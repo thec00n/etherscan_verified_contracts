@@ -9,8 +9,8 @@ pragma solidity ^0.4.0;
 		uint256 lastCashOut;
 		uint256[] entries;
 	}
-	// The address of the player and =&gt; the user info
-	mapping(address =&gt; Player) public playerInfo;
+	// The address of the player and => the user info
+	mapping(address => Player) public playerInfo;
 
 	function() public payable {}
 
@@ -34,28 +34,28 @@ pragma solidity ^0.4.0;
 			return 0;
 		}
 		uint256 totalBalance = 0;
-		for(uint i = 0; i &lt; entries.length; i++){
+		for(uint i = 0; i < entries.length; i++){
 			uint256 entry = entries[i];
 			uint256 cycle = entry / cycleLength;
 			uint256 cycleEnd = (cycle+1) * cycleLength;
 			//check if we have completed that cycle
-			if(numberOfEntries &gt;= cycleEnd) {
+			if(numberOfEntries >= cycleEnd) {
 			    uint256 entryBalence;
-				if(lastCashOut &lt;= entry) {
+				if(lastCashOut <= entry) {
 					entryBalence = calculateBalance(entry % 100, 99);
 					totalBalance += entryBalence;
 				}
-				if(lastCashOut &gt; entry &amp;&amp; lastCashOut &lt; cycleEnd){
+				if(lastCashOut > entry && lastCashOut < cycleEnd){
 					entryBalence = calculateBalance(lastCashOut % 100, 99);
 					totalBalance += entryBalence;
 				}
 			}
-			if(numberOfEntries &lt; cycleEnd) {
-				if(lastCashOut &lt;= entry) {
+			if(numberOfEntries < cycleEnd) {
+				if(lastCashOut <= entry) {
 					entryBalence = calculateBalance(entry % 100, (numberOfEntries - 1) % 100);
 					totalBalance += entryBalence;
 				}
-				if(lastCashOut &gt; entry &amp;&amp; lastCashOut &lt; numberOfEntries){
+				if(lastCashOut > entry && lastCashOut < numberOfEntries){
 					entryBalence = calculateBalance(lastCashOut % 100, (numberOfEntries - 1) % 100);
 					totalBalance += entryBalence;
 				}
@@ -65,9 +65,9 @@ pragma solidity ^0.4.0;
 	}
 
 	function calculateBalance(uint256 start, uint256 stop) public constant returns(uint256){
-		if (start &gt;= stop) return 0;
+		if (start >= stop) return 0;
 		uint256 balance  = 0;
-		for(uint i = start + 1; i &lt;= stop; i++) {
+		for(uint i = start + 1; i <= stop; i++) {
 			balance += price / i;
 		}
 		return balance;
@@ -75,7 +75,7 @@ pragma solidity ^0.4.0;
 
 	// buy into the contract
 	function buy() public payable {
-		require(msg.value &gt;= price);
+		require(msg.value >= price);
 		playerInfo[msg.sender].entries.push(numberOfEntries);
 		numberOfEntries++;
 		totalValue += msg.value;
@@ -91,7 +91,7 @@ pragma solidity ^0.4.0;
 		uint256 finalEntry = playerInfo[player].entries[playerInfo[player].entries.length - 1];
 		uint256 lastCycle = (finalEntry / cycleLength);
 		uint256 cycleEnd = (lastCycle + 1) * cycleLength;
-		return (numberOfEntries &gt; cycleEnd);
+		return (numberOfEntries > cycleEnd);
 
 	}
 

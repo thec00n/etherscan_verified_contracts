@@ -15,7 +15,7 @@
 // Ex: We generate 100 Eth profit daily, then it will be distributed in 50 times in 2 ether packages, then those packages get shared between shareholders. With the example above if you hold 2%, then you will earn 50 times 0.04 Eth, which is 2 Eth profit in total.
 //
 //
-// Profit: This contract itself is not generating any profit, it&#39;s just a ledger to keep record of investors, and pays out dividends automatically.There will be other contracts linked to this, that will send the profits here. EthVentures is just the core of this business, there will be other contracts built on it.
+// Profit: This contract itself is not generating any profit, it's just a ledger to keep record of investors, and pays out dividends automatically.There will be other contracts linked to this, that will send the profits here. EthVentures is just the core of this business, there will be other contracts built on it.
 // Ex: A dice game built on this contract that generates say 10 Eth daily, will send the fees directly here
 // Ex: A doubler game built on this contract that generates 50 Eth daily, that will send all fees here
 // Ex: Any other form of contract that takes a % fee, and will send the fees directly here to be distributed between EthVentures shareholders.
@@ -37,7 +37,7 @@
 //
 //
 //============================================================================================================================
-// Copyright (c) 2016, This piece of code cannot be copied or reused without the author&#39;s permission!
+// Copyright (c) 2016, This piece of code cannot be copied or reused without the author's permission!
 //
 // This is v3 of the contract, new and improved, all possible bugs fixed!
 //
@@ -57,7 +57,7 @@ uint public balance = 0;
 uint public totaldeposited=0;
 uint public totalpaidout=0;
 uint public totaldividends=0;
-string public Message_To_Investors=&quot;Welcome to EthVentures!&quot;; // the manager can send short messages to investors
+string public Message_To_Investors="Welcome to EthVentures!"; // the manager can send short messages to investors
 address public owner;
 // manager privilege
 modifier manager { if (msg.sender == owner) _ }
@@ -73,7 +73,7 @@ Enter();
 function Enter() {
 //DIVIDEND PAYOUT FUNCTION, IT WILL GET INCOME FROM OTHER CONTRACTS, THE DIVIDENDS WILL ALWAYS BE SENT
 //IN LESS THAN 2 ETHER SIZE PACKETS, BECAUSE ANY DEPOSIT OVER 2 ETHER GETS REGISTERED AS AN INVESTOR!!!
-if (msg.value &lt; 2 ether)
+if (msg.value < 2 ether)
 {
 uint PRE_inv_length = investors.length;
 uint PRE_payout;
@@ -82,9 +82,9 @@ owner.send(PRE_amount/100); //send the 1% management fee to the manager
 totalpaidout+=PRE_amount/100; //update paid out amount
 PRE_amount=PRE_amount - PRE_amount/100; //remaining 99% is the dividend
 //Distribute Dividends
-if(PRE_inv_length !=0 &amp;&amp; PRE_amount !=0)
+if(PRE_inv_length !=0 && PRE_amount !=0)
 {
-for(uint PRE_i=0; PRE_i&lt;PRE_inv_length;PRE_i++)
+for(uint PRE_i=0; PRE_i<PRE_inv_length;PRE_i++)
 {
 PRE_payout = PRE_amount * investors[PRE_i].percentage_ownership /10000000000; //calculate pay out
 investors[PRE_i].etherAddress.send(PRE_payout); //send dividend to investor
@@ -106,7 +106,7 @@ uint inv_length = investors.length;
 bool alreadyinvestor =false;
 uint alreadyinvestor_id;
 //go through all investors and see if the current investor was already an investor or not
-for(uint i=0; i&lt;inv_length;i++)
+for(uint i=0; i<inv_length;i++)
 {
 if( msg.sender== investors[i].etherAddress) // if yes then:
 {
@@ -115,7 +115,7 @@ alreadyinvestor_id=i; // and save the id of the investor in the investor array
 break; // get out of the loop to save gas, because we already found it
 }
 }
-// if it&#39;s a new investor then add it to the array
+// if it's a new investor then add it to the array
 if(alreadyinvestor==false)
 {
 total_investors=inv_length+1;
@@ -123,7 +123,7 @@ investors.length += 1;
 investors[inv_length].etherAddress = msg.sender;
 investors[inv_length].amount = amount;
 investors[inv_length].percentage_ownership = investors[inv_length].amount /totaldeposited*10000000000;
-for(uint k=0; k&lt;inv_length;k++)
+for(uint k=0; k<inv_length;k++)
 {investors[k].percentage_ownership = investors[k].amount/totaldeposited*10000000000;} //recalculate % ownership
 }
 else // if its already an investor, then update his investments and his % ownership
@@ -134,7 +134,7 @@ investors[alreadyinvestor_id].percentage_ownership = investors[alreadyinvestor_i
 // pay out the 1% management fee
 if (fees != 0)
 {
-if(balance&gt;fees)
+if(balance>fees)
 {
 owner.send(fees); //send the 1% to the manager
 balance -= fees; //balance update

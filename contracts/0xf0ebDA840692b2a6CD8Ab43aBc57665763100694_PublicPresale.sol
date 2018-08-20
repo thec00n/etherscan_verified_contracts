@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -102,7 +102,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -147,8 +147,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -197,7 +197,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -332,8 +332,8 @@ contract MintableToken is StandardToken, Ownable {
 contract SignalsToken is PausableToken, MintableToken {
 
     // Standard token variables
-    string constant public name = &quot;SGNPresaleToken&quot;;
-    string constant public symbol = &quot;SGN&quot;;
+    string constant public name = "SGNPresaleToken";
+    string constant public symbol = "SGN";
     uint8 constant public decimals = 9;
 
     event TokensBurned(address initiatior, address indexed _partner, uint256 _tokens);
@@ -350,7 +350,7 @@ contract SignalsToken is PausableToken, MintableToken {
     * @param _tokens uint256 amount of tokens to burn
     */
     function burnTokens(address _partner, uint256 _tokens) public onlyOwner {
-        require(balances[_partner] &gt;= _tokens);
+        require(balances[_partner] >= _tokens);
 
         balances[_partner] -= _tokens;
         totalSupply -= _tokens;
@@ -361,7 +361,7 @@ contract SignalsToken is PausableToken, MintableToken {
 // Public PreSale register contract
 contract PresaleRegister is Ownable {
 
-    mapping (address =&gt; bool) verified;
+    mapping (address => bool) verified;
     event ApprovedInvestor(address indexed investor);
 
     /*
@@ -420,8 +420,8 @@ contract Crowdsale {
 
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, address _wallet, SignalsToken _tokenAddress) {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_wallet != 0x0);
 
         token = _tokenAddress;
@@ -447,14 +447,14 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
 
@@ -474,7 +474,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -514,7 +514,7 @@ contract PublicPresale is FinalizableCrowdsale {
      * @dev The constructor
      * @param _startTime uint256 is a time stamp of presale start
      * @param _endTime uint256 is a time stamp of presale end (can be changed later)
-     * @param _wallet address is the address the funds will go to - it&#39;s not a multisig
+     * @param _wallet address is the address the funds will go to - it's not a multisig
      * @param _token address is the address of the token contract (ownership is required to handle it)
      * @param _register address is the investor registry
      */
@@ -544,7 +544,7 @@ contract PublicPresale is FinalizableCrowdsale {
         // calculate token amount to be created
         uint256 toGet = howMany(msg.value);
 
-        require((toGet &gt; 0) &amp;&amp; (toGet.add(tokensSold) &lt;= toBeSold));
+        require((toGet > 0) && (toGet.add(tokensSold) <= toBeSold));
 
         // update state
         weiRaised = weiRaised.add(weiAmount);
@@ -579,7 +579,7 @@ contract PublicPresale is FinalizableCrowdsale {
      */
     function extendDuration(uint256 _newEndTime) onlyOwner {
         require(!isFinalized);
-        require(endTime &lt; _newEndTime);
+        require(endTime < _newEndTime);
         endTime = _newEndTime;
         PresaleExtended(_newEndTime);
     }

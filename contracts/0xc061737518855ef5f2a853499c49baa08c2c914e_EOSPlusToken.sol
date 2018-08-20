@@ -7,10 +7,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -18,7 +18,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -91,8 +91,8 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     uint256 internal constant INITIAL_SUPPLY = 1000000000 * 10**uint(decimals);
 
@@ -100,7 +100,7 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
     }
 
@@ -111,8 +111,8 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
         decimals = 18;                            // Amount of decimals for display purposes
         balances[msg.sender] = INITIAL_SUPPLY;               // Give the creator all initial tokens (100000 for example)
         _totalSupply = INITIAL_SUPPLY;                        //total supply (there are 1.2 billion tokens going to 18DP)
-        name = &quot;EOS+&quot;;                                   // Set the name for display purposes
-        symbol = &quot;EOS+&quot;;                               // Set the symbol for display purposes
+        name = "EOS+";                                   // Set the name for display purposes
+        symbol = "EOS+";                               // Set the symbol for display purposes
     }
 
 
@@ -133,14 +133,14 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) onlyPayloadSize(2 * 32) public returns (bool success) {
         require (to != address(0));
-        require (balances[msg.sender] &gt;= tokens); // Check if the sender has enough
-        require (balances[to] + tokens &gt; balances[to]); // Check for overflows
+        require (balances[msg.sender] >= tokens); // Check if the sender has enough
+        require (balances[to] + tokens > balances[to]); // Check for overflows
 
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -151,7 +151,7 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -176,9 +176,9 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens)  onlyPayloadSize(3 * 32) public returns (bool success) {
         require(to != address(0));
-        require (balances[from] &gt;= tokens); // Check if the sender has enough
-        require (balances[to] + tokens &gt; balances[to]); // Check for overflows
-        require (tokens &lt;= allowed[from][msg.sender]); // Check allowance  
+        require (balances[from] >= tokens); // Check if the sender has enough
+        require (balances[to] + tokens > balances[to]); // Check for overflows
+        require (tokens <= allowed[from][msg.sender]); // Check allowance  
 
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
@@ -190,7 +190,7 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -199,7 +199,7 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender co&#183;&#183;ntract function
+    // from the token owner's account. The spender co··ntract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -211,7 +211,7 @@ contract EOSPlusToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

@@ -6,7 +6,7 @@ pragma solidity ^0.4.21;
 
 contract Send69Wei{
     uint256 constant HowMuchWei = 69;
-    mapping(uint256=&gt;address) targets;
+    mapping(uint256=>address) targets;
     uint256 maxval=1;
     
     function Send69Wei() public {
@@ -14,7 +14,7 @@ contract Send69Wei{
     }
     
     function() payable public {
-        if (msg.value&gt;=HowMuchWei){
+        if (msg.value>=HowMuchWei){
             uint256 ret = msg.value-(HowMuchWei);//69;
             msg.sender.transfer(ret);
             

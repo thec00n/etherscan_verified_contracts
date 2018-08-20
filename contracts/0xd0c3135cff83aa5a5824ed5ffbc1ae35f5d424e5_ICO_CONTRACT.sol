@@ -46,7 +46,7 @@ contract ICO_CONTRACT is owned {
    
    function withdrawEther(uint256 _amount) onlyOwner returns (bool){
        
-       if(_amount &gt; getBalance()) {
+       if(_amount > getBalance()) {
            return false;
        }
        owner.transfer(_amount);
@@ -86,7 +86,7 @@ contract ICO_CONTRACT is owned {
    }
    
    function setIcoTimeStartEnd(uint _startTime, uint _endTime) onlyOwner {
-       if(_startTime &gt; _endTime) {
+       if(_startTime > _endTime) {
            return;
        }
        
@@ -104,11 +104,11 @@ contract ICO_CONTRACT is owned {
 
    function () payable {
        
-       if(msg.value &lt; minimunInputEther) {
+       if(msg.value < minimunInputEther) {
            throw;
        }
        
-       if(msg.value &gt; maximumInputEther) {
+       if(msg.value > maximumInputEther) {
            throw;
        }
        
@@ -124,7 +124,7 @@ contract ICO_CONTRACT is owned {
    }
    
    function isFundingNow() constant returns (bool) {
-       return (now &gt; icoStartTime &amp;&amp; now &lt; icoEndTime);
+       return (now > icoStartTime && now < icoEndTime);
    }
    
    function getIsStopFunding() constant returns (bool) {

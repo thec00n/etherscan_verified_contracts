@@ -1,8 +1,8 @@
 pragma solidity ^0.4.19;
 
 contract SURT {
-	string public constant name = &quot;SURT token&quot;;
-	string public constant symbol = &quot;SURT&quot;;	
+	string public constant name = "SURT token";
+	string public constant symbol = "SURT";	
 	uint8 public constant decimals = 2;
 	address public owner;
 	uint256 public totalSupply_;
@@ -11,8 +11,8 @@ contract SURT {
 	uint256 public airdropAmount;
 	bool public airdropConjured;
 
-	mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => uint256) public balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 	event Transfer(address indexed from, address indexed to, uint256 value);	
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -37,10 +37,10 @@ contract SURT {
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-    	require(balances[msg.sender] &gt;=_value);
+    	require(balances[msg.sender] >=_value);
 		
-		require(balances[msg.sender] &gt;= _value);
-		require(balances[_to] + _value &gt;= balances[_to]);
+		require(balances[msg.sender] >= _value);
+		require(balances[_to] + _value >= balances[_to]);
 
 		balances[msg.sender] -= _value;					 
 		balances[_to] += _value;					
@@ -51,12 +51,12 @@ contract SURT {
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));						  
-		require(_value &lt;= balances[_from]);			
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);			
+		require(_value <= allowed[_from][msg.sender]);
 
-		require(balances[msg.sender] &gt;= _value);
-		require(balances[_to] + _value &gt;= balances[_to]);		
-		require(allowed[_from][msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
+		require(balances[_to] + _value >= balances[_to]);		
+		require(allowed[_from][msg.sender] >= _value);
 
 		balances[_from] -= _value;
 		balances[_to] += _value;
@@ -80,7 +80,7 @@ contract SURT {
 	}
 
 	function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
-    	require(allowed[msg.sender][_spender] + _addedValue &gt;= allowed[msg.sender][_spender]);
+    	require(allowed[msg.sender][_spender] + _addedValue >= allowed[msg.sender][_spender]);
 		allowed[msg.sender][_spender] = allowed[msg.sender][_spender] + _addedValue;
     	Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     	return true;
@@ -88,7 +88,7 @@ contract SURT {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} 
 		else {
@@ -99,7 +99,7 @@ contract SURT {
   	}
 
 	function burn(uint256 _value) public returns (bool) {		
-		require(balances[msg.sender] &gt;= _value ); 							
+		require(balances[msg.sender] >= _value ); 							
 		balances[msg.sender] -= _value;					  					
 		totalSupply_ -= _value;												
 		Burn(msg.sender, _value);											
@@ -107,8 +107,8 @@ contract SURT {
 	}
 
 	function burnFrom(address _from, uint256 _value) public returns (bool) {
-		require(balances[_from] &gt;= _value );								
-		require(allowed[_from][msg.sender] &gt;= _value);						
+		require(balances[_from] >= _value );								
+		require(allowed[_from][msg.sender] >= _value);						
 		balances[_from] -= _value;						  					
 		totalSupply_ -= _value;							   					
 		Burn(_from, _value);												

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -125,7 +125,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -143,7 +143,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -172,7 +172,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -183,8 +183,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -256,12 +256,12 @@ contract StandardToken is ERC20, BasicToken {
  * @dev Implementation of the Trident token.
  */
 contract Trident is StandardToken, Ownable {
-  string public name = &#39;Trident&#39;;
-  string public symbol = &#39;TDT&#39;;
+  string public name = 'Trident';
+  string public symbol = 'TDT';
   uint public decimals = 18;
-  uint public INITIAL_SUPPLY = 0;  // we&#39;re starting off with zero initial supply and will &#39;mint&#39; as needed
+  uint public INITIAL_SUPPLY = 0;  // we're starting off with zero initial supply and will 'mint' as needed
 
-  // The following were created as arrays instead of mappings since the dapp requires access to all elements (a mapping doesn&#39;t allow access to its keys). Extra iteration gas costs are negligible due to the fact that delegates are usually very limited in number.
+  // The following were created as arrays instead of mappings since the dapp requires access to all elements (a mapping doesn't allow access to its keys). Extra iteration gas costs are negligible due to the fact that delegates are usually very limited in number.
   address[] mintDelegates;   // accounts allowed to mint tokens
   address[] burnDelegates;   // accounts allowed to burn tokens
 
@@ -290,7 +290,7 @@ contract Trident is StandardToken, Ownable {
       allowedToMint = true;
     }
     else {
-      for(uint i=0; i&lt;mintDelegates.length; i++) {
+      for(uint i=0; i<mintDelegates.length; i++) {
         if(mintDelegates[i]==msg.sender) {
           allowedToMint = true;
           break;
@@ -312,7 +312,7 @@ contract Trident is StandardToken, Ownable {
       allowedToBurn = true;
     }
     else {
-      for(uint i=0; i&lt;burnDelegates.length; i++) {
+      for(uint i=0; i<burnDelegates.length; i++) {
         if(burnDelegates[i]==msg.sender) {
           allowedToBurn = true;
           break;
@@ -344,7 +344,7 @@ contract Trident is StandardToken, Ownable {
    */
   function approveMintDelegate(address _mintDelegate) onlyOwner public returns (bool) {
     bool delegateFound = false;
-    for(uint i=0; i&lt;mintDelegates.length; i++) {
+    for(uint i=0; i<mintDelegates.length; i++) {
       if(mintDelegates[i]==_mintDelegate) {
         delegateFound = true;
         break;
@@ -365,7 +365,7 @@ contract Trident is StandardToken, Ownable {
    */
   function revokeMintDelegate(address _mintDelegate) onlyOwner public returns (bool) {
     uint length = mintDelegates.length;
-    require(length &gt; 0);
+    require(length > 0);
 
     address lastDelegate = mintDelegates[length-1];
     if(_mintDelegate == lastDelegate) {
@@ -374,7 +374,7 @@ contract Trident is StandardToken, Ownable {
     }
     else {
       // Game plan: find the delegate, replace it with the very last item in the array, then delete the last item
-      for(uint i=0; i&lt;length; i++) {
+      for(uint i=0; i<length; i++) {
         if(mintDelegates[i]==_mintDelegate) {
           mintDelegates[i] = lastDelegate;
           delete mintDelegates[length-1];
@@ -394,7 +394,7 @@ contract Trident is StandardToken, Ownable {
    */
   function approveBurnDelegate(address _burnDelegate) onlyOwner public returns (bool) {
     bool delegateFound = false;
-    for(uint i=0; i&lt;burnDelegates.length; i++) {
+    for(uint i=0; i<burnDelegates.length; i++) {
       if(burnDelegates[i]==_burnDelegate) {
         delegateFound = true;
         break;
@@ -415,7 +415,7 @@ contract Trident is StandardToken, Ownable {
    */
   function revokeBurnDelegate(address _burnDelegate) onlyOwner public returns (bool) {
     uint length = burnDelegates.length;
-    require(length &gt; 0);
+    require(length > 0);
 
     address lastDelegate = burnDelegates[length-1];
     if(_burnDelegate == lastDelegate) {
@@ -424,7 +424,7 @@ contract Trident is StandardToken, Ownable {
     }
     else {
       // Game plan: find the delegate, replace it with the very last item in the array, then delete the last item
-      for(uint i=0; i&lt;length; i++) {
+      for(uint i=0; i<length; i++) {
         if(burnDelegates[i]==_burnDelegate) {
           burnDelegates[i] = lastDelegate;
           delete burnDelegates[length-1];
@@ -440,7 +440,7 @@ contract Trident is StandardToken, Ownable {
 
 
   /**
-   * @dev Function to mint tokens and transfer them to contract owner&#39;s address
+   * @dev Function to mint tokens and transfer them to contract owner's address
    * @param _amount The amount of tokens to mint.
    * @return A boolean that indicates if the operation was successful.
    */
@@ -461,7 +461,7 @@ contract Trident is StandardToken, Ownable {
    * @return A boolean that indicates if the operation was successful.
    */
   function burn(uint256 _value) onlyOwnerOrBurnDelegate public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);

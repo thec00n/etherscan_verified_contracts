@@ -42,9 +42,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -61,7 +61,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -140,9 +140,9 @@ contract DetailBase is AccessControl {
 
     Detail[] details;
 
-    mapping (uint256 =&gt; address) public detailIndexToOwner;
-    mapping (address =&gt; uint256) public ownershipTokenCount;
-    mapping (uint256 =&gt; address) public detailIndexToApproved;
+    mapping (uint256 => address) public detailIndexToOwner;
+    mapping (address => uint256) public ownershipTokenCount;
+    mapping (uint256 => address) public detailIndexToApproved;
 
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         ownershipTokenCount[_to]++;
@@ -192,15 +192,15 @@ contract AssemblyBase is DetailBase {
     
     Assembly[] assemblys;
     
-    mapping (uint256 =&gt; address) public assemblIndexToOwner;
-    mapping (address =&gt; uint256) public ownershipAssemblyCount;
-    mapping (uint256 =&gt; address) public robotIndexToApproved;
+    mapping (uint256 => address) public assemblIndexToOwner;
+    mapping (address => uint256) public ownershipAssemblyCount;
+    mapping (uint256 => address) public robotIndexToApproved;
     
     function gatherDetails(uint64[] _arrIdDetails) public whenNotPaused returns (uint) {
         
         require(_arrIdDetails.length == 7);
         
-        for (uint i = 0; i &lt; _arrIdDetails.length; i++) {
+        for (uint i = 0; i < _arrIdDetails.length; i++) {
             _checkDetail(_arrIdDetails[i], uint8(i+1));
         }
         
@@ -208,7 +208,7 @@ contract AssemblyBase is DetailBase {
         
         uint256 newAssemblyId = assemblys.push(_ass) - 1;
         
-        for (uint j = 0; j &lt; _arrIdDetails.length; j++) {
+        for (uint j = 0; j < _arrIdDetails.length; j++) {
             details[_arrIdDetails[j]].idParent = newAssemblyId;
         }
         
@@ -219,16 +219,16 @@ contract AssemblyBase is DetailBase {
     }
     
     function changeAssembly(uint _id, uint64[] _index, uint64[] _arrIdReplace) public whenNotPaused {
-        require(_index.length == _arrIdReplace.length &amp;&amp;
-                assemblIndexToOwner[_id] == msg.sender &amp;&amp;
+        require(_index.length == _arrIdReplace.length &&
+                assemblIndexToOwner[_id] == msg.sender &&
                 assemblys[_id].startMiningTime == 0);
-        for (uint i = 0; i &lt; _arrIdReplace.length; i++) {
+        for (uint i = 0; i < _arrIdReplace.length; i++) {
             _checkDetail(_arrIdReplace[i], uint8(_index[i] + 1));
         }
         
         Assembly storage _assStorage = assemblys[_id];
         
-        for (uint j = 0; j &lt; _index.length; j++) {
+        for (uint j = 0; j < _index.length; j++) {
             details[_assStorage.spares[_index[j]]].idParent = 0;
             _assStorage.spares[_index[j]] = _arrIdReplace[j];
             details[_arrIdReplace[j]].idParent = _id;
@@ -240,8 +240,8 @@ contract AssemblyBase is DetailBase {
     }
     
     function startMining(uint _id) public whenNotPaused returns(bool) {
-        require(assemblIndexToOwner[_id] == msg.sender &amp;&amp;
-                assemblys[_id].rang &gt; 0 &amp;&amp;
+        require(assemblIndexToOwner[_id] == msg.sender &&
+                assemblys[_id].rang > 0 &&
                 assemblys[_id].startMiningTime == 0);
         assemblys[_id].startMiningTime = uint64(now);
         return true;
@@ -262,7 +262,7 @@ contract AssemblyBase is DetailBase {
         uint[] memory resultDna = new uint[](ownershipAssemblyCount[_owner]);
         uint[] memory resultRang = new uint[](ownershipAssemblyCount[_owner]);
         uint counter = 0;
-        for (uint i = 0; i &lt; assemblys.length; i++) {
+        for (uint i = 0; i < assemblys.length; i++) {
           if (assemblIndexToOwner[i] == _owner) {
             resultIndex[counter] = i; // index
             resultDna[counter] = assemblys[i].dna;
@@ -275,13 +275,13 @@ contract AssemblyBase is DetailBase {
     
     function _checkDetail(uint _id, uint8 _mask) internal view {
         require(detailIndexToOwner[_id] == msg.sender
-        &amp;&amp; details[_id].idParent == 0
-        &amp;&amp; details[_id].dna / 1000 == _mask);
+        && details[_id].idParent == 0
+        && details[_id].dna / 1000 == _mask);
     }
     
     function _isCanMining(uint64[] memory _arrIdDetails) internal view returns(uint) {
         uint _ch = details[_arrIdDetails[i]].dna % 100;
-        for (uint i = 1; i &lt; _arrIdDetails.length; i++) {
+        for (uint i = 1; i < _arrIdDetails.length; i++) {
             if (_ch != details[_arrIdDetails[i]].dna % 100) {
                 return 0;
             }
@@ -307,13 +307,13 @@ contract AssemblyBase is DetailBase {
         uint _ch = _isCanMining(_arrIdDetails);
         if (_ch == 0) {
             rang = 0;
-        } else if (_ch &lt; 29) {
+        } else if (_ch < 29) {
             rang = rangIndex[0];
-        } else if (_ch &gt; 28 &amp;&amp; _ch &lt; 37) {
+        } else if (_ch > 28 && _ch < 37) {
             rang = rangIndex[1];
-        } else if (_ch &gt; 36 &amp;&amp; _ch &lt; 40) {
+        } else if (_ch > 36 && _ch < 40) {
             rang = rangIndex[2];
-        } else if (_ch &lt; 39) {
+        } else if (_ch < 39) {
             rang = rangIndex[3];
         }
         return rang;
@@ -321,7 +321,7 @@ contract AssemblyBase is DetailBase {
     
     function _makeDna(uint64[] memory _arrIdDetails) internal view returns(uint) {
         uint _dna = 0;
-        for (uint i = 0; i &lt; _arrIdDetails.length; i++) {
+        for (uint i = 0; i < _arrIdDetails.length; i++) {
             _dna += details[_arrIdDetails[i]].dna * (10000 ** i);
         }
         return _dna;
@@ -348,8 +348,8 @@ contract BaseContract is AssemblyBase, ERC721 {
     address wallet4;
     address wallet5;
     
-    string public constant name = &quot;Robots Crypto&quot;;
-    string public constant symbol = &quot;RC&quot;;
+    string public constant name = "Robots Crypto";
+    string public constant symbol = "RC";
 
     uint[] dHead;
     uint[] dHousing;
@@ -437,7 +437,7 @@ contract BaseContract is AssemblyBase, ERC721 {
         require(_to != address(this));
         _transferRobot(msg.sender, _to, _robotId);
         uint64[] storage spares = assemblys[_robotId].spares;
-        for (uint i = 0; i &lt; spares.length; i++) {
+        for (uint i = 0; i < spares.length; i++) {
             _transfer(msg.sender, _to, spares[i]);
         }
     }
@@ -516,7 +516,7 @@ contract BaseContract is AssemblyBase, ERC721 {
             uint256 resultIndex = 0;
             uint256 detailId;
 
-            for (detailId = 1; detailId &lt;= totalDetails; detailId++) {
+            for (detailId = 1; detailId <= totalDetails; detailId++) {
                 if (detailIndexToOwner[detailId] == _owner) {
                     result[resultIndex] = detailId;
                     resultIndex++;
@@ -529,9 +529,9 @@ contract BaseContract is AssemblyBase, ERC721 {
     
     modifier canMining(uint _id) {
         if (assemblys[_id].rang == 6) {
-            require(assemblys[_id].countMiningDetail &lt; (assemblys[_id].rang - 1));
+            require(assemblys[_id].countMiningDetail < (assemblys[_id].rang - 1));
         } else {
-            require(assemblys[_id].countMiningDetail &lt; assemblys[_id].rang);
+            require(assemblys[_id].countMiningDetail < assemblys[_id].rang);
         }
         _;
       }
@@ -570,7 +570,7 @@ contract MainContract is BaseContract {
     
     event BuyChestSuccess(uint count);
     
-    mapping (address =&gt; uint256) public ownershipChestCount;
+    mapping (address => uint256) public ownershipChestCount;
     
         modifier isMultiplePrice() {
         require((msg.value % 0.1 ether) == 0);
@@ -578,7 +578,7 @@ contract MainContract is BaseContract {
     }
     
     modifier isMinValue() {
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
         _;
     }
     
@@ -600,7 +600,7 @@ contract MainContract is BaseContract {
     
     function getMiningDetail(uint _id) public canMining(_id) whenNotPaused returns(bool) {
         require(assemblIndexToOwner[_id] == msg.sender);
-        if (assemblys[_id].startMiningTime + 259200 &lt;= now) {
+        if (assemblys[_id].startMiningTime + 259200 <= now) {
             if (assemblys[_id].rang == 6) {
                 _generateDetail(40);
             } else {
@@ -617,8 +617,8 @@ contract MainContract is BaseContract {
         uint[] memory resultIndex = new uint[](ownershipTokenCount[_owner] - (ownershipAssemblyCount[_owner] * 7));
         uint[] memory resultDna = new uint[](ownershipTokenCount[_owner] - (ownershipAssemblyCount[_owner] * 7));
         uint counter = 0;
-        for (uint i = 0; i &lt; details.length; i++) {
-          if (detailIndexToOwner[i] == _owner &amp;&amp; details[i].idParent == 0) {
+        for (uint i = 0; i < details.length; i++) {
+          if (detailIndexToOwner[i] == _owner && details[i].idParent == 0) {
             resultIndex[counter] = i;
             resultDna[counter] = details[i].dna;
             counter++;
@@ -653,7 +653,7 @@ contract MainContract is BaseContract {
         
         uint _dna = 1;
         
-        for (uint i = 0; i &lt; 7; i++) {
+        for (uint i = 0; i < 7; i++) {
             
             uint256 newDetailId = createDetail(_owner, (_dna * 1000 + _color));
             
@@ -682,22 +682,22 @@ contract MainContract is BaseContract {
     }
     
     function openChest() public whenNotPaused {
-        require(ownershipChestCount[msg.sender] &gt;= 1);
-        for (uint i = 0; i &lt; 5; i++) {
+        require(ownershipChestCount[msg.sender] >= 1);
+        for (uint i = 0; i < 5; i++) {
             _generateDetail(40);
         }
         ownershipChestCount[msg.sender]--;
     }
     
     function open5Chest() public whenNotPaused {
-        require(ownershipChestCount[msg.sender] &gt;= 5);
-        for (uint i = 0; i &lt; 5; i++) {
+        require(ownershipChestCount[msg.sender] >= 5);
+        for (uint i = 0; i < 5; i++) {
             openChest();
         }
     }
     
     function rechargeRobot(uint _robotId) external whenNotPaused payable {
-        require(assemblIndexToOwner[_robotId] == msg.sender &amp;&amp;
+        require(assemblIndexToOwner[_robotId] == msg.sender &&
                 msg.value == costRecharge(_robotId));
         if (assemblys[_robotId].rang == 6) {
             require(assemblys[_robotId].countMiningDetail == (assemblys[_robotId].rang - 1));

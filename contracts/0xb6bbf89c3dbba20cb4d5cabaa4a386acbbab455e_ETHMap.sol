@@ -10,10 +10,10 @@ contract ETHMap {
     address contractOwner;
 
     /// Users pending withdrawals
-    mapping(address =&gt; uint) pendingWithdrawals;
+    mapping(address => uint) pendingWithdrawals;
 
     /// Zone structures mapping
-    mapping(uint =&gt; Zone) zoneStructs;
+    mapping(uint => Zone) zoneStructs;
     uint[] zoneList;
 
     struct Zone {
@@ -37,7 +37,7 @@ contract ETHMap {
     modifier onlyValidZone(uint zoneId)
     {
        // Throws if zone id is not valid
-        require(zoneId &gt;= 1 &amp;&amp; zoneId &lt;= 178);
+        require(zoneId >= 1 && zoneId <= 178);
         _;
     }
 
@@ -59,7 +59,7 @@ contract ETHMap {
         }
         // Throw if amount sent is not sufficient
         uint minPrice = (zoneStructs[zoneId].owner == address(0)) ? computeInitialPrice(zoneId) : zoneStructs[zoneId].sellPrice;
-        require(msg.value &gt;= minPrice);
+        require(msg.value >= minPrice);
         // If initial sale
         if (zoneStructs[zoneId].owner == address(0)) {
             // No current owners, credit contract owner balance

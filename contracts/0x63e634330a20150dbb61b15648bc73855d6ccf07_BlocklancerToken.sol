@@ -41,11 +41,11 @@ contract ERC20Interface {
 
 /// Blocklancer Token (LNC) - crowdfunding code for Blocklancer Project
 contract BlocklancerToken is ERC20Interface {
-    string public constant name = &quot;Lancer Token&quot;;
-    string public constant symbol = &quot;LNC&quot;;
+    string public constant name = "Lancer Token";
+    string public constant symbol = "LNC";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
     
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     uint public fundingStart;
 
@@ -64,13 +64,13 @@ contract BlocklancerToken is ERC20Interface {
 	
 	bool startRefund=false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; bool) initialInvestor;
-    mapping (address =&gt; uint) lastTransferred;
+    mapping (address => uint256) balances;
+    mapping (address => bool) initialInvestor;
+    mapping (address => uint) lastTransferred;
     
     //needed to refund everyone should the ICO fail
-    // needed because the price per LNC isn&#39;t linear
-    mapping (address =&gt; uint256) balancesEther;
+    // needed because the price per LNC isn't linear
+    mapping (address => uint256) balancesEther;
 
     //address of the contract that manages the migration
     //can only be changed by the creator
@@ -99,13 +99,13 @@ contract BlocklancerToken is ERC20Interface {
 
     /// allows to transfer token to another address
     function transfer(address _to, uint256 _value) returns (bool success) {
-        // Don&#39;t allow in funding state
+        // Don't allow in funding state
         if(funding) throw;
         if(!allowTransfer)throw;
 
         var senderBalance = balances[msg.sender];
-        //only allow if the balance of the sender is more than he want&#39;s to send
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        //only allow if the balance of the sender is more than he want's to send
+        if (senderBalance >= _value && _value > 0) {
             //reduce the sender balance by the amount he sends
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
@@ -148,7 +148,7 @@ contract BlocklancerToken is ERC20Interface {
     
     //time left before the crodsale begins
     function TimeLeftBeforeCrowdsale() external constant returns (uint256) {
-        if(fundingStart&gt;block.timestamp)
+        if(fundingStart>block.timestamp)
             return fundingStart-block.timestamp;
         else
             return 0;
@@ -166,7 +166,7 @@ contract BlocklancerToken is ERC20Interface {
         if(_value == 0) throw;
         
         //if the value is higher than the sender owns abort
-        if(_value &gt; balances[msg.sender]) throw;
+        if(_value > balances[msg.sender]) throw;
 
         //reduce the balance of the owner
         balances[msg.sender] -= _value;
@@ -237,7 +237,7 @@ contract BlocklancerToken is ERC20Interface {
 		startRefund=s;
 	}
     
-    //return the current exchange rate -&gt; LNC per Ether
+    //return the current exchange rate -> LNC per Ether
     function getExchangeRate(address investorAddress) constant returns(uint){
 		if(initialInvestor[investorAddress])
 			return EarlyInvestorExchangeRate;
@@ -248,7 +248,7 @@ contract BlocklancerToken is ERC20Interface {
     //returns if the crowd sale is still open
     function ICOopen() constant returns(bool){
         if(!funding) return false;
-        else if(block.timestamp &lt; fundingStart) return false;
+        else if(block.timestamp < fundingStart) return false;
         else return true;
     }
 
@@ -258,7 +258,7 @@ contract BlocklancerToken is ERC20Interface {
         if(!funding) throw;
         
         //not possible before the funding started
-        if(block.timestamp &lt; fundingStart) throw;
+        if(block.timestamp < fundingStart) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if(msg.value == 0) throw;
@@ -324,17 +324,17 @@ contract BlocklancerToken is ERC20Interface {
 	
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom(address _from,address _to,uint256 _amount) returns (bool success) {
          if(funding) throw;
          if(!allowTransfer)throw;
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;

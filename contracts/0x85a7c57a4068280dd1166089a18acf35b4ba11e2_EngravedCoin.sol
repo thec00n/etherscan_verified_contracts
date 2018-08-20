@@ -42,18 +42,18 @@ contract ERC20 {
 
 
 contract EngravedCoin is ERC20, InputValidator, Owned {
-    string public name = &quot;Engraved Coin&quot;;
-    string public symbol = &quot;XEG&quot;;
+    string public name = "Engraved Coin";
+    string public symbol = "XEG";
     uint8 public decimals = 18;
 
     // Token state
     uint internal currentTotalSupply;
 
     // Token balances
-    mapping (address =&gt; uint) internal balances;
+    mapping (address => uint) internal balances;
 
     // Token allowances
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => mapping (address => uint)) internal allowed;
 
     function EngravedCoin() public {
         owner = msg.sender;
@@ -74,8 +74,8 @@ contract EngravedCoin is ERC20, InputValidator, Owned {
     }
 
     function transfer(address _to, uint _value) public safeArguments(2) returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -85,9 +85,9 @@ contract EngravedCoin is ERC20, InputValidator, Owned {
     }
 
     function transferFrom(address _from, address _to, uint _value) public safeArguments(3) returns (bool) {
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -110,7 +110,7 @@ contract EngravedCoin is ERC20, InputValidator, Owned {
     }
 
     function issue(address _to, uint _value) public onlyOwner safeArguments(2) returns (bool) {
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[_to] += _value;
         currentTotalSupply += _value;

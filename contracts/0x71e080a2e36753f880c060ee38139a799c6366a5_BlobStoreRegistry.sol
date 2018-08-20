@@ -3,7 +3,7 @@ pragma solidity ^0.4.4;
 
 /**
  * @title AbstractBlobStore
- * @author Jonathan Brown &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="68020a1a071f06280a041d0d0c1a0718040d1c460b0705">[email&#160;protected]</a>&gt;
+ * @author Jonathan Brown <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="68020a1a071f06280a041d0d0c1a0718040d1c460b0705">[email protected]</a>>
  * @dev Contracts must be able to interact with blobs regardless of which BlobStore contract they are stored in, so it is necessary for there to be an abstract contract that defines an interface for BlobStore contracts.
  */
 contract AbstractBlobStore {
@@ -33,20 +33,20 @@ contract AbstractBlobStore {
     function createNewRevision(bytes20 blobId, bytes contents) external returns (uint revisionId);
 
     /**
-     * @dev Update a blob&#39;s latest revision.
+     * @dev Update a blob's latest revision.
      * @param blobId Id of the blob.
      * @param contents Contents that should replace the latest revision.
      */
     function updateLatestRevision(bytes20 blobId, bytes contents) external;
 
     /**
-     * @dev Retract a blob&#39;s latest revision. Revision 0 cannot be retracted.
+     * @dev Retract a blob's latest revision. Revision 0 cannot be retracted.
      * @param blobId Id of the blob.
      */
     function retractLatestRevision(bytes20 blobId) external;
 
     /**
-     * @dev Delete all a blob&#39;s revisions and replace it with a new blob.
+     * @dev Delete all a blob's revisions and replace it with a new blob.
      * @param blobId Id of the blob.
      * @param contents Contents that should be stored.
      */
@@ -131,7 +131,7 @@ contract AbstractBlobStore {
     function getInfo(bytes20 blobId) external constant returns (bytes4 flags, address owner, uint revisionCount, uint[] blockNumbers);
 
     /**
-     * @dev Get all a blob&#39;s flags.
+     * @dev Get all a blob's flags.
      * @param blobId Id of the blob.
      * @return flags Packed blob settings.
      */
@@ -180,7 +180,7 @@ contract AbstractBlobStore {
     function getRevisionCount(bytes20 blobId) external constant returns (uint revisionCount);
 
     /**
-     * @dev Get the block numbers for all of a blob&#39;s revisions.
+     * @dev Get the block numbers for all of a blob's revisions.
      * @param blobId Id of the blob.
      * @return blockNumbers Revision block numbers.
      */
@@ -191,14 +191,14 @@ contract AbstractBlobStore {
 
 /**
  * @title BlobStoreRegistry
- * @author Jonathan Brown &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc6cedec3dbc2eccec0d9c9c8dec3dcc0c9d882cfc3c1">[email&#160;protected]</a>&gt;
+ * @author Jonathan Brown <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc6cedec3dbc2eccec0d9c9c8dec3dcc0c9d882cfc3c1">[email protected]</a>>
  */
 contract BlobStoreRegistry {
 
     /**
      * @dev Mapping of contract id to contract addresses.
      */
-    mapping (bytes12 =&gt; address) contractAddresses;
+    mapping (bytes12 => address) contractAddresses;
 
     /**
      * @dev An AbstractBlobStore contract has been registered.

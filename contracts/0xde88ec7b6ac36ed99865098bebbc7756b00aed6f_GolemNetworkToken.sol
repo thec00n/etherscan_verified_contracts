@@ -10,7 +10,7 @@ contract GNTAllocation {
     uint256 constant totalAllocations = 30000;
 
     // Addresses of developer and the Golem Factory to allocations mapping.
-    mapping (address =&gt; uint256) allocations;
+    mapping (address => uint256) allocations;
 
     GolemNetworkToken gnt;
     uint256 unlockedAt;
@@ -25,35 +25,35 @@ contract GNTAllocation {
         allocations[_golemFactory] = 20000; // 12/18 pp of 30000 allocations.
 
         // For developers:
-        allocations[0x3F4e79023273E82EfcD8B204fF1778e09df1a597] = 2500; // 25.0% of developers&#39; allocations (10000).
-        allocations[0x1A5218B6E5C49c290745552481bb0335be2fB0F4] =  730; //  7.3% of developers&#39; allocations.
+        allocations[0x3F4e79023273E82EfcD8B204fF1778e09df1a597] = 2500; // 25.0% of developers' allocations (10000).
+        allocations[0x1A5218B6E5C49c290745552481bb0335be2fB0F4] =  730; //  7.3% of developers' allocations.
         allocations[0x00eA32D8DAe74c01eBe293C74921DB27a6398D57] =  730;
         allocations[0xde03] =  730;
         allocations[0xde04] =  730;
         allocations[0xde05] =  730;
-        allocations[0xde06] =  630; //  6.3% of developers&#39; allocations.
+        allocations[0xde06] =  630; //  6.3% of developers' allocations.
         allocations[0xde07] =  630;
         allocations[0xde08] =  630;
         allocations[0xde09] =  630;
-        allocations[0xde10] =  310; //  3.1% of developers&#39; allocations.
-        allocations[0xde11] =  153; //  1.53% of developers&#39; allocations.
-        allocations[0xde12] =  150; //  1.5% of developers&#39; allocations.
-        allocations[0xde13] =  100; //  1.0% of developers&#39; allocations.
+        allocations[0xde10] =  310; //  3.1% of developers' allocations.
+        allocations[0xde11] =  153; //  1.53% of developers' allocations.
+        allocations[0xde12] =  150; //  1.5% of developers' allocations.
+        allocations[0xde13] =  100; //  1.0% of developers' allocations.
         allocations[0xde14] =  100;
         allocations[0xde15] =  100;
-        allocations[0xde16] =   70; //  0.7% of developers&#39; allocations.
+        allocations[0xde16] =   70; //  0.7% of developers' allocations.
         allocations[0xde17] =   70;
         allocations[0xde18] =   70;
         allocations[0xde19] =   70;
         allocations[0xde20] =   70;
-        allocations[0xde21] =   42; //  0.42% of developers&#39; allocations.
-        allocations[0xde22] =   25; //  0.25% of developers&#39; allocations.
+        allocations[0xde21] =   42; //  0.42% of developers' allocations.
+        allocations[0xde22] =   25; //  0.25% of developers' allocations.
     }
 
     /// @notice Allow developer to unlock allocated tokens by transferring them
-    /// from GNTAllocation to developer&#39;s address.
+    /// from GNTAllocation to developer's address.
     function unlock() external {
-        if (now &lt; unlockedAt) throw;
+        if (now < unlockedAt) throw;
 
         // During first unlock attempt fetch total number of locked tokens.
         if (tokensCreated == 0)
@@ -75,8 +75,8 @@ contract MigrationAgent {
 
 /// @title Golem Network Token (GNT) - crowdfunding code for Golem Project
 contract GolemNetworkToken {
-    string public constant name = &quot;Test Network Token&quot;;
-    string public constant symbol = &quot;TNT&quot;;
+    string public constant name = "Test Network Token";
+    string public constant symbol = "TNT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     uint256 public constant tokenCreationRate = 1000;
@@ -102,7 +102,7 @@ contract GolemNetworkToken {
     // The current total token supply.
     uint256 totalTokens;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     address public migrationAgent;
     uint256 public totalMigrated;
@@ -118,8 +118,8 @@ contract GolemNetworkToken {
 
         if (_golemFactory == 0) throw;
         if (_migrationMaster == 0) throw;
-        if (_fundingStartBlock &lt;= block.number) throw;
-        if (_fundingEndBlock   &lt;= _fundingStartBlock) throw;
+        if (_fundingStartBlock <= block.number) throw;
+        if (_fundingEndBlock   <= _fundingStartBlock) throw;
 
         lockedAllocation = new GNTAllocation(_golemFactory);
         migrationMaster = _migrationMaster;
@@ -128,7 +128,7 @@ contract GolemNetworkToken {
         fundingEndBlock = _fundingEndBlock;
     }
 
-    /// @notice Transfer `_value` GNT tokens from sender&#39;s account
+    /// @notice Transfer `_value` GNT tokens from sender's account
     /// `msg.sender` to provided account address `_to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Operational
@@ -140,7 +140,7 @@ contract GolemNetworkToken {
         if (funding) throw;
 
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -170,7 +170,7 @@ contract GolemNetworkToken {
 
         // Validate input value.
         if (_value == 0) throw;
-        if (_value &gt; balances[msg.sender]) throw;
+        if (_value > balances[msg.sender]) throw;
 
         balances[msg.sender] -= _value;
         totalTokens -= _value;
@@ -182,7 +182,7 @@ contract GolemNetworkToken {
     /// @notice Set address of migration target contract and enable migration
 	/// process.
     /// @dev Required state: Operational Normal
-    /// @dev State transition: -&gt; Operational Migration
+    /// @dev State transition: -> Operational Migration
     /// @param _agent The address of the MigrationAgent contract
     function setMigrationAgent(address _agent) external {
         // Abort if not in Operational Normal state.
@@ -202,18 +202,18 @@ contract GolemNetworkToken {
 
     /// @notice Create tokens when funding is active.
     /// @dev Required state: Funding Active
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function create() payable external {
         // Abort if not in Funding Active state.
         // The checks are split (instead of using or operator) because it is
         // cheaper this way.
         if (!funding) throw;
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingEndBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingEndBlock) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if (msg.value == 0) throw;
-        if (msg.value &gt; (tokenCreationCap - totalTokens) / tokenCreationRate)
+        if (msg.value > (tokenCreationCap - totalTokens) / tokenCreationRate)
             throw;
 
         var numTokens = msg.value * tokenCreationRate;
@@ -231,13 +231,13 @@ contract GolemNetworkToken {
     /// create GNT for the Golem Factory and developer,
     /// transfer ETH to the Golem Factory address.
     /// @dev Required state: Funding Success
-    /// @dev State transition: -&gt; Operational Normal
+    /// @dev State transition: -> Operational Normal
     function finalize() external {
         // Abort if not in Funding Success state.
         if (!funding) throw;
-        if ((block.number &lt;= fundingEndBlock ||
-             totalTokens &lt; tokenCreationMin) &amp;&amp;
-            totalTokens &lt; tokenCreationCap) throw;
+        if ((block.number <= fundingEndBlock ||
+             totalTokens < tokenCreationMin) &&
+            totalTokens < tokenCreationCap) throw;
 
         // Switch to Operational state. This is the only place this can happen.
         funding = false;
@@ -263,8 +263,8 @@ contract GolemNetworkToken {
     function refund() external {
         // Abort if not in Funding Failure state.
         if (!funding) throw;
-        if (block.number &lt;= fundingEndBlock) throw;
-        if (totalTokens &gt;= tokenCreationMin) throw;
+        if (block.number <= fundingEndBlock) throw;
+        if (totalTokens >= tokenCreationMin) throw;
 
         var gntValue = balances[msg.sender];
         if (gntValue == 0) throw;

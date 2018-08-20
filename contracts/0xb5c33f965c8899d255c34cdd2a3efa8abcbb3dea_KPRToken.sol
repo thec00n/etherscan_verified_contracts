@@ -23,20 +23,20 @@ library SafeMath {
     }
     function div(uint256 a,uint256 b) internal constant returns(uint256)
     {
-        //assert(b&gt;0);//Solidityautomaticallythrowswhendividingby0
+        //assert(b>0);//Solidityautomaticallythrowswhendividingby0
         uint256 c=a/b;
-        //assert(a==b*c+a%b);//Thereisnocaseinwhichthisdoesn&#39;thold
+        //assert(a==b*c+a%b);//Thereisnocaseinwhichthisdoesn'thold
         return c;
     }
     function sub(uint256 a,uint256 b) internal constant returns(uint256)
     {
-        assert(b&lt;=a);
+        assert(b<=a);
         return a-b;
     }
     function add(uint256 a,uint256 b) internal constant returns(uint256)
     {
         uint256 c=a+b;
-        assert(c&gt;=a);
+        assert(c>=a);
         return c;
     }
 }
@@ -48,8 +48,8 @@ contract KPRToken is IERC20 {
 
     
     //public variables
-    string public constant symbol=&quot;KPR&quot;; 
-    string public constant name=&quot;KPR Coin&quot;; 
+    string public constant symbol="KPR"; 
+    string public constant name="KPR Coin"; 
     uint8 public constant decimals=18;
 
     //1 ETH = 2,500 KPR
@@ -63,8 +63,8 @@ contract KPRToken is IERC20 {
     address public owner;
     
     //map the addresses
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     // 1514764800 : Jan 1 2018
     uint phase1starttime = 1517443200; // Phase 1 Start Date Feb 1 2018
     uint phase1endtime = 1519257600;  // Phase 1 End Date Feb 22 2018
@@ -87,25 +87,25 @@ contract KPRToken is IERC20 {
 
     function buyTokens() payable {
         
-        require(msg.value &gt; 0);
-        require(now &gt; phase1starttime &amp;&amp; now &lt; phase3endtime);
+        require(msg.value > 0);
+        require(now > phase1starttime && now < phase3endtime);
         uint256 tokens;
     
-        if (now &gt; phase1starttime &amp;&amp; now &lt; phase1endtime){
+        if (now > phase1starttime && now < phase1endtime){
             
             RATE = 3000;
             setPrice(msg.sender, msg.value);
-        } else if(now &gt; phase2starttime &amp;&amp; now &lt; phase2endtime){
+        } else if(now > phase2starttime && now < phase2endtime){
             RATE = 2000;
             setPrice(msg.sender, msg.value);
             // tokens = msg.value.mul(RATE);
-            // require(tokens &lt; buyabletoken);
+            // require(tokens < buyabletoken);
             // balances[msg.sender]=balances[msg.sender].add(tokens);
             // balances[owner] = balances[owner].sub(tokens);
             // buyabletoken = buyabletoken.sub(tokens);
             // owner.transfer(msg.value);
             
-        } else if(now &gt; phase3starttime &amp;&amp; now &lt; phase3endtime){
+        } else if(now > phase3starttime && now < phase3endtime){
             
             RATE = 1000;
             setPrice(msg.sender, msg.value);
@@ -115,7 +115,7 @@ contract KPRToken is IERC20 {
     function setPrice(address receipt, uint256 value){
         uint256 tokens;
         tokens = value.mul(RATE);
-        require(tokens &lt; buyabletoken);
+        require(tokens < buyabletoken);
         balances[receipt]=balances[receipt].add(tokens);
         balances[owner] = balances[owner].sub(tokens);
         buyabletoken = buyabletoken.sub(tokens);
@@ -131,7 +131,7 @@ contract KPRToken is IERC20 {
     function transfer(address _to, uint256 _value) returns(bool success) {
         
         //require is the same as an if statement = checks 
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 );
+        require(balances[msg.sender] >= _value && _value > 0 );
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -143,7 +143,7 @@ contract KPRToken is IERC20 {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         
         //checking if the spender has permission to spend and how much 
-        require( allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; _value &gt; 0);
+        require( allowed[_from][msg.sender] >= _value && balances[_from] >= _value && _value > 0);
         
         //updating the spenders balance 
         balances[_from] = balances[_from].sub(_value); 

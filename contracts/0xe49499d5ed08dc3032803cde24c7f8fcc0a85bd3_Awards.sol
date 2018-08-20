@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 
 contract Awards {
 
-	mapping (uint =&gt; uint16[17]) public awards;
+	mapping (uint => uint16[17]) public awards;
 
 	function Awards() public {
 		awards[0] = [10000];
@@ -21,13 +21,13 @@ contract Awards {
 	}
 
 	function getAwards(uint maxPlayers) public view returns (uint16[17]) {
-		assert(maxPlayers &gt; 0);
+		assert(maxPlayers > 0);
 
-		if (maxPlayers &lt;= 2)
+		if (maxPlayers <= 2)
 		return awards[0];
 
 		uint index = ((maxPlayers - 1) / 10) + 1;
 
-		return index &gt; 10 ? awards[10] : awards[index];
+		return index > 10 ? awards[10] : awards[index];
 	}
 }

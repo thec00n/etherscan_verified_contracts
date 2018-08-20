@@ -8,37 +8,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -140,14 +140,14 @@ contract PricingMechanism is Haltable, SafeMath{
         if (numTiers == 0) return 0;
         numTokens = 0;
         uint8 tierIndex = 0;
-        for (uint8 i = 0; i &lt; numTiers; i++){
-            if (priceList[i].ethersDepositedInTier &lt; priceList[i].maxEthersInTier){
+        for (uint8 i = 0; i < numTiers; i++){
+            if (priceList[i].ethersDepositedInTier < priceList[i].maxEthersInTier){
                 uint ethersToDepositInTier = min256(priceList[i].maxEthersInTier - priceList[i].ethersDepositedInTier, value);
                 numTokens = safeAdd(numTokens, ethersToDepositInTier / priceList[i].costPerToken);
                 priceList[i].ethersDepositedInTier = safeAdd(ethersToDepositInTier, priceList[i].ethersDepositedInTier);
                 totalDepositedEthers = safeAdd(ethersToDepositInTier, totalDepositedEthers);
                 value = safeSub(value, ethersToDepositInTier);
-                if (priceList[i].ethersDepositedInTier &gt; 0)
+                if (priceList[i].ethersDepositedInTier > 0)
                     tierIndex = i;
             }
         }
@@ -204,21 +204,21 @@ contract CrowdSale is PricingMechanism, DAOController{
         finalizeSet = true;
     }
     function() payable stopInEmergency onlyStarted notFinalized{
-        if (totalDepositedEthers &gt;= hardCapAmount) throw;
+        if (totalDepositedEthers >= hardCapAmount) throw;
         uint contribution = msg.value;
-        if (safeAdd(totalDepositedEthers, msg.value) &gt; hardCapAmount){
+        if (safeAdd(totalDepositedEthers, msg.value) > hardCapAmount){
             contribution = safeSub(hardCapAmount, totalDepositedEthers);
         }
         uint excess = safeSub(msg.value, contribution);
         uint numTokensToAllocate = allocateTokensInternally(contribution);
         tokenFactory.mint(msg.sender, numTokensToAllocate);
-        if (excess &gt; 0){
+        if (excess > 0){
             msg.sender.send(excess);
         }
     }
     
     function finalize() payable onlyOwner afterFinalizeSet{
-        if (hardCapAmount == totalDepositedEthers || (now - startTime) &gt; duration){
+        if (hardCapAmount == totalDepositedEthers || (now - startTime) > duration){
             dao.call.gas(150000).value(totalDepositedEthers * 3 / 10)();
             multiSig.call.gas(150000).value(this.balance)();
             isFinalized = true;

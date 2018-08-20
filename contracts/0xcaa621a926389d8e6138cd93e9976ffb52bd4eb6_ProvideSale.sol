@@ -17,30 +17,30 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assertTrue(bool val) internal {
@@ -135,10 +135,10 @@ contract ProvideSale is Haltable {
   uint public purchaserCount;
 
   /** Total incoming ETH (in wei) per centrally tracked purchaser. */
-  mapping (uint128 =&gt; uint) public paymentsByPurchaser;
+  mapping (uint128 => uint) public paymentsByPurchaser;
 
   /** Total incoming ETH (in wei) per benefactor address. */
-  mapping (address =&gt; uint) public paymentsByBenefactor;
+  mapping (address => uint) public paymentsByBenefactor;
 
   /** Emitted when a purchase is made; benefactor is the address where the tokens will be ultimately issued. */
   event PaymentForwarded(address source, uint amount, uint128 identifier, address benefactor);

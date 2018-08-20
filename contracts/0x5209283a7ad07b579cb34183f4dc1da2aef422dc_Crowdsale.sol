@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -55,7 +55,7 @@ contract Crowdsale {
     uint test_factor;
     uint start_time;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event FundTransfer(address backer, uint amount, bool isContribution);
 
     /**
@@ -83,18 +83,18 @@ contract Crowdsale {
         uint price;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
-        if (now &lt;= start_time + 7 days) { price = SafeMath.div(2 * 1 ether, dollar_exchange);}
+        if (now <= start_time + 7 days) { price = SafeMath.div(2 * 1 ether, dollar_exchange);}
         else {price = SafeMath.div(3 * 1 ether, dollar_exchange);}
         // price = SafeMath.div(price, test_factor); for testing
         tokenBalance = SafeMath.sub(tokenBalance, SafeMath.div(amount, price));
-        if (tokenBalance &lt; 0 ) { revert(); }
+        if (tokenBalance < 0 ) { revert(); }
         tokenReward.transfer(msg.sender, SafeMath.div(amount * 1 ether, price));
         FundTransfer(msg.sender, amount, true);
         
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
-    modifier beforeDeadline() { if (now &lt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
+    modifier beforeDeadline() { if (now <= deadline) _; }
 
     /**
      * Check if goal was reached

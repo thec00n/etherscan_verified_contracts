@@ -13,16 +13,16 @@ contract ERC20Interface {
 
 contract DeDeMasterContract {
 
-	mapping (address =&gt; bool) public isDeDeContract;
+	mapping (address => bool) public isDeDeContract;
 
-	mapping (address =&gt; uint256) public validationTime;
-	mapping (address =&gt; address) public dip;
-	mapping (address =&gt; address) public scs;
-	mapping (address =&gt; address) public issuer;
-	mapping (address =&gt; address) public targetAddress;//if address value is zero, this contract itself posesses ethereum as target.
-	mapping (address =&gt; address) public bulletAddress;//if address value is zero, this contract itself gets ethereum as bullet.
-	mapping (address =&gt; uint256) public targetAmount;
-	mapping (address =&gt; uint256) public bulletAmount;
+	mapping (address => uint256) public validationTime;
+	mapping (address => address) public dip;
+	mapping (address => address) public scs;
+	mapping (address => address) public issuer;
+	mapping (address => address) public targetAddress;//if address value is zero, this contract itself posesses ethereum as target.
+	mapping (address => address) public bulletAddress;//if address value is zero, this contract itself gets ethereum as bullet.
+	mapping (address => uint256) public targetAmount;
+	mapping (address => uint256) public bulletAmount;
 
 	event Issue(address indexed dip, address indexed scs, address issuer, address indexed dedeAddress);
 	event Transfer(address indexed from, address indexed to, address issuer, address indexed dedeAddress); // unused in current version
@@ -42,12 +42,12 @@ contract DeDeMasterContract {
 
 	function issue(uint256 _targetAmount, uint256 _bulletAmount, address _targetAddress, address _bulletAddress, uint256 _validationTime, address _issuer) payable {
 		require(msg.sender == dedeNetworkAddress);
-		require(now + 1 days &lt; _validationTime);
+		require(now + 1 days < _validationTime);
 		require(_targetAddress != _bulletAddress);
 
 		if(_targetAddress == 0){ // ether target
-			require(msg.value &gt;= _targetAmount);
-			if(msg.value &gt; _targetAmount){
+			require(msg.value >= _targetAmount);
+			if(msg.value > _targetAmount){
 				msg.sender.transfer(msg.value - _targetAmount);
 			}
 		}
@@ -76,15 +76,15 @@ contract DeDeMasterContract {
 		require(isDeDeContract[dede]);
 
 		require(msg.sender == scs[dede]);
-		require(now &gt;= validationTime[dede] &amp;&amp; now &lt; validationTime[dede] + 1 days);
+		require(now >= validationTime[dede] && now < validationTime[dede] + 1 days);
 
 		isDeDeContract[dede] = false;
 
 		Activate(dip[dede], scs[dede], issuer[dede], dede);
 
 		if(bulletAddress[dede] == 0){
-			require(msg.value &gt;= bulletAmount[dede]);
-			if(msg.value &gt; bulletAmount[dede]){
+			require(msg.value >= bulletAmount[dede]);
+			if(msg.value > bulletAmount[dede]){
 				msg.sender.transfer(msg.value - bulletAmount[dede]);
 			}
 		}
@@ -102,7 +102,7 @@ contract DeDeMasterContract {
 
 		require(isDeDeContract[dede]);
 
-		require(now &gt;= (validationTime[dede] + 1 days) &amp;&amp; (msg.sender == dip[dede] || msg.sender == scs[dede]));
+		require(now >= (validationTime[dede] + 1 days) && (msg.sender == dip[dede] || msg.sender == scs[dede]));
 
 		isDeDeContract[dede] = false;
 

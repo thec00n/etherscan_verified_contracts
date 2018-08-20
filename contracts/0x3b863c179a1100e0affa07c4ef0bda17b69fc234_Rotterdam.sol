@@ -1,23 +1,23 @@
 contract Rotterdam {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public initialSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function Rotterdam () {
 
          initialSupply = 5400000;
-         name =&quot;Rotterdan City Coin&quot;;
+         name ="Rotterdan City Coin";
         decimals = 0;
-         symbol = &quot;RCC&quot;;
+         symbol = "RCC";
         
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         uint256 totalSupply = initialSupply;                        // Update total supply
@@ -26,8 +26,8 @@ contract Rotterdam {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
       

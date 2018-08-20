@@ -6,7 +6,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -54,20 +54,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,7 +107,7 @@ contract MultiVesting is Ownable, Destroyable {
     event BeneficiaryDestroyed(address _beneficiary);
 
 
-    mapping(address =&gt; Beneficiary) public beneficiaries;
+    mapping(address => Beneficiary) public beneficiaries;
     address[] public addresses;
     Token public token;
     uint256 public totalVested;
@@ -168,7 +168,7 @@ contract MultiVesting is Ownable, Destroyable {
 
         uint256 unreleased = releasableAmount(_beneficiary);
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         beneficiary.released = beneficiary.released.add(unreleased);
 
@@ -204,8 +204,8 @@ contract MultiVesting is Ownable, Destroyable {
     isNotBeneficiary(_beneficiary)
     public {
         require(_beneficiary != address(0));
-        require(_cliff &gt;= _start);
-        require(token.balanceOf(this) &gt;= totalVested.sub(totalReleased).add(_vested));
+        require(_cliff >= _start);
+        require(token.balanceOf(this) >= totalVested.sub(totalReleased).add(_vested));
         beneficiaries[_beneficiary] = Beneficiary({
             released : 0,
             vested : _vested,
@@ -263,7 +263,7 @@ contract MultiVesting is Ownable, Destroyable {
         beneficiary.isBeneficiary = false;
         beneficiary.released = beneficiary.released.add(balance);
 
-        for (uint i = 0; i &lt; addresses.length - 1; i++)
+        for (uint i = 0; i < addresses.length - 1; i++)
             if (addresses[i] == _beneficiary) {
                 addresses[i] = addresses[addresses.length - 1];
                 break;
@@ -281,7 +281,7 @@ contract MultiVesting is Ownable, Destroyable {
 
         token.transfer(owner, token.balanceOf(this));
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             Beneficiary storage beneficiary = beneficiaries[addresses[i]];
             beneficiary.isBeneficiary = false;
             beneficiary.released = 0;
@@ -291,14 +291,14 @@ contract MultiVesting is Ownable, Destroyable {
             beneficiary.duration = 0;
             beneficiary.revoked = false;
             beneficiary.revocable = false;
-            beneficiary.description = &quot;&quot;;
+            beneficiary.description = "";
         }
         addresses.length = 0;
 
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      * @param _beneficiary Beneficiary address
      */
     function releasableAmount(address _beneficiary) public view returns (uint256) {
@@ -313,9 +313,9 @@ contract MultiVesting is Ownable, Destroyable {
         Beneficiary storage beneficiary = beneficiaries[_beneficiary];
         uint256 totalBalance = beneficiary.vested;
 
-        if (now &lt; beneficiary.cliff) {
+        if (now < beneficiary.cliff) {
             return 0;
-        } else if (now &gt;= beneficiary.start.add(beneficiary.duration) || beneficiary.revoked) {
+        } else if (now >= beneficiary.start.add(beneficiary.duration) || beneficiary.revoked) {
             return totalBalance;
         } else {
             return totalBalance.mul(now.sub(beneficiary.start)).div(beneficiary.duration);

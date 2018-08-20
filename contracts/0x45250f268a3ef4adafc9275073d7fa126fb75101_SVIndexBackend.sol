@@ -8,11 +8,11 @@ library BPackedUtils {
     uint256 constant endTimeMask   = 0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000;
 
     function packedToSubmissionBits(uint256 packed) internal pure returns (uint16) {
-        return uint16(packed &gt;&gt; 128);
+        return uint16(packed >> 128);
     }
 
     function packedToStartTime(uint256 packed) internal pure returns (uint64) {
-        return uint64(packed &gt;&gt; 64);
+        return uint64(packed >> 64);
     }
 
     function packedToEndTime(uint256 packed) internal pure returns (uint64) {
@@ -20,25 +20,25 @@ library BPackedUtils {
     }
 
     function unpackAll(uint256 packed) internal pure returns (uint16 submissionBits, uint64 startTime, uint64 endTime) {
-        submissionBits = uint16(packed &gt;&gt; 128);
-        startTime = uint64(packed &gt;&gt; 64);
+        submissionBits = uint16(packed >> 128);
+        startTime = uint64(packed >> 64);
         endTime = uint64(packed);
     }
 
     function pack(uint16 sb, uint64 st, uint64 et) internal pure returns (uint256 packed) {
-        return uint256(sb) &lt;&lt; 128 | uint256(st) &lt;&lt; 64 | uint256(et);
+        return uint256(sb) << 128 | uint256(st) << 64 | uint256(et);
     }
 
     function setSB(uint256 packed, uint16 newSB) internal pure returns (uint256) {
-        return (packed &amp; sbMask) | uint256(newSB) &lt;&lt; 128;
+        return (packed & sbMask) | uint256(newSB) << 128;
     }
 
     // function setStartTime(uint256 packed, uint64 startTime) internal pure returns (uint256) {
-    //     return (packed &amp; startTimeMask) | uint256(startTime) &lt;&lt; 64;
+    //     return (packed & startTimeMask) | uint256(startTime) << 64;
     // }
 
     // function setEndTime(uint256 packed, uint64 endTime) internal pure returns (uint256) {
-    //     return (packed &amp; endTimeMask) | uint256(endTime);
+    //     return (packed & endTimeMask) | uint256(endTime);
     // }
 }
 
@@ -46,18 +46,18 @@ contract safeSend {
     bool private txMutex3847834;
 
     // we want to be able to call outside contracts (e.g. the admin proxy contract)
-    // but reentrency is bad, so here&#39;s a mutex.
+    // but reentrency is bad, so here's a mutex.
     function doSafeSend(address toAddr, uint amount) internal {
-        doSafeSendWData(toAddr, &quot;&quot;, amount);
+        doSafeSendWData(toAddr, "", amount);
     }
 
     function doSafeSendWData(address toAddr, bytes data, uint amount) internal {
-        require(txMutex3847834 == false, &quot;ss-guard&quot;);
+        require(txMutex3847834 == false, "ss-guard");
         txMutex3847834 = true;
         // we need to use address.call.value(v)() because we want
         // to be able to send to other contracts, even with no data,
         // which might use more than 2300 gas in their fallback function.
-        require(toAddr.call.value(amount)(data), &quot;ss-failed&quot;);
+        require(toAddr.call.value(amount)(data), "ss-failed");
         txMutex3847834 = false;
     }
 }
@@ -105,12 +105,12 @@ contract owned {
     event OwnerChanged(address newOwner);
 
     modifier only_owner() {
-        require(msg.sender == owner, &quot;only_owner: forbidden&quot;);
+        require(msg.sender == owner, "only_owner: forbidden");
         _;
     }
 
     modifier owner_or(address addr) {
-        require(msg.sender == addr || msg.sender == owner, &quot;!owner-or&quot;);
+        require(msg.sender == addr || msg.sender == owner, "!owner-or");
         _;
     }
 
@@ -129,7 +129,7 @@ contract controlledIface {
 }
 
 contract hasAdmins is owned {
-    mapping (uint =&gt; mapping (address =&gt; bool)) admins;
+    mapping (uint => mapping (address => bool)) admins;
     uint public currAdminEpoch = 0;
     bool public adminsDisabledForever = false;
     address[] adminLog;
@@ -140,8 +140,8 @@ contract hasAdmins is owned {
     event AdminDisabledForever();
 
     modifier only_admin() {
-        require(adminsDisabledForever == false, &quot;admins must not be disabled&quot;);
-        require(isAdmin(msg.sender), &quot;only_admin: forbidden&quot;);
+        require(adminsDisabledForever == false, "admins must not be disabled");
+        require(isAdmin(msg.sender), "only_admin: forbidden");
         _;
     }
 
@@ -163,13 +163,13 @@ contract hasAdmins is owned {
 
     function upgradeMeAdmin(address newAdmin) only_admin() external {
         // note: already checked msg.sender has admin with `only_admin` modifier
-        require(msg.sender != owner, &quot;owner cannot upgrade self&quot;);
+        require(msg.sender != owner, "owner cannot upgrade self");
         _setAdmin(msg.sender, false);
         _setAdmin(newAdmin, true);
     }
 
     function setAdmin(address a, bool _givePerms) only_admin() external {
-        require(a != msg.sender &amp;&amp; a != owner, &quot;cannot change your own (or owner&#39;s) permissions&quot;);
+        require(a != msg.sender && a != owner, "cannot change your own (or owner's) permissions");
         _setAdmin(a, _givePerms);
     }
 
@@ -200,7 +200,7 @@ contract hasAdmins is owned {
 }
 
 contract permissioned is owned, hasAdmins {
-    mapping (address =&gt; bool) editAllowed;
+    mapping (address => bool) editAllowed;
     bool public adminLockdown = false;
 
     event PermissionError(address editAddr);
@@ -211,12 +211,12 @@ contract permissioned is owned, hasAdmins {
     event AdminLockdown();
 
     modifier only_editors() {
-        require(editAllowed[msg.sender], &quot;only_editors: forbidden&quot;);
+        require(editAllowed[msg.sender], "only_editors: forbidden");
         _;
     }
 
     modifier no_lockdown() {
-        require(adminLockdown == false, &quot;no_lockdown: check failed&quot;);
+        require(adminLockdown == false, "no_lockdown: check failed");
         _;
     }
 
@@ -261,7 +261,7 @@ contract upgradePtr {
     address ptr = address(0);
 
     modifier not_upgraded() {
-        require(ptr == address(0), &quot;upgrade pointer is non-zero&quot;);
+        require(ptr == address(0), "upgrade pointer is non-zero");
         _;
     }
 
@@ -377,7 +377,7 @@ contract SVIndexBackend is IxBackendIface {
         bool communityBallotsDisabled;
         bool erc20OwnerClaimDisabled;
         uint editorEpoch;
-        mapping (uint =&gt; mapping (address =&gt; bool)) editors;
+        mapping (uint => mapping (address => bool)) editors;
         uint256[] allBallots;
         uint256[] includedBasicBallots;  // the IDs of official ballots
 
@@ -397,20 +397,20 @@ contract SVIndexBackend is IxBackendIface {
 
     struct CategoriesIx {
         uint nCategories;
-        mapping(uint =&gt; Category) categories;
+        mapping(uint => Category) categories;
     }
 
-    mapping (bytes32 =&gt; Democ) democs;
-    mapping (bytes32 =&gt; CategoriesIx) democCategories;
-    mapping (bytes13 =&gt; bytes32) democPrefixToHash;
-    mapping (address =&gt; bytes32[]) erc20ToDemocs;
+    mapping (bytes32 => Democ) democs;
+    mapping (bytes32 => CategoriesIx) democCategories;
+    mapping (bytes13 => bytes32) democPrefixToHash;
+    mapping (address => bytes32[]) erc20ToDemocs;
     bytes32[] democList;
 
     // allows democ admins to store arbitrary data
     // this lets us (for example) set particular keys to signal cerain
     // things to client apps s.t. the admin can turn them on and off.
     // arbitraryData[democHash][key]
-    mapping (bytes32 =&gt; mapping (bytes32 =&gt; bytes)) arbitraryData;
+    mapping (bytes32 => mapping (bytes32 => bytes)) arbitraryData;
 
     /* constructor */
 
@@ -476,7 +476,7 @@ contract SVIndexBackend is IxBackendIface {
     /* user democ admin functions */
 
     function dInit(address defaultErc20, address initOwner, bool disableErc20OwnerClaim) only_editors() external returns (bytes32 democHash) {
-        // generating the democHash in this way guarentees it&#39;ll be unique/hard-to-brute-force
+        // generating the democHash in this way guarentees it'll be unique/hard-to-brute-force
         // (particularly because prevBlockHash and now are part of the hash)
         democHash = keccak256(abi.encodePacked(democList.length, blockhash(block.number-1), defaultErc20, now));
         _addDemoc(democHash, defaultErc20, initOwner, disableErc20OwnerClaim);
@@ -500,11 +500,11 @@ contract SVIndexBackend is IxBackendIface {
     function setDOwnerFromClaim(bytes32 democHash, address newOwner) only_editors() external {
         Democ storage d = democs[democHash];
         // make sure that the owner claim is enabled (i.e. the disabled flag is false)
-        require(d.erc20OwnerClaimDisabled == false, &quot;!erc20-claim&quot;);
+        require(d.erc20OwnerClaimDisabled == false, "!erc20-claim");
         // set owner and editor
         d.owner = newOwner;
         d.editors[d.editorEpoch][newOwner] = true;
-        // disable the ability to claim now that it&#39;s done
+        // disable the ability to claim now that it's done
         d.erc20OwnerClaimDisabled = true;
         emit DemocOwnerSet(democHash, newOwner);
         emit DemocClaimed(democHash);
@@ -574,7 +574,7 @@ contract SVIndexBackend is IxBackendIface {
         uint localBallotId = democs[democHash].allBallots.length;
         democs[democHash].allBallots.push(ballotId);
 
-        // do this for anything that doesn&#39;t qualify as a community ballot
+        // do this for anything that doesn't qualify as a community ballot
         if (countTowardsLimit) {
             democs[democHash].includedBasicBallots.push(ballotId);
         }
@@ -657,6 +657,6 @@ contract SVIndexBackend is IxBackendIface {
     /* util for calculating editor key */
 
     function _calcEditorKey(bytes key) internal pure returns (bytes) {
-        return abi.encodePacked(&quot;editor.&quot;, key);
+        return abi.encodePacked("editor.", key);
     }
 }

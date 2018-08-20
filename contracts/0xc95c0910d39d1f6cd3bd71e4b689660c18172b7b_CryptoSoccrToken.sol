@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -91,8 +91,8 @@ contract CryptoSoccrToken is ERC721 {
     /*** CONSTANTS ***/
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant NAME = &quot;CryptoSoccr&quot;;
-    string public constant SYMBOL = &quot;CryptoSoccrToken&quot;;
+    string public constant NAME = "CryptoSoccr";
+    string public constant SYMBOL = "CryptoSoccrToken";
 
     uint256 private startingPrice = 0.001 ether;
     uint256 private constant PROMO_CREATION_LIMIT = 5000;
@@ -106,19 +106,19 @@ contract CryptoSoccrToken is ERC721 {
 
     /// @dev A mapping from player IDs to the address that owns them. All players have
     ///    some valid owner address.
-    mapping (uint256 =&gt; address) public playerIndexToOwner;
+    mapping (uint256 => address) public playerIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //    Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
 
     /// @dev A mapping from PlayerIDs to an address that has been approved to call
     ///    transferFrom(). Each Player can only have one approved address for transfer
     ///    at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public playerIndexToApproved;
+    mapping (uint256 => address) public playerIndexToApproved;
 
     // @dev A mapping from PlayerIDs to the price of the token.
-    mapping (uint256 =&gt; uint256) private playerIndexToPrice;
+    mapping (uint256 => uint256) private playerIndexToPrice;
 
     // The addresses of the accounts (or contracts) that can execute actions within each roles.
     address public ceoAddress;
@@ -178,14 +178,14 @@ contract CryptoSoccrToken is ERC721 {
 
     /// @dev Creates a new promo Player with the given name, with given _price and assignes it to an address.
     function createPromoPlayer(address _owner, string _name, uint256 _price, uint256 _internalPlayerId) public onlyCEO {
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         address playerOwner = _owner;
         if (playerOwner == address(0)) {
             playerOwner = ceoAddress;
         }
 
-        if (_price &lt;= 0) {
+        if (_price <= 0) {
             _price = startingPrice;
         }
 
@@ -252,16 +252,16 @@ contract CryptoSoccrToken is ERC721 {
         require(_addressNotNull(newOwner));
 
         // Making sure sent amount is greater than or equal to the sellingPrice
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
 
         uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
         uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
         // Update prices
-        if (sellingPrice &lt; firstStepLimit) {
+        if (sellingPrice < firstStepLimit) {
             // first stage
             playerIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, firstStepMultiplier), 94);
-        } else if (sellingPrice &lt; secondStepLimit) {
+        } else if (sellingPrice < secondStepLimit) {
             // second stage
             playerIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, secondStepMultiplier), 94);
         } else {
@@ -316,7 +316,7 @@ contract CryptoSoccrToken is ERC721 {
     }
 
     /// @param _owner The owner whose soccer player tokens we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///    expensive (it walks the entire Players array looking for players belonging to owner),
     ///    but it also returns a dynamic array, which is only supported for web3 calls, and
     ///    not contract-to-contract calls.
@@ -331,7 +331,7 @@ contract CryptoSoccrToken is ERC721 {
             uint256 resultIndex = 0;
 
             uint256 playerId;
-            for (playerId = 0; playerId &lt;= totalPlayers; playerId++) {
+            for (playerId = 0; playerId <= totalPlayers; playerId++) {
                 if (playerIndexToOwner[playerId] == _owner) {
                     result[resultIndex] = playerId;
                     resultIndex++;
@@ -397,8 +397,8 @@ contract CryptoSoccrToken is ERC721 {
         });
         uint256 newPlayerId = players.push(_player) - 1;
 
-        // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-        // let&#39;s just be 100% sure we never let this happen.
+        // It's probably never going to happen, 4 billion tokens are A LOT, but
+        // let's just be 100% sure we never let this happen.
         require(newPlayerId == uint256(uint32(newPlayerId)));
 
         Birth(newPlayerId, _name, _owner);
@@ -426,12 +426,12 @@ contract CryptoSoccrToken is ERC721 {
 
     /// @dev Assigns ownership of a specific Player to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) private {
-        // Since the number of players is capped to 2^32 we can&#39;t overflow this
+        // Since the number of players is capped to 2^32 we can't overflow this
         ownershipTokenCount[_to]++;
         //transfer ownership
         playerIndexToOwner[_tokenId] = _to;
 
-        // When creating new players _from is 0x0, but we can&#39;t account that address.
+        // When creating new players _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // clear any previously approved ownership exchange

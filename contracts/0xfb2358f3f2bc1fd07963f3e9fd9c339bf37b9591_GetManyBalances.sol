@@ -30,7 +30,7 @@ contract GetManyBalances {
       outEnd := add(out, mul(32, numAddresses))
     }
 
-    while (out &lt; outEnd) {
+    while (out < outEnd) {
       assembly {
           addressesPacked := add(addressesPacked, 20)
           mstore(out, mload(addressesPacked))
@@ -44,7 +44,7 @@ contract GetManyBalances {
   function _getManyBalances(address[] memory addresses)
       internal view returns (uint256[]) {
     uint[] memory b = new uint[](addresses.length);
-    for (uint i = 0; i &lt; addresses.length; ++i) {
+    for (uint i = 0; i < addresses.length; ++i) {
         b[i] = addresses[i].balance;
     }
     return b;
@@ -56,7 +56,7 @@ contract GetManyBalances {
       return _getManyBalances(addresses);
     }
     uint[] memory b = new uint[](addresses.length);
-    for (uint i = 0; i &lt; addresses.length; ++i) {
+    for (uint i = 0; i < addresses.length; ++i) {
         b[i] = token.balanceOf(addresses[i]);
     }
     return b;

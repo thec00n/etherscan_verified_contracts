@@ -9,20 +9,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -68,13 +68,13 @@ contract ERC20 {
 // ERC20Token
 contract ERC20Token is ERC20, SafeMath {
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalTokens; 
     uint256 public contributorTokens; 
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -86,7 +86,7 @@ contract ERC20Token is ERC20, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         var _allowance = allowed[_from][msg.sender];
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -121,8 +121,8 @@ contract ERC20Token is ERC20, SafeMath {
 contract Wolk is ERC20Token, Owned {
 
     // TOKEN INFO
-    string  public constant name = &quot;WOLK TOKEN&quot;;
-    string  public constant symbol = &quot;WLK&quot;;
+    string  public constant name = "WOLK TOKEN";
+    string  public constant symbol = "WLK";
     uint256 public constant decimals = 18;
 
     // RESERVE
@@ -146,8 +146,8 @@ contract Wolk is ERC20Token, Owned {
 contract WolkTGE is Wolk {
 
     // TOKEN GENERATION EVENT
-    mapping (address =&gt; uint256) contribution;
-    mapping (address =&gt; bool) whitelistContributor;
+    mapping (address => uint256) contribution;
+    mapping (address => bool) whitelistContributor;
     
     uint256 public constant tokenGenerationMin =   1 * 10**4 * 10**decimals;
     uint256 public constant tokenGenerationMax = 175 * 10**5 * 10**decimals;
@@ -161,7 +161,7 @@ contract WolkTGE is Wolk {
     // @return success
     // @dev Wolk Genesis Event [only accessible by Contract Owner]
     function wolkGenesis(uint256 _startBlock, uint256 _endTime, address _wolkinc) onlyOwner returns (bool success){
-        require((totalTokens &lt; 1) &amp;&amp; (block.number &lt;= _startBlock)); 
+        require((totalTokens < 1) && (block.number <= _startBlock)); 
         start_block = _startBlock;
         end_time = _endTime;
         wolkInc = _wolkinc;
@@ -178,7 +178,7 @@ contract WolkTGE is Wolk {
     // @param _participants
     // @return success
     function addParticipant(address[] _participants) onlyOwner returns (bool success) {
-        for (uint cnt = 0; cnt &lt; _participants.length; cnt++){           
+        for (uint cnt = 0; cnt < _participants.length; cnt++){           
             whitelistContributor[_participants[cnt]] = true;
         }
         return true;
@@ -188,7 +188,7 @@ contract WolkTGE is Wolk {
     // @return success
     // @dev Revoke designated contributors [only accessible by current Contract Owner]
     function removeParticipant(address[] _participants) onlyOwner returns (bool success){         
-        for (uint cnt = 0; cnt &lt; _participants.length; cnt++){           
+        for (uint cnt = 0; cnt < _participants.length; cnt++){           
             whitelistContributor[_participants[cnt]] = false;
         }
         return true;
@@ -204,17 +204,17 @@ contract WolkTGE is Wolk {
     // @param _participant
     // @dev use tokenGenerationEvent to handle sale of WOLK
     function tokenGenerationEvent(address _participant) payable external {
-        require( ( whitelistContributor[_participant] || whitelistContributor[msg.sender] || balances[_participant] &gt; 0 || kycRequirement )  &amp;&amp; !allSaleCompleted &amp;&amp; ( block.timestamp &lt;= end_time ) &amp;&amp; msg.value &gt; 0);
+        require( ( whitelistContributor[_participant] || whitelistContributor[msg.sender] || balances[_participant] > 0 || kycRequirement )  && !allSaleCompleted && ( block.timestamp <= end_time ) && msg.value > 0);
     
         uint256 rate = 1000;  // Default Rate
         rate = safeDiv( 175 * 10**5 * 10**decimals, safeAdd( 875 * 10**1 * 10**decimals, safeDiv( totalTokens, 2 * 10**3)) );
-        if ( rate &gt; 2000 ) rate = 2000;
-        if ( rate &lt; 500 ) rate = 500;
-        require(block.number &gt;= start_block) ;
+        if ( rate > 2000 ) rate = 2000;
+        if ( rate < 500 ) rate = 500;
+        require(block.number >= start_block) ;
 
         uint256 tokens = safeMul(msg.value, rate);
         uint256 checkedSupply = safeAdd(totalTokens, tokens);
-        require(checkedSupply &lt;= tokenGenerationMax);
+        require(checkedSupply <= tokenGenerationMax);
 
         totalTokens = checkedSupply;
         contributorTokens = safeAdd(contributorTokens, tokens);
@@ -242,7 +242,7 @@ contract WolkTGE is Wolk {
     }
 
     function refund() external {
-        require((contribution[msg.sender] &gt; 0) &amp;&amp; (!allSaleCompleted) &amp;&amp; (block.timestamp &gt; end_time)  &amp;&amp; (totalTokens &lt; tokenGenerationMin));
+        require((contribution[msg.sender] > 0) && (!allSaleCompleted) && (block.timestamp > end_time)  && (totalTokens < tokenGenerationMin));
         uint256 tokenBalance = balances[msg.sender];
         uint256 refundBalance = contribution[msg.sender];
         balances[msg.sender] = 0;
@@ -269,15 +269,15 @@ contract WolkExchange is  WolkTGE {
     bool    public isPurchasePossible = false;
     bool    public isSellPossible = false;
 
-    modifier isPurchasable { require(isPurchasePossible &amp;&amp; allSaleCompleted); _; }
-    modifier isSellable { require(isSellPossible &amp;&amp; allSaleCompleted); _; }
+    modifier isPurchasable { require(isPurchasePossible && allSaleCompleted); _; }
+    modifier isSellable { require(isSellPossible && allSaleCompleted); _; }
     
     // @param  _newExchangeformula
     // @return success
     // @dev Set the bancor formula to use -- only Wolk Inc can set this
     function setExchangeFormula(address _newExchangeformula) onlyOwner returns (bool success){
-        require(sellWolkEstimate(10**decimals, _newExchangeformula) &gt; 0);
-        require(purchaseWolkEstimate(10**decimals, _newExchangeformula) &gt; 0);
+        require(sellWolkEstimate(10**decimals, _newExchangeformula) > 0);
+        require(purchaseWolkEstimate(10**decimals, _newExchangeformula) > 0);
         isPurchasePossible = false;
         isSellPossible = false;
         exchangeFormula = _newExchangeformula;
@@ -288,7 +288,7 @@ contract WolkExchange is  WolkTGE {
     // @return success
     // @dev Set the reserve ratio in case of emergency -- only Wolk Inc can set this
     function updateReserveRatio(uint8 _newReserveRatio) onlyOwner returns (bool success) {
-        require(allSaleCompleted &amp;&amp; ( _newReserveRatio &gt; 1 ) &amp;&amp; ( _newReserveRatio &lt; 20 ) );
+        require(allSaleCompleted && ( _newReserveRatio > 1 ) && ( _newReserveRatio < 20 ) );
         percentageETHReserve = _newReserveRatio;
         return true;
     }
@@ -298,8 +298,8 @@ contract WolkExchange is  WolkTGE {
     // @dev updating isPurchasePossible -- only Wolk Inc can set this
     function updatePurchasePossible(bool _isRunning) onlyOwner returns (bool success){
         if (_isRunning){
-            require(sellWolkEstimate(10**decimals, exchangeFormula) &gt; 0);
-            require(purchaseWolkEstimate(10**decimals, exchangeFormula) &gt; 0);   
+            require(sellWolkEstimate(10**decimals, exchangeFormula) > 0);
+            require(purchaseWolkEstimate(10**decimals, exchangeFormula) > 0);   
         }
         isPurchasePossible = _isRunning;
         return true;
@@ -310,8 +310,8 @@ contract WolkExchange is  WolkTGE {
     // @dev updating isSellPossible -- only Wolk Inc can set this
     function updateSellPossible(bool _isRunning) onlyOwner returns (bool success){
         if (_isRunning){
-            require(sellWolkEstimate(10**decimals, exchangeFormula) &gt; 0);
-            require(purchaseWolkEstimate(10**decimals, exchangeFormula) &gt; 0);   
+            require(sellWolkEstimate(10**decimals, exchangeFormula) > 0);
+            require(purchaseWolkEstimate(10**decimals, exchangeFormula) > 0);   
         }
         isSellPossible = _isRunning;
         return true;
@@ -331,9 +331,9 @@ contract WolkExchange is  WolkTGE {
     // @return ethReceivable
     // @dev send Wolk into contract in exchange for eth, at an exchange rate based on the Bancor Protocol derivation and decrease totalSupply accordingly
     function sellWolk(uint256 _wolkAmount) isSellable() returns(uint256) {
-        require((balances[msg.sender] &gt;= _wolkAmount));
+        require((balances[msg.sender] >= _wolkAmount));
         uint256 ethReceivable = sellWolkEstimate(_wolkAmount,exchangeFormula);
-        require(this.balance &gt; ethReceivable);
+        require(this.balance > ethReceivable);
         balances[msg.sender] = safeSub(balances[msg.sender], _wolkAmount);
         contributorTokens = safeSub(contributorTokens, _wolkAmount);
         totalTokens = safeSub(totalTokens, _wolkAmount);
@@ -347,9 +347,9 @@ contract WolkExchange is  WolkTGE {
     // @return wolkReceivable    
     // @dev send eth into contract in exchange for Wolk tokens, at an exchange rate based on the Bancor Protocol derivation and increase totalSupply accordingly
     function purchaseWolk(address _buyer) isPurchasable() payable returns(uint256){
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 wolkReceivable = purchaseWolkEstimate(msg.value, exchangeFormula);
-        require(wolkReceivable &gt; 0);
+        require(wolkReceivable > 0);
 
         contributorTokens = safeAdd(contributorTokens, wolkReceivable);
         totalTokens = safeAdd(totalTokens, wolkReceivable);
@@ -363,10 +363,10 @@ contract WolkExchange is  WolkTGE {
     // @dev  fallback function for purchase
     // @note Automatically fallback to tokenGenerationEvent before sale is completed. After the token generation event, fallback to purchaseWolk. Liquidity exchange will be enabled through updateExchangeStatus  
     function () payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         if(!allSaleCompleted){
             this.tokenGenerationEvent.value(msg.value)(msg.sender);
-        } else if ( block.timestamp &gt;= end_time ){
+        } else if ( block.timestamp >= end_time ){
             this.purchaseWolk.value(msg.value)(msg.sender);
         } else {
             revert();

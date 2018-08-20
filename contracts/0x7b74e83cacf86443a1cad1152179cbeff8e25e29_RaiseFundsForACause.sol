@@ -14,13 +14,13 @@ contract RaiseFundsForACause {
     uint256 public minimumAmountRequired;
     uint256 public numPayments;
     uint256 public totalAmountRaised;
-    mapping(address =&gt; uint256) donationData;
+    mapping(address => uint256) donationData;
 
     function RaiseFundsForACause(address beneficiary, string message, uint256 secondsUntilExpiration)
         public
     {
         require(beneficiary != 0x0);
-        require(secondsUntilExpiration &gt; 0);
+        require(secondsUntilExpiration > 0);
 
         owner = msg.sender;
         receiver = beneficiary;
@@ -45,14 +45,14 @@ contract RaiseFundsForACause {
         payable
     {
         require(msg.sender != receiver);
-        require(block.timestamp &lt; (timeStarted + expirationInSeconds));
-        require(msg.value &gt; 0);
+        require(block.timestamp < (timeStarted + expirationInSeconds));
+        require(msg.value > 0);
         require(minimumAmountRequired != 0);
         require(hasBeenClaimed == false);
 
-        assert(donationData[msg.sender] + msg.value &gt;= donationData[msg.sender]);
-        assert(totalAmountRaised + msg.value &gt;= totalAmountRaised);
-        assert(numPayments + 1 &gt;= numPayments);
+        assert(donationData[msg.sender] + msg.value >= donationData[msg.sender]);
+        assert(totalAmountRaised + msg.value >= totalAmountRaised);
+        assert(numPayments + 1 >= numPayments);
 
         donationData[msg.sender] += msg.value;
         totalAmountRaised += msg.value;
@@ -65,7 +65,7 @@ contract RaiseFundsForACause {
     {
         require(msg.sender == receiver);
         require(minimumAmountRequired == 0);
-        require(minimum &gt; 0);
+        require(minimum > 0);
 
         minimumAmountRequired = minimum;
     }
@@ -74,9 +74,9 @@ contract RaiseFundsForACause {
         public
     {
         require(msg.sender == receiver);
-        require(totalAmountRaised &gt;= minimumAmountRequired);
-        require(this.balance &gt; 0);
-        require(block.timestamp &lt; (timeStarted + expirationInSeconds));
+        require(totalAmountRaised >= minimumAmountRequired);
+        require(this.balance > 0);
+        require(block.timestamp < (timeStarted + expirationInSeconds));
         require(hasBeenClaimed == false);
 
         hasBeenClaimed = true;
@@ -88,8 +88,8 @@ contract RaiseFundsForACause {
     function withdraw()
         public
     {
-        require(donationData[msg.sender] &gt; 0);
-        require(block.timestamp &gt; (timeStarted + expirationInSeconds));
+        require(donationData[msg.sender] > 0);
+        require(block.timestamp > (timeStarted + expirationInSeconds));
         require(hasBeenClaimed == false);
 
         var value = donationData[msg.sender];
@@ -103,7 +103,7 @@ contract RaiseFundsForACause {
         public
         constant returns (uint256)
     {
-        if (totalAmountRaised &gt; minimumAmountRequired) {
+        if (totalAmountRaised > minimumAmountRequired) {
             return totalAmountRaised - minimumAmountRequired;
         }
         else {
@@ -115,7 +115,7 @@ contract RaiseFundsForACause {
         public
         constant returns (uint256)
     {
-        assert((timeStarted + expirationInSeconds) &gt;= timeStarted);
+        assert((timeStarted + expirationInSeconds) >= timeStarted);
         return (timeStarted + expirationInSeconds);
     }
 }

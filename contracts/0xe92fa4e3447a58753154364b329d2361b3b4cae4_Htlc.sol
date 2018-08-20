@@ -32,12 +32,12 @@ library ECRecovery {
         }
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
 
         // If the version is correct return the signer address
-        if (v != 27 &amp;&amp; v != 28) {
+        if (v != 27 && v != 28) {
             return (address(0));
         } else {
             // solium-disable-next-line arg-overflow
@@ -47,7 +47,7 @@ library ECRecovery {
 
     /**
      * toEthSignedMessageHash
-     * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+     * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
      * @dev and hash the result
      */
     function toEthSignedMessageHash(bytes32 hash)
@@ -58,7 +58,7 @@ library ECRecovery {
         // 32 is the length in bytes of hash,
         // enforced by the type signature above
         return keccak256(
-            &quot;\x19Ethereum Signed Message:\n32&quot;,
+            "\x19Ethereum Signed Message:\n32",
             hash
         );
     }
@@ -66,26 +66,26 @@ library ECRecovery {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -104,10 +104,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -159,9 +159,9 @@ contract Htlc is DSMath {
 
     address constant FEE_RECIPIENT = 0x478189a0aF876598C8a70Ce8896960500455A949;
     uint constant MAX_BATCH_ITERATIONS = 25; // Assumption block.gaslimit around 7500000
-    mapping (bytes32 =&gt; Multisig) public multisigs;
-    mapping (bytes32 =&gt; AtomicSwap) public atomicswaps;
-    mapping (bytes32 =&gt; bool) public isAntecedentHashedSecret;
+    mapping (bytes32 => Multisig) public multisigs;
+    mapping (bytes32 => AtomicSwap) public atomicswaps;
+    mapping (bytes32 => bool) public isAntecedentHashedSecret;
 
     // EVENTS
 
@@ -203,7 +203,7 @@ contract Htlc is DSMath {
     {
         // Require not own authority and non-zero ether amount are sent
         require(msg.sender != authority);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         // Create unique multisig identifier
         msigId = keccak256(
             msg.sender,
@@ -236,7 +236,7 @@ contract Htlc is DSMath {
         require(multisigs[msigId].owner == msg.sender);
         Multisig storage multisig = multisigs[msigId];
         multisig.deposit = add(multisig.deposit, msg.value);
-        assert(multisig.unlockTime &lt;= unlockTime); // Can only increase unlockTime
+        assert(multisig.unlockTime <= unlockTime); // Can only increase unlockTime
         multisig.unlockTime = unlockTime;
         emit MultisigReparametrized(msigId);
     }
@@ -274,7 +274,7 @@ contract Htlc is DSMath {
         public
     {
         // Require time has passed
-        require(now &gt;= multisigs[msigId].unlockTime);
+        require(now >= multisigs[msigId].unlockTime);
         // Return to owner
         spendFromMultisig(msigId, amount, multisigs[msigId].owner);
     }
@@ -295,12 +295,12 @@ contract Htlc is DSMath {
     {
         // Require owner with sufficient deposit
         require(multisigs[msigId].owner == msg.sender);
-        require(multisigs[msigId].deposit &gt;= amount + fee); // Checks for underflow
+        require(multisigs[msigId].deposit >= amount + fee); // Checks for underflow
         require(
-            now &lt;= expirationTime &amp;&amp;
-            expirationTime &lt;= min(now + 1 days, multisigs[msigId].unlockTime)
+            now <= expirationTime &&
+            expirationTime <= min(now + 1 days, multisigs[msigId].unlockTime)
         ); // Not more than 1 day or unlockTime
-        require(amount &gt; 0); // Non-empty amount as definition for active swap
+        require(amount > 0); // Non-empty amount as definition for active swap
         require(!isAntecedentHashedSecret[hashedSecret]);
         isAntecedentHashedSecret[hashedSecret] = true;
         // Account in multisig balance
@@ -343,8 +343,8 @@ contract Htlc is DSMath {
         public
         returns (bytes32[] swapId)
     {
-        require(msigIds.length &lt;= MAX_BATCH_ITERATIONS);
-        for (uint i = 0; i &lt; msigIds.length; ++i)
+        require(msigIds.length <= MAX_BATCH_ITERATIONS);
+        for (uint i = 0; i < msigIds.length; ++i)
             convertIntoHtlc(
                 msigIds[i],
                 beneficiaries[i],
@@ -380,8 +380,8 @@ contract Htlc is DSMath {
     function batchRegularTransfers(bytes32[] swapIds, bytes32[] secrets)
         public
     {
-        require(swapIds.length &lt;= MAX_BATCH_ITERATIONS);
-        for (uint i = 0; i &lt; swapIds.length; ++i)
+        require(swapIds.length <= MAX_BATCH_ITERATIONS);
+        for (uint i = 0; i < swapIds.length; ++i)
             regularTransfer(swapIds[i], secrets[i]); // Gas estimate `infinite`
     }
 
@@ -402,7 +402,7 @@ contract Htlc is DSMath {
         // Require msigId matches swapId
         require(msigId == atomicswaps[swapId].msigId);
         // Require: is expired
-        require(now &gt;= atomicswaps[swapId].expirationTime);
+        require(now >= atomicswaps[swapId].expirationTime);
         uint amount = atomicswaps[swapId].amount;
         delete atomicswaps[swapId];
         multisigs[msigId].deposit = add(multisigs[msigId].deposit, amount);
@@ -414,8 +414,8 @@ contract Htlc is DSMath {
     function batchReclaimExpiredSwaps(bytes32 msigId, bytes32[] swapIds)
         public
     {
-        require(swapIds.length &lt;= MAX_BATCH_ITERATIONS); // &lt;&lt; block.gaslimit / 88281
-        for (uint i = 0; i &lt; swapIds.length; ++i)
+        require(swapIds.length <= MAX_BATCH_ITERATIONS); // << block.gaslimit / 88281
+        for (uint i = 0; i < swapIds.length; ++i)
             reclaimExpiredSwap(msigId, swapIds[i]); // Gas estimate 88281
     }
 }

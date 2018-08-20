@@ -5,7 +5,7 @@
     Version 1.0
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the &quot;Software&quot;), to deal
+    of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
@@ -14,7 +14,7 @@
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -51,9 +51,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -61,7 +61,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -70,7 +70,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,7 +78,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -182,8 +182,8 @@ contract PRODToken is ERC20, Pausable {
 
   using SafeMath for uint256;
     
-  string public name = &quot;Productivist&quot;;      //  token name
-  string public symbol = &quot;PROD&quot;;           //  token symbol
+  string public name = "Productivist";      //  token name
+  string public symbol = "PROD";           //  token symbol
   uint256 public decimals = 8;            //  token digit
 
 
@@ -201,9 +201,9 @@ contract PRODToken is ERC20, Pausable {
   uint256 totalSupply_ = 0;
   uint256 public cap = 385000000 * 10 ** decimals; // Max cap 385.000.000 token
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   bool public mintingFinished = false;
 
@@ -225,7 +225,7 @@ contract PRODToken is ERC20, Pausable {
   }
   
   function setWallets(address _foundation, address _team, address _bounty) public onlyOwner canMint {
-    require(_foundation != address(0) &amp;&amp; _team != address(0) &amp;&amp; _bounty != address(0));
+    require(_foundation != address(0) && _team != address(0) && _bounty != address(0));
     foundationAddress = _foundation;
     teamAddress = _team;
     bountyAddress = _bounty;
@@ -254,7 +254,7 @@ contract PRODToken is ERC20, Pausable {
   */
   function transfer(address _to, uint256 _value) public whenNotPaused returns (bool success) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -270,8 +270,8 @@ contract PRODToken is ERC20, Pausable {
   */
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -285,7 +285,7 @@ contract PRODToken is ERC20, Pausable {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -334,7 +334,7 @@ contract PRODToken is ERC20, Pausable {
   */
   function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -350,7 +350,7 @@ contract PRODToken is ERC20, Pausable {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
     require(_to != address(0));
     totalSupply_ = totalSupply_.add(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -365,7 +365,7 @@ contract PRODToken is ERC20, Pausable {
    */
   function finishMinting() onlyOwner canMint public returns (bool) {
 
-    require(foundationAddress != address(0) &amp;&amp; teamAddress != address(0) &amp;&amp; bountyAddress != address(0));
+    require(foundationAddress != address(0) && teamAddress != address(0) && bountyAddress != address(0));
     require(SHARE_PURCHASERS + SHARE_FOUNDATION + SHARE_TEAM + SHARE_BOUNTY == 1000);
     require(totalSupply_ != 0);
     
@@ -391,9 +391,9 @@ contract PRODToken is ERC20, Pausable {
     * @param _value The amount of token to be burned.
   */
   function burn(uint256 _value) public whenNotPaused {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -409,7 +409,7 @@ contract PRODToken is ERC20, Pausable {
     * @param _amount is an array of uint256
   */
   function batchMint(address[] _data,uint256[] _amount) public onlyOwner canMint {
-    for (uint i = 0; i &lt; _data.length; i++) {
+    for (uint i = 0; i < _data.length; i++) {
 	mint(_data[i],_amount[i]);
     }
   }

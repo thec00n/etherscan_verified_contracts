@@ -53,12 +53,12 @@ contract VRCoinCrowdsale {
          tokenWallet = ERC20Interface(walletAddress);
 
          // Make sure the provided token has the expected number of tokens to distribute
-         require(tokenWallet.totalSupply() &gt;= TOTAL_TOKENS_TO_DISTRIBUTE);
+         require(tokenWallet.totalSupply() >= TOTAL_TOKENS_TO_DISTRIBUTE);
 
          // Make sure the owner actually controls all the tokens
-         require(tokenWallet.balanceOf(owner) &gt;= TOTAL_TOKENS_TO_DISTRIBUTE);
+         require(tokenWallet.balanceOf(owner) >= TOTAL_TOKENS_TO_DISTRIBUTE);
 
-         // We haven&#39;t started yet
+         // We haven't started yet
          hasStarted = false;
                  
          sale.start = 1521234001; // 00:00:01, March 05, 2018 UTC
@@ -104,7 +104,7 @@ contract VRCoinCrowdsale {
          }
 
          // Sanity check: verify the crowdsale controls all tokens
-         require(tokenWallet.balanceOf(this) &gt;= sale.tokenToDistibute);
+         require(tokenWallet.balanceOf(this) >= sale.tokenToDistibute);
 
          // The sale can begin
          hasStarted = true;
@@ -130,14 +130,14 @@ contract VRCoinCrowdsale {
          // Only the owner can do this
          require(msg.sender == owner);
          
-         // We can change period details as long as the sale hasn&#39;t started yet
+         // We can change period details as long as the sale hasn't started yet
          require(hasStarted == false);
          
          // Make sure the provided token has the expected number of tokens to distribute
-         require(tokenWallet.totalSupply() &gt;= newAmount);
+         require(tokenWallet.totalSupply() >= newAmount);
 
          // Make sure the owner actually controls all the tokens
-         require(tokenWallet.balanceOf(owner) &gt;= newAmount);
+         require(tokenWallet.balanceOf(owner) >= newAmount);
 
 
          // Change the price for this period
@@ -151,11 +151,11 @@ contract VRCoinCrowdsale {
          // Only the owner can do this
          require(msg.sender == owner);
 
-         // We can change period details as long as the sale hasn&#39;t started yet
+         // We can change period details as long as the sale hasn't started yet
          require(hasStarted == false);
 
          // Make sure the input is valid
-         require(start &lt; end);
+         require(start < end);
 
          // Everything checks out, update the period start/end time
          sale.start = start;
@@ -174,7 +174,7 @@ contract VRCoinCrowdsale {
          uint crowdsaleEnd = sale.end;
 
          // The crowsale must be over to perform this operation
-         require(block.timestamp &gt; crowdsaleEnd);
+         require(block.timestamp > crowdsaleEnd);
 
          // Get the remaining tokens owned by the crowdsale
          uint tokensRemaining = getTokensRemaining();
@@ -215,7 +215,7 @@ contract VRCoinCrowdsale {
          uint crowdsaleEnd = sale.end;
         
          // The crowsale must be going to perform this operation
-         require(block.timestamp &lt;= crowdsaleEnd);
+         require(block.timestamp <= crowdsaleEnd);
 
          // Get the price for this current period
          uint periodPriceInWei = sale.priceInWei;
@@ -225,10 +225,10 @@ contract VRCoinCrowdsale {
          tokenAmount = weiContribution / periodPriceInWei;
          
 	 	
-            if (block.timestamp &lt; 1522270801) {
+            if (block.timestamp < 1522270801) {
                 // bonus for contributor from 5.03.2018 to 28.03.2018 
                 bonus = tokenAmount * 20 / 100;
-            } else if (block.timestamp &lt; 1523739601) {
+            } else if (block.timestamp < 1523739601) {
                 // bonus for contributor from 29.03.2018 to 14.04.2018 
                 bonus = tokenAmount * 15 / 100;
             } else {
@@ -247,24 +247,24 @@ contract VRCoinCrowdsale {
     // Allow a user to contribute to the crowdsale
     function contribute() public payable
     {
-         // Cannot contribute if the sale hasn&#39;t started
+         // Cannot contribute if the sale hasn't started
          require(hasStarted == true);
 
          // Calculate the tokens to be distributed based on the contribution amount
          var (tokenAmount, weiRemainder) = getTokensForContribution(msg.value);
 
          // Need to contribute enough for at least 1 token
-         require(tokenAmount &gt; 0);
+         require(tokenAmount > 0);
          
          // Sanity check: make sure the remainder is less or equal to what was sent to us
-         require(weiRemainder &lt;= msg.value);
+         require(weiRemainder <= msg.value);
 
          // Make sure there are enough tokens left to buy
          uint tokensRemaining = getTokensRemaining();
-         require(tokensRemaining &gt;= tokenAmount);
+         require(tokensRemaining >= tokenAmount);
 
-         // Transfer the token amount from the crowd sale&#39;s token wallet to the
-         // sender&#39;s token wallet
+         // Transfer the token amount from the crowd sale's token wallet to the
+         // sender's token wallet
          if (!tokenWallet.transfer(msg.sender, tokenAmount))
          {
             // Unable to transfer funds, abort transaction

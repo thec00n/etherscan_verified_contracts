@@ -15,20 +15,20 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract Token {
     /**
      * @title Ownable
      * @dev The Ownable contract has an owner address, and provides basic authorization control
-     * functions, this simplifies the implementation of &quot;user permissions&quot;.
+     * functions, this simplifies the implementation of "user permissions".
      */
 contract Ownable {
   address public owner;
@@ -130,7 +130,7 @@ contract Pausable is Ownable {
 /**
  * @title LockFunds
  * @dev Base contract which allows children to lock funds.
- * Funds are locked in contributors&#39; wallets since ICO end. On 6th March 2018 funds will be transferable
+ * Funds are locked in contributors' wallets since ICO end. On 6th March 2018 funds will be transferable
  */
 contract LockFunds is Ownable {
   event Lock();
@@ -178,7 +178,7 @@ contract LockFunds is Ownable {
 contract StandardToken is Token, SafeMath, LockFunds {
 
     function transfer(address _to, uint256 _value) whenNotLocked returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -189,7 +189,7 @@ contract StandardToken is Token, SafeMath, LockFunds {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) whenNotLocked returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] = add(balances[_to], _value);
         balances[_from] -= sub(balances[_from], _value);
         allowed[_from][msg.sender] = sub(allowed[_from][msg.sender], _value);
@@ -214,8 +214,8 @@ contract StandardToken is Token, SafeMath, LockFunds {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /** Burn contract allows team to burn their OWN SEEDS supply, 
@@ -231,9 +231,9 @@ contract BurnableToken is SafeMath, StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = sub(balances[burner],_value);
@@ -255,8 +255,8 @@ contract BurnableToken is SafeMath, StandardToken {
 
 contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
 
-    string public constant name = &quot;Seeds&quot;;                                      //token name
-    string public constant symbol = &quot;SEEDS&quot;;                                    //token symbol
+    string public constant name = "Seeds";                                      //token name
+    string public constant symbol = "SEEDS";                                    //token symbol
     uint256 public constant decimals = 18;                                      //token decimals
     uint256 public constant maxFixedSupply = 500000000*10**decimals;            //Max SEEDS supply
 	uint256 public constant tokenCreationCap = 375000000*10**decimals;          //Max cap for ICO and PRE-ICO
@@ -312,7 +312,7 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
                 oneTokenInWei = 25000000000000;
                 tokens = div(msg.value*100000000, oneTokenInWei) * multiplier;
                 checkedSupply = add(totalSupply, tokens);
-                if (checkedSupply &lt;= tokenCreationCap)
+                if (checkedSupply <= tokenCreationCap)
                     {
                         addTokens(tokens);
                         stillAvailable = sub(stillAvailable, tokens);           //
@@ -326,7 +326,7 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
                 oneTokenInWei = 35000000000000;
                 tokens = div(msg.value*100000000, oneTokenInWei) * multiplier;
                 checkedSupply = add(totalSupply, tokens);
-                if (checkedSupply &lt;= tokenCreationCap)
+                if (checkedSupply <= tokenCreationCap)
                     {
                         addTokens(tokens);
                         stillAvailable = sub(stillAvailable, tokens);
@@ -340,7 +340,7 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
                 oneTokenInWei = 42000000000000;
                 tokens = div(msg.value*100000000, oneTokenInWei) * multiplier;
                 checkedSupply = add(totalSupply, tokens);
-                if (checkedSupply &lt;= tokenCreationCap)
+                if (checkedSupply <= tokenCreationCap)
                     {
                         addTokens(tokens);
                         stillAvailable = sub(stillAvailable, tokens);           //
@@ -354,7 +354,7 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
                 oneTokenInWei = 47500000000000;
                 tokens = div(msg.value*100000000, oneTokenInWei) * multiplier;
                 checkedSupply = add(totalSupply, tokens);
-                if (checkedSupply &lt;= tokenCreationCap)
+                if (checkedSupply <= tokenCreationCap)
                     {
                         addTokens(tokens);
                         stillAvailable = sub(stillAvailable, tokens);           //
@@ -368,7 +368,7 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
                 oneTokenInWei = 50000000000000;
                 tokens = div(msg.value*100000000, oneTokenInWei) * multiplier;
                 checkedSupply = add(totalSupply, tokens);
-                if (checkedSupply &lt;= tokenCreationCap)
+                if (checkedSupply <= tokenCreationCap)
                     {
                         addTokens(tokens);
                         stillAvailable = sub(stillAvailable, tokens);           //
@@ -383,7 +383,7 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
     }
 
     function addTokens(uint256 tokens) internal {                               //updates received ETH and total supply, sends Seeds to contributor
-        require (msg.value &gt;= 0 &amp;&amp; msg.sender != address(0));
+        require (msg.value >= 0 && msg.sender != address(0));
         balances[msg.sender] = add(balances[msg.sender], tokens);
         totalSupply = add(totalSupply, tokens);
         totalEthReceivedinWei = add(totalEthReceivedinWei, msg.value);
@@ -396,34 +396,34 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
         Withdraw(_toAddress, amount);
     }
 
-    function setPreICOPhase() external onlyOwner {                              //set current Phase. Initial phase is set to &quot;END&quot;.
+    function setPreICOPhase() external onlyOwner {                              //set current Phase. Initial phase is set to "END".
         currentPhase = Phase.PreICO;
-        StageChanged(&quot;Current stage: PreICO&quot;);
+        StageChanged("Current stage: PreICO");
     }
     
     function setICO1Phase() external onlyOwner {
         currentPhase = Phase.ICO1;
-        StageChanged(&quot;Current stage: ICO1&quot;);
+        StageChanged("Current stage: ICO1");
     }
     
     function setICO2Phase() external onlyOwner {
         currentPhase = Phase.ICO2;
-        StageChanged(&quot;Current stage: ICO2&quot;);
+        StageChanged("Current stage: ICO2");
     }
     
     function setICO3Phase() external onlyOwner {
         currentPhase = Phase.ICO3;
-        StageChanged(&quot;Current stage: ICO3&quot;);
+        StageChanged("Current stage: ICO3");
     }
     
     function setICO4Phase() external onlyOwner {
         currentPhase = Phase.ICO4;
-        StageChanged(&quot;Current stage: ICO4&quot;);
+        StageChanged("Current stage: ICO4");
     }
 
     function setENDPhase () external onlyOwner {
         currentPhase = Phase.END;
-        StageChanged (&quot;Current stage: END&quot;);
+        StageChanged ("Current stage: END");
     }
 
     function generateTokens(address _receiver, uint256 _amount) external onlyOwner {    //token generation
@@ -437,8 +437,8 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
          uint256 airdrop = _value;
          uint256 airdropMax = 100000*10**decimals;
          uint256 total = mul(airdrop, addresses.length);
-         if (toBeDistributedFree &gt;= 0 &amp;&amp; total&lt;=airdropMax){
-             for (uint i = 0; i &lt; addresses.length; i++) {
+         if (toBeDistributedFree >= 0 && total<=airdropMax){
+             for (uint i = 0; i < addresses.length; i++) {
 	            balances[owner] = sub(balances[owner], airdrop);
                 balances[addresses[i]] = add(balances[addresses[i]],airdrop);
                 Transfer(owner, addresses[i], airdrop);
@@ -452,8 +452,8 @@ contract SEEDSToken is SafeMath, StandardToken, BurnableToken, Pausable {
     function bountySEEDSinWei(address[] addresses, uint256 _value) onlyOwner {  //distribute bounty, value inserted with decimals
          uint256 bounty = _value;
          uint256 total = mul(bounty, addresses.length);
-         if (toBeDistributedFree &gt;= 0){
-             for (uint i = 0; i &lt; addresses.length; i++) {
+         if (toBeDistributedFree >= 0){
+             for (uint i = 0; i < addresses.length; i++) {
 	            balances[owner] = sub(balances[owner], bounty);
                 balances[addresses[i]] = add(balances[addresses[i]],bounty);
                 Transfer(owner, addresses[i], bounty);

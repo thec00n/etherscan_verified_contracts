@@ -38,7 +38,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -187,8 +187,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -203,9 +203,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -213,7 +213,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -222,7 +222,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -283,7 +283,7 @@ contract Ownable {
 
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -306,7 +306,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -399,7 +399,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   uint256 public totalTokensSold;
   bool public isFinalized = false;
 
-  mapping(address =&gt; uint256) public purchaseRecords;
+  mapping(address => uint256) public purchaseRecords;
 
   /*
    *  Events
@@ -459,7 +459,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     whenNotFinalized
     returns(bool)
   {
-    return now &gt;= crowdsaleStartTime;
+    return now >= crowdsaleStartTime;
   }
 
   /// @dev Allows the owner to set the current rate for calculating the number of tokens for a purchase.
@@ -470,7 +470,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     whenNotFinalized
     returns(bool)
   {
-    require(_newRate &gt; 0);
+    require(_newRate > 0);
     rate = _newRate;
     RateChanged(rate);
     return true;
@@ -482,7 +482,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
     onlyOwner
     whenNotFinalized
   {
-    require(_total &gt; 0);
+    require(_total > 0);
     totalUSDRaised = _total;
     USDRaisedUpdated(_total);
   }
@@ -508,7 +508,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   /// @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
   /// @param _beneficiaries Addresses to be added to the whitelist
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
       WhitelistAddressAdded(_beneficiaries[i]);
     }
@@ -539,16 +539,16 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
    {
     super._preValidatePurchase(_beneficiary, _weiAmount);
 
-    // Beneficiary&#39;s total should be between the minimum and maximum purchase amounts
+    // Beneficiary's total should be between the minimum and maximum purchase amounts
     uint256 _totalPurchased = purchaseRecords[_beneficiary].add(_getTokenAmount(_weiAmount));
-    require(_totalPurchased &gt;= minimumTokenPurchase);
-    require(_totalPurchased &lt;= maximumTokenPurchase);
+    require(_totalPurchased >= minimumTokenPurchase);
+    require(_totalPurchased <= maximumTokenPurchase);
 
     // Must make the purchase from the intended whitelisted address
     require(msg.sender == _beneficiary);
 
     // Must be after the start time
-    require(now &gt;= crowdsaleStartTime);
+    require(now >= crowdsaleStartTime);
   }
 
   /// @dev Overrides parent by storing balances in timelock contract instead of issuing tokens right away.
@@ -557,7 +557,7 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
   function _processPurchase(address _beneficiary, uint256 _tokenAmount)
     internal
   {
-    // Lock beneficiary&#39;s tokens
+    // Lock beneficiary's tokens
     tokenLock.lockTokens(_beneficiary, 1 weeks, _tokenAmount);
   }
 
@@ -577,15 +577,15 @@ contract OMICrowdsale is WhitelistedCrowdsale, Pausable {
 
     // Finish the crowdsale...
     // ...if there is not a minimum purchase left
-    if (crowdsaleTokenGoal.sub(totalTokensSold) &lt; minimumTokenPurchase) {
+    if (crowdsaleTokenGoal.sub(totalTokensSold) < minimumTokenPurchase) {
       _finalization();
     }
     // ...if USD funding goal has been reached
-    if (totalUSDRaised &gt;= crowdsaleUSDGoal) {
+    if (totalUSDRaised >= crowdsaleUSDGoal) {
       _finalization();
     }
     // ...if the time is after the crowdsale end time
-    if (now &gt; crowdsaleFinishTime) {
+    if (now > crowdsaleFinishTime) {
       _finalization();
     }
   }
@@ -625,7 +625,7 @@ contract OMITokenLock is Ownable, Pausable {
     uint256 lockIndex;
     Lock[] locks;
   }
-  mapping(address =&gt; TokenLockVault) public tokenLocks;
+  mapping(address => TokenLockVault) public tokenLocks;
   address[] public lockIndexes;
   uint256 public totalTokensLocked;
 
@@ -728,8 +728,8 @@ contract OMITokenLock is Ownable, Pausable {
     view
     returns (uint256 amount, uint256 lockDuration, bool released, bool revoked)
   {
-    require(_lockIndex &gt;= 0);
-    require(_lockIndex &lt;= tokenLocks[_beneficiary].locks.length.sub(1));
+    require(_lockIndex >= 0);
+    require(_lockIndex <= tokenLocks[_beneficiary].locks.length.sub(1));
 
     return (
       tokenLocks[_beneficiary].locks[_lockIndex].amount,
@@ -747,8 +747,8 @@ contract OMITokenLock is Ownable, Pausable {
     onlyOwner
     returns (bool)
   {
-    require(_lockIndex &gt;= 0);
-    require(_lockIndex &lt;= tokenLocks[_beneficiary].locks.length.sub(1));
+    require(_lockIndex >= 0);
+    require(_lockIndex <= tokenLocks[_beneficiary].locks.length.sub(1));
     require(!tokenLocks[_beneficiary].locks[_lockIndex].revoked);
 
     tokenLocks[_beneficiary].locks[_lockIndex].revoked = true;
@@ -766,12 +766,12 @@ contract OMITokenLock is Ownable, Pausable {
     whenNotPaused
   {
     // Lock duration must be greater than zero seconds
-    require(_lockDuration &gt;= 0);
+    require(_lockDuration >= 0);
     // Token amount must be greater than zero
-    require(_tokens &gt; 0);
+    require(_tokens > 0);
 
     // Token Lock must have a sufficient allowance prior to creating locks
-    require(_tokens.add(totalTokensLocked) &lt;= token.allowance(allowanceProvider, address(this)));
+    require(_tokens.add(totalTokensLocked) <= token.allowance(allowanceProvider, address(this)));
 
     TokenLockVault storage lock = tokenLocks[_beneficiary];
 
@@ -834,7 +834,7 @@ contract OMITokenLock is Ownable, Pausable {
 
     bool hasUnDueLocks = false;
 
-    for (uint256 i = 0; i &lt; lock.locks.length; i++) {
+    for (uint256 i = 0; i < lock.locks.length; i++) {
       Lock memory currentLock = lock.locks[i];
       // Skip any locks which are already released or revoked
       if (currentLock.released || currentLock.revoked) {
@@ -842,13 +842,13 @@ contract OMITokenLock is Ownable, Pausable {
       }
 
       // Skip any locks that are not due for release
-      if (crowdsaleEndTime.add(currentLock.lockDuration) &gt;= now) {
+      if (crowdsaleEndTime.add(currentLock.lockDuration) >= now) {
         hasUnDueLocks = true;
         continue;
       }
 
       // The amount of tokens to transfer must be less than the number of locked tokens
-      require(currentLock.amount &lt;= token.allowance(allowanceProvider, address(this)));
+      require(currentLock.amount <= token.allowance(allowanceProvider, address(this)));
 
       // Release Tokens
       UnlockedTokens(_beneficiary, currentLock.amount);
@@ -878,7 +878,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -896,7 +896,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -932,7 +932,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -950,8 +950,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -965,7 +965,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -1034,7 +1034,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -1100,7 +1100,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   constructor(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -1119,7 +1119,7 @@ contract CappedToken is MintableToken {
     public
     returns (bool)
   {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -1186,8 +1186,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract OMIToken is CappedToken, PausableToken {
-  string public constant name = &quot;Ecomi Token&quot;;
-  string public constant symbol = &quot;OMI&quot;;
+  string public constant name = "Ecomi Token";
+  string public constant symbol = "OMI";
   uint256 public decimals = 18;
 
   function OMIToken() public CappedToken(1000000000*1e18) {}

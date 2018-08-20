@@ -63,11 +63,11 @@ contract PlayCryptoGaming {
             mostExpensiveCryptoGamerOwner = contractOwnerAddress; 
         }
         
-        leastExpensiveCryptoGamerOwner.transfer(commission1percent * 5); // =&gt; 5%  
-        mostExpensiveCryptoGamerOwner.transfer(commission1percent * 5); // =&gt; 5%  
+        leastExpensiveCryptoGamerOwner.transfer(commission1percent * 5); // => 5%  
+        mostExpensiveCryptoGamerOwner.transfer(commission1percent * 5); // => 5%  
 
-        // Calculate the owner commission on this sale &amp; transfer the commission to the owner.      
-        uint256 commissionOwner = msg.value - (commission1percent * 15); // =&gt; 85%
+        // Calculate the owner commission on this sale & transfer the commission to the owner.      
+        uint256 commissionOwner = msg.value - (commission1percent * 15); // => 85%
         
         // This cryptoGamer is still owned by the contract, we transfer the commission to the ownerAddress
         if(cryptoGamers[_cryptoGamerId].ownerAddress == address(this)) {
@@ -80,14 +80,14 @@ contract PlayCryptoGaming {
         
 
         // Transfer the 3% commission to the developer
-        contractOwnerAddress.transfer(commission1percent * 3); // =&gt; 3%
+        contractOwnerAddress.transfer(commission1percent * 3); // => 3%
         
         // Transfer the 2% commission to the actual cryptogamer
         if(cryptoGamers[_cryptoGamerId].CryptoGamerAddress != 0x0) {
-            cryptoGamers[_cryptoGamerId].CryptoGamerAddress.transfer(commission1percent * 2); // =&gt; 2%
+            cryptoGamers[_cryptoGamerId].CryptoGamerAddress.transfer(commission1percent * 2); // => 2%
         } else {
-            // We don&#39;t konw the address of the crypto gamer yet, we transfer the commission to the owner
-            contractOwnerAddress.transfer(commission1percent * 2); // =&gt; 2%
+            // We don't konw the address of the crypto gamer yet, we transfer the commission to the owner
+            contractOwnerAddress.transfer(commission1percent * 2); // => 2%
         }
         
 
@@ -120,11 +120,11 @@ contract PlayCryptoGaming {
         }
         
         // Transfer the commission
-        leastExpensiveCryptoGamerOwner.transfer(commission5percent); // =&gt; 5%  
-        mostExpensiveCryptoGamerOwner.transfer(commission5percent); // =&gt; 5%  
+        leastExpensiveCryptoGamerOwner.transfer(commission5percent); // => 5%  
+        mostExpensiveCryptoGamerOwner.transfer(commission5percent); // => 5%  
 
-        // Calculate the owner commission on this sale &amp; transfer the commission to the owner.      
-        uint256 commissionOwner = msg.value - (commission5percent * 2); // =&gt; 85%
+        // Calculate the owner commission on this sale & transfer the commission to the owner.      
+        uint256 commissionOwner = msg.value - (commission5percent * 2); // => 85%
         
         contractOwnerAddress.transfer(commissionOwner);
         contractOwnerAddress = msg.sender;
@@ -153,9 +153,9 @@ contract PlayCryptoGaming {
     The price is set in WEI.
     */
     function updateCryptoGamerPrice(uint _cryptoGamerId, uint256 _newPrice) public {
-        require(_newPrice &gt; 0);
+        require(_newPrice > 0);
         require(cryptoGamers[_cryptoGamerId].ownerAddress == msg.sender);
-        require(_newPrice &lt; cryptoGamers[_cryptoGamerId].curPrice);
+        require(_newPrice < cryptoGamers[_cryptoGamerId].curPrice);
         cryptoGamers[_cryptoGamerId].curPrice = _newPrice;
     }
     
@@ -183,8 +183,8 @@ contract PlayCryptoGaming {
         uint256 _leastExpensiveGamerPrice = 9999000000000000000000;
 
         // Loop through all the shares of this company
-        for (uint8 i = 0; i &lt; cryptoGamers.length; i++) {
-            if(cryptoGamers[i].curPrice &lt; _leastExpensiveGamerPrice) {
+        for (uint8 i = 0; i < cryptoGamers.length; i++) {
+            if(cryptoGamers[i].curPrice < _leastExpensiveGamerPrice) {
                 _leastExpensiveGamerPrice = cryptoGamers[i].curPrice;
                 _leastExpensiveGamerId = i;
             }
@@ -201,8 +201,8 @@ contract PlayCryptoGaming {
         uint256 _mostExpensiveGamerPrice = 9999000000000000000000;
 
         // Loop through all the shares of this company
-        for (uint8 i = 0; i &lt; cryptoGamers.length; i++) {
-            if(cryptoGamers[i].curPrice &gt; _mostExpensiveGamerPrice) {
+        for (uint8 i = 0; i < cryptoGamers.length; i++) {
+            if(cryptoGamers[i].curPrice > _mostExpensiveGamerPrice) {
                 _mostExpensiveGamerPrice = cryptoGamers[i].curPrice;
                 _mostExpensiveGamerId = i;
             }
@@ -211,7 +211,7 @@ contract PlayCryptoGaming {
     }
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -223,16 +223,16 @@ contract PlayCryptoGaming {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     /*
-    The dev can update the verified address of the crypto gamer. Email me at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="84e7ebeaf0e5e7f0c4f4e8e5fde7f6fdf4f0ebe3e5e9edeae3aae7ebe9">[email&#160;protected]</a> to get your account verified and earn a commission.
+    The dev can update the verified address of the crypto gamer. Email me at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="84e7ebeaf0e5e7f0c4f4e8e5fde7f6fdf4f0ebe3e5e9edeae3aae7ebe9">[email protected]</a> to get your account verified and earn a commission.
     */
     function updateCryptoGamerVerifiedAddress(uint _cryptoGamerId, address _newAddress) public onlyOwner {
         cryptoGamers[_cryptoGamerId].CryptoGamerAddress = _newAddress;
@@ -250,34 +250,34 @@ contract PlayCryptoGaming {
     // Initiate functions that will create the cryptoGamers
     function InitiateCryptoGamers() public onlyOwner {
         require(cryptoGamersAreInitiated == false);
-        cryptoGamers.push(CryptoGamer(&quot;Phil&quot;, 0x183febd8828a9ac6c70c0e27fbf441b93004fc05, 1012500000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Carlini8&quot;, address(this), 310000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Ferocious&quot;, 0x1A5fe261E8D9e8efC5064EEccC09B531E6E24BD3, 375000000000000000, 0x1A5fe261E8D9e8efC5064EEccC09B531E6E24BD3));
-        cryptoGamers.push(CryptoGamer(&quot;Pranked&quot;, address(this), 224000000000000000, 0xD387A6E4e84a6C86bd90C158C6028A58CC8Ac459));
-        cryptoGamers.push(CryptoGamer(&quot;SwagDaPanda&quot;, address(this), 181000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Slush&quot;, address(this), 141000000000000000, 0x70580eA14d98a53fd59376dC7e959F4a6129bB9b));
-        cryptoGamers.push(CryptoGamer(&quot;Acapuck&quot;, address(this), 107000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Arwynian&quot;, address(this), 131000000000000000, 0xA3b61695E46432E5CCCd0427AD956fa146379D08));
-        cryptoGamers.push(CryptoGamer(&quot;Bohl&quot;, address(this), 106000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Corgi&quot;, address(this), 91500000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Enderhero&quot;, address(this), 104000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Hecatonquiro&quot;, address(this), 105000000000000000, 0xB87e73ad25086C43a16fE5f9589Ff265F8A3A9Eb));
-        cryptoGamers.push(CryptoGamer(&quot;herb&quot;, address(this), 101500000000000000, 0x466aCFE9f93D167EA8c8fa6B8515A65Aa47784dD));
-        cryptoGamers.push(CryptoGamer(&quot;Kail&quot;, address(this), 103000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;karupin the cat&quot;, 0x5632ca98e5788eddb2397757aa82d1ed6171e5ad, 108100000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;LiveFree&quot;, 0x3177abbe93422c9525652b5d4e1101a248a99776, 90100000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Prokiller&quot;, address(this), 100200000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Sanko&quot;, address(this), 101000000000000000, 0x71f35825a3B1528859dFa1A64b24242BC0d12990));
-        cryptoGamers.push(CryptoGamer(&quot;TheHermitMonk&quot;, address(this), 100000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;TomiSharked&quot;, 0x9afbaa3003d9e75c35fde2d1fd283b13d3335f00, 89000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Zalman&quot;, 0x9afbaa3003d9e75c35fde2d1fd283b13d3335f00, 92000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;xxFyMxx&quot;, address(this), 110000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;UncleTom&quot;, address(this), 90000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;legal&quot;, address(this), 115000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Terpsicores&quot;, address(this), 102000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;triceratops&quot;, 0x9afbaa3003d9e75c35fde2d1fd283b13d3335f00, 109000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;souto&quot;, address(this), 85000000000000000, 0x0));
-        cryptoGamers.push(CryptoGamer(&quot;Danimal&quot;, 0xa586a3b8939e9c0dc72d88166f6f6bb7558eedce, 85000000000000000, 0x3177Abbe93422c9525652b5d4e1101a248A99776));
+        cryptoGamers.push(CryptoGamer("Phil", 0x183febd8828a9ac6c70c0e27fbf441b93004fc05, 1012500000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Carlini8", address(this), 310000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Ferocious", 0x1A5fe261E8D9e8efC5064EEccC09B531E6E24BD3, 375000000000000000, 0x1A5fe261E8D9e8efC5064EEccC09B531E6E24BD3));
+        cryptoGamers.push(CryptoGamer("Pranked", address(this), 224000000000000000, 0xD387A6E4e84a6C86bd90C158C6028A58CC8Ac459));
+        cryptoGamers.push(CryptoGamer("SwagDaPanda", address(this), 181000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Slush", address(this), 141000000000000000, 0x70580eA14d98a53fd59376dC7e959F4a6129bB9b));
+        cryptoGamers.push(CryptoGamer("Acapuck", address(this), 107000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Arwynian", address(this), 131000000000000000, 0xA3b61695E46432E5CCCd0427AD956fa146379D08));
+        cryptoGamers.push(CryptoGamer("Bohl", address(this), 106000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Corgi", address(this), 91500000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Enderhero", address(this), 104000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Hecatonquiro", address(this), 105000000000000000, 0xB87e73ad25086C43a16fE5f9589Ff265F8A3A9Eb));
+        cryptoGamers.push(CryptoGamer("herb", address(this), 101500000000000000, 0x466aCFE9f93D167EA8c8fa6B8515A65Aa47784dD));
+        cryptoGamers.push(CryptoGamer("Kail", address(this), 103000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("karupin the cat", 0x5632ca98e5788eddb2397757aa82d1ed6171e5ad, 108100000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("LiveFree", 0x3177abbe93422c9525652b5d4e1101a248a99776, 90100000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Prokiller", address(this), 100200000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Sanko", address(this), 101000000000000000, 0x71f35825a3B1528859dFa1A64b24242BC0d12990));
+        cryptoGamers.push(CryptoGamer("TheHermitMonk", address(this), 100000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("TomiSharked", 0x9afbaa3003d9e75c35fde2d1fd283b13d3335f00, 89000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Zalman", 0x9afbaa3003d9e75c35fde2d1fd283b13d3335f00, 92000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("xxFyMxx", address(this), 110000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("UncleTom", address(this), 90000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("legal", address(this), 115000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Terpsicores", address(this), 102000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("triceratops", 0x9afbaa3003d9e75c35fde2d1fd283b13d3335f00, 109000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("souto", address(this), 85000000000000000, 0x0));
+        cryptoGamers.push(CryptoGamer("Danimal", 0xa586a3b8939e9c0dc72d88166f6f6bb7558eedce, 85000000000000000, 0x3177Abbe93422c9525652b5d4e1101a248A99776));
 
     }
 }

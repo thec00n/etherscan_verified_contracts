@@ -249,14 +249,14 @@ contract XCPlugin is XCPluginInterface {
 
         address[] publicKeys;
 
-        mapping(string =&gt; Proposal) proposals;
+        mapping(string => Proposal) proposals;
     }
 
     Admin private admin;
 
     address[] private callers;
 
-    mapping(bytes32 =&gt; Platform) private platforms;
+    mapping(bytes32 => Platform) private platforms;
 
     function XCPlugin() public {
 
@@ -267,13 +267,13 @@ contract XCPlugin is XCPluginInterface {
         // Admin { status | platformName | tokenSymbol | account}
         admin.status = true;
 
-        admin.platformName = &quot;ETH&quot;;
+        admin.platformName = "ETH";
 
-        admin.tokenSymbol = &quot;INK&quot;;
+        admin.tokenSymbol = "INK";
 
         admin.account = msg.sender;
 
-        bytes32 platformName = &quot;INK&quot;;
+        bytes32 platformName = "INK";
 
         platforms[platformName].status = true;
 
@@ -349,7 +349,7 @@ contract XCPlugin is XCPluginInterface {
 
             bool exist;
 
-            for (uint i = 0; i &lt;= callers.length; i++) {
+            for (uint i = 0; i <= callers.length; i++) {
 
                 if (exist) {
 
@@ -387,7 +387,7 @@ contract XCPlugin is XCPluginInterface {
 
         require(admin.account == msg.sender);
 
-        require(name != &quot;&quot;);
+        require(name != "");
 
         require(name != admin.platformName);
 
@@ -425,7 +425,7 @@ contract XCPlugin is XCPluginInterface {
 
         require(_existPlatform(platformName));
 
-        require(weight &gt; 0);
+        require(weight > 0);
 
         if (platforms[platformName].weight != weight) {
 
@@ -452,7 +452,7 @@ contract XCPlugin is XCPluginInterface {
 
         address[] storage listOfPublicKey = platforms[platformName].publicKeys;
 
-        for (uint i; i &lt; listOfPublicKey.length; i++) {
+        for (uint i; i < listOfPublicKey.length; i++) {
 
             if (publicKey == listOfPublicKey[i]) {
 
@@ -473,7 +473,7 @@ contract XCPlugin is XCPluginInterface {
 
         bool exist;
 
-        for (uint i = 0; i &lt;= listOfPublicKey.length; i++) {
+        for (uint i = 0; i <= listOfPublicKey.length; i++) {
 
             if (exist) {
                 if (i == listOfPublicKey.length) {
@@ -543,7 +543,7 @@ contract XCPlugin is XCPluginInterface {
             proposal.tokenSymbol = tokenSymbol;
         } else {
 
-            require(proposal.fromAccount == fromAccount &amp;&amp; proposal.toAccount == toAccount &amp;&amp; proposal.value == value &amp;&amp; proposal.tokenSymbol == tokenSymbol);
+            require(proposal.fromAccount == fromAccount && proposal.toAccount == toAccount && proposal.value == value && proposal.tokenSymbol == tokenSymbol);
         }
 
         changeVoters(fromPlatform, publicKey, txid);
@@ -559,7 +559,7 @@ contract XCPlugin is XCPluginInterface {
 
         if (proposal.status) {
 
-            return (true, (proposal.voters.length &gt;= proposal.weight));
+            return (true, (proposal.voters.length >= proposal.weight));
         }
 
         if (proposal.value == 0) {
@@ -567,9 +567,9 @@ contract XCPlugin is XCPluginInterface {
             return (false, false);
         }
 
-        require(proposal.fromAccount == fromAccount &amp;&amp; proposal.toAccount == toAccount &amp;&amp; proposal.value == value &amp;&amp; proposal.tokenSymbol == tokenSymbol);
+        require(proposal.fromAccount == fromAccount && proposal.toAccount == toAccount && proposal.value == value && proposal.tokenSymbol == tokenSymbol);
 
-        return (false, (proposal.voters.length &gt;= platforms[fromPlatform].weight));
+        return (false, (proposal.voters.length >= platforms[fromPlatform].weight));
     }
 
     function commitProposal(bytes32 platformName, string txid) external returns (bool) {
@@ -625,7 +625,7 @@ contract XCPlugin is XCPluginInterface {
 
         require(account != address(0));
 
-        require(value &gt; 0 &amp;&amp; value &gt;= address(this).balance);
+        require(value > 0 && value >= address(this).balance);
 
         this.transfer(account, value);
     }
@@ -638,7 +638,7 @@ contract XCPlugin is XCPluginInterface {
 
     function hashMsg(bytes32 fromPlatform, address fromAccount, bytes32 toPlatform, address toAccount, uint value, bytes32 tokenSymbol, string txid) internal pure returns (bytes32) {
 
-        return sha256(bytes32ToStr(fromPlatform), &quot;:0x&quot;, uintToStr(uint160(fromAccount), 16), &quot;:&quot;, bytes32ToStr(toPlatform), &quot;:0x&quot;, uintToStr(uint160(toAccount), 16), &quot;:&quot;, uintToStr(value, 10), &quot;:&quot;, bytes32ToStr(tokenSymbol), &quot;:&quot;, txid);
+        return sha256(bytes32ToStr(fromPlatform), ":0x", uintToStr(uint160(fromAccount), 16), ":", bytes32ToStr(toPlatform), ":0x", uintToStr(uint160(toAccount), 16), ":", uintToStr(value, 10), ":", bytes32ToStr(tokenSymbol), ":", txid);
     }
 
     function changeVoters(bytes32 platformName, address publicKey, string txid) internal {
@@ -647,7 +647,7 @@ contract XCPlugin is XCPluginInterface {
 
         bool change = true;
 
-        for (uint i = 0; i &lt; voters.length; i++) {
+        for (uint i = 0; i < voters.length; i++) {
 
             if (voters[i] == publicKey) {
 
@@ -665,9 +665,9 @@ contract XCPlugin is XCPluginInterface {
 
         uint length = b.length;
 
-        for (uint i = 0; i &lt; b.length; i++) {
+        for (uint i = 0; i < b.length; i++) {
 
-            if (b[b.length - 1 - i] == &quot;&quot;) {
+            if (b[b.length - 1 - i] == "") {
 
                 length -= 1;
             } else {
@@ -678,7 +678,7 @@ contract XCPlugin is XCPluginInterface {
 
         bytes memory bs = new bytes(length);
 
-        for (uint j = 0; j &lt; length; j++) {
+        for (uint j = 0; j < length; j++) {
 
             bs[j] = b[j];
         }
@@ -692,11 +692,11 @@ contract XCPlugin is XCPluginInterface {
 
         uint length = 0;
 
-        bytes16 tenStr = &quot;0123456789abcdef&quot;;
+        bytes16 tenStr = "0123456789abcdef";
 
         while (true) {
 
-            if (_value &gt; 0) {
+            if (_value > 0) {
 
                 length ++;
 
@@ -713,7 +713,7 @@ contract XCPlugin is XCPluginInterface {
 
         bytes memory bs = new bytes(length);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
 
             bs[length - 1 - i] = tenStr[value % base];
 
@@ -725,7 +725,7 @@ contract XCPlugin is XCPluginInterface {
 
     function _existCaller(address caller) internal view returns (bool) {
 
-        for (uint i = 0; i &lt; callers.length; i++) {
+        for (uint i = 0; i < callers.length; i++) {
 
             if (callers[i] == caller) {
 
@@ -746,7 +746,7 @@ contract XCPlugin is XCPluginInterface {
 
         address[] memory listOfPublicKey = platforms[platformName].publicKeys;
 
-        for (uint i = 0; i &lt; listOfPublicKey.length; i++) {
+        for (uint i = 0; i < listOfPublicKey.length; i++) {
 
             if (listOfPublicKey[i] == publicKey) {
 
@@ -774,7 +774,7 @@ contract XCPlugin is XCPluginInterface {
             v := byte(0, mload(add(sig, 96)))
         }
 
-        if (v &lt; 27) {
+        if (v < 27) {
 
             v += 27;
         }

@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,10 +79,10 @@ contract PresalePool {
   struct Contributor {
     bool refundedEth;
     uint balance;
-    mapping (address =&gt; uint) tokensClaimed;
+    mapping (address => uint) tokensClaimed;
   }
   // a mapping that holds the contributor struct for each contributing address
-  mapping (address =&gt; Contributor) contributors;
+  mapping (address => Contributor) contributors;
   
   // a data structure for holding information related to token withdrawals.
   struct TokenAllocation {
@@ -92,7 +92,7 @@ contract PresalePool {
     uint claimCount;
   }
   // a mapping that holds the token allocation struct for each token address
-  mapping (address =&gt; TokenAllocation) distribution;
+  mapping (address => TokenAllocation) distribution;
   
   
   // this modifier is used for functions that can only be accessed by the contract creator
@@ -101,7 +101,7 @@ contract PresalePool {
     _;
   }
   
-  // this modifier is used to prevent re-entrancy exploits during contract &gt; contract interaction
+  // this modifier is used to prevent re-entrancy exploits during contract > contract interaction
   bool locked;
   modifier noReentrancy() {
     require(!locked);
@@ -130,9 +130,9 @@ contract PresalePool {
   
   // This function is called at the time of contract creation and sets the initial variables.
   function PresalePool(address receiver, uint individualMin, uint poolMax, uint fee) public {
-    require (fee &lt; 100);
-    require (100000000000000000 &lt;= individualMin);
-    require (individualMin &lt;= poolMax);
+    require (fee < 100);
+    require (100000000000000000 <= individualMin);
+    require (individualMin <= poolMax);
     require (receiver != 0x00);
     owner = msg.sender;
     receiverAddress = receiver;
@@ -145,10 +145,10 @@ contract PresalePool {
   // The amount sent is added to the balance in the Contributor struct associated with the sending address.
   function () payable public {
     require (contractStage == 1);
-    require (this.balance &lt;= contractMax);
+    require (this.balance <= contractMax);
     var c = contributors[msg.sender];
     uint newBalance = c.balance.add(msg.value);
-    require (newBalance &gt;= contributionMin);
+    require (newBalance >= contributionMin);
     if (contributors[msg.sender].balance == 0) {
       contributorCount = contributorCount.add(1);
     }
@@ -158,13 +158,13 @@ contract PresalePool {
     
   // This function is called to withdraw eth or tokens from the contract.
   // It can only be called by addresses that have a balance greater than 0.
-  // If called during contract stages one or two, the full eth balance deposited into the contract will be returned and the contributor&#39;s balance will be reset to 0.
-  // If called during stage three, the contributor&#39;s unused eth will be returned, as well as any available tokens.
+  // If called during contract stages one or two, the full eth balance deposited into the contract will be returned and the contributor's balance will be reset to 0.
+  // If called during stage three, the contributor's unused eth will be returned, as well as any available tokens.
   // The token address may be provided optionally to withdraw tokens that are not currently the default token (airdrops).
   function withdraw (address tokenAddr) public {
     var c = contributors[msg.sender];
-    require (c.balance &gt; 0);
-    if (contractStage &lt; 3) {
+    require (c.balance > 0);
+    if (contractStage < 3) {
       uint amountToTransfer = c.balance;
       c.balance = 0;
       msg.sender.transfer(amountToTransfer);
@@ -180,7 +180,7 @@ contract PresalePool {
   // not yet withdrawn their previous allocation.
   function withdrawFor (address contributor, address tokenAddr) public onlyOwner {
     require (contractStage == 3);
-    require (contributors[contributor].balance &gt; 0);
+    require (contributors[contributor].balance > 0);
     _withdraw(contributor,tokenAddr);
   }
   
@@ -193,23 +193,23 @@ contract PresalePool {
       tokenAddr = activeToken;
     }
     var d = distribution[tokenAddr];
-    require ( (refundPct &gt; 0 &amp;&amp; !c.refundedEth) || d.claimRound &gt; c.tokensClaimed[tokenAddr] );
-    if (refundPct &gt; 0 &amp;&amp; !c.refundedEth) {
+    require ( (refundPct > 0 && !c.refundedEth) || d.claimRound > c.tokensClaimed[tokenAddr] );
+    if (refundPct > 0 && !c.refundedEth) {
       uint ethAmount = _applyPct(c.balance,refundPct);
       c.refundedEth = true;
       if (ethAmount == 0) return;
-      if (ethAmount+10 &gt; c.balance) {
+      if (ethAmount+10 > c.balance) {
         ethAmount = c.balance-10;
       }
       c.balance = c.balance.sub(ethAmount+10);
       receiver.transfer(ethAmount);
       EthRefunded(receiver,ethAmount);
     }
-    if (d.claimRound &gt; c.tokensClaimed[tokenAddr]) {
+    if (d.claimRound > c.tokensClaimed[tokenAddr]) {
       uint amount = _applyPct(c.balance,d.pct);
       c.tokensClaimed[tokenAddr] = d.claimRound;
       d.claimCount = d.claimCount.add(1);
-      if (amount &gt; 0) {
+      if (amount > 0) {
         require (d.token.transfer(receiver,amount));
       }
       TokensWithdrawn(receiver,amount);
@@ -219,9 +219,9 @@ contract PresalePool {
   // This function can be called during stages one or two to modify the maximum balance of the contract.
   // It can only be called by the owner. The amount cannot be set to lower than the current balance of the contract.
   function modifyMaxContractBalance (uint amount) public onlyOwner {
-    require (contractStage &lt; 3);
-    require (amount &gt;= contributionMin);
-    require (amount &gt;= this.balance);
+    require (contractStage < 3);
+    require (amount >= contributionMin);
+    require (amount >= this.balance);
     contractMax = amount;
   }
   
@@ -263,8 +263,8 @@ contract PresalePool {
   // The amount to send (given in wei) must be specified during the call. As this function can only be executed once,
   // it is VERY IMPORTANT not to get the amount wrong.
   function submitPool (uint amountInWei) public onlyOwner noReentrancy {
-    require (contractStage &lt; 3);
-    require (contributionMin &lt;= amountInWei &amp;&amp; amountInWei &lt;= this.balance);
+    require (contractStage < 3);
+    require (contributionMin <= amountInWei && amountInWei <= this.balance);
     uint b = this.balance;
     require (receiverAddress.call.value(amountInWei).gas(msg.gas.sub(5000))());
     submittedAmount = b.sub(this.balance);
@@ -288,8 +288,8 @@ contract PresalePool {
     require (d.claimRound == 0 || d.claimCount == contributorCount);
     d.token = ERC20(tokenAddr);
     uint amount = d.token.balanceOf(this);
-    require (amount &gt; 0);
-    if (feePct &gt; 0) {
+    require (amount > 0);
+    if (feePct > 0) {
       require (d.token.transfer(owner,_applyPct(amount,feePct)));
     }
     d.pct = _toPct(d.token.balanceOf(this),submittedAmount);

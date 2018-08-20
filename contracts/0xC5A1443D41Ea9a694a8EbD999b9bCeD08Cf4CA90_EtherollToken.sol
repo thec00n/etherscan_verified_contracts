@@ -30,7 +30,7 @@ contract owned {
 contract DSSafeAddSub {
 
     function safeToAdd(uint a, uint b) internal returns (bool) {
-        return (a + b &gt;= a);
+        return (a + b >= a);
     }
     
     function safeAdd(uint a, uint b) internal returns (uint) {
@@ -39,7 +39,7 @@ contract DSSafeAddSub {
     }
 
     function safeToSubtract(uint a, uint b) internal returns (bool) {
-        return (b &lt;= a);
+        return (b <= a);
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
@@ -69,9 +69,9 @@ contract EtherollToken is owned, DSSafeAddSub {
     }    
 
     /* vars */
-    string public standard = &#39;Token 1.0&#39;;
-    string public name = &quot;DICE&quot;;
-    string public symbol = &quot;ROL&quot;;
+    string public standard = 'Token 1.0';
+    string public name = "DICE";
+    string public symbol = "ROL";
     uint8 public decimals = 16;
     uint public totalSupply = 250000000000000000000000; 
 
@@ -83,8 +83,8 @@ contract EtherollToken is owned, DSSafeAddSub {
    
 
     /* map balances */
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;  
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;  
 
     /* events */
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -111,9 +111,9 @@ contract EtherollToken is owned, DSSafeAddSub {
     function transfer(address _to, uint _value) public
         returns (bool success)    
     {
-        if(tokensFrozen &amp;&amp; msg.sender != priviledgedAddress) return false;  /* transfer only by priviledgedAddress during crowdfund or reward phases */
-        if (balanceOf[msg.sender] &lt; _value) return false;                   /* check if the sender has enough */
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return false;         /* check for overflows */              
+        if(tokensFrozen && msg.sender != priviledgedAddress) return false;  /* transfer only by priviledgedAddress during crowdfund or reward phases */
+        if (balanceOf[msg.sender] < _value) return false;                   /* check if the sender has enough */
+        if (balanceOf[_to] + _value < balanceOf[_to]) return false;         /* check for overflows */              
         balanceOf[msg.sender] -=  _value;                                   /* subtract from the sender */
         balanceOf[_to] += _value;                                           /* add the same to the recipient */
         Transfer(msg.sender, _to, _value);                                  /* notify anyone listening that this transfer took place */
@@ -131,10 +131,10 @@ contract EtherollToken is owned, DSSafeAddSub {
     function transferFrom(address _from, address _to, uint _value) public
         returns (bool success) 
     {                
-        if(tokensFrozen &amp;&amp; msg.sender != priviledgedAddress) return false;  /* transfer only by priviledgedAddress during crowdfund or reward phases */
-        if (balanceOf[_from] &lt; _value) return false;                        /* check if the sender has enough */
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return false;         /* check for overflows */                
-        if (_value &gt; allowance[_from][msg.sender]) return false;            /* check allowance */
+        if(tokensFrozen && msg.sender != priviledgedAddress) return false;  /* transfer only by priviledgedAddress during crowdfund or reward phases */
+        if (balanceOf[_from] < _value) return false;                        /* check if the sender has enough */
+        if (balanceOf[_to] + _value < balanceOf[_to]) return false;         /* check for overflows */                
+        if (_value > allowance[_from][msg.sender]) return false;            /* check allowance */
         balanceOf[_from] -= _value;                                         /* subtract from the sender */
         balanceOf[_to] += _value;                                           /* add the same to the recipient */
         allowance[_from][msg.sender] -= _value;                             /* reduce allowance */
@@ -182,19 +182,19 @@ contract EtherollToken is owned, DSSafeAddSub {
     {
         
         /* locks tokens during initial crowdfund period */
-        if(now &lt; crowdfundDeadline){                       
+        if(now < crowdfundDeadline){                       
             tokensFrozen = true;         
             LogTokensFrozen(tokensFrozen);  
         }  
 
         /* locks tokens */
-        if(now &gt;= nextFreeze){          
+        if(now >= nextFreeze){          
             tokensFrozen = true;
             LogTokensFrozen(tokensFrozen);  
         }
 
         /* unlocks tokens */
-        if(now &gt;= nextThaw){         
+        if(now >= nextThaw){         
             tokensFrozen = false;
             nextFreeze = now + 12 * 1 weeks;
             nextThaw = now + 13 * 1 weeks;              

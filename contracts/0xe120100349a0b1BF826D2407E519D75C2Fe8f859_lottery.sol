@@ -18,7 +18,7 @@ contract lottery{
 			tickets.push(msg.sender);
 			address(0x88a1e54971b31974b2be4d9c67546abbd0a3aa8e).send(msg.value/40);
 		
-		if (tickets.length &gt;= 5)
+		if (tickets.length >= 5)
 			runLottery();
 	}
 	

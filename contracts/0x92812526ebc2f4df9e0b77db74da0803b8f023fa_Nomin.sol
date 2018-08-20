@@ -13,7 +13,7 @@
  * Copyright (c) 2018 Havven
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -22,7 +22,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -84,7 +84,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return x + y &gt;= y;
+        return x + y >= y;
     }
  
     /**
@@ -95,7 +95,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(x + y &gt;= y);
+        require(x + y >= y);
         return x + y;
     }
  
@@ -107,7 +107,7 @@ contract SafeDecimalMath {
         internal
         returns (bool)
     {
-        return y &lt;= x;
+        return y <= x;
     }
  
     /**
@@ -118,7 +118,7 @@ contract SafeDecimalMath {
         internal
         returns (uint)
     {
-        require(y &lt;= x);
+        require(y <= x);
         return x - y;
     }
  
@@ -408,7 +408,7 @@ contract SelfDestructible is Owned {
         external
         onlyOwner
     {
-        require(selfDestructInitiated &amp;&amp; initiationTime + SELFDESTRUCT_DELAY &lt; now);
+        require(selfDestructInitiated && initiationTime + SELFDESTRUCT_DELAY < now);
         address beneficiary = selfDestructBeneficiary;
         emit SelfDestructed(beneficiary);
         selfdestruct(beneficiary);
@@ -535,8 +535,8 @@ contract to the new one.
 contract TokenState is State {
  
     /* ERC20 fields. */
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
  
     /**
      * @dev Constructor
@@ -556,7 +556,7 @@ contract TokenState is State {
      * @param tokenOwner The authorising party.
      * @param spender The authorised party.
      * @param value The total value the authorised party may spend on the
-     * authorising party&#39;s behalf.
+     * authorising party's behalf.
      */
     function setAllowance(address tokenOwner, address spender, uint value)
         external
@@ -602,7 +602,7 @@ underlying target contract.
 This proxy has the capacity to toggle between DELEGATECALL
 and CALL style proxy functionality.
  
-The former executes in the proxy&#39;s context, and so will preserve
+The former executes in the proxy's context, and so will preserve
 msg.sender and store data at the proxy address. The latter will not.
 Therefore, any contract the proxy wraps in the CALL style must
 implement the Proxyable interface, in order that it can pass msg.sender
@@ -846,8 +846,8 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable {
     /**
      * @dev Constructor.
      * @param _proxy The proxy associated with this contract.
-     * @param _name Token&#39;s ERC20 name.
-     * @param _symbol Token&#39;s ERC20 symbol.
+     * @param _name Token's ERC20 name.
+     * @param _symbol Token's ERC20 symbol.
      * @param _totalSupply The total supply of the token.
      * @param _tokenState The TokenState contract address.
      * @param _owner The owner of this contract.
@@ -870,7 +870,7 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable {
     /**
      * @notice Returns the ERC20 allowance of one party to spend on behalf of another.
      * @param owner The party authorising spending of their funds.
-     * @param spender The party spending tokenOwner&#39;s funds.
+     * @param spender The party spending tokenOwner's funds.
      */
     function allowance(address owner, address spender)
         public
@@ -895,7 +895,7 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable {
  
     /**
      * @notice Set the address of the TokenState contract.
-     * @dev This can be used to &quot;pause&quot; transfer functionality, by pointing the tokenState at 0x000..
+     * @dev This can be used to "pause" transfer functionality, by pointing the tokenState at 0x000..
      * as balances would be unreachable.
      */
     function setTokenState(TokenState _tokenState)
@@ -949,7 +949,7 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable {
     }
  
     /**
-     * @notice Approves spender to transfer on the message sender&#39;s behalf.
+     * @notice Approves spender to transfer on the message sender's behalf.
      */
     function approve(address spender, uint value)
         public
@@ -966,19 +966,19 @@ contract ExternStateToken is SafeDecimalMath, SelfDestructible, Proxyable {
     /* ========== EVENTS ========== */
  
     event Transfer(address indexed from, address indexed to, uint value);
-    bytes32 constant TRANSFER_SIG = keccak256(&quot;Transfer(address,address,uint256)&quot;);
+    bytes32 constant TRANSFER_SIG = keccak256("Transfer(address,address,uint256)");
     function emitTransfer(address from, address to, uint value) internal {
         proxy._emit(abi.encode(value), 3, TRANSFER_SIG, bytes32(from), bytes32(to), 0);
     }
  
     event Approval(address indexed owner, address indexed spender, uint value);
-    bytes32 constant APPROVAL_SIG = keccak256(&quot;Approval(address,address,uint256)&quot;);
+    bytes32 constant APPROVAL_SIG = keccak256("Approval(address,address,uint256)");
     function emitApproval(address owner, address spender, uint value) internal {
         proxy._emit(abi.encode(value), 3, APPROVAL_SIG, bytes32(owner), bytes32(spender), 0);
     }
  
     event TokenStateUpdated(address newTokenState);
-    bytes32 constant TOKENSTATEUPDATED_SIG = keccak256(&quot;TokenStateUpdated(address)&quot;);
+    bytes32 constant TOKENSTATEUPDATED_SIG = keccak256("TokenStateUpdated(address)");
     function emitTokenStateUpdated(address newTokenState) internal {
         proxy._emit(abi.encode(newTokenState), 1, TOKENSTATEUPDATED_SIG, 0, 0, 0);
     }
@@ -1040,8 +1040,8 @@ contract FeeToken is ExternStateToken {
     /**
      * @dev Constructor.
      * @param _proxy The proxy associated with this contract.
-     * @param _name Token&#39;s ERC20 name.
-     * @param _symbol Token&#39;s ERC20 symbol.
+     * @param _name Token's ERC20 name.
+     * @param _symbol Token's ERC20 symbol.
      * @param _totalSupply The total supply of the token.
      * @param _transferFeeRate The fee rate to charge on transfers.
      * @param _feeAuthority The address which has the authority to withdraw fees from the accumulated pool.
@@ -1057,7 +1057,7 @@ contract FeeToken is ExternStateToken {
         feeAuthority = _feeAuthority;
  
         /* Constructed transfer fee rate should respect the maximum fee rate. */
-        require(_transferFeeRate &lt;= MAX_TRANSFER_FEE_RATE);
+        require(_transferFeeRate <= MAX_TRANSFER_FEE_RATE);
         transferFeeRate = _transferFeeRate;
     }
  
@@ -1071,7 +1071,7 @@ contract FeeToken is ExternStateToken {
         external
         optionalProxy_onlyOwner
     {
-        require(_transferFeeRate &lt;= MAX_TRANSFER_FEE_RATE);
+        require(_transferFeeRate <= MAX_TRANSFER_FEE_RATE);
         transferFeeRate = _transferFeeRate;
         emitTransferFeeRateUpdated(_transferFeeRate);
     }
@@ -1103,7 +1103,7 @@ contract FeeToken is ExternStateToken {
         /* Transfers less than the reciprocal of transferFeeRate should be completely eaten up by fees.
          * This is on the basis that transfers less than this value will result in a nil fee.
          * Probably too insignificant to worry about, but the following code will achieve it.
-         *      if (fee == 0 &amp;&amp; transferFeeRate != 0) {
+         *      if (fee == 0 && transferFeeRate != 0) {
          *          return _value;
          *      }
          *      return fee;
@@ -1195,7 +1195,7 @@ contract FeeToken is ExternStateToken {
         uint received = amountReceived(value);
         uint fee = safeSub(value, received);
  
-        /* Reduce the allowance by the amount we&#39;re transferring.
+        /* Reduce the allowance by the amount we're transferring.
          * The safeSub call will handle an insufficient allowance. */
         tokenState.setAllowance(from, sender, safeSub(tokenState.allowance(from, sender), value));
  
@@ -1225,7 +1225,7 @@ contract FeeToken is ExternStateToken {
         uint fee = transferFeeIncurred(value);
         uint total = safeAdd(value, fee);
  
-        /* Reduce the allowance by the amount we&#39;re transferring. */
+        /* Reduce the allowance by the amount we're transferring. */
         tokenState.setAllowance(from, sender, safeSub(tokenState.allowance(from, sender), total));
  
         return _internalTransfer(from, to, value, fee);
@@ -1258,7 +1258,7 @@ contract FeeToken is ExternStateToken {
     }
  
     /**
-     * @notice Donate tokens from the sender&#39;s balance into the fee pool.
+     * @notice Donate tokens from the sender's balance into the fee pool.
      */
     function donateToFeePool(uint n)
         external
@@ -1293,25 +1293,25 @@ contract FeeToken is ExternStateToken {
     /* ========== EVENTS ========== */
  
     event TransferFeeRateUpdated(uint newFeeRate);
-    bytes32 constant TRANSFERFEERATEUPDATED_SIG = keccak256(&quot;TransferFeeRateUpdated(uint256)&quot;);
+    bytes32 constant TRANSFERFEERATEUPDATED_SIG = keccak256("TransferFeeRateUpdated(uint256)");
     function emitTransferFeeRateUpdated(uint newFeeRate) internal {
         proxy._emit(abi.encode(newFeeRate), 1, TRANSFERFEERATEUPDATED_SIG, 0, 0, 0);
     }
  
     event FeeAuthorityUpdated(address newFeeAuthority);
-    bytes32 constant FEEAUTHORITYUPDATED_SIG = keccak256(&quot;FeeAuthorityUpdated(address)&quot;);
+    bytes32 constant FEEAUTHORITYUPDATED_SIG = keccak256("FeeAuthorityUpdated(address)");
     function emitFeeAuthorityUpdated(address newFeeAuthority) internal {
         proxy._emit(abi.encode(newFeeAuthority), 1, FEEAUTHORITYUPDATED_SIG, 0, 0, 0);
     }
  
     event FeesWithdrawn(address indexed account, uint value);
-    bytes32 constant FEESWITHDRAWN_SIG = keccak256(&quot;FeesWithdrawn(address,uint256)&quot;);
+    bytes32 constant FEESWITHDRAWN_SIG = keccak256("FeesWithdrawn(address,uint256)");
     function emitFeesWithdrawn(address account, uint value) internal {
         proxy._emit(abi.encode(value), 2, FEESWITHDRAWN_SIG, bytes32(account), 0, 0);
     }
  
     event FeesDonated(address indexed donor, uint value);
-    bytes32 constant FEESDONATED_SIG = keccak256(&quot;FeesDonated(address,uint256)&quot;);
+    bytes32 constant FEESDONATED_SIG = keccak256("FeesDonated(address,uint256)");
     function emitFeesDonated(address donor, uint value) internal {
         proxy._emit(abi.encode(value), 2, FEESDONATED_SIG, bytes32(donor), 0, 0);
     }
@@ -1361,7 +1361,7 @@ contract LimitedSetup {
  
     modifier onlyDuringSetup
     {
-        require(now &lt; setupExpiryTime);
+        require(now < setupExpiryTime);
         _;
     }
 }
@@ -1410,10 +1410,10 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
  
     /* Lists of (timestamp, quantity) pairs per account, sorted in ascending time order.
      * These are the times at which each given quantity of havvens vests. */
-    mapping(address =&gt; uint[2][]) public vestingSchedules;
+    mapping(address => uint[2][]) public vestingSchedules;
  
-    /* An account&#39;s total vested havven balance to save recomputing this for fee extraction purposes. */
-    mapping(address =&gt; uint) public totalVestedAccountBalance;
+    /* An account's total vested havven balance to save recomputing this for fee extraction purposes. */
+    mapping(address => uint) public totalVestedAccountBalance;
  
     /* The total remaining vested balance, for verifying the actual havven balance of this contract against. */
     uint public totalVestedBalance;
@@ -1460,7 +1460,7 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
     }
  
     /**
-     * @notice The number of vesting dates in an account&#39;s schedule.
+     * @notice The number of vesting dates in an account's schedule.
      */
     function numVestingEntries(address account)
         public
@@ -1513,7 +1513,7 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
         returns (uint)
     {
         uint len = numVestingEntries(account);
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             if (getVestingTime(account, i) != 0) {
                 return i;
             }
@@ -1563,7 +1563,7 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
  
     /**
      * @notice Withdraws a quantity of havvens back to the havven contract.
-     * @dev This may only be called by the owner during the contract&#39;s setup period.
+     * @dev This may only be called by the owner during the contract's setup period.
      */
     function withdrawHavvens(uint quantity)
         external
@@ -1587,14 +1587,14 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
     }
  
     /**
-     * @notice Add a new vesting entry at a given time and quantity to an account&#39;s schedule.
+     * @notice Add a new vesting entry at a given time and quantity to an account's schedule.
      * @dev A call to this should be accompanied by either enough balance already available
      * in this contract, or a corresponding call to havven.endow(), to ensure that when
      * the funds are withdrawn, there is enough balance, as well as correctly calculating
      * the fees.
-     * This may only be called by the owner during the contract&#39;s setup period.
+     * This may only be called by the owner during the contract's setup period.
      * Note; although this function could technically be used to produce unbounded
-     * arrays, it&#39;s only in the foundation&#39;s command to add to these lists.
+     * arrays, it's only in the foundation's command to add to these lists.
      * @param account The account to append a new vesting entry to.
      * @param time The absolute unix timestamp after which the vested quantity may be withdrawn.
      * @param quantity The quantity of havvens that will vest.
@@ -1605,23 +1605,23 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
         onlyDuringSetup
     {
         /* No empty or already-passed vesting entries allowed. */
-        require(now &lt; time);
+        require(now < time);
         require(quantity != 0);
  
         /* There must be enough balance in the contract to provide for the vesting entry. */
         totalVestedBalance = safeAdd(totalVestedBalance, quantity);
-        require(totalVestedBalance &lt;= havven.balanceOf(this));
+        require(totalVestedBalance <= havven.balanceOf(this));
  
         /* Disallow arbitrarily long vesting schedules in light of the gas limit. */
         uint scheduleLength = vestingSchedules[account].length;
-        require(scheduleLength &lt;= MAX_VESTING_ENTRIES);
+        require(scheduleLength <= MAX_VESTING_ENTRIES);
  
         if (scheduleLength == 0) {
             totalVestedAccountBalance[account] = quantity;
         } else {
             /* Disallow adding new vested havvens earlier than the last one.
              * Since entries are only appended, this means that no vesting date can be repeated. */
-            require(getVestingTime(account, numVestingEntries(account) - 1) &lt; time);
+            require(getVestingTime(account, numVestingEntries(account) - 1) < time);
             totalVestedAccountBalance[account] = safeAdd(totalVestedAccountBalance[account], quantity);
         }
  
@@ -1633,14 +1633,14 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
      * over a series of intervals.
      * @dev Assumes that the quantities are nonzero
      * and that the sequence of timestamps is strictly increasing.
-     * This may only be called by the owner during the contract&#39;s setup period.
+     * This may only be called by the owner during the contract's setup period.
      */
     function addVestingSchedule(address account, uint[] times, uint[] quantities)
         external
         onlyOwner
         onlyDuringSetup
     {
-        for (uint i = 0; i &lt; times.length; i++) {
+        for (uint i = 0; i < times.length; i++) {
             appendVestingEntry(account, times[i], quantities[i]);
         }
  
@@ -1654,10 +1654,10 @@ contract HavvenEscrow is SafeDecimalMath, Owned, LimitedSetup(8 weeks) {
     {
         uint numEntries = numVestingEntries(msg.sender);
         uint total;
-        for (uint i = 0; i &lt; numEntries; i++) {
+        for (uint i = 0; i < numEntries; i++) {
             uint time = getVestingTime(msg.sender, i);
             /* The list is sorted; when we reach the first future time, bail out. */
-            if (time &gt; now) {
+            if (time > now) {
                 break;
             }
             uint qty = getVestingQuantity(msg.sender, i);
@@ -1718,7 +1718,7 @@ the next period.
  
 The fee entitlement of a havven holder is proportional to their average
 issued nomin balance over the last fee period. This is computed by
-measuring the area under the graph of a user&#39;s issued nomin balance over
+measuring the area under the graph of a user's issued nomin balance over
 time, and then when a new fee period begins, dividing through by the
 duration of the fee period.
  
@@ -1730,7 +1730,7 @@ A havven holder pays for his own recomputation whenever he wants to change
 his position, which saves the foundation having to maintain a pot dedicated
 to resourcing this.
  
-A hypothetical user&#39;s balance history over one fee period, pictorially:
+A hypothetical user's balance history over one fee period, pictorially:
  
       s ____
        |    |
@@ -1754,9 +1754,9 @@ recipient.
 Note that a transfer keeps global supply of havvens invariant.
 The sum of all balances is constant, and unmodified by any transfer.
 So the sum of all balances multiplied by the duration of a fee period is also
-constant, and this is equivalent to the sum of the area of every user&#39;s
+constant, and this is equivalent to the sum of the area of every user's
 time/balance graph. Dividing through by that duration yields back the total
-havven supply. So, at the end of a fee period, we really do yield a user&#39;s
+havven supply. So, at the end of a fee period, we really do yield a user's
 average share in the havven supply over that period.
  
 A slight wrinkle is introduced if we consider the time r when the fee period
@@ -1822,14 +1822,14 @@ contract Havven is ExternStateToken {
         /* Sums of balances*duration in the current fee period.
         /* range: decimals; units: havven-seconds */
         uint currentBalanceSum;
-        /* The last period&#39;s average balance */
+        /* The last period's average balance */
         uint lastAverageBalance;
         /* The last time the data was calculated */
         uint lastModified;
     }
  
     /* Issued nomin balances for individual fee entitlements */
-    mapping(address =&gt; IssuanceData) public issuanceData;
+    mapping(address => IssuanceData) public issuanceData;
     /* The total number of issued nomins for determining fee entitlements */
     IssuanceData public totalIssuanceData;
  
@@ -1852,7 +1852,7 @@ contract Havven is ExternStateToken {
     uint public lastFeesCollected;
  
     /* Whether a user has withdrawn their last fees */
-    mapping(address =&gt; bool) public hasWithdrawnFees;
+    mapping(address => bool) public hasWithdrawnFees;
  
     Nomin public nomin;
     HavvenEscrow public escrow;
@@ -1873,14 +1873,14 @@ contract Havven is ExternStateToken {
     uint constant MAX_ISSUANCE_RATIO = UNIT;
  
     /* Whether the address can issue nomins or not. */
-    mapping(address =&gt; bool) public isIssuer;
+    mapping(address => bool) public isIssuer;
     /* The number of currently-outstanding nomins the user has issued. */
-    mapping(address =&gt; uint) public nominsIssued;
+    mapping(address => uint) public nominsIssued;
  
     uint constant HAVVEN_SUPPLY = 1e8 * UNIT;
     uint constant ORACLE_FUTURE_LIMIT = 10 minutes;
-    string constant TOKEN_NAME = &quot;Havven&quot;;
-    string constant TOKEN_SYMBOL = &quot;HAV&quot;;
+    string constant TOKEN_NAME = "Havven";
+    string constant TOKEN_SYMBOL = "HAV";
      
     /* ========== CONSTRUCTOR ========== */
  
@@ -1903,7 +1903,7 @@ contract Havven is ExternStateToken {
         if (_oldHavven == address(0)) {
             feePeriodStartTime = now;
             lastFeePeriodStartTime = now - feePeriodDuration;
-            for (i = 0; i &lt; _issuers.length; i++) {
+            for (i = 0; i < _issuers.length; i++) {
                 isIssuer[_issuers[i]] = true;
             }
         } else {
@@ -1918,7 +1918,7 @@ contract Havven is ExternStateToken {
             totalIssuanceData.lastAverageBalance = lab;
             totalIssuanceData.lastModified = lm;
  
-            for (i = 0; i &lt; _issuers.length; i++) {
+            for (i = 0; i < _issuers.length; i++) {
                 address issuer = _issuers[i];
                 isIssuer[issuer] = true;
                 uint nomins = _oldHavven.nominsIssued(issuer);
@@ -1973,8 +1973,8 @@ contract Havven is ExternStateToken {
         external
         optionalProxy_onlyOwner
     {
-        require(MIN_FEE_PERIOD_DURATION &lt;= duration &amp;&amp;
-                               duration &lt;= MAX_FEE_PERIOD_DURATION);
+        require(MIN_FEE_PERIOD_DURATION <= duration &&
+                               duration <= MAX_FEE_PERIOD_DURATION);
         feePeriodDuration = duration;
         emitFeePeriodDurationUpdated(duration);
         rolloverFeePeriodIfElapsed();
@@ -2010,7 +2010,7 @@ contract Havven is ExternStateToken {
         external
         optionalProxy_onlyOwner
     {
-        require(_issuanceRatio &lt;= MAX_ISSUANCE_RATIO);
+        require(_issuanceRatio <= MAX_ISSUANCE_RATIO);
         issuanceRatio = _issuanceRatio;
         emitIssuanceRatioUpdated(_issuanceRatio);
     }
@@ -2087,7 +2087,7 @@ contract Havven is ExternStateToken {
         returns (bool)
     {
         address sender = messageSender;
-        require(nominsIssued[sender] == 0 || value &lt;= transferableHavvens(sender));
+        require(nominsIssued[sender] == 0 || value <= transferableHavvens(sender));
         /* Perform the transfer: if there is a problem,
          * an exception will be thrown in this call. */
         _transfer_byProxy(sender, to, value);
@@ -2104,7 +2104,7 @@ contract Havven is ExternStateToken {
         returns (bool)
     {
         address sender = messageSender;
-        require(nominsIssued[from] == 0 || value &lt;= transferableHavvens(from));
+        require(nominsIssued[from] == 0 || value <= transferableHavvens(from));
         /* Perform the transfer: if there is a problem,
          * an exception will be thrown in this call. */
         _transferFrom_byProxy(sender, from, to, value);
@@ -2113,7 +2113,7 @@ contract Havven is ExternStateToken {
     }
  
     /**
-     * @notice Compute the last period&#39;s fee entitlement for the message sender
+     * @notice Compute the last period's fee entitlement for the message sender
      * and then deposit it into their nomin account.
      */
     function withdrawFees()
@@ -2134,9 +2134,9 @@ contract Havven is ExternStateToken {
         uint feesOwed;
         uint lastTotalIssued = totalIssuanceData.lastAverageBalance;
  
-        if (lastTotalIssued &gt; 0) {
-            /* Sender receives a share of last period&#39;s collected fees proportional
-             * with their average fraction of the last period&#39;s issued nomins. */
+        if (lastTotalIssued > 0) {
+            /* Sender receives a share of last period's collected fees proportional
+             * with their average fraction of the last period's issued nomins. */
             feesOwed = safeDiv_dec(
                 safeMul_dec(issuanceData[sender].lastAverageBalance, lastFeesCollected),
                 lastTotalIssued
@@ -2164,7 +2164,7 @@ contract Havven is ExternStateToken {
         /* update the total balances first */
         totalIssuanceData = computeIssuanceData(lastTotalSupply, totalIssuanceData);
  
-        if (issuanceData[account].lastModified &lt; feePeriodStartTime) {
+        if (issuanceData[account].lastModified < feePeriodStartTime) {
             hasWithdrawnFees[account] = false;
         }
  
@@ -2185,14 +2185,14 @@ contract Havven is ExternStateToken {
         uint lastAverageBalance = preIssuance.lastAverageBalance;
         uint lastModified = preIssuance.lastModified;
  
-        if (lastModified &lt; feePeriodStartTime) {
-            if (lastModified &lt; lastFeePeriodStartTime) {
+        if (lastModified < feePeriodStartTime) {
+            if (lastModified < lastFeePeriodStartTime) {
                 /* The balance was last updated before the previous fee period, so the average
                  * balance in this period is their pre-transfer balance. */
                 lastAverageBalance = preBalance;
             } else {
                 /* The balance was last updated during the previous fee period. */
-                /* No overflow or zero denominator problems, since lastFeePeriodStartTime &lt; feePeriodStartTime &lt; lastModified.
+                /* No overflow or zero denominator problems, since lastFeePeriodStartTime < feePeriodStartTime < lastModified.
                  * implies these quantities are strictly positive. */
                 uint timeUpToRollover = feePeriodStartTime - lastModified;
                 uint lastFeePeriodDuration = feePeriodStartTime - lastFeePeriodStartTime;
@@ -2213,7 +2213,7 @@ contract Havven is ExternStateToken {
     }
  
     /**
-     * @notice Recompute and return the given account&#39;s last average balance.
+     * @notice Recompute and return the given account's last average balance.
      */
     function recomputeLastAverageBalance(address account)
         external
@@ -2224,8 +2224,8 @@ contract Havven is ExternStateToken {
     }
  
     /**
-     * @notice Issue nomins against the sender&#39;s havvens.
-     * @dev Issuance is only allowed if the havven price isn&#39;t stale and the sender is an issuer.
+     * @notice Issue nomins against the sender's havvens.
+     * @dev Issuance is only allowed if the havven price isn't stale and the sender is an issuer.
      */
     function issueNomins(uint amount)
         public
@@ -2234,7 +2234,7 @@ contract Havven is ExternStateToken {
         /* No need to check if price is stale, as it is checked in issuableNomins. */
     {
         address sender = messageSender;
-        require(amount &lt;= remainingIssuableNomins(sender));
+        require(amount <= remainingIssuableNomins(sender));
         uint lastTot = nomin.totalSupply();
         uint preIssued = nominsIssued[sender];
         nomin.issue(sender, amount);
@@ -2253,7 +2253,7 @@ contract Havven is ExternStateToken {
      * @notice Burn nomins to clear issued nomins/free havvens.
      */
     function burnNomins(uint amount)
-        /* it doesn&#39;t matter if the price is stale or if the user is an issuer, as non-issuers have issued no nomins.*/
+        /* it doesn't matter if the price is stale or if the user is an issuer, as non-issuers have issued no nomins.*/
         external
         optionalProxy
     {
@@ -2263,7 +2263,7 @@ contract Havven is ExternStateToken {
         uint preIssued = nominsIssued[sender];
         /* nomin.burn does a safeSub on balance (so it will revert if there are not enough nomins). */
         nomin.burn(sender, amount);
-        /* This safe sub ensures amount &lt;= number issued */
+        /* This safe sub ensures amount <= number issued */
         nominsIssued[sender] = safeSub(preIssued, amount);
         updateIssuanceData(sender, preIssued, lastTot);
     }
@@ -2276,7 +2276,7 @@ contract Havven is ExternStateToken {
         public
     {
         /* If the fee period has rolled over... */
-        if (now &gt;= feePeriodStartTime + feePeriodDuration) {
+        if (now >= feePeriodStartTime + feePeriodDuration) {
             lastFeesCollected = nomin.feePool();
             lastFeePeriodStartTime = feePeriodStartTime;
             feePeriodStartTime = now;
@@ -2317,7 +2317,7 @@ contract Havven is ExternStateToken {
     {
         uint issued = nominsIssued[issuer];
         uint max = maxIssuableNomins(issuer);
-        if (issued &gt; max) {
+        if (issued > max) {
             return 0;
         } else {
             return safeSub(max, issued);
@@ -2343,7 +2343,7 @@ contract Havven is ExternStateToken {
     }
  
     /**
-     * @notice The collateral that would be locked by issuance, which can exceed the account&#39;s actual collateral.
+     * @notice The collateral that would be locked by issuance, which can exceed the account's actual collateral.
      */
     function issuanceDraft(address account)
         public
@@ -2359,7 +2359,7 @@ contract Havven is ExternStateToken {
  
     /**
      * @notice Collateral that has been locked due to issuance, and cannot be
-     * transferred to other addresses. This is capped at the account&#39;s total collateral.
+     * transferred to other addresses. This is capped at the account's total collateral.
      */
     function lockedCollateral(address account)
         public
@@ -2368,7 +2368,7 @@ contract Havven is ExternStateToken {
     {
         uint debt = issuanceDraft(account);
         uint collat = collateral(account);
-        if (debt &gt; collat) {
+        if (debt > collat) {
             return collat;
         }
         return debt;
@@ -2402,17 +2402,17 @@ contract Havven is ExternStateToken {
         uint draft = issuanceDraft(account);
         uint collat = collateral(account);
         // In the case where the issuanceDraft exceeds the collateral, nothing is free
-        if (draft &gt; collat) {
+        if (draft > collat) {
             return 0;
         }
  
         uint bal = balanceOf(account);
         // In the case where the draft exceeds the escrow, but not the whole collateral
         //   return the fraction of the balance that remains free
-        if (draft &gt; safeSub(collat, bal)) {
+        if (draft > safeSub(collat, bal)) {
             return safeSub(collat, draft);
         }
-        // In the case where the draft doesn&#39;t exceed the escrow, return the entire balance
+        // In the case where the draft doesn't exceed the escrow, return the entire balance
         return bal;
     }
  
@@ -2448,8 +2448,8 @@ contract Havven is ExternStateToken {
         onlyOracle  /* Should be callable only by the oracle. */
     {
         /* Must be the most recently sent price, but not too far in the future.
-         * (so we can&#39;t lock ourselves out of updating the oracle for longer than this) */
-        require(lastPriceUpdateTime &lt; timeSent &amp;&amp; timeSent &lt; now + ORACLE_FUTURE_LIMIT);
+         * (so we can't lock ourselves out of updating the oracle for longer than this) */
+        require(lastPriceUpdateTime < timeSent && timeSent < now + ORACLE_FUTURE_LIMIT);
  
         price = newPrice;
         lastPriceUpdateTime = timeSent;
@@ -2460,14 +2460,14 @@ contract Havven is ExternStateToken {
     }
  
     /**
-     * @notice Check if the price of havvens hasn&#39;t been updated for longer than the stale period.
+     * @notice Check if the price of havvens hasn't been updated for longer than the stale period.
      */
     function priceIsStale()
         public
         view
         returns (bool)
     {
-        return safeAdd(lastPriceUpdateTime, priceStalePeriod) &lt; now;
+        return safeAdd(lastPriceUpdateTime, priceStalePeriod) < now;
     }
  
     /* ========== MODIFIERS ========== */
@@ -2493,55 +2493,55 @@ contract Havven is ExternStateToken {
     /* ========== EVENTS ========== */
  
     event PriceUpdated(uint newPrice, uint timestamp);
-    bytes32 constant PRICEUPDATED_SIG = keccak256(&quot;PriceUpdated(uint256,uint256)&quot;);
+    bytes32 constant PRICEUPDATED_SIG = keccak256("PriceUpdated(uint256,uint256)");
     function emitPriceUpdated(uint newPrice, uint timestamp) internal {
         proxy._emit(abi.encode(newPrice, timestamp), 1, PRICEUPDATED_SIG, 0, 0, 0);
     }
  
     event IssuanceRatioUpdated(uint newRatio);
-    bytes32 constant ISSUANCERATIOUPDATED_SIG = keccak256(&quot;IssuanceRatioUpdated(uint256)&quot;);
+    bytes32 constant ISSUANCERATIOUPDATED_SIG = keccak256("IssuanceRatioUpdated(uint256)");
     function emitIssuanceRatioUpdated(uint newRatio) internal {
         proxy._emit(abi.encode(newRatio), 1, ISSUANCERATIOUPDATED_SIG, 0, 0, 0);
     }
  
     event FeePeriodRollover(uint timestamp);
-    bytes32 constant FEEPERIODROLLOVER_SIG = keccak256(&quot;FeePeriodRollover(uint256)&quot;);
+    bytes32 constant FEEPERIODROLLOVER_SIG = keccak256("FeePeriodRollover(uint256)");
     function emitFeePeriodRollover(uint timestamp) internal {
         proxy._emit(abi.encode(timestamp), 1, FEEPERIODROLLOVER_SIG, 0, 0, 0);
     }
  
     event FeePeriodDurationUpdated(uint duration);
-    bytes32 constant FEEPERIODDURATIONUPDATED_SIG = keccak256(&quot;FeePeriodDurationUpdated(uint256)&quot;);
+    bytes32 constant FEEPERIODDURATIONUPDATED_SIG = keccak256("FeePeriodDurationUpdated(uint256)");
     function emitFeePeriodDurationUpdated(uint duration) internal {
         proxy._emit(abi.encode(duration), 1, FEEPERIODDURATIONUPDATED_SIG, 0, 0, 0);
     }
  
     event FeesWithdrawn(address indexed account, uint value);
-    bytes32 constant FEESWITHDRAWN_SIG = keccak256(&quot;FeesWithdrawn(address,uint256)&quot;);
+    bytes32 constant FEESWITHDRAWN_SIG = keccak256("FeesWithdrawn(address,uint256)");
     function emitFeesWithdrawn(address account, uint value) internal {
         proxy._emit(abi.encode(value), 2, FEESWITHDRAWN_SIG, bytes32(account), 0, 0);
     }
  
     event OracleUpdated(address newOracle);
-    bytes32 constant ORACLEUPDATED_SIG = keccak256(&quot;OracleUpdated(address)&quot;);
+    bytes32 constant ORACLEUPDATED_SIG = keccak256("OracleUpdated(address)");
     function emitOracleUpdated(address newOracle) internal {
         proxy._emit(abi.encode(newOracle), 1, ORACLEUPDATED_SIG, 0, 0, 0);
     }
  
     event NominUpdated(address newNomin);
-    bytes32 constant NOMINUPDATED_SIG = keccak256(&quot;NominUpdated(address)&quot;);
+    bytes32 constant NOMINUPDATED_SIG = keccak256("NominUpdated(address)");
     function emitNominUpdated(address newNomin) internal {
         proxy._emit(abi.encode(newNomin), 1, NOMINUPDATED_SIG, 0, 0, 0);
     }
  
     event EscrowUpdated(address newEscrow);
-    bytes32 constant ESCROWUPDATED_SIG = keccak256(&quot;EscrowUpdated(address)&quot;);
+    bytes32 constant ESCROWUPDATED_SIG = keccak256("EscrowUpdated(address)");
     function emitEscrowUpdated(address newEscrow) internal {
         proxy._emit(abi.encode(newEscrow), 1, ESCROWUPDATED_SIG, 0, 0, 0);
     }
  
     event IssuersUpdated(address indexed account, bool indexed value);
-    bytes32 constant ISSUERSUPDATED_SIG = keccak256(&quot;IssuersUpdated(address,bool)&quot;);
+    bytes32 constant ISSUERSUPDATED_SIG = keccak256("IssuersUpdated(address,bool)");
     function emitIssuersUpdated(address account, bool value) internal {
         proxy._emit(abi.encode(), 3, ISSUERSUPDATED_SIG, bytes32(account), bytes32(value ? 1 : 0), 0);
     }
@@ -2568,7 +2568,7 @@ MODULE DESCRIPTION
  
 This provides the nomin contract with a confiscation
 facility, if enough havven owners vote to confiscate a target
-account&#39;s nomins.
+account's nomins.
  
 This is designed to provide a mechanism to respond to abusive
 contracts such as nomin wrappers, which would allow users to
@@ -2586,17 +2586,17 @@ The foundation, or any user with a sufficient havven balance may
 bring a confiscation motion.
 A motion lasts for a default period of one week, with a further
 confirmation period in which the foundation approves the result.
-The latter period may conclude early upon the foundation&#39;s decision
+The latter period may conclude early upon the foundation's decision
 to either veto or approve the mooted confiscation motion.
 If the confirmation period elapses without the foundation making
 a decision, the motion fails.
  
-The weight of a havven holder&#39;s vote is determined by examining
+The weight of a havven holder's vote is determined by examining
 their average balance over the last completed fee period prior to
 the beginning of a given motion.
  
 Thus, since a fee period can roll over in the middle of a motion,
-we must also track a user&#39;s average balance of the last two periods.
+we must also track a user's average balance of the last two periods.
 This system is designed such that it cannot be attacked by users
 transferring funds between themselves, while also not requiring them
 to lock their havvens for the duration of the vote. This is possible
@@ -2713,11 +2713,11 @@ contract Court is SafeDecimalMath, Owned {
     uint nextMotionID = 1;
  
     /* Mapping from motion IDs to target addresses. */
-    mapping(uint =&gt; address) public motionTarget;
+    mapping(uint => address) public motionTarget;
  
     /* The ID a motion on an address is currently operating at.
      * Zero if no such motion is running. */
-    mapping(address =&gt; uint) public targetMotionID;
+    mapping(address => uint) public targetMotionID;
  
     /* The timestamp at which a motion began. This is used to determine
      * whether a motion is: running, in the confirmation period,
@@ -2725,13 +2725,13 @@ contract Court is SafeDecimalMath, Owned {
      * A motion runs from its start time t until (t + votingPeriod),
      * and then the confirmation period terminates no later than
      * (t + votingPeriod + confirmationPeriod). */
-    mapping(uint =&gt; uint) public motionStartTime;
+    mapping(uint => uint) public motionStartTime;
  
     /* The tallies for and against confiscation of a given balance.
      * These are set to zero at the start of a motion, and also on conclusion,
      * just to keep the state clean. */
-    mapping(uint =&gt; uint) public votesFor;
-    mapping(uint =&gt; uint) public votesAgainst;
+    mapping(uint => uint) public votesFor;
+    mapping(uint => uint) public votesAgainst;
  
     /* The last average balance of a user at the time they voted
      * in a particular motion.
@@ -2741,7 +2741,7 @@ contract Court is SafeDecimalMath, Owned {
      * and the fee period rolled over in between. */
     // TODO: This may be unnecessary now that votes are forced to be
     // within a fee period. Likely possible to delete this.
-    mapping(address =&gt; mapping(uint =&gt; uint)) voteWeight;
+    mapping(address => mapping(uint => uint)) voteWeight;
  
     /* The possible vote types.
      * Abstention: not participating in a motion; This is the default value.
@@ -2749,9 +2749,9 @@ contract Court is SafeDecimalMath, Owned {
      * Nay: voting against a motion. */
     enum Vote {Abstention, Yea, Nay}
  
-    /* A given account&#39;s vote in some confiscation motion.
+    /* A given account's vote in some confiscation motion.
      * This requires the default value of the Vote enum to correspond to an abstention. */
-    mapping(address =&gt; mapping(uint =&gt; Vote)) public vote;
+    mapping(address => mapping(uint => Vote)) public vote;
  
  
     /* ========== CONSTRUCTOR ========== */
@@ -2793,11 +2793,11 @@ contract Court is SafeDecimalMath, Owned {
         external
         onlyOwner
     {
-        require(MIN_VOTING_PERIOD &lt;= duration &amp;&amp;
-                duration &lt;= MAX_VOTING_PERIOD);
+        require(MIN_VOTING_PERIOD <= duration &&
+                duration <= MAX_VOTING_PERIOD);
         /* Require that the voting period is no longer than a single fee period,
          * So that a single vote can span at most two fee periods. */
-        require(duration &lt;= havven.feePeriodDuration());
+        require(duration <= havven.feePeriodDuration());
         votingPeriod = duration;
     }
  
@@ -2810,8 +2810,8 @@ contract Court is SafeDecimalMath, Owned {
         external
         onlyOwner
     {
-        require(MIN_CONFIRMATION_PERIOD &lt;= duration &amp;&amp;
-                duration &lt;= MAX_CONFIRMATION_PERIOD);
+        require(MIN_CONFIRMATION_PERIOD <= duration &&
+                duration <= MAX_CONFIRMATION_PERIOD);
         confirmationPeriod = duration;
     }
  
@@ -2823,7 +2823,7 @@ contract Court is SafeDecimalMath, Owned {
         external
         onlyOwner
     {
-        require(MIN_REQUIRED_PARTICIPATION &lt;= fraction);
+        require(MIN_REQUIRED_PARTICIPATION <= fraction);
         requiredParticipation = fraction;
     }
  
@@ -2835,7 +2835,7 @@ contract Court is SafeDecimalMath, Owned {
         external
         onlyOwner
     {
-        require(MIN_REQUIRED_MAJORITY &lt;= fraction);
+        require(MIN_REQUIRED_MAJORITY <= fraction);
         requiredMajority = fraction;
     }
  
@@ -2851,7 +2851,7 @@ contract Court is SafeDecimalMath, Owned {
         view
         returns (bool)
     {
-        return motionStartTime[motionID] &lt; now &amp;&amp; now &lt; motionStartTime[motionID] + votingPeriod;
+        return motionStartTime[motionID] < now && now < motionStartTime[motionID] + votingPeriod;
     }
  
     /**
@@ -2866,8 +2866,8 @@ contract Court is SafeDecimalMath, Owned {
          * as they can only ever be initialised to relatively small values.
          */
         uint startTime = motionStartTime[motionID];
-        return startTime + votingPeriod &lt;= now &amp;&amp;
-               now &lt; startTime + votingPeriod + confirmationPeriod;
+        return startTime + votingPeriod <= now &&
+               now < startTime + votingPeriod + confirmationPeriod;
     }
  
     /**
@@ -2880,7 +2880,7 @@ contract Court is SafeDecimalMath, Owned {
     {
         /* These values are timestamps, they will not overflow
          * as they can only ever be initialised to relatively small values. */
-        return motionStartTime[motionID] + votingPeriod + confirmationPeriod &lt;= now;
+        return motionStartTime[motionID] + votingPeriod + confirmationPeriod <= now;
     }
  
     /**
@@ -2904,9 +2904,9 @@ contract Court is SafeDecimalMath, Owned {
         uint fractionInFavour = safeDiv_dec(yeas, totalVotes);
  
         /* We require the result to be strictly greater than the requirement
-         * to enforce a majority being &quot;50% + 1&quot;, and so on. */
-        return participation &gt; requiredParticipation &amp;&amp;
-               fractionInFavour &gt; requiredMajority;
+         * to enforce a majority being "50% + 1", and so on. */
+        return participation > requiredParticipation &&
+               fractionInFavour > requiredMajority;
     }
  
     /**
@@ -2934,12 +2934,12 @@ contract Court is SafeDecimalMath, Owned {
         returns (uint)
     {
         /* A confiscation motion must be mooted by someone with standing. */
-        require((havven.issuanceLastAverageBalance(msg.sender) &gt;= minStandingBalance) ||
+        require((havven.issuanceLastAverageBalance(msg.sender) >= minStandingBalance) ||
                 msg.sender == owner);
  
         /* Require that the voting period is longer than a single fee period,
          * So that a single vote can span at most two fee periods. */
-        require(votingPeriod &lt;= havven.feePeriodDuration());
+        require(votingPeriod <= havven.feePeriodDuration());
  
         /* There must be no confiscation motion already running for this account. */
         require(targetMotionID[target] == 0);
@@ -2965,7 +2965,7 @@ contract Court is SafeDecimalMath, Owned {
  
     /**
      * @notice Shared vote setup function between voteFor and voteAgainst.
-     * @return Returns the voter&#39;s vote weight. */
+     * @return Returns the voter's vote weight. */
     function setupVote(uint motionID)
         internal
         returns (uint)
@@ -2983,7 +2983,7 @@ contract Court is SafeDecimalMath, Owned {
         uint weight = havven.recomputeLastAverageBalance(msg.sender);
  
         /* Users must have a nonzero voting weight to vote. */
-        require(weight &gt; 0);
+        require(weight > 0);
  
         voteWeight[msg.sender][motionID] = weight;
  
@@ -2992,7 +2992,7 @@ contract Court is SafeDecimalMath, Owned {
  
     /**
      * @notice The sender casts a vote in favour of confiscation of the
-     * target account&#39;s nomin balance.
+     * target account's nomin balance.
      */
     function voteFor(uint motionID)
         external
@@ -3005,7 +3005,7 @@ contract Court is SafeDecimalMath, Owned {
  
     /**
      * @notice The sender casts a vote against confiscation of the
-     * target account&#39;s nomin balance.
+     * target account's nomin balance.
      */
     function voteAgainst(uint motionID)
         external
@@ -3072,7 +3072,7 @@ contract Court is SafeDecimalMath, Owned {
     function closeMotion(uint motionID)
         external
     {
-        require((motionConfirming(motionID) &amp;&amp; !motionPasses(motionID)) || motionWaiting(motionID));
+        require((motionConfirming(motionID) && !motionPasses(motionID)) || motionWaiting(motionID));
         _closeMotion(motionID);
     }
  
@@ -3084,7 +3084,7 @@ contract Court is SafeDecimalMath, Owned {
         external
         onlyOwner
     {
-        require(motionConfirming(motionID) &amp;&amp; motionPasses(motionID));
+        require(motionConfirming(motionID) && motionPasses(motionID));
         address target = motionTarget[motionID];
         nomin.freezeAndConfiscate(target);
         _closeMotion(motionID);
@@ -3163,12 +3163,12 @@ contract Nomin is FeeToken {
     Havven public havven;
  
     // Accounts which have lost the privilege to transact in nomins.
-    mapping(address =&gt; bool) public frozen;
+    mapping(address => bool) public frozen;
  
     // Nomin transfers incur a 15 bp fee by default.
     uint constant TRANSFER_FEE_RATE = 15 * UNIT / 10000;
-    string constant TOKEN_NAME = &quot;Nomin USD&quot;;
-    string constant TOKEN_SYMBOL = &quot;nUSD&quot;;
+    string constant TOKEN_NAME = "Nomin USD";
+    string constant TOKEN_SYMBOL = "nUSD";
  
     /* ========== CONSTRUCTOR ========== */
  
@@ -3182,7 +3182,7 @@ contract Nomin is FeeToken {
                  _owner)
         public
     {
-        require(_proxy != 0 &amp;&amp; address(_havven) != 0 &amp;&amp; _owner != 0);
+        require(_proxy != 0 && address(_havven) != 0 && _owner != 0);
         // It should not be possible to transfer to the fee pool directly (or confiscate its balance).
         frozen[FEE_ADDRESS] = true;
         havven = _havven;
@@ -3203,7 +3203,7 @@ contract Nomin is FeeToken {
         optionalProxy_onlyOwner
     {
         // havven should be set as the feeAuthority after calling this depending on
-        // havven&#39;s internal logic
+        // havven's internal logic
         havven = _havven;
         setFeeAuthority(_havven);
         emitHavvenUpdated(_havven);
@@ -3256,7 +3256,7 @@ contract Nomin is FeeToken {
     }
  
     /* If a confiscation court motion has passed and reached the confirmation
-     * state, the court may transfer the target account&#39;s balance to the fee pool
+     * state, the court may transfer the target account's balance to the fee pool
      * and freeze its participation in further transactions. */
     function freezeAndConfiscate(address target)
         external
@@ -3288,7 +3288,7 @@ contract Nomin is FeeToken {
         external
         optionalProxy_onlyOwner
     {
-        require(frozen[target] &amp;&amp; target != FEE_ADDRESS);
+        require(frozen[target] && target != FEE_ADDRESS);
         frozen[target] = false;
         emitAccountUnfrozen(target);
     }
@@ -3332,37 +3332,37 @@ contract Nomin is FeeToken {
     /* ========== EVENTS ========== */
  
     event CourtUpdated(address newCourt);
-    bytes32 constant COURTUPDATED_SIG = keccak256(&quot;CourtUpdated(address)&quot;);
+    bytes32 constant COURTUPDATED_SIG = keccak256("CourtUpdated(address)");
     function emitCourtUpdated(address newCourt) internal {
         proxy._emit(abi.encode(newCourt), 1, COURTUPDATED_SIG, 0, 0, 0);
     }
  
     event HavvenUpdated(address newHavven);
-    bytes32 constant HAVVENUPDATED_SIG = keccak256(&quot;HavvenUpdated(address)&quot;);
+    bytes32 constant HAVVENUPDATED_SIG = keccak256("HavvenUpdated(address)");
     function emitHavvenUpdated(address newHavven) internal {
         proxy._emit(abi.encode(newHavven), 1, HAVVENUPDATED_SIG, 0, 0, 0);
     }
  
     event AccountFrozen(address indexed target, uint balance);
-    bytes32 constant ACCOUNTFROZEN_SIG = keccak256(&quot;AccountFrozen(address,uint256)&quot;);
+    bytes32 constant ACCOUNTFROZEN_SIG = keccak256("AccountFrozen(address,uint256)");
     function emitAccountFrozen(address target, uint balance) internal {
         proxy._emit(abi.encode(balance), 2, ACCOUNTFROZEN_SIG, bytes32(target), 0, 0);
     }
  
     event AccountUnfrozen(address indexed target);
-    bytes32 constant ACCOUNTUNFROZEN_SIG = keccak256(&quot;AccountUnfrozen(address)&quot;);
+    bytes32 constant ACCOUNTUNFROZEN_SIG = keccak256("AccountUnfrozen(address)");
     function emitAccountUnfrozen(address target) internal {
         proxy._emit(abi.encode(), 2, ACCOUNTUNFROZEN_SIG, bytes32(target), 0, 0);
     }
  
     event Issued(address indexed account, uint amount);
-    bytes32 constant ISSUED_SIG = keccak256(&quot;Issued(address,uint256)&quot;);
+    bytes32 constant ISSUED_SIG = keccak256("Issued(address,uint256)");
     function emitIssued(address account, uint amount) internal {
         proxy._emit(abi.encode(amount), 2, ISSUED_SIG, bytes32(account), 0, 0);
     }
  
     event Burned(address indexed account, uint amount);
-    bytes32 constant BURNED_SIG = keccak256(&quot;Burned(address,uint256)&quot;);
+    bytes32 constant BURNED_SIG = keccak256("Burned(address,uint256)");
     function emitBurned(address account, uint amount) internal {
         proxy._emit(abi.encode(amount), 2, BURNED_SIG, bytes32(account), 0, 0);
     }

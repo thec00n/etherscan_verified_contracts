@@ -4,8 +4,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
 
@@ -73,7 +73,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -96,7 +96,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -145,8 +145,8 @@ contract Withdrawable is PermissionGroups {
 contract WhiteList is Withdrawable {
 
     uint public weiPerSgd; // amount of weis in 1 singapore dollar
-    mapping (address=&gt;uint) public userCategory; // each user has a category defining cap on trade. 0 for standard.
-    mapping (uint=&gt;uint)    public categoryCap;  // will define cap on trade amount per category in singapore Dollar.
+    mapping (address=>uint) public userCategory; // each user has a category defining cap on trade. 0 for standard.
+    mapping (uint=>uint)    public categoryCap;  // will define cap on trade amount per category in singapore Dollar.
 
     function WhiteList(address _admin) public {
         require(_admin != address(0));

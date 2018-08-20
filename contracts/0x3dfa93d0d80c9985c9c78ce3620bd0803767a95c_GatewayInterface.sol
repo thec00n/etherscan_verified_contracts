@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a6e646c7e476968706b6e7162297568">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a6e646c7e476968706b6e7162297568">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Gateway Interface Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff92969c9486bf9190889396899ad18d90">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff92969c9486bf9190889396899ad18d90">[email protected]</a>>
 
  Used as a resolver to retrieve the latest deployed version of the Application
 
@@ -113,7 +113,7 @@ contract GatewayInterface {
     /**
     @notice Get current ApplicationEntity Contract address
     @return {
-        &quot;currentApplicationEntityAddress&quot;: Currently bound application address
+        "currentApplicationEntityAddress": Currently bound application address
     }
     */
     function getApplicationAddress() external view returns (address) {
@@ -127,7 +127,7 @@ contract GatewayInterface {
     @param _newAddress address, The address of the application contract
     @param _sourceCodeUrl bytes32, The url of the application source code on etherscan
     @return {
-        &quot;bool&quot;: TRUE if successfully processed
+        "bool": TRUE if successfully processed
     }
     */
     function requestCodeUpgrade( address _newAddress, bytes32 _sourceCodeUrl )
@@ -171,7 +171,7 @@ contract GatewayInterface {
     @dev modifier onlyCurrentApplicationEntity
     @param _newAddress address, The address of the new application contract
     @return {
-        &quot;bool&quot;: TRUE if successfully processed
+        "bool": TRUE if successfully processed
     }
     */
     function approveCodeUpgrade( address _newAddress ) external returns (bool) {
@@ -200,7 +200,7 @@ contract GatewayInterface {
     @notice Link to new Application Entity
     @param _newAddress address, The address of the new application contract
     @return {
-        &quot;bool&quot;: TRUE if successfully processed
+        "bool": TRUE if successfully processed
     }
     */
     function link( address _newAddress ) internal returns (bool) {
@@ -218,7 +218,7 @@ contract GatewayInterface {
     /**
     @notice Get current News Contract address
     @return {
-        &quot;address&quot;: 0x address of the News Contract
+        "address": 0x address of the News Contract
     }
     */
     function getNewsContractAddress() external view returns (address) {
@@ -228,7 +228,7 @@ contract GatewayInterface {
     /**
     @notice Get current Listing Contract address
     @return {
-        &quot;address&quot;: 0x address of the Listing Contract
+        "address": 0x address of the Listing Contract
     }
     */
     function getListingContractAddress() external view returns (address) {
@@ -236,11 +236,11 @@ contract GatewayInterface {
     }
 
     /*
-    * Validates if new application&#39;s deployer is allowed to upgrade current app
+    * Validates if new application's deployer is allowed to upgrade current app
     */
 
     /**
-    @notice Validates if new application&#39;s deployer is allowed to upgrade current app
+    @notice Validates if new application's deployer is allowed to upgrade current app
     */
     modifier validCodeUpgradeInitiator() {
         bool valid = false;

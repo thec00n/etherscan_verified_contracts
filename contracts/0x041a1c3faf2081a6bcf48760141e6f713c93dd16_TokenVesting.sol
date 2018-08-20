@@ -64,8 +64,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -80,9 +80,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -90,7 +90,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -99,7 +99,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,7 +107,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -188,8 +188,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -211,7 +211,7 @@ contract TokenVesting is Ownable {
     public
   {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -227,7 +227,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -258,7 +258,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -273,9 +273,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (block.timestamp &lt; cliff) {
+    if (block.timestamp < cliff) {
       return 0;
-    } else if (block.timestamp &gt;= start.add(duration) || revoked[token]) {
+    } else if (block.timestamp >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(block.timestamp.sub(start)).div(duration);

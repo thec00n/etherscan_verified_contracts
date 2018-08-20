@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -89,7 +89,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -124,9 +124,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -141,7 +141,7 @@ contract BurnableToken is BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -202,7 +202,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -213,8 +213,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -228,7 +228,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -277,7 +277,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -344,7 +344,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -355,7 +355,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -398,7 +398,7 @@ contract ERC827Token is ERC827, StandardToken {
      Beware that changing an allowance with this method brings the risk that
      someone may use both the old and the new allowance by unfortunate
      transaction ordering. One possible solution to mitigate this race condition
-     is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     is to first reduce the spender's allowance to 0 and set the desired value
      afterwards:
      https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -506,8 +506,8 @@ contract ERC827Token is ERC827, StandardToken {
 // File: contracts/QuintessenceToken.sol
 
 contract AbstractQuintessenceToken is CappedToken, ERC827Token, BurnableToken {
-  string public name = &quot;Quintessence Token&quot;;
-  string public symbol = &quot;QST&quot;;
+  string public name = "Quintessence Token";
+  string public symbol = "QST";
 
   function AbstractQuintessenceToken(uint256 initial_supply, uint256 _cap)
         CappedToken(_cap) public {
@@ -536,7 +536,7 @@ contract QuintessenceToken is AbstractQuintessenceToken {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -570,7 +570,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -697,7 +697,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -706,7 +706,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -716,7 +716,7 @@ contract CappedCrowdsale is Crowdsale {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -756,7 +756,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -766,8 +766,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -778,7 +778,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   /**
@@ -808,7 +808,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -842,7 +842,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -898,7 +898,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -914,7 +914,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @param _goal Funding goal
    */
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
@@ -934,7 +934,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @return Whether funding goal was reached
    */
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /**
@@ -991,7 +991,7 @@ contract AbstractCryptonsPreICO is RefundableCrowdsale, DiscountedPreICO,
         DiscountedPreICO(_opening_time, _closing_time)
         CappedCrowdsale(_hard_cap)
         Crowdsale(_rate, _wallet, _token) public {
-    require(_soft_cap &lt; _hard_cap);
+    require(_soft_cap < _hard_cap);
   }
 
   function finalization() internal {
@@ -1012,7 +1012,7 @@ contract AbstractCryptonsPreICOWithDiscount is AbstractCryptonsPreICO {
     }
 
     function getCurrentDiscount() public view returns(uint256) {
-      if (now &lt; openingTime + 1 weeks)
+      if (now < openingTime + 1 weeks)
         return 50;
       return 40;
     }
@@ -1034,10 +1034,10 @@ contract CryptonsPreICO is AbstractCryptonsPreICOWithDiscount {
                                          ETH_TO_QST_TOKEN_RATE,
                                          _wallet, _token,
                                          SOFT_CAP, HARD_CAP) public {
-      // Check if we didn&#39;t set up the opening and closing time to far in
+      // Check if we didn't set up the opening and closing time to far in
       // the future by accident.
-      require(now + 1 weeks &gt; openingTime);
-      require(openingTime + 2 weeks + 10 hours &gt; closingTime);
+      require(now + 1 weeks > openingTime);
+      require(openingTime + 2 weeks + 10 hours > closingTime);
   }
 
 }

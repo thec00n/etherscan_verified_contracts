@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -71,7 +71,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="beccdbd3ddd1fe8c">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="beccdbd3ddd1fe8c">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -120,7 +120,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -147,7 +147,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -160,7 +160,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -220,8 +220,8 @@ contract MigrationAgent {
 /// @title Moeda Loyalty Points token contract
 /// @author Erik Mossberg
 contract MoedaToken is StandardToken, Ownable, HasNoTokens {
-  string public constant name = &quot;Moeda Loyalty Points&quot;;
-  string public constant symbol = &quot;MDA&quot;;
+  string public constant name = "Moeda Loyalty Points";
+  string public constant symbol = "MDA";
   uint8 public constant decimals = 18;
 
   // The migration agent is used to be to allow opt-in transfer of tokens to a
@@ -234,7 +234,7 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   uint256 public totalMigrated;
 
   uint constant TOKEN_MULTIPLIER = 10**uint256(decimals);
-  // don&#39;t allow creation of more than this number of tokens
+  // don't allow creation of more than this number of tokens
   uint public constant MAX_TOKENS = 20000000 * TOKEN_MULTIPLIER;
 
   // transfers are locked during minting
@@ -252,7 +252,7 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   }
 
   modifier canTransfer(address recipient) {
-    require(mintingFinished &amp;&amp; recipient != address(0));
+    require(mintingFinished && recipient != address(0));
     _;
   }
 
@@ -274,7 +274,7 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   /// @dev start a migration to a new contract
   /// @param agent address of contract handling migration
   function setMigrationAgent(address agent) external onlyOwner afterMinting {
-    require(agent != address(0) &amp;&amp; isContract(agent));
+    require(agent != address(0) && isContract(agent));
     require(MigrationAgent(agent).MIGRATE_MAGIC_ID() == AGENT_MAGIC_ID);
     require(migrationAgent == address(0));
     migrationAgent = MigrationAgent(agent);
@@ -283,7 +283,7 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   function isContract(address addr) internal constant returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
   /// @dev move a given amount of tokens a new contract (destroying them here)
@@ -292,9 +292,9 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   function migrate(address beneficiary, uint256 amount) external afterMinting {
     require(beneficiary != address(0));
     require(migrationAgent != address(0));
-    require(amount &gt; 0);
+    require(amount > 0);
 
-    // safemath subtraction will throw if balance &lt; amount
+    // safemath subtraction will throw if balance < amount
     balances[msg.sender] = balances[msg.sender].sub(amount);
     totalSupply = totalSupply.sub(amount);
     totalMigrated = totalMigrated.add(amount);
@@ -306,7 +306,7 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   /// @dev destroy a given amount of tokens owned by sender
   // anyone that owns tokens can destroy them, reducing the total supply
   function burn(uint256 amount) external {
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[msg.sender] = balances[msg.sender].sub(amount);
     totalSupply = totalSupply.sub(amount);
 
@@ -323,8 +323,8 @@ contract MoedaToken is StandardToken, Ownable, HasNoTokens {
   /// @param recipient address that will receive the created tokens
   /// @param amount the number of tokens to create
   function mint(address recipient, uint256 amount) internal canMint {
-    require(amount &gt; 0);
-    require(totalSupply.add(amount) &lt;= MAX_TOKENS);
+    require(amount > 0);
+    require(totalSupply.add(amount) <= MAX_TOKENS);
 
     balances[recipient] = balances[recipient].add(amount);
     totalSupply = totalSupply.add(amount);

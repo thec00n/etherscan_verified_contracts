@@ -26,13 +26,13 @@ contract SafeMath {
   }
   
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
   
@@ -60,7 +60,7 @@ contract Token {
 
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -69,7 +69,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             balances[_to] += _value;
             allowed[_from][msg.sender] -= _value;
@@ -92,13 +92,13 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract pr0coin is owned, SafeMath, StandardToken {
-    string public name = &quot;pr0coin&quot;;
-    string public symbol = &quot;&gt;_&quot;;
+    string public name = "pr0coin";
+    string public symbol = ">_";
     address public pr0coinAddress = this;
     uint8 public decimals = 4;
     uint256 public totalSupply = 1000000000000;
@@ -145,16 +145,16 @@ contract pr0coin is owned, SafeMath, StandardToken {
     }
     
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (_value &lt; DCNForGas) throw;                                   
-        if (msg.sender != owner &amp;&amp; _to == pr0coinAddress &amp;&amp; directTradeAllowed) {
+        if (_value < DCNForGas) throw;                                   
+        if (msg.sender != owner && _to == pr0coinAddress && directTradeAllowed) {
             sellpr0coinsAgainstEther(_value);                         
             return true;
         }
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {            
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {            
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
 
-            if (msg.sender.balance &gt;= minBalanceForAccounts &amp;&amp; _to.balance &gt;= minBalanceForAccounts) { 
+            if (msg.sender.balance >= minBalanceForAccounts && _to.balance >= minBalanceForAccounts) { 
                 balances[_to] = safeAdd(balances[_to], _value);
                 Transfer(msg.sender, _to, _value);
                 return true;
@@ -163,10 +163,10 @@ contract pr0coin is owned, SafeMath, StandardToken {
                 balances[_to] = safeAdd(balances[_to], safeSub(_value, DCNForGas));
                 Transfer(msg.sender, _to, safeSub(_value, DCNForGas));
 
-                if(msg.sender.balance &lt; minBalanceForAccounts) {
+                if(msg.sender.balance < minBalanceForAccounts) {
                     if(!msg.sender.send(gasForDCN)) throw;
                   }
-                if(_to.balance &lt; minBalanceForAccounts) {
+                if(_to.balance < minBalanceForAccounts) {
                     if(!_to.send(gasForDCN)) throw;
                 }
             }
@@ -174,9 +174,9 @@ contract pr0coin is owned, SafeMath, StandardToken {
     }
     
     function buypr0coinsAgainstEther() payable returns (uint amount) {
-        if (buyPriceEth == 0 || msg.value &lt; buyPriceEth) throw;             
+        if (buyPriceEth == 0 || msg.value < buyPriceEth) throw;             
         amount = msg.value / buyPriceEth;                                   
-        if (balances[this] &lt; amount) throw;                                 
+        if (balances[this] < amount) throw;                                 
         balances[msg.sender] = safeAdd(balances[msg.sender], amount);       
         balances[this] = safeSub(balances[this], amount);                   
         Transfer(this, msg.sender, amount);                                 
@@ -184,10 +184,10 @@ contract pr0coin is owned, SafeMath, StandardToken {
     }
     
     function sellpr0coinsAgainstEther(uint256 amount) returns (uint revenue) {
-        if (sellPriceEth == 0 || amount &lt; DCNForGas) throw;                 
-        if (balances[msg.sender] &lt; amount) throw;                           
+        if (sellPriceEth == 0 || amount < DCNForGas) throw;                 
+        if (balances[msg.sender] < amount) throw;                           
         revenue = safeMul(amount, sellPriceEth);                            
-        if (safeSub(this.balance, revenue) &lt; gasReserve) throw;             
+        if (safeSub(this.balance, revenue) < gasReserve) throw;             
         if (!msg.sender.send(revenue)) {                                    
             throw;                                                          
         } else {
@@ -205,7 +205,7 @@ contract pr0coin is owned, SafeMath, StandardToken {
         } else {
             Transfer(this, msg.sender, eth);                               
         }
-        if (balances[this] &lt; dcn) throw;                                   
+        if (balances[this] < dcn) throw;                                   
         balances[msg.sender] = safeAdd(balances[msg.sender], dcn);         
         balances[this] = safeSub(balances[this], dcn);                     
         Transfer(this, msg.sender, dcn);                                   

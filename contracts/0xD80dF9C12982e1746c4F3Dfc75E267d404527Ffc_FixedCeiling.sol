@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint a, uint b) internal constant returns (uint) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint a, uint b) internal constant returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -62,7 +62,7 @@ contract CeilingStrategy {
    * @param _value - What is the value of the transaction sent in as wei.
    * @param _weiRaised - How much money has been raised so far.
    * @param _weiInvestedBySender - the investment made by the address that is sending the transaction.
-   * @param _weiFundingCap - the caller&#39;s declared total cap. May be reinterpreted by the implementation of the CeilingStrategy.
+   * @param _weiFundingCap - the caller's declared total cap. May be reinterpreted by the implementation of the CeilingStrategy.
    * @return Amount of wei the crowdsale can receive.
    */
   function weiAllowedToReceive(uint _value, uint _weiRaised, uint _weiInvestedBySender, uint _weiFundingCap) public constant returns (uint amount);
@@ -100,21 +100,21 @@ contract FixedCeiling is CeilingStrategy {
     function weiAllowedToReceive(uint tentativeAmount, uint weiRaised, uint weiInvestedBySender, uint weiFundingCap) public constant returns (uint) {
         // First, we limit per address investment
         uint totalOfSender = tentativeAmount.add(weiInvestedBySender);
-        if (totalOfSender &gt; weiLimitPerAddress) tentativeAmount = weiLimitPerAddress.sub(weiInvestedBySender);
+        if (totalOfSender > weiLimitPerAddress) tentativeAmount = weiLimitPerAddress.sub(weiInvestedBySender);
         // Then, we check the funding cap
         if (weiFundingCap == 0) return tentativeAmount;
         uint total = tentativeAmount.add(weiRaised);
-        if (total &lt; weiFundingCap) return tentativeAmount;
+        if (total < weiFundingCap) return tentativeAmount;
         else return weiFundingCap.sub(weiRaised);
     }
 
     function isCrowdsaleFull(uint weiRaised, uint weiFundingCap) public constant returns (bool) {
-        return weiFundingCap &gt; 0 &amp;&amp; weiRaised &gt;= weiFundingCap;
+        return weiFundingCap > 0 && weiRaised >= weiFundingCap;
     }
 
-    /* If the new target cap has not been reached yet, it&#39;s fine as it is */
+    /* If the new target cap has not been reached yet, it's fine as it is */
     function relaxFundingCap(uint newCap, uint weiRaised) public constant returns (uint) {
-        if (newCap &gt; weiRaised) return newCap;
+        if (newCap > weiRaised) return newCap;
         else return weiRaised.div(chunkedWeiMultiple).add(1).mul(chunkedWeiMultiple);
     }
 

@@ -27,9 +27,9 @@ contract CryptoPlanets {
 
 
     // How many shares an addres own
-    mapping (address =&gt; uint) public addressPlanetsCount;
-    mapping (address =&gt; uint) public addressAttackCount;
-    mapping (address =&gt; uint) public addressDefenseCount;
+    mapping (address => uint) public addressPlanetsCount;
+    mapping (address => uint) public addressAttackCount;
+    mapping (address => uint) public addressDefenseCount;
     
 
     uint256 attackCost = 10000000000000000;
@@ -48,8 +48,8 @@ contract CryptoPlanets {
         // Calculate the 5% value
         uint256 commission5percent = ((msg.value / 10)/2);
 
-        // Calculate the owner commission on this sale &amp; transfer the commission to the owner.      
-        uint256 commissionOwner = msg.value - (commission5percent * 2); // =&gt; 95%
+        // Calculate the owner commission on this sale & transfer the commission to the owner.      
+        uint256 commissionOwner = msg.value - (commission5percent * 2); // => 95%
         planets[_planetId].ownerAddress.transfer(commissionOwner);
 
         // Reduce number of planets for previous owner
@@ -94,16 +94,16 @@ contract CryptoPlanets {
 
     function StealResources(uint _planetId) {
         // Verify that the address actually own a planet
-        require(addressPlanetsCount[msg.sender] &gt; 0);
+        require(addressPlanetsCount[msg.sender] > 0);
 
-        // We verify that this address doesn&#39;t own this planet
+        // We verify that this address doesn't own this planet
         require(planets[_planetId].ownerAddress != msg.sender);
 
         // We verify that this planet has resources
-        require(planets[_planetId].curResources &gt; 0);
+        require(planets[_planetId].curResources > 0);
 
-        // Transfer a random amount of resources (between 1% and 90%) of the resources of the planet to the stealer if it&#39;s attack is better than the planet&#39;s owner defense
-        if(addressAttackCount[msg.sender] &gt; addressDefenseCount[planets[_planetId].ownerAddress]) {
+        // Transfer a random amount of resources (between 1% and 90%) of the resources of the planet to the stealer if it's attack is better than the planet's owner defense
+        if(addressAttackCount[msg.sender] > addressDefenseCount[planets[_planetId].ownerAddress]) {
             // Generate a random number between 1 and 49
             uint random = uint(keccak256(now, msg.sender, randNonce)) % 49;
             randNonce++;
@@ -151,15 +151,15 @@ contract CryptoPlanets {
     // Initiate functions that will create the planets
     function InitiatePlanets() public onlyCeo {
         require(planetsAreInitiated == false);
-        createPlanet(&quot;Blue Lagoon&quot;, 100000000000000000); 
-        createPlanet(&quot;GreenPeace&quot;, 100000000000000000); 
-        createPlanet(&quot;Medusa&quot;, 100000000000000000); 
-        createPlanet(&quot;O&#39;Ranger&quot;, 100000000000000000); 
-        createPlanet(&quot;Queen&quot;, 90000000000000000); 
-        createPlanet(&quot;Citrus&quot;, 90000000000000000); 
-        createPlanet(&quot;O&#39;Ranger II&quot;, 90000000000000000); 
-        createPlanet(&quot;Craterion&quot;, 50000000000000000);
-        createPlanet(&quot;Dark&#39;Air&quot;, 50000000000000000);
+        createPlanet("Blue Lagoon", 100000000000000000); 
+        createPlanet("GreenPeace", 100000000000000000); 
+        createPlanet("Medusa", 100000000000000000); 
+        createPlanet("O'Ranger", 100000000000000000); 
+        createPlanet("Queen", 90000000000000000); 
+        createPlanet("Citrus", 90000000000000000); 
+        createPlanet("O'Ranger II", 90000000000000000); 
+        createPlanet("Craterion", 50000000000000000);
+        createPlanet("Dark'Air", 50000000000000000);
 
     }
 }

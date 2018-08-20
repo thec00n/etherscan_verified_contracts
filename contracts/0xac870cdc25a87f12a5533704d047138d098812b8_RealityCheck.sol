@@ -3,7 +3,7 @@ pragma solidity 0.4.18;
 library SafeMath32 {
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -19,27 +19,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract BalanceHolder {
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     event LogWithdraw(
         address indexed user,
@@ -72,7 +72,7 @@ contract RealityCheck is BalanceHolder {
     // An unanswered reveal_ts for a commitment will indicate that it does not exist.
     uint256 constant COMMITMENT_NON_EXISTENT = 0;
 
-    // Commit-&gt;reveal timeout is 1/8 of the question timeout (rounded down).
+    // Commit->reveal timeout is 1/8 of the question timeout (rounded down).
     uint32 constant COMMITMENT_TIMEOUT_RATIO = 8;
 
     event LogSetQuestionFee(
@@ -170,12 +170,12 @@ contract RealityCheck is BalanceHolder {
     }
 
     uint256 nextTemplateID = 0;
-    mapping(uint256 =&gt; uint256) public templates;
-    mapping(uint256 =&gt; bytes32) public template_hashes;
-    mapping(bytes32 =&gt; Question) public questions;
-    mapping(bytes32 =&gt; Claim) question_claims;
-    mapping(bytes32 =&gt; Commitment) public commitments;
-    mapping(address =&gt; uint256) public arbitrator_question_fees; 
+    mapping(uint256 => uint256) public templates;
+    mapping(uint256 => bytes32) public template_hashes;
+    mapping(bytes32 => Question) public questions;
+    mapping(bytes32 => Claim) question_claims;
+    mapping(bytes32 => Commitment) public commitments;
+    mapping(address => uint256) public arbitrator_question_fees; 
 
     modifier onlyArbitrator(bytes32 question_id) {
         require(msg.sender == questions[question_id].arbitrator);
@@ -192,12 +192,12 @@ contract RealityCheck is BalanceHolder {
     }
 
     modifier stateOpen(bytes32 question_id) {
-        require(questions[question_id].timeout &gt; 0); // Check existence
+        require(questions[question_id].timeout > 0); // Check existence
         require(!questions[question_id].is_pending_arbitration);
         uint32 finalize_ts = questions[question_id].finalize_ts;
-        require(finalize_ts == UNANSWERED || finalize_ts &gt; uint32(now));
+        require(finalize_ts == UNANSWERED || finalize_ts > uint32(now));
         uint32 opening_ts = questions[question_id].opening_ts;
-        require(opening_ts == 0 || opening_ts &lt;= uint32(now)); 
+        require(opening_ts == 0 || opening_ts <= uint32(now)); 
         _;
     }
 
@@ -207,11 +207,11 @@ contract RealityCheck is BalanceHolder {
     }
 
     modifier stateOpenOrPendingArbitration(bytes32 question_id) {
-        require(questions[question_id].timeout &gt; 0); // Check existence
+        require(questions[question_id].timeout > 0); // Check existence
         uint32 finalize_ts = questions[question_id].finalize_ts;
-        require(finalize_ts == UNANSWERED || finalize_ts &gt; uint32(now));
+        require(finalize_ts == UNANSWERED || finalize_ts > uint32(now));
         uint32 opening_ts = questions[question_id].opening_ts;
-        require(opening_ts == 0 || opening_ts &lt;= uint32(now)); 
+        require(opening_ts == 0 || opening_ts <= uint32(now)); 
         _;
     }
 
@@ -226,14 +226,14 @@ contract RealityCheck is BalanceHolder {
     }
 
     modifier bondMustDouble(bytes32 question_id) {
-        require(msg.value &gt; 0); 
-        require(msg.value &gt;= (questions[question_id].bond.mul(2)));
+        require(msg.value > 0); 
+        require(msg.value >= (questions[question_id].bond.mul(2)));
         _;
     }
 
     modifier previousBondMustNotBeatMaxPrevious(bytes32 question_id, uint256 max_previous) {
-        if (max_previous &gt; 0) {
-            require(questions[question_id].bond &lt;= max_previous);
+        if (max_previous > 0) {
+            require(questions[question_id].bond <= max_previous);
         }
         _;
     }
@@ -242,11 +242,11 @@ contract RealityCheck is BalanceHolder {
     /// @dev Creates some generalized templates for different question types used in the DApp.
     function RealityCheck() 
     public {
-        createTemplate(&#39;{&quot;title&quot;: &quot;%s&quot;, &quot;type&quot;: &quot;bool&quot;, &quot;category&quot;: &quot;%s&quot;}&#39;);
-        createTemplate(&#39;{&quot;title&quot;: &quot;%s&quot;, &quot;type&quot;: &quot;uint&quot;, &quot;decimals&quot;: 18, &quot;category&quot;: &quot;%s&quot;}&#39;);
-        createTemplate(&#39;{&quot;title&quot;: &quot;%s&quot;, &quot;type&quot;: &quot;single-select&quot;, &quot;outcomes&quot;: [%s], &quot;category&quot;: &quot;%s&quot;}&#39;);
-        createTemplate(&#39;{&quot;title&quot;: &quot;%s&quot;, &quot;type&quot;: &quot;multiple-select&quot;, &quot;outcomes&quot;: [%s], &quot;category&quot;: &quot;%s&quot;}&#39;);
-        createTemplate(&#39;{&quot;title&quot;: &quot;%s&quot;, &quot;type&quot;: &quot;datetime&quot;, &quot;category&quot;: &quot;%s&quot;}&#39;);
+        createTemplate('{"title": "%s", "type": "bool", "category": "%s"}');
+        createTemplate('{"title": "%s", "type": "uint", "decimals": 18, "category": "%s"}');
+        createTemplate('{"title": "%s", "type": "single-select", "outcomes": [%s], "category": "%s"}');
+        createTemplate('{"title": "%s", "type": "multiple-select", "outcomes": [%s], "category": "%s"}');
+        createTemplate('{"title": "%s", "type": "datetime", "category": "%s"}');
     }
 
     /// @notice Function for arbitrator to set an optional per-question fee. 
@@ -307,7 +307,7 @@ contract RealityCheck is BalanceHolder {
         // stateNotCreated is enforced by the internal _askQuestion
     public payable returns (bytes32) {
 
-        require(templates[template_id] &gt; 0); // Template must exist
+        require(templates[template_id] > 0); // Template must exist
 
         bytes32 content_hash = keccak256(template_id, opening_ts, question);
         bytes32 question_id = keccak256(content_hash, arbitrator, timeout, msg.sender, nonce);
@@ -323,8 +323,8 @@ contract RealityCheck is BalanceHolder {
     internal {
 
         // A timeout of 0 makes no sense, and we will use this to check existence
-        require(timeout &gt; 0); 
-        require(timeout &lt; 365 days); 
+        require(timeout > 0); 
+        require(timeout < 365 days); 
         require(arbitrator != NULL_ADDRESS);
 
         uint256 bounty = msg.value;
@@ -336,7 +336,7 @@ contract RealityCheck is BalanceHolder {
         // This would allow more sophisticated pricing, question whitelisting etc.
         if (msg.sender != arbitrator) {
             uint256 question_fee = arbitrator_question_fees[arbitrator];
-            require(bounty &gt;= question_fee); 
+            require(bounty >= question_fee); 
             bounty = bounty.sub(question_fee);
             balanceOf[arbitrator] = balanceOf[arbitrator].add(question_fee);
         }
@@ -360,8 +360,8 @@ contract RealityCheck is BalanceHolder {
     }
 
     /// @notice Submit an answer for a question.
-    /// @dev Adds the answer to the history and updates the current &quot;best&quot; answer.
-    /// May be subject to front-running attacks; Substitute submitAnswerCommitment()-&gt;submitAnswerReveal() to prevent them.
+    /// @dev Adds the answer to the history and updates the current "best" answer.
+    /// May be subject to front-running attacks; Substitute submitAnswerCommitment()->submitAnswerReveal() to prevent them.
     /// @param question_id The ID of the question
     /// @param answer The answer, encoded into bytes32
     /// @param max_previous If specified, reverts if a bond higher than this was submitted after you sent your transaction.
@@ -419,7 +419,7 @@ contract RealityCheck is BalanceHolder {
         bytes32 commitment_id = keccak256(question_id, answer_hash, bond);
 
         require(!commitments[commitment_id].is_revealed);
-        require(commitments[commitment_id].reveal_ts &gt; uint32(now)); // Reveal deadline must not have passed
+        require(commitments[commitment_id].reveal_ts > uint32(now)); // Reveal deadline must not have passed
 
         commitments[commitment_id].revealed_answer = answer;
         commitments[commitment_id].is_revealed = true;
@@ -450,7 +450,7 @@ contract RealityCheck is BalanceHolder {
     }
 
     /// @notice Notify the contract that the arbitrator has been paid for a question, freezing it pending their decision.
-    /// @dev The arbitrator contract is trusted to only call this if they&#39;ve been paid, and tell us who paid them.
+    /// @dev The arbitrator contract is trusted to only call this if they've been paid, and tell us who paid them.
     /// @param question_id The ID of the question
     /// @param requester The account that requested arbitration
     /// @param max_previous If specified, reverts if a bond higher than this was submitted after you sent your transaction.
@@ -464,7 +464,7 @@ contract RealityCheck is BalanceHolder {
     }
 
     /// @notice Submit the answer for a question, for use by the arbitrator.
-    /// @dev Doesn&#39;t require (or allow) a bond.
+    /// @dev Doesn't require (or allow) a bond.
     /// If the current final answer is correct, the account should be whoever submitted it.
     /// If the current final answer is wrong, the account should be whoever paid for arbitration.
     /// However, the answerer stipulations are not enforced by the contract.
@@ -492,10 +492,10 @@ contract RealityCheck is BalanceHolder {
     function isFinalized(bytes32 question_id) 
     constant public returns (bool) {
         uint32 finalize_ts = questions[question_id].finalize_ts;
-        return ( !questions[question_id].is_pending_arbitration &amp;&amp; (finalize_ts &gt; UNANSWERED) &amp;&amp; (finalize_ts &lt;= uint32(now)) );
+        return ( !questions[question_id].is_pending_arbitration && (finalize_ts > UNANSWERED) && (finalize_ts <= uint32(now)) );
     }
 
-    /// @notice Return the final answer to the specified question, or revert if there isn&#39;t one
+    /// @notice Return the final answer to the specified question, or revert if there isn't one
     /// @param question_id The ID of the question
     /// @return The answer formatted as a bytes32
     function getFinalAnswer(bytes32 question_id) 
@@ -520,8 +520,8 @@ contract RealityCheck is BalanceHolder {
     external constant returns (bytes32) {
         require(content_hash == questions[question_id].content_hash);
         require(arbitrator == questions[question_id].arbitrator);
-        require(min_timeout &lt;= questions[question_id].timeout);
-        require(min_bond &lt;= questions[question_id].bond);
+        require(min_timeout <= questions[question_id].timeout);
+        require(min_bond <= questions[question_id].bond);
         return questions[question_id].best_answer;
     }
 
@@ -529,16 +529,16 @@ contract RealityCheck is BalanceHolder {
     /// Caller must provide the answer history, in reverse order
     /// @dev Works up the chain and assign bonds to the person who gave the right answer
     /// If someone gave the winning answer earlier, they must get paid from the higher bond
-    /// That means we can&#39;t pay out the bond added at n until we have looked at n-1
+    /// That means we can't pay out the bond added at n until we have looked at n-1
     /// The first answer is authenticated by checking against the stored history_hash.
     /// One of the inputs to history_hash is the history_hash before it, so we use that to authenticate the next entry, etc
-    /// Once we get to a null hash we&#39;ll know we&#39;re done and there are no more answers.
+    /// Once we get to a null hash we'll know we're done and there are no more answers.
     /// Usually you would call the whole thing in a single transaction, but if not then the data is persisted to pick up later.
     /// @param question_id The ID of the question
     /// @param history_hashes Second-last-to-first, the hash of each history entry. (Final one should be empty).
     /// @param addrs Last-to-first, the address of each answerer or commitment sender
     /// @param bonds Last-to-first, the bond supplied with each answer or commitment
-    /// @param answers Last-to-first, each answer supplied, or commitment ID if the answer was supplied with commit-&gt;reveal
+    /// @param answers Last-to-first, each answer supplied, or commitment ID if the answer was supplied with commit->reveal
     function claimWinnings(
         bytes32 question_id, 
         bytes32[] history_hashes, address[] addrs, uint256[] bonds, bytes32[] answers
@@ -546,21 +546,21 @@ contract RealityCheck is BalanceHolder {
         stateFinalized(question_id)
     public {
 
-        require(history_hashes.length &gt; 0);
+        require(history_hashes.length > 0);
 
         // These are only set if we split our claim over multiple transactions.
         address payee = question_claims[question_id].payee; 
         uint256 last_bond = question_claims[question_id].last_bond; 
         uint256 queued_funds = question_claims[question_id].queued_funds; 
 
-        // Starts as the hash of the final answer submitted. It&#39;ll be cleared when we&#39;re done.
-        // If we&#39;re splitting the claim over multiple transactions, it&#39;ll be the hash where we left off last time
+        // Starts as the hash of the final answer submitted. It'll be cleared when we're done.
+        // If we're splitting the claim over multiple transactions, it'll be the hash where we left off last time
         bytes32 last_history_hash = questions[question_id].history_hash;
 
         bytes32 best_answer = questions[question_id].best_answer;
 
         uint256 i;
-        for (i = 0; i &lt; history_hashes.length; i++) {
+        for (i = 0; i < history_hashes.length; i++) {
         
             // Check input against the history hash, and see which of 2 possible values of is_commitment fits.
             bool is_commitment = _verifyHistoryInputOrRevert(last_history_hash, history_hashes[i], answers[i], bonds[i], addrs[i]);
@@ -570,14 +570,14 @@ contract RealityCheck is BalanceHolder {
                 question_id, best_answer, queued_funds, payee, 
                 addrs[i], bonds[i], answers[i], is_commitment);
  
-            // Line the bond up for next time, when it will be added to somebody&#39;s queued_funds
+            // Line the bond up for next time, when it will be added to somebody's queued_funds
             last_bond = bonds[i];
             last_history_hash = history_hashes[i];
 
         }
  
         if (last_history_hash != NULL_HASH) {
-            // We haven&#39;t yet got to the null hash (1st answer), ie the caller didn&#39;t supply the full answer chain.
+            // We haven't yet got to the null hash (1st answer), ie the caller didn't supply the full answer chain.
             // Persist the details so we can pick up later where we left off later.
 
             // If we know who to pay we can go ahead and pay them out, only keeping back last_bond
@@ -631,7 +631,7 @@ contract RealityCheck is BalanceHolder {
         // We look at the referenced commitment ID and switch in the actual answer.
         if (is_commitment) {
             bytes32 commitment_id = answer;
-            // If it&#39;s a commit but it hasn&#39;t been revealed, it will always be considered wrong.
+            // If it's a commit but it hasn't been revealed, it will always be considered wrong.
             if (!commitments[commitment_id].is_revealed) {
                 delete commitments[commitment_id];
                 return (queued_funds, payee);
@@ -660,8 +660,8 @@ contract RealityCheck is BalanceHolder {
                 // (This is our arbitrary rule, to give consistent right-answerers a defence against high-rollers.)
 
                 // There should be enough for the fee, but if not, take what we have.
-                // There&#39;s an edge case involving weird arbitrator behaviour where we may be short.
-                uint256 answer_takeover_fee = (queued_funds &gt;= bond) ? bond : queued_funds;
+                // There's an edge case involving weird arbitrator behaviour where we may be short.
+                uint256 answer_takeover_fee = (queued_funds >= bond) ? bond : queued_funds;
 
                 // Settle up with the old (higher-bonded) payee
                 _payPayee(question_id, payee, queued_funds.sub(answer_takeover_fee));
@@ -696,7 +696,7 @@ contract RealityCheck is BalanceHolder {
         
         uint256 qi;
         uint256 i;
-        for (qi = 0; qi &lt; question_ids.length; qi++) {
+        for (qi = 0; qi < question_ids.length; qi++) {
             bytes32 qid = question_ids[qi];
             uint256 ln = lengths[qi];
             bytes32[] memory hh = new bytes32[](ln);
@@ -704,7 +704,7 @@ contract RealityCheck is BalanceHolder {
             uint256[] memory bo = new uint256[](ln);
             bytes32[] memory an = new bytes32[](ln);
             uint256 j;
-            for (j = 0; j &lt; ln; j++) {
+            for (j = 0; j < ln; j++) {
                 hh[j] = hist_hashes[i];
                 ad[j] = addrs[i];
                 bo[j] = bonds[i];

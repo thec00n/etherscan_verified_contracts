@@ -9,37 +9,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function toPower2(uint256 a) internal pure returns (uint256) {
@@ -49,7 +49,7 @@ library SafeMath {
     function sqrt(uint256 a) internal pure returns (uint256) {
         uint256 c = (a + 1) / 2;
         uint256 b = a;
-        while (c &lt; b) {
+        while (c < b) {
             b = c;
             c = (a / c + c) / 2;
         }
@@ -141,8 +141,8 @@ contract ERC20 {
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions,
-/// this simplifies the implementation of &quot;user permissions&quot;.
-/// @dev Based on OpenZeppelin&#39;s Ownable.
+/// this simplifies the implementation of "user permissions".
+/// @dev Based on OpenZeppelin's Ownable.
 
 contract Ownable {
     address public owner;
@@ -283,13 +283,13 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
     _;
   }
 
-  /// @dev Reverts if msg.sender can&#39;t trade
+  /// @dev Reverts if msg.sender can't trade
   modifier canTrade() {
     require(openForPublic || msg.sender == owner);
     _;
   }
 
-  /// @dev Reverts if tkn.sender can&#39;t trade
+  /// @dev Reverts if tkn.sender can't trade
   modifier canTrade223() {
     require (openForPublic || tkn.sender == owner);
     _;
@@ -327,7 +327,7 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
 
   /// @dev returns true iff the contract is open for public trade.
   function isOpenForPublic() public onlyOwner returns (bool) {
-    return (openForPublic &amp;&amp; operational);
+    return (openForPublic && operational);
   }
 
   /// @dev returns true iff token is supperted by this contract (for erc223/677 tokens calls)
@@ -353,7 +353,7 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
     R1 = token1.balanceOf(this);
     R2 = token2.balanceOf(this);
     // one reserve should be full and the second should be empty
-    success = ((R1 == 0 &amp;&amp; R2 == S2) || (R2 == 0 &amp;&amp; R1 == S1));
+    success = ((R1 == 0 && R2 == S2) || (R2 == 0 && R1 == S1));
     if (success) {
       operational = true;
     }
@@ -387,24 +387,24 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
   /// @return the return amount of the buying token
   function quoteAndReserves(address _fromToken, uint256 _inAmount, address _toToken) private isOperational returns (uint256 returnAmount) {
     // if buying token2 from token1
-    if (token1 == _fromToken &amp;&amp; token2 == _toToken) {
+    if (token1 == _fromToken && token2 == _toToken) {
       // add buying amount to the temp reserve
       l_R1 = R1.add(_inAmount);
       // calculate the other reserve
       l_R2 = calcReserve(l_R1, S1, S2);
-      if (l_R2 &gt; R2) {
+      if (l_R2 > R2) {
         return 0;
       }
       // the returnAmount is the other reserve difference
       returnAmount = R2.sub(l_R2);
     }
     // if buying token1 from token2
-    else if (token2 == _fromToken &amp;&amp; token1 == _toToken) {
+    else if (token2 == _fromToken && token1 == _toToken) {
       // add buying amount to the temp reserve
       l_R2 = R2.add(_inAmount);
       // calculate the other reserve
       l_R1 = calcReserve(l_R2, S2, S1);
-      if (l_R1 &gt; R1) {
+      if (l_R1 > R1) {
         return 0;
       }
       // the returnAmount is the other reserve difference
@@ -423,24 +423,24 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
     uint256 _R1;
     uint256 _R2;
     // if buying token2 from token1
-    if (token1 == _fromToken &amp;&amp; token2 == _toToken) {
+    if (token1 == _fromToken && token2 == _toToken) {
       // add buying amount to the temp reserve
       _R1 = R1.add(_inAmount);
       // calculate the other reserve
       _R2 = calcReserve(_R1, S1, S2);
-      if (_R2 &gt; R2) {
+      if (_R2 > R2) {
         return 0;
       }
       // the returnAmount is the other reserve difference
       returnAmount = R2.sub(_R2);
     }
     // if buying token1 from token2
-    else if (token2 == _fromToken &amp;&amp; token1 == _toToken) {
+    else if (token2 == _fromToken && token1 == _toToken) {
       // add buying amount to the temp reserve
       _R2 = R2.add(_inAmount);
       // calculate the other reserve
       _R1 = calcReserve(_R2, S2, S1);
-      if (_R1 &gt; R1) {
+      if (_R1 > R1) {
         return 0;
       }
       // the returnAmount is the other reserve difference
@@ -543,8 +543,8 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
   function exchange(address _fromToken, uint256 _inAmount, address _toToken, uint256 _minReturn) private returns (uint256 returnAmount) {
     // get quote and update temp reserves
     returnAmount = quoteAndReserves(_fromToken, _inAmount, _toToken);
-    // if the return amount is lower than minimum return, don&#39;t buy
-    if (returnAmount == 0 || returnAmount &lt; _minReturn) {
+    // if the return amount is lower than minimum return, don't buy
+    if (returnAmount == 0 || returnAmount < _minReturn) {
       return 0;
     }
 
@@ -558,20 +558,20 @@ contract EllipseMarketMakerLib is TokenOwnable, IEllipseMarketMaker {
     R2 = l_R2;
   }
 
-  /// @dev validate that the tokens balances don&#39;t goes below reserves
+  /// @dev validate that the tokens balances don't goes below reserves
   function validateReserves() public view returns (bool) {
-    return (token1.balanceOf(this) &gt;= R1 &amp;&amp; token2.balanceOf(this) &gt;= R2);
+    return (token1.balanceOf(this) >= R1 && token2.balanceOf(this) >= R2);
   }
 
   /// @dev allow admin to withraw excess tokens accumulated due to precision
   function withdrawExcessReserves() public onlyOwner returns (uint256 returnAmount) {
     // if there is excess of token 1, transfer it to the owner
-    if (token1.balanceOf(this) &gt; R1) {
+    if (token1.balanceOf(this) > R1) {
       returnAmount = returnAmount.add(token1.balanceOf(this).sub(R1));
       token1.transfer(msg.sender, token1.balanceOf(this).sub(R1));
     }
     // if there is excess of token 2, transfer it to the owner
-    if (token2.balanceOf(this) &gt; R2) {
+    if (token2.balanceOf(this) > R2) {
       returnAmount = returnAmount.add(token2.balanceOf(this).sub(R2));
       token2.transfer(msg.sender, token2.balanceOf(this).sub(R2));
     }

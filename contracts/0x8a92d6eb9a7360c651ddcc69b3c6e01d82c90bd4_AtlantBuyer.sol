@@ -8,8 +8,8 @@ contract ERC20 {
 }
 
 contract AtlantBuyer {
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) public balances_for_refund;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) public balances_for_refund;
   bool public bought_tokens;
   bool public token_set;
   uint256 public contract_eth_value;
@@ -55,7 +55,7 @@ contract AtlantBuyer {
 
 
   // Use with caution - use this withdraw function if you do not trust the
-  // contract&#39;s token setting. You can only use this once, so if you
+  // contract's token setting. You can only use this once, so if you
   // put in the wrong token address you will burn the Digi on the contract.
   function withdraw_token(address _token){
     ERC20 myToken = ERC20(_token);
@@ -93,7 +93,7 @@ contract AtlantBuyer {
     if (!bought_tokens) {
       balances[msg.sender] += msg.value;
       balances_for_refund[msg.sender] += msg.value;
-      if (this.balance &lt; eth_minimum) return;
+      if (this.balance < eth_minimum) return;
       if (kill_switch) return;
       require(sale != 0x0);
       bought_tokens = true;

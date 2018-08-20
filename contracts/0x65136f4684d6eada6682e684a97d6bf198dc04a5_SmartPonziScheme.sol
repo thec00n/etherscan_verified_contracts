@@ -5,9 +5,9 @@ contract SmartPonziScheme{
     uint private sender_per_round = 50;
     uint private sender = 0;
     uint public round = 1;
-    mapping (uint =&gt; uint) public round_earnings;
-    mapping (address =&gt; uint) private balances;
-    mapping (address =&gt; uint) public roundin;
+    mapping (uint => uint) public round_earnings;
+    mapping (address => uint) private balances;
+    mapping (address => uint) public roundin;
     address private owner;
 
     function SmartPonziScheme() public {
@@ -15,12 +15,12 @@ contract SmartPonziScheme{
     }
 
     function () public payable {
-        if(balances[msg.sender] == 0 &amp;&amp; msg.value &gt;= 10000000000000000){
+        if(balances[msg.sender] == 0 && msg.value >= 10000000000000000){
             round_earnings[round] += msg.value;
 	    sender += 1;
 	    balances[msg.sender] = msg.value;
             roundin[msg.sender] = round;
-            if (sender &gt;= sender_per_round){
+            if (sender >= sender_per_round){
 	        sender_per_round = (sender_per_round * 3) / 2;							
                 owner.transfer(round_earnings[round]/100);
                 sender = 0;
@@ -34,12 +34,12 @@ contract SmartPonziScheme{
     }
 
    function withdraw () public {
-       if (roundin[msg.sender]+1 &lt; round){
+       if (roundin[msg.sender]+1 < round){
             uint withdrawAmount = balances[msg.sender];
             uint counter = roundin[msg.sender]+2;
             uint total_value = 0;
             balances[msg.sender] = 0;
-            while (counter &lt;= round){
+            while (counter <= round){
                 total_value += round_earnings[counter];
                 counter += 1;
             }

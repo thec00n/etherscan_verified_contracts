@@ -27,7 +27,7 @@ contract StandardToken is Token
     function transfer(address _to, uint256 _value) returns (bool success) 
     {
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) 
+        if (balances[msg.sender] >= _value && _value > 0) 
         {
             balances[msg.sender] -= _value;
             
@@ -47,7 +47,7 @@ contract StandardToken is Token
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) 
     {
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) 
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) 
         {
             balances[_to] += _value;
             
@@ -84,9 +84,9 @@ contract StandardToken is Token
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     uint256 public totalSupply;
 }
@@ -98,13 +98,13 @@ contract Grand is StandardToken
 
     function () { revert(); }
 
-    string public name = &quot;Grand&quot;; 
+    string public name = "Grand"; 
     
     uint8  public decimals = 0;               
     
-    string public symbol = &quot;G&quot;;
+    string public symbol = "G";
     
-    string public version = &quot;1.0&quot;; 
+    string public version = "1.0"; 
 
 
     function Grand ()       
@@ -113,11 +113,11 @@ contract Grand is StandardToken
         
         totalSupply = 8888888888888888;
         
-        name = &quot;Grand&quot;;
+        name = "Grand";
         
         decimals = 0;
         
-        symbol = &quot;G&quot;;
+        symbol = "G";
     }
 
 
@@ -128,7 +128,7 @@ contract Grand is StandardToken
         
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) 
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) 
         
         { revert(); }
         

@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,12 +55,12 @@ contract ERC20 {
     uint private TOTALSUPPLY;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
     //This is a mapping of a mapping
     // This mapping keeps track of the allowances given
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
                  //*** ERC20 FUNCTIONS ***//
     //1
@@ -78,16 +78,16 @@ contract ERC20 {
     function transfer(address _to, uint256 _value) public returns (bool success);
 
     //4
-    //Owner &quot;approves&quot; the given address to withdraw instances of the tokens from the owners address
+    //Owner "approves" the given address to withdraw instances of the tokens from the owners address
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     //5
-    //Lets an &quot;approved&quot; address transfer the approved amount from the address that called approve()
+    //Lets an "approved" address transfer the approved amount from the address that called approve()
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
     //6
     //returns the amount of tokens approved by the owner that can *Still* be transferred
-    //to the spender&#39;s account using the transferFrom method.
+    //to the spender's account using the transferFrom method.
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
 
             //***ERC20 Events***//
@@ -104,7 +104,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -144,20 +144,20 @@ contract Ownable {
 contract Bitcub is Ownable, ERC20 {
     using SafeMath for uint256;
 
-    string public constant NAME = &quot;Bitcub&quot;;
-    string public constant SYMBOL = &quot;BCU&quot;;
+    string public constant NAME = "Bitcub";
+    string public constant SYMBOL = "BCU";
     uint8 public constant DECIMALS = 18; // 18 DECIMALS is the strongly suggested default, avoid changing it
 
     //total supply (TOTALSUPPLY) is declared private and constant and can be accessed via totalSupply()
     uint private constant TOTALSUPPLY = 500000000*(10**18);
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
     //This is a mapping of a mapping
     // This mapping keeps track of the allowances given
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     //Constructor FOR BITCUB TOKEN
     constructor() public {
@@ -204,8 +204,8 @@ contract Bitcub is Ownable, ERC20 {
     //Note: returns a boolean indicating whether transfer was successful
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //not sending to burn address
-        require(_value &lt;= balances[msg.sender]); // If the sender has sufficient funds to send
-        require(_value&gt;0);// and the amount is not zero or negative
+        require(_value <= balances[msg.sender]); // If the sender has sufficient funds to send
+        require(_value>0);// and the amount is not zero or negative
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -215,13 +215,13 @@ contract Bitcub is Ownable, ERC20 {
     }
 
     //4
-    //Owner &quot;approves&quot; the given address to withdraw instances of the tokens from the owners address
+    //Owner "approves" the given address to withdraw instances of the tokens from the owners address
     /**
        * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
        *
        * Beware that changing an allowance with this method brings the risk that someone may use both the old
        * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-       * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+       * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
        * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
        * @param _spender The address which will spend the funds.
        * @param _value The amount of tokens to be spent.
@@ -233,7 +233,7 @@ contract Bitcub is Ownable, ERC20 {
     }
 
     //5
-    //Lets an &quot;approved&quot; address transfer the approved amount from the address that called approve()
+    //Lets an "approved" address transfer the approved amount from the address that called approve()
     /**
      * @dev Transfer tokens from one address to another
      * @param _from address The address which you want to send tokens from
@@ -242,8 +242,8 @@ contract Bitcub is Ownable, ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -292,7 +292,7 @@ contract Bitcub is Ownable, ERC20 {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -363,7 +363,7 @@ contract BitcubCrowdsale is Ownable {
     uint256 public maxInvestment = 250000 ether;
   
     //mapping to keep track of the amount invested by each address.
-    mapping (address =&gt; uint256) internal invested;
+    mapping (address => uint256) internal invested;
 
 
     /**
@@ -387,8 +387,8 @@ contract BitcubCrowdsale is Ownable {
         etherWallet = 0xaf0A558783E92a1aEC9dd2D10f2Dc9b9AF371212; //Bitcub Reserve Wallet
         tokenWallet = 0xaf0A558783E92a1aEC9dd2D10f2Dc9b9AF371212; //Bitcub Reserve Wallet
 
-        require(startTime &gt;= now);
-        require(endTime &gt;= startTime);
+        require(startTime >= now);
+        require(endTime >= startTime);
         require(etherWallet != address(0));
 
         //establishes ownership of the contract upon creation
@@ -432,7 +432,7 @@ contract BitcubCrowdsale is Ownable {
         uint256 tokens = getTokenAmount(weiAmount);
 
         //Logic so that investors must purchase at least 1 token.
-        require(weiAmount &gt;= minPurchaseInEth); 
+        require(weiAmount >= minPurchaseInEth); 
 
         //Token transfer
         require(token.transfer(beneficiary, tokens));
@@ -453,7 +453,7 @@ contract BitcubCrowdsale is Ownable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // Function to have a way to add business logic to your crowdsale when buying
@@ -468,9 +468,9 @@ contract BitcubCrowdsale is Ownable {
             - If you purchase outside of any of the defined bonus tiers then you
             receive the original rate of tokens (1 token per 0.01 ether)
             */
-        if (now&gt;=tier1Start &amp;&amp; now &lt; tier1End) {
+        if (now>=tier1Start && now < tier1End) {
             rate = 120;
-        }else if (now&gt;=tier2Start &amp;&amp; now &lt; tier2End) {
+        }else if (now>=tier2Start && now < tier2End) {
             rate = 110;
         }else {
             rate = 100;
@@ -487,11 +487,11 @@ contract BitcubCrowdsale is Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase(address beneficiary) internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool withinMaxInvestment = ( invested[beneficiary].add(msg.value) &lt;= maxInvestment );
+        bool withinMaxInvestment = ( invested[beneficiary].add(msg.value) <= maxInvestment );
 
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinMaxInvestment;
+        return withinPeriod && nonZeroPurchase && withinMaxInvestment;
     }
 
 }

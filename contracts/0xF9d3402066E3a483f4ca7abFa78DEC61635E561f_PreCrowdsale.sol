@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
     address public owner;
@@ -97,7 +97,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -128,7 +128,7 @@ contract BasicToken is ERC20Basic, Ownable {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // if (_value &gt; _allowance) throw;
+        // if (_value > _allowance) throw;
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
 contract TKRPToken is StandardToken {
     event Destroy(address indexed _from);
 
-    string public name = &quot;TKRPToken&quot;;
-    string public symbol = &quot;TKRP&quot;;
+    string public name = "TKRPToken";
+    string public symbol = "TKRP";
     uint256 public decimals = 18;
     uint256 public initialSupply = 500000;
 
@@ -232,7 +232,7 @@ contract PreCrowdsale is Ownable {
     }
 
     /* Backers are keyed by their address containing a Contributor struct */
-    mapping(address =&gt; Contributor) public contributors;
+    mapping(address => Contributor) public contributors;
 
     /* Events to emit when a contribution has successfully processed */
     event TokensSent(address indexed to, uint256 value);
@@ -254,7 +254,7 @@ contract PreCrowdsale is Ownable {
 
     /* Modifier to check whether the preCrowdsale is running */
     modifier preCrowdsaleRunning() {
-        if (now &gt; preCrowdsaleEndTime || now &lt; preCrowdsaleStartTime) throw;
+        if (now > preCrowdsaleEndTime || now < preCrowdsaleStartTime) throw;
         _;
     }
 
@@ -296,7 +296,7 @@ contract PreCrowdsale is Ownable {
     * @dev Finalizes the preCrowdsale and sends funds
     */
     function finalize() onlyOwner {
-        if ((preCrowdsaleStartTime == 0 || now &lt; preCrowdsaleEndTime) &amp;&amp; tokensSent != TOKEN_CAP) {
+        if ((preCrowdsaleStartTime == 0 || now < preCrowdsaleEndTime) && tokensSent != TOKEN_CAP) {
             throw;
         }
 
@@ -308,10 +308,10 @@ contract PreCrowdsale is Ownable {
     * @param sender The address of the contributor
     */
     function processContribution(address sender) internal {
-        if (msg.value &lt; MINIMUM_CONTRIBUTION) throw;
+        if (msg.value < MINIMUM_CONTRIBUTION) throw;
 
         uint256 contributionInTokens = msg.value.mul(TOKENS_PER_ETHER).div(1 ether);
-        if (contributionInTokens.add(tokensSent) &gt; TOKEN_CAP) throw; 
+        if (contributionInTokens.add(tokensSent) > TOKEN_CAP) throw; 
 
         /* Send the tokens */
         token.transfer(sender, contributionInTokens);

@@ -13,12 +13,12 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,12 +33,12 @@ contract ERC20{
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 contract VTToken is ERC20{
-    string public name   = &quot;Virtual Talk&quot;;
-    string public symbol = &quot;VT&quot;; 
+    string public name   = "Virtual Talk";
+    string public symbol = "VT"; 
     uint8 public decimals=18;
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     constructor(uint256 initialSupply)public{
         totalSupply = initialSupply * 10 ** uint256(decimals);
@@ -51,7 +51,7 @@ contract VTToken is ERC20{
     
     function transfer(address _to, uint256 _value)public returns (bool success){
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -61,8 +61,8 @@ contract VTToken is ERC20{
      
     function transferFrom(address _from, address _to, uint256 _value)public returns (bool success){
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
     
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

@@ -20,30 +20,30 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -144,7 +144,7 @@ contract ForecasterReward is Haltable {
  
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   
   /** State machine
@@ -279,8 +279,8 @@ contract ForecasterReward is Haltable {
    */
   function setEndsAt(uint _endsAt) public onlyOwner {
     
-    // Don&#39;t change past
-    require(_endsAt &gt; now);
+    // Don't change past
+    require(_endsAt > now);
 
     endsAt = _endsAt;
     EndsAtChanged(_endsAt);
@@ -300,9 +300,9 @@ contract ForecasterReward is Haltable {
    * We make it a function and do not assign the result to a variable, so there is no chance of the variable being stale.
    */
   function getState() public constant returns (State) {
-    if (now &lt; startsAt) return State.PreFunding;
-    else if (now &lt;= endsAt) return State.Funding;
-    else if (now &gt; endsAt) return State.Closed;
+    if (now < startsAt) return State.PreFunding;
+    else if (now <= endsAt) return State.Funding;
+    else if (now > endsAt) return State.Closed;
   }
 
   /** Interface marker. */
@@ -321,7 +321,7 @@ contract ForecasterReward is Haltable {
 
   /** Modifier allowing execution only if received value is greater than zero */
   modifier nonZero(){
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     _;
   }
 }

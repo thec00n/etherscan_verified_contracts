@@ -24,9 +24,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -34,7 +34,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -43,7 +43,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 contract Ownable {
@@ -160,7 +160,7 @@ contract Crowdsale is Ownable {
   function Crowdsale(address _newOwner, address _wallet, TravelHelperToken _token,uint256 _ethPriceInCents) Ownable(_newOwner) public {
     require(_wallet != address(0));
     require(_token != address(0));
-    require(_ethPriceInCents &gt; 0);
+    require(_ethPriceInCents > 0);
     wallet = _wallet;
     owner = _newOwner;
     token = _token;
@@ -194,8 +194,8 @@ contract Crowdsale is Ownable {
    */
   function buyTokens(address _beneficiary) CrowdsaleStarted public payable {
     uint256 weiAmount = msg.value;
-    require(weiAmount &gt; 0);
-    require(ethPrice &gt; 0);
+    require(weiAmount > 0);
+    require(ethPrice > 0);
     uint256 usdCents = weiAmount.mul(ethPrice).div(1 ether); 
 
     // calculate token amount to be created
@@ -231,14 +231,14 @@ contract Crowdsale is Ownable {
    * @param _tokens tokens amount
    */
   function _validateTokensLimits(uint256 _tokens) internal {
-    if (block.number &gt; preIcoStartBlock &amp;&amp; block.number &lt; discountedIcoStartBlock) {
+    if (block.number > preIcoStartBlock && block.number < discountedIcoStartBlock) {
       preIcoTokensSold = preIcoTokensSold.add(_tokens);
-      require(preIcoTokensSold &lt;= preIcoCap &amp;&amp; totalRaisedInCents &lt;= hardCapInCents);
-    } else if(block.number &gt;= discountedIcoStartBlock &amp;&amp; block.number &lt; mainIcoStartBlock ) {
-       require(discountedIcoTokensSold &lt;= icoCap &amp;&amp; totalRaisedInCents &lt;= hardCapInCents);
-    } else if(block.number &gt;= mainIcoStartBlock &amp;&amp; block.number &lt; mainIcoEndBlock ) {
+      require(preIcoTokensSold <= preIcoCap && totalRaisedInCents <= hardCapInCents);
+    } else if(block.number >= discountedIcoStartBlock && block.number < mainIcoStartBlock ) {
+       require(discountedIcoTokensSold <= icoCap && totalRaisedInCents <= hardCapInCents);
+    } else if(block.number >= mainIcoStartBlock && block.number < mainIcoEndBlock ) {
       icoTokensSold = icoTokensSold.add(_tokens);
-      require(icoTokensSold &lt;= icoCap &amp;&amp; totalRaisedInCents &lt; hardCapInCents);
+      require(icoTokensSold <= icoCap && totalRaisedInCents < hardCapInCents);
     } else {
       revert();
     }
@@ -270,9 +270,9 @@ contract Crowdsale is Ownable {
   function _getTokenAmount(uint256 _usdCents) CrowdsaleStarted public view returns (uint256) {
     uint256 tokens;
     
-    if (block.number &gt; preIcoStartBlock &amp;&amp; block.number &lt; discountedIcoStartBlock ) tokens = _usdCents.div(100).mul(presaleTokensPerDollar);
-    if (block.number &gt;= discountedIcoStartBlock &amp;&amp; block.number &lt; mainIcoStartBlock )  tokens = _usdCents.div(100).mul(discountedTokensPerDollar);
-    if (block.number &gt;= mainIcoStartBlock &amp;&amp; block.number &lt; mainIcoEndBlock )  tokens = _usdCents.div(100).mul(mainTokensPerDollar);
+    if (block.number > preIcoStartBlock && block.number < discountedIcoStartBlock ) tokens = _usdCents.div(100).mul(presaleTokensPerDollar);
+    if (block.number >= discountedIcoStartBlock && block.number < mainIcoStartBlock )  tokens = _usdCents.div(100).mul(discountedTokensPerDollar);
+    if (block.number >= mainIcoStartBlock && block.number < mainIcoEndBlock )  tokens = _usdCents.div(100).mul(mainTokensPerDollar);
     
 
     return tokens;
@@ -283,22 +283,22 @@ contract Crowdsale is Ownable {
    */
     function getStage() public view returns (string) {
         if(!crowdsaleStarted){
-            return &#39;Crowdsale not started yet&#39;;
+            return 'Crowdsale not started yet';
         }
-        if (block.number &gt; preIcoStartBlock &amp;&amp; block.number &lt; discountedIcoStartBlock )
+        if (block.number > preIcoStartBlock && block.number < discountedIcoStartBlock )
         {
-            return &#39;Presale&#39;;
+            return 'Presale';
         }
-        else if (block.number &gt;= discountedIcoStartBlock  &amp;&amp; block.number &lt; mainIcoStartBlock ) {
-            return &#39;Discounted sale&#39;;
+        else if (block.number >= discountedIcoStartBlock  && block.number < mainIcoStartBlock ) {
+            return 'Discounted sale';
         }
-        else if (block.number &gt;= mainIcoStartBlock &amp;&amp; block.number &lt; mainIcoEndBlock )
+        else if (block.number >= mainIcoStartBlock && block.number < mainIcoEndBlock )
         {
-            return &#39;Crowdsale&#39;;
+            return 'Crowdsale';
         }
-        else if(block.number &gt; mainIcoEndBlock)
+        else if(block.number > mainIcoEndBlock)
         {
-            return &#39;Sale ended&#39;;
+            return 'Sale ended';
         }
       
      }
@@ -308,7 +308,7 @@ contract Crowdsale is Ownable {
        
        */
      function burnTokens() public onlyOwner {
-        require(block.number &gt; mainIcoEndBlock);
+        require(block.number > mainIcoEndBlock);
         require(token.burnTokensForSale());
       }
         
@@ -316,7 +316,7 @@ contract Crowdsale is Ownable {
    * @dev finalize the crowdsale.After finalizing ,tokens transfer can be done.
    */
   function finalizeSale() public onlyOwner {
-    require(block.number &gt; mainIcoEndBlock);
+    require(block.number > mainIcoEndBlock);
     token.finalize();
   }
   

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ contract SMEBankingPlatformToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -97,21 +97,21 @@ contract Sale is Ownable {
 
   SMEBankingPlatformToken public token;
 
-  mapping(address=&gt;bool) public participated;
+  mapping(address=>bool) public participated;
 
    // address where funds are collected
   address public wallet;
 
-  // how many token units a buyer gets per wei (for &lt; 1ETH purchases)
+  // how many token units a buyer gets per wei (for < 1ETH purchases)
   uint256 public rate = 28000;
 
-  // how many token units a buyer gets per wei (for &lt; 5ETH purchases)
+  // how many token units a buyer gets per wei (for < 5ETH purchases)
   uint256 public rate1 = 32000;
 
-  // how many token units a buyer gets per wei (for &lt; 10ETH purchases)
+  // how many token units a buyer gets per wei (for < 10ETH purchases)
   uint256 public rate5 = 36000;
 
-  // how many token units a buyer gets per wei (for &gt;= 10ETH purchases)
+  // how many token units a buyer gets per wei (for >= 10ETH purchases)
   uint256 public rate10 = 40000;
 
   // amount of raised money in wei
@@ -136,22 +136,22 @@ contract Sale is Ownable {
   }
 
   function setRate(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
   }
 
   function setRate1(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate1 = _rate;
   }
 
   function setRate5(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate5 = _rate;
   }
 
   function setRate10(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate10 = _rate;
   }
 
@@ -182,17 +182,17 @@ contract Sale is Ownable {
   function getTokenAmount(address beneficiary, uint256 weiAmount) internal view returns(uint256) {
     uint256 tokenAmount;
 
-    if (weiAmount &gt;= 10 ether) {
+    if (weiAmount >= 10 ether) {
       tokenAmount = weiAmount.mul(rate10);
-    } else if (weiAmount &gt;= 5 ether) {
+    } else if (weiAmount >= 5 ether) {
       tokenAmount = weiAmount.mul(rate5);
-    } else if (weiAmount &gt;= 1 ether) {
+    } else if (weiAmount >= 1 ether) {
       tokenAmount = weiAmount.mul(rate1);
     } else {
       tokenAmount = weiAmount.mul(rate);
     }
 
-    if (!participated[beneficiary] &amp;&amp; weiAmount &gt;= 0.01 ether) {
+    if (!participated[beneficiary] && weiAmount >= 0.01 ether) {
       tokenAmount = tokenAmount.add(200 * 10 ** 18);
     }
 

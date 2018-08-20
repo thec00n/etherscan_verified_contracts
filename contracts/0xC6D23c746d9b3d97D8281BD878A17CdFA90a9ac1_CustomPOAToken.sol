@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -201,7 +201,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -343,11 +343,11 @@ contract CustomPOAToken is PausableToken {
   uint256 public constant feeRate = 5;
 
   // self contained whitelist on contract, must be whitelisted to buy
-  mapping (address =&gt; bool) public whitelisted;
+  mapping (address => bool) public whitelisted;
   // used to deduct already claimed payouts on a per token basis
-  mapping(address =&gt; uint256) public claimedPerTokenPayouts;
+  mapping(address => uint256) public claimedPerTokenPayouts;
   // fallback for when a transfer happens with payouts remaining
-  mapping(address =&gt; uint256) public unclaimedPayoutTotals;
+  mapping(address => uint256) public unclaimedPayoutTotals;
 
   enum Stages {
     Funding,
@@ -388,7 +388,7 @@ contract CustomPOAToken is PausableToken {
   }
 
   modifier checkTimeout() {
-    if (stage == Stages.Funding &amp;&amp; block.number &gt;= creationBlock.add(timeoutBlock)) {
+    if (stage == Stages.Funding && block.number >= creationBlock.add(timeoutBlock)) {
       uint256 _unsoldBalance = balances[this];
       balances[this] = 0;
       totalSupply = totalSupply.sub(_unsoldBalance);
@@ -412,8 +412,8 @@ contract CustomPOAToken is PausableToken {
   )
     public
   {
-    require(_fundingGoal &gt; 0);
-    require(_totalSupply &gt; _fundingGoal);
+    require(_fundingGoal > 0);
+    require(_totalSupply > _fundingGoal);
     owner = msg.sender;
     name = _name;
     symbol = _symbol;
@@ -549,7 +549,7 @@ contract CustomPOAToken is PausableToken {
     uint256 _payAmount;
     uint256 _buyAmount;
     // check if balance has met funding goal to move on to Pending
-    if (fundedAmount.add(msg.value) &lt; fundingGoal) {
+    if (fundedAmount.add(msg.value) < fundingGoal) {
       // _payAmount is just value sent
       _payAmount = msg.value;
       // get token amount from wei... drops remainders (keeps wei dust in contract)
@@ -557,7 +557,7 @@ contract CustomPOAToken is PausableToken {
       // check that buyer will indeed receive something after integer division
       // this check cannot be done in other case because it could prevent
       // contract from moving to next stage
-      require(_buyAmount &gt; 0);
+      require(_buyAmount > 0);
     } else {
       // let the world know that the token is in Pending Stage
       enterStage(Stages.Pending);
@@ -579,7 +579,7 @@ contract CustomPOAToken is PausableToken {
     }
     // deduct token buy amount balance from contract balance
     balances[this] = balances[this].sub(_buyAmount);
-    // add token buy amount to sender&#39;s balance
+    // add token buy amount to sender's balance
     balances[msg.sender] = balances[msg.sender].add(_buyAmount);
     // increment the funded amount
     fundedAmount = fundedAmount.add(_payAmount);
@@ -729,7 +729,7 @@ contract CustomPOAToken is PausableToken {
     // get token balance of user
     uint256 _tokenBalance = balances[msg.sender];
     // ensure that token balance is over 0
-    require(_tokenBalance &gt; 0);
+    require(_tokenBalance > 0);
     // set token balance to 0 so re reclaims are not possible
     balances[msg.sender] = 0;
     // decrement totalSupply by token amount being reclaimed
@@ -755,7 +755,7 @@ contract CustomPOAToken is PausableToken {
     // calculate fee based on feeRate
     uint256 _fee = calculateFee(msg.value);
     // ensure the value is high enough for a fee to be claimed
-    require(_fee &gt; 0);
+    require(_fee > 0);
     // deduct fee from payout
     uint256 _payoutAmount = msg.value.sub(_fee);
     /*
@@ -791,7 +791,7 @@ contract CustomPOAToken is PausableToken {
     */
     uint256 _payoutAmount = currentPayout(msg.sender, true);
     // check that there indeed is a pending payout for sender
-    require(_payoutAmount &gt; 0);
+    require(_payoutAmount > 0);
     // max out per token payout for sender in order to make payouts effectively
     // 0 for sender
     claimedPerTokenPayouts[msg.sender] = totalPerTokenPayout;

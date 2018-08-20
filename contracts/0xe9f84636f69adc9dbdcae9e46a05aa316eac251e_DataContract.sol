@@ -39,7 +39,7 @@ contract DataContract is owned {
         uint time;
     }
 
-    mapping (bytes32 =&gt; Good) public goods;
+    mapping (bytes32 => Good) public goods;
 
     function setGood(bytes32 _preset, uint _price,uint _decision) onlyOwnerAndtokenContract external {
         goods[_preset] = Good({preset: _preset, price: _price, decision:_decision, time: now});
@@ -68,7 +68,7 @@ contract Token is owned {
     event Decision(uint decision,bytes32 preset);
 
     function postGood(bytes32 _preset, uint _price) onlyOwner public {
-        require(DC.getGoodPreset(_preset) == &quot;&quot;);
+        require(DC.getGoodPreset(_preset) == "");
         uint _decision = uint(keccak256(keccak256(blockhash(block.number),_preset),now))%(_price);
         DC.setGood(_preset, _price, _decision);
         Decision(_decision, _preset);

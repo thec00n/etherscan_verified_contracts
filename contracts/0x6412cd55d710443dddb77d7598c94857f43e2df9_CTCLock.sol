@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,9 +56,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -66,7 +66,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -75,7 +75,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -120,17 +120,17 @@ contract CTCLock is Ownable {
   //锁仓开开始时间
   uint256 public lockStartTime; 
    /** Reserve allocations */
-    mapping(address =&gt; uint256) public allocations;
+    mapping(address => uint256) public allocations;
     
-    mapping(address =&gt; uint256) public stageSettings;
+    mapping(address => uint256) public stageSettings;
     
-    mapping(address =&gt; uint256) public timeLockDurations;
+    mapping(address => uint256) public timeLockDurations;
 
     /** How many tokens each reserve wallet has claimed */
-    mapping(address =&gt; uint256) public releasedAmounts;
+    mapping(address => uint256) public releasedAmounts;
     
     modifier onlyReserveWallets {
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
     function CTCLock(ERC20Basic _token,
@@ -139,9 +139,9 @@ contract CTCLock is Ownable {
                           address _institutionWallet,
                           uint256 _start,
                           uint256 _lockTime)public{
-        require(_start &gt; 0);
-        require(_lockTime &gt; 0);
-        require(_start.add(_lockTime) &gt; 0);
+        require(_start > 0);
+        require(_lockTime > 0);
+        require(_start.add(_lockTime) > 0);
         require(_teamWallet != address(0));
         require(_earlyWallet != address(0));
         require(_institutionWallet != address(0));
@@ -155,7 +155,7 @@ contract CTCLock is Ownable {
     }
     
     function allocateToken() onlyOwner public{
-        require(block.timestamp &gt; lockStartTime);
+        require(block.timestamp > lockStartTime);
         //only claim  once
         require(allocations[teamWallet] == 0);
         require(token.balanceOf(address(this)) == totalAllocation);
@@ -174,8 +174,8 @@ contract CTCLock is Ownable {
     }
     function releaseToken() onlyReserveWallets public{
         uint256 totalUnlocked = unlockAmount();
-        require(totalUnlocked &lt;= allocations[msg.sender]);
-        require(releasedAmounts[msg.sender] &lt; totalUnlocked);
+        require(totalUnlocked <= allocations[msg.sender]);
+        require(releasedAmounts[msg.sender] < totalUnlocked);
         uint256 payment = totalUnlocked.sub(releasedAmounts[msg.sender]);
         
         releasedAmounts[msg.sender] = totalUnlocked;
@@ -191,7 +191,7 @@ contract CTCLock is Ownable {
         uint256 vestingMonths = timeLockDurations[msg.sender].div(stageSettings[msg.sender]);
         uint256 stage = (block.timestamp.sub(lockStartTime)).div(vestingMonths);
         
-        if(stage &gt; stageSettings[msg.sender]){
+        if(stage > stageSettings[msg.sender]){
             stage = stageSettings[msg.sender];
         }
         return stage;

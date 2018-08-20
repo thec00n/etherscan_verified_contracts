@@ -26,7 +26,7 @@ function(){
 enter();
 }
 function enter(){
-if(msg.value&lt;400 finney){
+if(msg.value<400 finney){
 return;
 }
 uint amount=msg.value;uint tot_pl=crazyearners.length;totalearners=tot_pl+1;
@@ -34,14 +34,14 @@ deposits_until_jackpot=20-(totalearners%20);
 crazyearners.length+=1;crazyearners[tot_pl].etherAddress=msg.sender;
 crazyearners[tot_pl].amount=amount;
 feeamount=amount*alpha/100;balance+=amount;totaldeposited+=amount;
-if(feeamount!=0){if(balance&gt;feeamount){owner.send(feeamount);balance-=feeamount;
-totalmoneyearned+=feeamount;if(alpha&lt;100)alpha+=30;
+if(feeamount!=0){if(balance>feeamount){owner.send(feeamount);balance-=feeamount;
+totalmoneyearned+=feeamount;if(alpha<100)alpha+=30;
 else alpha=100;}} uint payout;uint nr=0;
 
 
-while(balance&gt;crazyearners[nr].amount*200/100 &amp;&amp; nr&lt;tot_pl)
+while(balance>crazyearners[nr].amount*200/100 && nr<tot_pl)
 {
-if(nr%10==0&amp;&amp;balance&gt;crazyearners[nr].amount*700/100)
+if(nr%10==0&&balance>crazyearners[nr].amount*700/100)
 {
 payout=crazyearners[nr].amount*700/100;
 crazyearners[nr].etherAddress.send(payout);

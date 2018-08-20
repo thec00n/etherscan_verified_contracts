@@ -12,9 +12,9 @@ contract ERC20 {
 contract StandToken is ERC20 {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
-        require(balances[msg.sender] + _value &gt;= balances[msg.sender]);
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
+        require(balances[msg.sender] + _value >= balances[msg.sender]);
         
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -26,7 +26,7 @@ contract StandToken is ERC20 {
         return balances[_owner];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     uint256 public totalSupply;
 }
 
@@ -39,9 +39,9 @@ contract COZ is StandToken {
     uint256 public dec_multiple;
 
     constructor() public {
-        name = &quot;COZ&quot;;
+        name = "COZ";
         decimals = 18;
-        symbol = &quot;COZ&quot;;
+        symbol = "COZ";
         dec_multiple = 10 ** uint256(decimals);
 
         totalSupply = 3 * 1000 * 1000 * 1000 * dec_multiple;

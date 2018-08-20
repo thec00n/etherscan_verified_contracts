@@ -1,29 +1,29 @@
-pragma solidity ^0.4.15; //MMMMMMM*~+&gt; Self-documenting smart contract. &lt;+~*M //
+pragma solidity ^0.4.15; //MMMMMMM*~+> Self-documenting smart contract. <+~*M //
 // MMMMWKkk0KNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOkOKWMMMMMM //
 // MMMMXl.....,cdOXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWXOo:,.....dNMMMM //
-// MMMWd.        .&#39;cxKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0d:&#39;.        .xMMMM //
+// MMMWd.        .'cxKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMW0d:'.        .xMMMM //
 // MMMK,   ......   ..:xXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMWKd;.    .....    :XMMM //
-// MMWd.   .;;;,,&#39;..   .&#39;lkXNWWNNNWMMMMMMMMMMWNNWWWNKkc..  ...&#39;,;;;,.   .kMMM //
-// MMNc   .,::::::;,&#39;..   ..,;;,,dNMMMMMMMMMMXl,;;;,..   ..&#39;;;::::::&#39;.  .lWMM //
-// MM0&#39;   .;:::::::;;&#39;..        ;0MMMMMMMMMMMWO&#39;        ..,;;:::::::;.   ;KMM //
-// MMx.  .&#39;;::::;,&#39;...        .:0MMMMMMMMMMMMMWO;.        ...&#39;;;::::;..  .OMM //
-// MWd.  .,:::;&#39;..          .,xNMMMMMMMMMMMMMMMMXd&#39;.          ..,;:::&#39;.  .xMM //
-// MNl.  .,:;&#39;..         .,ckNMMMMMMMMMMMMMMMMMMMMXxc&#39;.         ..&#39;;:,.  .dWM //
-// MNc   .,,..    .;:clox0NWXXWMMMMMMMMMMMMMMMMMMWXXWXOxolc:;.    ..,&#39;.  .oWM //
+// MMWd.   .;;;,,'..   .'lkXNWWNNNWMMMMMMMMMMWNNWWWNKkc..  ...',;;;,.   .kMMM //
+// MMNc   .,::::::;,'..   ..,;;,,dNMMMMMMMMMMXl,;;;,..   ..';;::::::'.  .lWMM //
+// MM0'   .;:::::::;;'..        ;0MMMMMMMMMMMWO'        ..,;;:::::::;.   ;KMM //
+// MMx.  .';::::;,'...        .:0MMMMMMMMMMMMMWO;.        ...';;::::;..  .OMM //
+// MWd.  .,:::;'..          .,xNMMMMMMMMMMMMMMMMXd'.          ..,;:::'.  .xMM //
+// MNl.  .,:;'..         .,ckNMMMMMMMMMMMMMMMMMMMMXxc'.         ..';:,.  .dWM //
+// MNc   .,,..    .;:clox0NWXXWMMMMMMMMMMMMMMMMMMWXXWXOxolc:;.    ..,'.  .oWM //
 // MNc   ...     .oWMMMNXNMW0odXMMMMMMMMMMMMMMMMKooKWMNXNMMMNc.     ...  .oWM //
 // MNc.          ;KMMMMNkokNMXlcKMMMMMMMMMMMMMM0coNMNxoOWMMMM0,          .oWM //
 // MNc         .;0MMMMMMWO:dNMNoxWMMMMMMMMMMMMNddNMNocKMMMMMMWO,         .oWM //
 // MX:        .lXMMMMMMMMM0lOMMNXWMMMMMMMMMMMMWXNMMklKMMMMMMMMM0:.       .lNM //
 // MX;      .;kWMMMMMMMMMMMXNMMMMMMMMMMMMMMMMMMMMMMNNMMMMMMMMMMMNx,.      cNM //
 // MO.    .:kNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNx:.  . ,0M //
-// Wl..&#39;:dKWMMMMMMMWNK000KNMMMMMMMMMMMMMMMMMMMMMMMMMWNK000KNMMMMMMMMW0o;...dW //
+// Wl..':dKWMMMMMMMWNK000KNMMMMMMMMMMMMMMMMMMMMMMMMMWNK000KNMMMMMMMMW0o;...dW //
 // NxdOXWMMMMMMMW0olcc::;,,cxXWMMMMMMMMMMMMMMMMMMWKd:,,;::ccld0WMMMMMMMWKkokW //
-// MMMMMMMMMMMWOlcd0XWWWN0x:.,OMMMMMMMMMMMMMMMMMWk,&#39;cxKNWWWXOdcl0MMMMMMMMMMMM //
+// MMMMMMMMMMMWOlcd0XWWWN0x:.,OMMMMMMMMMMMMMMMMMWk,'cxKNWWWXOdcl0MMMMMMMMMMMM //
 // MMMMMMMMMMMWKKWMMMMMMMMMWK0XMMMMMMMMMMMMMMMMMMXOXWMMMMMMMMMN0XMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWK0OOOO0KWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo.......&#39;xWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo.......'xWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMNKOkkkk0XNMMMMMMMMMMMMMMMMMMWO;.    .:0WMMMMMMMMMMMMMMMMMWNKOkkkkOKNMMM //
-// MMWXOkxddoddxxkKWMMMMMMMMMMMMMMMMXo...&#39;dNMMMMMMMMMMMMMMMMN0kxxdodddxk0XMMM //
+// MMWXOkxddoddxxkKWMMMMMMMMMMMMMMMMXo...'dNMMMMMMMMMMMMMMMMN0kxxdodddxk0XMMM //
 // MMMMMMMMMMMMWNKKNMMMMMMMMMMMMMMMMWOc,,c0WMMMMMMMMMMMMMMMMXKKNWMMMMMMMMMMMM //
 // MMMMMMMMWXKKXXNWMMMMMMMMMMWWWWWX0xcclc:cxKNWWWWWMMMMMMMMMMWNXXKKXWMMMMMMMM //
 // MMMWXOxdoooddxkO0NMMMMMMMWKkfoahheitNX0GlikkdakXMMMMMMMWX0OkxddooddxOXWMMM //
@@ -31,12 +31,12 @@ pragma solidity ^0.4.15; //MMMMMMM*~+&gt; Self-documenting smart contract. &lt;+
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Lucky* MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// MMM&gt; *~+&gt; we are the MMMMMMMMMMMM Number MMMMMMM&gt; we are the &lt;+~* &lt;MMMMMMM //
-// MMMMMMMMMM&gt; music &lt;MMMMMMMMMMMMMM ------ MMMMMMMMMM&gt; dreamer &lt;MMMMMMMMMMMM //
-// MMMMMMMM&gt; *~+&gt; makers &lt;MMMMM&lt;MMMM Random MMMMMMMMMMMMM&gt; of &lt;MMMMMMMMMMMMMM //
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Ledger MMMMMMMMMMMMMM&gt; dreams. &lt;+~* &lt;MMM //
-// M&gt; palimpsest by &lt;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
-// ~&gt; arkimedes.eth &lt;~+~+~+~~+~+~+~~+~+~+~~+~+~+~~+~+~+~&gt; VIII*XXII*MMXVII &lt;~ //
+// MMM> *~+> we are the MMMMMMMMMMMM Number MMMMMMM> we are the <+~* <MMMMMMM //
+// MMMMMMMMMM> music <MMMMMMMMMMMMMM ------ MMMMMMMMMM> dreamer <MMMMMMMMMMMM //
+// MMMMMMMM> *~+> makers <MMMMM<MMMM Random MMMMMMMMMMMMM> of <MMMMMMMMMMMMMM //
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM Ledger MMMMMMMMMMMMMM> dreams. <+~* <MMM //
+// M> palimpsest by <MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
+// ~> arkimedes.eth <~+~+~+~~+~+~+~~+~+~+~~+~+~+~~+~+~+~> VIII*XXII*MMXVII <~ //
 // MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM //
 
 /**
@@ -74,16 +74,16 @@ contract SafeMath {
   internal
   constant
   returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b)
   internal
   constant
   returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b)
@@ -91,7 +91,7 @@ contract SafeMath {
   constant
   returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -132,7 +132,7 @@ contract Fresh is SafeMath {
     constant 
     returns(uint) {
         uint256 expired = block.number;
-        if (expired &gt; 256) {
+        if (expired > 256) {
             expired = sub(expired, 256);
         }
         return expired;
@@ -144,12 +144,12 @@ contract Fresh is SafeMath {
  * 
  * The ledger feature embraces the blockchain capablities,
  * leveaged by the Event logs generated by Ethereum Smart Contracts.
- * &quot;Events are inheritable members of contracts. When they are called,
- * they cause the arguments to be stored in the transaction&#39;s log 
+ * "Events are inheritable members of contracts. When they are called,
+ * they cause the arguments to be stored in the transaction's log 
  * - a special data structure in the blockchain. These logs are associated with 
  * the address of the contract and will be incorporated into the blockchain and 
  * stay there as long as a block is accessible (forever as of Frontier 
- * and Homestead, but this might change with Serenity).&quot; 
+ * and Homestead, but this might change with Serenity)." 
  * ++ Read more in the solidity#events documentation. ++
  * 
  * To make a request:
@@ -159,11 +159,11 @@ contract Fresh is SafeMath {
  *         this is required to create the Events which generate the Ledger. 
  */
 contract RandomLedger is Owned {
-    // ~&gt; cost to generate a random number in Wei.
+    // ~> cost to generate a random number in Wei.
     uint256 public cost;
-    // ~&gt; waitTime is the number of blocks before random is generated.
+    // ~> waitTime is the number of blocks before random is generated.
     uint8 public defaultWaitTime;
-    // ~&gt; set default max
+    // ~> set default max
     uint256 public defaultMax;
     //
     // RandomNumber represents one number.
@@ -183,15 +183,15 @@ contract RandomLedger is Owned {
     event EventRandomLedgerRequested(address requestor, uint256 max, uint256 originBlock, uint8 waitTime, address indexed requestProxy);
     event EventRandomLedgerRevealed(address requestor, uint256 originBlock, uint256 renderedNumber, uint256 expiredBlock, address indexed requestProxy);
     
-    mapping (address =&gt; RandomNumber) public randomNumbers;
-    mapping (address =&gt; bool) public whiteList;
+    mapping (address => RandomNumber) public randomNumbers;
+    mapping (address => bool) public whiteList;
 
     function requestNumber(address _requestor, uint256 _max, uint8 _waitTime) payable public;
     function revealNumber(address _requestor) payable public;
 }
 
 /**
- * Lucky Number :: Random Ledger [Number Generator] Service *~+&gt;
+ * Lucky Number :: Random Ledger [Number Generator] Service *~+>
  * Any contract or address can make a request from this implementation
  * on behalf of any other address as a requestProxy.
  */
@@ -266,11 +266,11 @@ contract RandomLedgerService is RandomLedger, Random, Fresh {
     function () payable public {
         assert(msg.sender != owner);
         // make a quick request
-        // *~+&gt; use default max and waitTime
+        // *~+> use default max and waitTime
         requestNumber(msg.sender, defaultMax, defaultWaitTime);
     }
     
-    // Request a Number ... *~&gt;
+    // Request a Number ... *~>
     function requestNumber(address _requestor, uint256 _max, uint8 _waitTime)
     payable 
     public {
@@ -278,7 +278,7 @@ contract RandomLedgerService is RandomLedger, Random, Fresh {
         // value must exceed cost
         // unless address is whitelisted
         if (!whiteList[msg.sender]) {
-            require(!(msg.value &lt; cost));
+            require(!(msg.value < cost));
         }
         // internal requirement: 
         // request address must not have pending number
@@ -293,27 +293,27 @@ contract RandomLedgerService is RandomLedger, Random, Fresh {
             waitTime: defaultWaitTime
         });
         // custom number configurations
-        if (_max &gt; 1) {
+        if (_max > 1) {
             randomNumbers[_requestor].max = _max;
         }
         // max 250 wait to leave a few blocks
         // for the reveal transction to occur
         // and write from the pending numbers block
         // before it expires
-        if (_waitTime &gt; 0 &amp;&amp; _waitTime &lt; 250) {
+        if (_waitTime > 0 && _waitTime < 250) {
             randomNumbers[_requestor].waitTime = _waitTime;
         }
         // log event +.+.+.
         EventRandomLedgerRequested(_requestor, randomNumbers[_requestor].max, randomNumbers[_requestor].originBlock, randomNumbers[_requestor].waitTime, randomNumbers[_requestor].requestProxy);
     }
 
-    // Reveal your number ... *~&gt;
+    // Reveal your number ... *~>
     // Only requestor or proxy can generate the number
     function revealNumber(address _requestor)
     public
     payable {
         assert(_canReveal(_requestor, msg.sender));
-        // waitTime has passed, render this requestor&#39;s number.
+        // waitTime has passed, render this requestor's number.
         _revealNumber(_requestor);
     }
 
@@ -322,11 +322,11 @@ contract RandomLedgerService is RandomLedger, Random, Fresh {
     internal {
         uint256 luckyBlock = _revealBlock(_requestor);
         //
-        // TIME LIMITATION ~&gt; should handle in user interface
+        // TIME LIMITATION ~> should handle in user interface
         // blocks older than (currentBlock - 256) 
-        // &quot;expire&quot; and read the same hash as most recent valid block
+        // "expire" and read the same hash as most recent valid block
         randomNumbers[_requestor].expired = expiredBlock();
-        // *~+&gt; get number!
+        // *~+> get number!
         randomNumbers[_requestor].renderedNumber = generateRandomNumber(luckyBlock, randomNumbers[_requestor].max);
         // log event +.+.+.
         EventRandomLedgerRevealed(_requestor, randomNumbers[_requestor].originBlock, randomNumbers[_requestor].renderedNumber, randomNumbers[_requestor].expired, randomNumbers[_requestor].requestProxy);
@@ -365,7 +365,7 @@ contract RandomLedgerService is RandomLedger, Random, Fresh {
     returns (uint) {
         uint256 revealBlock = add(randomNumbers[_requestor].originBlock, randomNumbers[_requestor].waitTime);
         uint256 remainingBlocks = 0;
-        if (revealBlock &gt; block.number) {
+        if (revealBlock > block.number) {
             remainingBlocks = sub(revealBlock, block.number);
         }
         return remainingBlocks;
@@ -394,10 +394,10 @@ contract RandomLedgerService is RandomLedger, Random, Fresh {
     public
     constant
     returns (bool) {
-        if (randomNumbers[_requestor].renderedNumber == 0 &amp;&amp; randomNumbers[_requestor].waitTime &gt; 0) {
+        if (randomNumbers[_requestor].renderedNumber == 0 && randomNumbers[_requestor].waitTime > 0) {
             return true;
         }
         return false;
     }
-// 0xMMWKkk0KN/&gt;HBBi/MASSa/DANTi/LANTen.MI.MI.MI.M+.+.+.M-&gt;MMWNKOkOKWJ.J.J.M*~+&gt;
+// 0xMMWKkk0KN/>HBBi/MASSa/DANTi/LANTen.MI.MI.MI.M+.+.+.M->MMWNKOkOKWJ.J.J.M*~+>
 }

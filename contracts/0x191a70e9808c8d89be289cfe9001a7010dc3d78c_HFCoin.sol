@@ -8,7 +8,7 @@ contract HFCoin {
     bool public gameStarted = false;
     bool public prizeWon = false;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     event Burn(address indexed from, uint256 value);
     event Redemption(address indexed from, uint256 value);
@@ -32,22 +32,22 @@ contract HFCoin {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &lt;= 10);
+        require(_value <= 10);
         balanceOf[msg.sender] -= _value;
         emit Burn(msg.sender, _value);
         return true;
     }
 
     function _redeem(address _from, uint256 _value) internal {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[owner] + _value &gt; balanceOf[owner]);
-        require(_value &lt;= 1337);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[owner] + _value > balanceOf[owner]);
+        require(_value <= 1337);
 
         balanceOf[_from] -= _value;
         balanceOf[owner] += _value;
         emit Redemption(_from, _value);
 
-        if (_value == 1337 &amp;&amp; gameStarted &amp;&amp; !prizeWon) {
+        if (_value == 1337 && gameStarted && !prizeWon) {
             prizeWon = true;
             emit Winner(_from);
             _from.transfer(prizeAmount);
@@ -59,7 +59,7 @@ contract HFCoin {
     }
 
     function _requestTokens(address _to, uint256 _value) internal {
-        require(balanceOf[_to] + _value &lt;= 10);
+        require(balanceOf[_to] + _value <= 10);
         balanceOf[_to] += _value;
         emit TokenRequest(_to, _value);  
     }

@@ -10,7 +10,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -19,7 +19,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -28,7 +28,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address internal contractOwner;
@@ -72,7 +72,7 @@ contract Pausable is Ownable {
      @dev If is paused msg.value is send back
    */
   modifier whenNotPaused() {
-    if(paused == true &amp;&amp; msg.value &gt; 0){
+    if(paused == true && msg.value > 0){
       msg.sender.transfer(msg.value);
     }
     require(!paused);
@@ -132,15 +132,15 @@ contract ChampFactory is Pausable{
         uint256 defencePower;
         uint256 cooldownReduction;
         uint256 price;
-        uint256 onChampId; //can not be used to decide if item is on champ, because champ&#39;s id can be 0, &#39;bool onChamp&#39; solves it.
+        uint256 onChampId; //can not be used to decide if item is on champ, because champ's id can be 0, 'bool onChamp' solves it.
         bool onChamp; 
         bool forSale; //is item for sale?
     }
     
-    mapping (address =&gt; AddressInfo) public addressInfo;
-    mapping (uint256 =&gt; address) public champToOwner;
-    mapping (uint256 =&gt; address) public itemToOwner;
-    mapping (uint256 =&gt; string) public champToName;
+    mapping (address => AddressInfo) public addressInfo;
+    mapping (uint256 => address) public champToOwner;
+    mapping (uint256 => address) public itemToOwner;
+    mapping (uint256 => string) public champToName;
     
     Champ[] public champs;
     Item[] public items;
@@ -173,21 +173,21 @@ contract ChampFactory is Pausable{
 
     /// @notice Checks if amount was sent
     modifier isPaid(uint256 _price){
-        require(msg.value &gt;= _price);
+        require(msg.value >= _price);
         _;
     }
 
 
     /// @notice People are allowed to withdraw only if min. balance (0.01 gwei) is reached
     modifier contractMinBalanceReached(){
-        require( (address(this).balance).sub(pendingWithdrawal) &gt; 1000000 );
+        require( (address(this).balance).sub(pendingWithdrawal) > 1000000 );
         _;
     }
 
 
     /// @notice Checks if withdraw cooldown passed 
     modifier isChampWithdrawReady(uint256 _id){
-        require(champs[_id].withdrawCooldown &lt; block.timestamp);
+        require(champs[_id].withdrawCooldown < block.timestamp);
         _;
     }
 
@@ -201,8 +201,8 @@ contract ChampFactory is Pausable{
         pendingWithdrawal += contractOwnerWithdrawal;
 
         //affiliate
-        //checks if _affiliateAddress is set &amp; if affiliate address is not buying player
-        if(_affiliateAddress != address(0) &amp;&amp; _affiliateAddress != msg.sender){
+        //checks if _affiliateAddress is set & if affiliate address is not buying player
+        if(_affiliateAddress != address(0) && _affiliateAddress != msg.sender){
             uint256 affiliateBonus = (msg.value / 100) * 25; //provision is 25%
             addressInfo[_affiliateAddress].withdrawal += affiliateBonus;
             pendingWithdrawal += affiliateBonus;
@@ -221,7 +221,7 @@ contract ChampFactory is Pausable{
     function getChampsByOwner(address _owner) external view returns(uint256[]) {
         uint256[] memory result = new uint256[](addressInfo[_owner].champsCount);
         uint256 counter = 0;
-        for (uint256 i = 0; i &lt; champs.length; i++) {
+        for (uint256 i = 0; i < champs.length; i++) {
             if (champToOwner[i] == _owner) {
                 result[counter] = i;
                 counter++;
@@ -237,9 +237,9 @@ contract ChampFactory is Pausable{
     }
     
 
-    /// @notice Gets champ&#39;s reward in wei
+    /// @notice Gets champ's reward in wei
     function getChampReward(uint256 _position) public view returns(uint256) {
-        if(_position &lt;= 800){
+        if(_position <= 800){
             //percentageMultipier = 10,000
             //maxReward = 2000 = .2% * percentageMultipier
             //subtractPerPosition = 2 = .0002% * percentageMultipier
@@ -249,7 +249,7 @@ contract ChampFactory is Pausable{
             //available funds are all funds - already pending
             uint256 availableWithdrawal = address(this).balance.sub(pendingWithdrawal);
 
-            //calculate reward for champ&#39;s position
+            //calculate reward for champ's position
             //1000000 = percentageMultipier * 100
             return availableWithdrawal / 1000000 * rewardPercentage;
         }else{
@@ -290,7 +290,7 @@ contract ChampFactory is Pausable{
              readyTime: 0,
              winCount: 0,
              lossCount: 0,
-             position: leaderboard.length + 1, //Last place in leaderboard is new champ&#39;s position. Used in new champ struct bellow. +1 to avoid zero position.
+             position: leaderboard.length + 1, //Last place in leaderboard is new champ's position. Used in new champ struct bellow. +1 to avoid zero position.
              price: 0,
              withdrawCooldown: uint256(block.timestamp), 
              eq_sword: 0,
@@ -314,28 +314,28 @@ contract ChampFactory is Pausable{
     }
 
 
-    /// @notice Change &quot;CreateChampFee&quot;. If ETH price will grow up it can expensive to create new champ.
-    /// @param _fee New &quot;CreateChampFee&quot;
-    /// @dev Only owner of contract can change &quot;CreateChampFee&quot;
+    /// @notice Change "CreateChampFee". If ETH price will grow up it can expensive to create new champ.
+    /// @param _fee New "CreateChampFee"
+    /// @dev Only owner of contract can change "CreateChampFee"
     function setCreateChampFee(uint256 _fee) external onlyOwner {
         createChampFee = _fee;
     }
     
 
-    /// @notice Change champ&#39;s name
+    /// @notice Change champ's name
     function changeChampsName(uint _champId, string _name) external 
     onlyOwnerOfChamp(_champId){
         champToName[_champId] = _name;
     }
 
 
-    /// @notice Change players&#39;s name
+    /// @notice Change players's name
     function changePlayersName(string _name) external {
         addressInfo[msg.sender].name = _name;
     }
 
 
-    /// @notice Withdraw champ&#39;s reward
+    /// @notice Withdraw champ's reward
     /// @param _id Champ id
     /// @dev Move champ reward to pending withdrawal to his wallet. 
     function withdrawChamp(uint _id) external 
@@ -344,7 +344,7 @@ contract ChampFactory is Pausable{
     isChampWithdrawReady(_id) 
     whenNotPaused {
         Champ storage champ = champs[_id];
-        require(champ.position &lt;= 800);
+        require(champ.position <= 800);
 
         champ.withdrawCooldown = block.timestamp + 1 days; //one withdrawal 1 per day
 
@@ -354,16 +354,16 @@ contract ChampFactory is Pausable{
     }
     
 
-    /// @dev Send all pending funds of caller&#39;s address
+    /// @dev Send all pending funds of caller's address
     function withdrawToAddress(address _address) external 
     whenNotPaused {
         address playerAddress = _address;
         if(playerAddress == address(0)){ playerAddress = msg.sender; }
         uint256 share = addressInfo[playerAddress].withdrawal; //gets pending funds
-        require(share &gt; 0); //is it more than 0?
+        require(share > 0); //is it more than 0?
 
         //first sets players withdrawal pending to 0 and subtract amount from playerWithdrawals then transfer funds to avoid reentrancy
-        addressInfo[playerAddress].withdrawal = 0; //set player&#39;s withdrawal pendings to 0 
+        addressInfo[playerAddress].withdrawal = 0; //set player's withdrawal pendings to 0 
         pendingWithdrawal = pendingWithdrawal.sub(share); //subtract share from total pendings 
         
         playerAddress.transfer(share); //transfer
@@ -379,7 +379,7 @@ contract Items is ChampFactory {
     event NewItem(uint256 itemID, address owner);
 
     constructor () internal {
-        //item -&gt; nothing
+        //item -> nothing
         items.push(Item(0, 0, 0, 0, 0, 0, 0, false, false));
     }
 
@@ -425,7 +425,7 @@ contract Items is ChampFactory {
     function getItemsByOwner(address _owner) external view returns(uint256[]) {
         uint256[] memory result = new uint256[](addressInfo[_owner].itemsCount);
         uint256 counter = 0;
-        for (uint256 i = 0; i &lt; items.length; i++) {
+        for (uint256 i = 0; i < items.length; i++) {
             if (itemToOwner[i] == _owner) {
                 result[counter] = i;
                 counter++;
@@ -445,23 +445,23 @@ contract Items is ChampFactory {
             Champ storage champ = champs[_champId];
             if(_type == 1){
                 itemId = champ.eq_sword; //Get item ID
-                if (itemId &gt; 0) { //0 = nothing
+                if (itemId > 0) { //0 = nothing
                     champ.eq_sword = 0; //take off sword
                 }
             }
             if(_type == 2){
                 itemId = champ.eq_shield; //Get item ID
-                if(itemId &gt; 0) {//0 = nothing
+                if(itemId > 0) {//0 = nothing
                     champ.eq_shield = 0; //take off shield
                 }
             }
             if(_type == 3){
                 itemId = champ.eq_helmet; //Get item ID
-                if(itemId &gt; 0) { //0 = nothing
+                if(itemId > 0) { //0 = nothing
                     champ.eq_helmet = 0; //take off 
                 }
             }
-            if(itemId &gt; 0){
+            if(itemId > 0){
                 items[itemId].onChamp = false; //item is free to use, is not on champ
             }
     }
@@ -484,26 +484,26 @@ contract Items is ChampFactory {
             }
 
             item.onChamp = true; //item is on champ
-            item.onChampId = _champId; //champ&#39;s id
+            item.onChampId = _champId; //champ's id
 
             //put on
             if(item.itemType == 1){
                 //take off actual sword 
-                if(champ.eq_sword &gt; 0){
+                if(champ.eq_sword > 0){
                     takeOffItem(champ.id, 1);
                 }
                 champ.eq_sword = _itemId; //put on sword
             }
             if(item.itemType == 2){
                 //take off actual shield 
-                if(champ.eq_shield &gt; 0){
+                if(champ.eq_shield > 0){
                     takeOffItem(champ.id, 2);
                 }
                 champ.eq_shield = _itemId; //put on shield
             }
             if(item.itemType == 3){
                 //take off actual helmet 
-                if(champ.eq_helmet &gt; 0){
+                if(champ.eq_helmet > 0){
                     takeOffItem(champ.id, 3);
                 }
                 champ.eq_helmet = _itemId; //put on helmet
@@ -519,13 +519,13 @@ contract Items is ChampFactory {
     distributeInput(_affiliateAddress) {
 
         uint256 pointToCooldownReduction;
-        uint256 randNum = randMod(1001); //random number &lt;= 1000
+        uint256 randNum = randMod(1001); //random number <= 1000
         uint256 pointsToShare; //total points given
         uint256 itemID;
 
         //sets up item
         Item memory item = Item({
-            itemType: uint8(uint256(randMod(3) + 1)), //generates item type - max num is 2 -&gt; 0 + 1 SWORD | 1 + 1 SHIELD | 2 + 1 HELMET;
+            itemType: uint8(uint256(randMod(3) + 1)), //generates item type - max num is 2 -> 0 + 1 SWORD | 1 + 1 SHIELD | 2 + 1 HELMET;
             itemRarity: uint8(0),
             attackPower: 0,
             defencePower: 0,
@@ -542,16 +542,16 @@ contract Items is ChampFactory {
         // 19% rare
         // 7%  epic
         // 2%  legendary
-        if(450 &gt; randNum){
+        if(450 > randNum){
             pointsToShare = 25 + randMod(9); //25 basic + random number max to 8
             item.itemRarity = uint8(1);
-        }else if(720 &gt; randNum){
+        }else if(720 > randNum){
             pointsToShare = 42 + randMod(17); //42 basic + random number max to 16
             item.itemRarity = uint8(2);
-        }else if(910 &gt; randNum){
+        }else if(910 > randNum){
             pointsToShare = 71 + randMod(25); //71 basic + random number max to 24
             item.itemRarity = uint8(3);
-        }else if(980 &gt; randNum){
+        }else if(980 > randNum){
             pointsToShare = 119 + randMod(33); //119 basic + random number max to 32
             item.itemRarity = uint8(4);
         }else{
@@ -604,9 +604,9 @@ contract Items is ChampFactory {
 
     }
 
-    /// @notice Change &quot;lootboxFee&quot;. 
-    /// @param _fee New &quot;lootboxFee&quot;
-    /// @dev Only owner of contract can change &quot;lootboxFee&quot;
+    /// @notice Change "lootboxFee". 
+    /// @param _fee New "lootboxFee"
+    /// @dev Only owner of contract can change "lootboxFee"
     function setLootboxFee(uint _fee) external onlyOwner {
         lootboxFee = _fee;
     }
@@ -649,7 +649,7 @@ contract ItemMarket is Items {
         uint256 contractOwnerCommision; //1%
         uint256 playerShare; //99%
         
-        if(msg.value &gt; 100){
+        if(msg.value > 100){
             contractOwnerCommision = (msg.value / 100);
             playerShare = msg.value - contractOwnerCommision;
         }else{
@@ -670,9 +670,9 @@ contract ItemMarket is Items {
      */
     function getItemsForSale() view external returns(uint256[]){
         uint256[] memory result = new uint256[](itemsForSaleCount);
-        if(itemsForSaleCount &gt; 0){
+        if(itemsForSaleCount > 0){
             uint256 counter = 0;
-            for (uint256 i = 0; i &lt; items.length; i++) {
+            for (uint256 i = 0; i < items.length; i++) {
                 if (items[i].forSale == true) {
                     result[counter]=i;
                     counter++;
@@ -687,7 +687,7 @@ contract ItemMarket is Items {
      */
     ///@notice Cancel sale. Should not be called without checking if item is really for sale.
     function _cancelItemSale(Item storage item) private {
-      //No need to overwrite item&#39;s price
+      //No need to overwrite item's price
       item.forSale = false;
       itemsForSaleCount--;
     }
@@ -702,7 +702,7 @@ contract ItemMarket is Items {
         Item storage item = items[_itemID];
 
         //take off      
-        if(item.onChamp &amp;&amp; _to != champToOwner[item.onChampId]){
+        if(item.onChamp && _to != champToOwner[item.onChampId]){
           takeOffItem(item.onChampId, item.itemType);
         }
 
@@ -726,7 +726,7 @@ contract ItemMarket is Items {
     }
     
 
-    /// @notice Calcels item&#39;s sale
+    /// @notice Calcels item's sale
     function cancelItemSale(uint256 _id) public 
     itemIsForSale(_id) 
     onlyOwnerOfItem(_id){
@@ -788,9 +788,9 @@ contract ItemForge is ItemMarket {
 		}
 
 		//update parent item
-		parentItem.attackPower = (parentItem.attackPower &gt; childItem.attackPower) ? parentItem.attackPower : childItem.attackPower;
-		parentItem.defencePower = (parentItem.defencePower &gt; childItem.defencePower) ? parentItem.defencePower : childItem.defencePower;
-		parentItem.cooldownReduction = (parentItem.cooldownReduction &gt; childItem.cooldownReduction) ? parentItem.cooldownReduction : childItem.cooldownReduction;
+		parentItem.attackPower = (parentItem.attackPower > childItem.attackPower) ? parentItem.attackPower : childItem.attackPower;
+		parentItem.defencePower = (parentItem.defencePower > childItem.defencePower) ? parentItem.defencePower : childItem.defencePower;
+		parentItem.cooldownReduction = (parentItem.cooldownReduction > childItem.cooldownReduction) ? parentItem.cooldownReduction : childItem.cooldownReduction;
 		parentItem.itemRarity = uint8(6);
 
 		//burn child item
@@ -812,7 +812,7 @@ contract ChampAttack is ItemForge {
      */
      /// @notice Is champ ready to fight again?
     modifier isChampReady(uint256 _champId) {
-      require (champs[_champId].readyTime &lt;= block.timestamp);
+      require (champs[_champId].readyTime <= block.timestamp);
       _;
     }
 
@@ -834,7 +834,7 @@ contract ChampAttack is ItemForge {
     /*
      * View
      */
-    /// @notice Gets champ&#39;s attack power, defence power and cooldown reduction with items on
+    /// @notice Gets champ's attack power, defence power and cooldown reduction with items on
     function getChampStats(uint256 _champId) public view returns(uint256,uint256,uint256){
         Champ storage champ = champs[_champId];
         Item storage sword = items[champ.eq_sword];
@@ -857,19 +857,19 @@ contract ChampAttack is ItemForge {
     /*
      * Pure
      */
-    /// @notice Subtracts ability points. Helps to not cross minimal attack ability points -&gt; 2
-    /// @param _playerAttackPoints Actual player&#39;s attack points
+    /// @notice Subtracts ability points. Helps to not cross minimal attack ability points -> 2
+    /// @param _playerAttackPoints Actual player's attack points
     /// @param _x Amount to subtract 
     function subAttack(uint256 _playerAttackPoints, uint256 _x) internal pure returns (uint256) {
-        return (_playerAttackPoints &lt;= _x + 2) ? 2 : _playerAttackPoints - _x;
+        return (_playerAttackPoints <= _x + 2) ? 2 : _playerAttackPoints - _x;
     }
     
 
-    /// @notice Subtracts ability points. Helps to not cross minimal defence ability points -&gt; 1
-    /// @param _playerDefencePoints Actual player&#39;s defence points
+    /// @notice Subtracts ability points. Helps to not cross minimal defence ability points -> 1
+    /// @param _playerDefencePoints Actual player's defence points
     /// @param _x Amount to subtract 
     function subDefence(uint256 _playerDefencePoints, uint256 _x) internal pure returns (uint256) {
-        return (_playerDefencePoints &lt;= _x) ? 1 : _playerDefencePoints - _x;
+        return (_playerDefencePoints <= _x) ? 1 : _playerDefencePoints - _x;
     }
     
 
@@ -877,7 +877,7 @@ contract ChampAttack is ItemForge {
      * Private
      */
     /// @dev Is called from from Attack function after the winner is already chosen
-    /// @dev Updates abilities, champ&#39;s stats and swaps positions
+    /// @dev Updates abilities, champ's stats and swaps positions
     function _attackCompleted(Champ storage _winnerChamp, Champ storage _defeatedChamp, uint256 _pointsGiven, uint256 _pointsToAttackPower) private {
         /*
          * Updates abilities after fight
@@ -886,15 +886,15 @@ contract ChampAttack is ItemForge {
         _winnerChamp.attackPower += _pointsToAttackPower; //increase attack power
         _winnerChamp.defencePower += _pointsGiven - _pointsToAttackPower; //max point that was given - already given to AP
                 
-        //defeated champ&#39;s abilities update
-        //checks for not cross minimal AP &amp; DP points
+        //defeated champ's abilities update
+        //checks for not cross minimal AP & DP points
         _defeatedChamp.attackPower = subAttack(_defeatedChamp.attackPower, _pointsToAttackPower); //decrease attack power
         _defeatedChamp.defencePower = subDefence(_defeatedChamp.defencePower, _pointsGiven - _pointsToAttackPower); // decrease defence power
 
 
 
         /*
-         * Update champs&#39; wins and losses
+         * Update champs' wins and losses
          */
         _winnerChamp.winCount++;
         _defeatedChamp.lossCount++;
@@ -904,7 +904,7 @@ contract ChampAttack is ItemForge {
         /*
          * Swap positions
          */
-        if(_winnerChamp.position &gt; _defeatedChamp.position) { //require loser to has better (lower) postion than attacker
+        if(_winnerChamp.position > _defeatedChamp.position) { //require loser to has better (lower) postion than attacker
             uint256 winnerPosition = _winnerChamp.position;
             uint256 loserPosition = _defeatedChamp.position;
         
@@ -948,18 +948,18 @@ contract ChampAttack is ItemForge {
         (,enemyChampDefencePower,) = getChampStats(_targetId);
 
 
-        //if attacker&#39;s AP is more than target&#39;s DP then attacker wins
-        if (myChampAttackPower &gt; enemyChampDefencePower) {
+        //if attacker's AP is more than target's DP then attacker wins
+        if (myChampAttackPower > enemyChampDefencePower) {
             
             //this should demotivate players from farming on way weaker champs than they are
-            //the bigger difference between AP &amp; DP is, the reward is smaller
-            if(myChampAttackPower - enemyChampDefencePower &lt; 5){
+            //the bigger difference between AP & DP is, the reward is smaller
+            if(myChampAttackPower - enemyChampDefencePower < 5){
                 
                 //big experience - 3 ability points
                 (pointsGiven, pointsToAttackPower) = _getPoints(3);
                 
                 
-            }else if(myChampAttackPower - enemyChampDefencePower &lt; 10){
+            }else if(myChampAttackPower - enemyChampDefencePower < 10){
                 
                 //medium experience - 2 ability points
                 (pointsGiven, pointsToAttackPower) = _getPoints(2);
@@ -1032,9 +1032,9 @@ contract ChampMarket is ChampAttack {
     ///@notice Gets all champs for sale
     function getChampsForSale() view external returns(uint256[]){
         uint256[] memory result = new uint256[](champsForSaleCount);
-        if(champsForSaleCount &gt; 0){
+        if(champsForSaleCount > 0){
             uint256 counter = 0;
-            for (uint256 i = 0; i &lt; champs.length; i++) {
+            for (uint256 i = 0; i < champs.length; i++) {
                 if (champs[i].forSale == true) {
                     result[counter]=i;
                     counter++;
@@ -1050,7 +1050,7 @@ contract ChampMarket is ChampAttack {
      */
      ///@dev Cancel sale. Should not be called without checking if champ is really for sale.
      function _cancelChampSale(Champ storage champ) private {
-        //cancel champ&#39;s sale
+        //cancel champ's sale
         //no need waste gas to overwrite his price.
         champ.forSale = false;
         champsForSaleCount--;
@@ -1130,7 +1130,7 @@ contract ChampMarket is ChampAttack {
 /// @title Only used for deploying all contracts
 contract MyCryptoChampCore is ChampMarket {
 	/* 
-		&#169; Copyright 2018 - Patrik Mojzis
+		© Copyright 2018 - Patrik Mojzis
 		Redistributing and modifying is prohibited.
 		
 		https://mycryptochamp.io/
@@ -1140,6 +1140,6 @@ contract MyCryptoChampCore is ChampMarket {
 		  trading them and the best 800 champs are daily rewarded by real Ether.
 
 		Feel free to ask any questions
-		<span class="__cf_email__" data-cfemail="2a424f4646456a47534958535a5e4549424b475a044345">[email&#160;protected]</span>
+		<span class="__cf_email__" data-cfemail="2a424f4646456a47534958535a5e4549424b475a044345">[email protected]</span>
 	*/
 }

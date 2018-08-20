@@ -50,7 +50,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -68,7 +68,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -89,7 +89,7 @@ contract BasicToken is ERC20Basic {
 }
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -100,8 +100,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -164,7 +164,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -215,7 +215,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -226,7 +226,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -248,8 +248,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -262,7 +262,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -278,7 +278,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -309,7 +309,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -324,9 +324,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -346,7 +346,7 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -356,10 +356,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -370,8 +370,8 @@ contract TokenTimelock {
 
 contract NebulaToken is CappedToken{
     using SafeMath for uint256;
-    string public constant name = &quot;Nebula AI Token&quot;;
-    string public constant symbol = &quot;NBAI&quot;;
+    string public constant name = "Nebula AI Token";
+    string public constant symbol = "NBAI";
     uint8 public constant decimals = 18;
 
     bool public pvt_plmt_set;
@@ -382,7 +382,7 @@ contract NebulaToken is CappedToken{
     TokenVesting public foundation_vesting_contract;
     uint256 public token_unlock_time = 1524887999; //April 27th 2018 23:59:59 GMT-4:00, 7 days after completion
 
-    mapping(address =&gt; TokenTimelock[]) public time_locked_reclaim_addresses;
+    mapping(address => TokenTimelock[]) public time_locked_reclaim_addresses;
 
     //vesting starts on April 21th 2018 00:00 GMT-4:00
     //vesting duration is 3 years
@@ -403,7 +403,7 @@ contract NebulaToken is CappedToken{
 
     //@dev Can only set once
     function set_private_sale_total(uint256 _pvt_plmt_max_in_Wei) external onlyOwner returns(bool){
-        require(!pvt_plmt_set &amp;&amp; _pvt_plmt_max_in_Wei &gt;= 5000 ether);//_pvt_plmt_max_in_wei is minimum the soft cap
+        require(!pvt_plmt_set && _pvt_plmt_max_in_Wei >= 5000 ether);//_pvt_plmt_max_in_wei is minimum the soft cap
         pvt_plmt_set = true;
         pvt_plmt_max_in_Wei = _pvt_plmt_max_in_Wei;
         pvt_plmt_remaining_in_Wei = pvt_plmt_max_in_Wei;
@@ -422,7 +422,7 @@ contract NebulaToken is CappedToken{
      * _rate: rate that the private sale buyer has agreed with NebulaAi
      */
     function distribute_private_sale_fund(address _beneficiary, uint256 _wei_amount, uint256 _rate) public onlyOwner returns(bool){
-        require(pvt_plmt_set &amp;&amp; _beneficiary != address(0) &amp;&amp; pvt_plmt_remaining_in_Wei &gt;= _wei_amount &amp;&amp; _rate &gt;= 100000 &amp;&amp; _rate &lt;= 125000);
+        require(pvt_plmt_set && _beneficiary != address(0) && pvt_plmt_remaining_in_Wei >= _wei_amount && _rate >= 100000 && _rate <= 125000);
 
         pvt_plmt_remaining_in_Wei = pvt_plmt_remaining_in_Wei.sub(_wei_amount);//remove from limit
         uint256 _token_amount = _wei_amount.mul(_rate); //calculate token amount to be generated
@@ -430,7 +430,7 @@ contract NebulaToken is CappedToken{
 
         //Mint token if unlocked time has been reached, directly mint to beneficiary, else create time locked contract
         address _ret;
-        if(now &lt; token_unlock_time) assert((_ret = mint_time_locked_token(_beneficiary, _token_amount))!=address(0));
+        if(now < token_unlock_time) assert((_ret = mint_time_locked_token(_beneficiary, _token_amount))!=address(0));
         else assert(mint(_beneficiary, _token_amount));
 
         PrivateSaleTokenGenerated(_ret, _beneficiary, _token_amount);
@@ -447,15 +447,15 @@ contract NebulaToken is CappedToken{
     //Release all tokens held by time locked contracts to the beneficiary address stored in the contract
     //Note: requirement is checked in time lock contract
     function release_all(address _beneficiary) external returns(bool){
-        require(time_locked_reclaim_addresses[_beneficiary].length &gt; 0);
+        require(time_locked_reclaim_addresses[_beneficiary].length > 0);
         TokenTimelock[] memory _locks = time_locked_reclaim_addresses[_beneficiary];
-        for(uint256 i = 0 ; i &lt; _locks.length; ++i) _locks[i].release();
+        for(uint256 i = 0 ; i < _locks.length; ++i) _locks[i].release();
         return true;
     }
 
     //override to add a checker
     function finishMinting() onlyOwner canMint public returns (bool){
-        require(pvt_plmt_set &amp;&amp; pvt_plmt_remaining_in_Wei == 0);
+        require(pvt_plmt_set && pvt_plmt_remaining_in_Wei == 0);
         super.finishMinting();
     }
 
@@ -499,7 +499,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -620,7 +620,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -630,8 +630,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -642,7 +642,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   /**
@@ -665,7 +665,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -695,7 +695,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -704,7 +704,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -714,7 +714,7 @@ contract CappedCrowdsale is Crowdsale {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -722,11 +722,11 @@ contract CappedCrowdsale is Crowdsale {
 contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public contributions;
-  mapping(address =&gt; uint256) public caps;
+  mapping(address => uint256) public contributions;
+  mapping(address => uint256) public caps;
 
   /**
-   * @dev Sets a specific user&#39;s maximum contribution.
+   * @dev Sets a specific user's maximum contribution.
    * @param _beneficiary Address to be capped
    * @param _cap Wei limit for individual contribution
    */
@@ -735,12 +735,12 @@ contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
   }
 
   /**
-   * @dev Sets a group of users&#39; maximum contribution.
+   * @dev Sets a group of users' maximum contribution.
    * @param _beneficiaries List of addresses to be capped
    * @param _cap Wei limit for individual contribution
    */
   function setGroupCap(address[] _beneficiaries, uint256 _cap) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       caps[_beneficiaries[i]] = _cap;
     }
   }
@@ -764,13 +764,13 @@ contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
   }
 
   /**
-   * @dev Extend parent behavior requiring purchase to respect the user&#39;s funding cap.
+   * @dev Extend parent behavior requiring purchase to respect the user's funding cap.
    * @param _beneficiary Token purchaser
    * @param _weiAmount Amount of wei contributed
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(contributions[_beneficiary].add(_weiAmount) &lt;= caps[_beneficiary]);
+    require(contributions[_beneficiary].add(_weiAmount) <= caps[_beneficiary]);
   }
 
   /**
@@ -802,7 +802,7 @@ contract NebulaCrowdsale is CappedCrowdsale, FinalizableCrowdsale, IndividuallyC
      */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount);
-        require(msg.value&gt;=0.1 ether &amp;&amp; msg.value &lt;= 50 ether);
+        require(msg.value>=0.1 ether && msg.value <= 50 ether);
     }
 
     //@dev Overrides delivery by minting tokens upon purchase and store in the time locked contract.
@@ -814,7 +814,7 @@ contract NebulaCrowdsale is CappedCrowdsale, FinalizableCrowdsale, IndividuallyC
     //This is the only finalization function
     function finalization() internal {
         NebulaToken _nebula_token = NebulaToken(token);
-        if(_nebula_token.pvt_plmt_set() &amp;&amp; _nebula_token.pvt_plmt_remaining_in_Wei() == 0) {
+        if(_nebula_token.pvt_plmt_set() && _nebula_token.pvt_plmt_remaining_in_Wei() == 0) {
             _nebula_token.finishMinting();
         }
         _nebula_token.transferOwnership(owner);//transfer ownership back to original owner
@@ -822,7 +822,7 @@ contract NebulaCrowdsale is CappedCrowdsale, FinalizableCrowdsale, IndividuallyC
 
     //getter
     function hasStarted() public view returns(bool){
-        return now &gt; openingTime;
+        return now > openingTime;
     }
 
     function get_time_locked_contract(uint256 _index) public view returns(address){
@@ -852,9 +852,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -862,7 +862,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -871,7 +871,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

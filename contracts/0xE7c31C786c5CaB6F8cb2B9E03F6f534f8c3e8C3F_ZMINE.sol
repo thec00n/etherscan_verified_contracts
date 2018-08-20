@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
   address public owner;
@@ -72,10 +72,10 @@ contract Ownable {
 /**
 * @title Authorizable
 * @dev The Authorizable contract has authorized addresses, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;multiple user permissions&quot;.
+* functions, this simplifies the implementation of "multiple user permissions".
 */
 contract Authorizable is Ownable {
-mapping(address =&gt; bool) public authorized;
+mapping(address => bool) public authorized;
 
 event AuthorizationSet(address indexed addressAuthorized, bool indexed authorization);
 
@@ -110,10 +110,10 @@ function Authorizable() public {
 /**
 * @title WhiteList
 * @dev The WhiteList contract has whiteListed addresses, and provides basic whiteListStatus control
-* functions, this simplifies the implementation of &quot;multiple user permissions&quot;.
+* functions, this simplifies the implementation of "multiple user permissions".
 */
 contract WhiteList is Authorizable {
-  mapping(address =&gt; bool) whiteListed;
+  mapping(address => bool) whiteListed;
 
   event WhiteListSet(address indexed addressWhiteListed, bool indexed whiteListStatus);
 
@@ -179,7 +179,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -188,7 +188,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -215,7 +215,7 @@ contract BasicToken is ERC20Basic {
 * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
 */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
   * @dev Transfer tokens from one address to another
@@ -225,8 +225,8 @@ contract StandardToken is ERC20, BasicToken {
   */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -240,7 +240,7 @@ contract StandardToken is ERC20, BasicToken {
   *
   * Beware that changing an allowance with this method brings the risk that someone may use both the old
   * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-  * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+  * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
   * @param _spender The address which will spend the funds.
   * @param _value The amount of tokens to be spent.
@@ -275,7 +275,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -302,12 +302,12 @@ contract TreasureBox {
 
   function claim() external {
     require(available());
-    require(amount() &gt; 0);
+    require(amount() > 0);
     token.transfer(beneficiary, amount());
   }
 
   function available() public view returns (bool) {
-    return (now &gt;= releaseTime);
+    return (now >= releaseTime);
   }
 
   function amount() public view returns (uint256) {
@@ -316,9 +316,9 @@ contract TreasureBox {
 }
 
 contract AirDropper is Authorizable {
-  mapping(address =&gt; bool) public isAnExchanger; // allow to airdrop to destination is exchanger with out minimum
-  mapping(address =&gt; bool) public isTreasureBox; // flag who not eligible airdrop
-  mapping(address =&gt; address) public airDropDestinations; // setTo 0x0 if want airdrop to self
+  mapping(address => bool) public isAnExchanger; // allow to airdrop to destination is exchanger with out minimum
+  mapping(address => bool) public isTreasureBox; // flag who not eligible airdrop
+  mapping(address => address) public airDropDestinations; // setTo 0x0 if want airdrop to self
 
   StandardToken token;
 
@@ -356,11 +356,11 @@ contract AirDropper is Authorizable {
   }
 
   /**
-  * help fix airdrop when holder &gt; 100
+  * help fix airdrop when holder > 100
   * but need to calculate outer
   */
   function multiTransfer(address[] _address, uint[] _value) public returns (bool) {
-    for (uint i = 0; i &lt; _address.length; i++) {
+    for (uint i = 0; i < _address.length; i++) {
       token.transferFrom(msg.sender, _address[i], _value[i]);
     }
     return true;
@@ -372,11 +372,11 @@ contract AirDropper is Authorizable {
 * @dev The main ZMINE token contract
 *
 * ABI
-* [{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;mintingFinished&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;name&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_spender&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;approve&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalSupply&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;transferFrom&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;startTrading&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;decimals&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_amount&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;mint&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;tradingStarted&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;balanceOf&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;balance&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;finishMinting&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;symbol&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;transfer&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_spender&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;allowance&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;remaining&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;newOwner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;transferOwnership&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Mint&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;MintFinished&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;owner&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;spender&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Approval&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;to&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;Transfer&quot;,&quot;type&quot;:&quot;event&quot;}]
+* [{"constant":true,"inputs":[],"name":"mintingFinished","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"startTrading","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"mint","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tradingStarted","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"finishMinting","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[],"name":"MintFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}]
 */
 contract ZMINE is StandardToken, Ownable {
-  string public name = &quot;ZMINE Token&quot;;
-  string public symbol = &quot;ZMN&quot;;
+  string public name = "ZMINE Token";
+  string public symbol = "ZMN";
   uint8 public decimals = 18;
 
   uint256 public totalSupply = 1000000000000000000000000000; // 1,000,000,000 ^ 18
@@ -390,7 +390,7 @@ contract ZMINE is StandardToken, Ownable {
   * burn token if token is not sold out after Public
   */
   function burn(uint _amount) external onlyOwner {
-    require(balances[owner] &gt;= _amount);
+    require(balances[owner] >= _amount);
     balances[owner] = balances[owner] - _amount;
     totalSupply = totalSupply - _amount;
     Transfer(owner, address(0x0), _amount);
@@ -425,18 +425,18 @@ contract FounderThreader is Ownable {
 
   uint public minTx = 100000000000000000000; // 100 * 1e18
 
-  mapping(address =&gt; bool) isFounder;
+  mapping(address => bool) isFounder;
 
   function FounderThreader (AirDropper _airdropper, address[] _founders) public {
     airdropper = AirDropper(_airdropper);
-    for (uint i = 0; i &lt; _founders.length; i++) {
+    for (uint i = 0; i < _founders.length; i++) {
       isFounder[_founders[i]] = true;
     }
   }
 
   function transferFor(address _recipient, uint _tokens) external onlyOwner {
     require(_recipient != address(0));
-    require(_tokens &gt;= minTx);
+    require(_tokens >= minTx);
     require(isFounder[_recipient]);
 
     StandardToken token = StandardToken(airdropper.getToken());
@@ -500,7 +500,7 @@ contract PreSale is Ownable {
     require(_recipient != address(0));
     require(available());
     require(isWhiteListed(_recipient));
-    require(_value &gt;= minTx &amp;&amp; _value &lt;= maxTx);
+    require(_value >= minTx && _value <= maxTx);
     uint tokens = _rate.mul(_value).div(1000000000000000000);
 
     remain = remain.sub(tokens);
@@ -515,7 +515,7 @@ contract PreSale is Ownable {
   }
 
   function available() public view returns (bool) {
-    return (now &gt; startDate &amp;&amp; now &lt; stopDate);
+    return (now > startDate && now < stopDate);
   }
 
   function isWhiteListed(address _address) public view returns (bool) {
@@ -560,7 +560,7 @@ contract PublicSale is Ownable {
   * increase hard cap if previous dont sold out
   */
   function increaseHardCap(uint _amount) external onlyOwner {
-    require(_amount &lt;= 300000000000000000000000000); // presale hard cap
+    require(_amount <= 300000000000000000000000000); // presale hard cap
     hardCap = hardCap.add(_amount);
     remain = remain.add(_amount);
     IncreaseHardCap(_amount);
@@ -569,7 +569,7 @@ contract PublicSale is Ownable {
   function sale(address _recipient, uint _value, uint _rate) private {
     require(available());
     require(isWhiteListed(_recipient));
-    require(_value &gt;= minTx &amp;&amp; _value &lt;= maxTx);
+    require(_value >= minTx && _value <= maxTx);
     uint tokens = _rate.mul(_value).div(1000000000000000000);
 
     remain = remain.sub(tokens);
@@ -584,7 +584,7 @@ contract PublicSale is Ownable {
   }
 
   function available () public view returns (bool) {
-    return (now &gt; startDate &amp;&amp; now &lt; stopDate);
+    return (now > startDate && now < stopDate);
   }
 
   function isWhiteListed (address _address) public view returns(bool) {

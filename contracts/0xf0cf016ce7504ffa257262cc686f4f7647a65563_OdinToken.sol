@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,8 +93,8 @@ contract OdinToken is ERC20Interface, Owned {
        uint airDropQty;
     }
 
-    mapping(address =&gt; balanceData) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => balanceData) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
   /**
@@ -105,8 +105,8 @@ contract OdinToken is ERC20Interface, Owned {
         
         // owner of this contract
         owner = msg.sender;
-        symbol = &quot;ODIN&quot;;
-        name = &quot;ODIN Token&quot;;
+        symbol = "ODIN";
+        name = "ODIN Token";
         decimals = 18;
         _whitelistAll=false;
         _totalSupply = 100000000000000000000000;
@@ -156,33 +156,33 @@ contract OdinToken is ERC20Interface, Owned {
 
         require (msg.sender != to);                             // cannot send to yourself
         require(to != address(0));                              // cannot send to address(0)
-        require(tokens &lt;= balances[msg.sender].balance);        // do you have enough to send?
+        require(tokens <= balances[msg.sender].balance);        // do you have enough to send?
         
         if (!_whitelistAll) {
 
             // do not allow transfering air dropped tokens prior to Sep 1 2018
-             if (msg.sender != owner &amp;&amp; block.timestamp &lt; 1535760000 &amp;&amp; balances[msg.sender].airDropQty&gt;0) {
-                 require(tokens &lt; 0);
+             if (msg.sender != owner && block.timestamp < 1535760000 && balances[msg.sender].airDropQty>0) {
+                 require(tokens < 0);
             }
 
             // after Sep 1 2018 and before Dec 31, 2018, do not allow transfering more than 10% of air dropped tokens
-            if (msg.sender != owner &amp;&amp; block.timestamp &lt; 1546214400 &amp;&amp; balances[msg.sender].airDropQty&gt;0) {
-                require((balances[msg.sender].balance - tokens) &gt;= (balances[msg.sender].airDropQty / 10 * 9));
+            if (msg.sender != owner && block.timestamp < 1546214400 && balances[msg.sender].airDropQty>0) {
+                require((balances[msg.sender].balance - tokens) >= (balances[msg.sender].airDropQty / 10 * 9));
             }
 
             // after Dec 31 2018 and before March 31, 2019, do not allow transfering more than 25% of air dropped tokens
-            if (msg.sender != owner &amp;&amp; block.timestamp &lt; 1553990400 &amp;&amp; balances[msg.sender].airDropQty&gt;0) {
-                require((balances[msg.sender].balance - tokens) &gt;= balances[msg.sender].airDropQty / 4 * 3);
+            if (msg.sender != owner && block.timestamp < 1553990400 && balances[msg.sender].airDropQty>0) {
+                require((balances[msg.sender].balance - tokens) >= balances[msg.sender].airDropQty / 4 * 3);
             }
 
             // after March 31, 2019 and before Jun 30, 2019, do not allow transfering more than 50% of air dropped tokens
-            if (msg.sender != owner &amp;&amp; block.timestamp &lt; 1561852800 &amp;&amp; balances[msg.sender].airDropQty&gt;0) {
-                require((balances[msg.sender].balance - tokens) &gt;= balances[msg.sender].airDropQty / 2);
+            if (msg.sender != owner && block.timestamp < 1561852800 && balances[msg.sender].airDropQty>0) {
+                require((balances[msg.sender].balance - tokens) >= balances[msg.sender].airDropQty / 2);
             }
 
             // after Jun 30, 2019 and before Oct 2, 2019, do not allow transfering more than 75% of air dropped tokens
-            if (msg.sender != owner &amp;&amp; block.timestamp &lt; 1569974400 &amp;&amp; balances[msg.sender].airDropQty&gt;0) {
-                require((balances[msg.sender].balance - tokens) &gt;= balances[msg.sender].airDropQty / 4);
+            if (msg.sender != owner && block.timestamp < 1569974400 && balances[msg.sender].airDropQty>0) {
+                require((balances[msg.sender].balance - tokens) >= balances[msg.sender].airDropQty / 4);
             }
             
             // otherwise, no transfer restrictions
@@ -233,7 +233,7 @@ contract OdinToken is ERC20Interface, Owned {
     // Used to burn unspent tokens in the contract
     // ------------------------------------------------------------------------
     function burn(uint256 tokens) onlyOwner public returns (bool) {
-        require((balances[owner].balance - tokens) &gt;= 0);
+        require((balances[owner].balance - tokens) >= 0);
         balances[owner].balance = balances[owner].balance.sub(tokens);
         _totalSupply = _totalSupply.sub(tokens);
         emit Burn(tokens);

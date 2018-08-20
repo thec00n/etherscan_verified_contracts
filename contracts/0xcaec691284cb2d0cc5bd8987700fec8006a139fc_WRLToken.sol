@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,7 +85,7 @@ contract Ownable {
 contract StandardToken is ERC20, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   
   address internal tokensHolder = 0x2Ff4be5E03a079D5FC20Dba8d763059FcB78CA9f;
   address internal burnAndRef = 0x84765e3f2D0379eC7AAb7de8b480762a75f14ef4;
@@ -123,7 +123,7 @@ contract StandardToken is ERC20, Ownable {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,7 +134,7 @@ contract StandardToken is ERC20, Ownable {
   
   function deposit(address _to, uint256 _value) onlyOwner public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= tokensAvailable());
+    require(_value <= tokensAvailable());
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[tokensHolder] = balances[tokensHolder].sub(_value);
@@ -197,7 +197,7 @@ contract BurnableToken is MintableToken {
   event Burn(address indexed burner, uint256 value);
   
   function transferToRef(address _to, uint256 _value) public onlyOwner {
-    require(_value &lt;= balances[tokensHolder]);
+    require(_value <= balances[tokensHolder]);
 
     balances[tokensHolder] = balances[tokensHolder].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -206,7 +206,7 @@ contract BurnableToken is MintableToken {
   }
   
   function burnTokens(uint256 _value) public onlyOwner {
-    require(_value &lt;= balances[burnAndRef]);
+    require(_value <= balances[burnAndRef]);
 
     balances[burnAndRef] = balances[burnAndRef].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -217,8 +217,8 @@ contract BurnableToken is MintableToken {
 }
 
 contract WRLToken is BurnableToken {
-    string public name = &quot;Whyral Token&quot;;
-    string public symbol = &quot;WRL&quot;;
+    string public name = "Whyral Token";
+    string public symbol = "WRL";
     uint256 public decimals = 8;
     
     uint256 internal rate;
@@ -293,8 +293,8 @@ contract WRLToken is BurnableToken {
       uint256 finalTokenValue = currentValue.add(_tokens);
       uint256 toBeBurned;
       
-      if(now &gt;= stage0Start &amp;&amp; now &lt; stage0End) {
-          if(finalTokenValue &lt;= stage0Cap) {
+      if(now >= stage0Start && now < stage0End) {
+          if(finalTokenValue <= stage0Cap) {
               rate = stage0Rate;
               currentStage = 0;
           }
@@ -303,14 +303,14 @@ contract WRLToken is BurnableToken {
               currentStage = 0;
           }
       }
-      else if(now &gt;= stage1Start &amp;&amp; now &lt; stage1End) {
-          if(currentValue &lt; stage0Cap) {
+      else if(now >= stage1Start && now < stage1End) {
+          if(currentValue < stage0Cap) {
               toBeBurned = stage0Cap.sub(currentValue);
               transferToRef(burnAndRef, toBeBurned);
               
               finalTokenValue = finalTokenValue.add(toBeBurned);
               
-              if(finalTokenValue &lt;= stage1Cap) {
+              if(finalTokenValue <= stage1Cap) {
                   rate = stage1Rate;
                   currentStage = 1;
               }
@@ -320,7 +320,7 @@ contract WRLToken is BurnableToken {
               }
           }
           else {
-              if(finalTokenValue &lt;= stage1Cap) {
+              if(finalTokenValue <= stage1Cap) {
                   rate = stage1Rate;
                   currentStage = 1;
               }
@@ -330,14 +330,14 @@ contract WRLToken is BurnableToken {
               }
           }
       }
-      else if(now &gt;= stage2Start &amp;&amp; now &lt; stage2End) {
-          if(currentValue &lt; stage1Cap) {
+      else if(now >= stage2Start && now < stage2End) {
+          if(currentValue < stage1Cap) {
               toBeBurned = stage1Cap.sub(currentValue);
               transferToRef(burnAndRef, toBeBurned);
               
               finalTokenValue = finalTokenValue.add(toBeBurned);
               
-              if(finalTokenValue &lt;= stage2Cap) {
+              if(finalTokenValue <= stage2Cap) {
                   rate = stage2Rate;
                   currentStage = 2;
               }
@@ -347,7 +347,7 @@ contract WRLToken is BurnableToken {
               }
           }
           else {
-              if(finalTokenValue &lt;= stage2Cap) {
+              if(finalTokenValue <= stage2Cap) {
                   rate = stage2Rate;
                   currentStage = 2;
               }
@@ -357,14 +357,14 @@ contract WRLToken is BurnableToken {
               }
           }
       }
-      else if(now &gt;= stage3Start &amp;&amp; now &lt; stage3End) {
-          if(currentValue &lt; stage2Cap) {
+      else if(now >= stage3Start && now < stage3End) {
+          if(currentValue < stage2Cap) {
               toBeBurned = stage2Cap.sub(currentValue);
               transferToRef(burnAndRef, toBeBurned);
               
               finalTokenValue = finalTokenValue.add(toBeBurned);
               
-              if(finalTokenValue &lt;= stage3Cap) {
+              if(finalTokenValue <= stage3Cap) {
                   rate = stage3Rate;
                   currentStage = 3;
               }
@@ -374,7 +374,7 @@ contract WRLToken is BurnableToken {
               }
           }
           else {
-              if(finalTokenValue &lt;= stage3Cap) {
+              if(finalTokenValue <= stage3Cap) {
                   rate = stage3Rate;
                   currentStage = 3;
               }
@@ -384,8 +384,8 @@ contract WRLToken is BurnableToken {
               }
           }
       }
-      else if(now &gt;= stage3End) {
-          if(currentValue &lt; stage3Cap) {
+      else if(now >= stage3End) {
+          if(currentValue < stage3Cap) {
               toBeBurned = stage3Cap.sub(currentValue);
               transferToRef(burnAndRef, toBeBurned);
               
@@ -426,7 +426,7 @@ contract TimedCrowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -436,8 +436,8 @@ contract TimedCrowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -448,11 +448,11 @@ contract TimedCrowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   function isOpen() public view returns (bool) {
-    return ((now &gt; openingTime) &amp;&amp; (now &lt; closingTime));
+    return ((now > openingTime) && (now < closingTime));
   }
   
   /**
@@ -478,7 +478,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -502,7 +502,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
 contract WhitelistedCrowdsale is FinalizableCrowdsale {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -525,7 +525,7 @@ contract WhitelistedCrowdsale is FinalizableCrowdsale {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -597,7 +597,7 @@ contract WRLCrowdsale is WhitelistedCrowdsale {
    * @param _beneficiary Address performing the token purchase
    */
   function buyTokens(address _beneficiary) public payable {
-    require(msg.value &gt;= 100000000000000000);
+    require(msg.value >= 100000000000000000);
     uint256 weiAmount = msg.value;
     _preValidatePurchase(_beneficiary, weiAmount);
 
@@ -674,7 +674,7 @@ contract WRLCrowdsale is WhitelistedCrowdsale {
    * @param _tokenAmount Number of tokens to be emitted
    */
   function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-    require(_tokenAmount &lt;= token.tokensAvailable());
+    require(_tokenAmount <= token.tokensAvailable());
 
     token.deposit(_beneficiary, _tokenAmount);
   }

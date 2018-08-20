@@ -16,11 +16,11 @@ contract ZethrProxy_Fifteen {
     );
     
     function buyTokensWithProperEvent(address _referredBy, uint8 divChoice) public payable {
-        // Query token balance before &amp; after to see how much we bought
+        // Query token balance before & after to see how much we bought
         uint balanceBefore = zethr.balanceOf(msg.sender);
         
         // Buy tokens with selected div rate
-        zethr.buyAndTransfer.value(msg.value)(_referredBy, msg.sender, &quot;&quot;, divChoice);
+        zethr.buyAndTransfer.value(msg.value)(_referredBy, msg.sender, "", divChoice);
         
         // Query balance after
         uint balanceAfter = zethr.balanceOf(msg.sender);

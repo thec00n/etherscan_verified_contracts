@@ -6,11 +6,11 @@
  pragma solidity ^0.4.18;
 
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : start
+ * import "../common/Owned.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./IOwned.sol&quot; : start
+ * import "./IOwned.sol" : start
  *************************************************************************/
 
 /**@dev Simple interface to Owned base class */
@@ -18,7 +18,7 @@ contract IOwned {
     function owner() public constant returns (address) {}
     function transferOwnership(address _newOwner) public;
 }/*************************************************************************
- * import &quot;./IOwned.sol&quot; : end
+ * import "./IOwned.sol" : end
  *************************************************************************/
 
 contract Owned is IOwned {
@@ -41,10 +41,10 @@ contract Owned is IOwned {
     }
 }
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : end
+ * import "../common/Owned.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../token/IERC20Token.sol&quot; : start
+ * import "../token/IERC20Token.sol" : start
  *************************************************************************/
 
 /**@dev ERC20 compliant token interface. 
@@ -52,7 +52,7 @@ https://theethereum.wiki/w/index.php/ERC20_Token_Standard
 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md */
 contract IERC20Token {
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external    
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external    
     function name() public constant returns (string _name) { _name; }
     function symbol() public constant returns (string _symbol) { _symbol; }
     function decimals() public constant returns (uint8 _decimals) { _decimals; }
@@ -70,7 +70,7 @@ contract IERC20Token {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 /*************************************************************************
- * import &quot;../token/IERC20Token.sol&quot; : end
+ * import "../token/IERC20Token.sol" : end
  *************************************************************************/
 
 /**@dev This contract holds tokens and unlock at specific dates.
@@ -126,7 +126,7 @@ contract CustomTrancheWallet is Owned {
     /**@dev Returns how many token can be withdrawn on specific date */
     function amountToWithdrawOnDate(uint256 currentDate) public constant returns (uint256) {
         for (uint256 i = unlockDates.length; i != 0; --i) {
-            if (currentDate &gt; unlockDates[i - 1]) {
+            if (currentDate > unlockDates[i - 1]) {
                 return unlockAmounts[i - 1];
             }
         }
@@ -139,11 +139,11 @@ contract CustomTrancheWallet is Owned {
             return false;
         }        
 
-        for (uint256 i = 0; i &lt; unlockAmounts.length - 1; ++i) {
-            if (unlockAmounts[i] &gt;= unlockAmounts[i + 1]) {
+        for (uint256 i = 0; i < unlockAmounts.length - 1; ++i) {
+            if (unlockAmounts[i] >= unlockAmounts[i + 1]) {
                 return false;
             }
-            if (unlockDates[i] &gt;= unlockDates[i + 1]) {
+            if (unlockDates[i] >= unlockDates[i + 1]) {
                 return false;
             }
         }

@@ -12,19 +12,19 @@ contract SafeMathLib {
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure  returns (uint256) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -32,7 +32,7 @@ contract SafeMathLib {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -112,17 +112,17 @@ contract StandardToken is ERC20, SafeMathLib {
   event Minted(address receiver, uint256 amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transfer(address _to, uint256 _value)
   public
   returns (bool) 
   { 
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = safeSub(balances[msg.sender],_value);
@@ -135,9 +135,9 @@ contract StandardToken is ERC20, SafeMathLib {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     uint _allowance = allowed[_from][msg.sender];
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= _allowance);
-    require(balances[_to] + _value &gt; balances[_to]);
+    require(_value <= balances[_from]);
+    require(_value <= _allowance);
+    require(balances[_to] + _value > balances[_to]);
 
     balances[_to] = safeAdd(balances[_to],_value);
     balances[_from] = safeSub(balances[_from],_value);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, SafeMathLib {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, SafeMathLib {
    */
   function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);
@@ -250,7 +250,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -359,7 +359,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -381,7 +381,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -437,7 +437,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state);
   event Mint(address indexed to, uint256 amount);
@@ -482,7 +482,7 @@ contract MintableToken is StandardToken, Ownable {
 contract Allocatable is Ownable {
 
   /** List of agents that are allowed to allocate new tokens */
-  mapping (address =&gt; bool) public allocateAgents;
+  mapping (address => bool) public allocateAgents;
 
   event AllocateAgentChanged(address addr, bool state  );
 
@@ -553,7 +553,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken {
     // Create initially all balance on the team multisig
     balances[owner] = totalSupply;
 
-    if(totalSupply &gt; 0) {
+    if(totalSupply > 0) {
       Minted(owner, totalSupply);
     }
 
@@ -577,7 +577,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken {
    * Allow upgrade agent functionality kick in only if the crowdsale was success.
    */
   function canUpgrade() public view returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
   /**
@@ -607,7 +607,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public view returns (bool);
@@ -756,13 +756,13 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
   address public signerAddress;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => bool) public earlyParticipantWhitelist;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint256 public ownerTestValue;
@@ -816,15 +816,15 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    require(startsAt &lt; endsAt);
+    // Don't mess the dates
+    require(startsAt < endsAt);
 
     // Minimum funding goal can be zero
     minimumFundingGoal = _minimumFundingGoal;
   }
 
   /**
-   * Don&#39;t expect to just send in money and get tokens.
+   * Don't expect to just send in money and get tokens.
    */
   function() payable public {
     require(false);
@@ -842,7 +842,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
    */
   function investInternal(address receiver, string customerId) stopInEmergency private {
 
-    // Determine if it&#39;s a good time to accept investment from this participant
+    // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
       require(earlyParticipantWhitelist[receiver]);
@@ -905,7 +905,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
   function allocate(address receiver, uint256 tokenAmount, uint256 weiPrice, string customerId,  uint256 lockedTokenAmount) public onlyAllocateAgent {
 
     // cannot lock more than total tokens
-    require(lockedTokenAmount &lt;= tokenAmount);
+    require(lockedTokenAmount <= tokenAmount);
 
     uint256 weiAmount = (weiPrice * tokenAmount)/10**uint256(token.decimals()); // This can be also 0, we give out tokens for free
 
@@ -916,7 +916,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
     tokenAmountOf[receiver] = safeAdd(tokenAmountOf[receiver],tokenAmount);
 
     // assign locked token to Vesting contract
-    if (lockedTokenAmount &gt; 0) {
+    if (lockedTokenAmount > 0) {
       TokenVesting tokenVesting = TokenVesting(tokenVestingAddress);
       // to prevent minting of tokens which will be useless as vesting amount cannot be updated
       require(!tokenVesting.isVestingSet(receiver));
@@ -926,7 +926,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
     }
 
     // assign remaining tokens to contributor
-    if (tokenAmount - lockedTokenAmount &gt; 0) {
+    if (tokenAmount - lockedTokenAmount > 0) {
       assignTokens(receiver, tokenAmount - lockedTokenAmount);
     }
 
@@ -953,7 +953,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
     require(!requireCustomerId);
     
     require(!requiredSignedAddress);
-    investInternal(addr, &quot;&quot;);
+    investInternal(addr, "");
   }
 
   /**
@@ -1008,7 +1008,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
   function setFinalizeAgent(FinalizeAgent addr) public onlyOwner {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     require(finalizeAgent.isFinalizeAgent());
   }
 
@@ -1043,7 +1043,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
    */
   function setEndsAt(uint time) public onlyOwner {
 
-    require(now &lt;= time);
+    require(now <= time);
 
     endsAt = time;
     EndsAtChanged(endsAt);
@@ -1057,7 +1057,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
   function setPricingStrategy(PricingStrategy _pricingStrategy) public onlyOwner {
     pricingStrategy = _pricingStrategy;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     require(pricingStrategy.isPricingStrategy());
   }
 
@@ -1071,7 +1071,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
   function setMultisig(address addr) public onlyOwner {
 
     // Change
-    require(investorCount &lt;= MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE);
+    require(investorCount <= MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE);
 
     multisigWallet = addr;
   }
@@ -1102,7 +1102,7 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
    * @return true if the crowdsale has raised enough money to be a succes
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -1129,10 +1129,10 @@ contract Crowdsale is Allocatable, Haltable, SafeMathLib {
     else if (address(finalizeAgent) == 0) return State.Preparing;
     else if (!finalizeAgent.isSane()) return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) return State.Preparing;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
 
@@ -1205,7 +1205,7 @@ contract BonusFinalizeAgent is FinalizeAgent, SafeMathLib {
   uint256 public totalMembers;
   // Per address % of total token raised to be assigned to the member Ex 1% is passed as 100
   uint256 public allocatedBonus;
-  mapping (address=&gt;uint256) bonusOf;
+  mapping (address=>uint256) bonusOf;
   /** Where we move the tokens at the end of the sale. */
   address[] public teamAddresses;
 
@@ -1217,7 +1217,7 @@ contract BonusFinalizeAgent is FinalizeAgent, SafeMathLib {
     //crowdsale address must not be 0
     require(address(crowdsale) != 0);
 
-    //bonus &amp; team address array size must match
+    //bonus & team address array size must match
     require(_bonusBasePoints.length == _teamAddresses.length);
 
     totalMembers = _teamAddresses.length;
@@ -1225,13 +1225,13 @@ contract BonusFinalizeAgent is FinalizeAgent, SafeMathLib {
     
     //if any of the bonus is 0 throw
     // otherwise sum it up in totalAllocatedBonus
-    for (uint256 i=0;i&lt;totalMembers;i++) {
+    for (uint256 i=0;i<totalMembers;i++) {
       require(_bonusBasePoints[i] != 0);
     }
 
     //if any of the address is 0 or invalid throw
     //otherwise initialize the bonusOf array
-    for (uint256 j=0;j&lt;totalMembers;j++) {
+    for (uint256 j=0;j<totalMembers;j++) {
       require(_teamAddresses[j] != 0);
       bonusOf[_teamAddresses[j]] = _bonusBasePoints[j];
     }
@@ -1239,7 +1239,7 @@ contract BonusFinalizeAgent is FinalizeAgent, SafeMathLib {
 
   /* Can we run finalize properly */
   function isSane() public view returns (bool) {
-    return (token.mintAgents(address(this)) == true) &amp;&amp; (token.releaseAgent() == address(this));
+    return (token.mintAgents(address(this)) == true) && (token.releaseAgent() == address(this));
   }
 
   /** Called once by crowdsale finalize() if the sale was success. */
@@ -1252,7 +1252,7 @@ contract BonusFinalizeAgent is FinalizeAgent, SafeMathLib {
     // get the total sold tokens count.
     uint tokensSold = crowdsale.tokensSold();
 
-    for (uint256 i=0;i&lt;totalMembers;i++) {
+    for (uint256 i=0;i<totalMembers;i++) {
       allocatedBonus = safeMul(tokensSold, bonusOf[teamAddresses[i]]) / 10000;
       // move tokens to the team multisig wallet
       token.mint(teamAddresses[i], allocatedBonus);
@@ -1288,11 +1288,11 @@ contract MintedEthCappedCrowdsale is Crowdsale {
    * Called from invest() to confirm if the curret investment does not break our cap rule.
    */
   function isBreakingCap(uint256 weiAmount, uint256 tokenAmount, uint256 weiRaisedTotal, uint256 tokensSoldTotal) public constant returns (bool limitBroken) {
-    return weiRaisedTotal &gt; weiCap;
+    return weiRaisedTotal > weiCap;
   }
 
   function isCrowdsaleFull() public constant returns (bool) {
-    return weiRaised &gt;= weiCap;
+    return weiRaised >= weiCap;
   }
 
   /**
@@ -1304,7 +1304,7 @@ contract MintedEthCappedCrowdsale is Crowdsale {
   }
 }
 /// @dev Tranche based pricing with special support for pre-ico deals.
-///      Implementing &quot;first price&quot; tranches, meaning, that if byers order is
+///      Implementing "first price" tranches, meaning, that if byers order is
 ///      covering more than one tranche, the price of the lowest tranche will apply
 ///      to the whole order.
 contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
@@ -1313,7 +1313,7 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
  
  
   // This contains all pre-ICO addresses, and their prices (weis per token)
-  mapping (address =&gt; uint256) public preicoAddresses;
+  mapping (address => uint256) public preicoAddresses;
 
   /**
   * Define pricing schedule using tranches.
@@ -1339,14 +1339,14 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
   function EthTranchePricing(uint[] _tranches) public {
 
     // Need to have tuples, length check
-    require(!(_tranches.length % 2 == 1 || _tranches.length &gt;= MAX_TRANCHES*2));
+    require(!(_tranches.length % 2 == 1 || _tranches.length >= MAX_TRANCHES*2));
     trancheCount = _tranches.length / 2;
     uint256 highestAmount = 0;
-    for(uint256 i=0; i&lt;_tranches.length/2; i++) {
+    for(uint256 i=0; i<_tranches.length/2; i++) {
       tranches[i].amount = _tranches[i*2];
       tranches[i].price = _tranches[i*2+1];
       // No invalid steps
-      require(!((highestAmount != 0) &amp;&amp; (tranches[i].amount &lt;= highestAmount)));
+      require(!((highestAmount != 0) && (tranches[i].amount <= highestAmount)));
       highestAmount = tranches[i].amount;
     }
 
@@ -1391,7 +1391,7 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
   }
 
   function isSane(address _crowdsale) public view returns(bool) {
-    // Our tranches are not bound by time, so we can&#39;t really check are we sane
+    // Our tranches are not bound by time, so we can't really check are we sane
     // so we presume we are ;)
     // In the future we could save and track raised tokens, and compare it to
     // the Crowdsale contract.
@@ -1403,8 +1403,8 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
   /// @return {[type]} [description]
   function getCurrentTranche(uint256 weiRaised) private constant returns (Tranche) {
     uint i;
-    for(i=0; i &lt; tranches.length; i++) {
-      if(weiRaised &lt; tranches[i].amount) {
+    for(i=0; i < tranches.length; i++) {
+      if(weiRaised < tranches[i].amount) {
         return tranches[i-1];
       }
     }
@@ -1423,7 +1423,7 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
     uint256 multiplier = 10 ** decimals;
 
     // This investor is coming through pre-ico
-    if(preicoAddresses[msgSender] &gt; 0) {
+    if(preicoAddresses[msgSender] > 0) {
       return safeMul(value, multiplier) / preicoAddresses[msgSender];
     }
 
@@ -1467,7 +1467,7 @@ contract TokenVesting is Allocatable, SafeMathLib {
         bool changeFreezed;
     }
 
-    mapping (address =&gt; VestingSchedule) public vestingMap;
+    mapping (address => VestingSchedule) public vestingMap;
 
     event VestedTokensReleased(address _adr, uint256 _amount);
 
@@ -1498,7 +1498,7 @@ contract TokenVesting is Allocatable, SafeMathLib {
         // data validation
         require(_step != 0);
         require(_duration != 0);
-        require(_cliff &lt;= _duration);
+        require(_cliff <= _duration);
 
         startAt = _startAt;
         cliff = _cliff;
@@ -1523,9 +1523,9 @@ contract TokenVesting is Allocatable, SafeMathLib {
 
         // data validation
         require(_step != 0);
-        require(_amount != 0 || vestingSchedule.amount &gt; 0);
+        require(_amount != 0 || vestingSchedule.amount > 0);
         require(_duration != 0);
-        require(_cliff &lt;= _duration);
+        require(_cliff <= _duration);
 
         //if startAt is zero, set current time as start time.
         if (_startAt == 0) 
@@ -1540,7 +1540,7 @@ contract TokenVesting is Allocatable, SafeMathLib {
         if (vestingSchedule.amount == 0) {
             // check if enough tokens are held by this contract
             ERC20 LALAToken = ERC20(LALATokenAddress);
-            require(LALAToken.balanceOf(this) &gt;= safeAdd(totalUnreleasedTokens, _amount));
+            require(LALAToken.balanceOf(this) >= safeAdd(totalUnreleasedTokens, _amount));
             totalUnreleasedTokens = safeAdd(totalUnreleasedTokens, _amount);
             vestingSchedule.amount = _amount; 
         }
@@ -1569,14 +1569,14 @@ contract TokenVesting is Allocatable, SafeMathLib {
         VestingSchedule storage vestingSchedule = vestingMap[_adr];
         
         // check if all tokens are not vested
-        require(safeSub(vestingSchedule.amount, vestingSchedule.amountReleased) &gt; 0);
+        require(safeSub(vestingSchedule.amount, vestingSchedule.amountReleased) > 0);
         
         // calculate total vested tokens till now
         uint256 totalTime = block.timestamp - vestingSchedule.startAt;
         uint256 totalSteps = totalTime / vestingSchedule.step;
 
         // check if cliff is passed
-        require(vestingSchedule.cliff &lt;= totalSteps);
+        require(vestingSchedule.cliff <= totalSteps);
 
         uint256 tokensPerStep = vestingSchedule.amount / vestingSchedule.duration;
         // check if amount is divisble by duration
@@ -1585,7 +1585,7 @@ contract TokenVesting is Allocatable, SafeMathLib {
         uint256 totalReleasableAmount = safeMul(tokensPerStep, totalSteps);
 
         // handle the case if user has not claimed even after vesting period is over or amount was not divisible
-        if(totalReleasableAmount &gt; vestingSchedule.amount) totalReleasableAmount = vestingSchedule.amount;
+        if(totalReleasableAmount > vestingSchedule.amount) totalReleasableAmount = vestingSchedule.amount;
 
         uint256 amountToRelease = safeSub(totalReleasableAmount, vestingSchedule.amountReleased);
         vestingSchedule.amountReleased = safeAdd(vestingSchedule.amountReleased, amountToRelease);

@@ -22,37 +22,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -66,9 +66,9 @@ contract SafeMath {
 
 contract StandardToken is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    * Fix for the ERC20 short address attack
@@ -103,7 +103,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function approve(address _spender, uint _value) returns (bool success) {
 
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -119,12 +119,12 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 
 contract PermiCoin is StandardToken {
-  string public constant name = &quot;PermiCoin&quot;;
-  string public constant symbol = &quot;PMC&quot;;
+  string public constant name = "PermiCoin";
+  string public constant symbol = "PMC";
   uint public constant decimals = 6;               
   uint public totalSupply = 10000000000000;       
  /* = 10 000 000 PermiCoins * 1 000 000 (6 decimals) */
-  string public version = &quot;1.0&quot;;
+  string public version = "1.0";
 
   // Constructor
 

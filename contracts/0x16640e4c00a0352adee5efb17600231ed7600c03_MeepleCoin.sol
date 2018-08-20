@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,10 +48,10 @@ contract ERC20 {
 contract MeepleCoin is ERC20
 { using SafeMath for uint256;
     // Name of the token
-    string public constant name = &quot;MeepleCoin&quot;;
+    string public constant name = "MeepleCoin";
 
     // Symbol of token
-    string public constant symbol = &quot;MPL&quot;;
+    string public constant symbol = "MPL";
     uint8 public constant decimals = 18;
     uint public _totalsupply = 129500000 * 10 ** 18; // 129.5 million total supply // muliplies dues to decimal precision
     address public owner;                    // Owner of this contract
@@ -71,8 +71,8 @@ contract MeepleCoin is ERC20
   
     uint256 public eth_received; // total ether received in the contract
     uint256 maxCap_public = 77700000 * 10 **18;  //  77.7 million in Public Sale
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     
      enum Stages {
@@ -109,10 +109,10 @@ contract MeepleCoin is ERC20
     function () public payable 
     {
         require(stage != Stages.ENDED);
-        require(!stopped &amp;&amp; msg.sender != owner);
-            if( stage == Stages.PREICO &amp;&amp; now &lt;= pre_enddate )
+        require(!stopped && msg.sender != owner);
+            if( stage == Stages.PREICO && now <= pre_enddate )
             { 
-                require (eth_received &lt;= 1500 ether);
+                require (eth_received <= 1500 ether);
               eth_received = (eth_received).add(msg.value);
                 no_of_tokens =((msg.value).mul(_price_tokn_PRE));
                 bonus_token = ((no_of_tokens).mul(58)).div(100); // 58 percent bonus token
@@ -120,9 +120,9 @@ contract MeepleCoin is ERC20
                 transferTokens(msg.sender,total_token);
                }
                
-             else if(stage == Stages.ICO &amp;&amp; now &lt;= ico_fourth ){
+             else if(stage == Stages.ICO && now <= ico_fourth ){
                     
-                if( now &lt; ico_first )
+                if( now < ico_first )
             {
               no_of_tokens =(msg.value).mul(_price_tokn_ICO);
                 bonus_token = ((no_of_tokens).mul(15)).div(100); // 15% bonus
@@ -132,7 +132,7 @@ contract MeepleCoin is ERC20
                 
             }   
             
-              else if(now &gt;= ico_first &amp;&amp; now &lt; ico_second)
+              else if(now >= ico_first && now < ico_second)
             {
                 
                 
@@ -143,7 +143,7 @@ contract MeepleCoin is ERC20
                 
                 
             }
-             else if(now &gt;= ico_second &amp;&amp; now &lt; ico_third)
+             else if(now >= ico_second && now < ico_third)
             {
                 
                    no_of_tokens =(msg.value).mul(_price_tokn_ICO);
@@ -154,7 +154,7 @@ contract MeepleCoin is ERC20
                 
             }
             
-             else if(now &gt;= ico_third &amp;&amp; now &lt; ico_fourth)
+             else if(now >= ico_third && now < ico_fourth)
             {
                 
                    
@@ -183,7 +183,7 @@ contract MeepleCoin is ERC20
       
       function start_ICO() public onlyOwner atStage(Stages.PREICO)
       {
-          require(now &gt; pre_enddate || eth_received &gt;= 1500 ether);
+          require(now > pre_enddate || eth_received >= 1500 ether);
           stage = Stages.ICO;
           stopped = false;
           ico1_startdate = now;
@@ -210,7 +210,7 @@ contract MeepleCoin is ERC20
      
      function end_ICO() external onlyOwner atStage(Stages.ICO)
      {
-         require(now &gt; ico_fourth);
+         require(now > ico_fourth);
          stage = Stages.ENDED;
          _totalsupply = (_totalsupply).sub(balances[address(this)]);
          balances[address(this)] = 0;
@@ -230,13 +230,13 @@ contract MeepleCoin is ERC20
     
     // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
      require( _to != 0x0);
-     require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+     require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
      balances[_from] = (balances[_from]).sub(_amount);
      allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
      balances[_to] = (balances[_to]).add(_amount);
@@ -254,24 +254,24 @@ contract MeepleCoin is ERC20
      }
   
      function allowance(address _owner, address _spender)public view returns (uint256 remaining) {
-         require( _owner != 0x0 &amp;&amp; _spender !=0x0);
+         require( _owner != 0x0 && _spender !=0x0);
          return allowed[_owner][_spender];
    }
 
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
         require( _to != 0x0);
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+        require(balances[msg.sender] >= _amount && _amount >= 0);
         balances[msg.sender] = (balances[msg.sender]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
         Transfer(msg.sender, _to, _amount);
              return true;
          }
     
-          // Transfer the balance from owner&#39;s account to another account
+          // Transfer the balance from owner's account to another account
     function transferTokens(address _to, uint256 _amount) private returns(bool success) {
         require( _to != 0x0);       
-        require(balances[address(this)] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[address(this)] >= _amount && _amount > 0);
         balances[address(this)] = (balances[address(this)]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
         Transfer(address(this), _to, _amount);

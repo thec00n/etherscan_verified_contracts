@@ -56,7 +56,7 @@ contract SmartRouletteTokenDividend {
 	}
 
 	modifier isManager(){
-		if (msg.sender!=manager &amp;&amp; msg.sender!=developer) throw;
+		if (msg.sender!=manager && msg.sender!=developer) throw;
 		_;
 	}
 
@@ -102,19 +102,19 @@ contract SmartRouletteTokenDividend {
 	{
 		uint256 countProfitsTokens = 0;
 
-        mapping(address =&gt; bool) uniqueHolders;
+        mapping(address => bool) uniqueHolders;
 
 		uint256 countHolders = smartToken.getCountHolders();
-		for(uint256 i=0; i&lt;countHolders; i++)
+		for(uint256 i=0; i<countHolders; i++)
 		{
 			address holder = smartToken.getItemHolders(i);
-			if(holder!=address(0x0) &amp;&amp; !uniqueHolders[holder])
+			if(holder!=address(0x0) && !uniqueHolders[holder])
 			{
 				uint256 holdersTokens = smartToken.balanceOf(holder);
-				if(holdersTokens&gt;0)
+				if(holdersTokens>0)
 				{
 					uint256 tempTokens = smartToken.tempTokensBalanceOf(holder);
-					if((holdersTokens+tempTokens)/decimal &gt;= tokensNeededToGetPayment)
+					if((holdersTokens+tempTokens)/decimal >= tokensNeededToGetPayment)
 					{
 						uniqueHolders[holder]=true;
 						countProfitsTokens += (holdersTokens+tempTokens);
@@ -124,16 +124,16 @@ contract SmartRouletteTokenDividend {
 		}
 
 		uint256 countTempHolders = smartToken.getCountTempHolders();
-		for(uint256 j=0; j&lt;countTempHolders; j++)
+		for(uint256 j=0; j<countTempHolders; j++)
 		{
 			address temp_holder = smartToken.getItemTempHolders(j);
-			if(temp_holder!=address(0x0) &amp;&amp; !uniqueHolders[temp_holder])
+			if(temp_holder!=address(0x0) && !uniqueHolders[temp_holder])
 			{
 				uint256 token_balance = smartToken.balanceOf(temp_holder);
 				if(token_balance==0)
 				{
 					uint256 count_tempTokens = smartToken.tempTokensBalanceOf(temp_holder);
-					if(count_tempTokens&gt;0 &amp;&amp; count_tempTokens/decimal &gt;= tokensNeededToGetPayment)
+					if(count_tempTokens>0 && count_tempTokens/decimal >= tokensNeededToGetPayment)
 					{
 						uniqueHolders[temp_holder]=true;
 						countProfitsTokens += count_tempTokens;
@@ -148,19 +148,19 @@ contract SmartRouletteTokenDividend {
 	function get_CountAllHolderForProfit() constant returns(uint256){
 		uint256 countAllHolders = 0;
 
-		mapping(address =&gt; bool) uniqueHolders;
+		mapping(address => bool) uniqueHolders;
 
 		uint256 countHolders = smartToken.getCountHolders();
-		for(uint256 i=0; i&lt;countHolders; i++)
+		for(uint256 i=0; i<countHolders; i++)
 		{
 			address holder = smartToken.getItemHolders(i);
-			if(holder!=address(0x0) &amp;&amp; !uniqueHolders[holder])
+			if(holder!=address(0x0) && !uniqueHolders[holder])
 			{
 				uint256 holdersTokens = smartToken.balanceOf(holder);
-				if(holdersTokens&gt;0)
+				if(holdersTokens>0)
 				{
 					uint256 tempTokens = smartToken.tempTokensBalanceOf(holder);
-					if((holdersTokens+tempTokens)/decimal &gt;= tokensNeededToGetPayment)
+					if((holdersTokens+tempTokens)/decimal >= tokensNeededToGetPayment)
 					{
 						uniqueHolders[holder] = true;
 						countAllHolders += 1;
@@ -170,16 +170,16 @@ contract SmartRouletteTokenDividend {
 		}
 
 		uint256 countTempHolders = smartToken.getCountTempHolders();
-		for(uint256 j=0; j&lt;countTempHolders; j++)
+		for(uint256 j=0; j<countTempHolders; j++)
 		{
 			address temp_holder = smartToken.getItemTempHolders(j);
-			if(temp_holder!=address(0x0) &amp;&amp; !uniqueHolders[temp_holder])
+			if(temp_holder!=address(0x0) && !uniqueHolders[temp_holder])
 			{
 				uint256 token_balance = smartToken.balanceOf(temp_holder);
 				if(token_balance==0)
 				{
 					uint256 coun_tempTokens = smartToken.tempTokensBalanceOf(temp_holder);
-					if(coun_tempTokens&gt;0 &amp;&amp; coun_tempTokens/decimal &gt;= tokensNeededToGetPayment)
+					if(coun_tempTokens>0 && coun_tempTokens/decimal >= tokensNeededToGetPayment)
 					{
 						uniqueHolders[temp_holder] = true;
 						countAllHolders += 1;
@@ -196,13 +196,13 @@ contract SmartRouletteTokenDividend {
 	{
 		uint8 n = 0;		
 		uint256 countHolders = smartToken.getCountHolders();
-		for(; position &lt; countHolders; position++){			
+		for(; position < countHolders; position++){			
 			address holder = smartToken.getItemHolders(position);
 			if(holder!=address(0x0)){
 				uint256 holdersTokens = smartToken.balanceOf(holder);
-				if(holdersTokens&gt;0){
+				if(holdersTokens>0){
 					uint256 tempTokens = smartToken.tempTokensBalanceOf(holder);
-					if((holdersTokens+tempTokens)/decimal &gt;= tokensNeededToGetPayment){
+					if((holdersTokens+tempTokens)/decimal >= tokensNeededToGetPayment){
 						//
 						listHolders[n++] = holder;
 						if (n == 64) 
@@ -216,17 +216,17 @@ contract SmartRouletteTokenDividend {
 		}
 
 		
-		if (position &gt;= countHolders)
+		if (position >= countHolders)
 		{			
 			uint256 countTempHolders = smartToken.getCountTempHolders();			
-			for(uint256 j=position-countHolders; j&lt;countTempHolders; j++) 
+			for(uint256 j=position-countHolders; j<countTempHolders; j++) 
 			{							
 				address temp_holder = smartToken.getItemTempHolders(j);
 				if(temp_holder!=address(0x0)){
 					uint256 token_balance = smartToken.balanceOf(temp_holder);
 					if(token_balance==0){
 						uint256 count_tempTokens = smartToken.tempTokensBalanceOf(temp_holder);
-						if(count_tempTokens&gt;0 &amp;&amp; count_tempTokens/decimal &gt;= tokensNeededToGetPayment){
+						if(count_tempTokens>0 && count_tempTokens/decimal >= tokensNeededToGetPayment){
 							listHolders[n++] = temp_holder;
 							if (n == 64) 
 							{
@@ -246,10 +246,10 @@ contract SmartRouletteTokenDividend {
 
 	function get_HoldersProfit(address holder, uint256 amountDividendInTokens) constant returns(uint256){
 		uint256 profit = 0;
-		if(holder != address(0x0) &amp;&amp; amountDividendInTokens &gt; 0)
+		if(holder != address(0x0) && amountDividendInTokens > 0)
 		{
 			uint256 count_tokens = smartToken.balanceOf(holder) + smartToken.tempTokensBalanceOf(holder);
-			if(count_tokens/decimal &gt;= tokensNeededToGetPayment){
+			if(count_tokens/decimal >= tokensNeededToGetPayment){
 				profit = (count_tokens * amountDividendInTokens) / get_CountProfitsToken();
 			}
 		}

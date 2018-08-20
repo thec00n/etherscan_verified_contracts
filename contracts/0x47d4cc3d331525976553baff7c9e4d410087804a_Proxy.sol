@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 contract Contract {
-  mapping (address =&gt; uint256) public balances_bonus;
+  mapping (address => uint256) public balances_bonus;
   uint256 public contract_eth_value_bonus;
 }
 
@@ -15,7 +15,7 @@ contract Proxy {
   Contract contr;
   uint256 public eth_balance;
   ERC20 public token;
-  mapping (address =&gt; bool) public withdrew;
+  mapping (address => bool) public withdrew;
   address owner;
 
   constructor(address _contract, address _token) {

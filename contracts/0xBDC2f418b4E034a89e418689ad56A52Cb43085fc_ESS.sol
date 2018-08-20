@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 /*
 
-    Copyright 2018, Angelo A. M. &amp; Vicent Nos &amp; Mireia Puig
+    Copyright 2018, Angelo A. M. & Vicent Nos & Mireia Puig
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ pragma solidity ^0.4.24;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -32,20 +32,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -93,9 +93,9 @@ contract ESS is Ownable {
     address public addrFWD;
     address public token;
     uint256 public decimals=18;
-    string public name=&quot;ESS PUBLIC ENGAGEMENT&quot;;
+    string public name="ESS PUBLIC ENGAGEMENT";
 
-    mapping (address =&gt; uint256) public sold;
+    mapping (address => uint256) public sold;
 
     uint256 public pubEnd=0;
     // constant to simplify conversion of token amounts into integer form
@@ -143,8 +143,8 @@ contract ESS is Ownable {
 
 
     function buy()  public payable {
-        require(block.timestamp&lt;pubEnd);
-        require(msg.value&gt;0);
+        require(block.timestamp<pubEnd);
+        require(msg.value>0);
         uint256 tokenAmount = (msg.value * tokenUnit) / tokenPrice ;  // Calculate the amount of tokens
 
         transferBuy(msg.sender, tokenAmount);
@@ -154,11 +154,11 @@ contract ESS is Ownable {
 
 
     function withdrawPUB() public returns(bool){
-        require(block.timestamp&gt;pubEnd);   // Finalize and transfer
-        require(sold[msg.sender]&gt;0);
+        require(block.timestamp>pubEnd);   // Finalize and transfer
+        require(sold[msg.sender]>0);
 
 
-        bool result=token.call(bytes4(keccak256(&quot;transfer(address,uint256)&quot;)), msg.sender, sold[msg.sender]);
+        bool result=token.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, sold[msg.sender]);
         delete sold[msg.sender];
         return result;
     }

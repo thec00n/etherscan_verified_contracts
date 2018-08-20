@@ -86,7 +86,7 @@ contract hackethereumIco is mortal {
     hackoin public _educatedToken;
     hackoin public _adeptToken;
 
-    mapping(address =&gt; uint256) private _balanceOf;
+    mapping(address => uint256) private _balanceOf;
 
     event FundTransfer(address indexed backer, string indexed transferType, uint256 amount);
 
@@ -129,12 +129,12 @@ contract hackethereumIco is mortal {
 
         _initialPrice = 1;
 
-        address tokenContractAddress = new hackoin(&quot;Hackoin&quot;, &quot;HK&quot;);
+        address tokenContractAddress = new hackoin("Hackoin", "HK");
         _hackoinToken = hackoin(tokenContractAddress);
 
-        address tenuousTokenContractAddress = new hackoin(&quot;Hackoin_Tenuous&quot;, &quot;HKT&quot;);
-        address educatedTokenContractAddress = new hackoin(&quot;Hackoin_Educated&quot;, &quot;HKE&quot;);
-        address adeptTokenContractAddress = new hackoin(&quot;Hackoin_Adept&quot;, &quot;HKA&quot;);
+        address tenuousTokenContractAddress = new hackoin("Hackoin_Tenuous", "HKT");
+        address educatedTokenContractAddress = new hackoin("Hackoin_Educated", "HKE");
+        address adeptTokenContractAddress = new hackoin("Hackoin_Adept", "HKA");
 
         _tenuousToken = hackoin(tenuousTokenContractAddress);
         _educatedToken = hackoin(educatedTokenContractAddress);
@@ -153,16 +153,16 @@ contract hackethereumIco is mortal {
     }
 
     function () payable {
-        require(now &lt; _deadline);
+        require(now < _deadline);
 
         uint256 amount = msg.value;
 
         uint256 currentPrice;
-        if(now &lt; _priceIncrease1)
+        if(now < _priceIncrease1)
         {
             currentPrice = _initialPrice;
         }
-        else if (now &lt; _priceIncrease2)
+        else if (now < _priceIncrease2)
         {
             currentPrice = _initialPrice * 2;
         }
@@ -173,32 +173,32 @@ contract hackethereumIco is mortal {
 
         uint256 tokenAmount = amount / currentPrice;
 
-        require(tokenAmount &gt; 0);
-        require(_balanceOf[msg.sender] + amount &gt;= _balanceOf[msg.sender]);
-        require(this.balance + amount &gt;= this.balance);
+        require(tokenAmount > 0);
+        require(_balanceOf[msg.sender] + amount >= _balanceOf[msg.sender]);
+        require(this.balance + amount >= this.balance);
 
         _balanceOf[msg.sender] += amount;
         _amountRaised += amount;
 
         _hackoinToken.mintToken(msg.sender, tokenAmount);
-        FundTransfer(msg.sender, &quot;Ticket Purchase&quot;, amount);
+        FundTransfer(msg.sender, "Ticket Purchase", amount);
     }
 
     modifier afterDeadline()
     { 
-        require (now &gt;= _deadline); 
+        require (now >= _deadline); 
         _;
     }
 
     function withdrawFunds(uint256 amount) afterDeadline {
         require(_beneficiary == msg.sender);
 
-        require(this.balance &gt; 0);
-        require(amount &lt;= this.balance);
+        require(this.balance > 0);
+        require(amount <= this.balance);
 
         if (_beneficiary.send(amount))
         {
-            FundTransfer(_beneficiary, &quot;Withdrawal&quot;, amount);
+            FundTransfer(_beneficiary, "Withdrawal", amount);
         }
     }
 
@@ -206,14 +206,14 @@ contract hackethereumIco is mortal {
         require(msg.data.length == 32*2+4);
         require(_hackerDecisive == msg.sender);
 
-        require(_hackoinToken.balanceOf(targetAddress) &gt;= _participationMax*2);
+        require(_hackoinToken.balanceOf(targetAddress) >= _participationMax*2);
 
-        require(this.balance &gt; 0);
-        require(amount &lt;= this.balance);
+        require(this.balance > 0);
+        require(amount <= this.balance);
 
         if (targetAddress.send(amount))
         {
-            FundTransfer(targetAddress, &quot;Decisive hack&quot;, amount);
+            FundTransfer(targetAddress, "Decisive hack", amount);
         }
     }
 
@@ -221,16 +221,16 @@ contract hackethereumIco is mortal {
         require(_whitehat == msg.sender);
         require(_whitehatActive);
 
-        require(_lastWhitehat + _timeBetweenWithdrawCalls &lt; now);
+        require(_lastWhitehat + _timeBetweenWithdrawCalls < now);
 
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
 
         uint amount;
-        if(_amountRaised &gt; 500 ether)
+        if(_amountRaised > 500 ether)
         {
             amount = _amountRaised / 50;
         }
-        else if(_amountRaised &gt; 100 ether)
+        else if(_amountRaised > 100 ether)
         {
             amount = _amountRaised / 20;
         }
@@ -239,7 +239,7 @@ contract hackethereumIco is mortal {
             amount = _amountRaised / 10;
         }
         
-        if(amount &gt; this.balance)
+        if(amount > this.balance)
         {
             amount = this.balance;
         }
@@ -248,7 +248,7 @@ contract hackethereumIco is mortal {
 
         if (_whitehat.send(amount))
         {
-            FundTransfer(_whitehat, &quot;Whitehat recovery&quot;, amount);
+            FundTransfer(_whitehat, "Whitehat recovery", amount);
         }
     }
 
@@ -261,22 +261,22 @@ contract hackethereumIco is mortal {
         require(_hackedAdept);
         require(!_whitehatActive);
 
-        require(_lastHack + _timeBetweenWithdrawCalls &lt; now);
+        require(_lastHack + _timeBetweenWithdrawCalls < now);
 
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
 
-        require(_hackoinToken.balanceOf(targetAddress) &gt;= _participationThreshold);
+        require(_hackoinToken.balanceOf(targetAddress) >= _participationThreshold);
 
-        require(_tenuousToken.balanceOf(targetAddress) &gt;= _hackTokenThreshold);
-        require(_educatedToken.balanceOf(targetAddress) &gt;= _hackTokenThreshold);
-        require(_adeptToken.balanceOf(targetAddress) &gt;= _hackTokenThreshold);
+        require(_tenuousToken.balanceOf(targetAddress) >= _hackTokenThreshold);
+        require(_educatedToken.balanceOf(targetAddress) >= _hackTokenThreshold);
+        require(_adeptToken.balanceOf(targetAddress) >= _hackTokenThreshold);
 
         uint minAmount;
-        if(_amountRaised &gt; 500 ether)
+        if(_amountRaised > 500 ether)
         {
             minAmount = _amountRaised / 500;
         }
-        else if(_amountRaised &gt; 100 ether)
+        else if(_amountRaised > 100 ether)
         {
             minAmount = _amountRaised / 200;
         }
@@ -287,7 +287,7 @@ contract hackethereumIco is mortal {
 
 
         uint256 participationAmount = _hackoinToken.balanceOf(targetAddress);
-        if(participationAmount &gt; _participationMax)
+        if(participationAmount > _participationMax)
         {
             participationAmount = _participationMax;
         }
@@ -295,7 +295,7 @@ contract hackethereumIco is mortal {
         uint256 ratio = participationAmount / _participationThreshold;
         uint256 amount = minAmount * ratio;
         
-        if(amount &gt; this.balance)
+        if(amount > this.balance)
         {
             amount = this.balance;
         }
@@ -304,7 +304,7 @@ contract hackethereumIco is mortal {
 
         if (targetAddress.send(amount))
         {
-            FundTransfer(targetAddress, &quot;Hack&quot;, amount);
+            FundTransfer(targetAddress, "Hack", amount);
         }
     }
 
@@ -313,7 +313,7 @@ contract hackethereumIco is mortal {
         require(_hackerTenuous == msg.sender);
 
         if(!_hackedTenuous) {
-            require(_lastControlFlip + _timeBetweenControlFlipCalls &lt; now);
+            require(_lastControlFlip + _timeBetweenControlFlipCalls < now);
         }
 
         _hackedTenuous = true;
@@ -329,7 +329,7 @@ contract hackethereumIco is mortal {
         require(_hackedTenuous);
 
         if(!_hackedEducated) {
-            require(_lastControlFlip + _timeBetweenControlFlipCalls &lt; now);
+            require(_lastControlFlip + _timeBetweenControlFlipCalls < now);
         }
 
         _hackedEducated = true;
@@ -342,10 +342,10 @@ contract hackethereumIco is mortal {
     function hackAdept(address targetAddress) afterDeadline {
         require(msg.data.length == 32+4);
         require(_hackerAdept == msg.sender);
-        require(_hackedTenuous &amp;&amp; _hackedEducated);
+        require(_hackedTenuous && _hackedEducated);
 
         if(!_hackedAdept) {
-            require(_lastControlFlip + _timeBetweenControlFlipCalls &lt; now);
+            require(_lastControlFlip + _timeBetweenControlFlipCalls < now);
             _lastControlFlip = now;
         }
 
@@ -359,7 +359,7 @@ contract hackethereumIco is mortal {
 
     function whiteHat() afterDeadline {
         require(_whitehat == msg.sender);
-        require(_lastControlFlip + _timeBetweenControlFlipCalls &lt; now);
+        require(_lastControlFlip + _timeBetweenControlFlipCalls < now);
         _hackedTenuous = false;
         _hackedEducated = false;
         _hackedAdept = false;
@@ -408,8 +408,8 @@ contract hackoin is ERC20, owned, mortal {
     uint256 public _totalSupply;
 
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function hackoin(string _name, string _symbol) {
         name = _name;
@@ -420,9 +420,9 @@ contract hackoin is ERC20, owned, mortal {
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(msg.data.length == 32*2+4);
 
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -434,10 +434,10 @@ contract hackoin is ERC20, owned, mortal {
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
         require(msg.data.length == 32*3+4);
 
-        require(balances[_from] &gt;= _amount);
-        require(allowed[_from][msg.sender] &gt;= _amount);
-        require(_amount &gt; 0);
-        require(balances[_to] + _amount &gt; balances[_to]);
+        require(balances[_from] >= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
+        require(_amount > 0);
+        require(balances[_to] + _amount > balances[_to]);
 
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;

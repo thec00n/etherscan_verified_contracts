@@ -19,15 +19,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract token {
     /* 令牌的公开变量 */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* 所有账本的数组 */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* 定义一个事件，当交易发生时，通知客户端 */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -48,8 +48,8 @@ contract token {
 
     /* 发送令牌 */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // 检查这发送者是否有足够多的令牌
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // 检查溢出
+        if (balanceOf[msg.sender] < _value) throw;           // 检查这发送者是否有足够多的令牌
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // 检查溢出
         balanceOf[msg.sender] -= _value;                     // 从发送者账户减去相应的额度
         balanceOf[_to] += _value;                            // 从接收者账户增加相应的额度
         Transfer(msg.sender, _to, _value);                   // 事件。通知所有正在监听这个合约的用户
@@ -74,9 +74,9 @@ contract token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -93,7 +93,7 @@ contract token {
 contract TlzsToken is owned, token {
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* 定义一个事件，当有资产被冻结的时候，通知正在监听事件的客户端 */
     event FrozenFunds(address target, bool frozen);
@@ -108,8 +108,8 @@ contract TlzsToken is owned, token {
 
     /* 发送令牌 */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // 检查发送者是否有足够多的令牌
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // 检查溢出
+        if (balanceOf[msg.sender] < _value) throw;           // 检查发送者是否有足够多的令牌
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // 检查溢出
         if (frozenAccount[msg.sender]) throw;                // 检查冻结状态
         balanceOf[msg.sender] -= _value;                     // 从发送者的账户上减去相应的数额
         balanceOf[_to] += _value;                            // 从接收者的账户上增加相应的数额
@@ -120,9 +120,9 @@ contract TlzsToken is owned, token {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[_from]) throw;                        // Check if frozen            
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;

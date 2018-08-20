@@ -117,7 +117,7 @@ contract AssetMin is SafeMin {
     }
 
     function transfer(address _to, uint _value) returns(bool) {
-        return __transferWithReference(_to, _value, &quot;&quot;);
+        return __transferWithReference(_to, _value, "");
     }
 
     function transferWithReference(address _to, uint _value, string _reference) returns(bool) {
@@ -131,7 +131,7 @@ contract AssetMin is SafeMin {
     }
 
     function transferToICAP(bytes32 _icap, uint _value) returns(bool) {
-        return __transferToICAPWithReference(_icap, _value, &quot;&quot;);
+        return __transferToICAPWithReference(_icap, _value, "");
     }
 
     function transferToICAPWithReference(bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -195,13 +195,13 @@ contract GMT is AssetMin, Owned {
     uint public forwardCallGas = 21000;
     uint public setCosignerCallGas = 21000;
     EtherTreasuryInterface public treasury;
-    mapping(bytes32 =&gt; address) public allowedForwards;
+    mapping(bytes32 => address) public allowedForwards;
 
     function updateRefundGas() onlyContractOwner() returns(uint) {
         uint startGas = msg.gas;
         // just to simulate calculations, dunno if optimizer will remove this.
         uint refund = (startGas - msg.gas + refundGas) * tx.gasprice;
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return 0;
         }
         // end.
@@ -240,7 +240,7 @@ contract GMT is AssetMin, Owned {
         }
         treasury = EtherTreasuryInterface(_treasury);
         txGasPriceLimit = _txGasPriceLimit;
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             _safeSend(_treasury, msg.value);
         }
         return true;
@@ -256,7 +256,7 @@ contract GMT is AssetMin, Owned {
     }
 
     function _applyRefund(uint _startGas) internal returns(bool) {
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return false;
         }
         uint refund = (_startGas - msg.gas + refundGas) * tx.gasprice;
@@ -264,7 +264,7 @@ contract GMT is AssetMin, Owned {
     }
 
     function _refund(uint _value) internal returns(bool) {
-        return address(treasury) != 0 &amp;&amp; treasury.withdraw(tx.origin, _value);
+        return address(treasury) != 0 && treasury.withdraw(tx.origin, _value);
     }
 
     function _transfer(address _to, uint _value) internal returns(bool, bool) {

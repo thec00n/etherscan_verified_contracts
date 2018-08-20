@@ -4,8 +4,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -76,7 +76,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -87,7 +87,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -101,7 +101,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -112,7 +112,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -196,15 +196,15 @@ contract SetStepFunctionWrapper is Withdrawable {
         uint i;
 
         // check all x for buy are positive and y are positive as well
-        for( i = 0 ; i &lt; xBuy.length ; i++ ) {
-          require(xBuy[i] &gt;= 0 );
-          require(yBuy[i] &lt;= 0 );
+        for( i = 0 ; i < xBuy.length ; i++ ) {
+          require(xBuy[i] >= 0 );
+          require(yBuy[i] <= 0 );
         }
 
         // check all x for sell are negative and y are positive
-        for( i = 0 ; i &lt; xSell.length ; i++ ) {
-          require(xSell[i] &lt;= 0 );
-          require(ySell[i] &lt;= 0 );
+        for( i = 0 ; i < xSell.length ; i++ ) {
+          require(xSell[i] <= 0 );
+          require(ySell[i] <= 0 );
         }
 
         rateContract.setImbalanceStepFunction(token,xBuy,yBuy,xSell,ySell);

@@ -1,5 +1,5 @@
 // Appics token smart contract.
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="acc5c2cac3ecdcc4c9c2c3c182d8c9cdc1">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="acc5c2cac3ecdcc4c9c2c3c182d8c9cdc1">[email protected]</span>>
 
 pragma solidity ^ 0.4.15;
 
@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -40,8 +40,8 @@ library SafeMath {
  */
 contract ERC20 {
     uint256 public totalSupply = 0;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     function balanceOf(address _owner) public constant returns(uint256);
     function transfer(address _to, uint256 _value) public returns(bool);
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool);
@@ -58,8 +58,8 @@ contract ERC20 {
  */
 contract AppicsToken is ERC20 {
     using SafeMath for uint256;
-    string public name = &quot;Appics&quot;;
-    string public symbol = &quot;XAP&quot;;
+    string public name = "Appics";
+    string public symbol = "XAP";
     uint256 public decimals = 18;
 
     // Ico contract address
@@ -89,7 +89,7 @@ contract AppicsToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint256 _value) external icoOnly {
-        require(_value &gt; 0);
+        require(_value > 0);
         balances[_holder] = balances[_holder].add(_value);
         totalSupply = totalSupply.add(_value);
         Transfer(0x0, _holder, _value);
@@ -115,7 +115,7 @@ contract AppicsToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _investor, uint256 _value) external icoOnly {
-        require(balances[_investor] &gt; 0);
+        require(balances[_investor] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_investor] = balances[_investor].sub(_value);
         Burn(_investor, _value);
@@ -123,7 +123,7 @@ contract AppicsToken is ERC20 {
 
    /**
     *   @dev Get balance of investor
-    *   @param _owner        investor&#39;s address
+    *   @param _owner        investor's address
     *   @return              balance of investor
     */
     function balanceOf(address _owner) public constant returns(uint256) {

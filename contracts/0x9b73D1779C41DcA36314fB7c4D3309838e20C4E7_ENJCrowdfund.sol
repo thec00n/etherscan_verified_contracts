@@ -4,7 +4,7 @@ pragma solidity ^0.4.15;
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -57,7 +57,7 @@ contract Owned is IOwned {
 }
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -66,7 +66,7 @@ contract Utils {
     function Utils() {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -90,7 +90,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -103,7 +103,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -126,7 +126,7 @@ contract Utils {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) { name; }
     function symbol() public constant returns (string) { symbol; }
     function decimals() public constant returns (uint8) { decimals; }
@@ -147,10 +147,10 @@ contract ITokenHolder is IOwned {
 }
 
 /*
-    We consider every contract to be a &#39;token holder&#39; since it&#39;s currently not possible
+    We consider every contract to be a 'token holder' since it's currently not possible
     for a contract to deny receiving tokens.
 
-    The TokenHolder&#39;s contract sole purpose is to provide a safety mechanism that allows
+    The TokenHolder's contract sole purpose is to provide a safety mechanism that allows
     the owner to send tokens that were sent to the contract by mistake back to their sender.
 */
 contract TokenHolder is ITokenHolder, Owned, Utils {
@@ -183,13 +183,13 @@ contract TokenHolder is ITokenHolder, Owned, Utils {
     ERC20 Standard Token implementation
 */
 contract ERC20Token is IERC20Token, Utils {
-    string public standard = &quot;Token 0.1&quot;;
-    string public name = &quot;&quot;;
-    string public symbol = &quot;&quot;;
+    string public standard = "Token 0.1";
+    string public name = "";
+    string public symbol = "";
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -202,7 +202,7 @@ contract ERC20Token is IERC20Token, Utils {
         @param _decimals    decimal points, for display purposes
     */
     function ERC20Token(string _name, string _symbol, uint8 _decimals) {
-        require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0); // validate input
+        require(bytes(_name).length > 0 && bytes(_symbol).length > 0); // validate input
 
         name = _name;
         symbol = _symbol;
@@ -216,7 +216,7 @@ contract ERC20Token is IERC20Token, Utils {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transfer(address _to, uint256 _value)
         public
@@ -237,7 +237,7 @@ contract ERC20Token is IERC20Token, Utils {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value)
         public
@@ -263,14 +263,14 @@ contract ERC20Token is IERC20Token, Utils {
         @param _spender approved address
         @param _value   allowance amount
 
-        @return true if the approval was successful, false if it wasn&#39;t
+        @return true if the approval was successful, false if it wasn't
     */
     function approve(address _spender, uint256 _value)
         public
         validAddress(_spender)
         returns (bool success)
     {
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
+        // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
         require(_value == 0 || allowance[msg.sender][_spender] == 0);
 
         allowance[msg.sender][_spender] = _value;
@@ -294,7 +294,7 @@ contract ENJToken is ERC20Token, TokenHolder {
     uint256 constant public enjinTeamAllocation = 74 * 10**6 * ENJ_UNIT;         // Enjin Team allocation
 
     address public crowdFundAddress;                                             // Address of the crowdfund
-    address public advisorAddress;                                               // Enjin advisor&#39;s address
+    address public advisorAddress;                                               // Enjin advisor's address
     address public incentivisationFundAddress;                                   // Address that holds the incentivization funds
     address public enjinTeamAddress;                                             // Enjin Team address
 
@@ -314,13 +314,13 @@ contract ENJToken is ERC20Token, TokenHolder {
 
     // Enjin Team timelock    
     modifier safeTimelock() {
-        require(now &gt;= endTime + 6 * 4 weeks);
+        require(now >= endTime + 6 * 4 weeks);
         _;
     }
 
     // Advisor Team timelock    
     modifier advisorTimelock() {
-        require(now &gt;= endTime + 2 * 4 weeks);
+        require(now >= endTime + 2 * 4 weeks);
         _;
     }
 
@@ -338,7 +338,7 @@ contract ENJToken is ERC20Token, TokenHolder {
         @param _advisorAddress     Advisor address
     */
     function ENJToken(address _crowdFundAddress, address _advisorAddress, address _incentivisationFundAddress, address _enjinTeamAddress)
-    ERC20Token(&quot;Enjin Coin&quot;, &quot;ENJ&quot;, 18)
+    ERC20Token("Enjin Coin", "ENJ", 18)
      {
         crowdFundAddress = _crowdFundAddress;
         advisorAddress = _advisorAddress;
@@ -359,7 +359,7 @@ contract ENJToken is ERC20Token, TokenHolder {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, throws if it wasn&#39;t
+        @return true if the transfer was successful, throws if it wasn't
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         if (isTransferAllowed() == true || msg.sender == crowdFundAddress || msg.sender == incentivisationFundAddress) {
@@ -378,7 +378,7 @@ contract ENJToken is ERC20Token, TokenHolder {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, throws if it wasn&#39;t
+        @return true if the transfer was successful, throws if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         if (isTransferAllowed() == true || msg.sender == crowdFundAddress || msg.sender == incentivisationFundAddress) {        
@@ -406,12 +406,12 @@ contract ENJToken is ERC20Token, TokenHolder {
         @return true if successful, throws if not
     */
     function releaseEnjinTeamTokens() safeTimelock ownerOnly returns(bool success) {
-        require(totalAllocatedToTeam &lt; enjinTeamAllocation);
+        require(totalAllocatedToTeam < enjinTeamAllocation);
 
         uint256 enjinTeamAlloc = enjinTeamAllocation / 1000;
-        uint256 currentTranche = uint256(now - endTime) / 12 weeks;     // &quot;months&quot; after crowdsale end time (division floored)
+        uint256 currentTranche = uint256(now - endTime) / 12 weeks;     // "months" after crowdsale end time (division floored)
 
-        if(teamTranchesReleased &lt; maxTeamTranches &amp;&amp; currentTranche &gt; teamTranchesReleased) {
+        if(teamTranchesReleased < maxTeamTranches && currentTranche > teamTranchesReleased) {
             teamTranchesReleased++;
 
             uint256 amount = safeMul(enjinTeamAlloc, 125);
@@ -479,7 +479,7 @@ contract ENJToken is ERC20Token, TokenHolder {
         Transfers are forbidden before the end of the crowdfund
     */
     function isTransferAllowed() internal constant returns(bool) {
-        if (now &gt; endTime || isReleasedToPublic == true) {
+        if (now > endTime || isReleasedToPublic == true) {
             return true;
         }
         return false;
@@ -525,7 +525,7 @@ contract ENJCrowdfund is TokenHolder {
 
     // Ensures that the current time is between startTime (inclusive) and endTime (exclusive)
     modifier between() {
-        assert(now &gt;= startTime &amp;&amp; now &lt; endTime);
+        assert(now >= startTime && now < endTime);
         _;
     }
 
@@ -564,8 +564,8 @@ contract ENJCrowdfund is TokenHolder {
         @param _amountofENJ matching list of address balances
     */
     function deliverPresaleTokens(address[] _batchOfAddresses, uint256[] _amountofENJ) external tokenIsSet ownerOnly returns (bool success) {
-        require(now &lt; startTime);
-        for (uint256 i = 0; i &lt; _batchOfAddresses.length; i++) {
+        require(now < startTime);
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             deliverPresaleTokenToClient(_batchOfAddresses[i], _amountofENJ[i]);            
         }
         return true;
@@ -579,7 +579,7 @@ contract ENJCrowdfund is TokenHolder {
         @param _amountofENJ balance to send out
     */
     function deliverPresaleTokenToClient(address _accountHolder, uint256 _amountofENJ) internal ownerOnly {
-        require(totalPresaleTokensYetToAllocate &gt; 0);
+        require(totalPresaleTokensYetToAllocate > 0);
         token.transfer(_accountHolder, _amountofENJ);
         token.addToAllocation(_amountofENJ);
         totalPresaleTokensYetToAllocate = safeSub(totalPresaleTokensYetToAllocate, _amountofENJ);
@@ -634,11 +634,11 @@ contract ENJCrowdfund is TokenHolder {
     */
     function getTotalAmountOfTokens(uint256 _contribution) public constant returns (uint256 amountOfTokens) {
         uint256 currentTokenRate = 0;
-        if (now &lt; week2Start) {
+        if (now < week2Start) {
             return currentTokenRate = safeMul(_contribution, 6000);
-        } else if (now &lt; week3Start) {
+        } else if (now < week3Start) {
             return currentTokenRate = safeMul(_contribution, 5000);
-        } else if (now &lt; week4Start) {
+        } else if (now < week4Start) {
             return currentTokenRate = safeMul(_contribution, 4000);
         } else {
             return currentTokenRate = safeMul(_contribution, 3000);

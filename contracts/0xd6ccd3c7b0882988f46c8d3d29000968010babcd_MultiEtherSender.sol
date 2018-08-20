@@ -15,9 +15,9 @@ contract MultiEtherSender {
         uint256 balance = msg.sender.balance;
         bool result = false;
         require(list.length != 0);
-        require(list.length &lt;= MAX_RECIPIENTS);
-        for (uint i=0; i&lt;list.length; i++) {
-            require(balance &gt;= amount);
+        require(list.length <= MAX_RECIPIENTS);
+        for (uint i=0; i<list.length; i++) {
+            require(balance >= amount);
             result = list[i].send(amount);
         }
         return result;

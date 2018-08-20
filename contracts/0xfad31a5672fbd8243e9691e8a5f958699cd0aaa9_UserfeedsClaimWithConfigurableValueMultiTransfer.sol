@@ -1,12 +1,12 @@
 /*
- * Contracts&#39; names:
+ * Contracts' names:
  * 1) UserfeedsClaim - prefix
  * 2a) WithoutValueTransfer - simplest case, no transfer
  * 2b) With - continuation
  * 3) Configurable - optional, means there is function parameter to decide how much to send to each recipient
  * 4) Value or Token - value means ether, token means ERC20 or ERC721
  * 5) Multi - optional, means there are multiple recipients
- * 6) Send or Transfer - using send or transfer in case of ether, or transferFrom in case of ERC20/ERC721 (no &quot;Send&quot; possible in this case)
+ * 6) Send or Transfer - using send or transfer in case of ether, or transferFrom in case of ERC20/ERC721 (no "Send" possible in this case)
  * 7) Unsafe or NoCheck - optional, means that value returned from send or transferFrom is not checked
  */
 
@@ -121,7 +121,7 @@ contract UserfeedsClaimWithValueMultiSendUnsafe is Destructible, WithClaim {
 
   function send(address[] recipients) public payable {
     uint amount = msg.value / recipients.length;
-    for (uint i = 0; i &lt; recipients.length; i++) {
+    for (uint i = 0; i < recipients.length; i++) {
       recipients[i].send(amount);
     }
     msg.sender.transfer(address(this).balance);
@@ -129,7 +129,7 @@ contract UserfeedsClaimWithValueMultiSendUnsafe is Destructible, WithClaim {
 
   function send(bytes20[] recipients) public payable {
     uint amount = msg.value / recipients.length;
-    for (uint i = 0; i &lt; recipients.length; i++) {
+    for (uint i = 0; i < recipients.length; i++) {
       address(recipients[i]).send(amount);
     }
     msg.sender.transfer(address(this).balance);
@@ -149,7 +149,7 @@ contract UserfeedsClaimWithConfigurableValueMultiTransfer is Destructible, WithC
   }
 
   function transfer(address[] recipients, uint[] values) public payable {
-    for (uint i = 0; i &lt; recipients.length; i++) {
+    for (uint i = 0; i < recipients.length; i++) {
       recipients[i].transfer(values[i]);
     }
     msg.sender.transfer(address(this).balance);
@@ -168,7 +168,7 @@ contract UserfeedsClaimWithConfigurableTokenMultiTransfer is Destructible, WithC
   }
 
   function transfer(address[] recipients, ERC20 token, uint[] values) public {
-    for (uint i = 0; i &lt; recipients.length; i++) {
+    for (uint i = 0; i < recipients.length; i++) {
       require(token.transferFrom(msg.sender, recipients[i], values[i]));
     }
   }
@@ -186,7 +186,7 @@ contract UserfeedsClaimWithConfigurableTokenMultiTransferNoCheck is Destructible
   }
 
   function transfer(address[] recipients, ERC721 token, uint[] values) public {
-    for (uint i = 0; i &lt; recipients.length; i++) {
+    for (uint i = 0; i < recipients.length; i++) {
       token.transferFrom(msg.sender, recipients[i], values[i]);
     }
   }

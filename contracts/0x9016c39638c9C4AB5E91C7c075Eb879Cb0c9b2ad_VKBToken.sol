@@ -1,16 +1,16 @@
 pragma solidity ^0.4.11;
 
 contract VKBToken {
-	string public constant symbol = &quot;VKB&quot;;
-	string public constant name = &quot;VKBToken&quot;;
+	string public constant symbol = "VKB";
+	string public constant name = "VKBToken";
 	uint8 public constant decimals = 18;
 	uint256 _totalSupply = 210000;
 	
 	address public owner;
 	
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 	
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => mapping(address => uint256)) allowed;
 	
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 	
@@ -35,9 +35,9 @@ contract VKBToken {
 	}
 	
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount 
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -52,10 +52,10 @@ contract VKBToken {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

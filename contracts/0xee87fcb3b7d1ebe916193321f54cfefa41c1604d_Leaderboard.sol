@@ -12,7 +12,7 @@ contract Leaderboard {
     uint public numLeaders;
     address public head;
     address public tail;
-    mapping (address =&gt; Leader) public leaders;
+    mapping (address => Leader) public leaders;
     
     struct Leader {
         // Data
@@ -40,31 +40,31 @@ contract Leaderboard {
     */
     function () payable {
         // Bid must be larger than minBid
-        require(msg.value &gt;= minBid);
+        require(msg.value >= minBid);
         
         // Bid must be multiple of minBid. Remainder is sent back.
         uint256 remainder  = msg.value % minBid;
         uint256 bid_amount = msg.value - remainder;
         
         // If leaderboard is full, bid needs to be larger than the lowest placed leader
-        require(!((numLeaders == maxLeaders) &amp;&amp; (bid_amount &lt;= leaders[tail].amount)));
+        require(!((numLeaders == maxLeaders) && (bid_amount <= leaders[tail].amount)));
         
         // Get leader
         Leader memory leader = popLeader(msg.sender);
         
-        // Add to leader&#39;s bid
+        // Add to leader's bid
         leader.amount += bid_amount;
         
         // Insert leader in appropriate position
         insertLeader(leader);
         
         // If leaderboard is full, drop last leader
-        if (numLeaders &gt; maxLeaders) {
+        if (numLeaders > maxLeaders) {
             dropLast();
         }
         
         // Return remainder to sender
-        if (remainder &gt; 0) msg.sender.transfer(remainder);
+        if (remainder > 0) msg.sender.transfer(remainder);
     }
     
     
@@ -74,16 +74,16 @@ contract Leaderboard {
     function setUrls(string url, string img_url) {
         var leader = leaders[msg.sender];
         
-        require(leader.amount &gt; 0);
+        require(leader.amount > 0);
         
-        // Set leader&#39;s url if it is not an empty string
+        // Set leader's url if it is not an empty string
         bytes memory tmp_url = bytes(url);
         if (tmp_url.length != 0) {
             // Set url
             leader.url = url;
         }
         
-        // Set leader&#39;s img_url if it is not an empty string
+        // Set leader's img_url if it is not an empty string
         bytes memory tmp_img_url = bytes(img_url);
         if (tmp_img_url.length != 0) {
             // Set image url
@@ -98,11 +98,11 @@ contract Leaderboard {
     function resetUrls(bool url, bool img_url) {
         var leader = leaders[msg.sender];
         
-        require(leader.amount &gt; 0);
+        require(leader.amount > 0);
         
         // Reset urls
-        if (url) leader.url = &quot;&quot;;
-        if (img_url) leader.img_url = &quot;&quot;;
+        if (url) leader.url = "";
+        if (img_url) leader.img_url = "";
     }
     
     
@@ -154,10 +154,10 @@ contract Leaderboard {
         if (numLeaders == 0) {
             head = msg.sender;
             tail = msg.sender;
-        } else if (leader.amount &lt;= leaders[tail].amount) {
+        } else if (leader.amount <= leaders[tail].amount) {
             leaders[tail].next = msg.sender;
             tail = msg.sender;
-        } else if (leader.amount &gt; leaders[head].amount) {
+        } else if (leader.amount > leaders[head].amount) {
             leader.next = head;
             leaders[head].previous = msg.sender;
             head = msg.sender;
@@ -165,8 +165,8 @@ contract Leaderboard {
             var current_addr = head;
             var current = leaders[current_addr];
             
-            while (current.amount &gt; 0) {
-                if (leader.amount &gt; current.amount) {
+            while (current.amount > 0) {
+                if (leader.amount > current.amount) {
                     leader.next = current_addr;
                     leader.previous = current.previous;
                     current.previous = msg.sender;
@@ -214,7 +214,7 @@ contract Leaderboard {
     /*
         Lets owner withdraw Eth from the contract. Owner can withdraw all funds,
         because leaders who fall of the board can always be refunded with the new
-        bid: (newBid &gt; refund).
+        bid: (newBid > refund).
     */
     function withdraw() onlyOwner {
         owner.transfer(this.balance);

@@ -31,11 +31,11 @@ contract CryptoCatsMarket {
 
 
     /* You can use this hash to verify the image file containing all cats */
-    string public imageHash = &quot;3b82cfd5fb39faff3c2c9241ca5a24439f11bdeaa7d6c0771eb782ea7c963917&quot;;
+    string public imageHash = "3b82cfd5fb39faff3c2c9241ca5a24439f11bdeaa7d6c0771eb782ea7c963917";
 
     /* Variables to store contract owner and contract token standard details */
     address owner;
-    string public standard = &#39;CryptoCats&#39;;
+    string public standard = 'CryptoCats';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -56,20 +56,20 @@ contract CryptoCatsMarket {
     uint public currentReleaseCeiling;       // variable to track maximum cat index for latest release
 
     /* Create array to store cat index to owner address */
-    mapping (uint =&gt; address) public catIndexToAddress;
+    mapping (uint => address) public catIndexToAddress;
     
     /* Create array to store cat release id to price in wei for all cats in that release */
-    mapping (uint32 =&gt; uint) public catReleaseToPrice;
+    mapping (uint32 => uint) public catReleaseToPrice;
 
     /* Create array to store cat index to any exception price deviating from release price */
-    mapping (uint =&gt; uint) public catIndexToPriceException;
+    mapping (uint => uint) public catIndexToPriceException;
 
     /* Create an array with all balances */
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
     /* Store type descriptor string for each attribute number */
-    mapping (uint =&gt; string) public attributeType;
+    mapping (uint => string) public attributeType;
     /* Store up to 6 cat attribute strings where attribute types are defined in attributeType */
-    mapping (uint =&gt; string[6]) public catAttributes;
+    mapping (uint => string[6]) public catAttributes;
 
     /* Struct that is used to describe seller offer details */
     struct Offer {
@@ -83,10 +83,10 @@ contract CryptoCatsMarket {
     uint[] public releaseCatIndexUpperBound;
 
     // Store sale Offer details for each cat made for sale by its owner
-    mapping (uint =&gt; Offer) public catsForSale;
+    mapping (uint => Offer) public catsForSale;
 
     // Store pending withdrawal amounts in ETH that a failed bidder or successful seller is able to withdraw
-    mapping (address =&gt; uint) public pendingWithdrawals;
+    mapping (address => uint) public pendingWithdrawals;
 
     /* Define event types to publish transaction details related to transfer and buy/sell activities */
     event CatTransfer(address indexed from, address indexed to, uint catIndex);
@@ -109,8 +109,8 @@ contract CryptoCatsMarket {
         owner = msg.sender;                          // Set contract creation sender as owner
         _totalSupply = 625;                          // Set total supply
         catsRemainingToAssign = _totalSupply;        // Initialise cats remaining to total supply amount
-        name = &quot;CRYPTOCATS&quot;;                         // Set the name for display purposes
-        symbol = &quot;CCAT&quot;;                             // Set the symbol for display purposes
+        name = "CRYPTOCATS";                         // Set the name for display purposes
+        symbol = "CCAT";                             // Set the symbol for display purposes
         decimals = 0;                                // Amount of decimals for display purposes
         contractVersion = 3;
         currentReleaseCeiling = 625;
@@ -136,7 +136,7 @@ contract CryptoCatsMarket {
     function setAttributeType(uint attributeIndex, string descriptionText)
         onlyBy(owner)
     {
-        require(attributeIndex &gt;= 0 &amp;&amp; attributeIndex &lt; 6);
+        require(attributeIndex >= 0 && attributeIndex < 6);
         attributeType[attributeIndex] = descriptionText;
     }
     
@@ -146,7 +146,7 @@ contract CryptoCatsMarket {
         returns (uint256 newTotalSupply) 
     {
         require(!totalSupplyIsLocked);                  // Check that new cat releases still available
-        require(numberOfCatsAdded &gt; 0);                 // Require release to have more than 0 cats 
+        require(numberOfCatsAdded > 0);                 // Require release to have more than 0 cats 
         currentReleaseCeiling = currentReleaseCeiling + numberOfCatsAdded;  // Add new cats to release ceiling
         uint _previousSupply = _totalSupply;
         _totalSupply = _totalSupply + numberOfCatsAdded;
@@ -164,7 +164,7 @@ contract CryptoCatsMarket {
     function updateCatReleasePrice(uint32 _releaseId, uint256 catPrice)
         onlyBy(owner)
     {
-        require(_releaseId &lt;= releaseCatIndexUpperBound.length);            // Check that release is id valid
+        require(_releaseId <= releaseCatIndexUpperBound.length);            // Check that release is id valid
         catReleaseToPrice[_releaseId] = catPrice;                           // Update price for cat release
         UpdateReleasePrice(_releaseId, catPrice);                           // Send EVM event with release id and price details
     }
@@ -174,7 +174,7 @@ contract CryptoCatsMarket {
         onlyBy(owner)
     {
         PreviousCryptoCatsContract previousCatContract = PreviousCryptoCatsContract(previousContractAddress);
-        for (uint256 catIndex = startIndex; catIndex &lt;= endIndex; catIndex++) {     // Loop through cat index based on start/end index
+        for (uint256 catIndex = startIndex; catIndex <= endIndex; catIndex++) {     // Loop through cat index based on start/end index
             address catOwner = previousCatContract.catIndexToAddress(catIndex);     // Retrieve owner address from previous contract
 
             if (catOwner != 0x0) {                                                  // Check that cat index has an owner address and is not unclaimed
@@ -189,9 +189,9 @@ contract CryptoCatsMarket {
     
     /* Add value for cat attribute that has been defined (only for cat owner) */
     function setCatAttributeValue(uint catIndex, uint attrIndex, string attrValue) {
-        require(catIndex &lt; _totalSupply);                      // cat index requested should not exceed total supply
+        require(catIndex < _totalSupply);                      // cat index requested should not exceed total supply
         require(catIndexToAddress[catIndex] == msg.sender);    // require sender to be cat owner
-        require(attrIndex &gt;= 0 &amp;&amp; attrIndex &lt; 6);              // require that attribute index is 0 - 5
+        require(attrIndex >= 0 && attrIndex < 6);              // require that attribute index is 0 - 5
         bytes memory tempAttributeTypeText = bytes(attributeType[attrIndex]);
         require(tempAttributeTypeText.length != 0);            // require that attribute being stored is not empty
         catAttributes[catIndex][attrIndex] = attrValue;        // store attribute value string in contract based on cat index
@@ -199,12 +199,12 @@ contract CryptoCatsMarket {
 
     /* Transfer cat by owner to another wallet address
        Different usage in Cryptocats than in normal token transfers 
-       This will transfer an owner&#39;s cat to another wallet&#39;s address
+       This will transfer an owner's cat to another wallet's address
        Cat is identified by cat index passed in as _value */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (_value &lt; _totalSupply &amp;&amp;                    // ensure cat index is valid
-            catIndexToAddress[_value] == msg.sender &amp;&amp;  // ensure sender is owner of cat
-            balanceOf[msg.sender] &gt; 0) {                // ensure sender balance of cat exists
+        if (_value < _totalSupply &&                    // ensure cat index is valid
+            catIndexToAddress[_value] == msg.sender &&  // ensure sender is owner of cat
+            balanceOf[msg.sender] > 0) {                // ensure sender balance of cat exists
             balanceOf[msg.sender]--;                    // update (reduce) cat balance  from owner
             catIndexToAddress[_value] = _to;            // set new owner of cat in cat index
             balanceOf[_to]++;                           // update (include) cat balance for recepient
@@ -232,19 +232,19 @@ contract CryptoCatsMarket {
     //     require(!allCatsAssigned);                      // require all cats have not been assigned/claimed
     //     require(catsRemainingToAssign != 0);            // require cats remaining to be assigned count is not 0
     //     require(catIndexToAddress[catIndex] == 0x0);    // require owner address for requested cat index is empty
-    //     require(catIndex &lt; _totalSupply);               // require cat index requested does not exceed total supply
-    //     require(catIndex &lt; currentReleaseCeiling);      // require cat index to not be above current ceiling of released cats
-    //     catIndexToAddress[catIndex] = msg.sender;       // Assign sender&#39;s address as owner of cat
-    //     balanceOf[msg.sender]++;                        // Increase sender&#39;s balance holder 
+    //     require(catIndex < _totalSupply);               // require cat index requested does not exceed total supply
+    //     require(catIndex < currentReleaseCeiling);      // require cat index to not be above current ceiling of released cats
+    //     catIndexToAddress[catIndex] = msg.sender;       // Assign sender's address as owner of cat
+    //     balanceOf[msg.sender]++;                        // Increase sender's balance holder 
     //     catsRemainingToAssign--;                        // Decrease cats remaining count
-    //     Assign(msg.sender, catIndex);                   // Triggers address assignment event to EVM&#39;s
+    //     Assign(msg.sender, catIndex);                   // Triggers address assignment event to EVM's
     //                                                     // log to allow javascript callbacks
     // }
 
     /* Return the release index for a cat based on the cat index */
     function getCatRelease(uint catIndex) returns (uint32) {
-        for (uint32 i = 0; i &lt; releaseCatIndexUpperBound.length; i++) {     // loop through release index record array
-            if (releaseCatIndexUpperBound[i] &gt; catIndex) {                  // check if highest cat index for release is higher than submitted cat index 
+        for (uint32 i = 0; i < releaseCatIndexUpperBound.length; i++) {     // loop through release index record array
+            if (releaseCatIndexUpperBound[i] > catIndex) {                  // check if highest cat index for release is higher than submitted cat index 
                 return i;                                                   // return release id
             }
         }   
@@ -252,7 +252,7 @@ contract CryptoCatsMarket {
 
     /* Gets cat price for a particular cat index */
     function getCatPrice(uint catIndex) returns (uint catPrice) {
-        require(catIndex &lt; _totalSupply);                   // Require that cat index is valid
+        require(catIndex < _totalSupply);                   // Require that cat index is valid
 
         if(catIndexToPriceException[catIndex] != 0) {       // Check if there is any exception pricing
             return catIndexToPriceException[catIndex];      // Return price if there is overriding exception pricing
@@ -266,8 +266,8 @@ contract CryptoCatsMarket {
     function setCatPrice(uint catIndex, uint catPrice)
         onlyBy(owner) 
     {
-        require(catIndex &lt; _totalSupply);                   // Require that cat index is valid
-        require(catPrice &gt; 0);                              // Check that cat price is not 0
+        require(catIndex < _totalSupply);                   // Require that cat index is valid
+        require(catPrice > 0);                              // Check that cat price is not 0
         catIndexToPriceException[catIndex] = catPrice;      // Create cat price record in exception pricing array for this cat index
     }
 
@@ -276,15 +276,15 @@ contract CryptoCatsMarket {
         require(!allCatsAssigned);                      // require all cats have not been assigned/claimed
         require(catsRemainingToAssign != 0);            // require cats remaining to be assigned count is not 0
         require(catIndexToAddress[catIndex] == 0x0);    // require owner address for requested cat index is empty
-        require(catIndex &lt; _totalSupply);               // require cat index requested does not exceed total supply
-        require(catIndex &lt; currentReleaseCeiling);      // require cat index to not be above current ceiling of released cats
-        require(getCatPrice(catIndex) &lt;= msg.value);    // require ETH amount sent with tx is sufficient for cat price
+        require(catIndex < _totalSupply);               // require cat index requested does not exceed total supply
+        require(catIndex < currentReleaseCeiling);      // require cat index to not be above current ceiling of released cats
+        require(getCatPrice(catIndex) <= msg.value);    // require ETH amount sent with tx is sufficient for cat price
 
-        catIndexToAddress[catIndex] = msg.sender;       // Assign sender&#39;s address as owner of cat
-        balanceOf[msg.sender]++;                        // Increase sender&#39;s balance holder 
+        catIndexToAddress[catIndex] = msg.sender;       // Assign sender's address as owner of cat
+        balanceOf[msg.sender]++;                        // Increase sender's balance holder 
         catsRemainingToAssign--;                        // Decrease cats remaining count
         pendingWithdrawals[owner] += msg.value;         // Add paid amount to pending withdrawals for contract owner (bugfix in v3.0)
-        Assign(msg.sender, catIndex);                   // Triggers address assignment event to EVM&#39;s
+        Assign(msg.sender, catIndex);                   // Triggers address assignment event to EVM's
                                                         // log to allow javascript callbacks
     }
 
@@ -302,7 +302,7 @@ contract CryptoCatsMarket {
     /* Indicate that cat is no longer for sale (by cat owner only) */
     function catNoLongerForSale(uint catIndex) {
         require (catIndexToAddress[catIndex] == msg.sender);                // Require that sender is cat owner
-        require (catIndex &lt; _totalSupply);                                  // Require that cat index is valid
+        require (catIndex < _totalSupply);                                  // Require that cat index is valid
         catsForSale[catIndex] = Offer(false, catIndex, msg.sender, 0, 0x0); // Switch cat for sale flag to false and reset all other values
         CatNoLongerForSale(catIndex);                                       // Create EVM event logging that cat is no longer for sale 
     }
@@ -310,7 +310,7 @@ contract CryptoCatsMarket {
     /* Create sell offer for cat with a certain minimum sale price in wei (by cat owner only) */
     function offerCatForSale(uint catIndex, uint minSalePriceInWei) {
         require (catIndexToAddress[catIndex] == msg.sender);                // Require that sender is cat owner 
-        require (catIndex &lt; _totalSupply);                                  // Require that cat index is valid
+        require (catIndex < _totalSupply);                                  // Require that cat index is valid
         catsForSale[catIndex] = Offer(true, catIndex, msg.sender, minSalePriceInWei, 0x0);  // Set cat for sale flag to true and update with price details 
         CatOffered(catIndex, minSalePriceInWei, 0x0);                       // Create EVM event to log details of cat sale
     }
@@ -318,17 +318,17 @@ contract CryptoCatsMarket {
     /* Create sell offer for cat only to a particular buyer address with certain minimum sale price in wei (by cat owner only) */
     function offerCatForSaleToAddress(uint catIndex, uint minSalePriceInWei, address toAddress) {
         require (catIndexToAddress[catIndex] == msg.sender);                // Require that sender is cat owner 
-        require (catIndex &lt; _totalSupply);                                  // Require that cat index is valid
+        require (catIndex < _totalSupply);                                  // Require that cat index is valid
         catsForSale[catIndex] = Offer(true, catIndex, msg.sender, minSalePriceInWei, toAddress); // Set cat for sale flag to true and update with price details and only sell to address
         CatOffered(catIndex, minSalePriceInWei, toAddress);                 // Create EVM event to log details of cat sale
     }
 
     /* Buy cat that is currently on offer  */
     function buyCat(uint catIndex) payable {
-        require (catIndex &lt; _totalSupply);                      // require that cat index is valid and less than total cat index                
+        require (catIndex < _totalSupply);                      // require that cat index is valid and less than total cat index                
         Offer offer = catsForSale[catIndex];
         require (offer.isForSale);                              // require that cat is marked for sale  // require buyer to have required address if indicated in offer 
-        require (msg.value &gt;= offer.minPrice);                  // require buyer sent enough ETH
+        require (msg.value >= offer.minPrice);                  // require buyer sent enough ETH
         require (offer.seller == catIndexToAddress[catIndex]);  // require seller must still be owner of cat
         if (offer.sellOnlyTo != 0x0) {                          // if cat offer sell only to address is not blank
             require (offer.sellOnlyTo == msg.sender);           // require that buyer is allowed to buy offer
@@ -336,13 +336,13 @@ contract CryptoCatsMarket {
         
         address seller = offer.seller;
 
-        catIndexToAddress[catIndex] = msg.sender;               // update cat owner address to buyer&#39;s address
+        catIndexToAddress[catIndex] = msg.sender;               // update cat owner address to buyer's address
         balanceOf[seller]--;                                    // reduce cat balance of seller
         balanceOf[msg.sender]++;                                // increase cat balance of buyer
         Transfer(seller, msg.sender, 1);                        // create EVM event logging transfer of 1 cat from seller to owner
 
         CatNoLongerForSale(catIndex);                           // create EVM event logging cat is no longer for sale
-        pendingWithdrawals[seller] += msg.value;                // increase pending withdrawal amount of seller based on amount sent in buyer&#39;s message
+        pendingWithdrawals[seller] += msg.value;                // increase pending withdrawal amount of seller based on amount sent in buyer's message
         CatBought(catIndex, msg.value, seller, msg.sender);     // create EVM event logging details of cat purchase
 
     }
@@ -358,11 +358,11 @@ contract CryptoCatsMarket {
 contract PreviousCryptoCatsContract {
 
     /* You can use this hash to verify the image file containing all cats */
-    string public imageHash = &quot;e055fe5eb1d95ea4e42b24d1038db13c24667c494ce721375bdd827d34c59059&quot;;
+    string public imageHash = "e055fe5eb1d95ea4e42b24d1038db13c24667c494ce721375bdd827d34c59059";
 
     /* Variables to store contract owner and contract token standard details */
     address owner;
-    string public standard = &#39;CryptoCats&#39;;
+    string public standard = 'CryptoCats';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -381,10 +381,10 @@ contract PreviousCryptoCatsContract {
     uint public currentReleaseCeiling;       // variable to track maximum cat index for latest release
 
     /* Create array to store cat index to owner address */
-    mapping (uint =&gt; address) public catIndexToAddress;
+    mapping (uint => address) public catIndexToAddress;
 
     /* Create an array with all balances */
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function PreviousCryptoCatsContract() payable {

@@ -6,7 +6,7 @@
 
 pragma solidity ^0.4.6;
 
-// import &quot;./UpgradeableToken.sol&quot;;
+// import "./UpgradeableToken.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -15,11 +15,11 @@ pragma solidity ^0.4.6;
 
 // pragma solidity ^0.4.15;
 
-// import &quot;zeppelin-solidity/contracts/token/ERC20.sol&quot;;
+// import "zeppelin-solidity/contracts/token/ERC20.sol";
 // pragma solidity ^0.4.18;
 
 
-// import &#39;./ERC20Basic.sol&#39;;
+// import './ERC20Basic.sol';
 // pragma solidity ^0.4.18;
 
 
@@ -46,7 +46,7 @@ contract ERC20 is ERC20Basic {
   function approve(address spender, uint256 value) public returns (bool);
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
-// import &#39;./StandardToken.sol&#39;;
+// import './StandardToken.sol';
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -56,8 +56,8 @@ contract ERC20 is ERC20Basic {
 // pragma solidity ^0.4.15;
 
 
-// import &#39;zeppelin-solidity/contracts/token/ERC20.sol&#39;;
-// import &quot;zeppelin-solidity/contracts/math/SafeMath.sol&quot;;
+// import 'zeppelin-solidity/contracts/token/ERC20.sol';
+// import "zeppelin-solidity/contracts/math/SafeMath.sol";
 // pragma solidity ^0.4.18;
 
 
@@ -76,20 +76,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,10 +107,10 @@ contract StandardToken is ERC20 {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -144,7 +144,7 @@ contract StandardToken is ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) 
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) 
       revert();
 
     allowed[msg.sender][_spender] = _value;
@@ -158,7 +158,7 @@ contract StandardToken is ERC20 {
 
 }
 
-// import &quot;./UpgradeAgent.sol&quot;;
+// import "./UpgradeAgent.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -207,7 +207,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -312,7 +312,7 @@ contract UpgradeableToken is StandardToken {
 
 }
 
-// import &quot;./ReleasableToken.sol&quot;;
+// import "./ReleasableToken.sol";
 /**
  * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
  *
@@ -321,14 +321,14 @@ contract UpgradeableToken is StandardToken {
 
 // pragma solidity ^0.4.15;
 
-// import &quot;zeppelin-solidity/contracts/ownership/Ownable.sol&quot;;
+// import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 // pragma solidity ^0.4.18;
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -366,7 +366,7 @@ contract Ownable {
   }
 
 }
-// import &quot;zeppelin-solidity/contracts/token/ERC20.sol&quot;;
+// import "zeppelin-solidity/contracts/token/ERC20.sol";
 
 
 /**
@@ -381,7 +381,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -405,7 +405,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -453,15 +453,15 @@ contract ReleasableToken is ERC20, Ownable {
 
 }
 
-// import &quot;./PausableToken.sol&quot;;
+// import "./PausableToken.sol";
 // pragma solidity ^0.4.15;
 
-// import &#39;./StandardToken.sol&#39;;
-// import &#39;zeppelin-solidity/contracts/lifecycle/Pausable.sol&#39;;
+// import './StandardToken.sol';
+// import 'zeppelin-solidity/contracts/lifecycle/Pausable.sol';
 // pragma solidity ^0.4.18;
 
 
-// import &quot;../ownership/Ownable.sol&quot;;
+// import "../ownership/Ownable.sol";
 
 
 /**

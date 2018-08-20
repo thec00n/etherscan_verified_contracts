@@ -50,14 +50,14 @@ contract ERC20 {
 }
 
 contract SpecialGift is ERC721 {
-    string public name = &quot;VirtualGift&quot;;             
+    string public name = "VirtualGift";             
     uint8 public decimals = 0;                
-    string public symbol = &quot;VTG&quot;;                 
-    string public version = &quot;1.0&quot;;  
+    string public symbol = "VTG";                 
+    string public version = "1.0";  
 
     address private defaultGiftOwner;
     
-    mapping(address =&gt; bool) allowPermission;
+    mapping(address => bool) allowPermission;
 
     ERC20 private Gifto = ERC20(0x00C5bBaE50781Be1669306b9e001EFF57a2957b09d);
     
@@ -66,26 +66,26 @@ contract SpecialGift is ERC721 {
     GiftToken[] giftStorageArry;
     //Gift template storage.
     GiftTemplateToken[] giftTemplateStorageArry;
-    //mapping address to it&#39;s gift sum
-    mapping(address =&gt; uint256) private balances;
+    //mapping address to it's gift sum
+    mapping(address => uint256) private balances;
     //mapping gift id to owner
-    mapping(uint256 =&gt; address) private giftIndexToOwners;
+    mapping(uint256 => address) private giftIndexToOwners;
     //tells the gift is existed by gift id
-    mapping(uint256 =&gt; bool) private giftExists;
+    mapping(uint256 => bool) private giftExists;
     //mapping current owner to approved owners to gift
-    mapping(address =&gt; mapping (address =&gt; uint256)) private ownerToApprovedAddsToGifIds;
+    mapping(address => mapping (address => uint256)) private ownerToApprovedAddsToGifIds;
     //mapping gift template id to gift ids
-    mapping(uint256 =&gt; uint256[]) private giftTemplateIdToGiftids;
+    mapping(uint256 => uint256[]) private giftTemplateIdToGiftids;
     //mapping address to allready bought sum.
-    mapping(address =&gt; mapping(uint256 =&gt; uint256)) private addressToBoughtSum;
+    mapping(address => mapping(uint256 => uint256)) private addressToBoughtSum;
     //Mapping gift type to gift limit.
-    mapping(uint256 =&gt; uint256) private giftTypeToGiftLimit;
+    mapping(uint256 => uint256) private giftTypeToGiftLimit;
     //Single address can limitation.
     uint256 constant NO_LIMIT = 0;
     uint256 private singleAddressBuyLimit = 1;
     
     //mapping gift template to gift selled sum.
-    mapping(uint256 =&gt; uint256) private giftTypeToSelledSum;
+    mapping(uint256 => uint256) private giftTypeToSelledSum;
 
     //Gift template known as 0 generation gift
     struct GiftTemplateToken {
@@ -124,15 +124,15 @@ contract SpecialGift is ERC721 {
         GiftToken memory newGift = GiftToken({
             giftPrice: 0,
             giftType: 0,
-            giftImgUrl: &quot;&quot;,
-            giftName: &quot;&quot;
+            giftImgUrl: "",
+            giftName: ""
         });
 
          GiftTemplateToken memory newGiftTemplate = GiftTemplateToken({
                 giftPrice: 0,
                 giftLimit: 0,
-                giftImgUrl: &quot;&quot;,
-                giftName: &quot;&quot;
+                giftImgUrl: "",
+                giftName: ""
             });
         
         giftStorageArry.push(newGift); // id = 0
@@ -162,11 +162,11 @@ contract SpecialGift is ERC721 {
                      returns(uint256 _giftId)
                      {
         //Check if there is a buy Limit for buyer address
-        require(addressToBoughtSum[recipient][_type] &lt; singleAddressBuyLimit);
-        //Check if the created gifts sum &lt;  gift Limit
-        require(giftTypeToSelledSum[_type] &lt; giftTemplateStorageArry[_type].giftLimit);
+        require(addressToBoughtSum[recipient][_type] < singleAddressBuyLimit);
+        //Check if the created gifts sum <  gift Limit
+        require(giftTypeToSelledSum[_type] < giftTemplateStorageArry[_type].giftLimit);
          //_type must be a valid value
-        require(_type &gt; 0 &amp;&amp; _type &lt; giftTemplateStorageArry.length);
+        require(_type > 0 && _type < giftTemplateStorageArry.length);
         //Mint a special gift.
         _giftId = _mintGift(_type, recipient);
         giftTypeToSelledSum[_type]++;
@@ -199,7 +199,7 @@ contract SpecialGift is ERC721 {
     }
 
     /// @dev Initiate gift template.
-    /// A gift template means a gift of &quot;0&quot; generation&#39;s
+    /// A gift template means a gift of "0" generation's
     function createGiftTemplate(uint256 _price,
                          uint256 _limit, 
                          string _imgUrl,
@@ -208,12 +208,12 @@ contract SpecialGift is ERC721 {
                          returns (uint256 giftTemplateId)
                          {
         //Check these variables
-        require(_price &gt; 0);
+        require(_price > 0);
         bytes memory imgUrlStringTest = bytes(_imgUrl);
         bytes memory giftNameStringTest = bytes(_giftName);
-        require(imgUrlStringTest.length &gt; 0);
-        require(giftNameStringTest.length &gt; 0);
-        require(_limit &gt; 0);
+        require(imgUrlStringTest.length > 0);
+        require(giftNameStringTest.length > 0);
+        require(_limit > 0);
         require(msg.sender != address(0));
         //Create GiftTemplateToken
         GiftTemplateToken memory newGiftTemplate = GiftTemplateToken({
@@ -263,22 +263,22 @@ contract SpecialGift is ERC721 {
     constant 
     returns(uint256[]) {
         
-        if (giftTemplateStorageArry.length &gt; 1) {
+        if (giftTemplateStorageArry.length > 1) {
             uint256 theLength = giftTemplateStorageArry.length - 1;
             uint256[] memory resultTempIds = new uint256[](theLength);
             uint256 resultIndex = 0;
            
-            for (uint256 i = 1; i &lt;= theLength; i++) {
+            for (uint256 i = 1; i <= theLength; i++) {
                 resultTempIds[resultIndex] = i;
                 resultIndex++;
             }
              return resultTempIds;
         }
-        require(giftTemplateStorageArry.length &gt; 1);
+        require(giftTemplateStorageArry.length > 1);
        
     }
 
-    //@dev Retrieving gift template by it&#39;s id
+    //@dev Retrieving gift template by it's id
     function getGiftTemplateById(uint256 templateId) 
                                 public constant returns(
                                 uint256 _price,
@@ -286,8 +286,8 @@ contract SpecialGift is ERC721 {
                                 string _imgUrl,
                                 string _giftName
                                 ){
-        require(templateId &gt; 0);
-        require(templateId &lt; giftTemplateStorageArry.length);
+        require(templateId > 0);
+        require(templateId < giftTemplateStorageArry.length);
         GiftTemplateToken memory giftTemplate = giftTemplateStorageArry[templateId];
         _price = giftTemplate.giftPrice;
         _limit = giftTemplate.giftLimit;
@@ -304,7 +304,7 @@ contract SpecialGift is ERC721 {
                     string imgUrl,
                     string giftName
                     ) {
-        require(_giftId &lt; giftStorageArry.length);
+        require(_giftId < giftStorageArry.length);
         GiftToken memory gToken = giftStorageArry[_giftId];
         giftType = gToken.giftType;
         giftPrice = gToken.giftPrice;
@@ -326,7 +326,7 @@ contract SpecialGift is ERC721 {
         return true;
     }
 
-    /// @dev change Gifto contract&#39;s address or another type of token, like Ether.
+    /// @dev change Gifto contract's address or another type of token, like Ether.
     /// @param newAddress Gifto contract address
     function setGiftoAddress(address newAddress) public onlyOwner {
         Gifto = ERC20(newAddress);
@@ -394,12 +394,12 @@ contract SpecialGift is ERC721 {
         Transfer(oldOwner, newOwner, _giftId);
     }
     
-    /// @dev transfer gift for new owner &quot;_to&quot;
+    /// @dev transfer gift for new owner "_to"
     /// @param _from : 
     /// @param _to : 
     /// @param _giftId :
     function _transfer(address _from, address _to, uint256 _giftId) internal {
-        require(balances[_to] + 1 &gt; balances[_to]);
+        require(balances[_to] + 1 > balances[_to]);
         balances[_to]++;
         giftIndexToOwners[_giftId] = _to;
    
@@ -442,7 +442,7 @@ contract SpecialGift is ERC721 {
 
             uint256 giftId;
             
-            for (giftId = 0; giftId &lt;= total; giftId++) {
+            for (giftId = 0; giftId <= total; giftId++) {
                 if (giftIndexToOwners[giftId] == _owner) {
                     result[resultIndex] = giftId;
                     resultIndex++;

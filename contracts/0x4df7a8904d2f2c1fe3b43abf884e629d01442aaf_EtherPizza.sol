@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -89,7 +89,7 @@ contract Ownable {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -100,7 +100,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -130,7 +130,7 @@ contract EtherPizza is Ownable, PullPayment {
     }
 
     function gimmePizza() external payable {
-        require(msg.value &gt;= pizzaPrice);
+        require(msg.value >= pizzaPrice);
         require(msg.sender != pizzaHolder);
         uint taxesAreSick = msg.value.div(100);
         uint hodlerPrize = msg.value.sub(taxesAreSick);

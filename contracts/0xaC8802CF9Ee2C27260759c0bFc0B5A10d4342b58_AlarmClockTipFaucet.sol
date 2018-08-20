@@ -20,12 +20,12 @@ _
 }
 
 modifier isOpen {
-if(block.timestamp &gt; timeToPayout) throw;
+if(block.timestamp > timeToPayout) throw;
 _
 }
 
 modifier canWithdraw {
-if(block.timestamp &lt; timeToPayout) throw;
+if(block.timestamp < timeToPayout) throw;
 _
 }
 

@@ -55,32 +55,32 @@ contract FunFairSale is Owned, TokenReceivable {
     }
 
     function setSoftCapDeadline(uint t) onlyOwner {
-        if (t &gt; deadline) throw;
+        if (t > deadline) throw;
         deadline = t;
     }
 
     function launch(uint _cap) onlyOwner {
         // cap is immutable once the sale starts
-        if (this.balance &gt; 0) throw;
+        if (this.balance > 0) throw;
         capAmount = _cap;
     }
 
     function () payable {
-        if (block.timestamp &lt; startTime || block.timestamp &gt;= deadline) throw;
-        if (this.balance &gt;= capAmount) throw;
-        if (this.balance + msg.value &gt;= capAmount) {
+        if (block.timestamp < startTime || block.timestamp >= deadline) throw;
+        if (this.balance >= capAmount) throw;
+        if (this.balance + msg.value >= capAmount) {
             deadline = block.timestamp;
         }
     }
 
     function withdraw() onlyOwner {
-        if (block.timestamp &lt; deadline) throw;
+        if (block.timestamp < deadline) throw;
         if (!owner.call.value(this.balance)()) throw;
     }
 
     // for testing
     function setStartTime(uint _startTime, uint _deadline) onlyOwner {
-    	if (_deadline &lt; _startTime) throw;
+    	if (_deadline < _startTime) throw;
         startTime = _startTime;
         deadline = _deadline;
     }

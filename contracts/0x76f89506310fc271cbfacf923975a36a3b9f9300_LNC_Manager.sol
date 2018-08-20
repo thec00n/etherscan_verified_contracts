@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,13 +58,13 @@ contract Token is ERC20Interface {
     
     using SafeMath for uint;
     
-    string public constant symbol = &quot;LNC&quot;;
-    string public constant name = &quot;Linker Coin&quot;;
+    string public constant symbol = "LNC";
+    string public constant name = "Linker Coin";
     uint8 public constant decimals = 18;
     uint256 _totalSupply = 500000000000000000000000000;
     
-    //AML &amp; KYC
-    mapping (address =&gt; bool) public frozenAccount;
+    //AML & KYC
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
   
     // Linker coin has  5*10^25 units, each unit has 10^18  minimum fractions which are called 
@@ -72,10 +72,10 @@ contract Token is ERC20Interface {
     address public owner;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Functions with this modifier can only be executed by the owner
     modifier onlyOwner() {
@@ -102,14 +102,14 @@ contract Token is ERC20Interface {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _value) public returns (bool success)
     {
         if (_to != 0x0  // Prevent transfer to 0x0 address.
-            &amp;&amp; IsFreezedAccount(msg.sender) == false
-            &amp;&amp; balances[msg.sender] &gt;= _value 
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+            && IsFreezedAccount(msg.sender) == false
+            && balances[msg.sender] >= _value 
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -121,17 +121,17 @@ contract Token is ERC20Interface {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address _from,address _to, uint256 _value) public returns (bool success) {
         if (_to != 0x0  // Prevent transfer to 0x0 address.
-            &amp;&amp; IsFreezedAccount(_from) == false
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+            && IsFreezedAccount(_from) == false
+            && balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -208,9 +208,9 @@ contract MyToken is Token {
     //Owner will be Lp 
     event SetPrices(uint256 _lpBidPrice, uint256 _lpAskPrice, uint256 _lpBidVolume, uint256 _lpAskVolume);
     function setPrices(uint256 _lpBidPrice, uint256 _lpAskPrice, uint256 _lpBidVolume, uint256 _lpAskVolume) onlyOwner public{
-        require(_lpBidPrice &lt; _lpAskPrice);
-        require(_lpBidVolume &lt;= lpMaxVolume);
-        require(_lpAskVolume &lt;= lpMaxVolume);
+        require(_lpBidPrice < _lpAskPrice);
+        require(_lpBidVolume <= lpMaxVolume);
+        require(_lpAskVolume <= lpMaxVolume);
         lpBidPrice = _lpBidPrice;
         lpAskPrice = _lpAskPrice;
         lpBidVolume = _lpBidVolume;
@@ -220,12 +220,12 @@ contract MyToken is Token {
     
     event SetLpMaxVolume(uint256 _lpMaxVolume);
     function setLpMaxVolume(uint256 _lpMaxVolume) onlyOwner public {
-        require(_lpMaxVolume &lt; 1000000000000000000000000);
+        require(_lpMaxVolume < 1000000000000000000000000);
         lpMaxVolume = _lpMaxVolume;
-        if (lpMaxVolume &lt; lpBidVolume){
+        if (lpMaxVolume < lpBidVolume){
             lpBidVolume = lpMaxVolume;
         }
-        if (lpMaxVolume &lt; lpAskVolume){
+        if (lpMaxVolume < lpAskVolume){
             lpAskVolume = lpMaxVolume;
         }
         SetLpMaxVolume(_lpMaxVolume);
@@ -233,21 +233,21 @@ contract MyToken is Token {
     
     event SetEdgePerPosition(uint256 _edgePerPosition);
     function setEdgePerPosition(uint256 _edgePerPosition) onlyOwner public {
-        //require(_edgePerPosition &lt; 100000000000000000000000000000);
+        //require(_edgePerPosition < 100000000000000000000000000000);
         edgePerPosition = _edgePerPosition;
         SetEdgePerPosition(_edgePerPosition);
     }
     
     event SetLPTargetPostion(uint256 _lpTargetPositionn);
     function setLPTargetPostion(uint256 _lpTargetPosition) onlyOwner public {
-        require(_lpTargetPosition &lt;totalSupply() );
+        require(_lpTargetPosition <totalSupply() );
         lpTargetPosition = _lpTargetPosition;
         SetLPTargetPostion(_lpTargetPosition);
     }
     
     event SetLpFee(uint256 _lpFeeBp);
     function setLpFee(uint256 _lpFeeBp) onlyOwner public {
-        require(_lpFeeBp &lt;= 100);
+        require(_lpFeeBp <= 100);
         lpFeeBp = _lpFeeBp;
         SetLpFee(lpFeeBp);
     }
@@ -261,7 +261,7 @@ contract MyToken is Token {
     { 
         uint256 lpPosition = balanceOf(owner);
             
-        if (lpTargetPosition &gt;= lpPosition)
+        if (lpTargetPosition >= lpPosition)
         {
             return lpBidPrice;
         }
@@ -275,7 +275,7 @@ contract MyToken is Token {
     {
         uint256 lpPosition = balanceOf(owner);
             
-        if (lpTargetPosition &lt;= lpPosition)
+        if (lpTargetPosition <= lpPosition)
         {
             return lpAskPrice;
         }
@@ -298,7 +298,7 @@ contract MyToken is Token {
         int256 bidPrice = int256(getLpBidPrice());
         int256 askPrice = int256(getLpAskPrice());
         
-        if (askPrice - bidPrice &gt; minSpeadBp * (bidPrice + askPrice) / 2 / 10000)
+        if (askPrice - bidPrice > minSpeadBp * (bidPrice + askPrice) / 2 / 10000)
         {
             return false;
         }
@@ -322,9 +322,9 @@ contract MyToken is Token {
     function buy() public payable returns (uint256){
         require (getLpIsWorking(500));                      // Check Whether Lp Bid and Ask spread is less than 5%
         uint256 amount = getAmountOfLinkerBuy(msg.value);   // calculates the amount of buy from customer 
-        require(balances[owner] &gt;= amount);                  // checks if it has enough to sell
-        balances[msg.sender] = balances[msg.sender].add(amount);                     // adds the amount to buyer&#39;s balance
-        balances[owner] = balances[owner].sub(amount);                           // subtracts amount from seller&#39;s balance
+        require(balances[owner] >= amount);                  // checks if it has enough to sell
+        balances[msg.sender] = balances[msg.sender].add(amount);                     // adds the amount to buyer's balance
+        balances[owner] = balances[owner].sub(amount);                           // subtracts amount from seller's balance
         lpAskVolume = lpAskVolume.sub(amount);
         Transfer(owner, msg.sender, amount);                 // execute an event reflecting the chang               // ends function and returns
         return amount;                                    
@@ -332,13 +332,13 @@ contract MyToken is Token {
     
     function sell(uint256 amount)public returns (uint256) {    
         require (getLpIsWorking(500));
-        require (balances[msg.sender] &gt;= amount);           // checks if the sender has enough to sell
-        balances[owner] = balances[owner].add(amount);                           // adds the amount to owner&#39;s balance
-        balances[msg.sender] = balances[msg.sender].sub(amount);                     // subtracts the amount from seller&#39;s balance
+        require (balances[msg.sender] >= amount);           // checks if the sender has enough to sell
+        balances[owner] = balances[owner].add(amount);                           // adds the amount to owner's balance
+        balances[msg.sender] = balances[msg.sender].sub(amount);                     // subtracts the amount from seller's balance
         lpBidVolume = lpBidVolume.sub(amount);
         uint256 linkerSendAmount = getAmountOfEtherSell(amount);
         
-        msg.sender.transfer(linkerSendAmount);         // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(linkerSendAmount);         // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, linkerSendAmount);       // executes an event reflecting on the change
         return linkerSendAmount;                                   // ends function and returns
     }
@@ -356,7 +356,7 @@ contract LNC_Manager is Token
         uint256 i = 0;
         Token T = Token(_tokenAddr);
         bool isMissed = false;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             T.transfer(dests[i], values[i]);
             
             i += 1;
@@ -371,7 +371,7 @@ contract LNC_Manager is Token
         //address[10] memory unfreezedAddress;
         uint256 unfreezedAddress = 0;
         Token T = Token(_tokenAddr);
-        while (i &lt; dests.length &amp;&amp; n &lt; 20) 
+        while (i < dests.length && n < 20) 
         {
             if (T.IsFreezedAccount(dests[i]) == isFreeze)
             {
@@ -393,7 +393,7 @@ contract LNC_Manager is Token
         //address[10] memory unfreezedAddress;
         uint256 unfreezedAddress = 0;
         Token T = Token(_tokenAddr);
-        while (i &lt; dests.length &amp;&amp; n &lt; 20) 
+        while (i < dests.length && n < 20) 
         {
             if (T.IsFreezedAccount(dests[i]) == false)
             {
@@ -418,7 +418,7 @@ contract LNC_Manager is Token
         //address[10] memory unfreezedAddress;
         uint256 unfreezedAddress = 0;
         Token T = Token(_tokenAddr);
-        while (i &lt; dests.length &amp;&amp; n &lt; 20) 
+        while (i < dests.length && n < 20) 
         {
             if (T.IsFreezedAccount(dests[i]) == isFreeze)
             {
@@ -440,29 +440,29 @@ contract LNC_Manager is Token
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal pure  returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
     
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
     
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
     
     function toString(address x)  internal pure returns (string) {
         bytes memory b = new bytes(20);
-        for (uint i = 0; i &lt; 20; i++)
+        for (uint i = 0; i < 20; i++)
             b[i] = byte(uint8(uint(x) / (2**(8*(19 - i)))));
         return string(b);
     }
@@ -475,12 +475,12 @@ contract LNC_Manager is Token
         //string memory unfreezedAddresses = new string(0);
         address[] memory unfreezedAddress;
         //string memory x = toString(dests[0]);
-        while (i &lt; dests.length) 
+        while (i < dests.length) 
         {
             if (T.IsFreezedAccount(dests[i]) == isFreeze)
             {
-                //unfreezedAddresses = strConcat(unfreezedAddresses, &quot;/&quot;);
-                //unfreezedAddresses = strConcat(unfreezedAddresses, toString(dests[i]), &quot;/&quot;);
+                //unfreezedAddresses = strConcat(unfreezedAddresses, "/");
+                //unfreezedAddresses = strConcat(unfreezedAddresses, toString(dests[i]), "/");
                 //unfreezedAddress.push(dests[i]);
                     n += 1;
             }

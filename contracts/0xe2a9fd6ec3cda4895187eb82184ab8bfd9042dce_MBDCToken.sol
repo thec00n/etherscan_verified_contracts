@@ -40,8 +40,8 @@ contract TokenERC20  is ERC20Basic{
     string public symbol;
     uint8 public decimals = 4;
     uint256 _supply;
-    mapping (address =&gt; uint256)   _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) _allowance;
+    mapping (address => uint256)   _balances;
+    mapping (address => mapping (address => uint256)) _allowance;
 
     /**
      * Constrctor function
@@ -76,9 +76,9 @@ contract TokenERC20  is ERC20Basic{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(_balances[_from] &gt;= _value);
+        require(_balances[_from] >= _value);
         // Check for overflows
-        require(_balances[_to] + _value &gt; _balances[_to]);
+        require(_balances[_to] + _value > _balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = _balances[_from] + _balances[_to];
         // Subtract from the sender
@@ -113,7 +113,7 @@ contract TokenERC20  is ERC20Basic{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= _allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= _allowance[_from][msg.sender]);     // Check allowance
         _allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -156,7 +156,7 @@ contract TokenERC20  is ERC20Basic{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(_balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(_balances[msg.sender] >= _value);   // Check if the sender has enough
         _balances[msg.sender] -= _value;            // Subtract from the sender
         _supply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -172,10 +172,10 @@ contract TokenERC20  is ERC20Basic{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= _allowance[_from][msg.sender]);    // Check allowance
+        require(_balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= _allowance[_from][msg.sender]);    // Check allowance
         _balances[_from] -= _value;                         // Subtract from the targeted balance
-        _allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        _allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         _supply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -191,7 +191,7 @@ contract MBDCToken is owned, TokenERC20 {
     uint256 public sellPrice = 0.00000001 ether ; //设置代币的卖的价格等于一个以太币
     uint256 public buyPrice = 0.00000001 ether ;//设置代币的买的价格等于一个以太币
     
-    mapping (address =&gt; bool) public _frozenAccount;
+    mapping (address => bool) public _frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -209,8 +209,8 @@ contract MBDCToken is owned, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (_balances[_from] &gt;= _value);               // Check if the sender has enough
-        require (_balances[_to] + _value &gt; _balances[_to]); // Check for overflows
+        require (_balances[_from] >= _value);               // Check if the sender has enough
+        require (_balances[_to] + _value > _balances[_to]); // Check for overflows
         require(!_frozenAccount[_from]);                     // Check if sender is frozen
         require(!_frozenAccount[_to]);                       // Check if recipient is frozen
         _balances[_from] -= _value;                         // Subtract from the sender
@@ -228,7 +228,7 @@ contract MBDCToken is owned, TokenERC20 {
         Transfer(owner, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -262,8 +262,8 @@ contract MBDCToken is owned, TokenERC20 {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(owner.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(owner.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, owner, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }

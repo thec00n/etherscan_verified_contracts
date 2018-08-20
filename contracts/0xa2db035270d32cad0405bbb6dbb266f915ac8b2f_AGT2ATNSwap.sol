@@ -147,11 +147,11 @@ contract AGT2ATNSwap is DSStop, TokenTransferGuard {
     {
         if (_to == address(this))
         {
-            if (msg.gas &lt; gasRequired) return false;
+            if (msg.gas < gasRequired) return false;
 
             if (stopped) return false;
 
-            if (ATN.balanceOf(this) &lt; _amount) return false;
+            if (ATN.balanceOf(this) < _amount) return false;
         }
 
         return true;

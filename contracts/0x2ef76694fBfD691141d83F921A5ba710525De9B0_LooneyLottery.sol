@@ -39,9 +39,9 @@ contract LooneyLottery {
   uint private seeda = LEHMER_SDA;
   uint private seedb = LEHMER_SDB;
 
-  // we allow 222 * 100 max tickets, allocate a bit more and store the mapping of entry =&gt; address
+  // we allow 222 * 100 max tickets, allocate a bit more and store the mapping of entry => address
   uint8[22500] private tickets;
-  mapping (uint =&gt; address) private players;
+  mapping (uint => address) private players;
 
   // public game-related values
   uint public round = 1;
@@ -55,7 +55,7 @@ contract LooneyLottery {
   uint public tktotal = 0;
   uint public turnover = 0;
 
-  // nothing much to do in the constructor, we have the owner set &amp; init done
+  // nothing much to do in the constructor, we have the owner set & init done
   function LooneyLottery() {
   }
 
@@ -65,7 +65,7 @@ contract LooneyLottery {
     uint fees = this.balance - (numtickets * CONFIG_PRICE);
 
     // return it if we have someting
-    if (fees &gt; 0) {
+    if (fees > 0) {
       owner.call.value(fees)();
     }
   }
@@ -84,8 +84,8 @@ contract LooneyLottery {
 
   // pick a random winner when the time is right
   function pickWinner() private {
-    // do we have &gt;222 players or &gt;= 5 tickets and an expired timer
-    if ((numplayers &gt;= CONFIG_MAX_PLAYERS ) || ((numplayers &gt;= CONFIG_MIN_PLAYERS ) &amp;&amp; (now &gt; end))) {
+    // do we have >222 players or >= 5 tickets and an expired timer
+    if ((numplayers >= CONFIG_MAX_PLAYERS ) || ((numplayers >= CONFIG_MIN_PLAYERS ) && (now > end))) {
       // get the winner based on the number of tickets (each player has multiple tickets)
       uint winidx = tickets[random % numtickets];
       uint output = numtickets * CONFIG_RETURN;
@@ -109,7 +109,7 @@ contract LooneyLottery {
     uint ticketmax = numtickets + number;
 
     // loop through and allocate a ticket based on the number bought
-    for (uint idx = numtickets; idx &lt; ticketmax; idx++) {
+    for (uint idx = numtickets; idx < ticketmax; idx++) {
       tickets[idx] = uint8(numplayers);
     }
 
@@ -127,7 +127,7 @@ contract LooneyLottery {
   // we only have a default function, send an amount and it gets allocated, no ABI needed
   function() public {
     // oops, we need at least 10 finney to play :(
-    if (msg.value &lt; CONFIG_MIN_VALUE) {
+    if (msg.value < CONFIG_MIN_VALUE) {
       throw;
     }
 
@@ -141,13 +141,13 @@ contract LooneyLottery {
     uint number = 0;
 
     // get either a max number based on the over-the-top entry or calculate based on inputs
-    if (msg.value &gt;= CONFIG_MAX_VALUE) {
+    if (msg.value >= CONFIG_MAX_VALUE) {
       number = CONFIG_MAX_TICKETS;
     } else {
       number = msg.value / CONFIG_PRICE;
     }
 
-    // overflow is the value to be returned, &gt;max or not a multiple of min
+    // overflow is the value to be returned, >max or not a multiple of min
     uint input = number * CONFIG_PRICE;
     uint overflow = msg.value - input;
 
@@ -160,7 +160,7 @@ contract LooneyLottery {
     allocateTickets(number);
 
     // send back the overflow where applicable
-    if (overflow &gt; 0) {
+    if (overflow > 0) {
       msg.sender.call.value(overflow)();
     }
   }

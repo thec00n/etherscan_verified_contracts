@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ contract EtherTv is Ownable {
   uint256 public devOwed;
 
   // dividends
-  mapping (address =&gt; uint256) public userDividends;
+  mapping (address => uint256) public userDividends;
 
   // Events
   event ShowPurchased(
@@ -93,7 +93,7 @@ contract EtherTv is Ownable {
 
   function createShow(uint256 _payoutPercentage) onlyOwner() public {
     // payout must be greater than 0
-    require(_payoutPercentage &gt; 0);
+    require(_payoutPercentage > 0);
     
     // create new token
     var show = Show({
@@ -106,7 +106,7 @@ contract EtherTv is Ownable {
   }
 
   function createMultipleShows(uint256[] _payoutPercentages) onlyOwner() public {
-    for (uint256 i = 0; i &lt; _payoutPercentages.length; i++) {
+    for (uint256 i = 0; i < _payoutPercentages.length; i++) {
       createShow(_payoutPercentages[i]);
     }
   }
@@ -131,13 +131,13 @@ contract EtherTv is Ownable {
   * @param _price uint256 ID of current price
   */
   function getNextPrice (uint256 _price) private pure returns (uint256 _nextPrice) {
-    if (_price &lt; FIRST_CAP) {
+    if (_price < FIRST_CAP) {
       return _price.mul(200).div(100);
-    } else if (_price &lt; SECOND_CAP) {
+    } else if (_price < SECOND_CAP) {
       return _price.mul(135).div(100);
-    } else if (_price &lt; THIRD_CAP) {
+    } else if (_price < THIRD_CAP) {
       return _price.mul(125).div(100);
-    } else if (_price &lt; FINAL_CAP) {
+    } else if (_price < FINAL_CAP) {
       return _price.mul(117).div(100);
     } else {
       return _price.mul(115).div(100);
@@ -145,13 +145,13 @@ contract EtherTv is Ownable {
   }
 
   function calculatePoolCut (uint256 _price) private pure returns (uint256 _poolCut) {
-    if (_price &lt; FIRST_CAP) {
+    if (_price < FIRST_CAP) {
       return _price.mul(7).div(100); // 7%
-    } else if (_price &lt; SECOND_CAP) {
+    } else if (_price < SECOND_CAP) {
       return _price.mul(6).div(100); // 6%
-    } else if (_price &lt; THIRD_CAP) {
+    } else if (_price < THIRD_CAP) {
       return _price.mul(5).div(100); // 5%
-    } else if (_price &lt; FINAL_CAP) {
+    } else if (_price < FINAL_CAP) {
       return _price.mul(4).div(100); // 4%
     } else {
       return _price.mul(3).div(100); // 3%
@@ -169,8 +169,8 @@ contract EtherTv is Ownable {
     address newOwner = msg.sender;
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(oldOwner != msg.sender);
 
     uint256 purchaseExcess = msg.value.sub(price);
@@ -185,7 +185,7 @@ contract EtherTv is Ownable {
     uint256 shareholderCut = calculatePoolCut(price);
     distributeDividends(shareholderCut);
 
-    // Transfer payment to old owner minus the developer&#39;s and pool&#39;s cut.
+    // Transfer payment to old owner minus the developer's and pool's cut.
     uint256 excess = price.sub(devCut).sub(shareholderCut);
 
     if (oldOwner != address(this)) {
@@ -200,7 +200,7 @@ contract EtherTv is Ownable {
     show.owner = newOwner;
 
     // Send refund to owner if needed
-    if (purchaseExcess &gt; 0) {
+    if (purchaseExcess > 0) {
       newOwner.transfer(purchaseExcess);
     }
 
@@ -211,7 +211,7 @@ contract EtherTv is Ownable {
   function distributeDividends(uint256 _shareholderCut) private {
     uint256 totalPayout = getTotalPayout();
 
-    for (uint256 i = 0; i &lt; shows.length; i++) {
+    for (uint256 i = 0; i < shows.length; i++) {
       var show = shows[i];
       var payout = _shareholderCut.mul(show.payout).div(totalPayout);
       userDividends[show.owner] = userDividends[show.owner].add(payout);
@@ -221,7 +221,7 @@ contract EtherTv is Ownable {
   function getTotalPayout() private view returns(uint256) {
     uint256 totalPayout = 0;
 
-    for (uint256 i = 0; i &lt; shows.length; i++) {
+    for (uint256 i = 0; i < shows.length; i++) {
       var show = shows[i];
       totalPayout = totalPayout.add(show.payout);
     }
@@ -230,7 +230,7 @@ contract EtherTv is Ownable {
   }
 
   /**
-  * @dev Withdraw dev&#39;s cut
+  * @dev Withdraw dev's cut
   */
   function withdraw() onlyOwner public {
     owner.transfer(devOwed);

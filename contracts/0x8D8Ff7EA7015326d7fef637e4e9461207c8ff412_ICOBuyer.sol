@@ -4,19 +4,19 @@ pragma solidity ^0.4.11;
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -159,12 +159,12 @@ contract ICOBuyer is Ownable {
 
   // Buys tokens in the crowdsale and rewards the caller, callable by anyone.
   function buyICO() {
-    // Short circuit to save gas if the earliest block number hasn&#39;t been reached.
-    if ((icoStartBlock != 0) &amp;&amp; (getBlockNumber() &lt; icoStartBlock)) return;
-    // Short circuit to save gas if the earliest buy time hasn&#39;t been reached.
-    if ((icoStartTime != 0) &amp;&amp; (getNow() &lt; icoStartTime)) return;
+    // Short circuit to save gas if the earliest block number hasn't been reached.
+    if ((icoStartBlock != 0) && (getBlockNumber() < icoStartBlock)) return;
+    // Short circuit to save gas if the earliest buy time hasn't been reached.
+    if ((icoStartTime != 0) && (getNow() < icoStartTime)) return;
     // Return if no balance
-    if (this.balance &lt; minimumContribution) return;
+    if (this.balance < minimumContribution) return;
 
     // Purchase tokens from ICO contract (assuming call to ICO fallback function)
     uint256 purchaseAmount = Math.min256(this.balance, purchaseCap);

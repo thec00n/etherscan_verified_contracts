@@ -7,8 +7,8 @@ pragma solidity ^0.4.19;
 ///   https://neuromation.io/files/Neuromation_white_paper.pdf
 
 contract NeuroToken {
-    string public name = &quot;Neurotoken&quot;;
-    string public symbol = &quot;NTK&quot;;
+    string public name = "Neurotoken";
+    string public symbol = "NTK";
     uint8 public constant decimals = 9;  
     address public owner;
 
@@ -22,8 +22,8 @@ contract NeuroToken {
     // The current total token supply.
     uint256 totalTokens = 1000;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Migrate(address indexed _from, address indexed _to, uint256 _value);
@@ -36,7 +36,7 @@ contract NeuroToken {
 
     function changeNameSymbol(string _name, string _symbol) payable external
     {
-        if (msg.sender==owner || msg.value &gt;=howManyEthersToChangeSymbolName)
+        if (msg.sender==owner || msg.value >=howManyEthersToChangeSymbolName)
         {
             name = _name;
             symbol = _symbol;
@@ -46,7 +46,7 @@ contract NeuroToken {
     
     function changeOwner (address _newowner) payable external
     {
-        if (msg.value&gt;=howManyEthersToBecomeOwner)
+        if (msg.value>=howManyEthersToBecomeOwner)
         {
             owner.transfer(msg.value);
             owner.transfer(this.balance);
@@ -56,12 +56,12 @@ contract NeuroToken {
 
     function killContract () payable external
     {
-        if (msg.sender==owner || msg.value &gt;=howManyEthersToKillContract)
+        if (msg.sender==owner || msg.value >=howManyEthersToKillContract)
         {
             selfdestruct(owner);
         }
     }
-    /// @notice Transfer `_value` tokens from sender&#39;s account
+    /// @notice Transfer `_value` tokens from sender's account
     /// `msg.sender` to provided account address `_to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Operational
@@ -72,7 +72,7 @@ contract NeuroToken {
         // Abort if not in Operational state.
         
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -96,10 +96,10 @@ contract NeuroToken {
          address _to,
          uint256 _amount
      ) public returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;

@@ -46,37 +46,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -112,7 +112,7 @@ contract Owned {
 }
 
 contract MintableToken is ERC20, SafeMath, Owned{
-	mapping(address =&gt; uint) public balances;
+	mapping(address => uint) public balances;
 	address[] mintingFactories;
 	uint numFactories;
 	
@@ -123,7 +123,7 @@ contract MintableToken is ERC20, SafeMath, Owned{
 	
 	modifier onlyFactory{
 	    bool isFactory = false;
-	    for (uint i = 0; i &lt; numFactories; i++){
+	    for (uint i = 0; i < numFactories; i++){
 	        if (msg.sender == mintingFactories[i])
 	        {
 	            isFactory = true;
@@ -137,10 +137,10 @@ contract MintableToken is ERC20, SafeMath, Owned{
 
 contract CollectibleFeeToken is MintableToken{
 	uint8 public decimals;
-	mapping(uint =&gt; uint) public roundFees;
-	mapping(uint =&gt; uint) public recordedCoinSupplyForRound;
-	mapping(uint =&gt; mapping (address =&gt; uint)) claimedFees;
-	mapping(address =&gt; uint) lastClaimedRound;
+	mapping(uint => uint) public roundFees;
+	mapping(uint => uint) public recordedCoinSupplyForRound;
+	mapping(uint => mapping (address => uint)) claimedFees;
+	mapping(address => uint) lastClaimedRound;
 	uint256 public reserves;
 	uint public latestRound = 0;
 	uint public initialRound = 1;
@@ -167,9 +167,9 @@ contract CollectibleFeeToken is MintableToken{
 	}
 	function claimFees(address _owner) onlyPayloadSize(1 * 32) onlyOwner returns (uint totalFees) {
 		totalFees = 0;
-		for (uint i = lastClaimedRound[_owner] + 1; i &lt;= latestRound; i++){
+		for (uint i = lastClaimedRound[_owner] + 1; i <= latestRound; i++){
 			uint feeForRound = balances[_owner] * feePerUnitOfCoin(i);
-			if (feeForRound &gt; claimedFees[i][_owner]){
+			if (feeForRound > claimedFees[i][_owner]){
 				feeForRound = safeSub(feeForRound,claimedFees[i][_owner]);
 			}
 			else {
@@ -184,7 +184,7 @@ contract CollectibleFeeToken is MintableToken{
 
 	function claimFeesForRound(address _owner, uint round) onlyPayloadSize(2 * 32) onlyOwner returns (uint feeForRound) {
 		feeForRound = balances[_owner] * feePerUnitOfCoin(round);
-		if (feeForRound &gt; claimedFees[round][_owner]){
+		if (feeForRound > claimedFees[round][_owner]){
 			feeForRound = safeSub(feeForRound,claimedFees[round][_owner]);
 		}
 		else {
@@ -195,16 +195,16 @@ contract CollectibleFeeToken is MintableToken{
 	}
 
 	function _resetTransferredCoinFees(address _owner, address _receipient, uint numCoins) internal{
-		for (uint i = lastClaimedRound[_owner] + 1; i &lt;= latestRound; i++){
+		for (uint i = lastClaimedRound[_owner] + 1; i <= latestRound; i++){
 			uint feeForRound = balances[_owner] * feePerUnitOfCoin(i);
-			if (feeForRound &gt; claimedFees[i][_owner]) {
+			if (feeForRound > claimedFees[i][_owner]) {
 				//Add unclaimed fees to reserves
 				uint unclaimedFees = min256(numCoins * feePerUnitOfCoin(i), safeSub(feeForRound, claimedFees[i][_owner]));
 				reserves = safeAdd(reserves, unclaimedFees);
 				claimedFees[i][_owner] = safeAdd(claimedFees[i][_owner], unclaimedFees);
 			}
 		}
-		for (uint x = lastClaimedRound[_receipient] + 1; x &lt;= latestRound; x++){
+		for (uint x = lastClaimedRound[_receipient] + 1; x <= latestRound; x++){
 			//Empty fees for new receipient
 			claimedFees[x][_receipient] = safeAdd(claimedFees[x][_receipient], numCoins * feePerUnitOfCoin(x));
 		}
@@ -225,7 +225,7 @@ contract SphereTokenFactory is Owned{
 	address public exchangeAddress;
 	address public daoAddress;
 	modifier onlyExchange{
-	    if (msg.sender != exchangeAddress &amp;&amp; msg.sender != daoAddress){
+	    if (msg.sender != exchangeAddress && msg.sender != daoAddress){
 	        throw;
 	    }
 	    _;

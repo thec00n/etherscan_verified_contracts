@@ -14,7 +14,7 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
@@ -41,15 +41,15 @@ contract StandardTokenProtocol {
 contract StandardToken is StandardTokenProtocol {
 
     modifier when_can_transfer(address _from, uint256 _value) {
-        if (balances[_from] &gt;= _value) _;
+        if (balances[_from] >= _value) _;
     }
 
     modifier when_can_receive(address _recipient, uint256 _value) {
-        if (balances[_recipient] + _value &gt; balances[_recipient]) _;
+        if (balances[_recipient] + _value > balances[_recipient]) _;
     }
 
     modifier when_is_allowed(address _from, address _delegate, uint256 _value) {
-        if (allowed[_from][_delegate] &gt;= _value) _;
+        if (allowed[_from][_delegate] >= _value) _;
     }
 
     function transfer(address _recipient, uint256 _value)
@@ -90,8 +90,8 @@ contract StandardToken is StandardTokenProtocol {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
 }
@@ -99,8 +99,8 @@ contract StandardToken is StandardTokenProtocol {
 contract GUPToken is StandardToken {
 
 	//FIELDS
-	string public name = &quot;Guppy&quot;;
-    string public symbol = &quot;GUP&quot;;
+	string public name = "Guppy";
+    string public symbol = "GUP";
     uint public decimals = 3;
 
 	//CONSTANTS
@@ -110,7 +110,7 @@ contract GUPToken is StandardToken {
 	uint public endMintingTime; //Timestamp after which no more tokens can be created
 	address public minter; //address of the account which may mint new tokens
 
-	mapping (address =&gt; uint) public illiquidBalance; //Balance of &#39;Frozen funds&#39;
+	mapping (address => uint) public illiquidBalance; //Balance of 'Frozen funds'
 
 	//MODIFIERS
 	//Can only be called by contribution contract.
@@ -122,21 +122,21 @@ contract GUPToken is StandardToken {
 	// Can only be called if illiquid tokens may be transformed into liquid.
 	// This happens when `LOCKOUT_PERIOD` of time passes after `endMintingTime`.
 	modifier when_thawable {
-		if (now &lt; endMintingTime + LOCKOUT_PERIOD) throw;
+		if (now < endMintingTime + LOCKOUT_PERIOD) throw;
 		_;
 	}
 
 	// Can only be called if (liquid) tokens may be transferred. Happens
 	// immediately after `endMintingTime`.
 	modifier when_transferable {
-		if (now &lt; endMintingTime) throw;
+		if (now < endMintingTime) throw;
 		_;
 	}
 
 	// Can only be called if the `crowdfunder` is allowed to mint tokens. Any
 	// time before `endMintingTime`.
 	modifier when_mintable {
-		if (now &gt;= endMintingTime) throw;
+		if (now >= endMintingTime) throw;
 		_;
 	}
 
@@ -170,7 +170,7 @@ contract GUPToken is StandardToken {
 		return true;
 	}
 
-	// Make sender&#39;s illiquid balance liquid when called after lockout period.
+	// Make sender's illiquid balance liquid when called after lockout period.
 	function makeLiquid()
 		when_thawable
 	{

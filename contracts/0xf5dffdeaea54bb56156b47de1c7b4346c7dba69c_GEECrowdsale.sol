@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -51,7 +51,7 @@ library SafeMath {
     */
     function ADD (uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -59,7 +59,7 @@ library SafeMath {
         @return difference of a and b
     */
     function SUB (uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
     
@@ -118,7 +118,7 @@ contract GEECrowdsale is Ownable {
 
 
     //MAP
-    mapping (address =&gt; uint256) public bought;                 //saves how much ETH user spent on GEE
+    mapping (address => uint256) public bought;                 //saves how much ETH user spent on GEE
 
 
     //EVENT
@@ -157,8 +157,8 @@ contract GEECrowdsale is Ownable {
         onlyOwner
     {
         require(soldTokens != hardCapInTokens);
-        if (soldTokens &lt; (hardCapInTokens - GEE100)) {
-            require(block.number &gt; endBlockNumber);
+        if (soldTokens < (hardCapInTokens - GEE100)) {
+            require(block.number > endBlockNumber);
         }
         hardCapInTokens = soldTokens;
         gee.burn(hardCapInTokens.SUB(soldTokens));
@@ -175,8 +175,8 @@ contract GEECrowdsale is Ownable {
 
 
         require (isCrowdsaleActive());
-        require(amountWei &gt;= MIN_ETHER);                            //Ether limitation
-        require(amountWei &lt;= MAX_ETHER);
+        require(amountWei >= MIN_ETHER);                            //Ether limitation
+        require(amountWei <= MAX_ETHER);
 
         price = getPrice();
         
@@ -184,9 +184,9 @@ contract GEECrowdsale is Ownable {
 
         soldTokens = soldTokens.ADD(amount);                        //Add amount to soldTokens
 
-        require(soldTokens &lt;= hardCapInTokens);
+        require(soldTokens <= hardCapInTokens);
 
-        if (soldTokens &gt;= (hardCapInTokens - GEE100)) {
+        if (soldTokens >= (hardCapInTokens - GEE100)) {
             endBlockNumber = blocks;
         }
         
@@ -207,7 +207,7 @@ contract GEECrowdsale is Ownable {
         returns (bool) 
     {
 
-        if (endBlockNumber &lt; block.number || START_BLOCK_NUMBER &gt; block.number) {
+        if (endBlockNumber < block.number || START_BLOCK_NUMBER > block.number) {
             return false;
         }
         return true;
@@ -220,11 +220,11 @@ contract GEECrowdsale is Ownable {
         constant
         returns (uint256)
     {
-        if (block.number &lt; TIER2) {
+        if (block.number < TIER2) {
             return TIER1_PRICE;
-        } else if (block.number &lt; TIER3) {
+        } else if (block.number < TIER3) {
             return TIER2_PRICE;
-        } else if (block.number &lt; TIER4) {
+        } else if (block.number < TIER4) {
             return TIER3_PRICE;
         }
 
@@ -238,7 +238,7 @@ contract GEECrowdsale is Ownable {
     {
         uint256 refund = bought[msg.sender];
         require (!isCrowdsaleActive());
-        require (collected &lt; SOFT_CAP_IN_ETHER);
+        require (collected < SOFT_CAP_IN_ETHER);
         bought[msg.sender] = 0;
         msg.sender.transfer(refund);
         Refund(msg.sender, refund);
@@ -257,8 +257,8 @@ contract GEECrowdsale is Ownable {
     */
     function setEndBlockNumber(uint256 _newEndBlockNumber) external onlyOwner {
         require(isCrowdsaleActive());
-        require(_newEndBlockNumber &gt;= block.number);
-        require(_newEndBlockNumber &lt;= MAX_END_BLOCK_NUMBER);
+        require(_newEndBlockNumber >= block.number);
+        require(_newEndBlockNumber <= MAX_END_BLOCK_NUMBER);
 
         uint256 currentEndBlockNumber = endBlockNumber;
         endBlockNumber = _newEndBlockNumber;

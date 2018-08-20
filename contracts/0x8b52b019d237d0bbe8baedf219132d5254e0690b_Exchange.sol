@@ -8,32 +8,32 @@ pragma solidity 0.4.24;
 library SafeMath {
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a * b;
-        require(a == 0 || c / a == b, &quot;mul overflow&quot;);
+        require(a == 0 || c / a == b, "mul overflow");
         return c;
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &gt; 0, &quot;div by 0&quot;); // Solidity automatically throws for div by 0 but require to emit reason
+        require(b > 0, "div by 0"); // Solidity automatically throws for div by 0 but require to emit reason
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a, &quot;sub underflow&quot;);
+        require(b <= a, "sub underflow");
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a, &quot;add overflow&quot;);
+        require(c >= a, "add overflow");
         return c;
     }
 
     function roundedDiv(uint a, uint b) internal pure returns (uint256) {
-        require(b &gt; 0, &quot;div by 0&quot;); // Solidity automatically throws for div by 0 but require to emit reason
+        require(b > 0, "div by 0"); // Solidity automatically throws for div by 0 but require to emit reason
         uint256 z = a / b;
-        if (a % b &gt;= b / 2) {
+        if (a % b >= b / 2) {
             z++;  // no need for safe add b/c it can happen only if we divided the input
         }
         return z;
@@ -46,7 +46,7 @@ library SafeMath {
 
     deployment works as:
            1. contract deployer account deploys contracts
-           2. constructor grants &quot;PermissionGranter&quot; permission to deployer account
+           2. constructor grants "PermissionGranter" permission to deployer account
            3. deployer account executes initial setup (no multiSig)
            4. deployer account grants PermissionGranter permission for the MultiSig contract
                 (e.g. StabilityBoardProxy or PreTokenProxy)
@@ -55,49 +55,49 @@ library SafeMath {
 
 contract Restricted {
 
-    // NB: using bytes32 rather than the string type because it&#39;s cheaper gas-wise:
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) public permissions;
+    // NB: using bytes32 rather than the string type because it's cheaper gas-wise:
+    mapping (address => mapping (bytes32 => bool)) public permissions;
 
     event PermissionGranted(address indexed agent, bytes32 grantedPermission);
     event PermissionRevoked(address indexed agent, bytes32 revokedPermission);
 
     modifier restrict(bytes32 requiredPermission) {
-        require(permissions[msg.sender][requiredPermission], &quot;msg.sender must have permission&quot;);
+        require(permissions[msg.sender][requiredPermission], "msg.sender must have permission");
         _;
     }
 
     constructor(address permissionGranterContract) public {
-        require(permissionGranterContract != address(0), &quot;permissionGranterContract must be set&quot;);
-        permissions[permissionGranterContract][&quot;PermissionGranter&quot;] = true;
-        emit PermissionGranted(permissionGranterContract, &quot;PermissionGranter&quot;);
+        require(permissionGranterContract != address(0), "permissionGranterContract must be set");
+        permissions[permissionGranterContract]["PermissionGranter"] = true;
+        emit PermissionGranted(permissionGranterContract, "PermissionGranter");
     }
 
     function grantPermission(address agent, bytes32 requiredPermission) public {
-        require(permissions[msg.sender][&quot;PermissionGranter&quot;],
-            &quot;msg.sender must have PermissionGranter permission&quot;);
+        require(permissions[msg.sender]["PermissionGranter"],
+            "msg.sender must have PermissionGranter permission");
         permissions[agent][requiredPermission] = true;
         emit PermissionGranted(agent, requiredPermission);
     }
 
     function grantMultiplePermissions(address agent, bytes32[] requiredPermissions) public {
-        require(permissions[msg.sender][&quot;PermissionGranter&quot;],
-            &quot;msg.sender must have PermissionGranter permission&quot;);
+        require(permissions[msg.sender]["PermissionGranter"],
+            "msg.sender must have PermissionGranter permission");
         uint256 length = requiredPermissions.length;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             grantPermission(agent, requiredPermissions[i]);
         }
     }
 
     function revokePermission(address agent, bytes32 requiredPermission) public {
-        require(permissions[msg.sender][&quot;PermissionGranter&quot;],
-            &quot;msg.sender must have PermissionGranter permission&quot;);
+        require(permissions[msg.sender]["PermissionGranter"],
+            "msg.sender must have PermissionGranter permission");
         permissions[agent][requiredPermission] = false;
         emit PermissionRevoked(agent, requiredPermission);
     }
 
     function revokeMultiplePermissions(address agent, bytes32[] requiredPermissions) public {
         uint256 length = requiredPermissions.length;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             revokePermission(agent, requiredPermissions[i]);
         }
     }
@@ -134,12 +134,12 @@ contract AugmintTokenInterface is Restricted, ERC20Interface {
     uint8 public decimals;
 
     uint public totalSupply;
-    mapping(address =&gt; uint256) public balances; // Balances for each account
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowed; // allowances added with approve()
+    mapping(address => uint256) public balances; // Balances for each account
+    mapping(address => mapping (address => uint256)) public allowed; // allowances added with approve()
 
     address public stabilityBoardProxy;
     TransferFeeInterface public feeAccount;
-    mapping(bytes32 =&gt; bool) public delegatedTxHashesUsed; // record txHashes used by delegatedTransfer
+    mapping(bytes32 => bool) public delegatedTxHashesUsed; // record txHashes used by delegatedTransfer
 
     event TransferFeesChanged(uint transferFeePt, uint transferFeeMin, uint transferFeeMax);
     event Transfer(address indexed from, address indexed to, uint amount);
@@ -171,7 +171,7 @@ contract AugmintTokenInterface is Restricted, ERC20Interface {
     function increaseApproval(address spender, uint addedValue) external returns (bool);
     function decreaseApproval(address spender, uint subtractedValue) external returns (bool);
 
-    function issueTo(address to, uint amount) external; // restrict it to &quot;MonetarySupervisor&quot; in impl.;
+    function issueTo(address to, uint amount) external; // restrict it to "MonetarySupervisor" in impl.;
     function burn(uint amount) external;
 
     function transferAndNotify(TokenReceiver target, uint amount, uint data) external;
@@ -195,41 +195,41 @@ contract Rates is Restricted {
         uint lastUpdated;
     }
 
-    // mapping currency symbol =&gt; rate. all rates are stored with 4 decimals. i.e. ETH/EUR = 989.12 then rate = 989,1200
-    mapping(bytes32 =&gt; RateInfo) public rates;
+    // mapping currency symbol => rate. all rates are stored with 4 decimals. i.e. ETH/EUR = 989.12 then rate = 989,1200
+    mapping(bytes32 => RateInfo) public rates;
 
     event RateChanged(bytes32 symbol, uint newRate);
 
     constructor(address permissionGranterContract) public Restricted(permissionGranterContract) {} // solhint-disable-line no-empty-blocks
 
-    function setRate(bytes32 symbol, uint newRate) external restrict(&quot;RatesFeeder&quot;) {
+    function setRate(bytes32 symbol, uint newRate) external restrict("RatesFeeder") {
         rates[symbol] = RateInfo(newRate, now);
         emit RateChanged(symbol, newRate);
     }
 
-    function setMultipleRates(bytes32[] symbols, uint[] newRates) external restrict(&quot;RatesFeeder&quot;) {
-        require(symbols.length == newRates.length, &quot;symobls and newRates lengths must be equal&quot;);
-        for (uint256 i = 0; i &lt; symbols.length; i++) {
+    function setMultipleRates(bytes32[] symbols, uint[] newRates) external restrict("RatesFeeder") {
+        require(symbols.length == newRates.length, "symobls and newRates lengths must be equal");
+        for (uint256 i = 0; i < symbols.length; i++) {
             rates[symbols[i]] = RateInfo(newRates[i], now);
             emit RateChanged(symbols[i], newRates[i]);
         }
     }
 
     function convertFromWei(bytes32 bSymbol, uint weiValue) external view returns(uint value) {
-        require(rates[bSymbol].rate &gt; 0, &quot;rates[bSymbol] must be &gt; 0&quot;);
+        require(rates[bSymbol].rate > 0, "rates[bSymbol] must be > 0");
         return weiValue.mul(rates[bSymbol].rate).roundedDiv(1000000000000000000);
     }
 
     function convertToWei(bytes32 bSymbol, uint value) external view returns(uint weiValue) {
         // next line would revert with div by zero but require to emit reason
-        require(rates[bSymbol].rate &gt; 0, &quot;rates[bSymbol] must be &gt; 0&quot;);
+        require(rates[bSymbol].rate > 0, "rates[bSymbol] must be > 0");
         /* TODO: can we make this not loosing max scale? */
         return value.mul(1000000000000000000).roundedDiv(rates[bSymbol].rate);
     }
 
 }
 
-/* Augmint&#39;s Internal Exchange
+/* Augmint's Internal Exchange
 
   For flows see: https://github.com/Augmint/augmint-contracts/blob/master/docs/exchangeFlow.png
 
@@ -261,14 +261,14 @@ contract Exchange is Restricted {
     }
 
     uint64 public orderCount;
-    mapping(uint64 =&gt; Order) public buyTokenOrders;
-    mapping(uint64 =&gt; Order) public sellTokenOrders;
+    mapping(uint64 => Order) public buyTokenOrders;
+    mapping(uint64 => Order) public sellTokenOrders;
 
     uint64[] private activeBuyOrders;
     uint64[] private activeSellOrders;
 
     /* used to stop executing matchMultiple when running out of gas.
-        actual is much less, just leaving enough matchMultipleOrders() to finish TODO: fine tune &amp; test it*/
+        actual is much less, just leaving enough matchMultipleOrders() to finish TODO: fine tune & test it*/
     uint32 private constant ORDER_MATCH_WORST_GAS = 100000;
 
     event NewOrder(uint64 indexed orderId, address indexed maker, uint32 price, uint tokenAmount, uint weiAmount);
@@ -288,14 +288,14 @@ contract Exchange is Restricted {
 
     /* to allow upgrade of Rates  contract */
     function setRatesContract(Rates newRatesContract)
-    external restrict(&quot;StabilityBoard&quot;) {
+    external restrict("StabilityBoard") {
         rates = newRatesContract;
         emit RatesContractChanged(newRatesContract);
     }
 
     function placeBuyTokenOrder(uint32 price) external payable returns (uint64 orderId) {
-        require(price &gt; 0, &quot;price must be &gt; 0&quot;);
-        require(msg.value &gt; 0, &quot;msg.value must be &gt; 0&quot;);
+        require(price > 0, "price must be > 0");
+        require(msg.value > 0, "msg.value must be > 0");
 
         orderId = ++orderCount;
         buyTokenOrders[orderId] = Order(uint64(activeBuyOrders.length), msg.sender, price, msg.value);
@@ -310,21 +310,21 @@ contract Exchange is Restricted {
         return _placeSellTokenOrder(msg.sender, price, tokenAmount);
     }
 
-    /* place sell token order called from AugmintToken&#39;s transferAndNotify
+    /* place sell token order called from AugmintToken's transferAndNotify
      Flow:
-        1) user calls token contract&#39;s transferAndNotify price passed in data arg
+        1) user calls token contract's transferAndNotify price passed in data arg
         2) transferAndNotify transfers tokens to the Exchange contract
         3) transferAndNotify calls Exchange.transferNotification with lockProductId
     */
     function transferNotification(address maker, uint tokenAmount, uint price) external {
-        require(msg.sender == address(augmintToken), &quot;msg.sender must be augmintToken&quot;);
+        require(msg.sender == address(augmintToken), "msg.sender must be augmintToken");
         _placeSellTokenOrder(maker, uint32(price), tokenAmount);
     }
 
     function cancelBuyTokenOrder(uint64 buyTokenId) external {
         Order storage order = buyTokenOrders[buyTokenId];
-        require(order.maker == msg.sender, &quot;msg.sender must be order.maker&quot;);
-        require(order.amount &gt; 0, &quot;buy order already removed&quot;);
+        require(order.maker == msg.sender, "msg.sender must be order.maker");
+        require(order.amount > 0, "buy order already removed");
 
         uint amount = order.amount;
         order.amount = 0;
@@ -337,36 +337,36 @@ contract Exchange is Restricted {
 
     function cancelSellTokenOrder(uint64 sellTokenId) external {
         Order storage order = sellTokenOrders[sellTokenId];
-        require(order.maker == msg.sender, &quot;msg.sender must be order.maker&quot;);
-        require(order.amount &gt; 0, &quot;sell order already removed&quot;);
+        require(order.maker == msg.sender, "msg.sender must be order.maker");
+        require(order.amount > 0, "sell order already removed");
 
         uint amount = order.amount;
         order.amount = 0;
         _removeSellOrder(order);
 
-        augmintToken.transferWithNarrative(msg.sender, amount, &quot;Sell token order cancelled&quot;);
+        augmintToken.transferWithNarrative(msg.sender, amount, "Sell token order cancelled");
 
         emit CancelledOrder(sellTokenId, msg.sender, amount, 0);
     }
 
-    /* matches any two orders if the sell price &gt;= buy price
+    /* matches any two orders if the sell price >= buy price
         trade price is the price of the maker (the order placed earlier)
         reverts if any of the orders have been removed
     */
     function matchOrders(uint64 buyTokenId, uint64 sellTokenId) external {
-        require(_fillOrder(buyTokenId, sellTokenId), &quot;fill order failed&quot;);
+        require(_fillOrder(buyTokenId, sellTokenId), "fill order failed");
     }
 
     /*  matches as many orders as possible from the passed orders
         Runs as long as gas is available for the call.
-        Reverts if any match is invalid (e.g sell price &gt; buy price)
+        Reverts if any match is invalid (e.g sell price > buy price)
         Skips match if any of the matched orders is removed / already filled (i.e. amount = 0)
     */
     function matchMultipleOrders(uint64[] buyTokenIds, uint64[] sellTokenIds) external returns(uint matchCount) {
         uint len = buyTokenIds.length;
-        require(len == sellTokenIds.length, &quot;buyTokenIds and sellTokenIds lengths must be equal&quot;);
+        require(len == sellTokenIds.length, "buyTokenIds and sellTokenIds lengths must be equal");
 
-        for (uint i = 0; i &lt; len &amp;&amp; gasleft() &gt; ORDER_MATCH_WORST_GAS; i++) {
+        for (uint i = 0; i < len && gasleft() > ORDER_MATCH_WORST_GAS; i++) {
             if(_fillOrder(buyTokenIds[i], sellTokenIds[i])) {
                 matchCount++;
             }
@@ -380,7 +380,7 @@ contract Exchange is Restricted {
     // returns CHUNK_SIZE orders starting from offset
     // orders are encoded as [id, maker, price, amount]
     function getActiveBuyOrders(uint offset) external view returns (uint[4][CHUNK_SIZE] response) {
-        for (uint8 i = 0; i &lt; CHUNK_SIZE &amp;&amp; i + offset &lt; activeBuyOrders.length; i++) {
+        for (uint8 i = 0; i < CHUNK_SIZE && i + offset < activeBuyOrders.length; i++) {
             uint64 orderId = activeBuyOrders[offset + i];
             Order storage order = buyTokenOrders[orderId];
             response[i] = [orderId, uint(order.maker), order.price, order.amount];
@@ -388,7 +388,7 @@ contract Exchange is Restricted {
     }
 
     function getActiveSellOrders(uint offset) external view returns (uint[4][CHUNK_SIZE] response) {
-        for (uint8 i = 0; i &lt; CHUNK_SIZE &amp;&amp; i + offset &lt; activeSellOrders.length; i++) {
+        for (uint8 i = 0; i < CHUNK_SIZE && i + offset < activeSellOrders.length; i++) {
             uint64 orderId = activeSellOrders[offset + i];
             Order storage order = sellTokenOrders[orderId];
             response[i] = [orderId, uint(order.maker), order.price, order.amount];
@@ -403,10 +403,10 @@ contract Exchange is Restricted {
                           // we let matchMultiple continue, indivudal match will revert
         }
 
-        require(buy.price &gt;= sell.price, &quot;buy price must be &gt;= sell price&quot;);
+        require(buy.price >= sell.price, "buy price must be >= sell price");
 
-        // pick maker&#39;s price (whoever placed order sooner considered as maker)
-        uint32 price = buyTokenId &gt; sellTokenId ? sell.price : buy.price;
+        // pick maker's price (whoever placed order sooner considered as maker)
+        uint32 price = buyTokenId > sellTokenId ? sell.price : buy.price;
 
         uint publishedRate;
         (publishedRate, ) = rates.rates(augmintToken.peggedSymbol());
@@ -416,7 +416,7 @@ contract Exchange is Restricted {
 
         uint tradedWei;
         uint tradedTokens;
-        if (sellWei &lt;= buy.amount) {
+        if (sellWei <= buy.amount) {
             tradedWei = sellWei;
             tradedTokens = sell.amount;
         } else {
@@ -434,7 +434,7 @@ contract Exchange is Restricted {
             _removeSellOrder(sell);
         }
 
-        augmintToken.transferWithNarrative(buy.maker, tradedTokens, &quot;Buy token order fill&quot;);
+        augmintToken.transferWithNarrative(buy.maker, tradedTokens, "Buy token order fill");
         sell.maker.transfer(tradedWei);
 
         emit OrderFill(buy.maker, sell.maker, buyTokenId,
@@ -445,8 +445,8 @@ contract Exchange is Restricted {
 
     function _placeSellTokenOrder(address maker, uint32 price, uint tokenAmount)
     private returns (uint64 orderId) {
-        require(price &gt; 0, &quot;price must be &gt; 0&quot;);
-        require(tokenAmount &gt; 0, &quot;tokenAmount must be &gt; 0&quot;);
+        require(price > 0, "price must be > 0");
+        require(tokenAmount > 0, "tokenAmount must be > 0");
 
         orderId = ++orderCount;
         sellTokenOrders[orderId] = Order(uint64(activeSellOrders.length), maker, price, tokenAmount);
@@ -464,7 +464,7 @@ contract Exchange is Restricted {
     }
 
     function _removeOrder(uint64[] storage orders, uint64 index) private {
-        if (index &lt; orders.length - 1) {
+        if (index < orders.length - 1) {
             orders[index] = orders[orders.length - 1];
         }
         orders.length--;

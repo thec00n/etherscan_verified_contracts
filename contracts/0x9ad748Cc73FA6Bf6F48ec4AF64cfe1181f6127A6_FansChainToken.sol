@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -106,7 +106,7 @@ contract limitedFactor {
     bool public tokenFrozen = true;
     modifier teamAccountNeedFreezeOneYear(address _address) {
         if(_address == teamAddress) {
-            require(now &gt; startTime + 1 years);
+            require(now > startTime + 1 years);
         }
         _;
     }
@@ -117,8 +117,8 @@ contract limitedFactor {
     } 
 }
 contract standardToken is ERC20Token, limitedFactor {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     function balanceOf(address _owner) constant public returns (uint256) {
         return balances[_owner];
@@ -126,8 +126,8 @@ contract standardToken is ERC20Token, limitedFactor {
 
     /* Transfers tokens from your address to other */
     function transfer(address _to, uint256 _value) public TokenUnFreeze teamAccountNeedFreezeOneYear(msg.sender) returns (bool success) {
-        require (balances[msg.sender] &gt; _value);           // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt; balances[_to]);  // Throw if owerflow detected
+        require (balances[msg.sender] > _value);           // Throw if sender has insufficient balance
+        require (balances[_to] + _value > balances[_to]);  // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers blaance
         Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -151,9 +151,9 @@ contract standardToken is ERC20Token, limitedFactor {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public TokenUnFreeze returns (bool success) {
-        require (balances[_from] &gt; _value);                // Throw if sender does not have enough balance
-        require (balances[_to] + _value &gt; balances[_to]);  // Throw if overflow detected
-        require (_value &gt; allowances[_from][msg.sender]);  // Throw if you do not have allowance
+        require (balances[_from] > _value);                // Throw if sender does not have enough balance
+        require (balances[_to] + _value > balances[_to]);  // Throw if overflow detected
+        require (_value > allowances[_from][msg.sender]);  // Throw if you do not have allowance
         balances[_from] -= _value;                          // Deduct senders balance
         balances[_to] += _value;                            // Add recipient blaance
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address
@@ -171,8 +171,8 @@ contract standardToken is ERC20Token, limitedFactor {
 contract FansChainToken is standardToken,Owned {
     using SafeMath for uint;
 
-    string constant public name=&quot;FansChain&quot;;
-    string constant public symbol=&quot;FSC&quot;;
+    string constant public name="FansChain";
+    string constant public symbol="FSC";
     uint256 constant public decimals=18;
     
     uint256 public totalSupply = 0;
@@ -201,7 +201,7 @@ contract FansChainToken is standardToken,Owned {
     function depositToken(uint256 _value) internal {
         uint256 tokenAlloc = buyPriceAt(getTime()) * _value;
         ICOSupply = ICOSupply.add(tokenAlloc);
-        require (ICOSupply &lt; ICOtotalSupply);
+        require (ICOSupply < ICOtotalSupply);
         mintTokens (msg.sender, tokenAlloc);
         forwardFunds();
     }
@@ -213,7 +213,7 @@ contract FansChainToken is standardToken,Owned {
     
     /// @dev Issue new tokens
     function mintTokens(address _to, uint256 _amount) internal {
-        require (balances[_to] + _amount &gt; balances[_to]);      // Check for overflows
+        require (balances[_to] + _amount > balances[_to]);      // Check for overflows
         balances[_to] = balances[_to].add(_amount);             // Set minted coins to target
         totalSupply = totalSupply.add(_amount);
         Transfer(0x0, _to, _amount);                            // Create Transfer event from 0x
@@ -221,7 +221,7 @@ contract FansChainToken is standardToken,Owned {
     
     /// @dev Calculate exchange
     function buyPriceAt(uint256 _time) internal constant returns(uint256) {
-        if (_time &gt;= startTime &amp;&amp; _time &lt;= stopTime) {
+        if (_time >= startTime && _time <= stopTime) {
             return exchangeRate;
         } else {
             return 0;
@@ -255,7 +255,7 @@ contract FansChainToken is standardToken,Owned {
     /// @dev withDraw Ether to a Safe Wallet
     function withDraw() public payable onlyOwner {
         require (msg.sender != address(0));
-        require (getTime() &gt; stopTime);
+        require (getTime() > stopTime);
         walletAddress.transfer(this.balance);
     }
     
@@ -267,11 +267,11 @@ contract FansChainToken is standardToken,Owned {
     /// @dev allocate Token
     function allocateTokens(address[] _owners, uint256[] _values) public onlyOwner {
         require (_owners.length == _values.length);
-        for(uint256 i = 0; i &lt; _owners.length ; i++){
+        for(uint256 i = 0; i < _owners.length ; i++){
             address owner = _owners[i];
             uint256 value = _values[i];
             ICOSupply = ICOSupply.add(value);
-            require(totalSupply &lt; ICOtotalSupply);
+            require(totalSupply < ICOtotalSupply);
             mintTokens(owner, value);
         }
     }
@@ -289,11 +289,11 @@ contract FansChainToken is standardToken,Owned {
     /// @dev allocate token for Private Address
     function allocatePrivateToken(address[] _privateFundingAddress, uint256[] _amount) public onlyOwner {
         require (_privateFundingAddress.length == _amount.length);
-        for(uint256 i = 0; i &lt; _privateFundingAddress.length ; i++){
+        for(uint256 i = 0; i < _privateFundingAddress.length ; i++){
             address owner = _privateFundingAddress[i];
             uint256 value = _amount[i];
             privateFundingSupply = privateFundingSupply.add(value);
-            require(privateFundingSupply &lt;= privateFundSupply);
+            require(privateFundingSupply <= privateFundSupply);
             mintTokens(owner, value);
         }
     }

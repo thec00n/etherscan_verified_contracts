@@ -25,7 +25,7 @@ contract WinMatrix
 
    uint16 constant maxTypeBets = 157;
    uint16 private betsProcessed;
-   mapping (uint16 =&gt; uint8) private winMatrix;
+   mapping (uint16 => uint8) private winMatrix;
       
    function WinMatrix() 
    {
@@ -47,16 +47,16 @@ contract WinMatrix
    {      
       if (betsProcessed == maxTypeBets) throw;
       var max = betsProcessed + count;
-      if (max &gt; maxTypeBets) max = maxTypeBets;
+      if (max > maxTypeBets) max = maxTypeBets;
 
-      for(uint16 bet=betsProcessed; bet&lt;max; bet++)
+      for(uint16 bet=betsProcessed; bet<max; bet++)
       {   
         BetTypes betType = BetTypes(bet);                   
-        for(uint8 wheelResult=0; wheelResult&lt;=36; wheelResult++)
+        for(uint8 wheelResult=0; wheelResult<=36; wheelResult++)
         {
           uint16 index = getIndex(bet, wheelResult);
           
-          if (bet &lt;= 36) // bet on number
+          if (bet <= 36) // bet on number
           {
               if (bet == wheelResult) winMatrix[index] = 35;
           }
@@ -79,7 +79,7 @@ contract WinMatrix
                 wheelResult == 30 ||
                 wheelResult == 32 ||
                 wheelResult == 34 ||
-                wheelResult == 36) &amp;&amp; wheelResult != 0) winMatrix[index] = 1; 
+                wheelResult == 36) && wheelResult != 0) winMatrix[index] = 1; 
                 
           }
           else if (betType == BetTypes.black)
@@ -101,47 +101,47 @@ contract WinMatrix
                 wheelResult == 30 ||
                 wheelResult == 32 ||
                 wheelResult == 34 ||
-                wheelResult == 36) &amp;&amp; wheelResult != 0) winMatrix[index] = 1;
+                wheelResult == 36) && wheelResult != 0) winMatrix[index] = 1;
           }
           else if (betType == BetTypes.odd)
           {
-            if (wheelResult % 2 != 0 &amp;&amp; wheelResult != 0) winMatrix[index] = 1;  
+            if (wheelResult % 2 != 0 && wheelResult != 0) winMatrix[index] = 1;  
           }
           else if (betType == BetTypes.even)
           {
-            if (wheelResult % 2 == 0 &amp;&amp; wheelResult != 0) winMatrix[index] = 1;     
+            if (wheelResult % 2 == 0 && wheelResult != 0) winMatrix[index] = 1;     
           }
           else if (betType == BetTypes.low)
           {
-              if (wheelResult &lt; 19 &amp;&amp; wheelResult != 0) winMatrix[index] = 1; 
+              if (wheelResult < 19 && wheelResult != 0) winMatrix[index] = 1; 
           }
           else if (betType == BetTypes.high)
           {
-            if (wheelResult &gt; 18 &amp;&amp; wheelResult != 0) winMatrix[index] = 1;     
+            if (wheelResult > 18 && wheelResult != 0) winMatrix[index] = 1;     
           }
           else if (betType == BetTypes.dozen1)
           {
-            if (wheelResult &lt;13 &amp;&amp; wheelResult != 0) winMatrix[index] = 2;
+            if (wheelResult <13 && wheelResult != 0) winMatrix[index] = 2;
           }
           else if (betType == BetTypes.dozen2)
           {
-            if (wheelResult &gt;13 &amp;&amp; wheelResult &lt; 25 &amp;&amp; wheelResult != 0) winMatrix[index] = 2;
+            if (wheelResult >13 && wheelResult < 25 && wheelResult != 0) winMatrix[index] = 2;
           }              
           else if (betType == BetTypes.dozen3)
           {
-              if (wheelResult &gt;24 &amp;&amp; wheelResult != 0) winMatrix[index] = 2;
+              if (wheelResult >24 && wheelResult != 0) winMatrix[index] = 2;
           }   
           else if (betType == BetTypes.column1)
           {
-              if (wheelResult%3 == 1 &amp;&amp; wheelResult != 0) winMatrix[index] = 2;
+              if (wheelResult%3 == 1 && wheelResult != 0) winMatrix[index] = 2;
           }
           else if (betType == BetTypes.column2)
           {
-            if (wheelResult%3 == 2 &amp;&amp; wheelResult != 0) winMatrix[index] = 2;    
+            if (wheelResult%3 == 2 && wheelResult != 0) winMatrix[index] = 2;    
           }              
           else if (betType == BetTypes.column3)
           {
-              if (wheelResult%3 == 0 &amp;&amp; wheelResult != 0) winMatrix[index] = 2;
+              if (wheelResult%3 == 0 && wheelResult != 0) winMatrix[index] = 2;
           }
           else if (betType == BetTypes.pair_01)
           {

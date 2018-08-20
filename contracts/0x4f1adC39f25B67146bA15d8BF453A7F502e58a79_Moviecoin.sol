@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 // An ERC20 standard
 //
 // author: Xender Team
-// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35465047435c5650754d505b5150471b565a58">[email&#160;protected]</a>
+// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35465047435c5650754d505b5150471b565a58">[email protected]</a>
 // ----------------------------------------------------------------------------------------------
 
 /*
@@ -58,7 +58,7 @@ contract Owned {
     bool isLock = true;
     
     // white list
-    mapping(address =&gt; bool) whitelisted;
+    mapping(address => bool) whitelisted;
  
     
     function Owned() public {
@@ -109,7 +109,7 @@ contract Owned {
 }
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -118,7 +118,7 @@ contract Utils {
     function Utils() public {
     }
     
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -136,7 +136,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        require(z &gt;= _x);
+        require(z >= _x);
         return z;
     }
 
@@ -149,7 +149,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        require(_x &gt;= _y);
+        require(_x >= _y);
         return _x - _y;
     }
 }
@@ -158,13 +158,13 @@ contract Utils {
     Moviecoin Token
 */
 contract Moviecoin is ERC20Interface, Owned, Utils {
-    string name_ = &#39;Dayibi&#39;;  
-    string  symbol_ = &#39;DYB&#39;;
+    string name_ = 'Dayibi';  
+    string  symbol_ = 'DYB';
     uint8 decimals_ = 8; 
     uint256 totalSupply_ = 10 ** 18;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function Moviecoin() public {
         balances[msg.sender] = totalSupply_;
@@ -172,7 +172,7 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
     }
 
   /**
-  * @dev token&#39;s symbol
+  * @dev token's symbol
   */
   
   function name() public constant returns (string){
@@ -188,7 +188,7 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
 
   
   /**
-  * @dev token&#39;s symbol
+  * @dev token's symbol
   */
   function symbol() public constant returns (string){
       return symbol_;
@@ -202,7 +202,7 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
    }
     
   /**
-  * @dev token&#39;s decimals
+  * @dev token's decimals
   */
    function decimals() public constant returns (uint){
         return decimals_;
@@ -228,7 +228,7 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public isUnlock returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -244,8 +244,8 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint256 _value) public isUnlock returns (bool) {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = safeSub(balances[_from], _value);
     balances[_to] = safeAdd(balances[_to], _value);
@@ -259,7 +259,7 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -281,7 +281,7 @@ contract Moviecoin is ERC20Interface, Owned, Utils {
   }
   
   /**
-   * @dev Don&#39;t accept ETH
+   * @dev Don't accept ETH
    */
    function () public payable {
        revert();

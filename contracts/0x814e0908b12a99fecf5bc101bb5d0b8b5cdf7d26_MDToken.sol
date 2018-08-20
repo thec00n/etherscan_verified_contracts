@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-      return a &gt;= b ? a : b;
+      return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
   }
 }
 
@@ -85,7 +85,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev Transfer token for a specified address.
@@ -158,13 +158,13 @@ contract ERC677Token is ERC677 {
     function isContract(address _addr) private view returns (bool hasCode) {
         uint length;
         assembly { length := extcodesize(_addr) }
-        return length &gt; 0;
+        return length > 0;
     }
 }
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
     * @dev Transfer tokens from one address to another.
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -219,8 +219,8 @@ contract MDToken is StandardToken, ERC677Token, Ownable {
     using SafeMath for uint256;
 
     // Token metadata
-    string public constant name = &quot;Measurable Data Token&quot;;
-    string public constant symbol = &quot;MDT&quot;;
+    string public constant name = "Measurable Data Token";
+    string public constant symbol = "MDT";
     uint256 public constant decimals = 18;
     uint256 public constant maxSupply = 10 * (10**8) * (10**decimals); // 1 billion MDT
 
@@ -255,7 +255,7 @@ contract MDToken is StandardToken, ERC677Token, Ownable {
 
     /// @dev Reverts if address is 0x0 or this token address
     modifier validRecipient(address _recipient) {
-        require(_recipient != address(0) &amp;&amp; _recipient != address(this));
+        require(_recipient != address(0) && _recipient != address(this));
         _;
     }
 
@@ -301,7 +301,7 @@ contract MDToken is StandardToken, ERC677Token, Ownable {
 
         // issue remaining tokens to MDT Foundation
         uint256 remainingTokens = maxSupply.sub(totalSupply);
-        if (remainingTokens &gt; 0) {
+        if (remainingTokens > 0) {
             mint(mdtFoundationAddress, remainingTokens);
         }
     }
@@ -316,7 +316,7 @@ contract MDToken is StandardToken, ERC677Token, Ownable {
         validRecipient(_to)
         returns (bool)
     {
-        require(totalSupply.add(_amount) &lt;= maxSupply);
+        require(totalSupply.add(_amount) <= maxSupply);
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
 

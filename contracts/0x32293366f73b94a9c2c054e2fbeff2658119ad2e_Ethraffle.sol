@@ -18,7 +18,7 @@ contract Ethraffle {
     // Variables
     uint public raffleId = 0;
     uint public nextTicket = 0;
-    mapping (uint =&gt; Contestant) public contestants;
+    mapping (uint => Contestant) public contestants;
     uint[] public gaps;
 
     // Initialization
@@ -40,9 +40,9 @@ contract Ethraffle {
     function buyTickets() payable public {
         uint moneySent = msg.value;
 
-        while (moneySent &gt;= pricePerTicket &amp;&amp; nextTicket &lt;= totalTickets) {
+        while (moneySent >= pricePerTicket && nextTicket <= totalTickets) {
             uint currTicket = 0;
-            if (gaps.length &gt; 0) {
+            if (gaps.length > 0) {
                 currTicket = gaps[gaps.length-1];
                 gaps.length--;
             } else {
@@ -54,12 +54,12 @@ contract Ethraffle {
         }
 
         // Choose winner if we sold all the tickets
-        if (nextTicket &gt; totalTickets) {
+        if (nextTicket > totalTickets) {
             chooseWinner();
         }
 
         // Send back leftover money
-        if (moneySent &gt; 0) {
+        if (moneySent > 0) {
             msg.sender.transfer(moneySent);
         }
     }
@@ -79,15 +79,15 @@ contract Ethraffle {
 
     function getRefund() public {
         uint refunds = 0;
-        for (uint i = 1; i &lt;= totalTickets; i++) {
-            if (msg.sender == contestants[i].addr &amp;&amp; raffleId == contestants[i].raffleId) {
+        for (uint i = 1; i <= totalTickets; i++) {
+            if (msg.sender == contestants[i].addr && raffleId == contestants[i].raffleId) {
                 refunds++;
                 contestants[i] = Contestant(address(0), 0);
                 gaps.push(i);
             }
         }
 
-        if (refunds &gt; 0) {
+        if (refunds > 0) {
             msg.sender.transfer(refunds * pricePerTicket);
         }
     }

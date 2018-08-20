@@ -8,7 +8,7 @@ pragma solidity 0.4.24;
  * https://github.com/OpenZeppelin/openzeppelin-solidity/
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,7 +74,7 @@ contract Ownable {
  * https://github.com/OpenZeppelin/openzeppelin-solidity/
  *
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81f3e4ece2eec1b3">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81f3e4ece2eec1b3">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -114,8 +114,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -130,9 +130,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -140,7 +140,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -149,7 +149,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -233,7 +233,7 @@ contract IndTokenPayment is Ownable, ReentrancyGuard {
     //Minimum tokens per 1 ETH to convert
     uint256 public minConversionRate;
     IContractRegistry public bancorRegistry;
-    bytes32 public constant BANCOR_NETWORK = &quot;BancorNetwork&quot;;
+    bytes32 public constant BANCOR_NETWORK = "BancorNetwork";
     
     event conversionSucceded(address from,uint256 fromTokenVal,address dest,uint256 minReturn,uint256 destTokenVal);    
     event conversionMin(uint256 min);
@@ -269,7 +269,7 @@ contract IndTokenPayment is Ownable, ReentrancyGuard {
         IBancorNetwork bancorNetwork = IBancorNetwork(bancorRegistry.getAddress(BANCOR_NETWORK));   
         uint256 minReturn = minConversionRate.mul(msg.value);
         uint256 convTokens =  bancorNetwork.convertFor.value(msg.value)(path,msg.value,minReturn,destinationWallet);        
-        assert(convTokens &gt; 0);
+        assert(convTokens > 0);
         emit conversionSucceded(msg.sender,msg.value,destinationWallet,minReturn,convTokens);                                                                    
     }
 
@@ -285,7 +285,7 @@ contract IndTokenPayment is Ownable, ReentrancyGuard {
     //ETH cannot get locked in this contract. If it does, this can be used to withdraw
     //the locked ether.
     function withdrawEther() public onlyOwner nonReentrant returns(bool){
-        if(address(this).balance &gt; 0){
+        if(address(this).balance > 0){
             destinationWallet.transfer(address(this).balance);
         }        
         return true;

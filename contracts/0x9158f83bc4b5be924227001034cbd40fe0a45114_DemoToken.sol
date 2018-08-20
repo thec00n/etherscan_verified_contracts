@@ -70,27 +70,27 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 contract ReadOnlyTokenImpl is ReadOnlyToken {
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
     * @dev Gets the balance of the specified address.
@@ -129,7 +129,7 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -150,8 +150,8 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -165,7 +165,7 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -190,7 +190,7 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -208,7 +208,7 @@ contract MintableTokenImpl is Ownable, Secured, TokenImpl, MintableToken {
      * @param _amount The amount of tokens to mint.
      * @return A boolean that indicates if the operation was successful.
      */
-    function mint(address _to, uint256 _amount) only(&quot;minter&quot;) public returns (bool) {
+    function mint(address _to, uint256 _amount) only("minter") public returns (bool) {
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emitMint(_to, _amount);
@@ -224,7 +224,7 @@ contract MintableTokenImpl is Ownable, Secured, TokenImpl, MintableToken {
 /**
  * @title OwnableImpl
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableImpl is Ownable {
     address public owner;
@@ -258,7 +258,7 @@ contract OwnableImpl is Ownable {
 }
 
 contract SecuredImpl is Ownable, Secured {
-        mapping(string =&gt; address) users;
+        mapping(string => address) users;
         event RoleTransferred(address indexed previousUser, address indexed newUser, string role);
 
         function getRole(string role) constant public returns (address) {
@@ -350,9 +350,9 @@ contract BurnableTokenImpl is TokenImpl, BurnableToken {
          * @param _value The amount of token to be burned.
          */
         function burn(uint256 _value) public {
-                require(_value &lt;= balances[msg.sender]);
-                // no need to require value &lt;= totalSupply, since that would imply the
-                // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+                require(_value <= balances[msg.sender]);
+                // no need to require value <= totalSupply, since that would imply the
+                // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
                 address burner = msg.sender;
                 balances[burner] = balances[burner].sub(_value);
@@ -362,8 +362,8 @@ contract BurnableTokenImpl is TokenImpl, BurnableToken {
 }
 
 contract DemoToken is OwnableImpl, SecuredImpl, PausableToken, MintableTokenImpl, BurnableTokenImpl {
-        string public constant name = &quot;Demo Token&quot;;
-        string public constant symbol = &quot;DEMO1&quot;;
+        string public constant name = "Demo Token";
+        string public constant symbol = "DEMO1";
         uint8 public constant decimals = 18;
 
         function burn(uint256 _value) public whenNotPaused {

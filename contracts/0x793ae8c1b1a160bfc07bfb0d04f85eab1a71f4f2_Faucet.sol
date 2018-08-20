@@ -1,6 +1,6 @@
 contract Faucet {
     uint256 sendAmount;
-    mapping (address =&gt; uint) lastSent;
+    mapping (address => uint) lastSent;
     uint blockLimit;
     function Faucet(){
         
@@ -9,7 +9,7 @@ contract Faucet {
     }
 	
 	function getWei() returns (bool){
-	    if(lastSent[msg.sender]&lt;(block.number-blockLimit)&amp;&amp;address(this).balance&gt;sendAmount){
+	    if(lastSent[msg.sender]<(block.number-blockLimit)&&address(this).balance>sendAmount){
 	        msg.sender.send(sendAmount);
 	        lastSent[msg.sender] = block.number;
 	        return true;

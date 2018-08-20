@@ -6,11 +6,11 @@
  pragma solidity ^0.4.10;
 
 /*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : start
+ * import "../common/Manageable.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : start
+ * import "../common/Owned.sol" : start
  *************************************************************************/
 
 
@@ -34,7 +34,7 @@ contract Owned {
     }
 }
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : end
+ * import "../common/Owned.sol" : end
  *************************************************************************/
 
 ///A token that have an owner and a list of managers that can perform some operations
@@ -43,7 +43,7 @@ contract Manageable is Owned {
 
     event ManagerSet(address manager, bool state);
 
-    mapping (address =&gt; bool) public managers;
+    mapping (address => bool) public managers;
 
     function Manageable() Owned() {
         managers[owner] = true;
@@ -67,18 +67,18 @@ contract Manageable is Owned {
         ManagerSet(manager, state);
     }
 }/*************************************************************************
- * import &quot;../common/Manageable.sol&quot; : end
+ * import "../common/Manageable.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ValueToken.sol&quot; : start
- *************************************************************************/
-
-/*************************************************************************
- * import &quot;./ERC20StandardToken.sol&quot; : start
+ * import "./ValueToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./IERC20Token.sol&quot; : start
+ * import "./ERC20StandardToken.sol" : start
+ *************************************************************************/
+
+/*************************************************************************
+ * import "./IERC20Token.sol" : start
  *************************************************************************/
 
 /**@dev ERC20 compliant token interface. 
@@ -86,7 +86,7 @@ https://theethereum.wiki/w/index.php/ERC20_Token_Standard
 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md */
 contract IERC20Token {
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external    
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external    
     function name() public constant returns (string _name) { _name; }
     function symbol() public constant returns (string _symbol) { _symbol; }
     function decimals() public constant returns (uint8 _decimals) { _decimals; }
@@ -104,10 +104,10 @@ contract IERC20Token {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 /*************************************************************************
- * import &quot;./IERC20Token.sol&quot; : end
+ * import "./IERC20Token.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../common/SafeMath.sol&quot; : start
+ * import "../common/SafeMath.sol" : start
  *************************************************************************/
 
 /**dev Utility methods for overflow-proof arithmetic operations 
@@ -117,14 +117,14 @@ contract SafeMath {
     /**dev Returns the sum of a and b. Throws an exception if it exceeds uint256 limits*/
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {        
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
 
     /**dev Returns the difference of a and b. Throws an exception if a is less than b*/
     function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
@@ -140,7 +140,7 @@ contract SafeMath {
         return x / y;
     }
 }/*************************************************************************
- * import &quot;../common/SafeMath.sol&quot; : end
+ * import "../common/SafeMath.sol" : end
  *************************************************************************/
 
 /**@dev Standard ERC20 compliant token implementation */
@@ -152,9 +152,9 @@ contract ERC20StandardToken is IERC20Token, SafeMath {
     //tokens already issued
     uint256 tokensIssued;
     //balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     //one account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function ERC20StandardToken() {
      
@@ -219,10 +219,10 @@ contract ERC20StandardToken is IERC20Token, SafeMath {
         balances[_to] = safeAdd(balances[_to], _value);
     }
 }/*************************************************************************
- * import &quot;./ERC20StandardToken.sol&quot; : end
+ * import "./ERC20StandardToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../token/ValueTokenAgent.sol&quot; : start
+ * import "../token/ValueTokenAgent.sol" : start
  *************************************************************************/
 
 
@@ -249,19 +249,19 @@ contract ValueTokenAgent {
     amount - amount of new or deleted tokens  */
     function tokenChanged(address holder, uint256 amount);
 }/*************************************************************************
- * import &quot;../token/ValueTokenAgent.sol&quot; : end
+ * import "../token/ValueTokenAgent.sol" : end
  *************************************************************************/
 
 
 /**@dev Can be relied on to distribute values according to its balances 
- Can set some reserve addreses whose tokens don&#39;t take part in dividend distribution */
+ Can set some reserve addreses whose tokens don't take part in dividend distribution */
 contract ValueToken is Manageable, ERC20StandardToken {
     
     /**@dev Watches transfer operation of this token */
     ValueTokenAgent valueAgent;
 
     /**@dev Holders of reserved tokens */
-    mapping (address =&gt; bool) public reserved;
+    mapping (address => bool) public reserved;
 
     /**@dev Reserved token amount */
     uint256 public reservedAmount;
@@ -307,7 +307,7 @@ contract ValueToken is Manageable, ERC20StandardToken {
             valueAgent.tokenChanged(holder, holderBalance);
         }
 
-        //change reserved token amount according to holder&#39;s state
+        //change reserved token amount according to holder's state
         if (state) {
             //reservedAmount += holderBalance;
             reservedAmount = safeAdd(reservedAmount, holderBalance);
@@ -319,16 +319,16 @@ contract ValueToken is Manageable, ERC20StandardToken {
         reserved[holder] = state;
     }
 }/*************************************************************************
- * import &quot;./ValueToken.sol&quot; : end
+ * import "./ValueToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ReturnableToken.sol&quot; : start
+ * import "./ReturnableToken.sol" : start
  *************************************************************************/
 
 
 
 /*************************************************************************
- * import &quot;./ReturnTokenAgent.sol&quot; : start
+ * import "./ReturnTokenAgent.sol" : start
  *************************************************************************/
 
 
@@ -338,8 +338,8 @@ contract ValueToken is Manageable, ERC20StandardToken {
 contract ReturnTokenAgent is Manageable {
     //ReturnableToken public returnableToken;
 
-    /**@dev List of returnable tokens in format token-&gt;flag  */
-    mapping (address =&gt; bool) public returnableTokens;
+    /**@dev List of returnable tokens in format token->flag  */
+    mapping (address => bool) public returnableTokens;
 
     /**@dev Allows only token to execute method */
     //modifier returnableTokenOnly {require(msg.sender == address(returnableToken)); _;}
@@ -358,14 +358,14 @@ contract ReturnTokenAgent is Manageable {
         returnableTokens[address(token)] = false;
     }
 }/*************************************************************************
- * import &quot;./ReturnTokenAgent.sol&quot; : end
+ * import "./ReturnTokenAgent.sol" : end
  *************************************************************************/
 
 ///Token that when sent to specified contract (returnAgent) invokes additional actions
 contract ReturnableToken is Manageable, ERC20StandardToken {
 
     /**@dev List of return agents */
-    mapping (address =&gt; bool) public returnAgents;
+    mapping (address => bool) public returnAgents;
 
     function ReturnableToken() {}    
     
@@ -386,26 +386,26 @@ contract ReturnableToken is Manageable, ERC20StandardToken {
         }
     }
 }/*************************************************************************
- * import &quot;./ReturnableToken.sol&quot; : end
+ * import "./ReturnableToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./IBurnableToken.sol&quot; : start
+ * import "./IBurnableToken.sol" : start
  *************************************************************************/
 
 /**@dev A token that can be burnt */
 contract IBurnableToken {
     function burn(uint256 _value);
 }/*************************************************************************
- * import &quot;./IBurnableToken.sol&quot; : end
+ * import "./IBurnableToken.sol" : end
  *************************************************************************/
 
 /**@dev bcshop.io crowdsale token */
 contract BCSToken is ValueToken, ReturnableToken, IBurnableToken {
 
     /**@dev Specifies allowed address that always can transfer tokens in case of global transfer lock */
-    mapping (address =&gt; bool) public transferAllowed;
+    mapping (address => bool) public transferAllowed;
     /**@dev Specifies timestamp when specific token holder can transfer funds */    
-    mapping (address =&gt; uint256) public transferLockUntil; 
+    mapping (address => uint256) public transferLockUntil; 
     /**@dev True if transfer is locked for all holders, false otherwise */
     bool public transferLocked;
 
@@ -413,12 +413,12 @@ contract BCSToken is ValueToken, ReturnableToken, IBurnableToken {
 
     /**@dev Creates a token with given initial supply  */
     function BCSToken(uint256 _initialSupply, uint8 _decimals) {
-        name = &quot;BCShop.io Token&quot;;
-        symbol = &quot;BCS&quot;;
+        name = "BCShop.io Token";
+        symbol = "BCS";
         decimals = _decimals;        
 
         tokensIssued = _initialSupply * (uint256(10) ** decimals);
-        //store all tokens at the owner&#39;s address;
+        //store all tokens at the owner's address;
         balances[msg.sender] = tokensIssued;
 
         transferLocked = true;
@@ -436,9 +436,9 @@ contract BCSToken is ValueToken, ReturnableToken, IBurnableToken {
         if(transferLocked) {
             return transferAllowed[holder];
         } else {
-            return now &gt; transferLockUntil[holder];
+            return now > transferLockUntil[holder];
         }
-        //return !transferLocked &amp;&amp; now &gt; transferLockUntil[holder];
+        //return !transferLocked && now > transferLockUntil[holder];
     }    
 
     /**@dev Lock transfer for a given holder for a given amount of days */
@@ -457,7 +457,7 @@ contract BCSToken is ValueToken, ReturnableToken, IBurnableToken {
     }
     
     function burn(uint256 _value) managerOnly {        
-        require (balances[msg.sender] &gt;= _value);            // Check if the sender has enough
+        require (balances[msg.sender] >= _value);            // Check if the sender has enough
 
         if (address(valueAgent) != 0x0) {            
             valueAgent.tokenChanged(msg.sender, _value);

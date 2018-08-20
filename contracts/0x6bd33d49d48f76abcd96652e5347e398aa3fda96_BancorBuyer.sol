@@ -22,7 +22,7 @@ contract CrowdsaleController {
 
 contract BancorBuyer {
   // Store the amount of ETH deposited or BNT owned by each account.
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
   // Reward for first to execute the buy.
   uint public reward;
   // Track whether the contract has bought the tokens yet.
@@ -38,17 +38,17 @@ contract BancorBuyer {
   address developer = 0x4e6A1c57CdBfd97e8efe831f8f4418b1F2A09e6e;
   
   // Withdraws all ETH deposited by the sender.
-  // Called to cancel a user&#39;s participation in the sale.
+  // Called to cancel a user's participation in the sale.
   function withdraw(){
-    // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+    // Store the user's balance prior to withdrawal in a temporary variable.
     uint amount = balances[msg.sender];
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
-    // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+    // Return the user's funds.  Throws on failure to prevent loss of funds.
     msg.sender.transfer(amount);
   }
   
-  // Allow anyone to contribute to the buy executer&#39;s reward.
+  // Allow anyone to contribute to the buy executer's reward.
   function add_reward() payable {
     // Update reward value to include received amount.
     reward += msg.value;
@@ -62,7 +62,7 @@ contract BancorBuyer {
     time_bought = now;
     // Transfer all the funds (less the caller reward) 
     // to the Bancor crowdsale contract to buy tokens.
-    // Throws if the crowdsale hasn&#39;t started yet or has
+    // Throws if the crowdsale hasn't started yet or has
     // already completed, preventing loss of funds.
     CrowdsaleController(sale).contributeETH.value(this.balance - reward)();
     // Reward the caller for being the first to execute the buy.
@@ -71,21 +71,21 @@ contract BancorBuyer {
   
   // A helper function for the default function, allowing contracts to interact.
   function default_helper() payable {
-    // Only allow deposits if the contract hasn&#39;t already purchased the tokens.
+    // Only allow deposits if the contract hasn't already purchased the tokens.
     if (!bought_tokens) {
       // Update records of deposited ETH to include the received amount.
       balances[msg.sender] += msg.value;
     }
-    // Withdraw the sender&#39;s tokens if the contract has already purchased them.
+    // Withdraw the sender's tokens if the contract has already purchased them.
     else {
-      // Store the user&#39;s BNT balance in a temporary variable (1 ETHWei -&gt; 100 BNTWei).
+      // Store the user's BNT balance in a temporary variable (1 ETHWei -> 100 BNTWei).
       uint amount = balances[msg.sender] * 100;
-      // Update the user&#39;s balance prior to sending BNT to prevent recursive call.
+      // Update the user's balance prior to sending BNT to prevent recursive call.
       balances[msg.sender] = 0;
       // No fee for withdrawing during the crowdsale.
       uint fee = 0;
       // 1% fee for withdrawing after the crowdsale has ended.
-      if (now &gt; time_bought + 1 hours) {
+      if (now > time_bought + 1 hours) {
         fee = amount / 100;
       }
       // Transfer the tokens to the sender and the developer.

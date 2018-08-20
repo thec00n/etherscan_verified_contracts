@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="533736273613322b3a3c3e29363d7d303c">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="533736273613322b3a3c3e29363d7d303c">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function implementsERC721() public pure returns (bool);
@@ -75,7 +75,7 @@ contract FootballerAccessControl{
   /// since one reason we may pause the contract is when manager accounts are compromised.
   /// @notice This is public rather than external so it can be called by derived contracts.
   function unpause() public onlyManager {
-    // can&#39;t unpause if contract was upgraded
+    // can't unpause if contract was upgraded
     paused = false;
   }
 
@@ -101,14 +101,14 @@ contract FootballerBase is FootballerAccessControl {
   //存球星和球员
   footballer[] public footballers;
   //将球员的id和球员的拥有者对应起来
-  mapping (uint256 =&gt; address) public footballerToOwner;
+  mapping (uint256 => address) public footballerToOwner;
 
   //记录拥有者有多少球员，在balanceOf（）内部使用来解决所有权计数
-  mapping (address =&gt; uint256) public ownershipTokenCount;
+  mapping (address => uint256) public ownershipTokenCount;
 
   //从footballID 到 已批准调用transferFrom（）的地址的映射
   //每个球员只能有一个批准的地址。零值表示没有批准
-  mapping (uint256 =&gt; address) public footballerToApproved;
+  mapping (uint256 => address) public footballerToApproved;
 
   // 将特定球员的所有权 赋给 某个地址
   function _transfer(address _from, address _to, uint256 _tokenId) internal {
@@ -165,8 +165,8 @@ contract FootballerBase is FootballerAccessControl {
 
 contract FootballerOwnership is FootballerBase, ERC721 {
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant name = &quot;CyptoWorldCup&quot;;
-  string public constant symbol = &quot;CWC&quot;;
+  string public constant name = "CyptoWorldCup";
+  string public constant symbol = "CWC";
 
 
   function implementsERC721() public pure returns (bool) {
@@ -244,7 +244,7 @@ contract FootballerOwnership is FootballerBase, ERC721 {
       uint256 totalpalyers = totalSupply();
       uint256 resultIndex = 0;
       uint256 footballerId;
-      for (footballerId = 0; footballerId &lt; totalpalyers; footballerId++) {
+      for (footballerId = 0; footballerId < totalpalyers; footballerId++) {
         if(footballerToOwner[footballerId] == _owner) {
           result[resultIndex] = footballerId;
           resultIndex++;
@@ -264,10 +264,10 @@ contract FootballerAction is FootballerOwnership {
   //抽卡包得球星
   function CardFootballers() public payable returns (uint) {
       uint price = 4000000000000 wei; //0.04 eth
-      require(msg.value &gt;= price);
+      require(msg.value >= price);
       uint ballerCount = 14;
       uint newFootballerId = 0;
-      for (uint i = 0; i &lt; ballerCount; i++) {
+      for (uint i = 0; i < ballerCount; i++) {
          newFootballerId = createFootballer();
       }
       managerAddress.transfer(msg.value);
@@ -275,7 +275,7 @@ contract FootballerAction is FootballerOwnership {
   }
 
   function buyStar(uint footballerId,uint price) public payable  {
-    require(msg.value &gt;= price);
+    require(msg.value >= price);
     //将球星的拥有权 交给 购买的用户
     address holder = footballerToApproved[footballerId];
     require(holder != address(0));
@@ -296,7 +296,7 @@ contract FootballerAction is FootballerOwnership {
   function getTeamBallers(address actor) public view returns (uint[]) {
     uint len = footballers.length;
     uint count=0;
-    for(uint i = 0; i &lt; len; i++) {
+    for(uint i = 0; i < len; i++) {
         if(_owns(actor, i)){
           if(footballerToApproved[i] == address(0)){
             count++;
@@ -305,7 +305,7 @@ contract FootballerAction is FootballerOwnership {
     }
     uint[] memory res = new uint256[](count);
     uint index = 0;
-    for(i = 0; i &lt; len; i++) {
+    for(i = 0; i < len; i++) {
       if(_owns(actor, i)){
           if(footballerToApproved[i] == address(0)){
             res[index] = i;
@@ -320,14 +320,14 @@ contract FootballerAction is FootballerOwnership {
   function getSellBallers() public view returns (uint[]) {
     uint len = footballers.length;
     uint count = 0;
-    for(uint i = 0; i &lt; len; i++) {
+    for(uint i = 0; i < len; i++) {
         if(footballerToApproved[i] != address(0)){
           count++;
         }
     }
     uint[] memory res = new uint256[](count);
     uint index = 0;
-    for( i = 0; i &lt; len; i++) {
+    for( i = 0; i < len; i++) {
         if(footballerToApproved[i] != address(0)){
           res[index] = i;
           index++;
@@ -362,9 +362,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -372,7 +372,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -381,7 +381,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

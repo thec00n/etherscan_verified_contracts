@@ -3,12 +3,12 @@ pragma solidity ^0.4.17;
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -51,7 +51,7 @@ contract Enums {
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -260,14 +260,14 @@ contract MedalClaim2 is AccessControl, SafeMath  {
     
          // Stores which address have claimed which tokens, to avoid one address claiming the same token twice.
          //Note - this does NOT affect medals won on the sponsored leaderboards;
-  mapping (address =&gt; bool[12]) public claimedbyAddress;
+  mapping (address => bool[12]) public claimedbyAddress;
   
   //Stores which cards have been used to claim medals, to avoid transfering a key card to another account and claiming another medal. 
 
-  mapping (uint64 =&gt; bool) public petsClaimedDiamond;
-  mapping (uint64 =&gt; bool) public petsClaimedZeronium;
-  mapping (uint64 =&gt; bool) public angelsClaimedZeronium;
-  mapping (uint64 =&gt; bool) public accessoriesClaimedZeronium;
+  mapping (uint64 => bool) public petsClaimedDiamond;
+  mapping (uint64 => bool) public petsClaimedZeronium;
+  mapping (uint64 => bool) public angelsClaimedZeronium;
+  mapping (uint64 => bool) public accessoriesClaimedZeronium;
 
     // write functions
     function DataContacts(address _angelCardDataContract, address _petCardDataContract, address _accessoryDataContract, address _leaderboardDataContract, address _medalDataContract) onlyCREATOR external {
@@ -281,7 +281,7 @@ contract MedalClaim2 is AccessControl, SafeMath  {
     function checkExistsOwnedAngel (uint64 angelId) private constant returns (bool) {
         IAngelCardData angelCardData = IAngelCardData(angelCardDataContract);
        
-        if ((angelId &lt;= 0) || (angelId &gt; angelCardData.getTotalAngels())) {return false;}
+        if ((angelId <= 0) || (angelId > angelCardData.getTotalAngels())) {return false;}
         address angelowner;
         (,,,,,,,,,,angelowner) = angelCardData.getAngel(angelId);
         if (angelowner == msg.sender) {return true;}
@@ -292,7 +292,7 @@ contract MedalClaim2 is AccessControl, SafeMath  {
     function checkExistsOwnedPet (uint64 petId) private constant returns (bool) {
           IPetCardData petCardData = IPetCardData(petCardDataContract);
        
-        if ((petId &lt;= 0) || (petId &gt; petCardData.getTotalPets())) {return false;}
+        if ((petId <= 0) || (petId > petCardData.getTotalPets())) {return false;}
         address petowner;
          (,,,,,,,petowner) = petCardData.getPet(petId);
         if (petowner == msg.sender) {return true;}
@@ -304,7 +304,7 @@ contract MedalClaim2 is AccessControl, SafeMath  {
     function getPetCardSeries (uint64 petId) public constant returns (uint8) {
           IPetCardData petCardData = IPetCardData(petCardDataContract);
        
-        if ((petId &lt;= 0) || (petId &gt; petCardData.getTotalPets())) {revert();}
+        if ((petId <= 0) || (petId > petCardData.getTotalPets())) {revert();}
         uint8 seriesId;
          (,seriesId,,,,,,,,) = petCardData.getPet(petId);
         return uint8(seriesId);
@@ -341,8 +341,8 @@ contract MedalClaim2 is AccessControl, SafeMath  {
             (,,,, pet1.auraRed, pet1.auraBlue, pet1.auraYellow,, ,) = petCardData.getPet(pet1Id);
             (,,,, pet2.auraRed, pet2.auraBlue, pet2.auraYellow,, ,) = petCardData.getPet(pet2Id);
             
-         if ((pet1.auraRed &gt;= 240) || (pet1.auraYellow &gt;=240) || (pet1.auraBlue &gt;= 240)) {
-             if ((pet2.auraRed &gt;= 240) || (pet2.auraYellow &gt;=240) || (pet2.auraBlue &gt;= 240)) {
+         if ((pet1.auraRed >= 240) || (pet1.auraYellow >=240) || (pet1.auraBlue >= 240)) {
+             if ((pet2.auraRed >= 240) || (pet2.auraYellow >=240) || (pet2.auraBlue >= 240)) {
              claimedbyAddress[msg.sender][9] = true;
              IMedalData medalData = IMedalData(medalDataContract);   
              medalData._createMedal(msg.sender, 9);
@@ -393,12 +393,12 @@ contract MedalClaim2 is AccessControl, SafeMath  {
               (,ids[4],owners[4]) =  accessoryData.getAccessory(lightningRodId);
               (,ids[5],owners[5]) =  accessoryData.getAccessory(HolyLightId);
               
-              for (uint i=0; i&lt;6; i++) {
+              for (uint i=0; i<6; i++) {
                   if (owners[i] != msg.sender) {revert();}
               }
               
               
-          if ((ids[0] == 17) &amp;&amp; (ids[1] == 18) &amp;&amp; (ids[2] == 3)  &amp;&amp; (ids[3] == 23)  &amp;&amp; (ids[4] == 17)  &amp;&amp; (ids[5] == 18) )  {
+          if ((ids[0] == 17) && (ids[1] == 18) && (ids[2] == 3)  && (ids[3] == 23)  && (ids[4] == 17)  && (ids[5] == 18) )  {
               angelsClaimedZeronium[MichaelId]=true;
               angelsClaimedZeronium[JophielId] = true;
              
@@ -418,13 +418,13 @@ contract MedalClaim2 is AccessControl, SafeMath  {
       
       function getAngelClaims (uint64 angelId) public constant returns (bool claimedZeronium) {
           //before purchasing an angel card, anyone can verify if that card has already been used to claim medals
-          if (angelId &lt; 0) {revert();}
+          if (angelId < 0) {revert();}
           claimedZeronium = angelsClaimedZeronium[angelId];
       }
       
           function getPetClaims (uint64 petId) public constant returns (bool claimedDiamond, bool claimedZeronium) {
           //before purchasing a pet card, anyone can verify if that card has already been used to claim medals
-          if (petId &lt; 0) {revert();}
+          if (petId < 0) {revert();}
           claimedDiamond = petsClaimedDiamond[petId];
           claimedZeronium = petsClaimedZeronium[petId];
         
@@ -432,7 +432,7 @@ contract MedalClaim2 is AccessControl, SafeMath  {
       
         function getAccessoryClaims (uint64 accessoryId) public constant returns (bool claimedZeronium) {
           //before purchasing an accessory card, anyone can verify if that card has already been used to claim medals
-          if (accessoryId &lt; 0) {revert();}
+          if (accessoryId < 0) {revert();}
           claimedZeronium = accessoriesClaimedZeronium[accessoryId];
           
       }

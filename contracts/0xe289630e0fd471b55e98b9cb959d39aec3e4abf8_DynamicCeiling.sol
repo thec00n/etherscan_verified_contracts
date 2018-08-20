@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -115,7 +115,7 @@ contract DynamicCeiling is Owned {
         require(ceilings.length == 0);
 
         ceilings.length = _ceilingHashes.length;
-        for (uint256 i = 0; i &lt; _ceilingHashes.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _ceilingHashes.length; i = i.add(1)) {
             ceilings[i].hash = _ceilingHashes[i];
         }
     }
@@ -123,7 +123,7 @@ contract DynamicCeiling is Owned {
     /// @notice Anybody can reveal the next ceiling if he knows it.
     /// @param _limit Ceiling cap.
     ///  (must be greater or equal to the previous one).
-    /// @param _last `true` if it&#39;s the last ceiling.
+    /// @param _last `true` if it's the last ceiling.
     /// @param _salt Random number used to commit the ceiling
     function revealCeiling(
         uint256 _limit, 
@@ -145,9 +145,9 @@ contract DynamicCeiling is Owned {
             )
         );
 
-        require(_limit != 0 &amp;&amp; _slopeFactor != 0 &amp;&amp; _collectMinimum != 0);
-        if (revealedCeilings &gt; 0) {
-            require(_limit &gt;= ceilings[revealedCeilings.sub(1)].limit);
+        require(_limit != 0 && _slopeFactor != 0 && _collectMinimum != 0);
+        if (revealedCeilings > 0) {
+            require(_limit >= ceilings[revealedCeilings.sub(1)].limit);
         }
 
         ceilings[revealedCeilings].limit = _limit;
@@ -171,14 +171,14 @@ contract DynamicCeiling is Owned {
         {
         // Do not allow none and needs to be same length for all parameters
         require(
-            _limits.length != 0 &amp;&amp;
-            _limits.length == _slopeFactors.length &amp;&amp;
-            _limits.length == _collectMinimums.length &amp;&amp;
-            _limits.length == _lasts.length &amp;&amp;
+            _limits.length != 0 &&
+            _limits.length == _slopeFactors.length &&
+            _limits.length == _collectMinimums.length &&
+            _limits.length == _lasts.length &&
             _limits.length == _salts.length
         );
 
-        for (uint256 i = 0; i &lt; _limits.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _limits.length; i = i.add(1)) {
             
             revealCeiling(
                 _limits[i],
@@ -204,25 +204,25 @@ contract DynamicCeiling is Owned {
             return 0;
         }
 
-        if (totallCollected &gt;= ceilings[currentIndex].limit) {  
+        if (totallCollected >= ceilings[currentIndex].limit) {  
             uint256 nextIndex = currentIndex.add(1);
 
-            if (nextIndex &gt;= revealedCeilings) {
+            if (nextIndex >= revealedCeilings) {
                 return 0; 
             }
             currentIndex = nextIndex;
-            if (totallCollected &gt;= ceilings[currentIndex].limit) {
+            if (totallCollected >= ceilings[currentIndex].limit) {
                 return 0;  
             }
         }        
         uint256 remainedFromCurrentCeiling = ceilings[currentIndex].limit.sub(totallCollected);
         uint256 reminderWithSlopeFactor = remainedFromCurrentCeiling.div(ceilings[currentIndex].slopeFactor);
 
-        if (reminderWithSlopeFactor &gt; ceilings[currentIndex].collectMinimum) {
+        if (reminderWithSlopeFactor > ceilings[currentIndex].collectMinimum) {
             return reminderWithSlopeFactor;
         }
         
-        if (remainedFromCurrentCeiling &gt; ceilings[currentIndex].collectMinimum) {
+        if (remainedFromCurrentCeiling > ceilings[currentIndex].collectMinimum) {
             return ceilings[currentIndex].collectMinimum;
         } else {
             return remainedFromCurrentCeiling;
@@ -231,7 +231,7 @@ contract DynamicCeiling is Owned {
 
     /// @notice Calculates the hash of a ceiling.
     /// @param _limit Ceiling cap.
-    /// @param _last `true` if it&#39;s the last ceiling.
+    /// @param _last `true` if it's the last ceiling.
     /// @param _collectMinimum the minimum amount to collect
     /// @param _salt Random number that will be needed to reveal this ceiling.
     /// @return The calculated hash of this ceiling to be used in the `setHiddenCurves` method

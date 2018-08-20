@@ -9,7 +9,7 @@ contract HODL {
         bool claimed6M;
         bool claimed9M;
     }
-    mapping (address =&gt; HODL) public hodlerStakes;
+    mapping (address => HODL) public hodlerStakes;
 }
 
 /**
@@ -31,16 +31,16 @@ contract EthealHodlHelper {
         address[] memory _hodlers = new address[](keys.length);
 
         // search in contributors
-        for (i = 0; i &lt; keys.length; i++) {
+        for (i = 0; i < keys.length; i++) {
             (_s, _v, _a, _b, _c) = hodl.hodlerStakes(keys[i]);
-            if ((_v &amp;&amp; valid) || (!_v &amp;&amp; invalid)) {
+            if ((_v && valid) || (!_v && invalid)) {
                 _hodlers[result] = keys[i];
                 result++;
             }
         }
 
         hodlers = new address[](result);
-        for (i = 0; i &lt; result; i++) {
+        for (i = 0; i < result; i++) {
             hodlers[i] = _hodlers[i];
         }
 

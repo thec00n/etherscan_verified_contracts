@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -29,7 +29,7 @@ contract Ownable {
  * @title Voting2018 Contract
  */
 contract Voting2018 is Ownable {
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     struct File {
         string content;
@@ -44,7 +44,7 @@ contract Voting2018 is Ownable {
     File[13] public files;
 
     function setHashes(uint8 fileId, string _md5, string _sha256, string _sha1, string _time) public onlyOwner() {
-        if (fileId &lt; files.length) {
+        if (fileId < files.length) {
             bytes memory hashTimeEmptyTest = bytes(files[fileId].hashTime); // Uses memory
             if (hashTimeEmptyTest.length == 0) {
                 files[fileId].md5 = _md5;
@@ -56,7 +56,7 @@ contract Voting2018 is Ownable {
     }
 
     function setContent(uint8 fileId, string _content, string _time) public onlyOwner() {
-        if (fileId &lt; files.length) {
+        if (fileId < files.length) {
             bytes memory contentTimeEmptyTest = bytes(files[fileId].contentTime); // Uses memory
             if (contentTimeEmptyTest.length == 0) {
                 files[fileId].content = _content;
@@ -66,10 +66,10 @@ contract Voting2018 is Ownable {
     }
 
     function getFile(uint8 fileId) public view returns (string content, string contentTime, string _md5, string _sha256, string _sha1, string hashTime) {
-        if (fileId &lt; files.length) {
+        if (fileId < files.length) {
             return (files[fileId].content, files[fileId].contentTime, files[fileId].md5, files[fileId].sha256, files[fileId].sha1, files[fileId].hashTime);
         }
 
-        return (&quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return ("", "", "", "", "", "");
     }
 }

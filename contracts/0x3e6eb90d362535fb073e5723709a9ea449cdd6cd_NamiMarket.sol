@@ -19,9 +19,9 @@ contract NamiMultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -74,8 +74,8 @@ contract NamiMultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        require(!(ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        require(!(ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0));
         _;
@@ -83,7 +83,7 @@ contract NamiMultiSigWallet {
 
     /// @dev Fallback function allows to deposit ether.
     function() public payable {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             emit Deposit(msg.sender, msg.value);
     }
 
@@ -97,7 +97,7 @@ contract NamiMultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i = 0; i &lt; _owners.length; i++) {
+        for (uint i = 0; i < _owners.length; i++) {
             require(!(isOwner[_owners[i]] || _owners[i] == 0));
             isOwner[_owners[i]] = true;
         }
@@ -127,14 +127,14 @@ contract NamiMultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++) {
+        for (uint i=0; i<owners.length - 1; i++) {
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         emit OwnerRemoval(owner);
     }
@@ -148,7 +148,7 @@ contract NamiMultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -237,7 +237,7 @@ contract NamiMultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -280,7 +280,7 @@ contract NamiMultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
         }
@@ -295,8 +295,8 @@ contract NamiMultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed)
+        for (uint i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed)
                 count += 1;
         }
     }
@@ -322,14 +322,14 @@ contract NamiMultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         }
         _confirmations = new address[](count);
-        for (i = 0; i &lt; count; i++) {
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
         }
     }
@@ -348,14 +348,14 @@ contract NamiMultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed) {
+        for (i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         }
         _transactionIds = new uint[](to - from);
-        for (i = from; i &lt; to; i++) {
+        for (i = from; i < to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }
@@ -382,7 +382,7 @@ contract ERC223ReceivingContract {
     function tokenFallbackExchange(address _from, uint _value, uint _price) public returns (bool success);
 }
 contract PresaleToken {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     function burnTokens(address _owner) public;
 }
 
@@ -406,8 +406,8 @@ contract NamiCrowdSale {
      *  Constants
     /*/
 
-    string public name = &quot;Nami ICO&quot;;
-    string public  symbol = &quot;NAC&quot;;
+    string public name = "Nami ICO";
+    string public  symbol = "NAC";
     uint   public decimals = 18;
 
     bool public TRANSFERABLE = false; // default not transferable
@@ -435,7 +435,7 @@ contract NamiCrowdSale {
     // functions on this contract.
     address public escrow;
 
-    // Gathered funds can be withdraw only to namimultisigwallet&#39;s address.
+    // Gathered funds can be withdraw only to namimultisigwallet's address.
     address public namiMultiSigWallet;
 
     // nami presale contract
@@ -448,8 +448,8 @@ contract NamiCrowdSale {
     address public binaryAddress;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     modifier onlyCrowdsaleManager() {
         require(msg.sender == crowdsaleManager); 
@@ -494,9 +494,9 @@ contract NamiCrowdSale {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -508,7 +508,7 @@ contract NamiCrowdSale {
         assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // only escrow can send token (to send token private sale)
     function transferForTeam(address _to, uint256 _value) public
         onlyEscrow
@@ -544,7 +544,7 @@ contract NamiCrowdSale {
         onlyTranferable
         returns (bool success)
     {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -641,31 +641,31 @@ contract NamiCrowdSale {
     * 1522281600: Thursday, March 29, 2018 12:00:00 AM
     */
     function getPrice() public view returns (uint price) {
-        if (now &lt; 1517443200) {
+        if (now < 1517443200) {
             // presale
             return 3450;
-        } else if (1517443200 &lt; now &amp;&amp; now &lt;= 1518048000) {
+        } else if (1517443200 < now && now <= 1518048000) {
             // 1st week
             return 2400;
-        } else if (1518048000 &lt; now &amp;&amp; now &lt;= 1518652800) {
+        } else if (1518048000 < now && now <= 1518652800) {
             // 2nd week
             return 2300;
-        } else if (1518652800 &lt; now &amp;&amp; now &lt;= 1519257600) {
+        } else if (1518652800 < now && now <= 1519257600) {
             // 3rd week
             return 2200;
-        } else if (1519257600 &lt; now &amp;&amp; now &lt;= 1519862400) {
+        } else if (1519257600 < now && now <= 1519862400) {
             // 4th week
             return 2100;
-        } else if (1519862400 &lt; now &amp;&amp; now &lt;= 1520467200) {
+        } else if (1519862400 < now && now <= 1520467200) {
             // 5th week
             return 2000;
-        } else if (1520467200 &lt; now &amp;&amp; now &lt;= 1521072000) {
+        } else if (1520467200 < now && now <= 1521072000) {
             // 6th week
             return 1900;
-        } else if (1521072000 &lt; now &amp;&amp; now &lt;= 1521676800) {
+        } else if (1521072000 < now && now <= 1521676800) {
             // 7th week
             return 1800;
-        } else if (1521676800 &lt; now &amp;&amp; now &lt;= 1522281600) {
+        } else if (1521676800 < now && now <= 1522281600) {
             // 8th week
             return 1700;
         } else {
@@ -683,10 +683,10 @@ contract NamiCrowdSale {
         // Available only if presale is running.
         require(currentPhase == Phase.Running);
         // require ICO time or binary option
-        require(now &lt;= 1522281600 || msg.sender == binaryAddress);
+        require(now <= 1522281600 || msg.sender == binaryAddress);
         require(msg.value != 0);
         uint newTokens = msg.value * getPrice();
-        require (totalSupply + newTokens &lt; TOKEN_SUPPLY_LIMIT);
+        require (totalSupply + newTokens < TOKEN_SUPPLY_LIMIT);
         // add new token to buyer
         balanceOf[_buyer] = balanceOf[_buyer].add(newTokens);
         // add new token to totalSupply
@@ -726,16 +726,16 @@ contract NamiCrowdSale {
         onlyEscrow
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         require(canSwitchPhase);
         currentPhase = _nextPhase;
@@ -748,7 +748,7 @@ contract NamiCrowdSale {
     {
         require(namiMultiSigWallet != 0x0);
         // Available at any phase.
-        if (address(this).balance &gt; 0) {
+        if (address(this).balance > 0) {
             namiMultiSigWallet.transfer(_amount);
         }
     }
@@ -766,7 +766,7 @@ contract NamiCrowdSale {
     function setCrowdsaleManager(address _mgr) public
         onlyEscrow
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         require(currentPhase != Phase.Migrating);
         crowdsaleManager = _mgr;
     }
@@ -777,7 +777,7 @@ contract NamiCrowdSale {
     {
         PresaleToken presale = PresaleToken(namiPresale);
         uint256 newToken = presale.balanceOf(_from);
-        require(newToken &gt; 0);
+        require(newToken > 0);
         // burn old token
         presale.burnTokens(_from);
         // add new token to _to
@@ -829,7 +829,7 @@ contract NamiCrowdSale {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender,_to,_value);
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallbackExchange(msg.sender, _value, _price);
             emit TransferToExchange(msg.sender, _to, _value, _price);
@@ -858,7 +858,7 @@ contract NamiCrowdSale {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender,_to,_value);
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallbackBuyer(msg.sender, _value, _buyer);
             emit TransferToBuyer(msg.sender, _to, _value, _buyer);
@@ -878,37 +878,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -930,7 +930,7 @@ contract NamiMarket{
     uint public minWithdraw =  10**16; // 0.01 ether
     uint public maxWithdraw = 10**18; // max NAC withdraw one time, 1 ether
 
-    // Gathered funds can be withdraw only to namimultisigwallet&#39;s address.
+    // Gathered funds can be withdraw only to namimultisigwallet's address.
     address public namiMultiSigWallet;
 
     /// address of Nami token
@@ -940,7 +940,7 @@ contract NamiMarket{
     *
     * list setting function
     */
-    mapping(address =&gt; bool) public isController;
+    mapping(address => bool) public isController;
     
     /**
      * 
@@ -1006,7 +1006,7 @@ contract NamiMarket{
     {
         require(namiMultiSigWallet != address(0x0));
         // Available at any phase.
-        if (address(this).balance &gt; 0) {
+        if (address(this).balance > 0) {
             _to.transfer(_amount);
         }
     }
@@ -1020,7 +1020,7 @@ contract NamiMarket{
         require(namiMultiSigWallet != address(0x0));
         // Available at any phase.
         NamiCrowdSale namiToken = NamiCrowdSale(NamiAddr);
-        if (namiToken.balanceOf(address(this)) &gt; 0) {
+        if (namiToken.balanceOf(address(this)) > 0) {
             namiToken.transfer(namiMultiSigWallet, _amount);
         }
     }
@@ -1052,11 +1052,11 @@ contract NamiMarket{
         isController[_controller] = false;
     }
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    string public name = &quot;Nami Market&quot;;
+    string public name = "Nami Market";
     
     function depositEth() public payable
     {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         emit Deposit(msg.sender, msg.value, now);
     }
     
@@ -1068,9 +1068,9 @@ contract NamiMarket{
     function withdrawToken(address _account, uint _amount) public
         onlyController
     {
-        require(_account != address(0x0) &amp;&amp; _amount != 0);
-        require(_amount &gt;= minWithdraw &amp;&amp; _amount &lt;= maxWithdraw);
-        if (address(this).balance &gt; 0) {
+        require(_account != address(0x0) && _amount != 0);
+        require(_amount >= minWithdraw && _amount <= maxWithdraw);
+        if (address(this).balance > 0) {
             _account.transfer(_amount);
         }
         // emit event

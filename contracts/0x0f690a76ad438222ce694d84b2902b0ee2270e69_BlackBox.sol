@@ -31,7 +31,7 @@ contract Secure {
         address receiver,
         Algorithm algorithm
     ) pure internal returns(bytes32 index, bytes32 operator, bytes32 check) {
-        require(caller != receiver &amp;&amp; caller != 0);
+        require(caller != receiver && caller != 0);
         bytes32 x = hash_seed(seed, algorithm);
         if (algorithm == Algorithm.sha) {
             index = sha256(x, caller);
@@ -93,9 +93,9 @@ contract BlackBox is Secure {
         bytes32 check;
     }
     
-    mapping(bytes32 =&gt; Proof) public proofs;
-    mapping(bytes32 =&gt; bool) public used;
-    mapping(address =&gt; uint256) private donations;
+    mapping(bytes32 => Proof) public proofs;
+    mapping(bytes32 => bool) public used;
+    mapping(address => uint256) private donations;
 
     // events for audit purposes
     event Unlocked(string _key, bytes32 _hash, address _receiver);
@@ -116,8 +116,8 @@ contract BlackBox is Secure {
         bytes32 check
     ) public payable {
         // protect invalid entries on value transfer
-        if (msg.value &gt; 0) {
-            require(hash != 0 &amp;&amp; operator != 0 &amp;&amp; check != 0);
+        if (msg.value > 0) {
+            require(hash != 0 && operator != 0 && check != 0);
         }
         // check existence
         require(!used[hash]);
@@ -154,14 +154,14 @@ contract BlackBox is Secure {
         // get locked balance to avoid recursive attacks
         uint bal = proofs[hash].balance;
         // owner collecting donations
-        if (donations[msg.sender] &gt; 0) {
+        if (donations[msg.sender] > 0) {
             bal += donations[msg.sender];
             delete donations[msg.sender];
         }
         // delete the entry to free up memory
         delete proofs[hash];
         // check the balance to send to the receiver
-        if (bal &lt;= this.balance &amp;&amp; bal &gt; 0) {
+        if (bal <= this.balance && bal > 0) {
             // transfer to receiver 
             // this could fail if receiver is another contract, so fallback
             if(!receiver.send(bal)){
@@ -173,7 +173,7 @@ contract BlackBox is Secure {
     
     // deposits get stored for the owner
     function() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         donations[owner] += msg.value;
         Donation(msg.sender, msg.value);
     }

@@ -37,13 +37,13 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y)
+        if (x > MAX_UINT256 - y)
             revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) {
+        if (x < y) {
             revert();
         }
         return x - y;
@@ -53,7 +53,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        if (x &gt; MAX_UINT256 / y) {
+        if (x > MAX_UINT256 / y) {
             revert();
         }
         return x * y;
@@ -78,7 +78,7 @@ contract SafeMath {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
 
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -93,9 +93,9 @@ contract SafeMath {
 
 contract EDOGE is ERC223, SafeMath {
 
-    string public name = &quot;eDogecoin&quot;;
+    string public name = "eDogecoin";
 
-    string public symbol = &quot;EDOGE&quot;;
+    string public symbol = "EDOGE";
 
     uint8 public decimals = 8;
 
@@ -107,9 +107,9 @@ contract EDOGE is ERC223, SafeMath {
 
     bool public tokenCreated = false;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Initialize to have owner have 100,000,000,000 EDOGE on contract creation
     // Constructor is called only once and can not be called again (Ethereum Solidity specification)
@@ -124,7 +124,7 @@ contract EDOGE is ERC223, SafeMath {
         balances[owner] = totalSupply;
 
         // Final sanity check to ensure owner balance is greater than zero
-        require(balances[owner] &gt; 0);
+        require(balances[owner] > 0);
     }
 
     modifier onlyOwner() {
@@ -140,11 +140,11 @@ contract EDOGE is ERC223, SafeMath {
     function distributeAirdrop(address[] addresses, uint256 amount) onlyOwner public {
         // Only proceed if there are enough tokens to be distributed to all addresses
         // Never allow balance of owner to become negative
-        require(balances[owner] &gt;= safeMul(addresses.length, amount));
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        require(balances[owner] >= safeMul(addresses.length, amount));
+        for (uint i = 0; i < addresses.length; i++) {
             balances[owner] = safeSub(balanceOf(owner), amount);
             // Another sanity check to make sure owner balance can never be negative
-            require(balances[owner] &gt;= 0);
+            require(balances[owner] >= 0);
             balances[addresses[i]] = safeAdd(balanceOf(addresses[i]), amount);
             transfer(addresses[i], amount);
         }
@@ -175,7 +175,7 @@ contract EDOGE is ERC223, SafeMath {
         require(unlocked);
 
         if (isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) {
+            if (balanceOf(msg.sender) < _value) {
                 revert();
             }
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
@@ -228,12 +228,12 @@ contract EDOGE is ERC223, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) {
+        if (balanceOf(msg.sender) < _value) {
             revert();
         }
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
@@ -244,7 +244,7 @@ contract EDOGE is ERC223, SafeMath {
 
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) {
+        if (balanceOf(msg.sender) < _value) {
             revert();
         }
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
@@ -271,12 +271,12 @@ contract EDOGE is ERC223, SafeMath {
         // Once it is unlocked, it is unlocked forever and no one can lock again
         require(unlocked);
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);

@@ -22,7 +22,7 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -50,9 +50,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -81,11 +81,11 @@ contract TokenERC20 {
  * Faith
  */
 contract TMCoin is owned, TokenERC20 {
-    function TMCoin() TokenERC20(21000000, &quot;TM Token&quot;, &quot;TM&quot;) public {}
+    function TMCoin() TokenERC20(21000000, "TM Token", "TM") public {}
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);

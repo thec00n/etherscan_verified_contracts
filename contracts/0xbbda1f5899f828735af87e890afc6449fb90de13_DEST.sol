@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -156,8 +156,8 @@ contract DEST  is StandardToken {
   // Constants
   // =========
 
-  string public constant name = &quot;Decentralized Escrow Token&quot;;
-  string public constant symbol = &quot;DEST&quot;;
+  string public constant name = "Decentralized Escrow Token";
+  string public constant symbol = "DEST";
   uint   public constant decimals = 18;
 
   uint public constant ETH_MIN_LIMIT = 500 ether;
@@ -173,46 +173,46 @@ contract DEST  is StandardToken {
   // ===============
 
   uint public ethCollected;
-  mapping (address=&gt;uint) ethInvested;
+  mapping (address=>uint) ethInvested;
 
 
   // Constant functions
   // =========================
 
   function hasStarted() public constant returns (bool) {
-    return now &gt;= START_TIMESTAMP;
+    return now >= START_TIMESTAMP;
   }
 
 
   // Payments are not accepted after ICO is finished.
   function hasFinished() public constant returns (bool) {
-    return now &gt;= END_TIMESTAMP || ethCollected &gt;= ETH_MAX_LIMIT;
+    return now >= END_TIMESTAMP || ethCollected >= ETH_MAX_LIMIT;
   }
 
 
   // Investors can move their tokens only after ico has successfully finished
   function tokensAreLiquid() public constant returns (bool) {
-    return (ethCollected &gt;= ETH_MIN_LIMIT &amp;&amp; now &gt;= END_TIMESTAMP)
-      || (ethCollected &gt;= ETH_MAX_LIMIT);
+    return (ethCollected >= ETH_MIN_LIMIT && now >= END_TIMESTAMP)
+      || (ethCollected >= ETH_MAX_LIMIT);
   }
 
 
   function price(uint _v) public constant returns (uint) {
-    return // poor man&#39;s binary search
-      _v &lt; 7 ether
-        ? _v &lt; 3 ether
-          ? _v &lt; 1 ether
+    return // poor man's binary search
+      _v < 7 ether
+        ? _v < 3 ether
+          ? _v < 1 ether
             ? 1000
-            : _v &lt; 2 ether ? 1005 : 1010
-          : _v &lt; 4 ether
+            : _v < 2 ether ? 1005 : 1010
+          : _v < 4 ether
             ? 1015
-            : _v &lt; 5 ether ? 1020 : 1030
-        : _v &lt; 14 ether
-          ? _v &lt; 10 ether
-            ? _v &lt; 9 ether ? 1040 : 1050
+            : _v < 5 ether ? 1020 : 1030
+        : _v < 14 ether
+          ? _v < 10 ether
+            ? _v < 9 ether ? 1040 : 1050
             : 1080
-          : _v &lt; 100 ether
-            ? _v &lt; 20 ether ? 1110 : 1150
+          : _v < 100 ether
+            ? _v < 20 ether ? 1110 : 1150
             : 1200;
   }
 
@@ -221,8 +221,8 @@ contract DEST  is StandardToken {
   // =========================
 
   function() public payable {
-    require(hasStarted() &amp;&amp; !hasFinished());
-    require(ethCollected + msg.value &lt;= ETH_MAX_LIMIT);
+    require(hasStarted() && !hasFinished());
+    require(ethCollected + msg.value <= ETH_MAX_LIMIT);
 
     ethCollected += msg.value;
     ethInvested[msg.sender] += msg.value;
@@ -236,8 +236,8 @@ contract DEST  is StandardToken {
 
   // Investors can get refund if ETH_MIN_LIMIT is not reached.
   function refund() public {
-    require(ethCollected &lt; ETH_MIN_LIMIT &amp;&amp; now &gt;= END_TIMESTAMP);
-    require(balances[msg.sender] &gt; 0);
+    require(ethCollected < ETH_MIN_LIMIT && now >= END_TIMESTAMP);
+    require(balances[msg.sender] > 0);
 
     totalSupply -= balances[msg.sender];
     balances[msg.sender] = 0;
@@ -249,7 +249,7 @@ contract DEST  is StandardToken {
 
   // Owner can withdraw all the money after min_limit is reached.
   function withdraw() public {
-    require(ethCollected &gt;= ETH_MIN_LIMIT);
+    require(ethCollected >= ETH_MIN_LIMIT);
     wallet.transfer(this.balance);
   }
 

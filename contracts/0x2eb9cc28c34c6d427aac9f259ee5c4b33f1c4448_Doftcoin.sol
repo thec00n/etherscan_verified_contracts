@@ -48,8 +48,8 @@ contract ERC20 {
 contract BasicToken is ERC20 { 
     uint256 _totalSupply;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -68,8 +68,8 @@ contract BasicToken is ERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt; _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] > _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
 
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
@@ -91,7 +91,7 @@ contract BasicToken is ERC20 {
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-        require (_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require (_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -130,11 +130,11 @@ contract Doftcoin is BasicToken, owned, doftManaged {
         decimals = 18;
         _totalSupply = 5000000 * (10 ** decimals);  // Update total supply
         miningStorage = _totalSupply / 2;
-        name = &quot;Doftcoin&quot;;                                   // Set the name for display purposes
-        symbol = &quot;DFC&quot;;                               // Set the symbol for display purposes
+        name = "Doftcoin";                                   // Set the name for display purposes
+        symbol = "DFC";                               // Set the symbol for display purposes
 
         balanceOf[msg.sender] = _totalSupply;              // Give the creator all initial tokens
-	version = &quot;1.0&quot;;
+	version = "1.0";
     }
 
     /// @notice Create `_mintedAmount` tokens and send it to `_target`
@@ -152,7 +152,7 @@ contract Doftcoin is BasicToken, owned, doftManaged {
 
     /// @notice Buy tokens from contract by sending ether
     function buy() payable {
-	    require(buyPrice &gt; 0);
+	    require(buyPrice > 0);
         uint amount = msg.value / buyPrice;               // calculates the amount
         _transfer(this, msg.sender, amount);              // makes the transfers
     }
@@ -160,10 +160,10 @@ contract Doftcoin is BasicToken, owned, doftManaged {
     /// @notice Sell `_amount` tokens to contract
     /// @param _amount Amount of tokens to be sold
     function sell(uint256 _amount) {
-	    require(sellPrice &gt; 0);
-        require(this.balance &gt;= _amount * sellPrice);      // checks if the contract has enough ether to buy
+	    require(sellPrice > 0);
+        require(this.balance >= _amount * sellPrice);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, _amount);              // makes the transfers
-        msg.sender.transfer(_amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(_amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 
     /// @notice Allow users to buy tokens for `_newBuyPrice` eth and sell tokens for `_newSellPrice` eth
@@ -178,11 +178,11 @@ contract Doftcoin is BasicToken, owned, doftManaged {
     /// @param _target The address of the recipient
     /// @param _minedAmount The amount of reward tokens
     function mine(address _target, uint256 _minedAmount) onlyDoftManager {
-	require (_minedAmount &gt; 0);
+	require (_minedAmount > 0);
         require (_target != 0x0);
-        require (miningStorage - _minedAmount &gt;= 0);
-        require (balanceOf[doftManager] &gt;= _minedAmount);                // Check if the sender has enough
-        require (balanceOf[_target] + _minedAmount &gt; balanceOf[_target]); // Check for overflows
+        require (miningStorage - _minedAmount >= 0);
+        require (balanceOf[doftManager] >= _minedAmount);                // Check if the sender has enough
+        require (balanceOf[_target] + _minedAmount > balanceOf[_target]); // Check for overflows
 
 	    balanceOf[doftManager] -= _minedAmount;
 	    balanceOf[_target] += _minedAmount;

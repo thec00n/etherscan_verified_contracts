@@ -49,7 +49,7 @@ contract GenericCrowdsale {
      *      Supposed to be run by the backend.
      * @param _beneficiary Token holder.
      * @param _contribution The equivalent (in USD cents) of the contribution received off-chain.
-     * @param _tokens Total Tokens to issue for the contribution, must be &gt; 0
+     * @param _tokens Total Tokens to issue for the contribution, must be > 0
      * @param _bonus How many tokens are bonuses, less or equal to _tokens
      */
     function issueTokensWithCustomBonus(address _beneficiary, uint _contribution, uint _tokens, uint _bonus) onlyBackend onlyUnpaused external;
@@ -135,20 +135,20 @@ library SafeMath {
    }
 
    function sub(uint a, uint b) internal pure returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
    }
 
    function add(uint a, uint b) internal pure returns (uint) {
       uint c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
    }
 
   function div(uint a, uint b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -156,14 +156,14 @@ library SafeMath {
 contract StandardToken is ERC20 {
     using SafeMath for uint;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; _to != msg.sender
-            &amp;&amp; _to != address(0)
+        if (balances[msg.sender] >= _value
+            && _value > 0
+            && _to != msg.sender
+            && _to != address(0)
           ) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -176,10 +176,10 @@ contract StandardToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; _from != _to
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && _from != _to
           ) {
             balances[_to]   = balances[_to].add(_value);
             balances[_from] = balances[_from].sub(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20 {
 
     function approve(address _spender, uint _value) public returns (bool) {
         require(_spender != address(0));
-        // needs to be called twice -&gt; first set to 0, then increase to another amount
+        // needs to be called twice -> first set to 0, then increase to another amount
         // this is to avoid race conditions
         require((_value == 0) || (allowed[msg.sender][_spender] == 0));
 
@@ -225,7 +225,7 @@ contract StandardToken is ERC20 {
         require(_spender != address(0));
 
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -236,7 +236,7 @@ contract StandardToken is ERC20 {
     }
 
     modifier onlyPayloadSize(uint _size) {
-        require(msg.data.length &gt;= _size + 4);
+        require(msg.data.length >= _size + 4);
         _;
     }
 }
@@ -245,8 +245,8 @@ contract Cappasity is StandardToken {
 
     // Constants
     // =========
-    string public constant name = &quot;Cappasity&quot;;
-    string public constant symbol = &quot;CAPP&quot;;
+    string public constant name = "Cappasity";
+    string public constant symbol = "CAPP";
     uint8 public constant decimals = 2;
     uint public constant TOKEN_LIMIT = 10 * 1e9 * 1e2; // 10 billion tokens, 2 decimals
 
@@ -317,7 +317,7 @@ contract Cappasity is StandardToken {
     // Mint some tokens and assign them to an address
     function mint(address _beneficiary, uint _value) external onlyByManager {
         require(_value != 0);
-        require(totalSupply.add(_value) &lt;= TOKEN_LIMIT);
+        require(totalSupply.add(_value) <= TOKEN_LIMIT);
         require(mintingIsAllowed == true);
 
         balances[_beneficiary] = balances[_beneficiary].add(_value);
@@ -390,18 +390,18 @@ contract VestingWallet {
     // ====================
     function releaseBatch() external onlyFounders {
         require(true == vestingStarted);
-        require(now &gt; nextPeriod);
-        require(periodsPassed &lt; totalPeriods);
+        require(now > nextPeriod);
+        require(periodsPassed < totalPeriods);
 
         uint tokensToRelease = 0;
         do {
             periodsPassed   = periodsPassed.add(1);
             nextPeriod      = nextPeriod.add(cliffPeriod);
             tokensToRelease = tokensToRelease.add(tokensPerBatch);
-        } while (now &gt; nextPeriod);
+        } while (now > nextPeriod);
 
         // If vesting has finished, just transfer the remaining tokens.
-        if (periodsPassed &gt;= totalPeriods) {
+        if (periodsPassed >= totalPeriods) {
             tokensToRelease = tokenContract.balanceOf(this);
             nextPeriod = 0x0;
         }
@@ -463,9 +463,9 @@ contract TokenAllocation is GenericCrowdsale {
     // Total sum gathered in phase one, need this to adjust the bonus tiers in phase two.
     // Updated only once, when the phase one is concluded.
     uint public centsInPhaseOne = 0;
-    uint public totalTokenSupply = 0;     // Counting the bonuses, not counting the founders&#39; share.
+    uint public totalTokenSupply = 0;     // Counting the bonuses, not counting the founders' share.
 
-    // Total tokens issued in phase one, including bonuses. Need this to correctly calculate the founders&#39; \
+    // Total tokens issued in phase one, including bonuses. Need this to correctly calculate the founders' \
     // share and issue it in parts, once after each round. Updated when issuing tokens.
     uint public tokensDuringPhaseOne = 0;
     VestingWallet public vestingWallet;
@@ -484,7 +484,7 @@ contract TokenAllocation is GenericCrowdsale {
      * @param _icoBackend Wallet address that should be owned by the off-chain backend, from which \
      *          \ it mints the tokens for contributions accepted in other currencies.
      * @param _icoManager Allowed to start phase 2.
-     * @param _foundersWallet Where the founders&#39; tokens to to after vesting.
+     * @param _foundersWallet Where the founders' tokens to to after vesting.
      * @param _partnersWallet A wallet that distributes tokens to early contributors.
      */
     function TokenAllocation(address _icoManager,
@@ -519,9 +519,9 @@ contract TokenAllocation is GenericCrowdsale {
     function issueTokens(address _beneficiary, uint _contribution) external onlyBackend onlyValidPhase onlyUnpaused {
         // phase 1 cap less than hard cap
         if (crowdsalePhase == CrowdsalePhase.PhaseOne) {
-            require(totalCentsGathered.add(_contribution) &lt;= phaseOneCap);
+            require(totalCentsGathered.add(_contribution) <= phaseOneCap);
         } else {
-            require(totalCentsGathered.add(_contribution) &lt;= hardCap);
+            require(totalCentsGathered.add(_contribution) <= hardCap);
         }
 
         uint remainingContribution = _contribution;
@@ -540,13 +540,13 @@ contract TokenAllocation is GenericCrowdsale {
 
             // 4 - mint bonus
             uint tierBonus = calculateTierBonus(contributionPart);
-            if (tierBonus &gt; 0) {
+            if (tierBonus > 0) {
                 mintAndUpdate(_beneficiary, tierBonus);
                 BonusIssued(_beneficiary, tierBonus);
             }
 
             // 5 - advance bonus phase
-            if ((bonusPhase != BonusPhase.None) &amp;&amp; (contributionPart == centsLeftInPhase)) {
+            if ((bonusPhase != BonusPhase.None) && (contributionPart == centsLeftInPhase)) {
                 advanceBonusPhase();
             }
 
@@ -555,11 +555,11 @@ contract TokenAllocation is GenericCrowdsale {
             remainingContribution = remainingContribution.sub(contributionPart);
 
             // 7 - continue?
-        } while (remainingContribution &gt; 0);
+        } while (remainingContribution > 0);
 
         // Mint contribution size bonus
         uint sizeBonus = calculateSizeBonus(_contribution);
-        if (sizeBonus &gt; 0) {
+        if (sizeBonus > 0) {
             mintAndUpdate(_beneficiary, sizeBonus);
             BonusIssued(_beneficiary, sizeBonus);
         }
@@ -579,16 +579,16 @@ contract TokenAllocation is GenericCrowdsale {
                                             external onlyBackend onlyValidPhase onlyUnpaused {
 
         // sanity check, ensure we allocate more than 0
-        require(_tokens &gt; 0);
+        require(_tokens > 0);
         // all tokens can be bonuses, but they cant be less than bonuses
-        require(_tokens &gt;= _bonus);
+        require(_tokens >= _bonus);
         // check capps
         if (crowdsalePhase == CrowdsalePhase.PhaseOne) {
             // ensure we are not over phase 1 cap after this contribution
-            require(totalCentsGathered.add(_contribution) &lt;= phaseOneCap);
+            require(totalCentsGathered.add(_contribution) <= phaseOneCap);
         } else {
             // ensure we are not over hard cap after this contribution
-            require(totalCentsGathered.add(_contribution) &lt;= hardCap);
+            require(totalCentsGathered.add(_contribution) <= hardCap);
         }
 
         uint remainingContribution = _contribution;
@@ -605,22 +605,22 @@ contract TokenAllocation is GenericCrowdsale {
           remainingContribution = remainingContribution.sub(contributionPart);
 
           // 4 - advance bonus phase
-          if ((remainingContribution == centsLeftInPhase) &amp;&amp; (bonusPhase != BonusPhase.None)) {
+          if ((remainingContribution == centsLeftInPhase) && (bonusPhase != BonusPhase.None)) {
               advanceBonusPhase();
           }
 
-        } while (remainingContribution &gt; 0);
+        } while (remainingContribution > 0);
 
         // add tokens to the beneficiary
         mintAndUpdate(_beneficiary, _tokens);
 
         // if tokens arent equal to bonus
-        if (_tokens &gt; _bonus) {
+        if (_tokens > _bonus) {
           TokensAllocated(_beneficiary, _contribution, _tokens.sub(_bonus));
         }
 
         // if bonus exists
-        if (_bonus &gt; 0) {
+        if (_bonus > 0) {
           BonusIssued(_beneficiary, _bonus);
         }
     }
@@ -638,7 +638,7 @@ contract TokenAllocation is GenericCrowdsale {
             tokensDuringThisPhase = totalTokenSupply - tokensDuringPhaseOne;
         }
 
-        // Total tokens sold is 70% of the overall supply, founders&#39; share is 18%, early contributors&#39; is 12%
+        // Total tokens sold is 70% of the overall supply, founders' share is 18%, early contributors' is 12%
         // So to obtain those from tokens sold, multiply them by 0.18 / 0.7 and 0.12 / 0.7 respectively.
         uint tokensForFounders = tokensDuringThisPhase.mul(257).div(1000); // 0.257 of 0.7 is 0.18 of 1
         uint tokensForPartners = tokensDuringThisPhase.mul(171).div(1000); // 0.171 of 0.7 is 0.12 of 1
@@ -674,7 +674,7 @@ contract TokenAllocation is GenericCrowdsale {
      * @dev Set the CAPP / USD rate for Phase two, and then start the second phase of token allocation.
      *        Can only be called by the crowdsale manager.
      * _tokenRate How many CAPP per 1 USD cent. As dollars, CAPP has two decimals.
-     *            For instance: tokenRate = 125 means &quot;1.25 CAPP per USD cent&quot; &lt;=&gt; &quot;125 CAPP per USD&quot;.
+     *            For instance: tokenRate = 125 means "1.25 CAPP per USD cent" <=> "125 CAPP per USD".
      */
     function beginPhaseTwo(uint _tokenRate) external onlyManager onlyUnpaused {
         require(crowdsalePhase == CrowdsalePhase.BetweenPhases);
@@ -745,10 +745,10 @@ contract TokenAllocation is GenericCrowdsale {
         uint sizeBonus = 0;
         if (crowdsalePhase == CrowdsalePhase.PhaseOne) {
             // 10% for huge contribution
-            if (_contribution &gt;= hugeContributionBound) {
+            if (_contribution >= hugeContributionBound) {
                 sizeBonus = _contribution.div(10); // multiply by 0.1
             // 5% for big one
-            } else if (_contribution &gt;= bigContributionBound) {
+            } else if (_contribution >= bigContributionBound) {
                 sizeBonus = _contribution.div(20); // multiply by 0.05
             }
 
@@ -774,7 +774,7 @@ contract TokenAllocation is GenericCrowdsale {
     }
 
     function min(uint _a, uint _b) internal pure returns (uint result) {
-        return _a &lt; _b ? _a : _b;
+        return _a < _b ? _a : _b;
     }
 
     /**

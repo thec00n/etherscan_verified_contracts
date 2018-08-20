@@ -9,7 +9,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.13;
 
@@ -133,7 +133,7 @@ contract SwapController is DSAuth, TokenController {
     // Each Swap Controller has its own token, each token should set their own controller.
     function SwapController(address[] _guards)
     {
-        for (uint i=0; i&lt;_guards.length; i++) {
+        for (uint i=0; i<_guards.length; i++) {
             addGuard(_guards[i]);
         }
     }
@@ -149,7 +149,7 @@ contract SwapController is DSAuth, TokenController {
 
     function onTransfer(address _from, address _to, uint _amount) public returns (bool)
     {
-        for (uint i=0; i&lt;guards.length; i++)
+        for (uint i=0; i<guards.length; i++)
         {
             if (!guards[i].onTokenTransfer(_from, _to, _amount))
             {

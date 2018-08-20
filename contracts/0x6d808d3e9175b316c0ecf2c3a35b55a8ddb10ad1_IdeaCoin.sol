@@ -21,9 +21,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -164,7 +164,7 @@ contract Contactable is Ownable {
 /////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="34465159575b7406">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="34465159575b7406">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -184,7 +184,7 @@ contract HasNoContracts is Ownable {
 /////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a786f6769654a38">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a786f6769654a38">[email protected]</a>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -275,9 +275,9 @@ contract ERC20Basic {
   string internal _name;
   uint8 internal _decimals;
   uint internal _totalSupply;
-  mapping (address =&gt; uint) internal _balanceOf;
+  mapping (address => uint) internal _balanceOf;
 
-  mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
+  mapping (address => mapping (address => uint)) internal _allowances;
 
   function ERC20Basic(string symbol, string name, uint8 decimals, uint totalSupply) public {
       _symbol = symbol;
@@ -340,7 +340,7 @@ library SafeERC20 {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
 
- mapping (address =&gt; bool) public frozenAccount;
+ mapping (address => bool) public frozenAccount;
  event FrozenFunds(address target, bool frozen);
 
   uint256 totalSupply_;
@@ -365,7 +365,7 @@ contract BasicToken is ERC20Basic, Ownable {
   function transfer(address _to, uint256 _value) public returns (bool) {
       require(!frozenAccount[msg.sender]);
     require(_to != address(0));
-    require(_value &lt;= _balanceOf[msg.sender]);
+    require(_value <= _balanceOf[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);
@@ -394,7 +394,7 @@ contract BasicToken is ERC20Basic, Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -404,10 +404,10 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(!frozenAccount[_from] &amp;&amp; !frozenAccount[_to] &amp;&amp; !frozenAccount[msg.sender]);
+    require(!frozenAccount[_from] && !frozenAccount[_to] && !frozenAccount[msg.sender]);
     require(_to != address(0));
-    require(_value &lt;= _balanceOf[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= _balanceOf[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     _balanceOf[_from] = _balanceOf[_from].sub(_value);
     _balanceOf[_to] = _balanceOf[_to].add(_value);
@@ -421,7 +421,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -470,7 +470,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -538,7 +538,7 @@ contract ERC827Token is ERC827, StandardToken {
      Beware that changing an allowance with this method brings the risk that
      someone may use both the old and the new allowance by unfortunate
      transaction ordering. One possible solution to mitigate this race condition
-     is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     is to first reduce the spender's allowance to 0 and set the desired value
      afterwards:
      https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -549,7 +549,7 @@ contract ERC827Token is ERC827, StandardToken {
      @return true if the call function was executed successfully
    */
   function approve(address _spender, uint256 _value, bytes _data) public returns (bool) {
-    require(!frozenAccount[msg.sender] &amp;&amp; !frozenAccount[_spender]);
+    require(!frozenAccount[msg.sender] && !frozenAccount[_spender]);
     require(_spender != address(this));
 
     super.approve(_spender, _value);
@@ -650,7 +650,7 @@ contract ERC827Token is ERC827, StandardToken {
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
 
 // IdeaCoin Contract Starts Here/////////////////////////////////////////////////////////////////////////////////////////////
-contract IdeaCoin is ERC20Basic(&quot;IDC&quot;, &quot;IdeaCoin&quot;, 18, 1000000000000000000000000), ERC827Token, PausableToken, Destructible, Contactable, HasNoTokens, HasNoContracts {
+contract IdeaCoin is ERC20Basic("IDC", "IdeaCoin", 18, 1000000000000000000000000), ERC827Token, PausableToken, Destructible, Contactable, HasNoTokens, HasNoContracts {
 
     using SafeMath for uint;
 
@@ -674,7 +674,7 @@ contract IdeaCoin is ERC20Basic(&quot;IDC&quot;, &quot;IdeaCoin&quot;, 18, 10000
 
 
         function burn(address _from, uint256 _value) onlyOwner external {
-              require(_balanceOf[_from] &gt;= 0);
+              require(_balanceOf[_from] >= 0);
               _balanceOf[_from] =  _balanceOf[_from].sub(_value);
               _totalSupply = _totalSupply.sub(_value);
               emit Burn(_from, _value);
@@ -682,7 +682,7 @@ contract IdeaCoin is ERC20Basic(&quot;IDC&quot;, &quot;IdeaCoin&quot;, 18, 10000
 
 
         function mintToken(address _to, uint256 _value) onlyOwner external  {
-                require(!frozenAccount[msg.sender] &amp;&amp; !frozenAccount[_to]);
+                require(!frozenAccount[msg.sender] && !frozenAccount[_to]);
                _balanceOf[_to] = _balanceOf[_to].add(_value);
                _totalSupply = _totalSupply.add(_value);
                emit Mint(_to,_value);

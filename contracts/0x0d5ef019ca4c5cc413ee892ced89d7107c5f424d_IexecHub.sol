@@ -30,37 +30,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -84,13 +84,13 @@ library SafeMathOZ
 	function add(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -107,20 +107,20 @@ library SafeMathOZ
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function max(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		return a &gt;= b ? a : b;
+		return a >= b ? a : b;
 	}
 
 	function min(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		return a &lt; b ? a : b;
+		return a < b ? a : b;
 	}
 
 	function mulByFraction(uint256 a, uint256 b, uint256 c) internal pure returns (uint256)
@@ -193,7 +193,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableOZ
 {
@@ -245,18 +245,18 @@ contract RLC is ERC20, SafeMath, Ownable {
   string public name;       //fancy name
   string public symbol;
   uint8 public decimals;    //How many decimals to show.
-  string public version = &#39;v0.1&#39;;
+  string public version = 'v0.1';
   uint public initialSupply;
   uint public totalSupply;
   bool public locked;
   //uint public unlockBlock;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   // lock transfer during the ICO
   modifier onlyUnlocked() {
-    if (msg.sender != owner &amp;&amp; locked) throw;
+    if (msg.sender != owner && locked) throw;
     _;
   }
 
@@ -272,8 +272,8 @@ contract RLC is ERC20, SafeMath, Ownable {
     initialSupply = 87000000000000000;
     totalSupply = initialSupply;
     balances[msg.sender] = initialSupply;// Give the creator all initial tokens
-    name = &#39;iEx.ec Network Token&#39;;        // Set the name for display purposes
-    symbol = &#39;RLC&#39;;                       // Set the symbol for display purposes
+    name = 'iEx.ec Network Token';        // Set the name for display purposes
+    symbol = 'RLC';                       // Set the symbol for display purposes
     decimals = 9;                        // Amount of decimals for display purposes
   }
 
@@ -797,12 +797,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	uint256                     public m_subscriptionMinimumStakePolicy; // Minimum stake for subscribing
 	uint256                     public m_subscriptionMinimumScorePolicy; // Minimum score for subscribing
 	address[]                   public m_workers;
-	mapping(address =&gt; uint256) public m_workerIndex;
+	mapping(address => uint256) public m_workerIndex;
 
-	// mapping(woid =&gt; IexecLib.Consensus)
-	mapping(address =&gt; IexecLib.Consensus) public m_consensus;
-	// mapping(woid =&gt; worker address =&gt; Contribution);
-	mapping(address =&gt; mapping(address =&gt; IexecLib.Contribution)) public m_contributions;
+	// mapping(woid => IexecLib.Consensus)
+	mapping(address => IexecLib.Consensus) public m_consensus;
+	// mapping(woid => worker address => Contribution);
+	mapping(address => mapping(address => IexecLib.Contribution)) public m_contributions;
 
 	uint256 public constant REVEAL_PERIOD_DURATION_RATIO  = 2;
 	uint256 public constant CONSENSUS_DURATION_RATIO      = 10;
@@ -881,7 +881,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 			m_subscriptionMinimumStakePolicy, _newSubscriptionMinimumStakePolicy,
 			m_subscriptionMinimumScorePolicy, _newSubscriptionMinimumScorePolicy
 		);
-		require(_newSchedulerRewardRatioPolicy &lt;= 100);
+		require(_newSchedulerRewardRatioPolicy <= 100);
 		m_stakeRatioPolicy               = _newStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy     = _newSchedulerRewardRatioPolicy;
 		m_subscriptionMinimumStakePolicy = _newSubscriptionMinimumStakePolicy;
@@ -1024,10 +1024,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	function claimFailedConsensus(address _woid) public onlyIexecHub returns (bool)
 	{
 	  IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now &gt; consensus.consensusTimeout);
+		require(now > consensus.consensusTimeout);
 		uint256 i;
 		address w;
-		for (i = 0; i &lt; consensus.contributors.length; ++i)
+		for (i = 0; i < consensus.contributors.length; ++i)
 		{
 			w = consensus.contributors[i];
 			if (m_contributions[_woid][w].status != IexecLib.ContributionStatusEnum.AUTHORIZED)
@@ -1041,7 +1041,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function allowWorkersToContribute(address _woid, address[] _workers, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
-		for (uint i = 0; i &lt; _workers.length; ++i)
+		for (uint i = 0; i < _workers.length; ++i)
 		{
 			require(allowWorkerToContribute(_woid, _workers[i], _enclaveChallenge));
 		}
@@ -1054,7 +1054,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
-		require(now &lt;= consensus.consensusTimeout);
+		require(now <= consensus.consensusTimeout);
 
 		address workerPool;
 		uint256 workerScore;
@@ -1073,8 +1073,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
-		require(now &lt;= consensus.consensusTimeout);
-		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can&#39;t contribute on a claimed or completed workorder
+		require(now <= consensus.consensusTimeout);
+		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
@@ -1082,7 +1082,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(_resultSign != 0x0);
 		if (contribution.enclaveChallenge != address(0))
 		{
-			require(contribution.enclaveChallenge == ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n64&quot;, _resultHash, _resultSign), _v, _r, _s));
+			require(contribution.enclaveChallenge == ecrecover(keccak256("\x19Ethereum Signed Message:\n64", _resultHash, _resultSign), _v, _r, _s));
 		}
 
 		require(contribution.status == IexecLib.ContributionStatusEnum.AUTHORIZED);
@@ -1101,23 +1101,23 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now &lt;= consensus.consensusTimeout);
+		require(now <= consensus.consensusTimeout);
 		require(WorkOrder(_woid).startRevealingPhase());
 
 		consensus.winnerCount = 0;
-		for (uint256 i = 0; i&lt;consensus.contributors.length; ++i)
+		for (uint256 i = 0; i<consensus.contributors.length; ++i)
 		{
 			address w = consensus.contributors[i];
 			if (
 				m_contributions[_woid][w].resultHash == _consensus
-				&amp;&amp;
+				&&
 				m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
 			)
 			{
 				consensus.winnerCount = consensus.winnerCount.add(1);
 			}
 		}
-		require(consensus.winnerCount &gt; 0); // you cannot revealConsensus if no worker has contributed to this hash
+		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
 		consensus.consensus  = _consensus;
 		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
@@ -1129,11 +1129,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
-		require(now &lt;= consensus.consensusTimeout);
+		require(now <= consensus.consensusTimeout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
-		require(consensus.revealDate        &gt;  now                                        );
+		require(consensus.revealDate        >  now                                        );
 		require(contribution.status         == IexecLib.ContributionStatusEnum.CONTRIBUTED);
 		require(contribution.resultHash     == consensus.consensus                        );
 		require(contribution.resultHash     == keccak256(_result                        ) );
@@ -1150,11 +1150,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now &lt;= consensus.consensusTimeout);
-		require(consensus.revealDate &lt;= now &amp;&amp; consensus.revealCounter == 0);
+		require(now <= consensus.consensusTimeout);
+		require(consensus.revealDate <= now && consensus.revealCounter == 0);
 		require(WorkOrder(_woid).reActivate());
 
-		for (uint256 i = 0; i &lt; consensus.contributors.length; ++i)
+		for (uint256 i = 0; i < consensus.contributors.length; ++i)
 		{
 			address w = consensus.contributors[i];
 			if (m_contributions[_woid][w].resultHash == consensus.consensus)
@@ -1175,8 +1175,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now &lt;= consensus.consensusTimeout);
-		require((consensus.revealDate &lt;= now &amp;&amp; consensus.revealCounter &gt; 0) || (consensus.revealCounter == consensus.winnerCount)); // consensus.winnerCount never 0 at this step
+		require(now <= consensus.consensusTimeout);
+		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); // consensus.winnerCount never 0 at this step
 
 		// add penalized to the call worker to contribution and they never contribute ?
 		require(distributeRewards(_woid, consensus));
@@ -1196,7 +1196,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		uint256 individualWorkerReward;
 		uint256 totalReward = _consensus.poolReward;
 		address[] memory contributors = _consensus.contributors;
-		for (i = 0; i&lt;contributors.length; ++i)
+		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
 			IexecLib.Contribution storage c = m_contributions[_woid][w];
@@ -1205,19 +1205,19 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 				workerBonus  = (c.enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
 				workerWeight = 1 + c.score.mul(workerBonus).log();
 				totalWeight  = totalWeight.add(workerWeight);
-				c.weight     = workerWeight; // store so we don&#39;t have to recompute
+				c.weight     = workerWeight; // store so we don't have to recompute
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				totalReward = totalReward.add(_consensus.stakeAmount);
 			}
 		}
-		require(totalWeight &gt; 0);
+		require(totalWeight > 0);
 
 		// compute how much is going to the workers
 		uint256 totalWorkersReward = totalReward.percentage(uint256(100).sub(_consensus.schedulerRewardRatioPolicy));
 
-		for (i = 0; i&lt;contributors.length; ++i)
+		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
 			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
@@ -1252,7 +1252,7 @@ contract Marketplace is IexecHubAccessor
 	 * Marketplace
 	 */
 	uint                                 public m_orderCount;
-	mapping(uint =&gt;IexecLib.MarketOrder) public m_orderBook;
+	mapping(uint =>IexecLib.MarketOrder) public m_orderBook;
 
 	uint256 public constant ASK_STAKE_RATIO  = 30;
 
@@ -1285,7 +1285,7 @@ contract Marketplace is IexecHubAccessor
 	public returns (uint)
 	{
 		require(iexecHubInterface.existingCategory(_category));
-		require(_volume &gt;0);
+		require(_volume >0);
 		m_orderCount = m_orderCount.add(1);
 		IexecLib.MarketOrder storage marketorder    = m_orderBook[m_orderCount];
 		marketorder.direction      = _direction;
@@ -1342,7 +1342,7 @@ contract Marketplace is IexecHubAccessor
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 		require(marketorder.direction  == IexecLib.MarketOrderDirectionEnum.ASK);
-		require(marketorder.remaining  &gt;  0);
+		require(marketorder.remaining  >  0);
 		require(marketorder.workerpool == _workerpool);
 
 		marketorder.remaining = marketorder.remaining.sub(1);
@@ -1357,7 +1357,7 @@ contract Marketplace is IexecHubAccessor
 
 	function existingMarketOrder(uint256 _marketorderIdx) public view  returns (bool marketOrderExist)
 	{
-		return m_orderBook[_marketorderIdx].category &gt; 0;
+		return m_orderBook[_marketorderIdx].category > 0;
 	}
 
 	/**
@@ -1414,8 +1414,8 @@ contract Marketplace is IexecHubAccessor
 
 	event WorkOrderCallbackProof(address indexed woid, address requester, address beneficiary,address indexed callbackTo, address indexed gasCallbackProvider,string stdout, string stderr , string uri);
 
-	//mapping(workorder =&gt; bool)
-	 mapping(address =&gt; bool) m_callbackDone;
+	//mapping(workorder => bool)
+	 mapping(address => bool) m_callbackDone;
 
 	 function isCallbackDone(address _woid) public view  returns (bool callbackDone)
 	 {
@@ -1489,11 +1489,11 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	mapping(address =&gt; uint256)                     m_appCountByOwner;
-	mapping(address =&gt; mapping(uint256 =&gt; address)) m_appByOwnerByIndex;
-	mapping(address =&gt; bool)                        m_appRegistered;
+	mapping(address => uint256)                     m_appCountByOwner;
+	mapping(address => mapping(uint256 => address)) m_appByOwnerByIndex;
+	mapping(address => bool)                        m_appRegistered;
 
-	mapping(uint256 =&gt; address)                     m_appByIndex;
+	mapping(uint256 => address)                     m_appByIndex;
 	uint256 public                                  m_totalAppCount;
 
 	/**
@@ -1600,11 +1600,11 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	mapping(address =&gt; uint256)                     m_datasetCountByOwner;
-	mapping(address =&gt; mapping(uint256 =&gt; address)) m_datasetByOwnerByIndex;
-	mapping(address =&gt; bool)                        m_datasetRegistered;
+	mapping(address => uint256)                     m_datasetCountByOwner;
+	mapping(address => mapping(uint256 => address)) m_datasetByOwnerByIndex;
+	mapping(address => bool)                        m_datasetRegistered;
 
-	mapping(uint256 =&gt; address)                     m_datasetByIndex;
+	mapping(uint256 => address)                     m_datasetByIndex;
 	uint256 public                                  m_totalDatasetCount;
 
 
@@ -1676,17 +1676,17 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	// worker =&gt; workerPool
-	mapping(address =&gt; address)                     m_workerAffectation;
-	// owner =&gt; index
-	mapping(address =&gt; uint256)                     m_workerPoolCountByOwner;
-	// owner =&gt; index =&gt; workerPool
-	mapping(address =&gt; mapping(uint256 =&gt; address)) m_workerPoolByOwnerByIndex;
-	//  workerPool =&gt; owner // stored in the workerPool
-	/* mapping(address =&gt; address)                     m_ownerByWorkerPool; */
-	mapping(address =&gt; bool)                        m_workerPoolRegistered;
+	// worker => workerPool
+	mapping(address => address)                     m_workerAffectation;
+	// owner => index
+	mapping(address => uint256)                     m_workerPoolCountByOwner;
+	// owner => index => workerPool
+	mapping(address => mapping(uint256 => address)) m_workerPoolByOwnerByIndex;
+	//  workerPool => owner // stored in the workerPool
+	/* mapping(address => address)                     m_ownerByWorkerPool; */
+	mapping(address => bool)                        m_workerPoolRegistered;
 
-	mapping(uint256 =&gt; address)                     m_workerPoolByIndex;
+	mapping(uint256 => address)                     m_workerPoolByIndex;
 	uint256 public                                  m_totalWorkerPoolCount;
 
 
@@ -1810,7 +1810,7 @@ contract IexecHub
 	/**
 	 * Categories
 	 */
-	mapping(uint256 =&gt; IexecLib.Category) public m_categories;
+	mapping(uint256 => IexecLib.Category) public m_categories;
 	uint256                               public m_categoriesCount;
 	address                               public m_categoriesCreator;
 	modifier onlyCategoriesCreator()
@@ -1822,13 +1822,13 @@ contract IexecHub
 	/**
 	 * Escrow
 	 */
-	mapping(address =&gt; IexecLib.Account) public m_accounts;
+	mapping(address => IexecLib.Account) public m_accounts;
 
 
 	/**
 	 * workOrder Registered
 	 */
-	mapping(address =&gt; bool) public m_woidRegistered;
+	mapping(address => bool) public m_woidRegistered;
 	modifier onlyRegisteredWoid(address _woid)
 	{
 		require(m_woidRegistered[_woid]);
@@ -1838,7 +1838,7 @@ contract IexecHub
 	/**
 	 * Reputation for PoCo
 	 */
-	mapping(address =&gt; uint256)  public m_scores;
+	mapping(address => uint256)  public m_scores;
 	IexecLib.ContributionHistory public m_contributionHistory;
 
 
@@ -2084,7 +2084,7 @@ contract IexecHub
 		// APP
 		App     app      = App(workorder.m_app());
 		uint256 appPrice = app.m_appPrice();
-		if (appPrice &gt; 0)
+		if (appPrice > 0)
 		{
 			require(reward(app.m_owner(), appPrice));
 		}
@@ -2094,7 +2094,7 @@ contract IexecHub
 		if (dataset != address(0))
 		{
 			uint256 datasetPrice = dataset.m_datasetPrice();
-			if (datasetPrice &gt; 0)
+			if (datasetPrice > 0)
 			{
 				require(reward(dataset.m_owner(), datasetPrice));
 			}
@@ -2120,12 +2120,12 @@ contract IexecHub
 		// write results
 		workorder.setResult(_stdout, _stderr, _uri); // revert on error
 
-		// Rien ne se perd, rien ne se cr&#233;e, tout se transfere
+		// Rien ne se perd, rien ne se crée, tout se transfere
 		// distribute bonus to scheduler. jackpot bonus come from scheduler stake loose on IexecHub contract
 		// we reuse the varaible value for the kitty / fraction of the kitty (stack too deep)
 		/* (,value) = checkBalance(this); // kitty is locked on `this` wallet */
 		value = m_accounts[this].locked; // kitty is locked on `this` wallet
-		if(value &gt; 0)
+		if(value > 0)
 		{
 			value = value.min(value.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
 			require(seize(this,             value));
@@ -2147,7 +2147,7 @@ contract IexecHub
 
 	function existingCategory(uint256 _catId) public view  returns (bool categoryExist)
 	{
-		return m_categories[_catId].catid &gt; 0;
+		return m_categories[_catId].catid > 0;
 	}
 
 	function getCategory(uint256 _catId) public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef)
@@ -2183,8 +2183,8 @@ contract IexecHub
 		// Lock worker deposit
 		require(lock(_worker, workerpool.m_subscriptionLockStakePolicy()));
 		// Check subscription policy
-		require(m_accounts[_worker].stake &gt;= workerpool.m_subscriptionMinimumStakePolicy());
-		require(m_scores[_worker]         &gt;= workerpool.m_subscriptionMinimumScorePolicy());
+		require(m_accounts[_worker].stake >= workerpool.m_subscriptionMinimumStakePolicy());
+		require(m_scores[_worker]         >= workerpool.m_subscriptionMinimumScorePolicy());
 		// Update affectation
 		require(workerPoolHub.registerWorkerAffectation(msg.sender, _worker));
 		// Trigger event notice

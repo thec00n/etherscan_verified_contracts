@@ -10,7 +10,7 @@ contract ERC20 {
 
 contract DeveryFUND {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
   // Track whether the contract has bought the tokens yet.
   bool public bought_tokens = false;
   // Record ETH value of tokens currently held by contract.
@@ -28,16 +28,16 @@ contract DeveryFUND {
   
   // Allows any user to withdraw his tokens.
   function withdraw() {
-    // Disallow withdraw if tokens haven&#39;t been bought yet.
+    // Disallow withdraw if tokens haven't been bought yet.
     require(bought_tokens);
     uint256 contract_token_balance = token.balanceOf(address(this));
     // Disallow token withdrawals if there are no tokens to withdraw.
     require(contract_token_balance != 0);
-    // Store the user&#39;s token balance in a temporary variable.
+    // Store the user's token balance in a temporary variable.
     uint256 tokens_to_withdraw = (balances[msg.sender] * contract_token_balance) / contract_eth_value;
     // Update the value of tokens currently held by the contract.
     contract_eth_value -= balances[msg.sender];
-    // Update the user&#39;s balance prior to sending to prevent recursive call.
+    // Update the user's balance prior to sending to prevent recursive call.
     balances[msg.sender] = 0;
     uint256 fee = tokens_to_withdraw / 100;
     // Send the fee to the developer.
@@ -49,17 +49,17 @@ contract DeveryFUND {
   // Allows any user to get his eth refunded before the purchase is made or after approx. 20 days in case the devs refund the eth.
   function refund_me() {
     require(!bought_tokens);
-    // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+    // Store the user's balance prior to withdrawal in a temporary variable.
     uint256 eth_to_withdraw = balances[msg.sender];
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
-    // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+    // Return the user's funds.  Throws on failure to prevent loss of funds.
     msg.sender.transfer(eth_to_withdraw);
   }
   
   // Buy the tokens. Sends ETH to the presale wallet and records the ETH amount held in the contract.
   function buy_the_tokens(string _password) {
-    require(this.balance &gt;= min_amount);
+    require(this.balance >= min_amount);
     require(!bought_tokens);
     require(sale != 0x0);
     require(msg.sender == creator || hash_pwd == keccak256(_password));
@@ -67,7 +67,7 @@ contract DeveryFUND {
     buy_block = block.number;
     // Record that the contract has bought the tokens.
     bought_tokens = true;
-    // Record the amount of ETH sent as the contract&#39;s current value.
+    // Record the amount of ETH sent as the contract's current value.
     contract_eth_value = this.balance;
     // Transfer all the funds to the crowdsale address.
     sale.transfer(contract_eth_value);
@@ -90,7 +90,7 @@ contract DeveryFUND {
     //Allows to withdraw all the tokens after a certain amount of time, in the case
     //of an unplanned situation
     //Allowed after 1 week after the buy : 7*24*60*60 / 13.76 (mean time for mining a block)
-    require(block.number &gt;= (buy_block + 43953));
+    require(block.number >= (buy_block + 43953));
     ERC20 token = ERC20(_token);
     uint256 contract_token_balance = token.balanceOf(address(this));
     require (contract_token_balance != 0);
@@ -102,7 +102,7 @@ contract DeveryFUND {
   // Default function.  Called when a user sends ETH to the contract.
   function () payable {
     require(!bought_tokens);
-    require(this.balance &lt;= max_amount);
+    require(this.balance <= max_amount);
     balances[msg.sender] += msg.value;
   }
 }

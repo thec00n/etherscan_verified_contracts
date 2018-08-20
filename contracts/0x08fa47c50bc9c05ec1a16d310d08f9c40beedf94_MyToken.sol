@@ -24,8 +24,8 @@ contract Token
 	string internal _name;
 	uint8 internal _decimals;	
     uint internal _totalSupply;
-   	mapping(address =&gt;uint) internal _balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint)) internal _allowances;
+   	mapping(address =>uint) internal _balanceOf;
+	mapping(address => mapping(address => uint)) internal _allowances;
 
     function Token(string symbol, string name, uint8 decimals, uint totalSupply) public{
 	    _symbol = symbol;
@@ -61,15 +61,15 @@ contract Multiownable {
     address insideOnlyManyOwners;
     
     // Reverse lookup tables for owners and allOperations
-    mapping(address =&gt; uint) ownersIndices; // Starts from 1
-    mapping(bytes32 =&gt; uint) allOperationsIndicies;
+    mapping(address => uint) ownersIndices; // Starts from 1
+    mapping(bytes32 => uint) allOperationsIndicies;
     
     // Owners voting mask per operations
-    mapping(bytes32 =&gt; uint256) public votesMaskByOperation;
-    mapping(bytes32 =&gt; uint256) public votesCountByOperation;
+    mapping(bytes32 => uint256) public votesMaskByOperation;
+    mapping(bytes32 => uint256) public votesCountByOperation;
     event OwnershipTransferred(address[] previousOwners, address[] newOwners);
     function isOwner(address wallet) public constant returns(bool) {
-        return ownersIndices[wallet] &gt; 0;
+        return ownersIndices[wallet] > 0;
     }
 
     function ownersCount() public constant returns(uint) {
@@ -107,7 +107,7 @@ contract Multiownable {
             allOperationsIndicies[operation] = allOperations.length;
             allOperations.push(operation);
         }
-        require((votesMaskByOperation[operation] &amp; (2 ** ownerIndex)) == 0);
+        require((votesMaskByOperation[operation] & (2 ** ownerIndex)) == 0);
         votesMaskByOperation[operation] |= (2 ** ownerIndex);
         votesCountByOperation[operation] += 1;
 
@@ -136,7 +136,7 @@ contract Multiownable {
     */
     function deleteOperation(bytes32 operation) internal {
         uint index = allOperationsIndicies[operation];
-        if (allOperations.length &gt; 1) {
+        if (allOperations.length > 1) {
             allOperations[index] = allOperations[allOperations.length - 1];
             allOperationsIndicies[allOperations[index]] = index;
         }
@@ -163,21 +163,21 @@ contract Multiownable {
     * @param newHowManyOwnersDecide defines how many owners can decide
     */
     function transferOwnershipWithHowMany(address[] newOwners, uint256 newHowManyOwnersDecide) public onlyManyOwners {
-        require(newOwners.length &gt; 0);
-        require(newOwners.length &lt;= 256);
-        require(newHowManyOwnersDecide &gt; 0);
-        require(newHowManyOwnersDecide &lt;= newOwners.length);
-        for (uint i = 0; i &lt; newOwners.length; i++) {
+        require(newOwners.length > 0);
+        require(newOwners.length <= 256);
+        require(newHowManyOwnersDecide > 0);
+        require(newHowManyOwnersDecide <= newOwners.length);
+        for (uint i = 0; i < newOwners.length; i++) {
             require(newOwners[i] != address(0));
         }
 
         OwnershipTransferred(owners, newOwners);
 
         // Reset owners array and index reverse lookup table
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             delete ownersIndices[owners[i]];
         }
-        for (i = 0; i &lt; newOwners.length; i++) {
+        for (i = 0; i < newOwners.length; i++) {
             require(ownersIndices[newOwners[i]] == 0);
             ownersIndices[newOwners[i]] = i + 1;
         }
@@ -185,7 +185,7 @@ contract Multiownable {
         howManyOwnersDecide = newHowManyOwnersDecide;
 
         // Discard all pendign operations
-        for (i = 0; i &lt; allOperations.length; i++) {
+        for (i = 0; i < allOperations.length; i++) {
             delete votesMaskByOperation[allOperations[i]];
             delete votesCountByOperation[allOperations[i]];
             delete allOperationsIndicies[allOperations[i]];
@@ -194,7 +194,7 @@ contract Multiownable {
     }
 }
 
-contract MyToken is Token(&quot;TLT&quot;,&quot;Talent Coin&quot;,18,50000000000000000000000000),ERC20,ERC223,Multiownable
+contract MyToken is Token("TLT","Talent Coin",18,50000000000000000000000000),ERC20,ERC223,Multiownable
 {    		
 	uint256 internal sellPrice;
 	uint256 internal buyPrice;
@@ -212,7 +212,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;Talent Coin&quot;,18,50000000000
 	}
 
 	function transfer(address _to, uint _value)public onlyManyOwners returns (bool){
-    	require(_value&gt;0 &amp;&amp; _value &lt;= balanceOf(msg.sender));
+    	require(_value>0 && _value <= balanceOf(msg.sender));
     	if(!isContract(_to))
     	{
     		_balanceOf[msg.sender]-= _value;
@@ -225,7 +225,7 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;Talent Coin&quot;,18,50000000000
 
 	function transfer(address _to, uint _value, bytes _data)public returns(bool)
 	{
-	    require(_value&gt;0 &amp;&amp; _value &lt;= balanceOf(msg.sender));
+	    require(_value>0 && _value <= balanceOf(msg.sender));
 		if(isContract(_to))
 		{
 			_balanceOf[msg.sender]-= _value;
@@ -244,11 +244,11 @@ contract MyToken is Token(&quot;TLT&quot;,&quot;Talent Coin&quot;,18,50000000000
 		{
 		    codeLength := extcodesize(_addr)
 	    }
-		return codeLength &gt; 0;
+		return codeLength > 0;
 	}	
     
 	function transferFrom(address _from, address _to, uint _value)public onlyManyOwners returns(bool){
-    	require(_allowances[_from][msg.sender] &gt; 0 &amp;&amp; _value &gt; 0 &amp;&amp; _allowances[_from][msg.sender] &gt;= _value &amp;&amp; _balanceOf[_from] &gt;= _value);
+    	require(_allowances[_from][msg.sender] > 0 && _value > 0 && _allowances[_from][msg.sender] >= _value && _balanceOf[_from] >= _value);
     	{
 			_balanceOf[_from]-=_value;
     		_balanceOf[_to]+=_value;

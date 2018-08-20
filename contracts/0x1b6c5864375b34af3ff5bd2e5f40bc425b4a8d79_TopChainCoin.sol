@@ -82,9 +82,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -92,8 +92,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -125,7 +125,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         } else {
@@ -176,7 +176,7 @@ contract DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                             timestamp += LEAP_YEAR_IN_SECONDS;
                         } else {
@@ -203,7 +203,7 @@ contract DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -227,7 +227,7 @@ contract DateTime {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -274,12 +274,12 @@ contract Ownable {
  * @dev Allows to authorize access to certain function calls
  *
  * ABI
- * [{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;authorizerIndex&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;getAuthorizer&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_addr&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;addAuthorized&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_addr&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;isAuthorized&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;constructor&quot;}]
+ * [{"constant":true,"inputs":[{"name":"authorizerIndex","type":"uint256"}],"name":"getAuthorizer","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_addr","type":"address"}],"name":"addAuthorized","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_addr","type":"address"}],"name":"isAuthorized","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]
  */
 contract Authorizable {
 
     address[] authorizers;
-    mapping(address =&gt; uint) authorizerIndex;
+    mapping(address => uint) authorizerIndex;
 
     /**
      * @dev Throws if called by any account tat is not authorized.
@@ -313,7 +313,7 @@ contract Authorizable {
      * @return boolean flag if address is authorized.
      */
     function isAuthorized(address _addr) public view returns(bool) {
-        return authorizerIndex[_addr] &gt; 0;
+        return authorizerIndex[_addr] > 0;
     }
 
     /**
@@ -345,20 +345,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -384,7 +384,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -393,7 +393,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -441,7 +441,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -452,8 +452,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -467,7 +467,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -502,7 +502,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -567,12 +567,12 @@ contract MintableToken is StandardToken, Ownable {
  * @dev The main TOPC token contract
  *
  * ABI
- * [ { &quot;constant&quot;: true, &quot;inputs&quot;: [], &quot;name&quot;: &quot;mintingFinished&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot;, &quot;value&quot;: false } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [], &quot;name&quot;: &quot;name&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;string&quot;, &quot;value&quot;: &quot;TopChainCoin&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_spender&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_value&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;approve&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [], &quot;name&quot;: &quot;totalSupply&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;uint256&quot;, &quot;value&quot;: &quot;0&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_from&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_to&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_value&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;transferFrom&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [], &quot;name&quot;: &quot;decimals&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;uint256&quot;, &quot;value&quot;: &quot;6&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_to&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_amount&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;mint&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_spender&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_subtractedValue&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;decreaseApproval&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_owner&quot;, &quot;type&quot;: &quot;address&quot; } ], &quot;name&quot;: &quot;balanceOf&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;balance&quot;, &quot;type&quot;: &quot;uint256&quot;, &quot;value&quot;: &quot;0&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [], &quot;name&quot;: &quot;finishMinting&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [], &quot;name&quot;: &quot;owner&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;address&quot;, &quot;value&quot;: &quot;0x0acb56da5d13db292ab72b16aabde8c850bd2f29&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [], &quot;name&quot;: &quot;symbol&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;string&quot;, &quot;value&quot;: &quot;TOPC&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_to&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_value&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;transfer&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_spender&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_addedValue&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;increaseApproval&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;bool&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: true, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;_owner&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;name&quot;: &quot;_spender&quot;, &quot;type&quot;: &quot;address&quot; } ], &quot;name&quot;: &quot;allowance&quot;, &quot;outputs&quot;: [ { &quot;name&quot;: &quot;&quot;, &quot;type&quot;: &quot;uint256&quot;, &quot;value&quot;: &quot;0&quot; } ], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;view&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;constant&quot;: false, &quot;inputs&quot;: [ { &quot;name&quot;: &quot;newOwner&quot;, &quot;type&quot;: &quot;address&quot; } ], &quot;name&quot;: &quot;transferOwnership&quot;, &quot;outputs&quot;: [], &quot;payable&quot;: false, &quot;stateMutability&quot;: &quot;nonpayable&quot;, &quot;type&quot;: &quot;function&quot; }, { &quot;anonymous&quot;: false, &quot;inputs&quot;: [ { &quot;indexed&quot;: true, &quot;name&quot;: &quot;to&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;indexed&quot;: false, &quot;name&quot;: &quot;amount&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;Mint&quot;, &quot;type&quot;: &quot;event&quot; }, { &quot;anonymous&quot;: false, &quot;inputs&quot;: [], &quot;name&quot;: &quot;MintFinished&quot;, &quot;type&quot;: &quot;event&quot; }, { &quot;anonymous&quot;: false, &quot;inputs&quot;: [ { &quot;indexed&quot;: true, &quot;name&quot;: &quot;previousOwner&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;indexed&quot;: true, &quot;name&quot;: &quot;newOwner&quot;, &quot;type&quot;: &quot;address&quot; } ], &quot;name&quot;: &quot;OwnershipTransferred&quot;, &quot;type&quot;: &quot;event&quot; }, { &quot;anonymous&quot;: false, &quot;inputs&quot;: [ { &quot;indexed&quot;: true, &quot;name&quot;: &quot;owner&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;indexed&quot;: true, &quot;name&quot;: &quot;spender&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;indexed&quot;: false, &quot;name&quot;: &quot;value&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;Approval&quot;, &quot;type&quot;: &quot;event&quot; }, { &quot;anonymous&quot;: false, &quot;inputs&quot;: [ { &quot;indexed&quot;: true, &quot;name&quot;: &quot;from&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;indexed&quot;: true, &quot;name&quot;: &quot;to&quot;, &quot;type&quot;: &quot;address&quot; }, { &quot;indexed&quot;: false, &quot;name&quot;: &quot;value&quot;, &quot;type&quot;: &quot;uint256&quot; } ], &quot;name&quot;: &quot;Transfer&quot;, &quot;type&quot;: &quot;event&quot; } ]
+ * [ { "constant": true, "inputs": [], "name": "mintingFinished", "outputs": [ { "name": "", "type": "bool", "value": false } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "name", "outputs": [ { "name": "", "type": "string", "value": "TopChainCoin" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_spender", "type": "address" }, { "name": "_value", "type": "uint256" } ], "name": "approve", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "totalSupply", "outputs": [ { "name": "", "type": "uint256", "value": "0" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_from", "type": "address" }, { "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" } ], "name": "transferFrom", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "decimals", "outputs": [ { "name": "", "type": "uint256", "value": "6" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_to", "type": "address" }, { "name": "_amount", "type": "uint256" } ], "name": "mint", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_spender", "type": "address" }, { "name": "_subtractedValue", "type": "uint256" } ], "name": "decreaseApproval", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_owner", "type": "address" } ], "name": "balanceOf", "outputs": [ { "name": "balance", "type": "uint256", "value": "0" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [], "name": "finishMinting", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [ { "name": "", "type": "address", "value": "0x0acb56da5d13db292ab72b16aabde8c850bd2f29" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "symbol", "outputs": [ { "name": "", "type": "string", "value": "TOPC" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" } ], "name": "transfer", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_spender", "type": "address" }, { "name": "_addedValue", "type": "uint256" } ], "name": "increaseApproval", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_owner", "type": "address" }, { "name": "_spender", "type": "address" } ], "name": "allowance", "outputs": [ { "name": "", "type": "uint256", "value": "0" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "newOwner", "type": "address" } ], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "anonymous": false, "inputs": [ { "indexed": true, "name": "to", "type": "address" }, { "indexed": false, "name": "amount", "type": "uint256" } ], "name": "Mint", "type": "event" }, { "anonymous": false, "inputs": [], "name": "MintFinished", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "name": "previousOwner", "type": "address" }, { "indexed": true, "name": "newOwner", "type": "address" } ], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "name": "owner", "type": "address" }, { "indexed": true, "name": "spender", "type": "address" }, { "indexed": false, "name": "value", "type": "uint256" } ], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "name": "from", "type": "address" }, { "indexed": true, "name": "to", "type": "address" }, { "indexed": false, "name": "value", "type": "uint256" } ], "name": "Transfer", "type": "event" } ]
  */
 contract TopChainCoin is MintableToken {
 
-    string public name = &quot;TopChainCoin&quot;;
-    string public symbol = &quot;TOPC&quot;;
+    string public name = "TopChainCoin";
+    string public symbol = "TOPC";
     uint public decimals = 6;
 
     /**
@@ -640,12 +640,12 @@ contract TopChainCoinDistribution is Ownable, Authorizable {
     bool public operationTokenCreated = false;
     bool public marketTokenCreated = false;
 
-    //year =&gt; token
-    mapping(uint16 =&gt; uint) public gameMiningToken; //游戏挖矿已发行数量
+    //year => token
+    mapping(uint16 => uint) public gameMiningToken; //游戏挖矿已发行数量
 
     uint public firstYearGameMiningTokenCap = 577500000 * (10 ** 6); //2018年5.775亿(21亿*0.55*0.5)，以后逐年减半 
 
-    uint public gameMiningTokenStartTime = 1514736000; //new Date(&quot;Jan 01 2018 00:00:00 GMT+8&quot;).getTime() / 1000;
+    uint public gameMiningTokenStartTime = 1514736000; //new Date("Jan 01 2018 00:00:00 GMT+8").getTime() / 1000;
 
     function isContract(address _addr) internal view returns(bool) {
         uint size;
@@ -655,14 +655,14 @@ contract TopChainCoinDistribution is Ownable, Authorizable {
         assembly {
         size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
     //2018年5.775亿(21亿*0.55*0.5)，以后逐年减半，到2028年发放剩余的全部
     function getCurrentYearGameMiningTokenCap(uint _currentYear) public view returns(uint) {
-        require(_currentYear &lt;= 2028);
+        require(_currentYear <= 2028);
 
-        if (_currentYear &lt; 2028) {
+        if (_currentYear < 2028) {
             uint divTimes = 2 ** (_currentYear - 2018);
             uint currentYearGameMiningTokenCap = firstYearGameMiningTokenCap.div(divTimes).div(10 ** 6).mul(10 ** 6);
             return currentYearGameMiningTokenCap;
@@ -737,10 +737,10 @@ contract TopChainCoinDistribution is Ownable, Authorizable {
     }
 
     function gameMining(address recipient, uint _tokens) public onlyAuthorized {
-        require(now &gt; gameMiningTokenStartTime);
+        require(now > gameMiningTokenStartTime);
         uint16 currentYear = dateTime.getYear(now);
         uint currentYearRemainTokens = getCurrentYearGameMiningRemainToken(currentYear);
-        require(_tokens &lt;= currentYearRemainTokens);
+        require(_tokens <= currentYearRemainTokens);
 
         gameMiningToken[currentYear] += _tokens; 
 
@@ -749,7 +749,7 @@ contract TopChainCoinDistribution is Ownable, Authorizable {
     }
 
     function authorizedCreateTokensToPrivate(address recipient, uint _tokens) public onlyAuthorized {
-        require(privateToken + _tokens &lt;= privateTokenCap);
+        require(privateToken + _tokens <= privateTokenCap);
         privateToken += _tokens;
         token.mint(recipient, _tokens);
         AuthorizedCreateToPrivate(recipient, _tokens);

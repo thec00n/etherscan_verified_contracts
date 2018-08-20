@@ -55,7 +55,7 @@ contract SKYFTeamFund is Ownable{
     }
 
     function transfer(address _to, uint256 _value) public onlyOwner returns (bool) {
-        require(now &gt; firstYearEnd);
+        require(now > firstYearEnd);
 
         token.transfer(_to, _value);
 

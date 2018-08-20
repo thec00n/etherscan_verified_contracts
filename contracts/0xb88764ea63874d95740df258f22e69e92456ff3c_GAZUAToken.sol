@@ -29,7 +29,7 @@ contract NFTEvents {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -78,18 +78,18 @@ contract BasicNFT is NFT, NFTEvents {
   uint public totalTokens;
 
   // Array of owned tokens for a user
-  mapping(address =&gt; uint[]) public ownedTokens;
-  mapping(address =&gt; uint) _virtualLength;
-  mapping(uint =&gt; uint) _tokenIndexInOwnerArray;
+  mapping(address => uint[]) public ownedTokens;
+  mapping(address => uint) _virtualLength;
+  mapping(uint => uint) _tokenIndexInOwnerArray;
 
   // Mapping from token ID to owner
-  mapping(uint =&gt; address) public tokenOwner;
+  mapping(uint => address) public tokenOwner;
 
   // Allowed transfers for a token (only one at a time)
-  mapping(uint =&gt; address) public allowedTransfer;
+  mapping(uint => address) public allowedTransfer;
 
   // Metadata associated with each token
-  mapping(uint =&gt; string) public _tokenMetadata;
+  mapping(uint => string) public _tokenMetadata;
 
   function totalSupply() public constant returns (uint) {
     return totalTokens;
@@ -100,14 +100,14 @@ contract BasicNFT is NFT, NFTEvents {
   }
 
   function tokenOfOwnerByIndex(address owner, uint index) public constant returns (uint) {
-    require(index &gt;= 0 &amp;&amp; index &lt; balanceOf(owner));
+    require(index >= 0 && index < balanceOf(owner));
     return ownedTokens[owner][index];
   }
 
   function getAllTokens(address owner) public constant returns (uint[]) {
     uint size = _virtualLength[owner];
     uint[] memory result = new uint[](size);
-    for (uint i = 0; i &lt; size; i++) {
+    for (uint i = 0; i < size; i++) {
       result[i] = ownedTokens[owner][i];
     }
     return result;
@@ -169,7 +169,7 @@ contract BasicNFT is NFT, NFTEvents {
   }
 
   function _removeTokenFrom(address from, uint tokenId) internal {
-    require(_virtualLength[from] &gt; 0);
+    require(_virtualLength[from] > 0);
 
     uint length = _virtualLength[from];
     uint index = _tokenIndexInOwnerArray[tokenId];
@@ -209,30 +209,30 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract GAZUAToken is Ownable, BasicNFT {
-    string public name = &quot;Gazua&quot;;
-    string public symbol = &quot;GAZ&quot;;
+    string public name = "Gazua";
+    string public symbol = "GAZ";
     uint public limitation = 300;
 
-    mapping (uint =&gt; string) public _message; //Personal Message;
+    mapping (uint => string) public _message; //Personal Message;
 
     event MessageUpdated(uint tokenId, address owner, string data);
 
@@ -240,7 +240,7 @@ contract GAZUAToken is Ownable, BasicNFT {
 
     function generateToken(address beneficiary, uint tokenId, string _metadata, string _personalMessage) public onlyOwner {
         require(tokenOwner[tokenId] == 0);
-        require(totalSupply() &lt;= limitation);
+        require(totalSupply() <= limitation);
         _generateToken(beneficiary, tokenId, _metadata, _personalMessage);
     }
 

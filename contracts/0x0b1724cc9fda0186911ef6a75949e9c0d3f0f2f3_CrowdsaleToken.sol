@@ -9,13 +9,13 @@ contract SafeMathLib {
   }
 
   function safeSub(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 
@@ -71,10 +71,10 @@ contract StandardToken is ERC20, SafeMathLib{
   event Minted(address receiver, uint amount);
 
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   modifier onlyPayloadSize(uint size) {
      if(msg.data.length != size + 4) {
@@ -108,7 +108,7 @@ contract StandardToken is ERC20, SafeMathLib{
 
   function approve(address _spender, uint _value) returns (bool success) {
 
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -134,7 +134,7 @@ contract StandardToken is ERC20, SafeMathLib{
 
       uint oldVal = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldVal) {
+      if (_subtractedValue > oldVal) {
           allowed[msg.sender][_spender] = 0;
       } else {
           allowed[msg.sender][_spender] = safeSub(oldVal,_subtractedValue);
@@ -265,7 +265,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
 
   modifier canTransfer(address _sender) {
@@ -327,7 +327,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
 
@@ -387,7 +387,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken {
     
     balances[owner] = totalSupply;
 
-    if(totalSupply &gt; 0) {
+    if(totalSupply > 0) {
       Minted(owner, totalSupply);
     }
 
@@ -408,7 +408,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken {
 
 
   function canUpgrade() public constant returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
 

@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,8 +35,8 @@ contract SplitPayment {
   uint256 public totalShares = 0;
   uint256 public totalReleased = 0;
 
-  mapping(address =&gt; uint256) public shares;
-  mapping(address =&gt; uint256) public released;
+  mapping(address => uint256) public shares;
+  mapping(address => uint256) public released;
   address[] public payees;
 
   /**
@@ -45,7 +45,7 @@ contract SplitPayment {
   function SplitPayment(address[] _payees, uint256[] _shares) public {
     require(_payees.length == _shares.length);
 
-    for (uint256 i = 0; i &lt; _payees.length; i++) {
+    for (uint256 i = 0; i < _payees.length; i++) {
       addPayee(_payees[i], _shares[i]);
     }
   }
@@ -57,7 +57,7 @@ contract SplitPayment {
    */
   function addPayee(address _payee, uint256 _shares) internal {
     require(_payee != address(0));
-    require(_shares &gt; 0);
+    require(_shares > 0);
     require(shares[_payee] == 0);
 
     payees.push(_payee);
@@ -71,13 +71,13 @@ contract SplitPayment {
   function claim() public {
     address payee = msg.sender;
 
-    require(shares[payee] &gt; 0);
+    require(shares[payee] > 0);
 
     uint256 totalReceived = this.balance.add(totalReleased);
     uint256 payment = totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     released[payee] = released[payee].add(payment);
     totalReleased = totalReleased.add(payment);

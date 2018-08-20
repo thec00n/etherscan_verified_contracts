@@ -109,7 +109,7 @@ contract ERC20Token {
     event Claimed(address indexed beneficiar, uint256 tokens);
 
     /** all the deposits made */
-    mapping(address =&gt; TokenDeposit[]) deposits;
+    mapping(address => TokenDeposit[]) deposits;
 
     /** Tokens contract instance */
     ERC20Token public tokenContract;
@@ -129,8 +129,8 @@ contract ERC20Token {
      * @param  depositTime - time to hold in seconds
      */
     function depositTokens (uint256 tokenCount, address tokenBeneficiar, uint256 depositTime)   {  
-        require(tokenCount &gt;= MIN_TOKENS_TO_HOLD);
-        require(tokenContract.allowance(msg.sender, address(this)) &gt;= tokenCount);
+        require(tokenCount >= MIN_TOKENS_TO_HOLD);
+        require(tokenContract.allowance(msg.sender, address(this)) >= tokenCount);
 
         if(tokenContract.transferFrom(msg.sender, address(this), tokenCount)) {
             deposits[tokenBeneficiar].push(TokenDeposit(tokenCount, now + depositTime));
@@ -151,7 +151,7 @@ contract ERC20Token {
     function getDeposit (address beneficiar, uint idx)   constant   returns (uint256 deposit_dot_tokens, uint256 deposit_dot_releaseTime) {  
 TokenDeposit memory deposit;
 
-        require(idx &lt; deposits[beneficiar].length);
+        require(idx < deposits[beneficiar].length);
         deposit = deposits[beneficiar][idx];
     deposit_dot_tokens = uint256(deposit.tokens);
 deposit_dot_releaseTime = uint256(deposit.releaseTime);}
@@ -166,8 +166,8 @@ deposit_dot_releaseTime = uint256(deposit.releaseTime);}
 
         uint idx = 0;
         while(true) {
-            if(idx &gt;= myDeposits.length) { break; }
-            if(now &gt; myDeposits[idx].releaseTime) {
+            if(idx >= myDeposits.length) { break; }
+            if(now > myDeposits[idx].releaseTime) {
                 toPay += myDeposits[idx].tokens;
                 myDeposits[idx] = myDeposits[myDeposits.length - 1];
                 myDeposits.length--;
@@ -176,7 +176,7 @@ deposit_dot_releaseTime = uint256(deposit.releaseTime);}
             }
         }
 
-        if(toPay &gt; 0) {
+        if(toPay > 0) {
             tokenContract.transfer(msg.sender, toPay);
             Claimed(msg.sender, toPay);
         }

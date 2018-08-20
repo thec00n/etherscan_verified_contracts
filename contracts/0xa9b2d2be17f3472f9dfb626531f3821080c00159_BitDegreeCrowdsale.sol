@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,7 +45,7 @@ contract BitDegreeCrowdsale {
     using SafeMath for uint256;
 
     // Investor contributions
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // The token being sold
     token public reward;
@@ -96,8 +96,8 @@ contract BitDegreeCrowdsale {
      * @param _owner Address of the owner of the smart contract who can execute restricted functions
      */
     function BitDegreeCrowdsale(uint256 _startTime, uint256 _endTime, address _wallet, address _token, address _owner)  public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_wallet != address(0));
         require(_token != address(0));
         require(_owner != address(0));
@@ -122,7 +122,7 @@ contract BitDegreeCrowdsale {
      */
     function () external payable {
         if(msg.sender == wallet) {
-            require(hasEnded() &amp;&amp; tokensSold &lt; softCap);
+            require(hasEnded() && tokensSold < softCap);
         } else {
             buyTokens(msg.sender);
         }
@@ -146,7 +146,7 @@ contract BitDegreeCrowdsale {
         uint256 tokens = weiAmount.mul(rate);
 
         // Distribute only the remaining tokens if final contribution exceeds hard cap
-        if(tokensSold.add(tokens) &gt; hardCap) {
+        if(tokensSold.add(tokens) > hardCap) {
             tokens = hardCap.sub(tokensSold);
             weiAmount = tokens.div(rate);
             returnToSender = msg.value.sub(weiAmount);
@@ -176,7 +176,7 @@ contract BitDegreeCrowdsale {
         }
 
         // Return funds that are over hard cap
-        if(returnToSender &gt; 0) {
+        if(returnToSender > 0) {
             msg.sender.transfer(returnToSender);
         }
     }
@@ -186,15 +186,15 @@ contract BitDegreeCrowdsale {
      * @return The current token rate
      */
     function getRate() internal constant returns (uint256) {
-        if(now &lt; (startTime + 1 weeks)) {
+        if(now < (startTime + 1 weeks)) {
             return 11500;
         }
 
-        if(now &lt; (startTime + 2 weeks)) {
+        if(now < (startTime + 2 weeks)) {
             return 11000;
         }
 
-        if(now &lt; (startTime + 3 weeks)) {
+        if(now < (startTime + 3 weeks)) {
             return 10500;
         }
 
@@ -206,17 +206,17 @@ contract BitDegreeCrowdsale {
      * @return True if the transaction can buy tokens
      */
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool hardCapNotReached = tokensSold &lt; hardCap;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; hardCapNotReached;
+        bool hardCapNotReached = tokensSold < hardCap;
+        return withinPeriod && nonZeroPurchase && hardCapNotReached;
     }
 
     /**
      * @return True if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || tokensSold &gt;= hardCap;
+        return now > endTime || tokensSold >= hardCap;
     }
 
     /**
@@ -224,13 +224,13 @@ contract BitDegreeCrowdsale {
      */
     function claimRefund() external {
         require(hasEnded());
-        require(tokensSold &lt; softCap);
+        require(tokensSold < softCap);
 
         uint256 amount = balances[msg.sender];
 
-        if(address(this).balance &gt;= amount) {
+        if(address(this).balance >= amount) {
             balances[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 msg.sender.transfer(amount);
                 Refund(msg.sender, amount);
             }

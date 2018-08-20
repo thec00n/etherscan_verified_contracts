@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract GiftCard2017{
     address owner;
-    mapping (address =&gt; uint256) public authorizations;
+    mapping (address => uint256) public authorizations;
     
     /// Constructor sets owner.
     function GiftCard2017() public {
@@ -12,7 +12,7 @@ contract GiftCard2017{
     /// Redeems authorized ETH.
     function () public {
         uint256 _redemption = authorizations[msg.sender];   // Amount mEth available to redeem.
-        require (_redemption &gt; 0);
+        require (_redemption > 0);
         authorizations[msg.sender] = 0;                     // Clear authorization.
         msg.sender.transfer(_redemption * 1e15);            // convert mEth to wei for transfer()
     }
@@ -28,7 +28,7 @@ contract GiftCard2017{
 
     /// Contract owner authorizes redemptions in units of 1/1000 ETH.    
     function authorize(address _addr, uint256 _amount_mEth) public OwnerOnly {
-        require (this.balance &gt;= _amount_mEth);
+        require (this.balance >= _amount_mEth);
         authorizations[_addr] = _amount_mEth;
     }
     

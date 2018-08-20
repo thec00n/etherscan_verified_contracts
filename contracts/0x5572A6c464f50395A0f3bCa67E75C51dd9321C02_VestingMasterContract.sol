@@ -1,5 +1,5 @@
 pragma solidity 0.4.21;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 
 contract Owned {
     address public owner;
@@ -46,9 +46,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -56,7 +56,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -65,7 +65,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -137,7 +137,7 @@ contract ReleasingScheduleLinearContract {
         TokenVestingContract vesting = TokenVestingContract(_vesting);
         uint256 balance = ERC20TokenInterface(vesting.tokenAddress()).balanceOf(_vesting);
         // check if there is balance and if it is active yet
-        if (balance == 0 || (startTime &gt;= now)) {
+        if (balance == 0 || (startTime >= now)) {
             return 0;
         }
         // all funds that may be released according to vesting schedule 
@@ -145,7 +145,7 @@ contract ReleasingScheduleLinearContract {
         // deduct already released funds 
         uint256 releasableFunds = vestingScheduleAmount.sub(vesting.alreadyReleasedAmount());
         // make sure to release remainder of funds for last payout
-        if (releasableFunds &gt; balance) {
+        if (releasableFunds > balance) {
             releasableFunds = balance;
         }
         return releasableFunds;
@@ -160,7 +160,7 @@ contract TgeOtherReleasingScheduleContract is ReleasingScheduleLinearContract {
     }
 
     function getReleasableFunds(address _vesting) public view returns (uint256) {
-        if (now &lt; releaseDate) {
+        if (now < releaseDate) {
             return 0;
         }
         return super.getReleasableFunds(_vesting);
@@ -174,7 +174,7 @@ contract TgeTeamReleasingScheduleContract {
 
     function getReleasableFunds(address _vesting) public view returns (uint256) {
         TokenVestingContract vesting = TokenVestingContract(_vesting);
-        if (releaseDate &gt;= now) {
+        if (releaseDate >= now) {
             return 0;
         } else {
             return vesting.getTokenBalance();
@@ -191,7 +191,7 @@ contract TokenVestingContract is Owned {
     * @param _revocable Allows owner to terminate vesting, but all funds yet vested still go to beneficiary. Owner gets remainder of funds back.
     * @param _changable Allows that releasing schedule and withdrawal address be changed. Essentialy rendering contract not binding.
     * @param _releasingScheduleContract Address of scheduling contract, that implements getReleasableFunds() function
-    * @return created vesting&#39;s address.
+    * @return created vesting's address.
     */
     using SafeMath for uint256;
 
@@ -246,7 +246,7 @@ contract TokenVestingContract is Owned {
         checkForReceivedTokens();
         require(msg.sender == beneficiary || msg.sender == owner);
         uint256 amountToTransfer = ReleasingScheduleInterface(releasingScheduleContract).getReleasableFunds(this);
-        require(amountToTransfer &gt; 0);
+        require(amountToTransfer > 0);
         // internal accounting
         alreadyReleasedAmount = alreadyReleasedAmount.add(amountToTransfer);
         internalBalance = internalBalance.sub(amountToTransfer);
@@ -263,7 +263,7 @@ contract TokenVestingContract is Owned {
         uint256 releasableFunds = ReleasingScheduleInterface(releasingScheduleContract).getReleasableFunds(this);
         ERC20TokenInterface(tokenAddress).transfer(beneficiary, releasableFunds);
         VestingMasterInterface(owner).substractLockedAmount(releasableFunds);
-        // have to do it here, can&#39;t use return, because contract selfdestructs
+        // have to do it here, can't use return, because contract selfdestructs
         // returns remainder of funds to VestingMaster and kill vesting contract
         VestingMasterInterface(owner).addInternalBalance(getTokenBalance());
         ERC20TokenInterface(tokenAddress).transfer(owner, getTokenBalance());
@@ -304,7 +304,7 @@ contract TokenVestingContract is Owned {
         // check if there are any new tokens
         checkForReceivedTokens();
         // only allow sending tokens, that were not allowed to be sent to contract
-        require(_amount &lt;= getTokenBalance() - internalBalance);
+        require(_amount <= getTokenBalance() - internalBalance);
         ERC20TokenInterface(tokenAddress).transfer(_to, _amount);
     }
     function () external{
@@ -332,8 +332,8 @@ contract VestingMasterContract is Owned {
     }
 
     address[] public vestingAddresses;
-    mapping(address =&gt; VestingStruct) public addressToVestingStruct;
-    mapping(address =&gt; address) public beneficiaryToVesting;
+    mapping(address => VestingStruct) public addressToVestingStruct;
+    mapping(address => address) public beneficiaryToVesting;
 
     event VestingContractFunded(address beneficiary, address tokenAddress, uint256 amount);
     event LockedAmountDecreased(uint256 amount);
@@ -398,10 +398,10 @@ contract VestingMasterContract is Owned {
 
     // add funds to vesting contract
     function fundVesting(address _vestingContract, uint256 _amount) public onlyOwner {
-        // convenience, so you don&#39;t have to call it manualy if you just uploaded funds
+        // convenience, so you don't have to call it manualy if you just uploaded funds
         checkForReceivedTokens();
         // check if there is actually enough funds
-        require((internalBalance &gt;= _amount) &amp;&amp; (getTokenBalance() &gt;= _amount));
+        require((internalBalance >= _amount) && (getTokenBalance() >= _amount));
         // make sure that fundee is vesting contract on the list
         require(vestingExists(_vestingContract));
         internalBalance = internalBalance.sub(_amount);
@@ -459,7 +459,7 @@ contract VestingMasterContract is Owned {
             // check if there are any new tokens
             checkForReceivedTokens();
             // only allow sending tokens, that were not allowed to be sent to contract
-            require(_amount &lt;= getTokenBalance() - internalBalance);
+            require(_amount <= getTokenBalance() - internalBalance);
             ERC20TokenInterface(tokenAddress).transfer(_to, _amount);
         }
         if (vestingExists(_contractFrom)) {
@@ -487,7 +487,7 @@ contract VestingMasterContract is Owned {
         require(vestingExists(_vestingContract));
         TokenVestingContract vesting = TokenVestingContract(_vestingContract);
         // withdrawal address can be changed only by beneficiary or in case vesting is changable also by owner
-        require(msg.sender == vesting.beneficiary() || (msg.sender == owner &amp;&amp; vesting.changable()));
+        require(msg.sender == vesting.beneficiary() || (msg.sender == owner && vesting.changable()));
         TokenVestingInterface(_vestingContract).setWithdrawalAddress(_beneficiary);
         addressToVestingStruct[_vestingContract].beneficiary = _beneficiary;
     }
@@ -524,7 +524,7 @@ contract VestingMasterContract is Owned {
     ) public onlyOwner {
         TgeOtherReleasingScheduleContract releasingSchedule = new TgeOtherReleasingScheduleContract(_amount, _startTime);
         TokenVestingContract newVesting = new TokenVestingContract(_beneficiary, tokenAddress, true, true, true, releasingSchedule);
-        addVesting(newVesting, _beneficiary, releasingSchedule, &#39;other&#39;, 1);
+        addVesting(newVesting, _beneficiary, releasingSchedule, 'other', 1);
         fundVesting(newVesting, _amount);
     }
 
@@ -534,7 +534,7 @@ contract VestingMasterContract is Owned {
     ) public onlyOwner {
         TgeTeamReleasingScheduleContract releasingSchedule = new TgeTeamReleasingScheduleContract();
         TokenVestingContract newVesting = new TokenVestingContract(_beneficiary, tokenAddress, true, true, true, releasingSchedule);
-        addVesting(newVesting, _beneficiary, releasingSchedule, &#39;X8 team&#39;, 1);
+        addVesting(newVesting, _beneficiary, releasingSchedule, 'X8 team', 1);
         fundVesting(newVesting, _amount);
     }
 

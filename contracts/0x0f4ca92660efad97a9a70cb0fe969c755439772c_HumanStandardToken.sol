@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) pure internal  returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) pure internal  returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,11 +78,11 @@ contract StandardToken is Token {
         validTransfer
        	returns (bool success) 
     {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-    	require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+    	require(balances[msg.sender] >= _value);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
         balances[_to] = SafeMath.add(balances[_to],_value);
         Transfer(msg.sender, _to, _value);
@@ -95,8 +95,8 @@ contract StandardToken is Token {
       	returns (bool success)
       {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-	    require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+	    require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = SafeMath.add(balances[_to], _value);
         balances[_from] = SafeMath.sub(balances[_from], _value);
         allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -109,7 +109,7 @@ contract StandardToken is Token {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -119,8 +119,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier validTransfer()
     {
@@ -136,13 +136,13 @@ contract HumanStandardToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -166,10 +166,10 @@ contract HumanStandardToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
@@ -255,7 +255,7 @@ contract Disbursement {
             startDate = now;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses
+    /// @dev Setup function sets external contracts' addresses
     /// @param _token Token address
     function setup(Token _token)
         public
@@ -276,7 +276,7 @@ contract Disbursement {
         isSetUp
     {
         uint maxTokens = calcMaxWithdraw();
-        if (_value &gt; maxTokens)
+        if (_value > maxTokens)
             revert();
         withdrawnTokens = SafeMath.add(withdrawnTokens, _value);
         token.transfer(_to, _value);
@@ -291,9 +291,9 @@ contract Disbursement {
     {
         uint maxTokens = SafeMath.mul(SafeMath.add(token.balanceOf(this), withdrawnTokens), SafeMath.sub(now,startDate)) / disbursementPeriod;
         //uint maxTokens = (token.balanceOf(this) + withdrawnTokens) * (now - startDate) / disbursementPeriod;
-        if (withdrawnTokens &gt;= maxTokens || startDate &gt; now)
+        if (withdrawnTokens >= maxTokens || startDate > now)
             return 0;
-        if (SafeMath.sub(maxTokens, withdrawnTokens) &gt; token.totalSupply())
+        if (SafeMath.sub(maxTokens, withdrawnTokens) > token.totalSupply())
             return token.totalSupply();
         return SafeMath.sub(maxTokens, withdrawnTokens);
     }

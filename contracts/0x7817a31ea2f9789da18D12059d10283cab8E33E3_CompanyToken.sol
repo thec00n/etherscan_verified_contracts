@@ -5,7 +5,7 @@ library FifoLib {
     uint constant HEAD = 0;
     
     struct LinkedList {
-        mapping (uint =&gt; uint) list;
+        mapping (uint => uint) list;
         uint tail;
         uint size;
     }
@@ -22,7 +22,7 @@ library FifoLib {
 
     // insert n after prev
     function insert(LinkedList storage self, uint prev, uint n) internal returns (uint) {
-        require(n != HEAD &amp;&amp; self.list[n] == HEAD &amp;&amp; n != self.tail);
+        require(n != HEAD && self.list[n] == HEAD && n != self.tail);
         self.list[n] = self.list[prev];
         self.list[prev] = n;
         self.size++;
@@ -34,7 +34,7 @@ library FifoLib {
     
     // Remove node n preceded by prev
     function remove(LinkedList storage self, uint prev, uint n) internal returns (uint) {
-        require(n != HEAD &amp;&amp; self.list[prev] == n);
+        require(n != HEAD && self.list[prev] == n);
         self.list[prev] = self.list[n];
         delete self.list[n];
         self.size--;
@@ -49,7 +49,7 @@ library FifoLib {
     }
     
     function popHead(LinkedList storage self) internal returns (uint) {
-        require(self.size &gt; 0);
+        require(self.size > 0);
         return remove(self, HEAD, self.list[HEAD]);
     }
 }
@@ -59,8 +59,8 @@ contract CompanyToken {
     event SharesSold(uint256 tokenId, uint256 shares, uint256 price, address prevOwner, address newOnwer, string name);
     event Transfer(address from, address to, uint256 tokenId, uint256 shares);
 
-    string public constant NAME = &quot;CryptoCompanies&quot;; // solhint-disable-line
-    string public constant SYMBOL = &quot;CompanyToken&quot;; // solhint-disable-line
+    string public constant NAME = "CryptoCompanies"; // solhint-disable-line
+    string public constant SYMBOL = "CompanyToken"; // solhint-disable-line
 
     uint256 private constant HEAD = 0;
 
@@ -74,33 +74,33 @@ contract CompanyToken {
     // @dev max number of shares per company
     uint256 private constant TOTAL_SHARES = 100;
 
-    // @dev companyIndex =&gt; (ownerAddress =&gt; numberOfShares)
-    mapping (uint256 =&gt; mapping (address =&gt; uint256)) public companyIndexToOwners;
+    // @dev companyIndex => (ownerAddress => numberOfShares)
+    mapping (uint256 => mapping (address => uint256)) public companyIndexToOwners;
 
     struct Holding {
         address owner;
         uint256 shares;
     }
 
-    // tokenId =&gt; holding fifo
-    mapping (uint256 =&gt; FifoLib.LinkedList) private fifo;
-    // tokenId =&gt; map(fifoIndex =&gt; holding)
-    mapping (uint256 =&gt; mapping (uint256 =&gt; Holding)) private fifoStorage;
+    // tokenId => holding fifo
+    mapping (uint256 => FifoLib.LinkedList) private fifo;
+    // tokenId => map(fifoIndex => holding)
+    mapping (uint256 => mapping (uint256 => Holding)) private fifoStorage;
 
-    mapping (uint256 =&gt; uint256) private fifoStorageKey;
+    mapping (uint256 => uint256) private fifoStorageKey;
 
     // number of shares traded
-    // tokenId =&gt; circulatationCount
-    mapping (uint256 =&gt; uint256) private circulationCounters;
+    // tokenId => circulatationCount
+    mapping (uint256 => uint256) private circulationCounters;
 
     // @dev A mapping from CompanyIDs to the price of the token.
-    mapping (uint256 =&gt; uint256) private companyIndexToPrice;
+    mapping (uint256 => uint256) private companyIndexToPrice;
 
     // @dev Owner who has most shares 
-    mapping (uint256 =&gt; address) private companyIndexToChairman;
+    mapping (uint256 => address) private companyIndexToChairman;
 
     // @dev Whether buying shares is allowed. if false, only whole purchase is allowed.
-    mapping (uint256 =&gt; bool) private shareTradingEnabled;
+    mapping (uint256 => bool) private shareTradingEnabled;
 
 
     // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -139,14 +139,14 @@ contract CompanyToken {
     }
 
     function createPromoCompany(address _owner, string _name, uint256 _price) public onlyCOO {
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         address companyOwner = _owner;
         if (companyOwner == address(0)) {
             companyOwner = cooAddress;
         }
 
-        if (_price &lt;= 0) {
+        if (_price <= 0) {
             _price = startingPrice;
         }
 
@@ -163,7 +163,7 @@ contract CompanyToken {
     }
 
     function setCommissionPoints(uint256 _point) public onlyCOO {
-        require(_point &gt;= 0 &amp;&amp; _point &lt;= 10);
+        require(_point >= 0 && _point <= 10);
         commissionPoints = _point;
     }
 
@@ -258,8 +258,8 @@ contract CompanyToken {
         });
         uint256 newCompanyId = companies.push(_company) - 1;
 
-        // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-        // let&#39;s just be 100% sure we never let this happen.
+        // It's probably never going to happen, 4 billion tokens are A LOT, but
+        // let's just be 100% sure we never let this happen.
         require(newCompanyId == uint256(uint32(newCompanyId)));
 
         Founded(newCompanyId, _name, _owner, _price);
@@ -271,7 +271,7 @@ contract CompanyToken {
 
     /// Check for token ownership
     function _owns(address claimant, uint256 _tokenId, uint256 _shares) private view returns (bool) {
-        return companyIndexToOwners[_tokenId][claimant] &gt;= _shares;
+        return companyIndexToOwners[_tokenId][claimant] >= _shares;
     }
 
     /// For paying out balance on contract
@@ -300,11 +300,11 @@ contract CompanyToken {
 
         SharesSold(_tokenId, currentPriceShares, companyIndexToPrice[_tokenId], _holding.owner, msg.sender, companies[_tokenId].name);
 
-        if (sharesFulfilled &gt;= currentTierLeft) {
+        if (sharesFulfilled >= currentTierLeft) {
             uint256 newPrice = nextPrice(_tokenId, companyIndexToPrice[_tokenId]);
             companyIndexToPrice[_tokenId] = newPrice;
 
-            if (sharesFulfilled &gt; currentTierLeft) {
+            if (sharesFulfilled > currentTierLeft) {
                 uint256 newPriceShares = sharesFulfilled - currentTierLeft;
                 payment += SafeMath.div(SafeMath.mul(newPrice, newPriceShares), TOTAL_SHARES);
                 SharesSold(_tokenId, newPriceShares, newPrice, _holding.owner, msg.sender, companies[_tokenId].name);
@@ -329,7 +329,7 @@ contract CompanyToken {
         while (fifoKey != HEAD) {
             Holding storage holding = fifoStorage[_tokenId][fifoKey];
 
-            assert(holding.shares &gt; 0);
+            assert(holding.shares > 0);
 
             if (holding.owner != msg.sender) {
                 uint256 itemSharesFulfilled;
@@ -355,11 +355,11 @@ contract CompanyToken {
 
     function purchase(uint256 _tokenId, uint256 _shares) public payable {
         require(_sharesValid(_tokenId, _shares));
-        require(companyIndexToOwners[_tokenId][msg.sender] + _shares &lt;= TOTAL_SHARES);
+        require(companyIndexToOwners[_tokenId][msg.sender] + _shares <= TOTAL_SHARES);
 
         uint256 estimatedPayment = estimatePurchasePayment(_tokenId, _shares);
 
-        require(msg.value &gt;= estimatedPayment);
+        require(msg.value >= estimatedPayment);
 
         uint256 sharesFulfilled;
         uint256 totalPayment;
@@ -369,9 +369,9 @@ contract CompanyToken {
         assert(totalPayment == estimatedPayment);
 
         uint256 purchaseExess = SafeMath.sub(msg.value, totalPayment);
-        assert(purchaseExess &gt;= 0);
+        assert(purchaseExess >= 0);
 
-        if (purchaseExess &gt; 0) {
+        if (purchaseExess > 0) {
             msg.sender.transfer(purchaseExess);
         }
 
@@ -379,13 +379,13 @@ contract CompanyToken {
 
         companyIndexToOwners[_tokenId][msg.sender] += _shares;
 
-        if (companyIndexToOwners[_tokenId][msg.sender] &gt; companyIndexToOwners[_tokenId][companyIndexToChairman[_tokenId]]) {
+        if (companyIndexToOwners[_tokenId][msg.sender] > companyIndexToOwners[_tokenId][companyIndexToChairman[_tokenId]]) {
             companyIndexToChairman[_tokenId] = msg.sender;
         }
     }
 
     function estimatePurchasePayment(uint256 _tokenId, uint256 _shares) public view returns (uint256) {
-        require(_shares &lt;= TOTAL_SHARES);
+        require(_shares <= TOTAL_SHARES);
 
         uint256 currentPrice = companyIndexToPrice[_tokenId];
 
@@ -398,10 +398,10 @@ contract CompanyToken {
 
     function nextPrice(uint256 _tokenId, uint256 _currentPrice) public view returns (uint256) {
         uint256 price;
-        if (_currentPrice &lt; firstStepLimit) {
+        if (_currentPrice < firstStepLimit) {
           // first stage
           price = SafeMath.div(SafeMath.mul(_currentPrice, 200), 100);
-        } else if (_currentPrice &lt; secondStepLimit) {
+        } else if (_currentPrice < secondStepLimit) {
           // second stage
           price = SafeMath.div(SafeMath.mul(_currentPrice, 120), 100);
         } else {
@@ -445,7 +445,7 @@ contract CompanyToken {
             while (fifoKey != HEAD) {
                 Holding storage holding = fifoStorage[_tokenId][fifoKey];
 
-                assert(holding.shares &gt; 0);
+                assert(holding.shares > 0);
 
                 if (holding.owner == _from) {
                     uint256 fulfilled = Math.min(holding.shares, sharesToFulfill);
@@ -483,7 +483,7 @@ contract CompanyToken {
 
         companyIndexToOwners[_tokenId][_to] += _shares;
 
-        if (companyIndexToOwners[_tokenId][_to] &gt; companyIndexToOwners[_tokenId][companyIndexToChairman[_tokenId]]) {
+        if (companyIndexToOwners[_tokenId][_to] > companyIndexToOwners[_tokenId][companyIndexToChairman[_tokenId]]) {
             companyIndexToChairman[_tokenId] = _to;
         }
 
@@ -492,7 +492,7 @@ contract CompanyToken {
     }
 
     function _sharesValid(uint256 _tokenId, uint256 _shares) private view returns (bool) {
-        return (_shares &gt; 0 &amp;&amp; _shares &lt;= TOTAL_SHARES) &amp;&amp;
+        return (_shares > 0 && _shares <= TOTAL_SHARES) &&
             (shareTradingEnabled[_tokenId] || _shares == TOTAL_SHARES);
     }
 
@@ -520,9 +520,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -530,7 +530,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -539,18 +539,18 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 library Math {
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt; b) return a;
+        if (a > b) return a;
         else return b;
     }
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt; b) return a;
+        if (a < b) return a;
         else return b;
     }
 }

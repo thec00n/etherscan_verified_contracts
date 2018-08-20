@@ -15,8 +15,8 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint _value) returns (bool) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -25,7 +25,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -48,8 +48,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -62,13 +62,13 @@ contract UnlimitedAllowanceToken is StandardToken {
         returns (bool)
     {
         uint allowance = allowed[_from][msg.sender];
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowance &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt;= balances[_to]
+        if (balances[_from] >= _value
+            && allowance >= _value
+            && balances[_to] + _value >= balances[_to]
         ) {
             balances[_to] += _value;
             balances[_from] -= _value;
-            if (allowance &lt; MAX_UINT) {
+            if (allowance < MAX_UINT) {
                 allowed[_from][msg.sender] -= _value;
             }
             Transfer(_from, _to, _value);
@@ -83,8 +83,8 @@ contract ZRXToken is UnlimitedAllowanceToken {
 
     uint8 constant public decimals = 18;
     uint public totalSupply = 10**27; // 1 billion tokens, 18 decimal places
-    string constant public name = &quot;DMarket&quot;;
-    string constant public symbol = &quot;DMT&quot;;
+    string constant public name = "DMarket";
+    string constant public symbol = "DMT";
 
     function ZRXToken() {
         balances[msg.sender] = totalSupply;

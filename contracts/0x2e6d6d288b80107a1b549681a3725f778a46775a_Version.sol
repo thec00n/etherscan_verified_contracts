@@ -2,26 +2,26 @@ pragma solidity ^0.4.13;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -40,10 +40,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -69,8 +69,8 @@ contract DSMath {
 }
 
 contract WETH9_ {
-    string public name     = &quot;Wrapped Ether&quot;;
-    string public symbol   = &quot;WETH&quot;;
+    string public name     = "Wrapped Ether";
+    string public symbol   = "WETH";
     uint8  public decimals = 18;
 
     event  Approval(address indexed src, address indexed guy, uint wad);
@@ -78,8 +78,8 @@ contract WETH9_ {
     event  Deposit(address indexed dst, uint wad);
     event  Withdrawal(address indexed src, uint wad);
 
-    mapping (address =&gt; uint)                       public  balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint))  public  allowance;
+    mapping (address => uint)                       public  balanceOf;
+    mapping (address => mapping (address => uint))  public  allowance;
 
     function() public payable {
         deposit();
@@ -89,7 +89,7 @@ contract WETH9_ {
         Deposit(msg.sender, msg.value);
     }
     function withdraw(uint wad) public {
-        require(balanceOf[msg.sender] &gt;= wad);
+        require(balanceOf[msg.sender] >= wad);
         balanceOf[msg.sender] -= wad;
         msg.sender.transfer(wad);
         Withdrawal(msg.sender, wad);
@@ -113,10 +113,10 @@ contract WETH9_ {
         public
         returns (bool)
     {
-        require(balanceOf[src] &gt;= wad);
+        require(balanceOf[src] >= wad);
 
-        if (src != msg.sender &amp;&amp; allowance[src][msg.sender] != uint(-1)) {
-            require(allowance[src][msg.sender] &gt;= wad);
+        if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {
+            require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
         }
 
@@ -186,7 +186,7 @@ interface AssetInterface {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -221,15 +221,15 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
 
     // DATA STRUCTURES
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 
     // PUBLIC METHODS
 
     /**
      * @notice Send `_value` tokens to `_to` from `msg.sender`
-     * @dev Transfers sender&#39;s tokens to a given address
+     * @dev Transfers sender's tokens to a given address
      * @dev Similar to transfer(address, uint, bytes), but without _data parameter
      * @param _to Address of token receiver
      * @param _value Number of tokens to transfer
@@ -247,12 +247,12 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
             codeLength := extcodesize(_to)
         }
  
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
-        // if (codeLength &gt; 0) {
+        // if (codeLength > 0) {
         //     ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         //     receiver.tokenFallback(msg.sender, _value, empty);
         // }
@@ -279,12 +279,12 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
             codeLength := extcodesize(_to)
         }
 
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
-        // if (codeLength &gt; 0) {
+        // if (codeLength > 0) {
         //     ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         //     receiver.tokenFallback(msg.sender, _value, _data);
         // }
@@ -307,9 +307,9 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         // require(_to == msg.sender); // can only use transferFrom to send to self
 
         balances[_to] += _value;
@@ -470,7 +470,7 @@ contract RestrictedShares is Shares {
 
     /**
      * @notice Send `_value` tokens to `_to` from `msg.sender`
-     * @dev Transfers sender&#39;s tokens to a given address
+     * @dev Transfers sender's tokens to a given address
      * @dev Similar to transfer(address, uint, bytes), but without _data parameter
      * @param _to Address of token receiver
      * @param _value Number of tokens to transfer
@@ -489,12 +489,12 @@ contract RestrictedShares is Shares {
             codeLength := extcodesize(_to)
         }
 
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -522,12 +522,12 @@ contract RestrictedShares is Shares {
             codeLength := extcodesize(_to)
         }
 
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -696,10 +696,10 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     bool public isInvestAllowed; // User option, if false fund rejects Melon investments
     bool public isRedeemAllowed; // User option, if false fund rejects Melon redemptions; Redemptions using slices always possible
     Order[] public orders; // All the orders this fund placed on exchanges
-    mapping (uint =&gt; mapping(address =&gt; uint)) public exchangeIdsToOpenMakeOrderIds; // exchangeIndex to: asset to open make order ID ; if no open make orders, orderID is zero
+    mapping (uint => mapping(address => uint)) public exchangeIdsToOpenMakeOrderIds; // exchangeIndex to: asset to open make order ID ; if no open make orders, orderID is zero
     address[] public ownedAssets; // List of all assets owned by the fund or for which the fund has open make orders
-    mapping (address =&gt; bool) public isInAssetList; // Mapping from asset to whether the asset exists in ownedAssets
-    mapping (address =&gt; bool) public isInOpenMakeOrder; // Mapping from asset to whether the asset is in a open make order as buy asset
+    mapping (address => bool) public isInAssetList; // Mapping from asset to whether the asset exists in ownedAssets
+    mapping (address => bool) public isInOpenMakeOrder; // Mapping from asset to whether the asset is in a open make order as buy asset
 
     // METHODS
 
@@ -729,21 +729,21 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         address[] ofExchanges,
         address[] ofExchangeAdapters
     )
-        RestrictedShares(withName, &quot;MLNF&quot;, 18, now)
+        RestrictedShares(withName, "MLNF", 18, now)
     {
         isInvestAllowed = true;
         isRedeemAllowed = true;
         owner = ofManager;
-        require(ofManagementFee &lt; 10 ** 18); // Require management fee to be less than 100 percent
+        require(ofManagementFee < 10 ** 18); // Require management fee to be less than 100 percent
         MANAGEMENT_FEE_RATE = ofManagementFee; // 1 percent is expressed as 0.01 * 10 ** 18
-        require(ofPerformanceFee &lt; 10 ** 18); // Require performance fee to be less than 100 percent
+        require(ofPerformanceFee < 10 ** 18); // Require performance fee to be less than 100 percent
         PERFORMANCE_FEE_RATE = ofPerformanceFee; // 1 percent is expressed as 0.01 * 10 ** 18
         VERSION = msg.sender;
         module.compliance = ComplianceInterface(ofCompliance);
         module.riskmgmt = RiskMgmtInterface(ofRiskMgmt);
         module.pricefeed = PriceFeedInterface(ofPriceFeed);
         // Bridged to Melon exchange interface by exchangeAdapter library
-        for (uint i = 0; i &lt; ofExchanges.length; ++i) {
+        for (uint i = 0; i < ofExchanges.length; ++i) {
             ExchangeInterface adapter = ExchangeInterface(ofExchangeAdapters[i]);
             bool isApproveOnly = adapter.isApproveOnly();
             exchanges.push(Exchange({
@@ -850,12 +850,12 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         external
         pre_cond(!isShutDown)
         pre_cond(requests[id].status == RequestStatus.active)
-        pre_cond(requests[id].requestType != RequestType.redeem || requests[id].shareQuantity &lt;= balances[requests[id].participant]) // request owner does not own enough shares
+        pre_cond(requests[id].requestType != RequestType.redeem || requests[id].shareQuantity <= balances[requests[id].participant]) // request owner does not own enough shares
         pre_cond(
             totalSupply == 0 ||
             (
-                now &gt;= add(requests[id].timestamp, module.pricefeed.getInterval()) &amp;&amp;
-                module.pricefeed.getLastUpdateId() &gt;= add(requests[id].atUpdateId, 2)
+                now >= add(requests[id].timestamp, module.pricefeed.getInterval()) &&
+                module.pricefeed.getLastUpdateId() >= add(requests[id].atUpdateId, 2)
             )
         )   // PriceFeed Module: Wait at least one interval time and two updates before continuing (unless it is the first investment)
          // PriceFeed Module: No recent updates for fund asset list
@@ -879,25 +879,25 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         }
 
         if (
-            isInvestAllowed &amp;&amp;
-            request.requestType == RequestType.invest &amp;&amp;
-            costQuantity &lt;= request.giveQuantity
+            isInvestAllowed &&
+            request.requestType == RequestType.invest &&
+            costQuantity <= request.giveQuantity
         ) {
             request.status = RequestStatus.executed;
             assert(AssetInterface(request.requestAsset).transferFrom(request.participant, this, costQuantity)); // Allocate Value
             createShares(request.participant, request.shareQuantity); // Accounting
         } else if (
-            isRedeemAllowed &amp;&amp;
-            request.requestType == RequestType.redeem &amp;&amp;
-            request.receiveQuantity &lt;= costQuantity
+            isRedeemAllowed &&
+            request.requestType == RequestType.redeem &&
+            request.receiveQuantity <= costQuantity
         ) {
             request.status = RequestStatus.executed;
             assert(AssetInterface(request.requestAsset).transfer(request.participant, costQuantity)); // Return value
             annihilateShares(request.participant, request.shareQuantity); // Accounting
         } else if (
-            isRedeemAllowed &amp;&amp;
-            request.requestType == RequestType.tokenFallbackRedeem &amp;&amp;
-            request.receiveQuantity &lt;= costQuantity
+            isRedeemAllowed &&
+            request.requestType == RequestType.tokenFallbackRedeem &&
+            request.receiveQuantity <= costQuantity
         ) {
             request.status = RequestStatus.executed;
             assert(AssetInterface(request.requestAsset).transfer(request.participant, costQuantity)); // Return value
@@ -967,11 +967,11 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
                 buyQuantity
             )
         ); // RiskMgmt module: Make order not permitted
-        require(isInAssetList[buyAsset] || ownedAssets.length &lt; MAX_FUND_ASSETS); // Limit for max ownable assets by the fund reached
+        require(isInAssetList[buyAsset] || ownedAssets.length < MAX_FUND_ASSETS); // Limit for max ownable assets by the fund reached
         require(AssetInterface(sellAsset).approve(exchanges[exchangeNumber].exchange, sellQuantity)); // Approve exchange to spend assets
 
         // Since there is only one openMakeOrder allowed for each asset, we can assume that openMakeOrderId is set as zero by quantityHeldInCustodyOfExchange() function
-        require(address(exchanges[exchangeNumber].exchangeAdapter).delegatecall(bytes4(keccak256(&quot;makeOrder(address,address,address,uint256,uint256)&quot;)), exchanges[exchangeNumber].exchange, sellAsset, buyAsset, sellQuantity, buyQuantity));
+        require(address(exchanges[exchangeNumber].exchangeAdapter).delegatecall(bytes4(keccak256("makeOrder(address,address,address,uint256,uint256)")), exchanges[exchangeNumber].exchange, sellAsset, buyAsset, sellQuantity, buyQuantity));
         exchangeIdsToOpenMakeOrderIds[exchangeNumber][sellAsset] = exchanges[exchangeNumber].exchangeAdapter.getLastOrderId(exchanges[exchangeNumber].exchange);
 
         // Success defined as non-zero order id
@@ -1019,10 +1019,10 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         // Check pre conditions
         require(order.sellAsset != address(this)); // Prevent buying of own fund token
         require(module.pricefeed.existsPriceOnAssetPair(order.buyAsset, order.sellAsset)); // PriceFeed module: Requested asset pair not valid
-        require(isInAssetList[order.sellAsset] || ownedAssets.length &lt; MAX_FUND_ASSETS); // Limit for max ownable assets by the fund reached
+        require(isInAssetList[order.sellAsset] || ownedAssets.length < MAX_FUND_ASSETS); // Limit for max ownable assets by the fund reached
         var (isRecent, referencePrice, ) = module.pricefeed.getReferencePrice(order.buyAsset, order.sellAsset);
         require(isRecent); // Reference price is required to be recent
-        require(receiveQuantity &lt;= order.sellQuantity); // Not enough quantity of order for what is trying to be bought
+        require(receiveQuantity <= order.sellQuantity); // Not enough quantity of order for what is trying to be bought
         uint spendQuantity = mul(receiveQuantity, order.buyQuantity) / order.sellQuantity;
         require(AssetInterface(order.buyAsset).approve(exchanges[exchangeNumber].exchange, spendQuantity)); // Could not approve spending of spendQuantity of order.buyAsset
         require(
@@ -1041,7 +1041,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         )); // RiskMgmt module: Take order not permitted
 
         // Execute request
-        require(address(exchanges[exchangeNumber].exchangeAdapter).delegatecall(bytes4(keccak256(&quot;takeOrder(address,uint256,uint256)&quot;)), exchanges[exchangeNumber].exchange, id, receiveQuantity));
+        require(address(exchanges[exchangeNumber].exchangeAdapter).delegatecall(bytes4(keccak256("takeOrder(address,uint256,uint256)")), exchanges[exchangeNumber].exchange, id, receiveQuantity));
 
         // Update ownedAssets array and isInAssetList mapping
         if (!isInAssetList[order.sellAsset]) {
@@ -1069,7 +1069,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         Order order = orders[id];
 
         // Execute request
-        require(address(exchanges[exchangeNumber].exchangeAdapter).delegatecall(bytes4(keccak256(&quot;cancelOrder(address,uint256)&quot;)), exchanges[exchangeNumber].exchange, order.exchangeId));
+        require(address(exchanges[exchangeNumber].exchangeAdapter).delegatecall(bytes4(keccak256("cancelOrder(address,uint256)")), exchanges[exchangeNumber].exchange, order.exchangeId));
 
         order.status = OrderStatus.cancelled;
         OrderUpdated(id);
@@ -1081,7 +1081,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     // PUBLIC METHODS : ERC223
 
     /// @dev Standard ERC223 function that handles incoming token transfers.
-    /// @dev This type of redemption can be seen as a &quot;market order&quot;, where price is calculated at execution time
+    /// @dev This type of redemption can be seen as a "market order", where price is calculated at execution time
     /// @param ofSender  Token sender address.
     /// @param tokenAmount Amount of tokens sent.
     /// @param metadata  Transaction metadata.
@@ -1092,7 +1092,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     ) {
         if (msg.sender != address(this)) {
             // when ofSender is a recognized exchange, receive tokens, otherwise revert
-            for (uint i; i &lt; exchanges.length; i++) {
+            for (uint i; i < exchanges.length; i++) {
                 if (exchanges[i].exchange == ofSender) return; // receive tokens and do nothing
             }
             revert();
@@ -1124,7 +1124,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         address[] memory tempOwnedAssets; // To store ownedAssets
         tempOwnedAssets = ownedAssets;
         delete ownedAssets;
-        for (uint i = 0; i &lt; tempOwnedAssets.length; ++i) {
+        for (uint i = 0; i < tempOwnedAssets.length; ++i) {
             address ofAsset = tempOwnedAssets[i];
             // assetHoldings formatting: mul(exchangeHoldings, 10 ** assetDecimal)
             uint assetHoldings = add(
@@ -1151,9 +1151,9 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     @notice Calculates unclaimed fees of the fund manager
     @param gav Gross asset value in QUOTE_ASSET and multiplied by 10 ** shareDecimals
     @return {
-      &quot;managementFees&quot;: &quot;A time (seconds) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals&quot;,
-      &quot;performanceFees&quot;: &quot;A performance (rise of sharePrice measured in QUOTE_ASSET) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals&quot;,
-      &quot;unclaimedfees&quot;: &quot;The sum of both managementfee and performancefee in QUOTE_ASSET and multiplied by 10 ** shareDecimals&quot;
+      "managementFees": "A time (seconds) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals",
+      "performanceFees": "A performance (rise of sharePrice measured in QUOTE_ASSET) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals",
+      "unclaimedfees": "The sum of both managementfee and performancefee in QUOTE_ASSET and multiplied by 10 ** shareDecimals"
     }
     */
     function calcUnclaimedFees(uint gav)
@@ -1170,8 +1170,8 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
 
         // Performance fee calculation
         // Handle potential division through zero by defining a default value
-        uint valuePerShareExclMgmtFees = totalSupply &gt; 0 ? calcValuePerShare(sub(gav, managementFee), totalSupply) : toSmallestShareUnit(1);
-        if (valuePerShareExclMgmtFees &gt; atLastUnclaimedFeeAllocation.highWaterMark) {
+        uint valuePerShareExclMgmtFees = totalSupply > 0 ? calcValuePerShare(sub(gav, managementFee), totalSupply) : toSmallestShareUnit(1);
+        if (valuePerShareExclMgmtFees > atLastUnclaimedFeeAllocation.highWaterMark) {
             uint gainInSharePrice = sub(valuePerShareExclMgmtFees, atLastUnclaimedFeeAllocation.highWaterMark);
             uint investmentProfits = wmul(gainInSharePrice, totalSupply);
             performanceFee = wmul(investmentProfits, PERFORMANCE_FEE_RATE);
@@ -1200,7 +1200,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     /// @return valuePerShare Share price denominated in QUOTE_ASSET and multiplied by 10 ** shareDecimals
     function calcValuePerShare(uint totalValue, uint numShares)
         view
-        pre_cond(numShares &gt; 0)
+        pre_cond(numShares > 0)
         returns (uint valuePerShare)
     {
         valuePerShare = toSmallestShareUnit(totalValue) / numShares;
@@ -1209,13 +1209,13 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     /**
     @notice Calculates essential fund metrics
     @return {
-      &quot;gav&quot;: &quot;Gross asset value of this fund denominated in [base unit of melonAsset]&quot;,
-      &quot;managementFee&quot;: &quot;A time (seconds) based fee&quot;,
-      &quot;performanceFee&quot;: &quot;A performance (rise of sharePrice measured in QUOTE_ASSET) based fee&quot;,
-      &quot;unclaimedFees&quot;: &quot;The sum of both managementFee and performanceFee denominated in [base unit of melonAsset]&quot;,
-      &quot;feesShareQuantity&quot;: &quot;The number of shares to be given as fees to the manager&quot;,
-      &quot;nav&quot;: &quot;Net asset value denominated in [base unit of melonAsset]&quot;,
-      &quot;sharePrice&quot;: &quot;Share price denominated in [base unit of melonAsset]&quot;
+      "gav": "Gross asset value of this fund denominated in [base unit of melonAsset]",
+      "managementFee": "A time (seconds) based fee",
+      "performanceFee": "A performance (rise of sharePrice measured in QUOTE_ASSET) based fee",
+      "unclaimedFees": "The sum of both managementFee and performanceFee denominated in [base unit of melonAsset]",
+      "feesShareQuantity": "The number of shares to be given as fees to the manager",
+      "nav": "Net asset value denominated in [base unit of melonAsset]",
+      "sharePrice": "Share price denominated in [base unit of melonAsset]"
     }
     */
     function performCalculations()
@@ -1238,7 +1238,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         feesShareQuantity = (gav == 0) ? 0 : mul(totalSupply, unclaimedFees) / gav;
         // The total share supply including the value of unclaimedFees, measured in shares of this fund
         uint totalSupplyAccountingForFees = add(totalSupply, feesShareQuantity);
-        sharePrice = nav &gt; 0 ? calcValuePerShare(nav, totalSupplyAccountingForFees) : toSmallestShareUnit(1); // Handle potential division through zero by defining a default value
+        sharePrice = nav > 0 ? calcValuePerShare(nav, totalSupplyAccountingForFees) : toSmallestShareUnit(1); // Handle potential division through zero by defining a default value
     }
 
     /// @notice Converts unclaimed fees of the manager into fund shares
@@ -1259,7 +1259,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         createShares(owner, feesShareQuantity); // Updates totalSupply by creating shares allocated to manager
 
         // Update Calculations
-        uint highWaterMark = atLastUnclaimedFeeAllocation.highWaterMark &gt;= sharePrice ? atLastUnclaimedFeeAllocation.highWaterMark : sharePrice;
+        uint highWaterMark = atLastUnclaimedFeeAllocation.highWaterMark >= sharePrice ? atLastUnclaimedFeeAllocation.highWaterMark : sharePrice;
         atLastUnclaimedFeeAllocation = Calculations({
             gav: gav,
             managementFee: managementFee,
@@ -1284,13 +1284,13 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     /// @return Whether all assets sent to shareholder or not
     function emergencyRedeem(uint shareQuantity, address[] requestedAssets)
         public
-        pre_cond(balances[msg.sender] &gt;= shareQuantity)  // sender owns enough shares
+        pre_cond(balances[msg.sender] >= shareQuantity)  // sender owns enough shares
         returns (bool)
     {
         uint[] memory ownershipQuantities = new uint[](requestedAssets.length);
 
         // Check whether enough assets held by fund
-        for (uint i = 0; i &lt; requestedAssets.length; ++i) {
+        for (uint i = 0; i < requestedAssets.length; ++i) {
             address ofAsset = requestedAssets[i];
             uint assetHoldings = add(
                 uint(AssetInterface(ofAsset).balanceOf(this)),
@@ -1299,13 +1299,13 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
 
             if (assetHoldings == 0) continue;
 
-            // participant&#39;s ownership percentage of asset holdings
+            // participant's ownership percentage of asset holdings
             ownershipQuantities[i] = mul(assetHoldings, shareQuantity) / totalSupply;
 
             // CRITICAL ERR: Not enough fund asset balance for owed ownershipQuantitiy, eg in case of unreturned asset quantity at address(exchanges[i].exchange) address
-            if (uint(AssetInterface(ofAsset).balanceOf(this)) &lt; ownershipQuantities[i]) {
+            if (uint(AssetInterface(ofAsset).balanceOf(this)) < ownershipQuantities[i]) {
                 isShutDown = true;
-                ErrorMessage(&quot;CRITICAL ERR: Not enough assetHoldings for owed ownershipQuantitiy&quot;);
+                ErrorMessage("CRITICAL ERR: Not enough assetHoldings for owed ownershipQuantitiy");
                 return false;
             }
         }
@@ -1314,7 +1314,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
         annihilateShares(msg.sender, shareQuantity);
 
         // Transfer ownershipQuantity of Assets
-        for (uint j = 0; j &lt; ownershipQuantities.length; ++j) {
+        for (uint j = 0; j < ownershipQuantities.length; ++j) {
             // Failed to send owed ownershipQuantity from fund to participant
             if (!AssetInterface(ofAsset).transfer(msg.sender, ownershipQuantities[j])) {
                 revert();
@@ -1332,7 +1332,7 @@ contract Fund is DSMath, DBC, Owned, RestrictedShares, FundInterface, ERC223Rece
     function quantityHeldInCustodyOfExchange(address ofAsset) returns (uint) {
         uint totalSellQuantity;     // quantity in custody across exchanges
         uint totalSellQuantityInApprove; // quantity of asset in approve (allowance) but not custody of exchange
-        for (uint i; i &lt; exchanges.length; i++) {
+        for (uint i; i < exchanges.length; i++) {
             if (exchangeIdsToOpenMakeOrderIds[i][ofAsset] == 0) {
                 continue;
             }
@@ -1531,7 +1531,7 @@ contract Version is DBC, Owned, VersionInterface {
     // Methods fields
     bool public isShutDown; // Governance feature, if yes than setupFund gets blocked and shutDownFund gets opened
     address[] public listOfFunds; // A complete list of fund addresses created using this version
-    mapping (address =&gt; address) public managerToFunds; // Links manager address to fund address created using this version
+    mapping (address => address) public managerToFunds; // Links manager address to fund address created using this version
 
     // EVENTS
 
@@ -1631,11 +1631,11 @@ contract Version is DBC, Owned, VersionInterface {
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
             //  it will return rsv (same as geth; where v is [27, 28]).
-            // Note that if you are using ecrecover, v will be either &quot;00&quot; or &quot;01&quot;.
+            // Note that if you are using ecrecover, v will be either "00" or "01".
             //  As a result, in order to use this value, you will have to parse it to an
             //  integer and then add 27. This will result in either a 27 or a 28.
             //  https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, TERMS_AND_CONDITIONS),
+            keccak256("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
             v,
             r,
             s

@@ -38,13 +38,13 @@ contract TokenERC20 {
     uint8 public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
-    string public symbol = &quot;SATT&quot;;
-    string public name = &quot;Smart Advertisement Transaction Token&quot;;
+    string public symbol = "SATT";
+    string public name = "Smart Advertisement Transaction Token";
     
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
    event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
 
@@ -70,9 +70,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -97,7 +97,7 @@ contract TokenERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
          bytes memory empty;
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value,empty);
         return true;
@@ -144,7 +144,7 @@ contract SATTToken is owned, TokenERC20,ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
     
      function transfer(address to, uint256 value) public returns (bool success) {
@@ -163,9 +163,9 @@ contract SATTToken is owned, TokenERC20,ERC223 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -211,7 +211,7 @@ contract SATTToken is owned, TokenERC20,ERC223 {
     
 
      function() public payable  {
-         require(buyPrice &gt;0);
+         require(buyPrice >0);
           bytes memory empty;
         // Buy(msg.sender, msg.value);
        // uint amount = msg.value * buyPrice; 
@@ -225,11 +225,11 @@ contract SATTToken is owned, TokenERC20,ERC223 {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(sellPrice &gt;0);
+        require(sellPrice >0);
          bytes memory empty;
-        require(this.balance &gt;= amount / sellPrice);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount / sellPrice);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, owner, amount,empty);              // makes the transfers
-        //msg.sender.transfer(amount / sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        //msg.sender.transfer(amount / sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
     
     

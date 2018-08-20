@@ -21,8 +21,8 @@ contract ArtyCoin {
     bool public isCanSell;
     bool public isCanBuy;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -51,26 +51,26 @@ contract ArtyCoin {
     }
     
     function setSellPrice(uint256 newSellPrice) onlyOwner public returns (bool success) {
-        require(newSellPrice &gt; 0);
+        require(newSellPrice > 0);
         sellPrice = newSellPrice;
         return true;
     }
     
     function setBuyPrice(uint256 newBuyPrice) onlyOwner public returns (bool success) {
-        require(newBuyPrice &gt; 0);
+        require(newBuyPrice > 0);
         buyPrice = newBuyPrice;
         return true;
     }
     
     function sellTokens(uint amount) public returns (uint revenue){
         require(isCanSell);
-        require(sellPrice &gt; 0);
-        require(balanceOf[msg.sender] &gt;= amount);
+        require(sellPrice > 0);
+        require(balanceOf[msg.sender] >= amount);
         
         uint256 divideValue = 1 * 10 ** uint256(decimals);
         
         revenue = (amount / divideValue) * sellPrice;
-        require(this.balance &gt;= revenue);
+        require(this.balance >= revenue);
         
         balanceOf[owner] += amount;
         balanceOf[msg.sender] -= amount;
@@ -82,10 +82,10 @@ contract ArtyCoin {
     }
     
     function buyTokens() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         totalEthInWei += msg.value;
         uint256 amount = msg.value * tokensPerOneETH;
-        require(balanceOf[owner] &gt;= amount);
+        require(balanceOf[owner] >= amount);
         
         balanceOf[owner] -= amount;
         balanceOf[msg.sender] += amount;
@@ -95,7 +95,7 @@ contract ArtyCoin {
     }
     
     function createTokensToOwner(uint256 amount) onlyOwner public {
-        require(amount &gt; 0);
+        require(amount > 0);
         uint256 newAmount = amount * 10 ** uint256(decimals);
         totalSupply += newAmount;
         balanceOf[owner] += newAmount;
@@ -103,7 +103,7 @@ contract ArtyCoin {
     }
     
     function createTokensTo(address target, uint256 mintedAmount) onlyOwner public {
-        require(mintedAmount &gt; 0);
+        require(mintedAmount > 0);
         uint256 newAmount = mintedAmount * 10 ** uint256(decimals);
         balanceOf[target] += newAmount;
         totalSupply += newAmount;
@@ -111,7 +111,7 @@ contract ArtyCoin {
     }
     
     function setTokensPerOneETH(uint256 value) onlyOwner public returns (bool success) {
-        require(value &gt; 0);
+        require(value > 0);
         tokensPerOneETH = value;
         return true;
     }
@@ -121,11 +121,11 @@ contract ArtyCoin {
     }
     
     function() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         totalEthInWei += msg.value;
         totalETHRaised += msg.value;
         uint256 amount = msg.value * tokensPerOneETH;
-        require(balanceOf[owner] &gt;= amount);
+        require(balanceOf[owner] >= amount);
         
         balanceOf[owner] -= amount;
         balanceOf[msg.sender] += amount;
@@ -139,13 +139,13 @@ contract ArtyCoin {
     }
     
     function withdrawEthToOwner(uint256 amount) onlyOwner public {
-        require(amount &gt; 0);
-        require(this.balance &gt;= amount);
+        require(amount > 0);
+        require(this.balance >= amount);
         owner.transfer(amount);
     }
     
     function withdrawAllEthToOwner() onlyOwner public {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         owner.transfer(this.balance);
     }
     
@@ -160,7 +160,7 @@ contract ArtyCoin {
     
     function sendMultipleAddress(address[] dests, uint256[] values) public returns (uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             transfer(dests[i], values[i]);
             i += 1;
         }
@@ -169,8 +169,8 @@ contract ArtyCoin {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -183,7 +183,7 @@ contract ArtyCoin {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -203,7 +203,7 @@ contract ArtyCoin {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -211,8 +211,8 @@ contract ArtyCoin {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

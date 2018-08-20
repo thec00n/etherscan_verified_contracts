@@ -2,12 +2,12 @@ pragma solidity ^0.4.11;
 
 library SafeMath {
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -27,8 +27,8 @@ contract EtheraffleLOT is ERC223Compliant {
     address   public etheraffle;
     uint      public totalSupply;
 
-    mapping (address =&gt; uint) public balances;
-    mapping (address =&gt; bool) public canFreeze;
+    mapping (address => uint) public balances;
+    mapping (address => bool) public canFreeze;
 
     event LogFrozenStatus(bool status, uint atTime);
     event LogFreezerAddition(address newFreezer, uint atTime);
@@ -64,7 +64,7 @@ contract EtheraffleLOT is ERC223Compliant {
      * @dev   Constructor: Sets the meta data for the token and gives the intial supply to the
      *        Etheraffle ICO.
      *
-     * @param _etheraffle   Address of the Etheraffle&#39;s multisig wallet, the only
+     * @param _etheraffle   Address of the Etheraffle's multisig wallet, the only
      *                      address via which the frozen/unfrozen state of the
      *                      token transfers can be toggled.
      * @param _supply       Total numner of LOT to mint on contract creation.
@@ -72,8 +72,8 @@ contract EtheraffleLOT is ERC223Compliant {
      */
     function EtheraffleLOT(address _etheraffle, uint _supply) {
         freezers.push(_etheraffle);
-        name                   = &quot;Etheraffle LOT&quot;;
-        symbol                 = &quot;LOT&quot;;
+        name                   = "Etheraffle LOT";
+        symbol                 = "LOT";
         decimals               = 6;
         etheraffle             = _etheraffle;
         totalSupply            = _supply * 10 ** uint256(decimals);
@@ -100,7 +100,7 @@ contract EtheraffleLOT is ERC223Compliant {
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to]        = balances[_to].add(_value);
-        if(codeLength &gt; 0) {
+        if(codeLength > 0) {
             ERC223Compliant receiver = ERC223Compliant(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -122,7 +122,7 @@ contract EtheraffleLOT is ERC223Compliant {
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to]        = balances[_to].add(_value);
-        if(codeLength &gt; 0) {
+        if(codeLength > 0) {
             ERC223Compliant receiver = ERC223Compliant(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -166,7 +166,7 @@ contract EtheraffleLOT is ERC223Compliant {
     function removeFreezer(address _freezer) external onlyEtheraffle {
         require(canFreeze[_freezer]);
         canFreeze[_freezer] = false;
-        for(uint i = 0; i &lt; freezers.length - 1; i++)
+        for(uint i = 0; i < freezers.length - 1; i++)
             if(freezers[i] == _freezer) {
                 freezers[i] = freezers[freezers.length - 1];
                 break;

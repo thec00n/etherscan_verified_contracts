@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;NTS&#39; Nauticus Token Fixed Supply
+// 'NTS' Nauticus Token Fixed Supply
 //
 // Symbol      : NTS
 // Name        : NauticusToken
@@ -40,12 +40,12 @@ library Math {
 
 	function add(uint a, uint b) internal pure returns (uint c) {
 		c = a + b;
-		//require(c &gt;= a);
-		//require(c &gt;= b);
+		//require(c >= a);
+		//require(c >= b);
 	}
 
 	function sub(uint a, uint b) internal pure returns (uint c) {
-		require(b &lt;= a);
+		require(b <= a);
 		c = a - b;
 	}
 
@@ -55,7 +55,7 @@ library Math {
 	}
 
 	function div(uint a, uint b) internal pure returns (uint c) {
-		require(b &gt; 0);
+		require(b > 0);
 		c = a / b;
 	}
 }
@@ -82,8 +82,8 @@ contract NauticusToken is Permission {
     uint public constant termination = 1526601600;
 
     //token details
-    string public constant name = &quot;NauticusToken&quot;;
-	string public constant symbol = &quot;NTS&quot;;
+    string public constant name = "NauticusToken";
+	string public constant symbol = "NTS";
 	uint8 public constant decimals = 18;
 
     //number of tokens that exist, totally.
@@ -99,8 +99,8 @@ contract NauticusToken is Permission {
     bool public transferActive = false;
     
     //mappings for token balances and allowances.
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     /*
         MODIFIERS
@@ -111,12 +111,12 @@ contract NauticusToken is Permission {
 	}
 	
 	/*modifier ICOActive() { 
-		require(now &gt; inception * 1 seconds &amp;&amp; now &lt; termination * 1 seconds); 
+		require(now > inception * 1 seconds && now < termination * 1 seconds); 
 		_; 
 	}*/
 	
 	modifier ICOTerminated() {
-	    require(now &gt; termination * 1 seconds);
+	    require(now > termination * 1 seconds);
 	    _;
 	}
 
@@ -152,7 +152,7 @@ contract NauticusToken is Permission {
 	function transfer(address to, uint val) transferable ICOTerminated public returns (bool) {
 		//only send to a valid address
 		require(to != address(0));
-		require(val &lt;= balances[msg.sender]);
+		require(val <= balances[msg.sender]);
 
 		//deduct the val from sender
 		balances[msg.sender] = balances[msg.sender] - val;
@@ -185,7 +185,7 @@ contract NauticusToken is Permission {
 		require(recipient != address(0));
 		require(from != address(0));
 		//tokens must exist in from account
-		require(val &lt;= balances[from]);
+		require(val <= balances[from]);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(val);
 		balances[from] = balances[from] - val;
 		balances[recipient] = balances[recipient] + val;
@@ -211,7 +211,7 @@ contract NauticusToken is Permission {
         @return true
      */
 	function mint(uint tokensToExist) onlyOwner ICOTerminated canMint public returns (bool) {
-	    tokensToExist &gt; hardCap ? totalSupply = hardCap : totalSupply = tokensToExist;
+	    tokensToExist > hardCap ? totalSupply = hardCap : totalSupply = tokensToExist;
 	    balances[owner] = balances[owner].add(totalSupply);
         minted = true;
         transferActive = true;

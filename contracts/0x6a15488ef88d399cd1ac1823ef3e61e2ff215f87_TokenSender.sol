@@ -30,7 +30,7 @@ contract TokenSender {
     function bulkTransfer(address[] receivers, uint256[] amounts, address token) external {
         address sender = msg.sender;
         uint256 length = receivers.length;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             if (!ERC20(token).transferFrom(sender, receivers[i], amounts[i])) {
                 emit TransferFail(i, receivers[i], amounts[i]);
                 return;
@@ -41,7 +41,7 @@ contract TokenSender {
     function bulkTransferEther(address[] receivers, uint256[] amounts) external payable {
         uint256 length = receivers.length;
         uint256 totalSend = 0;
-        for (uint256 i = 0; i &lt; length; i++){
+        for (uint256 i = 0; i < length; i++){
             if (!receivers[i].send(amounts[i])) {
                 emit TransferFail(i, receivers[i], amounts[i]);
                 return;
@@ -49,7 +49,7 @@ contract TokenSender {
             totalSend += amounts[i];
         }
         uint256 balances = msg.value - totalSend;
-        if (balances &gt; 0) {
+        if (balances > 0) {
             msg.sender.transfer(balances);
         }
         require(this.balance == 0);

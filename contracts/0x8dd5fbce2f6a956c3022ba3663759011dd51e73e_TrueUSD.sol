@@ -29,9 +29,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -173,7 +173,7 @@ contract Claimable is Ownable {
 
 contract AddressList is Claimable {
     string public name;
-    mapping (address =&gt; bool) public onList;
+    mapping (address => bool) public onList;
 
     function AddressList(string _name, bool nullValue) public {
         name = _name;
@@ -254,7 +254,7 @@ contract NoOwner is HasNoEther, HasNoTokens, HasNoContracts {
 contract AllowanceSheet is Claimable {
     using SafeMath for uint256;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowanceOf;
+    mapping (address => mapping (address => uint256)) public allowanceOf;
 
     function addAllowance(address tokenHolder, address spender, uint256 value) public onlyOwner {
         allowanceOf[tokenHolder][spender] = allowanceOf[tokenHolder][spender].add(value);
@@ -272,7 +272,7 @@ contract AllowanceSheet is Claimable {
 contract BalanceSheet is Claimable {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     function addBalance(address addr, uint256 value) public onlyOwner {
         balanceOf[addr] = balanceOf[addr].add(value);
@@ -326,7 +326,7 @@ contract BasicToken is ERC20Basic, Claimable {
   function transferAllArgsNoAllowance(address _from, address _to, uint256 _value) internal {
     require(_to != address(0));
     require(_from != address(0));
-    require(_value &lt;= balances.balanceOf(_from));
+    require(_value <= balances.balanceOf(_from));
 
     // SafeMath.sub will throw if there is not enough balance.
     balances.subBalance(_from, _value);
@@ -353,9 +353,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances.balanceOf(msg.sender));
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances.balanceOf(msg.sender));
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances.subBalance(burner, _value);
@@ -407,7 +407,7 @@ contract StandardToken is ERC20, BasicToken {
   }
 
   function transferAllArgsYesAllowance(address _from, address _to, uint256 _value, address spender) internal {
-    require(_value &lt;= allowances.allowanceOf(_from, spender));
+    require(_value <= allowances.allowanceOf(_from, spender));
 
     allowances.subAllowance(_from, spender, _value);
     transferAllArgsNoAllowance(_from, _to, _value);
@@ -418,7 +418,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -480,7 +480,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApprovalAllArgs(address _spender, uint _subtractedValue, address tokenHolder) internal {
     uint oldValue = allowances.allowanceOf(tokenHolder, _spender);
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowances.setAllowance(tokenHolder, _spender, 0);
     } else {
       allowances.subAllowance(tokenHolder, _spender, _subtractedValue);
@@ -492,7 +492,7 @@ contract StandardToken is ERC20, BasicToken {
 
 contract CanDelegate is StandardToken {
     // If this contract needs to be upgraded, the new contract will be stored
-    // in &#39;delegate&#39; and any ERC20 calls to this contract will be delegated to that one.
+    // in 'delegate' and any ERC20 calls to this contract will be delegated to that one.
     DelegateERC20 public delegate;
 
     event DelegatedTo(address indexed newContract);
@@ -644,8 +644,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract TrueUSD is StandardDelegate, PausableToken, BurnableToken, NoOwner, CanDelegate {
-    string public name = &quot;TrueUSD&quot;;
-    string public symbol = &quot;TUSD&quot;;
+    string public name = "TrueUSD";
+    string public symbol = "TUSD";
     uint8 public constant decimals = 18;
 
     AddressList public canReceiveMintWhiteList;
@@ -690,8 +690,8 @@ contract TrueUSD is StandardDelegate, PausableToken, BurnableToken, NoOwner, Can
     //and will send them back the equivalent amount of money (rounded down to the nearest cent).
     function burn(uint256 _value) public {
         require(canBurnWhiteList.onList(msg.sender));
-        require(_value &gt;= burnMin);
-        require(_value &lt;= burnMax);
+        require(_value >= burnMin);
+        require(_value <= burnMax);
         uint256 fee = payStakingFee(msg.sender, _value, burnFeeNumerator, burnFeeDenominator, burnFeeFlat, 0x0);
         uint256 remaining = _value.sub(fee);
         super.burn(remaining);
@@ -710,12 +710,12 @@ contract TrueUSD is StandardDelegate, PausableToken, BurnableToken, NoOwner, Can
 
     //Change the minimum and maximum amount that can be burned at once. Burning
     //may be disabled by setting both to 0 (this will not be done under normal
-    //operation, but we can&#39;t add checks to disallow it without losing a lot of
+    //operation, but we can't add checks to disallow it without losing a lot of
     //flexibility since burning could also be as good as disabled
-    //by setting the minimum extremely high, and we don&#39;t want to lock
+    //by setting the minimum extremely high, and we don't want to lock
     //in any particular cap for the minimum)
     function changeBurnBounds(uint newMin, uint newMax) onlyOwner public {
-        require(newMin &lt;= newMax);
+        require(newMin <= newMax);
         burnMin = newMin;
         burnMax = newMax;
         ChangeBurnBoundsEvent(newMin, newMax);
@@ -743,7 +743,7 @@ contract TrueUSD is StandardDelegate, PausableToken, BurnableToken, NoOwner, Can
             return 0;
         }
         uint256 stakingFee = value.mul(numerator).div(denominator).add(flatRate);
-        if (stakingFee &gt; 0) {
+        if (stakingFee > 0) {
             super.transferAllArgsNoAllowance(payer, staker, stakingFee);
         }
         return stakingFee;

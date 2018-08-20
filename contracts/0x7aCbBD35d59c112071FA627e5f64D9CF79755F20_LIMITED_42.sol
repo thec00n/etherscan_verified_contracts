@@ -8,10 +8,10 @@ contract LIMITED_42 {
         string data;
     }
 
-    mapping(address =&gt; bytes32[]) public Patterns;
-    mapping(bytes32 =&gt; PatternOBJ) public Pattern;
+    mapping(address => bytes32[]) public Patterns;
+    mapping(bytes32 => PatternOBJ) public Pattern;
 
-    string public info = &quot;&quot;;
+    string public info = "";
 
     address private constant emergency_admin = 0x59ab67D9BA5a748591bB79Ce223606A8C2892E6d;
     address private constant first_admin = 0x9a203e2E251849a26566EBF94043D74FEeb0011c;
@@ -66,11 +66,11 @@ contract LIMITED_42 {
 
           addPatternUserIndex(newowner,patternid);
 
-          return &quot;ok&quot;;
+          return "ok";
 
       }else{
           //must be for sale
-          return &quot;error:exists&quot;;
+          return "error:exists";
       }
 
     }
@@ -110,7 +110,7 @@ contract LIMITED_42 {
       //add reference to owner map
       addPatternUserIndex(newowner,patternid);
 
-      return &quot;ok&quot;;
+      return "ok";
 
     }
 
@@ -140,7 +140,7 @@ contract LIMITED_42 {
 
       Pattern[patternid].message = message;
 
-      return &quot;ok&quot;;
+      return "ok";
 
     }
 
@@ -172,7 +172,7 @@ contract LIMITED_42 {
       returns (bytes32)
     {
         bytes32 h = keccak256(abi.encodePacked(message));
-        return keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, h));
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", h));
     }
 
     function prefixedHash2(address message)
@@ -181,7 +181,7 @@ contract LIMITED_42 {
       returns (bytes32)
     {
         bytes32 h = keccak256(abi.encodePacked(message));
-        return keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, h));
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", h));
     }
 
 
@@ -195,7 +195,7 @@ contract LIMITED_42 {
       private
     {
       require(Pattern[patternid].owner == account);
-      for (uint i = 0; i&lt;Patterns[account].length; i++){
+      for (uint i = 0; i<Patterns[account].length; i++){
           if(Patterns[account][i] == patternid){
               //replace with last entry
               Patterns[account][i] = Patterns[account][Patterns[account].length-1];
@@ -212,7 +212,7 @@ contract LIMITED_42 {
       view
       returns(bool)
     {
-      if(Patterns[account].length &gt;=1 )
+      if(Patterns[account].length >=1 )
       {
         return true;
       }else{
@@ -251,9 +251,9 @@ contract LIMITED_42 {
     {
       bytes memory bStr = bytes(str);
       bytes memory bLower = new bytes(bStr.length);
-      for (uint i = 0; i &lt; bStr.length; i++) {
+      for (uint i = 0; i < bStr.length; i++) {
         // lowercase character...
-        if ((bStr[i] &gt;= 65+32) &amp;&amp; (bStr[i] &lt;= 90+32)) {
+        if ((bStr[i] >= 65+32) && (bStr[i] <= 90+32)) {
           // So we remove 32 to make it uppercase
           bLower[i] = bytes1(int(bStr[i]) - 32);
         } else {

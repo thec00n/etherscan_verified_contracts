@@ -43,8 +43,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -59,9 +59,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -78,7 +78,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,7 +93,7 @@ library SafeMath {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract SVGCrowdsale {
@@ -231,19 +231,19 @@ contract SVGCrowdsale {
       
     if(tranches != Tranches.Successful){
         
-        if(currentRound &gt; caps[0] &amp;&amp; tranches == Tranches.Round1){//plus 8weeks
+        if(currentRound > caps[0] && tranches == Tranches.Round1){//plus 8weeks
             tranches = Tranches.Round2;
             currentRound = 0;    
         }
-        else if(currentRound &gt; caps[1] &amp;&amp; tranches == Tranches.Round2){ //plus 4weeks
+        else if(currentRound > caps[1] && tranches == Tranches.Round2){ //plus 4weeks
             tranches = Tranches.Round3;
             currentRound = 0;    
         }
-        else if(currentRound &gt; caps[2] &amp;&amp; tranches == Tranches.Round3){ //plus 3weeks
+        else if(currentRound > caps[2] && tranches == Tranches.Round3){ //plus 3weeks
             tranches = Tranches.Round4;
             currentRound = 0;    
         }
-        else if(currentRound &gt; caps[3] &amp;&amp; tranches == Tranches.Round4){ //plus 3weeks
+        else if(currentRound > caps[3] && tranches == Tranches.Round4){ //plus 3weeks
             tranches = Tranches.Round5;
             currentRound = 0; 
         }
@@ -317,27 +317,27 @@ contract SVGCrowdsale {
     if(tranches == Tranches.Round1){
         
         tokenBought = _weiAmount.mul(tablePrices[0]);
-        require(SafeMath.add(currentRound, tokenBought) &lt;= caps[0]);
+        require(SafeMath.add(currentRound, tokenBought) <= caps[0]);
         
     }else if(tranches == Tranches.Round2){
         
         tokenBought = _weiAmount.mul(tablePrices[1]);
-        require(SafeMath.add(currentRound, tokenBought) &lt;= caps[1]);            
+        require(SafeMath.add(currentRound, tokenBought) <= caps[1]);            
         
     }else if(tranches == Tranches.Round3){
         
         tokenBought = _weiAmount.mul(tablePrices[2]);
-        require(SafeMath.add(currentRound, tokenBought) &lt;= caps[2]);
+        require(SafeMath.add(currentRound, tokenBought) <= caps[2]);
         
     }else if(tranches == Tranches.Round4){
         
         tokenBought = _weiAmount.mul(tablePrices[3]);
-        require(SafeMath.add(currentRound, tokenBought) &lt;= caps[3]);
+        require(SafeMath.add(currentRound, tokenBought) <= caps[3]);
         
     }else if(tranches == Tranches.Round5){
         
         tokenBought = _weiAmount.mul(tablePrices[4]);
-        require(SafeMath.add(currentRound, tokenBought) &lt;= caps[4]); 
+        require(SafeMath.add(currentRound, tokenBought) <= caps[4]); 
         
     }else{
         revert();

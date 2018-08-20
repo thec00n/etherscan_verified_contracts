@@ -10,7 +10,7 @@ contract Random {
 	);	
 
 	function random(uint256 maxValue) public returns (uint256 randomNumber) {
-		require(maxValue &gt; 0);
+		require(maxValue > 0);
 		require(lastTimeBlockNumber != block.number);
 		lastTimeBlockNumber = block.number;
 		uint256 result = uint256(keccak256(block.blockhash(block.number - 1), block.coinbase, block.difficulty));

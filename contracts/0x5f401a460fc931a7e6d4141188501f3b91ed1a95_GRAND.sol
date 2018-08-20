@@ -8,14 +8,14 @@ contract Ownable {
 
 contract GRAND is Ownable {
     
-    string public version           = &quot;3.0.3&quot;;
-    string public name              = &quot;GRAND&quot;;
-    string public symbol            = &quot;G&quot;;
+    string public version           = "3.0.3";
+    string public name              = "GRAND";
+    string public symbol            = "G";
 
     uint256 public totalSupply      = 100000000000000000000000 * 1000;
     uint8 public decimals           = 15;
     
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
        
     event Transfer(address indexed from, address indexed to, uint256 value);
    
@@ -26,8 +26,8 @@ contract GRAND is Ownable {
    
     function _transfer(address _from, address _to, uint _value) internal returns (bool success) {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;

@@ -2,10 +2,10 @@ pragma solidity ^0.4.16;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -13,7 +13,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -55,7 +55,7 @@ contract JungleScratch is Owned {
         uint value;
     }
     
-    mapping (bytes32 =&gt; Game) public TicketPool;
+    mapping (bytes32 => Game) public TicketPool;
     
     event SubmitTicket(bytes32 indexed SecretKey_D_hash, uint Bet_amount,bytes32 SecretKey_P, address Player);   
     event Result(bytes32 SecretKey_D_hash, bytes32 SecretKey_D,address Buyer, uint[] Bird_Result, uint Game_Result, uint time);
@@ -70,7 +70,7 @@ contract JungleScratch is Owned {
     function submit(bytes32 secretKey_P, bytes32 secretKey_D_hash) payable public {
         require(msg.value == 0.02 ether || msg.value == 0.04 ether || msg.value == 0.06 ether || msg.value == 0.08 ether || msg.value == 0.1 ether);
         require(TicketPool[secretKey_D_hash].Time == 0);
-        require(msg.value &gt;= LimitBottom &amp;&amp; msg.value &lt;= LimitTop);
+        require(msg.value >= LimitBottom && msg.value <= LimitTop);
         uint check = msg.value.div(20000000000000000);
         require(check == 1 || check == 2 || check == 3 || check == 4 || check == 5);
         
@@ -86,70 +86,70 @@ contract JungleScratch is Owned {
         
         Game local_ = TicketPool[secretKey_D_hash];
         
-        require(local_.Time != 0 &amp;&amp; !local_.isPlay);
+        require(local_.Time != 0 && !local_.isPlay);
         
         uint game_result = 0;
         uint[] memory RandomResult = new uint[](9);
         
-        RandomResult[0] = uint(keccak256(&quot;Pig World is an AWESOME team&quot;,secretKey_D,&#39;a&#39;,local_.SecretKey_P)) % 1000 + 1;
-        RandomResult[1] = uint(keccak256(local_.SecretKey_P,&quot;Every Game in our world is provably fair&quot;,secretKey_D,&#39;b&#39;)) % 1000 + 1;
-        RandomResult[2] = uint(keccak256(&#39;c&#39;,secretKey_D,&quot;OMG it is a revolution dapp&quot;,local_.SecretKey_P)) % 1000 + 1;
-        RandomResult[3] = uint(keccak256(secretKey_D,&quot;hahahaha&quot;,local_.SecretKey_P,&#39;d&#39;,&quot;thanks for our team member and all player support.&quot;)) % 1000 + 1;
-        RandomResult[4] = uint(keccak256(&quot;CC is our CEO&quot;,secretKey_D,&quot;he can eat Betel nut&quot;,local_.SecretKey_P,&#39;e&#39;)) % 1000 + 1;
-        RandomResult[5] = uint(keccak256(20180612,&quot;justin is our researcher&quot;,secretKey_D,&quot;and he love little girl(at least 18, so it is ok)&quot;,local_.SecretKey_P,&#39;f&#39;)) % 1000 + 1;
-        RandomResult[6] = uint(keccak256(&quot;jeremy is our marketing&quot;,secretKey_D,&#39;g&#39;,local_.SecretKey_P,&quot;he is very humble and serious&quot;)) % 1000 + 1;
-        RandomResult[7] = uint(keccak256(&#39;h&#39;,secretKey_D,&quot;We are a geek team&quot;,local_.SecretKey_P,&quot;we love blockchain&quot;)) % 1000 + 1;
-        RandomResult[8] = uint(keccak256(secretKey_D,&quot;hope you win a big prize&quot;,local_.SecretKey_P,&quot;love you all!!!&quot;,&#39;i&#39;)) % 1000 + 1;
+        RandomResult[0] = uint(keccak256("Pig World is an AWESOME team",secretKey_D,'a',local_.SecretKey_P)) % 1000 + 1;
+        RandomResult[1] = uint(keccak256(local_.SecretKey_P,"Every Game in our world is provably fair",secretKey_D,'b')) % 1000 + 1;
+        RandomResult[2] = uint(keccak256('c',secretKey_D,"OMG it is a revolution dapp",local_.SecretKey_P)) % 1000 + 1;
+        RandomResult[3] = uint(keccak256(secretKey_D,"hahahaha",local_.SecretKey_P,'d',"thanks for our team member and all player support.")) % 1000 + 1;
+        RandomResult[4] = uint(keccak256("CC is our CEO",secretKey_D,"he can eat Betel nut",local_.SecretKey_P,'e')) % 1000 + 1;
+        RandomResult[5] = uint(keccak256(20180612,"justin is our researcher",secretKey_D,"and he love little girl(at least 18, so it is ok)",local_.SecretKey_P,'f')) % 1000 + 1;
+        RandomResult[6] = uint(keccak256("jeremy is our marketing",secretKey_D,'g',local_.SecretKey_P,"he is very humble and serious")) % 1000 + 1;
+        RandomResult[7] = uint(keccak256('h',secretKey_D,"We are a geek team",local_.SecretKey_P,"we love blockchain")) % 1000 + 1;
+        RandomResult[8] = uint(keccak256(secretKey_D,"hope you win a big prize",local_.SecretKey_P,"love you all!!!",'i')) % 1000 + 1;
         
-        for (uint n = 0; n &lt; 9; n++) {
+        for (uint n = 0; n < 9; n++) {
             
-            if(RandomResult[n]&lt; 81){
+            if(RandomResult[n]< 81){
                 RandomResult[n] = 0;
-            } else if(RandomResult[n]&lt; 168){
+            } else if(RandomResult[n]< 168){
                 RandomResult[n] = 1;
-            } else if(RandomResult[n]&lt; 266){
+            } else if(RandomResult[n]< 266){
                 RandomResult[n] = 2;
-            } else if(RandomResult[n]&lt; 381){
+            } else if(RandomResult[n]< 381){
                 RandomResult[n] = 3;
-            } else if(RandomResult[n]&lt; 535){
+            } else if(RandomResult[n]< 535){
                 RandomResult[n] = 4;
-            } else if(RandomResult[n]&lt; 749){
+            } else if(RandomResult[n]< 749){
                 RandomResult[n] = 5;
-            } else if(RandomResult[n]&lt; 1001){
+            } else if(RandomResult[n]< 1001){
                 RandomResult[n] = 6;
             }
         }
             
-        for(uint nn = 0; nn &lt; 6; nn++){
+        for(uint nn = 0; nn < 6; nn++){
             uint count = 0;
-            for(uint p = 0; p &lt; 9; p++){
+            for(uint p = 0; p < 9; p++){
                 if(RandomResult[p] == nn)
                     count ++;
             }
             
-            if(count &gt;= 3 &amp;&amp; nn == 0)
+            if(count >= 3 && nn == 0)
                 game_result = game_result.add(TicketPool[secretKey_D_hash].value.div(20000000000000000).mul(0.1 ether));
                 
-            if(count &gt;= 3 &amp;&amp; nn == 1)
+            if(count >= 3 && nn == 1)
                 game_result = game_result.add(TicketPool[secretKey_D_hash].value.div(20000000000000000).mul(0.08 ether));
                 
-            if(count &gt;= 3 &amp;&amp; nn == 2)
+            if(count >= 3 && nn == 2)
                 game_result = game_result.add(TicketPool[secretKey_D_hash].value.div(20000000000000000).mul(0.06 ether));
                 
-            if(count &gt;= 3 &amp;&amp; nn == 3)
+            if(count >= 3 && nn == 3)
                 game_result = game_result.add(TicketPool[secretKey_D_hash].value.div(20000000000000000).mul(0.04 ether));
                 
-            if(count &gt;= 3 &amp;&amp; nn == 4)
+            if(count >= 3 && nn == 4)
                 game_result = game_result.add(TicketPool[secretKey_D_hash].value.div(20000000000000000).mul(0.02 ether)); 
                 
-            if(count &gt;= 3 &amp;&amp; nn == 5)
+            if(count >= 3 && nn == 5)
                 game_result = game_result.add(TicketPool[secretKey_D_hash].value.div(20000000000000000).mul(0.01 ether)); 
         }
     
         
         if(game_result != 0){
             TicketPool[secretKey_D_hash].Result = game_result;
-            if (address(this).balance &gt;= game_result &amp;&amp; TicketPool[secretKey_D_hash].Buyer.send(game_result)) {
+            if (address(this).balance >= game_result && TicketPool[secretKey_D_hash].Buyer.send(game_result)) {
                 TicketPool[secretKey_D_hash].isPay = true;
                 Pay(secretKey_D_hash,TicketPool[secretKey_D_hash].Buyer, game_result);
             } else {
@@ -194,7 +194,7 @@ contract JungleScratch is Owned {
         require(TicketPool[secretKey_D_hash].isPlay);
         require(TicketPool[secretKey_D_hash].Result != 0);
         
-        if(address(this).balance &gt;= TicketPool[secretKey_D_hash].Result){
+        if(address(this).balance >= TicketPool[secretKey_D_hash].Result){
             if (TicketPool[secretKey_D_hash].Buyer.send(TicketPool[secretKey_D_hash].Result)) {
                 TicketPool[secretKey_D_hash].isPay = true;
                 OwePay(secretKey_D_hash, TicketPool[secretKey_D_hash].Buyer, TicketPool[secretKey_D_hash].Result);

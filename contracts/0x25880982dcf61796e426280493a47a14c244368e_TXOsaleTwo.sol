@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -83,10 +83,10 @@ contract TXOsaleTwo is Ownable {
     * @dev fallback function
     */
     function() public payable {
-        require(now &gt;= saleStart &amp;&amp; now &lt;= saleEnd);
+        require(now >= saleStart && now <= saleEnd);
         require(!goalAchieved);
-        require(msg.value &gt;= 0.1 ether);
-        require(msg.value &lt;= 65 ether);
+        require(msg.value >= 0.1 ether);
+        require(msg.value <= 65 ether);
         wallet.transfer(msg.value);
         emit ReceiveEther(msg.sender, msg.value);
     }

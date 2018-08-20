@@ -25,7 +25,7 @@ contract Owned {
 contract CheckPayloadSize {
 
   modifier onlyPayloadSize(uint256 _size) {
-    require(msg.data.length &gt;= _size + 4);
+    require(msg.data.length >= _size + 4);
     _;
   }
 
@@ -43,12 +43,12 @@ contract CanTransferTokens is CheckPayloadSize, Owned {
 contract SafeMath {
 
   function add(uint256 x, uint256 y) pure internal returns (uint256) {
-    require(x &lt;= x + y);
+    require(x <= x + y);
     return x + y;
   }
 
   function sub(uint256 x, uint256 y) pure internal returns (uint256) {
-    require(x &gt;= y);
+    require(x >= y);
     return x - y;
   }
 
@@ -62,7 +62,7 @@ contract CheckIfContract {
     assembly {
       length := extcodesize(_addr)
     }
-    if(length &gt; 0) {
+    if(length > 0) {
       return true;
     } else {
       return false;
@@ -91,7 +91,7 @@ contract ContractReceiver {
     tkn.sender = _from;
     tkn.value = _value;
     tkn.data = _data;
-    uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+    uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
     tkn.sig = bytes4(u);
     fallback = tkn;
     return true;
@@ -104,10 +104,10 @@ contract Token1st {
   address public currentTradingSystem;
   address public currentExchangeSystem;
 
-  mapping(address =&gt; uint) public balanceOf;
-  mapping(address =&gt; mapping (address =&gt; uint)) public allowance;
-  mapping(address =&gt; mapping (address =&gt; uint)) public tradingBalanceOf;
-  mapping(address =&gt; mapping (address =&gt; uint)) public exchangeBalanceOf;
+  mapping(address => uint) public balanceOf;
+  mapping(address => mapping (address => uint)) public allowance;
+  mapping(address => mapping (address => uint)) public tradingBalanceOf;
+  mapping(address => mapping (address => uint)) public exchangeBalanceOf;
 
   /* @notice get balance of a specific address */
   function getBalanceOf(address _address) view public returns (uint amount){
@@ -120,9 +120,9 @@ contract Token1st {
   function transferDecimalAmountFrom(address _from, address _to, uint _value) public returns (bool success) {
     require(balanceOf[_from]
       - tradingBalanceOf[_from][currentTradingSystem]
-      - exchangeBalanceOf[_from][currentExchangeSystem] &gt;= _value);                 // Check if the sender has enough
-    require(balanceOf[_to] + (_value) &gt;= balanceOf[_to]);  // Check for overflows
-    require(_value &lt;= allowance[_from][msg.sender]);   // Check allowance
+      - exchangeBalanceOf[_from][currentExchangeSystem] >= _value);                 // Check if the sender has enough
+    require(balanceOf[_to] + (_value) >= balanceOf[_to]);  // Check for overflows
+    require(_value <= allowance[_from][msg.sender]);   // Check allowance
     balanceOf[_from] -= _value;                          // Subtract from the sender
     balanceOf[_to] += _value;                            // Add the same to the recipient
     allowance[_from][msg.sender] -= _value;
@@ -141,7 +141,7 @@ contract Token1st {
 contract ContractWeb is CanTransferTokens, CheckIfContract {
 
       //contract name | contract info
-  mapping(string =&gt; contractInfo) internal contracts;
+  mapping(string => contractInfo) internal contracts;
 
   event ContractAdded(string _name, address _referredTo);
   event ContractEdited(string _name, address _referredTo);
@@ -184,11 +184,11 @@ contract ContractWeb is CanTransferTokens, CheckIfContract {
   }
 
   function tokenSetup(address _Tokens1st, address _Balancecs, address _Token, address _Conversion, address _Distribution) onlyPayloadSize(5 * 32) onlyOwner public returns (bool) {
-    setContract(&quot;Token1st&quot;, _Tokens1st);
-    setContract(&quot;Balances&quot;, _Balancecs);
-    setContract(&quot;Token&quot;, _Token);
-    setContract(&quot;Conversion&quot;, _Conversion);
-    setContract(&quot;Distribution&quot;, _Distribution);
+    setContract("Token1st", _Tokens1st);
+    setContract("Balances", _Balancecs);
+    setContract("Token", _Token);
+    setContract("Conversion", _Conversion);
+    setContract("Distribution", _Distribution);
     return true;
   }
 
@@ -196,14 +196,14 @@ contract ContractWeb is CanTransferTokens, CheckIfContract {
 
 contract Balances is CanTransferTokens, SafeMath, useContractWeb {
 
-  mapping(address =&gt; uint256) internal _balances;
+  mapping(address => uint256) internal _balances;
 
   function get(address _account) view public returns (uint256) {
     return _balances[_account];
   }
 
   function tokenContract() view public returns (address) {
-    return web.getContractAddress(&quot;Token&quot;);
+    return web.getContractAddress("Token");
   }
 
   function Balances() public {
@@ -225,12 +225,12 @@ contract Balances is CanTransferTokens, SafeMath, useContractWeb {
 
 contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
 
-  string public symbol = &quot;SHC&quot;;
-  string public name = &quot;ShineCoin&quot;;
+  string public symbol = "SHC";
+  string public name = "ShineCoin";
   uint8 public decimals = 18;
   uint256 public totalSupply = 190 * 1000000 * 1000000000000000000;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal _allowance;
+  mapping (address => mapping (address => uint256)) internal _allowance;
 
     // ERC20 Events
   event Approval(address indexed from, address indexed to, uint256 value);
@@ -248,7 +248,7 @@ contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
   }
 
   function balancesContract() view public returns (address) {
-    return web.getContractAddress(&quot;Balances&quot;);
+    return web.getContractAddress("Balances");
   }
 
   function Token() public {
@@ -259,7 +259,7 @@ contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
 
   function transfer(address _to, uint256 _value, bytes _data, string _custom_fallback) onlyPayloadSize(4 * 32) public returns (bool success) {
     if(isContract(_to)) {
-      require(Balances(balancesContract()).get(msg.sender) &gt;= _value);
+      require(Balances(balancesContract()).get(msg.sender) >= _value);
       Balances(balancesContract()).transfer(msg.sender, _to, _value);
       ContractReceiver receiver = ContractReceiver(_to);
       require(receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -291,7 +291,7 @@ contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
   }
 
   function transferToAddress(address _to, uint256 _value, bytes _data) internal returns (bool success) {
-    require(Balances(balancesContract()).get(msg.sender) &gt;= _value);
+    require(Balances(balancesContract()).get(msg.sender) >= _value);
     Balances(balancesContract()).transfer(msg.sender, _to, _value);
     Transfer(msg.sender, _to, _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -299,7 +299,7 @@ contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
   }
 
   function transferToContract(address _to, uint256 _value, bytes _data) internal returns (bool success) {
-    require(Balances(balancesContract()).get(msg.sender) &gt;= _value);
+    require(Balances(balancesContract()).get(msg.sender) >= _value);
     Balances(balancesContract()).transfer(msg.sender, _to, _value);
     ContractReceiver receiver = ContractReceiver(_to);
     receiver.tokenFallback(msg.sender, _value, _data);
@@ -310,9 +310,9 @@ contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
 
   function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) public returns (bool) {
     bytes memory empty;
-    require(_value &gt; 0 &amp;&amp; _allowance[_from][msg.sender] &gt;= _value &amp;&amp; Balances(balancesContract()).get(_from) &gt;= _value);
+    require(_value > 0 && _allowance[_from][msg.sender] >= _value && Balances(balancesContract()).get(_from) >= _value);
     _allowance[_from][msg.sender] = sub(_allowance[_from][msg.sender], _value);
-    if(msg.sender != _to &amp;&amp; isContract(_to)) {
+    if(msg.sender != _to && isContract(_to)) {
       Balances(balancesContract()).transfer(_from, _to, _value);
       ContractReceiver receiver = ContractReceiver(_to);
       receiver.tokenFallback(_from, _value, empty);
@@ -335,21 +335,21 @@ contract Token is CanTransferTokens, SafeMath, CheckIfContract, useContractWeb {
 contract Conversion is CanTransferTokens, useContractWeb {
 
   function token1stContract() view public returns (address) {
-    return web.getContractAddress(&quot;Token1st&quot;);
+    return web.getContractAddress("Token1st");
   }
 
   function tokenContract() view public returns (address) {
-    return web.getContractAddress(&quot;Token&quot;);
+    return web.getContractAddress("Token");
   }
 
   function deposit() onlyOwner public returns (bool) {
-    require(Token(tokenContract()).allowance(owner, this) &gt; 0);
+    require(Token(tokenContract()).allowance(owner, this) > 0);
     return Token(tokenContract()).transferFrom(owner, this, Token(tokenContract()).allowance(owner, this));
   }
 
   function convert() public returns (bool) {
     uint256 senderBalance = Token1st(token1stContract()).getBalanceOf(msg.sender);
-    require(Token1st(token1stContract()).allowance(msg.sender, this) &gt;= senderBalance);
+    require(Token1st(token1stContract()).allowance(msg.sender, this) >= senderBalance);
     Token1st(token1stContract()).transferDecimalAmountFrom(msg.sender, owner, senderBalance);
     return Token(tokenContract()).transfer(msg.sender, senderBalance * 10000000000);
   }
@@ -389,7 +389,7 @@ contract Distribution is CanTransferTokens, SafeMath, useContractWeb {
   }
 
   function tokenContract() view public returns (address) {
-    return web.getContractAddress(&quot;Token&quot;);
+    return web.getContractAddress("Token");
   }
 
   function makeLive() onlyOwner public returns (bool) {
@@ -399,18 +399,18 @@ contract Distribution is CanTransferTokens, SafeMath, useContractWeb {
   }
 
   function deposit() onlyOwner public returns (bool) {
-    require(Token(tokenContract()).allowance(owner, this) &gt; 0);
+    require(Token(tokenContract()).allowance(owner, this) > 0);
     return Token(tokenContract()).transferFrom(owner, this, Token(tokenContract()).allowance(owner, this));
   }
 
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) onlyOwner public returns (bool) {
-    require(stillAllowed() &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; liveSince != 0);
+    require(stillAllowed() >= _value && _value > 0 && liveSince != 0);
     withdrawn = add(withdrawn, _value);
     return Token(tokenContract()).transfer(_to, _value);
   }
 
   function transferReadable(address _to, uint256 _value) onlyPayloadSize(2 * 32) onlyOwner public returns (bool) {
-    require(stillAllowed() &gt;= _value * 1000000000000000000 &amp;&amp; stillAllowed() != 0 &amp;&amp; liveSince != 0);
+    require(stillAllowed() >= _value * 1000000000000000000 && stillAllowed() != 0 && liveSince != 0);
     withdrawn = add(withdrawn, _value * 1000000000000000000);
     return Token(tokenContract()).transfer(_to, _value * 1000000000000000000);
   }

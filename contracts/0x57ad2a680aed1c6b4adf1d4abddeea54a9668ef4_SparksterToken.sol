@@ -19,7 +19,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -37,7 +37,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -86,7 +86,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -104,8 +104,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -118,7 +118,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -261,11 +261,11 @@ contract Ownable {
 
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ceafbcafada6a0a7aa8ea0a1baaaa1bae0a0abba">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ceafbcafada6a0a7aa8ea0a1baaaa1bae0a0abba">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -273,11 +273,11 @@ contract Ownable {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -292,7 +292,7 @@ contract Ownable {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -304,7 +304,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -343,23 +343,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -395,7 +395,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -418,18 +418,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         uint ptr = self._ptr - 31;
         uint end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -457,12 +457,12 @@ library strings {
      */
     function compare(slice self, slice other) internal pure returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         uint selfptr = self._ptr;
         uint otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -472,10 +472,10 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint256 mask = uint256(-1); // 0xffff...
-                if(shortest &lt; 32) {
+                if(shortest < 32) {
                   mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
                 }
-                uint256 diff = (a &amp; mask) - (b &amp; mask);
+                uint256 diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -514,18 +514,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             l = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             l = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             l = 3;
         } else {
             l = 4;
         }
 
         // Check for truncated codepoints
-        if (l &gt; self._len) {
+        if (l > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -565,33 +565,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         uint b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -615,7 +615,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -641,7 +641,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -670,7 +670,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -698,7 +698,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -727,8 +727,8 @@ library strings {
         uint ptr = selfptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -739,7 +739,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &gt;= end)
+                    if (ptr >= end)
                         return selfptr + selflen;
                     ptr++;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -750,7 +750,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
 
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -767,8 +767,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private pure returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -779,7 +779,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &lt;= selfptr)
+                    if (ptr <= selfptr)
                         return selfptr;
                     ptr--;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -790,7 +790,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -912,7 +912,7 @@ library strings {
      */
     function count(slice self, slice needle) internal pure returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -954,20 +954,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal pure returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             length += parts[i]._len;
 
         string memory ret = new string(length);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -988,8 +988,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -1004,9 +1004,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -1014,7 +1014,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -1023,7 +1023,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -1036,19 +1036,19 @@ contract SparksterToken is StandardToken, Ownable{
 	using SafeMath for uint256;
 	struct Member {
 		address walletAddress;
-		mapping(uint256 =&gt; bool) groupMemberships; // What groups does this member belong to?
-		mapping(uint256 =&gt; uint256) ethBalance; // How much eth has this member contributed for this group?
-		mapping(uint256 =&gt; uint256) tokenBalance; // The member&#39;s token balance in a specific group.
+		mapping(uint256 => bool) groupMemberships; // What groups does this member belong to?
+		mapping(uint256 => uint256) ethBalance; // How much eth has this member contributed for this group?
+		mapping(uint256 => uint256) tokenBalance; // The member's token balance in a specific group.
 		uint256 max1; // Maximum amount this user can contribute for phase1.
 		int256 transferred; // The amount of tokens the member has transferred out or been transferred in. Sending tokens out will increase this value and accepting tokens in will decrease it. In other words, the more negative this value is, the more unlocked tokens the member holds.
-		bool exists; // A flag to see if we have a record of this member or not. If we don&#39;t, they won&#39;t be allowed to purchase.
+		bool exists; // A flag to see if we have a record of this member or not. If we don't, they won't be allowed to purchase.
 	}
 
 	struct Group {
 		bool distributed; // Whether or not tokens in this group have been distributed.
 		bool distributing; // This flag is set when we first enter the distribute function and is there to prevent race conditions, since distribution might take a long time.
 		bool unlocked; // Whether or not tokens in this group have been unlocked.
-		uint256 groupNumber; // This group&#39;s number
+		uint256 groupNumber; // This group's number
 		uint256 ratio; // 1 eth:ratio tokens. This amount represents the decimal amount. ratio*10**decimal = ratio sparks.
 		uint256 startTime; // Epoch of crowdsale start time.
 		uint256 phase1endTime; // Epoch of phase1 end time.
@@ -1069,13 +1069,13 @@ contract SparksterToken is StandardToken, Ownable{
 	uint8 public decimals;							//How many decimals to show.
 	uint256 internal maxGasPrice; // The maximum allowed gas for the purchase function.
 	uint256 internal nextGroupNumber;
-	uint256 public sellPrice; // sellPrice wei:1 spark token; we won&#39;t allow to sell back parts of a token.
+	uint256 public sellPrice; // sellPrice wei:1 spark token; we won't allow to sell back parts of a token.
 	address[] internal allMembers;	
 	address[] internal allNonMembers;
-	mapping(address =&gt; bool) internal nonMemberTransfers;
-	mapping(address =&gt; Member) internal members;
-	mapping(uint256 =&gt; Group) internal groups;
-	mapping(uint256 =&gt; address[]) internal associations; // Will hold a record of which addresses belong to which group.
+	mapping(address => bool) internal nonMemberTransfers;
+	mapping(address => Member) internal members;
+	mapping(uint256 => Group) internal groups;
+	mapping(uint256 => address[]) internal associations; // Will hold a record of which addresses belong to which group.
 	uint256 internal openGroupNumber;
 	event PurchaseSuccess(address indexed _addr, uint256 _weiAmount,uint256 _totalEthBalance,uint256 _totalTokenBalance);
 	event DistributeDone(uint256 groupNumber);
@@ -1115,9 +1115,9 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	constructor() public {
-		name = &quot;Sparkster&quot;;									// Set the name for display purposes
+		name = "Sparkster";									// Set the name for display purposes
 		decimals = 18;					 // Amount of decimals for display purposes
-		symbol = &quot;SPRK&quot;;							// Set the symbol for display purposes
+		symbol = "SPRK";							// Set the symbol for display purposes
 		setMaximumGasPrice(40);
 		// Give all the tokens to the owner to start with.
 		mintTokens(435000000);
@@ -1133,14 +1133,14 @@ contract SparksterToken is StandardToken, Ownable{
 		uint160 iaddr = 0;
 		uint160 b1;
 		uint160 b2;
-		for (uint i=2; i&lt;2+2*20; i+=2){
+		for (uint i=2; i<2+2*20; i+=2){
 			iaddr *= 256;
 			b1 = uint160(tmp[i]);
 			b2 = uint160(tmp[i+1]);
-			if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-			else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-			if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-			else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+			if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+			else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+			if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+			else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
 			iaddr += (b1*16+b2);
 		}
 		return address(iaddr);
@@ -1150,8 +1150,8 @@ contract SparksterToken is StandardToken, Ownable{
 		bytes memory bresult = bytes(_a);
 		uint mint = 0;
 		bool decim = false;
-		for (uint i = 0; i &lt; bresult.length; i++) {
-			if ((bresult[i] &gt;= 48) &amp;&amp; (bresult[i] &lt;= 57)) {
+		for (uint i = 0; i < bresult.length; i++) {
+			if ((bresult[i] >= 48) && (bresult[i] <= 57)) {
 				if (decim) {
 					if (_b == 0) break;
 						else _b--;
@@ -1164,7 +1164,7 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function mintTokens(uint256 amount) public onlyOwner {
-		// Here, we&#39;ll consider amount to be the full token amount, so we have to get its decimal value.
+		// Here, we'll consider amount to be the full token amount, so we have to get its decimal value.
 		uint256 decimalAmount = amount.mul(uint(10)**decimals);
 		totalSupply_ = totalSupply_.add(decimalAmount);
 		balances[msg.sender] = balances[msg.sender].add(decimalAmount);
@@ -1172,48 +1172,48 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 	
 	function purchase() public canPurchase payable{
-		require(msg.sender != address(0)); // Don&#39;t allow the 0 address.
+		require(msg.sender != address(0)); // Don't allow the 0 address.
 		Member storage memberRecord = members[msg.sender];
 		Group storage openGroup = groups[openGroupNumber];
-		require(openGroup.ratio &gt; 0); // Group must be initialized.
-		require(memberRecord.exists &amp;&amp; memberRecord.groupMemberships[openGroup.groupNumber] &amp;&amp; !openGroup.distributing &amp;&amp; !openGroup.distributed &amp;&amp; !openGroup.unlocked); // member must exist; Don&#39;t allow to purchase if we&#39;re in the middle of distributing this group; Don&#39;t let someone buy tokens on the current group if that group is already distributed, unlocked or both; don&#39;t allow member to purchase if they&#39;re not part of the open group.
+		require(openGroup.ratio > 0); // Group must be initialized.
+		require(memberRecord.exists && memberRecord.groupMemberships[openGroup.groupNumber] && !openGroup.distributing && !openGroup.distributed && !openGroup.unlocked); // member must exist; Don't allow to purchase if we're in the middle of distributing this group; Don't let someone buy tokens on the current group if that group is already distributed, unlocked or both; don't allow member to purchase if they're not part of the open group.
 		uint256 currentTimestamp = block.timestamp;
-		require(currentTimestamp &gt;= openGroup.startTime &amp;&amp; currentTimestamp &lt;= openGroup.deadline);																 //the timestamp must be greater than or equal to the start time and less than or equal to the deadline time
-		require(tx.gasprice &lt;= maxGasPrice); // Restrict maximum gas this transaction is allowed to consume.
+		require(currentTimestamp >= openGroup.startTime && currentTimestamp <= openGroup.deadline);																 //the timestamp must be greater than or equal to the start time and less than or equal to the deadline time
+		require(tx.gasprice <= maxGasPrice); // Restrict maximum gas this transaction is allowed to consume.
 		uint256 weiAmount = msg.value;																		// The amount purchased by the current member
-		require(weiAmount &gt;= 0.1 ether);
+		require(weiAmount >= 0.1 ether);
 		uint256 ethTotal = openGroup.ethTotal.add(weiAmount); // Calculate total contribution of all members in this group.
-		require(ethTotal &lt;= openGroup.cap);														// Check to see if accepting these funds will put us above the hard ether cap.
+		require(ethTotal <= openGroup.cap);														// Check to see if accepting these funds will put us above the hard ether cap.
 		uint256 userETHTotal = memberRecord.ethBalance[openGroup.groupNumber].add(weiAmount);	// Calculate the total amount purchased by the current member
-		if(currentTimestamp &lt;= openGroup.phase1endTime){																			 // whether the current timestamp is in the first phase
-			require(userETHTotal &lt;= memberRecord.max1);														 // Will these new funds put the member over their first phase contribution limit?
-		} else if (currentTimestamp &lt;= openGroup.phase2endTime) { // Are we in phase 2?
-			require(userETHTotal &lt;= openGroup.max2); // Allow to contribute no more than max2 in phase 2.
-		} else { // We&#39;ve passed both phases 1 and 2.
-			require(userETHTotal &lt;= openGroup.max3); // Don&#39;t allow to contribute more than max3 in phase 3.
+		if(currentTimestamp <= openGroup.phase1endTime){																			 // whether the current timestamp is in the first phase
+			require(userETHTotal <= memberRecord.max1);														 // Will these new funds put the member over their first phase contribution limit?
+		} else if (currentTimestamp <= openGroup.phase2endTime) { // Are we in phase 2?
+			require(userETHTotal <= openGroup.max2); // Allow to contribute no more than max2 in phase 2.
+		} else { // We've passed both phases 1 and 2.
+			require(userETHTotal <= openGroup.max3); // Don't allow to contribute more than max3 in phase 3.
 		}
 		uint256 tokenAmount = weiAmount.mul(openGroup.ratio);						 //calculate member token amount.
-		uint256 newLeftOver = balances[owner].sub(tokenAmount); // Won&#39;t pass if result is &lt; 0.
+		uint256 newLeftOver = balances[owner].sub(tokenAmount); // Won't pass if result is < 0.
 		openGroup.ethTotal = ethTotal;								 // Calculate the total amount purchased by all members in this group.
 		memberRecord.ethBalance[openGroup.groupNumber] = userETHTotal;														 // Record the total amount purchased by the current member
-		memberRecord.tokenBalance[openGroup.groupNumber] = memberRecord.tokenBalance[openGroup.groupNumber].add(tokenAmount); // Update the member&#39;s token amount.
+		memberRecord.tokenBalance[openGroup.groupNumber] = memberRecord.tokenBalance[openGroup.groupNumber].add(tokenAmount); // Update the member's token amount.
 		balances[owner] = newLeftOver; // Update the available number of tokens.
-		owner.transfer(weiAmount); // Transfer to owner, don&#39;t keep funds in the contract.
+		owner.transfer(weiAmount); // Transfer to owner, don't keep funds in the contract.
 		emit PurchaseSuccess(msg.sender,weiAmount,memberRecord.ethBalance[openGroup.groupNumber],memberRecord.tokenBalance[openGroup.groupNumber]); 
 	}
 	
-	function sell(uint256 amount) public canSell { // Can&#39;t sell unless owner has allowed it.
+	function sell(uint256 amount) public canSell { // Can't sell unless owner has allowed it.
 		uint256 decimalAmount = amount.mul(uint(10)**decimals); // convert the full token value to the smallest unit possible.
 		if (members[msg.sender].exists) { // If this seller exists, they have an unlocked balance we need to take care of.
 			int256 sellValue = members[msg.sender].transferred + int(decimalAmount);
-			require(sellValue &gt;= members[msg.sender].transferred); // Check for overflow.
-			require(sellValue &lt;= int(getUnlockedBalanceLimit(msg.sender))); // Make sure they&#39;re not selling more than their unlocked amount.
+			require(sellValue >= members[msg.sender].transferred); // Check for overflow.
+			require(sellValue <= int(getUnlockedBalanceLimit(msg.sender))); // Make sure they're not selling more than their unlocked amount.
 			members[msg.sender].transferred = sellValue;
 		}
-		balances[msg.sender] = balances[msg.sender].sub(decimalAmount); // Do this before transferring to avoid re-entrance attacks; will throw if result &lt; 0.
+		balances[msg.sender] = balances[msg.sender].sub(decimalAmount); // Do this before transferring to avoid re-entrance attacks; will throw if result < 0.
 		// Amount is considered to be how many full tokens the user wants to sell.
 		uint256 totalCost = amount.mul(sellPrice); // sellPrice is the per-full-token value.
-		require(address(this).balance &gt;= totalCost); // The contract must have enough funds to cover the selling.
+		require(address(this).balance >= totalCost); // The contract must have enough funds to cover the selling.
 		balances[owner] = balances[owner].add(decimalAmount); // Put these tokens back into the available pile.
 		msg.sender.transfer(totalCost); // Pay the seller for their tokens.
 		emit Transfer(msg.sender, owner, decimalAmount); // Notify exchanges of the sell.
@@ -1259,7 +1259,7 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function getGroup(uint256 groupNumber) public view onlyOwner returns(bool distributed, bool unlocked, uint256 phase2cap, uint256 phase3cap, uint256 cap, uint256 ratio, uint256 startTime, uint256 phase1endTime, uint256 phase2endTime, uint256 deadline, uint256 ethTotal, uint256 howManyDistributed) {
-		require(groupNumber &lt; nextGroupNumber);
+		require(groupNumber < nextGroupNumber);
 		Group storage theGroup = groups[groupNumber];
 		distributed = theGroup.distributed;
 		unlocked = theGroup.unlocked;
@@ -1276,31 +1276,31 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function getHowManyLeftToDistribute(uint256 groupNumber) public view returns(uint256 howManyLeftToDistribute) {
-		require(groupNumber &lt; nextGroupNumber);
+		require(groupNumber < nextGroupNumber);
 		Group storage theGroup = groups[groupNumber];
-		howManyLeftToDistribute = associations[groupNumber].length - theGroup.howManyDistributed; // No need to use SafeMath here since we&#39;re guaranteed to not underflow on this line.
+		howManyLeftToDistribute = associations[groupNumber].length - theGroup.howManyDistributed; // No need to use SafeMath here since we're guaranteed to not underflow on this line.
 	}
 	
 	function getMembersInGroup(uint256 groupNumber) public view returns (address[]) {
-		require(groupNumber &lt; nextGroupNumber); // Check for nonexistent group
+		require(groupNumber < nextGroupNumber); // Check for nonexistent group
 		return associations[groupNumber];
 	}
 
 	function addMember(address walletAddress, uint256 groupNumber, uint256 tokens, uint256 maxContribution1) public onlyOwner returns (bool success) {
 		Member storage theMember = members[walletAddress];
 		Group storage theGroup = groups[groupNumber];
-		require(groupNumber &lt; nextGroupNumber); // Don&#39;t let the owner assign to a group that doesn&#39;t exist, protect against mistypes.
-		require(!theGroup.distributed &amp;&amp; !theGroup.distributing &amp;&amp; !theGroup.unlocked); // Don&#39;t let us add to a distributed group, a group that&#39;s distributing right now, or a group that&#39;s already been unlocked.
-		require(!theMember.exists); // Don&#39;t let the owner re-add a member.
+		require(groupNumber < nextGroupNumber); // Don't let the owner assign to a group that doesn't exist, protect against mistypes.
+		require(!theGroup.distributed && !theGroup.distributing && !theGroup.unlocked); // Don't let us add to a distributed group, a group that's distributing right now, or a group that's already been unlocked.
+		require(!theMember.exists); // Don't let the owner re-add a member.
 		theMember.walletAddress = walletAddress;
 		theMember.groupMemberships[groupNumber] = true;
 		balances[owner] = balances[owner].sub(tokens);
 		theMember.tokenBalance[groupNumber] = tokens;
 		theMember.max1 = maxContribution1;
-		theMember.transferred = -int(balances[walletAddress]); // Don&#39;t lock the tokens they come in with if they already hold a balance.
+		theMember.transferred = -int(balances[walletAddress]); // Don't lock the tokens they come in with if they already hold a balance.
 		theMember.exists = true;
-		associations[groupNumber].push(walletAddress); // Push this user&#39;s address to the associations array so we can easily keep track of which users belong to which group...
-		// ... Solidity doesn&#39;t allow to iterate over a map.
+		associations[groupNumber].push(walletAddress); // Push this user's address to the associations array so we can easily keep track of which users belong to which group...
+		// ... Solidity doesn't allow to iterate over a map.
 		allMembers.push(walletAddress); // Push this address to allMembers array so we can easily loop through all addresses...
 		// Used for splitTokens and reverseSplitTokens.
 		emit Added(walletAddress, groupNumber, tokens, maxContribution1);
@@ -1309,18 +1309,18 @@ contract SparksterToken is StandardToken, Ownable{
 
 	function addMemberToGroup(address walletAddress, uint256 groupNumber) public onlyOwner returns(bool success) {
 		Member storage memberRecord = members[walletAddress];
-		require(memberRecord.exists &amp;&amp; groupNumber &lt; nextGroupNumber &amp;&amp; !memberRecord.groupMemberships[groupNumber]); // Don&#39;t add this user to a group if they already exist in that group.
+		require(memberRecord.exists && groupNumber < nextGroupNumber && !memberRecord.groupMemberships[groupNumber]); // Don't add this user to a group if they already exist in that group.
 		memberRecord.groupMemberships[groupNumber] = true;
 		associations[groupNumber].push(walletAddress);
 		return true;
 	}
 	function upload(string uploadedData) public onlyOwner returns (bool success) {
-		// We&#39;ll separate records by a | and individual entries in the record by a :.
+		// We'll separate records by a | and individual entries in the record by a :.
 		strings.slice memory uploadedSlice = uploadedData.toSlice();
-		strings.slice memory nextRecord = &quot;&quot;.toSlice();
-		strings.slice memory nextDatum = &quot;&quot;.toSlice();
-		strings.slice memory recordSeparator = &quot;|&quot;.toSlice();
-		strings.slice memory datumSeparator = &quot;:&quot;.toSlice();
+		strings.slice memory nextRecord = "".toSlice();
+		strings.slice memory nextDatum = "".toSlice();
+		strings.slice memory recordSeparator = "|".toSlice();
+		strings.slice memory datumSeparator = ":".toSlice();
 		while (!uploadedSlice.empty()) {
 			nextRecord = uploadedSlice.split(recordSeparator);
 			nextDatum = nextRecord.split(datumSeparator);
@@ -1338,20 +1338,20 @@ contract SparksterToken is StandardToken, Ownable{
 	
 	function distribute(uint256 groupNumber, uint256 howMany) public onlyOwner returns (bool success) {
 		Group storage theGroup = groups[groupNumber];
-		require(groupNumber &lt; nextGroupNumber &amp;&amp; !theGroup.distributed ); // can&#39;t have already distributed
+		require(groupNumber < nextGroupNumber && !theGroup.distributed ); // can't have already distributed
 		uint256 inclusiveStartIndex = theGroup.howManyDistributed;
 		uint256 exclusiveEndIndex = inclusiveStartIndex.add(howMany);
 		theGroup.distributing = true;
 		uint256 n = associations[groupNumber].length;
-		require(n &gt; 0 ); // We must have more than 0 members in this group
-		if (exclusiveEndIndex &gt; n) { // This batch will overrun the array.
+		require(n > 0 ); // We must have more than 0 members in this group
+		if (exclusiveEndIndex > n) { // This batch will overrun the array.
 			exclusiveEndIndex = n;
 		}
-		for (uint256 i = inclusiveStartIndex; i &lt; exclusiveEndIndex; i++) { // This section might be expensive in terms of gas cost!
+		for (uint256 i = inclusiveStartIndex; i < exclusiveEndIndex; i++) { // This section might be expensive in terms of gas cost!
 			address memberAddress = associations[groupNumber][i];
 			Member storage currentMember = members[memberAddress];
 			uint256 balance = currentMember.tokenBalance[groupNumber];
-			if (balance &gt; 0) { // No need to waste ticks if they have no tokens to distribute
+			if (balance > 0) { // No need to waste ticks if they have no tokens to distribute
 				balances[memberAddress] = balances[memberAddress].add(balance);
 				emit Transfer(owner, memberAddress, balance); // Notify exchanges of the distribution.
 			}
@@ -1370,7 +1370,7 @@ contract SparksterToken is StandardToken, Ownable{
 		if (!theMember.exists) {
 			return balances[walletAddress];
 		}
-		for (uint256 i = 0; i &lt; nextGroupNumber; i++) {
+		for (uint256 i = 0; i < nextGroupNumber; i++) {
 			if (groups[i].unlocked) {
 				balance = balance.add(theMember.tokenBalance[i]);
 			}
@@ -1388,7 +1388,7 @@ contract SparksterToken is StandardToken, Ownable{
 
 	function unlock(uint256 groupNumber) public onlyOwner returns (bool success) {
 		Group storage theGroup = groups[groupNumber];
-		require(theGroup.distributed &amp;&amp; !theGroup.unlocked); // Distribution must have occurred first.
+		require(theGroup.distributed && !theGroup.unlocked); // Distribution must have occurred first.
 		theGroup.unlocked = true;
 		emit UnlockDone(groupNumber);
 		return true;
@@ -1400,10 +1400,10 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 	
 	function burn(uint256 amount) public onlyOwner {
-		// Burns tokens from the owner&#39;s supply and doesn&#39;t touch allocated tokens.
+		// Burns tokens from the owner's supply and doesn't touch allocated tokens.
 		// Decrease totalSupply and leftOver by the amount to burn so we can decrease the circulation.
-		balances[msg.sender] = balances[msg.sender].sub(amount); // Will throw if result &lt; 0
-		totalSupply_ = totalSupply_.sub(amount); // Will throw if result &lt; 0
+		balances[msg.sender] = balances[msg.sender].sub(amount); // Will throw if result < 0
+		totalSupply_ = totalSupply_.sub(amount); // Will throw if result < 0
 		emit Transfer(msg.sender, address(0), amount);
 	}
 	
@@ -1414,13 +1414,13 @@ contract SparksterToken is StandardToken, Ownable{
 		uint256 increaseSupplyBy = ownerBalance.mul(splitFactor).sub(ownerBalance); // We need to mint owner*splitFactor - owner additional tokens.
 		balances[msg.sender] = balances[msg.sender].mul(splitFactor);
 		totalSupply_ = totalSupply_.mul(splitFactor);
-		emit Transfer(address(0), msg.sender, increaseSupplyBy); // Notify exchange that we&#39;ve minted tokens.
-		for (uint256 i = 0; i &lt; n; i++) {
+		emit Transfer(address(0), msg.sender, increaseSupplyBy); // Notify exchange that we've minted tokens.
+		for (uint256 i = 0; i < n; i++) {
 			Member storage currentMember = members[allMembers[i]];
 			// Take care of transferred balance.
 			currentMember.transferred = currentMember.transferred * int(splitFactor);
-			// Iterate over all of this user&#39;s balances for all groups. If a user is not a part of a group their balance will be 0.
-			for (uint256 j = 0; j &lt; nextGroupNumber; j++) {
+			// Iterate over all of this user's balances for all groups. If a user is not a part of a group their balance will be 0.
+			for (uint256 j = 0; j < nextGroupNumber; j++) {
 				uint256 memberBalance = currentMember.tokenBalance[j];
 				uint256 multiplier = memberBalance.mul(splitFactor);
 				currentMember.tokenBalance[j] = multiplier;
@@ -1428,8 +1428,8 @@ contract SparksterToken is StandardToken, Ownable{
 		}
 		// Next, increase group ratios by splitFactor, so users will receive ratio + splitFactor tokens per ether.
 		n = nextGroupNumber;
-		require(n &gt; 0); // Must have at least one group.
-		for (i = 0; i &lt; n; i++) {
+		require(n > 0); // Must have at least one group.
+		for (i = 0; i < n; i++) {
 			Group storage currentGroup = groups[i];
 			currentGroup.ratio = currentGroup.ratio.mul(splitFactor);
 		}
@@ -1442,16 +1442,16 @@ contract SparksterToken is StandardToken, Ownable{
 		uint256 n = allMembers.length;
 		uint256 ownerBalance = balances[msg.sender];
 		uint256 decreaseSupplyBy = ownerBalance.sub(ownerBalance.div(splitFactor));
-		// We don&#39;t use burnTokens here since the amount to subtract might be more than what the owner currently holds in their unallocated supply which will cause the function to throw.
+		// We don't use burnTokens here since the amount to subtract might be more than what the owner currently holds in their unallocated supply which will cause the function to throw.
 		totalSupply_ = totalSupply_.div(splitFactor);
 		balances[msg.sender] = ownerBalance.div(splitFactor);
 		// Notify the exchanges of how many tokens were burned.
 		emit Transfer(msg.sender, address(0), decreaseSupplyBy);
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			Member storage currentMember = members[allMembers[i]];
-			// Take care of the member&#39;s transferred balance.
+			// Take care of the member's transferred balance.
 			currentMember.transferred = currentMember.transferred / int(splitFactor);
-			for (uint256 j = 0; j &lt; nextGroupNumber; j++) {
+			for (uint256 j = 0; j < nextGroupNumber; j++) {
 				uint256 memberBalance = currentMember.tokenBalance[j];
 				uint256 divier = memberBalance.div(splitFactor);
 				currentMember.tokenBalance[j] = divier;
@@ -1459,8 +1459,8 @@ contract SparksterToken is StandardToken, Ownable{
 		}
 		// Next, decrease group ratios by splitFactor, so users will receive ratio - splitFactor tokens per ether.
 		n = nextGroupNumber;
-		require(n &gt; 0); // Must have at least one group. Groups are 0-indexed.
-		for (i = 0; i &lt; n; i++) {
+		require(n > 0); // Must have at least one group. Groups are 0-indexed.
+		for (i = 0; i < n; i++) {
 			Group storage currentGroup = groups[i];
 			currentGroup.ratio = currentGroup.ratio.div(splitFactor);
 		}
@@ -1471,10 +1471,10 @@ contract SparksterToken is StandardToken, Ownable{
 	function splitTokensAfterDistribution(uint256 splitFactor) public onlyOwner returns (bool success) {
 		splitTokensBeforeDistribution(splitFactor);
 		uint256 n = allMembers.length;
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			address currentMember = allMembers[i];
 			uint256 memberBalance = balances[currentMember];
-			if (memberBalance &gt; 0) {
+			if (memberBalance > 0) {
 				uint256 multiplier1 = memberBalance.mul(splitFactor);
 				uint256 increaseMemberSupplyBy = multiplier1.sub(memberBalance);
 				balances[currentMember] = multiplier1;
@@ -1482,14 +1482,14 @@ contract SparksterToken is StandardToken, Ownable{
 			}
 		}
 		n = allNonMembers.length;
-		for (i = 0; i &lt; n; i++) {
+		for (i = 0; i < n; i++) {
 			address currentNonMember = allNonMembers[i];
-			// If this address started out as a nonmember and then became a member, we&#39;ve seen them already in allMembers so don&#39;t grow or shrink them twice.
+			// If this address started out as a nonmember and then became a member, we've seen them already in allMembers so don't grow or shrink them twice.
 			if (members[currentNonMember].exists) {
 				continue;
 			}
 			uint256 nonMemberBalance = balances[currentNonMember];
-			if (nonMemberBalance &gt; 0) {
+			if (nonMemberBalance > 0) {
 				uint256 multiplier2 = nonMemberBalance.mul(splitFactor);
 				uint256 increaseNonMemberSupplyBy = multiplier2.sub(nonMemberBalance);
 				balances[currentNonMember] = multiplier2;
@@ -1503,10 +1503,10 @@ contract SparksterToken is StandardToken, Ownable{
 	function reverseSplitTokensAfterDistribution(uint256 splitFactor) public onlyOwner returns (bool success) {
 		reverseSplitTokensBeforeDistribution(splitFactor);
 		uint256 n = allMembers.length;
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			address currentMember = allMembers[i];
 			uint256 memberBalance = balances[currentMember];
-			if (memberBalance &gt; 0) {
+			if (memberBalance > 0) {
 				uint256 divier1 = memberBalance.div(splitFactor);
 				uint256 decreaseMemberSupplyBy = memberBalance.sub(divier1);
 				balances[currentMember] = divier1;
@@ -1514,14 +1514,14 @@ contract SparksterToken is StandardToken, Ownable{
 			}
 		}
 		n = allNonMembers.length;
-		for (i = 0; i &lt; n; i++) {
+		for (i = 0; i < n; i++) {
 			address currentNonMember = allNonMembers[i];
-			// If this address started out as a nonmember and then became a member, we&#39;ve seen them already in allMembers so don&#39;t grow or shrink them twice.
+			// If this address started out as a nonmember and then became a member, we've seen them already in allMembers so don't grow or shrink them twice.
 			if (members[currentNonMember].exists) {
 				continue;
 			}
 			uint256 nonMemberBalance = balances[currentNonMember];
-			if (nonMemberBalance &gt; 0) {
+			if (nonMemberBalance > 0) {
 				uint256 divier2 = nonMemberBalance.div(splitFactor);
 				uint256 decreaseNonMemberSupplyBy = nonMemberBalance.sub(divier2);
 				balances[currentNonMember] = divier2;
@@ -1533,9 +1533,9 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function changeMaxContribution(address memberAddress, uint256 newMax1) public onlyOwner {
-		// Allows to change a member&#39;s maximum contribution for phase 1.
+		// Allows to change a member's maximum contribution for phase 1.
 		Member storage theMember = members[memberAddress];
-		require(theMember.exists); // Don&#39;t allow to change for a nonexistent member.
+		require(theMember.exists); // Don't allow to change for a nonexistent member.
 		theMember.max1 = newMax1;
 	}
 	
@@ -1544,28 +1544,28 @@ contract SparksterToken is StandardToken, Ownable{
 		Member storage fromMember = members[msg.sender];
 		if (fromMember.exists) { // If this is the owner, this check will be false so no need to check specifically for owner here.
 			int256 transferValue = fromMember.transferred + int(_value);
-			require(transferValue &gt;= fromMember.transferred); // Check for overflow.
-			require(transferValue &lt;= int(getUnlockedBalanceLimit(msg.sender))); // Make sure they don&#39;t transfer out more than their unlocked limit.
+			require(transferValue >= fromMember.transferred); // Check for overflow.
+			require(transferValue <= int(getUnlockedBalanceLimit(msg.sender))); // Make sure they don't transfer out more than their unlocked limit.
 			fromMember.transferred = transferValue;
 		}
 		// If any of the parties involved are not members, add them to the nonmembers list.
-		// Don&#39;t add the owner, since they&#39;re a special case.
-		if (!fromMember.exists &amp;&amp; msg.sender != owner) {
+		// Don't add the owner, since they're a special case.
+		if (!fromMember.exists && msg.sender != owner) {
 			bool fromTransferee = nonMemberTransfers[msg.sender];
-			if (!fromTransferee) { // If we haven&#39;t added this transferee before.
+			if (!fromTransferee) { // If we haven't added this transferee before.
 				nonMemberTransfers[msg.sender] = true;
 				allNonMembers.push(msg.sender);
 			}
 		}
-		if (!members[_to].exists &amp;&amp; _to != owner) {
+		if (!members[_to].exists && _to != owner) {
 			bool toTransferee = nonMemberTransfers[_to];
-			if (!toTransferee) { // If we haven&#39;t added this transferee before.
+			if (!toTransferee) { // If we haven't added this transferee before.
 				nonMemberTransfers[_to] = true;
 				allNonMembers.push(_to);
 			}
 		} else if (members[_to].exists) { // Add this transfer to the unlocked balance
 			int256 transferInValue = members[_to].transferred - int(_value);
-			require(transferInValue &lt;= members[_to].transferred); // Check for underflow.
+			require(transferInValue <= members[_to].transferred); // Check for underflow.
 			members[_to].transferred = transferInValue;
 		}
 		return super.transfer(_to, _value);
@@ -1574,37 +1574,37 @@ contract SparksterToken is StandardToken, Ownable{
 	function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3 * 32) canTransfer returns (bool success) {
 		// If the transferrer has purchased tokens, they must be unlocked before they can be used.
 		Member storage fromMember = members[_from];
-		if (fromMember.exists) { // If _from is the owner, this check will always fail, so we don&#39;t need to check specifically for owner here.
+		if (fromMember.exists) { // If _from is the owner, this check will always fail, so we don't need to check specifically for owner here.
 			int256 transferValue = fromMember.transferred + int(_value);
-			require(transferValue &gt;= fromMember.transferred); // Check for overflow.
-			require(transferValue &lt;= int(getUnlockedBalanceLimit(msg.sender))); // Make sure they don&#39;t transfer out more than their unlocked limit.
+			require(transferValue >= fromMember.transferred); // Check for overflow.
+			require(transferValue <= int(getUnlockedBalanceLimit(msg.sender))); // Make sure they don't transfer out more than their unlocked limit.
 			fromMember.transferred = transferValue;
 		}
 		// If any of the parties involved are not members, add them to the nonmembers list.
-		// Don&#39;t add the owner since they&#39;re a special case.
-		if (!fromMember.exists &amp;&amp; _from != owner) {
+		// Don't add the owner since they're a special case.
+		if (!fromMember.exists && _from != owner) {
 			bool fromTransferee = nonMemberTransfers[_from];
-			if (!fromTransferee) { // If we haven&#39;t added this transferee before.
+			if (!fromTransferee) { // If we haven't added this transferee before.
 				nonMemberTransfers[_from] = true;
 				allNonMembers.push(_from);
 			}
 		}
-		if (!members[_to].exists &amp;&amp; _to != owner) {
+		if (!members[_to].exists && _to != owner) {
 			bool toTransferee = nonMemberTransfers[_to];
-			if (!toTransferee) { // If we haven&#39;t added this transferee before.
+			if (!toTransferee) { // If we haven't added this transferee before.
 				nonMemberTransfers[_to] = true;
 				allNonMembers.push(_to);
 			}
 		} else if (members[_to].exists) { // Add this transfer to the unlocked balance
 			int256 transferInValue = members[_to].transferred - int(_value);
-			require(transferInValue &lt;= members[_to].transferred); // Check for underflow.
+			require(transferInValue <= members[_to].transferred); // Check for underflow.
 			members[_to].transferred = transferInValue;
 		}
 		return super.transferFrom(_from, _to, _value);
 	}
 
 	function setOpenGroup(uint256 groupNumber) public onlyOwner returns (bool success) {
-		require(groupNumber &lt; nextGroupNumber);
+		require(groupNumber < nextGroupNumber);
 		openGroupNumber = groupNumber;
 		return true;
 	}
@@ -1622,13 +1622,13 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function transferRecovery(address _from, address _to, uint256 _value) public onlyOwner returns (bool success) {
-		// Will be used if someone sends tokens to an incorrect address by accident. This way, we have the ability to recover the tokens. For example, sometimes there&#39;s a problem of lost tokens if someone sends tokens to a contract address that can&#39;t utilize the tokens.
-		allowed[_from][msg.sender] = allowed[_from][msg.sender].add(_value); // Authorize the owner to spend on someone&#39;s behalf.
+		// Will be used if someone sends tokens to an incorrect address by accident. This way, we have the ability to recover the tokens. For example, sometimes there's a problem of lost tokens if someone sends tokens to a contract address that can't utilize the tokens.
+		allowed[_from][msg.sender] = allowed[_from][msg.sender].add(_value); // Authorize the owner to spend on someone's behalf.
 		Member storage fromMember = members[_from];
 		if (fromMember.exists) {
 			int256 oldTransferred = fromMember.transferred;
 			fromMember.transferred -= int(_value); // Unlock this amount.
-			require(oldTransferred &gt;= fromMember.transferred); // Check for underflow.
+			require(oldTransferred >= fromMember.transferred); // Check for underflow.
 		}
 		return transferFrom(_from, _to, _value);
 	}

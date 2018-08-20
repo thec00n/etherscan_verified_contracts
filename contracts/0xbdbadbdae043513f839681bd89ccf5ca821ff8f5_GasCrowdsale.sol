@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -43,7 +43,7 @@ contract GasCrowdsale {
     uint256 public price;
     uint256 public fundTransferred;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 
@@ -86,7 +86,7 @@ contract GasCrowdsale {
         //FundTransfer(msg.sender, amount, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      *ends the campaign after deadline

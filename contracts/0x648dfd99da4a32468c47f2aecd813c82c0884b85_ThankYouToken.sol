@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -81,14 +81,14 @@ contract ThankYouToken is ERC20 {
     uint256 public totalSupply;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint256 size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -97,10 +97,10 @@ contract ThankYouToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _value //the transfer is approved
-        &amp;&amp; _value &gt; 0
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+        && allowed[_from][msg.sender] >= _value //the transfer is approved
+        && _value > 0
+        && balances[_to] + _value > balances[_to]) {
 
             balances[_to]   = balances[_to].add(_value);
             balances[_from] = balances[_from].sub(_value);
@@ -118,7 +118,7 @@ contract ThankYouToken is ERC20 {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             return false;
         }
         allowed[msg.sender][_spender] = _value;
@@ -132,9 +132,9 @@ contract ThankYouToken is ERC20 {
         return allowed[_owner][_spender];
     }
 
-    // Transfer the balance _value from owner&#39;s account (msg.sender) to another account (_to)
+    // Transfer the balance _value from owner's account (msg.sender) to another account (_to)
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
 
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -147,21 +147,21 @@ contract ThankYouToken is ERC20 {
     }
 
 
-    string public thankYou  = &quot;ThankYou!&quot;;
+    string public thankYou  = "ThankYou!";
     string public name;
     string public symbol;
     uint256 public decimals = 18;
 
     function ThankYouToken(uint256 _initialSupply) {
-        name = &quot;ThankYou! Token&quot;;
-        symbol = &quot;TYT&quot;;
+        name = "ThankYou! Token";
+        symbol = "TYT";
         totalSupply = _initialSupply;
         balances[msg.sender] = _initialSupply;
     }
     //---------------------------------------------------------------------------------------------------
 
     //Number of purchases per address
-    mapping(address =&gt; uint256) numPurchasesPerAddress;
+    mapping(address => uint256) numPurchasesPerAddress;
 
     bool public crowdsaleClosed = true;
     uint256 bonusMultiplier             = 50 * 10**decimals;
@@ -172,7 +172,7 @@ contract ThankYouToken is ERC20 {
     uint256 public contribution         = 0;
     uint256 public totalTokensIssued    = 0;
     // Accounts that have received the 2 TYT for free
-    mapping(address =&gt; bool) addressBonusReceived;
+    mapping(address => bool) addressBonusReceived;
 
     event BonusTokens(address _from, address _to, uint256 _bonusToken);
     event FreeTokensIssued(address _from, address _to, uint256 _value);
@@ -189,8 +189,8 @@ contract ThankYouToken is ERC20 {
     function() payable {
         if(msg.value == 0){
             assert(!addressBonusReceived[msg.sender]);
-            assert(freeTokensAvailable &gt;= freeTokensPerAddress);
-            assert(balances[owner] &gt;= freeTokensPerAddress);
+            assert(freeTokensAvailable >= freeTokensPerAddress);
+            assert(balances[owner] >= freeTokensPerAddress);
 
             addressBonusReceived[msg.sender] = true;
 
@@ -210,16 +210,16 @@ contract ThankYouToken is ERC20 {
 
             // 1 ETH = 1000 ThankYou tokens
             uint256 tokensSent = (msg.value * 1000);
-            assert(balances[owner] &gt;= tokensSent);
+            assert(balances[owner] >= tokensSent);
 
-            if(msg.value &gt;= 50 finney){
+            if(msg.value >= 50 finney){
                 numPurchasesPerAddress[msg.sender] = numPurchasesPerAddress[msg.sender].add(1);
 
                 uint256 bonusTokens = numPurchasesPerAddress[msg.sender].mul(bonusMultiplier);
                 tokensSent = tokensSent.add(bonusTokens);
                 bonusTokensIssued = bonusTokensIssued.add(bonusTokens);
 
-                assert(balances[owner] &gt;= tokensSent);
+                assert(balances[owner] >= tokensSent);
                 BonusTokens(owner, msg.sender, bonusTokens);
             }
 

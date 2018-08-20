@@ -10,7 +10,7 @@ contract SafeMath {
 
     function safeAddCheck(uint256 x, uint256 y) internal returns(bool) {
       uint256 z = x + y;
-      if ((z &gt;= x) &amp;&amp; (z &gt;= y)) {
+      if ((z >= x) && (z >= y)) {
           return true;
       }
     }
@@ -38,12 +38,12 @@ contract Token {
 /*  ERC 20 token */
 contract LeeroyPoints is Token, SafeMath {
     address public owner;
-    mapping (address =&gt; bool) public controllers;
+    mapping (address => bool) public controllers;
 
-    string public constant name = &quot;Leeroy Points&quot;;
-    string public constant symbol = &quot;LRP&quot;;
+    string public constant name = "Leeroy Points";
+    string public constant symbol = "LRP";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     uint256 public constant baseUnit = 1 * 10**decimals;
 
     event CreateLRP(address indexed _to, uint256 _value);
@@ -77,7 +77,7 @@ contract LeeroyPoints is Token, SafeMath {
    }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -88,7 +88,7 @@ contract LeeroyPoints is Token, SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -113,14 +113,14 @@ contract LeeroyPoints is Token, SafeMath {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract Leeroy {
 
     // metadata
-    string public constant name = &quot;Leeroy&quot;;
+    string public constant name = "Leeroy";
 
     // points contract
     LeeroyPoints public points;
@@ -148,11 +148,11 @@ contract Leeroy {
         bytes32 detailsHash;
         uint joined;
         uint blockNumber;
-        mapping(bytes32 =&gt; bool) following;
+        mapping(bytes32 => bool) following;
     }
 
-    mapping (bytes32 =&gt; User) public usernames; // lookup user by username
-    mapping (address =&gt; bytes32) public addresses; // lookup username by address
+    mapping (bytes32 => User) public usernames; // lookup user by username
+    mapping (address => bytes32) public addresses; // lookup username by address
 
     // posts
     struct Post {
@@ -161,8 +161,8 @@ contract Leeroy {
         uint timestamp;
         uint blockNumber;
         uint id;
-        mapping(bytes32 =&gt; bool) likes;
-        mapping(bytes32 =&gt; bool) reposts;
+        mapping(bytes32 => bool) likes;
+        mapping(bytes32 => bool) reposts;
         uint repostOf;
         uint inReplyTo;
     }
@@ -178,7 +178,7 @@ contract Leeroy {
         var newUser = User({
             username: username,
             owner: msg.sender,
-            detailsHash: &quot;&quot;,
+            detailsHash: "",
             joined: block.timestamp,
             blockNumber: block.number,
         });
@@ -280,7 +280,7 @@ contract Leeroy {
         var postId = posts.length + 1;
         posts.push(Post({
             username: user.username,
-            postHash: &quot;&quot;,
+            postHash: "",
             timestamp: block.timestamp,
             blockNumber: block.number,
             id: postId,
@@ -315,9 +315,9 @@ contract Leeroy {
     }
 
     function isLowercase(bytes32 self) internal constant returns (bool) {
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             byte char = byte(bytes32(uint(self) * 2 ** (8 * i)));
-            if (char &gt;= 0x41 &amp;&amp; char &lt;= 0x5A) {
+            if (char >= 0x41 && char <= 0x5A) {
                 return false;
             }
         }

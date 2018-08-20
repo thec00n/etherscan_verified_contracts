@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -111,7 +111,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -191,9 +191,9 @@ contract Ownable {
 
 contract SynchroCoin is Ownable, StandardToken {
 
-    string public constant symbol = &quot;SYC&quot;;
+    string public constant symbol = "SYC";
 
-    string public constant name = &quot;SynchroCoin&quot;;
+    string public constant name = "SynchroCoin";
 
     uint8 public constant decimals = 12;
     
@@ -228,31 +228,31 @@ contract SynchroCoin is Ownable, StandardToken {
     //This includes the Ether raised during the presale.
     uint256 public totalConsideredFundedEther = 338;
 
-    mapping (address =&gt; uint256) consideredFundedEtherOf;
+    mapping (address => uint256) consideredFundedEtherOf;
 
-    mapping (address =&gt; bool) withdrawalStatuses;
+    mapping (address => bool) withdrawalStatuses;
 
     function calcBonus() public constant returns (uint256){
         return calcBonusAt(now);
     }
 
     function calcBonusAt(uint256 at) public constant returns (uint256){
-        if (at &lt; STARTDATE) {
+        if (at < STARTDATE) {
             return 140;
         }
-        else if (at &lt; (STARTDATE + 1 days)) {
+        else if (at < (STARTDATE + 1 days)) {
             return 120;
         }
-        else if (at &lt; (STARTDATE + 7 days)) {
+        else if (at < (STARTDATE + 7 days)) {
             return 115;
         }
-        else if (at &lt; (STARTDATE + 14 days)) {
+        else if (at < (STARTDATE + 14 days)) {
             return 110;
         }
-        else if (at &lt; (STARTDATE + 21 days)) {
+        else if (at < (STARTDATE + 21 days)) {
             return 105;
         }
-        else if (at &lt;= ENDDATE) {
+        else if (at <= ENDDATE) {
             return 100;
         }
         else {
@@ -266,12 +266,12 @@ contract SynchroCoin is Ownable, StandardToken {
     }
 
     function proxyPayment(address participant) public payable {
-        require(now &gt;= STARTDATE);
+        require(now >= STARTDATE);
 
-        require(now &lt;= ENDDATE);
+        require(now <= ENDDATE);
 
-        //require msg.value &gt;= 0.1 ether
-        require(msg.value &gt;= 100 finney);
+        //require msg.value >= 0.1 ether
+        require(msg.value >= 100 finney);
 
         totalFundedEther = totalFundedEther.add(msg.value);
 
@@ -302,9 +302,9 @@ contract SynchroCoin is Ownable, StandardToken {
     }
 
     function proxyWithdraw(address participant) public returns (bool success){
-        require(now &gt; ENDDATE);
+        require(now > ENDDATE);
         require(withdrawalStatuses[participant]);
-        require(totalConsideredFundedEther &gt; 1);
+        require(totalConsideredFundedEther > 1);
 
         uint256 share = crowdSale.mul(consideredFundedEtherOf[participant]).div(totalConsideredFundedEther);
         participant.transfer(share);
@@ -314,7 +314,7 @@ contract SynchroCoin is Ownable, StandardToken {
 
     /* Send coins */
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        require(now &gt; ENDDATE);
+        require(now > ENDDATE);
         return super.transfer(_to, _amount);
     }
 
@@ -322,7 +322,7 @@ contract SynchroCoin is Ownable, StandardToken {
     function transferFrom(address _from, address _to, uint256 _amount) public
     returns (bool success)
     {
-        require(now &gt; ENDDATE);
+        require(now > ENDDATE);
         return super.transferFrom(_from, _to, _amount);
     }
 

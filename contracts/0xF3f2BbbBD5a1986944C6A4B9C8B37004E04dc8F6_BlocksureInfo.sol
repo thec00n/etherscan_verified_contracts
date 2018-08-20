@@ -3,7 +3,7 @@ contract BlocksureInfo {
     address public owner;
     string public name;
     
-    mapping (string =&gt; string) strings;
+    mapping (string => string) strings;
 
     function BlocksureInfo() {
         owner = tx.origin;

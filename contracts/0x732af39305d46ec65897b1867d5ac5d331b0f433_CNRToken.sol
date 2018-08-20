@@ -88,17 +88,17 @@ contract StandardToken is Token {
     bool public locked;
 
     // DCORP token balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // DCORP token allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
      * ERC20 Short Address Attack fix
      */
     modifier onlyPayloadSize(uint numArgs) {
-        assert(msg.data.length &gt;= numArgs * 32 + 4);
+        assert(msg.data.length >= numArgs * 32 + 4);
         _;
     }
     
@@ -127,10 +127,10 @@ contract StandardToken is Token {
         require(!locked);
 
         // Check if the sender has enough tokens
-        require(balances[msg.sender] &gt;= _value);   
+        require(balances[msg.sender] >= _value);   
 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Transfer tokens
         balances[msg.sender] -= _value;
@@ -156,13 +156,13 @@ contract StandardToken is Token {
         require(!locked);
 
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Check allowance
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Transfer tokens
         balances[_to] += _value;
@@ -222,13 +222,13 @@ contract StandardToken is Token {
 contract CNRToken is Owned, StandardToken {
 
     // Ethereum token standard
-    string public standard = &quot;Token 0.2&quot;;
+    string public standard = "Token 0.2";
 
     // Full name
-    string public name = &quot;Coinoor&quot;;        
+    string public name = "Coinoor";        
     
     // Symbol
-    string public symbol = &quot;CNR&quot;;
+    string public symbol = "CNR";
 
     // No decimal points
     uint8 public decimals = 8;
@@ -257,7 +257,7 @@ contract CNRToken is Owned, StandardToken {
 
 
      /**
-     * Issues `_value` new tokens to `_recipient` (_value &lt; 0 guarantees that tokens are never removed)
+     * Issues `_value` new tokens to `_recipient` (_value < 0 guarantees that tokens are never removed)
      *
      * @param _recipient The address to which the tokens will be issued
      * @param _value The amount of new tokens to issue
@@ -266,7 +266,7 @@ contract CNRToken is Owned, StandardToken {
     function issue(address _recipient, uint256 _value) onlyOwner onlyPayloadSize(2) returns (bool success) {
 
         // Guarantee positive 
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Create tokens
         balances[_recipient] += _value;

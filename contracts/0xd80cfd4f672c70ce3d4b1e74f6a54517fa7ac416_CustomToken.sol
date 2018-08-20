@@ -14,13 +14,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ contract Ownable {
     owner = msg.sender;
   }
 
-// Any call to the contract not from the creator&#39;s account will be thrown.   
+// Any call to the contract not from the creator's account will be thrown.   
   modifier onlyOwner() {
     require(msg.sender == owner);
     _;
@@ -64,7 +64,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -93,7 +93,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -148,7 +148,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) public 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -165,7 +165,7 @@ contract BurnableToken is StandardToken {
     function burn(uint _value)
         public
     {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -218,8 +218,8 @@ contract TokenRecipient {
 
 contract CustomToken is MintableToken, BurnableToken {
 
-    string public constant name = &quot;Credits&quot;;
-    string public constant symbol = &quot;CREDS&quot;;
+    string public constant name = "Credits";
+    string public constant symbol = "CREDS";
     uint8 public constant decimals = 18;
 
     constructor() public {
@@ -231,7 +231,7 @@ contract CustomToken is MintableToken, BurnableToken {
         return result;
     }
 
-    mapping (address =&gt; bool) stopReceive;
+    mapping (address => bool) stopReceive;
 
     function setStopReceive(bool stop) public {
         stopReceive[msg.sender] = stop;
@@ -252,7 +252,7 @@ contract CustomToken is MintableToken, BurnableToken {
 
     function transferAndCall(address _recipient, uint256 _amount) public {
         require(_recipient != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_recipient] = balances[_recipient].add(_amount);

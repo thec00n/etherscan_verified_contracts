@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,18 +87,18 @@ contract BSPMintable is Ownable {
   uint256 public minted;
 
   modifier whenStarted() {
-    require(started == true &amp;&amp; startTime &lt;= block.timestamp);
+    require(started == true && startTime <= block.timestamp);
     _;
   }
 
   function startMining(uint256 _startTime) public onlyOwner {
 
-      require(started == false &amp;&amp; BSPToken.balanceOf(this) &gt;= rewardAmount);
+      require(started == false && BSPToken.balanceOf(this) >= rewardAmount);
 
       // cannot start from a historical time
-      require(_startTime &gt;= block.timestamp);
+      require(_startTime >= block.timestamp);
       // prevent input error
-      require(_startTime &lt;= block.timestamp + 60 days);
+      require(_startTime <= block.timestamp + 60 days);
 
       startTime = _startTime;
       started = true;
@@ -112,7 +112,7 @@ contract BSPMintable is Ownable {
 
   function mint() public whenStarted {
     uint256 unminted = mintableAmount();
-    require(unminted &gt; 0);
+    require(unminted > 0);
 
     minted = minted.add(unminted);
     BSPToken.safeTransfer(distributor, unminted);
@@ -122,11 +122,11 @@ contract BSPMintable is Ownable {
 
   function mintableAmount() public view returns (uint256) {
 
-    if(started == false || startTime &gt;= block.timestamp){
+    if(started == false || startTime >= block.timestamp){
         return 0;
     }
 
-    if (block.timestamp &gt;= startTime.add(duration)){
+    if (block.timestamp >= startTime.add(duration)){
         return BSPToken.balanceOf(this);
     }
 
@@ -134,7 +134,7 @@ contract BSPMintable is Ownable {
     uint currentDay = (block.timestamp.sub(startTime) % (1 years)).div(1 days);
     uint currentMintable = 0;
 
-    for (uint i = 0; i &lt; currentYear; i++){
+    for (uint i = 0; i < currentYear; i++){
         currentMintable = currentMintable.add(rewardAmount.mul(miningRate[i]).div(100));
     }
     currentMintable = currentMintable.add(rewardAmount.mul(miningRate[currentYear]).div(36500).mul(currentDay));

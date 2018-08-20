@@ -21,7 +21,7 @@ contract publish_text {
     
     function flushETH() public onlyOwner {
         uint my_balance = address(this).balance;
-        if (my_balance &gt; 0){
+        if (my_balance > 0){
             owner.transfer(address(this).balance);
         }
     }

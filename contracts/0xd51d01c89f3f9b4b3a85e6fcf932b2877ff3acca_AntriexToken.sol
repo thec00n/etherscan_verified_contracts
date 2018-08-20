@@ -16,27 +16,27 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -109,7 +109,7 @@ contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
   //balance in each address account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -118,8 +118,8 @@ contract BasicToken is ERC20Basic {
   */
     function transfer(address _to, uint256 _amount) public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+        require(balances[msg.sender] >= _amount && _amount > 0
+        && balances[_to].add(_amount) > balances[_to]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -148,7 +148,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   
   
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -159,9 +159,9 @@ contract StandardToken is ERC20, BasicToken {
    */
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _amount);
-        require(allowed[_from][msg.sender] &gt;= _amount);
-        require(_amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+        require(balances[_from] >= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
+        require(_amount > 0 && balances[_to].add(_amount) > balances[_to]);
 
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -175,7 +175,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _amount The amount of tokens to be spent.
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
 contract BurnableToken is StandardToken, Ownable {
 
     //this will contain a list of addresses allowed to burn their tokens
-    mapping(address=&gt;bool)allowedBurners;
+    mapping(address=>bool)allowedBurners;
     
     event Burn(address indexed burner, uint256 value);
     
@@ -246,7 +246,7 @@ contract BurnableToken is StandardToken, Ownable {
      */
     function burnAllTokens() public isBurner(msg.sender) {
         
-        require(balances[msg.sender]&gt;0);
+        require(balances[msg.sender]>0);
         
         uint256 value = balances[msg.sender];
         

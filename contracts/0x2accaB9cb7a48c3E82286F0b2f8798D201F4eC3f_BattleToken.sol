@@ -36,11 +36,11 @@ library SafeMathLib {
     uint constant RAY = 10 ** 27;
 
     function add(uint x, uint y) internal returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint x, uint y) internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint x, uint y) internal returns (uint z) {
@@ -52,19 +52,19 @@ library SafeMathLib {
     }
 
     function min(uint x, uint y) internal returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function max(uint x, uint y) internal returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     function imin(int x, int y) internal returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function imax(int x, int y) internal returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     function wmul(uint x, uint y) internal returns (uint z) {
@@ -87,10 +87,10 @@ library SafeMathLib {
         return wmul(wdiv(x, 100), y);
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -119,11 +119,11 @@ library SafeMathLib {
 contract BattleToken is Owned, TokenEIP20 {
     using SafeMathLib for uint256;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
-    string  public constant name        = &quot;Battle&quot;;
-    string  public constant symbol      = &quot;BTL&quot;;
+    string  public constant name        = "Battle";
+    string  public constant symbol      = "BTL";
     uint256 public constant decimals    = 18;
     uint256 public constant totalSupply = 1000000 * (10 ** decimals);
 
@@ -133,26 +133,26 @@ contract BattleToken is Owned, TokenEIP20 {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
-        assert(balances[msg.sender] &gt;= 0);
+        assert(balances[msg.sender] >= 0);
         balances[_to] = balances[_to].add(_value);
-        assert(balances[_to] &lt;= totalSupply);
+        assert(balances[_to] <= totalSupply);
         Transfer(msg.sender, _to, _value);
         return true;
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             return false;
         }
         balances[_from] = balances[_from].sub(_value);
-        assert(balances[_from] &gt;= 0);
+        assert(balances[_from] >= 0);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        assert(balances[_to] &lt;= totalSupply);        
+        assert(balances[_to] <= totalSupply);        
         Transfer(_from, _to, _value);
         return true;
     }

@@ -18,13 +18,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ interface Token {
 contract CslTokenDistribution {
     
     using SafeMath for uint256;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     Token public cslToken;
     address public owner;
     uint256 public decimals = 10e17;      //token decimals
@@ -123,9 +123,9 @@ contract CslTokenDistribution {
     
     function airdrop(address[] addresses) onlyOwner public {
         
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             sendTokens(addresses[i], drop);
             cslToken.transfer(addresses[i], drop);
         }
@@ -134,9 +134,9 @@ contract CslTokenDistribution {
     
     function distribution(address[] addresses, uint256 amount) onlyOwner public {
         
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             sendTokens(addresses[i], amount);
             cslToken.transfer(addresses[i], amount);
         }
@@ -145,10 +145,10 @@ contract CslTokenDistribution {
     
     function distributeAmounts(address[] addresses, uint256[] amounts) onlyOwner public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        for (uint8 i = 0; i < addresses.length; i++) {
             sendTokens(addresses[i], amounts[i]);
             cslToken.transfer(addresses[i], amounts[i]);
         }

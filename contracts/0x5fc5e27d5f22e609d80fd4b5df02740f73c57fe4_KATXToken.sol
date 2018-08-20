@@ -63,7 +63,7 @@ interface IMultiOwned {
 contract MultiOwned is IMultiOwned {
 
     // Owners
-    mapping (address =&gt; uint) private owners;
+    mapping (address => uint) private owners;
     address[] private ownersIndex;
 
 
@@ -91,7 +91,7 @@ contract MultiOwned is IMultiOwned {
      * @param _account The address to test against
      */
     function isOwner(address _account) public view returns (bool) {
-        return owners[_account] &lt; ownersIndex.length &amp;&amp; _account == ownersIndex[owners[_account]];
+        return owners[_account] < ownersIndex.length && _account == ownersIndex[owners[_account]];
     }
 
 
@@ -213,7 +213,7 @@ contract Observable is IObservable {
 
 
     // Observers
-    mapping (address =&gt; uint) private observers;
+    mapping (address => uint) private observers;
     address[] private observerIndex;
 
 
@@ -224,7 +224,7 @@ contract Observable is IObservable {
      * @return Whether the account is a registered observer
      */
     function isObserver(address _account) public view returns (bool) {
-        return observers[_account] &lt; observerIndex.length &amp;&amp; _account == observerIndex[observers[_account]];
+        return observers[_account] < observerIndex.length && _account == observerIndex[observers[_account]];
     }
 
 
@@ -398,7 +398,7 @@ contract TokenRetriever is ITokenRetriever {
     function retrieveTokens(address _tokenContract) public {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(msg.sender, tokenBalance);
         }
     }
@@ -508,7 +508,7 @@ interface IToken {
 contract Token is IToken, InputValidator {
 
     // Ethereum token standard
-    string public standard = &quot;Token 0.3.1&quot;;
+    string public standard = "Token 0.3.1";
     string public name;        
     string public symbol;
     uint8 public decimals;
@@ -517,10 +517,10 @@ contract Token is IToken, InputValidator {
     uint internal totalTokenSupply;
 
     // Token balances
-    mapping (address =&gt; uint) internal balances;
+    mapping (address => uint) internal balances;
 
     // Token allowances
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => mapping (address => uint)) internal allowed;
 
 
     // Events
@@ -574,10 +574,10 @@ contract Token is IToken, InputValidator {
     function transfer(address _to, uint _value) public safe_arguments(2) returns (bool) {
 
         // Check if the sender has enough tokens
-        require(balances[msg.sender] &gt;= _value);   
+        require(balances[msg.sender] >= _value);   
 
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
 
         // Transfer tokens
         balances[msg.sender] -= _value;
@@ -600,13 +600,13 @@ contract Token is IToken, InputValidator {
     function transferFrom(address _from, address _to, uint _value) public safe_arguments(3) returns (bool) {
 
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
 
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
 
         // Check allowance
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Transfer tokens
         balances[_to] += _value;
@@ -830,7 +830,7 @@ contract ManagedToken is IManagedToken, Token, MultiOwned {
     function issue(address _to, uint _value) public only_owner safe_arguments(2) returns (bool) {
         
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
 
         // Create tokens
         balances[_to] += _value;
@@ -853,10 +853,10 @@ contract ManagedToken is IManagedToken, Token, MultiOwned {
     function burn(address _from, uint _value) public only_owner safe_arguments(2) returns (bool) {
 
         // Check if the token owner has enough tokens
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
 
         // Check for overflows
-        require(balances[_from] - _value &lt;= balances[_from]);
+        require(balances[_from] - _value <= balances[_from]);
 
         // Burn tokens
         balances[_from] -= _value;
@@ -884,7 +884,7 @@ contract KATXToken is ManagedToken, Observable, TokenRetriever {
     /**
      * Construct the managed utility token
      */
-    function KATXToken() public ManagedToken(&quot;KATM Utility&quot;, &quot;KATX&quot;, 8, false) {}
+    function KATXToken() public ManagedToken("KATM Utility", "KATX", 8, false) {}
 
 
     /**
@@ -894,7 +894,7 @@ contract KATXToken is ManagedToken, Observable, TokenRetriever {
      * @return Whether the sender is allowed or not
      */
     function canRegisterObserver(address _observer) internal view returns (bool) {
-        return _observer != address(this) &amp;&amp; isOwner(msg.sender);
+        return _observer != address(this) && isOwner(msg.sender);
     }
 
 

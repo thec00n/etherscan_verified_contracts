@@ -14,22 +14,22 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max(uint a, uint b) internal pure returns (uint) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -59,19 +59,19 @@ contract MntToken {
     // --- ERC20 Token Section ---
     uint8 constant public decimals = 6;
     uint public totalSupply = 100*10**(8+uint256(decimals));  // ***** 100 * 100 Million
-    string constant public name = &quot;MDEX Token | Mongolia National Blockchain Digital Assets Exchange Token&quot;;
-    string constant public symbol = &quot;MNT&quot;;
+    string constant public name = "MDEX Token | Mongolia National Blockchain Digital Assets Exchange Token";
+    string constant public symbol = "MNT";
 
-    mapping(address =&gt; uint) ownerance; // Owner Balance
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance; // Allower Balance
+    mapping(address => uint) ownerance; // Owner Balance
+    mapping(address => mapping(address => uint)) public allowance; // Allower Balance
 
     // --- Locked Section ---
     uint8 LOCKED_TYPE_MAX = 2; // ***** Max locked type
     uint private constant RELEASE_BASE_TIME = 1533686888; // ***** (2018-08-08 08:08:08) Private Lock phase start datetime (UTC seconds)
     address[] private lockedOwner;
-    mapping(address =&gt; uint) public lockedance; // Lockeder Balance
-    mapping(address =&gt; uint8) public lockedtype; // Locked Type
-    mapping(address =&gt; uint8) public unlockedstep; // Unlocked Step
+    mapping(address => uint) public lockedance; // Lockeder Balance
+    mapping(address => uint8) public lockedtype; // Locked Type
+    mapping(address => uint8) public unlockedstep; // Unlocked Step
 
     uint public totalCirculating; // Total circulating token amount
 
@@ -90,17 +90,17 @@ contract MntToken {
 
     // --- ERC20 Section ---
     modifier hasEnoughBalance(uint _amount) {
-        require(ownerance[msg.sender] &gt;= _amount);
+        require(ownerance[msg.sender] >= _amount);
         _;
     }
 
     modifier overflowDetected(address _owner, uint _amount) {
-        require(ownerance[_owner] + _amount &gt;= ownerance[_owner]);
+        require(ownerance[_owner] + _amount >= ownerance[_owner]);
         _;
     }
 
     modifier hasAllowBalance(address _owner, address _allower, uint _amount) {
-        require(allowance[_owner][_allower] &gt;= _amount);
+        require(allowance[_owner][_allower] >= _amount);
         _;
     }
 
@@ -122,7 +122,7 @@ contract MntToken {
     }
 
     modifier checkLockedType(uint8 _locktype) {
-        require(_locktype &gt; 0 &amp;&amp; _locktype &lt;= LOCKED_TYPE_MAX);
+        require(_locktype > 0 && _locktype <= LOCKED_TYPE_MAX);
         _;
     }
 
@@ -152,8 +152,8 @@ contract MntToken {
         overflowDetected(_to, _value)
         public returns (bool success)
     {
-        require(ownerance[_from] &gt;= _value);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(ownerance[_from] >= _value);
+        require(allowance[_from][msg.sender] >= _value);
 
         ownerance[_to] = ownerance[_to].add(_value);
         ownerance[_from] = ownerance[_from].sub(_value);
@@ -273,17 +273,17 @@ contract MntToken {
         returns (bool success)
     {
         if (_locktype == 1) {
-            if (_delta &lt; 6 * 30 days) {
+            if (_delta < 6 * 30 days) {
                 return false;
             }
             uint _more1 = _delta.sub(6 * 30 days);
             uint _step1 = _more1 / 30 days;
-            for(uint8 i = 0; i &lt; 10; i++) {
-                if (unlockedstep[_locker] == i &amp;&amp; i &lt; 9 &amp;&amp; i &lt;= _step1 ) {
+            for(uint8 i = 0; i < 10; i++) {
+                if (unlockedstep[_locker] == i && i < 9 && i <= _step1 ) {
                     ownerance[_locker] = ownerance[_locker].add(lockedance[_locker] / (10 - i));
                     lockedance[_locker] = lockedance[_locker].sub(lockedance[_locker] / (10 - i));
                     unlockedstep[_locker] = i + 1;
-                } else if (i == 9 &amp;&amp; unlockedstep[_locker] == 9 &amp;&amp; _step1 == 9){
+                } else if (i == 9 && unlockedstep[_locker] == 9 && _step1 == 9){
                     ownerance[_locker] = ownerance[_locker].add(lockedance[_locker]);
                     lockedance[_locker] = 0;
                     unlockedstep[_locker] = 0;
@@ -291,17 +291,17 @@ contract MntToken {
                 }
             }
         } else if (_locktype == 2) {
-            if (_delta &lt; 30 days) {
+            if (_delta < 30 days) {
                 return false;
             }
             uint _more2 = _delta - 30 days;
             uint _step2 = _more2 / 30 days;
-            for(uint8 j = 0; j &lt; 11; j++) {
-                if (unlockedstep[_locker] == j &amp;&amp; j &lt; 10 &amp;&amp; j &lt;= _step2 ) {
+            for(uint8 j = 0; j < 11; j++) {
+                if (unlockedstep[_locker] == j && j < 10 && j <= _step2 ) {
                     ownerance[_locker] = ownerance[_locker].add(lockedance[_locker] / (11 - j));
                     lockedance[_locker] = lockedance[_locker].sub(lockedance[_locker] / (11 - j));
                     unlockedstep[_locker] = j + 1;
-                } else if (j == 10 &amp;&amp; unlockedstep[_locker] == 10 &amp;&amp; _step2 == 10){
+                } else if (j == 10 && unlockedstep[_locker] == 10 && _step2 == 10){
                     ownerance[_locker] = ownerance[_locker].add(lockedance[_locker]);
                     lockedance[_locker] = 0;
                     unlockedstep[_locker] = 0;
@@ -322,11 +322,11 @@ contract MntToken {
         isNotFrozen
         returns (bool success)
     {
-        require(now &gt; RELEASE_BASE_TIME);
+        require(now > RELEASE_BASE_TIME);
         uint delta = now - RELEASE_BASE_TIME;
         uint lockedAmount;
-        for (uint i = 0; i &lt; lockedOwner.length; i++) {
-            if ( lockedance[lockedOwner[i]] &gt; 0) {
+        for (uint i = 0; i < lockedOwner.length; i++) {
+            if ( lockedance[lockedOwner[i]] > 0) {
                 lockedAmount = lockedance[lockedOwner[i]];
                 unlock(lockedOwner[i], delta, lockedtype[lockedOwner[i]]);
                 totalCirculating = totalCirculating.add(lockedAmount - lockedance[lockedOwner[i]]);

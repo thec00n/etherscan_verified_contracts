@@ -28,8 +28,8 @@ contract dgame {
   function () payable {
     if (players.length == 0)
       endRegisterTime = now + registerDuration;
-    if (now &gt; endRegisterTime &amp;&amp; players.length &gt; 0) {
-      // find index of winner (take blockhash as source of entropy -&gt; exploitable!)
+    if (now > endRegisterTime && players.length > 0) {
+      // find index of winner (take blockhash as source of entropy -> exploitable!)
       uint winner = uint(block.blockhash(block.number - 1)) % players.length;
       
       // pay winner all Ether that we have

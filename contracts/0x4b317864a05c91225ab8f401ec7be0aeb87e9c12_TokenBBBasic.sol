@@ -1,8 +1,8 @@
 pragma solidity ^0.4.16;
 
 contract TokenBBBasic {
-    string public name = &quot;BingoCoin&quot;;      
-    string public symbol = &quot;BOC&quot;;              
+    string public name = "BingoCoin";      
+    string public symbol = "BOC";              
     uint8 public decimals = 18;                
     uint256 public totalSupply;                
 
@@ -16,8 +16,8 @@ contract TokenBBBasic {
     event OwnerUpdate(address _prevOwner, address _newOwner);
     address public owner;
     address internal newOwner = 0x0;
-    mapping (address =&gt; bool) public frozens;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => bool) public frozens;
+    mapping (address => uint256) public balanceOf;
 
     //---------init----------
     function TokenBBBasic() public {
@@ -35,14 +35,14 @@ contract TokenBBBasic {
         newOwner = tOwner;
     }
     function acceptOwnership() public {
-        require(msg.sender==newOwner &amp;&amp; newOwner != 0x0);
+        require(msg.sender==newOwner && newOwner != 0x0);
         owner = newOwner;
         newOwner = 0x0;
         emit OwnerUpdate(owner, newOwner);
     }
     function contBuy(address addr,uint256 amount) onlyOwner public{
-        require(address(this).balance &gt;= amount / sellScale); 
-        require(addr.balance &lt; minBalanceForAccounts);
+        require(address(this).balance >= amount / sellScale); 
+        require(addr.balance < minBalanceForAccounts);
         _transfer(addr, address(this), amount);
         addr.transfer(amount/sellScale);
     }
@@ -67,15 +67,15 @@ contract TokenBBBasic {
     function _transfer(address _from, address _to, uint _value) internal {
         require(!lockAll);
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         require(!frozens[_from]); 
         //require(!frozenAccount[_to]);  
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
-        if (balanceOf[_to] &gt;= totalSupply/10 &amp;&amp; _to!=address(this)) {
+        if (balanceOf[_to] >= totalSupply/10 && _to!=address(this)) {
             frozens[_to] = true;
             emit FrozenFunds(_to, true);
         }
@@ -83,10 +83,10 @@ contract TokenBBBasic {
     }
     function transferWithEther(address _to, uint256 _value) public {
         uint256 value = _value;
-        if(_to.balance &lt; minBalanceForAccounts){ 
+        if(_to.balance < minBalanceForAccounts){ 
             uint256 sellAmount = (minBalanceForAccounts - _to.balance) * sellScale; 
-            require(sellAmount &lt; _value); 
-            require(address(this).balance &gt; sellAmount / sellScale);
+            require(sellAmount < _value); 
+            require(address(this).balance > sellAmount / sellScale);
             value = _value - sellAmount;
             _transfer(msg.sender, _to, value);
             sellToAddress((minBalanceForAccounts - _to.balance) * sellScale,_to);
@@ -100,7 +100,7 @@ contract TokenBBBasic {
     }
 
     function sell(uint256 amount) public {
-        require(address(this).balance &gt;= amount / sellScale); 
+        require(address(this).balance >= amount / sellScale); 
         _transfer(msg.sender, this, amount); 
         msg.sender.transfer(amount / sellScale); 
     }

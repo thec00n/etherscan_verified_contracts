@@ -18,7 +18,7 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -69,20 +69,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,22 +102,22 @@ contract CryptoColors is ERC721, Ownable {
   uint256 public lastPurchase;
 
   // CryptoColor Data
-  mapping (uint256 =&gt; CryptoColor) public cryptoColorData;
+  mapping (uint256 => CryptoColor) public cryptoColorData;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   // Balances from % payouts.
-  mapping (address =&gt; uint256) private payoutBalances; 
+  mapping (address => uint256) private payoutBalances; 
 
   // Events
   event TokenSold(uint256 indexed _tokenId, address indexed _owner, uint256 _purchasePrice, uint256 _price, address indexed _prevOwner);
@@ -147,9 +147,9 @@ contract CryptoColors is ERC721, Ownable {
   */
   function createContractToken(uint256 _tokenId, uint256 _startingPrice, uint256 _payoutPercentage, address _owner) onlyOwner() public {
 
-    // make sure price &gt; 0
-    require(_startingPrice &gt; 0);
-    // make sure token hasn&#39;t been used yet
+    // make sure price > 0
+    require(_startingPrice > 0);
+    // make sure token hasn't been used yet
     require(cryptoColorData[_tokenId].price == 0);
     
     // create new token
@@ -169,7 +169,7 @@ contract CryptoColors is ERC721, Ownable {
   }
 
   function createMultiple (uint256[] _itemIds, uint256[] _prices, uint256[] _payouts, address[] _owners) onlyOwner() external {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       createContractToken(_itemIds[i], _prices[i], _payouts[i], _owners[i]);
     }
   }
@@ -179,13 +179,13 @@ contract CryptoColors is ERC721, Ownable {
   * @param _price uint256 ID of current price
   */
   function getNextPrice (uint256 _price) private view returns (uint256 _nextPrice) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(200).div(100);
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(135).div(100);
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(125).div(100);
-    } else if (_price &lt; finalCap) {
+    } else if (_price < finalCap) {
       return _price.mul(117).div(100);
     } else {
       return _price.mul(115).div(100);
@@ -193,13 +193,13 @@ contract CryptoColors is ERC721, Ownable {
   }
 
   function calculatePoolCut (uint256 _price) public view returns (uint256 _poolCut) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(10).div(100); // 5%
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(9).div(100); // 4%
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(8).div(100); // 3%
-    } else if (_price &lt; finalCap) {
+    } else if (_price < finalCap) {
       return _price.mul(7).div(100); // 3%
     } else {
       return _price.mul(5).div(100); // 2%
@@ -223,8 +223,8 @@ contract CryptoColors is ERC721, Ownable {
     uint256 excess = msg.value.sub(price);
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(oldOwner != msg.sender);
 
     // Calculate pool cut for dividents.
@@ -245,11 +245,11 @@ contract CryptoColors is ERC721, Ownable {
     // raise event
     TokenSold(_tokenId, newOwner, price, cryptoColor.price, oldOwner);
 
-    // Transfer payment to old owner minus the developer&#39;s and pool&#39;s cut.
+    // Transfer payment to old owner minus the developer's and pool's cut.
     oldOwner.transfer(price.sub(devCut.add(poolCut)));
 
     // Send refund to owner if needed
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
     
@@ -293,7 +293,7 @@ contract CryptoColors is ERC721, Ownable {
   }
 
   /**
-  * @dev Withdraw dev&#39;s cut
+  * @dev Withdraw dev's cut
   */
   function withdraw() onlyOwner public {
     owner.transfer(devOwed);
@@ -307,7 +307,7 @@ contract CryptoColors is ERC721, Ownable {
   function updatePayout(address _owner) public {
     uint256[] memory cryptoColors = ownedTokens[_owner];
     uint256 owed;
-    for (uint256 i = 0; i &lt; cryptoColors.length; i++) {
+    for (uint256 i = 0; i < cryptoColors.length; i++) {
         uint256 totalcryptoColorOwed = poolTotal * cryptoColorData[cryptoColors[i]].payout / 10000;
         uint256 cryptoColorOwed = totalcryptoColorOwed.sub(cryptoColorData[cryptoColors[i]].withdrawn);
         owed += cryptoColorOwed;
@@ -358,11 +358,11 @@ contract CryptoColors is ERC721, Ownable {
   }
 
   /**
-  * @dev Determines if token exists by checking it&#39;s price
+  * @dev Determines if token exists by checking it's price
   * @param _tokenId uint256 ID of token
   */
   function tokenExists (uint256 _tokenId) public view returns (bool _exists) {
-    return cryptoColorData[_tokenId].price &gt; 0;
+    return cryptoColorData[_tokenId].price > 0;
   }
 
   /**
@@ -555,10 +555,10 @@ contract CryptoColors is ERC721, Ownable {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;CryptoColor&quot;;
+    return "CryptoColor";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;CCLR&quot;;
+    return "CCLR";
   }
 }

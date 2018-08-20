@@ -4,9 +4,9 @@ pragma solidity ^0.4.2;
 contract SimpleMixer {
     
     struct Deal{
-        mapping(address=&gt;uint) deposit;
+        mapping(address=>uint) deposit;
         uint                   depositSum;
-        mapping(address=&gt;bool) claims;
+        mapping(address=>bool) claims;
 	    uint 		           numClaims;
         uint                   claimSum;
 
@@ -48,7 +48,7 @@ contract SimpleMixer {
         	         _claimDepositInWei,
         	         _minNumClaims,
         	         false,
-        	         &quot;_depositDurationInHours and _claimDurationInHours must be positive&quot; );
+        	         "_depositDurationInHours and _claimDurationInHours must be positive" );
             return ReturnValue.Error;
         }
         _deals.length++;
@@ -72,7 +72,7 @@ contract SimpleMixer {
     	         _claimDepositInWei,
     	         _minNumClaims,
     	         true,
-    	         &quot;all good&quot; );
+    	         "all good" );
         return ReturnValue.Ok;
     }
     
@@ -82,23 +82,23 @@ contract SimpleMixer {
         string memory error;
     	// validations
     	if( !_deals[dealId].active ){
-    	    error = &quot;deal is not active&quot;;
-    	    //ErrorLog( msg.sender, dealId, &quot;makeClaim: deal is not active&quot;);
+    	    error = "deal is not active";
+    	    //ErrorLog( msg.sender, dealId, "makeClaim: deal is not active");
     	    errorDetected = true;
     	}
-        if( deal.startTime + deal.claimDurationInSec &lt; now ){
-            error = &quot;claim phase already ended&quot;;            
-            //ErrorLog( msg.sender, dealId, &quot;makeClaim: claim phase already ended&quot; );
+        if( deal.startTime + deal.claimDurationInSec < now ){
+            error = "claim phase already ended";            
+            //ErrorLog( msg.sender, dealId, "makeClaim: claim phase already ended" );
             errorDetected = true;
         }
         if( msg.value != deal.claimDepositInWei ){
-            error = &quot;msg.value must be equal to claim deposit unit&quot;;            
-            //ErrorLog( msg.sender, dealId, &quot;makeClaim: msg.value must be equal to claim deposit unit&quot; );
+            error = "msg.value must be equal to claim deposit unit";            
+            //ErrorLog( msg.sender, dealId, "makeClaim: msg.value must be equal to claim deposit unit" );
             errorDetected = true;
         }
     	if( deal.claims[msg.sender] ){
-    	    error = &quot;cannot claim twice with the same address&quot;;
-            //ErrorLog( msg.sender, dealId, &quot;makeClaim: cannot claim twice with the same address&quot; );
+    	    error = "cannot claim twice with the same address";
+            //ErrorLog( msg.sender, dealId, "makeClaim: cannot claim twice with the same address" );
             errorDetected = true;
     	}
     	
@@ -113,7 +113,7 @@ contract SimpleMixer {
         deal.claims[msg.sender] = true;
 	    deal.numClaims++;
 
-	    Claim( msg.sender, dealId, true, &quot;all good&quot; );
+	    Claim( msg.sender, dealId, true, "all good" );
 	    
 	    if( deal.numClaims == deal.minNumClaims ) EnoughClaims( dealId );
 	    
@@ -125,41 +125,41 @@ contract SimpleMixer {
         string memory error;
     	// validations
         if( msg.value == 0 ){
-            error = &quot;deposit value must be positive&quot;;
-            //ErrorLog( msg.sender, dealId, &quot;makeDeposit: deposit value must be positive&quot;);
+            error = "deposit value must be positive";
+            //ErrorLog( msg.sender, dealId, "makeDeposit: deposit value must be positive");
             errorDetected = true;
         }
     	if( !_deals[dealId].active ){
-    	    error = &quot;deal is not active&quot;;
-    	    //ErrorLog( msg.sender, dealId, &quot;makeDeposit: deal is not active&quot;);
+    	    error = "deal is not active";
+    	    //ErrorLog( msg.sender, dealId, "makeDeposit: deal is not active");
     	    errorDetected = true;
     	}
         Deal deal = _deals[dealId];
-        if( deal.startTime + deal.claimDurationInSec &gt; now ){
-            error = &quot;contract is still in claim phase&quot;;
-    	    //ErrorLog( msg.sender, dealId, &quot;makeDeposit: contract is still in claim phase&quot;);
+        if( deal.startTime + deal.claimDurationInSec > now ){
+            error = "contract is still in claim phase";
+    	    //ErrorLog( msg.sender, dealId, "makeDeposit: contract is still in claim phase");
     	    errorDetected = true;
         }
-        if( deal.startTime + deal.claimDurationInSec + deal.depositDurationInSec &lt; now ){
-            error = &quot;deposit phase is over&quot;;
-    	    //ErrorLog( msg.sender, dealId, &quot;makeDeposit: deposit phase is over&quot;);
+        if( deal.startTime + deal.claimDurationInSec + deal.depositDurationInSec < now ){
+            error = "deposit phase is over";
+    	    //ErrorLog( msg.sender, dealId, "makeDeposit: deposit phase is over");
     	    errorDetected = true;
         }
-        if( ( msg.value % deal.claimValueInWei ) &gt; 0 ){
-            error = &quot;deposit value must be a multiple of claim value&quot;;
-    	    //ErrorLog( msg.sender, dealId, &quot;makeDeposit: deposit value must be a multiple of claim value&quot;);
+        if( ( msg.value % deal.claimValueInWei ) > 0 ){
+            error = "deposit value must be a multiple of claim value";
+    	    //ErrorLog( msg.sender, dealId, "makeDeposit: deposit value must be a multiple of claim value");
     	    errorDetected = true;
         }
-    	if( deal.deposit[msg.sender] &gt; 0 ){
-    	    error = &quot;cannot deposit twice with the same address&quot;;
-    	    //ErrorLog( msg.sender, dealId, &quot;makeDeposit: cannot deposit twice with the same address&quot;);
+    	if( deal.deposit[msg.sender] > 0 ){
+    	    error = "cannot deposit twice with the same address";
+    	    //ErrorLog( msg.sender, dealId, "makeDeposit: cannot deposit twice with the same address");
     	    errorDetected = true;
     	}
-    	if( deal.numClaims &lt; deal.minNumClaims ){
-    	    error = &quot;deal is off as there are not enough claims. Call withdraw with you claimer address&quot;;
+    	if( deal.numClaims < deal.minNumClaims ){
+    	    error = "deal is off as there are not enough claims. Call withdraw with you claimer address";
     	    /*ErrorLog( msg.sender,
     	              dealId,
-    	              &quot;makeDeposit: deal is off as there are not enough claims. Call withdraw with you claimer address&quot;);*/
+    	              "makeDeposit: deal is off as there are not enough claims. Call withdraw with you claimer address");*/
     	    errorDetected = true;
     	}
     	
@@ -173,12 +173,12 @@ contract SimpleMixer {
         deal.depositSum += msg.value;
         deal.deposit[msg.sender] = msg.value;
 
-    	if( deal.depositSum &gt;= deal.claimSum ){
+    	if( deal.depositSum >= deal.claimSum ){
     	    deal.fullyFunded = true;
     	    DealFullyFunded( dealId );
     	}
     
-    	Deposit( msg.sender, dealId, msg.value, true, &quot;all good&quot; );
+    	Deposit( msg.sender, dealId, msg.value, true, "all good" );
 	    return ReturnValue.Ok;    	
     }
         
@@ -187,18 +187,18 @@ contract SimpleMixer {
         bool errorDetected = false;
         string memory error;
         Deal deal = _deals[dealId];
-    	bool enoughClaims = deal.numClaims &gt;= deal.minNumClaims;
+    	bool enoughClaims = deal.numClaims >= deal.minNumClaims;
     	if( ! enoughClaims ){
-    	    if( deal.startTime + deal.claimDurationInSec &gt; now ){
-    	        error = &quot;claim phase not over yet&quot;;
-    	        //ErrorLog( msg.sender, dealId, &quot;withdraw: claim phase not over yet&quot;);
+    	    if( deal.startTime + deal.claimDurationInSec > now ){
+    	        error = "claim phase not over yet";
+    	        //ErrorLog( msg.sender, dealId, "withdraw: claim phase not over yet");
     	        errorDetected = true;
     	    }
     	}
     	else{
-    	    if( deal.startTime + deal.depositDurationInSec + deal.claimDurationInSec &gt; now ){
-    	        error = &quot;deposit phase not over yet&quot;;
-    	        //ErrorLog( msg.sender, dealId, &quot;withdraw: deposit phase not over yet&quot;);
+    	    if( deal.startTime + deal.depositDurationInSec + deal.claimDurationInSec > now ){
+    	        error = "deposit phase not over yet";
+    	        //ErrorLog( msg.sender, dealId, "withdraw: deposit phase not over yet");
     	        errorDetected = true;
     	    }
     	}
@@ -212,12 +212,12 @@ contract SimpleMixer {
 	    // actual withdraw
 	    bool publicWithdraw;
     	uint withdrawedValue = 0;
-        if( (! deal.fullyFunded) &amp;&amp; enoughClaims ){
+        if( (! deal.fullyFunded) && enoughClaims ){
 	        publicWithdraw = true;
             uint depositValue = deal.deposit[msg.sender];
             if( depositValue == 0 ){
-                Withdraw( msg.sender, dealId, 0, publicWithdraw, false, &quot;address made no deposit. Note that this should be called with the public address&quot; );
-    	        //ErrorLog( msg.sender, dealId, &quot;withdraw: address made no deposit. Note that this should be called with the public address&quot;);
+                Withdraw( msg.sender, dealId, 0, publicWithdraw, false, "address made no deposit. Note that this should be called with the public address" );
+    	        //ErrorLog( msg.sender, dealId, "withdraw: address made no deposit. Note that this should be called with the public address");
     	        return ReturnValue.Error; // function non payable
             }
             
@@ -234,8 +234,8 @@ contract SimpleMixer {
         else{
     	    publicWithdraw = false;
             if( ! deal.claims[msg.sender] ){
-                Withdraw( msg.sender, dealId, 0, publicWithdraw, false, &quot;address made no claims. Note that this should be called with the secret address&quot; );
-    	        //ErrorLog( msg.sender, dealId, &quot;withdraw: address made no claims. Note that this should be called with the secret address&quot;);
+                Withdraw( msg.sender, dealId, 0, publicWithdraw, false, "address made no claims. Note that this should be called with the secret address" );
+    	        //ErrorLog( msg.sender, dealId, "withdraw: address made no claims. Note that this should be called with the secret address");
     	        return ReturnValue.Error; // function non payable
             }
 	        if( enoughClaims ) withdrawedValue = deal.claimDepositInWei + deal.claimValueInWei;
@@ -245,7 +245,7 @@ contract SimpleMixer {
             if( ! msg.sender.send(withdrawedValue) ) throw;
         }
 	    
-        Withdraw( msg.sender, dealId, withdrawedValue, publicWithdraw, true, &quot;all good&quot; );
+        Withdraw( msg.sender, dealId, withdrawedValue, publicWithdraw, true, "all good" );
         return ReturnValue.Ok;
     }    
 

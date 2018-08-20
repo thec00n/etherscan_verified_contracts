@@ -5,13 +5,13 @@ contract Election{
     address public manager; // contract manager
     
     bool public isActive;
-    mapping(uint256 =&gt; address[]) public users; // all votes
-    mapping(address =&gt; uint256[]) public votes; // to fetch one user&#39;s votes
+    mapping(uint256 => address[]) public users; // all votes
+    mapping(address => uint256[]) public votes; // to fetch one user's votes
     uint256 public totalUsers; // total users participated (not unique user count)
     uint256 public totalVotes; // for calculating avg vote guess on client side. (stats only)
     address[] public winners; // winner list. will be set after manager calls finalizeContract function
     uint256 public winnerPrice; // reward per user for successfull guess.
-    uint256 public voteResult; // candidate&#39;s vote result will be set after election.
+    uint256 public voteResult; // candidate's vote result will be set after election.
     
     
     // minimum reqired ether to enter competition.
@@ -40,12 +40,12 @@ contract Election{
     
     /**
     * user can join competition with this function.
-    * user&#39;s guess multiplied with 10 before calling this function for not using decimal numbers.
-    * ex: user guess: 40.2 -&gt; 402
+    * user's guess multiplied with 10 before calling this function for not using decimal numbers.
+    * ex: user guess: 40.2 -> 402
     **/
     function voteRequest(uint256 guess) public payable mIsActive mRequiredValue {
-        require(guess &gt; 0);
-        require(guess &lt;= 1000);
+        require(guess > 0);
+        require(guess <= 1000);
         address[] storage list = users[guess];
         list.push(msg.sender);
         votes[msg.sender].push(guess);
@@ -53,7 +53,7 @@ contract Election{
         totalVotes += guess;
     }
     
-    // get user&#39;s vote history.
+    // get user's vote history.
     function getUserVotes() public view returns(uint256[]){
         return votes[msg.sender];
     }
@@ -67,7 +67,7 @@ contract Election{
         );
     }
     
-    // for pausing contract. contract will be paused on election day. new users can&#39;t join competition after contract paused.
+    // for pausing contract. contract will be paused on election day. new users can't join competition after contract paused.
     function pause() public mManagerOnly {
         isActive = !isActive;
     }
@@ -95,7 +95,7 @@ contract Election{
                 secondaryList = users[winningNumber+index];
                 winnersCount = list.length + secondaryList.length;
 
-                if(winnersCount &gt; 0){
+                if(winnersCount > 0){
                     loop = false;
                 }
                 else{
@@ -111,12 +111,12 @@ contract Election{
         // set winner list
         winners = list;
         // transfer eth to winners.
-        for (uint256 i = 0; i &lt; list.length; i++) {
+        for (uint256 i = 0; i < list.length; i++) {
             list[i].transfer(reward);
         }
                 
         // if anyone guessed the correct percent secondaryList will be empty array.
-        for (uint256 j = 0; j &lt; secondaryList.length; j++) {
+        for (uint256 j = 0; j < secondaryList.length; j++) {
             // transfer eth to winners.
             secondaryList[j].transfer(reward);
             winners.push(secondaryList[j]); // add to winners

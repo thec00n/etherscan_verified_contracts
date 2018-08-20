@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
  
 contract PandaCapitalFund {
-    string public symbol = &quot;Panda Capital&quot;;
-    string public name = &quot;PFXC&quot;;
+    string public symbol = "Panda Capital";
+    string public name = "PFXC";
     uint8 public constant decimals = 8;
     uint256 _totalSupply = 10000000000000000;
     address owner = 0xb09574438BfCcB96E71eDE6f92FB1749DfCF3A05;
@@ -11,9 +11,9 @@ contract PandaCapitalFund {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
  
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
  
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
  
     function PandaCapitalFund(address adr) {
         owner = adr;        
@@ -21,7 +21,7 @@ contract PandaCapitalFund {
    
     function SetupToken(string tokenName, string tokenSymbol, uint256 tokenSupply)
     {
-        if (msg.sender == owner &amp;&amp; setupDone == false)
+        if (msg.sender == owner && setupDone == false)
         {
             symbol = tokenSymbol;
             name = tokenName;
@@ -40,9 +40,9 @@ contract PandaCapitalFund {
     }
  
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -57,10 +57,10 @@ contract PandaCapitalFund {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

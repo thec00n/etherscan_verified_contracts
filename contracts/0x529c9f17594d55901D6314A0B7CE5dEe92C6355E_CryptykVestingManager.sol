@@ -10,7 +10,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -32,7 +32,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -68,14 +68,14 @@ contract CryptykVestingManager is Ambi2EnabledFull {
     uint public schedule;
     uint public presaleDeadline;
 
-    function setVesting(VestingInterface _vesting) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setVesting(VestingInterface _vesting) onlyRole('admin') returns(bool) {
         require(address(vesting) == 0x0);
 
         vesting = _vesting;
         return true;
     }
 
-    function setAssetProxy(AssetProxyInterface _assetProxy) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setAssetProxy(AssetProxyInterface _assetProxy) onlyRole('admin') returns(bool) {
         require(address(assetProxy) == 0x0);
         require(address(vesting) != 0x0);
 
@@ -84,7 +84,7 @@ contract CryptykVestingManager is Ambi2EnabledFull {
         return true;
     }
 
-    function setIntervalSchedulePresale(uint _paymentInterval, uint _schedule, uint _presaleDeadline) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setIntervalSchedulePresale(uint _paymentInterval, uint _schedule, uint _presaleDeadline) onlyRole('admin') returns(bool) {
         paymentInterval = _paymentInterval;
         schedule = _schedule;
         presaleDeadline = _presaleDeadline;
@@ -92,7 +92,7 @@ contract CryptykVestingManager is Ambi2EnabledFull {
     }
 
     function transfer(address _to, uint _value) returns(bool) {
-        if (now &lt; presaleDeadline) {
+        if (now < presaleDeadline) {
             require(assetProxy.transferFrom(msg.sender, address(this), _value));
             require(vesting.createVesting(_to, assetProxy, _value, 1, paymentInterval, schedule));
             return true;
@@ -105,7 +105,7 @@ contract CryptykVestingManager is Ambi2EnabledFull {
     }
 
     function transferWithReference(address _to, uint _value, string _reference) returns(bool) {
-        if (now &lt; presaleDeadline) {
+        if (now < presaleDeadline) {
             require(assetProxy.transferFromWithReference(msg.sender, address(this), _value, _reference));
             require(vesting.createVesting(_to, assetProxy, _value, 1, paymentInterval, schedule));
             return true;

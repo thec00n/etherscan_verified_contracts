@@ -23,19 +23,19 @@ library SafeMath {
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure  returns (uint256) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -82,15 +82,15 @@ contract OnlyOwner {
 contract StandardToken is ERC20{
   using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Minted(address receiver, uint256 amount);
     
     
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool success){
       //prevent sending of tokens from genesis address or to self
-      require(_from != address(0) &amp;&amp; _from != _to);
+      require(_from != address(0) && _from != _to);
       require(_to != address(0));
       //subtract tokens from the sender on transfer
       balances[_from] = balances[_from].safeSub(_value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20{
 
   function transfer(address _to, uint256 _value) public returns (bool success) 
   { 
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
       _transfer(msg.sender,_to,_value);
       emit Transfer(msg.sender, _to, _value);
       return true;
@@ -110,9 +110,9 @@ contract StandardToken is ERC20{
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
       uint256 _allowance = allowed[_from][msg.sender];
       //value must be less than allowed value
-      require(_value &lt;= _allowance);
+      require(_value <= _allowance);
       //balance of sender + token value transferred by sender must be greater than balance of sender
-      require(balances[_to] + _value &gt; balances[_to]);
+      require(balances[_to] + _value > balances[_to]);
       //call transfer function
       _transfer(_from,_to,_value);
       //subtract the amount allowed to the sender 
@@ -133,7 +133,7 @@ contract StandardToken is ERC20{
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -167,9 +167,9 @@ contract StandardToken is ERC20{
 contract XRT is StandardToken, OnlyOwner{
   uint8 public constant decimals = 18;
     uint256 private constant multiplier = 10**27;
-    string public constant name = &quot;XRT Token&quot;;
-    string public constant symbol = &quot;XRT&quot;;
-    string public version = &quot;X1.1&quot;;
+    string public constant name = "XRT Token";
+    string public constant symbol = "XRT";
+    string public version = "X1.1";
     uint256 private maxSupply = multiplier;
     uint256 public totalSupply = (50*maxSupply)/100;
     uint256 private approvalCount =0;
@@ -193,7 +193,7 @@ contract XRT is StandardToken, OnlyOwner{
 
   modifier canMint() {
     require(!mintingFinished);
-    require(totalSupply &lt;= maxSupply);
+    require(totalSupply <= maxSupply);
     _;
   }
 
@@ -205,7 +205,7 @@ contract XRT is StandardToken, OnlyOwner{
    */
   function mint(address _to, uint256 _amount) isOwner canMint public returns (bool) {
       uint256 newAmount = _amount.safeMul(multiplier.safeDiv(100));
-      require(totalSupply &lt;= maxSupply.safeSub(newAmount));
+      require(totalSupply <= maxSupply.safeSub(newAmount));
       totalSupply = totalSupply.safeAdd(newAmount);
     balances[_to] = balances[_to].safeAdd(newAmount);
     emit Mint(_to, newAmount);
@@ -228,7 +228,7 @@ contract XRT is StandardToken, OnlyOwner{
     }
     
     function setMinApprovalCount(uint _value) public isController returns (bool){
-        require(_value &gt; 0);
+        require(_value > 0);
         minApproval = _value;
         return true;
     }
@@ -242,7 +242,7 @@ contract XRT is StandardToken, OnlyOwner{
     }
     
     function controllerApproval(address _from, uint256 _value) public isOwner returns (bool) {
-        require(minApproval &lt;= approvalCount); 
+        require(minApproval <= approvalCount); 
         balances[_from] = balances[_from].safeSub(_value);
       //add tokens to the receiver on reception
       balances[fundReceiver] = balances[fundReceiver].safeAdd(_value);

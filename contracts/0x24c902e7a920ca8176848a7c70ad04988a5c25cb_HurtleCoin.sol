@@ -14,12 +14,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ contract Ownable {
 contract RefundVault is Ownable {
     using SafeMath for uint256;
     enum State { Active, Refunding, Closed }
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
     event Closed();
@@ -89,13 +89,13 @@ contract HurtleCoin is ERC20, Ownable {
 
     RefundVault public vault;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 totalSupply_; // of hurtle token
 
-    string public name = &#39;HurtleCoin&#39;; // Defines the name of the token.
-    string public symbol = &#39;HRTL&#39;; // Defines the symbol of the token.
+    string public name = 'HurtleCoin'; // Defines the name of the token.
+    string public symbol = 'HRTL'; // Defines the symbol of the token.
     uint256 public decimals = 4; // Number of decimal places for the token.
     uint256 public initialSupply = 200000000; //200m
 
@@ -124,7 +124,7 @@ contract HurtleCoin is ERC20, Ownable {
     State public crowdSaleState;
 
     modifier nonZero() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -196,9 +196,9 @@ contract HurtleCoin is ERC20, Ownable {
 
     function transferTokens(address _recipient, uint256 tokens_in_cents) internal returns (bool) {
         require(
-            tokens_in_cents &gt; 0
-            &amp;&amp; _recipient != owner
-            &amp;&amp; tokens_in_cents &lt; balances[owner]
+            tokens_in_cents > 0
+            && _recipient != owner
+            && tokens_in_cents < balances[owner]
         );
 
         balances[owner] = balances[owner].sub(tokens_in_cents);
@@ -209,9 +209,9 @@ contract HurtleCoin is ERC20, Ownable {
     }
 
     function transfer(address _to, uint256 _tokens_in_cents) public returns (bool) {
-        require(_tokens_in_cents &gt; 0);
+        require(_tokens_in_cents > 0);
         require(_to != msg.sender);
-        require(balances[msg.sender] &gt;= _tokens_in_cents);
+        require(balances[msg.sender] >= _tokens_in_cents);
 
         if(balanceOf(_to) == 0) {  //increase invester count if new invester
             investorCount++;
@@ -229,10 +229,10 @@ contract HurtleCoin is ERC20, Ownable {
     }
 
     function transferFrom(address _from, address _to, uint256 _tokens_in_cents) public returns (bool success) {
-        require(_tokens_in_cents &gt; 0);
+        require(_tokens_in_cents > 0);
         require(_from != _to);
-        require(balances[_from] &gt;= _tokens_in_cents);
-        require(allowed[_from][msg.sender] &gt;= _tokens_in_cents);
+        require(balances[_from] >= _tokens_in_cents);
+        require(allowed[_from][msg.sender] >= _tokens_in_cents);
 
         if(balanceOf(_to) == 0) {  //increase invester count if new invester
             investorCount++;
@@ -261,7 +261,7 @@ contract HurtleCoin is ERC20, Ownable {
     }
 
     function calculateTokens(uint256 _amount) internal returns (uint256 tokens){
-        if(crowdSaleState == State.Preparing &amp;&amp; isPreSalePeriod()) {
+        if(crowdSaleState == State.Preparing && isPreSalePeriod()) {
             crowdSaleState = State.PreSale;
         }
         if(isCrowdSaleStatePreSale()) {
@@ -320,12 +320,12 @@ contract HurtleCoin is ERC20, Ownable {
       */
 
     function isPreSalePeriod() public constant returns (bool) {
-        if(preSaleRaised &gt; preSaleMaxCapInWei || now &gt;= presaleEndTimestamp) {
+        if(preSaleRaised > preSaleMaxCapInWei || now >= presaleEndTimestamp) {
             crowdSaleState = State.PresaleFinalized;
             //icoStartTimestamp = now.sub(10); //CONFIRM
             return false;
         } else {
-            return now &gt; presaleStartTimestamp;
+            return now > presaleStartTimestamp;
         }
     }
 
@@ -334,18 +334,18 @@ contract HurtleCoin is ERC20, Ownable {
       */
 
     function isICOPeriod() public constant returns (bool) {
-        if (icoRaised &gt; icoHardCapInWei || now &gt;= icoEndTimestamp){
+        if (icoRaised > icoHardCapInWei || now >= icoEndTimestamp){
             crowdSaleState = State.ICOFinalized;
             return false;
         } else {
-            return now &gt; icoStartTimestamp;
+            return now > icoStartTimestamp;
         }
     }
 
     // Called by the owner of the contract to close the Sale
     function endCrowdSale() public onlyOwner {
-        require(now &gt;= icoEndTimestamp || icoRaised &gt;= icoSoftCapInWei);
-        if(icoRaised &gt;= icoSoftCapInWei){
+        require(now >= icoEndTimestamp || icoRaised >= icoSoftCapInWei);
+        if(icoRaised >= icoSoftCapInWei){
             crowdSaleState = State.Success;
             vault.close(); //send funds to owner
         } else {

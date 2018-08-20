@@ -30,11 +30,11 @@ contract AddressTree is Owned{
     uint256 public constant TreeLim = 2;
     
     struct Tree{
-        mapping(uint256 =&gt; Tree) Items;
+        mapping(uint256 => Tree) Items;
         address Item;
     }
     
-    mapping(address =&gt; Tree) public TreeList; 
+    mapping(address => Tree) public TreeList; 
     
     function CheckTree(address root)
         internal
@@ -60,7 +60,7 @@ contract AddressTree is Owned{
         CheckTree(root);
         CheckTree(target);
         Tree storage CurrentTree = TreeList[root];
-        for (uint256 i=0; i&lt;TreeLim; i++){
+        for (uint256 i=0; i<TreeLim; i++){
             if (CurrentTree.Items[i].Item == address(0x0)){
                 
                 Tree storage TargetTree = TreeList[target];
@@ -76,7 +76,7 @@ contract AddressTree is Owned{
         public    
         onlyOwner
     {
-        require(index &lt; TreeLim);
+        require(index < TreeLim);
         CheckTree(root);
         CheckTree(target);
         Tree storage CurrentTree = TreeList[root];
@@ -93,7 +93,7 @@ contract AddressTree is Owned{
     {
         address[TreeLim] memory toReturn;
         Tree storage CurrentTree = TreeList[target];
-        for (uint256 i=0; i&lt;TreeLim; i++){
+        for (uint256 i=0; i<TreeLim; i++){
             toReturn[i] = CurrentTree.Items[i].Item;
         }
         return toReturn;

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
 contract Nicks {
-  mapping (address =&gt; string) private nickOfOwner;
-  mapping (string =&gt; address) private ownerOfNick;
+  mapping (address => string) private nickOfOwner;
+  mapping (string => address) private ownerOfNick;
 
   event Set (string indexed _nick, address indexed _owner);
   event Unset (string indexed _nick, address indexed _owner);
@@ -29,13 +29,13 @@ modifier onlyOwner() {
   }
 
   function set (string _nick) public {
-    require(bytes(_nick).length &gt; 2);
+    require(bytes(_nick).length > 2);
     require(ownerOf(_nick) == address(0));
 
     address owner = msg.sender;
     string storage oldNick = nickOfOwner[owner];
 
-    if (bytes(oldNick).length &gt; 0) {
+    if (bytes(oldNick).length > 0) {
       emit Unset(oldNick, owner);
       delete ownerOfNick[oldNick];
     }
@@ -46,7 +46,7 @@ modifier onlyOwner() {
   }
 
   function unset () public {
-    require(bytes(nickOfOwner[msg.sender]).length &gt; 0);
+    require(bytes(nickOfOwner[msg.sender]).length > 0);
 
     address owner = msg.sender;
     string storage oldNick = nickOfOwner[owner];
@@ -71,7 +71,7 @@ modifier onlyOwner() {
 	
 	
 	function withdrawEther() public onlyOwner {
-		require(address(this).balance &gt; 0);
+		require(address(this).balance > 0);
 		
         contractOwner.transfer(address(this).balance);
     }

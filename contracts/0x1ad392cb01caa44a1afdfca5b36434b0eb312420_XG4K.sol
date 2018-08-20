@@ -5,10 +5,10 @@ the Equity4keeps programme and can be transferred to anyone or entity.
 */
 
 contract XG4K {
-    // The keyword &quot;public&quot; makes those variables
+    // The keyword "public" makes those variables
     // readable from outside.
     address public coiner;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     // Events allow light clients to react on
     // changes efficiently.
@@ -27,7 +27,7 @@ contract XG4K {
     }
 
     function send(address receiver, uint amount) public {
-        if (balances[msg.sender] &lt; amount) return;
+        if (balances[msg.sender] < amount) return;
         balances[msg.sender] -= amount;
         balances[receiver] += amount;
         Issue(msg.sender, receiver, amount);

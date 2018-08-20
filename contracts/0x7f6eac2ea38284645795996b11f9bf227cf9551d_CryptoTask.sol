@@ -59,9 +59,9 @@ contract CryptoTask is Ownable {
         uint solutionSubmittedTime;
         uint disputeStartedTime;
         bytes32 blockHash;
-        mapping(address =&gt; bytes32) voteCommits;
-        mapping(uint32 =&gt; uint32) votes;
-        mapping(uint32 =&gt; address) voters;
+        mapping(address => bytes32) voteCommits;
+        mapping(uint32 => uint32) votes;
+        mapping(uint32 => address) voters;
         uint32 votesTotal;
         uint32 votesClient;
         uint32 votesFl;        
@@ -70,10 +70,10 @@ contract CryptoTask is Ownable {
         uint next;
     }
     //due to stack depth error not everything could be fitted to the struct
-    mapping(uint =&gt; string) public titles;
-    mapping(uint =&gt; string) public descriptions;
-    mapping(uint =&gt; string) public solutions;
-    mapping(uint =&gt; uint) public disputeBlockNos;
+    mapping(uint => string) public titles;
+    mapping(uint => string) public descriptions;
+    mapping(uint => string) public solutions;
+    mapping(uint => uint) public disputeBlockNos;
     
     
     ERC20 public tokenContract = ERC20(0x4545750F39aF6Be4F237B6869D4EccA928Fd5A85);
@@ -81,13 +81,13 @@ contract CryptoTask is Ownable {
     //owner can prevent new task submissions if platform is to be moved to a new contract
     //apart from this and airdrops, owner has no other privileges
     bool public migrating;
-    mapping(address =&gt; uint32) public ADs;
+    mapping(address => uint32) public ADs;
     
-    mapping(uint =&gt; Task) public tasks;
+    mapping(uint => Task) public tasks;
     uint public tasksSize;
     uint public lastTaskIndex;
-    mapping(address =&gt; uint) public stakes;
-    mapping(address =&gt; uint) public lastStakings;
+    mapping(address => uint) public stakes;
+    mapping(address => uint) public lastStakings;
     uint public totalStake;
     
     
@@ -100,7 +100,7 @@ contract CryptoTask is Ownable {
     }
     
     function postTask(string title, string description, uint taskValue, uint workTime) {
-        require(!migrating &amp;&amp; taskValue &gt; MIN_TASK_VALUE);
+        require(!migrating && taskValue > MIN_TASK_VALUE);
         
         tasksSize++;
         
@@ -112,7 +112,7 @@ contract CryptoTask is Ownable {
         
         //linked list connecting
         tasks[tasksSize].prev = lastTaskIndex;
-        if(lastTaskIndex &gt; 0) {
+        if(lastTaskIndex > 0) {
             tasks[lastTaskIndex].next = tasksSize;
         }
         lastTaskIndex = tasksSize;
@@ -121,7 +121,7 @@ contract CryptoTask is Ownable {
     }
     
     function applyForTask(uint taskID) {
-        require(tasks[taskID].stage == 0 &amp;&amp; tasks[taskID].client != address(0));
+        require(tasks[taskID].stage == 0 && tasks[taskID].client != address(0));
         tasks[taskID].fl = msg.sender;
         tasks[taskID].applyTime = now;
         tasks[taskID].stage = 1;
@@ -129,36 +129,36 @@ contract CryptoTask is Ownable {
     }
     
     function submitSolution(uint taskID, string solution) {
-        require(tasks[taskID].stage == 1 &amp;&amp; msg.sender == tasks[taskID].fl &amp;&amp; now &lt; tasks[taskID].applyTime + tasks[taskID].workTime);
+        require(tasks[taskID].stage == 1 && msg.sender == tasks[taskID].fl && now < tasks[taskID].applyTime + tasks[taskID].workTime);
         solutions[taskID] = solution;
         tasks[taskID].solutionSubmittedTime = now;
         tasks[taskID].stage = 2;
     }
     
     function startDispute(uint taskID) {
-        require(tasks[taskID].stage == 2 &amp;&amp; tasks[taskID].client == msg.sender &amp;&amp; now &lt; tasks[taskID].solutionSubmittedTime + CLIENT_TIME_TO_DECIDE);
+        require(tasks[taskID].stage == 2 && tasks[taskID].client == msg.sender && now < tasks[taskID].solutionSubmittedTime + CLIENT_TIME_TO_DECIDE);
         disputeBlockNos[taskID] = block.number;
         tasks[taskID].stage = 3;
     }
     
     //commitDispute and startDispute need to be separate stages to ensure blockHash randomness
     function commitDispute(uint taskID) {
-        require(tasks[taskID].stage == 3 &amp;&amp; tasks[taskID].client == msg.sender &amp;&amp; now &lt; tasks[taskID].solutionSubmittedTime + CLIENT_TIME_TO_DECIDE &amp;&amp; block.number &gt; disputeBlockNos[taskID]+5);
+        require(tasks[taskID].stage == 3 && tasks[taskID].client == msg.sender && now < tasks[taskID].solutionSubmittedTime + CLIENT_TIME_TO_DECIDE && block.number > disputeBlockNos[taskID]+5);
         tasks[taskID].blockHash = block.blockhash(disputeBlockNos[taskID]);
         tasks[taskID].disputeStartedTime = now;
         tasks[taskID].stage = 4;
     }
     
     function commitVote(uint taskID, bytes32 voteHash) {
-        require(tasks[taskID].stage == 4 &amp;&amp; now &lt; tasks[taskID].disputeStartedTime + VOTING_PERIOD &amp;&amp; tasks[taskID].voteCommits[msg.sender] == bytes32(0));
+        require(tasks[taskID].stage == 4 && now < tasks[taskID].disputeStartedTime + VOTING_PERIOD && tasks[taskID].voteCommits[msg.sender] == bytes32(0));
         tasks[taskID].voteCommits[msg.sender] = voteHash;
     }
     
     function revealVote(uint taskID, uint8 v, bytes32 r, bytes32 s, uint32 vote, bytes32 salt) {
         //100 sec buffer between commit and reveal vote stages
-        require(tasks[taskID].stage == 4 &amp;&amp; now &gt; tasks[taskID].disputeStartedTime + VOTING_PERIOD+100 &amp;&amp; now &lt; tasks[taskID].disputeStartedTime + 2*VOTING_PERIOD &amp;&amp; tasks[taskID].voteCommits[msg.sender] != bytes32(0));
-        //check that revealed signature matches public key, that stake is high enough (selection likelihood proportional to stake), that tokens haven&#39;t been moved around since dispute started to prevent biasing the selection likelihood, that revealed vote matches the vote commit
-        if(ecrecover(keccak256(taskID, tasks[taskID].blockHash), v, r, s) == msg.sender &amp;&amp; (10*MAX_UINT32)/(uint(s) % (MAX_UINT32+1)) &gt; totalStake/stakes[msg.sender] &amp;&amp; lastStakings[msg.sender] &lt; tasks[taskID].disputeStartedTime &amp;&amp; keccak256(salt, vote) == tasks[taskID].voteCommits[msg.sender]) {
+        require(tasks[taskID].stage == 4 && now > tasks[taskID].disputeStartedTime + VOTING_PERIOD+100 && now < tasks[taskID].disputeStartedTime + 2*VOTING_PERIOD && tasks[taskID].voteCommits[msg.sender] != bytes32(0));
+        //check that revealed signature matches public key, that stake is high enough (selection likelihood proportional to stake), that tokens haven't been moved around since dispute started to prevent biasing the selection likelihood, that revealed vote matches the vote commit
+        if(ecrecover(keccak256(taskID, tasks[taskID].blockHash), v, r, s) == msg.sender && (10*MAX_UINT32)/(uint(s) % (MAX_UINT32+1)) > totalStake/stakes[msg.sender] && lastStakings[msg.sender] < tasks[taskID].disputeStartedTime && keccak256(salt, vote) == tasks[taskID].voteCommits[msg.sender]) {
             if(vote==1) {
                 tasks[taskID].votesClient++;
             } else if(vote==2) {
@@ -180,40 +180,40 @@ contract CryptoTask is Ownable {
         uint32 i;
         
         //cancel posted task no has applied for yet
-        if(tasks[taskID].stage == 0 &amp;&amp; msg.sender == tasks[taskID].client) {
+        if(tasks[taskID].stage == 0 && msg.sender == tasks[taskID].client) {
             tokenContract.transfer(tasks[taskID].client, tasks[taskID].taskValue + taskValueTenth);
             tasks[taskID].stage = 5;
         }
-        //accept freelancer&#39;s solution
-        else if(tasks[taskID].stage == 2 &amp;&amp; msg.sender == tasks[taskID].client) {
+        //accept freelancer's solution
+        else if(tasks[taskID].stage == 2 && msg.sender == tasks[taskID].client) {
             tokenContract.transfer(tasks[taskID].fl, tasks[taskID].taskValue + taskValueTenth);
             tokenContract.transfer(tasks[taskID].client, taskValueTenth);
             tasks[taskID].stage = 6;
         }
-        //client didn&#39;t review freelancer&#39;s solution on time, treated as solution accepted
-        else if((tasks[taskID].stage == 2 || tasks[taskID].stage == 3) &amp;&amp; now &gt; tasks[taskID].solutionSubmittedTime + CLIENT_TIME_TO_DECIDE) {
+        //client didn't review freelancer's solution on time, treated as solution accepted
+        else if((tasks[taskID].stage == 2 || tasks[taskID].stage == 3) && now > tasks[taskID].solutionSubmittedTime + CLIENT_TIME_TO_DECIDE) {
             tokenContract.transfer(tasks[taskID].fl, tasks[taskID].taskValue + 2*taskValueTenth);
             tasks[taskID].stage = 7;
         }
-        //dispute was started and reviewers voted in freelancer&#39;s favour
-        else if(tasks[taskID].stage == 4 &amp;&amp; tasks[taskID].votesFl &gt; tasks[taskID].votesClient &amp;&amp; now &gt; tasks[taskID].disputeStartedTime + 2*VOTING_PERIOD) {
+        //dispute was started and reviewers voted in freelancer's favour
+        else if(tasks[taskID].stage == 4 && tasks[taskID].votesFl > tasks[taskID].votesClient && now > tasks[taskID].disputeStartedTime + 2*VOTING_PERIOD) {
             tokenContract.transfer(tasks[taskID].fl, tasks[taskID].taskValue + taskValueTenth);
             reviewerReward = taskValueTenth / tasks[taskID].votesFl;
             //distribute reviewer rewards
-            for(i=0; i &lt; tasks[taskID].votesTotal; i++) {
+            for(i=0; i < tasks[taskID].votesTotal; i++) {
                 if(tasks[taskID].votes[i] == 2) {
                     tokenContract.transfer(tasks[taskID].voters[i], reviewerReward);
                 }
             }
             tasks[taskID].stage = 8;
         }
-        //freelancer didn&#39;t submit solution on time, client gets freelancer&#39;s escrow
-        else if(tasks[taskID].stage == 1 &amp;&amp; now &gt; tasks[taskID].applyTime + tasks[taskID].workTime) {
+        //freelancer didn't submit solution on time, client gets freelancer's escrow
+        else if(tasks[taskID].stage == 1 && now > tasks[taskID].applyTime + tasks[taskID].workTime) {
             tokenContract.transfer(tasks[taskID].client, tasks[taskID].taskValue + 2*taskValueTenth);
             tasks[taskID].stage = 9;
         }
-        //dispute was started and reviewers voted in client&#39;s favour
-        else if(tasks[taskID].stage == 4 &amp;&amp; tasks[taskID].votesClient &gt;= tasks[taskID].votesFl &amp;&amp; now &gt; tasks[taskID].disputeStartedTime + 2*VOTING_PERIOD) {
+        //dispute was started and reviewers voted in client's favour
+        else if(tasks[taskID].stage == 4 && tasks[taskID].votesClient >= tasks[taskID].votesFl && now > tasks[taskID].disputeStartedTime + 2*VOTING_PERIOD) {
             if(tasks[taskID].votesTotal == 0) {
                 tokenContract.transfer(tasks[taskID].client, tasks[taskID].taskValue + taskValueTenth);
                 tokenContract.transfer(tasks[taskID].fl, taskValueTenth);
@@ -221,7 +221,7 @@ contract CryptoTask is Ownable {
                 tokenContract.transfer(tasks[taskID].client, tasks[taskID].taskValue + taskValueTenth);
                 reviewerReward = taskValueTenth / tasks[taskID].votesClient;
                 //distribute reviewer rewards
-                for(i=0; i &lt; tasks[taskID].votesTotal; i++) {
+                for(i=0; i < tasks[taskID].votesTotal; i++) {
                     if(tasks[taskID].votes[i] == 1) {
                         tokenContract.transfer(tasks[taskID].voters[i], reviewerReward);
                     }
@@ -233,10 +233,10 @@ contract CryptoTask is Ownable {
         }
         
         //connect linked list after the task removal
-        if(tasks[taskID].prev &gt; 0) {
+        if(tasks[taskID].prev > 0) {
             tasks[tasks[taskID].prev].next = tasks[taskID].next;
         }
-        if(tasks[taskID].next &gt; 0) {
+        if(tasks[taskID].next > 0) {
             tasks[tasks[taskID].next].prev = tasks[taskID].prev;
         }
         if(taskID == lastTaskIndex) {
@@ -244,17 +244,17 @@ contract CryptoTask is Ownable {
         }
         
         //if users who received airdrops
-        if(ADs[tasks[taskID].client] &gt; 0) {
+        if(ADs[tasks[taskID].client] > 0) {
             ADs[tasks[taskID].client]++;
         }
-        if(ADs[tasks[taskID].fl] &gt; 0) {
+        if(ADs[tasks[taskID].fl] > 0) {
             ADs[tasks[taskID].fl]++;
         }
     }
     
     
     function addStake(uint value) {
-        if(value &gt; 0) {
+        if(value > 0) {
             stakes[msg.sender] += value;
             lastStakings[msg.sender] = now;
             totalStake += value;
@@ -263,9 +263,9 @@ contract CryptoTask is Ownable {
     }
     
     function withdrawStake(uint value) {
-        if(value &gt; 0 &amp;&amp; stakes[msg.sender] &gt;= value) {
+        if(value > 0 && stakes[msg.sender] >= value) {
             //received airdrop but completed less than 10 tasks
-            if(ADs[msg.sender] &gt; 0 &amp;&amp; ADs[msg.sender] &lt; 10) {
+            if(ADs[msg.sender] > 0 && ADs[msg.sender] < 10) {
                 throw;
             }
             stakes[msg.sender] -= value;
@@ -278,7 +278,7 @@ contract CryptoTask is Ownable {
     //airdrop
     function addStakeAD(uint value, address recipient) onlyOwner {
         //prevent owner from adding a small value to set regular user to airdropped user
-        if(value &gt; 0 &amp;&amp; value &gt; 1000*stakes[recipient]) {
+        if(value > 0 && value > 1000*stakes[recipient]) {
             stakes[recipient] += value;
             lastStakings[recipient] = now;
             totalStake += value;

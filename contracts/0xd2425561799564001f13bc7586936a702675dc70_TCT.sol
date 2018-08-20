@@ -35,11 +35,11 @@ contract Stopped is Owned {
 contract MathTCT {
 
     function add(uint256 x, uint256 y) pure internal returns(uint256 z) {
-      assert((z = x + y) &gt;= x);
+      assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) pure internal returns(uint256 z) {
-      assert((z = x - y) &lt;= x);
+      assert((z = x - y) <= x);
     }
 }
 
@@ -60,8 +60,8 @@ contract TCT is Owned, Stopped, MathTCT, TokenERC20 {
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
     event Burn(address from, uint256 value);
@@ -83,7 +83,7 @@ contract TCT is Owned, Stopped, MathTCT, TokenERC20 {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt;= _value);
+        require (balanceOf[_from] >= _value);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] = sub(balanceOf[_from], _value);
@@ -104,7 +104,7 @@ contract TCT is Owned, Stopped, MathTCT, TokenERC20 {
 
     function burn(uint256 _value) noStopped onlyOwner public returns (bool success) {
         require(!frozenAccount[msg.sender]);
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = sub(balanceOf[msg.sender], _value);
         totalSupply = sub(totalSupply, _value);
         emit Burn(msg.sender, _value);

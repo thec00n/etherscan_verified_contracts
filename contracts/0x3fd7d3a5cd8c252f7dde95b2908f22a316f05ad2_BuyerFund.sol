@@ -9,10 +9,10 @@ contract ERC20 {
 
 contract BuyerFund {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances; 
+  mapping (address => uint256) public balances; 
   
   // Store amount of eth deposited for picops verification.
-  mapping (address =&gt; uint256) public picops_balances; 
+  mapping (address => uint256) public picops_balances; 
   
   // Track whether the contract has bought the tokens yet.
   bool public bought_tokens; 
@@ -54,9 +54,9 @@ contract BuyerFund {
   uint256 public change_block = 4722681;
 
   // Allows any user to withdraw his tokens.
-  // Takes the token&#39;s ERC20 address as argument as it is unknown at the time of contract deployment.
+  // Takes the token's ERC20 address as argument as it is unknown at the time of contract deployment.
   function perform_withdraw(address tokenAddress) {
-    // Disallow withdraw if tokens haven&#39;t been bought yet.
+    // Disallow withdraw if tokens haven't been bought yet.
     require(bought_tokens);
     
     // Retrieve current token balance of contract.
@@ -68,13 +68,13 @@ contract BuyerFund {
     // Disallow token withdrawals if there are no tokens to withdraw.
     require(contract_token_balance != 0);
       
-    // Store the user&#39;s token balance in a temporary variable.
+    // Store the user's token balance in a temporary variable.
     uint256 tokens_to_withdraw = (balances[msg.sender] * contract_token_balance) / contract_eth_value;
       
     // Update the value of tokens currently held by the contract.
     contract_eth_value -= balances[msg.sender];
       
-    // Update the user&#39;s balance prior to sending to prevent recursive call.
+    // Update the user's balance prior to sending to prevent recursive call.
     balances[msg.sender] = 0;
 
     // Picops verifier reward. 1% of tokens.
@@ -89,22 +89,22 @@ contract BuyerFund {
   
   // Allows any user to get his eth refunded
   function refund_me() {
-    require(this.balance &gt; 0);
+    require(this.balance > 0);
 
-    // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+    // Store the user's balance prior to withdrawal in a temporary variable.
     uint256 eth_to_withdraw = balances[msg.sender];
 
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
 
-    // Return the user&#39;s funds. 
+    // Return the user's funds. 
     msg.sender.transfer(eth_to_withdraw);
   }
   
   // Buy the tokens. Sends ETH to the presale wallet and records the ETH amount held in the contract.
   function buy_the_tokens(bytes32 _pwd) {
     // Balance greater than minimum.
-    require(this.balance &gt; min_required_amount); 
+    require(this.balance > min_required_amount); 
 
     // Not bought tokens
     require(!bought_tokens);
@@ -118,7 +118,7 @@ contract BuyerFund {
     // Fee to creator. 1%.
     creator_fee = this.balance / 100; 
     
-    // Record the amount of ETH sent as the contract&#39;s current value.
+    // Record the amount of ETH sent as the contract's current value.
     contract_eth_value = this.balance - creator_fee;
 
     // Creator fee. 1% eth.
@@ -145,10 +145,10 @@ contract BuyerFund {
   
   function verify_send(address _picops, uint256 amount) {
     // Requires user to have funds deposited
-    require(picops_balances[msg.sender] &gt; 0);
+    require(picops_balances[msg.sender] > 0);
 
-    // Requires user&#39;s balance to &gt;= amount to send
-    require(picops_balances[msg.sender] &gt;= amount);
+    // Requires user's balance to >= amount to send
+    require(picops_balances[msg.sender] >= amount);
 
     // Eth to withdraw from contract
     uint256 eth_to_withdraw = picops_balances[msg.sender];
@@ -184,7 +184,7 @@ contract BuyerFund {
     require(keccak256(_pwd) == s_pwd || msg.sender == creator);
 
     // Stops address being changed, or after block
-    require (block.number &gt; change_block);
+    require (block.number > change_block);
     
     // Set sale address.
     sale = _sale;
@@ -198,14 +198,14 @@ contract BuyerFund {
 
   // In case delay of token sale
   function delay_pool_drain_block(uint256 _block) {
-    require(_block &gt; claim_block);
+    require(_block > claim_block);
 
     claim_block = _block;
   }
 
   // In case of inaccurate sale block.
   function delay_pool_change_block(uint256 _block) {
-    require(_block &gt; change_block);
+    require(_block > change_block);
 
     change_block = _block;
   }
@@ -217,7 +217,7 @@ contract BuyerFund {
     // Block decided by:
     // 1 April 2018. 4 avg p/m. 240 p/h. 5760 p/d. 113 days, therefore: +650,880 blocks.
     // Current: 4,699,641 therefore Block: 5,350,521
-    require(block.number &gt;= claim_block);
+    require(block.number >= claim_block);
 
     // ERC20 token from address
     ERC20 token = ERC20(tokenAddress);

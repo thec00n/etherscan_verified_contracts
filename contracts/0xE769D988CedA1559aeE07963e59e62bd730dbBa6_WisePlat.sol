@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,7 +88,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -126,7 +126,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
 
 
    /**
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
      var _allowance = allowed[_from][msg.sender];
 
      // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-     // require (_value &lt;= _allowance);
+     // require (_value <= _allowance);
 
      balances[_to] = balances[_to].add(_value);
      balances[_from] = balances[_from].sub(_value);
@@ -214,8 +214,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract WisePlat is MintableToken {
-  string public name = &quot;WisePlat Token&quot;;
-  string public symbol = &quot;WISE&quot;;
+  string public name = "WisePlat Token";
+  string public symbol = "WISE";
   uint256 public decimals = 18;
   address public bountyWallet = 0x0;
 
@@ -315,30 +315,30 @@ contract WisePlatSale is Ownable {
 	token.mint(proWallet, tokensPromotion);
 	token.mint(bountyWallet, tokensBounty);
 	token.setbountyWallet(bountyWallet);		//allow transfer for bountyWallet
-    require(startTimestamp &gt;= now);
-    require(endTimestamp &gt;= startTimestamp);
+    require(startTimestamp >= now);
+    require(endTimestamp >= startTimestamp);
   }
 
   // check if valid purchase
   modifier validPurchase {
-    require(now &gt;= startTimestamp);
-    require(now &lt;= endTimestamp);
-    require(msg.value &gt;= minContribution);
-    require(tokensTotal &gt; token.totalSupply());
+    require(now >= startTimestamp);
+    require(now <= endTimestamp);
+    require(msg.value >= minContribution);
+    require(tokensTotal > token.totalSupply());
     _;
   }
   // check if valid claim for BTC
   modifier validPurchase4BTC {
-    require(now &gt;= startTimestamp);
-    require(now &lt;= endTimestamp);
-    require(tokensTotal &gt; token.totalSupply());
+    require(now >= startTimestamp);
+    require(now <= endTimestamp);
+    require(tokensTotal > token.totalSupply());
     _;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool timeLimitReached = now &gt; endTimestamp;
-    bool allOffered = tokensTotal &lt;= token.totalSupply();
+    bool timeLimitReached = now > endTimestamp;
+    bool allOffered = tokensTotal <= token.totalSupply();
     return timeLimitReached || allOffered;
   }
 
@@ -349,10 +349,10 @@ contract WisePlatSale is Ownable {
     uint256 weiAmount = msg.value;
 
     // calculate token amount to be created
-	if (now &lt; middleTimestamp) {rate = ratePreICO;} else {rate = rateICO;}
+	if (now < middleTimestamp) {rate = ratePreICO;} else {rate = rateICO;}
     uint256 tokens = weiAmount.mul(rate);
     
-	require(token.totalSupply().add(tokens) &lt;= tokensTotal);
+	require(token.totalSupply().add(tokens) <= tokensTotal);
 	
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -365,18 +365,18 @@ contract WisePlatSale is Ownable {
   //claim tokens buyed for mBTC
   function claimTokens4mBTC(address beneficiary, uint256 mBTC) validPurchase4BTC public onlyOwner {
     require(beneficiary != 0x0);
-	require(mBTC &gt;= minContribution_mBTC);
+	require(mBTC >= minContribution_mBTC);
 
 	//uint256 _BTC = mBTC.div(1000);			//convert mBTC	to BTC
 	//uint256 _ETH = _BTC.mul(rateBTCxETH);		//convert BTC	to ETH
     //uint256 weiAmount = _ETH * 1e18;			//convert ETH	to wei
-	uint256 weiAmount = mBTC.mul(rateBTCxETH) * 1e15;	//all convert in one line mBTC-&gt;BTC-&gt;ETH-&gt;wei
+	uint256 weiAmount = mBTC.mul(rateBTCxETH) * 1e15;	//all convert in one line mBTC->BTC->ETH->wei
 
     // calculate token amount to be created
-	if (now &lt; middleTimestamp) {rate = ratePreICO;} else {rate = rateICO;}
+	if (now < middleTimestamp) {rate = ratePreICO;} else {rate = rateICO;}
     uint256 tokens = weiAmount.mul(rate);
     
-	require(token.totalSupply().add(tokens) &lt;= tokensTotal);
+	require(token.totalSupply().add(tokens) <= tokensTotal);
 	
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -407,7 +407,7 @@ contract WisePlatSale is Ownable {
     require(hasEnded());
     uint issuedTokenSupply = token.totalSupply();			
 	tokensRemainder = tokensTotal.sub(issuedTokenSupply);
-	if (tokensRemainder &gt; 0) {token.mint(remainderWallet, tokensRemainder);}
+	if (tokensRemainder > 0) {token.mint(remainderWallet, tokensRemainder);}
     token.finishMinting();
     token.transferOwnership(owner);
     SaleClosed();

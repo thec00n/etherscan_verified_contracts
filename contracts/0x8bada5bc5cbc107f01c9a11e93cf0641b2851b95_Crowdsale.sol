@@ -43,37 +43,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -84,7 +84,7 @@ contract SafeMath {
 }
 
 contract PullPayment {
-  mapping(address =&gt; uint) public payments;
+  mapping(address => uint) public payments;
   event RefundETH(address to, uint value);
   // store sent amount as credit to be pulled, called by payer
   function asyncSend(address dest, uint amount) internal {
@@ -100,7 +100,7 @@ contract PullPayment {
       throw;
     }
 
-    if (this.balance &lt; payment) {
+    if (this.balance < payment) {
       throw;
     }
 
@@ -149,18 +149,18 @@ contract RLC is ERC20, SafeMath, Ownable {
   string public name;       //fancy name
   string public symbol;
   uint8 public decimals;    //How many decimals to show.
-  string public version = &#39;v0.1&#39;; 
+  string public version = 'v0.1'; 
   uint public initialSupply;
   uint public totalSupply;
   bool public locked;
   //uint public unlockBlock;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   // lock transfer during the ICO
   modifier onlyUnlocked() {
-    if (msg.sender != owner &amp;&amp; locked) throw;
+    if (msg.sender != owner && locked) throw;
     _;
   }
 
@@ -176,8 +176,8 @@ contract RLC is ERC20, SafeMath, Ownable {
     initialSupply = 87000000000000000;
     totalSupply = initialSupply;
     balances[msg.sender] = initialSupply;// Give the creator all initial tokens                    
-    name = &#39;iEx.ec Network Token&#39;;        // Set the name for display purposes     
-    symbol = &#39;RLC&#39;;                       // Set the symbol for display purposes  
+    name = 'iEx.ec Network Token';        // Set the name for display purposes     
+    symbol = 'RLC';                       // Set the symbol for display purposes  
     decimals = 9;                        // Amount of decimals for display purposes
   }
 
@@ -272,7 +272,7 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 	uint public rlc_bounty;		// amount of bounties RLC
 	uint public rlc_reserve;	// amount of the contingency reserve
 	uint public rlc_team;		// amount of the team RLC 
-	mapping(address =&gt; Backer) public backers; //backersETH indexed by their ETH address
+	mapping(address => Backer) public backers; //backersETH indexed by their ETH address
 
 	modifier onlyBy(address a){
 		if (msg.sender != a) throw;  
@@ -280,12 +280,12 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 	}
 
 	modifier minCapNotReached() {
-		if ((now&lt;endBlock) || RLCSentToETH + RLCSentToBTC &gt;= minCap ) throw;
+		if ((now<endBlock) || RLCSentToETH + RLCSentToBTC >= minCap ) throw;
 		_;
 	}
 
 	modifier respectTimeFrame() {
-		if ((now &lt; startBlock) || (now &gt; endBlock )) throw;
+		if ((now < startBlock) || (now > endBlock )) throw;
 		_;
 	}
 
@@ -328,7 +328,7 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 	 * The fallback function corresponds to a donation in ETH
 	 */
 	function() payable {
-		if (now &gt; endBlock) throw;
+		if (now > endBlock) throw;
 		receiveETH(msg.sender);
 	}
 
@@ -344,9 +344,9 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 	*	Receives a donation in ETH
 	*/
 	function receiveETH(address beneficiary) internal stopInEmergency  respectTimeFrame  {
-		if (msg.value &lt; minInvestETH) throw;								//don&#39;t accept funding under a predefined threshold
+		if (msg.value < minInvestETH) throw;								//don't accept funding under a predefined threshold
 		uint rlcToSend = bonus(safeMul(msg.value,RLCPerETH)/(1 ether));		//compute the number of RLC to send
-		if (safeAdd(rlcToSend, safeAdd(RLCSentToETH, RLCSentToBTC)) &gt; maxCap) throw;	
+		if (safeAdd(rlcToSend, safeAdd(RLCSentToETH, RLCSentToBTC)) > maxCap) throw;	
 
 		Backer backer = backers[beneficiary];
 		if (!rlc.transfer(beneficiary, rlcToSend)) throw;     				// Do the RLC transfer right now 
@@ -363,10 +363,10 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 	* receives a donation in BTC
 	*/
 	function receiveBTC(address beneficiary, string btc_address, uint value, string txid) stopInEmergency respectTimeFrame onlyBy(BTCproxy) returns (bool res){
-		if (value &lt; minInvestBTC) throw;											// this verif is also made on the btcproxy
+		if (value < minInvestBTC) throw;											// this verif is also made on the btcproxy
 
 		uint rlcToSend = bonus(safeMul(value,RLCPerSATOSHI));						//compute the number of RLC to send
-		if (safeAdd(rlcToSend, safeAdd(RLCSentToETH, RLCSentToBTC)) &gt; maxCap) {		// check if we are not reaching the maxCap by accepting this donation
+		if (safeAdd(rlcToSend, safeAdd(RLCSentToETH, RLCSentToBTC)) > maxCap) {		// check if we are not reaching the maxCap by accepting this donation
 			RefundBTC(btc_address , value);
 			return false;
 		}
@@ -390,15 +390,15 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 		rlc_bounty = safeAdd(rlc_bounty, amount/10);
 		rlc_team = safeAdd(rlc_team, amount/20);
 		rlc_reserve = safeAdd(rlc_reserve, amount/10);
-		Logs(msg.sender ,amount, &quot;emitRLC&quot;);
+		Logs(msg.sender ,amount, "emitRLC");
 	}
 
 	/*
 	 *Compute the RLC bonus according to the investment period
 	 */
 	function bonus(uint amount) internal constant returns (uint) {
-		if (now &lt; safeAdd(startBlock, 10 days)) return (safeAdd(amount, amount/5));   // bonus 20%
-		if (now &lt; safeAdd(startBlock, 20 days)) return (safeAdd(amount, amount/10));  // bonus 10%
+		if (now < safeAdd(startBlock, 10 days)) return (safeAdd(amount, amount/5));   // bonus 20%
+		if (now < safeAdd(startBlock, 20 days)) return (safeAdd(amount, amount/10));  // bonus 10%
 		return amount;
 	}
 
@@ -416,10 +416,10 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 		backers[_from].weiReceived=0;
 		uint BTCToSend = backers[_from].satoshiReceived;
 		backers[_from].satoshiReceived = 0;
-		if (ETHToSend &gt; 0) {
+		if (ETHToSend > 0) {
 			asyncSend(_from,ETHToSend);									// pull payment to get refund in ETH
 		}
-		if (BTCToSend &gt; 0)
+		if (BTCToSend > 0)
 			RefundBTC(backers[_from].btc_address ,BTCToSend);			// event message to manually refund BTC
 	}
 
@@ -435,16 +435,16 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 	*/
 	function finalize() onlyBy(owner) {
 		// check
-		if (RLCSentToETH + RLCSentToBTC &lt; maxCap - 5000000000000 &amp;&amp; now &lt; endBlock) throw;	// cannot finalise before 30 day until maxcap is reached minus 1BTC
-		if (RLCSentToETH + RLCSentToBTC &lt; minCap &amp;&amp; now &lt; endBlock + 15 days) throw ;		// if mincap is not reached donors have 15days to get refund before we can finalise
+		if (RLCSentToETH + RLCSentToBTC < maxCap - 5000000000000 && now < endBlock) throw;	// cannot finalise before 30 day until maxcap is reached minus 1BTC
+		if (RLCSentToETH + RLCSentToBTC < minCap && now < endBlock + 15 days) throw ;		// if mincap is not reached donors have 15days to get refund before we can finalise
 		if (!multisigETH.send(this.balance)) throw;											// moves the remaining ETH to the multisig address
-		if (rlc_reserve &gt; 6000000000000000){												// moves RLC to the team, reserve and bounty address
+		if (rlc_reserve > 6000000000000000){												// moves RLC to the team, reserve and bounty address
 			if(!rlc.transfer(reserve,6000000000000000)) throw;								// max cap 6000000RLC
 			rlc_reserve = 6000000000000000;
 		} else {
 			if(!rlc.transfer(reserve,rlc_reserve)) throw;  
 		}
-		if (rlc_bounty &gt; 6000000000000000){
+		if (rlc_bounty > 6000000000000000){
 			if(!rlc.transfer(bounty,6000000000000000)) throw;								// max cap 6000000RLC
 			rlc_bounty = 6000000000000000;
 		} else {
@@ -452,7 +452,7 @@ contract Crowdsale is SafeMath, PullPayment, Pausable {
 		}
 		if (!rlc.transfer(team,rlc_team)) throw;
 		uint RLCEmitted = rlc_reserve + rlc_bounty + rlc_team + RLCSentToBTC + RLCSentToETH;
-		if (RLCEmitted &lt; rlc.totalSupply())													// burn the rest of RLC
+		if (RLCEmitted < rlc.totalSupply())													// burn the rest of RLC
 			  rlc.burn(rlc.totalSupply() - RLCEmitted);
 		rlc.unlock();
 		crowdsaleClosed = true;

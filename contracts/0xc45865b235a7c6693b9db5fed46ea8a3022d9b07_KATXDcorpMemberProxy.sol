@@ -246,7 +246,7 @@ contract TokenRetriever is ITokenRetriever {
     function retrieveTokens(address _tokenContract) public {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(msg.sender, tokenBalance);
         }
     }
@@ -258,7 +258,7 @@ contract TokenRetriever is ITokenRetriever {
  *
  * Interface that allows collective contributions from DCORP members
  * 
- * DCORP DAO VC &amp; Promotion https://www.dcorp.it
+ * DCORP DAO VC & Promotion https://www.dcorp.it
  *
  * #created 10/11/2017
  * #author Frank Bonnet
@@ -320,7 +320,7 @@ interface IDcorpPersonalCrowdsaleProxy {
     /**
      * Receive ether and issue tokens
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -336,7 +336,7 @@ interface IDcorpPersonalCrowdsaleProxy {
  * Proxy that allows collective contributions from DCORP members using 
  * a unique address
  * 
- * DCORP DAO VC &amp; Promotion https://www.dcorp.it
+ * DCORP DAO VC & Promotion https://www.dcorp.it
  *
  * #created 22/11/2017
  * #author Frank Bonnet
@@ -362,7 +362,7 @@ contract DcorpPersonalCrowdsaleProxy is IDcorpPersonalCrowdsaleProxy {
     /**
      * Receive contribution and forward to the target crowdsale
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      */
@@ -383,7 +383,7 @@ interface IDcorpCrowdsaleProxy {
     /**
      * Receive ether and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -415,7 +415,7 @@ interface IDcorpCrowdsaleProxy {
  *
  * Proxy that allows collective contributions from DCORP members
  * 
- * DCORP DAO VC &amp; Promotion https://www.dcorp.it
+ * DCORP DAO VC & Promotion https://www.dcorp.it
  *
  * #created 22/11/2017
  * #author Frank Bonnet
@@ -439,7 +439,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
     bool private updating;
 
     // Member records
-    mapping (address =&gt; Record) private records;
+    mapping (address => Record) private records;
     address[] private recordIndex;
 
     uint public totalContributed;
@@ -536,7 +536,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
 
 
     /**
-     * After calling the deploy function the proxy&#39;s
+     * After calling the deploy function the proxy's
      * rules become immutable 
      */
     function deploy() public only_owner at_stage(Stages.Attached) {
@@ -584,7 +584,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
      * @return True if there is a record that belongs to `_member`
      */
     function hasRecord(address _member) public view returns (bool) {
-        return records[_member].index &lt; recordIndex.length &amp;&amp; _member == recordIndex[records[_member].index];
+        return records[_member].index < recordIndex.length && _member == recordIndex[records[_member].index];
     }
 
 
@@ -609,7 +609,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
         Record storage r = records[_member];
         uint balance = 0;
         uint share = shareOf(_member);
-        if (share &gt; 0 &amp;&amp; r.withdrawnTokens &lt; share) {
+        if (share > 0 && r.withdrawnTokens < share) {
             balance = share - r.withdrawnTokens;
         }
 
@@ -645,7 +645,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
 
     /**
      * Request tokens from the target crowdsale by calling 
-     * it&#39;s withdraw token function
+     * it's withdraw token function
      */
     function requestTokensFromCrowdsale() public only_when_not_updating {
         crowdsale.withdrawTokens();
@@ -665,7 +665,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
         uint actualBalance = token.balanceOf(this);
         
         // Update balance intrnally
-        if (actualBalance &gt; recordedBalance) {
+        if (actualBalance > recordedBalance) {
             totalTokensReceived += actualBalance - recordedBalance;
         }
 
@@ -694,7 +694,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
     /**
      * Receive Eth and issue tokens to the sender
      * 
-     * This function requires that msg.sender is not a contract. This is required because it&#39;s 
+     * This function requires that msg.sender is not a contract. This is required because it's 
      * not possible for a contract to specify a gas amount when calling the (internal) send() 
      * function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing)
      * 
@@ -782,7 +782,7 @@ contract DcorpCrowdsaleProxy is IDcorpCrowdsaleProxy, Ownership, TokenObserver, 
         } else {
             Record storage r = records[_beneficiary];
             r.contributed += acceptedAmount;
-            if (weight &lt; r.weight) {
+            if (weight < r.weight) {
                 // Adjust weight
                 r.weight = weight;
                 totalWeight -= r.weight - weight;

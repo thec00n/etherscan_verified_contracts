@@ -21,12 +21,12 @@ contract SafeMath {
     uint256 constant public MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -34,7 +34,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -74,7 +74,7 @@ contract Lockable is Owned {
     event ContractLocked(uint256 _untilBlock, string _reason);
 
     modifier lockAffected {
-        require(block.number &gt; lockedUntilBlock);
+        require(block.number > lockedUntilBlock);
         _;
     }
 
@@ -104,9 +104,9 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     // Current supply of tokens
     uint256 supply = 0;
     // Map of users balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Map of users allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     // Event that shows that new tokens were created
     event Mint(address indexed _to, uint256 _value);
@@ -140,7 +140,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     * @return if successful returns true
     */
     function transfer(address _to, uint256 _value) lockAffected public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _to != address(this));
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         Transfer(msg.sender, _to, _value);
@@ -184,7 +184,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     * @return if successful returns true
     */
     function transferFrom(address _from, address _to, uint256 _value) lockAffected public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _to != address(this));
         balances[_from] = safeSub(balanceOf(_from), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender], _value);
@@ -210,7 +210,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
     * @param _amount Amount of tokens to be created;
     */
     function mintTokens(address _to, uint256 _amount) onlyOwner public {
-        require(supply + _amount &lt;= totalSupplyLimit);
+        require(supply + _amount <= totalSupplyLimit);
         supply = safeAdd(supply, _amount);
         balances[_to] = safeAdd(balances[_to], _amount);
         Mint(_to, _amount);
@@ -254,10 +254,10 @@ contract B2BCoinContract is ERC20Token {
     * @dev Intialises token and all the necesary variable
     */
     function B2BCoinContract() {
-        name = &quot;B2BCoin&quot;;
-        symbol = &quot;BBC&quot;;
+        name = "B2BCoin";
+        symbol = "BBC";
         decimals = 18;
         totalSupplyLimit = 1000000000 * 10**18;
-        lockFromSelf(0, &quot;Lock before crowdsale starts&quot;);
+        lockFromSelf(0, "Lock before crowdsale starts");
     }
 }

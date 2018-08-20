@@ -71,17 +71,17 @@ library DateTime {
                 secondsAccountedFor += YEAR_IN_SECONDS * (dt.year - ORIGIN_YEAR - buf);
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
                         secondsAccountedFor += secondsInMonth;
                 }
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -105,7 +105,7 @@ library DateTime {
                 numLeapYears = leapYearsBefore(year) - leapYearsBefore(ORIGIN_YEAR);
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -137,7 +137,7 @@ library DateTime {
         function toTimestamp(uint16 year, uint8 month, uint8 day, uint8 hour, uint8 minute, uint8 second) constant returns (uint timestamp) {
                 uint16 i;
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -164,7 +164,7 @@ library DateTime {
                 monthDayCounts[9] = 31;
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
                 // Day
@@ -181,7 +181,7 @@ library DateTime {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -262,18 +262,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -283,7 +283,7 @@ library SafeMath {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -322,7 +322,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -332,7 +332,7 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -366,7 +366,7 @@ contract StandardToken is ERC20, BasicToken {
 }
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="c5b7a0a8a6aa85f7">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="c5b7a0a8a6aa85f7">[email protected]</span>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -401,10 +401,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -422,7 +422,7 @@ contract BonusToken is BurnableToken, Operational {
                      address operator
                      ) Operational(operator) {}
     function makeBonus(address[] _to, uint256[] _bonus) onlyOperator returns(bool) {
-        for(uint i = 0; i &lt; _to.length; i++){
+        for(uint i = 0; i < _to.length; i++){
             require(transfer(_to[i], _bonus[i]));
         }
         return true;
@@ -454,11 +454,11 @@ contract KuaiMintableToken is BonusToken {
     }
     function judgeIsReachDailyLimit(uint256 mintAmount, uint256 timestamp) internal returns(bool _exist) {
         bool reached = false;
-        if (dailyLimitLeft &gt; 0) {
+        if (dailyLimitLeft > 0) {
             if ((timestamp.parseTimestamp().year == lastMintTime.parseTimestamp().year)
-                &amp;&amp; (timestamp.parseTimestamp().month == lastMintTime.parseTimestamp().month)
-                &amp;&amp; (timestamp.parseTimestamp().day == lastMintTime.parseTimestamp().day)) {
-                if (dailyLimitLeft &lt; mintAmount) {
+                && (timestamp.parseTimestamp().month == lastMintTime.parseTimestamp().month)
+                && (timestamp.parseTimestamp().day == lastMintTime.parseTimestamp().day)) {
+                if (dailyLimitLeft < mintAmount) {
                     reached = true;
                 } else {
                     dailyLimitLeft = dailyLimitLeft.sub(mintAmount);
@@ -467,7 +467,7 @@ contract KuaiMintableToken is BonusToken {
             } else {
                 dailyLimitLeft = standardDailyLimit;
                 lastMintTime = timestamp;
-                if (dailyLimitLeft &lt; mintAmount) {
+                if (dailyLimitLeft < mintAmount) {
                     reached = true;
                 } else {
                     dailyLimitLeft = dailyLimitLeft.sub(mintAmount);
@@ -484,9 +484,9 @@ contract KuaiMintableToken is BonusToken {
     }
 }
 contract KuaiToken is KuaiMintableToken {
-    string public standard = &#39;2017122806&#39;;
-    string public name = &#39;KuaiToken&#39;;
-    string public symbol = &#39;KT&#39;;
+    string public standard = '2017122806';
+    string public name = 'KuaiToken';
+    string public symbol = 'KT';
     uint8 public decimals = 8;
     function KuaiToken(
                     address operator,

@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -72,13 +72,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     require(!(msg.data.length &lt; size + 4));
+     require(!(msg.data.length < size + 4));
      _;
   }
 
@@ -113,7 +113,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -126,7 +126,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -145,7 +145,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    require(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) );
+    require(!((_value != 0) && (allowed[msg.sender][_spender] != 0)) );
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -189,7 +189,7 @@ contract Pixiu_Beta is StandardToken {
     
     exchangeRate[] public exchangeRateArray;  
 
-	mapping (address =&gt; Member) public members; 
+	mapping (address => Member) public members; 
     address[] public adminArray;   
     address[] public memberArray;
 	
@@ -256,7 +256,7 @@ contract Pixiu_Beta is StandardToken {
         
         bool ok = false;
         
-        for (uint i = 0; i &lt; adminArray.length; i++) {
+        for (uint i = 0; i < adminArray.length; i++) {
             if (admin == adminArray[i]) {
                 ok = true;
                 break;
@@ -302,7 +302,7 @@ contract Pixiu_Beta is StandardToken {
     function admin_dividend(uint xEth) onlyAdmin{
         
 		uint256 xwei = xEth * 10**18;
-		require(xwei &lt;= (deposit_amount-dividend_amount) ); 
+		require(xwei <= (deposit_amount-dividend_amount) ); 
 
 		dividend_amount += xwei;
         uint256 len = memberArray.length;	
@@ -310,7 +310,7 @@ contract Pixiu_Beta is StandardToken {
         address _member;
         
 		uint total_balance_dividened=0;
-        for( i = 0; i &lt; len; i++){            
+        for( i = 0; i < len; i++){            
             _member = memberArray[i];
 			if(members[_member].isDividend){
 				total_balance_dividened = balances[_member]; 
@@ -318,7 +318,7 @@ contract Pixiu_Beta is StandardToken {
         }
 		uint256 perTokenWei = xwei / (total_balance_dividened / 10 ** 6);
             
-        for( i = 0; i &lt; len; i++){            
+        for( i = 0; i < len; i++){            
             _member = memberArray[i];
 			if(members[_member].isDividend){
 				uint256 thisWei = (balances[_member] / 10 ** 6) * perTokenWei;
@@ -334,7 +334,7 @@ contract Pixiu_Beta is StandardToken {
         uint len = exchangeRates.length;
         exchangeRateArray.length = 0;
         
-        for(uint i = 0; i &lt; len; i += 3){
+        for(uint i = 0; i < len; i += 3){
             
             uint time1 = exchangeRates[i];
             uint time2 = exchangeRates[i + 1];
@@ -349,13 +349,13 @@ contract Pixiu_Beta is StandardToken {
 
 		uint len = exchangeRateArray.length;  
 		uint nowTime = block.timestamp;
-        for(uint i = 0; i &lt; len; i += 3){
+        for(uint i = 0; i < len; i += 3){
             
 			exchangeRate memory rate = exchangeRateArray[i];
             uint time1 = rate.time1;
             uint time2 = rate.time2;
             uint value = rate.value;
-			if (nowTime&gt;= time1 &amp;&amp; nowTime&lt;=time2) {
+			if (nowTime>= time1 && nowTime<=time2) {
 				tokenExchangeRateInWei = value;
 				return value;
 			}
@@ -366,7 +366,7 @@ contract Pixiu_Beta is StandardToken {
 	
 	function admin_set_min_pay(uint256 _min_pay) onlyAdmin{
 	    
-	    require(_min_pay &gt;= 0);
+	    require(_min_pay >= 0);
 	    min_pay_wei = _min_pay * 10 ** 18;
 	    
 	}
@@ -385,7 +385,7 @@ contract Pixiu_Beta is StandardToken {
     
     function admin_del(address admin) onlyAdmin adminExists(admin){
         
-        for (uint i = 0; i &lt; adminArray.length - 1; i++)
+        for (uint i = 0; i < adminArray.length - 1; i++)
             if (adminArray[i] == admin) {
                 adminArray[i] = adminArray[adminArray.length - 1];
                 break;
@@ -470,7 +470,7 @@ contract Pixiu_Beta is StandardToken {
     function withdraw() isMember {
         
         uint256 _remain = members[msg.sender].dividend - members[msg.sender].withdraw;
-        require(_remain &gt; 0);
+        require(_remain > 0);
         require(isWithdrawable);
         require(members[msg.sender].isWithdraw);
         msg.sender.transfer(_remain);
@@ -484,7 +484,7 @@ contract Pixiu_Beta is StandardToken {
         uint256 _withdraw = xEth * 10**18;
 		require( msg.sender == deposit_address );
 
-		require(this.balance &gt; _withdraw);
+		require(this.balance > _withdraw);
 		msg.sender.transfer(_withdraw);
 
         withdraw_amount += _withdraw;  
@@ -526,7 +526,7 @@ contract Pixiu_Beta is StandardToken {
 		require(_from != deposit_address);
         require(isPayable);
 		var _allowance = allowed[_from][msg.sender]; 
-		require(_allowance &gt;= _value);
+		require(_allowance >= _value);
 
 		balances[_to] = balances[_to].add(_value);
 		balances[_from] = balances[_from].sub(_value);
@@ -550,7 +550,7 @@ contract Pixiu_Beta is StandardToken {
   
     function pay() public payable returns (bool) {
       
-        require(msg.value &gt; min_pay_wei);
+        require(msg.value > min_pay_wei);
         require(isPayable);
         
         if(msg.sender == deposit_address){

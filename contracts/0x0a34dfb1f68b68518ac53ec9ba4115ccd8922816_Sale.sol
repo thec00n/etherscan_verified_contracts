@@ -1,6 +1,6 @@
 // Copyright New Alchemy Limited, 2017. All rights reserved.
 
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 contract Token {
 	function balanceOf(address addr) returns(uint);
@@ -30,8 +30,8 @@ contract Sale {
 	}
 
 	function () payable {
-		require(block.timestamp &gt;= start);
-		if (block.timestamp &gt; end || this.balance &gt; cap) {
+		require(block.timestamp >= start);
+		if (block.timestamp > end || this.balance > cap) {
 			require(live);
 			live = false;
 			EndSale();
@@ -49,7 +49,7 @@ contract Sale {
 	}
 
 	function softCap(uint _newend) onlyOwner {
-		require(_newend &gt;= block.timestamp &amp;&amp; _newend &gt;= start &amp;&amp; _newend &lt;= end);
+		require(_newend >= block.timestamp && _newend >= start && _newend <= end);
 		end = _newend;
 	}
 
@@ -72,7 +72,7 @@ contract Sale {
 	}
 
 	function withdrawSome(uint value) onlyOwner {
-		require(value &lt;= this.balance);
+		require(value <= this.balance);
 		msg.sender.transfer(value);
 	}
 

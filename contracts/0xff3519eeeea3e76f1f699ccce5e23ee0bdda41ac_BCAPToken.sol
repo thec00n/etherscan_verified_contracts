@@ -1,17 +1,17 @@
 /*
- * Blockchain Capital Token Smart Contract.  Copyright &#169; 2017 by ABDK
+ * Blockchain Capital Token Smart Contract.  Copyright © 2017 by ABDK
  * Consulting.  
  */
 
 /*
  * ERC-20 Standard Token Smart Contract Interface.
- * Copyright &#169; 2016 by ABDK Consulting.
+ * Copyright © 2016 by ABDK Consulting.
  */
 pragma solidity ^0.4.1;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -98,7 +98,7 @@ contract Token {
 }
 
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016 by ABDK Consulting.
+ * Safe Math Smart Contract.  Copyright © 2016 by ABDK Consulting.
  */
 /**
  * Provides methods to safely add, subtract and multiply uint256 numbers.
@@ -117,7 +117,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &gt; MAX_UINT256 - y) throw;
+    if (x > MAX_UINT256 - y) throw;
     return x + y;
   }
 
@@ -131,7 +131,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &lt; y) throw;
+    if (x < y) throw;
     return x - y;
   }
 
@@ -146,13 +146,13 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    if (x &gt; MAX_UINT256 / y) throw;
+    if (x > MAX_UINT256 / y) throw;
     return x * y;
   }
 }
 
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
  */
 
 /**
@@ -186,8 +186,8 @@ contract AbstractToken is Token, SafeMath {
    * @return true if tokens were transferred successfully, false otherwise
    */
   function transfer (address _to, uint256 _value) returns (bool success) {
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (msg.sender, _to, _value);
@@ -206,13 +206,13 @@ contract AbstractToken is Token, SafeMath {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   returns (bool success) {
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false;
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (_from, _to, _value);
@@ -255,33 +255,33 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 
 
 /*
- * Standard Token Smart Contract.  Copyright &#169; 2016 by ABDK Consulting.
+ * Standard Token Smart Contract.  Copyright © 2016 by ABDK Consulting.
  */
 
 
 /**
  * Standard Token Smart Contract that implements ERC-20 token with special
- * unlimited supply &quot;token issuer&quot; account.
+ * unlimited supply "token issuer" account.
  */
 contract StandardToken is AbstractToken {
   uint256 constant private MAX_UINT256 =
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
   /**
-   * Create new Standard Token contract with given &quot;token issuer&quot; account.
+   * Create new Standard Token contract with given "token issuer" account.
    *
-   * @param _tokenIssuer address of &quot;token issuer&quot; account
+   * @param _tokenIssuer address of "token issuer" account
    */
   function StandardToken (address _tokenIssuer) AbstractToken () {
     tokenIssuer = _tokenIssuer;
@@ -309,7 +309,7 @@ contract StandardToken is AbstractToken {
   }
 
   /**
-   * Address of &quot;token issuer&quot; account.
+   * Address of "token issuer" account.
    */
   address private tokenIssuer;
 }

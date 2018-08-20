@@ -23,7 +23,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -50,9 +50,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -60,7 +60,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -123,16 +123,16 @@ contract ERC721BasicToken is ERC721Basic {
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
     
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     modifier onlyOwnerOf(uint256 _tokenId) {
         require(ownerOf(_tokenId) == msg.sender);
@@ -200,7 +200,7 @@ contract ERC721BasicToken is ERC721Basic {
 
     function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
         // solium-disable-next-line arg-overflow
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
     
     function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes _data) public canTransfer(_tokenId) {
@@ -264,15 +264,15 @@ contract ERC721Token is ERC721Basic, ERC721Enumerable, ERC721Metadata, ERC721Bas
     string internal symbol_;
 
     // Mapping from owner to list of owned token IDs
-    mapping(address =&gt; uint256[]) internal ownedTokens;
+    mapping(address => uint256[]) internal ownedTokens;
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
     // Array with all token ids, used for enumeration
     uint256[] internal allTokens;
     // Mapping from token id to position in the allTokens array
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
     // Optional mapping for token URIs
-    mapping(uint256 =&gt; string) internal tokenURIs;
+    mapping(uint256 => string) internal tokenURIs;
 
 
     constructor(string _name, string _symbol) public {
@@ -294,7 +294,7 @@ contract ERC721Token is ERC721Basic, ERC721Enumerable, ERC721Metadata, ERC721Bas
     }
 
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -303,7 +303,7 @@ contract ERC721Token is ERC721Basic, ERC721Enumerable, ERC721Metadata, ERC721Bas
     }
 
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
         return allTokens[_index];
     }
     
@@ -371,7 +371,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     constructor() public {
@@ -424,7 +424,7 @@ interface EtheremonAdventureHandler {
     function handleMultipleItems(address _sender, uint _classId1, uint _classId2, uint _classId3, uint _target, uint _param) external;
 }
 
-contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &quot;EMOND&quot;), BasicAccessControl {
+contract EtheremonAdventureItem is ERC721Token("EtheremonAdventure", "EMOND"), BasicAccessControl {
     uint constant public MAX_OWNER_PERS_SITE = 10;
     uint constant public MAX_SITE_ID = 108;
     uint constant public MAX_SITE_TOKEN_ID = 1080;
@@ -432,7 +432,7 @@ contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &
     // smartcontract
     address public adventureHandler;
     
-    // class sites: 1 -&gt; 108
+    // class sites: 1 -> 108
     // shard: 109 - 126
     // level, exp
     struct Item {
@@ -441,8 +441,8 @@ contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &
     }
     
     uint public totalItem = MAX_SITE_TOKEN_ID;
-    mapping (uint =&gt; uint[]) sites; // site class id =&gt; token id
-    mapping (uint =&gt; Item) items; // token id =&gt; info
+    mapping (uint => uint[]) sites; // site class id => token id
+    mapping (uint => Item) items; // token id => info
     
     modifier requireAdventureHandler {
         require(adventureHandler != address(0));
@@ -459,11 +459,11 @@ contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &
     
     function spawnSite(uint _classId, uint _tokenId, address _owner) onlyModerators external {
         if (_owner == address(0)) revert();
-        if (_classId &gt; MAX_SITE_ID || _classId == 0 || _tokenId &gt; MAX_SITE_TOKEN_ID || _tokenId == 0) revert();
+        if (_classId > MAX_SITE_ID || _classId == 0 || _tokenId > MAX_SITE_TOKEN_ID || _tokenId == 0) revert();
         
         // can not spawn more than MAX_OWNER_PERS_SITE per site
         uint[] storage siteIds = sites[_classId];
-        if (siteIds.length &gt; MAX_OWNER_PERS_SITE)
+        if (siteIds.length > MAX_OWNER_PERS_SITE)
             revert();
         
         Item storage item = items[_tokenId];
@@ -476,7 +476,7 @@ contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &
     
     function spawnItem(uint _classId, uint _value, address _owner) onlyModerators external returns(uint) {
         if (_owner == address(0)) revert();
-        if (_classId &lt; MAX_SITE_ID) revert();
+        if (_classId < MAX_SITE_ID) revert();
         
         totalItem += 1;
         Item storage item = items[totalItem];
@@ -501,9 +501,9 @@ contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &
     }
     
     function useMultipleItem(uint _token1, uint _token2, uint _token3, uint _target, uint _param) isActive requireAdventureHandler public {
-        if (_token1 &gt; 0 &amp;&amp; tokenOwner[_token1] != msg.sender) revert();
-        if (_token2 &gt; 0 &amp;&amp; tokenOwner[_token2] != msg.sender) revert();
-        if (_token3 &gt; 0 &amp;&amp; tokenOwner[_token3] != msg.sender) revert();
+        if (_token1 > 0 && tokenOwner[_token1] != msg.sender) revert();
+        if (_token2 > 0 && tokenOwner[_token2] != msg.sender) revert();
+        if (_token3 > 0 && tokenOwner[_token3] != msg.sender) revert();
         
         Item storage item1 = items[_token1];
         Item storage item2 = items[_token2];
@@ -512,9 +512,9 @@ contract EtheremonAdventureItem is ERC721Token(&quot;EtheremonAdventure&quot;, &
         EtheremonAdventureHandler handler = EtheremonAdventureHandler(adventureHandler);
         handler.handleMultipleItems(msg.sender, item1.classId, item2.classId, item3.classId, _target, _param);
         
-        if (_token1 &gt; 0) _burn(msg.sender, _token1);
-        if (_token2 &gt; 0) _burn(msg.sender, _token2);
-        if (_token3 &gt; 0) _burn(msg.sender, _token3);
+        if (_token1 > 0) _burn(msg.sender, _token1);
+        if (_token2 > 0) _burn(msg.sender, _token2);
+        if (_token3 > 0) _burn(msg.sender, _token3);
     }
     
     

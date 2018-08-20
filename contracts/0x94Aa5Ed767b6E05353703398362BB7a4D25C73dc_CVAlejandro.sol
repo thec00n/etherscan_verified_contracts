@@ -34,7 +34,7 @@ contract CVExtender {
     function getAddress() constant returns (string);
 
     function elementsAreSet() constant returns (bool) {
-        //Normally I&#39;d do whitelisting, but for sake of simplicity, lets do blacklisting
+        //Normally I'd do whitelisting, but for sake of simplicity, lets do blacklisting
 
         bytes memory tempEmptyStringTest = bytes(getDescription());
         if(tempEmptyStringTest.length == 0) {
@@ -86,47 +86,47 @@ contract CVAlejandro is Mortal, CVExtender {
     function CVAlejandro() {
 
         // Main
-        _name = &quot;Alejandro Saucedo&quot;;
-        _email = &quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e4c5e0a8fdabecea">[email&#160;protected]</a>&quot;;
-        _link = &quot;https://github.com/axsauze/ethereum-solidity-cv-contract&quot;;
-        _description = &quot;CTO. Manager. Engineer.&quot;;
-        _title = &quot;Alejandro ETH CV&quot;;
-        _summary = &quot;My experience ranges from chief technology officer, to engineering manager, to hands on software/devops engineer at startups and tech giants. I have designed and led the development of multiple software projects, and I have coordinated multiple national and global initiatives. I have deep technical knowledge, as well as managerial, leadership and people skills. I am highly driven by impact, and I strongly abide by my values.&quot;;
+        _name = "Alejandro Saucedo";
+        _email = "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e4c5e0a8fdabecea">[email protected]</a>";
+        _link = "https://github.com/axsauze/ethereum-solidity-cv-contract";
+        _description = "CTO. Manager. Engineer.";
+        _title = "Alejandro ETH CV";
+        _summary = "My experience ranges from chief technology officer, to engineering manager, to hands on software/devops engineer at startups and tech giants. I have designed and led the development of multiple software projects, and I have coordinated multiple national and global initiatives. I have deep technical knowledge, as well as managerial, leadership and people skills. I am highly driven by impact, and I strongly abide by my values.";
 
         // Social
-        _linkedIn = &quot;http://linkedin.com/in/axsaucedo&quot;;
-        _gitHub = &quot;https://github.com/axsauze&quot;;
-        _twitter = &quot;https://twitter.com/axsaucedo&quot;;
+        _linkedIn = "http://linkedin.com/in/axsaucedo";
+        _gitHub = "https://github.com/axsauze";
+        _twitter = "https://twitter.com/axsaucedo";
 
         // Experience
-        _experience.push(&quot;J.P. Morgan, Java Engineer&quot;);
-        _experience.push(&quot;CTVE Shanghai China, English Teacher &amp; Coordinator&quot;);
-        _experience.push(&quot;Bloomberg LP, Software Engineer Intern&quot;);
-        _experience.push(&quot;WakeUpRoulette, Founder &amp; Chief Technology Officer&quot;);
-        _experience.push(&quot;GitHack, Founder &amp; Open Source Lead Engineer&quot;);
-        _experience.push(&quot;Founders4Schools, Advisor&quot;);
-        _experience.push(&quot;Techstars, Global Facilitator&quot;);
-        _experience.push(&quot;HackaGlobal, Founder &amp; Managing Director&quot;);
-        _experience.push(&quot;Bloomberg LP, Full Stack Software Engineer&quot;);
-        _experience.push(&quot;Hack Partners, Co-founder &amp; Chief Technology Officer&quot;);
-        _experience.push(&quot;Entrepreneur First, Entrepreneur in Residence&quot;);
-        _experience.push(&quot;Exponential Technologies, Founder &amp; Chief Engineer&quot;);
+        _experience.push("J.P. Morgan, Java Engineer");
+        _experience.push("CTVE Shanghai China, English Teacher & Coordinator");
+        _experience.push("Bloomberg LP, Software Engineer Intern");
+        _experience.push("WakeUpRoulette, Founder & Chief Technology Officer");
+        _experience.push("GitHack, Founder & Open Source Lead Engineer");
+        _experience.push("Founders4Schools, Advisor");
+        _experience.push("Techstars, Global Facilitator");
+        _experience.push("HackaGlobal, Founder & Managing Director");
+        _experience.push("Bloomberg LP, Full Stack Software Engineer");
+        _experience.push("Hack Partners, Co-founder & Chief Technology Officer");
+        _experience.push("Entrepreneur First, Entrepreneur in Residence");
+        _experience.push("Exponential Technologies, Founder & Chief Engineer");
 
         // Education
-        _education.push(&quot;University of Southampton, BEng. Software Engineering (1st Class Honours)&quot;);
+        _education.push("University of Southampton, BEng. Software Engineering (1st Class Honours)");
 
         // Languages
-        _language.push(&quot;English&quot;);
-        _language.push(&quot;Spanish&quot;);
-        _language.push(&quot;Mandarin&quot;);
-        _language.push(&quot;Russian&quot;);
-        _language.push(&quot;Portuguese&quot;);
+        _language.push("English");
+        _language.push("Spanish");
+        _language.push("Mandarin");
+        _language.push("Russian");
+        _language.push("Portuguese");
     }
 
     // UTIL
 
     function popFromStringArray(string[] storage array) internal {
-        if(array.length &lt; 1) return;
+        if(array.length < 1) return;
 
         array.length--;
     }
@@ -139,7 +139,7 @@ contract CVAlejandro is Mortal, CVExtender {
         uint strIndex = 0;
         bytes memory currStr;
 
-        for(i = 0; i &lt; array.length; i++) {
+        for(i = 0; i < array.length; i++) {
             currStr = bytes(array[i]);
             // We add the total plus the \n character
             totalSize = totalSize + currStr.length + 1;
@@ -148,15 +148,15 @@ contract CVAlejandro is Mortal, CVExtender {
         string memory stringBuffer = new string(totalSize);
         bytes memory bytesResult = bytes(stringBuffer);
 
-        for(i = 0; i &lt; array.length; i++) {
+        for(i = 0; i < array.length; i++) {
             currStr = bytes(array[i]);
 
-            for(j = 0; j &lt; currStr.length; j++) {
+            for(j = 0; j < currStr.length; j++) {
                 bytesResult[strIndex] = currStr[j];
                 strIndex = strIndex + 1;
             }
 
-            bytesResult[strIndex] = byte(&quot;\n&quot;);
+            bytesResult[strIndex] = byte("\n");
             strIndex = strIndex + 1;
         }
 

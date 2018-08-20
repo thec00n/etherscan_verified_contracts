@@ -74,8 +74,8 @@ contract ANBXTimelock {
     public
   {
     // solium-disable-next-line security/no-block-members
-    require(_firstLockupInDays &gt; 0);
-    require(_secondLockupInDays &gt; 0);
+    require(_firstLockupInDays > 0);
+    require(_secondLockupInDays > 0);
     token = ERC20Basic(_token);
     beneficiary = _beneficiary;
     firstReleaseTime = now + _firstLockupInDays * 1 days;
@@ -88,14 +88,14 @@ contract ANBXTimelock {
   function release() public {
     uint256 amount;
     // solium-disable-next-line security/no-block-members
-    if (secondReleaseTime != 0 &amp;&amp; block.timestamp &gt;= secondReleaseTime) {
+    if (secondReleaseTime != 0 && block.timestamp >= secondReleaseTime) {
       amount = token.balanceOf(this);
-      require(amount &gt; 0);
+      require(amount > 0);
       token.safeTransfer(beneficiary, amount);
       secondReleaseTime = 0;
-    } else if (firstReleaseTime != 0 &amp;&amp; block.timestamp &gt;= firstReleaseTime) {
+    } else if (firstReleaseTime != 0 && block.timestamp >= firstReleaseTime) {
       amount = token.balanceOf(this);
-      require(amount &gt; 0);
+      require(amount > 0);
       token.safeTransfer(beneficiary, amount / 2);
       firstReleaseTime = 0;
     }

@@ -7,8 +7,8 @@ contract BanknadToken {
     uint8   public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -19,8 +19,8 @@ contract BanknadToken {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function BanknadToken() {
       owner = 0xaCa0B051C98B1667B9211aB4A4Cb8CFF03d755Bb;
-      name = &#39;banknad token&#39;;
-      symbol = &#39;BAK&#39;;
+      name = 'banknad token';
+      symbol = 'BAK';
       decimals = 18;
       totalSupply = 10000000000000000000000000000;  // 10 billion
       balanceOf[owner] = 10000000000000000000000000000;
@@ -28,7 +28,7 @@ contract BanknadToken {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       balanceOf[_to] += _value;
@@ -44,8 +44,8 @@ contract BanknadToken {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt;= _value);
-      require(allowance[_from][msg.sender] &gt;= _value);
+      require(balanceOf[_from] >= _value);
+      require(allowance[_from][msg.sender] >= _value);
 
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;
@@ -55,7 +55,7 @@ contract BanknadToken {
     }
 
     function burn(uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       totalSupply -= _value;
@@ -64,7 +64,7 @@ contract BanknadToken {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt;= _value);
+      require(balanceOf[_from] >= _value);
       require(msg.sender == owner);
 
       balanceOf[_from] -= _value;

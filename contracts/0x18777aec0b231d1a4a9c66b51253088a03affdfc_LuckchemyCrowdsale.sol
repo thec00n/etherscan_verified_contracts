@@ -63,7 +63,7 @@ contract LuckchemyCrowdsale {
 
 
     //White list of addresses that are allowed to by a token
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
 
     /**
@@ -135,26 +135,26 @@ contract LuckchemyCrowdsale {
     Stage public  currentStage;
 
     //pools of token for each stage
-    mapping(uint256 =&gt; uint256) public tokenPools;
+    mapping(uint256 => uint256) public tokenPools;
 
     //number of tokens per 1 ether for each stage
-    mapping(uint256 =&gt; uint256) public stageRates;
+    mapping(uint256 => uint256) public stageRates;
 
     /*
     * deposit is amount in wei , which was sent to the contract
     * @ address - address of depositor
     * @ uint256 - amount
     */
-    mapping(address =&gt; uint256) public deposits;
+    mapping(address => uint256) public deposits;
 
     /* 
     * constructor of contract 
     *  @ _service- address which has rights to call payFiat
     */
     function LuckchemyCrowdsale(address _service) public {
-        require(START_TIME_SALE &gt;= now);
-        require(START_TIME_SALE &gt; END_TIME_PRESALE);
-        require(END_TIME_SALE &gt; START_TIME_SALE);
+        require(START_TIME_SALE >= now);
+        require(START_TIME_SALE > END_TIME_PRESALE);
+        require(END_TIME_SALE > START_TIME_SALE);
 
         require(_service != 0x0);
 
@@ -200,7 +200,7 @@ contract LuckchemyCrowdsale {
     */
     function payETH(address beneficiary) public onlyWhiteList(beneficiary) payable {
 
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
         require(beneficiary != 0x0);
         require(validPurchase());
         if (isPrivateSale()) {
@@ -222,16 +222,16 @@ contract LuckchemyCrowdsale {
         uint256 stage = uint256(Stage.Private);
 
         require(currentStage == Stage.Private);
-        require(tokenPools[stage] &gt; 0);
+        require(tokenPools[stage] > 0);
 
         //calculate number tokens
         uint256 tokensToBuy = (weiAmount.mul(stageRates[stage])).div(1 ether);
-        if (tokensToBuy &lt;= tokenPools[stage]) {
+        if (tokensToBuy <= tokenPools[stage]) {
             //pool has enough tokens
             payoutTokens(beneficiary, tokensToBuy, weiAmount);
 
         } else {
-            //pool doesn&#39;t have enough tokens
+            //pool doesn't have enough tokens
             tokensToBuy = tokenPools[stage];
             //left wei
             uint256 usedWei = (tokensToBuy.mul(1 ether)).div(stageRates[stage]);
@@ -259,18 +259,18 @@ contract LuckchemyCrowdsale {
             tokenPools[uint256(Stage.Private)] = 0;
         }
 
-        for (uint256 stage = uint256(currentStage); stage &lt;= 3; stage++) {
+        for (uint256 stage = uint256(currentStage); stage <= 3; stage++) {
 
             //calculate number tokens
             uint256 tokensToBuy = (weiAmount.mul(stageRates[stage])).div(1 ether);
 
-            if (tokensToBuy &lt;= tokenPools[stage]) {
+            if (tokensToBuy <= tokenPools[stage]) {
                 //pool has enough tokens
                 payoutTokens(beneficiary, tokensToBuy, weiAmount);
 
                 break;
             } else {
-                //pool doesn&#39;t have enough tokens
+                //pool doesn't have enough tokens
                 tokensToBuy = tokenPools[stage];
                 //left wei
                 uint256 usedWei = (tokensToBuy.mul(1 ether)).div(stageRates[stage]);
@@ -326,7 +326,7 @@ contract LuckchemyCrowdsale {
     function payFiat(address beneficiary, uint256 amount, uint256 stage) public onlyServiceAgent onlyWhiteList(beneficiary) {
 
         require(beneficiary != 0x0);
-        require(tokenPools[stage] &gt;= amount);
+        require(tokenPools[stage] >= amount);
         require(stage == uint256(currentStage));
 
         //calculate fiat amount in wei
@@ -346,24 +346,24 @@ contract LuckchemyCrowdsale {
      * function for  checking if crowdsale is finished
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; END_TIME_SALE || tokensSold &gt;= totalSupply;
+        return now > END_TIME_SALE || tokensSold >= totalSupply;
     }
 
     /*
      * function for  checking if hardCapReached
      */
     function hardCapReached() public constant returns (bool) {
-        return tokensSold &gt;= totalSupply || fiatBalance.add(ethBalance) &gt;= hardCap;
+        return tokensSold >= totalSupply || fiatBalance.add(ethBalance) >= hardCap;
     }
     /*
      * function for  checking if crowdsale goal is reached
      */
     function softCapReached() public constant returns (bool) {
-        return fiatBalance.add(ethBalance) &gt;= softCap;
+        return fiatBalance.add(ethBalance) >= softCap;
     }
 
     function isPrivateSale() public constant returns (bool) {
-        return now &gt;= START_TIME_PRESALE &amp;&amp; now &lt;= END_TIME_PRESALE;
+        return now >= START_TIME_PRESALE && now <= END_TIME_PRESALE;
     }
 
     /*
@@ -390,15 +390,15 @@ contract LuckchemyCrowdsale {
     }
     /*
      * function that call after crowdsale is ended
-     *          conditions : ico ended and goal isn&#39;t reached. amount of depositor &gt; 0.
+     *          conditions : ico ended and goal isn't reached. amount of depositor > 0.
      *
      *          refund eth deposit (fiat refunds will be done manually)
      */
     function refund() public {
         require(hasEnded());
-        require(!softCapReached() || ((now &gt; END_TIME_SALE + 30 days) &amp;&amp; !token.released()));
+        require(!softCapReached() || ((now > END_TIME_SALE + 30 days) && !token.released()));
         uint256 amount = deposits[msg.sender];
-        require(amount &gt; 0);
+        require(amount > 0);
         deposits[msg.sender] = 0;
         msg.sender.transfer(amount);
 
@@ -412,8 +412,8 @@ contract LuckchemyCrowdsale {
      *  function for checking period of investment and investment amount restriction for ETH purchases
      */
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = (now &gt;= START_TIME_PRESALE &amp;&amp; now &lt;= END_TIME_PRESALE) || (now &gt;= START_TIME_SALE &amp;&amp; now &lt;= END_TIME_SALE);
-        return withinPeriod &amp;&amp; !hardCapReached();
+        bool withinPeriod = (now >= START_TIME_PRESALE && now <= END_TIME_PRESALE) || (now >= START_TIME_SALE && now <= END_TIME_SALE);
+        return withinPeriod && !hardCapReached();
     }
     /*
      * function for adding address to whitelist
@@ -444,7 +444,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -462,7 +462,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -491,9 +491,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -512,7 +512,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -523,8 +523,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -538,7 +538,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -587,7 +587,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -666,9 +666,9 @@ contract LuckchemyToken is BurnableToken, StandardToken, Claimable {
 
     bool public released = false;
 
-    string public constant name = &quot;Luckchemy&quot;;
+    string public constant name = "Luckchemy";
 
-    string public constant symbol = &quot;LUK&quot;;
+    string public constant symbol = "LUK";
 
     uint8 public constant decimals = 8;
 
@@ -682,11 +682,11 @@ contract LuckchemyToken is BurnableToken, StandardToken, Claimable {
     uint256 public addressCount = 0;
 
     // Map of unique addresses
-    mapping(uint256 =&gt; address) public addressMap;
-    mapping(address =&gt; bool) public addressAvailabilityMap;
+    mapping(uint256 => address) public addressMap;
+    mapping(address => bool) public addressAvailabilityMap;
 
     //blacklist of addresses (product/developers addresses) that are not included in the final Holder lottery
-    mapping(address =&gt; bool) public blacklist;
+    mapping(address => bool) public blacklist;
 
     // service agent for managing blacklist
     address public serviceAgent;
@@ -827,9 +827,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -837,7 +837,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -846,7 +846,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -4,7 +4,7 @@ contract Utils {
     function Utils() public {
     }
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
     modifier validAddress(address _address) {
@@ -17,11 +17,11 @@ contract Utils {
     }
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
     function safeMul(uint256 _x, uint256 _y) internal pure returns (uint256) {
@@ -42,13 +42,13 @@ contract IERC20Token {
 }
 
 contract ERC20Token is IERC20Token, Utils {
-    string public standard = &quot;ERC20TOKEN&quot;;
-    string public name = &quot;SUPERSTRING SOPHON&quot;;
-    string public symbol = &quot;SOPHON&quot;;
+    string public standard = "ERC20TOKEN";
+    string public name = "SUPERSTRING SOPHON";
+    string public symbol = "SOPHON";
     uint8 public decimals = 18;
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);

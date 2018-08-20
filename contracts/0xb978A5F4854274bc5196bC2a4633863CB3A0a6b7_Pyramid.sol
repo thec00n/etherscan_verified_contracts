@@ -21,12 +21,12 @@ contract Pyramid {
 
     // users are allowed to join with .1 - 5 ethereum
     function join() payable {
-        require(msg.value &gt;= 100 finney);
+        require(msg.value >= 100 finney);
 
         uint entries = msg.value / 100 finney;
-        entries = entries &gt; 50 ? 50 : entries; // cap at 5 ethereum
+        entries = entries > 50 ? 50 : entries; // cap at 5 ethereum
 
-        for (uint i = 0; i &lt; entries; i++) {
+        for (uint i = 0; i < entries; i++) {
             memberQueue.push(msg.sender);
 
             if (memberQueue.length % 2 == 1) {
@@ -39,7 +39,7 @@ contract Pyramid {
 
         // send back any unused ethereum
         uint remainder = msg.value - (entries * 100 finney);
-        if (remainder &gt; 1 finney) {
+        if (remainder > 1 finney) {
             msg.sender.transfer(remainder);
         }
         //msg.sender.send(msg.value - entries * 100 finney);

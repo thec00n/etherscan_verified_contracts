@@ -1,14 +1,14 @@
 /*
   Copyright 2017 Sharder Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -26,56 +26,56 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 /**
 * @title Sharder Protocol Token.
 * For more information about this token sale, please visit https://sharder.org
-* @author Ben - &lt;<span class="__cf_email__" data-cfemail="ff8786bf8c979e8d9b9a8dd1908d98">[email&#160;protected]</span>&gt;.
+* @author Ben - <<span class="__cf_email__" data-cfemail="ff8786bf8c979e8d9b9a8dd1908d98">[email protected]</span>>.
 * @dev https://github.com/ethereum/EIPs/issues/20
 * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
 */
 contract SharderToken {
     using SafeMath for uint;
-    string public constant NAME = &quot;Sharder Storage&quot;;
-    string public constant SYMBOL = &quot;SS&quot;;
+    string public constant NAME = "Sharder Storage";
+    string public constant SYMBOL = "SS";
     uint public constant DECIMALS = 18;
     uint public totalSupply;
 
-    mapping (address =&gt; mapping (address =&gt; uint256))  public allowed;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => mapping (address => uint256))  public allowed;
+    mapping (address => uint) public balances;
 
     /// This is where we hold ether during this crowdsale. We will not transfer any ether
     /// out of this address before we invocate the `closeCrowdsale` function to finalize the crowdsale.
@@ -87,16 +87,16 @@ contract SharderToken {
     /// Admin account used to manage after crowdsale
     address public admin;
 
-    mapping (address =&gt; bool) public accountLockup;
-    mapping (address =&gt; uint) public accountLockupTime;
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => bool) public accountLockup;
+    mapping (address => uint) public accountLockupTime;
+    mapping (address => bool) public frozenAccounts;
 
     ///   +-----------------------------------------------------------------------------------+
     ///   |                        SS Token Issue Plan - First Round                          |
     ///   +-----------------------------------------------------------------------------------+
     ///   |  Total Sale  |   Airdrop    |  Community Reserve  |  Team Reserve | System Reward |
     ///   +-----------------------------------------------------------------------------------+
-    ///   |     50%      |     10%      |         10%         |  Don&#39;t Issued | Don&#39;t Issued  |
+    ///   |     50%      |     10%      |         10%         |  Don't Issued | Don't Issued  |
     ///   +-----------------------------------------------------------------------------------+
     ///   | 250,000,000  |  50,000,000  |     50,000,000      |      None     |      None     |
     ///   +-----------------------------------------------------------------------------------+
@@ -105,7 +105,7 @@ contract SharderToken {
     /// Maximum amount of fund to be raised, the sale ends on reaching this amount.
     uint256 public constant HARD_CAP = 1500 ether;
 
-    /// It will be refuned if crowdsale can&#39;t acheive the soft cap, all ethers will be refuned.
+    /// It will be refuned if crowdsale can't acheive the soft cap, all ethers will be refuned.
     uint256 public constant SOFT_CAP = 1000 ether;
 
     /// 1 ether exchange rate
@@ -192,9 +192,9 @@ contract SharderToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -222,7 +222,7 @@ contract SharderToken {
     * @param _transferTokensWithDecimal uint the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint _transferTokensWithDecimal) public returns (bool success) {
-        require(_transferTokensWithDecimal &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_transferTokensWithDecimal <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] -= _transferTokensWithDecimal;
         _transfer(_from, _to, _transferTokensWithDecimal);
         return true;
@@ -267,7 +267,7 @@ contract SharderToken {
        * @param _burnedTokensWithDecimal the amount of reserve tokens. !!IMPORTANT is 18 DECIMALS
        */
     function burn(uint256 _burnedTokensWithDecimal) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _burnedTokensWithDecimal);   /// Check if the sender has enough
+        require(balances[msg.sender] >= _burnedTokensWithDecimal);   /// Check if the sender has enough
         balances[msg.sender] -= _burnedTokensWithDecimal;            /// Subtract from the sender
         totalSupply -= _burnedTokensWithDecimal;                      /// Updates totalSupply
         Burn(msg.sender, _burnedTokensWithDecimal);
@@ -282,10 +282,10 @@ contract SharderToken {
      * @param _burnedTokensWithDecimal the amount of reserve tokens. !!IMPORTANT is 18 DECIMALS
      */
     function burnFrom(address _from, uint256 _burnedTokensWithDecimal) public returns (bool success) {
-        require(balances[_from] &gt;= _burnedTokensWithDecimal);                /// Check if the targeted balance is enough
-        require(_burnedTokensWithDecimal &lt;= allowed[_from][msg.sender]);    /// Check allowance
+        require(balances[_from] >= _burnedTokensWithDecimal);                /// Check if the targeted balance is enough
+        require(_burnedTokensWithDecimal <= allowed[_from][msg.sender]);    /// Check allowance
         balances[_from] -= _burnedTokensWithDecimal;                        /// Subtract from the targeted balance
-        allowed[_from][msg.sender] -= _burnedTokensWithDecimal;             /// Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] -= _burnedTokensWithDecimal;             /// Subtract from the sender's allowance
         totalSupply -= _burnedTokensWithDecimal;                            /// Update totalSupply
         Burn(_from, _burnedTokensWithDecimal);
         return true;
@@ -310,7 +310,7 @@ contract SharderToken {
     }
 
     modifier inProgress {
-        require(saleStarted() &amp;&amp; !saleEnded());
+        require(saleStarted() && !saleEnded());
         _;
     }
 
@@ -320,7 +320,7 @@ contract SharderToken {
     }
 
     modifier isNotFrozen {
-        require( frozenAccounts[msg.sender] != true &amp;&amp; now &gt; accountLockupTime[msg.sender] );
+        require( frozenAccounts[msg.sender] != true && now > accountLockupTime[msg.sender] );
         _;
     }
 
@@ -350,11 +350,11 @@ contract SharderToken {
         frozenAccounts[_address] = _frozenStatus;
     }
 
-    /// @dev Lockup account till the date. Can&#39;t lockup again when this account locked already.
+    /// @dev Lockup account till the date. Can't lockup again when this account locked already.
     /// 1 year = 31536000 seconds
     /// 0.5 year = 15768000 seconds
     function lockupAccount(address _address, uint _lockupSeconds) public onlyAdmin {
-        require((accountLockup[_address] &amp;&amp; now &gt; accountLockupTime[_address]) || !accountLockup[_address]);
+        require((accountLockup[_address] && now > accountLockupTime[_address]) || !accountLockup[_address]);
 
         // frozen time = now + _lockupSeconds
         accountLockupTime[_address] = now + _lockupSeconds;
@@ -363,7 +363,7 @@ contract SharderToken {
 
     /// @dev Start the crowdsale.
     function startCrowdsale(uint _saleStartAtBlock) public onlyOwner beforeStart {
-        require(_saleStartAtBlock &gt; block.number);
+        require(_saleStartAtBlock > block.number);
         saleStartAtBlock = _saleStartAtBlock;
         SaleStarted();
     }
@@ -372,7 +372,7 @@ contract SharderToken {
     function closeCrowdsale() public onlyOwner afterEnd {
         require(!unsoldTokenIssued);
 
-        if (totalEthReceived &gt;= SOFT_CAP) {
+        if (totalEthReceived >= SOFT_CAP) {
             saleEndAtBlock = block.number;
             issueUnsoldToken();
             SaleSucceeded();
@@ -383,7 +383,7 @@ contract SharderToken {
 
     /// @dev goal achieved ahead of time
     function goalAchieved() public onlyOwner {
-        require(!isGoalAchieved &amp;&amp; softCapReached());
+        require(!isGoalAchieved && softCapReached());
         isGoalAchieved = true;
         closeCrowdsale();
     }
@@ -403,9 +403,9 @@ contract SharderToken {
     /// @param recipient Address that newly issued token will be sent to.
     function issueToken(address recipient) public payable inProgress {
         // Personal cap check
-        require(balances[recipient].div(BASE_RATE).add(msg.value) &lt;= CONTRIBUTION_MAX);
+        require(balances[recipient].div(BASE_RATE).add(msg.value) <= CONTRIBUTION_MAX);
         // Contribution cap check
-        require(CONTRIBUTION_MIN &lt;= msg.value &amp;&amp; msg.value &lt;= CONTRIBUTION_MAX);
+        require(CONTRIBUTION_MIN <= msg.value && msg.value <= CONTRIBUTION_MAX);
 
         uint tokens = computeTokenAmount(msg.value);
 
@@ -437,7 +437,7 @@ contract SharderToken {
         uint phase = (block.number - saleStartAtBlock).div(BLOCKS_PER_PHASE);
 
         // A safe check
-        if (phase &gt;= bonusPercentages.length) {
+        if (phase >= bonusPercentages.length) {
             phase = bonusPercentages.length - 1;
         }
 
@@ -445,7 +445,7 @@ contract SharderToken {
 
         //Check promotion supply and phase bonus
         uint tokenBonus = 0;
-        if(totalEthReceived * BASE_RATE &lt; MAX_PROMOTION_SS) {
+        if(totalEthReceived * BASE_RATE < MAX_PROMOTION_SS) {
             tokenBonus = tokenBase.mul(bonusPercentages[phase]).div(100);
         }
 
@@ -455,13 +455,13 @@ contract SharderToken {
     /// @dev Issue unsold token to `owner` address.
     function issueUnsoldToken() internal {
         if (unsoldTokenIssued) {
-            InvalidState(&quot;Unsold token has been issued already&quot;);
+            InvalidState("Unsold token has been issued already");
         } else {
             // Add another safe guard
-            require(soldSS &gt; 0);
+            require(soldSS > 0);
 
             uint256 unsoldSS = totalSupply.sub(soldSS);
-            // Issue &#39;unsoldToken&#39; to the admin account.
+            // Issue 'unsoldToken' to the admin account.
             balances[owner] = balances[owner].add(unsoldSS);
             Issue(issueIndex++,owner,0,unsoldSS);
 
@@ -471,27 +471,27 @@ contract SharderToken {
 
     /// @return true if sale has started, false otherwise.
     function saleStarted() public constant returns (bool) {
-        return (saleStartAtBlock &gt; 0 &amp;&amp; block.number &gt;= saleStartAtBlock);
+        return (saleStartAtBlock > 0 && block.number >= saleStartAtBlock);
     }
 
     /// @return true if sale has ended, false otherwise.
     /// Sale ended in: a) end time of crowdsale reached, b) hard cap reached, c) goal achieved ahead of time
     function saleEnded() public constant returns (bool) {
-        return saleStartAtBlock &gt; 0 &amp;&amp; (saleDue() || hardCapReached() || isGoalAchieved);
+        return saleStartAtBlock > 0 && (saleDue() || hardCapReached() || isGoalAchieved);
     }
 
     /// @return true if sale is due when the last phase is finished.
     function saleDue() internal constant returns (bool) {
-        return block.number &gt;= saleStartAtBlock + BLOCKS_PER_PHASE * NUM_OF_PHASE;
+        return block.number >= saleStartAtBlock + BLOCKS_PER_PHASE * NUM_OF_PHASE;
     }
 
     /// @return true if the hard cap is reached.
     function hardCapReached() internal constant returns (bool) {
-        return totalEthReceived &gt;= HARD_CAP;
+        return totalEthReceived >= HARD_CAP;
     }
 
     /// @return true if the soft cap is reached.
     function softCapReached() internal constant returns (bool) {
-        return totalEthReceived &gt;= SOFT_CAP;
+        return totalEthReceived >= SOFT_CAP;
     }
 }

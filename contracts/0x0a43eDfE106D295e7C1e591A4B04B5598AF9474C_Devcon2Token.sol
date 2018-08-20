@@ -117,7 +117,7 @@ contract Devcon2Token is TokenInterface {
      *  | Administrative |
      *  +----------------+
      */
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
     uint constant _END_MINTING = 1474502400;  // UTC (2016/09/22 - 00:00:00)
 
     function END_MINTING() constant returns (uint) {
@@ -136,14 +136,14 @@ contract Devcon2Token is TokenInterface {
      */
     uint numTokens;
 
-    // id =&gt; Token
-    mapping (bytes32 =&gt; TokenLib.Token) tokens;
+    // id => Token
+    mapping (bytes32 => TokenLib.Token) tokens;
 
-    // owner =&gt; ownedToken.id
-    mapping (address =&gt; bytes32) public ownedToken;
+    // owner => ownedToken.id
+    mapping (address => bytes32) public ownedToken;
 
-    // owner =&gt; spender =&gt; ownedToken.id
-    mapping (address =&gt; mapping (address =&gt; bytes32)) approvals;
+    // owner => spender => ownedToken.id
+    mapping (address => mapping (address => bytes32)) approvals;
 
     /*
      *  Read and write storage functions
@@ -153,19 +153,19 @@ contract Devcon2Token is TokenInterface {
     /// @param _identity String for owner identity.
     function mint(address _to, string _identity) returns (bool success) {
         // only mintable till end of conference
-        if (now &gt;= _END_MINTING) throw;
+        if (now >= _END_MINTING) throw;
 
         // ensure the msg.sender is allowed to mint.
         if (!minters[msg.sender]) return false;
 
-        // ensure that the token owner doesn&#39;t already own a token.
+        // ensure that the token owner doesn't already own a token.
         if (ownedToken[_to] != 0x0) return false;
 
         // generate the token id and get the token.
         bytes32 id = TokenLib.generateId(_identity);
         var token = tokens[id];
 
-        // don&#39;t allow re-minting of a given identity.
+        // don't allow re-minting of a given identity.
         if (id == token.id()) return false;
 
         // set the token data
@@ -186,7 +186,7 @@ contract Devcon2Token is TokenInterface {
     /// @param _id Bytes32 id of the token to be destroyed
     function destroy(bytes32 _id) returns (bool success) {
         // only mintable till end of conference
-        if (now &gt;= _END_MINTING) throw;
+        if (now >= _END_MINTING) throw;
 
         // ensure the msg.sender is allowed to mint.
         if (!minters[msg.sender]) return false;
@@ -198,7 +198,7 @@ contract Devcon2Token is TokenInterface {
         ownedToken[tokenToDestroy.owner] = 0x0;
 
         // Zero out the actual token data
-        tokenToDestroy.identity = &#39;&#39;;
+        tokenToDestroy.identity = '';
         tokenToDestroy.owner = 0x0;
 
         // Log the destruction
@@ -214,7 +214,7 @@ contract Devcon2Token is TokenInterface {
     /// @param who Address the address that can now mint tokens.
     function addMinter(address who) returns (bool) {
         // only mintable till end of conference
-        if (now &gt;= _END_MINTING) throw;
+        if (now >= _END_MINTING) throw;
 
         // ensure the msg.sender is allowed
         if (!minters[msg.sender]) return false;
@@ -255,7 +255,7 @@ contract Devcon2Token is TokenInterface {
         // ensure it is actually a token
         if (tokens[_value].id() != _value) return false;
 
-        // ensure that the new owner doesn&#39;t already own a token.
+        // ensure that the new owner doesn't already own a token.
         if (ownedToken[_to] != 0x0) return false;
 
         // get the token
@@ -291,7 +291,7 @@ contract Devcon2Token is TokenInterface {
         // ensure it is actually a token
         if (tokens[_value].id() != _value) return false;
 
-        // ensure that the new owner doesn&#39;t already own a token.
+        // ensure that the new owner doesn't already own a token.
         if (ownedToken[_to] != 0x0) return false;
 
         // get the token
@@ -375,7 +375,7 @@ contract Devcon2Token is TokenInterface {
     /// @dev Returns whether the address owns a token.
     /// @param _owner Address to check.
     function isTokenOwner(address _owner) constant returns (bool) {
-        return (ownedToken[_owner] != 0x0 &amp;&amp; tokens[ownedToken[_owner]].owner == _owner);
+        return (ownedToken[_owner] != 0x0 && tokens[ownedToken[_owner]].owner == _owner);
     }
 
     /// @dev Returns the identity of the given token id.

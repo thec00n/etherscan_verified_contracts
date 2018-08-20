@@ -7,12 +7,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal pure returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x));
+        assert((z >= x));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal pure returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         return x - y;
     }
 
@@ -29,9 +29,9 @@ contract SafeMath {
 
     // mitigate short address attack
     // thanks to https://github.com/numerai/contract/blob/c182465f82e50ced8dacb3977ec374a892f5fa8c/contracts/Safe.sol#L30-L34.
-    // TODO: doublecheck implication of &gt;= compared to ==
+    // TODO: doublecheck implication of >= compared to ==
     modifier onlyPayloadSize(uint numWords) {
-        assert(msg.data.length &gt;= numWords * 32 + 4);
+        assert(msg.data.length >= numWords * 32 + 4);
         _;
     }
 
@@ -51,7 +51,7 @@ contract CrowdSale is SafeMath {
     ///metadata
     enum State { Fundraising,Paused,Successful,Closed }
     State public state = State.Fundraising; // equal to 0
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     //External contracts
     TrakToken public trakToken;
@@ -60,7 +60,7 @@ contract CrowdSale is SafeMath {
     // Address which will receive raised funds
     address public contractOwner;
     // adreess vs state mapping (1 for exists , zero default);
-    mapping (address =&gt; bool) public whitelistedContributors;
+    mapping (address => bool) public whitelistedContributors;
 
     uint256 public fundingStartBlock; // Dec 15 - Dec 25
     uint256 public firstChangeBlock;  // December 25 - January 5
@@ -95,28 +95,28 @@ contract CrowdSale is SafeMath {
     }
 
     modifier isIcoOpen() {
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt;= fundingEndBlock);
-        require(totalRaisedInWei &lt;= fundingMaximumTargetInWei);
+        require(block.number >= fundingStartBlock);
+        require(block.number <= fundingEndBlock);
+        require(totalRaisedInWei <= fundingMaximumTargetInWei);
         _;
     }
 
 
     modifier isMinimumPrice() {
-        if (tokensDistributed &lt; safeMult(3,tokensPerTranche) || block.number &lt; thirdChangeBlock ) {
-           require(msg.value &gt;= minPriceInWeiForPre);
+        if (tokensDistributed < safeMult(3,tokensPerTranche) || block.number < thirdChangeBlock ) {
+           require(msg.value >= minPriceInWeiForPre);
         }
-        else if (tokensDistributed &lt;= safeMult(6,tokensPerTranche)) {
-           require(msg.value &gt;= minPriceInWeiForIco);
+        else if (tokensDistributed <= safeMult(6,tokensPerTranche)) {
+           require(msg.value >= minPriceInWeiForIco);
         }
 
-        require(msg.value &lt;= maxPriceInWeiFromUser);
+        require(msg.value <= maxPriceInWeiFromUser);
 
          _;
     }
 
     modifier isIcoFinished() {
-        require(totalRaisedInWei &gt;= fundingMaximumTargetInWei || (block.number &gt; fundingEndBlock) || state == State.Successful );
+        require(totalRaisedInWei >= fundingMaximumTargetInWei || (block.number > fundingEndBlock) || state == State.Successful );
         _;
     }
 
@@ -132,7 +132,7 @@ contract CrowdSale is SafeMath {
 
     // wait 100 block after final contract state before allowing contract destruction
     modifier atEndOfLifecycle() {
-        require(totalRaisedInWei &gt;= fundingMaximumTargetInWei || (block.number &gt; fundingEndBlock + 40000));
+        require(totalRaisedInWei >= fundingMaximumTargetInWei || (block.number > fundingEndBlock + 40000));
         _;
     }
 
@@ -147,7 +147,7 @@ contract CrowdSale is SafeMath {
     TrakToken _tokenAddress
     ) public {
 
-        require(safeAdd(_fundingStartBlock, safeMult(_fundingDurationInHours , 212)) &gt; _fundingStartBlock);
+        require(safeAdd(_fundingStartBlock, safeMult(_fundingDurationInHours , 212)) > _fundingStartBlock);
 
         creator = msg.sender;
 
@@ -180,9 +180,9 @@ contract CrowdSale is SafeMath {
         require(whitelistedContributors[beneficiary] == true );
         uint256 tokenAmount;
         uint256 checkedReceivedWei = safeAdd(totalRaisedInWei, msg.value);
-        // Check that this transaction wouldn&#39;t exceed the ETH max cap
+        // Check that this transaction wouldn't exceed the ETH max cap
 
-        if (checkedReceivedWei &gt; fundingMaximumTargetInWei ) {
+        if (checkedReceivedWei > fundingMaximumTargetInWei ) {
 
             // update totalRaised After Subtracting
             totalRaisedInWei = safeAdd(totalRaisedInWei,safeSubtract(fundingMaximumTargetInWei,totalRaisedInWei));
@@ -198,13 +198,13 @@ contract CrowdSale is SafeMath {
             var (currentRate,trancheMaxTokensLeft) = getCurrentTokenPrice();
             // Calculate how many tokens (in units of Wei) should be awarded on this transaction
             tokenAmount = safeMult(msg.value, currentRate);
-            if (tokenAmount &gt; trancheMaxTokensLeft) {
+            if (tokenAmount > trancheMaxTokensLeft) {
                 // handle round off error by adding .1 token
                 tokensDistributed =  safeAdd(tokensDistributed,safeAdd(trancheMaxTokensLeft,safeDiv(1,10)));
                 //find remaining tokens by getCurrentTokenPrice() function and sell them from remaining ethers left
                 var (nextCurrentRate,nextTrancheMaxTokensLeft) = getCurrentTokenPrice();
 
-                if (nextTrancheMaxTokensLeft &lt;= 0) {
+                if (nextTrancheMaxTokensLeft <= 0) {
                     tokenAmount = safeAdd(trancheMaxTokensLeft,safeDiv(1,10));
                     state =  State.Successful;
                     // Send change extra ether to user.
@@ -232,23 +232,23 @@ contract CrowdSale is SafeMath {
     /// @dev Returns the current token rate , minimum ether needed and maximum tokens left in currenttranche
     function getCurrentTokenPrice() private constant returns (uint256 currentRate, uint256 maximumTokensLeft) {
 
-        if (tokensDistributed &lt; safeMult(1,tokensPerTranche) &amp;&amp; (block.number &lt; firstChangeBlock)) {
+        if (tokensDistributed < safeMult(1,tokensPerTranche) && (block.number < firstChangeBlock)) {
             //  return ( privateExchangeRate, minPriceInWeiForPre, safeSubtract(tokensPerTranche,tokensDistributed) );
             return ( privateExchangeRate, safeSubtract(tokensPerTranche,tokensDistributed) );
         }
-        else if (tokensDistributed &lt; safeMult(2,tokensPerTranche) &amp;&amp; (block.number &lt; secondChangeBlock)) {
+        else if (tokensDistributed < safeMult(2,tokensPerTranche) && (block.number < secondChangeBlock)) {
             return ( firstExchangeRate, safeSubtract(safeMult(2,tokensPerTranche),tokensDistributed) );
         }
-        else if (tokensDistributed &lt; safeMult(3,tokensPerTranche) &amp;&amp; (block.number &lt; thirdChangeBlock)) {
+        else if (tokensDistributed < safeMult(3,tokensPerTranche) && (block.number < thirdChangeBlock)) {
             return ( secondExchangeRate, safeSubtract(safeMult(3,tokensPerTranche),tokensDistributed) );
         }
-        else if (tokensDistributed &lt; safeMult(4,tokensPerTranche) &amp;&amp; (block.number &lt; fundingEndBlock)) {
+        else if (tokensDistributed < safeMult(4,tokensPerTranche) && (block.number < fundingEndBlock)) {
             return  (thirdExchangeRate,safeSubtract(safeMult(4,tokensPerTranche),tokensDistributed)  );
         }
-        else if (tokensDistributed &lt; safeMult(5,tokensPerTranche) &amp;&amp; (block.number &lt; fundingEndBlock)) {
+        else if (tokensDistributed < safeMult(5,tokensPerTranche) && (block.number < fundingEndBlock)) {
             return  (fourthExchangeRate,safeSubtract(safeMult(5,tokensPerTranche),tokensDistributed)  );
         }
-        else if (tokensDistributed &lt;= safeMult(6,tokensPerTranche)) {
+        else if (tokensDistributed <= safeMult(6,tokensPerTranche)) {
             return  (fifthExchangeRate,safeSubtract(safeMult(6,tokensPerTranche),tokensDistributed)  );
         }
     }
@@ -260,7 +260,7 @@ contract CrowdSale is SafeMath {
         // @TODO amount of gas for a block of code - and will fail if that is exceeded
         uint arrayLength = addrs.length;
 
-        for (uint x = 0; x &lt; arrayLength; x++) {
+        for (uint x = 0; x < arrayLength; x++) {
             whitelistedContributors[addrs[x]] = true;
         }
 
@@ -274,8 +274,8 @@ contract CrowdSale is SafeMath {
     }
 
     function updateFundingEndBlock(uint256 newFundingEndBlock)  external onlyOwner {
-        require(newFundingEndBlock &gt; fundingStartBlock);
-        //require(newFundingEndBlock &gt;= fundingEndBlock);
+        require(newFundingEndBlock > fundingStartBlock);
+        //require(newFundingEndBlock >= fundingEndBlock);
         fundingEndBlock = newFundingEndBlock;
     }
 
@@ -283,7 +283,7 @@ contract CrowdSale is SafeMath {
     // after ICO only owner can call this
     function burnRemainingToken(uint256 _value) external  onlyOwner isIcoFinished {
         //@TODO - check balance of address if no value passed
-        require(_value &gt; 0);
+        require(_value > 0);
         trakToken.burn(_value);
     }
 
@@ -291,7 +291,7 @@ contract CrowdSale is SafeMath {
     function withdrawRemainingToken(uint256 _value,address trakTokenAdmin)  external onlyOwner isIcoFinished {
         //@TODO - check balance of address if no value passed
         require(trakTokenAdmin != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
         trakToken.transfer(trakTokenAdmin,_value);
     }
 

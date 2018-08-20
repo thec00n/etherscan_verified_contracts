@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 
 contract MeetOneTokenBase {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
+    mapping (address => uint256)                       _balances;
     
     event Transfer( address indexed from, address indexed to, uint256 value);
 
@@ -17,7 +17,7 @@ contract MeetOneTokenBase {
     
     function transfer(address dst, uint256 wad) public returns (bool) {
         require(dst != address(0));
-        require(_balances[msg.sender] &gt;= wad);
+        require(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -29,20 +29,20 @@ contract MeetOneTokenBase {
     
     function add(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x + y;
-        require(z &gt;= x &amp;&amp; z&gt;=y);
+        require(z >= x && z>=y);
         return z;
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x - y;
-        require(x &gt;= y &amp;&amp; z &lt;= x);
+        require(x >= y && z <= x);
         return z;
     }
 }
 
 contract MeetOneToken is MeetOneTokenBase {
-    string  public  symbol = &quot;MEET.ONE&quot;;
-    string  public name = &quot;MEET.ONE&quot;;
+    string  public  symbol = "MEET.ONE";
+    string  public name = "MEET.ONE";
     uint256  public  decimals = 18; 
     uint256 public freezedValue = 25*(10**8)*(10**18);
     uint256 public eachUnfreezeValue = 625000000*(10**18);
@@ -73,9 +73,9 @@ contract MeetOneToken is MeetOneTokenBase {
 
     function unfreeze(uint256 i) public {
         require(msg.sender == owner);
-        require(i&gt;=0 &amp;&amp; i&lt;unfreezeTimeMap.length);
-        require(now &gt;= unfreezeTimeMap[i].unfreezeTime &amp;&amp; unfreezeTimeMap[i].freezed);
-        require(_balances[0x01] &gt;= eachUnfreezeValue);
+        require(i>=0 && i<unfreezeTimeMap.length);
+        require(now >= unfreezeTimeMap[i].unfreezeTime && unfreezeTimeMap[i].freezed);
+        require(_balances[0x01] >= eachUnfreezeValue);
 
         _balances[0x01] = sub(_balances[0x01], eachUnfreezeValue);
         _balances[owner] = add(_balances[owner], eachUnfreezeValue);

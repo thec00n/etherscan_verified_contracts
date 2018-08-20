@@ -12,7 +12,7 @@ pragma solidity ^0.4.24;
 
 
 contract Authorized {
-  mapping (address =&gt; bool) public AuthorizedUser;
+  mapping (address => bool) public AuthorizedUser;
   event AuthorizedUserChanged(address indexed addr, bool state );
 
 /**
@@ -56,7 +56,7 @@ pragma solidity ^0.4.24;
  
 contract HBRIdentification is Authorized {
 
-  mapping (address =&gt; bool)  IdentificationDb;
+  mapping (address => bool)  IdentificationDb;
 
   event proven(address addr,bool isConfirm);
 
@@ -74,7 +74,7 @@ contract HBRIdentification is Authorized {
 
 
   function provenAddresseList(address[] _addrs, bool _isConfirm) public onlyAuthorized{
-    for (uint256 i = 0; i &lt; _addrs.length; i++) {
+    for (uint256 i = 0; i < _addrs.length; i++) {
       provenAddress(_addrs[i],_isConfirm);
     }
   }

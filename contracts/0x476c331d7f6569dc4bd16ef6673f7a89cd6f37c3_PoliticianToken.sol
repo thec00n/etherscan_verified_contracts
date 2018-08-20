@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18; // solhint-disable-line
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="ceaaabbaab8eafb6a7a1a3b4aba0e0ada1">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="ceaaabbaab8eafb6a7a1a3b4aba0e0ada1">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -45,8 +45,8 @@ contract PoliticianToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoPoliticians&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;POLITICIAN&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoPoliticians"; // solhint-disable-line
+  string public constant SYMBOL = "POLITICIAN"; // solhint-disable-line
   bool private erc721Enabled = false;
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
@@ -58,19 +58,19 @@ contract PoliticianToken is ERC721 {
 
   /// @dev A mapping from politician IDs to the address that owns them. All politicians have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public politicianIndexToOwner;
+  mapping (uint256 => address) public politicianIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PoliticianIDs to an address that has been approved to call
   ///  transferFrom(). Each Politician can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public politicianIndexToApproved;
+  mapping (uint256 => address) public politicianIndexToApproved;
 
   // @dev A mapping from PoliticianIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private politicianIndexToPrice;
+  mapping (uint256 => uint256) private politicianIndexToPrice;
 
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -149,7 +149,7 @@ contract PoliticianToken is ERC721 {
 
   /// @dev Creates a new promo Politician with the given name and _price and assignes it to an address.
   function createPromoPolitician(address _owner, string _name, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address politicianOwner = _owner;
 
@@ -157,7 +157,7 @@ contract PoliticianToken is ERC721 {
       politicianOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -184,7 +184,7 @@ contract PoliticianToken is ERC721 {
   }
 
   function changePoliticianName(uint256 _tokenId, string _name) public onlyCOO {
-    require(_tokenId &lt; politicians.length);
+    require(_tokenId < politicians.length);
     politicians[_tokenId].name = _name;
   }
 
@@ -237,19 +237,19 @@ contract PoliticianToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       politicianIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       politicianIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 150), 94);
-    } else if (sellingPrice &lt; thirdStepLimit) {
+    } else if (sellingPrice < thirdStepLimit) {
       // second stage
       politicianIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 125), 94);
     } else {
@@ -312,7 +312,7 @@ contract PoliticianToken is ERC721 {
   }
 
   /// @param _owner The owner whose politician tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Politicians array looking for politicians belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -327,7 +327,7 @@ contract PoliticianToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 politicianId;
-      for (politicianId = 0; politicianId &lt;= totalPoliticians; politicianId++) {
+      for (politicianId = 0; politicianId <= totalPoliticians; politicianId++) {
         if (politicianIndexToOwner[politicianId] == _owner) {
           result[resultIndex] = politicianId;
           resultIndex++;
@@ -392,8 +392,8 @@ contract PoliticianToken is ERC721 {
     });
     uint256 newPoliticianId = politicians.push(_politician) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPoliticianId == uint256(uint32(newPoliticianId)));
 
     Birth(newPoliticianId, _name, _owner);
@@ -420,7 +420,7 @@ contract PoliticianToken is ERC721 {
   }
 
   function _withdrawFunds(address _to, uint256 amount) private {
-    require(this.balance &gt;= amount);
+    require(this.balance >= amount);
     if (_to == address(0)) {
       ceoAddress.transfer(amount);
     } else {
@@ -430,12 +430,12 @@ contract PoliticianToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Politician to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of politicians is capped to 2^32 we can&#39;t overflow this
+    // Since the number of politicians is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     politicianIndexToOwner[_tokenId] = _to;
 
-    // When creating new polticians _from is 0x0, but we can&#39;t account that address.
+    // When creating new polticians _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -466,9 +466,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -476,7 +476,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -485,7 +485,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

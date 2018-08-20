@@ -17,8 +17,8 @@ contract CryptoLandmarks {
     event LandmarkCreated(uint256 tokenId, uint256 groupId, uint256 price, address owner);
 
    
-    string public constant NAME = &quot;CryptoLandmarks.co Landmarks&quot;; 
-    string public constant SYMBOL = &quot;LANDMARK&quot;; 
+    string public constant NAME = "CryptoLandmarks.co Landmarks"; 
+    string public constant SYMBOL = "LANDMARK"; 
 
     // Initial price of new Landmark
     uint256 private startingPrice = 0.03 ether;
@@ -35,25 +35,25 @@ contract CryptoLandmarks {
     uint256[] private landmarks;
     
     // landmark to prices
-    mapping (uint256 =&gt; uint256) landmarkToMaxPrice;
-    mapping (uint256 =&gt; uint256) landmarkToPrice;
+    mapping (uint256 => uint256) landmarkToMaxPrice;
+    mapping (uint256 => uint256) landmarkToPrice;
     
     // landmark to owner
-    mapping (uint256 =&gt; address) landmarkToOwner;
+    mapping (uint256 => address) landmarkToOwner;
     
     // landmark to ambassador id
     // ambassador is also landmark token
     // every ambassador belongs to self
-    mapping (uint256 =&gt; uint256) landmarkToAmbassador;
+    mapping (uint256 => uint256) landmarkToAmbassador;
     
-    // ambassadors&#39;s landmarks count
-    mapping (uint256 =&gt; uint256) groupLandmarksCount;
+    // ambassadors's landmarks count
+    mapping (uint256 => uint256) groupLandmarksCount;
 
     // withdraw cooldown date of landmark owner
-    mapping (address =&gt; uint256) public withdrawCooldown;
+    mapping (address => uint256) public withdrawCooldown;
 
-    mapping (uint256 =&gt; address) landmarkToApproved;
-    mapping (address =&gt; uint256) landmarkOwnershipCount;
+    mapping (uint256 => address) landmarkToApproved;
+    mapping (address => uint256) landmarkOwnershipCount;
 
 
     function CryptoLandmarks() public {
@@ -62,22 +62,22 @@ contract CryptoLandmarks {
     }
 
     function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-        if (_price &lt; 0.2 ether)
+        if (_price < 0.2 ether)
             return _price.mul(2); // 200%
-        if (_price &lt; 4 ether)
+        if (_price < 4 ether)
             return _price.mul(17).div(10); // 170%
-        if (_price &lt; 15 ether)
+        if (_price < 15 ether)
             return _price.mul(141).div(100); // 141%
         else
             return _price.mul(134).div(100); // 134%
     }
 
     function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-        if (_price &lt; 0.2 ether)
+        if (_price < 0.2 ether)
             return 5; // 5%
-        if (_price &lt; 4 ether)
+        if (_price < 4 ether)
             return 4; // 4%
-        if (_price &lt; 15 ether)
+        if (_price < 15 ether)
             return 3; // 3%
         else
             return 2; // 2%
@@ -90,8 +90,8 @@ contract CryptoLandmarks {
          - every owner of Landmark in an Ambassador group gets a cut
         All funds are sent directly to players and are never stored in the contract.
 
-        Ambassador -&gt; _tokenId &lt; 1000
-        Landmark -&gt; _tokenId &gt;= 1000
+        Ambassador -> _tokenId < 1000
+        Landmark -> _tokenId >= 1000
 
     */
     function buy(uint256 _tokenId) public payable {
@@ -99,7 +99,7 @@ contract CryptoLandmarks {
         require(oldOwner != msg.sender);
         require(msg.sender != address(0));
         uint256 sellingPrice = priceOfLandmark(_tokenId);
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
 
         // excess that will be refunded
         uint256 excess = msg.value.sub(sellingPrice);
@@ -110,13 +110,13 @@ contract CryptoLandmarks {
         // number of Landmarks in the group
         uint256 groupMembersCount = groupLandmarksCount[groupId];
 
-        // developer&#39;s cut in % (2-5)
+        // developer's cut in % (2-5)
         uint256 devCut = calculateDevCut(sellingPrice);
 
         // for previous owner
         uint256 payment;
         
-        if (_tokenId &lt; 1000) {
+        if (_tokenId < 1000) {
             // Buying Ambassador
             payment = sellingPrice.mul(SafeMath.sub(95, devCut)).div(100);
         } else {
@@ -128,14 +128,14 @@ contract CryptoLandmarks {
         uint256 feeGroupMember = (sellingPrice.mul(5).div(100)).div(groupMembersCount);
 
 
-        for (uint i = 0; i &lt; totalSupply(); i++) {
+        for (uint i = 0; i < totalSupply(); i++) {
             uint id = landmarks[i];
             if ( landmarkToAmbassador[id] == groupId ) {
                 if ( _tokenId == id) {
                     // Transfer payment to previous owner
                     oldOwner.transfer(payment);
                 }
-                if (groupId == id &amp;&amp; _tokenId &gt;= 1000) {
+                if (groupId == id && _tokenId >= 1000) {
                     // Transfer 5% to Ambassador
                     landmarkToOwner[id].transfer(sellingPrice.mul(5).div(100));
                 }
@@ -158,7 +158,7 @@ contract CryptoLandmarks {
         _transfer(oldOwner, msg.sender, _tokenId);
 
         // if overpaid, transfer excess back to sender
-        if (excess &gt; 0) {
+        if (excess > 0) {
             msg.sender.transfer(excess);
         }
 
@@ -176,7 +176,7 @@ contract CryptoLandmarks {
         require(landmarkToOwner[_tokenId] == msg.sender);
 
         // price cannot be higher than maximum price
-        require(landmarkToMaxPrice[_tokenId] &gt;= _price);
+        require(landmarkToMaxPrice[_tokenId] >= _price);
 
         // set new price
         landmarkToPrice[_tokenId] = _price;
@@ -187,16 +187,16 @@ contract CryptoLandmarks {
 
     function createLandmark(uint256 _tokenId, uint256 _groupId, address _owner, uint256 _price) public onlyCOO {
         // token with id below 1000 is a Ambassador
-        if (_price &lt;= 0 &amp;&amp; _tokenId &gt;= 1000) {
+        if (_price <= 0 && _tokenId >= 1000) {
             _price = startingPrice;
-        } else if (_price &lt;= 0 &amp;&amp; _tokenId &lt; 1000) {
+        } else if (_price <= 0 && _tokenId < 1000) {
             _price = ambassadorStartingPrice;
         }
         if (_owner == address(0)) {
             _owner = coo;
         }
 
-        if (_tokenId &lt; 1000) {
+        if (_tokenId < 1000) {
             _groupId == _tokenId;
         }
 
@@ -267,18 +267,18 @@ contract CryptoLandmarks {
     */
     function withdrawBalance() external notCLevel {
         // only person owning more than 3 tokens can whitdraw
-        require(landmarkOwnershipCount[msg.sender] &gt;= 3);
+        require(landmarkOwnershipCount[msg.sender] >= 3);
         
         // player can withdraw only week after his previous withdrawal
-        require(withdrawCooldown[msg.sender] &lt;= now);
+        require(withdrawCooldown[msg.sender] <= now);
 
         // can be invoked after any 10 purchases from previous withdrawal
-        require(transactions &gt;= 10);
+        require(transactions >= 10);
 
         uint256 balance = this.balance;
 
         // balance must be greater than 0.3 ether
-        require(balance &gt;= 0.3 ether);
+        require(balance >= 0.3 ether);
 
         uint256 senderCut = balance.mul(3).div(1000).mul(landmarkOwnershipCount[msg.sender]);
         
@@ -370,7 +370,7 @@ contract CryptoLandmarks {
         uint256 total = totalSupply();
         uint256 resultIndex = 0;
 
-        for(uint256 i = 0; i &lt;= total; i++) {
+        for(uint256 i = 0; i <= total; i++) {
             if (landmarkToOwner[i] == _owner) {
                 result[resultIndex] = i;
                 resultIndex++;
@@ -405,9 +405,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -415,7 +415,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -424,7 +424,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

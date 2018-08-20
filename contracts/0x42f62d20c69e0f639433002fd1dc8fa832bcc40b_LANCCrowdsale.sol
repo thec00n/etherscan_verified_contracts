@@ -10,7 +10,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -19,7 +19,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -97,8 +97,8 @@ contract LANCCrowdsale is Ownable {
   // 4 = Round 2
   // 5 = Finished
 
-  mapping (uint256 =&gt; uint256) public rateMap;
-  mapping (address =&gt; uint256) powerDayAddressLimits;
+  mapping (uint256 => uint256) public rateMap;
+  mapping (address => uint256) powerDayAddressLimits;
 
   uint256 public powerDayRate; 
   uint256 public powerDayEthPerPerson = 10;
@@ -137,7 +137,7 @@ contract LANCCrowdsale is Ownable {
   }
 
   function setTokenContract(address _token) public onlyOwner {
-        require(_token != address(0) &amp;&amp; token == address(0));
+        require(_token != address(0) && token == address(0));
         require(LANCToken(_token).owner() == address(this));
         require(LANCToken(_token).totalSupply() == 0);
         require(!LANCToken(_token).mintingFinished());
@@ -156,8 +156,8 @@ contract LANCCrowdsale is Ownable {
    // Backup function in case of ETH price fluctuations
 
   function updateRates(uint256 rateIdx, uint256 newRate) public onlyOwner {
-    require(rateIdx &gt; 0 &amp;&amp; rateIdx &lt; 5);
-    require(newRate &gt; 0);
+    require(rateIdx > 0 && rateIdx < 5);
+    require(newRate > 0);
 
     rateMap[rateIdx] = newRate;
 
@@ -173,7 +173,7 @@ contract LANCCrowdsale is Ownable {
   function switchSaleState() public onlyOwner {
     require(token != address(0));
 
-    if (currentPeriod &gt; 4) {
+    if (currentPeriod > 4) {
       revert(); // Finished, last state is 4
     }
 
@@ -220,14 +220,14 @@ contract LANCCrowdsale is Ownable {
       uint256 newWeiAmountPerSender = powerDayAddressLimits[msg.sender].add(weiAmount);
 
       // Check if the person has reached their power day limit.
-      if (newWeiAmountPerSender &gt; powerDayPerPersonCapInWei()) {
+      if (newWeiAmountPerSender > powerDayPerPersonCapInWei()) {
         revert();
       } else {
         powerDayAddressLimits[msg.sender] = newWeiAmountPerSender;
       }
     }
 
-    // Generate the tokens by using MintableToken&#39;s mint method.
+    // Generate the tokens by using MintableToken's mint method.
     
     token.mint(beneficiary, tokens);
 
@@ -238,9 +238,9 @@ contract LANCCrowdsale is Ownable {
 
   function saleInPowerDay() internal view returns (bool) {
     bool inPresale = (currentPeriod == 2);
-    bool inPowerDayPeriod = (now &gt;= presaleStartTime &amp;&amp; now &lt;= powerDayEndTime);
+    bool inPowerDayPeriod = (now >= presaleStartTime && now <= powerDayEndTime);
 
-    return inPresale &amp;&amp; inPowerDayPeriod;
+    return inPresale && inPowerDayPeriod;
   }
 
   function powerDayPerPersonCapInWei() public view returns (uint) {
@@ -253,11 +253,11 @@ contract LANCCrowdsale is Ownable {
 
   function willFitInCap(uint256 checkedSupply) internal view returns (bool) {
     if (currentPeriod == 1 || currentPeriod == 2) {
-      return (checkedSupply &lt;= capPresale);
+      return (checkedSupply <= capPresale);
     } else if (currentPeriod == 3) {
-      return (checkedSupply &lt;= capRound1);
+      return (checkedSupply <= capRound1);
     } else if (currentPeriod == 4) {
-      return (checkedSupply &lt;= capRound2);
+      return (checkedSupply <= capRound2);
     }
 
     return false;
@@ -266,10 +266,10 @@ contract LANCCrowdsale is Ownable {
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
     bool tokenAssigned = (token != address(0));
-    bool inStartedState = (currentPeriod &gt; 0 &amp;&amp; currentPeriod &lt; 5);
+    bool inStartedState = (currentPeriod > 0 && currentPeriod < 5);
     bool nonZeroPurchase = msg.value != 0;
 
-    return tokenAssigned &amp;&amp; inStartedState &amp;&amp; nonZeroPurchase &amp;&amp; !isFinalized;
+    return tokenAssigned && inStartedState && nonZeroPurchase && !isFinalized;
   }
 
   // Finalize the sale and calculate final token supply and distribute amounts.
@@ -291,7 +291,7 @@ contract LANCCrowdsale is Ownable {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return currentPeriod &gt; 4;
+    return currentPeriod > 4;
   }
 
   // send ether to the fund collection wallet
@@ -317,27 +317,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -348,8 +348,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -363,7 +363,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -412,7 +412,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -462,8 +462,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract LANCToken is MintableToken {
 
-  string public name = &quot;LanceChain Token&quot;;
-  string public symbol = &quot;LANC&quot;;
+  string public name = "LanceChain Token";
+  string public symbol = "LANC";
   uint public decimals = 18;
   
 }

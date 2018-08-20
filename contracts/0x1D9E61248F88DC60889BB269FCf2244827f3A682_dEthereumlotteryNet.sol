@@ -40,7 +40,7 @@ contract dEthereumlotteryNet {
 		uint id;
 	}
 	
-	mapping(address =&gt; rolls_s[]) private players;
+	mapping(address => rolls_s[]) private players;
 	
 	struct investors_s {
 		address owner;
@@ -53,7 +53,7 @@ contract dEthereumlotteryNet {
 	
 	investors_s[] private investors;
 	
-	string constant public Information = &quot;http://d.ethereumlottery.net&quot;;
+	string constant public Information = "http://d.ethereumlottery.net";
 	
 	/*
 		Deploy
@@ -72,16 +72,16 @@ contract dEthereumlotteryNet {
 	        Bet = 0;
 	        return;
 	    }
-		if (Value &lt; minimumRollPrice) {
+		if (Value < minimumRollPrice) {
 			Value = minimumRollPrice;
 		}
 		Rate = getRate(Value);
 		Bet = getRealBet(Rate);
-		if (Value &lt; Bet) {
+		if (Value < Bet) {
 		    Rate++;
 		    Bet = getRealBet(Rate);
 		}
-		if (Rate &lt; BestRollRate) { 
+		if (Rate < BestRollRate) { 
 		    Rate = BestRollRate;
 		    Bet = getRealBet(Rate);
         }
@@ -112,8 +112,8 @@ contract dEthereumlotteryNet {
 	/* For Investors */
 	function Invest() OnlyEnabled external {
 		uint value_ = msg.value;
-		if (value_ &lt; investUnit) { throw; }
-		if (value_ % investUnit &gt; 0) { 
+		if (value_ < investUnit) { throw; }
+		if (value_ % investUnit > 0) { 
 			if ( ! msg.sender.send(value_ % investUnit)) { throw; } 
 			value_ = value_ - (value_ % investUnit);
 		}
@@ -122,7 +122,7 @@ contract dEthereumlotteryNet {
 			InvestorID = investors.length;
 			investors.length++;
 		}
-		if (investors[InvestorID].valid &amp;&amp; investors[InvestorID].live) {
+		if (investors[InvestorID].valid && investors[InvestorID].live) {
 			investors[InvestorID].value += value_;
 		} else {
 			investors[InvestorID].value = value_;
@@ -146,14 +146,14 @@ contract dEthereumlotteryNet {
 		uint InvestorID = getInvestorByAddress(msg.sender);
 		if (InvestorID == 0) { throw; }
 		if ( ! investors[InvestorID].valid) { throw; }
-		if (investors[InvestorID].timestamp &gt; now &amp;&amp; ContractEnabled) { throw; }
+		if (investors[InvestorID].timestamp > now && ContractEnabled) { throw; }
 		uint balance_;
 		if (investors[InvestorID].live) {
 			jackpot_ -= investors[InvestorID].value;
 			balance_ = investors[InvestorID].value;
 			setJackpot();
 		}
-		if (investors[InvestorID].balance &gt; 0) {
+		if (investors[InvestorID].balance > 0) {
 			balance_ += investors[InvestorID].balance;
 		}
 		if ( ! msg.sender.send( balance_ )) { throw; }
@@ -163,9 +163,9 @@ contract dEthereumlotteryNet {
 	function DoRoll() external noEther {
 		uint value_;
 		bool found;
-		for ( uint a=0 ; a &lt; players[msg.sender].length ; a++ ) {
+		for ( uint a=0 ; a < players[msg.sender].length ; a++ ) {
 			if (players[msg.sender][a].valid) {
-			    if (players[msg.sender][a].blockNumber+rollLossBlockDelay &lt;= block.number) {
+			    if (players[msg.sender][a].blockNumber+rollLossBlockDelay <= block.number) {
 			        uint feeValue_ = players[msg.sender][a].value/2;
 			        feeValue += feeValue_;
 			        investorAddFee(players[msg.sender][a].value - feeValue_);
@@ -183,7 +183,7 @@ contract dEthereumlotteryNet {
 					found = true;
 					continue;
 				}
-				if (players[msg.sender][a].blockNumber &lt; block.number) {
+				if (players[msg.sender][a].blockNumber < block.number) {
 					value_ += makeRoll(a);
 					playersPot -= players[msg.sender][a].value;
 					delete players[msg.sender][a];
@@ -193,25 +193,25 @@ contract dEthereumlotteryNet {
 			}
 		}
 		if ( ! found) { throw; }
-		if (value_ &gt; 0) { if ( ! msg.sender.send(value_)) { throw; } }
+		if (value_ > 0) { if ( ! msg.sender.send(value_)) { throw; } }
 	}
 	function PrepareRoll(uint seed) OnlyEnabled {
-		if (msg.value &lt; minimumRollPrice) { throw; }
+		if (msg.value < minimumRollPrice) { throw; }
 		if (jackpot_ == 0) { throw; }
 		uint _rate = getRate(msg.value);
 		uint _realBet = getRealBet(_rate);
-		if (msg.value &lt; _realBet) {
+		if (msg.value < _realBet) {
 		    _rate++;
 		    _realBet = getRealBet(_rate);
 		}
-		if (_rate &lt; BestRollRate) { 
+		if (_rate < BestRollRate) { 
 		    _rate = BestRollRate;
 		    _realBet = getRealBet(_rate);
         }
-		if (msg.value-_realBet &gt; 0) {
+		if (msg.value-_realBet > 0) {
 			if ( ! msg.sender.send( msg.value-_realBet )) { throw; }
 		}
-		for (uint a = 0 ; a &lt; players[msg.sender].length ; a++) {
+		for (uint a = 0 ; a < players[msg.sender].length ; a++) {
 			if ( ! players[msg.sender][a].valid) {
 				prepareRoll( a, _realBet, seed );
 				return;
@@ -223,7 +223,7 @@ contract dEthereumlotteryNet {
 	/* For Owner */
 	function OwnerCloseContract() external OnlyOwner noEther {
 		if ( ! ContractEnabled) {
-		    if (ContractDisabledBlock &lt; block.number) {
+		    if (ContractDisabledBlock < block.number) {
 				if (playersPot == 0) { throw; }
 				if ( ! msg.sender.send( playersPot )) { throw; }
 				playersPot = 0;
@@ -256,14 +256,14 @@ contract dEthereumlotteryNet {
 		extraJackpot_ += players[msg.sender][id].value - feeValue_ - investorFee_;
 		setJackpot();
 		bytes32 hash_ = players[msg.sender][id].extraHash;
-		for ( uint a = 1 ; a &lt;= prepareBlockDelay ; a++ ) {
+		for ( uint a = 1 ; a <= prepareBlockDelay ; a++ ) {
 			hash_ = sha3(hash_, block.blockhash(players[msg.sender][id].blockNumber - prepareBlockDelay+a));
 		}
 		uint _rate = getRate(players[msg.sender][id].value);
 		uint bigNumber = uint64(hash_);
 		if (bigNumber % _rate == 0 ) {
 			win = Jackpot;
-			for ( a=1 ; a &lt; investors.length ; a++ ) {
+			for ( a=1 ; a < investors.length ; a++ ) {
 				investors[a].live = false;
 			}
 			JackpotHits++;
@@ -277,8 +277,8 @@ contract dEthereumlotteryNet {
 	}
 	function investorAddFee(uint value) private {
 		bool done;
-		for ( uint a=1 ; a &lt; investors.length ; a++ ) {
-			if (investors[a].live &amp;&amp; investors[a].valid) {
+		for ( uint a=1 ; a < investors.length ; a++ ) {
+			if (investors[a].live && investors[a].valid) {
 				investors[a].balance += value * investors[a].value / jackpot_;
 				done = true;
 			}
@@ -309,7 +309,7 @@ contract dEthereumlotteryNet {
 		return jackpot_ * 1000000 / ( rate * 1000000 * investorFee / extraRate);
 	}
 	function getInvestorByAddress(address Address) internal returns (uint id) {
-		for ( id=1 ; id &lt; investors.length ; id++ ) {
+		for ( id=1 ; id < investors.length ; id++ ) {
 			if (investors[id].owner == Address) {
 				return;
 			}
@@ -327,7 +327,7 @@ contract dEthereumlotteryNet {
 	/*
 		Modifiers
 	*/
-	modifier noEther() { if (msg.value &gt; 0) { throw; } _ }
+	modifier noEther() { if (msg.value > 0) { throw; } _ }
 	modifier OnlyOwner() { if (owner != msg.sender) { throw; } _ }
 	modifier OnlyEnabled() { if ( ! ContractEnabled) { throw; } _ }
 }

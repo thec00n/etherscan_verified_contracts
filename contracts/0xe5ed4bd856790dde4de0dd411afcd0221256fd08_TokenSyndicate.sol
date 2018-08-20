@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract TokenSyndicate {
     bool public tokensPurchased;
     /**
     * Has the withdraw function been called on the token contract.
-    * This makes the syndicate&#39;s tokens available for distribution.
+    * This makes the syndicate's tokens available for distribution.
     */
     bool public syndicateTokensWithdrawn;
 
@@ -69,7 +69,7 @@ contract TokenSyndicate {
     uint256 public totalPresale;
     address public owner;
 
-    mapping(address =&gt; uint256) public presaleBalances;
+    mapping(address => uint256) public presaleBalances;
 
     event LogInvest(address indexed _to,  uint256 presale);
     event LogRefund(address indexed _to, uint256 presale);
@@ -90,7 +90,7 @@ contract TokenSyndicate {
         assert(syndicateTokensWithdrawn); _; 
     }
     modifier whenRefundIsPermitted() {
-        require(now &gt;= refundStart || refundsEnabled);
+        require(now >= refundStart || refundsEnabled);
         _;
     }
     modifier onlyWhenRefundsNotEnabled() {
@@ -125,7 +125,7 @@ contract TokenSyndicate {
         is called without a `throw`.
     */
     function invest() payable public onlyWhenTokensNotPurchased {
-        assert(msg.value &gt; 0);
+        assert(msg.value > 0);
 
         presaleBalances[msg.sender] = SafeMath.add(presaleBalances[msg.sender], msg.value);
         totalPresale = SafeMath.add(totalPresale, msg.value);        
@@ -140,7 +140,7 @@ contract TokenSyndicate {
     }
 
     /**
-    * An &#39;escape hatch&#39; function to allow purchasers to get a refund of their eth before refundStart.
+    * An 'escape hatch' function to allow purchasers to get a refund of their eth before refundStart.
     */
     function enableRefunds() external onlyWhenTokensNotPurchased onlyOwner {
         refundsEnabled = true;
@@ -151,7 +151,7 @@ contract TokenSyndicate {
 
     */
     function buyTokens() external onlyWhenRefundsNotEnabled onlyWhenTokensNotPurchased onlyOwner {
-        require(this.balance &gt;= totalPresale);
+        require(this.balance >= totalPresale);
 
         tokenContract.buyTokens.value(this.balance)();
         //Get the exchange rate the contract will got for the purchase. Used to distribute tokens
@@ -164,7 +164,7 @@ contract TokenSyndicate {
     }
 
     /*
-        Call &#39;withdraw&#39; on the skrilla contract as this contract. So that the tokens are available for distribution with the &#39;transfer&#39; function.
+        Call 'withdraw' on the skrilla contract as this contract. So that the tokens are available for distribution with the 'transfer' function.
         This can only be called 14 days after sale close.
     */
     function withdrawSyndicateTokens() external onlyWhenTokensPurchased onlyOwner {
@@ -179,7 +179,7 @@ contract TokenSyndicate {
 
     function withdrawTokens() external onlyWhenSyndicateTokensWithdrawn {
         uint256 tokens = SafeMath.div(SafeMath.mul(presaleBalances[msg.sender], tokenExchangeRate), 1 ether);
-        assert(tokens &gt; 0);
+        assert(tokens > 0);
 
         totalPresale = SafeMath.sub(totalPresale, presaleBalances[msg.sender]);
         presaleBalances[msg.sender] = 0;
@@ -200,7 +200,7 @@ contract TokenSyndicate {
     */
     function refund() external whenRefundIsPermitted onlyWhenTokensNotPurchased {
         uint256 totalValue = presaleBalances[msg.sender];
-        assert(totalValue &gt; 0);
+        assert(totalValue > 0);
 
         presaleBalances[msg.sender] = 0;
         totalPresale = SafeMath.sub(totalPresale, totalValue);

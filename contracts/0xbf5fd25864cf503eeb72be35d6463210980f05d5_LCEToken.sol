@@ -6,8 +6,8 @@ contract LCEToken {
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 
 
@@ -17,16 +17,16 @@ value);
     function LCEToken() public {
         totalSupply = 1500000000 * 10 ** uint256(decimals);
         balanceOf[msg.sender] = totalSupply;
-        name = &quot;Linecycle&quot;;
-        symbol = &quot;LCE&quot;;
+        name = "Linecycle";
+        symbol = "LCE";
     }
 
     function _transfer(address _from, address _to, uint _value) internal 
 
 {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -41,7 +41,7 @@ value);
     function transferFrom(address _from, address _to, uint256 _value) 
 
 public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     
+        require(_value <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -55,7 +55,7 @@ public returns (bool success) {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
       emit  Burn(msg.sender, _value);
@@ -65,8 +65,8 @@ public returns (bool success) {
     function burnFrom(address _from, uint256 _value) public returns 
 
 (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              

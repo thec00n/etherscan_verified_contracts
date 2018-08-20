@@ -3,13 +3,13 @@ pragma solidity ^0.4.4;
 contract InsightsNetwork1 {
   address public owner;
   address public successor;
-  mapping (address =&gt; uint) public balances;
-  mapping (address =&gt; uint) public unlockTimes;
+  mapping (address => uint) public balances;
+  mapping (address => uint) public unlockTimes;
   bool public active;
   uint256 _totalSupply;
 
-  string public constant name = &quot;INS&quot;;
-  string public constant symbol = &quot;INS&quot;;
+  string public constant name = "INS";
+  string public constant symbol = "INS";
   uint8 public constant decimals = 0;
 
   function InsightsNetwork1() {
@@ -25,13 +25,13 @@ contract InsightsNetwork1 {
     _totalSupply += issueAmount;
     Mint(newTokenHolder, issueAmount);
 
-    require(balances[newTokenHolder] &lt; (balances[newTokenHolder] + issueAmount));
+    require(balances[newTokenHolder] < (balances[newTokenHolder] + issueAmount));
     balances[newTokenHolder] += issueAmount;
     Transfer(address(0), newTokenHolder, issueAmount);
 
     uint currentTime = block.timestamp; // seconds since the Unix epoch
     uint unlockTime = currentTime + 365*24*60*60; // one year out from the current time
-    assert(unlockTime &gt; currentTime); // check for overflow
+    assert(unlockTime > currentTime); // check for overflow
     unlockTimes[newTokenHolder] = unlockTime;
   }
 
@@ -76,7 +76,7 @@ contract InsightsNetwork1 {
 
   function deactivate() {
     require(active);
-    require(msg.sender == owner || (successor != address(0) &amp;&amp; msg.sender == successor));
+    require(msg.sender == owner || (successor != address(0) && msg.sender == successor));
     active = false;
   }
 }

@@ -21,11 +21,11 @@ contract SmartCityCrowdsale {
 	
 	address public owner; // Owner address
 
-	mapping (address =&gt; bool) whitelist; // useers whithelist
+	mapping (address => bool) whitelist; // useers whithelist
 
-    mapping(address =&gt; uint256) public balances; // the array of users along with amounts invested
+    mapping(address => uint256) public balances; // the array of users along with amounts invested
 	
-	mapping(address =&gt; uint256) public purchases; // the array of users and tokens purchased
+	mapping(address => uint256) public purchases; // the array of users and tokens purchased
 
     uint256 public raisedEth; // Amount of Ether raised
 
@@ -65,12 +65,12 @@ contract SmartCityCrowdsale {
 
 	/// modifiers
 	modifier onlyWhenActive() {
-		require(now &gt;= startTime &amp;&amp; !crowdsaleEnded &amp;&amp; !paused);
+		require(now >= startTime && !crowdsaleEnded && !paused);
 		_;
 	}
 	
 	modifier whenPositionsAvailable() {
-		require(availablePositions &gt; 0);
+		require(availablePositions > 0);
 		_;
 	}
 
@@ -129,16 +129,16 @@ contract SmartCityCrowdsale {
 
         var (positionsCnt, tokensCnt) = getPositionsAndTokensCnt(amount); 
 
-        require(positionsCnt &gt; 0 &amp;&amp; positionsCnt &lt;= availablePositions &amp;&amp; tokensCnt &gt; 0);
+        require(positionsCnt > 0 && positionsCnt <= availablePositions && tokensCnt > 0);
 
-		require(purchases[_receiver].add(tokensCnt) &lt;= investmentLimit); // Check the investment limit is not exceeded
+		require(purchases[_receiver].add(tokensCnt) <= investmentLimit); // Check the investment limit is not exceeded
 
-        require(tokensSoldTotal.add(tokensCnt) &lt;= tokensForSale);
+        require(tokensSoldTotal.add(tokensCnt) <= tokensForSale);
 
         walletAddress.transfer(amount); // Send funds to the Wallet
 		
-        balances[_receiver] = balances[_receiver].add(amount); // Add the amount invested to Investor&#39;s ballance
-		purchases[_receiver] = purchases[_receiver].add(tokensCnt); // Add tokens to Investor&#39;s purchases
+        balances[_receiver] = balances[_receiver].add(amount); // Add the amount invested to Investor's ballance
+		purchases[_receiver] = purchases[_receiver].add(tokensCnt); // Add tokens to Investor's purchases
         raisedEth = raisedEth.add(amount); // Increase raised funds counter
 		availablePositions = availablePositions.sub(positionsCnt);
 		usedPositions = usedPositions.add(positionsCnt);
@@ -161,7 +161,7 @@ contract SmartCityCrowdsale {
      *  @param _value uint256 Amount invested
      */
     function getPositionsAndTokensCnt(uint256 _value) public constant onlyWhenActive returns(uint256 positionsCnt, uint256 tokensCnt) {
-			if (_value % positionPrice != 0 || usedPositions &gt;= investmentPositions) {
+			if (_value % positionPrice != 0 || usedPositions >= investmentPositions) {
 				return(0, 0);
 			}
 			else {
@@ -181,7 +181,7 @@ contract SmartCityCrowdsale {
      *  @dev To increace/reduce number of Investment Positions released for sale
      */
     function setAvailablePositions(uint256 newAvailablePositions) public onlyOwner {
-        require(newAvailablePositions &lt;= investmentPositions.sub(usedPositions));
+        require(newAvailablePositions <= investmentPositions.sub(usedPositions));
 		availablePositions = newAvailablePositions;
     }
 	
@@ -189,7 +189,7 @@ contract SmartCityCrowdsale {
      *  @dev Allows Investment Position price changes
      */
     function setPositionPrice(uint256 newPositionPrice) public onlyOwner {
-        require(newPositionPrice &gt; 0);
+        require(newPositionPrice > 0);
 		positionPrice = newPositionPrice;
     }
 	
@@ -232,7 +232,7 @@ contract SmartCityCrowdsale {
 	{
 		uint len = _parties.length;
 		
-		for (uint i = 0; i &lt; len; i++) {
+		for (uint i = 0; i < len; i++) {
 			whitelist[_parties[i]] = true;
 			Granted(_parties[i]);
 		}
@@ -242,7 +242,7 @@ contract SmartCityCrowdsale {
 	{
 		uint len = _parties.length;
 		
-		for (uint i = 0; i &lt; len; i++) {
+		for (uint i = 0; i < len; i++) {
 			whitelist[_parties[i]] = false;
 			Revoked(_parties[i]);
 		}
@@ -283,7 +283,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -292,7 +292,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

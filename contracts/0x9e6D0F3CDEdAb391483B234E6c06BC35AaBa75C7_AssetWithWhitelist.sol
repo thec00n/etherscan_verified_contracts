@@ -14,7 +14,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -36,7 +36,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -89,7 +89,7 @@ contract AssetInterface {
  * Receives calls from the proxy, and calls back immediatly without arguments modification.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Asset is AssetInterface, Bytes32, ReturnData {
     // Assigned asset proxy contract, immutable.
@@ -132,7 +132,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
      */
     function _performTransferWithReference(address _to, uint _value, string _reference, address _sender) onlyProxy() returns(bool) {
         if (isICAP(_to)) {
-            return _transferToICAPWithReference(bytes32(_to) &lt;&lt; 96, _value, _reference, _sender);
+            return _transferToICAPWithReference(bytes32(_to) << 96, _value, _reference, _sender);
         }
         return _transferWithReference(_to, _value, _reference, _sender);
     }
@@ -179,7 +179,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
      */
     function _performTransferFromWithReference(address _from, address _to, uint _value, string _reference, address _sender) onlyProxy() returns(bool) {
         if (isICAP(_to)) {
-            return _transferFromToICAPWithReference(_from, bytes32(_to) &lt;&lt; 96, _value, _reference, _sender);
+            return _transferFromToICAPWithReference(_from, bytes32(_to) << 96, _value, _reference, _sender);
         }
         return _transferFromWithReference(_from, _to, _value, _reference, _sender);
     }
@@ -274,7 +274,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
 
     // Interface functions to allow specifying ICAP addresses as strings.
     function transferToICAP(string _icap, uint _value) returns(bool) {
-        return transferToICAPWithReference(_icap, _value, &#39;&#39;);
+        return transferToICAPWithReference(_icap, _value, '');
     }
 
     function transferToICAPWithReference(string _icap, uint _value, string _reference) returns(bool) {
@@ -282,7 +282,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
     }
 
     function transferFromToICAP(address _from, string _icap, uint _value) returns(bool) {
-        return transferFromToICAPWithReference(_from, _icap, _value, &#39;&#39;);
+        return transferFromToICAPWithReference(_from, _icap, _value, '');
     }
 
     function transferFromToICAPWithReference(address _from, string _icap, uint _value, string _reference) returns(bool) {
@@ -290,16 +290,16 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
     }
 
     function isICAP(address _address) constant returns(bool) {
-        bytes32 a = bytes32(_address) &lt;&lt; 96;
-        if (a[0] != &#39;X&#39; || a[1] != &#39;E&#39;) {
+        bytes32 a = bytes32(_address) << 96;
+        if (a[0] != 'X' || a[1] != 'E') {
             return false;
         }
-        if (a[2] &lt; 48 || a[2] &gt; 57 || a[3] &lt; 48 || a[3] &gt; 57) {
+        if (a[2] < 48 || a[2] > 57 || a[3] < 48 || a[3] > 57) {
             return false;
         }
-        for (uint i = 4; i &lt; 20; i++) {
+        for (uint i = 4; i < 20; i++) {
             uint char = uint(a[i]);
-            if (char &lt; 48 || char &gt; 90 || (char &gt; 57 &amp;&amp; char &lt; 65)) {
+            if (char < 48 || char > 90 || (char > 57 && char < 65)) {
                 return false;
             }
         }
@@ -309,7 +309,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
 
 contract AssetWithAmbi is Asset, Ambi2EnabledFull {
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; (ambi2.hasRole(this, _role, _sender()))) {
+        if (address(ambi2) != 0x0 && (ambi2.hasRole(this, _role, _sender()))) {
             _;
         }
     }
@@ -326,46 +326,46 @@ contract AssetProxy {
  * @title EToken2 Asset with whitelist implementation contract.
  */
 contract AssetWithWhitelist is AssetWithAmbi {
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
     uint public restrictionExpiraton;
     bool public restrictionRemoved;
 
     event Error(bytes32 _errorText);
 
-    function allowTransferFrom(address _from) onlyRole(&#39;admin&#39;) returns(bool) {
+    function allowTransferFrom(address _from) onlyRole('admin') returns(bool) {
         whitelist[_from] = true;
         return true;
     }
 
-    function blockTransferFrom(address _from) onlyRole(&#39;admin&#39;) returns(bool) {
+    function blockTransferFrom(address _from) onlyRole('admin') returns(bool) {
         whitelist[_from] = false;
         return true;
     }
 
     function transferIsAllowed(address _from) constant returns(bool) {
-        return restrictionRemoved || whitelist[_from] || (now &gt;= restrictionExpiraton);
+        return restrictionRemoved || whitelist[_from] || (now >= restrictionExpiraton);
     }
 
-    function removeRestriction() onlyRole(&#39;admin&#39;) returns(bool) {
+    function removeRestriction() onlyRole('admin') returns(bool) {
         restrictionRemoved = true;
         return true;
     }
 
     modifier transferAllowed(address _sender) {
         if (!transferIsAllowed(_sender)) {
-            Error(&#39;Transfer not allowed&#39;);
+            Error('Transfer not allowed');
             return;
         }
         _;
     }
 
-    function setExpiration(uint _time) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setExpiration(uint _time) onlyRole('admin') returns(bool) {
         if (restrictionExpiraton != 0) {
-            Error(&#39;Expiration time already set&#39;);
+            Error('Expiration time already set');
             return false;
         }
-        if (_time &lt; now) {
-            Error(&#39;Expiration time invalid&#39;);
+        if (_time < now) {
+            Error('Expiration time invalid');
             return false;
         }
         restrictionExpiraton = _time;

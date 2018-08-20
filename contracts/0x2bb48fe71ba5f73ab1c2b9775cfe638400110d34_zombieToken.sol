@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,9 +64,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -83,7 +83,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,13 +93,13 @@ contract ERC20Token {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;Zombie Token&quot;;
-    string public constant symbol = &quot;ZOB&quot;;
+    string public constant name = "Zombie Token";
+    string public constant symbol = "ZOB";
     uint8 public constant decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed from, uint256 value, address indexed to);
@@ -112,10 +112,10 @@ contract ERC20Token {
      */
     function _transfer(address from, address to, uint256 value) internal {
         // Check if the sender has enough balance
-        require(balanceOf[from] &gt;= value);
+        require(balanceOf[from] >= value);
 
         // Check for overflow
-        require(balanceOf[to] + value &gt; balanceOf[to]);
+        require(balanceOf[to] + value > balanceOf[to]);
 
         // Save this for an amount double check assertion
         uint256 previousBalances = balanceOf[from].add(balanceOf[to]);
@@ -153,7 +153,7 @@ contract ERC20Token {
      * @param value the amount to send
      */
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
-        require(value &lt;= allowance[from][msg.sender]);
+        require(value <= allowance[from][msg.sender]);
         allowance[from][msg.sender] = allowance[from][msg.sender].sub(value);
         _transfer(from, to, value);
         return true;

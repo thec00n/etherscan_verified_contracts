@@ -22,8 +22,8 @@ contract ACEEquityToken  {
 	uint8 public decimals; 
   
   //database to match user Accounts and their respective balances
-  mapping(address =&gt; uint) _balances;
-  mapping(address =&gt; mapping( address =&gt; uint )) _approvals;
+  mapping(address => uint) _balances;
+  mapping(address => mapping( address => uint )) _approvals;
   
   //ACE Equity Token Hard cap 
   uint public cap_ACE;
@@ -69,13 +69,13 @@ function allowance(address _owner, address spender) public constant returns (uin
 
   // A helper to notify if overflow occurs
 function safeToAdd(uint a, uint b) internal returns (bool) {
-    return (a + b &gt;= a &amp;&amp; a + b &gt;= b);
+    return (a + b >= a && a + b >= b);
   }
 
 //transfer an amount of ACE Equity Tokens to an Ethereum address
 function transfer(address to, uint value) public returns (bool ok) {
 
-    if(_balances[msg.sender] &lt; value) revert();
+    if(_balances[msg.sender] < value) revert();
     
     if(!safeToAdd(_balances[to], value)) revert();
     
@@ -88,11 +88,11 @@ function transfer(address to, uint value) public returns (bool ok) {
 
 //spend ACE Equity Tokens from another Ethereum account that approves you as spender
 function transferFrom(address from, address to, uint value) public returns (bool ok) {
-    // if you don&#39;t have enough balance, throw
-    if(_balances[from] &lt; value) revert();
+    // if you don't have enough balance, throw
+    if(_balances[from] < value) revert();
 
-    // if you don&#39;t have approval, throw
-    if(_approvals[from][msg.sender] &lt; value) revert();
+    // if you don't have approval, throw
+    if(_approvals[from][msg.sender] < value) revert();
     
     if(!safeToAdd(_balances[to], value)) revert();
     

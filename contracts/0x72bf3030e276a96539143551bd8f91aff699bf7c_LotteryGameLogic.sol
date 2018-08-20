@@ -97,7 +97,7 @@ contract LotteryGameLogicInterfaceV1 is LotteryGameLogicInterface {
 
 /**
  * Core game logic.  Handlings management of rounds, carry-over balances,
- * paying winners, etc.  Separate from the main contract because it&#39;s more
+ * paying winners, etc.  Separate from the main contract because it's more
  * tightly-coupled to the factory/round logic than the game logic.  This
  * allows for new rules in the future (e.g. partial picks, etc).  Carries
  * the caveat that it cannot be upgraded until the current rules produce
@@ -122,7 +122,7 @@ contract LotteryGameLogic is LotteryGameLogicInterfaceV1, Owned {
   modifier onlyBeforeDraw {
     if (
       currentRound == LotteryRoundInterface(0) ||
-      block.number &lt;= currentRound.closingBlock() ||
+      block.number <= currentRound.closingBlock() ||
       currentRound.winningNumbersPicked() == true
     ) {
       throw;
@@ -178,7 +178,7 @@ contract LotteryGameLogic is LotteryGameLogicInterfaceV1, Owned {
    * is a round underway, or this contract is holding a balance, upgrading is not allowed.
    */
   function isUpgradeAllowed() constant returns(bool) {
-    return currentRound == LotteryRoundInterface(0) &amp;&amp; this.balance &lt; 1 finney;
+    return currentRound == LotteryRoundInterface(0) && this.balance < 1 finney;
   }
 
   /**
@@ -188,7 +188,7 @@ contract LotteryGameLogic is LotteryGameLogicInterfaceV1, Owned {
    * @param saltNHash   Proof of N, in the form of sha3(salt, N, salt)
    */
   function startRound(bytes32 saltHash, bytes32 saltNHash) onlyCurator onlyWhenNoRound {
-    if (this.balance &gt; 0) {
+    if (this.balance > 0) {
       currentRound = LotteryRoundInterface(
         roundFactory.createRound.value(this.balance)(saltHash, saltNHash)
       );
@@ -216,17 +216,17 @@ contract LotteryGameLogic is LotteryGameLogicInterfaceV1, Owned {
   function finalizeRound() onlyOwner onlyAfterDraw returns(address) {
     address roundAddress = address(currentRound);
     if (!currentRound.paidOut()) {
-      // we&#39;ll only make one attempt here to pay the winners
+      // we'll only make one attempt here to pay the winners
       currentRound.distributeWinnings();
       currentRound.claimOwnerFee(curator);
-    } else if (currentRound.balance &gt; 0) {
+    } else if (currentRound.balance > 0) {
       // otherwise, we have no winners, so just pull out funds in
       // preparation for the next round.
       currentRound.withdraw();
     }
 
     // be sure someone can handle disputes, etc, if they arise.
-    // not that they&#39;ll be able to *do* anything, but they can at least
+    // not that they'll be able to *do* anything, but they can at least
     // try calling `distributeWinnings()` again...
     currentRound.transferOwnership(curator);
 
@@ -234,7 +234,7 @@ contract LotteryGameLogic is LotteryGameLogicInterfaceV1, Owned {
     delete currentRound;
 
     // if there are or were any problems distributing winnings, the winners can attempt to withdraw
-    // funds for themselves.  The contracts won&#39;t be destroyed so long as they have funds to pay out.
+    // funds for themselves.  The contracts won't be destroyed so long as they have funds to pay out.
     // handling them might require special care or something.
 
     return roundAddress;
@@ -249,7 +249,7 @@ contract LotteryGameLogic is LotteryGameLogicInterfaceV1, Owned {
   }
 
   /**
-   * Only accept payments from the current round.  Required due to calling `.withdraw` at round&#39;s end.
+   * Only accept payments from the current round.  Required due to calling `.withdraw` at round's end.
    */
   function () payable onlyFromCurrentRound {
     // another noop, since we can only receive funds from the current round.

@@ -19,7 +19,7 @@ contract SafeMath {
         pure
     returns(uint) {
         uint256 z = x + y;
-        require((z &gt;= x) &amp;&amp; (z &gt;= y));
+        require((z >= x) && (z >= y));
         return z;
     }
 
@@ -27,7 +27,7 @@ contract SafeMath {
         internal
         pure
     returns(uint) {
-        require(x &gt;= y);
+        require(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -45,7 +45,7 @@ contract SafeMath {
         internal
         pure
     returns(uint) {
-        require(y &gt; 0);
+        require(y > 0);
         return x / y;
     }
 
@@ -69,7 +69,7 @@ interface TokenFactory {
 }
 
 contract Authorization {
-    mapping(address =&gt; bool) internal authbook;
+    mapping(address => bool) internal authbook;
     address[] public operators;
     address owner;
 
@@ -102,7 +102,7 @@ contract Authorization {
         public
         onlyOwner
     {
-        if(user_ != address(0) &amp;&amp; !authbook[user_]) {
+        if(user_ != address(0) && !authbook[user_]) {
             authbook[user_] = true;
             operators.push(user_);
         }
@@ -113,7 +113,7 @@ contract Authorization {
         onlyOwner
     {
         delete authbook[user_];
-        for(uint i = 0; i &lt; operators.length; i++) {
+        for(uint i = 0; i < operators.length; i++) {
             if(operators[i] == user_) {
                 operators[i] = operators[operators.length - 1];
                 operators.length -= 1;
@@ -130,7 +130,7 @@ contract Authorization {
 }
 
 contract FundAccount is Authorization, SafeMath {
-    string public version = &quot;0.5.0&quot;;
+    string public version = "0.5.0";
 
     address public tokenFactory = 0x001393F1fb2E243Ee68Efe172eBb6831772633A926;
     address public xpaExchange = 0x008ea74569c1b9bbb13780114b6b5e93396910070a;
@@ -163,9 +163,9 @@ contract FundAccount is Authorization, SafeMath {
         uint256 price = TokenFactory(tokenFactory).getPrice(token_);
         uint256 xpaAmount = amount_ * 1 ether / price;
         if(
-            Token(token_).burn(amount_) &amp;&amp;
-            xpaAmount &gt; 0 &amp;&amp;
-            Token(XPA).balanceOf(this) &gt;= xpaAmount
+            Token(token_).burn(amount_) &&
+            xpaAmount > 0 &&
+            Token(XPA).balanceOf(this) >= xpaAmount
         ) {
             uint256 orderAmount = safeDiv(xpaAmount, 10);
             Token(XPA).approve(xpaExchange, orderAmount);

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,7 +77,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -124,7 +124,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -135,8 +135,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -256,7 +256,7 @@ contract Ownable {
 
 contract Authorizable is Ownable {
 
-    mapping(address =&gt; bool) public authorized;
+    mapping(address => bool) public authorized;
 
     modifier onlyAuthorized() {
         require(authorized[msg.sender]);
@@ -277,8 +277,8 @@ contract Authorizable is Ownable {
 contract LiteNetCoin is StandardToken, Authorizable{
 	
 	uint256 public INITIAL_SUPPLY = 300000000 * 1 ether; // Всего токенов
-	string public constant name = &quot;LiteNetCoin&quot;;
-    string public constant symbol = &quot;LNC&quot;;
+	string public constant name = "LiteNetCoin";
+    string public constant symbol = "LNC";
 	uint8 public constant decimals = 18;
 	
 	constructor() public  {
@@ -341,7 +341,7 @@ contract Crowdsale is LiteNetCoin {
 	
 
 	enum TokenDistributions { crowdsale, reserve, bounty, team, founders }
-	mapping(uint =&gt; uint256) public distributions;
+	mapping(uint => uint256) public distributions;
 	
 	address public teamTokens = 0xC7FDAE4f201D76281975D890d5491D90Ec433B0E;
 	address public notSoldTokens = 0x6CccCD6fa8184D29950dF21DDDE1069F5B37F3d1;
@@ -369,17 +369,17 @@ contract Crowdsale is LiteNetCoin {
     }
 
 
-	// Функция доставляет токены на кошелек покупателя при поступлении &quot;эфира&quot;
+	// Функция доставляет токены на кошелек покупателя при поступлении "эфира"
     function() public payable {
 		buyTokens(msg.sender);
     }
     
     // получает адрес получаетля токенов
     function buyTokens(address _addr) public payable {
-		require(msg.value &gt;= 0.001 ether);
-		require(distributions[0] &gt; 0);
-		require(totalBuyTokens_ &lt;= INITIAL_SUPPLY );
-		require(getCurrentRound() &gt; 0);
+		require(msg.value >= 0.001 ether);
+		require(distributions[0] > 0);
+		require(totalBuyTokens_ <= INITIAL_SUPPLY );
+		require(getCurrentRound() > 0);
 		
 		uint discountPercent = getCurrentDiscountPercent();
 		
@@ -403,21 +403,21 @@ contract Crowdsale is LiteNetCoin {
 	function getCurrentRound() public view returns (uint8 round) {
         round = 0;
 		
-		if(now &gt; ICO_START + 3 days  &amp;&amp; now &lt;= ICO_START + 5 days)      round = 7;
-		if(now &gt; ICO_START        &amp;&amp; now &lt;= ICO_START        + 3 days)  round = 6;
-		if(now &gt; PRE_ICO_START    &amp;&amp; now &lt;= PRE_ICO_START    + 7 days)  round = 5;
-		if(now &gt; PRE_SALE_START_4 &amp;&amp; now &lt;= PRE_SALE_START_4 + 6 days)  round = 4;
-		if(now &gt; PRE_SALE_START_3 &amp;&amp; now &lt;= PRE_SALE_START_3 + 6 days)  round = 3;
-		if(now &gt; PRE_SALE_START_2 &amp;&amp; now &lt;= PRE_SALE_START_2 + 13 days) round = 2;
-		if(now &gt; PRE_SALE_START_1 &amp;&amp; now &lt;= PRE_SALE_START_1 + 8 days)  round = 1;
+		if(now > ICO_START + 3 days  && now <= ICO_START + 5 days)      round = 7;
+		if(now > ICO_START        && now <= ICO_START        + 3 days)  round = 6;
+		if(now > PRE_ICO_START    && now <= PRE_ICO_START    + 7 days)  round = 5;
+		if(now > PRE_SALE_START_4 && now <= PRE_SALE_START_4 + 6 days)  round = 4;
+		if(now > PRE_SALE_START_3 && now <= PRE_SALE_START_3 + 6 days)  round = 3;
+		if(now > PRE_SALE_START_2 && now <= PRE_SALE_START_2 + 13 days) round = 2;
+		if(now > PRE_SALE_START_1 && now <= PRE_SALE_START_1 + 8 days)  round = 1;
 		
 
-		/* if(now &gt; ICO_START        ) round = 6;
-		if(now &gt; PRE_ICO_START    ) round = 5;
-		if(now &gt; PRE_SALE_START_4 ) round = 4;
-		if(now &gt; PRE_SALE_START_3 ) round = 3;
-		if(now &gt; PRE_SALE_START_2 ) round = 2;
-		if(now &gt; PRE_SALE_START_1 ) round = 1; */
+		/* if(now > ICO_START        ) round = 6;
+		if(now > PRE_ICO_START    ) round = 5;
+		if(now > PRE_SALE_START_4 ) round = 4;
+		if(now > PRE_SALE_START_3 ) round = 3;
+		if(now > PRE_SALE_START_2 ) round = 2;
+		if(now > PRE_SALE_START_1 ) round = 1; */
 		
 		
         return round;
@@ -452,7 +452,7 @@ contract Crowdsale is LiteNetCoin {
 	
 	
 	function sendOtherTokens(address _addr,uint256 _amount) onlyOwner onlyAuthorized isNotIcoClosed public {
-        require(totalBuyTokens_ &lt;= INITIAL_SUPPLY);
+        require(totalBuyTokens_ <= INITIAL_SUPPLY);
 		
 		token.transfer(_addr, _amount);
 		totalSupply_ = totalSupply_.sub(_amount);
@@ -462,7 +462,7 @@ contract Crowdsale is LiteNetCoin {
 	
 	
 	function sendBountyTokens(address _addr,uint256 _amount) onlyOwner onlyAuthorized isNotIcoClosed public {
-        require(distributions[3] &gt; 0);
+        require(distributions[3] > 0);
 		sendOtherTokens(_addr, _amount);
 		distributions[3] = distributions[3].sub(_amount);
     }
@@ -472,9 +472,9 @@ contract Crowdsale is LiteNetCoin {
 	// Закрываем ICO 
     function close() public onlyOwner isNotIcoClosed {
         // Закрываем ICO
-		require(now &gt; ICO_FINISH);
+		require(now > ICO_FINISH);
 		
-		if(distributions[0] &gt; 0){
+		if(distributions[0] > 0){
 			token.transfer(notSoldTokens, distributions[0]);
 			totalSupply_ = totalSupply_.sub(distributions[0]);
 			totalBuyTokens_ = totalBuyTokens_.add(distributions[0]);

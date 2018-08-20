@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -118,7 +118,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -165,7 +165,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -176,8 +176,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -191,7 +191,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -240,7 +240,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -264,9 +264,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -281,9 +281,9 @@ contract BurnableToken is BasicToken {
  */
 contract TriggmineToken is StandardToken, BurnableToken, Ownable {
 
-    string public constant name = &quot;Triggmine Coin&quot;;
+    string public constant name = "Triggmine Coin";
 
-    string public constant symbol = &quot;TRG&quot;;
+    string public constant symbol = "TRG";
 
     uint256 public constant decimals = 18;
 
@@ -292,11 +292,11 @@ contract TriggmineToken is StandardToken, BurnableToken, Ownable {
 
     address public holder;
 
-    mapping(address =&gt; uint) public lockedAddresses;
+    mapping(address => uint) public lockedAddresses;
 
     modifier isReleased () {
         require(released || msg.sender == holder || msg.sender == owner);
-        require(lockedAddresses[msg.sender] &lt;= now);
+        require(lockedAddresses[msg.sender] <= now);
         _;
     }
 
@@ -311,7 +311,7 @@ contract TriggmineToken is StandardToken, BurnableToken, Ownable {
     }
 
     function lockAddress(address _lockedAddress, uint256 _time) public onlyOwner returns (bool) {
-        require(balances[_lockedAddress] == 0 &amp;&amp; lockedAddresses[_lockedAddress] == 0 &amp;&amp; _time &gt; now);
+        require(balances[_lockedAddress] == 0 && lockedAddresses[_lockedAddress] == 0 && _time > now);
         lockedAddresses[_lockedAddress] = _time;
         return true;
     }
@@ -386,7 +386,7 @@ contract TriggmineCrowdsale is Ownable {
     uint public constant BONUS_250_500 = 20;
     uint public constant BONUS_500 = 25;
 
-    mapping(address =&gt; uint256) public investments;
+    mapping(address => uint256) public investments;
     uint256 public investedUSD;
     uint256 public investedETH;
     uint256 public investedBTC;
@@ -396,7 +396,7 @@ contract TriggmineCrowdsale is Ownable {
     uint256 public rate_BTCUSD;
 
     address public whitelistSupplier;
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     event ContributedETH(address indexed receiver, uint contribution, uint contributionUSD, uint reward);
     event ContributedBTC(address indexed receiver, uint contribution, uint contributionUSD, uint reward);
@@ -417,14 +417,14 @@ contract TriggmineCrowdsale is Ownable {
     }
 
     function contributeETH(address _participant) public payable returns(bool) {
-        require(now &gt;= SALES_START &amp;&amp; now &lt; SALES_END);
+        require(now >= SALES_START && now < SALES_END);
         require(whitelist[_participant]);
 
         uint256 usdAmount = (msg.value * rate_ETHUSD) / 10**18;
         investedUSD = investedUSD.add(usdAmount);
-        require(investedUSD &lt;= USD_HARD_CAP);
+        require(investedUSD <= USD_HARD_CAP);
         investments[msg.sender] = investments[msg.sender].add(usdAmount);
-        require(investments[msg.sender] &gt;= MIN_INVESTMENT);
+        require(investments[msg.sender] >= MIN_INVESTMENT);
 
         uint bonusPercents = getBonusPercents(usdAmount);
         uint totalTokens = getTotalTokens(msg.value, bonusPercents);
@@ -439,14 +439,14 @@ contract TriggmineCrowdsale is Ownable {
     }
 
     function contributeBTC(address _participant, uint256 _btcAmount) public onlyWhitelistSupplier returns(bool) {
-        require(now &gt;= SALES_START &amp;&amp; now &lt; SALES_END);
+        require(now >= SALES_START && now < SALES_END);
         require(whitelist[_participant]);
 
         uint256 usdAmount = (_btcAmount * rate_BTCUSD) / 10**8; // BTC amount should be provided in satoshi
         investedUSD = investedUSD.add(usdAmount);
-        require(investedUSD &lt;= USD_HARD_CAP);
+        require(investedUSD <= USD_HARD_CAP);
         investments[_participant] = investments[_participant].add(usdAmount);
-        require(investments[_participant] &gt;= MIN_INVESTMENT);
+        require(investments[_participant] >= MIN_INVESTMENT);
 
         uint bonusPercents = getBonusPercents(usdAmount);
 
@@ -470,19 +470,19 @@ contract TriggmineCrowdsale is Ownable {
     }
 
     function getBonusPercents(uint256 usdAmount) private pure returns(uint256) {
-        if (usdAmount &gt;= 500000) {
+        if (usdAmount >= 500000) {
             return BONUS_500;
         }
 
-        if (usdAmount &gt;= 250000) {
+        if (usdAmount >= 250000) {
             return BONUS_250_500;
         }
 
-        if (usdAmount &gt;= 100000) {
+        if (usdAmount >= 100000) {
             return BONUS_100_250;
         }
 
-        if (usdAmount &gt;= 50000) {
+        if (usdAmount >= 50000) {
             return BONUS_50_100;
         }
 
@@ -492,7 +492,7 @@ contract TriggmineCrowdsale is Ownable {
     function getTotalTokens(uint256 ethAmount, uint256 bonusPercents) private pure returns(uint256) {
         // If there is some division reminder, we just collect it too.
         uint256 tokensAmount = (ethAmount * TOKEN_CENTS) / TOKEN_PRICE;
-        require(tokensAmount &gt; 0);
+        require(tokensAmount > 0);
         uint256 bonusTokens = (tokensAmount * bonusPercents) / 100;
         uint256 totalTokens = tokensAmount.add(bonusTokens);
 

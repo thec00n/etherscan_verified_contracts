@@ -14,17 +14,17 @@ contract Soccer {
 
   /*** CONSTANTS ***/
 
-  string public constant NAME = &quot;SoccerAllStars&quot;;
-  string public constant SYMBOL = &quot;SAS&quot;;
+  string public constant NAME = "SoccerAllStars";
+  string public constant SYMBOL = "SAS";
 
   /*** STORAGE ***/
   struct Token {
     address owner;
     uint256 price;
   }
-  mapping (uint256 =&gt; Token) collectibleIdx;
-  mapping (uint256 =&gt; address[3]) mapToLastOwners;
-  mapping (uint256 =&gt; address) collectibleIndexToApproved;
+  mapping (uint256 => Token) collectibleIdx;
+  mapping (uint256 => address[3]) mapToLastOwners;
+  mapping (uint256 => address) collectibleIndexToApproved;
   uint256[] private tokens;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -52,19 +52,19 @@ contract Soccer {
   }
   
   function getInitialPriceOfToken(uint _tokenId) public pure returns (uint) {
-    if (_tokenId &gt; CLUB_INDEX)
+    if (_tokenId > CLUB_INDEX)
       return PLAYER_PRICE;
-    if (_tokenId &gt; NATION_INDEX)
+    if (_tokenId > NATION_INDEX)
       return CLUB_PRICE;
     return NATION_PRICE;
   }
 
   function getNextPrice(uint price, uint _tokenId) public pure returns (uint) {
-    if (price &lt; 0.05 ether)
+    if (price < 0.05 ether)
       return price.mul(200).div(93); //x2
-    if (price &lt; 0.5 ether)
+    if (price < 0.5 ether)
       return price.mul(150).div(93); //x1.5
-    if (price &lt; 2 ether)
+    if (price < 2 ether)
       return price.mul(130).div(93); //x1.3
     return price.mul(120).div(93); //x1.2
   }
@@ -86,7 +86,7 @@ contract Soccer {
         sellingPrice = token.price;
         require(oldOwner != msg.sender);
     }
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
     
     address[3] storage lastOwners = mapToLastOwners[_tokenId];
     uint256 payment = _handle(_tokenId, sellingPrice, lastOwners);
@@ -112,7 +112,7 @@ contract Soccer {
 
     // refund when paid too much
     uint256 purchaseExcess = msg.value.sub(sellingPrice);
-    if (purchaseExcess &gt; 0) {
+    if (purchaseExcess > 0) {
         msg.sender.transfer(purchaseExcess);
     }
   }
@@ -120,7 +120,7 @@ contract Soccer {
 function _handle(uint256 _tokenId, uint256 sellingPrice, address[3] lastOwners) private returns (uint256) {
     uint256 pPrice = sellingPrice.div(100);
     uint256 tax = pPrice.mul(7); // initial dev cut = 7%
-    if (_tokenId &gt; CLUB_INDEX) {
+    if (_tokenId > CLUB_INDEX) {
         uint256 clubId = _tokenId % CLUB_INDEX;
         Token storage clubToken = collectibleIdx[clubId];
         if (clubToken.owner != address(0)) {
@@ -135,7 +135,7 @@ function _handle(uint256 _tokenId, uint256 sellingPrice, address[3] lastOwners) 
             tax += pPrice; // 1% nation tax;
             nationToken.owner.transfer(pPrice);
         }
-    } else if (_tokenId &gt; NATION_INDEX) {
+    } else if (_tokenId > NATION_INDEX) {
         nationId = _tokenId % NATION_INDEX;
         nationToken = collectibleIdx[nationId];
         if (nationToken.owner != address(0)) {
@@ -208,14 +208,14 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
   function createPromoCollectible(uint256 tokenId, address _owner, uint256 _price) public onlyCLevel {
     Token memory token = collectibleIdx[tokenId];
     require(token.owner == address(0));
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address collectibleOwner = _owner;
     if (collectibleOwner == address(0)) {
       collectibleOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = getInitialPriceOfToken(tokenId);
     }
 
@@ -237,9 +237,9 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
   bool isChangePriceLocked = false;
   // allows owners of tokens to decrease the price of them or if there is no owner the coo can do it
   function changePrice(uint256 _tokenId, uint256 newPrice) public {
-    require((_owns(msg.sender, _tokenId) &amp;&amp; !isChangePriceLocked) || (_owns(address(0), _tokenId) &amp;&amp; msg.sender == cooAddress));
+    require((_owns(msg.sender, _tokenId) && !isChangePriceLocked) || (_owns(address(0), _tokenId) && msg.sender == cooAddress));
     Token storage token = collectibleIdx[_tokenId];
-    require(newPrice &lt; token.price);
+    require(newPrice < token.price);
     token.price = newPrice;
     collectibleIdx[_tokenId] = token;
   }
@@ -402,7 +402,7 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
       uint256 tokenIndex;
       uint256 tokenId;
       result = 0;
-      for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
         tokenId = tokens[tokenIndex];
         if (collectibleIdx[tokenId].owner == _owner) {
           result = result.add(1);
@@ -416,7 +416,7 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
     //transfer ownership
     collectibleIdx[_tokenId].owner = _to;
 
-    // When creating new collectibles _from is 0x0, but we can&#39;t account that address.
+    // When creating new collectibles _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       // clear any previously approved ownership exchange
       delete collectibleIndexToApproved[_tokenId];
@@ -428,7 +428,7 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
 
 
    /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire tokens array looking for tokens belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -444,7 +444,7 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
 
       uint256 tokenIndex;
       uint256 tokenId;
-      for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
         tokenId = tokens[tokenIndex];
         if (collectibleIdx[tokenId].owner == _owner) {
           result[resultIndex] = tokenId;
@@ -459,7 +459,7 @@ function _addLastOwner(address[3] lastOwners, address oldOwner) pure private ret
   function isContract(address addr) private view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -483,9 +483,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -493,7 +493,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -502,7 +502,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

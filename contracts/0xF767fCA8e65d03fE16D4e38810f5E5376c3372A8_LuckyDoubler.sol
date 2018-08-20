@@ -15,7 +15,7 @@ contract LuckyDoubler {
     uint private fee = 5;
     uint private multiplier = 125;
 
-    mapping (address =&gt; User) private users;
+    mapping (address => User) private users;
     Entry[] private entries;
     uint[] private unpaidEntries;
     
@@ -46,7 +46,7 @@ contract LuckyDoubler {
     
     function init() private{
         
-        if (msg.value &lt; 1 ether) {
+        if (msg.value < 1 ether) {
              msg.sender.send(msg.value);
             return;
         }
@@ -59,7 +59,7 @@ contract LuckyDoubler {
         //Limit deposits to 1ETH
         uint dValue = 1 ether;
         
-        if (msg.value &gt; 1 ether) {
+        if (msg.value > 1 ether) {
             
         	msg.sender.send(msg.value - 1 ether);	
         	dValue = 1 ether;
@@ -81,11 +81,11 @@ contract LuckyDoubler {
         //Collect fees and update contract balance
         balance += (dValue * (100 - fee)) / 100;
         
-        uint index = unpaidEntries.length &gt; 1 ? rand(unpaidEntries.length) : 0;
+        uint index = unpaidEntries.length > 1 ? rand(unpaidEntries.length) : 0;
         Entry theEntry = entries[unpaidEntries[index]];
         
         //Pay pending entries if the new balance allows for it
-        if (balance &gt; theEntry.payout) {
+        if (balance > theEntry.payout) {
             
             uint payout = theEntry.payout;
             
@@ -95,7 +95,7 @@ contract LuckyDoubler {
 
             balance -= payout;
             
-            if (index &lt; unpaidEntries.length - 1)
+            if (index < unpaidEntries.length - 1)
                 unpaidEntries[index] = unpaidEntries[unpaidEntries.length - 1];
            
             unpaidEntries.length--;
@@ -104,14 +104,14 @@ contract LuckyDoubler {
         
         //Collect money from fees and possible leftovers from errors (actual balance untouched)
         uint fees = this.balance - balance;
-        if (fees &gt; 0)
+        if (fees > 0)
         {
                 owner.send(fees);
         }      
        
     }
     
-    //Generate random number between 0 &amp; max
+    //Generate random number between 0 & max
     uint256 constant private FACTOR =  1157920892373161954235709850086879078532699846656405640394575840079131296399;
     function rand(uint max) constant private returns (uint256 result){
         uint256 factor = FACTOR * 100 / max;
@@ -128,13 +128,13 @@ contract LuckyDoubler {
     }
     
     function changeMultiplier(uint multi) onlyowner {
-        if (multi &lt; 110 || multi &gt; 150) throw;
+        if (multi < 110 || multi > 150) throw;
         
         multiplier = multi;
     }
     
     function changeFee(uint newFee) onlyowner {
-        if (fee &gt; 5) 
+        if (fee > 5) 
             throw;
         fee = newFee;
     }
@@ -143,17 +143,17 @@ contract LuckyDoubler {
     //JSON functions
     function multiplierFactor() constant returns (uint factor, string info) {
         factor = multiplier;
-        info = &#39;The current multiplier applied to all deposits. Min 110%, max 150%.&#39;; 
+        info = 'The current multiplier applied to all deposits. Min 110%, max 150%.'; 
     }
     
     function currentFee() constant returns (uint feePercentage, string info) {
         feePercentage = fee;
-        info = &#39;The fee percentage applied to all deposits. It can change to speed payouts (max 5%).&#39;;
+        info = 'The fee percentage applied to all deposits. It can change to speed payouts (max 5%).';
     }
     
     function totalEntries() constant returns (uint count, string info) {
         count = entries.length;
-        info = &#39;The number of deposits.&#39;;
+        info = 'The number of deposits.';
     }
     
     function userStats(address user) constant returns (uint deposits, uint payouts, string info)
@@ -162,17 +162,17 @@ contract LuckyDoubler {
         {
             deposits = users[user].deposits;
             payouts = users[user].payoutsReceived;
-            info = &#39;Users stats: total deposits, payouts received.&#39;;
+            info = 'Users stats: total deposits, payouts received.';
         }
     }
     
     function entryDetails(uint index) constant returns (address user, uint payout, bool paid, string info)
     {
-        if (index &lt; entries.length) {
+        if (index < entries.length) {
             user = entries[index].entryAddress;
             payout = entries[index].payout / 1 finney;
             paid = entries[index].paid;
-            info = &#39;Entry info: user address, expected payout in Finneys, payout status.&#39;;
+            info = 'Entry info: user address, expected payout in Finneys, payout status.';
         }
     }
     

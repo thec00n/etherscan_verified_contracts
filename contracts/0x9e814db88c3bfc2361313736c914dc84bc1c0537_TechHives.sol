@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,8 +78,8 @@ contract IERC20Sec is IERC20 {
 contract ERC20 is IERC20{
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) internal balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping(address => uint) internal balances;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   uint internal totalSupply_;
 
@@ -102,7 +102,7 @@ contract ERC20 is IERC20{
       uint _bfrom = balances[_from];
       uint _bto = balances[_to];
       require(_to != address(0));
-      require(_value &lt;= _bfrom);
+      require(_value <= _bfrom);
       balances[_from] = _bfrom.sub(_value);
       balances[_to] = _bto.add(_value);
     }
@@ -128,7 +128,7 @@ contract ERC20 is IERC20{
    */
   function transferFrom(address _from, address _to, uint _value) external returns (bool) {
     uint _allowed = allowed[_from][msg.sender];
-    require(_value &lt;= _allowed);
+    require(_value <= _allowed);
     allowed[_from][msg.sender] = _allowed.sub(_value);
     return transfer_(_from, _to, _value);
   }
@@ -148,7 +148,7 @@ contract ERC20 is IERC20{
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -199,7 +199,7 @@ contract ERC20 is IERC20{
    */
   function decreaseApproval(address _spender, uint _subtractedValue) external returns (bool) {
     uint _allowed = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; _allowed) {
+    if (_subtractedValue > _allowed) {
       _allowed = 0;
     } else {
       _allowed = _allowed.sub(_subtractedValue);
@@ -231,9 +231,9 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
   using SafeMath for uint;
 
   uint constant DECIMAL_MULTIPLIER = 10 ** 18;
-  uint constant INT256_MAX = 1 &lt;&lt; 255 - 1;
+  uint constant INT256_MAX = 1 << 255 - 1;
 
-  mapping (address =&gt; uint) internal dividendsRightsFix;
+  mapping (address => uint) internal dividendsRightsFix;
   uint internal dividendsPerToken;
 
   /**
@@ -247,7 +247,7 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
 
   function dividendsRightsOf_(address _owner) internal view returns (uint) {
     uint rights = dividendsPerToken * balances[_owner] / DECIMAL_MULTIPLIER + dividendsRightsFix[_owner];
-    return int(rights) &lt; 0 ? 0 : rights;
+    return int(rights) < 0 ? 0 : rights;
   }
 
 
@@ -258,7 +258,7 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
   */
   function releaseDividendsRights_(address _for, uint _value) internal returns(bool) {
     uint _dividendsRights = dividendsRightsOf_(_for);
-    require(_dividendsRights &gt;= _value);
+    require(_dividendsRights >= _value);
     dividendsRightsFix[_for] -= _value;
     releaseAbstractToken_(_for, _value);
     emit ReleaseDividendsRights(_for, _value);
@@ -312,7 +312,7 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
    */
   function transferFrom(address _from, address _to, uint _value) external returns (bool) {
     uint _allowed = allowed[_from][msg.sender];
-    require(_value &lt;= _allowed);
+    require(_value <= _allowed);
     allowed[_from][msg.sender] = _allowed.sub(_value);
     dividendsRightsFixUpdate_(_from, _to, _value);
     return transfer_(_from, _to, _value);
@@ -322,7 +322,7 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
 
   function () public payable {
     releaseDividendsRights_(msg.sender, dividendsRightsOf_(msg.sender));
-    if(msg.value &gt; 0){
+    if(msg.value > 0){
       msg.sender.transfer(msg.value);
     }
   }
@@ -341,9 +341,9 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
     } else revert();
     uint _dividendsPerToken = dividendsPerToken;
     uint _totalSupply = totalSupply_;
-    require(_totalSupply &gt; 0);
+    require(_totalSupply > 0);
     _dividendsPerToken = _dividendsPerToken.add(_value.mul(DECIMAL_MULTIPLIER)/_totalSupply);
-    require(_dividendsPerToken.mul(_totalSupply) &lt;= INT256_MAX);
+    require(_dividendsPerToken.mul(_totalSupply) <= INT256_MAX);
     dividendsPerToken = _dividendsPerToken;
     emit AcceptDividends(_value);
   }
@@ -352,7 +352,7 @@ contract ERC20Sec is IERC20, IERC20Sec, ERC20, ICassette {
 
 contract MultiOwnable{
 
-  mapping(address =&gt; bool) public owners;
+  mapping(address => bool) public owners;
   uint internal ownersLength_;
 
   modifier onlyOwner() {
@@ -378,7 +378,7 @@ contract MultiOwnable{
   }
 
   function removeOwner_(address _for) internal returns(bool) {
-    if((owners[_for]) &amp;&amp; (ownersLength_ &gt; 1)){
+    if((owners[_for]) && (ownersLength_ > 1)){
       ownersLength_ -= 1;
       owners[_for] = false;
       emit RemoveOwner(msg.sender, _for);
@@ -416,8 +416,8 @@ contract EtherCassette is ICassette {
 contract TechHives is ERC20Sec, EtherCassette, MultiOwnable {
   using SafeMath for uint;
   uint constant DECIMAL_MULTIPLIER = 10 ** 18;
-  string public name = &quot;TechHives&quot;;
-  string public symbol = &quot;THV&quot;;
+  string public name = "TechHives";
+  string public symbol = "THV";
   uint8 public decimals = 18;
 
   uint mintSupply_;
@@ -439,7 +439,7 @@ contract TechHives is ERC20Sec, EtherCassette, MultiOwnable {
   }
   
   function mint_(address _for, uint _value) internal returns(bool) {
-    require (mintSupply_ &gt;= _value);
+    require (mintSupply_ >= _value);
     dividendsRightsFixUpdate_(_for, _value);
     mintSupply_ = mintSupply_.sub(_value);
     balances[_for] = balances[_for].add(_value);

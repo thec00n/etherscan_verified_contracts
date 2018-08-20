@@ -4,7 +4,7 @@ pragma solidity ^0.4.17;
 // BLU ICO contract
 //
 // BLU mainnet token address : 0x362a95215564d895f27021a7d7314629db2e1649
-// RATE = 4000 =&gt; 1 ETH = 4000 BLU
+// RATE = 4000 => 1 ETH = 4000 BLU
 // ----------------------------------------------------------------------------
 
 
@@ -14,10 +14,10 @@ pragma solidity ^0.4.17;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -25,7 +25,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -85,7 +85,7 @@ contract BlupassICO is Owned {
     BlupassToken public BLU; // BLU token address
     bool public isStopped = false; // ICO start/stop
     
-    mapping(address =&gt; bool) whitelist; // whitelisting for KYC verified users
+    mapping(address => bool) whitelist; // whitelisting for KYC verified users
 
     // events for log
     event LogWhiteListed(address _addr);
@@ -123,7 +123,7 @@ contract BlupassICO is Owned {
     // ----------------------------------------------------------------------------
     // Function to handle eth transfers
     // It invokes when someone sends ETH to this contract address.
-    // Requires enough gas for the execution otherwise it&#39;ll throw out of gas error.
+    // Requires enough gas for the execution otherwise it'll throw out of gas error.
     // tokens are transferred to user
     // ETH are transferred to current owner
     // minimum 1 ETH investment
@@ -141,7 +141,7 @@ contract BlupassICO is Owned {
     // ----------------------------------------------------------------------------
     function contribute() onlyWhenRunning onlyifWhiteListed public payable {
         
-        require(msg.value &gt;= 1 ether); // min 1 ETH investment
+        require(msg.value >= 1 ether); // min 1 ETH investment
         
         uint256 tokenBought; // Variable to store amount of tokens bought
         uint256 bonus; // Variable to store bonus if any
@@ -152,19 +152,19 @@ contract BlupassICO is Owned {
         // Bonus for  5+ ETH investment
         
         // 20 % bonus for 5 to 9 ETH investment
-        if (msg.value &gt;= 5 ether &amp;&amp; msg.value &lt;= 9 ether) {
+        if (msg.value >= 5 ether && msg.value <= 9 ether) {
             bonus = (tokenBought.mul(20)).div(100); // 20 % bonus
             tokenBought = tokenBought.add(bonus);
         } 
         
         // 40 % bonus for 10+ ETH investment
-        if (msg.value &gt;= 10 ether) {
+        if (msg.value >= 10 ether) {
             bonus = (tokenBought.mul(40)).div(100); // 40 % bonus
             tokenBought = tokenBought.add(bonus);
         }
 
         // this smart contract should have enough tokens to distribute
-        require(BLU.balanceOf(this) &gt;= tokenBought);
+        require(BLU.balanceOf(this) >= tokenBought);
         
         totalDistributed = totalDistributed.add(tokenBought); //Save to total tokens distributed
         BLU.transfer(msg.sender,tokenBought); //Send Tokens to user

@@ -20,9 +20,9 @@ pragma solidity ^0.4.23;
    * @dev Integer division of two numbers, truncating the quotient.
    */
    function div(uint256 a, uint256 b) internal returns (uint256) {
-     // assert(b &gt; 0); // Solidity automatically revert()s when dividing by 0
+     // assert(b > 0); // Solidity automatically revert()s when dividing by 0
      // uint256 c = a / b;
-     // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
      return a / b;
    }
 
@@ -30,7 +30,7 @@ pragma solidity ^0.4.23;
    * @dev Subtracts two numbers, revert()s on overflow (i.e. if subtrahend is greater than minuend).
    */
    function sub(uint256 a, uint256 b) internal returns (uint256) {
-     assert(b &lt;= a);
+     assert(b <= a);
      return a - b;
    }
 
@@ -39,7 +39,7 @@ pragma solidity ^0.4.23;
    */
    function add(uint256 a, uint256 b) internal returns (uint256 c) {
      c = a + b;
-     assert(c &gt;= a &amp;&amp; c &gt;= b);
+     assert(c >= a && c >= b);
      return c;
    }
 
@@ -68,13 +68,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size.add(4)) {
+     if(msg.data.length < size.add(4)) {
        revert();
      }
      _;
@@ -122,7 +122,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -135,7 +135,7 @@ contract StandardToken is BasicToken, ERC20 {
     uint _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already revert() if this condition is not met
-    // if (_value &gt; _allowance) revert();
+    // if (_value > _allowance) revert();
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -154,7 +154,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     emit Approval(msg.sender, _spender, _value);
@@ -174,7 +174,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -282,13 +282,13 @@ contract CNYTokenPlus is PausableToken {
       revert();
   }
 
-  string public name = &quot;CNYTokenPlus&quot;;
-  string public symbol = &quot;CNYt⁺&quot;;
+  string public name = "CNYTokenPlus";
+  string public symbol = "CNYt⁺";
   uint8 public decimals = 18;
   uint public totalSupply = 100000000000000000000000000;
-  string public version = &#39;CNYt⁺ 2.0&#39;;
+  string public version = 'CNYt⁺ 2.0';
   // The nonce for avoid transfer replay attacks
-  mapping(address =&gt; uint256) nonces;
+  mapping(address => uint256) nonces;
 
   event Burn(address indexed burner, uint256 value);
 
@@ -305,9 +305,9 @@ contract CNYTokenPlus is PausableToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -316,7 +316,7 @@ contract CNYTokenPlus is PausableToken {
   }
 
   /*
-   * Proxy transfer HC token. When some users of the ethereum account don&#39;t have ether,
+   * Proxy transfer HC token. When some users of the ethereum account don't have ether,
    * Who can authorize the agent for broadcast transactions, the agents may charge fees
    * @param _from
    * @param _to
@@ -330,13 +330,13 @@ contract CNYTokenPlus is PausableToken {
   function transferProxy(address _from, address _to, uint256 _value, uint256 _fee,
       uint8 _v, bytes32 _r, bytes32 _s) whenNotPaused {
 
-      require((balances[_from] &gt;= _fee.add(_value)));
-      require(balances[_to].add(_value) &gt;= balances[_to]);
-      require(balances[msg.sender].add(_fee) &gt;= balances[msg.sender]);
+      require((balances[_from] >= _fee.add(_value)));
+      require(balances[_to].add(_value) >= balances[_to]);
+      require(balances[msg.sender].add(_fee) >= balances[msg.sender]);
 
       uint256 nonce = nonces[_from];
       bytes32 hash = keccak256(_from,_to,_value,_fee,nonce);
-      bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+      bytes memory prefix = "\x19Ethereum Signed Message:\n32";
       bytes32 prefixedHash = keccak256(prefix, hash);
       require(_from == ecrecover(prefixedHash,_v,_r,_s));
 

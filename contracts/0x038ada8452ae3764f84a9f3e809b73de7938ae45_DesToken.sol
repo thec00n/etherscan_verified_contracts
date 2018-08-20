@@ -8,13 +8,13 @@ library SafeMathLib {
     }
 
     function minus(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function plus(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a &amp;&amp; c &gt;= b);
+        require(c >= a && c >= b);
         return c;
     }
 }
@@ -23,8 +23,8 @@ library ERC20Lib {
     using SafeMathLib for uint;
 
     struct TokenStorage {
-        mapping (address =&gt; uint) balances;
-        mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+        mapping (address => uint) balances;
+        mapping (address => mapping (address => uint)) allowed;
         uint totalSupply;
     }
 
@@ -74,8 +74,8 @@ contract DesToken {
 
     ERC20Lib.TokenStorage token;
 
-    string public name = &quot;Digital Equivalent Stabilized Coin&quot;;
-    string public symbol = &quot;DES&quot;;
+    string public name = "Digital Equivalent Stabilized Coin";
+    string public symbol = "DES";
     uint8 public decimals = 8;
     uint public INITIAL_SUPPLY = 100000000000;
 

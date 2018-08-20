@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 
 // Metrumcoin Ltd. www.metrumcoin.com 
 
-// &#39;interface&#39;:
+// 'interface':
 //  this is expected from another contract,
 //  if it wants to spend tokens (shares) of behalf of the token owner
 //  in our contract
@@ -19,11 +19,11 @@ contract MetrumcoinShares {
 
     /* Standard public variables of the token */
 
-    // string public standard = &#39;ERC20 Token&#39;; // https://github.com/ethereum/EIPs/issues/20
+    // string public standard = 'ERC20 Token'; // https://github.com/ethereum/EIPs/issues/20
 
-    string public name = &quot;Metrumcoin Ltd.&quot;;
+    string public name = "Metrumcoin Ltd.";
 
-    string public symbol = &quot;Shares&quot;;
+    string public symbol = "Shares";
 
     uint8 public decimals = 0;
 
@@ -33,11 +33,11 @@ contract MetrumcoinShares {
     // Shares, shareholders, balances ect.
 
     // list of all shareholders (represented by Ethereum accounts)
-    // in this Corporation&#39;s history, # is ID
+    // in this Corporation's history, # is ID
     address[] public shareholder;
 
     // this helps to find address by ID without loop
-    mapping (address =&gt; uint256) public shareholderID;
+    mapping (address => uint256) public shareholderID;
 
     // list of addresses, who currently own at least one share
     address[] public activeShareholdersArray;
@@ -46,10 +46,10 @@ contract MetrumcoinShares {
     uint256 public activeShareholdersArrayLength;
 
     // balances:
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // shares that have to be managed by external contract
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* ------- Utilities:  */
     // universal events
@@ -81,8 +81,8 @@ contract MetrumcoinShares {
 
     function refreshActiveShareholdersArray() returns (address[]) {
         delete activeShareholdersArray;
-        for (uint256 i = 0; i &lt; shareholder.length; i++) {
-            if (balanceOf[shareholder[i]] &gt; 0) {
+        for (uint256 i = 0; i < shareholder.length; i++) {
+            if (balanceOf[shareholder[i]] > 0) {
                 activeShareholdersArray.push(shareholder[i]);
             }
         }
@@ -103,10 +103,10 @@ contract MetrumcoinShares {
     // see: https://github.com/ethereum/EIPs/issues/20
     function transfer(address _to, uint256 _value) returns (bool success) {
         // check arguments:
-        if (_value &lt; 1) throw;
+        if (_value < 1) throw;
         if (this == _to) throw;
         // do not send shares to contract itself;
-        if (balanceOf[msg.sender] &lt; _value) throw;
+        if (balanceOf[msg.sender] < _value) throw;
         // Check if the sender has enough
 
         // make transaction
@@ -131,25 +131,25 @@ contract MetrumcoinShares {
 
     /* Allow another contract to spend some shares in your behalf
     (shareholder calls this) */
-    function approveAndCall(address _spender, // another contract&#39;s adress
+    function approveAndCall(address _spender, // another contract's adress
     uint256 _value, // number of shares
     bytes _extraData) // data for another contract
     returns (bool success) {
         // msg.sender - account owner who gives allowance
         // _spender   - address of another contract
-        // it writes in &quot;allowance&quot; that this owner allows another
+        // it writes in "allowance" that this owner allows another
         // contract (_spender) to spend this amount (_value) of shares
         // in his behalf
         allowance[msg.sender][_spender] = _value;
-        // &#39;spender&#39; is another contract that implements code
-        //  prescribed in &#39;shareRecipient&#39; above
+        // 'spender' is another contract that implements code
+        //  prescribed in 'shareRecipient' above
         tokenRecipient spender = tokenRecipient(_spender);
-        // this contract calls &#39;receiveApproval&#39; function
+        // this contract calls 'receiveApproval' function
         // of another contract to send information about
         // allowance
         spender.receiveApproval(msg.sender, // shares owner
         _value, // number of shares
-        this, // this contract&#39;s adress
+        this, // this contract's adress
         _extraData);
         // data from shares owner
         return true;
@@ -164,14 +164,14 @@ contract MetrumcoinShares {
 
         // Check arguments:
         // should one share or more
-        if (_value &lt; 1) throw;
+        if (_value < 1) throw;
         // do not send shares to this contract itself;
         if (this == _to) throw;
         // Check if the sender has enough
-        if (balanceOf[_from] &lt; _value) throw;
+        if (balanceOf[_from] < _value) throw;
 
         // Check allowance
-        if (_value &gt; allowance[_from][msg.sender]) throw;
+        if (_value > allowance[_from][msg.sender]) throw;
 
         // Subtract from the sender
         balanceOf[_from] -= _value;
@@ -197,29 +197,29 @@ contract MetrumcoinShares {
     }
 
     /*  --------- Voting  --------------  */
-    // we only count &#39;yes&#39; votes, not voting &#39;yes&#39;
-    // considered as voting &#39;no&#39; (as stated in Bylaws)
+    // we only count 'yes' votes, not voting 'yes'
+    // considered as voting 'no' (as stated in Bylaws)
 
-    // each proposal should contain it&#39;s text
+    // each proposal should contain it's text
     // index of text in this array is a proposal ID
     string[] public proposalText;
 
-    // proposalID =&gt; (shareholder =&gt; &quot;if already voted for this proposal&quot;)
-    mapping (uint256 =&gt; mapping (address =&gt; bool)) voted;
+    // proposalID => (shareholder => "if already voted for this proposal")
+    mapping (uint256 => mapping (address => bool)) voted;
 
-    // proposalID =&gt; addresses voted &#39;yes&#39;
+    // proposalID => addresses voted 'yes'
     // exact number of votes according to shares will be counted
     // after deadline
-    mapping (uint256 =&gt; address[]) public votes;
+    mapping (uint256 => address[]) public votes;
 
-    // proposalID =&gt; deadline
-    mapping (uint256 =&gt; uint256) public deadline;
+    // proposalID => deadline
+    mapping (uint256 => uint256) public deadline;
 
-    // proposalID =&gt; final &#39;yes&#39; votes
-    mapping (uint256 =&gt; uint256) public results;
+    // proposalID => final 'yes' votes
+    mapping (uint256 => uint256) public results;
 
     // proposals of every shareholder
-    mapping (address =&gt; uint256[]) public proposalsByShareholder;
+    mapping (address => uint256[]) public proposalsByShareholder;
 
     // useful for Dapp, to get array using loop
     function getProposalTextArrayLength() constant returns (uint){
@@ -238,9 +238,9 @@ contract MetrumcoinShares {
     returns (uint256){
         // only shareholder with one or more shares can make a proposal
         // !!!! can be more then one share required
-        if (balanceOf[msg.sender] &lt; 1) throw;
+        if (balanceOf[msg.sender] < 1) throw;
 
-        if (_debatingPeriodInMinutes &lt; 1) throw;
+        if (_debatingPeriodInMinutes < 1) throw;
 
         uint256 id = proposalText.push(_proposalDescription) - 1;
         deadline[id] = now + _debatingPeriodInMinutes * 1 minutes;
@@ -248,7 +248,7 @@ contract MetrumcoinShares {
         // add to proposals of this shareholder:
         proposalsByShareholder[msg.sender].push(id);
 
-        // initiator always votes &#39;yes&#39;
+        // initiator always votes 'yes'
         votes[id].push(msg.sender);
         voted[id][msg.sender] = true;
 
@@ -258,7 +258,7 @@ contract MetrumcoinShares {
         // returns proposal id
     }
 
-    // &gt;&gt;&gt; not from Wallet (needs msg.sender), from Dapp
+    // >>> not from Wallet (needs msg.sender), from Dapp
     function getMyProposals() constant returns (uint256[]){
         return proposalsByShareholder[msg.sender];
     }
@@ -266,22 +266,22 @@ contract MetrumcoinShares {
     function voteForProposal(uint256 _proposalID) returns (string) {
 
         // if no shares currently owned - no right to vote
-        if (balanceOf[msg.sender] &lt; 1) return &quot;no shares, vote not accepted&quot;;
+        if (balanceOf[msg.sender] < 1) return "no shares, vote not accepted";
 
         // if already voted - throw, else voting can be spammed
         if (voted[_proposalID][msg.sender]) {
-            return &quot;already voted, vote not accepted&quot;;
+            return "already voted, vote not accepted";
         }
 
         // no votes after deadline
-        if (now &gt; deadline[_proposalID]) {
-            return &quot;vote not accepted after deadline&quot;;
+        if (now > deadline[_proposalID]) {
+            return "vote not accepted after deadline";
         }
 
-        // add to list of voted &#39;yes&#39;
+        // add to list of voted 'yes'
         votes[_proposalID].push(msg.sender);
         voted[_proposalID][msg.sender] = true;
-        return &quot;vote accepted&quot;;
+        return "vote accepted";
     }
 
     // to count votes this transaction should be started manually
@@ -289,24 +289,24 @@ contract MetrumcoinShares {
     function countVotes(uint256 _proposalID) returns (uint256){
 
         // if not after deadline - throw
-        if (now &lt; deadline[_proposalID]) throw;
+        if (now < deadline[_proposalID]) throw;
 
         // if already counted return result;
-        if (results[_proposalID] &gt; 0) return results[_proposalID];
+        if (results[_proposalID] > 0) return results[_proposalID];
 
         // else should count results and store in public variable
         uint256 result = 0;
-        for (uint256 i = 0; i &lt; votes[_proposalID].length; i++) {
+        for (uint256 i = 0; i < votes[_proposalID].length; i++) {
 
             address voter = votes[_proposalID][i];
             result = result + balanceOf[voter];
         }
-        // -----&gt;&gt;&gt; !!! important
+        // ----->>> !!! important
         // store result
         results[_proposalID] = result;
 
         // Log and notify anyone listening that this voting finished
-        // with &#39;result&#39; - number of &#39;yes&#39; votes
+        // with 'result' - number of 'yes' votes
         VotingFinished(_proposalID, result);
 
         return result;

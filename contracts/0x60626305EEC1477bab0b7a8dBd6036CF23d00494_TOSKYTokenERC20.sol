@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 //Base class of token-owner
 contract Ownable {
-	address public owner;														//owner&#39;s address
+	address public owner;														//owner's address
 
 	function Ownable() public 
 	{
@@ -14,7 +14,7 @@ contract Ownable {
 		_;
 	}
 	/*
-	*	Funtion: Transfer owner&#39;s authority 
+	*	Funtion: Transfer owner's authority 
 	*	Type:Public and onlyOwner
 	*	Parameters:
 			@newOwner:	address of newOwner
@@ -45,9 +45,9 @@ contract TOSKYTokenERC20 is Ownable{
     uint256 public totalSupply;													//Maximum amount of Token supplies
 
     //define dictionaries of balance
-    mapping (address =&gt; uint256) public balanceOf;								//Announce the dictionary of account&#39;s balance
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;			//Announce the dictionary of account&#39;s available balance
-	mapping (address =&gt; bool) public blackList;	
+    mapping (address => uint256) public balanceOf;								//Announce the dictionary of account's balance
+    mapping (address => mapping (address => uint256)) public allowance;			//Announce the dictionary of account's available balance
+	mapping (address => bool) public blackList;	
 	//===================public variables definition end==================
 
 	
@@ -58,30 +58,30 @@ contract TOSKYTokenERC20 is Ownable{
 	
 	//===================Contract Initialization Sequence Definition start===================
     function TOSKYTokenERC20 () public {
-		decimals=9;															//Assignment of Token&#39;s decimals
-		totalSupply = 2000000000 * 10 ** uint256(decimals);  				//Assignment of Token&#39;s total supply with decimals
-        balanceOf[owner] = totalSupply;                					//Assignment of Token&#39;s creator initial tokens
-        name = &quot;TOSKY Share&quot;;                                   					//Set the name of Token
-        symbol = &quot;TOSKY&quot;;                               					//Set the symbol of  Token
+		decimals=9;															//Assignment of Token's decimals
+		totalSupply = 2000000000 * 10 ** uint256(decimals);  				//Assignment of Token's total supply with decimals
+        balanceOf[owner] = totalSupply;                					//Assignment of Token's creator initial tokens
+        name = "TOSKY Share";                                   					//Set the name of Token
+        symbol = "TOSKY";                               					//Set the symbol of  Token
         
     }
 	//===================Contract Initialization Sequence definition end===================
 	
-	//===================Contract behavior &amp; funtions definition start===================
+	//===================Contract behavior & funtions definition start===================
 	
 	/*
 	*	Funtion: Transfer funtions
 	*	Type:Internal
 	*	Parameters:
-			@_from:	address of sender&#39;s account
-			@_to:	address of recipient&#39;s account
+			@_from:	address of sender's account
+			@_to:	address of recipient's account
 			@_value:transaction amount
 	*/
     function _transfer(address _from, address _to, uint _value) internal notInBlackList(_from){
 		//Fault-tolerant processing
 		require(_to != 0x0);						//
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         //Execute transaction
 		uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -98,7 +98,7 @@ contract TOSKYTokenERC20 is Ownable{
 	*	Funtion: Transfer tokens
 	*	Type:Public
 	*	Parameters:
-			@_to:	address of recipient&#39;s account
+			@_to:	address of recipient's account
 			@_value:transaction amount
 	*/
     function transfer(address _to, uint256 _value) public {
@@ -110,14 +110,14 @@ contract TOSKYTokenERC20 is Ownable{
 	*	Funtion: Transfer tokens from other address
 	*	Type:Public
 	*	Parameters:
-			@_from:	address of sender&#39;s account
-			@_to:	address of recipient&#39;s account
+			@_from:	address of sender's account
+			@_to:	address of recipient's account
 			@_value:transaction amount
 	*/
 
     function transferFrom(address _from, address _to, uint256 _value) public 
 	returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     					//Allowance verification
+        require(_value <= allowance[_from][msg.sender]);     					//Allowance verification
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -127,7 +127,7 @@ contract TOSKYTokenERC20 is Ownable{
 	*	Funtion: Approve usable amount for an account
 	*	Type:Public
 	*	Parameters:
-			@_spender:	address of spender&#39;s account
+			@_spender:	address of spender's account
 			@_value:	approve amount
 	*/
     function approve(address _spender, uint256 _value) notInBlackList(_spender) public 
@@ -169,7 +169,7 @@ contract TOSKYTokenERC20 is Ownable{
         }
     }
     /*
-	*	Funtion: Transfer owner&#39;s authority and account balance
+	*	Funtion: Transfer owner's authority and account balance
 	*	Type:Public and onlyOwner
 	*	Parameters:
 			@newOwner:	address of newOwner
@@ -180,5 +180,5 @@ contract TOSKYTokenERC20 is Ownable{
 		    owner = newOwner;
 		}
 	}
-   //===================Contract behavior &amp; funtions definition end===================
+   //===================Contract behavior & funtions definition end===================
 }

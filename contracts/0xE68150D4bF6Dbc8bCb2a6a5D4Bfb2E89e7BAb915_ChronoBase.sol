@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -62,9 +62,9 @@ contract ChronoBase is ERC20 {
     address public owner;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public frozen;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public frozen;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
@@ -79,10 +79,10 @@ contract ChronoBase is ERC20 {
     function ChronoBase() {
         balances[msg.sender] = 10000000000000000;       // Give the creator all initial tokens
         totalSupply = 10000000000000000;                // Update total supply
-        name = &#39;ChronoBase&#39;;                            // Set the name for display purposes
-        symbol = &#39;BASE&#39;;                                // Set the symbol for display purposes
+        name = 'ChronoBase';                            // Set the name for display purposes
+        symbol = 'BASE';                                // Set the symbol for display purposes
         decimals = 8;                                   // Amount of decimals for display purposes
-        version = &#39;BASE1.0&#39;;                            // Token contract version
+        version = 'BASE1.0';                            // Token contract version
         owner = msg.sender;
     }
 

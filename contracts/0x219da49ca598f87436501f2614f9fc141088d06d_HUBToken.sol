@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -89,12 +89,12 @@ contract HUBToken  is Ownable{
     
     using SafeMath for uint256;
     
-    string public constant name = &quot;HubiToken&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;HUBTEST&quot;; // solium-disable-line uppercase
+    string public constant name = "HubiToken"; // solium-disable-line uppercase
+    string public constant symbol = "HUBTEST"; // solium-disable-line uppercase
     uint8 public constant decimals = 18; // solium-disable-line uppercase
     uint256 public constant INITIAL_SUPPLY = 100000000 * (10 ** uint256(decimals));
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     uint256 totalSupply_;
 
@@ -126,7 +126,7 @@ contract HUBToken  is Ownable{
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -152,10 +152,10 @@ contract HUBToken  is Ownable{
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         emit Burn(_who, _value);

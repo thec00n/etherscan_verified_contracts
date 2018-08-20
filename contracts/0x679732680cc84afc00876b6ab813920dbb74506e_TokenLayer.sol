@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -114,7 +114,7 @@ contract Manageable is Ownable {
     }
 
     function withdrawFunds(address _to, uint256 amount) public onlyOwner {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         if (_to == address(0)) {
             owner.transfer(amount);
         } else {
@@ -147,8 +147,8 @@ contract TokenLayer is ERC721, Manageable {
 /******************************************** STORAGE ***********************************************/
     uint256 private constant DEFAULTPARENT = 123456789;
 
-    mapping (uint256 =&gt; Token)   private tokenIndexToToken;
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (uint256 => Token)   private tokenIndexToToken;
+    mapping (address => uint256) private ownershipTokenCount;
 
     address public gameAddress;
     address public parentAddr;
@@ -190,11 +190,11 @@ contract TokenLayer is ERC721, Manageable {
     }
 
     function name() public pure returns (string) {
-        return &quot;CryptoCities&quot;;
+        return "CryptoCities";
     }
 
     function symbol() public pure returns (string) {
-        return &quot;ResourceToken&quot;;
+        return "ResourceToken";
     }
 
     function approve(address _to, uint256 _tokenId, address _from) public onlySystem {
@@ -244,7 +244,7 @@ contract TokenLayer is ERC721, Manageable {
 
             uint256 tokenId = 0;
             uint256 tokenIndex = 0;
-            while (tokenIndex &lt;= _totalTokens) {
+            while (tokenIndex <= _totalTokens) {
                 if (exists(tokenId)) {
                     tokenIndex++;
                     if (tokenIndexToToken[tokenId].owner == _owner) {
@@ -283,7 +283,7 @@ contract TokenLayer is ERC721, Manageable {
         bytes32 _name, uint256 _parentId,
         uint256 _price, bytes32 _metadata
     ) public onlyAdmin {
-        require(_price &gt; 0);
+        require(_price > 0);
         require(_addressNotNull(_owner));
         require(_tokenId == uint256(uint32(_tokenId)));
         require(!exists(_tokenId));
@@ -313,7 +313,7 @@ contract TokenLayer is ERC721, Manageable {
         bytes32[] _names, uint256[] _parentIds,
         uint256[] _prices, bytes32[] _metadatas
     ) public onlyAdmin {
-        for (uint256 id = 0; id &lt; _tokenIds.length; id++) {
+        for (uint256 id = 0; id < _tokenIds.length; id++) {
             createToken(
                 _tokenIds[id], _owners[id], _names[id],
                 _parentIds[id], _prices[id], _metadatas[id]
@@ -433,7 +433,7 @@ contract TokenLayer is ERC721, Manageable {
     function getChainFees(uint256 _tokenId) public view returns (uint256 _total) {
         uint256 chainLength = _getChainLength(_tokenId);
         uint256 totalFee = 0;
-        for (uint id = 0; id &lt; chainLength; id++) {
+        for (uint id = 0; id < chainLength; id++) {
             totalFee = totalFee + chainFees[id];
         }
         return(totalFee);
@@ -466,13 +466,13 @@ contract TokenLayer is ERC721, Manageable {
 
         address[10] memory result;
 
-        if (_parentId != DEFAULTPARENT &amp;&amp; _addressNotNull(_parentAddr)) {
+        if (_parentId != DEFAULTPARENT && _addressNotNull(_parentAddr)) {
             uint256 resultIndex = 0;
 
             TokenLayer layer = TokenLayer(_parentAddr);
             bool parentExists = layer.exists(_parentId);
 
-            while ((_parentId != DEFAULTPARENT) &amp;&amp; _addressNotNull(_parentAddr) &amp;&amp; parentExists) {
+            while ((_parentId != DEFAULTPARENT) && _addressNotNull(_parentAddr) && parentExists) {
                 parentExists = layer.exists(_parentId);
                 if (!parentExists) {
                     return(result);
@@ -562,7 +562,7 @@ contract TokenLayer is ERC721, Manageable {
         TokenLayer layer = TokenLayer(_parentAddr);
         bool parentExists = layer.exists(_parentId);
 
-        while ((_parentId != DEFAULTPARENT) &amp;&amp; _addressNotNull(_parentAddr) &amp;&amp; parentExists) {
+        while ((_parentId != DEFAULTPARENT) && _addressNotNull(_parentAddr) && parentExists) {
             parentExists = layer.exists(_parentId);
             if(!parentExists) {
                     return(length);

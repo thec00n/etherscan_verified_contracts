@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,7 +46,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -86,7 +86,7 @@ contract Ownable {
 /*
   ____      _   _ _   _               _       
  |  _ \ ___| |_(_) |_(_) ___  _ __   (_) ___  
- | |_) / _ \ __| | __| |/ _ \| &#39;_ \  | |/ _ \ 
+ | |_) / _ \ __| | __| |/ _ \| '_ \  | |/ _ \ 
  |  __/  __/ |_| | |_| | (_) | | | |_| | (_) |
  |_|   \___|\__|_|\__|_|\___/|_| |_(_)_|\___/ 
 
@@ -145,12 +145,12 @@ contract PetitionFactory is Ownable {
     Petition[] public petitions;
 
     PetitionSigner[] public petitionsigners;
-    mapping(address =&gt; mapping(uint =&gt; uint)) ownerPetitionSignerArrayCreated;
-    mapping(address =&gt; mapping(uint =&gt; uint)) petitionSignerMap;
+    mapping(address => mapping(uint => uint)) ownerPetitionSignerArrayCreated;
+    mapping(address => mapping(uint => uint)) petitionSignerMap;
 
     PetitionShareholder[] public PetitionShareholders;
-    mapping(address =&gt; uint) ownerPetitionShareholderArrayCreated;
-    mapping(address =&gt; uint) PetitionShareholderMap;
+    mapping(address => uint) ownerPetitionShareholderArrayCreated;
+    mapping(address => uint) PetitionShareholderMap;
 
     DividendHistory[] public divs;
 
@@ -170,7 +170,7 @@ contract PetitionFactory is Ownable {
     uint maxShares = 5000000; // 5,000,000 shares exist
 
     // initial price per share from Petition.io (until all shares are sold). But can also be listed and sold p2p on our marketplace at the price set by shareholder
-    uint initialPricePerShare  = 5000000000000000; // 0.005 ETH -&gt; 
+    uint initialPricePerShare  = 5000000000000000; // 0.005 ETH -> 
         // notice of bonuses: 
         // 10 ETH + get a 10% bonus
         // 50 ETH + get a 20% bonus 
@@ -197,7 +197,7 @@ contract PetitionFactory is Ownable {
     // shareholder functions
 
     function invest() payable public {
-        require(sharesSold &lt; maxShares);
+        require(sharesSold < maxShares);
         // calc how many shares
         uint numberOfShares = SafeMath.div(msg.value, initialPricePerShare); // example is 1 ETH (1000000000000000000) / 0.01 ETH (10000000000000000) = 100 shares
 
@@ -205,31 +205,31 @@ contract PetitionFactory is Ownable {
         uint numberOfSharesBonus;
         uint numberOfSharesBonusOne;
         uint numberOfSharesBonusTwo;
-        if (msg.value &gt;= 1000000000000000000000) { // 1000 ETH
+        if (msg.value >= 1000000000000000000000) { // 1000 ETH
             numberOfSharesBonus = SafeMath.div(numberOfShares, 2); // 50%
             numberOfShares = SafeMath.add(numberOfShares, numberOfSharesBonus);
 
-        } else if (msg.value &gt;= 500000000000000000000) { // 500 ETH
+        } else if (msg.value >= 500000000000000000000) { // 500 ETH
             numberOfSharesBonusOne = SafeMath.div(numberOfShares, 5); // 20%
             numberOfSharesBonusTwo = SafeMath.div(numberOfShares, 5); // 20%
             numberOfShares = numberOfShares + numberOfSharesBonusOne + numberOfSharesBonusTwo; // 40%
 
-        } else if (msg.value &gt;= 100000000000000000000) { // 100 ETH
+        } else if (msg.value >= 100000000000000000000) { // 100 ETH
             numberOfSharesBonusOne = SafeMath.div(numberOfShares, 5); // 20%
             numberOfSharesBonusTwo = SafeMath.div(numberOfShares, 10); // 10%
             numberOfShares = numberOfShares + numberOfSharesBonusOne + numberOfSharesBonusTwo; // 30%
         
-        } else if (msg.value &gt;= 50000000000000000000) { // 50 ETH
+        } else if (msg.value >= 50000000000000000000) { // 50 ETH
             numberOfSharesBonus = SafeMath.div(numberOfShares, 5); // 20%
             numberOfShares = numberOfShares + numberOfSharesBonus; // 20%
 
-        } else if (msg.value &gt;= 10000000000000000000) { // 10 ETH
+        } else if (msg.value >= 10000000000000000000) { // 10 ETH
             numberOfSharesBonus = SafeMath.div(numberOfShares, 10); // 10%
             numberOfShares = numberOfShares + numberOfSharesBonus; // 10%
         
         }
 
-        require((numberOfShares + sharesSold) &lt; maxShares);
+        require((numberOfShares + sharesSold) < maxShares);
 
         if (ownerPetitionShareholderArrayCreated[msg.sender] == 0) {
             // new investor
@@ -266,7 +266,7 @@ contract PetitionFactory is Ownable {
     }
 
     function viewPetitionShareholderWithAddress(address _investorAddress) view public returns (uint, address, uint, uint) {
-        require (ownerPetitionShareholderArrayCreated[_investorAddress] &gt; 0);
+        require (ownerPetitionShareholderArrayCreated[_investorAddress] > 0);
 
         PetitionShareholder storage investors = PetitionShareholders[PetitionShareholderMap[_investorAddress]];
         return (PetitionShareholderMap[_investorAddress], investors.PetitionShareholderAddress, investors.shares, investors.lastDividend);
@@ -282,7 +282,7 @@ contract PetitionFactory is Ownable {
 
     function endDividendPool() public {
         // we do if instead of require so we can call it throughout the smart contract. This way if someone signs, creates a petition, etc. It can ding to the next dividend pool.
-        if (now &gt; dividendPoolEnds) {
+        if (now > dividendPoolEnds) {
 
             // unclaimed dividends go to admin available
             availableForWithdraw = availableForWithdraw + (claimableDividendPool - claimedThisPool);
@@ -303,9 +303,9 @@ contract PetitionFactory is Ownable {
     }
 
     function collectDividend() payable public {
-        require (ownerPetitionShareholderArrayCreated[msg.sender] &gt; 0);
-        require ((PetitionShareholders[PetitionShareholderMap[msg.sender]].lastDividend + dividendCooldown) &lt; now);
-        require (claimableDividendPool &gt; 0);
+        require (ownerPetitionShareholderArrayCreated[msg.sender] > 0);
+        require ((PetitionShareholders[PetitionShareholderMap[msg.sender]].lastDividend + dividendCooldown) < now);
+        require (claimableDividendPool > 0);
 
         // calc amount
         uint divAmt = claimableDividendPool / (sharesSold / PetitionShareholders[PetitionShareholderMap[msg.sender]].shares);
@@ -353,8 +353,8 @@ contract PetitionFactory is Ownable {
 
     // transfer shares
     function transferShares(uint _amount, address _to) public {
-        require(ownerPetitionShareholderArrayCreated[msg.sender] &gt; 0);
-        require((PetitionShareholders[PetitionShareholderMap[msg.sender]].shares - PetitionShareholders[PetitionShareholderMap[msg.sender]].sharesListedForSale) &gt;= _amount);
+        require(ownerPetitionShareholderArrayCreated[msg.sender] > 0);
+        require((PetitionShareholders[PetitionShareholderMap[msg.sender]].shares - PetitionShareholders[PetitionShareholderMap[msg.sender]].sharesListedForSale) >= _amount);
 
         // give to receiver
         if (ownerPetitionShareholderArrayCreated[_to] == 0) {
@@ -381,8 +381,8 @@ contract PetitionFactory is Ownable {
 
     // p2p share listing, selling and buying
     function listSharesForSale(uint _amount, uint _price) public {
-        require(ownerPetitionShareholderArrayCreated[msg.sender] &gt; 0);
-        require((PetitionShareholders[PetitionShareholderMap[msg.sender]].shares - PetitionShareholders[PetitionShareholderMap[msg.sender]].sharesListedForSale) &gt;= _amount);
+        require(ownerPetitionShareholderArrayCreated[msg.sender] > 0);
+        require((PetitionShareholders[PetitionShareholderMap[msg.sender]].shares - PetitionShareholders[PetitionShareholderMap[msg.sender]].sharesListedForSale) >= _amount);
         
         PetitionShareholders[PetitionShareholderMap[msg.sender]].sharesListedForSale = PetitionShareholders[PetitionShareholderMap[msg.sender]].sharesListedForSale + _amount;
 
@@ -414,9 +414,9 @@ contract PetitionFactory is Ownable {
 
     function buySharesFromListing(uint _shareholderListingId) payable public {
         ShareholderListing storage listing = listings[_shareholderListingId];
-        require(msg.value &gt;= listing.price);
+        require(msg.value >= listing.price);
         require(listing.sold == false);
-        require(listing.sharesForSale &gt; 0);
+        require(listing.sharesForSale > 0);
         
         // give to buyer
         if (ownerPetitionShareholderArrayCreated[msg.sender] == 0) {
@@ -455,11 +455,11 @@ contract PetitionFactory is Ownable {
     // petition functions
 
     function createPetition(string _name, string _message, uint _signaturesNeeded, bool _featured, string _connectingHash) payable public {
-        require(msg.value &gt;= createPetitionFee);
+        require(msg.value >= createPetitionFee);
         uint featuredExpires = 0;
         uint totalPaid = createPetitionFee;
         if (_featured) {
-            require(msg.value &gt;= (createPetitionFee + featurePetitionFee));
+            require(msg.value >= (createPetitionFee + featurePetitionFee));
             featuredExpires = now + featuredLength;
             totalPaid = totalPaid + featurePetitionFee;
         }
@@ -476,10 +476,10 @@ contract PetitionFactory is Ownable {
     }
 
     function renewFeatured(uint _petitionId) payable public {
-        require(msg.value &gt;= featurePetitionFee);
+        require(msg.value >= featurePetitionFee);
 
         uint featuredExpires = 0;
-        if (now &gt; petitions[_petitionId].featuredExpires) {
+        if (now > petitions[_petitionId].featuredExpires) {
             featuredExpires = now + featuredLength;
         }else {
             featuredExpires = petitions[_petitionId].featuredExpires + featuredLength;
@@ -499,7 +499,7 @@ contract PetitionFactory is Ownable {
     }
 
     function viewPetitionSignerWithAddress(address _ownerAddress, uint _petitionId) view public returns (uint, uint, address, uint) {
-        require (ownerPetitionSignerArrayCreated[_ownerAddress][_petitionId] &gt; 0);
+        require (ownerPetitionSignerArrayCreated[_ownerAddress][_petitionId] > 0);
 
         PetitionSigner storage signers = petitionsigners[petitionSignerMap[_ownerAddress][_petitionId]];
         return (petitionSignerMap[_ownerAddress][_petitionId], signers.petitionId, signers.petitionSignerAddress, signers.signed);
@@ -514,7 +514,7 @@ contract PetitionFactory is Ownable {
         petitions[_petitionId].advertisingBudget = SafeMath.add(petitions[_petitionId].advertisingBudget, msg.value);
 
         /////////////
-        // cut to shareholders dividend pool -&gt; since its advertising we can cut 100% of the msg.value to everyone
+        // cut to shareholders dividend pool -> since its advertising we can cut 100% of the msg.value to everyone
         cutToInvestorsDividendPool(msg.value);
 
     }
@@ -541,7 +541,7 @@ contract PetitionFactory is Ownable {
 
     function advertisingUse (uint _petitionId, uint amount) public {
         require(petitions[_petitionId].creator == msg.sender);
-        require(petitions[_petitionId].advertisingBudget &gt;= amount);
+        require(petitions[_petitionId].advertisingBudget >= amount);
         // (fills out advertising information on website and funds it here)
         petitions[_petitionId].advertisingBudget = petitions[_petitionId].advertisingBudget - amount;
 
@@ -552,7 +552,7 @@ contract PetitionFactory is Ownable {
 
     function sign (uint _petitionId) public {
         // cant send it to a non existing petition
-        require (keccak256(petitions[_petitionId].name) != keccak256(&quot;&quot;));
+        require (keccak256(petitions[_petitionId].name) != keccak256(""));
         require (ownerPetitionSignerArrayCreated[msg.sender][_petitionId] == 0);
 
         //if (ownerPetitionSignerArrayCreated[msg.sender][_petitionId] == 0) {
@@ -620,7 +620,7 @@ contract PetitionFactory is Ownable {
     }
 
     function spendAdvertising(uint _petitionId, uint amount) public onlyOwner() {
-        require(petitions[_petitionId].advertisingBudget &gt;= amount);
+        require(petitions[_petitionId].advertisingBudget >= amount);
 
         petitions[_petitionId].advertisingBudget = petitions[_petitionId].advertisingBudget - amount;
     }
@@ -670,7 +670,7 @@ contract PetitionFactory is Ownable {
     }
 
     function withdrawFromContract(address _to, uint _amount) payable external onlyOwner() {
-        require(_amount &lt;= availableForWithdraw);
+        require(_amount <= availableForWithdraw);
         availableForWithdraw = availableForWithdraw - _amount;
         _to.transfer(_amount);
 

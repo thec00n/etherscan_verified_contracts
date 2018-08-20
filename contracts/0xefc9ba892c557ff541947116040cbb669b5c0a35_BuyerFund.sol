@@ -9,7 +9,7 @@ contract ERC20 {
 
 contract BuyerFund {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances; 
+  mapping (address => uint256) public balances; 
   
   // Track whether the contract has bought the tokens yet.
   bool public bought_tokens; 
@@ -49,7 +49,7 @@ contract BuyerFund {
     // User == picops user.
     require(msg.sender == picops_user);
 
-    // If picops isn&#39;t verified.
+    // If picops isn't verified.
     require(!picops_enabled);
 
     // Transfers
@@ -57,13 +57,13 @@ contract BuyerFund {
   }
 
   function picops_withdraw_excess() {
-    // If sale address set, this can&#39;t be called.
+    // If sale address set, this can't be called.
     require(sale == 0x0);
 
     // User == picops user.
     require(msg.sender == picops_user);
     
-    // If picops isn&#39;t verified.
+    // If picops isn't verified.
     require(!picops_enabled);
 
     // Reset picops_block
@@ -74,9 +74,9 @@ contract BuyerFund {
   }
   
   // Allows any user to withdraw his tokens.
-  // Takes the token&#39;s ERC20 address as argument as it is unknown at the time of contract deployment.
+  // Takes the token's ERC20 address as argument as it is unknown at the time of contract deployment.
   function perform_withdraw(address tokenAddress) {
-    // Disallow withdraw if tokens haven&#39;t been bought yet.
+    // Disallow withdraw if tokens haven't been bought yet.
     require(bought_tokens);
     
     // Retrieve current token balance of contract.
@@ -88,13 +88,13 @@ contract BuyerFund {
     // Disallow token withdrawals if there are no tokens to withdraw.
     require(contract_token_balance != 0);
       
-    // Store the user&#39;s token balance in a temporary variable.
+    // Store the user's token balance in a temporary variable.
     uint256 tokens_to_withdraw = (balances[msg.sender] * contract_token_balance) / contract_eth_value;
       
     // Update the value of tokens currently held by the contract.
     contract_eth_value -= balances[msg.sender];
       
-    // Update the user&#39;s balance prior to sending to prevent recursive call.
+    // Update the user's balance prior to sending to prevent recursive call.
     balances[msg.sender] = 0;
 
     // Fee to cover contract deployment + picops verifier. 
@@ -114,20 +114,20 @@ contract BuyerFund {
   function refund_me() {
     require(!bought_tokens);
 
-    // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+    // Store the user's balance prior to withdrawal in a temporary variable.
     uint256 eth_to_withdraw = balances[msg.sender];
 
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
 
-    // Return the user&#39;s funds. 
+    // Return the user's funds. 
     msg.sender.transfer(eth_to_withdraw);
   }
   
   // Buy the tokens. Sends ETH to the presale wallet and records the ETH amount held in the contract.
   function buy_the_tokens() {
     // Balance greater than minimum.
-    require(this.balance &gt; min_required_amount); 
+    require(this.balance > min_required_amount); 
 
     // Not bought tokens
     require(!bought_tokens);
@@ -135,7 +135,7 @@ contract BuyerFund {
     // Record that the contract has bought the tokens.
     bought_tokens = true;
     
-    // Record the amount of ETH sent as the contract&#39;s current value.
+    // Record the amount of ETH sent as the contract's current value.
     contract_eth_value = this.balance;
 
     // Transfer all the funds to the crowdsale address.
@@ -145,13 +145,13 @@ contract BuyerFund {
   function enable_deposits(bool toggle) {
     require(msg.sender == creator);
 
-    // Throw if sale isn&#39;t set
+    // Throw if sale isn't set
     require(sale != 0x0);
 
-    // Throw if drain_block isn&#39;t set
+    // Throw if drain_block isn't set
     require(drain_block != 0x0);
 
-    // Throw if picops isn&#39;t verified
+    // Throw if picops isn't verified
     require(picops_enabled);
     
     contract_enabled = toggle;
@@ -202,7 +202,7 @@ contract BuyerFund {
     require(bought_tokens); 
 
     // Block no. decided by community.
-    require(block.number &gt;= (drain_block));
+    require(block.number >= (drain_block));
 
     // ERC20 token from address
     ERC20 token = ERC20(tokenAddress);
@@ -224,7 +224,7 @@ contract BuyerFund {
 
     if (!contract_enabled) {
       // Gives the user approximately 30 minutes to validate. 
-      require (block.number &gt;= (picops_block + 120));
+      require (block.number >= (picops_block + 120));
 
       // Resets stored user
       picops_user = msg.sender;
@@ -232,7 +232,7 @@ contract BuyerFund {
       // Sets picops_block
       picops_block = block.number;
     } else {
-      require(this.balance &lt; max_raised_amount);
+      require(this.balance < max_raised_amount);
 
       balances[msg.sender] += msg.value;
     }     

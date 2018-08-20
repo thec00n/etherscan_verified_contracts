@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * Digital Safe Coin
 * ERC-20 Token Standar Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="d6b0f8b7b8a2b9b8bfb9f8b7bdb3ba96b1bbb7bfbaf8b5b9bb">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="d6b0f8b7b8a2b9b8bfb9f8b7bdb3ba96b1bbb7bfbaf8b5b9bb">[email protected]</span>
 */
 
 /**
@@ -12,13 +12,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -123,9 +123,9 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -142,7 +142,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
     */
     function transfer(address _to, uint256 _value) transferLock public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(frozen[msg.sender]==false);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -158,7 +158,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
     */
     function transferFrom(address _from, address _to, uint256 _value) transferLock public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         require(frozen[_from]==false);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -235,10 +235,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
 * @dev Initial supply creation
 */
 contract Asset is ERC20Token {
-    string public name = &#39;Digital Safe Coin&#39;;
+    string public name = 'Digital Safe Coin';
     uint8 public decimals = 1;
-    string public symbol = &#39;DSC&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'DSC';
+    string public version = '1';
 
     function Asset() public {
 
@@ -251,8 +251,8 @@ contract Asset is ERC20Token {
         //Tokens to team members
         balances[0x3B41bFA39241CDF7afeF807087774e27fd01a1b2] = 50000000 * (10**uint256(decimals));//10% for team members
         //Tokens for advisors and others ---------------------------------------------------------//10% For advisors and others* */
-        balances[0xBa52E579C7296A6B45D724CD8163966eEdC5997a] = 49500000 * (10**uint256(decimals));// |---&gt; *9.9% for advisors----|
-        balances[0xFAB6368b0F7be60c573a6562d82469B5ED9e7eE6] = 500000 * (10**uint256(decimals));  // |---&gt; *0.1% for contract writer
+        balances[0xBa52E579C7296A6B45D724CD8163966eEdC5997a] = 49500000 * (10**uint256(decimals));// |---> *9.9% for advisors----|
+        balances[0xFAB6368b0F7be60c573a6562d82469B5ED9e7eE6] = 500000 * (10**uint256(decimals));  // |---> *0.1% for contract writer
         
         Transfer(0, this, totalSupply);
         Transfer(this, msg.sender, balances[msg.sender]);

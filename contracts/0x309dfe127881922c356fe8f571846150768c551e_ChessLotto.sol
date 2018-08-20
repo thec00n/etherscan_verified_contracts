@@ -69,7 +69,7 @@ contract ChessLotto {
     function AddTicket() public payable 
     {
         require(msg.value == ticketPrice); 
-        require(numtickets &lt; maxTickets);
+        require(numtickets < maxTickets);
         
 		//update bif
 		lastTicketTime = now;
@@ -103,11 +103,11 @@ contract ChessLotto {
         totalBounty = 0;
 		
 		//change max tickets to give unpredictability
-		if(_direction == 0 &amp;&amp; maxTickets &lt; 64) maxTickets += 1;
-		if(_direction == 1 &amp;&amp; maxTickets &gt; 32) maxTickets -= 1;
+		if(_direction == 0 && maxTickets < 64) maxTickets += 1;
+		if(_direction == 1 && maxTickets > 32) maxTickets -= 1;
 		
-		if(_direction == 0 &amp;&amp; maxTickets == 64) _direction = 1;
-		if(_direction == 1 &amp;&amp; maxTickets == 32) _direction = 0;
+		if(_direction == 0 && maxTickets == 64) _direction = 1;
+		if(_direction == 1 && maxTickets == 32) _direction = 0;
          
 		//give real money
         worldOwner.transfer(ownerTax);

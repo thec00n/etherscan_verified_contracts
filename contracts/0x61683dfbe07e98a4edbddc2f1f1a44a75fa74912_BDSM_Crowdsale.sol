@@ -15,7 +15,7 @@ contract BDSM_Crowdsale {
 	uint public stopICO_20_March = 1521504060; // end ICO - 20 March 2018
 	uint public priceIncrease_20_January = 1516406460; // if time later than - 20 January 2018 - price +50%
 	uint public priceIncrease_20_February = 1519084860; // if time later than - 20 February 2018 - price +100%
-	string public price = &quot;0.0035 Ether for 1 microBDSM&quot;;
+	string public price = "0.0035 Ether for 1 microBDSM";
 	uint realPrice = 0.0035 * 1 ether; // ETH for 1 package of tokens
 	uint coeff = 100000; // capacity of 1 package
 	
@@ -35,21 +35,21 @@ contract BDSM_Crowdsale {
 
 	function() payable {
 	    
-	    if(now &gt; priceIncrease_20_February){
-	        price = &quot;0.007 Ether for 1 microBDSM&quot;;
+	    if(now > priceIncrease_20_February){
+	        price = "0.007 Ether for 1 microBDSM";
 	        realPrice = 0.007 * 1 ether; 
 	    } 
-	    else if(now &gt; priceIncrease_20_January){
-	        price = &quot;0.00525 Ether for 1 microBDSM&quot;;
+	    else if(now > priceIncrease_20_January){
+	        price = "0.00525 Ether for 1 microBDSM";
 	        realPrice = 0.00525 * 1 ether;
 	    } 
 	    
 		tokenFree = sharesTokenAddress.balanceOf(this); // free tokens count
 		
-		if (now &lt; startICO_20_December) {
+		if (now < startICO_20_December) {
 		    msg.sender.transfer(msg.value);
 		}
-		else if (now &gt; stopICO_20_March) {
+		else if (now > stopICO_20_March) {
 			msg.sender.transfer(msg.value); // if crowdsale closed - cash back
 			if(!tokensWithdrawn){ // when crowdsale closed - unsold tokens transfer to stopScamHolder
 			    sharesTokenAddress.transfer(safeContract, sharesTokenAddress.balanceOf(this));
@@ -63,19 +63,19 @@ contract BDSM_Crowdsale {
 		} 
 		else {
 			uint256 tokenToBuy = msg.value / realPrice * coeff; // tokens to buy
-			if(tokenToBuy &lt;= 0) msg.sender.transfer(msg.value); // mistake protector
-			require(tokenToBuy &gt; 0);
+			if(tokenToBuy <= 0) msg.sender.transfer(msg.value); // mistake protector
+			require(tokenToBuy > 0);
 			uint256 actualETHTransfer = tokenToBuy * realPrice / coeff;
-			if (tokenFree &gt;= tokenToBuy) { // free tokens &gt;= tokens to buy, sell tokens
+			if (tokenFree >= tokenToBuy) { // free tokens >= tokens to buy, sell tokens
 				owner.transfer(actualETHTransfer);
-				if (msg.value &gt; actualETHTransfer){ // if more than need - cash back
+				if (msg.value > actualETHTransfer){ // if more than need - cash back
 					msg.sender.transfer(msg.value - actualETHTransfer);
 				}
 				sharesTokenAddress.transfer(msg.sender, tokenToBuy);
 				tokenSold += tokenToBuy;
 				tokenFree -= tokenToBuy;
 				if(tokenFree==0) crowdsaleClosed = true;
-			} else { // free tokens &lt; tokens to buy 
+			} else { // free tokens < tokens to buy 
 				uint256 sendETH = tokenFree * realPrice / coeff; // price for all free tokens
 				owner.transfer(sendETH); 
 				sharesTokenAddress.transfer(msg.sender, tokenFree); 

@@ -18,7 +18,7 @@ contract AIAcrowdsale is myOwned {
     uint public amountRaised;
     token public contractTokenReward;
     address public contractWallet;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event GoalReached(address receiver, uint amount);
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -41,16 +41,16 @@ contract AIAcrowdsale is myOwned {
     }
 
     function saleActive() public constant returns (bool) {
-        return (now &gt;= startDate &amp;&amp; now &lt;= stopDate &amp;&amp; amountRaised &lt; fundingGoal);
+        return (now >= startDate && now <= stopDate && amountRaised < fundingGoal);
     }
 
     function getRateAt(uint256 at) public constant returns (uint256) {
-        if (at &lt; startDate) {return 0;} 
-        else if (at &lt; (startDate + 168 hours)) {return 10000;} 
-        else if (at &lt; (startDate + 336 hours)) {return 9000;} 
-        else if (at &lt; (startDate + 528 hours)) {return 8100;} 
-        else if (at &lt;= stopDate) {return 7300;} 
-        else if (at &gt; stopDate) {return 0;}
+        if (at < startDate) {return 0;} 
+        else if (at < (startDate + 168 hours)) {return 10000;} 
+        else if (at < (startDate + 336 hours)) {return 9000;} 
+        else if (at < (startDate + 528 hours)) {return 8100;} 
+        else if (at <= stopDate) {return 7300;} 
+        else if (at > stopDate) {return 0;}
     }
 
     function getRateNow() public constant returns (uint256) {
@@ -59,7 +59,7 @@ contract AIAcrowdsale is myOwned {
 
     function () public payable {
         require(saleActive());
-        require(amountRaised &lt; fundingGoal);
+        require(amountRaised < fundingGoal);
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
@@ -71,7 +71,7 @@ contract AIAcrowdsale is myOwned {
 
     function saleEnd() public onlyOwner {
         require(!saleActive());
-        require(now &gt; stopDate );
+        require(now > stopDate );
         contractWallet.transfer(this.balance);
         contractTokenReward.transfer(contractWallet, this.balance);
     }

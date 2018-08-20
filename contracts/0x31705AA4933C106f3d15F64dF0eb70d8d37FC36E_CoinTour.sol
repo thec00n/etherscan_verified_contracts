@@ -21,9 +21,9 @@ contract Ownable {
 
 contract CoinTour is Ownable {
     
-    string public  name  = &quot;Coin Tour&quot;;
+    string public  name  = "Coin Tour";
     
-    string public  symbol = &quot;COT&quot;;
+    string public  symbol = "COT";
     
     uint32 public  decimals = 8 ;
     
@@ -43,9 +43,9 @@ contract CoinTour is Ownable {
     uint startEtap2 = 1512468000;
     uint endEtap2 = 1512554400;
 
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
-    mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping (address => mapping(address => uint)) allowed;
     
     function CoinTour() public {
         balances[commandAddress] = forCommand;
@@ -57,7 +57,7 @@ contract CoinTour is Ownable {
     }
 
     function transfer(address _to, uint _value) public returns (bool success) {
-            if(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+            if(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
                 balances[msg.sender] -= _value; 
                 balances[_to] += _value;
                 Transfer(msg.sender, _to, _value);
@@ -67,9 +67,9 @@ contract CoinTour is Ownable {
     }
     
     function multisend(address[] temp) public onlyOwner returns (bool success){
-        if((now &gt; startEtap1 &amp;&amp; now &lt; endEtap1)||(now &gt; startEtap2 &amp;&amp; now &lt; endEtap2)){
-            for(uint i = 0; i &lt; temp.length; i++) {
-                if (now&gt;=startEtap1 &amp;&amp; now &lt;=endEtap1 &amp;&amp; balances[owner]&gt;etap || now&gt;=startEtap2 &amp;&amp; now &lt;=endEtap2 &amp;&amp; balances[owner]&gt;0){
+        if((now > startEtap1 && now < endEtap1)||(now > startEtap2 && now < endEtap2)){
+            for(uint i = 0; i < temp.length; i++) {
+                if (now>=startEtap1 && now <=endEtap1 && balances[owner]>etap || now>=startEtap2 && now <=endEtap2 && balances[owner]>0){
                     balances[owner] -= sendCount;
                     balances[temp[i]] += sendCount;
                     Transfer(owner, temp[i],sendCount);
@@ -81,11 +81,11 @@ contract CoinTour is Ownable {
     }
     
     function burn() onlyOwner public {
-        require (now&gt;=endEtap1 &amp;&amp; now &lt;=startEtap2 || now &gt;= endEtap2);
+        require (now>=endEtap1 && now <=startEtap2 || now >= endEtap2);
         uint _value;
-        if (now&gt;=endEtap1 &amp;&amp; now &lt;=startEtap2) {
+        if (now>=endEtap1 && now <=startEtap2) {
             _value = balances[owner] - etap;
-            require(_value &gt; 0);
+            require(_value > 0);
         }
         else _value = balances[owner];
         balances[owner] -= _value;
@@ -94,7 +94,7 @@ contract CoinTour is Ownable {
     }
     
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if( allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if( allowed[_from][msg.sender] >= _value && balances[_from] >= _value && balances[_to] + _value >= balances[_to]) {
             allowed[_from][msg.sender] -= _value;
             balances[_from] -= _value; 
             balances[_to] += _value;

@@ -1,7 +1,7 @@
 pragma solidity 0.4.21;
 
 // ----------------------------------------------------------------------------
-// TokenVesting for &#39;Digitize Coin&#39; project based on:
+// TokenVesting for 'Digitize Coin' project based on:
 // https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/token/ERC20/TokenVesting.sol
 //
 // Radek Ostrowski / http://startonchain.com / https://digitizecoin.com
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0);
+    require(b > 0);
     uint256 c = a / b;
     return c;
   }
@@ -39,7 +39,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ contract TokenVesting {
   uint256 public start;
   uint256 public duration;
 
-  mapping (address =&gt; uint256) public released;
+  mapping (address => uint256) public released;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -92,7 +92,7 @@ contract TokenVesting {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliffInDays, uint256 _durationInDays) public {
     require(_beneficiary != address(0));
-    require(_cliffInDays &lt;= _durationInDays);
+    require(_cliffInDays <= _durationInDays);
 
     beneficiary = _beneficiary;
     duration = _durationInDays * 1 days;
@@ -106,14 +106,14 @@ contract TokenVesting {
    */
   function release(CutdownToken _token) public {
     uint256 unreleased = releasableAmount(_token);
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
     released[_token] = released[_token].add(unreleased);
     _token.transfer(beneficiary, unreleased);
     emit Released(unreleased);
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param _token ERC20 token which is being vested
    */
   function releasableAmount(CutdownToken _token) public view returns (uint256) {
@@ -128,9 +128,9 @@ contract TokenVesting {
     uint256 currentBalance = _token.balanceOf(address(this));
     uint256 totalBalance = currentBalance.add(released[_token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration)) {
+    } else if (now >= start.add(duration)) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);

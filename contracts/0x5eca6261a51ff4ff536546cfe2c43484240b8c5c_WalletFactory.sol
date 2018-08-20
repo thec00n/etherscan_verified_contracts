@@ -93,9 +93,9 @@ contract Wallet is Pausable {
     }
     
     function transfer(address _to,uint256 _amount) external onlyOwner whenNotPaused{
-        require(address(this).balance&gt;=_amount);
+        require(address(this).balance>=_amount);
         require(_to!=address(0));
-        if (_amount&gt;0){
+        if (_amount>0){
             _to.transfer(_amount);
         }
         emit Transfer(_to,_amount);
@@ -104,7 +104,7 @@ contract Wallet is Pausable {
     function withdraw() public onlyOwner whenNotPaused{
         require(owner!=address(0));
         uint256 _val = address(this).balance;
-        if (_val&gt;0){
+        if (_val>0){
             owner.transfer(_val);
         }
         emit Withdraw(_val);
@@ -113,7 +113,7 @@ contract Wallet is Pausable {
 
 contract WalletFactory {
     event WalletCreated(address admin,address owner, address wallet);
-    mapping(address =&gt; address[]) public wallets;
+    mapping(address => address[]) public wallets;
     address public factoryOwner;
     
     constructor() public{
@@ -122,8 +122,8 @@ contract WalletFactory {
     // you can donate to me
     function createWallet(address _admin,address _owner) public payable{
         // you can create max 10 wallets for free
-        if (wallets[msg.sender].length&gt;10){
-            require(msg.value&gt;=0.01 ether);
+        if (wallets[msg.sender].length>10){
+            require(msg.value>=0.01 ether);
         }
         Wallet w = new Wallet(_admin,_owner);
         wallets[msg.sender].push(address(w));

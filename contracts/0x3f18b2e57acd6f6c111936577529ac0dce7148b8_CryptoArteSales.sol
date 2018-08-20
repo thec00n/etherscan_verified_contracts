@@ -83,7 +83,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -223,8 +223,8 @@ contract CryptoArteSales is Ownable, Pausable, Destructible {
     * @param _currentPrice initial sales price
     */
     constructor(address _nftAddress, uint256 _currentPrice) public { 
-        require(_nftAddress != address(0) &amp;&amp; _nftAddress != address(this));
-        require(_currentPrice &gt; 0);
+        require(_nftAddress != address(0) && _nftAddress != address(this));
+        require(_currentPrice > 0);
         nftAddress = ERC721(_nftAddress);
         currentPrice = _currentPrice;
     }
@@ -234,8 +234,8 @@ contract CryptoArteSales is Ownable, Pausable, Destructible {
     * @param _tokenId uint256 token ID (painting number)
     */
     function purchaseToken(uint256 _tokenId) public payable whenNotPaused {
-        require(msg.sender != address(0) &amp;&amp; msg.sender != address(this));
-        require(msg.value &gt;= currentPrice);
+        require(msg.sender != address(0) && msg.sender != address(this));
+        require(msg.value >= currentPrice);
         require(nftAddress.exists(_tokenId));
         address tokenSeller = nftAddress.ownerOf(_tokenId);
         nftAddress.safeTransferFrom(tokenSeller, msg.sender, _tokenId);
@@ -246,8 +246,8 @@ contract CryptoArteSales is Ownable, Pausable, Destructible {
     * @dev send / withdraw _amount to _payee
     */
     function sendTo(address _payee, uint256 _amount) public onlyOwner {
-        require(_payee != address(0) &amp;&amp; _payee != address(this));
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= address(this).balance);
+        require(_payee != address(0) && _payee != address(this));
+        require(_amount > 0 && _amount <= address(this).balance);
         _payee.transfer(_amount);
         emit Sent(_payee, _amount, address(this).balance);
     }    
@@ -257,7 +257,7 @@ contract CryptoArteSales is Ownable, Pausable, Destructible {
     * @dev Throws if _currentPrice is zero
     */
     function setCurrentPrice(uint256 _currentPrice) public onlyOwner {
-        require(_currentPrice &gt; 0);
+        require(_currentPrice > 0);
         currentPrice = _currentPrice;
     }        
 

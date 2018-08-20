@@ -16,7 +16,7 @@ contract ShiftSale {
 
     address public crowdSaleAddress;
     address[] public owners;
-    mapping(address =&gt; bool) public isOwner;
+    mapping(address => bool) public isOwner;
     uint public fee;
     /*
      *  Constants
@@ -41,8 +41,8 @@ contract ShiftSale {
         crowdSaleAddress = _crowdSale;
         crowdSale = Crowdsale(_crowdSale);
         token = Token(_token);
-        for (uint i = 0; i &lt; _owners.length; i++) {
-            require(!isOwner[_owners[i]] &amp;&amp; _owners[i] != 0);
+        for (uint i = 0; i < _owners.length; i++) {
+            require(!isOwner[_owners[i]] && _owners[i] != 0);
             isOwner[_owners[i]] = true;
         }
         owners = _owners;
@@ -62,7 +62,7 @@ contract ShiftSale {
         _;
     }
     modifier validAmount() {
-        require((msg.value - fee) &gt; 0);
+        require((msg.value - fee) > 0);
         _;
     }
 
@@ -119,7 +119,7 @@ contract ShiftSale {
     ownerExists(msg.sender)
     public {
         require(_to.length == _value.length);
-        for (uint i = 0; i &lt; _to.length; i++) {
+        for (uint i = 0; i < _to.length; i++) {
             _to[i].transfer(_value[i]);
         }
     }

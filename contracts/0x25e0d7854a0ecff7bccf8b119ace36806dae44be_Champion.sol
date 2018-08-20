@@ -18,9 +18,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -65,10 +65,10 @@ contract Ownable {
     }
 
     function withdrawPart(address _to,uint256 _percent) public onlyOwner{
-        require(_percent&gt;0&amp;&amp;_percent&lt;=100);
+        require(_percent>0&&_percent<=100);
         require(_to != address(0));
         uint256 _amount = address(this).balance - address(this).balance*(100 - _percent)/100;
-        if (_amount&gt;0){
+        if (_amount>0){
             _to.transfer(_amount);
         }
     }
@@ -101,39 +101,39 @@ contract Pausable is Ownable {
 }
 contract WWC is Pausable {
     string[33] public teams = [
-        &quot;&quot;,
-        &quot;Egypt&quot;,              // 1
-        &quot;Morocco&quot;,            // 2
-        &quot;Nigeria&quot;,            // 3
-        &quot;Senegal&quot;,            // 4
-        &quot;Tunisia&quot;,            // 5
-        &quot;Australia&quot;,          // 6
-        &quot;IR Iran&quot;,            // 7
-        &quot;Japan&quot;,              // 8
-        &quot;Korea Republic&quot;,     // 9
-        &quot;Saudi Arabia&quot;,       // 10
-        &quot;Belgium&quot;,            // 11
-        &quot;Croatia&quot;,            // 12
-        &quot;Denmark&quot;,            // 13
-        &quot;England&quot;,            // 14
-        &quot;France&quot;,             // 15
-        &quot;Germany&quot;,            // 16
-        &quot;Iceland&quot;,            // 17
-        &quot;Poland&quot;,             // 18
-        &quot;Portugal&quot;,           // 19
-        &quot;Russia&quot;,             // 20
-        &quot;Serbia&quot;,             // 21
-        &quot;Spain&quot;,              // 22
-        &quot;Sweden&quot;,             // 23
-        &quot;Switzerland&quot;,        // 24
-        &quot;Costa Rica&quot;,         // 25
-        &quot;Mexico&quot;,             // 26
-        &quot;Panama&quot;,             // 27
-        &quot;Argentina&quot;,          // 28
-        &quot;Brazil&quot;,             // 29
-        &quot;Colombia&quot;,           // 30
-        &quot;Peru&quot;,               // 31
-        &quot;Uruguay&quot;             // 32
+        "",
+        "Egypt",              // 1
+        "Morocco",            // 2
+        "Nigeria",            // 3
+        "Senegal",            // 4
+        "Tunisia",            // 5
+        "Australia",          // 6
+        "IR Iran",            // 7
+        "Japan",              // 8
+        "Korea Republic",     // 9
+        "Saudi Arabia",       // 10
+        "Belgium",            // 11
+        "Croatia",            // 12
+        "Denmark",            // 13
+        "England",            // 14
+        "France",             // 15
+        "Germany",            // 16
+        "Iceland",            // 17
+        "Poland",             // 18
+        "Portugal",           // 19
+        "Russia",             // 20
+        "Serbia",             // 21
+        "Spain",              // 22
+        "Sweden",             // 23
+        "Switzerland",        // 24
+        "Costa Rica",         // 25
+        "Mexico",             // 26
+        "Panama",             // 27
+        "Argentina",          // 28
+        "Brazil",             // 29
+        "Colombia",           // 30
+        "Peru",               // 31
+        "Uruguay"             // 32
     ];
 }
 
@@ -142,10 +142,10 @@ contract Champion is WWC {
     
     using SafeMath for uint256;
     struct Vote {
-        mapping(address =&gt; uint256) amounts;
+        mapping(address => uint256) amounts;
         uint256 totalAmount;
         address[] users;
-        mapping(address =&gt; uint256) weightedAmounts;
+        mapping(address => uint256) weightedAmounts;
         uint256 weightedTotalAmount;
     }
     uint256 public pool;
@@ -159,29 +159,29 @@ contract Champion is WWC {
     uint256 public minVote = 0.05 ether;
     uint256 public voteWeight = 4;
     
-    mapping(address=&gt;uint256) public alreadyWithdraw;
+    mapping(address=>uint256) public alreadyWithdraw;
 
     modifier validTeam(uint256 _teamno) {
-        require(_teamno &gt; 0 &amp;&amp; _teamno &lt;= 32);
+        require(_teamno > 0 && _teamno <= 32);
         _;
     }
 
     function setVoteWeight(uint256 _w) public onlyOwner{
-        require(_w&gt;0&amp;&amp; _w&lt;voteWeight);
+        require(_w>0&& _w<voteWeight);
         voteWeight = _w;
     }
     
     function setMinVote(uint256 _min) public onlyOwner{
-        require(_min&gt;=0.01 ether);
+        require(_min>=0.01 ether);
         minVote = _min;
     }
     function setVoteCut(uint256 _cut) public onlyOwner{
-        require(_cut&gt;=0&amp;&amp;_cut&lt;=100);
+        require(_cut>=0&&_cut<=100);
         voteCut = _cut;
     }
     
     function setPoolCut(uint256 _cut) public onlyOwner{
-        require(_cut&gt;=0&amp;&amp;_cut&lt;=100);
+        require(_cut>=0&&_cut<=100);
         poolCut = _cut;
     }
     function getVoteOf(uint256 _team) validTeam(_team) public view returns(
@@ -198,7 +198,7 @@ contract Champion is WWC {
     }
 
     function voteFor(uint256 _team) validTeam(_team) public payable whenNotPaused {
-        require(msg.value &gt;= minVote);
+        require(msg.value >= minVote);
         require(voteStopped == 0);
         userVoteFor(msg.sender, _team, msg.value);
     }
@@ -206,7 +206,7 @@ contract Champion is WWC {
     function userVoteFor(address _user, uint256 _team, uint256 _amount) internal{
         Vote storage _v = votes[_team];
         uint256 voteVal = _amount.sub(_amount.mul(voteCut).div(100));
-        if (voteVal&lt;_amount){
+        if (voteVal<_amount){
             owner.transfer(_amount.sub(voteVal));
         }
         if (_v.amounts[_user] == 0) {
@@ -249,12 +249,12 @@ contract Champion is WWC {
     }
     
     function withdrawBonus() public whenNotPaused{
-        require(teamWon&gt;0);
+        require(teamWon>0);
         require(alreadyWithdraw[msg.sender]==0);
         alreadyWithdraw[msg.sender] = 1;
         uint256 _amount = bonusAmount(teamWon,msg.sender);
-        require(_amount&lt;=address(this).balance);
-        if(_amount&gt;0){
+        require(_amount<=address(this).balance);
+        if(_amount>0){
             msg.sender.transfer(_amount);
         }
     }

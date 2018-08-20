@@ -9,13 +9,13 @@ pragma solidity ^0.4.18;
 
 contract Bam {
     address public owner; // Token owner address
-    mapping (address =&gt; uint256) public balances; // balanceOf
-    // mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances; // balanceOf
+    // mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) allowed;
 
-    string public standard = &#39;Baikal Mining&#39;;
-    string public constant name = &quot;Baikal Mining&quot;;
-    string public constant symbol = &quot;BAM&quot;;
+    string public standard = 'Baikal Mining';
+    string public constant name = "Baikal Mining";
+    string public constant symbol = "BAM";
     uint   public constant decimals = 18;
     uint   public constant totalSupply = 34550000 * 1000000000000000000;
     
@@ -65,7 +65,7 @@ contract Bam {
     // fallback function
     function() public payable {
         require(buyAllowed);
-        require(msg.value &gt;= 1);
+        require(msg.value >= 1);
         require(msg.sender != owner);
         buyTokens(msg.sender);
     }
@@ -87,13 +87,13 @@ contract Bam {
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 
@@ -102,7 +102,7 @@ contract Bam {
     function buyTokens(address _buyer) public payable
     {
         require(buyAllowed);
-        require(msg.value &gt;= tokenPrice);
+        require(msg.value >= tokenPrice);
         require(_buyer != owner);
         
         uint256 wei_value = msg.value;
@@ -166,7 +166,7 @@ contract Bam {
         onlyOwnerIfBlocked
         returns (bool success) 
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -179,7 +179,7 @@ contract Bam {
         onlyOwnerIfBlocked
         returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;

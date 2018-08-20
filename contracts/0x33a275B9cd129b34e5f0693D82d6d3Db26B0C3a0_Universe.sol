@@ -44,9 +44,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -54,7 +54,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -63,7 +63,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -131,7 +131,7 @@ contract Owned {
       newCooAddress = address(0);
   }
 
-  mapping (address =&gt; bool) public youCollectContracts;
+  mapping (address => bool) public youCollectContracts;
   function addYouCollectContract(address contractAddress, bool active) public onlyCOO {
     youCollectContracts[contractAddress] = active;
   }
@@ -150,7 +150,7 @@ contract Owned {
     youCollectContracts[yccContract] = true;
     youCollectContracts[yctContract] = true;
     youCollectContracts[ycmContract] = true;
-    for (uint16 index = 0; index &lt; otherContracts.length; index++) {
+    for (uint16 index = 0; index < otherContracts.length; index++) {
       youCollectContracts[otherContracts[index]] = true;
     }
   }
@@ -190,7 +190,7 @@ contract YouCollectBase is Owned {
     _payout(_to, this.balance);
   }
   function payout(address _to, uint amount) public onlyCLevel {
-    if (amount&gt;this.balance)
+    if (amount>this.balance)
       amount = this.balance;
     _payout(_to, amount);
   }
@@ -222,21 +222,21 @@ contract ERC721YC is YouCollectBase {
   // ERC721
 
     /*** STORAGE ***/
-    string public constant NAME = &quot;YouCollectTokens&quot;;
-    string public constant SYMBOL = &quot;YCT&quot;;
+    string public constant NAME = "YouCollectTokens";
+    string public constant SYMBOL = "YCT";
     uint256[] public tokens;
 
     /// @dev A mapping from collectible IDs to the address that owns them. All collectibles have
     ///  some valid owner address.
-    mapping (uint256 =&gt; address) public tokenIndexToOwner;
+    mapping (uint256 => address) public tokenIndexToOwner;
 
     /// @dev A mapping from CollectibleIDs to an address that has been approved to call
     ///  transferFrom(). Each Collectible can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public tokenIndexToApproved;
+    mapping (uint256 => address) public tokenIndexToApproved;
 
     // @dev A mapping from CollectibleIDs to the price of the token.
-    mapping (uint256 =&gt; uint256) public tokenIndexToPrice;
+    mapping (uint256 => uint256) public tokenIndexToPrice;
 
     /*** EVENTS ***/
     /// @dev The Birth event is fired whenever a new collectible comes into existence.
@@ -363,7 +363,7 @@ contract ERC721YC is YouCollectBase {
         uint256 tokenIndex;
         uint256 tokenId;
         result = 0;
-        for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+        for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
           tokenId = tokens[tokenIndex];
           if (tokenIndexToOwner[tokenId] == _owner) {
             result++;
@@ -377,7 +377,7 @@ contract ERC721YC is YouCollectBase {
       //transfer ownership
       tokenIndexToOwner[_tokenId] = _to;
 
-      // When creating new collectibles _from is 0x0, but we can&#39;t account that address.
+      // When creating new collectibles _from is 0x0, but we can't account that address.
       if (_from != address(0)) {
         // clear any previously approved ownership exchange
         delete tokenIndexToApproved[_tokenId];
@@ -389,7 +389,7 @@ contract ERC721YC is YouCollectBase {
 
 
     /// @param _owner The owner whose celebrity tokens we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire tokens array looking for tokens belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -405,7 +405,7 @@ contract ERC721YC is YouCollectBase {
 
         uint256 tokenIndex;
         uint256 tokenId;
-        for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+        for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
           tokenId = tokens[tokenIndex];
           if (tokenIndexToOwner[tokenId] == _owner) {
             result[resultIndex] = tokenId;
@@ -420,7 +420,7 @@ contract ERC721YC is YouCollectBase {
       // uint256[] storage _result = new uint256[]();
       // uint256 totalTokens = getTotalSupply();
 
-      // for (uint256 tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      // for (uint256 tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
       //   if (tokenIndexToOwner[tokens[tokenIndex]] == _owner) {
       //     _result.push(tokens[tokenIndex]);
       //   }
@@ -440,8 +440,8 @@ contract ERC721YC is YouCollectBase {
 
 contract Universe is ERC721YC {
 
-  mapping (uint =&gt; address) private subTokenCreator;
-  mapping (uint =&gt; address) private lastSubTokenBuyer;
+  mapping (uint => address) private subTokenCreator;
+  mapping (uint => address) private lastSubTokenBuyer;
 
   uint16 constant MAX_WORLD_INDEX = 1000;
   uint24 constant MAX_CONTINENT_INDEX = 10000000;
@@ -464,15 +464,15 @@ contract Universe is ERC721YC {
   }
 
   function getNextPrice(uint price, uint _tokenId) public pure returns (uint) {
-    if (_tokenId&gt;DOUBLE_TOKENS_INDEX)
+    if (_tokenId>DOUBLE_TOKENS_INDEX)
       return price.mul(2);
-    if (_tokenId&gt;TRIBLE_TOKENS_INDEX)
+    if (_tokenId>TRIBLE_TOKENS_INDEX)
       return price.mul(3);
-    if (_tokenId&gt;FIFTY_TOKENS_INDEX)
+    if (_tokenId>FIFTY_TOKENS_INDEX)
       return price.mul(3).div(2);
-    if (price &lt; 1.2 ether)
+    if (price < 1.2 ether)
       return price.mul(200).div(91);
-    if (price &lt; 5 ether)
+    if (price < 5 ether)
       return price.mul(150).div(91);
     return price.mul(120).div(91);
   }
@@ -481,9 +481,9 @@ contract Universe is ERC721YC {
   function buyToken(uint _tokenId) public payable {
     address oldOwner = tokenIndexToOwner[_tokenId];
     uint256 sellingPrice = tokenIndexToPrice[_tokenId];
-    require(oldOwner!=msg.sender || sellingPrice &gt; minSelfBuyPrice);
-    require(msg.value &gt;= sellingPrice);
-    require(sellingPrice &gt; 0);
+    require(oldOwner!=msg.sender || sellingPrice > minSelfBuyPrice);
+    require(msg.value >= sellingPrice);
+    require(sellingPrice > 0);
 
     uint256 purchaseExcess = msg.value.sub(sellingPrice);
     uint256 payment = sellingPrice.mul(91).div(100);
@@ -496,29 +496,29 @@ contract Universe is ERC721YC {
     // clear any previously approved ownership exchange
     delete tokenIndexToApproved[_tokenId];
     // payout mining reward
-    if (_tokenId&gt;MAX_SUBCONTINENT_INDEX) {
+    if (_tokenId>MAX_SUBCONTINENT_INDEX) {
       ycm.payoutMining(_tokenId, oldOwner, msg.sender);
-      if (sellingPrice &gt; minPriceForMiningUpgrade)
+      if (sellingPrice > minPriceForMiningUpgrade)
         ycm.levelUpMining(_tokenId);
     }
 
-    if (_tokenId &gt; 0) {
+    if (_tokenId > 0) {
       // Taxes for Universe owner
       if (tokenIndexToOwner[UNIVERSE_TOKEN_ID]!=address(0))
         tokenIndexToOwner[UNIVERSE_TOKEN_ID].transfer(feeOnce);
-      if (_tokenId &gt; MAX_WORLD_INDEX) {
+      if (_tokenId > MAX_WORLD_INDEX) {
         // Taxes for world owner
         if (tokenIndexToOwner[_tokenId % MAX_WORLD_INDEX]!=address(0))
           tokenIndexToOwner[_tokenId % MAX_WORLD_INDEX].transfer(feeOnce);
-        if (_tokenId &gt; MAX_CONTINENT_INDEX) {
+        if (_tokenId > MAX_CONTINENT_INDEX) {
           // Taxes for continent owner
           if (tokenIndexToOwner[_tokenId % MAX_CONTINENT_INDEX]!=address(0))
             tokenIndexToOwner[_tokenId % MAX_CONTINENT_INDEX].transfer(feeOnce);
-          if (_tokenId &gt; MAX_SUBCONTINENT_INDEX) {
+          if (_tokenId > MAX_SUBCONTINENT_INDEX) {
             // Taxes for subcontinent owner
             if (tokenIndexToOwner[_tokenId % MAX_SUBCONTINENT_INDEX]!=address(0))
               tokenIndexToOwner[_tokenId % MAX_SUBCONTINENT_INDEX].transfer(feeOnce);
-            if (_tokenId &gt; MAX_COUNTRY_INDEX) {
+            if (_tokenId > MAX_COUNTRY_INDEX) {
               // Taxes for country owner
               if (tokenIndexToOwner[_tokenId % MAX_COUNTRY_INDEX]!=address(0))
                 tokenIndexToOwner[_tokenId % MAX_COUNTRY_INDEX].transfer(feeOnce);
@@ -558,7 +558,7 @@ contract Universe is ERC721YC {
     TokenSold(_tokenId, sellingPrice, oldOwner, msg.sender);
     Transfer(oldOwner, msg.sender, _tokenId);
     // refund when paid too much
-    if (purchaseExcess&gt;0)
+    if (purchaseExcess>0)
       msg.sender.transfer(purchaseExcess);
   }
   

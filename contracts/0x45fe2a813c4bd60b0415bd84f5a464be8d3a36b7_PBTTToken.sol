@@ -14,7 +14,7 @@ contract Owned {
 
 
     modifier onlyOwner() {
-        require(isOwner(msg.sender) == true, &#39;Require owner to execute transaction&#39;);
+        require(isOwner(msg.sender) == true, 'Require owner to execute transaction');
         _;
     }
 
@@ -25,9 +25,9 @@ contract Owned {
 
 
     function initiateOwnershipTransfer(address _proposedOwner) public onlyOwner returns (bool success) {
-        require(_proposedOwner != address(0), &#39;Require proposedOwner != address(0)&#39;);
-        require(_proposedOwner != address(this), &#39;Require proposedOwner != address(this)&#39;);
-        require(_proposedOwner != owner, &#39;Require proposedOwner != owner&#39;);
+        require(_proposedOwner != address(0), 'Require proposedOwner != address(0)');
+        require(_proposedOwner != address(this), 'Require proposedOwner != address(this)');
+        require(_proposedOwner != owner, 'Require proposedOwner != owner');
 
         proposedOwner = _proposedOwner;
         return true;
@@ -35,7 +35,7 @@ contract Owned {
 
 
     function completeOwnershipTransfer() public returns (bool success) {
-        require(msg.sender == proposedOwner, &#39;Require msg.sender == proposedOwner&#39;);
+        require(msg.sender == proposedOwner, 'Require msg.sender == proposedOwner');
 
         owner = msg.sender;
         proposedOwner = address(0);
@@ -59,13 +59,13 @@ contract OpsManaged is Owned {
 
 
     modifier onlyOwnerOrOps() {
-        require(isOwnerOrOps(msg.sender), &#39;Require only owner or ops&#39;);
+        require(isOwnerOrOps(msg.sender), 'Require only owner or ops');
         _;
     }
 
 
     function isOps(address _address) public view returns (bool) {
-        return (opsAddress != address(0) &amp;&amp; _address == opsAddress);
+        return (opsAddress != address(0) && _address == opsAddress);
     }
 
 
@@ -75,8 +75,8 @@ contract OpsManaged is Owned {
 
 
     function setOpsAddress(address _newOpsAddress) public onlyOwner returns (bool success) {
-        require(_newOpsAddress != owner, &#39;Require newOpsAddress != owner&#39;);
-        require(_newOpsAddress != address(this), &#39;Require newOpsAddress != address(this)&#39;);
+        require(_newOpsAddress != owner, 'Require newOpsAddress != owner');
+        require(_newOpsAddress != address(this), 'Require newOpsAddress != address(this)');
 
         opsAddress = _newOpsAddress;
 
@@ -106,7 +106,7 @@ contract Finalizable is OpsManaged {
 
 
     function finalize() public onlyOwner returns (bool success) {
-        require(finalized == FinalizableState.None, &#39;Require !finalized&#39;);
+        require(finalized == FinalizableState.None, 'Require !finalized');
 
         finalized = FinalizableState.Finalized;
 
@@ -124,14 +124,14 @@ library Math {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 r = a + b;
 
-        require(r &gt;= a, &#39;Require r &gt;= a&#39;);
+        require(r >= a, 'Require r >= a');
 
         return r;
     }
 
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(a &gt;= b, &#39;Require a &gt;= b&#39;);
+        require(a >= b, 'Require a >= b');
 
         return a - b;
     }
@@ -144,7 +144,7 @@ library Math {
 
         uint256 r = a * b;
 
-        require(r / a == b, &#39;Require r / a == b&#39;);
+        require(r / a == b, 'Require r / a == b');
 
         return r;
     }
@@ -185,8 +185,8 @@ contract ERC20Token is ERC20Interface {
     uint8 public decimals;
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
 
     constructor(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply, address _initialTokenHolder) public {
@@ -215,7 +215,7 @@ contract ERC20Token is ERC20Interface {
 
 
     function transfer(address _to, uint256 _value) public returns (bool success) { 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
 
@@ -229,7 +229,7 @@ contract ERC20Token is ERC20Interface {
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -301,7 +301,7 @@ contract FinalizableToken is ERC20Token, OpsManaged, Finalizable {
 
         // Before the token is finalized, only owner and ops are allowed to initiate transfers.
         // This allows them to move tokens while the sale is still in private sale.
-        require(isOwnerOrOps(_sender), &#39;Require is owner or ops allowed to initiate transfer&#39;);
+        require(isOwnerOrOps(_sender), 'Require is owner or ops allowed to initiate transfer');
     }
 }
 
@@ -312,8 +312,8 @@ contract FinalizableToken is ERC20Token, OpsManaged, Finalizable {
 // ----------------------------------------------------------------------------
 contract PBTTTokenConfig {
 
-    string  internal constant TOKEN_SYMBOL      = &#39;PBTT&#39;;
-    string  internal constant TOKEN_NAME        = &#39;Purple Butterfly Token (PBTT)&#39;;
+    string  internal constant TOKEN_SYMBOL      = 'PBTT';
+    string  internal constant TOKEN_NAME        = 'Purple Butterfly Token (PBTT)';
     uint8   internal constant TOKEN_DECIMALS    = 3;
 
     uint256 internal constant DECIMALSFACTOR    = 10**uint256(TOKEN_DECIMALS);
@@ -330,7 +330,7 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
     uint256 public sellPriceEth = 0.0001 ether;                             // Sell price for PBTT
     uint256 public gasForPBTT = 0.005 ether;                                // Eth from contract against PBTT to pay tx (10 times sellPriceEth)
     uint256 public PBTTForGas = 1;                                          // PBTT to contract against eth to pay tx
-    uint256 public gasReserve = 1 ether;                                    // Eth amount that remains in the contract for gas and can&#39;t be sold
+    uint256 public gasReserve = 1 ether;                                    // Eth amount that remains in the contract for gas and can't be sold
 
     // Minimal eth balance of sender and recipient, ensure that no account receiving
     // the token has less than the necessary Ether to pay the fees
@@ -352,12 +352,12 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(halts == HaltState.Unhalted, &#39;Require smart contract is not in halted state&#39;);
+        require(halts == HaltState.Unhalted, 'Require smart contract is not in halted state');
 
         // Prevents drain and spam
-        require(_value &gt;= PBTTForGas, &#39;Token amount is not enough to transfer&#39;); 
+        require(_value >= PBTTForGas, 'Token amount is not enough to transfer'); 
          
-        if (!isOwnerOrOps(msg.sender) &amp;&amp; _to == address(this)) {
+        if (!isOwnerOrOps(msg.sender) && _to == address(this)) {
             // Trade PBTT against eth by sending to the token contract
             sellPBTTAgainstEther(_value);                             
             return true;
@@ -370,7 +370,7 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(halts == HaltState.Unhalted, &#39;Require smart contract is not in halted state&#39;);
+        require(halts == HaltState.Unhalted, 'Require smart contract is not in halted state');
         return super.transferFrom(_from, _to, _value);
     }
     
@@ -405,16 +405,16 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
     /* User buys PBTT and pays in Ether */
     function buyPBTTAgainstEther() private returns (uint256 tokenAmount) {
         // Avoid dividing 0, sending small amounts and spam
-        require(buyPriceEth &gt; 0, &#39;buyPriceEth must be &gt; 0&#39;);
-        require(msg.value &gt;= buyPriceEth, &#39;Transfer money must be enough for 1 token&#39;);
+        require(buyPriceEth > 0, 'buyPriceEth must be > 0');
+        require(msg.value >= buyPriceEth, 'Transfer money must be enough for 1 token');
         
         // Calculate the amount of PBTT
         tokenAmount = (msg.value.mul(DECIMALSFACTOR)).div(buyPriceEth);                
         
         // Check if it has enough to sell
-        require(balances[owner] &gt;= tokenAmount, &#39;Not enough token balance&#39;);
+        require(balances[owner] >= tokenAmount, 'Not enough token balance');
         
-        // Add the amount to buyer&#39;s balance
+        // Add the amount to buyer's balance
         balances[msg.sender] = balances[msg.sender].add(tokenAmount);            
 
         // Subtract amount from PBTT balance
@@ -430,30 +430,30 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
 
     function sellPBTTAgainstEther(uint256 amount) private returns (uint256 revenue) {
         // Avoid selling and spam
-        require(sellPriceEth &gt; 0, &#39;sellPriceEth must be &gt; 0&#39;);
+        require(sellPriceEth > 0, 'sellPriceEth must be > 0');
         
-        require(amount &gt;= PBTTForGas, &#39;Sell token amount must be larger than PBTTForGas value&#39;);
+        require(amount >= PBTTForGas, 'Sell token amount must be larger than PBTTForGas value');
 
         // Check if the sender has enough to sell
-        require(balances[msg.sender] &gt;= amount, &#39;Token balance is not enough to sold&#39;);
+        require(balances[msg.sender] >= amount, 'Token balance is not enough to sold');
         
-        require(msg.sender.balance &gt;= minBalanceForAccounts, &#39;Seller balance must be enough to pay the transaction fee&#39;);
+        require(msg.sender.balance >= minBalanceForAccounts, 'Seller balance must be enough to pay the transaction fee');
         
         // Revenue = eth that will be send to the user
         revenue = (amount.div(DECIMALSFACTOR)).mul(sellPriceEth);                                 
 
         // Keep min amount of eth in contract to provide gas for transactions
         uint256 remaining = address(this).balance.sub(revenue);
-        require(remaining &gt;= gasReserve, &#39;Remaining contract balance is not enough for reserved&#39;);
+        require(remaining >= gasReserve, 'Remaining contract balance is not enough for reserved');
 
         // Add the token amount to owner balance
         balances[owner] = balances[owner].add(amount);         
-        // Subtract the amount from seller&#39;s token balance
+        // Subtract the amount from seller's token balance
         balances[msg.sender] = balances[msg.sender].sub(amount);            
 
         // transfer eth
-        // &#39;msg.sender.transfer&#39; means the contract sends ether to &#39;msg.sender&#39;
-        // It&#39;s important to do this last to avoid recursion attacks
+        // 'msg.sender.transfer' means the contract sends ether to 'msg.sender'
+        // It's important to do this last to avoid recursion attacks
         msg.sender.transfer(revenue);
  
         // Execute an event reflecting on the change
@@ -464,10 +464,10 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
     // Allows a token holder to burn tokens. Once burned, tokens are permanently
     // removed from the total supply.
     function burn(uint256 _amount) public returns (bool success) {
-        require(_amount &gt; 0, &#39;Token amount to burn must be larger than 0&#39;);
+        require(_amount > 0, 'Token amount to burn must be larger than 0');
 
         address account = msg.sender;
-        require(_amount &lt;= balanceOf(account), &#39;You cannot burn token you dont have&#39;);
+        require(_amount <= balanceOf(account), 'You cannot burn token you dont have');
 
         balances[account] = balances[account].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
@@ -497,7 +497,7 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
         owner.transfer(eth);
     }
 
-    // Allows the owner to withdraw all fund from contract to owner&#39;s specific adress
+    // Allows the owner to withdraw all fund from contract to owner's specific adress
     function withdrawFundToAddress(address _ownerOtherAdress) public onlyOwner {
         // transfer to owner
         uint256 eth = address(this).balance; 
@@ -517,8 +517,8 @@ contract PBTTToken is FinalizableToken, PBTTTokenConfig {
 
     function() public payable { 
         if(msg.sender != owner) {
-            require(finalized == FinalizableState.Finalized, &#39;Require smart contract is finalized&#39;);
-            require(halts == HaltState.Unhalted, &#39;Require smart contract is not halted&#39;);
+            require(finalized == FinalizableState.Finalized, 'Require smart contract is finalized');
+            require(halts == HaltState.Unhalted, 'Require smart contract is not halted');
             
             buyPBTTAgainstEther(); 
         }

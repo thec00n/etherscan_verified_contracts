@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -157,7 +157,7 @@ contract AccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCLevel whenNotPaused {
         paused = true;
@@ -205,9 +205,9 @@ contract BSBase is AccessControl {
     Player[] players;
     uint256 constant commonPlayerCount = 10;
     uint256 constant totalPlayerSupplyLimit = 80000000;
-    mapping (uint256 =&gt; address) public playerIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) public playerIndexToApproved;
+    mapping (uint256 => address) public playerIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) public playerIndexToApproved;
     /// SaleClockAuction public saleAuction;
     ERC827 public joyTokenContract;
     TournamentInterface public tournamentContract;
@@ -219,7 +219,7 @@ contract BSBase is AccessControl {
         ownershipTokenCount[_to]++;
         // transfer ownership
         playerIndexToOwner[_tokenId] = _to;
-        // When creating new player _from is 0x0, but we can&#39;t account that address.
+        // When creating new player _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // clear any previously approved ownership exchange
@@ -254,7 +254,7 @@ contract BSBase is AccessControl {
         });
         uint256 newPlayerId = players.push(_player) - 1;
 
-        require(newPlayerId &lt;= totalPlayerSupplyLimit);
+        require(newPlayerId <= totalPlayerSupplyLimit);
 
         // emit the birth event
         Birth(
@@ -278,7 +278,7 @@ contract BSBase is AccessControl {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fcfdecfdd8f9e0f1f7f5e2fdf6b6fbf7">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fcfdecfdd8f9e0f1f7f5e2fdf6b6fbf7">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -306,22 +306,22 @@ contract ERC721 {
 contract BSOwnership is BSBase, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;BitSoccer Player&quot;;
-    string public constant symbol = &quot;BSP&quot;;
+    string public constant name = "BitSoccer Player";
+    string public constant symbol = "BSP";
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+        bytes4(keccak256("supportsInterface(bytes4)"));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&quot;name()&quot;)) ^
-        bytes4(keccak256(&quot;symbol()&quot;)) ^
-        bytes4(keccak256(&quot;totalSupply()&quot;)) ^
-        bytes4(keccak256(&quot;balanceOf(address)&quot;)) ^
-        bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-        bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transfer(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;tokensOfOwner(address)&quot;));
+        bytes4(keccak256("name()")) ^
+        bytes4(keccak256("symbol()")) ^
+        bytes4(keccak256("totalSupply()")) ^
+        bytes4(keccak256("balanceOf(address)")) ^
+        bytes4(keccak256("ownerOf(uint256)")) ^
+        bytes4(keccak256("approve(address,uint256)")) ^
+        bytes4(keccak256("transfer(address,uint256)")) ^
+        bytes4(keccak256("transferFrom(address,address,uint256)")) ^
+        bytes4(keccak256("tokensOfOwner(address)"));
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     ///  Returns true for any standardized interfaces implemented by this contract. We implement
@@ -329,7 +329,7 @@ contract BSOwnership is BSBase, ERC721 {
     function supportsInterface(bytes4 _interfaceID) public view returns (bool)
     {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9f40b779));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9f40b779));
 
         return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
     }
@@ -340,7 +340,7 @@ contract BSOwnership is BSBase, ERC721 {
 
     /// @dev Checks if a given address is the current owner of a particular Player.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId player id, only valid when &gt; 0
+    /// @param _tokenId player id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return playerIndexToOwner[_tokenId] == _claimant;
     }
@@ -351,7 +351,7 @@ contract BSOwnership is BSBase, ERC721 {
 
     /// @dev Checks if a given address currently has transferApproval for a particular Player.
     /// @param _claimant the address we are confirming player is approved for.
-    /// @param _tokenId player id, only valid when &gt; 0
+    /// @param _tokenId player id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return playerIndexToApproved[_tokenId] == _claimant;
     }
@@ -475,7 +475,7 @@ contract BSOwnership is BSBase, ERC721 {
 
     /// @notice Returns a list of all Player IDs assigned to an address.
     /// @param _owner The owner whose Players we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Player array looking for players belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -486,7 +486,7 @@ contract BSOwnership is BSBase, ERC721 {
         uint256 resultIndex = 0;
 
         uint256 playerId;
-        for (playerId = 1; playerId &lt;= commonPlayerCount; playerId++) {
+        for (playerId = 1; playerId <= commonPlayerCount; playerId++) {
             result[resultIndex] = playerId;
             resultIndex++;
         }
@@ -496,7 +496,7 @@ contract BSOwnership is BSBase, ERC721 {
         } else {
             uint256 totalPlayers = totalSupply();
 
-            for (; playerId &lt; totalPlayers; playerId++) {
+            for (; playerId < totalPlayers; playerId++) {
                 if (playerIndexToOwner[playerId] == _owner) {
                     result[resultIndex] = playerId;
                     resultIndex++;
@@ -530,7 +530,7 @@ contract BSMinting is BSOwnership {
     uint256 public promoCreationPlayerCount;
 
     uint256 public promoEndTime;
-    mapping (address =&gt; uint256) public userToken2PlayerCount;
+    mapping (address => uint256) public userToken2PlayerCount;
 
     event ExchangePlayer(address indexed user, uint256 count);
 
@@ -561,14 +561,14 @@ contract BSMinting is BSOwnership {
              sender = cooAddress;
         }
 
-        require(promoCreationPlayerCount &lt; promoCreationPlayerLimit);
+        require(promoCreationPlayerCount < promoCreationPlayerLimit);
         promoCreationPlayerCount++;
         _createPlayer(sender, _typeId, _attack, _defense, _stamina, _xp, _isKeeper, _skillId);
     }
 
     function token2Player(address _sender, uint256 _count) public whenNotPaused returns (bool) {
         require(msg.sender == address(joyTokenContract) || msg.sender == _sender);
-        require(_count &gt; 0);
+        require(_count > 0);
         uint256 totalTokenCount = _count.mul(exchangePlayerTokenCount);
         require(joyTokenContract.transferFrom(_sender, cfoAddress, totalTokenCount));
 
@@ -579,12 +579,12 @@ contract BSMinting is BSOwnership {
         uint256 xp;
         uint256 isKeeper;
         uint256 skillId;
-        for (uint256 i = 0; i &lt; _count; i++) {
+        for (uint256 i = 0; i < _count; i++) {
             (typeId, attack, defense, stamina, xp, isKeeper, skillId) = randomPlayer.gen();
             _createPlayer(_sender, typeId, attack, defense, stamina, xp, isKeeper, skillId);
         }
 
-        if (now &lt; promoEndTime) {
+        if (now < promoEndTime) {
             _onPromo(_sender, _count);
         }
         ExchangePlayer(_sender, _count);
@@ -598,7 +598,7 @@ contract BSMinting is BSOwnership {
         if (userCount == 0) {
             _createPlayer(_sender, 14, 88, 35, 58, 1, 0, 56);
         }
-        if (userCount &lt; 5 &amp;&amp; userCountNow &gt;= 5) {
+        if (userCount < 5 && userCountNow >= 5) {
             _createPlayer(_sender, 13, 42, 80, 81, 1, 0, 70);
         }
     }
@@ -770,9 +770,9 @@ contract BSCore is GlobalDefines, BSAuction, PlayerInterface {
     }
 
     function checkOwner(address _owner, uint32[11] _ids) public view returns (bool) {
-        for (uint256 i = 0; i &lt; _ids.length; i++) {
+        for (uint256 i = 0; i < _ids.length; i++) {
             uint256 _id = _ids[i];
-            if ((_id &lt;= 0 || _id &gt; commonPlayerCount) &amp;&amp; !_owns(_owner, _id)) {
+            if ((_id <= 0 || _id > commonPlayerCount) && !_owns(_owner, _id)) {
                 return false;
             }
         }
@@ -780,7 +780,7 @@ contract BSCore is GlobalDefines, BSAuction, PlayerInterface {
     }
 
     function queryPlayerType(uint32[11] _ids) public view returns (uint32[11] playerTypes) {
-        for (uint256 i = 0; i &lt; _ids.length; i++) {
+        for (uint256 i = 0; i < _ids.length; i++) {
             uint256 _id = _ids[i];
             Player storage player = players[_id];
             playerTypes[i] = player.typeId;
@@ -803,9 +803,9 @@ contract BSCore is GlobalDefines, BSAuction, PlayerInterface {
         returns (
         uint16[11] playerUnAwakeSkillIds
     ) {
-        for (uint256 i = 0; i &lt; _playerIds.length; i++) {
+        for (uint256 i = 0; i < _playerIds.length; i++) {
             Player storage player = players[_playerIds[i]];
-            if (player.skillId &gt; 0 &amp;&amp; player.isSkillOn == 0)
+            if (player.skillId > 0 && player.isSkillOn == 0)
             {
                 playerUnAwakeSkillIds[i] = player.skillId;
             }
@@ -815,11 +815,11 @@ contract BSCore is GlobalDefines, BSAuction, PlayerInterface {
     function tournamentResult(uint32[3][11][32] _playerAwakeSkills) public {
         require(msg.sender == address(tournamentContract));
 
-        for (uint8 i = 0; i &lt; 32; i++) {
-            for (uint8 j = 0; j &lt; 11; j++) {
+        for (uint8 i = 0; i < 32; i++) {
+            for (uint8 j = 0; j < 11; j++) {
                 uint32 _id = _playerAwakeSkills[i][j][0];
                 Player storage player = players[_id];
-                if (player.skillId &gt; 0 &amp;&amp; player.isSkillOn == 0) {
+                if (player.skillId > 0 && player.isSkillOn == 0) {
                     uint32 skillType = _playerAwakeSkills[i][j][1];
                     uint8 skillAddAttri = uint8(_playerAwakeSkills[i][j][2]);
 
@@ -838,7 +838,7 @@ contract BSCore is GlobalDefines, BSAuction, PlayerInterface {
                         player.isSkillOn = 1;
                     }
 
-                    if (skillType == TYPE_SKILL_ATTRI_GOALKEEPER &amp;&amp; player.isKeeper == 0) {
+                    if (skillType == TYPE_SKILL_ATTRI_GOALKEEPER && player.isKeeper == 0) {
                         player.isKeeper = 1;
                         player.isSkillOn = 1;
                     }

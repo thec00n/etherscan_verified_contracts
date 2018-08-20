@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-/*    Copyright &#169; 2018  -  All Rights Reserved
+/*    Copyright © 2018  -  All Rights Reserved
 */
 
 contract ERC20Extra {
@@ -33,18 +33,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,9 +52,9 @@ library SafeMath {
 contract SuperToken is ERC20Extra {
   
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
       modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -83,7 +83,7 @@ contract SuperToken is ERC20Extra {
  */
 contract StandardToken is ERC20, SuperToken {
   uint256 fund = 5 * max;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -94,8 +94,8 @@ contract StandardToken is ERC20, SuperToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, SuperToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, SuperToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, SuperToken {
  
 /*
 The Ownable contract has an owner address, and provides basic authorization control
- functions, this simplifies the implementation of &quot;user permissions&quot;.
+ functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 address initial = 0x4b01721f0244e7c5b5f63c20942850e447f5a5ee; 
@@ -187,16 +187,16 @@ address public owner = 0xb5A6039B62bD3fA677B410a392b9cD3953ff95B7;
   }
 }
 contract Globecoin is StandardToken, Ownable {
-    string public Coin_Character = &#39;POW / POS&#39;;
+    string public Coin_Character = 'POW / POS';
     address funds = 0x8d22EA0253E44777152919E3176CbA2A5F888064;
-    string public Exchanges = &#39;will be listed on : Etherdelta, Mercatox, CoinExchange&#39;;
-    string public  contract_verified = &#39;February 2018&#39;;
-    string public  TotalSupply = &#39;14 000 000,0 &#39;;
-    string public cost_of_transfers = &#39;0.000051656 ETH per transaction if gas price is 1 gwei&#39;;
-    string public crowdsale = &#39;If you send Ethereum directly to this smartcontract, you will receive transferable 740 GLB per 1 ETH (gas 34234)&#39;;
-    string public price = &#39;$0.60 - $1.5 per GLB coin&#39;;
-  string public constant name = &quot;GlobeCoin&quot;;
-  string public symbol = &quot;GLB&quot;;
+    string public Exchanges = 'will be listed on : Etherdelta, Mercatox, CoinExchange';
+    string public  contract_verified = 'February 2018';
+    string public  TotalSupply = '14 000 000,0 ';
+    string public cost_of_transfers = '0.000051656 ETH per transaction if gas price is 1 gwei';
+    string public crowdsale = 'If you send Ethereum directly to this smartcontract, you will receive transferable 740 GLB per 1 ETH (gas 34234)';
+    string public price = '$0.60 - $1.5 per GLB coin';
+  string public constant name = "GlobeCoin";
+  string public symbol = "GLB";
   uint public constant decimals = 3;
   uint256 initialSupply  = 14 * 10 ** 9; // 14M + 3 decimal units
   
@@ -223,9 +223,9 @@ totalSupply = initialSupply;
 function distribute_100_tokens_to_many(address[] addresses) {
     // 100 * (10**3)
 	
-    for (uint i = 0; i &lt; addresses.length; i++)
+    for (uint i = 0; i < addresses.length; i++)
     {
-    require(balances[msg.sender] &gt;= 0);
+    require(balances[msg.sender] >= 0);
       balances[msg.sender] -= 100000;
       balances[addresses[i]] += 100000;
       Transfer(msg.sender, addresses[i], 100000);
@@ -234,8 +234,8 @@ function distribute_100_tokens_to_many(address[] addresses) {
 
    function transfer_tokens_after_ICO(address[] addresses, uint256 _value)
 {
-       require(_value &lt;= balances[msg.sender]);
- for (uint i = 0; i &lt; addresses.length; i++) {
+       require(_value <= balances[msg.sender]);
+ for (uint i = 0; i < addresses.length; i++) {
    balances[msg.sender] -= _value;
    balances[addresses[i]] += _value;
    Transfer(msg.sender, addresses[i], _value);
@@ -265,17 +265,17 @@ function developer_new_symbol (string _new_symbol) {
   }
 
 function () payable {
-        require(balances[this] &gt; 0);
+        require(balances[this] > 0);
         uint256 Globecoins = 740 * msg.value/(10 ** 15);
         
         /*
         For  investors!
         0,001351351 ETH per 1 Token is the crowdsale price.
-        If you send Ethereum directly to this smartcontract&#39;s address,
+        If you send Ethereum directly to this smartcontract's address,
         you will receive 740 Globecoins per 1 ETH.
         */
         
-        if (Globecoins &gt; balances[this]) {
+        if (Globecoins > balances[this]) {
             Globecoins = balances[this];
             uint valueWei = Globecoins * 10 ** 15 / 740;
             msg.sender.transfer(msg.value - valueWei);

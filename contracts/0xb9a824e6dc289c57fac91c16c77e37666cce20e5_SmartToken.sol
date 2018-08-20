@@ -5,7 +5,7 @@
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
-    &quot;Software&quot;), to deal in the Software without restriction, including
+    "Software"), to deal in the Software without restriction, including
     without limitation the rights to use, copy, modify, merge, publish,
     distribute, sublicense, and/or sell copies of the Software, and to
     permit persons to whom the Software is furnished to do so, subject to
@@ -14,7 +14,7 @@
     The above copyright notice and this permission notice shall be included
     in all copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -49,9 +49,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -59,7 +59,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -68,7 +68,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -106,9 +106,9 @@ contract FixedMath {
 
         uint high = fAdd(n, DECMULT);
         uint low = 0;
-        while (fSub(high, low) &gt; 1) {
+        while (fSub(high, low) > 1) {
             uint mid = fAdd(low, high) / 2;
-            if (fSqr(mid) &lt;= n) {
+            if (fSqr(mid) <= n) {
                 low = mid;
             } else {
                 high = mid;
@@ -192,7 +192,7 @@ contract Pricer {
         uint i;
         
         /// Calculate 10 times of 0.99
-        for (i = 0; i &lt; 10; i++) {
+        for (i = 0; i < 10; i++) {
             x = x.mul(99).div(100);
         }
         tentimes = x;
@@ -201,7 +201,7 @@ contract Pricer {
         /// Calculate 100 times of 0.99 using tentimes calculated above.
         /// tentimes has 18 decimal places and due to this METDECMLT is
         /// used as divisor.
-        for (i = 0; i &lt; 10; i++) {
+        for (i = 0; i < 10; i++) {
             x = x.mul(tentimes).div(METDECMULT);
         }
         hundredtimes = x;
@@ -210,7 +210,7 @@ contract Pricer {
         /// Calculate 1000 times of 0.99 using hundredtimes calculated above.
         /// hundredtimes has 18 decimal places and due to this METDECMULT is
         /// used as divisor.
-        for (i = 0; i &lt; 10; i++) {
+        for (i = 0; i < 10; i++) {
             x = x.mul(hundredtimes).div(METDECMULT);
         }
         thousandtimes = x;
@@ -228,8 +228,8 @@ contract Pricer {
         /// If quotient of n/1000 is greater than 0 then calculate multiplier by
         /// multiplying thousandtimes and mult in a loop which runs quotient times.
         /// Also assign new value to n which is remainder of n/1000.
-        if (n / 1000 &gt; 0) {
-            for (i = 0; i &lt; n / 1000; i++) {
+        if (n / 1000 > 0) {
+            for (i = 0; i < n / 1000; i++) {
                 mult = mult.mul(thousandtimes).div(METDECMULT);
             }
             n = n % 1000;
@@ -238,8 +238,8 @@ contract Pricer {
         /// If quotient of n/100 is greater than 0 then calculate multiplier by
         /// multiplying hundredtimes and mult in a loop which runs quotient times.
         /// Also assign new value to n which is remainder of n/100.
-        if (n / 100 &gt; 0) {
-            for (i = 0; i &lt; n / 100; i++) {
+        if (n / 100 > 0) {
+            for (i = 0; i < n / 100; i++) {
                 mult = mult.mul(hundredtimes).div(METDECMULT);
             }
             n = n % 100;
@@ -248,15 +248,15 @@ contract Pricer {
         /// If quotient of n/10 is greater than 0 then calculate multiplier by
         /// multiplying tentimes and mult in a loop which runs quotient times.
         /// Also assign new value to n which is remainder of n/10.
-        if (n / 10 &gt; 0) {
-            for (i = 0; i &lt; n / 10; i++) {
+        if (n / 10 > 0) {
+            for (i = 0; i < n / 10; i++) {
                 mult = mult.mul(tentimes).div(METDECMULT);
             }
             n = n % 10;
         }
 
         /// Calculate multiplier by multiplying 0.99 and mult, repeat it n times.
-        for (i = 0; i &lt; n; i++) {
+        for (i = 0; i < n; i++) {
             mult = mult.mul(99).div(100);
         }
 
@@ -264,7 +264,7 @@ contract Pricer {
         /// Here mult is METDECMULT multiplied by 0.99 and that too _n times.
         price = initialPrice.mul(mult).div(METDECMULT);
         
-        if (price &lt; minimumPriceInDailyAuction) {
+        if (price < minimumPriceInDailyAuction) {
             price = minimumPriceInDailyAuction;
         }
     }
@@ -278,11 +278,11 @@ contract Pricer {
         /// If lastPurchasePrice is greater than decrease in price then calculated the price.
         /// Return minimumPrice, if calculated price is less than minimumPrice.
         /// If decrease in price is more than lastPurchasePrice then simply return the minimumPrice.
-        if (lastPurchasePrice &gt; MULTIPLIER.mul(numTicks)) {
+        if (lastPurchasePrice > MULTIPLIER.mul(numTicks)) {
             price = lastPurchasePrice.sub(MULTIPLIER.mul(numTicks));
         }
 
-        if (price &lt; minimumPrice) {
+        if (price < minimumPrice) {
             price = minimumPrice;
         }
     }
@@ -370,7 +370,7 @@ contract Mintable is Owned {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     uint256 internal _totalSupply;
-    mapping(address =&gt; uint256) internal _balanceOf;
+    mapping(address => uint256) internal _balanceOf;
 
     address public autonomousConverter;
     address public minter;
@@ -383,8 +383,8 @@ contract Mintable is Owned {
     /// @param _decmult Decimal places
     function initMintable(address _autonomousConverter, address _minter, uint _initialSupply, 
         uint _decmult) public onlyOwner {
-        require(autonomousConverter == 0x0 &amp;&amp; _autonomousConverter != 0x0);
-        require(minter == 0x0 &amp;&amp; _minter != 0x0);
+        require(autonomousConverter == 0x0 && _autonomousConverter != 0x0);
+        require(minter == 0x0 && _minter != 0x0);
       
         autonomousConverter = _autonomousConverter;
         minter = _minter;
@@ -437,7 +437,7 @@ contract Mintable is Owned {
 
 /// @title Token contract
 contract Token is ERC20, Mintable {
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal _allowance;
+    mapping(address => mapping(address => uint256)) internal _allowance;
 
     function initToken(address _autonomousConverter, address _minter,
      uint _initialSupply, uint _decmult) public onlyOwner {
@@ -476,13 +476,13 @@ contract Token is ERC20, Mintable {
     /// @return true/false
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) { 
         require(_to != address(0));       
-        require(_to != minter &amp;&amp; _from != minter);
-        require(_to != address(this) &amp;&amp; _from != address(this));
+        require(_to != minter && _from != minter);
+        require(_to != address(this) && _from != address(this));
         Proceeds proceeds = Auctions(minter).proceeds();
-        require(_to != address(proceeds) &amp;&amp; _from != address(proceeds));
+        require(_to != address(proceeds) && _from != address(proceeds));
         //AC can accept MET via this function, needed for MetToEth conversion
         require(_from != autonomousConverter);
-        require(_allowance[_from][msg.sender] &gt;= _value);
+        require(_allowance[_from][msg.sender] >= _value);
         
         _balanceOf[_from] = _balanceOf[_from].sub(_value);
         _balanceOf[_to] = _balanceOf[_to].add(_value);
@@ -508,9 +508,9 @@ contract Token is ERC20, Mintable {
     /// @param bits array of uint
     /// @return true/false
     function multiTransfer(uint[] bits) public returns (bool) {
-        for (uint i = 0; i &lt; bits.length; i++) {
-            address a = address(bits[i] &gt;&gt; 96);
-            uint amount = bits[i] &amp; ((1 &lt;&lt; 96) - 1);
+        for (uint i = 0; i < bits.length; i++) {
+            address a = address(bits[i] >> 96);
+            uint amount = bits[i] & ((1 << 96) - 1);
             if (!transfer(a, amount)) revert();
         }
 
@@ -557,8 +557,8 @@ contract SmartToken is Mintable {
 /// @title ERC20 token. Metronome token 
 contract METToken is Token {
 
-    string public constant name = &quot;Metronome&quot;;
-    string public constant symbol = &quot;MET&quot;;
+    string public constant name = "Metronome";
+    string public constant symbol = "MET";
     uint8 public constant decimals = 18;
 
     bool public transferAllowed;
@@ -575,7 +575,7 @@ contract METToken is Token {
     }
 
     function enableMETTransfers() public returns (bool) {
-        require(!transferAllowed &amp;&amp; Auctions(minter).isInitialAuctionEnded());
+        require(!transferAllowed && Auctions(minter).isInitialAuctionEnded());
         transferAllowed = true; 
         return true;
     }
@@ -604,7 +604,7 @@ contract METToken is Token {
         return super.multiTransfer(bits);
     }
     
-    mapping (address =&gt; bytes32) public roots;
+    mapping (address => bytes32) public roots;
 
     function setRoot(bytes32 data) public {
         roots[msg.sender] = data;
@@ -662,7 +662,7 @@ contract METToken is Token {
     event LogSubscription(address indexed subscriber, address indexed subscribesTo);
     event LogCancelSubscription(address indexed subscriber, address indexed subscribesTo);
 
-    mapping (address =&gt; mapping (address =&gt; Sub)) public subs;
+    mapping (address => mapping (address => Sub)) public subs;
 
     /// @notice subscribe for a weekly recurring payment 
     /// @param _startTime Subscription start time.
@@ -670,7 +670,7 @@ contract METToken is Token {
     /// @param _recipient address of beneficiary
     /// @return true/false
     function subscribe(uint _startTime, uint _payPerWeek, address _recipient) public returns (bool) {
-        require(_startTime &gt;= block.timestamp);
+        require(_startTime >= block.timestamp);
         require(_payPerWeek != 0);
         require(_recipient != 0);
 
@@ -723,7 +723,7 @@ contract METToken is Token {
     /// @return number of successful transfer done
     function multiSubWithdraw(address[] _owners) public returns (uint) {
         uint n = 0;
-        for (uint i=0; i &lt; _owners.length; i++) {
+        for (uint i=0; i < _owners.length; i++) {
             if (subWithdrawFor(_owners[i], msg.sender)) {
                 n++;
             } 
@@ -741,7 +741,7 @@ contract METToken is Token {
         require(_owners.length == _recipients.length);
 
         uint n = 0;
-        for (uint i = 0; i &lt; _owners.length; i++) {
+        for (uint i = 0; i < _owners.length; i++) {
             if (subWithdrawFor(_owners[i], _recipients[i])) {
                 n++;
             }
@@ -753,10 +753,10 @@ contract METToken is Token {
     function subWithdrawFor(address _from, address _to) internal returns (bool) {
         Sub storage sub = subs[_from][_to];
         
-        if (sub.startTime &gt; 0 &amp;&amp; sub.startTime &lt; block.timestamp &amp;&amp; sub.payPerWeek &gt; 0) {
+        if (sub.startTime > 0 && sub.startTime < block.timestamp && sub.payPerWeek > 0) {
             uint weekElapsed = (now.sub(sub.lastWithdrawTime)).div(7 days);
             uint amount = weekElapsed.mul(sub.payPerWeek);
-            if (weekElapsed &gt; 0 &amp;&amp; _balanceOf[_from] &gt;= amount) {
+            if (weekElapsed > 0 && _balanceOf[_from] >= amount) {
                 subs[_from][_to].lastWithdrawTime = block.timestamp;
                 _balanceOf[_from] = _balanceOf[_from].sub(amount);
                 _balanceOf[_to] = _balanceOf[_to].add(amount);
@@ -769,7 +769,7 @@ contract METToken is Token {
 }
 
 
-/// @title Autonomous Converter contract for MET &lt;=&gt; ETH exchange
+/// @title Autonomous Converter contract for MET <=> ETH exchange
 contract AutonomousConverter is Formula, Owned {
 
     SmartToken public smartToken;
@@ -875,10 +875,10 @@ contract AutonomousConverter is Formula, Owned {
     }
 
     function mint(WhichToken which, uint _depositAmount, uint _minReturn) internal returns (uint256 amount) {
-        require(_minReturn &gt; 0);
+        require(_minReturn > 0);
 
         amount = mintingReturn(which, _depositAmount);
-        require(amount &gt;= _minReturn);
+        require(amount >= _minReturn);
         require(smartToken.mint(msg.sender, amount));
     }
 
@@ -889,17 +889,17 @@ contract AutonomousConverter is Formula, Owned {
     }
 
     function redeem(WhichToken which, uint _amount, uint _minReturn) internal returns (uint redeemable) {
-        require(_amount &lt;= smartToken.balanceOf(msg.sender));
-        require(_minReturn &gt; 0);
+        require(_amount <= smartToken.balanceOf(msg.sender));
+        require(_minReturn > 0);
 
         redeemable = redemptionReturn(which, _amount);
-        require(redeemable &gt;= _minReturn);
+        require(redeemable >= _minReturn);
 
         uint256 reserveBalance = balanceOf(which);
-        require(reserveBalance &gt;= redeemable);
+        require(reserveBalance >= redeemable);
 
         uint256 tokenSupply = smartToken.totalSupply();
-        require(_amount &lt; tokenSupply);
+        require(_amount < tokenSupply);
 
         smartToken.destroy(msg.sender, _amount);
         if (which == WhichToken.Eth) {
@@ -931,8 +931,8 @@ contract Proceeds is Owned {
     uint latestAuctionClosed;
 
     function initProceeds(address _autonomousConverter, address _auctions) public onlyOwner {
-        require(address(auctions) == 0x0 &amp;&amp; _auctions != 0x0);
-        require(address(autonomousConverter) == 0x0 &amp;&amp; _autonomousConverter != 0x0);
+        require(address(auctions) == 0x0 && _auctions != 0x0);
+        require(address(autonomousConverter) == 0x0 && _autonomousConverter != 0x0);
 
         autonomousConverter = AutonomousConverter(_autonomousConverter);
         auctions = Auctions(_auctions);
@@ -948,8 +948,8 @@ contract Proceeds is Owned {
         uint lastPurchaseTick = auctions.lastPurchaseTick();
         uint currentAuction = auctions.currentAuction();
         uint val = ((address(this).balance).mul(25)).div(10000); 
-        if (val &gt; 0 &amp;&amp; (currentAuction &gt; auctions.whichAuction(lastPurchaseTick)) 
-            &amp;&amp; (latestAuctionClosed &lt; currentAuction)) {
+        if (val > 0 && (currentAuction > auctions.whichAuction(lastPurchaseTick)) 
+            && (latestAuctionClosed < currentAuction)) {
             latestAuctionClosed = currentAuction;
             autonomousConverter.handleFund.value(val)();
             emit LogClosedAuction(msg.sender, val);
@@ -965,7 +965,7 @@ contract Auctions is Pricer, Owned {
     METToken public token;
     Proceeds public proceeds;
     address[] public founders;
-    mapping(address =&gt; TokenLocker) public tokenLockers;
+    mapping(address => TokenLocker) public tokenLockers;
     uint internal constant DAY_IN_SECONDS = 86400;
     uint internal constant DAY_IN_MINUTES = 1440;
     uint public genesisTime;
@@ -983,13 +983,13 @@ contract Auctions is Pricer, Owned {
     uint public initialAuctionEndTime;
     uint public dailyAuctionStartTime;
     uint public constant DAILY_PURCHASE_LIMIT = 1000 ether;
-    mapping (address =&gt; uint) internal purchaseInTheAuction;
-    mapping (address =&gt; uint) internal lastPurchaseAuction;
+    mapping (address => uint) internal purchaseInTheAuction;
+    mapping (address => uint) internal lastPurchaseAuction;
     bool public minted;
     bool public initialized;
     uint public globalSupplyAfterPercentageLogic = 52598080 * METDECMULT;
     uint public constant AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS = 14791;
-    bytes8 public chain = &quot;ETH&quot;;
+    bytes8 public chain = "ETH";
     event LogAuctionFundsIn(address indexed sender, uint amount, uint tokens, uint purchasePrice, uint refund);
 
     function Auctions() public {
@@ -998,28 +998,28 @@ contract Auctions is Pricer, Owned {
 
     /// @notice Payable function to buy MET in descending price auction
     function () public payable running {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         uint amountForPurchase = msg.value;
         uint excessAmount;
 
-        if (currentAuction() &gt; whichAuction(lastPurchaseTick)) {
+        if (currentAuction() > whichAuction(lastPurchaseTick)) {
             proceeds.closeAuction();
             restartAuction();
         }
 
         if (isInitialAuctionEnded()) {
-            require(now &gt;= dailyAuctionStartTime);
-            if (lastPurchaseAuction[msg.sender] &lt; currentAuction()) {
-                if (amountForPurchase &gt; DAILY_PURCHASE_LIMIT) {
+            require(now >= dailyAuctionStartTime);
+            if (lastPurchaseAuction[msg.sender] < currentAuction()) {
+                if (amountForPurchase > DAILY_PURCHASE_LIMIT) {
                     excessAmount = amountForPurchase.sub(DAILY_PURCHASE_LIMIT);
                     amountForPurchase = DAILY_PURCHASE_LIMIT;
                 }           
                 purchaseInTheAuction[msg.sender] = msg.value;
                 lastPurchaseAuction[msg.sender] = currentAuction();
             } else {
-                require(purchaseInTheAuction[msg.sender] &lt; DAILY_PURCHASE_LIMIT);
-                if (purchaseInTheAuction[msg.sender].add(amountForPurchase) &gt; DAILY_PURCHASE_LIMIT) {
+                require(purchaseInTheAuction[msg.sender] < DAILY_PURCHASE_LIMIT);
+                if (purchaseInTheAuction[msg.sender].add(amountForPurchase) > DAILY_PURCHASE_LIMIT) {
                     excessAmount = (purchaseInTheAuction[msg.sender].add(amountForPurchase)).sub(DAILY_PURCHASE_LIMIT);
                     amountForPurchase = amountForPurchase.sub(excessAmount);
                 }
@@ -1033,9 +1033,9 @@ contract Auctions is Pricer, Owned {
         uint tokens;
         uint refund;
         (weiPerToken, tokens, refund) = calcPurchase(amountForPurchase, _currentTick);
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
-        if (now &lt; initialAuctionEndTime &amp;&amp; (token.totalSupply()).add(tokens) &gt;= INITIAL_SUPPLY) {
+        if (now < initialAuctionEndTime && (token.totalSupply()).add(tokens) >= INITIAL_SUPPLY) {
             initialAuctionEndTime = now;
             dailyAuctionStartTime = ((initialAuctionEndTime / 1 days) + 1) * 1 days;
         }
@@ -1043,10 +1043,10 @@ contract Auctions is Pricer, Owned {
         lastPurchaseTick = _currentTick;
         lastPurchasePrice = weiPerToken;
 
-        assert(tokens &lt;= mintable);
+        assert(tokens <= mintable);
         mintable = mintable.sub(tokens);
 
-        assert(refund &lt;= amountForPurchase);
+        assert(refund <= amountForPurchase);
         uint ethForProceeds = amountForPurchase.sub(refund);
 
         proceeds.handleFund.value(ethForProceeds)();
@@ -1054,8 +1054,8 @@ contract Auctions is Pricer, Owned {
         require(token.mint(msg.sender, tokens));
 
         refund = refund.add(excessAmount);
-        if (refund &gt; 0) {
-            if (purchaseInTheAuction[msg.sender] &gt; 0) {
+        if (refund > 0) {
+            if (purchaseInTheAuction[msg.sender] > 0) {
                 purchaseInTheAuction[msg.sender] = purchaseInTheAuction[msg.sender].sub(refund);
             }
             msg.sender.transfer(refund);
@@ -1069,7 +1069,7 @@ contract Auctions is Pricer, Owned {
     }
 
     function isRunning() public constant returns (bool) {
-        return (block.timestamp &gt;= genesisTime &amp;&amp; genesisTime &gt; 0);
+        return (block.timestamp >= genesisTime && genesisTime > 0);
     }
 
     /// @notice current tick(minute) of the metronome clock
@@ -1088,7 +1088,7 @@ contract Auctions is Pricer, Owned {
     /// @param t timestamp
     /// @return tick count
     function whichTick(uint t) public view returns(uint) {
-        if (genesisTime &gt; t) { 
+        if (genesisTime > t) { 
             revert(); 
         }
         return (t - genesisTime) * timeScale / 1 minutes;
@@ -1098,7 +1098,7 @@ contract Auctions is Pricer, Owned {
     /// @param t timestamp
     /// @return Auction count
     function whichAuction(uint t) public view returns(uint) {
-        if (whichTick(dailyAuctionStartTime) &gt; t) {
+        if (whichTick(dailyAuctionStartTime) > t) {
             return 0;
         } else {
             return ((t - whichTick(dailyAuctionStartTime)) / DAY_IN_MINUTES) + 1;
@@ -1143,7 +1143,7 @@ contract Auctions is Pricer, Owned {
         _lastPurchasePrice = lastPurchasePrice;
     }
 
-    /// @notice Skip Initialization and minting if we&#39;re not the OG Metronome
+    /// @notice Skip Initialization and minting if we're not the OG Metronome
     /// @param _token MET token contract address
     /// @param _proceeds Address of Proceeds contract
     /// @param _genesisTime The block.timestamp when first auction started on OG chain
@@ -1158,8 +1158,8 @@ contract Auctions is Pricer, Owned {
         require(!minted);
         require(!initialized);
         require(_timeScale != 0);
-        require(address(token) == 0x0 &amp;&amp; _token != 0x0);
-        require(address(proceeds) == 0x0 &amp;&amp; _proceeds != 0x0);
+        require(address(token) == 0x0 && _token != 0x0);
+        require(address(proceeds) == 0x0 && _proceeds != 0x0);
         initPricer();
 
         // minting substitute section
@@ -1184,13 +1184,13 @@ contract Auctions is Pricer, Owned {
 
         lastPurchaseTick = 0;
 
-        if (_minimumPrice &gt; 0) {
+        if (_minimumPrice > 0) {
             minimumPrice = _minimumPrice;
         }
 
         timeScale = _timeScale;
 
-        if (_startingPrice &gt; 0) {
+        if (_startingPrice > 0) {
             lastPurchasePrice = _startingPrice * 1 ether;
         } else {
             lastPurchasePrice = 2 ether;
@@ -1213,7 +1213,7 @@ contract Auctions is Pricer, Owned {
         require(!initialized);
         require(_timeScale != 0);
         initPricer();
-        if (_startTime &gt; 0) { 
+        if (_startTime > 0) { 
             genesisTime = (_startTime / (1 minutes)) * (1 minutes) + 60;
         } else {
             genesisTime = block.timestamp + 60 - (block.timestamp % 60);
@@ -1231,19 +1231,19 @@ contract Auctions is Pricer, Owned {
 
         lastPurchaseTick = 0;
 
-        if (_minimumPrice &gt; 0) {
+        if (_minimumPrice > 0) {
             minimumPrice = _minimumPrice;
         }
 
         timeScale = _timeScale;
 
-        if (_startingPrice &gt; 0) {
+        if (_startingPrice > 0) {
             lastPurchasePrice = _startingPrice * 1 ether;
         } else {
             lastPurchasePrice = 2 ether;
         }
 
-        for (uint i = 0; i &lt; founders.length; i++) {
+        for (uint i = 0; i < founders.length; i++) {
             TokenLocker tokenLocker = tokenLockers[founders[i]];
             tokenLocker.lockTokenLocker();
         }
@@ -1270,8 +1270,8 @@ contract Auctions is Pricer, Owned {
     {
         require(!minted);
         require(_founders.length != 0);
-        require(address(token) == 0x0 &amp;&amp; _token != 0x0);
-        require(address(proceeds) == 0x0 &amp;&amp; _proceeds != 0x0);
+        require(address(token) == 0x0 && _token != 0x0);
+        require(address(proceeds) == 0x0 && _proceeds != 0x0);
         require(_autonomousConverter != 0x0);
 
         token = METToken(_token);
@@ -1279,11 +1279,11 @@ contract Auctions is Pricer, Owned {
 
         // _founders will be minted into individual token lockers
         uint foundersTotal;
-        for (uint i = 0; i &lt; _founders.length; i++) {
-            address addr = address(_founders[i] &gt;&gt; 96);
+        for (uint i = 0; i < _founders.length; i++) {
+            address addr = address(_founders[i] >> 96);
             require(addr != 0x0);
-            uint amount = _founders[i] &amp; ((1 &lt;&lt; 96) - 1);
-            require(amount &gt; 0);
+            uint amount = _founders[i] & ((1 << 96) - 1);
+            require(amount > 0);
             TokenLocker tokenLocker = tokenLockers[addr];
             require(token.mint(address(tokenLocker), amount));
             tokenLocker.deposit(addr, amount);
@@ -1302,7 +1302,7 @@ contract Auctions is Pricer, Owned {
 
     /// @notice Suspend auction if not started yet
     function stopEverything() public onlyOwner {
-        if (genesisTime &lt; block.timestamp) {
+        if (genesisTime < block.timestamp) {
             revert(); 
         }
         genesisTime = genesisTime + 1000 years;
@@ -1312,15 +1312,15 @@ contract Auctions is Pricer, Owned {
 
     /// @notice Return information about initial auction status.
     function isInitialAuctionEnded() public view returns (bool) {
-        return (initialAuctionEndTime != 0 &amp;&amp; 
-            (now &gt;= initialAuctionEndTime || token.totalSupply() &gt;= INITIAL_SUPPLY));
+        return (initialAuctionEndTime != 0 && 
+            (now >= initialAuctionEndTime || token.totalSupply() >= INITIAL_SUPPLY));
     }
 
     /// @notice Global MET supply
     function globalMetSupply() public view returns (uint) {
 
         uint currAuc = currentAuction();
-        if (currAuc &gt; AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
+        if (currAuc > AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
             return globalSupplyAfterPercentageLogic;
         } else {
             return INITIAL_SUPPLY.add(INITIAL_GLOBAL_DAILY_SUPPLY.mul(currAuc));
@@ -1333,15 +1333,15 @@ contract Auctions is Pricer, Owned {
         uint dailySupply = INITIAL_GLOBAL_DAILY_SUPPLY;
         uint thisAuction = currentAuction();
 
-        if (thisAuction &gt; AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
+        if (thisAuction > AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
             uint lastAuctionPurchase = whichAuction(lastPurchaseTick);
             uint recentAuction = AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS + 1;
-            if (lastAuctionPurchase &gt; recentAuction) {
+            if (lastAuctionPurchase > recentAuction) {
                 recentAuction = lastAuctionPurchase;
             }
 
             uint totalAuctions = thisAuction - recentAuction;
-            if (totalAuctions &gt; 1) {
+            if (totalAuctions > 1) {
                 // derived formula to find close to accurate daily supply when some auction missed. 
                 uint factor = 36525 + ((totalAuctions - 1) * 2);
                 dailySupply = (globalSupplyAfterPercentageLogic.mul(2).mul(factor)).div(36525 ** 2);
@@ -1350,7 +1350,7 @@ contract Auctions is Pricer, Owned {
                 dailySupply = globalSupplyAfterPercentageLogic.mul(2).div(36525);
             }
 
-            if (dailySupply &lt; INITIAL_GLOBAL_DAILY_SUPPLY) {
+            if (dailySupply < INITIAL_GLOBAL_DAILY_SUPPLY) {
                 dailySupply = INITIAL_GLOBAL_DAILY_SUPPLY; 
             }
         }
@@ -1381,7 +1381,7 @@ contract Auctions is Pricer, Owned {
         uint currMintable = mintable;
         uint currAuction = currentAuction();
         uint totalAuctions = currAuction.sub(whichAuction(lastPurchaseTick));
-        if (totalAuctions &gt; 0) {
+        if (totalAuctions > 0) {
             currMintable = mintable.add(nextAuctionSupply(totalAuctions));
         }
         return currMintable;
@@ -1391,7 +1391,7 @@ contract Auctions is Pricer, Owned {
     function prepareAuctionForNonOGChain() public {
         require(msg.sender == address(token.tokenPorter()) || msg.sender == address(token));
         require(token.totalSupply() == 0);
-        require(chain != &quot;ETH&quot;);
+        require(chain != "ETH");
         lastPurchaseTick = currentTick();
     }
 
@@ -1407,7 +1407,7 @@ contract Auctions is Pricer, Owned {
         weiPerToken = calcPriceAt(whichTick(_timestamp));
         uint calctokens = METDECMULT.mul(_wei).div(weiPerToken);
         tokens = calctokens;
-        if (calctokens &gt; mintable) {
+        if (calctokens > mintable) {
             tokens = mintable;
             uint weiPaying = mintable.mul(weiPerToken).div(METDECMULT);
             refund = _wei.sub(weiPaying);
@@ -1419,7 +1419,7 @@ contract Auctions is Pricer, Owned {
     /// @return _startPrice Start price of MET in next auction
     /// @return _auctionTokens  MET supply in next auction
     function nextAuction() internal constant returns(uint _startTime, uint _startPrice, uint _auctionTokens) {
-        if (block.timestamp &lt; genesisTime) {
+        if (block.timestamp < genesisTime) {
             _startTime = genesisTime;
             _startPrice = lastPurchasePrice;
             _auctionTokens = mintable;
@@ -1430,13 +1430,13 @@ contract Auctions is Pricer, Owned {
         uint currAuc = currentAuction();
         uint totalAuctions = currAuc - recentAuction;
         _startTime = dailyAuctionStartTime;
-        if (currAuc &gt; 1) {
+        if (currAuc > 1) {
             _startTime = auctionStartTime(currentTick());
         }
 
         _auctionTokens = nextAuctionSupply(totalAuctions);
 
-        if (totalAuctions &gt; 1) {
+        if (totalAuctions > 1) {
             _startPrice = lastPurchasePrice / 100 + 1;
         } else {
             if (mintable == 0 || totalAuctions == 0) {
@@ -1451,7 +1451,7 @@ contract Auctions is Pricer, Owned {
                     // Descending price till end of auction and then multiply by 2
                     uint tickWhenAuctionEnded = whichTick(_startTime);
                     uint numTick = 0;
-                    if (tickWhenAuctionEnded &gt; lastPurchaseTick) {
+                    if (tickWhenAuctionEnded > lastPurchaseTick) {
                         numTick = tickWhenAuctionEnded - lastPurchaseTick;
                     }
                     _startPrice = priceAt(lastPurchasePrice, numTick) * 2;
@@ -1470,7 +1470,7 @@ contract Auctions is Pricer, Owned {
     /// @return refund Wei refund the purchaser will get if amount is excess and MET supply is less
     function calcPurchase(uint _wei, uint _t) internal view returns (uint weiPerToken, uint tokens, uint refund)
     {
-        require(_t &gt;= lastPurchaseTick);
+        require(_t >= lastPurchaseTick);
         uint numTicks = _t - lastPurchaseTick;
         if (isInitialAuctionEnded()) {
             weiPerToken = priceAt(lastPurchasePrice, numTicks);
@@ -1480,7 +1480,7 @@ contract Auctions is Pricer, Owned {
 
         uint calctokens = METDECMULT.mul(_wei).div(weiPerToken);
         tokens = calctokens;
-        if (calctokens &gt; mintable) {
+        if (calctokens > mintable) {
             tokens = mintable;
             uint ethPaying = mintable.mul(weiPerToken).div(METDECMULT);
             refund = _wei.sub(ethPaying);
@@ -1494,15 +1494,15 @@ contract Auctions is Pricer, Owned {
         uint tokensHere = token.totalSupply().add(mintable);
         supply = INITIAL_GLOBAL_DAILY_SUPPLY;
         uint dailySupplyAtLastPurchase;
-        if (thisAuction &gt; AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
+        if (thisAuction > AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
             supply = globalDailySupply();
-            if (totalAuctionMissed &gt; 1) {
+            if (totalAuctionMissed > 1) {
                 dailySupplyAtLastPurchase = globalSupplyAfterPercentageLogic.mul(2).div(36525);
                 supply = dailySupplyAtLastPurchase.add(supply).mul(totalAuctionMissed).div(2);
             } 
             supply = (supply.mul(tokensHere)).div(globalSupplyAfterPercentageLogic);
         } else {
-            if (totalAuctionMissed &gt; 1) {
+            if (totalAuctionMissed > 1) {
                 supply = supply.mul(totalAuctionMissed);
             }
             uint previousGlobalMetSupply = 
@@ -1523,12 +1523,12 @@ contract Auctions is Pricer, Owned {
         uint numTicks = 0;
 
         // Auction is sold out and metronome clock is in same auction
-        if (mintable == 0 &amp;&amp; totalAuctions == 0) {
+        if (mintable == 0 && totalAuctions == 0) {
             return lastPurchasePrice;
         }
 
         // Metronome has missed one auction ie no purchase in last auction
-        if (totalAuctions &gt; 1) {
+        if (totalAuctions > 1) {
             prevPrice = lastPurchasePrice / 100 + 1;
             numTicks = numTicksSinceAuctionStart(_tick);
         } else if (totalAuctions == 1) {
@@ -1552,7 +1552,7 @@ contract Auctions is Pricer, Owned {
             numTicks = _tick - lastPurchaseTick;
         }
 
-        require(numTicks &gt;= 0);
+        require(numTicks >= 0);
 
         if (isInitialAuctionEnded()) {
             weiPerToken = priceAt(prevPrice, numTicks);
@@ -1582,7 +1582,7 @@ contract Auctions is Pricer, Owned {
         return ((whichAuction(_tick)) * 1 days) / timeScale + dailyAuctionStartTime - 1 days;
     }
 
-    /// @notice start the next day&#39;s auction
+    /// @notice start the next day's auction
     function restartAuction() private {
         uint time;
         uint price;
@@ -1590,7 +1590,7 @@ contract Auctions is Pricer, Owned {
         (time, price, auctionTokens) = nextAuction();
 
         uint thisAuction = currentAuction();
-        if (thisAuction &gt; AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
+        if (thisAuction > AUCTION_WHEN_PERCENTAGE_LOGIC_STARTS) {
             globalSupplyAfterPercentageLogic = globalSupplyAfterPercentageLogic.add(globalDailySupply());
         }
 
@@ -1601,7 +1601,7 @@ contract Auctions is Pricer, Owned {
 }
 
 
-/// @title This contract serves as a locker for a founder&#39;s tokens
+/// @title This contract serves as a locker for a founder's tokens
 contract TokenLocker is Ownable {
     using SafeMath for uint;
     uint internal constant QUARTER = 91 days + 450 minutes;
@@ -1646,7 +1646,7 @@ contract TokenLocker is Ownable {
     /// locking of deposited tokens and further deposit of tokens will not be allowed.
     function lockTokenLocker() public onlyAuction {
         require(auctions.initialAuctionEndTime() != 0);
-        require(auctions.initialAuctionEndTime() &gt;= auctions.genesisTime()); 
+        require(auctions.initialAuctionEndTime() >= auctions.genesisTime()); 
         locked = true;
     }
 
@@ -1655,7 +1655,7 @@ contract TokenLocker is Ownable {
     /// @param amount Amount of tokens being locked
     function deposit (address beneficiary, uint amount ) public onlyAuction preLock {
         uint totalBalance = token.balanceOf(this);
-        require(totalBalance.sub(deposited) &gt;= amount);
+        require(totalBalance.sub(deposited) >= amount);
         deposited = deposited.add(amount);
         emit Deposited(beneficiary, amount);
     }
@@ -1664,10 +1664,10 @@ contract TokenLocker is Ownable {
     /// 25% of total deposited tokens can be withdrawn after initial auction end.
     /// Remaining 75% can be withdrawn in equal amount over 12 quarters.
     function withdraw() public onlyOwner postLock {
-        require(deposited &gt; 0);
+        require(deposited > 0);
         uint withdrawable = 0; 
         uint withdrawTime = auctions.initialAuctionEndTime();
-        if (lastWithdrawTime == 0 &amp;&amp; auctions.isInitialAuctionEnded()) {
+        if (lastWithdrawTime == 0 && auctions.isInitialAuctionEnded()) {
             withdrawable = withdrawable.add((deposited.mul(25)).div(100));
             quarterlyWithdrawable = (deposited.sub(withdrawable)).div(12);
             lastWithdrawTime = withdrawTime;
@@ -1675,22 +1675,22 @@ contract TokenLocker is Ownable {
 
         require(lastWithdrawTime != 0);
 
-        if (now &gt;= lastWithdrawTime.add(QUARTER)) {
+        if (now >= lastWithdrawTime.add(QUARTER)) {
             uint daysSinceLastWithdraw = now.sub(lastWithdrawTime);
             uint totalQuarters = daysSinceLastWithdraw.div(QUARTER);
 
-            require(totalQuarters &gt; 0);
+            require(totalQuarters > 0);
         
             withdrawable = withdrawable.add(quarterlyWithdrawable.mul(totalQuarters));
 
-            if (now &gt;= withdrawTime.add(QUARTER.mul(12))) {
+            if (now >= withdrawTime.add(QUARTER.mul(12))) {
                 withdrawable = deposited;
             }
 
             lastWithdrawTime = lastWithdrawTime.add(totalQuarters.mul(QUARTER));
         }
 
-        if (withdrawable &gt; 0) {
+        if (withdrawable > 0) {
             deposited = deposited.sub(withdrawable);
             token.transfer(msg.sender, withdrawable);
             emit Withdrawn(msg.sender, withdrawable);
@@ -1737,7 +1737,7 @@ contract TokenPorter is ITokenPorter, Owned {
     uint[] public supplyOnAllChains = new uint[](6);
 
     /// @notice mapping that tracks valid destination chains for export
-    mapping(bytes8 =&gt; address) public destinationChains;
+    mapping(bytes8 => address) public destinationChains;
 
     /// @notice Initialize TokenPorter contract.
     /// @param _tokenAddr Address of metToken contract
@@ -1771,7 +1771,7 @@ contract TokenPorter is ITokenPorter, Owned {
     function addDestinationChain(bytes8 _chainName, address _contractAddress) 
         public onlyOwner returns (bool) 
     {
-        require(_chainName != 0 &amp;&amp; _contractAddress != address(0));
+        require(_chainName != 0 && _contractAddress != address(0));
         destinationChains[_chainName] = _contractAddress;
         return true;
     }
@@ -1788,20 +1788,20 @@ contract TokenPorter is ITokenPorter, Owned {
     /// @notice holds claims from users that have exported on-chain
     /// @param key is address of destination MET token contract
     /// @param subKey is address of users account that burned their original MET token
-    mapping (address  =&gt; mapping(address =&gt; uint)) public claimables;
+    mapping (address  => mapping(address => uint)) public claimables;
 
     /// @notice destination MET token contract calls claimReceivables to record burned 
     /// tokens have been minted in new chain
     /// @param recipients array of addresses of each user that has exported from
     /// original chain.  These can be generated by ExportReceiptLog
     function claimReceivables(address[] recipients) public returns (uint) {
-        require(recipients.length &gt; 0);
+        require(recipients.length > 0);
 
         uint total;
-        for (uint i = 0; i &lt; recipients.length; i++) {
+        for (uint i = 0; i < recipients.length; i++) {
             address recipient = recipients[i];
             uint amountBurned = claimables[msg.sender][recipient];
-            if (amountBurned &gt; 0) {
+            if (amountBurned > 0) {
                 claimables[msg.sender][recipient] = 0;
                 emit ExportOnChainClaimedReceiptLog(msg.sender, recipient, amountBurned);
                 total = total.add(1);
@@ -1836,7 +1836,7 @@ contract TokenPorter is ITokenPorter, Owned {
 
         require(_destinationChain == auctions.chain());
         uint amountToImport = _importData[1].add(_importData[2]);
-        require(amountToImport.add(token.totalSupply()) &lt;= auctions.globalMetSupply());
+        require(amountToImport.add(token.totalSupply()) <= auctions.globalMetSupply());
 
         require(_addresses[0] == address(token));
 
@@ -1844,7 +1844,7 @@ contract TokenPorter is ITokenPorter, Owned {
             return false;
         }
 
-        if (importSequence == 1 &amp;&amp; token.totalSupply() == 0) {
+        if (importSequence == 1 && token.totalSupply() == 0) {
             auctions.prepareAuctionForNonOGChain();
         }
         
@@ -1870,10 +1870,10 @@ contract TokenPorter is ITokenPorter, Owned {
     {
         require(msg.sender == address(token));
 
-        require(_destChain != 0x0 &amp;&amp; _destMetronomeAddr != 0x0 &amp;&amp; _destRecipAddr != 0x0 &amp;&amp; _amount != 0);
+        require(_destChain != 0x0 && _destMetronomeAddr != 0x0 && _destRecipAddr != 0x0 && _amount != 0);
         require(destinationChains[_destChain] == _destMetronomeAddr);
         
-        require(token.balanceOf(tokenOwner) &gt;= _amount.add(_fee));
+        require(token.balanceOf(tokenOwner) >= _amount.add(_fee));
 
         token.destroy(tokenOwner, _amount.add(_fee));
 
@@ -1922,8 +1922,8 @@ contract TokenPorter is ITokenPorter, Owned {
 contract ChainLedger is Owned {
 
     using SafeMath for uint;
-    mapping (bytes8 =&gt; uint) public balance;
-    mapping (bytes8 =&gt; bool) public validChain;
+    mapping (bytes8 => uint) public balance;
+    mapping (bytes8 => bool) public validChain;
     bytes8[] public chains;
 
     address public tokenPorter;
@@ -1953,8 +1953,8 @@ contract ChainLedger is Owned {
 
     function registerExport(bytes8 originChain, bytes8 destChain, uint amount) public {
         require(msg.sender == tokenPorter || msg.sender == owner);
-        require(validChain[originChain] &amp;&amp; validChain[destChain]);
-        require(balance[originChain] &gt;= amount);
+        require(validChain[originChain] && validChain[destChain]);
+        require(balance[originChain] >= amount);
 
         balance[originChain] = balance[originChain].sub(amount);
         balance[destChain] = balance[destChain].add(amount);
@@ -1963,7 +1963,7 @@ contract ChainLedger is Owned {
 
     function registerImport(bytes8 originChain, bytes8 destChain, uint amount) public {
         require(msg.sender == tokenPorter || msg.sender == owner);
-        require(validChain[originChain] &amp;&amp; validChain[destChain]);
+        require(validChain[originChain] && validChain[destChain]);
 
         balance[originChain] = balance[originChain].sub(amount);
         balance[destChain] = balance[destChain].add(amount);
@@ -1974,14 +1974,14 @@ contract ChainLedger is Owned {
 
 contract Validator is Owned {
 
-    mapping (bytes32 =&gt; mapping (address =&gt; bool)) public hashAttestations;
-    mapping (address =&gt; bool) public isValidator;
-    mapping (address =&gt; uint8) public validatorNum;
+    mapping (bytes32 => mapping (address => bool)) public hashAttestations;
+    mapping (address => bool) public isValidator;
+    mapping (address => uint8) public validatorNum;
     address[] public validators;
     address public metToken;
     address public tokenPorter;
 
-    mapping (bytes32 =&gt; bool) public hashClaimed;
+    mapping (bytes32 => bool) public hashClaimed;
 
     uint8 public threshold = 2;
 
@@ -1992,7 +1992,7 @@ contract Validator is Owned {
     /// @param _validator3 third validator
     function initValidator(address _validator1, address _validator2, address _validator3) public onlyOwner {
         // Clear old validators. Validators can be updated multiple times
-        for (uint8 i = 0; i &lt; validators.length; i++) {
+        for (uint8 i = 0; i < validators.length; i++) {
             delete isValidator[validators[i]];
             delete validatorNum[validators[i]];
         }
@@ -2038,11 +2038,11 @@ contract Validator is Owned {
 
         uint8 count = 0;
 
-        for (uint8 i = 0; i &lt; validators.length; i++) {
+        for (uint8 i = 0; i < validators.length; i++) {
             if (hashAttestations[hash][validators[i]]) { count++;} 
         }
 
-        if (count &gt;= threshold) { return true; }
+        if (count >= threshold) { return true; }
         return false;
     }
 

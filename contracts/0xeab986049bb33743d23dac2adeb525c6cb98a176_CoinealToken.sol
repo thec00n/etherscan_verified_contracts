@@ -11,20 +11,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0);
+    require(b > 0);
     uint256 c = a / b;
     require(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c&gt;=a &amp;&amp; c&gt;=b);
+    require(c>=a && c>=b);
     return c;
   }
 }
@@ -36,9 +36,9 @@ contract CoinealToken is SafeMath{
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public freezeOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public freezeOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 	
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -57,8 +57,8 @@ contract CoinealToken is SafeMath{
     function CoinealToken() public {
 		totalSupply = 10*10**27; // Update total supply
         balanceOf[msg.sender] = totalSupply;              // Give the creator all initial tokens
-        name = &quot;Coineal&quot;;                                   // Set the name for display purposes
-        symbol = &quot;NEAL&quot;;                               // Set the symbol for display purposes
+        name = "Coineal";                                   // Set the name for display purposes
+        symbol = "NEAL";                               // Set the symbol for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
     }
 
@@ -70,9 +70,9 @@ contract CoinealToken is SafeMath{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -94,7 +94,7 @@ contract CoinealToken is SafeMath{
     /* Allow another contract to spend some tokens in your behalf */
     function approve(address _spender, uint256 _value) public
         returns (bool success) {
-		require(_value&gt;0);
+		require(_value>0);
         allowance[msg.sender][_spender] = _value;
         return true;
     }
@@ -102,7 +102,7 @@ contract CoinealToken is SafeMath{
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-		require(_value &lt;= allowance[_from][msg.sender]);  // Check allowance 
+		require(_value <= allowance[_from][msg.sender]);  // Check allowance 
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender], _value);
 		_transfer(_from, _to, _value);
         Transfer(_from, _to, _value);
@@ -110,8 +110,8 @@ contract CoinealToken is SafeMath{
     }
 
     function burn(uint256 _value) public returns (bool success) {
-		require(balanceOf[msg.sender] &gt;= _value);
-		require(_value &gt; 0);
+		require(balanceOf[msg.sender] >= _value);
+		require(_value > 0);
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);                      // Subtract from the sender
         totalSupply = SafeMath.safeSub(totalSupply,_value);                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -119,8 +119,8 @@ contract CoinealToken is SafeMath{
     }
 	
 	function freeze(uint256 _value) public returns (bool success) {
-		require(balanceOf[msg.sender] &gt;= _value);
-		require(_value &gt; 0);
+		require(balanceOf[msg.sender] >= _value);
+		require(_value > 0);
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);                      // Subtract from the sender
         freezeOf[msg.sender] = SafeMath.safeAdd(freezeOf[msg.sender], _value);                                // Updates totalSupply
         Freeze(msg.sender, _value);
@@ -128,8 +128,8 @@ contract CoinealToken is SafeMath{
     }
 	
 	function unfreeze(uint256 _value) public returns (bool success){
-		require(freezeOf[msg.sender] &gt;= _value); // Check if the sender has enough
-		require(_value &gt; 0);
+		require(freezeOf[msg.sender] >= _value); // Check if the sender has enough
+		require(_value > 0);
         freezeOf[msg.sender] = SafeMath.safeSub(freezeOf[msg.sender], _value);                      // Subtract from the sender
 		balanceOf[msg.sender] = SafeMath.safeAdd(balanceOf[msg.sender], _value);
         Unfreeze(msg.sender, _value);

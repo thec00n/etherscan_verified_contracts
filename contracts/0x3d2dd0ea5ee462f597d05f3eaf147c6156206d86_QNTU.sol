@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -91,7 +91,7 @@ library SafeMath {
         pure
         returns (uint)
     {
-        assert(_b &lt;= _a);
+        assert(_b <= _a);
         return _a - _b;
     }
 
@@ -104,7 +104,7 @@ library SafeMath {
         returns (uint)
     {
         uint c = _a + _b;
-        assert(c &gt;= _a);
+        assert(c >= _a);
         return c;
     }
 
@@ -122,8 +122,8 @@ contract StandardToken is Ownable {
     uint8 public decimals;
 
     uint public totalSupply;
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) internal allowed;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) internal allowed;
 
     /**
      * Events
@@ -160,7 +160,7 @@ contract StandardToken is Ownable {
 		returns (bool)
 	{
 		require(_to != 0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
 		balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
 		balanceOf[_to] = balanceOf[_to].add(_value);
@@ -179,7 +179,7 @@ contract StandardToken is Ownable {
         returns (bool)
     {
         require(_to != 0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -193,7 +193,7 @@ contract StandardToken is Ownable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
      * @param _spender The address which will spend the funds.
@@ -222,7 +222,7 @@ contract StandardToken is Ownable {
         public
         returns (bool)
     {
-        require(_addedValue &gt; 0);
+        require(_addedValue > 0);
 
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
@@ -243,11 +243,11 @@ contract StandardToken is Ownable {
         public
         returns (bool)
     {
-        require(_subtractedValue &gt; 0);
+        require(_subtractedValue > 0);
 
         uint oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
 
         } else {
@@ -354,7 +354,7 @@ contract CappedToken is MintableToken {
         onlyOwner
         canMint
     {
-        require(totalSupply.add(_amount) &lt;= cap);
+        require(totalSupply.add(_amount) <= cap);
 
         super.mint(_to, _amount);
     }
@@ -363,7 +363,7 @@ contract CappedToken is MintableToken {
 
 /**
  * @title Pausable token
- * @dev Token that can be freeze &quot;Transfer&quot; function
+ * @dev Token that can be freeze "Transfer" function
  */
 contract PausableToken is StandardToken {
 
@@ -434,7 +434,7 @@ contract PausableToken is StandardToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
      * @param _spender The address which will spend the funds.
@@ -585,7 +585,7 @@ contract UpgradableToken is StandardToken {
     {
         uint amount = balanceOf[msg.sender];
 
-        require(amount &gt; 0);
+        require(amount > 0);
 
         processUpgrade(msg.sender, amount);
     }
@@ -601,7 +601,7 @@ contract UpgradableToken is StandardToken {
     {
         uint amount;
 
-        for (uint i = 0; i &lt; _holders.length; i++) {
+        for (uint i = 0; i < _holders.length; i++) {
             amount = balanceOf[_holders[i]];
 
             if (amount == 0) {
@@ -639,8 +639,8 @@ contract QNTU is UpgradableToken, CappedToken, PausableToken {
     function QNTU()
         public
     {
-        symbol = &quot;QNTU&quot;;
-        name = &quot;QNTU Token&quot;;
+        symbol = "QNTU";
+        name = "QNTU Token";
         decimals = 18;
 
         uint multiplier = 10 ** uint(decimals);

@@ -5,7 +5,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -155,7 +155,7 @@ contract TokenTimelock {
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime &gt; block.timestamp);
+    require(_releaseTime > block.timestamp);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -166,10 +166,10 @@ contract TokenTimelock {
    */
   function release() public {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= releaseTime);
+    require(block.timestamp >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -199,9 +199,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -209,7 +209,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -218,7 +218,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -232,7 +232,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -250,7 +250,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -326,7 +326,7 @@ contract Pausable is Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -337,8 +337,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -352,7 +352,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -413,10 +413,10 @@ contract ERC223Token is ERC223, StandardToken, Ownable {
     bool public erc223Activated;
     // List of contracts which are known to have support for ERC20 tokens.
     // Needed to maintain compatibility with contracts that support ERC20 tokens but not ERC223 tokens.                      
-    mapping (address =&gt; bool) public supportedContracts;
+    mapping (address => bool) public supportedContracts;
     // List of contracts which users allowed to bypass tokenFallback.
     // Needed in case user wants to send tokens to contracts that do not support ERC223 tokens, i.e. multisig wallets.
-    mapping (address =&gt; mapping (address =&gt; bool)) public userAcknowledgedContracts;
+    mapping (address => mapping (address => bool)) public userAcknowledgedContracts;
 
     function setErc223Activated(bool _activated) external onlyOwner {
         erc223Activated = _activated;
@@ -440,7 +440,7 @@ contract ERC223Token is ERC223, StandardToken, Ownable {
             // Retrieve the size of the code on target address
             codeLength := extcodesize(_address)
         }
-        return codeLength &gt; 0;
+        return codeLength > 0;
     }
 
     /**
@@ -480,10 +480,10 @@ contract ERC223Token is ERC223, StandardToken, Ownable {
 
         // Invoke token receiver only when erc223 is activate, not listed on the whitelist and is a contract.
         if (erc223Activated 
-            &amp;&amp; isContract(_to)
-            &amp;&amp; supportedContracts[_to] == false 
-            &amp;&amp; userAcknowledgedContracts[msg.sender][_to] == false
-            &amp;&amp; status == true) {
+            && isContract(_to)
+            && supportedContracts[_to] == false 
+            && userAcknowledgedContracts[msg.sender][_to] == false
+            && status == true) {
             invokeTokenReceiver(msg.sender, _to, _value, _data);
         }
         return status;
@@ -514,10 +514,10 @@ contract ERC223Token is ERC223, StandardToken, Ownable {
         bool status = super.transferFrom(_from, _to, _value);
 
         if (erc223Activated 
-            &amp;&amp; isContract(_to)
-            &amp;&amp; supportedContracts[_to] == false 
-            &amp;&amp; userAcknowledgedContracts[msg.sender][_to] == false
-            &amp;&amp; status == true) {
+            && isContract(_to)
+            && supportedContracts[_to] == false 
+            && userAcknowledgedContracts[msg.sender][_to] == false
+            && status == true) {
             invokeTokenReceiver(_from, _to, _value, _data);
         }
         return status;
@@ -565,8 +565,8 @@ contract PausableERC223Token is ERC223Token, Pausable {
  */
 
 contract SynchroCoin is PausableERC223Token, Claimable {
-    string public constant name = &quot;SynchroCoin&quot;;
-    string public constant symbol = &quot;SYC&quot;;
+    string public constant name = "SynchroCoin";
+    string public constant symbol = "SYC";
     uint8 public constant decimals = 18;
     MigrationAgent public migrationAgent;
 
@@ -596,7 +596,7 @@ contract MigrationAgent is Ownable {
     uint256 public targetSupply;    // Target supply amount to meet
     uint256 public migratedSupply;  // Total amount of tokens migrated
 
-    mapping (address =&gt; bool) public migrated;  // Flags to keep track of addresses already migrated
+    mapping (address => bool) public migrated;  // Flags to keep track of addresses already migrated
 
     uint256 public timelockReleaseTime; // Timelocked token release time
     TokenTimelock public tokenTimelock; // TokenTimelock for Synchrolife team, advisors and partners
@@ -637,7 +637,7 @@ contract MigrationAgent is Ownable {
      * @return True if operation was completed
      */
     function migrateBalances(address[] _tokenHolders) onlyOwner external {
-        for (uint256 i = 0; i &lt; _tokenHolders.length; i++) {
+        for (uint256 i = 0; i < _tokenHolders.length; i++) {
             migrateBalance(_tokenHolders[i]);
         }
     }

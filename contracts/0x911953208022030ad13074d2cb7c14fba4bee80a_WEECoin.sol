@@ -1,7 +1,7 @@
 contract WeeMath {
 
     function subtractWee(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -28,7 +28,7 @@ contract ERC20Token {
 contract StandardToken is ERC20Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ contract StandardToken is ERC20Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -64,18 +64,18 @@ contract StandardToken is ERC20Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 	uint256 public totalSupply;
 }
 
 
 contract WEECoin is StandardToken, WeeMath {
 
-    string public constant name = &quot;WEE Token&quot;;
-    string public constant symbol = &quot;WEE&quot;;
+    string public constant name = "WEE Token";
+    string public constant symbol = "WEE";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 	
     address public WEEFundWallet;      
     address public account1Address;      
@@ -109,15 +109,15 @@ contract WEECoin is StandardToken, WeeMath {
 
     function () payable 
 	{      
-      if ( (isFinalized) || (!isPreSale &amp;&amp; !isMainSale) || (msg.value == 0) ) throw;
+      if ( (isFinalized) || (!isPreSale && !isMainSale) || (msg.value == 0) ) throw;
       
       uint256 tokens = multWee(msg.value, weeOneEthCanBuy); 
       uint256 verifiedLeftTokens = subtractWee(balances[WEEFundWallet], tokens);
 
-	  if( (isMainSale) &amp;&amp; (verifiedLeftTokens &lt; (totalSupply - tokenSaleCap)) ) throw;
-	  if (balances[WEEFundWallet] &lt; tokens) throw;
+	  if( (isMainSale) && (verifiedLeftTokens < (totalSupply - tokenSaleCap)) ) throw;
+	  if (balances[WEEFundWallet] < tokens) throw;
 	  
-      if( (isPreSale) &amp;&amp; (verifiedLeftTokens &lt; (totalSupply - tokenPreSaleCap) ) )
+      if( (isPreSale) && (verifiedLeftTokens < (totalSupply - tokenPreSaleCap) ) )
 	  {			
 		isMainSale = true;
 		weeOneEthCanBuy = 10000; 	

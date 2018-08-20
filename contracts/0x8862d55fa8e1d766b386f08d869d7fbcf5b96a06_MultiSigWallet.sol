@@ -5,7 +5,7 @@ pragma solidity ^0.4.17;
 // An ERC20 standard
 //
 // author: EdooPAD Inc.
-// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f48565353565e527f5a5b50504f5e5b115c5052">[email&#160;protected]</a> 
+// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f48565353565e527f5a5b50504f5e5b115c5052">[email protected]</a> 
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
 
@@ -21,9 +21,9 @@ contract MultiSigWallet {
     event RequirementChange(uint required);
     event CoinCreation(address coin);
 
-    mapping (bytes32 =&gt; Transaction) public transactions;
-    mapping (bytes32 =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (bytes32 => Transaction) public transactions;
+    mapping (bytes32 => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] owners;
     bytes32[] transactionList;
     uint public required;
@@ -79,7 +79,7 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint _ownerCount, uint _required) {
-        if (   _required &gt; _ownerCount
+        if (   _required > _ownerCount
             || _required == 0
             || _ownerCount == 0)
             revert();
@@ -106,13 +106,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -217,7 +217,7 @@ contract MultiSigWallet {
         validRequirement(_owners.length, _required)
         public 
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             // WHY Not included in this code?
             // if (isOwner[_owners[i]] || _owners[i] == 0)
             //     throw;
@@ -232,7 +232,7 @@ contract MultiSigWallet {
         public
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -245,7 +245,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -263,7 +263,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -278,16 +278,16 @@ contract MultiSigWallet {
     {
         bytes32[] memory _transactionListTemp = new bytes32[](transactionList.length);
         uint count = 0;
-        for (uint i=0; i&lt;transactionList.length; i++)
-            if (   isPending &amp;&amp; !transactions[transactionList[i]].executed
-                || !isPending &amp;&amp; transactions[transactionList[i]].executed)
+        for (uint i=0; i<transactionList.length; i++)
+            if (   isPending && !transactions[transactionList[i]].executed
+                || !isPending && transactions[transactionList[i]].executed)
             {
                 _transactionListTemp[count] = transactionList[i];
                 count += 1;
             }
         _transactionList = new bytes32[](count);
-        for (i=0; i&lt;count; i++)
-            if (_transactionListTemp[i] &gt; 0)
+        for (i=0; i<count; i++)
+            if (_transactionListTemp[i] > 0)
                 _transactionList[i] = _transactionListTemp[i];
     }
 

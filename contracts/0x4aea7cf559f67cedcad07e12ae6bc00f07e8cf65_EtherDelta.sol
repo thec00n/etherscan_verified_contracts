@@ -10,13 +10,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -68,11 +68,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -82,8 +82,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -106,9 +106,9 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -126,7 +126,7 @@ contract ReserveToken is StandardToken, SafeMath {
     }
     function destroy(address account, uint amount) {
       if (msg.sender != minter) throw;
-      if (balances[account] &lt; amount) throw;
+      if (balances[account] < amount) throw;
       balances[account] = safeSub(balances[account], amount);
       totalSupply = safeSub(totalSupply, amount);
     }
@@ -134,9 +134,9 @@ contract ReserveToken is StandardToken, SafeMath {
 
 contract EtherDelta is SafeMath {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) tokens; //mapping of token addresses to mapping of account balances
+  mapping (address => mapping (address => uint)) tokens; //mapping of token addresses to mapping of account balances
   //ether balances are held in the token=0 account
-  mapping (bytes32 =&gt; uint) orderFills;
+  mapping (bytes32 => uint) orderFills;
   address public feeAccount;
   uint public feeMake; //percentage times (1 ether)
   uint public feeTake; //percentage times (1 ether)
@@ -163,8 +163,8 @@ contract EtherDelta is SafeMath {
   }
 
   function withdraw(uint amount) {
-    if (msg.value&gt;0) throw;
-    if (tokens[0][msg.sender] &lt; amount) throw;
+    if (msg.value>0) throw;
+    if (tokens[0][msg.sender] < amount) throw;
     tokens[0][msg.sender] = safeSub(tokens[0][msg.sender], amount);
     if (!msg.sender.call.value(amount)()) throw;
     Withdraw(0, msg.sender, amount, tokens[0][msg.sender]);
@@ -172,15 +172,15 @@ contract EtherDelta is SafeMath {
 
   function depositToken(address token, uint amount) {
     //remember to call Token(address).approve(this, amount) or this contract will not be able to do the transfer on your behalf.
-    if (msg.value&gt;0 || token==0) throw;
+    if (msg.value>0 || token==0) throw;
     if (!Token(token).transferFrom(msg.sender, this, amount)) throw;
     tokens[token][msg.sender] = safeAdd(tokens[token][msg.sender], amount);
     Deposit(token, msg.sender, amount, tokens[token][msg.sender]);
   }
 
   function withdrawToken(address token, uint amount) {
-    if (msg.value&gt;0 || token==0) throw;
-    if (tokens[token][msg.sender] &lt; amount) throw;
+    if (msg.value>0 || token==0) throw;
+    if (tokens[token][msg.sender] < amount) throw;
     tokens[token][msg.sender] = safeSub(tokens[token][msg.sender], amount);
     if (!Token(token).transfer(msg.sender, amount)) throw;
     Withdraw(token, msg.sender, amount, tokens[token][msg.sender]);
@@ -191,20 +191,20 @@ contract EtherDelta is SafeMath {
   }
 
   function order(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, uint8 v, bytes32 r, bytes32 s) {
-    if (msg.value&gt;0) throw;
+    if (msg.value>0) throw;
     Order(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, msg.sender, v, r, s);
   }
 
   function trade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount) {
     //amount is in amountGet terms
-    if (msg.value&gt;0) throw;
+    if (msg.value>0) throw;
     bytes32 hash = sha256(tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
     if (!(
-      ecrecover(hash,v,r,s) == user &amp;&amp;
-      block.number &lt;= expires &amp;&amp;
-      safeAdd(orderFills[hash], amount) &lt;= amountGet &amp;&amp;
-      tokens[tokenGet][msg.sender] &gt;= amount &amp;&amp;
-      tokens[tokenGive][user] &gt;= safeMul(amountGive, amount) / amountGet
+      ecrecover(hash,v,r,s) == user &&
+      block.number <= expires &&
+      safeAdd(orderFills[hash], amount) <= amountGet &&
+      tokens[tokenGet][msg.sender] >= amount &&
+      tokens[tokenGive][user] >= safeMul(amountGive, amount) / amountGet
     )) throw;
     tokens[tokenGet][msg.sender] = safeSub(tokens[tokenGet][msg.sender], amount);
     tokens[tokenGet][user] = safeAdd(tokens[tokenGet][user], safeMul(amount, ((1 ether) - feeMake)) / (1 ether));
@@ -218,8 +218,8 @@ contract EtherDelta is SafeMath {
 
   function testTrade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount, address sender) constant returns(bool) {
     if (!(
-      tokens[tokenGet][sender] &gt;= amount &amp;&amp;
-      availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) &gt;= amount
+      tokens[tokenGet][sender] >= amount &&
+      availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) >= amount
     )) return false;
     return true;
   }
@@ -227,17 +227,17 @@ contract EtherDelta is SafeMath {
   function availableVolume(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s) constant returns(uint) {
     bytes32 hash = sha256(tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
     if (!(
-      ecrecover(hash,v,r,s) == user &amp;&amp;
-      block.number &lt;= expires
+      ecrecover(hash,v,r,s) == user &&
+      block.number <= expires
     )) return 0;
     uint available1 = safeSub(amountGet, orderFills[hash]);
     uint available2 = safeMul(tokens[tokenGive][user], amountGet) / amountGive;
-    if (available1&lt;available2) return available1;
+    if (available1<available2) return available1;
     return available2;
   }
 
   function cancelOrder(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, uint8 v, bytes32 r, bytes32 s) {
-    if (msg.value&gt;0) throw;
+    if (msg.value>0) throw;
     bytes32 hash = sha256(tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
     if (ecrecover(hash,v,r,s) != msg.sender) throw;
     orderFills[hash] = amountGet;

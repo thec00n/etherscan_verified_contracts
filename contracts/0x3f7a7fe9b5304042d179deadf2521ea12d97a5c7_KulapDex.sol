@@ -11,44 +11,44 @@ library SafeMath {
   }
 
   function div(uint a, uint b) pure internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) pure internal returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) pure internal returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,9 +92,9 @@ contract Ownable {
 interface ERC20 {
     function totalSupply() external view returns (uint supply);
     function balanceOf(address _owner) external view returns (uint balance);
-    function transfer(address _to, uint _value) external; // Some ERC20 doesn&#39;t have return
-    function transferFrom(address _from, address _to, uint _value) external; // Some ERC20 doesn&#39;t have return
-    function approve(address _spender, uint _value) external; // Some ERC20 doesn&#39;t have return
+    function transfer(address _to, uint _value) external; // Some ERC20 doesn't have return
+    function transferFrom(address _from, address _to, uint _value) external; // Some ERC20 doesn't have return
+    function approve(address _spender, uint _value) external; // Some ERC20 doesn't have return
     function allowance(address _owner, address _spender) external view returns (uint remaining);
     function decimals() external view returns(uint digits);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -190,7 +190,7 @@ contract KulapDex is Ownable {
         return destAmount;
     }
 
-    // Receive ETH in case of trade Token -&gt; ETH, will get ETH back from trading proxy
+    // Receive ETH in case of trade Token -> ETH, will get ETH back from trading proxy
     function () public payable {
 
     }
@@ -218,11 +218,11 @@ contract KulapDex is Ownable {
         return destAmount;
     }
 
-    // Ex1: trade 0.5 ETH -&gt; EOS
-    // 0, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;500000000000000000&quot;, &quot;0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817&quot;, &quot;21003850000000000000&quot;
+    // Ex1: trade 0.5 ETH -> EOS
+    // 0, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "500000000000000000", "0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817", "21003850000000000000"
     //
-    // Ex2: trade 30 EOS -&gt; ETH
-    // 0, &quot;0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817&quot;, &quot;30000000000000000000&quot;, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;740825000000000000&quot;
+    // Ex2: trade 30 EOS -> ETH
+    // 0, "0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817", "30000000000000000000", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "740825000000000000"
     function _trade(
         uint256             _tradingProxyIndex, 
         ERC20               _src, 
@@ -249,16 +249,16 @@ contract KulapDex is Ownable {
             destAmountBefore = _dest.balanceOf(this);
         }
 
-        // Trade ETH -&gt; Token
+        // Trade ETH -> Token
         if (etherERC20 == _src) {
             destAmount = _tradeEtherToToken(_tradingProxyIndex, _srcAmount, _dest);
         
-        // Trade Token -&gt; ETH
+        // Trade Token -> ETH
         } else if (etherERC20 == _dest) {
             destAmount = _tradeTokenToEther(_tradingProxyIndex, _src, _srcAmount);
 
-        // Trade Token -&gt; Token
-        // For token -&gt; token use tradeRoutes instead
+        // Trade Token -> Token
+        // For token -> token use tradeRoutes instead
         } else {
             revert();
         }
@@ -277,48 +277,48 @@ contract KulapDex is Ownable {
             assert(_dest.balanceOf(this) == destAmountBefore.add(destAmount));
         }
 
-        // Throw exception if destination amount doesn&#39;t meet user requirement.
-        assert(destAmount &gt;= _minDestAmount);
+        // Throw exception if destination amount doesn't meet user requirement.
+        assert(destAmount >= _minDestAmount);
 
         return destAmount;
     }
 
-    // Ex1: trade 0.5 ETH -&gt; EOS
-    // 0, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;500000000000000000&quot;, &quot;0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817&quot;, &quot;21003850000000000000&quot;
+    // Ex1: trade 0.5 ETH -> EOS
+    // 0, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "500000000000000000", "0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817", "21003850000000000000"
     //
-    // Ex2: trade 30 EOS -&gt; ETH
-    // 0, &quot;0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817&quot;, &quot;30000000000000000000&quot;, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;740825000000000000&quot;
+    // Ex2: trade 30 EOS -> ETH
+    // 0, "0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817", "30000000000000000000", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "740825000000000000"
     function trade(uint256 tradingProxyIndex, ERC20 src, uint256 srcAmount, ERC20 dest, uint256 minDestAmount) payable public returns(uint256)  {
         uint256 destAmount;
 
-        // Trade ETH -&gt; Token
+        // Trade ETH -> Token
         if (etherERC20 == src) {
             destAmount = _trade(tradingProxyIndex, src, srcAmount, dest, 1);
 
-            // Throw exception if destination amount doesn&#39;t meet user requirement.
-            assert(destAmount &gt;= minDestAmount);
+            // Throw exception if destination amount doesn't meet user requirement.
+            assert(destAmount >= minDestAmount);
 
             // Send back token to sender
-            // Some ERC20 Smart contract not return Bool, so we can&#39;t check here
+            // Some ERC20 Smart contract not return Bool, so we can't check here
             // require(dest.transfer(msg.sender, destAmount));
             dest.transfer(msg.sender, destAmount);
         
-        // Trade Token -&gt; ETH
+        // Trade Token -> ETH
         } else if (etherERC20 == dest) {
             // Transfer token to This address
             src.transferFrom(msg.sender, address(this), srcAmount);
 
             destAmount = _trade(tradingProxyIndex, src, srcAmount, dest, 1);
 
-            // Throw exception if destination amount doesn&#39;t meet user requirement.
-            assert(destAmount &gt;= minDestAmount);
+            // Throw exception if destination amount doesn't meet user requirement.
+            assert(destAmount >= minDestAmount);
 
             // Send back ether to sender
             // Throws on failure
             msg.sender.transfer(destAmount);
 
-        // Trade Token -&gt; Token
-        // For token -&gt; token use tradeRoutes instead
+        // Trade Token -> Token
+        // For token -> token use tradeRoutes instead
         } else {
             revert();
         }
@@ -329,15 +329,15 @@ contract KulapDex is Ownable {
         return destAmount;
     }
 
-    // Ex1: trade 50 OMG -&gt; ETH -&gt; EOS
-    // Step1: trade 50 OMG -&gt; ETH
-    // Step2: trade xx ETH -&gt; EOS
-    // &quot;0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be&quot;, &quot;30000000000000000000&quot;, &quot;0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817&quot;, &quot;1&quot;, [&quot;0x0000000000000000000000000000000000000000&quot;, &quot;0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be&quot;, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;0x0000000000000000000000000000000000000000&quot;, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817&quot;]
+    // Ex1: trade 50 OMG -> ETH -> EOS
+    // Step1: trade 50 OMG -> ETH
+    // Step2: trade xx ETH -> EOS
+    // "0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be", "30000000000000000000", "0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817", "1", ["0x0000000000000000000000000000000000000000", "0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "0x0000000000000000000000000000000000000000", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "0xd3c64BbA75859Eb808ACE6F2A6048ecdb2d70817"]
     //
-    // Ex2: trade 50 OMG -&gt; ETH -&gt; DAI
-    // Step1: trade 50 OMG -&gt; ETH
-    // Step2: trade xx ETH -&gt; DAI
-    // &quot;0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be&quot;, &quot;30000000000000000000&quot;, &quot;0x45ad02b30930cad22ff7921c111d22943c6c822f&quot;, &quot;1&quot;, [&quot;0x0000000000000000000000000000000000000000&quot;, &quot;0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be&quot;, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;0x0000000000000000000000000000000000000001&quot;, &quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;, &quot;0x45ad02b30930cad22ff7921c111d22943c6c822f&quot;]
+    // Ex2: trade 50 OMG -> ETH -> DAI
+    // Step1: trade 50 OMG -> ETH
+    // Step2: trade xx ETH -> DAI
+    // "0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be", "30000000000000000000", "0x45ad02b30930cad22ff7921c111d22943c6c822f", "1", ["0x0000000000000000000000000000000000000000", "0x5b9a857e0C3F2acc5b94f6693536d3Adf5D6e6Be", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "0x0000000000000000000000000000000000000001", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "0x45ad02b30930cad22ff7921c111d22943c6c822f"]
     function tradeRoutes(ERC20 src, uint256 srcAmount, ERC20 dest, uint256 minDestAmount, address[] _tradingPaths) payable public returns(uint256)  {
         uint256 destAmount;
 
@@ -347,7 +347,7 @@ contract KulapDex is Ownable {
         }
 
         uint256 pathSrcAmount = srcAmount;
-        for (uint i=0; i &lt; _tradingPaths.length; i+=3) {
+        for (uint i=0; i < _tradingPaths.length; i+=3) {
             uint256 tradingProxyIndex =         uint256(_tradingPaths[i]);
             ERC20 pathSrc =                     ERC20(_tradingPaths[i+1]);
             ERC20 pathDest =                    ERC20(_tradingPaths[i+2]);
@@ -356,19 +356,19 @@ contract KulapDex is Ownable {
             pathSrcAmount = destAmount;
         }
 
-        // Throw exception if destination amount doesn&#39;t meet user requirement.
-        assert(destAmount &gt;= minDestAmount);
+        // Throw exception if destination amount doesn't meet user requirement.
+        assert(destAmount >= minDestAmount);
 
-        // Trade Any -&gt; ETH
+        // Trade Any -> ETH
         if (etherERC20 == dest) {
             // Send back ether to sender
             // Throws on failure
             msg.sender.transfer(destAmount);
         
-        // Trade Any -&gt; Token
+        // Trade Any -> Token
         } else {
             // Send back token to sender
-            // Some ERC20 Smart contract not return Bool, so we can&#39;t check here
+            // Some ERC20 Smart contract not return Bool, so we can't check here
             // require(dest.transfer(msg.sender, destAmount));
             dest.transfer(msg.sender, destAmount);
         }

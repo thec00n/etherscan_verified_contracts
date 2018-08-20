@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -273,14 +273,14 @@ contract MyWillToken is usingMyWillConsts, MintableToken {
     /**
      * @dev Accounts who can transfer token even if paused. Works only during crowdsale.
      */
-    mapping(address =&gt; bool) excluded;
+    mapping(address => bool) excluded;
 
     function name() constant public returns (string _name) {
-        return &quot;MyWill Coin&quot;;
+        return "MyWill Coin";
     }
 
     function symbol() constant public returns (bytes32 _symbol) {
-        return &quot;WIL&quot;;
+        return "WIL";
     }
 
     function decimals() constant public returns (uint8 _decimals) {
@@ -351,10 +351,10 @@ contract Crowdsale {
 
 
     function Crowdsale(uint32 _startTime, uint32 _endTime, uint _hardCap, address _wallet) {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_wallet != 0x0);
-        require(_hardCap &gt; 0);
+        require(_hardCap > 0);
 
         token = createTokenContract();
         startTime = _startTime;
@@ -410,7 +410,7 @@ contract Crowdsale {
         uint change = 0;
 
         // if hard cap reached
-        if (tokens.add(totalSupply) &gt; hardCap) {
+        if (tokens.add(totalSupply) > hardCap) {
             // rest tokens
             uint maxTokens = hardCap.sub(totalSupply);
             uint realAmount = maxTokens.mul(rateScale).div(actualRate);
@@ -445,11 +445,11 @@ contract Crowdsale {
      * @return true if the transaction can buy tokens
      */
     function validPurchase(uint _amountWei, uint _actualRate, uint _totalSupply) internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = _amountWei != 0;
-        bool hardCapNotReached = _totalSupply &lt;= hardCap.sub(_actualRate);
+        bool hardCapNotReached = _totalSupply <= hardCap.sub(_actualRate);
 
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; hardCapNotReached;
+        return withinPeriod && nonZeroPurchase && hardCapNotReached;
     }
 
     /**
@@ -457,14 +457,14 @@ contract Crowdsale {
      * @return true if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || token.totalSupply() &gt; hardCap.sub(getBaseRate());
+        return now > endTime || token.totalSupply() > hardCap.sub(getBaseRate());
     }
 
     /**
      * @return true if crowdsale event has started
      */
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     /**
@@ -474,7 +474,7 @@ contract Crowdsale {
      */
     function hasEnded(uint _value) public constant returns (bool) {
         uint actualRate = getRate(_value);
-        return now &gt; endTime || token.totalSupply() &gt; hardCap.sub(actualRate);
+        return now > endTime || token.totalSupply() > hardCap.sub(actualRate);
     }
 }
 
@@ -496,7 +496,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner notFinalized {
         require(hasEnded());
@@ -532,7 +532,7 @@ contract RefundVault is Ownable {
 
     enum State {Active, Refunding, Closed}
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     address public wallet;
 
@@ -581,7 +581,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
     using SafeMath for uint256;
@@ -594,12 +594,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
 
     function RefundableCrowdsale(uint32 _startTime, uint32 _endTime, uint _hardCap, address _wallet, uint _goal)
             FinalizableCrowdsale(_startTime, _endTime, _hardCap, _wallet) {
-        require(_goal &gt; 0);
+        require(_goal > 0);
         vault = new RefundVault(wallet);
         goal = _goal;
     }
 
-    // We&#39;re overriding the fund forwarding from Crowdsale.
+    // We're overriding the fund forwarding from Crowdsale.
     // In addition to sending the funds, we want to call
     // the RefundVault deposit function
     function forwardFunds(uint amountWei) internal {
@@ -640,7 +640,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     }
 
     function goalReached() public constant returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
 }
@@ -688,7 +688,7 @@ contract MyWillRateProvider is usingMyWillConsts, MyWillRateProviderI, Ownable {
         bool exists;
     }
 
-    mapping(address =&gt; ExclusiveRate) exclusiveRate;
+    mapping(address => ExclusiveRate) exclusiveRate;
 
     function getRateScale() public constant returns (uint) {
         return RATE_SCALE;
@@ -701,13 +701,13 @@ contract MyWillRateProvider is usingMyWillConsts, MyWillRateProviderI, Ownable {
     function getRate(address buyer, uint totalSold, uint amountWei) public constant returns (uint) {
         uint rate;
         // apply sale
-        if (totalSold &lt; STEP_30) {
+        if (totalSold < STEP_30) {
             rate = RATE_30;
         }
-        else if (totalSold &lt; STEP_20) {
+        else if (totalSold < STEP_20) {
             rate = RATE_20;
         }
-        else if (totalSold &lt; STEP_10) {
+        else if (totalSold < STEP_10) {
             rate = RATE_10;
         }
         else {
@@ -715,27 +715,27 @@ contract MyWillRateProvider is usingMyWillConsts, MyWillRateProviderI, Ownable {
         }
 
         // apply bonus for amount
-        if (amountWei &gt;= 1000 ether) {
+        if (amountWei >= 1000 ether) {
             rate += rate * 13 / 100;
         }
-        else if (amountWei &gt;= 500 ether) {
+        else if (amountWei >= 500 ether) {
             rate += rate * 10 / 100;
         }
-        else if (amountWei &gt;= 100 ether) {
+        else if (amountWei >= 100 ether) {
             rate += rate * 7 / 100;
         }
-        else if (amountWei &gt;= 50 ether) {
+        else if (amountWei >= 50 ether) {
             rate += rate * 5 / 100;
         }
-        else if (amountWei &gt;= 30 ether) {
+        else if (amountWei >= 30 ether) {
             rate += rate * 4 / 100;
         }
-        else if (amountWei &gt;= 10 ether) {
+        else if (amountWei >= 10 ether) {
             rate += rate * 25 / 1000;
         }
 
         ExclusiveRate memory eRate = exclusiveRate[buyer];
-        if (eRate.exists &amp;&amp; eRate.workUntil &gt;= now) {
+        if (eRate.exists && eRate.workUntil >= now) {
             if (eRate.rate != 0) {
                 rate = eRate.rate;
             }
@@ -825,12 +825,12 @@ contract MyWillCrowdsale is usingMyWillConsts, RefundableCrowdsale {
      * @param _endTime New end time.
      */
     function setEndTime(uint32 _endTime) onlyOwner notFinalized {
-        require(_endTime &gt; startTime);
+        require(_endTime > startTime);
         endTime = _endTime;
     }
 
     function validPurchase(uint _amountWei, uint _actualRate, uint _totalSupply) internal constant returns (bool) {
-        if (_amountWei &lt; minimalPurchase) {
+        if (_amountWei < minimalPurchase) {
             return false;
         }
         return super.validPurchase(_amountWei, _actualRate, _totalSupply);

@@ -17,7 +17,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -68,20 +68,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -96,11 +96,11 @@ contract WPPToken is ERC20, Ownable {
 	uint256  public  totalSupply = 5000000000 * 1 ether;
 
 
-	mapping  (address =&gt; uint256)             public          _balances;
-    mapping  (address =&gt; mapping (address =&gt; uint256)) public  _approvals;
+	mapping  (address => uint256)             public          _balances;
+    mapping  (address => mapping (address => uint256)) public  _approvals;
 
-    string   public  name = &quot;WPPTOKEN&quot;;
-    string   public  symbol = &quot;WPP&quot;;
+    string   public  name = "WPPTOKEN";
+    string   public  symbol = "WPP";
     uint256  public  decimals = 18;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -122,7 +122,7 @@ contract WPPToken is ERC20, Ownable {
     }
     
     function transfer(address dst, uint256 wad) public returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = _balances[msg.sender].sub(wad);
         _balances[dst] = _balances[dst].add(wad);
@@ -133,8 +133,8 @@ contract WPPToken is ERC20, Ownable {
     }
     
     function transferFrom(address src, address dst, uint256 wad) public returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
         
         _approvals[src][msg.sender] = _approvals[src][msg.sender].sub(wad);
         _balances[src] = _balances[src].sub(wad);
@@ -179,8 +179,8 @@ contract WPPPresale is Ownable{
 
 	address public multisigwallet;
 
-	mapping(address =&gt; bool) public isWhitelisted;
-	mapping(address =&gt; bool) public isAdminlisted;
+	mapping(address => bool) public isWhitelisted;
+	mapping(address => bool) public isAdminlisted;
 
 	event BuyTokens(address indexed beneficiary, uint256 value, uint256 amount, uint time);
 	event WhitelistSet(address indexed _address, bool _state);
@@ -192,8 +192,8 @@ contract WPPPresale is Ownable{
 		// wpp.transfer(address(this), tokencap);
 		require (wpp.owner() == msg.sender);
 		
-		startTime = _startTime; // 1531659600 2018-07-15 8:AM EST-&gt;1:PM UTC
-		endTime = _endTime; // 1537016400 2018-09-15 8:AM EST-&gt;1:PM UTC
+		startTime = _startTime; // 1531659600 2018-07-15 8:AM EST->1:PM UTC
+		endTime = _endTime; // 1537016400 2018-09-15 8:AM EST->1:PM UTC
 		remain = hardcap;
 		multisigwallet = _multi;
 	}
@@ -227,7 +227,7 @@ contract WPPPresale is Ownable{
 		// calculate token amount to be sent
 		uint256 tokens = calcBonus(weiAmount.mul(rate));
 		
-		if(remain.sub(tokens) &lt;= 0){
+		if(remain.sub(tokens) <= 0){
 			reached = true;
 
 			uint256 real = remain;
@@ -257,7 +257,7 @@ contract WPPPresale is Ownable{
 	}
 
 	function calcBonus(uint256 token_amount) internal constant returns (uint256) {
-		if(now &gt; startTime &amp;&amp; now &lt;= (startTime + 3 days))
+		if(now > startTime && now <= (startTime + 3 days))
 			return token_amount * 110 / 100;
 		return token_amount;
 	}
@@ -266,7 +266,7 @@ contract WPPPresale is Ownable{
 	// override to create custom token transfer mechanism, eg. pull pattern
 	function transferToken(address beneficiary, uint256 tokenamount) internal {
 		wpp.transfer(beneficiary, tokenamount);
-		// address(wpp).call(bytes4(keccak256(&quot;transfer(address, uint256)&quot;)), beneficiary,tokenamount);
+		// address(wpp).call(bytes4(keccak256("transfer(address, uint256)")), beneficiary,tokenamount);
 	}
 
 	// send ether to the fund collection wallet
@@ -277,10 +277,10 @@ contract WPPPresale is Ownable{
 
 	// @return true if the transaction can buy tokens
 	function validPurchase(uint256 weiAmount) internal constant returns (bool) {
-		bool withinPeriod = now &gt; startTime &amp;&amp; now &lt;= endTime;
-		bool nonZeroPurchase = weiAmount &gt;= 0.5 ether;
+		bool withinPeriod = now > startTime && now <= endTime;
+		bool nonZeroPurchase = weiAmount >= 0.5 ether;
 		bool withinSale = reached ? false : true;
-		return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinSale;
+		return withinPeriod && nonZeroPurchase && withinSale;
 	} 
 
 	function setAdminlist(address _addr, bool _state) public onlyOwner {
@@ -294,31 +294,31 @@ contract WPPPresale is Ownable{
         emit WhitelistSet(_addr, true);
     }
 
-    ///&#160;@notice Set whitelist state for multiple addresses
+    /// @notice Set whitelist state for multiple addresses
     function setManyWhitelist(address[] _addr) public onlyOwners {
-        for (uint256 i = 0; i &lt; _addr.length; i++) {
+        for (uint256 i = 0; i < _addr.length; i++) {
             setWhitelist(_addr[i]);
         }
     }
 
 	// @return true if presale event has ended
 	function hasEnded() public constant returns (bool) {
-		return now &gt; endTime;
+		return now > endTime;
 	}
 
 	// @return true if presale has started
 	function hasStarted() public constant returns (bool) {
-		return now &gt;= startTime;
+		return now >= startTime;
 	}
 
 	function setRate(uint256 _rate) public onlyOwner returns (bool) {
-		require (now &gt;= startTime &amp;&amp; now &lt;= endTime);
+		require (now >= startTime && now <= endTime);
 		rate = _rate;
 	}
 
 	function treatRemaintoken() public onlyOwner returns (bool) {
-		require(now &gt; endTime);
-		require(remain &gt; 0);
+		require(now > endTime);
+		require(remain > 0);
 		wpp.transfer(multisigwallet, remain);
 		remain = 0;
 		emit TreatRemainToken();

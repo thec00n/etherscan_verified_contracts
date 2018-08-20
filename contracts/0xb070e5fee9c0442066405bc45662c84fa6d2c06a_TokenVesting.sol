@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ contract TokenVesting is Ownable {
 
     ERC20Basic token;
     // vesting
-    mapping (address =&gt; uint256) totalVestedAmount;
+    mapping (address => uint256) totalVestedAmount;
 
     struct Vesting {
         uint256 amount;
@@ -105,7 +105,7 @@ contract TokenVesting is Ownable {
     }
 
     address[] accountKeys;
-    mapping (address =&gt; Vesting[]) public vestingAccounts;
+    mapping (address => Vesting[]) public vestingAccounts;
 
     // events
     event Vest(address indexed beneficiary, uint256 amount);
@@ -132,13 +132,13 @@ contract TokenVesting is Ownable {
     // create vesting by introducing beneficiary addres, total token amount, start date, duration for each vest period and number of periods
     function createVestingByDurationAndSplits(address user, uint256 total_amount, uint256 startDate, uint256 durationPerVesting, uint256 times) public onlyOwner tokenSet {
         require(user != address(0));
-        require(startDate &gt;= now);
-        require(times &gt; 0);
-        require(durationPerVesting &gt; 0);
+        require(startDate >= now);
+        require(times > 0);
+        require(durationPerVesting > 0);
         uint256 vestingDate = startDate;
         uint256 i;
         uint256 amount = total_amount.div(times);
-        for (i = 0; i &lt; times; i++) {
+        for (i = 0; i < times; i++) {
             vestingDate = vestingDate.add(durationPerVesting);
             if (vestingAccounts[user].length == 0){
                 accountKeys.push(user);
@@ -152,8 +152,8 @@ contract TokenVesting is Ownable {
     function getVestingAmountByNow(address user) constant returns (uint256){
         uint256 amount;
         uint256 i;
-        for (i = 0; i &lt; vestingAccounts[user].length; i++) {
-            if (vestingAccounts[user][i].vestingDate &lt; now) {
+        for (i = 0; i < vestingAccounts[user].length; i++) {
+            if (vestingAccounts[user][i].vestingDate < now) {
                 amount = amount.add(vestingAccounts[user][i].amount);
             }
         }
@@ -172,8 +172,8 @@ contract TokenVesting is Ownable {
     function getAccountKeys(uint256 page) external constant returns (address[10]){
         address[10] memory accountList;
         uint256 i;
-        for (i=0 + page * 10; i&lt;10; i++){
-            if (i &lt; accountKeys.length){
+        for (i=0 + page * 10; i<10; i++){
+            if (i < accountKeys.length){
                 accountList[i - page * 10] = accountKeys[i];
             }
         }
@@ -183,7 +183,7 @@ contract TokenVesting is Ownable {
     // vest
     function vest() external tokenSet {
         uint256 availableAmount = getAvailableVestingAmount(msg.sender);
-        require(availableAmount &gt; 0);
+        require(availableAmount > 0);
         totalVestedAmount[msg.sender] = totalVestedAmount[msg.sender].add(availableAmount);
         token.transfer(msg.sender, availableAmount);
         Vest(msg.sender, availableAmount);

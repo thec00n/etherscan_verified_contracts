@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,7 +74,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -82,7 +82,7 @@ library AddressUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -224,7 +224,7 @@ contract PurchaseAdmin is Ownable{
   
   modifier checkPurchaseEnable() {
     require(purchaseEnable);
-     require(block.timestamp &gt;= startAt &amp;&amp; block.timestamp &lt;= stopAt);//要求在申购期内
+     require(block.timestamp >= startAt && block.timestamp <= stopAt);//要求在申购期内
     _;
   }
 
@@ -235,7 +235,7 @@ contract PurchaseAdmin is Ownable{
 
    modifier checkGrantEnable() {
     require(grantEnable);
-    require(block.timestamp &gt;= grantAt);
+    require(block.timestamp >= grantAt);
     _;
   }
 }
@@ -280,7 +280,7 @@ contract MyPurchaseContract is Ownable,PurchaseAdmin{
   }
 
   //申购详情
-  mapping (address =&gt; PurchaseData) public purchasedDatas;
+  mapping (address => PurchaseData) public purchasedDatas;
 
   //申购申购者钱包地址
   address[]  public purchasedWallets;
@@ -301,16 +301,16 @@ contract MyPurchaseContract is Ownable,PurchaseAdmin{
   //申购  
   function buyTokens()  payable checkPurchaseEnable public returns(uint256){
       
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
 
-    require(remainingPurchaseAmount &gt; 0);//剩余可申购的总额度
+    require(remainingPurchaseAmount > 0);//剩余可申购的总额度
 
-    require(purchasedDatas[msg.sender].amount &lt; maxPurchase);//尚未超出单个地址申购代币总额度限制
+    require(purchasedDatas[msg.sender].amount < maxPurchase);//尚未超出单个地址申购代币总额度限制
     
     uint256 hopeAmount = msg.value.div(buyPrice);//计算用户期望申购的数量
 
     //首次购买，必须最少申购minPurchaseOnce个代币
-    if (purchasedDatas[msg.sender].amount == 0 &amp;&amp; hopeAmount &lt; minPurchaseOnce) {
+    if (purchasedDatas[msg.sender].amount == 0 && hopeAmount < minPurchaseOnce) {
       msg.sender.transfer(msg.value);//不成交，原路退还以太币
       return 0;
     }
@@ -318,12 +318,12 @@ contract MyPurchaseContract is Ownable,PurchaseAdmin{
     uint256 currentAmount = hopeAmount;
 
     //不能超出单次最大申购额度
-    if (hopeAmount &gt;= maxPurchaseOnce) {
+    if (hopeAmount >= maxPurchaseOnce) {
        currentAmount = maxPurchaseOnce;
     } 
 
     //不能超出剩余可申购额度
-    if (currentAmount &gt;= remainingPurchaseAmount) {
+    if (currentAmount >= remainingPurchaseAmount) {
        currentAmount = remainingPurchaseAmount;
     } 
 
@@ -338,7 +338,7 @@ contract MyPurchaseContract is Ownable,PurchaseAdmin{
     
     emit Purchase(msg.sender,currentAmount);  
 
-    if (hopeAmount &gt; currentAmount){
+    if (hopeAmount > currentAmount){
       //超出申购额度的ether返回给用户
       uint256 out = hopeAmount.sub(currentAmount);
       //计算需要退还的ether
@@ -374,7 +374,7 @@ contract MyPurchaseContract is Ownable,PurchaseAdmin{
 
   function claimETH() onlyPurchaseAdmin public returns(bool){
 
-    require(block.timestamp &gt; grantAt);
+    require(block.timestamp > grantAt);
 
     require(grantCount == purchasedWallets.length);
     

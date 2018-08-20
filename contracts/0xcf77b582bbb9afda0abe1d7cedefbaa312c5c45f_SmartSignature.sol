@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,13 +39,13 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="bbdfdecfdefbdac3d2d4d6c1ded595d8d4">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="bbdfdecfdefbdac3d2d4d6c1ded595d8d4">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -80,13 +80,13 @@ contract SmartSignature is ERC721{
   address private owner;
   
   uint256 counter;
-  mapping (uint256 =&gt; address) private ownerOftoken;
-  mapping (uint256 =&gt; uint256) private priceOftoken;
-  mapping (uint256 =&gt; address) private approvedOftoken;
-  mapping (uint256 =&gt; address) private creatorOftoken;
-  mapping (uint256 =&gt; uint256) private parentOftoken;
-  mapping (uint256 =&gt; uint256) private balanceOfToken;  
-  mapping (uint256 =&gt; uint256) private freeOftoken;  
+  mapping (uint256 => address) private ownerOftoken;
+  mapping (uint256 => uint256) private priceOftoken;
+  mapping (uint256 => address) private approvedOftoken;
+  mapping (uint256 => address) private creatorOftoken;
+  mapping (uint256 => uint256) private parentOftoken;
+  mapping (uint256 => uint256) private balanceOfToken;  
+  mapping (uint256 => uint256) private freeOftoken;  
 
   function SmartSignature () public {
     owner = msg.sender;
@@ -124,7 +124,7 @@ contract SmartSignature is ERC721{
   }
 
   function withdrawAmountFromToken (uint256 _tokenId, uint256 t) onlyCreator(_tokenId) public {
-    if (t &gt; balanceOfToken[_tokenId]) t = balanceOfToken[_tokenId];
+    if (t > balanceOfToken[_tokenId]) t = balanceOfToken[_tokenId];
     uint256 r = t / 20;
     balanceOfToken[_tokenId] = 0;
     balanceOfToken[parentOftoken[_tokenId]] += r;
@@ -146,9 +146,9 @@ contract SmartSignature is ERC721{
   }
 
   function buy (uint256 _tokenId) payable public {
-    require(priceOf(_tokenId) &gt; 0);
+    require(priceOf(_tokenId) > 0);
     require(ownerOf(_tokenId) != address(0));
-    require(msg.value &gt;= priceOf(_tokenId));
+    require(msg.value >= priceOf(_tokenId));
     require(ownerOf(_tokenId) != msg.sender);
     require(!isContract(msg.sender));
     require(msg.sender != address(0));
@@ -164,17 +164,17 @@ contract SmartSignature is ERC721{
     Bought(_tokenId, newOwner, price);
     Sold(_tokenId, oldOwner, price);
 
-    // Devevloper&#39;s cut which is left in contract and accesed by
+    // Devevloper's cut which is left in contract and accesed by
     // `withdrawAll` and `withdrawAmountTo` methods.
     uint256 devCut = calculateDevCut(price);
 
-    // Transfer payment to old owner minus the developer&#39;s cut.
+    // Transfer payment to old owner minus the developer's cut.
     oldOwner.transfer(price.sub(devCut));
     uint256 shareHolderCut = devCut.div(20);
     ownerOftoken[parentOftoken[_tokenId]].transfer(shareHolderCut);
     balanceOfToken[_tokenId] += devCut.sub(shareHolderCut);
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
   }
@@ -182,11 +182,11 @@ contract SmartSignature is ERC721{
   /* ERC721 */
 
   function name() public view returns (string name) {
-    return &quot;smartsignature.io&quot;;
+    return "smartsignature.io";
   }
 
   function symbol() public view returns (string symbol) {
-    return &quot;SSI&quot;;
+    return "SSI";
   }
 
   function totalSupply() public view returns (uint256 _totalSupply) {
@@ -196,7 +196,7 @@ contract SmartSignature is ERC721{
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; counter; i++) {
+    for (uint256 i = 0; i < counter; i++) {
       if (ownerOf(i) == _owner) {
         counter++;
       }
@@ -229,7 +229,7 @@ contract SmartSignature is ERC721{
     uint256[] memory tokens = new uint256[](balanceOf(_owner));
 
     uint256 tokenCounter = 0;
-    for (uint256 i = 0; i &lt; counter; i++) {
+    for (uint256 i = 0; i < counter; i++) {
       if (ownerOf(i) == _owner) {
         tokens[tokenCounter] = i;
         tokenCounter += 1;
@@ -240,7 +240,7 @@ contract SmartSignature is ERC721{
   }
 
   function tokenExists (uint256 _tokenId) public view returns (bool _exists) {
-    return priceOf(_tokenId) &gt; 0;
+    return priceOf(_tokenId) > 0;
   }
 
   function approvedFor(uint256 _tokenId) public view returns (address _approved) {
@@ -304,16 +304,16 @@ contract SmartSignature is ERC721{
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
   
   function changePrice(uint256 _tokenId, uint256 _price) onlyOwner(_tokenId) public {
-    require(now &gt;= freeOftoken[_tokenId]);
+    require(now >= freeOftoken[_tokenId]);
     priceOftoken[_tokenId] = _price;
   }
   
   function issueToken(uint256 _price, uint256 _frozen, uint256 _parent) public {
-    require(_parent &lt;= counter);
+    require(_parent <= counter);
     creatorOftoken[counter] = ownerOftoken[counter] = msg.sender;
     priceOftoken[counter] = _price;
     parentOftoken[counter] = _parent;

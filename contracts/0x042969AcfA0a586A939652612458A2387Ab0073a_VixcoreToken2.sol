@@ -30,7 +30,7 @@ contract VixcoreToken2 is Owned {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;   
+    mapping (address => uint256) public balanceOf;   
  
     uint public totalTokenSold; 
     uint public totalWeiReceived;  
@@ -86,9 +86,9 @@ contract VixcoreToken2 is Owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -114,7 +114,7 @@ contract VixcoreToken2 is Owned {
     } 
 
     /**
-     * Default function when someone&#39;s transferring to this contract 
+     * Default function when someone's transferring to this contract 
      * The next 3 functions are the same
      */  
     function () payable public {
@@ -131,11 +131,11 @@ contract VixcoreToken2 is Owned {
         uint phase2 = phase1 + 1500000000000000000000000000;
         uint phase3 = phase2 + 1000000000000000000000000000; //phase 3 should be less than supply
 
-        if(totalTokenSold &lt;= phase1){
+        if(totalTokenSold <= phase1){
             _exchange(weiValue, 5000000);
-        }else if(totalTokenSold &lt;= phase2){
+        }else if(totalTokenSold <= phase2){
             _exchange(weiValue, 4000000);
-        }else if(totalTokenSold &lt;= phase3){
+        }else if(totalTokenSold <= phase3){
             _exchange(weiValue, 3500000);
         }else{
             emit OverSoftCap(msg.sender, weiValue);
@@ -164,8 +164,8 @@ contract VixcoreToken2 is Owned {
      * Only owner can call this function 
      */
     function withdraw(uint _amount) onlyOwner public {
-        require(_amount &gt; 0);
-        require(_amount &lt;= weiBalance);     // Amount withdraw should be less or equal to balance
+        require(_amount > 0);
+        require(_amount <= weiBalance);     // Amount withdraw should be less or equal to balance
         if (owner.send(_amount)) {
             weiBalance -= _amount;
             emit Withdrawal(owner, _amount);

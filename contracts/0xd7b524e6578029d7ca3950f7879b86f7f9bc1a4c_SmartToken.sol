@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -44,19 +44,19 @@ contract IERC20Token {
 contract ERC20Token is IERC20Token {
     using SafeMath for uint256;
 
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;&#39;;
-    string public symbol = &#39;&#39;;
+    string public standard = 'Token 0.1';
+    string public name = '';
+    string public symbol = '';
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     function ERC20Token(string _name, string _symbol, uint8 _decimals) {
-        require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0);
+        require(bytes(_name).length > 0 && bytes(_symbol).length > 0);
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
@@ -153,9 +153,9 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
     bool public transfersEnabled = true; 
 
     // Wallets, which allowed the transaction during the crowdfunding.
-    mapping (address =&gt; bool) private fundingWallets;
+    mapping (address => bool) private fundingWallets;
     // Wallets B2BX Project, which will be locked the tokens
-    mapping (address =&gt; allocationLock) public allocations;
+    mapping (address => allocationLock) public allocations;
 
     struct allocationLock {
         uint256 value;
@@ -170,7 +170,7 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
 
     /// @notice BXN Project - Initializing crowdfunding.
     /// @dev Constructor.
-    function SmartToken() ERC20Token(&quot;BITTXN&quot;, &quot;BXN&quot;, 18) {
+    function SmartToken() ERC20Token("BITTXN", "BXN", 18) {
         // The main, cold wallet for the distribution of tokens.
         fundingWallet = msg.sender; 
 
@@ -187,7 +187,7 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
         fundingWallets[0xc55c8D13CD5DA748c30918f899447983B53d896b] = true;
     }
 
-    // Validates an address - currently only checks that it isn&#39;t null.
+    // Validates an address - currently only checks that it isn't null.
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -219,19 +219,19 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
         return super.transferFrom(_from, _to, _value);
     }
 
-    /// @notice This function can accept for blocking no more than &quot;totalProjectToken&quot;.
+    /// @notice This function can accept for blocking no more than "totalProjectToken".
     /// @dev Lock tokens to a specified address.
     /// @param _to address      The address to lock tokens to.
     /// @param _value uint256   The amount of tokens to be locked.
     /// @param _end uint256     The end of the lock period.
     function lock(address _to, uint256 _value, uint256 _end) internal validAddress(_to) onlyOwner returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
-        assert(totalProjectToken &gt; 0);
+        assert(totalProjectToken > 0);
 
-        // Check that this lock doesn&#39;t exceed the total amount of tokens currently available for totalProjectToken.
+        // Check that this lock doesn't exceed the total amount of tokens currently available for totalProjectToken.
         totalLockToken = totalLockToken.add(_value);
-        assert(totalProjectToken &gt;= totalLockToken);
+        assert(totalProjectToken >= totalLockToken);
 
         // Make sure that a single address can be locked tokens only once.
         require(allocations[_to].value == 0);
@@ -252,7 +252,7 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
     /// @dev Unlock tokens at the address to the caller function.
     function unlock() external {
         require(allocations[msg.sender].locked);
-        require(now &gt;= allocations[msg.sender].end);
+        require(now >= allocations[msg.sender].end);
         
         balanceOf[msg.sender] = balanceOf[msg.sender].add(allocations[msg.sender].value);
 
@@ -262,7 +262,7 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
         Unlock(this, msg.sender, allocations[msg.sender].value);
     }
 
-    /// @notice BXN Allocation - finalize crowdfunding &amp; time-locked vault of tokens allocated
+    /// @notice BXN Allocation - finalize crowdfunding & time-locked vault of tokens allocated
     /// to BXN company, developers and Airdrop program.
     function finalize() external onlyOwner {
         require(fundingEnabled);
@@ -271,7 +271,7 @@ contract SmartToken is ISmartToken, ERC20Token, Owned {
         // totalSoldTokens is 80% of the total number of tokens.
         totalSoldTokens = maxSaleToken.sub(balanceOf[fundingWallet]);
 
-        // totalProjectToken = totalSoldTokens * 50 / 50 (50% this is BXN Project &amp; 50% this is totalSoldTokens)
+        // totalProjectToken = totalSoldTokens * 50 / 50 (50% this is BXN Project & 50% this is totalSoldTokens)
         //
         // |----------totalSoldTokens-----totalProjectToken|
         // |================50%====|================50%====|

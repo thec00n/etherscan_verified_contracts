@@ -18,14 +18,14 @@ library     SafeMath
     //--------------------------------------------------------------------------
     function sub(uint256 a, uint256 b) internal pure returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     //--------------------------------------------------------------------------
     function add(uint256 a, uint256 b) internal pure returns (uint256) 
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,16 +48,16 @@ contract    ERC20
     address public              owner;          // Owner of this contract
     address public              admin;          // The one who is allowed to do changes 
 
-    mapping(address =&gt; uint256)                         balances;       // Maintain balance in a mapping
-    mapping(address =&gt; mapping (address =&gt; uint256))    allowances;     // Allowances index-1 = Owner account   index-2 = spender account
+    mapping(address => uint256)                         balances;       // Maintain balance in a mapping
+    mapping(address => mapping (address => uint256))    allowances;     // Allowances index-1 = Owner account   index-2 = spender account
 
     //------ TOKEN SPECIFICATION
 
-    string  public  constant    name       = &quot;BQT Official Token&quot;;
-    string  public  constant    symbol     = &quot;BQT&quot;;
+    string  public  constant    name       = "BQT Official Token";
+    string  public  constant    symbol     = "BQT";
     uint256 public  constant    decimals   = 18;      // Handle the coin as FIAT (2 decimals). ETH Handles 18 decimal places
     uint256 public  constant    initSupply = 800000000 * 10**decimals;        // 10**18 max
-    uint256 public  constant    supplyReserveVal = 600000000 * 10**decimals;          // if quantity =&gt; the ##MACRO## addrs &quot;* 10**decimals&quot; 
+    uint256 public  constant    supplyReserveVal = 600000000 * 10**decimals;          // if quantity => the ##MACRO## addrs "* 10**decimals" 
 
     //-----
 
@@ -78,12 +78,12 @@ contract    ERC20
 
     modifier duringIcoOnlyTheOwner()  // if not during the ico : everyone is allowed at anytime
     { 
-        require( now&gt;icoDeadLine || msg.sender==owner );
+        require( now>icoDeadLine || msg.sender==owner );
         _;
     }
 
-    modifier icoFinished()          { require(now &gt; icoDeadLine);           _; }
-    modifier icoNotFinished()       { require(now &lt;= icoDeadLine);          _; }
+    modifier icoFinished()          { require(now > icoDeadLine);           _; }
+    modifier icoNotFinished()       { require(now <= icoDeadLine);          _; }
     modifier icoNotPaused()         { require(isIcoPaused==false);          _; }
     modifier icoPaused()            { require(isIcoPaused==true);           _; }
     modifier onlyOwner()            { require(msg.sender==owner);           _; }
@@ -133,21 +133,21 @@ contract    ERC20
         return balances[walletAddress];
     }
     //--------------------------------------------------------------------------
-    function transfer(address toAddr, uint256 amountInWei)  public   duringIcoOnlyTheOwner   returns (bool)     // don&#39;t icoNotPaused here. It&#39;s a logic issue. 
+    function transfer(address toAddr, uint256 amountInWei)  public   duringIcoOnlyTheOwner   returns (bool)     // don't icoNotPaused here. It's a logic issue. 
     {
-        require(toAddr!=0x0 &amp;&amp; toAddr!=msg.sender &amp;&amp; amountInWei&gt;0);     // Prevent transfer to 0x0 address and to self, amount must be &gt;0
+        require(toAddr!=0x0 && toAddr!=msg.sender && amountInWei>0);     // Prevent transfer to 0x0 address and to self, amount must be >0
 
         uint256 availableTokens = balances[msg.sender];
 
         //----- Checking Token reserve first : if during ICO    
 
-        if (msg.sender==owner &amp;&amp; now &lt;= icoDeadLine)                    // ICO Reserve Supply checking: Don&#39;t touch the RESERVE of tokens when owner is selling
+        if (msg.sender==owner && now <= icoDeadLine)                    // ICO Reserve Supply checking: Don't touch the RESERVE of tokens when owner is selling
         {
-            assert(amountInWei&lt;=availableTokens);
+            assert(amountInWei<=availableTokens);
 
             uint256 balanceAfterTransfer = availableTokens.sub(amountInWei);      
 
-            assert(balanceAfterTransfer &gt;= icoReserveSupply);           // We try to sell more than allowed during an ICO
+            assert(balanceAfterTransfer >= icoReserveSupply);           // We try to sell more than allowed during an ICO
         }
 
         //-----
@@ -167,9 +167,9 @@ contract    ERC20
     //--------------------------------------------------------------------------
     function transferFrom(address fromAddr, address toAddr, uint256 amountInWei)  public  returns (bool) 
     {
-        if (amountInWei &lt;= 0)                                   return false;
-        if (allowances[fromAddr][msg.sender] &lt; amountInWei)     return false;
-        if (balances[fromAddr] &lt; amountInWei)                   return false;
+        if (amountInWei <= 0)                                   return false;
+        if (allowances[fromAddr][msg.sender] < amountInWei)     return false;
+        if (balances[fromAddr] < amountInWei)                   return false;
 
         balances[fromAddr]               = balances[fromAddr].sub(amountInWei);
         balances[toAddr]                 = balances[toAddr].add(amountInWei);
@@ -190,7 +190,7 @@ contract    ERC20
     //--------------------------------------------------------------------------
     function() public                       
     {
-        assert(true == false);      // If Ether is sent to this address, don&#39;t handle it -&gt; send it back.
+        assert(true == false);      // If Ether is sent to this address, don't handle it -> send it back.
     }
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -235,7 +235,7 @@ contract    ERC20
     //--------------------------------------------------------------------------
     function    isHardcapReached()  public view returns(bool)
     {
-        return (isStoppingIcoOnHardCap &amp;&amp; initSupply-balances[owner] &gt; hardCap);
+        return (isStoppingIcoOnHardCap && initSupply-balances[owner] > hardCap);
     }
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -265,13 +265,13 @@ contract    ERC20
     //--------------------------------------------------------------------------*/
     function destroyRemainingTokens() public onlyAdmin icoFinished icoNotPaused  returns(uint)
     {
-        require(msg.sender==owner &amp;&amp; now&gt;icoDeadLine);
+        require(msg.sender==owner && now>icoDeadLine);
 
         address   toAddr = 0x0000000000000000000000000000000000000000;
 
         uint256   amountToBurn = balances[owner];
 
-        if (amountToBurn &gt; icoReserveSupply)
+        if (amountToBurn > icoReserveSupply)
         {
             amountToBurn = amountToBurn.sub(icoReserveSupply);
         }

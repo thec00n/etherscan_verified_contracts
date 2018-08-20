@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 
-//&gt;&gt; Reference to https://github.com/OpenZeppelin/zeppelin-solidity
+//>> Reference to https://github.com/OpenZeppelin/zeppelin-solidity
 
 /**
  * @title SafeMath
@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,12 +44,12 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
-//&lt;&lt; Reference to https://github.com/OpenZeppelin/zeppelin-solidity
+//<< Reference to https://github.com/OpenZeppelin/zeppelin-solidity
 
 
 
@@ -64,7 +64,7 @@ contract Coin {
  */
 contract MultiOwnable {
     address public root;
-    mapping (address =&gt; address) public owners; // owner =&gt; parent of owner
+    mapping (address => address) public owners; // owner => parent of owner
     
     /**
     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
@@ -96,7 +96,7 @@ contract MultiOwnable {
      * @dev Deleting owners
      */
     function deleteOwner(address _owner) onlyOwner public returns (bool) {
-        require(owners[_owner] == msg.sender || (owners[_owner] != 0 &amp;&amp; msg.sender == root));
+        require(owners[_owner] == msg.sender || (owners[_owner] != 0 && msg.sender == root));
         owners[_owner]= 0;
         return true;
     }
@@ -146,7 +146,7 @@ contract KStarCoinSale is MultiOwnable {
     function updateICOVars(eICOLevel _level, uint _rate, uint _minWei) onlyOwner public returns (bool) {
         require(checkValidLevel(_level));
         require(_rate != 0);
-        require(_minWei &gt;= 1 szabo);
+        require(_minWei >= 1 szabo);
         
         level= _level;
         rate= _rate;
@@ -162,13 +162,13 @@ contract KStarCoinSale is MultiOwnable {
     
     function buyCoin(address beneficiary) onSale public payable {
         require(beneficiary != address(0));
-        require(msg.value &gt;= minWei);
+        require(msg.value >= minWei);
 
         // calculate token amount to be created
         uint256 coins= getCoinAmount(msg.value);
         
         // update state 
-        coin.sell(beneficiary, coins, &quot;&quot;);
+        coin.sell(beneficiary, coins, "");
         
         forwardFunds();
     }

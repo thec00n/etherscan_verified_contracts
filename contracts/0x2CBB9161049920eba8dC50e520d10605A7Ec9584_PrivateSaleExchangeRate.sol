@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -86,7 +86,7 @@ contract PrivateSaleExchangeRate is Ownable {
     event UpdateUsdEthRate(uint256 _rate);
     
     function PrivateSaleExchangeRate(uint256 _rate) public {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
         timestamp = now;
     }
@@ -95,7 +95,7 @@ contract PrivateSaleExchangeRate is Ownable {
      * @param _rate USD/ETH
      */
     function updateUsdEthRate(uint256 _rate) public onlyOwner {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         require(rate != _rate);
         emit UpdateUsdEthRate(_rate);
         rate = _rate;
@@ -111,17 +111,17 @@ contract PrivateSaleExchangeRate is Ownable {
         // US cost for 10,000 tokens
         uint256 cost = 550;
         
-        if(_weiAmount &lt; 10 ether){ 
+        if(_weiAmount < 10 ether){ 
             cost = 550; 
-        }else if(_weiAmount &lt; 25 ether){ 
+        }else if(_weiAmount < 25 ether){ 
             cost = 545; 
-        }else if(_weiAmount &lt; 50 ether){ 
+        }else if(_weiAmount < 50 ether){ 
             cost = 540; 
-        }else if(_weiAmount &lt; 250 ether){ 
+        }else if(_weiAmount < 250 ether){ 
             cost = 530; 
-        }else if(_weiAmount &lt; 500 ether){ 
+        }else if(_weiAmount < 500 ether){ 
             cost = 520; 
-        }else if(_weiAmount &lt; 1000 ether){ 
+        }else if(_weiAmount < 1000 ether){ 
             cost = 510;
         }else{
             cost = 500;

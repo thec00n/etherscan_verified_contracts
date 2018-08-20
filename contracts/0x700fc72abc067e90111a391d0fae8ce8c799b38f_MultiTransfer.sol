@@ -12,7 +12,7 @@ contract MultiTransfer {
         
         
     function multiTransfer(ERC20 token, address[] Airdrop2, uint256 amount) public {
-        for (uint256 i = 0; i &lt; Airdrop2.length; i++) {
+        for (uint256 i = 0; i < Airdrop2.length; i++) {
             token.transfer( Airdrop2[i], amount * 10 ** 18);
         }
     }

@@ -14,8 +14,8 @@ contract metahashtoken {
     address public owner;           /* owner                  */
     
     /* arrays */
-    mapping (address =&gt; uint256) public balance;                  /* array of balance              */
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;    /* arrays of allowed transfers  */
+    mapping (address => uint256) public balance;                  /* array of balance              */
+    mapping (address => mapping (address => uint256)) allowed;    /* arrays of allowed transfers  */
     
     /* events */
     event Burn(address indexed from, uint256 value);
@@ -44,12 +44,12 @@ contract metahashtoken {
         }
         
         /* tokens are not enough */
-        if (balance[addrSender] &lt; _value){
+        if (balance[addrSender] < _value){
             revert();
         }
         
         /* overflow */
-        if ((balance[_to] + _value) &lt; balance[_to]){
+        if ((balance[_to] + _value) < balance[_to]){
             revert();
         }
         balance[addrSender] -= _value;
@@ -69,12 +69,12 @@ contract metahashtoken {
         var _allowance = allowed[_from][msg.sender];
         
         /* check of allowed value */
-        if (_allowance &lt; _value){
+        if (_allowance < _value){
             revert();
         }
         
         /* not enough tokens */
-        if (balance[_from] &lt; _value){
+        if (balance[_from] < _value){
             revert();
         }
         balance[_to] += _value;
@@ -93,8 +93,8 @@ contract metahashtoken {
     
     /* constructor */
     function metahashtoken() public {
-        name = &#39;BITCOMO&#39;;
-        symbol = &#39;BM&#39;;
+        name = 'BITCOMO';
+        symbol = 'BM';
         decimals = 2;
         owner = msg.sender;
         totalTokens = 0; /* when creating a token we do not add them */
@@ -110,7 +110,7 @@ contract metahashtoken {
     
     function setOptions(uint256 tokenCreate) public {
         /* set the amount, give the tokens to the contract */
-        if ((msg.sender == ownerContract) &amp;&amp; (finalyze == 0)){
+        if ((msg.sender == ownerContract) && (finalyze == 0)){
             totalTokens += tokenCreate;
             balance[ownerContract] += tokenCreate;
         } else {
@@ -119,7 +119,7 @@ contract metahashtoken {
     }
     
     function burn(uint256 _value) public returns (bool success) {
-        if (balance[msg.sender] &lt;= _value){
+        if (balance[msg.sender] <= _value){
             revert();
         }
 

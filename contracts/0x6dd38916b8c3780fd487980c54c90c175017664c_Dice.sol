@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -8,7 +8,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -21,7 +21,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -30,7 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-pragma solidity ^0.4.0;//please import oraclizeAPI_pre0.4.sol when solidity &lt; 0.4.0
+pragma solidity ^0.4.0;//please import oraclizeAPI_pre0.4.sol when solidity < 0.4.0
 
 contract OraclizeI {
     address public cbAddress;
@@ -76,15 +76,15 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 networkID) internal returns(bool){
-        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed);
             return true;
         }
-        if (getCodeSize(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1);
             return true;
         }
-        if (getCodeSize(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa);
             return true;
         }
@@ -93,42 +93,42 @@ contract usingOraclize {
     
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_cbAddress() oraclizeAPI internal returns (address){
@@ -156,14 +156,14 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -174,15 +174,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -192,19 +192,19 @@ contract usingOraclize {
     {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) 
+        if(h.length < 1 || n.length < 1 || (n.length > h.length)) 
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;                                  
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }   
@@ -225,24 +225,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -255,8 +255,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -265,12 +265,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
     
     function uint2str(uint i) internal returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -289,7 +289,7 @@ contract usingOraclize {
     
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 contract Dice is usingOraclize {
 
@@ -325,8 +325,8 @@ contract Dice is usingOraclize {
     }
 
     //Starting at 1
-    mapping(address =&gt; uint) public investorIDs;
-    mapping(uint =&gt; Investor) public investors;
+    mapping(address => uint) public investorIDs;
+    mapping(uint => Investor) public investors;
     uint public numInvestors = 0;
 
     uint public invested = 0;
@@ -337,7 +337,7 @@ contract Dice is usingOraclize {
 
     WithdrawalProposal public proposedWithdrawal;
 
-    mapping (bytes32 =&gt; Bet) public bets;
+    mapping (bytes32 => Bet) public bets;
     bytes32[] public betsKeys;
 
     uint public investorsProfit = 0;
@@ -406,7 +406,7 @@ contract Dice is usingOraclize {
     }
 
     modifier onlyMoreThanMinInvestment {
-        if (msg.value &lt;= getMinInvestment()) throw;
+        if (msg.value <= getMinInvestment()) throw;
         _;
     }
 
@@ -421,7 +421,7 @@ contract Dice is usingOraclize {
     }
 
     modifier onlyIfBetSizeIsStillCorrect(bytes32 myid) {
-        if ((((bets[myid].amountBet * ((10000 - edge) - pwin)) / pwin ) &lt;= (maxWin * getBankroll()) / 10000)  &amp;&amp; (bets[myid].amountBet &gt;= minBet)) {
+        if ((((bets[myid].amountBet * ((10000 - edge) - pwin)) / pwin ) <= (maxWin * getBankroll()) / 10000)  && (bets[myid].amountBet >= minBet)) {
              _;
         }
         else {
@@ -433,7 +433,7 @@ contract Dice is usingOraclize {
 
     modifier onlyIfValidRoll(bytes32 myid, string result) {
         uint numberRolled = parseInt(result);
-        if ((numberRolled &lt; 1 || numberRolled &gt; 10000) &amp;&amp; bets[myid].numberRolled == 0) {
+        if ((numberRolled < 1 || numberRolled > 10000) && bets[myid].numberRolled == 0) {
             bets[myid].numberRolled = INVALID_BET_MARKER;
             safeSend(bets[myid].playerAddress, bets[myid].amountBet);
             return;
@@ -442,13 +442,13 @@ contract Dice is usingOraclize {
     }
 
     modifier onlyWinningBets(uint numberRolled) {
-        if (numberRolled - 1 &lt; pwin) {
+        if (numberRolled - 1 < pwin) {
             _;
         }
     }
 
     modifier onlyLosingBets(uint numberRolled) {
-        if (numberRolled - 1 &gt;= pwin) {
+        if (numberRolled - 1 >= pwin) {
             _;
         }
     }
@@ -465,24 +465,24 @@ contract Dice is usingOraclize {
     }
 
     modifier onlyIfValidGas(uint newGasLimit) {
-        if (ORACLIZE_GAS_LIMIT + newGasLimit &lt; ORACLIZE_GAS_LIMIT) throw;
-        if (newGasLimit &lt; 25000) throw;
+        if (ORACLIZE_GAS_LIMIT + newGasLimit < ORACLIZE_GAS_LIMIT) throw;
+        if (newGasLimit < 25000) throw;
         _;
     }
 
     modifier onlyIfNotProcessed(bytes32 myid) {
-        if (bets[myid].numberRolled &gt; 0) throw;
+        if (bets[myid].numberRolled > 0) throw;
         _;
     }
 
     modifier onlyIfEmergencyTimeOutHasPassed {
-        if (proposedWithdrawal.atTime + EMERGENCY_TIMEOUT &gt; now) throw;
+        if (proposedWithdrawal.atTime + EMERGENCY_TIMEOUT > now) throw;
         _;
     }
 
     modifier investorsInvariant {
         _;
-        if (numInvestors &gt; maxInvestors) throw;
+        if (numInvestors > maxInvestors) throw;
     }
 
     //CONSTANT HELPER FUNCTIONS
@@ -491,9 +491,9 @@ contract Dice is usingOraclize {
         constant
         returns(uint) {
 
-        if ((invested &lt; investorsProfit) ||
-            (invested + investorsProfit &lt; invested) ||
-            (invested + investorsProfit &lt; investorsLosses)) {
+        if ((invested < investorsProfit) ||
+            (invested + investorsProfit < invested) ||
+            (invested + investorsProfit < investorsLosses)) {
             return 0;
         }
         else {
@@ -527,7 +527,7 @@ contract Dice is usingOraclize {
         constant
         returns(address, uint, uint) {
 
-        if (id &lt; betsKeys.length) {
+        if (id < betsKeys.length) {
             bytes32 betKey = betsKeys[id];
             return (bets[betKey].playerAddress, bets[betKey].amountBet, bets[betKey].numberRolled);
         }
@@ -544,7 +544,7 @@ contract Dice is usingOraclize {
         constant
         returns(uint) {
 
-        uint oraclizeFee = OraclizeI(OAR.getAddress()).getPrice(&quot;URL&quot;, ORACLIZE_GAS_LIMIT + safeGas);
+        uint oraclizeFee = OraclizeI(OAR.getAddress()).getPrice("URL", ORACLIZE_GAS_LIMIT + safeGas);
         return oraclizeFee + minBet;
     }
 
@@ -552,7 +552,7 @@ contract Dice is usingOraclize {
         constant
         returns(uint) {
 
-        uint oraclizeFee = OraclizeI(OAR.getAddress()).getPrice(&quot;URL&quot;, ORACLIZE_GAS_LIMIT + safeGas);
+        uint oraclizeFee = OraclizeI(OAR.getAddress()).getPrice("URL", ORACLIZE_GAS_LIMIT + safeGas);
         uint betValue =  (maxWin * getBankroll()) * pwin / (10000 * (10000 - edge - pwin));
         return betValue + oraclizeFee;
     }
@@ -579,9 +579,9 @@ contract Dice is usingOraclize {
         uint profit = getProfitShare(currentInvestor);
         uint losses = getLossesShare(currentInvestor);
 
-        if ((invested + profit &lt; profit) ||
-            (invested + profit &lt; invested) ||
-            (invested + profit &lt; losses))
+        if ((invested + profit < profit) ||
+            (invested + profit < invested) ||
+            (invested + profit < losses))
             return 0;
         else
             return invested + profit - losses;
@@ -592,8 +592,8 @@ contract Dice is usingOraclize {
         returns(uint) {
 
         uint investorID = 1;
-        for (uint i = 1; i &lt;= numInvestors; i++) {
-            if (getBalance(investors[i].investorAddress) &lt; getBalance(investors[investorID].investorAddress)) {
+        for (uint i = 1; i <= numInvestors; i++) {
+            if (getBalance(investors[i].investorAddress) < getBalance(investors[investorID].investorAddress)) {
                 investorID = i;
             }
         }
@@ -624,7 +624,7 @@ contract Dice is usingOraclize {
             return;
         }
 
-        if (this.balance &lt; value) {
+        if (this.balance < value) {
             LOG_ValueIsTooBig();
             return;
         }
@@ -657,13 +657,13 @@ contract Dice is usingOraclize {
 
         uint copyInvested;
 
-        for (uint i = 1; i &lt;= numInvestors; i++) {
+        for (uint i = 1; i <= numInvestors; i++) {
             address currentInvestor = investors[i].investorAddress;
             uint profitOfInvestor = getProfitShare(currentInvestor);
             uint lossesOfInvestor = getLossesShare(currentInvestor);
             //Check for overflow and underflow
-            if ((investors[i].amountInvested + profitOfInvestor &gt;= investors[i].amountInvested) &amp;&amp;
-                (investors[i].amountInvested + profitOfInvestor &gt;= lossesOfInvestor))  {
+            if ((investors[i].amountInvested + profitOfInvestor >= investors[i].amountInvested) &&
+                (investors[i].amountInvested + profitOfInvestor >= lossesOfInvestor))  {
                 investors[i].amountInvested += profitOfInvestor - lossesOfInvestor;
                 LOG_InvestorCapitalUpdate(currentInvestor, (int) (profitOfInvestor - lossesOfInvestor));
             }
@@ -672,7 +672,7 @@ contract Dice is usingOraclize {
                 LOG_EmergencyAutoStop();
             }
 
-            if (copyInvested + investors[i].amountInvested &gt;= copyInvested)
+            if (copyInvested + investors[i].amountInvested >= copyInvested)
                 copyInvested += investors[i].amountInvested;
         }
 
@@ -683,7 +683,7 @@ contract Dice is usingOraclize {
         profitDistributed = true;
     }
 
-    // SECTION II: BET &amp; BET PROCESSING
+    // SECTION II: BET & BET PROCESSING
 
     function()
         payable {
@@ -695,15 +695,15 @@ contract Dice is usingOraclize {
         payable
         onlyIfNotStopped {
 
-        uint oraclizeFee = OraclizeI(OAR.getAddress()).getPrice(&quot;URL&quot;, ORACLIZE_GAS_LIMIT + safeGas);
-        if (oraclizeFee &gt;= msg.value) throw;
+        uint oraclizeFee = OraclizeI(OAR.getAddress()).getPrice("URL", ORACLIZE_GAS_LIMIT + safeGas);
+        if (oraclizeFee >= msg.value) throw;
         uint betValue = msg.value - oraclizeFee;
-        if ((((betValue * ((10000 - edge) - pwin)) / pwin ) &lt;= (maxWin * getBankroll()) / 10000) &amp;&amp; (betValue &gt;= minBet)) {
+        if ((((betValue * ((10000 - edge) - pwin)) / pwin ) <= (maxWin * getBankroll()) / 10000) && (betValue >= minBet)) {
             LOG_NewBet(msg.sender, betValue);
             bytes32 myid =
                 oraclize_query(
-                    &quot;nested&quot;,
-                    &quot;[URL] [&#39;json(https://api.random.org/json-rpc/1/invoke).result.random.data.0&#39;, &#39;\\n{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;,\&quot;method\&quot;:\&quot;generateSignedIntegers\&quot;,\&quot;params\&quot;:{\&quot;apiKey\&quot;:${[decrypt] BGY6bTXlCGZvb4G+m/7GGsPb1+QjJV0fcy2HLxf5m+6wWiRYm9eDw/C7tgusIKEBvFDOER9P9Bcg0aoZKlikx1juY9RPkRs0ioSFkYavyaBmmWCDsLQdBv+1kojrJvUnseMaPDRuj3UbYMpg5dsWsgjgSAgiWfg=},\&quot;n\&quot;:1,\&quot;min\&quot;:1,\&quot;max\&quot;:10000${[identity] \&quot;}\&quot;},\&quot;id\&quot;:1${[identity] \&quot;}\&quot;}&#39;]&quot;,
+                    "nested",
+                    "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random.data.0', '\\n{\"jsonrpc\":\"2.0\",\"method\":\"generateSignedIntegers\",\"params\":{\"apiKey\":${[decrypt] BGY6bTXlCGZvb4G+m/7GGsPb1+QjJV0fcy2HLxf5m+6wWiRYm9eDw/C7tgusIKEBvFDOER9P9Bcg0aoZKlikx1juY9RPkRs0ioSFkYavyaBmmWCDsLQdBv+1kojrJvUnseMaPDRuj3UbYMpg5dsWsgjgSAgiWfg=},\"n\":1,\"min\":1,\"max\":10000${[identity] \"}\"},\"id\":1${[identity] \"}\"}']",
                     ORACLIZE_GAS_LIMIT + safeGas
                 );
             bets[myid] = Bet(msg.sender, betValue, 0);
@@ -737,8 +737,8 @@ contract Dice is usingOraclize {
         safeSend(thisBet.playerAddress, winAmount);
 
         //Check for overflow and underflow
-        if ((investorsLosses + winAmount &lt; investorsLosses) ||
-            (investorsLosses + winAmount &lt; thisBet.amountBet)) {
+        if ((investorsLosses + winAmount < investorsLosses) ||
+            (investorsLosses + winAmount < thisBet.amountBet)) {
                 throw;
             }
 
@@ -753,8 +753,8 @@ contract Dice is usingOraclize {
         safeSend(thisBet.playerAddress, 1);
 
         //Check for overflow and underflow
-        if ((investorsProfit + thisBet.amountBet &lt; investorsProfit) ||
-            (investorsProfit + thisBet.amountBet &lt; thisBet.amountBet) ||
+        if ((investorsProfit + thisBet.amountBet < investorsProfit) ||
+            (investorsProfit + thisBet.amountBet < thisBet.amountBet) ||
             (thisBet.amountBet == 1)) {
                 throw;
             }
@@ -765,7 +765,7 @@ contract Dice is usingOraclize {
         safeSend(houseAddress, houseProfit);
     }
 
-    //SECTION III: INVEST &amp; DIVEST
+    //SECTION III: INVEST & DIVEST
 
     function increaseInvestment()
         payable
@@ -812,7 +812,7 @@ contract Dice is usingOraclize {
         uint currentID = investorIDs[currentInvestor];
         uint amountToReturn = getBalance(currentInvestor);
 
-        if ((invested &gt;= investors[currentID].amountInvested)) {
+        if ((invested >= investors[currentID].amountInvested)) {
             invested -= investors[currentID].amountInvested;
             uint divestFeeAmount =  (amountToReturn*divestFee)/10000;
             amountToReturn -= divestFeeAmount;
@@ -846,7 +846,7 @@ contract Dice is usingOraclize {
         onlyOwner {
 
         uint copyNumInvestors = numInvestors;
-        for (uint i = 1; i &lt;= copyNumInvestors; i++) {
+        for (uint i = 1; i <= copyNumInvestors; i++) {
             divest(investors[1].investorAddress);
         }
     }
@@ -923,7 +923,7 @@ contract Dice is usingOraclize {
         onlyOwner {
 
         //Resets previous votes
-        for (uint i = 1; i &lt;= numInvestors; i++) {
+        for (uint i = 1; i <= numInvestors; i++) {
             delete investors[i].votedForEmergencyWithdrawal;
         }
 
@@ -940,14 +940,14 @@ contract Dice is usingOraclize {
         uint numOfVotesInFavour;
         uint amountToWithdraw = this.balance;
 
-        for (uint i = 1; i &lt;= numInvestors; i++) {
+        for (uint i = 1; i <= numInvestors; i++) {
             if (investors[i].votedForEmergencyWithdrawal == true) {
                 numOfVotesInFavour++;
                 delete investors[i].votedForEmergencyWithdrawal;
             }
         }
 
-        if (numOfVotesInFavour &gt;= emergencyWithdrawalRatio * numInvestors / 100) {
+        if (numOfVotesInFavour >= emergencyWithdrawalRatio * numInvestors / 100) {
             if (!proposedWithdrawal.toAddress.send(amountToWithdraw)) {
                 LOG_EmergencyWithdrawalFailed(proposedWithdrawal.toAddress);
             }

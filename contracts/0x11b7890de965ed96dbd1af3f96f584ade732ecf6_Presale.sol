@@ -7,34 +7,34 @@ library SafeMath {
         return c;
     }
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
      }
     function add(uint a, uint b) internal returns (uint) {
          uint c = a + b;
-         assert(c &gt;= a);
+         assert(c >= a);
          return c;
      }
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
      }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -53,15 +53,15 @@ contract tokenLUCG {
 
         }
     /* This creates an array with all balances */
-        mapping (address =&gt; uint256) public balanceOf;
+        mapping (address => uint256) public balanceOf;
 
 }
 
 contract Presale is tokenLUCG {
 
         using SafeMath for uint;
-        string name = &#39;Level Up Coin Gold&#39;;
-        string symbol = &#39;LUCG&#39;;
+        string name = 'Level Up Coin Gold';
+        string symbol = 'LUCG';
         uint8 decimals = 18;
         address manager;
         address public ico;

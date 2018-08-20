@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 
 contract SendGift {
 	address public owner;
-	mapping(address=&gt;address) public friends;
-	mapping(address=&gt;uint256) public received;
-	mapping(address=&gt;uint256) public sent;
+	mapping(address=>address) public friends;
+	mapping(address=>uint256) public received;
+	mapping(address=>uint256) public sent;
 	event Gift(address indexed _sender);
 	modifier onlyOwner() {
       if (msg.sender!=owner) revert();
@@ -17,7 +17,7 @@ contract SendGift {
     
     
     function sendGift(address friend) payable public returns (bool ok){
-        if (msg.value==0 || friend==address(0) || friend==msg.sender || (friend!=owner &amp;&amp; friends[friend]==address(0))) revert();
+        if (msg.value==0 || friend==address(0) || friend==msg.sender || (friend!=owner && friends[friend]==address(0))) revert();
         friends[msg.sender] = friend;
         payOut();
         return true;
@@ -27,7 +27,7 @@ contract SendGift {
         uint256 gift;
         address payee1 = friends[msg.sender];
         if (payee1==address(0)) payee1 = owner;
-        if (received[payee1]&gt;sent[payee1]*2) {
+        if (received[payee1]>sent[payee1]*2) {
             gift = msg.value*49/100;
             address payee2 = friends[payee1];
             if (payee2==address(0)) payee2 = owner;

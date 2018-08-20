@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -30,16 +30,16 @@ contract OwOToken {
 
     using SafeMath for uint256;
 
-    string public constant symbol = &quot;OWO&quot;;
-    string public constant name = &quot;OwO.World Token&quot;;
+    string public constant symbol = "OWO";
+    string public constant name = "OwO.World Token";
     uint public constant decimals = 18;
     address public _multiSigWallet;  // The address to hold the funds donated
     address public owner;
     uint public totalSupply;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -63,7 +63,7 @@ contract OwOToken {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns(bool success){
-      require((balanceOf[msg.sender] &gt;= _value) &amp;&amp; (balanceOf[_to].add(_value)&gt;balanceOf[_to]));
+      require((balanceOf[msg.sender] >= _value) && (balanceOf[_to].add(_value)>balanceOf[_to]));
         balanceOf[msg.sender].sub(_value);                     // Subtract from the sender
         balanceOf[_to].add(_value);                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);

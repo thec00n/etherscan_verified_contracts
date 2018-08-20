@@ -11,7 +11,7 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
@@ -79,7 +79,7 @@ contract Exchange is SafeMath {
         require(exchangeState);
         uint _etherAmountInWei = msg.value;
         uint _tokenAmount = safeDiv(safeMul(_etherAmountInWei, multiplier), priceInWei);
-        if ( _tokenAmount &lt;= tokenExchanged.balanceOf(this) ){
+        if ( _tokenAmount <= tokenExchanged.balanceOf(this) ){
           tokenExchanged.transfer(msg.sender, _tokenAmount);
           TokenTransfer(msg.sender, _tokenAmount);
         } else {

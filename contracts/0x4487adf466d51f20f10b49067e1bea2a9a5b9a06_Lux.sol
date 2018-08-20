@@ -13,23 +13,23 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     }
     contract Lux{
     
 	
-	string public standard = &#39;Lux 1.0&#39;;
+	string public standard = 'Lux 1.0';
     using SafeMath for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -41,7 +41,7 @@ library SafeMath {
     function Lux() 
     {
         totalSupply = 1000000;
-        symbol = &#39;luxcorp&#39;;
+        symbol = 'luxcorp';
         owner =0x0720CF3Db1100aF1BEd64940c6D374A69b9935Ae;
         balances[owner] = 1000000;
         decimals = 0;

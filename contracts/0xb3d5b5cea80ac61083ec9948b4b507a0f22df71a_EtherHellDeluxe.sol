@@ -74,10 +74,10 @@ contract EtherHellDeluxe {
     address owner;
 
     // Mapping from addresses to amounts earned
-    mapping(address =&gt; uint) public earnings;
+    mapping(address => uint) public earnings;
 
     // Mapping from addresses to dividend shares
-    mapping(address =&gt; uint) public dividendShares;
+    mapping(address => uint) public dividendShares;
 
     // Total number of dividend shares
     uint public totalDividendShares;
@@ -98,7 +98,7 @@ contract EtherHellDeluxe {
     uint public deadline;
 
     function EtherHellDeluxe() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         owner = msg.sender;
         round = 1;
         pot = msg.value;
@@ -111,7 +111,7 @@ contract EtherHellDeluxe {
     function computeDeadline() internal view returns (uint) {
         uint _durationDecrease = DURATION_DECREASE_PER_ETHER.mul(pot.div(1 ether));
         uint _duration;
-        if (MINIMUM_DURATION.add(_durationDecrease) &gt; BASE_DURATION) {
+        if (MINIMUM_DURATION.add(_durationDecrease) > BASE_DURATION) {
             _duration = MINIMUM_DURATION;
         } else {
             _duration = BASE_DURATION.sub(_durationDecrease);
@@ -120,7 +120,7 @@ contract EtherHellDeluxe {
     }
 
     modifier advanceRoundIfNeeded {
-        if (now &gt; deadline) {
+        if (now > deadline) {
             uint _nextPot = pot.mul(NEXT_POT_FRAC_TOP).div(NEXT_POT_FRAC_BOT);
             uint _leaderEarnings = pot.sub(_nextPot);
             Winner(now, leader, _leaderEarnings, deadline);
@@ -146,7 +146,7 @@ contract EtherHellDeluxe {
         pot = pot.add(_bidAmountToPot);
         Bid(now, msg.sender, msg.value, pot);
 
-        if (msg.value &gt;= _minLeaderAmount) {
+        if (msg.value >= _minLeaderAmount) {
             uint _dividendShares = msg.value.div(_minLeaderAmount);
             dividendShares[msg.sender] = dividendShares[msg.sender].add(_dividendShares);
             totalDividendShares = totalDividendShares.add(_dividendShares);
@@ -157,8 +157,8 @@ contract EtherHellDeluxe {
     }
 
     function withdrawEarnings() public advanceRoundIfNeeded {
-        require(earnings[msg.sender] &gt; 0);
-        assert(earnings[msg.sender] &lt;= this.balance);
+        require(earnings[msg.sender] > 0);
+        assert(earnings[msg.sender] <= this.balance);
         uint _amount = earnings[msg.sender];
         earnings[msg.sender] = 0;
         msg.sender.transfer(_amount);
@@ -166,11 +166,11 @@ contract EtherHellDeluxe {
     }
 
     function withdrawDividends() public {
-        require(dividendShares[msg.sender] &gt; 0);
+        require(dividendShares[msg.sender] > 0);
         uint _dividendShares = dividendShares[msg.sender];
-        assert(_dividendShares &lt;= totalDividendShares);
+        assert(_dividendShares <= totalDividendShares);
         uint _amount = dividendFund.mul(_dividendShares).div(totalDividendShares);
-        assert(_amount &lt;= this.balance);
+        assert(_amount <= this.balance);
         dividendShares[msg.sender] = 0;
         totalDividendShares = totalDividendShares.sub(_dividendShares);
         dividendFund = dividendFund.sub(_amount);
@@ -200,9 +200,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -210,7 +210,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -219,7 +219,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

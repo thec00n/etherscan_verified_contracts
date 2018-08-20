@@ -17,9 +17,9 @@ contract owned {
         owner = newOwner;
     }
     function isOwner()public{
-        if(msg.sender==owner)emit Log(&quot;Owner&quot;);
+        if(msg.sender==owner)emit Log("Owner");
         else{
-            emit Log(&quot;Not Owner&quot;);
+            emit Log("Not Owner");
         }
     }
 }
@@ -31,8 +31,8 @@ contract ERC20 is owned{
     uint256 public totalSupply;
     uint8 public constant decimals = 4;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
     
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
@@ -83,10 +83,10 @@ contract EPLAY is ERC20 {
     
     uint256 activeUsers;
 
-    mapping(address =&gt; bool) isRegistered;
-    mapping(address =&gt; uint256) accountID;
-    mapping(uint256 =&gt; address) accountFromID;
-    mapping(address =&gt; bool) isTrusted;
+    mapping(address => bool) isRegistered;
+    mapping(address => uint256) accountID;
+    mapping(uint256 => address) accountFromID;
+    mapping(address => bool) isTrusted;
 
     event Burn(address _from,uint256 _value);
     
@@ -110,13 +110,13 @@ contract EPLAY is ERC20 {
     
     function distribute(address[] users,uint256[] balances) public onlyOwner {
          uint i;
-        for(i = 0;i &lt;users.length;i++){
+        for(i = 0;i <users.length;i++){
             transferFrom(owner,users[i],balances[i]);
         }
     }
 
     function burnFrom(address _from, uint256 _value) internal returns (bool success) {
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         balances[_from] -= _value;
         totalSupply -= _value;
         emit Burn(_from, _value);
@@ -149,6 +149,6 @@ contract EPLAY is ERC20 {
     }
 
     function testConnection() external {
-        emit Log(&quot;CONNECTED&quot;);
+        emit Log("CONNECTED");
     }
 }

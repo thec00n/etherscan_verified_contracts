@@ -16,9 +16,9 @@ contract EtherRock {
         uint timesSold;
     }
     
-    mapping (uint =&gt; Rock) public rocks;
+    mapping (uint => Rock) public rocks;
     
-    mapping (address =&gt; uint[]) public rockOwners;
+    mapping (address => uint[]) public rockOwners;
 
     uint public latestNewRockForSale;
     
@@ -134,7 +134,7 @@ contract EtherRock {
     
     function sellRock (uint rockNumber, uint price) {
         require(msg.sender == rocks[rockNumber].owner);
-        require(price &gt; 0);
+        require(price > 0);
         rocks[rockNumber].price = price;
         rocks[rockNumber].currentlyForSale = true;
     }

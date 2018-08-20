@@ -37,20 +37,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal view returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal view returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal view returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,19 +72,19 @@ contract IERC20Token {
 contract ERC20Token is IERC20Token {
   using SafeMath for uint256;
 
-  string public standard = &#39;Token 0.1&#39;;
-  string public name = &#39;&#39;;
-  string public symbol = &#39;&#39;;
+  string public standard = 'Token 0.1';
+  string public name = '';
+  string public symbol = '';
   uint8 public decimals = 0;
   uint256 public totalSupply = 0;
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
   function ERC20Token(string _name, string _symbol, uint8 _decimals) public {
-    require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0);
+    require(bytes(_name).length > 0 && bytes(_symbol).length > 0);
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
@@ -96,7 +96,7 @@ contract ERC20Token is IERC20Token {
   }
 
   function transfer(address _to, uint256 _value) public validAddress(_to) returns (bool) {
-    require(_value &lt;= balanceOf[msg.sender]);
+    require(_value <= balanceOf[msg.sender]);
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
     balanceOf[_to] = balanceOf[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -105,8 +105,8 @@ contract ERC20Token is IERC20Token {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public validAddress(_to) returns (bool) {
-    require(_value &lt;= allowance[_from][msg.sender]);
-    require(_value &lt;= balanceOf[_from]);
+    require(_value <= allowance[_from][msg.sender]);
+    require(_value <= balanceOf[_from]);
     allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
     balanceOf[_from] = balanceOf[_from].sub(_value);
     balanceOf[_to] = balanceOf[_to].add(_value);
@@ -143,12 +143,12 @@ contract SerenityToken is ISerenityToken, ERC20Token, Owned {
   uint256 public totalProjectToken;
   bool public transfersEnabled = false;
 
-  mapping (address =&gt; bool) internal fundingWallets;
+  mapping (address => bool) internal fundingWallets;
 
   event Finalize(address indexed _from, uint256 _value);
   event DisableTransfers(address indexed _from);
 
-  function SerenityToken() ERC20Token(&quot;Serenity&quot;, &quot;SRNT&quot;, 18) public {
+  function SerenityToken() ERC20Token("Serenity", "SRNT", 18) public {
     fundingWallet = msg.sender; 
 
     balanceOf[fundingWallet] = maxSaleToken;
@@ -252,7 +252,7 @@ contract Crowdsale {
 
   SerenityToken public token;
 
-  mapping(uint256 =&gt; uint8) internal icoWeeksDiscounts;
+  mapping(uint256 => uint8) internal icoWeeksDiscounts;
 
   bool public isICOStarted = false; 
   uint256 public icoStartTime; 
@@ -291,8 +291,8 @@ contract Crowdsale {
 
   function getDiscount() internal view returns (uint8) {
     require(isICOStarted == true);
-    require(icoStartTime &lt; now);
-    require(icoEndTime &gt; now);
+    require(icoStartTime < now);
+    require(icoEndTime > now);
 
     uint256 weeksPassed = now.sub(icoStartTime).div(7 days);
     return icoWeeksDiscounts[weeksPassed];
@@ -305,7 +305,7 @@ contract Crowdsale {
     uint8 discountPercents = getDiscount();
     uint256 tokens = msg.value.mul(100).div(100 - discountPercents).mul(10000);
 
-    require(tokens &gt;= 100 ether);
+    require(tokens >= 100 ether);
 
     token.autoTransfer(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, msg.value, tokens);
@@ -315,7 +315,7 @@ contract Crowdsale {
 
   function activateICO(uint256 _icoEndTime) public {
     require(msg.sender == wallet);
-    require(_icoEndTime &gt;= now);
+    require(_icoEndTime >= now);
     require(isICOStarted == false);
       
     isICOStarted = true;
@@ -333,10 +333,10 @@ contract Crowdsale {
   }
 
   function validPurchase() internal view returns (bool) {
-    bool withinICOPeriod = isICOStarted &amp;&amp; now &gt;= icoStartTime &amp;&amp; now &lt;= icoEndTime;
+    bool withinICOPeriod = isICOStarted && now >= icoStartTime && now <= icoEndTime;
 
     bool nonZeroPurchase = msg.value != 0;
     
-    return withinICOPeriod &amp;&amp; nonZeroPurchase;
+    return withinICOPeriod && nonZeroPurchase;
   }
 }

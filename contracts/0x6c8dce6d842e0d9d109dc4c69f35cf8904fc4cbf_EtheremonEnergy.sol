@@ -1,12 +1,12 @@
 pragma solidity ^0.4.19;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="294a46475d484a5d694c5d414c5b4c444647074a4644">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="294a46475d484a5d694c5d414c5b4c444647074a4644">[email protected]</a>
 
 contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     function BasicAccessControl() public {
@@ -69,8 +69,8 @@ contract EtheremonEnergy is BasicAccessControl {
         uint energy;
     }
     
-    mapping(address =&gt; Energy) energyData;
-    mapping(uint =&gt; EnergyPackage) paidPackages;
+    mapping(address => Energy) energyData;
+    mapping(uint => EnergyPackage) paidPackages;
     uint public claimMaxAmount = 10;
     uint public claimTime = 30 * 60; // in second
     uint public claimAmount = 1;
@@ -93,7 +93,7 @@ contract EtheremonEnergy is BasicAccessControl {
     // moderator
     
     function withdrawEther(address _sendTo, uint _amount) onlyModerators public {
-        if (_amount &gt; address(this).balance) {
+        if (_amount > address(this).balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -128,7 +128,7 @@ contract EtheremonEnergy is BasicAccessControl {
     // public update
     
     function safeDeduct(uint _a, uint _b) pure public returns(uint) {
-        if (_a &lt; _b) return 0;
+        if (_a < _b) return 0;
         return (_a - _b);
     }
     
@@ -149,7 +149,7 @@ contract EtheremonEnergy is BasicAccessControl {
         uint energyAmount = (period / claimTime) * claimAmount;
         
         if (energyAmount == 0) revert();
-        if (energyAmount &gt; claimMaxAmount) energyAmount = claimMaxAmount;
+        if (energyAmount > claimMaxAmount) energyAmount = claimMaxAmount;
         
         energy.freeAmount += energyAmount;
         energy.lastClaim = block.timestamp;
@@ -167,7 +167,7 @@ contract EtheremonEnergy is BasicAccessControl {
         Energy storage energy = energyData[_trainer];
         uint period = safeDeduct(block.timestamp, energy.lastClaim);
         uint energyAmount = (period / claimTime) * claimAmount;
-        if (energyAmount &gt; claimMaxAmount) energyAmount = claimMaxAmount;
+        if (energyAmount > claimMaxAmount) energyAmount = claimMaxAmount;
         return energyAmount;
     }
 }

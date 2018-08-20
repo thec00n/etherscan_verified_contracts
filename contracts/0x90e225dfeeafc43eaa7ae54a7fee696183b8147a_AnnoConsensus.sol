@@ -26,10 +26,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -37,7 +37,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -121,18 +121,18 @@ contract GSUMedal is ERC20Interface, Owned, SafeMath {
     uint8 public medalDecimals;
     uint public _medalTotalSupply;
 
-    mapping(address =&gt; uint) medalBalances;
-    mapping(address =&gt; bool) medalFreezed;
-    mapping(address =&gt; uint) medalFreezeAmount;
-    mapping(address =&gt; uint) medalUnlockTime;
+    mapping(address => uint) medalBalances;
+    mapping(address => bool) medalFreezed;
+    mapping(address => uint) medalFreezeAmount;
+    mapping(address => uint) medalUnlockTime;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function GSUMedal() public {
-        medalSymbol = &quot;GSU&quot;;
-        medalName = &quot;Anno Consensus&quot;;
+        medalSymbol = "GSU";
+        medalName = "Anno Consensus";
         medalDecimals = 0;
         _medalTotalSupply = 1000000;
         medalBalances[msg.sender] = _medalTotalSupply;
@@ -157,8 +157,8 @@ contract GSUMedal is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function medalTransfer(address to, uint tokens) public returns (bool success) {
@@ -167,8 +167,8 @@ contract GSUMedal is ERC20Interface, Owned, SafeMath {
             medalBalances[to] = safeAdd(medalBalances[to], tokens);
             MedalTransfer(msg.sender, to, tokens);
         } else {
-            if(medalBalances[msg.sender] &gt; medalFreezeAmount[msg.sender]) {
-                require(tokens &lt;= safeSub(medalBalances[msg.sender], medalFreezeAmount[msg.sender]));
+            if(medalBalances[msg.sender] > medalFreezeAmount[msg.sender]) {
+                require(tokens <= safeSub(medalBalances[msg.sender], medalFreezeAmount[msg.sender]));
                 medalBalances[msg.sender] = safeSub(medalBalances[msg.sender], tokens);
                 medalBalances[to] = safeAdd(medalBalances[to], tokens);
                 MedalTransfer(msg.sender, to, tokens);
@@ -198,14 +198,14 @@ contract GSUMedal is ERC20Interface, Owned, SafeMath {
     // Freeze Tokens
     // ------------------------------------------------------------------------
     function medalFreeze(address user, uint amount, uint period) public onlyOwner {
-        require(medalBalances[user] &gt;= amount);
+        require(medalBalances[user] >= amount);
         medalFreezed[user] = true;
         medalUnlockTime[user] = uint(now) + period;
         medalFreezeAmount[user] = amount;
     }
     
     function _medalFreeze(uint amount) internal {
-        require(medalBalances[msg.sender] &gt;= amount);
+        require(medalBalances[msg.sender] >= amount);
         medalFreezed[msg.sender] = true;
         medalUnlockTime[msg.sender] = uint(-1);
         medalFreezeAmount[msg.sender] = amount;
@@ -216,7 +216,7 @@ contract GSUMedal is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function medalUnFreeze() public {
         require(medalFreezed[msg.sender] == true);
-        require(medalUnlockTime[msg.sender] &lt; uint(now));
+        require(medalUnlockTime[msg.sender] < uint(now));
         medalFreezed[msg.sender] = false;
         medalFreezeAmount[msg.sender] = 0;
     }
@@ -251,19 +251,19 @@ contract AnnoToken is GSUMedal {
     uint public _totalSupply;
     uint public minePool;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; bool) freezed;
-    mapping(address =&gt; uint) freezeAmount;
-    mapping(address =&gt; uint) unlockTime;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => bool) freezed;
+    mapping(address => uint) freezeAmount;
+    mapping(address => uint) unlockTime;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function AnnoToken() public {
-        symbol = &quot;ANNO&quot;;
-        name = &quot;Anno Consensus Token&quot;;
+        symbol = "ANNO";
+        name = "Anno Consensus Token";
         decimals = 18;
         _totalSupply = 1000000000000000000000000000;
         minePool = 600000000000000000000000000;
@@ -289,8 +289,8 @@ contract AnnoToken is GSUMedal {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -299,8 +299,8 @@ contract AnnoToken is GSUMedal {
             balances[to] = safeAdd(balances[to], tokens);
             Transfer(msg.sender, to, tokens);
         } else {
-            if(balances[msg.sender] &gt; freezeAmount[msg.sender]) {
-                require(tokens &lt;= safeSub(balances[msg.sender], freezeAmount[msg.sender]));
+            if(balances[msg.sender] > freezeAmount[msg.sender]) {
+                require(tokens <= safeSub(balances[msg.sender], freezeAmount[msg.sender]));
                 balances[msg.sender] = safeSub(balances[msg.sender], tokens);
                 balances[to] = safeAdd(balances[to], tokens);
                 Transfer(msg.sender, to, tokens);
@@ -313,7 +313,7 @@ contract AnnoToken is GSUMedal {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -347,7 +347,7 @@ contract AnnoToken is GSUMedal {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         require(freezed[msg.sender] != true);
@@ -357,7 +357,7 @@ contract AnnoToken is GSUMedal {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -372,7 +372,7 @@ contract AnnoToken is GSUMedal {
     // Freeze Tokens
     // ------------------------------------------------------------------------
     function freeze(address user, uint amount, uint period) public onlyOwner {
-        require(balances[user] &gt;= amount);
+        require(balances[user] >= amount);
         freezed[user] = true;
         unlockTime[user] = uint(now) + period;
         freezeAmount[user] = amount;
@@ -383,7 +383,7 @@ contract AnnoToken is GSUMedal {
     // ------------------------------------------------------------------------
     function unFreeze() public {
         require(freezed[msg.sender] == true);
-        require(unlockTime[msg.sender] &lt; uint(now));
+        require(unlockTime[msg.sender] < uint(now));
         freezed[msg.sender] = false;
         freezeAmount[msg.sender] = 0;
     }
@@ -419,10 +419,10 @@ contract AnnoConsensus is AnnoToken {
     event TradeComplete(uint indexed tradeId, address indexed buyer, address indexed seller, uint medal, uint token);
     event Mine(address indexed miner, uint indexed salary);
     
-    mapping (address =&gt; uint) MemberToLevel;
-    mapping (address =&gt; uint) MemberToMedal;
-    mapping (address =&gt; uint) MemberToToken;
-    mapping (address =&gt; uint) MemberToTime;
+    mapping (address => uint) MemberToLevel;
+    mapping (address => uint) MemberToMedal;
+    mapping (address => uint) MemberToToken;
+    mapping (address => uint) MemberToTime;
     
     uint public period = 14 days;
     
@@ -452,7 +452,7 @@ contract AnnoConsensus is AnnoToken {
     AnnoTrade[] annoTrades;
     
     function boardMemberApply(uint _level) public {
-        require(medalBalances[msg.sender] &gt;= boardMember[_level]);
+        require(medalBalances[msg.sender] >= boardMember[_level]);
         _medalFreeze(boardMember[_level]);
         MemberToLevel[msg.sender] = _level;
         
@@ -464,7 +464,7 @@ contract AnnoConsensus is AnnoToken {
     }
     
     function boardMemberCancel() public {
-        require(medalBalances[msg.sender] &gt; 0);
+        require(medalBalances[msg.sender] > 0);
         _medalUnFreeze();
         
         MemberToLevel[msg.sender] = 0;
@@ -473,7 +473,7 @@ contract AnnoConsensus is AnnoToken {
     
     function createAnnoTrade(bool _ifMedal, uint _medal, uint _token) public returns (uint) {
         if(_ifMedal) {
-            require(medalBalances[msg.sender] &gt;= _medal);
+            require(medalBalances[msg.sender] >= _medal);
             medalBalances[msg.sender] = safeSub(medalBalances[msg.sender], _medal);
             MemberToMedal[msg.sender] = _medal;
             AnnoTrade memory anno = AnnoTrade({
@@ -487,7 +487,7 @@ contract AnnoConsensus is AnnoToken {
             
             return newMedalTradeId;
         } else {
-            require(balances[msg.sender] &gt;= _token);
+            require(balances[msg.sender] >= _token);
             balances[msg.sender] = safeSub(balances[msg.sender], _token);
             MemberToToken[msg.sender] = _token;
             AnnoTrade memory _anno = AnnoTrade({
@@ -536,9 +536,9 @@ contract AnnoConsensus is AnnoToken {
     
     function mine() public {
         uint level = MemberToLevel[msg.sender];
-        require(MemberToTime[msg.sender] &lt; uint(now)); 
-        require(minePool &gt;= salary[level]);
-        require(level &gt; 0);
+        require(MemberToTime[msg.sender] < uint(now)); 
+        require(minePool >= salary[level]);
+        require(level > 0);
         _mine(salary[level]);
         minePool = safeSub(minePool, salary[level]);
         MemberToTime[msg.sender] = safeAdd(MemberToTime[msg.sender], period);

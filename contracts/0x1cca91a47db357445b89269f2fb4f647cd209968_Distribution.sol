@@ -6,7 +6,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -14,7 +14,7 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 	
@@ -65,13 +65,13 @@ contract Distribution is Owned {
 
   function isActive() public constant returns (bool) {
     return (
-        tokensAvailable() &gt; 0 // Tokens must be available to send
+        tokensAvailable() > 0 // Tokens must be available to send
     );
   }
   //below function can be used when you want to send every recipeint with different number of tokens
   function sendTokens(address[] dests, uint256[] values) whenDropIsActive onlyOwner external {
     uint256 i = 0;
-    while (i &lt; dests.length) {
+    while (i < dests.length) {
         uint256 toSend = values[i] * 10**8;
         sendInternally(dests[i] , toSend, values[i]);
         i++;
@@ -82,7 +82,7 @@ contract Distribution is Owned {
   function sendTokensSingleValue(address[] dests, uint256 value) whenDropIsActive onlyOwner external {
     uint256 i = 0;
     uint256 toSend = value * 10**8;
-    while (i &lt; dests.length) {
+    while (i < dests.length) {
         sendInternally(dests[i] , toSend, value);
         i++;
     }
@@ -91,7 +91,7 @@ contract Distribution is Owned {
   function sendInternally(address recipient, uint256 tokensToSend, uint256 valueToPresent) internal {
     if(recipient == address(0)) return;
 
-    if(tokensAvailable() &gt;= tokensToSend) {
+    if(tokensAvailable() >= tokensToSend) {
       token.transfer(recipient, tokensToSend);
       TransferredToken(recipient, valueToPresent);
     } else {
@@ -106,7 +106,7 @@ contract Distribution is Owned {
 
   function destroy() onlyOwner public {
     uint256 balance = tokensAvailable();
-    require (balance &gt; 0);
+    require (balance > 0);
     token.transfer(owner, balance);
     selfdestruct(owner);
   }

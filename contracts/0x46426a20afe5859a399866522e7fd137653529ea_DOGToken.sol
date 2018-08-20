@@ -103,8 +103,8 @@ contract Pausable is Ownable {
 contract StandardToken is ERC20,Pausable {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     /**
     * @dev transfer token for a specified address
@@ -112,7 +112,7 @@ contract StandardToken is ERC20,Pausable {
     * @param _value The amount to be transferred.
     */
     function transfer(address _to, uint256 _value) whenNotPaused returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -126,7 +126,7 @@ contract StandardToken is ERC20,Pausable {
     * @param _value uint256 the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -179,7 +179,7 @@ contract StandardToken is ERC20,Pausable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) whenNotPaused public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -197,20 +197,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -220,8 +220,8 @@ library SafeMath {
 contract DOGToken is StandardToken {
   using SafeMath for uint256;
 
-  string constant public name = &#39;DOG: The Anti-Scam Reward Token&#39;;
-  string constant public symbol = &#39;DOG&#39;;
+  string constant public name = 'DOG: The Anti-Scam Reward Token';
+  string constant public symbol = 'DOG';
   uint constant public decimals = 18;
   uint256 public totalSupply;
   uint256 public maxSupply;
@@ -237,7 +237,7 @@ contract DOGToken is StandardToken {
  * @return A boolean that indicates if the operation was successful.
  */
   function mint(uint256 _amount) onlyOwner public returns (bool) {
-    require (maxSupply &gt;= (totalSupply.add(_amount)));
+    require (maxSupply >= (totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
     balances[msg.sender] = balances[msg.sender].add(_amount);
     Transfer(address(0), msg.sender, _amount);

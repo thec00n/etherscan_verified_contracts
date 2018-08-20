@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -96,13 +96,13 @@ contract CupExchange {
 
         // collect cup token
         uint256 allowance = cup.allowance(msg.sender, this);
-        require(allowance &gt; 0);
+        require(allowance > 0);
         require(cup.transferFrom(msg.sender, this, allowance));
 
         // transfer team cup token
         uint256 teamCupBalance = teamCup.balanceOf(address(this));
         uint256 teamCupAmount = allowance * exchangePrice;
-        require(teamCupAmount &lt;= teamCupBalance);
+        require(teamCupAmount <= teamCupBalance);
         require(teamCup.transfer(msg.sender, teamCupAmount));
 
         emit Exchange(msg.sender, teamCupAmount, allowance);
@@ -123,7 +123,7 @@ contract CupExchange {
     * Set finalPriceForThisCoin
     */
     function setExchangePrice(int256 price) public onlyOwner {
-        require(price &gt; 0);
+        require(price > 0);
         exchangePrice = uint256(price);
     }
 

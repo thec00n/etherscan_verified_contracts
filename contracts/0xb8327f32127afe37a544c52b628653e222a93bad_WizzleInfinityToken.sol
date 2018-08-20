@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal constant returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -134,11 +134,11 @@ contract ExtendedToken is ERC20, Roles {
   bool public transferPaused = false;
 
   /// Mapping for balances
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
   /// Mapping for locked amounts
-  mapping (address =&gt; Locked) public locked;
+  mapping (address => Locked) public locked;
   /// Mapping for allowance
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   /// @dev Pause token transfer
   function pause() public onlyOwner {
@@ -165,7 +165,7 @@ contract ExtendedToken is ERC20, Roles {
   /// @dev Used by mint function
   function _mint(address _to, uint _amount) internal returns (bool) {
       require(_to != address(0));
-	    require(totalSupply.add(_amount) &lt;= MINT_CAP);
+	    require(totalSupply.add(_amount) <= MINT_CAP);
       totalSupply = totalSupply.add(_amount);
       balances[_to] = balances[_to].add(_amount);
       return true;
@@ -175,7 +175,7 @@ contract ExtendedToken is ERC20, Roles {
   /// @param _amount Amount of tokens to be burned
   /// @return True if successfully burned
   function burn(uint _amount) public onlyGlobalOperator returns (bool) {
-	    require(balances[msg.sender] &gt;= _amount);
+	    require(balances[msg.sender] >= _amount);
 	    uint256 newBalance = balances[msg.sender].sub(_amount);      
       balances[msg.sender] = newBalance;
       totalSupply = totalSupply.sub(_amount);
@@ -195,9 +195,9 @@ contract ExtendedToken is ERC20, Roles {
   /// @param _amount Amount of tokens to be locked
   /// @return True if successfully locked
   function lock(uint _amount) public returns (bool) {
-      require(_amount &gt;= MINIMUM_LOCK_AMOUNT);
+      require(_amount >= MINIMUM_LOCK_AMOUNT);
       uint newLockedAmount = locked[msg.sender].lockedAmount.add(_amount);
-      require(balances[msg.sender] &gt;= newLockedAmount);
+      require(balances[msg.sender] >= newLockedAmount);
       _checkLock(msg.sender);
       locked[msg.sender].lockedAmount = newLockedAmount;
       locked[msg.sender].lastUpdated = now;
@@ -207,7 +207,7 @@ contract ExtendedToken is ERC20, Roles {
 
   /// @dev Used by lock, claimBonus and unlock functions
   function _checkLock(address _from) internal returns (bool) {
-    if (locked[_from].lockedAmount &gt;= MINIMUM_LOCK_AMOUNT) {
+    if (locked[_from].lockedAmount >= MINIMUM_LOCK_AMOUNT) {
       return _mintBonus(_from, locked[_from].lockedAmount);
     }
     return false;
@@ -238,9 +238,9 @@ contract ExtendedToken is ERC20, Roles {
   /// @return True if successful
   function unlock(uint _amount) public returns (bool) {
       require(msg.sender != address(0));
-      require(locked[msg.sender].lockedAmount &gt;= _amount);
+      require(locked[msg.sender].lockedAmount >= _amount);
       uint newLockedAmount = locked[msg.sender].lockedAmount.sub(_amount);
-      if (newLockedAmount &lt; MINIMUM_LOCK_AMOUNT) {
+      if (newLockedAmount < MINIMUM_LOCK_AMOUNT) {
         Unlock(msg.sender, locked[msg.sender].lockedAmount);
         _checkLock(msg.sender);
         locked[msg.sender].lockedAmount = 0;
@@ -256,7 +256,7 @@ contract ExtendedToken is ERC20, Roles {
   function _transfer(address _from, address _to, uint _value) internal {
     require(!transferPaused);
     require(_to != address(0));
-    require(balances[_from] &gt;= _value.add(locked[_from].lockedAmount));
+    require(balances[_from] >= _value.add(locked[_from].lockedAmount));
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(_from, _to, _value);
@@ -302,7 +302,7 @@ contract ExtendedToken is ERC20, Roles {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -316,10 +316,10 @@ contract ExtendedToken is ERC20, Roles {
   /// @param b Second number
   /// @return The bigger one :)
   function max(uint a, uint b) pure internal returns(uint) {
-    return (a &gt; b) ? a : b;
+    return (a > b) ? a : b;
   }
 
-  /// @dev Don&#39;t accept ether
+  /// @dev Don't accept ether
   function () public payable {
     revert();
   }
@@ -352,10 +352,10 @@ contract ExtendedToken is ERC20, Roles {
 
 /// @title Wizzle Infinity Token contract
 contract WizzleInfinityToken is ExtendedToken {
-    string public constant name = &quot;Wizzle Infinity Token&quot;;
-    string public constant symbol = &quot;WZI&quot;;
+    string public constant name = "Wizzle Infinity Token";
+    string public constant symbol = "WZI";
     uint8 public constant decimals = 18;
-    string public constant version = &quot;v1&quot;;
+    string public constant version = "v1";
 
     function WizzleInfinityToken() public { 
       totalSupply = 0;

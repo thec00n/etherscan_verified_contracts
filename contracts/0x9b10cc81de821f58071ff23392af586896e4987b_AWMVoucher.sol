@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;AWMV&#39; AnyWhereMobile Voucher Token
+// 'AWMV' AnyWhereMobile Voucher Token
 //
 // Symbol      : AWMV
 // Name        : Example Fixed Supply Token
@@ -19,11 +19,11 @@ contract SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -33,7 +33,7 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 
@@ -146,17 +146,17 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping (address => bool) public frozenAccount;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function AWMVoucher() public {
 
-        symbol = &quot;ATEST&quot;;
-        name = &quot;AWM Test Token&quot;;
+        symbol = "ATEST";
+        name = "AWM Test Token";
         decimals = 6;
 
         _totalSupply = 100000000000 * 10**uint(decimals);
@@ -186,9 +186,9 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         require(!frozenAccount[_from]);          // Check if sender is frozen
         require(!frozenAccount[_to]);            // Check if recipient is frozen
 
@@ -229,7 +229,7 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) stoppable public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -238,7 +238,7 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
     /**
      * Redeem tokens
      *
-     * Send `_value` tokens from &#39;_from&#39; to `_to`
+     * Send `_value` tokens from '_from' to `_to`
      * Used to redeem AWMVouchers for AWMDollars
      *
      * @param _from The address of the source
@@ -288,7 +288,7 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -302,7 +302,7 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) stoppable onlyOwner public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] = sub(balances[msg.sender], _value); 
         _totalSupply = sub(_totalSupply,_value);
         Burn(msg.sender, _value);
@@ -318,13 +318,13 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) stoppable onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
 
         // Subtract from the targeted balance
         balances[_from] = sub(balances[_from], _value);
 
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowed[_from][msg.sender] = sub(allowed[_from][msg.sender], _value);
 
         //totalSupply -= _value;                              // Update totalSupply
@@ -351,7 +351,7 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
 
     
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param _target Address to be frozen
     /// @param _freeze either to freeze it or not
     function freezeAccount(address _target, bool _freeze) onlyOwner public {
@@ -360,7 +360,7 @@ contract AWMVoucher is ERC20Interface, SafeMath, StopTrade {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

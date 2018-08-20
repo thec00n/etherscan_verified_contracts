@@ -13,7 +13,7 @@ contract owned {
 
     function rens() internal {
 	AbstractENS ens = AbstractENS(0x314159265dD8dbb310642f98f50C066173C1259b); // ENS addr
-	ReverseRegistrar registrar = ReverseRegistrar(ens.owner(0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2)); // namehash(&#39;addr.reverse&#39;)
+	ReverseRegistrar registrar = ReverseRegistrar(ens.owner(0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2)); // namehash('addr.reverse')
 	if(address(registrar) != 0)
 	    registrar.claim(owner);
     }
@@ -50,9 +50,9 @@ contract RichiumToken is owned {
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; bool) public approvedAccount;
+    mapping (address => bool) public approvedAccount;
     
     event ApprovedAccount(address target, bool approve);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -73,8 +73,8 @@ contract RichiumToken is owned {
     // Internal transfer, only called by this contract
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         require(approvedAccount[_from]);
         require(approvedAccount[_to]);
 
@@ -116,7 +116,7 @@ contract RichiumToken is owned {
      * @param _value the amount of token to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         balanceOf[_from] -= _value;
         totalSupply -= _value;
         emit Burn(_from, _value);
@@ -125,11 +125,11 @@ contract RichiumToken is owned {
     /// @notice Withdraw `amount` to owner
     /// @param amount amount to be withdrawn
     function withdraw(uint256 amount) onlyOwner public {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
         owner.transfer(amount);
     }
 
-    /// @notice `Allow | Prevent` `target` from sending &amp; receiving tokens
+    /// @notice `Allow | Prevent` `target` from sending & receiving tokens
     /// @param target Address to be allowed or not
     /// @param approve either to allow it or not
     function approveAccount(address target, bool approve) onlyAdmin public {
@@ -151,20 +151,20 @@ contract RichiumToken is owned {
     
     /// @notice Buy tokens from contract by sending ether
     function buy() payable public {
-        require(ask &gt; 0);
+        require(ask > 0);
         uint256 r = msg.value * (10 ** uint256(decimals));
-        require(r &gt; msg.value);
+        require(r > msg.value);
         _transfer(this, msg.sender, r / ask);
     }
 
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(bid &gt; 0);
-        require(amount * bid &gt;= amount);
+        require(bid > 0);
+        require(amount * bid >= amount);
         uint256 e = (amount * bid) / (10 ** uint256(decimals));
-        require(address(this).balance &gt;= e);
+        require(address(this).balance >= e);
         _transfer(msg.sender, this, amount);
-        msg.sender.transfer(e);					// sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(e);					// sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }

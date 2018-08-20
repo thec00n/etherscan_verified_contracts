@@ -3,8 +3,8 @@ pragma solidity ^0.4.4;
 
 contract TestToken {
 
-    string public constant name = &quot;Test Network Token&quot;;
-    string public constant symbol = &quot;TNT&quot;;
+    string public constant name = "Test Network Token";
+    string public constant symbol = "TNT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     uint256 public constant tokenCreationRate = 1000;
@@ -16,7 +16,7 @@ contract TestToken {
     uint256 public startMark;
     uint256 public endMark;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Refund(address indexed _from, uint256 _value);
@@ -27,10 +27,10 @@ contract TestToken {
         endMark = _endMark;
     }
 
-    // Transfer tokens from sender&#39;s account to provided account address.
+    // Transfer tokens from sender's account to provided account address.
     function transfer(address _to, uint256 _value) returns (bool) {
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -41,13 +41,13 @@ contract TestToken {
         return false;
     }
 
-    // Transfer tokens from sender&#39;s account to provided account address.
+    // Transfer tokens from sender's account to provided account address.
     function privilegedTransfer(address _from, address _to, uint256 _value) returns (bool) {
         if (msg.sender != owner) throw;
     
         var srcBalance = balances[_from];
         
-        if (srcBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (srcBalance >= _value && _value > 0) {
             srcBalance -= _value;
             balances[_from] = srcBalance;
             balances[_to] += _value;

@@ -9,7 +9,7 @@ contract ETHLotteryInterface {
 }
 
 contract ETHLottery {
-    bytes32 public name = &#39;ETHLottery - Last 1 Byte Lottery&#39;;
+    bytes32 public name = 'ETHLottery - Last 1 Byte Lottery';
     address public manager_address;
     address public owner;
     bool public open;
@@ -24,8 +24,8 @@ contract ETHLottery {
     address public accumulated_from;
     address public accumulate_to;
 
-    mapping (bytes1 =&gt; address[]) bettings;
-    mapping (address =&gt; uint256) credits;
+    mapping (bytes1 => address[]) bettings;
+    mapping (address => uint256) credits;
 
     event Balance(uint256 _balance);
     event Result(bytes1 _result);
@@ -79,24 +79,24 @@ contract ETHLottery {
     }
 
     modifier isPaid() {
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
         _;
     }
 
     modifier hasPrize() {
-        require(credits[msg.sender] &gt; 0);
+        require(credits[msg.sender] > 0);
         _;
     }
 
     modifier isAccumulated() {
-        require(result_hash != 0 &amp;&amp; winners_count == 0);
+        require(result_hash != 0 && winners_count == 0);
         _;
     }
 
     modifier hasResultHash() {
         require(
-            block.number &gt;= result_block &amp;&amp;
-            block.number &lt;= result_block + 256 &amp;&amp;
+            block.number >= result_block &&
+            block.number <= result_block + 256 &&
             block.blockhash(result_block) != result_hash
             );
         _;
@@ -104,7 +104,7 @@ contract ETHLottery {
 
     function play(bytes1 _byte) payable isOpen isPaid returns (bool) {
         bettings[_byte].push(msg.sender);
-        if (this.balance &gt;= jackpot) {
+        if (this.balance >= jackpot) {
             uint256 owner_fee_amount = (this.balance * owner_fee) / 100;
             // this is the transaction which
             // will generate the block used
@@ -131,9 +131,9 @@ contract ETHLottery {
         result = result_hash[31];
         address[] storage winners = bettings[result];
         winners_count = winners.length;
-        if (winners_count &gt; 0) {
+        if (winners_count > 0) {
             uint256 credit = this.balance / winners_count;
-            for (uint256 i = 0; i &lt; winners_count; i++) {
+            for (uint256 i = 0; i < winners_count; i++) {
                 credits[winners[i]] = credit;
             }
         }
@@ -146,9 +146,9 @@ contract ETHLottery {
         result = result_hash[31];
         address[] storage winners = bettings[result];
         winners_count = winners.length;
-        if (winners_count &gt; 0) {
+        if (winners_count > 0) {
             uint256 credit = this.balance / winners_count;
-            for (uint256 i = 0; i &lt; winners_count; i++) {
+            for (uint256 i = 0; i < winners_count; i++) {
                 credits[winners[i]] = credit;
             }
         }

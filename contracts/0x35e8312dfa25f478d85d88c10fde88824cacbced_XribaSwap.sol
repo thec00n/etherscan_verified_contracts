@@ -19,13 +19,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -48,17 +48,17 @@ contract Ownable {
 	}
 
 	modifier onlyOwner() {
-		require(msg.sender == owner, &quot;msg.sender == owner&quot;);
+		require(msg.sender == owner, "msg.sender == owner");
 		_;
 	}
 
 	function transferOwnership(address _newOwner) public onlyOwner {
-		require(address(0) != _newOwner, &quot;address(0) != _newOwner&quot;);
+		require(address(0) != _newOwner, "address(0) != _newOwner");
 		newOwner = _newOwner;
 	}
 
 	function acceptOwnership() public {
-		require(msg.sender == newOwner, &quot;msg.sender == newOwner&quot;);
+		require(msg.sender == newOwner, "msg.sender == newOwner");
 		emit OwnershipTransferred(owner, msg.sender);
 		owner = msg.sender;
 		newOwner = address(0);
@@ -81,14 +81,14 @@ contract XribaSwap is Ownable {
     uint256 public startRelease;
     uint256 public endRelease;
     
-    mapping (address =&gt; uint256) public xra_amount;
-    mapping (address =&gt; uint256) public xra_sent;
+    mapping (address => uint256) public xra_amount;
+    mapping (address => uint256) public xra_sent;
     
     constructor(address _mtv, address _xra, uint256 _startRelease) public {
         mtv = tokenInterface(_mtv);
         xra = tokenInterface(_xra);
-        //require(mtv.symbols() == &quot;MTV&quot;, &quot;mtv.symbols() == \&quot;MTV\&quot;&quot;);
-        //require(xra.symbols() == &quot;XRA&quot;, &quot;mtv.symbols() == \&quot;XRA\&quot;&quot;);
+        //require(mtv.symbols() == "MTV", "mtv.symbols() == \"MTV\"");
+        //require(xra.symbols() == "XRA", "mtv.symbols() == \"XRA\"");
         
         startRelease = _startRelease;
         endRelease = startRelease.add(7*30 days);
@@ -105,13 +105,13 @@ contract XribaSwap is Ownable {
     }
 	
 	function () public {
-		require ( msg.sender == tx.origin, &quot;msg.sender == tx.orgin&quot; );
-		require ( now &gt; startRelease.sub(1 days) );
+		require ( msg.sender == tx.origin, "msg.sender == tx.orgin" );
+		require ( now > startRelease.sub(1 days) );
 		
 		uint256 mtv_amount = mtv.balanceOf(msg.sender);
 		uint256 tknToSend;
 		
-		if( mtv_amount &gt; 0 ) {
+		if( mtv_amount > 0 ) {
 		    mtv.originBurn(mtv_amount);
 		    xra_amount[msg.sender] = xra_amount[msg.sender].add(mtv_amount.mul(5));
 		    
@@ -121,13 +121,13 @@ contract XribaSwap is Ownable {
 		    xra.transfer(msg.sender, tknToSend);
 		}
 		
-		require( xra_amount[msg.sender] &gt; 0, &quot;xra_amount[msg.sender] &gt; 0&quot;);
+		require( xra_amount[msg.sender] > 0, "xra_amount[msg.sender] > 0");
 		
-		if ( now &gt; startRelease ) {
+		if ( now > startRelease ) {
 		    uint256 timeframe = endRelease.sub(startRelease);
 		    uint256 timeprogress = now.sub(startRelease);
 		    uint256 rate = 0;
-		    if( now &gt; endRelease) { 
+		    if( now > endRelease) { 
 		        rate = 1 ether;
 		    } else {
 		        rate =  timeprogress.mul(1 ether).div(timeframe);   
@@ -140,7 +140,7 @@ contract XribaSwap is Ownable {
 		    tknToSend = alreadySent.add( remainingToSend.mul(rate).div(1 ether) ).sub( xra_sent[msg.sender] );
 		    xra_sent[msg.sender] = xra_sent[msg.sender].add(tknToSend);
 		    
-		    require(tknToSend &gt; 0,&quot;tknToSend &gt; 0&quot;);
+		    require(tknToSend > 0,"tknToSend > 0");
 		    xra.transfer(msg.sender, tknToSend);
 		}
 		

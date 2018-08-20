@@ -1,5 +1,5 @@
 /* Token - simple token for PreICO and ICO
-   Copyright (C) 2017  Sergey Sherkunov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1579707c7b797462607b5579707c7b797462607b3b7a6772">[email&#160;protected]</a>&gt;
+   Copyright (C) 2017  Sergey Sherkunov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1579707c7b797462607b5579707c7b797462607b3b7a6772">[email protected]</a>>
 
    This file is part of Token.
 
@@ -14,7 +14,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 pragma solidity ^0.4.18;
 
@@ -22,11 +22,11 @@ library SafeMath {
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
 
-    assert (c &gt;= a);
+    assert (c >= a);
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    assert(b &lt;= a);
+    assert(b <= a);
 
     c = a - b;
   }
@@ -49,17 +49,17 @@ contract ERC20MintableToken {
 
   Minter public minter;
 
-  string constant public name = &quot;PayAll&quot;;
+  string constant public name = "PayAll";
 
-  string constant public symbol = &quot;PLL&quot;;
+  string constant public symbol = "PLL";
 
   uint8 constant public decimals = 0;
 
   uint256 public totalSupply;
 
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed _oldTokensHolder,
                  address indexed _newTokensHolder, uint256 _tokensNumber);
@@ -298,10 +298,10 @@ contract Minter {
   modifier checkLimitsToBuyTokens {
     MinterState _minterState_ = _minterState();
 
-    require (_minterState_ == MinterState.PreICOStarted &amp;&amp;
-             PreICO.tokensMinimumNumberForBuy &lt;= msg.value / PreICO.tokensCost ||
-             _minterState_ == MinterState.ICOStarted &amp;&amp;
-             ICO.tokensMinimumNumberForBuy &lt;= msg.value / ICO.tokensCost);
+    require (_minterState_ == MinterState.PreICOStarted &&
+             PreICO.tokensMinimumNumberForBuy <= msg.value / PreICO.tokensCost ||
+             _minterState_ == MinterState.ICOStarted &&
+             ICO.tokensMinimumNumberForBuy <= msg.value / ICO.tokensCost);
 
     _;
   }
@@ -320,13 +320,13 @@ contract Minter {
   }
 
   function _minterState() private constant returns (MinterState) {
-    if (PreICO.startTime &gt; now) {
+    if (PreICO.startTime > now) {
       return MinterState.PreICOWait;
-    } else if (PreICO.endTime &gt; now) {
+    } else if (PreICO.endTime > now) {
       return MinterState.PreICOStarted;
-    } else if (ICO.startTime &gt; now) {
+    } else if (ICO.startTime > now) {
       return MinterState.ICOWait;
-    } else if (ICO.endTime &gt; now) {
+    } else if (ICO.endTime > now) {
       return MinterState.ICOStarted;
     } else {
       return MinterState.Over;
@@ -340,15 +340,15 @@ contract Minter {
                                       returns (uint256, uint256) {
     uint256 _tokensNumber = _wei.div(_tokensale.tokensCost);
 
-    require (_tokensNumber &gt;= _tokensale.tokensMinimumNumberForBuy);
+    require (_tokensNumber >= _tokensale.tokensMinimumNumberForBuy);
 
     uint256 _aviableTokensNumber =
-      _totalTokensNumber &lt;= _totalTokensNumberAllowance ?
+      _totalTokensNumber <= _totalTokensNumberAllowance ?
         _totalTokensNumber : _totalTokensNumberAllowance;
 
     uint256 _restWei = 0;
 
-    if (_tokensNumber &gt;= _aviableTokensNumber) {
+    if (_tokensNumber >= _aviableTokensNumber) {
       uint256 _restTokensNumber = _tokensNumber.sub(_aviableTokensNumber);
 
       _restWei = _restTokensNumber.mul(_tokensale.tokensCost);
@@ -359,23 +359,23 @@ contract Minter {
 
       uint256 _tokensNumberBounty = 0;
 
-      if (_timePassed &lt; _tokensale.tokensStepOneBountyTime) {
+      if (_timePassed < _tokensale.tokensStepOneBountyTime) {
         _tokensNumberBounty = _tokensNumber.mul(_tokensale.tokensStepOneBounty)
                                            .div(100);
-      } else if (_timePassed &lt; _tokensale.tokensStepTwoBountyTime) {
+      } else if (_timePassed < _tokensale.tokensStepTwoBountyTime) {
         _tokensNumberBounty = _tokensNumber.mul(_tokensale.tokensStepTwoBounty)
                                            .div(100);
-      } else if (_timePassed &lt; _tokensale.tokensStepThreeBountyTime) {
+      } else if (_timePassed < _tokensale.tokensStepThreeBountyTime) {
         _tokensNumberBounty =
           _tokensNumber.mul(_tokensale.tokensStepThreeBounty).div(100);
-      } else if (_timePassed &lt; _tokensale.tokensStepFourBountyTime) {
+      } else if (_timePassed < _tokensale.tokensStepFourBountyTime) {
         _tokensNumberBounty = _tokensNumber.mul(_tokensale.tokensStepFourBounty)
                                            .div(100);
       }
 
       _tokensNumber = _tokensNumber.add(_tokensNumberBounty);
 
-      if (_tokensNumber &gt; _aviableTokensNumber) {
+      if (_tokensNumber > _aviableTokensNumber) {
         _tokensNumber = _aviableTokensNumber;
       }
     }
@@ -401,7 +401,7 @@ contract Minter {
 
     token.transferFrom(token, msg.sender, _tokensNumber);
 
-    if (_restWei &gt; 0) {
+    if (_restWei > 0) {
       msg.sender.transfer(_restWei);
     }
   }

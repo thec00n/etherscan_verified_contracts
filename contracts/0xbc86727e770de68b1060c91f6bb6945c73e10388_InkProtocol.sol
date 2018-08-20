@@ -143,7 +143,7 @@ interface InkProtocolInterface {
     uint256 sellerAmount
   );
 
-  // Event emitted when a transaction&#39;s feedback is updated by the buyer.
+  // Event emitted when a transaction's feedback is updated by the buyer.
   event FeedbackUpdated(
     uint256 indexed transactionId,
     uint8 rating,
@@ -211,9 +211,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -221,7 +221,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -230,7 +230,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -258,7 +258,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -276,7 +276,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -320,7 +320,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -331,8 +331,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -346,7 +346,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -395,7 +395,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -410,8 +410,8 @@ contract StandardToken is ERC20, BasicToken {
 
 /// @title Ink Protocol: Decentralized reputation and payments for peer-to-peer marketplaces.
 contract InkProtocolCore is InkProtocolInterface, StandardToken {
-  string public constant name = &quot;Ink Protocol&quot;;
-  string public constant symbol = &quot;XNK&quot;;
+  string public constant name = "Ink Protocol";
+  string public constant symbol = "XNK";
   uint8 public constant decimals = 18;
 
   uint256 private constant gasLimitForExpiryCall = 1000000;
@@ -451,7 +451,7 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
   uint256 private globalTransactionId = 0;
 
   // Mapping of all transactions by ID (globalTransactionId).
-  mapping(uint256 =&gt; Transaction) internal transactions;
+  mapping(uint256 => Transaction) internal transactions;
 
   // The struct definition for an Ink Transaction.
   struct Transaction {
@@ -489,14 +489,14 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
   */
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-   // Don&#39;t allow token transfers to the Ink contract.
+   // Don't allow token transfers to the Ink contract.
    require(_to != address(this));
 
    return super.transfer(_to, _value);
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-   // Don&#39;t allow token transfers to the Ink contract.
+   // Don't allow token transfers to the Ink contract.
    require(_to != address(this));
 
    return super.transferFrom(_from, _to, _value);
@@ -592,9 +592,9 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
   */
 
   function _createTransaction(address _seller, uint256 _amount, bytes32 _metadata, address _policy, address _mediator, address _owner) private returns (uint256) {
-    require(_seller != address(0) &amp;&amp; _seller != msg.sender);
-    require(_owner != msg.sender &amp;&amp; _owner != _seller);
-    require(_amount &gt; 0);
+    require(_seller != address(0) && _seller != msg.sender);
+    require(_owner != msg.sender && _owner != _seller);
+    require(_amount > 0);
 
     // Per specifications, if a mediator is involved then a policy is required.
     // Otherwise, policy must be a zero address.
@@ -630,10 +630,10 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
       metadata: _metadata
     });
 
-    // Place the buyer&#39;s tokens in escrow (ie. this contract).
+    // Place the buyer's tokens in escrow (ie. this contract).
     _transferFrom(msg.sender, this, _amount);
 
-    // Return the newly created transaction&#39;s id.
+    // Return the newly created transaction's id.
     return id;
   }
 
@@ -731,7 +731,7 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
     require(_transaction.state == TransactionState.Escalated);
     require(_afterExpiry(_transaction, _fetchExpiry(_transaction, Expiry.Mediation)));
 
-    // Divide the escrow amount in half and give it to the buyer. There&#39;s
+    // Divide the escrow amount in half and give it to the buyer. There's
     // a possibility that one account will get slightly more than the other.
     // We have decided to give the lesser amount to the buyer (arbitrarily).
     uint256 buyerAmount = _transaction.amount.div(2);
@@ -771,8 +771,8 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
 
     (buyerMediatorFee, sellerMediatorFee) = InkMediator(_transaction.mediator).settleTransactionByMediatorFee(_buyerAmount, _sellerAmount);
 
-    // Require that the sum of the fees be no more than the transaction&#39;s amount.
-    require(buyerMediatorFee &lt;= _buyerAmount &amp;&amp; sellerMediatorFee &lt;= _sellerAmount);
+    // Require that the sum of the fees be no more than the transaction's amount.
+    require(buyerMediatorFee <= _buyerAmount && sellerMediatorFee <= _sellerAmount);
 
     TransactionSettledByMediator({
       id: _id,
@@ -796,7 +796,7 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
 
     // As per functional specifications, ratings must be an integer between
     // 1 and 5, inclusive.
-    require(_rating &gt;= 1 &amp;&amp; _rating &lt;= 5);
+    require(_rating >= 1 && _rating <= 5);
 
     FeedbackUpdated({
       transactionId: _id,
@@ -841,13 +841,13 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
     bool success;
 
     if (_expiryType == Expiry.Transaction) {
-      success = _transaction.policy.call.gas(gasLimitForExpiryCall)(bytes4(keccak256(&quot;transactionExpiry()&quot;)));
+      success = _transaction.policy.call.gas(gasLimitForExpiryCall)(bytes4(keccak256("transactionExpiry()")));
     } else if (_expiryType == Expiry.Fulfillment) {
-      success = _transaction.policy.call.gas(gasLimitForExpiryCall)(bytes4(keccak256(&quot;fulfillmentExpiry()&quot;)));
+      success = _transaction.policy.call.gas(gasLimitForExpiryCall)(bytes4(keccak256("fulfillmentExpiry()")));
     } else if (_expiryType == Expiry.Escalation) {
-      success = _transaction.policy.call.gas(gasLimitForExpiryCall)(bytes4(keccak256(&quot;escalationExpiry()&quot;)));
+      success = _transaction.policy.call.gas(gasLimitForExpiryCall)(bytes4(keccak256("escalationExpiry()")));
     } else if (_expiryType == Expiry.Mediation) {
-      success = _transaction.mediator.call.gas(gasLimitForExpiryCall)(bytes4(keccak256(&quot;mediationExpiry()&quot;)));
+      success = _transaction.mediator.call.gas(gasLimitForExpiryCall)(bytes4(keccak256("mediationExpiry()")));
     }
 
     if (success) {
@@ -872,19 +872,19 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
     bool success;
 
     if (_finalState == TransactionState.Confirmed) {
-      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256(&quot;confirmTransactionFee(uint256)&quot;)), _transaction.amount);
+      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256("confirmTransactionFee(uint256)")), _transaction.amount);
     } else if (_finalState == TransactionState.ConfirmedAfterExpiry) {
-      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256(&quot;confirmTransactionAfterExpiryFee(uint256)&quot;)), _transaction.amount);
+      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256("confirmTransactionAfterExpiryFee(uint256)")), _transaction.amount);
     } else if (_finalState == TransactionState.ConfirmedAfterDispute) {
-      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256(&quot;confirmTransactionAfterDisputeFee(uint256)&quot;)), _transaction.amount);
+      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256("confirmTransactionAfterDisputeFee(uint256)")), _transaction.amount);
     } else if (_finalState == TransactionState.ConfirmedByMediator) {
       mediatorFee = InkMediator(_transaction.mediator).confirmTransactionByMediatorFee(_transaction.amount);
     } else if (_finalState == TransactionState.Refunded) {
-      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256(&quot;refundTransactionFee(uint256)&quot;)), _transaction.amount);
+      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256("refundTransactionFee(uint256)")), _transaction.amount);
     } else if (_finalState == TransactionState.RefundedAfterExpiry) {
-      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256(&quot;refundTransactionAfterExpiryFee(uint256)&quot;)), _transaction.amount);
+      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256("refundTransactionAfterExpiryFee(uint256)")), _transaction.amount);
     } else if (_finalState == TransactionState.RefundedAfterDispute) {
-      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256(&quot;refundTransactionAfterDisputeFee(uint256)&quot;)), _transaction.amount);
+      success = _transaction.mediator.call.gas(gasLimitForMediatorCall)(bytes4(keccak256("refundTransactionAfterDisputeFee(uint256)")), _transaction.amount);
     } else if (_finalState == TransactionState.RefundedByMediator) {
       mediatorFee = InkMediator(_transaction.mediator).refundTransactionByMediatorFee(_transaction.amount);
     }
@@ -898,12 +898,12 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
         }
       }
 
-      // The mediator&#39;s fee cannot be more than transaction&#39;s amount.
-      if (mediatorFee &gt; _transaction.amount) {
+      // The mediator's fee cannot be more than transaction's amount.
+      if (mediatorFee > _transaction.amount) {
         mediatorFee = 0;
       }
     } else {
-      require(mediatorFee &lt;= _transaction.amount);
+      require(mediatorFee <= _transaction.amount);
     }
 
     return mediatorFee;
@@ -930,7 +930,7 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
   }
 
   function _afterExpiry(Transaction storage _transaction, uint32 _expiry) private view returns (bool) {
-    return now.sub(_transaction.stateTime) &gt;= _expiry;
+    return now.sub(_transaction.stateTime) >= _expiry;
   }
 
   function _findTransactionForBuyer(uint256 _id) private view returns (Transaction storage transaction) {
@@ -955,12 +955,12 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
 
   function _findTransaction(uint256 _id) private view returns (Transaction storage transaction) {
     transaction = transactions[_id];
-    require(_id &lt; globalTransactionId);
+    require(_id < globalTransactionId);
   }
 
   function _transferFrom(address _from, address _to, uint256 _value) private returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -970,7 +970,7 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
   }
 
   function _transferFromEscrow(address _to, uint256 _value) private returns (bool) {
-    if (_value &gt; 0) {
+    if (_value > 0) {
       return _transferFrom(this, _to, _value);
     }
 
@@ -1003,7 +1003,7 @@ contract InkProtocolCore is InkProtocolInterface, StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -1086,8 +1086,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -1100,7 +1100,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -1116,7 +1116,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -1147,7 +1147,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -1162,9 +1162,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);

@@ -68,7 +68,7 @@ contract WithBeneficiary is Owned {
             throw;
         }
         beneficiary = _beneficiary;
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             asyncSend(beneficiary, msg.value);
         }
     }
@@ -113,7 +113,7 @@ contract WithFee is WithBeneficiary {
     }
 
     modifier requestFeePaid {
-        if (msg.value &lt; queryFee) {
+        if (msg.value < queryFee) {
             throw;
         }
         asyncSend(getBeneficiary(), msg.value);
@@ -144,19 +144,19 @@ contract WithFee is WithBeneficiary {
  */
 contract PullPaymentCapable {
     uint256 private totalBalance;
-    mapping(address =&gt; uint256) private payments;
+    mapping(address => uint256) private payments;
 
     event LogPaymentReceived(address indexed dest, uint256 amount);
 
     function PullPaymentCapable() {
-        if (0 &lt; this.balance) {
+        if (0 < this.balance) {
             asyncSend(msg.sender, this.balance);
         }
     }
 
     // store sent amount as credit to be pulled, called by payer
     function asyncSend(address dest, uint256 amount) internal {
-        if (amount &gt; 0) {
+        if (amount > 0) {
             totalBalance += amount;
             payments[dest] += amount;
             LogPaymentReceived(dest, amount);
@@ -194,7 +194,7 @@ contract PullPaymentCapable {
     function fixBalanceInternal(address dest)
         internal
         returns (bool success) {
-        if (totalBalance &lt; this.balance) {
+        if (totalBalance < this.balance) {
             uint256 amount = this.balance - totalBalance;
             payments[dest] += amount;
             LogPaymentReceived(dest, amount);
@@ -314,13 +314,13 @@ contract CertificationDb is CertificationDbI, WithFee, PullPaymentCapable {
         bool certified;
         uint256 timestamp;
         address certifier;
-        mapping(bytes32 =&gt; DocumentStatus) documentStatuses;
+        mapping(bytes32 => DocumentStatus) documentStatuses;
         bytes32[] documents;
         uint256 index;
     }
 
     // @notice Address of certified students.
-    mapping(address =&gt; Certification) studentCertifications;
+    mapping(address => Certification) studentCertifications;
     // @notice The potentially long list of all certified students.
     address[] certifiedStudents;
 
@@ -392,12 +392,12 @@ contract CertificationDb is CertificationDbI, WithFee, PullPaymentCapable {
         returns (bool success) {
         if (!studentCertifications[student].certified
             // You need to uncertify all documents first
-            || studentCertifications[student].documents.length &gt; 0) {
+            || studentCertifications[student].documents.length > 0) {
             throw;
         }
         uint256 index = studentCertifications[student].index;
         delete studentCertifications[student];
-        if (certifiedStudents.length &gt; 1) {
+        if (certifiedStudents.length > 1) {
             certifiedStudents[index] = certifiedStudents[certifiedStudents.length - 1];
             studentCertifications[certifiedStudents[index]].index = index;
         }
@@ -457,7 +457,7 @@ contract CertificationDb is CertificationDbI, WithFee, PullPaymentCapable {
         if (certification.documentStatuses[document].isValid) {
             uint256 index = certification.documentStatuses[document].index;
             delete certification.documentStatuses[document];
-            if (certification.documents.length &gt; 1) {
+            if (certification.documents.length > 1) {
                 certification.documents[index] =
                     certification.documents[certification.documents.length - 1];
                 certification.documentStatuses[certification.documents[index]].index = index;

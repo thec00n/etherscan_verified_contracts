@@ -64,17 +64,17 @@ contract CreditBIT is IERC20Token {
     address public creditMcAddress;
     bool public lockdown;
 
-    string public standard = &#39;Creditbit 1.0&#39;;
-    string public name = &#39;CreditBIT&#39;;
-    string public symbol = &#39;CRB&#39;;
+    string public standard = 'Creditbit 1.0';
+    string public name = 'CreditBIT';
+    string public symbol = 'CRB';
     uint8 public decimals = 8;
 
     uint256 public totalSupply = 0;
     uint public totalAvaliableSupply = 0;
     uint public totalLockedSupply = 0; 
 
-    mapping (address =&gt; CreditBalance) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => CreditBalance) balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     //event Transfer(address indexed from, address indexed to, uint256 value);
     //event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -109,14 +109,14 @@ contract CreditBIT is IERC20Token {
     function lockBalance(uint _amount, uint _lockForBlocks) returns (uint error){
         if (lockdown) throw;
         uint realBlocksLocked;
-        if (block.number + _lockForBlocks &lt; balances[msg.sender].lockedUntilBlock){
+        if (block.number + _lockForBlocks < balances[msg.sender].lockedUntilBlock){
             realBlocksLocked = balances[msg.sender].lockedUntilBlock;
         }else{
             realBlocksLocked = block.number + _lockForBlocks;
         }
         
         uint realAmount;
-        if (balances[msg.sender].avaliableBalance &lt; (_amount * 10**8)) {
+        if (balances[msg.sender].avaliableBalance < (_amount * 10**8)) {
             realAmount = (balances[msg.sender].avaliableBalance / 10**8) * 10**8;
         }else{
             realAmount = (_amount * 10**8);
@@ -151,7 +151,7 @@ contract CreditBIT is IERC20Token {
         if (balances[msg.sender].lockedBalance == 0) { return 1;}
         
         uint blockDifference = block.number - balances[msg.sender].lastBlockClaimed;
-        if (blockDifference &lt; 10){ return 1;}
+        if (blockDifference < 10){ return 1;}
         
         uint newCreditsIssued = creditBond.getNewCoinsIssued(
             balances[msg.sender].lockedBalance, 
@@ -159,7 +159,7 @@ contract CreditBIT is IERC20Token {
             balances[msg.sender].bondMultiplier);
         if (newCreditsIssued == 0) { return 1; }
         
-        if (balances[msg.sender].lockedUntilBlock &lt; block.number ) {
+        if (balances[msg.sender].lockedUntilBlock < block.number ) {
             balances[msg.sender].avaliableBalance += balances[msg.sender].lockedBalance;
             totalAvaliableSupply += balances[msg.sender].lockedBalance;
             totalLockedSupply -= balances[msg.sender].lockedBalance;
@@ -206,8 +206,8 @@ contract CreditBIT is IERC20Token {
 
     function transfer(address _to, uint256 _value) returns (bool success){
         if (lockdown) throw;
-        if (balances[msg.sender].avaliableBalance &lt; _value) throw;
-        if (balances[_to].avaliableBalance + _value &lt; balances[_to].avaliableBalance) throw;
+        if (balances[msg.sender].avaliableBalance < _value) throw;
+        if (balances[_to].avaliableBalance + _value < balances[_to].avaliableBalance) throw;
         balances[msg.sender].avaliableBalance -= _value;
         balances[_to].avaliableBalance += _value;
         Transfer(msg.sender, _to, _value);
@@ -232,9 +232,9 @@ contract CreditBIT is IERC20Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (lockdown) throw;
-        if (balances[_from].avaliableBalance &lt; _value) throw;
-        if (balances[_to].avaliableBalance + _value &lt; balances[_to].avaliableBalance) throw;
-        if (_value &gt; allowance[_from][msg.sender]) throw;
+        if (balances[_from].avaliableBalance < _value) throw;
+        if (balances[_to].avaliableBalance + _value < balances[_to].avaliableBalance) throw;
+        if (_value > allowance[_from][msg.sender]) throw;
         balances[_from].avaliableBalance -= _value;
         balances[_to].avaliableBalance += _value;
         allowance[_from][msg.sender] -= _value;

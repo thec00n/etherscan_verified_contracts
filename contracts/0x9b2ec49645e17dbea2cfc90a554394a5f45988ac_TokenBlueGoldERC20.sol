@@ -1,14 +1,14 @@
 pragma solidity ^0.4.18;
 
 contract TokenBlueGoldERC20 {
-    string private constant _name = &quot;BlueGold&quot;;
-    string private constant _symbol = &quot;BEG&quot;;
+    string private constant _name = "BlueGold";
+    string private constant _symbol = "BEG";
     uint8 private constant _decimals = 8;
     uint256 private constant _initialSupply = 15000000;
     uint256 private constant _totalSupply = _initialSupply * (10 ** uint256(_decimals));
 
-    mapping (address =&gt; uint256) private _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private _allowance;
+    mapping (address => uint256) private _balanceOf;
+    mapping (address => mapping (address => uint256)) private _allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -50,7 +50,7 @@ contract TokenBlueGoldERC20 {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         address sender = msg.sender;
 
-        require(_value &lt;= _allowance[_from][sender]);
+        require(_value <= _allowance[_from][sender]);
         _reduceAllowanceLimit(_from, _value);
         _transfer(_from, _to, _value);
 
@@ -75,8 +75,8 @@ contract TokenBlueGoldERC20 {
 
     function _preValidTransfer(address _from, address _to, uint256 _value) view internal {
         require(_to != 0x0);
-        require(_value &gt; 0);
-        require(_balanceOf[_from] &gt;= _value);
+        require(_value > 0);
+        require(_balanceOf[_from] >= _value);
     }
 
     function _sendToken(address _from, address _to, uint256 _value) internal {

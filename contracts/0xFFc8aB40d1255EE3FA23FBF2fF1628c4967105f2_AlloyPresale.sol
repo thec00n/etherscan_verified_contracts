@@ -16,37 +16,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -111,7 +111,7 @@ contract MinimumValueTransfer is Ownable {
    * @dev modifier to allow actions only when the minimum wei is received
    */
   modifier minimumWeiMet() {
-    require(msg.value &gt;= minimumWeiRequired);
+    require(msg.value >= minimumWeiRequired);
     _;
   }
 
@@ -162,15 +162,15 @@ contract Crowdsale is MinimumValueTransfer {
 
 
   function Crowdsale(address _tokenAddress, uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
     require(_tokenAddress != 0x0);
 
     // Create and instance pointer to the already deployed Token
     token = createTokenContract(_tokenAddress);
 
-    // Set the timelines, exchange rate &amp; wallet to store the received ETH
+    // Set the timelines, exchange rate & wallet to store the received ETH
     startTime = _startTime;
     endTime = _endTime;
     rate = _rate;
@@ -216,26 +216,26 @@ contract Crowdsale is MinimumValueTransfer {
   // @return true if the transaction can buy tokens
   function validPurchase() minimumWeiMet internal constant returns (bool) {
     uint256 current = now;
-    bool withinPeriod = current &gt;= startTime &amp;&amp; current &lt;= endTime;
+    bool withinPeriod = current >= startTime && current <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; !hasEnded();
+    return withinPeriod && nonZeroPurchase && !hasEnded();
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // Allows the Owner to run any emergency updates on the time line
   function updateCrowdsaleTimeline(uint256 newStartTime, uint256 newEndTime) onlyOwner external {
-    require (newStartTime &gt; 0 &amp;&amp; newEndTime &gt; newStartTime);
+    require (newStartTime > 0 && newEndTime > newStartTime);
     startTime = newStartTime;
     endTime = newEndTime;
   }
 
   // Gets the Human readable progress for the current crowsale timeline in %
   function crowdsaleProgress() external constant returns(uint256){
-    return now &gt; endTime ? 100: now.sub(startTime).mul(100).div(endTime.sub(startTime));
+    return now > endTime ? 100: now.sub(startTime).mul(100).div(endTime.sub(startTime));
   }
 
   // Transfers the Token ownership
@@ -252,21 +252,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 

@@ -1,4 +1,4 @@
-// proxy.sol - execute actions atomically through the proxy&#39;s identity
+// proxy.sol - execute actions atomically through the proxy's identity
 
 // Copyright (C) 2017  DappHub, LLC
 
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.23;
 
@@ -119,7 +119,7 @@ contract DSProxy is DSAuth, DSNote {
     {
         target = cache.read(_code);
         if (target == 0x0) {
-            // deploy contract &amp; store its address in cache
+            // deploy contract & store its address in cache
             target = cache.write(_code);
         }
 
@@ -165,7 +165,7 @@ contract DSProxy is DSAuth, DSNote {
 // Deployed proxy addresses are logged
 contract DSProxyFactory {
     event Created(address indexed sender, address indexed owner, address proxy, address cache);
-    mapping(address=&gt;bool) public isProxy;
+    mapping(address=>bool) public isProxy;
     DSProxyCache public cache = new DSProxyCache();
 
     // deploys a new proxy instance
@@ -191,10 +191,10 @@ contract DSProxyFactory {
 
 // By default, all proxies deployed from the same factory store
 // contracts in the same cache. The cache a proxy instance uses can be
-// changed.  The cache uses the sha3 hash of a contract&#39;s bytecode to
+// changed.  The cache uses the sha3 hash of a contract's bytecode to
 // lookup the address
 contract DSProxyCache {
-    mapping(bytes32 =&gt; address) cache;
+    mapping(bytes32 => address) cache;
 
     function read(bytes _code) public view returns (address) {
         bytes32 hash = keccak256(_code);

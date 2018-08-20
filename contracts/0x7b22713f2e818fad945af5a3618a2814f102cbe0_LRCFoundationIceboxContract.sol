@@ -2,14 +2,14 @@
 
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -29,9 +29,9 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -83,10 +83,10 @@ contract Token {
 
 
 /// @title LRC Foundation Icebox Program
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="e084818e89858ca08c8f8f9092898e87ce8f9287">[email&#160;protected]</span>&gt;.
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="e084818e89858ca08c8f8f9092898e87ce8f9287">[email protected]</span>>.
 /// For more information, please visit https://loopring.org.
 
-/// Loopring Foundation&#39;s LRC (20% of total supply) will be locked during the first two years，
+/// Loopring Foundation's LRC (20% of total supply) will be locked during the first two years，
 /// two years later, 1/24 of all locked LRC fund can be unlocked every month.
 
 contract LRCFoundationIceboxContract {
@@ -115,7 +115,7 @@ contract LRCFoundationIceboxContract {
 
     /// @dev Initialize the contract
     /// @param _lrcTokenAddress LRC ERC20 token address
-    /// @param _owner Owner&#39;s address
+    /// @param _owner Owner's address
     function LRCFoundationIceboxContract(address _lrcTokenAddress, address _owner) {
         require(_lrcTokenAddress != address(0));
         require(_owner != address(0));
@@ -134,7 +134,7 @@ contract LRCFoundationIceboxContract {
         require(startTime == 0);
 
         lrcInitialBalance = Token(lrcTokenAddress).balanceOf(address(this));
-        require(lrcInitialBalance &gt; 0);
+        require(lrcInitialBalance > 0);
 
         lrcUnlockPerMonth = lrcInitialBalance.div(24); // 24 month
         startTime = now;
@@ -146,15 +146,15 @@ contract LRCFoundationIceboxContract {
     function () payable {
         require(msg.sender == owner);
         require(msg.value == 0);
-        require(startTime &gt; 0);
-        require(now &gt; startTime + FREEZE_PERIOD);
+        require(startTime > 0);
+        require(now > startTime + FREEZE_PERIOD);
 
         var token = Token(lrcTokenAddress);
         uint balance = token.balanceOf(address(this));
-        require(balance &gt; 0);
+        require(balance > 0);
 
         uint lrcAmount = calculateLRCUnlockAmount(now, balance);
-        if (lrcAmount &gt; 0) {
+        if (lrcAmount > 0) {
             lrcWithdrawn += lrcAmount;
 
             Withdrawal(withdrawId++, lrcAmount);
@@ -172,9 +172,9 @@ contract LRCFoundationIceboxContract {
             .div(30 days)
             .mul(lrcUnlockPerMonth) - lrcWithdrawn;
 
-        require(unlockable &gt; 0);
+        require(unlockable > 0);
 
-        if (unlockable &gt; _balance) return _balance;
+        if (unlockable > _balance) return _balance;
         else return unlockable;
     }
 

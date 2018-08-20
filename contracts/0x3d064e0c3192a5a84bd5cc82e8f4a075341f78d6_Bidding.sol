@@ -9,7 +9,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -112,7 +112,7 @@ contract Bidding is Pausable
     Purchase[] public purchases;
 
     // Allowed withdrawals of previous bids
-    mapping(address =&gt; uint) public pendingReturns;
+    mapping(address => uint) public pendingReturns;
     uint public totalReturns;
 
     function getBiddingInfo(address bidder) public view returns (
@@ -134,7 +134,7 @@ contract Bidding is Pausable
     /// Withdraw a bid that was overbid.
     function withdraw() public {
         uint amount = pendingReturns[msg.sender];
-        require (amount &gt; 0);
+        require (amount > 0);
         
         // It is important to set this to zero because the recipient
         // can call this function again as part of the receiving call
@@ -166,7 +166,7 @@ contract Bidding is Pausable
 
     function isEnded() public view returns (bool)
     {
-        return timeEnd &lt; now;
+        return timeEnd < now;
     }
 
     function bid() public payable whenNotPaused
@@ -183,7 +183,7 @@ contract Bidding is Pausable
 
         uint256 currentBid = bank + msg.value;
 
-        require(currentBid &gt; highestBid);
+        require(currentBid > highestBid);
         require(!isEnded());
 
 

@@ -7,7 +7,7 @@ contract IAccessPolicy {
     // Public functions
     ////////////////////////
 
-    /// @notice We don&#39;t make this function constant to allow for state-updating access controls such as rate limiting.
+    /// @notice We don't make this function constant to allow for state-updating access controls such as rate limiting.
     /// @dev checks if subject belongs to requested role for particular object
     /// @param subject address to be checked against role, typically msg.sender
     /// @param role identifier of required role
@@ -65,14 +65,14 @@ contract StandardRoles {
     // Constants
     ////////////////////////
 
-    // @notice Soldity somehow doesn&#39;t evaluate this compile time
-    // @dev role which has rights to change permissions and set new policy in contract, keccak256(&quot;AccessController&quot;)
+    // @notice Soldity somehow doesn't evaluate this compile time
+    // @dev role which has rights to change permissions and set new policy in contract, keccak256("AccessController")
     bytes32 internal constant ROLE_ACCESS_CONTROLLER = 0xac42f8beb17975ed062dcb80c63e6d203ef1c2c335ced149dc5664cc671cb7da;
 }
 
 /// @title Granular code execution permissions
 /// @notice Intended to replace existing Ownable pattern with more granular permissions set to execute smart contract functions
-///     for each function where &#39;only&#39; modifier is applied, IAccessPolicy implementation is called to evaluate if msg.sender belongs to required role for contract being called.
+///     for each function where 'only' modifier is applied, IAccessPolicy implementation is called to evaluate if msg.sender belongs to required role for contract being called.
 ///     Access evaluation specific belong to IAccessPolicy implementation, see RoleBasedAccessPolicy for details.
 /// @dev Should be inherited by a contract requiring such permissions controll. IAccessPolicy must be provided in constructor. Access policy may be replaced to a different one
 ///     by msg.sender with ROLE_ACCESS_CONTROLLER role
@@ -88,7 +88,7 @@ contract AccessControlled is IAccessControlled, StandardRoles {
     // Modifiers
     ////////////////////////
 
-    /// @dev limits function execution only to senders assigned to required &#39;role&#39;
+    /// @dev limits function execution only to senders assigned to required 'role'
     modifier only(bytes32 role) {
         require(_accessPolicy.allowed(msg.sender, role, this, msg.sig));
         _;
@@ -145,7 +145,7 @@ contract AccessRoles {
 
     // NOTE: All roles are set to the keccak256 hash of the
     // CamelCased role name, i.e.
-    // ROLE_LOCKED_ACCOUNT_ADMIN = keccak256(&quot;LockedAccountAdmin&quot;)
+    // ROLE_LOCKED_ACCOUNT_ADMIN = keccak256("LockedAccountAdmin")
 
     // may setup LockedAccount, change disbursal mechanism and set migration
     bytes32 internal constant ROLE_LOCKED_ACCOUNT_ADMIN = 0x4675da546d2d92c5b86c4f726a9e61010dce91cccc2491ce6019e78b09d2572e;
@@ -168,10 +168,10 @@ contract AccessRoles {
     // may reclaim tokens/ether from contracts supporting IReclaimable interface
     bytes32 internal constant ROLE_RECLAIMER = 0x0542bbd0c672578966dcc525b30aa16723bb042675554ac5b0362f86b6e97dc5;
 
-    // represents legally platform operator in case of forks and contracts with legal agreement attached. keccak256(&quot;PlatformOperatorRepresentative&quot;)
+    // represents legally platform operator in case of forks and contracts with legal agreement attached. keccak256("PlatformOperatorRepresentative")
     bytes32 internal constant ROLE_PLATFORM_OPERATOR_REPRESENTATIVE = 0xb2b321377653f655206f71514ff9f150d0822d062a5abcf220d549e1da7999f0;
 
-    // allows to deposit EUR-T and allow addresses to send and receive EUR-T. keccak256(&quot;EurtDepositManager&quot;)
+    // allows to deposit EUR-T and allow addresses to send and receive EUR-T. keccak256("EurtDepositManager")
     bytes32 internal constant ROLE_EURT_DEPOSIT_MANAGER = 0x7c8ecdcba80ce87848d16ad77ef57cc196c208fc95c5638e4a48c681a34d4fe7;
 }
 
@@ -242,9 +242,9 @@ contract IEthereumForkArbiter {
  *  c. Migration provision (bilateral code update mechanism)
  *
  * Details on Agreement base class:
- * 1. We bind smart contract to legal contract by storing uri (preferably ipfs or hash) of the legal contract in the smart contract. It is however crucial that such binding is done by platform operator representation so transaction establishing the link must be signed by respective wallet (&#39;amendAgreement&#39;)
- * 2. Mutable part of agreement may change. We should be able to amend the uri later. Previous amendments should not be lost and should be retrievable (`amendAgreement` and &#39;pastAgreement&#39; functions).
- * 3. It is up to deriving contract to decide where to put &#39;acceptAgreement&#39; modifier. However situation where there is no cryptographic proof that given address was really acting in the transaction should be avoided, simplest example being &#39;to&#39; address in `transfer` function of ERC20.
+ * 1. We bind smart contract to legal contract by storing uri (preferably ipfs or hash) of the legal contract in the smart contract. It is however crucial that such binding is done by platform operator representation so transaction establishing the link must be signed by respective wallet ('amendAgreement')
+ * 2. Mutable part of agreement may change. We should be able to amend the uri later. Previous amendments should not be lost and should be retrievable (`amendAgreement` and 'pastAgreement' functions).
+ * 3. It is up to deriving contract to decide where to put 'acceptAgreement' modifier. However situation where there is no cryptographic proof that given address was really acting in the transaction should be avoided, simplest example being 'to' address in `transfer` function of ERC20.
  *
 **/
 contract Agreement is
@@ -276,8 +276,8 @@ contract Agreement is
     // stores all amendments to the agreement, first amendment is the original
     SignedAgreement[] private _amendments;
 
-    // stores block numbers of all addresses that signed the agreement (signatory =&gt; block number)
-    mapping(address =&gt; uint256) private _signatories;
+    // stores block numbers of all addresses that signed the agreement (signatory => block number)
+    mapping(address => uint256) private _signatories;
 
     ////////////////////////
     // Events
@@ -297,10 +297,10 @@ contract Agreement is
     ////////////////////////
 
     /// @notice logs that agreement was accepted by platform user
-    /// @dev intended to be added to functions that if used make &#39;accepter&#39; origin to enter legally binding agreement
+    /// @dev intended to be added to functions that if used make 'accepter' origin to enter legally binding agreement
     modifier acceptAgreement(address accepter) {
         if(_signatories[accepter] == 0) {
-            require(_amendments.length &gt; 0);
+            require(_amendments.length > 0);
             _signatories[accepter] = block.number;
             LogAgreementAccepted(accepter);
         }
@@ -355,7 +355,7 @@ contract Agreement is
             uint256 index
         )
     {
-        require(_amendments.length &gt; 0);
+        require(_amendments.length > 0);
         uint256 last = _amendments.length - 1;
         SignedAgreement storage amendment = _amendments[last];
         return (
@@ -409,7 +409,7 @@ contract IsContract {
         uint256 size;
         // takes 700 gas
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -435,7 +435,7 @@ contract IBasicToken {
         constant
         returns (uint256);
 
-    /// @param owner The address that&#39;s balance is being requested
+    /// @param owner The address that's balance is being requested
     /// @return The balance of `owner` at the current block
     function balanceOf(address owner)
         public
@@ -456,7 +456,7 @@ contract IBasicToken {
 /// @notice note that this opens your contracts to claims from various people saying they lost tokens and they want them back
 ///     be ready to handle such claims
 /// @dev use with care!
-///     1. ROLE_RECLAIMER is allowed to claim tokens, it&#39;s not returning tokens to original owner
+///     1. ROLE_RECLAIMER is allowed to claim tokens, it's not returning tokens to original owner
 ///     2. in derived contract that holds any token by design you must override `reclaim` and block such possibility.
 ///         see LockedAccount as an example
 contract Reclaimable is AccessControlled, AccessRoles {
@@ -515,7 +515,7 @@ contract TokenMetadata is ITokenMetadata {
     // Immutable state
     ////////////////////////
 
-    // The Token&#39;s name: e.g. DigixDAO Tokens
+    // The Token's name: e.g. DigixDAO Tokens
     string private NAME;
 
     // An identifier: e.g. REP
@@ -690,7 +690,7 @@ contract IERC677Callback {
 
     // NOTE: This call can be initiated by anyone. You need to make sure that
     // it is send by the token (`require(msg.sender == token)`) or make sure
-    // amount is valid (`require(token.allowance(this) &gt;= amount)`).
+    // amount is valid (`require(token.allowance(this) >= amount)`).
     function receiveApproval(
         address from,
         uint256 amount,
@@ -736,7 +736,7 @@ contract Math {
         constant
         returns(uint256)
     {
-        return v1 &gt; v2 ? v1 - v2 : v2 - v1;
+        return v1 > v2 ? v1 - v2 : v2 - v1;
     }
 
     // divide v by d, round up if remainder is 0.5 or more
@@ -748,7 +748,7 @@ contract Math {
         return add(v, d/2) / d;
     }
 
-    // computes decimal decimalFraction &#39;frac&#39; of &#39;amount&#39; with maximum precision (multiplication first)
+    // computes decimal decimalFraction 'frac' of 'amount' with maximum precision (multiplication first)
     // both amount and decimalFraction must have 18 decimals precision, frac 10**18 represents a whole (100% of) amount
     // mind loss of precision as decimal fractions do not have finite binary expansion
     // do not use instead of division
@@ -757,7 +757,7 @@ contract Math {
         constant
         returns(uint256)
     {
-        // it&#39;s like 1 ether is 100% proportion
+        // it's like 1 ether is 100% proportion
         return proportion(amount, frac, 10**18);
     }
 
@@ -790,7 +790,7 @@ contract Math {
         constant
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -800,7 +800,7 @@ contract Math {
         returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -809,7 +809,7 @@ contract Math {
         constant
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max(uint256 a, uint256 b)
@@ -817,7 +817,7 @@ contract Math {
         constant
         returns (uint256)
     {
-        return a &gt; b ? a : b;
+        return a > b ? a : b;
     }
 }
 
@@ -831,7 +831,7 @@ contract BasicToken is IBasicToken, Math {
     // Mutable state
     ////////////////////////
 
-    mapping(address =&gt; uint256) internal _balances;
+    mapping(address => uint256) internal _balances;
 
     uint256 internal _totalSupply;
 
@@ -908,7 +908,7 @@ contract StandardToken is
     // Mutable state
     ////////////////////////
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) private _allowed;
+    mapping (address => mapping (address => uint256)) private _allowed;
 
     ////////////////////////
     // Public functions
@@ -1009,9 +1009,9 @@ contract EtherToken is
     // Constants
     ////////////////////////
 
-    string private constant NAME = &quot;Ether Token&quot;;
+    string private constant NAME = "Ether Token";
 
-    string private constant SYMBOL = &quot;ETH-T&quot;;
+    string private constant SYMBOL = "ETH-T";
 
     uint8 private constant DECIMALS = 18;
 
@@ -1036,7 +1036,7 @@ contract EtherToken is
     function EtherToken(IAccessPolicy accessPolicy)
         AccessControlled(accessPolicy)
         StandardToken()
-        TokenMetadata(NAME, DECIMALS, SYMBOL, &quot;&quot;)
+        TokenMetadata(NAME, DECIMALS, SYMBOL, "")
         Reclaimable()
         public
     {
@@ -1057,11 +1057,11 @@ contract EtherToken is
         Transfer(address(0), msg.sender, msg.value);
     }
 
-    /// withdraws and sends &#39;amount&#39; of ether to msg.sender
+    /// withdraws and sends 'amount' of ether to msg.sender
     function withdraw(uint256 amount)
         public
     {
-        require(_balances[msg.sender] &gt;= amount);
+        require(_balances[msg.sender] >= amount);
         _balances[msg.sender] = sub(_balances[msg.sender], amount);
         _totalSupply = sub(_totalSupply, amount);
         msg.sender.transfer(amount);
@@ -1150,8 +1150,8 @@ contract EuroTokenMigrationTarget is
 
 /// @notice implemented in the contract that stores state to be migrated
 /// @notice contract is called migration source
-/// @dev migration target implements IMigrationTarget interface, when it is passed in &#39;enableMigration&#39; function
-/// @dev &#39;migrate&#39; function may be called to migrate part of state owned by msg.sender
+/// @dev migration target implements IMigrationTarget interface, when it is passed in 'enableMigration' function
+/// @dev 'migrate' function may be called to migrate part of state owned by msg.sender
 /// @dev in legal terms this corresponds to amending/changing agreement terms by co-signature of parties
 contract IMigrationSource {
 
@@ -1282,9 +1282,9 @@ contract EuroToken is
     // Constants
     ////////////////////////
 
-    string private constant NAME = &quot;Euro Token&quot;;
+    string private constant NAME = "Euro Token";
 
-    string private constant SYMBOL = &quot;EUR-T&quot;;
+    string private constant SYMBOL = "EUR-T";
 
     uint8 private constant DECIMALS = 18;
 
@@ -1293,10 +1293,10 @@ contract EuroToken is
     ////////////////////////
 
     // a list of addresses that are allowed to receive EUR-T
-    mapping(address =&gt; bool) private _allowedTransferTo;
+    mapping(address => bool) private _allowedTransferTo;
 
     // a list of of addresses that are allowed to send EUR-T
-    mapping(address =&gt; bool) private _allowedTransferFrom;
+    mapping(address => bool) private _allowedTransferFrom;
 
     ////////////////////////
     // Events
@@ -1349,7 +1349,7 @@ contract EuroToken is
     function EuroToken(IAccessPolicy accessPolicy)
         AccessControlled(accessPolicy)
         StandardToken()
-        TokenMetadata(NAME, DECIMALS, SYMBOL, &quot;&quot;)
+        TokenMetadata(NAME, DECIMALS, SYMBOL, "")
         MigrationSource(accessPolicy, ROLE_EURT_DEPOSIT_MANAGER)
         Reclaimable()
         public
@@ -1360,8 +1360,8 @@ contract EuroToken is
     // Public functions
     ////////////////////////
 
-    /// @notice deposit &#39;amount&#39; of EUR-T to address &#39;to&#39;
-    /// @dev address &#39;to&#39; is whitelisted as recipient of future transfers
+    /// @notice deposit 'amount' of EUR-T to address 'to'
+    /// @dev address 'to' is whitelisted as recipient of future transfers
     /// @dev deposit may happen only in case of succesful KYC of recipient and validation of banking data
     /// @dev which in this implementation is an off-chain responsibility of EURT_DEPOSIT_MANAGER
     function deposit(address to, uint256 amount)
@@ -1378,13 +1378,13 @@ contract EuroToken is
         return true;
     }
 
-    /// @notice withdraws &#39;amount&#39; of EUR-T by burning required amount and providing a proof of whithdrawal
+    /// @notice withdraws 'amount' of EUR-T by burning required amount and providing a proof of whithdrawal
     /// @dev proof is provided in form of log entry on which EURT_DEPOSIT_MANAGER
     /// @dev will act off-chain to return required Euro amount to EUR-T holder
     function withdraw(uint256 amount)
         public
     {
-        require(_balances[msg.sender] &gt;= amount);
+        require(_balances[msg.sender] >= amount);
         _balances[msg.sender] = sub(_balances[msg.sender], amount);
         _totalSupply = sub(_totalSupply, amount);
         LogWithdrawal(msg.sender, amount);
@@ -1438,9 +1438,9 @@ contract EuroToken is
         return BasicToken.transfer(to, amount);
     }
 
-    /// @dev broker acts in the name of &#39;from&#39; address so broker needs to have permission to transfer from
+    /// @dev broker acts in the name of 'from' address so broker needs to have permission to transfer from
     ///  this way we may give permissions to brokering smart contracts while investors do not have permissions
-    ///  to transfer. &#39;to&#39; address requires standard transfer to permission
+    ///  to transfer. 'to' address requires standard transfer to permission
     function transferFrom(address from, address to, uint256 amount)
         public
         onlyAllowedTransferFrom(msg.sender)
@@ -1461,7 +1461,7 @@ contract EuroToken is
     {
         // burn deposit
         uint256 amount = _balances[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             _balances[msg.sender] = 0;
             _totalSupply = sub(_totalSupply, amount);
         }
@@ -1530,12 +1530,12 @@ contract NeumarkIssuanceCurve {
         constant
         returns (uint256 neumarkUlps)
     {
-        require(totalEuroUlps + euroUlps &gt;= totalEuroUlps);
+        require(totalEuroUlps + euroUlps >= totalEuroUlps);
         uint256 from = cumulative(totalEuroUlps);
         uint256 to = cumulative(totalEuroUlps + euroUlps);
         // as expansion is not monotonic for large totalEuroUlps, assert below may fail
         // example: totalEuroUlps=1.999999999999999999999000000e+27 and euroUlps=50
-        assert(to &gt;= from);
+        assert(to >= from);
         return to - from;
     }
 
@@ -1548,11 +1548,11 @@ contract NeumarkIssuanceCurve {
         returns (uint256 euroUlps)
     {
         uint256 totalNeumarkUlps = cumulative(totalEuroUlps);
-        require(totalNeumarkUlps &gt;= burnNeumarkUlps);
+        require(totalNeumarkUlps >= burnNeumarkUlps);
         uint256 fromNmk = totalNeumarkUlps - burnNeumarkUlps;
         uint newTotalEuroUlps = cumulativeInverse(fromNmk, 0, totalEuroUlps);
         // yes, this may overflow due to non monotonic inverse function
-        assert(totalEuroUlps &gt;= newTotalEuroUlps);
+        assert(totalEuroUlps >= newTotalEuroUlps);
         return totalEuroUlps - newTotalEuroUlps;
     }
 
@@ -1567,11 +1567,11 @@ contract NeumarkIssuanceCurve {
         returns (uint256 euroUlps)
     {
         uint256 totalNeumarkUlps = cumulative(totalEuroUlps);
-        require(totalNeumarkUlps &gt;= burnNeumarkUlps);
+        require(totalNeumarkUlps >= burnNeumarkUlps);
         uint256 fromNmk = totalNeumarkUlps - burnNeumarkUlps;
         uint newTotalEuroUlps = cumulativeInverse(fromNmk, minEurUlps, maxEurUlps);
         // yes, this may overflow due to non monotonic inverse function
-        assert(totalEuroUlps &gt;= newTotalEuroUlps);
+        assert(totalEuroUlps >= newTotalEuroUlps);
         return totalEuroUlps - newTotalEuroUlps;
     }
 
@@ -1584,17 +1584,17 @@ contract NeumarkIssuanceCurve {
         returns(uint256 neumarkUlps)
     {
         // Return the cap if euroUlps is above the limit.
-        if (euroUlps &gt;= ISSUANCE_LIMIT_EUR_ULPS) {
+        if (euroUlps >= ISSUANCE_LIMIT_EUR_ULPS) {
             return NEUMARK_CAP;
         }
         // use linear approximation above limit below
         // binomial expansion does not guarantee monotonicity on uint256 precision for large euroUlps
-        if (euroUlps &gt;= LINEAR_APPROX_LIMIT_EUR_ULPS) {
+        if (euroUlps >= LINEAR_APPROX_LIMIT_EUR_ULPS) {
             // (euroUlps - LINEAR_APPROX_LIMIT_EUR_ULPS) is small so expression does not overflow
             return NEUMARKS_AT_LINEAR_LIMIT_ULPS + (TOT_LINEAR_NEUMARKS_ULPS * (euroUlps - LINEAR_APPROX_LIMIT_EUR_ULPS)) / TOT_LINEAR_EUR_ULPS;
         }
 
-        // Approximate cap-cap&#183;(1-1/D)^n using the Binomial expansion
+        // Approximate cap-cap·(1-1/D)^n using the Binomial expansion
         // http://galileo.phys.virginia.edu/classes/152.mf1i.spring02/Exponential_Function.htm
         // Function[imax, -CAP*Sum[(-IR*EUR/CAP)^i/Factorial[i], {i, imax}]]
         // which may be simplified to
@@ -1630,29 +1630,29 @@ contract NeumarkIssuanceCurve {
         constant
         returns (uint256 euroUlps)
     {
-        require(maxEurUlps &gt;= minEurUlps);
-        require(cumulative(minEurUlps) &lt;= neumarkUlps);
-        require(cumulative(maxEurUlps) &gt;= neumarkUlps);
+        require(maxEurUlps >= minEurUlps);
+        require(cumulative(minEurUlps) <= neumarkUlps);
+        require(cumulative(maxEurUlps) >= neumarkUlps);
         uint256 min = minEurUlps;
         uint256 max = maxEurUlps;
 
         // Binary search
-        while (max &gt; min) {
+        while (max > min) {
             uint256 mid = (max + min) / 2;
             uint256 val = cumulative(mid);
             // exact solution should not be used, a late points of the curve when many euroUlps are needed to
-            // increase by one nmkUlp this will lead to  &quot;indeterministic&quot; inverse values that depend on the initial min and max
-            // and further binary division -&gt; you can land at any of the euro value that is mapped to the same nmk value
+            // increase by one nmkUlp this will lead to  "indeterministic" inverse values that depend on the initial min and max
+            // and further binary division -> you can land at any of the euro value that is mapped to the same nmk value
             // with condition below removed, binary search will point to the lowest eur value possible which is good because it cannot be exploited even with 0 gas costs
             /* if (val == neumarkUlps) {
                 return mid;
             }*/
             // NOTE: approximate search (no inverse) must return upper element of the final range
-            //  last step of approximate search is always (min, min+1) so new mid is (2*min+1)/2 =&gt; min
+            //  last step of approximate search is always (min, min+1) so new mid is (2*min+1)/2 => min
             //  so new min = mid + 1 = max which was upper range. and that ends the search
             // NOTE: when there are multiple inverses for the same neumarkUlps, the `max` will be dragged down
             //  by `max = mid` expression to the lowest eur value of inverse. works only for ranges that cover all points of multiple inverse
-            if (val &lt; neumarkUlps) {
+            if (val < neumarkUlps) {
                 min = mid + 1;
             } else {
                 max = mid;
@@ -1707,7 +1707,7 @@ contract ISnapshotable {
         public
         returns (uint256);
 
-    /// upper bound of series snapshotIds for which there&#39;s a value
+    /// upper bound of series snapshotIds for which there's a value
     function currentSnapshotId()
         public
         constant
@@ -1725,7 +1725,7 @@ contract MSnapshotPolicy {
 
     // The snapshot Ids need to be strictly increasing.
     // Whenever the snaspshot id changes, a new snapshot will be created.
-    // As long as the same snapshot id is being returned, last snapshot will be updated as this indicates that snapshot id didn&#39;t change
+    // As long as the same snapshot id is being returned, last snapshot will be updated as this indicates that snapshot id didn't change
     //
     // Values passed to `hasValueAt` and `valuteAt` are required
     // to be less or equal to `mCurrentSnapshotId()`.
@@ -1761,11 +1761,11 @@ contract DailyAndSnapshotable is
     /// @dev start must be for the same day or 0, required for token cloning
     function DailyAndSnapshotable(uint256 start) internal {
         // 0 is invalid value as we are past unix epoch
-        if (start &gt; 0) {
+        if (start > 0) {
             uint256 dayBase = snapshotAt(block.timestamp);
-            require(start &gt;= dayBase);
+            require(start >= dayBase);
             // dayBase + 2**128 will not overflow as it is based on block.timestamp
-            require(start &lt; dayBase + 2**128);
+            require(start < dayBase + 2**128);
             _currentSnapshotId = start;
         }
     }
@@ -1779,7 +1779,7 @@ contract DailyAndSnapshotable is
         constant
         returns (uint256)
     {
-        require(timestamp &lt; MAX_TIMESTAMP);
+        require(timestamp < MAX_TIMESTAMP);
 
         uint256 dayBase = 2**128 * (timestamp / 1 days);
         return dayBase;
@@ -1795,7 +1795,7 @@ contract DailyAndSnapshotable is
     {
         uint256 dayBase = 2**128 * (block.timestamp / 1 days);
 
-        if (dayBase &gt; _currentSnapshotId) {
+        if (dayBase > _currentSnapshotId) {
             // New day has started, create snapshot for midnight
             _currentSnapshotId = dayBase;
         } else {
@@ -1831,7 +1831,7 @@ contract DailyAndSnapshotable is
         uint256 dayBase = 2**128 * (block.timestamp / 1 days);
 
         // New day has started
-        if (dayBase &gt; _currentSnapshotId) {
+        if (dayBase > _currentSnapshotId) {
             _currentSnapshotId = dayBase;
             LogSnapshotCreated(dayBase);
         }
@@ -1933,7 +1933,7 @@ contract TokenAllowance is
     ////////////////////////
 
     // `allowed` tracks rights to spends others tokens as per ERC20
-    mapping (address =&gt; mapping (address =&gt; uint256)) private _allowed;
+    mapping (address => mapping (address => uint256)) private _allowed;
 
     ////////////////////////
     // Constructor
@@ -2000,7 +2000,7 @@ contract TokenAllowance is
         returns (bool success)
     {
         // The standard ERC 20 transferFrom functionality
-        bool amountApproved = _allowed[from][msg.sender] &gt;= amount;
+        bool amountApproved = _allowed[from][msg.sender] >= amount;
         require(amountApproved);
 
         _allowed[from][msg.sender] -= amount;
@@ -2076,10 +2076,10 @@ contract Snapshot is MSnapshotPolicy {
         constant
         returns (bool)
     {
-        return values.length &gt; 0;
+        return values.length > 0;
     }
 
-    /// @dev makes sure that &#39;snapshotId&#39; between current snapshot id (mCurrentSnapshotId) and first snapshot id. this guarantees that getValueAt returns value from one of the snapshots.
+    /// @dev makes sure that 'snapshotId' between current snapshot id (mCurrentSnapshotId) and first snapshot id. this guarantees that getValueAt returns value from one of the snapshots.
     function hasValueAt(
         Values[] storage values,
         uint256 snapshotId
@@ -2088,8 +2088,8 @@ contract Snapshot is MSnapshotPolicy {
         constant
         returns (bool)
     {
-        require(snapshotId &lt;= mCurrentSnapshotId());
-        return values.length &gt; 0 &amp;&amp; values[0].snapshotId &lt;= snapshotId;
+        require(snapshotId <= mCurrentSnapshotId());
+        return values.length > 0 && values[0].snapshotId <= snapshotId;
     }
 
     /// gets last value in the series
@@ -2122,7 +2122,7 @@ contract Snapshot is MSnapshotPolicy {
         constant
         returns (uint256)
     {
-        require(snapshotId &lt;= mCurrentSnapshotId());
+        require(snapshotId <= mCurrentSnapshotId());
 
         // Empty value
         if (values.length == 0) {
@@ -2132,20 +2132,20 @@ contract Snapshot is MSnapshotPolicy {
         // Shortcut for the out of bounds snapshots
         uint256 last = values.length - 1;
         uint256 lastSnapshot = values[last].snapshotId;
-        if (snapshotId &gt;= lastSnapshot) {
+        if (snapshotId >= lastSnapshot) {
             return values[last].value;
         }
         uint256 firstSnapshot = values[0].snapshotId;
-        if (snapshotId &lt; firstSnapshot) {
+        if (snapshotId < firstSnapshot) {
             return defaultValue;
         }
         // Binary search of the value in the array
         uint256 min = 0;
         uint256 max = last;
-        while (max &gt; min) {
+        while (max > min) {
             uint256 mid = (max + min + 1) / 2;
             // must always return lower indice for approximate searches
-            if (values[mid].snapshotId &lt;= snapshotId) {
+            if (values[mid].snapshotId <= snapshotId) {
                 min = mid;
             } else {
                 max = mid - 1;
@@ -2180,7 +2180,7 @@ contract Snapshot is MSnapshotPolicy {
         }
 
         uint256 last = values.length - 1;
-        bool hasNewSnapshot = values[last].snapshotId &lt; currentSnapshotId;
+        bool hasNewSnapshot = values[last].snapshotId < currentSnapshotId;
         if (hasNewSnapshot) {
 
             // Do nothing if the value was not modified
@@ -2199,7 +2199,7 @@ contract Snapshot is MSnapshotPolicy {
         } else {
 
             // We are updating the currentSnapshotId
-            bool previousUnmodified = last &gt; 0 &amp;&amp; values[last - 1].value == value;
+            bool previousUnmodified = last > 0 && values[last - 1].value == value;
             if (previousUnmodified) {
                 // Remove current snapshot if current value was set to previous value
                 delete values[last];
@@ -2241,7 +2241,7 @@ contract ITokenSnapshots {
         constant
         returns (uint256);
 
-    /// @notice upper bound of series of snapshotIds for which there&#39;s a value in series
+    /// @notice upper bound of series of snapshotIds for which there's a value in series
     /// @return snapshotId
     function currentSnapshotId()
         public
@@ -2304,7 +2304,7 @@ contract BasicSnapshotToken is
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the snapshot id that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Values[]) internal _balances;
+    mapping (address => Values[]) internal _balances;
 
     // Tracks the history of the `totalSupply` of the token
     Values[] internal _totalSupplyValues;
@@ -2333,7 +2333,7 @@ contract BasicSnapshotToken is
             require(parentSnapshotId == 0);
         } else {
             if (parentSnapshotId == 0) {
-                require(parentToken.currentSnapshotId() &gt; 0);
+                require(parentToken.currentSnapshotId() > 0);
                 PARENT_SNAPSHOT_ID = parentToken.currentSnapshotId() - 1;
             } else {
                 PARENT_SNAPSHOT_ID = parentSnapshotId;
@@ -2359,7 +2359,7 @@ contract BasicSnapshotToken is
         return totalSupplyAtInternal(mCurrentSnapshotId());
     }
 
-    /// @param owner The address that&#39;s balance is being requested
+    /// @param owner The address that's balance is being requested
     /// @return The balance of `owner` at the current block
     function balanceOf(address owner)
         public
@@ -2434,7 +2434,7 @@ contract BasicSnapshotToken is
     // Other public functions
     //
 
-    /// @notice gets all token balances of &#39;owner&#39;
+    /// @notice gets all token balances of 'owner'
     /// @dev intended to be called via eth_call where gas limit is not an issue
     function allBalancesOf(address owner)
         external
@@ -2451,7 +2451,7 @@ contract BasicSnapshotToken is
 
         Values[] storage values = _balances[owner];
         uint256[2][] memory balances = new uint256[2][](values.length);
-        for(uint256 ii = 0; ii &lt; values.length; ++ii) {
+        for(uint256 ii = 0; ii < values.length; ++ii) {
             balances[ii] = [values[ii].snapshotId, values[ii].value];
         }
 
@@ -2476,7 +2476,7 @@ contract BasicSnapshotToken is
 
         // Try parent contract at or before the fork
         if (address(PARENT_TOKEN) != 0) {
-            uint256 earlierSnapshotId = PARENT_SNAPSHOT_ID &gt; snapshotId ? snapshotId : PARENT_SNAPSHOT_ID;
+            uint256 earlierSnapshotId = PARENT_SNAPSHOT_ID > snapshotId ? snapshotId : PARENT_SNAPSHOT_ID;
             return PARENT_TOKEN.totalSupplyAt(earlierSnapshotId);
         }
 
@@ -2499,7 +2499,7 @@ contract BasicSnapshotToken is
 
         // Try parent contract at or before the fork
         if (PARENT_TOKEN != address(0)) {
-            uint256 earlierSnapshotId = PARENT_SNAPSHOT_ID &gt; snapshotId ? snapshotId : PARENT_SNAPSHOT_ID;
+            uint256 earlierSnapshotId = PARENT_SNAPSHOT_ID > snapshotId ? snapshotId : PARENT_SNAPSHOT_ID;
             return PARENT_TOKEN.balanceOfAt(owner, earlierSnapshotId);
         }
 
@@ -2527,14 +2527,14 @@ contract BasicSnapshotToken is
         // never send to address 0
         require(to != address(0));
         // block transfers in clone that points to future/current snapshots of patent token
-        require(parentToken() == address(0) || parentSnapshotId() &lt; parentToken().currentSnapshotId());
+        require(parentToken() == address(0) || parentSnapshotId() < parentToken().currentSnapshotId());
         // Alerts the token controller of the transfer
         require(mOnTransfer(from, to, amount));
 
         // If the amount being transfered is more than the balance of the
         //  account the transfer reverts
         var previousBalanceFrom = balanceOf(from);
-        require(previousBalanceFrom &gt;= amount);
+        require(previousBalanceFrom >= amount);
 
         // First update the balance array with the new value for the address
         //  sending the tokens
@@ -2545,7 +2545,7 @@ contract BasicSnapshotToken is
         //  receiving the tokens
         uint256 previousBalanceTo = balanceOf(to);
         uint256 newBalanceTo = previousBalanceTo + amount;
-        assert(newBalanceTo &gt;= previousBalanceTo); // Check for overflow
+        assert(newBalanceTo >= previousBalanceTo); // Check for overflow
         setValue(_balances[to], newBalanceTo);
 
         // An event to make the transfer easy to find on the blockchain
@@ -2607,15 +2607,15 @@ contract MintableSnapshotToken is
         // never create for address 0
         require(owner != address(0));
         // block changes in clone that points to future/current snapshots of patent token
-        require(parentToken() == address(0) || parentSnapshotId() &lt; parentToken().currentSnapshotId());
+        require(parentToken() == address(0) || parentSnapshotId() < parentToken().currentSnapshotId());
 
         uint256 curTotalSupply = totalSupply();
         uint256 newTotalSupply = curTotalSupply + amount;
-        require(newTotalSupply &gt;= curTotalSupply); // Check for overflow
+        require(newTotalSupply >= curTotalSupply); // Check for overflow
 
         uint256 previousBalanceTo = balanceOf(owner);
         uint256 newBalanceTo = previousBalanceTo + amount;
-        assert(newBalanceTo &gt;= previousBalanceTo); // Check for overflow
+        assert(newBalanceTo >= previousBalanceTo); // Check for overflow
 
         setValue(_totalSupplyValues, newTotalSupply);
         setValue(_balances[owner], newBalanceTo);
@@ -2630,13 +2630,13 @@ contract MintableSnapshotToken is
         internal
     {
         // block changes in clone that points to future/current snapshots of patent token
-        require(parentToken() == address(0) || parentSnapshotId() &lt; parentToken().currentSnapshotId());
+        require(parentToken() == address(0) || parentSnapshotId() < parentToken().currentSnapshotId());
 
         uint256 curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= amount);
+        require(curTotalSupply >= amount);
 
         uint256 previousBalanceFrom = balanceOf(owner);
-        require(previousBalanceFrom &gt;= amount);
+        require(previousBalanceFrom >= amount);
 
         uint256 newTotalSupply = curTotalSupply - amount;
         uint256 newBalanceFrom = previousBalanceFrom - amount;
@@ -2662,12 +2662,12 @@ contract MintableSnapshotToken is
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /// @title StandardSnapshotToken Contract
 /// @author Jordi Baylina, Remco Bloemen, Marcin Rudolf
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -2743,13 +2743,13 @@ contract Neumark is
     // Constants
     ////////////////////////
 
-    string private constant TOKEN_NAME = &quot;Neumark&quot;;
+    string private constant TOKEN_NAME = "Neumark";
 
     uint8  private constant TOKEN_DECIMALS = 18;
 
-    string private constant TOKEN_SYMBOL = &quot;NEU&quot;;
+    string private constant TOKEN_SYMBOL = "NEU";
 
-    string private constant VERSION = &quot;NMK_1.0&quot;;
+    string private constant VERSION = "NMK_1.0";
 
     ////////////////////////
     // Mutable state
@@ -2818,7 +2818,7 @@ contract Neumark is
         acceptAgreement(msg.sender)
         returns (uint256)
     {
-        require(_totalEurUlps + euroUlps &gt;= _totalEurUlps);
+        require(_totalEurUlps + euroUlps >= _totalEurUlps);
         uint256 neumarkUlps = incremental(_totalEurUlps, euroUlps);
         _totalEurUlps += euroUlps;
         mGenerateTokens(msg.sender, neumarkUlps);
@@ -2937,7 +2937,7 @@ contract Neumark is
         mDestroyTokens(msg.sender, burnNeumarkUlps);
         _totalEurUlps = cumulativeInverse(totalSupply(), minEurUlps, maxEurUlps);
         // actually may overflow on non-monotonic inverse
-        assert(prevEuroUlps &gt;= _totalEurUlps);
+        assert(prevEuroUlps >= _totalEurUlps);
         uint256 euroUlps = prevEuroUlps - _totalEurUlps;
         LogNeumarksBurned(msg.sender, euroUlps, burnNeumarkUlps);
     }
@@ -3027,7 +3027,7 @@ contract LockedAccount is
     address private _penaltyDisbursalAddress;
 
     // LockedAccountMigration private migration;
-    mapping(address =&gt; Account) internal _accounts;
+    mapping(address => Account) internal _accounts;
 
     ////////////////////////
     // Events
@@ -3146,7 +3146,7 @@ contract LockedAccount is
         onlyState(LockState.AcceptingLocks)
         onlyController()
     {
-        require(amount &gt; 0);
+        require(amount > 0);
         // transfer to itself from Commitment contract allowance
         assert(ASSET_TOKEN.transferFrom(msg.sender, address(this), amount));
 
@@ -3155,7 +3155,7 @@ contract LockedAccount is
         account.neumarksDue = add(account.neumarksDue, neumarks);
 
         if (account.unlockDate == 0) {
-            // this is new account - unlockDate always &gt; 0
+            // this is new account - unlockDate always > 0
             _totalInvestors += 1;
             account.unlockDate = currentTime() + LOCK_PERIOD;
         }
@@ -3196,7 +3196,7 @@ contract LockedAccount is
         unlockInvestor(from);
 
         // we assume external call so return value will be lost to clients
-        // that&#39;s why we throw above
+        // that's why we throw above
         return true;
     }
 
@@ -3423,12 +3423,12 @@ contract LockedAccount is
         _lockState = newState;
     }
 
-    /// @notice unlocks &#39;investor&#39; tokens by making them withdrawable from assetToken
-    /// @dev expects number of neumarks that is due on investor&#39;s account to be approved for LockedAccount for transfer
+    /// @notice unlocks 'investor' tokens by making them withdrawable from assetToken
+    /// @dev expects number of neumarks that is due on investor's account to be approved for LockedAccount for transfer
     /// @dev there are 3 unlock modes depending on contract and investor state
-    ///     in &#39;AcceptingUnlocks&#39; state Neumarks due will be burned and funds transferred to investors address in assetToken,
+    ///     in 'AcceptingUnlocks' state Neumarks due will be burned and funds transferred to investors address in assetToken,
     ///         before unlockDate, penalty is deduced and distributed
-    ///     in &#39;ReleaseAll&#39; neumarks are not burned and unlockDate is not observed, funds are unlocked unconditionally
+    ///     in 'ReleaseAll' neumarks are not burned and unlockDate is not observed, funds are unlocked unconditionally
     function unlockInvestor(address investor)
         private
     {
@@ -3445,21 +3445,21 @@ contract LockedAccount is
         // Neumark burning and penalty processing only in AcceptingUnlocks state
         if (_lockState == LockState.AcceptingUnlocks) {
             // transfer Neumarks to be burned to itself via allowance mechanism
-            //  not enough allowance results in revert which is acceptable state so &#39;require&#39; is used
+            //  not enough allowance results in revert which is acceptable state so 'require' is used
             require(NEUMARK.transferFrom(investor, address(this), accountInMem.neumarksDue));
 
             // burn neumarks corresponding to unspent funds
             NEUMARK.burn(accountInMem.neumarksDue);
 
             // take the penalty if before unlockDate
-            if (currentTime() &lt; accountInMem.unlockDate) {
+            if (currentTime() < accountInMem.unlockDate) {
                 require(_penaltyDisbursalAddress != address(0));
                 uint256 penalty = decimalFraction(accountInMem.balance, PENALTY_FRACTION);
 
                 // distribute penalty
                 if (isContract(_penaltyDisbursalAddress)) {
                     require(
-                        ASSET_TOKEN.approveAndCall(_penaltyDisbursalAddress,penalty, &quot;&quot;)
+                        ASSET_TOKEN.approveAndCall(_penaltyDisbursalAddress,penalty, "")
                     );
                 } else {
                     // transfer to simple address
@@ -3479,8 +3479,8 @@ contract LockedAccount is
 }
 
 /// @title state machine for Commitment contract
-/// @notice implements following state progression Before --&gt; Whitelist --&gt; Public --&gt; Finished
-/// @dev state switching via &#39;transitionTo&#39; function
+/// @notice implements following state progression Before --> Whitelist --> Public --> Finished
+/// @dev state switching via 'transitionTo' function
 /// @dev inherited contract must implement mAfterTransition which will be called just after state transition happened
 contract StateMachine {
 
@@ -3576,9 +3576,9 @@ contract StateMachine {
         returns (bool valid)
     {
         return (
-            oldState == State.Before &amp;&amp; newState == State.Whitelist) || (
-            oldState == State.Whitelist &amp;&amp; newState == State.Public) || (
-            oldState == State.Public &amp;&amp; newState == State.Finished
+            oldState == State.Before && newState == State.Whitelist) || (
+            oldState == State.Whitelist && newState == State.Public) || (
+            oldState == State.Public && newState == State.Finished
         );
     }
 
@@ -3589,14 +3589,14 @@ contract StateMachine {
 }
 
 /// @title time induced state machine
-/// @notice ------ time -----&gt;
+/// @notice ------ time ----->
 ///
 ///  +--------+-----------+--------+------------
 ///  | Before | Whitelist | Public | Finished …
 ///  +--------+-----------+--------+------------
-/// @dev intended usage via &#39;withTimedTransitions&#39; modifier which makes sure that state machine transitions into
+/// @dev intended usage via 'withTimedTransitions' modifier which makes sure that state machine transitions into
 ///     correct state before executing function body. note that this is contract state changing modifier so use with care
-/// @dev state change request is publicly accessible via &#39;handleTimedTransitions&#39;
+/// @dev state change request is publicly accessible via 'handleTimedTransitions'
 /// @dev time is based on block.timestamp
 contract TimedStateMachine is StateMachine {
 
@@ -3652,15 +3652,15 @@ contract TimedStateMachine is StateMachine {
         int256 t = int256(block.timestamp);
 
         // Time induced state transitions.
-        // @dev Don&#39;t use `else if` and keep sorted by time and call `state()`
-        //     or else multiple transitions won&#39;t cascade properly.
-        if (state() == State.Before &amp;&amp; t &gt;= startOf(State.Whitelist)) {
+        // @dev Don't use `else if` and keep sorted by time and call `state()`
+        //     or else multiple transitions won't cascade properly.
+        if (state() == State.Before && t >= startOf(State.Whitelist)) {
             transitionTo(State.Whitelist);
         }
-        if (state() == State.Whitelist &amp;&amp; t &gt;= startOf(State.Public)) {
+        if (state() == State.Whitelist && t >= startOf(State.Public)) {
             transitionTo(State.Public);
         }
-        if (state() == State.Public &amp;&amp; t &gt;= startOf(State.Finished)) {
+        if (state() == State.Public && t >= startOf(State.Finished)) {
             transitionTo(State.Finished);
         }
     }
@@ -3761,7 +3761,7 @@ contract Commitment is
     ////////////////////////
 
     // Mapping of investor to pre-allocated tickets.
-    mapping (address =&gt; WhitelistTicket) private _whitelist;
+    mapping (address => WhitelistTicket) private _whitelist;
 
     // List of pre-allocated ticket investors.
     // NOTE: The order of of the investors matters when computing the reward.
@@ -3797,7 +3797,7 @@ contract Commitment is
     /// @param accessPolicy access policy instance controlling access to admin public functions
     /// @param forkArbiter indicates supported fork
     /// @param startDate timestamp of Whitelist state beginning, see TimedStateMachine constructor
-    /// @param platformWallet address of wallet storing platform operator&#39;s Neumarks
+    /// @param platformWallet address of wallet storing platform operator's Neumarks
     /// @param neumark Neumark token contract
     /// @param etherToken ether-encapsulating token contract
     /// @param euroToken euro pegged stable coin
@@ -3834,12 +3834,12 @@ contract Commitment is
         require(address(euroLock) != 0x0);
         require(euroLock.assetToken() == euroToken);
         // Euro is represented internally with 18 decimals
-        require(capEurUlps &gt;= 10**18*10**6); // 1 M€
-        require(capEurUlps &lt;= 10**18*10**9); // 1 G€
-        require(minTicketEurUlps &gt;= 10**18*10**2); // 100 €
-        require(minTicketEurUlps &lt;= 10**18*10**5); // 100 k€
-        require(ethEurFraction &gt;= 10**18*10**2); // 100 € / ETH
-        require(ethEurFraction &lt;= 10**18*10**4); // 10 k€ / ETH
+        require(capEurUlps >= 10**18*10**6); // 1 M€
+        require(capEurUlps <= 10**18*10**9); // 1 G€
+        require(minTicketEurUlps >= 10**18*10**2); // 100 €
+        require(minTicketEurUlps <= 10**18*10**5); // 100 k€
+        require(ethEurFraction >= 10**18*10**2); // 100 € / ETH
+        require(ethEurFraction <= 10**18*10**4); // 10 k€ / ETH
         PLATFORM_WALLET = platformWallet;
         NEUMARK = neumark;
         ETHER_TOKEN = etherToken;
@@ -3868,12 +3868,12 @@ contract Commitment is
         require(investors.length == tokens.length);
         require(investors.length == amounts.length);
 
-        for (uint256 i = 0; i &lt; investors.length; ++i) {
+        for (uint256 i = 0; i < investors.length; ++i) {
             addWhitelistInvestorPrivate(investors[i], tokens[i], amounts[i]);
         }
 
-        // We don&#39;t go over the cap
-        require(NEUMARK.totalEuroUlps() &lt;= CAP_EUR_ULPS);
+        // We don't go over the cap
+        require(NEUMARK.totalEuroUlps() <= CAP_EUR_ULPS);
     }
 
     /// @notice used by WHITELIST_ADMIN to kill commitment process before it starts
@@ -3904,12 +3904,12 @@ contract Commitment is
         uint256 committedAmount = add(allowedAmount, msg.value);
         uint256 committedEurUlps = convertToEur(committedAmount);
         // check against minimum ticket before proceeding
-        require(committedEurUlps &gt;= MIN_TICKET_EUR_ULPS);
+        require(committedEurUlps >= MIN_TICKET_EUR_ULPS);
 
-        if (allowedAmount &gt; 0) {
+        if (allowedAmount > 0) {
             assert(ETHER_TOKEN.transferFrom(msg.sender, this, allowedAmount));
         }
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             ETHER_TOKEN.deposit.value(msg.value)();
         }
 
@@ -3940,7 +3940,7 @@ contract Commitment is
         // receive Euro tokens
         uint256 committedEurUlps = EURO_TOKEN.allowance(msg.sender, this);
         // check against minimum ticket before proceeding
-        require(committedEurUlps &gt;= MIN_TICKET_EUR_ULPS);
+        require(committedEurUlps >= MIN_TICKET_EUR_ULPS);
 
         assert(EURO_TOKEN.transferFrom(msg.sender, this, committedEurUlps));
 
@@ -3989,7 +3989,7 @@ contract Commitment is
         constant
         returns (uint256)
     {
-        require(amount &lt; 2**123);
+        require(amount < 2**123);
         return decimalFraction(amount, ETH_EUR_FRACTION);
     }
 
@@ -4138,7 +4138,7 @@ contract Commitment is
         // Note: amount can be zero, indicating no pre-allocated NMK,
         //       but still the ability to commit before the public.
         uint256 amountEurUlps = isEuro ? amount : convertToEur(amount);
-        require(amount == 0 || amountEurUlps &gt;= MIN_TICKET_EUR_ULPS);
+        require(amount == 0 || amountEurUlps >= MIN_TICKET_EUR_ULPS);
 
         // Register the investor on the list of investors to keep them
         // in order.
@@ -4152,7 +4152,7 @@ contract Commitment is
             rewardNmk: 0
         });
 
-        if (amountEurUlps &gt; 0) {
+        if (amountEurUlps > 0) {
             // Allocate Neumarks (will be issued to `this`).
             // Because `_whitelist[investor].token == Token.None` does not not hold
             // any more, this function is protected against reentrancy attack
@@ -4170,13 +4170,13 @@ contract Commitment is
         }
     }
 
-    /// @dev Token.None should not be passed to &#39;tokenType&#39; parameter
+    /// @dev Token.None should not be passed to 'tokenType' parameter
     function getInvestorNeumarkReward(uint256 committedEurUlps, Token tokenType)
         private
         returns (uint256)
     {
-        // We don&#39;t go over the cap
-        require(add(NEUMARK.totalEuroUlps(), committedEurUlps) &lt;= CAP_EUR_ULPS);
+        // We don't go over the cap
+        require(add(NEUMARK.totalEuroUlps(), committedEurUlps) <= CAP_EUR_ULPS);
 
         // Compute committed funds
         uint256 remainingEurUlps = committedEurUlps;
@@ -4190,7 +4190,7 @@ contract Commitment is
         require(whitelisted || state() == State.Public);
 
         bool whitelistActiveForToken = tokenType == Token.Euro || state() == State.Whitelist;
-        if (whitelisted &amp;&amp; whitelistActiveForToken &amp;&amp; ticket.amountEurUlps &gt; 0 ) {
+        if (whitelisted && whitelistActiveForToken && ticket.amountEurUlps > 0 ) {
             uint256 ticketEurUlps = min(remainingEurUlps, ticket.amountEurUlps);
             ticketNmk = proportion(
                 ticket.rewardNmk,
@@ -4213,7 +4213,7 @@ contract Commitment is
         }
 
         // issue Neumarks against curve for amount left after pre-defined ticket was realized
-        if (remainingEurUlps &gt; 0) {
+        if (remainingEurUlps > 0) {
             rewardNmk = add(rewardNmk, NEUMARK.issueForEuro(remainingEurUlps));
             remainingEurUlps = 0; // not used later but we should keep variable semantics
         }
@@ -4228,14 +4228,14 @@ contract Commitment is
         return investorNmk;
     }
 
-    // calculates investor&#39;s and platform operator&#39;s neumarks from total reward
+    // calculates investor's and platform operator's neumarks from total reward
     function calculateNeumarkDistribtion(uint256 rewardNmk)
         private
         returns (uint256 platformNmk, uint256 investorNmk)
     {
         // round down - platform may get 1 wei less than investor
         platformNmk = rewardNmk / PLATFORM_NEUMARK_SHARE;
-        // rewardNmk &gt; platformNmk always
+        // rewardNmk > platformNmk always
         return (platformNmk, rewardNmk - platformNmk);
     }
 }

@@ -1,8 +1,8 @@
 /**
  *  @title Kleros
- *  @author Cl&#233;ment Lesaege - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adcec1c8c0c8c3d9edc1c8deccc8cac883cec2c0">[email&#160;protected]</a>&gt;
+ *  @author Clément Lesaege - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adcec1c8c0c8c3d9edc1c8deccc8cac883cec2c0">[email protected]</a>>
  *  This code implements a simple version of Kleros.
- *  Bug Bounties: This code hasn&#39;t undertaken a bug bounty program yet.
+ *  Bug Bounties: This code hasn't undertaken a bug bounty program yet.
  */
 
 pragma solidity ^0.4.24;
@@ -55,13 +55,13 @@ contract Controlled {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract Pinakion is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -90,10 +90,10 @@ contract Pinakion is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -172,7 +172,7 @@ contract Pinakion is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            require(allowed[_from][msg.sender] &gt;= _amount);
+            require(allowed[_from][msg.sender] >= _amount);
             allowed[_from][msg.sender] -= _amount;
         }
         doTransfer(_from, _to, _amount);
@@ -193,16 +193,16 @@ contract Pinakion is Controlled {
                return;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer throws
            var previousBalanceFrom = balanceOfAt(_from, block.number);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            // Alerts the token controller of the transfer
            if (isContract(controller)) {
@@ -216,7 +216,7 @@ contract Pinakion is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -224,7 +224,7 @@ contract Pinakion is Controlled {
 
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -303,7 +303,7 @@ contract Pinakion is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -328,7 +328,7 @@ contract Pinakion is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -390,9 +390,9 @@ contract Pinakion is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -407,9 +407,9 @@ contract Pinakion is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -440,16 +440,16 @@ contract Pinakion is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -465,7 +465,7 @@ contract Pinakion is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -484,15 +484,15 @@ contract Pinakion is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -619,8 +619,8 @@ contract RNG{
  */
 contract BlockHashRNG is RNG {
 
-    mapping (uint =&gt; uint) public randomNumber; // randomNumber[block] is the random number for this block, 0 otherwise.
-    mapping (uint =&gt; uint) public reward; // reward[block] is the amount to be paid to the party w.
+    mapping (uint => uint) public randomNumber; // randomNumber[block] is the random number for this block, 0 otherwise.
+    mapping (uint => uint) public reward; // reward[block] is the amount to be paid to the party w.
 
 
 
@@ -653,7 +653,7 @@ contract BlockHashRNG is RNG {
         if (randomNumber[_block] != 0) { // If the number is set.
             uint rewardToSend = reward[_block];
             reward[_block] = 0;
-            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don&#39;t want to block in case msg.sender has a fallback issue.
+            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don't want to block in case msg.sender has a fallback issue.
         }
     }
 
@@ -672,7 +672,7 @@ contract BlockHashRNGFallback is BlockHashRNG {
      *  @param _block Block the random number is linked to.
      */
     function saveRN(uint _block) public {
-        if (_block&lt;block.number &amp;&amp; randomNumber[_block]==0) {// If the random number is not already set and can be.
+        if (_block<block.number && randomNumber[_block]==0) {// If the random number is not already set and can be.
             if (blockhash(_block)!=0x0) // Normal case.
                 randomNumber[_block]=uint(blockhash(_block));
             else // The contract was not called in time. Fallback to returning previous blockhash.
@@ -681,7 +681,7 @@ contract BlockHashRNGFallback is BlockHashRNG {
         if (randomNumber[_block] != 0) { // If the random number is set.
             uint rewardToSend=reward[_block];
             reward[_block]=0;
-            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don&#39;t want to block in case the msg.sender has a fallback issue.
+            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don't want to block in case the msg.sender has a fallback issue.
         }
     }
     
@@ -741,7 +741,7 @@ contract Arbitrable{
     /** @dev Give a ruling for a dispute. Must be called by the arbitrator.
      *  The purpose of this function is to ensure that the address calling it has the right to rule on the contract.
      *  @param _disputeID ID of the dispute in the Arbitrator contract.
-     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for &quot;Not able/wanting to make a decision&quot;.
+     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for "Not able/wanting to make a decision".
      */
     function rule(uint _disputeID, uint _ruling) public onlyArbitrator {
         emit Ruling(Arbitrator(msg.sender),_disputeID,_ruling);
@@ -752,7 +752,7 @@ contract Arbitrable{
 
     /** @dev Execute a ruling of a dispute.
      *  @param _disputeID ID of the dispute in the Arbitrator contract.
-     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for &quot;Not able/wanting to make a decision&quot;.
+     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for "Not able/wanting to make a decision".
      */
     function executeRuling(uint _disputeID, uint _ruling) internal;
 }
@@ -760,7 +760,7 @@ contract Arbitrable{
 /** @title Arbitrator
  *  Arbitrator abstract contract.
  *  When developing arbitrator contracts we need to:
- *  -Define the functions for dispute creation (createDispute) and appeal (appeal). Don&#39;t forget to store the arbitrated contract and the disputeID (which should be unique, use nbDisputes).
+ *  -Define the functions for dispute creation (createDispute) and appeal (appeal). Don't forget to store the arbitrated contract and the disputeID (which should be unique, use nbDisputes).
  *  -Define the functions for cost display (arbitrationCost and appealCost).
  *  -Allow giving rulings. For this a function must call arbitrable.rule(disputeID,ruling).
  */
@@ -768,8 +768,8 @@ contract Arbitrator{
 
     enum DisputeStatus {Waiting, Appealable, Solved}
 
-    modifier requireArbitrationFee(bytes _extraData) {require(msg.value&gt;=arbitrationCost(_extraData)); _;}
-    modifier requireAppealFee(uint _disputeID, bytes _extraData) {require(msg.value&gt;=appealCost(_disputeID, _extraData)); _;}
+    modifier requireArbitrationFee(bytes _extraData) {require(msg.value>=arbitrationCost(_extraData)); _;}
+    modifier requireAppealFee(uint _disputeID, bytes _extraData) {require(msg.value>=appealCost(_disputeID, _extraData)); _;}
 
     /** @dev To be raised when a dispute can be appealed.
      *  @param _disputeID ID of the dispute.
@@ -841,10 +841,10 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
 
     // Variables which should not change after initialization.
     Pinakion public pinakion;
-    uint public constant NON_PAYABLE_AMOUNT = (2**256 - 2) / 2; // An astronomic amount, practically can&#39;t be paid.
+    uint public constant NON_PAYABLE_AMOUNT = (2**256 - 2) / 2; // An astronomic amount, practically can't be paid.
 
     // Variables which will subject to the governance mechanism.
-    // Note they will only be able to be changed during the activation period (because a session assumes they don&#39;t change after it).
+    // Note they will only be able to be changed during the activation period (because a session assumes they don't change after it).
     RNG public rng; // Random Number Generator used to draw jurors.
     uint public arbitrationFeePerJuror = 0.05 ether; // The fee which will be paid to each juror.
     uint16 public defaultNumberJuror = 3; // Number of drawn jurors unless specified otherwise.
@@ -876,13 +876,13 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
 
     struct Juror {
         uint balance;      // The amount of tokens the contract holds for this juror.
-        uint atStake;      // Total number of tokens the jurors can loose in disputes they are drawn in. Those tokens are locked. Note that we can have atStake &gt; balance but it should be statistically unlikely and does not pose issues.
+        uint atStake;      // Total number of tokens the jurors can loose in disputes they are drawn in. Those tokens are locked. Note that we can have atStake > balance but it should be statistically unlikely and does not pose issues.
         uint lastSession;  // Last session the tokens were activated.
         uint segmentStart; // Start of the segment of activated tokens.
         uint segmentEnd;   // End of the segment of activated tokens.
     }
 
-    mapping (address =&gt; Juror) public jurors;
+    mapping (address => Juror) public jurors;
 
     struct Vote {
         address account; // The juror who casted the vote.
@@ -892,14 +892,14 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     struct VoteCounter {
         uint winningChoice; // The choice which currently has the highest amount of votes. Is 0 in case of a tie.
         uint winningCount;  // The number of votes for winningChoice. Or for the choices which are tied.
-        mapping (uint =&gt; uint) voteCount; // voteCount[choice] is the number of votes for choice.
+        mapping (uint => uint) voteCount; // voteCount[choice] is the number of votes for choice.
     }
 
     enum DisputeState {
         Open,       // The dispute is opened but the outcome is not available yet (this include when jurors voted but appeal is still possible).
-        Resolving,  // The token repartition has started. Note that if it&#39;s done in just one call, this state is skipped.
+        Resolving,  // The token repartition has started. Note that if it's done in just one call, this state is skipped.
         Executable, // The arbitrated contract can be called to enforce the decision.
-        Executed    // Everything has been done and the dispute can&#39;t be interacted with anymore.
+        Executed    // Everything has been done and the dispute can't be interacted with anymore.
     }
 
     struct Dispute {
@@ -912,7 +912,7 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
         DisputeState state;          // The state of the dispute.
         Vote[][] votes;              // The votes in the form vote[appeals][voteID].
         VoteCounter[] voteCounter;   // The vote counters in the form voteCounter[appeals].
-        mapping (address =&gt; uint) lastSessionVote; // Last session a juror has voted on this dispute. Is 0 if he never did.
+        mapping (address => uint) lastSessionVote; // Last session a juror has voted on this dispute. Is 0 if he never did.
         uint currentAppealToRepartition; // The current appeal we are repartitioning.
         AppealsRepartitioned[] appealsRepartitioned; // Track a partially repartitioned appeal in the form AppealsRepartitioned[appeal].
     }
@@ -996,15 +996,15 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
         jurors[_from].balance += _amount;
     }
 
-    /** @dev Withdraw tokens. Note that we can&#39;t withdraw the tokens which are still atStake. 
-     *  Jurors can&#39;t withdraw their tokens if they have deposited some during this session.
+    /** @dev Withdraw tokens. Note that we can't withdraw the tokens which are still atStake. 
+     *  Jurors can't withdraw their tokens if they have deposited some during this session.
      *  This is to prevent jurors from withdrawing tokens they could loose.
      *  @param _value The amount to withdraw.
      */
     function withdraw(uint _value) public {
         Juror storage juror = jurors[msg.sender];
-        require(juror.atStake &lt;= juror.balance); // Make sure that there is no more at stake than owned to avoid overflow.
-        require(_value &lt;= juror.balance-juror.atStake);
+        require(juror.atStake <= juror.balance); // Make sure that there is no more at stake than owned to avoid overflow.
+        require(_value <= juror.balance-juror.atStake);
         require(juror.lastSession != session);
 
         juror.balance -= _value;
@@ -1019,7 +1019,7 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     /** @dev To call to go to a new period. TRUSTED.
      */
     function passPeriod() public {
-        require(now-lastPeriodChange &gt;= timePerPeriod[uint8(period)]);
+        require(now-lastPeriodChange >= timePerPeriod[uint8(period)]);
 
         if (period == Period.Activation) {
             rnBlock = block.number + 1;
@@ -1053,8 +1053,8 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
      */
     function activateTokens(uint _value) public onlyDuring(Period.Activation) {
         Juror storage juror = jurors[msg.sender];
-        require(_value &lt;= juror.balance);
-        require(_value &gt;= minActivatedToken);
+        require(_value <= juror.balance);
+        require(_value >= minActivatedToken);
         require(juror.lastSession != session); // Verify that tokens were not already activated for this session.
 
         juror.lastSession = session;
@@ -1076,20 +1076,20 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
         Dispute storage dispute = disputes[_disputeID];
         Juror storage juror = jurors[msg.sender];
         VoteCounter storage voteCounter = dispute.voteCounter[dispute.appeals];
-        require(dispute.lastSessionVote[msg.sender] != session); // Make sure juror hasn&#39;t voted yet.
-        require(_ruling &lt;= dispute.choices);
+        require(dispute.lastSessionVote[msg.sender] != session); // Make sure juror hasn't voted yet.
+        require(_ruling <= dispute.choices);
         // Note that it throws if the draws are incorrect.
         require(validDraws(msg.sender, _disputeID, _draws));
 
         dispute.lastSessionVote[msg.sender] = session;
         voteCounter.voteCount[_ruling] += _draws.length;
-        if (voteCounter.winningCount &lt; voteCounter.voteCount[_ruling]) {
+        if (voteCounter.winningCount < voteCounter.voteCount[_ruling]) {
             voteCounter.winningCount = voteCounter.voteCount[_ruling];
             voteCounter.winningChoice = _ruling;
-        } else if (voteCounter.winningCount==voteCounter.voteCount[_ruling] &amp;&amp; _draws.length!=0) { // Verify draw length to be non-zero to avoid the possibility of setting tie by casting 0 votes.
-            voteCounter.winningChoice = 0; // It&#39;s currently a tie.
+        } else if (voteCounter.winningCount==voteCounter.voteCount[_ruling] && _draws.length!=0) { // Verify draw length to be non-zero to avoid the possibility of setting tie by casting 0 votes.
+            voteCounter.winningChoice = 0; // It's currently a tie.
         }
-        for (uint i = 0; i &lt; _draws.length; ++i) {
+        for (uint i = 0; i < _draws.length; ++i) {
             dispute.votes[dispute.appeals].push(Vote({
                 account: msg.sender,
                 ruling: _ruling
@@ -1103,7 +1103,7 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     }
 
     /** @dev Steal part of the tokens and the arbitration fee of a juror who failed to vote.
-     *  Note that a juror who voted but without all his weight can&#39;t be penalized.
+     *  Note that a juror who voted but without all his weight can't be penalized.
      *  It is possible to not penalize with the maximum weight.
      *  But note that it can lead to arbitration fees being kept by the contract and never distributed.
      *  @param _jurorAddress Address of the juror to steal tokens from.
@@ -1113,12 +1113,12 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     function penalizeInactiveJuror(address _jurorAddress, uint _disputeID, uint[] _draws) public {
         Dispute storage dispute = disputes[_disputeID];
         Juror storage inactiveJuror = jurors[_jurorAddress];
-        require(period &gt; Period.Vote);
-        require(dispute.lastSessionVote[_jurorAddress] != session); // Verify the juror hasn&#39;t voted.
+        require(period > Period.Vote);
+        require(dispute.lastSessionVote[_jurorAddress] != session); // Verify the juror hasn't voted.
         dispute.lastSessionVote[_jurorAddress] = session; // Update last session to avoid penalizing multiple times.
         require(validDraws(_jurorAddress, _disputeID, _draws));
         uint penality = _draws.length * minActivatedToken * 2 * alpha / ALPHA_DIVISOR;
-        penality = (penality &lt; inactiveJuror.balance) ? penality : inactiveJuror.balance; // Make sure the penality is not higher than the balance.
+        penality = (penality < inactiveJuror.balance) ? penality : inactiveJuror.balance; // Make sure the penality is not higher than the balance.
         inactiveJuror.balance -= penality;
         TokenShift(_jurorAddress, _disputeID, -int(penality));
         jurors[msg.sender].balance += penality / 2; // Give half of the penalty to the caller.
@@ -1138,23 +1138,23 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     function oneShotTokenRepartition(uint _disputeID) public onlyDuring(Period.Execution) {
         Dispute storage dispute = disputes[_disputeID];
         require(dispute.state == DisputeState.Open);
-        require(dispute.session+dispute.appeals &lt;= session);
+        require(dispute.session+dispute.appeals <= session);
 
         uint winningChoice = dispute.voteCounter[dispute.appeals].winningChoice;
         uint amountShift = getStakePerDraw();
-        for (uint i = 0; i &lt;= dispute.appeals; ++i) {
+        for (uint i = 0; i <= dispute.appeals; ++i) {
             // If the result is not a tie, some parties are incoherent. Note that 0 (refuse to arbitrate) winning is not a tie.
             // Result is a tie if the winningChoice is 0 (refuse to arbitrate) and the choice 0 is not the most voted choice.
-            // Note that in case of a &quot;tie&quot; among some choices including 0, parties who did not vote 0 are considered incoherent.
+            // Note that in case of a "tie" among some choices including 0, parties who did not vote 0 are considered incoherent.
             if (winningChoice!=0 || (dispute.voteCounter[dispute.appeals].voteCount[0] == dispute.voteCounter[dispute.appeals].winningCount)) {
                 uint totalToRedistribute = 0;
                 uint nbCoherent = 0;
                 // First loop to penalize the incoherent votes.
-                for (uint j = 0; j &lt; dispute.votes[i].length; ++j) {
+                for (uint j = 0; j < dispute.votes[i].length; ++j) {
                     Vote storage vote = dispute.votes[i][j];
                     if (vote.ruling != winningChoice) {
                         Juror storage juror = jurors[vote.account];
-                        uint penalty = amountShift&lt;juror.balance ? amountShift : juror.balance;
+                        uint penalty = amountShift<juror.balance ? amountShift : juror.balance;
                         juror.balance -= penalty;
                         TokenShift(vote.account, _disputeID, int(-penalty));
                         totalToRedistribute += penalty;
@@ -1166,9 +1166,9 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
                     jurors[governor].balance += totalToRedistribute;
                     TokenShift(governor, _disputeID, int(totalToRedistribute));
                 } else { // otherwise, redistribute them.
-                    uint toRedistribute = totalToRedistribute / nbCoherent; // Note that few fractions of tokens can be lost but due to the high amount of decimals we don&#39;t care.
+                    uint toRedistribute = totalToRedistribute / nbCoherent; // Note that few fractions of tokens can be lost but due to the high amount of decimals we don't care.
                     // Second loop to redistribute.
-                    for (j = 0; j &lt; dispute.votes[i].length; ++j) {
+                    for (j = 0; j < dispute.votes[i].length; ++j) {
                         vote = dispute.votes[i][j];
                         if (vote.ruling == winningChoice) {
                             juror = jurors[vote.account];
@@ -1179,10 +1179,10 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
                 }
             }
             // Third loop to lower the atStake in order to unlock tokens.
-            for (j = 0; j &lt; dispute.votes[i].length; ++j) {
+            for (j = 0; j < dispute.votes[i].length; ++j) {
                 vote = dispute.votes[i][j];
                 juror = jurors[vote.account];
-                juror.atStake -= amountShift; // Note that it can&#39;t underflow due to amountShift not changing between vote and redistribution.
+                juror.atStake -= amountShift; // Note that it can't underflow due to amountShift not changing between vote and redistribution.
             }
         }
         dispute.state = DisputeState.Executable; // Since it was solved in one shot, go directly to the executable step.
@@ -1196,35 +1196,35 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
      */
     function multipleShotTokenRepartition(uint _disputeID, uint _maxIterations) public onlyDuring(Period.Execution) {
         Dispute storage dispute = disputes[_disputeID];
-        require(dispute.state &lt;= DisputeState.Resolving);
-        require(dispute.session+dispute.appeals &lt;= session);
+        require(dispute.state <= DisputeState.Resolving);
+        require(dispute.session+dispute.appeals <= session);
         dispute.state = DisputeState.Resolving; // Mark as resolving so oneShotTokenRepartition cannot be called on dispute.
 
         uint winningChoice = dispute.voteCounter[dispute.appeals].winningChoice;
         uint amountShift = getStakePerDraw();
         uint currentIterations = 0; // Total votes we have repartitioned this iteration.
-        for (uint i = dispute.currentAppealToRepartition; i &lt;= dispute.appeals; ++i) {
+        for (uint i = dispute.currentAppealToRepartition; i <= dispute.appeals; ++i) {
             // Allocate space for new AppealsRepartitioned.
-            if (dispute.appealsRepartitioned.length &lt; i+1) {
+            if (dispute.appealsRepartitioned.length < i+1) {
                 dispute.appealsRepartitioned.length++;
             }
 
             // If the result is a tie, no parties are incoherent and no need to move tokens. Note that 0 (refuse to arbitrate) winning is not a tie.
-            if (winningChoice==0 &amp;&amp; (dispute.voteCounter[dispute.appeals].voteCount[0] != dispute.voteCounter[dispute.appeals].winningCount)) {
+            if (winningChoice==0 && (dispute.voteCounter[dispute.appeals].voteCount[0] != dispute.voteCounter[dispute.appeals].winningCount)) {
                 // If ruling is a tie we can skip to at stake.
                 dispute.appealsRepartitioned[i].stage = RepartitionStage.AtStake;
             }
 
             // First loop to penalize the incoherent votes.
             if (dispute.appealsRepartitioned[i].stage == RepartitionStage.Incoherent) {
-                for (uint j = dispute.appealsRepartitioned[i].currentIncoherentVote; j &lt; dispute.votes[i].length; ++j) {
-                    if (currentIterations &gt;= _maxIterations) {
+                for (uint j = dispute.appealsRepartitioned[i].currentIncoherentVote; j < dispute.votes[i].length; ++j) {
+                    if (currentIterations >= _maxIterations) {
                         return;
                     }
                     Vote storage vote = dispute.votes[i][j];
                     if (vote.ruling != winningChoice) {
                         Juror storage juror = jurors[vote.account];
-                        uint penalty = amountShift&lt;juror.balance ? amountShift : juror.balance;
+                        uint penalty = amountShift<juror.balance ? amountShift : juror.balance;
                         juror.balance -= penalty;
                         TokenShift(vote.account, _disputeID, int(-penalty));
                         dispute.appealsRepartitioned[i].totalToRedistribute += penalty;
@@ -1246,10 +1246,10 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
                     TokenShift(governor, _disputeID, int(dispute.appealsRepartitioned[i].totalToRedistribute));
                     dispute.appealsRepartitioned[i].stage = RepartitionStage.AtStake;
                 } else { // Otherwise, redistribute them.
-                    uint toRedistribute = dispute.appealsRepartitioned[i].totalToRedistribute / dispute.appealsRepartitioned[i].nbCoherent; // Note that few fractions of tokens can be lost but due to the high amount of decimals we don&#39;t care.
+                    uint toRedistribute = dispute.appealsRepartitioned[i].totalToRedistribute / dispute.appealsRepartitioned[i].nbCoherent; // Note that few fractions of tokens can be lost but due to the high amount of decimals we don't care.
                     // Second loop to redistribute.
-                    for (j = dispute.appealsRepartitioned[i].currentCoherentVote; j &lt; dispute.votes[i].length; ++j) {
-                        if (currentIterations &gt;= _maxIterations) {
+                    for (j = dispute.appealsRepartitioned[i].currentCoherentVote; j < dispute.votes[i].length; ++j) {
+                        if (currentIterations >= _maxIterations) {
                             return;
                         }
                         vote = dispute.votes[i][j];
@@ -1269,13 +1269,13 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
 
             if (dispute.appealsRepartitioned[i].stage == RepartitionStage.AtStake) {
                 // Third loop to lower the atStake in order to unlock tokens.
-                for (j = dispute.appealsRepartitioned[i].currentAtStakeVote; j &lt; dispute.votes[i].length; ++j) {
-                    if (currentIterations &gt;= _maxIterations) {
+                for (j = dispute.appealsRepartitioned[i].currentAtStakeVote; j < dispute.votes[i].length; ++j) {
+                    if (currentIterations >= _maxIterations) {
                         return;
                     }
                     vote = dispute.votes[i][j];
                     juror = jurors[vote.account];
-                    juror.atStake -= amountShift; // Note that it can&#39;t underflow due to amountShift not changing between vote and redistribution.
+                    juror.atStake -= amountShift; // Note that it can't underflow due to amountShift not changing between vote and redistribution.
 
                     ++currentIterations;
                     ++dispute.appealsRepartitioned[i].currentAtStakeVote;
@@ -1325,14 +1325,14 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
 
         if (juror.lastSession != session) return false; // Make sure that the tokens were deposited for this session.
         if (dispute.session+dispute.appeals != session) return false; // Make sure there is currently a dispute.
-        if (period &lt;= Period.Draw) return false; // Make sure that jurors are already drawn.
-        for (uint i = 0; i &lt; _draws.length; ++i) {
-            if (_draws[i] &lt;= draw) return false; // Make sure that draws are always increasing to avoid someone inputing the same multiple times.
+        if (period <= Period.Draw) return false; // Make sure that jurors are already drawn.
+        for (uint i = 0; i < _draws.length; ++i) {
+            if (_draws[i] <= draw) return false; // Make sure that draws are always increasing to avoid someone inputing the same multiple times.
             draw = _draws[i];
-            if (draw &gt; nbJurors) return false;
+            if (draw > nbJurors) return false;
             uint position = uint(keccak256(randomNumber, _disputeID, draw)) % segmentSize; // Random position on the segment for draw.
-            require(position &gt;= juror.segmentStart);
-            require(position &lt; juror.segmentEnd);
+            require(position >= juror.segmentStart);
+            require(position < juror.segmentEnd);
         }
 
         return true;
@@ -1351,12 +1351,12 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
      */
     function createDispute(uint _choices, bytes _extraData) public payable returns (uint disputeID) {
         uint16 nbJurors = extraDataToNbJurors(_extraData);
-        require(msg.value &gt;= arbitrationCost(_extraData));
+        require(msg.value >= arbitrationCost(_extraData));
 
         disputeID = disputes.length++;
         Dispute storage dispute = disputes[disputeID];
         dispute.arbitrated = Arbitrable(msg.sender);
-        if (period &lt; Period.Draw) // If drawing did not start schedule it for the current session.
+        if (period < Period.Draw) // If drawing did not start schedule it for the current session.
             dispute.session = session;
         else // Otherwise schedule it for the next one.
             dispute.session = session+1;
@@ -1377,7 +1377,7 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     function appeal(uint _disputeID, bytes _extraData) public payable onlyDuring(Period.Appeal) {
         super.appeal(_disputeID,_extraData);
         Dispute storage dispute = disputes[_disputeID];
-        require(msg.value &gt;= appealCost(_disputeID, _extraData));
+        require(msg.value >= appealCost(_disputeID, _extraData));
         require(dispute.session+dispute.appeals == session); // Dispute of the current session.
         require(dispute.arbitrated == msg.sender);
         
@@ -1420,7 +1420,7 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     function appealCost(uint _disputeID, bytes _extraData) public view returns (uint fee) {
         Dispute storage dispute = disputes[_disputeID];
 
-        if(dispute.appeals &gt;= maxAppeals) return NON_PAYABLE_AMOUNT;
+        if(dispute.appeals >= maxAppeals) return NON_PAYABLE_AMOUNT;
 
         return (2*amountJurors(_disputeID) + 1) * dispute.arbitrationFeePerJuror;
     }
@@ -1430,10 +1430,10 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
      *  Note that it does not check that the number of jurors is odd, but users are advised to choose a odd number of jurors.
      */
     function extraDataToNbJurors(bytes _extraData) internal view returns (uint16 nbJurors) {
-        if (_extraData.length &lt; 2)
+        if (_extraData.length < 2)
             return defaultNumberJuror;
         else
-            return (uint16(_extraData[0]) &lt;&lt; 8) + uint16(_extraData[1]);
+            return (uint16(_extraData[0]) << 8) + uint16(_extraData[1]);
     }
 
     /** @dev Compute the minimum activated pinakions in alpha.
@@ -1471,7 +1471,7 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
     /** @dev Getter for winningChoice in VoteCounter.
      *  @param _disputeID ID of the dispute.
      *  @param _appeals Which appeal (or 0 for the initial session).
-     *  @return winningChoice The currently winning choice (or 0 if it&#39;s tied). Note that 0 can also be return if the majority refuses to arbitrate.
+     *  @return winningChoice The currently winning choice (or 0 if it's tied). Note that 0 can also be return if the majority refuses to arbitrate.
      */
     function getWinningChoice(uint _disputeID, uint _appeals) public view returns (uint winningChoice) {
         return disputes[_disputeID].voteCounter[_appeals].winningChoice;
@@ -1516,15 +1516,15 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
         Juror storage juror = jurors[_juror];
         if (juror.lastSession != session
         || (dispute.session+dispute.appeals != session)
-        || period&lt;=Period.Draw
-        || _draw&gt;amountJurors(_disputeID)
+        || period<=Period.Draw
+        || _draw>amountJurors(_disputeID)
         || _draw==0
         || segmentSize==0
         ) {
             return false;
         } else {
             uint position = uint(keccak256(randomNumber,_disputeID,_draw)) % segmentSize;
-            return (position &gt;= juror.segmentStart) &amp;&amp; (position &lt; juror.segmentEnd);
+            return (position >= juror.segmentStart) && (position < juror.segmentEnd);
         }
 
     }
@@ -1544,11 +1544,11 @@ contract Kleros is Arbitrator, ApproveAndCallFallBack {
      */
     function disputeStatus(uint _disputeID) public view returns (DisputeStatus status) {
         Dispute storage dispute = disputes[_disputeID];
-        if (dispute.session+dispute.appeals &lt; session) // Dispute of past session.
+        if (dispute.session+dispute.appeals < session) // Dispute of past session.
             return DisputeStatus.Solved;
         else if(dispute.session+dispute.appeals == session) { // Dispute of current session.
             if (dispute.state == DisputeState.Open) {
-                if (period &lt; Period.Appeal)
+                if (period < Period.Appeal)
                     return DisputeStatus.Waiting;
                 else if (period == Period.Appeal)
                     return DisputeStatus.Appealable;

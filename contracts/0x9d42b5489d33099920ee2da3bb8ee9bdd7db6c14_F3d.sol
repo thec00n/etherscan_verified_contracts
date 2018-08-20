@@ -38,9 +38,9 @@ contract F3d is F3Devents {
   address public admin;
 
   PlayerStatus[] public players;
-  mapping(address =&gt; uint256) public playerIds;
-  mapping(uint256 =&gt; Round) public rounds;
-  mapping(uint256 =&gt; mapping (uint256 =&gt; PlayerRound)) public playerRoundData;
+  mapping(address => uint256) public playerIds;
+  mapping(uint256 => Round) public rounds;
+  mapping(uint256 => mapping (uint256 => PlayerRound)) public playerRoundData;
   uint256 public currentRound;
   
   struct PlayerStatus {
@@ -142,7 +142,7 @@ contract F3d is F3Devents {
   
   function updateWallet(uint256 _pID, uint256 _round) private {
       uint256 earnings = calculateMasked(_pID, _round);
-      if (earnings &gt; 0) {
+      if (earnings > 0) {
           players[_pID].wallet = earnings.add(players[_pID].wallet);
           playerRoundData[_pID][_round].mask = earnings.add(playerRoundData[_pID][_round].mask);
       }
@@ -150,7 +150,7 @@ contract F3d is F3Devents {
   
   function profit() public view returns (uint256) {
       uint256 id = playerIds[msg.sender];
-      if (id == 0 &amp;&amp; msg.sender != owner) {
+      if (id == 0 && msg.sender != owner) {
           return 0;
       }
       PlayerStatus memory player = players[id];
@@ -167,7 +167,7 @@ contract F3d is F3Devents {
       if (msg.sender != owner) {
           if (playerIds[msg.sender] == 0) {
               playerIds[msg.sender] = players.length;
-              if (ref &gt;= players.length) {
+              if (ref >= players.length) {
                   ref = 0;
               }
               
@@ -186,7 +186,7 @@ contract F3d is F3Devents {
   function finalize(uint256 ref) public {
       Round storage lastOne = rounds[currentRound];
       // round must be finished
-      require(block.timestamp &gt; lastOne.endTime);
+      require(block.timestamp > lastOne.endTime);
       
       // register the user if necessary
       registerUserIfNeeded(ref);
@@ -253,14 +253,14 @@ contract F3d is F3Devents {
       uint256 _price = price(c_key);
       uint256 remainKeys = c_key.mul(decimals).sub(current.keys);
 
-      if (remainKeys &gt;= _keys) {
+      if (remainKeys >= _keys) {
           return _price.mul(_keys) / decimals;
       } 
       
       uint256 costEth = _price.mul(_keys) / decimals;
       _keys = _keys.sub(remainKeys);
       
-      while(_keys &gt;= decimals) {
+      while(_keys >= decimals) {
           c_key = c_key.add(1);
           _price = price(c_key);
           costEth = costEth.add(_price);
@@ -283,7 +283,7 @@ contract F3d is F3Devents {
       uint256 remainKeys = c_key.mul(decimals).sub(current.keys);
       uint256 remain =remainKeys.mul(_price) / decimals;
       
-      if (remain &gt;= _eth) {
+      if (remain >= _eth) {
           return _eth.mul(decimals) / _price;
       }
       uint256 boughtKeys = remainKeys;
@@ -291,7 +291,7 @@ contract F3d is F3Devents {
       while(true) {
           c_key = c_key.add(1);
           _price = price(c_key);
-          if (_price &lt;= _eth) {
+          if (_price <= _eth) {
               // buy a whole unit
               boughtKeys = boughtKeys.add(decimals);
               _eth = _eth.sub(_price);
@@ -312,7 +312,7 @@ contract F3d is F3Devents {
           updatePlayer(_pID);
       }
       
-      if (block.timestamp &gt; current.endTime) {
+      if (block.timestamp > current.endTime) {
           //we need to do finalzing
           finalize(players[_pID].referer);
           
@@ -326,18 +326,18 @@ contract F3d is F3Devents {
       // calculate the keys that he could buy
       uint256 _keys = keys(_eth);
       
-      if (_keys &lt;= 0) {
+      if (_keys <= 0) {
           // put the eth to the sender
-          // sorry, you&#39;re bumped
+          // sorry, you're bumped
           players[_pID].wallet = _eth.add(players[_pID].wallet);
           return;
       }
 
-      if (_keys &gt;= decimals) {
+      if (_keys >= decimals) {
           // buy at least one key to be the winner 
           current_now.winner = players[_pID].addr;
           current_now.endTime = current_now.endTime.add(timeGap);
-          if (current_now.endTime.sub(block.timestamp) &gt; maxTimeRemain) {
+          if (current_now.endTime.sub(block.timestamp) > maxTimeRemain) {
               current_now.endTime = block.timestamp.add(maxTimeRemain);
           }
       }
@@ -358,7 +358,7 @@ contract F3d is F3Devents {
       } else {
           current_now.mask = current_now.mask.add((_eth.mul(tb) / 1000) / current_now.keys);
           // dust to owner;
-          // since the _eth will &gt; 0, so the division is ok
+          // since the _eth will > 0, so the division is ok
           uint256 dust = (_eth.mul(tb) / 1000).sub( _eth.mul(tb) / 1000 / current_now.keys * current_now.keys );
           players[0].wallet = toOwner.add(dust).add(players[0].wallet);
       }
@@ -367,7 +367,7 @@ contract F3d is F3Devents {
       current_now.keys = _keys.add(current_now.keys);
       current_now.eth = _eth.add(current_now.eth);
 
-      // for the new keys, remove the user&#39;s free earnings
+      // for the new keys, remove the user's free earnings
       playerRoundData[_pID][currentRound].mask = current_now.mask.mul(_keys).add(playerRoundData[_pID][currentRound].mask);
       
       // to ref 1, 2
@@ -427,7 +427,7 @@ contract F3d is F3Devents {
   }
   
   function remainTime() public view returns (uint256) {
-      if (rounds[currentRound].endTime &lt;= block.timestamp) {
+      if (rounds[currentRound].endTime <= block.timestamp) {
           return 0;
       } else {
           return rounds[currentRound].endTime - block.timestamp;
@@ -460,7 +460,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -472,7 +472,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -485,7 +485,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 }

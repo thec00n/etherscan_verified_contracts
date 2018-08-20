@@ -8,37 +8,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -76,7 +76,7 @@ contract ERC20 {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -85,7 +85,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(transfersEnabled);
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -108,7 +108,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     /**
@@ -119,8 +119,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(transfersEnabled);
 
         balances[_from] = balances[_from].sub(_value);
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -235,8 +235,8 @@ contract Ownable {
  */
 
 contract MintableToken is StandardToken, Ownable {
-    string public constant name = &quot;MCFit Token&quot;;
-    string public constant symbol = &quot;MCF&quot;;
+    string public constant name = "MCFit Token";
+    string public constant symbol = "MCF";
     uint8 public constant decimals = 18;
 
     uint256 public totalAllocated = 0;
@@ -271,7 +271,7 @@ contract MintableToken is StandardToken, Ownable {
 
         require(mintingFinished);
         uint256 amount = balanceOf(_investor);
-        require(amount &lt;= totalAllocated);
+        require(amount <= totalAllocated);
         totalAllocated = totalAllocated.sub(amount);
         balances[_investor] = balances[_investor].sub(amount);
         return true;
@@ -321,9 +321,9 @@ contract Crowdsale is Ownable {
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
 
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         //token = createTokenContract();
@@ -336,12 +336,12 @@ contract Crowdsale is Ownable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     /**
  * @dev Must be called after crowdsale ends, to do some extra finalization
- * work. Calls the contract&#39;s finalization function.
+ * work. Calls the contract's finalization function.
  */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -369,7 +369,7 @@ contract MCFitCrowdsale is Ownable, Crowdsale, MintableToken {
     enum State {Active, Closed}
     State public state;
 
-    mapping(address =&gt; uint256) public deposited;
+    mapping(address => uint256) public deposited;
     uint256 public constant INITIAL_SUPPLY = 1 * (10**9) * (10 ** uint256(decimals));
     uint256 public fundReservCompany = 350 * (10**6) * (10 ** uint256(decimals));
     uint256 public fundTeamCompany = 300 * (10**6) * (10 ** uint256(decimals));
@@ -406,7 +406,7 @@ contract MCFitCrowdsale is Ownable, Crowdsale, MintableToken {
         require(state == State.Active);
         require(_investor != address(0));
         if(checkDate){
-            assert(now &gt;= startTime &amp;&amp; now &lt; endTime);
+            assert(now >= startTime && now < endTime);
         }
         uint256 weiAmount = msg.value;
         // calculate token amount to be created
@@ -426,16 +426,16 @@ contract MCFitCrowdsale is Ownable, Crowdsale, MintableToken {
         uint256 currentTokenRate = 0;
         uint256 currentDate = now;
         //uint256 currentDate = 1516492800; // 21 Jan 2018
-        require(currentDate &gt;= startTime);
+        require(currentDate >= startTime);
 
-        if (totalAllocated &lt; limit40Percent &amp;&amp; currentDate &lt; endTime) {
-            if(_weiAmount &lt; 5 * 10**17){revert();}
+        if (totalAllocated < limit40Percent && currentDate < endTime) {
+            if(_weiAmount < 5 * 10**17){revert();}
             return currentTokenRate = _weiAmount.mul(rate*140);
-        } else if (totalAllocated &lt; limit20Percent &amp;&amp; currentDate &lt; endTime) {
-            if(_weiAmount &lt; 5 * 10**17){revert();}
+        } else if (totalAllocated < limit20Percent && currentDate < endTime) {
+            if(_weiAmount < 5 * 10**17){revert();}
             return currentTokenRate = _weiAmount.mul(rate*120);
-        } else if (totalAllocated &lt; limit10Percent &amp;&amp; currentDate &lt; endTime) {
-            if(_weiAmount &lt; 5 * 10**17){revert();}
+        } else if (totalAllocated < limit10Percent && currentDate < endTime) {
+            if(_weiAmount < 5 * 10**17){revert();}
             return currentTokenRate = _weiAmount.mul(rate*110);
         } else {
             return currentTokenRate = _weiAmount.mul(rate*100);
@@ -470,14 +470,14 @@ contract MCFitCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function changeRateUSD(uint256 _rate) onlyOwner public {
         require(state == State.Active);
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
     function changeCheckDate(bool _state, uint256 _startTime, uint256 _endTime) onlyOwner public {
         require(state == State.Active);
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
 
         checkDate = _state;
         startTime = _startTime;

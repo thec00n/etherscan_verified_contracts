@@ -29,37 +29,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal pure returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -117,9 +117,9 @@ contract SilentNotaryTokenStorage is SafeMath, Ownable {
   /// @param _freezePeriods Ordered array of freeze periods
   /// @param _freezePortions Ordered array of balance portions to freeze, in percents
   function SilentNotaryTokenStorage (address _token, address _teamWallet, uint[] _freezePeriods, uint[] _freezePortions) public {
-    require(_token &gt; 0);
-    require(_teamWallet &gt; 0);
-    require(_freezePeriods.length &gt; 0);
+    require(_token > 0);
+    require(_teamWallet > 0);
+    require(_freezePeriods.length > 0);
     require(_freezePeriods.length == _freezePortions.length);
 
     token = ERC20(_token);
@@ -128,8 +128,8 @@ contract SilentNotaryTokenStorage is SafeMath, Ownable {
 
     var cumulativeTime = deployedTime;
     uint cumulativePercent = 0;
-    for (uint i = 0; i &lt; _freezePeriods.length; i++) {
-      require(_freezePortions[i] &gt; 0 &amp;&amp; _freezePortions[i] &lt;= 100);
+    for (uint i = 0; i < _freezePeriods.length; i++) {
+      require(_freezePortions[i] > 0 && _freezePortions[i] <= 100);
       cumulativePercent = safeAdd(cumulativePercent, _freezePortions[i]);
       cumulativeTime = safeAdd(cumulativeTime, _freezePeriods[i]);
       frozenPortions.push(FrozenPortion({
@@ -146,11 +146,11 @@ contract SilentNotaryTokenStorage is SafeMath, Ownable {
     require(amountFixed);
 
     uint unfrozenTokens = 0;
-    for (uint i = 0; i &lt; frozenPortions.length; i++) {
+    for (uint i = 0; i < frozenPortions.length; i++) {
       var portion = frozenPortions[i];
       if (portion.isUnfrozen)
         continue;
-      if (portion.unfreezeTime &lt; now) {
+      if (portion.unfreezeTime < now) {
         unfrozenTokens = safeAdd(unfrozenTokens, portion.portionAmount);
         portion.isUnfrozen = true;
       }
@@ -166,7 +166,7 @@ contract SilentNotaryTokenStorage is SafeMath, Ownable {
     amountFixed = true;
 
     uint currentBalance = token.balanceOf(this);
-    for (uint i = 0; i &lt; frozenPortions.length; i++) {
+    for (uint i = 0; i < frozenPortions.length; i++) {
       var portion = frozenPortions[i];
       portion.portionAmount = safeDiv(safeMul(currentBalance, portion.portionPercent), 100);
     }
@@ -174,7 +174,7 @@ contract SilentNotaryTokenStorage is SafeMath, Ownable {
 
   /// @dev Withdraw remaining tokens after all freeze periods are over (in case there were additional token transfers)
   function withdrawRemainder() public onlyOwner {
-    for (uint i = 0; i &lt; frozenPortions.length; i++) {
+    for (uint i = 0; i < frozenPortions.length; i++) {
       if (!frozenPortions[i].isUnfrozen)
         revert();
     }
@@ -182,7 +182,7 @@ contract SilentNotaryTokenStorage is SafeMath, Ownable {
   }
 
   function transferTokens(uint tokenAmount) private {
-    require(tokenAmount &gt; 0);
+    require(tokenAmount > 0);
     var transferSuccess = token.transfer(teamWallet, tokenAmount);
     assert(transferSuccess);
     Unfrozen(tokenAmount);

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-// Markus Freitag &amp; Bao Dai
+// Markus Freitag & Bao Dai
 
 
 library SafeMath {
@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,21 +57,21 @@ contract Ownable {
 
 //////////////////////////////////////////////////////////////
 //                                                          //
-//  Bagholder&#39;s ERC20                           	    //
+//  Bagholder's ERC20                           	    //
 //                                                          //
 //////////////////////////////////////////////////////////////
 
 contract BagholderERC20 is Ownable {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) held;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) held;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 public constant blockEndICO = 1525197600;
 
     /* Public variables for the ERC20 token */
-    string public constant standard = &quot;ERC20 Bagholder&quot;;
+    string public constant standard = "ERC20 Bagholder";
     uint8 public constant decimals = 8; // hardcoded to be a constant
     uint256 public totalSupply;
     string public name;
@@ -89,9 +89,9 @@ contract BagholderERC20 is Ownable {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(block.timestamp &gt; blockEndICO || msg.sender == owner);
+        require(block.timestamp > blockEndICO || msg.sender == owner);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -104,8 +104,8 @@ contract BagholderERC20 is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         held[_to] = block.number;
         balances[_to] = balances[_to].add(_value);
@@ -134,7 +134,7 @@ contract BagholderERC20 is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public onlyOwner returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -164,8 +164,8 @@ contract Bagholder is BagholderERC20 {
 
     // Contract variables and constants
     uint256 constant initialSupply = 0;
-    string constant tokenName = &quot;Bagholder&quot;;
-    string constant tokenSymbol = &quot;BAG&quot;;
+    string constant tokenName = "Bagholder";
+    string constant tokenSymbol = "BAG";
 
     address public BagholderAddr = 0x02cEE5441eFb50C1532a53F3EAA1E074621174F2;
     uint256 public constant minPrice = 75000000000000;  //
@@ -192,20 +192,20 @@ contract Bagholder is BagholderERC20 {
     modifier status() {
         _;  // modified function code should go before prices update
 
-        if (block.timestamp &lt; 1520272800){          //until 5 march 2018
-            if (totalSupply &lt; 50000000000000){
+        if (block.timestamp < 1520272800){          //until 5 march 2018
+            if (totalSupply < 50000000000000){
                 buyPrice = 75000000000000;
 
             } else {			 
                 buyPrice = 80000000000000;
             }
-        } else if (block.timestamp &lt; 1521136800){   // until 15 march 2018
+        } else if (block.timestamp < 1521136800){   // until 15 march 2018
           buyPrice = 80000000000000;
 
-        } else if (block.timestamp&lt;1522605600){     //until 1 April 2018
+        } else if (block.timestamp<1522605600){     //until 1 April 2018
           buyPrice = 85000000000000;
 
-        } else if (block.timestamp &lt; 1523815200){   //until 15 April 2018
+        } else if (block.timestamp < 1523815200){   //until 15 April 2018
 
           buyPrice = 90000000000000;	
 
@@ -219,7 +219,7 @@ contract Bagholder is BagholderERC20 {
     function deposit() public payable onlyOwner returns(bool success) {
         // Check for overflows;
 
-        assert (this.balance + msg.value &gt;= this.balance); // Check for overflows
+        assert (this.balance + msg.value >= this.balance); // Check for overflows
         tokenReward = this.balance / totalSupply;
 
         //executes event to reflect the changes
@@ -229,7 +229,7 @@ contract Bagholder is BagholderERC20 {
     }
 
     function withdrawReward() public status {
-        require (block.number - held[msg.sender] &gt; 172800); //1 month
+        require (block.number - held[msg.sender] > 172800); //1 month
 
         held[msg.sender] = block.number;
         uint256 ethAmount = tokenReward * balances[msg.sender];
@@ -250,8 +250,8 @@ contract Bagholder is BagholderERC20 {
     }
 
     function buy() public payable status {
-        require (totalSupply &lt;= 10000000000000000);
-        require(block.timestamp &lt; blockEndICO);
+        require (totalSupply <= 10000000000000000);
+        require(block.timestamp < blockEndICO);
 
         uint256 tokenAmount = (msg.value / buyPrice)*tokenUnit ;  // calculates the amount
 

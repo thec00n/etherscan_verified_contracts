@@ -53,9 +53,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -63,7 +63,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -72,7 +72,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,7 +89,7 @@ contract Distribution is Ownable {
 
     uint256 sharesSum;
     uint8 constant maxRecsAmount = 12;
-    mapping(address =&gt; Recipient) public recs;
+    mapping(address => Recipient) public recs;
     address[maxRecsAmount] public recsLookUpTable; //to iterate
 
     event Payment(address indexed to, uint256 value);
@@ -105,7 +105,7 @@ contract Distribution is Ownable {
 
     function receiveFunds() public payable {
         emit FoundsReceived(msg.value);
-        for (uint8 i = 0; i &lt; maxRecsAmount; i++) {
+        for (uint8 i = 0; i < maxRecsAmount; i++) {
             Recipient storage rec = recs[recsLookUpTable[i]];
             uint ethAmount = (rec.share.mul(msg.value)).div(sharesSum);
             rec.balance = rec.balance + ethAmount;
@@ -119,7 +119,7 @@ contract Distribution is Ownable {
 
     function doPayments() public {
         Recipient storage rec = recs[msg.sender];
-        require(rec.balance &gt;= 1e12);
+        require(rec.balance >= 1e12);
         rec.addr.transfer(rec.balance);
         emit Payment(rec.addr, rec.balance);
         rec.received = (rec.received).add(rec.balance);
@@ -128,12 +128,12 @@ contract Distribution is Ownable {
 
     function addShare(address _rec, uint256 share) public onlyOwner {
         require(_rec != address(0));
-        require(share &gt; 0);
+        require(share > 0);
         require(recs[_rec].addr == address(0));
         recs[_rec].addr = _rec;
         recs[_rec].share = share;
         recs[_rec].received = 0;
-        for(uint8 i = 0; i &lt; maxRecsAmount; i++ ) {
+        for(uint8 i = 0; i < maxRecsAmount; i++ ) {
             if (recsLookUpTable[i] == address(0)) {
                 recsLookUpTable[i] = _rec;
                 break;
@@ -145,7 +145,7 @@ contract Distribution is Ownable {
 
     function changeShare(address _rec, uint share) public onlyOwner {
         require(_rec != address(0));
-        require(share &gt; 0);
+        require(share > 0);
         require(recs[_rec].addr != address(0));
         Recipient storage rec = recs[_rec];
         sharesSum = sharesSum.sub(rec.share).add(share);
@@ -157,7 +157,7 @@ contract Distribution is Ownable {
         require(_rec != address(0));
         require(recs[_rec].addr != address(0));
         sharesSum = sharesSum.sub(recs[_rec].share);
-        for(uint8 i = 0; i &lt; maxRecsAmount; i++ ) {
+        for(uint8 i = 0; i < maxRecsAmount; i++ ) {
             if (recsLookUpTable[i] == recs[_rec].addr) {
                 recsLookUpTable[i] = address(0);
                 break;

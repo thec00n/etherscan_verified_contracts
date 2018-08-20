@@ -47,9 +47,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -57,7 +57,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -66,7 +66,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,8 +75,8 @@ library SafeMath {
 
 contract Bonus is Ownable {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) public buyerBonus;
-    mapping(address =&gt; bool) hasBought;
+    mapping(address => uint256) public buyerBonus;
+    mapping(address => bool) hasBought;
     address[] public buyerList;
     
     function _addBonus(address _beneficiary, uint256 _bonus) internal {
@@ -144,7 +144,7 @@ contract Crowdsale is Bonus {
     event TokenBonus(address indexed purchaser, address indexed beneficiary, uint256 bonus);
 
     modifier onlyWhileOpen {
-        require(block.timestamp &lt;= closingTimePeriodTwo);
+        require(block.timestamp <= closingTimePeriodTwo);
         _;
     }
 
@@ -153,10 +153,10 @@ contract Crowdsale is Bonus {
         address _wallet, ERC20 _token, uint256 _decimals, uint256 _tokenUnsold, uint256 _bonusUnsold) public {
         require(_wallet != address(0));
         require(_token != address(0));
-        require(_openingTimePeriodOne &gt;= block.timestamp);
-        require(_closingTimePeriodOne &gt;= _openingTimePeriodOne);
-        require(_openingTimePeriodTwo &gt;= _closingTimePeriodOne);
-        require(_closingTimePeriodTwo &gt;= _openingTimePeriodTwo);
+        require(_openingTimePeriodOne >= block.timestamp);
+        require(_closingTimePeriodOne >= _openingTimePeriodOne);
+        require(_openingTimePeriodTwo >= _closingTimePeriodOne);
+        require(_closingTimePeriodTwo >= _openingTimePeriodTwo);
 
         wallet = _wallet;
         token = _token;
@@ -205,11 +205,11 @@ contract Crowdsale is Bonus {
     }
 	
     function isClosed() public view returns (bool) {
-        return block.timestamp &gt; closingTimePeriodTwo;
+        return block.timestamp > closingTimePeriodTwo;
     }
 
     function isOpened() public view returns (bool) {
-        return (block.timestamp &lt; closingTimePeriodOne &amp;&amp; block.timestamp &gt; openingTimePeriodOne) || (block.timestamp &lt; closingTimePeriodTwo &amp;&amp; block.timestamp &gt; openingTimePeriodTwo);
+        return (block.timestamp < closingTimePeriodOne && block.timestamp > openingTimePeriodOne) || (block.timestamp < closingTimePeriodTwo && block.timestamp > openingTimePeriodTwo);
     }
 
     function privateCrowdsale(address _beneficiary, uint256 _ethAmount) external onlyOwner{
@@ -237,8 +237,8 @@ contract Crowdsale is Bonus {
     }
     
     function returnToken() external onlyOwner{
-        require(block.timestamp &gt; closingTimePeriodTwo);
-        require(tokenUnsold &gt; 0);
+        require(block.timestamp > closingTimePeriodTwo);
+        require(tokenUnsold > 0);
         token.transfer(wallet,tokenUnsold);
         tokenUnsold = tokenUnsold.sub(tokenUnsold);
     }
@@ -247,8 +247,8 @@ contract Crowdsale is Bonus {
      * WARNING: Make sure that user who owns bonus is still in whitelist!!!
      */
     function deliverBonus() public onlyOwner {
-        require(bonusDeliverTime &lt;= block.timestamp);
-        for (uint i = 0; i&lt;buyerList.length; i++){
+        require(bonusDeliverTime <= block.timestamp);
+        for (uint i = 0; i<buyerList.length; i++){
             uint256 amount = buyerBonus[buyerList[i]];
             token.transfer(buyerList[i], amount);
             buyerBonus[buyerList[i]] = 0;
@@ -256,8 +256,8 @@ contract Crowdsale is Bonus {
     }
 
     function returnBonus() external onlyOwner{
-        require(block.timestamp &gt; bonusDeliverTime);
-        require(bonusUnsold &gt; 0);
+        require(block.timestamp > bonusDeliverTime);
+        require(bonusUnsold > 0);
         token.transfer(wallet, bonusUnsold);
         bonusUnsold = bonusUnsold.sub(bonusUnsold);
     }
@@ -265,11 +265,11 @@ contract Crowdsale is Bonus {
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal view onlyWhileOpen
     {
         require(_beneficiary != address(0));
-        require(_weiAmount &gt;= minPurchaseAmount);
+        require(_weiAmount >= minPurchaseAmount);
     }
 
     function _validateMaxSellAmount(uint256 _tokenAmount) internal view onlyWhileOpen {
-        require(tokenUnsold &gt;= _tokenAmount);
+        require(tokenUnsold >= _tokenAmount);
     }
 
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
@@ -288,9 +288,9 @@ contract Crowdsale is Bonus {
 
     function _getTokenBonus(uint256 _weiAmount) internal view returns (uint256) {
         uint256 bonusRate = 0;
-        if(block.timestamp &gt; openingTimePeriodOne &amp;&amp; block.timestamp &lt; closingTimePeriodOne){
+        if(block.timestamp > openingTimePeriodOne && block.timestamp < closingTimePeriodOne){
             bonusRate = bonusRatePeriodOne;
-        } else if(block.timestamp &gt; openingTimePeriodTwo &amp;&amp; block.timestamp &lt; closingTimePeriodTwo){
+        } else if(block.timestamp > openingTimePeriodTwo && block.timestamp < closingTimePeriodTwo){
             bonusRate = bonusRatePeriodTwo;
         }
         return _weiAmount.mul(10 ** uint256(decimals)).div(1 ether).mul(bonusRate);
@@ -305,8 +305,8 @@ contract Crowdsale is Bonus {
 
 contract StandardToken is ERC20, Ownable {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     uint256 totalSupply_;
     bool public transferOpen = true;
 
@@ -325,7 +325,7 @@ contract StandardToken is ERC20, Ownable {
 
     function transfer(address _to, uint256 _value) public onlyWhileTransferOpen returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -335,8 +335,8 @@ contract StandardToken is ERC20, Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public onlyWhileTransferOpen returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -367,7 +367,7 @@ contract StandardToken is ERC20, Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -382,8 +382,8 @@ contract StandardToken is ERC20, Ownable {
 contract Whitelist is Ownable {
 
     using SafeMath for uint256;
-    mapping(address =&gt; bool) public whitelist;
-    mapping(address =&gt; uint256) whitelistIndexMap;
+    mapping(address => bool) public whitelist;
+    mapping(address => uint256) whitelistIndexMap;
     address[] public whitelistArray;
     uint256 public whitelistLength = 0;
 
@@ -395,7 +395,7 @@ contract Whitelist is Ownable {
     function addToWhitelist(address _beneficiary) external onlyOwner {
         whitelist[_beneficiary] = true;
         if (whitelistIndexMap[_beneficiary] == 0){
-            if (whitelistArray.length &lt;= whitelistLength){
+            if (whitelistArray.length <= whitelistLength){
                 whitelistArray.push(_beneficiary);
             } else {
                 whitelistArray[whitelistLength] = _beneficiary;
@@ -406,14 +406,14 @@ contract Whitelist is Ownable {
     }
 
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
 
     function removeFromWhitelist(address _beneficiary) external onlyOwner {
         whitelist[_beneficiary] = false;
-        if (whitelistIndexMap[_beneficiary] &gt; 0){
+        if (whitelistIndexMap[_beneficiary] > 0){
             uint index = whitelistIndexMap[_beneficiary]-1;
             whitelistArray[index] = whitelistArray[whitelistLength-1];
             whitelistArray[whitelistLength-1] = 0;
@@ -427,8 +427,8 @@ contract Whitelist is Ownable {
 
 contract AFIToken is StandardToken, Crowdsale, Whitelist {
     using SafeMath for uint256;
-    string public constant name = &quot;AlchemyCoin&quot;;
-    string public constant symbol = &quot;AFI&quot;;
+    string public constant name = "AlchemyCoin";
+    string public constant symbol = "AFI";
     uint8 public constant decimals = 8;
     uint256 constant INITIAL_SUPPLY = 125000000 * (10 ** uint256(decimals));
     uint256 constant ICO_SUPPLY = 50000000 * (10 ** uint256(decimals));
@@ -436,7 +436,7 @@ contract AFIToken is StandardToken, Crowdsale, Whitelist {
     uint256 public minRevenueToDeliver = 0;
     address public assignRevenueContract;
     uint256 public snapshotBlockHeight;
-    mapping(address =&gt; uint256) public snapshotBalance;
+    mapping(address => uint256) public snapshotBalance;
     // Custom Setting values ---------------------------------
     uint256 constant _openingTimePeriodOne = 1531713600;
     uint256 constant _closingTimePeriodOne = 1534132800;
@@ -494,7 +494,7 @@ contract AFIToken is StandardToken, Crowdsale, Whitelist {
 
     function createBalanceSnapshot() external onlyOwner {
         snapshotBlockHeight = block.number;
-        for(uint256 i = 0; i &lt; whitelistLength; i++) {
+        for(uint256 i = 0; i < whitelistLength; i++) {
             snapshotBalance[whitelistArray[i]] = balances[whitelistArray[i]];
         }
     }
@@ -506,13 +506,13 @@ contract AFIToken is StandardToken, Crowdsale, Whitelist {
     function assignRevenue(uint256 _totalRevenue) external onlyOwner{
         address contractAddress = assignRevenueContract;
 
-        for (uint256 i = 0; i&lt;whitelistLength; i++){
+        for (uint256 i = 0; i<whitelistLength; i++){
             if(whitelistArray[i] == address(this)){
                 continue;
             }
             uint256 amount = _totalRevenue.mul(snapshotBalance[whitelistArray[i]]).div(INITIAL_SUPPLY);
-            if(amount &gt; minRevenueToDeliver){
-                bool done = contractAddress.call(bytes4(keccak256(&quot;transferRevenue(address,uint256)&quot;)),whitelistArray[i],amount);
+            if(amount > minRevenueToDeliver){
+                bool done = contractAddress.call(bytes4(keccak256("transferRevenue(address,uint256)")),whitelistArray[i],amount);
                 require(done == true);
             }
         }

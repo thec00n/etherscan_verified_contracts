@@ -1,13 +1,13 @@
 pragma solidity ^0.4.8;
 
-//import &quot;github.com/Arachnid/solidity-stringutils/src/strings.sol&quot;;
+//import "github.com/Arachnid/solidity-stringutils/src/strings.sol";
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1c7d6e7d7f747275785c72736878736832727968">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1c7d6e7d7f747275785c72736878736832727968">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -15,11 +15,11 @@ pragma solidity ^0.4.8;
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -34,7 +34,7 @@ pragma solidity ^0.4.8;
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
  
@@ -48,7 +48,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -87,23 +87,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -139,7 +139,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -162,18 +162,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         uint ptr = self._ptr - 31;
         uint end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -201,12 +201,12 @@ library strings {
      */
     function compare(slice self, slice other) internal pure returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         uint selfptr = self._ptr;
         uint otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -216,7 +216,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint256 mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                uint256 diff = (a &amp; mask) - (b &amp; mask);
+                uint256 diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -255,18 +255,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             l = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             l = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             l = 3;
         } else {
             l = 4;
         }
 
         // Check for truncated codepoints
-        if (l &gt; self._len) {
+        if (l > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -306,33 +306,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         uint b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -356,7 +356,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -382,7 +382,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -411,7 +411,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -439,7 +439,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -468,8 +468,8 @@ library strings {
         uint ptr = selfptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -480,7 +480,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &gt;= end) 
+                    if (ptr >= end) 
                         return selfptr + selflen;
                     ptr++;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -491,7 +491,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
 
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -508,8 +508,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private pure returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -520,7 +520,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &lt;= selfptr) 
+                    if (ptr <= selfptr) 
                         return selfptr;
                     ptr--;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -531,7 +531,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -653,7 +653,7 @@ library strings {
      */
     function count(slice self, slice needle) internal pure returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -695,20 +695,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal pure returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             length += parts[i]._len;
 
         string memory ret = new string(length);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -725,7 +725,7 @@ contract CryptoNumismat
     
     address owner;
 
-    string public standard = &#39;CryptoNumismat&#39;;
+    string public standard = 'CryptoNumismat';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -748,10 +748,10 @@ contract CryptoNumismat
         string name;
     }
 
-    mapping (uint =&gt; Buy) public cardsForSale;
-    mapping (uint =&gt; UnitedBuy) public UnitedCardsForSale;
-    mapping (address =&gt; bool) public admins;
-    mapping (address =&gt; string) public nicknames;
+    mapping (uint => Buy) public cardsForSale;
+    mapping (uint => UnitedBuy) public UnitedCardsForSale;
+    mapping (address => bool) public admins;
+    mapping (address => string) public nicknames;
 
     event Assign(uint indexed _cardIndex, address indexed _seller, uint256 _value, uint _intName, string _name);
     event Transfer(address indexed _from, address indexed _to, uint _cardIndex, uint256 _value);
@@ -762,8 +762,8 @@ contract CryptoNumismat
         admins[owner] = true;
         
         totalSupply = 1000;                         // Update total supply
-        name = &quot;cryptonumismat&quot;;                    // Set the name for display purposes
-        symbol = &quot;$&quot;;                               // Set the symbol for display purposes
+        name = "cryptonumismat";                    // Set the name for display purposes
+        symbol = "$";                               // Set the symbol for display purposes
         decimals = 0;                               // Amount of decimals for display purposes
     }
     
@@ -801,18 +801,18 @@ contract CryptoNumismat
 
     function withdrawAmount(uint256 _amount) onlyOwner() public 
     {
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         
         owner.transfer(_amount);
     }
     
-    /// _type == &quot;Common&quot;
-    /// _type == &quot;United&quot;
+    /// _type == "Common"
+    /// _type == "United"
 
     function addCard(string _type, uint _intName, string _name, uint _cardIndex, uint256 _value, address _ownAddress) public onlyAdmins()
     {
-        require(_cardIndex &lt;= 1000);
-        require(_cardIndex &gt; 0);
+        require(_cardIndex <= 1000);
+        require(_cardIndex > 0);
         
         require(cardsForSale[_cardIndex].cardIndex != _cardIndex);
         require(UnitedCardsForSale[_intName].intName != _intName);
@@ -820,12 +820,12 @@ contract CryptoNumismat
         address seller = _ownAddress;
         uint256 _value2 = (_value * 1000000000);
         
-        if (strings.equals(_type.toSlice(), &quot;Common&quot;.toSlice()))
+        if (strings.equals(_type.toSlice(), "Common".toSlice()))
         {
             cardsForSale[_cardIndex] = Buy(_cardIndex, seller, _value2, _intName, _name);
             Assign(_cardIndex, seller, _value2, _intName, _name);
         }
-        else if (strings.equals(_type.toSlice(), &quot;United&quot;.toSlice()))
+        else if (strings.equals(_type.toSlice(), "United".toSlice()))
         {
             UnitedCardsForSale[_intName] = UnitedBuy(_cardIndex, seller, _intName, _name);
             cardsForSale[_cardIndex] = Buy(_cardIndex, seller, _value2,  _intName, _name);
@@ -835,8 +835,8 @@ contract CryptoNumismat
     
     function displayCard(uint _cardIndex) public constant returns(uint, address, uint256, uint, string) 
     {
-        require(_cardIndex &lt;= 1000);
-        require(_cardIndex &gt; 0);
+        require(_cardIndex <= 1000);
+        require(_cardIndex > 0);
         
         require (cardsForSale[_cardIndex].cardIndex == _cardIndex);
             
@@ -865,13 +865,13 @@ contract CryptoNumismat
     
     function calculateNextPrice(uint256 _startPrice) public constant returns (uint256 _finalPrice)
     {
-        if (_startPrice &lt; limit1)
+        if (_startPrice < limit1)
             _startPrice =  _startPrice * 10 / 4;
-        else if (_startPrice &lt; limit2)
+        else if (_startPrice < limit2)
             _startPrice =  _startPrice * 10 / 5;
-        else if (_startPrice &lt; limit3)
+        else if (_startPrice < limit3)
             _startPrice =  _startPrice * 10 / 6;
-        else if (_startPrice &lt; limit4)
+        else if (_startPrice < limit4)
             _startPrice =  _startPrice * 10 / 7;
         else
             _startPrice =  _startPrice * 10 / 8;
@@ -881,11 +881,11 @@ contract CryptoNumismat
     
     function calculateDevCut(uint256 _startPrice) public constant returns (uint256 _cut)
     {
-        if (_startPrice &lt; limit2)
+        if (_startPrice < limit2)
             _startPrice =  _startPrice * 5 / 100;
-        else if (_startPrice &lt; limit3)
+        else if (_startPrice < limit3)
             _startPrice =  _startPrice * 4 / 100;
-        else if (_startPrice &lt; limit4)
+        else if (_startPrice < limit4)
             _startPrice =  _startPrice * 3 / 100;
         else
             _startPrice =  _startPrice * 2 / 100;
@@ -895,14 +895,14 @@ contract CryptoNumismat
     
     function buy(uint _cardIndex) public payable
     {
-        require(_cardIndex &lt;= 1000);
-        require(_cardIndex &gt; 0);
+        require(_cardIndex <= 1000);
+        require(_cardIndex > 0);
         require(cardsForSale[_cardIndex].cardIndex == _cardIndex);
         require(cardsForSale[_cardIndex].seller != msg.sender);
         require(msg.sender != address(0));
         require(msg.sender != owner);
-        require(cardsForSale[_cardIndex].minValue &gt; 0);
-        require(msg.value &gt;= cardsForSale[_cardIndex].minValue);
+        require(cardsForSale[_cardIndex].minValue > 0);
+        require(msg.value >= cardsForSale[_cardIndex].minValue);
         
         address _buyer = msg.sender;
         address _seller = cardsForSale[_cardIndex].seller;
@@ -922,7 +922,7 @@ contract CryptoNumismat
         _seller.transfer(_totalPrice);
         _UnitedOwner.transfer((_devCut / 4));
         
-        if (_extra &gt; 0)
+        if (_extra > 0)
         {
             Transfer(_buyer, _buyer, _cardIndex, _extra);
             

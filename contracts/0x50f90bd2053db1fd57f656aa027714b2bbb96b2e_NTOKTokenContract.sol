@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
 
     function totalSupply() public view returns (uint256) {
@@ -104,7 +104,7 @@ contract BasicToken is ERC20Basic {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(_to != address(0));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -118,7 +118,7 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(
         address _from,
@@ -128,8 +128,8 @@ contract StandardToken is ERC20, BasicToken {
     public
     returns (bool)
     {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(_to != address(0));
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -221,7 +221,7 @@ contract BurnableToken is BasicToken {
         _burn(msg.sender, _value);
     }
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
+        require(_value <= balances[_who]);
 
 
         balances[_who] = balances[_who].sub(_value);
@@ -233,7 +233,7 @@ contract BurnableToken is BasicToken {
 
 library Roles {
     struct Role {
-        mapping (address =&gt; bool) bearer;
+        mapping (address => bool) bearer;
     }
 
     function add(Role storage role, address addr)
@@ -266,7 +266,7 @@ library Roles {
 
 contract RBAC {
     using Roles for Roles.Role;
-    mapping (string =&gt; Roles.Role) private roles;
+    mapping (string => Roles.Role) private roles;
     event RoleAdded(address indexed operator, string role);
     event RoleRemoved(address indexed operator, string role);
 
@@ -307,7 +307,7 @@ contract RBAC {
 }
 
 contract Whitelist is Ownable, RBAC {
-    string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+    string public constant ROLE_WHITELISTED = "whitelist";
 
     modifier onlyIfWhitelisted(address _operator) {
         checkRole(_operator, ROLE_WHITELISTED);
@@ -333,7 +333,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
     {
-        for (uint256 i = 0; i &lt; _operators.length; i++) {
+        for (uint256 i = 0; i < _operators.length; i++) {
             addAddressToWhitelist(_operators[i]);
         }
     }
@@ -349,7 +349,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
     {
-        for (uint256 i = 0; i &lt; _operators.length; i++) {
+        for (uint256 i = 0; i < _operators.length; i++) {
             removeAddressFromWhitelist(_operators[i]);
         }
     }
@@ -395,10 +395,10 @@ contract Distributable is StandardToken, Ownable, Whitelist, DateKernel {
         uint256 tokensLeft;
     }
 
-    mapping (address =&gt; member) public teams;
+    mapping (address => member) public teams;
 
     function _transfer(address _from, address _to, uint256 _value) private returns (bool) {
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
         require(_to != address(0));
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -414,7 +414,7 @@ contract Distributable is StandardToken, Ownable, Whitelist, DateKernel {
 
     function airdrop(address[] dests, uint256[] values) public onlyOwner {
         require(dests.length == values.length);
-        for (uint256 i = 0; i &lt; dests.length; i++) {
+        for (uint256 i = 0; i < dests.length; i++) {
             transfer(dests[i], values[i]);
         }
     }
@@ -425,7 +425,7 @@ contract Distributable is StandardToken, Ownable, Whitelist, DateKernel {
     returns (bool)
     {
         require(_member.length == _amount.length);
-        for (uint256 i = 0; i &lt; _member.length; i++) {
+        for (uint256 i = 0; i < _member.length; i++) {
             updateMember(_member[i], 0, _amount[i], _amount[i]);
             addAddressToWhitelist(_member[i]);
         }
@@ -438,17 +438,17 @@ contract Distributable is StandardToken, Ownable, Whitelist, DateKernel {
     returns (uint256)
     {
         member storage mbr = teams[_member];
-        require(mbr.tokensLeft &gt; 0, &quot;You&#39;ve spent your share&quot;);
+        require(mbr.tokensLeft > 0, "You've spent your share");
         uint256 multiplier;
         uint256 callback;
         uint256 curDate = determineDate();
         uint256 lastDate = mbr.lastWithdrawal;
-        if(curDate &gt; lastDate) {
+        if(curDate > lastDate) {
             multiplier = curDate.sub(lastDate);
         } else if(curDate == lastDate) {
-            revert(&quot;Its no time&quot;);
+            revert("Its no time");
         }
-        if(mbr.tokensTotal &gt;= mbr.tokensLeft &amp;&amp; mbr.tokensTotal &gt; 0) {
+        if(mbr.tokensTotal >= mbr.tokensLeft && mbr.tokensTotal > 0) {
             if(curDate == 10) {
                 callback = mbr.tokensLeft;
             } else {
@@ -469,7 +469,7 @@ contract Distributable is StandardToken, Ownable, Whitelist, DateKernel {
     onlyIfWhitelisted(msg.sender)
     returns(bool)
     {
-        require(unlockTime &gt; now);
+        require(unlockTime > now);
         uint256 amount = rewardController(msg.sender);
         _transfer(this, msg.sender, amount);
         return true;
@@ -486,8 +486,8 @@ contract NTOKTokenContract is Distributable, BurnableToken, CanReclaimToken, Cla
     public
     DateKernel(1541030400)
     {
-        name = &quot;NTOK Token Contract&quot;;
-        symbol = &quot;NTOK&quot;;
+        name = "NTOK Token Contract";
+        symbol = "NTOK";
         decimals = 18; 
         INITIAL_SUPPLY = 33000000 * 10 ** uint256(decimals);
         totalSupply_ = INITIAL_SUPPLY;
@@ -496,6 +496,6 @@ contract NTOKTokenContract is Distributable, BurnableToken, CanReclaimToken, Cla
     }
 
     function() external {
-        revert(&quot;Does not accept ether&quot;);
+        revert("Does not accept ether");
     }
 }

@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ contract Token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -71,19 +71,19 @@ contract Ownable {
 
 contract Pausable is Ownable {
     
-  uint public constant startPreICO = 1521072000; // 15&#39;th March
+  uint public constant startPreICO = 1521072000; // 15'th March
   uint public constant endPreICO = startPreICO + 31 days;
 
-  uint public constant startICOStage1 = 1526342400; // 15&#39;th May
+  uint public constant startICOStage1 = 1526342400; // 15'th May
   uint public constant endICOStage1 = startICOStage1 + 3 days;
 
-  uint public constant startICOStage2 = 1526688000; // 19&#39;th May
+  uint public constant startICOStage2 = 1526688000; // 19'th May
   uint public constant endICOStage2 = startICOStage2 + 5 days;
 
-  uint public constant startICOStage3 = 1527206400; // 25&#39;th May
+  uint public constant startICOStage3 = 1527206400; // 25'th May
   uint public constant endICOStage3 = endICOStage2 + 6 days;
 
-  uint public constant startICOStage4 = 1527811200; // 1&#39;st June
+  uint public constant startICOStage4 = 1527811200; // 1'st June
   uint public constant endICOStage4 = startICOStage4 + 7 days;
 
   uint public constant startICOStage5 = 1528502400;
@@ -93,7 +93,7 @@ contract Pausable is Ownable {
    * @dev modifier to allow actions only when the contract IS not paused
    */
   modifier whenNotPaused() {
-    require(now &lt; startPreICO || now &gt; endICOStage5);
+    require(now < startPreICO || now > endICOStage5);
     _;
   }
 
@@ -101,9 +101,9 @@ contract Pausable is Ownable {
 
 contract StandardToken is Token, Pausable {
   using SafeMath for uint256;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -135,7 +135,7 @@ contract StandardToken is Token, Pausable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -149,7 +149,7 @@ contract StandardToken is Token, Pausable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -184,7 +184,7 @@ contract StandardToken is Token, Pausable {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -207,8 +207,8 @@ contract BurnableToken is StandardToken {
     * @param _value The amount of token to be burned.
     */
   function burn(uint256 _value) public {
-      require(_value &gt; 0);
-      require(_value &lt;= balances[msg.sender]);
+      require(_value > 0);
+      require(_value <= balances[msg.sender]);
 
       address burner = msg.sender;
       balances[burner] = balances[burner].sub(_value);
@@ -218,8 +218,8 @@ contract BurnableToken is StandardToken {
 }
 
 contract MBEToken is BurnableToken {
-  string public constant name = &quot;MoBee&quot;;
-  string public constant symbol = &quot;MBE&quot;;
+  string public constant name = "MoBee";
+  string public constant symbol = "MBE";
   uint8 public constant decimals = 18;
   address public tokenWallet;
   address public founderWallet;
@@ -272,7 +272,7 @@ contract MBEToken is BurnableToken {
   function sellManually(address _to, uint amount) public onlyOwner returns(bool) {
     uint tokens = calcTokens(amount);
     uint256 balance = balanceOf(tokenWallet);
-    if (balance &lt; tokens) {
+    if (balance < tokens) {
       sendTokens(_to, balance);
     } else {
       sendTokens(_to, tokens);
@@ -286,7 +286,7 @@ contract MBEToken is BurnableToken {
   }
   
   function isTokenSale() public view returns (bool) {
-    if (now &gt;= startPreICO &amp;&amp; now &lt; endICOStage5) {
+    if (now >= startPreICO && now < endICOStage5) {
       return true;
     } else {
       return false;
@@ -301,27 +301,27 @@ contract MBEToken is BurnableToken {
   function calcTokens(uint amount) public view returns(uint) {
     uint rate = extraRate(amount, tokenRate);
     uint tokens = amount.mul(rate);
-    if (now &gt;= startPreICO &amp;&amp; now &lt; endPreICO) {
+    if (now >= startPreICO && now < endPreICO) {
       rate = extraRate(amount, tokenRate30);
       tokens = amount.mul(rate);
       return tokens;
-    } else if (now &gt;= startICOStage1 &amp;&amp; now &lt; endICOStage1) {
+    } else if (now >= startICOStage1 && now < endICOStage1) {
       rate = extraRate(amount, tokenRate20);
       tokens = amount.mul(rate);
       return tokens;
-    } else if (now &gt;= startICOStage2 &amp;&amp; now &lt; endICOStage2) {
+    } else if (now >= startICOStage2 && now < endICOStage2) {
       rate = extraRate(amount, tokenRate15);
       tokens = amount.mul(rate);
       return tokens;
-    } else if (now &gt;= startICOStage3 &amp;&amp; now &lt; endICOStage3) {
+    } else if (now >= startICOStage3 && now < endICOStage3) {
       rate = extraRate(amount, tokenRate10);
       tokens = amount.mul(rate);
       return tokens;
-    } else if (now &gt;= startICOStage4 &amp;&amp; now &lt; endICOStage4) {
+    } else if (now >= startICOStage4 && now < endICOStage4) {
       rate = extraRate(amount, tokenRate5);
       tokens = amount.mul(rate);
       return tokens;
-    } else if (now &gt;= startICOStage5 &amp;&amp; now &lt; endICOStage5) {
+    } else if (now >= startICOStage5 && now < endICOStage5) {
       return tokens;
     }
   }
@@ -331,13 +331,13 @@ contract MBEToken is BurnableToken {
   }
 
   function extraDiscount(uint amount) public pure returns(uint) {
-    if ( 3 ether &lt;= amount &amp;&amp; amount &lt;= 5 ether ) {
+    if ( 3 ether <= amount && amount <= 5 ether ) {
       return 5;
-    } else if ( 5 ether &lt; amount &amp;&amp; amount &lt;= 10 ether ) {
+    } else if ( 5 ether < amount && amount <= 10 ether ) {
       return 7;
-    } else if ( 10 ether &lt; amount &amp;&amp; amount &lt;= 20 ether ) {
+    } else if ( 10 ether < amount && amount <= 20 ether ) {
       return 10;
-    } else if ( 20 ether &lt; amount ) {
+    } else if ( 20 ether < amount ) {
       return 15;
     }
     return 0;
@@ -345,7 +345,7 @@ contract MBEToken is BurnableToken {
 
   function safeSend(uint tokens) private {
     uint256 balance = balanceOf(tokenWallet);
-    if (balance &lt; tokens) {
+    if (balance < tokens) {
       uint toReturn = tokenRate.mul(tokens.sub(balance));
       sendTokens(msg.sender, balance);
       msg.sender.transfer(toReturn);

@@ -45,8 +45,8 @@ contract PPNAirdrop {
     modifier validBalance(address[] _recipients, uint256 _amount) {
         // Assert balance
         uint256 balance = token.balanceOf(this);
-        require(balance &gt; 0);
-        require(balance &gt;= _recipients.length.mul(_amount));
+        require(balance > 0);
+        require(balance >= _recipients.length.mul(_amount));
         _;
     }
 
@@ -63,13 +63,13 @@ contract PPNAirdrop {
     modifier validBalanceMultiple(address[] _recipients, uint256[] _amounts) {
         // Assert balance
         uint256 balance = token.balanceOf(this);
-        require(balance &gt; 0);
+        require(balance > 0);
 
         uint256 totalAmount;
-        for (uint256 i = 0 ; i &lt; _recipients.length ; i++) {
+        for (uint256 i = 0 ; i < _recipients.length ; i++) {
             totalAmount = totalAmount.add(_amounts[i]);
         }
-        require(balance &gt;= totalAmount);
+        require(balance >= totalAmount);
         _;
     }
 
@@ -106,7 +106,7 @@ contract PPNAirdrop {
         validBalance(_recipients, _amount)
     {
         // Loop through all recipients
-        for (uint256 i = 0 ; i &lt; _recipients.length ; i++) {
+        for (uint256 i = 0 ; i < _recipients.length ; i++) {
             address recipient = _recipients[i];
 
             // Transfer amount
@@ -127,7 +127,7 @@ contract PPNAirdrop {
         validBalanceMultiple(_recipients, _amounts)
     {
         // Loop through all recipients
-        for (uint256 i = 0 ; i &lt; _recipients.length ; i++) {
+        for (uint256 i = 0 ; i < _recipients.length ; i++) {
             address recipient = _recipients[i];
             uint256 amount = _amounts[i];
 
@@ -147,7 +147,7 @@ contract PPNAirdrop {
     function airdropSingleAmount(address _recipient, uint256 _amount) external
       onlyAdmin
     {
-        assert(_amount &lt;= token.balanceOf(this));
+        assert(_amount <= token.balanceOf(this));
         assert(token.transfer(_recipient, _amount));
     }
 }
@@ -170,9 +170,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -180,7 +180,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -189,7 +189,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -239,7 +239,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -257,7 +257,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -286,9 +286,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -306,7 +306,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -317,8 +317,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -332,7 +332,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -381,7 +381,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -396,8 +396,8 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     /**
     * @dev Token Contract Constants
     */
-    string    public constant name     = &quot;PolicyPal Network Token&quot;;
-    string    public constant symbol   = &quot;PAL&quot;;
+    string    public constant name     = "PolicyPal Network Token";
+    string    public constant symbol   = "PAL";
     uint8     public constant decimals = 18;
 
     /**
@@ -411,7 +411,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     * @dev   Token Contract Modifier
     *
     * Check if a transfer is allowed
-    * Transfers are restricted to token creator &amp; owner(admin) during token sale duration
+    * Transfers are restricted to token creator & owner(admin) during token sale duration
     * Transfers after token sale is limited by `isTokenTransferable` toggle
     *
     */
@@ -457,7 +457,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
         public
         isValidDestination(_adminAddr)
     {
-        require(_tokenTotalAmount &gt; 0);
+        require(_tokenTotalAmount > 0);
 
         totalSupply_ = _tokenTotalAmount;
 
@@ -477,7 +477,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     * @param _to - Address to transfer to
     * @param _value - Value to transfer
     * @return bool - Result of transfer
-    * &quot;Overloaded&quot; Function of ERC20Basic&#39;s transfer
+    * "Overloaded" Function of ERC20Basic's transfer
     *
     */
     function transfer(address _to, uint256 _value) public
@@ -495,7 +495,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     * @param _value - Value to transfer
     * @return bool - Result of transferFrom
     *
-    * &quot;Overloaded&quot; Function of ERC20&#39;s transferFrom
+    * "Overloaded" Function of ERC20's transferFrom
     * Added with modifiers,
     *    1. onlyWhenTransferAllowed
     *    2. isValidDestination
@@ -512,7 +512,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     /**
     * @dev Token Contract burn
     * @param _value - Value to burn
-    * &quot;Overloaded&quot; Function of BurnableToken&#39;s burn
+    * "Overloaded" Function of BurnableToken's burn
     */
     function burn(uint256 _value)
         public

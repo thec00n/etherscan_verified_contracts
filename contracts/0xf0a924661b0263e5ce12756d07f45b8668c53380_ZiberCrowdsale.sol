@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
  /// @title SafeMath contract - math operations with safety checks
- /// @author <span class="__cf_email__" data-cfemail="3a5e5f4c7a49575b484e5955544e485b594e5f5b5714595557">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="3a5e5f4c7a49575b484e5955544e485b594e5f5b5714595557">[email protected]</span>
 contract SafeMath {
   function safeMul(uint a, uint b) internal returns (uint) {
     uint c = a * b;
@@ -10,37 +10,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -49,7 +49,7 @@ contract SafeMath {
 }
 
  /// @title Ownable contract - base contract with an owner
- /// @author <span class="__cf_email__" data-cfemail="f3979685b3809e928187909c9d878192908796929edd909c9e">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="f3979685b3809e928187909c9d878192908796929edd909c9e">[email protected]</span>
 contract Ownable {
   address public owner;
 
@@ -71,7 +71,7 @@ contract Ownable {
 
 
 /// @title Haltable contract - abstract contract that allows children to implement an emergency stop mechanism.
-/// @author <span class="__cf_email__" data-cfemail="f0949586b0839d918284939f9e848291938495919dde939f9d">[email&#160;protected]</span>
+/// @author <span class="__cf_email__" data-cfemail="f0949586b0839d918284939f9e848291938495919dde939f9d">[email protected]</span>
 /// Originally envisioned in FirstBlood ICO contract.
 contract Haltable is Ownable {
   bool public halted;
@@ -98,7 +98,7 @@ contract Haltable is Ownable {
 }
 
  /// @title Killable contract - base contract that can be killed by owner. All funds in contract will be sent to the owner.
- /// @author <span class="__cf_email__" data-cfemail="45212033053628243731262a2b31372426312024286b262a28">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="45212033053628243731262a2b31372426312024286b262a28">[email protected]</span>
 contract Killable is Ownable {
   function kill() onlyOwner {
     selfdestruct(owner);
@@ -107,7 +107,7 @@ contract Killable is Ownable {
 
 
  /// @title ERC20 interface see https://github.com/ethereum/EIPs/issues/20
- /// @author <span class="__cf_email__" data-cfemail="a7c3c2d1e7d4cac6d5d3c4c8c9d3d5c6c4d3c2c6ca89c4c8ca">[email&#160;protected]</span>
+ /// @author <span class="__cf_email__" data-cfemail="a7c3c2d1e7d4cac6d5d3c4c8c9d3d5c6c4d3c2c6ca89c4c8ca">[email protected]</span>
 contract ERC20 {
   uint public totalSupply;
   function balanceOf(address who) constant returns (uint);
@@ -122,10 +122,10 @@ contract ERC20 {
 
 
 /// @title ZiberToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
-/// @author <span class="__cf_email__" data-cfemail="4622233006352b273432252928323427253223272b6825292b">[email&#160;protected]</span>
+/// @author <span class="__cf_email__" data-cfemail="4622233006352b273432252928323427253223272b6825292b">[email protected]</span>
 contract ZiberToken is SafeMath, ERC20, Ownable {
- string public name = &quot;Ziber Token&quot;;
- string public symbol = &quot;ZBR&quot;;
+ string public name = "Ziber Token";
+ string public symbol = "ZBR";
  uint public decimals = 8;
  uint public constant FROZEN_TOKENS = 1e7;
  uint public constant FREEZE_PERIOD = 1 years;
@@ -136,9 +136,9 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
  /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
  bool public released = false;
  /// approve() allowances
- mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+ mapping (address => mapping (address => uint)) allowed;
  /// holder balances
- mapping(address =&gt; uint) balances;
+ mapping(address => uint) balances;
 
  /// @dev Limit token transfer until the crowdsale is over.
  modifier canTransfer() {
@@ -149,9 +149,9 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
  }
 
  modifier checkFrozenAmount(address source, uint amount) {
-   if (source == owner &amp;&amp; now &lt; crowdSaleOverTimestamp + FREEZE_PERIOD) {
+   if (source == owner && now < crowdSaleOverTimestamp + FREEZE_PERIOD) {
      var frozenTokens = 10 ** decimals * FROZEN_TOKENS;
-     require(safeSub(balances[owner], amount) &gt; frozenTokens);
+     require(safeSub(balances[owner], amount) > frozenTokens);
    }
    _;
  }
@@ -172,7 +172,7 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
  /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
  /// @param size payload size
  modifier onlyPayloadSize(uint size) {
-   require(msg.data.length &gt;= size + 4);
+   require(msg.data.length >= size + 4);
     _;
  }
 
@@ -270,13 +270,13 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
 
 
 /// @title ZiberCrowdsale contract - contract for token sales.
-/// @author <span class="__cf_email__" data-cfemail="cfabaab98fbca2aebdbbaca0a1bbbdaeacbbaaaea2e1aca0a2">[email&#160;protected]</span>
+/// @author <span class="__cf_email__" data-cfemail="cfabaab98fbca2aebdbbaca0a1bbbdaeacbbaaaea2e1aca0a2">[email protected]</span>
 contract ZiberCrowdsale is Haltable, Killable, SafeMath {
 
   /// Total count of tokens distributed via ICO
   uint public constant TOTAL_ICO_TOKENS = 100000000;
 
-  /// Miminal tokens funding goal in Wei, if this goal isn&#39;t reached during ICO, refund will begin
+  /// Miminal tokens funding goal in Wei, if this goal isn't reached during ICO, refund will begin
   uint public constant MIN_ICO_GOAL = 5000 ether;
 
   /// Maximal tokens funding goal in Wei
@@ -310,10 +310,10 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
   bool public finalized;
 
   /// How much ETH each address has invested to this crowdsale
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /// How much tokens this crowdsale has credited for each investor address
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /// Define a structure for one investment event occurrence
   struct Investment {
@@ -358,7 +358,7 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
     startsAt = _start;
   }
 
-  ///  Don&#39;t expect to just send in money and get tokens.
+  ///  Don't expect to just send in money and get tokens.
   function() payable {
     buy();
   }
@@ -368,7 +368,7 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
   function investInternal(address receiver) stopInEmergency private {
     var state = getState();
     require(state == State.Funding);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
 
     // Add investment record
     var weiAmount = msg.value;
@@ -378,7 +378,7 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
     // Update totals
     weiRaised = safeAdd(weiRaised, weiAmount);
     // Max ICO goal reached at
-    if(maxGoalReachedAt == 0 &amp;&amp; weiRaised &gt;= MAX_ICO_GOAL)
+    if(maxGoalReachedAt == 0 && weiRaised >= MAX_ICO_GOAL)
       maxGoalReachedAt = now;
     // Tell us invest was success
     Invested(receiver, weiAmount);
@@ -413,7 +413,7 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
   function finalizeCrowdsale() internal {
     // Calculate divisor of the total token count
     uint divisor;
-    for (uint i = 0; i &lt; investments.length; i++)
+    for (uint i = 0; i < investments.length; i++)
        divisor = safeAdd(divisor, investments[i].weiValue);
 
     var multiplier = 10 ** token.decimals();
@@ -421,7 +421,7 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
     uint unitPrice = safeDiv(safeMul(TOTAL_ICO_TOKENS, multiplier), divisor);
 
     // Distribute tokens among investors
-    for (i = 0; i &lt; investments.length; i++) {
+    for (i = 0; i < investments.length; i++) {
         var tokenAmount = safeMul(unitPrice, investments[i].weiValue);
         tokenAmountOf[investments[i].source] += tokenAmount;
         assignTokens(investments[i].source, tokenAmount);
@@ -432,7 +432,7 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
 
   /// @dev Allow load refunds back on the contract for the refunding.
   function loadRefund() public payable inState(State.Failure) {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     loadedRefund = safeAdd(loadedRefund, msg.value);
   }
 
@@ -450,13 +450,13 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
   /// @dev Minimum goal was reached
   /// @return true if the crowdsale has raised enough money to not initiate the refunding
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= MIN_ICO_GOAL;
+    return weiRaised >= MIN_ICO_GOAL;
   }
 
   /// @dev Check if the ICO goal was reached.
   /// @return true if the crowdsale has raised enough money to be a success
   function isCrowdsaleFull() public constant returns (bool) {
-    return weiRaised &gt;= MAX_ICO_GOAL &amp;&amp; now &gt; maxGoalReachedAt + AFTER_MAX_GOAL_DURATION;
+    return weiRaised >= MAX_ICO_GOAL && now > maxGoalReachedAt + AFTER_MAX_GOAL_DURATION;
   }
 
   /// @dev Crowdfund state machine management.
@@ -466,11 +466,11 @@ contract ZiberCrowdsale is Haltable, Killable, SafeMath {
       return State.Finalized;
     if (address(token) == 0)
       return State.Preparing;
-    if (now &gt;= startsAt &amp;&amp; now &lt; startsAt + ICO_DURATION &amp;&amp; !isCrowdsaleFull())
+    if (now >= startsAt && now < startsAt + ICO_DURATION && !isCrowdsaleFull())
       return State.Funding;
     if (isCrowdsaleFull())
       return State.Success;
-    if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised)
+    if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised)
       return State.Refunding;
     return State.Failure;
   }

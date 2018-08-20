@@ -4,25 +4,25 @@ pragma solidity ^0.4.15;
 library SafeMath {
     function mul(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a * b;
-        if (a != 0 &amp;&amp; c / a != b) revert();
+        if (a != 0 && c / a != b) revert();
         return c;
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        if (b &gt; a) revert();
+        if (b > a) revert();
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        if (c &lt; a) revert();
+        if (c < a) revert();
         return c;
     }
 }
@@ -30,7 +30,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -76,7 +76,7 @@ contract IRBPreRefundVault is Ownable {
     enum State {Active, Refunding, Closed}
     State public state;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     uint256 public totalDeposited;
 
@@ -136,12 +136,12 @@ contract IRBPreRefundVault is Ownable {
     }
 
     /**
-     * @dev withdraw method that can be used by crowdsale contract&#39;s owner
+     * @dev withdraw method that can be used by crowdsale contract's owner
      *      for the withdrawal funds to the owner
      */
     function withdraw(uint value) onlyCrowdsaleContract external returns (bool success) {
         require(state == State.Active);
-        require(totalDeposited &gt;= value);
+        require(totalDeposited >= value);
         totalDeposited = totalDeposited.sub(value);
         wallet.transfer(value);
         Withdrawal(wallet, value);

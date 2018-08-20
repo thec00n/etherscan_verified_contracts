@@ -52,10 +52,10 @@ contract AirdropMeth is Ownable{
         token = ERC20(_token);
     }
 
-    // Uses transferFrom so you&#39;ll need to approve some tokens before this one to
+    // Uses transferFrom so you'll need to approve some tokens before this one to
     // this contract address
     function startAirdropFrom(address _fromAddr, address[] users, uint256 amounts) public onlyOwner {
-        for(uint256 i = 0; i &lt; users.length; i++) {
+        for(uint256 i = 0; i < users.length; i++) {
             
             LogAccountAmount(users[i], amounts);
 
@@ -64,7 +64,7 @@ contract AirdropMeth is Ownable{
     }
     
     function startAirdrop(address[] _user, uint256 _amount) public onlyOwner {
-    	for(uint256 i = 0; i &lt; _user.length; i++) {
+    	for(uint256 i = 0; i < _user.length; i++) {
         	token.transfer(_user[i], _amount);
         }
     }

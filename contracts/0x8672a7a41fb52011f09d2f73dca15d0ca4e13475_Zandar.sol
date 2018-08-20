@@ -18,7 +18,7 @@ contract Zandar {
         uint claimingPhaseStart;//unix time
         uint claimingPhaseEnd;  //unix time
     
-        mapping(address =&gt; uint8) tickets;
+        mapping(address => uint8) tickets;
         uint8 numTickets;
         uint8 numPrizeClaimed;
         uint8 winningMultiplier;
@@ -83,9 +83,9 @@ contract Zandar {
     }
 
     function purchaseTicket(uint _gameID) external payable {
-        require(msg.value &gt;= games[_gameID].ticketPrice);
-        require(now &gt;= games[_gameID].bettingPhaseStart &amp;&amp;
-            now &lt; games[_gameID].bettingPhaseEnd);
+        require(msg.value >= games[_gameID].ticketPrice);
+        require(now >= games[_gameID].bettingPhaseStart &&
+            now < games[_gameID].bettingPhaseEnd);
         games[_gameID].tickets[msg.sender] += 1;
         games[_gameID].numTickets += 1;
         uint admin_fee = games[_gameID].ticketPrice * MAINTENANCE_FEE_PERCENT/100;
@@ -94,10 +94,10 @@ contract Zandar {
     }        
 
     function claimProfit(uint _gameID) external {
-        require(now &gt;= games[_gameID].claimingPhaseStart &amp;&amp;
-            now &lt; games[_gameID].claimingPhaseEnd);
-        require(games[_gameID].tickets[msg.sender]&gt;0);
-        require(games[_gameID].numPrizeClaimed &lt;
+        require(now >= games[_gameID].claimingPhaseStart &&
+            now < games[_gameID].claimingPhaseEnd);
+        require(games[_gameID].tickets[msg.sender]>0);
+        require(games[_gameID].numPrizeClaimed <
             games[_gameID].numTickets/games[_gameID].winningMultiplier);
         
         games[_gameID].numPrizeClaimed += 1;
@@ -110,8 +110,8 @@ contract Zandar {
     
     // get back the BET before claimingPhase
     function getRefund(uint _gameID) external {
-        require(now &lt; games[_gameID].claimingPhaseStart - 1 days);
-        require(games[_gameID].tickets[msg.sender]&gt;0);
+        require(now < games[_gameID].claimingPhaseStart - 1 days);
+        require(games[_gameID].tickets[msg.sender]>0);
         games[_gameID].tickets[msg.sender] -= 1;
         games[_gameID].numTickets -= 1;
         uint refund = games[_gameID].ticketPrice * REFUND_PERCENT / 100;
@@ -125,15 +125,15 @@ contract Zandar {
 
     // call by admin to get maintenance fee
     function getAdminFee() adminOnly external {
-        require(admin_profit &gt; 0);
+        require(admin_profit > 0);
         msg.sender.transfer(admin_profit);
         admin_profit = 0;
     }
     
     // admin can claim unclaimed fund after the claiming phase, if any
     function getUnclaimedEtherIfAny(uint _gameID) adminOnly external {
-        require(now &gt;= games[_gameID].claimingPhaseEnd);
-        require(games[_gameID].balance &gt; 0);
+        require(now >= games[_gameID].claimingPhaseEnd);
+        require(games[_gameID].balance > 0);
         msg.sender.transfer(games[_gameID].balance);
         games[_gameID].balance = 0;
     }

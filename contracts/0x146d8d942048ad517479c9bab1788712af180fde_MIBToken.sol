@@ -52,8 +52,8 @@ library SafeMath {
      * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
           return 0;
@@ -68,9 +68,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -78,7 +78,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -87,7 +87,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -109,15 +109,15 @@ contract ERC20 is ERC20Basic {
 
 contract MIBToken is ERC20, MIBStop {
     uint256 public _totalsupply;
-    string public constant name = &quot;Mobile Integrated Blockchain&quot;;
-    string public constant symbol = &quot;MIB&quot;;
+    string public constant name = "Mobile Integrated Blockchain";
+    string public constant symbol = "MIB";
     uint public constant decimals = 18;
     using SafeMath for uint256;
 
     /* Actual balances of token holders */
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;    
+    mapping (address => mapping (address => uint256)) public allowed;    
 
     event Burn(address indexed from, uint256 value);  
 

@@ -11,37 +11,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -73,10 +73,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    *
@@ -102,7 +102,7 @@ contract StandardToken is ERC20, SafeMath {
     uint _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -121,7 +121,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -158,7 +158,7 @@ contract StandardToken is ERC20, SafeMath {
 
       uint oldVal = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldVal) {
+      if (_subtractedValue > oldVal) {
           allowed[msg.sender][_spender] = 0;
       } else {
           allowed[msg.sender][_spender] = safeSub(oldVal, _subtractedValue);
@@ -226,7 +226,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -338,8 +338,8 @@ contract FLescoin is BurnableToken, UpgradeableToken {
   uint public decimals;
 
   function FLescoin(address _owner, address _init)  UpgradeableToken(_owner) {
-    name = &quot;Lescoin Futures&quot;;
-    symbol = &quot;LSCF&quot;;
+    name = "Lescoin Futures";
+    symbol = "LSCF";
     totalSupply = 5000000000000;
     decimals = 8;
 
@@ -373,7 +373,7 @@ contract FLescoinSale {
     function () payable {
         uint amount = msg.value;
         uint tokenAmount = amount * ethPrice / price / 1000000000000;
-        if (tokenAmount &lt; minSaleAmount) throw;
+        if (tokenAmount < minSaleAmount) throw;
         amountRaised += amount;
         tokenReward.transfer(msg.sender, tokenAmount);
     }

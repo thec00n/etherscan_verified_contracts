@@ -7,37 +7,37 @@ contract SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -52,65 +52,65 @@ contract Arithmetic {
         constant
         returns (uint ab32, uint ab1, uint ab0)
     {
-        uint ahi = a &gt;&gt; 128;
-        uint alo = a &amp; 2**128-1;
-        uint bhi = b &gt;&gt; 128;
-        uint blo = b &amp; 2**128-1;
+        uint ahi = a >> 128;
+        uint alo = a & 2**128-1;
+        uint bhi = b >> 128;
+        uint blo = b & 2**128-1;
         ab0 = alo * blo;
-        ab1 = (ab0 &gt;&gt; 128) + (ahi * blo &amp; 2**128-1) + (alo * bhi &amp; 2**128-1);
-        ab32 = (ab1 &gt;&gt; 128) + ahi * bhi + (ahi * blo &gt;&gt; 128) + (alo * bhi &gt;&gt; 128);
-        ab1 &amp;= 2**128-1;
-        ab0 &amp;= 2**128-1;
+        ab1 = (ab0 >> 128) + (ahi * blo & 2**128-1) + (alo * bhi & 2**128-1);
+        ab32 = (ab1 >> 128) + ahi * bhi + (ahi * blo >> 128) + (alo * bhi >> 128);
+        ab1 &= 2**128-1;
+        ab0 &= 2**128-1;
     }
 
-    // I adapted this from Fast Division of Large Integers by Karl Hasselstr&#246;m
+    // I adapted this from Fast Division of Large Integers by Karl Hasselström
     // Algorithm 3.4: Divide-and-conquer division (3 by 2)
     // Karl got it from Burnikel and Ziegler and the GMP lib implementation
     function div256_128By256(uint a21, uint a0, uint b)
         constant
         returns (uint q, uint r)
     {
-        uint qhi = (a21 / b) &lt;&lt; 128;
+        uint qhi = (a21 / b) << 128;
         a21 %= b;
 
         uint shift = 0;
-        while(b &gt;&gt; shift &gt; 0) shift++;
+        while(b >> shift > 0) shift++;
         shift = 256 - shift;
-        a21 = (a21 &lt;&lt; shift) + (shift &gt; 128 ? a0 &lt;&lt; (shift - 128) : a0 &gt;&gt; (128 - shift));
-        a0 = (a0 &lt;&lt; shift) &amp; 2**128-1;
-        b &lt;&lt;= shift;
-        var (b1, b0) = (b &gt;&gt; 128, b &amp; 2**128-1);
+        a21 = (a21 << shift) + (shift > 128 ? a0 << (shift - 128) : a0 >> (128 - shift));
+        a0 = (a0 << shift) & 2**128-1;
+        b <<= shift;
+        var (b1, b0) = (b >> 128, b & 2**128-1);
 
         uint rhi;
         q = a21 / b1;
         rhi = a21 % b1;
 
-        uint rsub0 = (q &amp; 2**128-1) * b0;
-        uint rsub21 = (q &gt;&gt; 128) * b0 + (rsub0 &gt;&gt; 128);
-        rsub0 &amp;= 2**128-1;
+        uint rsub0 = (q & 2**128-1) * b0;
+        uint rsub21 = (q >> 128) * b0 + (rsub0 >> 128);
+        rsub0 &= 2**128-1;
 
-        while(rsub21 &gt; rhi || rsub21 == rhi &amp;&amp; rsub0 &gt; a0) {
+        while(rsub21 > rhi || rsub21 == rhi && rsub0 > a0) {
             q--;
             a0 += b0;
-            rhi += b1 + (a0 &gt;&gt; 128);
-            a0 &amp;= 2**128-1;
+            rhi += b1 + (a0 >> 128);
+            a0 &= 2**128-1;
         }
 
         q += qhi;
-        r = (((rhi - rsub21) &lt;&lt; 128) + a0 - rsub0) &gt;&gt; shift;
+        r = (((rhi - rsub21) << 128) + a0 - rsub0) >> shift;
     }
 
     function overflowResistantFraction(uint a, uint b, uint divisor)
         returns (uint)
     {
         uint ab32_q1; uint ab1_r1; uint ab0;
-        if(b &lt;= 1 || b != 0 &amp;&amp; a * b / b == a) {
+        if(b <= 1 || b != 0 && a * b / b == a) {
             return a * b / divisor;
         } else {
             (ab32_q1, ab1_r1, ab0) = mul256By256(a, b);
             (ab32_q1, ab1_r1) = div256_128By256(ab32_q1, ab1_r1, divisor);
             (a, b) = div256_128By256(ab1_r1, ab0, divisor);
-            return (ab32_q1 &lt;&lt; 128) + a;
+            return (ab32_q1 << 128) + a;
         }
     }
 }
@@ -157,7 +157,7 @@ contract ERC20 is ERC20Basic {
 contract Presale is Ownable, SafeMath, Arithmetic  {
     uint public minInvest = 1 ether;
     uint public maxcap = 425 ether;   // 100k euro 
-    address public ledgerWallet = &quot;0xa4dbbF474a6f026Cf0a2d3e45aB192Fbd98D3a5f&quot;;
+    address public ledgerWallet = "0xa4dbbF474a6f026Cf0a2d3e45aB192Fbd98D3a5f";
     uint public count = 0;
     uint public totalFunding;
     bool public saleOn;
@@ -165,7 +165,7 @@ contract Presale is Ownable, SafeMath, Arithmetic  {
     address public crowdsaleContract;
     uint public balanceToken;
     address[] public listBackers;
-    mapping (address =&gt; uint) public backers;
+    mapping (address => uint) public backers;
     ERC20 public DTR;                       // wait to be instantiate when ERC20 will be created
     event ReceivedETH(address addr, uint value);
     event Logs(address addr, uint value1, uint value2);
@@ -176,8 +176,8 @@ contract Presale is Ownable, SafeMath, Arithmetic  {
     }
     function() payable {
         require(saleOn);
-        require(msg.value &gt; minInvest);
-        require( SafeMath.add(totalFunding, msg.value) &lt;= maxcap);
+        require(msg.value > minInvest);
+        require( SafeMath.add(totalFunding, msg.value) <= maxcap);
         if (backers[msg.sender] == 0)
           listBackers.push(msg.sender);
         backers[msg.sender] =  SafeMath.add(backers[msg.sender], msg.value);
@@ -205,7 +205,7 @@ contract Presale is Ownable, SafeMath, Arithmetic  {
     // when closing ICO, token will be send to this contract, then this function will be called and token will be distribute among early investor
     function distributes(uint max) onlyOwner {
         require(!saleOn);
-        while(count &lt; max) {
+        while(count < max) {
             uint toSend = Arithmetic.overflowResistantFraction(balanceToken, backers[listBackers[count]], totalFunding);
             require(DTR.transfer(listBackers[count], toSend));
             count++;

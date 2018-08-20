@@ -27,7 +27,7 @@ contract KingOfTheHill {
 
 	function () external payable {
 		require(msg.value == 0.1 ether);
-		if ((lastKing + timeLimit) &lt; block.timestamp) {
+		if ((lastKing + timeLimit) < block.timestamp) {
 			winner();
 		}
 		previousEntries.push(currentKing);

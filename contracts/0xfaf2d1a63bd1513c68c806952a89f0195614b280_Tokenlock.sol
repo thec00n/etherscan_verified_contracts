@@ -61,7 +61,7 @@ contract Tokenlock is Ownable {
     event TokenLocked(address indexed buyer, uint256 amount);
     event TokenReleased(address indexed buyer, uint256 amount);
 
-    mapping (address =&gt; uint256) public buyers;
+    mapping (address => uint256) public buyers;
 
     address public locker;
     address public distributor;
@@ -125,7 +125,7 @@ contract Tokenlock is Ownable {
     {
         require(msg.sender == distributor);
         require(started);
-        require(block.timestamp &gt;= releaseTime);
+        require(block.timestamp >= releaseTime);
 
         // prevent reentrancy
         uint256 amount = buyers[beneficiary];
@@ -136,7 +136,7 @@ contract Tokenlock is Ownable {
     }
 
     function withdraw() public onlyOwner {
-        require(block.timestamp &gt;= releaseTime);
+        require(block.timestamp >= releaseTime);
         Token.safeTransfer(owner, Token.balanceOf(address(this)));
     }
 

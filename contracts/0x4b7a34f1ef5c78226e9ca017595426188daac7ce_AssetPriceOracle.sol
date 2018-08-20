@@ -13,7 +13,7 @@ pragma solidity 0.4.24;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity 0.4.24;
 
@@ -83,7 +83,7 @@ contract AssetPriceOracle is DSAuth {
         bool isRecord;
     }
 
-    mapping(uint128 =&gt; mapping(uint128 =&gt; AssetPriceRecord)) public assetPriceRecords;
+    mapping(uint128 => mapping(uint128 => AssetPriceRecord)) public assetPriceRecords;
 
     event AssetPriceRecorded(
         uint128 indexed assetId,
@@ -107,6 +107,6 @@ contract AssetPriceOracle is DSAuth {
     }
 
     function () public {
-        // dont receive ether via fallback method (by not having &#39;payable&#39; modifier on this function).
+        // dont receive ether via fallback method (by not having 'payable' modifier on this function).
     }
 }

@@ -18,23 +18,23 @@
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     }
     contract Sentinel{
     
 	
-	string public standard = &#39;Sent 2.0&#39;;
+	string public standard = 'Sent 2.0';
     using SafeMath for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -48,7 +48,7 @@
     function Sentinel() 
     {
         totalSupply = 2000000;
-        symbol = &#39;sent&#39;;
+        symbol = 'sent';
         owner = 0x79FE5E4c313205A6B2385751b0716060C9446A64;
         balances[owner] = 2000000;
         decimals = 0;

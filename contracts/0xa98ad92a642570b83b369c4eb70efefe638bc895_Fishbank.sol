@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -117,16 +117,16 @@ contract ChestsStore is Beneficiary {
     function buyChest(uint16 _chestId) payable public {
         chestProduct memory tmpChestProduct = chestProducts[_chestId];
 
-        require(tmpChestProduct.price &gt; 0);
+        require(tmpChestProduct.price > 0);
         // only chests with price
-        require(msg.value &gt;= tmpChestProduct.price);
+        require(msg.value >= tmpChestProduct.price);
         //check if enough ether is send
-        require(!tmpChestProduct.isLimited || tmpChestProduct.limit &gt; 0);
+        require(!tmpChestProduct.isLimited || tmpChestProduct.limit > 0);
         //check limits if they exists
 
         chests.mintChest(msg.sender, tmpChestProduct.boosters, tmpChestProduct.raiseStrength, tmpChestProduct.raiseChance, tmpChestProduct.onlyBoosterType, tmpChestProduct.onlyBoosterStrength);
 
-        if (msg.value &gt; chestProducts[_chestId].price) {//send to much ether send some back
+        if (msg.value > chestProducts[_chestId].price) {//send to much ether send some back
             msg.sender.transfer(msg.value - chestProducts[_chestId].price);
         }
 
@@ -155,10 +155,10 @@ contract FishbankBoosters is Ownable {
 
     Booster[] public boosters;
     bool public implementsERC721 = true;
-    string public name = &quot;Fishbank Boosters&quot;;
-    string public symbol = &quot;FISHB&quot;;
-    mapping(uint256 =&gt; address) public approved;
-    mapping(address =&gt; uint256) public balances;
+    string public name = "Fishbank Boosters";
+    string public symbol = "FISHB";
+    mapping(uint256 => address) public approved;
+    mapping(address => uint256) public balances;
     address public fishbank;
     address public chests;
     address public auction;
@@ -232,7 +232,7 @@ contract FishbankBoosters is Ownable {
     }
 
     //ERC721 functionality
-    //could split this to a different contract but doesn&#39;t make it easier to read
+    //could split this to a different contract but doesn't make it easier to read
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
@@ -313,9 +313,9 @@ contract FishbankChests is Ownable {
 
     Chest[] public chests;
     FishbankBoosters public boosterContract;
-    mapping(uint256 =&gt; address) public approved;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; bool) public minters;
+    mapping(uint256 => address) public approved;
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public minters;
 
     modifier onlyChestOwner(uint256 _tokenId) {
         require(chests[_tokenId].owner == msg.sender);
@@ -383,34 +383,34 @@ contract FishbankChests is Ownable {
 
         } else {//Regular chest
 
-            for (uint8 i = 0; i &lt; numberOfBoosters; i ++) {
+            for (uint8 i = 0; i < numberOfBoosters; i ++) {
                 uint24 random = uint16(keccak256(block.coinbase, block.blockhash(block.number - 1), i, chests.length)) % 1000
                 - chest.raiseChance;
                 //get random 0 - 9999 minus raiseChance
 
-                if (random &gt; 850) {
+                if (random > 850) {
                     boosterContract.mintBooster(msg.sender, 2 days, 1, 1, 1, chest.raiseStrength); //Small Agility Booster
-                } else if (random &gt; 700) {
+                } else if (random > 700) {
                     boosterContract.mintBooster(msg.sender, 7 days, 2, 1, 1, chest.raiseStrength); //Small Freezer
-                } else if (random &gt; 550) {
+                } else if (random > 550) {
                     boosterContract.mintBooster(msg.sender, 2 days, 3, 1, 1, chest.raiseStrength); //Small Power Booster
-                } else if (random &gt; 400) {
+                } else if (random > 400) {
                     boosterContract.mintBooster(msg.sender, 12 hours, 4, 1, 1, chest.raiseStrength); //Tiny Watch
-                } else if (random &gt; 325) {
+                } else if (random > 325) {
                     boosterContract.mintBooster(msg.sender, 48 hours, 4, 2, 1, chest.raiseStrength); //Small Watch
-                } else if (random &gt; 250) {
+                } else if (random > 250) {
                     boosterContract.mintBooster(msg.sender, 2 days, 1, 2, 1, chest.raiseStrength); //Mid Agility Booster
-                } else if (random &gt; 175) {
+                } else if (random > 175) {
                     boosterContract.mintBooster(msg.sender, 14 days, 2, 2, 1, chest.raiseStrength); //Mid Freezer
-                } else if (random &gt; 100) {
+                } else if (random > 100) {
                     boosterContract.mintBooster(msg.sender, 2 days, 3, 2, 1, chest.raiseStrength); //Mid Power Booster
-                } else if (random &gt; 80) {
+                } else if (random > 80) {
                     boosterContract.mintBooster(msg.sender, 2 days, 1, 3, 1, chest.raiseStrength); //Big Agility Booster
-                } else if (random &gt; 60) {
+                } else if (random > 60) {
                     boosterContract.mintBooster(msg.sender, 30 days, 2, 3, 1, chest.raiseStrength); //Big Freezer
-                } else if (random &gt; 40) {
+                } else if (random > 40) {
                     boosterContract.mintBooster(msg.sender, 2 days, 3, 3, 1, chest.raiseStrength); //Big Power Booster
-                } else if (random &gt; 20) {
+                } else if (random > 20) {
                     boosterContract.mintBooster(msg.sender, 0, 5, 1, 1, 0); //Instant Attack
                 } else {
                     boosterContract.mintBooster(msg.sender, 3 days, 4, 3, 1, 0); //Gold Watch
@@ -422,7 +422,7 @@ contract FishbankChests is Ownable {
     }
 
     //ERC721 functionality
-    //could split this to a different contract but doesn&#39;t make it easier to read
+    //could split this to a different contract but doesn't make it easier to read
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
@@ -540,7 +540,7 @@ contract FishbankUtils is Ownable {
                 if(fishParams[2] == 75) {
                     fishParams[2]++;
                 }
-            } else if (seeds[4] &lt; 4) {//Blue whale
+            } else if (seeds[4] < 4) {//Blue whale
                 fishParams = [130 + uint8(seeds[1] / 42), 130 + uint8(seeds[2] / 42), 75 + uint8(seeds[3] / 6), uint32(500000)];
                 if(fishParams[0] == 130) {
                     fishParams[0]++;
@@ -572,7 +572,7 @@ contract FishbankUtils is Ownable {
                 if(fishParams[1] == 85) {
                     fishParams[1]++;
                 }
-            } else if (seeds[5] &gt; 4899) {//Epic
+            } else if (seeds[5] > 4899) {//Epic
                 fishParams = [50 + uint8(seeds[1] / 12), 50 + uint8(seeds[2] / 12), uint8(25 + seeds[3] / 2), uint32(300)];
                 if(fishParams[0] == 50) {
                     fishParams[0]++;
@@ -581,7 +581,7 @@ contract FishbankUtils is Ownable {
                     fishParams[1]++;
                 }
 
-            } else if (seeds[5] &gt; 4000) {//Rare
+            } else if (seeds[5] > 4000) {//Rare
                 fishParams = [20 + uint8(seeds[1] / 14), 20 + uint8(seeds[2] / 14), uint8(25 + seeds[3] / 3), uint32(100)];
                 if(fishParams[0] == 20) {
                     fishParams[0]++;
@@ -612,7 +612,7 @@ contract FishbankUtils is Ownable {
 
     //Ceiling function for fish generator
     function ceil(uint base, uint divider) internal pure returns (uint) {
-        return base / divider + ((base % divider &gt; 0) ? 1 : 0);
+        return base / divider + ((base % divider > 0) ? 1 : 0);
     }
 }
 
@@ -666,7 +666,7 @@ contract ERC721Auction is Beneficiary {
     ERC721 public ERC721Contract;
     uint256 public fee = 45000; //in 1 10000th of a percent so 4.5% at the start
     uint256 constant FEE_DIVIDER = 1000000;
-    mapping(uint256 =&gt; Auction) public auctions;
+    mapping(uint256 => Auction) public auctions;
 
     event AuctionWon(uint256 indexed tokenId, address indexed winner, address indexed seller, uint256 price);
 
@@ -678,8 +678,8 @@ contract ERC721Auction is Beneficiary {
     function startAuction(uint256 _tokenId, uint256 _startPrice, uint256 _endPrice) external {
         require(ERC721Contract.transferFrom(msg.sender, address(this), _tokenId));
         //Prices must be in range from 0.01 Eth and 10 000 Eth
-        require(_startPrice &lt;= 10000 ether &amp;&amp; _endPrice &lt;= 10000 ether);
-        require(_startPrice &gt;= (1 ether / 100) &amp;&amp; _endPrice &gt;= (1 ether / 100));
+        require(_startPrice <= 10000 ether && _endPrice <= 10000 ether);
+        require(_startPrice >= (1 ether / 100) && _endPrice >= (1 ether / 100));
 
         Auction memory auction;
 
@@ -687,7 +687,7 @@ contract ERC721Auction is Beneficiary {
         auction.tokenId = _tokenId;
         auction.auctionBegin = uint64(now);
         auction.auctionEnd = uint64(now + auctionDuration);
-        require(auction.auctionEnd &gt; auction.auctionBegin);
+        require(auction.auctionEnd > auction.auctionBegin);
         auction.startPrice = _startPrice;
         auction.endPrice = _endPrice;
 
@@ -703,7 +703,7 @@ contract ERC721Auction is Beneficiary {
         uint256 price = calculateBid(_tokenId);
         uint256 totalFee = price * fee / FEE_DIVIDER; //safe math needed?
 
-        require(price &lt;= msg.value); //revert if not enough ether send
+        require(price <= msg.value); //revert if not enough ether send
 
         if (price != msg.value) {//send back to much eth
             msg.sender.transfer(msg.value - price);
@@ -715,7 +715,7 @@ contract ERC721Auction is Beneficiary {
 
         if (!ERC721Contract.transfer(msg.sender, _tokenId)) {
             revert();
-            //can&#39;t complete transfer if this fails
+            //can't complete transfer if this fails
         }
 
         AuctionWon(_tokenId, msg.sender, auction.seller, price);
@@ -725,7 +725,7 @@ contract ERC721Auction is Beneficiary {
     }
 
     function saveToken(uint256 _tokenId) external {
-        require(auctions[_tokenId].auctionEnd &lt; now);
+        require(auctions[_tokenId].auctionEnd < now);
         //auction must have ended
         require(ERC721Contract.transfer(auctions[_tokenId].seller, _tokenId));
         //transfer fish back to seller
@@ -741,7 +741,7 @@ contract ERC721Auction is Beneficiary {
     }
 
     function setFee(uint256 _fee) onlyOwner public {
-        if (_fee &gt; fee) {
+        if (_fee > fee) {
             revert(); //fee can only be set to lower value to prevent attacks by owner
         }
         fee = _fee; // all is well set fee
@@ -750,7 +750,7 @@ contract ERC721Auction is Beneficiary {
     function calculateBid(uint256 _tokenId) public view returns (uint256) {
         Auction storage auction = auctions[_tokenId];
 
-        if (now &gt;= auction.auctionEnd) {//if auction ended return auction end price
+        if (now >= auction.auctionEnd) {//if auction ended return auction end price
             return auction.endPrice;
         }
         //get hours passed
@@ -759,9 +759,9 @@ contract ERC721Auction is Beneficiary {
         //get total hours
         uint16 totalHours = uint16(auctionDuration /1 hours) - 1;
 
-        if (auction.endPrice &gt; auction.startPrice) {
+        if (auction.endPrice > auction.startPrice) {
             currentPrice = auction.startPrice + (hoursPassed * (auction.endPrice - auction.startPrice))/ totalHours;
-        } else if(auction.endPrice &lt; auction.startPrice) {
+        } else if(auction.endPrice < auction.startPrice) {
             currentPrice = auction.startPrice - (hoursPassed * (auction.startPrice - auction.endPrice))/ totalHours;
         } else {//start and end are the same
             currentPrice = auction.endPrice;
@@ -831,8 +831,8 @@ contract Fishbank is ChestsStore {
     address public auction;
     address public minter;
     bool public implementsERC721 = true;
-    string public name = &quot;Fishbank&quot;;
-    string public symbol = &quot;FISH&quot;;
+    string public name = "Fishbank";
+    string public symbol = "FISH";
     bytes32[] public randomHashes;
     uint256 public hashesUsed;
     uint256 public aquariumCost = 1 ether / 100 * 3;//fee for fishing starts at 0.03 ether
@@ -843,11 +843,11 @@ contract Fishbank is ChestsStore {
     FishbankUtils private utils;
 
 
-    mapping(bytes32 =&gt; FishingAttempt) public pendingFishing;//attempts that need solving;
+    mapping(bytes32 => FishingAttempt) public pendingFishing;//attempts that need solving;
 
-    mapping(uint256 =&gt; address) public approved;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; bool) public affiliated;
+    mapping(uint256 => address) public approved;
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public affiliated;
 
     event AquariumFished(
         bytes32 hash,
@@ -890,7 +890,7 @@ contract Fishbank is ChestsStore {
 
     function mintFish(address[] _owner, uint32[] _weight, uint8[] _power, uint8[] _agility, uint8[] _speed, bytes16[] _color) onlyMinter public {
 
-        for (uint i = 0; i &lt; _owner.length; i ++) {
+        for (uint i = 0; i < _owner.length; i ++) {
             _mintFish(_owner[i], _weight[i], _power[i], _agility[i], _speed[i], _color[i]);
         }
     }
@@ -963,18 +963,18 @@ contract Fishbank is ChestsStore {
 
     /// batch fishing from 1 to 10 times
     function batchFishAquarium(uint256[] _seeds, address _affiliate) payable public {
-        require(_seeds.length &gt; 0 &amp;&amp; _seeds.length &lt;= 10);
-        require(msg.value &gt;= aquariumCost * _seeds.length);
+        require(_seeds.length > 0 && _seeds.length <= 10);
+        require(msg.value >= aquariumCost * _seeds.length);
         //must send enough ether to cover costs
-        require(randomHashes.length &gt; hashesUsed + _seeds.length);
+        require(randomHashes.length > hashesUsed + _seeds.length);
         //there needs to be a hash left
 
-        if (msg.value &gt; aquariumCost * _seeds.length) {
+        if (msg.value > aquariumCost * _seeds.length) {
             msg.sender.transfer(msg.value - aquariumCost * _seeds.length);
             //send to much ether back
         }
 
-        for (uint256 i = 0; i &lt; _seeds.length; i ++) {
+        for (uint256 i = 0; i < _seeds.length; i ++) {
             _fishAquarium(_seeds[i]);
         }
 
@@ -994,7 +994,7 @@ contract Fishbank is ChestsStore {
 
         newAttempt.fisher = msg.sender;
         newAttempt.feePaid = aquariumCost;
-        //set the fee paid so it can be returned if the hash doesn&#39;t get resolved fast enough
+        //set the fee paid so it can be returned if the hash doesn't get resolved fast enough
         newAttempt.seed = _seed;
         //sets the seed that gets combined with the random seed of the owner
         newAttempt.deadline = uint64(now + resolveTime);
@@ -1016,7 +1016,7 @@ contract Fishbank is ChestsStore {
         require(tempAttempt.fisher != address(0));
         //attempt must be set so we look if fisher is set
 
-        if (tempAttempt.affiliate != address(0) &amp;&amp; !affiliated[tempAttempt.fisher]) {//if affiliate is set
+        if (tempAttempt.affiliate != address(0) && !affiliated[tempAttempt.fisher]) {//if affiliate is set
             chests.mintChest(tempAttempt.affiliate, 1, 0, 0, 0, 0);
             //Chest with one random booster
             affiliated[tempAttempt.fisher] = true;
@@ -1037,7 +1037,7 @@ contract Fishbank is ChestsStore {
     /// @notice Batch resolve fishing attempts
     /// @param _seeds array of seeds that correspond to hashes that need resolving
     function batchResolveAquarium(uint256[] _seeds) onlyResolver public {
-        for (uint256 i = 0; i &lt; _seeds.length; i ++) {
+        for (uint256 i = 0; i < _seeds.length; i ++) {
             _resolveAquarium(_seeds[i]);
         }
     }
@@ -1046,7 +1046,7 @@ contract Fishbank is ChestsStore {
     /// @notice Adds an array of hashes to be used for resolving
     /// @param _hashes array of hashes to add
     function addHash(bytes32[] _hashes) onlyResolver public {
-        for (uint i = 0; i &lt; _hashes.length; i ++) {
+        for (uint i = 0; i < _hashes.length; i ++) {
             randomHashes.push(_hashes[i]);
         }
     }
@@ -1060,23 +1060,23 @@ contract Fishbank is ChestsStore {
         Fish memory victim = fishes[_victim];
 
         //check if attacker is sleeping
-        if (attacker.activeBooster == 2 &amp;&amp; attacker.boostedTill &gt; now) {//if your fish is sleeping auto awake it
+        if (attacker.activeBooster == 2 && attacker.boostedTill > now) {//if your fish is sleeping auto awake it
             fishes[_attacker].activeBooster = 0;
             attacker.boostedTill = uint64(now);
             //set booster to invalid one so it has no effect
         }
 
         //check if victim has active sleeping booster
-        require(!((victim.activeBooster == 2) &amp;&amp; victim.boostedTill &gt;= now));
+        require(!((victim.activeBooster == 2) && victim.boostedTill >= now));
         //cannot attack a sleeping fish
-        require(now &gt;= attacker.canFightAgain);
+        require(now >= attacker.canFightAgain);
         //check if attacking fish is cooled down
-        require(now &gt;= victim.canBeAttackedAgain);
+        require(now >= victim.canBeAttackedAgain);
         //check if victim fish can be attacked again
 
 
         if (msg.sender == victim.owner) {
-            uint64 weight = attacker.weight &lt; victim.weight ? attacker.weight : victim.weight;
+            uint64 weight = attacker.weight < victim.weight ? attacker.weight : victim.weight;
             fishes[_attacker].weight += weight;
             fishes[_victim].weight -= weight;
             fishes[_attacker].canFightAgain = uint64(utils.getCooldown(attacker.speed));
@@ -1094,7 +1094,7 @@ contract Fishbank is ChestsStore {
             return;
         }
 
-        if (victim.weight &lt; 2 || attacker.weight &lt; 2) {
+        if (victim.weight < 2 || attacker.weight < 2) {
             revert();
             //revert if one of the fish is below fighting weight
         }
@@ -1106,13 +1106,13 @@ contract Fishbank is ChestsStore {
 
         bytes32 randomHash = keccak256(block.coinbase, block.blockhash(block.number - 1), fishes.length);
 
-        uint256 max = AP &gt; VP ? AP : VP;
+        uint256 max = AP > VP ? AP : VP;
         uint256 attackRange = max * 2;
         uint256 random = uint256(randomHash) % attackRange + 1;
 
         uint64 weightLost;
 
-        if (random &lt;= (max + AP - VP)) {
+        if (random <= (max + AP - VP)) {
             weightLost = _handleWin(_attacker, _victim);
             Attack(_attacker, _victim, _attacker, weightLost, AP, VP, random);
         } else {
@@ -1136,9 +1136,9 @@ contract Fishbank is ChestsStore {
         uint64 fullWeightLost = loser.weight / sqrt(winner.weight);
         uint64 maxWeightLost = loser.weight / weightLostPartLimit;
 
-        uint64 weightLost = maxWeightLost &lt; fullWeightLost ? maxWeightLost : fullWeightLost;
+        uint64 weightLost = maxWeightLost < fullWeightLost ? maxWeightLost : fullWeightLost;
 
-        if (weightLost &lt; 1) {
+        if (weightLost < 1) {
             weightLost = 1;
             // Minimum 1
         }
@@ -1162,7 +1162,7 @@ contract Fishbank is ChestsStore {
     function applyBooster(uint256 _tokenId, uint256 _booster) onlyFishOwner(_tokenId) public {
         require(msg.sender == boosters.ownerOf(_booster));
         //only owner can do this
-        require(boosters.getBoosterAmount(_booster) &gt;= 1);
+        require(boosters.getBoosterAmount(_booster) >= 1);
         Fish storage tempFish = fishes[_tokenId];
         uint8 boosterType = uint8(boosters.getBoosterType(_booster));
 
@@ -1173,7 +1173,7 @@ contract Fishbank is ChestsStore {
             tempFish.boosterRaiseValue = boosters.getBoosterRaiseValue(_booster);
         }
         else if (boosterType == 4) {//watch booster
-            require(tempFish.boostedTill &gt; uint64(now));
+            require(tempFish.boostedTill > uint64(now));
             //revert on using watch on booster that has passed;
             tempFish.boosterStrength = boosters.getBoosterStrength(_booster);
             tempFish.boostedTill += boosters.getBoosterDuration(_booster) * boosters.getBoosterAmount(_booster);
@@ -1196,7 +1196,7 @@ contract Fishbank is ChestsStore {
     function sqrt(uint64 x) pure internal returns (uint64 y) {
         uint64 z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -1209,13 +1209,13 @@ contract Fishbank is ChestsStore {
 
     function getFishPower(Fish _fish) internal view returns (uint24 power) {
         power = _fish.power;
-        if (_fish.activeBooster == 1 &amp;&amp; _fish.boostedTill &gt; now) {// check if booster active
+        if (_fish.activeBooster == 1 && _fish.boostedTill > now) {// check if booster active
             uint24 boosterPower = (10 * _fish.boosterStrength + _fish.boosterRaiseValue + 100) * power / 100 - power;
-            if (boosterPower &lt; 1 &amp;&amp; _fish.boosterStrength == 1) {
+            if (boosterPower < 1 && _fish.boosterStrength == 1) {
                 power += 1;
-            } else if (boosterPower &lt; 3 &amp;&amp; _fish.boosterStrength == 2) {
+            } else if (boosterPower < 3 && _fish.boosterStrength == 2) {
                 power += 3;
-            } else if (boosterPower &lt; 5 &amp;&amp; _fish.boosterStrength == 3) {
+            } else if (boosterPower < 5 && _fish.boosterStrength == 3) {
                 power += 5;
             } else {
                 power = boosterPower + power;
@@ -1225,13 +1225,13 @@ contract Fishbank is ChestsStore {
 
     function getFishAgility(Fish _fish) internal view returns (uint24 agility) {
         agility = _fish.agility;
-        if (_fish.activeBooster == 3 &amp;&amp; _fish.boostedTill &gt; now) {// check if booster active
+        if (_fish.activeBooster == 3 && _fish.boostedTill > now) {// check if booster active
             uint24 boosterPower = (10 * _fish.boosterStrength + _fish.boosterRaiseValue + 100) * agility / 100 - agility;
-            if (boosterPower &lt; 1 &amp;&amp; _fish.boosterStrength == 1) {
+            if (boosterPower < 1 && _fish.boosterStrength == 1) {
                 agility += 1;
-            } else if (boosterPower &lt; 3 &amp;&amp; _fish.boosterStrength == 2) {
+            } else if (boosterPower < 3 && _fish.boosterStrength == 2) {
                 agility += 3;
-            } else if (boosterPower &lt; 5 &amp;&amp; _fish.boosterStrength == 3) {
+            } else if (boosterPower < 5 && _fish.boosterStrength == 3) {
                 agility += 5;
             } else {
                 agility = boosterPower + agility;
@@ -1241,7 +1241,7 @@ contract Fishbank is ChestsStore {
 
 
     //ERC721 functionality
-    //could split this to a different contract but doesn&#39;t make it easier to read
+    //could split this to a different contract but doesn't make it easier to read
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 

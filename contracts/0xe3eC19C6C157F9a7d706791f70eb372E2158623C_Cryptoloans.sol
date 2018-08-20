@@ -40,9 +40,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -50,7 +50,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,8 +69,8 @@ contract ERC20Interface {
     //function balanceOf(address tokenOwner) public constant returns (uint balance);
     //function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
     function transfer(address to, uint tokens) public returns (bool success);
     function approve(address spender, uint tokens) public returns (bool success);
     function transferFrom(address from, address to, uint tokens) public returns (bool success);
@@ -83,24 +83,24 @@ contract ERC20Interface {
 contract Cryptoloans is ERC20Interface, owned {
     using SafeMath for uint256;
     //uint256 public totalSupply;
-    //mapping (address =&gt; uint256) public balanceOf;
-    //mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    //mapping (address => uint256) public balanceOf;
+    //mapping (address => mapping (address => uint)) public allowance;
 
     //function allowance(address _owner, address _spender) public constant returns (uint remaining) {
     //    require(state != State.Disabled);
     //    return allowance[_owner][_spender];
     //}
 
-    //string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;Cryptoloans&#39;;
-    string  public symbol      = &quot;LCN&quot;;
+    //string  public standard    = 'Token 0.1';
+    string  public name        = 'Cryptoloans';
+    string  public symbol      = "LCN";
     uint8   public decimals    = 18;
     uint256 public tokensPerOneEther = 300;
     uint    public min_tokens = 30;
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
     
@@ -126,15 +126,15 @@ contract Cryptoloans is ERC20Interface, owned {
 
     function () public payable {
         require(state==State.TokenSale);
-        require(balanceOf[this] &gt; 0);
+        require(balanceOf[this] > 0);
         uint256 tokens = tokensPerOneEther.mul(msg.value);//.div(1 ether);
-        require(min_tokens.mul(10**uint(decimals))&lt;=tokens || tokens &gt; balanceOf[this]);
-        if (tokens &gt; balanceOf[this]) {
+        require(min_tokens.mul(10**uint(decimals))<=tokens || tokens > balanceOf[this]);
+        if (tokens > balanceOf[this]) {
             tokens = balanceOf[this];
             uint256 valueWei = tokens.div(tokensPerOneEther);
             msg.sender.transfer(msg.value - valueWei);
         }
-        require(tokens &gt; 0);
+        require(tokens > 0);
         balanceOf[msg.sender] = balanceOf[msg.sender].add(tokens);
         balanceOf[this] = balanceOf[this].sub(tokens);
         emit Transfer(this, msg.sender, tokens);
@@ -143,8 +143,8 @@ contract Cryptoloans is ERC20Interface, owned {
 	function _transfer(address _from, address _to, uint _value) internal
 	{
         require(state != State.Disabled);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
@@ -158,7 +158,7 @@ contract Cryptoloans is ERC20Interface, owned {
 
     function transferFrom(address _from, address _to, uint _value) public onlyPayloadSize(3 * 32)  returns(bool success){
         require(state != State.Disabled);
-		require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+		require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -176,11 +176,11 @@ contract Cryptoloans is ERC20Interface, owned {
 
     function withdrawBack() public { // failed tokensale
         require(state == State.Failed);
-        require(balanceOf[msg.sender]&gt;0);
+        require(balanceOf[msg.sender]>0);
         uint256 amount = balanceOf[msg.sender].div(tokensPerOneEther);// ethers wei
         uint256 balance_sender = balanceOf[msg.sender];
         
-        require(address(this).balance&gt;=amount &amp;&amp; amount &gt; 0);
+        require(address(this).balance>=amount && amount > 0);
         balanceOf[this] = balanceOf[this].add(balance_sender);
         balanceOf[msg.sender] = 0;
         emit Transfer(msg.sender, this,  balance_sender);
@@ -204,14 +204,14 @@ contract Cryptoloans is ERC20Interface, owned {
     function startTokensSale(uint _volume_tokens, uint token_by_ether, uint min_in_token) public {
         require(owner == msg.sender);
         //require(state == State.Disabled);
-        require((_volume_tokens * 10**uint(decimals))&lt;(balanceOf[owner]+balanceOf[this]));
+        require((_volume_tokens * 10**uint(decimals))<(balanceOf[owner]+balanceOf[this]));
         tokensPerOneEther = token_by_ether;
         min_tokens = min_in_token;
         
-        //if(balanceOf[this]&gt;0)
-        if(balanceOf[this]&gt;(_volume_tokens * 10**uint(decimals)))
+        //if(balanceOf[this]>0)
+        if(balanceOf[this]>(_volume_tokens * 10**uint(decimals)))
             emit Transfer(this, owner, balanceOf[this]-(_volume_tokens * 10**uint(decimals)));
-        else if(balanceOf[this]&lt;(_volume_tokens * 10**uint(decimals)))
+        else if(balanceOf[this]<(_volume_tokens * 10**uint(decimals)))
             emit Transfer(owner, this, (_volume_tokens * 10**uint(decimals)) - balanceOf[this]);
 
         balanceOf[owner] = balanceOf[owner].add(balanceOf[this]).sub(_volume_tokens * 10**uint(decimals));

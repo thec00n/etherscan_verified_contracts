@@ -9,10 +9,10 @@ contract ERC20Standard
     uint256 internal totalSupply_;
     
     // This creates a dictionary with all the balances
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
     
     // This creates a dictionary with allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     // #endregion
     
@@ -46,10 +46,10 @@ contract ERC20Standard
     /// @return Whether the transfer was successful or not
     function transfer(address _to, uint256 _value) public returns (bool) 
     {
-        require(msg.data.length &gt;= 68);                   // Guard against short address
+        require(msg.data.length >= 68);                   // Guard against short address
         require(_to != 0x0);                              // Prevent transfer to 0x0 address
-        require(balances[msg.sender] &gt;= _value);          // Check if the sender has enough tokens
-        require(balances[_to] + _value &gt;= balances[_to]); // Check for overflows
+        require(balances[msg.sender] >= _value);          // Check if the sender has enough tokens
+        require(balances[_to] + _value >= balances[_to]); // Check for overflows
         
         // Update balance
         balances[msg.sender] -= _value;
@@ -68,11 +68,11 @@ contract ERC20Standard
     /// @return Whether the transfer was successful or not
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) 
     {
-        require(msg.data.length &gt;= 68);                   // Guard against short address
+        require(msg.data.length >= 68);                   // Guard against short address
         require(_to != 0x0);                              // Prevent transfer to 0x0 address
-        require(balances[_from] &gt;= _value);               // Check if the sender has enough tokens
-        require(balances[_to] + _value &gt;= balances[_to]); // Check for overflows
-        require(allowed[_from][msg.sender] &gt;= _value);    // Check allowance
+        require(balances[_from] >= _value);               // Check if the sender has enough tokens
+        require(balances[_to] + _value >= balances[_to]); // Check for overflows
+        require(allowed[_from][msg.sender] >= _value);    // Check allowance
         
         // Update balance
         balances[_from] -= _value;
@@ -118,8 +118,8 @@ contract BinvToken is ERC20Standard
 {
     // #region Constants
     
-    string public constant name = &quot;BINV&quot;;              
-    string public constant symbol = &quot;BINV&quot;;            
+    string public constant name = "BINV";              
+    string public constant symbol = "BINV";            
     uint256 public constant initialSupply = 100000000;
     uint8 public constant decimals = 18;               
     
@@ -164,13 +164,13 @@ contract BinvToken is ERC20Standard
         require(payableEnabled);
         require(msg.sender != 0x0);
      
-        require(maxPaymentInEther &gt; uint256(msg.value / (10 ** 18)));
-        require(hardCapInEther &gt; payableEtherReceived);
+        require(maxPaymentInEther > uint256(msg.value / (10 ** 18)));
+        require(hardCapInEther > payableEtherReceived);
         
         uint256 actualTokensPerEther = getActualTokensPerEther();
         uint256 tokensAmount = msg.value * actualTokensPerEther;
         
-        require(balances[owner] &gt;= tokensAmount);
+        require(balances[owner] >= tokensAmount);
         
         balances[owner] -= tokensAmount;
         balances[msg.sender] += tokensAmount;
@@ -203,13 +203,13 @@ contract BinvToken is ERC20Standard
        uint256 etherReceived = payableEtherReceived;
        
        uint256 bonusPercent = 0;
-       if(etherReceived &lt; 1000)
+       if(etherReceived < 1000)
            bonusPercent = 16;
-       else if(etherReceived &lt; 2200)
+       else if(etherReceived < 2200)
            bonusPercent = 12; 
-       else if(etherReceived &lt; 3600)
+       else if(etherReceived < 3600)
            bonusPercent = 8; 
-       else if(etherReceived &lt; 5200)
+       else if(etherReceived < 5200)
            bonusPercent = 4; 
        
        uint256 actualTokensPerEther = tokensPerEther * (100 + bonusPercent) / 100;
@@ -220,7 +220,7 @@ contract BinvToken is ERC20Standard
     function setTokensPerEther(uint256 amount) public returns (bool)
     {
        require(msg.sender == owner); 
-       require(amount &gt; 0);
+       require(amount > 0);
        tokensPerEther = amount;
        
        return true;
@@ -230,7 +230,7 @@ contract BinvToken is ERC20Standard
     function setHardCapInEther(uint256 amount) public returns (bool)
     {
        require(msg.sender == owner); 
-       require(amount &gt; 0);
+       require(amount > 0);
        hardCapInEther = amount;
        
        return true;
@@ -240,7 +240,7 @@ contract BinvToken is ERC20Standard
     function setMaxPaymentInEther(uint256 amount) public returns (bool)
     {
        require(msg.sender == owner); 
-       require(amount &gt; 0);
+       require(amount > 0);
        maxPaymentInEther = amount;
        
        return true;
@@ -271,7 +271,7 @@ contract BinvToken is ERC20Standard
         
         uint256 tokensAmount = milliTokensAmount * (10 ** uint256(decimals - 3));
         
-        require(balances[owner] &gt;= tokensAmount);
+        require(balances[owner] >= tokensAmount);
 
         balances[owner] -= tokensAmount;
         balances[destination] += tokensAmount;

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -125,12 +125,12 @@ contract Claimable is Ownable {
 contract SeeToken is Claimable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;See Presale Token&quot;;
-  string public constant symbol = &quot;SEE&quot;;
+  string public constant name = "See Presale Token";
+  string public constant symbol = "SEE";
   uint8 public constant decimals = 18;
 
   uint256 public totalSupply;
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
 
   event Issue(address to, uint256 amount);
 
@@ -148,8 +148,8 @@ contract SeeToken is Claimable {
 
   /**
    * @dev Get the balance for a particular token holder
-   * @param _holder The token holder&#39;s address
-   * @return The holder&#39;s balance
+   * @param _holder The token holder's address
+   * @return The holder's balance
    */
   function balanceOf(address _holder) public view returns (uint256 balance) {
     balance = balances[_holder];

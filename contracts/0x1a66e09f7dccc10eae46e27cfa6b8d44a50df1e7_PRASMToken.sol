@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;       
     }       
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -127,18 +127,18 @@ contract PRASMToken is ERC20, Ownable, Pausable {
     uint256 internal initialSupply;
     uint256 internal totalSupply_;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; bool) internal locks;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; LockupInfo) internal lockupInfo;
+    mapping(address => uint256) internal balances;
+    mapping(address => bool) internal locks;
+    mapping(address => mapping(address => uint256)) internal allowed;
+    mapping(address => LockupInfo) internal lockupInfo;
 
     event Unlock(address indexed holder, uint256 value);
     event Lock(address indexed holder, uint256 value);
     event Burn(address indexed owner, uint256 value);
 
     constructor() public {
-        name = &quot;PRASM&quot;;
-        symbol = &quot;PSM&quot;;
+        name = "PRASM";
+        symbol = "PSM";
         decimals = 18;
         initialSupply = 4000000000;
         totalSupply_ = initialSupply * 10 ** uint(decimals);
@@ -159,7 +159,7 @@ contract PRASMToken is ERC20, Ownable, Pausable {
             autoUnlock(msg.sender);            
         }
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -178,8 +178,8 @@ contract PRASMToken is ERC20, Ownable, Pausable {
             autoUnlock(_from);            
         }
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
 
         balances[_from] = balances[_from].sub(_value);
@@ -210,7 +210,7 @@ contract PRASMToken is ERC20, Ownable, Pausable {
 
     function lock(address _holder, uint256 _amount, uint256 _releaseStart, uint256 _releaseRate) public onlyOwner returns (bool) {
         require(locks[_holder] == false);
-        require(balances[_holder] &gt;= _amount);
+        require(balances[_holder] >= _amount);
         balances[_holder] = balances[_holder].sub(_amount);
         lockupInfo[_holder] = LockupInfo(_releaseStart, _amount.div(100).mul(_releaseRate), _amount);
 
@@ -244,7 +244,7 @@ contract PRASMToken is ERC20, Ownable, Pausable {
 
     function distribute(address _to, uint256 _value) public onlyOwner returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
 
         balances[owner] = balances[owner].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -264,7 +264,7 @@ contract PRASMToken is ERC20, Ownable, Pausable {
     }
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -275,11 +275,11 @@ contract PRASMToken is ERC20, Ownable, Pausable {
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly{size := extcodesize(addr)}
-        return size &gt; 0;
+        return size > 0;
     }
 
     function autoUnlock(address _holder) internal returns (bool) {
-        if (lockupInfo[_holder].releaseTime &lt;= now) {
+        if (lockupInfo[_holder].releaseTime <= now) {
             return releaseTimeLock(_holder);
         }
         return false;
@@ -289,7 +289,7 @@ contract PRASMToken is ERC20, Ownable, Pausable {
         require(locks[_holder]);
         uint256 releaseAmount = 0;
         // If lock status of holder is finished, delete lockup info. 
-        if (lockupInfo[_holder].lockupBalance &lt;= lockupInfo[_holder].unlockAmountPerMonth) {
+        if (lockupInfo[_holder].lockupBalance <= lockupInfo[_holder].unlockAmountPerMonth) {
             releaseAmount = lockupInfo[_holder].lockupBalance;
             delete lockupInfo[_holder];
             locks[_holder] = false;

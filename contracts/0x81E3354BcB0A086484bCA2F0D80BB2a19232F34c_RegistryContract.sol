@@ -7,7 +7,7 @@ contract RegistryContract {
        string info;
     }
     
-    mapping (uint =&gt; record) public records;
+    mapping (uint => record) public records;
    
     address owner;
    

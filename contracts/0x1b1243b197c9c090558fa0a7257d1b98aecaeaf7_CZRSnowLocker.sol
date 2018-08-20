@@ -33,7 +33,7 @@ contract CZRSnowLocker is owned {
         bool completed;
     }
     
-    mapping(address =&gt; LockRecord[]) public lockRecordMap;
+    mapping(address => LockRecord[]) public lockRecordMap;
     
     function CZRSnowLocker(address _tokenAddr) public {
         tokenAddr = _tokenAddr;
@@ -56,7 +56,7 @@ contract CZRSnowLocker is owned {
 
     function _lock(address addr, uint amount) internal {
         require(!isPaused);
-        require(amount &gt;= 100 ether);
+        require(amount >= 100 ether);
 
         token t = token(tokenAddr);
         t.transferFrom(addr, owner, amount);
@@ -74,7 +74,7 @@ contract CZRSnowLocker is owned {
         require(addr == msg.sender);
         
         var lock = lockRecordMap[addr][index];
-        require(lock.amount &gt; 0 &amp;&amp; !lock.completed);
+        require(lock.amount > 0 && !lock.completed);
 
         var during = now - lock.time;
         var reward = _calcReward(during, lock.amount);

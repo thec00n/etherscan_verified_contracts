@@ -24,7 +24,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -99,7 +99,7 @@ contract ICO is admined {
     token public tokenReward; //Address of the valit token used as reward
     address public creator; //Address of the contract deployer
     string public campaignUrl; //Web site of the campaing
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -156,24 +156,24 @@ contract ICO is admined {
 
             tokenBought = msg.value.mul(price);
             tokenBought = tokenBought.mul(4); //4x
-            require(stageDistributed.add(tokenBought) &lt;= 200000000 * (10 ** 18));
+            require(stageDistributed.add(tokenBought) <= 200000000 * (10 ** 18));
 
         } else if (state == State.PreSale){
 
             tokenBought = msg.value.mul(price);
             tokenBought = tokenBought.mul(15); //1.5x
             tokenBought = tokenBought.div(10);
-            require(stageDistributed.add(tokenBought) &lt;= 500000000 * (10 ** 18));
+            require(stageDistributed.add(tokenBought) <= 500000000 * (10 ** 18));
 
         } else if (state == State.TokenSale){
 
             tokenBought = msg.value.mul(price); //1x
-            require(stageDistributed.add(tokenBought) &lt;= 500000000 * (10 ** 18));
+            require(stageDistributed.add(tokenBought) <= 500000000 * (10 ** 18));
 
         } else if (state == State.ITO){
 
             tokenBought = msg.value.mul(price); //1x
-            require(stageDistributed.add(tokenBought) &lt;= 800000000 * (10 ** 18));
+            require(stageDistributed.add(tokenBought) <= 800000000 * (10 ** 18));
 
         } 
 
@@ -194,28 +194,28 @@ contract ICO is admined {
         
         if(state!=State.Successful){ //if we are on ICO period and its not Successful
             
-            if(state == State.EarlyBird &amp;&amp; now &gt; startTime.add(38 days)){ //38 days - 25.12.2017 to 01.02.2018
+            if(state == State.EarlyBird && now > startTime.add(38 days)){ //38 days - 25.12.2017 to 01.02.2018
                 
                 StageDistributed(state,stageDistributed);
 
                 state = State.PreSale;
                 stageDistributed = 0;
             
-            } else if(state == State.PreSale &amp;&amp; now &gt; startTime.add(127 days)){ //89 days(+38) - 01.02.2018 to 01.05.2018
+            } else if(state == State.PreSale && now > startTime.add(127 days)){ //89 days(+38) - 01.02.2018 to 01.05.2018
                 
                 StageDistributed(state,stageDistributed);
 
                 state = State.TokenSale;
                 stageDistributed = 0;
 
-            } else if(state == State.TokenSale &amp;&amp; now &gt; startTime.add(219 days)){ //92 days(+127) - 01.05.2018 to 01.08.2018
+            } else if(state == State.TokenSale && now > startTime.add(219 days)){ //92 days(+127) - 01.05.2018 to 01.08.2018
             
                 StageDistributed(state,stageDistributed);
 
                 state = State.ITO;
                 stageDistributed = 0;
 
-            } else if(state == State.ITO &amp;&amp; now &gt; startTime.add(372 days)){ //153 days(+219) - 01.08.2018 to 01.01.2019
+            } else if(state == State.ITO && now > startTime.add(372 days)){ //153 days(+219) - 01.08.2018 to 01.01.2019
                 
                 StageDistributed(state,stageDistributed);
 

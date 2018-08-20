@@ -28,8 +28,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -100,7 +100,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         emit AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -111,7 +111,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -125,7 +125,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         emit OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -136,7 +136,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -205,9 +205,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -215,7 +215,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -224,7 +224,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -297,8 +297,8 @@ contract KyberIEOWrapper is Withdrawable {
 
     function contribute(ContributeData data) internal returns(bool) {
         uint weiCap = data.kyberIEO.getContributorRemainingCap(data.userId);
-        if (data.maxDestAmountWei &lt; weiCap) weiCap = data.maxDestAmountWei;
-        require(weiCap &gt; 0);
+        if (data.maxDestAmountWei < weiCap) weiCap = data.maxDestAmountWei;
+        require(weiCap > 0);
 
         uint initialTokenBalance = data.token.balanceOf(this);
 
@@ -312,7 +312,7 @@ contract KyberIEOWrapper is Withdrawable {
 
         require(amountWei == weiAfter.sub(weiBefore));
 
-        //emit event here where we still have valid &quot;change&quot; value
+        //emit event here where we still have valid "change" value
         emit ContributionByToken(
             msg.sender,
             data.userId,
@@ -321,7 +321,7 @@ contract KyberIEOWrapper is Withdrawable {
             amountWei,
             (data.token.balanceOf(this).sub(initialTokenBalance))); // solium-disable-line indentation
 
-        if (data.token.balanceOf(this) &gt; initialTokenBalance) {
+        if (data.token.balanceOf(this) > initialTokenBalance) {
             //if not all tokens were taken by network approve value is not zereod.
             // must zero it so next time will not revert.
             data.token.approve(address(data.network), 0);

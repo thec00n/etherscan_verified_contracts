@@ -8,14 +8,14 @@ contract Owned {
 
 contract StaffFunds is Owned {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     
     function StaffWallet() { Owner = msg.sender; }
     
     function() payable { }
     
     function deposit() payable { // For employee benefits
-        if( msg.value &gt;= 1 ether ) // prevent dust payments
+        if( msg.value >= 1 ether ) // prevent dust payments
             deposits[msg.sender] += msg.value;
         else return;
     }
@@ -23,7 +23,7 @@ contract StaffFunds is Owned {
     function withdraw(uint amount) onlyOwner {  // only BOD can initiate payments as requested
         uint depo = deposits[msg.sender];
         deposits[msg.sender] -= msg.value; // MAX: for security re entry attack dnr
-        if( amount &lt;= depo &amp;&amp; depo &gt; 0 )
+        if( amount <= depo && depo > 0 )
             msg.sender.send(amount);
     }
 //TODO

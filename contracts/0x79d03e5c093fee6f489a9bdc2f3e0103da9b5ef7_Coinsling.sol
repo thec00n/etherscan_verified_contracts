@@ -4,8 +4,8 @@ pragma solidity ^0.4.18;
 contract Token {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) public allowed;
 
     string public description;
     uint8 public decimals;
@@ -41,13 +41,13 @@ contract Token {
         balances[creator] = _totalSupply;
     }
 
-    // Don&#39;t let people randomly send ETH to contract
+    // Don't let people randomly send ETH to contract
     function() public payable {
         revert();
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -56,10 +56,10 @@ contract Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -87,7 +87,7 @@ contract Token {
 }
 
 // Sample constructor args
-// &quot;0x54686520746f6b656e20666f7220617765736f6d652070656f706c652e&quot;, &quot;0x68747470733a2f2f692e696d6775722e636f6d2f5a336871756c492e6a7067&quot;, &quot;0x417765736f6d6520546f6b656e&quot;, &quot;0x415745&quot;, &quot;0x52b7d2dcc80cd2e4000000&quot;
+// "0x54686520746f6b656e20666f7220617765736f6d652070656f706c652e", "0x68747470733a2f2f692e696d6775722e636f6d2f5a336871756c492e6a7067", "0x417765736f6d6520546f6b656e", "0x415745", "0x52b7d2dcc80cd2e4000000"
 
 contract Coinsling {
 

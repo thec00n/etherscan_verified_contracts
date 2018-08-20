@@ -92,7 +92,7 @@ contract ProvideWorkOrder {
 
   /**
    * Complete the transaction by remitting the exact amount of PRVD tokens due.
-   * The service provider&#39;s payment is escrowed in the payment escrow wallet
+   * The service provider's payment is escrowed in the payment escrow wallet
    * and the platform fee is remitted to Provide.
    *
    * Partial payments will be rejected.
@@ -175,30 +175,30 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assertTrue(bool val) internal {

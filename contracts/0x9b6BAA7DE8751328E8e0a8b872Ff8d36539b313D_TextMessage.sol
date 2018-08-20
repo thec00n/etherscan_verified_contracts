@@ -57,11 +57,11 @@ contract usingOraclize {
  
     function oraclize_setNetwork(uint8 networkID) internal returns(bool){
         networkID=networkID;
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
             return true;
         }
@@ -70,42 +70,42 @@ contract usingOraclize {
     
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_cbAddress() oraclizeAPI internal returns (address){
@@ -132,7 +132,7 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){ iaddr *= 256; b1 = uint160(tmp[i]); b2 = uint160(tmp[i+1]); if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87; else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48; if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87; else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+        for (uint i=2; i<2+2*20; i+=2){ iaddr *= 256; b1 = uint160(tmp[i]); b2 = uint160(tmp[i+1]); if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87; else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48; if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87; else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -143,11 +143,11 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i]) return -1; else if (a[i] &gt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i]) return -1; else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length) return -1; else if (a.length &gt; b.length)
+        if (a.length < b.length) return -1; else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -157,19 +157,19 @@ contract usingOraclize {
     {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) 
+        if(h.length < 1 || n.length < 1 || (n.length > h.length)) 
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;                                  
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }   
@@ -190,24 +190,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
  
     function strConcat(string _a, string _b, string _c) internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
  
     function strConcat(string _a, string _b) internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
  
     // parseInt
@@ -220,7 +220,7 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){ if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){ if (decimals){ if (_b == 0) break; else _b--; } mint *= 10; mint += uint(bresult[i]) - 48; } else if (bresult[i] == 46) decimals = true; } if (_b &gt; 0) mint *= 10**_b;
+        for (uint i=0; i<bresult.length; i++){ if ((bresult[i] >= 48)&&(bresult[i] <= 57)){ if (decimals){ if (_b == 0) break; else _b--; } mint *= 10; mint += uint(bresult[i]) - 48; } else if (bresult[i] == 46) decimals = true; } if (_b > 0) mint *= 10**_b;
         return mint;
     }
     
@@ -272,12 +272,12 @@ contract TextMessage is usingOraclize, owned {
     
     function pauseContract() onlyOwner {
         enabled = false;
-        updateEnabled(&quot;Texting has been disabled&quot;);
+        updateEnabled("Texting has been disabled");
     }
     
     function enableContract() onlyOwner {
         enabled = true;
-        updateEnabled(&quot;Texting has been enabled&quot;);
+        updateEnabled("Texting has been enabled");
     }
     
     function changeApiUrl(string newUrl) onlyOwner {
@@ -294,14 +294,14 @@ contract TextMessage is usingOraclize, owned {
     
     function sendText(string phoneNumber, string textBody) public payable {
         if(!enabled) throw;
-        if(msg.value &lt; cost) throw;
-        if (oraclize.getPrice(&quot;URL&quot;) &gt; this.balance) throw;
+        if(msg.value < cost) throw;
+        if (oraclize.getPrice("URL") > this.balance) throw;
         sendMsg(phoneNumber, textBody);
     }
     
     function sendMsg(string num, string body) internal {
-        submitData = strConcat(&#39;{&quot;to&quot;:&quot;&#39;, num, &#39;&quot;,&quot;msg&quot;:&quot;&#39;, body, &#39;&quot;}&#39;);
-        oraclize_query(&quot;URL&quot;, apiURL, submitData);
+        submitData = strConcat('{"to":"', num, '","msg":"', body, '"}');
+        oraclize_query("URL", apiURL, submitData);
     }
     
 }

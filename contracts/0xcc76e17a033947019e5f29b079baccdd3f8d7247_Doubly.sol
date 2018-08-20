@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 // TURN 0.2 ETH INTO 0.4 ETH
 
 // This is a minimalistic program aiming
-// at very fast, secure &amp; unlimited 
+// at very fast, secure & unlimited 
 // payouts of 0.4 ETH with
 // a neglibile fees of 0.01 ETH
 
@@ -59,9 +59,9 @@ contract Doubly {
     function enter() payable returns(string){
 
         // Return non-eligible funds
-        if(msg.value &lt; 0.2 ether){
+        if(msg.value < 0.2 ether){
             msg.sender.transfer(msg.value);
-            return &quot;Low value!&quot;;
+            return "Low value!";
         }
         
         // Add participant to the payout queue
@@ -78,7 +78,7 @@ contract Doubly {
         fees += 0.01 ether;
         delete participants[payoutIndex];
         payoutIndex = payoutIndex + 1;
-        return &quot;Successfully joined the queue!&quot;;
+        return "Successfully joined the queue!";
 
     }
 }

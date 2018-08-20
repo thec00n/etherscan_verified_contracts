@@ -67,12 +67,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -82,7 +82,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * @dev and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -93,7 +93,7 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      &quot;\x19Ethereum Signed Message:\n32&quot;,
+      "\x19Ethereum Signed Message:\n32",
       hash
     );
   }
@@ -104,7 +104,7 @@ library ECRecovery {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -170,7 +170,7 @@ contract Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -183,7 +183,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -225,13 +225,13 @@ library Roles {
  * @dev See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -308,7 +308,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -343,7 +343,7 @@ contract RBAC {
 contract SignatureBouncer is Ownable, RBAC {
   using ECRecovery for bytes32;
 
-  string public constant ROLE_BOUNCER = &quot;bouncer&quot;;
+  string public constant ROLE_BOUNCER = "bouncer";
 
   /**
    * @dev requires that a valid signature of a bouncer was provided
@@ -420,7 +420,7 @@ contract GrapevineWhitelist is SignatureBouncer, GrapevineWhitelistInterface {
   event WhitelistedAddressRemoved(address addr);
   event UselessEvent(address addr, bytes sign, bool ret);
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   address crowdsale;
 
@@ -456,7 +456,7 @@ contract GrapevineWhitelist is SignatureBouncer, GrapevineWhitelistInterface {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addAddressesToWhitelist(address[] _beneficiaries) external onlyOwnerOrCrowdsale {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       addAddressToWhitelist(_beneficiaries[i]);
     }
   }

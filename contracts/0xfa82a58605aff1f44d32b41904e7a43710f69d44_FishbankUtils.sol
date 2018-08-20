@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -109,7 +109,7 @@ contract FishbankUtils is Ownable {
                 if(fishParams[2] == 75) {
                     fishParams[2]++;
                 }
-            } else if (seeds[4] &lt; 4) {//Blue whale
+            } else if (seeds[4] < 4) {//Blue whale
                 fishParams = [130 + uint8(seeds[1] / 42), 130 + uint8(seeds[2] / 42), 75 + uint8(seeds[3] / 6), uint32(500000)];
                 if(fishParams[0] == 130) {
                     fishParams[0]++;
@@ -141,7 +141,7 @@ contract FishbankUtils is Ownable {
                 if(fishParams[1] == 85) {
                     fishParams[1]++;
                 }
-            } else if (seeds[5] &gt; 4899) {//Epic
+            } else if (seeds[5] > 4899) {//Epic
                 fishParams = [50 + uint8(seeds[1] / 12), 50 + uint8(seeds[2] / 12), uint8(25 + seeds[3] / 2), uint32(300)];
                 if(fishParams[0] == 50) {
                     fishParams[0]++;
@@ -150,7 +150,7 @@ contract FishbankUtils is Ownable {
                     fishParams[1]++;
                 }
 
-            } else if (seeds[5] &gt; 4000) {//Rare
+            } else if (seeds[5] > 4000) {//Rare
                 fishParams = [20 + uint8(seeds[1] / 14), 20 + uint8(seeds[2] / 14), uint8(25 + seeds[3] / 3), uint32(100)];
                 if(fishParams[0] == 20) {
                     fishParams[0]++;
@@ -181,6 +181,6 @@ contract FishbankUtils is Ownable {
 
     //Ceiling function for fish generator
     function ceil(uint base, uint divider) internal pure returns (uint) {
-        return base / divider + ((base % divider &gt; 0) ? 1 : 0);
+        return base / divider + ((base % divider > 0) ? 1 : 0);
     }
 }

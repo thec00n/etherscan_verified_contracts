@@ -52,9 +52,9 @@ function getSplit(uint finishAmount, uint startBalance, uint targetBalance, uint
 }
  function setFinished(uint dealId, uint finishAmount) public  onlyBe inState(dealId, state.verified) {
      require(deals[dealId].amount != 0);
-     if(finishAmount &lt;= deals[dealId].startBalance){
+     if(finishAmount <= deals[dealId].startBalance){
        deals[dealId].investorAddress.transfer(deals[dealId].amount);
-     }else if(finishAmount&gt;deals[dealId].targetBalance){
+     }else if(finishAmount>deals[dealId].targetBalance){
        deals[dealId].traderAddress.transfer(deals[dealId].amount);
      }
      else{
@@ -73,7 +73,7 @@ function () external payable  {
 }
     function makeDeal(uint _duration, uint _maxLoss, uint _startBalance, uint _targetBalance, uint _amount,  string _investor, address _investorAddress, string _trader, address _traderAddress, uint offer, uint _currency)
     payable public {
-      require( _currency &gt;= 0 &amp;&amp;  _currency &lt; 3  );
+      require( _currency >= 0 &&  _currency < 3  );
       require(msg.value == _amount);
         deals.push(Deal({
             currentState: state.paid,

@@ -157,17 +157,17 @@ library SafeMathInt256 {
     }
 
     function sub(int256 a, int256 b) internal pure returns (int256) {
-        require(((a &gt;= 0) &amp;&amp; (b &gt;= a - INT256_MAX)) || ((a &lt; 0) &amp;&amp; (b &lt;= a - INT256_MIN)));
+        require(((a >= 0) && (b >= a - INT256_MAX)) || ((a < 0) && (b <= a - INT256_MIN)));
         return a - b;
     }
 
     function add(int256 a, int256 b) internal pure returns (int256) {
-        require(((a &gt;= 0) &amp;&amp; (b &lt;= INT256_MAX - a)) || ((a &lt; 0) &amp;&amp; (b &gt;= INT256_MIN - a)));
+        require(((a >= 0) && (b <= INT256_MAX - a)) || ((a < 0) && (b >= INT256_MIN - a)));
         return a + b;
     }
 
     function min(int256 a, int256 b) internal pure returns (int256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -175,7 +175,7 @@ library SafeMathInt256 {
     }
 
     function max(int256 a, int256 b) internal pure returns (int256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -208,25 +208,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -234,7 +234,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -512,10 +512,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -536,7 +536,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -580,7 +580,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -588,17 +588,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -616,14 +616,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -638,13 +638,13 @@ contract Orders is DelegationTarget, IOrders {
 
     struct MarketOrders {
         uint256 totalEscrowed;
-        mapping(uint256 =&gt; uint256) prices;
+        mapping(uint256 => uint256) prices;
     }
 
-    mapping(bytes32 =&gt; Order.Data) private orders;
-    mapping(address =&gt; MarketOrders) private marketOrderData;
-    mapping(bytes32 =&gt; bytes32) private bestOrder;
-    mapping(bytes32 =&gt; bytes32) private worstOrder;
+    mapping(bytes32 => Order.Data) private orders;
+    mapping(address => MarketOrders) private marketOrderData;
+    mapping(bytes32 => bytes32) private bestOrder;
+    mapping(bytes32 => bytes32) private worstOrder;
 
     // Getters
     function getMarket(bytes32 _orderId) public view returns (IMarket) {
@@ -709,17 +709,17 @@ contract Orders is DelegationTarget, IOrders {
 
     function isBetterPrice(Order.Types _type, uint256 _price, bytes32 _orderId) public view returns (bool) {
         if (_type == Order.Types.Bid) {
-            return (_price &gt; orders[_orderId].price);
+            return (_price > orders[_orderId].price);
         } else if (_type == Order.Types.Ask) {
-            return (_price &lt; orders[_orderId].price);
+            return (_price < orders[_orderId].price);
         }
     }
 
     function isWorsePrice(Order.Types _type, uint256 _price, bytes32 _orderId) public view returns (bool) {
         if (_type == Order.Types.Bid) {
-            return (_price &lt; orders[_orderId].price);
+            return (_price < orders[_orderId].price);
         } else {
-            return (_price &gt; orders[_orderId].price);
+            return (_price > orders[_orderId].price);
         }
     }
 
@@ -736,7 +736,7 @@ contract Orders is DelegationTarget, IOrders {
     function insertOrderIntoList(Order.Data storage _order, bytes32 _betterOrderId, bytes32 _worseOrderId) private returns (bool) {
         bytes32 _bestOrderId = bestOrder[getBestOrderWorstOrderHash(_order.market, _order.outcome, _order.orderType)];
         bytes32 _worstOrderId = worstOrder[getBestOrderWorstOrderHash(_order.market, _order.outcome, _order.orderType)];
-        IOrdersFetcher _ordersFetcher = IOrdersFetcher(controller.lookup(&quot;OrdersFetcher&quot;));
+        IOrdersFetcher _ordersFetcher = IOrdersFetcher(controller.lookup("OrdersFetcher"));
         (_betterOrderId, _worseOrderId) = _ordersFetcher.findBoundingOrders(_order.orderType, _order.price, _bestOrderId, _worstOrderId, _betterOrderId, _worseOrderId);
         if (_order.orderType == Order.Types.Bid) {
             _bestOrderId = updateBestBidOrder(_order.id, _order.market, _order.price, _order.outcome);
@@ -763,7 +763,7 @@ contract Orders is DelegationTarget, IOrders {
     }
 
     function saveOrder(Order.Types _type, IMarket _market, uint256 _amount, uint256 _price, address _sender, uint256 _outcome, uint256 _moneyEscrowed, uint256 _sharesEscrowed, bytes32 _betterOrderId, bytes32 _worseOrderId, bytes32 _tradeGroupId) public onlyWhitelistedCallers returns (bytes32 _orderId) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
+        require(_outcome < _market.getNumberOfOutcomes());
         _orderId = getOrderId(_type, _market, _amount, _price, _sender, block.number, _outcome, _moneyEscrowed, _sharesEscrowed);
         Order.Data storage _order = orders[_orderId];
         _order.orders = this;
@@ -790,11 +790,11 @@ contract Orders is DelegationTarget, IOrders {
 
     function recordFillOrder(bytes32 _orderId, uint256 _sharesFilled, uint256 _tokensFilled) public onlyWhitelistedCallers returns (bool) {
         Order.Data storage _order = orders[_orderId];
-        require(_order.outcome &lt; _order.market.getNumberOfOutcomes());
+        require(_order.outcome < _order.market.getNumberOfOutcomes());
         require(_orderId != bytes32(0));
-        require(_sharesFilled &lt;= _order.sharesEscrowed);
-        require(_tokensFilled &lt;= _order.moneyEscrowed);
-        require(_order.price &lt;= _order.market.getNumTicks());
+        require(_sharesFilled <= _order.sharesEscrowed);
+        require(_tokensFilled <= _order.moneyEscrowed);
+        require(_order.price <= _order.market.getNumTicks());
         uint256 _fill = 0;
         if (_order.orderType == Order.Types.Bid) {
             _fill = _sharesFilled.add(_tokensFilled.div(_order.price));
@@ -802,7 +802,7 @@ contract Orders is DelegationTarget, IOrders {
             uint256 _fillPrice = _order.market.getNumTicks().sub(_order.price);
             _fill = _sharesFilled.add(_tokensFilled.div(_fillPrice));
         }
-        require(_fill &lt;= _order.amount);
+        require(_fill <= _order.amount);
         _order.amount -= _fill;
         _order.moneyEscrowed -= _tokensFilled;
         _order.orders.decrementTotalEscrowed(_order.market, _tokensFilled);
@@ -862,7 +862,7 @@ contract Orders is DelegationTarget, IOrders {
      */
     function updateBestBidOrder(bytes32 _orderId, IMarket _market, uint256 _price, uint256 _outcome) private returns (bytes32) {
         bytes32 _bestBidOrderId = bestOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Bid)];
-        if (_bestBidOrderId == bytes32(0) || _price &gt; orders[_bestBidOrderId].price) {
+        if (_bestBidOrderId == bytes32(0) || _price > orders[_bestBidOrderId].price) {
             bestOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Bid)] = _orderId;
         }
         return bestOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Bid)];
@@ -873,7 +873,7 @@ contract Orders is DelegationTarget, IOrders {
      */
     function updateWorstBidOrder(bytes32 _orderId, IMarket _market, uint256 _price, uint256 _outcome) private returns (bytes32) {
         bytes32 _worstBidOrderId = worstOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Bid)];
-        if (_worstBidOrderId == bytes32(0) || _price &lt; orders[_worstBidOrderId].price) {
+        if (_worstBidOrderId == bytes32(0) || _price < orders[_worstBidOrderId].price) {
             worstOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Bid)] = _orderId;
         }
         return worstOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Bid)];
@@ -884,7 +884,7 @@ contract Orders is DelegationTarget, IOrders {
      */
     function updateBestAskOrder(bytes32 _orderId, IMarket _market, uint256 _price, uint256 _outcome) private returns (bytes32) {
         bytes32 _bestAskOrderId = bestOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Ask)];
-        if (_bestAskOrderId == bytes32(0) || _price &lt; orders[_bestAskOrderId].price) {
+        if (_bestAskOrderId == bytes32(0) || _price < orders[_bestAskOrderId].price) {
             bestOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Ask)] = _orderId;
         }
         return bestOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Ask)];
@@ -895,7 +895,7 @@ contract Orders is DelegationTarget, IOrders {
      */
     function updateWorstAskOrder(bytes32 _orderId, IMarket _market, uint256 _price, uint256 _outcome) private returns (bytes32) {
         bytes32 _worstAskOrderId = worstOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Ask)];
-        if (_worstAskOrderId == bytes32(0) || _price &gt; orders[_worstAskOrderId].price) {
+        if (_worstAskOrderId == bytes32(0) || _price > orders[_worstAskOrderId].price) {
             worstOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Ask)] = _orderId;
         }
         return worstOrder[getBestOrderWorstOrderHash(_market, _outcome, Order.Types.Ask)];

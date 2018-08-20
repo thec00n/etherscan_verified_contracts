@@ -7,8 +7,8 @@ contract Token {
     uint256 public totalSupply;
     uint8 public decimals;
     bool public allowTransactions;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     function transfer(address _to, uint256 _value) returns (bool success);
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success);
     function approve(address _spender, uint256 _value) returns (bool success);
@@ -53,22 +53,22 @@ contract Math is Assertive {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
 
 contract Exchange is Math, Owned {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) public tokens;
+  mapping (address => mapping (address => uint256)) public tokens;
 
-  mapping (bytes32 =&gt; uint256) public orderFills;
+  mapping (bytes32 => uint256) public orderFills;
   address public feeAccount;
   address public dvipAddress;
   address public feeMakeExporter;
@@ -110,7 +110,7 @@ contract Exchange is Math, Owned {
   }
 
   function withdraw(address token, uint256 amount) {
-    if (tokens[token][msg.sender] &lt; amount) throw;
+    if (tokens[token][msg.sender] < amount) throw;
     tokens[token][msg.sender] = safeSub(tokens[token][msg.sender], amount);
     if (token == address(0)) {
       if (!msg.sender.send(amount)) throw;
@@ -133,11 +133,11 @@ contract Exchange is Math, Owned {
     //amount is in amountBuy terms
     tradeHash = sha3(this, tokenBuy, amountBuy, tokenSell, amountSell, expires, nonce, user);
     if (!(
-      ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, tradeHash),v,r,s) == user &amp;&amp;
-      block.number &lt;= expires &amp;&amp;
-      safeAdd(orderFills[tradeHash], amount) &lt;= amountBuy &amp;&amp;
-      tokens[tokenBuy][msg.sender] &gt;= amount &amp;&amp;
-      tokens[tokenSell][user] &gt;= safeMul(amountSell, amount) / amountBuy
+      ecrecover(sha3("\x19Ethereum Signed Message:\n32", tradeHash),v,r,s) == user &&
+      block.number <= expires &&
+      safeAdd(orderFills[tradeHash], amount) <= amountBuy &&
+      tokens[tokenBuy][msg.sender] >= amount &&
+      tokens[tokenSell][user] >= safeMul(amountSell, amount) / amountBuy
     )) throw;
     feeMake = DVIP(dvipAddress).feeFor(feeMakeExporter, msg.sender, 1 ether);
     feeTake = DVIP(dvipAddress).feeFor(feeTakeExporter, user, 1 ether);
@@ -161,17 +161,17 @@ contract Exchange is Math, Owned {
 
   function testTrade(address tokenBuy, uint256 amountBuy, address tokenSell, uint256 amountSell, uint256 expires, uint256 nonce, address user, uint8 v, bytes32 r, bytes32 s, uint256 amount, address sender) constant returns (uint8 code) {
     testHash = sha3(this, tokenBuy, amountBuy, tokenSell, amountSell, expires, nonce, user);
-    if (tokens[tokenBuy][sender] &lt; amount) return 1;
-    if (ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, testHash), v, r, s) != user) return 4;
+    if (tokens[tokenBuy][sender] < amount) return 1;
+    if (ecrecover(sha3("\x19Ethereum Signed Message:\n32", testHash), v, r, s) != user) return 4;
     amountSelln = safeMul(amountSell, amount) / amountBuy;
-    if (tokens[tokenSell][user] &lt; amountSelln) return 5;
-    if (block.number &gt; expires) return 6;
-    if (safeAdd(orderFills[testHash], amount) &gt; amountBuy) return 7;
+    if (tokens[tokenSell][user] < amountSelln) return 5;
+    if (block.number > expires) return 6;
+    if (safeAdd(orderFills[testHash], amount) > amountBuy) return 7;
     return 0;
   }
   function cancelOrder(address tokenBuy, uint256 amountBuy, address tokenSell, uint256 amountSell, uint256 expires, uint256 nonce, uint8 v, bytes32 r, bytes32 s, address user) {
     bytes32 hash = sha3(this, tokenBuy, amountBuy, tokenSell, amountSell, expires, nonce, user);
-    if (ecrecover(sha3(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),v,r,s) != msg.sender) throw;
+    if (ecrecover(sha3("\x19Ethereum Signed Message:\n32", hash),v,r,s) != msg.sender) throw;
     orderFills[hash] = amountBuy;
     Cancel(tokenBuy, amountBuy, tokenSell, amountSell, expires, nonce, msg.sender, v, r, s);
   }

@@ -13,7 +13,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -101,17 +101,17 @@ library DateTime {
                 secondsAccountedFor += YEAR_IN_SECONDS * (dt.year - ORIGIN_YEAR - buf);
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
                         secondsAccountedFor += secondsInMonth;
                 }
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -135,7 +135,7 @@ library DateTime {
                 numLeapYears = leapYearsBefore(year) - leapYearsBefore(ORIGIN_YEAR);
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -167,7 +167,7 @@ library DateTime {
         function toTimestamp(uint16 year, uint8 month, uint8 day, uint8 hour, uint8 minute, uint8 second) constant returns (uint timestamp) {
                 uint16 i;
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -194,7 +194,7 @@ library DateTime {
                 monthDayCounts[9] = 31;
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
                 // Day
@@ -262,18 +262,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -283,7 +283,7 @@ library SafeMath {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -322,7 +322,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -332,7 +332,7 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -366,7 +366,7 @@ contract StandardToken is ERC20, BasicToken {
 }
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="b8caddd5dbd7f88a">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="b8caddd5dbd7f88a">[email protected]</span>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -401,10 +401,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -419,16 +419,16 @@ contract FrozenableToken is Operational, BurnableToken, ReentrancyGuard {
         uint256 value;
         uint256 unFrozenTime;
     }
-    mapping (uint =&gt; FrozenBalance) public frozenBalances;
+    mapping (uint => FrozenBalance) public frozenBalances;
     uint public frozenBalanceCount;
     event Freeze(address indexed owner, uint256 value, uint256 releaseTime);
     event FreezeForOwner(address indexed owner, uint256 value, uint256 releaseTime);
     event Unfreeze(address indexed owner, uint256 value, uint256 releaseTime);
     // freeze _value token to _unFrozenTime
     function freeze(uint256 _value, uint256 _unFrozenTime) nonReentrant returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
-        require(_unFrozenTime &gt; createTime);
-        require(_unFrozenTime &gt; now);
+        require(balances[msg.sender] >= _value);
+        require(_unFrozenTime > createTime);
+        require(_unFrozenTime > now);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         frozenBalances[frozenBalanceCount] = FrozenBalance({owner: msg.sender, value: _value, unFrozenTime: _unFrozenTime});
         frozenBalanceCount++;
@@ -436,9 +436,9 @@ contract FrozenableToken is Operational, BurnableToken, ReentrancyGuard {
         return true;
     }
     function freezeForOwner(uint256 _value, uint256 _unFrozenTime) onlyOperator returns(bool) {
-        require(balances[owner] &gt;= _value);
-        require(_unFrozenTime &gt; createTime);
-        require(_unFrozenTime &gt; now);
+        require(balances[owner] >= _value);
+        require(_unFrozenTime > createTime);
+        require(_unFrozenTime > now);
         balances[owner] = balances[owner].sub(_value);
         frozenBalances[frozenBalanceCount] = FrozenBalance({owner: owner, value: _value, unFrozenTime: _unFrozenTime});
         frozenBalanceCount++;
@@ -447,7 +447,7 @@ contract FrozenableToken is Operational, BurnableToken, ReentrancyGuard {
     }
     // get frozen balance
     function frozenBalanceOf(address _owner) constant returns (uint256 value) {
-        for (uint i = 0; i &lt; frozenBalanceCount; i++) {
+        for (uint i = 0; i < frozenBalanceCount; i++) {
             FrozenBalance storage frozenBalance = frozenBalances[i];
             if (_owner == frozenBalance.owner) {
                 value = value.add(frozenBalance.value);
@@ -458,8 +458,8 @@ contract FrozenableToken is Operational, BurnableToken, ReentrancyGuard {
     // unfreeze frozen amount
     function unfreeze() returns (uint256 releaseAmount) {
         uint index = 0;
-        while (index &lt; frozenBalanceCount) {
-            if (now &gt;= frozenBalances[index].unFrozenTime) {
+        while (index < frozenBalanceCount) {
+            if (now >= frozenBalances[index].unFrozenTime) {
                 releaseAmount += frozenBalances[index].value;
                 unFrozenBalanceByIndex(index);
             } else {
@@ -487,7 +487,7 @@ contract DragonReleaseableToken is FrozenableToken {
         uint256 amount; // release amount
         uint256 releasedTime; // release time
     }
-    mapping (uint =&gt; ReleaseRecord) public releasedRecords;
+    mapping (uint => ReleaseRecord) public releasedRecords;
     uint public releasedRecordsCount = 0;
     function DragonReleaseableToken(
                     address operator
@@ -495,7 +495,7 @@ contract DragonReleaseableToken is FrozenableToken {
         createTime = 1509580800;
     }
     function releaseSupply(uint256 timestamp) onlyOperator returns(uint256 _actualRelease) {
-        require(timestamp &gt;= createTime &amp;&amp; timestamp &lt;= now);
+        require(timestamp >= createTime && timestamp <= now);
         require(!judgeReleaseRecordExist(timestamp));
         updateAward(timestamp);
         balances[owner] = balances[owner].add(award);
@@ -507,11 +507,11 @@ contract DragonReleaseableToken is FrozenableToken {
     }
     function judgeReleaseRecordExist(uint256 timestamp) internal returns(bool _exist) {
         bool exist = false;
-        if (releasedRecordsCount &gt; 0) {
-            for (uint index = 0; index &lt; releasedRecordsCount; index++) {
+        if (releasedRecordsCount > 0) {
+            for (uint index = 0; index < releasedRecordsCount; index++) {
                 if ((releasedRecords[index].releasedTime.parseTimestamp().year == timestamp.parseTimestamp().year)
-                    &amp;&amp; (releasedRecords[index].releasedTime.parseTimestamp().month == timestamp.parseTimestamp().month)
-                    &amp;&amp; (releasedRecords[index].releasedTime.parseTimestamp().day == timestamp.parseTimestamp().day)) {
+                    && (releasedRecords[index].releasedTime.parseTimestamp().month == timestamp.parseTimestamp().month)
+                    && (releasedRecords[index].releasedTime.parseTimestamp().day == timestamp.parseTimestamp().day)) {
                     exist = true;
                 }
             }
@@ -519,25 +519,25 @@ contract DragonReleaseableToken is FrozenableToken {
         return exist;
     }
     function updateAward(uint256 timestamp) internal {
-        if (timestamp &lt; createTime.add(1 years)) {
+        if (timestamp < createTime.add(1 years)) {
             award = standardDecimals.mul(51200);
-        } else if (timestamp &lt; createTime.add(2 years)) {
+        } else if (timestamp < createTime.add(2 years)) {
             award = standardDecimals.mul(25600);
-        } else if (timestamp &lt; createTime.add(3 years)) {
+        } else if (timestamp < createTime.add(3 years)) {
             award = standardDecimals.mul(12800);
-        } else if (timestamp &lt; createTime.add(4 years)) {
+        } else if (timestamp < createTime.add(4 years)) {
             award = standardDecimals.mul(6400);
-        } else if (timestamp &lt; createTime.add(5 years)) {
+        } else if (timestamp < createTime.add(5 years)) {
             award = standardDecimals.mul(3200);
-        } else if (timestamp &lt; createTime.add(6 years)) {
+        } else if (timestamp < createTime.add(6 years)) {
             award = standardDecimals.mul(1600);
-        } else if (timestamp &lt; createTime.add(7 years)) {
+        } else if (timestamp < createTime.add(7 years)) {
             award = standardDecimals.mul(800);
-        } else if (timestamp &lt; createTime.add(8 years)) {
+        } else if (timestamp < createTime.add(8 years)) {
             award = standardDecimals.mul(400);
-        } else if (timestamp &lt; createTime.add(9 years)) {
+        } else if (timestamp < createTime.add(9 years)) {
             award = standardDecimals.mul(200);
-        } else if (timestamp &lt; createTime.add(10 years)) {
+        } else if (timestamp < createTime.add(10 years)) {
             award = standardDecimals.mul(100);
         } else {
             award = 0;
@@ -545,9 +545,9 @@ contract DragonReleaseableToken is FrozenableToken {
     }
 }
 contract DragonToken is DragonReleaseableToken {
-    string public standard = &#39;2017111504&#39;;
-    string public name = &#39;DragonToken&#39;;
-    string public symbol = &#39;DT&#39;;
+    string public standard = '2017111504';
+    string public name = 'DragonToken';
+    string public symbol = 'DT';
     uint8 public decimals = 8;
     function DragonToken(
                      address operator

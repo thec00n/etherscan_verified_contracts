@@ -97,37 +97,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -146,7 +146,7 @@ library SafeMath {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title DynamicCeiling Contract
@@ -202,7 +202,7 @@ contract DynamicCeiling is Owned {
         require(curves.length == 0);
 
         curves.length = _curveHashes.length;
-        for (uint256 i = 0; i &lt; _curveHashes.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _curveHashes.length; i = i.add(1)) {
             curves[i].hash = _curveHashes[i];
         }
     }
@@ -211,7 +211,7 @@ contract DynamicCeiling is Owned {
     /// @notice Anybody can reveal the next curve if he knows it.
     /// @param _limit Ceiling cap.
     ///  (must be greater or equal to the previous one).
-    /// @param _last `true` if it&#39;s the last curve.
+    /// @param _last `true` if it's the last curve.
     /// @param _salt Random number used to commit the curve
     function revealCurve(uint256 _limit, uint256 _slopeFactor, uint256 _collectMinimum,
                          bool _last, bytes32 _salt) public {
@@ -220,9 +220,9 @@ contract DynamicCeiling is Owned {
         require(curves[revealedCurves].hash == calculateHash(_limit, _slopeFactor, _collectMinimum,
                                                              _last, _salt));
 
-        require(_limit != 0 &amp;&amp; _slopeFactor != 0 &amp;&amp; _collectMinimum != 0);
-        if (revealedCurves &gt; 0) {
-            require(_limit &gt;= curves[revealedCurves.sub(1)].limit);
+        require(_limit != 0 && _slopeFactor != 0 && _collectMinimum != 0);
+        if (revealedCurves > 0) {
+            require(_limit >= curves[revealedCurves.sub(1)].limit);
         }
 
         curves[revealedCurves].limit = _limit;
@@ -237,13 +237,13 @@ contract DynamicCeiling is Owned {
     function revealMulti(uint256[] _limits, uint256[] _slopeFactors, uint256[] _collectMinimums,
                          bool[] _lasts, bytes32[] _salts) public {
         // Do not allow none and needs to be same length for all parameters
-        require(_limits.length != 0 &amp;&amp;
-                _limits.length == _slopeFactors.length &amp;&amp;
-                _limits.length == _collectMinimums.length &amp;&amp;
-                _limits.length == _lasts.length &amp;&amp;
+        require(_limits.length != 0 &&
+                _limits.length == _slopeFactors.length &&
+                _limits.length == _collectMinimums.length &&
+                _limits.length == _lasts.length &&
                 _limits.length == _salts.length);
 
-        for (uint256 i = 0; i &lt; _limits.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _limits.length; i = i.add(1)) {
             revealCurve(_limits[i], _slopeFactors[i], _collectMinimums[i],
                         _lasts[i], _salts[i]);
         }
@@ -251,7 +251,7 @@ contract DynamicCeiling is Owned {
 
     /// @notice Move to curve, used as a failsafe
     function moveTo(uint256 _index) public onlyOwner {
-        require(_index &lt; revealedCurves &amp;&amp;       // No more curves
+        require(_index < revealedCurves &&       // No more curves
                 _index == currentIndex.add(1));  // Only move one index at a time
         currentIndex = _index;
     }
@@ -262,11 +262,11 @@ contract DynamicCeiling is Owned {
         if (revealedCurves == 0) return 0;
 
         // Move to the next curve
-        if (collected &gt;= curves[currentIndex].limit) {  // Catches `limit == 0`
+        if (collected >= curves[currentIndex].limit) {  // Catches `limit == 0`
             uint256 nextIndex = currentIndex.add(1);
-            if (nextIndex &gt;= revealedCurves) return 0;  // No more curves
+            if (nextIndex >= revealedCurves) return 0;  // No more curves
             currentIndex = nextIndex;
-            if (collected &gt;= curves[currentIndex].limit) return 0;  // Catches `limit == 0`
+            if (collected >= curves[currentIndex].limit) return 0;  // Catches `limit == 0`
         }
 
         // Everything left to collect from this limit
@@ -276,8 +276,8 @@ contract DynamicCeiling is Owned {
         uint256 collect = difference.div(curves[currentIndex].slopeFactor);
 
         // Prevents paying too much fees vs to be collected; breaks long tail
-        if (collect &lt;= curves[currentIndex].collectMinimum) {
-            if (difference &gt; curves[currentIndex].collectMinimum) {
+        if (collect <= curves[currentIndex].collectMinimum) {
+            if (difference > curves[currentIndex].collectMinimum) {
                 return curves[currentIndex].collectMinimum;
             } else {
                 return difference;
@@ -289,7 +289,7 @@ contract DynamicCeiling is Owned {
 
     /// @notice Calculates the hash of a curve.
     /// @param _limit Ceiling cap.
-    /// @param _last `true` if it&#39;s the last curve.
+    /// @param _last `true` if it's the last curve.
     /// @param _salt Random number that will be needed to reveal this curve.
     /// @return The calculated hash of this curve to be used in the `setHiddenCurves` method
     function calculateHash(uint256 _limit, uint256 _slopeFactor, uint256 _collectMinimum,
@@ -321,13 +321,13 @@ contract DynamicCeiling is Owned {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -380,13 +380,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -415,10 +415,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -496,7 +496,7 @@ contract MiniMeToken is Controlled {
             if (!transfersEnabled) throw;
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -515,7 +515,7 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           if (parentSnapShotBlock &gt;= getBlockNumber()) throw;
+           if (parentSnapShotBlock >= getBlockNumber()) throw;
 
            // Do not allow transfer to 0x0 or the token contract itself
            if ((_to == 0) || (_to == address(this))) throw;
@@ -523,7 +523,7 @@ contract MiniMeToken is Controlled {
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, getBlockNumber());
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -540,7 +540,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, getBlockNumber());
-           if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+           if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -549,7 +549,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, getBlockNumber());
@@ -568,7 +568,7 @@ contract MiniMeToken is Controlled {
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_amount!=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)) throw;
+        if ((_amount!=0) && (allowed[msg.sender][_spender] !=0)) throw;
 
         // Alerts the token controller of the approve function call
         if (isContract(controller)) {
@@ -636,7 +636,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -661,7 +661,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -723,10 +723,10 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, getBlockNumber());
-        if (curTotalSupply + _amount &lt; curTotalSupply) throw; // Check for overflow
+        if (curTotalSupply + _amount < curTotalSupply) throw; // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         var previousBalanceTo = balanceOf(_owner);
-        if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+        if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
         return true;
@@ -740,10 +740,10 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, getBlockNumber());
-        if (curTotalSupply &lt; _amount) throw;
+        if (curTotalSupply < _amount) throw;
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         var previousBalanceFrom = balanceOf(_owner);
-        if (previousBalanceFrom &lt; _amount) throw;
+        if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
         return true;
@@ -773,16 +773,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -798,7 +798,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; getBlockNumber())) {
+        || (checkpoints[checkpoints.length -1].fromBlock < getBlockNumber())) {
                Checkpoint newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(getBlockNumber());
                newCheckPoint.value = uint128(_value);
@@ -817,15 +817,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -927,7 +927,7 @@ contract MiniMeTokenFactory {
 
 
 /*
-    Copyright 2017, Jarrad Hope (Status Research &amp; Development GmbH)
+    Copyright 2017, Jarrad Hope (Status Research & Development GmbH)
 */
 
 
@@ -938,9 +938,9 @@ contract SNT is MiniMeToken {
                 _tokenFactory,
                 0x0,                     // no parent token
                 0,                       // no snapshot block number from parent
-                &quot;Status Network Token&quot;,  // Token name
+                "Status Network Token",  // Token name
                 18,                      // Decimals
-                &quot;SNT&quot;,                   // Symbol
+                "SNT",                   // Symbol
                 true                     // Enable transfers
             ) {}
 }
@@ -960,7 +960,7 @@ contract SNT is MiniMeToken {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title StatusContribution Contract
@@ -997,8 +997,8 @@ contract StatusContribution is Owned, TokenController {
 
     address public sntController;
 
-    mapping (address =&gt; uint256) public guaranteedBuyersLimit;
-    mapping (address =&gt; uint256) public guaranteedBuyersBought;
+    mapping (address => uint256) public guaranteedBuyersLimit;
+    mapping (address => uint256) public guaranteedBuyersBought;
 
     uint256 public totalGuaranteedCollected;
     uint256 public totalNormalCollected;
@@ -1006,7 +1006,7 @@ contract StatusContribution is Owned, TokenController {
     uint256 public finalizedBlock;
     uint256 public finalizedTime;
 
-    mapping (address =&gt; uint256) public lastCallBlock;
+    mapping (address => uint256) public lastCallBlock;
 
     bool public paused;
 
@@ -1016,9 +1016,9 @@ contract StatusContribution is Owned, TokenController {
     }
 
     modifier contributionOpen() {
-        require(getBlockNumber() &gt;= startBlock &amp;&amp;
-                getBlockNumber() &lt;= endBlock &amp;&amp;
-                finalizedBlock == 0 &amp;&amp;
+        require(getBlockNumber() >= startBlock &&
+                getBlockNumber() <= endBlock &&
+                finalizedBlock == 0 &&
                 address(SNT) != 0x0);
         _;
     }
@@ -1077,8 +1077,8 @@ contract StatusContribution is Owned, TokenController {
         require(_sntController != 0x0);
         sntController = _sntController;
 
-        require(_startBlock &gt;= getBlockNumber());
-        require(_startBlock &lt; _endBlock);
+        require(_startBlock >= getBlockNumber());
+        require(_startBlock < _endBlock);
         startBlock = _startBlock;
         endBlock = _endBlock;
 
@@ -1100,7 +1100,7 @@ contract StatusContribution is Owned, TokenController {
         require(_sgt != 0x0);
         SGT = MiniMeToken(_sgt);
 
-        require(_maxSGTSupply &gt;= MiniMeToken(SGT).totalSupply());
+        require(_maxSGTSupply >= MiniMeToken(SGT).totalSupply());
         maxSGTSupply = _maxSGTSupply;
     }
 
@@ -1112,8 +1112,8 @@ contract StatusContribution is Owned, TokenController {
     /// @param _th Guaranteed address
     /// @param _limit Limit for the guaranteed address.
     function setGuaranteedAddress(address _th, uint256 _limit) public initialized onlyOwner {
-        require(getBlockNumber() &lt; startBlock);
-        require(_limit &gt; 0 &amp;&amp; _limit &lt;= maxGuaranteedLimit);
+        require(getBlockNumber() < startBlock);
+        require(_limit > 0 && _limit <= maxGuaranteedLimit);
         guaranteedBuyersLimit[_th] = _limit;
         GuaranteedAddress(_th, _limit);
     }
@@ -1135,7 +1135,7 @@ contract StatusContribution is Owned, TokenController {
     /// @param _th SNT holder where the SNTs will be minted.
     function proxyPayment(address _th) public payable notPaused initialized contributionOpen returns (bool) {
         require(_th != 0x0);
-        if (guaranteedBuyersLimit[_th] &gt; 0) {
+        if (guaranteedBuyersLimit[_th] > 0) {
             buyGuaranteed(_th);
         } else {
             buyNormal(_th);
@@ -1152,7 +1152,7 @@ contract StatusContribution is Owned, TokenController {
     }
 
     function buyNormal(address _th) internal {
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(tx.gasprice <= maxGasPrice);
 
         // Antispam mechanism
         address caller;
@@ -1165,13 +1165,13 @@ contract StatusContribution is Owned, TokenController {
         // Do not allow contracts to game the system
         require(!isContract(caller));
 
-        require(getBlockNumber().sub(lastCallBlock[caller]) &gt;= maxCallFrequency);
+        require(getBlockNumber().sub(lastCallBlock[caller]) >= maxCallFrequency);
         lastCallBlock[caller] = getBlockNumber();
 
         uint256 toCollect = dynamicCeiling.toCollect(totalNormalCollected);
 
         uint256 toFund;
-        if (msg.value &lt;= toCollect) {
+        if (msg.value <= toCollect) {
             toFund = msg.value;
         } else {
             toFund = toCollect;
@@ -1185,7 +1185,7 @@ contract StatusContribution is Owned, TokenController {
         uint256 toCollect = guaranteedBuyersLimit[_th];
 
         uint256 toFund;
-        if (guaranteedBuyersBought[_th].add(msg.value) &gt; toCollect) {
+        if (guaranteedBuyersBought[_th].add(msg.value) > toCollect) {
             toFund = toCollect.sub(guaranteedBuyersBought[_th]);
         } else {
             toFund = msg.value;
@@ -1197,10 +1197,10 @@ contract StatusContribution is Owned, TokenController {
     }
 
     function doBuy(address _th, uint256 _toFund, bool _guaranteed) internal {
-        assert(msg.value &gt;= _toFund);  // Not needed, but double check.
-        assert(totalCollected() &lt;= failSafeLimit);
+        assert(msg.value >= _toFund);  // Not needed, but double check.
+        assert(totalCollected() <= failSafeLimit);
 
-        if (_toFund &gt; 0) {
+        if (_toFund > 0) {
             uint256 tokensGenerated = _toFund.mul(exchangeRate);
             assert(SNT.generateTokens(_th, tokensGenerated));
             destEthDevs.transfer(_toFund);
@@ -1208,7 +1208,7 @@ contract StatusContribution is Owned, TokenController {
         }
 
         uint256 toReturn = msg.value.sub(_toFund);
-        if (toReturn &gt; 0) {
+        if (toReturn > 0) {
             // If the call comes from the Token controller,
             // then we return it to the token Holder.
             // Otherwise we return to the sender.
@@ -1223,7 +1223,7 @@ contract StatusContribution is Owned, TokenController {
     // NOTE on Percentage format
     // Right now, Solidity does not support decimal numbers. (This will change very soon)
     //  So in this contract we use a representation of a percentage that consist in
-    //  expressing the percentage in &quot;x per 10**18&quot;
+    //  expressing the percentage in "x per 10**18"
     // This format has a precision of 16 digits for a percent.
     // Examples:
     //  3%   =   3*(10**16)
@@ -1243,24 +1243,24 @@ contract StatusContribution is Owned, TokenController {
     ///  by creating the remaining tokens and transferring the controller to the configured
     ///  controller.
     function finalize() public initialized {
-        require(getBlockNumber() &gt;= startBlock);
-        require(msg.sender == owner || getBlockNumber() &gt; endBlock);
+        require(getBlockNumber() >= startBlock);
+        require(msg.sender == owner || getBlockNumber() > endBlock);
         require(finalizedBlock == 0);
 
         // Do not allow termination until all curves revealed.
         require(dynamicCeiling.allRevealed());
 
         // Allow premature finalization if final limit is reached
-        if (getBlockNumber() &lt;= endBlock) {
+        if (getBlockNumber() <= endBlock) {
             var (,lastLimit,,) = dynamicCeiling.curves(dynamicCeiling.revealedCurves().sub(1));
-            require(totalNormalCollected &gt;= lastLimit);
+            require(totalNormalCollected >= lastLimit);
         }
 
         finalizedBlock = getBlockNumber();
         finalizedTime = now;
 
         uint256 percentageToSgt;
-        if (SGT.totalSupply() &gt;= maxSGTSupply) {
+        if (SGT.totalSupply() >= maxSGTSupply) {
             percentageToSgt = percent(10);  // 10%
         } else {
 
@@ -1283,21 +1283,21 @@ contract StatusContribution is Owned, TokenController {
         uint256 percentageToReserve = percent(29);
 
 
-        // SNT.totalSupply() -&gt; Tokens minted during the contribution
-        //  totalTokens  -&gt; Total tokens that should be after the allocation
+        // SNT.totalSupply() -> Tokens minted during the contribution
+        //  totalTokens  -> Total tokens that should be after the allocation
         //                   of devTokens, sgtTokens and reserve
-        //  percentageToContributors -&gt; Which percentage should go to the
+        //  percentageToContributors -> Which percentage should go to the
         //                               contribution participants
         //                               (x per 10**18 format)
-        //  percent(100) -&gt; 100% in (x per 10**18 format)
+        //  percent(100) -> 100% in (x per 10**18 format)
         //
         //                       percentageToContributors
-        //  SNT.totalSupply() = -------------------------- * totalTokens  =&gt;
+        //  SNT.totalSupply() = -------------------------- * totalTokens  =>
         //                             percent(100)
         //
         //
         //                            percent(100)
-        //  =&gt;  totalTokens = ---------------------------- * SNT.totalSupply()
+        //  =>  totalTokens = ---------------------------- * SNT.totalSupply()
         //                      percentageToContributors
         //
         uint256 totalTokens = SNT.totalSupply().mul(percent(100)).div(percentageToContributors);
@@ -1351,7 +1351,7 @@ contract StatusContribution is Owned, TokenController {
         assembly {
             size := extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
 
@@ -1435,7 +1435,7 @@ contract StatusContribution is Owned, TokenController {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title ContributionWallet Contract
@@ -1466,7 +1466,7 @@ contract ContributionWallet {
     function ContributionWallet(address _multisig, uint256 _endBlock, address _contribution) {
         require(_multisig != 0x0);
         require(_contribution != 0x0);
-        require(_endBlock != 0 &amp;&amp; _endBlock &lt;= 4000000);
+        require(_endBlock != 0 && _endBlock <= 4000000);
         multisig = _multisig;
         endBlock = _endBlock;
         contribution = StatusContribution(_contribution);
@@ -1478,7 +1478,7 @@ contract ContributionWallet {
     // @dev Withdraw function sends all the funds to the wallet if conditions are correct
     function withdraw() public {
         require(msg.sender == multisig);              // Only the multisig can request it
-        require(block.number &gt; endBlock ||            // Allow after end block
+        require(block.number > endBlock ||            // Allow after end block
                 contribution.finalizedBlock() != 0);  // Allow when sale is finalized
         multisig.transfer(this.balance);
     }
@@ -1500,7 +1500,7 @@ contract ContributionWallet {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title DevTokensHolder Contract
@@ -1523,7 +1523,7 @@ contract ContributionWallet {
 //   |        . |
 //   |      .   |
 //   |    .     |
-//   +===+======+--------------+----------&gt; time
+//   +===+======+--------------+----------> time
 //     Contrib   6 Months       24 Months
 //       End
 
@@ -1550,13 +1550,13 @@ contract DevTokensHolder is Owned {
 
         uint256 finalizedTime = contribution.finalizedTime();
 
-        require(finalizedTime &gt; 0 &amp;&amp; getTime() &gt; finalizedTime.add(months(6)));
+        require(finalizedTime > 0 && getTime() > finalizedTime.add(months(6)));
 
         uint256 canExtract = total.mul(getTime().sub(finalizedTime)).div(months(24));
 
         canExtract = canExtract.sub(collectedTokens);
 
-        if (canExtract &gt; balance) {
+        if (canExtract > balance) {
             canExtract = balance;
         }
 
@@ -1615,7 +1615,7 @@ contract DevTokensHolder is Owned {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title SGTExchanger Contract
@@ -1630,7 +1630,7 @@ contract DevTokensHolder is Owned {
 contract SGTExchanger is TokenController, Owned {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public collected;
+    mapping (address => uint256) public collected;
     uint256 public totalCollected;
     MiniMeToken public sgt;
     MiniMeToken public snt;
@@ -1648,7 +1648,7 @@ contract SGTExchanger is TokenController, Owned {
         uint256 finalizedBlock = statusContribution.finalizedBlock();
 
         require(finalizedBlock != 0);
-        require(getBlockNumber() &gt; finalizedBlock);
+        require(getBlockNumber() > finalizedBlock);
 
         uint256 total = totalCollected.add(snt.balanceOf(address(this)));
 
@@ -1660,7 +1660,7 @@ contract SGTExchanger is TokenController, Owned {
         // And then subtract the amount already collected
         amount = amount.sub(collected[msg.sender]);
 
-        require(amount &gt; 0);  // Notify the user that there are no tokens to exchange
+        require(amount > 0);  // Notify the user that there are no tokens to exchange
 
         totalCollected = totalCollected.add(amount);
         collected[msg.sender] = collected[msg.sender].add(amount);
@@ -1731,7 +1731,7 @@ contract SGTExchanger is TokenController, Owned {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title SNTPlaceholder Contract
@@ -1795,13 +1795,13 @@ contract SNTPlaceHolder is TokenController, Owned {
         // Allow the exchanger to work from the beginning
         if (activationTime == 0) {
             uint256 f = contribution.finalizedTime();
-            if (f &gt; 0) {
+            if (f > 0) {
                 activationTime = f.add(1 weeks);
             } else {
                 return false;
             }
         }
-        return (getTime() &gt; activationTime) || (_from == sgtExchanger);
+        return (getTime() > activationTime) || (_from == sgtExchanger);
     }
 
 

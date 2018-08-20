@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,8 +47,8 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -57,7 +57,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -76,7 +76,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -129,8 +129,8 @@ contract ANOToken is BasicToken {
 
 using SafeMath for uint256;
 
-string public name = &quot;Anonium&quot;;                                 // Name of the token
-string public symbol = &quot;ANO&quot;;                                   // Symbol of the token
+string public name = "Anonium";                                 // Name of the token
+string public symbol = "ANO";                                   // Symbol of the token
 uint8 public decimals = 18;                                     // Decimals
 uint256 public totalSupply = 21000000000 * 10**18;              // Total supply of SPC Tokens  
 
@@ -231,14 +231,14 @@ struct weeklyData {
 }
 
 // mapping is used to store the weeklyData corresponds to integer
-mapping(uint256 =&gt; weeklyData) public weeklyRate;
+mapping(uint256 => weeklyData) public weeklyRate;
 
 //Event 
 event LogWeekRate(uint32 _weekRate, uint256 _timestamp);
 
 // Modifier for validating the time lapse should between in start and end date
 modifier isBetween() {
-    require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+    require(now >= startDate && now <= endDate);
     _;
 }
 
@@ -267,7 +267,7 @@ function () public payable {
  */
 
 function setWeeklyRate() private returns (bool) {
-    for (uint32 i = 0; i &lt; 40; ++i) {
+    for (uint32 i = 0; i < 40; ++i) {
         uint32 weekRate = tokenRate + appreciationRate * i;
         uint256 weekStartTime = now + i * 1 weeks;
         uint256 weekEndTime = now + (i+1) * 1 weeks;
@@ -283,9 +283,9 @@ function setWeeklyRate() private returns (bool) {
  */
 
 function getWeeklyRate() private returns (uint32) {
-   if (now &lt;= weeklyRate[weekNo].endTime &amp;&amp; now &gt;= weeklyRate[weekNo].startTime) {
+   if (now <= weeklyRate[weekNo].endTime && now >= weeklyRate[weekNo].startTime) {
        return weeklyRate[weekNo].weekRate;
-   } if (now &lt;= weeklyRate[weekNo + 1].endTime &amp;&amp; now &gt;= weeklyRate[weekNo + 1].startTime ) {
+   } if (now <= weeklyRate[weekNo + 1].endTime && now >= weeklyRate[weekNo + 1].startTime ) {
         weekNo = weekNo + 1;
         setWeeklyAllocation();
         return weeklyRate[weekNo + 1].weekRate;
@@ -314,7 +314,7 @@ function setWeeklyAllocation() private {
 
 /**
     @dev ANOCrowdsale constructor to set the founder and beneficiary
-    as well as to set start &amp; end date.
+    as well as to set start & end date.
     @param _founderAddress address which operates all the admin functionality of the contract
     @param _beneficiaryAddress address where all invested amount get transferred 
  */
@@ -358,7 +358,7 @@ returns (bool)
    require(_investor != address(0));
    uint256 rate = uint256(getWeeklyRate());
    uint256 tokenAmount = (msg.value.div(rate)).mul(10 ** 8);
-   require(tokenAllocatedForWeek &gt;= tokenSoldForWeek + tokenAmount);
+   require(tokenAllocatedForWeek >= tokenSoldForWeek + tokenAmount);
    fundTransfer(msg.value);
    require(token.transfer(_investor, tokenAmount));
    tokenSoldForWeek = tokenSoldForWeek.add(tokenAmount);
@@ -383,7 +383,7 @@ function getWeekNo() public view returns (uint256) {
 
 function endCrowdfund() public onlyFounder returns (bool) {
     require(isTokenSet == true);
-    require(now &gt; endDate);
+    require(now > endDate);
     require(token.burnToken());
     return true;
 }

@@ -86,8 +86,8 @@ contract MyanmarDonations{
     function() public payable {
         require(msg.value == TOTAL_ETHER_HARD_CAP);
         require(
-            address(this).balance &lt;= TOTAL_ETHER_HARD_CAP,
-            &quot;Contract balance hardcap reachead&quot;
+            address(this).balance <= TOTAL_ETHER_HARD_CAP,
+            "Contract balance hardcap reachead"
         );
     }
 
@@ -96,11 +96,11 @@ contract MyanmarDonations{
      * hard cap reached or the campaign reached the final day.
      */
     function finalize() public onlyDonationAddress returns (bool) {
-        require(getSencBalance() &gt;= sencHardCap || now &gt;= endDate, &quot;SENC hard cap rached OR End date reached&quot;);
-        require(!finalized, &quot;Donation not already finalized&quot;);
+        require(getSencBalance() >= sencHardCap || now >= endDate, "SENC hard cap rached OR End date reached");
+        require(!finalized, "Donation not already finalized");
         // The Ether balance collected in Wei
         totalSencCollected = getSencBalance();
-        if (totalSencCollected &gt;= sencHardCap) {
+        if (totalSencCollected >= sencHardCap) {
             // Transfer of donations to the donations address
             donationWallet.transfer(address(this).balance);
         } else {
@@ -122,7 +122,7 @@ contract MyanmarDonations{
      * @param _to the recipient that receives the tokens.
      */
     function claimTokens(address _token, address _to) public onlyDonationAddress {
-        require(_to != address(0), &quot;Wallet format error&quot;);
+        require(_to != address(0), "Wallet format error");
         if (_token == address(0)) {
             _to.transfer(address(this).balance);
             return;
@@ -130,7 +130,7 @@ contract MyanmarDonations{
 
         ERC20Basic token = ERC20Basic(_token);
         uint256 balance = token.balanceOf(this);
-        require(token.transfer(_to, balance), &quot;Token transfer unsuccessful&quot;);
+        require(token.transfer(_to, balance), "Token transfer unsuccessful");
     }
 
     /// @notice The `sencToken()` is the getter for the SENC Token.

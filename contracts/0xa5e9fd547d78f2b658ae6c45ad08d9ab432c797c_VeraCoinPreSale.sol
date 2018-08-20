@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -145,7 +145,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -180,7 +180,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -241,9 +241,9 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract VeraCoin is StandardToken {
 
-    string public name = &quot;VeraCoin&quot;;
+    string public name = "VeraCoin";
 
-    string public symbol = &quot;Vera&quot;;
+    string public symbol = "Vera";
 
     uint256 public decimals = 18;
 
@@ -262,7 +262,7 @@ contract VeraCoin is StandardToken {
 contract VeraCoinPreSale is Haltable {
     using SafeMath for uint;
 
-    string public name = &quot;VeraCoin PreSale&quot;;
+    string public name = "VeraCoin PreSale";
 
     VeraCoin public token;
 
@@ -292,7 +292,7 @@ contract VeraCoinPreSale is Haltable {
 
     bool public crowdsaleFinished = false;
 
-    mapping (address =&gt; bool) refunded;
+    mapping (address => bool) refunded;
 
     event GoalReached(uint256 amountRaised);
 
@@ -303,12 +303,12 @@ contract VeraCoinPreSale is Haltable {
     event Refunded(address indexed holder, uint256 amount);
 
     modifier onlyAfter(uint256 time) {
-        require(now &gt;= time);
+        require(now >= time);
         _;
     }
 
     modifier onlyBefore(uint256 time) {
-        require(now &lt;= time);
+        require(now <= time);
         _;
     }
 
@@ -335,7 +335,7 @@ contract VeraCoinPreSale is Haltable {
     }
 
     function() payable stopInEmergency {
-        require(msg.value &gt;= 0.01 * 1 ether);
+        require(msg.value >= 0.01 * 1 ether);
         doPurchase(msg.sender);
     }
 
@@ -344,10 +344,10 @@ contract VeraCoinPreSale is Haltable {
         require(!refunded[msg.sender]);
 
         uint256 balance = token.balanceOf(msg.sender);
-        require(balance &gt; 0);
+        require(balance > 0);
 
         uint256 refund = balance / price;
-        if (refund &gt; this.balance) {
+        if (refund > this.balance) {
             refund = this.balance;
         }
 
@@ -366,9 +366,9 @@ contract VeraCoinPreSale is Haltable {
 
     function doPurchase(address _owner) private onlyAfter(startTime) onlyBefore(endTime) {
         require(!crowdsaleFinished);
-        require(collected.add(msg.value) &lt;= hardCap);
+        require(collected.add(msg.value) <= hardCap);
 
-        if (!softCapReached &amp;&amp; collected &lt; softCap &amp;&amp; collected.add(msg.value) &gt;= softCap) {
+        if (!softCapReached && collected < softCap && collected.add(msg.value) >= softCap) {
             softCapReached = true;
             SoftCapReached(softCap);
         }

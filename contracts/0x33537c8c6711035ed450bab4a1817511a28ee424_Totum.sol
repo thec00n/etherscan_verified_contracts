@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     //Variables
@@ -99,9 +99,9 @@ contract ERC20 is Ownable {
 
     uint256 public creationBlock;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -122,7 +122,7 @@ contract ERC20 is Ownable {
         bool _transferAllSupplyToOwner,
         bool _locked
     ) {
-        standard = &quot;ERC20 0.1&quot;;
+        standard = "ERC20 0.1";
 
         initialSupply = _initialSupply;
 
@@ -190,7 +190,7 @@ contract ERC20 is Ownable {
             return false;
         }
 
-        if (allowance[_from][msg.sender] &lt; _value) {
+        if (allowance[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -214,7 +214,7 @@ contract ERC20 is Ownable {
             return true;
         }
 
-        if (balances[_from] &lt; _value) {
+        if (balances[_from] < _value) {
             return false;
         }
 
@@ -238,7 +238,7 @@ contract MintingERC20 is ERC20 {
 
     uint256 public maxSupply;
 
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     modifier onlyMinters () {
         require(true == minters[msg.sender]);
@@ -273,7 +273,7 @@ contract MintingERC20 is ERC20 {
             return uint256(0);
         }
 
-        if (totalSupply().add(_amount) &gt; maxSupply) {
+        if (totalSupply().add(_amount) > maxSupply) {
             return uint256(0);
         }
 
@@ -303,7 +303,7 @@ contract Totum is MintingERC20 {
     )
     MintingERC20(0, _maxSupply, _tokenName, _precision, _tokenSymbol, false, _locked)
     {
-        standard = &quot;Totum 0.1&quot;;
+        standard = "Totum 0.1";
     }
 
     function setLocked(bool _locked) public onlyOwner {
@@ -315,7 +315,7 @@ contract Totum is MintingERC20 {
     }
 
     function unfreeze() public onlyOwner {
-        if (totumPhases != address(0) &amp;&amp; totumPhases.isFinished(1)) {
+        if (totumPhases != address(0) && totumPhases.isFinished(1)) {
             transferFrozen = false;
         }
     }
@@ -366,8 +366,8 @@ contract TotumAllocation is Ownable {
     address _icoAddress, //50%
     address _icoAddress1 //50%
     ) {
-        require((address(_bountyAddress) != 0x0) &amp;&amp; (address(_teamAddress) != 0x0));
-        require((address(_preICOAddress) != 0x0) &amp;&amp; (address(_icoAddress) != 0x0) &amp;&amp; (address(_icoAddress1) != 0x0));
+        require((address(_bountyAddress) != 0x0) && (address(_teamAddress) != 0x0));
+        require((address(_preICOAddress) != 0x0) && (address(_icoAddress) != 0x0) && (address(_icoAddress1) != 0x0));
 
         bountyAddress = _bountyAddress;
         teamAddress = _teamAddress;
@@ -396,9 +396,9 @@ contract TotumPhases is Ownable {
 
     uint256 public investorsCount;
 
-    mapping (address =&gt; uint256) public icoEtherBalances;
+    mapping (address => uint256) public icoEtherBalances;
 
-    mapping (address =&gt; bool) private investors;
+    mapping (address => bool) private investors;
 
     event Refund(address holder, uint256 ethers, uint256 tokens);
 
@@ -427,8 +427,8 @@ contract TotumPhases is Ownable {
         require(address(_totum) != 0x0);
         totum = Totum(address(_totum));
 
-        require((_preIcoSince &lt; _preIcoTill) &amp;&amp; (_icoSince &lt; _icoTill) &amp;&amp; (_preIcoTill &lt;= _icoSince));
-        require((_preIcoMaxCap &lt; _icoMaxCap) &amp;&amp; (_icoMaxCap &lt; totum.maxSupply()));
+        require((_preIcoSince < _preIcoTill) && (_icoSince < _icoTill) && (_preIcoTill <= _icoSince));
+        require((_preIcoMaxCap < _icoMaxCap) && (_icoMaxCap < totum.maxSupply()));
 
         phases.push(Phase(_tokenPrice, _minInvest, 0, _preIcoMaxCap, _preIcoSince, _preIcoTill, false));
         phases.push(Phase(_tokenPrice, _minInvest, _icoMinCap, _icoMaxCap, _icoSince, _icoTill, false));
@@ -439,8 +439,8 @@ contract TotumPhases is Ownable {
     }
 
     function setCurrentRate(uint256 _rate) public onlyOwner {
-        require(_rate &gt; 0);
-        for (uint i = 0; i &lt; phases.length; i++) {
+        require(_rate > 0);
+        for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
             phase.price = _rate;
         }
@@ -462,9 +462,9 @@ contract TotumPhases is Ownable {
     uint256 _softCap,
     uint256 _hardCap
     ) public onlyOwner returns (bool) {
-        require((phases.length &gt; _phaseId) &amp;&amp; (_price &gt; 0));
-        require((_till &gt; _since) &amp;&amp; (_since &gt; 0));
-        require((totum.maxSupply() &gt; _hardCap) &amp;&amp; (_hardCap &gt; _softCap) &amp;&amp; (_softCap &gt;= 0));
+        require((phases.length > _phaseId) && (_price > 0));
+        require((_till > _since) && (_since > 0));
+        require((totum.maxSupply() > _hardCap) && (_hardCap > _softCap) && (_softCap >= 0));
 
         Phase storage phase = phases[_phaseId];
 
@@ -485,7 +485,7 @@ contract TotumPhases is Ownable {
             return false;
         }
         uint256 totalAmount = _tokens.add(getBonusAmount(_tokens, now));
-        if (getTokens().add(totalAmount) &gt; totum.maxSupply()) {
+        if (getTokens().add(totalAmount) > totum.maxSupply()) {
             return false;
         }
 
@@ -505,7 +505,7 @@ contract TotumPhases is Ownable {
 
         uint256 totalAmount = _tokens.add(getBonusAmount(_tokens, _time));
 
-        if (getTokens().add(totalAmount) &gt; totum.maxSupply()) {
+        if (getTokens().add(totalAmount) > totum.maxSupply()) {
             return false;
         }
 
@@ -530,7 +530,7 @@ contract TotumPhases is Ownable {
 
         uint256 totalAmount = _tokens.add(_bonus);
 
-        if (getTokens().add(totalAmount) &gt; totum.maxSupply()) {
+        if (getTokens().add(totalAmount) > totum.maxSupply()) {
             return false;
         }
 
@@ -548,13 +548,13 @@ contract TotumPhases is Ownable {
         if (_time == 0) {
             return uint8(phases.length);
         }
-        for (uint8 i = 0; i &lt; phases.length; i++) {
+        for (uint8 i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
-            if (phase.since &gt; _time) {
+            if (phase.since > _time) {
                 continue;
             }
 
-            if (phase.till &lt; _time) {
+            if (phase.till < _time) {
                 continue;
             }
 
@@ -581,17 +581,17 @@ contract TotumPhases is Ownable {
     }
 
     function isSucceed(uint8 _phaseId) public returns (bool) {
-        if (phases.length &lt;= _phaseId) {
+        if (phases.length <= _phaseId) {
             return false;
         }
         Phase storage phase = phases[_phaseId];
         if (phase.isSucceed == true) {
             return true;
         }
-        if (phase.till &gt; now) {
+        if (phase.till > now) {
             return false;
         }
-        if (phase.softCap != 0 &amp;&amp; phase.softCap &gt; getTokens()) {
+        if (phase.softCap != 0 && phase.softCap > getTokens()) {
             return false;
         }
         phase.isSucceed = true;
@@ -604,10 +604,10 @@ contract TotumPhases is Ownable {
 
     function refund() public returns (bool) {
         Phase storage icoPhase = phases[1];
-        if (icoPhase.till &gt; now) {
+        if (icoPhase.till > now) {
             return false;
         }
-        if (icoPhase.softCap &lt; getTokens()) {
+        if (icoPhase.softCap < getTokens()) {
             return false;
         }
         if (icoEtherBalances[msg.sender] == 0) {
@@ -623,12 +623,12 @@ contract TotumPhases is Ownable {
     }
 
     function isFinished(uint8 _phaseId) public constant returns (bool) {
-        if (phases.length &lt;= _phaseId) {
+        if (phases.length <= _phaseId) {
             return false;
         }
         Phase storage phase = phases[_phaseId];
 
-        return (phase.isSucceed || now &gt; phase.till);
+        return (phase.isSucceed || now > phase.till);
     }
 
     function buy(address _address, uint256 _value) internal returns (bool) {
@@ -638,7 +638,7 @@ contract TotumPhases is Ownable {
 
         uint8 currentPhase = getCurrentPhase(now);
 
-        if (phases.length &lt;= currentPhase) {
+        if (phases.length <= currentPhase) {
             return false;
         }
 
@@ -677,7 +677,7 @@ contract TotumPhases is Ownable {
     }
 
     function increaseInvestorsCount(address _address) internal {
-        if (address(_address) != 0x0 &amp;&amp; investors[_address] == false) {
+        if (address(_address) != 0x0 && investors[_address] == false) {
             investors[_address] = true;
             investorsCount = investorsCount.add(1);
         }
@@ -687,11 +687,11 @@ contract TotumPhases is Ownable {
         if (_amount == 0) {
             return 0;
         }
-        if (_value &lt; 3 ether) {
+        if (_value < 3 ether) {
             return 0;
-        } else if (_value &lt; 15 ether) {
+        } else if (_value < 15 ether) {
             return _amount.mul(3).div(100);
-        } else if (_value &lt; 30 ether) {
+        } else if (_value < 30 ether) {
             return _amount.mul(5).div(100);
         } else {
             return _amount.mul(7).div(100);
@@ -699,7 +699,7 @@ contract TotumPhases is Ownable {
     }
 
     function getTokensAmount(uint256 _value, uint8 _currentPhase) internal returns (uint256) {
-        if (_value == 0 || phases.length &lt;= _currentPhase) {
+        if (_value == 0 || phases.length <= _currentPhase) {
             return uint256(0);
         }
 
@@ -707,11 +707,11 @@ contract TotumPhases is Ownable {
 
         uint256 amount = _value.mul(uint256(10) ** totum.decimals()).div(phase.price);
 
-        if (amount &lt; phase.minInvest) {
+        if (amount < phase.minInvest) {
             return uint256(0);
         }
 
-        if (getTokens().add(amount) &gt; phase.hardCap) {
+        if (getTokens().add(amount) > phase.hardCap) {
             return uint256(0);
         }
 
@@ -720,7 +720,7 @@ contract TotumPhases is Ownable {
 
     function getBonusAmount(uint256 _amount, uint256 _time) internal returns (uint256) {
         uint8 currentPhase = getCurrentPhase(_time);
-        if (_amount == 0 || _time == 0 || phases.length &lt;= currentPhase) {
+        if (_amount == 0 || _time == 0 || phases.length <= currentPhase) {
             return uint256(0);
         }
 
@@ -736,16 +736,16 @@ contract TotumPhases is Ownable {
 
     function getICOBonusAmount(uint256 _amount, uint256 _time) internal returns (uint256) {
         Phase storage ico = phases[1];
-        if (_time.sub(ico.since) &lt; 11 * DAY) {// 11d since ico =&gt; reward 20%;
+        if (_time.sub(ico.since) < 11 * DAY) {// 11d since ico => reward 20%;
             return _amount.mul(20).div(100);
         }
-        if (_time.sub(ico.since) &lt; 21 * DAY) {// 21d since ico =&gt; reward 15%
+        if (_time.sub(ico.since) < 21 * DAY) {// 21d since ico => reward 15%
             return _amount.mul(15).div(100);
         }
-        if (_time.sub(ico.since) &lt; 31 * DAY) {// 31d since ico =&gt; reward 10%
+        if (_time.sub(ico.since) < 31 * DAY) {// 31d since ico => reward 10%
             return _amount.mul(10).div(100);
         }
-        if (_time.sub(ico.since) &lt; 41 * DAY) {// 41d since ico =&gt; reward 5%
+        if (_time.sub(ico.since) < 41 * DAY) {// 41d since ico => reward 5%
             return _amount.mul(5).div(100);
         }
 
@@ -753,12 +753,12 @@ contract TotumPhases is Ownable {
     }
 
     function allocate(uint8 _currentPhase) internal {
-        if (this.balance &gt; 0 &amp;&amp; phases.length &gt; _currentPhase) {
+        if (this.balance > 0 && phases.length > _currentPhase) {
             Phase storage phase = phases[_currentPhase];
 
             if (_currentPhase == 0) {
                 totumAllocation.preICOAddress().transfer(this.balance);
-            } else if (_currentPhase == 1 &amp;&amp; soldTokens &gt;= phase.softCap) {
+            } else if (_currentPhase == 1 && soldTokens >= phase.softCap) {
                 totumAllocation.icoAddress().transfer(this.balance.mul(5).div(10));
                 totumAllocation.icoAddress1().transfer(this.balance);
             }

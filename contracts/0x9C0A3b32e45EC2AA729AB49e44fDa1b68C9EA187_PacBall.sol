@@ -4,7 +4,7 @@ pragma solidity ^0.4.0;
 
 contract PacBall{
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -12,17 +12,17 @@ contract PacBall{
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function PacBall() {
 
          initialSupply =10000;
-         name =&quot;PacBall&quot;;
+         name ="PacBall";
          decimals =5;
-         symbol = &quot;PBC&quot;;
+         symbol = "PBC";
         
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         totalSupply = initialSupply;                        // Update total supply
@@ -31,8 +31,8 @@ contract PacBall{
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
       

@@ -85,7 +85,7 @@ contract Loan {
     event LoanPaid();
 
     function payLoan() public payable {
-        require(now &lt;= dueDate);
+        require(now <= dueDate);
         require(msg.value == payoffAmount);
 
         require(token.transfer(borrower, collateralAmount));
@@ -94,7 +94,7 @@ contract Loan {
     }
 
     function repossess() public {
-        require(now &gt; dueDate);
+        require(now > dueDate);
 
         require(token.transfer(lender, collateralAmount));
         selfdestruct(lender);

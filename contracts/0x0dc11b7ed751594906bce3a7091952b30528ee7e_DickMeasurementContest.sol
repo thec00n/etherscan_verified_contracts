@@ -17,7 +17,7 @@ contract DickMeasurementContest {
     function () public payable {}
 
     function mineIsBigger() public payable {
-        if (msg.value &gt; this.balance) {
+        if (msg.value > this.balance) {
             owner = msg.sender;
             lastBlock = now;
         }
@@ -26,7 +26,7 @@ contract DickMeasurementContest {
     function withdraw() public onlyowner {
         // if there are no contestants within 3 days
         // the winner is allowed to take the money
-        require(now &gt; lastBlock + 3 days);
+        require(now > lastBlock + 3 days);
         msg.sender.transfer(this.balance);
     }
 

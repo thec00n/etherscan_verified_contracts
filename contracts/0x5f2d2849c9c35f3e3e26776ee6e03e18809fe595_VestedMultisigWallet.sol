@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,12 +127,12 @@ library SafeERC20 {
 contract StandardToken is iERC20Token {
 
     using SafeMath for uint256;
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function transfer(address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -143,8 +143,8 @@ contract StandardToken is iERC20Token {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is iERC20Token {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -248,7 +248,7 @@ contract FreezableToken is iERC223Token, StandardToken, Ownable {
     function isContract(address _addr) private view returns (bool is_contract) {
         uint length;
         assembly { length := extcodesize(_addr) }
-        return length &gt; 0;
+        return length > 0;
     }
 
     function unfreeze() public onlyOwner returns (bool){
@@ -325,13 +325,13 @@ contract SimpleMultisigWallet is ERC223Receiver {
     event RequirementChange(uint required, uint256 createdOn);*/
 
     // dictionary which shows transaction info by transaction identifer
-    mapping (uint =&gt; Transaction) public transactions;
+    mapping (uint => Transaction) public transactions;
 
     // dictionary which shows which owners confirmed transactions
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
+    mapping (uint => mapping (address => bool)) public confirmations;
 
     // dictionary which shows if ether account is owner
-    mapping (address =&gt; bool) internal isOwner;
+    mapping (address => bool) internal isOwner;
 
     // owners of wallet
     address[] internal owners;
@@ -343,10 +343,10 @@ contract SimpleMultisigWallet is ERC223Receiver {
     uint public transactionCount;
 
     // dictionary which shows owners who confirmed new owner addition
-    mapping(address =&gt; address[]) private ownersConfirmedOwnerAdd;
+    mapping(address => address[]) private ownersConfirmedOwnerAdd;
 
     // dictionary which shows owners who confirmed existing owner remove
-    mapping(address =&gt; address[]) private ownersConfirmedOwnerRemove;
+    mapping(address => address[]) private ownersConfirmedOwnerRemove;
 
     // Type which identifies if transaction will operate with ethers or tokens
     enum TransactionType{Standard, Token, Unfreeze, PassOwnership}
@@ -361,14 +361,14 @@ contract SimpleMultisigWallet is ERC223Receiver {
     }
 
     modifier notConfirmedOwnerAdd(address _owner) {
-        for(uint i = 0; i &lt; ownersConfirmedOwnerAdd[_owner].length; i++){
+        for(uint i = 0; i < ownersConfirmedOwnerAdd[_owner].length; i++){
             require(ownersConfirmedOwnerAdd[_owner][i] != msg.sender);
         }
         _;
     }
 
     modifier notConfirmedOwnerRemove(address _owner) {
-        for(uint i = 0; i &lt; ownersConfirmedOwnerRemove[_owner].length; i++){
+        for(uint i = 0; i < ownersConfirmedOwnerRemove[_owner].length; i++){
             require(ownersConfirmedOwnerRemove[_owner][i] != msg.sender);
         }
         _;
@@ -395,13 +395,13 @@ contract SimpleMultisigWallet is ERC223Receiver {
     }
 
     modifier notConfirmed(uint transactionId, address owner) {
-        require(transactionId &gt;= 0 &amp;&amp; transactionId &lt; transactionCount);
+        require(transactionId >= 0 && transactionId < transactionCount);
         require(!confirmations[transactionId][owner]);
         _;
     }
 
     modifier notExecuted(uint transactionId) {
-        require(transactionId &gt;= 0 &amp;&amp; transactionId &lt; transactionCount);
+        require(transactionId >= 0 && transactionId < transactionCount);
         require(!transactions[transactionId].executed);
         _;
     }
@@ -412,23 +412,23 @@ contract SimpleMultisigWallet is ERC223Receiver {
     }
 
     modifier validRequirement(uint _ownersCount, uint _required) {
-        require(_ownersCount &lt;= MAX_OWNER_COUNT);
-        require(_required &lt;= _ownersCount);
-        require(_required &gt; 1);
-        require(_ownersCount &gt; 1);
+        require(_ownersCount <= MAX_OWNER_COUNT);
+        require(_required <= _ownersCount);
+        require(_required > 1);
+        require(_ownersCount > 1);
         _;
     }
 
     modifier validTransaction(address destination, uint value) {
         require(destination != 0x0);
-        require(value &gt; 0);
+        require(value > 0);
         _;
     }
 
     modifier validTokenTransaction(address token, address destination, uint value) {
         require(token != 0x0);
         require(destination != 0x0);
-        require(value &gt; 0);
+        require(value > 0);
         _;
     }
 
@@ -439,7 +439,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
 
     /// @dev Fallback function allows to deposit ether.
     function() public payable {
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             Deposit(msg.sender, msg.value, now);
         }
     }
@@ -451,7 +451,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
     public
     validRequirement(_owners.length, _required)
     {
-        for (uint i = 0; i &lt; _owners.length; i++) {
+        for (uint i = 0; i < _owners.length; i++) {
             require(!(isOwner[_owners[i]] || _owners[i] == 0));
             isOwner[_owners[i]] = true;
         }
@@ -459,7 +459,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
         owners = _owners;
         //        owners.push(msg.sender);
         //        isOwner[msg.sender] = true;
-        require(_required &lt;= owners.length);
+        require(_required <= owners.length);
         required = _required;
     }
 
@@ -474,7 +474,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
 
     function removeOwnersConfirmations(address _owner) private {
         uint[] memory transactionIds = ownersConfirmedTransactions(_owner);
-        for (uint i = 0; i &lt; transactionIds.length; i++) {
+        for (uint i = 0; i < transactionIds.length; i++) {
             confirmations[transactionIds[i]][_owner] = false;
         }
     }
@@ -500,7 +500,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
     validTransaction(destination, value)
     returns (uint)
     {
-        require(address(this).balance &gt;= value);
+        require(address(this).balance >= value);
         uint transactionId = addTransaction(0x0, destination, value, TransactionType.Standard);
         confirmTransaction(transactionId);
         return transactionId;
@@ -517,7 +517,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
     validTokenTransaction(token, destination, value)
     returns (uint)
     {
-        require(StandardToken(token).balanceOf(address(this)) &gt;= value);
+        require(StandardToken(token).balanceOf(address(this)) >= value);
         uint transactionId = addTransaction(token, destination, value, TransactionType.Token);
         confirmTransaction(transactionId);
         return transactionId;
@@ -561,7 +561,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
     returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i &lt; owners.length; i++) {
+        for (uint i=0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]){
                 count += 1;
             }
@@ -580,27 +580,27 @@ contract SimpleMultisigWallet is ERC223Receiver {
     returns(bool)
     {
         if (transactions[transactionId].transactionType == TransactionType.Standard
-        &amp;&amp; isConfirmed(transactionId)
-        &amp;&amp; this.balance &gt;= transactions[transactionId].value) {
+        && isConfirmed(transactionId)
+        && this.balance >= transactions[transactionId].value) {
             transactions[transactionId].executed = true;
             transactions[transactionId].destination.transfer(transactions[transactionId].value);
             Execution(transactionId, now);
             return true;
         } else if(transactions[transactionId].transactionType == TransactionType.Token
-        &amp;&amp; isConfirmed(transactionId)
-        &amp;&amp; StandardToken(transactions[transactionId].token).balanceOf(address(this)) &gt;= transactions[transactionId].value) {
+        && isConfirmed(transactionId)
+        && StandardToken(transactions[transactionId].token).balanceOf(address(this)) >= transactions[transactionId].value) {
             transactions[transactionId].executed = true;
             StandardToken(transactions[transactionId].token).transfer(transactions[transactionId].destination, transactions[transactionId].value);
             Execution(transactionId, now);
             return true;
         } else if(transactions[transactionId].transactionType == TransactionType.Unfreeze
-        &amp;&amp; isConfirmed(transactionId)) {
+        && isConfirmed(transactionId)) {
             transactions[transactionId].executed = true;
             FreezableToken(transactions[transactionId].token).unfreeze();
             Execution(transactionId, now);
             return true;
         } else if(transactions[transactionId].transactionType == TransactionType.PassOwnership
-        &amp;&amp; isConfirmed(transactionId)) {
+        && isConfirmed(transactionId)) {
             transactions[transactionId].executed = true;
             Ownable(transactions[transactionId].token).transferOwnership(transactions[transactionId].destination);
             Execution(transactionId, now);
@@ -643,7 +643,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
     view
     returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 count += 1;
             }
@@ -659,8 +659,8 @@ contract SimpleMultisigWallet is ERC223Receiver {
     view
     returns (uint founded)
     {
-        for (uint i=0; i &lt; transactionCount; i++) {
-            if ((pending &amp;&amp; !transactions[i].executed) || (executed &amp;&amp; transactions[i].executed)) {
+        for (uint i=0; i < transactionCount; i++) {
+            if ((pending && !transactions[i].executed) || (executed && transactions[i].executed)) {
                 founded += 1;
             }
         }
@@ -689,13 +689,13 @@ contract SimpleMultisigWallet is ERC223Receiver {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -713,22 +713,22 @@ contract SimpleMultisigWallet is ERC223Receiver {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count;
         uint i;
-        for (i=0; i &lt; transactionCount; i++){
-            if ((pending &amp;&amp; !transactions[i].executed) ||
-                (executed &amp;&amp; transactions[i].executed))
+        for (i=0; i < transactionCount; i++){
+            if ((pending && !transactions[i].executed) ||
+                (executed && transactions[i].executed))
             {
                 transactionIdsTemp[count] = i;
                 count +=1;
             }
         }
 
-        if(to &gt; count) {
+        if(to > count) {
             to = count;
         }
 
         _transactionIds = new uint[](to - from);
 
-        for (i=from; i&lt;to; i++) {
+        for (i=from; i<to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }
@@ -743,7 +743,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
         uint count = 0;
         uint i;
 
-        for (i=0; i &lt; transactionCount; i++){
+        for (i=0; i < transactionCount; i++){
             if (confirmations[i][_owner]) {
                 transactionIdsTemp[count] = i;
                 count += 1;
@@ -751,7 +751,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
         }
 
         _transactionIds = new uint[](count);
-        for(i = 0; i&lt; count; i++){
+        for(i = 0; i< count; i++){
             _transactionIds[i] = transactionIdsTemp[i];
         }
 
@@ -759,7 +759,7 @@ contract SimpleMultisigWallet is ERC223Receiver {
 
 
     /// @dev Implementation of ERC223 receiver fallback function in order to protect
-    /// @dev sending tokens (standard ERC223) to smart tokens who doesn&#39;t except them
+    /// @dev sending tokens (standard ERC223) to smart tokens who doesn't except them
     function tokenFallback(address /*_origin*/, uint /*_value*/, bytes /*_data*/) public returns (bool ok) {
         return true;
     }
@@ -776,10 +776,10 @@ contract SimpleTokenVesting is Ownable {
 
     uint256 public vestedDate;
 
-    mapping(address =&gt; uint256) public released;
+    mapping(address => uint256) public released;
 
     modifier vested() {
-        require(now &gt;= vestedDate);
+        require(now >= vestedDate);
         _;
     }
 
@@ -791,7 +791,7 @@ contract SimpleTokenVesting is Ownable {
      */
     function SimpleTokenVesting(address _beneficiary, uint256 _vestedDate) public {
         require(_beneficiary != address(0));
-        require(_vestedDate &gt;= now);
+        require(_vestedDate >= now);
 
         beneficiary = _beneficiary;
         vestedDate = _vestedDate;
@@ -807,7 +807,7 @@ contract SimpleTokenVesting is Ownable {
     {
         uint256 unreleased = token.balanceOf(this);
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         released[token] = released[token].add(unreleased);
 
@@ -817,7 +817,7 @@ contract SimpleTokenVesting is Ownable {
     }
 
     /// @dev Implementation of ERC223 receiver fallback function in order to protect
-    /// @dev sending tokens (standard ERC223) to smart tokens who doesn&#39;t except them
+    /// @dev sending tokens (standard ERC223) to smart tokens who doesn't except them
     function tokenFallback(address /*_origin*/, uint /*_value*/, bytes /*_data*/) pure public returns (bool ok) {
         return true;
     }
@@ -848,28 +848,28 @@ contract VestedMultisigWallet is SimpleMultisigWallet {
     returns(bool)
     {
         if (transactions[transactionId].transactionType == TransactionType.Standard
-        &amp;&amp; isConfirmed(transactionId)
-        &amp;&amp; this.balance &gt;= transactions[transactionId].value) {
+        && isConfirmed(transactionId)
+        && this.balance >= transactions[transactionId].value) {
             transactions[transactionId].executed = true;
             transactions[transactionId].destination.transfer(transactions[transactionId].value);
             Execution(transactionId, now);
             return true;
         } else if(transactions[transactionId].transactionType == TransactionType.Token
-        &amp;&amp; isConfirmed(transactionId)
-        &amp;&amp; StandardToken(transactions[transactionId].token).balanceOf(address(this)) &gt;= transactions[transactionId].value) {
-            require(now &gt;= vestedDate);
+        && isConfirmed(transactionId)
+        && StandardToken(transactions[transactionId].token).balanceOf(address(this)) >= transactions[transactionId].value) {
+            require(now >= vestedDate);
             transactions[transactionId].executed = true;
             StandardToken(transactions[transactionId].token).transfer(transactions[transactionId].destination, transactions[transactionId].value);
             Execution(transactionId, now);
             return true;
         } else if(transactions[transactionId].transactionType == TransactionType.Unfreeze
-        &amp;&amp; isConfirmed(transactionId)) {
+        && isConfirmed(transactionId)) {
             transactions[transactionId].executed = true;
             FreezableToken(transactions[transactionId].token).unfreeze();
             Execution(transactionId, now);
             return true;
         } else if(transactions[transactionId].transactionType == TransactionType.PassOwnership
-        &amp;&amp; isConfirmed(transactionId)) {
+        && isConfirmed(transactionId)) {
             transactions[transactionId].executed = true;
             Ownable(transactions[transactionId].token).transferOwnership(transactions[transactionId].destination);
             Execution(transactionId, now);

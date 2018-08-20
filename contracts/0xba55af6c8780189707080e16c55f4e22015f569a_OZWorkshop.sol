@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,14 +52,14 @@ contract EIP820ImplementerInterface {
     /// @param addr Address that the contract woll implement the interface in behalf of
     /// @param interfaceHash keccak256 of the name of the interface
     /// @return true if the contract can implement the interface represented by
-    ///  `&#236;nterfaceHash` in behalf of `addr`
+    ///  `ìnterfaceHash` in behalf of `addr`
     function canImplementInterfaceForAddress(address addr, bytes32 interfaceHash) view public returns(bool);
 }
 
 contract EIP820Registry {
 
-    mapping (address =&gt; mapping(bytes32 =&gt; address)) interfaces;
-    mapping (address =&gt; address) managers;
+    mapping (address => mapping(bytes32 => address)) interfaces;
+    mapping (address => address) managers;
 
     modifier canManage(address addr) {
         require(getManager(addr) == msg.sender);
@@ -95,7 +95,7 @@ contract EIP820Registry {
     /// @notice Query if an address implements an interface and thru which contract
     /// @param addr Address that is being queried for the implementation of an interface
     /// @param iHash SHA3 of the name of the interface as a string
-    ///  Example `web3.utils.sha3(&#39;Ierc777`&#39;)`
+    ///  Example `web3.utils.sha3('Ierc777`')`
     /// @return The address of the contract that implements a speficic interface
     ///  or 0x0 if `addr` does not implement this interface
     function getInterfaceImplementer(address addr, bytes32 iHash) public constant returns (address) {
@@ -106,9 +106,9 @@ contract EIP820Registry {
     ///  the address itself or a `manager` defined for that address can set it
     /// @param addr Address that you want to define the interface for
     /// @param iHash SHA3 of the name of the interface as a string
-    ///  For example `web3.utils.sha3(&#39;Ierc777&#39;)` for the Ierc777
+    ///  For example `web3.utils.sha3('Ierc777')` for the Ierc777
     function setInterfaceImplementer(address addr, bytes32 iHash, address implementer) public canManage(addr)  {
-        if ((implementer != 0) &amp;&amp; (implementer!=msg.sender)) {
+        if ((implementer != 0) && (implementer!=msg.sender)) {
             require(EIP820ImplementerInterface(implementer).canImplementInterfaceForAddress(addr, iHash));
         }
         interfaces[addr][iHash] = implementer;
@@ -154,28 +154,28 @@ contract AssetRegistryStorage {
   /**
    * Stores an array of assets owned by a given account
    */
-  mapping(address =&gt; uint256[]) internal _assetsOf;
+  mapping(address => uint256[]) internal _assetsOf;
 
   /**
    * Stores the current holder of an asset
    */
-  mapping(uint256 =&gt; address) internal _holderOf;
+  mapping(uint256 => address) internal _holderOf;
 
   /**
    * Stores the index of an asset in the `_assetsOf` array of its holder
    */
-  mapping(uint256 =&gt; uint256) internal _indexOfAsset;
+  mapping(uint256 => uint256) internal _indexOfAsset;
 
   /**
    * Stores the data associated with an asset
    */
-  mapping(uint256 =&gt; string) internal _assetData;
+  mapping(uint256 => string) internal _assetData;
 
   /**
    * For a given account, for a given operator, store whether that operator is
    * allowed to transfer and modify assets on behalf of them.
    */
-  mapping(address =&gt; mapping(address =&gt; bool)) internal _operators;
+  mapping(address => mapping(address => bool)) internal _operators;
 
   /**
    * Simple reentrancy lock
@@ -190,7 +190,7 @@ contract AssetRegistryStorage {
   /**
    * Approval array
    */
-  mapping(uint256 =&gt; address) internal _approval;
+  mapping(uint256 => address) internal _approval;
 }
 
 
@@ -342,7 +342,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
   }
 
   function ownerOf(uint256 assetId) public view returns (address) {
-    // It&#39;s OK to be inefficient here, as this method is for compatibility.
+    // It's OK to be inefficient here, as this method is for compatibility.
     // Users should call `holderOf`
     return holderOf(assetId);
   }
@@ -379,8 +379,8 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
   }
 
   function assetByIndex(address holder, uint256 index) public view returns (uint256) {
-    require(index &lt; _assetsOf[holder].length);
-    require(index &lt; (1&lt;&lt;127));
+    require(index < _assetsOf[holder].length);
+    require(index < (1<<127));
     return _assetsOf[holder][index];
   }
 
@@ -493,14 +493,14 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
   }
 
   function _clearApproval(address holder, uint256 assetId) internal {
-    if (holderOf(assetId) == holder &amp;&amp; _approval[assetId] != 0) {
+    if (holderOf(assetId) == holder && _approval[assetId] != 0) {
       _approval[assetId] = 0;
       Approve(holder, 0, assetId);
     }
   }
 
   function _removeAssetData(uint256 assetId) internal {
-    _assetData[assetId] = &#39;&#39;;
+    _assetData[assetId] = '';
   }
 
   //
@@ -512,7 +512,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
 
     _addAssetTo(beneficiary, assetId, data);
 
-    Transfer(0, beneficiary, assetId, msg.sender, bytes(data), &#39;&#39;);
+    Transfer(0, beneficiary, assetId, msg.sender, bytes(data), '');
   }
 
   function _destroy(uint256 assetId) internal {
@@ -522,7 +522,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
     _removeAssetFrom(holder, assetId);
     _removeAssetData(assetId);
 
-    Transfer(holder, 0, assetId, msg.sender, &#39;&#39;, &#39;&#39;);
+    Transfer(holder, 0, assetId, msg.sender, '', '');
   }
 
   //
@@ -554,11 +554,11 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
   }
 
   function transfer(address to, uint256 assetId) public {
-    return _doTransfer(to, assetId, &#39;&#39;, 0, &#39;&#39;);
+    return _doTransfer(to, assetId, '', 0, '');
   }
 
   function transfer(address to, uint256 assetId, bytes userData) public {
-    return _doTransfer(to, assetId, userData, 0, &#39;&#39;);
+    return _doTransfer(to, assetId, userData, 0, '');
   }
 
   function transfer(address to, uint256 assetId, bytes userData, bytes operatorData) public {
@@ -591,7 +591,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
       require(!_reentrancy);
       _reentrancy = true;
 
-      address recipient = interfaceAddr(to, &#39;IAssetHolder&#39;);
+      address recipient = interfaceAddr(to, 'IAssetHolder');
       require(recipient != 0);
 
       IAssetHolder(recipient).onAssetReceived(assetId, holder, to, userData, operator, operatorData);
@@ -619,7 +619,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
   function _isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -632,7 +632,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820Im
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -645,7 +645,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -687,13 +687,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -701,7 +701,7 @@ contract RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev constructor. Sets msg.sender as admin by default
@@ -818,7 +818,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -838,7 +838,7 @@ contract Mintable821 is StandardAssetRegistry, RBAC {
 
   uint256 public nextAssetId = 0;
 
-  string constant ROLE_MINTER = &quot;minter&quot;;
+  string constant ROLE_MINTER = "minter";
   bool public minting;
 
   modifier onlyMinter() {
@@ -854,9 +854,9 @@ contract Mintable821 is StandardAssetRegistry, RBAC {
   }
 
   function Mintable821(address minter) public {
-    _name = &quot;Mintable821&quot;;
-    _symbol = &quot;MINT&quot;;
-    _description = &quot;ERC 821 minting contract&quot;;
+    _name = "Mintable821";
+    _symbol = "MINT";
+    _description = "ERC 821 minting contract";
 
     removeRole(msg.sender, ROLE_ADMIN);
     addRole(minter, ROLE_MINTER);
@@ -910,8 +910,8 @@ contract OZWorkshop is Mintable821 {
     Mintable821(msg.sender)
     public
   {
-    _name = &quot;OZ Workshop&quot;;
-    _symbol = &quot;OZWS&quot;;
-    _description = &quot;Awarded for completing the OpenZeppelin Workshop at ETHDenver 2018&quot;;
+    _name = "OZ Workshop";
+    _symbol = "OZWS";
+    _description = "Awarded for completing the OpenZeppelin Workshop at ETHDenver 2018";
   }
 }

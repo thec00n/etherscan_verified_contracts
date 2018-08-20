@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ contract WaterCrowdsale {
   uint256 public thirdWeekBonusInWeek;
  
   
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
   bool fundingGoalReached = false;
   bool crowdsaleClosed = false;
   /**
@@ -80,12 +80,12 @@ contract WaterCrowdsale {
   event GoalReached(address recipient, uint totalAmountRaised);
   
   modifier isMinimum() {
-         if(msg.value &lt; 500000000000000000) throw;
+         if(msg.value < 500000000000000000) throw;
         _;
     }
     
   modifier afterDeadline() { 
-      if (now &lt;= endTimeinMinutes) throw;
+      if (now <= endTimeinMinutes) throw;
       _;
   }    
 
@@ -132,11 +132,11 @@ contract WaterCrowdsale {
     // calculate token amount to be sent
     uint256 tokens = (weiAmount) * price;
     
-    if(now &lt; firstWeekBonusInWeek){
+    if(now < firstWeekBonusInWeek){
       tokens += (tokens * 20) / 100;
-    }else if(now &lt; secondWeekBonusInWeek){
+    }else if(now < secondWeekBonusInWeek){
       tokens += (tokens * 10) / 100;
-    }else if(now &lt; thirdWeekBonusInWeek){
+    }else if(now < thirdWeekBonusInWeek){
       tokens += (tokens * 5) / 100;
     }
     // update state
@@ -149,10 +149,10 @@ contract WaterCrowdsale {
   
   //withdrawal or refund for investor and beneficiary
   function safeWithdrawal() afterDeadline {
-        if (weiRaised &lt; fundingGoal &amp;&amp; weiRaised &lt; minimumFundingGoal) {
+        if (weiRaised < fundingGoal && weiRaised < minimumFundingGoal) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                     /*tokenReward.burnFrom(msg.sender, price * amount);*/
@@ -162,7 +162,7 @@ contract WaterCrowdsale {
             }
         }
 
-        if ((weiRaised &gt;= fundingGoal || weiRaised &gt;= minimumFundingGoal) &amp;&amp; wallet == msg.sender) {
+        if ((weiRaised >= fundingGoal || weiRaised >= minimumFundingGoal) && wallet == msg.sender) {
             if (wallet.send(weiRaised)) {
                 FundTransfer(wallet, weiRaised, false);
                 GoalReached(wallet, weiRaised);
@@ -176,14 +176,14 @@ contract WaterCrowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTimeInMinutes &amp;&amp; now &lt;= endTimeinMinutes;
+    bool withinPeriod = now >= startTimeInMinutes && now <= endTimeinMinutes;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTimeinMinutes;
+    return now > endTimeinMinutes;
   }
  
 }

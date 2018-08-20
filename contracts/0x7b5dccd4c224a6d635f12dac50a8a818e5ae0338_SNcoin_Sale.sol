@@ -50,7 +50,7 @@ contract SNcoin_Sale is Owned {
     // Constructor
     // ------------------------------------------------------------------------
     constructor(address _tokenAddress, address _vaultAddress, bool _fundingEnabled, uint _newTokenPrice) public {
-        require((_tokenAddress != 0) &amp;&amp; (_vaultAddress != 0) &amp;&amp; (_newTokenPrice &gt; 0));
+        require((_tokenAddress != 0) && (_vaultAddress != 0) && (_newTokenPrice > 0));
         tokenContract = MinimalTokenInterface(_tokenAddress);
         vaultAddress = _vaultAddress;
         fundingEnabled = _fundingEnabled;
@@ -68,13 +68,13 @@ contract SNcoin_Sale is Owned {
     }
 
     function updateTokenPrice(uint _newTokenPrice) public onlyOwner {
-        require(_newTokenPrice &gt; 0);
+        require(_newTokenPrice > 0);
         tokenPrice = _newTokenPrice;
         return;
     }
 
     function () public payable {
-        require (fundingEnabled &amp;&amp; (tokenPrice &gt; 0) &amp;&amp; (msg.value &gt;= tokenPrice));
+        require (fundingEnabled && (tokenPrice > 0) && (msg.value >= tokenPrice));
         
         totalCollected += msg.value;
 

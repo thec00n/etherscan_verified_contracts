@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -137,17 +137,17 @@ contract PreSale is Pausable {
   
   uint public period;
 
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   address[] public investors;
 
   modifier saleIsOn() {
-    require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+    require(now > start && now < start + period * 1 days);
     _;
   }
 
   modifier isUnderHardcap() {
-    require(invested &lt; hardcap);
+    require(invested < hardcap);
     _;
   }
 
@@ -181,7 +181,7 @@ contract PreSale is Pausable {
   }
 
   function invest() saleIsOn isUnderHardcap whenNotPaused payable {
-    require(msg.value &gt;= min);
+    require(msg.value >= min);
     wallet.transfer(msg.value);
     if(balances[msg.sender] == 0) {
       investors.push(msg.sender);    

@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,13 +51,13 @@ contract DistributeKRI is Ownable{
 		// addresses = _addrs;
 		// balances = _bals;
 		// distribute();
-		for(uint i = 0; i &lt; _addrs.length; ++i){
+		for(uint i = 0; i < _addrs.length; ++i){
 			tokenReward.transfer(_addrs[i],_bals[i]*10**18);
 		}
 	}
 
 	// function distribute() onlyOwner {
-	// 	for(uint i = 0; i &lt; addresses.length; ++i){
+	// 	for(uint i = 0; i < addresses.length; ++i){
 	// 		tokenReward.transfer(addresses[i],balances[i]*10**18);
 	// 	}
 	// }

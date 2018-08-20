@@ -3,15 +3,15 @@ pragma solidity ^0.4.8;
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract TMN {
-    string public standard = &#39;ERC20&#39;;
+    string public standard = 'ERC20';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -20,14 +20,14 @@ contract TMN {
     function TMN() {
         totalSupply = 4955000000000;
         balanceOf[msg.sender] = totalSupply;                                     
-        name = &#39;Transmission&#39;;                                   
-        symbol = &#39;TMN&#39;;                          
+        name = 'Transmission';                                   
+        symbol = 'TMN';                          
         decimals = 4;                            
     }
 
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; 
+        if (balanceOf[msg.sender] < _value) throw;           
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; 
         balanceOf[msg.sender] -= _value;                     
         balanceOf[_to] += _value;                            
         Transfer(msg.sender, _to, _value);                  
@@ -49,9 +49,9 @@ contract TMN {
     }        
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw;   
+        if (balanceOf[_from] < _value) throw;                
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw;   
         balanceOf[_from] -= _value;                          
         balanceOf[_to] += _value;                            
         allowance[_from][msg.sender] -= _value;

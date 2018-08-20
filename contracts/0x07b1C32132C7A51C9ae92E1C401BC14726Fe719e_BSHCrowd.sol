@@ -10,7 +10,7 @@ contract BSHCrowd {
     bool public fundingGoalReached = false;  //达成众筹目标
     bool public crowdsaleClosed = false; //众筹关闭
 
-    mapping(address =&gt; uint256) public balance; 
+    mapping(address => uint256) public balance; 
 
     event GoalReached(address _beneficiary, uint _amountRaised);
     event FundTransfer(address _backer, uint _amount, bool _isContribution);
@@ -40,7 +40,7 @@ contract BSHCrowd {
      * 检测众筹目标是否已经达到
      */
     function checkGoalReached() public {
-        if (amountRaised &gt;= fundingGoal) {
+        if (amountRaised >= fundingGoal) {
             //达成众筹目标
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
@@ -63,7 +63,7 @@ contract BSHCrowd {
      * 提币
      */
     function safeWithdrawal(uint256 _value) public {
-        if (beneficiary == msg.sender &amp;&amp; _value &gt; 0) {
+        if (beneficiary == msg.sender && _value > 0) {
             if (beneficiary.send(_value)) {
                 FundTransfer(beneficiary, _value, false);
             } else {

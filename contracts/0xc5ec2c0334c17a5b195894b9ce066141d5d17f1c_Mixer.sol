@@ -22,10 +22,10 @@ library bn256g1 {
         return Point(1, 2);
     }
     function equal(Point a, Point b) internal pure returns (bool) {
-        return a.X == b.X &amp;&amp; a.Y == b.Y;
+        return a.X == b.X && a.Y == b.Y;
     }
     function negate(Point p) internal pure returns (Point) {
-        if(p.X == 0 &amp;&amp; p.Y == 0) {
+        if(p.X == 0 && p.Y == 0) {
             return Point(0, 0);
         }
         return Point(p.X, FIELD_ORDER - (p.Y % FIELD_ORDER));
@@ -49,7 +49,7 @@ library bn256g1 {
         return (beta, y);
     }
     function isInfinity(Point p) internal pure returns (bool) {
-        return p.X == 0 &amp;&amp; p.Y == 0;
+        return p.X == 0 && p.Y == 0;
     }
     function isOnCurve(Point p) internal pure returns (bool) {
         uint256 p_squared = mulmod(p.X, p.X, FIELD_ORDER);
@@ -118,10 +118,10 @@ library LinkableRing {
         return bytes32(self.hash.X);
     }
     function isDead(Data storage self) internal view returns (bool) {
-        return self.hash.X == 0 || (self.tags.length &gt;= RING_SIZE &amp;&amp; self.pubkeys.length &gt;= RING_SIZE);
+        return self.hash.X == 0 || (self.tags.length >= RING_SIZE && self.pubkeys.length >= RING_SIZE);
     }
     function pubExists(Data storage self, uint256 pub_x) internal view returns (bool) {
-        for(uint i = 0; i &lt; self.pubkeys.length; i++) {
+        for(uint i = 0; i < self.pubkeys.length; i++) {
             if(self.pubkeys[i].X == pub_x) {
                 return true;
             }
@@ -129,7 +129,7 @@ library LinkableRing {
         return false;
     }
     function tagExists(Data storage self, uint256 pub_x) internal view returns (bool) {
-        for(uint i = 0; i &lt; self.tags.length; i++) {
+        for(uint i = 0; i < self.tags.length; i++) {
             if(self.tags[i] == pub_x) {
                 return true;
             }
@@ -181,7 +181,7 @@ library LinkableRing {
         uint256 hashout = uint256(sha256(self.hash.X, tag_x, tag_y));
         uint256 csum = 0;
 
-        for (uint i = 0; i &lt; self.pubkeys.length; i++) {
+        for (uint i = 0; i < self.pubkeys.length; i++) {
             uint256 cj = ctlist[2*i] % bn256g1.genOrder();
             uint256 tj = ctlist[2*i+1] % bn256g1.genOrder();
             hashout = ringLink(hashout, cj, tj, bn256g1.Point(tag_x, tag_y), self.hash, self.pubkeys[i]);
@@ -222,9 +222,9 @@ contract Mixer {
         LinkableRing.Data ring;
     }
 
-    mapping(bytes32 =&gt; Data) internal m_rings;
-    mapping(uint256 =&gt; bytes32) internal m_pubx_to_ring;
-    mapping(bytes32 =&gt; bytes32) internal m_filling;
+    mapping(bytes32 => Data) internal m_rings;
+    mapping(uint256 => bytes32) internal m_pubx_to_ring;
+    mapping(bytes32 => bytes32) internal m_filling;
     
     uint256 internal m_ring_ctr;
 
@@ -260,7 +260,7 @@ contract Mixer {
             codeLength := extcodesize(token)
         }
 
-        require(token != 0 &amp;&amp; codeLength &gt; 0);
+        require(token != 0 && codeLength > 0);
         bytes32 ring_guid = depositLogic(token, denomination, pub_x, pub_y);
         ERC20Compatible untrustedErc20Token = ERC20Compatible(token);
         untrustedErc20Token.transferFrom(msg.sender, this, denomination);
@@ -304,7 +304,7 @@ contract Mixer {
     function depositLogic(address token, uint256 denomination, uint256 pub_x, uint256 pub_y)
         internal returns (bytes32)
     {
-        require(denomination != 0 &amp;&amp; 0 == (denomination &amp; (denomination - 1)));
+        require(denomination != 0 && 0 == (denomination & (denomination - 1)));
         require(0 == uint256(m_pubx_to_ring[pub_x]));
         bytes32 filling_id;
         Data storage entry;
@@ -333,7 +333,7 @@ contract Mixer {
         emit LogMixerWithdraw(ring_id, tag_x, entry.token, entry.denomination);
         Data memory entrySaved = entry;
         if(ring.isDead()) {
-            for(uint i = 0; i &lt; ring.pubkeys.length; i++) {
+            for(uint i = 0; i < ring.pubkeys.length; i++) {
                 delete m_pubx_to_ring[ring.pubkeys[i].X];
             }
             delete m_rings[ring_id];

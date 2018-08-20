@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 contract Parallax {
     
     // Mapping of last bid for each price.
-    mapping(uint =&gt; address) cup;
+    mapping(uint => address) cup;
 
 
     // Address of creator.
@@ -25,20 +25,20 @@ contract Parallax {
         // Rule 1: You can only send multiples of 0.002 ether.
         require(msg.value % 2 finney == 0);
         
-        // Rule 2: You can&#39;t close the game by becoming the highest bidder.
-        if(msg.value &gt; highestBid)
-            require(this.balance - msg.value &lt; deadline);
+        // Rule 2: You can't close the game by becoming the highest bidder.
+        if(msg.value > highestBid)
+            require(this.balance - msg.value < deadline);
         
         // Reassign limits.
-        if(msg.value &lt; lowestBid)   lowestBid = msg.value;
-        if(msg.value &gt; highestBid)  highestBid = msg.value;
+        if(msg.value < lowestBid)   lowestBid = msg.value;
+        if(msg.value > highestBid)  highestBid = msg.value;
         
         
         // Set the last bidder for the price.
         cup[msg.value] = msg.sender;
         
         // Check if the deadline was reached.
-        if(this.balance &gt;= deadline) {
+        if(this.balance >= deadline) {
             
             // Winning condition: The last bidder of the average price
             // get the chicken.

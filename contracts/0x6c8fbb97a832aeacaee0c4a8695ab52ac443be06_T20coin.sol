@@ -1,6 +1,6 @@
 contract T20coin {
   
-    string public standard = &#39;0.1&#39;;
+    string public standard = '0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -8,17 +8,17 @@ contract T20coin {
     uint256 public totalSupply;
 
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     
     function T20coin() {
 
          initialSupply = 10000000000;
-         name =&quot;T20coin&quot;;
+         name ="T20coin";
         decimals = 1;
-         symbol = &quot;T20&quot;;
+         symbol = "T20";
         
         balanceOf[msg.sender] = initialSupply;              
         totalSupply = initialSupply;                
@@ -27,8 +27,8 @@ contract T20coin {
 
     
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; 
+        if (balanceOf[msg.sender] < _value) throw;           
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; 
         balanceOf[msg.sender] -= _value;                     
         balanceOf[_to] += _value;                            
       

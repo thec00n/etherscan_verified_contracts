@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;TestToken&#39;  token contract
+// 'TestToken'  token contract
 //
 // Deployed to : main net
 // Symbol      : L51TT
@@ -21,10 +21,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(int a, int b) public pure returns (int c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(int a, int b) public pure returns (int c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(int a, int b) public pure returns (int c) {
@@ -32,7 +32,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(int a, int b) public pure returns (int c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -105,21 +105,21 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
     int8 public decimals;
     int public _totalSupply;
 
-    mapping(address =&gt; int) balances;
-    mapping(address =&gt; mapping(address =&gt; int)) allowed;
+    mapping(address => int) balances;
+    mapping(address => mapping(address => int)) allowed;
 
 
 
     //- In mappingg The entire storage space is virtually initialized to 0
-    //-    -2   =&gt; operation inside whitelist implemented or result is unknown
-    //-    -1   =&gt; operation inside whitelist not permitted
-    //-     0   =&gt; NOT existing in whitelist AKA NOT Allowed
-    //-     1   =&gt; exist in whitelist and allowed
-    //-     2   =&gt; exist in whitelist but in quarantine
-    //-     3   =&gt; exist in whitelist but suspended
-    //-     4   =&gt; exist in whitelist but disabled
-    //-     5   =&gt; exist in whitelist but erased
-    mapping(address =&gt; int) private _whitelist;
+    //-    -2   => operation inside whitelist implemented or result is unknown
+    //-    -1   => operation inside whitelist not permitted
+    //-     0   => NOT existing in whitelist AKA NOT Allowed
+    //-     1   => exist in whitelist and allowed
+    //-     2   => exist in whitelist but in quarantine
+    //-     3   => exist in whitelist but suspended
+    //-     4   => exist in whitelist but disabled
+    //-     5   => exist in whitelist but erased
+    mapping(address => int) private _whitelist;
 
     //- modifier onlyOwner() - Prevents function from running if it is called by anyone other than the owner.
     function Subscribe(address addr) onlyOwner public returns (bool) {
@@ -162,8 +162,8 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
     // Constructor
     // ------------------------------------------------------------------------
     function Lab51TestToken() public {
-        symbol = &quot;L51TT&quot;;
-        name = &quot;Lab51 Test Token&quot;;
+        symbol = "L51TT";
+        name = "Lab51 Test Token";
         decimals = 18;
         _totalSupply = -100000000000000000000000000;
         balances[0x8aD2a62AE1EDDAB27322541E6602466f61428e8B] = _totalSupply;
@@ -188,8 +188,8 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, int tokens) public returns (bool success) {
@@ -202,7 +202,7 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -235,7 +235,7 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (int remaining) {
         return allowed[tokenOwner][spender];
@@ -244,7 +244,7 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, int tokens, bytes data) public returns (bool success) {
@@ -256,7 +256,7 @@ contract Lab51TestToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

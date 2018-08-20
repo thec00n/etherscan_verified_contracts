@@ -9,13 +9,13 @@ pragma solidity ^0.4.13;
 
 contract PlusCoin {
     address public owner; // Token owner address
-    mapping (address =&gt; uint256) public balances; // balanceOf
-    // mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances; // balanceOf
+    // mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) allowed;
 
-    string public standard = &#39;PlusCoin 1.0&#39;;
-    string public constant name = &quot;PlusCoin&quot;;
-    string public constant symbol = &quot;PLC&quot;;
+    string public standard = 'PlusCoin 1.0';
+    string public constant name = "PlusCoin";
+    string public constant symbol = "PLC";
     uint   public constant decimals = 18;
     uint public totalSupply;
     
@@ -101,8 +101,8 @@ contract PlusCoin {
 
     // fallback function
     function() payable {
-        require(current_state != State.Paused &amp;&amp; current_state != State.Created &amp;&amp; current_state != State.Freedom);
-        require(msg.value &gt;= 1);
+        require(current_state != State.Paused && current_state != State.Created && current_state != State.Freedom);
+        require(msg.value >= 1);
         require(msg.sender != owner);
         buyTokens(msg.sender);
     }
@@ -124,20 +124,20 @@ contract PlusCoin {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 
     // Buy entry point
     function buy() public payable {
-        require(current_state != State.Paused &amp;&amp; current_state != State.Created &amp;&amp; current_state != State.Freedom);
-        require(msg.value &gt;= 1);
+        require(current_state != State.Paused && current_state != State.Created && current_state != State.Freedom);
+        require(msg.value >= 1);
         require(msg.sender != owner);
         buyTokens(msg.sender);
     }
@@ -145,8 +145,8 @@ contract PlusCoin {
     // Payable function for buy coins from token owner
     function buyTokens(address _buyer) public payable
     {
-        require(current_state != State.Paused &amp;&amp; current_state != State.Created &amp;&amp; current_state != State.Freedom);
-        require(msg.value &gt;= 1);
+        require(current_state != State.Paused && current_state != State.Created && current_state != State.Freedom);
+        require(msg.value >= 1);
         require(_buyer != owner);
         
         uint256 wei_value = msg.value;
@@ -157,19 +157,19 @@ contract PlusCoin {
         uint256 currentSoldAmount = safeAdd(tokens, soldAmount);
 
         if(current_state == State.Presale) {
-            require(currentSoldAmount &lt;= TOKEN_PRESALE_LIMIT);
+            require(currentSoldAmount <= TOKEN_PRESALE_LIMIT);
         }
         if(current_state == State.ICO1) {
-            require(currentSoldAmount &lt;= TOKEN_ICO1_LIMIT);
+            require(currentSoldAmount <= TOKEN_ICO1_LIMIT);
         }
         if(current_state == State.ICO2) {
-            require(currentSoldAmount &lt;= TOKEN_ICO2_LIMIT);
+            require(currentSoldAmount <= TOKEN_ICO2_LIMIT);
         }
         if(current_state == State.ICO3) {
-            require(currentSoldAmount &lt;= TOKEN_ICO3_LIMIT);
+            require(currentSoldAmount <= TOKEN_ICO3_LIMIT);
         }
 
-        require( (balances[owner] - tokens) &gt;= owner_MIN_LIMIT );
+        require( (balances[owner] - tokens) >= owner_MIN_LIMIT );
         
         balances[owner] = safeSub(balances[owner], tokens);
         balances[_buyer] = safeAdd(balances[_buyer], tokens);
@@ -206,15 +206,15 @@ contract PlusCoin {
         returns (bool success)
     {
         bool canSwitchState
-            =  (current_state == State.Created &amp;&amp; _nextState == State.Presale)
-            || (current_state == State.Presale &amp;&amp; _nextState == State.ICO1)
-            || (current_state == State.ICO1 &amp;&amp; _nextState == State.ICO2)
-            || (current_state == State.ICO2 &amp;&amp; _nextState == State.ICO3)
-            || (current_state == State.ICO3 &amp;&amp; _nextState == State.Freedom)
-            //pause (allowed only &#39;any state-&gt;pause&#39; &amp; &#39;pause-&gt;presale&#39; transition)
-            // || (current_state == State.Presale &amp;&amp; _nextState == State.Paused)
-            // || (current_state == State.Paused &amp;&amp; _nextState == State.Presale)
-            || (current_state != State.Freedom &amp;&amp; _nextState == State.Paused)
+            =  (current_state == State.Created && _nextState == State.Presale)
+            || (current_state == State.Presale && _nextState == State.ICO1)
+            || (current_state == State.ICO1 && _nextState == State.ICO2)
+            || (current_state == State.ICO2 && _nextState == State.ICO3)
+            || (current_state == State.ICO3 && _nextState == State.Freedom)
+            //pause (allowed only 'any state->pause' & 'pause->presale' transition)
+            // || (current_state == State.Presale && _nextState == State.Paused)
+            // || (current_state == State.Paused && _nextState == State.Presale)
+            || (current_state != State.Freedom && _nextState == State.Paused)
             || (current_state == State.Paused);
 
         require(canSwitchState);
@@ -274,7 +274,7 @@ contract PlusCoin {
         onlyOwnerBeforeFree
         returns (bool success) 
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -286,7 +286,7 @@ contract PlusCoin {
         onlyOwnerBeforeFree
         returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -318,7 +318,7 @@ contract PlusCoin {
     
 
 
-    ///suicide &amp; send funds to owner
+    ///suicide & send funds to owner
     function destroy() { 
         if (msg.sender == owner) {
           suicide(owner);

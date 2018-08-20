@@ -19,22 +19,22 @@ library SafeMath {
 
 	// devides two values safely and returns result
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	// subtracts two values safely and returns result
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	// adds two values safely and returns result
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -43,7 +43,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -91,7 +91,7 @@ contract Timestamped is Ownable {
 	uint256 public plus = 0;
 
 	function getBlockTime() public view returns (uint256) {
-		if(ts &gt; 0) {
+		if(ts > 0) {
 			return ts + plus;
 		} else {
 			return block.timestamp + plus; 
@@ -130,7 +130,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	/**
 	* @dev transfer token for a specified address
@@ -139,7 +139,7 @@ contract BasicToken is ERC20Basic {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -171,7 +171,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
 
 	// tracks the allowance of address. 
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 
 	/**
@@ -182,8 +182,8 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
 	 *
 	 * Beware that changing an allowance with this method brings the risk that someone may use both the old
 	 * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	 * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	 * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	 * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	 * @param _spender The address which will spend the funds.
 	 * @param _value The amount of tokens to be spent.
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
 		uint256 oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -287,7 +287,7 @@ contract ERC223Receiver {
 		tkn.sender = _from;
 		tkn.value = _value;
 		tkn.data = _data;
-		// uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+		// uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
 		// tkn.sig = bytes4(u);
 	  
 		/* tkn variable is analogue of msg variable of Ether transaction
@@ -338,7 +338,7 @@ contract ERC223Token is ERC223, StandardToken {
 		if(isContract(_to)) {
 			// validate the address and balance
 			require(_to != address(0));
-			require(_value &lt;= balances[msg.sender]);
+			require(_value <= balances[msg.sender]);
 
 			// SafeMath.sub will throw if there is not enough balance.
 			balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -411,7 +411,7 @@ contract ERC223Token is ERC223, StandardToken {
 			//retrieve the size of the code on target address, this needs assembly
 			length := extcodesize(_addr)
 		}
-		return (length &gt; 0);
+		return (length > 0);
 	}
 
 	/**
@@ -424,7 +424,7 @@ contract ERC223Token is ERC223, StandardToken {
 	function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
 		// validate the address and balance
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -445,7 +445,7 @@ contract ERC223Token is ERC223, StandardToken {
 	function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
 		// validate the address and balance
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -467,8 +467,8 @@ contract ERC223Token is ERC223, StandardToken {
 */
 contract dHealthToken is ERC223Token, Ownable {
 
-	string public constant name = &quot;dHealth&quot;;
-	string public constant symbol = &quot;dHt&quot;;
+	string public constant name = "dHealth";
+	string public constant symbol = "dHt";
 	uint256 public constant decimals = 18;
 
 	uint256 constant INITIAL_SUPPLY = 500000000 * 1E18;
@@ -592,19 +592,19 @@ contract dHealthEtherDistributor is Ownable, Timestamped {
 		
 		// distribute funds to founders 		
 		uint256 founderPart = balance.mul(founderShare).div(100);
-		if(founderPart &gt; 0) {
+		if(founderPart > 0) {
 			founderContract.transfer(founderPart);
 		}
 
 		// distribute funds to technology 		
 		uint256 technologyPart = balance.mul(technologyShare).div(100);
-		if(technologyPart &gt; 0) {
+		if(technologyPart > 0) {
 			technologyContract.transfer(technologyPart);
 		}
 
 		// distribute left balance to project
 		uint256 projectPart = this.balance;
-		if(projectPart &gt; 0) {
+		if(projectPart > 0) {
 			projectContract.transfer(projectPart);
 		}
 	}
@@ -640,7 +640,7 @@ contract dHealthTokenIncentive is dHealthTokenDistributor, ERC223Receiver {
 	* @dev Method called by owner of contract to withdraw all tokens after timeout has reached
 	*/
 	function withdraw() onlyOwner public {
-		require(contractTimeout &lt;= getBlockTime());
+		require(contractTimeout <= getBlockTime());
 		
 		// send remaining tokens back to owner.
 		uint256 tokens = token.balanceOf(this); 
@@ -708,7 +708,7 @@ contract dHealthTokenGrowth is Ownable, ERC223Receiver, Timestamped {
 	*/
 	function withdrawExchangesToken() public {
 		// check if time has reached
-		require(exchangesLockEndingAt &lt;= getBlockTime());
+		require(exchangesLockEndingAt <= getBlockTime());
 		// ensure that tokens are not already transferred
 		require(exchangesStatus == false);
 		
@@ -723,7 +723,7 @@ contract dHealthTokenGrowth is Ownable, ERC223Receiver, Timestamped {
 	*/
 	function withdrawCountriesToken() public {
 		// check if time has reached
-		require(countriesLockEndingAt &lt;= getBlockTime());
+		require(countriesLockEndingAt <= getBlockTime());
 		// ensure that tokens are not already transferred
 		require(countriesStatus == false);
 		
@@ -738,7 +738,7 @@ contract dHealthTokenGrowth is Ownable, ERC223Receiver, Timestamped {
 	*/
 	function withdrawAcquisitionsToken() public {
 		// check if time has reached
-		require(acquisitionsLockEndingAt &lt;= getBlockTime());
+		require(acquisitionsLockEndingAt <= getBlockTime());
 		// ensure that tokens are not already transferred
 		require(acquisitionsStatus == false);
 		
@@ -753,7 +753,7 @@ contract dHealthTokenGrowth is Ownable, ERC223Receiver, Timestamped {
 	*/
 	function withdrawCoindropsToken() public {
 		// check if time has reached
-		require(coindropsLockEndingAt &lt;= getBlockTime());
+		require(coindropsLockEndingAt <= getBlockTime());
 		// ensure that tokens are not already transferred
 		require(coindropsStatus == false);
 		
@@ -767,7 +767,7 @@ contract dHealthTokenGrowth is Ownable, ERC223Receiver, Timestamped {
 	* @dev Method called by owner of contract to withdraw all tokens after timeout has reached
 	*/
 	function withdraw() onlyOwner public {
-		require(contractTimeout &lt;= getBlockTime());
+		require(contractTimeout <= getBlockTime());
 		
 		// send remaining tokens back to owner.
 		uint256 tokens = token.balanceOf(this); 
@@ -833,7 +833,7 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 	uint256 public totalEtherRaised;
 
 	// ether raised per wallet
-	mapping(address =&gt; uint256) public etherRaisedPerWallet;
+	mapping(address => uint256) public etherRaisedPerWallet;
 
 	// is contract close and ended
 	bool public isClose = false;
@@ -874,30 +874,30 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 		bool validAmount = false;
 
 		// check if phase 1 is running	
-		if(phase1StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase1EndingAt) {
+		if(phase1StartingAt <= getBlockTime() && getBlockTime() <= phase1EndingAt) {
 			// check if tokens is falling in timerange
 			validTimestamp = true;
 
 			// check if token amount is falling in limit
-			validAmount = phase1MaxTokenForSale.sub(totalTokenSold) &gt;= amount;
+			validAmount = phase1MaxTokenForSale.sub(totalTokenSold) >= amount;
 		}
 
 		// check if phase 2 is running	
-		if(phase2StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase2EndingAt) {
+		if(phase2StartingAt <= getBlockTime() && getBlockTime() <= phase2EndingAt) {
 			// check if tokens is falling in timerange
 			validTimestamp = true;
 
 			// check if token amount is falling in limit
-			validAmount = phase2MaxTokenForSale.sub(totalTokenSold) &gt;= amount;
+			validAmount = phase2MaxTokenForSale.sub(totalTokenSold) >= amount;
 		}
 
 		// check if phase 3 is running	
-		if(phase3StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase3EndingAt) {
+		if(phase3StartingAt <= getBlockTime() && getBlockTime() <= phase3EndingAt) {
 			// check if tokens is falling in timerange
 			validTimestamp = true;
 
 			// check if token amount is falling in limit
-			validAmount = phase3MaxTokenForSale.sub(totalTokenSold) &gt;= amount;
+			validAmount = phase3MaxTokenForSale.sub(totalTokenSold) >= amount;
 		}
 
 		// check if value of the ether is valid
@@ -907,26 +907,26 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 		bool validToken = amount != 0;
 
 		// validate if all conditions are met
-		return validTimestamp &amp;&amp; validAmount &amp;&amp; validValue &amp;&amp; validToken &amp;&amp; !isClose &amp;&amp; !isPaused;
+		return validTimestamp && validAmount && validValue && validToken && !isClose && !isPaused;
 	}
 
 	function calculate(uint256 value) internal constant returns (uint256) {
 		uint256 amount = 0;
 			
 		// check if phase 1 is running	
-		if(phase1StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase1EndingAt) {
+		if(phase1StartingAt <= getBlockTime() && getBlockTime() <= phase1EndingAt) {
 			// calculate the amount of tokens
 			amount = value.mul(1E18).div(phase1TokenPriceInEth);
 		}
 
 		// check if phase 2 is running	
-		if(phase2StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase2EndingAt) {
+		if(phase2StartingAt <= getBlockTime() && getBlockTime() <= phase2EndingAt) {
 			// calculate the amount of tokens
 			amount = value.mul(1E18).div(phase2TokenPriceInEth);
 		}
 
 		// check if phase 3 is running	
-		if(phase3StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase3EndingAt) {
+		if(phase3StartingAt <= getBlockTime() && getBlockTime() <= phase3EndingAt) {
 			// calculate the amount of tokens
 			amount = value.mul(1E18).div(phase3TokenPriceInEth);
 		}
@@ -942,19 +942,19 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 		etherRaisedPerWallet[msg.sender] = etherRaisedPerWallet[msg.sender].add(value);
 
 		// check if phase 1 is running	
-		if(phase1StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase1EndingAt) {
+		if(phase1StartingAt <= getBlockTime() && getBlockTime() <= phase1EndingAt) {
 			// add tokens to phase1 counts
 			phase1TokenSold = phase1TokenSold.add(amount);
 		}
 
 		// check if phase 2 is running	
-		if(phase2StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase2EndingAt) {
+		if(phase2StartingAt <= getBlockTime() && getBlockTime() <= phase2EndingAt) {
 			// add tokens to phase2 counts
 			phase2TokenSold = phase2TokenSold.add(amount);
 		}
 
 		// check if phase 3 is running	
-		if(phase3StartingAt &lt;= getBlockTime() &amp;&amp; getBlockTime() &lt;= phase3EndingAt) {
+		if(phase3StartingAt <= getBlockTime() && getBlockTime() <= phase3EndingAt) {
 			// add tokens to phase3 counts
 			phase3TokenSold = phase3TokenSold.add(amount);
 		}
@@ -979,10 +979,10 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 		uint256 value = msg.value;
 
 		// throw error if not enough ethers sent
-		require(value &gt;= minEthPerTransaction);
+		require(value >= minEthPerTransaction);
 
 		// refund the extra ethers if sent more than allowed
-		if(value &gt; maxEthPerTransaction) {
+		if(value > maxEthPerTransaction) {
 			// more ethers are sent so refund extra
 			msg.sender.transfer(value.sub(maxEthPerTransaction));
 			value = maxEthPerTransaction;
@@ -1027,7 +1027,7 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 	* This will send remaining tokens to growth contract
 	*/	
 	function sendToGrowthContract() onlyOwner public {
-		require(contractTimeout &lt;= getBlockTime());
+		require(contractTimeout <= getBlockTime());
 
 		// send remaining tokens to growth contract.
 		uint256 tokens = token.balanceOf(this); 
@@ -1050,7 +1050,7 @@ contract dHealthTokenSale is dHealthEtherDistributor, ERC223Receiver {
 	* This will distribute available funds across team members
 	*/	
 	function withdraw() onlyOwner public {
-		require(contractTimeout &lt;= getBlockTime());
+		require(contractTimeout <= getBlockTime());
 
 		// send remaining tokens to growth contract.
 		uint256 tokens = token.balanceOf(this); 
@@ -1124,7 +1124,7 @@ contract dHealthEtherVesting is Ownable, Timestamped {
 	}
 
 	// vesting that tracks vestings done against the period.
-	mapping (uint256 =&gt; VestingStruct) public vestings;
+	mapping (uint256 => VestingStruct) public vestings;
 
 	// Event to log whenever the payment is done
 	event Payouts(uint256 indexed period, bool status, address wallet, uint256 amount, uint256 timestamp);
@@ -1148,19 +1148,19 @@ contract dHealthEtherVesting is Ownable, Timestamped {
 	*/
 	function pay(uint256 percentage) public payable {
 		// requested amount should always be less than vestingAmount variable
-		percentage = percentage &lt;= vestingAmount ? percentage : vestingAmount;
+		percentage = percentage <= vestingAmount ? percentage : vestingAmount;
 
 		// calculate amount allowed
 		var (period, amount) = calculate(getBlockTime() , this.balance , percentage);
 
 		// payment should not be done if period is zero
-		require(period &gt; 0);
+		require(period > 0);
 		// payment should not be done already
 		require(vestings[period].status == false);
 		// wallet should not be set already.
 		require(vestings[period].wallet == address(0));
 		// there should be amount to pay
-		require(amount &gt; 0);
+		require(amount > 0);
 
 		// set period for storage
 		vestings[period].period = period;
@@ -1184,19 +1184,19 @@ contract dHealthEtherVesting is Ownable, Timestamped {
 	* @dev Internal method called to current vesting period
 	*/
 	function getPeriod(uint256 timestamp) public view returns (uint256) {
-		for(uint256 i = 1 ; i &lt;= 18 ; i ++) {
+		for(uint256 i = 1 ; i <= 18 ; i ++) {
 			// calculate timestamp range
 			uint256 startTime = startingAt + (vestingPeriodLength * (i - 1));
 			uint256 endTime = startingAt + (vestingPeriodLength * (i));
 
-			if(startTime &lt;= timestamp &amp;&amp; timestamp &lt; endTime) {
+			if(startTime <= timestamp && timestamp < endTime) {
 				return i;
 			}
 		}
 
 		// calculate timestamp of last period
 		uint256 lastEndTime = startingAt + (vestingPeriodLength * (18));
-		if(lastEndTime &lt;= timestamp) {
+		if(lastEndTime <= timestamp) {
 			return 18;
 		}
 
@@ -1207,12 +1207,12 @@ contract dHealthEtherVesting is Ownable, Timestamped {
 	* @dev Internal method called to current vesting period range
 	*/
 	function getPeriodRange(uint256 timestamp) public view returns (uint256 , uint256) {
-		for(uint256 i = 1 ; i &lt;= 18 ; i ++) {
+		for(uint256 i = 1 ; i <= 18 ; i ++) {
 			// calculate timestamp range
 			uint256 startTime = startingAt + (vestingPeriodLength * (i - 1));
 			uint256 endTime = startingAt + (vestingPeriodLength * (i));
 
-			if(startTime &lt;= timestamp &amp;&amp; timestamp &lt; endTime) {
+			if(startTime <= timestamp && timestamp < endTime) {
 				return (startTime , endTime);
 			}
 		}
@@ -1220,7 +1220,7 @@ contract dHealthEtherVesting is Ownable, Timestamped {
 		// calculate timestamp of last period
 		uint256 lastStartTime = startingAt + (vestingPeriodLength * (17));
 		uint256 lastEndTime = startingAt + (vestingPeriodLength * (18));
-		if(lastEndTime &lt;= timestamp) {
+		if(lastEndTime <= timestamp) {
 			return (lastStartTime , lastEndTime);
 		}
 
@@ -1273,7 +1273,7 @@ contract dHealthEtherVesting is Ownable, Timestamped {
 	* @dev Method called by owner of contract to withdraw funds after timeout has reached
 	*/
 	function withdraw() onlyOwner public payable {
-		require(contractTimeout &lt;= getBlockTime());
+		require(contractTimeout <= getBlockTime());
 		owner.transfer(this.balance);
 	}	
 }
@@ -1320,7 +1320,7 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 	}
 
 	// vesting that tracks vestings done against the period.
-	mapping (uint256 =&gt; VestingStruct) public vestings;
+	mapping (uint256 => VestingStruct) public vestings;
 
 	// Event to log whenever the payment is done
 	event Payouts(uint256 indexed period, bool status, address wallet, uint256 amount, uint256 timestamp);
@@ -1355,7 +1355,7 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 	*/
 	function pay(uint256 percentage) public {
 		// requested amount should always be less than vestingAmount variable
-		percentage = percentage &lt;= vestingAmount ? percentage : vestingAmount;
+		percentage = percentage <= vestingAmount ? percentage : vestingAmount;
 
 		// get current token balance
 		uint256 balance = token.balanceOf(this); 
@@ -1364,13 +1364,13 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 		var (period, amount) = calculate(getBlockTime() , balance , percentage);
 
 		// payment should not be done if period is zero
-		require(period &gt; 0);
+		require(period > 0);
 		// payment should not be done already
 		require(vestings[period].status == false);
 		// wallet should not be set already.
 		require(vestings[period].wallet == address(0));
 		// there should be amount to pay
-		require(amount &gt; 0);
+		require(amount > 0);
 
 		// set period for storage
 		vestings[period].period = period;
@@ -1395,19 +1395,19 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 	* @dev Internal method called to current vesting period
 	*/
 	function getPeriod(uint256 timestamp) public view returns (uint256) {
-		for(uint256 i = 1 ; i &lt;= 18 ; i ++) {
+		for(uint256 i = 1 ; i <= 18 ; i ++) {
 			// calculate timestamp range
 			uint256 startTime = startingAt + (vestingPeriodLength * (i - 1));
 			uint256 endTime = startingAt + (vestingPeriodLength * (i));
 
-			if(startTime &lt;= timestamp &amp;&amp; timestamp &lt; endTime) {
+			if(startTime <= timestamp && timestamp < endTime) {
 				return i;
 			}
 		}
 
 		// calculate timestamp of last period
 		uint256 lastEndTime = startingAt + (vestingPeriodLength * (18));
-		if(lastEndTime &lt;= timestamp) {
+		if(lastEndTime <= timestamp) {
 			return 18;
 		}
 
@@ -1418,12 +1418,12 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 	* @dev Internal method called to current vesting period range
 	*/
 	function getPeriodRange(uint256 timestamp) public view returns (uint256 , uint256) {
-		for(uint256 i = 1 ; i &lt;= 18 ; i ++) {
+		for(uint256 i = 1 ; i <= 18 ; i ++) {
 			// calculate timestamp range
 			uint256 startTime = startingAt + (vestingPeriodLength * (i - 1));
 			uint256 endTime = startingAt + (vestingPeriodLength * (i));
 
-			if(startTime &lt;= timestamp &amp;&amp; timestamp &lt; endTime) {
+			if(startTime <= timestamp && timestamp < endTime) {
 				return (startTime , endTime);
 			}
 		}
@@ -1431,7 +1431,7 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 		// calculate timestamp of last period
 		uint256 lastStartTime = startingAt + (vestingPeriodLength * (17));
 		uint256 lastEndTime = startingAt + (vestingPeriodLength * (18));
-		if(lastEndTime &lt;= timestamp) {
+		if(lastEndTime <= timestamp) {
 			return (lastStartTime , lastEndTime);
 		}
 
@@ -1484,7 +1484,7 @@ contract dHealthTokenVesting is Ownable, Timestamped {
 	* @dev Method called by owner of contract to withdraw funds after timeout has reached
 	*/
 	function withdraw() onlyOwner public payable {
-		require(contractTimeout &lt;= getBlockTime());
+		require(contractTimeout <= getBlockTime());
 		
 		// send remaining tokens back to owner.
 		uint256 tokens = token.balanceOf(this); 

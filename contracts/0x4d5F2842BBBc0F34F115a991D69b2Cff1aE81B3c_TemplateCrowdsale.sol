@@ -14,7 +14,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 pragma solidity ^0.4.20;
@@ -49,20 +49,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,7 +76,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -85,7 +85,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -129,7 +129,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -140,8 +140,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -330,9 +330,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -381,14 +381,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -409,7 +409,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -442,7 +442,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -487,11 +487,11 @@ contract RefundVault is Ownable {
 
 contract FreezableToken is StandardToken {
     // freezing chains
-    mapping (bytes32 =&gt; uint64) internal chains;
+    mapping (bytes32 => uint64) internal chains;
     // freezing amounts for each chain
-    mapping (bytes32 =&gt; uint) internal freezings;
+    mapping (bytes32 => uint) internal freezings;
     // total freezing balance per address
-    mapping (address =&gt; uint) internal freezingBalance;
+    mapping (address => uint) internal freezingBalance;
 
     event Freezed(address indexed to, uint64 release, uint amount);
     event Released(address indexed owner, uint amount);
@@ -537,7 +537,7 @@ contract FreezableToken is StandardToken {
      * @param _index Freezing portion index. It ordered by release date descending.
      */
     function getFreezing(address _addr, uint _index) public view returns (uint64 _release, uint _balance) {
-        for (uint i = 0; i &lt; _index + 1; i ++) {
+        for (uint i = 0; i < _index + 1; i ++) {
             _release = chains[toKey(_addr, _release)];
             if (_release == 0) {
                 return;
@@ -556,7 +556,7 @@ contract FreezableToken is StandardToken {
      */
     function freezeTo(address _to, uint _amount, uint64 _until) public {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
 
@@ -575,7 +575,7 @@ contract FreezableToken is StandardToken {
         bytes32 headKey = toKey(msg.sender, 0);
         uint64 head = chains[headKey];
         require(head != 0);
-        require(uint64(block.timestamp) &gt; head);
+        require(uint64(block.timestamp) > head);
         bytes32 currentKey = toKey(msg.sender, head);
 
         uint64 next = chains[currentKey];
@@ -604,7 +604,7 @@ contract FreezableToken is StandardToken {
         uint release;
         uint balance;
         (release, balance) = getFreezing(msg.sender, 0);
-        while (release != 0 &amp;&amp; block.timestamp &gt; release) {
+        while (release != 0 && block.timestamp > release) {
             releaseOnce();
             tokens += balance;
             (release, balance) = getFreezing(msg.sender, 0);
@@ -621,7 +621,7 @@ contract FreezableToken is StandardToken {
     }
 
     function freeze(address _to, uint64 _until) internal {
-        require(_until &gt; block.timestamp);
+        require(_until > block.timestamp);
         bytes32 key = toKey(_to, _until);
         bytes32 parentKey = toKey(_to, uint64(0));
         uint64 next = chains[parentKey];
@@ -634,7 +634,7 @@ contract FreezableToken is StandardToken {
         bytes32 nextKey = toKey(_to, next);
         uint parent;
 
-        while (next != 0 &amp;&amp; _until &gt; next) {
+        while (next != 0 && _until > next) {
             parent = next;
             parentKey = nextKey;
 
@@ -705,10 +705,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -794,8 +794,8 @@ contract Consts {
     uint8 constant TOKEN_DECIMALS_UINT8 = 18;
     uint constant TOKEN_DECIMAL_MULTIPLIER = 10 ** TOKEN_DECIMALS;
 
-    string constant TOKEN_NAME = &quot;Delphi Technologies Token&quot;;
-    string constant TOKEN_SYMBOL = &quot;DTT&quot;;
+    string constant TOKEN_NAME = "Delphi Technologies Token";
+    string constant TOKEN_SYMBOL = "DTT";
     bool constant PAUSED = true;
     address constant TARGET_USER = 0xc9060fcf7bD238A359DEA06b6421c7F06E88Dc2b;
     
@@ -836,7 +836,7 @@ contract ERC223Token is ERC223Basic, BasicToken, FailingERC223Receiver {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength &gt; 0) {
+        if(codeLength > 0) {
             ERC223Receiver receiver = ERC223Receiver(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -847,7 +847,7 @@ contract ERC223Token is ERC223Basic, BasicToken, FailingERC223Receiver {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -901,21 +901,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -927,7 +927,7 @@ contract CappedCrowdsale is Crowdsale {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -939,12 +939,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -971,7 +971,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -979,7 +979,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
 
 contract MainCrowdsale is Consts, FinalizableCrowdsale {
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     function finalization() internal {
@@ -1105,17 +1105,17 @@ contract BonusableCrowdsale is Consts, Crowdsale {
         uint256 bonusRate = rate;
 
         
-        // apply bonus for time &amp; weiRaised
+        // apply bonus for time & weiRaised
         uint[2] memory weiRaisedStartsBoundaries = [uint(0),uint(0)];
         uint[2] memory weiRaisedEndsBoundaries = [uint(336000000000000000000000),uint(336000000000000000000000)];
         uint64[2] memory timeStartsBoundaries = [uint64(1523734197),uint64(1524252540)];
         uint64[2] memory timeEndsBoundaries = [uint64(1524252540),uint64(1525116540)];
         uint[2] memory weiRaisedAndTimeRates = [uint(400),uint(300)];
 
-        for (uint i = 0; i &lt; 2; i++) {
-            bool weiRaisedInBound = (weiRaisedStartsBoundaries[i] &lt;= weiRaised) &amp;&amp; (weiRaised &lt; weiRaisedEndsBoundaries[i]);
-            bool timeInBound = (timeStartsBoundaries[i] &lt;= now) &amp;&amp; (now &lt; timeEndsBoundaries[i]);
-            if (weiRaisedInBound &amp;&amp; timeInBound) {
+        for (uint i = 0; i < 2; i++) {
+            bool weiRaisedInBound = (weiRaisedStartsBoundaries[i] <= weiRaised) && (weiRaised < weiRaisedEndsBoundaries[i]);
+            bool timeInBound = (timeStartsBoundaries[i] <= now) && (now < timeEndsBoundaries[i]);
+            if (weiRaisedInBound && timeInBound) {
                 bonusRate += bonusRate * weiRaisedAndTimeRates[i] / 1000;
             }
         }
@@ -1126,8 +1126,8 @@ contract BonusableCrowdsale is Consts, Crowdsale {
         uint[2] memory weiAmountBoundaries = [uint(336000000000000000000000),uint(10000000000000000000)];
         uint[2] memory weiAmountRates = [uint(0),uint(100)];
 
-        for (uint j = 0; j &lt; 2; j++) {
-            if (weiAmount &gt;= weiAmountBoundaries[j]) {
+        for (uint j = 0; j < 2; j++) {
+            if (weiAmount >= weiAmountBoundaries[j]) {
                 bonusRate += bonusRate * weiAmountRates[j] / 1000;
                 break;
             }
@@ -1154,7 +1154,7 @@ contract TemplateCrowdsale is Consts, MainCrowdsale
     bool public initialized = false;
 
     function TemplateCrowdsale(MintableToken _token) public
-        Crowdsale(START_TIME &gt; now ? START_TIME : now, 1531337340, 1250 * TOKEN_DECIMAL_MULTIPLIER, 0xc9060fcf7bD238A359DEA06b6421c7F06E88Dc2b)
+        Crowdsale(START_TIME > now ? START_TIME : now, 1531337340, 1250 * TOKEN_DECIMAL_MULTIPLIER, 0xc9060fcf7bD238A359DEA06b6421c7F06E88Dc2b)
         CappedCrowdsale(336000000000000000000000)
         
     {
@@ -1189,7 +1189,7 @@ contract TemplateCrowdsale is Consts, MainCrowdsale
      * @return bool true of accident triggered, false otherwise.
      */
     function internalCheck() internal returns (bool) {
-        return !isFinalized &amp;&amp; hasEnded();
+        return !isFinalized && hasEnded();
     }
 
     /**

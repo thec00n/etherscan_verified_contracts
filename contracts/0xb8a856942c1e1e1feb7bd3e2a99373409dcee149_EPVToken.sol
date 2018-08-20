@@ -24,13 +24,13 @@ contract Owned {
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(a &gt;= b);
+    require(a >= b);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -47,8 +47,8 @@ contract ERC20 {
     uint8 public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -97,8 +97,8 @@ contract ERC20 {
 
 contract EPVToken is Owned, ERC20 {
 
-    string public name = &quot;EPVToken&quot;;
-    string public symbol = &quot;EPV&quot;;
+    string public name = "EPVToken";
+    string public symbol = "EPV";
     uint8 public decimals = 18;
     uint256 public INITIAL_SUPPLY = 100000000000 * (10 ** uint256(decimals));
 
@@ -115,7 +115,7 @@ contract EPVToken is Owned, ERC20 {
 
     function backTransfer(address _to, uint256 _value) onlyOwner public returns (bool){
         require(_to != 0x0);
-        require(address(this).balance &gt;= _value);
+        require(address(this).balance >= _value);
         _to.transfer(_value);
 	    return true;
     }

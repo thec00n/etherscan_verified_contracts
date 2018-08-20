@@ -31,12 +31,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -46,7 +46,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -57,7 +57,7 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)
+      abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
     );
   }
 }
@@ -67,8 +67,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -83,9 +83,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -93,7 +93,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -102,13 +102,13 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 contract Feeless {
     address internal msgSender;
-    mapping(address =&gt; uint256) public nonces;
+    mapping(address => uint256) public nonces;
     modifier feeless {
         if (msgSender == address(0)) {
             msgSender = msg.sender;
@@ -121,7 +121,7 @@ contract Feeless {
     function performFeelessTransaction(address sender, address target, bytes data, uint256 nonce, bytes sig) public payable {
         require(this == target);
         
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 hash = keccak256(prefix, keccak256(target, data, nonce));
         msgSender = ECRecovery.recover(hash, sig);
         require(msgSender == sender);
@@ -137,7 +137,7 @@ contract ERC20Basic {
 }
 contract AbstractFee is ERC20Basic, Feeless {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     function transfer(address _to, uint256 _value) public feeless returns (bool) {
         balances[msgSender] = balances[msgSender].sub(_value);
         balances[_to] = balances[_to].add(_value);

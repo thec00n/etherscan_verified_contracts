@@ -2,12 +2,12 @@ pragma solidity ^0.4.18;
 
 contract LinkyexToken {
 
-    string public name = &quot;Linkyex Token&quot;;      //  token name
-    string public symbol = &quot;LT&quot;;           //  token symbol
+    string public name = "Linkyex Token";      //  token name
+    string public symbol = "LT";           //  token symbol
     uint256 public decimals = 8;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool public stopped = false;
@@ -38,8 +38,8 @@ contract LinkyexToken {
     }
 
     function transfer(address _to, uint256 _value) isRunning validAddress public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -47,9 +47,9 @@ contract LinkyexToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

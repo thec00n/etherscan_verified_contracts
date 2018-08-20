@@ -1,7 +1,7 @@
 pragma solidity ^0.4.6;
 
 contract VIUREFoundersTokenSale {
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   uint public transferred_total = 0;
 
@@ -18,8 +18,8 @@ contract VIUREFoundersTokenSale {
   uint public refund_window_end_block;
 
   function VIUREFoundersTokenSale(uint _start_block, uint _end_block, address _project_wallet) {
-    if (_start_block &lt;= block.number) throw;
-    if (_end_block &lt;= _start_block) throw;
+    if (_start_block <= block.number) throw;
+    if (_end_block <= _start_block) throw;
     if (_project_wallet == 0) throw;
     
     token_sale_start_block = _start_block;
@@ -29,19 +29,19 @@ contract VIUREFoundersTokenSale {
   }
 
   function has_token_sale_started() private constant returns (bool) {
-    return block.number &gt;= token_sale_start_block;
+    return block.number >= token_sale_start_block;
   }
 
   function has_token_sale_time_ended() private constant returns (bool) {
-    return block.number &gt; token_sale_end_block;
+    return block.number > token_sale_end_block;
   }
 
   function is_min_goal_reached() private constant returns (bool) {
-    return transferred_total &gt;= min_goal_amount;
+    return transferred_total >= min_goal_amount;
   }
 
   function is_max_goal_reached() private constant returns (bool) {
-    return transferred_total &gt;= max_goal_amount;
+    return transferred_total >= max_goal_amount;
   }
 
   function() payable {
@@ -53,7 +53,7 @@ contract VIUREFoundersTokenSale {
 
     if (is_max_goal_reached()) throw;
 
-    if (transferred_total + msg.value &gt; max_goal_amount) {
+    if (transferred_total + msg.value > max_goal_amount) {
      
       var change_to_return = transferred_total + msg.value - max_goal_amount;
       if (!msg.sender.send(change_to_return)) throw;
@@ -81,7 +81,7 @@ contract VIUREFoundersTokenSale {
 
     if (is_min_goal_reached()) throw;
   
-    if (block.number &gt; refund_window_end_block) throw;
+    if (block.number > refund_window_end_block) throw;
 
     var refund_amount = balances[msg.sender];
 
@@ -97,7 +97,7 @@ contract VIUREFoundersTokenSale {
   function transfer_remaining_funds_to_project() {
     if (!has_token_sale_time_ended()) throw;
     if (is_min_goal_reached()) throw;
-    if (block.number &lt;= refund_window_end_block) throw;
+    if (block.number <= refund_window_end_block) throw;
 
     if (this.balance == 0) throw;
     if (!project_wallet.send(this.balance)) throw;

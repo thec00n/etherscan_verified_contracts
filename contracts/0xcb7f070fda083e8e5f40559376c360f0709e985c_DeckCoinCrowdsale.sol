@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -107,14 +107,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -130,7 +130,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -167,7 +167,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -182,7 +182,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,7 +290,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -321,12 +321,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -353,7 +353,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public constant returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -363,7 +363,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -435,11 +435,11 @@ contract DeckCoinCrowdsale is RefundableCrowdsale {
     uint256 tokens;
 
     // Note: assumes rate is 28000
-    if (now &lt; fortyEndTime) {
+    if (now < fortyEndTime) {
       tokens = weiAmount.mul(rate.add(11200));
-    } else if (now &lt; twentyEndTime) {
+    } else if (now < twentyEndTime) {
       tokens = weiAmount.mul(rate.add(5600));
-    } else if (now &lt; tenEndTime) {
+    } else if (now < tenEndTime) {
       tokens = weiAmount.mul(rate.add(2800));
     } else {
       tokens = weiAmount.mul(rate);
@@ -477,19 +477,19 @@ contract DeckCoinCrowdsale is RefundableCrowdsale {
 
   // @Override
   function goalReached() public constant returns (bool) {
-    return tokensSold &gt;= tokenGoal;
+    return tokensSold >= tokenGoal;
   }
 
   // @Override
   function hasEnded() public constant returns (bool) {
-    bool capReached = tokensSold &gt;= tokenCap;
+    bool capReached = tokensSold >= tokenCap;
     return super.hasEnded() || capReached;
   }
 
   // @Override
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = tokensSold.add(weiToTokens(msg.value)) &lt;= tokenCap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = tokensSold.add(weiToTokens(msg.value)) <= tokenCap;
+    return super.validPurchase() && withinCap;
   }
 
   // @Override
@@ -538,8 +538,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract DeckCoin is MintableToken {
   // ERC20 optionals
-  string public constant name = &quot;Deck Coin&quot;;
-  string public constant symbol = &quot;DEK&quot;;
+  string public constant name = "Deck Coin";
+  string public constant symbol = "DEK";
   uint8 public constant decimals = 18;
 
   uint256 private constant D160 = 0x10000000000000000000000000000000000000000;
@@ -550,8 +550,8 @@ contract DeckCoin is MintableToken {
   function bulkMint(uint256[] data) onlyOwner canMint public {
     uint256 totalMinted = 0;
 
-    for (uint256 i = 0; i &lt; data.length; i++) {
-      address beneficiary = address(data[i] &amp; (D160 - 1));
+    for (uint256 i = 0; i < data.length; i++) {
+      address beneficiary = address(data[i] & (D160 - 1));
       uint256 amount = data[i] / D160;
 
       totalMinted += amount;

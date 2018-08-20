@@ -15,7 +15,7 @@ contract EtherGame
     }
     
     address[] ListOfUsers;
-    mapping(address=&gt;user) public Users;
+    mapping(address=>user) public Users;
     
     event newuser(address User, address Parent);
     event levelup(address User, uint Level);
@@ -42,7 +42,7 @@ contract EtherGame
     
     function NewUser() payable
     {
-        if(msg.value &lt; RegCost || Users[msg.sender].parent != 0) 
+        if(msg.value < RegCost || Users[msg.sender].parent != 0) 
             throw;
         Users[msg.sender].parent = address(this);
         ListOfUsers.push(msg.sender);
@@ -51,7 +51,7 @@ contract EtherGame
     
     function NewUser(address addr) payable
     {
-        if(msg.value &lt; RegCost || Users[msg.sender].parent != 0 || Users[addr].parent == 0)
+        if(msg.value < RegCost || Users[msg.sender].parent != 0 || Users[addr].parent == 0)
             throw;
         if(addr != address(this))
             addr.transfer(RegCost);
@@ -67,17 +67,17 @@ contract EtherGame
             Price = FirstLevelCost;
         else
             Price = uint(8)**Users[msg.sender].level*SecondLevelCost/uint(5)**Users[msg.sender].level*2;
-        if(msg.value &lt; Price || Users[msg.sender].parent == 0)
+        if(msg.value < Price || Users[msg.sender].parent == 0)
             throw;
         address ToTransfer = Users[msg.sender].parent;
         uint Level = Users[msg.sender].level + 1;
-        while(Users[ToTransfer].level &lt; Level)
+        while(Users[ToTransfer].level < Level)
             ToTransfer = Users[ToTransfer].parent;
         if(ToTransfer != address(this))
         {
             ToTransfer.transfer(Price/1000*(1000-ParentFee));
             ToTransfer = Users[ToTransfer].parent;
-            if(ToTransfer != address(this) &amp;&amp; ParentFee != 0)
+            if(ToTransfer != address(this) && ParentFee != 0)
                 ToTransfer.transfer(Price/1000*ParentFee);
         }
         Users[msg.sender].level++;
@@ -122,13 +122,13 @@ contract EtherGame
         uint MaxLevel = 0;
         uint Level;
         address child;
-        for(uint i=0;i&lt;ListOfUsers.length;i++)
+        for(uint i=0;i<ListOfUsers.length;i++)
         {
             child = ListOfUsers[i];
             Level = Users[child].level;
-            while(child != address(this) &amp;&amp; Users[child].parent != addr)
+            while(child != address(this) && Users[child].parent != addr)
                 child = Users[child].parent;
-            if(child != address(this) &amp;&amp; Level &gt; MaxLevel)
+            if(child != address(this) && Level > MaxLevel)
                 MaxLevel = Level;
         }
         return MaxLevel;

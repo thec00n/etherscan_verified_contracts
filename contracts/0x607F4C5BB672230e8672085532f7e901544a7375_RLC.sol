@@ -44,37 +44,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -91,18 +91,18 @@ contract RLC is ERC20, SafeMath, Ownable {
   string public name;       //fancy name
   string public symbol;
   uint8 public decimals;    //How many decimals to show.
-  string public version = &#39;v0.1&#39;; 
+  string public version = 'v0.1'; 
   uint public initialSupply;
   uint public totalSupply;
   bool public locked;
   //uint public unlockBlock;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   // lock transfer during the ICO
   modifier onlyUnlocked() {
-    if (msg.sender != owner &amp;&amp; locked) throw;
+    if (msg.sender != owner && locked) throw;
     _;
   }
 
@@ -118,8 +118,8 @@ contract RLC is ERC20, SafeMath, Ownable {
     initialSupply = 87000000000000000;
     totalSupply = initialSupply;
     balances[msg.sender] = initialSupply;// Give the creator all initial tokens                    
-    name = &#39;iEx.ec Network Token&#39;;        // Set the name for display purposes     
-    symbol = &#39;RLC&#39;;                       // Set the symbol for display purposes  
+    name = 'iEx.ec Network Token';        // Set the name for display purposes     
+    symbol = 'RLC';                       // Set the symbol for display purposes  
     decimals = 9;                        // Amount of decimals for display purposes
   }
 

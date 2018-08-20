@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,10 +52,10 @@ contract ERC20 {
 contract BasicToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   /**
   * @dev transfer token for a specified address
@@ -63,9 +63,9 @@ contract BasicToken is ERC20 {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value
-    &amp;&amp; _value &gt; 0
-    &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value
+    && _value > 0
+    && balances[_to] + _value > balances[_to]) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -77,15 +77,15 @@ contract BasicToken is ERC20 {
 
   // Send _value amount of tokens from address _from to address _to
   // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-  // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+  // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
   // fees in sub-currencies; the command should fail unless the _from account has
   // deliberately authorized the sender of the message via some mechanism; we propose
   // these standardized APIs for approval:
   function transferFrom(address _from,address _to, uint256 _amount) returns (bool success) {
-    if (balances[_from] &gt;= _amount
-    &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-    &amp;&amp; _amount &gt; 0
-    &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount
+    && allowed[_from][msg.sender] >= _amount
+    && _amount > 0
+    && balances[_to] + _amount > balances[_to]) {
       balances[_from] -= _amount;
       allowed[_from][msg.sender] -= _amount;
       balances[_to] += _amount;
@@ -120,7 +120,7 @@ contract BasicToken is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -133,7 +133,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -253,7 +253,7 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract NatCoin is MintableToken {
-  string public constant name = &quot;NATCOIN&quot;;
-  string public constant symbol = &quot;NTC&quot;;
+  string public constant name = "NATCOIN";
+  string public constant symbol = "NTC";
   uint256 public constant decimals = 18;
 }

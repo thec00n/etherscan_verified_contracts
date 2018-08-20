@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 
 contract SafePromo {
 
-	string public url = &quot;http://ecos.ee&quot;;
-	string public name = &quot;ECOS PROMO&quot;;
-	string public symbol = &quot;ECOS&quot;;
+	string public url = "http://ecos.ee";
+	string public name = "ECOS PROMO";
+	string public symbol = "ECOS";
 	address owner;
 	uint256 public totalSupply;
 
@@ -50,7 +50,7 @@ contract SafePromo {
 
 		require(msg.sender == owner);
 
-		for(uint256 i = 0; i &lt; _recipients.length; i++){
+		for(uint256 i = 0; i < _recipients.length; i++){
 			emit Transfer(address(this), _recipients[i], 777);
 
 		}

@@ -16,7 +16,7 @@ contract owned {
 
 contract deposittest is owned {
     address public owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     
     function init() {
         owner=msg.sender;
@@ -27,7 +27,7 @@ contract deposittest is owned {
     }
     
     function deposit() payable {
-        if (msg.value &gt;= 100 finney)
+        if (msg.value >= 100 finney)
             deposits[msg.sender]+=msg.value;
         else
             throw;
@@ -35,7 +35,7 @@ contract deposittest is owned {
     
     function withdraw(uint amount) public onlyowner {
         uint depo = deposits[msg.sender];
-        if (amount &lt;= depo &amp;&amp; depo&gt;0)
+        if (amount <= depo && depo>0)
             msg.sender.send(amount);
     }
 

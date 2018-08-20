@@ -6,8 +6,8 @@ contract BBTDonate {
     bool public isClosed;
     uint256 public totalReceive;
     uint256 public remain;
-    mapping (address =&gt; uint256) public record;
-    mapping (address =&gt; bool) public isAdmin;
+    mapping (address => uint256) public record;
+    mapping (address => bool) public isAdmin;
 
     modifier onlyAdmin {
         require(msg.sender == owner || isAdmin[msg.sender]);
@@ -75,15 +75,15 @@ contract BBTDonate {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     } 
     

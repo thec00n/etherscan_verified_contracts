@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 
 
 contract BM_MasterClass_Reserved {
-    mapping (address =&gt; uint256) public holders;
+    mapping (address => uint256) public holders;
     uint256 public amount_investments = 0;
     uint256 public countHolders = 0;
 
@@ -37,14 +37,14 @@ contract BM_MasterClass_Reserved {
     }
 
     function sendInvestmentsToOwner() isOwner {
-        assert(now &gt;= dtEnd);
+        assert(now >= dtEnd);
         owner.transfer(this.balance);
     }
 
     function () payable {
-        assert(now &lt; dtEnd);
-        assert(now &gt;= dtStart);
-        assert(msg.value&gt;=minSizeInvest);
+        assert(now < dtEnd);
+        assert(now >= dtStart);
+        assert(msg.value>=minSizeInvest);
 
         if(holders[msg.sender] == 0){
             countHolders += 1;

@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /************************************************
  *
  * Star Cards - Verifiably unique celebrity collectibles
- * Authors: Dick Oranges &amp; Eggy Bagelface
+ * Authors: Dick Oranges & Eggy Bagelface
  *
  * MD5: 696fa8ba0f25d6d6f8391e37251736bc
  * SHA256: ba3178b5d13ec7b05cf3ebaae2be797cc0eb6756eac455426f2b1d70f17cefae
@@ -32,9 +32,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -51,7 +51,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,7 +78,7 @@ library AddressUtils {
         // TODO Check this again before the Serenity release, because all addresses will be
         // contracts then.
         assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -86,7 +86,7 @@ library AddressUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -193,7 +193,7 @@ pragma solidity ^0.4.21;
 contract ERC721Receiver {
     /**
      * @dev Magic value to be returned upon successful reception of an NFT
-     *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+     *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
      *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
      */
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -208,7 +208,7 @@ contract ERC721Receiver {
      * @param _from The sending address
      * @param _tokenId The NFT identifier which is being transfered
      * @param _data Additional data with no specified format
-     * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+     * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
      */
     function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -223,21 +223,21 @@ contract ERC721BasicToken is ERC721Basic {
     using SafeMath for uint256;
     using AddressUtils for address;
 
-    // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     /**
      * @dev Guarantees msg.sender is owner of the given token
@@ -361,7 +361,7 @@ contract ERC721BasicToken is ERC721Basic {
      * @dev Safely transfers the ownership of a given token ID to another address
      * @dev If the target address is a contract, it must implement `onERC721Received`,
      *  which is called upon a safe transfer, and return the magic value
-     *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+     *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
      *  the transfer is reverted.
      * @dev Requires the msg sender to be the owner, approved, or operator
      * @param _from current owner of the token
@@ -377,14 +377,14 @@ contract ERC721BasicToken is ERC721Basic {
         canTransfer(_tokenId)
     {
         // solium-disable-next-line arg-overflow
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /**
      * @dev Safely transfers the ownership of a given token ID to another address
      * @dev If the target address is a contract, it must implement `onERC721Received`,
      *  which is called upon a safe transfer, and return the magic value
-     *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+     *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
      *  the transfer is reverted.
      * @dev Requires the msg sender to be the owner, approved, or operator
      * @param _from current owner of the token
@@ -499,13 +499,13 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     uint256 internal totalSupply_;
 
     // Mapping from owner to list of owned token IDs
-    mapping (address =&gt; uint256[]) internal ownedTokens;
+    mapping (address => uint256[]) internal ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
     // Optional mapping for token URIs
-    mapping(uint256 =&gt; string) internal tokenURIs;
+    mapping(uint256 => string) internal tokenURIs;
 
     /**
      * @dev Constructor function
@@ -568,7 +568,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
      * @return uint256 token ID at the given index of the tokens list owned by the requested address
      */
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -579,7 +579,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
      * @return uint256 token ID at the given index of the tokens list
      */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
         return _index;
     }
 
@@ -621,7 +621,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
 contract ERC165 {
 
-    bytes4 constant ERC165InterfaceId = bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+    bytes4 constant ERC165InterfaceId = bytes4(keccak256("supportsInterface(bytes4)"));
     bytes4 constant ERC721InterfaceId = 0x80ac58cd;
     bytes4 constant ERC721EnumerableInterfaceId = 0x780e9d63;
     bytes4 constant ERC721MetadataInterfaceId = 0x5b5e139f;
@@ -646,11 +646,11 @@ contract ERC165 {
 contract StarCards is Ownable, ERC721Token, ERC165 {
 
     // The card database can be verified using these checksums.
-    string constant public dataset_md5checksum = &quot;696fa8ba0f25d6d6f8391e37251736bc&quot;;
-    string constant public dataset_sha256checksum = &quot;ba3178b5d13ec7b05cf3ebaae2be797cc0eb6756eac455426f2b1d70f17cefae&quot;;
+    string constant public dataset_md5checksum = "696fa8ba0f25d6d6f8391e37251736bc";
+    string constant public dataset_sha256checksum = "ba3178b5d13ec7b05cf3ebaae2be797cc0eb6756eac455426f2b1d70f17cefae";
 
     // The card database can be downloaded at this URL.
-    string public databaseDownloadUrl = &quot;ftp://starcards.my/starCardsDataset.json&quot;;
+    string public databaseDownloadUrl = "ftp://starcards.my/starCardsDataset.json";
     
     uint256 constant public editionSize = 345;
     uint256 constant public minimumBid = 0.001 ether;
@@ -671,12 +671,12 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
 
     event NewBid(uint id, uint value, uint timePlaced, address bidder);
 
-    mapping(address =&gt; uint) public pendingWithdrawals;
-    mapping(uint =&gt; ReleaseAuction) releaseAuctions;
+    mapping(address => uint) public pendingWithdrawals;
+    mapping(uint => ReleaseAuction) releaseAuctions;
 
     uint256 public contractInitializationTime;
 
-    constructor() ERC721Token(&quot;Star Cards&quot;, &quot;STAR&quot;, 586155) public payable {
+    constructor() ERC721Token("Star Cards", "STAR", 586155) public payable {
         owner = msg.sender;
         contractInitializationTime = now + initializationDelay;
     }
@@ -699,7 +699,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
     }
 
     function isReleased(uint id) public view onlyValidTokenIds(id) returns (bool) {
-        return getEdition(id) &lt;= getCurrentEdition();
+        return getEdition(id) <= getCurrentEdition();
     }
 
     function getReleaseAuctionEndTime(uint id) public view onlyValidTokenIds(id) returns (uint) {
@@ -708,7 +708,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
     }
 
     function releaseAuctionEnded(uint id) public view onlyValidTokenIds(id) returns (bool) {
-        return (isReleased(id) &amp;&amp; (getReleaseAuctionEndTime(id) &lt; now));
+        return (isReleased(id) && (getReleaseAuctionEndTime(id) < now));
     }
 
     function getHighestBidder(uint id) public view onlyValidTokenIds(id) returns (address) {
@@ -725,7 +725,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
 
     function getRemainingTime(uint id) public view onlyValidTokenIds(id) returns (uint) {
         uint endTime = getReleaseAuctionEndTime(id);
-        if (endTime &gt; now) {
+        if (endTime > now) {
             return SafeMath.sub(endTime, now);
         } else {
             return 0;
@@ -735,7 +735,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
     function getAllTokens(address owner) public view returns (uint[]) {
         uint size = ownedTokens[owner].length;
         uint[] memory result = new uint[](size);
-        for (uint i = 0; i &lt; size; i++) {
+        for (uint i = 0; i < size; i++) {
             result[i] = ownedTokens[owner][i];
         }
         return result;
@@ -754,7 +754,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
         uint payout;
 
         if (auction.highestBid.bidder == address(0)) {
-            require(msg.value &gt;= minimumBid);
+            require(msg.value >= minimumBid);
             newOwner = msg.sender;
             payout = msg.value;
         } else {
@@ -777,7 +777,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
         ReleaseAuction storage auction = releaseAuctions[id];
 
         // Ensure new bid is greater than or equal to current bid plus minimum bid increase.
-        require(msg.value &gt;= auction.highestBid.value + minimumBid);
+        require(msg.value >= auction.highestBid.value + minimumBid);
 
         // Reset auction timeout.
         auction.additionalTime = SafeMath.add(auction.additionalTime, timeBetweenEditions - getRemainingTime(id));
@@ -796,7 +796,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
     // Withdraw a bid that was overbid.
     function withdraw() external returns (bool) {
         uint amount = pendingWithdrawals[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `send` returns.
@@ -819,7 +819,7 @@ contract StarCards is Ownable, ERC721Token, ERC165 {
 
     // Token id must be in range
     modifier onlyValidTokenIds(uint id) {
-        require(id &lt; totalSupply());
+        require(id < totalSupply());
         _;
     }
   

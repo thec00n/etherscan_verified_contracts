@@ -1,6 +1,6 @@
 contract GameOfThrones {
     address public trueGods;
-    // King&#39;s Jester
+    // King's Jester
     address public jester;
     // Record the last collection time
     uint public lastCollection;
@@ -47,18 +47,18 @@ contract GameOfThrones {
     function repairTheCastle() returns(bool) {
         uint amount = msg.value;
         // Check if the minimum amount if reached
-        if (amount &lt; 10 finney) {
+        if (amount < 10 finney) {
             msg.sender.send(msg.value);
             return false;
         }
         // If the amount received is more than 100 ETH return the difference
-        if (amount &gt; 100 ether) {
+        if (amount > 100 ether) {
             msg.sender.send(msg.value - 100 ether);
             amount = 100 ether;
         }
 
         // Check if the Castle has fell
-        if (lastCollection + TWENTY_FOUR_HOURS &lt; block.timestamp) {
+        if (lastCollection + TWENTY_FOUR_HOURS < block.timestamp) {
             // Send the Piggy Bank to the last 3 citizens
             // If there is no one who contributed this last 24 hours, no action needed
             if (totalCitizens == 1) {
@@ -68,7 +68,7 @@ contract GameOfThrones {
                 // If only 2 citizens contributed
                 citizensAddresses[citizensAddresses.length - 1].send(piggyBank * 60 / 100);
                 citizensAddresses[citizensAddresses.length - 2].send(piggyBank * 35 / 100);
-            } else if (totalCitizens &gt;= 3) {
+            } else if (totalCitizens >= 3) {
                 // If there is 3 or more citizens who contributed
                 citizensAddresses[citizensAddresses.length - 1].send(piggyBank * 50 / 100);
                 citizensAddresses[citizensAddresses.length - 2].send(piggyBank * 30 / 100);
@@ -100,7 +100,7 @@ contract GameOfThrones {
             // 5% goes to the Piggy Bank
             piggyBank += (amount * 5 / 100);
 
-            while (citizensAmounts[lastCitizenPaid] &lt; (address(this).balance - piggyBank - godBank - kingBank - jesterBank) &amp;&amp; lastCitizenPaid &lt;= totalCitizens) {
+            while (citizensAmounts[lastCitizenPaid] < (address(this).balance - piggyBank - godBank - kingBank - jesterBank) && lastCitizenPaid <= totalCitizens) {
                 citizensAddresses[lastCitizenPaid].send(citizensAmounts[lastCitizenPaid]);
                 amountAlreadyPaidBack += citizensAmounts[lastCitizenPaid];
                 lastCitizenPaid += 1;
@@ -139,7 +139,7 @@ contract GameOfThrones {
 
     function bribery() {
         uint amount = 100 finney;
-        if (msg.value &gt;= amount) {
+        if (msg.value >= amount) {
             // return jester
             jester.send(jesterBank);
             jesterBank = 0;
@@ -159,7 +159,7 @@ contract GameOfThrones {
             investInTheSystem(msg.value);
             kingCost += msg.value;
         } else {
-            if (onThrone + PEACE_PERIOD &lt;= block.timestamp &amp;&amp; msg.value &gt;= kingCost * 110 / 100) {
+            if (onThrone + PEACE_PERIOD <= block.timestamp && msg.value >= kingCost * 110 / 100) {
                 // return the fees to before king
                 madKing.send(kingBank);
                 // offer sacrifices to the Gods
@@ -183,21 +183,21 @@ contract GameOfThrones {
     }
 
     function godAutomaticCollectFee() internal {
-        if (godBank &gt;= 1 ether) {
+        if (godBank >= 1 ether) {
           trueGods.send(godBank);
           godBank = 0;
         }
     }
 
     function kingAutomaticCollectFee() internal {
-        if (kingBank &gt;= 100 finney) {
+        if (kingBank >= 100 finney) {
           madKing.send(kingBank);
           kingBank = 0;
         }
     }
 
     function jesterAutomaticCollectFee() internal {
-        if (jesterBank &gt;= 100 finney) {
+        if (jesterBank >= 100 finney) {
           jester.send(jesterBank);
           jesterBank = 0;
         }

@@ -6,8 +6,8 @@ contract BMICOAffiliateProgramm
 }
 
 contract BMPre_ICO {
-	mapping (address =&gt; uint256) public holders;
-	mapping (address =&gt; uint256) public holdersBonus;
+	mapping (address => uint256) public holders;
+	mapping (address => uint256) public holdersBonus;
 	uint256 public amount_investments = 0;
 	uint256 public amount_bonus = 0;
 	uint256 public countHolders = 0;
@@ -63,7 +63,7 @@ contract BMPre_ICO {
 	uint256 public stopBlock = 0;
 
 	function stopPreIco_step1() {
-		assert(now - lastCallstopPreICO &gt; 12 hours);
+		assert(now - lastCallstopPreICO > 12 hours);
 		lastCallstopPreICO = now;
 
 		stopBlock = block.number + 5;
@@ -71,17 +71,17 @@ contract BMPre_ICO {
 
 	function stopPreIco_step2()
 	{
-		if (stopBlock != 0 &amp;&amp; stopBlock &lt; block.number)
+		if (stopBlock != 0 && stopBlock < block.number)
 		{
 			bytes32 hash = block.blockhash(stopBlock);
-			if (uint256(hash) &gt; 0)
+			if (uint256(hash) > 0)
 			{
 				uint8 value = uint8(uint256(sha3(hash, msg.sender)) % 100);
 				uint8 limit = uint8((amount_investments*100)/100000000000000000000000);
 
-				if(value &lt; limit)
+				if(value < limit)
 				{
-					if(preIcoEnd - now &gt; 1 days)
+					if(preIcoEnd - now > 1 days)
 					{
 						preIcoEnd -= 1 days;
 					}
@@ -93,14 +93,14 @@ contract BMPre_ICO {
 	}
 
 	function sendInvestmentsToOwner() isOwner {
-		assert(now &gt;= preIcoEnd);
+		assert(now >= preIcoEnd);
 		owner.transfer(this.balance);
 	}
 
 	function buy(string promo) payable {
-		assert(now &lt; preIcoEnd);
-		assert(now &gt;= preIcoStart);
-		assert(msg.value&gt;=minSizeInvest);
+		assert(now < preIcoEnd);
+		assert(now >= preIcoStart);
+		assert(msg.value>=minSizeInvest);
 
 		if(holders[msg.sender] == 0){
 			countHolders += 1;
@@ -111,11 +111,11 @@ contract BMPre_ICO {
 
 		if(affiliate != address(0x0)){
 			var (partner_address, partner_bonus, referral_bonus) = contractAffiliate.add_referral(msg.sender, promo, msg.value);
-			if(partner_bonus &gt; 0 &amp;&amp; partner_address != address(0x0)){
+			if(partner_bonus > 0 && partner_address != address(0x0)){
 				holdersBonus[partner_address] += msg.value;
 				amount_bonus += msg.value;
 			}
-			if(referral_bonus &gt; 0){
+			if(referral_bonus > 0){
 				holdersBonus[msg.sender] = referral_bonus;
 				amount_bonus += referral_bonus;
 			}
@@ -124,6 +124,6 @@ contract BMPre_ICO {
 	}
 
 	function () payable {
-		buy(&#39;&#39;);
+		buy('');
 	}
 }

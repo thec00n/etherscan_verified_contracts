@@ -19,12 +19,12 @@ contract SafeMath {
     return c;
   }
   function safeSub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function safeAdd(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
   function safeNumDigits(uint number) pure internal returns (uint8) {
@@ -38,9 +38,9 @@ contract SafeMath {
 
   // mitigate short address attack
   // thanks to https://github.com/numerai/contract/blob/c182465f82e50ced8dacb3977ec374a892f5fa8c/contracts/Safe.sol#L30-L34.
-  // TODO: doublecheck implication of &gt;= compared to ==
+  // TODO: doublecheck implication of >= compared to ==
   modifier onlyPayloadSize(uint numWords) {
-     assert(msg.data.length &gt;= numWords * 32 + 4);
+     assert(msg.data.length >= numWords * 32 + 4);
      _;
   }
 
@@ -52,7 +52,7 @@ contract StandardToken is Token, SafeMath {
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2) public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -62,7 +62,7 @@ contract StandardToken is Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0);
         balances[_from] = safeSub(balances[_from], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -75,8 +75,8 @@ contract StandardToken is Token, SafeMath {
         return balances[_owner];
     }
 
-    // To change the approve amount you first have to reduce the addresses&#39;
-    //  allowance to zero by calling &#39;approve(_spender, 0)&#39; if it is not
+    // To change the approve amount you first have to reduce the addresses'
+    //  allowance to zero by calling 'approve(_spender, 0)' if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     function approve(address _spender, uint256 _value) public onlyPayloadSize(2) returns (bool success) {
@@ -99,17 +99,17 @@ contract StandardToken is Token, SafeMath {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 }
 
 contract GRO is StandardToken {
     // FIELDS
-    string public name = &quot;Gron Digital&quot;;
-    string public symbol = &quot;GRO&quot;;
+    string public name = "Gron Digital";
+    string public symbol = "GRO";
     uint256 public decimals = 18;
-    string public version = &quot;10.0&quot;;
+    string public version = "10.0";
 
     // Nine Hundred and Fifty million with support for 18 decimals
     uint256 public tokenCap = 950000000 * 10**18;
@@ -142,11 +142,11 @@ contract GRO is StandardToken {
     uint256 public minAmount; // Minimum amount of ether to accept for GRO purchases
 
     // map participant address to a withdrawal request
-    mapping (address =&gt; Withdrawal) public withdrawals;
+    mapping (address => Withdrawal) public withdrawals;
     // maps previousUpdateTime to the next price
-    mapping (uint256 =&gt; Price) public prices;
+    mapping (uint256 => Price) public prices;
     // maps addresses
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     // TYPES
 
@@ -198,11 +198,11 @@ contract GRO is StandardToken {
         if (msg.sender == controlWallet) _;
     }
     modifier require_waited {
-      require(safeSub(currentTime(), waitTime) &gt;= previousUpdateTime);
+      require(safeSub(currentTime(), waitTime) >= previousUpdateTime);
         _;
     }
     modifier only_if_decrease (uint256 newNumerator) {
-        if (newNumerator &lt; currentPrice.numerator) _;
+        if (newNumerator < currentPrice.numerator) _;
     }
 
     // CONSTRUCTOR
@@ -217,8 +217,8 @@ contract GRO is StandardToken {
     // This function is provided for maximum compatibility. 
     function initialiseContract(address controlWalletInput, uint256 priceNumeratorInput, uint256 startBlockInput, uint256 endBlockInput) external onlyFundWallet {
       require(controlWalletInput != address(0));
-      require(priceNumeratorInput &gt; 0);
-      require(endBlockInput &gt; startBlockInput);
+      require(priceNumeratorInput > 0);
+      require(endBlockInput > startBlockInput);
       controlWallet = controlWalletInput;
       whitelist[controlWallet] = true;
       currentPrice = Price(priceNumeratorInput);
@@ -239,7 +239,7 @@ contract GRO is StandardToken {
 
     // allows controlWallet to update the price within a time contstraint, allows fundWallet complete control
     function updatePrice(uint256 newNumerator) external onlyManagingWallets {
-        require(newNumerator &gt; 0);
+        require(newNumerator > 0);
         require_limited_change(newNumerator);
         // either controlWallet command is compliant or transaction came from fundWallet
         currentPrice.numerator = newNumerator;
@@ -260,12 +260,12 @@ contract GRO is StandardToken {
         percentage_diff = safeMul(newNumerator, 100) / currentPrice.numerator;
         percentage_diff = safeSub(100, percentage_diff);
         // controlWallet can only increase price by max 20% and only every waitTime
-        require(percentage_diff &lt;= 20);
+        require(percentage_diff <= 20);
     }
 
     function mint(address participant, uint256 amountTokens) private {
         require(vestingSet);
-        // 40% of total allocated for Founders, Team incentives &amp; Bonuses.
+        // 40% of total allocated for Founders, Team incentives & Bonuses.
 
 	// Solidity v0.4.18 - floating point is not fully supported,
 	// integer division results in truncated values
@@ -276,7 +276,7 @@ contract GRO is StandardToken {
         uint256 developmentAllocation = safeMul(allocationRatio, safeMul(380000000, precision)) / precision;
         // check that token cap is not exceeded
         uint256 newTokens = safeAdd(amountTokens, developmentAllocation);
-        require(safeAdd(totalSupply, newTokens) &lt;= tokenCap);
+        require(safeAdd(totalSupply, newTokens) <= tokenCap);
         // increase token supply, assign tokens to participant
         totalSupply = safeAdd(totalSupply, newTokens);
         balances[participant] = safeAdd(balances[participant], amountTokens);
@@ -297,7 +297,7 @@ contract GRO is StandardToken {
 			       )
       external onlyFundWallet {
 
-      require(currentBlock() &lt; fundingEndBlock);
+      require(currentBlock() < fundingEndBlock);
       require(participant_address != address(0));
      
       uint256 bonusTokens = 0;
@@ -336,8 +336,8 @@ contract GRO is StandardToken {
     function buyTo(address participant) public payable onlyWhitelist {
       require(!halted);
       require(participant != address(0));
-      require(msg.value &gt;= minAmount);
-      require(currentBlock() &gt;= fundingStartBlock &amp;&amp; currentBlock() &lt; fundingEndBlock);
+      require(msg.value >= minAmount);
+      require(currentBlock() >= fundingStartBlock && currentBlock() < fundingEndBlock);
       // msg.value in wei - scale to GRO
       uint256 baseAmountTokens = safeMul(msg.value, currentPrice.numerator);
       // calc lottery amount excluding potential ico bonus
@@ -362,13 +362,13 @@ contract GRO is StandardToken {
         uint256 thirdBlockPhase = 241920; // // #blocks = 6*7*24*60*60/15 = 241920
         //uint256 fourthBlock = 322560; // #blocks = Greater Than thirdBlock
 
-        if (icoDuration &lt; firstBlockPhase ) {
+        if (icoDuration < firstBlockPhase ) {
             numerator = 13000;
 	    return numerator;
-        } else if (icoDuration &lt; secondBlockPhase ) { 
+        } else if (icoDuration < secondBlockPhase ) { 
             numerator = 12000;
 	    return numerator;
-        } else if (icoDuration &lt; thirdBlockPhase ) { 
+        } else if (icoDuration < thirdBlockPhase ) { 
             numerator = 11000;
 	    return numerator;
         } else {
@@ -398,10 +398,10 @@ contract GRO is StandardToken {
     }
 
     function requestWithdrawal(uint256 amountTokensToWithdraw) external isTradeable onlyWhitelist {
-      require(currentBlock() &gt; fundingEndBlock);
-        require(amountTokensToWithdraw &gt; 0);
+      require(currentBlock() > fundingEndBlock);
+        require(amountTokensToWithdraw > 0);
         address participant = msg.sender;
-        require(balanceOf(participant) &gt;= amountTokensToWithdraw);
+        require(balanceOf(participant) >= amountTokensToWithdraw);
         require(withdrawals[participant].tokens == 0); // participant cannot have outstanding withdrawals
         balances[participant] = safeSub(balances[participant], amountTokensToWithdraw);
         withdrawals[participant] = Withdrawal({tokens: amountTokensToWithdraw, time: previousUpdateTime});
@@ -411,15 +411,15 @@ contract GRO is StandardToken {
     function withdraw() external {
         address participant = msg.sender;
         uint256 tokens = withdrawals[participant].tokens;
-        require(tokens &gt; 0); // participant must have requested a withdrawal
+        require(tokens > 0); // participant must have requested a withdrawal
         uint256 requestTime = withdrawals[participant].time;
         // obtain the next price that was set after the request
         Price price = prices[requestTime];
-        require(price.numerator &gt; 0); // price must have been set
+        require(price.numerator > 0); // price must have been set
         uint256 withdrawValue = tokens / price.numerator;
-        // if contract ethbal &gt; then send + transfer tokens to fundWallet, otherwise give tokens back
+        // if contract ethbal > then send + transfer tokens to fundWallet, otherwise give tokens back
         withdrawals[participant].tokens = 0;
-        if (this.balance &gt;= withdrawValue) {
+        if (this.balance >= withdrawValue) {
             enact_withdrawal_greater_equal(participant, withdrawValue, tokens);
 	}
         else {
@@ -430,7 +430,7 @@ contract GRO is StandardToken {
     function enact_withdrawal_greater_equal(address participant, uint256 withdrawValue, uint256 tokens)
         private
     {
-        assert(this.balance &gt;= withdrawValue);
+        assert(this.balance >= withdrawValue);
         balances[fundWallet] = safeAdd(balances[fundWallet], tokens);
         participant.transfer(withdrawValue);
         Withdraw(participant, tokens, withdrawValue);
@@ -438,7 +438,7 @@ contract GRO is StandardToken {
     function enact_withdrawal_less(address participant, uint256 withdrawValue, uint256 tokens)
         private
     {
-        assert(this.balance &lt; withdrawValue);
+        assert(this.balance < withdrawValue);
         balances[participant] = safeAdd(balances[participant], tokens);
         Withdraw(participant, tokens, 0); // indicate a failed withdrawal
     }
@@ -447,22 +447,22 @@ contract GRO is StandardToken {
     // in subunits for decimal support, at the current GRO exchange
     // rate
     function checkWithdrawValue(uint256 amountTokensInSubunit) public constant returns (uint256 weiValue) {
-        require(amountTokensInSubunit &gt; 0);
-        require(balanceOf(msg.sender) &gt;= amountTokensInSubunit);
+        require(amountTokensInSubunit > 0);
+        require(balanceOf(msg.sender) >= amountTokensInSubunit);
         uint256 withdrawValue = amountTokensInSubunit / currentPrice.numerator;
-        require(this.balance &gt;= withdrawValue);
+        require(this.balance >= withdrawValue);
         return withdrawValue;
     }
 
     // allow fundWallet or controlWallet to add ether to contract
     function addLiquidity() external onlyManagingWallets payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         AddLiquidity(msg.value);
     }
 
     // allow fundWallet to remove ether from contract
     function removeLiquidity(uint256 amount) external onlyManagingWallets {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         fundWallet.transfer(amount);
         RemoveLiquidity(amount);
     }
@@ -487,14 +487,14 @@ contract GRO is StandardToken {
     }
 
     function updateFundingStartBlock(uint256 newFundingStartBlock) external onlyFundWallet {
-      require(currentBlock() &lt; fundingStartBlock);
-        require(currentBlock() &lt; newFundingStartBlock);
+      require(currentBlock() < fundingStartBlock);
+        require(currentBlock() < newFundingStartBlock);
         fundingStartBlock = newFundingStartBlock;
     }
 
     function updateFundingEndBlock(uint256 newFundingEndBlock) external onlyFundWallet {
-        require(currentBlock() &lt; fundingEndBlock);
-        require(currentBlock() &lt; newFundingEndBlock);
+        require(currentBlock() < fundingEndBlock);
+        require(currentBlock() < newFundingEndBlock);
         fundingEndBlock = newFundingEndBlock;
     }
 
@@ -506,7 +506,7 @@ contract GRO is StandardToken {
     }
 
     function enableTrading() external onlyFundWallet {
-        require(currentBlock() &gt; fundingEndBlock);
+        require(currentBlock() > fundingEndBlock);
         tradeable = true;
     }
 

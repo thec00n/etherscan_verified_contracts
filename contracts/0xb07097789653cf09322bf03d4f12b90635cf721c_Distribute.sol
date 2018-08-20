@@ -111,7 +111,7 @@ contract Distribute {
 	// Check if user is whitelisted admin
 	modifier onlyAdmins() {
 		uint8 isAdmin = 0;
-		for (uint8 i = 0; i &lt; admins.length; i++) {
+		for (uint8 i = 0; i < admins.length; i++) {
 			if (admins[i] == msg.sender)
         isAdmin = isAdmin | 1;
 		}
@@ -137,9 +137,9 @@ contract Distribute {
 		require(validate());
 		withdrawalDeployed = true;
 		// Send all tokens
-		for (uint i = 0; i &lt; payees.length; i++) {
+		for (uint i = 0; i < payees.length; i++) {
 			// Confirm that contributor has not yet been paid is owed more than gas withhold
-			if (payees[i].paid == false &amp;&amp; tokensDue(payees[i].contributionWei) &gt;= withhold) {
+			if (payees[i].paid == false && tokensDue(payees[i].contributionWei) >= withhold) {
 				// Withhold tokens to cover gas cost
 				uint tokensToSend = tokensDue(payees[i].contributionWei) - withhold;
 				// Send tokens to payee
@@ -154,13 +154,13 @@ contract Distribute {
 	function validate() public view returns (bool) {
 		// Calculate total tokens due to all contributors
 		uint totalTokensDue = 0;
-		for (uint i = 0; i &lt; payees.length; i++) {
+		for (uint i = 0; i < payees.length; i++) {
 			if (!payees[i].paid) {
 				// Calculate tokens based on ETH contribution
 				totalTokensDue += tokensDue(payees[i].contributionWei)*tokenMultiplier;
 			}
 		}
-		return token.balanceOf(multisig) &gt;= totalTokensDue &amp;&amp; token.allowance(multisig,address(this)) &gt;= totalTokensDue;
+		return token.balanceOf(multisig) >= totalTokensDue && token.allowance(multisig,address(this)) >= totalTokensDue;
 	}
 
   

@@ -9,19 +9,19 @@ pragma solidity ^0.4.11;
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -40,20 +40,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -132,8 +132,8 @@ contract ContractReceiver {
     sender = _from;
     value = _value;
     data = _data;
-    functionName = &quot;tokenFallback&quot;;
-    //uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+    functionName = "tokenFallback";
+    //uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
     //tkn.sig = bytes4(u);
 
     /* tkn variable is analogue of msg variable of Ether transaction
@@ -147,7 +147,7 @@ contract ContractReceiver {
 
   function customFallback(address _from, uint _value, bytes _data) public {
     tokenFallback(_from, _value, _data);
-    functionName = &quot;customFallback&quot;;
+    functionName = "customFallback";
   }
 }
 
@@ -161,9 +161,9 @@ contract RobomedIco is ERC223, ERC20 {
 
     using SafeMath for uint256;
 
-    string public name = &quot;RobomedToken&quot;;
+    string public name = "RobomedToken";
 
-    string public symbol = &quot;RBM&quot;;
+    string public symbol = "RBM";
 
     uint8 public decimals = 18;
 
@@ -471,14 +471,14 @@ contract RobomedIco is ERC223, ERC20 {
     /**
     * Здесь храним балансы токенов
     */
-    mapping (address =&gt; uint256)  balances;
+    mapping (address => uint256)  balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256))  allowed;
+    mapping (address => mapping (address => uint256))  allowed;
 
     /**
     * Здесь храним начисленные премиальные токены, могут быть выведены на кошелёк начиная с даты startDateOfUseTeamTokens
     */
-    mapping (address =&gt; uint256) teamBalances;
+    mapping (address => uint256) teamBalances;
 
     /**
     * Владелец контракта - распределяет вип токены, начисляет баунти и team, осуществляет переход по стадиям,
@@ -637,7 +637,7 @@ contract RobomedIco is ERC223, ERC20 {
      * только если состояние PostIco или выше
      */
     modifier afterIco() {
-        require(uint(currentState) &gt;= uint(IcoStates.PostIco));
+        require(uint(currentState) >= uint(IcoStates.PostIco));
         _;
     }
 
@@ -648,16 +648,16 @@ contract RobomedIco is ERC223, ERC20 {
     modifier checkForTransfer(address _from, address _to, uint256 _value)  {
 
         //проверяем размер перевода
-        require(_value &gt; 0);
+        require(_value > 0);
 
         //проверяем кошелёк назначения
-        require(_to != 0x0 &amp;&amp; _to != _from);
+        require(_to != 0x0 && _to != _from);
 
         //на стадиях перед ico переводить может только владелец
         require(currentState == IcoStates.PostIco || _from == owner);
 
         //операции на bounty и team не допустимы до окончания ico
-        require(currentState == IcoStates.PostIco || (_to != bountyTokensAccount &amp;&amp; _to != teamTokensAccount));
+        require(currentState == IcoStates.PostIco || (_to != bountyTokensAccount && _to != teamTokensAccount));
 
         _;
     }
@@ -683,11 +683,11 @@ contract RobomedIco is ERC223, ERC20 {
         //проверяем, что все указанные адреса не равны 0, также они отличаются от создающего контракт
         //по сути контракт создаёт некое 3-ее лицо не имеющее в дальнейшем ни каких особенных прав
         //так же действует условие что все перичисленные адреса разные (нельзя быть одновременно владельцем и кошельком для токенов - например)
-        require(ADDR_OWNER != 0x0 &amp;&amp; ADDR_OWNER != msg.sender);
-        require(ADDR_WITHDRAWAL1 != 0x0 &amp;&amp; ADDR_WITHDRAWAL1 != msg.sender);
-        require(ADDR_WITHDRAWAL2 != 0x0 &amp;&amp; ADDR_WITHDRAWAL2 != msg.sender);
-        require(ADDR_BOUNTY_TOKENS_ACCOUNT != 0x0 &amp;&amp; ADDR_BOUNTY_TOKENS_ACCOUNT != msg.sender);
-        require(ADDR_TEAM_TOKENS_ACCOUNT != 0x0 &amp;&amp; ADDR_TEAM_TOKENS_ACCOUNT != msg.sender);
+        require(ADDR_OWNER != 0x0 && ADDR_OWNER != msg.sender);
+        require(ADDR_WITHDRAWAL1 != 0x0 && ADDR_WITHDRAWAL1 != msg.sender);
+        require(ADDR_WITHDRAWAL2 != 0x0 && ADDR_WITHDRAWAL2 != msg.sender);
+        require(ADDR_BOUNTY_TOKENS_ACCOUNT != 0x0 && ADDR_BOUNTY_TOKENS_ACCOUNT != msg.sender);
+        require(ADDR_TEAM_TOKENS_ACCOUNT != 0x0 && ADDR_TEAM_TOKENS_ACCOUNT != msg.sender);
 
         require(ADDR_BOUNTY_TOKENS_ACCOUNT != ADDR_TEAM_TOKENS_ACCOUNT);
         require(ADDR_OWNER != ADDR_TEAM_TOKENS_ACCOUNT);
@@ -781,7 +781,7 @@ contract RobomedIco is ERC223, ERC20 {
     */
     function accrueTeamTokens() public afterIco {
         //зачисление возможно только после определённой даты
-        require(startDateOfUseTeamTokens &lt;= now);
+        require(startDateOfUseTeamTokens <= now);
 
         //добавляем в общее количество выпущенных
         totalSupply = totalSupply.add(teamBalances[msg.sender]);
@@ -799,7 +799,7 @@ contract RobomedIco is ERC223, ERC20 {
         if (currentState != IcoStates.PostIco) return false;
 
         //восстановление возможно только после определённой даты
-        if (startDateOfRestoreUnsoldTokens &gt; now) return false;
+        if (startDateOfRestoreUnsoldTokens > now) return false;
 
         //восстановление возможно только если есть что восстанавливать
         if (unsoldTokens == 0) return false;
@@ -844,7 +844,7 @@ contract RobomedIco is ERC223, ERC20 {
     * Подтверждение снятия эфира на указанный кошелёк
     */
     function approveWithdrawal(address _to, uint256 _value) public afterIco onlyWithdrawal2 {
-        require(_to != 0x0 &amp;&amp; _value &gt; 0);
+        require(_to != 0x0 && _value > 0);
         require(_to == withdrawalTo);
         require(_value == withdrawalValue);
 
@@ -862,56 +862,56 @@ contract RobomedIco is ERC223, ERC20 {
      */
     function canGotoState(IcoStates toState) public constant returns (bool){
         if (toState == IcoStates.PreSale) {
-            return (currentState == IcoStates.VipPlacement &amp;&amp; endDateOfVipPlacement &lt;= now);
+            return (currentState == IcoStates.VipPlacement && endDateOfVipPlacement <= now);
         }
         else if (toState == IcoStates.SaleStage1) {
-            return (currentState == IcoStates.PreSale &amp;&amp; endDateOfPreSale &lt;= now);
+            return (currentState == IcoStates.PreSale && endDateOfPreSale <= now);
         }
         else if (toState == IcoStates.SaleStage2) {
-            return (currentState == IcoStates.SaleStage1 &amp;&amp; freeMoney == 0 &amp;&amp; startDateOfSaleStageLast &gt; now);
+            return (currentState == IcoStates.SaleStage1 && freeMoney == 0 && startDateOfSaleStageLast > now);
         }
         else if (toState == IcoStates.SaleStage3) {
-            return (currentState == IcoStates.SaleStage2 &amp;&amp; freeMoney == 0 &amp;&amp; startDateOfSaleStageLast &gt; now);
+            return (currentState == IcoStates.SaleStage2 && freeMoney == 0 && startDateOfSaleStageLast > now);
         }
         else if (toState == IcoStates.SaleStage4) {
-            return (currentState == IcoStates.SaleStage3 &amp;&amp; freeMoney == 0 &amp;&amp; startDateOfSaleStageLast &gt; now);
+            return (currentState == IcoStates.SaleStage3 && freeMoney == 0 && startDateOfSaleStageLast > now);
         }
         else if (toState == IcoStates.SaleStage5) {
-            return (currentState == IcoStates.SaleStage4 &amp;&amp; freeMoney == 0 &amp;&amp; startDateOfSaleStageLast &gt; now);
+            return (currentState == IcoStates.SaleStage4 && freeMoney == 0 && startDateOfSaleStageLast > now);
         }
         else if (toState == IcoStates.SaleStage6) {
-            return (currentState == IcoStates.SaleStage5 &amp;&amp; freeMoney == 0 &amp;&amp; startDateOfSaleStageLast &gt; now);
+            return (currentState == IcoStates.SaleStage5 && freeMoney == 0 && startDateOfSaleStageLast > now);
         }
         else if (toState == IcoStates.SaleStage7) {
-            return (currentState == IcoStates.SaleStage6 &amp;&amp; freeMoney == 0 &amp;&amp; startDateOfSaleStageLast &gt; now);
+            return (currentState == IcoStates.SaleStage6 && freeMoney == 0 && startDateOfSaleStageLast > now);
         }
         else if (toState == IcoStates.SaleStageLast) {
             //переход на состояние SaleStageLast возможен только из состояний SaleStages
             if (
             currentState != IcoStates.SaleStage1
-            &amp;&amp;
+            &&
             currentState != IcoStates.SaleStage2
-            &amp;&amp;
+            &&
             currentState != IcoStates.SaleStage3
-            &amp;&amp;
+            &&
             currentState != IcoStates.SaleStage4
-            &amp;&amp;
+            &&
             currentState != IcoStates.SaleStage5
-            &amp;&amp;
+            &&
             currentState != IcoStates.SaleStage6
-            &amp;&amp;
+            &&
             currentState != IcoStates.SaleStage7) return false;
 
             //переход осуществляется если на состоянии SaleStage7 не осталось свободных токенов
             //или на одном из состояний SaleStages наступило время startDateOfSaleStageLast
-            if (!(currentState == IcoStates.SaleStage7 &amp;&amp; freeMoney == 0) &amp;&amp; startDateOfSaleStageLast &gt; now) {
+            if (!(currentState == IcoStates.SaleStage7 && freeMoney == 0) && startDateOfSaleStageLast > now) {
                 return false;
             }
 
             return true;
         }
         else if (toState == IcoStates.PostIco) {
-            return (currentState == IcoStates.SaleStageLast &amp;&amp; endDateOfSaleStageLast &lt;= now);
+            return (currentState == IcoStates.SaleStageLast && endDateOfSaleStageLast <= now);
         }
     }
 
@@ -930,7 +930,7 @@ contract RobomedIco is ERC223, ERC20 {
         require(msg.value != 0);
 
         //нельзя покупать на токены bounty и team
-        require(beneficiary != bountyTokensAccount &amp;&amp; beneficiary != teamTokensAccount);
+        require(beneficiary != bountyTokensAccount && beneficiary != teamTokensAccount);
 
         //выставляем остаток средств
         //в процессе покупки будем его уменьшать на каждой итерации - итерация - покупка токенов на определённой стадии
@@ -948,17 +948,17 @@ contract RobomedIco is ERC223, ERC20 {
         //общее количество токенов которые купили за этот вызов
         uint256 boughtTokens = 0;
 
-        while (remVal &gt; 0) {
+        while (remVal > 0) {
             //покупать токены можно только на указанных стадиях
             require(
             currentState != IcoStates.VipPlacement
-            &amp;&amp;
+            &&
             currentState != IcoStates.PostIco);
 
             //выполняем покупку для вызывающего
             //смотрим, есть ли у нас такое количество свободных токенов на текущей стадии
             uint256 tokens = remVal.mul(rate);
-            if (tokens &gt; freeMoney) {
+            if (tokens > freeMoney) {
                 remVal = remVal.sub(freeMoney.div(rate));
                 tokens = freeMoney;
             }
@@ -967,11 +967,11 @@ contract RobomedIco is ERC223, ERC20 {
                 remVal = 0;
                 //если остаток свободных токенов меньше чем курс - отдаём их покупателю
                 uint256 remFreeTokens = freeMoney.sub(tokens);
-                if (0 &lt; remFreeTokens &amp;&amp; remFreeTokens &lt; rate) {
+                if (0 < remFreeTokens && remFreeTokens < rate) {
                     tokens = freeMoney;
                 }
             }
-            assert(tokens &gt; 0);
+            assert(tokens > 0);
 
             freeMoney = freeMoney.sub(tokens);
             totalBought = totalBought.add(tokens);
@@ -980,9 +980,9 @@ contract RobomedIco is ERC223, ERC20 {
 
             //если покупка была выполнена на любой из стадий Sale кроме последней
             if (
-            uint(currentState) &gt;= uint(IcoStates.SaleStage1)
-            &amp;&amp;
-            uint(currentState) &lt;= uint(IcoStates.SaleStage7)) {
+            uint(currentState) >= uint(IcoStates.SaleStage1)
+            &&
+            uint(currentState) <= uint(IcoStates.SaleStage7)) {
 
                 //уменьшаем количество остатка по токенам которые необходимо продать на этих стадиях
                 remForSalesBeforeStageLast = remForSalesBeforeStageLast.sub(tokens);
@@ -1002,7 +1002,7 @@ contract RobomedIco is ERC223, ERC20 {
     */
     function transferBounty(address _to, uint256 _value) public onlyOwner {
         //проверяем кошелёк назначения
-        require(_to != 0x0 &amp;&amp; _to != msg.sender);
+        require(_to != 0x0 && _to != msg.sender);
 
         //уменьшаем количество нераспределённых
         bountyTokensNotDistributed = bountyTokensNotDistributed.sub(_value);
@@ -1019,7 +1019,7 @@ contract RobomedIco is ERC223, ERC20 {
     */
     function transferTeam(address _to, uint256 _value) public onlyOwner {
         //проверяем кошелёк назначения
-        require(_to != 0x0 &amp;&amp; _to != msg.sender);
+        require(_to != 0x0 && _to != msg.sender);
 
         //уменьшаем количество нераспределённых
         teamTokensNotDistributed = teamTokensNotDistributed.sub(_value);
@@ -1075,7 +1075,7 @@ contract RobomedIco is ERC223, ERC20 {
         //retrieve the size of the code on target address, this needs assembly
         length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     /**
@@ -1099,7 +1099,7 @@ contract RobomedIco is ERC223, ERC20 {
     }
 
     function _transfer(address _from, address _to, uint _value) private {
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         if (currentState != IcoStates.PostIco) {
@@ -1131,7 +1131,7 @@ contract RobomedIco is ERC223, ERC20 {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -1245,17 +1245,17 @@ contract RobomedIco is ERC223, ERC20 {
         //переход между состояниями SaleStages возможен только если находимся в одном из них, кроме последнего
         if (
         currentState != IcoStates.SaleStage1
-        &amp;&amp;
+        &&
         currentState != IcoStates.SaleStage2
-        &amp;&amp;
+        &&
         currentState != IcoStates.SaleStage3
-        &amp;&amp;
+        &&
         currentState != IcoStates.SaleStage4
-        &amp;&amp;
+        &&
         currentState != IcoStates.SaleStage5
-        &amp;&amp;
+        &&
         currentState != IcoStates.SaleStage6
-        &amp;&amp;
+        &&
         currentState != IcoStates.SaleStage7) return;
 
         //если есть возможность сразу переходим в состояние StageLast

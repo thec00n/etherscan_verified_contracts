@@ -15,11 +15,11 @@ contract GrowToken{
     bool public buyOpen;
     
     //store token data set
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     //transition limite
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
     //freeze account 
-    mapping(address=&gt;bool) public frozenAccount;
+    mapping(address=>bool) public frozenAccount;
     
     //event for transition
     event Transfer(address indexed from,address indexed to , uint256 value);
@@ -27,9 +27,9 @@ contract GrowToken{
     event Approval(address indexed owner,address indexed spender,uint256 value);
     //event for freeze/unfreeze Account 
     event FrozenFunds(address target,bool freeze);
-    //TODO event for sell token , do&#39;t need it now
+    //TODO event for sell token , do't need it now
     event SellToken(address seller,uint256 sellPrice, uint256 amount,uint256 getEth);
-    //TODO event for buy token , do&#39;t need it now 
+    //TODO event for buy token , do't need it now 
     event BuyToken(address buyer,uint256 buyPrice,uint256 amount,uint256 spendEth);
     
     modifier onlyOwner {
@@ -39,8 +39,8 @@ contract GrowToken{
     //func constructor
     function GrowToken() public {
         owner = 0x757D7FbB9822b5033a6BBD4e17F95714942f921f;
-        name = &quot;GROWCHAIN&quot;;
-        symbol = &quot;GROW&quot;;
+        name = "GROWCHAIN";
+        symbol = "GROW";
         decimals = 8;
         totalSupply = 5000000000 * 10 ** uint256(8);
         
@@ -65,11 +65,11 @@ contract GrowToken{
         }
     }
     
-    // 2 Transfer Other&#39;s tokens ,who had approve some token to me 
+    // 2 Transfer Other's tokens ,who had approve some token to me 
     function transferFrom(address _from,address _to,uint256 _value) public returns (bool success){
         //validate the allowance 
-        require(!frozenAccount[_from]&amp;&amp;!frozenAccount[msg.sender]);
-        require(_value&lt;=allowance[_from][msg.sender]);
+        require(!frozenAccount[_from]&&!frozenAccount[msg.sender]);
+        require(_value<=allowance[_from][msg.sender]);
         //do action :sub allowance and do transfer 
         allowance[_from][msg.sender] -= _value;
         if(_to == address(this)){
@@ -121,12 +121,12 @@ contract GrowToken{
     }
     // 14 open/close user to  buy token 
     function setBuyOpen(bool newBuyOpen) onlyOwner public{
-        require(buyPrice&gt;0);
+        require(buyPrice>0);
         buyOpen = newBuyOpen;
     }
     // 15 open/close user to  sell token 
     function setSellOpen(bool newSellOpen) onlyOwner public{
-        require(sellPrice&gt;0);
+        require(sellPrice>0);
         sellOpen = newSellOpen;
     }
     // 16 transfer eth back to owner 
@@ -139,8 +139,8 @@ contract GrowToken{
     function _transfer(address _from,address _to, uint256 _value) internal {
         //validate input and other internal limites
         require(_to != 0x0);//check to address
-        require(balanceOf[_from] &gt;= _value);//check from address has enough balance 
-        require(balanceOf[_to] + _value &gt;balanceOf[_to]);//after transfer the balance of _to address is ok ,no overflow
+        require(balanceOf[_from] >= _value);//check from address has enough balance 
+        require(balanceOf[_to] + _value >balanceOf[_to]);//after transfer the balance of _to address is ok ,no overflow
         uint256 previousBalances = balanceOf[_from]+balanceOf[_to];//store it for add asset to power the security
         //do transfer:sub from _from address,and add to the _to address
         balanceOf[_from] -= _value;
@@ -152,8 +152,8 @@ contract GrowToken{
  // 2 _buy 
     function _buy() internal returns (uint256 amount){
         require(buyOpen);
-        require(buyPrice&gt;0);
-        require(msg.value&gt;0);
+        require(buyPrice>0);
+        require(msg.value>0);
         amount = msg.value / buyPrice;                    // calculates the amount
         _transfer(owner,msg.sender,amount);
         BuyToken(msg.sender,buyPrice,amount,msg.value);
@@ -164,12 +164,12 @@ contract GrowToken{
     function _sell(address _from,uint256 amount) internal returns (uint256 revenue){
         require(sellOpen);
         require(!frozenAccount[_from]);
-        require(amount&gt;0);
-        require(sellPrice&gt;0);
+        require(amount>0);
+        require(sellPrice>0);
         require(_from!=owner);
         _transfer(_from,owner,amount);
         revenue = amount * sellPrice;
-        _from.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        _from.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         SellToken(_from,sellPrice,amount,revenue);
         return revenue;                                   // ends function and returns
     }

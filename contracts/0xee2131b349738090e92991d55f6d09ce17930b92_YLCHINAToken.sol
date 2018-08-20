@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -57,17 +57,17 @@ contract YLCHINAToken is Ownable{
     
     using SafeMath for uint256;
     
-    string public constant name       = &quot;YLCHINA&quot;;
-    string public constant symbol     = &quot;DYLC&quot;;
+    string public constant name       = "YLCHINA";
+    string public constant symbol     = "DYLC";
     uint32 public constant decimals   = 18;
     uint256 public totalSupply        = 5000000000 ether;
     uint256 public currentTotalAirdrop = 0;
     uint256 totalAirdrop              = 2880000 ether;
     uint256 startBalance              = 288 ether;
     
-    mapping(address =&gt; bool) touched;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => bool) touched;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -79,13 +79,13 @@ contract YLCHINAToken is Ownable{
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
 
-        if( !touched[msg.sender] &amp;&amp; currentTotalAirdrop &lt; totalAirdrop ){
+        if( !touched[msg.sender] && currentTotalAirdrop < totalAirdrop ){
             balances[msg.sender] = balances[msg.sender].add( startBalance );
             touched[msg.sender] = true;
             currentTotalAirdrop = currentTotalAirdrop.add( startBalance );
         }
         
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -98,15 +98,15 @@ contract YLCHINAToken is Ownable{
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
         
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         
-        if( !touched[_from] &amp;&amp; currentTotalAirdrop &lt; totalAirdrop ){
+        if( !touched[_from] && currentTotalAirdrop < totalAirdrop ){
             touched[_from] = true;
             balances[_from] = balances[_from].add( startBalance );
             currentTotalAirdrop = currentTotalAirdrop.add( startBalance );
         }
         
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
         
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -129,7 +129,7 @@ contract YLCHINAToken is Ownable{
 
     function getBalance(address _a) internal constant returns(uint256)
     {
-        if( currentTotalAirdrop &lt; totalAirdrop ){
+        if( currentTotalAirdrop < totalAirdrop ){
             if( touched[_a] )
                 return balances[_a];
             else

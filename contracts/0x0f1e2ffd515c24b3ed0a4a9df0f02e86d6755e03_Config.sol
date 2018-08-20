@@ -9,7 +9,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -218,8 +218,8 @@ contract Config is Ownable, ConfigInterface
 	}
 
     /// @dev A lookup table that shows the cooldown duration after a successful
-    ///  breeding action, called &quot;breeding cooldown&quot;. The cooldown roughly doubles each time
-    /// a cutie is bred, so that owners don&#39;t breed the same cutie continuously. Maximum cooldown is seven days.
+    ///  breeding action, called "breeding cooldown". The cooldown roughly doubles each time
+    /// a cutie is bred, so that owners don't breed the same cutie continuously. Maximum cooldown is seven days.
     uint32[14] public cooldowns = [
         uint32(1 minutes),
         uint32(2 minutes),
@@ -254,7 +254,7 @@ contract Config is Ownable, ConfigInterface
     function getCooldownIndexFromGeneration(uint16 _generation) public view returns (uint16)
     {
         uint16 result = _generation;
-        if (result &gt; getCooldownIndexCount()) {
+        if (result > getCooldownIndexCount()) {
             result = uint16(getCooldownIndexCount() - 1);
         }
         return result;
@@ -273,7 +273,7 @@ contract Config is Ownable, ConfigInterface
     function getBabyGen(uint16 _momGen, uint16 _dadGen) public pure returns (uint16)
     {
         uint16 babyGen = _momGen;
-        if (_dadGen &gt; _momGen) {
+        if (_dadGen > _momGen) {
             babyGen = _dadGen;
         }
         babyGen = babyGen + 1;

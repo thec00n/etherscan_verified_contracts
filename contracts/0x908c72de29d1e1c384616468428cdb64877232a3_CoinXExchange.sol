@@ -23,8 +23,8 @@ contract ERC20 {
  * @title Standard ERC20 token
  */
 contract StandardToken is ERC20 {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
     uint256 public totalTokens;
 
     function totalSupply() public constant returns (uint256) {
@@ -36,7 +36,7 @@ contract StandardToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowances[_from][msg.sender]);
+        require(_value <= allowances[_from][msg.sender]);
         allowances[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -65,9 +65,9 @@ contract StandardToken is ERC20 {
         // Prevent transfer to 0x0 address.
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Subtract from the sender
         balances[_from] -= _value;
         // Add the same to the recipient
@@ -78,8 +78,8 @@ contract StandardToken is ERC20 {
 }
 
 contract CoinXExchange is StandardToken {
-    string public constant NAME = &quot;CoinX Exchange&quot;;
-    string public constant SYMBOL = &quot;CXE&quot;;
+    string public constant NAME = "CoinX Exchange";
+    string public constant SYMBOL = "CXE";
     uint8 public constant DECIMALS = 0;
 
     function name() public constant returns (string) {

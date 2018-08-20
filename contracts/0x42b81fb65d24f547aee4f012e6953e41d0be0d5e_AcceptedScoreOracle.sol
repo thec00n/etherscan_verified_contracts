@@ -12,8 +12,8 @@ contract KnowsConstants {
 // knows what a valid box is
 contract KnowsSquares {
     modifier isValidSquare(uint home, uint away) {
-        require(home &gt;= 0 &amp;&amp; home &lt; 10);
-        require(away &gt;= 0 &amp;&amp; away &lt; 10);
+        require(home >= 0 && home < 10);
+        require(away >= 0 && away < 10);
         _;
     }
 }
@@ -57,20 +57,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -142,16 +142,16 @@ contract OwnedScoreOracle is KnowsConstants, KnowsSquares, KnowsTime, Ownable, I
     event LogSquareWinsUpdated(uint home, uint away, uint wins);
 
     function setSquareWins(uint home, uint away, uint wins) public onlyOwner isValidSquare(home, away) {
-        require(currentTime() &gt;= SCORE_REPORT_START_TIME);
-        require(wins &lt;= TOTAL_WINS);
+        require(currentTime() >= SCORE_REPORT_START_TIME);
+        require(wins <= TOTAL_WINS);
         require(!finalized);
 
         uint currentSquareWins = squareWins[home][away];
 
         // account the number of quarters reported
-        if (currentSquareWins &gt; wins) {
+        if (currentSquareWins > wins) {
             winsReported = winsReported.sub(currentSquareWins.sub(wins));
-        } else if (currentSquareWins &lt; wins) {
+        } else if (currentSquareWins < wins) {
             winsReported = winsReported.add(wins.sub(currentSquareWins));
         }
 
@@ -163,7 +163,7 @@ contract OwnedScoreOracle is KnowsConstants, KnowsSquares, KnowsTime, Ownable, I
 
     event LogFinalized(uint time);
 
-    // finalize the score after it&#39;s been reported
+    // finalize the score after it's been reported
     function finalize() public onlyOwner {
         require(winsReported == TOTAL_WINS);
         require(!finalized);
@@ -213,7 +213,7 @@ contract AcceptedScoreOracle is OwnedScoreOracle {
     }
 
     // for the voting period blcok number, these are the votes counted from each address
-    mapping(uint =&gt; mapping(address =&gt; Vote)) votes;
+    mapping(uint => mapping(address => Vote)) votes;
 
     IKnowsVoterStakes public voterStakes;
 
@@ -242,13 +242,13 @@ contract AcceptedScoreOracle is OwnedScoreOracle {
         require(finalized);
 
         // voting period is over
-        require(currentTime() &gt;= votingPeriodStartTime + VOTING_PERIOD_DURATION);
+        require(currentTime() >= votingPeriodStartTime + VOTING_PERIOD_DURATION);
 
         // score is not already accepted as truth
         require(!accepted);
 
         // require 66.666% majority of voters affirmed the score
-        require(affirmations.mul(100000).div(totalVotes) &gt;= 66666);
+        require(affirmations.mul(100000).div(totalVotes) >= 66666);
 
         // score is accepted as truth
         accepted = true;
@@ -263,14 +263,14 @@ contract AcceptedScoreOracle is OwnedScoreOracle {
         // score is finalized
         require(finalized);
 
-        // however it&#39;s not accepted
+        // however it's not accepted
         require(!accepted);
 
         // and the voting period for the score has ended
-        require(currentTime() &gt;= votingPeriodStartTime + VOTING_PERIOD_DURATION);
+        require(currentTime() >= votingPeriodStartTime + VOTING_PERIOD_DURATION);
 
         // require people to have
-        require(affirmations.mul(10000).div(totalVotes) &lt; 6666);
+        require(affirmations.mul(10000).div(totalVotes) < 6666);
 
         // score is no longer finalized
         finalized = false;
@@ -294,7 +294,7 @@ contract AcceptedScoreOracle is OwnedScoreOracle {
         uint stake = voterStakes.getVoterStakes(msg.sender, votingPeriodBlockNumber);
 
         // user has some stake
-        require(stake &gt; 0);
+        require(stake > 0);
 
         Vote storage userVote = votes[votingPeriodBlockNumber][msg.sender];
 
@@ -309,9 +309,9 @@ contract AcceptedScoreOracle is OwnedScoreOracle {
             }
         } else {
             // changing their vote to an affirmation
-            if (affirm &amp;&amp; !userVote.affirmed) {
+            if (affirm && !userVote.affirmed) {
                 affirmations = affirmations.add(stake);
-            } else if (!affirm &amp;&amp; userVote.affirmed) {
+            } else if (!affirm && userVote.affirmed) {
                 // changing their vote to a disaffirmation
                 affirmations = affirmations.sub(stake);
             }
@@ -322,6 +322,6 @@ contract AcceptedScoreOracle is OwnedScoreOracle {
     }
 
     function isFinalized() public view returns (bool) {
-        return super.isFinalized() &amp;&amp; accepted;
+        return super.isFinalized() && accepted;
     }
 }

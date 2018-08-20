@@ -7,7 +7,7 @@ contract Owned {
 
 contract ETHDeposit is Owned {
     address public Owner;
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
 
     event Deposit(uint amount);
     event Withdraw(uint amount);
@@ -22,15 +22,15 @@ contract ETHDeposit is Owned {
     }
 
     function deposit() payable {
-        if (msg.value &gt;= 500 finney)
-            if (Deposits[msg.sender] + msg.value &gt;= Deposits[msg.sender]) {
+        if (msg.value >= 500 finney)
+            if (Deposits[msg.sender] + msg.value >= Deposits[msg.sender]) {
                 Deposits[msg.sender] += msg.value;
                 Deposit(msg.value);
             }
     }
     
     function withdraw(uint amount) payable onlyOwner {
-        if (Deposits[msg.sender] &gt; 0 &amp;&amp; amount &lt;= Deposits[msg.sender]) {
+        if (Deposits[msg.sender] > 0 && amount <= Deposits[msg.sender]) {
             msg.sender.transfer(amount);
             Withdraw(amount);
         }

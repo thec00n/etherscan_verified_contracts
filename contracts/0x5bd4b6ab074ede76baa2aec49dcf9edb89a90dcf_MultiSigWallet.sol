@@ -1,7 +1,7 @@
 // b7f01af8bd882501f6801eb1eea8b22aa2a4979e from https://github.com/gnosis/MultiSigWallet/blob/master/contracts/MultiSigWallet.sol
     
     /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-    /// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="9be8effefdfaf5b5fcfef4e9fcfedbf8f4f5e8fef5e8e2e8b5f5feef">[email&#160;protected]</span>&gt;
+    /// @author Stefan George - <<span class="__cf_email__" data-cfemail="9be8effefdfaf5b5fcfef4e9fcfedbf8f4f5e8fef5e8e2e8b5f5feef">[email protected]</span>>
     contract MultiSigWallet {
     
         /*
@@ -25,9 +25,9 @@
         /*
          *  Storage
          */
-        mapping (uint =&gt; Transaction) public transactions;
-        mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-        mapping (address =&gt; bool) public isOwner;
+        mapping (uint => Transaction) public transactions;
+        mapping (uint => mapping (address => bool)) public confirmations;
+        mapping (address => bool) public isOwner;
         address[] public owners;
         uint public required;
         uint public transactionCount;
@@ -91,8 +91,8 @@
         }
     
         modifier validRequirement(uint ownerCount, uint _required) {
-            if (   ownerCount &gt; MAX_OWNER_COUNT
-                || _required &gt; ownerCount
+            if (   ownerCount > MAX_OWNER_COUNT
+                || _required > ownerCount
                 || _required == 0
                 || ownerCount == 0)
                 throw;
@@ -103,7 +103,7 @@
         function()
             payable
         {
-            if (msg.value &gt; 0)
+            if (msg.value > 0)
                 Deposit(msg.sender, msg.value);
         }
     
@@ -117,7 +117,7 @@
             public
             validRequirement(_owners.length, _required)
         {
-            for (uint i=0; i&lt;_owners.length; i++) {
+            for (uint i=0; i<_owners.length; i++) {
                 if (isOwner[_owners[i]] || _owners[i] == 0)
                     throw;
                 isOwner[_owners[i]] = true;
@@ -148,13 +148,13 @@
             ownerExists(owner)
         {
             isOwner[owner] = false;
-            for (uint i=0; i&lt;owners.length - 1; i++)
+            for (uint i=0; i<owners.length - 1; i++)
                 if (owners[i] == owner) {
                     owners[i] = owners[owners.length - 1];
                     break;
                 }
             owners.length -= 1;
-            if (required &gt; owners.length)
+            if (required > owners.length)
                 changeRequirement(owners.length);
             OwnerRemoval(owner);
         }
@@ -168,7 +168,7 @@
             ownerExists(owner)
             ownerDoesNotExist(newOwner)
         {
-            for (uint i=0; i&lt;owners.length; i++)
+            for (uint i=0; i<owners.length; i++)
                 if (owners[i] == owner) {
                     owners[i] = newOwner;
                     break;
@@ -257,7 +257,7 @@
             returns (bool)
         {
             uint count = 0;
-            for (uint i=0; i&lt;owners.length; i++) {
+            for (uint i=0; i<owners.length; i++) {
                 if (confirmations[transactionId][owners[i]])
                     count += 1;
                 if (count == required)
@@ -300,7 +300,7 @@
             constant
             returns (uint count)
         {
-            for (uint i=0; i&lt;owners.length; i++)
+            for (uint i=0; i<owners.length; i++)
                 if (confirmations[transactionId][owners[i]])
                     count += 1;
         }
@@ -314,9 +314,9 @@
             constant
             returns (uint count)
         {
-            for (uint i=0; i&lt;transactionCount; i++)
-                if (   pending &amp;&amp; !transactions[i].executed
-                    || executed &amp;&amp; transactions[i].executed)
+            for (uint i=0; i<transactionCount; i++)
+                if (   pending && !transactions[i].executed
+                    || executed && transactions[i].executed)
                     count += 1;
         }
     
@@ -341,13 +341,13 @@
             address[] memory confirmationsTemp = new address[](owners.length);
             uint count = 0;
             uint i;
-            for (i=0; i&lt;owners.length; i++)
+            for (i=0; i<owners.length; i++)
                 if (confirmations[transactionId][owners[i]]) {
                     confirmationsTemp[count] = owners[i];
                     count += 1;
                 }
             _confirmations = new address[](count);
-            for (i=0; i&lt;count; i++)
+            for (i=0; i<count; i++)
                 _confirmations[i] = confirmationsTemp[i];
         }
     
@@ -365,15 +365,15 @@
             uint[] memory transactionIdsTemp = new uint[](transactionCount);
             uint count = 0;
             uint i;
-            for (i=0; i&lt;transactionCount; i++)
-                if (   pending &amp;&amp; !transactions[i].executed
-                    || executed &amp;&amp; transactions[i].executed)
+            for (i=0; i<transactionCount; i++)
+                if (   pending && !transactions[i].executed
+                    || executed && transactions[i].executed)
                 {
                     transactionIdsTemp[count] = i;
                     count += 1;
                 }
             _transactionIds = new uint[](to - from);
-            for (i=from; i&lt;to; i++)
+            for (i=from; i<to; i++)
                 _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }

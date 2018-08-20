@@ -12,7 +12,7 @@ contract theRelayer {
     
     function () public {
         require(msg.sender == owner);
-        require(gasleft() &gt; 400000);
+        require(gasleft() > 400000);
         
         uint256 gasToForward = 400000 - 200;
         gasToForward -= gasToForward % 8191;

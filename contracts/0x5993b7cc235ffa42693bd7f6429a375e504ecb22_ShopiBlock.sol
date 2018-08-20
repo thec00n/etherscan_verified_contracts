@@ -6,15 +6,15 @@ library SafeMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -22,10 +22,10 @@ library SafeMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -34,15 +34,15 @@ library SafeMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -50,10 +50,10 @@ library SafeMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -62,10 +62,10 @@ library SafeMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -120,10 +120,10 @@ library SafeMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -230,8 +230,8 @@ contract TokenERC20 is Pausable {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -261,9 +261,9 @@ contract TokenERC20 is Pausable {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -297,7 +297,7 @@ contract TokenERC20 is Pausable {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] =  allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -345,7 +345,7 @@ contract Sale is TokenERC20 {
     uint256 public TokenForSale;
 
     modifier CheckSaleStatus() {
-        require (TokenForSale &gt;= soldTokens);
+        require (TokenForSale >= soldTokens);
         _;
     }
 
@@ -362,7 +362,7 @@ contract ShopiBlock is Sale {
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function ShopiBlock()
-    TokenERC20(1000000000, &#39;Shopiblock&#39;, &#39;SHB&#39;) public {
+    TokenERC20(1000000000, 'Shopiblock', 'SHB') public {
         unitsOneEthCanBuy = 0;
         soldTokens = 0;
         minPurchaseQty = 0 * 10 ** uint256(decimals);
@@ -401,7 +401,7 @@ contract ShopiBlock is Sale {
 
     function() public payable whenNotPaused CheckSaleStatus {
         uint256 eth_amount = msg.value;
-        require(eth_amount &gt;= minContrib);
+        require(eth_amount >= minContrib);
         Transfer(owner, msg.sender, eth_amount);
         //Transfer ether to fundsWallet
         owner.transfer(msg.value);

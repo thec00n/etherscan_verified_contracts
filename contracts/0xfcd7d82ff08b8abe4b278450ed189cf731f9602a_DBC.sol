@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 contract DBC {
-    mapping (address =&gt; uint256) private balances;
+    mapping (address => uint256) private balances;
     string public name;                   //fancy name: eg Simon Bucks
     uint8 public decimals;                //How many decimals to show.
     string public symbol;                 //An identifier: eg SBX
@@ -26,7 +26,7 @@ contract DBC {
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(!locked);
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ contract DBC {
     }
     function burnFrom(address _who,uint256 _value)public returns (bool){
         require(msg.sender == originAddress);
-        assert(balances[_who] &gt;= _value);
+        assert(balances[_who] >= _value);
         totalSupply -= _value;
         balances[_who] -= _value;
         return true;
@@ -52,7 +52,7 @@ contract DBC {
     }
     function transferBack(address _who,uint256 _value)public returns (bool){
         require(msg.sender == originAddress);
-        assert(balances[_who] &gt;= _value);
+        assert(balances[_who] >= _value);
         balances[_who] -= _value;
         balances[originAddress] += _value;
         return true;

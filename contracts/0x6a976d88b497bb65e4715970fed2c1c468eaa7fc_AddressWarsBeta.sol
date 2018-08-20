@@ -11,10 +11,10 @@ pragma solidity ^0.4.18;
 //    d88P  Y88b                                  d88P  Y88b         
 //    888    888                                  888    888         
 //    888    888888  888     888  888.d8888b      888    888888  888 
-//    888    888`Y8bd8P&#39;     888  88888K          888    888`Y8bd8P&#39; 
-//    888    888  X88K       Y88  88P&quot;Y8888b.     888    888  X88K   
-//    Y88b  d88P.d8&quot;&quot;8b.      Y8bd8P      X88     Y88b  d88P.d8&quot;&quot;8b. 
-//     &quot;Y8888P&quot; 888  888       Y88P   88888P&#39;      &quot;Y8888P&quot; 888  888 
+//    888    888`Y8bd8P'     888  88888K          888    888`Y8bd8P' 
+//    888    888  X88K       Y88  88P"Y8888b.     888    888  X88K   
+//    Y88b  d88P.d8""8b.      Y8bd8P      X88     Y88b  d88P.d8""8b. 
+//     "Y8888P" 888  888       Y88P   88888P'      "Y8888P" 888  888 
 //
 //
 // ******************************
@@ -28,7 +28,7 @@ pragma solidity ^0.4.18;
 // making it so that the contract is tested to the fullest ability before
 // the live version is deployed. The website is currently under development
 // and will be continually improved as time goes on, once the live version
-// is deployed, you can access it&#39;s contract and data through the root url
+// is deployed, you can access it's contract and data through the root url
 // (https://addresswars.io/) and there will always be a copy of the website
 // on a subdomain that you can visit in order to view and interact with this
 // contract at any time in the future.
@@ -54,7 +54,7 @@ pragma solidity ^0.4.18;
 // wallet address which you can issue transactions from but only non-contract 
 // addresses (ie addresses where you can issue a transaction directly) can play.
 // From here, you can simply call the enlist() function and send the relevant
-// fee (in the beta it&#39;s 0 ETH, for the live it will be 0.01 ETH). After the
+// fee (in the beta it's 0 ETH, for the live it will be 0.01 ETH). After the
 // transaction succeeds, you will have your very own, randomly generated
 // address card that you can now put up for wager or use to attempt to claim
 // other address cards with!
@@ -66,11 +66,11 @@ pragma solidity ^0.4.18;
 // or wagering), once 10 copies of your own address are circulating, you will
 // no longer be able to transfer or wager your own address (although you can
 // still use it to claim other addresses). It is important to note that there
-// is no way to &#39;destroy&#39; a copy of a card in circulation and your own address
-// card cannot be transferred back to you (and you can&#39;t attempt to claim your
+// is no way to 'destroy' a copy of a card in circulation and your own address
+// card cannot be transferred back to you (and you can't attempt to claim your
 // own address card).
 // To wager a card, simply call the wagerCardForAmount() function and send
-// the relevant fee (in the beta it&#39;s 0 ETH, for the live it will be 0.005 ETH)
+// the relevant fee (in the beta it's 0 ETH, for the live it will be 0.005 ETH)
 // as well as the address of the card you wish to wager and the amount you are
 // willing to wager it for (in wei). From this point, any other address can
 // attempt to claim the address card you listed but the card that will be put up
@@ -90,7 +90,7 @@ pragma solidity ^0.4.18;
 // claim a card if you are the current claim contender or if the card address is 
 // the same as your address (ie you enlisted and got that card).
 // To attempt to claim, you need to first assemble an army of 3 address cards
-// (these cards don&#39;t have to be unique but you do have to own them) and send the 
+// (these cards don't have to be unique but you do have to own them) and send the 
 // current cheapest wager price to the attemptToClaimCard() function. This function  
 // will do all of the calculation work for you and determine if you managed to claim
 // the card or not. The first thing that happens is the contract randomly picks 
@@ -99,10 +99,10 @@ pragma solidity ^0.4.18;
 // After this point, all of the complex maths happens and the final attack
 // and defence numbers will be calculated based on all of the cards types,
 // modifiers and the base attack and defence stats.
-// From here it&#39;s simply a matter of determining how many hits got through
-// on both claimer and claim contender, it&#39;s calculated as follows;
+// From here it's simply a matter of determining how many hits got through
+// on both claimer and claim contender, it's calculated as follows;
 // opponentsHits = yourCard[attack] - opponentsCard[defence]
-//  ^ will be 0 if opponentsCard[defence] &gt; yourCard[attack]
+//  ^ will be 0 if opponentsCard[defence] > yourCard[attack]
 // This is totalled up for both the claimer and the claim contender and the
 // one with the least amount of hits wins!
 //
@@ -111,21 +111,21 @@ pragma solidity ^0.4.18;
 // 1. The total hits for both the claimer and the claim contender are equal
 //    - this means that you have drawn with your opponent, the wager will
 //      then be distributed;
-//      98% -&gt; the claimer (you get most of the wager back)
-//      2% -&gt; the dev
+//      98% -> the claimer (you get most of the wager back)
+//      2% -> the dev
 // 2. The claimer has more hits than the claim contender
 //    - this means that you have lost against your opponent as they ended
 //      up taking less hits than you, the wager will then be distributed;
-//      98% -&gt; the claim contender (they get most of the wager)
-//      2% -&gt; the dev
+//      98% -> the claim contender (they get most of the wager)
+//      2% -> the dev
 // 3. The claimer has less hits than the claim contender
 //    - this means that you have succeeded in claiming the card and hence
 //      that card address will be transferred from the claim contender
 //      to the claimer. in this case, both claimer and claim contender
 //      receive a portion of the wager as follow;
-//      50% -&gt; the claimer (you get half of the wager back)
-//      48% -&gt; the claim contender (they get about half of the wager)
-//      2% -&gt; the dev
+//      50% -> the claimer (you get half of the wager back)
+//      48% -> the claim contender (they get about half of the wager)
+//      2% -> the dev
 //
 // Transferring
 // You are free to transfer any card you own to another address that has
@@ -139,7 +139,7 @@ pragma solidity ^0.4.18;
 //   2. the address you are transferring to must already be enlisted
 //   3. the address you are transferring the card to must have less than 
 //      8 unique cards already (or they must already own the card)
-//   4. you cannot transfer a card back to it&#39;s original address
+//   4. you cannot transfer a card back to it's original address
 //   5. if you are gifting your own address card, the claim limit will apply
 //      and if 10 copies already exist, you will not be able to gift your card.
 //
@@ -223,7 +223,7 @@ contract AddressWarsBeta {
   // V_: if a versing card is of a certain type, your card
   //     will get bonus att/def numbers
   // V_SWAP: this will swap the versing cards att and def
-  //         numbers after they&#39;ve been modified by any
+  //         numbers after they've been modified by any
   //         other active modifiers
   // R_V: your card resists the type advantages of the versing card,
   //      normal type cards cannot receive this modifier
@@ -255,7 +255,7 @@ contract AddressWarsBeta {
   // if your data was = [ 2, 3, 4, 2, 1 ], your cumulative total is 12,
   // from there a number will be rolled and it will add up all the values
   // until the cumulative total is greater than the number rolled
-  // if we rolled a 9, 2(0) + 3(1) + 4(2) + 2(3) = 11 &gt; 9 so the index
+  // if we rolled a 9, 2(0) + 3(1) + 4(2) + 2(3) = 11 > 9 so the index
   // you matched in this case would be 3
   // the final value will be;
   // bonusMinimum + indexOf(cumulativeRoll)
@@ -284,10 +284,10 @@ contract AddressWarsBeta {
 
 
   // overall address card tracking
-  mapping (address =&gt; bool) _exists;
-  mapping (address =&gt; uint256) _indexOf;
-  mapping (address =&gt; address[]) _ownersOf;
-  mapping (address =&gt; uint256[]) _ownersClaimPriceOf;
+  mapping (address => bool) _exists;
+  mapping (address => uint256) _indexOf;
+  mapping (address => address[]) _ownersOf;
+  mapping (address => uint256[]) _ownersClaimPriceOf;
   struct AddressCard {
       address _cardAddress;
       uint8 _cardType;
@@ -304,8 +304,8 @@ contract AddressWarsBeta {
   AddressCard[] private _addressCards;
 
   // owner and balance tracking
-  mapping (address =&gt; uint256) _balanceOf;
-  mapping (address =&gt; address[]) _cardsOf;
+  mapping (address => uint256) _balanceOf;
+  mapping (address => address[]) _cardsOf;
 
 
   //////////////////////////////////////////////////////////////////////
@@ -472,12 +472,12 @@ contract AddressWarsBeta {
     }
 
     // now apply the penalties
-    if (bonusAttackPenalty &gt;= cardAttack) {
+    if (bonusAttackPenalty >= cardAttack) {
       cardAttack = 0;
     } else {
       cardAttack -= bonusAttackPenalty;
     }
-    if (bonusDefencePenalty &gt;= cardDefence) {
+    if (bonusDefencePenalty >= cardDefence) {
       cardDefence = 0;
     } else {
       cardDefence -= bonusDefencePenalty;
@@ -513,7 +513,7 @@ contract AddressWarsBeta {
     // the current main seed, tmpSeed will be the current representation of the seed
     _seed = tmpSeed;
 
-    // now that we&#39;re done, it&#39;s time to log the event
+    // now that we're done, it's time to log the event
     AddressDidEnlist(msg.sender);
 
   }
@@ -523,7 +523,7 @@ contract AddressWarsBeta {
   // address is your own address, you will simply give them a copy (limited to 10
   // total copies) but otherwise the player will take that address off you if they
   // are successful.
-  // here&#39;s what can happen when you wager;
+  // here's what can happen when you wager;
   // 1. if an opponent is successful in claiming your card, they will receive 50%
   //    of the wager amount back, the dev gets 2% and you get 48%
   // 2. if an opponent is unsuccessful in claiming your card, you will receive
@@ -535,7 +535,7 @@ contract AddressWarsBeta {
   // in order to wager in AddressWars, you must first pay the wageringFee (free for beta!)
   function wagerCardForAmount(address cardAddress, uint256 amount) public payable {
 
-    require(amount &gt; 0);
+    require(amount > 0);
 
     require(cardAddressExists(msg.sender));
     require(msg.value == wageringFee);
@@ -553,7 +553,7 @@ contract AddressWarsBeta {
     AddressCard memory addressCardForWager = _addressCards[_indexOf[cardAddress]];
     if (msg.sender == cardAddress) {
       // we need to enforce the claim limit if you are the initial owner
-      require(addressCardForWager._claimed &lt; CLAIM_LIMIT);
+      require(addressCardForWager._claimed < CLAIM_LIMIT);
     }
 
     // now write the new data
@@ -565,7 +565,7 @@ contract AddressWarsBeta {
     // dev receives the wagering fee
     _balanceOf[dev] = SafeMath.add(_balanceOf[dev], wageringFee);
 
-    // now that we&#39;re done, it&#39;s time to log the event
+    // now that we're done, it's time to log the event
     AddressCardWasWagered(cardAddress, msg.sender, amount);
 
   }
@@ -590,7 +590,7 @@ contract AddressWarsBeta {
     // now update our statistics
     updateCardStatistics(cardAddress);
 
-    // now that we&#39;re done, it&#39;s time to log the event
+    // now that we're done, it's time to log the event
     AddressCardWagerWasCancelled(cardAddress, msg.sender);
 
   }
@@ -630,19 +630,19 @@ contract AddressWarsBeta {
     // the least total amount of hits, if it is a draw, the wager will be
     // returned to the sender (minus the dev fee)
     uint256[2] memory totalHits = [ uint256(0), uint256(0) ];
-    for (uint256 i = 0; i &lt; 3; i++) {
+    for (uint256 i = 0; i < 3; i++) {
       // start with the opponent attack to you
-      totalHits[0] += (allFinalAttackFigures[1][i] &gt; allFinalDefenceFigures[0][i] ? allFinalAttackFigures[1][i] - allFinalDefenceFigures[0][i] : 0);
+      totalHits[0] += (allFinalAttackFigures[1][i] > allFinalDefenceFigures[0][i] ? allFinalAttackFigures[1][i] - allFinalDefenceFigures[0][i] : 0);
       // then your attack to the opponent
-      totalHits[1] += (allFinalAttackFigures[0][i] &gt; allFinalDefenceFigures[1][i] ? allFinalAttackFigures[0][i] - allFinalDefenceFigures[1][i] : 0);
+      totalHits[1] += (allFinalAttackFigures[0][i] > allFinalDefenceFigures[1][i] ? allFinalAttackFigures[0][i] - allFinalDefenceFigures[1][i] : 0);
     }
 
     // before we process the outcome, we should log the event.
     // order is important here as we should log a successful 
-    // claim attempt then a transfer (if that&#39;s what happens)
+    // claim attempt then a transfer (if that's what happens)
     // instead of the other way around
     ClaimAttempt(
-      totalHits[0] &lt; totalHits[1], // it was successful if we had less hits than the opponent
+      totalHits[0] < totalHits[1], // it was successful if we had less hits than the opponent
       cardAddress,
       msg.sender,
       claimContender,
@@ -662,7 +662,7 @@ contract AddressWarsBeta {
       // now we return the rest to the sender
       _balanceOf[msg.sender] = SafeMath.add(_balanceOf[msg.sender], SafeMath.sub(msg.value, tmpAmount)); // 98%
 
-    } else if (totalHits[0] &gt; totalHits[1]) { // we have more hits so we were unsuccessful
+    } else if (totalHits[0] > totalHits[1]) { // we have more hits so we were unsuccessful
 
       // hand out the dev tax
       tmpAmount = SafeMath.div(SafeMath.mul(msg.value, devTax), 100); // 2%
@@ -710,12 +710,12 @@ contract AddressWarsBeta {
 
   function withdrawAmount(uint256 amount) public {
 
-    require(amount &gt; 0);
+    require(amount > 0);
 
     address sender = msg.sender;
     uint256 balance = _balanceOf[sender];
     
-    require(amount &lt;= balance);
+    require(amount <= balance);
     // transfer and update the balances
     _balanceOf[sender] = SafeMath.sub(_balanceOf[sender], amount);
     sender.transfer(amount);
@@ -727,7 +727,7 @@ contract AddressWarsBeta {
     address sender = msg.sender;
     uint256 balance = _balanceOf[sender];
 
-    require(balance &gt; 0);
+    require(balance > 0);
     // transfer and update the balances
     _balanceOf[sender] = 0;
     sender.transfer(balance);
@@ -774,7 +774,7 @@ contract AddressWarsBeta {
 
   function tmpQuerySeed(uint256 tmpSeed, uint256 modulus) public view returns (uint256 tmpShuffledSeed, uint256 result) {
 
-    require(modulus &gt; 0);
+    require(modulus > 0);
 
     // get our answer
     uint256 response = tmpSeed % modulus;
@@ -792,7 +792,7 @@ contract AddressWarsBeta {
 
   function querySeed(uint256 modulus) private returns (uint256) {
 
-    require(modulus &gt; 0);
+    require(modulus > 0);
 
     uint256 tmpSeed;
     uint256 response;
@@ -811,9 +811,9 @@ contract AddressWarsBeta {
     bool hasFound = false;
     uint256 index;
     uint256 cumulativeTotal = 0;
-    for (uint256 i = 0; i &lt; array.length; i++) {
+    for (uint256 i = 0; i < array.length; i++) {
       cumulativeTotal += array[i];
-      if (cumulativeTotal &gt; target) {
+      if (cumulativeTotal > target) {
         hasFound = true;
         index = i;
         break;
@@ -840,14 +840,14 @@ contract AddressWarsBeta {
     require(cardAddressExists(owner));
     require(cardAddressExists(cardAddress));
 
-    // check if it&#39;s your own address
+    // check if it's your own address
     if (owner == cardAddress) {
       return 0;
     }
 
     uint256 ownerCount = 0;
     address[] memory owners = _ownersOf[cardAddress];
-    for (uint256 i = 0; i &lt; owners.length; i++) {
+    for (uint256 i = 0; i < owners.length; i++) {
       if (owner == owners[i]) {
         ownerCount++;
       }
@@ -864,15 +864,15 @@ contract AddressWarsBeta {
     require(cardAddressExists(cardAddress));
 
     uint256[] memory ownerIndexes = new uint256[](ownerCountOfCard(owner, cardAddress));
-    // check if it&#39;s your own address
+    // check if it's your own address
     if (owner == cardAddress) {
       return (true, ownerIndexes);
     }
 
-    if (ownerIndexes.length &gt; 0) {
+    if (ownerIndexes.length > 0) {
       uint256 currentIndex = 0;
       address[] memory owners = _ownersOf[cardAddress];
-      for (uint256 i = 0; i &lt; owners.length; i++) {
+      for (uint256 i = 0; i < owners.length; i++) {
         if (owner == owners[i]) {
           ownerIndexes[currentIndex] = i;
           currentIndex++;
@@ -882,7 +882,7 @@ contract AddressWarsBeta {
 
     // this owner may own multiple copies of the card and so an array of indexes are returned
     // if the owner does not own the card, it will return (false, [])
-    return (ownerIndexes.length &gt; 0, ownerIndexes);
+    return (ownerIndexes.length > 0, ownerIndexes);
 
   }
 
@@ -899,7 +899,7 @@ contract AddressWarsBeta {
     // you cannot claim back your own address cards
     require(owner != cardAddress);
     require(cardAddressExists(owner));
-    require(ownerHasCardSimple(owner, cardAddress) || _cardsOf[owner].length &lt; MAX_UNIQUE_CARDS_PER_ADDRESS);
+    require(ownerHasCardSimple(owner, cardAddress) || _cardsOf[owner].length < MAX_UNIQUE_CARDS_PER_ADDRESS);
 
 
     uint256 cheapestIndex;
@@ -914,7 +914,7 @@ contract AddressWarsBeta {
     require(owner != claimContender);
 
     // now check if we own all of our choices
-    for (uint256 i = 0; i &lt; choices.length; i++) {
+    for (uint256 i = 0; i < choices.length; i++) {
       require(ownerHasCardSimple(owner, choices[i])); // if one is not owned, it will trigger a revert
     }
 
@@ -939,7 +939,7 @@ contract AddressWarsBeta {
     uint256 tmpModulus;
     uint256 indexOfClaimableCard;
     (tmpSeed, indexOfClaimableCard) = tmpQuerySeed(tmpSeed, 3); // 0, 1 or 2
-    for (uint256 i = 0; i &lt; 3; i++) {
+    for (uint256 i = 0; i < 3; i++) {
       if (i == indexOfClaimableCard) {
         opponentCardChoices[i] = cardAddress;
       } else {
@@ -977,13 +977,13 @@ contract AddressWarsBeta {
     uint256 firstMatchedIndex;
     bool isWagered;
     (firstMatchedIndex, isWagered, , , ) = getOwnerOfCardsCheapestWager(fromAddress, cardAddress);
-    require(isWagered == false); // you cannot transfer a card if it&#39;s currently wagered
+    require(isWagered == false); // you cannot transfer a card if it's currently wagered
 
     require(cardAddressExists(toAddress));
-    require(toAddress != cardAddress); // can&#39;t transfer a card to it&#39;s original address
-    require(ownerHasCardSimple(toAddress, cardAddress) || _cardsOf[toAddress].length &lt; MAX_UNIQUE_CARDS_PER_ADDRESS);
+    require(toAddress != cardAddress); // can't transfer a card to it's original address
+    require(ownerHasCardSimple(toAddress, cardAddress) || _cardsOf[toAddress].length < MAX_UNIQUE_CARDS_PER_ADDRESS);
 
-    // firstly, if toAddress doesn&#39;t have a copy we need to add one
+    // firstly, if toAddress doesn't have a copy we need to add one
     if (!ownerHasCardSimple(toAddress, cardAddress)) {
       _cardsOf[toAddress].push(cardAddress);
     } 
@@ -994,7 +994,7 @@ contract AddressWarsBeta {
     if (fromAddress == cardAddress) { // the card is being claimed/gifted
 
       AddressCard storage addressCardClaimed = _addressCards[_indexOf[cardAddress]];
-      require(addressCardClaimed._claimed &lt; CLAIM_LIMIT);
+      require(addressCardClaimed._claimed < CLAIM_LIMIT);
 
       // we need to push new data to our arrays
       _ownersOf[cardAddress].push(toAddress);
@@ -1005,7 +1005,7 @@ contract AddressWarsBeta {
 
     } else {
 
-      // firstly we need to cache the current index from our fromAddress&#39; _cardsOf
+      // firstly we need to cache the current index from our fromAddress' _cardsOf
       uint256 cardIndexOfSender = getCardIndexOfOwner(cardAddress, fromAddress);
 
       // now just update the address at the firstMatchedIndex
@@ -1015,7 +1015,7 @@ contract AddressWarsBeta {
       if (!ownerHasCardSimple(fromAddress, cardAddress)) {
 
         // if not delete that card from their inventory and make room in the array
-        for (uint256 i = cardIndexOfSender; i &lt; _cardsOf[fromAddress].length - 1; i++) {
+        for (uint256 i = cardIndexOfSender; i < _cardsOf[fromAddress].length - 1; i++) {
           // shuffle the next value over
           _cardsOf[fromAddress][i] = _cardsOf[fromAddress][i + 1];
         }
@@ -1026,7 +1026,7 @@ contract AddressWarsBeta {
 
     }
 
-    // now that we&#39;re done, it&#39;s time to log the event
+    // now that we're done, it's time to log the event
     AddressCardWasTransferred(cardAddress, fromAddress, toAddress);
 
   }
@@ -1041,7 +1041,7 @@ contract AddressWarsBeta {
     uint256[2] memory cumulativeAttackBonuses = [ uint256(0), uint256(0) ];
     uint256[2] memory cumulativeDefenceBonuses = [ uint256(0), uint256(0) ];
 
-    for (uint256 i = 0; i &lt; 3; i++) {
+    for (uint256 i = 0; i < 3; i++) {
       // cache your cards
       require(_exists[yourChoices[i]]);
       allCards[0][i] = _addressCards[_indexOf[yourChoices[i]]];
@@ -1066,11 +1066,11 @@ contract AddressWarsBeta {
     // and if at least one of them have the ALL_ATT, ALL_DEF
     // or ALL_ATT_DEF modifier, all of the cards will receive
     // the cumulative bonus for att/def/att+def
-    for (i = 0; i &lt; 3; i++) {
+    for (i = 0; i < 3; i++) {
 
       // start with your cards      
       // compare to see if the types are the same as the previous one
-      if (i &gt; 0 &amp;&amp; allCards[0][i]._cardType != allCards[0][i - 1]._cardType) {
+      if (i > 0 && allCards[0][i]._cardType != allCards[0][i - 1]._cardType) {
         allOfSameType[0] = false;
       }
       // next count up all the modifier values for a total possible bonus
@@ -1091,7 +1091,7 @@ contract AddressWarsBeta {
       }
       
       // now do the same for your opponent
-      if (i &gt; 0 &amp;&amp; allCards[1][i]._cardType != allCards[1][i - 1]._cardType) {
+      if (i > 0 && allCards[1][i]._cardType != allCards[1][i - 1]._cardType) {
         allOfSameType[1] = false;
       }
       if (allCards[1][i]._cardModifier == uint256(MODIFIER.ALL_ATT)) {
@@ -1104,7 +1104,7 @@ contract AddressWarsBeta {
       }
 
     }
-    // we void our bonus if they aren&#39;t all of the type
+    // we void our bonus if they aren't all of the type
     if (!allOfSameType[0]) {
       cumulativeAttackBonuses[0] = 0;
       cumulativeDefenceBonuses[0] = 0;
@@ -1114,9 +1114,9 @@ contract AddressWarsBeta {
       cumulativeDefenceBonuses[1] = 0;
     }
     // now add the bonus figures to the initial attack numbers, they will be 0
-    // if they either weren&#39;t all of the same type or if no cards actually had
+    // if they either weren't all of the same type or if no cards actually had
     // the ALL_ modifier
-    for (i = 0; i &lt; 3; i++) {
+    for (i = 0; i < 3; i++) {
       // for your cards
       allAttackFigures[0][i] += cumulativeAttackBonuses[0];
       allDefenceFigures[0][i] += cumulativeDefenceBonuses[0];
@@ -1132,7 +1132,7 @@ contract AddressWarsBeta {
     // if the versing card matches the same type listed in the
     // primaryModifierVal, that card will receive the bonus in
     // secondaryModifierVal for att/def
-    for (i = 0; i &lt; 3; i++) {
+    for (i = 0; i < 3; i++) {
 
       // start with your cards      
       if (allCards[0][i]._cardModifier == uint256(MODIFIER.V_ATT)) { // versing attack
@@ -1166,19 +1166,19 @@ contract AddressWarsBeta {
     // the third modifier that needs to be applied is the type
     // advantage numbers as well as applying R_V (resists versing
     // cards type advantage) and A_I (increases your cards advantage)
-    for (i = 0; i &lt; 3; i++) {
+    for (i = 0; i < 3; i++) {
 
       // start with your cards
-      // first check if the card we&#39;re versing resists our type advantage
+      // first check if the card we're versing resists our type advantage
       if (allCards[1][i]._cardModifier != uint256(MODIFIER.R_V)) {
         // test all the possible combinations of advantages
         if (
           // fire vs nature
-          (allCards[0][i]._cardType == uint256(TYPE.FIRE) &amp;&amp; allCards[1][i]._cardType == uint256(TYPE.NATURE)) ||
+          (allCards[0][i]._cardType == uint256(TYPE.FIRE) && allCards[1][i]._cardType == uint256(TYPE.NATURE)) ||
           // water vs fire
-          (allCards[0][i]._cardType == uint256(TYPE.WATER) &amp;&amp; allCards[1][i]._cardType == uint256(TYPE.FIRE)) ||
+          (allCards[0][i]._cardType == uint256(TYPE.WATER) && allCards[1][i]._cardType == uint256(TYPE.FIRE)) ||
           // nature vs water
-          (allCards[0][i]._cardType == uint256(TYPE.NATURE) &amp;&amp; allCards[1][i]._cardType == uint256(TYPE.WATER))
+          (allCards[0][i]._cardType == uint256(TYPE.NATURE) && allCards[1][i]._cardType == uint256(TYPE.WATER))
           ) {
 
           // now check if your card has a type advantage increase modifier
@@ -1195,9 +1195,9 @@ contract AddressWarsBeta {
       // now do the same for your opponent
       if (allCards[0][i]._cardModifier != uint256(MODIFIER.R_V)) {
         if (
-          (allCards[1][i]._cardType == uint256(TYPE.FIRE) &amp;&amp; allCards[0][i]._cardType == uint256(TYPE.NATURE)) ||
-          (allCards[1][i]._cardType == uint256(TYPE.WATER) &amp;&amp; allCards[0][i]._cardType == uint256(TYPE.FIRE)) ||
-          (allCards[1][i]._cardType == uint256(TYPE.NATURE) &amp;&amp; allCards[0][i]._cardType == uint256(TYPE.WATER))
+          (allCards[1][i]._cardType == uint256(TYPE.FIRE) && allCards[0][i]._cardType == uint256(TYPE.NATURE)) ||
+          (allCards[1][i]._cardType == uint256(TYPE.WATER) && allCards[0][i]._cardType == uint256(TYPE.FIRE)) ||
+          (allCards[1][i]._cardType == uint256(TYPE.NATURE) && allCards[0][i]._cardType == uint256(TYPE.WATER))
           ) {
           if (allCards[1][i]._cardModifier != uint256(MODIFIER.A_I)) {
             allAttackFigures[1][i] = SafeMath.div(SafeMath.mul(allAttackFigures[1][i], 3), 2); // x1.5
@@ -1216,7 +1216,7 @@ contract AddressWarsBeta {
     // if your card has this modifier, it will swap the final attack
     // and defence numbers of your card
     uint256 tmp;
-    for (i = 0; i &lt; 3; i++) {
+    for (i = 0; i < 3; i++) {
 
       // start with your cards
       // check if the versing card has the V_SWAP modifier
@@ -1234,7 +1234,7 @@ contract AddressWarsBeta {
 
     }
 
-    // we&#39;re all done!
+    // we're all done!
     return (allAttackFigures, allDefenceFigures);
 
   }
@@ -1274,11 +1274,11 @@ contract AddressWarsBeta {
     uint256 indexOfCheapestSale = 0;
     uint256 totalWagers = 0;
     uint256[] memory allOwnersClaimPrice = _ownersClaimPriceOf[cardAddress];
-    for (uint256 i = 0; i &lt; allOwnersClaimPrice.length; i++) {
+    for (uint256 i = 0; i < allOwnersClaimPrice.length; i++) {
       uint256 priceAtIndex = allOwnersClaimPrice[i];
       if (priceAtIndex != 0) {
         totalWagers++;
-        if (cheapestSale == 0 || priceAtIndex &lt; cheapestSale) {
+        if (cheapestSale == 0 || priceAtIndex < cheapestSale) {
           cheapestSale = priceAtIndex;
           indexOfCheapestSale = i;
         }
@@ -1287,8 +1287,8 @@ contract AddressWarsBeta {
 
     return (
         indexOfCheapestSale,
-        (cheapestSale &gt; 0),
-        (cheapestSale &gt; 0 ? _ownersOf[cardAddress][indexOfCheapestSale] : address(0)),
+        (cheapestSale > 0),
+        (cheapestSale > 0 ? _ownersOf[cardAddress][indexOfCheapestSale] : address(0)),
         cheapestSale,
         totalWagers
       );
@@ -1305,14 +1305,14 @@ contract AddressWarsBeta {
     uint256[] memory allOwnersClaimPrice = _ownersClaimPriceOf[cardAddress];
     uint256 cheapestSale = 0;
     uint256 indexOfCheapestSale = 0; // this will handle the case of owner == cardAddress
-    if (indexes.length &gt; 0) {
+    if (indexes.length > 0) {
       indexOfCheapestSale = indexes[0]; // defaults to the first index matched
     } else { // also will handle the case of owner == cardAddress
       cheapestSale = allOwnersClaimPrice[0];
     }
 
-    for (uint256 i = 0; i &lt; indexes.length; i++) {
-      if (allOwnersClaimPrice[indexes[i]] != 0 &amp;&amp; (cheapestSale == 0 || allOwnersClaimPrice[indexes[i]] &lt; cheapestSale)) {
+    for (uint256 i = 0; i < indexes.length; i++) {
+      if (allOwnersClaimPrice[indexes[i]] != 0 && (cheapestSale == 0 || allOwnersClaimPrice[indexes[i]] < cheapestSale)) {
         cheapestSale = allOwnersClaimPrice[indexes[i]];
         indexOfCheapestSale = indexes[i];
       }
@@ -1320,12 +1320,12 @@ contract AddressWarsBeta {
 
     uint256 saleRank = 0;
     uint256 totalWagers = 0;
-    if (cheapestSale &gt; 0) {
+    if (cheapestSale > 0) {
       saleRank = 1;
-      for (i = 0; i &lt; allOwnersClaimPrice.length; i++) {
+      for (i = 0; i < allOwnersClaimPrice.length; i++) {
         if (allOwnersClaimPrice[i] != 0) {
           totalWagers++;
-          if (allOwnersClaimPrice[i] &lt; cheapestSale) {
+          if (allOwnersClaimPrice[i] < cheapestSale) {
             saleRank++;
           }
         }
@@ -1334,7 +1334,7 @@ contract AddressWarsBeta {
 
     return (
         indexOfCheapestSale,
-        (cheapestSale &gt; 0),
+        (cheapestSale > 0),
         cheapestSale,
         saleRank,
         totalWagers
@@ -1350,7 +1350,7 @@ contract AddressWarsBeta {
 
     uint256 matchedIndex;
     address[] memory cardsOfOwner = _cardsOf[owner];
-    for (uint256 i = 0; i &lt; cardsOfOwner.length; i++) {
+    for (uint256 i = 0; i < cardsOfOwner.length; i++) {
       if (cardsOfOwner[i] == cardAddress) {
         matchedIndex = i;
         break;
@@ -1368,7 +1368,7 @@ contract AddressWarsBeta {
   function getAllCardsAddress() public view returns (bytes20[]) {
 
     bytes20[] memory allCardsAddress = new bytes20[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsAddress[i] = bytes20(addressCard._cardAddress);
     }
@@ -1379,7 +1379,7 @@ contract AddressWarsBeta {
   function getAllCardsType() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsType = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsType[i] = bytes1(addressCard._cardType);
     }
@@ -1390,7 +1390,7 @@ contract AddressWarsBeta {
   function getAllCardsModifier() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsModifier = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsModifier[i] = bytes1(addressCard._cardModifier);
     }
@@ -1401,7 +1401,7 @@ contract AddressWarsBeta {
   function getAllCardsModifierPrimaryVal() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsModifierPrimaryVal = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsModifierPrimaryVal[i] = bytes1(addressCard._modifierPrimarayVal);
     }
@@ -1412,7 +1412,7 @@ contract AddressWarsBeta {
   function getAllCardsModifierSecondaryVal() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsModifierSecondaryVal = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsModifierSecondaryVal[i] = bytes1(addressCard._modifierSecondaryVal);
     }
@@ -1423,7 +1423,7 @@ contract AddressWarsBeta {
   function getAllCardsAttack() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsAttack = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsAttack[i] = bytes1(addressCard._attack);
     }
@@ -1434,7 +1434,7 @@ contract AddressWarsBeta {
   function getAllCardsDefence() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsDefence = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsDefence[i] = bytes1(addressCard._defence);
     }
@@ -1445,7 +1445,7 @@ contract AddressWarsBeta {
   function getAllCardsClaimed() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsClaimed = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsClaimed[i] = bytes1(addressCard._claimed);
     }
@@ -1456,7 +1456,7 @@ contract AddressWarsBeta {
   function getAllCardsForClaim() public view returns (bytes1[]) {
 
     bytes1[] memory allCardsForClaim = new bytes1[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsForClaim[i] = bytes1(addressCard._forClaim);
     }
@@ -1467,7 +1467,7 @@ contract AddressWarsBeta {
   function getAllCardsLowestPrice() public view returns (bytes32[]) {
 
     bytes32[] memory allCardsLowestPrice = new bytes32[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsLowestPrice[i] = bytes32(addressCard._lowestPrice);
     }
@@ -1479,7 +1479,7 @@ contract AddressWarsBeta {
 
     // returns the indexes of the claim contender
     bytes4[] memory allCardsClaimContender = new bytes4[](_addressCards.length);
-    for (uint256 i = 0; i &lt; _addressCards.length; i++) {
+    for (uint256 i = 0; i < _addressCards.length; i++) {
       AddressCard memory addressCard = _addressCards[i];
       allCardsClaimContender[i] = bytes4(_indexOf[addressCard._claimContender]);
     }
@@ -1494,7 +1494,7 @@ contract AddressWarsBeta {
     // returns the indexes of the owners
     address[] memory ownersOfCardAddress = _ownersOf[cardAddress];
     bytes4[] memory allOwners = new bytes4[](ownersOfCardAddress.length);
-    for (uint256 i = 0; i &lt; ownersOfCardAddress.length; i++) {
+    for (uint256 i = 0; i < ownersOfCardAddress.length; i++) {
       allOwners[i] = bytes4(_indexOf[ownersOfCardAddress[i]]);
     }
     return allOwners;
@@ -1507,7 +1507,7 @@ contract AddressWarsBeta {
 
     uint256[] memory ownersClaimPriceOfCardAddress = _ownersClaimPriceOf[cardAddress];
     bytes32[] memory allOwnersClaimPrice = new bytes32[](ownersClaimPriceOfCardAddress.length);
-    for (uint256 i = 0; i &lt; ownersClaimPriceOfCardAddress.length; i++) {
+    for (uint256 i = 0; i < ownersClaimPriceOfCardAddress.length; i++) {
       allOwnersClaimPrice[i] = bytes32(ownersClaimPriceOfCardAddress[i]);
     }
     return allOwnersClaimPrice;
@@ -1521,7 +1521,7 @@ contract AddressWarsBeta {
     // returns the indexes of the cards owned
     address[] memory cardsOfOwner = _cardsOf[owner];
     bytes4[] memory allCardAddresses = new bytes4[](cardsOfOwner.length);
-    for (uint256 i = 0; i &lt; cardsOfOwner.length; i++) {
+    for (uint256 i = 0; i < cardsOfOwner.length; i++) {
       allCardAddresses[i] = bytes4(_indexOf[cardsOfOwner[i]]);
     }
     return allCardAddresses;
@@ -1534,7 +1534,7 @@ contract AddressWarsBeta {
 
     address[] memory cardsOfOwner = _cardsOf[owner];
     bytes1[] memory allCardAddressesCount = new bytes1[](cardsOfOwner.length);
-    for (uint256 i = 0; i &lt; cardsOfOwner.length; i++) {
+    for (uint256 i = 0; i < cardsOfOwner.length; i++) {
       allCardAddressesCount[i] = bytes1(ownerCountOfCard(owner, cardsOfOwner[i]));
     }
     return allCardAddressesCount;
@@ -1564,9 +1564,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -1574,7 +1574,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (ie if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -1583,7 +1583,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

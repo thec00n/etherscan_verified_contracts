@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -69,7 +69,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner, &quot;Invalid owner&quot;);
+        require(msg.sender == owner, "Invalid owner");
         _;
     }
 
@@ -78,7 +78,7 @@ contract Ownable {
      * @param newOwner The address to transfer ownership to.
      */
     function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0), &quot;Zero address&quot;);
+        require(newOwner != address(0), "Zero address");
         emit OwnershipTransferred(owner, newOwner);  
         owner = newOwner;
     }
@@ -119,13 +119,13 @@ contract EyeToken is ERC20, Ownable {
         uint until;
     }
 
-    string public name = &quot;EYE Token&quot;;
-    string public symbol = &quot;EYE&quot;;
+    string public name = "EYE Token";
+    string public symbol = "EYE";
     uint8 public decimals = 18;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; Frozen) public frozenAccounts;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
+    mapping(address => Frozen) public frozenAccounts;
     uint256 internal totalSupplyTokens;
     bool internal isICO;
     address public wallet;
@@ -165,7 +165,7 @@ contract EyeToken is ERC20, Ownable {
      * @param _until Time until
      */
     function freeze(address _account, uint _until) public onlyOwner {
-        if (_until == 0 || (_until != 0 &amp;&amp; _until &gt; now)) {
+        if (_until == 0 || (_until != 0 && _until > now)) {
             frozenAccounts[_account] = Frozen(true, _until);
         }
     }
@@ -185,9 +185,9 @@ contract EyeToken is ERC20, Ownable {
      * @param _from The address to transfer from.
      */
     modifier allowTransfer(address _from) {
-        require(!isICO, &quot;ICO phase&quot;);
+        require(!isICO, "ICO phase");
         if (frozenAccounts[_from].frozen) {
-            require(frozenAccounts[_from].until != 0 &amp;&amp; frozenAccounts[_from].until &lt; now, &quot;Frozen account&quot;);
+            require(frozenAccounts[_from].until != 0 && frozenAccounts[_from].until < now, "Frozen account");
             delete frozenAccounts[_from];
         }
         _;
@@ -210,9 +210,9 @@ contract EyeToken is ERC20, Ownable {
     * @param _value The amount to be transferred.
     */
     function transferICO(address _to, uint256 _value) public onlyOwner returns (bool) {
-        require(isICO, &quot;Not ICO phase&quot;);
-        require(_to != address(0), &quot;Zero address &#39;To&#39;&quot;);
-        require(_value &lt;= balances[wallet], &quot;Not enought balance&quot;);
+        require(isICO, "Not ICO phase");
+        require(_to != address(0), "Zero address 'To'");
+        require(_value <= balances[wallet], "Not enought balance");
         balances[wallet] = balances[wallet].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(wallet, _to, _value);  
@@ -235,7 +235,7 @@ contract EyeToken is ERC20, Ownable {
      * @param _value uint256 the amount of tokens to be transferred
      */
     function transferFrom(address _from, address _to, uint256 _value) public allowTransfer(_from) returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender], &quot;Not enought allowance&quot;);
+        require(_value <= allowed[_from][msg.sender], "Not enought allowance");
         bool result = _transfer(_from, _to, _value);
         if (result) {
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -249,7 +249,7 @@ contract EyeToken is ERC20, Ownable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -298,7 +298,7 @@ contract EyeToken is ERC20, Ownable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -314,9 +314,9 @@ contract EyeToken is ERC20, Ownable {
      * @param _value The amount to be transferred.
      */
     function _transfer(address _from, address _to, uint256 _value) internal allowTransfer(_from) returns (bool) {
-        require(_to != address(0), &quot;Zero address &#39;To&#39;&quot;);
-        require(_from != address(0), &quot;Zero address &#39;From&#39;&quot;);
-        require(_value &lt;= balances[_from], &quot;Not enought balance&quot;);
+        require(_to != address(0), "Zero address 'To'");
+        require(_from != address(0), "Zero address 'From'");
+        require(_value <= balances[_from], "Not enought balance");
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         return true;
@@ -397,7 +397,7 @@ contract CrowdSale is Ownable {
      * @dev Allow only for owner or manager
      */
     modifier onlyOwnerOrManager(){
-        require(msg.sender == owner || (msg.sender == manager &amp;&amp; manager != address(0)), &quot;Invalid owner or manager&quot;);
+        require(msg.sender == owner || (msg.sender == manager && manager != address(0)), "Invalid owner or manager");
         _;
     }
 
@@ -423,7 +423,7 @@ contract CrowdSale is Ownable {
      * executed by CRM
      */
     function setRate(uint _rate) public onlyOwnerOrManager {
-        require(_rate &gt; 0, &quot;Invalid exchange rate&quot;);
+        require(_rate > 0, "Invalid exchange rate");
         exchange_rate = _rate;
     }
 
@@ -433,12 +433,12 @@ contract CrowdSale is Ownable {
 
     /**
      * @dev Start crowd-sale
-     * @param _token Coin&#39;s contract
+     * @param _token Coin's contract
      * @param _rate current exchange rate
      */
     function start(address _token, uint256 _rate) public onlyOwnerOrManager {
-        require(_rate &gt; 0, &quot;Invalid exchange rate&quot;);
-        require(phase_i == PHASE_NOT_STARTED, &quot;Bad phase&quot;);
+        require(_rate > 0, "Invalid exchange rate");
+        require(phase_i == PHASE_NOT_STARTED, "Bad phase");
 
         token = EyeToken(_token);
         base_wallet = token.wallet();
@@ -477,17 +477,17 @@ contract CrowdSale is Ownable {
      * @dev Finalize ICO
      */
     function _finalizeICO() internal {
-        require(phase_i != PHASE_NOT_STARTED &amp;&amp; phase_i != PHASE_FINISHED, &quot;Bad phase&quot;);
+        require(phase_i != PHASE_NOT_STARTED && phase_i != PHASE_FINISHED, "Bad phase");
         phase_i = PHASE_ICO_FINISHED;
         uint curr_date = now;
-        finish_date = (curr_date &lt; ico_phase_5_end ? ico_phase_5_end : curr_date).add(SECONDS_IN_DAY * 10);
+        finish_date = (curr_date < ico_phase_5_end ? ico_phase_5_end : curr_date).add(SECONDS_IN_DAY * 10);
     }
 
     /**
      * @dev Finalize crowd-sale
      */
     function _finalize() internal {
-        require(phase_i != PHASE_NOT_STARTED &amp;&amp; phase_i != PHASE_FINISHED, &quot;Bad phase&quot;);
+        require(phase_i != PHASE_NOT_STARTED && phase_i != PHASE_FINISHED, "Bad phase");
 
         uint date = now.add(SECONDS_IN_YEAR);
         token.freeze(vest_1, date);
@@ -515,21 +515,21 @@ contract CrowdSale is Ownable {
         if (phase_i == PHASE_FINISHED || phase_i == PHASE_NOT_STARTED)
             return phase_i;
         uint curr_date = now;
-        if (curr_date &gt;= ico_phase_5_end || token.balanceOf(base_wallet) == 0)
+        if (curr_date >= ico_phase_5_end || token.balanceOf(base_wallet) == 0)
             return PHASE_ICO_FINISHED;
-        if (curr_date &lt; presale_start)
+        if (curr_date < presale_start)
             return PHASE_BEFORE_PRESALE;
-        if (curr_date &lt;= presale_end)
+        if (curr_date <= presale_end)
             return PHASE_PRESALE;
-        if (curr_date &lt; ico_start)
+        if (curr_date < ico_start)
             return PHASE_BETWEEN_PRESALE_ICO;
-        if (curr_date &lt; ico_phase_1_end)
+        if (curr_date < ico_phase_1_end)
             return PHASE_ICO_1;
-        if (curr_date &lt; ico_phase_2_end)
+        if (curr_date < ico_phase_2_end)
             return PHASE_ICO_2;
-        if (curr_date &lt; ico_phase_3_end)
+        if (curr_date < ico_phase_3_end)
             return PHASE_ICO_3;
-        if (curr_date &lt; ico_phase_4_end)
+        if (curr_date < ico_phase_4_end)
             return PHASE_ICO_4;
         return PHASE_ICO_5;
     }
@@ -544,35 +544,35 @@ contract CrowdSale is Ownable {
     function _updatePhase(bool check_can_sale) internal {
         uint curr_date = now;
         if (phase_i == PHASE_ICO_FINISHED) {
-            if (curr_date &gt;= finish_date)
+            if (curr_date >= finish_date)
                 _finalize();
         }
         else
-            if (phase_i != PHASE_NOT_STARTED &amp;&amp; phase_i != PHASE_FINISHED) {
+            if (phase_i != PHASE_NOT_STARTED && phase_i != PHASE_FINISHED) {
                 int8 new_phase = _calcPhase();
-                if (new_phase == PHASE_ICO_FINISHED &amp;&amp; phase_i != PHASE_ICO_FINISHED)
+                if (new_phase == PHASE_ICO_FINISHED && phase_i != PHASE_ICO_FINISHED)
                     _finalizeICO();
                 else
                     phase_i = new_phase;
             }
         if (check_can_sale)
-            require(phase_i &gt;= 0, &quot;Bad phase&quot;);
+            require(phase_i >= 0, "Bad phase");
     }
 
     /**
      * @dev Update phase end times
      */
     function _updatePhaseTimes() internal {
-        require(phase_i != PHASE_NOT_STARTED &amp;&amp; phase_i != PHASE_FINISHED, &quot;Bad phase&quot;);
-        if (phase_i &lt; PHASE_ICO_1)
+        require(phase_i != PHASE_NOT_STARTED && phase_i != PHASE_FINISHED, "Bad phase");
+        if (phase_i < PHASE_ICO_1)
             ico_phase_1_end = ico_start.add(SECONDS_IN_DAY.mul(ico_phase_1_days));
-        if (phase_i &lt; PHASE_ICO_2)
+        if (phase_i < PHASE_ICO_2)
             ico_phase_2_end = ico_phase_1_end.add(SECONDS_IN_DAY.mul(ico_phase_2_days));
-        if (phase_i &lt; PHASE_ICO_3)
+        if (phase_i < PHASE_ICO_3)
             ico_phase_3_end = ico_phase_2_end.add(SECONDS_IN_DAY.mul(ico_phase_3_days));
-        if (phase_i &lt; PHASE_ICO_4)
+        if (phase_i < PHASE_ICO_4)
             ico_phase_4_end = ico_phase_3_end.add(SECONDS_IN_DAY.mul(ico_phase_4_days));
-        if (phase_i &lt; PHASE_ICO_5)
+        if (phase_i < PHASE_ICO_5)
             ico_phase_5_end = ico_phase_4_end.add(SECONDS_IN_DAY.mul(ico_phase_5_days));
         if (phase_i != PHASE_ICO_FINISHED)
             finish_date = ico_phase_5_end.add(SECONDS_IN_DAY.mul(10));
@@ -591,7 +591,7 @@ contract CrowdSale is Ownable {
     function transferICO(address _to, uint256 _amount_coin) public onlyOwnerOrManager {
         _updatePhase(true);
         uint256 remainedCoin = token.balanceOf(base_wallet);
-        require(remainedCoin &gt;= _amount_coin, &quot;Not enough coins&quot;);
+        require(remainedCoin >= _amount_coin, "Not enough coins");
         token.transferICO(_to, _amount_coin);
         if (remainedCoin == _amount_coin)
             _finalizeICO();
@@ -611,8 +611,8 @@ contract CrowdSale is Ownable {
         } else {
             uint8 percent = bonus_percents[uint256(phase_i)];
             uint256 amountCoin = calcTokensFromEth(amountEth);
-            assert(amountCoin &gt;= MIN_TOKEN_AMOUNT);
-            if (amountCoin &gt; remainedCoin) {
+            assert(amountCoin >= MIN_TOKEN_AMOUNT);
+            if (amountCoin > remainedCoin) {
                 lastPayerOverflow = amountCoin.sub(remainedCoin);
                 amountCoin = remainedCoin;
             }
@@ -641,13 +641,13 @@ contract CrowdSale is Ownable {
      * executed by CRM
      */
     function freeze(address[] _accounts) public onlyOwnerOrManager {
-        require(phase_i != PHASE_NOT_STARTED &amp;&amp; phase_i != PHASE_FINISHED, &quot;Bad phase&quot;);
+        require(phase_i != PHASE_NOT_STARTED && phase_i != PHASE_FINISHED, "Bad phase");
         uint i;
-        for (i = 0; i &lt; _accounts.length; i++) {
-            require(_accounts[i] != address(0), &quot;Zero address&quot;);
-            require(_accounts[i] != base_wallet, &quot;Freeze self&quot;);
+        for (i = 0; i < _accounts.length; i++) {
+            require(_accounts[i] != address(0), "Zero address");
+            require(_accounts[i] != base_wallet, "Freeze self");
         }
-        for (i = 0; i &lt; _accounts.length; i++) {
+        for (i = 0; i < _accounts.length; i++) {
             token.freeze(_accounts[i]);
         }
     }
@@ -657,13 +657,13 @@ contract CrowdSale is Ownable {
      * @param _accounts Given accounts
      */
     function unfreeze(address[] _accounts) public onlyOwnerOrManager {
-        require(phase_i != PHASE_NOT_STARTED &amp;&amp; phase_i != PHASE_FINISHED, &quot;Bad phase&quot;);
+        require(phase_i != PHASE_NOT_STARTED && phase_i != PHASE_FINISHED, "Bad phase");
         uint i;
-        for (i = 0; i &lt; _accounts.length; i++) {
-            require(_accounts[i] != address(0), &quot;Zero address&quot;);
-            require(_accounts[i] != base_wallet, &quot;Freeze self&quot;);
+        for (i = 0; i < _accounts.length; i++) {
+            require(_accounts[i] != address(0), "Zero address");
+            require(_accounts[i] != base_wallet, "Freeze self");
         }
-        for (i = 0; i &lt; _accounts.length; i++) {
+        for (i = 0; i < _accounts.length; i++) {
             token.unfreeze(_accounts[i]);
         }
     }
@@ -683,10 +683,10 @@ contract CrowdSale is Ownable {
      */
     function setPresaleDates(uint _presale_start, uint _presale_end) public onlyOwnerOrManager {
         _updatePhase(false);
-        require(phase_i == PHASE_BEFORE_PRESALE, &quot;Bad phase&quot;);
-        // require(_presale_start &gt;= now);
-        require(_presale_start &lt; _presale_end, &quot;Invalid presale dates&quot;);
-        require(_presale_end &lt; ico_start, &quot;Invalid dates&quot;);
+        require(phase_i == PHASE_BEFORE_PRESALE, "Bad phase");
+        // require(_presale_start >= now);
+        require(_presale_start < _presale_end, "Invalid presale dates");
+        require(_presale_end < ico_start, "Invalid dates");
         presale_start = _presale_start;
         presale_end = _presale_end;
     }
@@ -702,8 +702,8 @@ contract CrowdSale is Ownable {
      */
     function setICODates(uint _ico_start, uint _ico_1_days, uint _ico_2_days, uint _ico_3_days, uint _ico_4_days, uint _ico_5_days) public onlyOwnerOrManager {
         _updatePhase(false);
-        require(phase_i != PHASE_FINISHED &amp;&amp; phase_i != PHASE_ICO_FINISHED &amp;&amp; phase_i &lt; PHASE_ICO_1, &quot;Bad phase&quot;);
-        require(presale_end &lt; _ico_start, &quot;Invalid dates&quot;);
+        require(phase_i != PHASE_FINISHED && phase_i != PHASE_ICO_FINISHED && phase_i < PHASE_ICO_1, "Bad phase");
+        require(presale_end < _ico_start, "Invalid dates");
         ico_start = _ico_start;
         ico_phase_1_days = _ico_1_days;
         ico_phase_2_days = _ico_2_days;

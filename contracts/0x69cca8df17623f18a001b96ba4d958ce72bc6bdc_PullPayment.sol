@@ -42,7 +42,7 @@ contract ControllerInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -90,20 +90,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,7 +121,7 @@ contract PullPayment is Ownable {
   uint public spentToday;
 
   // 8bytes date, 24 bytes value
-  mapping(address =&gt; uint256) internal payments;
+  mapping(address => uint256) internal payments;
 
   modifier onlyNutz() {
     require(msg.sender == ControllerInterface(owner).nutzAddr());
@@ -139,7 +139,7 @@ contract PullPayment is Ownable {
 
   function paymentOf(address _owner) constant returns (uint256 value, uint256 date) {
     value = uint192(payments[_owner]);
-    date = (payments[_owner] &gt;&gt; 192);
+    date = (payments[_owner] >> 192);
     return;
   }
 
@@ -152,21 +152,21 @@ contract PullPayment is Ownable {
   function changeWithdrawalDate(address _owner, uint256 _newDate)  public onlyOwner {
     // allow to withdraw immediately
     // move witdrawal date more days into future
-    payments[_owner] = (_newDate &lt;&lt; 192) + uint192(payments[_owner]);
+    payments[_owner] = (_newDate << 192) + uint192(payments[_owner]);
   }
 
   function asyncSend(address _dest) public payable onlyNutz {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 newValue = msg.value.add(uint192(payments[_dest]));
     uint256 newDate;
     if (isUnderLimit(msg.value)) {
-      uint256 date = payments[_dest] &gt;&gt; 192;
-      newDate = (date &gt; now) ? date : now;
+      uint256 date = payments[_dest] >> 192;
+      newDate = (date > now) ? date : now;
     } else {
       newDate = now.add(3 days);
     }
     spentToday = spentToday.add(msg.value);
-    payments[_dest] = (newDate &lt;&lt; 192) + uint192(newValue);
+    payments[_dest] = (newDate << 192) + uint192(newValue);
   }
 
 
@@ -175,8 +175,8 @@ contract PullPayment is Ownable {
     uint256 amountWei = uint192(payments[untrustedRecipient]);
 
     require(amountWei != 0);
-    require(now &gt;= (payments[untrustedRecipient] &gt;&gt; 192));
-    require(this.balance &gt;= amountWei);
+    require(now >= (payments[untrustedRecipient] >> 192));
+    require(this.balance >= amountWei);
 
     payments[untrustedRecipient] = 0;
 
@@ -190,12 +190,12 @@ contract PullPayment is Ownable {
   /// @param amount Amount to withdraw.
   /// @return Returns if amount is under daily limit.
   function isUnderLimit(uint amount) internal returns (bool) {
-    if (now &gt; lastDay.add(24 hours)) {
+    if (now > lastDay.add(24 hours)) {
       lastDay = now;
       spentToday = 0;
     }
-    // not using safe math because we don&#39;t want to throw;
-    if (spentToday + amount &gt; dailyLimit || spentToday + amount &lt; spentToday) {
+    // not using safe math because we don't want to throw;
+    if (spentToday + amount > dailyLimit || spentToday + amount < spentToday) {
       return false;
     }
     return true;

@@ -23,15 +23,15 @@ interface tokenRecipient {
 
 contract ParsecTokenERC20 {
     // Public variables of the token
-    string public constant name = &quot;Parsec Credits&quot;;
-    string public constant symbol = &quot;PRSC&quot;;
+    string public constant name = "Parsec Credits";
+    string public constant symbol = "PRSC";
     uint8 public decimals = 6;
     uint256 public initialSupply = 30856775800;
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -60,10 +60,10 @@ contract ParsecTokenERC20 {
         require(_to != 0x0);
 
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -102,7 +102,7 @@ contract ParsecTokenERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -149,7 +149,7 @@ contract ParsecTokenERC20 {
      */
     function burn(uint256 _value) public returns (bool success) {
         // Check if the sender has enough
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         // Subtract from the sender
         balanceOf[msg.sender] -= _value;
@@ -173,15 +173,15 @@ contract ParsecTokenERC20 {
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
         // Check if the targeted balance is enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         // Subtract from the targeted balance
         balanceOf[_from] -= _value;
 
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
 
         // Update totalSupply

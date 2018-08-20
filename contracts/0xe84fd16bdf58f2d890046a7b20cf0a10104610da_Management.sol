@@ -11,8 +11,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -27,9 +27,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -46,7 +46,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -126,14 +126,14 @@ contract Management {
     // num of mining times
     uint256 public numOfMiningTimes;
 
-    mapping(address =&gt; uint256) public payments;
-    mapping(address =&gt; uint256) public paymentsTimestamps;
+    mapping(address => uint256) public payments;
+    mapping(address => uint256) public paymentsTimestamps;
 
-    // mining time =&gt; mining reward
-    mapping(uint256 =&gt; uint256) internal miningReward;
+    // mining time => mining reward
+    mapping(uint256 => uint256) internal miningReward;
 
-    // id mining token =&gt; getting reward last mining
-    mapping(uint256 =&gt; uint256) internal lastGettingReward;
+    // id mining token => getting reward last mining
+    mapping(uint256 => uint256) internal lastGettingReward;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -178,7 +178,7 @@ contract Management {
         uint256 _currentTime = now;
         uint256 _allowed = token.allowance(msg.sender, address(this));
         uint256 _currentPrice = getPrice(_currentTime);
-        require(_allowed &gt;= _currentPrice);
+        require(_allowed >= _currentPrice);
 
         //remove the remainder
         uint256 _hlpmtAmount = _allowed.div(_currentPrice);
@@ -186,7 +186,7 @@ contract Management {
 
         require(token.transferFrom(msg.sender, fund, _allowed));
 
-        for (uint256 i = 0; i &lt; _hlpmtAmount; i++) {
+        for (uint256 i = 0; i < _hlpmtAmount; i++) {
             uint256 _id = miningToken.totalSupply();
             miningToken.mint(msg.sender, _id);
             lastGettingReward[_id] = numOfMiningTimes;
@@ -199,14 +199,14 @@ contract Management {
     function mining() external {
 
         uint256 _currentTime = now;
-        require(_currentTime &gt; _getEndOfLastMiningDay());
+        require(_currentTime > _getEndOfLastMiningDay());
 
 
         uint256 _missedDays = (_currentTime - lastMiningTime) / (1 days);
 
         updateLastMiningTime(_currentTime);
 
-        for (uint256 i = 0; i &lt; _missedDays; i++) {
+        for (uint256 i = 0; i < _missedDays; i++) {
             // 0.1% daily from remaining unmined tokens.
             uint256 _dailyTokens = token.getMaxTotalSupply().sub(token.totalSupply()).div(1000);
 
@@ -231,25 +231,25 @@ contract Management {
      */
     function getReward(uint256[] tokensForReward) external {
         uint256 _rewardAmount = 0;
-        for (uint256 i = 0; i &lt; tokensForReward.length; i++) {
+        for (uint256 i = 0; i < tokensForReward.length; i++) {
             if (
-                msg.sender == miningToken.ownerOf(tokensForReward[i]) &amp;&amp;
-                numOfMiningTimes &gt; getLastRewardTime(tokensForReward[i])
+                msg.sender == miningToken.ownerOf(tokensForReward[i]) &&
+                numOfMiningTimes > getLastRewardTime(tokensForReward[i])
             ) {
                 _rewardAmount += _calculateReward(tokensForReward[i]);
                 setLastRewardTime(tokensForReward[i], numOfMiningTimes);
             }
         }
 
-        require(_rewardAmount &gt; 0);
+        require(_rewardAmount > 0);
         token.transfer(msg.sender, _rewardAmount);
     }
 
     function checkReward(uint256[] tokensForReward) external view returns (uint256) {
         uint256 reward = 0;
 
-        for (uint256 i = 0; i &lt; tokensForReward.length; i++) {
-            if (numOfMiningTimes &gt; getLastRewardTime(tokensForReward[i])) {
+        for (uint256 i = 0; i < tokensForReward.length; i++) {
+            if (numOfMiningTimes > getLastRewardTime(tokensForReward[i])) {
                 reward += _calculateReward(tokensForReward[i]);
             }
         }
@@ -269,8 +269,8 @@ contract Management {
     * @dev Sends the daily mining reward to HLPMT holder.
     */
     function sendReward(uint256[] tokensForReward) public onlyOwner {
-        for (uint256 i = 0; i &lt; tokensForReward.length; i++) {
-            if (numOfMiningTimes &gt; getLastRewardTime(tokensForReward[i])) {
+        for (uint256 i = 0; i < tokensForReward.length; i++) {
+            if (numOfMiningTimes > getLastRewardTime(tokensForReward[i])) {
                 uint256 reward = _calculateReward(tokensForReward[i]);
                 setLastRewardTime(tokensForReward[i], numOfMiningTimes);
                 token.transfer(miningToken.ownerOf(tokensForReward[i]), reward);
@@ -327,7 +327,7 @@ contract Management {
     function getPrice(uint256 _timestamp) public view returns(uint256) {
         uint256 _raising = _timestamp.sub(startTime).div(30 days);
         _raising = _raising.mul(stepForPrice);
-        if (_raising &gt; maxHLPMTMarkup) _raising = maxHLPMTMarkup;
+        if (_raising > maxHLPMTMarkup) _raising = maxHLPMTMarkup;
         return (startPriceForHLPMT + _raising) * 10 ** 18;
     }
 
@@ -347,7 +347,7 @@ contract Management {
         view
         returns (uint256 reward)
     {
-        for (uint256 i = getLastRewardTime(tokenID) + 1; i &lt;= numOfMiningTimes; i++) {
+        for (uint256 i = getLastRewardTime(tokenID) + 1; i <= numOfMiningTimes; i++) {
             reward += miningReward[i];
         }
         return reward;
@@ -383,7 +383,7 @@ contract Management {
         uint256 timestamp = paymentsTimestamps[payee];
 
         require(payment != 0);
-        require(now &gt;= timestamp);
+        require(now >= timestamp);
 
         payments[payee] = 0;
 

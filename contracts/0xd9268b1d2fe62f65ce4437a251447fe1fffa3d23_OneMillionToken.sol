@@ -4,7 +4,7 @@ contract OneMillionToken{
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
         }
     
@@ -15,7 +15,7 @@ contract OneMillionToken{
     }
     
     struct pixelWallet{
-        mapping (uint24 =&gt; uint) indexList;
+        mapping (uint24 => uint) indexList;
         uint24[] pixelOwned;
         uint24 pixelListlength;
         string name; 
@@ -24,8 +24,8 @@ contract OneMillionToken{
     
     address public owner;
     
-    string public constant symbol = &quot;1MT&quot;;
-    string public constant name = &quot;OneMillionToken&quot;;
+    string public constant symbol = "1MT";
+    string public constant name = "OneMillionToken";
     uint8 public constant decimals = 0;
     
     uint private startPrice = 1000000000000000;
@@ -34,23 +34,23 @@ contract OneMillionToken{
     uint public constant minPrice = 1000000000000;
     
     
-    mapping (uint24 =&gt; PixelToken) private Image;
+    mapping (uint24 => PixelToken) private Image;
     
-    mapping (address =&gt; pixelWallet) balance;
+    mapping (address => pixelWallet) balance;
     
     function getPixelToken(uint24 _id) public view returns(uint256,string,string,uint24,address){
         return(Image[_id].pixelOwner == address(0) ? startPrice : Image[_id].price,balance[Image[_id].pixelOwner].name,balance[Image[_id].pixelOwner].link,Image[_id].color,Image[_id].pixelOwner);
     }
     
     function buyPixelTokenFor(uint24 _id,uint256 _price,uint24 _color, address _to) public payable returns (bool) {
-        require(_id&gt;=0&amp;&amp;_id&lt;1000000);
+        require(_id>=0&&_id<1000000);
         
-        require(_price&gt;=minPrice&amp;&amp;_price&lt;=maxPrice);
-        require(msg.value&gt;=minPrice&amp;&amp;msg.value&lt;=maxPrice);
+        require(_price>=minPrice&&_price<=maxPrice);
+        require(msg.value>=minPrice&&msg.value<=maxPrice);
         
         if(Image[_id].pixelOwner== address(0)){
             
-            require(msg.value&gt;=startPrice);
+            require(msg.value>=startPrice);
             
             Transfer(owner, _to, _id);
             
@@ -69,7 +69,7 @@ contract OneMillionToken{
             return true;
             
         }else{
-            require(msg.value&gt;=Image[_id].price);
+            require(msg.value>=Image[_id].price);
             
             address prevOwner =Image[_id].pixelOwner; 
             
@@ -100,8 +100,8 @@ contract OneMillionToken{
     }
     
     function setPixelToken(uint24 _id,uint256 _price,uint24 _color) public returns (bool){
-        require(_id&gt;=0&amp;&amp;_id&lt;1000000);
-        require(_price&gt;=minPrice&amp;&amp;_price&lt;=maxPrice);
+        require(_id>=0&&_id<1000000);
+        require(_price>=minPrice&&_price<=maxPrice);
         
         require(msg.sender==Image[_id].pixelOwner);
         
@@ -135,7 +135,7 @@ contract OneMillionToken{
         
         uint24 index = 0;
         
-        for(uint24 i = 0; i &lt; balance[msg.sender].pixelOwned.length;i++){
+        for(uint24 i = 0; i < balance[msg.sender].pixelOwned.length;i++){
             if(balance[msg.sender].indexList[balance[msg.sender].pixelOwned[i]]==i+1){
                 list[index]=balance[msg.sender].pixelOwned[i];
                 index++;
@@ -145,7 +145,7 @@ contract OneMillionToken{
     }
 
     function transfer(address _to, uint24 _id) public returns (bool success){
-        require(_id&gt;=0&amp;&amp;_id&lt;1000000);
+        require(_id>=0&&_id<1000000);
         require(Image[_id].pixelOwner == msg.sender);
         
         balance[Image[_id].pixelOwner].indexList[_id] = 0;
@@ -162,14 +162,14 @@ contract OneMillionToken{
     }
     
     function pixelblockPrice (uint24 _startx,uint24 _starty,uint24 _endx,uint24 _endy) public view returns (uint){
-        require(_startx&gt;=0&amp;&amp;_startx&lt;625);
-        require(_starty&gt;=0&amp;&amp;_starty&lt;1600);
-        require(_endx&gt;=_startx&amp;&amp;_endx&lt;625);
-        require(_endy&gt;=_starty&amp;&amp;_endy&lt;1600);
+        require(_startx>=0&&_startx<625);
+        require(_starty>=0&&_starty<1600);
+        require(_endx>=_startx&&_endx<625);
+        require(_endy>=_starty&&_endy<1600);
         
         uint256 price = 0;
-        for(uint24 x = _startx; x&lt;= _endx;x++){
-            for(uint24 y = _starty;y&lt;=_endy;y++ ){
+        for(uint24 x = _startx; x<= _endx;x++){
+            for(uint24 y = _starty;y<=_endy;y++ ){
                 uint24 id = y*1600+x;
                 if(Image[id].pixelOwner==address(0)){
                     price=add(price,startPrice);
@@ -183,7 +183,7 @@ contract OneMillionToken{
     
     function setStartPrice(uint _price) public onlyOwner returns (bool){
         
-        require(_price&gt;=minPrice&amp;&amp;_price&lt;=maxPrice);
+        require(_price>=minPrice&&_price<=maxPrice);
         startPrice = _price;
         return true;
     }

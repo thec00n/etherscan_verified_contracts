@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /******************************************/
 /*       Netkiller Batch Token            */
 /******************************************/
-/* Author netkiller &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81efe4f5eae8edede4f3c1ecf2efafe2eeec">[email&#160;protected]</a>&gt;   */
+/* Author netkiller <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81efe4f5eae8edede4f3c1ecf2efafe2eeec">[email protected]</a>>   */
 /* Home http://www.netkiller.cn           */
 /* Version 2018-06-09 - Batch transfer    */
 /******************************************/
@@ -15,14 +15,14 @@ contract NetkillerBatchToken {
     uint public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     bool lock = false;
@@ -64,8 +64,8 @@ contract NetkillerBatchToken {
 
     function _transfer(address _from, address _to, uint _value) isLock internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt;= _value);
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require (balanceOf[_from] >= _value);
+        require (balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -79,7 +79,7 @@ contract NetkillerBatchToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -92,7 +92,7 @@ contract NetkillerBatchToken {
     }
 
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -100,8 +100,8 @@ contract NetkillerBatchToken {
     }
 
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value); 
-        require(_value &lt;= allowance[_from][msg.sender]); 
+        require(balanceOf[_from] >= _value); 
+        require(_value <= allowance[_from][msg.sender]); 
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -122,7 +122,7 @@ contract NetkillerBatchToken {
     }
 
     function transferBatch(address[] _to, uint256 _value) public returns (bool success) {
-        for (uint i=0; i&lt;_to.length; i++) {
+        for (uint i=0; i<_to.length; i++) {
             _transfer(msg.sender, _to[i], _value);
         }
         return true;

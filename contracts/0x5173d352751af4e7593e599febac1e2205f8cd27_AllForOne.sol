@@ -6,12 +6,12 @@ pragma solidity ^0.4.21;
 contract AllForOne {
     
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    mapping (address =&gt; uint) private playerCount;
-    mapping (address =&gt; uint) private currentGame;
-    mapping (address =&gt; uint) private currentPlayersRequired;
-    mapping (address =&gt; uint) private playerRegistrationStatus;
-    mapping (address =&gt; uint) private confirmedWinners;
-    mapping (uint =&gt; address) private numberToAddress;
+    mapping (address => uint) private playerCount;
+    mapping (address => uint) private currentGame;
+    mapping (address => uint) private currentPlayersRequired;
+    mapping (address => uint) private playerRegistrationStatus;
+    mapping (address => uint) private confirmedWinners;
+    mapping (uint => address) private numberToAddress;
     uint private currentBet;
     uint private jackpot;
     uint private ownerBalance;
@@ -37,8 +37,8 @@ contract AllForOne {
         _;
     }
     modifier betConditions () {
-        require (playerRegistrationStatus[msg.sender] &lt; currentGame[contractAddress]);
-        require (playerCount[contractAddress] &lt; currentPlayersRequired[contractAddress]);
+        require (playerRegistrationStatus[msg.sender] < currentGame[contractAddress]);
+        require (playerCount[contractAddress] < currentPlayersRequired[contractAddress]);
         require (msg.value == currentBet);
         require (confirmedWinners[msg.sender] == 0);
         _;
@@ -52,7 +52,7 @@ contract AllForOne {
         _;
     }
     modifier ownerWithdrawConditions () {
-        require (ownerBalance &gt;= 1);
+        require (ownerBalance >= 1);
         _;
     }
     function transferOwnership (address newOwner) public onlyOwner {
@@ -67,7 +67,7 @@ contract AllForOne {
         uint _status = 0;
         uint _playerCount = playerCount[contractAddress];
         address _lastWinner = lastWinner;
-        if (playerRegistrationStatus[msg.sender] &lt; currentGame[contractAddress]) {
+        if (playerRegistrationStatus[msg.sender] < currentGame[contractAddress]) {
         _status = 1;
         }
         return (_status, _playerCount, _lastWinner);

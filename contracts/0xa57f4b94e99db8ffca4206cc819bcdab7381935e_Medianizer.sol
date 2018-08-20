@@ -16,7 +16,7 @@ pragma solidity ^0.4.19;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -88,32 +88,32 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -132,10 +132,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -161,7 +161,7 @@ contract DSMath {
 }
 
 ////// lib/medianizer/lib/ds-value/lib/ds-thing/lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@ contract DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -219,13 +219,13 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
-/* import &#39;ds-note/note.sol&#39;; */
-/* import &#39;ds-math/math.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
+/* import 'ds-note/note.sol'; */
+/* import 'ds-math/math.sol'; */
 
 contract DSThing is DSAuth, DSNote, DSMath {
 }
@@ -246,11 +246,11 @@ contract DSThing is DSAuth, DSNote, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-thing/thing.sol&#39;; */
+/* import 'ds-thing/thing.sol'; */
 
 contract DSValue is DSThing {
     bool    has;
@@ -275,15 +275,15 @@ contract DSValue is DSThing {
 ////// lib/medianizer/src/medianizer.sol
 /* pragma solidity ^0.4.18; */
 
-/* import &#39;ds-value/value.sol&#39;; */
+/* import 'ds-value/value.sol'; */
 
 contract MedianizerEvents {
     event LogValue(bytes32 val);
 }
 
 contract Medianizer is DSValue, MedianizerEvents {
-    mapping (bytes12 =&gt; address) public values;
-    mapping (address =&gt; bytes12) public indexes;
+    mapping (bytes12 => address) public values;
+    mapping (address => bytes12) public indexes;
     bytes12 public next = 0x1;
 
     uint96 public min = 0x1;
@@ -338,18 +338,18 @@ contract Medianizer is DSValue, MedianizerEvents {
     function compute() public constant returns (bytes32, bool) {
         bytes32[] memory wuts = new bytes32[](uint96(next) - 1);
         uint96 ctr = 0;
-        for (uint96 i = 1; i &lt; uint96(next); i++) {
+        for (uint96 i = 1; i < uint96(next); i++) {
             if (values[bytes12(i)] != 0) {
                 var (wut, wuz) = DSValue(values[bytes12(i)]).peek();
                 if (wuz) {
-                    if (ctr == 0 || wut &gt;= wuts[ctr - 1]) {
+                    if (ctr == 0 || wut >= wuts[ctr - 1]) {
                         wuts[ctr] = wut;
                     } else {
                         uint96 j = 0;
-                        while (wut &gt;= wuts[j]) {
+                        while (wut >= wuts[j]) {
                             j++;
                         }
-                        for (uint96 k = ctr; k &gt; j; k--) {
+                        for (uint96 k = ctr; k > j; k--) {
                             wuts[k] = wuts[k - 1];
                         }
                         wuts[j] = wut;
@@ -359,7 +359,7 @@ contract Medianizer is DSValue, MedianizerEvents {
             }
         }
 
-        if (ctr &lt; min) {
+        if (ctr < min) {
             return (val, false);
         }
 

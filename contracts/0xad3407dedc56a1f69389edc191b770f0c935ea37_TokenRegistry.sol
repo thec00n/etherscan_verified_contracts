@@ -1,18 +1,18 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 pragma solidity 0.4.21;
 /// @title Utility Functions for address
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="aecacfc0c7cbc2eec2c1c1dedcc7c0c980c1dcc9">[email&#160;protected]</span>&gt;
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="aecacfc0c7cbc2eec2c1c1dedcc7c0c980c1dcc9">[email protected]</span>>
 library AddressUtil {
     function isContract(address addr)
         internal
@@ -24,42 +24,42 @@ library AddressUtil {
         } else {
             uint size;
             assembly { size := extcodesize(addr) }
-            return size &gt; 0;
+            return size > 0;
         }
     }
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -67,7 +67,7 @@ library AddressUtil {
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic
 ///      authorization control functions, this simplifies the implementation of
-///      &quot;user permissions&quot;.
+///      "user permissions".
 contract Ownable {
     address public owner;
     event OwnershipTransferred(
@@ -106,7 +106,7 @@ contract Claimable is Ownable {
     /// @dev Allows the current owner to set the pendingOwner address.
     /// @param newOwner The address to transfer ownership to.
     function transferOwnership(address newOwner) onlyOwner public {
-        require(newOwner != 0x0 &amp;&amp; newOwner != owner);
+        require(newOwner != 0x0 && newOwner != owner);
         pendingOwner = newOwner;
     }
     /// @dev Allows the pendingOwner address to finalize the transfer.
@@ -118,20 +118,20 @@ contract Claimable is Ownable {
 }
 /// @title Token Register Contract
 /// @dev This contract maintains a list of tokens the Protocol supports.
-/// @author Kongliang Zhong - &lt;<span class="__cf_email__" data-cfemail="2a4145444d46434b444d6a4645455a5843444d0445584d">[email&#160;protected]</span>&gt;,
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="2a4e4b44434f466a4645455a5843444d0445584d">[email&#160;protected]</span>&gt;.
+/// @author Kongliang Zhong - <<span class="__cf_email__" data-cfemail="2a4145444d46434b444d6a4645455a5843444d0445584d">[email protected]</span>>,
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="2a4e4b44434f466a4645455a5843444d0445584d">[email protected]</span>>.
 contract TokenRegistry is Claimable {
     using AddressUtil for address;
     address tokenMintAddr;
     address[] public addresses;
-    mapping (address =&gt; TokenInfo) addressMap;
-    mapping (string =&gt; address) symbolMap;
+    mapping (address => TokenInfo) addressMap;
+    mapping (string => address) symbolMap;
     ////////////////////////////////////////////////////////////////////////////
     /// Structs                                                              ///
     ////////////////////////////////////////////////////////////////////////////
     struct TokenInfo {
-        uint   pos;      // 0 mens unregistered; if &gt; 0, pos + 1 is the
-                         // token&#39;s position in `addresses`.
+        uint   pos;      // 0 mens unregistered; if > 0, pos + 1 is the
+                         // token's position in `addresses`.
         string symbol;   // Symbol of the token
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -185,7 +185,7 @@ contract TokenRegistry is Claimable {
         // We will replace the token we need to unregister with the last token
         // Only the pos of the last token will need to be updated
         address lastToken = addresses[addresses.length - 1];
-        // Don&#39;t do anything if the last token is the one we want to delete
+        // Don't do anything if the last token is the one we want to delete
         if (addr != lastToken) {
             // Swap with the last token and update the pos
             addresses[pos - 1] = lastToken;
@@ -199,7 +199,7 @@ contract TokenRegistry is Claimable {
         view
         returns (bool)
     {
-        for (uint i = 0; i &lt; addressList.length; i++) {
+        for (uint i = 0; i < addressList.length; i++) {
             if (addressMap[addressList[i]].pos == 0) {
                 return false;
             }
@@ -236,18 +236,18 @@ contract TokenRegistry is Claimable {
         returns (address[] addressList)
     {
         uint num = addresses.length;
-        if (start &gt;= num) {
+        if (start >= num) {
             return;
         }
         uint end = start + count;
-        if (end &gt; num) {
+        if (end > num) {
             end = num;
         }
         if (start == num) {
             return;
         }
         addressList = new address[](end - start);
-        for (uint i = start; i &lt; end; i++) {
+        for (uint i = start; i < end; i++) {
             addressList[i - start] = addresses[i];
         }
     }
@@ -258,7 +258,7 @@ contract TokenRegistry is Claimable {
         internal
     {
         require(0x0 != addr);
-        require(bytes(symbol).length &gt; 0);
+        require(bytes(symbol).length > 0);
         require(0x0 == symbolMap[symbol]);
         require(0 == addressMap[addr].pos);
         addresses.push(addr);

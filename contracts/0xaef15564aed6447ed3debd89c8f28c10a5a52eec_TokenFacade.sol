@@ -1,7 +1,7 @@
 pragma solidity ^0.4.15;
 
 contract Permittable {
-    mapping(address =&gt; bool) permitted;
+    mapping(address => bool) permitted;
 
     function Permittable() public {
         permitted[msg.sender] = true;
@@ -61,59 +61,59 @@ contract TokenStorage is Permittable, Destructable, Withdrawable {
         uint256 timestamp;
     }
 
-    mapping(address =&gt; uint256) private balances;
-    mapping(string =&gt; uint256) private settings;
-    mapping(uint256 =&gt; Megabox) private megaboxes;
+    mapping(address => uint256) private balances;
+    mapping(string => uint256) private settings;
+    mapping(uint256 => Megabox) private megaboxes;
     uint256 megaboxIndex = 0;
 
     function _start() public onlyPermitted {
         //Number of decimal places
         uint decimalPlaces = 8;
-        setSetting(&quot;decimalPlaces&quot;, decimalPlaces);
+        setSetting("decimalPlaces", decimalPlaces);
 
         //Tokens stored as integer values multiplied by multiplier. I.e. 1 token with 8 decimals would be stored as 100,000,000
-        setSetting(&quot;multiplier&quot;, 10 ** decimalPlaces);
+        setSetting("multiplier", 10 ** decimalPlaces);
 
         //Tokens amount to send exhausting warning
-        setSetting(&quot;exhaustingNumber&quot;, 2 * 10**decimalPlaces);
+        setSetting("exhaustingNumber", 2 * 10**decimalPlaces);
 
         //Token price in weis per 1
-        setSetting(&quot;tokenPrice&quot;, 15283860872157044);
+        setSetting("tokenPrice", 15283860872157044);
 
         //Decimator for the percents (1000 = 100%)
-        setSetting(&quot;percentage&quot;, 1000);
+        setSetting("percentage", 1000);
 
         //TransferFee(10) == 1%
-        setSetting(&quot;transferFee&quot;, 10);
+        setSetting("transferFee", 10);
 
         //PurchaseFee(157) == 15.7%
-        setSetting(&quot;purchaseFee&quot;, 0);
+        setSetting("purchaseFee", 0);
 
         //PurchaseCap(5000) == 5000.00000000 tokens
-        setSetting(&quot;purchaseCap&quot;, 0);
+        setSetting("purchaseCap", 0);
 
         //PurchaseTimeout in seconds
-        setSetting(&quot;purchaseTimeout&quot;, 0);
+        setSetting("purchaseTimeout", 0);
 
         //Timestamp when ICO
-        setSetting(&quot;icoTimestamp&quot;, now);
+        setSetting("icoTimestamp", now);
 
         //RedemptionTimeout in seconds
-        setSetting(&quot;redemptionTimeout&quot;, 365 * 24 * 60 * 60);
+        setSetting("redemptionTimeout", 365 * 24 * 60 * 60);
 
         //RedemptionFee(157) == 15.7%
-        setSetting(&quot;redemptionFee&quot;, 0);
+        setSetting("redemptionFee", 0);
 
         // Address to return operational fees
-        setSetting(&quot;feeReturnAddress&quot;, uint(address(0x0d026A63a88A0FEc2344044e656D6B63684FBeA1)));
+        setSetting("feeReturnAddress", uint(address(0x0d026A63a88A0FEc2344044e656D6B63684FBeA1)));
 
         // Address to collect dead tokens
-        setSetting(&quot;deadTokensAddress&quot;, uint(address(0x4DcB8F5b22557672B35Ef48F8C2b71f8F54c251F)));
+        setSetting("deadTokensAddress", uint(address(0x4DcB8F5b22557672B35Ef48F8C2b71f8F54c251F)));
 
         //Total supply of tokens
-        setSetting(&quot;totalSupply&quot;, 100 * 1000 * 1000 * (10 ** decimalPlaces));
+        setSetting("totalSupply", 100 * 1000 * 1000 * (10 ** decimalPlaces));
 
-        setSetting(&quot;newMegaboxThreshold&quot;, 1 * 10**decimalPlaces);
+        setSetting("newMegaboxThreshold", 1 * 10**decimalPlaces);
     }
 
     function getBalance(address _address) public view onlyPermitted returns(uint256) {
@@ -126,7 +126,7 @@ contract TokenStorage is Permittable, Destructable, Withdrawable {
     }
 
     function transfer(address _from, address _to, uint256 _amount) public onlyPermitted returns (uint256) {
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
 
         decreaseBalance(_from, _amount);
         increaseBalance(_to, _amount);
@@ -134,7 +134,7 @@ contract TokenStorage is Permittable, Destructable, Withdrawable {
     }
 
     function decreaseBalance(address _address, uint256 _amount) public onlyPermitted returns (uint256) {
-        require(balances[_address] &gt;= _amount);
+        require(balances[_address] >= _amount);
 
         balances[_address] -= _amount;
         return _amount;
@@ -162,7 +162,7 @@ contract TokenStorage is Permittable, Destructable, Withdrawable {
         uint newMegaboxIndex = megaboxIndex++;
         megaboxes[newMegaboxIndex] = Megabox({owner: _owner, totalSupply: _tokens, timestamp: _timestamp});
 
-        setSetting(&quot;totalSupply&quot;, getSetting(&quot;totalSupply&quot;) + _tokens);
+        setSetting("totalSupply", getSetting("totalSupply") + _tokens);
 
         uint256 balance = balances[_owner] + _tokens;
         setBalance(_owner, balance);
@@ -179,32 +179,32 @@ contract TokenStorage is Permittable, Destructable, Withdrawable {
 
 contract TokenValidator is Permittable, Destructable {
     TokenStorage store;
-    mapping(address =&gt; uint256) datesOfPurchase;
+    mapping(address => uint256) datesOfPurchase;
 
     function _setStore(address _address) public onlyPermitted {
         store = TokenStorage(_address);
     }
 
     function getTransferFee(address _owner, address _address, uint256 _amount) public view returns(uint256) {
-        return (_address == _owner) ? 0 : (_amount * store.getSetting(&quot;transferFee&quot;) / store.getSetting(&quot;percentage&quot;));
+        return (_address == _owner) ? 0 : (_amount * store.getSetting("transferFee") / store.getSetting("percentage"));
     }
 
     function validateAndGetTransferFee(address _owner, address _from, address /*_to*/, uint256 _amount) public view returns(uint256) {
         uint256 _fee = getTransferFee(_owner, _from, _amount);
 
-        require(_amount &gt; 0);
-        require((_amount + _fee) &gt; 0);
-        require(store.getBalance(_from) &gt;= (_amount + _fee));
+        require(_amount > 0);
+        require((_amount + _fee) > 0);
+        require(store.getBalance(_from) >= (_amount + _fee));
 
         return _fee;
     }
 
     function validateResetDeadTokens(uint256 _amount) public view returns(address) {
-        address deadTokensAddress = store.getSettingAddress(&quot;deadTokensAddress&quot;);
+        address deadTokensAddress = store.getSettingAddress("deadTokensAddress");
         uint256 deadTokens = store.getBalance(deadTokensAddress);
 
-        require(_amount &gt; 0);
-        require(_amount &lt;= deadTokens);
+        require(_amount > 0);
+        require(_amount <= deadTokens);
 
         return deadTokensAddress;
     }
@@ -216,14 +216,14 @@ contract TokenValidator is Permittable, Destructable {
     }
 
     function validateAndGetPurchaseTokens(address _owner, address _address, uint256 _moneyAmount) public view returns (uint256) {
-        uint256 _tokens = _moneyAmount * store.getSetting(&quot;multiplier&quot;) / store.getSetting(&quot;tokenPrice&quot;);
-        uint256 _purchaseTimeout = store.getSetting(&quot;purchaseTimeout&quot;);
-        uint256 _purchaseCap = store.getSetting(&quot;purchaseCap&quot;);
+        uint256 _tokens = _moneyAmount * store.getSetting("multiplier") / store.getSetting("tokenPrice");
+        uint256 _purchaseTimeout = store.getSetting("purchaseTimeout");
+        uint256 _purchaseCap = store.getSetting("purchaseCap");
 
-        require((_purchaseTimeout &lt;= 0) || (block.timestamp - datesOfPurchase[_address] &gt; _purchaseTimeout));
-        require(_tokens &gt; 0);
-        require(store.getBalance(_owner) &gt;= _tokens);
-        require((_purchaseCap &lt;= 0) || (_tokens &lt;= _purchaseCap));
+        require((_purchaseTimeout <= 0) || (block.timestamp - datesOfPurchase[_address] > _purchaseTimeout));
+        require(_tokens > 0);
+        require(store.getBalance(_owner) >= _tokens);
+        require((_purchaseCap <= 0) || (_tokens <= _purchaseCap));
 
         return _tokens;
     }
@@ -233,36 +233,36 @@ contract TokenValidator is Permittable, Destructable {
     }
 
     function validateAndGetRedeemFee(address /*_owner*/, address _address, uint256 _tokens) public view returns (uint256) {
-        uint256 _icoTimestamp = store.getSetting(&quot;icoTimestamp&quot;);
-        uint256 _redemptionTimeout = store.getSetting(&quot;redemptionTimeout&quot;);
-        uint256 _fee = _tokens * store.getSetting(&quot;redemptionFee&quot;) / store.getSetting(&quot;percentage&quot;);
+        uint256 _icoTimestamp = store.getSetting("icoTimestamp");
+        uint256 _redemptionTimeout = store.getSetting("redemptionTimeout");
+        uint256 _fee = _tokens * store.getSetting("redemptionFee") / store.getSetting("percentage");
 
-        require((_redemptionTimeout &lt;= 0) || (block.timestamp &gt; _icoTimestamp + _redemptionTimeout));
-        require(_tokens &gt; 0);
-        require((_tokens + _fee) &gt;= 0);
-        require(store.getBalance(_address) &gt;= (_tokens + _fee));
+        require((_redemptionTimeout <= 0) || (block.timestamp > _icoTimestamp + _redemptionTimeout));
+        require(_tokens > 0);
+        require((_tokens + _fee) >= 0);
+        require(store.getBalance(_address) >= (_tokens + _fee));
 
         return _fee;
     }
 
     function validateStartMegabox(address _owner, uint256 _tokens) public view {
-        uint256 _totalSupply = store.getSetting(&quot;totalSupply&quot;);
-        uint256 _newMegaboxThreshold = store.getSetting(&quot;newMegaboxThreshold&quot;);
+        uint256 _totalSupply = store.getSetting("totalSupply");
+        uint256 _newMegaboxThreshold = store.getSetting("newMegaboxThreshold");
         uint256 _ownerBalance = store.getBalance(_owner);
 
-        require(_ownerBalance &lt;= _newMegaboxThreshold);
-        require(_tokens &gt; 0);
-        require((_totalSupply + _tokens) &gt; _totalSupply);
+        require(_ownerBalance <= _newMegaboxThreshold);
+        require(_tokens > 0);
+        require((_totalSupply + _tokens) > _totalSupply);
     }
 
     function canPurchase(address _owner, address _address, uint256 _tokens) public view returns(bool, bool, bool, bool) {
-        uint256 _purchaseTimeout = store.getSetting(&quot;purchaseTimeout&quot;);
-        uint256 _fee = _tokens * store.getSetting(&quot;purchaseFee&quot;) / store.getSetting(&quot;percentage&quot;);
+        uint256 _purchaseTimeout = store.getSetting("purchaseTimeout");
+        uint256 _fee = _tokens * store.getSetting("purchaseFee") / store.getSetting("percentage");
 
-        bool purchaseTimeoutPassed = ((_purchaseTimeout &lt;= 0) || (block.timestamp - datesOfPurchase[_address] &gt; _purchaseTimeout));
-        bool tokensNumberPassed = (_tokens &gt; 0);
-        bool ownerBalancePassed = (store.getBalance(_owner) &gt;= (_tokens + _fee));
-        bool purchaseCapPassed = (store.getSetting(&quot;purchaseCap&quot;) &lt;= 0) || (_tokens &lt; store.getSetting(&quot;purchaseCap&quot;));
+        bool purchaseTimeoutPassed = ((_purchaseTimeout <= 0) || (block.timestamp - datesOfPurchase[_address] > _purchaseTimeout));
+        bool tokensNumberPassed = (_tokens > 0);
+        bool ownerBalancePassed = (store.getBalance(_owner) >= (_tokens + _fee));
+        bool purchaseCapPassed = (store.getSetting("purchaseCap") <= 0) || (_tokens < store.getSetting("purchaseCap"));
 
         return (purchaseTimeoutPassed, ownerBalancePassed, tokensNumberPassed, purchaseCapPassed);
     }
@@ -270,8 +270,8 @@ contract TokenValidator is Permittable, Destructable {
     function canTransfer(address _owner, address _from, address /*_to*/, uint256 _amount) public view returns (bool, bool) {
         uint256 _fee = getTransferFee(_owner, _from, _amount);
 
-        bool transferPositivePassed = (_amount + _fee) &gt; 0;
-        bool ownerBalancePassed = store.getBalance(_from) &gt;= (_amount + _fee);
+        bool transferPositivePassed = (_amount + _fee) > 0;
+        bool ownerBalancePassed = store.getBalance(_from) >= (_amount + _fee);
 
         return (transferPositivePassed, ownerBalancePassed);
     }
@@ -285,8 +285,8 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
 
     // Just for information begin //
     uint256 public infoAboveSpot = 400;
-    string public infoTier = &quot;Tier 1&quot;;
-    string public infoTokenSilverRatio = &quot;1 : 1&quot;;
+    string public infoTier = "Tier 1";
+    string public infoTokenSilverRatio = "1 : 1";
     // Just for information end //
 
     event TokenSold(address _from, uint256 _amount);                            //fe2ff4cf36ff7d2c2b06eb960897ee0d76d9c3e58da12feb7b93e86b226dd344
@@ -294,7 +294,7 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     event TokenPoolExhausting(uint256 _amount);                                 //29ba2e073781c1157a9b5d5edb561437a6181e92b79152fe776615159312e9cd
     event FeeApplied(string _name, address _address, uint256 _amount);
 
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function TokenFacade() public {
         owner = msg.sender;
@@ -306,15 +306,15 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     }
 
     function totalSupply() public constant returns (uint256) {
-        return store.getSetting(&quot;totalSupply&quot;);
+        return store.getSetting("totalSupply");
     }
 
     function balanceOf(address _address) public constant returns (uint256) {
         return store.getBalance(_address);
     }
 
-    string public constant symbol = &quot;SLVT&quot;;
-    string public constant name = &quot;SilverToken&quot;;
+    string public constant symbol = "SLVT";
+    string public constant name = "SilverToken";
     uint8 public constant decimals = 8;
 
     ///@notice Transfer `_amount` of tokens (must be sent as floating point number of token and decimal parts)
@@ -326,8 +326,8 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
 
         store.transfer(msg.sender, _to, _amount);
 
-        if (_fee &gt; 0)
-            store.transfer(msg.sender, store.getSettingAddress(&quot;feeReturnAddress&quot;), _fee);
+        if (_fee > 0)
+            store.transfer(msg.sender, store.getSettingAddress("feeReturnAddress"), _fee);
 
         Transfer(msg.sender, _to, _amount);
 
@@ -340,14 +340,14 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     ///@param _amount Amount of tokens to transfer. Passed as `Token.Decimals * 10^8`, @see `decimals`.
     ///@return bool Success state
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
-        require(allowed[_from][_to] &gt;= _amount);
+        require(allowed[_from][_to] >= _amount);
 
         uint256 _fee = validator.validateAndGetTransferFee(owner, _from, _to, _amount);
 
         store.transfer(_from, _to, _amount);
 
-        if (_fee &gt; 0)
-            store.transfer(_from, store.getSettingAddress(&quot;feeReturnAddress&quot;), _fee);
+        if (_fee > 0)
+            store.transfer(_from, store.getSettingAddress("feeReturnAddress"), _fee);
 
         allowed[_from][_to] -= _amount;
 
@@ -386,18 +386,18 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     //@notice Get amount if tokens that actually available for purchase
     //@returns amount if tokens
     function getTokensInAction() public view returns (uint256) {
-        address deadTokensAddress = store.getSettingAddress(&quot;deadTokensAddress&quot;);
+        address deadTokensAddress = store.getSettingAddress("deadTokensAddress");
         return store.getBalance(owner) - store.getBalance(deadTokensAddress);
     }
 
     //@notice Get price of specified tokens amount. Depends on the second parameter returns price with fee or without
     //@return price of specified tokens in Wei
     function getTokensPrice(uint256 _amount, bool withFee) public constant returns (uint256) {
-        uint256 tokenPrice = store.getSetting(&quot;tokenPrice&quot;);
+        uint256 tokenPrice = store.getSetting("tokenPrice");
         uint256 result = _amount * tokenPrice / 10**uint256(decimals);
 
         if (withFee) {
-            result = result + result * store.getSetting(&quot;purchaseFee&quot;) / store.getSetting(&quot;percentage&quot;);
+            result = result + result * store.getSetting("purchaseFee") / store.getSetting("percentage");
         }
 
         return result;
@@ -467,8 +467,8 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     function _start() public onlyPermitted {
         validator.validateStart(owner, store);
 
-        store.setBalance(owner, store.getSetting(&quot;totalSupply&quot;));
-        store.setSetting(&quot;icoTimestamp&quot;, block.timestamp);
+        store.setBalance(owner, store.getSetting("totalSupply"));
+        store.setSetting("icoTimestamp", block.timestamp);
     }
 
     function _setStore(address _address) public onlyPermitted {
@@ -499,21 +499,21 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     }
 
     function __purchase_impl(address _to, uint256 _amount) private {
-        uint256 _amountWithoutFee = _amount * store.getSetting(&quot;percentage&quot;) / (store.getSetting(&quot;purchaseFee&quot;) + store.getSetting(&quot;percentage&quot;));
-        uint256 _fee = _amountWithoutFee * store.getSetting(&quot;purchaseFee&quot;) / store.getSetting(&quot;percentage&quot;);
+        uint256 _amountWithoutFee = _amount * store.getSetting("percentage") / (store.getSetting("purchaseFee") + store.getSetting("percentage"));
+        uint256 _fee = _amountWithoutFee * store.getSetting("purchaseFee") / store.getSetting("percentage");
         uint256 _ownerBalance = store.getBalance(owner);
-        address _feeReturnAddress = store.getSettingAddress(&quot;feeReturnAddress&quot;);
+        address _feeReturnAddress = store.getSettingAddress("feeReturnAddress");
         uint256 _tokens = validator.validateAndGetPurchaseTokens(owner, msg.sender, _amountWithoutFee);
 
         store.increaseBalance(_to, _tokens);
         store.decreaseBalance(owner, _tokens);
 
-        if (_fee &gt; 0)
+        if (_fee > 0)
             _feeReturnAddress.transfer(_fee);
 
         validator.updateDateOfPurchase(_to, now);
 
-        if (_ownerBalance &lt; store.getSetting(&quot;exhaustingNumber&quot;)) {
+        if (_ownerBalance < store.getSetting("exhaustingNumber")) {
             TokenPoolExhausting(_ownerBalance);
         }
         TokenPurchased(_to, msg.value, _tokens);
@@ -521,8 +521,8 @@ contract TokenFacade is Permittable, Destructable, Withdrawable, ERC20Token {
     }
 
     function __redeem_impl(address _from, uint256 _tokens) private {
-        address deadTokensAddress = store.getSettingAddress(&quot;deadTokensAddress&quot;);
-        address feeReturnAddress = store.getSettingAddress(&quot;feeReturnAddress&quot;);
+        address deadTokensAddress = store.getSettingAddress("deadTokensAddress");
+        address feeReturnAddress = store.getSettingAddress("feeReturnAddress");
         uint256 _fee = validator.validateAndGetRedeemFee(owner, _from, _tokens);
 
         store.transfer(_from, deadTokensAddress, _tokens);

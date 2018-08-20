@@ -1,16 +1,16 @@
-//                       , ; ,   .-&#39;&quot;&quot;&quot;&#39;-.   , ; ,
-//                       \\|/  .&#39;          &#39;.  \|//
+//                       , ; ,   .-'"""'-.   , ; ,
+//                       \\|/  .'          '.  \|//
 //                        \-;-/   ()   ()   \-;-/
 //                        // ;               ; \\
 //                       //__; :.         .; ;__\\
-//                      `-----\&#39;.&#39;-.....-&#39;.&#39;/-----&#39;
-//                             &#39;.&#39;.-.-,_.&#39;.&#39;
-//                               &#39;(  (..-&#39;
-//                                 &#39;-&#39;
+//                      `-----\'.'-.....-'.'/-----'
+//                             '.'.-.-,_.'.'
+//                               '(  (..-'
+//                                 '-'
 //  ROULETH 
 //
 //  Play the Roulette on ethereum blockchain !
-//  (or become a member of Rouleth&#39;s Decentralized Organisation  and contribute to the bankroll.) 
+//  (or become a member of Rouleth's Decentralized Organisation  and contribute to the bankroll.) 
 //
 //
 //
@@ -51,13 +51,13 @@ contract Rouleth
     Gamble[] private gambles;
     uint totalGambles; 
     //Tracking progress of players
-    mapping (address=&gt;uint) gambleIndex; //current gamble index of the player
+    mapping (address=>uint) gambleIndex; //current gamble index of the player
     //records current status of player
-    enum Status {waitingForBet, waitingForSpin} mapping (address=&gt;Status) playerStatus; 
+    enum Status {waitingForBet, waitingForSpin} mapping (address=>Status) playerStatus; 
 
 
     //**********************************************
-    //        Management &amp; Config FUNCTIONS        //
+    //        Management & Config FUNCTIONS        //
     //**********************************************
 
     function  Rouleth() private //creation settings
@@ -84,10 +84,10 @@ contract Rouleth
 	developer=new_dev;
     }
 
-    //Prevents accidental sending of Eth when you shouldn&#39;t
+    //Prevents accidental sending of Eth when you shouldn't
     modifier noEthSent()
     {
-        if (msg.value&gt;0) 
+        if (msg.value>0) 
 	{
 	    throw;
 	}
@@ -130,26 +130,26 @@ contract Rouleth
 
 
         // changes the statistical multiplier that guarantees the long run casino survival
-        if (newCasinoStatLimit&lt;100) throw;
+        if (newCasinoStatLimit<100) throw;
         casinoStatisticalLimit=newCasinoStatLimit;
         //Max number of bets per block to prevent miner cheating
         maxBetsPerBlock=newMaxBetsBlock;
         //MAX BET : limited by payroll/(casinoStatisticalLimit*35)
-        if (newMaxGamble&lt;newMinGamble) throw;  
+        if (newMaxGamble<newMinGamble) throw;  
 	else { maxGamble=newMaxGamble; }
         //Min Bet
-        if (newMinGamble&lt;0) throw; 
+        if (newMinGamble<0) throw; 
 	else { minGamble=newMinGamble; }
         //MAX NB of DAO members (can only increase (within bounds) or stay equal)
         //this number of members can only increase after 25k spins on Rouleth
         //refuse change of max number of members if less than 25k spins played
-        if (newMaxInvestor!=setting_maxInvestors &amp;&amp; gambles.length&lt;25000) throw;
-        if ( newMaxInvestor&lt;setting_maxInvestors 
-             || newMaxInvestor&gt;investors.length) throw;
+        if (newMaxInvestor!=setting_maxInvestors && gambles.length<25000) throw;
+        if ( newMaxInvestor<setting_maxInvestors 
+             || newMaxInvestor>investors.length) throw;
         else { setting_maxInvestors=newMaxInvestor;}
         //computes the results of the vote of the VIP members, fees to apply to new members
         computeResultVoteExtraInvestFeesRate();
-        if (newMaxInvestment&lt;newMinInvestment) throw;
+        if (newMaxInvestment<newMinInvestment) throw;
         //MIN INVEST : 
         setting_minInvestment=newMinInvestment;
         //MAX INVEST : 
@@ -157,11 +157,11 @@ contract Rouleth
         //Invest LOCK PERIOD
 	//1 year max
 	//can also serve as a failsafe to shutdown withdraws for a period
-        if (setting_lockPeriod&gt;360 days) throw; 
+        if (setting_lockPeriod>360 days) throw; 
         setting_lockPeriod=newLockPeriod;
         //Delay before spin :
 	blockDelay=newBlockDelay;
-	if (newBlockExpiration&lt;blockDelay+20) throw;
+	if (newBlockExpiration<blockDelay+20) throw;
 	blockExpiration=newBlockExpiration;
         updateMaxBet();
     }
@@ -172,11 +172,11 @@ contract Rouleth
     //**********************************************
 
     //User set nickname
-    mapping (address =&gt; string) nicknames;
+    mapping (address => string) nicknames;
     function setNickname(string name) 
     noEthSent
     {
-        if (bytes(name).length &gt;= 2 &amp;&amp; bytes(name).length &lt;= 30)
+        if (bytes(name).length >= 2 && bytes(name).length <= 30)
             nicknames[msg.sender] = name;
     }
     function getNickname(address _address) constant returns(string _name) {
@@ -203,7 +203,7 @@ contract Rouleth
     function updateMaxBet() private
     {
 	//check that setting is still within safety bounds
-        if (payroll/(casinoStatisticalLimit*35) &gt; maxGamble) 
+        if (payroll/(casinoStatisticalLimit*35) > maxGamble) 
 	{ 
 	    currentMaxGamble=maxGamble;
         }
@@ -218,8 +218,8 @@ contract Rouleth
     // returns bet value
     function checkBetValue() private returns(uint256 playerBetValue)
     {
-        if (msg.value &lt; minGamble) throw;
-	if (msg.value &gt; currentMaxGamble) //if above max, send difference back
+        if (msg.value < minGamble) throw;
+	if (msg.value > currentMaxGamble) //if above max, send difference back
 	{
             playerBetValue=currentMaxGamble;
 	}
@@ -232,9 +232,9 @@ contract Rouleth
     //check number of bets in block (to prevent miner cheating)
     modifier checkNbBetsCurrentBlock()
     {
-        if (gambles.length!=0 &amp;&amp; block.number==gambles[gambles.length-1].blockNumber) nbBetsCurrentBlock+=1;
+        if (gambles.length!=0 && block.number==gambles[gambles.length-1].blockNumber) nbBetsCurrentBlock+=1;
         else nbBetsCurrentBlock=0;
-        if (nbBetsCurrentBlock&gt;=maxBetsPerBlock) throw;
+        if (nbBetsCurrentBlock>=maxBetsPerBlock) throw;
         _
     }
 
@@ -260,7 +260,7 @@ contract Rouleth
         uint256 betValue = checkBetValue();
 	gambles.push(Gamble(msg.sender, false, false, betType_, input_, betValue, block.number, 0, 37)); //37 indicates not spinned yet
 	//refund excess bet (at last step vs re-entry)
-        if (betValue&lt;msg.value) 
+        if (betValue<msg.value) 
         {
  	    if (msg.sender.send(msg.value-betValue)==false) throw;
         }
@@ -273,7 +273,7 @@ contract Rouleth
     checkNbBetsCurrentBlock
     {
         //check that number chosen is valid and records bet
-        if (numberChosen&gt;36) throw;
+        if (numberChosen>36) throw;
         placeBet(BetTypes.number, numberChosen);
     }
 
@@ -398,7 +398,7 @@ contract Rouleth
 
 
     //**********************************************
-    // Spin The Wheel &amp; Check Result FUNCTIONS//
+    // Spin The Wheel & Check Result FUNCTIONS//
     //**********************************************
 
     event Win(address player, uint8 result, uint value_won, bytes32 bHash, bytes32 sha3Player, uint gambleId);
@@ -428,9 +428,9 @@ contract Rouleth
         //and also that the bet is not expired
 	uint playerblock = gambles[gambleIndex[playerSpinned]].blockNumber;
         //too early to spin
-	if (block.number&lt;=playerblock+blockDelay) throw;
+	if (block.number<=playerblock+blockDelay) throw;
         //too late, bet expired, player lost
-        else if (block.number&gt;playerblock+blockExpiration)  solveBet(playerSpinned, 255, false, 1, 0, 0) ;
+        else if (block.number>playerblock+blockExpiration)  solveBet(playerSpinned, 255, false, 1, 0, 0) ;
 	//spin !
         else
 	{
@@ -439,7 +439,7 @@ contract Rouleth
             bytes32 blockHash= block.blockhash(playerblock+blockDelay);
             //security check that the Hash is not empty
             if (blockHash==0) throw;
-	    // generate the hash for RNG from the blockHash and the player&#39;s address
+	    // generate the hash for RNG from the blockHash and the player's address
             bytes32 shaPlayer = sha3(playerSpinned, blockHash);
 	    // get the final wheel result
 	    wheelResult = uint8(uint256(shaPlayer)%37);
@@ -515,7 +515,7 @@ contract Rouleth
     {
         bool win;
         //win
-	if (result%2==gambles[gambleIndex[player]].input &amp;&amp; result!=0)
+	if (result%2==gambles[gambleIndex[player]].input && result!=0)
 	{
             win=true;                
         }
@@ -529,8 +529,8 @@ contract Rouleth
     {
         bool win;
         //win
-	if (result!=0 &amp;&amp; ( (result&lt;19 &amp;&amp; gambles[gambleIndex[player]].input==0)
-			   || (result&gt;18 &amp;&amp; gambles[gambleIndex[player]].input==1)
+	if (result!=0 && ( (result<19 && gambles[gambleIndex[player]].input==0)
+			   || (result>18 && gambles[gambleIndex[player]].input==1)
 			 ) )
 	{
             win=true;
@@ -546,7 +546,7 @@ contract Rouleth
     {
         bool red;
         //check if red
-        for (uint8 k; k&lt;18; k++)
+        for (uint8 k; k<18; k++)
         { 
             if (red_list[k]==result) 
             { 
@@ -557,8 +557,8 @@ contract Rouleth
         bool win;
         //win
         if ( result!=0
-             &amp;&amp; ( (gambles[gambleIndex[player]].input==0 &amp;&amp; red)  
-                  || ( gambles[gambleIndex[player]].input==1 &amp;&amp; !red)  ) )
+             && ( (gambles[gambleIndex[player]].input==0 && red)  
+                  || ( gambles[gambleIndex[player]].input==1 && !red)  ) )
         {
             win=true;
         }
@@ -572,12 +572,12 @@ contract Rouleth
     { 
         bool win;
         //win on first dozen
-     	if ( result!=0 &amp;&amp;
-             ( (result&lt;13 &amp;&amp; gambles[gambleIndex[player]].input==0)
+     	if ( result!=0 &&
+             ( (result<13 && gambles[gambleIndex[player]].input==0)
      	       ||
-               (result&gt;12 &amp;&amp; result&lt;25 &amp;&amp; gambles[gambleIndex[player]].input==1)
+               (result>12 && result<25 && gambles[gambleIndex[player]].input==1)
                ||
-               (result&gt;24 &amp;&amp; gambles[gambleIndex[player]].input==2) ) )
+               (result>24 && gambles[gambleIndex[player]].input==2) ) )
      	{
             win=true;                
         }
@@ -592,9 +592,9 @@ contract Rouleth
         bool win;
         //win
         if ( result!=0
-             &amp;&amp; ( (gambles[gambleIndex[player]].input==0 &amp;&amp; result%3==1)  
-                  || ( gambles[gambleIndex[player]].input==1 &amp;&amp; result%3==2)
-                  || ( gambles[gambleIndex[player]].input==2 &amp;&amp; result%3==0)  ) )
+             && ( (gambles[gambleIndex[player]].input==0 && result%3==1)  
+                  || ( gambles[gambleIndex[player]].input==1 && result%3==2)
+                  || ( gambles[gambleIndex[player]].input==2 && result%3==0)  ) )
         {
             win=true;
         }
@@ -617,15 +617,15 @@ contract Rouleth
 	uint256 time;
     }	
     
-    Investor[777] private investors; //array of 777 elements (max Rouleth&#39;s members nb.)
+    Investor[777] private investors; //array of 777 elements (max Rouleth's members nb.)
     uint16 setting_maxInvestors = 77; //Initially restricted to 77 VIP Members
     //Balances of the DAO members
-    mapping (address=&gt;uint256) balance; 
+    mapping (address=>uint256) balance; 
     //lockPeriod
     //minimum membership time
     uint256 setting_lockPeriod=30 days ;
-    uint256 setting_minInvestment=100 ether; //min amount to send when using &quot;invest()&quot;
-    uint256 setting_maxInvestment=200 ether; //max amount to send when using &quot;invest()&quot;
+    uint256 setting_minInvestment=100 ether; //min amount to send when using "invest()"
+    uint256 setting_maxInvestment=200 ether; //max amount to send when using "invest()"
     
     event newInvest(address player, uint invest_v, uint net_invest_v);
 
@@ -643,7 +643,7 @@ contract Rouleth
         bool alreadyInvestor;
         // loop over array to find if already member, 
         // and record a potential openPosition
-        for (uint16 k = 0; k&lt;setting_maxInvestors; k++)
+        for (uint16 k = 0; k<setting_maxInvestors; k++)
         { 
             // captures an index of an open position
             if (investors[k].investor==0) openPosition=k; 
@@ -658,10 +658,10 @@ contract Rouleth
         if (!alreadyInvestor)
         {
             // check that more than min is sent (variable setting)
-            if (msg.value&lt;setting_minInvestment) throw;
+            if (msg.value<setting_minInvestment) throw;
             // check that less than max is sent (variable setting)
             // otherwise refund
-            if (msg.value&gt;setting_maxInvestment)
+            if (msg.value>setting_maxInvestment)
             {
                 excess=msg.value-setting_maxInvestment;
   		netInvest=setting_maxInvestment;
@@ -670,8 +670,8 @@ contract Rouleth
 	    {
 		netInvest=msg.value;
 	    }
-            //members can&#39;t become a VIP member after the initial period
-            if (setting_maxInvestors &gt;77 &amp;&amp; openPosition&lt;77) throw;
+            //members can't become a VIP member after the initial period
+            if (setting_maxInvestors >77 && openPosition<77) throw;
             //case : array not full, record new member
             else if (openPosition!=999) investors[openPosition]=Investor(msg.sender, now);
             //case : array full
@@ -686,12 +686,12 @@ contract Rouleth
             netInvest=msg.value;
             //is already above the max balance allowed or is sending
 	    // too much refuse additional invest
-            if (balance[msg.sender]+msg.value&gt;setting_maxInvestment)
+            if (balance[msg.sender]+msg.value>setting_maxInvestment)
             {
                 throw;
             }
-	    // this additionnal amount should be of at least 1/5 of &quot;setting_minInvestment&quot; (vs spam)
-	    if (msg.value&lt;setting_minInvestment/5) throw;
+	    // this additionnal amount should be of at least 1/5 of "setting_minInvestment" (vs spam)
+	    if (msg.value<setting_minInvestment/5) throw;
         }
 
         // add to balance of member and to bankroll
@@ -710,9 +710,9 @@ contract Rouleth
 	// market value of their shares in Rouleth to outsiders
 	// warning if a VIP adds to its initial invest after the casino has been opened to 
 	// extra members he will pay have to pay this fee.
-        if (setting_maxInvestors&gt;77)
+        if (setting_maxInvestors>77)
         {
-            // % of extra member&#39;s investment that rewards VIP funders
+            // % of extra member's investment that rewards VIP funders
             // Starts at 100%
             // is set by a vote and computed when settings are changed
             // to allow more investors
@@ -726,7 +726,7 @@ contract Rouleth
         payroll+=netInvest; //add to bankroll
         updateMaxBet();
         //refund potential excess
-        if (excess&gt;0) 
+        if (excess>0) 
         {
             if (msg.sender.send(excess)==false) throw;
         }
@@ -736,7 +736,7 @@ contract Rouleth
     //Allows to transfer your DAO account to another address
     //target should not be currently a DAO member of rouleth
     //enter twice the address to make sure you make no mistake.
-    //this can&#39;t be reversed if you don&#39;t own the target account
+    //this can't be reversed if you don't own the target account
     function transferInvestorAccount(address newInvestorAccountOwner, address newInvestorAccountOwner_confirm)
     noEthSent
     {
@@ -744,7 +744,7 @@ contract Rouleth
         if (newInvestorAccountOwner==0) throw;
         //retrieve investor ID
         uint16 investorID=999;
-        for (uint16 k = 0; k&lt;setting_maxInvestors; k++)
+        for (uint16 k = 0; k<setting_maxInvestors; k++)
         {
 	    //new address cant be of a current investor
             if (investors[k].investor==newInvestorAccountOwner) throw;
@@ -777,14 +777,14 @@ contract Rouleth
     noEthSent
     {
 	//vs spam withdraw min 1/10 of min
-	if (amountToWithdrawInWei!=0 &amp;&amp; amountToWithdrawInWei&lt;setting_minInvestment/10) throw;
+	if (amountToWithdrawInWei!=0 && amountToWithdrawInWei<setting_minInvestment/10) throw;
         //before withdraw, update balances with the Profit and Loss sinceChange
         updateBalances();
 	//check that amount requested is authorized  
-	if (amountToWithdrawInWei&gt;balance[msg.sender]) throw;
+	if (amountToWithdrawInWei>balance[msg.sender]) throw;
         //retrieve member ID
         uint16 investorID=999;
-        for (uint16 k = 0; k&lt;setting_maxInvestors; k++)
+        for (uint16 k = 0; k<setting_maxInvestors; k++)
         {
             if (investors[k].investor==msg.sender)
             {
@@ -794,9 +794,9 @@ contract Rouleth
         }
         if (investorID==999) throw; //stop if not a member
         //check if investment lock period is over
-        if (investors[investorID].time+setting_lockPeriod&gt;now) throw;
+        if (investors[investorID].time+setting_lockPeriod>now) throw;
         //if balance left after withdraw is still above min accept partial withdraw
-        if (balance[msg.sender]-amountToWithdrawInWei&gt;=setting_minInvestment &amp;&amp; amountToWithdrawInWei!=0)
+        if (balance[msg.sender]-amountToWithdrawInWei>=setting_minInvestment && amountToWithdrawInWei!=0)
         {
             balance[msg.sender]-=amountToWithdrawInWei;
             payroll-=amountToWithdrawInWei;
@@ -806,7 +806,7 @@ contract Rouleth
         }
         else
             //if amountToWithdraw=0 : user wants full withdraw
-            //if balance after withdraw is &lt; min invest, withdraw all and delete member
+            //if balance after withdraw is < min invest, withdraw all and delete member
         {
             //send amount to member (with security if transaction fails)
             uint256 fullAmount=balance[msg.sender];
@@ -834,14 +834,14 @@ contract Rouleth
         //split Profits
         uint256 profitToSplit;
         uint256 lossToSplit;
-        if (profitSinceChange==0 &amp;&amp; lossSinceChange==0)
+        if (profitSinceChange==0 && lossSinceChange==0)
         { return; }
         
         else
         {
             // Case : Global profit (more win than losses)
-            // 20% fees for game development on global profit (if profit&gt;loss)
-            if (profitSinceChange&gt;lossSinceChange)
+            // 20% fees for game development on global profit (if profit>loss)
+            if (profitSinceChange>lossSinceChange)
             {
                 profitToSplit=profitSinceChange-lossSinceChange;
                 uint256 developerFees=profitToSplit*20/100;
@@ -854,10 +854,10 @@ contract Rouleth
             }
             
             //share the loss and profits between all DAO members 
-            //(proportionnaly. to each one&#39;s balance)
+            //(proportionnaly. to each one's balance)
 
             uint totalShared;
-            for (uint16 k=0; k&lt;setting_maxInvestors; k++)
+            for (uint16 k=0; k<setting_maxInvestors; k++)
             {
                 address inv=investors[k].investor;
                 if (inv==0) continue;
@@ -898,13 +898,13 @@ contract Rouleth
 
     //VIP Voting on Extra Invest Fees Rate
     //mapping records 100 - vote
-    mapping (address=&gt;uint) hundredminus_extraInvestFeesRate;
+    mapping (address=>uint) hundredminus_extraInvestFeesRate;
     // max fee is 99%
     // a fee of 100% indicates that the VIP has never voted.
     function voteOnNewEntryFees_only_VIP(uint8 extraInvestFeesRate_0_to_99)
     noEthSent
     {
-        if (extraInvestFeesRate_0_to_99&lt;1 || extraInvestFeesRate_0_to_99&gt;99) throw;
+        if (extraInvestFeesRate_0_to_99<1 || extraInvestFeesRate_0_to_99>99) throw;
         hundredminus_extraInvestFeesRate[msg.sender]=100-extraInvestFeesRate_0_to_99;
     }
 
@@ -916,12 +916,12 @@ contract Rouleth
         voted_extraInvestFeesRate=0;
         //compute total payroll of the VIPs
         //compute vote results among VIPs
-        for (uint8 k=0; k&lt;77; k++)
+        for (uint8 k=0; k<77; k++)
         {
             if (investors[k].investor==0) continue;
             else
             {
-                //don&#39;t count vote if the VIP never voted
+                //don't count vote if the VIP never voted
                 if (hundredminus_extraInvestFeesRate[investors[k].investor]==0) continue;
                 else
                 {
@@ -938,7 +938,7 @@ contract Rouleth
     }
 
 
-    //Split the profits of the VIP members on extra members&#39; contribution
+    //Split the profits of the VIP members on extra members' contribution
     uint profitVIP;
     function splitProfitVIP_only_Dev()
     noEthSent
@@ -946,7 +946,7 @@ contract Rouleth
     {
         payrollVIP=0;
         //compute total payroll of the VIPs
-        for (uint8 k=0; k&lt;77; k++)
+        for (uint8 k=0; k<77; k++)
         {
             if (investors[k].investor==0) continue;
             else
@@ -954,9 +954,9 @@ contract Rouleth
                 payrollVIP+=balance[investors[k].investor];
             }
         }
-        //split the profits of the VIP members on extra member&#39;s contribution
+        //split the profits of the VIP members on extra member's contribution
 	uint totalSplit;
-        for (uint8 i=0; i&lt;77; i++)
+        for (uint8 i=0; i<77; i++)
         {
             if (investors[i].investor==0) continue;
             else

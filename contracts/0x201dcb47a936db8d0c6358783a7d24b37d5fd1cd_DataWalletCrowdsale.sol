@@ -35,20 +35,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,7 +95,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -186,7 +186,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -195,7 +195,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -224,9 +224,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -244,7 +244,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -255,8 +255,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -270,7 +270,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -319,7 +319,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -357,7 +357,7 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     // We have a window in the first 24hrs that permits to allocate all whitelist 
-    // participants with an equal distribution =&gt; firstDayCap = cap / whitelist participants.
+    // participants with an equal distribution => firstDayCap = cap / whitelist participants.
     uint256 public firstDayCap;
     uint256 public cap;
     uint256 public goal;
@@ -375,8 +375,8 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
     bool public isFinalized = false;
     uint256 public weiRaised;
 
-    mapping(address =&gt; bool) public whitelist;
-    mapping(address =&gt; uint256) public contribution;
+    mapping(address => bool) public whitelist;
+    mapping(address => uint256) public contribution;
     
     event WhitelistUpdate(address indexed purchaser, bool status);
     event TokenPurchase(address indexed beneficiary, uint256 value, uint256 amount);
@@ -395,11 +395,11 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
         uint256 _firstDayCap,
         uint256 _goal
     ) {
-        require(_startTime &gt;= getBlockTimestamp());
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
-        require(_goal &gt; 0);
-        require(_cap &gt; 0);
+        require(_startTime >= getBlockTimestamp());
+        require(_endTime >= _startTime);
+        require(_rate > 0);
+        require(_goal > 0);
+        require(_cap > 0);
         require(_wallet != 0x0);
 
         vault = new RefundVault(_wallet);
@@ -428,19 +428,19 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
         uint256 weiAmount = msg.value;
 
         // check if contribution is in the first 24h hours
-        if (getBlockTimestamp() &lt;= firstDay) {
-            require((contribution[beneficiary].add(weiAmount)) &lt;= firstDayCap);
+        if (getBlockTimestamp() <= firstDay) {
+            require((contribution[beneficiary].add(weiAmount)) <= firstDayCap);
         }
         //check if there is enough funds 
         uint256 remainingToFund = cap.sub(weiRaised);
-        if (weiAmount &gt; remainingToFund) {
+        if (weiAmount > remainingToFund) {
             weiAmount = remainingToFund;
         }
         uint256 weiToReturn = msg.value.sub(weiAmount);
         //Forward funs to the vault 
         forwardFunds(weiAmount);
         //refund if the contribution exceed the cap
-        if (weiToReturn &gt; 0) {
+        if (weiToReturn > 0) {
             beneficiary.transfer(weiToReturn);
             TokenRefund(beneficiary, weiToReturn);
         }
@@ -469,17 +469,17 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
 
     //in case of endTime before the reach of the cap, the owner can claim the unsold tokens
     function claimUnsold() onlyOwner {
-        require(endTime &lt;= getBlockTimestamp());
+        require(endTime <= getBlockTimestamp());
         uint256 unsold = token.balanceOf(this);
 
-        if (unsold &gt; 0) {
+        if (unsold > 0) {
             require(token.transfer(msg.sender, unsold));
         }
     }
 
     // add/remove to whitelist array of addresses based on boolean status
     function updateWhitelist(address[] addresses, bool status) public onlyOwner {
-        for (uint256 i = 0; i &lt; addresses.length; i++) {
+        for (uint256 i = 0; i < addresses.length; i++) {
             address contributorAddress = addresses[i];
             whitelist[contributorAddress] = status;
             WhitelistUpdate(contributorAddress, status);
@@ -516,16 +516,16 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
 
     // @return true if crowdsale event has ended or cap reached
     function hasEnded() public constant returns (bool) {
-        bool passedEndTime = getBlockTimestamp() &gt; endTime;
+        bool passedEndTime = getBlockTimestamp() > endTime;
         return passedEndTime || capReached();
     }
 
     function capReached() public constant returns (bool) {
-        return weiRaised &gt;= cap;
+        return weiRaised >= cap;
     }
 
     function goalReached() public constant returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
     function isWhitelisted(address contributor) public constant returns (bool) {
@@ -534,10 +534,10 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = getBlockTimestamp() &gt;= startTime &amp;&amp; getBlockTimestamp() &lt;= endTime;
+        bool withinPeriod = getBlockTimestamp() >= startTime && getBlockTimestamp() <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool capNotReached = weiRaised &lt; cap;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; capNotReached;
+        bool capNotReached = weiRaised < cap;
+        return withinPeriod && nonZeroPurchase && capNotReached;
     }
 
     function getBlockTimestamp() internal constant returns (uint256) {
@@ -547,8 +547,8 @@ contract DataWalletCrowdsale is Ownable, ReentrancyGuard {
 
 contract DataWalletToken is PausableToken, BurnableToken {
 
-    string public constant name = &quot;DataWallet Token&quot;;
-    string public constant symbol = &quot;DXT&quot;;
+    string public constant name = "DataWallet Token";
+    string public constant symbol = "DXT";
     uint8 public constant decimals = 8;
     uint256 public constant INITIAL_SUPPLY = 1000000000 * 10**uint256(decimals);
     
@@ -566,7 +566,7 @@ contract DataWalletToken is PausableToken, BurnableToken {
             require(!paused);
         }
         require(beneficiary != address(0));
-        require(amount &lt;= balances[msg.sender]);
+        require(amount <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(amount);

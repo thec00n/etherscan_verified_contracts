@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the NeuroDAO Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the NeuroDAO Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="5f36712c29362d36311f31302d3b3e2936313b712d2a">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="5f36712c29362d36311f31302d3b3e2936313b712d2a">[email protected]</span>>
 
 IF YOU ARE ENJOYED IT DONATE TO 0x3Ad38D1060d1c350aF29685B2b8Ec3eDE527452B ! :)
 */
@@ -68,14 +68,14 @@ contract BaseNeuroDAO {
         uint limit;
         bool isTeam;
     }
-    mapping (address =&gt; SpecialTokenHolder) public specials;
+    mapping (address => SpecialTokenHolder) public specials;
 
     struct TokenHolder {
         uint balance;
         uint balanceBeforeUpdate;
         uint balanceUpdateTime;
     }
-    mapping (address =&gt; TokenHolder) public holders;
+    mapping (address => TokenHolder) public holders;
 
     function freezedBalanceOf(address _who) constant public returns(uint);
 }
@@ -112,7 +112,7 @@ contract ManualMigration is owned, ERC20, BaseNeuroDAO {
     }
     
     function migrateManual2(address [] _who, uint count) public onlyOwner {
-        for(uint i = 0; i &lt; count; ++i) {
+        for(uint i = 0; i < count; ++i) {
             migrateManual(_who[i]);
         }
     }
@@ -123,7 +123,7 @@ contract ManualMigration is owned, ERC20, BaseNeuroDAO {
     }
 
     function beforeBalanceChanges(address _who) internal {
-        if (holders[_who].balanceUpdateTime &lt;= freezedMoment) {
+        if (holders[_who].balanceUpdateTime <= freezedMoment) {
             holders[_who].balanceUpdateTime = now;
             holders[_who].balanceBeforeUpdate = holders[_who].balance;
         }
@@ -132,14 +132,14 @@ contract ManualMigration is owned, ERC20, BaseNeuroDAO {
 
 contract Token is ManualMigration {
 
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;NeuroDAO 3.0&#39;;
-    string  public symbol      = &quot;NDAO&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'NeuroDAO 3.0';
+    string  public symbol      = "NDAO";
     uint8   public decimals    = 0;
 
     uint    public startTime;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Burned(address indexed owner, uint256 value);
 
@@ -160,7 +160,7 @@ contract Token is ManualMigration {
                 } else {
                     periods = (now - startTime) / 1 years;
                     ++periods;
-                    if (periods &lt; 5) {
+                    if (periods < 5) {
                         blocked = limit * (100 - periods * 20) / 100;
                     }
                 }
@@ -169,7 +169,7 @@ contract Token is ManualMigration {
                     blocked = limit * (100 - periods) / 100;
                 }
             }
-            if (_avail &lt;= blocked) {
+            if (_avail <= blocked) {
                 _avail = 0;
             } else {
                 _avail -= blocked;
@@ -179,7 +179,7 @@ contract Token is ManualMigration {
     
     function firstYearPeriods() internal constant returns (uint _periods) {
         _periods = 0;
-        if (now &lt; startTime + 1 years) {
+        if (now < startTime + 1 years) {
             uint8[12] memory logic = [1, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9, 10];
             _periods = logic[(now - startTime) / 28 days];
         }
@@ -190,8 +190,8 @@ contract Token is ManualMigration {
     }
 
     function transfer(address _to, uint256 _value) public enabled {
-        require(availableTokens(msg.sender) &gt;= _value);
-        require(holders[_to].balance + _value &gt;= holders[_to].balance); // overflow
+        require(availableTokens(msg.sender) >= _value);
+        require(holders[_to].balance + _value >= holders[_to].balance); // overflow
         beforeBalanceChanges(msg.sender);
         beforeBalanceChanges(_to);
         holders[msg.sender].balance -= _value;
@@ -200,9 +200,9 @@ contract Token is ManualMigration {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public enabled {
-        require(availableTokens(_from) &gt;= _value);
-        require(holders[_to].balance + _value &gt;= holders[_to].balance); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(availableTokens(_from) >= _value);
+        require(holders[_to].balance + _value >= holders[_to].balance); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         beforeBalanceChanges(_from);
         beforeBalanceChanges(_to);
         holders[_from].balance -= _value;
@@ -222,7 +222,7 @@ contract Token is ManualMigration {
     }
     
     function burn(uint256 _value) public enabled {
-        require(holders[msg.sender].balance &gt;= _value);
+        require(holders[msg.sender].balance >= _value);
         beforeBalanceChanges(msg.sender);
         holders[msg.sender].balance -= _value;
         totalSupply -= _value;
@@ -282,7 +282,7 @@ contract NeuroDAO is TokenMigration {
      *  freezeTheMoment()
      */
     function freezedBalanceOf(address _who) constant public returns(uint) {
-        if (holders[_who].balanceUpdateTime &lt;= freezedMoment) {
+        if (holders[_who].balanceUpdateTime <= freezedMoment) {
             return holders[_who].balance;
         } else {
             return holders[_who].balanceBeforeUpdate;
@@ -295,9 +295,9 @@ contract NeuroDAO is TokenMigration {
     }
 
     function mintTokens(uint _tokens, address _who, bool _isTeam) enabled public onlyOwner {
-        require(holders[this].balance &gt; 0);
-        require(holders[msg.sender].balance + _tokens &gt; holders[msg.sender].balance); // overflow
-        require(_tokens &gt; 0);
+        require(holders[this].balance > 0);
+        require(holders[msg.sender].balance + _tokens > holders[msg.sender].balance); // overflow
+        require(_tokens > 0);
         beforeBalanceChanges(_who);
         beforeBalanceChanges(this);
         if (holders[_who].balance == 0) {

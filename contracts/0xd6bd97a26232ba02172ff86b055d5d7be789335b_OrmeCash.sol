@@ -41,17 +41,17 @@ contract IERC20Token {
 
 contract OrmeCash is IERC20Token {         
   
-	string public name = &quot;OrmeCash&quot;;
-	string public symbol = &quot;OMC&quot;;
+	string public name = "OrmeCash";
+	string public symbol = "OMC";
 	uint8 public decimals = 18;
 	uint256 public tokenFrozenUntilBlock;
 	address public owner;
 	uint public mintingCap = 2000000000 * 10**18;
    
 	uint256 supply = 0;
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
-	mapping (address =&gt; bool) restrictedAddresses;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowances;
+	mapping (address => bool) restrictedAddresses;
    
 	event Mint(address indexed _to, uint256 _value);
 	event Burn(address indexed _from, uint256 _value);
@@ -77,10 +77,10 @@ contract OrmeCash is IERC20Token {
 	}     
  
 	function transfer(address _to, uint256 _value) public returns (bool success) {     	
-		require (block.number &gt;= tokenFrozenUntilBlock);
+		require (block.number >= tokenFrozenUntilBlock);
 		require (!restrictedAddresses[_to]);
-		require (balances[msg.sender] &gt;= _value);
-		require (balances[_to] + _value &gt; balances[_to]);
+		require (balances[msg.sender] >= _value);
+		require (balances[_to] + _value > balances[_to]);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);       
@@ -88,7 +88,7 @@ contract OrmeCash is IERC20Token {
 	}
 
 	function approve(address _spender, uint256 _value) public returns (bool success) {     	
-		require (block.number &gt;= tokenFrozenUntilBlock);
+		require (block.number >= tokenFrozenUntilBlock);
 		allowances[msg.sender][_spender] = _value;
 		Approval(msg.sender, _spender, _value);
 		return true;     
@@ -102,11 +102,11 @@ contract OrmeCash is IERC20Token {
 	}     
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {     	
-		require (block.number &gt;= tokenFrozenUntilBlock);
+		require (block.number >= tokenFrozenUntilBlock);
 		require (!restrictedAddresses[_to]);
-		require (balances[_from] &gt;= _value); 
-		require (balances[_to] + _value &gt;= balances[_to]);     
-		require (_value &lt;= allowances[_from][msg.sender]);     
+		require (balances[_from] >= _value); 
+		require (balances[_to] + _value >= balances[_to]);     
+		require (_value <= allowances[_from][msg.sender]);     
 		balances[_from] -= _value;
 		balances[_to] += _value;    
 		allowances[_from][msg.sender] -= _value; 
@@ -121,8 +121,8 @@ contract OrmeCash is IERC20Token {
 	function mintTokens(address _to, uint256 _amount) onlyOwner public {
 		require (!restrictedAddresses[_to]);
 		require (_amount != 0);
-		require (balances[_to] + _amount &gt; balances[_to]);
-		require (mintingCap &gt;= supply + _amount);
+		require (balances[_to] + _amount > balances[_to]);
+		require (mintingCap >= supply + _amount);
 		supply += _amount;
 		balances[_to] += _amount;
 		Mint(_to, _amount);
@@ -130,7 +130,7 @@ contract OrmeCash is IERC20Token {
 	}
 
 	function burnTokens(uint _amount) public {
-		require(_amount &lt;= balanceOf(msg.sender));
+		require(_amount <= balanceOf(msg.sender));
 		supply -= _amount;
 		balances[msg.sender] -= _amount;
 		Transfer(msg.sender, 0x0, _amount);

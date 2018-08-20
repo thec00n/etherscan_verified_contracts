@@ -5,28 +5,28 @@ pragma solidity ^0.4.20;
 * From CryptoGaming Discord
 * cryptogamingcoin.surge.sh
 * https://discord.gg/jrvSZ5K
-* &#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;&#127918;
+* 🎮🎮🎮🎮🎮🎮🎮🎮🎮🎮🎮🎮🎮🎮
 *
 * CRYPTOGAMINGCOIN (CGC)
 * Join us to the MOOOOOOOOON!
 *
-* -&gt; What?
+* -> What?
 * Incorporated the strong points of different POW{x}, best config:
 * [✓] 20% dividends for token purchase, shared among all token holders.
 * [✓] 10% dividends for token transfer, shared among all token holders.
 * [✓] 25% dividends for token selling.
 * [✓] 7% dividends is given to referrer.
 * [✓] 50 tokens to activate Masternodes.
-*&#127762;&#127763;&#127764;&#127765;
+*🌒🌓🌔🌕
 */
 
 contract CryptoGaming {
     modifier onlyBagholders {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     modifier onlyStronghands {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
     event onTokenPurchase(
@@ -59,8 +59,8 @@ contract CryptoGaming {
         address indexed to,
         uint256 tokens
     );
-    string public name = &quot;CryptoGamingCoin&quot;;
-    string public symbol = &quot;&#127918;&quot;;
+    string public name = "CryptoGamingCoin";
+    string public symbol = "🎮";
     uint8 constant public decimals = 18;
     uint8 constant internal entryFee_ = 20;
     uint8 constant internal transferFee_ = 10;
@@ -70,9 +70,9 @@ contract CryptoGaming {
     uint256 constant internal tokenPriceIncremental_ = 0.00000001 ether;
     uint256 constant internal magnitude = 2 ** 64;
     uint256 public stakingRequirement = 50e18;
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
     uint256 internal tokenSupply_;
     uint256 internal profitPerShare_;
     function buy(address _referredBy) public payable returns (uint256) {
@@ -93,7 +93,7 @@ contract CryptoGaming {
     function exit() public {
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if (_tokens &gt; 0) sell(_tokens);
+        if (_tokens > 0) sell(_tokens);
         withdraw();
     }
     function withdraw() onlyStronghands public {
@@ -107,7 +107,7 @@ contract CryptoGaming {
     }
     function sell(uint256 _amountOfTokens) onlyBagholders public {
         address _customerAddress = msg.sender;
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(SafeMath.mul(_ethereum, exitFee_), 100);
@@ -116,15 +116,15 @@ contract CryptoGaming {
         tokenBalanceLedger_[_customerAddress] = SafeMath.sub(tokenBalanceLedger_[_customerAddress], _tokens);
         int256 _updatedPayouts = (int256) (profitPerShare_ * _tokens + (_taxedEthereum * magnitude));
         payoutsTo_[_customerAddress] -= _updatedPayouts;
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
         onTokenSell(_customerAddress, _tokens, _taxedEthereum, now, buyPrice());
     }
     function transfer(address _toAddress, uint256 _amountOfTokens) onlyBagholders public returns (bool) {
         address _customerAddress = msg.sender;
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
-        if (myDividends(true) &gt; 0) {
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
+        if (myDividends(true) > 0) {
             withdraw();
         }
         uint256 _tokenFee = SafeMath.div(SafeMath.mul(_amountOfTokens, transferFee_), 100);
@@ -186,7 +186,7 @@ contract CryptoGaming {
         return _amountOfTokens;
     }
     function calculateEthereumReceived(uint256 _tokensToSell) public view returns (uint256) {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(SafeMath.mul(_ethereum, exitFee_), 100);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -200,18 +200,18 @@ contract CryptoGaming {
         uint256 _taxedEthereum = SafeMath.sub(_incomingEthereum, _undividedDividends);
         uint256 _amountOfTokens = ethereumToTokens_(_taxedEthereum);
         uint256 _fee = _dividends * magnitude;
-        require(_amountOfTokens &gt; 0 &amp;&amp; SafeMath.add(_amountOfTokens, tokenSupply_) &gt; tokenSupply_);
+        require(_amountOfTokens > 0 && SafeMath.add(_amountOfTokens, tokenSupply_) > tokenSupply_);
         if (
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
-            _referredBy != _customerAddress &amp;&amp;
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
+            _referredBy != _customerAddress &&
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ) {
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
         } else {
             _dividends = SafeMath.add(_dividends, _referralBonus);
             _fee = _dividends * magnitude;
         }
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
             profitPerShare_ += (_dividends * magnitude / tokenSupply_);
             _fee = _fee - (_fee - (_amountOfTokens * (_dividends * magnitude / tokenSupply_)));
@@ -266,7 +266,7 @@ contract CryptoGaming {
     function sqrt(uint256 x) internal pure returns (uint256 y) {
         uint256 z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -286,12 +286,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

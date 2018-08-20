@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,8 +120,8 @@ contract ERC20StandardToken {
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed _owner, address indexed _spender, uint _value);
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) internal allowed;
+  mapping (address => uint256) public balanceOf;
   
   using SafeMath for uint256;
   uint256 totalSupply_;
@@ -136,8 +136,8 @@ contract ERC20StandardToken {
   function transferFrom(address _from,address _to,uint256 _value) public returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balanceOf[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balanceOf[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balanceOf[_from] = balanceOf[_from].sub(_value);
     balanceOf[_to] = balanceOf[_to].add(_value);
@@ -160,7 +160,7 @@ contract ERC20StandardToken {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balanceOf[msg.sender]);
+    require(_value <= balanceOf[msg.sender]);
 
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
     balanceOf[_to] = balanceOf[_to].add(_value);
@@ -174,7 +174,7 @@ contract ERC20StandardToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -247,7 +247,7 @@ contract ERC20StandardToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -291,7 +291,7 @@ contract ERC223ReceivingContract {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);        
     }
 }
@@ -303,7 +303,7 @@ contract ERC223ReceivingContract {
 contract ERC223Token is addtionalERC223Interface , ERC20StandardToken {
  
     function _transfer(address _to, uint256 _value ) private returns (bool) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -312,7 +312,7 @@ contract ERC223Token is addtionalERC223Interface , ERC20StandardToken {
     }
 
     function _transferFallback(address _to, uint256 _value, bytes _data) private returns (bool) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -353,7 +353,7 @@ contract ERC223Token is addtionalERC223Interface , ERC20StandardToken {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -379,7 +379,7 @@ contract ERC223Token is addtionalERC223Interface , ERC20StandardToken {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }    
 
     
@@ -392,8 +392,8 @@ contract NANASHITOKEN is ERC223Token , Ownable
     event Burn(address indexed from, uint256 amount);
     event Mint(address indexed to, uint256 amount);
 
-    string public name = &quot;NANASHITOKEN&quot;;
-    string public symbol = &quot;NNSH&quot;;
+    string public name = "NANASHITOKEN";
+    string public symbol = "NNSH";
     uint8 public decimals = 18;
     
     constructor() public{
@@ -408,8 +408,8 @@ contract NANASHITOKEN is ERC223Token , Ownable
     }
     
     function burn(address _from, uint256 _unitAmount) onlyOwner public {
-        require(_unitAmount &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _unitAmount);
+        require(_unitAmount > 0
+                && balanceOf[_from] >= _unitAmount);
 
         balanceOf[_from] = balanceOf[_from].sub(_unitAmount);
         totalSupply_ = totalSupply_.sub(_unitAmount);
@@ -422,7 +422,7 @@ contract NANASHITOKEN is ERC223Token , Ownable
      * @param _unitAmount The amount of tokens to mint.
      */
     function mint(address _to, uint256 _unitAmount) onlyOwner public returns (bool) {
-        require(_unitAmount &gt; 0);
+        require(_unitAmount > 0);
 
         totalSupply_ = totalSupply_.add(_unitAmount);
         balanceOf[_to] = balanceOf[_to].add(_unitAmount);

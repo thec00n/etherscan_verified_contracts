@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,21 +72,21 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   using SafeMath for uint;
 
-  string public constant name = &quot;TEFOOD FARM TO FORK FOOD TRACEABILITY SYSTEM LICENSE TOKEN&quot;;
-  string public constant symbol = &quot;TFOOD&quot;;
+  string public constant name = "TEFOOD FARM TO FORK FOOD TRACEABILITY SYSTEM LICENSE TOKEN";
+  string public constant symbol = "TFOOD";
   uint8 public constant decimals = 18;
   uint constant _totalSupply = 1000000000 * 1 ether;
   uint public transferrableTime = 1521712800;
   uint _vestedSupply;
   uint _circulatingSupply;
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (address => mapping(address => uint)) allowed;
 
   struct vestedBalance {
     address addr;
     uint balance;
   }
-  mapping (uint =&gt; vestedBalance[]) vestingMap;
+  mapping (uint => vestedBalance[]) vestingMap;
 
 
 
@@ -99,7 +99,7 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   function allocateTokens (address addr, uint amount) public onlyOwner returns (bool) {
     require (addr != 0x00);
-    require (amount &gt; 0);
+    require (amount > 0);
     balances[0x00] = balances[0x00].sub(amount);
     balances[addr] = balances[addr].add(amount);
     _circulatingSupply = _circulatingSupply.add(amount);
@@ -109,8 +109,8 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   function allocateVestedTokens (address addr, uint amount, uint vestingPeriod) public onlyOwner returns (bool) {
     require (addr != 0x00);
-    require (amount &gt; 0);
-    require (vestingPeriod &gt; 0);
+    require (amount > 0);
+    require (vestingPeriod > 0);
     balances[0x00] = balances[0x00].sub(amount);
     vestingMap[vestingPeriod].push( vestedBalance (addr,amount) );
     _vestedSupply = _vestedSupply.add(amount);
@@ -119,11 +119,11 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function releaseVestedTokens (uint vestingPeriod) public {
-    require (now &gt;= transferrableTime.add(vestingPeriod));
-    require (vestingMap[vestingPeriod].length &gt; 0);
-    require (vestingMap[vestingPeriod][0].balance &gt; 0);
+    require (now >= transferrableTime.add(vestingPeriod));
+    require (vestingMap[vestingPeriod].length > 0);
+    require (vestingMap[vestingPeriod][0].balance > 0);
     var v = vestingMap[vestingPeriod];
-    for (uint8 i = 0; i &lt; v.length; i++) {
+    for (uint8 i = 0; i < v.length; i++) {
       balances[v[i].addr] = balances[v[i].addr].add(v[i].balance);
       _circulatingSupply = _circulatingSupply.add(v[i].balance);
       _vestedSupply = _vestedSupply.sub(v[i].balance);
@@ -133,7 +133,7 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function enableTransfers () public onlyOwner returns (bool) {
-    if (now.add(86400) &lt; transferrableTime) {
+    if (now.add(86400) < transferrableTime) {
       transferrableTime = now.add(86400);
     }
     owner = 0x00;
@@ -154,7 +154,7 @@ contract TEFoodsToken is Ownable, ERC20Interface {
 
   function vestedBalanceOf(address tokenOwner, uint vestingPeriod) public constant returns (uint balance) {
     var v = vestingMap[vestingPeriod];
-    for (uint8 i = 0; i &lt; v.length; i++) {
+    for (uint8 i = 0; i < v.length; i++) {
       if (v[i].addr == tokenOwner) return v[i].balance;
     }
     return 0;
@@ -165,9 +165,9 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function transfer(address to, uint tokens) public returns (bool success) {
-    require (now &gt;= transferrableTime);
+    require (now >= transferrableTime);
     require (to != address(this));
-    require (balances[msg.sender] &gt;= tokens);
+    require (balances[msg.sender] >= tokens);
     balances[msg.sender] = balances[msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);
     Transfer(msg.sender, to, tokens);
@@ -182,9 +182,9 @@ contract TEFoodsToken is Ownable, ERC20Interface {
   }
 
   function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-    require (now &gt;= transferrableTime);
+    require (now >= transferrableTime);
     require (to != address(this));
-    require (allowed[from][msg.sender] &gt;= tokens);
+    require (allowed[from][msg.sender] >= tokens);
     balances[from] = balances[from].sub(tokens);
     allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);
@@ -249,14 +249,14 @@ contract TEFoodsCrowdsale is Ownable {
   uint public constant marketingTokenAllocation = 60000000 * 1 ether;
   uint public marketingTokensDistributed;
 
-  mapping (address =&gt; bool) presaleAllocated;
-  mapping (address =&gt; bool) marketingAllocated;
+  mapping (address => bool) presaleAllocated;
+  mapping (address => bool) marketingAllocated;
 
   struct Contributor {
     bool authorised;
     bool contributed;
   }
-  mapping (address =&gt; Contributor) whitelist;
+  mapping (address => Contributor) whitelist;
 
 
   event PresaleAllocation(address to, uint usdAmount, uint tokenAmount);
@@ -270,12 +270,12 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function allocatePresaleTokens (address recipient, uint amountInUsdCents, uint bonusPct, uint vestingPeriodInSeconds) public onlyOwner  {
-    require (now &lt; crowdsaleStartTime);
+    require (now < crowdsaleStartTime);
     require (!presaleAllocated[recipient]);
     uint tokenAmount = amountInUsdCents.mul(1 ether).div(tokenRateInUsdCents);
     uint bonusAmount = tokenAmount.mul(bonusPct).div(100);
 
-    if (vestingPeriodInSeconds &gt; 0) {
+    if (vestingPeriodInSeconds > 0) {
       require (tokenContract.allocateTokens(recipient, tokenAmount));
       require (tokenContract.allocateVestedTokens(recipient, bonusAmount, vestingPeriodInSeconds));
     } else {
@@ -289,7 +289,7 @@ contract TEFoodsCrowdsale is Ownable {
 
   function allocateMarketingTokens (address recipient, uint tokenAmount) public onlyOwner {
     require (!marketingAllocated[recipient]);
-    require (marketingTokensDistributed.add(tokenAmount) &lt;= marketingTokenAllocation);
+    require (marketingTokensDistributed.add(tokenAmount) <= marketingTokenAllocation);
     marketingTokensDistributed = marketingTokensDistributed.add(tokenAmount);
     tokensAllocated = tokensAllocated.add(tokenAmount);
     require (tokenContract.allocateTokens(recipient, tokenAmount));
@@ -298,8 +298,8 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function whitelistUsers (address[] addressList) public onlyOwner {
-    require (now &lt; crowdsaleStartTime);
-    for (uint8 i = 0; i &lt; addressList.length; i++) {
+    require (now < crowdsaleStartTime);
+    for (uint8 i = 0; i < addressList.length; i++) {
       require (!whitelist[i].authorised);
       whitelist[addressList[i]].authorised = true;
     }
@@ -307,8 +307,8 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function revokeUsers (address[] addressList) public onlyOwner {
-    require (now &lt; crowdsaleStartTime);
-    for (uint8 i = 0; i &lt; addressList.length; i++) {
+    require (now < crowdsaleStartTime);
+    for (uint8 i = 0; i < addressList.length; i++) {
       require (whitelist[i].authorised);
       whitelist[addressList[i]].authorised = false;
     }
@@ -316,7 +316,7 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function setMaxGasPrice (uint newMaxInWei) public onlyOwner {
-    require(newMaxInWei &gt;= 1000000000);
+    require(newMaxInWei >= 1000000000);
     maxGasPriceInWei = newMaxInWei;
   }
 
@@ -325,18 +325,18 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function isOpen () public view returns (bool) {
-    return (now &gt;= crowdsaleStartTime &amp;&amp; !crowdsaleFinished &amp;&amp; now &lt; crowdsaleClosedTime);
+    return (now >= crowdsaleStartTime && !crowdsaleFinished && now < crowdsaleClosedTime);
   }
 
 
   function getRemainingEthAvailable () public view returns (uint) {
-    if (crowdsaleFinished || now &gt; crowdsaleClosedTime) return 0;
+    if (crowdsaleFinished || now > crowdsaleClosedTime) return 0;
     return amountToRaiseInUsdCents.sub(amountRaisedInUsdCents).mul(1 ether).div(ethRateInUsdCents);
   }
 
   function _applyBonus (uint amount) internal view returns (uint) {
-    for (uint8 i = 0; i &lt; 3; i++) {
-      if (tokenBonusTimes[i] &gt; now) {
+    for (uint8 i = 0; i < 3; i++) {
+      if (tokenBonusTimes[i] > now) {
         return amount.add(amount.mul(tokenBonusPct[i]).div(100));
       }
     }
@@ -344,7 +344,7 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function _allocateTokens(address addr, uint amount) internal {
-    require (tokensAllocated.add(amount) &lt;= totalTokenSupply);
+    require (tokensAllocated.add(amount) <= totalTokenSupply);
     tokensAllocated = tokensAllocated.add(amount);
     teFoodsAddress.transfer(this.balance);
     if (!whitelist[addr].contributed) {
@@ -355,20 +355,20 @@ contract TEFoodsCrowdsale is Ownable {
   }
 
   function () public payable {
-    require (tx.gasprice &lt;= maxGasPriceInWei);
-    require (msg.value &gt; 0);
-    require (now &gt;= crowdsaleStartTime &amp;&amp; now &lt;= crowdsaleClosedTime);
+    require (tx.gasprice <= maxGasPriceInWei);
+    require (msg.value > 0);
+    require (now >= crowdsaleStartTime && now <= crowdsaleClosedTime);
     require (whitelist[msg.sender].authorised);
     require (!crowdsaleFinished);
-    if (now &lt; crowdsaleUncappedTime) {
+    if (now < crowdsaleUncappedTime) {
       require (!whitelist[msg.sender].contributed);
-      require (msg.value &lt;= contributionCapInWei);
+      require (msg.value <= contributionCapInWei);
     }
     uint usdAmount = msg.value.mul(ethRateInUsdCents).div(1 ether);
-    require (usdAmount &gt;= minContributionInUsdCents);
+    require (usdAmount >= minContributionInUsdCents);
     uint tokenAmount = _applyBonus(msg.value.mul(ethRateInUsdCents).div(tokenRateInUsdCents));
     amountRaisedInUsdCents = amountRaisedInUsdCents.add(usdAmount);
-    if (amountRaisedInUsdCents &gt;= amountToRaiseInUsdCents) {
+    if (amountRaisedInUsdCents >= amountToRaiseInUsdCents) {
       closeCrowdsale();
     } else {
       _allocateTokens(msg.sender, tokenAmount);
@@ -377,18 +377,18 @@ contract TEFoodsCrowdsale is Ownable {
 
   function closeCrowdsale () public {
     require (!crowdsaleFinished);
-    require (now &gt;= crowdsaleStartTime);
-    require (msg.sender == owner || amountRaisedInUsdCents &gt;= amountToRaiseInUsdCents);
+    require (now >= crowdsaleStartTime);
+    require (msg.sender == owner || amountRaisedInUsdCents >= amountToRaiseInUsdCents);
     crowdsaleFinished = true;
 
-    if (msg.value &gt; 0 &amp;&amp; amountRaisedInUsdCents &gt;= amountToRaiseInUsdCents) {
+    if (msg.value > 0 && amountRaisedInUsdCents >= amountToRaiseInUsdCents) {
 
       uint excessEth = amountRaisedInUsdCents.sub(amountToRaiseInUsdCents).mul(1 ether).div(ethRateInUsdCents);
       uint tokenAmount = _applyBonus(msg.value.sub(excessEth).mul(ethRateInUsdCents).div(tokenRateInUsdCents));
       amountRaisedInUsdCents = amountToRaiseInUsdCents;
       msg.sender.transfer(excessEth);
       _allocateTokens(msg.sender, tokenAmount);
-    } else if ( amountRaisedInUsdCents &lt; amountToRaiseInUsdCents) {
+    } else if ( amountRaisedInUsdCents < amountToRaiseInUsdCents) {
       tokenAmount = amountToRaiseInUsdCents.sub(amountRaisedInUsdCents).mul(1 ether).div(tokenRateInUsdCents);
       tokensAllocated = tokensAllocated.add(tokenAmount); // burn
     }

@@ -34,12 +34,12 @@ contract ERC20Token {
 contract StandardToken is ERC20Token {
 
     function transfer(address _to, uint _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -49,8 +49,8 @@ contract StandardToken is ERC20Token {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -73,8 +73,8 @@ contract StandardToken is ERC20Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public _supply;
 
     function totalSupply() public constant returns (uint supply) {
@@ -97,13 +97,13 @@ contract CWVToken is StandardToken,owned {
 
     uint public team_release_epoch; // epoch to release teams
 
-    string public name = &quot;CryptoWorldVip  Token&quot;;
-    string public symbol = &quot;CWV&quot;;
-    string public version = &quot;V1.0.0&quot;;
+    string public name = "CryptoWorldVip  Token";
+    string public symbol = "CWV";
+    string public version = "V1.0.0";
     uint public decimals = 18;
 
 
-    mapping (address =&gt; uint) angels_locks;//all lock 3 months,
+    mapping (address => uint) angels_locks;//all lock 3 months,
     
 
     
@@ -152,7 +152,7 @@ contract CWVToken is StandardToken,owned {
 
     function transfer(address _to, uint _value) public returns (bool success) {
 
-        require (_to != 0x0 &amp;&amp; msg.sender != team_address &amp;&amp; _value &gt;0 );
+        require (_to != 0x0 && msg.sender != team_address && _value >0 );
 
         if (angels_locks[msg.sender] != 0 )
         { // before lock days 
@@ -161,15 +161,15 @@ contract CWVToken is StandardToken,owned {
                 //cannot transfer before time_on_trademarket
                 return false;
             }
-            if( now &lt; time_on_trademarket + angels_lock_days &amp;&amp;
-                 balances[msg.sender] - angels_locks[msg.sender] &lt; _value )
+            if( now < time_on_trademarket + angels_lock_days &&
+                 balances[msg.sender] - angels_locks[msg.sender] < _value )
             {
                 // not have enough values to sender
                 return false;
             }
         }
 
-        require (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require (balances[msg.sender] >= _value && _value > 0);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -178,10 +178,10 @@ contract CWVToken is StandardToken,owned {
     
     //3 month lock up
     function earlyAngelSales(address _to, uint256 _value) public onlyOwner returns (bool success)   {
-        require (_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; _to !=team_address);
+        require (_to != 0x0 && _value > 0 && _to !=team_address);
         
         uint v = _value * 10 ** uint256(decimals);
-        require (balances[msg.sender] &gt;= v &amp;&amp; v &gt; 0) ;
+        require (balances[msg.sender] >= v && v > 0) ;
 
         balances[msg.sender] -= v;
         balances[_to] += v;
@@ -195,7 +195,7 @@ contract CWVToken is StandardToken,owned {
 
     function batchEarlyAngelSales(address []_tos, uint256 []_values) public onlyOwner returns (bool success)   {
         require( _tos.length == _values.length );
-        for (uint256 i = 0; i &lt; _tos.length; i++) {
+        for (uint256 i = 0; i < _tos.length; i++) {
             earlyAngelSales(_tos[i], _values[i]);
         }
         return true;
@@ -203,10 +203,10 @@ contract CWVToken is StandardToken,owned {
 
 
     function angelSales(address _to, uint256 _value) public onlyOwner returns (bool success)   {
-        require (_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; _to !=team_address);
+        require (_to != 0x0 && _value > 0 && _to !=team_address);
         
         uint v = _value * 10 ** uint256(decimals);
-        require (balances[msg.sender] &gt;= v &amp;&amp; v &gt; 0) ;
+        require (balances[msg.sender] >= v && v > 0) ;
 
         balances[msg.sender] -= v;
         balances[_to] += v;
@@ -219,7 +219,7 @@ contract CWVToken is StandardToken,owned {
 
     function batchAngelSales(address []_tos, uint256 []_values) public onlyOwner returns (bool success)   {
         require( _tos.length == _values.length );
-        for (uint256 i = 0; i &lt; _tos.length; i++) {
+        for (uint256 i = 0; i < _tos.length; i++) {
             angelSales(_tos[i], _values[i]);
         }
         return true;
@@ -228,13 +228,13 @@ contract CWVToken is StandardToken,owned {
     function unlockAngelAccounts(address[] _batchOfAddresses) public onlyOwner returns (bool success)   {
         
         require( time_on_trademarket != 0 );
-        require( now &gt; time_on_trademarket + angels_lock_days );//after 3months
+        require( now > time_on_trademarket + angels_lock_days );//after 3months
 
         address holder;
 
-        for (uint256 i = 0; i &lt; _batchOfAddresses.length; i++) {
+        for (uint256 i = 0; i < _batchOfAddresses.length; i++) {
             holder = _batchOfAddresses[i];
-            if(angels_locks[holder]&gt;0){                
+            if(angels_locks[holder]>0){                
                 angels_locks[holder] = 0;
             }
         }
@@ -258,7 +258,7 @@ contract CWVToken is StandardToken,owned {
 
     function changeTeamAddress(address _new)  public onlyOwner returns (bool success)   {
 
-        require (_new != 0 &amp;&amp; team_address != 0);
+        require (_new != 0 && team_address != 0);
         address old_team_address = team_address;
 
         uint team_remains = balances[team_address];
@@ -272,12 +272,12 @@ contract CWVToken is StandardToken,owned {
     }
 
     function epochReleaseTeam(address _to) public onlyOwner returns (bool success)   {
-        require (balances[team_address] &gt; 0);
-        require (now &gt; last_release_date + team_release_epoch );
+        require (balances[team_address] > 0);
+        require (now > last_release_date + team_release_epoch );
         
         uint current_release_count = (now - last_release_date)  / (team_release_epoch ) * epoch_release_count;
        
-        if(balances[team_address]&gt;current_release_count){
+        if(balances[team_address]>current_release_count){
             current_release_count = current_release_count;
         }else{
             current_release_count = balances[team_address];

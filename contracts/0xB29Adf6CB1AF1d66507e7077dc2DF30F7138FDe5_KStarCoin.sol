@@ -22,8 +22,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -38,9 +38,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -87,7 +87,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -134,7 +134,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -152,8 +152,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -266,7 +266,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -277,7 +277,7 @@ library AddressUtils {
  */
 contract MultiOwnable {
     address public root;
-    mapping (address =&gt; bool) public owners;
+    mapping (address => bool) public owners;
     
     constructor() public {
         root = msg.sender;
@@ -319,26 +319,26 @@ contract LockableToken is StandardToken, MultiOwnable {
     /**
      * @dev 락 상태에서도 거래 가능한 언락 계정
      */
-    mapping(address =&gt; bool) public unlockAddrs;
+    mapping(address => bool) public unlockAddrs;
     
     /**
      * @dev 계정 별로 lock value 만큼 잔고가 잠김
      * @dev - 값이 0 일 때 : 잔고가 0 이어도 되므로 제한이 없는 것임.
      * @dev - 값이 LOCK_MAX 일 때 : 잔고가 uint256 의 최대값이므로 아예 잠긴 것임.
      */
-    mapping(address =&gt; uint256) public lockValues;
+    mapping(address => uint256) public lockValues;
     
     event Locked(bool locked, string note);
     event LockedTo(address indexed addr, bool locked, string note);
     event SetLockValue(address indexed addr, uint256 value, string note);
     
     constructor() public {
-        unlockTo(msg.sender, &quot;&quot;);
+        unlockTo(msg.sender, "");
     }
     
     modifier checkUnlock (address addr, uint256 value) {
         require(!locked || unlockAddrs[addr]);
-        require(balances[addr].sub(value) &gt;= lockValues[addr]);
+        require(balances[addr].sub(value) >= lockValues[addr]);
         _;
     }
     
@@ -379,7 +379,7 @@ contract LockableToken is StandardToken, MultiOwnable {
      */ 
     function getMyUnlockValue() public view returns (uint256) {
         address addr = msg.sender;
-        if ((!locked || unlockAddrs[addr]) &amp;&amp; balances[addr] &gt;= lockValues[addr])
+        if ((!locked || unlockAddrs[addr]) && balances[addr] >= lockValues[addr])
             return balances[addr].sub(lockValues[addr]);
         else
             return 0;
@@ -419,7 +419,7 @@ contract KSCBaseToken is LockableToken {
 
     // ERC20 함수들을 오버라이딩하여 super 로 올라가지 않고 무조건 ksc~ 함수로 지나가게 한다.
     function transfer(address to, uint256 value) public returns (bool ret) {
-        return kscTransfer(to, value, &quot;&quot;);
+        return kscTransfer(to, value, "");
     }
     
     function kscTransfer(address to, uint256 value, string note) public returns (bool ret) {
@@ -430,7 +430,7 @@ contract KSCBaseToken is LockableToken {
     }
     
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        return kscTransferFrom(from, to, value, &quot;&quot;);
+        return kscTransferFrom(from, to, value, "");
     }
     
     function kscTransferFrom(address from, address to, uint256 value, string note) public returns (bool ret) {
@@ -441,7 +441,7 @@ contract KSCBaseToken is LockableToken {
     }
 
     function approve(address spender, uint256 value) public returns (bool) {
-        return kscApprove(spender, value, &quot;&quot;);
+        return kscApprove(spender, value, "");
     }
     
     function kscApprove(address spender, uint256 value, string note) public returns (bool ret) {
@@ -450,7 +450,7 @@ contract KSCBaseToken is LockableToken {
     }
 
     function increaseApproval(address spender, uint256 addedValue) public returns (bool) {
-        return kscIncreaseApproval(spender, addedValue, &quot;&quot;);
+        return kscIncreaseApproval(spender, addedValue, "");
     }
 
     function kscIncreaseApproval(address spender, uint256 addedValue, string note) public returns (bool ret) {
@@ -459,7 +459,7 @@ contract KSCBaseToken is LockableToken {
     }
 
     function decreaseApproval(address spender, uint256 subtractedValue) public returns (bool) {
-        return kscDecreaseApproval(spender, subtractedValue, &quot;&quot;);
+        return kscDecreaseApproval(spender, subtractedValue, "");
     }
 
     function kscDecreaseApproval(address spender, uint256 subtractedValue, string note) public returns (bool ret) {
@@ -489,7 +489,7 @@ contract KSCBaseToken is LockableToken {
      * @dev 화폐 소각. 반드시 이유를 메모로 남겨라.
      */
     function burnFrom(address from, uint256 value) internal returns (bool) {
-        require(value &lt;= balances[from]);
+        require(value <= balances[from]);
         
         balances[from] = balances[from].sub(value);
         totalSupply_ = totalSupply_.sub(value);
@@ -516,8 +516,8 @@ contract KSCBaseToken is LockableToken {
         require(length == values.length);
         
         ret = true;
-        for (uint256 i = 0; i &lt; length; i++) {
-            ret = ret &amp;&amp; kscBurnWhenMoveToMainnet(burners[i], values[i], note);
+        for (uint256 i = 0; i < length; i++) {
+            ret = ret && kscBurnWhenMoveToMainnet(burners[i], values[i], note);
         }
     }
 
@@ -534,8 +534,8 @@ contract KSCBaseToken is LockableToken {
         require(length == values.length);
         
         ret = true;
-        for (uint256 i = 0; i &lt; length; i++) {
-            ret = ret &amp;&amp; kscBurnWhenUseInSidechain(burners[i], values[i], note);
+        for (uint256 i = 0; i < length; i++) {
+            ret = ret && kscBurnWhenUseInSidechain(burners[i], values[i], note);
         }
     }
 
@@ -559,10 +559,10 @@ contract KSCBaseToken is LockableToken {
         require(length == userIdHash.length);
         
         ret = true;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             require(to[i] != address(this));            
             
-            ret = ret &amp;&amp; super.transferFrom(from, to[i], values[i]);
+            ret = ret && super.transferFrom(from, to[i], values[i]);
             emit KSCSellByOtherCoin(from, msg.sender, to[i], values[i], processIdHash, userIdHash[i], note);
         }
     }
@@ -577,10 +577,10 @@ contract KSCBaseToken is LockableToken {
         require(length == userIdHash.length);
 
         ret = true;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             require(to[i] != address(this));            
             
-            ret = ret &amp;&amp; super.transferFrom(from, to[i], values[i]);
+            ret = ret && super.transferFrom(from, to[i], values[i]);
             emit KSCTransferToEcosystem(from, msg.sender, to[i], values[i], processIdHash, userIdHash[i], note);
         }
     }
@@ -594,10 +594,10 @@ contract KSCBaseToken is LockableToken {
         require(to.length == values.length);
 
         ret = true;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             require(to[i] != address(this));            
             
-            ret = ret &amp;&amp; super.transferFrom(from, to[i], values[i]);
+            ret = ret && super.transferFrom(from, to[i], values[i]);
             emit KSCTransferToBounty(from, msg.sender, to[i], values[i], processIdHash, userIdHash[i], note);
         }
     }
@@ -613,8 +613,8 @@ contract KSCBaseToken is LockableToken {
 contract KStarCoin is KSCBaseToken {
     using AddressUtils for address;
     
-    string public constant name = &quot;KStarCoin&quot;;
-    string public constant symbol = &quot;KSC&quot;;
+    string public constant name = "KStarCoin";
+    string public constant symbol = "KSC";
     uint8 public constant decimals = 18;
     
     uint256 public constant INITIAL_SUPPLY = 1e9 * (10 ** uint256(decimals));
@@ -674,7 +674,7 @@ contract KSCDappSample is KSCReceiver {
     event LogOnReceiveKSC(string message, address indexed owner, address indexed spender, uint256 value, KSCReceiveType receiveType);
     
     function onKSCReceived(address owner, address spender, uint256 value, KSCReceiveType receiveType) public returns (bytes4) {
-        emit LogOnReceiveKSC(&quot;I receive KstarCoin.&quot;, owner, spender, value, receiveType);
+        emit LogOnReceiveKSC("I receive KstarCoin.", owner, spender, value, receiveType);
         
         return KSC_RECEIVED; // must return this value if successful
     }

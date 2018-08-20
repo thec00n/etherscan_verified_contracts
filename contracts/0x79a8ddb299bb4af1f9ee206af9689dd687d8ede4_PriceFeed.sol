@@ -2,26 +2,26 @@ pragma solidity ^0.4.13;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -40,10 +40,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -128,7 +128,7 @@ contract AssetRegistrar is DBC, Owned {
     // FIELDS
 
     // Methods fields
-    mapping (address =&gt; Asset) public information;
+    mapping (address => Asset) public information;
 
     // METHODS
 
@@ -278,7 +278,7 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
     /// @param quoteAssetDecimals Decimal places for quote asset
     /// @param quoteAssetUrl URL related to quote asset
     /// @param quoteAssetIpfsHash IPFS hash associated with quote asset
-    /// @param quoteAssetChainId Chain ID associated with quote asset (e.g. &quot;1&quot; for main Ethereum network)
+    /// @param quoteAssetChainId Chain ID associated with quote asset (e.g. "1" for main Ethereum network)
     /// @param quoteAssetBreakIn Break-in address for the quote asset
     /// @param quoteAssetBreakOut Break-out address for the quote asset
     /// @param interval Number of seconds between pricefeed updates (this interval is not enforced on-chain, but should be followed by the datafeed maintainer)
@@ -329,7 +329,7 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
         pre_cond(ofAssets.length == newPrices.length)
     {
         updateId += 1;
-        for (uint i = 0; i &lt; ofAssets.length; ++i) {
+        for (uint i = 0; i < ofAssets.length; ++i) {
             require(information[ofAssets[i]].timestamp != now); // prevent two updates in one block
             require(information[ofAssets[i]].exists);
             information[ofAssets[i]].timestamp = now;
@@ -354,7 +354,7 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
         pre_cond(information[ofAsset].exists)
         returns (bool isRecent)
     {
-        return sub(now, information[ofAsset].timestamp) &lt;= VALIDITY;
+        return sub(now, information[ofAsset].timestamp) <= VALIDITY;
     }
 
     /// @notice Whether prices of assets have been updated less than VALIDITY seconds ago
@@ -364,7 +364,7 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
         view
         returns (bool areRecent)
     {
-        for (uint i; i &lt; ofAssets.length; i++) {
+        for (uint i; i < ofAssets.length; i++) {
             if (!hasRecentPrice(ofAssets[i])) {
                 return false;
             }
@@ -377,9 +377,9 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
     @dev Asset has been registered
     @param ofAsset Asset for which price should be returned
     @return {
-      &quot;isRecent&quot;: &quot;Whether the returned price is valid (as defined by VALIDITY)&quot;,
-      &quot;price&quot;: &quot;Price formatting: mul(exchangePrice, 10 ** decimal), to avoid floating numbers&quot;,
-      &quot;decimal&quot;: &quot;Decimal, order of magnitude of precision, of the Asset as in ERC223 token standard&quot;,
+      "isRecent": "Whether the returned price is valid (as defined by VALIDITY)",
+      "price": "Price formatting: mul(exchangePrice, 10 ** decimal), to avoid floating numbers",
+      "decimal": "Decimal, order of magnitude of precision, of the Asset as in ERC223 token standard",
     }
     */
     function getPrice(address ofAsset)
@@ -398,9 +398,9 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
     @dev Convention for price formatting: mul(price, 10 ** decimal), to avoid floating numbers
     @param ofAssets Assets for which prices should be returned
     @return {
-        &quot;areRecent&quot;:    &quot;Whether all of the prices are fresh, given VALIDITY interval&quot;,
-        &quot;prices&quot;:       &quot;Array of prices&quot;,
-        &quot;decimals&quot;:     &quot;Array of decimal places for returned assets&quot;
+        "areRecent":    "Whether all of the prices are fresh, given VALIDITY interval",
+        "prices":       "Array of prices",
+        "decimals":     "Array of decimal places for returned assets"
     }
     */
     function getPrices(address[] ofAssets)
@@ -408,7 +408,7 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
         returns (bool areRecent, uint[] prices, uint[] decimals)
     {
         areRecent = true;
-        for (uint i; i &lt; ofAssets.length; i++) {
+        for (uint i; i < ofAssets.length; i++) {
             var (isRecent, price, decimal) = getPrice(ofAssets[i]);
             if (!isRecent) {
                 areRecent = false;
@@ -424,9 +424,9 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
     @dev Existing price ofAssets quoted in QUOTE_ASSET (convention)
     @param ofAsset Asset for which inverted price should be return
     @return {
-        &quot;isRecent&quot;: &quot;Whether the price is fresh, given VALIDITY interval&quot;,
-        &quot;invertedPrice&quot;: &quot;Price based (instead of quoted) against QUOTE_ASSET&quot;,
-        &quot;decimal&quot;: &quot;Decimal places for this asset&quot;
+        "isRecent": "Whether the price is fresh, given VALIDITY interval",
+        "invertedPrice": "Price based (instead of quoted) against QUOTE_ASSET",
+        "decimal": "Decimal places for this asset"
     }
     */
     function getInvertedPrice(address ofAsset)
@@ -453,9 +453,9 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
     @param ofBase Address of base asset
     @param ofQuote Address of quote asset
     @return {
-        &quot;isRecent&quot;: &quot;Whether the price is fresh, given VALIDITY interval&quot;,
-        &quot;referencePrice&quot;: &quot;Reference price&quot;,
-        &quot;decimal&quot;: &quot;Decimal places for this asset&quot;
+        "isRecent": "Whether the price is fresh, given VALIDITY interval",
+        "referencePrice": "Reference price",
+        "decimal": "Decimal places for this asset"
     }
     */
     function getReferencePrice(address ofBase, address ofQuote)
@@ -499,9 +499,9 @@ contract PriceFeed is PriceFeedInterface, AssetRegistrar, DSMath {
         returns (bool isExistent)
     {
         return
-            hasRecentPrice(sellAsset) &amp;&amp; // Is tradable asset (TODO cleaner) and datafeed delivering data
-            hasRecentPrice(buyAsset) &amp;&amp; // Is tradable asset (TODO cleaner) and datafeed delivering data
-            (buyAsset == QUOTE_ASSET || sellAsset == QUOTE_ASSET) &amp;&amp; // One asset must be QUOTE_ASSET
+            hasRecentPrice(sellAsset) && // Is tradable asset (TODO cleaner) and datafeed delivering data
+            hasRecentPrice(buyAsset) && // Is tradable asset (TODO cleaner) and datafeed delivering data
+            (buyAsset == QUOTE_ASSET || sellAsset == QUOTE_ASSET) && // One asset must be QUOTE_ASSET
             (buyAsset != QUOTE_ASSET || sellAsset != QUOTE_ASSET); // Pair must consists of diffrent assets
     }
 }

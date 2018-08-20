@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,8 +87,8 @@ contract StandardToken is ERC20 {
   
   address public owner;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -121,7 +121,7 @@ contract StandardToken is ERC20 {
    */
    function setMinAmount(uint256 newMinAmount) public returns (bool) {
      require(msg.sender == owner);
-     require(newMinAmount &lt; maxAmount);
+     require(newMinAmount < maxAmount);
      
      minAmount = newMinAmount;
      return true;
@@ -132,7 +132,7 @@ contract StandardToken is ERC20 {
    */
    function setMaxAmount(uint256 newMaxAmount) public returns (bool) {
      require(msg.sender == owner);
-     require(newMaxAmount &gt; minAmount);
+     require(newMaxAmount > minAmount);
     
      maxAmount = newMaxAmount;
      return true;
@@ -152,8 +152,8 @@ contract StandardToken is ERC20 {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt;= minAmount &amp;&amp; _value &lt;= maxAmount);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value >= minAmount && _value <= maxAmount);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -185,9 +185,9 @@ contract StandardToken is ERC20 {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &gt;= minAmount &amp;&amp; _value &lt;= maxAmount);
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value >= minAmount && _value <= maxAmount);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -270,7 +270,7 @@ contract StandardToken is ERC20 {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -287,8 +287,8 @@ contract StandardToken is ERC20 {
  */
 contract MobarakToken is StandardToken {
 
-  string public constant name = &quot;(Mobarak) مبارك&quot;;
-  string public constant symbol = &quot;MBK&quot;;
+  string public constant name = "(Mobarak) مبارك";
+  string public constant symbol = "MBK";
   uint8 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 100000000 * (10 ** uint256(decimals));

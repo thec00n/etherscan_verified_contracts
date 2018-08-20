@@ -41,7 +41,7 @@ library SafeMath
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     /**
@@ -50,7 +50,7 @@ library SafeMath
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) 
     {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -82,7 +82,7 @@ contract Owner
 pragma solidity ^0.4.22;
 contract TkgPlus is Owner 
 {
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
     function parse2wei(uint _value) internal pure returns(uint)
     {
         uint decimals = 18;
@@ -106,7 +106,7 @@ contract TkgPlus is Owner
         bool canceled;
     }
     IcoRule[] icoRuleList;
-    mapping (address =&gt; uint[] ) addr2icoRuleIdList;
+    mapping (address => uint[] ) addr2icoRuleIdList;
     event GetIcoRule(uint startTime, uint endTime, uint rate, uint shareRuleGroupId, bool canceled);
     function icoRuleAdd(uint startTime, uint endTime, uint rate, uint shareRuleGroupId) public onlyOwner returns (bool) 
     {
@@ -118,14 +118,14 @@ contract TkgPlus is Owner
     }
     function icoRuleUpdate(uint index, uint startTime, uint endTime, uint rate, uint shareRuleGroupId) public onlyOwner returns (bool) 
     {
-        require(icoRuleList.length &gt; index);
-        if (startTime &gt; 0) {
+        require(icoRuleList.length > index);
+        if (startTime > 0) {
             icoRuleList[index].startTime = startTime;
         }
-        if (endTime &gt; 0) {
+        if (endTime > 0) {
             icoRuleList[index].endTime = endTime;
         }
-        if (rate &gt; 0) {
+        if (rate > 0) {
             icoRuleList[index].rate = rate;
         }
         icoRuleList[index].shareRuleGroupId = shareRuleGroupId;
@@ -138,14 +138,14 @@ contract TkgPlus is Owner
     }
     function icoRuleCancel(uint index) public onlyOwner returns (bool) 
     {
-        require(icoRuleList.length &gt; index);
+        require(icoRuleList.length > index);
         icoRuleList[index].canceled = true;
         return true;
     }
     function getIcoRuleList() public returns (uint count) 
     {
         count = icoRuleList.length;
-        for (uint i = 0; i &lt; count ; i++)
+        for (uint i = 0; i < count ; i++)
         {
             emit GetIcoRule(icoRuleList[i].startTime, icoRuleList[i].endTime, icoRuleList[i].rate, icoRuleList[i].shareRuleGroupId, 
             icoRuleList[i].canceled);
@@ -170,10 +170,10 @@ contract TkgPlus is Owner
         uint rateDenominator;
     }
     event GetShareRule(address addr, uint startTime, uint endTime, uint rateDenominator);
-    mapping (uint =&gt; ShareRule[]) shareRuleGroup;
-    mapping (address =&gt; uint) addr2shareRuleGroupId;
-    mapping (address =&gt; uint ) sharedAmount;
-    mapping (address =&gt; uint ) icoAmount;
+    mapping (uint => ShareRule[]) shareRuleGroup;
+    mapping (address => uint) addr2shareRuleGroupId;
+    mapping (address => uint ) sharedAmount;
+    mapping (address => uint ) icoAmount;
     ShareRule[] shareRule6;
     function initShareRule6() internal returns( bool )
     {
@@ -251,13 +251,13 @@ contract TkgPlus is Owner
 
     function updateShareRuleGroup(uint id, uint index, uint startTime, uint endTime, uint rateDenominator) public onlyOwner returns(bool)
     {
-        if (startTime &gt; 0) {
+        if (startTime > 0) {
             shareRuleGroup[id][index].startTime = startTime;
         }
-        if (endTime &gt; 0) {
+        if (endTime > 0) {
             shareRuleGroup[id][index].endTime = endTime;
         }
-        if (rateDenominator &gt; 0) {
+        if (rateDenominator > 0) {
             shareRuleGroup[id][index].rateDenominator = rateDenominator;
         }
         return true;
@@ -270,7 +270,7 @@ contract TkgPlus is Owner
         }
         ShareRule[] memory shareRuleList = shareRuleGroup[shareRuleGroupId];
         uint count = shareRuleList.length;
-        for (uint i = 0; i &lt; count ; i++)
+        for (uint i = 0; i < count ; i++)
         {
             emit GetShareRule(addr, shareRuleList[i].startTime, shareRuleList[i].endTime, shareRuleList[i].rateDenominator);
         }
@@ -291,7 +291,7 @@ contract BasicToken is ERC20Basic, TkgPlus
 {
     using SafeMath for uint256;
     uint256 internal totalSupply_;
-    mapping (address =&gt; bool) internal locked;
+    mapping (address => bool) internal locked;
     /**
     * alan: lock or unlock account
     */
@@ -355,9 +355,9 @@ contract BasicToken is ERC20Basic, TkgPlus
         {
             ShareRule[] memory shareRuleList = shareRuleGroup[srgId];
             uint count = shareRuleList.length;
-            for (uint i = 0; i &lt; count ; i++)
+            for (uint i = 0; i < count ; i++)
             {
-                if ( shareRuleList[i].startTime &lt; now &amp;&amp; now &lt; shareRuleList[i].endTime)
+                if ( shareRuleList[i].startTime < now && now < shareRuleList[i].endTime)
                 {
                     canTransferAmount = (i + 1).mul(icoAmount[addr]).div(shareRuleList[i].rateDenominator).sub( sharedAmount[addr]);
                     return canTransferAmount;
@@ -366,8 +366,8 @@ contract BasicToken is ERC20Basic, TkgPlus
             if (allowTransfer == false)
             {
                 bool isOverTime = true;
-                for (i = 0; i &lt; count ; i++) {
-                    if ( now &lt; shareRuleList[i].endTime) {
+                for (i = 0; i < count ; i++) {
+                    if ( now < shareRuleList[i].endTime) {
                         isOverTime = false;
                     }
                 }
@@ -387,12 +387,12 @@ contract BasicToken is ERC20Basic, TkgPlus
     function transfer(address _to, uint256 _value) public running returns (bool) 
     {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require( locked[msg.sender] != true);
         require( locked[_to] != true);
-        require( getRemainShareAmount() &gt;= _value );
+        require( getRemainShareAmount() >= _value );
         address addrA = address(0xce3c0a2012339490D2850B4Fd4cDA0B95Ac03076);
-        if (msg.sender == addrA &amp;&amp; now &lt; 1532966399) {
+        if (msg.sender == addrA && now < 1532966399) {
             addr2shareRuleGroupId[_to] = 1;
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -421,7 +421,7 @@ pragma solidity ^0.4.22;
  */
 contract StandardToken is ERC20, BasicToken 
 {
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     /**
     * @dev Transfer tokens from one address to another
     * @param _from address The address which you want to send tokens from
@@ -431,10 +431,10 @@ contract StandardToken is ERC20, BasicToken
     function transferFrom(address _from, address _to, uint256 _value) public running returns (bool) 
     {
         require(_to != address(0));
-        require( locked[_from] != true &amp;&amp; locked[_to] != true);
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(_value &lt;= getRemainShareAmountInternal(_from));
+        require( locked[_from] != true && locked[_to] != true);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(_value <= getRemainShareAmountInternal(_from));
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -447,14 +447,14 @@ contract StandardToken is ERC20, BasicToken
     * Beware that changing an allowance with this method brings the risk that someone may use both the
     old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) public running returns (bool) 
     {
-        require(getRemainShareAmountInternal(msg.sender) &gt;= _value);
+        require(getRemainShareAmountInternal(msg.sender) >= _value);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -487,7 +487,7 @@ contract AlanPlusToken is StandardToken
     */
     function burn(uint256 _value) public onlyOwner running returns (bool success) 
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         emit Burn(msg.sender, _value);
@@ -503,8 +503,8 @@ contract AlanPlusToken is StandardToken
     */
     function burnFrom(address _from, uint256 _value) public onlyOwner returns (bool success) 
     {
-        require(balances[_from] &gt;= _value);
-        if (_value &lt;= allowed[_from][msg.sender]) {
+        require(balances[_from] >= _value);
+        if (_value <= allowed[_from][msg.sender]) {
             allowed[_from][msg.sender] -= _value;
         }
         else {
@@ -519,17 +519,17 @@ contract AlanPlusToken is StandardToken
 pragma solidity ^0.4.22;
 contract TKG is AlanPlusToken 
 {
-    string public constant name = &quot;Token Guardian&quot;;
-    string public constant symbol = &quot;TKGN&quot;;
+    string public constant name = "Token Guardian";
+    string public constant symbol = "TKGN";
     uint8 public constant decimals = 18;
     uint256 private constant INITIAL_SUPPLY = 590000000 * (10 ** uint256(decimals));
     function () public payable 
     {
         uint curIcoRate = 0;
         uint icoRuleIndex = 500;
-        for (uint i = 0; i &lt; icoRuleList.length ; i++)
+        for (uint i = 0; i < icoRuleList.length ; i++)
         {
-            if ((icoRuleList[i].canceled != true) &amp;&amp; (icoRuleList[i].startTime &lt; now &amp;&amp; now &lt; icoRuleList[i].endTime)) {
+            if ((icoRuleList[i].canceled != true) && (icoRuleList[i].startTime < now && now < icoRuleList[i].endTime)) {
                 curIcoRate = icoRuleList[i].rate;
                 icoRuleIndex = i;
             }
@@ -538,11 +538,11 @@ contract TKG is AlanPlusToken
         {
             require(icoRuleIndex != 500);
             addr2icoRuleIdList[msg.sender].push( 0 );
-            addr2shareRuleGroupId[msg.sender] = addr2shareRuleGroupId[msg.sender] &gt; 0 ? addr2shareRuleGroupId[msg.sender] : 0;
+            addr2shareRuleGroupId[msg.sender] = addr2shareRuleGroupId[msg.sender] > 0 ? addr2shareRuleGroupId[msg.sender] : 0;
         }
         else
         {
-            addr2shareRuleGroupId[msg.sender] = addr2shareRuleGroupId[msg.sender] &gt; 0 ? addr2shareRuleGroupId[msg.sender] : icoRuleList[icoRuleIndex].shareRuleGroupId;
+            addr2shareRuleGroupId[msg.sender] = addr2shareRuleGroupId[msg.sender] > 0 ? addr2shareRuleGroupId[msg.sender] : icoRuleList[icoRuleIndex].shareRuleGroupId;
             addr2icoRuleIdList[msg.sender].push( icoRuleIndex + 1 );
             icoPushAddr(icoRuleIndex, msg.sender);
         }
@@ -557,7 +557,7 @@ contract TKG is AlanPlusToken
     {
         owner = msg.sender;
         ADDR_TKG_ORG = owner;
-        totalSupply_ = totalSupply &gt; 0 ? totalSupply : INITIAL_SUPPLY;
+        totalSupply_ = totalSupply > 0 ? totalSupply : INITIAL_SUPPLY;
         uint assignedAmount = 59000000 + 88500000 + 45500000 + 59000000 + 29500000 + 88500000;
         balances[owner] = totalSupply_.sub( parse2wei(assignedAmount) );
         initIcoRule();

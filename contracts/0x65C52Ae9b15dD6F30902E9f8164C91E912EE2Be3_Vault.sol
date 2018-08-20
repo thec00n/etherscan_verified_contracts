@@ -11,7 +11,7 @@ contract Vault {
         TransferOwnership(Owner, to); Owner = to;
     }
     
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
     uint minDeposit;
     bool Locked;
     uint Date;
@@ -30,8 +30,8 @@ contract Vault {
     function() public payable { deposit(); }
 
     function deposit() public payable {
-        if (msg.value &gt; 0) {
-            if (msg.value &gt;= MinimumDeposit())
+        if (msg.value > 0) {
+            if (msg.value >= MinimumDeposit())
                 Deposits[msg.sender] += msg.value;
             Deposit(msg.sender, msg.value);
         }
@@ -42,7 +42,7 @@ contract Vault {
     function withdrawTo(address to, uint amount) public onlyOwner {
         if (WithdrawalEnabled()) {
             uint max = Deposits[msg.sender];
-            if (max &gt; 0 &amp;&amp; amount &lt;= max) {
+            if (max > 0 && amount <= max) {
                 to.transfer(amount);
                 Withdrawal(to, amount);
             }
@@ -51,7 +51,7 @@ contract Vault {
 
     function MinimumDeposit() public constant returns (uint) { return minDeposit; }
     function ReleaseDate() public constant returns (uint) { return Date; }
-    function WithdrawalEnabled() constant internal returns (bool) { return Date &gt; 0 &amp;&amp; Date &lt;= now; }
+    function WithdrawalEnabled() constant internal returns (bool) { return Date > 0 && Date <= now; }
     function lock() public { Locked = true; }
     modifier onlyOwner { if (msg.sender == Owner) _; }
     modifier open { if (!Locked) _; }

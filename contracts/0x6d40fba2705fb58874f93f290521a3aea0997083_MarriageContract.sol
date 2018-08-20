@@ -7,8 +7,8 @@ contract MarriageContract {
     uint256 till;
     string agreement;
     
-    mapping(address =&gt; bool) coupleConfirmations;
-    mapping(address =&gt; bool) witnesses;
+    mapping(address => bool) coupleConfirmations;
+    mapping(address => bool) witnesses;
     
     modifier onlyCouple(){
         require(msg.sender == a || msg.sender == b);
@@ -23,7 +23,7 @@ contract MarriageContract {
     }
     
     function married() constant returns (bool) {
-        return coupleConfirmations[a] &amp;&amp; coupleConfirmations[b];
+        return coupleConfirmations[a] && coupleConfirmations[b];
     }
     
     function signContract() onlyCouple() {

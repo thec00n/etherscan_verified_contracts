@@ -30,17 +30,17 @@ contract timegame {
   
 function enter() {
 
- if (regeneration + TWELEVE_HOURS &lt; block.timestamp) {
+ if (regeneration + TWELEVE_HOURS < block.timestamp) {
 
 
 
-     if (msg.value &lt; 1 ether) {
+     if (msg.value < 1 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 50 ether) {
+		if (msg.value > 50 ether) {
 			msg.sender.send(msg.value - 50 ether);	
 			amount = 50 ether;
     }
@@ -67,7 +67,7 @@ function enter() {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 200) {
+    while (balance > persons[payoutIdx].amount / 100 * 200) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 200;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

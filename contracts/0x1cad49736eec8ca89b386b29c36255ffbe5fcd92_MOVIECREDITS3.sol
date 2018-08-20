@@ -8,20 +8,20 @@ contract SafeMath{
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
  
  function safeSub(uint a, uint b) internal returns (uint) {
-     assert(b &lt;= a);
+     assert(b <= a);
      return a - b;
   }
 
  function safeAdd(uint a, uint b) internal returns (uint) {
      uint c = a + b;
-     assert(c &gt;= a);
+     assert(c >= a);
      return c;
   }
  function assert(bool assertion) internal {
@@ -48,7 +48,7 @@ contract ERC20{
 contract MOVIECREDITS3 is ERC20, SafeMath{
 
  
- mapping(address =&gt; uint256) balances;
+ mapping(address => uint256) balances;
 
  uint256 public totalSupply;
 
@@ -64,7 +64,7 @@ contract MOVIECREDITS3 is ERC20, SafeMath{
      return true;
  }
 
- mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+ mapping (address => mapping (address => uint256)) allowed;
 
  function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
      var _allowance = allowed[_from][msg.sender];
@@ -92,7 +92,7 @@ contract MOVIECREDITS3 is ERC20, SafeMath{
  uint256 public endTime;
 
  modifier during_offering_time(){
-  if (now &gt;= endTime){
+  if (now >= endTime){
    throw;
   }else{
    _;
@@ -117,11 +117,11 @@ contract MOVIECREDITS3 is ERC20, SafeMath{
     throw;
   }
  }
- string  public name = &quot;MOVIECREDITS (EMVC)&quot;;
- string  public symbol = &quot;EMVC&quot;;
+ string  public name = "MOVIECREDITS (EMVC)";
+ string  public symbol = "EMVC";
  uint  public decimals = 8;
  uint256 public INITIAL_SUPPLY = 6000000000000000;
-string public version = &#39;EMVC3.0&#39;;
+string public version = 'EMVC3.0';
  uint256 public price;
  address public owner;
 

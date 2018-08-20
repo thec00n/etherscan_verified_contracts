@@ -46,7 +46,7 @@ contract ERC20Token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  *
  * Contract source taken from Open Zeppelin: https://github.com/OpenZeppelin/zeppelin-solidity/blob/v1.4.0/contracts/ownership/Ownable.sol
  */
@@ -95,7 +95,7 @@ library SafeMathLib {
 
     //
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0 &amp;&amp; a &gt; 0);
+        assert(b > 0 && a > 0);
         // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         return c;
@@ -103,14 +103,14 @@ library SafeMathLib {
 
     //
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     //
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -118,8 +118,8 @@ library SafeMathLib {
 contract StandardToken is ERC20Token {
     using SafeMathLib for uint;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     //
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -127,7 +127,7 @@ contract StandardToken is ERC20Token {
 
     //
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value);
+        require(_value > 0 && balances[msg.sender] >= _value);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -137,8 +137,8 @@ contract StandardToken is ERC20Token {
 
     //
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &gt; 0 &amp;&amp; balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(_value > 0 && balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -168,8 +168,8 @@ contract Winchain is StandardToken, Ownable {
 
     uint256 INTERVAL_TIME = 63072000;//Two years
     uint256 public deadlineToFreedTeamPool;//the deadline to freed the win pool of team
-    string public name = &quot;Winchain&quot;;
-    string public symbol = &quot;WIN&quot;;
+    string public name = "Winchain";
+    string public symbol = "WIN";
     uint256 public decimals = 18;
     uint256 public INITIAL_SUPPLY = (210) * (10 ** 8) * (10 ** 18);//210
 
@@ -209,9 +209,9 @@ contract Winchain is StandardToken, Ownable {
     }
 
     function freedWinPoolForSecondStage() onlyOwner returns (bool success) {
-        require(winPoolForSecondStage &gt; 0);
-        require(balances[msg.sender].add(winPoolForSecondStage) &gt;= balances[msg.sender]
-        &amp;&amp; balances[msg.sender].add(winPoolForSecondStage) &gt;= winPoolForSecondStage);
+        require(winPoolForSecondStage > 0);
+        require(balances[msg.sender].add(winPoolForSecondStage) >= balances[msg.sender]
+        && balances[msg.sender].add(winPoolForSecondStage) >= winPoolForSecondStage);
 
         balances[msg.sender] = balances[msg.sender].add(winPoolForSecondStage);
         Freed(msg.sender, winPoolForSecondStage);
@@ -224,9 +224,9 @@ contract Winchain is StandardToken, Ownable {
     }
 
     function freedWinPoolForThirdStage() onlyOwner returns (bool success) {
-        require(winPoolForThirdStage &gt; 0);
-        require(balances[msg.sender].add(winPoolForThirdStage) &gt;= balances[msg.sender]
-        &amp;&amp; balances[msg.sender].add(winPoolForThirdStage) &gt;= winPoolForThirdStage);
+        require(winPoolForThirdStage > 0);
+        require(balances[msg.sender].add(winPoolForThirdStage) >= balances[msg.sender]
+        && balances[msg.sender].add(winPoolForThirdStage) >= winPoolForThirdStage);
 
         balances[msg.sender] = balances[msg.sender].add(winPoolForThirdStage);
         Freed(msg.sender, winPoolForThirdStage);
@@ -239,11 +239,11 @@ contract Winchain is StandardToken, Ownable {
     }
 
     function freedWinPoolToTeam() onlyOwner returns (bool success) {
-        require(winPoolToTeam &gt; 0);
-        require(balances[msg.sender].add(winPoolToTeam) &gt;= balances[msg.sender]
-        &amp;&amp; balances[msg.sender].add(winPoolToTeam) &gt;= winPoolToTeam);
+        require(winPoolToTeam > 0);
+        require(balances[msg.sender].add(winPoolToTeam) >= balances[msg.sender]
+        && balances[msg.sender].add(winPoolToTeam) >= winPoolToTeam);
 
-        require(block.timestamp &gt;= deadlineToFreedTeamPool);
+        require(block.timestamp >= deadlineToFreedTeamPool);
 
         balances[msg.sender] = balances[msg.sender].add(winPoolToTeam);
         Freed(msg.sender, winPoolToTeam);
@@ -256,9 +256,9 @@ contract Winchain is StandardToken, Ownable {
     }
 
     function freedWinPoolToWinSystem() onlyOwner returns (bool success) {
-        require(winPoolToWinSystem &gt; 0);
-        require(balances[msg.sender].add(winPoolToWinSystem) &gt;= balances[msg.sender]
-        &amp;&amp; balances[msg.sender].add(winPoolToWinSystem) &gt;= winPoolToWinSystem);
+        require(winPoolToWinSystem > 0);
+        require(balances[msg.sender].add(winPoolToWinSystem) >= balances[msg.sender]
+        && balances[msg.sender].add(winPoolToWinSystem) >= winPoolToWinSystem);
 
         balances[msg.sender] = balances[msg.sender].add(winPoolToWinSystem);
         Freed(msg.sender, winPoolToWinSystem);

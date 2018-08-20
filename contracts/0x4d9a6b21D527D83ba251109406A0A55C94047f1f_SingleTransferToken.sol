@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87e3e2f3e2c7e6ffeee8eafde2e9a9e4e8">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87e3e2f3e2c7e6ffeee8eafde2e9a9e4e8">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     function implementsERC721() public pure returns (bool);
     function totalSupply() public view returns (uint256 total);
@@ -23,9 +23,9 @@ contract ERC721 {
 
 contract SingleTransferToken is ERC721 {
 
-    string public symbol = &quot;STT&quot;;
+    string public symbol = "STT";
 
-    string public name = &quot;SingleTransferToken&quot;;
+    string public name = "SingleTransferToken";
 
     uint256 _totalSupply = 1;
 
@@ -98,11 +98,11 @@ contract SingleTransferToken is ERC721 {
 
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
 
     function transfer(address _to, uint256 _amount) onlySingle(_amount) public returns (bool success) {
 
-        if(balanceOf(msg.sender) &gt; 0){
+        if(balanceOf(msg.sender) > 0){
          
             tokenOwner = _to;
         
@@ -130,7 +130,7 @@ contract SingleTransferToken is ERC721 {
 
     ) onlySingle(_amount) public returns (bool success) {
 
-        require(balanceOf(_from) &gt; 0 &amp;&amp; allowedTo == _to);
+        require(balanceOf(_from) > 0 && allowedTo == _to);
 
         tokenOwner = _to;
         
@@ -159,7 +159,7 @@ contract SingleTransferToken is ERC721 {
  
     function allowance(address _owner, address _spender) constant public returns (uint256 remaining) {
 
-        return _owner == tokenOwner &amp;&amp; allowedTo == _spender? 1 : 0;
+        return _owner == tokenOwner && allowedTo == _spender? 1 : 0;
 
     }
 
@@ -171,10 +171,10 @@ contract SingleTransferToken is ERC721 {
         assert(tokenOwner != msg.sender);
         
         //making sure sent amount is greater than or equal to the sellingPrice
-        assert(msg.value &gt;= sellingPrice);
+        assert(msg.value >= sellingPrice);
         
         //if sent amount is greater than sellingPrice refund extra
-        if(msg.value &gt; sellingPrice){
+        if(msg.value > sellingPrice){
             
             msg.sender.transfer(msg.value - sellingPrice);
 
@@ -183,7 +183,7 @@ contract SingleTransferToken is ERC721 {
         //update prices
         currentPrice = sellingPrice;
 
-        if(currentPrice &gt;= stepLimit){
+        if(currentPrice >= stepLimit){
 
             sellingPrice = (currentPrice * 120)/94; //adding commission amount //1.2/(1-0.06)
         
@@ -197,7 +197,7 @@ contract SingleTransferToken is ERC721 {
 
         //if contact balance is greater than 1000000000000000 wei,
         //transfer balance to the contract owner
-        //if (this.balance &gt;= 1000000000000000) {
+        //if (this.balance >= 1000000000000000) {
 
         //    owner.transfer(this.balance);
 
@@ -218,7 +218,7 @@ contract SingleTransferToken is ERC721 {
     }
 
     function payout(address _to) onlyOwner public{
-    	if(this.balance &gt; 1 ether){
+    	if(this.balance > 1 ether){
     		if(_to == address(0)){
     			owner.transfer(this.balance - 1 ether);
     		}else{

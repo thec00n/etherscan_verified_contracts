@@ -23,56 +23,56 @@ contract storer {
 /*
 
 {
-	&quot;maker&quot;: {
-		&quot;address&quot;: &quot;0x0a6d88d0ac14bb76b58bf6341b65a10353b8aee8&quot;,
-		&quot;token&quot;: {
-			&quot;name&quot;: &quot;Augur Reputation Token&quot;,
-			&quot;symbol&quot;: &quot;REP&quot;,
-			&quot;decimals&quot;: 18,
-			&quot;address&quot;: &quot;0xe94327d07fc17907b4db788e5adf2ed424addff6&quot;
+	"maker": {
+		"address": "0x0a6d88d0ac14bb76b58bf6341b65a10353b8aee8",
+		"token": {
+			"name": "Augur Reputation Token",
+			"symbol": "REP",
+			"decimals": 18,
+			"address": "0xe94327d07fc17907b4db788e5adf2ed424addff6"
 		},
-		&quot;amount&quot;: &quot;860000000000000000&quot;,
-		&quot;feeAmount&quot;: &quot;0&quot;
+		"amount": "860000000000000000",
+		"feeAmount": "0"
 	},
-	&quot;taker&quot;: {
-		&quot;address&quot;: &quot;0x6CF821A13455cABed0adc2789C6803FA2e938cA9&quot;,
-		&quot;token&quot;: {
-			&quot;name&quot;: &quot;pcp cab dac sec 5&quot;,
-			&quot;symbol&quot;: &quot;CCA&quot;,
-			&quot;decimals&quot;: 8,
-			&quot;address&quot;: &quot;0xaf34de25a4962c05287025a386869fa0e12ce95d&quot;
+	"taker": {
+		"address": "0x6CF821A13455cABed0adc2789C6803FA2e938cA9",
+		"token": {
+			"name": "pcp cab dac sec 5",
+			"symbol": "CCA",
+			"decimals": 8,
+			"address": "0xaf34de25a4962c05287025a386869fa0e12ce95d"
 		},
-		&quot;amount&quot;: &quot;1700000000&quot;,
-		&quot;feeAmount&quot;: &quot;0&quot;
+		"amount": "1700000000",
+		"feeAmount": "0"
 	},
-	&quot;expiration&quot;: &quot;1509303780&quot;,
-	&quot;feeRecipient&quot;: &quot;0x0000000000000000000000000000000000000000&quot;,
-	&quot;salt&quot;: &quot;99080185595902305128011107182726626379042477463436851204612997193034843428216&quot;,
-	&quot;signature&quot;: {
-		&quot;v&quot;: 28,
-		&quot;r&quot;: &quot;0xa5a3b9dee57e814e2cc733c2b362cee5c037baade9dbdd47bcfa47de10c38a10&quot;,
-		&quot;s&quot;: &quot;0x75225fddc9b382a218b4d64e8992ab17e6d030fde885c4c618a97da0311e1e5f&quot;,
-		&quot;hash&quot;: &quot;0x4e427f1a75e0f55745689b0f6e36d4f44a8fcb1b525620c69e491a36daf9a3ee&quot;
+	"expiration": "1509303780",
+	"feeRecipient": "0x0000000000000000000000000000000000000000",
+	"salt": "99080185595902305128011107182726626379042477463436851204612997193034843428216",
+	"signature": {
+		"v": 28,
+		"r": "0xa5a3b9dee57e814e2cc733c2b362cee5c037baade9dbdd47bcfa47de10c38a10",
+		"s": "0x75225fddc9b382a218b4d64e8992ab17e6d030fde885c4c618a97da0311e1e5f",
+		"hash": "0x4e427f1a75e0f55745689b0f6e36d4f44a8fcb1b525620c69e491a36daf9a3ee"
 	},
-	&quot;exchangeContract&quot;: &quot;0x12459c951127e0c374ff9105dda097662a027093&quot;,
-	&quot;networkId&quot;: 1
+	"exchangeContract": "0x12459c951127e0c374ff9105dda097662a027093",
+	"networkId": 1
 }
 
-	&#39;0x protocol implementation
-	&#39;carnet d&#39;ordres
-	&#39;offre d&#39;achat
-	&#39;acheteur, compte num&#233;ro :	0x0a6d88d0ac14bb76b58bf6341b65a10353b8aee8
-	&#39;compte d&#39;actif, actif :	CCA (clevestAB equity)
-	&#39;volume :			17.00000000
-	&#39;au prix de
-	&#39;compte en devises, devise :	REP
-	&#39;montant :			0.860
-	&#39;consolidation
-	&#39;compte en devises, devise :	ETH
-	&#39;montant :			0.01
-	&#39;compte en devise, devise :	CHF
-	&#39;montant :			17.00
-	&#39;contr&#244;le source :		
+	'0x protocol implementation
+	'carnet d'ordres
+	'offre d'achat
+	'acheteur, compte numéro :	0x0a6d88d0ac14bb76b58bf6341b65a10353b8aee8
+	'compte d'actif, actif :	CCA (clevestAB equity)
+	'volume :			17.00000000
+	'au prix de
+	'compte en devises, devise :	REP
+	'montant :			0.860
+	'consolidation
+	'compte en devises, devise :	ETH
+	'montant :			0.01
+	'compte en devise, devise :	CHF
+	'montant :			17.00
+	'contrôle source :		
 
 */	
 }

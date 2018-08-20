@@ -17,7 +17,7 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -30,15 +30,15 @@ contract StandardToken is Token {
         return true;
     }
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
         return true;
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract CCToken is StandardToken { 
@@ -50,15 +50,15 @@ contract CCToken is StandardToken {
     function CCToken() {
         balances[msg.sender] = 10000000000000000; 
         totalSupply = 10000000000000000;         
-        name = &quot;Coin Coming Token&quot;;                  
+        name = "Coin Coming Token";                  
         decimals = 8;          
-        symbol = &quot;CCT&quot;;            
+        symbol = "CCT";            
     }
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))),  
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))),  
             msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }

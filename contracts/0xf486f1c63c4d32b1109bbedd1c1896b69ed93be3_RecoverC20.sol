@@ -17,8 +17,8 @@ contract RecoverC20 {
   Token public C20Token;
 
   address[] public addressList;
-  mapping (address =&gt; bool) public added;
-  mapping (address =&gt; uint256) public allowances;
+  mapping (address => bool) public added;
+  mapping (address => uint256) public allowances;
 
   address public receivingAddress = 0x9bb3fdb9CD7B6D63Abfb493a362845EBAc5f94c7; // TODO: change
 
@@ -39,7 +39,7 @@ contract RecoverC20 {
   }
 
   function addAddresses(address[] tokenHolders) public onlyOwner {
-    for(uint i = 0; i &lt; tokenHolders.length; i++) {
+    for(uint i = 0; i < tokenHolders.length; i++) {
       address tokenHolder = tokenHolders[i];
       require(!added[tokenHolder]);
       added[tokenHolder] = true;
@@ -48,7 +48,7 @@ contract RecoverC20 {
   }
 
   function recoverTokens(uint count) public onlyOwner {
-    for(uint i = 0; index &lt; addressList.length &amp;&amp; i &lt; count; i++) {
+    for(uint i = 0; index < addressList.length && i < count; i++) {
       address tokenHolder = addressList[index];
       uint value = C20Token.allowance(tokenHolder, this); // check allowance of this contract address
       if(value!=0) {

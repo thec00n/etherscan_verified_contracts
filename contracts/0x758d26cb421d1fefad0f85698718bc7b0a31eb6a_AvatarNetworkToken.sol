@@ -3,10 +3,10 @@ pragma solidity ^0.4.11;
 contract AvatarNetworkToken {
 
     // Token name
-    string public name = &quot;Avatar_Network_Token&quot;;
+    string public name = "Avatar_Network_Token";
     
     // Token symbol
-    string public constant symbol = &quot;ATT&quot;;
+    string public constant symbol = "ATT";
     
     // Token decimals
     uint256 public constant decimals = 6;
@@ -14,8 +14,8 @@ contract AvatarNetworkToken {
     // INIT SUPPLY
     uint256 public constant INITIAL_SUPPLY = 6000000000 * (10 ** uint256(decimals));
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // Totle supply of Avatar Network Token
     uint256 public totalSupply = 0;
@@ -53,10 +53,10 @@ contract AvatarNetworkToken {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) isRunning validAddress public returns (bool success) {
-        // ATT token can&#39;t be burned
+        // ATT token can't be burned
         require(_to != address(0));
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -70,11 +70,11 @@ contract AvatarNetworkToken {
      * @param _value uint256 the amount of tokens to be transferred
      */
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress public returns (bool success) {
-        // ATT token can&#39;t be burned
+        // ATT token can't be burned
         require(_to != address(0));
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

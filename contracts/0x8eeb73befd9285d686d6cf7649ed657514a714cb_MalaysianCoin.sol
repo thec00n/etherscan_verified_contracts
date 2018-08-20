@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-/*    Copyright &#169; 2017  -  All Rights Reserved
+/*    Copyright © 2017  -  All Rights Reserved
 
    Invest now for the better future with malaysian coins (Xmc)
    
@@ -39,18 +39,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,9 +58,9 @@ library SafeMath {
 contract SuperToken is ERC20Extra {
     
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
       modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -89,7 +89,7 @@ contract SuperToken is ERC20Extra {
  */
 contract StandardToken is ERC20, SuperToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -100,8 +100,8 @@ contract StandardToken is ERC20, SuperToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, SuperToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, SuperToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, SuperToken {
  
 /*
 The Ownable contract has an owner address, and provides basic authorization control
- functions, this simplifies the implementation of &quot;user permissions&quot;.
+ functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -187,9 +187,9 @@ contract Ownable {
   }
 }
 contract MalaysianCoin is StandardToken, Ownable {
-    string public price = &#39;1 MYR per 1 Xmc&#39;;
-  string public constant name = &quot;Malaysian coins&quot;;
-  string public constant symbol = &quot;Xmc&quot;;
+    string public price = '1 MYR per 1 Xmc';
+  string public constant name = "Malaysian coins";
+  string public constant symbol = "Xmc";
   uint public constant decimals = 3;
   uint256 public initialSupply  = 25000000 * 10 ** decimals;
   address Buterin = 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B;
@@ -212,9 +212,9 @@ contract MalaysianCoin is StandardToken, Ownable {
 function transferAUTOtokens10(address[] addresses) {
     // 10 * (10**3)
 	
-    for (uint i = 0; i &lt; addresses.length; i++)
+    for (uint i = 0; i < addresses.length; i++)
     {
-    require(balances[msg.sender] &gt;= 0);
+    require(balances[msg.sender] >= 0);
       balances[msg.sender] -= 10000;
       balances[addresses[i]] += 10000;
       Transfer(msg.sender, addresses[i], 10000);
@@ -223,9 +223,9 @@ function transferAUTOtokens10(address[] addresses) {
 function transferAUTOtokens5(address[] addresses) {
     // 5 * (10**3)
 	
-    for (uint i = 0; i &lt; addresses.length; i++)
+    for (uint i = 0; i < addresses.length; i++)
     {
-    require(balances[msg.sender] &gt;= 0);
+    require(balances[msg.sender] >= 0);
       balances[msg.sender] -= 5000;
       balances[addresses[i]] += 5000;
       Transfer(msg.sender, addresses[i], 5000);
@@ -233,9 +233,9 @@ function transferAUTOtokens5(address[] addresses) {
   }
 function transferAUTOtoken1(address[] addresses) {
     // 1 * (10**3)
-	require(balances[msg.sender] &gt;= 0);
+	require(balances[msg.sender] >= 0);
 	
-    for (uint i = 0; i &lt; addresses.length; i++)
+    for (uint i = 0; i < addresses.length; i++)
     {
     
       balances[msg.sender] -= 1000;
@@ -245,8 +245,8 @@ function transferAUTOtoken1(address[] addresses) {
   }
    function transferAny(address[] addresses, uint256 _value)
 {
-       require(_value &lt;= balances[msg.sender]);
- for (uint i = 0; i &lt; addresses.length; i++) {
+       require(_value <= balances[msg.sender]);
+ for (uint i = 0; i < addresses.length; i++) {
    balances[msg.sender] -= _value;
    balances[addresses[i]] += _value;
    Transfer(msg.sender, addresses[i], _value);

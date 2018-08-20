@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract ERC20NoReturn {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -177,21 +177,21 @@ library Utils {
     uint  constant MAX_DECIMALS = 18;
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        if( dstDecimals &gt;= srcDecimals ) {
-            require((dstDecimals-srcDecimals) &lt;= MAX_DECIMALS);
+        if( dstDecimals >= srcDecimals ) {
+            require((dstDecimals-srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals-srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals-dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals-dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals-dstDecimals)));
         }
     }
 
     // function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-    //     if( srcDecimals &gt;= dstDecimals ) {
-    //         require((srcDecimals-dstDecimals) &lt;= MAX_DECIMALS);
+    //     if( srcDecimals >= dstDecimals ) {
+    //         require((srcDecimals-dstDecimals) <= MAX_DECIMALS);
     //         return (PRECISION * dstQty * (10**(srcDecimals - dstDecimals))) / rate;
     //     } else {
-    //         require((dstDecimals-srcDecimals) &lt;= MAX_DECIMALS);
+    //         require((dstDecimals-srcDecimals) <= MAX_DECIMALS);
     //         return (PRECISION * dstQty) / (rate * (10**(dstDecimals - srcDecimals)));
     //     }
     // }
@@ -210,7 +210,7 @@ contract ExchangeInterface is ComponentInterface {
      * For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return boolean whether or not the trading pair is supported by this exchange provider
      */
     function supportsTradingPair(address _srcAddress, address _destAddress, bytes32 _exchangeId)
@@ -222,7 +222,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the _amount.
      * @param uint _minimumRate The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here.
      * @return boolean whether or not the trade succeeded.
      */
@@ -238,7 +238,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of tokens to sell.
      * @param uint _minimumRate The minimum amount of ETH to receive for 1 ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -301,7 +301,7 @@ contract PriceProviderInterface is ComponentInterface {
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
      * @param uint _amount The amount of tokens which is wanted to buy.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return returns the expected and slippage rate for the specified conversion
      */
     function getPrice(ERC20Extended _sourceAddress, ERC20Extended _destAddress, uint _amount, bytes32 _exchangeId)
@@ -315,7 +315,7 @@ contract OlympusExchangeInterface is ExchangeInterface, PriceProviderInterface, 
      * @param uint[] _amounts Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the sum of this array.
      * @param uint[] _minimumRates The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -331,7 +331,7 @@ contract OlympusExchangeInterface is ExchangeInterface, PriceProviderInterface, 
      * @param uint[] _amounts Amount of tokens to sell this token. Make sure the value sent to this function is the same as the sum of this array.
      * @param uint[] _minimumRates The minimum amount of ETH to receive for 1 specified ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -343,7 +343,7 @@ contract OlympusExchangeInterface is ExchangeInterface, PriceProviderInterface, 
 }
 
 contract ComponentContainerInterface {
-    mapping (string =&gt; address) components;
+    mapping (string => address) components;
 
     event ComponentUpdated (string _name, address _componentAddress);
 
@@ -397,8 +397,8 @@ contract FeeCharger is Ownable, FeeChargerInterface {
       uint fee = calculateFee(_amount);
       DerivativeInterface derivative = DerivativeInterface(msg.sender);
       // take money directly from the derivative.
-      require(MOT.balanceOf(address(derivative)) &gt;= fee);
-      require(MOT.allowance(address(derivative), address(this)) &gt;= fee);
+      require(MOT.balanceOf(address(derivative)) >= fee);
+      require(MOT.allowance(address(derivative), address(this)) >= fee);
       _;
     }
 
@@ -409,7 +409,7 @@ contract FeeCharger is Ownable, FeeChargerInterface {
         } else if (feeMode == FeeMode.ByCalls) {
             fee = feeAmount;
         } else {
-          revert(&quot;Unsupported fee mode.&quot;);
+          revert("Unsupported fee mode.");
         }
 
         return fee;
@@ -426,7 +426,7 @@ contract FeeCharger is Ownable, FeeChargerInterface {
     }    
 
     function adjustFeePercentage(uint _newPercentage) external onlyOwner returns (bool success) {
-        require(_newPercentage &lt;= FEE_CHARGER_DENOMINATOR);
+        require(_newPercentage <= FEE_CHARGER_DENOMINATOR);
         feePercentage = _newPercentage;
         return true;
     }    
@@ -442,7 +442,7 @@ contract FeeCharger is Ownable, FeeChargerInterface {
         require(_motAddress != address(MOT));
         MOT = ERC20Extended(_motAddress);
         // this is only and will always be MOT.
-        require(keccak256(abi.encodePacked(MOT.symbol())) == keccak256(abi.encodePacked(&quot;MOT&quot;)));
+        require(keccak256(abi.encodePacked(MOT.symbol())) == keccak256(abi.encodePacked("MOT")));
 
         return true;
     }
@@ -475,11 +475,11 @@ contract FeeCharger is Ownable, FeeChargerInterface {
 
 contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
     using SafeMath for uint256;
-    string public name = &quot;OlympusExchangeProvider&quot;;
+    string public name = "OlympusExchangeProvider";
     string public description =
-    &quot;Exchange provider of Olympus Labs, which additionally supports buy\and sellTokens for multiple tokens at the same time&quot;;
-    string public category = &quot;exchange&quot;;
-    string public version = &quot;v1.0&quot;;
+    "Exchange provider of Olympus Labs, which additionally supports buy\and sellTokens for multiple tokens at the same time";
+    string public category = "exchange";
+    string public version = "v1.0";
     ERC20Extended private constant ETH  = ERC20Extended(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
 
     OlympusExchangeAdapterManagerInterface private exchangeAdapterManager;
@@ -490,7 +490,7 @@ contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
     }
 
     modifier checkAllowance(ERC20Extended _token, uint _amount) {
-        require(_token.allowance(msg.sender, address(this)) &gt;= _amount, &quot;Not enough tokens approved&quot;);
+        require(_token.allowance(msg.sender, address(this)) >= _amount, "Not enough tokens approved");
         _;
     }
 
@@ -508,9 +508,9 @@ contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
 
         OlympusExchangeAdapterInterface adapter;
         // solhint-disable-next-line
-        bytes32 exchangeId = _exchangeId == &quot;&quot; ? exchangeAdapterManager.pickExchange(_token, _amount, _minimumRate, true) : _exchangeId;
+        bytes32 exchangeId = _exchangeId == "" ? exchangeAdapterManager.pickExchange(_token, _amount, _minimumRate, true) : _exchangeId;
         if(exchangeId == 0){
-            revert(&quot;No suitable exchange found&quot;);
+            revert("No suitable exchange found");
         }
 
         require(payFee(msg.value * getMotPrice(exchangeId) / 10 ** 18));
@@ -532,9 +532,9 @@ contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
         ) checkAllowance(_token, _amount) external returns(bool success) {
 
         OlympusExchangeAdapterInterface adapter;
-        bytes32 exchangeId = _exchangeId == &quot;&quot; ? exchangeAdapterManager.pickExchange(_token, _amount, _minimumRate, false) : _exchangeId;
+        bytes32 exchangeId = _exchangeId == "" ? exchangeAdapterManager.pickExchange(_token, _amount, _minimumRate, false) : _exchangeId;
         if(exchangeId == 0){
-            revert(&quot;No suitable exchange found&quot;);
+            revert("No suitable exchange found");
         }
 
         uint tokenPrice;
@@ -564,20 +564,20 @@ contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
         ERC20Extended[] _tokens, uint[] _amounts, uint[] _minimumRates,
         address _depositAddress, bytes32 _exchangeId, address /* _partnerId */
         ) external payable returns(bool success) {
-        require(_tokens.length == _amounts.length &amp;&amp; _amounts.length == _minimumRates.length, &quot;Arrays are not the same lengths&quot;);
+        require(_tokens.length == _amounts.length && _amounts.length == _minimumRates.length, "Arrays are not the same lengths");
         require(payFee(msg.value * getMotPrice(_exchangeId) / 10 ** 18));
         uint totalValue;
         uint i;
-        for(i = 0; i &lt; _amounts.length; i++ ) {
+        for(i = 0; i < _amounts.length; i++ ) {
             totalValue += _amounts[i];
         }
-        require(totalValue == msg.value, &quot;msg.value is not the same as total value&quot;);
+        require(totalValue == msg.value, "msg.value is not the same as total value");
 
-        for (i = 0; i &lt; _tokens.length; i++ ) {
-            bytes32 exchangeId = _exchangeId == &quot;&quot; ?
+        for (i = 0; i < _tokens.length; i++ ) {
+            bytes32 exchangeId = _exchangeId == "" ?
             exchangeAdapterManager.pickExchange(_tokens[i], _amounts[i], _minimumRates[i], true) : _exchangeId;
             if (exchangeId == 0) {
-                revert(&quot;No suitable exchange found&quot;);
+                revert("No suitable exchange found");
             }
             require(
                 OlympusExchangeAdapterInterface(exchangeAdapterManager.getExchangeAdapter(exchangeId)).buyToken.value(_amounts[i])(
@@ -595,15 +595,15 @@ contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
         ERC20Extended[] _tokens, uint[] _amounts, uint[] _minimumRates,
         address _depositAddress, bytes32 _exchangeId, address /* _partnerId */
         ) external returns(bool success) {
-        require(_tokens.length == _amounts.length &amp;&amp; _amounts.length == _minimumRates.length, &quot;Arrays are not the same lengths&quot;);
+        require(_tokens.length == _amounts.length && _amounts.length == _minimumRates.length, "Arrays are not the same lengths");
         OlympusExchangeAdapterInterface adapter;
 
         uint[] memory prices = new uint[](3); // 0 tokenPrice, 1 MOT price, 3 totalValueInMOT
-        for (uint i = 0; i &lt; _tokens.length; i++ ) {
-            bytes32 exchangeId = _exchangeId == bytes32(&quot;&quot;) ?
+        for (uint i = 0; i < _tokens.length; i++ ) {
+            bytes32 exchangeId = _exchangeId == bytes32("") ?
             exchangeAdapterManager.pickExchange(_tokens[i], _amounts[i], _minimumRates[i], false) : _exchangeId;
             if(exchangeId == 0){
-                revert(&quot;No suitable exchange found&quot;);
+                revert("No suitable exchange found");
             }
 
             (prices[0],) = exchangeAdapterManager.getPrice(_tokens[i], ETH, _amounts[i], exchangeId);
@@ -611,7 +611,7 @@ contract ExchangeProvider is FeeCharger, OlympusExchangeInterface {
             prices[2] += prices[0] * _amounts[i] * prices[1] / 10 ** _tokens[i].decimals() / 10 ** 18;
 
             adapter = OlympusExchangeAdapterInterface(exchangeAdapterManager.getExchangeAdapter(exchangeId));
-            require(_tokens[i].allowance(msg.sender, address(this)) &gt;= _amounts[i], &quot;Not enough tokens approved&quot;);
+            require(_tokens[i].allowance(msg.sender, address(this)) >= _amounts[i], "Not enough tokens approved");
             ERC20NoReturn(_tokens[i]).transferFrom(msg.sender, address(adapter), _amounts[i]);
             require(
                 adapter.sellToken(

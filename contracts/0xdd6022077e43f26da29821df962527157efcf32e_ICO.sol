@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c1a521d120813121513521d1719103c1b111d1510521f1311">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c1a521d120813121513521d1719103c1b111d1510521f1311">[email protected]</a>
 */
 
 /**
@@ -25,7 +25,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,7 +57,7 @@ contract ICO {
     token public tokenReward; //Address of the valit token used as reward
     address public creator; //Address of the contract deployer
     string public campaignUrl; //Web site of the campaing
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -94,7 +94,7 @@ contract ICO {
     */
     function contribute() public notFinished payable {
 
-        require(msg.value &gt;= 100 finney);
+        require(msg.value >= 100 finney);
 
         uint256 tokenBought; //Variable to store amount of tokens bought
         totalRaised = totalRaised.add(msg.value); //Save the total eth totalRaised (in wei)
@@ -103,23 +103,23 @@ contract ICO {
 
             tokenBought = msg.value.mul(price[0]); //Base price rate
             tokenBought = tokenBought.mul(12); // 12/10 = 1.2
-            tokenBought = tokenBought.div(10); // 1.2 =&gt; 100% + 20% Bonus               
+            tokenBought = tokenBought.div(10); // 1.2 => 100% + 20% Bonus               
             
-            require(stageDistributed.add(tokenBought) &lt;= 60000000 * (10 ** 18)); //Cannot exceed 60.000.000 distributed
+            require(stageDistributed.add(tokenBought) <= 60000000 * (10 ** 18)); //Cannot exceed 60.000.000 distributed
 
         } else if (state == State.PreSale){
 
             tokenBought = msg.value.mul(price[0]); //Base price rate
             tokenBought = tokenBought.mul(11); // 11/10 = 1.1
-            tokenBought = tokenBought.div(10); // 1.1 =&gt; 100% + 10% Bonus               
+            tokenBought = tokenBought.div(10); // 1.1 => 100% + 10% Bonus               
             
-            require(stageDistributed.add(tokenBought) &lt;= 60000000 * (10 ** 18)); //Cannot exceed 60.000.000 distributed
+            require(stageDistributed.add(tokenBought) <= 60000000 * (10 ** 18)); //Cannot exceed 60.000.000 distributed
 
         } else if (state == State.Crowdsale){
 
             tokenBought = msg.value.mul(price[1]); //Base price rate
 
-            require(stageDistributed.add(tokenBought) &lt;= 80000000 * (10 ** 18)); //Cannot exceed 80.000.000 distributed
+            require(stageDistributed.add(tokenBought) <= 80000000 * (10 ** 18)); //Cannot exceed 80.000.000 distributed
 
         }
 
@@ -141,21 +141,21 @@ contract ICO {
         
         if(state!=State.Successful){ //if we are on ICO period and its not Successful
             
-            if(state == State.EarlyPreSale &amp;&amp; now &gt; startTime.add(8 days)){
+            if(state == State.EarlyPreSale && now > startTime.add(8 days)){
 
                 StageDistributed(state,stageDistributed);
 
                 state = State.PreSale;
                 stageDistributed = 0;
             
-            } else if(state == State.PreSale &amp;&amp; now &gt; startTime.add(15 days)){
+            } else if(state == State.PreSale && now > startTime.add(15 days)){
 
                 StageDistributed(state,stageDistributed);
 
                 state = State.Crowdsale;
                 stageDistributed = 0;
 
-            } else if(state == State.Crowdsale &amp;&amp; now &gt; startTime.add(36 days)){
+            } else if(state == State.Crowdsale && now > startTime.add(36 days)){
 
                 StageDistributed(state,stageDistributed);
 
@@ -184,7 +184,7 @@ contract ICO {
 
     /**
     * @notice Function to handle eth transfers
-    * @dev BEWARE: if a call to this functions doesn&#39;t have
+    * @dev BEWARE: if a call to this functions doesn't have
     * enought gas, transaction could not be finished
     */
 

@@ -7,7 +7,7 @@ contract AbstractMintableToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -46,8 +46,8 @@ contract Ownable {
 contract RegistrationBonus is Ownable {
     address public tokenAddr;
     uint256 constant  bonusAmount = 1 * 1 ether;
-    mapping (address =&gt; uint) public beneficiaryAddresses;
-    mapping (uint =&gt; address) public beneficiaryUserIds;
+    mapping (address => uint) public beneficiaryAddresses;
+    mapping (uint => address) public beneficiaryUserIds;
     AbstractMintableToken token;
 
     event BonusEnrolled(address beneficiary, uint userId, uint256 amount);

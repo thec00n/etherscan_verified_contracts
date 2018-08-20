@@ -11,13 +11,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -43,8 +43,8 @@ contract ERC20TokenInterface {
 contract ERC20Token is ERC20TokenInterface { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -126,10 +126,10 @@ contract ERC20Token is ERC20TokenInterface { //Standard definition of a ERC20Tok
 * @dev Initial supply creation
 */
 contract Asset is ERC20Token {
-    string public name = &#39;Social Activity Token&#39;;
+    string public name = 'Social Activity Token';
     uint8 public decimals = 8;
-    string public symbol = &#39;SAT&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'SAT';
+    string public version = '1';
 
     function Asset() public {
         totalSupply = 1000000000 * (10**uint256(decimals)); //1 billion initial token creation

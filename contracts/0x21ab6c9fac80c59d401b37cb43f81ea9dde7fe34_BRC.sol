@@ -44,9 +44,9 @@ interface ERC20Interface {
 
  contract BRC is ERC20Interface {
 
-      string public constant symbol = &quot;BRC&quot;;
+      string public constant symbol = "BRC";
 
-      string public constant name = &quot;Baer Chain&quot;;
+      string public constant name = "Baer Chain";
 
       uint8 public constant decimals = 8;
 
@@ -58,13 +58,13 @@ interface ERC20Interface {
 
       
 
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
 
       
 
     
 
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
 
       
 
@@ -112,11 +112,11 @@ interface ERC20Interface {
 
       function transfer(address _to, uint256 _amount) returns (bool success) {
 
-          if (balances[msg.sender] &gt;= _amount 
+          if (balances[msg.sender] >= _amount 
 
-              &amp;&amp; _amount &gt; 0
+              && _amount > 0
 
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+              && balances[_to] + _amount > balances[_to]) {
 
               balances[msg.sender] -= _amount;
 
@@ -146,13 +146,13 @@ interface ERC20Interface {
 
      ) returns (bool success) {
 
-         if (balances[_from] &gt;= _amount
+         if (balances[_from] >= _amount
 
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
+             && allowed[_from][msg.sender] >= _amount
 
-             &amp;&amp; _amount &gt; 0
+             && _amount > 0
 
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+             && balances[_to] + _amount > balances[_to]) {
 
              balances[_from] -= _amount;
 

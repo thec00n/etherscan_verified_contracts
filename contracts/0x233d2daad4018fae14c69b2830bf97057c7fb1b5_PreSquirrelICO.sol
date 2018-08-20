@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -87,9 +87,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -97,7 +97,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -120,7 +120,7 @@ library SafeMath {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -153,7 +153,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -312,11 +312,11 @@ contract AllowanceCrowdsale is Crowdsale {
 contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public contributions;
-  mapping(address =&gt; uint256) public caps;
+  mapping(address => uint256) public contributions;
+  mapping(address => uint256) public caps;
 
   /**
-   * @dev Sets a specific user&#39;s maximum contribution.
+   * @dev Sets a specific user's maximum contribution.
    * @param _beneficiary Address to be capped
    * @param _cap Wei limit for individual contribution
    */
@@ -325,12 +325,12 @@ contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
   }
 
   /**
-   * @dev Sets a group of users&#39; maximum contribution.
+   * @dev Sets a group of users' maximum contribution.
    * @param _beneficiaries List of addresses to be capped
    * @param _cap Wei limit for individual contribution
    */
   function setGroupCap(address[] _beneficiaries, uint256 _cap) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       caps[_beneficiaries[i]] = _cap;
     }
   }
@@ -354,13 +354,13 @@ contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
   }
 
   /**
-   * @dev Extend parent behavior requiring purchase to respect the user&#39;s funding cap.
+   * @dev Extend parent behavior requiring purchase to respect the user's funding cap.
    * @param _beneficiary Token purchaser
    * @param _weiAmount Amount of wei contributed
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(contributions[_beneficiary].add(_weiAmount) &lt;= caps[_beneficiary]);
+    require(contributions[_beneficiary].add(_weiAmount) <= caps[_beneficiary]);
   }
 
   /**
@@ -381,7 +381,7 @@ contract IndividuallyCappedCrowdsale is Crowdsale, Ownable {
  */
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -404,7 +404,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -443,7 +443,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -454,8 +454,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -467,7 +467,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -527,7 +527,7 @@ contract PreSquirrelICO is Crowdsale, TimedCrowdsale, WhitelistedCrowdsale, Indi
     super._preValidatePurchase(_beneficiary, _weiAmount);
 
     // check if min contribution amount
-    require(_weiAmount &gt;= MIN_PURCHASE);
+    require(_weiAmount >= MIN_PURCHASE);
 
     totalEthRcvd = totalEthRcvd.add(_weiAmount);
   }
@@ -564,7 +564,7 @@ contract PreSquirrelICO is Crowdsale, TimedCrowdsale, WhitelistedCrowdsale, Indi
     external
     onlyOwner
   {
-    for (uint i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
 
       // set MAX to 15 eth per user
@@ -591,7 +591,7 @@ contract PreSquirrelICO is Crowdsale, TimedCrowdsale, WhitelistedCrowdsale, Indi
     view
     returns (bool)
   {
-    return block.timestamp &gt;= openingTime;
+    return block.timestamp >= openingTime;
   }
 
   // helper function so that UI can display amount ETH already contributed by user

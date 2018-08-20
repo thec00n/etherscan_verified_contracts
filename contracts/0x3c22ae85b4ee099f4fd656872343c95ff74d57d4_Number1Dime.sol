@@ -42,8 +42,8 @@ contract Number1Dime is ERC20Interface {
     uint256 public totContribution = 0;
     address owner;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     modifier onlyOwner() {
         if (msg.sender != owner) { revert(); }
@@ -66,8 +66,8 @@ contract Number1Dime is ERC20Interface {
         enablePurchase(false);
     }
 
-    function name() public pure returns (string)    { return &quot;Number One Dime&quot;; }
-    function symbol() public pure returns (string)  { return &quot;N1D&quot;; }
+    function name() public pure returns (string)    { return "Number One Dime"; }
+    function symbol() public pure returns (string)  { return "N1D"; }
     function decimals() public pure returns (uint8) { return 0; }
     
     function get_balance(address a) public view returns (uint256) { return a.balance; }
@@ -95,9 +95,9 @@ contract Number1Dime is ERC20Interface {
 
     function transfer(address _to, uint256 _amount) public transferAllowed returns (bool) {
         if ( 
-                _amount &gt; 0
-            &amp;&amp;  balances[msg.sender] &gt;= _amount
-            &amp;&amp;  balances[_to] + _amount &gt; balances[_to]
+                _amount > 0
+            &&  balances[msg.sender] >= _amount
+            &&  balances[_to] + _amount > balances[_to]
         ) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -114,10 +114,10 @@ contract Number1Dime is ERC20Interface {
         uint256 _amount
     ) public transferAllowed returns (bool) {
         if (
-                _amount &gt; 0
-            &amp;&amp;  balances[_from] &gt;= _amount
-            &amp;&amp;  allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp;  balances[_to] + _amount &gt; balances[_to]
+                _amount > 0
+            &&  balances[_from] >= _amount
+            &&  allowed[_from][msg.sender] >= _amount
+            &&  balances[_to] + _amount > balances[_to]
         ) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;

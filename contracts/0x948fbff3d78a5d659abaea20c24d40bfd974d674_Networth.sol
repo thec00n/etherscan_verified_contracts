@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 * @title Networth Token Contract
 * @dev ERC-20 Token Standar Compliant
 * Contact: networthlabs.com
-* Airdrop service provided by <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f59115e514b50515650115e545a537f58525e5653115c5052">[email&#160;protected]</a>
+* Airdrop service provided by <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f59115e514b50515650115e545a537f58525e5653115c5052">[email protected]</a>
 */
 
 /**
@@ -13,13 +13,13 @@ pragma solidity 0.4.24;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -121,9 +121,9 @@ contract ERC20TokenInterface {
 contract ERC20Token is admined,ERC20TokenInterface { //Standard definition of an ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of all frozen status
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of all frozen status
 
     /**
     * @dev Get the balance of an specified address.
@@ -201,10 +201,10 @@ contract ERC20Token is admined,ERC20TokenInterface { //Standard definition of an
     */
     function batch(address[] _target,uint256 _amount) onlyAdmin public { //It takes an array of addresses and an amount
         uint256 size = _target.length;
-        require( balances[msg.sender] &gt;= size.mul(_amount));
+        require( balances[msg.sender] >= size.mul(_amount));
         balances[msg.sender] = balances[msg.sender].sub(size.mul(_amount));
 
-        for (uint i=0; i&lt;size; i++) { //It moves over the array
+        for (uint i=0; i<size; i++) { //It moves over the array
             balances[_target[i]] = balances[_target[i]].add(_amount);
             emit Transfer(msg.sender, _target[i], _amount);
         }
@@ -225,10 +225,10 @@ contract ERC20Token is admined,ERC20TokenInterface { //Standard definition of an
 * @dev ERC20 Token compliant
 */
 contract Networth is ERC20Token {
-    string public name = &#39;Networth&#39;;
+    string public name = 'Networth';
     uint8 public decimals = 18;
-    string public symbol = &#39;Googol&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'Googol';
+    string public version = '1';
 
     /**
     * @notice token contructor.
@@ -249,7 +249,7 @@ contract Networth is ERC20Token {
 
 
     /**
-    * @notice this contract will revert on direct non-function calls, also it&#39;s not payable
+    * @notice this contract will revert on direct non-function calls, also it's not payable
     * @dev Function to handle callback calls to contract
     */
     function() public {

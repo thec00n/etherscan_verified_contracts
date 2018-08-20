@@ -8,9 +8,9 @@ contract Target {
 
 contract COE {
 
-    string public name = &quot;Coeval by Monkey Capital&quot;;
+    string public name = "Coeval by Monkey Capital";
     uint8 public decimals = 18;
-    string public symbol = &quot;COE&quot;;
+    string public symbol = "COE";
 
     address public owner;
     address public devFeesAddr = 0xF772464393Ac87a1b7C628bF79090e014d931A23;
@@ -59,8 +59,8 @@ contract COE {
     bool canExchange = true;
 
     // Storage
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; bool) public exchangePartners;
+    mapping (address => uint256) public balances;
+    mapping (address => bool) public exchangePartners;
 
     // events
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -78,7 +78,7 @@ contract COE {
     }
 
     function () payable public {
-        require((msg.value &gt; 0) &amp;&amp; (receiveEth));
+        require((msg.value > 0) && (receiveEth));
 
         if(payFees) {
             devFees = add(devFees, ((msg.value * fees) / 10000));
@@ -95,7 +95,7 @@ contract COE {
         uint256 _allocation = 0;
         // multiply _submitted by cost per token and see if that is greater than _availableInTier
 
-        if(_submitted &gt;= _availableInTier) {
+        if(_submitted >= _availableInTier) {
             _allocation = tierTokens[tierLevel];
             tierTokens[tierLevel] = 0;
             tierLevel++;
@@ -113,7 +113,7 @@ contract COE {
         circulatingSupply = add(circulatingSupply, _allocation);
         totalSupply = sub(totalSupply, _allocation);
 
-        if((_submitted != 0) &amp;&amp; (tierLevel &lt;= maxTier)) {
+        if((_submitted != 0) && (tierLevel <= maxTier)) {
             allocateTokens(_submitted);
         }
         else {
@@ -124,7 +124,7 @@ contract COE {
 
     function transfer(address _to, uint _value) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         totalSupply = add(totalSupply, _value);
         circulatingSupply = sub(circulatingSupply, _value);
 
@@ -238,14 +238,14 @@ contract COE {
     function safeWithdrawal(address _receiver, uint256 _value) public {
         require(msg.sender == owner);
         // check balance before transferring
-        require(_value &lt;= this.balance);
+        require(_value <= this.balance);
         _receiver.transfer(_value);
     }
 
     // enables fee update - must be between 0 and 100 (%)
     function updateFeeAmount(uint _newFee) public {
         require(msg.sender == owner);
-        require((_newFee &gt;= 0) &amp;&amp; (_newFee &lt;= 100));
+        require((_newFee >= 0) && (_newFee <= 100));
         fees = _newFee * 100;
     }
 
@@ -301,20 +301,20 @@ contract COE {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }

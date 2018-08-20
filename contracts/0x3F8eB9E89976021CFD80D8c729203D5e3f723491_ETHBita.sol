@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract ETHBita {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract ETHBita {
 
     function ETHBita() {
         totalSupply = 10000000;
-        symbol = &#39;ETB&#39;;
+        symbol = 'ETB';
         owner = 0xfc57e1b25fe8abd59941dee99abfd4ba0af089a3;
         balances[owner] = totalSupply;
         decimals = 0;

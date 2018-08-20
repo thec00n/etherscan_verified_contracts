@@ -3,11 +3,11 @@
 The MIT License (MIT)
 
 Copyright (c) 2018 Bitindia.
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 For more information regarding the MIT License visit: https://opensource.org/licenses/MIT
 
 @AUTHOR Bitindia. https://bitindia.co/
@@ -33,7 +33,7 @@ contract IERC20 {
 /**
  * @title Ownable
  * @notice The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -82,11 +82,11 @@ contract BitindiaVestingContract is Ownable{
 
   IERC20 token;
 
-  mapping (address =&gt; uint256) ownersMap;
+  mapping (address => uint256) ownersMap;
 
-  mapping (address =&gt; uint256) ownersMapFirstPeriod;    
-  mapping (address =&gt; uint256) ownersMapSecondPeriod;    
-  mapping (address =&gt; uint256) ownersMapThirdPeriod;   
+  mapping (address => uint256) ownersMapFirstPeriod;    
+  mapping (address => uint256) ownersMapSecondPeriod;    
+  mapping (address => uint256) ownersMapThirdPeriod;   
 
   /**
    * Can be initialized only once all the committed token amount is deposited to this contract
@@ -103,8 +103,8 @@ contract BitindiaVestingContract is Ownable{
   /**
    * To avoid too many address changes,  * 
    */ 
-  mapping (address =&gt; address)  originalAddressTraker;
-  mapping (address =&gt; uint) changeAddressAttempts;
+  mapping (address => address)  originalAddressTraker;
+  mapping (address => uint) changeAddressAttempts;
 
   /**
    *  Fixed Vesting Schedule   *
@@ -150,8 +150,8 @@ contract BitindiaVestingContract is Ownable{
    */ 
   function initialize() public onlyOwner
   {
-      require(totalCommitted&gt;0);
-      require(totalCommitted &lt;= token.balanceOf(this));
+      require(totalCommitted>0);
+      require(totalCommitted <= token.balanceOf(this));
       if(!initialized){
             initialized = true;
       }
@@ -180,7 +180,7 @@ contract BitindiaVestingContract is Ownable{
    */
   modifier whenClaimable() {
     // Check if Contract is active
-    assert(now&gt;firstDueDate);
+    assert(now>firstDueDate);
     _;
   }
   
@@ -189,7 +189,7 @@ contract BitindiaVestingContract is Ownable{
    * this is to discourage SPAMMERS
    */ 
   modifier checkValidUser(){
-    assert(ownersMap[msg.sender]&gt;0);
+    assert(ownersMap[msg.sender]>0);
     _;
   }
 
@@ -218,7 +218,7 @@ contract BitindiaVestingContract is Ownable{
       // Validates if Change address is not meant to Spam
       address origAddress = originalAddressTraker[msg.sender];
       uint newCount = changeAddressAttempts[origAddress]+1;
-      assert(newCount&lt;5);
+      assert(newCount<5);
       changeAddressAttempts[origAddress] = newCount;
       
       // Do the address change transaction
@@ -274,30 +274,30 @@ contract BitindiaVestingContract is Ownable{
   function claimAmount() internal whenContractIsActive whenClaimable checkValidUser{
       uint256 amount = 0;
       uint256 periodAmount = 0;
-      if(now&gt;firstDueDate){
+      if(now>firstDueDate){
         periodAmount = ownersMapFirstPeriod[msg.sender];
-        if(periodAmount &gt; 0){
+        if(periodAmount > 0){
           ownersMapFirstPeriod[msg.sender] = 0;
           amount += periodAmount;
         }
       }
 
-      if(now&gt;secondDueDate){
+      if(now>secondDueDate){
         periodAmount = ownersMapSecondPeriod[msg.sender];
-        if(periodAmount &gt; 0){
+        if(periodAmount > 0){
           ownersMapSecondPeriod[msg.sender] = 0;
           amount += periodAmount;
         }
       }
 
-      if(now&gt;thirdDueDate){
+      if(now>thirdDueDate){
         periodAmount = ownersMapThirdPeriod[msg.sender];
-        if(periodAmount &gt; 0){
+        if(periodAmount > 0){
           ownersMapThirdPeriod[msg.sender] = 0;
           amount += periodAmount;
         }
       }
-      require(amount&gt;0);
+      require(amount>0);
       ownersMap[msg.sender]= ownersMap[msg.sender]-amount;
       token.transfer(msg.sender, amount);
       totalCommitted -= amount;

@@ -27,20 +27,20 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -89,16 +89,16 @@ contract GTBC is Owned, SafeMath, Pausable, EIP20Interface {
 
     uint8 public version = 1;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public frozen;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public frozen;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Freeze(address indexed from, uint256 value);
     event Unfreeze(address indexed from, uint256 value);
 
     constructor() public {
-        name = &quot;Global Token Bet Coin &quot;;
-        symbol = &quot;GTBC&quot;;
+        name = "Global Token Bet Coin ";
+        symbol = "GTBC";
         decimals = 18;
         totalSupply = 1000000000 * 10 ** uint256(decimals);
         balances[msg.sender] = totalSupply;
@@ -106,8 +106,8 @@ contract GTBC is Owned, SafeMath, Pausable, EIP20Interface {
 
     // freeze part
     function freeze(address _addr, uint256 _value) public onlyOwner returns (bool success) {
-        require(balances[_addr] &gt;= _value);
-        require(_value &gt; 0);
+        require(balances[_addr] >= _value);
+        require(_value > 0);
         balances[_addr] = sub(balances[_addr], _value);
         frozen[_addr] = add(frozen[_addr], _value);
         emit Freeze(_addr, _value);
@@ -115,8 +115,8 @@ contract GTBC is Owned, SafeMath, Pausable, EIP20Interface {
     }
     
     function unfreeze(address _addr, uint256 _value) public onlyOwner returns (bool success) {
-        require(frozen[_addr] &gt;= _value);
-        require(_value &gt; 0);
+        require(frozen[_addr] >= _value);
+        require(_value > 0);
         frozen[_addr] = sub(frozen[_addr], _value);
         balances[_addr] = add(balances[_addr], _value);
         emit Unfreeze(_addr, _value);
@@ -133,8 +133,8 @@ contract GTBC is Owned, SafeMath, Pausable, EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public notPaused returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -142,9 +142,9 @@ contract GTBC is Owned, SafeMath, Pausable, EIP20Interface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) notPaused public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
+        require(allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -153,7 +153,7 @@ contract GTBC is Owned, SafeMath, Pausable, EIP20Interface {
     }
 
     function approve(address _spender, uint256 _value) public notPaused returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;

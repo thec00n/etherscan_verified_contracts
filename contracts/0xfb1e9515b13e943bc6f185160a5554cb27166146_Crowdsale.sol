@@ -9,13 +9,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal pure  returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure  returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -27,7 +27,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -143,7 +143,7 @@ contract Crowdsale is Pausable {
     uint public numOfBlocksInMinute; // number of blocks in one minute * 100. eg. 
     WhiteList public whiteList;     // whitelist contract
 
-    mapping(address =&gt; Backer) public backers; // contributors list
+    mapping(address => Backer) public backers; // contributors list
     address[] public backersIndex; // to be able to iterate through backers for verification.              
     uint public priorTokensSent; 
     uint public presaleCap;
@@ -151,7 +151,7 @@ contract Crowdsale is Pausable {
 
     // @notice to verify if action is not performed out of the campaign range
     modifier respectTimeFrame() {
-        require(block.number &gt;= startBlock &amp;&amp; block.number &lt;= endBlock);
+        require(block.number >= startBlock && block.number <= endBlock);
         _;
     }
 
@@ -231,7 +231,7 @@ contract Crowdsale is Pausable {
     // @notice It will be called by owner to start the sale    
     function start(uint _block) external onlyOwner() {   
 
-        require(_block &lt;= (numOfBlocksInMinute * 60 * 24 * 55)/100);  // allow max 55 days for campaign 323136
+        require(_block <= (numOfBlocksInMinute * 60 * 24 * 55)/100);  // allow max 55 days for campaign 323136
         startBlock = block.number;
         endBlock = startBlock.add(_block); 
     }
@@ -240,15 +240,15 @@ contract Crowdsale is Pausable {
     // this function will allow on adjusting duration of campaign closer to the end 
     function adjustDuration(uint _block) external onlyOwner() {
 
-        require(_block &lt; (numOfBlocksInMinute * 60 * 24 * 60)/100); // allow for max of 60 days for campaign
-        require(_block &gt; block.number.sub(startBlock)); // ensure that endBlock is not set in the past
+        require(_block < (numOfBlocksInMinute * 60 * 24 * 60)/100); // allow for max of 60 days for campaign
+        require(_block > block.number.sub(startBlock)); // ensure that endBlock is not set in the past
         endBlock = startBlock.add(_block); 
     }   
 
     // @notice due to Ether to Dollar flacutation this value will be adjusted during the campaign
     // @param _dollarToEtherRatio {uint} new value of dollar to ether ratio
     function adjustDollarToEtherRatio(uint _dollarToEtherRatio) external onlyOwner() {
-        require(_dollarToEtherRatio &gt; 0);
+        require(_dollarToEtherRatio > 0);
         dollarToEtherRatio = _dollarToEtherRatio;
     }
 
@@ -266,8 +266,8 @@ contract Crowdsale is Pausable {
         if (backer.weiReceived == 0)
             backersIndex.push(_backer);
        
-        backer.tokensToSend += tokensToSend; // save contributor&#39;s total tokens sent
-        backer.weiReceived = backer.weiReceived.add(msg.value);  // save contributor&#39;s total ether contributed
+        backer.tokensToSend += tokensToSend; // save contributor's total tokens sent
+        backer.weiReceived = backer.weiReceived.add(msg.value);  // save contributor's total ether contributed
 
         if (Step.FundingPublicSale == currentStep) { // Update the total Ether received and tokens sent during public sale
             ethReceivedMain = ethReceivedMain.add(msg.value);
@@ -291,17 +291,17 @@ contract Crowdsale is Pausable {
     // @return tokensToSend {uint} proper number of tokens based on the timline
     function determinePurchase() internal view  returns (uint) {
 
-        require(msg.value &gt;= minInvestETH);   // ensure that min contributions amount is met  
+        require(msg.value >= minInvestETH);   // ensure that min contributions amount is met  
         uint tokenAmount = dollarToEtherRatio.mul(msg.value)/4e10;  // price of token is $0.01 and there are 8 decimals for the token
         
         uint tokensToSend;
           
         if (Step.FundingPublicSale == currentStep) {  // calculate price of token in public sale
             tokensToSend = tokenAmount;
-            require(totalTokensSent + tokensToSend + priorTokensSent &lt;= maxCap); // Ensure that max cap hasn&#39;t been reached  
+            require(totalTokensSent + tokensToSend + priorTokensSent <= maxCap); // Ensure that max cap hasn't been reached  
         }else {
             tokensToSend = tokenAmount + (tokenAmount * 50) / 100; 
-            require(totalTokensSent + tokensToSend &lt;= presaleCap); // Ensure that max cap hasn&#39;t been reached for presale            
+            require(totalTokensSent + tokensToSend <= presaleCap); // Ensure that max cap hasn't been reached for presale            
         }                                                        
        
         return tokensToSend;
@@ -316,7 +316,7 @@ contract Crowdsale is Pausable {
         require(!crowdsaleClosed);        
         // purchasing precise number of tokens might be impractical, thus subtract 1000 
         // tokens so finalization is possible near the end 
-        require(block.number &gt;= endBlock || totalTokensSent + priorTokensSent &gt;= maxCap - 1000);                        
+        require(block.number >= endBlock || totalTokensSent + priorTokensSent >= maxCap - 1000);                        
         crowdsaleClosed = true; 
         
         if (!token.transfer(team, token.balanceOf(this))) // transfer all remaining tokens to team address
@@ -331,7 +331,7 @@ contract Crowdsale is Pausable {
 
     // @notice Fail-safe token transfer
     function tokenDrain() external onlyOwner() {
-        if (block.number &gt; endBlock) {
+        if (block.number > endBlock) {
             if (!token.transfer(multisig, token.balanceOf(this))) 
                 revert();
         }
@@ -345,8 +345,8 @@ contract Crowdsale is Pausable {
 
         Backer storage backer = backers[msg.sender];
 
-        require(backer.weiReceived &gt; 0);  // ensure that user has sent contribution
-        require(!backer.refunded);        // ensure that user hasn&#39;t been refunded yet
+        require(backer.weiReceived > 0);  // ensure that user has sent contribution
+        require(!backer.refunded);        // ensure that user hasn't been refunded yet
 
         backer.refunded = true;  // save refund status to true
         refundCount++;

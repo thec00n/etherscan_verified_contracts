@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -150,7 +150,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -179,7 +179,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -269,9 +269,9 @@ contract StandardCrowdsale {
         uint256 _rate, 
         address _wallet) 
     {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != 0x0);
 
         startTime = _startTime;
@@ -343,9 +343,9 @@ contract StandardCrowdsale {
         internal 
         returns(bool) 
     {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
@@ -354,17 +354,17 @@ contract StandardCrowdsale {
         constant 
         returns(bool) 
     {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     modifier onlyBeforeSale() {
-        require(now &lt; startTime);
+        require(now < startTime);
         _;
     }
 
     // Request Modification : Add check 24hours before token sale
     modifier only24HBeforeSale() {
-        require(now &lt; startTime.sub(1 days));
+        require(now < startTime.sub(1 days));
         _;
     }
 
@@ -384,7 +384,7 @@ contract CappedCrowdsale is StandardCrowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -392,14 +392,14 @@ contract CappedCrowdsale is StandardCrowdsale {
   // @return true if investors can buy at the moment
   // Request Modification : delete constant because needed in son contract
   function validPurchase() internal returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -412,8 +412,8 @@ contract CappedCrowdsale is StandardCrowdsale {
  * @dev inherite from StandardToken and Ownable by Zeppelin
  */
 contract MINDToken is StandardToken, Ownable {
-    string  public  constant name = &quot;MIND Token&quot;;
-    string  public  constant symbol = &quot;MIND&quot;;
+    string  public  constant name = "MIND Token";
+    string  public  constant symbol = "MIND";
     uint8    public  constant decimals = 18;
 
     uint    public  transferableStartTime;
@@ -425,7 +425,7 @@ contract MINDToken is StandardToken, Ownable {
 
     modifier onlyWhenTransferEnabled() 
     {
-        if ( now &lt; transferableStartTime ) {
+        if ( now < transferableStartTime ) {
             require(msg.sender == tokenSaleContract || msg.sender == fullTokenWallet || msg.sender == owner);
         }
         _;
@@ -607,16 +607,16 @@ contract MINDTokenCrowdSale is Ownable, CappedCrowdsale {
     */
     function getBonus(uint256 _tokens) constant returns (uint256 bonus) {
         require(_tokens != 0);
-        if (startTime &lt;= now &amp;&amp; now &lt; startTime + 1 days) {
+        if (startTime <= now && now < startTime + 1 days) {
             // 20% bonus
             return _tokens.div(5);
-        } else if (startTime + 1 days &lt;= now &amp;&amp; now &lt; startTime + 2 days ) {
+        } else if (startTime + 1 days <= now && now < startTime + 2 days ) {
             // 15% bonus
             return _tokens.mul(3).div(20);
-        } else if (startTime + 2 days &lt;= now &amp;&amp; now &lt; startTime + 3 days ) {
+        } else if (startTime + 2 days <= now && now < startTime + 3 days ) {
             // 10% bonus
             return _tokens.div(10);
-        } else if (startTime + 3 days &lt;= now &amp;&amp; now &lt; startTime + 4 days ) {
+        } else if (startTime + 3 days <= now && now < startTime + 4 days ) {
             // 5% bonus
             return _tokens.div(20);
         }

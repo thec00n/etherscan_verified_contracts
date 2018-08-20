@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -41,7 +41,7 @@ contract TokenTimeLock {
     function TokenTimeLock(IToken _token, address _beneficiary, uint _releaseTimeFirst, uint _amountFirst, uint _releaseTimeSecond, uint _amountSecond)
     public
     {
-        require(_releaseTimeFirst &gt; now &amp;&amp; _releaseTimeSecond &gt; now);
+        require(_releaseTimeFirst > now && _releaseTimeSecond > now);
         token = _token;
         beneficiary = _beneficiary;
 
@@ -52,19 +52,19 @@ contract TokenTimeLock {
     }
 
     function releaseFirst() public {
-        require(now &gt;= releaseTimeFirst);
+        require(now >= releaseTimeFirst);
 
         uint amount = token.balanceOf(this);
-        require(amount &gt; 0 &amp;&amp; amount &gt;= amountFirst);
+        require(amount > 0 && amount >= amountFirst);
 
         token.transfer(beneficiary, amountFirst);
     }
 
     function releaseSecond() public {
-        require(now &gt;= releaseTimeSecond);
+        require(now >= releaseTimeSecond);
 
         uint amount = token.balanceOf(this);
-        require(amount &gt; 0 &amp;&amp; amount &gt;= amountSecond);
+        require(amount > 0 && amount >= amountSecond);
 
         token.transfer(beneficiary, amountSecond);
     }
@@ -144,9 +144,9 @@ contract Crowdsale is Owned {
     uint public bonus = 5000; //50%
     uint public currentPrice;
     address public beneficiary;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; TokenTimeLock) lockBalances;
-    mapping(address =&gt; uint) prices;
+    mapping(address => uint) balances;
+    mapping(address => TokenTimeLock) lockBalances;
+    mapping(address => uint) prices;
 
     uint private bonusBase = 10000; //100%;
 
@@ -204,11 +204,11 @@ contract Crowdsale is Owned {
     only(owner)
     {
         require(
-        currentState == State.INIT &amp;&amp; _newState == State.PRESALE
-        || currentState == State.PRESALE &amp;&amp; _newState == State.PREICO
-        || currentState == State.PREICO &amp;&amp; _newState == State.PREICO_FINISHED
-        || currentState == State.PREICO_FINISHED &amp;&amp; _newState == State.ICO
-        || currentState == State.ICO &amp;&amp; _newState == State.CLOSED
+        currentState == State.INIT && _newState == State.PRESALE
+        || currentState == State.PRESALE && _newState == State.PREICO
+        || currentState == State.PREICO && _newState == State.PREICO_FINISHED
+        || currentState == State.PREICO_FINISHED && _newState == State.ICO
+        || currentState == State.ICO && _newState == State.CLOSED
         || _newState == State.EMERGENCY_STOP
         );
 
@@ -225,7 +225,7 @@ contract Crowdsale is Owned {
     inState(State.PRESALE)
     {
         uint totalAmount = _firstStake.add(_secondStake);
-        require(totalSaleSupply.add(totalAmount) &lt;= MAX_SALE_SUPPLY);
+        require(totalSaleSupply.add(totalAmount) <= MAX_SALE_SUPPLY);
 
         totalSaleSupply = totalSaleSupply.add(totalAmount);
 
@@ -257,7 +257,7 @@ contract Crowdsale is Owned {
     only(owner)
     inState(State.PRESALE)
     {
-        require(totalSaleSupply.add(_amount) &lt;= MAX_SALE_SUPPLY);
+        require(totalSaleSupply.add(_amount) <= MAX_SALE_SUPPLY);
 
         totalSaleSupply = totalSaleSupply.add(_amount);
 
@@ -289,7 +289,7 @@ contract Crowdsale is Owned {
             require(msg.value != 0);
             uint weiAmount = msg.value;
             transferTokens = weiAmount.div(currentPrice);
-            require(totalSaleSupply.add(transferTokens) &lt;= MAX_SALE_SUPPLY);
+            require(totalSaleSupply.add(transferTokens) <= MAX_SALE_SUPPLY);
 
             totalSaleSupply = totalSaleSupply.add(transferTokens);
             balances[msg.sender] = balances[msg.sender].add(weiAmount);
@@ -301,10 +301,10 @@ contract Crowdsale is Owned {
         } else {
             uint price = prices[_erc20OrEth];
 
-            require(price &gt; 0 &amp;&amp; _amount &gt; 0);
+            require(price > 0 && _amount > 0);
 
             transferTokens = _amount.div(price);
-            require(totalSaleSupply.add(transferTokens) &lt;= MAX_SALE_SUPPLY);
+            require(totalSaleSupply.add(transferTokens) <= MAX_SALE_SUPPLY);
 
             totalSaleSupply = totalSaleSupply.add(transferTokens);
             balances[msg.sender] = balances[msg.sender].add(weiAmount);
@@ -329,7 +329,7 @@ contract Crowdsale is Owned {
     onlyConfirmOwner
     {
 
-        require(totalSaleSupply.add(_amount) &lt;= MAX_SALE_SUPPLY);
+        require(totalSaleSupply.add(_amount) <= MAX_SALE_SUPPLY);
 
         totalSaleSupply = totalSaleSupply.add(_amount);
 
@@ -343,7 +343,7 @@ contract Crowdsale is Owned {
     {
         require(msg.value != 0);
         uint transferTokens = msg.value.div(currentPrice);
-        require(totalSaleSupply.add(transferTokens) &lt;= MAX_SALE_SUPPLY);
+        require(totalSaleSupply.add(transferTokens) <= MAX_SALE_SUPPLY);
 
         totalSaleSupply = totalSaleSupply.add(transferTokens);
         balances[msg.sender] = balances[msg.sender].add(msg.value);

@@ -18,20 +18,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -145,7 +145,7 @@ contract IcoCrowdsale is Ownable {
     /**
      * @dev Indicates whether contribution identified by bytes32 id is already registered
      */
-    mapping (bytes32 =&gt; bool) public isContributionRegistered;
+    mapping (bytes32 => bool) public isContributionRegistered;
 
     /**
      * @dev Stores price tiers in chronological order
@@ -158,7 +158,7 @@ contract IcoCrowdsale is Ownable {
     uint256 public endBlock;
 
     modifier onlySufficientValue(uint256 value) {
-        require(value &gt;= minValue);
+        require(value >= minValue);
         _;
     }
 
@@ -178,7 +178,7 @@ contract IcoCrowdsale is Ownable {
     }
 
     modifier onlyScheduledTiers() {
-        require(tiers.length &gt; 0);
+        require(tiers.length > 0);
         _;
     }
 
@@ -188,8 +188,8 @@ contract IcoCrowdsale is Ownable {
     }
 
     modifier onlySubsequentBlock(uint256 startBlock) {
-        if (tiers.length &gt; 0) {
-            require(startBlock &gt; tiers[tiers.length - 1].startBlock);
+        if (tiers.length > 0) {
+            require(startBlock > tiers[tiers.length - 1].startBlock);
         }
         _;
     }
@@ -355,7 +355,7 @@ contract IcoCrowdsale is Ownable {
      */
     function calculateContribution(uint256 value) public view returns (uint256) {
         uint256 price = currentPrice();
-        if (price &gt; 0) {
+        if (price > 0) {
             return value.mul(10 ** token.decimals()).div(price);
         }
 
@@ -367,8 +367,8 @@ contract IcoCrowdsale is Ownable {
      * @return uint256 Tier containing the block or zero if before start or last if after finished
      */
     function getTierId(uint256 blockNumber) public view returns (uint256) {
-        for (uint256 i = tiers.length - 1; i &gt;= 0; i--) {
-            if (blockNumber &gt;= tiers[i].startBlock) {
+        for (uint256 i = tiers.length - 1; i >= 0; i--) {
+            if (blockNumber >= tiers[i].startBlock) {
                 return i;
             }
         }
@@ -381,7 +381,7 @@ contract IcoCrowdsale is Ownable {
      * @return uint256 Current price if tiers defined, otherwise 0
      */
     function currentPrice() public view returns (uint256) {
-        if (tiers.length &gt; 0) {
+        if (tiers.length > 0) {
             uint256 id = getTierId(block.number);
             return tiers[id].price;
         }
@@ -417,11 +417,11 @@ contract IcoCrowdsale is Ownable {
         endBlocks = new uint256[](tiers.length);
         prices = new uint256[](tiers.length);
 
-        for (uint256 i = 0; i &lt; tiers.length; i++) {
+        for (uint256 i = 0; i < tiers.length; i++) {
             startBlocks[i] = tiers[i].startBlock;
             prices[i] = tiers[i].price;
 
-            if (i + 1 &lt; tiers.length) {
+            if (i + 1 < tiers.length) {
                 endBlocks[i] = tiers[i + 1].startBlock - 1;
             } else {
                 endBlocks[i] = endBlock;
@@ -435,9 +435,9 @@ contract IcoCrowdsale is Ownable {
      */
     function isActive() public view returns (bool) {
         return
-            tiers.length &gt; 0 &amp;&amp;
-            block.number &gt;= tiers[0].startBlock &amp;&amp;
-            block.number &lt;= endBlock;
+            tiers.length > 0 &&
+            block.number >= tiers[0].startBlock &&
+            block.number <= endBlock;
     }
 
     /**
@@ -445,7 +445,7 @@ contract IcoCrowdsale is Ownable {
      * @return boolean True if end block is defined, otherwise False
      */
     function isFinalized() public view returns (bool) {
-        return endBlock &gt; 0;
+        return endBlock > 0;
     }
 
     /**
@@ -453,7 +453,7 @@ contract IcoCrowdsale is Ownable {
      * @return boolean True if end block passed, otherwise False
      */
     function isFinished() public view returns (bool) {
-        return endBlock &gt; 0 &amp;&amp; block.number &gt; endBlock;
+        return endBlock > 0 && block.number > endBlock;
     }
 
     function acceptContribution(address contributor, uint256 value)

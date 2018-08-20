@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,24 +40,24 @@ library SafeMath {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
 
-// Slightly modified Zeppelin&#39;s Vested Token deriving MiniMeToken
+// Slightly modified Zeppelin's Vested Token deriving MiniMeToken
 
 /*
     Copyright 2018, Konstantin Viktorov (EscrowBlock Foundation)
@@ -146,26 +146,26 @@ contract TokenController {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.    If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.    If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///    token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///    token using the token distribution at a given block, this will allow DAO's
 ///    and DApps to upgrade their features in a decentralized manner without
 ///    affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///    that deploys the contract, so usually this token will be deployed by a
-///    token controller contract, which Giveth will call a &quot;Campaign&quot;
+///    token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;               //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;               //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;               //An identifier: e.g. REP
-    string public version = &quot;MMT_0.1&quot;; //An arbitrary versioning scheme
+    string public version = "MMT_0.1"; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -194,10 +194,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //    contract when the balance changes the block number that the change
     //    occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -276,7 +276,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            require(allowed[_from][msg.sender] &gt;= _amount);
+            require(allowed[_from][msg.sender] >= _amount);
             allowed[_from][msg.sender] -= _amount;
         }
         doTransfer(_from, _to, _amount);
@@ -297,15 +297,15 @@ contract MiniMeToken is Controlled {
              return;
              }
 
-             require(parentSnapShotBlock &lt; block.number);
+             require(parentSnapShotBlock < block.number);
 
              // Do not allow transfer to 0x0 or the token contract itself
-             require((_to != 0) &amp;&amp; (_to != address(this)));
+             require((_to != 0) && (_to != address(this)));
 
              // If the amount being transfered is more than the balance of the
              //    account the transfer throws
              uint256 previousBalanceFrom = balanceOfAt(_from, block.number);
-             require(previousBalanceFrom &gt;= _amount);
+             require(previousBalanceFrom >= _amount);
 
              // Alerts the token controller of the transfer
              if (isContract(controller)) {
@@ -319,7 +319,7 @@ contract MiniMeToken is Controlled {
              // Then update the balance array with the new value for the address
              //    receiving the tokens
              uint256 previousBalanceTo = balanceOfAt(_to, block.number);
-             require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+             require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
              updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
              // An event to make the transfer easy to find on the blockchain
@@ -327,7 +327,7 @@ contract MiniMeToken is Controlled {
 
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -413,7 +413,7 @@ contract MiniMeToken is Controlled {
         //    genesis block for that token as this contains initial balance of
         //    this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -438,7 +438,7 @@ contract MiniMeToken is Controlled {
         //    genesis block for this token as that contains totalSupply of this
         //    token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -500,9 +500,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -517,9 +517,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint256 _amount
     ) onlyController returns (bool) {
         uint256 curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint256 previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -550,16 +550,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                min = mid;
             } else {
                max = mid-1;
@@ -575,7 +575,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal    {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                  Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                  newCheckPoint.fromBlock =    uint128(block.number);
                  newCheckPoint.value = uint128(_value);
@@ -594,15 +594,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///    set to 0, then the `proxyPayment` method is called which relays the
     ///    ether and creates tokens as described in the token controller contract
     function ()    payable {
@@ -723,15 +723,15 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
     bool burnsOnRevoke;    // 2 * 1 = 2 bits? or 2 bytes?
     } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-    mapping (address =&gt; TokenGrant[]) public grants;
+    mapping (address => TokenGrant[]) public grants;
 
     event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint64 start, uint64 cliff, uint64 vesting, uint256 grantId);
 
-    mapping (address =&gt; bool) canCreateGrants;
+    mapping (address => bool) canCreateGrants;
     address vestingWhitelister;
 
     modifier canTransfer(address _sender, uint _value) {
-    require(_value &lt;= spendableBalanceOf(_sender));
+    require(_value <= spendableBalanceOf(_sender));
     _;
     }
 
@@ -793,10 +793,10 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
     ) public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
+    require(_cliff >= _start && _vesting >= _cliff);
     require(canCreateGrants[msg.sender]);
 
-    require(tokenGrantsCount(_to) &lt; MAX_GRANTS_PER_ADDRESS);    // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(tokenGrantsCount(_to) < MAX_GRANTS_PER_ADDRESS);    // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint256 count = grants[_to].push(
                TokenGrant(
@@ -866,7 +866,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
     * @dev Calculate the total amount of transferable tokens of a holder at a given time
     * @param holder address The address of the holder
     * @param time uint64 The specific time.
-    * @return An uint256 representing a holder&#39;s total amount of transferable tokens.
+    * @return An uint256 representing a holder's total amount of transferable tokens.
     */
     function transferableTokens(address holder, uint64 time) public view returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -875,7 +875,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
         nonVested = SafeMath.add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -917,7 +917,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
     *    |        .        |
     *    |        .        |
     *    |    .            |
-    *    +===+===========+---------+----------&gt; time
+    *    +===+===========+---------+----------> time
     *        Start         Clift    Vesting
     */
     function calculateVestedTokens(
@@ -928,12 +928,12 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
     uint256 vesting) internal view returns (uint256)
     {
         // Shortcuts for before cliff and after vesting cases.
-        if (time &lt; cliff) return 0;
-        if (time &gt;= vesting) return tokens;
+        if (time < cliff) return 0;
+        if (time >= vesting) return tokens;
 
         // Interpolate all vested tokens.
         // As before cliff the shortcut returns 0, we can use just calculate a value
-        // in the vesting rect (as shown in above&#39;s figure)
+        // in the vesting rect (as shown in above's figure)
 
         // vestedTokens = tokens * (time - start) / (vesting - start)
         uint256 vestedTokens = SafeMath.div(
@@ -1005,7 +1005,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken {
     function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
         date = Math.max64(grants[holder][i].vesting, date);
     }
     }
@@ -1044,15 +1044,15 @@ contract MiniMeIrrVesDivToken is MiniMeIrrevocableVestedToken {
     uint256 claimedAmount;
     uint256 totalSupply;
     bool recycled;
-    mapping (address =&gt; bool) claimed;
+    mapping (address => bool) claimed;
     }
 
     Dividend[] public dividends;
 
-    mapping (address =&gt; uint256) dividendsClaimed;
+    mapping (address => uint256) dividendsClaimed;
 
     modifier validDividendIndex(uint256 _dividendIndex) {
-    require(_dividendIndex &lt; dividends.length);
+    require(_dividendIndex < dividends.length);
     _;
     }
 
@@ -1085,16 +1085,16 @@ contract MiniMeIrrVesDivToken is MiniMeIrrevocableVestedToken {
     uint256 claim = balance.mul(dividend.amount).div(dividend.totalSupply);
     dividend.claimed[msg.sender] = true;
     dividend.claimedAmount = SafeMath.add(dividend.claimedAmount, claim);
-    if (claim &gt; 0) {
+    if (claim > 0) {
          msg.sender.transfer(claim);
          DividendClaimed(msg.sender, _dividendIndex, claim);
     }
     }
 
     function claimDividendAll() public {
-    require(dividendsClaimed[msg.sender] &lt; dividends.length);
-    for (uint i = dividendsClaimed[msg.sender]; i &lt; dividends.length; i++) {
-         if ((dividends[i].claimed[msg.sender] == false) &amp;&amp; (dividends[i].recycled == false)) {
+    require(dividendsClaimed[msg.sender] < dividends.length);
+    for (uint i = dividendsClaimed[msg.sender]; i < dividends.length; i++) {
+         if ((dividends[i].claimed[msg.sender] == false) && (dividends[i].recycled == false)) {
          dividendsClaimed[msg.sender] = SafeMath.add(i, 1);
          claimDividend(i);
          }
@@ -1107,7 +1107,7 @@ contract MiniMeIrrVesDivToken is MiniMeIrrevocableVestedToken {
     {
     Dividend storage dividend = dividends[_dividendIndex];
     require(dividend.recycled == false);
-    require(dividend.timestamp &lt; SafeMath.sub(getNow(), RECYCLE_TIME));
+    require(dividend.timestamp < SafeMath.sub(getNow(), RECYCLE_TIME));
     dividends[_dividendIndex].recycled = true;
     uint256 currentSupply = super.totalSupplyAt(block.number);
     uint256 remainingAmount = SafeMath.sub(dividend.amount, dividend.claimedAmount);
@@ -1143,9 +1143,9 @@ contract ESCBCoin is MiniMeIrrVesDivToken {
     _tokenFactory,
     0x0,            // no parent token
     0,               // no snapshot block number from parent
-    &quot;ESCB token&quot;,    // Token name
+    "ESCB token",    // Token name
     18,             // Decimals
-    &quot;ESCB&quot;,         // Symbol
+    "ESCB",         // Symbol
     true            // Enable transfers
     ) {}
 }
@@ -1211,7 +1211,7 @@ contract SaleWallet {
     enum State { Active, Refunding }
     State public currentState;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     //Events
     event Withdrawal();
@@ -1257,7 +1257,7 @@ contract SaleWallet {
     function enableRefunds() public {
     require(currentState == State.Active);
     assert(msg.sender == multisig);    // Only the multisig can request it
-    require(!tokenSale.minGoalReached());    // Allow when minimum goal isn&#39;t reached
+    require(!tokenSale.minGoalReached());    // Allow when minimum goal isn't reached
     require(tokenSale.saleFinalized()); // Allow when sale is finalized
     currentState = State.Refunding;
     RefundsEnabled();
@@ -1297,7 +1297,7 @@ contract SaleWallet {
    bool public saleStopped = false;              // Has ESCB Dev stopped the sale?
    bool public saleFinalized = false;            // Has ESCB Dev finalized the sale?
 
-   mapping (address =&gt; bool) public activated;   // Address confirmates that wants to activate the sale
+   mapping (address => bool) public activated;   // Address confirmates that wants to activate the sale
 
    ESCBCoin public token;                         // The token
    ESCBCoinPlaceholder public networkPlaceholder; // The network placeholder
@@ -1323,8 +1323,8 @@ contract SaleWallet {
    // @param _price The price. Price in wei-ESCBCoin per wei
    function ESCBTokenSale (uint _initialTime, uint _controlTime, address _ESCBDevMultisig, uint256 _price)
             non_zero_address(_ESCBDevMultisig) {
-     assert (_initialTime &gt;= getNow());
-     assert (_initialTime &lt; _controlTime);
+     assert (_initialTime >= getNow());
+     assert (_initialTime < _controlTime);
 
      // Save constructor arguments as global variables
      initialTime = _initialTime;
@@ -1339,20 +1339,20 @@ contract SaleWallet {
    }
 
    modifier only_before_sale {
-     require(getNow() &lt; initialTime);
+     require(getNow() < initialTime);
      _;
    }
 
    modifier only_during_sale_period {
-     require(getNow() &gt;= initialTime);
+     require(getNow() >= initialTime);
 
      // if minimum goal is reached, then infinite time to reach the main goal
-     require(getNow() &lt; controlTime || minGoalReached());
+     require(getNow() < controlTime || minGoalReached());
      _;
    }
 
    modifier only_after_sale {
-     require(getNow() &gt;= controlTime || goalReached());
+     require(getNow() >= controlTime || goalReached());
      _;
    }
 
@@ -1377,7 +1377,7 @@ contract SaleWallet {
    }
 
    modifier only_finalized_sale {
-     require(getNow() &gt;= controlTime || goalReached());
+     require(getNow() >= controlTime || goalReached());
      require(saleFinalized);
      _;
    }
@@ -1388,7 +1388,7 @@ contract SaleWallet {
    }
 
    modifier minimum_value(uint256 x) {
-     require(msg.value &gt;= x);
+     require(msg.value >= x);
      _;
    }
 
@@ -1408,7 +1408,7 @@ contract SaleWallet {
      require(_networkPlaceholder != 0);
      require(_saleWallet != 0);
 
-     // Assert that the function hasn&#39;t been called before, as activate will happen at the end
+     // Assert that the function hasn't been called before, as activate will happen at the end
      assert(!activated[this]);
 
      token = ESCBCoin(_token);
@@ -1424,9 +1424,9 @@ contract SaleWallet {
      assert(saleWallet.multisig() == ESCBDevMultisig);        // receiving wallet must match
      assert(saleWallet.tokenSale() == address(this));         // watched token sale must be self
 
-     assert(_minGoal &gt; 0);                                   // minimum goal is not empty
-     assert(_goal &gt; 0);                                      // the main goal is not empty
-     assert(_minGoal &lt; _goal);                               // minimum goal is less than the main goal
+     assert(_minGoal > 0);                                   // minimum goal is not empty
+     assert(_goal > 0);                                      // the main goal is not empty
+     assert(_minGoal < _goal);                               // minimum goal is less than the main goal
 
      minGoal = _minGoal;
      goal = _goal;
@@ -1454,7 +1454,7 @@ contract SaleWallet {
             constant
             public
             returns (bool) {
-     return activated[this] &amp;&amp; activated[ESCBDevMultisig];
+     return activated[this] && activated[ESCBDevMultisig];
    }
 
    // @notice Get the price for tokens for the current stage
@@ -1477,57 +1477,57 @@ contract SaleWallet {
             internal
             returns (uint256) {
 
-     if (totalCollected &gt;= 0 &amp;&amp; totalCollected &lt;= 80 ether) { // 1 ETH = 500 USD, then 40 000 USD 1 stage
+     if (totalCollected >= 0 && totalCollected <= 80 ether) { // 1 ETH = 500 USD, then 40 000 USD 1 stage
        currentStage = 1;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 20), 100));
      }
 
-     if (totalCollected &gt; 80 ether &amp;&amp; totalCollected &lt;= 200 ether) { // 1 ETH = 500 USD, then 100 000 USD 2 stage
+     if (totalCollected > 80 ether && totalCollected <= 200 ether) { // 1 ETH = 500 USD, then 100 000 USD 2 stage
        currentStage = 2;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 18), 100));
      }
 
-     if (totalCollected &gt; 200 ether &amp;&amp; totalCollected &lt;= 400 ether) { // 1 ETH = 500 USD, then 200 000 USD 3 stage
+     if (totalCollected > 200 ether && totalCollected <= 400 ether) { // 1 ETH = 500 USD, then 200 000 USD 3 stage
        currentStage = 3;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 16), 100));
      }
 
-     if (totalCollected &gt; 400 ether &amp;&amp; totalCollected &lt;= 1000 ether) { // 1 ETH = 500 USD, then 500 000 USD 4 stage
+     if (totalCollected > 400 ether && totalCollected <= 1000 ether) { // 1 ETH = 500 USD, then 500 000 USD 4 stage
        currentStage = 4;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 14), 100));
      }
 
-     if (totalCollected &gt; 1000 ether &amp;&amp; totalCollected &lt;= 2000 ether) { // 1 ETH = 500 USD, then 1 000 000 USD 5 stage
+     if (totalCollected > 1000 ether && totalCollected <= 2000 ether) { // 1 ETH = 500 USD, then 1 000 000 USD 5 stage
        currentStage = 5;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 12), 100));
      }
 
-     if (totalCollected &gt; 2000 ether &amp;&amp; totalCollected &lt;= 4000 ether) { // 1 ETH = 500 USD, then 2 000 000 USD 6 stage
+     if (totalCollected > 2000 ether && totalCollected <= 4000 ether) { // 1 ETH = 500 USD, then 2 000 000 USD 6 stage
        currentStage = 6;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 10), 100));
      }
 
-     if (totalCollected &gt; 4000 ether &amp;&amp; totalCollected &lt;= 8000 ether) { // 1 ETH = 500 USD, then 4 000 000 USD 7 stage
+     if (totalCollected > 4000 ether && totalCollected <= 8000 ether) { // 1 ETH = 500 USD, then 4 000 000 USD 7 stage
        currentStage = 7;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 8), 100));
      }
 
-     if (totalCollected &gt; 8000 ether &amp;&amp; totalCollected &lt;= 12000 ether) { // 1 ETH = 500 USD, then 6 000 000 USD 8 stage
+     if (totalCollected > 8000 ether && totalCollected <= 12000 ether) { // 1 ETH = 500 USD, then 6 000 000 USD 8 stage
        currentStage = 8;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 6), 100));
      }
 
-     if (totalCollected &gt; 12000 ether &amp;&amp; totalCollected &lt;= 16000 ether) { // 1 ETH = 500 USD, then 8 000 000 USD 9 stage
+     if (totalCollected > 12000 ether && totalCollected <= 16000 ether) { // 1 ETH = 500 USD, then 8 000 000 USD 9 stage
        currentStage = 9;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 4), 100));
      }
 
-     if (totalCollected &gt; 16000 ether &amp;&amp; totalCollected &lt;= 20000 ether) { // 1 ETH = 500 USD, then 10 000 000 USD 10 stage
+     if (totalCollected > 16000 ether && totalCollected <= 20000 ether) { // 1 ETH = 500 USD, then 10 000 000 USD 10 stage
        currentStage = 10;
        return SafeMath.add(_amount, SafeMath.div(SafeMath.mul(_amount, 2), 100));
      }
 
-     if (totalCollected &gt; 20000 ether) { // without bonus
+     if (totalCollected > 20000 ether) { // without bonus
        return _amount;
      }
    }
@@ -1538,7 +1538,7 @@ contract SaleWallet {
    function allocationForESCBbyStage()
             only(ESCBDevMultisig)
             public {
-     if(currentStage &gt; allocatedStage) {
+     if(currentStage > allocatedStage) {
        // ESCB Foundation owns 30% of the total number of emitted tokens.
        // totalSupply here 66%, then we 30%/66% to get amount 30% of tokens
        uint256 ESCBTokens = SafeMath.div(SafeMath.mul(SafeMath.sub(uint256(token.totalSupply()), usedTotalSupply), 15), 33);
@@ -1633,7 +1633,7 @@ contract SaleWallet {
             minimum_value(dust)
             internal
             returns (uint256) {
-     assert(totalCollected + msg.value &lt;= goal); // If goal is reached, throw
+     assert(totalCollected + msg.value <= goal); // If goal is reached, throw
      uint256 boughtTokens = priceForStage(SafeMath.mul(msg.value, price)); // Calculate how many tokens bought
      saleWallet.transfer(msg.value); // Send funds to multisig
      saleWallet.deposit(_owner, msg.value); // Send info about deposit to multisig
@@ -1658,7 +1658,7 @@ contract SaleWallet {
             only(ESCBDevMultisig)
             public
             returns (uint256) {
-     assert(totalCollected + _amount &lt;= goal); // If goal is reached, throw
+     assert(totalCollected + _amount <= goal); // If goal is reached, throw
      uint256 boughtTokens = priceForStage(SafeMath.mul(_amount, price)); // Calculate how many tokens bought
 
      assert(token.generateTokens(_owner, boughtTokens)); // Allocate tokens.
@@ -1743,7 +1743,7 @@ contract SaleWallet {
             public
             view
             returns (bool) {
-     return totalCollected &gt;= minGoal;
+     return totalCollected >= minGoal;
    }
 
    // @notice Check the main goal for 10th stage
@@ -1751,6 +1751,6 @@ contract SaleWallet {
             public
             view
             returns (bool) {
-     return totalCollected &gt;= goal;
+     return totalCollected >= goal;
    }
  }

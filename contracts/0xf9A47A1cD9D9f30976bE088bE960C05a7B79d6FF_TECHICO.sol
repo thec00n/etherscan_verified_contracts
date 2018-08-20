@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 /**
 * @title TECH ICO Contract
 * @dev TECH is an ERC-20 Standar Compliant Token
-* Contact: <span class="__cf_email__" data-cfemail="396e564b527a515850577a5c574d5c4b4a795e54585055175a5654">[email&#160;protected]</span>  www.WorkChainCenters.io
+* Contact: <span class="__cf_email__" data-cfemail="396e564b527a515850577a5c574d5c4b4a795e54585055175a5654">[email protected]</span>  www.WorkChainCenters.io
 */
 
 /**
@@ -24,12 +24,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -55,7 +55,7 @@ contract ERC20Basic {
  */
 contract admined {
     //mapping to user levels
-    mapping(address =&gt; uint8) public level;
+    mapping(address => uint8) public level;
     //0 normal user
     //1 basic admin
     //2 master admin
@@ -72,7 +72,7 @@ contract admined {
     * @dev This modifier limits function execution to the admin
     */
     modifier onlyAdmin(uint8 _level) { //A modifier to define admin-only functions
-        require(level[msg.sender] &gt;= _level ); //It require the user level to be more or equal than _level
+        require(level[msg.sender] >= _level ); //It require the user level to be more or equal than _level
         _;
     }
 
@@ -114,10 +114,10 @@ contract TECHICO is admined {
     uint256 public totalDistributed; //Whole sale tokens distributed
     ERC20Basic public tokenReward; //Token contract address
     uint256 public hardCap = 31200000 * (10 ** 18); // 31.200.000 tokens
-    mapping(address =&gt; uint256) public pending; //tokens pending to being transfered
+    mapping(address => uint256) public pending; //tokens pending to being transfered
     //Contract details
     address public creator; //Creator address
-    string public version = &#39;2&#39;; //Contract version
+    string public version = '2'; //Contract version
     //Bonus Related - How much tokens per bonus
     uint256 bonus1Remain = 1440000*10**18; //+20%
     uint256 bonus2Remain = 2380000*10**18; //+15%
@@ -128,7 +128,7 @@ contract TECHICO is admined {
     State laststate;
 
     //User rights handlers
-    mapping (address =&gt; bool) public whiteList; //List of allowed to send eth
+    mapping (address => bool) public whiteList; //List of allowed to send eth
 
     //Price related
     uint256 rate = 3000; //3000 tokens per ether unit
@@ -143,7 +143,7 @@ contract TECHICO is admined {
 
     //Modifier to prevent execution if ico has ended or is holded
     modifier notFinished() {
-        require(state != State.Successful &amp;&amp; state != State.Paused);
+        require(state != State.Successful && state != State.Paused);
         _;
     }
 
@@ -166,7 +166,7 @@ contract TECHICO is admined {
 
     /**
     * @notice Check remaining and cost function
-    * @dev The cost function doesn&#39;t include the bonuses calculation
+    * @dev The cost function doesn't include the bonuses calculation
     */
     function remainingTokensAndCost() public view returns (uint256[2]){
         uint256 remaining = hardCap.sub(totalDistributed);
@@ -213,12 +213,12 @@ contract TECHICO is admined {
     * @notice contribution handler
     */
     function contribute(address _target) public notFinished payable {
-        require(now &gt; SaleStart); //This time must be equal or greater than the start time
+        require(now > SaleStart); //This time must be equal or greater than the start time
 
         //To handle admin guided contributions
         address user;
-        //Let&#39;s if user is an admin and is givin a valid target
-        if(_target != address(0) &amp;&amp; level[msg.sender] &gt;= 1){
+        //Let's if user is an admin and is givin a valid target
+        if(_target != address(0) && level[msg.sender] >= 1){
           user = _target;
         } else {
           user = msg.sender; //If not the user is the sender
@@ -235,11 +235,11 @@ contract TECHICO is admined {
         uint256 buyHelper = tokenBought; //Base tokens bought
 
         //Bonus Stage 1
-        if(bonus1Remain &gt; 0){ //If there still are some tokens with bonus
+        if(bonus1Remain > 0){ //If there still are some tokens with bonus
 
           //Lets check if tokens bought are less or more than remaining available
           //tokens whit bonus
-          if(buyHelper &lt;= bonus1Remain){ //If purchase is less
+          if(buyHelper <= bonus1Remain){ //If purchase is less
               bonus1Remain = bonus1Remain.sub(buyHelper); //Sub from remaining
               //Calculate the bonus for the total bought amount
               bonus = bonus.add((buyHelper.mul(2)).div(10));//+20%
@@ -255,9 +255,9 @@ contract TECHICO is admined {
 
         //Lets check if tokens bought are less or more than remaining available
         //tokens whit bonus
-        if(bonus2Remain &gt; 0 &amp;&amp; buyHelper &gt; 0){
+        if(bonus2Remain > 0 && buyHelper > 0){
 
-          if(buyHelper &lt;= bonus2Remain){ //If purchase is less
+          if(buyHelper <= bonus2Remain){ //If purchase is less
               bonus2Remain = bonus2Remain.sub(buyHelper);//Sub from remaining
               //Calculate the bonus for the total bought amount
               bonus = bonus.add((buyHelper.mul(15)).div(100));//+15%
@@ -273,9 +273,9 @@ contract TECHICO is admined {
 
         //Lets check if tokens bought are less or more than remaining available
         //tokens whit bonus
-        if(bonus3Remain &gt; 0 &amp;&amp; buyHelper &gt; 0){
+        if(bonus3Remain > 0 && buyHelper > 0){
 
-          if(buyHelper &lt;= bonus3Remain){ //If purchase is less
+          if(buyHelper <= bonus3Remain){ //If purchase is less
               bonus3Remain = bonus3Remain.sub(buyHelper);//Sub from remaining
               //Calculate the bonus for the total bought amount
               bonus = bonus.add(buyHelper.div(10));//+10%
@@ -291,9 +291,9 @@ contract TECHICO is admined {
 
         //Lets check if tokens bought are less or more than remaining available
         //tokens whit bonus
-        if(bonus4Remain &gt; 0 &amp;&amp; buyHelper &gt; 0){
+        if(bonus4Remain > 0 && buyHelper > 0){
 
-          if(buyHelper &lt;= bonus4Remain){ //If purchase is less
+          if(buyHelper <= bonus4Remain){ //If purchase is less
               bonus4Remain = bonus4Remain.sub(buyHelper);//Sub from remaining
               //Calculate the bonus for the total bought amount
               bonus = bonus.add((buyHelper.mul(5)).div(100));//+5%
@@ -309,7 +309,7 @@ contract TECHICO is admined {
 
         tokenBought = tokenBought.add(bonus); //Sum Up Bonus(es) to base purchase
 
-        require(totalDistributed.add(tokenBought) &lt;= hardCap); //The total amount after sum up must not be more than the hardCap
+        require(totalDistributed.add(tokenBought) <= hardCap); //The total amount after sum up must not be more than the hardCap
 
         pending[user] = pending[user].add(tokenBought); //Pending balance to distribute is updated
         totalDistributed = totalDistributed.add(tokenBought); //Whole tokens sold updated
@@ -347,9 +347,9 @@ contract TECHICO is admined {
     */
     function checkIfFundingCompleteOrExpired() public {
          //If hardacap or deadline is reached and not yet successful
-        if ( (totalDistributed == hardCap || now &gt; SaleDeadline)
-            &amp;&amp; state != State.Successful 
-            &amp;&amp; state != State.Paused) {
+        if ( (totalDistributed == hardCap || now > SaleDeadline)
+            && state != State.Successful 
+            && state != State.Paused) {
             //remanent tokens are assigned to creator for later handle
             pending[creator] = tokenReward.balanceOf(address(this)).sub(totalDistributed);
 

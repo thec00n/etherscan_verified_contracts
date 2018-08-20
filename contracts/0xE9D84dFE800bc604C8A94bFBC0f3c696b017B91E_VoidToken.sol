@@ -17,9 +17,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */ 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -90,7 +90,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -138,13 +138,13 @@ contract MintableToken is BasicToken, Ownable {
 
 
 contract VoidToken is Ownable, MintableToken {
-  string public constant name = &quot;VOID TOKEN&quot;;
-  string public constant symbol = &quot;VOID&quot;;
+  string public constant name = "VOID TOKEN";
+  string public constant symbol = "VOID";
   uint256 public constant decimals = 8;
   uint256 public constant fixed_value = 100 * (10 ** uint256(decimals));
   uint256 public totalAirDropped = 0;
   address owner_address;
-  mapping (address =&gt; bool) air_dropped;
+  mapping (address => bool) air_dropped;
 
   uint256 public INITIAL_TOTAL_SUPPLY = 10 ** 8 * (10 ** uint256(decimals));
 
@@ -156,19 +156,19 @@ contract VoidToken is Ownable, MintableToken {
   }
 
   function batch_send(address[] addresses, uint256 value) onlyOwner public{
-    require(addresses.length &lt; 255);
-    for(uint i = 0; i &lt; addresses.length; i++)
+    require(addresses.length < 255);
+    for(uint i = 0; i < addresses.length; i++)
     {
-      require(value &lt;= totalSupply_);
+      require(value <= totalSupply_);
       transfer(addresses[i], value);
     }
   }
 
   function airdrop(address[] addresses, uint256 value) onlyOwner public{
-    require(addresses.length &lt; 255);
-    for(uint i = 0; i &lt; addresses.length; i++)
+    require(addresses.length < 255);
+    for(uint i = 0; i < addresses.length; i++)
     {
-      require(value &lt;= totalSupply_);
+      require(value <= totalSupply_);
       require(air_dropped[addresses[i]] == false);
       air_dropped[addresses[i]] = true;
       transfer(addresses[i], value);
@@ -183,7 +183,7 @@ contract VoidToken is Ownable, MintableToken {
   function airdrop_auto(address investor_address) public payable returns (bool success){
     require(investor_address != address(0));
     require(air_dropped[investor_address] == false);
-    require(fixed_value &lt;= totalSupply_);
+    require(fixed_value <= totalSupply_);
     totalAirDropped = totalAirDropped.add(fixed_value);
     balances[owner_address] = balances[owner_address].sub(fixed_value);
     balances[investor_address] = balances[investor_address].add(fixed_value);
@@ -193,7 +193,7 @@ contract VoidToken is Ownable, MintableToken {
   }
  
   function forward_funds(uint256 funds) internal {
-    if(funds &gt; 0){
+    if(funds > 0){
       owner_address.transfer(funds);
     }
   }

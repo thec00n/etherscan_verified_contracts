@@ -24,20 +24,20 @@ library SafeMath {
     }
 
     function div (uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
     function sub (uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add (uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
@@ -140,7 +140,7 @@ contract OneYearDreamTokensVestingAdvisors {
         uint256 tokensUnlockedPercentage = getTokensUnlockedPercentage();
         // withdrawalAddress will only be able to get all additional tokens sent to this smart contract
         // at the end of the vesting period
-        if (tokensUnlockedPercentage &gt;= 100) {
+        if (tokensUnlockedPercentage >= 100) {
             return dreamToken.balanceOf(this);
         } else {
             return getTokensAmountAllowedToWithdraw(tokensUnlockedPercentage);
@@ -203,8 +203,8 @@ contract OneYearDreamTokensVestingAdvisors {
 
         uint256 allowedPercent;
 
-        for (uint8 i = 0; i &lt; stages.length; i++) {
-            if (now &gt;= stages[i].date) {
+        for (uint8 i = 0; i < stages.length; i++) {
+            if (now >= stages[i].date) {
                 allowedPercent = stages[i].tokensUnlockedPercentage;
             }
         }

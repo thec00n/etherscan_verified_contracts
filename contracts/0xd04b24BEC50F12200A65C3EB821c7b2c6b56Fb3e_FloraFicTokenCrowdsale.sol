@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -128,7 +128,7 @@ contract ERC20 is ERC20Basic {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -162,7 +162,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -289,7 +289,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -299,8 +299,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -311,7 +311,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   /**
@@ -341,7 +341,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -384,8 +384,8 @@ contract FloraFicTokenCrowdsale is FinalizableCrowdsale {
   }
 
   function setClosingTime(uint256 _closingTime) onlyOwner public {
-    require(_closingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= openingTime);
+    require(_closingTime >= block.timestamp);
+    require(_closingTime >= openingTime);
 
     closingTime = _closingTime;
   }
@@ -403,15 +403,15 @@ contract FloraFicTokenCrowdsale is FinalizableCrowdsale {
     uint256 bonus = 0;
     uint256 currentRate = getCurrentRate();
     uint256 currentWeiAmount = currentRate.mul(_weiAmount);
-    if( sendWeiAmount &gt;= 1000000000000000000 &amp;&amp; sendWeiAmount &lt; 5000000000000000000){
+    if( sendWeiAmount >= 1000000000000000000 && sendWeiAmount < 5000000000000000000){
         bonus = currentWeiAmount.mul(10).div(100);
-    } else if (sendWeiAmount &gt;= 5000000000000000000 &amp;&amp; sendWeiAmount &lt; 10000000000000000000){
+    } else if (sendWeiAmount >= 5000000000000000000 && sendWeiAmount < 10000000000000000000){
         bonus = currentWeiAmount.mul(20).div(100);
-    } else if (sendWeiAmount &gt;= 10000000000000000000 &amp;&amp; sendWeiAmount &lt; 20000000000000000000){
+    } else if (sendWeiAmount >= 10000000000000000000 && sendWeiAmount < 20000000000000000000){
         bonus = currentWeiAmount.mul(50).div(100);
-    } else if (sendWeiAmount &gt;= 20000000000000000000 &amp;&amp; sendWeiAmount &lt; 50000000000000000000){
+    } else if (sendWeiAmount >= 20000000000000000000 && sendWeiAmount < 50000000000000000000){
         bonus = currentWeiAmount.mul(75).div(100);
-    } else if (sendWeiAmount &gt;= 50000000000000000000){
+    } else if (sendWeiAmount >= 50000000000000000000){
         bonus = currentWeiAmount.mul(100).div(100);
     }
     return currentWeiAmount.add(bonus);
@@ -419,7 +419,7 @@ contract FloraFicTokenCrowdsale is FinalizableCrowdsale {
 
   function finalization() internal {
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.transfer(wallet, amount);
   }

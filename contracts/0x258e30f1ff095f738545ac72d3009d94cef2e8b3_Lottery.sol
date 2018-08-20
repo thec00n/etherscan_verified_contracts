@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -45,15 +45,15 @@ contract Lottery{
     }
 
     function UpdateNumPlayers (uint256 num) public {
-        if (owner != msg.sender || num &lt; 3 || num &gt;= 1000) revert();
+        if (owner != msg.sender || num < 3 || num >= 1000) revert();
         MaxPlayers = num;
     }
     
      function () payable public  {
-        if(msg.value &lt; .01 ether) revert();
+        if(msg.value < .01 ether) revert();
         players.push(msg.sender);
         jackpot += msg.value;
-        if (players.length &gt;= MaxPlayers) RandomWinner();
+        if (players.length >= MaxPlayers) RandomWinner();
     }
 
     function getPlayers() public view returns(address[]) {
@@ -65,7 +65,7 @@ contract Lottery{
     }
 
     function RandomWinner()  private {
-        if (players.length &lt; MaxPlayers) revert();
+        if (players.length < MaxPlayers) revert();
         uint256 fee = SafeMath.div(address(this).balance, 100);
         lastWinner = players[random() % players.length];
         

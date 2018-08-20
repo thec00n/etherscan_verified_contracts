@@ -12,7 +12,7 @@ contract PreICO {
         uint256 balance;
         bool init;
     }
-    mapping(address =&gt; dataHolder) holders;
+    mapping(address => dataHolder) holders;
     address[] listHolders;
 
     function PreICO(){
@@ -46,7 +46,7 @@ contract PreICO {
     }
 
     function getItemHolder(uint256 index) constant returns(address){
-        if(index &gt;= listHolders.length || listHolders.length == 0) return address(0x0);
+        if(index >= listHolders.length || listHolders.length == 0) return address(0x0);
         return listHolders[index];
     }
 
@@ -62,7 +62,7 @@ contract PreICO {
 
         uint256 return_amount = 0;
 
-        if(this.balance + msg.value &gt; maxAmountSupply){
+        if(this.balance + msg.value > maxAmountSupply){
             amount = maxAmountSupply - this.balance ;
             return_amount = msg.value - amount;
         }
@@ -72,7 +72,7 @@ contract PreICO {
             holders[msg.sender].init = true;
         }
 
-        if((amount+holders[msg.sender].balance) &gt; maxPreOrderAmount){
+        if((amount+holders[msg.sender].balance) > maxPreOrderAmount){
             return_amount += ((amount+holders[msg.sender].balance) - maxPreOrderAmount);
             holders[msg.sender].balance = maxPreOrderAmount;
         }
@@ -80,7 +80,7 @@ contract PreICO {
             holders[msg.sender].balance += amount;
         }
 
-        if(return_amount&gt;0){
+        if(return_amount>0){
             if(msg.sender.send(return_amount)==false) throw;
         }
 

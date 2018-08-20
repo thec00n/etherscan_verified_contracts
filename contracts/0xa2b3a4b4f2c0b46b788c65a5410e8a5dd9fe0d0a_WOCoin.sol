@@ -16,12 +16,12 @@ contract Token {
 
 contract WOCoin is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
-    string constant public name = &quot;WOC Global Foundation Limited&quot;;
-    string constant public symbol = &quot;WOCoin&quot;;
+    string constant public name = "WOC Global Foundation Limited";
+    string constant public symbol = "WOCoin";
     uint8 constant public decimals = 18;
 
     function WOCoin()
@@ -35,7 +35,7 @@ contract WOCoin is Token {
         public
         returns (bool)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             throw;
         }
         balances[msg.sender] -= _value;
@@ -48,7 +48,7 @@ contract WOCoin is Token {
         public
         returns (bool)
     {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             throw;
         }
         balances[_to] += _value;

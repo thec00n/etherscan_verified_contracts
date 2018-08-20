@@ -33,7 +33,7 @@ contract ItsCalledBeingOnTheCuttingEdge {
     }
     
     function payMeFor(uint16 mins) public {
-        require(msg.sender == Chow &amp;&amp; mins &lt; 20000);
+        require(msg.sender == Chow && mins < 20000);
         
         minsToPay = mins;
         // log an event
@@ -41,12 +41,12 @@ contract ItsCalledBeingOnTheCuttingEdge {
     }
     
     function acceptMins(uint256 etherPriceInCents) public {
-        require (minsToPay &gt; 0 &amp;&amp; (msg.sender == Ben || msg.sender == Alex));
+        require (minsToPay > 0 && (msg.sender == Ben || msg.sender == Alex));
         
         Accept(msg.sender, minsToPay, etherPriceInCents);
         
         if (msg.sender == Alex){
-            if (benAccepts &amp;&amp; etherPricesAreClose(bensEtherPriceInCents, etherPriceInCents)){
+            if (benAccepts && etherPricesAreClose(bensEtherPriceInCents, etherPriceInCents)){
                 // pay Chow
                 payChow(bensEtherPriceInCents, etherPriceInCents);
                 // toggle off acceptance
@@ -58,7 +58,7 @@ contract ItsCalledBeingOnTheCuttingEdge {
             }
         }
         else if (msg.sender == Ben){
-            if (alexAccepts &amp;&amp; etherPricesAreClose(bensEtherPriceInCents, etherPriceInCents)){
+            if (alexAccepts && etherPricesAreClose(bensEtherPriceInCents, etherPriceInCents)){
                 // pay Chow
                 payChow(alexsEtherPriceInCents, etherPriceInCents);
                 // toggleOffAcceptance
@@ -80,7 +80,7 @@ contract ItsCalledBeingOnTheCuttingEdge {
     }
     
     function etherPricesAreClose(uint256 price1InCents, uint256 price2InCents) public pure returns (bool) {
-        if (price1InCents + 1001 &gt; price2InCents &amp;&amp; price2InCents + 1001 &gt; price1InCents){
+        if (price1InCents + 1001 > price2InCents && price2InCents + 1001 > price1InCents){
             return true;
         }
         return false;

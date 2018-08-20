@@ -66,7 +66,7 @@ contract DukeOfEther is Ownable
 		string m_strCountry;
 	}
 	
-	mapping (string =&gt; Country) m_Countries;	// Russia, USA, China... Add more using addNewCountry()
+	mapping (string => Country) m_Countries;	// Russia, USA, China... Add more using addNewCountry()
     
     // --- Events ---
 
@@ -80,12 +80,12 @@ contract DukeOfEther is Ownable
 	{
         m_deployedAtBlock = block.number;
         // ---
-		addCountry(&quot;USA&quot;);
-		addCountry(&quot;Russia&quot;);
-		addCountry(&quot;China&quot;);
-        addCountry(&quot;Japan&quot;);
-        addCountry(&quot;Taiwan&quot;);
-        addCountry(&quot;Ukraine&quot;);
+		addCountry("USA");
+		addCountry("Russia");
+		addCountry("China");
+        addCountry("Japan");
+        addCountry("Taiwan");
+        addCountry("Ukraine");
 	}
 
 	// ---
@@ -95,7 +95,7 @@ contract DukeOfEther is Ownable
 	    Country memory newCountryInfo;
 	    
         newCountryInfo.m_bIsDestroyed = false;
-		newCountryInfo.m_strNickName = &quot;Vacant&quot;;
+		newCountryInfo.m_strNickName = "Vacant";
 		newCountryInfo.m_addrCurrentDuke = m_addrOwner;
 		newCountryInfo.m_nCurrentDukePaid = m_nMinDukePrice;
 
@@ -103,7 +103,7 @@ contract DukeOfEther is Ownable
         newCountryInfo.m_nLastDukeRiseDate = now;
 		m_Countries[strCountry] = newCountryInfo;
         
-        updateDukeHistory(strCountry, false, &quot;Vacant&quot;, m_addrOwner, 0, now);
+        updateDukeHistory(strCountry, false, "Vacant", m_addrOwner, 0, now);
         
         m_nNumberOfActiveCountries++;
 	}
@@ -112,9 +112,9 @@ contract DukeOfEther is Ownable
 	
 	function verifyNickNameAndCountry(string strCountry, string strNickName) internal
     {
-		if(bytes(strNickName).length &gt; 30 || bytes(strCountry).length &gt; 30)
+		if(bytes(strNickName).length > 30 || bytes(strCountry).length > 30)
         {
-            errorMessage(&quot;String too long: keep strNickName and strCountry &lt;= 30&quot;);
+            errorMessage("String too long: keep strNickName and strCountry <= 30");
             revert();
         }
 	}
@@ -127,7 +127,7 @@ contract DukeOfEther is Ownable
 		if(m_addrShareHolder != 0)
         {
             ShareHolder contractShareHolder = ShareHolder(m_addrShareHolder);
-            contractShareHolder.addToShareHoldersProfit.value(nFee)(strNickName, &quot;&quot;);
+            contractShareHolder.addToShareHoldersProfit.value(nFee)(strNickName, "");
         }
 	}
 
@@ -137,21 +137,21 @@ contract DukeOfEther is Ownable
 	{
 		verifyNickNameAndCountry(strCountry, strNickName);
 
-        if(!bDestroy &amp;&amp; m_nNumberOfActiveCountries &gt;= 12)
+        if(!bDestroy && m_nNumberOfActiveCountries >= 12)
         {
-            errorMessage(&quot;Too many active countries. Consider destroying few.&quot;);
+            errorMessage("Too many active countries. Consider destroying few.");
             revert();
         }
-        else if(bDestroy &amp;&amp; m_nNumberOfActiveCountries &lt;= 3)
+        else if(bDestroy && m_nNumberOfActiveCountries <= 3)
         {
-            errorMessage(&quot;There should be at least 3 countries alive&quot;);
+            errorMessage("There should be at least 3 countries alive");
             revert();
         }
         
         // Demiurg pays more, then gets even
-        if(msg.value &lt; getPaymentToAddRemoveCountry(strCountry, bDestroy))
+        if(msg.value < getPaymentToAddRemoveCountry(strCountry, bDestroy))
 		{
-			errorMessage(&quot;Sorry, but country costs more&quot;);
+			errorMessage("Sorry, but country costs more");
 			revert();
 		}
       
@@ -192,19 +192,19 @@ contract DukeOfEther is Ownable
 	
 	function becomeDuke(string strCountry, string strNickName) payable
 	{
-		if(msg.value &lt; getMinNextBet(strCountry))
+		if(msg.value < getMinNextBet(strCountry))
 			revert();
 
-        if(bytes(strNickName).length &gt; 30 || bytes(strCountry).length &gt; 30)
+        if(bytes(strNickName).length > 30 || bytes(strCountry).length > 30)
         {
-            errorMessage(&quot;String too long: keep strNickName and strCountry &lt;= 30&quot;);
+            errorMessage("String too long: keep strNickName and strCountry <= 30");
             revert();
         }
             
         Country memory countryInfo = m_Countries[strCountry];
         if(countryInfo.m_addrCurrentDuke == 0 || countryInfo.m_bIsDestroyed == true)
 		{
-			errorMessage(&quot;This country does not exist: use addRemoveCountry first&quot;);
+			errorMessage("This country does not exist: use addRemoveCountry first");
 			revert();
 		}
 		
@@ -260,11 +260,11 @@ contract DukeOfEther is Ownable
 
         uint nDaysSinceLastRise = (now - m_Countries[strCountry].m_nLastDukeRiseDate) / 86400;
         uint nDaysMax = m_nDaysBeforeDeteriorationStarts + 100 / m_nDeterioration;
-        if(nDaysSinceLastRise &gt;= nDaysMax)
+        if(nDaysSinceLastRise >= nDaysMax)
             return 1 finney;
 
         uint nCurrentDukeDue = m_Countries[strCountry].m_nCurrentDukePaid;
-        if(nDaysSinceLastRise &gt; m_nDaysBeforeDeteriorationStarts)
+        if(nDaysSinceLastRise > m_nDaysBeforeDeteriorationStarts)
             nCurrentDukeDue = nCurrentDukeDue * (nDaysSinceLastRise - m_nDaysBeforeDeteriorationStarts) * m_nDeterioration / 100; 
             
 		return  m_NextDukePaymentIncrease * nCurrentDukeDue / 100; 
@@ -272,13 +272,13 @@ contract DukeOfEther is Ownable
 
 	function getPaymentToAddRemoveCountry(string strCountry, bool bRemove) constant returns (uint)
 	{
-		if(bRemove &amp;&amp; m_Countries[strCountry].m_addrCurrentDuke == 0)
+		if(bRemove && m_Countries[strCountry].m_addrCurrentDuke == 0)
 			return 0;
-		else if(!bRemove &amp;&amp; m_Countries[strCountry].m_addrCurrentDuke != 0 &amp;&amp; m_Countries[strCountry].m_bIsDestroyed == false)	
+		else if(!bRemove && m_Countries[strCountry].m_addrCurrentDuke != 0 && m_Countries[strCountry].m_bIsDestroyed == false)	
 			return 0;
 
 		uint nPrice = m_NextDukePaymentIncrease * getMinNextBet(strCountry) / 100;
-		if(nPrice &lt; m_nNewCountryPrice)
+		if(nPrice < m_nNewCountryPrice)
 			nPrice = m_nNewCountryPrice;
 		return nPrice;	
 	}

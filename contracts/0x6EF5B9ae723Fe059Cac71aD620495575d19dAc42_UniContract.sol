@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    //assert(b &lt;= a);
+    //assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    //assert(c &gt;= a);
+    //assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -65,7 +65,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -91,7 +91,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -104,7 +104,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -123,7 +123,7 @@ contract StandardToken is ERC20, BasicToken {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -148,7 +148,7 @@ contract owned {
      // This contract only defines a modifier but does not use
      // it - it will be used in derived contracts.
      // The function body is inserted where the special symbol
-     // &quot;_;&quot; in the definition of a modifier appears.
+     // "_;" in the definition of a modifier appears.
      // This means that if the owner calls this function, the
      // function is executed and otherwise, an exception is
      // thrown.
@@ -165,11 +165,11 @@ contract owned {
 contract UniContract is StandardToken, owned {
 
 
-   string public constant name = &quot;SaveUNICOINs&quot;;
-   string public constant symbol = &quot;UCN&quot;;
+   string public constant name = "SaveUNICOINs";
+   string public constant symbol = "UCN";
    uint256 public constant decimals = 0;
    
-   //founder &amp; fund collector
+   //founder & fund collector
    address public multisig;
    address public founder; 
    
@@ -295,16 +295,16 @@ contract UniContract is StandardToken, owned {
      	}
 		
    	 	//Permit buying only between 10/09/17 - 10/27/2017 and after 11/01/2017
-   	 	if((now &gt; start &amp;&amp; now &lt; end) || now &gt; launch)
+   	 	if((now > start && now < end) || now > launch)
    	 		{				
         		uint256 tokens = msg.value.mul(PRICE).div( 1 ether);
-        		if(tokens.add(OVERALLSOLD) &gt; MAXTOKENSOLD)
+        		if(tokens.add(OVERALLSOLD) > MAXTOKENSOLD)
    	 				{
    					throw;
    					}
 		
    				//Pre-Sale CAP 10,000,000 check
-   				if(((tokens.add(OVERALLSOLD)) &gt; RANGEEND_PRESALE) &amp;&amp; (now &gt; start &amp;&amp; now &lt; end))
+   				if(((tokens.add(OVERALLSOLD)) > RANGEEND_PRESALE) && (now > start && now < end))
    					{
    					throw;
    					}
@@ -328,86 +328,86 @@ contract UniContract is StandardToken, owned {
 		
 		//TIMING 10/09/17 - 10/27/17 OR CAP 10,000,000 reached
 		
-		if(now&gt;start &amp;&amp; now &lt;end)
+		if(now>start && now <end)
 		{
 			//Stage Pre-Sale Range 0 - 10,000,000 
-			if(OVERALLSOLD &gt;= RANGESTART_PRESALE &amp;&amp; OVERALLSOLD &lt;= RANGEEND_PRESALE) 
+			if(OVERALLSOLD >= RANGESTART_PRESALE && OVERALLSOLD <= RANGEEND_PRESALE) 
 				{
 				PRICE = PRICE_PRESALE - (1 + OVERALLSOLD - RANGESTART_PRESALE).div(FACTOR_PRESALE);
 				}
 		}
 		
 		//TIMING 11/01/17 Start Token Sale
-		if(now&gt;launch)
+		if(now>launch)
 		{
 		//Stage Post-Pre-Sale Range 0 - 10,000,000 
-		if(OVERALLSOLD &gt;= RANGESTART_PRESALE &amp;&amp; OVERALLSOLD &lt;= RANGEEND_PRESALE) 
+		if(OVERALLSOLD >= RANGESTART_PRESALE && OVERALLSOLD <= RANGEEND_PRESALE) 
 			{
 			PRICE = PRICE_PRESALE - (1 + OVERALLSOLD - RANGESTART_PRESALE).div(FACTOR_PRESALE);
 			}
 		
 		//Stage One 10,000,001 - 10,100,000 
-		if(OVERALLSOLD &gt;= RANGESTART_1 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_1)
+		if(OVERALLSOLD >= RANGESTART_1 && OVERALLSOLD <= RANGEEND_1)
 			{
 			PRICE = PRICE_1 - (1 + OVERALLSOLD - RANGESTART_1).div(FACTOR_1);
 			}
 
 		//Stage Two 10,100,001 - 11,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_2 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_2)
+		if(OVERALLSOLD >= RANGESTART_2 && OVERALLSOLD <= RANGEEND_2)
 			{
 			PRICE = PRICE_2 - (1 + OVERALLSOLD - RANGESTART_2).div(FACTOR_2);
 			}
 
 		//Stage Three 11,000,001 - 15,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_3 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_3)
+		if(OVERALLSOLD >= RANGESTART_3 && OVERALLSOLD <= RANGEEND_3)
 			{
 			PRICE = PRICE_3 - (1 + OVERALLSOLD - RANGESTART_3).div(FACTOR_3);
 			}
 			
 		//Stage Four 15,000,001 - 20,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_4 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_4)
+		if(OVERALLSOLD >= RANGESTART_4 && OVERALLSOLD <= RANGEEND_4)
 			{
 			PRICE = PRICE_4 - (1 + OVERALLSOLD - RANGESTART_4).div(FACTOR_4);
 			}
 			
 		//Stage Five 20,000,001 - 30,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_5 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_5)
+		if(OVERALLSOLD >= RANGESTART_5 && OVERALLSOLD <= RANGEEND_5)
 			{
 			PRICE = PRICE_5 - (1 + OVERALLSOLD - RANGESTART_5).div(FACTOR_5);
 			}
 		
 		//Stage Six 30,000,001 - 40,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_6 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_6)
+		if(OVERALLSOLD >= RANGESTART_6 && OVERALLSOLD <= RANGEEND_6)
 			{
 			PRICE = PRICE_6 - (1 + OVERALLSOLD - RANGESTART_6).div(FACTOR_6);
 			}	
 		
 		//Stage Seven 40,000,001 - 50,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_7 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_7)
+		if(OVERALLSOLD >= RANGESTART_7 && OVERALLSOLD <= RANGEEND_7)
 			{
 			PRICE = PRICE_7 - (1 + OVERALLSOLD - RANGESTART_7).div(FACTOR_7);
 			}
 			
 		//Stage Eight 50,000,001 - 60,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_8 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_8)
+		if(OVERALLSOLD >= RANGESTART_8 && OVERALLSOLD <= RANGEEND_8)
 			{
 			PRICE = PRICE_8 - (1 + OVERALLSOLD - RANGESTART_8).div(FACTOR_8);
 			}
 		
 		//Stage Nine 60,000,001 - 70,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_9 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_9)
+		if(OVERALLSOLD >= RANGESTART_9 && OVERALLSOLD <= RANGEEND_9)
 			{
 			PRICE = PRICE_9 - (1 + OVERALLSOLD - RANGESTART_9).div(FACTOR_9);
 			}
 		
 		//Stage Ten 70,000,001 - 80,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_10 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_10)
+		if(OVERALLSOLD >= RANGESTART_10 && OVERALLSOLD <= RANGEEND_10)
 			{
 			PRICE = PRICE_10 - (1 + OVERALLSOLD - RANGESTART_10).div(FACTOR_10);
 			}	
 		
 		//Stage Eleven 80,000,001 - 85,000,000
-		if(OVERALLSOLD &gt;= RANGESTART_11 &amp;&amp; OVERALLSOLD &lt;= RANGEEND_11)
+		if(OVERALLSOLD >= RANGESTART_11 && OVERALLSOLD <= RANGEEND_11)
 			{
 			PRICE = PRICE_11 - (1 + OVERALLSOLD - RANGESTART_11).div(FACTOR_11);
 			}
@@ -447,9 +447,9 @@ contract UniContract is StandardToken, owned {
 	
  
       function addMessageToQueue(string msg_from, string name_from, uint spendToken) {
-        if(balances[msg.sender]&gt;spendToken &amp;&amp; spendToken&gt;=10)
+        if(balances[msg.sender]>spendToken && spendToken>=10)
         {
-           if(spendToken&gt;maxSpendToken) 
+           if(spendToken>maxSpendToken) 
                {
                    spendToken=maxSpendToken;
                }
@@ -460,9 +460,9 @@ contract UniContract is StandardToken, owned {
           
 		  //If first message or last message already expired set newest timestamp
   		  uint expireTimestamp=now;
-		  if(mQueue.length&gt;0)
+		  if(mQueue.length>0)
 			{
-			 if(mQueue[mQueue.length-1].expireTimestamp&gt;now)
+			 if(mQueue[mQueue.length-1].expireTimestamp>now)
 			 	{
 			 	expireTimestamp = mQueue[mQueue.length-1].expireTimestamp;
 				}
@@ -489,7 +489,7 @@ contract UniContract is StandardToken, owned {
 	
     function feedUnicorn(uint spendToken) {
 	
-   	 	if(balances[msg.sender]&gt;spendToken)
+   	 	if(balances[msg.sender]>spendToken)
         	{
        	 	UniCoinSize=UniCoinSize.add(spendToken);
         	balances[msg.sender] = balances[msg.sender].sub(spendToken);
@@ -538,7 +538,7 @@ contract UniContract is StandardToken, owned {
    }
     
 
-   //We don&#39;t want the Unicorn to spread hateful messages 
+   //We don't want the Unicorn to spread hateful messages 
    function aDeleteMessage(uint256 i,string f,string m) onlyOwner{
      mQueue[i].message=m;
 	 mQueue[i].from=f; 

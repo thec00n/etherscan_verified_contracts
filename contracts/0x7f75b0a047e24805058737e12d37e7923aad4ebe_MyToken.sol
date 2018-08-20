@@ -13,11 +13,11 @@ contract MyToken {
         uint amount;
         uint time;
     }
-    mapping(address =&gt; locked_balances_info[]) public lockedBalanceOf;
+    mapping(address => locked_balances_info[]) public lockedBalanceOf;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -46,12 +46,12 @@ contract MyToken {
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
         
-	if(balanceOf[_from] &lt; _value) {
+	if(balanceOf[_from] < _value) {
         	uint length = lockedBalanceOf[_from].length;
         	uint index = 0;
-        	if(length &gt; 0){
-            		for (uint i = 0; i &lt; length; i++) {
-                		if(now &gt; lockedBalanceOf[_from][i].time){
+        	if(length > 0){
+            		for (uint i = 0; i < length; i++) {
+                		if(now > lockedBalanceOf[_from][i].time){
                     			balanceOf[_from] += lockedBalanceOf[_from][i].amount;
                     			index++;
                 		}else{
@@ -62,7 +62,7 @@ contract MyToken {
             		if(index == length){
                 		delete lockedBalanceOf[_from];
             		} else {
-                		for (uint j = 0; j &lt; length - index; j++) {
+                		for (uint j = 0; j < length - index; j++) {
                     			lockedBalanceOf[_from][j] = lockedBalanceOf[_from][j + index];
                 		}
                 		lockedBalanceOf[_from].length = length - index;
@@ -72,8 +72,8 @@ contract MyToken {
 	}
 
         
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -82,7 +82,7 @@ contract MyToken {
     function balanceOf(address _owner) constant returns (uint256 balance) {
         balance = balanceOf[_owner];
         uint length = lockedBalanceOf[_owner].length;
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             balance += lockedBalanceOf[_owner][i].amount;
         }
     }
@@ -93,8 +93,8 @@ contract MyToken {
     
     function _transferAndLock(address _from, address _to, uint _value, uint _time) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         //balanceOf[_to] += _value;                            // Add the same to the recipient
        
@@ -118,7 +118,7 @@ contract MyToken {
     /// @param _to The address of the recipient
     /// @param _value the amount to send
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require (_value &lt; allowance[_from][msg.sender]);     // Check allowance
+        require (_value < allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -149,7 +149,7 @@ contract MyToken {
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) returns (bool success) {
-        require (balanceOf[msg.sender] &gt; _value);            // Check if the sender has enough
+        require (balanceOf[msg.sender] > _value);            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -157,10 +157,10 @@ contract MyToken {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

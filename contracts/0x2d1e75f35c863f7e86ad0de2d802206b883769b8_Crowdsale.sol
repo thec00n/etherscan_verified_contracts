@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// param :: &quot;0x8fD8eCA1E7fA9BA32DA609c90D01a674c332fFB1&quot;, 0.15, 2400, 0.00005, &quot;0xe43c2d2814d77174ac5eb21fd1bce3a674b14888&quot;
+// param :: "0x8fD8eCA1E7fA9BA32DA609c90D01a674c332fFB1", 0.15, 2400, 0.00005, "0xe43c2d2814d77174ac5eb21fd1bce3a674b14888"
 
 interface token {
     function transfer(address receiver, uint amount);
@@ -13,7 +13,7 @@ contract Crowdsale {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 
@@ -53,7 +53,7 @@ contract Crowdsale {
         FundTransfer(msg.sender, amount, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -61,7 +61,7 @@ contract Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -80,7 +80,7 @@ contract Crowdsale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -89,7 +89,7 @@ contract Crowdsale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {

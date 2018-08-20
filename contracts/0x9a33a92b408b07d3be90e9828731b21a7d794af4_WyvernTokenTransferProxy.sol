@@ -131,7 +131,7 @@ contract AuthenticatedProxy is TokenRecipient {
         public
         returns (bool result)
     {
-        require(msg.sender == user || (!revoked &amp;&amp; registry.contracts(msg.sender)));
+        require(msg.sender == user || (!revoked && registry.contracts(msg.sender)));
         if (howToCall == HowToCall.Call) {
             result = dest.call(calldata);
         } else if (howToCall == HowToCall.DelegateCall) {
@@ -159,13 +159,13 @@ contract AuthenticatedProxy is TokenRecipient {
 contract ProxyRegistry is Ownable {
 
     /* Authenticated proxies by user. */
-    mapping(address =&gt; AuthenticatedProxy) public proxies;
+    mapping(address => AuthenticatedProxy) public proxies;
 
     /* Contracts pending access. */
-    mapping(address =&gt; uint) public pending;
+    mapping(address => uint) public pending;
 
     /* Contracts allowed to call those proxies. */
-    mapping(address =&gt; bool) public contracts;
+    mapping(address => bool) public contracts;
 
     /* Delay period for adding an authenticated contract.
        This mitigates a particular class of potential attack on the Wyvern DAO (which owns this registry) - if at any point the value of assets held by proxy contracts exceeded the value of half the WYV supply (votes in the DAO),
@@ -184,7 +184,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] == 0);
+        require(!contracts[addr] && pending[addr] == 0);
         pending[addr] = now;
     }
 
@@ -198,7 +198,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] != 0 &amp;&amp; ((pending[addr] + DELAY_PERIOD) &lt; now));
+        require(!contracts[addr] && pending[addr] != 0 && ((pending[addr] + DELAY_PERIOD) < now));
         pending[addr] = 0;
         contracts[addr] = true;
     }

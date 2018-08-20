@@ -1,14 +1,14 @@
 /**
  * Copyright 2016 Everex https://everex.io
  *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -17,12 +17,12 @@
 
 /* String utility library */
 library strUtils {
-    string constant CHAINY_JSON_ID = &#39;&quot;id&quot;:&quot;CHAINY&quot;&#39;;
+    string constant CHAINY_JSON_ID = '"id":"CHAINY"';
     uint8 constant CHAINY_JSON_MIN_LEN = 32;
 
     /* Converts given number to base58, limited by _maxLength symbols */
     function toBase58(uint256 _value, uint8 _maxLength) internal returns (string) {
-        string memory letters = &quot;123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ&quot;;
+        string memory letters = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
         bytes memory alphabet = bytes(letters);
         uint8 base = 58;
         uint8 len = 0;
@@ -30,8 +30,8 @@ library strUtils {
         bool needBreak = false;
         bytes memory bytesReversed = bytes(new string(_maxLength));
 
-        for (uint8 i = 0; i &lt; _maxLength; i++) {
-            if(_value &lt; base){
+        for (uint8 i = 0; i < _maxLength; i++) {
+            if(_value < base){
                 needBreak = true;
             }
             remainder = _value % base;
@@ -45,7 +45,7 @@ library strUtils {
 
         // Reverse
         bytes memory result = bytes(new string(len));
-        for (i = 0; i &lt; len; i++) {
+        for (i = 0; i < len; i++) {
             result[i] = bytesReversed[len - i - 1];
         }
         return string(result);
@@ -59,10 +59,10 @@ library strUtils {
         bytes memory bs3 = bytes(s3);
 
         uint256 j = 0;
-        for (uint256 i = 0; i &lt; bs1.length; i++) {
+        for (uint256 i = 0; i < bs1.length; i++) {
             bs3[j++] = bs1[i];
         }
-        for (i = 0; i &lt; bs2.length; i++) {
+        for (i = 0; i < bs2.length; i++) {
             bs3[j++] = bs2[i];
         }
 
@@ -74,13 +74,13 @@ library strUtils {
         bytes memory json = bytes(_json);
         bytes memory id = bytes(CHAINY_JSON_ID);
 
-        if (json.length &lt; CHAINY_JSON_MIN_LEN) {
+        if (json.length < CHAINY_JSON_MIN_LEN) {
             return false;
         } else {
             uint len = 0;
             if (json[1] == id[0]) {
                 len = 1;
-                while (len &lt; id.length &amp;&amp; (1 + len) &lt; json.length &amp;&amp; json[1 + len] == id[len]) {
+                while (len < id.length && (1 + len) < json.length && json[1 + len] == id[len]) {
                     len++;
                 }
                 if (len == id.length) {
@@ -117,25 +117,25 @@ contract Chainy is owned {
     string CHAINY_URL;
 
     // Configuration
-    mapping(string =&gt; uint256) private chainyConfig;
+    mapping(string => uint256) private chainyConfig;
 
     // Service accounts
-    mapping (address =&gt; bool) private srvAccount;
+    mapping (address => bool) private srvAccount;
 
     // Fee receiver
     address private receiverAddress;
 
     struct data {uint256 timestamp; string json; address sender;}
-    mapping (string =&gt; data) private chainy;
+    mapping (string => data) private chainy;
 
     event chainyShortLink(uint256 timestamp, string code);
 
     // Constructor
     function Chainy(){
-        setConfig(&quot;fee&quot;, 0);
+        setConfig("fee", 0);
         // change the block offset to 1000000 to use contract in testnet
-        setConfig(&quot;blockoffset&quot;, 2000000);
-        setChainyURL(&quot;https://txn.me/&quot;);
+        setConfig("blockoffset", 2000000);
+        setChainyURL("https://txn.me/");
     }
 
     // Sets new Chainy viewer URL
@@ -179,7 +179,7 @@ contract Chainy is owned {
 
         var code = generateShortLink();
         // Checks if the record exist
-        if (getChainyTimestamp(code) &gt; 0) throw;
+        if (getChainyTimestamp(code) > 0) throw;
 
         processFee();
         chainy[code] = data({
@@ -210,10 +210,10 @@ contract Chainy is owned {
 
     // Checks if enough fee provided
     function processFee() internal {
-        var fee = getConfig(&quot;fee&quot;);
+        var fee = getConfig("fee");
         if (srvAccount[msg.sender] || (fee == 0)) return;
 
-        if (msg.value &lt; fee)
+        if (msg.value < fee)
             throw;
         else
             if (!receiverAddress.send(fee)) throw;
@@ -226,7 +226,7 @@ contract Chainy is owned {
 
     // Generates a shortlink code for this transaction
     function generateShortLink() internal returns (string) {
-        var s1 = strUtils.toBase58(block.number - getConfig(&quot;blockoffset&quot;), 11);
+        var s1 = strUtils.toBase58(block.number - getConfig("blockoffset"), 11);
         var s2 = strUtils.toBase58(uint256(tx.origin), 2);
 
         var s = strUtils.concat(s1, s2);

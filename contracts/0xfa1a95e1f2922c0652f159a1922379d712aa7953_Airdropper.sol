@@ -13,7 +13,7 @@ contract Airdropper {
                     address[] dests,
                     uint[] quantities ) public returns (uint) {
 
-    for (uint ii = 0; ii &lt; dests.length; ii++) {
+    for (uint ii = 0; ii < dests.length; ii++) {
       ERC20(tokAddr).transfer( dests[ii], quantities[ii] );
     }
 

@@ -21,7 +21,7 @@ contract Ownable {
 library SafeMath {
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -29,10 +29,10 @@ library SafeMath {
 contract EthCapsule is Ownable {
   struct Depositor {
     uint numCapsules;
-    mapping (uint =&gt; Capsule) capsules;
+    mapping (uint => Capsule) capsules;
   }
 
-  mapping (address =&gt; Depositor) depositors;
+  mapping (address => Depositor) depositors;
 
   struct Capsule {
     uint value;
@@ -50,14 +50,14 @@ contract EthCapsule is Ownable {
   uint public totalBuriedCapsules;
 
   function bury(uint unlockTime) payable {
-    require(msg.value &gt;= minDeposit);
-    require(unlockTime &lt;= block.timestamp + maxDuration);
+    require(msg.value >= minDeposit);
+    require(unlockTime <= block.timestamp + maxDuration);
 
-    if (unlockTime &lt; block.timestamp + minDuration) {
+    if (unlockTime < block.timestamp + minDuration) {
       unlockTime = SafeMath.add(block.timestamp, minDuration);
     }
 
-    if (depositors[msg.sender].numCapsules &lt;= 0) {
+    if (depositors[msg.sender].numCapsules <= 0) {
         depositors[msg.sender] = Depositor({ numCapsules: 0 });
     }
 
@@ -80,7 +80,7 @@ contract EthCapsule is Ownable {
   function dig(uint capsuleNumber) {
     Capsule storage capsule = depositors[msg.sender].capsules[capsuleNumber];
 
-    require(capsule.unlockTime &lt;= block.timestamp);
+    require(capsule.unlockTime <= block.timestamp);
     require(capsule.withdrawnTime == 0);
 
     totalBuriedCapsules--;

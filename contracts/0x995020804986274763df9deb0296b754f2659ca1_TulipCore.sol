@@ -12,7 +12,7 @@ contract AccessControl {
   modifier onlyAdmins {
     bool found = false;
 
-    for (uint i = 0; i &lt; admins.length; i++) {
+    for (uint i = 0; i < admins.length; i++) {
       if (admins[i] == msg.sender) {
         found = true;
         break;
@@ -57,9 +57,9 @@ contract TulipBase is AccessControl {
   }
 
   Tulip[] public tulips;
-  mapping (uint256 =&gt; address) public tulipToOwner;
-  mapping (address =&gt; uint256[]) internal ownerToTulips;
-  mapping (uint256 =&gt; address) public tulipToApproved;
+  mapping (uint256 => address) public tulipToOwner;
+  mapping (address => uint256[]) internal ownerToTulips;
+  mapping (uint256 => address) public tulipToApproved;
 
   function _generateTulip(bytes32 _name, address _owner, uint16 _gen) internal returns (uint256 id) {
     id = tulips.length;
@@ -84,12 +84,12 @@ contract TulipBase is AccessControl {
     tulipToApproved[_id] = address(0);
 
     uint256[] storage fromTulips = ownerToTulips[_from];
-    for (uint256 i = 0; i &lt; fromTulips.length; i++) {
+    for (uint256 i = 0; i < fromTulips.length; i++) {
       if (fromTulips[i] == _id) {
         break;
       }
     }
-    assert(i &lt; fromTulips.length);
+    assert(i < fromTulips.length);
 
     fromTulips[i] = fromTulips[fromTulips.length - 1];
     delete fromTulips[fromTulips.length - 1];
@@ -141,15 +141,15 @@ contract TulipToken is TulipBase, ERC721 {
   }
 
   function name() public pure returns (string) {
-    return &quot;Ether Tulips&quot;;
+    return "Ether Tulips";
   }
 
   function symbol() public pure returns (string) {
-    return &quot;ETHT&quot;;
+    return "ETHT";
   }
 
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; ownerToTulips[_owner].length);
+    require(_index < ownerToTulips[_owner].length);
     return ownerToTulips[_owner][_index];
   }
 
@@ -174,14 +174,14 @@ contract TulipSales is TulipToken {
   // a max of 10000x the original price. For gen 0, this corresponds to a cap
   // of 100 ETH.
   function price(uint16 _gen) public view returns (uint256) {
-    require(_gen &lt; genToStartPrice.length);
+    require(_gen < genToStartPrice.length);
 
     uint128 periodsElapsed = (uint128(block.number) - startBlock) / increasePeriod;
     return _priceAtPeriod(periodsElapsed, _gen);
   }
 
   function nextPrice(uint16 _gen) public view returns (uint256 futurePrice, uint128 blocksRemaining, uint128 changeBlock) {
-    require(_gen &lt; genToStartPrice.length);
+    require(_gen < genToStartPrice.length);
 
     uint128 periodsElapsed = (uint128(block.number) - startBlock) / increasePeriod;
     futurePrice = _priceAtPeriod(periodsElapsed + 1, _gen);
@@ -190,7 +190,7 @@ contract TulipSales is TulipToken {
   }
 
   function buyTulip(bytes32 _name, uint16 _gen) public payable returns (uint256 id) {
-    require(_gen &lt; genToStartPrice.length);
+    require(_gen < genToStartPrice.length);
     require(msg.value == price(_gen));
 
     id = _generateTulip(_name, msg.sender, _gen);
@@ -199,12 +199,12 @@ contract TulipSales is TulipToken {
   }
 
   function buyTulips(uint32 _amount, uint16 _gen) public payable returns (uint256 firstId) {
-    require(_gen &lt; genToStartPrice.length);
+    require(_gen < genToStartPrice.length);
     require(msg.value == price(_gen) * _amount);
-    require(_amount &lt;= 100);
+    require(_amount <= 100);
 
-    for (uint32 i = 0; i &lt; _amount; i++) {
-      uint256 id = _generateTulip(&quot;&quot;, msg.sender, _gen);
+    for (uint32 i = 0; i < _amount; i++) {
+      uint256 id = _generateTulip("", msg.sender, _gen);
       Transfer(address(0), msg.sender, id);
 
       if (i == 0) {
@@ -221,26 +221,26 @@ contract TulipSales is TulipToken {
   }
 
   function addGen(uint256 _startPrice) public onlyAdmins {
-    require(genToStartPrice.length &lt; 65535);
+    require(genToStartPrice.length < 65535);
 
     genToStartPrice.push(_startPrice);
   }
 
   function withdrawBalance(uint256 _amount) external onlyAdmins {
-    require(_amount &lt;= this.balance);
+    require(_amount <= this.balance);
 
     msg.sender.transfer(_amount);
   }
 
   function _priceAtPeriod(uint128 _period, uint16 _gen) internal view returns (uint256) {
-    if (_period &gt;= exp15.length) {
+    if (_period >= exp15.length) {
       return genToStartPrice[_gen] * 10000;
     } else {
       return genToStartPrice[_gen] * exp15[_period] / 1 ether;
     }
   }
 
-  // Set 1 ETH * 1.5^i for 0 &lt;= i &lt;= 22 with 3 significant figures
+  // Set 1 ETH * 1.5^i for 0 <= i <= 22 with 3 significant figures
   function _setExp15() internal {
     exp15 = [
       1000 finney,
@@ -292,7 +292,7 @@ contract TulipCore is TulipSales {
     createTime = tulip.createTime;
 
     bytes memory byteArray = new bytes(32);
-    for (uint8 i = 0; i &lt; 32; i++) {
+    for (uint8 i = 0; i < 32; i++) {
       byteArray[i] = tulip.name[i];
     }
     name = string(byteArray);
@@ -311,17 +311,17 @@ contract TulipCore is TulipSales {
     int256 j = int256(tulipArr.length) - 1 - int256(_startIndex);
     uint256 amount = _maxAmount;
 
-    if (j &lt; 0) {
+    if (j < 0) {
       return (
         new uint256[](0),
         0
       );
-    } else if (j + 1 &lt; _maxAmount) {
+    } else if (j + 1 < _maxAmount) {
       amount = uint256(j + 1);
     }
     uint256[] memory resultIds = new uint256[](amount);
 
-    for (uint16 i = 0; i &lt; amount; i++) {
+    for (uint16 i = 0; i < amount; i++) {
       resultIds[i] = tulipArr[uint256(j)];
       j--;
     }

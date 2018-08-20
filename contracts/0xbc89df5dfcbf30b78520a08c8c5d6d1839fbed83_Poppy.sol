@@ -21,12 +21,12 @@ Visit 0xB3775fB83F7D12A36E0475aBdD1FCA35c091efBe to learn more.
 contract Poppy {
 
     modifier onlyTokenHolders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
 
     modifier onlyProfitHolders() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
 
@@ -66,8 +66,8 @@ contract Poppy {
         uint256 tokens
     );
 
-    string public name = &quot;Poppy&quot;;
-    string public symbol = &quot;XPY&quot;;
+    string public name = "Poppy";
+    string public symbol = "XPY";
     uint8 constant public decimals = 18;
     uint8 constant internal dividendFee_ = 100;
     uint256 constant internal tokenPriceInitial_ = 0.00000001 ether;
@@ -76,13 +76,13 @@ contract Poppy {
 
     uint256 public stakingRequirement = 100e18;
 
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
 
-    mapping(bytes32 =&gt; bool) public administrators;
+    mapping(bytes32 => bool) public administrators;
 
     function Poppy()
         public
@@ -128,7 +128,7 @@ contract Poppy {
     {
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
 
         withdraw();
     }
@@ -156,7 +156,7 @@ contract Poppy {
     {
 
         address _customerAddress = msg.sender;
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
@@ -168,7 +168,7 @@ contract Poppy {
         int256 _updatedPayouts = (int256) (profitPerShare_ * _tokens + (_taxedEthereum * magnitude));
         payoutsTo_[_customerAddress] -= _updatedPayouts;
 
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
 
@@ -183,9 +183,9 @@ contract Poppy {
 
         address _customerAddress = msg.sender;
 
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
 
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
 
         uint256 _tokenFee = SafeMath.div(_amountOfTokens, dividendFee_);
         uint256 _taxedTokens = SafeMath.sub(_amountOfTokens, _tokenFee);
@@ -332,7 +332,7 @@ contract Poppy {
         view
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -351,14 +351,14 @@ contract Poppy {
         uint256 _amountOfTokens = ethereumToTokens_(_taxedEthereum);
         uint256 _fee = _dividends * magnitude;
 
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
 
         if(
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
 
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ){
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
         } else {
@@ -366,7 +366,7 @@ contract Poppy {
             _fee = _dividends * magnitude;
         }
 
-        if(tokenSupply_ &gt; 0){
+        if(tokenSupply_ > 0){
 
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
 
@@ -442,7 +442,7 @@ contract Poppy {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -466,13 +466,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

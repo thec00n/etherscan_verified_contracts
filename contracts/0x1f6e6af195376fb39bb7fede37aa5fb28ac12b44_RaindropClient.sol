@@ -75,14 +75,14 @@ contract RaindropClient is Withdrawable {
     }
 
     // Mapping from hashed names to users (primary User directory)
-    mapping (bytes32 =&gt; User) internal userDirectory;
+    mapping (bytes32 => User) internal userDirectory;
     // Mapping from addresses to hashed names (secondary directory for account recovery based on address)
-    mapping (address =&gt; bytes32) internal nameDirectory;
+    mapping (address => bytes32) internal nameDirectory;
 
     // Requires an address to have a minimum number of Hydro
     modifier requireStake(address _address, uint stake) {
         ERC20Basic hydro = ERC20Basic(hydroTokenAddress);
-        require(hydro.balanceOf(_address) &gt;= stake);
+        require(hydro.balanceOf(_address) >= stake);
         _;
     }
 
@@ -91,7 +91,7 @@ contract RaindropClient is Withdrawable {
         public
         requireStake(msg.sender, minimumHydroStakeDelegatedUser)
     {
-        require(isSigned(userAddress, keccak256(&quot;Create RaindropClient Hydro Account&quot;), v, r, s));
+        require(isSigned(userAddress, keccak256("Create RaindropClient Hydro Account"), v, r, s));
         _userSignUp(userName, userAddress, true);
     }
 
@@ -121,8 +121,8 @@ contract RaindropClient is Withdrawable {
     // Allows the Hydro API to set minimum hydro balances required for sign ups
     function setMinimumHydroStakes(uint newMinimumHydroStakeUser, uint newMinimumHydroStakeDelegatedUser) public {
         ERC20Basic hydro = ERC20Basic(hydroTokenAddress);
-        require(newMinimumHydroStakeUser &lt;= (hydro.totalSupply() / 100 / 10)); // &lt;= .1% of total supply
-        require(newMinimumHydroStakeDelegatedUser &lt;= (hydro.totalSupply() / 100)); // &lt;= 1% of total supply
+        require(newMinimumHydroStakeUser <= (hydro.totalSupply() / 100 / 10)); // <= .1% of total supply
+        require(newMinimumHydroStakeDelegatedUser <= (hydro.totalSupply() / 100)); // <= 1% of total supply
         minimumHydroStakeUser = newMinimumHydroStakeUser;
         minimumHydroStakeDelegatedUser = newMinimumHydroStakeDelegatedUser;
     }
@@ -171,7 +171,7 @@ contract RaindropClient is Withdrawable {
         pure
         returns (bool)
     {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedMessageHash = keccak256(prefix, messageHash);
 
         return ecrecover(prefixedMessageHash, v, r, s) == _address;
@@ -179,7 +179,7 @@ contract RaindropClient is Withdrawable {
 
     // Common internal logic for all user signups
     function _userSignUp(string userName, address userAddress, bool delegated) internal {
-        require(bytes(userName).length &lt; 100);
+        require(bytes(userName).length < 100);
         bytes32 userNameHash = keccak256(userName);
         require(!userDirectory[userNameHash]._initialized);
 

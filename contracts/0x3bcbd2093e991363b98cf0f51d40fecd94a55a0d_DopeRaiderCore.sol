@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 // DopeRaider Narcos Contract
 // by gasmasters.io
-// contact: <span class="__cf_email__" data-cfemail="3e4a5b5f537e5a514e5b4c5f575a5b4c105d5153">[email&#160;protected]</span>
+// contact: <span class="__cf_email__" data-cfemail="3e4a5b5f537e5a514e5b4c5f575a5b4c105d5153">[email protected]</span>
 
 contract DistrictsCoreInterface {
   // callable by other contracts to control economy
@@ -83,7 +83,7 @@ contract NarcoAccessControl {
     }
 
     function unpause() public onlyCLevel whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -158,7 +158,7 @@ contract NarcoBase is NarcoAccessControl {
     /// @dev The main Narco struct. Every narco in DopeRaider is represented by a copy
     ///  of this structure.
     struct Narco {
-        // The Narco&#39;s genetic code is packed into these 256-bits.
+        // The Narco's genetic code is packed into these 256-bits.
         string genes; // represents his avatar
         string narcoName;
         // items making level
@@ -180,15 +180,15 @@ contract NarcoBase is NarcoAccessControl {
 
     /// @dev A mapping from  narco IDs to the address that owns them. All  narcos have
     ///  some valid owner address, even gen0  narcos are created with a non-zero owner.
-    mapping (uint256 =&gt; address) public narcoIndexToOwner;
+    mapping (uint256 => address) public narcoIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) ownershipTokenCount;
+    mapping (address => uint256) ownershipTokenCount;
 
     /// @dev A mapping from NarcoIDs to an address that has been approved to call
     ///  transferFrom(). A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public  narcoIndexToApproved;
+    mapping (uint256 => address) public  narcoIndexToApproved;
 
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         // since the number of  narcos is capped to 2^32
@@ -239,7 +239,7 @@ contract NarcoBase is NarcoAccessControl {
         });
 
         uint256 newNarcoId = narcos.push(_narco) - 1;
-        require(newNarcoId &lt;= 4294967295);
+        require(newNarcoId <= 4294967295);
 
         // raid character (token 0) live in 7 and have random special skills
         if (newNarcoId==0){
@@ -256,7 +256,7 @@ contract NarcoBase is NarcoAccessControl {
     }
 
     function subToZero(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b &lt;= a){
+        if (b <= a){
           return a - b;
         }else{
           return 0;
@@ -268,7 +268,7 @@ contract NarcoBase is NarcoAccessControl {
         capacity = uint16(subToZero(uint256(narcos[_narcoId].skills[5]), usedCapacity));
     }
 
-    // respect it&#39;s called now
+    // respect it's called now
     function getLevel(uint256 _narcoId) public view returns (uint16 rank){
 
     /*
@@ -308,7 +308,7 @@ contract NarcoBase is NarcoAccessControl {
         uint256[] memory result = new uint256[](tokenCount);
         uint256 narcoId;
         uint256 resultIndex=0;
-        for (narcoId = 0; narcoId &lt;= totalNarcos; narcoId++) {
+        for (narcoId = 0; narcoId <= totalNarcos; narcoId++) {
           if (narcoIndexToOwner[narcoId] == _owner) {
             result[resultIndex] = narcoId;
             resultIndex++;
@@ -342,8 +342,8 @@ contract ERC721 {
 
 /// @title The facet of the DopeRaider core contract that manages ownership, ERC-721 (draft) compliant.
 contract NarcoOwnership is NarcoBase, ERC721 {
-    string public name = &quot;DopeRaider&quot;;
-    string public symbol = &quot;DOPR&quot;;
+    string public name = "DopeRaider";
+    string public symbol = "DOPR";
 
     function implementsERC721() public pure returns (bool)
     {
@@ -352,14 +352,14 @@ contract NarcoOwnership is NarcoBase, ERC721 {
 
     /// @dev Checks if a given address is the current owner of a particular narco.
     /// @param _claimant the address we are validating against.
-    /// @param _tokenId narco id, only valid when &gt; 0
+    /// @param _tokenId narco id, only valid when > 0
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return narcoIndexToOwner[_tokenId] == _claimant;
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular narco.
     /// @param _claimant the address we are confirming narco is approved for.
-    /// @param _tokenId narco id, only valid when &gt; 0
+    /// @param _tokenId narco id, only valid when > 0
     function _approvedFor(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return narcoIndexToApproved[_tokenId] == _claimant;
     }
@@ -565,8 +565,8 @@ contract NarcoMinting is NarcoAuction {
         if (_owner == address(0)) {
              _owner = cooAddress;
         }
-        require(promoCreatedCount &lt; promoCreationLimit);
-        require(gen0CreatedCount &lt; gen0CreationLimit);
+        require(promoCreatedCount < promoCreationLimit);
+        require(gen0CreatedCount < gen0CreationLimit);
 
         promoCreatedCount++;
         gen0CreatedCount++;
@@ -580,7 +580,7 @@ contract NarcoMinting is NarcoAuction {
        string _genes,
         string _name
     ) public onlyCLevel {
-        require(gen0CreatedCount &lt; gen0CreationLimit);
+        require(gen0CreatedCount < gen0CreationLimit);
 
         uint256 narcoId = _createNarco(_genes,_name,address(this));
 
@@ -602,13 +602,13 @@ contract NarcoMinting is NarcoAuction {
     function _computeNextGen0Price() internal view returns (uint256) {
         uint256 avePrice = saleAuction.averageGen0SalePrice();
 
-        // sanity check to ensure we don&#39;t overflow arithmetic (this big number is 2^128-1).
-        require(avePrice &lt; 340282366920938463463374607431768211455);
+        // sanity check to ensure we don't overflow arithmetic (this big number is 2^128-1).
+        require(avePrice < 340282366920938463463374607431768211455);
 
         uint256 nextPrice = avePrice + (avePrice / 2);
 
         // We never auction for less than starting price
-        if (nextPrice &lt; gen0StartingPrice) {
+        if (nextPrice < gen0StartingPrice) {
             nextPrice = gen0StartingPrice;
         }
 
@@ -643,7 +643,7 @@ contract DopeRaiderCore is NarcoMinting {
     //             while auction creation and bidding is mostly mediated through this facet of the core contract.
     //
     //      - NarcoMinting: This final facet contains the functionality we use for creating new gen0 narcos.
-    //             We can make up to 4096 &quot;promo&quot; narcos
+    //             We can make up to 4096 "promo" narcos
 
     // Set in case the core contract is broken and an upgrade is required
     address public newContractAddress;
@@ -666,7 +666,7 @@ contract DopeRaiderCore is NarcoMinting {
     }
 
     function unpause() public onlyCLevel whenGamePaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         gamePaused = false;
     }
 
@@ -682,7 +682,7 @@ contract DopeRaiderCore is NarcoMinting {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -692,7 +692,7 @@ contract DopeRaiderCore is NarcoMinting {
     }
 
     /// @notice No tipping!
-    /// @dev Reject all Ether from being sent here, unless it&#39;s from one of the
+    /// @dev Reject all Ether from being sent here, unless it's from one of the
     ///  two auction contracts. (Hopefully, we can prevent user accidents.)
     function() external payable {
         require(msg.sender == address(saleAuction));
@@ -740,9 +740,9 @@ contract DopeRaiderCore is NarcoMinting {
       personalisationCost=_cost;
     }
     function updateNarco(uint256 _narcoId, string _genes, string _name) public payable whenGameNotPaused {
-       require(getLevel(_narcoId)&gt;=changeIdentityNarcoRespect); // minimum level to recruit a narco
-       require(msg.sender==narcoIndexToOwner[_narcoId]); // can&#39;t be moving other peoples narcos about
-       require(msg.value&gt;=personalisationCost);
+       require(getLevel(_narcoId)>=changeIdentityNarcoRespect); // minimum level to recruit a narco
+       require(msg.sender==narcoIndexToOwner[_narcoId]); // can't be moving other peoples narcos about
+       require(msg.value>=personalisationCost);
        narcos[_narcoId].genes = _genes;
        narcos[_narcoId].narcoName = _name;
     }
@@ -754,9 +754,9 @@ contract DopeRaiderCore is NarcoMinting {
     }
 
     function recruitNarco(uint256 _narcoId, string _genes, string _name) public whenGameNotPaused {
-       require(msg.sender==narcoIndexToOwner[_narcoId]); // can&#39;t be moving other peoples narcos about
-       require(getLevel(_narcoId)&gt;=respectRequiredToRecruit); // minimum level to recruit a narco
-       require(narcos[_narcoId].stats[8]&lt;getLevel(_narcoId)/respectRequiredToRecruit); // must have recruited &lt; respect / required reqpect (times)
+       require(msg.sender==narcoIndexToOwner[_narcoId]); // can't be moving other peoples narcos about
+       require(getLevel(_narcoId)>=respectRequiredToRecruit); // minimum level to recruit a narco
+       require(narcos[_narcoId].stats[8]<getLevel(_narcoId)/respectRequiredToRecruit); // must have recruited < respect / required reqpect (times)
       _createNarco(_genes,_name, msg.sender);
       narcos[_narcoId].stats[8]+=1; // increase number recruited
     }
@@ -768,13 +768,13 @@ contract DopeRaiderCore is NarcoMinting {
     }
 
     function growWeed(uint256 _narcoId) public payable whenGameNotPaused{
-         require(msg.sender==narcoIndexToOwner[_narcoId]); // can&#39;t be moving other peoples narcos about
-         require(msg.value&gt;=growCost);
-         require(now&gt;narcos[_narcoId].cooldowns[1]); //cooldown must have expired
+         require(msg.sender==narcoIndexToOwner[_narcoId]); // can't be moving other peoples narcos about
+         require(msg.value>=growCost);
+         require(now>narcos[_narcoId].cooldowns[1]); //cooldown must have expired
          uint16 growSkillLevel = narcos[_narcoId].skills[1]; // grow
          uint16 maxYield = 9 + growSkillLevel; // max amount can be grown based on skill
          uint yield = min(narcos[_narcoId].consumables[1],maxYield);
-         require(yield&gt;0); // gotta produce something
+         require(yield>0); // gotta produce something
 
          // must be home location
          uint8 district = districtsCore.getNarcoLocation(_narcoId);
@@ -801,13 +801,13 @@ contract DopeRaiderCore is NarcoMinting {
     }
 
     function refineCoke(uint256 _narcoId) public payable whenGameNotPaused{
-         require(msg.sender==narcoIndexToOwner[_narcoId]); // can&#39;t be moving other peoples narcos about
-         require(msg.value&gt;=refineCost);
-         require(now&gt;narcos[_narcoId].cooldowns[2]); //cooldown must have expired
+         require(msg.sender==narcoIndexToOwner[_narcoId]); // can't be moving other peoples narcos about
+         require(msg.value>=refineCost);
+         require(now>narcos[_narcoId].cooldowns[2]); //cooldown must have expired
          uint16 refineSkillLevel = narcos[_narcoId].skills[2]; // refine
          uint16 maxYield = 3+(refineSkillLevel/3); // max amount can be grown based on skill
          uint yield = min(narcos[_narcoId].consumables[2],maxYield);
-         require(yield&gt;0); // gotta produce something
+         require(yield>0); // gotta produce something
 
          // must be home location
          uint8 district = districtsCore.getNarcoLocation(_narcoId);
@@ -831,7 +831,7 @@ contract DopeRaiderCore is NarcoMinting {
 
 
     function min(uint a, uint b) private pure returns (uint) {
-             return a &lt; b ? a : b;
+             return a < b ? a : b;
     }
 
 }

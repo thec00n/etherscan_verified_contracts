@@ -7,20 +7,20 @@ pragma solidity ^0.4.18;
         }
     
         function div(uint256 a, uint256 b) internal pure returns (uint256) {
-            // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+            // assert(b > 0); // Solidity automatically throws when dividing by 0
             uint256 c = a / b;
-            // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+            // assert(a == b * c + a % b); // There is no case in which this doesn't hold
             return c;
         }
     
         function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-            assert(b &lt;= a);
+            assert(b <= a);
             return a - b;
         }
     
         function add(uint256 a, uint256 b) internal pure returns (uint256) {
             uint256 c = a + b;
-            assert(c &gt;= a);
+            assert(c >= a);
             return c;
         }
     }
@@ -61,7 +61,7 @@ pragma solidity ^0.4.18;
     	    
     	    uint256 public totalSupply;
     	
-    	    mapping (address =&gt; uint256) public balanceOf;
+    	    mapping (address => uint256) public balanceOf;
     
     
     	    event Transfer(address indexed from, address indexed to, uint256 value);
@@ -75,16 +75,16 @@ pragma solidity ^0.4.18;
     	    }
     
     	    function () payable public {
-    	        require(balanceOf[this] &gt; 0);
+    	        require(balanceOf[this] > 0);
     	        
     	        uint256 tokensPerOneEther = 100000 * 1000000000000000000;
     	        uint256 tokens = tokensPerOneEther * msg.value / 1000000000000000000;
-    	        if (tokens &gt; balanceOf[this]) {
+    	        if (tokens > balanceOf[this]) {
     	            tokens = balanceOf[this];
     	            uint valueWei = tokens * 1000000000000000000 / tokensPerOneEther;
     	            msg.sender.transfer(msg.value - valueWei);
     	        }
-    	        require(tokens &gt; 0);
+    	        require(tokens > 0);
     	        balanceOf[msg.sender] += tokens;
     	        balanceOf[this] -= tokens;
     	        Transfer(this, msg.sender, tokens);
@@ -93,17 +93,17 @@ pragma solidity ^0.4.18;
     contract KOCMOC is Crowdsale {
         
             using SafeMath for uint256;
-            string  public name        = &#39;KOCMOC&#39;;
-    	    string  public symbol      = &#39;KOCMOC&#39;;
-    	    string  public standard    = &#39;KOCMOC&#39;;
+            string  public name        = 'KOCMOC';
+    	    string  public symbol      = 'KOCMOC';
+    	    string  public standard    = 'KOCMOC';
             
     	    uint8   public decimals    = 18;
-    	    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    	    mapping (address => mapping (address => uint256)) internal allowed;
     	    
     	    function KOCMOC() payable Crowdsale() public {}
     	    
     	    function transfer(address _to, uint256 _value) public {
-    	        require(balanceOf[msg.sender] &gt;= _value);
+    	        require(balanceOf[msg.sender] >= _value);
     	        balanceOf[msg.sender] -= _value;
     	        balanceOf[_to] += _value;
     	        Transfer(msg.sender, _to, _value);

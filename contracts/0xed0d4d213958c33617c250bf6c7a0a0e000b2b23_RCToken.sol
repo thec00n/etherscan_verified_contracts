@@ -6,12 +6,12 @@ contract Utils {
 
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 _z = _x + _y;
-        assert(_z &gt;= _x);
+        assert(_z >= _x);
         return _z;
     }
 
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -57,8 +57,8 @@ contract StandardToken is ERC20Token, Utils, Ownable {
  
     bool public transfersEnabled = true;  
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     modifier transfersAllowed {
         assert(transfersEnabled);
@@ -70,7 +70,7 @@ contract StandardToken is ERC20Token, Utils, Ownable {
     }
     
     function transfer(address _to, uint256 _value) public validAddress(_to) transfersAllowed returns (bool success){
-        require(balanceOf[msg.sender] &gt;= _value &amp;&amp; balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value > balanceOf[_to]); 
         
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -86,8 +86,8 @@ contract StandardToken is ERC20Token, Utils, Ownable {
 
 contract RCToken is StandardToken {
 
-    string public constant name = &quot;RC&quot;;
-    string public constant symbol = &quot;RC&quot;;
+    string public constant name = "RC";
+    string public constant symbol = "RC";
     uint8 public constant decimals = 18;
     uint256 public constant totalSupply = 5 * 10**26;
     

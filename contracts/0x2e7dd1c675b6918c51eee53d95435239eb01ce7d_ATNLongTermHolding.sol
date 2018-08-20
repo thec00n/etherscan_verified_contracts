@@ -123,37 +123,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -168,7 +168,7 @@ contract RewardSharedPool is DSStop {
 
     uint public consumed   = 0;
 
-    mapping(address =&gt; bool) public consumers;
+    mapping(address => bool) public consumers;
 
     modifier onlyConsumer {
         require(msg.sender == owner || consumers[msg.sender]);
@@ -192,7 +192,7 @@ contract RewardSharedPool is DSStop {
 
     function available(uint amount) constant public returns (bool)
     {
-        return consumed.add(amount) &lt;= maxReward;
+        return consumed.add(amount) <= maxReward;
     }
 
     function changeMaxReward(uint _maxReward) auth public
@@ -241,7 +241,7 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
         uint timestamp;
     }
 
-    mapping (address =&gt; Record) public records;
+    mapping (address => Record) public records;
 
     ERC20 public AGT;
     ERC20 public ATN;
@@ -255,7 +255,7 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
 
         pool = RewardSharedPool(_poolAddress);
 
-        require(_rate &gt; 100);
+        require(_rate > 100);
 
         rate = _rate;
         withdrawal_delay = _delayDays * 1 days;
@@ -291,7 +291,7 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
                 return;
             }
 
-            require(now &lt;= depositStopTime);
+            require(now <= depositStopTime);
 
             var record = records[_from];
 
@@ -309,15 +309,15 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
 
     function onTokenTransfer(address _from, address _to, uint _amount) public returns (bool)
     {
-        if (_to == address(this) &amp;&amp; _from != owner)
+        if (_to == address(this) && _from != owner)
         {
-            if (msg.gas &lt; gasRequired) return false;
+            if (msg.gas < gasRequired) return false;
             
             if (stopped) return false;
-            if (now &gt; depositStopTime) return false;
+            if (now > depositStopTime) return false;
 
             // each address can only deposit once.
-            if (records[_from].timestamp &gt; 0 ) return false;
+            if (records[_from].timestamp > 0 ) return false;
 
             // can not over the limit of maximum reward amount
             if ( !pool.available( _amount.mul(rate - 100 ).div(100) ) ) return false;
@@ -331,9 +331,9 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
 
         Record record = records[msg.sender];
 
-        require(record.timestamp &gt; 0);
+        require(record.timestamp > 0);
 
-        require(now &gt;= record.timestamp + withdrawal_delay);
+        require(now >= record.timestamp + withdrawal_delay);
 
         withdrawFor(msg.sender);
     }
@@ -343,9 +343,9 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
 
         Record record = records[_addr];
 
-        require(record.timestamp &gt; 0);
+        require(record.timestamp > 0);
 
-        require(now &gt;= record.timestamp + withdrawal_delay);
+        require(now >= record.timestamp + withdrawal_delay);
 
         withdrawFor(_addr);
     }
@@ -369,8 +369,8 @@ contract ATNLongTermHolding is DSStop, TokenTransferGuard {
     }
 
     function batchWithdraw(address[] _addrList) public stoppable {
-        for (uint i = 0; i &lt; _addrList.length; i++) {
-            if (records[_addrList[i]].timestamp &gt; 0 &amp;&amp; now &gt;= records[_addrList[i]].timestamp + withdrawal_delay)
+        for (uint i = 0; i < _addrList.length; i++) {
+            if (records[_addrList[i]].timestamp > 0 && now >= records[_addrList[i]].timestamp + withdrawal_delay)
             {
                 withdrawFor(_addrList[i]);
             }

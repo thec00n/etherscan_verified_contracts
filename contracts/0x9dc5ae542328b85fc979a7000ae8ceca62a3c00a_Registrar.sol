@@ -23,12 +23,12 @@ contract Registrar {
 	}
 	
 	uint256 public numHashTypes;
-	mapping(bytes32 =&gt; Manifest) private manifests;
-	mapping(address =&gt; bytes32[]) private registrantManifests;
-	mapping(bytes32 =&gt; bytes32[]) private registrantNameManifests;
-	mapping(bytes32 =&gt; uint256) private registrantNameVersionCount;
-	mapping(bytes32 =&gt; uint256) public hashTypeIdLookup;
-	mapping(uint256 =&gt; HashType) public hashTypes;
+	mapping(bytes32 => Manifest) private manifests;
+	mapping(address => bytes32[]) private registrantManifests;
+	mapping(bytes32 => bytes32[]) private registrantNameManifests;
+	mapping(bytes32 => uint256) private registrantNameVersionCount;
+	mapping(bytes32 => uint256) public hashTypeIdLookup;
+	mapping(uint256 => HashType) public hashTypes;
 	
 	 /**
 	  * @dev Log when a manifest registration is successful
@@ -55,10 +55,10 @@ contract Registrar {
      * @dev Checks if the values provided for this manifest are valid
      */
     modifier manifestIsValid(bytes32 name, bytes32 hashTypeName, string checksum, address registrant) {
-        require(name != bytes32(0x0) &amp;&amp; 
-            hashTypes[hashTypeIdLookup[hashTypeName]].active == true &amp;&amp;
-            bytes(checksum).length != 0 &amp;&amp;
-            registrant != address(0x0) &amp;&amp;
+        require(name != bytes32(0x0) && 
+            hashTypes[hashTypeIdLookup[hashTypeName]].active == true &&
+            bytes(checksum).length != 0 &&
+            registrant != address(0x0) &&
             manifests[keccak256(abi.encodePacked(registrant, name, nextVersion(registrant, name)))].name == bytes32(0x0)
             );
         _;
@@ -69,7 +69,7 @@ contract Registrar {
      */
 	constructor() public {
 		contractOwner = msg.sender;
-		addHashType(&#39;sha256&#39;);
+		addHashType('sha256');
 	}
 
     /******************************************/
@@ -97,7 +97,7 @@ contract Registrar {
 	 * @param _active The value to be set
 	 */
 	function setActiveHashType(bytes32 _name, bool _active) public onlyContractOwner {
-        require(hashTypeIdLookup[_name] &gt; 0);
+        require(hashTypeIdLookup[_name] > 0);
         hashTypes[hashTypeIdLookup[_name]].active = _active;
 	}
 
@@ -240,7 +240,7 @@ contract Registrar {
 	    returns (address, bytes32, uint256, uint256, bytes32, string, uint256) {
 	        
 	    bytes32 registrantNameIndex = keccak256(abi.encodePacked(_registrant, _name));
-	    require(registrantNameManifests[registrantNameIndex].length &gt; 0);
+	    require(registrantNameManifests[registrantNameIndex].length > 0);
 	    
 	    bytes32 manifestId = registrantNameManifests[registrantNameIndex][registrantNameManifests[registrantNameIndex].length - 1];
 	    Manifest memory _manifest = manifests[manifestId];
@@ -269,7 +269,7 @@ contract Registrar {
      */
 	function getLatestManifest(address _registrant) public view
 	    returns (address, bytes32, uint256, uint256, bytes32, string, uint256) {
-	    require(registrantManifests[_registrant].length &gt; 0);
+	    require(registrantManifests[_registrant].length > 0);
 	    
 	    bytes32 manifestId = registrantManifests[_registrant][registrantManifests[_registrant].length - 1];
 	    Manifest memory _manifest = manifests[manifestId];

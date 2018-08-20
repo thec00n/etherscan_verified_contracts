@@ -20,9 +20,9 @@ contract Registrar {
         parent = Registrar(parentAddress);
     }
 
-    mapping (bytes32 =&gt; bytes32) records;
-    mapping (bytes32 =&gt; string) stringRecords;
-    mapping (bytes32 =&gt; bool) recordExists;
+    mapping (bytes32 => bytes32) records;
+    mapping (bytes32 => string) stringRecords;
+    mapping (bytes32 => bool) recordExists;
 
 
     function set(string key, bytes32 value) public onlyowner {

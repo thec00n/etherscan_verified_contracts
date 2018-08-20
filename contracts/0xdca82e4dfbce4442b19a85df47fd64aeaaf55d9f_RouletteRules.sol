@@ -11,9 +11,9 @@ contract RouletteRules {
     function getTotalBetAmount(bytes32 first16, bytes32 second16) public pure returns(uint totalBetAmount) {
         uint a;
         uint b;
-        for (uint i = 240; i &gt;= 0; i -= 16) {
-            a = uint(first16 &gt;&gt; i &amp; 0xffff);
-            b = uint(second16 &gt;&gt; i &amp; 0xffff);
+        for (uint i = 240; i >= 0; i -= 16) {
+            a = uint(first16 >> i & 0xffff);
+            b = uint(second16 >> i & 0xffff);
             if (a == 0) return totalBetAmount;
             else totalBetAmount = totalBetAmount + a + b;
         }
@@ -22,10 +22,10 @@ contract RouletteRules {
     function getBetResult(bytes32 betTypes, bytes32 first16, bytes32 second16, uint wheelResult) public view returns(uint wonAmount) {
         uint a;
         // player can place maximum 32 types of bets
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             // get corresponding bet amount
-            if (i &lt; 16) a = uint(first16 &gt;&gt; (240 - i * 16) &amp; 0xffff);
-            else a = uint(second16 &gt;&gt; (240 - (i - 16) * 16) &amp; 0xffff);
+            if (i < 16) a = uint(first16 >> (240 - i * 16) & 0xffff);
+            else a = uint(second16 >> (240 - (i - 16) * 16) & 0xffff);
             // break if bet amount is empty
             if (a == 0) break;
             // resolve result with calculated index
@@ -37,7 +37,7 @@ contract RouletteRules {
         require(msg.sender == developer);
         uint8[7] memory payoutRate = [36, 18, 12, 9, 6, 3, 2];
         uint start;
-        for (uint r = processStart; r &lt;= processEnd; r++) {
+        for (uint r = processStart; r <= processEnd; r++) {
             start = r * 157;
             payoutTable[start + r] = payoutRate[0];
             if (r == 0 || r == 1) payoutTable[start + 37] = payoutRate[1];
@@ -137,27 +137,27 @@ contract RouletteRules {
             if (r == 29 || r == 30 || r == 32 || r == 33) payoutTable[start + 131] = payoutRate[3];
             if (r == 31 || r == 32 || r == 34 || r == 35) payoutTable[start + 132] = payoutRate[3];
             if (r == 32 || r == 33 || r == 35 || r == 36) payoutTable[start + 133] = payoutRate[3];
-            if (r &gt;= 1 &amp;&amp; r &lt;= 6) payoutTable[start + 134] = payoutRate[4];
-            if (r &gt;= 4 &amp;&amp; r &lt;= 9) payoutTable[start + 135] = payoutRate[4];
-            if (r &gt;= 7 &amp;&amp; r &lt;= 12) payoutTable[start + 136] = payoutRate[4];
-            if (r &gt;= 10 &amp;&amp; r &lt;= 15) payoutTable[start + 137] = payoutRate[4];
-            if (r &gt;= 13 &amp;&amp; r &lt;= 18) payoutTable[start + 138] = payoutRate[4];
-            if (r &gt;= 16 &amp;&amp; r &lt;= 21) payoutTable[start + 139] = payoutRate[4];
-            if (r &gt;= 19 &amp;&amp; r &lt;= 24) payoutTable[start + 140] = payoutRate[4];
-            if (r &gt;= 22 &amp;&amp; r &lt;= 27) payoutTable[start + 141] = payoutRate[4];
-            if (r &gt;= 25 &amp;&amp; r &lt;= 30) payoutTable[start + 142] = payoutRate[4];
-            if (r &gt;= 28 &amp;&amp; r &lt;= 33) payoutTable[start + 143] = payoutRate[4];
-            if (r &gt;= 31 &amp;&amp; r &lt;= 36) payoutTable[start + 144] = payoutRate[4];
+            if (r >= 1 && r <= 6) payoutTable[start + 134] = payoutRate[4];
+            if (r >= 4 && r <= 9) payoutTable[start + 135] = payoutRate[4];
+            if (r >= 7 && r <= 12) payoutTable[start + 136] = payoutRate[4];
+            if (r >= 10 && r <= 15) payoutTable[start + 137] = payoutRate[4];
+            if (r >= 13 && r <= 18) payoutTable[start + 138] = payoutRate[4];
+            if (r >= 16 && r <= 21) payoutTable[start + 139] = payoutRate[4];
+            if (r >= 19 && r <= 24) payoutTable[start + 140] = payoutRate[4];
+            if (r >= 22 && r <= 27) payoutTable[start + 141] = payoutRate[4];
+            if (r >= 25 && r <= 30) payoutTable[start + 142] = payoutRate[4];
+            if (r >= 28 && r <= 33) payoutTable[start + 143] = payoutRate[4];
+            if (r >= 31 && r <= 36) payoutTable[start + 144] = payoutRate[4];
             if (r % 3 == 1) payoutTable[start + 145] = payoutRate[5];
             if (r % 3 == 2) payoutTable[start + 146] = payoutRate[5];
-            if (r != 0 &amp;&amp; r % 3 == 0) payoutTable[start + 147] = payoutRate[5];
-            if (r &gt;= 1 &amp;&amp; r &lt;= 12) payoutTable[start + 148] = payoutRate[5];
-            if (r &gt;= 13 &amp;&amp; r &lt;= 24) payoutTable[start + 149] = payoutRate[5];
-            if (r &gt;= 25 &amp;&amp; r &lt;= 36) payoutTable[start + 150] = payoutRate[5];
-            if (r &gt;= 1 &amp;&amp; r &lt;= 18) payoutTable[start + 151] = payoutRate[6];
-            if (r &gt;= 19 &amp;&amp; r &lt;= 36) payoutTable[start + 152] = payoutRate[6];
+            if (r != 0 && r % 3 == 0) payoutTable[start + 147] = payoutRate[5];
+            if (r >= 1 && r <= 12) payoutTable[start + 148] = payoutRate[5];
+            if (r >= 13 && r <= 24) payoutTable[start + 149] = payoutRate[5];
+            if (r >= 25 && r <= 36) payoutTable[start + 150] = payoutRate[5];
+            if (r >= 1 && r <= 18) payoutTable[start + 151] = payoutRate[6];
+            if (r >= 19 && r <= 36) payoutTable[start + 152] = payoutRate[6];
             if (r % 2 == 1) payoutTable[start + 153] = payoutRate[6];
-            if (r != 0 &amp;&amp; r % 2 == 0) payoutTable[start + 154] = payoutRate[6];
+            if (r != 0 && r % 2 == 0) payoutTable[start + 154] = payoutRate[6];
             if (r == 1 || r == 3 || r == 5 || r == 7 || r == 9 || r == 12 || r == 14 || r == 16 || r == 18 || r == 19 || r == 21 || r == 23 || r == 25 || r == 27 || r == 30 || r == 32 || r == 34 || r == 36) payoutTable[start + 155] = payoutRate[6];
             if (r == 2 || r == 4 || r == 6 || r == 8 || r == 10 || r == 11 || r == 13 || r == 15 || r == 17 || r == 20 || r == 22 || r == 24 || r == 26 || r == 28 || r == 29 || r == 31 || r == 33 || r == 35) payoutTable[start + 156] = payoutRate[6];
         }

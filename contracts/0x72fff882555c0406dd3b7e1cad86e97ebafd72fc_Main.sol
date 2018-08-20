@@ -6,7 +6,7 @@ pragma solidity ^0.4.22;
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public view returns (string) {}
     function symbol() public view returns (string) {}
     function decimals() public view returns (uint8) {}
@@ -24,7 +24,7 @@ contract IERC20Token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -132,14 +132,14 @@ contract Main is Claimable {
 
         IERC20Token[] memory pathConverted = new IERC20Token[](path.length);
 
-        for (uint i = 0; i &lt; path.length; i++) {
+        for (uint i = 0; i < path.length; i++) {
             pathConverted[i] = IERC20Token(path[i]);
         }
 
-        require(IERC20Token(path[0]).transferFrom(msg.sender, address(this), amount), &quot;transferFrom msg.sender failed&quot;);
-        require(IERC20Token(path[0]).approve(address(bancor), amount), &quot;approve to bancor failed&quot;);
+        require(IERC20Token(path[0]).transferFrom(msg.sender, address(this), amount), "transferFrom msg.sender failed");
+        require(IERC20Token(path[0]).approve(address(bancor), amount), "approve to bancor failed");
         uint256 amountReceived = bancor.quickConvert(pathConverted, amount, 1);
-        require(IERC20Token(path[path.length - 1]).transfer(receiverAddress, amountReceived), &quot;transfer back to receiverAddress failed&quot;);
+        require(IERC20Token(path[path.length - 1]).transfer(receiverAddress, amountReceived), "transfer back to receiverAddress failed");
         return true;
     }
 

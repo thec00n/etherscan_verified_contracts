@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * TOKEN Contract
 * ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="f096de919e849f9e999fde919b959cb0979d91999cde939f9d">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="f096de919e849f9e999fde919b959cb0979d91999cde939f9d">[email protected]</span>
 */
 
 /**
@@ -12,13 +12,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -130,9 +130,9 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -207,7 +207,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
     * @param _mintedAmount amount to mint.
     */
     function mintToken(address _target, uint256 _mintedAmount) onlyAdmin supplyLock public {
-        require(totalSupply.add(_mintedAmount) &lt;= 1000000000 * (10 ** 2) ); //max supply, 18 decimals
+        require(totalSupply.add(_mintedAmount) <= 1000000000 * (10 ** 2) ); //max supply, 18 decimals
         balances[_target] = SafeMath.add(balances[_target], _mintedAmount);
         totalSupply = SafeMath.add(totalSupply, _mintedAmount);
         Transfer(0, this, _mintedAmount);
@@ -237,10 +237,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 * @dev Initial supply creation
 */
 contract Asset is ERC20Token {
-    string public name = &#39;PGcoin&#39;;
+    string public name = 'PGcoin';
     uint8 public decimals = 2;
-    string public symbol = &#39;PGC&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'PGC';
+    string public version = '1';
 
     function Asset() public {
         totalSupply = 200000000 * (10 ** uint256(decimals)); //initial token creation

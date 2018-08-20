@@ -18,9 +18,9 @@ library SafeMath {
     pure
     returns (uint256) 
     {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -30,7 +30,7 @@ library SafeMath {
     pure
     returns (uint256) 
     {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     returns (uint256) 
     {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -75,14 +75,14 @@ contract StandardToken is Token {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowances;
     uint256 public totalSupply;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param to Address of token receiver
     /// @param value Number of tokens to transfer
     /// @return Returns success of function call
@@ -91,7 +91,7 @@ contract StandardToken is Token {
         returns (bool)
     {
         require(to != address(0));
-        require(value &lt;= balances[msg.sender]);
+        require(value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
         Transfer(msg.sender, to, value);
@@ -107,12 +107,12 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        // if (balances[from] &lt; value || allowances[from][msg.sender] &lt; value)
+        // if (balances[from] < value || allowances[from][msg.sender] < value)
         //     // Balance or allowance too low
         //     revert();
         require(to != address(0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowances[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowances[from][msg.sender]);
         balances[to] = balances[to].add(value);
         balances[from] = balances[from].sub(value);
         allowances[from][msg.sender] = allowances[from][msg.sender].sub(value);
@@ -154,7 +154,7 @@ contract StandardToken is Token {
         returns (bool) 
     {
         uint oldValue = allowances[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -193,8 +193,8 @@ contract Balehubuck is StandardToken {
     /*
      *  Constants
      */
-    string public constant name = &quot;balehubuck&quot;;
-    string public constant symbol = &quot;BUX&quot;;
+    string public constant name = "balehubuck";
+    string public constant symbol = "BUX";
     uint8 public constant decimals = 18;
     uint256 public constant TOTAL_SUPPLY = 1000000000 * 10**18;
     // Presale Allocation = 500 * (5000 + 4500 + 4000 + 3500 + 3250 + 3000)
@@ -239,8 +239,8 @@ contract TokenSale {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint256) public presaleAllocations;
-    mapping (address =&gt; uint256) public mainSaleAllocations;
+    mapping (address => uint256) public presaleAllocations;
+    mapping (address => uint256) public mainSaleAllocations;
     address public wallet;
     Balehubuck public token;
     uint256 public presaleEndTime;
@@ -316,7 +316,7 @@ contract TokenSale {
         public
         payable
     {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         address receiver = _receiver;
         if (receiver == 0x0)
             receiver = msg.sender;
@@ -357,15 +357,15 @@ contract TokenSale {
         atStage(Stages.PresaleEnded)
     {
         // Checks the inputs for null values
-        require(_minimumMainSaleRaise &gt; 0 &amp;&amp;
-                _maximumMainSaleRaise &gt; 0 &amp;&amp;
-                _maximumAllocationPerParticipant &gt; 0 &amp;&amp;
-                _mainSaleExchangeRate &gt; 0);
+        require(_minimumMainSaleRaise > 0 &&
+                _maximumMainSaleRaise > 0 &&
+                _maximumAllocationPerParticipant > 0 &&
+                _mainSaleExchangeRate > 0);
         // Sanity check that requires the min raise to be less then the max
-        require(_minimumMainSaleRaise &lt; _maximumMainSaleRaise);
+        require(_minimumMainSaleRaise < _maximumMainSaleRaise);
         // This check verifies that the token_sale contract has enough tokens to match the
         // _maximumMainSaleRaiseAmount * _mainSaleExchangeRate (subtracts presale amounts first)
-        require(_maximumMainSaleRaise.sub(PRESALE_MAX_RAISE).mul(_mainSaleExchangeRate) &lt;= token.balanceOf(this).sub(PRESALE_TOKEN_ALLOCATION));
+        require(_maximumMainSaleRaise.sub(PRESALE_MAX_RAISE).mul(_mainSaleExchangeRate) <= token.balanceOf(this).sub(PRESALE_TOKEN_ALLOCATION));
         minimumMainSaleRaise = _minimumMainSaleRaise;
         maximumMainSaleRaise = _maximumMainSaleRaise;
         mainSaleExchangeRate = _mainSaleExchangeRate;
@@ -391,12 +391,12 @@ contract TokenSale {
     {
         // Trading starts between two weeks (if called by the wallet) and two months (callable by anyone)
         // after the main sale has ended
-        require((msg.sender == wallet &amp;&amp; now &gt;= minTradingStartTime) || now &gt;= maxTradingStartTime);
+        require((msg.sender == wallet && now >= minTradingStartTime) || now >= maxTradingStartTime);
         stage = Stages.Trading;
         TradingStart(now);
     }
 
-    // @dev Allows buyer to be refunded their ETH if the minimum presale raise amount hasn&#39;t been met
+    // @dev Allows buyer to be refunded their ETH if the minimum presale raise amount hasn't been met
     function refund() 
         external
         atStage(Stages.Refund)
@@ -407,7 +407,7 @@ contract TokenSale {
         Refund(msg.sender, amount);
     }
 
-    // @dev Allows buyers to claim the tokens they&#39;ve purchased
+    // @dev Allows buyers to claim the tokens they've purchased
     function claimTokens()
         external
         atStage(Stages.Trading)
@@ -426,7 +426,7 @@ contract TokenSale {
     function buyPresale(address receiver)
         private
     {
-        if (now &gt;= presaleEndTime) {
+        if (now >= presaleEndTime) {
             endPresale();
             return;
         }
@@ -446,34 +446,34 @@ contract TokenSale {
             // stageAmount = totalReceived.add(500 * 10**18).div(500 * 10**18).mul(500 * 10**18);
             // maxWeiForPresaleStage = stageAmount - totalReceived
             maxWeiForPresaleStage = (totalReceived.add(500 * 10**18).div(500 * 10**18).mul(500 * 10**18)).sub(totalReceived);
-            if (weiAmount &gt; maxWeiForPresaleStage) {
+            if (weiAmount > maxWeiForPresaleStage) {
                 weiUsing = maxWeiForPresaleStage;
             } else {
                 weiUsing = weiAmount;
             }
             weiAmount = weiAmount.sub(weiUsing);
-            if (totalReceived &lt; 500 * 10**18) {
+            if (totalReceived < 500 * 10**18) {
             // Stage 1: up to 500 Ether, exchange rate of 1 ETH for 5000 BUX
                 tokenAllocation = calcpresaleAllocations(weiUsing, 5000);
-            } else if (totalReceived &lt; 1000 * 10**18) {
+            } else if (totalReceived < 1000 * 10**18) {
             // Stage 2: up to 1000 Ether, exchange rate of 1 ETH for 4500 BUX
                 tokenAllocation = calcpresaleAllocations(weiUsing, 4500);
-            } else if (totalReceived &lt; 1500 * 10**18) {
+            } else if (totalReceived < 1500 * 10**18) {
             // Stage 3: up to 1500 Ether, exchange rate of 1 ETH for 4000 BUX
                 tokenAllocation = calcpresaleAllocations(weiUsing, 4000);
-            } else if (totalReceived &lt; 2000 * 10**18) {
+            } else if (totalReceived < 2000 * 10**18) {
             // Stage 4: up to 2000 Ether, exchange rate of 1 ETH for 3500 BUX
                 tokenAllocation = calcpresaleAllocations(weiUsing, 3500);
-            } else if (totalReceived &lt; 2500 * 10**18) {
+            } else if (totalReceived < 2500 * 10**18) {
             // Stage 5: up to 2500 Ether, exchange rate of 1 ETH for 3250 BUX
                 tokenAllocation = calcpresaleAllocations(weiUsing, 3250);
-            } else if (totalReceived &lt; 3000 * 10**18) {
+            } else if (totalReceived < 3000 * 10**18) {
             // Stage 6: up to 3000 Ether, exchange rate of 1 ETH for 3000 BUX
                 tokenAllocation = calcpresaleAllocations(weiUsing, 3000);
             } 
             totalTokenAllocation = totalTokenAllocation.add(tokenAllocation);
             totalReceived = totalReceived.add(weiUsing);
-            if (totalReceived &gt;= PRESALE_MAX_RAISE) {
+            if (totalReceived >= PRESALE_MAX_RAISE) {
                     buyerRefund = weiAmount;
                     endPresale();
             }
@@ -493,19 +493,19 @@ contract TokenSale {
     function buyMainSale(address receiver)
         private
     {
-        if (now &gt;= mainSaleEndTime) {
+        if (now >= mainSaleEndTime) {
             endMainSale(msg.value);
             msg.sender.transfer(msg.value);
             return;
         }
         uint256 buyerRefund = 0;
         uint256 weiAllocation = mainSaleAllocations[receiver].add(msg.value);
-        if (weiAllocation &gt;= maximumAllocationPerParticipant) {
+        if (weiAllocation >= maximumAllocationPerParticipant) {
             weiAllocation = maximumAllocationPerParticipant.sub(mainSaleAllocations[receiver]);
             buyerRefund = msg.value.sub(weiAllocation);
         }
         uint256 potentialReceived = totalReceived.add(weiAllocation);
-        if (potentialReceived &gt; maximumMainSaleRaise) {
+        if (potentialReceived > maximumMainSaleRaise) {
             weiAllocation = maximumMainSaleRaise.sub(totalReceived);
             buyerRefund = buyerRefund.add(potentialReceived.sub(maximumMainSaleRaise));
             endMainSale(buyerRefund);
@@ -540,7 +540,7 @@ contract TokenSale {
     function endMainSale(uint256 buyerRefund)
         private
     {
-        if (totalReceived &lt; minimumMainSaleRaise) {
+        if (totalReceived < minimumMainSaleRaise) {
             stage = Stages.Refund;
         } else {
             minTradingStartTime = now + 2 weeks;

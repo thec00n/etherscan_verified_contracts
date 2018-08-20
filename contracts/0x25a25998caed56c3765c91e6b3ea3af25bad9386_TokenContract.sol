@@ -48,7 +48,7 @@ contract TokenContract is EIP20Interface {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(!frozen[msg.sender]);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -59,10 +59,10 @@ contract TokenContract is EIP20Interface {
         require(!frozen[msg.sender]);
         require(!frozen[_from]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -86,7 +86,7 @@ contract TokenContract is EIP20Interface {
 
     function burn(uint256 _value) public returns (bool success) {
         require(!frozen[msg.sender]);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -115,7 +115,7 @@ contract TokenContract is EIP20Interface {
         FrozenFunds(_target, _freeze);
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) frozen;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) frozen;
 }

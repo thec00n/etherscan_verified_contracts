@@ -1,12 +1,12 @@
 /**
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
- * Author: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e5356577e48574c4a4b5b105857505f505d5b">[email&#160;protected]</a> 
+ * Author: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e5356577e48574c4a4b5b105857505f505d5b">[email protected]</a> 
  *
  * MIT License
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
- * of this software and associated documentation files (the &quot;&quot;Software&quot;&quot;), to 
+ * of this software and associated documentation files (the ""Software""), to 
  * deal in the Software without restriction, including without limitation the 
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
  * sell copies of the Software, and to permit persons to whom the Software is 
@@ -31,13 +31,13 @@ pragma solidity ^0.4.11;
 contract Guarded {
 
     modifier isValidAmount(uint256 _amount) { 
-        require(_amount &gt; 0); 
+        require(_amount > 0); 
         _; 
     }
 
     // ensure address not null, and not this contract address
     modifier isValidAddress(address _address) {
-        require(_address != 0x0 &amp;&amp; _address != address(this));
+        require(_address != 0x0 && _address != address(this));
         _;
     }
 
@@ -87,20 +87,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -110,10 +110,10 @@ contract FaradTokenSwap is Guarded, Ownable {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) contributions;          // contributions from public
+    mapping(address => uint256) contributions;          // contributions from public
     uint256 contribCount = 0;
 
-    string public version = &#39;0.1.2&#39;;
+    string public version = '0.1.2';
 
     uint256 public startBlock = 4280263;                // 16th September 2017, 00:00:00 - 1505520000
     uint256 public endBlock = 4334263;                  // 30th September 2017, 23:59:59 - 1506815999
@@ -160,12 +160,12 @@ contract FaradTokenSwap is Guarded, Ownable {
 
     // @return true if token swap event has ended
     function hasEnded() public constant returns (bool) {
-        return block.number &gt;= endBlock;
+        return block.number >= endBlock;
     }
 
     // @return true if the token swap contract is active.
     function isActive() public constant returns (bool) {
-        return block.number &gt;= startBlock &amp;&amp; block.number &lt;= endBlock;
+        return block.number >= startBlock && block.number <= endBlock;
     }
 
     function () payable {
@@ -201,15 +201,15 @@ contract FaradTokenSwap is Guarded, Ownable {
     function validPurchase() internal constant returns (bool) {
         uint256 current = block.number;
 
-        bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
-        bool minPurchase = msg.value &gt;= minContrib;
+        bool withinPeriod = current >= startBlock && current <= endBlock;
+        bool minPurchase = msg.value >= minContrib;
 
         // add total wei raised
         uint256 totalWeiRaised = weiRaised.add(msg.value);
-        bool withinCap = totalWeiRaised &lt;= totalEtherCap;
+        bool withinCap = totalWeiRaised <= totalEtherCap;
 
         // check all 3 conditions met
-        return withinPeriod &amp;&amp; minPurchase &amp;&amp; withinCap;
+        return withinPeriod && minPurchase && withinCap;
     }
 
     // send ether to the fund collection wallet

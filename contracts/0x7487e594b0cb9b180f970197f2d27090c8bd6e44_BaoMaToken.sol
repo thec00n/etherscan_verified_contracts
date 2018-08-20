@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -52,13 +52,13 @@ contract BasicToken is ERC20Basic {
   /// This is a switch to control the liquidity
   bool public transferable = true;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   //The frozen accounts 
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => bool) public frozenAccount;
 
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -82,7 +82,7 @@ contract BasicToken is ERC20Basic {
       if (transferable) {
           _;
       } else {
-          LiquidityAlarm(&quot;The liquidity is switched off&quot;);
+          LiquidityAlarm("The liquidity is switched off");
           throw;
       }
   }
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic {
   
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) unFrozenAccount onlyTransferable {
     if (frozenAccount[_to]) {
-        InvalidAccount(_to, &quot;The receiver account is frozen&quot;);
+        InvalidAccount(_to, "The receiver account is frozen");
     } else {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Basic {
     return balances[_owner];
   }
 
-  ///@notice `freeze? Prevent | Allow` `target` from sending &amp; receiving TOKEN preconditions
+  ///@notice `freeze? Prevent | Allow` `target` from sending & receiving TOKEN preconditions
   ///@param target Address to be frozen
   ///@param freeze To freeze the target account or not
   function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -152,13 +152,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) unFrozenAccount onlyTransferable{
     var _allowance = allowed[_from][msg.sender];
 
     // Check account _from and _to is not frozen
-    require(!frozenAccount[_from]&amp;&amp;!frozenAccount[_to]);
+    require(!frozenAccount[_from]&&!frozenAccount[_to]);
     
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -167,7 +167,7 @@ contract StandardToken is BasicToken {
   }
 
   function approve(address _spender, uint _value) unFrozenAccount {
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -181,8 +181,8 @@ contract StandardToken is BasicToken {
 
 
 contract BaoMaToken is StandardToken {
-    string public name = &quot;BaoMa Coin&quot;;
-    string public symbol = &quot;BMB&quot;;
+    string public name = "BaoMa Coin";
+    string public symbol = "BMB";
     uint public decimals = 18;
     /**
      * CONSTRUCTOR, This address will be : 0x...

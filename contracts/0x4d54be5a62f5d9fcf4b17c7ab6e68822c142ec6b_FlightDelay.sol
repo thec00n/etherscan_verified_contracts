@@ -24,14 +24,14 @@
  *
  **************************************************************************/
  
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize srl, Thomas Bertani
 
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -44,7 +44,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -100,15 +100,15 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 networkID) internal returns(bool){
-        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)&gt;0){
+        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)>0){
             OAR = OraclizeAddrResolverI(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed);
             return true;
         }
-        if (getCodeSize(0x9efbea6358bed926b293d2ce63a730d6d98d43dd)&gt;0){
+        if (getCodeSize(0x9efbea6358bed926b293d2ce63a730d6d98d43dd)>0){
             OAR = OraclizeAddrResolverI(0x9efbea6358bed926b293d2ce63a730d6d98d43dd);
             return true;
         }
-        if (getCodeSize(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf)&gt;0){
+        if (getCodeSize(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf)>0){
             OAR = OraclizeAddrResolverI(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf);
             return true;
         }
@@ -117,42 +117,42 @@ contract usingOraclize {
     
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_cbAddress() oraclizeAPI internal returns (address){
@@ -177,14 +177,14 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -195,15 +195,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -213,19 +213,19 @@ contract usingOraclize {
     {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) 
+        if(h.length < 1 || n.length < 1 || (n.length > h.length)) 
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;                                  
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }   
@@ -246,24 +246,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -276,8 +276,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -286,13 +286,13 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
     
 
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 
 /**************************************************************************
@@ -302,11 +302,11 @@ contract usingOraclize {
  **************************************************************************/
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="38594a595b5056515c7856574c5c574c16565d4c">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="38594a595b5056515c7856574c5c574c16565d4c">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -314,11 +314,11 @@ contract usingOraclize {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -333,7 +333,7 @@ contract usingOraclize {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 library strings {
@@ -344,7 +344,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -383,23 +383,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -435,7 +435,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -458,18 +458,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -498,12 +498,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -513,7 +513,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -552,18 +552,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -603,33 +603,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / div;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             len = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             len = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             len = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             div = div / 256;
-            b = (word / div) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / div) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -653,7 +653,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -679,7 +679,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -708,7 +708,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -736,7 +736,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -763,8 +763,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -784,7 +784,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -801,8 +801,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -824,7 +824,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -946,7 +946,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint count) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             count++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -988,20 +988,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint len = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             len += parts[i]._len;
 
         var ret = new string(len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -1030,7 +1030,7 @@ contract FlightDelay is usingOraclize {
 
 	using strings for *;
 
-	modifier noEther { if (msg.value &gt; 0) throw; _ }
+	modifier noEther { if (msg.value > 0) throw; _ }
 	modifier onlyOwner { if (msg.sender != owner) throw; _ }
 	modifier onlyOraclize {	if (msg.sender != oraclize_cbAddress()) throw; _ }
 
@@ -1052,7 +1052,7 @@ contract FlightDelay is usingOraclize {
 
 	modifier notInMaintenance {
 		healthCheck();
-		if (maintenance_mode &gt;= maintenance_Emergency) throw;
+		if (maintenance_mode >= maintenance_Emergency) throw;
 		_
 	}
 
@@ -1077,7 +1077,7 @@ contract FlightDelay is usingOraclize {
 	//					customer by the oracle.
 	// 03 = PaidOut:	The flight has ended with delay.
 	//					The oracle has checked and payed out.
-	// 04 = Expired:	The flight has endet with &lt;15min. delay.
+	// 04 = Expired:	The flight has endet with <15min. delay.
 	//					No payout.
 	// 05 = Declined:	The application was invalid.
 	//					The premium minus cancellation fee is payed back to the
@@ -1166,7 +1166,7 @@ contract FlightDelay is usingOraclize {
 	// reserve for tail risks
 	uint8 constant reservePercent 			= 1;
 	// the weight pattern; in future versions this may become part of the policy struct.
-	// currently can&#39;t be constant because of compiler restrictions
+	// currently can't be constant because of compiler restrictions
 	// weightPattern[0] is not used, just to be consistent
     uint8[6] weightPattern 					= [0, 10,20,30,50,50];
 	// Deadline for acceptance of policies: Mon, 26 Sep 2016 12:00:00 GMT
@@ -1199,15 +1199,15 @@ contract FlightDelay is usingOraclize {
 	// URLs and query strings for oraclize
 
 	string constant oraclize_RatingsBaseUrl =
-		&quot;[URL] json(https://api.flightstats.com/flex/ratings/rest/v1/json/flight/&quot;;
+		"[URL] json(https://api.flightstats.com/flex/ratings/rest/v1/json/flight/";
 	string constant oraclizeRatingsQuery =
-		&quot;?${[decrypt] BGHdZ9cDNIfZogzCYUU+esupKmGPoVvNE38mj1ELQZHv9MybFpzBp90QQN6j33fzU2UvvX/NqE02z1bGJ9yY5X3Az/dLou0DdWTc/Pu9vYXaq8oTuq9Zyqjg+VQ9T6k/OrASsgCF8P9z+/vW3FO5odhpmqCrwUpvLZTAbhcNyCYjbnA16XUW}).ratings[0][&#39;observations&#39;,&#39;late15&#39;,&#39;late30&#39;,&#39;late45&#39;,&#39;cancelled&#39;,&#39;diverted&#39;]&quot;;
+		"?${[decrypt] BGHdZ9cDNIfZogzCYUU+esupKmGPoVvNE38mj1ELQZHv9MybFpzBp90QQN6j33fzU2UvvX/NqE02z1bGJ9yY5X3Az/dLou0DdWTc/Pu9vYXaq8oTuq9Zyqjg+VQ9T6k/OrASsgCF8P9z+/vW3FO5odhpmqCrwUpvLZTAbhcNyCYjbnA16XUW}).ratings[0]['observations','late15','late30','late45','cancelled','diverted']";
 
-	// [URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/LH/410/dep/2016/09/01?appId={appId}&amp;appKey={appKey})
+	// [URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/LH/410/dep/2016/09/01?appId={appId}&appKey={appKey})
 	string constant oraclize_StatusBaseUrl =
-	  &quot;[URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/&quot;;
+	  "[URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/";
 	string constant oraclizeStatusQuery =
-		&quot;?${[decrypt] BGHdZ9cDNIfZogzCYUU+esupKmGPoVvNE38mj1ELQZHv9MybFpzBp90QQN6j33fzU2UvvX/NqE02z1bGJ9yY5X3Az/dLou0DdWTc/Pu9vYXaq8oTuq9Zyqjg+VQ9T6k/OrASsgCF8P9z+/vW3FO5odhpmqCrwUpvLZTAbhcNyCYjbnA16XUW}).flightStatuses[0][&#39;status&#39;,&#39;delays&#39;,&#39;operationalTimes&#39;]&quot;;
+		"?${[decrypt] BGHdZ9cDNIfZogzCYUU+esupKmGPoVvNE38mj1ELQZHv9MybFpzBp90QQN6j33fzU2UvvX/NqE02z1bGJ9yY5X3Az/dLou0DdWTc/Pu9vYXaq8oTuq9Zyqjg+VQ9T6k/OrASsgCF8P9z+/vW3FO5odhpmqCrwUpvLZTAbhcNyCYjbnA16XUW}).flightStatuses[0]['status','delays','operationalTimes']";
 
 
 	// the policy structure: this structure keeps track of the individual parameters of a policy.
@@ -1287,10 +1287,10 @@ contract FlightDelay is usingOraclize {
 	// Table of policies
 	policy[] public policies;
 	// Lookup policyIds from customer addresses
-	mapping (address =&gt; uint[]) public customerPolicies;
+	mapping (address => uint[]) public customerPolicies;
 	// Lookup policy Ids from queryIds
-	mapping (bytes32 =&gt; oraclizeCallback) public oraclizeCallbacks;
-	mapping (bytes32 =&gt; risk) public risks;
+	mapping (bytes32 => oraclizeCallback) public oraclizeCallbacks;
+	mapping (bytes32 => risk) public risks;
 	// Internal ledger
 	int[6] public ledger;
 
@@ -1306,11 +1306,11 @@ contract FlightDelay is usingOraclize {
 		if (diff == 0) {
 			return; // everything ok.
 		}
-		if (diff &gt; 0) {
-			LOG_HealthCheck(&#39;Balance too high&#39;, diff, this.balance, ledger[acc_Balance]);
+		if (diff > 0) {
+			LOG_HealthCheck('Balance too high', diff, this.balance, ledger[acc_Balance]);
 			maintenance_mode = maintenance_BalTooHigh;
 		} else {
-			LOG_HealthCheck(&#39;Balance too low&#39;, diff, this.balance, ledger[acc_Balance]);
+			LOG_HealthCheck('Balance too low', diff, this.balance, ledger[acc_Balance]);
 			maintenance_mode = maintenance_Emergency;
 		}
 	}
@@ -1322,7 +1322,7 @@ contract FlightDelay is usingOraclize {
 	//    255 = set maintenance_mode to maintenance_emergency (no newPolicy anymore)
 	function performHealthCheck(uint8 _maintenance_mode) onlyOwner {
 		maintenance_mode = _maintenance_mode;
-		if (maintenance_mode &gt; 0 &amp;&amp; maintenance_mode &lt; maintenance_Emergency) {
+		if (maintenance_mode > 0 && maintenance_mode < maintenance_Emergency) {
 			healthCheck();
 		}
 	}
@@ -1330,7 +1330,7 @@ contract FlightDelay is usingOraclize {
 	function payReward() onlyOwner {
 
 		if (!owner.send(this.balance)) throw;
-		maintenance_mode = maintenance_Emergency; // don&#39;t accept any policies
+		maintenance_mode = maintenance_Emergency; // don't accept any policies
 
 	}
 
@@ -1397,27 +1397,27 @@ contract FlightDelay is usingOraclize {
 
 		// sanity checks:
 
-		// don&#39;t accept too low or too high policies
+		// don't accept too low or too high policies
 
-		if (msg.value &lt; minPremium || msg.value &gt; maxPremium) {
-			LOG_PolicyDeclined(0, &#39;Invalid premium value&#39;);
+		if (msg.value < minPremium || msg.value > maxPremium) {
+			LOG_PolicyDeclined(0, 'Invalid premium value');
 			if (!msg.sender.send(msg.value)) {
-				LOG_SendFail(0, &#39;newPolicy sendback failed (1)&#39;);
+				LOG_SendFail(0, 'newPolicy sendback failed (1)');
 			}
 			return;
 		}
 
-        // don&#39;t accept flights with departure time earlier than in 24 hours, 
+        // don't accept flights with departure time earlier than in 24 hours, 
 		// or arrivalTime before departureTime, 
 		// or departureTime after Mon, 26 Sep 2016 12:00:00 GMT
         if (
-			_arrivalTime &lt; _departureTime ||
-			_arrivalTime &gt; _departureTime + 2 days ||
-			_departureTime &lt; now + 24 hours ||
-			_departureTime &gt; contractDeadline) {
-			LOG_PolicyDeclined(0, &#39;Invalid arrival/departure time&#39;);
+			_arrivalTime < _departureTime ||
+			_arrivalTime > _departureTime + 2 days ||
+			_departureTime < now + 24 hours ||
+			_departureTime > contractDeadline) {
+			LOG_PolicyDeclined(0, 'Invalid arrival/departure time');
 			if (!msg.sender.send(msg.value)) {
-				LOG_SendFail(0, &#39;newPolicy sendback failed (2)&#39;);
+				LOG_SendFail(0, 'newPolicy sendback failed (2)');
 			}
 			return;
         }
@@ -1435,11 +1435,11 @@ contract FlightDelay is usingOraclize {
 		// (we accept the inaccuracy that the real remaining premium is 3% lower), 
 		// but we are conservative;
 		// if this is the first policy, the left side will be 0
-		if (msg.value * r.premiumMultiplier + r.cumulatedWeightedPremium &gt;= 
+		if (msg.value * r.premiumMultiplier + r.cumulatedWeightedPremium >= 
 			maxCumulatedWeightedPremium) {
-			LOG_PolicyDeclined(0, &#39;Cluster risk&#39;);
+			LOG_PolicyDeclined(0, 'Cluster risk');
 			if (!msg.sender.send(msg.value)) {
-				LOG_SendFail(0, &#39;newPolicy sendback failed (3)&#39;);
+				LOG_SendFail(0, 'newPolicy sendback failed (3)');
 			}
 			return;
 		} else if (r.cumulatedWeightedPremium == 0) {
@@ -1472,7 +1472,7 @@ contract FlightDelay is usingOraclize {
 
 		// now we have successfully applied
 		p.state = policyState.Applied;
-		p.stateMessage = &#39;Policy applied by customer&#39;;
+		p.stateMessage = 'Policy applied by customer';
 		p.stateTime = now;
 		LOG_PolicyApplied(policyId, msg.sender, _carrierFlightNumber, p.premium);
 
@@ -1484,7 +1484,7 @@ contract FlightDelay is usingOraclize {
 
 		policy p = policies[_policyId]; // throws if _policyId invalid
 		uint weight;
-		for (uint8 i = 1; i &lt;= 5; i++ ) {
+		for (uint8 i = 1; i <= 5; i++ ) {
 			weight += weightPattern[i] * _statistics[i];
 			// 1% = 100 / 100% = 10,000
 		}
@@ -1495,7 +1495,7 @@ contract FlightDelay is usingOraclize {
 		risk r = risks[p.riskId];
 		// we calculate the factors to limit cluster risks.
 		if (r.premiumMultiplier == 0) { 
-			// it&#39;s the first call, we accept any premium
+			// it's the first call, we accept any premium
 			r.premiumMultiplier = 100000 / weight;
 			r.cumulatedWeightedPremium = p.premium * 100000 / weight;
 		}
@@ -1512,7 +1512,7 @@ contract FlightDelay is usingOraclize {
 		);
 
 		p.state = policyState.Accepted;
-		p.stateMessage = &#39;Policy underwritten by oracle&#39;;
+		p.stateMessage = 'Policy underwritten by oracle';
 		p.stateTime = now;
 
 		LOG_PolicyAccepted(
@@ -1533,15 +1533,15 @@ contract FlightDelay is usingOraclize {
 
 		p.state = policyState.Declined;
 		p.stateMessage = _reason;
-		p.stateTime = now; // won&#39;t be reverted in case of errors
+		p.stateTime = now; // won't be reverted in case of errors
 		p.proof = _proof;
 		bookkeeping(acc_Premium, acc_Balance, p.premium);
 
 		if (!p.customer.send(p.premium))  {
 			bookkeeping(acc_Balance, acc_RiskFund, p.premium);
 			p.state = policyState.SendFailed;
-			p.stateMessage = &#39;decline: Send failed.&#39;;
-			LOG_SendFail(_policyId, &#39;decline sendfail&#39;);
+			p.stateMessage = 'decline: Send failed.';
+			LOG_SendFail(_policyId, 'decline sendfail');
 		}
 		else {
 			LOG_PolicyDeclined(_policyId, _reason);
@@ -1564,7 +1564,7 @@ contract FlightDelay is usingOraclize {
 			oraclizeStatusQuery
 			);
 
-		bytes32 queryId = oraclize_query(_oraclizeTime, &#39;nested&#39;, oraclize_url, oraclizeGas);
+		bytes32 queryId = oraclize_query(_oraclizeTime, 'nested', oraclize_url, oraclizeGas);
 		bookkeeping(acc_OraclizeCosts, acc_Balance, uint((-ledger[acc_Balance]) - int(this.balance)));
 		oraclizeCallbacks[queryId] = oraclizeCallback(_policyId, oraclizeState.ForPayout, _oraclizeTime);
 
@@ -1584,7 +1584,7 @@ contract FlightDelay is usingOraclize {
 		
 		if (_delay == 0) {
 			p.state = policyState.Expired;
-			p.stateMessage = &#39;Expired - no delay!&#39;;
+			p.stateMessage = 'Expired - no delay!';
 			p.stateTime = now;
 			LOG_PolicyExpired(_policyId);
 		} else {
@@ -1592,11 +1592,11 @@ contract FlightDelay is usingOraclize {
 			uint payout = p.premium * weightPattern[_delay] * 10000 / p.weight;
 			p.calculatedPayout = payout;
 
-			if (payout &gt; maxPayout) {
+			if (payout > maxPayout) {
 				payout = maxPayout;
 			}
 
-			if (payout &gt; uint(-ledger[acc_Balance])) { // don&#39;t go for chapter 11
+			if (payout > uint(-ledger[acc_Balance])) { // don't go for chapter 11
 				payout = uint(-ledger[acc_Balance]);
 			}
 
@@ -1607,21 +1607,21 @@ contract FlightDelay is usingOraclize {
 			if (!p.customer.send(payout))  {
 				bookkeeping(acc_Balance, acc_Payout, payout);
 				p.state = policyState.SendFailed;
-				p.stateMessage = &#39;Payout, send failed!&#39;;
+				p.stateMessage = 'Payout, send failed!';
 				p.actualPayout = 0;
-				LOG_SendFail(_policyId, &#39;payout sendfail&#39;);
+				LOG_SendFail(_policyId, 'payout sendfail');
 			}
 			else {
 				p.state = policyState.PaidOut;
-				p.stateMessage = &#39;Payout successful!&#39;;
-				p.stateTime = now; // won&#39;t be reverted in case of errors
+				p.stateMessage = 'Payout successful!';
+				p.stateTime = now; // won't be reverted in case of errors
 				LOG_PolicyPaidOut(_policyId, payout);
 			}
 		}
 
 	}
 
-	// fallback function: don&#39;t accept ether, except from owner
+	// fallback function: don't accept ether, except from owner
 	function () onlyOwner {
 
 		// put additional funds in risk fund.
@@ -1636,19 +1636,19 @@ contract FlightDelay is usingOraclize {
 		internal {
 
 		// call oraclize and retrieve the number of observations from flightstats API
-		// format https://api.flightstats.com/flex/ratings/rest/v1/json/flight/OS/75?appId=**&amp;appKey=**
+		// format https://api.flightstats.com/flex/ratings/rest/v1/json/flight/OS/75?appId=**&appKey=**
 
 		// using nested data sources (query type nested) and partial
 		// encrypted queries in the next release of oraclize
 		// note that the first call maps the encrypted string to the
-		// sending contract address, this string can&#39;t be used from any other sender
+		// sending contract address, this string can't be used from any other sender
 		string memory oraclize_url = strConcat(
 			oraclize_RatingsBaseUrl,
 			_carrierFlightNumber,
 			oraclizeRatingsQuery
 			);
 
-		bytes32 queryId = oraclize_query(&quot;nested&quot;, oraclize_url, oraclizeGas);
+		bytes32 queryId = oraclize_query("nested", oraclize_url, oraclizeGas);
 		// calculate the spent gas
 		bookkeeping(acc_OraclizeCosts, acc_Balance, uint((-ledger[acc_Balance]) - int(this.balance)));
 		oraclizeCallbacks[queryId] = oraclizeCallback(_policyId, oraclizeState.ForUnderwriting, 0);
@@ -1681,37 +1681,37 @@ contract FlightDelay is usingOraclize {
 		risk r = risks[policies[_policyId].riskId];
 
 		// we expect result to contain 6 values, something like
-		// &quot;[61, 10, 4, 3, 0, 0]&quot; -&gt;
-		// [&#39;observations&#39;,&#39;late15&#39;,&#39;late30&#39;,&#39;late45&#39;,&#39;cancelled&#39;,&#39;diverted&#39;]
+		// "[61, 10, 4, 3, 0, 0]" ->
+		// ['observations','late15','late30','late45','cancelled','diverted']
 
 		if (bytes(_result).length == 0) {
-			decline(_policyId, &#39;Declined (empty result)&#39;, _proof);
+			decline(_policyId, 'Declined (empty result)', _proof);
 		} else {
 
 			// now slice the string using
 			// https://github.com/Arachnid/solidity-stringutils
 
-			if (sl_result.count(&#39;, &#39;.toSlice()) != 5) { 
+			if (sl_result.count(', '.toSlice()) != 5) { 
 				// check if result contains 6 values
-				decline(_policyId, &#39;Declined (invalid result)&#39;, _proof);
+				decline(_policyId, 'Declined (invalid result)', _proof);
 			} else {
-				sl_result.beyond(&quot;[&quot;.toSlice()).until(&quot;]&quot;.toSlice());
+				sl_result.beyond("[".toSlice()).until("]".toSlice());
 
 				uint observations = parseInt(
-					sl_result.split(&#39;, &#39;.toSlice()).toString());
+					sl_result.split(', '.toSlice()).toString());
 
-				// decline on &lt; minObservations observations,
-				// can&#39;t calculate reasonable probabibilities
-				if (observations &lt;= minObservations) {
-					decline(_policyId, &#39;Declined (too few observations)&#39;, _proof);
+				// decline on < minObservations observations,
+				// can't calculate reasonable probabibilities
+				if (observations <= minObservations) {
+					decline(_policyId, 'Declined (too few observations)', _proof);
 				} else {
 					uint[6] memory statistics;
-					// calculate statistics (scaled by 10000; 1% =&gt; 100)
+					// calculate statistics (scaled by 10000; 1% => 100)
 					statistics[0] = observations;
-					for(uint i = 1; i &lt;= 5; i++) {
+					for(uint i = 1; i <= 5; i++) {
 						statistics[i] =
 							parseInt(
-								sl_result.split(&#39;, &#39;.toSlice()).toString()) 
+								sl_result.split(', '.toSlice()).toString()) 
 								* 10000/observations;
 					}
 
@@ -1730,8 +1730,8 @@ contract FlightDelay is usingOraclize {
 		risk r = risks[policies[policyId].riskId];
 
 		if (bytes(_result).length == 0) {
-			if (o.oraclizeTime &gt; r.arrivalTime + 180 minutes) {
-				LOG_PolicyManualPayout(policyId, &#39;No Callback at +120 min&#39;);
+			if (o.oraclizeTime > r.arrivalTime + 180 minutes) {
+				LOG_PolicyManualPayout(policyId, 'No Callback at +120 min');
 				return;
 			} else {
 				schedulePayoutOraclizeCall(
@@ -1746,31 +1746,31 @@ contract FlightDelay is usingOraclize {
 			// first check status
 
 			// extract the status field:
-			sl_result.find(&#39;&quot;&#39;.toSlice()).beyond(&#39;&quot;&#39;.toSlice());
-			sl_result.until(sl_result.copy().find(&#39;&quot;&#39;.toSlice()));
+			sl_result.find('"'.toSlice()).beyond('"'.toSlice());
+			sl_result.until(sl_result.copy().find('"'.toSlice()));
 			bytes1 status = bytes(sl_result.toString())[0];	// s = L
 			
-			if (status == &#39;C&#39;) {
-				// flight cancelled --&gt; payout
+			if (status == 'C') {
+				// flight cancelled --> payout
 				payOut(policyId, 4, 0);
 				return;
-			} else if (status == &#39;D&#39;) {
-				// flight diverted --&gt; payout					
+			} else if (status == 'D') {
+				// flight diverted --> payout					
 				payOut(policyId, 5, 0);
 				return;
-			} else if (status != &#39;L&#39; &amp;&amp; status != &#39;A&#39; &amp;&amp; status != &#39;C&#39; &amp;&amp; status != &#39;D&#39;) {
-				LOG_PolicyManualPayout(policyId, &#39;Unprocessable status&#39;);
+			} else if (status != 'L' && status != 'A' && status != 'C' && status != 'D') {
+				LOG_PolicyManualPayout(policyId, 'Unprocessable status');
 				return;
 			}
 			
 			// process the rest of the response:
 			sl_result = _result.toSlice();
-			bool arrived = sl_result.contains(&#39;actualGateArrival&#39;.toSlice());
+			bool arrived = sl_result.contains('actualGateArrival'.toSlice());
 
-			if (status == &#39;A&#39; || (status == &#39;L&#39; &amp;&amp; !arrived)) {
-				// flight still active or not at gate --&gt; reschedule
-				if (o.oraclizeTime &gt; r.arrivalTime + 180 minutes) {
-					LOG_PolicyManualPayout(policyId, &#39;No arrival at +120 min&#39;);
+			if (status == 'A' || (status == 'L' && !arrived)) {
+				// flight still active or not at gate --> reschedule
+				if (o.oraclizeTime > r.arrivalTime + 180 minutes) {
+					LOG_PolicyManualPayout(policyId, 'No arrival at +120 min');
 				} else {
 					schedulePayoutOraclizeCall(
 						policyId, 
@@ -1779,24 +1779,24 @@ contract FlightDelay is usingOraclize {
 						o.oraclizeTime + 45 minutes
 					);
 				}
-			} else if (status == &#39;L&#39; &amp;&amp; arrived) {
-				var aG = &#39;&quot;arrivalGateDelayMinutes&quot;: &#39;.toSlice();
+			} else if (status == 'L' && arrived) {
+				var aG = '"arrivalGateDelayMinutes": '.toSlice();
 				if (sl_result.contains(aG)) {
 					sl_result.find(aG).beyond(aG);
-					sl_result.until(sl_result.copy().find(&#39;&quot;&#39;.toSlice())
-						.beyond(&#39;&quot;&#39;.toSlice()));
-					sl_result.until(sl_result.copy().find(&#39;}&#39;.toSlice()));
-					sl_result.until(sl_result.copy().find(&#39;,&#39;.toSlice()));
+					sl_result.until(sl_result.copy().find('"'.toSlice())
+						.beyond('"'.toSlice()));
+					sl_result.until(sl_result.copy().find('}'.toSlice()));
+					sl_result.until(sl_result.copy().find(','.toSlice()));
 					uint delayInMinutes = parseInt(sl_result.toString());
 				} else {
 					delayInMinutes = 0;
 				}
 				
-				if (delayInMinutes &lt; 15) {
+				if (delayInMinutes < 15) {
 					payOut(policyId, 0, 0);
-				} else if (delayInMinutes &lt; 30) {
+				} else if (delayInMinutes < 30) {
 					payOut(policyId, 1, delayInMinutes);
-				} else if (delayInMinutes &lt; 45) {
+				} else if (delayInMinutes < 45) {
 					payOut(policyId, 2, delayInMinutes);
 				} else {
 					payOut(policyId, 3, delayInMinutes);

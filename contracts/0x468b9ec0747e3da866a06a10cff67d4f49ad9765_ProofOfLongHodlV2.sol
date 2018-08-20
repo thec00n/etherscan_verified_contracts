@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 /*
 * Team Proof of Long Hodl presents V2 the rebirth...
-* All the goodness of POLH, now with 1% of deposits &amp; withdrawals go into the weekly lottery.
+* All the goodness of POLH, now with 1% of deposits & withdrawals go into the weekly lottery.
 * https://polh.net/
 */
 
@@ -16,7 +16,7 @@ contract ProofOfLongHodlV2 {
     event Reinvest(address user, uint dividends);
 
     address owner;
-    mapping(address =&gt; bool) preauthorized;
+    mapping(address => bool) preauthorized;
     bool gameStarted = true;
 
     uint constant depositTaxDivisor = 25;		// 25% of  deposits goes to  divs
@@ -24,14 +24,14 @@ contract ProofOfLongHodlV2 {
     uint constant lotteryFee = 25; 				// 4% of deposits and withdrawals goes to lotteryPool
     uint constant weeklyLotteryFee = 1; 		// 1% of deposits and withdrawals goes to weekly lotteryPool
     
-    mapping(address =&gt; uint) public investment;
+    mapping(address => uint) public investment;
 
-    mapping(address =&gt; uint) public stake;
+    mapping(address => uint) public stake;
     uint public totalStake;
     uint stakeValue;
 
-    mapping(address =&gt; uint) dividendCredit;
-    mapping(address =&gt; uint) dividendDebit;
+    mapping(address => uint) dividendCredit;
+    mapping(address => uint) dividendDebit;
 
     function ProofOfLongHodlV2() public {
         owner = msg.sender;
@@ -49,7 +49,7 @@ contract ProofOfLongHodlV2 {
     }
 
     function depositHelper(uint _amount) private {
-    	require(_amount &gt; 0);
+    	require(_amount > 0);
         uint _tax = _amount.mul(depositTaxDivisor).div(100);
         uint _lotteryPool = _amount.div(lotteryFee); // add to lottery fee
         uint _amountAfterTax = _amount.sub(_tax).sub(_lotteryPool);
@@ -57,7 +57,7 @@ contract ProofOfLongHodlV2 {
         lotteryPool = lotteryPool.add(_lotteryPool);
 
         // check if first deposit, and greater than and make user eligable for lottery
-        if (isEligable[msg.sender] == false &amp;&amp;  _amount &gt; 0.1 ether) {
+        if (isEligable[msg.sender] == false &&  _amount > 0.1 ether) {
         	isEligable[msg.sender] = true;
         	hasWithdrawed[msg.sender] = false;
 
@@ -65,7 +65,7 @@ contract ProofOfLongHodlV2 {
         	eligableIndex[msg.sender] = lotteryAddresses.length - 1;      	
         }
 
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         uint _stakeIncrement = sqrt(totalStake.mul(totalStake).add(_amountAfterTax)).sub(totalStake);
         investment[msg.sender] = investment[msg.sender].add(_amountAfterTax);
@@ -81,8 +81,8 @@ contract ProofOfLongHodlV2 {
     }
 
     function withdraw(uint _amount) public {
-        require(_amount &gt; 0);
-        require(_amount &lt;= investment[msg.sender]);
+        require(_amount > 0);
+        require(_amount <= investment[msg.sender]);
         uint _tax = _amount.mul(withdrawalTaxDivisor).div(100);
         uint _lotteryPool = _amount.div(lotteryFee); // add to lottery fee
         uint _amountAfterTax = _amount.sub(_tax).sub(_lotteryPool);
@@ -90,7 +90,7 @@ contract ProofOfLongHodlV2 {
         lotteryPool = lotteryPool.add(_lotteryPool);
 
         // removing user from lotteryAddresses if it is first withdraw
-        if (lotteryAddresses.length != 0 &amp;&amp; !hasWithdrawed[msg.sender] ) {
+        if (lotteryAddresses.length != 0 && !hasWithdrawed[msg.sender] ) {
         	hasWithdrawed[msg.sender] = true;
         	isEligable[msg.sender] = false;
         	totalWithdrawals = totalWithdrawals.add(_amountAfterTax);
@@ -105,7 +105,7 @@ contract ProofOfLongHodlV2 {
         	eligableIndex[lastAddress] = indexToDelete;
         	eligableIndex[msg.sender] = 0;
 
-        	if (withdrawalsCTR &gt; 9 &amp;&amp; totalWithdrawals &gt; 1 ether) {
+        	if (withdrawalsCTR > 9 && totalWithdrawals > 1 ether) {
         		// pick lottery winner and sent reward
 			    uint256 winnerIndex = rand(lotteryAddresses.length);
 			    address winner = lotteryAddresses[winnerIndex];
@@ -124,7 +124,7 @@ contract ProofOfLongHodlV2 {
         investment[msg.sender] = investment[msg.sender].sub(_amount);
         stake[msg.sender] = stake[msg.sender].sub(_stakeDecrement);
         totalStake = totalStake.sub(_stakeDecrement);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         dividendCredit[msg.sender] = dividendCredit[msg.sender].add(_dividendCredit);
         uint _creditDebitCancellation = min(dividendCredit[msg.sender], dividendDebit[msg.sender]);
@@ -163,13 +163,13 @@ contract ProofOfLongHodlV2 {
     }
 
     function min(uint x, uint y) private pure returns (uint) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function sqrt(uint x) private pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -183,13 +183,13 @@ contract ProofOfLongHodlV2 {
     uint public withdrawalsCTR = 0;
     uint public totalWithdrawals = 0;
 
-    mapping(address =&gt; uint256) internal eligableIndex; // 
-    mapping(address =&gt; bool) internal isEligable; // for first deposit check
-    mapping(address =&gt; bool) internal hasWithdrawed; // check if user already withdrawed
+    mapping(address => uint256) internal eligableIndex; // 
+    mapping(address => bool) internal isEligable; // for first deposit check
+    mapping(address => bool) internal hasWithdrawed; // check if user already withdrawed
 
     address[] public lotteryAddresses;
 
-    // Generate random number between 0 &amp; max
+    // Generate random number between 0 & max
     uint256 constant private FACTOR =  1157920892373161954235709850086879078532699846656405640394575840079131296399;
     function rand(uint max) constant public returns (uint256 result){
         uint256 factor = FACTOR * 100 / max;
@@ -201,7 +201,7 @@ contract ProofOfLongHodlV2 {
 
     // check if address is withdrawed
     function checkIfEligable(address _address) public view returns (bool) {
-    	return (isEligable[_address] &amp;&amp; !hasWithdrawed[_address]) ;
+    	return (isEligable[_address] && !hasWithdrawed[_address]) ;
     }
 
     function getLotteryData() public view returns( uint256, uint256, address) {
@@ -245,9 +245,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0                                                                                                                               
+        // assert(b > 0); // Solidity automatically throws when dividing by 0                                                                                                                               
         // uint256 c = a / b;                                                                                                                                                                               
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold                                                                                                                       
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold                                                                                                                       
         return a / b;                                                                                                                                                                                       
     }
 
@@ -255,7 +255,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);                                                                                                                                                                                     
+        assert(b <= a);                                                                                                                                                                                     
         return a - b;                                                                                                                                                                                       
     }
 
@@ -264,7 +264,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;                                                                                                                                                                                  
-        assert(c &gt;= a);                                                                                                                                                                                     
+        assert(c >= a);                                                                                                                                                                                     
         return c;                                                                                                                                                                                           
     }
 }

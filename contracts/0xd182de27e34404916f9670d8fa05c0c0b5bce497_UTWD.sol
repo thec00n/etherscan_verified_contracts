@@ -20,15 +20,15 @@ contract owned {
 contract TokenERC20 is owned {
     address public deployer;
 
-    string public name =&quot;Universe-TWD&quot;;
-    string public symbol = &quot;UTWD&quot;;
+    string public name ="Universe-TWD";
+    string public symbol = "UTWD";
     uint8 public decimals = 18;
 
     uint256 public totalSupply;
 
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Approval(address indexed owner, address indexed spender, uint value);
 
@@ -42,8 +42,8 @@ contract TokenERC20 is owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -56,7 +56,7 @@ contract TokenERC20 is owned {
     }
 	
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(allowance[_from][msg.sender] >= _value);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -69,7 +69,7 @@ contract TokenERC20 is owned {
     }
 
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -79,7 +79,7 @@ contract TokenERC20 is owned {
 }
 
 contract MyAdvancedToken is TokenERC20 {
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
 
@@ -87,8 +87,8 @@ contract MyAdvancedToken is TokenERC20 {
 
      function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -100,7 +100,7 @@ contract MyAdvancedToken is TokenERC20 {
         uint tempSupply = totalSupply;
         balanceOf[target] += mintedAmount;
         totalSupply += mintedAmount;
-        require(totalSupply &gt;= tempSupply);
+        require(totalSupply >= tempSupply);
         Transfer(0, this, mintedAmount);
         Transfer(this, target, mintedAmount);
     }
@@ -118,14 +118,14 @@ contract MyAdvancedToken is TokenERC20 {
 }
 
 contract UTWD is MyAdvancedToken {
-    mapping(address =&gt; uint) public lockdate;
-    mapping(address =&gt; uint) public lockTokenBalance;
+    mapping(address => uint) public lockdate;
+    mapping(address => uint) public lockTokenBalance;
 
     event LockToken(address account, uint amount, uint unixtime);
 
     function UTWD() MyAdvancedToken() public {}
     function getLockBalance(address account) internal returns(uint) {
-        if(now &gt;= lockdate[account]) {
+        if(now >= lockdate[account]) {
             lockdate[account] = 0;
             lockTokenBalance[account] = 0;
         }
@@ -134,10 +134,10 @@ contract UTWD is MyAdvancedToken {
 
     function _transfer(address _from, address _to, uint _value) internal {
         uint usableBalance = balanceOf[_from] - getLockBalance(_from);
-        require(balanceOf[_from] &gt;= usableBalance);
+        require(balanceOf[_from] >= usableBalance);
         require(_to != 0x0);
-        require(usableBalance &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(usableBalance >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -147,9 +147,9 @@ contract UTWD is MyAdvancedToken {
 
 
     function lockTokenToDate(address account, uint amount, uint unixtime) onlyOwner public {
-        require(unixtime &gt;= lockdate[account]);
-        require(unixtime &gt;= now);
-        if(balanceOf[account] &gt;= amount) {
+        require(unixtime >= lockdate[account]);
+        require(unixtime >= now);
+        if(balanceOf[account] >= amount) {
             lockdate[account] = unixtime;
             lockTokenBalance[account] = amount;
             emit LockToken(account, amount, unixtime);
@@ -163,8 +163,8 @@ contract UTWD is MyAdvancedToken {
 
     function burn(uint256 _value) onlyOwner public returns (bool success) {
         uint usableBalance = balanceOf[msg.sender] - getLockBalance(msg.sender);
-        require(balanceOf[msg.sender] &gt;= usableBalance);
-        require(usableBalance &gt;= _value);
+        require(balanceOf[msg.sender] >= usableBalance);
+        require(usableBalance >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value; 
         emit Burn(msg.sender, _value);

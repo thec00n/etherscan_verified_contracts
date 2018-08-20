@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -205,7 +205,7 @@ contract DoubleKingsReward is Owned
    function mintForwarder(uint256 nonce, bytes32 challenge_digest, address[] proxyMintArray) public returns (bool)
    {
 
-       require(proxyMintArray.length &gt; 0);
+       require(proxyMintArray.length > 0);
 
 
        uint previousEpochCount = ERC918Interface(minedToken).epochCount();
@@ -214,7 +214,7 @@ contract DoubleKingsReward is Owned
 
        if(proxyMintArray.length == 1)
        {
-         //Forward to the last proxyMint contract, typically a pool&#39;s owned  mint contract
+         //Forward to the last proxyMint contract, typically a pool's owned  mint contract
          require(proxyMinterInterface(proxyMinter).proxyMint(nonce, challenge_digest));
        }else{
          //if array length is greater than 1, pop the proxyMinter from the front of the array and keep cascading down the chain...
@@ -254,7 +254,7 @@ contract DoubleKingsReward is Owned
   {
     address[] memory newArray = new address[](array.length-1);
 
-    for (uint i=0; i &lt; array.length-1; i++) {
+    for (uint i=0; i < array.length-1; i++) {
       newArray[i] =  array[i+1]  ;
     }
 
@@ -264,7 +264,7 @@ contract DoubleKingsReward is Owned
  function uintToBytesForAddress(uint256 x) pure public returns (bytes b) {
 
       b = new bytes(20);
-      for (uint i = 0; i &lt; 20; i++) {
+      for (uint i = 0; i < 20; i++) {
           b[i] = byte(uint8(x / (2**(8*(31 - i)))));
       }
 
@@ -274,7 +274,7 @@ contract DoubleKingsReward is Owned
 
  function bytesToAddress (bytes b) pure public returns (address) {
      uint result = 0;
-     for (uint i = b.length-1; i+1 &gt; 0; i--) {
+     for (uint i = b.length-1; i+1 > 0; i--) {
        uint c = uint(b[i]);
        uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
        result += to_inc;

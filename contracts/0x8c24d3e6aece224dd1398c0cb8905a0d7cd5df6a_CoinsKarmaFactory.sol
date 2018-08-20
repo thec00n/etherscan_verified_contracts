@@ -3,7 +3,7 @@ pragma solidity 0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -44,7 +44,7 @@ contract Ownable {
 
    ____      _             _  __                                                    
   / ___|___ (_)_ __  ___  | |/ /__ _ _ __ _ __ ___   __ _        ___ ___  _ __ ___  
- | |   / _ \| | &#39;_ \/ __| | &#39; // _` | &#39;__| &#39;_ ` _ \ / _` |      / __/ _ \| &#39;_ ` _ \ 
+ | |   / _ \| | '_ \/ __| | ' // _` | '__| '_ ` _ \ / _` |      / __/ _ \| '_ ` _ \ 
  | |__| (_) | | | | \__ \ | . \ (_| | |  | | | | | | (_| |  _  | (_| (_) | | | | | |
   \____\___/|_|_| |_|___/ |_|\_\__,_|_|  |_| |_| |_|\__,_| (_)  \___\___/|_| |_| |_|
                                                                                     
@@ -74,12 +74,12 @@ contract CoinsKarmaFactory is Ownable {
     }
 
     CoinsKarma[] public coinkarma;
-    mapping(string =&gt; uint) coinsKarmaCreated;
-    mapping(string =&gt; uint) coinsKarmaMap;
+    mapping(string => uint) coinsKarmaCreated;
+    mapping(string => uint) coinsKarmaMap;
 
     KarmaVotes[] public karmavoters;
-    mapping(address =&gt; mapping(uint =&gt; uint)) karmaVoterCreated;
-    mapping(address =&gt; mapping(uint =&gt; uint)) karmaVoterMap;
+    mapping(address => mapping(uint => uint)) karmaVoterCreated;
+    mapping(address => mapping(uint => uint)) karmaVoterMap;
 
     uint giveKarmaFee = 1800000000000000; // CoinsKarma tries to keep this around $1 and checks regularly to make sure of that. CoinsKarma can change this fee with the alterGiveKarmaFee funciton.
 
@@ -96,7 +96,7 @@ contract CoinsKarmaFactory is Ownable {
         if (coinskarma.exists == true) {
             return (coinsKarmaMap[_coinSymbol], coinskarma.name, coinskarma.symbol, coinskarma.totalKarmaUp, coinskarma.totalKarmaDown, coinskarma.exists);
         } else {
-            return (0, &quot;&quot;, &quot;&quot;, 0, 0, false);
+            return (0, "", "", 0, 0, false);
         }
     }
 
@@ -110,12 +110,12 @@ contract CoinsKarmaFactory is Ownable {
         if (karmavoters[karmaVoterMap[_userAddress][getCoinsId]].exists == true) {
             return (karmavoters[karmaVoterMap[_userAddress][getCoinsId]].coinsKarmaId, karmavoters[karmaVoterMap[_userAddress][getCoinsId]].voterAddress, karmavoters[karmaVoterMap[_userAddress][getCoinsId]].up, karmavoters[karmaVoterMap[_userAddress][getCoinsId]].down, karmavoters[karmaVoterMap[_userAddress][getCoinsId]].voteTime, _coinSymbol);
         } else {
-            return (0, 0x0, 0, 0, 0, &quot;&quot;);
+            return (0, 0x0, 0, 0, 0, "");
         }
     }
 
     function giveKarma(uint _upOrDown, string _coinName, string _coinSymbol) payable public {
-        require(msg.value &gt;= giveKarmaFee);
+        require(msg.value >= giveKarmaFee);
 
         uint upVote = 0;
         uint downVote = 0;
@@ -155,9 +155,9 @@ contract CoinsKarmaFactory is Ownable {
 
         }else{
             // has, update KarmaVote
-            if (karmavoters[karmaVoterMap[msg.sender][id]].up &gt; 0){
+            if (karmavoters[karmaVoterMap[msg.sender][id]].up > 0){
                 coinkarma[coinsKarmaMap[_coinSymbol]].totalKarmaUp = coinkarma[coinsKarmaMap[_coinSymbol]].totalKarmaUp - 1;
-            } else if(karmavoters[karmaVoterMap[msg.sender][id]].down &gt; 0) { 
+            } else if(karmavoters[karmaVoterMap[msg.sender][id]].down > 0) { 
                 coinkarma[coinsKarmaMap[_coinSymbol]].totalKarmaDown = coinkarma[coinsKarmaMap[_coinSymbol]].totalKarmaDown - 1;
             }
             

@@ -4,12 +4,12 @@ pragma solidity ^0.4.21;
 library SafeMath {
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(a &lt;= c);
+		assert(a <= c);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(a &gt;= b);
+		assert(a >= b);
 		return a - b;
 	}
 }
@@ -37,7 +37,7 @@ contract AuctusPreSaleDistribution is ContractReceiver {
 	address public auctusPreSaleAddress = 0x84D45E60f7036F0DE7dF8ed68E1Ee50471B963BA;
 	uint256 public escrowedTokens;
 	address public owner;
-	mapping(address =&gt; bool) public redeemed;
+	mapping(address => bool) public redeemed;
 
 	event Escrow(address indexed from, uint256 value);
 	event Redeem(address indexed to, uint256 value);
@@ -63,7 +63,7 @@ contract AuctusPreSaleDistribution is ContractReceiver {
 	}
 
 	function redeemMany(address[] _addresses) onlyOwner public {
-		for (uint256 i = 0; i &lt; _addresses.length; i++) {
+		for (uint256 i = 0; i < _addresses.length; i++) {
 			redeemPreSale(_addresses[i]);
 		}
 	}
@@ -71,7 +71,7 @@ contract AuctusPreSaleDistribution is ContractReceiver {
 	function redeemPreSale(address _address) public returns (bool) {
 		if (!redeemed[_address]) {
 			uint256 value = AuctusPreSale(auctusPreSaleAddress).getTokenAmount(_address);
-			if (value &gt; 0) {
+			if (value > 0) {
 				redeemed[_address] = true;
 				escrowedTokens = escrowedTokens.sub(value);
 				assert(AuctusToken(auctusTokenAddress).transfer(_address, value));

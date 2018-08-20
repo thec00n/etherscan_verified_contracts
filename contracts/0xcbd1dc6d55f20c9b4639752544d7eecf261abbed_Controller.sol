@@ -1,5 +1,5 @@
 // Unattributed material copyright New Alchemy Limited, 2017. All rights reserved.
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 contract SafeMath {
     function safeMul(uint a, uint b) internal returns (uint) {
@@ -9,13 +9,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 }
@@ -92,9 +92,9 @@ contract EventDefinitions {
 }
 
 contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions, Pausable {
-	string constant public name = &quot;Education&quot;;
+	string constant public name = "Education";
 	uint8 constant public decimals = 8;
-	string constant public symbol = &quot;EDU&quot;;
+	string constant public symbol = "EDU";
 	Controller public controller;
 	string public motd;
 	event Motd(string message);
@@ -167,7 +167,7 @@ contract Token is Finalizable, TokenReceivable, SafeMath, EventDefinitions, Paus
 	}
 
 	modifier onlyPayloadSize(uint numwords) {
-		assert(msg.data.length &gt;= numwords * 32 + 4);
+		assert(msg.data.length >= numwords * 32 + 4);
 		_;
 	}
 
@@ -268,8 +268,8 @@ contract Controller is Owned, Finalizable {
 
 contract Ledger is Owned, SafeMath, Finalizable {
 	Controller public controller;
-	mapping(address =&gt; uint) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+	mapping(address => uint) public balanceOf;
+	mapping (address => mapping (address => uint)) public allowance;
 	uint public totalSupply;
 	uint public mintingNonce;
 	bool public mintingStopped;
@@ -291,11 +291,11 @@ contract Ledger is Owned, SafeMath, Finalizable {
 		require(!mintingStopped);
 		if (nonce != mintingNonce) return;
 		mintingNonce += 1;
-		uint256 lomask = (1 &lt;&lt; 96) - 1;
+		uint256 lomask = (1 << 96) - 1;
 		uint created = 0;
-		for (uint i=0; i&lt;bits.length; i++) {
-			address a = address(bits[i]&gt;&gt;96);
-			uint value = bits[i]&amp;lomask;
+		for (uint i=0; i<bits.length; i++) {
+			address a = address(bits[i]>>96);
+			uint value = bits[i]&lomask;
 			balanceOf[a] = balanceOf[a] + value;
 			controller.ledgerTransfer(0, a, value);
 			created += value;
@@ -311,7 +311,7 @@ contract Ledger is Owned, SafeMath, Finalizable {
 	}
 
 	function transfer(address _from, address _to, uint _value) onlyController returns (bool success) {
-		if (balanceOf[_from] &lt; _value) return false;
+		if (balanceOf[_from] < _value) return false;
 
 		balanceOf[_from] = safeSub(balanceOf[_from], _value);
 		balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -319,10 +319,10 @@ contract Ledger is Owned, SafeMath, Finalizable {
 	}
 
 	function transferFrom(address _spender, address _from, address _to, uint _value) onlyController returns (bool success) {
-		if (balanceOf[_from] &lt; _value) return false;
+		if (balanceOf[_from] < _value) return false;
 
 		var allowed = allowance[_from][_spender];
-		if (allowed &lt; _value) return false;
+		if (allowed < _value) return false;
 
 		balanceOf[_to] = safeAdd(balanceOf[_to], _value);
 		balanceOf[_from] = safeSub(balanceOf[_from], _value);
@@ -331,7 +331,7 @@ contract Ledger is Owned, SafeMath, Finalizable {
 	}
 
 	function approve(address _owner, address _spender, uint _value) onlyController returns (bool success) {
-		if ((_value != 0) &amp;&amp; (allowance[_owner][_spender] != 0)) {
+		if ((_value != 0) && (allowance[_owner][_spender] != 0)) {
 			return false;
 		}
 
@@ -347,7 +347,7 @@ contract Ledger is Owned, SafeMath, Finalizable {
 
 	function decreaseApproval (address _owner, address _spender, uint _subtractedValue) onlyController returns (bool success) {
 		uint oldValue = allowance[_owner][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowance[_owner][_spender] = 0;
 		} else {
 			allowance[_owner][_spender] = safeSub(oldValue, _subtractedValue);

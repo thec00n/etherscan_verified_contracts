@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,8 +110,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -126,9 +126,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -136,7 +136,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -145,7 +145,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -178,7 +178,7 @@ contract RivetzRegistrar is Ownable {
     // Add an event, so we an find all SPIDs via the log
     event SPCreated(uint256 indexed spid);
 
-    mapping(uint256 =&gt; SPEntry) public spEntries;
+    mapping(uint256 => SPEntry) public spEntries;
 
     // ERC-20 token that will be accepted for payment
     ERC20 public rvt;
@@ -193,7 +193,7 @@ contract RivetzRegistrar is Ownable {
     uint256 public registrationFee = 1000 ether;               /* Initial fee (in wei) -- includes 1 year */
     // Annual subscription fee
     uint256 constant defaultAnnualFee = 1000 ether;     /* wei/year */
-    // Annual fee as a per-second charge in &quot;wei&quot;
+    // Annual fee as a per-second charge in "wei"
     uint256 public feePerSec = defaultAnnualFee / secPerYear;  /* wei/sec = (wei/year) / (sec/year) */
 
 
@@ -249,7 +249,7 @@ contract RivetzRegistrar is Ownable {
      */
     function setRegistrant(uint256 spid, address registrant) public {
         SPEntry storage spEntry = spEntries[spid];
-        require(spEntry.registrant != 0 &amp;&amp; spEntry.registrant != address(0x1) );
+        require(spEntry.registrant != 0 && spEntry.registrant != address(0x1) );
         requireRegistrantOrGreater(spEntry);
         spEntry.registrant = registrant;
     }
@@ -294,7 +294,7 @@ contract RivetzRegistrar is Ownable {
     function renew(uint256 spid, uint256 payment) public returns (uint256 expiration) {
         SPEntry storage spEntry = spEntries[spid];
         require(rvt.transferFrom(msg.sender, paymentWalletAddress, payment));
-        uint256 periodStart = (spEntry.expiration &gt; now) ? spEntry.expiration : now;
+        uint256 periodStart = (spEntry.expiration > now) ? spEntry.expiration : now;
         spEntry.expiration = periodStart.add(feeToSeconds(payment));
         return spEntry.expiration;
     }
@@ -356,7 +356,7 @@ contract RivetzRegistrar is Ownable {
 
     /**
      * Permission check - admin or greater
-     * SP Registrant or Admin can&#39;t proceed if subscription expired
+     * SP Registrant or Admin can't proceed if subscription expired
      */
     function requireAdminOrGreater(SPEntry spEntry) internal view {
         require (msg.sender == spEntry.admin ||
@@ -367,7 +367,7 @@ contract RivetzRegistrar is Ownable {
 
     /**
      * Permission check - registrant or greater
-     * SP Registrant or Admin can&#39;t proceed if subscription expired
+     * SP Registrant or Admin can't proceed if subscription expired
      */
     function requireRegistrantOrGreater(SPEntry spEntry) internal view  {
         require (msg.sender == spEntry.registrant ||
@@ -394,6 +394,6 @@ contract RivetzRegistrar is Ownable {
 
     function isSubscribed(SPEntry spEntry) internal view returns (bool subscribed)
     {
-        return now &lt; spEntry.expiration;
+        return now < spEntry.expiration;
     }
 }

@@ -5,12 +5,12 @@ contract SafeMath {
 
 function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
 uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -39,7 +39,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -75,17 +75,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract FAPcoin is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;FAPcoin&quot;;
-    string public constant symbol = &quot;FAP&quot;;
+    string public constant name = "FAPcoin";
+    string public constant symbol = "FAP";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;      // deposit address for ETH for FAP
@@ -117,13 +117,13 @@ contract FAPcoin is StandardToken, SafeMath {
     {
       isFinalized = false;                   //controls pre through crowdsale state
       saleStarted = false;
-      FAPFounder = &#39;0x97F5eD1c6af0F45B605f4Ebe62Bae572B2e2198A&#39;;
-      FAPFundDeposit1 = &#39;0xF946cB03dC53Bfc13a902022C1c37eA830F8E35B&#39;;
-      FAPFundDeposit2 = &#39;0x19Eb1FE8Fdc51C0f785F455D8aB3BD22Af50cf11&#39;;
-      FAPFundDeposit3 = &#39;0xaD349885e35657956859c965670c41EE9A044b84&#39;;
-      FAPFundDeposit4 = &#39;0x4EEbfDEe9141796AaaA65b53A502A6DcFF21d397&#39;;
-      FAPFundDeposit5 = &#39;0x20a0A5759a56aDE253cf8BF3683923D7934CC84a&#39;;
-      ethFundDeposit = &#39;0x6404B11A733b8a62Bd4bf3A27d08e40DD13a5686&#39;;
+      FAPFounder = '0x97F5eD1c6af0F45B605f4Ebe62Bae572B2e2198A';
+      FAPFundDeposit1 = '0xF946cB03dC53Bfc13a902022C1c37eA830F8E35B';
+      FAPFundDeposit2 = '0x19Eb1FE8Fdc51C0f785F455D8aB3BD22Af50cf11';
+      FAPFundDeposit3 = '0xaD349885e35657956859c965670c41EE9A044b84';
+      FAPFundDeposit4 = '0x4EEbfDEe9141796AaaA65b53A502A6DcFF21d397';
+      FAPFundDeposit5 = '0x20a0A5759a56aDE253cf8BF3683923D7934CC84a';
+      ethFundDeposit = '0x6404B11A733b8a62Bd4bf3A27d08e40DD13a5686';
       totalSupply = safeMult(FAPFund,5);
       totalSupply = safeAdd(totalSupply,FAPFounderFund);
       balances[FAPFundDeposit1] = FAPFund;    // Deposit tokens for Owners
@@ -146,24 +146,24 @@ contract FAPcoin is StandardToken, SafeMath {
       if (!saleStarted) throw;
       if (msg.value == 0) throw;
       //change exchange rate based on duration
-      if (now &gt; firstStage &amp;&amp; now &lt;= secondStage){
+      if (now > firstStage && now <= secondStage){
         tokenExchangeRate = 1300;
       }
-      else if (now &gt; secondStage &amp;&amp; now &lt;= thirdStage){
+      else if (now > secondStage && now <= thirdStage){
         tokenExchangeRate = 1100;
       }
-      if (now &gt; thirdStage &amp;&amp; now &lt;= fourthStage){
+      if (now > thirdStage && now <= fourthStage){
         tokenExchangeRate = 1050;
       }
-      if (now &gt; fourthStage){
+      if (now > fourthStage){
         tokenExchangeRate = 1000;
       }
       //create tokens
-      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
       // return money if something goes wrong
-      if (tokenCreationCap &lt; checkedSupply) throw;  // odd fractions won&#39;t be found
+      if (tokenCreationCap < checkedSupply) throw;  // odd fractions won't be found
       totalSupply = checkedSupply;
       //All good. start the transfer
       balances[msg.sender] += tokens;  // safeAdd not needed
@@ -174,10 +174,10 @@ contract FAPcoin is StandardToken, SafeMath {
     function finalize() external {
       if (isFinalized) throw;
       if (msg.sender != ethFundDeposit) throw; // locks finalize to the ultimate ETH owner
-      if (totalSupply &lt; tokenCreationCap){
+      if (totalSupply < tokenCreationCap){
         uint256 remainingTokens = safeSubtract(tokenCreationCap, totalSupply);
         uint256 checkedSupply = safeAdd(totalSupply, remainingTokens);
-        if (tokenCreationCap &lt; checkedSupply) throw;
+        if (tokenCreationCap < checkedSupply) throw;
         totalSupply = checkedSupply;
         balances[msg.sender] += remainingTokens;
         CreateFAP(msg.sender, remainingTokens);

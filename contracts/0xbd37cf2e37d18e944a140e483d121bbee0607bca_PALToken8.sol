@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a584f4749456a18">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a584f4749456a18">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -33,7 +33,7 @@ contract ReentrancyGuard {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,20 +113,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -161,7 +161,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -195,7 +195,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -208,7 +208,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -337,9 +337,9 @@ library DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -347,8 +347,8 @@ library DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -381,7 +381,7 @@ library DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -421,7 +421,7 @@ library DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -450,7 +450,7 @@ library DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -481,10 +481,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -498,17 +498,17 @@ contract LockableToken is Ownable, ReentrancyGuard, BurnableToken {
     using DateTime for uint;
     using SafeMath for uint256;
 
-    mapping (uint256 =&gt; uint256) public lockedBalances;
+    mapping (uint256 => uint256) public lockedBalances;
     uint256[] public lockedKeys;
-    // For store all user&#39;s transfer records, eg: (0x000...000 =&gt; (201806 =&gt; 100) )
-    mapping (address =&gt; mapping (uint256 =&gt; uint256) ) public payRecords;
+    // For store all user's transfer records, eg: (0x000...000 => (201806 => 100) )
+    mapping (address => mapping (uint256 => uint256) ) public payRecords;
 
     event TransferLocked(address indexed from,address indexed to,uint256 value, uint256 releaseTime);//new
     event ReleaseLockedBalance( uint256 value, uint256 releaseTime); //new
 
     function transferLockedToken(uint256 _value) public payable nonReentrant returns (bool) {
 
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_value > 0 && _value <= balances[msg.sender]);
 
         uint256 unlockTime = now.add(26 weeks);
         uint theYear = unlockTime.parseTimestamp().year;
@@ -517,7 +517,7 @@ contract LockableToken is Ownable, ReentrancyGuard, BurnableToken {
 
         address _to = owner;
         balances[msg.sender] = balances[msg.sender].sub(_value);
-        // Stored user&#39;s transfer per month
+        // Stored user's transfer per month
         var dt = now.parseTimestamp();
         var (curYear, curMonth) = (uint256(dt.year), uint256(dt.month) );
         uint256 yearMonth = (curYear.mul(100)).add(curMonth);
@@ -542,12 +542,12 @@ contract LockableToken is Ownable, ReentrancyGuard, BurnableToken {
         uint theYear = unlockTime.parseTimestamp().year;
         uint theMonth = unlockTime.parseTimestamp().month;
         uint256 currentTime = (theYear.mul(100)).add(theMonth);
-        for (uint i = 0; i &lt; lockedKeys.length; i++) {
+        for (uint i = 0; i < lockedKeys.length; i++) {
             uint256 theTime = lockedKeys[i];
             if(theTime == 0 || lockedBalances[theTime] == 0)
                 continue;
 
-            if(currentTime &gt;= theTime) {
+            if(currentTime >= theTime) {
                 releaseAmount = releaseAmount.add(lockedBalances[theTime]);
                 unlockBalanceByKey(theTime,i);
             }
@@ -564,7 +564,7 @@ contract LockableToken is Ownable, ReentrancyGuard, BurnableToken {
     }
 
     function lockedBalance() public constant returns (uint256 value) {
-        for (uint i=0; i &lt; lockedKeys.length; i++) {
+        for (uint i=0; i < lockedKeys.length; i++) {
             value = value.add(lockedBalances[lockedKeys[i]]);
         }
         return value;
@@ -574,8 +574,8 @@ contract LockableToken is Ownable, ReentrancyGuard, BurnableToken {
         bool found_index = false;
         uint256 i=0;
         // Found a empty key.
-        if(lockedKeys.length &gt;= 1) {
-            for(; i&lt;lockedKeys.length; i++) {
+        if(lockedKeys.length >= 1) {
+            for(; i<lockedKeys.length; i++) {
                 if(lockedKeys[i] == 0) {
                     found_index = true;
                     break;
@@ -620,12 +620,12 @@ contract ReleaseableToken is Operational, LockableToken {
     // Release the amount on the time
     function releaseSupply(uint256 releaseAmount) public onlyOperator returns(uint256 _actualRelease) {
 
-        require(now &gt;= (releaseTokenTime.add(1 days)) );
-        require(releaseAmount &lt;= dailyLimit);
+        require(now >= (releaseTokenTime.add(1 days)) );
+        require(releaseAmount <= dailyLimit);
         updateLimit();
-        require(limitSupplyPerYear &gt; 0);
-        if (releaseAmount &gt; limitSupplyPerYear) {
-            if (totalSupply.add(limitSupplyPerYear) &gt; supplyLimit) {
+        require(limitSupplyPerYear > 0);
+        if (releaseAmount > limitSupplyPerYear) {
+            if (totalSupply.add(limitSupplyPerYear) > supplyLimit) {
                 releaseAmount = supplyLimit.sub(totalSupply);
                 totalSupply = supplyLimit;
             } else {
@@ -634,7 +634,7 @@ contract ReleaseableToken is Operational, LockableToken {
             }
             limitSupplyPerYear = 0;
         } else {
-            if (totalSupply.add(releaseAmount) &gt; supplyLimit) {
+            if (totalSupply.add(releaseAmount) > supplyLimit) {
                 releaseAmount = supplyLimit.sub(totalSupply);
                 totalSupply = supplyLimit;
             } else {
@@ -651,12 +651,12 @@ contract ReleaseableToken is Operational, LockableToken {
 
     // Update year limit
     function updateLimit() internal {
-        if (createTime.add(1 years) &lt; now &amp;&amp; !secondYearUpdate) {
+        if (createTime.add(1 years) < now && !secondYearUpdate) {
             limitSupplyPerYear = standardDecimals.mul(10000000000);
             secondYearUpdate = true;
         }
-        if (createTime.add(2 * 1 years) &lt; now) {
-            if (totalSupply &lt; supplyLimit) {
+        if (createTime.add(2 * 1 years) < now) {
+            if (totalSupply < supplyLimit) {
                 limitSupplyPerYear = supplyLimit.sub(totalSupply);
             }
         }
@@ -669,9 +669,9 @@ contract ReleaseableToken is Operational, LockableToken {
 }
 
 contract PALToken8 is ReleaseableToken {
-    string public standard = &#39;2018071601&#39;;
-    string public name = &#39;PALToken8&#39;;
-    string public symbol = &#39;PALT8&#39;;
+    string public standard = '2018071601';
+    string public name = 'PALToken8';
+    string public symbol = 'PALT8';
     uint8 public decimals = 8;
 
     function PALToken8(

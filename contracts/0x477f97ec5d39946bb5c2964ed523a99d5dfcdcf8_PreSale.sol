@@ -7,7 +7,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract PreSale is Ownable {
     uint256 constant public END_TIME =   1552508971;
 
     uint256 public landsSold;
-    mapping (address =&gt; uint32) public lands;
+    mapping (address => uint32) public lands;
 
     bool private paused = false; 
 
@@ -62,20 +62,20 @@ contract PreSale is Ownable {
     event landsRedeemed(address indexed sender, uint256 lands);
 
     function bulkPurchageLand() payable public {
-        require(now &gt; START_TIME);
-        require(now &lt; END_TIME);
+        require(now > START_TIME);
+        require(now < END_TIME);
         require(paused == false);
-        require(msg.value &gt;= (landPriceCurrent() * 5));
+        require(msg.value >= (landPriceCurrent() * 5));
         lands[msg.sender] = lands[msg.sender] + 5;
         landsSold = landsSold + 5;
         landsPurchased(msg.sender, msg.value, 5);
     }
     
     function purchaseLand() payable public {
-        require(now &gt; START_TIME);
-        require(now &lt; END_TIME);
+        require(now > START_TIME);
+        require(now < END_TIME);
         require(paused == false);
-        require(msg.value &gt;= landPriceCurrent());
+        require(msg.value >= landPriceCurrent());
 
         lands[msg.sender] = lands[msg.sender] + 1;
         landsSold = landsSold + 1;
@@ -85,7 +85,7 @@ contract PreSale is Ownable {
     
     function redeemLand(address targetUser) public onlyOwner returns(uint256) {
         require(paused == false);
-        require(lands[targetUser] &gt; 0);
+        require(lands[targetUser] > 0);
 
         landsRedeemed(targetUser, lands[targetUser]);
 

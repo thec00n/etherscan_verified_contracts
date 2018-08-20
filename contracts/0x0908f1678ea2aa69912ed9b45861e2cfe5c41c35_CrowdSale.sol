@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 /*
 Original Code from Toshendra Sharma Course at UDEMY
-Personalization and modifications by Fares Akel - <span class="__cf_email__" data-cfemail="42246c232c362d2c2b2d6c2329272e02252f232b2e6c212d2f">[email&#160;protected]</span>
+Personalization and modifications by Fares Akel - <span class="__cf_email__" data-cfemail="42246c232c362d2c2b2d6c2329272e02252f232b2e6c212d2f">[email protected]</span>
 */
 contract token { function transfer(address receiver, uint amount);
                  function balanceOf(address addr);
@@ -13,7 +13,7 @@ contract CrowdSale {
     }
     State public state = State.Fundraising;
     
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     address[] contributors;
     uint public totalRaised;
     uint public currentBalance;
@@ -45,7 +45,7 @@ contract CrowdSale {
         _;
     }
     modifier atEndOfLifecycle() {
-        if(!(state == State.Successful &amp;&amp; completedAt + 1 hours &lt; now)) {
+        if(!(state == State.Successful && completedAt + 1 hours < now)) {
             revert();
         }
         _;
@@ -79,7 +79,7 @@ contract CrowdSale {
             id=0;
         }
         else{
-            for(uint i = 0; i &lt; contributors.length; i++)
+            for(uint i = 0; i < contributors.length; i++)
             {
                 if(contributors[i]==msg.sender)
                 {
@@ -105,7 +105,7 @@ contract CrowdSale {
     }
 
     function checkIfFundingCompleteOrExpired() {
-        if ( now &gt; deadline ) {
+        if ( now > deadline ) {
             state = State.Successful;
             LogFundingSuccessful(totalRaised);
             finished();  
@@ -134,7 +134,7 @@ contract CrowdSale {
             uint amount = 0;
             address add;
 
-            for(uint i=0; i&lt;contributors.length ;i++){
+            for(uint i=0; i<contributors.length ;i++){
                 if (contributors[i]==msg.sender){
                     add = contributors[i];
                     amount = balances[add]*9000000/totalRaised;
@@ -167,7 +167,7 @@ contract CrowdSale {
     }
 
     function () payable {
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             contribute();
         }
         else revert();

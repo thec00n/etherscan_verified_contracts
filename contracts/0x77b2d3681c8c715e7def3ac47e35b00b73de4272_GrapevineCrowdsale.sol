@@ -84,8 +84,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -100,9 +100,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -110,7 +110,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -119,7 +119,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -170,7 +170,7 @@ contract ERC20 is ERC20Basic {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -211,7 +211,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -371,7 +371,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -382,8 +382,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   constructor(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -395,7 +395,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -424,7 +424,7 @@ contract TimedCrowdsale is Crowdsale {
 contract PostDeliveryCrowdsale is TimedCrowdsale {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   /**
    * @dev Withdraw tokens only after crowdsale ends.
@@ -432,7 +432,7 @@ contract PostDeliveryCrowdsale is TimedCrowdsale {
   function withdrawTokens() public {
     require(hasClosed());
     uint256 amount = balances[msg.sender];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[msg.sender] = 0;
     _deliverTokens(msg.sender, amount);
   }
@@ -458,7 +458,7 @@ contract PostDeliveryCrowdsale is TimedCrowdsale {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -530,7 +530,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -565,7 +565,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -621,7 +621,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -637,7 +637,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @param _goal Funding goal
    */
   constructor(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
@@ -657,7 +657,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @return Whether funding goal was reached
    */
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /**
@@ -698,7 +698,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   constructor(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -707,7 +707,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -722,7 +722,7 @@ contract CappedCrowdsale is Crowdsale {
     internal
   {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -787,7 +787,7 @@ contract GrapevineCrowdsale is CappedCrowdsale, TimedCrowdsale, Pausable, Refund
   GrapevineWhitelistInterface  public authorisedInvestors;
   GrapevineWhitelistInterface public earlyInvestors;
 
-  mapping(address =&gt; uint256) public bonuses;
+  mapping(address => uint256) public bonuses;
 
   uint256 deliveryTime;
   uint256 tokensToBeDelivered;
@@ -845,10 +845,10 @@ contract GrapevineCrowdsale is CappedCrowdsale, TimedCrowdsale, Pausable, Refund
   function withdrawTokens() public {
     require(goalReached());
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt; deliveryTime);
+    require(block.timestamp > deliveryTime);
     super.withdrawTokens();
     uint256 _bonusTokens = bonuses[msg.sender];
-    if (_bonusTokens &gt; 0) {
+    if (_bonusTokens > 0) {
       bonuses[msg.sender] = 0;
       require(token.approve(address(timelockController), _bonusTokens));
       require(
@@ -872,11 +872,11 @@ contract GrapevineCrowdsale is CappedCrowdsale, TimedCrowdsale, Pausable, Refund
     uint256 _totalTokens = _tokenAmount;
     // solium-disable-next-line security/no-block-members
     uint256 _bonus = getBonus(block.timestamp, _beneficiary, msg.value);
-    if (_bonus&gt;0) {
+    if (_bonus>0) {
       uint256 _bonusTokens = _tokenAmount.mul(_bonus).div(100);
       // make sure the crowdsale contract has enough tokens to transfer the purchased tokens and to create the timelock bonus.
       uint256 _currentBalance = token.balanceOf(this);
-      require(_currentBalance &gt;= _totalTokens.add(_bonusTokens));
+      require(_currentBalance >= _totalTokens.add(_bonusTokens));
       bonuses[_beneficiary] = bonuses[_beneficiary].add(_bonusTokens);
       _totalTokens = _totalTokens.add(_bonusTokens);
     }
@@ -912,14 +912,14 @@ contract GrapevineCrowdsale is CappedCrowdsale, TimedCrowdsale, Pausable, Refund
     _bonus = 0;
     
     // at this level the amount was added to weiRaised
-    if ( (weiRaised.sub(_value) &lt; goal) &amp;&amp; earlyInvestors.whitelist(_beneficiary) ) {
+    if ( (weiRaised.sub(_value) < goal) && earlyInvestors.whitelist(_beneficiary) ) {
       _bonus = 30;
     } else {
-      if (_time &lt; openingTime.add(7 days)) {
+      if (_time < openingTime.add(7 days)) {
         _bonus = 15;
-      } else if (_time &lt; openingTime.add(14 days)) {
+      } else if (_time < openingTime.add(14 days)) {
         _bonus = 10;
-      } else if (_time &lt; openingTime.add(21 days)) {
+      } else if (_time < openingTime.add(21 days)) {
         _bonus = 8;
       } else {
         _bonus = 6;
@@ -943,7 +943,7 @@ contract GrapevineCrowdsale is CappedCrowdsale, TimedCrowdsale, Pausable, Refund
       // calculate the quantity of tokens to be burnt. The bonuses are already transfered to the Controller.
       uint256 balance = token.balanceOf(this);
       uint256 remainingTokens = balance.sub(tokensToBeDelivered);
-      if (remainingTokens&gt;0) {
+      if (remainingTokens>0) {
         BurnableTokenInterface(address(token)).burn(remainingTokens);
       }
     }

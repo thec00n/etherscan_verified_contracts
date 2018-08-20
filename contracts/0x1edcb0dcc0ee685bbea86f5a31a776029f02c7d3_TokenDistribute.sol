@@ -33,8 +33,8 @@ contract Token {
     uint256 public totalSupply;
     uint8 public decimals;
     bool public allowTransactions; 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     function transfer(address _to, uint256 _value) public returns (bool success);
     function approve(address _spender, uint256 _value) public returns (bool success);
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
@@ -50,7 +50,7 @@ contract TokenDistribute is OwnerHelper
     
     function multipleTokenDistribute(address _token, address[] _addresses, uint[] _values) public onlyOwner
     {
-        for(uint i = 0; i &lt; _addresses.length ; i++)
+        for(uint i = 0; i < _addresses.length ; i++)
         {
             Token(_token).transfer(_addresses[i], _values[i] * E18);  
         }

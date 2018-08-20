@@ -29,20 +29,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,7 +56,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer contracts for a specified address
@@ -65,7 +65,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -99,9 +99,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of contracts to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -133,7 +133,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -144,8 +144,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -208,7 +208,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -342,9 +342,9 @@ contract PAXToken is BurnableToken, PausableToken {
 
     using SafeMath for uint;
 
-    string public constant name = &quot;Pax Token&quot;;
+    string public constant name = "Pax Token";
 
-    string public constant symbol = &quot;PAX&quot;;
+    string public constant symbol = "PAX";
 
     uint32 public constant decimals = 10;
 
@@ -358,7 +358,7 @@ contract PAXToken is BurnableToken, PausableToken {
      * @param _isPause bool (pause === true)
      */
     function PAXToken(address _company, address _founders_1, address _founders_2, bool _isPause) public {
-        require(_company != address(0) &amp;&amp; _founders_1 != address(0) &amp;&amp; _founders_2 != address(0));
+        require(_company != address(0) && _founders_1 != address(0) && _founders_2 != address(0));
         paused = _isPause;
         totalSupply = INITIAL_SUPPLY;
         balances[msg.sender] = 349500000 * (10 ** uint256(decimals));
@@ -395,12 +395,12 @@ contract Crowdsale is Pausable {
     /**
      * @dev Mapping with stageId = stageInfo
      */
-    mapping (uint =&gt; stageInfo) public stages;
+    mapping (uint => stageInfo) public stages;
 
     /**
      * @dev Mapping with adress = with balance
      */
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     /**
      * @dev Softcap
@@ -536,8 +536,8 @@ contract Crowdsale is Pausable {
     modifier isUnderHardCap() {
         uint tokenBalance = token.balanceOf(this);
         require(
-            tokenBalance &lt;= hardcap &amp;&amp;
-            tokenBalance &gt;= 500
+            tokenBalance <= hardcap &&
+            tokenBalance >= 500
         );
         _;
     }
@@ -593,7 +593,7 @@ contract Crowdsale is Pausable {
      * @dev Fallback function
      */
     function() whenNotPaused saleIsOn external payable {
-        require (msg.value &gt; 0);
+        require (msg.value > 0);
         sendTokens(msg.value, msg.sender);
     }
 
@@ -606,17 +606,17 @@ contract Crowdsale is Pausable {
         uint tokens = _value;
         uint avalibleTokens = token.balanceOf(this);
 
-        if (tokens &lt; avalibleTokens) {
-            if (tokens &lt;= stages[3].limit) {
+        if (tokens < avalibleTokens) {
+            if (tokens <= stages[3].limit) {
                 stages[3].limit = (stages[3].limit).sub(tokens);
-            } else if (tokens &lt;= (stages[3].limit).add(stages[2].limit)) {
+            } else if (tokens <= (stages[3].limit).add(stages[2].limit)) {
                 stages[2].limit = (stages[2].limit).sub(tokens.sub(stages[3].limit));
                 stages[3].limit = 0;
-            } else if (tokens &lt;= (stages[3].limit).add(stages[2].limit).add(stages[1].limit)) {
+            } else if (tokens <= (stages[3].limit).add(stages[2].limit).add(stages[1].limit)) {
                 stages[1].limit = (stages[1].limit).sub(tokens.sub(stages[3].limit).sub(stages[2].limit));
                 stages[3].limit = 0;
                 stages[2].limit = 0;
-            } else if (tokens &lt;= (stages[3].limit).add(stages[2].limit).add(stages[1].limit).add(stages[0].limit)) {
+            } else if (tokens <= (stages[3].limit).add(stages[2].limit).add(stages[1].limit).add(stages[0].limit)) {
                 stages[0].limit = (stages[0].limit).sub(tokens.sub(stages[3].limit).sub(stages[2].limit).sub(stages[1].limit));
                 stages[3].limit = 0;
                 stages[2].limit = 0;
@@ -642,7 +642,7 @@ contract Crowdsale is Pausable {
      * @dev Return Etherium all investors
      */
     function refund() public {
-        require(sumWei &lt; softcap &amp;&amp; !state);
+        require(sumWei < softcap && !state);
         uint value = balances[msg.sender];
         balances[msg.sender] = 0;
         emit Refund(msg.sender, value);
@@ -668,7 +668,7 @@ contract Crowdsale is Pausable {
      * @dev Starting ICO
      */
     function startICO() public onlyOwner returns(bool) {
-        require(stages[0].start &gt;= now);
+        require(stages[0].start >= now);
         require(requireOnce);
         requireOnce = false;
         state = true;
@@ -716,7 +716,7 @@ contract Crowdsale is Pausable {
      * @dev Withdrawal Etherium from smart-contract
      */
     function withDrawal() public onlyOwner {
-        if(!state &amp;&amp; sumWei &gt;= softcap) {
+        if(!state && sumWei >= softcap) {
             multisig.transfer(address(this).balance);
         }
     }
@@ -728,29 +728,29 @@ contract Crowdsale is Pausable {
         uint stageId;
         uint today = now;
 
-        if (today &lt; stages[0].stop) {
+        if (today < stages[0].stop) {
             stageId = 0;
 
-        } else if (today &gt;= stages[1].start &amp;&amp;
-        today &lt; stages[1].stop ) {
+        } else if (today >= stages[1].start &&
+        today < stages[1].stop ) {
             stageId = 1;
 
-        } else if (today &gt;= stages[2].start &amp;&amp;
-        today &lt; stages[2].stop ) {
+        } else if (today >= stages[2].start &&
+        today < stages[2].stop ) {
             stageId = 2;
 
-        } else if (today &gt;= stages[3].start &amp;&amp;
-        today &lt; stages[3].stop ) {
+        } else if (today >= stages[3].start &&
+        today < stages[3].stop ) {
             stageId = 3;
 
-        } else if (today &gt;= stages[3].stop) {
+        } else if (today >= stages[3].stop) {
             stageId = 4;
 
         } else {
             return 5;
         }
 
-        uint tempId = (stageId &gt; period) ? stageId : period;
+        uint tempId = (stageId > period) ? stageId : period;
         return tempId;
     }
 
@@ -807,7 +807,7 @@ contract Crowdsale is Pausable {
         tokens = tokens.div(rate);
         bool needPause;
 
-        if (tokens &gt; limit) {
+        if (tokens > limit) {
             needPause = true;
             uint stageEther = calculateStagePrice();
             period++;
@@ -827,8 +827,8 @@ contract Crowdsale is Pausable {
             sendTokens(_etherValue.sub(stageEther), _to);
 
         } else {
-            require(tokens &lt;= token.balanceOf(this));
-            if (limit.sub(tokens) &lt; 500) {
+            require(tokens <= token.balanceOf(this));
+            if (limit.sub(tokens) < 500) {
                 needPause = true;
                 period++;
             }
@@ -858,7 +858,7 @@ contract Crowdsale is Pausable {
      * @param _shift uint Time in seconds
      */
     function dateMove(uint _shift) private returns(bool) {
-        require(_shift &gt; 0);
+        require(_shift > 0);
 
         uint i;
 
@@ -866,7 +866,7 @@ contract Crowdsale is Pausable {
             stages[period].start = now;
             stages[period].stop = (stages[period].start).add(stages[period].duration);
 
-            for (i = period + 1; i &lt; 4; i++) {
+            for (i = period + 1; i < 4; i++) {
                 stages[i].start = stages[i - 1].stop;
                 stages[i].stop = (stages[i].start).add(stages[i].duration);
             }
@@ -874,7 +874,7 @@ contract Crowdsale is Pausable {
         } else {
             if (manualPause) stages[period].stop = (stages[period].stop).add(_shift);
 
-            for (i = period + 1; i &lt; 4; i++) {
+            for (i = period + 1; i < 4; i++) {
                 stages[i].start = (stages[i].start).add(_shift);
                 stages[i].stop = (stages[i].stop).add(_shift);
             }
@@ -904,7 +904,7 @@ contract Crowdsale is Pausable {
      * @param _start uint Time start
      */
     function setStartDate(uint _start) public onlyOwner returns(bool) {
-        require(_start &gt; now);
+        require(_start > now);
         require(requireOnce);
 
         stages[0].start = _start;

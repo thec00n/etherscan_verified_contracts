@@ -8,8 +8,8 @@ contract MigrationAgent {
 
 // title preICO humansOnly networkToken (HON Token) - crowdfunding code for preICO humansOnly networkToken PreICO
 contract HumansOnlyNetworkETHpreICO {
-    string public constant name = &quot;preICO for HumansOnly.Network on ETH&quot;;
-    string public constant symbol = &quot;HON&quot;;
+    string public constant name = "preICO for HumansOnly.Network on ETH";
+    string public constant symbol = "HON";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETC/ETH.
 
     uint256 public constant tokenCreationRate = 1000;
@@ -45,8 +45,8 @@ contract HumansOnlyNetworkETHpreICO {
     // The current total token supply.
     uint256 totalTokens;
 	uint256 bonusCreationRate;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) balancesRAW;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) balancesRAW;
 
 
    uint256 public totalMigrated;
@@ -59,11 +59,11 @@ contract HumansOnlyNetworkETHpreICO {
 
         if (hon1ninja == 0) throw;
         if (migrationMaster == 0) throw;
-        if (fundingEndBlock   &lt;= fundingStartBlock) throw;
+        if (fundingEndBlock   <= fundingStartBlock) throw;
 
     }
 
-    // notice Transfer `_value` HON Token tokens from sender&#39;s account
+    // notice Transfer `_value` HON Token tokens from sender's account
     // `msg.sender` to provided account address `_to`.
     // notice This function is disabled during the funding.
     // dev Required state: Operational
@@ -73,10 +73,10 @@ contract HumansOnlyNetworkETHpreICO {
     function transfer(address _to, uint256 _value) returns (bool) {
 
 // freez till end of crowdfunding + 2  weeks
-if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 2*oneweek)) throw;
+if ((msg.sender!=migrationMaster)&&(block.number < fundingEndBlock + 2*oneweek)) throw;
 
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -105,27 +105,27 @@ if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 
         function createHONtokens(address holder) payable {
 
         if (!funding) throw;
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingEndBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingEndBlock) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if (msg.value == 0) throw;
 		// check the maximum token creation cap
-        if (msg.value &gt; (tokenCreationCap - totalTokens) / tokenCreationRate)
+        if (msg.value > (tokenCreationCap - totalTokens) / tokenCreationRate)
           throw;
 		
 		//bonus structure
 		bonusCreationRate = tokenCreationRate;
 		// early birds bonuses :
-        if (totalTokens &lt; tokenSEEDcap) bonusCreationRate = tokenCreationRate +800;
+        if (totalTokens < tokenSEEDcap) bonusCreationRate = tokenCreationRate +800;
 	
 
-		if	(totalTokens &gt; tokenXstepCAP){bonusCreationRate = tokenCreationRate - 250;}// 750
-		if	(totalTokens &gt; token18KstepCAP){bonusCreationRate = tokenCreationRate - 250;} //500
+		if	(totalTokens > tokenXstepCAP){bonusCreationRate = tokenCreationRate - 250;}// 750
+		if	(totalTokens > token18KstepCAP){bonusCreationRate = tokenCreationRate - 250;} //500
 		
 	//blackFriday bonuses
 	// 1 block = 13.7-16.8 s
-		if (block.number &lt; blackFridayEndBlock){
+		if (block.number < blackFridayEndBlock){
 		bonusCreationRate = bonusCreationRate * 3;
 		}
 		
@@ -186,7 +186,7 @@ function finalize() external {
  }
 	
 	function finalizebackup() external {
-       if (block.number &lt;= fundingEndBlock+2*oneday) throw;
+       if (block.number <= fundingEndBlock+2*oneday) throw;
         // Switch to Operational state. This is the only place this can happen.
         funding = false;		
         // Transfer ETH to the preICO humansOnly network ninja address.
@@ -201,7 +201,7 @@ function finalize() external {
 
         // Validate input value.
         if (_value == 0) throw;
-        if (_value &gt; balances[msg.sender]) throw;
+        if (_value > balances[msg.sender]) throw;
 
         balances[msg.sender] -= _value;
         totalTokens -= _value;
@@ -224,6 +224,6 @@ function refundTRA() external {
 }
 
 function preICOregulations() external returns(string wow) {
-	return &#39;Regulations of ICO and preICO and usage of this smartcontract are present at website  humansOnly.network and by using this smartcontract you commit that you accept and will follow those rules&#39;;
+	return 'Regulations of ICO and preICO and usage of this smartcontract are present at website  humansOnly.network and by using this smartcontract you commit that you accept and will follow those rules';
 }
 }

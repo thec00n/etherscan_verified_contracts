@@ -3,7 +3,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,20 +57,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,7 +85,7 @@ library StateMachineLib {
         bytes32 nextId;
 
         // The identifiers for the available functions in each stage
-        mapping(bytes4 =&gt; bool) allowedFunctions;
+        mapping(bytes4 => bool) allowedFunctions;
     }
 
     struct State {
@@ -96,10 +96,10 @@ library StateMachineLib {
         function(bytes32) internal onTransition;
 
         // Checks if a stage id is valid
-        mapping(bytes32 =&gt; bool) validStage;
+        mapping(bytes32 => bool) validStage;
 
         // Maps stage ids to their Stage structs
-        mapping(bytes32 =&gt; Stage) stages;
+        mapping(bytes32 => Stage) stages;
     }
 
     /// @dev Creates and sets the initial stage. It has to be called before creating any transitions.
@@ -109,15 +109,15 @@ library StateMachineLib {
         self.currentStageId = stageId;
     }
 
-    /// @dev Creates a transition from &#39;fromId&#39; to &#39;toId&#39;. If fromId already had a nextId, it deletes the now unreachable stage.
+    /// @dev Creates a transition from 'fromId' to 'toId'. If fromId already had a nextId, it deletes the now unreachable stage.
     /// @param fromId The id of the stage from which the transition begins.
-    /// @param toId The id of the stage that will be reachable from &quot;fromId&quot;.
+    /// @param toId The id of the stage that will be reachable from "fromId".
     function createTransition(State storage self, bytes32 fromId, bytes32 toId) internal {
         require(self.validStage[fromId]);
 
         Stage storage from = self.stages[fromId];
 
-        // Invalidate the stage that won&#39;t be reachable any more
+        // Invalidate the stage that won't be reachable any more
         if (from.nextId != 0) {
             self.validStage[from.nextId] = false;
             delete self.stages[from.nextId];
@@ -192,7 +192,7 @@ contract StateMachine {
 
         while (state.validStage[nextId]) {
             StateMachineLib.Stage storage next = state.stages[nextId];
-            // If the next stage&#39;s condition is true, go to next stage and continue
+            // If the next stage's condition is true, go to next stage and continue
             if (startConditions(nextId)) {
                 state.goToNextStage();
                 nextId = next.nextId;
@@ -221,15 +221,15 @@ contract TimedStateMachine is StateMachine {
 
     event LogSetStageStartTime(bytes32 indexed stageId, uint256 startTime);
 
-    // Stores the start timestamp for each stage (the value is 0 if the stage doesn&#39;t have a start timestamp).
-    mapping(bytes32 =&gt; uint256) internal startTime;
+    // Stores the start timestamp for each stage (the value is 0 if the stage doesn't have a start timestamp).
+    mapping(bytes32 => uint256) internal startTime;
 
     /// @dev This function overrides the startConditions function in the parent class in order to enable automatic transitions that depend on the timestamp.
     function startConditions(bytes32 stageId) internal constant returns(bool) {
         // Get the startTime for stage
         uint256 start = startTime[stageId];
         // If the startTime is set and has already passed, return true.
-        return start != 0 &amp;&amp; block.timestamp &gt; start;
+        return start != 0 && block.timestamp > start;
     }
 
     /// @dev Sets the starting timestamp for a stage.
@@ -237,7 +237,7 @@ contract TimedStateMachine is StateMachine {
     /// @param timestamp The start timestamp for the given stage. It should be bigger than the current one.
     function setStageStartTime(bytes32 stageId, uint256 timestamp) internal {
         require(state.validStage[stageId]);
-        require(timestamp &gt; block.timestamp);
+        require(timestamp > block.timestamp);
 
         startTime[stageId] = timestamp;
         LogSetStageStartTime(stageId, timestamp);
@@ -284,7 +284,7 @@ contract DetailedERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -293,7 +293,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -322,7 +322,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -333,8 +333,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -348,7 +348,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -383,7 +383,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -501,7 +501,7 @@ contract ERC223BasicToken is ERC223Basic, BasicToken {
 
         require(super.transfer(_to, _value));
 
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -531,8 +531,8 @@ contract ERC223BasicToken is ERC223Basic, BasicToken {
 
 /// @title Token for the Pryze project.
 contract PryzeToken is DetailedERC20, MintableToken, ERC223BasicToken {
-    string constant NAME = &quot;Pryze&quot;;
-    string constant SYMBOL = &quot;PRYZ&quot;;
+    string constant NAME = "Pryze";
+    string constant SYMBOL = "PRYZ";
     uint8 constant DECIMALS = 18;
 
     //// @dev Constructor that sets details of the ERC20 token.
@@ -549,7 +549,7 @@ contract Whitelistable is Ownable {
     event LogUserRegistered(address indexed sender, address indexed userAddress);
     event LogUserUnregistered(address indexed sender, address indexed userAddress);
     
-    mapping(address =&gt; bool) public whitelisted;
+    mapping(address => bool) public whitelisted;
 
     function registerUser(address userAddress) 
         public 
@@ -583,8 +583,8 @@ contract DisbursementHandler is Ownable {
     event LogWithdraw(address indexed to, uint256 value);
 
     ERC20 public token;
-    mapping(address =&gt; Disbursement[]) public disbursements;
-    mapping(address =&gt; uint256) public withdrawnTokens;
+    mapping(address => Disbursement[]) public disbursements;
+    mapping(address => uint256) public withdrawnTokens;
 
     function DisbursementHandler(address _token) public {
         token = ERC20(_token);
@@ -602,7 +602,7 @@ contract DisbursementHandler is Ownable {
         public
         onlyOwner
     {
-        require(block.timestamp &lt; timestamp);
+        require(block.timestamp < timestamp);
         disbursements[vestor].push(Disbursement(timestamp, tokens));
         LogSetup(vestor, timestamp, tokens);
     }
@@ -619,8 +619,8 @@ contract DisbursementHandler is Ownable {
         public
         onlyOwner
     {
-        require(block.timestamp &lt; timestamp);
-        require(index &lt; disbursements[vestor].length);
+        require(block.timestamp < timestamp);
+        require(index < disbursements[vestor].length);
         disbursements[vestor][index].timestamp = timestamp;
         LogChangeTimestamp(vestor, index, timestamp);
     }
@@ -632,7 +632,7 @@ contract DisbursementHandler is Ownable {
         public
     {
         uint256 maxTokens = calcMaxWithdraw();
-        uint256 withdrawAmount = value &lt; maxTokens ? value : maxTokens;
+        uint256 withdrawAmount = value < maxTokens ? value : maxTokens;
         withdrawnTokens[msg.sender] = SafeMath.add(withdrawnTokens[msg.sender], withdrawAmount);
         token.transfer(to, withdrawAmount);
         LogWithdraw(to, value);
@@ -647,8 +647,8 @@ contract DisbursementHandler is Ownable {
     {
         uint256 maxTokens = 0;
         Disbursement[] storage temp = disbursements[msg.sender];
-        for (uint256 i = 0; i &lt; temp.length; i++) {
-            if (block.timestamp &gt; temp[i].timestamp) {
+        for (uint256 i = 0; i < temp.length; i++) {
+            if (block.timestamp > temp[i].timestamp) {
                 maxTokens = SafeMath.add(maxTokens, temp[i].tokens);
             }
         }
@@ -667,12 +667,12 @@ contract Sale is Ownable, TimedStateMachine {
     event LogDisbursement(address indexed beneficiary, uint256 tokens);
 
     // Stages for the state machine
-    bytes32 public constant SETUP = &quot;setup&quot;;
-    bytes32 public constant SETUP_DONE = &quot;setupDone&quot;;
-    bytes32 public constant SALE_IN_PROGRESS = &quot;saleInProgress&quot;;
-    bytes32 public constant SALE_ENDED = &quot;saleEnded&quot;;
+    bytes32 public constant SETUP = "setup";
+    bytes32 public constant SETUP_DONE = "setupDone";
+    bytes32 public constant SALE_IN_PROGRESS = "saleInProgress";
+    bytes32 public constant SALE_ENDED = "saleEnded";
 
-    mapping(address =&gt; uint256) public contributions;
+    mapping(address => uint256) public contributions;
 
     uint256 public weiContributed = 0;
     uint256 public contributionCap;
@@ -714,7 +714,7 @@ contract Sale is Ownable, TimedStateMachine {
         onlyOwner 
         checkAllowed
     {
-        // require(_startTime &lt; getStageStartTime(SALE_ENDED));
+        // require(_startTime < getStageStartTime(SALE_ENDED));
         setStageStartTime(SALE_IN_PROGRESS, timestamp);
     }
 
@@ -725,7 +725,7 @@ contract Sale is Ownable, TimedStateMachine {
         onlyOwner 
         checkAllowed
     {
-        require(getStageStartTime(SALE_IN_PROGRESS) &lt; timestamp);
+        require(getStageStartTime(SALE_IN_PROGRESS) < timestamp);
         setStageStartTime(SALE_ENDED, timestamp);
     }
 
@@ -737,8 +737,8 @@ contract Sale is Ownable, TimedStateMachine {
     {
         uint256 _startTime = getStageStartTime(SALE_IN_PROGRESS);
         uint256 _endTime = getStageStartTime(SALE_ENDED);
-        require(block.timestamp &lt; _startTime);
-        require(_startTime &lt; _endTime);
+        require(block.timestamp < _startTime);
+        require(_startTime < _endTime);
 
         state.goToNextStage();
     }
@@ -749,24 +749,24 @@ contract Sale is Ownable, TimedStateMachine {
         payable
         checkAllowed 
     {
-        require(msg.value &gt; 0);   
+        require(msg.value > 0);   
 
         uint256 contributionLimit = getContributionLimit(msg.sender);
-        require(contributionLimit &gt; 0);
+        require(contributionLimit > 0);
 
         // Check that the user is allowed to contribute
         uint256 totalContribution = contributions[msg.sender].add(msg.value);
         uint256 excess = 0;
 
         // Check if it goes over the eth cap for the sale.
-        if (weiContributed.add(msg.value) &gt; contributionCap) {
+        if (weiContributed.add(msg.value) > contributionCap) {
             // Subtract the excess
             excess = weiContributed.add(msg.value).sub(contributionCap);
             totalContribution = totalContribution.sub(excess);
         }
 
         // Check if it goes over the contribution limit of the user. 
-        if (totalContribution &gt; contributionLimit) {
+        if (totalContribution > contributionLimit) {
             excess = excess.add(totalContribution).sub(contributionLimit);
             contributions[msg.sender] = contributionLimit;
         } else {
@@ -774,17 +774,17 @@ contract Sale is Ownable, TimedStateMachine {
         }
 
         // We are only able to refund up to msg.value because the contract will not contain ether
-        excess = excess &lt; msg.value ? excess : msg.value;
+        excess = excess < msg.value ? excess : msg.value;
 
         weiContributed = weiContributed.add(msg.value).sub(excess);
 
-        if (excess &gt; 0) {
+        if (excess > 0) {
             msg.sender.transfer(excess);
         }
 
         wallet.transfer(this.balance);
 
-        assert(contributions[msg.sender] &lt;= contributionLimit);
+        assert(contributions[msg.sender] <= contributionLimit);
         LogContribution(msg.sender, msg.value, excess);
     }
 
@@ -833,7 +833,7 @@ contract Sale is Ownable, TimedStateMachine {
     /// @dev Stage start conditions.
     function startConditions(bytes32 stageId) internal constant returns (bool) {
         // If the cap has been reached, end the sale.
-        if (stageId == SALE_ENDED &amp;&amp; contributionCap == weiContributed) {
+        if (stageId == SALE_ENDED && contributionCap == weiContributed) {
             return true;
         }
         return super.startConditions(stageId);
@@ -865,7 +865,7 @@ contract PryzeSale is Sale, Whitelistable {
     uint256 public presaleWeiContributed = 0;
     uint256 private weiAllocated = 0;
 
-    mapping(address =&gt; uint256) public presaleContributions;
+    mapping(address => uint256) public presaleContributions;
 
     function PryzeSale(
         address _wallet
@@ -888,7 +888,7 @@ contract PryzeSale is Sale, Whitelistable {
             presaleWeiContributed = presaleWeiContributed.sub(presaleContributions[_contributor]);
         } 
         presaleWeiContributed = presaleWeiContributed.add(_amount);
-        require(presaleWeiContributed &lt;= PRESALE_WEI);
+        require(presaleWeiContributed <= PRESALE_WEI);
         presaleContributions[_contributor] = _amount;
     }
 

@@ -8,20 +8,20 @@ contract SafeMath{
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 	
 	function safeSub(uint a, uint b) internal returns (uint) {
-    	assert(b &lt;= a);
+    	assert(b <= a);
     	return a - b;
   }
 
 	function safeAdd(uint a, uint b) internal returns (uint) {
     	uint c = a + b;
-    	assert(c &gt;= a);
+    	assert(c >= a);
     	return c;
   }
 	function assert(bool assertion) internal {
@@ -50,10 +50,10 @@ contract ERC20{
 contract Xtremcoin is ERC20, SafeMath{
 
 	
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
-	string 	public name = &quot;Xtremcoin&quot;;
-	string 	public symbol = &quot;XTR&quot;;
+	string 	public name = "Xtremcoin";
+	string 	public symbol = "XTR";
 	uint 	public decimals = 8;
 	uint256 public CIR_SUPPLY;
 	uint256 public totalSupply;
@@ -78,23 +78,23 @@ contract Xtremcoin is ERC20, SafeMath{
     
 	function transfer(address _to, uint256 _value) returns (bool success){
 	    require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[msg.sender] &gt; _value);                // Check if the sender has enough
-        require (safeAdd(balances[_to], _value) &gt; balances[_to]); // Check for overflows
+        require (balances[msg.sender] > _value);                // Check if the sender has enough
+        require (safeAdd(balances[_to], _value) > balances[_to]); // Check for overflows
 	    balances[msg.sender] = safeSub(balances[msg.sender], _value);
 	    balances[_to] = safeAdd(balances[_to], _value);
 	    Transfer(msg.sender, _to, _value);
 	    return true;
 	}
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 	    var _allowance = allowed[_from][msg.sender];
-	    require (_value &lt; _allowance);
+	    require (_value < _allowance);
 	    
 	    require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[msg.sender] &gt; _value);                // Check if the sender has enough
-        require (safeAdd(balances[_to], _value) &gt; balances[_to]); // Check for overflows
+        require (balances[msg.sender] > _value);                // Check if the sender has enough
+        require (safeAdd(balances[_to], _value) > balances[_to]); // Check for overflows
 	    balances[_to] = safeAdd(balances[_to], _value);
 	    balances[_from] = safeSub(balances[_from], _value);
 	    allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -114,7 +114,7 @@ contract Xtremcoin is ERC20, SafeMath{
 
 
 	modifier during_offering_time(){
-		if (now &lt; startTime || now &gt;= endTime){
+		if (now < startTime || now >= endTime){
 			throw;
 		}else{
 			_;
@@ -130,7 +130,7 @@ contract Xtremcoin is ERC20, SafeMath{
 		  throw;
 		}
 		uint tokens = safeDiv(safeMul(msg.value, price), 1 ether);
-        if(safeSub(balances[owner],tokens)&gt;safeSub(totalSupply, CIR_SUPPLY)){
+        if(safeSub(balances[owner],tokens)>safeSub(totalSupply, CIR_SUPPLY)){
             balances[owner] = safeSub(balances[owner], tokens);
 		    balances[recipient] = safeAdd(balances[recipient], tokens);   
         }else{

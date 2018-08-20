@@ -82,26 +82,26 @@ contract DSNote {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -120,10 +120,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -178,8 +178,8 @@ contract ERC20 {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint supply) public {
         _balances[msg.sender] = supply;
@@ -268,7 +268,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         stoppable
         returns (bool)
     {
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -302,7 +302,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         Mint(guy, wad);
     }
     function burn(address guy, uint wad) public auth stoppable {
-        if (guy != msg.sender &amp;&amp; _approvals[guy][msg.sender] != uint(-1)) {
+        if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -312,7 +312,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     // Optional token name
-    string  name = &quot;&quot;;
+    string  name = "";
 
     function setName(string name_) public auth {
         name = name_;
@@ -337,7 +337,7 @@ contract DSProxy is DSAuth, DSNote {
     {
         target = cache.read(_code);
         if (target == 0x0) {
-            // deploy contract &amp; store its address in cache
+            // deploy contract & store its address in cache
             target = cache.write(_code);
         }
 
@@ -383,7 +383,7 @@ contract DSProxy is DSAuth, DSNote {
 // Deployed proxy addresses are logged
 contract DSProxyFactory {
     event Created(address indexed sender, address proxy, address cache);
-    mapping(address=&gt;bool) public isProxy;
+    mapping(address=>bool) public isProxy;
     DSProxyCache public cache = new DSProxyCache();
 
     // deploys a new proxy instance
@@ -409,10 +409,10 @@ contract DSProxyFactory {
 
 // By default, all proxies deployed from the same factory store
 // contracts in the same cache. The cache a proxy instance uses can be
-// changed.  The cache uses the sha3 hash of a contract&#39;s bytecode to
+// changed.  The cache uses the sha3 hash of a contract's bytecode to
 // lookup the address
 contract DSProxyCache {
-    mapping(bytes32 =&gt; address) cache;
+    mapping(bytes32 => address) cache;
 
     function read(bytes _code) public view returns (address) {
         bytes32 hash = keccak256(_code);
@@ -573,7 +573,7 @@ contract WETH is ERC20 {
 }
 
 /**
-    A contract to help creating creating CDPs in MakerDAO&#39;s system
+    A contract to help creating creating CDPs in MakerDAO's system
     The motivation for this is simply to save time and automate some steps for people who
     want to create CDPs often
 */
@@ -599,7 +599,7 @@ contract CDPer is DSStop, DSMath {
     DSValue public feed = DSValue(0xA944bd4b25C9F186A846fd5668941AA3d3B8425F);  // Price feed
     OtcInterface public otc = OtcInterface(0x8cf1Cab422A0b6b554077A361f8419cDf122a9F9);
 
-    ///You won&#39;t be able to create a CDP or trade less than these values
+    ///You won't be able to create a CDP or trade less than these values
     uint public minETH = WAD / 20; //0.05 ETH
     uint public minDai = WAD * 50; //50 Dai
 
@@ -642,11 +642,11 @@ contract CDPer is DSStop, DSMath {
 
      /**
      @notice create a CDP and join with the ETH sent to this function
-     @dev This function wraps ETH, converts to PETH, creates a CDP, joins with the PETH created and gives the CDP to the sender. Will revert if there&#39;s not enough WETH to buy with the acceptable slippage
+     @dev This function wraps ETH, converts to PETH, creates a CDP, joins with the PETH created and gives the CDP to the sender. Will revert if there's not enough WETH to buy with the acceptable slippage
      */
     function createAndJoinCDP() public stoppable payable returns(bytes32 id) {
 
-        require(msg.value &gt;= minETH);
+        require(msg.value >= minETH);
 
         gem.deposit.value(msg.value)();
         
@@ -656,20 +656,20 @@ contract CDPer is DSStop, DSMath {
     }
 
     /**
-     @notice create a CDP from all the Dai in the sender&#39;s balance - needs Dai transfer approval
-     @dev this function will sell the Dai at otc for weth and then do the same as create and JoinCDP.  Will revert if there&#39;s not enough WETH to buy with the acceptable slippage
+     @notice create a CDP from all the Dai in the sender's balance - needs Dai transfer approval
+     @dev this function will sell the Dai at otc for weth and then do the same as create and JoinCDP.  Will revert if there's not enough WETH to buy with the acceptable slippage
      */
     function createAndJoinCDPAllDai() public returns(bytes32 id) {
         return createAndJoinCDPDai(dai.balanceOf(msg.sender));
     }
 
     /**
-     @notice create a CDP from the given amount of Dai in the sender&#39;s balance - needs Dai transfer approval
-     @dev this function will sell the Dai at otc for weth and then do the same as create and JoinCDP.  Will revert if there&#39;s not enough WETH to buy with the acceptable slippage
-     @param amount - dai to transfer from the sender&#39;s balance (needs approval)
+     @notice create a CDP from the given amount of Dai in the sender's balance - needs Dai transfer approval
+     @dev this function will sell the Dai at otc for weth and then do the same as create and JoinCDP.  Will revert if there's not enough WETH to buy with the acceptable slippage
+     @param amount - dai to transfer from the sender's balance (needs approval)
      */
     function createAndJoinCDPDai(uint amount) public auth stoppable returns(bytes32 id) {
-        require(amount &gt;= minDai);
+        require(amount >= minDai);
 
         uint price = uint(feed.read());
 
@@ -689,7 +689,7 @@ contract CDPer is DSStop, DSMath {
      @dev same as openAndJoinCDP, but then draw and reinvest dai. Will revert if trades are not possible.
      */
     function createCDPLeveraged() public auth stoppable payable returns(bytes32 id) {
-        require(msg.value &gt;= minETH);
+        require(msg.value >= minETH);
 
         uint price = uint(feed.read());
 
@@ -703,7 +703,7 @@ contract CDPer is DSStop, DSMath {
     }
 
     /**
-     @notice create a CDP all the Dai in the sender&#39;s balance (needs approval), and then create Dai and reinvest it in the CDP until the target liquidation price is reached (or the minimum investment amount)
+     @notice create a CDP all the Dai in the sender's balance (needs approval), and then create Dai and reinvest it in the CDP until the target liquidation price is reached (or the minimum investment amount)
      @dev same as openAndJoinCDPDai, but then draw and reinvest dai. Will revert if trades are not possible.
      */
     function createCDPLeveragedAllDai() public returns(bytes32 id) {
@@ -711,12 +711,12 @@ contract CDPer is DSStop, DSMath {
     }
     
     /**
-     @notice create a CDP the given amount of Dai in the sender&#39;s balance (needs approval), and then create Dai and reinvest it in the CDP until the target liquidation price is reached (or the minimum investment amount)
+     @notice create a CDP the given amount of Dai in the sender's balance (needs approval), and then create Dai and reinvest it in the CDP until the target liquidation price is reached (or the minimum investment amount)
      @dev same as openAndJoinCDPDai, but then draw and reinvest dai. Will revert if trades are not possible.
      */
     function createCDPLeveragedDai(uint amount) public auth stoppable returns(bytes32 id) {
 
-        require(amount &gt;= minDai);
+        require(amount >= minDai);
 
         uint price = uint(feed.read());
 
@@ -733,13 +733,13 @@ contract CDPer is DSStop, DSMath {
 
     /**
      @notice Shuts a CDP and returns the value in the form of ETH. You need to give permission for the amount of debt in Dai, so that the contract will draw it from your account. You need to give the CDP to this contract before using this function. You also need to send a small amount of MKR to this contract so that the fee can be paid.
-     @dev this function pays all debt(from the sender&#39;s account) and fees(there must be enough MKR present on this account), then it converts PETH to WETH, and then WETH to ETH, finally it sends the balance to the sender
+     @dev this function pays all debt(from the sender's account) and fees(there must be enough MKR present on this account), then it converts PETH to WETH, and then WETH to ETH, finally it sends the balance to the sender
      @param _id id of the CDP to shut - it must be given to this contract
      */
     function shutForETH(uint _id) public auth stoppable {
         bytes32 id = bytes32(_id);
         uint debt = tub.tab(id);
-        if (debt &gt; 0) {
+        if (debt > 0) {
             require(dai.transferFrom(msg.sender, this, debt));
         }
         uint ink = tub.ink(id);// locked collateral
@@ -754,13 +754,13 @@ contract CDPer is DSStop, DSMath {
 
     /**
      @notice shuts the CDP and returns all the value in the form of Dai. You need to give permission for the amount of debt in Dai, so that the contract will draw it from your account. You need to give the CDP to this contract before using this function. You also need to send a small amount of MKR to this contract so that the fee can be paid.
-     @dev this function pays all debt(from the sender&#39;s account) and fees(there must be enough MKR present on this account), then it converts PETH to WETH, then trades WETH for Dai, and sends it to the sender
+     @dev this function pays all debt(from the sender's account) and fees(there must be enough MKR present on this account), then it converts PETH to WETH, then trades WETH for Dai, and sends it to the sender
      @param _id id of the CDP to shut - it must be given to this contract
      */
     function shutForDai(uint _id) public auth stoppable {
         bytes32 id = bytes32(_id);
         uint debt = tub.tab(id);
-        if (debt &gt; 0) {
+        if (debt > 0) {
             require(dai.transferFrom(msg.sender, this, debt));
         }
         uint ink = tub.ink(id);// locked collateral
@@ -812,7 +812,7 @@ contract CDPer is DSStop, DSMath {
      @param slip E.g: 0.01 * 10^18 == 1% acceptable slippage 
      */
     function setSlippage(uint slip) public auth {
-        require(slip &lt; WAD);
+        require(slip < WAD);
         slippage = slip;
     }
 
@@ -889,13 +889,13 @@ contract CDPer is DSStop, DSMath {
         
         uint maxInvest = wdiv(wmul(liquidationPriceWad, ink), ratio);
         
-        if(debt &gt;= maxInvest) {
+        if(debt >= maxInvest) {
             return false;
         }
         
         uint leftOver = sub(maxInvest, debt);
         
-        if(leftOver &gt;= minDai) {
+        if(leftOver >= minDai) {
             tub.draw(id, leftOver);
 
             uint bought = otc.sellAllAmount(dai, min(leftOver, dai.balanceOf(this)),
@@ -913,7 +913,7 @@ contract CDPer is DSStop, DSMath {
 
 contract CDPerFactory {
     event Created(address indexed sender, address cdper);
-    mapping(address=&gt;bool) public isCDPer;
+    mapping(address=>bool) public isCDPer;
 
     // deploys a new CDPer instance
     // sets owner of CDPer to caller

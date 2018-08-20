@@ -20,8 +20,8 @@ uint256 public totalSupply;
 uint public decimals;
 string public symbol;
 string public name;
-mapping (address =&gt; mapping (address =&gt; uint256)) approach;
-mapping (address =&gt; uint256) holders;
+mapping (address => mapping (address => uint256)) approach;
+mapping (address => uint256) holders;
 //***************************** REVERT IF ETHEREUM SEND ************************
 function () public {
 revert();
@@ -34,33 +34,33 @@ return holders[_own];
 //***************************** TRANSFER TOKENS FROM YOUR ACCOUNT **************
 function transfer(address _to, uint256 _val)
 public returns (bool) {
-require(holders[msg.sender] &gt;= _val);
+require(holders[msg.sender] >= _val);
 require(msg.sender != _to);
-assert(_val &lt;= holders[msg.sender]);
+assert(_val <= holders[msg.sender]);
 holders[msg.sender] = holders[msg.sender] - _val;
 holders[_to] = holders[_to] + _val;
-assert(holders[_to] &gt;= _val);
+assert(holders[_to] >= _val);
 emit Transfer(msg.sender, _to, _val);
 return true;
 }
 //**************************** TRANSFER TOKENS FROM ANOTHER ACCOUNT ************
 function transferFrom(address _from, address _to, uint256 _val)
 public returns (bool) {
-require(holders[_from] &gt;= _val);
-require(approach[_from][msg.sender] &gt;= _val);
-assert(_val &lt;= holders[_from]);
+require(holders[_from] >= _val);
+require(approach[_from][msg.sender] >= _val);
+assert(_val <= holders[_from]);
 holders[_from] = holders[_from] - _val;
-assert(_val &lt;= approach[_from][msg.sender]);
+assert(_val <= approach[_from][msg.sender]);
 approach[_from][msg.sender] = approach[_from][msg.sender] - _val;
 holders[_to] = holders[_to] + _val;
-assert(holders[_to] &gt;= _val);
+assert(holders[_to] >= _val);
 emit Transfer(_from, _to, _val);
 return true;
 }
 //***************************** APPROVE TOKENS TO SEND *************************
 function approve(address _spender, uint256 _val)
 public returns (bool) {
-require(holders[msg.sender] &gt;= _val);
+require(holders[msg.sender] >= _val);
 approach[msg.sender][_spender] = _val;
 emit Approval(msg.sender, _spender, _val);
 return true;
@@ -72,8 +72,8 @@ return approach[_owner][_spender];
 }
 //***************************** CONSTRUCTOR CONTRACT ***************************
 constructor() public {
-symbol = &quot;VEST&quot;;
-name = &quot;Vestchain&quot;;
+symbol = "VEST";
+name = "Vestchain";
 decimals = 8;
 totalSupply = 884800000000000000;
 holders[msg.sender] = totalSupply;

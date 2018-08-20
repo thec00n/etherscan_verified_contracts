@@ -13,9 +13,9 @@ library SafeMath {
 
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -23,7 +23,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,17 +98,17 @@ library DateTime {
                 secondsAccountedFor += YEAR_IN_SECONDS * (dt.year - ORIGIN_YEAR - buf);
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
                         secondsAccountedFor += secondsInMonth;
                 }
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -132,7 +132,7 @@ library DateTime {
                 numLeapYears = leapYearsBefore(year) - leapYearsBefore(ORIGIN_YEAR);
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -164,7 +164,7 @@ library DateTime {
         function toTimestamp(uint16 year, uint8 month, uint8 day, uint8 hour, uint8 minute, uint8 second) constant returns (uint timestamp) {
                 uint16 i;
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -191,7 +191,7 @@ library DateTime {
                 monthDayCounts[9] = 31;
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
                 // Day
@@ -223,7 +223,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
     uint8 public decimals = 18;
     uint public allSupply = 54000000 ;    // 90000000 * 0.6
@@ -244,7 +244,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -263,8 +263,8 @@ contract NBToken is ERC20, BasicToken {
 
   using DateTime for uint256;
 
-  string public name = &quot;NineBlock&quot;;
-  string public symbol = &quot;NB&quot;;
+  string public name = "NineBlock";
+  string public symbol = "NB";
 
   address owner;
 
@@ -277,7 +277,7 @@ contract NBToken is ERC20, BasicToken {
       uint256 releasedTime; // release time
   }
 
-  mapping (uint =&gt; ReleaseRecord) public releasedRecords;
+  mapping (uint => ReleaseRecord) public releasedRecords;
   uint public releasedRecordsCount = 0;
 
     constructor() public {
@@ -298,12 +298,12 @@ contract NBToken is ERC20, BasicToken {
   }
 
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -334,7 +334,7 @@ contract NBToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -350,7 +350,7 @@ contract NBToken is ERC20, BasicToken {
 
   // 如果有哪天遗漏了，可以调用这个方法
   function releaseSupply(uint256 timestamp) public onlyOwner returns(uint256 _actualRelease) {
-      require(timestamp &gt;= createTime &amp;&amp; timestamp &lt;= now);
+      require(timestamp >= createTime && timestamp <= now);
       require(!judgeReleaseRecordExist(timestamp));
 
       uint award = updateAward(timestamp);
@@ -366,11 +366,11 @@ contract NBToken is ERC20, BasicToken {
 
   function judgeReleaseRecordExist(uint256 timestamp) internal returns(bool _exist) {
       bool exist = false;
-      if (releasedRecordsCount &gt; 0) {
-          for (uint index = 0; index &lt; releasedRecordsCount; index++) {
+      if (releasedRecordsCount > 0) {
+          for (uint index = 0; index < releasedRecordsCount; index++) {
               if ((releasedRecords[index].releasedTime.parseTimestamp().year == timestamp.parseTimestamp().year)
-                  &amp;&amp; (releasedRecords[index].releasedTime.parseTimestamp().month == timestamp.parseTimestamp().month)
-                  &amp;&amp; (releasedRecords[index].releasedTime.parseTimestamp().day == timestamp.parseTimestamp().day)) {
+                  && (releasedRecords[index].releasedTime.parseTimestamp().month == timestamp.parseTimestamp().month)
+                  && (releasedRecords[index].releasedTime.parseTimestamp().day == timestamp.parseTimestamp().day)) {
                   exist = true;
               }
           }

@@ -15,7 +15,7 @@ contract StudioCrowdsale {
     uint public price;
     token public tokenReward;
     
-    mapping(address =&gt; uint256) public contributions;
+    mapping(address => uint256) public contributions;
     bool crowdSaleStart;
     bool crowdSalePause;
     bool crowdSaleClosed;
@@ -40,17 +40,17 @@ contract StudioCrowdsale {
     function () payable {
         require(!crowdSaleClosed);
         require(!crowdSalePause);
-        if ( crowdSaleStart) require( now &lt; deadline );
-        if ( !crowdSaleStart &amp;&amp; tokensSold &gt; 250000000000000 ) throw;
+        if ( crowdSaleStart) require( now < deadline );
+        if ( !crowdSaleStart && tokensSold > 250000000000000 ) throw;
         uint amount = msg.value;
         contributions[msg.sender] += amount;
         amountRaised += amount;
         tokensSold += amount / price;
         
-        if (tokensSold &gt;  250000000000000 &amp;&amp; tokensSold  &lt;=  850000000000000 ) { price = .00000000003333333 ether; }
-        if (tokensSold &gt;  850000000000000 &amp;&amp; tokensSold  &lt;= 1350000000000000 ) { price = .00000000003636363 ether; }
-        if (tokensSold &gt; 1350000000000000 &amp;&amp; tokensSold &lt;=  1850000000000000 ) { price = .00000000004444444 ether; }
-        if (tokensSold &gt; 1850000000000000 ) { price = .00000000005 ether; }
+        if (tokensSold >  250000000000000 && tokensSold  <=  850000000000000 ) { price = .00000000003333333 ether; }
+        if (tokensSold >  850000000000000 && tokensSold  <= 1350000000000000 ) { price = .00000000003636363 ether; }
+        if (tokensSold > 1350000000000000 && tokensSold <=  1850000000000000 ) { price = .00000000004444444 ether; }
+        if (tokensSold > 1850000000000000 ) { price = .00000000005 ether; }
         
         tokenReward.transfer(msg.sender, amount / price);
         FundTransfer(msg.sender, amount );

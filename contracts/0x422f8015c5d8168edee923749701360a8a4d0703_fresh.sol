@@ -26,13 +26,13 @@ contract fresh {
   }
   
   function enter() {
-    if (msg.value &lt; 1 ether) {
+    if (msg.value < 1 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 20 ether) {
+		if (msg.value > 20 ether) {
 			msg.sender.send(msg.value - 20 ether);	
 			amount = 20 ether;
     }
@@ -58,7 +58,7 @@ contract fresh {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 200) {
+    while (balance > persons[payoutIdx].amount / 100 * 200) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 200;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

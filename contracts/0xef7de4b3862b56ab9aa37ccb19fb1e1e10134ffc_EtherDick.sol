@@ -2,7 +2,7 @@ pragma solidity ^0.4.17;
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions, this simplifies
-/// and the implementation of &quot;user permissions&quot;.
+/// and the implementation of "user permissions".
 contract Ownable {
     address public owner;
     address public newOwnerCandidate;
@@ -72,8 +72,8 @@ contract EtherDick is Ownable {
 
     function EtherDick() public {
         biggestDicks.push(BiggestDick({
-            name:       &#39;Brian&#39;,
-            notes:      &#39;First dick&#39;,
+            name:       'Brian',
+            notes:      'First dick',
             size:      9,
             timestamp:  block.timestamp,
             who:        address(0)
@@ -87,10 +87,10 @@ contract EtherDick is Ownable {
         uint notesLen = bytes(notes).length;
 
         require(msg.sender != address(0));
-        require(nameLen &gt; 2);
-        require(nameLen &lt;= 64);
-        require(notesLen &lt;= 140);
-        require(msg.value &gt; biggestDicks[biggestDicks.length - 1].size);
+        require(nameLen > 2);
+        require(nameLen <= 64);
+        require(notesLen <= 140);
+        require(msg.value > biggestDicks[biggestDicks.length - 1].size);
 
         BiggestDick memory bd = BiggestDick({
             name:       name,

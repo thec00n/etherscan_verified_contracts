@@ -46,10 +46,10 @@ contract ApproveAndCallFallBack {
 
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -78,10 +78,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -159,7 +159,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -178,15 +178,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -202,7 +202,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -211,7 +211,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -297,7 +297,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -322,7 +322,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -384,9 +384,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -401,9 +401,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -434,16 +434,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -459,7 +459,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -478,15 +478,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -538,9 +538,9 @@ contract CND is MiniMeToken {
       _tokenFactory,
       0x0,                      // no parent token
       0,                        // no snapshot block number from parent
-      &quot;Cindicator Token&quot;,   // Token name
+      "Cindicator Token",   // Token name
       18,                       // Decimals
-      &quot;CND&quot;,                    // Symbol
+      "CND",                    // Symbol
       true                      // Enable transfers
     ) 
     {}
@@ -593,20 +593,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -620,7 +620,7 @@ contract Contribution is Controlled, TokenController {
     uint256 contributedAmount;
   }
 
-  mapping(address =&gt; WhitelistedInvestor) investors;
+  mapping(address => WhitelistedInvestor) investors;
   Tier[4] public tiers;
   uint256 public tierCount;
 
@@ -661,8 +661,8 @@ contract Contribution is Controlled, TokenController {
   /// @return False if the contribuion is closed
   function contributionOpen() public constant returns(bool) {
     Tier tier = tiers[tierCount];
-    return (getBlockTimestamp() &gt;= tier.startTime() &amp;&amp; 
-           getBlockTimestamp() &lt;= tier.endTime() &amp;&amp;
+    return (getBlockTimestamp() >= tier.startTime() && 
+           getBlockTimestamp() <= tier.endTime() &&
            tier.finalizedTime() == 0);
   }
 
@@ -701,7 +701,7 @@ contract Contribution is Controlled, TokenController {
     Tier tier = Tier(_tierAddress);
     assert(tier.controller() == address(this));
     //cannot be more than 4 tiers
-    require(_tierNumber &gt;= 0 &amp;&amp; _tierNumber &lt;= 3);
+    require(_tierNumber >= 0 && _tierNumber <= 3);
     assert(tier.IS_TIER_CONTRACT_MAGIC_NUMBER() == 0x1337);
     // check if tier is not defined
     assert(tiers[_tierNumber] == address(0));
@@ -729,14 +729,14 @@ contract Contribution is Controlled, TokenController {
   /// @return number of tokens 
   function isWhitelisted(address _investor, uint256 _tier) public constant returns(bool) {
     WhitelistedInvestor memory investor = investors[_investor];
-    return (investor.tier &lt;= _tier &amp;&amp; investor.status);
+    return (investor.tier <= _tier && investor.status);
   }
   /// @notice interface for founders to whitelist investors
   /// @param _addresses array of investors
   /// @param _tier tier Number
   /// @param _status enable or disable
   function whitelistAddresses(address[] _addresses, uint256 _tier, bool _status) public onlyController {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
         address investorAddress = _addresses[i];
         require(investors[investorAddress].contributedAmount == 0);
         investors[investorAddress] = WhitelistedInvestor(_tier, _status, 0);
@@ -764,14 +764,14 @@ contract Contribution is Controlled, TokenController {
   ///  controller to react if desired
   /// @return False if the controller does not authorize the transfer
   function onTransfer(address /* _from */, address /* _to */, uint256 /* _amount */) returns(bool) {
-    return (transferable || getBlockTimestamp() &gt;= October12_2017 );
+    return (transferable || getBlockTimestamp() >= October12_2017 );
   } 
 
   /// @notice Notifies the controller about an approval allowing the
   ///  controller to react if desired
   /// @return False if the controller does not authorize the approval
   function onApprove(address /* _owner */, address /* _spender */, uint /* _amount */) returns(bool) {
-    return (transferable || getBlockTimestamp() &gt;= October12_2017);
+    return (transferable || getBlockTimestamp() >= October12_2017);
   }
   /// @notice Allows founders to set transfers before October12_2017
   /// @param _transferable set True if founders want to let people make transfers
@@ -789,31 +789,31 @@ contract Contribution is Controlled, TokenController {
   /// @notice actual method that funds investor and contribution wallet
   function doBuy() internal {
     Tier tier = tiers[tierCount];
-    assert(msg.value &lt;= tier.maxInvestorCap());
+    assert(msg.value <= tier.maxInvestorCap());
     address caller = msg.sender;
     WhitelistedInvestor storage investor = investors[caller];
     uint256 investorTokenBP = investorAmountTokensToBuy(caller);
-    require(investorTokenBP &gt; 0);
+    require(investorTokenBP > 0);
 
     if(investor.contributedAmount == 0) {
-      assert(msg.value &gt;= tier.minInvestorCap());  
+      assert(msg.value >= tier.minInvestorCap());  
     }
 
     uint256 toFund = msg.value;  
     uint256 tokensGenerated = toFund.mul(tier.exchangeRate());
     // check that at least 1 token will be generated
-    require(tokensGenerated &gt;= 1);
+    require(tokensGenerated >= 1);
     uint256 tokensleftForSale = leftForSale();    
 
-    if(tokensleftForSale &gt; investorTokenBP ) {
-      if(tokensGenerated &gt; investorTokenBP) {
+    if(tokensleftForSale > investorTokenBP ) {
+      if(tokensGenerated > investorTokenBP) {
         tokensGenerated = investorTokenBP;
         toFund = investorTokenBP.div(tier.exchangeRate());
       }
     }
 
-    if(investorTokenBP &gt; tokensleftForSale) {
-      if(tokensGenerated &gt; tokensleftForSale) {
+    if(investorTokenBP > tokensleftForSale) {
+      if(tokensGenerated > tokensleftForSale) {
         tokensGenerated = tokensleftForSale;
         toFund = tokensleftForSale.div(tier.exchangeRate());
       }
@@ -833,7 +833,7 @@ contract Contribution is Controlled, TokenController {
     NewSale(caller, toFund, tokensGenerated);
 
     uint256 toReturn = msg.value.sub(toFund);
-    if (toReturn &gt; 0) {
+    if (toReturn > 0) {
       caller.transfer(toReturn);
       Refund(toReturn);
     }
@@ -858,8 +858,8 @@ contract Contribution is Controlled, TokenController {
   function finalize() public initialized {
     Tier tier = tiers[tierCount];
     assert(tier.finalizedTime() == 0);
-    assert(getBlockTimestamp() &gt;= tier.startTime());
-    assert(msg.sender == controller || getBlockTimestamp() &gt; tier.endTime() || isCurrentTierCapReached());
+    assert(getBlockTimestamp() >= tier.startTime());
+    assert(msg.sender == controller || getBlockTimestamp() > tier.endTime() || isCurrentTierCapReached());
 
     tier.finalize();
     tierCount++;
@@ -867,7 +867,7 @@ contract Contribution is Controlled, TokenController {
     FinalizedTier(tierCount, tier.finalizedTime());
   }
   /// @notice check if tier cap has reached
-  /// @return False if it&#39;s still open
+  /// @return False if it's still open
   function isCurrentTierCapReached() public constant returns(bool) {
     Tier tier = tiers[tierCount];
     return tier.isCapReached();
@@ -948,20 +948,20 @@ contract Tier is Controlled {
   )
   {
     require(initializedTime == 0);
-    assert(_startTime &gt;= getBlockTimestamp());
-    require(_startTime &lt; _endTime);
+    assert(_startTime >= getBlockTimestamp());
+    require(_startTime < _endTime);
     startTime = _startTime;
     endTime = _endTime;
 
-    require(_cap &gt; 0);
-    require(_cap &gt; _maxInvestorCap);
+    require(_cap > 0);
+    require(_cap > _maxInvestorCap);
     cap = _cap;
 
-    require(_minInvestorCap &lt; _maxInvestorCap &amp;&amp; _maxInvestorCap &gt; 0);
+    require(_minInvestorCap < _maxInvestorCap && _maxInvestorCap > 0);
     minInvestorCap = _minInvestorCap;
     maxInvestorCap = _maxInvestorCap;
 
-    require(_exchangeRate &gt; 0);
+    require(_exchangeRate > 0);
     exchangeRate = _exchangeRate;
 
     initializedTime = getBlockTimestamp();
@@ -979,7 +979,7 @@ contract Tier is Controlled {
   function finalize() public onlyController {
     require(finalizedTime == 0);
     uint256 currentTime = getBlockTimestamp();
-    assert(cap == totalInvestedWei || currentTime &gt; endTime || msg.sender == controller);
+    assert(cap == totalInvestedWei || currentTime > endTime || msg.sender == controller);
     finalizedTime = currentTime;
   }
 

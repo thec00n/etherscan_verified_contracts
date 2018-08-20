@@ -15,7 +15,7 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         assert(a == b * c);
         return c;
@@ -23,14 +23,14 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a - b;
-        assert(b &lt;= a);
+        assert(b <= a);
         assert(a == c + b);
         return c;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         assert(a == c - b);
         return c;
     }
@@ -81,7 +81,7 @@ contract StandardToken is Token {
     event NewTx(address indexed from, address indexed to, uint256 value);
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             NewTx(msg.sender, _to, _value);
@@ -91,7 +91,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -114,8 +114,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -132,15 +132,15 @@ contract MNPYToken is StandardToken {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;H1.0&#39;;
+    string public version = 'H1.0';
 
     function MNPYToken(
     ) {
         balances[msg.sender] = 25000000000000000000000000; // 25 million with 18 decimals
         totalSupply = 25000000000000000000000000; // 25 million with 18 decimals
-        name = &quot;MNPY&quot;;
+        name = "MNPY";
         decimals = 18;
-        symbol = &quot;MNPY&quot;;
+        symbol = "MNPY";
     }
 
     /* Approves and then calls the receiving contract */
@@ -148,10 +148,10 @@ contract MNPYToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

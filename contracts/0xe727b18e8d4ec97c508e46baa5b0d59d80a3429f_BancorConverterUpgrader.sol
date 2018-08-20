@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public view returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -40,7 +40,7 @@ contract IContractFeatures {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public view returns (string) {}
     function symbol() public view returns (string) {}
     function decimals() public view returns (uint8) {}
@@ -180,13 +180,13 @@ contract Owned is IOwned {
 */
 contract ContractIds {
     // generic
-    bytes32 public constant CONTRACT_FEATURES = &quot;ContractFeatures&quot;;
+    bytes32 public constant CONTRACT_FEATURES = "ContractFeatures";
 
     // bancor logic
-    bytes32 public constant BANCOR_NETWORK = &quot;BancorNetwork&quot;;
-    bytes32 public constant BANCOR_FORMULA = &quot;BancorFormula&quot;;
-    bytes32 public constant BANCOR_GAS_PRICE_LIMIT = &quot;BancorGasPriceLimit&quot;;
-    bytes32 public constant BANCOR_CONVERTER_FACTORY = &quot;BancorConverterFactory&quot;;
+    bytes32 public constant BANCOR_NETWORK = "BancorNetwork";
+    bytes32 public constant BANCOR_FORMULA = "BancorFormula";
+    bytes32 public constant BANCOR_GAS_PRICE_LIMIT = "BancorGasPriceLimit";
+    bytes32 public constant BANCOR_CONVERTER_FACTORY = "BancorConverterFactory";
 }
 
 /**
@@ -196,7 +196,7 @@ contract ContractIds {
 */
 contract FeatureIds {
     // converter features
-    uint256 public constant CONVERTER_CONVERSION_WHITELIST = 1 &lt;&lt; 0;
+    uint256 public constant CONVERTER_CONVERSION_WHITELIST = 1 << 0;
 }
 
 /*
@@ -211,7 +211,7 @@ contract FeatureIds {
     The address of the new converter is available in the ConverterUpgrade event.
 */
 contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
-    string public version = &#39;0.3&#39;;
+    string public version = '0.3';
 
     IContractRegistry public registry;                      // contract registry contract address
 
@@ -238,7 +238,7 @@ contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
 
     /**
         @dev upgrade an old converter to the latest version
-        will throw if ownership wasn&#39;t transferred to the upgrader before calling this function.
+        will throw if ownership wasn't transferred to the upgrader before calling this function.
         ownership of the new converter will be transferred back to the original owner.
         fires the ConverterUpgrade event upon success.
 
@@ -247,7 +247,7 @@ contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
     */
     function upgrade(IBancorConverterExtended _oldConverter, bytes32 _version) public {
         bool formerVersions = false;
-        if (_version == &quot;0.4&quot;)
+        if (_version == "0.4")
             formerVersions = true;
         acceptConverterOwnership(_oldConverter);
         IBancorConverterExtended newConverter = createConverter(_oldConverter);
@@ -339,7 +339,7 @@ contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
         bool isSet;
         uint16 connectorTokenCount = _isLegacyVersion ? _oldConverter.reserveTokenCount() : _oldConverter.connectorTokenCount();
 
-        for (uint16 i = 0; i &lt; connectorTokenCount; i++) {
+        for (uint16 i = 0; i < connectorTokenCount; i++) {
             address connectorAddress = _isLegacyVersion ? _oldConverter.reserveTokens(i) : _oldConverter.connectorTokens(i);
             (virtualBalance, weight, isVirtualBalanceEnabled, isPurchaseEnabled, isSet) = readConnector(
                 _oldConverter,
@@ -374,11 +374,11 @@ contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
     */
     function copyQuickBuyPath(IBancorConverterExtended _oldConverter, IBancorConverterExtended _newConverter) private {
         uint256 quickBuyPathLength = _oldConverter.getQuickBuyPathLength();
-        if (quickBuyPathLength &lt;= 0)
+        if (quickBuyPathLength <= 0)
             return;
 
         IERC20Token[] memory path = new IERC20Token[](quickBuyPathLength);
-        for (uint256 i = 0; i &lt; quickBuyPathLength; i++) {
+        for (uint256 i = 0; i < quickBuyPathLength; i++) {
             path[i] = _oldConverter.quickBuyPath(i);
         }
 
@@ -400,7 +400,7 @@ contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
         uint256 connectorBalance;
         uint16 connectorTokenCount = _isLegacyVersion ? _oldConverter.reserveTokenCount() : _oldConverter.connectorTokenCount();
 
-        for (uint16 i = 0; i &lt; connectorTokenCount; i++) {
+        for (uint16 i = 0; i < connectorTokenCount; i++) {
             address connectorAddress = _isLegacyVersion ? _oldConverter.reserveTokens(i) : _oldConverter.connectorTokens(i);
             IERC20Token connector = IERC20Token(connectorAddress);
             connectorBalance = connector.balanceOf(_oldConverter);
@@ -412,10 +412,10 @@ contract BancorConverterUpgrader is Owned, ContractIds, FeatureIds {
         @dev returns the connector settings
 
         @param _converter       old converter contract address
-        @param _address         connector&#39;s address to read from
+        @param _address         connector's address to read from
         @param _isLegacyVersion true if the converter version is under 0.5
 
-        @return connector&#39;s settings
+        @return connector's settings
     */
     function readConnector(IBancorConverterExtended _converter, address _address, bool _isLegacyVersion) 
         private

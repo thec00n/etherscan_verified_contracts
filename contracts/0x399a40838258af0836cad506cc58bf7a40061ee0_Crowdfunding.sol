@@ -114,8 +114,8 @@ contract Token is Object, ERC20 {
     uint8 public decimals;
     
     /* Token approvement system */
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowances;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowances;
  
     /**
      * @dev Get balance of plain address
@@ -151,7 +151,7 @@ contract Token is Object, ERC20 {
      * @return `true` when transfer done
      */
     function transfer(address _to, uint _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to]        += _value;
             Transfer(msg.sender, _to, _value);
@@ -170,9 +170,9 @@ contract Token is Object, ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         var avail = allowances[_from][msg.sender]
-                  &gt; balances[_from] ? balances[_from]
+                  > balances[_from] ? balances[_from]
                                     : allowances[_from][msg.sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowances[_from][msg.sender] -= _value;
             balances[_from] -= _value;
             balances[_to]   += _value;
@@ -214,7 +214,7 @@ contract TokenEmission is Token {
      */
     function emission(uint _value) onlyOwner {
         // Overflow check
-        if (_value + totalSupply &lt; totalSupply) throw;
+        if (_value + totalSupply < totalSupply) throw;
 
         totalSupply     += _value;
         balances[owner] += _value;
@@ -226,7 +226,7 @@ contract TokenEmission is Token {
      * @notice sender balance will be decreased by `_value`
      */
     function burn(uint _value) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             totalSupply      -= _value;
         }
@@ -294,7 +294,7 @@ contract Crowdfunding is Object, Recipient {
     /**
      * @dev Distribution of donations
      */
-    mapping(address =&gt; uint256) public donations;
+    mapping(address => uint256) public donations;
 
     /**
      * @dev Total funded value
@@ -343,7 +343,7 @@ contract Crowdfunding is Object, Recipient {
      * @return Bounty value
      */
     function bountyValue(uint256 _value, uint256 _block) constant returns (uint256) {
-        if (_block &lt; config.startBlock || _block &gt; config.stopBlock)
+        if (_block < config.startBlock || _block > config.stopBlock)
             return 0;
 
         var R = config.startRatio;
@@ -358,9 +358,9 @@ contract Crowdfunding is Object, Recipient {
      * @dev Crowdfunding running checks
      */
     modifier onlyRunning {
-        bool isRunning = totalFunded + msg.value  &lt; config.maxValue
-                      &amp;&amp; block.number &gt; config.startBlock
-                      &amp;&amp; block.number &lt; config.stopBlock;
+        bool isRunning = totalFunded + msg.value  < config.maxValue
+                      && block.number > config.startBlock
+                      && block.number < config.stopBlock;
         if (!isRunning) throw;
         _;
     }
@@ -369,8 +369,8 @@ contract Crowdfunding is Object, Recipient {
      * @dev Crowdfundung failure checks
      */
     modifier onlyFailure {
-        bool isFailure = totalFunded  &lt; config.minValue
-                      &amp;&amp; block.number &gt; config.stopBlock;
+        bool isFailure = totalFunded  < config.minValue
+                      && block.number > config.stopBlock;
         if (!isFailure) throw;
         _;
     }
@@ -379,8 +379,8 @@ contract Crowdfunding is Object, Recipient {
      * @dev Crowdfunding success checks
      */
     modifier onlySuccess {
-        bool isSuccess = totalFunded &gt;= config.minValue
-                      &amp;&amp; block.number &gt; config.stopBlock;
+        bool isSuccess = totalFunded >= config.minValue
+                      && block.number > config.stopBlock;
         if (!isSuccess) throw;
         _;
     }

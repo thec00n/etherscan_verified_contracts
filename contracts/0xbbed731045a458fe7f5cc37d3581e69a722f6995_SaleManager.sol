@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -105,7 +105,7 @@ contract Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -118,7 +118,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -159,13 +159,13 @@ library Roles {
  * @dev See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -242,7 +242,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -259,16 +259,16 @@ contract RBAC {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * @dev This simplifies the implementation of &quot;user permissions&quot;.
+ * @dev This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable, RBAC {
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
 
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     checkRole(msg.sender, ROLE_WHITELISTED);
@@ -309,7 +309,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       addAddressToWhitelist(addrs[i]);
     }
   }
@@ -318,7 +318,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param addr address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address addr)
     onlyOwner
@@ -332,13 +332,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param addrs addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] addrs)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       removeAddressFromWhitelist(addrs[i]);
     }
   }
@@ -458,14 +458,14 @@ contract PresaleSecond is Ownable {
         require(_whitelist != address(0));
 
         List = Whitelist(_whitelist);
-        emit Change(_whitelist, &quot;whitelist&quot;);
+        emit Change(_whitelist, "whitelist");
     }
 
     function setDistributor(address _distributor) external onlyOwner {
         require(_distributor != address(0));
 
         distributor = _distributor;
-        emit Change(_distributor, &quot;distributor&quot;);
+        emit Change(_distributor, "distributor");
 
     }
 
@@ -473,7 +473,7 @@ contract PresaleSecond is Ownable {
         require(_wallet != address(0));
 
         wallet = _wallet;
-        emit Change(_wallet, &quot;wallet&quot;);
+        emit Change(_wallet, "wallet");
     }
 
 //  sale controller
@@ -505,18 +505,18 @@ contract PresaleSecond is Ownable {
 //  collect eth
     event Purchase(address indexed _buyer, uint256 _purchased, uint256 _refund, uint256 _tokens);
 
-    mapping (address =&gt; uint256) public buyers;
+    mapping (address => uint256) public buyers;
 
     function collect() public payable {
         address buyer = msg.sender;
         uint256 amount = msg.value;
 
-        require(ignited &amp;&amp; !paused);
+        require(ignited && !paused);
         require(List.whitelist(buyer));
         require(buyer != address(0));
-        require(buyers[buyer].add(amount) &gt;= minimum);
-        require(buyers[buyer] &lt; exceed);
-        require(weiRaised &lt; maxcap);
+        require(buyers[buyer].add(amount) >= minimum);
+        require(buyers[buyer] < exceed);
+        require(weiRaised < maxcap);
 
         uint256 purchase;
         uint256 refund;
@@ -525,7 +525,7 @@ contract PresaleSecond is Ownable {
 
         weiRaised = weiRaised.add(purchase);
 
-        if(weiRaised &gt;= maxcap) ignited = false;
+        if(weiRaised >= maxcap) ignited = false;
 
         buyers[buyer] = buyers[buyer].add(purchase);
         emit Purchase(buyer, purchase, refund, purchase.mul(rate));
@@ -542,16 +542,16 @@ contract PresaleSecond is Ownable {
         uint256 d1 = maxcap.sub(weiRaised);
         uint256 d2 = exceed.sub(buyers[_buyer]);
 
-        uint256 d = (d1 &gt; d2) ? d2 : d1;
+        uint256 d = (d1 > d2) ? d2 : d1;
 
-        return (_amount &gt; d) ? (d, _amount.sub(d)) : (_amount, 0);
+        return (_amount > d) ? (d, _amount.sub(d)) : (_amount, 0);
     }
 
 //  finalize
     bool public finalized = false;
 
     function finalize() external onlyOwner {
-        require(!ignited &amp;&amp; !finalized);
+        require(!ignited && !finalized);
 
         withdrawEther();
         withdrawToken();
@@ -559,7 +559,7 @@ contract PresaleSecond is Ownable {
         finalized = true;
     }
 
-//  release &amp; release
+//  release & release
     event Release(address indexed _to, uint256 _amount);
     event Refund(address indexed _to, uint256 _amount);
 
@@ -567,7 +567,7 @@ contract PresaleSecond is Ownable {
         external
         returns (bool)
     {
-        require(!ignited &amp;&amp; !finalized);
+        require(!ignited && !finalized);
         require(msg.sender == distributor); // only for distributor
         require(_addr != address(0));
 
@@ -588,7 +588,7 @@ contract PresaleSecond is Ownable {
         external
         returns (bool)
     {
-        require(!ignited &amp;&amp; !finalized);
+        require(!ignited && !finalized);
         require(msg.sender == distributor); // only for distributor
         require(_addr != address(0));
 
@@ -637,17 +637,17 @@ contract SaleManager is Ownable {
     event Fail(address indexed _addr);
 
     function releaseMany(address[] _addrs) external onlyOwner {
-        require(_addrs.length &lt; 30);
+        require(_addrs.length < 30);
 
-        for(uint256 i = 0; i &lt; _addrs.length; i++)
+        for(uint256 i = 0; i < _addrs.length; i++)
             if (!Sale.release(_addrs[i]))
                 emit Fail(_addrs[i]);
     }
 
     function refundMany(address[] _addrs) external onlyOwner {
-        require(_addrs.length &lt; 30);
+        require(_addrs.length < 30);
 
-        for(uint256 i = 0; i &lt; _addrs.length; i++)
+        for(uint256 i = 0; i < _addrs.length; i++)
             if (!Sale.refund(_addrs[i]))
                 emit Fail(_addrs[i]);
     }

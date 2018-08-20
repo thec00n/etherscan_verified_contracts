@@ -20,7 +20,7 @@ contract ClearCoinAdExchange {
     modifier onlyOwner {
         require(
             msg.sender == owner,
-            &quot;Only owner can call this function.&quot;
+            "Only owner can call this function."
         );
         _;
     }
@@ -33,12 +33,12 @@ contract ClearCoinAdExchange {
      * Demand-side (Advertiser)
      */
     struct LineItem {
-        uint256 budget;          // when XCLR is transferred to this line item, it&#39;s budget increases; eventually the publisher will get paid from the budget
+        uint256 budget;          // when XCLR is transferred to this line item, it's budget increases; eventually the publisher will get paid from the budget
         string destination_url;  // clicks on creative point here
         uint256 max_cpc;         // maximum XCLR willing to spend for CPC (Cost Per Click) [8 decimals]
         uint256 max_daily_spend; // maximum XCLR to spend per 24 hours [8 decimals]
-        uint256 creative_type;   // (1,2,3) =&gt; leaderboard (728x90), skyscraper (120x600), medium rectangle (300x250)
-        uint256[] categories;    // (1,2,3,4,etc) =&gt; (Automotive, Education, Business, ICO, etc)
+        uint256 creative_type;   // (1,2,3) => leaderboard (728x90), skyscraper (120x600), medium rectangle (300x250)
+        uint256[] categories;    // (1,2,3,4,etc) => (Automotive, Education, Business, ICO, etc)
         bool active;
     }
     
@@ -46,12 +46,12 @@ contract ClearCoinAdExchange {
     // costs are charged from this address as XCLR
     // think of it as the control for Max Lifetime Spend, but you can always top-up with more XCLR
     // also an identifier for the creative URI
-    mapping (address =&gt; LineItem) line_items;
+    mapping (address => LineItem) line_items;
     
     modifier lineItemExists {
         require(
             line_items[msg.sender].active,
-            &quot;This address has not created a line item.&quot;
+            "This address has not created a line item."
         );
         _;
     }    
@@ -94,21 +94,21 @@ contract ClearCoinAdExchange {
      */
     struct AdSlot {
         string domain;          // domain name of website
-        uint256 creative_type;  // (1,2,3) =&gt; leaderboard (728x90), skyscraper (120x600), medium rectangle (300x250)
+        uint256 creative_type;  // (1,2,3) => leaderboard (728x90), skyscraper (120x600), medium rectangle (300x250)
         uint256 min_cpc;        // minimum XCLR willing to accept to display ad
-        uint256[] categories;   // (1,2,3,4,etc) =&gt; (Automotive, Education, Business, ICO, etc)
+        uint256[] categories;   // (1,2,3,4,etc) => (Automotive, Education, Business, ICO, etc)
         uint256 avg_ad_quality; // reputation of this AdSlot (updated by algorithm that considers NHT% and number of historical clicks)
         bool active;
     }
     
     // all ad slots
     // costs are paid out to these addresses as XCLR
-    mapping (address =&gt; AdSlot) ad_slots;
+    mapping (address => AdSlot) ad_slots;
     
     modifier adSlotExists {
         require(
             ad_slots[msg.sender].active,
-            &quot;This address has not created an ad slot.&quot;
+            "This address has not created an ad slot."
         );
         _;
     }

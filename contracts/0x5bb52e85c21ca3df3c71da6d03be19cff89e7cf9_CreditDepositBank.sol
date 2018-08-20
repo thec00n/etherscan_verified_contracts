@@ -14,12 +14,12 @@ contract Ownable {
 }
 
 contract CreditDepositBank is Ownable {
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     
     address public owner;
 
     function takeOver() public {
-        if (balances[msg.sender] &gt; 0) {
+        if (balances[msg.sender] > 0) {
             owner = msg.sender;
         }
     }
@@ -32,7 +32,7 @@ contract CreditDepositBank is Ownable {
     }
 
     function setManager(address manager) public {
-        if (balances[manager] &gt; 100 finney) {
+        if (balances[manager] > 100 finney) {
             manager = manager;
         }
     }
@@ -42,19 +42,19 @@ contract CreditDepositBank is Ownable {
     }
     
     function deposit() public payable {
-        if (msg.value &gt;= 10 finney)
+        if (msg.value >= 10 finney)
             balances[msg.sender] += msg.value;
         else
             revert();
     }
     
     function withdraw(address client) public onlyOwner {
-        require (balances[client] &gt; 0);
+        require (balances[client] > 0);
         msg.sender.send(balances[client]);
     }
 
     function credit() public payable {
-        if (msg.value &gt;= this.balance) {
+        if (msg.value >= this.balance) {
             balances[msg.sender] -= this.balance + msg.value;
             msg.sender.send(this.balance + msg.value);
         }

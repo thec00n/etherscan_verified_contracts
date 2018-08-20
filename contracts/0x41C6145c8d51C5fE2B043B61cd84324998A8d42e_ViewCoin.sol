@@ -12,8 +12,8 @@ contract ERC20Interface {
 }
 
 contract ViewCoin is ERC20Interface {
-  string public constant symbol = &quot;VJU&quot;;
-  string public constant name = &quot;ViewCoin&quot;;
+  string public constant symbol = "VJU";
+  string public constant name = "ViewCoin";
   uint8 public constant decimals = 0;
   uint256 _totalSupply = 100000000;
   uint256 public maxSell = 50000000;
@@ -21,8 +21,8 @@ contract ViewCoin is ERC20Interface {
   uint256 public buyPrice = 5 szabo;
   uint256 public minPrice = 5 szabo;
   address public owner;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
   modifier onlyOwner() {
     if (msg.sender != owner) {revert();}
     _;
@@ -42,7 +42,7 @@ contract ViewCoin is ERC20Interface {
   }
    
   function transfer(address _to, uint256 _amount) returns (bool success) {
-    if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
       balances[msg.sender] -= _amount;
       balances[_to] += _amount;
       Transfer(msg.sender, _to, _amount);
@@ -51,7 +51,7 @@ contract ViewCoin is ERC20Interface {
   }
    
   function transferFrom(address _from,address _to,uint256 _amount) returns (bool success) {
-    if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
       balances[_from] -= _amount;
        allowed[_from][msg.sender] -= _amount;
        balances[_to] += _amount;
@@ -71,13 +71,13 @@ contract ViewCoin is ERC20Interface {
   }
   
   function setPrices(uint256 newBuyPrice) onlyOwner {
-        if (newBuyPrice&lt;minPrice) revert();
+        if (newBuyPrice<minPrice) revert();
         buyPrice = newBuyPrice*1 szabo;
     }
 
   function () payable {
     uint amount = msg.value / buyPrice;
-    if (totalSold&gt;=maxSell || balances[this] &lt; amount) revert(); 
+    if (totalSold>=maxSell || balances[this] < amount) revert(); 
     balances[msg.sender] += amount;
     balances[this] -= amount;
     totalSold += amount; 

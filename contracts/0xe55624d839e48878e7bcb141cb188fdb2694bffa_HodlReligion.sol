@@ -2,12 +2,12 @@ pragma solidity ^0.4.17;
 
 library SafeMath {
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -29,10 +29,10 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   modifier onlyPayloadSize(uint size) {
-     assert(msg.data.length &gt;= size + 4);
+     assert(msg.data.length >= size + 4);
      _;
   }
   /**
@@ -62,7 +62,7 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is BasicToken, ERC20 {
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -84,7 +84,7 @@ contract StandardToken is BasicToken, ERC20 {
    */
   function approve(address _spender, uint _value) public {
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    assert(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)));
+    assert(!((_value != 0) && (allowed[msg.sender][_spender] != 0)));
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -105,8 +105,8 @@ contract StandardToken is BasicToken, ERC20 {
 contract HodlReligion is StandardToken {
 
     // metadata
-    string public constant name = &quot;HODL Religion Token&quot;;
-    string public constant symbol = &quot;HODL&quot;; // changed due to conflicts
+    string public constant name = "HODL Religion Token";
+    string public constant symbol = "HODL"; // changed due to conflicts
     uint public constant decimals = 18;
     uint public minted = 0;
 
@@ -127,8 +127,8 @@ contract HodlReligion is StandardToken {
      * @dev or send 0 to collect prize
      */
     function () payable external {
-        require(minted &lt;= totalSupply);
-        if(msg.value &gt; 0){
+        require(minted <= totalSupply);
+        if(msg.value > 0){
             balances[msg.sender] += 10 ** 18; // 1 Token
             minted += 10 ** 18;
             Transfer(0x0000000000000000000000000000000000000000, msg.sender, 10 ** 18);

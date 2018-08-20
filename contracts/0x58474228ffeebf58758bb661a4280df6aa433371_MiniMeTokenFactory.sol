@@ -14,7 +14,7 @@ pragma solidity ^0.4.18;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MyEtherWallet Campaign Contract
@@ -77,13 +77,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -112,10 +112,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -193,7 +193,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -212,15 +212,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -236,7 +236,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -245,7 +245,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -331,7 +331,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -356,7 +356,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -418,9 +418,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -435,9 +435,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -468,16 +468,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -493,7 +493,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -512,15 +512,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -606,9 +606,9 @@ contract MiniMeTokenFactory {
 }
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91f0f5e3f8f0d1f2fef5f4f2feffe5f4e9e5bff8fe">[email&#160;protected]</a>&gt;
+/// @author Adrià Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91f0f5e3f8f0d1f2fef5f4f2feffe5f4e9e5bff8fe">[email protected]</a>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
+///  authorization control functions, this simplifies & the implementation of
 ///  user permissions; this contract has three work flows for a change in
 ///  ownership, the first requires the new owner to validate that they have the
 ///  ability to accept ownership, the second allows the ownership to be
@@ -694,7 +694,7 @@ contract Owned {
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -729,7 +729,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) constant public returns (bool) {
         return !escapeBlacklist[_token];
@@ -782,7 +782,7 @@ contract GivethCampaign is TokenController, Owned, Escapable {
     MiniMeToken public tokenContract;   // The new token for this Campaign
     address public vaultAddress;        // The address to hold the funds donated
 
-/// @notice &#39;GivethCampaign()&#39; initiates the Campaign by setting its funding
+/// @notice 'GivethCampaign()' initiates the Campaign by setting its funding
 /// parameters
 /// @dev There are several checks to make sure the parameters are acceptable
 /// @param _startFundingTime The UNIX time that the Campaign will be able to
@@ -802,9 +802,9 @@ contract GivethCampaign is TokenController, Owned, Escapable {
         address _vaultAddress,
         address _tokenAddress
     ) Escapable(_escapeHatchCaller, _escapeHatchDestination) {
-        require(_endFundingTime &gt; now);                // Cannot end in the past
-        require(_endFundingTime &gt; _startFundingTime);
-        require(_maximumFunding &lt;= 10000 ether);        // The Beta is limited
+        require(_endFundingTime > now);                // Cannot end in the past
+        require(_endFundingTime > _startFundingTime);
+        require(_maximumFunding <= 10000 ether);        // The Beta is limited
         require(_vaultAddress != 0);                     // To prevent burning ETH
         startFundingTime = _startFundingTime;
         endFundingTime = _endFundingTime;
@@ -863,11 +863,11 @@ contract GivethCampaign is TokenController, Owned, Escapable {
     function doPayment(address _owner) internal {
 
 // First check that the Campaign is allowed to receive this donation
-        require(now&gt;=startFundingTime);
-        require(now&lt;=endFundingTime);
+        require(now>=startFundingTime);
+        require(now<=endFundingTime);
         require(tokenContract.controller() != 0);           // Extra check
         require(msg.value != 0);
-        require(totalCollected + msg.value &lt;= maximumFunding);
+        require(totalCollected + msg.value <= maximumFunding);
 
 //Track how much the Campaign has collected
         totalCollected += msg.value;
@@ -887,7 +887,7 @@ contract GivethCampaign is TokenController, Owned, Escapable {
 ///  Campaign from receiving more ether
 /// @dev `finalizeFunding()` can only be called after the end of the funding period.
     function finalizeFunding() {
-        require (now &gt;= endFundingTime);
+        require (now >= endFundingTime);
         tokenContract.changeController(0);
     }
 
@@ -920,7 +920,7 @@ contract ERC20 {
     /// @dev Transfers _value number of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
-    /// @dev Allows _spender to withdraw from the msg.sender&#39;s account up to the _value amount
+    /// @dev Allows _spender to withdraw from the msg.sender's account up to the _value amount
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     /// @dev Returns the amount which _spender is still allowed to withdraw from _owner

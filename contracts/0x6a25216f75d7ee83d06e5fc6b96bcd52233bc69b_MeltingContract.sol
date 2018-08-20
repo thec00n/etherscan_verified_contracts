@@ -44,8 +44,8 @@ contract MeltingContract is Owned{
     
     function doMelt(uint256 _xaurAmount, uint256 _goldAmount) public onlyOwner returns (bool) {
         uint actualBalance = XaurumInterface(XaurumAddress).balanceOf(address(this));
-        require(actualBalance &gt; XaurumAmountMelted);
-        require(actualBalance - XaurumAmountMelted &gt;= _xaurAmount);
+        require(actualBalance > XaurumAmountMelted);
+        require(actualBalance - XaurumAmountMelted >= _xaurAmount);
         XaurumInterface(XaurumAddress).doMelt(_xaurAmount, _goldAmount);
         XaurumAmountMelted += _xaurAmount;
         GoldAmountMelted += _goldAmount;

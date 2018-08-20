@@ -16,8 +16,8 @@ contract DoneToken {
  
     bool public purchasingAllowed = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
 
@@ -27,23 +27,23 @@ contract DoneToken {
     uint256 constant August25 = 1503669600; //2 PM GMT 8/25/2017
     uint256 constant testtime = 1502003216; //20 minutes
 
-    function name() constant returns (string) { return &quot;Donation Efficiency Token&quot;; }
-    function symbol() constant returns (string) { return &quot;DONE&quot;; }
+    function name() constant returns (string) { return "Donation Efficiency Token"; }
+    function symbol() constant returns (string) { return "DONE"; }
     function decimals() constant returns (uint8) { return 16; }
     
     function balanceOf(address _owner) constant returns (uint256) { return balances[_owner]; }
     
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if(msg.data.length &lt; (2 * 32) + 4) { throw; }
+        if(msg.data.length < (2 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -53,18 +53,18 @@ contract DoneToken {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if(msg.data.length &lt; (3 * 32) + 4) { throw; }
+        if(msg.data.length < (3 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
         
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             
@@ -76,7 +76,7 @@ contract DoneToken {
     }
     
     function approve(address _spender, uint256 _value) returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -94,7 +94,7 @@ contract DoneToken {
     function enablePurchasing() {
         if (msg.sender != owner) { throw; }
         
-        if (totalContribution &gt; 1000000000000000000000) {throw;} //purchasing cannot be re-enabled
+        if (totalContribution > 1000000000000000000000) {throw;} //purchasing cannot be re-enabled
                                   
         purchasingAllowed = true;
     }
@@ -128,7 +128,7 @@ contract DoneToken {
         owner.transfer(msg.value);
         totalContribution += msg.value;
         
-        if (block.timestamp &gt; August25){
+        if (block.timestamp > August25){
         
         uint256 tokensIssued = (msg.value * 5);
         }

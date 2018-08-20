@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,7 +95,7 @@ contract ERC20 is ERC20Basic {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="e99b8c848a86a9db">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="e99b8c848a86a9db">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be sent to this contract by:
@@ -179,7 +179,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="4735222a24280775">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="4735222a24280775">[email protected]</span>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -203,7 +203,7 @@ contract HasNoTokens is CanReclaimToken {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="e99b8c848a86a9db">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="e99b8c848a86a9db">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -221,7 +221,7 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="d8aabdb5bbb798ea">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="d8aabdb5bbb798ea">[email protected]</span>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -252,10 +252,10 @@ library MerkleProof {
   {
     bytes32 computedHash = _leaf;
 
-    for (uint256 i = 0; i &lt; _proof.length; i++) {
+    for (uint256 i = 0; i < _proof.length; i++) {
       bytes32 proofElement = _proof[i];
 
-      if (computedHash &lt; proofElement) {
+      if (computedHash < proofElement) {
         // Hash(current computed hash + current element of the proof)
         computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
       } else {
@@ -321,7 +321,7 @@ contract Pausable is Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -334,7 +334,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -374,13 +374,13 @@ library Roles {
  * See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  * for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  * to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address indexed operator, string role);
   event RoleRemoved(address indexed operator, string role);
@@ -457,7 +457,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] _roles) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; _roles.length; i++) {
+  //     for (uint8 i = 0; i < _roles.length; i++) {
   //         if (hasRole(msg.sender, _roles[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -473,10 +473,10 @@ contract RBAC {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * This simplifies the implementation of &quot;user permissions&quot;.
+ * This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable, RBAC {
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
    * @dev Throws if operator is not whitelisted.
@@ -520,7 +520,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       addAddressToWhitelist(_operators[i]);
     }
   }
@@ -529,7 +529,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param _operator address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address _operator)
     onlyOwner
@@ -542,13 +542,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param _operators addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _operators)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       removeAddressFromWhitelist(_operators[i]);
     }
   }
@@ -559,7 +559,7 @@ contract MerkleDrops is Pausable, Whitelist {
 
   bytes32 public rootHash;
   ERC20 public token;
-  mapping(bytes32 =&gt; bool) public redeemed;
+  mapping(bytes32 => bool) public redeemed;
 
   constructor(bytes32 _rootHash, address _tokenAddress) {
     rootHash = _rootHash;

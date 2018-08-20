@@ -27,12 +27,12 @@ contract ERC20 is ERC20Basic {
 contract MultiSend {
   function multiSend(address _token, address[] addresses, uint amount) public {
     ERC20 token = ERC20(_token);
-    for(uint i = 0; i &lt; addresses.length; i++) {
+    for(uint i = 0; i < addresses.length; i++) {
       require(token.transferFrom(msg.sender, addresses[i], amount));
     }
   }
   function multiSendEth(address[] addresses) public payable {
-    for(uint i = 0; i &lt; addresses.length; i++) {
+    for(uint i = 0; i < addresses.length; i++) {
       addresses[i].transfer(msg.value / addresses.length);
     }
     msg.sender.transfer(this.balance);

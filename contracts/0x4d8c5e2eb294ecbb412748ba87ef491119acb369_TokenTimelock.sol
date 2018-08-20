@@ -44,7 +44,7 @@ contract TokenTimelock is Ownable{
   uint64 public releaseTime; // timestamp when token claim is enabled
 
   function TokenTimelock(ERC20Basic _token, uint64 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     owner = msg.sender;
     releaseTime = _releaseTime;
@@ -54,10 +54,10 @@ contract TokenTimelock is Ownable{
    * @notice Transfers tokens held by timelock to owner.
    */
   function claim() public onlyOwner {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(owner, amount);
   }

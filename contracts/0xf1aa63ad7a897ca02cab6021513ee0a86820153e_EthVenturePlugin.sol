@@ -20,7 +20,7 @@ uint Fees = msg.value;
      if (Fees != 0) 
      {
 	uint minimal= 1999 finney;
-	if(Fees&lt;minimal)
+	if(Fees<minimal)
 	{
       	owner.send(Fees);		//send fee to owner
 	}
@@ -28,8 +28,8 @@ uint Fees = msg.value;
 	{
 	uint Times= Fees/minimal;
 
-	for(uint i=0; i&lt;Times;i++)   // send the fees out in packets compatible to EthVentures dividend function
-	if(Fees&gt;0)
+	for(uint i=0; i<Times;i++)   // send the fees out in packets compatible to EthVentures dividend function
+	if(Fees>0)
 	{
 	owner.send(minimal);		//send fee to owner
 	Fees-=minimal;
@@ -40,6 +40,6 @@ uint Fees = msg.value;
 
 }
 
-// AAAAAAAAAAAAAND IT&#39;S STUCK!
+// AAAAAAAAAAAAAND IT'S STUCK!
 
 }

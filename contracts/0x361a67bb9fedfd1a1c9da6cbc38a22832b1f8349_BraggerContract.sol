@@ -15,9 +15,9 @@ contract BraggerContract {
     }
 
     function becomeRichest(string newString) public payable {
-        require(msg.value &gt; 0.002 ether);
-        require(msg.sender.balance &gt; highestBalance);
-        require(bytes(newString).length &lt; 500);
+        require(msg.value > 0.002 ether);
+        require(msg.sender.balance > highestBalance);
+        require(bytes(newString).length < 500);
         
         highestBalance = msg.sender.balance;
         pastValues.push(msg.sender.balance);

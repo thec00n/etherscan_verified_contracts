@@ -7,15 +7,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -23,10 +23,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -35,15 +35,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -51,10 +51,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -63,10 +63,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -121,10 +121,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -193,17 +193,17 @@ contract ProspectorsCrowdsale is Owned, DSMath
     uint public constant goal = 2000 ether; //soft crowdsale cap. If not reached funds will be returned
     bool private closed = false; //can be true after end_time or when all tokens sold
     
-    mapping(address =&gt; uint) funded; //needed to save amounts of ETH for refund
+    mapping(address => uint) funded; //needed to save amounts of ETH for refund
     
     modifier in_time //allows send eth only when crowdsale is active
     {
-        if (time() &lt; start_time || time() &gt; end_time)  revert();
+        if (time() < start_time || time() > end_time)  revert();
         _;
     }
 
     function is_success() public constant returns (bool)
     {
-        return closed == true &amp;&amp; total_raised &gt;= goal;
+        return closed == true && total_raised >= goal;
     }
     
     function time() public constant returns (uint)
@@ -219,7 +219,7 @@ contract ProspectorsCrowdsale is Owned, DSMath
     //tokens amount available by bonus price
     function available_with_bonus() public constant returns (uint)
     {
-        return my_token_balance() &gt;=  min_balance_for_bonus() ? 
+        return my_token_balance() >=  min_balance_for_bonus() ? 
                 my_token_balance() - min_balance_for_bonus() 
                 : 
                 0;
@@ -238,7 +238,7 @@ contract ProspectorsCrowdsale is Owned, DSMath
     //prevent send less than 0.01 ETH
     modifier has_value
     {
-        if (msg.value &lt; 0.01 ether) revert();
+        if (msg.value < 0.01 ether) revert();
         _;
     }
 
@@ -260,7 +260,7 @@ contract ProspectorsCrowdsale is Owned, DSMath
         var buy_amount = cast(min(can_with_bonus, available_with_bonus()));
         remains = sub(remains, wmul(buy_amount, cast(bonus_price)));
         
-        if (buy_amount &lt; can_with_bonus) //calculate tokens amount by standart price if tokens with bonus don&#39;t cover eth amount
+        if (buy_amount < can_with_bonus) //calculate tokens amount by standart price if tokens with bonus don't cover eth amount
         {
             var can_without_bonus = wdiv(cast(remains), cast(price));
             var buy_without_bonus = cast(min(can_without_bonus, available_without_bonus()));
@@ -268,7 +268,7 @@ contract ProspectorsCrowdsale is Owned, DSMath
             buy_amount = hadd(buy_amount, buy_without_bonus);
         }
 
-        if (remains &gt; 0) revert();
+        if (remains > 0) revert();
 
         total_raised = add(total_raised, msg.value);
         if (funded[msg.sender] == 0) contributors_count++;
@@ -279,9 +279,9 @@ contract ProspectorsCrowdsale is Owned, DSMath
     
     function refund() //allows get eth back if min goal not reached
     {
-        if (total_raised &gt;= goal || closed == false) revert();
+        if (total_raised >= goal || closed == false) revert();
         var amount = funded[msg.sender];
-        if (amount &gt; 0)
+        if (amount > 0)
         {
             funded[msg.sender] = 0;
             msg.sender.transfer(amount);
@@ -290,13 +290,13 @@ contract ProspectorsCrowdsale is Owned, DSMath
     
     function closeCrowdsale() //close crowdsale. this action unlocks refunds or token transfers
     {
-        if (closed == false &amp;&amp; time() &gt; start_time &amp;&amp; (time() &gt; end_time || my_token_balance() == 0))
+        if (closed == false && time() > start_time && (time() > end_time || my_token_balance() == 0))
         {
             closed = true;
             if (is_success())
             {
                 token.unlock(); //unlock token transfers
-                if (my_token_balance() &gt; 0)
+                if (my_token_balance() > 0)
                 {
                     token.transfer(0xb1, my_token_balance()); //move not saled tokens to game balance
                 }
@@ -310,7 +310,7 @@ contract ProspectorsCrowdsale is Owned, DSMath
     
     function collect() //collect eth by devs if min goal reached
     {
-        if (total_raised &lt; goal) revert();
+        if (total_raised < goal) revert();
         dev_multisig.transfer(this.balance);
     }
 
@@ -322,7 +322,7 @@ contract ProspectorsCrowdsale is Owned, DSMath
     //allows destroy this whithin 180 days after crowdsale ends
     function destroy() onlyOwner
     {
-        if (time() &gt; end_time + 180 days)
+        if (time() > end_time + 180 days)
         {
             selfdestruct(dev_multisig);
         }

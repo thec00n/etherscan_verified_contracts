@@ -11,7 +11,7 @@ contract LoveLockChain {
 
 
     function LoveLockChain() public ownerFunc {
-        for(uint8 i = 1; i&lt;=3; i++){
+        for(uint8 i = 1; i<=3; i++){
             grantToken(_ceo);
             newAuction(lastAuctionId+1,currentStartPrice, currentMinPrice, currentSpawnDuration, LastTokenId,_ceo);
             AuctionIds[lastAuctionId+1].isSpawn = true;
@@ -21,8 +21,8 @@ contract LoveLockChain {
 
 
     // Token Info
-	string public constant name = &quot;Love Locks&quot;;
-	string public constant symbol = &quot;LOCKS&quot;;
+	string public constant name = "Love Locks";
+	string public constant symbol = "LOCKS";
 	uint8 public constant decimals = 0;
 	uint64 public totalSupply = 0;
 	uint64 public LastTokenId = 0;
@@ -35,25 +35,25 @@ contract LoveLockChain {
     uint256 private constant currentSpawnDuration = 60 minutes ;//60 minutes;
 
     // Desgign attributes
-	mapping(uint64 =&gt; uint16) private tokenBackground;
-	mapping(uint64 =&gt; uint16) private tokenLock;
-	mapping(uint64 =&gt; uint16) private tokenNote;
+	mapping(uint64 => uint16) private tokenBackground;
+	mapping(uint64 => uint16) private tokenLock;
+	mapping(uint64 => uint16) private tokenNote;
 	uint16 private maxIdBackground = 19;
 	uint16 private maxIdLock = 18;
 	uint16 private maxIdNote = 22;
 
 	// User Wallet
-	mapping (address =&gt; uint64[]) private TokenBalanceOf;
-	mapping (uint64 =&gt; uint64) private TokenBalanceIndex; // TokenID =&gt; TokenBalanceIndex
-	mapping (address =&gt; uint64) public balanceOf;
-	mapping (uint64 =&gt; Message) internal LoveLocks;
-	mapping (uint64 =&gt; address) private Tokens;
-	mapping (address =&gt; uint64[]) private _userLoveLocks;
+	mapping (address => uint64[]) private TokenBalanceOf;
+	mapping (uint64 => uint64) private TokenBalanceIndex; // TokenID => TokenBalanceIndex
+	mapping (address => uint64) public balanceOf;
+	mapping (uint64 => Message) internal LoveLocks;
+	mapping (uint64 => address) private Tokens;
+	mapping (address => uint64[]) private _userLoveLocks;
 
 	// Auction Storage 
-	mapping (uint64 =&gt; uint64) private tokenAuctions;
-    mapping (uint64 =&gt; Auction) private AuctionIds;
-    mapping (address =&gt; uint64[]) private userAuctionIds;
+	mapping (uint64 => uint64) private tokenAuctions;
+    mapping (uint64 => Auction) private AuctionIds;
+    mapping (address => uint64[]) private userAuctionIds;
     uint64 private lastAuctionId = 0;
 
 	// Events
@@ -127,7 +127,7 @@ contract LoveLockChain {
         return lastAuctionId;
     }
 
-    // User&#39;s Auctions used for wallet
+    // User's Auctions used for wallet
 	function getUserAuctionIds(address _addr) public view returns (uint64[]){
 	    return userAuctionIds[_addr];
 	}
@@ -214,7 +214,7 @@ contract LoveLockChain {
         		tokenNote[SoldTokenId]          = rand(1, maxIdNote, uint64(SoldTokenId + SpawnCycles(_AuctionId)));
 		        
 		        //Spawn new
-		        if(LastTokenId &lt;maxSupply){
+		        if(LastTokenId <maxSupply){
     		        grantToken(_ceo);
     		        newAuction(lastAuctionId+1,currentStartPrice, currentMinPrice, currentSpawnDuration, LastTokenId,_ceo);
                     AuctionIds[lastAuctionId+1].isSpawn = true;
@@ -280,10 +280,10 @@ contract LoveLockChain {
 
 
 	function newAuction(uint64 _AuctionId,uint256 _startPrice, uint256 _minPrice, uint256 _duration, uint64 _TokenId, address _owner) internal returns (Auction _out){
-		require(_duration &gt;= 600 &amp;&amp; _duration &lt;= 24 hours ); //10min to 1 day
-		require(_TokenId &gt; 0);
-		require(_minPrice &gt; 0);
-		require(_startPrice &gt; _minPrice);
+		require(_duration >= 600 && _duration <= 24 hours ); //10min to 1 day
+		require(_TokenId > 0);
+		require(_minPrice > 0);
+		require(_startPrice > _minPrice);
 
         _out.AuctionId = _AuctionId;
 		_out.startTime = block.timestamp;
@@ -303,12 +303,12 @@ contract LoveLockChain {
 	}
 
 	function setBid(uint64 _AuctionId, uint256 bid) internal returns (bool) {
-		require(bid&gt;0);
+		require(bid>0);
 		require(AuctionIds[_AuctionId].created);
 		require(!AuctionIds[_AuctionId].sold);
 		require(!AuctionIds[_AuctionId].cancelled);
 		uint256 curPrice = auctionCurrentPrice(_AuctionId);
-		if(bid &gt; curPrice){
+		if(bid > curPrice){
 			AuctionIds[_AuctionId].sold = true;
 			AuctionIds[_AuctionId].finalPrice = curPrice;
 			return true;
@@ -331,7 +331,7 @@ contract LoveLockChain {
 		if(AuctionIds[_AuctionId].sold) return true;
 		if(AuctionIds[_AuctionId].cancelled) return true;
 		if(AuctionIds[_AuctionId].isSpawn) return false;
-		if(block.timestamp &gt;= AuctionIds[_AuctionId].duration + AuctionIds[_AuctionId].startTime) return true;
+		if(block.timestamp >= AuctionIds[_AuctionId].duration + AuctionIds[_AuctionId].startTime) return true;
 		return false;
 	}
 
@@ -350,9 +350,9 @@ contract LoveLockChain {
 	}
 
 	function setTokenTypes(uint16 _maxIdBackground, uint16 _maxIdLock,uint16 _maxIdNote) public ownerFunc {
-	    require(_maxIdBackground &gt;= maxIdBackground);
-	    require(_maxIdLock &gt;= maxIdLock);
-	    require(_maxIdNote &gt;= maxIdNote);
+	    require(_maxIdBackground >= maxIdBackground);
+	    require(_maxIdLock >= maxIdLock);
+	    require(_maxIdNote >= maxIdNote);
 	    maxIdBackground = _maxIdBackground;
 	    maxIdLock = _maxIdLock;
         maxIdNote = _maxIdNote;

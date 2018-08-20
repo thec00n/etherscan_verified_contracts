@@ -25,15 +25,15 @@ contract ZeePinToken  {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
 
-    string public name = &quot;ZeePin Token&quot;;
-    string public symbol = &quot;ZPT&quot;;
+    string public name = "ZeePin Token";
+    string public symbol = "ZPT";
     uint public decimals = 18;
 
     uint public startTime; //crowdsale start time (set in constructor)
@@ -118,23 +118,23 @@ contract ZeePinToken  {
 
     //price based on current token supply
     function price() constant returns(uint256) {
-        if (now &lt;= endEarlyBird &amp;&amp; now &gt;= startEarlyBird) return earlyBirdPrice;
-        if (now &lt;= endFirstWeek) return firstWeekTokenPrice;
-        if (now &lt;= endSecondWeek) return secondWeekTokenPrice;
-        if (now &lt;= endThirdWeek) return thirdWeekTokenPrice;
-        if (now &lt;= endFourthWeek) return fourthWeekTokenPrice;
-        if (now &lt;= endFifthWeek) return fifthWeekTokenPrice;
+        if (now <= endEarlyBird && now >= startEarlyBird) return earlyBirdPrice;
+        if (now <= endFirstWeek) return firstWeekTokenPrice;
+        if (now <= endSecondWeek) return secondWeekTokenPrice;
+        if (now <= endThirdWeek) return thirdWeekTokenPrice;
+        if (now <= endFourthWeek) return fourthWeekTokenPrice;
+        if (now <= endFifthWeek) return fifthWeekTokenPrice;
         return fifthWeekTokenPrice;
     }
 
     // price() exposed for unit tests
     function testPrice(uint256 currentTime) constant returns(uint256) {
-        if (currentTime &lt; endEarlyBird &amp;&amp; currentTime &gt;= startEarlyBird) return earlyBirdPrice;
-        if (currentTime &lt; endFirstWeek &amp;&amp; currentTime &gt;= startTime) return firstWeekTokenPrice;
-        if (currentTime &lt; endSecondWeek &amp;&amp; currentTime &gt;= endFirstWeek) return secondWeekTokenPrice;
-        if (currentTime &lt; endThirdWeek &amp;&amp; currentTime &gt;= endSecondWeek) return thirdWeekTokenPrice;
-        if (currentTime &lt; endFourthWeek &amp;&amp; currentTime &gt;= endThirdWeek) return fourthWeekTokenPrice;
-        if (currentTime &lt; endFifthWeek &amp;&amp; currentTime &gt;= endFourthWeek) return fifthWeekTokenPrice;
+        if (currentTime < endEarlyBird && currentTime >= startEarlyBird) return earlyBirdPrice;
+        if (currentTime < endFirstWeek && currentTime >= startTime) return firstWeekTokenPrice;
+        if (currentTime < endSecondWeek && currentTime >= endFirstWeek) return secondWeekTokenPrice;
+        if (currentTime < endThirdWeek && currentTime >= endSecondWeek) return thirdWeekTokenPrice;
+        if (currentTime < endFourthWeek && currentTime >= endThirdWeek) return fourthWeekTokenPrice;
+        if (currentTime < endFifthWeek && currentTime >= endFourthWeek) return fifthWeekTokenPrice;
         return fifthWeekTokenPrice;
     }
 
@@ -142,14 +142,14 @@ contract ZeePinToken  {
     // Buy entry point
     function buy( bytes32 hash) payable {
         print(hash);
-        if (((now &lt; startTime || now &gt;= endTime) &amp;&amp; (now &lt; startEarlyBird || now &gt;= endEarlyBird)) || halted) revert();
-        if (now&gt;=startEarlyBird &amp;&amp; now&lt;endEarlyBird) {
-            if (msg.value &lt; earlyBirdMinPerPerson || msg.value &gt; earlyBirdMaxPerPerson || (saleEtherRaised + msg.value) &gt; (peCap + earlyBirdCap)) {
+        if (((now < startTime || now >= endTime) && (now < startEarlyBird || now >= endEarlyBird)) || halted) revert();
+        if (now>=startEarlyBird && now<endEarlyBird) {
+            if (msg.value < earlyBirdMinPerPerson || msg.value > earlyBirdMaxPerPerson || (saleEtherRaised + msg.value) > (peCap + earlyBirdCap)) {
                 revert();
             }
         }
-        if (now&gt;=startTime &amp;&amp; now&lt;endTime) {
-            if (msg.value &lt; regularMinPerPerson || msg.value &gt; regularMaxPerPerson || (saleEtherRaised + msg.value) &gt; etherCap ) {
+        if (now>=startTime && now<endTime) {
+            if (msg.value < regularMinPerPerson || msg.value > regularMaxPerPerson || (saleEtherRaised + msg.value) > etherCap ) {
                 revert();
             }
         }
@@ -176,7 +176,7 @@ contract ZeePinToken  {
      */
     function allocateFounderTokens() {
         if (msg.sender!=founder) revert();
-        if (now &lt;= endTime + founderLockup) revert();
+        if (now <= endTime + founderLockup) revert();
         if (founderAllocated) revert();
         balances[founder] = (balances[founder] + totalSupply * founderAllocation / (1 ether));
         totalSupply = (totalSupply + totalSupply * founderAllocation / (1 ether));
@@ -197,8 +197,8 @@ contract ZeePinToken  {
      */
     function offlineSales(uint256 offlineNum, uint256 offlineEther) {
         if (msg.sender!=founder) revert();
-        // if (now &gt;= startEarlyBird &amp;&amp; now &lt;= endEarlyBird) revert(); //offline sales can be done only during early bird time 
-        if (saleEtherRaised + offlineEther &gt; etherCap) revert();
+        // if (now >= startEarlyBird && now <= endEarlyBird) revert(); //offline sales can be done only during early bird time 
+        if (saleEtherRaised + offlineEther > etherCap) revert();
         totalSupply = (totalSupply + offlineNum);
         balances[founder] = (balances[founder] + offlineNum );
         saleEtherRaised = (saleEtherRaised + offlineEther);
@@ -246,13 +246,13 @@ contract ZeePinToken  {
      * - Test transfer after restricted period
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (now &lt;= endTime + transferLockup) revert();
+        if (now <= endTime + transferLockup) revert();
 
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -269,8 +269,8 @@ contract ZeePinToken  {
         if (msg.sender != founder) revert();
 
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;

@@ -103,7 +103,7 @@ contract Dexter {
 
     function withdraw() public returns (bool success) {
         require(owner == msg.sender);
-        require(address(this).balance &gt; 0);
+        require(address(this).balance > 0);
 
         msg.sender.transfer(address(this).balance);
 
@@ -116,7 +116,7 @@ contract Dexter {
         uint256 balance = erc20.balanceOf(this);
 
         // Sanity check in case the contract does not do this
-        require(balance &gt; 0);
+        require(balance > 0);
 
         require(erc20.transfer(msg.sender, balance));
 
@@ -145,7 +145,7 @@ contract Dexter {
         payable
         returns (bool success)
     {
-        // Fill the order, always ETH, since we can&#39;t withdraw from the user unless authorized
+        // Fill the order, always ETH, since we can't withdraw from the user unless authorized
         AirSwapExchangeI(0x8fd3121013A07C57f0D69646E86E7a4880b467b7).fill.value(msg.value)(
             makerAddress, 
             makerAmount, 
@@ -160,7 +160,7 @@ contract Dexter {
             s
         );
 
-        if (takerFee &gt; 0) {
+        if (takerFee > 0) {
             nonceFee = (makerAmount * takerFee) / (1 ether);
 
             expirationFinalAmount = makerAmount - nonceFee;//;
@@ -196,7 +196,7 @@ contract Dexter {
 
         uint256 transferAmount;
 
-        if (takerFee &gt; 0) {
+        if (takerFee > 0) {
             uint256 fee = (actualDestAmount * takerFee) / (1 ether);
 
             transferAmount = actualDestAmount - fee;
@@ -243,7 +243,7 @@ contract Dexter {
         // deposit
         etherDelta.deposit.value(msg.value)();
 
-        // trade throws if it can&#39;t match
+        // trade throws if it can't match
         etherDelta.trade(
             tokenGet, 
             amountGetFee, 
@@ -260,7 +260,7 @@ contract Dexter {
 
         etherDelta.withdrawToken(tokenGive, withdrawAmount);
 
-        if (takerFee &gt; 0) {
+        if (takerFee > 0) {
             // amountGetFee
             amountGetFee = (withdrawAmount * takerFee) / (1 ether);
 
@@ -288,7 +288,7 @@ contract Dexter {
 
         uint256 transferAmount;
 
-        if (takerFee &gt; 0) {
+        if (takerFee > 0) {
             uint256 fee = (actualAmount * takerFee) / (1 ether);
 
             transferAmount = actualAmount - fee;

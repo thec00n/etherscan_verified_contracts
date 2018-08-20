@@ -14,7 +14,7 @@ contract PODSSale {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
     event GoalReached(address recipient, uint totalAmountRaised);
@@ -34,9 +34,9 @@ contract PODSSale {
         tokenReward.transfer(msg.sender, amount * price);
         FundTransfer(msg.sender, amount, true);
     }
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
     function checkGoalReached() public afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }

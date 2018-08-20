@@ -2,7 +2,7 @@ pragma solidity ^0.4.17;
 
 
 // ----------------------------------------------------------------------------
-// &#39;KWHToken&#39; contract
+// 'KWHToken' contract
 //
 // Symbol      : KWHT
 // Name        : KWHToken
@@ -19,11 +19,11 @@ contract SafeMath {
 
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -33,7 +33,7 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 
@@ -103,7 +103,7 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
             balances[msg.sender] -= _value;
             
@@ -122,7 +122,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
             balances[_from] -= _value;
             
@@ -163,21 +163,21 @@ contract StandardToken is Token {
 
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 }
 
 
 
-// &#39;KWHToken&#39; contract
+// 'KWHToken' contract
 
 contract KWHToken is SafeMath, Owned, StandardToken {
 
-    string public symbol = &quot;KWHT&quot;;
+    string public symbol = "KWHT";
     
-    string public name = &quot;KWHToken&quot;;
+    string public name = "KWHToken";
 
     address public KWHTokenAddress = this;
     
@@ -256,9 +256,9 @@ contract KWHToken is SafeMath, Owned, StandardToken {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         
-        require(_value &gt; KWHForGas);
+        require(_value > KWHForGas);
         
-        if (msg.sender != owner &amp;&amp; _to == KWHTokenAddress &amp;&amp; directTradeAllowed) {
+        if (msg.sender != owner && _to == KWHTokenAddress && directTradeAllowed) {
             
             sellKWHAgainstEther(_value);
             
@@ -266,11 +266,11 @@ contract KWHToken is SafeMath, Owned, StandardToken {
             
         }
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
 
-            if (msg.sender.balance &gt;= minBalanceForAccounts &amp;&amp; _to.balance &gt;= minBalanceForAccounts) {
+            if (msg.sender.balance >= minBalanceForAccounts && _to.balance >= minBalanceForAccounts) {
                 
                 balances[_to] = safeAdd(balances[_to], _value);
                 
@@ -286,13 +286,13 @@ contract KWHToken is SafeMath, Owned, StandardToken {
                 
                 Transfer(msg.sender, _to, safeSub(_value, KWHForGas));
 
-                if(msg.sender.balance &lt; minBalanceForAccounts) {
+                if(msg.sender.balance < minBalanceForAccounts) {
                     
                     require(msg.sender.send(gasForKWH));
                     
                 }
                 
-                if(_to.balance &lt; minBalanceForAccounts) {
+                if(_to.balance < minBalanceForAccounts) {
                     
                     require(_to.send(gasForKWH));
                 
@@ -306,11 +306,11 @@ contract KWHToken is SafeMath, Owned, StandardToken {
 // User buys KWHs and pays in Ether
     function buyKWHAgainstEther() payable returns (uint amount) {
         
-        require(!(buyPriceEth == 0 || msg.value &lt; buyPriceEth));
+        require(!(buyPriceEth == 0 || msg.value < buyPriceEth));
         
         amount = msg.value / buyPriceEth;
         
-        require(!(balances[this] &lt; amount));
+        require(!(balances[this] < amount));
         
         balances[msg.sender] = safeAdd(balances[msg.sender], amount);
         
@@ -325,13 +325,13 @@ contract KWHToken is SafeMath, Owned, StandardToken {
 // User sells KWHs and gets Ether
     function sellKWHAgainstEther(uint256 amount) returns (uint revenue) {
         
-        require(!(sellPriceEth == 0 || amount &lt; KWHForGas));
+        require(!(sellPriceEth == 0 || amount < KWHForGas));
         
-        require(!(balances[msg.sender] &lt; amount));
+        require(!(balances[msg.sender] < amount));
         
         revenue = safeMul(amount, sellPriceEth);
         
-        require(!(safeSub(this.balance, revenue) &lt; gasReserve));
+        require(!(safeSub(this.balance, revenue) < gasReserve));
         
         if (!msg.sender.send(revenue)) {
             
@@ -365,7 +365,7 @@ contract KWHToken is SafeMath, Owned, StandardToken {
             
         }
         
-        require(!(balances[this] &lt; kwh));
+        require(!(balances[this] < kwh));
         
         balances[msg.sender] = safeAdd(balances[msg.sender], kwh);
         

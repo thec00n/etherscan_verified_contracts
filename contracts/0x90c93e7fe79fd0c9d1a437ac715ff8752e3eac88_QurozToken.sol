@@ -16,13 +16,13 @@ library SafeMath {                             //SafeMath.sol
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -30,24 +30,24 @@ library SafeMath {                             //SafeMath.sol
 contract QurozToken {
   using SafeMath for uint256;
   address public owner;                                              //Ownable.sol
-  string public name = &quot;Qfora&quot;;                                      //DetailedERC20.sol
-  string public symbol = &quot;Quroz&quot;;                                    //DetailedERC20.sol
-  string public version = &quot;Quroz v1.1&quot;;              // new
+  string public name = "Qfora";                                      //DetailedERC20.sol
+  string public symbol = "Quroz";                                    //DetailedERC20.sol
+  string public version = "Quroz v1.1";              // new
   uint256 public decimals = 18;                                        //DetailedERC20.sol  
   uint256 totalSupply_ = 12e8 * (10**uint256(decimals));             //BasicToken.sol
   uint256 public cap = totalSupply_;                                 //CappedToken.sol
   bool public paused = false;                                         //Pausable.sol
   bool public mintingFinished = true;                                //MintableToken.sol
-  mapping(address =&gt; uint256) balances;                              //BasicToken.sol
-  mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed; //StandardToken.sol
-  mapping(address =&gt; bool) internal locked;          // new
+  mapping(address => uint256) balances;                              //BasicToken.sol
+  mapping(address => mapping (address => uint256)) internal allowed; //StandardToken.sol
+  mapping(address => bool) internal locked;          // new
   event Burn(address indexed burner, uint256 value);                               //BurnableToken.sol
   event Approval(address indexed owner, address indexed spender,uint256 value);    //ERC20.sol
   event Transfer(address indexed from, address indexed to, uint256 value);         //ERC20Basic.sol
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner); //Ownable.sol
   event Pause();                                                                   //Pausable.sol
   event Unpause();                                                                 //Pausable.sol
-  event Mint(address indexed to, uint256 amount, string reason);                   //MintableToken.sol, &quot;reason&quot; added
+  event Mint(address indexed to, uint256 amount, string reason);                   //MintableToken.sol, "reason" added
   event MintFinished();                                                            //MintableToken.sol
   event MintStarted(string reason);                      // new
   event Lock(address indexed LockedAddress);             // new. lock each address
@@ -79,7 +79,7 @@ contract QurozToken {
   }
 
   function _burn(address _who, uint256 _value) internal {  //BurnableToken.sol
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
     emit Burn(_who, _value);
@@ -87,7 +87,7 @@ contract QurozToken {
   }
   
   function burnFrom(address _from, uint256 _value) public {  //StandardBurnableToken.sol
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     _burn(_from, _value);
   }
@@ -113,7 +113,7 @@ contract QurozToken {
   function decreaseApproval(address _spender, uint256 _subtractedValue) public whenNotPaused returns(bool) {
       //StandardToken.sol, PausableToken.sol
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) { allowed[msg.sender][_spender] = 0;
+    if (_subtractedValue > oldValue) { allowed[msg.sender][_spender] = 0;
     } else                           { allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);}
     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     return true;
@@ -121,7 +121,7 @@ contract QurozToken {
 
   function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {//BasicToken.sol, PausableToken.sol
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(locked[msg.sender] != true);                                                             // new
     require(locked[_to] != true);                                                                    // new
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -133,8 +133,8 @@ contract QurozToken {
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns(bool) {  
       //StandardToken.sol, PausableToken.sol
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(locked[_from] != true);                                                             // new
     require(locked[_to] != true);                                                               // new
     balances[_from] = balances[_from].sub(_value);
@@ -166,7 +166,7 @@ contract QurozToken {
 
   function mint(address _to, uint256 _amount, string _reason) hasMintPermission canMint public returns (bool)  { 
       //MintableToken.sol, CappedToken.sol
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
     totalSupply_ = totalSupply_.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     emit Mint(_to, _amount, _reason);
@@ -209,14 +209,14 @@ contract QurozToken {
     require(_to.length == _amount.length);
     uint256 i;
     uint256 amountSum = 0;
-    for (i=0; i &lt; _amount.length; i++){
-      require(_amount[i] &gt; 0);
+    for (i=0; i < _amount.length; i++){
+      require(_amount[i] > 0);
       require(_to[i] != address(0));
       require(locked[_to[i]] != true);                                                            
       amountSum = amountSum.add(_amount[i]);
     }
-    require(amountSum &lt;= balances[msg.sender]);
-    for (i=0; i &lt; _to.length; i++){
+    require(amountSum <= balances[msg.sender]);
+    for (i=0; i < _to.length; i++){
       balances[_to[i]] = balances[_to[i]].add(_amount[i]);
       emit Transfer(msg.sender, _to[i], _amount[i]);
     }
@@ -228,19 +228,19 @@ contract QurozToken {
     require(_to.length == _amount.length);
     uint16 i;              // less than 65536 at one time
     uint256 amountSum = 0;
-    for (i=0; i &lt; _amount.length; i++){
-      require(_amount[i] &gt; 0);
+    for (i=0; i < _amount.length; i++){
+      require(_amount[i] > 0);
       require(_to[i] != address(0));
       amountSum = amountSum.add(_amount[i]);
     }
-    require(totalSupply_.add(amountSum) &lt;= cap);
-    for (i=0; i &lt; _to.length; i++){
+    require(totalSupply_.add(amountSum) <= cap);
+    for (i=0; i < _to.length; i++){
       mint(_to[i], _amount[i], _reason);
     }
     return true;
   }
   
-  function lock(address _lockAddress) public onlyOwner returns (bool) {  // stop _lockAddress&#39;s transfer
+  function lock(address _lockAddress) public onlyOwner returns (bool) {  // stop _lockAddress's transfer
     require(_lockAddress != address(0));
     require(_lockAddress != owner);
     require(locked[_lockAddress] != true);
@@ -259,13 +259,13 @@ contract QurozToken {
   }
 
   function multiLock(address[] _lockAddress) public onlyOwner {
-    for (uint i=0; i &lt; _lockAddress.length; i++){
+    for (uint i=0; i < _lockAddress.length; i++){
       lock(_lockAddress[i]);
     }
   }
 
   function multiUnlock(address[] _lockAddress) public onlyOwner {
-    for (uint i=0; i &lt; _lockAddress.length; i++){
+    for (uint i=0; i < _lockAddress.length; i++){
       unlock(_lockAddress[i]);
     }
   }

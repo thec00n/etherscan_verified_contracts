@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -44,7 +44,7 @@ library MathUtils {
      * @param _amount Amount that is supposed to be a percentage
      */
     function validPerc(uint256 _amount) internal pure returns (bool) {
-        return _amount &lt;= PERC_DIVISOR;
+        return _amount <= PERC_DIVISOR;
     }
 
     /*
@@ -79,7 +79,7 @@ library MathUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -228,7 +228,7 @@ contract Manager is IManager {
  * potentially break the delegate proxy upgradeability mechanism
  */
 contract ManagerProxyTarget is Manager {
-    // Used to look up target contract address in controller&#39;s registry
+    // Used to look up target contract address in controller's registry
     bytes32 public targetContractId;
 }
 
@@ -330,7 +330,7 @@ contract RoundsManager is ManagerProxyTarget, IRoundsManager {
      */
     function setRoundLength(uint256 _roundLength) external onlyControllerOwner {
         // Round length cannot be 0
-        require(_roundLength &gt; 0);
+        require(_roundLength > 0);
 
         if (roundLength == 0) {
             // If first time initializing roundLength, set roundLength before
@@ -346,7 +346,7 @@ contract RoundsManager is ManagerProxyTarget, IRoundsManager {
             roundLength = _roundLength;
         }
 
-        ParameterUpdate(&quot;roundLength&quot;);
+        ParameterUpdate("roundLength");
     }
 
     /**
@@ -359,7 +359,7 @@ contract RoundsManager is ManagerProxyTarget, IRoundsManager {
 
         roundLockAmount = _roundLockAmount;
 
-        ParameterUpdate(&quot;roundLockAmount&quot;);
+        ParameterUpdate("roundLockAmount");
     }
 
     /**
@@ -369,7 +369,7 @@ contract RoundsManager is ManagerProxyTarget, IRoundsManager {
         uint256 currRound = currentRound();
 
         // Check if already called for the current round
-        require(lastInitializedRound &lt; currRound);
+        require(lastInitializedRound < currRound);
 
         // Set current round as initialized
         lastInitializedRound = currRound;
@@ -394,9 +394,9 @@ contract RoundsManager is ManagerProxyTarget, IRoundsManager {
     function blockHash(uint256 _block) public view returns (bytes32) {
         uint256 currentBlock = blockNum();
         // Can only retrieve past block hashes
-        require(_block &lt; currentBlock);
+        require(_block < currentBlock);
         // Can only retrieve hashes for last 256 blocks
-        require(currentBlock &lt; 256 || _block &gt;= currentBlock - 256);
+        require(currentBlock < 256 || _block >= currentBlock - 256);
 
         return block.blockhash(_block);
     }
@@ -433,20 +433,20 @@ contract RoundsManager is ManagerProxyTarget, IRoundsManager {
      */
     function currentRoundLocked() public view returns (bool) {
         uint256 lockedBlocks = MathUtils.percOf(roundLength, roundLockAmount);
-        return blockNum().sub(currentRoundStartBlock()) &gt;= roundLength.sub(lockedBlocks);
+        return blockNum().sub(currentRoundStartBlock()) >= roundLength.sub(lockedBlocks);
     }
 
     /**
      * @dev Return BondingManager interface
      */
     function bondingManager() internal view returns (IBondingManager) {
-        return IBondingManager(controller.getContract(keccak256(&quot;BondingManager&quot;)));
+        return IBondingManager(controller.getContract(keccak256("BondingManager")));
     }
 
     /**
      * @dev Return Minter interface
      */
     function minter() internal view returns (IMinter) {
-        return IMinter(controller.getContract(keccak256(&quot;Minter&quot;)));
+        return IMinter(controller.getContract(keccak256("Minter")));
     }
 }

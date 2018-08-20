@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract ContractReceiver {
 contract ERC223Token is ERC223 {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   string public name;
   string public symbol;
@@ -125,7 +125,7 @@ contract ERC223Token is ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -135,7 +135,7 @@ contract ERC223Token is ERC223 {
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     Transfer(msg.sender, _to, _value);
@@ -145,7 +145,7 @@ contract ERC223Token is ERC223 {
 
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver reciever = ContractReceiver(_to);
@@ -164,8 +164,8 @@ contract ERC223Token is ERC223 {
 contract CoVEXTokenERC223 is ERC223Token{
     using SafeMath for uint256;
 
-    string public name = &quot;CoVEX Coin&quot;;
-    string public symbol = &quot;CoVEX&quot;;
+    string public name = "CoVEX Coin";
+    string public symbol = "CoVEX";
     uint256 public decimals = 18;
 
     // 250M
@@ -179,9 +179,9 @@ contract CoVEXTokenERC223 is ERC223Token{
 
     uint256 coinsPerETH;
 
-    mapping(address =&gt; uint) etherBalance;
+    mapping(address => uint) etherBalance;
 
-    mapping(uint =&gt; uint) public weeklyRewards;
+    mapping(uint => uint) public weeklyRewards;
 
     uint256 minPerUser = 0.1 ether;
     uint256 maxPerUser = 100 ether;
@@ -222,8 +222,8 @@ contract CoVEXTokenERC223 is ERC223Token{
     function calculateTokenAmount(uint256 weiAmount) constant returns(uint256) {
         uint256 tokenAmount = weiAmount.mul(coinsPerETH);
         // setting rewards is possible only for 4 weeks
-        for (uint i = 1; i &lt;= 4; i++) {
-            if (now &lt;= startTimestamp + (i * 7 days)) {
+        for (uint i = 1; i <= 4; i++) {
+            if (now <= startTimestamp + (i * 7 days)) {
                 return tokenAmount.mul(100+weeklyRewards[i]).div(100);    
             }
         }
@@ -235,9 +235,9 @@ contract CoVEXTokenERC223 is ERC223Token{
      * @param _value The amount of token to be burned.
      */
     function adminBurn(uint256 _value) public {
-      require(_value &lt;= balances[msg.sender]);
-      // no need to require value &lt;= totalSupply, since that would imply the
-      // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+      require(_value <= balances[msg.sender]);
+      // no need to require value <= totalSupply, since that would imply the
+      // sender's balance is greater than the totalSupply, which *should* be an assertion failure
       address burner = msg.sender;
       balances[burner] = balances[burner].sub(_value);
       totalSupply = totalSupply.sub(_value);
@@ -263,15 +263,15 @@ contract CoVEXTokenERC223 is ERC223Token{
     }
 
     modifier isIcoOpen() {
-        require(now &gt;= startTimestamp);
-        require(now &lt;= (startTimestamp + durationSeconds));
-        require(totalRaised &lt;= maxCap);
+        require(now >= startTimestamp);
+        require(now <= (startTimestamp + durationSeconds));
+        require(totalRaised <= maxCap);
         _;
     }
 
     modifier checkMinMax(){
-      require(msg.value &gt;= minPerUser);
-      require(msg.value &lt;= maxPerUser);
+      require(msg.value >= minPerUser);
+      require(msg.value <= maxPerUser);
       _;
     }
 

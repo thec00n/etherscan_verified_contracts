@@ -40,7 +40,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -59,31 +59,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
         
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -97,8 +97,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -169,7 +169,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -180,7 +180,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -194,7 +194,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -205,7 +205,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -262,7 +262,7 @@ contract VolumeImbalanceRecorder is Withdrawable {
                             // before halting trade
     }
 
-    mapping(address =&gt; TokenControlInfo) internal tokenControlInfo;
+    mapping(address => TokenControlInfo) internal tokenControlInfo;
 
     struct TokenImbalanceData {
         int  lastBlockBuyUnitsImbalance;
@@ -272,7 +272,7 @@ contract VolumeImbalanceRecorder is Withdrawable {
         uint lastRateUpdateBlock;
     }
 
-    mapping(address =&gt; mapping(uint=&gt;uint)) public tokenImbalanceData;
+    mapping(address => mapping(uint=>uint)) public tokenImbalanceData;
 
     function VolumeImbalanceRecorder(address _admin) public {
         require(_admin != address(0));
@@ -346,21 +346,21 @@ contract VolumeImbalanceRecorder is Withdrawable {
     }
 
     function setGarbageToVolumeRecorder(ERC20 token) internal {
-        for (uint i = 0; i &lt; SLIDING_WINDOW_SIZE; i++) {
+        for (uint i = 0; i < SLIDING_WINDOW_SIZE; i++) {
             tokenImbalanceData[token][i] = 0x1;
         }
     }
 
     function getImbalanceInRange(ERC20 token, uint startBlock, uint endBlock) internal view returns(int buyImbalance) {
         // check the imbalance in the sliding window
-        require(startBlock &lt;= endBlock);
+        require(startBlock <= endBlock);
 
         buyImbalance = 0;
 
-        for (uint windowInd = 0; windowInd &lt; SLIDING_WINDOW_SIZE; windowInd++) {
+        for (uint windowInd = 0; windowInd < SLIDING_WINDOW_SIZE; windowInd++) {
             TokenImbalanceData memory perBlockData = decodeTokenImbalanceData(tokenImbalanceData[token][windowInd]);
 
-            if (perBlockData.lastBlock &lt;= endBlock &amp;&amp; perBlockData.lastBlock &gt;= startBlock) {
+            if (perBlockData.lastBlock <= endBlock && perBlockData.lastBlock >= startBlock) {
                 buyImbalance += int(perBlockData.lastBlockBuyUnitsImbalance);
             }
         }
@@ -377,15 +377,15 @@ contract VolumeImbalanceRecorder is Withdrawable {
         uint startBlock = rateUpdateBlock;
         uint endBlock = currentBlock;
 
-        for (uint windowInd = 0; windowInd &lt; SLIDING_WINDOW_SIZE; windowInd++) {
+        for (uint windowInd = 0; windowInd < SLIDING_WINDOW_SIZE; windowInd++) {
             TokenImbalanceData memory perBlockData = decodeTokenImbalanceData(tokenImbalanceData[token][windowInd]);
 
-            if (perBlockData.lastBlock &lt;= endBlock &amp;&amp; perBlockData.lastBlock &gt;= startBlock) {
+            if (perBlockData.lastBlock <= endBlock && perBlockData.lastBlock >= startBlock) {
                 imbalanceInRange += perBlockData.lastBlockBuyUnitsImbalance;
             }
 
             if (perBlockData.lastRateUpdateBlock != rateUpdateBlock) continue;
-            if (perBlockData.lastBlock &lt; latestBlock) continue;
+            if (perBlockData.lastBlock < latestBlock) continue;
 
             latestBlock = perBlockData.lastBlock;
             buyImbalance = perBlockData.totalBuyUnitsImbalance;
@@ -426,17 +426,17 @@ contract VolumeImbalanceRecorder is Withdrawable {
 
     function encodeTokenImbalanceData(TokenImbalanceData data) internal pure returns(uint) {
         // check for overflows
-        require(data.lastBlockBuyUnitsImbalance &lt; int(POW_2_64 / 2));
-        require(data.lastBlockBuyUnitsImbalance &gt; int(-1 * int(POW_2_64) / 2));
-        require(data.lastBlock &lt; POW_2_64);
-        require(data.totalBuyUnitsImbalance &lt; int(POW_2_64 / 2));
-        require(data.totalBuyUnitsImbalance &gt; int(-1 * int(POW_2_64) / 2));
-        require(data.lastRateUpdateBlock &lt; POW_2_64);
+        require(data.lastBlockBuyUnitsImbalance < int(POW_2_64 / 2));
+        require(data.lastBlockBuyUnitsImbalance > int(-1 * int(POW_2_64) / 2));
+        require(data.lastBlock < POW_2_64);
+        require(data.totalBuyUnitsImbalance < int(POW_2_64 / 2));
+        require(data.totalBuyUnitsImbalance > int(-1 * int(POW_2_64) / 2));
+        require(data.lastRateUpdateBlock < POW_2_64);
 
         // do encoding
-        uint result = uint(data.lastBlockBuyUnitsImbalance) &amp; (POW_2_64 - 1);
+        uint result = uint(data.lastBlockBuyUnitsImbalance) & (POW_2_64 - 1);
         result |= data.lastBlock * POW_2_64;
-        result |= (uint(data.totalBuyUnitsImbalance) &amp; (POW_2_64 - 1)) * POW_2_64 * POW_2_64;
+        result |= (uint(data.totalBuyUnitsImbalance) & (POW_2_64 - 1)) * POW_2_64 * POW_2_64;
         result |= data.lastRateUpdateBlock * POW_2_64 * POW_2_64 * POW_2_64;
 
         return result;
@@ -445,9 +445,9 @@ contract VolumeImbalanceRecorder is Withdrawable {
     function decodeTokenImbalanceData(uint input) internal pure returns(TokenImbalanceData) {
         TokenImbalanceData memory data;
 
-        data.lastBlockBuyUnitsImbalance = int(int64(input &amp; (POW_2_64 - 1)));
-        data.lastBlock = uint(uint64((input / POW_2_64) &amp; (POW_2_64 - 1)));
-        data.totalBuyUnitsImbalance = int(int64((input / (POW_2_64 * POW_2_64)) &amp; (POW_2_64 - 1)));
+        data.lastBlockBuyUnitsImbalance = int(int64(input & (POW_2_64 - 1)));
+        data.lastBlock = uint(uint64((input / POW_2_64) & (POW_2_64 - 1)));
+        data.totalBuyUnitsImbalance = int(int64((input / (POW_2_64 * POW_2_64)) & (POW_2_64 - 1)));
         data.lastRateUpdateBlock = uint(uint64((input / (POW_2_64 * POW_2_64 * POW_2_64))));
 
         return data;
@@ -494,7 +494,7 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
     } */
     uint public validRateDurationInBlocks = 10; // rates are valid for this amount of blocks
     ERC20[] internal listedTokens;
-    mapping(address=&gt;TokenData) internal tokenData;
+    mapping(address=>TokenData) internal tokenData;
     bytes32[] internal tokenRatesCompactData;
     uint public numTokensInCurrentCompactData = 0;
     address public reserveContract;
@@ -531,12 +531,12 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
 
         require(buy.length == sell.length);
         require(indices.length == buy.length);
-        require(blockNumber &lt;= 0xFFFFFFFF);
+        require(blockNumber <= 0xFFFFFFFF);
 
         uint bytes14Offset = BYTES_14_OFFSET;
 
-        for (uint i = 0; i &lt; indices.length; i++) {
-            require(indices[i] &lt; tokenRatesCompactData.length);
+        for (uint i = 0; i < indices.length; i++) {
+            require(indices[i] < tokenRatesCompactData.length);
             uint data = uint(buy[i]) | uint(sell[i]) * bytes14Offset | (blockNumber * (bytes14Offset * bytes14Offset));
             tokenRatesCompactData[indices[i]] = bytes32(data);
         }
@@ -559,7 +559,7 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
         require(sell.length == buy.length);
         require(sell.length == indices.length);
 
-        for (uint ind = 0; ind &lt; tokens.length; ind++) {
+        for (uint ind = 0; ind < tokens.length; ind++) {
             require(tokenData[tokens[ind]].listed);
             tokenData[tokens[ind]].baseBuyRate = baseBuy[ind];
             tokenData[tokens[ind]].baseSellRate = baseSell[ind];
@@ -580,8 +580,8 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
     {
         require(xBuy.length == yBuy.length);
         require(xSell.length == ySell.length);
-        require(xBuy.length &lt;= MAX_STEPS_IN_FUNCTION);
-        require(xSell.length &lt;= MAX_STEPS_IN_FUNCTION);
+        require(xBuy.length <= MAX_STEPS_IN_FUNCTION);
+        require(xSell.length <= MAX_STEPS_IN_FUNCTION);
         require(tokenData[token].listed);
 
         tokenData[token].buyRateQtyStepFunction = StepFunction(xBuy, yBuy);
@@ -600,8 +600,8 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
     {
         require(xBuy.length == yBuy.length);
         require(xSell.length == ySell.length);
-        require(xBuy.length &lt;= MAX_STEPS_IN_FUNCTION);
-        require(xSell.length &lt;= MAX_STEPS_IN_FUNCTION);
+        require(xBuy.length <= MAX_STEPS_IN_FUNCTION);
+        require(xSell.length <= MAX_STEPS_IN_FUNCTION);
         require(tokenData[token].listed);
 
         tokenData[token].buyRateImbalanceStepFunction = StepFunction(xBuy, yBuy);
@@ -652,7 +652,7 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
         bytes32 compactData = tokenRatesCompactData[tokenData[token].compactDataArrayIndex];
 
         uint updateRateBlock = getLast4Bytes(compactData);
-        if (currentBlockNumber &gt;= updateRateBlock + validRateDurationInBlocks) return 0; // rate is expired
+        if (currentBlockNumber >= updateRateBlock + validRateDurationInBlocks) return 0; // rate is expired
         // check imbalance
         int totalImbalance;
         int blockImbalance;
@@ -707,8 +707,8 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
             rate = addBps(rate, extraBps);
         }
 
-        if (abs(totalImbalance) &gt;= getMaxTotalImbalance(token)) return 0;
-        if (abs(blockImbalance + imbalanceQty) &gt;= getMaxPerBlockImbalance(token)) return 0;
+        if (abs(totalImbalance) >= getMaxTotalImbalance(token)) return 0;
+        if (abs(blockImbalance + imbalanceQty) >= getMaxPerBlockImbalance(token)) return 0;
 
         return rate;
     }
@@ -799,24 +799,24 @@ contract ConversionRates is ConversionRatesInterface, VolumeImbalanceRecorder, U
 
     function executeStepFunction(StepFunction f, int x) internal pure returns(int) {
         uint len = f.y.length;
-        for (uint ind = 0; ind &lt; len; ind++) {
-            if (x &lt;= f.x[ind]) return f.y[ind];
+        for (uint ind = 0; ind < len; ind++) {
+            if (x <= f.x[ind]) return f.y[ind];
         }
 
         return f.y[len-1];
     }
 
     function addBps(uint rate, int bps) internal pure returns(uint) {
-        require(rate &lt;= MAX_RATE);
-        require(bps &gt;= MIN_BPS_ADJUSTMENT);
-        require(bps &lt;= MAX_BPS_ADJUSTMENT);
+        require(rate <= MAX_RATE);
+        require(bps >= MIN_BPS_ADJUSTMENT);
+        require(bps <= MAX_BPS_ADJUSTMENT);
 
         uint maxBps = 100 * 100;
         return (rate * uint(int(maxBps) + bps)) / maxBps;
     }
 
     function abs(int x) internal pure returns(uint) {
-        if (x &lt; 0)
+        if (x < 0)
             return uint(-1 * x);
         else
             return uint(x);
@@ -870,14 +870,14 @@ contract KyberNetwork is Withdrawable, Utils {
 
     uint public negligibleRateDiff = 10; // basic rate steps will be in 0.01%
     KyberReserveInterface[] public reserves;
-    mapping(address=&gt;bool) public isReserve;
+    mapping(address=>bool) public isReserve;
     WhiteListInterface public whiteListContract;
     ExpectedRateInterface public expectedRateContract;
     FeeBurnerInterface    public feeBurnerContract;
     uint                  public maxGasPrice = 50 * 1000 * 1000 * 1000; // 50 gwei
     bool                  public enabled = false; // network is enabled
-    mapping(bytes32=&gt;uint) public info; // this is only a UI field for external app.
-    mapping(address=&gt;mapping(bytes32=&gt;bool)) public perReserveListedPairs;
+    mapping(bytes32=>uint) public info; // this is only a UI field for external app.
+    mapping(address=>mapping(bytes32=>bool)) public perReserveListedPairs;
 
     function KyberNetwork(address _admin) public {
         require(_admin != address(0));
@@ -938,15 +938,15 @@ contract KyberNetwork is Withdrawable, Utils {
                                         minConversionRate,
                                         walletId
                                         );
-        require(actualDestAmount &gt; 0);
+        require(actualDestAmount > 0);
 
         userSrcBalanceAfter = getBalance(src, msg.sender);
         userDestBalanceAfter = getBalance(dest, destAddress);
 
-        require(userSrcBalanceAfter &lt;= userSrcBalanceBefore);
-        require(userDestBalanceAfter &gt;= userDestBalanceBefore);
+        require(userSrcBalanceAfter <= userSrcBalanceBefore);
+        require(userDestBalanceAfter >= userDestBalanceBefore);
 
-        require((userDestBalanceAfter - userDestBalanceBefore) &gt;=
+        require((userDestBalanceAfter - userDestBalanceBefore) >=
             calcDstQty((userSrcBalanceBefore - userSrcBalanceAfter), getDecimals(src), getDecimals(dest),
                 minConversionRate));
 
@@ -969,7 +969,7 @@ contract KyberNetwork is Withdrawable, Utils {
         } else {
             isReserve[reserve] = false;
             // will have trouble if more than 50k reserves...
-            for (uint i = 0; i &lt; reserves.length; i++) {
+            for (uint i = 0; i < reserves.length; i++) {
                 if (reserves[i] == reserve) {
                     reserves[i] = reserves[reserves.length - 1];
                     reserves.length--;
@@ -1018,7 +1018,7 @@ contract KyberNetwork is Withdrawable, Utils {
         require(_whiteList != address(0));
         require(_feeBurner != address(0));
         require(_expectedRate != address(0));
-        require(_negligibleRateDiff &lt;= 100 * 100); // at most 100%
+        require(_negligibleRateDiff <= 100 * 100); // at most 100%
         
         whiteListContract = _whiteList;
         expectedRateContract = _expectedRate;
@@ -1076,29 +1076,29 @@ contract KyberNetwork is Withdrawable, Utils {
         uint[] memory rates = new uint[](numReserves);
         uint[] memory reserveCandidates = new uint[](numReserves);
 
-        for (uint i = 0; i &lt; numReserves; i++) {
+        for (uint i = 0; i < numReserves; i++) {
             //list all reserves that have this token.
             if (!(perReserveListedPairs[reserves[i]])[keccak256(src, dest)]) continue;
 
             rates[i] = reserves[i].getConversionRate(src, dest, srcQty, block.number);
 
-            if (rates[i] &gt; bestRate) {
+            if (rates[i] > bestRate) {
                 //best rate is highest rate
                 bestRate = rates[i];
             }
         }
 
-        if (bestRate &gt; 0) {
+        if (bestRate > 0) {
             uint random = 0;
             uint smallestRelevantRate = (bestRate * 10000) / (10000 + negligibleRateDiff);
 
-            for (i = 0; i &lt; numReserves; i++) {
-                if (rates[i] &gt;= smallestRelevantRate) {
+            for (i = 0; i < numReserves; i++) {
+                if (rates[i] >= smallestRelevantRate) {
                     reserveCandidates[numRelevantReserves++] = i;
                 }
             }
 
-            if (numRelevantReserves &gt; 1) {
+            if (numRelevantReserves > 1) {
                 //when encountering small rate diff from bestRate. draw from relevant reserves
                 random = uint(block.blockhash(block.number-1)) % numRelevantReserves;
             }
@@ -1135,7 +1135,7 @@ contract KyberNetwork is Withdrawable, Utils {
         internal
         returns(uint)
     {
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(tx.gasprice <= maxGasPrice);
         require(validateTradeInput(src, srcAmount, destAddress));
 
         uint reserveInd;
@@ -1143,16 +1143,16 @@ contract KyberNetwork is Withdrawable, Utils {
 
         (reserveInd, rate) = findBestRate(src, dest, srcAmount);
         KyberReserveInterface theReserve = reserves[reserveInd];
-        require(rate &gt; 0);
-        require(rate &lt; MAX_RATE);
-        require(rate &gt;= minConversionRate);
+        require(rate > 0);
+        require(rate < MAX_RATE);
+        require(rate >= minConversionRate);
 
         uint actualSrcAmount = srcAmount;
         uint actualDestAmount = calcDestAmount(src, dest, actualSrcAmount, rate);
-        if (actualDestAmount &gt; maxDestAmount) {
+        if (actualDestAmount > maxDestAmount) {
             actualDestAmount = maxDestAmount;
             actualSrcAmount = calcSrcAmount(src, dest, actualDestAmount, rate);
-            require(actualSrcAmount &lt;= srcAmount);
+            require(actualSrcAmount <= srcAmount);
         }
 
         // do the trade
@@ -1164,7 +1164,7 @@ contract KyberNetwork is Withdrawable, Utils {
             ethAmount = actualDestAmount;
         }
 
-        require(ethAmount &lt;= getUserCapInWei(msg.sender));
+        require(ethAmount <= getUserCapInWei(msg.sender));
         require(doReserveTrade(
                 src,
                 actualSrcAmount,
@@ -1175,7 +1175,7 @@ contract KyberNetwork is Withdrawable, Utils {
                 rate,
                 true));
 
-        if ((actualSrcAmount &lt; srcAmount) &amp;&amp; (src == ETH_TOKEN_ADDRESS)) {
+        if ((actualSrcAmount < srcAmount) && (src == ETH_TOKEN_ADDRESS)) {
             msg.sender.transfer(srcAmount - actualSrcAmount);
         }
 
@@ -1242,14 +1242,14 @@ contract KyberNetwork is Withdrawable, Utils {
     /// @param srcAmount amount of src tokens
     /// @return true if input is valid
     function validateTradeInput(ERC20 src, uint srcAmount, address destAddress) internal view returns(bool) {
-        if ((srcAmount &gt;= MAX_QTY) || (srcAmount == 0) || (destAddress == 0))
+        if ((srcAmount >= MAX_QTY) || (srcAmount == 0) || (destAddress == 0))
             return false;
 
         if (src == ETH_TOKEN_ADDRESS) {
             if (msg.value != srcAmount)
                 return false;
         } else {
-            if ((msg.value != 0) || (src.allowance(msg.sender, this) &lt; srcAmount))
+            if ((msg.value != 0) || (src.allowance(msg.sender, this) < srcAmount))
                 return false;
         }
 
@@ -1272,7 +1272,7 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
     bool public tradeEnabled;
     ConversionRatesInterface public conversionRatesContract;
     SanityRatesInterface public sanityRatesContract;
-    mapping(bytes32=&gt;bool) public approvedWithdrawAddresses; // sha3(token,address)=&gt;bool
+    mapping(bytes32=>bool) public approvedWithdrawAddresses; // sha3(token,address)=>bool
 
     function KyberReserve(address _kyberNetwork, ConversionRatesInterface _ratesContract, address _admin) public {
         require(_admin != address(0));
@@ -1419,11 +1419,11 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
         uint rate = conversionRatesContract.getRate(token, blockNumber, buy, srcQty);
         uint destQty = getDestQty(src, dest, srcQty, rate);
 
-        if (getBalance(dest) &lt; destQty) return 0;
+        if (getBalance(dest) < destQty) return 0;
 
         if (sanityRatesContract != address(0)) {
             uint sanityRate = sanityRatesContract.getSanityRate(src, dest);
-            if (rate &gt; sanityRate) return 0;
+            if (rate > sanityRate) return 0;
         }
 
         return rate;
@@ -1449,7 +1449,7 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
     {
         // can skip validation if done at kyber network level
         if (validate) {
-            require(conversionRate &gt; 0);
+            require(conversionRate > 0);
             if (srcToken == ETH_TOKEN_ADDRESS)
                 require(msg.value == srcAmount);
             else
@@ -1458,7 +1458,7 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
 
         uint destAmount = getDestQty(srcToken, destToken, srcAmount, conversionRate);
         // sanity check
-        require(destAmount &gt; 0);
+        require(destAmount > 0);
 
         // add to imbalance
         ERC20 token;
@@ -1502,7 +1502,7 @@ contract Wrapper is Utils {
 
     function getBalances(address reserve, ERC20[] tokens) public view returns(uint[],uint) {
         uint[] memory result = new uint[](tokens.length);
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             uint balance = 0;
             if (tokens[i] == ETH_TOKEN_ADDRESS) {
                 balance = reserve.balance;
@@ -1517,12 +1517,12 @@ contract Wrapper is Utils {
     }
 
     function getByteFromBytes14(bytes14 x, uint byteInd) public pure returns(byte) {
-        require(byteInd &lt;= 13);
+        require(byteInd <= 13);
         return x[byteInd];
     }
 
     function getInt8FromByte(bytes14 x, uint byteInd) public pure returns(int8) {
-        require(byteInd &lt;= 13);
+        require(byteInd <= 13);
         return int8(x[byteInd]);
     }
 
@@ -1544,7 +1544,7 @@ contract Wrapper is Utils {
         int8[] memory compactSell = new int8[](tokenList.length);
         uint[] memory updateBlock = new uint[](tokenList.length);
 
-        for (uint i = 0;  i &lt; tokenList.length; i++) {
+        for (uint i = 0;  i < tokenList.length; i++) {
             buyBases[i] = ratesContract.getBasicRate(tokenList[i], true);
             sellBases[i] = ratesContract.getBasicRate(tokenList[i], false);
 
@@ -1558,7 +1558,7 @@ contract Wrapper is Utils {
         uint[] memory bulkIndices = new uint[](tokenList.length);
         uint[] memory tokenIndexInBulk = new uint[](tokenList.length);
 
-        for (uint i = 0; i &lt; tokenList.length; i++) {
+        for (uint i = 0; i < tokenList.length; i++) {
             uint bulkIndex; uint index; byte buy; byte sell;
             (bulkIndex, index, buy, sell) = ratesContract.getCompactData(tokenList[i]);
 
@@ -1578,7 +1578,7 @@ contract Wrapper is Utils {
 
         uint[] memory rates = new uint[](srcs.length);
         uint[] memory slippage = new uint[](srcs.length);
-        for ( uint i = 0; i &lt; srcs.length; i++ ) {
+        for ( uint i = 0; i < srcs.length; i++ ) {
             (rates[i],slippage[i]) = network.getExpectedRate(srcs[i],dests[i],qty[i]);
         }
 
@@ -1593,7 +1593,7 @@ contract Wrapper is Utils {
         uint[] memory rates      = new uint[](srcs.length);
         uint[] memory sanityRate = new uint[](srcs.length);
 
-        for(uint i = 0 ; i &lt; srcs.length ; i++) {
+        for(uint i = 0 ; i < srcs.length ; i++) {
             if(reserve.sanityRatesContract() != address(0x0)){
                 sanityRate[i] = reserve.sanityRatesContract().getSanityRate(srcs[i],
                                                                             dests[i]);

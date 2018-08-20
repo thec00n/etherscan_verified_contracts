@@ -55,14 +55,14 @@ contract PulsarToken is Ownable {
   uint public constant MIN_BUYBACK_VALUE = 1 * TOKEN_SCALE;
 
   // Public identifiers of the token
-  string public constant NAME = &quot;Pulsar&quot;;       // token name
-  string public constant SYMBOL = &quot;PVC&quot;;        // token symbol
+  string public constant NAME = "Pulsar";       // token name
+  string public constant SYMBOL = "PVC";        // token symbol
 
 
   /**
    * Contract state machine.                           _____________
    *                                                  ↓             |
-   * Deployed -&gt; ICOStarted -&gt; ICOStopped -&gt; BuybackEnabled -&gt; BuybackPaused -&gt; Destroyed.
+   * Deployed -> ICOStarted -> ICOStopped -> BuybackEnabled -> BuybackPaused -> Destroyed.
    */
   enum ContractState { Deployed, ICOStarted, ICOStopped, BuybackEnabled, BuybackPaused, Destroyed }
 
@@ -79,7 +79,7 @@ contract PulsarToken is Ownable {
   /******** Public variables *********/
 
   // This creates an array with all balances
-  mapping (address =&gt; uint) public balanceOf;
+  mapping (address => uint) public balanceOf;
 
   // Reserved bounty tokens
   uint public bountyTokens = 40000 * TOKEN_SCALE;
@@ -122,8 +122,8 @@ contract PulsarToken is Ownable {
     uint8 _bonus = 0;
     uint _elapsed = now - icoStartTime;
 
-    for (uint8 i = 0; i &lt; staging.length; i++) {
-      if (_elapsed &lt;= staging[i]) {
+    for (uint8 i = 0; i < staging.length; i++) {
+      if (_elapsed <= staging[i]) {
           _bonus = bonuses[i];
           break;
       }
@@ -156,9 +156,9 @@ contract PulsarToken is Ownable {
   function _transfer(address _from, address _to, uint _value) internal
   {
     require(_to != address(0x0));                       // prevent transfer to 0x0 address
-    require(_value &gt; 0);                                // check if the value is greater than zero
-    require(balanceOf[_from] &gt;= _value);                // check if the sender has enough tokens
-    require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // check for overflows
+    require(_value > 0);                                // check if the value is greater than zero
+    require(balanceOf[_from] >= _value);                // check if the sender has enough tokens
+    require(balanceOf[_to] + _value > balanceOf[_to]);  // check for overflows
 
     balanceOf[_from]  -= _value;                        // subtract from the sender
     balanceOf[_to]    += _value;                        // add the same to the recipient
@@ -211,7 +211,7 @@ contract PulsarToken is Ownable {
   /**
    * View current Ether balance of the contract.
    *
-   * Returns: Current amount of Wei at the contract&#39;s address.
+   * Returns: Current amount of Wei at the contract's address.
    */
   function getContractEtherBalance() public view returns (uint) {
     return this.balance;
@@ -235,13 +235,13 @@ contract PulsarToken is Ownable {
   function invest() public payable
   {
     require(contractState == ContractState.ICOStarted);   // check state
-    require(now &gt;= icoStartTime);                         // check time
-    require(msg.value &gt;= MIN_ACCEPTED_VALUE);             // check amount of contribution
+    require(now >= icoStartTime);                         // check time
+    require(msg.value >= MIN_ACCEPTED_VALUE);             // check amount of contribution
 
     uint8 _bonus  = calcBonusPercent();
     uint  _tokens = calcEthersToTokens(msg.value, _bonus);
 
-    require(balanceOf[this] &gt;= _tokens);                  // check amount of tokens
+    require(balanceOf[this] >= _tokens);                  // check amount of tokens
 
     _transfer(this, msg.sender, _tokens);                 // tranfer tokens to the investor
 
@@ -262,23 +262,23 @@ contract PulsarToken is Ownable {
   function buyback(uint token_value) public
   {
     require(contractState == ContractState.BuybackEnabled);   // check current state
-    require(buybackPrice &gt; 0);                                // buyback price must be set
-    require(token_value &gt;= MIN_BUYBACK_VALUE);                // minimum allowed amount of tokens
-    require(msg.sender != owner);                             // the owner can&#39;t buyback
+    require(buybackPrice > 0);                                // buyback price must be set
+    require(token_value >= MIN_BUYBACK_VALUE);                // minimum allowed amount of tokens
+    require(msg.sender != owner);                             // the owner can't buyback
 
     uint _ethers = calcTokensToEthers(token_value);
 
     // Check if the contract has enough ether to buyback the tokens
-    require(this.balance &gt;= _ethers);
+    require(this.balance >= _ethers);
 
     // Transfer the tokens back to the contract
     _transfer(msg.sender, this, token_value);
 
-    // Send ether to the seller. It&#39;s important to do this last to avoid recursion attacks.
+    // Send ether to the seller. It's important to do this last to avoid recursion attacks.
     msg.sender.transfer(_ethers);
   }
 
-  /************************** Owner&#39;s interface *****************************/
+  /************************** Owner's interface *****************************/
 
   /**
    * Set ICO start time
@@ -338,7 +338,7 @@ contract PulsarToken is Ownable {
    * @param ether_value Amount in Wei
    */
   function transferEthersToOwner(uint ether_value) onlyOwner external {
-    require(this.balance &gt;= ether_value);
+    require(this.balance >= ether_value);
     msg.sender.transfer(ether_value);
   }
 
@@ -363,7 +363,7 @@ contract PulsarToken is Ownable {
   function transferTokens(address recipient_address, uint token_value) external {
     require( (msg.sender == owner) || (msg.sender == trustedSender) );  // Restricted to the owner or to trustedSender
     require(contractState == ContractState.ICOStarted);                 // check state
-    require(now &gt;= icoStartTime);                                       // check time
+    require(now >= icoStartTime);                                       // check time
 
     _transfer(this, recipient_address, token_value);
   }
@@ -378,8 +378,8 @@ contract PulsarToken is Ownable {
    */
   function grantBounty(address recipient_address, uint token_value) onlyOwner external {
     require((contractState == ContractState.ICOStarted) || (contractState == ContractState.ICOStopped));  // check the state
-    require(bountyTokens &gt;= token_value);  // check remaining amount of bounty tokens
-    require(now &gt;= icoStartTime);     // check time
+    require(bountyTokens >= token_value);  // check remaining amount of bounty tokens
+    require(now >= icoStartTime);     // check time
 
     _transfer(this, recipient_address, token_value);
     bountyTokens -= token_value;
@@ -408,13 +408,13 @@ contract PulsarToken is Ownable {
 
     require(investor_address != owner);                   // do not refund to the owner
     require(investor_address != address(this));           // do not refund to the contract
-    require(balanceOf[investor_address] &gt; 0);             // investor&#39;s token balance must be greater than zero
-    require(this.balance &gt;= ether_value);                 // the contract must have enough ether
+    require(balanceOf[investor_address] > 0);             // investor's token balance must be greater than zero
+    require(this.balance >= ether_value);                 // the contract must have enough ether
 
     // Transfer the tokens back to the contract
     _transfer(investor_address, this, balanceOf[investor_address]);
 
-    // Send ether to the investor. It&#39;s important to do this last to avoid recursion attacks.
+    // Send ether to the investor. It's important to do this last to avoid recursion attacks.
     investor_address.transfer(ether_value);
   }
 
@@ -426,7 +426,7 @@ contract PulsarToken is Ownable {
    * @param buyback_price New buyback price in Wei
    */
   function setBuybackPrice(uint buyback_price) onlyOwner public {
-    require(buyback_price &gt; 0);
+    require(buyback_price > 0);
     buybackPrice = buyback_price;
   }
 

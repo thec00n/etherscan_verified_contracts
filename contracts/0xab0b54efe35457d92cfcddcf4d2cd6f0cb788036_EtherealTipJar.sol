@@ -29,17 +29,17 @@ contract EtherealFoundationOwned {
     }
 }
 contract EtherealToken is EtherealFoundationOwned/*, MineableToken*/{
-    string public constant CONTRACT_NAME = &quot;EtherealToken&quot;;
-    string public constant CONTRACT_VERSION = &quot;A&quot;;
+    string public constant CONTRACT_NAME = "EtherealToken";
+    string public constant CONTRACT_VERSION = "A";
     
-    string public constant name = &quot;Test Token&#174;&quot;;//itCoin&#174; Limited
-    string public constant symbol = &quot;TMP&quot;;//ITLD
+    string public constant name = "Test Token®";//itCoin® Limited
+    string public constant symbol = "TMP";//ITLD
     uint256 public constant decimals = 0;  // 18 is the most common number of decimal places
     bool private tradeable;
     uint256 private currentSupply;
-    mapping(address =&gt; uint256) private balances;
-    mapping(address =&gt; mapping(address=&gt; uint256)) private allowed;
-    mapping(address =&gt; bool) private lockedAccounts;  
+    mapping(address => uint256) private balances;
+    mapping(address => mapping(address=> uint256)) private allowed;
+    mapping(address => bool) private lockedAccounts;  
 	
     
     function EtherealToken(
@@ -53,7 +53,7 @@ contract EtherealToken is EtherealFoundationOwned/*, MineableToken*/{
         
         currentSupply = initialTotalSupply * (10**decimals);
         uint256 totalCreated;
-        for(uint8 i =0; i &lt; addresses.length; i++)
+        for(uint8 i =0; i < addresses.length; i++)
         {
             if(initialBalancesLocked){
                 lockedAccounts[addresses[i]] = true;
@@ -63,7 +63,7 @@ contract EtherealToken is EtherealFoundationOwned/*, MineableToken*/{
         }
         
         
-        if(currentSupply &lt; totalCreated)
+        if(currentSupply < totalCreated)
         {
             selfdestruct(msg.sender);
         }
@@ -112,7 +112,7 @@ contract EtherealToken is EtherealFoundationOwned/*, MineableToken*/{
     }
     function transfer(address _to, uint _value) public notLocked returns (bool success) {
         require(tradeable);
-         if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
              Transfer( msg.sender, _to,  _value);
              balances[msg.sender] -= _value;
              balances[_to] += _value;
@@ -122,12 +122,12 @@ contract EtherealToken is EtherealFoundationOwned/*, MineableToken*/{
          }
      }
     function transferFrom(address _from, address _to, uint _value)public notLocked returns (bool success) {
-        require(!lockedAccounts[_from] &amp;&amp; !lockedAccounts[_to]);
+        require(!lockedAccounts[_from] && !lockedAccounts[_to]);
 		require(tradeable);
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
                 
             Transfer( _from, _to,  _value);
                 
@@ -157,9 +157,9 @@ contract EtherealToken is EtherealFoundationOwned/*, MineableToken*/{
    }
 } 
 contract EtherealTipJar  is EtherealFoundationOwned{
-    string public constant CONTRACT_NAME = &quot;EtherealTipJar&quot;;
-    string public constant CONTRACT_VERSION = &quot;B&quot;;
-    string public constant QUOTE = &quot;&#39;The universe never did make sense; I suspect it was built on government contract.&#39; -Robert A. Heinlein&quot;;
+    string public constant CONTRACT_NAME = "EtherealTipJar";
+    string public constant CONTRACT_VERSION = "B";
+    string public constant QUOTE = "'The universe never did make sense; I suspect it was built on government contract.' -Robert A. Heinlein";
     
     
     event RecievedTip(address indexed from, uint256 value);
@@ -169,9 +169,9 @@ contract EtherealTipJar  is EtherealFoundationOwned{
 	
 	event TransferedEth(address indexed to, uint256 value);
 	function TransferEth(address to, uint256 value) public onlyOwner{
-	    require(this.balance &gt;= value);
+	    require(this.balance >= value);
 	    
-        if(value &gt; 0)
+        if(value > 0)
 		{
 			to.transfer(value);
 			TransferedEth(to, value);
@@ -183,7 +183,7 @@ contract EtherealTipJar  is EtherealFoundationOwned{
 	    
 	    EtherealToken token = EtherealToken(tokenContract);
 	    
-        if(value &gt; 0)
+        if(value > 0)
 		{
 			token.transfer(to, value);
 			TransferedERC20(tokenContract,to, value);

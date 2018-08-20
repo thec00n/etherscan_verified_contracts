@@ -57,16 +57,16 @@ contract NFTHouseGame {
     House[] public houses;
     Trait[] public traits;
 
-    mapping (uint =&gt; uint[4]) public houseTraits;
-    mapping (uint =&gt; Listing) public listings;
+    mapping (uint => uint[4]) public houseTraits;
+    mapping (uint => Listing) public listings;
 
-    mapping (address =&gt; uint) public ownedHouses;
-    mapping (uint =&gt; uint) public classVariants;
-    mapping (uint =&gt; address) approvedTransfers;
+    mapping (address => uint) public ownedHouses;
+    mapping (uint => uint) public classVariants;
+    mapping (uint => address) approvedTransfers;
 
-    string[] colors = [&quot;e96b63&quot;];
-    string[] streetNames = [&quot;Main&quot;];
-    string[] streetTypes = [&quot;Street&quot;];
+    string[] colors = ["e96b63"];
+    string[] streetNames = ["Main"];
+    string[] streetTypes = ["Street"];
 
     modifier onlyBy(address _authorized) {
         require(msg.sender == _authorized);
@@ -103,11 +103,11 @@ contract NFTHouseGame {
 
     /* ERC-20 Compatibility */
     function name() pure public returns (string) {
-        return &quot;SubPrimeCrypto&quot;;
+        return "SubPrimeCrypto";
     }
 
     function symbol() pure public returns (string) {
-       return &quot;HOUSE&quot;;
+       return "HOUSE";
     }
 
     function totalSupply() view public returns (uint) {
@@ -189,7 +189,7 @@ contract NFTHouseGame {
     /* Public Functionality */
     function buildHouse() payable public {
         require(
-          msg.value &gt;= buildPrice ||
+          msg.value >= buildPrice ||
           msg.sender == gameOwner ||
           msg.sender == gameDeveloper
         );
@@ -204,7 +204,7 @@ contract NFTHouseGame {
 
     function buildAddition(uint _tokenId) onlyByAssetOwner(_tokenId) payable public {
         House storage house = houses[_tokenId];
-        require(msg.value &gt;= additionPrice);
+        require(msg.value >= additionPrice);
 
         if (presaleOngoing) presaleProceeds += msg.value;
 
@@ -216,12 +216,12 @@ contract NFTHouseGame {
         House storage house = houses[_tokenId];
         uint rand = notRandomWithSeed(1000, _tokenId);
 
-        // 80% chance &quot;claim&quot; is investigated
-        if (rand &gt; 799) {
+        // 80% chance "claim" is investigated
+        if (rand > 799) {
             upgradeAsset(_tokenId);
         } else {
             // investigations yield equal chance of upgrade or permanent loss
-            if (rand &gt; 499) {
+            if (rand > 499) {
                 upgradeAsset(_tokenId);
             } else {
                 house.class = HouseClasses.Ashes;
@@ -238,12 +238,12 @@ contract NFTHouseGame {
         Listing storage listing = listings[_tokenId];
 
         uint currentPrice = calculateCurrentPrice(listing);
-        require(msg.value &gt;= currentPrice);
+        require(msg.value >= currentPrice);
 
-        require(listing.isAvailable &amp;&amp; listing.endsAt &gt; now);
+        require(listing.isAvailable && listing.endsAt > now);
         listing.isAvailable = false;
 
-        if (presaleOngoing &amp;&amp; (++presaleSales &gt;= presaleLimit)) {
+        if (presaleOngoing && (++presaleSales >= presaleLimit)) {
           presaleOngoing = false;
         }
 
@@ -298,8 +298,8 @@ contract NFTHouseGame {
         uint houseId = generateHouse(this);
         uint sellPrice = (houses[houseId].propertyValue / 5000) * 1 finney;
 
-        if (sellPrice &gt; 250 finney) sellPrice = 250 finney;
-        if (sellPrice &lt; 50 finney) sellPrice = 50 finney;
+        if (sellPrice > 250 finney) sellPrice = 250 finney;
+        if (sellPrice < 50 finney) sellPrice = 50 finney;
 
         createListing(houseId, sellPrice, 0, 30);
     }
@@ -312,7 +312,7 @@ contract NFTHouseGame {
         uint remainingPresaleProceeds = presaleProceeds - presaleDevPayout;
         uint devsShare = remainingPresaleProceeds / (100 / presaleDevFee);
 
-        if (devsShare &gt; 0) {
+        if (devsShare > 0) {
           presaleDevPayout += devsShare;
           gameDeveloper.transfer(devsShare);
         }
@@ -324,7 +324,7 @@ contract NFTHouseGame {
         uint remainingPresaleProceeds = presaleProceeds - presaleDevPayout;
         uint devsShare = remainingPresaleProceeds / (100 / presaleDevFee);
 
-        if (devsShare &gt; 0) {
+        if (devsShare > 0) {
           presaleDevPayout += devsShare;
           _destination.transfer(devsShare);
         }
@@ -400,19 +400,19 @@ contract NFTHouseGame {
         propertyValue += squareFootage * 25;
         propertyValue *= 5;
 
-        return uint(houseClass) &gt; 4 ? propertyValue * 5 : propertyValue;
+        return uint(houseClass) > 4 ? propertyValue * 5 : propertyValue;
     }
 
     function randomHouseClass() internal view returns (HouseClasses) {
         uint rand = notRandom(1000);
 
-        if (rand &lt; 300) {
+        if (rand < 300) {
             return HouseClasses.Shack;
-        } else if (rand &gt; 300 &amp;&amp; rand &lt; 550) {
+        } else if (rand > 300 && rand < 550) {
             return HouseClasses.Apartment;
-        } else if (rand &gt; 550 &amp;&amp; rand &lt; 750) {
+        } else if (rand > 550 && rand < 750) {
             return HouseClasses.Bungalow;
-        } else if (rand &gt; 750 &amp;&amp; rand &lt; 900) {
+        } else if (rand > 750 && rand < 900) {
             return HouseClasses.House;
         } else {
             return HouseClasses.Mansion;
@@ -427,15 +427,15 @@ contract NFTHouseGame {
 
     function randomBedrooms(HouseClasses houseClass) internal view returns (uint) {
         uint class = uint(houseClass);
-        return class &gt;= 1 ? class + notRandom(4) : 0;
+        return class >= 1 ? class + notRandom(4) : 0;
     }
 
     function randomBathrooms(uint numBedrooms) internal view returns (uint) {
-        return numBedrooms &lt; 2 ? numBedrooms : numBedrooms - notRandom(3);
+        return numBedrooms < 2 ? numBedrooms : numBedrooms - notRandom(3);
     }
 
     function calculateSquareFootage(HouseClasses houseClass, uint numBedrooms, uint numBathrooms) internal pure returns (uint) {
-        uint baseSqft = uint(houseClass) &gt;= 4 ? 50 : 25;
+        uint baseSqft = uint(houseClass) >= 4 ? 50 : 25;
         uint multiplier = uint(houseClass) + 1;
 
         uint bedroomSqft = (numBedrooms + 1) * 10 * baseSqft;
@@ -447,7 +447,7 @@ contract NFTHouseGame {
     function upgradeAsset(uint tokenId) internal {
         House storage house = houses[tokenId];
 
-        if (uint(house.class) &lt; 5) {
+        if (uint(house.class) < 5) {
           house.class = HouseClasses(uint(house.class) + 1);
         }
 
@@ -459,13 +459,13 @@ contract NFTHouseGame {
 
     function processUpgrades(House storage house) internal {
         uint class = uint(house.class);
-        if (class &lt;= house.numBedrooms) {
+        if (class <= house.numBedrooms) {
             house.class = HouseClasses.Bungalow;
-        } else if (class &lt; 2 &amp;&amp; house.numBedrooms &gt; 5) {
+        } else if (class < 2 && house.numBedrooms > 5) {
             house.class = HouseClasses.Penthouse;
-        } else if (class &lt; 4 &amp;&amp; house.numBedrooms &gt; 10) {
+        } else if (class < 4 && house.numBedrooms > 10) {
             house.class = HouseClasses.Mansion;
-        } else if (class &lt; 6 &amp;&amp; house.numBedrooms &gt; 15) {
+        } else if (class < 6 && house.numBedrooms > 15) {
             house.class = HouseClasses.Estate;
         }
 

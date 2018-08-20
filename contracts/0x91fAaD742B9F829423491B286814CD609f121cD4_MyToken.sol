@@ -27,9 +27,9 @@ contract MyToken is Owner {
     uint256 public totalSupply;
     
     //Balance property which should be always associate with an address
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     //frozenAccount property which should be associate with an address
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     //These generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -49,9 +49,9 @@ contract MyToken is Owner {
         //checking account is freeze or not
         if (frozenAccount[msg.sender]) throw;
         //checking the sender should have enough coins
-        if(balanceOf[msg.sender] &lt; value) throw;
+        if(balanceOf[msg.sender] < value) throw;
         //checking for overflows
-        if(balanceOf[to] + value &lt; balanceOf[to]) throw;
+        if(balanceOf[to] + value < balanceOf[to]) throw;
         
         //substracting the sender balance
         balanceOf[msg.sender] -= value;

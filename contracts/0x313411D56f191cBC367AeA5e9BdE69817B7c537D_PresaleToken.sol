@@ -9,8 +9,8 @@ pragma solidity ^0.4.13;
 contract PresaleToken
 {
 /// Fields:
-    string public constant name = &quot;Remechain Presale Token&quot;;
-    string public constant symbol = &quot;RMC&quot;;
+    string public constant name = "Remechain Presale Token";
+    string public constant symbol = "RMC";
     uint public constant decimals = 18;
     uint public constant PRICE = 320;  // per 1 Ether
 
@@ -40,7 +40,7 @@ contract PresaleToken
     uint public totalSupply = 0; // amount of tokens already sold
     uint public bountySupply = 0; // amount of tokens already given as a reward
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow = 0;
 
     // Token manager has exclusive priveleges to call administrative
@@ -50,8 +50,8 @@ contract PresaleToken
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager = 0;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public ethBalances;
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public ethBalances;
 
 /// Modifiers:
     modifier onlyTokenManager()     { require(msg.sender == tokenManager); _;}
@@ -78,22 +78,22 @@ contract PresaleToken
     function reward(address _user, uint  _amount) public onlyTokenManager {
         require(_user != 0x0);
         
-        assert(bountySupply + _amount &gt;= bountySupply);
-        assert(bountySupply + _amount &lt;= BOUNTY_LIMIT);
+        assert(bountySupply + _amount >= bountySupply);
+        assert(bountySupply + _amount <= BOUNTY_LIMIT);
         bountySupply += _amount;
         
-        assert(balances[_user] + _amount &gt;= balances[_user]);
+        assert(balances[_user] + _amount >= balances[_user]);
         balances[_user] += _amount;
         
         addAddressToList(_user);
     }
     
     function isIcoSuccessful() constant public returns(bool successful)  {
-        return totalSupply &gt;= SOFTCAP_LIMIT;
+        return totalSupply >= SOFTCAP_LIMIT;
     }
     
     function isIcoOver() constant public returns(bool isOver) {
-        return now &gt;= icoDeadline;
+        return now >= icoDeadline;
     }
 
     function buyTokens(address _buyer) public payable onlyInState(State.Running)
@@ -104,10 +104,10 @@ contract PresaleToken
         uint ethValue = msg.value;
         uint newTokens = msg.value * PRICE;
        
-        require(!(totalSupply + newTokens &gt; TOKEN_SUPPLY_LIMIT));
-        assert(ethBalances[_buyer] + ethValue &gt;= ethBalances[_buyer]);
-        assert(balances[_buyer] + newTokens &gt;= balances[_buyer]);
-        assert(totalSupply + newTokens &gt;= totalSupply);
+        require(!(totalSupply + newTokens > TOKEN_SUPPLY_LIMIT));
+        assert(ethBalances[_buyer] + ethValue >= ethBalances[_buyer]);
+        assert(balances[_buyer] + newTokens >= balances[_buyer]);
+        assert(totalSupply + newTokens >= totalSupply);
         
         ethBalances[_buyer] += ethValue;
         balances[_buyer] += newTokens;
@@ -119,7 +119,7 @@ contract PresaleToken
     }
     
     address[] public addressList;
-    mapping (address =&gt; bool) isAddressInList;
+    mapping (address => bool) isAddressInList;
     function addAddressToList(address _address) private {
         if (isAddressInList[_address]) {
             return;
@@ -157,23 +157,23 @@ contract PresaleToken
 
     function setPresaleState(State _nextState) public onlyTokenManager
     {
-        // Init -&gt; Running
-        // Running -&gt; Paused
-        // Running -&gt; Migrating
-        // Paused -&gt; Running
-        // Paused -&gt; Migrating
-        // Migrating -&gt; Migrated
+        // Init -> Running
+        // Running -> Paused
+        // Running -> Migrating
+        // Paused -> Running
+        // Paused -> Migrating
+        // Migrating -> Migrated
         bool canSwitchState
-             =  (currentState == State.Init &amp;&amp; _nextState == State.Running)
-             || (currentState == State.Running &amp;&amp; _nextState == State.Paused)
+             =  (currentState == State.Init && _nextState == State.Running)
+             || (currentState == State.Running && _nextState == State.Paused)
              // switch to migration phase only if crowdsale manager is set
              || ((currentState == State.Running || currentState == State.Paused)
-                 &amp;&amp; _nextState == State.Migrating
-                 &amp;&amp; crowdsaleManager != 0x0)
-             || (currentState == State.Paused &amp;&amp; _nextState == State.Running)
+                 && _nextState == State.Migrating
+                 && crowdsaleManager != 0x0)
+             || (currentState == State.Paused && _nextState == State.Running)
              // switch to migrated only if everyting is migrated
-             || (currentState == State.Migrating &amp;&amp; _nextState == State.Migrated
-                 &amp;&amp; totalSupply == 0);
+             || (currentState == State.Migrating && _nextState == State.Migrated
+                 && totalSupply == 0);
 
         require(canSwitchState);
 
@@ -184,11 +184,11 @@ contract PresaleToken
     uint public nextInListToReturn = 0;
     uint private constant transfersPerIteration = 50;
     function returnToFunders() private {
-        uint afterLast = nextInListToReturn + transfersPerIteration &lt; addressList.length ? nextInListToReturn + transfersPerIteration : addressList.length; 
+        uint afterLast = nextInListToReturn + transfersPerIteration < addressList.length ? nextInListToReturn + transfersPerIteration : addressList.length; 
         
-        for (uint i = nextInListToReturn; i &lt; afterLast; i++) {
+        for (uint i = nextInListToReturn; i < afterLast; i++) {
             address currentUser = addressList[i];
-            if (ethBalances[currentUser] &gt; 0) {
+            if (ethBalances[currentUser] > 0) {
                 currentUser.transfer(ethBalances[currentUser]);
                 ethBalances[currentUser] = 0;
             }
@@ -199,7 +199,7 @@ contract PresaleToken
     function withdrawEther() public
     {
         if (isIcoSuccessful()) {
-            if(msg.sender == tokenManager &amp;&amp; this.balance &gt; 0) 
+            if(msg.sender == tokenManager && this.balance > 0) 
             {
                 escrow.transfer(this.balance);
             }
@@ -215,10 +215,10 @@ contract PresaleToken
         returnFundsFor(msg.sender);
     }
     function returnFundsFor(address _user) public {
-        assert(isIcoOver() &amp;&amp; !isIcoSuccessful());
+        assert(isIcoOver() && !isIcoSuccessful());
         assert(msg.sender == tokenManager || msg.sender == address(this));
         
-        if (ethBalances[_user] &gt; 0) {
+        if (ethBalances[_user] > 0) {
             _user.transfer(ethBalances[_user]);
             ethBalances[_user] = 0;
         }
@@ -232,7 +232,7 @@ contract PresaleToken
 
     function setCrowdsaleManager(address _mgr) public onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         require(currentState != State.Migrating);
 
         crowdsaleManager = _mgr;

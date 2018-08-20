@@ -36,7 +36,7 @@ Origin: the origin address from whose balance the tokens are sent
 Value is the amount of tokens sent
 Data is arbitrary data sent with the token transfer. Simulates ether tx.data
 
-From, origin and value shouldn&#39;t be trusted unless the token contract is trusted.
+From, origin and value shouldn't be trusted unless the token contract is trusted.
 If sender == tx.origin, it is safe to trust it regardless of the token.
 */
 
@@ -61,37 +61,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   /*function assert(bool assertion) internal {
@@ -110,11 +110,11 @@ contract SafeMath {
  * https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, SafeMath {
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
   function transfer(address _to, uint _value) returns (bool success) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
     Transfer(msg.sender, _to, _value);
@@ -123,7 +123,7 @@ contract StandardToken is ERC20, SafeMath {
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
     allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -145,8 +145,8 @@ contract StandardToken is ERC20, SafeMath {
 
 contract KinguinKrowns is ERC223, StandardToken {
   address public owner;  // token owner adddres
-  string public constant name = &quot;PINGUINS&quot;;
-  string public constant symbol = &quot;PGS&quot;;
+  string public constant name = "PINGUINS";
+  string public constant symbol = "PGS";
   uint8 public constant decimals = 18;
   // uint256 public totalSupply; // defined in ERC20 contract
 		
@@ -196,7 +196,7 @@ contract KinguinKrowns is ERC223, StandardToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
   
   // returns krown balance of given address 	
@@ -227,9 +227,9 @@ contract KinguinIco is SafeMath, ERC223Receiver {
     uint rSentKrownsCount;          // counter of KRS transactions during a round
     bool roundCompleted;            // flag whether a round has finished
   }
-  mapping(uint =&gt; IcoRoundData) public icoRounds;  // table of rounds data: ico number, ico record
+  mapping(uint => IcoRoundData) public icoRounds;  // table of rounds data: ico number, ico record
   
-  mapping(address =&gt; bool) public allowedAdresses; // list of KYC/AML approved wallets: participant address, allowed/not allowed
+  mapping(address => bool) public allowedAdresses; // list of KYC/AML approved wallets: participant address, allowed/not allowed
   
   struct RoundPayments {            // structure for storing sum of payments
     uint round;
@@ -237,7 +237,7 @@ contract KinguinIco is SafeMath, ERC223Receiver {
   }
   // amount of payments from the same address during each round 
   //  (to catch multiple payments to check KYC/AML approvance): participant address, payments record
-  mapping(address =&gt; RoundPayments) public paymentsFromAddress; 
+  mapping(address => RoundPayments) public paymentsFromAddress; 
 
   uint public ethEur;               // current EUR/ETH exchange rate (for AML check)
   uint public ethUsd;               // current ETH/USD exchange rate (sending KRS for ETH calc) 
@@ -264,7 +264,7 @@ contract KinguinIco is SafeMath, ERC223Receiver {
   // execution allowed only for contract owner or api address
   modifier onlyOwnerOrApi() {
 	require(msg.sender == owner || msg.sender == api);
-    if (msg.sender == api &amp;&amp; api != owner) {
+    if (msg.sender == api && api != owner) {
       require(!apiAccessDisabled);
 	}
     _;
@@ -272,36 +272,36 @@ contract KinguinIco is SafeMath, ERC223Receiver {
  
   function KinguinIco() {
     owner = msg.sender; // this contract owner
-    api = msg.sender; // initially api address is the contract owner&#39;s address 
+    api = msg.sender; // initially api address is the contract owner's address 
     krs = KinguinKrowns(0xdfb410994b66778bd6cc2c82e8ffe4f7b2870006); // KRS token 
   } 
  
   // receiving ETH and sending KRS
   function () payable {
     if(msg.sender != owner) { // if ETH comes from other than the contract owner address
-      if(block.number &gt;= icoRounds[rNo].rStartBlock &amp;&amp; block.number &lt;= icoRounds[rNo].rEndBlock &amp;&amp; !icoInProgress) {
+      if(block.number >= icoRounds[rNo].rStartBlock && block.number <= icoRounds[rNo].rEndBlock && !icoInProgress) {
         icoInProgress = true;
       }  
-      require(block.number &gt;= icoRounds[rNo].rStartBlock &amp;&amp; block.number &lt;= icoRounds[rNo].rEndBlock &amp;&amp; !icoRounds[rNo].roundCompleted); // allow payments only during the ico round
-      require(msg.value &gt;= icoRounds[rNo].rMinEthPayment); // minimum eth payment
-	  require(ethEur &gt; 0); // ETH/EUR rate for AML must be set earlier
-	  require(ethUsd &gt; 0); // ETH/USD rate for conversion to KRS
+      require(block.number >= icoRounds[rNo].rStartBlock && block.number <= icoRounds[rNo].rEndBlock && !icoRounds[rNo].roundCompleted); // allow payments only during the ico round
+      require(msg.value >= icoRounds[rNo].rMinEthPayment); // minimum eth payment
+	  require(ethEur > 0); // ETH/EUR rate for AML must be set earlier
+	  require(ethUsd > 0); // ETH/USD rate for conversion to KRS
 	  uint krowns4eth;
-	  if(icoRounds[rNo].rKrsUsdFixed &gt; 0) { // KRS has fixed ratio to USD
+	  if(icoRounds[rNo].rKrsUsdFixed > 0) { // KRS has fixed ratio to USD
         krowns4eth = safeDiv(safeMul(safeMul(msg.value, ethUsd), uint(100)), icoRounds[rNo].rKrsUsdFixed);
 	  } else { // KRS/USD is traded on exchanges
-		require(krsUsd &gt; 0); // KRS/USD rate for conversion to KRS
+		require(krsUsd > 0); // KRS/USD rate for conversion to KRS
         krowns4eth = safeDiv(safeMul(safeMul(msg.value, ethUsd), uint(100)), krsUsd);
   	  }
-      require(safeAdd(icoRounds[rNo].rSentKrownsAmount, krowns4eth) &lt;= icoRounds[rNo].rMaxKrsCap); // krs cap per round
+      require(safeAdd(icoRounds[rNo].rSentKrownsAmount, krowns4eth) <= icoRounds[rNo].rMaxKrsCap); // krs cap per round
 
       if(paymentsFromAddress[msg.sender].round != rNo) { // on mappings all keys are possible, so there is no checking for its existence
         paymentsFromAddress[msg.sender].round = rNo; // on new round set to current round
         paymentsFromAddress[msg.sender].amount = 0; // zeroing amount on new round
       }   
-      if(safeMul(ethEur, safeDiv(msg.value, 10**18)) &gt;= icoRounds[rNo].rKycTreshold || // if payment from this sender requires to be from KYC/AML approved address
+      if(safeMul(ethEur, safeDiv(msg.value, 10**18)) >= icoRounds[rNo].rKycTreshold || // if payment from this sender requires to be from KYC/AML approved address
         // if sum of payments from this sender address requires to be from KYC/AML approved address
-        safeMul(ethEur, safeDiv(safeAdd(paymentsFromAddress[msg.sender].amount, msg.value), 10**18)) &gt;= icoRounds[rNo].rKycTreshold) { 
+        safeMul(ethEur, safeDiv(safeAdd(paymentsFromAddress[msg.sender].amount, msg.value), 10**18)) >= icoRounds[rNo].rKycTreshold) { 
 		require(allowedAdresses[msg.sender]); // only KYC/AML allowed address
       }
 
@@ -314,10 +314,10 @@ contract KinguinIco is SafeMath, ERC223Receiver {
       krs.transfer(msg.sender, krowns4eth);
       LogSentKrs(msg.sender, krowns4eth, block.number);
     } else { // owner can always pay-in (and trigger round start/stop)
-	    if(block.number &gt;= icoRounds[rNo].rStartBlock &amp;&amp; block.number &lt;= icoRounds[rNo].rEndBlock &amp;&amp; !icoInProgress) {
+	    if(block.number >= icoRounds[rNo].rStartBlock && block.number <= icoRounds[rNo].rEndBlock && !icoInProgress) {
           icoInProgress = true;
         }
-        if(block.number &gt; icoRounds[rNo].rEndBlock &amp;&amp; icoInProgress) {
+        if(block.number > icoRounds[rNo].rEndBlock && icoInProgress) {
           endIcoRound();
         }
     }
@@ -343,8 +343,8 @@ contract KinguinIco is SafeMath, ERC223Receiver {
   }
 
   function getSig(bytes _data) private returns (bytes4 sig) {
-    uint l = _data.length &lt; 4 ? _data.length : 4;
-    for (uint i = 0; i &lt; l; i++) {
+    uint l = _data.length < 4 ? _data.length : 4;
+    for (uint i = 0; i < l; i++) {
       sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (l - 1 - i))));
     }
   }
@@ -370,7 +370,7 @@ contract KinguinIco is SafeMath, ERC223Receiver {
   function newIcoRound(uint _rMinEthPayment, uint _rKrsUsdFixed, uint _rKycTreshold,
     uint _rMinKrsCap, uint _rMaxKrsCap, uint _rStartBlock, uint _rEndBlock) public onlyOwner {
     require(!icoInProgress);            // new round can be set up only after finished/cancelled the active one
-    require(rNo &lt; 25);                  // limit of 25 rounds (with pre-ico)
+    require(rNo < 25);                  // limit of 25 rounds (with pre-ico)
 	rNo += 1;                           // increment round number, pre-ico has number 1
 	icoRounds[rNo] = IcoRoundData(_rMinEthPayment, _rKrsUsdFixed, _rKycTreshold, _rMinKrsCap, _rMaxKrsCap, 
 	  _rStartBlock, _rEndBlock, 0, 0, 0, 0, false); // rEthPaymentsAmount, rEthPaymentsCount, rSentKrownsAmount, rSentKrownsCount); 
@@ -392,11 +392,11 @@ contract KinguinIco is SafeMath, ERC223Receiver {
     icoRounds[rNo].rEthPaymentsCount = 0;
     icoRounds[rNo].rSentKrownsAmount = 0;
     icoRounds[rNo].rSentKrownsCount = 0;
-    if(rNo &gt; 0) rNo -= 1;
+    if(rNo > 0) rNo -= 1;
   }
 
   function changeIcoRoundEnding(uint _rEndBlock) public onlyOwner {
-    require(icoRounds[rNo].rStartBlock &gt; 0); // round must be set up earlier
+    require(icoRounds[rNo].rStartBlock > 0); // round must be set up earlier
     icoRounds[rNo].rEndBlock = _rEndBlock;  
   }
  
@@ -478,7 +478,7 @@ contract KinguinIco is SafeMath, ERC223Receiver {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -517,10 +517,10 @@ contract Ownable {
 
 contract KinguinVault is Ownable, ERC223Receiver {
     
-    mapping(uint=&gt;address) public microWalletPayments;
-    mapping(uint=&gt;address) public microWalletsAddrs;
-    mapping(address=&gt;uint) public microWalletsIDs;
-    mapping(uint=&gt;uint) public microWalletPaymentBlockNr;
+    mapping(uint=>address) public microWalletPayments;
+    mapping(uint=>address) public microWalletsAddrs;
+    mapping(address=>uint) public microWalletsIDs;
+    mapping(uint=>uint) public microWalletPaymentBlockNr;
 
     KinguinKrowns public token;
     uint public uncleSafeNr = 5;
@@ -537,7 +537,7 @@ contract KinguinVault is Ownable, ERC223Receiver {
     }
     
     function createMicroWallet(uint productOrderID, uint krsAmount) onlyOwner public {
-        require(productOrderID != 0 &amp;&amp; microWalletsAddrs[productOrderID] == address(0x0));
+        require(productOrderID != 0 && microWalletsAddrs[productOrderID] == address(0x0));
         microWalletsAddrs[productOrderID] = new MicroWallet(krsAmount);
         microWalletsIDs[microWalletsAddrs[productOrderID]] = productOrderID;
     }
@@ -551,7 +551,7 @@ contract KinguinVault is Ownable, ERC223Receiver {
     }
 
     function checkIfOnUncle(uint currentBlockNr, uint transBlockNr) private view returns (bool) {
-        if((currentBlockNr - transBlockNr) &lt; uncleSafeNr) {
+        if((currentBlockNr - transBlockNr) < uncleSafeNr) {
             return true;
         }
         return false;
@@ -570,7 +570,7 @@ contract KinguinVault is Ownable, ERC223Receiver {
 
     function tokenFallback(address _sender, address _origin, uint _value, bytes _data) public returns (bool)  {
         require(msg.sender == address(token));
-        if(microWalletsIDs[_sender] &gt; 0) {
+        if(microWalletsIDs[_sender] > 0) {
             microWalletPayments[microWalletsIDs[_sender]] = bytesToAddr(_data);
             microWalletPaymentBlockNr[microWalletsIDs[_sender]] = block.number;
         }
@@ -588,7 +588,7 @@ contract KinguinVault is Ownable, ERC223Receiver {
 
     function bytesToAddr (bytes b) private pure returns (address) {
         uint result = 0;
-        for (uint i = b.length-1; i+1 &gt; 0; i--) {
+        for (uint i = b.length-1; i+1 > 0; i--) {
             uint c = uint(b[i]);
             uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
             result += to_inc;
@@ -640,13 +640,13 @@ library MicroWalletLib {
             return;
         }
 
-        require(self.krsAmount &gt; 0);
+        require(self.krsAmount > 0);
         
         uint256 currentBalance = token.balanceOf(address(this));
 
-        require(currentBalance &gt;= self.krsAmount);
+        require(currentBalance >= self.krsAmount);
 
-        if(currentBalance &gt; self.krsAmount) {
+        if(currentBalance > self.krsAmount) {
             //return rest of the token
             require(token.transfer(_sender, currentBalance - self.krsAmount));
         }

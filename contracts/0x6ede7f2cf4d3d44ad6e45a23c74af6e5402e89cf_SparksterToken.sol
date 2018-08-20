@@ -19,7 +19,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -37,7 +37,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -86,7 +86,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -104,8 +104,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -118,7 +118,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -270,8 +270,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -286,9 +286,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -296,7 +296,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -305,7 +305,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -314,7 +314,7 @@ library SafeMath {
 contract SparksterToken is StandardToken, Ownable{
 	using SafeMath for uint256;
 	struct Member {
-		mapping(uint256 =&gt; uint256) weiBalance; // How much wei has this member contributed for this group?
+		mapping(uint256 => uint256) weiBalance; // How much wei has this member contributed for this group?
 	}
 
 	struct Group {
@@ -342,9 +342,9 @@ contract SparksterToken is StandardToken, Ownable{
 	uint256 public penalty;
 	uint256 public maxGasPrice; // The maximum allowed gas for the purchase function.
 	uint256 internal nextGroupNumber;
-	uint256 public sellPrice; // sellPrice wei:1 spark token; we won&#39;t allow to sell back parts of a token.
-	mapping(address =&gt; Member) internal members;
-	mapping(uint256 =&gt; Group) internal groups;
+	uint256 public sellPrice; // sellPrice wei:1 spark token; we won't allow to sell back parts of a token.
+	mapping(address => Member) internal members;
+	mapping(uint256 => Group) internal groups;
 	uint256 public openGroupNumber;
 	event WantsToPurchase(address walletAddress, uint256 weiAmount, uint256 groupNumber, bool inPhase1);
 	event PurchasedCallbackOnAccept(uint256 groupNumber, address[] addresses);
@@ -394,9 +394,9 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	constructor() public {
-		name = &quot;Sparkster&quot;;									// Set the name for display purposes
+		name = "Sparkster";									// Set the name for display purposes
 		decimals = 18;					 // Amount of decimals for display purposes
-		symbol = &quot;SPRK&quot;;							// Set the symbol for display purposes
+		symbol = "SPRK";							// Set the symbol for display purposes
 		setMaximumGasPrice(40);
 		mintTokens(435000000);
 	}
@@ -416,7 +416,7 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function mintTokens(uint256 amount) public onlyOwner {
-		// Here, we&#39;ll consider amount to be the full token amount, so we have to get its decimal value.
+		// Here, we'll consider amount to be the full token amount, so we have to get its decimal value.
 		uint256 decimalAmount = amount.mul(uint(10)**decimals);
 		totalSupply_ = totalSupply_.add(decimalAmount);
 		balances[msg.sender] = balances[msg.sender].add(decimalAmount);
@@ -424,28 +424,28 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function purchase() public canPurchase payable returns(bool success) {
-		require(msg.sender != address(0)); // Don&#39;t allow the 0 address.
+		require(msg.sender != address(0)); // Don't allow the 0 address.
 		Member storage memberRecord = members[msg.sender];
 		Group storage openGroup = groups[openGroupNumber];
-		require(openGroup.ratio &gt; 0); // Group must be initialized.
+		require(openGroup.ratio > 0); // Group must be initialized.
 		uint256 currentTimestamp = block.timestamp;
-		require(currentTimestamp &gt;= openGroup.startTime &amp;&amp; currentTimestamp &lt;= openGroup.deadline);																 //the timestamp must be greater than or equal to the start time and less than or equal to the deadline time
-		require(!openGroup.distributing &amp;&amp; !openGroup.distributed); // Don&#39;t allow to purchase if we&#39;re in the middle of distributing this group; Don&#39;t let someone buy tokens on the current group if that group is already distributed.
-		require(tx.gasprice &lt;= maxGasPrice); // Restrict maximum gas this transaction is allowed to consume.
+		require(currentTimestamp >= openGroup.startTime && currentTimestamp <= openGroup.deadline);																 //the timestamp must be greater than or equal to the start time and less than or equal to the deadline time
+		require(!openGroup.distributing && !openGroup.distributed); // Don't allow to purchase if we're in the middle of distributing this group; Don't let someone buy tokens on the current group if that group is already distributed.
+		require(tx.gasprice <= maxGasPrice); // Restrict maximum gas this transaction is allowed to consume.
 		uint256 weiAmount = msg.value;																		// The amount purchased by the current member
-		require(weiAmount &gt;= 0.1 ether);
+		require(weiAmount >= 0.1 ether);
 		uint256 weiTotal = openGroup.weiTotal.add(weiAmount); // Calculate total contribution of all members in this group.
-		require(weiTotal &lt;= openGroup.cap);														// Check to see if accepting these funds will put us above the hard ether cap.
+		require(weiTotal <= openGroup.cap);														// Check to see if accepting these funds will put us above the hard ether cap.
 		uint256 userWeiTotal = memberRecord.weiBalance[openGroupNumber].add(weiAmount);	// Calculate the total amount purchased by the current member
-		if(currentTimestamp &lt;= openGroup.phase1endTime){																			 // whether the current timestamp is in the first phase
+		if(currentTimestamp <= openGroup.phase1endTime){																			 // whether the current timestamp is in the first phase
 			emit WantsToPurchase(msg.sender, weiAmount, openGroupNumber, true);
 			return true;
-		} else if (currentTimestamp &lt;= openGroup.phase2endTime) { // Are we in phase 2?
-			require(userWeiTotal &lt;= openGroup.max2); // Allow to contribute no more than max2 in phase 2.
+		} else if (currentTimestamp <= openGroup.phase2endTime) { // Are we in phase 2?
+			require(userWeiTotal <= openGroup.max2); // Allow to contribute no more than max2 in phase 2.
 			emit WantsToPurchase(msg.sender, weiAmount, openGroupNumber, false);
 			return true;
-		} else { // We&#39;ve passed both phases 1 and 2.
-			require(userWeiTotal &lt;= openGroup.max3); // Don&#39;t allow to contribute more than max3 in phase 3.
+		} else { // We've passed both phases 1 and 2.
+			require(userWeiTotal <= openGroup.max3); // Don't allow to contribute more than max3 in phase 3.
 			emit WantsToPurchase(msg.sender, weiAmount, openGroupNumber, false);
 			return true;
 		}
@@ -453,19 +453,19 @@ contract SparksterToken is StandardToken, Ownable{
 	
 	function purchaseCallbackOnAccept(uint256 groupNumber, address[] addresses, uint256[] weiAmounts) public onlyOwnerOrOracle returns(bool success) {
 		uint256 n = addresses.length;
-		require(n == weiAmounts.length, &quot;Array lengths mismatch&quot;);
+		require(n == weiAmounts.length, "Array lengths mismatch");
 		Group storage theGroup = groups[groupNumber];
 		uint256 weiTotal = theGroup.weiTotal;
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			Member storage memberRecord = members[addresses[i]];
 			uint256 weiAmount = weiAmounts[i];
 			weiTotal = weiTotal.add(weiAmount);								 // Calculate the total amount purchased by all members in this group.
 			memberRecord.weiBalance[groupNumber] = memberRecord.weiBalance[groupNumber].add(weiAmount);														 // Record the total amount purchased by the current member
 		}
 		theGroup.weiTotal = weiTotal;
-		if (getHowMuchUntilHardCap_(groupNumber) &lt;= 100 ether) {
+		if (getHowMuchUntilHardCap_(groupNumber) <= 100 ether) {
 			emit NearingHardCap(groupNumber, getHowMuchUntilHardCap_(groupNumber));
-			if (weiTotal &gt;= theGroup.cap) {
+			if (weiTotal >= theGroup.cap) {
 				emit ReachedHardCap(groupNumber);
 			}
 		}
@@ -475,19 +475,19 @@ contract SparksterToken is StandardToken, Ownable{
 
 	function purchaseCallbackOnAcceptAndDistribute(uint256 groupNumber, address[] addresses, uint256[] weiAmounts) public onlyOwnerOrOracle returns(bool success) {
 		uint256 n = addresses.length;
-		require(n == weiAmounts.length, &quot;Array lengths mismatch&quot;);
+		require(n == weiAmounts.length, "Array lengths mismatch");
 		Group storage theGroup = groups[groupNumber];
 		if (!theGroup.distributing) {
 			theGroup.distributing = true;
 		}
 		uint256 newOwnerSupply = balances[owner];
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			address theAddress = addresses[i];
 			Member storage memberRecord = members[theAddress];
 			uint256 weiAmount = weiAmounts[i];
 			memberRecord.weiBalance[groupNumber] = memberRecord.weiBalance[groupNumber].add(weiAmount);														 // Record the total amount purchased by the current member
 			uint256 balance = getUndistributedBalanceOf_(theAddress, groupNumber);
-			if (balance &gt; 0) { // No need to waste ticks if they have no tokens to distribute
+			if (balance > 0) { // No need to waste ticks if they have no tokens to distribute
 				balances[theAddress] = balances[theAddress].add(balance);
 				newOwnerSupply = newOwnerSupply.sub(balance); // Update the available number of tokens.
 				emit Transfer(owner, theAddress, balance); // Notify exchanges of the distribution.
@@ -500,14 +500,14 @@ contract SparksterToken is StandardToken, Ownable{
 
 	function refund(address[] addresses, uint256[] weiAmounts) public onlyOwnerOrOracle returns(bool success) {
 		uint256 n = addresses.length;
-		require (n == weiAmounts.length, &quot;Array lengths mismatch&quot;);
+		require (n == weiAmounts.length, "Array lengths mismatch");
 		uint256 thePenalty = penalty;
-		for(uint256 i = 0; i &lt; n; i++) {
+		for(uint256 i = 0; i < n; i++) {
 			uint256 weiAmount = weiAmounts[i];
 			address theAddress = addresses[i];
-			if (thePenalty &lt;= weiAmount) {
+			if (thePenalty <= weiAmount) {
 				weiAmount = weiAmount.sub(thePenalty);
-				require(address(this).balance &gt;= weiAmount);
+				require(address(this).balance >= weiAmount);
 				theAddress.transfer(weiAmount);
 			}
 		}
@@ -531,13 +531,13 @@ contract SparksterToken is StandardToken, Ownable{
 		return true;
 	}
 	
-	function buyback(uint256 amount) public canSell { // Can&#39;t sell unless owner has allowed it.
+	function buyback(uint256 amount) public canSell { // Can't sell unless owner has allowed it.
 		uint256 decimalAmount = amount.mul(uint(10)**decimals); // convert the full token value to the smallest unit possible.
-		require(balances[msg.sender].sub(decimalAmount) &gt;= getLockedTokens_(msg.sender)); // Don&#39;t allow to sell locked tokens.
-		balances[msg.sender] = balances[msg.sender].sub(decimalAmount); // Do this before transferring to avoid re-entrance attacks; will throw if result &lt; 0.
+		require(balances[msg.sender].sub(decimalAmount) >= getLockedTokens_(msg.sender)); // Don't allow to sell locked tokens.
+		balances[msg.sender] = balances[msg.sender].sub(decimalAmount); // Do this before transferring to avoid re-entrance attacks; will throw if result < 0.
 		// Amount is considered to be how many full tokens the user wants to sell.
 		uint256 totalCost = amount.mul(sellPrice); // sellPrice is the per-full-token value.
-		require(address(this).balance &gt;= totalCost); // The contract must have enough funds to cover the selling.
+		require(address(this).balance >= totalCost); // The contract must have enough funds to cover the selling.
 		balances[owner] = balances[owner].add(decimalAmount); // Put these tokens back into the available pile.
 		msg.sender.transfer(totalCost); // Pay the seller for their tokens.
 		emit Transfer(msg.sender, owner, decimalAmount); // Notify exchanges of the sell.
@@ -580,7 +580,7 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function getGroup(uint256 groupNumber) public view returns(bool distributed, bool distributing, bool unlocked, uint256 phase2cap, uint256 phase3cap, uint256 cap, uint256 ratio, uint256 startTime, uint256 phase1endTime, uint256 phase2endTime, uint256 deadline, uint256 weiTotal) {
-		require(groupNumber &lt; nextGroupNumber);
+		require(groupNumber < nextGroupNumber);
 		Group storage theGroup = groups[groupNumber];
 		distributed = theGroup.distributed;
 		distributing = theGroup.distributing;
@@ -598,7 +598,7 @@ contract SparksterToken is StandardToken, Ownable{
 	
 	function getHowMuchUntilHardCap_(uint256 groupNumber) internal view returns(uint256 remainder) {
 		Group storage theGroup = groups[groupNumber];
-		if (theGroup.weiTotal &gt; theGroup.cap) { // calling .sub in this situation will throw.
+		if (theGroup.weiTotal > theGroup.cap) { // calling .sub in this situation will throw.
 			return 0;
 		}
 		return theGroup.cap.sub(theGroup.weiTotal);
@@ -615,7 +615,7 @@ contract SparksterToken is StandardToken, Ownable{
 	
 	function instructOracleToDistribute(uint256 groupNumber) public onlyOwner {
 		Group storage theGroup = groups[groupNumber];
-		require(groupNumber &lt; nextGroupNumber &amp;&amp; !theGroup.distributed); // can&#39;t have already distributed
+		require(groupNumber < nextGroupNumber && !theGroup.distributed); // can't have already distributed
 		emit WantsToDistribute(groupNumber);
 	}
 	
@@ -626,10 +626,10 @@ contract SparksterToken is StandardToken, Ownable{
 		}
 		uint256 n = addresses.length;
 		uint256 newOwnerBalance = balances[owner];
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			address memberAddress = addresses[i];
 			uint256 balance = getUndistributedBalanceOf_(memberAddress, groupNumber);
-			if (balance &gt; 0) { // No need to waste ticks if they have no tokens to distribute
+			if (balance > 0) { // No need to waste ticks if they have no tokens to distribute
 				balances[memberAddress] = balances[memberAddress].add(balance);
 				newOwnerBalance = newOwnerBalance.sub(balance); // Deduct from owner.
 				emit Transfer(owner, memberAddress, balance); // Notify exchanges of the distribution.
@@ -653,10 +653,10 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 	
 	function burn(uint256 amount) public onlyOwner {
-		// Burns tokens from the owner&#39;s supply and doesn&#39;t touch allocated tokens.
+		// Burns tokens from the owner's supply and doesn't touch allocated tokens.
 		// Decrease totalSupply and leftOver by the amount to burn so we can decrease the circulation.
-		balances[msg.sender] = balances[msg.sender].sub(amount); // Will throw if result &lt; 0
-		totalSupply_ = totalSupply_.sub(amount); // Will throw if result &lt; 0
+		balances[msg.sender] = balances[msg.sender].sub(amount); // Will throw if result < 0
+		totalSupply_ = totalSupply_.sub(amount); // Will throw if result < 0
 		emit Transfer(msg.sender, address(0), amount);
 	}
 	
@@ -667,11 +667,11 @@ contract SparksterToken is StandardToken, Ownable{
 		uint256 increaseSupplyBy = multiplier.sub(ownerBalance); // We need to mint owner*splitFactor - owner additional tokens.
 		balances[msg.sender] = multiplier;
 		totalSupply_ = totalSupply_.mul(splitFactor);
-		emit Transfer(address(0), msg.sender, increaseSupplyBy); // Notify exchange that we&#39;ve minted tokens.
+		emit Transfer(address(0), msg.sender, increaseSupplyBy); // Notify exchange that we've minted tokens.
 		// Next, increase group ratios by splitFactor, so users will receive ratio * splitFactor tokens per ether.
 		uint256 n = nextGroupNumber;
-		require(n &gt; 0); // Must have at least one group.
-		for (uint256 i = 0; i &lt; n; i++) {
+		require(n > 0); // Must have at least one group.
+		for (uint256 i = 0; i < n; i++) {
 			Group storage currentGroup = groups[i];
 			currentGroup.ratio = currentGroup.ratio.mul(splitFactor);
 		}
@@ -683,15 +683,15 @@ contract SparksterToken is StandardToken, Ownable{
 		uint256 ownerBalance = balances[msg.sender];
 		uint256 divier = ownerBalance.div(splitFactor);
 		uint256 decreaseSupplyBy = ownerBalance.sub(divier);
-		// We don&#39;t use burnTokens here since the amount to subtract might be more than what the owner currently holds in their unallocated supply which will cause the function to throw.
+		// We don't use burnTokens here since the amount to subtract might be more than what the owner currently holds in their unallocated supply which will cause the function to throw.
 		totalSupply_ = totalSupply_.div(splitFactor);
 		balances[msg.sender] = divier;
 		// Notify the exchanges of how many tokens were burned.
 		emit Transfer(msg.sender, address(0), decreaseSupplyBy);
 		// Next, decrease group ratios by splitFactor, so users will receive ratio / splitFactor tokens per ether.
 		uint256 n = nextGroupNumber;
-		require(n &gt; 0); // Must have at least one group. Groups are 0-indexed.
-		for (uint256 i = 0; i &lt; n; i++) {
+		require(n > 0); // Must have at least one group. Groups are 0-indexed.
+		for (uint256 i = 0; i < n; i++) {
 			Group storage currentGroup = groups[i];
 			currentGroup.ratio = currentGroup.ratio.div(splitFactor);
 		}
@@ -700,12 +700,12 @@ contract SparksterToken is StandardToken, Ownable{
 
 	function airdrop( address[] addresses, uint256[] tokenDecimalAmounts) public onlyOwnerOrOracle returns (bool success) {
 		uint256 n = addresses.length;
-		require(n == tokenDecimalAmounts.length, &quot;Array lengths mismatch&quot;);
+		require(n == tokenDecimalAmounts.length, "Array lengths mismatch");
 		uint256 newOwnerBalance = balances[owner];
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			address theAddress = addresses[i];
 			uint256 airdropAmount = tokenDecimalAmounts[i];
-			if (airdropAmount &gt; 0) {
+			if (airdropAmount > 0) {
 				uint256 currentBalance = balances[theAddress];
 				balances[theAddress] = currentBalance.add(airdropAmount);
 				newOwnerBalance = newOwnerBalance.sub(airdropAmount);
@@ -720,7 +720,7 @@ contract SparksterToken is StandardToken, Ownable{
 	function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) canTransfer returns (bool success) {		
 		// If the transferrer has purchased tokens, they must be unlocked before they can be used.
 		if (msg.sender != owner) { // Owner can transfer anything to anyone.
-			require(balances[msg.sender].sub(_value) &gt;= getLockedTokens_(msg.sender));
+			require(balances[msg.sender].sub(_value) >= getLockedTokens_(msg.sender));
 		}
 		return super.transfer(_to, _value);
 	}
@@ -728,13 +728,13 @@ contract SparksterToken is StandardToken, Ownable{
 	function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3 * 32) canTransfer returns (bool success) {
 		// If the transferrer has purchased tokens, they must be unlocked before they can be used.
 		if (msg.sender != owner) { // Owner not affected by locked tokens
-			require(balances[_from].sub(_value) &gt;= getLockedTokens_(_from));
+			require(balances[_from].sub(_value) >= getLockedTokens_(_from));
 		}
 		return super.transferFrom(_from, _to, _value);
 	}
 
 	function setOpenGroup(uint256 groupNumber) public onlyOwner returns (bool success) {
-		require(groupNumber &lt; nextGroupNumber);
+		require(groupNumber < nextGroupNumber);
 		openGroupNumber = groupNumber;
 		return true;
 	}
@@ -749,7 +749,7 @@ contract SparksterToken is StandardToken, Ownable{
 
 	function getLockedTokens_(address walletAddress) internal view returns(uint256 balance) {
 		uint256 n = nextGroupNumber;
-		for (uint256 i = 0; i &lt; n; i++) {
+		for (uint256 i = 0; i < n; i++) {
 			balance = balance.add(getLockedTokensInGroup_(walletAddress, i));
 		}
 		return balance;
@@ -777,8 +777,8 @@ contract SparksterToken is StandardToken, Ownable{
 	}
 
 	function transferRecovery(address _from, address _to, uint256 _value) public onlyOwner returns (bool success) {
-		// Will be used if someone sends tokens to an incorrect address by accident. This way, we have the ability to recover the tokens. For example, sometimes there&#39;s a problem of lost tokens if someone sends tokens to a contract address that can&#39;t utilize the tokens.
-		allowed[_from][msg.sender] = allowed[_from][msg.sender].add(_value); // Authorize the owner to spend on someone&#39;s behalf.
+		// Will be used if someone sends tokens to an incorrect address by accident. This way, we have the ability to recover the tokens. For example, sometimes there's a problem of lost tokens if someone sends tokens to a contract address that can't utilize the tokens.
+		allowed[_from][msg.sender] = allowed[_from][msg.sender].add(_value); // Authorize the owner to spend on someone's behalf.
 		return transferFrom(_from, _to, _value);
 	}
 }

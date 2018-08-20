@@ -2,8 +2,8 @@ pragma solidity ^0.4.24;
 
 contract Tokens {
     address public owner;
-    mapping(string =&gt; uint) supply; // Total supply of token named
-    mapping(string =&gt; mapping(address =&gt; uint)) balances;
+    mapping(string => uint) supply; // Total supply of token named
+    mapping(string => mapping(address => uint)) balances;
     uint public fee; // For creation
 
     constructor(uint _fee) public {
@@ -18,19 +18,19 @@ contract Tokens {
 
     // Safe math functions
     function subtr(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function addit(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     // Create new token, supply is hard, be serious on internal
     function mint(string _name, uint _supply) public payable {
-        require(msg.value &gt;= fee); // Fee is prevents over create
+        require(msg.value >= fee); // Fee is prevents over create
         require(supply[_name] == 0); // Protect from remint
         supply[_name] = _supply;
         balances[_name][msg.sender] = _supply;
@@ -38,7 +38,7 @@ contract Tokens {
     }
 
     function transfer(string _name, address _to, uint _amount) external {
-        require(_amount &lt;= balances[_name][msg.sender]);
+        require(_amount <= balances[_name][msg.sender]);
         balances[_name][msg.sender] = subtr(balances[_name][msg.sender], _amount);
         balances[_name][_to] = addit(balances[_name][_to], _amount);
         emit Transfer(_name, msg.sender, _to, _amount);

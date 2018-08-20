@@ -44,7 +44,7 @@ contract MultiTransfer {
         require(token != address(0));
 
         ERC20 t = ERC20(token);
-        for (uint i = 0; i &lt; to.length; i++) {
+        for (uint i = 0; i < to.length; i++) {
             t.transferFrom(owner, to[i], value[i]);
         }
     }

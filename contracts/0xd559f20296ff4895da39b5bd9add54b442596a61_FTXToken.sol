@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -71,7 +71,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -80,7 +80,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -109,7 +109,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -120,8 +120,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract Ownable {
@@ -228,9 +228,9 @@ contract Ownable {
 contract FTXToken is StandardToken, Ownable {
 
     /* metadata */
-    string public constant name = &quot;FintruX Network&quot;;
-    string public constant symbol = &quot;FTX&quot;;
-    string public constant version = &quot;1.0&quot;;
+    string public constant name = "FintruX Network";
+    string public constant symbol = "FTX";
+    string public constant version = "1.0";
     uint8 public constant decimals = 18;
 
     /* all accounts in wei */
@@ -255,7 +255,7 @@ contract FTXToken is StandardToken, Ownable {
     uint256 public minGas4Accts = 80000*4*10**9;
 
     bool public allowTransfers = false;
-    mapping (address =&gt; bool) public transferException;
+    mapping (address => bool) public transferException;
 
     event Withdraw(address indexed from, address indexed to, uint256 value);
     event GasRebateFailed(address indexed to, uint256 value);
@@ -284,12 +284,12 @@ contract FTXToken is StandardToken, Ownable {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(canTransferTokens());                                               // Team tokens lock 1 year
-        require(_value &gt; 0 &amp;&amp; _value &gt;= token4Gas);                                 // do nothing if less than allowed minimum but do not fail
+        require(_value > 0 && _value >= token4Gas);                                 // do nothing if less than allowed minimum but do not fail
         balances[msg.sender] = balances[msg.sender].sub(_value);                    // insufficient token balance would revert here inside safemath
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
         // Keep a minimum balance of gas in all sender accounts. It would not be executed if the account has enough ETH for next action.
-        if (this.balance &gt; gas4Token &amp;&amp; msg.sender.balance &lt; minGas4Accts) {
+        if (this.balance > gas4Token && msg.sender.balance < minGas4Accts) {
             // reimburse gas in ETH to keep a minimal balance for next transaction, use send instead of transfer thus ignore failed rebate(not enough ether to rebate etc.).
             if (!msg.sender.send(gas4Token)) {
                 GasRebateFailed(msg.sender,gas4Token);
@@ -300,19 +300,19 @@ contract FTXToken is StandardToken, Ownable {
     
     /* When necessary, adjust minimum FTX to transfer to make the gas worthwhile */
     function setToken4Gas(uint256 newFTXAmount) public onlyOwner {
-        require(newFTXAmount &gt; 0);                                                  // Upper bound is not necessary.
+        require(newFTXAmount > 0);                                                  // Upper bound is not necessary.
         token4Gas = newFTXAmount;
     }
 
     /* Only when necessary such as gas price change, adjust the gas to be reimbursed on every transfer when sender account below minimum */
     function setGas4Token(uint256 newGasInWei) public onlyOwner {
-        require(newGasInWei &gt; 0 &amp;&amp; newGasInWei &lt;= 840000*10**9);            // must be less than a reasonable gas value
+        require(newGasInWei > 0 && newGasInWei <= 840000*10**9);            // must be less than a reasonable gas value
         gas4Token = newGasInWei;
     }
 
     /* When necessary, adjust the minimum wei required in an account before an reimibusement of fee is triggerred */
     function setMinGas4Accts(uint256 minBalanceInWei) public onlyOwner {
-        require(minBalanceInWei &gt; 0 &amp;&amp; minBalanceInWei &lt;= 840000*10**9);    // must be less than a reasonable gas value
+        require(minBalanceInWei > 0 && minBalanceInWei <= 840000*10**9);    // must be less than a reasonable gas value
         minGas4Accts = minBalanceInWei;
     }
 
@@ -322,7 +322,7 @@ contract FTXToken is StandardToken, Ownable {
 
     /* Owner withdrawal for excessive gas fees deposited */
     function withdrawToOwner (uint256 weiAmt) public onlyOwner {
-        require(weiAmt &gt; 0);                                                // do not allow zero transfer
+        require(weiAmt > 0);                                                // do not allow zero transfer
         msg.sender.transfer(weiAmt);
         Withdraw(this, msg.sender, weiAmt);                                 // signal the event for communication only it is meaningful
     }
@@ -365,7 +365,7 @@ contract FTXToken is StandardToken, Ownable {
     */
     function canTransferTokens() internal view returns (bool) {
         if (msg.sender == TEAM_RESERVE) {                                       // Vesting for FintruX TEAM is 1 year.
-            return now &gt;= VESTING_DATE;
+            return now >= VESTING_DATE;
         } else {
             // if transfer is disabled, only allow special addresses to transfer tokens.
             return allowTransfers || isException(msg.sender);

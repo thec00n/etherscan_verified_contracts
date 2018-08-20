@@ -7,30 +7,30 @@ pragma solidity ^0.4.18;
 
   * `require` is used in these libraries for the following reasons:
   *   - overflows should not be checked in contract function bodies; DRY
-  *   - &quot;valid&quot; user input can cause overflows, which should not assert()
+  *   - "valid" user input can cause overflows, which should not assert()
   */
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
 
 library SafeMath64 {
   function sub(uint64 a, uint64 b) internal pure returns (uint64) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint64 a, uint64 b) internal pure returns (uint64) {
     uint64 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -110,12 +110,12 @@ contract DetailedERC20 is ERC20 {
   * - dividend is total contract value at end of the month, divided by total number of users as end of the month.
   * - user has 1 month to withdraw their dividend from the previous month.
   * - if user does not withdraw their dividend, their share will be rolled over as a donation to the next month.
-  * - mod can place a user on a 1 month &quot;timeout&quot;, whereby they won&#39;t be eligible for a dividend.
+  * - mod can place a user on a 1 month "timeout", whereby they won't be eligible for a dividend.
 
   * Eg: 10 eth is sent to the contract in January. There are 100 token holders on Jan 31. At any time in February, 
-  * each token holder can withdraw .1 eth for their January dividend (unless they were given a &quot;timeout&quot; in January).
+  * each token holder can withdraw .1 eth for their January dividend (unless they were given a "timeout" in January).
   */
-contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quot;, 0) {
+contract Karma is Ownable, DetailedERC20("KarmaToken", "KARMA", 0) {
   // SafeMath libs are responsible for checking overflow.
   using SafeMath for uint256;
   using SafeMath64 for uint64;
@@ -129,8 +129,8 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
   }
 
   // Manage users.
-  mapping(address =&gt; User) public users;
-  mapping(bytes20 =&gt; address) public usernames;
+  mapping(address => User) public users;
+  mapping(bytes20 => address) public usernames;
 
   // Manage dividend payments.
   uint256 public epoch;
@@ -141,7 +141,7 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
 
   address public moderator;
 
-  mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => mapping (address => uint256)) internal allowed;
 
   event Mint(address indexed to, uint256 amount);
   event PeriodEnd(uint16 period, uint256 amount, uint64 users);
@@ -173,7 +173,7 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
 
   // Owner should call this on 1st of every month.
   function newPeriod() public onlyOwner {
-    require(now &gt;= epoch + 28 days);
+    require(now >= epoch + 28 days);
 
     // Calculate dividend.
     uint64 existingUsers = numUsers;
@@ -208,7 +208,7 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
     Mint(_addr, _amount);
   }
 
-  // If a user has been bad, they won&#39;t be able to receive a dividend :(
+  // If a user has been bad, they won't be able to receive a dividend :(
   function timeout(address _addr) public onlyMod {
     require(users[_addr].canWithdrawPeriod != 0);
 
@@ -229,7 +229,7 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
   // User can withdraw their share of donations from the previous month.
   function withdraw() public {
     require(users[msg.sender].canWithdrawPeriod != 0);
-    require(users[msg.sender].canWithdrawPeriod &lt; currentPeriod);
+    require(users[msg.sender].canWithdrawPeriod < currentPeriod);
 
     users[msg.sender].canWithdrawPeriod = currentPeriod;
     msg.sender.transfer(dividend);
@@ -247,9 +247,9 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
   // Contrary to most ERC20 implementations, require that recipient is existing user.
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(users[_to].canWithdrawPeriod != 0);
-    require(_value &lt;= users[msg.sender].karma);
+    require(_value <= users[msg.sender].karma);
 
-    // Type assertion to uint64 is safe because we require that _value is &lt; uint64 above.
+    // Type assertion to uint64 is safe because we require that _value is < uint64 above.
     users[msg.sender].karma = users[msg.sender].karma.sub(uint64(_value));
     users[_to].karma = users[_to].karma.add(uint64(_value));
     Transfer(msg.sender, _to, _value);
@@ -274,7 +274,7 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -286,8 +286,8 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
   // Contrary to most ERC20 implementations, require that recipient is existing user.
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(users[_to].canWithdrawPeriod != 0);
-    require(_value &lt;= users[_from].karma);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= users[_from].karma);
+    require(_value <= allowed[_from][msg.sender]);
 
     users[_from].karma = users[_from].karma.sub(uint64(_value));
     users[_to].karma = users[_to].karma.add(uint64(_value));
@@ -319,20 +319,20 @@ contract Karma is Ownable, DetailedERC20(&quot;KarmaToken&quot;, &quot;KARMA&quo
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
     }
   }
 
-  // Ensures that username isn&#39;t taken, and account doesn&#39;t already exist for 
-  // user&#39;s address.
+  // Ensures that username isn't taken, and account doesn't already exist for 
+  // user's address.
   function newUser(address _addr, bytes20 _username, uint64 _endowment) private {
     require(usernames[_username] == address(0));
     require(users[_addr].canWithdrawPeriod == 0);

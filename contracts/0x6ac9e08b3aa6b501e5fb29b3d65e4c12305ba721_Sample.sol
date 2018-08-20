@@ -41,7 +41,7 @@ contract SampleStorage is Ownable {
         uint rarity;
     }
     
-    mapping (uint =&gt; Sample) sampleTypes;
+    mapping (uint => Sample) sampleTypes;
     
     uint public numOfSampleTypes;
     
@@ -73,11 +73,11 @@ contract SampleStorage is Ownable {
     function getType(uint _randomNum) public view returns (uint) {
         uint range = 0;
         
-        if (_randomNum &gt; 0 &amp;&amp; _randomNum &lt; 600) {
+        if (_randomNum > 0 && _randomNum < 600) {
             range = 600 / numOfCommon;
             return _randomNum / range;
             
-        } else if(_randomNum &gt;= 600 &amp;&amp; _randomNum &lt; 900) {
+        } else if(_randomNum >= 600 && _randomNum < 900) {
             range = 300 / numOfRare;
             return _randomNum / range;
         } else {
@@ -95,17 +95,17 @@ contract Jingle is Ownable, ERC721 {
         string author;
     }
     
-    mapping (uint =&gt; address) internal tokensForOwner;
-    mapping (uint =&gt; address) internal tokensForApproved;
-    mapping (address =&gt; uint[]) internal tokensOwned;
-    mapping (uint =&gt; uint) internal tokenPosInArr;
+    mapping (uint => address) internal tokensForOwner;
+    mapping (uint => address) internal tokensForApproved;
+    mapping (address => uint[]) internal tokensOwned;
+    mapping (uint => uint) internal tokenPosInArr;
     
-    mapping(uint =&gt; uint[]) internal samplesInJingle;
-    mapping(uint =&gt; MetaInfo) public jinglesInfo;
+    mapping(uint => uint[]) internal samplesInJingle;
+    mapping(uint => MetaInfo) public jinglesInfo;
     
-    mapping(bytes32 =&gt; bool) public uniqueJingles;
+    mapping(bytes32 => bool) public uniqueJingles;
     
-    mapping(uint =&gt; uint[]) public soundEffects;
+    mapping(uint => uint[]) public soundEffects;
     
     uint public numOfJingles;
     
@@ -189,7 +189,7 @@ contract Jingle is Ownable, ERC721 {
         tokenPosInArr[_jingleId] = tokensOwned[_owner].length - 1;
         
         if (bytes(author).length == 0) {
-            author = &quot;Soundtoshi Nakajingles&quot;;
+            author = "Soundtoshi Nakajingles";
         }
         
         jinglesInfo[numOfJingles] = MetaInfo({
@@ -286,11 +286,11 @@ contract Jingle is Ownable, ERC721 {
 
 contract Sample is Ownable {
     
-    mapping (uint =&gt; address) internal tokensForOwner;
-    mapping (address =&gt; uint[]) internal tokensOwned;
-    mapping (uint =&gt; uint) internal tokenPosInArr;
+    mapping (uint => address) internal tokensForOwner;
+    mapping (address => uint[]) internal tokensOwned;
+    mapping (uint => uint) internal tokenPosInArr;
     
-    mapping (uint =&gt; uint) public tokenType;
+    mapping (uint => uint) public tokenType;
     
     uint public numOfSamples;
     
@@ -357,7 +357,7 @@ contract Sample is Ownable {
         
         uint j = 0;
         
-        for(uint i = 0; i &lt; samples.length; ++i) {
+        for(uint i = 0; i < samples.length; ++i) {
             usersSamples[j] = samples[i];
             usersSamples[j + 1] = tokenType[samples[i]];
             j += 2;
@@ -400,9 +400,9 @@ contract CryptoJingles is Ownable {
     event Purchased(address indexed user, uint blockNumber, uint numJingles, uint numOfPurchases);
     event JinglesOpened(address byWhom, address jingleOwner, uint currBlockNumber);
     
-    mapping (uint =&gt; bool) public isAlreadyUsed;
+    mapping (uint => bool) public isAlreadyUsed;
     
-    mapping(address =&gt; string) public authors;
+    mapping(address => string) public authors;
 
     uint numOfPurchases;
     
@@ -421,10 +421,10 @@ contract CryptoJingles is Ownable {
     }
     
     function buySamples(uint _numSamples, address _to) public payable {
-        require(_numSamples &lt;= MAX_SAMPLES_PER_PURCHASE);
-        require(msg.value &gt;= (SAMPLE_PRICE * _numSamples));
+        require(_numSamples <= MAX_SAMPLES_PER_PURCHASE);
+        require(msg.value >= (SAMPLE_PRICE * _numSamples));
         
-         for (uint i = 0; i &lt; _numSamples; ++i) {
+         for (uint i = 0; i < _numSamples; ++i) {
             
             bytes32 blockHash = block.blockhash(block.number - 1);
             
@@ -441,10 +441,10 @@ contract CryptoJingles is Ownable {
         require(jingleContract.uniqueJingles(keccak256(samples)) == false);
         
         //check if you own all the 5 samples 
-        for (uint i = 0; i &lt; SAMPLES_PER_JINGLE; ++i) {
+        for (uint i = 0; i < SAMPLES_PER_JINGLE; ++i) {
             bool isOwner = sampleContract.isTokenOwner(samples[i], msg.sender);
             
-            require(isOwner == true &amp;&amp; isAlreadyUsed[samples[i]] == false);
+            require(isOwner == true && isAlreadyUsed[samples[i]] == false);
             
             isAlreadyUsed[samples[i]] = true;
         }
@@ -452,7 +452,7 @@ contract CryptoJingles is Ownable {
         uint[5] memory sampleTypes;
         
         // remove all the samples from your Ownership
-        for (uint j = 0; j &lt; SAMPLES_PER_JINGLE; ++j) {
+        for (uint j = 0; j < SAMPLES_PER_JINGLE; ++j) {
             sampleTypes[j] = sampleContract.tokenType(samples[j]);
             sampleContract.removeSample(msg.sender, samples[j]);
         }
@@ -472,7 +472,7 @@ contract CryptoJingles is Ownable {
     
     // The only ether kept on this contract are owner money for samples
     function withdraw(uint _amount) public onlyOwner {
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         
         msg.sender.transfer(_amount);
     }
@@ -502,8 +502,8 @@ contract Marketplace is Ownable {
     
     uint OWNERS_CUT = 3; // 3 percent of every sale goes to owner
     
-    mapping (uint =&gt; Order) public sellOrders;
-    mapping(uint =&gt; uint) public positionOfJingle;
+    mapping (uint => Order) public sellOrders;
+    mapping(uint => uint) public positionOfJingle;
     
     uint[] public jinglesOnSale;
     
@@ -515,7 +515,7 @@ contract Marketplace is Ownable {
     }
 
     function sell(address _owner, uint _jingleId, uint _amount) public onlyJingle {
-        require(_amount &gt; 100);
+        require(_amount > 100);
         require(sellOrders[_jingleId].exists == false);
         
         sellOrders[_jingleId] = Order({
@@ -540,7 +540,7 @@ contract Marketplace is Ownable {
     
     function buy(uint _jingleId) public payable {
         require(sellOrders[_jingleId].exists == true);
-        require(msg.value &gt;= sellOrders[_jingleId].price);
+        require(msg.value >= sellOrders[_jingleId].price);
         
         sellOrders[_jingleId].exists = false;
         
@@ -596,7 +596,7 @@ contract Marketplace is Ownable {
     
     //Owners functions 
     function withdraw(uint _amount) public onlyOwner {
-        require(_amount &lt;= ownerBalance);
+        require(_amount <= ownerBalance);
         
         msg.sender.transfer(_amount);
     }

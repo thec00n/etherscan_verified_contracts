@@ -53,11 +53,11 @@ contract BoomerangLiquidity is Owned {
     address internal constant sk2xContract = P3D(address(0xAfd87E1E1eCe09D18f4834F64F63502718d1b3d4));
     
     function() payable public {
-        if(p3dContract.myDividends(true) &gt; 0){
+        if(p3dContract.myDividends(true) > 0){
             p3dContract.withdraw();
         }
         uint256 amountToSend = address(this).balance;
-        if(amountToSend &gt; 1){
+        if(amountToSend > 1){
             uint256 half = amountToSend / 2;
             sk2xContract.transfer(half);
             p3dContract.buy.value(half)(msg.sender);

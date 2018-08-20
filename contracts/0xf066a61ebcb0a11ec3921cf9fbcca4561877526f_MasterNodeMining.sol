@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,8 +43,8 @@ contract Ownable {
 
 contract MasterNodeMining is Ownable{
     using SafeMath for uint;
-    string public constant name = &quot;Master Node Mining&quot;; // Master Node Mining tokens name
-    string public constant symbol = &quot;MNM&quot;; // Master Node Mining tokens ticker
+    string public constant name = "Master Node Mining"; // Master Node Mining tokens name
+    string public constant symbol = "MNM"; // Master Node Mining tokens ticker
     uint8 public constant decimals = 18; // Master Node Mining tokens decimals
     uint256 public constant maximumSupply =  10000000 * (10 ** uint256(decimals)); // Maximum 10M MNM tokens can be created
     uint256 public constant icoSupply =  9000000 * (10 ** uint256(decimals)); // Maximum 9M MNM tokens can be available for public ICO
@@ -55,10 +55,10 @@ contract MasterNodeMining is Ownable{
     uint256 public totalSupply;
 
     function transfer(address _to, uint _value) public returns (bool success) {
-		require( msg.data.length &gt;= (2 * 32) + 4 );
-		require( _value &gt; 0 );
-		require( balances[msg.sender] &gt;= _value );
-		require( balances[_to] + _value &gt; balances[_to] );
+		require( msg.data.length >= (2 * 32) + 4 );
+		require( _value > 0 );
+		require( balances[msg.sender] >= _value );
+		require( balances[_to] + _value > balances[_to] );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -66,11 +66,11 @@ contract MasterNodeMining is Ownable{
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-		require( msg.data.length &gt;= (3 * 32) + 4 );
-		require( _value &gt; 0 );
-		require( balances[_from] &gt;= _value );
-		require( allowed[_from][msg.sender] &gt;= _value );
-		require( balances[_to] + _value &gt; balances[_to] );
+		require( msg.data.length >= (3 * 32) + 4 );
+		require( _value > 0 );
+		require( balances[_from] >= _value );
+		require( allowed[_from][msg.sender] >= _value );
+		require( balances[_to] + _value > balances[_to] );
         balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;
 		balances[_to] += _value;
@@ -95,8 +95,8 @@ contract MasterNodeMining is Ownable{
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function ICOmint() public onlyOwner {
       require(totalSupply == 0);
@@ -108,16 +108,16 @@ contract MasterNodeMining is Ownable{
     function TEAMmint() public onlyOwner {
       uint256 addSupply = maximumSupply - totalSupply;
       uint256 currentSupply = totalSupply + addSupply;
-      require(now &gt; teamTokens);
-      require(totalSupply &gt; 0 &amp;&amp; addSupply &gt; 0);
-      require(maximumSupply &gt;= currentSupply);
+      require(now > teamTokens);
+      require(totalSupply > 0 && addSupply > 0);
+      require(maximumSupply >= currentSupply);
       totalSupply += addSupply;
       balances[owner] += addSupply;
     }
 
     function() external payable {
         uint256 tokens = msg.value.mul(TokensPerEther);
-        require(now &lt; icoEnd &amp;&amp; balances[owner] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+        require(now < icoEnd && balances[owner] >= tokens && tokens >= 0);
         balances[msg.sender] += tokens;
         balances[owner] -= tokens;
         Transfer(owner,msg.sender, tokens);

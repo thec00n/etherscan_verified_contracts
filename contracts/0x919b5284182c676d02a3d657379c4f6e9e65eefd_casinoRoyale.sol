@@ -19,24 +19,24 @@ contract casinoRoyale {
   function() public payable {}
 
   function flipCoin() public payable {
-    require(msg.value &gt; 1500 szabo &amp;&amp; tx.origin == msg.sender);
+    require(msg.value > 1500 szabo && tx.origin == msg.sender);
     uint value = m_RandomGen.random(100,uint8(msg.value));
-    if (value &gt; 55){
+    if (value > 55){
       msg.sender.transfer(msg.value * 2);
     }
     FlipCoinEvent(value, msg.sender);
   }
 
 function playSlot() public payable {
-    require(msg.value &gt; 1500 szabo &amp;&amp; tx.origin == msg.sender);
+    require(msg.value > 1500 szabo && tx.origin == msg.sender);
     uint r = m_RandomGen.random(100,uint8(msg.value));
-       if(r &gt;0 &amp;&amp; r&lt;3){ // 2
+       if(r >0 && r<3){ // 2
              PlaySlotEvent(3,msg.sender);
              msg.sender.transfer(msg.value * 12);
-       }else if(r &gt;3 &amp;&amp; r&lt;6){ // 5
+       }else if(r >3 && r<6){ // 5
              PlaySlotEvent(2,msg.sender);
              msg.sender.transfer(msg.value * 6);
-       }else if(r &gt;6 &amp;&amp; r&lt;9){ // 7
+       }else if(r >6 && r<9){ // 7
              PlaySlotEvent(1,msg.sender);
              msg.sender.transfer(msg.value * 3);
        }else{

@@ -41,20 +41,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -88,16 +88,16 @@ contract Token is HouseOwned, ERC20Interface {
     Jackpot public jackpot;
     address public croupier;
 
-    // All users&#39; balances
-    mapping (address =&gt; uint256) internal balances;
-    // Users&#39; deposits with Croupier
-    mapping (address =&gt; uint256) public depositOf;
+    // All users' balances
+    mapping (address => uint256) internal balances;
+    // Users' deposits with Croupier
+    mapping (address => uint256) public depositOf;
     // Total amount of deposits
     uint256 public totalDeposit;
-    // Total amount of &quot;Frozen Deposit Pool&quot; -- the tokens for sale at Croupier
+    // Total amount of "Frozen Deposit Pool" -- the tokens for sale at Croupier
     uint256 public frozenPool;
     // Allowance mapping
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     //////
     /// @title Modifiers
@@ -146,8 +146,8 @@ contract Token is HouseOwned, ERC20Interface {
 
     /// @dev Initializes contract with initial supply tokens to the creator of the contract
     function Token() HouseOwned() public {
-        name = &quot;JACK Token&quot;;
-        symbol = &quot;JACK&quot;;
+        name = "JACK Token";
+        symbol = "JACK";
         supply = 1000000;
     }
 
@@ -155,7 +155,7 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _jackpot Address of the Jackpot contract
     function setJackpot(address _jackpot) onlyHouse public {
         require(address(jackpot) == 0x0);
-        require(_jackpot != address(this)); // Protection from admin&#39;s mistake
+        require(_jackpot != address(this)); // Protection from admin's mistake
 
         jackpot = Jackpot(_jackpot);
 
@@ -175,7 +175,7 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _to The address of the recipient
     /// @param _extra Additional off-chain credit (AirDrop support), so that croupier can return more than the user has actually deposited
     function returnDeposit(address _to, uint256 _extra) onlyCroupier public {
-        require(depositOf[_to] &gt; 0 || _extra &gt; 0);
+        require(depositOf[_to] > 0 || _extra > 0);
         uint256 amount = depositOf[_to];
         depositOf[_to] = 0;
         totalDeposit = totalDeposit.sub(amount);
@@ -209,12 +209,12 @@ contract Token is HouseOwned, ERC20Interface {
             return true;
         }
 
-        if (_to == croupier &amp;&amp; msg.sender != house) {
-            // It&#39;s a deposit to Croupier. In addition to transferring the token,
+        if (_to == croupier && msg.sender != house) {
+            // It's a deposit to Croupier. In addition to transferring the token,
             // mark it in the deposits table
 
-            // House can&#39;t make deposits. If House is transferring something to
-            // Croupier, it&#39;s just a transfer, nothing more
+            // House can't make deposits. If House is transferring something to
+            // Croupier, it's just a transfer, nothing more
 
             depositOf[msg.sender] += _value;
             totalDeposit = totalDeposit.add(_value);
@@ -233,8 +233,8 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _value uint256 the amount of tokens to be transferred
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -274,7 +274,7 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _subtractedValue The amount of tokens to decrease the allowance by.
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -287,7 +287,7 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _user The address of the user
     /// @param _extra Additional off-chain credit (AirDrop support), so that croupier could have frozen more than the user had invested
     function freezeDeposit(address _user, uint256 _extra) onlyCroupier public {
-        require(depositOf[_user] &gt; 0 || _extra &gt; 0);
+        require(depositOf[_user] > 0 || _extra > 0);
 
         uint256 deposit = depositOf[_user];
         depositOf[_user] = depositOf[_user].sub(deposit);
@@ -300,12 +300,12 @@ contract Token is HouseOwned, ERC20Interface {
         DepositFrozen(_user, depositWithExtra);
     }
 
-    /// @dev Croupier uses this method stop selling user&#39;s tokens and return them to normal deposit
+    /// @dev Croupier uses this method stop selling user's tokens and return them to normal deposit
     /// @param _user The user whose deposit is being unfrozen
-    /// @param _value The value to unfreeze according to Croupier&#39;s records (off-chain sale data)
+    /// @param _value The value to unfreeze according to Croupier's records (off-chain sale data)
     function unfreezeDeposit(address _user, uint256 _value) onlyCroupier public {
-        require(_value &gt; 0);
-        require(frozenPool &gt;= _value);
+        require(_value > 0);
+        require(frozenPool >= _value);
 
         depositOf[_user] = depositOf[_user].add(_value);
         totalDeposit = totalDeposit.add(_value);
@@ -319,8 +319,8 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _to The recipient of the tokens
     /// @param _value The amount
     function transferFromCroupier(address _to, uint256 _value) onlyJackpot public {
-        require(_value &gt; 0);
-        require(frozenPool &gt;= _value);
+        require(_value > 0);
+        require(frozenPool >= _value);
 
         frozenPool = frozenPool.sub(_value);
 
@@ -338,7 +338,7 @@ contract Token is HouseOwned, ERC20Interface {
     /// @return success
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
         require(_to != address(0));                         // Prevent transfer to 0x0 address
-        require(balances[_from] &gt;= _value);                 // Check if the sender has enough
+        require(balances[_from] >= _value);                 // Check if the sender has enough
         balances[_from] = balances[_from].sub(_value);      // Subtract from the sender
         balances[_to] = balances[_to].add(_value);          // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -349,7 +349,7 @@ contract Token is HouseOwned, ERC20Interface {
     /// @param _sender The token sender (whose tokens are being burned)
     /// @param _value The amount of tokens to burn
     function _burnFromAccount(address _sender, uint256 _value) internal {
-        require(balances[_sender] &gt;= _value);               // Check if the sender has enough
+        require(balances[_sender] >= _value);               // Check if the sender has enough
         balances[_sender] = balances[_sender].sub(_value);  // Subtract from the sender
         supply = supply.sub(_value);                        // Updates totalSupply
         Burn(_sender, _value);
@@ -405,7 +405,7 @@ contract Jackpot is HouseOwned {
     uint256 public currentBetAmount = initialBetAmount;
 
     // Investment tracking for emergency ICO termination
-    mapping (address =&gt; uint256) public investmentOf;
+    mapping (address => uint256) public investmentOf;
     uint256 public abortTime;
 
     //////
@@ -441,7 +441,7 @@ contract Jackpot is HouseOwned {
     ///      Type: 1: 20, 2: 50, 3: 100
     event MinorPrizePayout(address indexed from, uint256 value, uint8 prizeType);
 
-    /// @dev Fired when as a result of ether bid, tokens are sold from the Croupier&#39;s pool
+    /// @dev Fired when as a result of ether bid, tokens are sold from the Croupier's pool
     ///      The parameters are who bought them, how many tokens, and for how much Ether they were sold
     event SoldTokensFromCroupier(address indexed from, uint256 value, uint256 tokens);
 
@@ -454,7 +454,7 @@ contract Jackpot is HouseOwned {
     //
 
     /// @dev The contract constructor
-    /// @param _croupier The address of the trusted Croupier bot&#39;s account
+    /// @param _croupier The address of the trusted Croupier bot's account
     function Jackpot(address _croupier)
         HouseOwned()
         public
@@ -464,7 +464,7 @@ contract Jackpot is HouseOwned {
 
         // There are no bets (it even starts in ICO stage), so initialize
         // lastBetUser, just so that value is not zero and is meaningful
-        // The game can&#39;t end until at least one bid is made, and once
+        // The game can't end until at least one bid is made, and once
         // a bid is made, this value is permanently overwritten.
         lastBetUser = _croupier;
     }
@@ -473,7 +473,7 @@ contract Jackpot is HouseOwned {
     /// @param _token Address of the Token contract (JACK Token)
     function setToken(address _token) onlyHouse public {
         require(address(token) == 0x0);
-        require(_token != address(this)); // Protection from admin&#39;s mistake
+        require(_token != address(this)); // Protection from admin's mistake
 
         token = Token(_token);
     }
@@ -508,7 +508,7 @@ contract Jackpot is HouseOwned {
                 return;
             }
 
-            require(msg.value &gt;= currentIcoTokenPrice);
+            require(msg.value >= currentIcoTokenPrice);
         
             // THE PLAN
             // 1. [CHECK + EFFECT] Calculate how much times price, the investment amount is,
@@ -531,13 +531,13 @@ contract Jackpot is HouseOwned {
 
             // 3. [EFFECT] Game start
             // Check if we have accumulated the jackpot amount required for game start
-            if (icoEndTime == 0 &amp;&amp; this.balance &gt;= gameStartJackpotThreshold) {
+            if (icoEndTime == 0 && this.balance >= gameStartJackpotThreshold) {
                 icoEndTime = now + icoTerminationTimeout;
             }
 
             // 4. [INT] Awarding tokens
             // Award the deserved tokens (if any)
-            if (tokens &gt; 0) {
+            if (tokens > 0) {
                 token.transfer(msg.sender, tokens);
             }
 
@@ -558,13 +558,13 @@ contract Jackpot is HouseOwned {
             }
 
             // Now processing an Ether bid
-            require(msg.value &gt;= currentBetAmount);
+            require(msg.value >= currentBetAmount);
 
             // THE PLAN
             // 1. [CHECK] Calculate how much times min-bet, the bet amount is,
             //    calculate how many tokens the player is going to get
-            // 2. [CHECK] Check how much is sold from the Croupier&#39;s pool, and how much from Jackpot
-            // 3. [EFFECT] Deposit 25% to the Croupier (for dividends and house&#39;s benefit)
+            // 2. [CHECK] Check how much is sold from the Croupier's pool, and how much from Jackpot
+            // 3. [EFFECT] Deposit 25% to the Croupier (for dividends and house's benefit)
             // 4. [EFFECT] Log and mark bid
             // 6. [INT] Check and reward (if won) minor (20, 100, 1000) prizes
             // 7. [EFFECT] Update bet amount
@@ -574,33 +574,33 @@ contract Jackpot is HouseOwned {
             // 1. [CHECK + EFFECT] Checking the bet amount and token reward
             tokens = _betTokensForEther(msg.value);
 
-            // 2. [CHECK] Check how much is sold from the Croupier&#39;s pool, and how much from Jackpot
+            // 2. [CHECK] Check how much is sold from the Croupier's pool, and how much from Jackpot
             //    The priority is (1) Croupier, (2) Jackpot
             uint256 sellingFromJackpot = 0;
             uint256 sellingFromCroupier = 0;
-            if (tokens &gt; 0) {
+            if (tokens > 0) {
                 uint256 croupierPool = token.frozenPool();
                 uint256 jackpotPool = token.balanceOf(this);
 
                 if (croupierPool == 0) {
                     // Simple case: only Jackpot is selling
                     sellingFromJackpot = tokens;
-                    if (sellingFromJackpot &gt; jackpotPool) {
+                    if (sellingFromJackpot > jackpotPool) {
                         sellingFromJackpot = jackpotPool;
                     }
-                } else if (jackpotPool == 0 || tokens &lt;= croupierPool) {
+                } else if (jackpotPool == 0 || tokens <= croupierPool) {
                     // Simple case: only Croupier is selling
                     // either because Jackpot has 0, or because Croupier takes over
                     // by priority and has enough tokens in its pool
                     sellingFromCroupier = tokens;
-                    if (sellingFromCroupier &gt; croupierPool) {
+                    if (sellingFromCroupier > croupierPool) {
                         sellingFromCroupier = croupierPool;
                     }
                 } else {
                     // Complex case: both are selling now
-                    sellingFromCroupier = croupierPool;  // (tokens &gt; croupierPool) is guaranteed at this point
+                    sellingFromCroupier = croupierPool;  // (tokens > croupierPool) is guaranteed at this point
                     sellingFromJackpot = tokens.sub(sellingFromCroupier);
-                    if (sellingFromJackpot &gt; jackpotPool) {
+                    if (sellingFromJackpot > jackpotPool) {
                         sellingFromJackpot = jackpotPool;
                     }
                 }
@@ -616,7 +616,7 @@ contract Jackpot is HouseOwned {
             uint256 tokenValue = msg.value.sub(currentBetAmount);
 
             uint256 croupierSaleRevenue = 0;
-            if (sellingFromCroupier &gt; 0) {
+            if (sellingFromCroupier > 0) {
                 croupierSaleRevenue = tokenValue.div(
                     sellingFromJackpot.add(sellingFromCroupier)
                 ).mul(sellingFromCroupier);
@@ -626,7 +626,7 @@ contract Jackpot is HouseOwned {
             uint256 dividends = (currentBetAmount.div(4)).add(jackpotSaleRevenue.div(2));
 
             // 100% of money for selling from Croupier still goes to Croupier
-            // so that it&#39;s later paid out to the selling user
+            // so that it's later paid out to the selling user
             pendingEtherForCroupier = pendingEtherForCroupier.add(dividends.add(croupierSaleRevenue));
 
             // 4. [EFFECT] Log and mark bid
@@ -636,7 +636,7 @@ contract Jackpot is HouseOwned {
             terminationTime = now + _terminationDuration();
 
             // If anything was sold from Croupier, log it appropriately
-            if (croupierSaleRevenue &gt; 0) {
+            if (croupierSaleRevenue > 0) {
                 SoldTokensFromCroupier(msg.sender, croupierSaleRevenue, sellingFromCroupier);
             }
 
@@ -648,10 +648,10 @@ contract Jackpot is HouseOwned {
             _updateBetAmount();
 
             // 7. [INT] Awarding tokens
-            if (sellingFromJackpot &gt; 0) {
+            if (sellingFromJackpot > 0) {
                 token.transfer(msg.sender, sellingFromJackpot);
             }
-            if (sellingFromCroupier &gt; 0) {
+            if (sellingFromCroupier > 0) {
                 token.transferFromCroupier(msg.sender, sellingFromCroupier);
             }
 
@@ -660,14 +660,14 @@ contract Jackpot is HouseOwned {
             require(msg.sender == winner || msg.sender == house);
 
             if (msg.sender == winner) {
-                require(pendingJackpotForWinner &gt; 0);
+                require(pendingJackpotForWinner > 0);
 
                 uint256 winnersPay = pendingJackpotForWinner;
                 pendingJackpotForWinner = 0;
 
                 msg.sender.transfer(winnersPay);
             } else if (msg.sender == house) {
-                require(pendingJackpotForHouse &gt; 0);
+                require(pendingJackpotForHouse > 0);
 
                 uint256 housePay = pendingJackpotForHouse;
                 pendingJackpotForHouse = 0;
@@ -683,14 +683,14 @@ contract Jackpot is HouseOwned {
     function payOutJackpot() onlyCroupier public {
         require(winner != 0x0);
     
-        if (pendingJackpotForHouse &gt; 0) {
+        if (pendingJackpotForHouse > 0) {
             uint256 housePay = pendingJackpotForHouse;
             pendingJackpotForHouse = 0;
 
             house.transfer(housePay);
         }
 
-        if (pendingJackpotForWinner &gt; 0) {
+        if (pendingJackpotForWinner > 0) {
             uint256 winnersPay = pendingJackpotForWinner;
             pendingJackpotForWinner = 0;
 
@@ -708,7 +708,7 @@ contract Jackpot is HouseOwned {
     ///      Croupier bot, to check whether it should call checkTermination
     /// @return Whether the game should be terminated by timeout
     function shouldBeTerminated() public view returns (bool should) {
-        return stage == Stages.GameOn &amp;&amp; terminationTime != 0 &amp;&amp; now &gt; terminationTime;
+        return stage == Stages.GameOn && terminationTime != 0 && now > terminationTime;
     }
 
     /// @dev Check whether the game should be terminated, and if it should, terminate it
@@ -741,7 +741,7 @@ contract Jackpot is HouseOwned {
     ///      Croupier bot, to check whether it should call `checkGameStart`
     /// @return Whether the game should be started
     function shouldBeStarted() public view returns (bool should) {
-        return stage == Stages.InitialOffer &amp;&amp; icoEndTime != 0 &amp;&amp; now &gt; icoEndTime;
+        return stage == Stages.InitialOffer && icoEndTime != 0 && now > icoEndTime;
     }
 
     /// @dev Check whether the game should be started, and if it should, start it
@@ -788,7 +788,7 @@ contract Jackpot is HouseOwned {
     ///      to pull back the investments
     function claimRefund() public {
         require(stage == Stages.Aborted);
-        require(investmentOf[msg.sender] &gt; 0);
+        require(investmentOf[msg.sender] > 0);
 
         uint256 payment = investmentOf[msg.sender];
         investmentOf[msg.sender] = 0;
@@ -800,7 +800,7 @@ contract Jackpot is HouseOwned {
     ///      after the termination date
     function killAborted() onlyHouse public {
         require(stage == Stages.Aborted);
-        require(now &gt; abortTime + 60 days);
+        require(now > abortTime + 60 days);
 
         selfdestruct(house);
     }
@@ -821,13 +821,13 @@ contract Jackpot is HouseOwned {
     function _updateIcoPrice() internal {
         uint256 newIcoTokenPrice = currentIcoTokenPrice;
 
-        if (icoSoldTokens &lt; 10000) {
+        if (icoSoldTokens < 10000) {
             newIcoTokenPrice = 4 finney;
-        } else if (icoSoldTokens &lt; 20000) {
+        } else if (icoSoldTokens < 20000) {
             newIcoTokenPrice = 5 finney;
-        } else if (icoSoldTokens &lt; 30000) {
+        } else if (icoSoldTokens < 30000) {
             newIcoTokenPrice = 5.3 finney;
-        } else if (icoSoldTokens &lt; 40000) {
+        } else if (icoSoldTokens < 40000) {
             newIcoTokenPrice = 5.7 finney;
         } else {
             newIcoTokenPrice = 6 finney;
@@ -855,15 +855,15 @@ contract Jackpot is HouseOwned {
         // tokens
         tokens = (value / currentBetAmount) - 1;
 
-        if (tokens &gt;= 1000) {
+        if (tokens >= 1000) {
             tokens = tokens + tokens / 4; // +25%
-        } else if (tokens &gt;= 300) {
+        } else if (tokens >= 300) {
             tokens = tokens + tokens / 5; // +20%
-        } else if (tokens &gt;= 100) {
+        } else if (tokens >= 100) {
             tokens = tokens + tokens / 7; // ~ +14.3%
-        } else if (tokens &gt;= 50) {
+        } else if (tokens >= 50) {
             tokens = tokens + tokens / 10; // +10%
-        } else if (tokens &gt;= 20) {
+        } else if (tokens >= 20) {
             tokens = tokens + tokens / 20; // +5%
         }
     }
@@ -875,20 +875,20 @@ contract Jackpot is HouseOwned {
         // How many times the input is greater than current token price
         tokens = value / currentIcoTokenPrice;
 
-        if (tokens &gt;= 10000) {
+        if (tokens >= 10000) {
             tokens = tokens + tokens / 4; // +25%
-        } else if (tokens &gt;= 5000) {
+        } else if (tokens >= 5000) {
             tokens = tokens + tokens / 5; // +20%
-        } else if (tokens &gt;= 1000) {
+        } else if (tokens >= 1000) {
             tokens = tokens + tokens / 7; // ~ +14.3%
-        } else if (tokens &gt;= 500) {
+        } else if (tokens >= 500) {
             tokens = tokens + tokens / 10; // +10%
-        } else if (tokens &gt;= 200) {
+        } else if (tokens >= 200) {
             tokens = tokens + tokens / 20; // +5%
         }
 
         // Checking if Jackpot has the tokens in reserve
-        if (tokens &gt; token.balanceOf(this)) {
+        if (tokens > token.balanceOf(this)) {
             tokens = token.balanceOf(this);
         }
 
@@ -899,7 +899,7 @@ contract Jackpot is HouseOwned {
 
     /// @dev Flush the currently pending Ether to Croupier
     function _flushEtherToCroupier() internal {
-        if (pendingEtherForCroupier &gt; 0) {
+        if (pendingEtherForCroupier > 0) {
             uint256 willTransfer = pendingEtherForCroupier;
             pendingEtherForCroupier = 0;
             
@@ -914,7 +914,7 @@ contract Jackpot is HouseOwned {
     function _checkMinorPrizes(address user, uint256 value) internal {
         // First and foremost, increment the counters and ether counters
         totalBets ++;
-        if (value &gt; 0) {
+        if (value > 0) {
             etherSince20 = etherSince20.add(value);
             etherSince50 = etherSince50.add(value);
             etherSince100 = etherSince100.add(value);

@@ -40,11 +40,11 @@ contract Token {
 
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -54,8 +54,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -78,8 +78,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -93,7 +93,7 @@ contract SnipCoin is StandardToken {
     string public tokenSymbol;          // Token identifier
     uint public totalEthReceivedInWei; // The total amount of Ether received during the sale in WEI
     uint public totalUsdReceived; // The total amount of Ether received during the sale in USD terms
-    string public version = &quot;1.0&quot;; // Code version
+    string public version = "1.0"; // Code version
     address public saleWalletAddress;  // The wallet address where the Ether from the sale will be stored
     address public ownerAddress; // Address of the contract owner.
 
@@ -130,14 +130,14 @@ contract SnipCoin is StandardToken {
         totalSupply = 10000000000;                                      // In total, 10 billion tokens
         balances[msg.sender] = totalSupply * DECIMALS_MULTIPLIER;        // Initially give owner all of the tokens 
         
-        tokenName = &quot;SnipCoin&quot;;                              // Name of token
+        tokenName = "SnipCoin";                              // Name of token
         decimals = 18;                                       // Amount of decimals for display purposes
-        tokenSymbol = &quot;SNP&quot;;                                      // Set the symbol for display purposes
+        tokenSymbol = "SNP";                                      // Set the symbol for display purposes
     }
 
     function sendCoin(address receiver, uint amount) returns(bool sufficient)
     {
-        if (balances[msg.sender] &lt; amount) return false;
+        if (balances[msg.sender] < amount) return false;
         balances[msg.sender] -= amount;
         balances[receiver] += amount;
         Transfer(msg.sender, receiver, amount);

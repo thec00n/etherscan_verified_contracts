@@ -22,11 +22,11 @@ contract ECVerify  {
         // albeit non-transactional signatures are not specified by the YP, one would expect it
         // to match the YP range of [27, 28].  geth uses [0, 1] and some clients have followed.
         // So, Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
         // Check the version is valid or not
-        if (v != 27 &amp;&amp; v != 28) {
+        if (v != 27 && v != 28) {
             return (address(0));
         } 
         
@@ -34,7 +34,7 @@ contract ECVerify  {
             return ecrecover(_msgHash, v, r, s); 
         }
         else if (v==28) {
-            //bytes memory _prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+            //bytes memory _prefix = "\x19Ethereum Signed Message:\n32";
             //bytes32 _prefixedHash = keccak256(_prefix, _msgHash);
             return ecrecover(_msgHash, v, r, s); 
         } 

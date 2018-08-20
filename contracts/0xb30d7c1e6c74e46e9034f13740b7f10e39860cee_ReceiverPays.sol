@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 contract ReceiverPays {
     address owner = msg.sender;
 
-    mapping(uint256 =&gt; bool) usedNonces;
+    mapping(uint256 => bool) usedNonces;
 
     // Funds are sent at deployment time.
     function ReceiverPays() public payable { }
@@ -69,6 +69,6 @@ contract ReceiverPays {
 
     // Builds a prefixed hash to mimic the behavior of eth_sign.
     function prefixed(bytes32 hash) internal pure returns (bytes32) {
-        return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+        return keccak256("\x19Ethereum Signed Message:\n32", hash);
     }
 }

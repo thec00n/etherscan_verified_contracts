@@ -9,8 +9,8 @@ contract DINRegistry {
         uint256 updated;   // Unix timestamp.
     }
 
-    // DIN =&gt; Record
-    mapping (uint256 =&gt; Record) records;
+    // DIN => Record
+    mapping (uint256 => Record) records;
 
     // The address of DINRegistrar.
     address public registrar;
@@ -147,9 +147,9 @@ contract DINRegistrar {
      * @param quantity The amount of DINs to register.
      */
     function registerDINs(uint256 quantity) {
-        require(quantity &lt;= MAX_QUANTITY);
+        require(quantity <= MAX_QUANTITY);
 
-        for (uint i = 0; i &lt; quantity; i++) {
+        for (uint i = 0; i < quantity; i++) {
             registerDIN();
         }
     }

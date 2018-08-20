@@ -7,10 +7,10 @@ contract ReplaySafeSend {
     AmIOnTheFork amIOnTheFork = AmIOnTheFork(0x2bd2326c993dfaef84f696526064ff22eba5b362);
 
     function safeSend(address etcAddress) returns(bool) {
-        if (!amIOnTheFork.forked() &amp;&amp; etcAddress.send(msg.value)) {
+        if (!amIOnTheFork.forked() && etcAddress.send(msg.value)) {
             return true;
         }
-        throw; // don&#39;t accept value transfer, otherwise it would be trapped.
+        throw; // don't accept value transfer, otherwise it would be trapped.
     }
 
     // Reject value transfers.

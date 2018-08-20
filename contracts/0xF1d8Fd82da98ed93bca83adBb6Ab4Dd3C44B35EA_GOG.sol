@@ -23,11 +23,11 @@ contract GOG is owned {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     // this creates an 2 x 2 array with allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     // This creates an array with all frozenFunds
-    mapping (address =&gt; uint256) public frozenFunds;
+    mapping (address => uint256) public frozenFunds;
     // This generates a public event on the blockchain that will notify clients freezing of funds
     event FrozenFunds(address target, uint256 funds);
         // This generates a public event on the blockchain that will notify clients unfreezing of funds
@@ -44,10 +44,10 @@ contract GOG is owned {
      * Initializes contract with initial supply tokens to the creator of the contract
      */
     function GOG() public {
-        totalSupply = 10000000000000000;               // GOG&#39;s total supply is 10 billion with 6 decimals
+        totalSupply = 10000000000000000;               // GOG's total supply is 10 billion with 6 decimals
         balances[msg.sender] = totalSupply;          // Give the creator all initial tokens
-        name = &quot;GoGlobe Token&quot;;                       // Token name is GoGlobe Token
-        symbol = &quot;GOG&quot;;                               // token symbol is GOG
+        name = "GoGlobe Token";                       // Token name is GoGlobe Token
+        symbol = "GOG";                               // token symbol is GOG
     }
 
     /**
@@ -69,9 +69,9 @@ contract GOG is owned {
      * @param _funds The amount of funds will be unfreezed
      */
     function unFreezeAccount(address _target, uint256 _funds) public onlyOwner {
-        require(_funds &gt; 0x0);
+        require(_funds > 0x0);
         uint256 temp = frozenFunds[_target];
-        temp = temp &lt; _funds ? 0x0 : temp - _funds;
+        temp = temp < _funds ? 0x0 : temp - _funds;
         frozenFunds[_target] = temp;
         UnFrozenFunds(_target, _funds);
     }
@@ -122,10 +122,10 @@ contract GOG is owned {
         require(_to != 0x0);
 
         // Check if the sender has enough
-        require(balances[_from] &gt; frozenFunds[_from]);
-        require((balances[_from] - frozenFunds[_from]) &gt;= _value);
+        require(balances[_from] > frozenFunds[_from]);
+        require((balances[_from] - frozenFunds[_from]) >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -155,7 +155,7 @@ contract GOG is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -167,7 +167,7 @@ contract GOG is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -181,10 +181,10 @@ contract GOG is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

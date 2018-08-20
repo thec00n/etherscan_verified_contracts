@@ -65,7 +65,7 @@ contract MultistageCrowdsale {
 
     saleEndTime = uint32(_timesAndRates[_timesAndRates.length - 1]);
     // check sale ends after last stage opening time
-    require(saleEndTime &gt; stages[stages.length - 1].time);
+    require(saleEndTime > stages[stages.length - 1].time);
 
     wallet = _wallet;
     token = _token;
@@ -85,12 +85,12 @@ contract MultistageCrowdsale {
    */
   function purchase(bytes32 _r, bytes32 _s, bytes32 _payload) public payable {
     // parse inputs
-    uint32 time = uint32(_payload &gt;&gt; 160);
+    uint32 time = uint32(_payload >> 160);
     address beneficiary = address(_payload);
     // verify inputs
-    require(uint56(_payload &gt;&gt; 192) == uint56(this));
+    require(uint56(_payload >> 192) == uint56(this));
     /* solium-disable-next-line arg-overflow */
-    require(ecrecover(keccak256(uint8(0), uint56(_payload &gt;&gt; 192), time, beneficiary), uint8(_payload &gt;&gt; 248), _r, _s) == signer);
+    require(ecrecover(keccak256(uint8(0), uint56(_payload >> 192), time, beneficiary), uint8(_payload >> 248), _r, _s) == signer);
     require(beneficiary != address(0));
 
     // calculate token amount to be created
@@ -99,8 +99,8 @@ contract MultistageCrowdsale {
     require(rate == getRateAt(time));
     // multiply rate with Gwei of investment
     uint256 tokens = rate.mul(msg.value).div(1000000000);
-    // check that msg.value &gt; 0
-    require(tokens &gt; 0);
+    // check that msg.value > 0
+    require(tokens > 0);
 
     // pocket Ether
     wallet.transfer(msg.value);
@@ -113,7 +113,7 @@ contract MultistageCrowdsale {
   function getParams() view public returns (uint256[] _times, uint256[] _rates, address _wallet, address _token, address _signer) {
     _times = new uint256[](stages.length + 1);
     _rates = new uint256[](stages.length);
-    for (uint256 i = 0; i &lt; stages.length; i++) {
+    for (uint256 i = 0; i < stages.length; i++) {
       _times[i] = stages[i].time;
       _rates[i] = stages[i].rate;
     }
@@ -127,38 +127,38 @@ contract MultistageCrowdsale {
     // check odd amount of array elements, tuples of rate and time + saleEndTime
     require(_timesAndRates.length % 2 == 1);
     // check that at least 1 stage provided
-    require(_timesAndRates.length &gt;= 3);
+    require(_timesAndRates.length >= 3);
 
-    for (uint256 i = 0; i &lt; _timesAndRates.length / 2; i++) {
+    for (uint256 i = 0; i < _timesAndRates.length / 2; i++) {
       stages.push(Stage(uint32(_timesAndRates[i * 2]), uint64(_timesAndRates[(i * 2) + 1])));
-      if (i &gt; 0) {
+      if (i > 0) {
         // check that each time higher than previous time
-        require(stages[i-1].time &lt; stages[i].time);
+        require(stages[i-1].time < stages[i].time);
         // check that each rate is lower than previous rate
-        require(stages[i-1].rate &gt; stages[i].rate);
+        require(stages[i-1].rate > stages[i].rate);
       }
     }
 
     // check that opening time in the future
-    require(stages[0].time &gt; now); // solium-disable-line security/no-block-members
+    require(stages[0].time > now); // solium-disable-line security/no-block-members
 
-    // check final rate &gt; 0
-    require(stages[stages.length - 1].rate &gt; 0);
+    // check final rate > 0
+    require(stages[stages.length - 1].rate > 0);
   }
 
   function getRateAt(uint256 _now) view internal returns (uint256 rate) {
     // if before first stage, return 0
-    if (_now &lt; stages[0].time) {
+    if (_now < stages[0].time) {
       return 0;
     }
 
-    for (uint i = 1; i &lt; stages.length; i++) {
-      if (_now &lt; stages[i].time)
+    for (uint i = 1; i < stages.length; i++) {
+      if (_now < stages[i].time)
         return stages[i - 1].rate;
     }
 
     // handle last stage
-    if (_now &lt; saleEndTime)
+    if (_now < saleEndTime)
       return stages[stages.length - 1].rate;
 
     // sale already closed
@@ -185,9 +185,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -195,7 +195,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -204,7 +204,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -18,7 +18,7 @@ contract WhiteListAccess {
     }
     
     address public owner;
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     modifier onlyBy(address who) { require(msg.sender == who); _; }
     modifier onlyOwner {require(msg.sender == owner); _;}
@@ -39,7 +39,7 @@ contract WhiteListAccess {
 // ----------------------------------------------------------------------------
 contract NRB_Common is WhiteListAccess {
     
-    string public name;             // contract&#39;s name
+    string public name;             // contract's name
     bool _init;
     
     function NRB_Common() public { ETH_address = 0x1; }
@@ -75,28 +75,28 @@ contract NRB_Common is WhiteListAccess {
 contract NRB_Users is NRB_Common {
 
     // how much raised for each token
-    mapping(address =&gt; uint) raisedAmount;
+    mapping(address => uint) raisedAmount;
 
     // accounts[TOKEN][USER] = DAta()
-    mapping(address =&gt; mapping(address =&gt; Data)) public accounts;
+    mapping(address => mapping(address => Data)) public accounts;
 
     // a list of users for each token
-    mapping(address =&gt;  mapping(uint =&gt; address)) public tokenUsers;
+    mapping(address =>  mapping(uint => address)) public tokenUsers;
 
     // length of eath prev list
-    mapping(address =&gt; uint) public userindex;
+    mapping(address => uint) public userindex;
 
     // a global list of users (uniques ids across)
-    mapping(uint =&gt; address) user;
+    mapping(uint => address) user;
 
     // length of prev list
     uint public userlength;
 
     // map of known tokens
-    mapping(address =&gt; bool) public tokenmap;
+    mapping(address => bool) public tokenmap;
 
     // list of known tokens
-    mapping(uint =&gt; address) public tokenlist;
+    mapping(uint => address) public tokenlist;
 
     // length of prev list
     uint public tokenlength;
@@ -116,13 +116,13 @@ contract NRB_Users is NRB_Common {
 // --------------------------------------------------------------------------------
     function NRB_Users() public {
         userlength = 1;
-        name = &quot;NRB_Users&quot;;
+        name = "NRB_Users";
     }
 
     // User Registration ------------------------------------------
     function registerUserOnToken(address _token, address _user, uint _value, uint _flc, string _json) public onlyWhitelisted() returns (uint) {
-        Debug(&quot;USER.registerUserOnToken() _token,_user,msg.sender&quot;,_token,_user, msg.sender);
-        Debug(&quot;USER.registerUserOnToken() _valu, msg.value&quot;,_value,msg.value);
+        Debug("USER.registerUserOnToken() _token,_user,msg.sender",_token,_user, msg.sender);
+        Debug("USER.registerUserOnToken() _valu, msg.value",_value,msg.value);
 
         uint _time = block.timestamp;
         uint _userid = 0;
@@ -153,7 +153,7 @@ contract NRB_Users is NRB_Common {
         }
 
         accounts[_user][_token].time = _time;
-        if (keccak256(_json) != keccak256(&quot;NO-JSON&quot;)) {
+        if (keccak256(_json) != keccak256("NO-JSON")) {
             accounts[_user][_token].json = _json;
         }
 
@@ -187,7 +187,7 @@ contract NRB_Users is NRB_Common {
     }
 
     function getUserLengthOnToken(address _token) constant public returns (uint) {
-        if (userindex[_token] &lt; 2) {return 0;}
+        if (userindex[_token] < 2) {return 0;}
         return userindex[_token]-1;
     }
 
@@ -197,7 +197,7 @@ contract NRB_Users is NRB_Common {
     }
 
     function getUserDataOnToken(address _token, uint _index) constant public returns (string) {
-        require(userindex[_token] &gt; _index-1);
+        require(userindex[_token] > _index-1);
         address _user = tokenUsers[_token][_index];
         return accounts[_user][_token].json;
     }
@@ -207,12 +207,12 @@ contract NRB_Users is NRB_Common {
     }
 
     function getUserNumbersOnToken(address _token, uint _index) constant public returns (uint, uint, uint, uint, uint, uint, uint, address) {
-        require(userindex[_token] &gt; _index-1);
+        require(userindex[_token] > _index-1);
         address _user = tokenUsers[_token][_index];
         Data memory data = accounts[_user][_token];
         uint _balance = getUserBalanceOnToken(_token, _user);
         // we truncate the current balance of user because he or che is only allowed to show till 10 times what benn paid.
-        if (_balance &gt; 9 * data.paid) {
+        if (_balance > 9 * data.paid) {
             _balance = 9 * data.paid;
         }
         _balance = _balance + data.paid;
@@ -248,12 +248,12 @@ contract NRB_Users is NRB_Common {
     // recover tokens sent accidentally
     function _withdrawal(address _token) public {
         uint _balance =  ERC20Interface(_token).balanceOf(address(this));
-        if (_balance &gt; 0) {
+        if (_balance > 0) {
             ERC20Interface(_token).transfer(owner, _balance);
         }
     }
     
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     function () public payable {
         revert();
     }

@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,8 +63,8 @@ contract BitLoanex is Ownable {
 
   using SafeMath for uint256;
   
-  string public constant name = &quot;Bitloanex&quot;;
-  string public constant symbol = &quot;BTLX&quot;;
+  string public constant name = "Bitloanex";
+  string public constant symbol = "BTLX";
   uint8 public constant decimals = 8;
 
   uint256 public rate;
@@ -80,8 +80,8 @@ contract BitLoanex is Ownable {
   uint256 public totalSupply;
   address[] public investors;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Transfer(address indexed from, address indexed to, uint256 value);
   event BoughtTokens(address indexed to, uint256 value);
@@ -93,7 +93,7 @@ contract BitLoanex is Ownable {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -110,8 +110,8 @@ contract BitLoanex is Ownable {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract BitLoanex is Ownable {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -165,15 +165,15 @@ contract BitLoanex is Ownable {
 
   function isActive() public constant returns (bool) {
     return(
-      initialized == true &amp;&amp;
-      now &gt;= START &amp;&amp;
-      now &lt;= START.add(DAYS * 1 days) &amp;&amp;
+      initialized == true &&
+      now >= START &&
+      now <= START.add(DAYS * 1 days) &&
       goalReached() == false
     );
   }
 
   function goalReached() private constant returns (bool) {
-    return (raisedAmount &gt;= CAP * 1 ether);
+    return (raisedAmount >= CAP * 1 ether);
   }
 
   function () public payable {
@@ -184,7 +184,7 @@ contract BitLoanex is Ownable {
 
   function buyTokens() public payable {
       
-    require(initialized &amp;&amp; now &lt;= START.add(DAYS * 1 days));
+    require(initialized && now <= START.add(DAYS * 1 days));
     
     uint256 weiAmount = msg.value;
     uint256 tokens = weiAmount.mul(getRate());
@@ -224,10 +224,10 @@ contract BitLoanex is Ownable {
 
   function getRate() public constant returns (uint256){
       
-      if(rate &gt; 0) return rate;
+      if(rate > 0) return rate;
       
-      for(var i = 0; i &lt; deadlines.length; i++)
-          if(now&lt;deadlines[i])
+      for(var i = 0; i < deadlines.length; i++)
+          if(now<deadlines[i])
               return rates[i];
       return rates[rates.length-1];//should never be returned, but to be sure to not divide by 0
   }

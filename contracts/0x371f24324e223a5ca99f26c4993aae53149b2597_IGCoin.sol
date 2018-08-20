@@ -6,10 +6,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -17,7 +17,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -109,16 +109,16 @@ contract DeaultERC20 is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;DFLT&quot;;
-        name = &quot;Default&quot;;
+        symbol = "DFLT";
+        name = "Default";
         decimals = 18;
     }
 
@@ -137,8 +137,8 @@ contract DeaultERC20 is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -150,7 +150,7 @@ contract DeaultERC20 is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -181,7 +181,7 @@ contract DeaultERC20 is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -189,7 +189,7 @@ contract DeaultERC20 is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -200,7 +200,7 @@ contract DeaultERC20 is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -247,7 +247,7 @@ contract IGCoin is DeaultERC20 {
     uint8   private constant LN2_EXPONENT = 122;
     
     /**
-        Auto-generated via &#39;PrintFunctionBancorFormula.py&#39;
+        Auto-generated via 'PrintFunctionBancorFormula.py'
     */
     uint256[128] private maxExpArray;    
     
@@ -258,34 +258,34 @@ contract IGCoin is DeaultERC20 {
     uint8 private constant MIN_PRECISION = 120;
 
     /**
-        Auto-generated via &#39;PrintLn2ScalingFactors.py&#39;
+        Auto-generated via 'PrintLn2ScalingFactors.py'
     */
     uint256 private constant LN2_NUMERATOR   = 0x3f80fe03f80fe03f80fe03f80fe03f8;
     uint256 private constant LN2_DENOMINATOR = 0x5b9de1d10bf4103d647b0955897ba80;
 
     /**
-        Auto-generated via &#39;PrintFunctionOptimalLog.py&#39; and &#39;PrintFunctionOptimalExp.py&#39;
+        Auto-generated via 'PrintFunctionOptimalLog.py' and 'PrintFunctionOptimalExp.py'
     */
     uint256 private constant OPT_LOG_MAX_VAL = 0x15bf0a8b1457695355fb8ac404e7a79e3; // 462491687273110168575455517921668397539
     uint256 private constant OPT_EXP_MAX_VAL = 0x800000000000000000000000000000000; // 2722258935367507707706996859454145691648 2^131
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen); 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;IG17&quot;;
-        name = &quot;theTestToken002&quot;;
+        symbol = "IG17";
+        name = "theTestToken002";
         decimals = 18;
         initialSaleComplete = false;
         _totalSupply = InitialSupply;  // Keep track of all IG Coins created, ever
         balances[owner] = _totalSupply;  // Give the creator all initial IG coins
         emit Transfer(address(0), owner, _totalSupply);
 
-        reserveAddress = new Contract(&quot;Reserve&quot;);  // Create contract to hold reserve
+        reserveAddress = new Contract("Reserve");  // Create contract to hold reserve
         quoteAsk();
         quoteBid();        
 
@@ -423,7 +423,7 @@ contract IGCoin is DeaultERC20 {
     }
     
 
-    /// @notice Deposits &#39;_value&#39; in wei to the reserve address
+    /// @notice Deposits '_value' in wei to the reserve address
     /// @param _value The number of wei to be transferred to the 
     /// reserve address
     function deposit(uint256 _value) private {
@@ -431,7 +431,7 @@ contract IGCoin is DeaultERC20 {
         balances[reserveAddress] += _value;
     }
   
-    /// @notice Withdraws &#39;_value&#39; in wei from the reserve address
+    /// @notice Withdraws '_value' in wei from the reserve address
     /// @param _value The number of wei to be transferred from the 
     /// reserve address    
     function withdraw(uint256 _value) private pure {
@@ -439,15 +439,15 @@ contract IGCoin is DeaultERC20 {
          _value = _value;
     }
     
-    /// @notice Transfers &#39;_value&#39; in aToken to the &#39;_to&#39; address
+    /// @notice Transfers '_value' in aToken to the '_to' address
     /// @param _to The recipient address
     /// @param _value The amount of wei to transfer
     function transfer(address _to, uint256 _value) public returns (bool success) {
         /* Check if sender has balance and for overflows */
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
         
         /* Check if amount is nonzero */
-        require(_value &gt; 0);
+        require(_value > 0);
 
         /* Add and subtract new balances */
         balances[msg.sender] -= _value;
@@ -460,7 +460,7 @@ contract IGCoin is DeaultERC20 {
     }
     
     /// @notice `freeze? Prevent | Allow` `target` from sending 
-    /// &amp; receiving tokens
+    /// & receiving tokens
     /// @param _target Address to be frozen
     /// @param _freeze either to freeze it or not
     function freezeAccount(address _target, bool _freeze) public onlyOwner {
@@ -511,7 +511,7 @@ contract IGCoin is DeaultERC20 {
             uint8 ps = 0;
 
             (p, ps) = power(1000008,1000000,(uint32)(1+_totalSupply/SU),1); // Calculate exponent
-            p=(S*p)&gt;&gt;ps;
+            p=(S*p)>>ps;
             
             //b = ((ln_fixed3_lnr_18( RS*msg.value/SU + fracExp(S, R, (1+_totalSupply/1e16),P),1))-1e18*lnRS-1e18*FIXED_3)/FIXED_3;
             b = (ln_fixed3_lnr_18(RS*msg.value/SU + p,1)-1e18*lnRS-1e18*FIXED_3)/FIXED_3; // b * 1e18
@@ -532,7 +532,7 @@ contract IGCoin is DeaultERC20 {
         }
         else
         {
-            // TODO don&#39;t sell more than the ICO amount if one transaction is huge
+            // TODO don't sell more than the ICO amount if one transaction is huge
             //debugVal = msg.value;
             ask = ICOask;                                   // ICO sale price (wei/Token)
             amount = 1e16*msg.value / ask;                  // calculates the amount of aToken (1e18*wei/(wei/Token))
@@ -544,7 +544,7 @@ contract IGCoin is DeaultERC20 {
             balances[reserveAddress] += msg.value-refund;   // All other addresses hold Token Coin, reserveAddress represents ether
             mintToken(msg.sender, amount);                  // Mint the coin (aToken)
 
-            if(_totalSupply &gt;= ICOAmount)
+            if(_totalSupply >= ICOAmount)
             {
                 initialSaleComplete = true;
             }             
@@ -561,7 +561,7 @@ contract IGCoin is DeaultERC20 {
         uint256 a = 0;
         
         require(initialSaleComplete);
-        require(balances[msg.sender] &gt;= amount);        // checks if the sender has enough to sell
+        require(balances[msg.sender] >= amount);        // checks if the sender has enough to sell
         
         a = _totalSupply - amount;
 
@@ -569,13 +569,13 @@ contract IGCoin is DeaultERC20 {
         uint8 ps = 0;
 
         (p, ps) = power(1000008,1000000,(uint32)(1e5+1e5*_totalSupply/SU),1e5); // Calculate exponent
-        p=(S*p)&gt;&gt;ps;
+        p=(S*p)>>ps;
 
         uint256 p2 = 0;
         uint8 ps2 = 0;
 
         (p2, ps2) = power(1000008,1000000,(uint32)(1e5+1e5*a/SU),1e5); // Calculate exponent
-        p2=(S*p2)&gt;&gt;ps2;
+        p2=(S*p2)>>ps2;
 
             
 
@@ -586,9 +586,9 @@ contract IGCoin is DeaultERC20 {
         //debugVal4 = p2;
         
         _totalSupply -= amount;                 // burn the tokens
-        require(balances[reserveAddress] &gt;= revenue);
-        balances[reserveAddress] -= revenue;             // adds the amount to owner&#39;s balance
-        balances[msg.sender] -= amount;                 // subtracts the amount from seller&#39;s balance
+        require(balances[reserveAddress] >= revenue);
+        balances[reserveAddress] -= revenue;             // adds the amount to owner's balance
+        balances[msg.sender] -= amount;                 // subtracts the amount from seller's balance
         Contract reserve = Contract(reserveAddress);
         reserve.sendFunds(msg.sender, revenue);
         
@@ -612,21 +612,21 @@ contract IGCoin is DeaultERC20 {
     }    
     
 
-    /// @notice Compute &#39;_k * (1+1/_q) ^ _n&#39;, with precision &#39;_p&#39;
+    /// @notice Compute '_k * (1+1/_q) ^ _n', with precision '_p'
     /// @dev The higher the precision, the higher the gas cost. It should be
-    /// something around the log of &#39;n&#39;. When &#39;p == n&#39;, the
+    /// something around the log of 'n'. When 'p == n', the
     /// precision is absolute (sans possible integer overflows).
     /// Much smaller values are sufficient to get a great approximation.
     /// @param _k input param k
     /// @param _q input param q
     /// @param _n input param n
     /// @param _p input param p
-    /// @return &#39;_k * (1+1/_q) ^ _n&#39;   
+    /// @return '_k * (1+1/_q) ^ _n'   
     function fracExp(uint256 _k, uint256 _q, uint256 _n, uint256 _p) internal pure returns (uint256) {
       uint256 s = 0;
       uint256 N = 1;
       uint256 B = 1;
-      for (uint256 i = 0; i &lt; _p; ++i){
+      for (uint256 i = 0; i < _p; ++i){
         s += _k * N / B / (_q**i);
         N  = N * (_n-i);
         B  = B * (i+1);
@@ -641,30 +641,30 @@ contract IGCoin is DeaultERC20 {
     /// @param _denominator is a value between 1 and 2 ^ (256 - MAX_PRECISION) - 1
     /// @return is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
 /*    function ln(uint256 _numerator, uint256 _denominator) internal pure returns (uint256) {
-        assert(_numerator &lt;= MAX_NUM);
+        assert(_numerator <= MAX_NUM);
 
         uint256 res = 0;
         uint256 x = _numerator * FIXED_1 / _denominator;
 
-        // If x &gt;= 2, then we compute the integer part of log2(x), which is larger than 0.
-        if (x &gt;= FIXED_2) {
+        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
+        if (x >= FIXED_2) {
             uint8 count = floorLog2(x / FIXED_1);
-            x &gt;&gt;= count; // now x &lt; 2
+            x >>= count; // now x < 2
             res = count * FIXED_1;
         }
 
-        // If x &gt; 1, then we compute the fraction part of log2(x), which is larger than 0.
-        if (x &gt; FIXED_1) {
-            for (uint8 i = MAX_PRECISION; i &gt; 0; --i) {
-                x = (x * x) / FIXED_1; // now 1 &lt; x &lt; 4
-                if (x &gt;= FIXED_2) {
-                    x &gt;&gt;= 1; // now 1 &lt; x &lt; 2
-                    res += ONE &lt;&lt; (i - 1);
+        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0.
+        if (x > FIXED_1) {
+            for (uint8 i = MAX_PRECISION; i > 0; --i) {
+                x = (x * x) / FIXED_1; // now 1 < x < 4
+                if (x >= FIXED_2) {
+                    x >>= 1; // now 1 < x < 2
+                    res += ONE << (i - 1);
                 }
             }
         }
 
-        return ((res * LN2_MANTISSA) &gt;&gt; LN2_EXPONENT) / FIXED_3;
+        return ((res * LN2_MANTISSA) >> LN2_EXPONENT) / FIXED_3;
     }
 */    
     /// @notice Compute the natural logarithm
@@ -675,30 +675,30 @@ contract IGCoin is DeaultERC20 {
     /// @param _denominator is a value between 1 and 2 ^ (256 - MAX_PRECISION) - 1
     /// @return is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
 /*    function ln_fixed3(uint256 _numerator, uint256 _denominator) private pure returns (uint256) {
-        assert(_numerator &lt;= MAX_NUM);
+        assert(_numerator <= MAX_NUM);
 
         uint256 res = 0;
         uint256 x = _numerator * FIXED_1 / _denominator;
 
-        // If x &gt;= 2, then we compute the integer part of log2(x), which is larger than 0.
-        if (x &gt;= FIXED_2) {
+        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
+        if (x >= FIXED_2) {
             uint8 count = floorLog2(x / FIXED_1);
-            x &gt;&gt;= count; // now x &lt; 2
+            x >>= count; // now x < 2
             res = count * FIXED_1;
         }
 
-        // If x &gt; 1, then we compute the fraction part of log2(x), which is larger than 0.
-        if (x &gt; FIXED_1) {
-            for (uint8 i = MAX_PRECISION; i &gt; 0; --i) {
-                x = (x * x) / FIXED_1; // now 1 &lt; x &lt; 4
-                if (x &gt;= FIXED_2) {
-                    x &gt;&gt;= 1; // now 1 &lt; x &lt; 2
-                    res += ONE &lt;&lt; (i - 1);
+        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0.
+        if (x > FIXED_1) {
+            for (uint8 i = MAX_PRECISION; i > 0; --i) {
+                x = (x * x) / FIXED_1; // now 1 < x < 4
+                if (x >= FIXED_2) {
+                    x >>= 1; // now 1 < x < 2
+                    res += ONE << (i - 1);
                 }
             }
         }
 
-        return ((res * LN2_MANTISSA) &gt;&gt; LN2_EXPONENT);
+        return ((res * LN2_MANTISSA) >> LN2_EXPONENT);
     }
 */    
     /// @notice Compute the natural logarithm
@@ -709,30 +709,30 @@ contract IGCoin is DeaultERC20 {
     /// @param _denominator is a value between 1 and 2 ^ (256 - MAX_PRECISION) - 1
     /// @return is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
 /*    function ln_fixed3_lnr(uint256 _numerator, uint256 _denominator) internal pure returns (uint256) {
-        assert(_numerator &lt;= MAX_NUM);
+        assert(_numerator <= MAX_NUM);
 
         uint256 res = 0;
         uint256 x = _numerator * FIXED_1 / _denominator;
 
-        // If x &gt;= 2, then we compute the integer part of log2(x), which is larger than 0.
-        if (x &gt;= FIXED_2) {
+        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
+        if (x >= FIXED_2) {
             uint8 count = floorLog2(x / FIXED_1);
-            x &gt;&gt;= count; // now x &lt; 2
+            x >>= count; // now x < 2
             res = count * FIXED_1;
         }
 
-        // If x &gt; 1, then we compute the fraction part of log2(x), which is larger than 0.
-        if (x &gt; FIXED_1) {
-            for (uint8 i = MAX_PRECISION; i &gt; 0; --i) {
-                x = (x * x) / FIXED_1; // now 1 &lt; x &lt; 4
-                if (x &gt;= FIXED_2) {
-                    x &gt;&gt;= 1; // now 1 &lt; x &lt; 2
-                    res += ONE &lt;&lt; (i - 1);
+        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0.
+        if (x > FIXED_1) {
+            for (uint8 i = MAX_PRECISION; i > 0; --i) {
+                x = (x * x) / FIXED_1; // now 1 < x < 4
+                if (x >= FIXED_2) {
+                    x >>= 1; // now 1 < x < 2
+                    res += ONE << (i - 1);
                 }
             }
         }
 
-        return (((res * LN2_MANTISSA) &gt;&gt; LN2_EXPONENT)*lnR);
+        return (((res * LN2_MANTISSA) >> LN2_EXPONENT)*lnR);
     }    
 */    
     /// @notice Compute the natural logarithm
@@ -743,30 +743,30 @@ contract IGCoin is DeaultERC20 {
     /// @param _denominator is a value between 1 and 2 ^ (256 - MAX_PRECISION) - 1
     /// @return is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
     function ln_fixed3_lnr_18(uint256 _numerator, uint256 _denominator) internal pure returns (uint256) {
-        assert(_numerator &lt;= MAX_NUM);
+        assert(_numerator <= MAX_NUM);
 
         uint256 res = 0;
         uint256 x = _numerator * FIXED_1 / _denominator;
 
-        // If x &gt;= 2, then we compute the integer part of log2(x), which is larger than 0.
-        if (x &gt;= FIXED_2) {
+        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
+        if (x >= FIXED_2) {
             uint8 count = floorLog2(x / FIXED_1);
-            x &gt;&gt;= count; // now x &lt; 2
+            x >>= count; // now x < 2
             res = count * FIXED_1;
         }
 
-        // If x &gt; 1, then we compute the fraction part of log2(x), which is larger than 0.
-        if (x &gt; FIXED_1) {
-            for (uint8 i = MAX_PRECISION; i &gt; 0; --i) {
-                x = (x * x) / FIXED_1; // now 1 &lt; x &lt; 4
-                if (x &gt;= FIXED_2) {
-                    x &gt;&gt;= 1; // now 1 &lt; x &lt; 2
-                    res += ONE &lt;&lt; (i - 1);
+        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0.
+        if (x > FIXED_1) {
+            for (uint8 i = MAX_PRECISION; i > 0; --i) {
+                x = (x * x) / FIXED_1; // now 1 < x < 4
+                if (x >= FIXED_2) {
+                    x >>= 1; // now 1 < x < 2
+                    res += ONE << (i - 1);
                 }
             }
         }
 
-        return (((res * LN2_MANTISSA) &gt;&gt; LN2_EXPONENT)*lnR*1e18);
+        return (((res * LN2_MANTISSA) >> LN2_EXPONENT)*lnR*1e18);
     }       
 
     /// @notice Compute the largest integer smaller than or equal to 
@@ -776,18 +776,18 @@ contract IGCoin is DeaultERC20 {
     function floorLog2(uint256 _n) internal pure returns (uint8) {
         uint8 res = 0;
 
-        if (_n &lt; 256) {
+        if (_n < 256) {
             // At most 8 iterations
-            while (_n &gt; 1) {
-                _n &gt;&gt;= 1;
+            while (_n > 1) {
+                _n >>= 1;
                 res += 1;
             }
         }
         else {
             // Exactly 8 iterations
-            for (uint8 s = 128; s &gt; 0; s &gt;&gt;= 1) {
-                if (_n &gt;= (ONE &lt;&lt; s)) {
-                    _n &gt;&gt;= s;
+            for (uint8 s = 128; s > 0; s >>= 1) {
+                if (_n >= (ONE << s)) {
+                    _n >>= s;
                     res |= s;
                 }
             }
@@ -806,7 +806,7 @@ contract IGCoin is DeaultERC20 {
         uint256 p =_n/_m;
         res = _n-(_m*p);
         
-        if(res &gt;= 1)
+        if(res >= 1)
         {
             res = p+1;
         }
@@ -829,22 +829,22 @@ contract IGCoin is DeaultERC20 {
             Calculate an integer approximation of (_baseN / _baseD) ^ (_expN / _expD) * 2 ^ precision.
             Return the result along with the precision used.
         Detailed Description:
-            Instead of calculating &quot;base ^ exp&quot;, we calculate &quot;e ^ (log(base) * exp)&quot;.
-            The value of &quot;log(base)&quot; is represented with an integer slightly smaller than &quot;log(base) * 2 ^ precision&quot;.
-            The larger &quot;precision&quot; is, the more accurately this value represents the real value.
-            However, the larger &quot;precision&quot; is, the more bits are required in order to store this value.
-            And the exponentiation function, which takes &quot;x&quot; and calculates &quot;e ^ x&quot;, is limited to a maximum exponent (maximum value of &quot;x&quot;).
-            This maximum exponent depends on the &quot;precision&quot; used, and it is given by &quot;maxExpArray[precision] &gt;&gt; (MAX_PRECISION - precision)&quot;.
+            Instead of calculating "base ^ exp", we calculate "e ^ (log(base) * exp)".
+            The value of "log(base)" is represented with an integer slightly smaller than "log(base) * 2 ^ precision".
+            The larger "precision" is, the more accurately this value represents the real value.
+            However, the larger "precision" is, the more bits are required in order to store this value.
+            And the exponentiation function, which takes "x" and calculates "e ^ x", is limited to a maximum exponent (maximum value of "x").
+            This maximum exponent depends on the "precision" used, and it is given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
             Hence we need to determine the highest precision which can be used for the given input, before calling the exponentiation function.
-            This allows us to compute &quot;base ^ exp&quot; with maximum accuracy and without exceeding 256 bits in any of the intermediate computations.
-            This functions assumes that &quot;_expN &lt; 2 ^ 256 / log(MAX_NUM - 1)&quot;, otherwise the multiplication should be replaced with a &quot;safeMul&quot;.
+            This allows us to compute "base ^ exp" with maximum accuracy and without exceeding 256 bits in any of the intermediate computations.
+            This functions assumes that "_expN < 2 ^ 256 / log(MAX_NUM - 1)", otherwise the multiplication should be replaced with a "safeMul".
     */
     function power(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD) internal view returns (uint256, uint8) {
-        assert(_baseN &lt; MAX_NUM);
+        assert(_baseN < MAX_NUM);
 
         uint256 baseLog;
         uint256 base = _baseN * FIXED_1 / _baseD;
-        if (base &lt; OPT_LOG_MAX_VAL) {
+        if (base < OPT_LOG_MAX_VAL) {
             baseLog = optimalLog(base);
         }
         else {
@@ -852,37 +852,37 @@ contract IGCoin is DeaultERC20 {
         }
 
         uint256 baseLogTimesExp = baseLog * _expN / _expD;
-        if (baseLogTimesExp &lt; OPT_EXP_MAX_VAL) {
+        if (baseLogTimesExp < OPT_EXP_MAX_VAL) {
             //debugVal = 123;
             return (optimalExp(baseLogTimesExp), MAX_PRECISION);
         }
         else {
             uint8 precision = findPositionInMaxExpArray(baseLogTimesExp);
-            return (generalExp(baseLogTimesExp &gt;&gt; (MAX_PRECISION - precision), precision), precision);
+            return (generalExp(baseLogTimesExp >> (MAX_PRECISION - precision), precision), precision);
         }
     }
 
     /**
         Compute log(x / FIXED_1) * FIXED_1.
-        This functions assumes that &quot;x &gt;= FIXED_1&quot;, because the output would be negative otherwise.
+        This functions assumes that "x >= FIXED_1", because the output would be negative otherwise.
     */
     function generalLog(uint256 x) internal pure returns (uint256) {
         uint256 res = 0;
 
-        // If x &gt;= 2, then we compute the integer part of log2(x), which is larger than 0.
-        if (x &gt;= FIXED_2) {
+        // If x >= 2, then we compute the integer part of log2(x), which is larger than 0.
+        if (x >= FIXED_2) {
             uint8 count = floorLog2(x / FIXED_1);
-            x &gt;&gt;= count; // now x &lt; 2
+            x >>= count; // now x < 2
             res = count * FIXED_1;
         }
 
-        // If x &gt; 1, then we compute the fraction part of log2(x), which is larger than 0.
-        if (x &gt; FIXED_1) {
-            for (uint8 i = MAX_PRECISION; i &gt; 0; --i) {
-                x = (x * x) / FIXED_1; // now 1 &lt; x &lt; 4
-                if (x &gt;= FIXED_2) {
-                    x &gt;&gt;= 1; // now 1 &lt; x &lt; 2
-                    res += ONE &lt;&lt; (i - 1);
+        // If x > 1, then we compute the fraction part of log2(x), which is larger than 0.
+        if (x > FIXED_1) {
+            for (uint8 i = MAX_PRECISION; i > 0; --i) {
+                x = (x * x) / FIXED_1; // now 1 < x < 4
+                if (x >= FIXED_2) {
+                    x >>= 1; // now 1 < x < 2
+                    res += ONE << (i - 1);
                 }
             }
         }
@@ -891,27 +891,27 @@ contract IGCoin is DeaultERC20 {
     }
 
     /**
-        The global &quot;maxExpArray&quot; is sorted in descending order, and therefore the following statements are equivalent:
-        - This function finds the position of [the smallest value in &quot;maxExpArray&quot; larger than or equal to &quot;x&quot;]
-        - This function finds the highest position of [a value in &quot;maxExpArray&quot; larger than or equal to &quot;x&quot;]
+        The global "maxExpArray" is sorted in descending order, and therefore the following statements are equivalent:
+        - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
+        - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
     */
     function findPositionInMaxExpArray(uint256 _x) internal view returns (uint8) {
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
 
-        while (lo + 1 &lt; hi) {
+        while (lo + 1 < hi) {
             uint8 mid = (lo + hi) / 2;
-            if (maxExpArray[mid] &gt;= _x)
+            if (maxExpArray[mid] >= _x)
                 lo = mid;
             else
                 hi = mid;
         }
         
-        if (maxExpArray[hi] &gt;= _x){
+        if (maxExpArray[hi] >= _x){
             //debugVal = hi;
             return hi;
         }
-        if (maxExpArray[lo] &gt;= _x){
+        if (maxExpArray[lo] >= _x){
             //debugVal = lo;
             return lo;
         }
@@ -923,56 +923,56 @@ contract IGCoin is DeaultERC20 {
     }
 
     /**
-        This function can be auto-generated by the script &#39;PrintFunctionGeneralExp.py&#39;.
-        It approximates &quot;e ^ x&quot; via maclaurin summation: &quot;(x^0)/0! + (x^1)/1! + ... + (x^n)/n!&quot;.
-        It returns &quot;e ^ (x / 2 ^ precision) * 2 ^ precision&quot;, that is, the result is upshifted for accuracy.
-        The global &quot;maxExpArray&quot; maps each &quot;precision&quot; to &quot;((maximumExponent + 1) &lt;&lt; (MAX_PRECISION - precision)) - 1&quot;.
-        The maximum permitted value for &quot;x&quot; is therefore given by &quot;maxExpArray[precision] &gt;&gt; (MAX_PRECISION - precision)&quot;.
+        This function can be auto-generated by the script 'PrintFunctionGeneralExp.py'.
+        It approximates "e ^ x" via maclaurin summation: "(x^0)/0! + (x^1)/1! + ... + (x^n)/n!".
+        It returns "e ^ (x / 2 ^ precision) * 2 ^ precision", that is, the result is upshifted for accuracy.
+        The global "maxExpArray" maps each "precision" to "((maximumExponent + 1) << (MAX_PRECISION - precision)) - 1".
+        The maximum permitted value for "x" is therefore given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
     */
     function generalExp(uint256 _x, uint8 _precision) internal pure returns (uint256) {
         uint256 xi = _x;
         uint256 res = 0;
 
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x3442c4e6074a82f1797f72ac0000000; // add x^02 * (33! / 02!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x116b96f757c380fb287fd0e40000000; // add x^03 * (33! / 03!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x045ae5bdd5f0e03eca1ff4390000000; // add x^04 * (33! / 04!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00defabf91302cd95b9ffda50000000; // add x^05 * (33! / 05!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x002529ca9832b22439efff9b8000000; // add x^06 * (33! / 06!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00054f1cf12bd04e516b6da88000000; // add x^07 * (33! / 07!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000a9e39e257a09ca2d6db51000000; // add x^08 * (33! / 08!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000012e066e7b839fa050c309000000; // add x^09 * (33! / 09!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000001e33d7d926c329a1ad1a800000; // add x^10 * (33! / 10!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000002bee513bdb4a6b19b5f800000; // add x^11 * (33! / 11!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000003a9316fa79b88eccf2a00000; // add x^12 * (33! / 12!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000048177ebe1fa812375200000; // add x^13 * (33! / 13!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000005263fe90242dcbacf00000; // add x^14 * (33! / 14!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000000000057e22099c030d94100000; // add x^15 * (33! / 15!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000057e22099c030d9410000; // add x^16 * (33! / 16!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000052b6b54569976310000; // add x^17 * (33! / 17!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000004985f67696bf748000; // add x^18 * (33! / 18!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000000000000003dea12ea99e498000; // add x^19 * (33! / 19!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000000031880f2214b6e000; // add x^20 * (33! / 20!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000000000000000025bcff56eb36000; // add x^21 * (33! / 21!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000000000000000001b722e10ab1000; // add x^22 * (33! / 22!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000000000001317c70077000; // add x^23 * (33! / 23!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000000000000cba84aafa00; // add x^24 * (33! / 24!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000000000000082573a0a00; // add x^25 * (33! / 25!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000000000000005035ad900; // add x^26 * (33! / 26!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x000000000000000000000002f881b00; // add x^27 * (33! / 27!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000000000000000001b29340; // add x^28 * (33! / 28!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x00000000000000000000000000efc40; // add x^29 * (33! / 29!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000000000000000000007fe0; // add x^30 * (33! / 30!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000000000000000000000420; // add x^31 * (33! / 31!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000000000000000000000021; // add x^32 * (33! / 32!)
-        xi = (xi * _x) &gt;&gt; _precision; res += xi * 0x0000000000000000000000000000001; // add x^33 * (33! / 33!)
+        xi = (xi * _x) >> _precision; res += xi * 0x3442c4e6074a82f1797f72ac0000000; // add x^02 * (33! / 02!)
+        xi = (xi * _x) >> _precision; res += xi * 0x116b96f757c380fb287fd0e40000000; // add x^03 * (33! / 03!)
+        xi = (xi * _x) >> _precision; res += xi * 0x045ae5bdd5f0e03eca1ff4390000000; // add x^04 * (33! / 04!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00defabf91302cd95b9ffda50000000; // add x^05 * (33! / 05!)
+        xi = (xi * _x) >> _precision; res += xi * 0x002529ca9832b22439efff9b8000000; // add x^06 * (33! / 06!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00054f1cf12bd04e516b6da88000000; // add x^07 * (33! / 07!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000a9e39e257a09ca2d6db51000000; // add x^08 * (33! / 08!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000012e066e7b839fa050c309000000; // add x^09 * (33! / 09!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000001e33d7d926c329a1ad1a800000; // add x^10 * (33! / 10!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000002bee513bdb4a6b19b5f800000; // add x^11 * (33! / 11!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000003a9316fa79b88eccf2a00000; // add x^12 * (33! / 12!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000048177ebe1fa812375200000; // add x^13 * (33! / 13!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000005263fe90242dcbacf00000; // add x^14 * (33! / 14!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000000000057e22099c030d94100000; // add x^15 * (33! / 15!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000057e22099c030d9410000; // add x^16 * (33! / 16!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000052b6b54569976310000; // add x^17 * (33! / 17!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000004985f67696bf748000; // add x^18 * (33! / 18!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000000000000003dea12ea99e498000; // add x^19 * (33! / 19!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000000031880f2214b6e000; // add x^20 * (33! / 20!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000000000000000025bcff56eb36000; // add x^21 * (33! / 21!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000000000000000001b722e10ab1000; // add x^22 * (33! / 22!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000000000001317c70077000; // add x^23 * (33! / 23!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000000000000cba84aafa00; // add x^24 * (33! / 24!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000000000000082573a0a00; // add x^25 * (33! / 25!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000000000000005035ad900; // add x^26 * (33! / 26!)
+        xi = (xi * _x) >> _precision; res += xi * 0x000000000000000000000002f881b00; // add x^27 * (33! / 27!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000000000000000001b29340; // add x^28 * (33! / 28!)
+        xi = (xi * _x) >> _precision; res += xi * 0x00000000000000000000000000efc40; // add x^29 * (33! / 29!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000000000000000000007fe0; // add x^30 * (33! / 30!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000000000000000000000420; // add x^31 * (33! / 31!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000000000000000000000021; // add x^32 * (33! / 32!)
+        xi = (xi * _x) >> _precision; res += xi * 0x0000000000000000000000000000001; // add x^33 * (33! / 33!)
 
-        return res / 0x688589cc0e9505e2f2fee5580000000 + _x + (ONE &lt;&lt; _precision); // divide by 33! and then add x^1 / 1! + x^0 / 0!
+        return res / 0x688589cc0e9505e2f2fee5580000000 + _x + (ONE << _precision); // divide by 33! and then add x^1 / 1! + x^0 / 0!
     }
 
     /**
         Return log(x / FIXED_1) * FIXED_1
-        Input range: FIXED_1 &lt;= x &lt;= LOG_EXP_MAX_VAL - 1
-        Auto-generated via &#39;PrintFunctionOptimalLog.py&#39;
+        Input range: FIXED_1 <= x <= LOG_EXP_MAX_VAL - 1
+        Auto-generated via 'PrintFunctionOptimalLog.py'
     */
     function optimalLog(uint256 x) internal pure returns (uint256) {
         uint256 res = 0;
@@ -981,14 +981,14 @@ contract IGCoin is DeaultERC20 {
         uint256 z;
         uint256 w;
 
-        if (x &gt;= 0xd3094c70f034de4b96ff7d5b6f99fcd8) {res += 0x40000000000000000000000000000000; x = x * FIXED_1 / 0xd3094c70f034de4b96ff7d5b6f99fcd8;}
-        if (x &gt;= 0xa45af1e1f40c333b3de1db4dd55f29a7) {res += 0x20000000000000000000000000000000; x = x * FIXED_1 / 0xa45af1e1f40c333b3de1db4dd55f29a7;}
-        if (x &gt;= 0x910b022db7ae67ce76b441c27035c6a1) {res += 0x10000000000000000000000000000000; x = x * FIXED_1 / 0x910b022db7ae67ce76b441c27035c6a1;}
-        if (x &gt;= 0x88415abbe9a76bead8d00cf112e4d4a8) {res += 0x08000000000000000000000000000000; x = x * FIXED_1 / 0x88415abbe9a76bead8d00cf112e4d4a8;}
-        if (x &gt;= 0x84102b00893f64c705e841d5d4064bd3) {res += 0x04000000000000000000000000000000; x = x * FIXED_1 / 0x84102b00893f64c705e841d5d4064bd3;}
-        if (x &gt;= 0x8204055aaef1c8bd5c3259f4822735a2) {res += 0x02000000000000000000000000000000; x = x * FIXED_1 / 0x8204055aaef1c8bd5c3259f4822735a2;}
-        if (x &gt;= 0x810100ab00222d861931c15e39b44e99) {res += 0x01000000000000000000000000000000; x = x * FIXED_1 / 0x810100ab00222d861931c15e39b44e99;}
-        if (x &gt;= 0x808040155aabbbe9451521693554f733) {res += 0x00800000000000000000000000000000; x = x * FIXED_1 / 0x808040155aabbbe9451521693554f733;}
+        if (x >= 0xd3094c70f034de4b96ff7d5b6f99fcd8) {res += 0x40000000000000000000000000000000; x = x * FIXED_1 / 0xd3094c70f034de4b96ff7d5b6f99fcd8;}
+        if (x >= 0xa45af1e1f40c333b3de1db4dd55f29a7) {res += 0x20000000000000000000000000000000; x = x * FIXED_1 / 0xa45af1e1f40c333b3de1db4dd55f29a7;}
+        if (x >= 0x910b022db7ae67ce76b441c27035c6a1) {res += 0x10000000000000000000000000000000; x = x * FIXED_1 / 0x910b022db7ae67ce76b441c27035c6a1;}
+        if (x >= 0x88415abbe9a76bead8d00cf112e4d4a8) {res += 0x08000000000000000000000000000000; x = x * FIXED_1 / 0x88415abbe9a76bead8d00cf112e4d4a8;}
+        if (x >= 0x84102b00893f64c705e841d5d4064bd3) {res += 0x04000000000000000000000000000000; x = x * FIXED_1 / 0x84102b00893f64c705e841d5d4064bd3;}
+        if (x >= 0x8204055aaef1c8bd5c3259f4822735a2) {res += 0x02000000000000000000000000000000; x = x * FIXED_1 / 0x8204055aaef1c8bd5c3259f4822735a2;}
+        if (x >= 0x810100ab00222d861931c15e39b44e99) {res += 0x01000000000000000000000000000000; x = x * FIXED_1 / 0x810100ab00222d861931c15e39b44e99;}
+        if (x >= 0x808040155aabbbe9451521693554f733) {res += 0x00800000000000000000000000000000; x = x * FIXED_1 / 0x808040155aabbbe9451521693554f733;}
 
         z = y = x - FIXED_1;
         w = y * y / FIXED_1;
@@ -1006,8 +1006,8 @@ contract IGCoin is DeaultERC20 {
 
     /**
         Return e ^ (x / FIXED_1) * FIXED_1
-        Input range: 0 &lt;= x &lt;= OPT_EXP_MAX_VAL - 1
-        Auto-generated via &#39;PrintFunctionOptimalExp.py&#39;
+        Input range: 0 <= x <= OPT_EXP_MAX_VAL - 1
+        Auto-generated via 'PrintFunctionOptimalExp.py'
     */
     function optimalExp(uint256 x) internal pure returns (uint256) {
         uint256 res = 0;
@@ -1037,13 +1037,13 @@ contract IGCoin is DeaultERC20 {
         z = z * y / FIXED_1; res += z * 0x0000000000000001; // add y^20 * (20! / 20!)
         res = res / 0x21c3677c82b40000 + y + FIXED_1; // divide by 20! and then add y^1 / 1! + y^0 / 0!
 
-        if ((x &amp; 0x010000000000000000000000000000000) != 0) res = res * 0x1c3d6a24ed82218787d624d3e5eba95f9 / 0x18ebef9eac820ae8682b9793ac6d1e776;
-        if ((x &amp; 0x020000000000000000000000000000000) != 0) res = res * 0x18ebef9eac820ae8682b9793ac6d1e778 / 0x1368b2fc6f9609fe7aceb46aa619baed4;
-        if ((x &amp; 0x040000000000000000000000000000000) != 0) res = res * 0x1368b2fc6f9609fe7aceb46aa619baed5 / 0x0bc5ab1b16779be3575bd8f0520a9f21f;
-        if ((x &amp; 0x080000000000000000000000000000000) != 0) res = res * 0x0bc5ab1b16779be3575bd8f0520a9f21e / 0x0454aaa8efe072e7f6ddbab84b40a55c9;
-        if ((x &amp; 0x100000000000000000000000000000000) != 0) res = res * 0x0454aaa8efe072e7f6ddbab84b40a55c5 / 0x00960aadc109e7a3bf4578099615711ea;
-        if ((x &amp; 0x200000000000000000000000000000000) != 0) res = res * 0x00960aadc109e7a3bf4578099615711d7 / 0x0002bf84208204f5977f9a8cf01fdce3d;
-        if ((x &amp; 0x400000000000000000000000000000000) != 0) res = res * 0x0002bf84208204f5977f9a8cf01fdc307 / 0x0000003c6ab775dd0b95b4cbee7e65d11;
+        if ((x & 0x010000000000000000000000000000000) != 0) res = res * 0x1c3d6a24ed82218787d624d3e5eba95f9 / 0x18ebef9eac820ae8682b9793ac6d1e776;
+        if ((x & 0x020000000000000000000000000000000) != 0) res = res * 0x18ebef9eac820ae8682b9793ac6d1e778 / 0x1368b2fc6f9609fe7aceb46aa619baed4;
+        if ((x & 0x040000000000000000000000000000000) != 0) res = res * 0x1368b2fc6f9609fe7aceb46aa619baed5 / 0x0bc5ab1b16779be3575bd8f0520a9f21f;
+        if ((x & 0x080000000000000000000000000000000) != 0) res = res * 0x0bc5ab1b16779be3575bd8f0520a9f21e / 0x0454aaa8efe072e7f6ddbab84b40a55c9;
+        if ((x & 0x100000000000000000000000000000000) != 0) res = res * 0x0454aaa8efe072e7f6ddbab84b40a55c5 / 0x00960aadc109e7a3bf4578099615711ea;
+        if ((x & 0x200000000000000000000000000000000) != 0) res = res * 0x00960aadc109e7a3bf4578099615711d7 / 0x0002bf84208204f5977f9a8cf01fdce3d;
+        if ((x & 0x400000000000000000000000000000000) != 0) res = res * 0x0002bf84208204f5977f9a8cf01fdc307 / 0x0000003c6ab775dd0b95b4cbee7e65d11;
 
         return res;
     }  

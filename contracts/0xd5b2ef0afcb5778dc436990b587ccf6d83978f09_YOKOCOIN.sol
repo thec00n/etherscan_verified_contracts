@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -90,7 +90,7 @@ contract ERC223 {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
 
         /*
@@ -108,8 +108,8 @@ contract ERC223 {
 contract YOKOCOIN is ERC223, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;YOKOCOIN&quot;;
-    string public symbol = &quot;YOKO&quot;;
+    string public name = "YOKOCOIN";
+    string public symbol = "YOKO";
     uint8 public decimals = 16;
     uint256 public totalSupply;
     bool public mintingStopped = false;
@@ -136,10 +136,10 @@ contract YOKOCOIN is ERC223, Ownable {
     address public manage = 0x8617F0e63728E1e7105b9b44912Eb1A253e0056C;
     
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping (address => uint256)) public allowance;
 
-    mapping(address =&gt; transferInStruct[]) public transferIns;
+    mapping(address => transferInStruct[]) public transferIns;
 
     event Burn(address indexed from, uint256 amount);
     event Mint(address indexed to, uint256 amount);
@@ -176,7 +176,7 @@ contract YOKOCOIN is ERC223, Ownable {
 
     // transfer
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         bytes memory empty;
         if (isContract(_to)) {
@@ -187,7 +187,7 @@ contract YOKOCOIN is ERC223, Ownable {
     }
 
     function transfer(address _to, uint _value, bytes _data) public  returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         if (isContract(_to)) {
             return transferToContract(_to, _value, _data);
@@ -197,17 +197,17 @@ contract YOKOCOIN is ERC223, Ownable {
     }
 
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         if (isContract(_to)) {
-            require(balanceOf[msg.sender] &gt;= _value);
+            require(balanceOf[msg.sender] >= _value);
             balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(_value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
             emit Transfer(msg.sender, _to, _value, _data);
             emit Transfer(msg.sender, _to, _value);
 
-            if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+            if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
             uint64 _now = uint64(now);
             transferIns[msg.sender].push(transferInStruct(uint256(balanceOf[msg.sender]),_now));
             transferIns[_to].push(transferInStruct(uint256(_value),_now));
@@ -225,18 +225,18 @@ contract YOKOCOIN is ERC223, Ownable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender, _to, _value, _data);
         emit Transfer(msg.sender, _to, _value);
 
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
         uint64 _now = uint64(now);
         transferIns[msg.sender].push(transferInStruct(uint256(balanceOf[msg.sender]),_now));
         transferIns[_to].push(transferInStruct(uint256(_value),_now));
@@ -246,7 +246,7 @@ contract YOKOCOIN is ERC223, Ownable {
 
     // function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -254,7 +254,7 @@ contract YOKOCOIN is ERC223, Ownable {
         emit Transfer(msg.sender, _to, _value, _data);
         emit Transfer(msg.sender, _to, _value);
 
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
         uint64 _now = uint64(now);
         transferIns[msg.sender].push(transferInStruct(uint256(balanceOf[msg.sender]),_now));
         transferIns[_to].push(transferInStruct(uint256(_value),_now));
@@ -265,16 +265,16 @@ contract YOKOCOIN is ERC223, Ownable {
     // transferFrom
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)
-                &amp;&amp; _value &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _value
-                &amp;&amp; allowance[_from][msg.sender] &gt;= _value);
+                && _value > 0
+                && balanceOf[_from] >= _value
+                && allowance[_from][msg.sender] >= _value);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         emit Transfer(_from, _to, _value);
 
-        if(transferIns[_from].length &gt; 0) delete transferIns[_from];
+        if(transferIns[_from].length > 0) delete transferIns[_from];
         uint64 _now = uint64(now);
         transferIns[_from].push(transferInStruct(uint256(balanceOf[_from]),_now));
         transferIns[_to].push(transferInStruct(uint256(_value),_now));
@@ -296,14 +296,14 @@ contract YOKOCOIN is ERC223, Ownable {
 
     // burn
     function burn(address _from, uint256 _unitAmount) onlyOwner public {
-        require(_unitAmount &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _unitAmount);
+        require(_unitAmount > 0
+                && balanceOf[_from] >= _unitAmount);
 
         balanceOf[_from] = balanceOf[_from].sub(_unitAmount);
         totalSupply = totalSupply.sub(_unitAmount);
         emit Burn(_from, _unitAmount);
 
-        if(transferIns[_from].length &gt; 0) delete transferIns[_from];
+        if(transferIns[_from].length > 0) delete transferIns[_from];
         uint64 _now = uint64(now);
         transferIns[_from].push(transferInStruct(uint256(balanceOf[_from]),_now));
     }
@@ -315,7 +315,7 @@ contract YOKOCOIN is ERC223, Ownable {
 
     // mint
     function mint(address _to, uint256 _unitAmount) onlyOwner canMinting public returns (bool) {
-        require(_unitAmount &gt; 0);
+        require(_unitAmount > 0);
 
         totalSupply = totalSupply.add(_unitAmount);
         balanceOf[_to] = balanceOf[_to].add(_unitAmount);
@@ -336,22 +336,22 @@ contract YOKOCOIN is ERC223, Ownable {
 
     // airdrop
     function airdrop(address[] addresses, uint[] amounts) public returns (bool) {
-        require(addresses.length &gt; 0
-                &amp;&amp; addresses.length == amounts.length);
+        require(addresses.length > 0
+                && addresses.length == amounts.length);
 
         uint256 totalAmount = 0;
 
-        for(uint j = 0; j &lt; addresses.length; j++){
-            require(amounts[j] &gt; 0
-                    &amp;&amp; addresses[j] != 0x0);
+        for(uint j = 0; j < addresses.length; j++){
+            require(amounts[j] > 0
+                    && addresses[j] != 0x0);
 
             amounts[j] = amounts[j].mul(1e16);
             totalAmount = totalAmount.add(amounts[j]);
         }
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
         uint64 _now = uint64(now);
-        for (j = 0; j &lt; addresses.length; j++) {
+        for (j = 0; j < addresses.length; j++) {
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amounts[j]);
             emit Transfer(msg.sender, addresses[j], amounts[j]);
 
@@ -359,14 +359,14 @@ contract YOKOCOIN is ERC223, Ownable {
         }
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(totalAmount);
 
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
-        if(balanceOf[msg.sender] &gt; 0) transferIns[msg.sender].push(transferInStruct(uint256(balanceOf[msg.sender]),_now));
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
+        if(balanceOf[msg.sender] > 0) transferIns[msg.sender].push(transferInStruct(uint256(balanceOf[msg.sender]),_now));
 
         return true;
     }
 
     function setStakeStartTime(uint timestamp) onlyOwner {
-        require((stakeStartTime &lt;= 0) &amp;&amp; (timestamp &gt;= chainStartTime));
+        require((stakeStartTime <= 0) && (timestamp >= chainStartTime));
         stakeStartTime = timestamp;
     }
 
@@ -375,18 +375,18 @@ contract YOKOCOIN is ERC223, Ownable {
     }
 
     modifier canPoSMint() {
-        require(totalSupply &lt; maxTotalSupply);
+        require(totalSupply < maxTotalSupply);
         _;
     }
 
     event PosMint(address indexed _address, uint _reward);
 
     function posMint() canPoSMint returns (bool) {
-        if(balanceOf[msg.sender] &lt;= 0) return false;
-        if(transferIns[msg.sender].length &lt;= 0) return false;
+        if(balanceOf[msg.sender] <= 0) return false;
+        if(transferIns[msg.sender].length <= 0) return false;
 
         uint reward = getReward(msg.sender);
-        if(reward &lt;= 0) return false;
+        if(reward <= 0) return false;
 
         totalSupply = totalSupply.add(reward);
         balanceOf[msg.sender] = balanceOf[msg.sender].add(reward);
@@ -402,24 +402,24 @@ contract YOKOCOIN is ERC223, Ownable {
     }
 
     function getCoinAge(address _address, uint _now) internal returns (uint _coinAge) {
-        if(transferIns[_address].length &lt;= 0) return 0;
+        if(transferIns[_address].length <= 0) return 0;
 
-        for (uint i = 0; i &lt; transferIns[_address].length; i++){
-            if( _now &lt; uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
+        for (uint i = 0; i < transferIns[_address].length; i++){
+            if( _now < uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
-            if( nCoinSeconds &gt; stakeMaxAge ) nCoinSeconds = stakeMaxAge;
+            if( nCoinSeconds > stakeMaxAge ) nCoinSeconds = stakeMaxAge;
 
             _coinAge = _coinAge.add(uint(transferIns[_address][i].amount).mul(nCoinSeconds).div(1 days));
         }
     }
 
     function getReward(address _address) internal returns (uint reward) {
-        require( (now &gt;= stakeStartTime) &amp;&amp; (stakeStartTime &gt; 0) );
+        require( (now >= stakeStartTime) && (stakeStartTime > 0) );
 
         uint64 _now = uint64(now);
         uint _coinAge = getCoinAge(_address, _now);
-        if(_coinAge &lt;= 0) return 0;
+        if(_coinAge <= 0) return 0;
 
         reward = _coinAge.mul(45).div(1000).div(365);
 

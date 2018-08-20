@@ -6,12 +6,12 @@ contract VoteFactory {
     uint public nextEndTime;
     Vote public yesContract;
     Vote public noContract;
-    mapping(uint =&gt; string) public voteDescription;
-    mapping(address =&gt; mapping(uint =&gt; bool)) public hasVoted;
-    mapping(uint =&gt; uint) public numVoters; // number of voters per round
-    mapping(uint =&gt; mapping(uint =&gt; address)) public voter; // [voteId][voterNumber] =&gt; address
-    mapping(uint =&gt; uint) public yesCount; // number of yes for a given round
-    mapping(uint =&gt; uint) public noCount;
+    mapping(uint => string) public voteDescription;
+    mapping(address => mapping(uint => bool)) public hasVoted;
+    mapping(uint => uint) public numVoters; // number of voters per round
+    mapping(uint => mapping(uint => address)) public voter; // [voteId][voterNumber] => address
+    mapping(uint => uint) public yesCount; // number of yes for a given round
+    mapping(uint => uint) public noCount;
     
     event transferredOwner(address newOwner);
     event startedNewVote(address initiator, uint duration, string description, uint voteId);
@@ -42,8 +42,8 @@ contract VoteFactory {
 
     function() payable {
         // default function starts new poll if previous poll is over for at least 10 minutes
-        if (nextEndTime &lt; now + 10 minutes)
-            startNewVote(10 minutes, &quot;Vote on tax reimbursements&quot;);
+        if (nextEndTime < now + 10 minutes)
+            startNewVote(10 minutes, "Vote on tax reimbursements");
     }
     
     function newVote(uint duration, string description) onlyOwner {
@@ -52,8 +52,8 @@ contract VoteFactory {
     }
     
     function startNewVote(uint duration, string description) internal {
-        // do not allow to start new vote if there&#39;s still something ongoing
-        if (now &lt;= nextEndTime)
+        // do not allow to start new vote if there's still something ongoing
+        if (now <= nextEndTime)
             throw;
         nextEndTime = now + duration;
         voteDescription[numPolls] = description;
@@ -63,11 +63,11 @@ contract VoteFactory {
     function vote(bool isYes, address voteSender) {
         
         // voting should just be able via voting contract (use them as SWIS contracts)
-        if (msg.sender != address(yesContract) &amp;&amp; msg.sender != address(noContract))
+        if (msg.sender != address(yesContract) && msg.sender != address(noContract))
             throw;
 
         // throw if time is over
-        if (now &gt; nextEndTime)
+        if (now > nextEndTime)
             throw;
             
         // throw if sender has already voted before

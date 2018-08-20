@@ -29,7 +29,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -70,7 +70,7 @@ contract Airdropper is Ownable {
     onlyOwner
     returns (uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            ERC20(_tokenAddr).transfer(dests[i], value);
            i += 1;
         }

@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,8 +58,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -115,7 +115,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -131,7 +131,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
 
@@ -147,8 +147,8 @@ contract BurnableToken is StandardToken {
     - Эмиссия токенов ограничена (всего 100 000 000 токенов)
 */
 contract Token is BurnableToken, Ownable {
-    string public name = &quot;Altyn Token&quot;;
-    string public symbol = &quot;ALT&quot;;
+    string public name = "Altyn Token";
+    string public symbol = "ALT";
     uint256 public decimals = 18;
     
     uint256 public INITIAL_SUPPLY = 100000000 * 1 ether;                                        // Amount tokens
@@ -161,7 +161,7 @@ contract Token is BurnableToken, Ownable {
     function multiTransfer(address[] _to, uint256[] _value) returns(bool success) {
         require(_to.length == _value.length);
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             balances[msg.sender] = balances[msg.sender].sub(_value[i] * 1 ether);
             balances[_to[i]] = balances[_to[i]].add(_value[i] * 1 ether);
 

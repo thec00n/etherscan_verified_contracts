@@ -24,12 +24,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -92,7 +92,7 @@ contract NETRico {
     token public tokenReward; //Address of the valid token used as reward
     address public creator; //Address of the contract deployer
     string public campaignUrl; //Web site of the campaign
-    string public version = &#39;2&#39;;
+    string public version = '2';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -128,7 +128,7 @@ contract NETRico {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(now &gt;= startTime);
+        require(now >= startTime);
 
         uint256 tokenBought; //Variable to store amount of tokens bought
         uint256 tokenPrice = price.EUR(0); //1 cent value in wei
@@ -141,7 +141,7 @@ contract NETRico {
         tokenBought = msg.value.div(tokenPrice); //Base 18/ Base 10 = Base 8
         tokenBought = tokenBought.mul(10 ** 10); //Base 8 to Base 18
 
-        require(tokenBought &gt;= 100 * 10 ** 18); //Minimum 100 base tokens 
+        require(tokenBought >= 100 * 10 ** 18); //Minimum 100 base tokens 
         
         //Bonus calculation
         if (state == State.Stage1){
@@ -176,7 +176,7 @@ contract NETRico {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(now &gt; deadline &amp;&amp; state != State.Successful){
+        if(now > deadline && state != State.Successful){
 
             state = State.Successful; //Sale becomes Successful
             completedAt = now; //ICO finished
@@ -184,15 +184,15 @@ contract NETRico {
             emit LogFundingSuccessful(totalRaised); //we log the finish
 
             finished();
-        } else if(state == State.Stage3 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,12,27,0)){
+        } else if(state == State.Stage3 && now > dateTimeContract.toTimestamp(2018,12,27,0)){
 
             state = State.Stage4;
             
-        } else if(state == State.Stage2 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,9,28,0)){
+        } else if(state == State.Stage2 && now > dateTimeContract.toTimestamp(2018,9,28,0)){
 
             state = State.Stage3;
             
-        } else if(state == State.Stage1 &amp;&amp; now &gt; dateTimeContract.toTimestamp(2018,6,30,0)){
+        } else if(state == State.Stage1 && now > dateTimeContract.toTimestamp(2018,6,30,0)){
 
             state = State.Stage2;
 
@@ -207,7 +207,7 @@ contract NETRico {
         
         uint256 remainder = tokenReward.balanceOf(this); //Remaining tokens on contract
         //Funds send to creator if any
-        if(address(this).balance &gt; 0) {
+        if(address(this).balance > 0) {
             creator.transfer(address(this).balance);
             emit LogBeneficiaryPaid(creator);
         }
@@ -231,7 +231,7 @@ contract NETRico {
 
     /**
     * @notice Function to handle eth transfers
-    * @dev BEWARE: if a call to this functions doesn&#39;t have
+    * @dev BEWARE: if a call to this functions doesn't have
     * enought gas, transaction could not be finished
     */
     function() public payable {

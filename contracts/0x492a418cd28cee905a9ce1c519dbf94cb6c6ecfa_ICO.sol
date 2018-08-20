@@ -1,5 +1,5 @@
 //
-// compiler: solcjs -o ./build/contracts --optimize --abi --bin &lt;this file&gt;
+// compiler: solcjs -o ./build/contracts --optimize --abi --bin <this file>
 //  version: 0.4.18+commit.9cf6e910.Emscripten.clang
 //
 pragma solidity ^0.4.18;
@@ -38,7 +38,7 @@ contract ICO is owned {
                 uint _tokpereth ) public
   {
     require( isContract(_erc20) );
-    require( _tokpereth &gt; 0 );
+    require( _tokpereth > 0 );
 
     if (_treasury != address(0)) require( isContract(_treasury) );
 
@@ -55,8 +55,8 @@ contract ICO is owned {
   function setDuration( uint dur ) public onlyOwner { duration = dur; }
 
   function() public payable {
-    require( msg.value &gt;= 500 finney );
-    if (now &lt; start || now &gt; (start + duration)) revert();
+    require( msg.value >= 500 finney );
+    if (now < start || now > (start + duration)) revert();
 
     // quantity =
     //   amountinwei * tokpereth/weipereth * (bonus+100)/100
@@ -67,7 +67,7 @@ contract ICO is owned {
                         100000000000000000000),
                 (bonus() + 100) );
 
-    if (qty &gt; tokenSC.balanceOf(address(this)) || qty &lt; 1)
+    if (qty > tokenSC.balanceOf(address(this)) || qty < 1)
       revert();
 
     tokenSC.transfer( msg.sender, qty );
@@ -77,13 +77,13 @@ contract ICO is owned {
 
   // unsold tokens can be claimed by owner after sale ends
   function claimUnsold() public onlyOwner {
-    if ( now &lt; (start + duration) ) revert();
+    if ( now < (start + duration) ) revert();
 
     tokenSC.transfer( owner, tokenSC.balanceOf(address(this)) );
   }
 
   function withdraw( uint amount ) public onlyOwner returns (bool) {
-    require ( treasury == address(0) &amp;&amp; amount &lt;= this.balance );
+    require ( treasury == address(0) && amount <= this.balance );
     return owner.send( amount );
   }
 
@@ -93,7 +93,7 @@ contract ICO is owned {
   function isContract( address _a ) constant private returns (bool) {
     uint ecs;
     assembly { ecs := extcodesize(_a) }
-    return ecs &gt; 0;
+    return ecs > 0;
   }
 
   // ref: github.com/OpenZeppelin/zeppelin-solidity/

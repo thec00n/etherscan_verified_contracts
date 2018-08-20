@@ -1,5 +1,5 @@
 contract ProtectTheCastle {
-    // King&#39;s Jester
+    // King's Jester
     address public jester;
     // Record the last Reparation time
     uint public lastReparation;
@@ -38,18 +38,18 @@ contract ProtectTheCastle {
     function repairTheCastle() returns(bool) {
         uint amount = msg.value;
         // Check if the minimum amount if reached
-        if (amount &lt; 10 finney) {
+        if (amount < 10 finney) {
             msg.sender.send(msg.value);
             return false;
         }
         // If the amount received is more than 100 ETH return the difference
-        if (amount &gt; 100 ether) {
+        if (amount > 100 ether) {
             msg.sender.send(msg.value - 100 ether);
             amount = 100 ether;
         }
 
         // Check if the Castle has fell
-        if (lastReparation + SIX_HOURS &lt; block.timestamp) {
+        if (lastReparation + SIX_HOURS < block.timestamp) {
             // Send the Piggy Bank to the last 3 citizens
             // If there is no one who contributed this last 6 hours, no action needed
             if (totalCitizens == 1) {
@@ -59,7 +59,7 @@ contract ProtectTheCastle {
                 // If only 2 citizens contributed
                 citizensAddresses[citizensAddresses.length - 1].send(piggyBank * 65 / 100);
                 citizensAddresses[citizensAddresses.length - 2].send(piggyBank * 35 / 100);
-            } else if (totalCitizens &gt;= 3) {
+            } else if (totalCitizens >= 3) {
                 // If there is 3 or more citizens who contributed
                 citizensAddresses[citizensAddresses.length - 1].send(piggyBank * 55 / 100);
                 citizensAddresses[citizensAddresses.length - 2].send(piggyBank * 30 / 100);
@@ -104,7 +104,7 @@ contract ProtectTheCastle {
             // The brided Citizen takes 3%
             collectedFee += amount * 3 / 100;
 
-            while (citizensAmounts[lastCitizenPaid] &lt; (address(this).balance - piggyBank - collectedFee) &amp;&amp; lastCitizenPaid &lt;= totalCitizens) {
+            while (citizensAmounts[lastCitizenPaid] < (address(this).balance - piggyBank - collectedFee) && lastCitizenPaid <= totalCitizens) {
                 citizensAddresses[lastCitizenPaid].send(citizensAmounts[lastCitizenPaid]);
                 amountAlreadyPaidBack += citizensAmounts[lastCitizenPaid];
                 lastCitizenPaid += 1;
@@ -139,7 +139,7 @@ contract ProtectTheCastle {
         }
     }
 
-    // When the jester can&#39;t handle it anymore, he can give his position to someone else
+    // When the jester can't handle it anymore, he can give his position to someone else
     function newJester(address newJester) {
         if (msg.sender == jester) {
             jester = newJester;

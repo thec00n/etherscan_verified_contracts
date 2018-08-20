@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract token {
  * @notice This contract have some admin-only functions
  */
 contract admined {
-    mapping (address =&gt; uint8) public admin; //Admin address is public
+    mapping (address => uint8) public admin; //Admin address is public
 
     /**
     * @dev This contructor takes the msg.sender as the first administer
@@ -80,7 +80,7 @@ contract admined {
     * @dev This modifier limits function execution to the admin
     */
     modifier onlyAdmin(uint8 _level) { //A modifier to define admin-only functions
-        require(admin[msg.sender] &gt;= _level);
+        require(admin[msg.sender] >= _level);
         _;
     }
 
@@ -117,9 +117,9 @@ contract IADSpecialEvent is admined {
     uint256 public totalDistributed; //tokens distributed
     uint256 public completedAt;
     address public creator;
-    mapping (address =&gt; bool) whiteList;
-    uint256 public rate = 6250;//Base rate is 5000 IAD/ETH - It&#39;s a 25% bonus
-    string public version = &#39;1&#39;;
+    mapping (address => bool) whiteList;
+    uint256 public rate = 6250;//Base rate is 5000 IAD/ETH - It's a 25% bonus
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -159,7 +159,7 @@ contract IADSpecialEvent is admined {
         //lets get the total purchase
         uint256 tokenBought = msg.value.mul(rate);
         //Minimum 150K tokenss
-        require(tokenBought &gt;= 150000 * (10 ** 18));
+        require(tokenBought >= 150000 * (10 ** 18));
         //Keep track of total wei raised
         totalRaised = totalRaised.add(msg.value);
         //Keep track of total tokens distributed

@@ -87,7 +87,7 @@ contract Sale is Ownable {
 
         // calculate token amount to be created
         uint256 tokens = calculator.getAmount(weiAmount);
-        assert(tokens &gt;= minimalTokens);
+        assert(tokens >= minimalTokens);
 
         token.transferFrom(tokenSeller, msg.sender, tokens);
         TokenPurchase(msg.sender, weiAmount, tokens);

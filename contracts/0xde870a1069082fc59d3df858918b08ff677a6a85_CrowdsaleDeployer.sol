@@ -9,20 +9,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal constant returns (uint256 ) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal constant returns (uint256 ) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256 ) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,8 +75,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     /// @dev Returns number of tokens owned by given address.
     /// @param _owner Address of token owner.
@@ -84,11 +84,11 @@ contract StandardToken is ERC20, SafeMath {
         return balances[_owner];
     }
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, SafeMath {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -156,7 +156,7 @@ contract Ownable {
 
 contract MultiOwnable {
 
-    mapping (address =&gt; bool) ownerMap;
+    mapping (address => bool) ownerMap;
     address[] public owners;
 
     event OwnerAdded(address indexed _newOwner);
@@ -183,7 +183,7 @@ contract MultiOwnable {
     }
 
     function addOwner(address owner) onlyOwner returns (bool) {
-        if (!isOwner(owner) &amp;&amp; owner != 0) {
+        if (!isOwner(owner) && owner != 0) {
             ownerMap[owner] = true;
             owners.push(owner);
 
@@ -195,7 +195,7 @@ contract MultiOwnable {
     function removeOwner(address owner) onlyOwner returns (bool) {
         if (isOwner(owner)) {
             ownerMap[owner] = false;
-            for (uint i = 0; i &lt; owners.length - 1; i++) {
+            for (uint i = 0; i < owners.length - 1; i++) {
                 if (owners[i] == owner) {
                     owners[i] = owners[owners.length - 1];
                     break;
@@ -245,7 +245,7 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     string public symbol;
     uint256 public totalSupply;
     uint8 public decimals = 18;
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
 
     address public creator;
     address public seller;     // The main account that holds all tokens at the beginning.
@@ -293,7 +293,7 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     }
 
     function changeSeller(address newSeller) onlyOwner public returns (bool) {
-        require(newSeller != 0x0 &amp;&amp; seller != newSeller);
+        require(newSeller != 0x0 && seller != newSeller);
 
         address oldSeller = seller;
         uint256 unsoldTokens = balances[oldSeller];
@@ -313,11 +313,11 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     function sell(address _to, uint256 _value) onlyOwner public returns (bool) {
 
         // Check that we are not out of limit and still can sell tokens:
-        if (saleLimit &gt; 0) require(safeSub(saleLimit, safeAdd(tokensSold, _value)) &gt;= 0);
+        if (saleLimit > 0) require(safeSub(saleLimit, safeAdd(tokensSold, _value)) >= 0);
 
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[seller]);
+        require(_value > 0);
+        require(_value <= balances[seller]);
 
         balances[seller] = safeSub(balances[seller], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -349,8 +349,8 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     }
 
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value) ;
         totalSupply = safeSub(totalSupply, _value);
@@ -380,8 +380,8 @@ contract CommonBsCrowdsale is SafeMath, Ownable, Pausable {
         uint256 tokensSent;  // Amount of tokens received in return to the given amount of ETH.
     }
 
-    // (buyer_eth_address -&gt; struct)
-    mapping(address =&gt; Backer) public backers;
+    // (buyer_eth_address -> struct)
+    mapping(address => Backer) public backers;
 
     CommonBsToken public token; // Token contract reference.
     address public beneficiary; // Address that will receive ETH raised during this crowdsale.
@@ -474,11 +474,11 @@ contract CommonBsCrowdsale is SafeMath, Ownable, Pausable {
 
     function sellTokensForEth(address _buyer, uint256 _amountWei) internal ifNotPaused ifUnderMaxCap {
 
-        require(_amountWei &gt;= minContributionWei);
+        require(_amountWei >= minContributionWei);
 
         totalInWei = safeAdd(totalInWei, _amountWei);
         weiReceived = safeAdd(weiReceived, _amountWei);
-        require(totalInWei &lt;= maxCapWei); // If max cap reached.
+        require(totalInWei <= maxCapWei); // If max cap reached.
 
         uint256 tokensE18 = weiToTokens(_amountWei);
         require(token.sell(_buyer, tokensE18)); // Transfer tokens to buyer.
@@ -500,9 +500,9 @@ contract CommonBsCrowdsale is SafeMath, Ownable, Pausable {
         // Get bonus rate based on current stage (6 stages by 1m tokens each)
         // Bonus rules applies only until crowdsale end time. No bonus after.
         if (isSaleOn()) {
-            for (uint i = 0; i &lt; stages.length; i++) {
+            for (uint i = 0; i < stages.length; i++) {
                 var s = stages[i];
-                if (s.fromTokens &lt;= totalTokensSold &amp;&amp; totalTokensSold &lt;= s.toTokens) {
+                if (s.fromTokens <= totalTokensSold && totalTokensSold <= s.toTokens) {
                     price = s.price;
                     break;
                 }
@@ -517,20 +517,20 @@ contract CommonBsCrowdsale is SafeMath, Ownable, Pausable {
     }
 
     function isMaxCapReached() public constant returns (bool) {
-        return totalInWei &gt;= maxCapWei;
+        return totalInWei >= maxCapWei;
     }
 
     function isSaleOn() public constant returns (bool) {
         uint _now = getNow();
-        return startTime &lt;= _now &amp;&amp; _now &lt;= endTime;
+        return startTime <= _now && _now <= endTime;
     }
 
     function isSaleOver() public constant returns (bool) {
-        return getNow() &gt; endTime;
+        return getNow() > endTime;
     }
 
     function isFinalized() public constant returns (bool) {
-        return finalizedTime &gt; 0;
+        return finalizedTime > 0;
     }
 
     /*
@@ -555,8 +555,8 @@ contract CrowdsaleDeployer {
     function CrowdsaleDeployer() public {
         token = new CommonBsToken(
             0x48eF88089e5A7C6f538E90E0d5Fffa38277fD98A, // _seller address
-            &#39;X full&#39;,
-            &#39;X&#39;,
+            'X full',
+            'X',
             10000000,
             7200000
         );

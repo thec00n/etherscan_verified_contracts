@@ -7,8 +7,8 @@ contract MultiOwner {
 	event RequirementChanged(uint256 newRequirement);
 	
     uint256 public ownerRequired;
-    mapping (address =&gt; bool) public isOwner;
-	mapping (address =&gt; bool) public RequireDispose;
+    mapping (address => bool) public isOwner;
+	mapping (address => bool) public RequireDispose;
 	address[] owners;
 	
 	function MultiOwner(address[] _owners, uint256 _required) public {
@@ -16,7 +16,7 @@ contract MultiOwner {
         isOwner[msg.sender] = true;
         owners.push(msg.sender);
         
-        for (uint256 i = 0; i &lt; _owners.length; ++i){
+        for (uint256 i = 0; i < _owners.length; ++i){
 			require(!isOwner[_owners[i]]);
 			isOwner[_owners[i]] = true;
 			owners.push(_owners[i]);
@@ -49,10 +49,10 @@ contract MultiOwner {
 	}
 	
     function removeOwner(address owner) onlyOwner ownerExists(owner) external{
-		require(owners.length &gt; 2);
+		require(owners.length > 2);
         isOwner[owner] = false;
 		RequireDispose[owner] = false;
-        for (uint256 i=0; i&lt;owners.length - 1; i++){
+        for (uint256 i=0; i<owners.length - 1; i++){
             if (owners[i] == owner) {
 				owners[i] = owners[owners.length - 1];
                 break;
@@ -63,14 +63,14 @@ contract MultiOwner {
     }
     
 	function changeRequirement(uint _newRequired) onlyOwner external {
-		require(_newRequired &gt;= owners.length);
+		require(_newRequired >= owners.length);
         ownerRequired = _newRequired;
         RequirementChanged(_newRequired);
     }
 	
 	function ConfirmDispose() onlyOwner() returns (bool){
 		uint count = 0;
-		for (uint i=0; i&lt;owners.length - 1; i++)
+		for (uint i=0; i<owners.length - 1; i++)
             if (RequireDispose[owners[i]])
                 count += 1;
             if (count == ownerRequired)
@@ -96,17 +96,17 @@ contract VVToken is MultiOwner{
 	event Bonus(uint256 value);
 	event Burn(uint256 value);
 	
-	string public name = &quot;VV Coin&quot;;
-	string public symbol = &quot;VVI&quot;;
+	string public name = "VV Coin";
+	string public symbol = "VVI";
 	uint8 public decimals = 8;
 	uint256 public totalSupply = 3000000000 * 10 ** uint256(decimals);
 	uint256 public EthPerToken = 300000;
 	uint256 public ChargeFee = 2;
 	
-	mapping(address =&gt; uint256) public balanceOf;
-	mapping(address =&gt; bool) public frozenAccount;
-	mapping (bytes32 =&gt; mapping (address =&gt; bool)) public Confirmations;
-	mapping (bytes32 =&gt; Transaction) public Transactions;
+	mapping(address => uint256) public balanceOf;
+	mapping(address => bool) public frozenAccount;
+	mapping (bytes32 => mapping (address => bool)) public Confirmations;
+	mapping (bytes32 => Transaction) public Transactions;
 	
 	struct Transaction {
 		address destination;
@@ -142,8 +142,8 @@ contract VVToken is MultiOwner{
 	/* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
 		uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -155,8 +155,8 @@ contract VVToken is MultiOwner{
 	/* Internal transfer, only can be called by this contract */
     function _collect_fee(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
 		uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -198,7 +198,7 @@ contract VVToken is MultiOwner{
     }
 	
 	function() payable {
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		uint amount = msg.value * 10 ** uint256(decimals) * EthPerToken / 1 ether;
         _transfer(this, msg.sender, amount);
     }
@@ -233,7 +233,7 @@ contract VVToken is MultiOwner{
 	
 	function isConfirmed(bytes32 TransHash) public constant returns (bool){
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (Confirmations[TransHash][owners[i]])
                 count += 1;
             if (count == ownerRequired)
@@ -241,7 +241,7 @@ contract VVToken is MultiOwner{
     }
 	
 	function confirmationCount(bytes32 TransHash) external constant returns (uint count){
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (Confirmations[TransHash][owners[i]])
                 count += 1;
     }
@@ -260,7 +260,7 @@ contract VVToken is MultiOwner{
     }
 	
 	function AccountVoid(address _from) onlyOwner public{
-		require (balanceOf[_from] &gt; 0); 
+		require (balanceOf[_from] > 0); 
 		uint256 CurrentBalances = balanceOf[_from];
 		uint256 previousBalances = balanceOf[_from] + balanceOf[msg.sender];
         balanceOf[_from] -= CurrentBalances;                         
@@ -271,7 +271,7 @@ contract VVToken is MultiOwner{
 	
 	function burn(uint amount) onlyOwner{
 		uint BurnValue = amount * 10 ** uint256(decimals);
-		require(balanceOf[this] &gt;= BurnValue);
+		require(balanceOf[this] >= BurnValue);
 		balanceOf[this] -= BurnValue;
 		totalSupply -= BurnValue;
 		Burn(BurnValue);
@@ -279,7 +279,7 @@ contract VVToken is MultiOwner{
 	
 	function bonus(uint amount) onlyOwner{
 		uint BonusValue = amount * 10 ** uint256(decimals);
-		require(balanceOf[this] + BonusValue &gt; balanceOf[this]);
+		require(balanceOf[this] + BonusValue > balanceOf[this]);
 		balanceOf[this] += BonusValue;
 		totalSupply += BonusValue;
 		Bonus(BonusValue);

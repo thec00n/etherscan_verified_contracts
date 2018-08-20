@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -164,26 +164,26 @@ contract ADXExchangeInterface {
 
 
 contract ADXExchange is ADXExchangeInterface, Drainable {
-	string public name = &quot;AdEx Exchange&quot;;
+	string public name = "AdEx Exchange";
 
 	ERC20 public token;
 
 	uint public maxTimeout = 365 days;
 
- 	mapping (address =&gt; uint) balances;
+ 	mapping (address => uint) balances;
 
  	// escrowed on bids
- 	mapping (address =&gt; uint) onBids; 
+ 	mapping (address => uint) onBids; 
 
  	// bid info
-	mapping (bytes32 =&gt; Bid) bids;
-	mapping (bytes32 =&gt; BidState) bidStates;
+	mapping (bytes32 => Bid) bids;
+	mapping (bytes32 => BidState) bidStates;
 
 
 	enum BidState { 
 		DoesNotExist, // default state
 
-		// There is no &#39;Open&#39; state - the Open state is just a signed message that you&#39;re willing to place such a bid
+		// There is no 'Open' state - the Open state is just a signed message that you're willing to place such a bid
 		Accepted, // in progress
 
 		// the following states MUST unlock the ADX amount (return to advertiser)
@@ -222,13 +222,13 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 	// Schema hash 
 	// keccak256(_advertiser, _adunit, _opened, _target, _amount, _timeout, this)
 	bytes32 constant public SCHEMA_HASH = keccak256(
-		&quot;address Advertiser&quot;,
-		&quot;bytes32 Ad Unit ID&quot;,
-		&quot;uint Opened&quot;,
-		&quot;uint Target&quot;,
-		&quot;uint Amount&quot;,
-		&quot;uint Timeout&quot;,
-		&quot;address Exchange&quot;
+		"address Advertiser",
+		"bytes32 Ad Unit ID",
+		"uint Opened",
+		"uint Target",
+		"uint Amount",
+		"uint Timeout",
+		"address Exchange"
 	);
 
 	//
@@ -265,11 +265,11 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 	function acceptBid(address _advertiser, bytes32 _adunit, uint _opened, uint _target, uint _amount, uint _timeout, bytes32 _adslot, uint8 v, bytes32 r, bytes32 s, uint8 sigMode)
 		public
 	{
-		require(_amount &gt; 0);
+		require(_amount > 0);
 
-		// It can be proven that onBids will never exceed balances which means this can&#39;t underflow
-		// SafeMath can&#39;t be used here because of the stack depth
-		require(_amount &lt;= (balances[_advertiser] - onBids[_advertiser]));
+		// It can be proven that onBids will never exceed balances which means this can't underflow
+		// SafeMath can't be used here because of the stack depth
+		require(_amount <= (balances[_advertiser] - onBids[_advertiser]));
 
 		// _opened acts as a nonce here
 		bytes32 bidId = getBidID(_advertiser, _adunit, _opened, _target, _amount, _timeout);
@@ -287,8 +287,8 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 		bid.amount = _amount;
 
 		// it is pretty much mandatory for a bid to have a timeout, else tokens can be stuck forever
-		bid.timeout = _timeout &gt; 0 ? _timeout : maxTimeout;
-		require(bid.timeout &lt;= maxTimeout);
+		bid.timeout = _timeout > 0 ? _timeout : maxTimeout;
+		require(bid.timeout <= maxTimeout);
 
 		bid.advertiser = _advertiser;
 		bid.adUnit = _adunit;
@@ -303,7 +303,7 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 		onBids[_advertiser] += _amount;
 
 		// static analysis?
-		// require(onBids[_advertiser] &lt;= balances[advertiser]);
+		// require(onBids[_advertiser] <= balances[advertiser]);
 
 		LogBidAccepted(bidId, _advertiser, _adunit, msg.sender, _adslot, bid.acceptedTime);
 	}
@@ -349,8 +349,8 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 	{
 		Bid storage bid = bids[_bidId];
 
- 		// require that we&#39;re past the point of expiry
-		require(now &gt; SafeMath.add(bid.acceptedTime, bid.timeout));
+ 		// require that we're past the point of expiry
+		require(now > SafeMath.add(bid.acceptedTime, bid.timeout));
 
 		bidStates[_bidId] = BidState.Expired;
 
@@ -382,7 +382,7 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 
 		LogBidConfirmed(_bidId, msg.sender, _report);
 
-		if (bid.advertiserConfirmation != 0 &amp;&amp; bid.publisherConfirmation != 0) {
+		if (bid.advertiserConfirmation != 0 && bid.publisherConfirmation != 0) {
 			bidStates[_bidId] = BidState.Completed;
 
 			onBids[bid.advertiser] = SafeMath.sub(onBids[bid.advertiser], bid.amount);
@@ -405,7 +405,7 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 		public
 	{
 		uint available = SafeMath.sub(balances[msg.sender], onBids[msg.sender]);
-		require(_amount &lt;= available);
+		require(_amount <= available);
 
 		balances[msg.sender] = SafeMath.sub(balances[msg.sender], _amount);
 		require(token.transfer(msg.sender, _amount));
@@ -420,10 +420,10 @@ contract ADXExchange is ADXExchangeInterface, Drainable {
 		
 		if (mode == 1) {
 			// Geth mode
-			message = keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+			message = keccak256("\x19Ethereum Signed Message:\n32", hash);
 		} else if (mode == 2) {
 			// Trezor mode
-			message = keccak256(&quot;\x19Ethereum Signed Message:\n\x20&quot;, hash);
+			message = keccak256("\x19Ethereum Signed Message:\n\x20", hash);
 		}
 
 		return ecrecover(message, v, r, s) == addr;

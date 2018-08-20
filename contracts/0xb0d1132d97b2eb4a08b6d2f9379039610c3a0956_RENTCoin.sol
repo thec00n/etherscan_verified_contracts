@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -80,13 +80,13 @@ contract Blocked {
     uint public blockedUntil;
 
     modifier unblocked {
-        require(now &gt; blockedUntil);
+        require(now > blockedUntil);
         _;
     }
 }
 
 contract BalancingToken is ERC20 {
-    mapping (address =&gt; uint256) public balances;      //!&lt; array of all balances
+    mapping (address => uint256) public balances;      //!< array of all balances
 
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balances[_owner];
@@ -99,20 +99,20 @@ contract DividendToken is BalancingToken, Blocked, Owned {
 
     event DividendReceived(address indexed dividendReceiver, uint256 dividendValue);
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     uint public totalReward;
     uint public lastDivideRewardTime;
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     // Fix for the ERC20 short address attack
     modifier rewardTimePast() {
-        require(now &gt; lastDivideRewardTime + rewardDays);
+        require(now > lastDivideRewardTime + rewardDays);
         _;
     }
 
@@ -122,7 +122,7 @@ contract DividendToken is BalancingToken, Blocked, Owned {
         uint    rewardWithdrawTime;
     }
 
-    mapping(address =&gt; TokenHolder) holders;
+    mapping(address => TokenHolder) holders;
 
     uint public rewardDays = 0;
 
@@ -162,11 +162,11 @@ contract DividendToken is BalancingToken, Blocked, Owned {
     }
 
     function reward() constant public returns (uint256) {
-        if (holders[msg.sender].rewardWithdrawTime &gt;= lastDivideRewardTime) {
+        if (holders[msg.sender].rewardWithdrawTime >= lastDivideRewardTime) {
             return 0;
         }
         uint256 balance;
-        if (holders[msg.sender].balanceUpdateTime &lt;= lastDivideRewardTime) {
+        if (holders[msg.sender].balanceUpdateTime <= lastDivideRewardTime) {
             balance = balances[msg.sender];
         } else {
             balance = holders[msg.sender].balance;
@@ -192,7 +192,7 @@ contract DividendToken is BalancingToken, Blocked, Owned {
 
     // Divide up reward and make it accesible for withdraw
     function divideUpReward(uint inDays) rewardTimePast onlyOwner external payable {
-        require(inDays &gt;= 15 &amp;&amp; inDays &lt;= 45);
+        require(inDays >= 15 && inDays <= 45);
         lastDivideRewardTime = now;
         rewardDays = inDays;
         totalReward = this.balance;
@@ -203,7 +203,7 @@ contract DividendToken is BalancingToken, Blocked, Owned {
     }
 
     function beforeBalanceChanges(address _who) public {
-        if (holders[_who].balanceUpdateTime &lt;= lastDivideRewardTime) {
+        if (holders[_who].balanceUpdateTime <= lastDivideRewardTime) {
             holders[_who].balanceUpdateTime = now;
             holders[_who].balance = balances[_who];
         }
@@ -212,9 +212,9 @@ contract DividendToken is BalancingToken, Blocked, Owned {
 
 contract RENTCoin is DividendToken {
 
-    string public constant name = &quot;RentAway Coin&quot;;
+    string public constant name = "RentAway Coin";
 
-    string public constant symbol = &quot;RTW&quot;;
+    string public constant symbol = "RTW";
 
     uint32 public constant decimals = 18;
 
@@ -242,20 +242,20 @@ contract TimingCrowdsale {
 
     function isPreICO() public view returns (bool) {
         var curTime = currentTime();
-        return curTime &lt; ICOstartTime &amp;&amp; curTime &gt;= preICOstartTime;
+        return curTime < ICOstartTime && curTime >= preICOstartTime;
     }
 
     function isICO() public view returns (bool) {
         var curTime = currentTime();
-        return curTime &lt; ICOendTime &amp;&amp; curTime &gt;= ICOstartTime;
+        return curTime < ICOendTime && curTime >= ICOstartTime;
     }
 
     function isPreICOFinished() public view returns (bool) {
-        return currentTime() &gt; ICOstartTime;
+        return currentTime() > ICOstartTime;
     }
 
     function isICOFinished() public view returns (bool) {
-        return currentTime() &gt; ICOendTime;
+        return currentTime() > ICOendTime;
     }
 }
 
@@ -270,10 +270,10 @@ contract BonusCrowdsale is TimingCrowdsale {
     }
 
     function getAmountBonus(uint256 amount) public view returns (uint) {
-        if (amount &gt;= 25 ether) {
+        if (amount >= 25 ether) {
             return 15;
         }
-        if (amount &gt;= 10 ether) {
+        if (amount >= 10 ether) {
             return 5;
         }
         return 0;
@@ -288,7 +288,7 @@ contract ManualSendingCrowdsale is BonusCrowdsale, Owned {
         uint256 value;
     }
 
-    mapping (uint =&gt; AmountData) public amountsByCurrency;
+    mapping (uint => AmountData) public amountsByCurrency;
 
     function addCurrency(uint currency) external onlyOwner {
         addCurrencyInternal(currency);
@@ -325,7 +325,7 @@ contract WithdrawCrowdsale is ManualSendingCrowdsale {
 
     function withdrawAmount(uint256 amount) external onlyOwner canWithdraw {
         uint256 givenAmount = amount;
-        if (this.balance &lt; amount) {
+        if (this.balance < amount) {
             givenAmount = this.balance;
         }
         require(msg.sender.call.gas(3000000).value(givenAmount)());
@@ -336,7 +336,7 @@ contract RefundableCrowdsale is WithdrawCrowdsale {
 
     event Refunded(address indexed beneficiary, uint256 weiAmount);
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     function refund(address investor) external {
         require(isRefundAllowed());
@@ -384,7 +384,7 @@ contract Crowdsale is RefundableCrowdsale {
     }
 
     modifier minPayment() {
-        require(msg.value &gt;= minAmountForDeal);
+        require(msg.value >= minAmountForDeal);
         _;
     }
 
@@ -395,11 +395,11 @@ contract Crowdsale is RefundableCrowdsale {
     }
 
     function isFinished() public view returns (bool) {
-        return isICOFinished() || (leftTokens == 0 &amp;&amp; (state == State.ICO || state == State.DONE));
+        return isICOFinished() || (leftTokens == 0 && (state == State.ICO || state == State.DONE));
     }
 
     function isWithdrawAllowed() public view returns (bool) {
-        return soldTokens &gt;= softCapTokens;
+        return soldTokens >= softCapTokens;
     }
 
     function isRefundAllowed() internal view returns (bool) {
@@ -413,9 +413,9 @@ contract Crowdsale is RefundableCrowdsale {
         uint256 givenTokens = amount.mul(rateToEther).div(100).mul(100 + bonus);
         uint256 providedTokens = transferTokensTo(investor, givenTokens);
 
-        if (givenTokens &gt; providedTokens) {
+        if (givenTokens > providedTokens) {
             uint256 needAmount = providedTokens.mul(100).div(100 + bonus).div(rateToEther);
-            require(amount &gt; needAmount);
+            require(amount > needAmount);
             require(investor.call.gas(3000000).value(amount - needAmount)());
             amount = needAmount;
         }
@@ -442,7 +442,7 @@ contract Crowdsale is RefundableCrowdsale {
 
     function takeBounty() external onlyOwner {
         require(state == State.DONE);
-        require(now &gt; ICOendTime);
+        require(now > ICOendTime);
         require(!bonusesPayed);
         token.changeOwner(msg.sender);
         bonusesPayed = true;
@@ -455,7 +455,7 @@ contract Crowdsale is RefundableCrowdsale {
 
     function transferTokensTo(address to, uint256 givenTokens) internal returns (uint256) {
         var providedTokens = givenTokens;
-        if (givenTokens &gt; leftTokens) {
+        if (givenTokens > leftTokens) {
             providedTokens = leftTokens;
         }
         leftTokens = leftTokens.sub(providedTokens);

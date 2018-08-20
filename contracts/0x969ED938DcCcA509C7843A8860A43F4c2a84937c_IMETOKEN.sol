@@ -13,7 +13,7 @@ pragma solidity ^0.4.8;
 
 3. Link to download a 28x28png icon logo:https://IME.IM/TOKENLOGO.png
 
-4. Official Contact Email Address:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ffb6b2bfb6b2bad1b6b2">[email&#160;protected]</a>
+4. Official Contact Email Address:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ffb6b2bfb6b2bad1b6b2">[email protected]</a>
 
 5. Link to blog (optional):
 
@@ -42,12 +42,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        require((z &gt;= x) &amp;&amp; (z &gt;= y));
+        require((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        require(x &gt;= y);
+        require(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -79,16 +79,16 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     //pre ico locked balance
-    mapping (address =&gt; uint256) lockedBalances;
-    mapping (address =&gt; uint256) initLockedBalances;
+    mapping (address => uint256) lockedBalances;
+    mapping (address => uint256) initLockedBalances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     bool allowTransfer = false;
 
     function transfer(address _to, uint256 _value) public returns (bool success){
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; allowTransfer) {
+        if (balances[msg.sender] >= _value && _value > 0 && allowTransfer) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -99,7 +99,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; allowTransfer) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && allowTransfer) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -134,17 +134,17 @@ contract StandardToken is Token {
 
 contract IMETOKEN is StandardToken, SafeMath {
     // Descriptive properties
-    string public constant name = &quot;IME.IM Token&quot;;
-    string public constant symbol = &quot;IME&quot;;
+    string public constant name = "IME.IM Token";
+    string public constant symbol = "IME";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // Account for ether proceed.
     address public etherProceedsAccount = 0x0;
     address public multiWallet = 0x0;
 
     //owners
-    mapping (address =&gt; bool) public isOwner;
+    mapping (address => bool) public isOwner;
     address[] public owners;
 
     // These params specify the start, end, min, and max of the sale.
@@ -290,7 +290,7 @@ contract IMETOKEN is StandardToken, SafeMath {
         uint256 tokens = 0;
         uint256 checkedSupply = 0;
         checkedSupply = safeAdd(window0TotalSupply, amount);
-        require(window0TokenCreationCap &gt;= checkedSupply);
+        require(window0TokenCreationCap >= checkedSupply);
         assignLockedBalance(buyer, amount);
         window0TotalSupply = checkedSupply;
         PreICOTokenPushed(buyer, amount);
@@ -307,7 +307,7 @@ contract IMETOKEN is StandardToken, SafeMath {
     returns (bool){
         uint256 shouldUnlockedBalance = 0;
         shouldUnlockedBalance = initLockedBalances[_owner] * prob / 100;
-        if(shouldUnlockedBalance &gt; lockedBalances[_owner]){
+        if(shouldUnlockedBalance > lockedBalances[_owner]){
             shouldUnlockedBalance = lockedBalances[_owner];
         }
         balances[_owner] += shouldUnlockedBalance;
@@ -321,36 +321,36 @@ contract IMETOKEN is StandardToken, SafeMath {
     }
     function create() internal{
         require(!isFinalized);
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
         uint256 tokens = 0;
         uint256 checkedSupply = 0;
 
-        if(window0StartTime != 0 &amp;&amp; window0EndTime != 0 &amp;&amp; time() &gt;= window0StartTime &amp;&amp; time() &lt;= window0EndTime){
-            if(preICOLimit &gt; 0){
-                require(msg.value &gt;= preICOLimit);
+        if(window0StartTime != 0 && window0EndTime != 0 && time() >= window0StartTime && time() <= window0EndTime){
+            if(preICOLimit > 0){
+                require(msg.value >= preICOLimit);
             }
             tokens = safeMult(msg.value, window0TokenExchangeRate);
             checkedSupply = safeAdd(window0TotalSupply, tokens);
-            require(window0TokenCreationCap &gt;= checkedSupply);
+            require(window0TokenCreationCap >= checkedSupply);
             assignLockedBalance(msg.sender, tokens);
             window0TotalSupply = checkedSupply;
-            if(multiWallet != 0x0 &amp;&amp; instantTransfer) multiWallet.transfer(msg.value);
+            if(multiWallet != 0x0 && instantTransfer) multiWallet.transfer(msg.value);
             CreateGameIco(msg.sender, tokens);
-        }else if(window1StartTime != 0 &amp;&amp; window1EndTime!= 0 &amp;&amp; time() &gt;= window1StartTime &amp;&amp; time() &lt;= window1EndTime){
+        }else if(window1StartTime != 0 && window1EndTime!= 0 && time() >= window1StartTime && time() <= window1EndTime){
             tokens = safeMult(msg.value, window1TokenExchangeRate);
             checkedSupply = safeAdd(window1TotalSupply, tokens);
-            require(window1TokenCreationCap &gt;= checkedSupply);
+            require(window1TokenCreationCap >= checkedSupply);
             balances[msg.sender] += tokens;
             window1TotalSupply = checkedSupply;
-            if(multiWallet != 0x0 &amp;&amp; instantTransfer) multiWallet.transfer(msg.value);
+            if(multiWallet != 0x0 && instantTransfer) multiWallet.transfer(msg.value);
             CreateGameIco(msg.sender, tokens);
-        }else if(window2StartTime != 0 &amp;&amp; window2EndTime != 0 &amp;&amp; time() &gt;= window2StartTime &amp;&amp; time() &lt;= window2EndTime){
+        }else if(window2StartTime != 0 && window2EndTime != 0 && time() >= window2StartTime && time() <= window2EndTime){
             tokens = safeMult(msg.value, window2TokenExchangeRate);
             checkedSupply = safeAdd(window2TotalSupply, tokens);
-            require(window2TokenCreationCap &gt;= checkedSupply);
+            require(window2TokenCreationCap >= checkedSupply);
             balances[msg.sender] += tokens;
             window2TotalSupply = checkedSupply;
-            if(multiWallet != 0x0 &amp;&amp; instantTransfer) multiWallet.transfer(msg.value);
+            if(multiWallet != 0x0 && instantTransfer) multiWallet.transfer(msg.value);
             CreateGameIco(msg.sender, tokens);
         }else{
             require(false);
@@ -367,7 +367,7 @@ contract IMETOKEN is StandardToken, SafeMath {
     }
 
     function dayFor(uint timestamp, uint startTime) internal returns (uint) {
-        return timestamp &lt; startTime ? 0 : safeSubtract(timestamp, startTime) / 24 hours + 1;
+        return timestamp < startTime ? 0 : safeSubtract(timestamp, startTime) / 24 hours + 1;
     }
 
     function withDraw(uint256 _value) public{
@@ -385,10 +385,10 @@ contract IMETOKEN is StandardToken, SafeMath {
         isFinalized = true;
         if(multiWallet != 0x0){
             assignLockedBalance(multiWallet, totalSupply- window0TotalSupply- window1TotalSupply - window2TotalSupply);
-            if(this.balance &gt; 0) multiWallet.transfer(this.balance);
+            if(this.balance > 0) multiWallet.transfer(this.balance);
         }else{
             assignLockedBalance(etherProceedsAccount, totalSupply- window0TotalSupply- window1TotalSupply - window2TotalSupply);
-            if(this.balance &gt; 0) etherProceedsAccount.transfer(this.balance);
+            if(this.balance > 0) etherProceedsAccount.transfer(this.balance);
         }
     }
 

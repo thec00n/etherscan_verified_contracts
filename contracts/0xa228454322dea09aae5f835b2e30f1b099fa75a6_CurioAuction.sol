@@ -29,7 +29,7 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- *      functions, this simplifies the implementation of &quot;user permissions&quot;.
+ *      functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -150,7 +150,7 @@ contract CurioAuction is Pausable {
   uint256 public feePercent;
 
   // Map from token ID to auction
-  mapping (uint256 =&gt; Auction) tokenIdToAuction;
+  mapping (uint256 => Auction) tokenIdToAuction;
 
   // Count of release tokens sold by auction
   uint256 public releaseTokensSaleCount;
@@ -171,7 +171,7 @@ contract CurioAuction is Pausable {
   )
     public
   {
-    require(_fee &lt;= 10000);
+    require(_fee <= 10000);
     feePercent = _fee;
 
     ERC721 candidateContract = ERC721(_tokenAddress);
@@ -209,10 +209,10 @@ contract CurioAuction is Pausable {
   {
     // Overflow and limitation input check
     require(_startingPrice == uint256(uint128(_startingPrice)));
-    require(_startingPrice &lt; auctionPriceLimit);
+    require(_startingPrice < auctionPriceLimit);
 
     require(_endingPrice == uint256(uint128(_endingPrice)));
-    require(_endingPrice &lt; auctionPriceLimit);
+    require(_endingPrice < auctionPriceLimit);
 
     require(_duration == uint256(uint64(_duration)));
 
@@ -418,7 +418,7 @@ contract CurioAuction is Pausable {
     internal
   {
     // Require that all auctions have a duration of at least one minute.
-    require(_auction.duration &gt;= 1 minutes);
+    require(_auction.duration >= 1 minutes);
 
     tokenIdToAuction[_tokenId] = _auction;
 
@@ -463,7 +463,7 @@ contract CurioAuction is Pausable {
    * @param _auction Auction to check
    */
   function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-    return (_auction.startedAt &gt; 0);
+    return (_auction.startedAt > 0);
   }
 
   /**
@@ -483,7 +483,7 @@ contract CurioAuction is Pausable {
 
     // Check that auction were started
     // Variable secondsPassed is positive
-    if (now &gt; _auction.startedAt) {
+    if (now > _auction.startedAt) {
       secondsPassed = now - _auction.startedAt;
     }
 
@@ -512,7 +512,7 @@ contract CurioAuction is Pausable {
     pure
     returns (uint256)
   {
-    if (_secondsPassed &gt;= _duration) {
+    if (_secondsPassed >= _duration) {
       // The auction lasts longer duration
       // Return end price
       return _endingPrice;
@@ -520,7 +520,7 @@ contract CurioAuction is Pausable {
       // totalPriceChange can be negative
       int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-      // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+      // This multiplication can't overflow, _secondsPassed will easily fit within
       // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
       // will always fit within 256-bits.
       int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -552,14 +552,14 @@ contract CurioAuction is Pausable {
 
     // Check that the incoming bid is higher than the current price
     uint256 price = _currentPrice(auction);
-    require(_bidAmount &gt;= price);
+    require(_bidAmount >= price);
 
     address seller = auction.seller;
 
     _removeAuction(_tokenId);
 
     // Transfer proceeds to seller
-    if (price &gt; 0) {
+    if (price > 0) {
       uint256 fee = _calculateFee(price);
 
       uint256 sellerProceeds = price - fee;

@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -50,37 +50,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint a, uint b) internal constant returns (uint) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint a, uint b) internal constant returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -124,7 +124,7 @@ contract FractionalERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * Obsolete. Removed this check based on:
@@ -132,7 +132,7 @@ contract BasicToken is ERC20Basic {
    * @dev Fix for the ERC20 short address attack.
    *
    * modifier onlyPayloadSize(uint size) {
-   *    require(msg.data.length &gt;= size + 4);
+   *    require(msg.data.length >= size + 4);
    *    _;
    * }
    */
@@ -171,7 +171,7 @@ contract StandardToken is BasicToken, ERC20 {
   /* Token supply got increased and a new owner received these tokens */
   event Minted(address receiver, uint amount);
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -188,7 +188,7 @@ contract StandardToken is BasicToken, ERC20 {
     uint _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require(_value &lt;= _allowance);
+    // require(_value <= _allowance);
     // SafeMath uses assert instead of require though, beware when using an analysis tool
 
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract StandardToken is BasicToken, ERC20 {
    */
   function approve(address _spender, uint _value) public returns (bool success) {
 
-    // To change the approve amount you first have to reduce the addresses&#39;
+    // To change the approve amount you first have to reduce the addresses'
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -250,7 +250,7 @@ contract StandardToken is BasicToken, ERC20 {
 
       uint oldVal = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldVal) {
+      if (_subtractedValue > oldVal) {
           allowed[msg.sender][_spender] = 0;
       } else {
           allowed[msg.sender][_spender] = oldVal.sub(_subtractedValue);
@@ -273,7 +273,7 @@ contract ReleasableToken is StandardToken, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Set the contract that can call release and make the token transferable.
@@ -282,7 +282,7 @@ contract ReleasableToken is StandardToken, Ownable {
    * it can only be called by a corresponding exposed API in the crowdsale contract in case of input error.
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
-    // We don&#39;t do interface check here as we might want to have a normal wallet address to act as a release agent.
+    // We don't do interface check here as we might want to have a normal wallet address to act as a release agent.
     releaseAgent = addr;
   }
 
@@ -351,7 +351,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state);
 
@@ -361,7 +361,7 @@ contract MintableToken is StandardToken, Ownable {
     // Cannot create a token without supply and no minting
     require(_mintable || _initialSupply != 0);
     // Create initially all balance on the team multisig
-    if (_initialSupply &gt; 0)
+    if (_initialSupply > 0)
         mintInternal(_multisig, _initialSupply);
     // No more new supply allowed after the token creation
     mintingFinished = !_mintable;
@@ -422,7 +422,7 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract UpgradeAgent {
 
-  /** This value should be the same as the original token&#39;s total supply */
+  /** This value should be the same as the original token's total supply */
   uint public originalSupply;
 
   /** Interface to ensure the contract is correctly configured */
@@ -469,7 +469,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -498,7 +498,7 @@ contract UpgradeableToken is StandardToken {
    */
   function upgrade(uint value) public {
     UpgradeState state = getUpgradeState();
-    // Ensure it&#39;s not called in a bad state
+    // Ensure it's not called in a bad state
     require(state == UpgradeState.ReadyToUpgrade || state == UpgradeState.Upgrading);
 
     // Validate input value.
@@ -601,7 +601,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, Fra
    * This token must be created through a team multisig wallet, so that it is owned by that wallet.
    *
    * @param _name Token name
-   * @param _symbol Token symbol - typically it&#39;s all caps
+   * @param _symbol Token symbol - typically it's all caps
    * @param _initialSupply How many tokens we start with
    * @param _decimals Number of decimal places
    * @param _mintable Are new tokens created over the crowdsale or do we distribute only the initial supply? Note that when the token becomes transferable the minting always ends.
@@ -625,7 +625,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, Fra
    * Allow upgrade agent functionality to kick in only if the crowdsale was a success.
    */
   function canUpgrade() public constant returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
   /**

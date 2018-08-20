@@ -3,13 +3,13 @@ contract AbstractStarbaseCrowdsale {
 }
 
 /// @title EarlyPurchase contract - Keep track of purchased amount by Early Purchasers
-/// @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e575058517e4d4a5f4c5c5f4d5b105d51">[email&#160;protected]</a>&gt;
+/// @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e575058517e4d4a5f4c5c5f4d5b105d51">[email protected]</a>>
 contract StarbaseEarlyPurchase {
     /*
      *  Constants
      */
-    string public constant PURCHASE_AMOUNT_UNIT = &#39;CNY&#39;;    // Chinese Yuan
-    string public constant PURCHASE_AMOUNT_RATE_REFERENCE = &#39;http://www.xe.com/currencytables/&#39;;
+    string public constant PURCHASE_AMOUNT_UNIT = 'CNY';    // Chinese Yuan
+    string public constant PURCHASE_AMOUNT_RATE_REFERENCE = 'http://www.xe.com/currencytables/';
     uint public constant PURCHASE_AMOUNT_CAP = 9000000;
 
     /*
@@ -37,7 +37,7 @@ contract StarbaseEarlyPurchase {
      *  Modifiers
      */
     modifier noEther() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
         _;
@@ -51,8 +51,8 @@ contract StarbaseEarlyPurchase {
     }
 
     modifier onlyBeforeCrowdsale() {
-        if (address(starbaseCrowdsale) != 0 &amp;&amp;
-            starbaseCrowdsale.startDate() &gt; 0)
+        if (address(starbaseCrowdsale) != 0 &&
+            starbaseCrowdsale.startDate() > 0)
         {
             throw;
         }
@@ -60,7 +60,7 @@ contract StarbaseEarlyPurchase {
     }
 
     modifier onlyEarlyPurchaseTerm() {
-        if (earlyPurchaseClosedAt &gt; 0) {
+        if (earlyPurchaseClosedAt > 0) {
             throw;
         }
         _;
@@ -69,7 +69,7 @@ contract StarbaseEarlyPurchase {
     /*
      *  Contract functions
      */
-    /// @dev Returns early purchased amount by purchaser&#39;s address
+    /// @dev Returns early purchased amount by purchaser's address
     /// @param purchaser Purchaser address
     function purchasedAmountBy(address purchaser)
         external
@@ -77,7 +77,7 @@ contract StarbaseEarlyPurchase {
         noEther
         returns (uint amount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             if (earlyPurchases[i].purchaser == purchaser) {
                 amount += earlyPurchases[i].amount;
             }
@@ -90,7 +90,7 @@ contract StarbaseEarlyPurchase {
         noEther
         returns (uint totalAmount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             totalAmount += earlyPurchases[i].amount;
         }
     }
@@ -118,12 +118,12 @@ contract StarbaseEarlyPurchase {
         returns (bool)
     {
         if (amount == 0 ||
-            totalAmountOfEarlyPurchases() + amount &gt; PURCHASE_AMOUNT_CAP)
+            totalAmountOfEarlyPurchases() + amount > PURCHASE_AMOUNT_CAP)
         {
             return false;
         }
 
-        if (purchasedAt == 0 || purchasedAt &gt; now) {
+        if (purchasedAt == 0 || purchasedAt > now) {
             throw;
         }
 
@@ -141,7 +141,7 @@ contract StarbaseEarlyPurchase {
         earlyPurchaseClosedAt = now;
     }
 
-    /// @dev Setup function sets external contract&#39;s address
+    /// @dev Setup function sets external contract's address
     /// @param starbaseCrowdsaleAddress Token address
     function setup(address starbaseCrowdsaleAddress)
         external

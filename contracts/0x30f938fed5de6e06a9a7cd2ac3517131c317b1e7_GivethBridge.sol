@@ -22,7 +22,7 @@ contract ERC20 {
     /// @dev Transfers _value number of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
-    /// @dev Allows _spender to withdraw from the msg.sender&#39;s account up to the _value amount
+    /// @dev Allows _spender to withdraw from the msg.sender's account up to the _value amount
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     /// @dev Returns the amount which _spender is still allowed to withdraw from _owner
@@ -40,9 +40,9 @@ pragma solidity ^0.4.19;
 
 
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="a5c4c1d7ccc4e5c6cac1c0c6cacbd1c0ddd18bccca">[email&#160;protected]</span>&gt;
+/// @author Adrià Massanet <<span class="__cf_email__" data-cfemail="a5c4c1d7ccc4e5c6cac1c0c6cacbd1c0ddd18bccca">[email protected]</span>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
+///  authorization control functions, this simplifies & the implementation of
 ///  user permissions; this contract has three work flows for a change in
 ///  ownership, the first requires the new owner to validate that they have the
 ///  ability to accept ownership, the second allows the ownership to be
@@ -125,7 +125,7 @@ contract Owned {
 pragma solidity ^0.4.19;
 /*
     Copyright 2016, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<span class="__cf_email__" data-cfemail="046560766d6544676b6061676b6a70617c702a6d6b">[email&#160;protected]</span>&gt;
+    Contributor: Adrià Massanet <<span class="__cf_email__" data-cfemail="046560766d6544676b6061676b6a70617c702a6d6b">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ pragma solidity ^0.4.19;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -153,7 +153,7 @@ pragma solidity ^0.4.19;
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -188,7 +188,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) view public returns (bool) {
         return !escapeBlacklist[_token];
@@ -297,7 +297,7 @@ pragma solidity ^0.4.21;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title Vault Contract
@@ -339,9 +339,9 @@ contract Vault is Escapable, Pausable {
     uint public maxSecurityGuardDelay;
     bool public allowDisbursePaymentWhenPaused;
 
-    /// @dev The white list of approved addresses allowed to set up &amp;&amp; receive
+    /// @dev The white list of approved addresses allowed to set up && receive
     ///  payments from this vault
-    mapping (address =&gt; bool) public allowedSpenders;
+    mapping (address => bool) public allowedSpenders;
 
     // @dev Events to make the payment movements easy to find on the blockchain
     event PaymentAuthorized(uint indexed idPayment, address indexed recipient, uint amount, address token, bytes32 reference);
@@ -437,10 +437,10 @@ contract Vault is Escapable, Pausable {
         p.spender = msg.sender;
 
         // Overflow protection
-        require(_paymentDelay &lt;= 10**18);
+        require(_paymentDelay <= 10**18);
 
         // Determines the earliest the recipient can receive payment (Unix time)
-        p.earliestPayTime = _paymentDelay &gt;= timeLock ?
+        p.earliestPayTime = _paymentDelay >= timeLock ?
                                 _getTime() + _paymentDelay :
                                 _getTime() + timeLock;
         p.recipient = _recipient;
@@ -457,13 +457,13 @@ contract Vault is Escapable, Pausable {
     /// @param _idPayment The payment ID to be executed
     function disburseAuthorizedPayment(uint _idPayment) disbursementsAllowed public {
         // Check that the `_idPayment` has been added to the payments struct
-        require(_idPayment &lt; authorizedPayments.length);
+        require(_idPayment < authorizedPayments.length);
 
         Payment storage p = authorizedPayments[_idPayment];
 
         // Checking for reasons not to execute the payment
         require(allowedSpenders[p.spender]);
-        require(_getTime() &gt;= p.earliestPayTime);
+        require(_getTime() >= p.earliestPayTime);
         require(!p.canceled);
         require(!p.paid);
 
@@ -481,7 +481,7 @@ contract Vault is Escapable, Pausable {
 
     /// convience function to disburse multiple payments in a single tx
     function disburseAuthorizedPayments(uint[] _idPayments) public {
-        for (uint i = 0; i &lt; _idPayments.length; i++) {
+        for (uint i = 0; i < _idPayments.length; i++) {
             uint _idPayment = _idPayments[i];
             disburseAuthorizedPayment(_idPayment);
         }
@@ -495,14 +495,14 @@ contract Vault is Escapable, Pausable {
     /// @param _idPayment ID of the payment to be delayed
     /// @param _delay The number of seconds to delay the payment
     function delayPayment(uint _idPayment, uint _delay) onlySecurityGuard external {
-        require(_idPayment &lt; authorizedPayments.length);
+        require(_idPayment < authorizedPayments.length);
 
         // Overflow test
-        require(_delay &lt;= 10**18);
+        require(_delay <= 10**18);
 
         Payment storage p = authorizedPayments[_idPayment];
 
-        require(p.securityGuardDelay + _delay &lt;= maxSecurityGuardDelay);
+        require(p.securityGuardDelay + _delay <= maxSecurityGuardDelay);
         require(!p.paid);
         require(!p.canceled);
 
@@ -517,7 +517,7 @@ contract Vault is Escapable, Pausable {
     /// @notice `onlyOwner` Cancel a payment all together
     /// @param _idPayment ID of the payment to be canceled.
     function cancelPayment(uint _idPayment) onlyOwner external {
-        require(_idPayment &lt; authorizedPayments.length);
+        require(_idPayment < authorizedPayments.length);
 
         Payment storage p = authorizedPayments[_idPayment];
 
@@ -547,14 +547,14 @@ contract Vault is Escapable, Pausable {
     /// @param _newTimeLock Sets the new minimum default `timeLock` in seconds;
     ///  pending payments maintain their `earliestPayTime`
     function setTimelock(uint _newTimeLock) onlyOwner external {
-        require(_newTimeLock &gt;= absoluteMinTimeLock);
+        require(_newTimeLock >= absoluteMinTimeLock);
         timeLock = _newTimeLock;
     }
 
     /// @notice `onlyOwner` Changes the maximum number of seconds
     /// `securityGuard` can delay a payment
     /// @param _maxSecurityGuardDelay The new maximum delay in seconds that
-    ///  `securityGuard` can delay the payment&#39;s execution in total
+    ///  `securityGuard` can delay the payment's execution in total
     function setMaxSecurityGuardDelay(uint _maxSecurityGuardDelay) onlyOwner external {
         maxSecurityGuardDelay = _maxSecurityGuardDelay;
     }
@@ -569,7 +569,7 @@ contract Vault is Escapable, Pausable {
     /// Owner can allow payment disbursement when the contract is paused. This is so the
     /// bridge can be upgraded without having to migrate any existing authorizedPayments
     /// @dev only callable whenPaused b/c pausing the contract will reset `allowDisbursePaymentWhenPaused` to false
-    /// @param allowed `true` if allowing payments to be disbursed when paused, otherwise &#39;false&#39;
+    /// @param allowed `true` if allowing payments to be disbursed when paused, otherwise 'false'
     function setAllowDisbursePaymentWhenPaused(bool allowed) onlyOwner whenPaused public {
         allowDisbursePaymentWhenPaused = allowed;
     }
@@ -599,22 +599,22 @@ pragma solidity ^0.4.21;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
 
 /**
 * @dev `FailClosedVault` is a version of the vault that requires
-*  the securityGuard to &quot;see&quot; each payment before it can be collected
+*  the securityGuard to "see" each payment before it can be collected
 */
 contract FailClosedVault is Vault {
     uint public securityGuardLastCheckin;
 
     /**
     * @param _absoluteMinTimeLock For this version of the vault, it is recommended
-    *   that this value is &gt; 24hrs. If not, it will require the securityGuard to checkIn
-    *   multiple times a day. Also consider that `securityGuardLastCheckin &gt;= payment.earliestPayTime - timelock + 30mins);`
+    *   that this value is > 24hrs. If not, it will require the securityGuard to checkIn
+    *   multiple times a day. Also consider that `securityGuardLastCheckin >= payment.earliestPayTime - timelock + 30mins);`
     *   is the condition to allow payments to be payed. The additional 30 mins is to reduce (not eliminate)
     *   the risk of front-running
     */
@@ -646,7 +646,7 @@ contract FailClosedVault is Vault {
     */
     function disburseAuthorizedPayment(uint _idPayment) disbursementsAllowed public {
         // Check that the `_idPayment` has been added to the payments struct
-        require(_idPayment &lt; authorizedPayments.length);
+        require(_idPayment < authorizedPayments.length);
 
         Payment storage p = authorizedPayments[_idPayment];
         // The current minimum delay for a payment is `timeLock`. Thus the following ensuress
@@ -654,7 +654,7 @@ contract FailClosedVault is Vault {
         // @notice earliestPayTime is updated when a payment is delayed. Which may require
         // another checkIn before the payment can be collected.
         // @notice We add 30 mins to this to reduce (not eliminate) the risk of front-running
-        require(securityGuardLastCheckin &gt;= p.earliestPayTime - timeLock + 30 minutes);
+        require(securityGuardLastCheckin >= p.earliestPayTime - timeLock + 30 minutes);
 
         super.disburseAuthorizedPayment(_idPayment);
     }
@@ -666,12 +666,12 @@ contract FailClosedVault is Vault {
     /**
     * @notice `onlySecurityGuard` can checkin. If they fail to checkin,
     * payments will not be allowed to be disbursed, unless the payment has
-    * an `earliestPayTime` &lt;= `securityGuardLastCheckin`.
+    * an `earliestPayTime` <= `securityGuardLastCheckin`.
     * @notice To reduce the risk of a front-running attack on payments, it
     * is important that this is called with a resonable gasPrice set for the
     * current network congestion. If this tx is not mined, within 30 mins
     * of being sent, it is possible that a payment can be authorized w/o the
-    * securityGuard&#39;s knowledge
+    * securityGuard's knowledge
     */
     function checkIn() onlySecurityGuard external {
         securityGuardLastCheckin = _getTime();
@@ -683,7 +683,7 @@ contract FailClosedVault is Vault {
 pragma solidity ^0.4.21;
 
 /*
-    Copyright 2017, RJ Ewing &lt;<span class="__cf_email__" data-cfemail="661603140f1515090a09011f261614091209080b070f0a4805090b">[email&#160;protected]</span>&gt;
+    Copyright 2017, RJ Ewing <<span class="__cf_email__" data-cfemail="661603140f1515090a09011f261614091209080b070f0a4805090b">[email protected]</span>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -696,7 +696,7 @@ pragma solidity ^0.4.21;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -712,7 +712,7 @@ pragma solidity ^0.4.21;
 */
 contract GivethBridge is FailClosedVault {
 
-    mapping(address =&gt; bool) tokenWhitelist;
+    mapping(address => bool) tokenWhitelist;
 
     event Donate(uint64 giverId, uint64 receiverId, address token, uint amount);
     event DonateAndCreateGiver(address giver, uint64 receiverId, address token, uint amount);
@@ -766,7 +766,7 @@ contract GivethBridge is FailClosedVault {
     * will be no way of notifying the sender/giver that the giver has to take action (withdraw/donate) in
     * the dapp
     *
-    * @param giver The address to create a &#39;giver&#39; pledge admin for in the liquidPledging contract
+    * @param giver The address to create a 'giver' pledge admin for in the liquidPledging contract
     * @param receiverId The adminId of the liquidPledging pledge admin receiving the donation
     */
     function donateAndCreateGiver(address giver, uint64 receiverId) payable external {
@@ -780,7 +780,7 @@ contract GivethBridge is FailClosedVault {
     * will be no way of notifying the sender/giver that the giver has to take action (withdraw/donate) in
     * the dapp
     *
-    * @param giver The address to create a &#39;giver&#39; pledge admin for in the liquidPledging contract
+    * @param giver The address to create a 'giver' pledge admin for in the liquidPledging contract
     * @param receiverId The adminId of the liquidPledging pledge admin receiving the donation
     * @param token The token to donate. If donating ETH, then 0x0. Note: the token must be whitelisted
     * @param _amount The amount of the token to donate. If donating ETH, then 0x0 as the msg.value will be used instead.
@@ -876,7 +876,7 @@ contract GivethBridge is FailClosedVault {
             amount = msg.value;
         }
 
-        require(amount &gt; 0);
+        require(amount > 0);
 
         if (token != 0) {
             require(ERC20(token).transferFrom(msg.sender, this, amount));

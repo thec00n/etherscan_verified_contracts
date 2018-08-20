@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function Div(uint a, uint b) internal pure returns (uint) {
-    //assert(b &gt; 0); // Solidity automatically throws when Dividing by 0
+    //assert(b > 0); // Solidity automatically throws when Dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function Sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   } 
 
   function Add(uint a, uint b) internal pure returns (uint) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   } 
 }
@@ -45,7 +45,7 @@ contract ERC223ReceivingContract {
 }
 
 /**
- * Contract &quot;Ownable&quot;
+ * Contract "Ownable"
  * Purpose: Defines Owner for contract and provide functionality to transfer ownership to another account
  */
 contract Ownable {
@@ -55,7 +55,7 @@ contract Ownable {
   //add another owner to transfer ownership
   address oldOwner;
 
-  //Constructor for the contract to store owner&#39;s account on deployement
+  //Constructor for the contract to store owner's account on deployement
   function Ownable() public {
     owner = msg.sender;
     oldOwner = msg.sender;
@@ -67,7 +67,7 @@ contract Ownable {
       _;
   }
 
-  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner&#39;s account
+  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner's account
   function transferOwnership(address newOwner) public onlyOwner {
     require (newOwner != address(0));
     owner = newOwner;
@@ -93,9 +93,9 @@ contract CTV is ERC20 {
 
     using SafeMath for uint256;
     //The name of the  token
-    string public constant name = &quot;Coin TV&quot;;
+    string public constant name = "Coin TV";
     //The token symbol
-    string public constant symbol = &quot;CTV&quot;;
+    string public constant symbol = "CTV";
     //To denote the locking on transfer of tokens among token holders
     bool public locked;
     //The precision used in the calculations in contract
@@ -121,11 +121,11 @@ contract CTV is ERC20 {
     uint256 public tokensSuppliedFromReferral = 0;
 
     //Mapping to relate owner and spender to the tokens allowed to transfer from owner
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
     //to manage referrals
-    mapping(address =&gt; address) public referredBy;
+    mapping(address => address) public referredBy;
     //Mapping to relate number of  token to the account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     //Structure for investors; holds received wei amount and Token sent
     struct Investor {
@@ -146,15 +146,15 @@ contract CTV is ERC20 {
     //to check the sale status
     bool public saleRunning;
     //investors indexed by their ETH address
-    mapping(address =&gt; Investor) public investors;
+    mapping(address => Investor) public investors;
     //investors indexed by their IDs
-    mapping (uint256 =&gt; address) public investorList;
+    mapping (uint256 => address) public investorList;
     //count number of investors
     uint256 public countTotalInvestors;
     //to keep track of how many investors have been refunded
     uint256 countInvestorsRefunded;
     //by default any new account will show false for registered mapping
-    mapping(address =&gt; bool) registered;
+    mapping(address => bool) registered;
 
     address[] listOfAddresses;
 
@@ -171,7 +171,7 @@ contract CTV is ERC20 {
     }
     //To handle ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -181,7 +181,7 @@ contract CTV is ERC20 {
     }
 
     modifier validTimeframe(){
-        require(saleRunning &amp;&amp; now &gt;=startTime &amp;&amp; now &lt; endTime);
+        require(saleRunning && now >=startTime && now < endTime);
         _;
     }
     
@@ -215,7 +215,7 @@ contract CTV is ERC20 {
         assembly{
             length := extcodesize(_address)
         }
-        if(length &gt; 0){
+        if(length > 0){
             return true;
         }
         else{
@@ -234,7 +234,7 @@ contract CTV is ERC20 {
     }
 
     /**
-    * @dev Transfer sender&#39;s token to a given address
+    * @dev Transfer sender's token to a given address
     *
     * @param _to The address which you want to transfer to
     * @param _value the amount of tokens to be transferred
@@ -243,7 +243,7 @@ contract CTV is ERC20 {
     function transfer(address _to, uint _value) onlyUnlocked onlyPayloadSize(2 * 32) public returns(bool _success) {
         require( _to != address(0) );
         bytes memory _empty;
-        if((balances[msg.sender] &gt; _value) &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0)){
+        if((balances[msg.sender] > _value) && _value > 0 && _to != address(0)){
             balances[msg.sender] = balances[msg.sender].Sub(_value);
             balances[_to] = balances[_to].Add(_value);
             if(isContract(_to)){
@@ -267,7 +267,7 @@ contract CTV is ERC20 {
     * @return A bool if the transfer was a success or not
     */
     function transfer(address _to, uint _value, bytes _data) onlyUnlocked onlyPayloadSize(3 * 32) public returns(bool _success) {
-        if((balances[msg.sender] &gt; _value) &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0)){
+        if((balances[msg.sender] > _value) && _value > 0 && _to != address(0)){
             balances[msg.sender] = balances[msg.sender].Sub(_value);
             balances[_to] = balances[_to].Add(_value);
             if(isContract(_to)){
@@ -292,10 +292,10 @@ contract CTV is ERC20 {
     */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3*32) public onlyUnlocked returns (bool){
         bytes memory _empty;
-        if((_value &gt; 0)
-           &amp;&amp; (_to != address(0))
-       &amp;&amp; (_from != address(0))
-       &amp;&amp; (allowed[_from][msg.sender] &gt; _value )){
+        if((_value > 0)
+           && (_to != address(0))
+       && (_from != address(0))
+       && (allowed[_from][msg.sender] > _value )){
            balances[_from] = balances[_from].Sub(_value);
            balances[_to] = balances[_to].Add(_value);
            allowed[_from][msg.sender] = allowed[_from][msg.sender].Sub(_value);
@@ -329,7 +329,7 @@ contract CTV is ERC20 {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) public returns (bool){
-        if( (_value &gt; 0) &amp;&amp; (_spender != address(0)) &amp;&amp; (balances[msg.sender] &gt;= _value)){
+        if( (_value > 0) && (_spender != address(0)) && (balances[msg.sender] >= _value)){
             allowed[msg.sender][_spender] = _value;
             Approval(msg.sender, _spender, _value);
             return true;
@@ -345,17 +345,17 @@ contract CTV is ERC20 {
     */
     function getPrice() public view returns(uint256) {
         uint256 price;
-        if(totalSupply &lt;= 1e6*1e18)
+        if(totalSupply <= 1e6*1e18)
             price = 13330;
-        else if(totalSupply &lt;= 5e6*1e18)
+        else if(totalSupply <= 5e6*1e18)
             price = 12500;
-        else if(totalSupply &lt;= 9e6*1e18)
+        else if(totalSupply <= 9e6*1e18)
             price = 11760;
-        else if(totalSupply &lt;= 13e6*1e18)
+        else if(totalSupply <= 13e6*1e18)
             price = 11110;
-        else if(totalSupply &lt;= 17e6*1e18)
+        else if(totalSupply <= 17e6*1e18)
             price = 10520;
-        else if(totalSupply &lt;= 21e6*1e18)
+        else if(totalSupply <= 21e6*1e18)
             price = 10000;
         else{
             //zero indicates that no tokens will be allocated when total supply
@@ -367,7 +367,7 @@ contract CTV is ERC20 {
     
     function mintAndTransfer(address beneficiary, uint256 numberOfTokensWithoutDecimal, bytes comment) public onlyOwner {
         uint256 tokensToBeTransferred = numberOfTokensWithoutDecimal*1e18;
-        require(totalSupply.Add(tokensToBeTransferred) &lt;= MAXCAP);
+        require(totalSupply.Add(tokensToBeTransferred) <= MAXCAP);
         totalSupply = totalSupply.Add(tokensToBeTransferred);
         balances[beneficiary] = balances[beneficiary].Add(tokensToBeTransferred);
         Transfer(owner, beneficiary ,tokensToBeTransferred, comment);
@@ -378,7 +378,7 @@ contract CTV is ERC20 {
     *
     */
     function pauseSale() public onlyOwner{
-        assert(saleRunning &amp;&amp; startTime &gt; 0 &amp;&amp; now &lt;= endTime);
+        assert(saleRunning && startTime > 0 && now <= endTime);
         saleRunning = false;
     }
 
@@ -387,7 +387,7 @@ contract CTV is ERC20 {
     *
     */
     function resumeSale() public onlyOwner{
-        assert(!saleRunning &amp;&amp; startTime &gt; 0 &amp;&amp; now &lt;= endTime);
+        assert(!saleRunning && startTime > 0 && now <= endTime);
         saleRunning = true;
     }
 
@@ -420,12 +420,12 @@ contract CTV is ERC20 {
         if(referredBy[referredBy[msg.sender]] != address(0)){
             //give 1% tokens to 2nd generation referrer
             balances[referredBy[referredBy[msg.sender]]] = balances[referredBy[referredBy[msg.sender]]].Add(tokensBought/100);
-            if(tokensSuppliedFromReferral.Add(tokensBought/100) &lt; MAX_REFERRAL_TOKENS)
+            if(tokensSuppliedFromReferral.Add(tokensBought/100) < MAX_REFERRAL_TOKENS)
                 tokensSuppliedFromReferral = tokensSuppliedFromReferral.Add(tokensBought/100);
             totalSupply = totalSupply.Add(tokensBought/100);
         }
         
-        assert(totalSupply &lt;= MAXCAP);
+        assert(totalSupply <= MAXCAP);
         totalWeiReceived = totalWeiReceived.Add(msg.value);
         ethCollector.transfer(msg.value);
     }
@@ -433,13 +433,13 @@ contract CTV is ERC20 {
     /**
      * @dev This function is used to register a referral.
      * Whoever calls this function, is telling contract,
-     * that &quot;I was referred by referredByAddress&quot;
+     * that "I was referred by referredByAddress"
      * Whenever I am going to buy tokens, 10% will be awarded to referredByAddress
      * 
      * @param referredByAddress The address of person who referred the person calling this function
      */
     function registerReferral (address referredByAddress) public {
-        require(msg.sender != referredByAddress &amp;&amp; referredByAddress != address(0));
+        require(msg.sender != referredByAddress && referredByAddress != address(0));
         referredBy[msg.sender] = referredByAddress;
     }
     
@@ -449,7 +449,7 @@ contract CTV is ERC20 {
      * @param I_referred_this_person The person who referred the above address
      */
     function referralRegistration(address heWasReferred, address I_referred_this_person) public onlyOwner {
-        require(heWasReferred != address(0) &amp;&amp; I_referred_this_person != address(0));
+        require(heWasReferred != address(0) && I_referred_this_person != address(0));
         referredBy[heWasReferred] = I_referred_this_person;
     }
 
@@ -459,7 +459,7 @@ contract CTV is ERC20 {
     function finalize() public onlyOwner {
         //Make sure Sale is running
         assert(saleRunning);
-        if(MAXCAP.Sub(totalSupply) &lt;= 1 ether || now &gt; endTime){
+        if(MAXCAP.Sub(totalSupply) <= 1 ether || now > endTime){
             //now sale can be finished
             saleRunning = false;
         }
@@ -472,7 +472,7 @@ contract CTV is ERC20 {
         // 4: Everyone refunded
 
         //Checks if the fundraising goal is reached in crowdsale or not
-        if (totalWeiReceived &lt; SOFTCAP)
+        if (totalWeiReceived < SOFTCAP)
             refundStatus = 2;
         else
             refundStatus = 1;
@@ -490,12 +490,12 @@ contract CTV is ERC20 {
     */
     function refund() public onlyOwner {
         assert(refundStatus == 2 || refundStatus == 3);
-        uint batchSize = countInvestorsRefunded.Add(30) &lt; countTotalInvestors ? countInvestorsRefunded.Add(30): countTotalInvestors;
-        for(uint i=countInvestorsRefunded.Add(1); i &lt;= batchSize; i++){
+        uint batchSize = countInvestorsRefunded.Add(30) < countTotalInvestors ? countInvestorsRefunded.Add(30): countTotalInvestors;
+        for(uint i=countInvestorsRefunded.Add(1); i <= batchSize; i++){
             address investorAddress = investorList[i];
             Investor storage investorStruct = investors[investorAddress];
             //If purchase has been made during CrowdSale
-            if(investorStruct.tokensPurchased &gt; 0 &amp;&amp; investorStruct.tokensPurchased &lt;= balances[investorAddress]){
+            if(investorStruct.tokensPurchased > 0 && investorStruct.tokensPurchased <= balances[investorAddress]){
                 //return everything
                 investorAddress.transfer(investorStruct.weiReceived);
                 //Reduce totalWeiReceived

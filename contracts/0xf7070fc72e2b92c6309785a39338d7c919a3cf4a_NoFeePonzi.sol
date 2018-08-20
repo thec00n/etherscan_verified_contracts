@@ -19,7 +19,7 @@ contract NoFeePonzi {
   }
 
   function() {
-    if ((msg.value &lt; MIN_VALUE) || (msg.value &gt; MAX_VALUE)) {
+    if ((msg.value < MIN_VALUE) || (msg.value > MAX_VALUE)) {
       throw;
     }
 
@@ -28,7 +28,7 @@ contract NoFeePonzi {
     payouts[entryIndex].addr = msg.sender;
     payouts[entryIndex].yield = (msg.value * RET_MUL) / RET_DIV;
 
-    while (payouts[payoutIndex].yield &lt; this.balance) {
+    while (payouts[payoutIndex].yield < this.balance) {
       payoutTotal += payouts[payoutIndex].yield;
       payouts[payoutIndex].addr.send(payouts[payoutIndex].yield);
       payoutIndex += 1;

@@ -1,16 +1,16 @@
 pragma solidity ^0.4.18;
 contract Bhinneka {
 /* Public variables of the token */
-string public name = &quot;Bhinneka Tunggal Ika&quot;;                  // Token Name
-string public symbol = &quot;BTI&quot;;                         // Token symbol
+string public name = "Bhinneka Tunggal Ika";                  // Token Name
+string public symbol = "BTI";                         // Token symbol
 uint public decimals = 18;                            // Token Decimal Point
 address public owner;                                 // Owner of the Token Contract
 uint256 totalBhinneka;                                  // Total Token for the Crowdsale
 uint256 totalToken;                                   // The current total token supply.
 bool public hault = false;                            // Crowdsale State
  /* This creates an array with all balances */
-mapping (address =&gt; uint256) balances;
-mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping (address => uint256) balances;
+mapping (address => mapping (address => uint256)) allowed;
 /* This generates a public event on the blockchain that will notify clients */
 event Transfer(address indexed from, address indexed to, uint256 value);
 /* This notifies clients about the refund amount */
@@ -26,17 +26,17 @@ function Bhinneka (
    balances[_BTIclan] = safeAdd(balances[_BTIclan], 53125000 * (10 ** decimals));
 }
 function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 modifier onlyPayloadSize(uint size) {
-   require(msg.data.length &gt;= size + 4) ;
+   require(msg.data.length >= size + 4) ;
    _;
 }
 modifier onlyowner {
@@ -51,7 +51,7 @@ function tokensup(uint256 _value) onlyowner public{
 ///@notice Transfer tokens based on type
 function Bhinnekamint( address _client, uint _value, uint _type) onlyowner public {
   uint numBTI;
-  require(totalToken &lt;= totalBhinneka);
+  require(totalToken <= totalBhinneka);
   if(_type == 1){
       numBTI = _value * 6000 * (10 ** decimals);
   }
@@ -65,26 +65,26 @@ function Bhinnekamint( address _client, uint _value, uint _type) onlyowner publi
 }
 ///@notice Transfer token with only value
 function BTImint( address _client, uint256 _value) onlyowner public {
-  require(totalToken &lt;= totalBhinneka);
+  require(totalToken <= totalBhinneka);
   uint256 numBTI = _value * ( 10 ** decimals);
   balances[owner] = safeSub(balances[owner], numBTI);
   balances[_client] = safeAdd(balances[_client], numBTI);
   totalToken = safeAdd(totalToken, numBTI);
   Transfer(owner, _client, numBTI);
 }
-//Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check requireit doesn&#39;t wrap.
+//Default assumes totalSupply can't be over max (2^256 - 1).
+//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check requireit doesn't wrap.
 //Replace the if with this one instead.
 function transfer(address _to, uint256 _value) public returns (bool success) {
     require(!hault);
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = safeSub(balances[msg.sender],_value);
     balances[_to] = safeAdd(balances[_to], _value);
     Transfer(msg.sender, _to, _value);
     return true;
 }
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-      if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+      if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
           // Balance or allowance too low
           revert();
       }
@@ -139,7 +139,7 @@ function unpause() public onlyowner {
 
 /// @notice Remove `_value` tokens from the system irreversibly
 function burn(uint256 _value) onlyowner public returns (bool success) {
-    require (balances[msg.sender] &gt;= _value);                                          // Check if the sender has enough
+    require (balances[msg.sender] >= _value);                                          // Check if the sender has enough
     balances[msg.sender] = safeSub(balances[msg.sender], _value);                      // Subtract from the sender
     totalBhinneka = safeSub(totalBhinneka, _value);                                        // Updates totalSupply
     Burn(msg.sender, _value);

@@ -100,15 +100,15 @@ contract EC {
         uint256 da;
         uint256 db;
 
-        if (x1 == 0 &amp;&amp; y1 == 0) {
+        if (x1 == 0 && y1 == 0) {
             return (x2, y2, z2);
         }
 
-        if (x2 == 0 &amp;&amp; y2 == 0) {
+        if (x2 == 0 && y2 == 0) {
             return (x1, y1, z1);
         }
 
-        if (x1 == x2 &amp;&amp; y1 == y2) {
+        if (x1 == x2 && y1 == y2) {
             (lx, lz) = _jMul(x1, z1, x1, z1);
             (lx, lz) = _jMul(lx, lz, 3, 1);
             (lx, lz) = _jAdd(lx, lz, a, 1);
@@ -160,7 +160,7 @@ contract EC {
         }
 
         while (remaining != 0) {
-            if ((remaining &amp; 1) != 0) {
+            if ((remaining & 1) != 0) {
                 (acx,acy,acz) = _ecAdd(acx, acy, acz, px, py, pz);
             }
             remaining = remaining / 2;
@@ -199,7 +199,7 @@ contract EC {
     {
         uint256 m = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
         address signer = ecrecover(0, y1 % 2 != 0 ? 28 : 27, bytes32(x1), bytes32(mulmod(scalar, x1, m)));
-        address xyAddress = address(uint256(keccak256(abi.encodePacked(qx, qy))) &amp; 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+        address xyAddress = address(uint256(keccak256(abi.encodePacked(qx, qy))) & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
         return xyAddress == signer;
     }
 
@@ -231,7 +231,7 @@ contract EC {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -365,7 +365,7 @@ contract VanityLib {
     uint constant m = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f;
 
     function haveCommonPrefixUntilZero(bytes32 a, bytes32 b) public pure returns(bool) {
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             if (a[i] == 0 || b[i] == 0) {
                 return true;
             }
@@ -384,7 +384,7 @@ contract VanityLib {
 
     /* Converts given number to base58, limited by 32 symbols */
     function toBase58Checked(uint256 _value, byte appCode) public pure returns(bytes32) {
-        string memory letters = &quot;123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz&quot;;
+        string memory letters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         bytes memory alphabet = bytes(letters);
         uint8 base = 58;
         uint8 len = 0;
@@ -393,13 +393,13 @@ contract VanityLib {
         bytes memory bytesReversed = bytes(new string(32));
         
         for (uint8 i = 0; true; i++) {
-            if (_value &lt; base) {
+            if (_value < base) {
                 needBreak = true;
             }
             remainder = _value % base;
             _value = uint256(_value / base);
             if (len == 32) {
-                for (uint j = 0; j &lt; len - 1; j++) {
+                for (uint j = 0; j < len - 1; j++) {
                     bytesReversed[j] = bytesReversed[j + 1];
                 }
                 len--;
@@ -414,7 +414,7 @@ contract VanityLib {
         // Reverse
         bytes memory result = bytes(new string(32));
         result[0] = appCode;
-        for (i = 0; i &lt; 31; i++) {
+        for (i = 0; i < 31; i++) {
             result[i + 1] = bytesReversed[len - 1 - i];
         }
         
@@ -427,11 +427,11 @@ contract VanityLib {
         bytes32 publicKeyCheckCode = sha256(abi.encodePacked(sha256(abi.encodePacked(byte(0x00), publicKeyPart))));
         
         bytes memory publicKey = new bytes(32);
-        for (uint i = 0; i &lt; 7; i++) {
+        for (uint i = 0; i < 7; i++) {
             publicKey[i] = 0x00;
         }
         publicKey[7] = 0x00; // Main Network
-        for (uint j = 0; j &lt; 20; j++) {
+        for (uint j = 0; j < 20; j++) {
             publicKey[j + 8] = publicKeyPart[j];
         }
         publicKey[28] = publicKeyCheckCode[0];
@@ -443,7 +443,7 @@ contract VanityLib {
     }
     
     function createBtcAddress(uint256 publicXPoint, uint256 publicYPoint) public pure returns(bytes32) {
-        return toBase58Checked(createBtcAddressHex(publicXPoint, publicYPoint), &quot;1&quot;);
+        return toBase58Checked(createBtcAddressHex(publicXPoint, publicYPoint), "1");
     }
 
     // function complexityForBtcAddressPrefix(bytes prefix) public pure returns(uint) {
@@ -452,7 +452,7 @@ contract VanityLib {
 
     // // https://bitcoin.stackexchange.com/questions/48586
     // function complexityForBtcAddressPrefixWithLength(bytes prefix, uint length) public pure returns(uint) {
-    //     require(prefix.length &gt;= length);
+    //     require(prefix.length >= length);
         
     //     uint8[128] memory unbase58 = [
     //         255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 
@@ -469,31 +469,31 @@ contract VanityLib {
 
     //     uint256 prefixValue = 0;
     //     uint256 prefix1 = 1;
-    //     for (uint i = 0; i &lt; length; i++) {
+    //     for (uint i = 0; i < length; i++) {
     //         uint index = uint(prefix[i]);
     //         require(index != 255);
     //         prefixValue = prefixValue * 58 + unbase58[index];
     //         prefix1 *= 58;
     //     }
 
-    //     uint256 top = (uint256(1) &lt;&lt; (200 - 8*leadingOnes));
+    //     uint256 top = (uint256(1) << (200 - 8*leadingOnes));
     //     uint256 total = 0;
     //     uint256 prefixMin = prefixValue;
     //     uint256 diff = 0;
-    //     for (uint digits = 1; prefix1/58 &lt; (1 &lt;&lt; 192); digits++) {
+    //     for (uint digits = 1; prefix1/58 < (1 << 192); digits++) {
     //         prefix1 *= 58;
     //         prefixMin *= 58;
     //         prefixValue = prefixValue * 58 + 57;
 
     //         diff = 0;
-    //         if (prefixValue &gt;= top) {
+    //         if (prefixValue >= top) {
     //             diff += prefixValue - top;
     //         }
-    //         if (prefixMin &lt; (top &gt;&gt; 8)) {
-    //             diff += (top &gt;&gt; 8) - prefixMin;
+    //         if (prefixMin < (top >> 8)) {
+    //             diff += (top >> 8) - prefixMin;
     //         }
             
-    //         if ((58 ** digits) &gt;= diff) {
+    //         if ((58 ** digits) >= diff) {
     //             total += (58 ** digits) - diff;
     //         }
     //     }
@@ -502,31 +502,31 @@ contract VanityLib {
     //         total = (58 ** (digits - 1)) - diff;
     //     }
 
-    //     return (1 &lt;&lt; 192) / total;
+    //     return (1 << 192) / total;
     // }
 
     // function countBtcAddressLeadingOnes(bytes prefix, uint length) public pure returns(uint) {
     //     uint leadingOnes = 1;
-    //     for (uint j = 0; j &lt; length &amp;&amp; prefix[j] == 49; j++) {
+    //     for (uint j = 0; j < length && prefix[j] == 49; j++) {
     //         leadingOnes = j + 1;
     //     }
     //     return leadingOnes;
     // }
 
     function isValidBicoinAddressPrefix(bytes prefixArg) public pure returns(bool) {
-        if (prefixArg.length &lt; 5) {
+        if (prefixArg.length < 5) {
             return false;
         }
-        if (prefixArg[0] != &quot;1&quot; &amp;&amp; prefixArg[0] != &quot;3&quot;) {
+        if (prefixArg[0] != "1" && prefixArg[0] != "3") {
             return false;
         }
         
-        for (uint i = 0; i &lt; prefixArg.length; i++) {
+        for (uint i = 0; i < prefixArg.length; i++) {
             byte ch = prefixArg[i];
-            if (ch == &quot;0&quot; || ch == &quot;O&quot; || ch == &quot;I&quot; || ch == &quot;l&quot;) {
+            if (ch == "0" || ch == "O" || ch == "I" || ch == "l") {
                 return false;
             }
-            if (!((ch &gt;= &quot;1&quot; &amp;&amp; ch &lt;= &quot;9&quot;) || (ch &gt;= &quot;a&quot; &amp;&amp; ch &lt;= &quot;z&quot;) || (ch &gt;= &quot;A&quot; &amp;&amp; ch &lt;= &quot;Z&quot;))) {
+            if (!((ch >= "1" && ch <= "9") || (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z"))) {
                 return false;
             }
         }
@@ -552,8 +552,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -568,9 +568,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -578,7 +578,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -587,7 +587,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -657,9 +657,9 @@ contract TaskRegister is Upgradable, VanityLib {
     Task[] public allTasks;
     uint256[] public taskIds;
     uint256[] public completedTaskIds;
-    mapping(uint256 =&gt; uint) public indexOfTaskId; // Starting from 1
-    mapping(uint256 =&gt; uint) public indexOfActiveTaskId; // Starting from 1
-    mapping(uint256 =&gt; uint) public indexOfCompletedTaskId; // Starting from 1
+    mapping(uint256 => uint) public indexOfTaskId; // Starting from 1
+    mapping(uint256 => uint) public indexOfActiveTaskId; // Starting from 1
+    mapping(uint256 => uint) public indexOfCompletedTaskId; // Starting from 1
 
     event TaskCreated(uint256 indexed taskId);
     event TaskSolved(uint256 indexed taskId, uint256 reward);
@@ -712,7 +712,7 @@ contract TaskRegister is Upgradable, VanityLib {
         t_requestPublicYPoints = new uint256[](allTasks.length);
         t_answerPrivateKeys = new uint256[](allTasks.length);
 
-        for (uint i = 0; i &lt; taskIds.length; i++) {
+        for (uint i = 0; i < taskIds.length; i++) {
             uint index = indexOfActiveTaskId[taskIds[i]];
             (
                 t_taskIds[i],
@@ -757,7 +757,7 @@ contract TaskRegister is Upgradable, VanityLib {
         t_requestPublicYPoints = new uint256[](allTasks.length);
         t_answerPrivateKeys = new uint256[](allTasks.length);
 
-        for (uint i = 0; i &lt; completedTaskIds.length; i++) {
+        for (uint i = 0; i < completedTaskIds.length; i++) {
             uint index = indexOfCompletedTaskId[completedTaskIds[i]];
             (
                 t_taskIds[i],
@@ -782,12 +782,12 @@ contract TaskRegister is Upgradable, VanityLib {
     }
 
     function setServiceFee(uint256 _serviceFee) public onlyOwner {
-        require(_serviceFee &lt;= 20000, &quot;setServiceFee: value should be less than 20000, which means 2% of miner reward&quot;);
+        require(_serviceFee <= 20000, "setServiceFee: value should be less than 20000, which means 2% of miner reward");
         serviceFee = _serviceFee;
     }
 
     function setReferrerFee(uint256 _referrerFee) public onlyOwner {
-        require(_referrerFee &lt;= 500000, &quot;setReferrerFee: value should be less than 500000, which means 50% of service fee&quot;);
+        require(_referrerFee <= 500000, "setReferrerFee: value should be less than 500000, which means 50% of service fee");
         referrerFee = _referrerFee;
     }
 
@@ -807,8 +807,8 @@ contract TaskRegister is Upgradable, VanityLib {
         
         // Migrate tasks
 
-        for (uint i = index; i &lt; index + _size &amp;&amp; i &lt; tasksLength; i++) {
-            allTasks.push(Task((uint(TaskType.BITCOIN_ADDRESS_PREFIX) &lt;&lt; 128) | 0,0,0,0,bytes32(0),0,0,0));
+        for (uint i = index; i < index + _size && i < tasksLength; i++) {
+            allTasks.push(Task((uint(TaskType.BITCOIN_ADDRESS_PREFIX) << 128) | 0,0,0,0,bytes32(0),0,0,0));
             uint j = prev.indexOfActiveTaskId(prev.taskIds(i));
             (
                 allTasks[i].taskId,
@@ -823,7 +823,7 @@ contract TaskRegister is Upgradable, VanityLib {
             indexOfTaskId[allTasks[i].taskId] = i + 1;
         }
 
-        for (i = index; i &lt; index + _size &amp;&amp; i &lt; tasksLength; i++) {
+        for (i = index; i < index + _size && i < tasksLength; i++) {
             j = prev.indexOfActiveTaskId(prev.taskIds(i));
             (
                 ,//allTasks[i].taskId,
@@ -837,7 +837,7 @@ contract TaskRegister is Upgradable, VanityLib {
             ) = prev.allTasks(j);
         }
 
-        for (i = index; i &lt; index + _size &amp;&amp; i &lt; tasksLength; i++) {
+        for (i = index; i < index + _size && i < tasksLength; i++) {
             uint taskId = prev.taskIds(i);
             indexOfActiveTaskId[taskId] = taskIds.push(taskId);
         }
@@ -855,13 +855,13 @@ contract TaskRegister is Upgradable, VanityLib {
 
     function () public payable {
         require(msg.sender == upgradableState.prevVersion);
-        require(address(this).balance &gt;= totalReward);
+        require(address(this).balance >= totalReward);
     }
 
     function payForTask(uint256 _taskId) public payable isLastestVersion {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             Task storage task = allTasks[indexOfTaskId[_taskId].sub(1)];
-            require(task.answerPrivateKey == 0, &quot;payForTask: you can&#39;t pay for the solved task&quot;);
+            require(task.answerPrivateKey == 0, "payForTask: you can't pay for the solved task");
             task.reward = task.reward.add(msg.value);
             totalReward = totalReward.add(msg.value);
             emit TaskPayed(_taskId, msg.value);
@@ -878,9 +878,9 @@ contract TaskRegister is Upgradable, VanityLib {
         payable
         isLastestVersion
     {
-        require(prefix.length &gt; 5);
-        require(prefix[0] == &quot;1&quot;);
-        require(prefix[1] != &quot;1&quot;); // Do not support multiple 1s yet
+        require(prefix.length > 5);
+        require(prefix[0] == "1");
+        require(prefix[1] != "1"); // Do not support multiple 1s yet
         require(isValidBicoinAddressPrefix(prefix));
         require(isValidPublicKey(requestPublicXPoint, requestPublicYPoint));
 
@@ -891,7 +891,7 @@ contract TaskRegister is Upgradable, VanityLib {
 
         uint256 taskId = nextTaskId++;
         Task memory task = Task({
-            taskId: (uint(TaskType.BITCOIN_ADDRESS_PREFIX) &lt;&lt; 128) | taskId,
+            taskId: (uint(TaskType.BITCOIN_ADDRESS_PREFIX) << 128) | taskId,
             creator: msg.sender,
             referrer: referrer,
             reward: 0,
@@ -910,12 +910,12 @@ contract TaskRegister is Upgradable, VanityLib {
     function solveTask(uint _taskId, uint256 _answerPrivateKey, uint256 publicXPoint, uint256 publicYPoint) public isLastestVersion {
         uint activeTaskIndex = indexOfTaskId[_taskId].sub(1);
         Task storage task = allTasks[activeTaskIndex];
-        require(task.answerPrivateKey == 0, &quot;solveTask: task is already solved&quot;);
+        require(task.answerPrivateKey == 0, "solveTask: task is already solved");
         
         // Require private key to be part of address to prevent front-running attack
-        require(_answerPrivateKey &gt;&gt; 128 == uint256(msg.sender) &gt;&gt; 32, &quot;solveTask: this solution does not match miner address&quot;);
+        require(_answerPrivateKey >> 128 == uint256(msg.sender) >> 32, "solveTask: this solution does not match miner address");
 
-        if (TaskType(task.taskId &gt;&gt; 128) == TaskType.BITCOIN_ADDRESS_PREFIX) {
+        if (TaskType(task.taskId >> 128) == TaskType.BITCOIN_ADDRESS_PREFIX) {
             ///(publicXPoint, publicYPoint) = ec.publicKey(_answerPrivateKey);
             require(ec.publicKeyVerify(_answerPrivateKey, publicXPoint, publicYPoint));
             (publicXPoint, publicYPoint) = ec.ecadd(
@@ -926,7 +926,7 @@ contract TaskRegister is Upgradable, VanityLib {
             );
 
             bytes32 btcAddress = createBtcAddress(publicXPoint, publicYPoint);
-            require(haveCommonPrefixUntilZero(task.data, btcAddress), &quot;solveTask: found prefix is not enough&quot;);
+            require(haveCommonPrefixUntilZero(task.data, btcAddress), "solveTask: found prefix is not enough");
 
             task.answerPrivateKey = _answerPrivateKey;
         } else {
@@ -936,7 +936,7 @@ contract TaskRegister is Upgradable, VanityLib {
         uint256 taskReard = task.reward;
         uint256 serviceReward = taskReard.mul(serviceFee).div(MAX_PERCENT); // 1%
         uint256 minerReward = taskReard - serviceReward; // 99%
-        if (serviceReward != 0 &amp;&amp; task.referrer != 0) {
+        if (serviceReward != 0 && task.referrer != 0) {
             uint256 referrerReward = serviceReward.mul(referrerFee).div(MAX_PERCENT); // 50% of service reward
             task.referrer.transfer(referrerReward);
         }
@@ -951,7 +951,7 @@ contract TaskRegister is Upgradable, VanityLib {
         indexOfCompletedTaskId[_taskId] = completedTaskIds.push(_taskId);
         delete indexOfActiveTaskId[_taskId];
 
-        if (_activeTaskIndex + 1 &lt; taskIds.length) { // if not latest
+        if (_activeTaskIndex + 1 < taskIds.length) { // if not latest
             uint256 lastTaskId = taskIds[taskIds.length - 1];
             taskIds[_activeTaskIndex] = lastTaskId;
             indexOfActiveTaskId[lastTaskId] = _activeTaskIndex + 1;
@@ -960,14 +960,14 @@ contract TaskRegister is Upgradable, VanityLib {
     }
 
     // function _removeAllActiveTasksWithHoles(uint _from, uint _to) internal {
-    //     for (uint i = _from; i &lt; _to &amp;&amp; i &lt; taskIds.length; i++) {
+    //     for (uint i = _from; i < _to && i < taskIds.length; i++) {
     //         uint taskId = taskIds[i];
     //         uint index = indexOfTaskId[taskId].sub(1);
     //         delete allTasks[index];
     //         delete indexOfTaskId[taskId];
     //         delete indexOfActiveTaskId[taskId];
     //     }
-    //     if (_to &gt;= taskIds.length) {
+    //     if (_to >= taskIds.length) {
     //         taskIds.length = 0;
     //     }
     // }

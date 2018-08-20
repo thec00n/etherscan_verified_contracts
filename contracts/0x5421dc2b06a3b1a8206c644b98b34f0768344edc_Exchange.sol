@@ -60,24 +60,24 @@ contract DSAuth is DSAuthEvents {
 contract Exchange is DSAuth {
 
     ERC20 public daiToken;
-    mapping(address =&gt; uint) public dai;
-    mapping(address =&gt; uint) public eth;
+    mapping(address => uint) public dai;
+    mapping(address => uint) public eth;
 
-    mapping(address =&gt; uint) public totalEth;
-    mapping(address =&gt; uint) public totalDai;
+    mapping(address => uint) public totalEth;
+    mapping(address => uint) public totalDai;
 
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public callsOwned;
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public putsOwned;
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public callsSold;
-    mapping(bytes32 =&gt; mapping(address =&gt; uint)) public putsSold;
+    mapping(bytes32 => mapping(address => uint)) public callsOwned;
+    mapping(bytes32 => mapping(address => uint)) public putsOwned;
+    mapping(bytes32 => mapping(address => uint)) public callsSold;
+    mapping(bytes32 => mapping(address => uint)) public putsSold;
 
-    mapping(bytes32 =&gt; uint) public callsAssigned;
-    mapping(bytes32 =&gt; uint) public putsAssigned;
-    mapping(bytes32 =&gt; uint) public callsExercised;
-    mapping(bytes32 =&gt; uint) public putsExercised;
+    mapping(bytes32 => uint) public callsAssigned;
+    mapping(bytes32 => uint) public putsAssigned;
+    mapping(bytes32 => uint) public callsExercised;
+    mapping(bytes32 => uint) public putsExercised;
 
-    mapping(address =&gt; mapping(bytes32 =&gt; bool)) public cancelled;
-    mapping(address =&gt; mapping(bytes32 =&gt; uint)) public filled;
+    mapping(address => mapping(bytes32 => bool)) public cancelled;
+    mapping(address => mapping(bytes32 => uint)) public filled;
 
     // fee values are actually in DAI, ether is just a keyword
     uint public flatFee       = 7 ether;
@@ -86,7 +86,7 @@ contract Exchange is DSAuth {
     uint public settlementFee = 20 ether;
     uint public feesCollected = 0;
 
-    string precisionError = &quot;Precision&quot;;
+    string precisionError = "Precision";
 
     constructor(address daiAddress) public {
         require(daiAddress != 0x0);
@@ -122,7 +122,7 @@ contract Exchange is DSAuth {
 
     function withdrawDai(uint amount, address to) public {
         require(
-            to != 0x0 &amp;&amp;
+            to != 0x0 &&
             daiToken.transfer(to, amount)
         );
         _subDai(amount, msg.sender);
@@ -131,7 +131,7 @@ contract Exchange is DSAuth {
 
     function depositDaiFor(uint amount, address account) public {
         require(
-            account != 0x0 &amp;&amp;
+            account != 0x0 &&
             daiToken.transferFrom(msg.sender, this, amount)
         );
         _addDai(amount, account);
@@ -144,7 +144,7 @@ contract Exchange is DSAuth {
     }
 
     function _subEth(uint amount, address account) private {
-        require(eth[account] &gt;= amount);
+        require(eth[account] >= amount);
         eth[account] -= amount;
         totalEth[account] -= amount;
     }
@@ -155,7 +155,7 @@ contract Exchange is DSAuth {
     }
 
     function _subDai(uint amount, address account) private {
-        require(dai[account] &gt;= amount);
+        require(dai[account] >= amount);
         dai[account] -= amount;
         totalDai[account] -= amount;
     }
@@ -174,10 +174,10 @@ contract Exchange is DSAuth {
         settlementFee = _settlementFee;
 
         require(
-            contractFee &lt; 5 ether &amp;&amp;
-            flatFee &lt; 6.95 ether &amp;&amp;
-            exerciseFee &lt; 20 ether &amp;&amp;
-            settlementFee &lt; 20 ether
+            contractFee < 5 ether &&
+            flatFee < 6.95 ether &&
+            exerciseFee < 20 ether &&
+            settlementFee < 20 ether
         );
     }
 
@@ -358,7 +358,7 @@ contract Exchange is DSAuth {
         uint premium = amount * price / 1 ether;
         _subDai(premium, buyer);
 
-        require(callsOwned[series][buyer] + amount &gt;= callsOwned[series][buyer]);
+        require(callsOwned[series][buyer] + amount >= callsOwned[series][buyer]);
         callsOwned[series][buyer] += amount;
         emit BuyCallToOpen(buyer, amount, expiration, price, strike);
     }
@@ -369,7 +369,7 @@ contract Exchange is DSAuth {
 
         _subDai(premium, buyer);
         eth[buyer] += amount;
-        require(callsSold[series][buyer] &gt;= amount);
+        require(callsSold[series][buyer] >= amount);
         callsSold[series][buyer] -= amount;
         emit BuyCallToClose(buyer, amount, expiration, price, strike);
     }
@@ -380,8 +380,8 @@ contract Exchange is DSAuth {
 
         _addDai(premium, seller);
         require(
-            eth[seller] &gt;= amount &amp;&amp;
-            callsSold[series][seller] + amount &gt;= callsSold[series][seller]
+            eth[seller] >= amount &&
+            callsSold[series][seller] + amount >= callsSold[series][seller]
         );
         eth[seller] -= amount;
         callsSold[series][seller] += amount;
@@ -393,7 +393,7 @@ contract Exchange is DSAuth {
         uint premium = amount * price / 1 ether;
 
         _addDai(premium, seller);
-        require(callsOwned[series][seller] &gt;= amount);
+        require(callsOwned[series][seller] >= amount);
         callsOwned[series][seller] -= amount;
         emit SellCallToClose(seller, amount, expiration, price, strike);
     }
@@ -408,10 +408,10 @@ contract Exchange is DSAuth {
         bytes32 series = keccak256(expiration, strike);
 
         require(
-            now &lt; expiration &amp;&amp;
-            amount % 1 finney == 0 &amp;&amp;
-            callsOwned[series][msg.sender] &gt;= amount &amp;&amp;
-            amount &gt; 0
+            now < expiration &&
+            amount % 1 finney == 0 &&
+            callsOwned[series][msg.sender] >= amount &&
+            amount > 0
         );
 
         callsOwned[series][msg.sender] -= amount;
@@ -429,15 +429,15 @@ contract Exchange is DSAuth {
         bytes32 series = keccak256(expiration, strike);
 
         require(
-            (msg.sender == writer || isAuthorized(msg.sender, msg.sig)) &amp;&amp;
-            now &gt; expiration &amp;&amp;
-            callsSold[series][writer] &gt; 0
+            (msg.sender == writer || isAuthorized(msg.sender, msg.sig)) &&
+            now > expiration &&
+            callsSold[series][writer] > 0
         );
 
-        if (callsAssigned[series] &lt; callsExercised[series]) {
+        if (callsAssigned[series] < callsExercised[series]) {
             uint maximum = callsSold[series][writer];
             uint needed = callsExercised[series] - callsAssigned[series];
-            uint assignment = needed &gt; maximum ? maximum : needed;
+            uint assignment = needed > maximum ? maximum : needed;
 
             totalEth[writer] -= assignment;
             callsAssigned[series] += assignment;
@@ -603,7 +603,7 @@ contract Exchange is DSAuth {
         uint premium = amount * price / 1 ether;
 
         _subDai(premium, buyer);
-        require(putsOwned[series][buyer] + amount &gt;= putsOwned[series][buyer]);
+        require(putsOwned[series][buyer] + amount >= putsOwned[series][buyer]);
         putsOwned[series][buyer] += amount;
         emit BuyPutToOpen(buyer, amount, expiration, price, strike);
     }
@@ -614,7 +614,7 @@ contract Exchange is DSAuth {
 
         dai[buyer] += strike * amount / 1 ether;
         _subDai(premium, buyer);
-        require(putsSold[series][buyer] &gt;= amount);
+        require(putsSold[series][buyer] >= amount);
         putsSold[series][buyer] -= amount;
         emit BuyPutToClose(buyer, amount, expiration, price, strike);
     }
@@ -625,7 +625,7 @@ contract Exchange is DSAuth {
         uint escrow = strike * amount / 1 ether;
 
         _addDai(premium, seller);
-        require(dai[seller] &gt;= escrow);
+        require(dai[seller] >= escrow);
         dai[seller] -= escrow;
         putsSold[series][seller] += amount;
         emit SellPutToOpen(seller, amount, expiration, price, strike);
@@ -636,7 +636,7 @@ contract Exchange is DSAuth {
         uint premium = amount * price / 1 ether;
 
         _addDai(premium, seller);
-        require(putsOwned[series][seller] &gt;= amount);
+        require(putsOwned[series][seller] >= amount);
         putsOwned[series][seller] -= amount;
         emit SellPutToClose(seller, amount, expiration, price, strike);
     }
@@ -651,10 +651,10 @@ contract Exchange is DSAuth {
         bytes32 series = keccak256(expiration, strike);
 
         require(
-            now &lt; expiration &amp;&amp;
-            amount % 1 finney == 0 &amp;&amp;
-            putsOwned[series][msg.sender] &gt;= amount &amp;&amp;
-            amount &gt; 0
+            now < expiration &&
+            amount % 1 finney == 0 &&
+            putsOwned[series][msg.sender] >= amount &&
+            amount > 0
         );
 
         putsOwned[series][msg.sender] -= amount;
@@ -673,15 +673,15 @@ contract Exchange is DSAuth {
         bytes32 series = keccak256(expiration, strike);
 
         require(
-            (msg.sender == writer || isAuthorized(msg.sender, msg.sig)) &amp;&amp;
-            now &gt; expiration &amp;&amp;
-            putsSold[series][writer] &gt; 0
+            (msg.sender == writer || isAuthorized(msg.sender, msg.sig)) &&
+            now > expiration &&
+            putsSold[series][writer] > 0
         );
 
-        if (putsAssigned[series] &lt; putsExercised[series]) {
+        if (putsAssigned[series] < putsExercised[series]) {
             uint maximum = putsSold[series][writer];
             uint needed = putsExercised[series] - putsAssigned[series];
-            uint assignment = maximum &gt; needed ? needed : maximum;
+            uint assignment = maximum > needed ? needed : maximum;
 
             totalDai[writer] -= assignment * strike / 1 ether;
             putsSold[series][writer] -= assignment;
@@ -716,7 +716,7 @@ contract Exchange is DSAuth {
         uint8 v
     ) private returns (address) {
         bytes32 h = keccak256(action, expiration, nonce, price, size, strike, validUntil, this);
-        address maker = ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, h), v, r, s);
+        address maker = ecrecover(keccak256("\x19Ethereum Signed Message:\n32", h), v, r, s);
         _validateOrder(amount, expiration, h, maker, price, validUntil, size, strike);
         return maker;
     }
@@ -724,19 +724,19 @@ contract Exchange is DSAuth {
     event TakeOrder(address indexed account, address maker, uint amount, bytes32 h);
     function _validateOrder(uint amount, uint expiration, bytes32 h, address maker, uint price, uint validUntil, uint size, uint strike) internal {
         require(
-            strike % 1 ether == 0 &amp;&amp;
-            amount % 1 finney == 0 &amp;&amp;
-            price % 1 finney == 0 &amp;&amp;
-            expiration % 86400 == 0 &amp;&amp;
-            cancelled[maker][h] == false &amp;&amp;
-            amount &lt;= size - filled[maker][h] &amp;&amp;
-            now &lt; validUntil &amp;&amp;
-            now &lt; expiration &amp;&amp;
-            strike &gt; 10 ether &amp;&amp;
-            price &lt; 1200000 ether &amp;&amp;
-            size &lt; 1200000 ether &amp;&amp;
-            strike &lt; 1200000 ether &amp;&amp;
-            price &gt;= 1 finney
+            strike % 1 ether == 0 &&
+            amount % 1 finney == 0 &&
+            price % 1 finney == 0 &&
+            expiration % 86400 == 0 &&
+            cancelled[maker][h] == false &&
+            amount <= size - filled[maker][h] &&
+            now < validUntil &&
+            now < expiration &&
+            strike > 10 ether &&
+            price < 1200000 ether &&
+            size < 1200000 ether &&
+            strike < 1200000 ether &&
+            price >= 1 finney
         );
 
         filled[maker][h] += amount;

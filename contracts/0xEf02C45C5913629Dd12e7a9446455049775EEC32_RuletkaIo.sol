@@ -5,7 +5,7 @@ contract RuletkaIo {
     /*** EVENTS ***/
     
     /// @dev A russian Roulette has been executed between 6 players
-    /// in room roomId and unfortunately, victim got shot and didn&#39;t 
+    /// in room roomId and unfortunately, victim got shot and didn't 
     /// make it out alive... RIP
     event partyOver(uint256 roomId, address victim, address[] winners);
 
@@ -75,10 +75,10 @@ contract RuletkaIo {
   }
     
     function enter(uint256 _roomId) public payable {
-        Room storage room = allRooms[_roomId-1]; //if _roomId doesn&#39;t exist in array, exits.
+        Room storage room = allRooms[_roomId-1]; //if _roomId doesn't exist in array, exits.
         
-        require(room.players.length &lt; 6);
-        require(msg.value &gt;= room.entryPrice);
+        require(room.players.length < 6);
+        require(msg.value >= room.entryPrice);
         
         room.players.push(msg.sender);
         room.balance += room.entryPrice;
@@ -92,10 +92,10 @@ contract RuletkaIo {
     
     function enterWithReferral(uint256 _roomId, address referrer) public payable {
         
-        Room storage room = allRooms[_roomId-1]; //if _roomId doesn&#39;t exist in array, exits.
+        Room storage room = allRooms[_roomId-1]; //if _roomId doesn't exist in array, exits.
         
-        require(room.players.length &lt; 6);
-        require(msg.value &gt;= room.entryPrice);
+        require(room.players.length < 6);
+        require(msg.value >= room.entryPrice);
         
         uint256 referrerCut = SafeMath.div(room.entryPrice, 100); // Referrer get one percent of the bet as reward
         referrer.transfer(referrerCut);
@@ -113,7 +113,7 @@ contract RuletkaIo {
     
     function executeRoom(uint256 _roomId) public {
         
-        Room storage room = allRooms[_roomId-1]; //if _roomId doesn&#39;t exist in array, exits.
+        Room storage room = allRooms[_roomId-1]; //if _roomId doesn't exist in array, exits.
         
         //Check if the room is really full before shooting people...
         require(room.players.length == 6);
@@ -132,13 +132,13 @@ contract RuletkaIo {
     
     function distributeFunds(uint256 _roomId, uint256 _deadSeat) private returns(uint256) {
         
-        Room storage room = allRooms[_roomId-1]; //if _roomId doesn&#39;t exist in array, exits.
+        Room storage room = allRooms[_roomId-1]; //if _roomId doesn't exist in array, exits.
         uint256 balanceToDistribute = SafeMath.div(room.balance,5);
         
         address victim = room.players[_deadSeat];
         address[] memory winners = new address[](5);
         uint256 j = 0; 
-        for (uint i = 0; i&lt;6; i++) {
+        for (uint i = 0; i<6; i++) {
             if(i != _deadSeat){
                room.players[i].transfer(balanceToDistribute);
                room.balance -= balanceToDistribute;
@@ -152,13 +152,13 @@ contract RuletkaIo {
         return address(this).balance;
     }
     
-     /// @dev Empty the room and refund each player. Safety mechanism which shouldn&#39;t be used.
+     /// @dev Empty the room and refund each player. Safety mechanism which shouldn't be used.
     /// @param _roomId The Room id to empty and refund
     function refundPlayersInRoom(uint256 _roomId) public onlyCTO{
-        Room storage room = allRooms[_roomId-1]; //if _roomId doesn&#39;t exist in array, exits.
+        Room storage room = allRooms[_roomId-1]; //if _roomId doesn't exist in array, exits.
         uint256 nbrOfPlayers = room.players.length;
         uint256 balanceToRefund = SafeMath.div(room.balance,nbrOfPlayers);
-        for (uint i = 0; i&lt;nbrOfPlayers; i++) {
+        for (uint i = 0; i<nbrOfPlayers; i++) {
              room.players[i].transfer(balanceToRefund);
              room.balance -= balanceToRefund;
         }
@@ -224,9 +224,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -234,7 +234,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -243,7 +243,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

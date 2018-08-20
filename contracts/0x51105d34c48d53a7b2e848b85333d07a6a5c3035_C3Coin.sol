@@ -48,20 +48,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -138,14 +138,14 @@ contract C3Coin is ERC223, Ownable {
     uint256 public totalSupply;
     
     constructor() public {
-        name = &quot;C3 Coin&quot;;
-        symbol = &quot;CCC&quot;;
+        name = "C3 Coin";
+        symbol = "CCC";
         decimals = 18;
         totalSupply = 100000000000000000000000000000;
         balances[msg.sender] = totalSupply;
     } 
     
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
     
     address public icoContract;
 
@@ -181,7 +181,7 @@ contract C3Coin is ERC223, Ownable {
    */
    function transfer(address _to, uint256 _value) external returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[msg.sender] &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+     require(_value <= balances[msg.sender] && balances[_to] + _value >= balances[_to]);
      require(!isContract(_to));
      balances[msg.sender] = balances[msg.sender].sub(_value);
      balances[_to] = balances[_to].add(_value);
@@ -207,7 +207,7 @@ contract C3Coin is ERC223, Ownable {
    */ 
   function transfer(address _to, uint _value, bytes _data) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender] &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+    require(_value <= balances[msg.sender] && balances[_to] + _value >= balances[_to]);
     if(isContract(_to)) {
         ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         receiver.tokenFallback(msg.sender, _value, _data);
@@ -229,7 +229,7 @@ contract C3Coin is ERC223, Ownable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
   }
   
   
@@ -249,7 +249,7 @@ contract C3Coin is ERC223, Ownable {
    */
   function sell(uint256 _value) public onlyOwner returns (bool) {
     require(icoContract != address(0));
-    require(_value &lt;= balances[msg.sender] &amp;&amp; balances[icoContract] + _value &gt;= balances[icoContract]); 
+    require(_value <= balances[msg.sender] && balances[icoContract] + _value >= balances[icoContract]); 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[icoContract] = balances[icoContract].add(_value);
     emit Sell(msg.sender, _value);

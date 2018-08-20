@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ contract Lockable is Owned{
   event ContractLocked(uint256 _untilBlock, string _reason);
 
   modifier lockAffected {
-      require(block.number &gt; lockedUntilBlock);
+      require(block.number > lockedUntilBlock);
       _;
   }
 
@@ -124,8 +124,8 @@ contract Token is IERC20Token, Owned, Lockable{
 
   /* Private variables of the token */
   uint256 supply = 0;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowances;
 
   /* Events */
   event Mint(address indexed _to, uint256 _value);
@@ -142,7 +142,7 @@ contract Token is IERC20Token, Owned, Lockable{
 
   /* Transfers tokens from your address to other */
   function transfer(address _to, uint256 _value) lockAffected returns (bool success) {
-    require(_to != 0x0 &amp;&amp; _to != address(this));
+    require(_to != 0x0 && _to != address(this));
     balances[msg.sender] = balances[msg.sender].sub(_value); // Deduct senders balance
     balances[_to] = balances[_to].add(_value);               // Add recivers blaance
     Transfer(msg.sender, _to, _value);                       // Raise Transfer event
@@ -166,7 +166,7 @@ contract Token is IERC20Token, Owned, Lockable{
 
   /* A contract attempts to get the coins */
   function transferFrom(address _from, address _to, uint256 _value) lockAffected returns (bool success) {
-    require(_to != 0x0 &amp;&amp; _to != address(this));
+    require(_to != 0x0 && _to != address(this));
     balances[_from] = balances[_from].sub(_value);                              // Deduct senders balance
     balances[_to] = balances[_to].add(_value);                                  // Add recipient blaance
     allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);  // Deduct allowance for this address
@@ -201,11 +201,11 @@ contract VibeToken is Token {
 
   /* Initializes contract */
   function VibeToken() {
-    standard = &quot;Viberate token v1.0&quot;;
-    name = &quot;Vibe&quot;;
-    symbol = &quot;VIB&quot;;
+    standard = "Viberate token v1.0";
+    name = "Vibe";
+    symbol = "VIB";
     decimals = 18;
     crowdsaleContractAddress = 0x91C94BEe75786fBBFdCFefBa1102b68f48A002F4;   
-    lockFromSelf(4352535, &quot;Lock before crowdsale starts&quot;);
+    lockFromSelf(4352535, "Lock before crowdsale starts");
   }
 }

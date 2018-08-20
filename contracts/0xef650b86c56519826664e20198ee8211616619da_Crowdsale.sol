@@ -25,20 +25,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -109,9 +109,9 @@ contract Crowdsale is Ownable {
     event TokenPurchased(address indexed purchaser, uint256 value, uint256 amount);
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _token) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
         require(_token != address(0));
 
@@ -135,8 +135,8 @@ contract Crowdsale is Ownable {
 
         // calculate token amount to be created
         uint256 tokens = weiAmount.div(rate);
-        require(tokens &gt; 0);
-        require(token.balanceOf(this) &gt; tokens);
+        require(tokens > 0);
+        require(token.balanceOf(this) > tokens);
 
         // update state
         weiRaised = weiRaised.add(weiAmount);
@@ -149,14 +149,14 @@ contract Crowdsale is Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // @dev updates the rate
@@ -171,7 +171,7 @@ contract Crowdsale is Ownable {
 
     // @dev returns the number of tokens available in the sale.
     function tokensAvailable() public view returns (bool) {
-        return token.balanceOf(this) &gt; 0;
+        return token.balanceOf(this) > 0;
     }
 
     // @dev Ends the token sale and transfers balance of tokens

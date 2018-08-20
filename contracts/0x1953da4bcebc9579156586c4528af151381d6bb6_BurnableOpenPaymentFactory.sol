@@ -9,7 +9,7 @@
 //unless he calls the recover() function before anyone else commit()s.
 
 //Anyone can become the recipient by contributing the commitThreshold with commit().
-//The recipient will never be changed once it&#39;s been set via commit().
+//The recipient will never be changed once it's been set via commit().
 
 //The payer can at any time choose to burn or release to the recipient any amount of funds.
 
@@ -28,7 +28,7 @@ contract BurnableOpenPayment {
     
     //payerString and recipientString enable rudimentary communication/publishing.
     //Although the two parties might quickly move to another medium with better privacy or convenience,
-    //beginning with this is nice because it&#39;s already trustless/transparent/signed/pseudonymous/etc.
+    //beginning with this is nice because it's already trustless/transparent/signed/pseudonymous/etc.
     string public payerString;
     string public recipientString;
     
@@ -73,7 +73,7 @@ contract BurnableOpenPayment {
     function BurnableOpenPayment(address _payer, uint _commitThreshold, DefaultAction _defaultAction, uint _defaultTimeoutLength, string _payerString)
     public
     payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             FundsAdded(msg.value);
             amountDeposited += msg.value;
         }
@@ -101,7 +101,7 @@ contract BurnableOpenPayment {
     public
     onlyPayer()
     payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         FundsAdded(msg.value);
         amountDeposited += msg.value;
@@ -125,9 +125,9 @@ contract BurnableOpenPayment {
     inState(State.Open)
     payable
     {
-        require(msg.value &gt;= commitThreshold);
+        require(msg.value >= commitThreshold);
         
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             FundsAdded(msg.value);
             amountDeposited += msg.value;
         }
@@ -220,7 +220,7 @@ contract BurnableOpenPayment {
     inState(State.Committed)
     {
         require(defaultAction != DefaultAction.None);
-        require(now &gt;= defaultTriggerTime);
+        require(now >= defaultTriggerTime);
         
         if (defaultAction == DefaultAction.Burn) {
             internalBurn(this.balance);

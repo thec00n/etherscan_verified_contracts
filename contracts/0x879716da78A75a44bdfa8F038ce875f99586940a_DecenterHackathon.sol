@@ -10,7 +10,7 @@ contract DecenterHackathon {
         bool rewardEligible;
         bool submittedByAdmin;
         bool disqualified;
-        mapping(address =&gt; bool) votedForByJuryMember;
+        mapping(address => bool) votedForByJuryMember;
     }
 
     struct JuryMember {
@@ -31,8 +31,8 @@ contract DecenterHackathon {
     uint public totalContribution;
     Period public currentPeriod;
 
-    mapping(address =&gt; Team) teams;
-    mapping(address =&gt; JuryMember) juryMembers;
+    mapping(address => Team) teams;
+    mapping(address => JuryMember) juryMembers;
 
     address administrator;
     address[] teamAddresses;
@@ -53,7 +53,7 @@ contract DecenterHackathon {
     }
 
     modifier onlyJury {
-        require(bytes(juryMembers[msg.sender].name).length &gt; 0);
+        require(bytes(juryMembers[msg.sender].name).length > 0);
         _;
     }
 
@@ -108,7 +108,7 @@ contract DecenterHackathon {
     // Anyone can contribute to the prize pool (i.e. either sponsor himself or administrator on behalf of the sponsor) during registration period
     function contributeToPrizePool(string _name, string _siteUrl, string _logoUrl) payable {
         require(currentPeriod != Period.End);
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
 
         sponsors.push(Sponsor({
             name: _name,
@@ -123,7 +123,7 @@ contract DecenterHackathon {
     }
 
     // Jury members can vote during voting period
-    // The _votes parameter should be an array of team addresses, sorted by score from highest to lowest based on jury member&#39;s preferences
+    // The _votes parameter should be an array of team addresses, sorted by score from highest to lowest based on jury member's preferences
     function vote(address[] _votes) onlyJury {
         require(currentPeriod == Period.Voting);
         require(_votes.length == teamAddresses.length);
@@ -131,11 +131,11 @@ contract DecenterHackathon {
 
         uint _points = _votes.length;
 
-        for(uint i = 0; i &lt; _votes.length; i++) {
+        for(uint i = 0; i < _votes.length; i++) {
             address teamAddress = _votes[i];
 
             // All submitted teams must be registered
-            require(bytes(teams[teamAddress].name).length &gt; 0);
+            require(bytes(teams[teamAddress].name).length > 0);
 
             // Judge should not be able to vote for the same team more than once
             require(teams[teamAddress].votedForByJuryMember[msg.sender] == false);
@@ -157,12 +157,12 @@ contract DecenterHackathon {
         require(currentPeriod == Period.Verification);
         require(_sortedTeams.length == teamAddresses.length);
 
-        for(uint i = 0; i &lt; _sortedTeams.length; i++) {
+        for(uint i = 0; i < _sortedTeams.length; i++) {
             // All submitted teams must be registered
-            require(bytes(teams[_sortedTeams[i]].name).length &gt; 0);
+            require(bytes(teams[_sortedTeams[i]].name).length > 0);
 
             // Teams must be sorted correctly
-            require(i == _sortedTeams.length - 1 || teams[_sortedTeams[i + 1]].score &lt;= teams[_sortedTeams[i]].score);
+            require(i == _sortedTeams.length - 1 || teams[_sortedTeams[i + 1]].score <= teams[_sortedTeams[i]].score);
 
             teams[_sortedTeams[i]].submittedByAdmin = true;
         }
@@ -170,14 +170,14 @@ contract DecenterHackathon {
         // Prizes are paid based on logarithmic scale, where first teams receives 1/2 of the prize pool, second 1/4 and so on
         uint prizePoolDivider = 2;
 
-        for(i = 0; i &lt; _sortedTeams.length; i++) {
+        for(i = 0; i < _sortedTeams.length; i++) {
             // Make sure all teams are included in _sortedTeams array
             // (i.e. the array should contain unique elements)
             require(teams[_sortedTeams[i]].submittedByAdmin);
 
             uint _prizeAmount = totalContribution / prizePoolDivider;
 
-            if(teams[_sortedTeams[i]].rewardEligible &amp;&amp; !teams[_sortedTeams[i]].disqualified) {
+            if(teams[_sortedTeams[i]].rewardEligible && !teams[_sortedTeams[i]].disqualified) {
                 _sortedTeams[i].transfer(_prizeAmount);
                 teams[_sortedTeams[i]].reward = _prizeAmount;
                 prizePoolDivider *= 2;
@@ -196,7 +196,7 @@ contract DecenterHackathon {
 
     // Administrator can disqualify team
     function disqualifyTeam(address _teamAddress) onlyOwner {
-        require(bytes(teams[_teamAddress].name).length &gt; 0);
+        require(bytes(teams[_teamAddress].name).length > 0);
 
         teams[_teamAddress].disqualified = true;
         TeamDisqualified(_teamAddress);
@@ -204,7 +204,7 @@ contract DecenterHackathon {
 
     // In case something goes wrong and contract needs to be redeployed, this is a way to return all contributions to the sponsors
     function returnContributionsToTheSponsors() onlyOwner {
-        for(uint i = i; i &lt; sponsors.length; i++) {
+        for(uint i = i; i < sponsors.length; i++) {
             sponsors[i].ethAddress.transfer(sponsors[i].contribution);
         }
     }
@@ -212,11 +212,11 @@ contract DecenterHackathon {
     // Public function that returns user type for the given address
     function getUserType(address _address) constant returns (string) {
         if(_address == administrator) {
-            return &quot;administrator&quot;;
-        } else if(bytes(juryMembers[_address].name).length &gt; 0) {
-            return &quot;jury&quot;;
+            return "administrator";
+        } else if(bytes(juryMembers[_address].name).length > 0) {
+            return "jury";
         } else {
-            return &quot;other&quot;;
+            return "other";
         }
     }
 

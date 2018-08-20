@@ -22,16 +22,16 @@ library StringUtils {
     bytes memory a = bytes(_a);
     bytes memory b = bytes(_b);
     uint minLength = a.length;
-    if (b.length &lt; minLength) minLength = b.length;
+    if (b.length < minLength) minLength = b.length;
     //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
-    for (uint i = 0; i &lt; minLength; i ++)
-      if (a[i] &lt; b[i])
+    for (uint i = 0; i < minLength; i ++)
+      if (a[i] < b[i])
         return -1;
-      else if (a[i] &gt; b[i])
+      else if (a[i] > b[i])
         return 1;
-    if (a.length &lt; b.length)
+    if (a.length < b.length)
       return -1;
-    else if (a.length &gt; b.length)
+    else if (a.length > b.length)
       return 1;
     else
       return 0;
@@ -44,16 +44,16 @@ library StringUtils {
   function indexOf(string _haystack, string _needle) public pure returns (int) {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length))
+        if(h.length < 1 || n.length < 1 || (n.length > h.length))
       return -1;
-    else if(h.length &gt; (2**128 -1)) // since we have to be able to return -1 (if the char isn&#39;t found or input error), this function must return an &quot;int&quot; type with a max length of (2^128 - 1)
+    else if(h.length > (2**128 -1)) // since we have to be able to return -1 (if the char isn't found or input error), this function must return an "int" type with a max length of (2^128 - 1)
       return -1;
     else {
       uint subindex = 0;
-      for (uint i = 0; i &lt; h.length; i ++) {
+      for (uint i = 0; i < h.length; i ++) {
         if (h[i] == n[0]) { // found the first char of b
           subindex = 1;
-          while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex]) {// search until the chars don&#39;t match or until we reach the end of a or b
+          while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex]) {// search until the chars don't match or until we reach the end of a or b
                 subindex++;
           }
           if(subindex == n.length)
@@ -71,8 +71,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -87,9 +87,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -97,7 +97,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -206,7 +206,7 @@ contract DelayedClaimable is Claimable {
    * @param _end The latest time ownership can be claimed.
    */
   function setLimits(uint256 _start, uint256 _end) onlyOwner public {
-    require(_start &lt;= _end);
+    require(_start <= _end);
     end = _end;
     start = _start;
   }
@@ -216,7 +216,7 @@ contract DelayedClaimable is Claimable {
    * the specified start and end time.
    */
   function claimOwnership() onlyPendingOwner public {
-    require((block.number &lt;= end) &amp;&amp; (block.number &gt;= start));
+    require((block.number <= end) && (block.number >= start));
     emit OwnershipTransferred(owner, pendingOwner);
     owner = pendingOwner;
     pendingOwner = address(0);
@@ -228,7 +228,7 @@ contract DelayedClaimable is Claimable {
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -305,7 +305,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -322,11 +322,11 @@ contract MultiOwners is DelayedClaimable, RBAC {
   using SafeMath for uint256;
   using StringUtils for string;
 
-  mapping (string =&gt; uint256) private authorizations;
-  mapping (address =&gt; string) private ownerOfSides;
-//   mapping (string =&gt; mapping (string =&gt; bool)) private voteResults;
-  mapping (string =&gt; uint256) private sideExist;
-  mapping (string =&gt; mapping (string =&gt; address[])) private sideVoters;
+  mapping (string => uint256) private authorizations;
+  mapping (address => string) private ownerOfSides;
+//   mapping (string => mapping (string => bool)) private voteResults;
+  mapping (string => uint256) private sideExist;
+  mapping (string => mapping (string => address[])) private sideVoters;
   address[] public owners;
   string[] private authTypes;
 //   string[] private ownerSides;
@@ -339,13 +339,13 @@ contract MultiOwners is DelayedClaimable, RBAC {
   event OwnerRemoved(address addr);
   event InitialFinished();
 
-  string public constant ROLE_MULTIOWNER = &quot;multiOwner&quot;;
-  string public constant AUTH_ADDOWNER = &quot;addOwner&quot;;
-  string public constant AUTH_REMOVEOWNER = &quot;removeOwner&quot;;
-//   string public constant AUTH_SETAUTHRATE = &quot;setAuthRate&quot;;
+  string public constant ROLE_MULTIOWNER = "multiOwner";
+  string public constant AUTH_ADDOWNER = "addOwner";
+  string public constant AUTH_REMOVEOWNER = "removeOwner";
+//   string public constant AUTH_SETAUTHRATE = "setAuthRate";
 
   /**
-   * @dev Throws if called by any account that&#39;s not multiOwners.
+   * @dev Throws if called by any account that's not multiOwners.
    */
   modifier onlyMultiOwners() {
     checkRole(msg.sender, ROLE_MULTIOWNER);
@@ -376,25 +376,25 @@ contract MultiOwners is DelayedClaimable, RBAC {
 
     // add voters of one side
     uint j = 0;
-    for (; j &lt; voters.length; j = j.add(1)) {
+    for (; j < voters.length; j = j.add(1)) {
       if (voters[j] == msg.sender) {
         break;
       }
     }
 
-    if (j &gt;= voters.length) {
+    if (j >= voters.length) {
       voters.push(msg.sender);
     }
 
     // add the authType for clearing auth
     uint i = 0;
-    for (; i &lt; authTypes.length; i = i.add(1)) {
+    for (; i < authTypes.length; i = i.add(1)) {
       if (authTypes[i].equal(_authType)) {
         break;
       }
     }
 
-    if (i &gt;= authTypes.length) {
+    if (i >= authTypes.length) {
       authTypes.push(_authType);
     }
   }
@@ -407,7 +407,7 @@ contract MultiOwners is DelayedClaimable, RBAC {
     string memory side = ownerOfSides[msg.sender];
     address[] storage voters = sideVoters[side][_authType];
 
-    for (uint j = 0; j &lt; voters.length; j = j.add(1)) {
+    for (uint j = 0; j < voters.length; j = j.add(1)) {
       if (voters[j] == msg.sender) {
         delete voters[j];
         break;
@@ -415,8 +415,8 @@ contract MultiOwners is DelayedClaimable, RBAC {
     }
 
     // if the sender has authorized this type of event, will remove its vote
-    if (j &lt; voters.length) {
-      for (uint jj = j; jj &lt; voters.length.sub(1); jj = jj.add(1)) {
+    if (j < voters.length) {
+      for (uint jj = j; jj < voters.length.sub(1); jj = jj.add(1)) {
         voters[jj] = voters[jj.add(1)];
       }
 
@@ -432,13 +432,13 @@ contract MultiOwners is DelayedClaimable, RBAC {
       // if there is no authorization on this type of event,
       // this event need to be removed from the list
       if (authorizations[_authType] == 0) {
-        for (uint i = 0; i &lt; authTypes.length; i = i.add(1)) {
+        for (uint i = 0; i < authTypes.length; i = i.add(1)) {
           if (authTypes[i].equal(_authType)) {
             delete authTypes[i];
             break;
           }
         }
-        for (uint ii = i; ii &lt; authTypes.length.sub(1); ii = ii.add(1)) {
+        for (uint ii = i; ii < authTypes.length.sub(1); ii = ii.add(1)) {
           authTypes[ii] = authTypes[ii.add(1)];
         }
 
@@ -453,7 +453,7 @@ contract MultiOwners is DelayedClaimable, RBAC {
    * @param _authType the event type need to be authorized
    */
   function hasAuth(string _authType) public view returns (bool) {
-    require(multiOwnerSides &gt; 1); // at least 2 sides have authorized
+    require(multiOwnerSides > 1); // at least 2 sides have authorized
 
     // uint256 rate = authorizations[_authType].mul(100).div(multiOwnerNumber)
     return (authorizations[_authType] == multiOwnerSides);
@@ -465,23 +465,23 @@ contract MultiOwners is DelayedClaimable, RBAC {
    */
   function clearAuth(string _authType) internal {
     authorizations[_authType] = 0; // clear authorizations
-    for (uint i = 0; i &lt; owners.length; i = i.add(1)) {
+    for (uint i = 0; i < owners.length; i = i.add(1)) {
       string memory side = ownerOfSides[owners[i]];
       address[] storage voters = sideVoters[side][_authType];
-      for (uint j = 0; j &lt; voters.length; j = j.add(1)) {
+      for (uint j = 0; j < voters.length; j = j.add(1)) {
         delete voters[j]; // clear votes of one side
       }
       voters.length = 0;
     }
 
     // clear this type of event
-    for (uint k = 0; k &lt; authTypes.length; k = k.add(1)) {
+    for (uint k = 0; k < authTypes.length; k = k.add(1)) {
       if (authTypes[k].equal(_authType)) {
         delete authTypes[k];
         break;
       }
     }
-    for (uint kk = k; kk &lt; authTypes.length.sub(1); kk = kk.add(1)) {
+    for (uint kk = k; kk < authTypes.length.sub(1); kk = kk.add(1)) {
       authTypes[kk] = authTypes[kk.add(1)];
     }
 
@@ -494,18 +494,18 @@ contract MultiOwners is DelayedClaimable, RBAC {
    * @param _addr the account address used as a multiOwner
    */
   function addAddress(address _addr, string _side) internal {
-    require(multiOwnerSides &lt; ownerSidesLimit);
+    require(multiOwnerSides < ownerSidesLimit);
     require(_addr != address(0));
-    require(ownerOfSides[_addr].equal(&quot;&quot;)); // not allow duplicated adding
+    require(ownerOfSides[_addr].equal("")); // not allow duplicated adding
 
     // uint i = 0;
-    // for (; i &lt; owners.length; i = i.add(1)) {
+    // for (; i < owners.length; i = i.add(1)) {
     //   if (owners[i] == _addr) {
     //     break;
     //   }
     // }
 
-    // if (i &gt;= owners.length) {
+    // if (i >= owners.length) {
     owners.push(_addr); // for not allowing duplicated adding, so each addr should be new
 
     addRole(_addr, ROLE_MULTIOWNER);
@@ -580,7 +580,7 @@ contract MultiOwners is DelayedClaimable, RBAC {
    * @dev remove an address from the whitelist
    * @param _addr address
    * @return true if the address was removed from the multiOwner list,
-   *         false if the address wasn&#39;t in the multiOwner list
+   *         false if the address wasn't in the multiOwner list
    */
   function removeAddressFromOwners(address _addr)
     onlyMultiOwners
@@ -592,14 +592,14 @@ contract MultiOwners is DelayedClaimable, RBAC {
 
     // first remove the owner
     uint j = 0;
-    for (; j &lt; owners.length; j = j.add(1)) {
+    for (; j < owners.length; j = j.add(1)) {
       if (owners[j] == _addr) {
         delete owners[j];
         break;
       }
     }
-    if (j &lt; owners.length) {
-      for (uint jj = j; jj &lt; owners.length.sub(1); jj = jj.add(1)) {
+    if (j < owners.length) {
+      for (uint jj = j; jj < owners.length.sub(1); jj = jj.add(1)) {
         owners[jj] = owners[jj.add(1)];
       }
 
@@ -608,24 +608,24 @@ contract MultiOwners is DelayedClaimable, RBAC {
     }
 
     string memory side = ownerOfSides[_addr];
-    // if (sideExist[side] &gt; 0) {
+    // if (sideExist[side] > 0) {
     sideExist[side] = sideExist[side].sub(1);
     if (sideExist[side] == 0) {
-      require(multiOwnerSides &gt; 2); // not allow only left 1 side
+      require(multiOwnerSides > 2); // not allow only left 1 side
       multiOwnerSides = multiOwnerSides.sub(1); // this side has been removed
     }
 
     // for every event type, if this owner has voted the event, then need to remove
-    for (uint i = 0; i &lt; authTypes.length; ) {
+    for (uint i = 0; i < authTypes.length; ) {
       address[] storage voters = sideVoters[side][authTypes[i]];
-      for (uint m = 0; m &lt; voters.length; m = m.add(1)) {
+      for (uint m = 0; m < voters.length; m = m.add(1)) {
         if (voters[m] == _addr) {
           delete voters[m];
           break;
         }
       }
-      if (m &lt; voters.length) {
-        for (uint n = m; n &lt; voters.length.sub(1); n = n.add(1)) {
+      if (m < voters.length) {
+        for (uint n = m; n < voters.length.sub(1); n = n.add(1)) {
           voters[n] = voters[n.add(1)];
         }
 
@@ -641,7 +641,7 @@ contract MultiOwners is DelayedClaimable, RBAC {
         if (authorizations[authTypes[i]] == 0) {
           delete authTypes[i];
 
-          for (uint kk = i; kk &lt; authTypes.length.sub(1); kk = kk.add(1)) {
+          for (uint kk = i; kk < authTypes.length.sub(1); kk = kk.add(1)) {
             authTypes[kk] = authTypes[kk.add(1)];
           }
 
@@ -669,7 +669,7 @@ contract MultiOwnerContract is MultiOwners {
     address public pendingOwnedOwner;
     // address internal origOwner;
 
-    string public constant AUTH_CHANGEOWNEDOWNER = &quot;transferOwnerOfOwnedContract&quot;;
+    string public constant AUTH_CHANGEOWNEDOWNER = "transferOwnerOfOwnedContract";
 
     /**
      * @dev Modifier throws if called by any account other than the pendingOwner.
@@ -743,10 +743,10 @@ contract MultiOwnerContract is MultiOwners {
 }
 
 contract DRCTOwner is MultiOwnerContract {
-    string public constant AUTH_INITCONGRESS = &quot;initCongress&quot;;
-    string public constant AUTH_CANMINT = &quot;canMint&quot;;
-    string public constant AUTH_SETMINTAMOUNT = &quot;setMintAmount&quot;;
-    string public constant AUTH_FREEZEACCOUNT = &quot;freezeAccount&quot;;
+    string public constant AUTH_INITCONGRESS = "initCongress";
+    string public constant AUTH_CANMINT = "canMint";
+    string public constant AUTH_SETMINTAMOUNT = "setMintAmount";
+    string public constant AUTH_FREEZEACCOUNT = "freezeAccount";
 
     bool congressInit = false;
     // bool paramsInit = false;
@@ -768,7 +768,7 @@ contract DRCTOwner is MultiOwnerContract {
      */
     function setOnceMintAmount(uint256 _value) onlyMultiOwners public {
         require(hasAuth(AUTH_SETMINTAMOUNT));
-        require(_value &gt; 0);
+        require(_value > 0);
         onceMintAmount = _value;
 
         clearAuth(AUTH_SETMINTAMOUNT);
@@ -820,7 +820,7 @@ contract DRCTOwner is MultiOwnerContract {
     }
 
     /**
-     * @dev freeze the account&#39;s balance under urgent situation
+     * @dev freeze the account's balance under urgent situation
      *
      * by default all the accounts will not be frozen until set freeze value as true.
      *
@@ -838,7 +838,7 @@ contract DRCTOwner is MultiOwnerContract {
     }
 
     /**
-     * @dev freeze the account&#39;s balance
+     * @dev freeze the account's balance
      *
      * by default all the accounts will not be frozen until set freeze value as true.
      *
@@ -856,7 +856,7 @@ contract DRCTOwner is MultiOwnerContract {
     }
 
     /**
-     * @dev freeze the account&#39;s balance
+     * @dev freeze the account's balance
      *
      * @param _target address the account should be frozen
      * @param _value uint256 the amount of tokens that will be frozen
@@ -889,7 +889,7 @@ contract DRCTOwner is MultiOwnerContract {
 
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -902,7 +902,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal

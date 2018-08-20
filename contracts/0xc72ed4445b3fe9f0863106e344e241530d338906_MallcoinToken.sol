@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 }
@@ -50,7 +50,7 @@ contract Ownable {
 }
 
 contract Authorizable {
-    mapping(address =&gt; bool) authorizers;
+    mapping(address => bool) authorizers;
 
     modifier onlyAuthorized {
       require(isAuthorized(msg.sender));
@@ -103,12 +103,12 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
     //modifier onlyPayloadSize(uint size) {
-    //  require(msg.data.length &lt; size + 4);
+    //  require(msg.data.length < size + 4);
     //  _;
     //}
 
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Basic {
     function transfer(address _to, uint256 _value) public returns (bool) {
       //requeres in FrozenToken
       //require(_to != address(0));
-      //require(_value &lt;= balances[msg.sender]);
+      //require(_value <= balances[msg.sender]);
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -134,13 +134,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
       //requires in FrozenToken
       //require(_to != address(0));
-      //require(_value &lt;= balances[_from]);
-      //require(_value &lt;= allowed[_from][msg.sender]);
+      //require(_value <= balances[_from]);
+      //require(_value <= allowed[_from][msg.sender]);
 
       balances[_from] = balances[_from].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -168,7 +168,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
       uint oldValue = allowed[msg.sender][_spender];
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -187,8 +187,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract FrozenToken is StandardToken, Ownable {
-    mapping(address =&gt; bool) frozens;
-    mapping(address =&gt; uint256) frozenTokens;
+    mapping(address => bool) frozens;
+    mapping(address => uint256) frozenTokens;
 
     event FrozenAddress(address addr);
     event UnFrozenAddress(address addr);
@@ -236,7 +236,7 @@ contract FrozenToken is StandardToken, Ownable {
 
       uint256 frozen = uint256(frozenTokens[_addr]);
       uint256 balance = uint256(balances[_addr]);
-      require(balance &gt;= frozen);
+      require(balance >= frozen);
 
       uint256 result = balance.sub(frozen);
 
@@ -245,10 +245,10 @@ contract FrozenToken is StandardToken, Ownable {
 
     function frozenToken(address _addr, uint256 _amount) onlyOwner public returns(bool) {
       require(_addr != address(0));
-      require(_amount &gt; 0);
+      require(_amount > 0);
 
       uint256 balance = uint256(balances[_addr]);
-      require(balance &gt;= _amount);
+      require(balance >= _amount);
 
       frozenTokens[_addr] = frozenTokens[_addr].add(_amount);
       FrozenTokenEvent(_addr, _amount);
@@ -258,8 +258,8 @@ contract FrozenToken is StandardToken, Ownable {
 
     function unFrozenToken(address _addr, uint256 _amount) onlyOwner public returns(bool) {
       require(_addr != address(0));
-      require(_amount &gt; 0);
-      require(frozenTokens[_addr] &gt;= _amount);
+      require(_amount > 0);
+      require(frozenTokens[_addr] >= _amount);
 
       frozenTokens[_addr] = frozenTokens[_addr].sub(_amount);
       UnFrozenTokenEvent(_addr, _amount);
@@ -268,33 +268,33 @@ contract FrozenToken is StandardToken, Ownable {
 
     function transfer(address _to, uint256 _value) isNotFrozen() public returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
 
       uint256 balance = balances[msg.sender];
       uint256 frozen = frozenTokens[msg.sender];
       uint256 availableBalance = balance.sub(frozen);
-      require(availableBalance &gt;= _value);
+      require(availableBalance >= _value);
 
       return super.transfer(_to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isNotFrozen() public returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[_from]);
-      require(_value &lt;= allowed[_from][msg.sender]);
+      require(_value <= balances[_from]);
+      require(_value <= allowed[_from][msg.sender]);
 
       uint256 balance = balances[_from];
       uint256 frozen = frozenTokens[_from];
       uint256 availableBalance = balance.sub(frozen);
-      require(availableBalance &gt;= _value);
+      require(availableBalance >= _value);
 
       return super.transferFrom(_from ,_to, _value);
     }
 }
 
 contract MallcoinToken is FrozenToken, Authorizable {
-      string public constant name = &quot;Mallcoin Token&quot;;
-      string public constant symbol = &quot;MLC&quot;;
+      string public constant name = "Mallcoin Token";
+      string public constant symbol = "MLC";
       uint8 public constant decimals = 18;
       uint256 public MAX_TOKEN_SUPPLY = 250000000 * 1 ether;
 
@@ -308,8 +308,8 @@ contract MallcoinToken is FrozenToken, Authorizable {
 
       function createToken(address _to, uint256 _amount) onlyOwnerOrAuthorized public returns (bool) {
         require(_to != address(0));
-        require(_amount &gt; 0);
-        require(MAX_TOKEN_SUPPLY &gt;= totalSupply_ + _amount);
+        require(_amount > 0);
+        require(MAX_TOKEN_SUPPLY >= totalSupply_ + _amount);
 
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -325,9 +325,9 @@ contract MallcoinToken is FrozenToken, Authorizable {
 
       function createTokenByAtes(address _to, uint256 _amount, string _data) onlyOwnerOrAuthorized public returns (bool) {
         require(_to != address(0));
-        require(_amount &gt; 0);
-        require(bytes(_data).length &gt; 0);
-        require(MAX_TOKEN_SUPPLY &gt;= totalSupply_ + _amount);
+        require(_amount > 0);
+        require(bytes(_data).length > 0);
+        require(MAX_TOKEN_SUPPLY >= totalSupply_ + _amount);
 
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);

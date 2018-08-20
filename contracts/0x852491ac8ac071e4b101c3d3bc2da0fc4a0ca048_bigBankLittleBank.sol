@@ -42,25 +42,25 @@ contract DefconPro is Ownable {
 
   //if defcon is set to 4 or lower then function is paused
   modifier defcon4() {//use this for high risk functions
-    require(defcon &gt; 4);
+    require(defcon > 4);
     _;
   }
 
   //if defcon is set to 3 or lower then function is paused
   modifier defcon3() {
-    require(defcon &gt; 3);
+    require(defcon > 3);
     _;
   }
   
   //if defcon is set to 2 or lower then function is paused
    modifier defcon2() {
-    require(defcon &gt; 2);
+    require(defcon > 2);
     _;
   }
   
   //if defcon is set to 1 or lower then function is paused
   modifier defcon1() {//use this for low risk functions
-    require(defcon &gt; 1);
+    require(defcon > 1);
     _;
   }
 
@@ -79,7 +79,7 @@ contract bigBankLittleBank is DefconPro {
     
     uint public houseFee = 2; //Fee is 2%
     uint public houseCommission = 0; //keeps track of commission
-    uint public bookKeeper = 0; //keeping track of what the balance should be to tie into auto pause script if it doesn&#39;t match contracte balance
+    uint public bookKeeper = 0; //keeping track of what the balance should be to tie into auto pause script if it doesn't match contracte balance
     
     bytes32 emptyBet = 0x0000000000000000000000000000000000000000000000000000000000000000;
     
@@ -105,11 +105,11 @@ contract bigBankLittleBank is DefconPro {
     }
     
     //setting up internal bank struct, should prevent prying eyes from seeing other users banks
-    mapping (address =&gt; uint) public userBank;
+    mapping (address => uint) public userBank;
 
     //main deposit function
     function depositBank() public defcon4 payable {
-        if(userBank[msg.sender] == 0) {//if the user doesn&#39;t have funds
+        if(userBank[msg.sender] == 0) {//if the user doesn't have funds
             userBank[msg.sender] = msg.value;//make balance = the funds
         } else {
             userBank[msg.sender] = (userBank[msg.sender]).add(msg.value);//if user already has funds, add to what exists
@@ -120,7 +120,7 @@ contract bigBankLittleBank is DefconPro {
     
     //widthdraw what is in users bank
     function withdrawBank(uint amount) public defcon2 returns(bool) {
-        require(userBank[msg.sender] &gt;= amount);//require that the user has enough to withdraw
+        require(userBank[msg.sender] >= amount);//require that the user has enough to withdraw
         bookKeeper = bookKeeper.sub(amount);//update the bookkeeper
         userBank[msg.sender] = userBank[msg.sender].sub(amount);//reduce users account balance
         Withdraw(msg.sender, amount);//broadcast Withdraw event
@@ -130,8 +130,8 @@ contract bigBankLittleBank is DefconPro {
     
     //create a bet
     function startBet(uint _bet) public defcon3 returns(uint betId) {
-        require(userBank[msg.sender] &gt;= _bet);//require user has enough to create the bet
-        require(_bet &gt; 0);
+        require(userBank[msg.sender] >= _bet);//require user has enough to create the bet
+        require(_bet > 0);
         userBank[msg.sender] = (userBank[msg.sender]).sub(_bet);//reduce users bank by the bet amount
         uint convertedAddr = uint(msg.sender);
         uint combinedBet = convertedAddr.add(_bet)*7;
@@ -150,10 +150,10 @@ contract bigBankLittleBank is DefconPro {
     
     //bet a users token against another users token
     function betAgainstUser(uint _betId1, uint _betId2) public defcon3 returns(bool){
-        require(betBanks[_betId1].bet != emptyBet &amp;&amp; betBanks[_betId2].bet != emptyBet);//require that both tokens are active and hold funds
+        require(betBanks[_betId1].bet != emptyBet && betBanks[_betId2].bet != emptyBet);//require that both tokens are active and hold funds
         require(betBanks[_betId1].owner == msg.sender || betBanks[_betId2].owner == msg.sender); //require that the user submitting is the owner of one of the tokens
         require(betBanks[_betId1].owner != betBanks[_betId2].owner);//prevent a user from betting 2 tokens he owns, prevent possible exploits
-        require(_betId1 != _betId2);//require that user doesn&#39;t bet token against itself
+        require(_betId1 != _betId2);//require that user doesn't bet token against itself
     
         //unhash the bets to calculate winner
         uint bet1ConvertedAddr = uint(betBanks[_betId1].owner);
@@ -165,7 +165,7 @@ contract bigBankLittleBank is DefconPro {
         uint fee = (take.mul(houseFee)).div(100);//calculate the fee
         houseCommission = houseCommission.add(fee);//add fee to commission
         if(bet1 != bet2) {//if no tie
-            if(bet1 &gt; bet2) {//if betId1 wins
+            if(bet1 > bet2) {//if betId1 wins
                 _payoutWinner(_betId1, _betId2, take, fee);//payout betId1
             } else {
                 _payoutWinner(_betId2, _betId1, take, fee);//payout betId2
@@ -215,8 +215,8 @@ contract bigBankLittleBank is DefconPro {
     //get amount of active bet tokens
     function _totalActiveBets() private view returns(uint total) {
         total = 0;
-        for(uint i=0; i&lt;betBanks.length; i++) {//loop through bets 
-            if(betBanks[i].bet != emptyBet &amp;&amp; betBanks[i].owner != msg.sender) {//if there is a bet and the owner is not the msg.sender
+        for(uint i=0; i<betBanks.length; i++) {//loop through bets 
+            if(betBanks[i].bet != emptyBet && betBanks[i].owner != msg.sender) {//if there is a bet and the owner is not the msg.sender
                 total++;//increase quantity
             }
         }
@@ -230,8 +230,8 @@ contract bigBankLittleBank is DefconPro {
         } else {
             uint256[] memory result = new uint256[](total);
             uint rc = 0;
-            for (uint idx=0; idx &lt; betBanks.length; idx++) {//loop through bets
-                if(betBanks[idx].bet != emptyBet &amp;&amp; betBanks[idx].owner != msg.sender) {//if there is a bet and the owner is not the msg.sender
+            for (uint idx=0; idx < betBanks.length; idx++) {//loop through bets
+                if(betBanks[idx].bet != emptyBet && betBanks[idx].owner != msg.sender) {//if there is a bet and the owner is not the msg.sender
                     result[rc] = idx;//add token to list
                     rc++;
                 }
@@ -243,8 +243,8 @@ contract bigBankLittleBank is DefconPro {
     //total open bets of user
     function _totalUsersBets() private view returns(uint total) {
         total = 0;
-        for(uint i=0; i&lt;betBanks.length; i++) {//loop through bets
-            if(betBanks[i].owner == msg.sender &amp;&amp; betBanks[i].bet != emptyBet) {//if the bet is over 0 and the owner is msg.sender
+        for(uint i=0; i<betBanks.length; i++) {//loop through bets
+            if(betBanks[i].owner == msg.sender && betBanks[i].bet != emptyBet) {//if the bet is over 0 and the owner is msg.sender
                 total++;//increase quantity
             }
         }
@@ -258,8 +258,8 @@ contract bigBankLittleBank is DefconPro {
         } else {
             uint256[] memory result = new uint256[](total);
             uint rc = 0;
-            for (uint idx=0; idx &lt; betBanks.length; idx++) {//loop through bets
-                if(betBanks[idx].owner == msg.sender &amp;&amp; betBanks[idx].bet != emptyBet) {//if the bet is over 0 and owner is msg.sender
+            for (uint idx=0; idx < betBanks.length; idx++) {//loop through bets
+                if(betBanks[idx].owner == msg.sender && betBanks[idx].bet != emptyBet) {//if the bet is over 0 and owner is msg.sender
                     result[rc] = idx;//add to list
                     rc++;
                 }
@@ -295,9 +295,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -305,7 +305,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -314,7 +314,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

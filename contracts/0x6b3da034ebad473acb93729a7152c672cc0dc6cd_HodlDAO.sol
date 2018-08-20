@@ -6,24 +6,24 @@ pragma solidity ^0.4.10;
 * Date: 2017
 *
 * Deploy with the following args:
-* 0, &quot;Hodl DAO&quot;, 18, &quot;HODL&quot;
+* 0, "Hodl DAO", 18, "HODL"
 *
 */
 contract HodlDAO {
     /* ERC20 Public variables of the token */
-    string public version = &#39;HDAO 0.2&#39;;
+    string public version = 'HDAO 0.2';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* ERC20 This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* store the block number when a withdrawal has been requested*/
-    mapping (address =&gt; withdrawalRequest) public withdrawalRequests;
+    mapping (address => withdrawalRequest) public withdrawalRequests;
     struct withdrawalRequest {
     uint sinceBlock;
     uint256 amount;
@@ -53,7 +53,7 @@ contract HodlDAO {
 
     /**
      * Initializes contract with initial supply tokens to the creator of the contract
-     * In our case, there&#39;s no initial supply. Tokens will be created as ether is sent
+     * In our case, there's no initial supply. Tokens will be created as ether is sent
      * to the fall-back function. Then tokens are burned when ether is withdrawn.
      */
     function HodlDAO(
@@ -75,7 +75,7 @@ contract HodlDAO {
      * withdrawal has been requested and is currently pending
      */
     modifier notPendingWithdrawal {
-        if (withdrawalRequests[msg.sender].sinceBlock &gt; 0) throw;
+        if (withdrawalRequests[msg.sender].sinceBlock > 0) throw;
         _;
     }
 
@@ -87,8 +87,8 @@ contract HodlDAO {
      * @return Whether the transfer was successful or not
      */
     function transfer(address _to, uint256 _value) notPendingWithdrawal {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -115,10 +115,10 @@ contract HodlDAO {
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-    //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+    //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
     //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
     //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 
@@ -132,9 +132,9 @@ contract HodlDAO {
      */
     function transferFrom(address _from, address _to, uint256 _value)  notPendingWithdrawal
     returns (bool success) {
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -144,7 +144,7 @@ contract HodlDAO {
 
     /**
      * withdrawalInitiate initiates the withdrawal by going into a waiting period
-     * It remembers the block number &amp; amount held at the time of request.
+     * It remembers the block number & amount held at the time of request.
      * After the waiting period finishes, the call withdrawalComplete
      */
     function withdrawalInitiate() notPendingWithdrawal {
@@ -163,7 +163,7 @@ contract HodlDAO {
     function withdrawalComplete() returns (bool) {
         withdrawalRequest r = withdrawalRequests[msg.sender];
         if (r.sinceBlock == 0) throw;
-        if ((r.sinceBlock + blockWait) &gt; block.number) {
+        if ((r.sinceBlock + blockWait) > block.number) {
             WithdrawalPremature(msg.sender, r.sinceBlock + blockWait - block.number);
             return false;
         }
@@ -172,8 +172,8 @@ contract HodlDAO {
         withdrawalRequests[msg.sender].sinceBlock = 0;
         withdrawalRequests[msg.sender].amount = 0;
 
-        if (reward &gt; 0) {
-            if (feePot - reward &gt; feePot) {
+        if (reward > 0) {
+            if (feePot - reward > feePot) {
                 feePot = 0; // overflow
             } else {
                 feePot -= reward;
@@ -190,7 +190,7 @@ contract HodlDAO {
      */
     function calculateReward(uint256 v) constant returns (uint256) {
         uint256 reward = 0;
-        if (feePot &gt; 0) {
+        if (feePot > 0) {
             reward = v / totalSupply * feePot;
         }
         return reward;
@@ -211,9 +211,9 @@ contract HodlDAO {
     function quickWithdraw() payable notPendingWithdrawal returns (bool) {
         // calculate required fee
         uint256 amount = balanceOf[msg.sender];
-        if (amount &lt;= 0) throw;
+        if (amount <= 0) throw;
         uint256 feeRequired = calculateFee(amount);
-        if (msg.value &lt; feeRequired) {
+        if (msg.value < feeRequired) {
             // not enough fees sent
             InsufficientFee(msg.sender, feeRequired);
             return false;
@@ -221,7 +221,7 @@ contract HodlDAO {
         uint256 overAmount = msg.value - feeRequired; // calculate any over-payment
         // add fee to the feePot, excluding any over-payment
 
-        if (overAmount &gt; 0) {
+        if (overAmount > 0) {
             feePot += msg.value - overAmount;
         } else {
             feePot += msg.value;
@@ -239,10 +239,10 @@ contract HodlDAO {
     function doWithdrawal(uint256 extra) internal {
         uint256 amount = balanceOf[msg.sender];
 
-        if (amount &lt;= 0) throw;                 // cannot withdraw
+        if (amount <= 0) throw;                 // cannot withdraw
         balanceOf[msg.sender] = 0;
-        if (totalSupply &gt; totalSupply - amount) {
-            totalSupply = 0; // don&#39;t let it overflow
+        if (totalSupply > totalSupply - amount) {
+            totalSupply = 0; // don't let it overflow
         } else {
             totalSupply -= amount; // deflate the supply!
         }
@@ -257,7 +257,7 @@ contract HodlDAO {
     */
     function () payable notPendingWithdrawal {
         uint256 amount = msg.value;  // amount that was sent
-        if (amount &lt;= 0) throw; // need to send some ETH
+        if (amount <= 0) throw; // need to send some ETH
         balanceOf[msg.sender] += amount; // mint new tokens
         totalSupply += amount; // track the supply
         Transfer(0, msg.sender, amount); // notify of the event

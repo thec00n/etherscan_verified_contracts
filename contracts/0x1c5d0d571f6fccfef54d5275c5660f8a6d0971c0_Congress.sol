@@ -47,7 +47,7 @@ contract Congress is owned, tokenRecipient {
     int public majorityMargin;
     Proposal[] public proposals;
     uint public numProposals;
-    mapping (address =&gt; uint) public memberId;
+    mapping (address => uint) public memberId;
     Member[] public members;
 
     event ProposalAdded(uint proposalID, address recipient, uint amount, string description);
@@ -67,7 +67,7 @@ contract Congress is owned, tokenRecipient {
         int currentResult;
         bytes32 proposalHash;
         Vote[] votes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
 
     struct Member {
@@ -98,9 +98,9 @@ contract Congress is owned, tokenRecipient {
     )  payable public {
         changeVotingRules(minimumQuorumForProposals, minutesForDebate, marginOfVotesForMajority);
         // It’s necessary to add an empty first member
-        addMember(0, &quot;&quot;);
-        // and let&#39;s add the founder, to save a step later
-        addMember(owner, &#39;founder&#39;);
+        addMember(0, "");
+        // and let's add the founder, to save a step later
+        addMember(owner, 'founder');
     }
 
     /**
@@ -132,7 +132,7 @@ contract Congress is owned, tokenRecipient {
     function removeMember(address targetMember) onlyOwner public {
         require(memberId[targetMember] != 0);
 
-        for (uint i = memberId[targetMember]; i&lt;members.length-1; i++){
+        for (uint i = memberId[targetMember]; i<members.length-1; i++){
             members[i] = members[i+1];
         }
         delete members[members.length-1];
@@ -263,7 +263,7 @@ contract Congress is owned, tokenRecipient {
         p.numberOfVotes++;                              // Increase the number of votes
         if (supportsProposal) {                         // If they support the proposal
             p.currentResult++;                          // Increase score
-        } else {                                        // If they don&#39;t
+        } else {                                        // If they don't
             p.currentResult--;                          // Decrease the score
         }
 
@@ -283,14 +283,14 @@ contract Congress is owned, tokenRecipient {
     function executeProposal(uint proposalNumber, bytes transactionBytecode) public {
         Proposal storage p = proposals[proposalNumber];
 
-        require(now &gt; p.votingDeadline                                            // If it is past the voting deadline
-            &amp;&amp; !p.executed                                                         // and it has not already been executed
-            &amp;&amp; p.proposalHash == keccak256(p.recipient, p.amount, transactionBytecode)  // and the supplied code matches the proposal
-            &amp;&amp; p.numberOfVotes &gt;= minimumQuorum);                                  // and a minimum quorum has been reached...
+        require(now > p.votingDeadline                                            // If it is past the voting deadline
+            && !p.executed                                                         // and it has not already been executed
+            && p.proposalHash == keccak256(p.recipient, p.amount, transactionBytecode)  // and the supplied code matches the proposal
+            && p.numberOfVotes >= minimumQuorum);                                  // and a minimum quorum has been reached...
 
         // ...then execute result
 
-        if (p.currentResult &gt; majorityMargin) {
+        if (p.currentResult > majorityMargin) {
             // Proposal passed; execute the transaction
 
             p.executed = true; // Avoid recursive calling

@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -80,7 +80,7 @@ contract Blocked {
     uint public blockedUntil;
 
     modifier unblocked {
-        require(now &gt; blockedUntil);
+        require(now > blockedUntil);
         _;
     }
 }
@@ -89,11 +89,11 @@ contract BasicToken is ERC20Basic, Blocked {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -112,7 +112,7 @@ contract BasicToken is ERC20Basic, Blocked {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) unblocked public returns (bool) {
         uint256 _allowance = allowed[_from][msg.sender];
@@ -144,10 +144,10 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) unblocked public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -158,9 +158,9 @@ contract BurnableToken is StandardToken {
 
 contract DEVCoin is BurnableToken, Owned {
 
-    string public constant name = &quot;Dev Coin&quot;;
+    string public constant name = "Dev Coin";
 
-    string public constant symbol = &quot;DEVC&quot;;
+    string public constant symbol = "DEVC";
 
     uint32 public constant decimals = 18;
 
@@ -186,7 +186,7 @@ contract ManualSendingCrowdsale is Owned {
         uint256 value;
     }
 
-    mapping (uint =&gt; AmountData) public amountsByCurrency;
+    mapping (uint => AmountData) public amountsByCurrency;
 
     function addCurrency(uint currency) external onlyOwner {
         addCurrencyInternal(currency);
@@ -280,29 +280,29 @@ contract Crowdsale is ManualSendingCrowdsale {
     }
 
     modifier minPayment() {
-        require(msg.value &gt;= minAmountForDeal);
+        require(msg.value >= minAmountForDeal);
         _;
     }
 
     function Crowdsale() public {
-        //require(currentTime() &lt; preICOstartTime);
+        //require(currentTime() < preICOstartTime);
         token = new DEVCoin(maxTokenAmount, ICOendTime);
         leftTokens = maxPreICOTokenAmount;
         addCurrencyInternal(0); // add BTC
     }
 
     function isFinished() public constant returns (bool) {
-        return currentTime() &gt; ICOendTime || (leftTokens == 0 &amp;&amp; state == State.ICO);
+        return currentTime() > ICOendTime || (leftTokens == 0 && state == State.ICO);
     }
 
     function isPreICO() public constant returns (bool) {
         uint curTime = currentTime();
-        return curTime &lt; preICOendTime &amp;&amp; curTime &gt; preICOstartTime;
+        return curTime < preICOendTime && curTime > preICOstartTime;
     }
 
     function isICO() public constant returns (bool) {
         uint curTime = currentTime();
-        return curTime &lt; ICOendTime &amp;&amp; curTime &gt; ICOstartTime;
+        return curTime < ICOendTime && curTime > ICOstartTime;
     }
 
     function() external canBuy minPayment payable {
@@ -311,9 +311,9 @@ contract Crowdsale is ManualSendingCrowdsale {
         uint256 givenTokens = amount.mul(rateToEther).div(100).mul(100 + bonus);
         uint256 providedTokens = transferTokensTo(msg.sender, givenTokens);
 
-        if (givenTokens &gt; providedTokens) {
+        if (givenTokens > providedTokens) {
             uint256 needAmount = providedTokens.mul(100).div(100 + bonus).div(rateToEther);
-            require(amount &gt; needAmount);
+            require(amount > needAmount);
             require(msg.sender.call.gas(3000000).value(amount - needAmount)());
             amount = needAmount;
         }
@@ -343,16 +343,16 @@ contract Crowdsale is ManualSendingCrowdsale {
     }
 
     function getAmountBonus(uint256 amount) public constant returns (uint) {
-        if (amount &gt;= firstAmountBonusBarrier) {
+        if (amount >= firstAmountBonusBarrier) {
             return firstAmountBonus;
         }
-        if (amount &gt;= secondAmountBonusBarrier) {
+        if (amount >= secondAmountBonusBarrier) {
             return secondAmountBonus;
         }
-        if (amount &gt;= thirdAmountBonusBarrier) {
+        if (amount >= thirdAmountBonusBarrier) {
             return thirdAmountBonus;
         }
-        if (amount &gt;= fourthAmountBonusBarrier) {
+        if (amount >= fourthAmountBonusBarrier) {
             return fourthAmountBonus;
         }
         return 0;
@@ -360,13 +360,13 @@ contract Crowdsale is ManualSendingCrowdsale {
 
     function getPreICOBonus() public constant returns (uint) {
         uint curTime = currentTime();
-        if (curTime &lt; firstPreICOTimeBarrier) {
+        if (curTime < firstPreICOTimeBarrier) {
             return firstPreICOTimeBonus;
         }
-        if (curTime &lt; secondPreICOTimeBarrier) {
+        if (curTime < secondPreICOTimeBarrier) {
             return secondPreICOTimeBonus;
         }
-        if (curTime &lt; thirdPreICOTimeBarrier) {
+        if (curTime < thirdPreICOTimeBarrier) {
             return thirdPreICOTimeBonus;
         }
         return 0;
@@ -374,13 +374,13 @@ contract Crowdsale is ManualSendingCrowdsale {
 
     function getICOBonus() public constant returns (uint) {
         uint curTime = currentTime();
-        if (curTime &lt; firstICOTimeBarrier) {
+        if (curTime < firstICOTimeBarrier) {
             return firstICOTimeBonus;
         }
-        if (curTime &lt; secondICOTimeBarrier) {
+        if (curTime < secondICOTimeBarrier) {
             return secondICOTimeBonus;
         }
-        if (curTime &lt; thirdICOTimeBarrier) {
+        if (curTime < thirdICOTimeBarrier) {
             return thirdICOTimeBonus;
         }
         return 0;
@@ -389,7 +389,7 @@ contract Crowdsale is ManualSendingCrowdsale {
     function finishCrowdsale() external {
         require(isFinished());
         require(state == State.ICO);
-        if (leftTokens &gt; 0) {
+        if (leftTokens > 0) {
             token.burn(leftTokens);
             leftTokens = 0;
         }
@@ -398,22 +398,22 @@ contract Crowdsale is ManualSendingCrowdsale {
     function takeBounty() external onlyOwner {
         require(isFinished());
         require(state == State.ICO);
-        require(now &gt; bountyAvailabilityTime);
+        require(now > bountyAvailabilityTime);
         require(!bonusesPayed);
         bonusesPayed = true;
         require(token.transfer(msg.sender, bountyTokens));
     }
 
     function startICO() external {
-        require(currentTime() &gt; preICOendTime);
-        require(state == State.PRE_ICO &amp;&amp; leftTokens &lt;= maxPreICOTokenAmount);
+        require(currentTime() > preICOendTime);
+        require(state == State.PRE_ICO && leftTokens <= maxPreICOTokenAmount);
         leftTokens = leftTokens.add(maxTokenAmount).sub(maxPreICOTokenAmount).sub(bountyTokens);
         state = State.ICO;
     }
 
     function transferTokensTo(address to, uint256 givenTokens) internal returns (uint256) {
         uint256 providedTokens = givenTokens;
-        if (givenTokens &gt; leftTokens) {
+        if (givenTokens > leftTokens) {
             providedTokens = leftTokens;
         }
         leftTokens = leftTokens.sub(providedTokens);
@@ -428,7 +428,7 @@ contract Crowdsale is ManualSendingCrowdsale {
 
     function withdrawAmount(uint256 amount) external onlyOwner {
         uint256 givenAmount = amount;
-        if (address(this).balance &lt; amount) {
+        if (address(this).balance < amount) {
             givenAmount = address(this).balance;
         }
         require(msg.sender.call.gas(3000000).value(givenAmount)());

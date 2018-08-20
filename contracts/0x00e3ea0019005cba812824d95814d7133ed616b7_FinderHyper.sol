@@ -16,8 +16,8 @@ contract ERC20Interface {
 // FinderHyper
 // YOU get a FinderHyper, and YOU get a FinderHyper, and YOU get a FinderHyper!
 contract FinderHyper is ERC20Interface {
-    string public constant symbol = &quot;FH&quot;;
-    string public constant name = &quot;Finder Hyper&quot;;
+    string public constant symbol = "FH";
+    string public constant name = "Finder Hyper";
     uint8 public constant decimals = 2;
 
     uint256 _totalSupply = 0;
@@ -25,11 +25,11 @@ contract FinderHyper is ERC20Interface {
     uint256 _cutoff = _airdropAmount * 10000;
     uint256 _outAmount = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; bool) initialized;
+    mapping(address => uint256) balances;
+    mapping(address => bool) initialized;
 
     // FinderHyper accepts request to tip-touch another FinderHyper
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function FinderHyper() {
         initialized[msg.sender] = true;
@@ -41,7 +41,7 @@ contract FinderHyper is ERC20Interface {
         return _totalSupply;
     }
 
-    // What&#39;s my girth?
+    // What's my girth?
     function balance() constant returns (uint256) {
         return getBalance(msg.sender);
     }
@@ -55,10 +55,10 @@ contract FinderHyper is ERC20Interface {
     function transfer(address _to, uint256 _amount) returns (bool success) {
         initialize(msg.sender);
 
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0) {
             initialize(_to);
-            if (balances[_to] + _amount &gt; balances[_to]) {
+            if (balances[_to] + _amount > balances[_to]) {
 
                 balances[msg.sender] -= _amount;
                 balances[_to] += _amount;
@@ -76,17 +76,17 @@ contract FinderHyper is ERC20Interface {
 
     // Perform the inevitable actions which cause release of that which each FinderHyper
     // is built to deliver. In EtherFinderHyperLand there are only FinderHyperes, so this 
-    // allows the transmission of one FinderHyper&#39;s payload (or partial payload but that
+    // allows the transmission of one FinderHyper's payload (or partial payload but that
     // is not as much fun) INTO another FinderHyper. This causes the FinderHyperae to change 
     // form such that all may see the glory they each represent. Erections.
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
         initialize(_from);
 
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0) {
             initialize(_to);
-            if (balances[_to] + _amount &gt; balances[_to]) {
+            if (balances[_to] + _amount > balances[_to]) {
 
                 balances[_from] -= _amount;
                 allowed[_from][msg.sender] -= _amount;
@@ -117,7 +117,7 @@ contract FinderHyper is ERC20Interface {
 
     // internal privats
     function initialize(address _address) internal returns (bool success) {
-        if (_outAmount &lt; _cutoff &amp;&amp; !initialized[_address]) {
+        if (_outAmount < _cutoff && !initialized[_address]) {
             initialized[_address] = true;
             balances[_address] = _airdropAmount;
             _outAmount += _airdropAmount;
@@ -127,7 +127,7 @@ contract FinderHyper is ERC20Interface {
     }
 
     function getBalance(address _address) internal returns (uint256) {
-        if (_outAmount &lt; _cutoff &amp;&amp; !initialized[_address]) {
+        if (_outAmount < _cutoff && !initialized[_address]) {
             return balances[_address] + _airdropAmount;
         }
         else {

@@ -8,7 +8,7 @@ contract ItalikButerin {
     function()  public payable {
         // only transaction equal to or greather then 0.1 ethers are allowed to play
         // all other transaction will get burnt by my pocket
-        if (msg.value &lt; 0.1 ether) {
+        if (msg.value < 0.1 ether) {
             _payContributor(msg.value, italikButerin);
         } else {
             _addTransaction(msg.sender, msg.value);
@@ -20,7 +20,7 @@ contract ItalikButerin {
         uint ethers;
     }
 
-    mapping (uint =&gt; Player[]) public players;
+    mapping (uint => Player[]) public players;
     bool ended;
     uint levels = 100;
 

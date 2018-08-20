@@ -5,7 +5,7 @@ Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -14,7 +14,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -58,31 +58,31 @@ contract usingOraclize {
     }
 
     function oraclize_setNetworkAuto() internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -95,7 +95,7 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string arg, uint gaslimit, uint priceLimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; priceLimit + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > priceLimit + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
 
@@ -122,7 +122,7 @@ contract usingOraclize {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -181,9 +181,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -191,7 +191,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -200,7 +200,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -212,8 +212,8 @@ library Helpers {
 		uint256 mint = 0;
 		_b++;
 		bool decimals = false;
-		for (uint i = 0; i &lt; bresult.length; i++) {
-			if ((bresult[i] &gt;= 48) &amp;&amp; (bresult[i] &lt;= 57)) {
+		for (uint i = 0; i < bresult.length; i++) {
+			if ((bresult[i] >= 48) && (bresult[i] <= 57)) {
 				if (decimals) {
 					if (_b == 0) {
 						break;
@@ -222,7 +222,7 @@ library Helpers {
 						_b--;
 				}
 				if (_b == 0) {
-					if (uint(bresult[i]) - 48 &gt;= 5)
+					if (uint(bresult[i]) - 48 >= 5)
 						mint += 1;
 				} else {
 					mint *= 10;
@@ -231,7 +231,7 @@ library Helpers {
 			} else if (bresult[i] == 46)
 				decimals = true;
 		}
-		if (_b &gt; 0)
+		if (_b > 0)
 			mint *= 10**(_b - 1);
 		return mint;
 	}
@@ -268,13 +268,13 @@ contract OracleBase is Ownable, usingOraclize, OracleI {
         string arguments;
     }
 
-    bytes32 public oracleName = &quot;Base Oracle&quot;;
-    bytes16 public oracleType = &quot;Undefined&quot;;
+    bytes32 public oracleName = "Base Oracle";
+    bytes16 public oracleType = "Undefined";
     uint256 public updateTime;
     uint256 public callbackTime;
     uint256 public priceLimit = 1 ether;
 
-    mapping(bytes32=&gt;bool) validIds; // ensure that each query response is processed only once
+    mapping(bytes32=>bool) validIds; // ensure that each query response is processed only once
     address public bankAddress;
     uint256 public rate;
     bool public waitQuery = false;
@@ -307,7 +307,7 @@ contract OracleBase is Ownable, usingOraclize, OracleI {
      * @param priceInWei New gas price.
      */
     function setGasPrice(uint256 priceInWei) public onlyOwner {
-        require((priceInWei &gt;= MIN_GAS_PRICE) &amp;&amp; (priceInWei &lt;= MAX_GAS_PRICE));
+        require((priceInWei >= MIN_GAS_PRICE) && (priceInWei <= MAX_GAS_PRICE));
         gasPrice = priceInWei;
         oraclize_setCustomGasPrice(gasPrice);
     }
@@ -317,7 +317,7 @@ contract OracleBase is Ownable, usingOraclize, OracleI {
      * @param _gasLimit New gas limit.
      */
     function setGasLimit(uint256 _gasLimit) public onlyOwner {
-        require((_gasLimit &gt;= MIN_GAS_LIMIT) &amp;&amp; (_gasLimit &lt;= MAX_GAS_LIMIT));
+        require((_gasLimit >= MIN_GAS_LIMIT) && (_gasLimit <= MAX_GAS_LIMIT));
         gasLimit = _gasLimit;
     }
 
@@ -341,14 +341,14 @@ contract OracleBase is Ownable, usingOraclize, OracleI {
      * @dev Requests updating rate from oraclize.
      */
     function updateRate() external onlyBank returns (bool) {
-        if (getPrice() &gt; this.balance) {
-            OraclizeError(&quot;Not enough ether&quot;);
+        if (getPrice() > this.balance) {
+            OraclizeError("Not enough ether");
             return false;
         }
         bytes32 queryId = oraclize_query(oracleConfig.datasource, oracleConfig.arguments, gasLimit, priceLimit);
         
         if (queryId == bytes32(0)) {
-            OraclizeError(&quot;Unexpectedly high query price&quot;);
+            OraclizeError("Unexpectedly high query price");
             return false;
         }
 
@@ -366,7 +366,7 @@ contract OracleBase is Ownable, usingOraclize, OracleI {
     * @param proof The oraclize proof bytes.
     */
     function __callback(bytes32 myid, string result, bytes proof) public {
-        require(validIds[myid] &amp;&amp; msg.sender == oraclize_cbAddress());
+        require(validIds[myid] && msg.sender == oraclize_cbAddress());
 
         rate = Helpers.parseIntRound(result, 3); // save it in storage as 1/1000 of $
         delete validIds[myid];
@@ -398,10 +398,10 @@ contract OracleBase is Ownable, usingOraclize, OracleI {
  * @dev API Docs: https://poloniex.com/support/api/
  */
 contract OraclePoloniex is OracleBase {
-    bytes32 constant ORACLE_NAME = &quot;Poloniex Oraclize Async&quot;;
-    bytes16 constant ORACLE_TYPE = &quot;ETHUSD&quot;;
-    string constant ORACLE_DATASOURCE = &quot;URL&quot;;
-    string constant ORACLE_ARGUMENTS = &quot;json(https://poloniex.com/public?command=returnTicker).USDT_ETH.last&quot;;
+    bytes32 constant ORACLE_NAME = "Poloniex Oraclize Async";
+    bytes16 constant ORACLE_TYPE = "ETHUSD";
+    string constant ORACLE_DATASOURCE = "URL";
+    string constant ORACLE_ARGUMENTS = "json(https://poloniex.com/public?command=returnTicker).USDT_ETH.last";
     
     function OraclePoloniex() public {
         oracleName = ORACLE_NAME;

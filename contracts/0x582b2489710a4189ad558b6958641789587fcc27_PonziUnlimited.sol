@@ -6,7 +6,7 @@ contract PonziUnlimited {
   modifier onlyBy(address _account)
     {
         require(msg.sender == _account);
-        // Do not forget the &quot;_;&quot;! It will
+        // Do not forget the "_;"! It will
         // be replaced by the actual function
         // body when the modifier is used.
         _;
@@ -66,14 +66,14 @@ contract PonziUnlimited {
   bool public active;
   uint private currentPayoutIndex;
 
-  mapping (uint =&gt; Deposit) public depositsStack;
+  mapping (uint => Deposit) public depositsStack;
 
-  mapping (address =&gt; uint) public refereesCount;
-  mapping (address =&gt; uint) public pendingReferals;
-  mapping (address =&gt; uint) public addressGains;
-  mapping (address =&gt; uint[]) public addressPositions;
-  mapping (address =&gt; address) public refereeInvitations;
-  mapping (address =&gt; bool) public refereds;
+  mapping (address => uint) public refereesCount;
+  mapping (address => uint) public pendingReferals;
+  mapping (address => uint) public addressGains;
+  mapping (address => uint[]) public addressPositions;
+  mapping (address => address) public refereeInvitations;
+  mapping (address => bool) public refereds;
 
   PayoutItem[] public lastPayouts;
 
@@ -102,11 +102,11 @@ contract PonziUnlimited {
     uint length = lastPayouts.length;
     uint startIndex = 0;
 
-    if (length &gt; 10) {
+    if (length > 10) {
       startIndex = length - 10;
     }
 
-    for(uint i = startIndex; i &lt; length; i++) {
+    for(uint i = startIndex; i < length; i++) {
       currentPayout = lastPayouts[i];
       lastReceivers[j] = currentPayout.receiver;
       lastAmounts[j] = currentPayout.amount;
@@ -178,7 +178,7 @@ contract PonziUnlimited {
   }
 
   function deposit() payable {
-    if(msg.value &lt;= 0) throw;
+    if(msg.value <= 0) throw;
     lastDeposit = block.timestamp;
     depositsStack[numDeposits] = Deposit(msg.sender, msg.value);
     totalDeposited += msg.value;
@@ -234,7 +234,7 @@ contract PonziUnlimited {
  function computeGains(Deposit deposit) private constant returns (uint gains, uint fees) {
     gains = 0;
 
-    if(deposit.amount &gt; 0) {
+    if(deposit.amount > 0) {
       gains = (deposit.amount * computeGainsRate(deposit.depositor)) / 100;
       fees = (gains * feesRate) / 100;
 
@@ -274,7 +274,7 @@ contract PonziUnlimited {
     uint payableAmount = deposit.amount + gains;
     address currentDepositor = deposit.depositor;
 
-    if(gains &gt; 0 &amp;&amp; this.balance &gt; payableAmount) {
+    if(gains > 0 && this.balance > payableAmount) {
       success = currentDepositor.send( payableAmount );
       if (success) {
         Payout(currentDepositor, payableAmount);
@@ -293,7 +293,7 @@ contract PonziUnlimited {
 
   function dispatchGains() {
 
-    for (uint i = currentPayoutIndex; i&lt;numDeposits; i++){
+    for (uint i = currentPayoutIndex; i<numDeposits; i++){
       payout(depositsStack[i]);
     }
   }

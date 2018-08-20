@@ -9,12 +9,12 @@ library SafeMath { //standard library for uint
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function pow(uint256 a, uint256 b) internal pure returns (uint256){ //power function
@@ -22,7 +22,7 @@ library SafeMath { //standard library for uint
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -100,7 +100,7 @@ contract SpyceCrowdsale is Ownable{
 
     uint tokensToSend = _value.mul((uint)(10).pow(decimals))/stages[currentStage].tokenPrice;
 
-    require (tokensToSend.add(stages[currentStage].tokensSold) &lt;= stages[currentStage].maxCap);
+    require (tokensToSend.add(stages[currentStage].tokensSold) <= stages[currentStage].maxCap);
 
     stages[currentStage].tokensSold = stages[currentStage].tokensSold.add(tokensToSend);
 
@@ -116,7 +116,7 @@ contract SpyceCrowdsale is Ownable{
   }
 
   function autoDistribute (uint currentStage) internal {
-    if (stages[currentStage].minCap &lt;= stages[currentStage].tokensSold){
+    if (stages[currentStage].minCap <= stages[currentStage].tokensSold){
 
       distributionAddress.transfer(stages[currentStage].ethCollected.sub(stages[currentStage].ethSended));
 
@@ -148,7 +148,7 @@ function manualSendTokens (address _address, uint _value) public onlyOwner {
     uint ethCollected;
     uint ethSended;
 
-    mapping (address =&gt; uint) ethContributors; 
+    mapping (address => uint) ethContributors; 
   }
 
   stageStruct[] public stages;
@@ -168,13 +168,13 @@ function manualSendTokens (address _address, uint _value) public onlyOwner {
   
   function getCurrentStage (uint _time) public view returns (uint) {
     uint currentStage = 0;
-    for (uint i = 0; i &lt; stages.length; i++){
-      if (stages[i].startDate &lt; _time &amp;&amp; _time &lt;= stages[i].finishDate){
+    for (uint i = 0; i < stages.length; i++){
+      if (stages[i].startDate < _time && _time <= stages[i].finishDate){
         currentStage = i;
         break;
       }
     }
-    if (stages[currentStage].startDate &lt; _time &amp;&amp; _time &lt;= stages[currentStage].finishDate){
+    if (stages[currentStage].startDate < _time && _time <= stages[currentStage].finishDate){
       return currentStage;
     }else{
       return 1000; //NO ACTIVE STAGE
@@ -185,8 +185,8 @@ function manualSendTokens (address _address, uint _value) public onlyOwner {
   function refund () public {
     uint currentStage = getCurrentStage(now);
 
-    for (uint i = 0; i &lt; currentStage; i++){
-      if(stages[i].ethContributors[msg.sender] &gt; 0 &amp;&amp; stages[i].tokensSold &lt; stages[i].minCap){
+    for (uint i = 0; i < currentStage; i++){
+      if(stages[i].ethContributors[msg.sender] > 0 && stages[i].tokensSold < stages[i].minCap){
         msg.sender.transfer(stages[i].ethContributors[msg.sender]);
         stages[i].ethContributors[msg.sender] = 0;
       }

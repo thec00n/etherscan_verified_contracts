@@ -22,37 +22,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -108,11 +108,11 @@ contract Token {
 contract StandardToken is Token {
 
     // function transfer(address _to, uint256 _value) returns (bool success) {
-    //     //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-    //     //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+    //     //Default assumes totalSupply can't be over max (2^256 - 1).
+    //     //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
     //     //Replace the if with this one instead.
-    //     //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-    //     require(balances[msg.sender] &gt;= _value);
+    //     //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+    //     require(balances[msg.sender] >= _value);
     //     balances[msg.sender] -= _value;
     //     balances[_to] += _value;
     //     Transfer(msg.sender, _to, _value);
@@ -121,8 +121,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -144,8 +144,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -161,7 +161,7 @@ contract ERC223Basic is StandardToken{
 contract ERC223BasicToken is ERC223Basic{
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // Function that is called when a user or another contract wants to transfer funds .
     function transfer(address to, uint value, bytes data) {
@@ -176,7 +176,7 @@ contract ERC223BasicToken is ERC223Basic{
 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
             receiver.tokenFallback(msg.sender, value, data);
         }
@@ -196,7 +196,7 @@ contract ERC223BasicToken is ERC223Basic{
 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
             receiver.tokenFallback(msg.sender, value, empty);
         }
@@ -224,13 +224,13 @@ contract HumanERC223Token is ERC223BasicToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanERC223Token (
         uint256 _initialAmount,
@@ -250,14 +250,14 @@ contract HumanERC223Token is ERC223BasicToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }
 
 
 // Creates 20,000,000.000000000000000000 Hedgeminer Token (HMT) Tokens
-contract HedgeminerToken is HumanERC223Token (20000000000000000000000000, &quot;Hedgeminer Token&quot;, 18, &quot;HMT&quot;) {}
+contract HedgeminerToken is HumanERC223Token (20000000000000000000000000, "Hedgeminer Token", 18, "HMT") {}

@@ -68,11 +68,11 @@ library SafeMath {
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
 
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
 
     // uint256 c = a / b;
 
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
     return a / b;
 
@@ -88,7 +88,7 @@ library SafeMath {
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 
-    assert(b &lt;= a);
+    assert(b <= a);
 
     return a - b;
 
@@ -106,7 +106,7 @@ library SafeMath {
 
     c = a + b;
 
-    assert(c &gt;= a);
+    assert(c >= a);
 
     return c;
 
@@ -152,7 +152,7 @@ contract ZoologicalGarden is ERC223, ERC20Basic {
   string public symbol;
   uint8 public decimals;
   uint256 public totalSupply;
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   /**
   * @dev Function to access name of token.
@@ -197,8 +197,8 @@ contract ZoologicalGarden is ERC223, ERC20Basic {
   
   
   function ZoologicalGarden() public{
-      name = &quot;Zoological Garden&quot;;
-      symbol = &quot;ZOO&quot;;
+      name = "Zoological Garden";
+      symbol = "ZOO";
       decimals = 4;
       totalSupply = 100000000 * 10 ** uint(decimals);
       balances[msg.sender] = totalSupply;
@@ -214,7 +214,7 @@ contract ZoologicalGarden is ERC223, ERC20Basic {
   */
   function transfer(address _to, uint256 _value, bytes _data, string _fallback) public returns (bool _success) {
     if (isContract(_to)) {
-      if (balanceOf(msg.sender) &lt; _value)
+      if (balanceOf(msg.sender) < _value)
       revert();
       balances[msg.sender] = balanceOf(msg.sender).sub(_value);
       balances[_to] = balanceOf(_to).add(_value);
@@ -270,7 +270,7 @@ contract ZoologicalGarden is ERC223, ERC20Basic {
     assembly {
       length := extcodesize(_addr)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
     
   /**
@@ -280,7 +280,7 @@ contract ZoologicalGarden is ERC223, ERC20Basic {
   * @param _data bytes data along token transaction.
   */
   function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool _success) {
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
     revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
@@ -296,7 +296,7 @@ contract ZoologicalGarden is ERC223, ERC20Basic {
   * @param _data bytes data along token transaction.
   */
   function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool _success) {
-    if (balanceOf(msg.sender) &lt; _value) {
+    if (balanceOf(msg.sender) < _value) {
         revert();
     }
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);

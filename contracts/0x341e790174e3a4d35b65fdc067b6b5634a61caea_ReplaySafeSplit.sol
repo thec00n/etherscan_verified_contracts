@@ -11,9 +11,9 @@ contract ReplaySafeSplit {
 
     // Splits the funds into 2 addresses
     function split(address targetFork, address targetNoFork) returns(bool) {
-        if (amIOnTheFork.forked() &amp;&amp; targetFork.send(msg.value)) {
+        if (amIOnTheFork.forked() && targetFork.send(msg.value)) {
             return true;
-        } else if (!amIOnTheFork.forked() &amp;&amp; targetNoFork.send(msg.value)) {
+        } else if (!amIOnTheFork.forked() && targetNoFork.send(msg.value)) {
             return true;
         }
         return false;

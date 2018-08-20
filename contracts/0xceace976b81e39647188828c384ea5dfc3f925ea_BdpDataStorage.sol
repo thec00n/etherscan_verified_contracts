@@ -67,14 +67,14 @@ contract BdpBase is BdpBaseData {
 	}
 
 	modifier whileContractIsActive() {
-		require(!paused &amp;&amp; setupCompleted);
+		require(!paused && setupCompleted);
 		_;
 	}
 
 	modifier storageAccessControl() {
 		require(
-			(! setupCompleted &amp;&amp; (msg.sender == ownerAddress || msg.sender == managerAddress))
-			|| (setupCompleted &amp;&amp; !paused &amp;&amp; (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
+			(! setupCompleted && (msg.sender == ownerAddress || msg.sender == managerAddress))
+			|| (setupCompleted && !paused && (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
 		);
 		_;
 	}
@@ -135,9 +135,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
@@ -145,7 +145,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -154,7 +154,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -182,7 +182,7 @@ contract BdpDataStorage is BdpBase {
 
 	uint256 public lastRegionId = 0;
 
-	mapping (uint256 =&gt; Region) public data;
+	mapping (uint256 => Region) public data;
 
 
 	function getLastRegionId() view public returns (uint256) {

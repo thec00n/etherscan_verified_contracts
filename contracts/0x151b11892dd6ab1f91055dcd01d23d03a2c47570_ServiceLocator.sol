@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,8 +50,8 @@ contract ServiceLocator is Ownable {
         uint32 ttl; 
     }
 
-    mapping (bytes32 =&gt; Registry) registry;
-    mapping (address =&gt; string) ptr;
+    mapping (bytes32 => Registry) registry;
+    mapping (address => string) ptr;
 
     // EVENTS
     event Set(string namespace, address registryAddr, uint32 ttl);
@@ -66,7 +66,7 @@ contract ServiceLocator is Ownable {
     function get(string _namespace) constant public returns (address) {
         Registry storage r = registry[keccak256(_namespace)];
         
-        if (r.ttl &gt; 0 &amp;&amp; r.updated + r.ttl &lt; now) {
+        if (r.ttl > 0 && r.updated + r.ttl < now) {
             return address(0);
         }
         return r.addr;
@@ -82,8 +82,8 @@ contract ServiceLocator is Ownable {
         string storage ns = ptr[_addr];
 
         Registry storage r = registry[keccak256(ns)];
-        if (r.ttl &gt; 0 &amp;&amp; r.updated + r.ttl &lt; now) {
-            return &quot;&quot;;
+        if (r.ttl > 0 && r.updated + r.ttl < now) {
+            return "";
         }
         return ns;
     }
@@ -132,6 +132,6 @@ contract ServiceLocator is Ownable {
         assembly {
             size := extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 }

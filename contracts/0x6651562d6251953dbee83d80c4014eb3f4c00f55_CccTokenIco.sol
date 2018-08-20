@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -63,7 +63,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
@@ -98,7 +98,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -111,8 +111,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract CccTokenIco is StandardToken {
     using SafeMath for uint256;
-    string public name = &quot;Crypto Credit Card Token&quot;;
-    string public symbol = &quot;CCCR&quot;;
+    string public name = "Crypto Credit Card Token";
+    string public symbol = "CCCR";
     uint8 public constant decimals = 6;
     
     uint256 public cntMembers = 0;
@@ -224,13 +224,13 @@ contract CccTokenIco is StandardToken {
 
     function getIcoDeflator() constant returns (uint256)
     {
-        if (now &lt;= startTimestamp + 15 days) 
+        if (now <= startTimestamp + 15 days) 
         {
             return 138;
-        }else if (now &lt;= startTimestamp + 29 days) 
+        }else if (now <= startTimestamp + 29 days) 
         {
             return 123;
-        }else if (now &lt;= startTimestamp + 43 days) 
+        }else if (now <= startTimestamp + 43 days) 
         {
             return 115;
         }else 
@@ -265,17 +265,17 @@ contract CccTokenIco is StandardToken {
 
     modifier isIcoOpen() 
     {
-        require(now &gt;= startTimestamp);//15.11-29.11 pre ICO
-        require(now &lt;= startTimestamp + 14 days || now &gt;= startTimestamp + 19 days);//gap 29.11-04.12
-        require(now &lt;= (startTimestamp + durationSeconds) || totalRaised &lt; minCap);//04.12-02.02 ICO
-        require(totalRaised &lt;= maxCap);
+        require(now >= startTimestamp);//15.11-29.11 pre ICO
+        require(now <= startTimestamp + 14 days || now >= startTimestamp + 19 days);//gap 29.11-04.12
+        require(now <= (startTimestamp + durationSeconds) || totalRaised < minCap);//04.12-02.02 ICO
+        require(totalRaised <= maxCap);
         _;
     }
 
     modifier isIcoFinished() 
     {
-        require(now &gt;= startTimestamp);
-        require(totalRaised &gt;= maxCap || (now &gt;= (startTimestamp + durationSeconds) &amp;&amp; totalRaised &gt;= minCap));
+        require(now >= startTimestamp);
+        require(totalRaised >= maxCap || (now >= (startTimestamp + durationSeconds) && totalRaised >= minCap));
         _;
     }
 

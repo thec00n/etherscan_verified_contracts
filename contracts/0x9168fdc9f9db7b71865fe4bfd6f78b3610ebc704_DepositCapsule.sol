@@ -26,7 +26,7 @@ contract Ownable {
 
 contract DepositCapsule is Ownable {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     uint public openDate;
     uint public minimum;
     
@@ -41,7 +41,7 @@ contract DepositCapsule is Ownable {
     function() public payable {  }
     
     function deposit() public payable {
-        if (msg.value &gt;= minimum) {
+        if (msg.value >= minimum) {
             deposits[msg.sender] += msg.value;
             emit Deposit(msg.sender, msg.value);
         } else revert();
@@ -49,9 +49,9 @@ contract DepositCapsule is Ownable {
     event Deposit(address indexed depositor, uint amount);
 
     function withdraw(uint amount) public onlyOwner {
-        if (now &gt;= openDate) {
+        if (now >= openDate) {
             uint max = deposits[msg.sender];
-            if (amount &lt;= max &amp;&amp; max &gt; 0) {
+            if (amount <= max && max > 0) {
                 if (msg.sender.send(amount))
                     emit Withdrawal(msg.sender, amount);
             }
@@ -60,7 +60,7 @@ contract DepositCapsule is Ownable {
     event Withdrawal(address indexed withdrawer, uint amount);
     
     function kill() public onlyOwner {
-        if (address(this).balance &gt;= 0)
+        if (address(this).balance >= 0)
             selfdestruct(msg.sender);
 	}
 }

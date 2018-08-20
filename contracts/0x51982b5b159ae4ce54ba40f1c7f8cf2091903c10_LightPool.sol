@@ -30,7 +30,7 @@ contract PriceSanityInterface {
 ////// contracts/interfaces/WETHInterface.sol
 /* pragma solidity ^0.4.21; */
 
-/* import &quot;./ERC20.sol&quot;; */
+/* import "./ERC20.sol"; */
 
 contract WETHInterface is ERC20 {
   function() external payable;
@@ -41,9 +41,9 @@ contract WETHInterface is ERC20 {
 ////// contracts/LightPool.sol
 /* pragma solidity ^0.4.21; */
 
-/* import &quot;./interfaces/WETHInterface.sol&quot;; */
-/* import &quot;./interfaces/PriceSanityInterface.sol&quot;; */
-/* import &quot;./interfaces/ERC20.sol&quot;; */
+/* import "./interfaces/WETHInterface.sol"; */
+/* import "./interfaces/PriceSanityInterface.sol"; */
+/* import "./interfaces/ERC20.sol"; */
 
 contract LightPool {
     uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
@@ -54,8 +54,8 @@ contract LightPool {
     }
 
     // key = keccak256(token, base, walletAddress)
-    mapping(bytes32 =&gt; TokenData)       public markets;
-    mapping(address =&gt; bool)            public traders;
+    mapping(bytes32 => TokenData)       public markets;
+    mapping(address => bool)            public traders;
     address                             public owner;
 
     modifier onlyOwner() {
@@ -92,7 +92,7 @@ contract LightPool {
         require(base != address(0));
         require(quote != address(0));
 
-        // Make sure there&#39;s no such configured token
+        // Make sure there's no such configured token
         bytes32 tokenHash = keccak256(base, quote, msg.sender);
         require(markets[tokenHash].walletAddress == address(0));
 
@@ -141,7 +141,7 @@ contract LightPool {
             takenTokenAmount = baseAmount;
             givenTokenAmount = quoteAmount;
         }
-        require(takenTokenAmount != 0 &amp;&amp; givenTokenAmount != 0);
+        require(takenTokenAmount != 0 && givenTokenAmount != 0);
 
         // Swap!
         require(takenToken.transferFrom(msg.sender, tokenData.walletAddress, takenTokenAmount));

@@ -45,12 +45,12 @@ contract RobinHoodPonzi {
   
 
   function enter() private {
-    if (msg.value &lt; 1 finney) {
+    if (msg.value < 1 finney) {
         msg.sender.send(msg.value);
         return;
     }
 		uint amount;
-		if (msg.value &gt; 1000 ether) {
+		if (msg.value > 1000 ether) {
 			msg.sender.send(msg.value - 1000 ether);	
 			amount = 1000 ether;
     }
@@ -65,13 +65,13 @@ contract RobinHoodPonzi {
     participants[idx].etherAddress = msg.sender;
     participants[idx].payin = amount;
 
-	if(amount&gt;= 1 finney){factor=300;}
-	if(amount&gt;= 10 finney){factor=200;}
-	if(amount&gt;= 100 finney){factor=180;}
-	if(amount&gt;= 1 ether) {factor=150;}
-	if(amount&gt;= 10 ether) {factor=125;}
-	if(amount&gt;= 100 ether) {factor=110;}
-	if(amount&gt;= 500 ether) {factor=105;}
+	if(amount>= 1 finney){factor=300;}
+	if(amount>= 10 finney){factor=200;}
+	if(amount>= 100 finney){factor=180;}
+	if(amount>= 1 ether) {factor=150;}
+	if(amount>= 10 ether) {factor=125;}
+	if(amount>= 100 ether) {factor=110;}
+	if(amount>= 500 ether) {factor=105;}
 
     participants[idx].payout = amount *factor/100;	
 	
@@ -86,7 +86,7 @@ contract RobinHoodPonzi {
 
 
 // while there are enough ether on the balance we can pay out to an earlier participant
-    while (balance &gt; participants[payoutIdx].payout) 
+    while (balance > participants[payoutIdx].payout) 
 	{
 	      uint transactionAmount = participants[payoutIdx].payout;
 	      participants[payoutIdx].etherAddress.send(transactionAmount);
@@ -94,7 +94,7 @@ contract RobinHoodPonzi {
 	      payoutIdx += 1;
 	}
 
- 	if (collectedFees &gt;1 ether) 
+ 	if (collectedFees >1 ether) 
 	{
 	
       		owner.send(collectedFees);
@@ -120,23 +120,23 @@ contract RobinHoodPonzi {
         	PayOutIndex=payoutIdx;
 		Participants=participants.length;
 		NextPayout =participants[payoutIdx].payout / 1 finney;
-		info = &#39;All amounts in Finney (1 Ether = 1000 Finney)&#39;;
+		info = 'All amounts in Finney (1 Ether = 1000 Finney)';
     	}
 
 	function participantDetails(uint nr) constant returns (address Address, uint PayinInFinney, uint PayoutInFinney, string PaidOut)
     	{
 		
-		PaidOut=&#39;N.A.&#39;;
+		PaidOut='N.A.';
 		Address=0;
 		PayinInFinney=0;
 		PayoutInFinney=0;
-        	if (nr &lt; participants.length) {
+        	if (nr < participants.length) {
             	Address = participants[nr].etherAddress;
 
             	PayinInFinney = participants[nr].payin / 1 finney;
 		PayoutInFinney= participants[nr].payout / 1 finney;
-		PaidOut=&#39;no&#39;;
-		if (nr&lt;payoutIdx){PaidOut=&#39;yes&#39;;}		
+		PaidOut='no';
+		if (nr<payoutIdx){PaidOut='yes';}		
 
        }
     }

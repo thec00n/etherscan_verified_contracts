@@ -10,12 +10,12 @@ pragma solidity ^0.4.19;
 * - After you reach the MaturityDate you can redeem the bond for the MaturityPrice
 * - MaturityPrice is always greater than the NominalPrice
 * - greater the MaturityDate = higher profit
-* - You can&#39;t redeem a bond after MaxRedeemTime
+* - You can't redeem a bond after MaxRedeemTime
 * 
 * For example, you bought a bond for 1 ETH which will mature in 1 month for 63% profit.
 * After the month you can redeem the bond and receive your 1.63 ETH.
 *
-* If you don&#39;t want to wait for your bond maturity you can sell it to another investor. 
+* If you don't want to wait for your bond maturity you can sell it to another investor. 
 * For example you bought a 1 year bond, 6 months have passed and you urgently need money. 
 * You can sell the bond on a secondary market to other investors before the maturity date.
 * You can also redeem your bond prematurely but only for a part of the nominal price.
@@ -61,7 +61,7 @@ contract SafeMath
 
     function div(uint a, uint b) internal pure returns (uint) 
     {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -69,14 +69,14 @@ contract SafeMath
 
     function sub(uint a, uint b) internal pure returns (uint) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) 
     {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -93,7 +93,7 @@ contract EtherBonds is SafeMath
 {
     /* A founder can write here useful information */
     /* For example current domain name or report a problem */
-    string public README = &quot;STATUS_OK&quot;;
+    string public README = "STATUS_OK";
     
     /* You can refer a friend and you will be receiving a bonus for EACH his deal */
     /* The friend will also have a bonus but only once */
@@ -104,7 +104,7 @@ contract EtherBonds is SafeMath
     uint32 UserRefBonusInPercent = 3;
     
     /* How long it takes for a bond to mature  */
-    uint32 MinMaturityTimeInDays = 30; // don&#39;t set less than 15 days
+    uint32 MinMaturityTimeInDays = 30; // don't set less than 15 days
     uint32 MaxMaturityTimeInDays = 240;
     
     /* Minimum price of a bond */
@@ -116,7 +116,7 @@ contract EtherBonds is SafeMath
     uint32 PrematureRedeemCostInPercent = 20;
     
     /* Be careful! */
-    /* If you don&#39;t redeem your bond AFTER its maturity date */
+    /* If you don't redeem your bond AFTER its maturity date */
     /* the bond will become irredeemable! */
     uint32 RedeemRangeInDays = 1;
     uint32 ExtraRedeemRangeInDays = 3;
@@ -124,7 +124,7 @@ contract EtherBonds is SafeMath
     uint32 ExtraRedeemRangeCostInPercent = 10;
     
     /* Founder takes a fee for each bond sold */
-    /* There is no way for a founder to take all the contract&#39;s money, fonder takes only the fee */
+    /* There is no way for a founder to take all the contract's money, fonder takes only the fee */
     address public Founder;
     uint32 public FounderFeeInPercent = 5;
     
@@ -146,7 +146,7 @@ contract EtherBonds is SafeMath
         uint32 maturityTime;
         uint32 redeemTime;
         
-        /* A bond can&#39;t be redeemed after this date */
+        /* A bond can't be redeemed after this date */
         uint32 maxRedeemTime;
         bool canBeRedeemedPrematurely;
         
@@ -157,7 +157,7 @@ contract EtherBonds is SafeMath
         uint sellingPrice;
     }
     uint32 NextBondID = 1;
-    mapping(uint32 =&gt; Bond) public Bonds;
+    mapping(uint32 => Bond) public Bonds;
     
     struct UserInfo
     {
@@ -165,11 +165,11 @@ contract EtherBonds is SafeMath
         address agent;
         
         uint32 totalBonds;
-        mapping(uint32 =&gt; uint32) bonds;
+        mapping(uint32 => uint32) bonds;
     }
-    mapping(address =&gt; UserInfo) public Users;
+    mapping(address => UserInfo) public Users;
 
-    mapping(address =&gt; uint) public Balances;
+    mapping(address => uint) public Balances;
 
     /* MAIN */
     
@@ -262,8 +262,8 @@ contract EtherBonds is SafeMath
         
         uint x = maturityTimeInDays;
         
-        /* The formula will break if x &lt; 15 */
-        require(x &gt;= 15);
+        /* The formula will break if x < 15 */
+        require(x >= 15);
         
         var a = mul(2134921000, x);
         var b = mul(mul(111234600, x), x);
@@ -281,22 +281,22 @@ contract EtherBonds is SafeMath
         internal view returns(bool) 
     {
         return 
-            bond.issueTime &gt; 0 &amp;&amp;                       // a bond should be issued
-            bond.owner != 0 &amp;&amp;                          // it should should have an owner
-            bond.redeemTime == 0 &amp;&amp;                     // it should not be already redeemed
-            bond.sellingPrice == 0 &amp;&amp;                   // it should not be reserved for selling
+            bond.issueTime > 0 &&                       // a bond should be issued
+            bond.owner != 0 &&                          // it should should have an owner
+            bond.redeemTime == 0 &&                     // it should not be already redeemed
+            bond.sellingPrice == 0 &&                   // it should not be reserved for selling
             (
                 !IsPremature(bond.maturityTime) ||      // it should be mature / be redeemable prematurely 
                 bond.canBeRedeemedPrematurely
-            ) &amp;&amp;       
-            block.timestamp &lt;= bond.maxRedeemTime;      // be careful, you can&#39;t redeem too old bonds
+            ) &&       
+            block.timestamp <= bond.maxRedeemTime;      // be careful, you can't redeem too old bonds
     }
     
     /* For some external checkings we gonna to wrap this in a function */
     function IsPremature(uint maturityTime)
         public view returns(bool) 
     {
-        return maturityTime &gt; block.timestamp;
+        return maturityTime > block.timestamp;
     }
     
     /* This is how you buy bonds on the primary market */
@@ -308,26 +308,26 @@ contract EtherBonds is SafeMath
         ) 
         public payable
     {
-        /* We don&#39;t issue bonds cheaper than MinNominalBondPrice*/
-        require(msg.value &gt;= MinNominalBondPrice);
+        /* We don't issue bonds cheaper than MinNominalBondPrice*/
+        require(msg.value >= MinNominalBondPrice);
         
-        /* We don&#39;t issue bonds out of allowed maturity range */
+        /* We don't issue bonds out of allowed maturity range */
         require(
-            maturityTimeInDays &gt;= MinMaturityTimeInDays &amp;&amp; 
-            maturityTimeInDays &lt;= MaxMaturityTimeInDays
+            maturityTimeInDays >= MinMaturityTimeInDays && 
+            maturityTimeInDays <= MaxMaturityTimeInDays
             );
             
         /* You can have a bonus on your first deal if specify an agent */
         bool hasRefBonus = false;
             
         /* On your first deal ...  */
-        if (Users[msg.sender].agent == 0 &amp;&amp; Users[msg.sender].totalBonds == 0)
+        if (Users[msg.sender].agent == 0 && Users[msg.sender].totalBonds == 0)
         {
             /* ... you may specify an agent and get a bonus for this ... */
             if (agent != 0)
             {
                 /* ... the agent should have some bonds behind him */
-                if (Users[agent].totalBonds &gt; 0)
+                if (Users[agent].totalBonds > 0)
                 {
                     Users[msg.sender].agent = agent;
                     hasRefBonus = true;
@@ -380,7 +380,7 @@ contract EtherBonds is SafeMath
         /* Notify all users about the issuing event */
         Issued(newBond.id, newBond.owner);
         
-        /* Founder&#39;s fee */
+        /* Founder's fee */
         uint moneyToFounder = div(
             mul(newBond.nominalPrice, FounderFeeInPercent), 
             100
@@ -391,14 +391,14 @@ contract EtherBonds is SafeMath
             100
             );
         
-        if (agent != 0 &amp;&amp; moneyToAgent &gt; 0)
+        if (agent != 0 && moneyToAgent > 0)
         {
-            /* Agent can potentially block user&#39;s trading attempts, so we dont use just .transfer*/
+            /* Agent can potentially block user's trading attempts, so we dont use just .transfer*/
             Balances[agent] = add(Balances[agent], moneyToAgent);
         }
         
         /* Founder always gets his fee */
-        require(moneyToFounder &gt; 0);
+        require(moneyToFounder > 0);
         
         Founder.transfer(moneyToFounder);
     }
@@ -410,23 +410,23 @@ contract EtherBonds is SafeMath
         var bond = Bonds[bondId];
         
         /* A bond you are buying should be issued */
-        require(bond.issueTime &gt; 0);
+        require(bond.issueTime > 0);
         /* Checking, if the bond is a valuable asset */
-        require(bond.redeemTime == 0 &amp;&amp; block.timestamp &lt; bond.maxRedeemTime);
+        require(bond.redeemTime == 0 && block.timestamp < bond.maxRedeemTime);
         
         var price = bond.sellingPrice;
         /* You can only buy a bond if an owner is selling it */
-        require(price &gt; 0);
+        require(price > 0);
         /* You should have enough money to pay the owner */
-        require(price &lt;= msg.value);
+        require(price <= msg.value);
         
-        /* It&#39;s ok if you accidentally transfer more money, we will send them back */
+        /* It's ok if you accidentally transfer more money, we will send them back */
         var residue = msg.value - price;
         
         /* Transfering the bond */
         var oldOwner = bond.owner;
         var newOwner = msg.sender;
-        require(newOwner != 0 &amp;&amp; newOwner != oldOwner);
+        require(newOwner != 0 && newOwner != oldOwner);
         
         bond.sellingPrice = 0;
         bond.owner = newOwner;
@@ -441,10 +441,10 @@ contract EtherBonds is SafeMath
         /* Notify all users about the exchange event */
         Sold(bond.id, oldOwner, newOwner, price);
         
-        /* Old owner can potentially block user&#39;s trading attempts, so we dont use just .transfer*/
+        /* Old owner can potentially block user's trading attempts, so we dont use just .transfer*/
         Balances[oldOwner] = add(Balances[oldOwner], price);
         
-        if (residue &gt; 0)
+        if (residue > 0)
         {
             /* If there is residue we will send it back */
             newOwner.transfer(residue);
@@ -457,17 +457,17 @@ contract EtherBonds is SafeMath
     {
         /* To protect from an accidental selling by 0 price */
         /* The selling price should be in Wei */
-        require(sellingPrice &gt;= MinNominalBondPrice);
+        require(sellingPrice >= MinNominalBondPrice);
         
         var bond = Bonds[bondId];
         
         /* A bond you are selling should be issued */
-        require(bond.issueTime &gt; 0);
-        /* You can&#39;t update selling price, please, call CancelSellOrder beforehand */
+        require(bond.issueTime > 0);
+        /* You can't update selling price, please, call CancelSellOrder beforehand */
         require(bond.sellingPrice == 0);
-        /* You can&#39;t sell useless bonds */
-        require(bond.redeemTime == 0 &amp;&amp; block.timestamp &lt; bond.maxRedeemTime);
-        /* You should own a bond you&#39;re selling */
+        /* You can't sell useless bonds */
+        require(bond.redeemTime == 0 && block.timestamp < bond.maxRedeemTime);
+        /* You should own a bond you're selling */
         require(bond.owner == msg.sender);
         
         bond.sellingPrice = sellingPrice;
@@ -483,9 +483,9 @@ contract EtherBonds is SafeMath
         var bond = Bonds[bondId];
         
         /* Bond should be reserved for selling */
-        require(bond.sellingPrice &gt; 0);
+        require(bond.sellingPrice > 0);
         
-        /* You should own a bond which sell order you&#39;re cancelling */
+        /* You should own a bond which sell order you're cancelling */
         require(bond.owner == msg.sender);
         
         bond.sellingPrice = 0;
@@ -494,13 +494,13 @@ contract EtherBonds is SafeMath
         SellOrderCanceled(bond.id, bond.owner);
     }
     
-    /* Sometimes we can&#39;t just use .transfer for a security reason */
+    /* Sometimes we can't just use .transfer for a security reason */
     function Withdraw()
         public
     {
-        require(Balances[msg.sender] &gt; 0);
+        require(Balances[msg.sender] > 0);
 
-        /* Don&#39;t forget about double entering in .transfer! */
+        /* Don't forget about double entering in .transfer! */
         var money = Balances[msg.sender];
         Balances[msg.sender] = 0;
 
@@ -523,7 +523,7 @@ contract EtherBonds is SafeMath
         /* If a bond has redeemTime it has been redeemed */
         bond.redeemTime = uint32(block.timestamp);
         
-        /* If it&#39;s a premature redeem you will only get 
+        /* If it's a premature redeem you will only get 
         PrematureRedeemPartInPercent of nominalPrice back */
         if (IsPremature(bond.maturityTime))
         {

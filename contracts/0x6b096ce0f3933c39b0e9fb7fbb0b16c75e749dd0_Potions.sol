@@ -58,7 +58,7 @@ contract Potions{
     address owner;
     bool openToPublic = false; 
     uint256 winningNumber; //The randomly generated number(this changes with every transaction)
-    mapping(address =&gt; uint256) paidPlayers;
+    mapping(address => uint256) paidPlayers;
 
 
     /*=======================================
@@ -81,7 +81,7 @@ contract Potions{
         uint256 tokensTransferred = getTokensPaidToGame(msg.sender);
 
         // When you transfer a token to the contract, there is a 1 coin difference until you enter the next if statement
-        if( tokensTransferred &gt; paidPlayers[msg.sender]) //can&#39;t play if you don&#39;t pay
+        if( tokensTransferred > paidPlayers[msg.sender]) //can't play if you don't pay
         {
             paidPlayers[msg.sender] = tokensTransferred;
         }
@@ -165,6 +165,6 @@ contract ERC20Interface
 contract BIT
 {
     function transfer(address, uint256) public returns(bool);
-    mapping(address =&gt; mapping(address =&gt; uint256)) public gamePlayers;
+    mapping(address => mapping(address => uint256)) public gamePlayers;
     function balanceOf(address customerAddress) public view returns(uint256);
 }

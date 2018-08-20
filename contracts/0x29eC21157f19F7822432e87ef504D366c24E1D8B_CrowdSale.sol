@@ -3,12 +3,12 @@ pragma solidity ^0.4.18;
 /**
  * @title MultiOwnable
  * @dev The MultiOwnable contract has owners addresses and provides basic authorization control
- * functions, this simplifies the implementation of &quot;users permissions&quot;.
+ * functions, this simplifies the implementation of "users permissions".
  */
 contract MultiOwnable {
     address public manager; // address used to set owners
     address[] public owners;
-    mapping(address =&gt; bool) public ownerByAddress;
+    mapping(address => bool) public ownerByAddress;
 
     event AddOwner(address owner);
     event RemoveOwner(address owner);
@@ -69,7 +69,7 @@ contract MultiOwnable {
 
     function indexOf(address value) internal returns(uint) {
         uint i = 0;
-        while (i &lt; owners.length) {
+        while (i < owners.length) {
             if (owners[i] == value) {
                 break;
             }
@@ -79,9 +79,9 @@ contract MultiOwnable {
   }
 
   function remove(uint index) internal {
-        if (index &gt;= owners.length) return;
+        if (index >= owners.length) return;
 
-        for (uint i = index; i&lt;owners.length-1; i++){
+        for (uint i = index; i<owners.length-1; i++){
             owners[i] = owners[i+1];
         }
         delete owners[owners.length-1];
@@ -112,9 +112,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -122,7 +122,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -131,7 +131,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -174,9 +174,9 @@ contract PricingStrategy {
     }
 
     function getRate() public constant returns(uint256 rate) {
-        if (now&lt;FIRST_ROUND) {
+        if (now<FIRST_ROUND) {
             return (FIRST_ROUND_RATE);
-        } else if (now&lt;SECOND_ROUND) {
+        } else if (now<SECOND_ROUND) {
             return (SECOND_ROUND_RATE);
         } else {
             return (FINAL_ROUND_RATE);
@@ -256,19 +256,19 @@ contract CrowdSale is MultiOwnable {
     address public OPSPoolAddress = 0xEA5C0F39e5E3c742fF6e387394e0337e7366a121;
 
     modifier checkCap() {
-        require(msg.value&gt;=MIN_ETHER_CONTR);
-        require(msg.value&lt;=MAX_ETHER_CONTR);
+        require(msg.value>=MIN_ETHER_CONTR);
+        require(msg.value<=MAX_ETHER_CONTR);
         _;
     }
 
     modifier checkBalance() {
-        require(JointToken.balanceOf(address(this))&gt;0);
-        require(OPSToken.balanceOf(address(this))&gt;0);
+        require(JointToken.balanceOf(address(this))>0);
+        require(OPSToken.balanceOf(address(this))>0);
         _;       
     }
 
     modifier checkTime() {
-        require(now&gt;=SALE_START_TIME);
+        require(now>=SALE_START_TIME);
         _;
     }
 
@@ -300,7 +300,7 @@ contract CrowdSale is MultiOwnable {
         uint256 _bonusRate = 0;
         uint256 _ethAmount = msg.value;
 
-        if (msg.value.mul(JOINT_PER_ETH)&gt;AVAILABLE_JOINTTOKENS) {
+        if (msg.value.mul(JOINT_PER_ETH)>AVAILABLE_JOINTTOKENS) {
             _ethAmount = AVAILABLE_JOINTTOKENS.div(JOINT_PER_ETH);
         } else {
             _ethAmount = msg.value;
@@ -311,12 +311,12 @@ contract CrowdSale is MultiOwnable {
         _jointBonusAmount = _ethAmount.mul(JOINT_PER_ETH).mul(_bonusRate).div(100);  
         _jointTransferAmount = _jointAmount.add(_jointBonusAmount);
         
-        require(_jointAmount&lt;=AVAILABLE_JOINTTOKENS);
+        require(_jointAmount<=AVAILABLE_JOINTTOKENS);
 
         require(JointToken.transfer(msg.sender, _jointTransferAmount));
         require(OPSToken.transfer(msg.sender, _jointTransferAmount));     
 
-        if (msg.value&gt;_ethAmount) {
+        if (msg.value>_ethAmount) {
             msg.sender.transfer(msg.value.sub(_ethAmount));
             CurrentState = ICOState.Stopped;
             SoldOutandSaleStopped();
@@ -335,7 +335,7 @@ contract CrowdSale is MultiOwnable {
      */
     function bookOVISSale(uint256 _rate, uint256 _jointToken) onlyOwner public {              
         OVISBOOKED_TOKENS = OVISBOOKED_TOKENS.add(_jointToken);
-        require(OVISBOOKED_TOKENS&lt;=OVISRESERVED_TOKENS.mul(DECIMALCOUNT));
+        require(OVISBOOKED_TOKENS<=OVISRESERVED_TOKENS.mul(DECIMALCOUNT));
         uint256 _bonus = _jointToken.mul(_rate).div(100);
         OVISBOOKED_BONUSTOKENS = OVISBOOKED_BONUSTOKENS.add(_bonus);
         OVISSaleBooked(_jointToken);
@@ -345,10 +345,10 @@ contract CrowdSale is MultiOwnable {
      * @dev changes OVIS partner sale reserved tokens
      */
     function changeOVISReservedToken(uint256 _jointToken) onlyOwner public {
-        if (_jointToken &gt; OVISRESERVED_TOKENS) {
+        if (_jointToken > OVISRESERVED_TOKENS) {
             AVAILABLE_JOINTTOKENS = AVAILABLE_JOINTTOKENS.sub((_jointToken.sub(OVISRESERVED_TOKENS)).mul(DECIMALCOUNT));
             OVISRESERVED_TOKENS = _jointToken;
-        } else if (_jointToken &lt; OVISRESERVED_TOKENS) {
+        } else if (_jointToken < OVISRESERVED_TOKENS) {
             AVAILABLE_JOINTTOKENS = AVAILABLE_JOINTTOKENS.add((OVISRESERVED_TOKENS.sub(_jointToken)).mul(DECIMALCOUNT));
             OVISRESERVED_TOKENS = _jointToken;
         }
@@ -394,7 +394,7 @@ contract CrowdSale is MultiOwnable {
      */
     function transferOVISBookedTokens() private {
         uint256 _totalTokens = OVISBOOKED_TOKENS.add(OVISBOOKED_BONUSTOKENS);
-        if(_totalTokens&gt;0) {       
+        if(_totalTokens>0) {       
             require(JointToken.transfer(OvisAddress, _totalTokens));
             require(OPSToken.transfer(OvisAddress, _totalTokens));
         }
@@ -406,7 +406,7 @@ contract CrowdSale is MultiOwnable {
      */
     function transferRewardPool() private {
         uint256 balance = JointToken.balanceOf(address(this));
-        if(balance&gt;0) {
+        if(balance>0) {
             require(JointToken.transfer(RewardPoolAddress, balance));
         }
         RewardPoolTransferred(RewardPoolAddress, balance);
@@ -417,7 +417,7 @@ contract CrowdSale is MultiOwnable {
      */
     function transferOPSPool() private {
         uint256 balance = OPSToken.balanceOf(address(this));
-        if(balance&gt;0) {
+        if(balance>0) {
         require(OPSToken.transfer(OPSPoolAddress, balance));
         }
         OPSPoolTransferred(OPSPoolAddress, balance);
@@ -429,8 +429,8 @@ contract CrowdSale is MultiOwnable {
      */
     function startSale() onlyOwner public {
         require(CurrentState == ICOState.NotStarted);
-        require(JointToken.balanceOf(address(this))&gt;0);
-        require(OPSToken.balanceOf(address(this))&gt;0);       
+        require(JointToken.balanceOf(address(this))>0);
+        require(OPSToken.balanceOf(address(this))>0);       
         CurrentState = ICOState.Started;
         transferPresaleTokens();
         transferTokenOPSPlatformTokens();
@@ -459,7 +459,7 @@ contract CrowdSale is MultiOwnable {
      * @dev finish function to finish crowdsale for contribution
      */
     function finishSale() onlyOwner public {
-        if (this.balance&gt;0) {
+        if (this.balance>0) {
             FundAddress.transfer(this.balance);
         }
         transferOVISBookedTokens();
@@ -470,10 +470,10 @@ contract CrowdSale is MultiOwnable {
     }
 
     /**
-     * @dev funds contract&#39;s balance to fund address
+     * @dev funds contract's balance to fund address
      */
     function getFund(uint256 _amount) onlyOwner public {
-        require(_amount&lt;=this.balance);
+        require(_amount<=this.balance);
         FundAddress.transfer(_amount);
         Funded(FundAddress, _amount);
     }

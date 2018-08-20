@@ -3,12 +3,12 @@ contract SafeMath {
     uint256 constant MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -16,7 +16,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -69,7 +69,7 @@ contract Lockable is Owned {
     event ContractLocked(uint256 _untilBlock, string _reason);
 
     modifier lockAffected {
-        require(block.number &gt; lockedUntilBlock);
+        require(block.number > lockedUntilBlock);
         _;
     }
 
@@ -102,8 +102,8 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
 
     /* Private variables of the token */
     uint256 supply = 0;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     event Mint(address indexed _to, uint256 _value);
     event Burn(address indexed _from, uint _value);
@@ -120,7 +120,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
 
     /* Transfers tokens from your address to other */
     function transfer(address _to, uint256 _value) lockAffected public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _to != address(this));
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);  // Deduct senders balance
         balances[_to] = safeAdd(balanceOf(_to), _value);                // Add recivers blaance
         Transfer(msg.sender, _to, _value);                              // Raise Transfer event
@@ -144,7 +144,7 @@ contract ERC20Token is ERC20TokenInterface, SafeMath, Owned, Lockable {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) lockAffected public returns (bool success) {
-        require(_to != 0x0 &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _to != address(this));
         balances[_from] = safeSub(balanceOf(_from), _value);                            // Deduct senders balance
         balances[_to] = safeAdd(balanceOf(_to), _value);                                // Add recipient blaance
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender], _value); // Deduct allowance for this address
@@ -196,11 +196,11 @@ contract MrpToken is ERC20Token {
 
   /* Initializes contract */
   function MrpToken() public {
-    standard = &quot;MoneyRebel token v1.0&quot;;
-    name = &quot;MrpToken&quot;;
-    symbol = &quot;MRP&quot;;
+    standard = "MoneyRebel token v1.0";
+    name = "MrpToken";
+    symbol = "MRP";
     decimals = 18;
     mintingEnabled = true;
-    lockFromSelf(5010000, &quot;Lock before crowdsale starts&quot;);
+    lockFromSelf(5010000, "Lock before crowdsale starts");
   }
 }

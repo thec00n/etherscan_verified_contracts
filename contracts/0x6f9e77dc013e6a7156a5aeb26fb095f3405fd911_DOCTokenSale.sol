@@ -2,10 +2,10 @@ pragma solidity ^0.4.19;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -13,7 +13,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -167,11 +167,11 @@ contract FlexibleTokenSale is  Owned {
         contributionMin     = 5 * 10**18;//minimum 5 DOC token
         totalTokensSold     = 0;
         totalEtherCollected = 0;
-        // This factor is used when converting cost &lt;-&gt; tokens.
-       // 18 is because of the ETH -&gt; Wei conversion.
+        // This factor is used when converting cost <-> tokens.
+       // 18 is because of the ETH -> Wei conversion.
       // 2 because toekn price  and etherPerToken Price are expressed as 100 for $1.00  and 100000 for $1000.00 (with 2 decimals).
        tokenConversionFactor = 10**(uint256(18).sub(token.decimals()).add(2));
-        assert(tokenConversionFactor &gt; 0);
+        assert(tokenConversionFactor > 0);
     }
 
 
@@ -196,7 +196,7 @@ contract FlexibleTokenSale is  Owned {
 
     //set token price in between $1 to $1000, pass 111 for $1.11, 100000 for $1000
     function setTokenPrice(uint _tokenPrice) external onlyOwner returns (bool) {
-        require(_tokenPrice &gt;= 100 &amp;&amp; _tokenPrice &lt;= 100000);
+        require(_tokenPrice >= 100 && _tokenPrice <= 100000);
 
         tokenPrice=_tokenPrice;
 
@@ -205,7 +205,7 @@ contract FlexibleTokenSale is  Owned {
     }
 
     function setMinToken(uint256 _minToken) external onlyOwner returns(bool) {
-        require(_minToken &gt; 0);
+        require(_minToken > 0);
 
         contributionMin = _minToken;
 
@@ -261,20 +261,20 @@ contract FlexibleTokenSale is  Owned {
         require(_beneficiary != address(token));
 
 
-        // We don&#39;t want to allow the wallet collecting ETH to
+        // We don't want to allow the wallet collecting ETH to
         // directly be used to purchase tokens.
         require(msg.sender != address(walletAddress));
 
         // Check how many tokens are still available for sale.
         uint256 saleBalance = token.balanceOf(address(this));
-        assert(saleBalance &gt; 0);
+        assert(saleBalance > 0);
 
 
         return buyTokensInternal(_beneficiary);
     }
 
     function updateTokenPerEther(uint _etherPrice) public returns(bool){
-        require(_etherPrice &gt; 0);
+        require(_etherPrice > 0);
         require(msg.sender == priceUpdateAddress || msg.sender == owner);
         tokenPerEther=_etherPrice;
         TokenPerEtherUpdated(_etherPrice);
@@ -293,7 +293,7 @@ contract FlexibleTokenSale is  Owned {
 
         // Calculate how many tokens the contributor could purchase based on ETH received.
         uint256 tokens =msg.value.mul(tokenPerEther.mul(100).div(tokenPrice)).div(tokenConversionFactor);
-        require(tokens &gt;= contributionMin);
+        require(tokens >= contributionMin);
 
         // This is the actual amount of ETH that can be sent to the wallet.
         uint256 contribution =msg.value;

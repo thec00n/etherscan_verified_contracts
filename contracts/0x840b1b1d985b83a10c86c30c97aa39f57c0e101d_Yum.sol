@@ -9,8 +9,8 @@ contract ERC20Interface {
 
 contract Yum is ERC20Interface {
     uint256 public constant INITIAL_SUPPLY = 3000000 * (10 ** uint256(decimals));
-    string public constant symbol = &quot;YUM&quot;;
-    string public constant name = &quot;YUM Token&quot;;
+    string public constant symbol = "YUM";
+    string public constant name = "YUM Token";
     uint8 public constant decimals = 18;
     uint256 public constant totalSupply = INITIAL_SUPPLY;
     
@@ -28,7 +28,7 @@ contract Yum is ERC20Interface {
     }
 
     // Accounts holds user accounts.
-    mapping(address =&gt; Account) accounts;
+    mapping(address => Account) accounts;
     
     // Constructor.
     function Yum() public {
@@ -55,22 +55,22 @@ contract Yum is ERC20Interface {
     // Transfer funds.
     function transfer(address _to, uint256 _amount) public returns (bool) {
         require(_to != address(0));
-        require(_amount &lt;= accounts[msg.sender].balance);
+        require(_amount <= accounts[msg.sender].balance);
         // Enable the receiver if the sender is the exchange.
-        if (msg.sender == owner &amp;&amp; !accounts[_to].enabled) {
+        if (msg.sender == owner && !accounts[_to].enabled) {
             accounts[_to].enabled = true;
         }
         if (
-            // Check that the sender&#39;s account is enabled.
+            // Check that the sender's account is enabled.
             accounts[msg.sender].enabled
-            // Check that the receiver&#39;s account is enabled.
-            &amp;&amp; accounts[_to].enabled
+            // Check that the receiver's account is enabled.
+            && accounts[_to].enabled
             // Check that the sender has sufficient balance.
-            &amp;&amp; accounts[msg.sender].balance &gt;= _amount
+            && accounts[msg.sender].balance >= _amount
             // Check that the amount is valid.
-            &amp;&amp; _amount &gt; 0
+            && _amount > 0
             // Check for overflow.
-            &amp;&amp; accounts[_to].balance + _amount &gt; accounts[_to].balance) {
+            && accounts[_to].balance + _amount > accounts[_to].balance) {
                 // Credit the sender.
                 accounts[msg.sender].balance -= _amount;
                 // Debit the receiver.

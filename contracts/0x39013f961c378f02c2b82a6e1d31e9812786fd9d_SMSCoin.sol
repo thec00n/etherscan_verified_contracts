@@ -19,7 +19,7 @@ library SMSLIB {
      */
     function safeDiv(uint a, uint b) pure internal returns(uint) {
         //overflow check; b must not be 0
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -39,8 +39,8 @@ contract ERC20 {
 }
 
 contract SMSCoin is ERC20 {
-    string public constant name = &quot;Speed Mining Service&quot;;
-    string public constant symbol = &quot;SMS&quot;;
+    string public constant name = "Speed Mining Service";
+    string public constant symbol = "SMS";
     uint256 public constant decimals = 3;
 
     uint256 public constant UNIT = 10 ** decimals;
@@ -67,14 +67,14 @@ contract SMSCoin is ERC20 {
 
     uint public soldToken = 0;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
     address[] addresses;
     address[] investorAddresses;
 
-    mapping(address =&gt; address) private userStructs;
+    mapping(address => address) private userStructs;
 
     address owner;
 
@@ -125,11 +125,11 @@ contract SMSCoin is ERC20 {
 
     function calcBonus(uint256 sendingSMSToken) view private returns(uint256) {
         // Calculating bonus
-        if (sendingSMSToken &lt; (10 * UNIT)) {            // 0-9
+        if (sendingSMSToken < (10 * UNIT)) {            // 0-9
             return (sendingSMSToken * bonusRatio.ratio1) / 100;
-        } else if (sendingSMSToken &lt; (50 * UNIT)) {     // 10-49
+        } else if (sendingSMSToken < (50 * UNIT)) {     // 10-49
             return (sendingSMSToken * bonusRatio.ratio2) / 100;
-        } else if (sendingSMSToken &lt; (100 * UNIT)) {    // 50-99
+        } else if (sendingSMSToken < (100 * UNIT)) {    // 50-99
             return (sendingSMSToken * bonusRatio.ratio3) / 100;
         } else {                                        // 100+
             return (sendingSMSToken * bonusRatio.ratio4) / 100;
@@ -145,15 +145,15 @@ contract SMSCoin is ERC20 {
         Log(msg.value);
 
         // Only for selling to investors
-        if (icoOnSale &amp;&amp; !icoOnPaused &amp;&amp; msg.sender != owner) {
-            if (now &lt;= endDate) {
+        if (icoOnSale && !icoOnPaused && msg.sender != owner) {
+            if (now <= endDate) {
                 // All the phases
                 Log(currentPhase);
                 
                 receivedETH = msg.value;
                 // Check if the investor already joined and completed membership payment
                 // If a new investor, check if the first purchase is at least equal to the membership price
-                if ((checkAddress(msg.sender) &amp;&amp; checkMinBalance(msg.sender)) || firstMembershipPurchase &lt;= receivedETH) {
+                if ((checkAddress(msg.sender) && checkMinBalance(msg.sender)) || firstMembershipPurchase <= receivedETH) {
                     // Calculating SMS
                     receivedETHUNIT = receivedETH * UNIT;
                     sendingSMSToken = SMSLIB.safeDiv(receivedETHUNIT, tokenPrice);
@@ -186,10 +186,10 @@ contract SMSCoin is ERC20 {
 
     // ======== Bonus Period 1 ========
     // --- Bonus ---
-    // 0-9 SMS -&gt; 5%
-    // 10-49 SMS -&gt; 10%
-    // 50-99 SMS -&gt; 20%
-    // 100~ SMS -&gt; 30%
+    // 0-9 SMS -> 5%
+    // 10-49 SMS -> 10%
+    // 50-99 SMS -> 20%
+    // 100~ SMS -> 30%
     // --- Time --- (2 days 9 hours 59 minutes 59 seconds )
     // From 27 Oct 2017, 14:00 PM JST (27 Oct 2017, 5:00 AM GMT)
     // To   29 Oct 2017, 23:59 PM JST (29 Oct 2017, 14:59 PM GMT)
@@ -226,10 +226,10 @@ contract SMSCoin is ERC20 {
 
     // ======== Bonus Period 2 ========
     // --- Bonus ---
-    // 0-9 SMS -&gt; 3%
-    // 10-49 SMS -&gt; 5%
-    // 50-99 SMS -&gt; 10%
-    // 100~ SMS -&gt; 15%
+    // 0-9 SMS -> 3%
+    // 10-49 SMS -> 5%
+    // 50-99 SMS -> 10%
+    // 100~ SMS -> 15%
     // --- Time --- (11 days 9 hours 59 minutes 59 seconds)
     // From 30 Oct 2017, 14:00 PM JST (30 Oct 2017, 5:00 AM GMT)
     // To   10 Nov 2017, 23:59 PM JST (10 Nov 2017, 14:59 PM GMT)
@@ -248,10 +248,10 @@ contract SMSCoin is ERC20 {
 
     // ======== Bonus Period 3 ========
     // --- Bonus ---
-    // 0-9 SMS -&gt; 1%
-    // 10-49 SMS -&gt; 3%
-    // 50-99 SMS -&gt; 5%
-    // 100~ SMS -&gt; 8%
+    // 0-9 SMS -> 1%
+    // 10-49 SMS -> 3%
+    // 50-99 SMS -> 5%
+    // 100~ SMS -> 8%
     // --- Time --- (50 days, 5 hours, 14 minutes and 59 seconds)
     // From 11 Nov 2017, 18:45 PM JST (11 Nov 2017, 09:45 AM GMT) (hardfork maintenance 00:00-18:45 JST)
     // To   31 Dec 2017, 23:59 PM JST (31 Dec 2017, 14:59 PM GMT)
@@ -335,7 +335,7 @@ contract SMSCoin is ERC20 {
         // Supply setting
 
         // Require enough token from owner to be sold on manual phase        
-        require(balances[owner] &gt;= _saleToken);
+        require(balances[owner] >= _saleToken);
         
         // Please drain SMS if it was not done yet
         require(!needToDrain);
@@ -360,7 +360,7 @@ contract SMSCoin is ERC20 {
 
     function x3Token() private {
         // Multiply token by 3 to all the current addresses
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             uint curr1XBalance = balances[addresses[i]];
             // In total 3X, then also calculate value to balances
             balances[addresses[i]] = 3 * curr1XBalance;
@@ -414,7 +414,7 @@ contract SMSCoin is ERC20 {
         return saleCounterThisPhase;
     }
 
-    // Price should be entered in multiple of 10000&#39;s
+    // Price should be entered in multiple of 10000's
     // E.g. for .0001 ether enter 1, for 5 ether price enter 50000
     function setTokenPrice(uint ethRate) external onlyOwner {
         tokenPrice = (ethRate * 10 ** 18) / 10000; // (Convert to ether unit then make 4 decimals for ETH)
@@ -424,9 +424,9 @@ contract SMSCoin is ERC20 {
         firstMembershipPurchase = (ethRate * 10 ** 18) / 10000; // (Convert to ether unit then make 4 decimals for ETH)
     }
 
-    // Transfer the SMS balance from caller&#39;s wallet address to target&#39;s wallet address
+    // Transfer the SMS balance from caller's wallet address to target's wallet address
     function transfer(address _to, uint256 _amount) public returns(bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -441,9 +441,9 @@ contract SMSCoin is ERC20 {
         }
     }
 
-    // Transfer the SMS balance from specific wallet address to target&#39;s wallet address
+    // Transfer the SMS balance from specific wallet address to target's wallet address
     function transferFrom(address _from, address _to, uint256 _amount) public returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
                 
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -468,9 +468,9 @@ contract SMSCoin is ERC20 {
         return allowed[_owner][_spender];
     }
 
-    // Transfer the SMS balance from SMS&#39;s contract address to an investor&#39;s wallet account
+    // Transfer the SMS balance from SMS's contract address to an investor's wallet account
     function transferTokens(address _to, uint256 _amount, uint256 _bonus) private returns(bool success) {
-        if (_amount &gt; 0 &amp;&amp; balances[address(this)] &gt;= _amount &amp;&amp; balances[address(this)] - _amount &gt;= 0 &amp;&amp; soldToken + _amount &gt; soldToken &amp;&amp; saleCounterThisPhase + _amount &lt;= limitedSale &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (_amount > 0 && balances[address(this)] >= _amount && balances[address(this)] - _amount >= 0 && soldToken + _amount > soldToken && saleCounterThisPhase + _amount <= limitedSale && balances[_to] + _amount > balances[_to]) {
             
             // Transfer token from contract to target
             balances[address(this)] -= _amount;
@@ -480,7 +480,7 @@ contract SMSCoin is ERC20 {
             Transfer(address(this), _to, _amount);
             
             // Transfer bonus token from owner to target
-            if (currentPhase &lt;= 3 &amp;&amp; _bonus &gt; 0 &amp;&amp; balances[owner] - _bonus &gt;= 0 &amp;&amp; sentBonus + _bonus &gt; sentBonus &amp;&amp; sentBonus + _bonus &lt;= reservedBonusLot1 &amp;&amp; balances[_to] + _bonus &gt; balances[_to]) {
+            if (currentPhase <= 3 && _bonus > 0 && balances[owner] - _bonus >= 0 && sentBonus + _bonus > sentBonus && sentBonus + _bonus <= reservedBonusLot1 && balances[_to] + _bonus > balances[_to]) {
 
                 // Transfer with bonus
                 balances[owner] -= _bonus;
@@ -514,18 +514,18 @@ contract SMSCoin is ERC20 {
     // Amount is including full digit
     function giveReward(uint256 _amount) external onlyOwner {
         // Checking if amount is available and had sold some token
-        require(balances[owner] &gt;= _amount);
+        require(balances[owner] >= _amount);
 
         uint totalInvestorHand = 0;
         // ------------ Sum up all investor token
-        for (uint idx = 0; idx &lt; investorAddresses.length; idx++) {
+        for (uint idx = 0; idx < investorAddresses.length; idx++) {
             if (checkMinBalance(investorAddresses[idx]))
                 totalInvestorHand += balances[investorAddresses[idx]];
         }
         uint valuePerToken = _amount * UNIT / totalInvestorHand;
 
         // ------------ Giving Reward ------------
-        for (idx = 0; idx &lt; investorAddresses.length; idx++) {
+        for (idx = 0; idx < investorAddresses.length; idx++) {
             if (checkMinBalance(investorAddresses[idx])) {
                 uint bonusForThisInvestor = balances[investorAddresses[idx]] * valuePerToken / UNIT;
                 sentBonus += bonusForThisInvestor;
@@ -543,18 +543,18 @@ contract SMSCoin is ERC20 {
 
     // Check if minBalance is enough
     function checkMinBalance(address _addr) public constant returns(bool enough) {
-        return balances[_addr] &gt;= (firstMembershipPurchase * 10000 / tokenPrice * UNIT / 10000);
+        return balances[_addr] >= (firstMembershipPurchase * 10000 / tokenPrice * UNIT / 10000);
     }
     
     // Add wallet address with existing check
     function addAddress(address _to) private {
-        if (addresses.length &gt; 0) {
+        if (addresses.length > 0) {
             if (userStructs[_to] != _to) {
                 userStructs[_to] = _to;
                 // Adding all addresses
                 addresses.push(_to);
                 // Adding investor addresses
-                if (_to != address(this) &amp;&amp; _to != owner)
+                if (_to != address(this) && _to != owner)
                     investorAddresses.push(_to);
             }
         } else {
@@ -562,27 +562,27 @@ contract SMSCoin is ERC20 {
             // Adding all addresses
             addresses.push(_to);
             // Adding investor addresses
-            if (_to != address(this) &amp;&amp; _to != owner)
+            if (_to != address(this) && _to != owner)
                 investorAddresses.push(_to);
         }
     }
 
-    // Drain all the available ETH from the contract back to owner&#39;s wallet
+    // Drain all the available ETH from the contract back to owner's wallet
     function drainETH() external onlyOwner {
         owner.transfer(this.balance);
     }
 
-    // Drain all the available SMS from the contract back to owner&#39;s wallet
+    // Drain all the available SMS from the contract back to owner's wallet
     // This will drain only the available token up to the current phase
     function drainSMS() external onlyOwner {
         // Only allowed to be executed after endPhase
         require(!icoOnSale);
 
         // Allow to drain SMS and SMS Bonus back to owner only on Phase 4, 5, 6
-        if (currentPhase &gt;= 4 || spPhase) {
+        if (currentPhase >= 4 || spPhase) {
             // Drain all available SMS
             // From SMS contract
-            if (balances[address(this)] &gt; 0) {
+            if (balances[address(this)] > 0) {
                 balances[owner] += balances[address(this)];
                 Transfer(address(this), owner, balances[address(this)]);
                 balances[address(this)] = 0;
@@ -598,7 +598,7 @@ contract SMSCoin is ERC20 {
     // Amount is including decimal points
     function hardBurnSMS(address _from, uint _amount) external onlyOwner {
         // Burning from source address
-        if (balances[_from] &gt; 0) {
+        if (balances[_from] > 0) {
             balances[_from] -= _amount;
             totalSupply -= _amount;
             Transfer(_from, genesis, _amount);

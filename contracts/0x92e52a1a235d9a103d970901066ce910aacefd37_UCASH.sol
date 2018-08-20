@@ -70,13 +70,13 @@ contract UCASH is EIP20Interface {
         ) public {
         totalSupply = 21*10**9*10**8;               //UCASH totalSupply
         balances[msg.sender] = totalSupply;         //Allocate UCASH to contract deployer
-        name = &quot;UCASH&quot;;
+        name = "UCASH";
         decimals = 8;                               //Amount of decimals for display purposes
-        symbol = &quot;UCASH&quot;;
+        symbol = "UCASH";
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -85,10 +85,10 @@ contract UCASH is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -110,6 +110,6 @@ contract UCASH is EIP20Interface {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }

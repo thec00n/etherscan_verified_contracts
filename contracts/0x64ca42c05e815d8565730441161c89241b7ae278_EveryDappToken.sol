@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670306110227060c080a05064904080a">[email&#160;protected]</a>
+// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670306110227060c080a05064904080a">[email protected]</a>
 // released under Apache 2.0 licence
 contract ERC721Basic {
   event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
@@ -46,9 +46,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -56,7 +56,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -65,7 +65,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ library SafeMath {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -88,7 +88,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -111,7 +111,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -187,21 +187,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -325,7 +325,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -341,14 +341,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -482,19 +482,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -537,7 +537,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list owned by the requested address
    */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -556,7 +556,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -665,12 +665,12 @@ contract EveryDappToken is ERC721Token, Ownable {
     event AdBought(uint256 adId);
     event AdAdded(uint256 adId);
 
-    mapping(uint256 =&gt; Ad) public ads;
-    mapping(uint256 =&gt; uint) public suggestedAdPrices;
+    mapping(uint256 => Ad) public ads;
+    mapping(uint256 => uint) public suggestedAdPrices;
     uint256 public ownerCut; //0-10000, in 0,01% so 10000 means 100%
     uint256 public priceProgression; //0-10000, in 0,01% so 10000 means 100%
 
-    constructor() public ERC721Token(&quot;EveryDapp Token&quot;, &quot;EVDT&quot;) {
+    constructor() public ERC721Token("EveryDapp Token", "EVDT") {
         ownerCut = 1000;
         priceProgression = 1000;
     }

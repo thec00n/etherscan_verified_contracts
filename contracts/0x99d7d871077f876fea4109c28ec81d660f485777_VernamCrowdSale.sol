@@ -12,20 +12,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -118,7 +118,7 @@ contract OwnableToken {
 
 contract KYCControl is OwnableToken {
 	event KYCApproved(address _user, bool isApproved);
-	mapping(address =&gt; bool) public KYCParticipants;
+	mapping(address => bool) public KYCParticipants;
 	
 	function isKYCApproved(address _who) view public returns (bool _isAprroved){
 		return KYCParticipants[_who];
@@ -146,7 +146,7 @@ contract VernamCrowdSaleToken is OwnableToken, KYCControl {
 	uint256 _circulatingSupply;
 	
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint256) public balances;
+	mapping (address => uint256) public balances;
 		
 	// This notifies clients about the amount burnt
 	event Burn(address indexed from, uint256 value);
@@ -154,16 +154,16 @@ contract VernamCrowdSaleToken is OwnableToken, KYCControl {
 
 	/* Initializes contract with initial supply tokens to the creator of the contract */
 	function VernamCrowdSaleToken() public {
-		name = &quot;Vernam Crowdsale Token&quot;;                            // Set the name for display purposes
-		symbol = &quot;VCT&quot;;                               				// Set the symbol for display purposes
+		name = "Vernam Crowdsale Token";                            // Set the name for display purposes
+		symbol = "VCT";                               				// Set the symbol for display purposes
 		decimals = 18;                            					// Amount of decimals for display purposes
 		_totalSupply = SafeMath.mul(1000000000, POW);     			//1 Billion Tokens with 18 Decimals
 		_circulatingSupply = 0;
 	}
 	
 	function mintToken(address _participant, uint256 _mintedAmount) public onlyMinter returns (bool _success) {
-		require(_mintedAmount &gt; 0);
-		require(_circulatingSupply.add(_mintedAmount) &lt;= _totalSupply);
+		require(_mintedAmount > 0);
+		require(_circulatingSupply.add(_mintedAmount) <= _totalSupply);
 		KYCParticipants[_participant] = false;
 
         balances[_participant] =  balances[_participant].add(_mintedAmount);
@@ -177,8 +177,8 @@ contract VernamCrowdSaleToken is OwnableToken, KYCControl {
     }
 	
 	function burn(address _participant, uint256 _value) public onlyBurner returns (bool _success) {
-        require(_value &gt; 0);
-		require(balances[_participant] &gt;= _value);   							// Check if the sender has enough
+        require(_value > 0);
+		require(balances[_participant] >= _value);   							// Check if the sender has enough
 		require(isKYCApproved(_participant) == true);
 		balances[_participant] = balances[_participant].sub(_value);            // Subtract from the sender
 		_circulatingSupply = _circulatingSupply.sub(_value);
@@ -271,22 +271,22 @@ contract VernamCrowdSale is Ownable {
 	uint public fifthMonthEnd;
     
     // Mappings
-	mapping(address =&gt; uint) public contributedInWei;
-	mapping(address =&gt; uint) public threeHotHoursTokens;
-	mapping(address =&gt; mapping(uint =&gt; uint)) public getTokensBalance;
-	mapping(address =&gt; mapping(uint =&gt; bool)) public isTokensTaken;
-	mapping(address =&gt; bool) public isCalculated;
+	mapping(address => uint) public contributedInWei;
+	mapping(address => uint) public threeHotHoursTokens;
+	mapping(address => mapping(uint => uint)) public getTokensBalance;
+	mapping(address => mapping(uint => bool)) public isTokensTaken;
+	mapping(address => bool) public isCalculated;
 	
 	VernamCrowdSaleToken public vernamCrowdsaleToken;
 	
 	// Modifiers
     modifier afterCrowdsale() {
-        require(block.timestamp &gt; thirdStageEnd);
+        require(block.timestamp > thirdStageEnd);
         _;
     }
     
     modifier isAfterThreeHotHours {
-	    require(block.timestamp &gt; threeHotHoursEnd);
+	    require(block.timestamp > threeHotHoursEnd);
 	    _;
 	}
 	
@@ -346,8 +346,8 @@ contract VernamCrowdSale is Ownable {
 	    // Check if the crowdsale is active
 		require(isInCrowdsale == true);
 		// Check if the wei amount is between minimum and maximum contribution amount
-		require(_weiAmount &gt;= minimumContribution);
-		require(_weiAmount &lt;= maximumContribution);
+		require(_weiAmount >= minimumContribution);
+		require(_weiAmount <= maximumContribution);
 		
 		// Vaidates the purchase 
 		// Check if the _participant address is not null and the weiAmount is not zero
@@ -360,7 +360,7 @@ contract VernamCrowdSale is Ownable {
 		uint tokensAmount = currentLevelTokens.add(nextLevelTokens);
 		
 		// If the hard cap is reached the crowdsale is not active anymore
-		if(totalSoldTokens.add(tokensAmount) &gt; TOKENS_HARD_CAP) {
+		if(totalSoldTokens.add(tokensAmount) > TOKENS_HARD_CAP) {
 			isInCrowdsale = false;
 			return;
 		}
@@ -368,16 +368,16 @@ contract VernamCrowdSale is Ownable {
 		// Transfer Ethers
 		benecifiary.transfer(_weiAmount);
 		
-		// Stores the participant&#39;s contributed wei
+		// Stores the participant's contributed wei
 		contributedInWei[_participant] = contributedInWei[_participant].add(_weiAmount);
 		
 		// If it is in threeHotHours tokens will not be minted they will be stored in mapping threeHotHoursTokens
-		if(threeHotHoursEnd &gt; block.timestamp) {
+		if(threeHotHoursEnd > block.timestamp) {
 			threeHotHoursTokens[_participant] = threeHotHoursTokens[_participant].add(currentLevelTokens);
 			isCalculated[_participant] = false;
 			// If we overflow threeHotHours tokens cap the tokens for the next level will not be zero
 			// So we should deactivate the threeHotHours and mint tokens
-			if(nextLevelTokens &gt; 0) {
+			if(nextLevelTokens > 0) {
 				vernamCrowdsaleToken.mintToken(_participant, nextLevelTokens);
 			} 
 		} else {	
@@ -402,33 +402,33 @@ contract VernamCrowdSale is Ownable {
       */
 	function calculateAndCreateTokens(uint weiAmount) internal view returns (uint _currentLevelTokensAmount, uint _nextLevelTokensAmount) {
 
-		if(block.timestamp &lt; threeHotHoursEnd &amp;&amp; totalSoldTokens &lt; threeHotHoursTokensCap) {
+		if(block.timestamp < threeHotHoursEnd && totalSoldTokens < threeHotHoursTokensCap) {
 		    (_currentLevelTokensAmount, _nextLevelTokensAmount) = tokensCalculator(weiAmount, threeHotHoursPriceOfTokenInWei, firstStagePriceOfTokenInWei, threeHotHoursCapInWei);
 			return (_currentLevelTokensAmount, _nextLevelTokensAmount);
 		}
 		
-		if(block.timestamp &lt; firstStageEnd) {
+		if(block.timestamp < firstStageEnd) {
 		    _currentLevelTokensAmount = weiAmount.div(firstStagePriceOfTokenInWei);
 	        _currentLevelTokensAmount = _currentLevelTokensAmount.mul(POW);
 	        
 		    return (_currentLevelTokensAmount, 0);
 		}
 		
-		if(block.timestamp &lt; secondStageEnd) {		
+		if(block.timestamp < secondStageEnd) {		
 		    _currentLevelTokensAmount = weiAmount.div(secondStagePriceOfTokenInWei);
 	        _currentLevelTokensAmount = _currentLevelTokensAmount.mul(POW);
 	        
 		    return (_currentLevelTokensAmount, 0);
 		}
 		
-		if(block.timestamp &lt; thirdStageEnd &amp;&amp; weiAmount &gt;= TEN_ETHERS) {
+		if(block.timestamp < thirdStageEnd && weiAmount >= TEN_ETHERS) {
 		    _currentLevelTokensAmount = weiAmount.div(thirdStageDiscountPriceOfTokenInWei);
 	        _currentLevelTokensAmount = _currentLevelTokensAmount.mul(POW);
 	        
 		    return (_currentLevelTokensAmount, 0);
 		}
 		
-		if(block.timestamp &lt; thirdStageEnd){	
+		if(block.timestamp < thirdStageEnd){	
 		    _currentLevelTokensAmount = weiAmount.div(thirdStagePriceOfTokenInWei);
 	        _currentLevelTokensAmount = _currentLevelTokensAmount.mul(POW);
 	        
@@ -479,7 +479,7 @@ contract VernamCrowdSale is Ownable {
     }
 	
 	/** @dev Function which calculate tokens for every month (6 months).
-      * @param weiAmount Participant&#39;s contribution in wei.
+      * @param weiAmount Participant's contribution in wei.
       * @param currentLevelPrice Price of the tokens for the current level.
       * @param nextLevelPrice Price of the tokens for the next level.
       * @param currentLevelCap Current level cap in wei.
@@ -494,7 +494,7 @@ contract VernamCrowdSale is Ownable {
 		uint nextLevelTokensAmount = 0;
 		
 		// Check if the contribution overflows and you should buy tokens on next level price
-		if(weiAmount.add(totalContributedWei) &gt; currentLevelCap) {
+		if(weiAmount.add(totalContributedWei) > currentLevelCap) {
 		    remainingAmountInWei = (weiAmount.add(totalContributedWei)).sub(currentLevelCap);
 		    currentAmountInWei = weiAmount.sub(remainingAmountInWei);
             
@@ -521,7 +521,7 @@ contract VernamCrowdSale is Ownable {
 	    
 	    // Start from 10% for the first three months
 	    uint percentage = 10;
-	    for(uint month = 0; month &lt; 6; month++) {
+	    for(uint month = 0; month < 6; month++) {
 	        // The fourth month the unlock tokens percentage is increased by 10% and for the fourth and fifth month will be 20%
 	        // It will increase one more by 10% in the last month and will become 30% 
 	        if(month == 3 || month == 5) {
@@ -543,45 +543,45 @@ contract VernamCrowdSale is Ownable {
       */
 	function unlockTokensAmount(address _participant) internal returns (uint _tokensAmount) {
 	    // Check if the _participant have tokens in threeHotHours stage
-		require(threeHotHoursTokens[_participant] &gt; 0);
+		require(threeHotHoursTokens[_participant] > 0);
 		
 		// Check if the _participant got his tokens in first month and if the time for the first month end has come 
-        if(block.timestamp &lt; firstMonthEnd &amp;&amp; isTokensTaken[_participant][FIRST_MONTH] == false) {
+        if(block.timestamp < firstMonthEnd && isTokensTaken[_participant][FIRST_MONTH] == false) {
             // Go and get the tokens for the current month
             return getTokens(_participant, FIRST_MONTH.add(1)); // First month
         } 
         
         // Check if the _participant got his tokens in second month and if the time is in the period between first and second month end
-        if(((block.timestamp &gt;= firstMonthEnd) &amp;&amp; (block.timestamp &lt; secondMonthEnd)) 
-            &amp;&amp; isTokensTaken[_participant][SECOND_MONTH] == false) {
+        if(((block.timestamp >= firstMonthEnd) && (block.timestamp < secondMonthEnd)) 
+            && isTokensTaken[_participant][SECOND_MONTH] == false) {
             // Go and get the tokens for the current month
             return getTokens(_participant, SECOND_MONTH.add(1)); // Second month
         } 
         
         // Check if the _participant got his tokens in second month and if the time is in the period between second and third month end
-        if(((block.timestamp &gt;= secondMonthEnd) &amp;&amp; (block.timestamp &lt; thirdMonthEnd)) 
-            &amp;&amp; isTokensTaken[_participant][THIRD_MONTH] == false) {
+        if(((block.timestamp >= secondMonthEnd) && (block.timestamp < thirdMonthEnd)) 
+            && isTokensTaken[_participant][THIRD_MONTH] == false) {
             // Go and get the tokens for the current month
             return getTokens(_participant, THIRD_MONTH.add(1)); // Third month
         } 
         
         // Check if the _participant got his tokens in second month and if the time is in the period between third and fourth month end
-        if(((block.timestamp &gt;= thirdMonthEnd) &amp;&amp; (block.timestamp &lt; fourthMonthEnd)) 
-            &amp;&amp; isTokensTaken[_participant][FORTH_MONTH] == false) {
+        if(((block.timestamp >= thirdMonthEnd) && (block.timestamp < fourthMonthEnd)) 
+            && isTokensTaken[_participant][FORTH_MONTH] == false) {
             // Go and get the tokens for the current month
             return getTokens(_participant, FORTH_MONTH.add(1)); // Forth month
         } 
         
         // Check if the _participant got his tokens in second month and if the time is in the period between forth and fifth month end
-        if(((block.timestamp &gt;= fourthMonthEnd) &amp;&amp; (block.timestamp &lt; fifthMonthEnd)) 
-            &amp;&amp; isTokensTaken[_participant][FIFTH_MONTH] == false) {
+        if(((block.timestamp >= fourthMonthEnd) && (block.timestamp < fifthMonthEnd)) 
+            && isTokensTaken[_participant][FIFTH_MONTH] == false) {
             // Go and get the tokens for the current month
             return getTokens(_participant, FIFTH_MONTH.add(1)); // Fifth month
         } 
         
         // Check if the _participant got his tokens in second month and if the time is after the end of the fifth month
-        if((block.timestamp &gt;= fifthMonthEnd) 
-            &amp;&amp; isTokensTaken[_participant][SIXTH_MONTH] == false) {
+        if((block.timestamp >= fifthMonthEnd) 
+            && isTokensTaken[_participant][SIXTH_MONTH] == false) {
             return getTokens(_participant, SIXTH_MONTH.add(1)); // Last month
         }
     }
@@ -593,7 +593,7 @@ contract VernamCrowdSale is Ownable {
       */
     function getTokens(address _participant, uint _period) internal returns(uint tokensAmount) {
         uint tokens = 0;
-        for(uint month = 0; month &lt; _period; month++) {
+        for(uint month = 0; month < _period; month++) {
             // Check if the tokens fot the current month unlocked
             if(isTokensTaken[_participant][month] == false) { 
                 // Set the isTokensTaken to true
@@ -643,23 +643,23 @@ contract VernamCrowdSale is Ownable {
 	
 	function getPrice(uint256 time, uint256 weiAmount) public view returns (uint levelPrice) {
 
-		if(time &lt; threeHotHoursEnd &amp;&amp; totalSoldTokens &lt; threeHotHoursTokensCap) {
+		if(time < threeHotHoursEnd && totalSoldTokens < threeHotHoursTokensCap) {
             return threeHotHoursPriceOfTokenInWei;
 		}
 		
-		if(time &lt; firstStageEnd) {
+		if(time < firstStageEnd) {
             return firstStagePriceOfTokenInWei;
 		}
 		
-		if(time &lt; secondStageEnd) {
+		if(time < secondStageEnd) {
             return secondStagePriceOfTokenInWei;
 		}
 		
-		if(time &lt; thirdStageEnd &amp;&amp; weiAmount &gt; TEN_ETHERS) {
+		if(time < thirdStageEnd && weiAmount > TEN_ETHERS) {
             return thirdStageDiscountPriceOfTokenInWei;
 		}
 		
-		if(time &lt; thirdStageEnd){		
+		if(time < thirdStageEnd){		
 		    return thirdStagePriceOfTokenInWei;
 		}
 	}

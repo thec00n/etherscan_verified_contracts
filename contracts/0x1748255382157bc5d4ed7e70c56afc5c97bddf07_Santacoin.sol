@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,7 +43,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -72,7 +72,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -87,7 +87,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -155,8 +155,8 @@ contract Santacoin is StandardToken {
     using SafeMath for uint256;
 
     // Santa Coin meta data
-    string constant public name = &quot;SCS&quot;;
-    string constant public symbol = &quot;SCS&quot;;
+    string constant public name = "SCS";
+    string constant public symbol = "SCS";
     uint8 constant public decimals = 0; // 1 SCS = 1 SCS
 
     // North Pole Address
@@ -166,10 +166,10 @@ contract Santacoin is StandardToken {
     uint256 public NorthPoleAF = 1000000000000000;
 
     // Santa Coin Holder ETH Balances
-    mapping(address =&gt; uint256) private ETHAmounts;
+    mapping(address => uint256) private ETHAmounts;
 
     // Rewards per contributing address
-    mapping(address =&gt; uint256) private SantaCoinRewardsInETH;
+    mapping(address => uint256) private SantaCoinRewardsInETH;
 
     // Total amount held to date by North Pole
     uint256 public TotalETHGivenToNorthPole = 0;
@@ -248,7 +248,7 @@ contract Santacoin is StandardToken {
         require(NorthPoleMintingEnabled == true);
         NorthPoleMintingEnabled = false;
 
-        if (this.balance &gt; 0 &amp;&amp; totalSupply &gt; 0) {
+        if (this.balance > 0 && totalSupply > 0) {
             MaxSantaRewardPerToken = this.balance.div(totalSupply);
         }
     }
@@ -257,7 +257,7 @@ contract Santacoin is StandardToken {
       public
       returns (bool)
     {
-        return balances[holderAddress] &gt; 0;
+        return balances[holderAddress] > 0;
     }
 
     function openGiftFromSanta(address holderAddress)
@@ -271,7 +271,7 @@ contract Santacoin is StandardToken {
       public
       returns (bool)
     {
-        return (ETHAmounts[holderAddress] &gt; 0 &amp;&amp; SantaCoinRewardsInETH[holderAddress] == 0);
+        return (ETHAmounts[holderAddress] > 0 && SantaCoinRewardsInETH[holderAddress] == 0);
     }
 
     // Initializes Santa coin
@@ -285,7 +285,7 @@ contract Santacoin is StandardToken {
     function () payable {
 
         // Open gifts if user has coins
-        if (msg.value == 0 &amp;&amp; hasSantaCoins(msg.sender) == true &amp;&amp; NorthPoleMintingEnabled == false &amp;&amp; MaxSantaRewardPerToken &gt; 0) {
+        if (msg.value == 0 && hasSantaCoins(msg.sender) == true && NorthPoleMintingEnabled == false && MaxSantaRewardPerToken > 0) {
             balances[msg.sender] -= 1;
             totalSupply -= 1;
             uint256 santasGift = MaxSantaRewardPerToken-NorthPoleAF;
@@ -299,7 +299,7 @@ contract Santacoin is StandardToken {
         }
 
         // Get SantaCoins
-        else if (msg.value &gt;= minimumSantaCoinContribution &amp;&amp; NorthPoleMintingEnabled == true) {
+        else if (msg.value >= minimumSantaCoinContribution && NorthPoleMintingEnabled == true) {
             uint256 tokensToCredit = askSantaForCoinAmountBetween(santaCoinMinterLowerBound, santaCoinMinterUpperBound);
             tokensToCredit = tokensToCredit == 0 ? 1 : tokensToCredit;
 

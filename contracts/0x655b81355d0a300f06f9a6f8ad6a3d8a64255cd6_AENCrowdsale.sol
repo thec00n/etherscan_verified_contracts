@@ -45,37 +45,37 @@ contract AENCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0 &amp;&amp; msg.value &lt; 5.1 ether);
+        require(msg.value > 0 && msg.value < 5.1 ether);
 	    uint amount = msg.value * 5000;
 	    amount = amount / 20;
         
         // 28 september 2018 - 4 October 2018: 30% bonus
-        if(now &gt; 1538089200 &amp;&amp; now &lt; 1538694000) {
+        if(now > 1538089200 && now < 1538694000) {
             amount = amount * 26;
         }
         
         // 5 October 2018 - 11 October 2018: 25% bonus
-        if(now &gt; 1538694000 &amp;&amp; now &lt; 1539298800) {
+        if(now > 1538694000 && now < 1539298800) {
             amount = amount * 25;
         }
         
         // 12 October 2018 - 18 October 2018: 20% bonus
-        if(now &gt; 1539298800 &amp;&amp; now &lt; 1539903600) {
+        if(now > 1539298800 && now < 1539903600) {
             amount = amount * 24;
         }
         
         // 19 October 2018 - 25 October 2018: 15% bonus
-        if(now &gt; 1539903600 &amp;&amp; now &lt; 1540508400) {
+        if(now > 1539903600 && now < 1540508400) {
             amount = amount * 23;
         }
 
         // 26 October 2018 - 09 November 2018: 10% bonus
-        if(now &gt; 1540508400 &amp;&amp; now &lt; 1541808000) {
+        if(now > 1540508400 && now < 1541808000) {
             amount = amount * 22;
         }
 
         // 09 November 2018
-        if(now &gt; 1541808000) {
+        if(now > 1541808000) {
             amount = amount * 20;
         }
         

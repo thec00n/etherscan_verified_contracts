@@ -56,40 +56,40 @@ contract CELLCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(tokenSelled &lt; 100000001);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(tokenSelled < 100000001);
         uint amount = msg.value / 10 finney;
-        require(amount &gt; 5);
+        require(amount > 5);
         uint amount20; 
         // Step 1 (15.01. - 12.02.) - 40% BONUS (1 ETH = 700 Tokens)
-        if(now &gt; startDate &amp;&amp; now &lt; 1518480000) {
+        if(now > startDate && now < 1518480000) {
             price = 700;
             amount *= price * 100;
             amount20 = amount / 20;
             amount += amount20 * 8;
         }
         // Step 2 (12.02. - 19.02.) - 25% BONUS (1 ETH = 625 Tokens)
-        if(now &gt; 1518480000 &amp;&amp; now &lt; 1519084800) {
+        if(now > 1518480000 && now < 1519084800) {
             price = 625;
             amount *= price * 100;
             amount += amount / 4;
         }
         // Step 3 (19.02. - 26.02.) - 15% BONUS (1 ETH = 575 Tokens)
-        if(now &gt; 1519084800 &amp;&amp; now &lt; 1519689600) {
+        if(now > 1519084800 && now < 1519689600) {
             price = 575;
             amount *= price * 100;
             amount20 = amount / 20;
             amount += amount20 * 3;
         }
         // Step 4 (26.02. - 05.03.) - 10% BONUS (1 ETH = 550 Tokens)
-        if(now &gt; 1519689600 &amp;&amp; now &lt; 1520294400) {
+        if(now > 1519689600 && now < 1520294400) {
             price = 550;
             amount *= price * 100;
             amount += amount / 10;
         }
         // Step 5
-        if(now &gt; 1520294400) {
+        if(now > 1520294400) {
             price = 500;
             amount *= price * 100;
         }

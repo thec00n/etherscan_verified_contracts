@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -86,9 +86,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -96,7 +96,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -105,7 +105,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -133,7 +133,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -151,7 +151,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -195,7 +195,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -206,8 +206,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -221,7 +221,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -270,7 +270,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -330,8 +330,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract RootsSaleToken is Contactable, MintableToken {
 
-    string constant public name = &quot;ROOTS Sale Token&quot;;
-    string constant public symbol = &quot;ROOTSSale&quot;;
+    string constant public name = "ROOTS Sale Token";
+    string constant public symbol = "ROOTSSale";
     uint constant public decimals = 18;
 
     bool public isTransferable = false;
@@ -440,13 +440,13 @@ contract RootsSale is Pausable {
   uint public buyerCount;
 
   // how much ETH each address has bought to this crowdsale
-  mapping (address =&gt; uint) public boughtAmountOf;
+  mapping (address => uint) public boughtAmountOf;
 
   // whether a buyer already bought some tokens
-  mapping (address =&gt; bool) public isBuyer;
+  mapping (address => bool) public isBuyer;
 
   // whether a buyer bought tokens through other currencies
-  mapping (address =&gt; bool) public isExternalBuyer;
+  mapping (address => bool) public isExternalBuyer;
 
   address public admin;
 
@@ -476,12 +476,12 @@ contract RootsSale is Pausable {
       address _admin
   ) public
   {
-      require(_startTime &gt;= now);
-      require(_endTime &gt;= _startTime);
-      require(_rate &gt; 0);
+      require(_startTime >= now);
+      require(_endTime >= _startTime);
+      require(_rate > 0);
       require(address(_token) != 0x0);
       require(_wallet != 0x0);
-      require(_weiMaximumGoal &gt; 0);
+      require(_weiMaximumGoal > 0);
       require(_admin != 0x0);
 
       startTime = _startTime;
@@ -511,8 +511,8 @@ contract RootsSale is Pausable {
       uint weiAmount = msg.value;
 
       require(beneficiary != 0x0);
-      require(weiAmount &gt;= weiMinimumAmount);
-      require(weiAmount &lt;= weiMaximumAmount);
+      require(weiAmount >= weiMinimumAmount);
+      require(weiAmount <= weiMaximumAmount);
       require(validPurchase(msg.value));
 
       // calculate token amount to be created
@@ -542,16 +542,16 @@ contract RootsSale is Pausable {
 
   // return true if the transaction can buy tokens
   function validPurchase(uint weiAmount) internal constant returns (bool) {
-      bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-      bool withinCap = weiRaised.add(weiAmount) &lt;= weiMaximumGoal;
+      bool withinPeriod = now >= startTime && now <= endTime;
+      bool withinCap = weiRaised.add(weiAmount) <= weiMaximumGoal;
 
-      return withinPeriod &amp;&amp; withinCap;
+      return withinPeriod && withinCap;
   }
 
   // return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-      bool capReached = weiRaised &gt;= weiMaximumGoal;
-      bool afterEndTime = now &gt; endTime;
+      bool capReached = weiRaised >= weiMaximumGoal;
+      bool afterEndTime = now > endTime;
 
       return capReached || afterEndTime;
   }
@@ -571,8 +571,8 @@ contract RootsSale is Pausable {
     uint _weiMaximumAmount
 )  external onlyOwner returns (bool) {
     require(!hasEnded());
-    require(_endTime &gt;= _startTime);
-    require(_weiMaximumGoal &gt; 0);
+    require(_endTime >= _startTime);
+    require(_weiMaximumGoal > 0);
 
     startTime = _startTime;
     endTime = _endTime;
@@ -593,7 +593,7 @@ contract RootsSale is Pausable {
       require(beneficiaries.length == tokenAmounts.length);
       require(tokenAmounts.length == weiAmounts.length);
 
-      for (uint i = 0; i &lt; beneficiaries.length; i++) {
+      for (uint i = 0; i < beneficiaries.length; i++) {
           registerPayment(beneficiaries[i], tokenAmounts[i], weiAmounts[i]);
       }
   }

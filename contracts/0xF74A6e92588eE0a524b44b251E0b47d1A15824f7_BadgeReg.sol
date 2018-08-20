@@ -20,10 +20,10 @@ contract BadgeReg is Owned {
 		address addr;
 		bytes32 name;
 		address owner;
-		mapping (bytes32 =&gt; bytes32) meta;
+		mapping (bytes32 => bytes32) meta;
 	}
 
-	modifier when_fee_paid { if (msg.value &lt; fee) return; _; }
+	modifier when_fee_paid { if (msg.value < fee) return; _; }
 	modifier when_address_free(address _addr) { if (mapFromAddress[_addr] != 0) return; _; }
 	modifier when_name_free(bytes32 _name) { if (mapFromName[_name] != 0) return; _; }
 	modifier when_has_name(bytes32 _name) { if (mapFromName[_name] == 0) return; _; }
@@ -102,8 +102,8 @@ contract BadgeReg is Owned {
 			throw;
 	}
 
-	mapping (address =&gt; uint) mapFromAddress;
-	mapping (bytes32 =&gt; uint) mapFromName;
+	mapping (address => uint) mapFromAddress;
+	mapping (bytes32 => uint) mapFromName;
 	Badge[] badges;
 	uint public fee = 1 ether;
 }

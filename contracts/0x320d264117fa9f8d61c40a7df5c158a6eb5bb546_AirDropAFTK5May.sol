@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -57,7 +57,7 @@ interface Token {
 contract AirDropAFTK5May is Ownable {
 
   Token token;
-  mapping(address =&gt; uint256) public redeemBalanceOf; 
+  mapping(address => uint256) public redeemBalanceOf; 
   event BalanceSet(address indexed beneficiary, uint256 value);
   event Redeemed(address indexed beneficiary, uint256 value);
   event BalanceCleared(address indexed beneficiary, uint256 value);
@@ -72,8 +72,8 @@ contract AirDropAFTK5May is Ownable {
 
  /**
   * @dev Send approved tokens to one address
-  * @param dests -&gt; address where you want to send tokens
-  * @param quantity -&gt; number of tokens to send
+  * @param dests -> address where you want to send tokens
+  * @param quantity -> number of tokens to send
   */
  function sendTokensToOneAddress(address dests, uint256 quantity)  public payable onlyOwner returns (uint) {
 	TokenSendStart(dests,quantity * 10**18);
@@ -84,14 +84,14 @@ contract AirDropAFTK5May is Ownable {
   
  /**
   * @dev Send approved tokens to seven addresses
-  * @param dests1 -&gt; address where you want to send tokens
-  * @param dests2 -&gt; address where you want to send tokens
-  * @param dests3 -&gt; address where you want to send tokens
-  * @param dests4 -&gt; address where you want to send tokens
-  * @param dests5 -&gt; address where you want to send tokens
-  * @param dests6 -&gt; address where you want to send tokens
-  * @param dests7 -&gt; address where you want to send tokens
-  * @param quantity -&gt; number of tokens to send
+  * @param dests1 -> address where you want to send tokens
+  * @param dests2 -> address where you want to send tokens
+  * @param dests3 -> address where you want to send tokens
+  * @param dests4 -> address where you want to send tokens
+  * @param dests5 -> address where you want to send tokens
+  * @param dests6 -> address where you want to send tokens
+  * @param dests7 -> address where you want to send tokens
+  * @param quantity -> number of tokens to send
   */
  function sendTokensToSevenAddresses(address dests1, address dests2, address dests3, address dests4, address dests5, 
  address dests6, address dests7,  uint256 quantity)  public payable onlyOwner returns (uint) {
@@ -123,5 +123,5 @@ contract AirDropAFTK5May is Ownable {
  /**
   * @dev admin can destroy this contract
   */
-  function destroy() onlyOwner public { uint256 tokensAvailable = token.balanceOf(this); require (tokensAvailable &gt; 0); token.transfer(owner, tokensAvailable);  selfdestruct(owner);  } 
+  function destroy() onlyOwner public { uint256 tokensAvailable = token.balanceOf(this); require (tokensAvailable > 0); token.transfer(owner, tokensAvailable);  selfdestruct(owner);  } 
 }

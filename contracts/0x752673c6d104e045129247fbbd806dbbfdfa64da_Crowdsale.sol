@@ -12,37 +12,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -79,8 +79,8 @@ contract ERC20 {
  */
 contract StandardToken is ERC20, SafeMath {
 
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -149,11 +149,11 @@ contract Ownable {
 
 /// @title Moeda Loaylty Points token contract
 contract MoedaToken is StandardToken, Ownable {
-    string public constant name = &quot;Moeda Loyalty Points&quot;;
-    string public constant symbol = &quot;MLO&quot;;
+    string public constant name = "Moeda Loyalty Points";
+    string public constant symbol = "MLO";
     uint8 public constant decimals = 18;
 
-    // don&#39;t allow creation of more than this number of tokens
+    // don't allow creation of more than this number of tokens
     uint public constant MAX_TOKENS = 20000000 ether;
     
     // transfers are locked during the sale
@@ -193,7 +193,7 @@ contract MoedaToken is StandardToken, Ownable {
     function create(address recipient, uint256 amount)
     onlyOwner onlyDuringSale {
         if (amount == 0) throw;
-        if (safeAdd(totalSupply, amount) &gt; MAX_TOKENS) throw;
+        if (safeAdd(totalSupply, amount) > MAX_TOKENS) throw;
 
         balances[recipient] = safeAdd(balances[recipient], amount);
         totalSupply = safeAdd(totalSupply, amount);
@@ -234,7 +234,7 @@ contract Crowdsale is Ownable, SafeMath {
     uint256 public constant PRESALE_TOKEN_ALLOCATION = 5000000 * TOKEN_MULTIPLIER;
 
     // recipient of presale tokens
-    address public PRESALE_WALLET = &quot;0x30B3C64d43e7A1E8965D934Fa96a3bFB33Eee0d2&quot;;
+    address public PRESALE_WALLET = "0x30B3C64d43e7A1E8965D934Fa96a3bFB33Eee0d2";
     
     // smallest possible donation
     uint256 public constant DUST_LIMIT = 1 finney;
@@ -260,11 +260,11 @@ contract Crowdsale is Ownable, SafeMath {
             throw;
         }
 
-        if (block.number &lt; startBlock) {
+        if (block.number < startBlock) {
             throw;
         }
 
-        if (block.number &gt;= endBlock) {
+        if (block.number >= endBlock) {
             throw;
         }
         _;
@@ -276,8 +276,8 @@ contract Crowdsale is Ownable, SafeMath {
     /// @param _endBlock block at which to end the sale
     function Crowdsale(address _wallet, uint _startBlock, uint _endBlock) {
         if (_wallet == address(0)) throw;
-        if (_startBlock &lt;= block.number) throw;
-        if (_endBlock &lt;= _startBlock) throw;
+        if (_startBlock <= block.number) throw;
+        if (_endBlock <= _startBlock) throw;
         
         crowdsaleClosed = false;
         wallet = _wallet;
@@ -289,32 +289,32 @@ contract Crowdsale is Ownable, SafeMath {
     /// @dev Determine the lowest rate to acquire tokens given an amount of 
     /// donated ethers
     /// @param totalReceived amount of ether that has been received
-    /// @return pair of the current tier&#39;s donation limit and a token creation rate
+    /// @return pair of the current tier's donation limit and a token creation rate
     function getLimitAndPrice(uint256 totalReceived)
     constant returns (uint256, uint256) {
         uint256 limit = 0;
         uint256 price = 0;
 
-        if (totalReceived &lt; TIER1_CAP) {
+        if (totalReceived < TIER1_CAP) {
             limit = TIER1_CAP;
             price = TIER1_RATE;
         }
-        else if (totalReceived &lt; TIER2_CAP) {
+        else if (totalReceived < TIER2_CAP) {
             limit = TIER2_CAP;
             price = TIER2_RATE;
         }
-        else if (totalReceived &lt; TIER3_CAP) {
+        else if (totalReceived < TIER3_CAP) {
             limit = TIER3_CAP;
             price = TIER3_RATE;
         } else {
-            throw; // this shouldn&#39;t happen
+            throw; // this shouldn't happen
         }
 
         return (limit, price);
     }
 
     /// @dev Determine how many tokens we can get from each pricing tier, in
-    /// case a donation&#39;s amount overlaps multiple pricing tiers.
+    /// case a donation's amount overlaps multiple pricing tiers.
     ///
     /// @param totalReceived ether received by contract plus spent by this donation
     /// @param requestedAmount total ether to spend on tokens in a donation
@@ -322,7 +322,7 @@ contract Crowdsale is Ownable, SafeMath {
     function getTokenAmount(uint256 totalReceived, uint256 requestedAmount) 
     constant returns (uint256) {
 
-        // base case, we&#39;ve spent the entire donation and can stop
+        // base case, we've spent the entire donation and can stop
         if (requestedAmount == 0) return 0;
         uint256 limit = 0;
         uint256 price = 0;
@@ -341,7 +341,7 @@ contract Crowdsale is Ownable, SafeMath {
         // donation will get you
         uint256 tokensToReceiveAtCurrentPrice = safeMul(amountToSpend, price);
 
-        // You&#39;ve spent everything you could at this level, continue to the next
+        // You've spent everything you could at this level, continue to the next
         // one, in case there is some ETH left unspent in this donation.
         uint256 additionalTokens = getTokenAmount(
             safeAdd(totalReceived, amountToSpend),
@@ -353,8 +353,8 @@ contract Crowdsale is Ownable, SafeMath {
     /// grant tokens to buyer when we receive ether
     /// @dev buy tokens, only usable while crowdsale is active
     function () payable onlyDuringSale {
-        if (msg.value &lt; DUST_LIMIT) throw;
-        if (safeAdd(etherReceived, msg.value) &gt; TIER3_CAP) throw;
+        if (msg.value < DUST_LIMIT) throw;
+        if (safeAdd(etherReceived, msg.value) > TIER3_CAP) throw;
 
         uint256 tokenAmount = getTokenAmount(etherReceived, msg.value);
 
@@ -370,12 +370,12 @@ contract Crowdsale is Ownable, SafeMath {
     /// this will only be successful if not already executed,
     /// if endBlock has been reached, or if the cap has been reached
     function finalize() onlyOwner {
-        if (block.number &lt; startBlock) throw;
+        if (block.number < startBlock) throw;
         if (crowdsaleClosed) throw;
 
         // if amount remaining is too small we can allow sale to end earlier
         uint256 amountRemaining = safeSub(TIER3_CAP, etherReceived);
-        if (block.number &lt; endBlock &amp;&amp; amountRemaining &gt;= DUST_LIMIT) throw;
+        if (block.number < endBlock && amountRemaining >= DUST_LIMIT) throw;
 
         // create and assign presale tokens to presale wallet
         moedaToken.create(PRESALE_WALLET, PRESALE_TOKEN_ALLOCATION);

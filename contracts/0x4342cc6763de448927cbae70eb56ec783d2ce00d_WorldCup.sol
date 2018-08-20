@@ -22,9 +22,9 @@ contract SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ contract SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ contract SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,12 +49,12 @@ contract SafeMath {
 /**
  * @title MultiOwnable
  * @dev The MultiOwnable contract has owners addresses and provides basic authorization control
- * functions, this simplifies the implementation of &quot;users permissions&quot;.
+ * functions, this simplifies the implementation of "users permissions".
  */
 contract MultiOwnable {
     address public manager; // address used to set owners
     address[] public owners;
-    mapping(address =&gt; bool) public ownerByAddress;
+    mapping(address => bool) public ownerByAddress;
 
     event SetManager(address manager);
     event SetOwners(address[] owners);
@@ -84,11 +84,11 @@ contract MultiOwnable {
     }
 
     function _setOwners(address[] _owners) internal {
-        for(uint256 i = 0; i &lt; owners.length; i++) {
+        for(uint256 i = 0; i < owners.length; i++) {
             ownerByAddress[owners[i]] = false;
         }
 
-        for(uint256 j = 0; j &lt; _owners.length; j++) {
+        for(uint256 j = 0; j < _owners.length; j++) {
             ownerByAddress[_owners[j]] = true;
         }
         owners = _owners;
@@ -140,8 +140,8 @@ contract WorldCup is MultiOwnable, SafeMath {
     // Storage
 
     uint public numMatches;
-    mapping(uint =&gt; Match) public matches;
-    mapping(uint =&gt; mapping(address =&gt; Prediction)) public predictions;
+    mapping(uint => Match) public matches;
+    mapping(uint => mapping(address => Prediction)) public predictions;
     uint256 public rate;
 
     // Event
@@ -167,13 +167,13 @@ contract WorldCup is MultiOwnable, SafeMath {
         rate = 20; // 5%
     }
 
-    // For Owner &amp; Manager
+    // For Owner & Manager
 
     function createMatch(uint _id, string _team, string _teamDetail, int32 _pointSpread, uint64 _startTime, uint64 _endTime)
     onlyOwner
     public {
 
-        require(_startTime &lt; _endTime);
+        require(_startTime < _endTime);
         require(matches[_id].created == false);
 
         // Create new match
@@ -204,7 +204,7 @@ contract WorldCup is MultiOwnable, SafeMath {
     public {
 
         // Update match info
-        if (bytes(_teamDetail).length &gt; 0) {
+        if (bytes(_teamDetail).length > 0) {
             matches[_id].teamDetail = _teamDetail;
         }
         if (_startTime != 0) {
@@ -237,21 +237,21 @@ contract WorldCup is MultiOwnable, SafeMath {
 
         if (_result == Result.HomeWin) {
             bonus = add(_match.stakesOfDraw, _match.stakesOfLoss);
-            if (_match.stakesOfWin &gt; 0) {
+            if (_match.stakesOfWin > 0) {
                 fee = div(bonus, rate);
             } else {
                 fee = bonus;
             }
         } else if (_result == Result.HomeDraw) {
             bonus = add(_match.stakesOfWin, _match.stakesOfLoss);
-            if (_match.stakesOfDraw &gt; 0) {
+            if (_match.stakesOfDraw > 0) {
                 fee = div(bonus, rate);
             } else {
                 fee = bonus;
             }
         } else if (_result == Result.HomeLoss) {
             bonus = add(_match.stakesOfWin, _match.stakesOfDraw);
-            if (_match.stakesOfLoss &gt; 0) {
+            if (_match.stakesOfLoss > 0) {
                 fee = div(bonus, rate);
             } else {
                 fee = bonus;
@@ -259,7 +259,7 @@ contract WorldCup is MultiOwnable, SafeMath {
         }
 
         address thiz = address(this);
-        require(thiz.balance &gt;= fee);
+        require(thiz.balance >= fee);
         manager.transfer(fee);
 
         // Set event
@@ -275,13 +275,13 @@ contract WorldCup is MultiOwnable, SafeMath {
     payable {
 
         // Check value
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Check match state
         Match storage _match = matches[_id];
         require(_match.result == Result.Unknown);
-        require(_match.startTime &lt;= now);
-        require(_match.endTime &gt;= now);
+        require(_match.startTime <= now);
+        require(_match.endTime >= now);
 
         // Update matches
         if (_result == Result.HomeWin) {
@@ -346,7 +346,7 @@ contract WorldCup is MultiOwnable, SafeMath {
         // Check prediction state
         Prediction storage _prediction = predictions[_id][msg.sender];
         require(_prediction.result != Result.Unknown);
-        require(_prediction.stake &gt; 0);
+        require(_prediction.stake > 0);
         require(_prediction.withdraw == false);
         _prediction.withdraw = true;
 
@@ -358,7 +358,7 @@ contract WorldCup is MultiOwnable, SafeMath {
         bonus = add(bonus, _prediction.stake);
 
         address thiz = address(this);
-        require(thiz.balance &gt;= bonus);
+        require(thiz.balance >= bonus);
         msg.sender.transfer(bonus);
 
         // Set event
@@ -376,15 +376,15 @@ contract WorldCup is MultiOwnable, SafeMath {
             return 0;
         }
 
-        if (_match.result == Result.HomeWin &amp;&amp; _match.stakesOfWin &gt; 0) {
+        if (_match.result == Result.HomeWin && _match.stakesOfWin > 0) {
             bonus = add(_match.stakesOfDraw, _match.stakesOfLoss);
             bonus = sub(bonus, div(bonus, rate));
             bonus = div(mul(_prediction.stake, bonus), _match.stakesOfWin);
-        } else if (_match.result == Result.HomeDraw &amp;&amp; _match.stakesOfDraw &gt; 0 ) {
+        } else if (_match.result == Result.HomeDraw && _match.stakesOfDraw > 0 ) {
             bonus = add(_match.stakesOfWin, _match.stakesOfLoss);
             bonus = sub(bonus, div(bonus, rate));
             bonus = div(mul(_prediction.stake, bonus), _match.stakesOfDraw);
-        } else if (_match.result == Result.HomeLoss &amp;&amp; _match.stakesOfLoss &gt; 0) {
+        } else if (_match.result == Result.HomeLoss && _match.stakesOfLoss > 0) {
             bonus = add(_match.stakesOfWin, _match.stakesOfDraw);
             bonus = sub(bonus, div(bonus, rate));
             bonus = div(mul(_prediction.stake, bonus), _match.stakesOfLoss);

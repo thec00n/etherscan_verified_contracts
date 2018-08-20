@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 
@@ -116,8 +116,8 @@ contract GameGoldTokenStandard {
 contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
     using SafeMath for uint256;
 
-    string constant name = &quot;Game Gold Token&quot;;
-    string constant symbol = &quot;GGT&quot;;
+    string constant name = "Game Gold Token";
+    string constant symbol = "GGT";
     uint constant decimals = 18;
 
     uint public chainStartTime; //chain start time
@@ -149,9 +149,9 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
         uint64 time;
     }
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; transferInStruct[]) transferIns;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => transferInStruct[]) transferIns;
 
     event Burn(address indexed burner, uint256 value);
 
@@ -159,7 +159,7 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -188,7 +188,7 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
     }
 
     function setPrice(uint _newPrice) external onlyOwner returns(bool) {
-        require(_newPrice &gt;= 0);
+        require(_newPrice >= 0);
         tokenPrice = _newPrice;
         return true;
     }
@@ -202,7 +202,7 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
         uint64 _now = uint64(now);
         transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
         transferIns[_to].push(transferInStruct(uint128(_value),_now));
@@ -215,13 +215,13 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
         uint _allowance = uint(allowed[_from][msg.sender]);
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = _allowance.sub(_value);
         Transfer(_from, _to, _value);
-        if(transferIns[_from].length &gt; 0) delete transferIns[_from];
+        if(transferIns[_from].length > 0) delete transferIns[_from];
         uint64 _now = uint64(now);
         transferIns[_from].push(transferInStruct(uint128(balances[_from]),_now));
         transferIns[_to].push(transferInStruct(uint128(_value),_now));
@@ -241,14 +241,14 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
     }
     
     function withdraw(uint amount) public onlyOwner returns(bool) {
-        require(amount &lt;= address(this).balance);
+        require(amount <= address(this).balance);
         owner.transfer(address(this).balance);
         return true;
     }
     
     function ownerMint(uint _amount) public onlyOwner returns (bool) {
         uint amount = _amount * 10**decimals;
-        require(totalSupply.add(amount) &lt;= 2**256 - 1 &amp;&amp; balances[owner].add(amount) &lt;= 2**256 - 1);
+        require(totalSupply.add(amount) <= 2**256 - 1 && balances[owner].add(amount) <= 2**256 - 1);
         totalSupply = totalSupply.add(amount);
         balances[owner] = balances[owner].add(amount);
         Transfer(address(0), owner, amount);
@@ -256,10 +256,10 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
     }
 
     function mint() public returns (bool) {
-        if(balances[msg.sender] &lt;= 0 || transferIns[msg.sender].length &lt;= 0) return false;
+        if(balances[msg.sender] <= 0 || transferIns[msg.sender].length <= 0) return false;
 
         uint reward = getProofOfStakeReward(msg.sender);
-        if(reward &lt;= 0) return false;
+        if(reward <= 0) return false;
 
         totalSupply = totalSupply.add(reward);
         balances[msg.sender] = balances[msg.sender].add(reward);
@@ -283,11 +283,11 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
     }
 
     function getProofOfStakeReward(address _address) internal constant returns (uint) {
-        require( (now &gt;= stakeStartTime) &amp;&amp; (stakeStartTime &gt; 0) );
+        require( (now >= stakeStartTime) && (stakeStartTime > 0) );
 
         uint _now = now;
         uint _coinAge = getCoinAge(_address, _now);
-        if(_coinAge &lt;= 0) return 0;
+        if(_coinAge <= 0) return 0;
 
         uint interest = maxMintProofOfStake;
 
@@ -295,25 +295,25 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
     }
 
     function getCoinAge(address _address, uint _now) internal constant returns (uint _coinAge) {
-        if(transferIns[_address].length &lt;= 0) return 0;
+        if(transferIns[_address].length <= 0) return 0;
 
-        for (uint i = 0; i &lt; transferIns[_address].length; i++){
-            if( _now &lt; uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
+        for (uint i = 0; i < transferIns[_address].length; i++){
+            if( _now < uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
-            if( nCoinSeconds &gt; stakeMaxAge ) nCoinSeconds = stakeMaxAge;
+            if( nCoinSeconds > stakeMaxAge ) nCoinSeconds = stakeMaxAge;
 
             _coinAge = _coinAge.add(uint(transferIns[_address][i].amount) * nCoinSeconds.div(1 days));
         }
     }
 
     function ownerSetStakeStartTime(uint timestamp) onlyOwner external {
-        require((stakeStartTime &lt;= 0) &amp;&amp; (timestamp &gt;= chainStartTime));
+        require((stakeStartTime <= 0) && (timestamp >= chainStartTime));
         stakeStartTime = timestamp;
     }
 
     function ownerBurnToken(uint _value) onlyOwner external {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         delete transferIns[msg.sender];
@@ -326,7 +326,7 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
 
     /* Batch token transfer. Used by contract creator to distribute initial tokens to holders */
     function batchTransfer(address[] _recipients, uint[] _values) onlyOwner public returns (uint) {
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require( _recipients.length > 0 && _recipients.length == _values.length);
         uint total = 0;
         assembly {
             let len := mload(_values)
@@ -334,18 +334,18 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
                 total := add(total, mload(add(add(_values, 0x20), mul(i, 0x20))))
             }
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
         uint64 _now = uint64(now);
         
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
             transferIns[_recipients[j]].push(transferInStruct(uint128(_values[j]),_now));
             Transfer(msg.sender, _recipients[j], _values[j]);
         }
 
         balances[msg.sender] = balances[msg.sender].sub(total);
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
-        if(balances[msg.sender] &gt; 0) transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
+        if(balances[msg.sender] > 0) transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),_now));
 
         return total;
     }
@@ -353,9 +353,9 @@ contract GameGoldToken is ERC20,GameGoldTokenStandard,Ownable {
 
     /* buying tokens function */
     function() public onlyIfSaleIsGoing payable {
-    	 require(msg.value &gt;= tokenPrice);
+    	 require(msg.value >= tokenPrice);
     	 uint tokenAmount = (msg.value / tokenPrice) * 10 ** decimals;
-    	 require(alreadySold.add(tokenAmount) &lt;= saleSupply);
+    	 require(alreadySold.add(tokenAmount) <= saleSupply);
 
     	 balances[owner] = balances[owner].sub(tokenAmount);
     	 balances[msg.sender] = balances[msg.sender].add(tokenAmount);

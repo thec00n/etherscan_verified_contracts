@@ -1,4 +1,4 @@
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -6,7 +6,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -19,7 +19,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -28,7 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-pragma solidity ^0.4.16;//please import oraclizeAPI_pre0.4.sol when solidity &lt; 0.4.0
+pragma solidity ^0.4.16;//please import oraclizeAPI_pre0.4.sol when solidity < 0.4.0
 
 contract OraclizeI {
     address public cbAddress;
@@ -60,31 +60,31 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork() internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -107,7 +107,7 @@ contract usingOraclize {
 
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_cbAddress() oraclizeAPI internal returns (address){
@@ -136,8 +136,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -146,12 +146,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 
     function uint2str(uint i) internal returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -167,14 +167,14 @@ contract usingOraclize {
         return string(bstr);
     }
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="44253625272c2a2d20042a2b30202b306a2a2130">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="44253625272c2a2d20042a2b30202b306a2a2130">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -182,11 +182,11 @@ contract usingOraclize {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -201,7 +201,7 @@ contract usingOraclize {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 pragma solidity ^0.4.16;
@@ -214,7 +214,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -253,23 +253,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -305,7 +305,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -328,18 +328,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -368,12 +368,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -383,7 +383,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -422,18 +422,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -473,33 +473,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / div;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             len = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             len = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             len = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             div = div / 256;
-            b = (word / div) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / div) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -523,7 +523,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -549,7 +549,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -578,7 +578,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -606,7 +606,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -633,8 +633,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -654,7 +654,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -671,8 +671,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -694,7 +694,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -816,7 +816,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint count) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             count++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -858,20 +858,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint len = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             len += parts[i]._len;
 
         var ret = new string(len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -914,7 +914,7 @@ contract LastWillOraclizeProxy is usingOraclize, LastWillOraclizeProxyI {
     /**
      * Oraclize query ids.
      */
-    mapping(bytes32 =&gt; function (bool) external) private validIds;
+    mapping(bytes32 => function (bool) external) private validIds;
 
     /**
      * To inform LastWill system about latest oraclize price in wei.
@@ -922,7 +922,7 @@ contract LastWillOraclizeProxy is usingOraclize, LastWillOraclizeProxyI {
     event Price(uint);
 
     function getPrice() returns (uint) {
-        return oraclize_getPrice(&quot;URL&quot;);
+        return oraclize_getPrice("URL");
     }
 
     function query(
@@ -932,7 +932,7 @@ contract LastWillOraclizeProxy is usingOraclize, LastWillOraclizeProxyI {
         function (bool) external callback
     ) public payable returns (bool) {
         string memory url = buildUrl(target, startBlock, endBlock);
-        bytes32 queryId = oraclize_query(&quot;URL&quot;, url);
+        bytes32 queryId = oraclize_query("URL", url);
         if (queryId == 0) {
             return false;
         }
@@ -941,7 +941,7 @@ contract LastWillOraclizeProxy is usingOraclize, LastWillOraclizeProxyI {
     }
 
     /**
-     * The result look like &#39;[&quot;1469624867&quot;, &quot;1469624584&quot;,...&#39;
+     * The result look like '["1469624867", "1469624584",...'
      */
     function __callback(bytes32 queryId, string result, bytes) {
         if (msg.sender != oraclize_cbAddress()) revert();
@@ -953,22 +953,22 @@ contract LastWillOraclizeProxy is usingOraclize, LastWillOraclizeProxyI {
 
     /************************** Internal **************************/
 
-    // json(https://api.etherscan.io/api?module=account&amp;action=txlist&amp;address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&amp;startblock=0&amp;endblock=99999999&amp;page=0&amp;offset=0&amp;sort=desc&amp;apikey=FJ39P2DIU8IX8U9N2735SUKQWG3HPPGPX8).result[?(@.from==&#39;&lt;address&gt;&#39;)].timeStamp
+    // json(https://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&page=0&offset=0&sort=desc&apikey=FJ39P2DIU8IX8U9N2735SUKQWG3HPPGPX8).result[?(@.from=='<address>')].timeStamp
     function buildUrl(address target, uint startBlock, uint endBlock) internal constant returns (string) {
         strings.slice memory strAddress = toHex(target).toSlice();
         uint8 i = 0; // count of the strings below
         var parts = new strings.slice[](9);
-        parts[i++] = &quot;json(https://api.etherscan.io/api?module=account&amp;action=txlist&amp;address=0x&quot;.toSlice();
+        parts[i++] = "json(https://api.etherscan.io/api?module=account&action=txlist&address=0x".toSlice();
         parts[i++] = strAddress;
-        //     // &amp;page=0&amp;offset=0 - means not pagination, but it might be a problem if there will be page limit
-        parts[i++] = &quot;&amp;startblock=&quot;.toSlice();
+        //     // &page=0&offset=0 - means not pagination, but it might be a problem if there will be page limit
+        parts[i++] = "&startblock=".toSlice();
         parts[i++] = uint2str(startBlock).toSlice();
-        parts[i++] = &quot;&amp;endblock=&quot;.toSlice();
+        parts[i++] = "&endblock=".toSlice();
         parts[i++] = uint2str(endBlock).toSlice();
-        parts[i++] = &quot;&amp;sort=desc&amp;apikey=FJ39P2DIU8IX8U9N2735SUKQWG3HPPGPX8).result[?(@.from==&#39;0x&quot;.toSlice();
+        parts[i++] = "&sort=desc&apikey=FJ39P2DIU8IX8U9N2735SUKQWG3HPPGPX8).result[?(@.from=='0x".toSlice();
         parts[i++] = strAddress;
-        parts[i++] = &quot;&#39;)].timeStamp&quot;.toSlice();
-        return &quot;&quot;.toSlice()
+        parts[i++] = "')].timeStamp".toSlice();
+        return "".toSlice()
                  .join(parts);
     }
 
@@ -978,14 +978,14 @@ contract LastWillOraclizeProxy is usingOraclize, LastWillOraclizeProxyI {
     function parseJsonArrayAndGetFirstElementAsNumber(string json) internal constant returns (uint) {
         var jsonSlice = json.toSlice();
         strings.slice memory firstResult;
-        jsonSlice.split(&quot;, &quot;.toSlice(), firstResult);
-        var ts = firstResult.beyond(&quot;[\&quot;&quot;.toSlice()).toString();
+        jsonSlice.split(", ".toSlice(), firstResult);
+        var ts = firstResult.beyond("[\"".toSlice()).toString();
         return parseInt(ts);
     }
 
     function toHex(address adr) internal constant returns (string) {
         var ss = new bytes(40);
-        for (uint i = 0; i &lt; 40; i ++) {
+        for (uint i = 0; i < 40; i ++) {
             uint c;
             assembly {
                 c := and(adr, 0xf)

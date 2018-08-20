@@ -27,7 +27,7 @@ library SafeMath {
     **/
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -36,7 +36,7 @@ library SafeMath {
      * Subtracts two numbers a and b, throws on overflow (i.e. if b is greater than a).
     **/
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
 
         return a - b;
     }
@@ -59,7 +59,7 @@ library SafeMath {
      * Divide of two numbers (a by b), truncating the quotient.
     **/
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
 
         return a / b;
     }
@@ -73,8 +73,8 @@ contract ERC20Token is ERC20Interface {
 
     uint256 _totalSupply;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
      * Return total number of tokens in existence.
@@ -103,14 +103,14 @@ contract ERC20Token is ERC20Interface {
     }
 
     /**
-     * Transfer token to a specified address from &#39;msg.sender&#39;.
+     * Transfer token to a specified address from 'msg.sender'.
      * @param recipient - The address to transfer to.
      * @param amount - The amount to be transferred.
      * @return true if transfer is successfull, error otherwise.
     **/
     function transfer(address recipient, uint256 amount) public returns (bool) {
-        require(recipient != address(0) &amp;&amp; recipient != address(this));
-        require(amount &lt;= balances[msg.sender], &quot;insufficient funds&quot;);
+        require(recipient != address(0) && recipient != address(this));
+        require(amount <= balances[msg.sender], "insufficient funds");
 
         balances[msg.sender] = balances[msg.sender].sub(amount);
         balances[recipient] = balances[recipient].add(amount);
@@ -128,8 +128,8 @@ contract ERC20Token is ERC20Interface {
      * @return true if transfer is successfull, error otherwise.
     **/
     function transferFrom(address from, address to, uint256 amount) public returns (bool) {
-        require(to != address(0) &amp;&amp; to != address(this));
-        require(amount &lt;= balances[from] &amp;&amp; amount &lt;= allowed[from][msg.sender], &quot;insufficient funds&quot;);
+        require(to != address(0) && to != address(this));
+        require(amount <= balances[from] && amount <= allowed[from][msg.sender], "insufficient funds");
 
         balances[from] = balances[from].sub(amount);
         balances[to] = balances[to].add(amount);
@@ -144,14 +144,14 @@ contract ERC20Token is ERC20Interface {
      * Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param spender - The address which will spend the funds.
      * @param amount - The amount of tokens to be spent.
      * @return true if transfer is successfull, error otherwise.
     **/
     function approve(address spender, uint256 amount) public returns (bool) {
-        require(spender != address(0) &amp;&amp; spender != address(this));
+        require(spender != address(0) && spender != address(this));
         require(amount == 0 || allowed[msg.sender][spender] == 0); // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
         allowed[msg.sender][spender] = amount;
@@ -164,7 +164,7 @@ contract ERC20Token is ERC20Interface {
 /**
  * @title Ownable
  * The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
 **/
 contract Ownable {
     address public owner;
@@ -200,7 +200,7 @@ contract BurnableToken is Ownable, ERC20Token {
      * @return true if burning is successfull, error otherwise.
     **/
     function burn(uint256 amount) public onlyOwner returns (bool) {
-        require(amount &lt;= balances[owner], &quot;amount should be less than available balance&quot;);
+        require(amount <= balances[owner], "amount should be less than available balance");
 
         balances[owner] = balances[owner].sub(amount);
         _totalSupply = _totalSupply.sub(amount);
@@ -255,21 +255,21 @@ contract PausableToken is Ownable, ERC20Token {
     }
 
     /**
-     * ERC20 specific &#39;transfer&#39; is only allowed, if contract is not in paused state.
+     * ERC20 specific 'transfer' is only allowed, if contract is not in paused state.
     **/
     function transfer(address recipient, uint256 amount) public whenNotPaused returns (bool) {
         return super.transfer(recipient, amount);
     }
 
     /**
-     * ERC20 specific &#39;transferFrom&#39; is only allowed, if contract is not in paused state.
+     * ERC20 specific 'transferFrom' is only allowed, if contract is not in paused state.
     **/
     function transferFrom(address from, address to, uint256 amount) public whenNotPaused returns (bool) {
         return super.transferFrom(from, to, amount);
     }
 
     /**
-     * ERC20 specific &#39;approve&#39; is only allowed, if contract is not in paused state.
+     * ERC20 specific 'approve' is only allowed, if contract is not in paused state.
     **/
     function approve(address spender, uint256 amount) public whenNotPaused returns (bool) {
         return super.approve(spender, amount);
@@ -281,14 +281,14 @@ contract PausableToken is Ownable, ERC20Token {
 **/
 contract BloxiaToken is Ownable, ERC20Token, PausableToken, BurnableToken {
 
-    string public constant name = &quot;Bloxia&quot;;
-    string public constant symbol = &quot;BLOX&quot;;
+    string public constant name = "Bloxia";
+    string public constant symbol = "BLOX";
     uint8 public constant decimals = 18;
 
     uint256 constant initial_supply = 500000000 * (10 ** uint256(decimals)); // 500 Million
 
     /**
-     * Constructor that gives &#39;msg.sender&#39; all of existing tokens.
+     * Constructor that gives 'msg.sender' all of existing tokens.
     **/
     constructor() public {
         _totalSupply = initial_supply;

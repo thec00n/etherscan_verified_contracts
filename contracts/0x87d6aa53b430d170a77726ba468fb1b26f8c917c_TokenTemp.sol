@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         require(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 }
@@ -111,8 +111,8 @@ contract StandardToken is ERC20, Lockable {
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     function balanceOf(address _owner) view public returns (uint256 balance){
         require(address(0) != _owner);

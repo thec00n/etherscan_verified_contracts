@@ -25,15 +25,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require((z = x * y) &gt;= x);
+        require((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -41,10 +41,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 }
 
@@ -74,8 +74,8 @@ contract LAWCoin is LAWStop,DSMath {
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf; 
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -90,8 +90,8 @@ contract LAWCoin is LAWStop,DSMath {
 
     function _transfer(address _from, address _to, uint _value) stoppable internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = add(balanceOf[_from],balanceOf[_to]);
         // uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] = sub(balanceOf[_from],_value);
@@ -108,7 +108,7 @@ contract LAWCoin is LAWStop,DSMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) stoppable public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] = sub(allowance[_from][msg.sender],_value);
         // allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -130,7 +130,7 @@ contract LAWCoin is LAWStop,DSMath {
     }
 
     function burn(uint256 _value) stoppable public returns (bool success) {   
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = sub(balanceOf[msg.sender],_value);
         // balanceOf[msg.sender] -= _value;
         totalSupply = sub(totalSupply,_value);
@@ -140,8 +140,8 @@ contract LAWCoin is LAWStop,DSMath {
     }
 
     function burnFrom(address _from, uint256 _value) stoppable public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] = sub(balanceOf[_from],_value);
         // balanceOf[_from] -= _value;
         allowance[_from][msg.sender] = sub(allowance[_from][msg.sender],_value);

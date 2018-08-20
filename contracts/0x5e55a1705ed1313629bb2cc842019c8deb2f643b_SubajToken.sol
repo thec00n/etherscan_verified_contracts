@@ -7,11 +7,11 @@ pragma solidity 0.4.21;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -21,7 +21,7 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -96,8 +96,8 @@ contract SubajToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint256 public _totalSupply;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
 
     // ------------------------------------------------------------------------
@@ -105,8 +105,8 @@ contract SubajToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     
     function SubajToken() public {
-        symbol = &quot;SBJ&quot;;
-        name = &quot;SUBAJ&quot;;
+        symbol = "SBJ";
+        name = "SUBAJ";
         decimals = 10;
         _totalSupply = 5000000000 * 10**uint256(decimals);
         balances[owner] = _totalSupply;
@@ -128,13 +128,13 @@ contract SubajToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // ------------------------------------------------------------------------
     function transfer(address to, uint256 tokens) public returns (bool success) {
         require(to != address(0));
         require(tokens != 0);
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         emit Transfer(msg.sender, to, tokens);
@@ -144,7 +144,7 @@ contract SubajToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account 
+    // from the token owner's account 
     // ------------------------------------------------------------------------
     function approve(address spender, uint256 tokens) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
@@ -155,7 +155,7 @@ contract SubajToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint256 tokens, bytes data) public returns (bool success) {
@@ -176,8 +176,8 @@ contract SubajToken is ERC20Interface, Owned {
     function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
         require(to != address(0));
         require(tokens != 0);
-        require(tokens &lt;= balances[from]);
-        require(tokens &lt;= allowed[from][msg.sender]);
+        require(tokens <= balances[from]);
+        require(tokens <= allowed[from][msg.sender]);
         
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -188,7 +188,7 @@ contract SubajToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint256 remaining) {
         return allowed[tokenOwner][spender];
@@ -196,8 +196,8 @@ contract SubajToken is ERC20Interface, Owned {
 
     /*Decreasing totalSupply*/
     function burn(uint256 token) public onlyOwner returns (bool success) { // only owner has authority to burn tokens        
-        if (balances[msg.sender] &lt; token) revert(); // Check if the sender has enough
-        if (token &lt;= 0) revert();
+        if (balances[msg.sender] < token) revert(); // Check if the sender has enough
+        if (token <= 0) revert();
         balances[msg.sender] = balances[msg.sender].sub(token);// Subtract from the sender
         _totalSupply = _totalSupply.sub(token); // Updates totalSupply
         emit Burn(msg.sender, token);

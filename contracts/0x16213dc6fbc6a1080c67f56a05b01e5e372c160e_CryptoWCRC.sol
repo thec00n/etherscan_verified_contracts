@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,20 +63,20 @@ library SafeMath32 {
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,20 +97,20 @@ library SafeMath16 {
   }
 
   function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint16 a, uint16 b) internal pure returns (uint16) {
     uint16 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -136,7 +136,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -144,7 +144,7 @@ library AddressUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -302,7 +302,7 @@ contract ERC721Basic {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -317,7 +317,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -333,21 +333,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -471,7 +471,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -487,14 +487,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -671,11 +671,11 @@ contract WorldCupFactory is Claimable, PausableToken {
     /// @dev A mapping from countryIDs to an address that has been approved to call
     ///  transferFrom(). Each Country can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-	//mapping (uint =&gt; address) internal tokenOwner;
+	//mapping (uint => address) internal tokenOwner;
 
 	// @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-	//mapping (address =&gt; uint) internal ownedTokensCount;
+	//mapping (address => uint) internal ownedTokensCount;
 
 	
 	/// @dev The WorldCupFactory constructor sets the initialized price of One token
@@ -687,15 +687,15 @@ contract WorldCupFactory is Claimable, PausableToken {
 	function createToken() external onlyOwner {
 		// Create tokens
 		uint length = countries.length;
-		for (uint i = length; i &lt; length + 100; i++) {
-			if (i &gt;= 836 ) {
+		for (uint i = length; i < length + 100; i++) {
+			if (i >= 836 ) {
 				break;
 			}
 
-			if (i &lt; 101) {
-				_createToken(&quot;Country&quot;);
+			if (i < 101) {
+				_createToken("Country");
 			}else {
-				_createToken(&quot;Player&quot;);
+				_createToken("Player");
 			}
 		}
 	}
@@ -754,7 +754,7 @@ contract WorldCupHelper is WorldCupControl {
 	    uint[] memory result = new uint[](ownedTokensCount[_owner]);
 	    uint counter = 0;
 
-	    for (uint i = 0; i &lt; countries.length; i++) {
+	    for (uint i = 0; i < countries.length; i++) {
 			if (tokenOwner[i] == _owner) {
 				result[counter] = i;
 				counter++;
@@ -768,7 +768,7 @@ contract WorldCupHelper is WorldCupControl {
   		uint[] memory result = new uint[](_ids.length);
   		uint counter = 0;
 
-  		for (uint i = 0; i &lt; _ids.length; i++) {
+  		for (uint i = 0; i < _ids.length; i++) {
   			Country storage token = countries[_ids[i]];
   			result[counter] = token.price;
   			counter++;
@@ -840,15 +840,15 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
 	event PurchaseToken(address indexed _from, address indexed _to, uint256 _tokenId, uint256 _tokenPrice, uint256 _timestamp, uint256 _purchaseCounter);
 
 	/// @dev ERC721 Token upper limit of price, cap.
-	///  Cap is the upper limit of price. It represented eth&#39;s cap if isEthPayable is true 
-	///  or erc20 token&#39;s cap if isEthPayable is false.
-	///  Note!!! Using &#39;wei&#39; for eth&#39;s cap units. Using minimum units for erc20 token cap units.
+	///  Cap is the upper limit of price. It represented eth's cap if isEthPayable is true 
+	///  or erc20 token's cap if isEthPayable is false.
+	///  Note!!! Using 'wei' for eth's cap units. Using minimum units for erc20 token cap units.
 	uint public cap;
 
     uint public finalCap;
 
 	/// @dev 1 equal to 0.001
-	/// erc721 token&#39;s price increasing. Each purchase the price increases 5%
+	/// erc721 token's price increasing. Each purchase the price increases 5%
 	uint public increasePermillage = 50;
 
 	/// @dev 1 equal to 0.001
@@ -860,7 +860,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
 	PayerInterface public payerContract = PayerInterface(address(0));
 
     /// @dev If isEthPayable is true, users can only use eth to buy current erc721 token.
-    ///  If isEthPayable is false, that mean&#39;s users can only use PayerInterface&#39;s token to buy current erc721 token.
+    ///  If isEthPayable is false, that mean's users can only use PayerInterface's token to buy current erc721 token.
     bool public isEthPayable;
 
     uint public purchaseCounter = 0;
@@ -871,7 +871,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
     /// @param _isEthPayable 
     /// @param _address PayerInterface address, it must be a ERC20 contract.
     function WorldCupAuction(uint _initPrice, uint _cap, bool _isEthPayable, address _address) public WorldCupFactory(_initPrice) {
-        require( (_isEthPayable == false &amp;&amp; _address != address(0)) || _isEthPayable == true &amp;&amp; _address == address(0) );
+        require( (_isEthPayable == false && _address != address(0)) || _isEthPayable == true && _address == address(0) );
 
         cap           = _cap;
         finalCap      = _cap.add(_cap.mul(25).div(1000));
@@ -888,7 +888,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
     	Country storage token = countries[_tokenId];
     	uint nextPrice = _computeNextPrice(token);
 
-    	require(msg.value &gt;= nextPrice);
+    	require(msg.value >= nextPrice);
 
     	uint fee = nextPrice.mul(sysFeePermillage).div(1000);
     	uint oldOwnerRefund = nextPrice.sub(fee);
@@ -902,7 +902,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
     	cooAddress.transfer(fee);
 
     	// Transfer eth left go back to the sender.
-    	if ( msg.value.sub(oldOwnerRefund).sub(fee) &gt; 0.0001 ether ) {
+    	if ( msg.value.sub(oldOwnerRefund).sub(fee) > 0.0001 ether ) {
     		msg.sender.transfer( msg.value.sub(oldOwnerRefund).sub(fee) );
     	}
 
@@ -925,7 +925,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
 
         // We need to know how much erc20 token allows our contract to transfer.
         uint256 aValue = payerContract.allowance(msg.sender, address(this));
-        require(aValue &gt;= nextPrice);
+        require(aValue >= nextPrice);
 
         uint fee = nextPrice.mul(sysFeePermillage).div(1000);
         uint oldOwnerRefund = nextPrice.sub(fee);
@@ -955,7 +955,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
     }
 
     function _computeNextPrice(Country storage token) private view returns(uint) {
-        if (token.price &gt;= cap) {
+        if (token.price >= cap) {
             return finalCap;
         }
 
@@ -963,7 +963,7 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
     	uint addPrice = price.mul(increasePermillage).div(1000);
 
 		uint nextPrice = price.add(addPrice);
-		if (nextPrice &gt; cap) {
+		if (nextPrice > cap) {
 			nextPrice = cap;
 		}
 
@@ -988,9 +988,9 @@ contract WorldCupAuction is WorldCupHelper, AuctionPaused {
 
 contract CryptoWCRC is WorldCupAuction {
 
-	string public constant name = &quot;CryptoWCRC&quot;;
+	string public constant name = "CryptoWCRC";
     
-    string public constant symbol = &quot;WCRC&quot;;
+    string public constant symbol = "WCRC";
 
     function CryptoWCRC(uint _initPrice, uint _cap, bool _isEthPayable, address _address) public WorldCupAuction(_initPrice, _cap, _isEthPayable, _address) {
 

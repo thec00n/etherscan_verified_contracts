@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 contract PaymentVerified {
-    mapping(address =&gt; uint256) payments;
+    mapping(address => uint256) payments;
 
     event Payment(address indexed owner, uint256 eth);
 

@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 library ArrayLib{
   function findAddress(address a, address[] storage arry) returns (int){
-    for (uint i = 0 ; i &lt; arry.length ; i++){
+    for (uint i = 0 ; i < arry.length ; i++){
       if(arry[i] == a){return int(i);}
     }
     return -1;
@@ -78,10 +78,10 @@ contract RecoverableController {
   function signRecoveryChange(address _proposedRecoveryKey) onlyUserKey{
     proposedRecoveryKeyPendingUntil = now + longTimeLock;
     proposedRecoveryKey = _proposedRecoveryKey;
-    RecoveryEvent(&quot;signRecoveryChange&quot;, msg.sender);
+    RecoveryEvent("signRecoveryChange", msg.sender);
   }
   function changeRecovery() {
-    if(proposedRecoveryKeyPendingUntil &lt; now &amp;&amp; proposedRecoveryKey != 0x0){
+    if(proposedRecoveryKeyPendingUntil < now && proposedRecoveryKey != 0x0){
       recoveryKey = proposedRecoveryKey;
       delete proposedRecoveryKey;
     }
@@ -90,10 +90,10 @@ contract RecoverableController {
   function signControllerChange(address _proposedController) onlyUserKey{
     proposedControllerPendingUntil = now + longTimeLock;
     proposedController = _proposedController;
-    RecoveryEvent(&quot;signControllerChange&quot;, msg.sender);
+    RecoveryEvent("signControllerChange", msg.sender);
   }
   function changeController() {
-    if(proposedControllerPendingUntil &lt; now &amp;&amp; proposedController != 0x0){
+    if(proposedControllerPendingUntil < now && proposedController != 0x0){
       proxy.transfer(proposedController);
       suicide(proposedController);
     }
@@ -102,13 +102,13 @@ contract RecoverableController {
   function signUserKeyChange(address _proposedUserKey) onlyUserKey{
     proposedUserKeyPendingUntil = now + shortTimeLock;
     proposedUserKey = _proposedUserKey;
-    RecoveryEvent(&quot;signUserKeyChange&quot;, msg.sender);
+    RecoveryEvent("signUserKeyChange", msg.sender);
   }
   function changeUserKey(){
-    if(proposedUserKeyPendingUntil &lt; now &amp;&amp; proposedUserKey != 0x0){
+    if(proposedUserKeyPendingUntil < now && proposedUserKey != 0x0){
       userKey = proposedUserKey;
       delete proposedUserKey;
-      RecoveryEvent(&quot;changeUserKey&quot;, msg.sender);
+      RecoveryEvent("changeUserKey", msg.sender);
     }
   }
   
@@ -123,7 +123,7 @@ contract RecoveryQuorum {
   RecoverableController public controller;
 
   address[] public delegateAddresses; // needed for iteration of mapping
-  mapping (address =&gt; Delegate) public delegates;
+  mapping (address => Delegate) public delegates;
   struct Delegate{
     uint deletedAfter; // delegate exists if not 0
     uint pendingUntil;
@@ -136,7 +136,7 @@ contract RecoveryQuorum {
 
   function RecoveryQuorum(address _controller, address[] _delegates){
     controller = RecoverableController(_controller);
-    for(uint i = 0; i &lt; _delegates.length; i++){
+    for(uint i = 0; i < _delegates.length; i++){
       delegateAddresses.push(_delegates[i]);
       delegates[_delegates[i]] = Delegate({proposedUserKey: 0x0, pendingUntil: 0, deletedAfter: 31536000000000});
     }
@@ -145,15 +145,15 @@ contract RecoveryQuorum {
     if(delegateRecordExists(delegates[msg.sender])) {
       delegates[msg.sender].proposedUserKey = proposedUserKey;
       changeUserKey(proposedUserKey);
-      RecoveryEvent(&quot;signUserChange&quot;, msg.sender);
+      RecoveryEvent("signUserChange", msg.sender);
     }
   }
   function changeUserKey(address newUserKey) {
-    if(collectedSignatures(newUserKey) &gt;= neededSignatures()){
+    if(collectedSignatures(newUserKey) >= neededSignatures()){
       controller.changeUserKeyFromRecovery(newUserKey);
-      for(uint i = 0 ; i &lt; delegateAddresses.length ; i++){
+      for(uint i = 0 ; i < delegateAddresses.length ; i++){
         //remove any pending delegates after a recovery
-        if(delegates[delegateAddresses[i]].pendingUntil &gt; now){ 
+        if(delegates[delegateAddresses[i]].pendingUntil > now){ 
             delegates[delegateAddresses[i]].deletedAfter = now;
         }
         delete delegates[delegateAddresses[i]].proposedUserKey;
@@ -162,18 +162,18 @@ contract RecoveryQuorum {
   }
 
   function replaceDelegates(address[] delegatesToRemove, address[] delegatesToAdd) onlyUserKey{
-    for(uint i = 0 ; i &lt; delegatesToRemove.length ; i++){
+    for(uint i = 0 ; i < delegatesToRemove.length ; i++){
       removeDelegate(delegatesToRemove[i]);
     }
     garbageCollect();
-    for(uint j = 0 ; j &lt; delegatesToAdd.length ; j++){
+    for(uint j = 0 ; j < delegatesToAdd.length ; j++){
       addDelegate(delegatesToAdd[j]);
     }
-    RecoveryEvent(&quot;replaceDelegates&quot;, msg.sender);
+    RecoveryEvent("replaceDelegates", msg.sender);
   }
   function collectedSignatures(address _proposedUserKey) returns (uint signatures){
-    for(uint i = 0 ; i &lt; delegateAddresses.length ; i++){
-      if (delegateHasValidSignature(delegates[delegateAddresses[i]]) &amp;&amp; delegates[delegateAddresses[i]].proposedUserKey == _proposedUserKey){
+    for(uint i = 0 ; i < delegateAddresses.length ; i++){
+      if (delegateHasValidSignature(delegates[delegateAddresses[i]]) && delegates[delegateAddresses[i]].proposedUserKey == _proposedUserKey){
         signatures++;
       }
     }
@@ -183,21 +183,21 @@ contract RecoveryQuorum {
 
   function neededSignatures() returns (uint){
     uint currentDelegateCount; //always 0 at this point
-    for(uint i = 0 ; i &lt; delegateAddresses.length ; i++){
+    for(uint i = 0 ; i < delegateAddresses.length ; i++){
       if(delegateIsCurrent(delegates[delegateAddresses[i]])){ currentDelegateCount++; }
     }
     return currentDelegateCount/2 + 1;
   }
   function addDelegate(address delegate) private {
-    if(!delegateRecordExists(delegates[delegate]) &amp;&amp; delegateAddresses.length &lt; 15) {
+    if(!delegateRecordExists(delegates[delegate]) && delegateAddresses.length < 15) {
       delegates[delegate] = Delegate({proposedUserKey: 0x0, pendingUntil: now + controller.longTimeLock(), deletedAfter: 31536000000000});
       delegateAddresses.push(delegate);
     }
   }
   function removeDelegate(address delegate) private {
-    if(delegates[delegate].deletedAfter &gt; controller.longTimeLock() + now){ 
+    if(delegates[delegate].deletedAfter > controller.longTimeLock() + now){ 
       //remove right away if they are still pending
-      if(delegates[delegate].pendingUntil &gt; now){ 
+      if(delegates[delegate].pendingUntil > now){ 
         delegates[delegate].deletedAfter = now;
       } else{
         delegates[delegate].deletedAfter = controller.longTimeLock() + now;
@@ -206,7 +206,7 @@ contract RecoveryQuorum {
   }
   function garbageCollect() private{
     uint i = 0;
-    while(i &lt; delegateAddresses.length){
+    while(i < delegateAddresses.length){
       if(delegateIsDeleted(delegates[delegateAddresses[i]])){
         delegates[delegateAddresses[i]].deletedAfter = 0;
         delegates[delegateAddresses[i]].pendingUntil = 0;
@@ -219,13 +219,13 @@ contract RecoveryQuorum {
       return d.deletedAfter != 0;
   }
   function delegateIsDeleted(Delegate d) private returns (bool){
-      return d.deletedAfter &lt;= now; //doesnt check record existence
+      return d.deletedAfter <= now; //doesnt check record existence
   }
   function delegateIsCurrent(Delegate d) private returns (bool){
-      return delegateRecordExists(d) &amp;&amp; !delegateIsDeleted(d) &amp;&amp; now &gt; d.pendingUntil;
+      return delegateRecordExists(d) && !delegateIsDeleted(d) && now > d.pendingUntil;
   }
   function delegateHasValidSignature(Delegate d) private returns (bool){
-      return delegateIsCurrent(d) &amp;&amp; d.proposedUserKey != 0x0;
+      return delegateIsCurrent(d) && d.proposedUserKey != 0x0;
   }
 }
 
@@ -236,7 +236,7 @@ contract IdentityFactory {
         address controller,
         address recoveryQuorum);
 
-    mapping(address =&gt; address) public senderToProxy;
+    mapping(address => address) public senderToProxy;
 
     //cost ~2.4M gas
     function CreateProxyWithControllerAndRecovery(address userKey, address[] delegates, uint longTimeLock, uint shortTimeLock) {

@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 //defines the contract (this is the entire program basically)
 
 contract TeaToken {
-    //Definition section. To the non-devs, define means &quot;tell the compiler this concept exists and if I mention it later this is what im talking about&quot; 
+    //Definition section. To the non-devs, define means "tell the compiler this concept exists and if I mention it later this is what im talking about" 
 
     //please note that define does not mean fill with data, that happens later on. Im merely telling the computer these variables exist so it doesnt get confused later.
 
@@ -15,13 +15,13 @@ contract TeaToken {
 
     uint256 tea_tokens;
 
-    mapping(address =&gt; uint256) public balanceOf;               //this is used to measure how much money some wallet just sent us
+    mapping(address => uint256) public balanceOf;               //this is used to measure how much money some wallet just sent us
 
     bool public crowdsaleOpen = true;                               //this is a true-false statement that tells the program whether or not the crowdsale is still going. Unlike the others, this one actually does have data saved to it via the = false;
 
-    string public name = &quot;TeaToken&quot;;                             //this is the name of the token, what normies will see in their Ether Wallets
+    string public name = "TeaToken";                             //this is the name of the token, what normies will see in their Ether Wallets
 
-    string public symbol = &quot;TEAT&quot;;
+    string public symbol = "TEAT";
 
     uint256 public decimals = 8;
 
@@ -84,14 +84,14 @@ contract TeaToken {
         //if (crowdsaleOpen) throw;     //throw means reject the transaction. This will prevent people from accidentally sending money to a crowdsale that is already closed.
         require(crowdsaleOpen);
 
-        uint256 amount = msg.value;                            //measures how many ETH coins they sent us (the message) and stores it as an integer called &quot;amount&quot;
+        uint256 amount = msg.value;                            //measures how many ETH coins they sent us (the message) and stores it as an integer called "amount"
         //presale
 
-        if (now &lt;= preSaleDeadline){
+        if (now <= preSaleDeadline){
         tea_tokens = (amount / pricePreSale);  
         //stage 1
 
-        }else if (now &lt;= icoStage1Deadline){
+        }else if (now <= icoStage1Deadline){
         tea_tokens = (amount / priceStage1);  
         //stage 2
         }else{
@@ -108,13 +108,13 @@ contract TeaToken {
     function safeWithdrawal() {
 
         //this checks to see if the sender is actually authorized to trigger the withdrawl. The sender must be the beneficiary in this case or it wont work.
-        //the now &gt;= deadline*3 line acts as a deadman switch, ensuring that anyone in the world can trigger the fund release after the specified time
+        //the now >= deadline*3 line acts as a deadman switch, ensuring that anyone in the world can trigger the fund release after the specified time
 
-        require(controllerAddress1 == msg.sender || controllerAddress2 == msg.sender || controllerAddress3 == msg.sender || now &gt;= deadmanSwitchDeadline);
-        require(this.balance &gt; 0);
+        require(controllerAddress1 == msg.sender || controllerAddress2 == msg.sender || controllerAddress3 == msg.sender || now >= deadmanSwitchDeadline);
+        require(this.balance > 0);
 
         uint256 sendValue = this.balance / numAddresses;
-        for (uint256 i = 0; i&lt;numAddresses; i++){
+        for (uint256 i = 0; i<numAddresses; i++){
 
                 //for the very final address, send the entire remaining balance instead of the divisor. This is to prevent remainders being left behind.
 
@@ -138,7 +138,7 @@ contract TeaToken {
     function endCrowdsale() {
         //this checks to see if the sender is actually authorized to trigger the withdrawl. The sender must be the beneficiary in this case or it wont work.
 
-        require(controllerAddress1 == msg.sender || controllerAddress2 == msg.sender || controllerAddress3 == msg.sender || now &gt;= deadmanSwitchDeadline);
+        require(controllerAddress1 == msg.sender || controllerAddress2 == msg.sender || controllerAddress3 == msg.sender || now >= deadmanSwitchDeadline);
         //shuts down the crowdsale
         crowdsaleOpen = false;
     }
@@ -149,9 +149,9 @@ contract TeaToken {
 
     function transfer(address _to, uint256 _value) {
 
-        require(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
 
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows. If someone sent like 500 googolplex tokens it would actually go back to zero again because of an overflow. Computerized integers can only store so many numbers before they run out of room for more. This prevents that from causing a problem. Fun fact: this shit right here is what caused the Y2K bug everyone was panicking about back in 1999
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows. If someone sent like 500 googolplex tokens it would actually go back to zero again because of an overflow. Computerized integers can only store so many numbers before they run out of room for more. This prevents that from causing a problem. Fun fact: this shit right here is what caused the Y2K bug everyone was panicking about back in 1999
 
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
 

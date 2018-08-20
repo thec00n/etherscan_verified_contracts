@@ -79,21 +79,21 @@ library SafeMath {
 
   
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -134,9 +134,9 @@ contract TokenVestingTimelock is Ownable {
     public
     {
         require(_beneficiary != address(0));
-        if (_releaseTime &gt; 0) {
+        if (_releaseTime > 0) {
             // solium-disable-next-line security/no-block-members
-            require(_releaseTime &gt; block.timestamp);
+            require(_releaseTime > block.timestamp);
         }
 
         beneficiary = _beneficiary;
@@ -151,11 +151,11 @@ contract TokenVestingTimelock is Ownable {
     function release() public returns(bool) {
         uint256 unreleased = releasableAmount();
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
-        if (releaseTime &gt; 0) {
+        if (releaseTime > 0) {
         // solium-disable-next-line security/no-block-members
-            require(block.timestamp &gt;= releaseTime);
+            require(block.timestamp >= releaseTime);
         }
 
         released = released.add(unreleased);
@@ -196,10 +196,10 @@ contract TokenVestingTimelock is Ownable {
         uint256 currentBalance = token.balanceOf(this);
         uint256 totalBalance = currentBalance.add(released);
         // solium-disable-next-line security/no-block-members
-        if (block.timestamp &lt; start) {
+        if (block.timestamp < start) {
             return 0;
           // solium-disable-next-line security/no-block-members
-        } else if (block.timestamp &gt;= start.add(duration) || revoked) {
+        } else if (block.timestamp >= start.add(duration) || revoked) {
             return totalBalance;
         } else {
             // solium-disable-next-line security/no-block-members

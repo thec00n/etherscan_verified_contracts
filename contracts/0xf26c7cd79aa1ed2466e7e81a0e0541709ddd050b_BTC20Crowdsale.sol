@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -123,8 +123,8 @@ contract BTC20Token is BasicToken,Ownable {
    using SafeMath for uint256;
    
    //TODO: Change the name and the symbol
-   string public constant name = &quot;BTC20&quot;;
-   string public constant symbol = &quot;BTC20&quot;;
+   string public constant name = "BTC20";
+   string public constant symbol = "BTC20";
    uint256 public constant decimals = 18;
 
    uint256 public constant INITIAL_SUPPLY = 21000000;
@@ -139,9 +139,9 @@ contract BTC20Token is BasicToken,Ownable {
     }
 
     function mint(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[wallet] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[wallet] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller's balance
       Transfer(wallet, buyer, tokenAmount); 
     }
   function showMyTokenBalance(address addr) public view returns (uint tokenBalance) {
@@ -187,7 +187,7 @@ contract BTC20Crowdsale {
     startTime = _startTime;   
     endTime = startTime + 14 days;
     
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
     require(_wallet != 0x0);
 
     wallet = _wallet;
@@ -231,8 +231,8 @@ contract BTC20Crowdsale {
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
     require(validPurchase());
-    require(msg.value&gt;= minimumContribution);
-    require(TOKENS_SOLD&lt;maxTokensToSale);
+    require(msg.value>= minimumContribution);
+    require(TOKENS_SOLD<maxTokensToSale);
     uint256 weiAmount = msg.value;
     
     // calculate token amount to be created
@@ -240,7 +240,7 @@ contract BTC20Crowdsale {
     uint256 tokens = weiAmount.mul(ratePerWei);
     uint256 bonus = determineBonus(tokens);
     tokens = tokens.add(bonus);
-    require(TOKENS_SOLD+tokens&lt;=maxTokensToSale);
+    require(TOKENS_SOLD+tokens<=maxTokensToSale);
     
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -259,14 +259,14 @@ contract BTC20Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    

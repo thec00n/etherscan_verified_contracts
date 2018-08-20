@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -36,9 +36,9 @@ library SafeMath {
 contract CoinPokerToken {
     using SafeMath for uint;
     // Public variables of the token
-    string constant public standard = &quot;ERC20&quot;;
-    string constant public name = &quot;Poker Chips&quot;;
-    string constant public symbol = &quot;CHP&quot;;
+    string constant public standard = "ERC20";
+    string constant public name = "Poker Chips";
+    string constant public symbol = "CHP";
     uint8 constant public decimals = 18;
     uint _totalSupply = 500000000e18; // Total supply of 500 Million CoinPoker Tokens
     uint constant public tokensPreICO = 100000000e18; // 20% for pre-ICO
@@ -53,8 +53,8 @@ contract CoinPokerToken {
     bool burned;
 
     // Array with all balances
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     // Public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint value);
@@ -87,7 +87,7 @@ contract CoinPokerToken {
 
     //  Send some of your tokens to a given address
     function transfer(address _to, uint _value) returns(bool) {
-        if (now &lt; startTime)  // Check if the crowdsale is already over
+        if (now < startTime)  // Check if the crowdsale is already over
             require(_to == cashierAddr); // allow only to transfer CHP (make a deposit) to game/cashier wallet
         balances[msg.sender] = balances[msg.sender].sub(_value); // Subtract from the sender
         balances[_to] = balances[_to].add(_value); // Add the same to the recipient
@@ -98,7 +98,7 @@ contract CoinPokerToken {
     //  A contract or person attempts to get the tokens of somebody else.
     //  This is only allowed if the token holder approved.
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        if (now &lt; startTime)  // Check if the crowdsale is already over
+        if (now < startTime)  // Check if the crowdsale is already over
             require(_from == ownerAddr || _to == cashierAddr);
         var _allowed = allowed[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value); // Subtract from the sender
@@ -125,14 +125,14 @@ contract CoinPokerToken {
     }
 
     //  Called when ICO is closed. Burns the remaining tokens except the tokens reserved:
-    //  - for tournaments (released by percentage of total token sale, max 75&#39;000&#39;000)
-    //  - for pre-ICO (100&#39;000&#39;000)
-    //  - for team/advisors/exchanges (50&#39;000&#39;000).
+    //  - for tournaments (released by percentage of total token sale, max 75'000'000)
+    //  - for pre-ICO (100'000'000)
+    //  - for team/advisors/exchanges (50'000'000).
     //  Anybody may burn the tokens after ICO ended, but only once (in case the owner holds more tokens in the future).
     //  this ensures that the owner will not posses a majority of the tokens.
     function burn() {
         // If tokens have not been burned already and the crowdsale ended
-        if (!burned &amp;&amp; now &gt; startTime) {
+        if (!burned && now > startTime) {
             // Calculate tournament release amount (tournament_reserve * proportion_how_many_sold)
             uint total_sold = _totalSupply.sub(balances[ownerAddr]);
             total_sold = total_sold.add(tokensPreICO);
@@ -140,7 +140,7 @@ contract CoinPokerToken {
             uint percentage = percent(total_sold, total_ico_amount, 8);
             uint tournamentsAmount = tournamentsReserve.mul(percentage).div(100000000);
 
-            // Calculate what&#39;s left
+            // Calculate what's left
             uint totalReserve = teamReserve.add(tokensPreICO);
             totalReserve = totalReserve.add(tournamentsAmount);
             uint difference = balances[ownerAddr].sub(totalReserve);
@@ -150,7 +150,7 @@ contract CoinPokerToken {
             balances[tournamentsAddr] = balances[tournamentsAddr].add(tournamentsAmount);
             balances[ownerAddr] = teamReserve;
 
-            // Burn what&#39;s left
+            // Burn what's left
             _totalSupply = _totalSupply.sub(difference);
             burned = true;
             Burned(difference);

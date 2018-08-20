@@ -14,12 +14,12 @@ pragma solidity ^0.4.4;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy to clone this token and
+/// @dev This token contract's goal is to make it easy to clone this token and
 ///  spawn new tokens using the token distribution at a given block.
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
 
@@ -65,10 +65,10 @@ contract Controlled {
 
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to the a
@@ -94,10 +94,10 @@ contract MiniMeToken is Controlled {
     uint public creationBlock;
 
     // `balances` is the map that tracks the balance of each address
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -174,7 +174,7 @@ contract MiniMeToken is Controlled {
             if (!transfersEnabled) throw;
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -193,11 +193,11 @@ contract MiniMeToken is Controlled {
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
-           if ((controller != 0)&amp;&amp;(isContract(controller))) {
+           if ((controller != 0)&&(isContract(controller))) {
                if (!TokenController(controller).onTransfer(_from, _to, _amount))
                throw;
            }
@@ -217,7 +217,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -231,12 +231,12 @@ contract MiniMeToken is Controlled {
     function approve(address _spender, uint256 _amount) returns (bool success) {
         if (!transfersEnabled) throw;
 
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         // allowance to zero by calling `approve(_spender,0)` if it is not
         // already 0 https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_amount!=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)) throw;
+        if ((_amount!=0) && (allowed[msg.sender][_spender] !=0)) throw;
 
-        if ((controller != 0)&amp;&amp;(isContract(controller))) {
+        if ((controller != 0)&&(isContract(controller))) {
             if (!TokenController(controller).onApprove(msg.sender, _spender, _amount))
                 throw;
         }
@@ -266,14 +266,14 @@ contract MiniMeToken is Controlled {
         allowed[msg.sender][_spender] = _amount;
         Approval(msg.sender, _spender, _amount);
 
-        // This portion is copied from ConsenSys&#39;s Standard Token Contract. It
+        // This portion is copied from ConsenSys's Standard Token Contract. It
         //  calls the receiveApproval function that is part of the contract that
         //  is being approved (`_spender`). The function should look like:
         //  `receiveApproval(address _from, uint256 _amount, address
         //  _tokenContract, bytes _extraData)` It is assumed that the call
         //  *should* succeed, otherwise one would use vanilla approve instead.
         if(!_spender.call(
-            bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))),
+            bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))),
             msg.sender,
             _amount,
             this,
@@ -302,7 +302,7 @@ contract MiniMeToken is Controlled {
 
         // If the `_blockNumber` requested is before the genesis block for the
         //  the token being queried, the value returned is 0
-        if (_blockNumber &lt; creationBlock) {
+        if (_blockNumber < creationBlock) {
             return 0;
 
         // These next few lines are used when the balance of the token is
@@ -311,7 +311,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         } else if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, parentSnapShotBlock);
             } else {
@@ -333,7 +333,7 @@ contract MiniMeToken is Controlled {
 
         // If the `_blockNumber` requested is before the genesis block for the
         //  the token being queried, the value returned is 0
-        if (_blockNumber &lt; creationBlock) {
+        if (_blockNumber < creationBlock) {
             return 0;
 
         // These next few lines are used when the totalSupply of the token is
@@ -342,7 +342,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         } else if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(parentSnapShotBlock);
             } else {
@@ -376,7 +376,7 @@ contract MiniMeToken is Controlled {
         uint _snapshotBlock,
         bool _transfersEnabled
         ) returns(address) {
-        if (_snapshotBlock &gt; block.number) _snapshotBlock = block.number;
+        if (_snapshotBlock > block.number) _snapshotBlock = block.number;
         MiniMeToken cloneToken = tokenFactory.createCloneToken(
             this,
             _snapshotBlock,
@@ -419,10 +419,10 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply &lt; _amount) throw;
+        if (curTotalSupply < _amount) throw;
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         var previousBalanceFrom = balanceOf(_owner);
-        if (previousBalanceFrom &lt; _amount) throw;
+        if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
         return true;
@@ -447,16 +447,16 @@ contract MiniMeToken is Controlled {
     ) constant internal returns (uint) {
         if (checkpoints.length == 0) return 0;
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -468,7 +468,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -484,10 +484,10 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     /// set to 0, the ether is sent to the controller (normally the token
     /// creation contract) using the `proxyPayment` method.
     function ()  payable {
@@ -549,7 +549,7 @@ contract MiniMeTokenFactory {
 
 contract Owned {
     /// Prevents methods from perfoming any value transfer
-    modifier noEther() {if (msg.value &gt; 0) throw; _; }
+    modifier noEther() {if (msg.value > 0) throw; _; }
     /// Allows only the owner to call a function
     modifier onlyOwner { if (msg.sender != owner) throw; _; }
 
@@ -582,7 +582,7 @@ contract Campaign is TokenController, Owned {
     MiniMeToken public tokenContract;  // The new token for this Campaign
     address public vaultAddress;       // The address to hold the funds donated
 
-/// @notice &#39;Campaign()&#39; initiates the Campaign by setting its funding
+/// @notice 'Campaign()' initiates the Campaign by setting its funding
 /// parameters and creating the deploying the token contract
 /// @dev There are several checks to make sure the parameters are acceptable
 /// @param _startFundingTime The UNIX time that the Campaign will be able to
@@ -601,9 +601,9 @@ contract Campaign is TokenController, Owned {
         address _vaultAddress,
         address _tokenAddress
     ) {
-        if ((_endFundingTime &lt; now) ||                // Cannot start in the past
-            (_endFundingTime &lt;= _startFundingTime) ||
-            (_maximumFunding &gt; 10000 ether) ||        // The Beta is limited
+        if ((_endFundingTime < now) ||                // Cannot start in the past
+            (_endFundingTime <= _startFundingTime) ||
+            (_maximumFunding > 10000 ether) ||        // The Beta is limited
             (_vaultAddress == 0))                    // To prevent burning ETH
             {
             throw;
@@ -666,11 +666,11 @@ contract Campaign is TokenController, Owned {
     function doPayment(address _owner) internal {
 
 // First we check that the Campaign is allowed to receive this donation
-        if ((now&lt;startFundingTime) ||
-            (now&gt;endFundingTime) ||
+        if ((now<startFundingTime) ||
+            (now>endFundingTime) ||
             (tokenContract.controller() == 0) ||           // Extra check
             (msg.value == 0) ||
-            (totalCollected + msg.value &gt; maximumFunding))
+            (totalCollected + msg.value > maximumFunding))
         {
             throw;
         }
@@ -697,7 +697,7 @@ contract Campaign is TokenController, Owned {
 /// @dev `finalizeFunding()` can only be called after the end of the funding period.
 
     function finalizeFunding() {
-        if (now &lt; endFundingTime) throw;
+        if (now < endFundingTime) throw;
         tokenContract.changeController(0);
     }
 
@@ -712,7 +712,7 @@ contract Campaign is TokenController, Owned {
         if (sealed)
             throw;
 
-        for (uint i=0; i&lt; data.length; i+= 2) {
+        for (uint i=0; i< data.length; i+= 2) {
             address dth = address(data[i]);
             uint amount = uint(data[i+1]);
             if (!tokenContract.generateTokens(dth, amount)) {

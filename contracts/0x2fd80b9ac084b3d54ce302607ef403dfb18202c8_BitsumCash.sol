@@ -50,7 +50,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success){
-		require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+		require(balances[msg.sender] >= _value && _value > 0);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);
@@ -58,7 +58,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-		require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+		require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0);
 		balances[_to] += _value;
 		balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;
@@ -83,8 +83,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 	
 	uint256 public totalSupply;
 
@@ -96,7 +96,7 @@ contract BitsumCash is StandardToken {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;BSCH_Token_1.0&#39;; 
+    string public version = 'BSCH_Token_1.0'; 
     uint256 public unitsOneEthCanBuy;
     uint256 public totalEthInWei;
     address public fundsWallet;
@@ -109,8 +109,8 @@ contract BitsumCash is StandardToken {
 		decimals = 0;
 		totalSupply = 17500000;
         balances[msg.sender] = 17500000;
-        name = &quot;BitsumCash&quot;;
-        symbol = &quot;BSCH&quot;;
+        name = "BitsumCash";
+        symbol = "BSCH";
         unitsOneEthCanBuy = 1000000;
         fundsWallet = msg.sender;
     }
@@ -119,10 +119,10 @@ contract BitsumCash is StandardToken {
         totalEthInWei = totalEthInWei + msg.value;
         
 		//Set minimal payment
-		require(msg.value &gt;= minimalPaymentInWei);
+		require(msg.value >= minimalPaymentInWei);
 		
 		uint256 amount = (msg.value * unitsOneEthCanBuy) / toWei;
-        require(balances[fundsWallet] &gt;= amount);
+        require(balances[fundsWallet] >= amount);
 
         balances[fundsWallet] = balances[fundsWallet] - amount;
         balances[msg.sender] = balances[msg.sender] + amount;
@@ -135,7 +135,7 @@ contract BitsumCash is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 	
@@ -148,7 +148,7 @@ contract BitsumCash is StandardToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -164,8 +164,8 @@ contract BitsumCash is StandardToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
         totalSupply -= _value;

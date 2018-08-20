@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="97f4f8f9e3f6f4e3d7d2e3fff2e5f2faf8f9b9f4f8fa">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="97f4f8f9e3f6f4e3d7d2e3fff2e5f2faf8f9b9f4f8fa">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -46,7 +46,7 @@ contract BasicAccessControl {
     modifier onlyModerators() {
         if (msg.sender != owner) {
             bool found = false;
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == msg.sender) {
                     found = true;
                     break;
@@ -69,7 +69,7 @@ contract BasicAccessControl {
 
     function AddModerator(address _newModerator) onlyOwner public {
         if (_newModerator != address(0)) {
-            for (uint index = 0; index &lt; moderators.length; index++) {
+            for (uint index = 0; index < moderators.length; index++) {
                 if (moderators[index] == _newModerator) {
                     return;
                 }
@@ -80,12 +80,12 @@ contract BasicAccessControl {
     
     function RemoveModerator(address _oldModerator) onlyOwner public {
         uint foundIndex = 0;
-        for (; foundIndex &lt; moderators.length; foundIndex++) {
+        for (; foundIndex < moderators.length; foundIndex++) {
             if (moderators[foundIndex] == _oldModerator) {
                 break;
             }
         }
-        if (foundIndex &lt; moderators.length) {
+        if (foundIndex < moderators.length) {
             moderators[foundIndex] = moderators[moderators.length-1];
             delete moderators[moderators.length-1];
             moderators.length--;
@@ -195,7 +195,7 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
  
      // admin
     function withdrawEther(address _sendTo, uint _amount) onlyOwner public returns(ResultCode) {
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             EventWithdrawEther(_sendTo, ResultCode.ERROR_INVALID_AMOUNT, 0);
             return ResultCode.ERROR_INVALID_AMOUNT;
         }
@@ -230,10 +230,10 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 _st1, uint8 _st2, uint8 _st3, uint8 _st4, uint8 _st5, uint8 _st6 ) onlyModerators public {
         
         EtheremonDataBase data = EtheremonDataBase(dataContract);
-        if (_type2 &gt; 0) {
+        if (_type2 > 0) {
             data.addElementToArrayType(ArrayType.CLASS_TYPE, uint64(_classId), _type2);
         }
-        if (_type3 &gt; 0) {
+        if (_type3 > 0) {
             data.addElementToArrayType(ArrayType.CLASS_TYPE, uint64(_classId), _type3);
         }
         
@@ -250,7 +250,7 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
     // helper
     function getRandom(uint8 maxRan, uint8 index) constant public returns(uint8) {
         uint256 genNum = uint256(block.blockhash(block.number-1));
-        for (uint8 i = 0; i &lt; index &amp;&amp; i &lt; 6; i ++) {
+        for (uint8 i = 0; i < index && i < 6; i ++) {
             genNum /= 256;
         }
         return uint8(genNum % maxRan);
@@ -275,7 +275,7 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
         
         uint256 totalBalance = safeAdd(msg.value, data.getExtraBalance(msg.sender));
         uint256 payPrice = class.price;
-        if (payPrice &gt; totalBalance) {
+        if (payPrice > totalBalance) {
             data.addExtraBalance(msg.sender, msg.value);
             EventCatchMonster(msg.sender, ResultCode.ERROR_LOW_BALANCE, 0);
             return ResultCode.ERROR_LOW_BALANCE;
@@ -287,14 +287,14 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
         // add monster
         uint64 objId = data.addMonsterObj(_classId, msg.sender, _name);
         // generate base stat
-        for (uint i=0; i &lt; STAT_COUNT; i+= 1) {
+        for (uint i=0; i < STAT_COUNT; i+= 1) {
             uint8 value = getRandom(STAT_MAX, uint8(i)) + data.getElementInArrayType(ArrayType.STAT_START, uint64(_classId), i);
             data.addElementToArrayType(ArrayType.STAT_BASE, objId, value);
         }
 
         // calculate the price
         uint256 distributedPrice = safeMult(class.returnPrice, class.total + 2);
-        if (payPrice &lt; distributedPrice) {
+        if (payPrice < distributedPrice) {
             payPrice = distributedPrice;
             // update price
             data.setMonsterClass(_classId, distributedPrice, class.returnPrice, true);
@@ -312,18 +312,18 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
         if (_amount == 0) {
             _amount = totalAmount;
         }
-        if (_amount &gt; totalAmount) {
+        if (_amount > totalAmount) {
             EventCashOut(msg.sender, ResultCode.ERROR_LOW_BALANCE, 0);
             return ResultCode.ERROR_LOW_BALANCE;
         }
         
         // check contract has enough money
-        if (this.balance &lt; _amount) {
+        if (this.balance < _amount) {
             EventCashOut(msg.sender, ResultCode.ERROR_NOT_ENOUGH_MONEY, 0);
             return ResultCode.ERROR_NOT_ENOUGH_MONEY;
         }
         
-        if (_amount &gt; 0) {
+        if (_amount > 0) {
             data.deductExtraBalance(msg.sender, _amount);
             if (!msg.sender.send(_amount)) {
                 data.addExtraBalance(msg.sender, _amount);
@@ -351,7 +351,7 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
     function getLevel(uint32 exp) pure internal returns (uint8) {
         uint8 level = 1;
         uint8 requirement = 100;
-        while(level &lt; 100 &amp;&amp; exp &gt; requirement) {
+        while(level < 100 && exp > requirement) {
             exp -= requirement;
             level += 1;
             requirement = requirement * 12 / 10 + 5;
@@ -379,7 +379,7 @@ contract EtheremonProcessor is EtheremonEnum, BasicAccessControl, SafeMath {
             return 0;
         
         uint256 total = 0;
-        for(uint i=0; i &lt; baseSize; i+=1) {
+        for(uint i=0; i < baseSize; i+=1) {
             total += data.getElementInArrayType(ArrayType.STAT_BASE, obj.monsterId, i);
             total += safeMult(data.getElementInArrayType(ArrayType.STAT_STEP, uint64(obj.classId), i), getLevel(obj.exp));
         }

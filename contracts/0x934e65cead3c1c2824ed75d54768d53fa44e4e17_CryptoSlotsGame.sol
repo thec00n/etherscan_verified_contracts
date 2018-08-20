@@ -34,7 +34,7 @@ contract CryptoSlotsGame is Ownable {
 
     ERC20Basic public token;
 
-    mapping (address =&gt; uint) private investorToProfitDay;
+    mapping (address => uint) private investorToProfitDay;
 
     address private houseAddress;
 
@@ -82,7 +82,7 @@ contract CryptoSlotsGame is Ownable {
 
     function changeWinConfig(uint8[] _winOdds, uint8[] _winChance) onlyOwner {
         winConfig.length = _winOdds.length;
-        for (uint8 i = 0; i &lt; winConfig.length; i++) {
+        for (uint8 i = 0; i < winConfig.length; i++) {
             winConfig[i].odds = _winOdds[i];
             winConfig[i].chance = _winChance[i];
         }
@@ -93,14 +93,14 @@ contract CryptoSlotsGame is Ownable {
     }
 
     function bet() public payable returns (uint win) {
-        require(minBet &lt;= msg.value &amp;&amp; msg.value &lt;= maxBet);
+        require(minBet <= msg.value && msg.value <= maxBet);
 
         updateProfit();
 
         uint playerWin = msg.value * odds(getRandom());
 
-        if (playerWin &gt; 0) {
-            if (playerWin &gt; this.balance) playerWin = this.balance;
+        if (playerWin > 0) {
+            if (playerWin > this.balance) playerWin = this.balance;
             msg.sender.transfer(playerWin);
             LogBet(msg.sender, msg.value, playerWin);
         }
@@ -118,7 +118,7 @@ contract CryptoSlotsGame is Ownable {
     function updateProfit() private {
         uint today = now / 1 days;
 
-        if (lastInvestorsProfitDay &lt; today) {
+        if (lastInvestorsProfitDay < today) {
             lastInvestorsProfitDay = today;
             lastInvestorsProfitSum = nextInvestorsProfitSum + lastInvestorsProfit;
             lastInvestorsProfit = lastInvestorsProfitSum;
@@ -147,8 +147,8 @@ contract CryptoSlotsGame is Ownable {
     }
 
     function odds(uint value) private constant returns (uint8){
-        for (uint8 i = 0; i &lt; winConfig.length; i++) {
-            if (value &lt;= winConfig[i].chance) return winConfig[i].odds;
+        for (uint8 i = 0; i < winConfig.length; i++) {
+            if (value <= winConfig[i].chance) return winConfig[i].odds;
         }
         return 0;
     }
@@ -156,9 +156,9 @@ contract CryptoSlotsGame is Ownable {
     function getProfit() returns (uint) {
         updateProfit();
 
-        if (lastInvestorsProfit &gt; 0 &amp;&amp; investorToProfitDay[msg.sender] &lt; lastInvestorsProfitDay) {
+        if (lastInvestorsProfit > 0 && investorToProfitDay[msg.sender] < lastInvestorsProfitDay) {
             uint tokenBalance = token.balanceOf(msg.sender);
-            if (tokenBalance &gt; 0) {
+            if (tokenBalance > 0) {
                 uint profit = tokenBalance / token.totalSupply() * lastInvestorsProfitSum;
                 msg.sender.transfer(profit);
                 lastInvestorsProfit -= profit;

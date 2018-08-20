@@ -76,9 +76,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -86,7 +86,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -95,7 +95,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -109,8 +109,8 @@ contract CountryJackpot is ERC721, Ownable{
     event Transfer(address from, address to, uint256 tokenId);
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant NAME = &quot;EtherCup2018&quot;; // solhint-disable-line
-    string public constant SYMBOL = &quot;EthCup&quot;; // solhint-disable-line
+    string public constant NAME = "EtherCup2018"; // solhint-disable-line
+    string public constant SYMBOL = "EthCup"; // solhint-disable-line
 
     //starting price for country token
     uint256 private startingPrice = 0.01 ether;
@@ -134,23 +134,23 @@ contract CountryJackpot is ERC721, Ownable{
     Country[] private countries;
 
     /// @dev A mapping from country IDs to the address that owns them. All countries have some valid owner address.
-    mapping (uint256 =&gt; address) public countryIndexToOwner;
+    mapping (uint256 => address) public countryIndexToOwner;
     // A mapping from country id to address to show if the Country approved for transfer
-    mapping (uint256 =&gt; address) public countryIndexToApproved;
+    mapping (uint256 => address) public countryIndexToApproved;
     // A mapping from country id to ranks to show what rank of the Country
-    mapping (uint256 =&gt; uint256) public countryToRank;
+    mapping (uint256 => uint256) public countryToRank;
     //A mapping from country id to price to store the last purchase price of a country
-    mapping (uint256 =&gt; uint256) private countryToLastPrice;
+    mapping (uint256 => uint256) private countryToLastPrice;
     // A mapping from country id to boolean which checks if the user has claimed jackpot for his country token
-    mapping (uint256 =&gt; bool) public  jackpotClaimedForCountry;
+    mapping (uint256 => bool) public  jackpotClaimedForCountry;
     // A mapping from ranks to the ether to be won from the jackpot.
-    mapping (uint256 =&gt; uint256) public rankShare;
+    mapping (uint256 => uint256) public rankShare;
 
     // Counts how many tokens a user has.
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
 
     // @dev A mapping from countryIds to the price of the token.
-    mapping (uint256 =&gt; uint256) private countryIndexToPrice;
+    mapping (uint256 => uint256) private countryIndexToPrice;
 
     //@notice Constructor that setups the share for each rank
     function CountryJackpot() public{
@@ -269,19 +269,19 @@ contract CountryJackpot is ERC721, Ownable{
         require(_addressNotNull(newOwner));
 
         // Making sure sent amount is greater than or equal to the sellingPrice
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
 
         uint256 sellingPrice = countryIndexToPrice[_tokenId];
         uint256 lastSellingPrice = countryToLastPrice[_tokenId];
 
         // Update prices
-        if (sellingPrice.mul(2) &lt; firstStepLimit) {
+        if (sellingPrice.mul(2) < firstStepLimit) {
             // first stage
             countryIndexToPrice[_tokenId] = sellingPrice.mul(2);
-        } else if (sellingPrice.mul(4).div(10) &lt; secondStepLimit) {
+        } else if (sellingPrice.mul(4).div(10) < secondStepLimit) {
             // second stage
             countryIndexToPrice[_tokenId] = sellingPrice.add(sellingPrice.mul(4).div(10));
-        } else if(sellingPrice.mul(2).div(10) &lt; thirdStepLimit){
+        } else if(sellingPrice.mul(2).div(10) < thirdStepLimit){
             // third stage
             countryIndexToPrice[_tokenId] = sellingPrice.add(sellingPrice.mul(2).div(10));
         }else {
@@ -354,7 +354,7 @@ contract CountryJackpot is ERC721, Ownable{
             uint256 resultIndex = 0;
             uint256 countryId;
 
-            for (countryId = 0; countryId &lt; totalCountries; countryId++) {
+            for (countryId = 0; countryId < totalCountries; countryId++) {
                 if (countryIndexToOwner[countryId] == _owner)
                 {
                     result[resultIndex] = countryId;
@@ -439,7 +439,7 @@ contract CountryJackpot is ERC721, Ownable{
         // clear any previously approved ownership exchange
         delete countryIndexToApproved[_tokenId];
 
-        // Since the number of countries is capped to 32 we can&#39;t overflow this
+        // Since the number of countries is capped to 32 we can't overflow this
         ownershipTokenCount[_to] = ownershipTokenCount[_to].add(1);
         //transfer ownership
         countryIndexToOwner[_tokenId] = _to;

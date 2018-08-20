@@ -6,8 +6,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -149,7 +149,7 @@ contract SimpleFlyDropToken is Claimable {
         require(_destAddrs.length == _values.length);
 
         uint256 i = 0;
-        for (; i &lt; _destAddrs.length; i = i.add(1)) {
+        for (; i < _destAddrs.length; i = i.add(1)) {
             if (!erc20tk.transfer(_destAddrs[i], _values[i])) {
                 break;
             }
@@ -171,7 +171,7 @@ contract DelayedClaimable is Claimable {
    * @param _end The latest time ownership can be claimed.
    */
   function setLimits(uint256 _start, uint256 _end) onlyOwner public {
-    require(_start &lt;= _end);
+    require(_start <= _end);
     end = _end;
     start = _start;
   }
@@ -181,7 +181,7 @@ contract DelayedClaimable is Claimable {
    * the specified start and end time.
    */
   function claimOwnership() onlyPendingOwner public {
-    require((block.number &lt;= end) &amp;&amp; (block.number &gt;= start));
+    require((block.number <= end) && (block.number >= start));
     emit OwnershipTransferred(owner, pendingOwner);
     owner = pendingOwner;
     pendingOwner = address(0);
@@ -195,7 +195,7 @@ contract FlyDropTokenMgr is DelayedClaimable {
 
     address[] dropTokenAddrs;
     SimpleFlyDropToken currentDropTokenContract;
-    // mapping(address =&gt; mapping (address =&gt; uint256)) budgets;
+    // mapping(address => mapping (address => uint256)) budgets;
 
     /**
      * @dev Send tokens to other multi addresses in one function
@@ -211,13 +211,13 @@ contract FlyDropTokenMgr is DelayedClaimable {
                      uint256 _value) onlyOwner public returns (bool) {
         require(_token != address(0));
         require(_from != address(0));
-        require(_rand &gt; 0);
+        require(_rand > 0);
 
-        if (ERC20(_token).allowance(_from, this) &lt; _value) {
+        if (ERC20(_token).allowance(_from, this) < _value) {
             return false;
         }
 
-        if (_rand &gt; dropTokenAddrs.length) {
+        if (_rand > dropTokenAddrs.length) {
             SimpleFlyDropToken dropTokenContract = new SimpleFlyDropToken();
             dropTokenAddrs.push(address(dropTokenContract));
             currentDropTokenContract = dropTokenContract;

@@ -7,13 +7,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -75,13 +75,13 @@ contract SouthKoreaJunket{
   function release() public {
     
     uint256 amount = token.balanceOf(address(this));
-    require(amount &gt; 0);
+    require(amount > 0);
 
     if(previousWithdrawal == 0){
         // calculate 50% of existing amount
         amount = amount.div(2);
     }else{
-        assert(now &gt;= releaseTime);
+        assert(now >= releaseTime);
     }
     
     previousWithdrawal = amount;

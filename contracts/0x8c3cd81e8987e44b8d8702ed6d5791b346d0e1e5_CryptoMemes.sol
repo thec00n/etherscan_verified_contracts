@@ -47,9 +47,9 @@ contract CryptoMemes is ERC721 {
     //the price user must pay to create a meme
     uint price;
 
-    mapping(uint256 =&gt; address) memeIndexToOwner;
-    mapping(address =&gt; uint256) ownershipTokenCount;
-    mapping(uint =&gt; address) memeApprovals;
+    mapping(uint256 => address) memeIndexToOwner;
+    mapping(address => uint256) ownershipTokenCount;
+    mapping(uint => address) memeApprovals;
 
     function CryptoMemes() public {
         contractOwner = msg.sender;
@@ -87,7 +87,7 @@ contract CryptoMemes is ERC721 {
 
     //validates the url cannot be of ambiguous length
     function _validateUrl(string _url) pure internal {
-        require(bytes(_url).length &lt; 1024);
+        require(bytes(_url).length < 1024);
     }
 
     function getMeme(uint256 _tokenId) public view returns (

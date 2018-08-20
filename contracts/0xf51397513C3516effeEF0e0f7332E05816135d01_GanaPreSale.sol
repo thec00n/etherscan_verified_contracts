@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -114,7 +114,7 @@ contract BasicToken is ERC20Basic {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -123,7 +123,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -153,7 +153,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -163,8 +163,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -247,7 +247,7 @@ contract Releasable is Ownable {
 
 contract Managed is Releasable {
 
-  mapping (address =&gt; bool) public manager;
+  mapping (address => bool) public manager;
   event SetManager(address _addr);
   event UnsetManager(address _addr);
 
@@ -261,14 +261,14 @@ contract Managed is Releasable {
   }
 
   function setManager(address _addr) public onlyOwner {
-    require(_addr != address(0) &amp;&amp; manager[_addr] == false);
+    require(_addr != address(0) && manager[_addr] == false);
     manager[_addr] = true;
 
     SetManager(_addr);
   }
 
   function unsetManager(address _addr) public onlyOwner {
-    require(_addr != address(0) &amp;&amp; manager[_addr] == true);
+    require(_addr != address(0) && manager[_addr] == true);
     manager[_addr] = false;
 
     UnsetManager(_addr);
@@ -315,10 +315,10 @@ contract BurnableToken is ReleasableToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) onlyManager public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= tota0lSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= tota0lSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -334,8 +334,8 @@ contract BurnableToken is ReleasableToken {
   */
 contract GANA is BurnableToken {
 
-  string public constant name = &quot;GANA&quot;;
-  string public constant symbol = &quot;GANA&quot;;
+  string public constant name = "GANA";
+  string public constant symbol = "GANA";
   uint8 public constant decimals = 18;
 
   event ClaimedTokens(address manager, address _token, uint256 claimedBalance);
@@ -348,7 +348,7 @@ contract GANA is BurnableToken {
   function claimTokens(address _token, uint256 _claimedBalance) public onlyManager afterReleased {
     ERC20Basic token = ERC20Basic(_token);
     uint256 tokenBalance = token.balanceOf(this);
-    require(tokenBalance &gt;= _claimedBalance);
+    require(tokenBalance >= _claimedBalance);
 
     address manager = msg.sender;
     token.transfer(manager, _claimedBalance);
@@ -363,7 +363,7 @@ contract GANA is BurnableToken {
   */
 contract Whitelist is Ownable {
 
-   mapping (address =&gt; bool) public whitelist;
+   mapping (address => bool) public whitelist;
    event Registered(address indexed _addr);
    event Unregistered(address indexed _addr);
 
@@ -377,14 +377,14 @@ contract Whitelist is Ownable {
    }
 
    function registerAddress(address _addr) public onlyOwner {
-     require(_addr != address(0) &amp;&amp; whitelist[_addr] == false);
+     require(_addr != address(0) && whitelist[_addr] == false);
      whitelist[_addr] = true;
      Registered(_addr);
    }
 
    function registerAddresses(address[] _addrs) public onlyOwner {
-     for(uint256 i = 0; i &lt; _addrs.length; i++) {
-       require(_addrs[i] != address(0) &amp;&amp; whitelist[_addrs[i]] == false);
+     for(uint256 i = 0; i < _addrs.length; i++) {
+       require(_addrs[i] != address(0) && whitelist[_addrs[i]] == false);
        whitelist[_addrs[i]] = true;
        Registered(_addrs[i]);
      }
@@ -396,7 +396,7 @@ contract Whitelist is Ownable {
    }
 
    function unregisterAddresses(address[] _addrs) public onlyOwner {
-     for(uint256 i = 0; i &lt; _addrs.length; i++) {
+     for(uint256 i = 0; i < _addrs.length; i++) {
        require(whitelist[_addrs[i]]);
        whitelist[_addrs[i]] = false;
        Unregistered(_addrs[i]);
@@ -452,14 +452,14 @@ contract GanaPreSale is Ownable {
     require(afterStart());
     require(buyer != address(0));
     require(buyer == msg.sender);
-    require(msg.value &gt;= minCap);
+    require(msg.value >= minCap);
 
     uint256 weiAmount = msg.value;
     //pre-calculate wei raise after buying
     uint256 preCalWeiRaised = weiRaised.add(weiAmount);
     uint256 ganaAmount;
 
-    if(preCalWeiRaised &lt;= hardCap){
+    if(preCalWeiRaised <= hardCap){
       //the pre-calculate wei raise is less than the hard cap
       ganaAmount = weiAmount.mul(rate);
       gana.saleTransfer(buyer, ganaAmount);
@@ -480,16 +480,16 @@ contract GanaPreSale is Ownable {
 
   //Was it sold out or sale overdue
   function hasEnded() public view returns (bool) {
-    bool hardCapReached = weiRaised &gt;= hardCap; // balid cap
+    bool hardCapReached = weiRaised >= hardCap; // balid cap
     return hardCapReached || afterEnded();
   }
 
   function afterEnded() internal constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   function afterStart() internal constant returns (bool) {
-    return now &gt;= startTime;
+    return now >= startTime;
   }
 
   function transferToSafe() onlyOwner public {
@@ -506,7 +506,7 @@ contract GanaPreSale is Ownable {
     require(reserveWallet != address(0));
     require(hasEnded());
     uint256 unsoldWei = hardCap.sub(weiRaised);
-    require(unsoldWei &gt; 0);
+    require(unsoldWei > 0);
     uint256 unsoldGanaAmount = gana.balanceOf(this);
     uint256 burnGanaAmount = unsoldWei.mul(defaultRate);
     uint256 bonusGanaAmount = unsoldGanaAmount.sub(burnGanaAmount);

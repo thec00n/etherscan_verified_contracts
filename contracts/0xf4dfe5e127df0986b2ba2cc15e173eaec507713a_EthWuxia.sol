@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 *       _                              __ _     _
 *      | |                            / _| |   (_)
 *    __| | __ _ _ __  _ __  ___  ___ | |_| |_   _  ___
-*   / _` |/ _` | &#39;_ \| &#39;_ \/ __|/ _ \|  _| __| | |/ _ \
+*   / _` |/ _` | '_ \| '_ \/ __|/ _ \|  _| __| | |/ _ \
 *  | (_| | (_| | |_) | |_) \__ \ (_) | | | |_ _| | (_) |
 *   \__,_|\__,_| .__/| .__/|___/\___/|_|  \__(_)_|\___/
 *              | |   | |
@@ -33,9 +33,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -52,24 +52,24 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max(uint a, uint b) internal pure returns (uint) {
-    if (a &gt; b) return a;
+    if (a > b) return a;
     else return b;
   }
 
   function min(uint a, uint b) internal pure returns (uint) {
-    if (a &lt; b) return a;
+    if (a < b) return a;
     else return b;
   }
 }
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="036766776643627b6a6c6e79666d2d606c">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="036766776643627b6a6c6e79666d2d606c">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -106,7 +106,7 @@ contract EthWuxia is ERC721{
   uint public unitRareGrowth = 3;  // 每单位时间 稀有卡投放数量
   uint public unitEpicGrowth = 0;  // 史诗卡投放数量
   uint public unitMythGrowth = 0;  // 传说卡投放数量
-  uint public initialMartialTimes=1;  // 新的门派会有一定的概率加成 =&gt; 2被
+  uint public initialMartialTimes=1;  // 新的门派会有一定的概率加成 => 2被
   uint public stepPrice = 1 finney;
   uint public lotteryPrice = 10 finney;  // lotteryPrice
   uint public dragonGirlLotteryPrice = 10 finney;
@@ -114,14 +114,14 @@ contract EthWuxia is ERC721{
   address[] public listedDragonGirlLotteryUser = [address(0), address(0), address(0), address(0), address(0)];
   address public wuxiaMaster = address(0);
   uint public wuxiaMasterPrice = 100 finney;  // 每次加价100finny;
-  mapping (uint256 =&gt; address) public approvedOfItem;
+  mapping (uint256 => address) public approvedOfItem;
   uint public littleMonster = 1 ether; // 游戏收入每到1ether就生成一个以太怪
 
 
-  uint public totalEarning = 0;  // 总收入 =&gt; 总收入的10%用于生成EthMonster
+  uint public totalEarning = 0;  // 总收入 => 总收入的10%用于生成EthMonster
   uint public totalTrading = 0;  // 总流水  
-  uint public lotteryTotalEarning = 0;  // 抽卡收入 =&gt; 掌门人5%
-  uint public marketTotalEarning = 0;  // 市场交易收入 =&gt; 武林盟主5%
+  uint public lotteryTotalEarning = 0;  // 抽卡收入 => 掌门人5%
+  uint public marketTotalEarning = 0;  // 市场交易收入 => 武林盟主5%
   uint public smartSpeedEarning = 0;
   uint public luckyStoneEarning = 0;
   uint public hunterLicenceEarning = 0;
@@ -133,19 +133,19 @@ contract EthWuxia is ERC721{
   uint public randNonce = 0;
 
 
-  mapping (address =&gt; uint) public mapUserLastFreeLotteryTimestamp;  // 用户上次抽奖的时间
-  mapping (address =&gt; uint) public mapUserPower;  // 实时维护用户的战斗力
+  mapping (address => uint) public mapUserLastFreeLotteryTimestamp;  // 用户上次抽奖的时间
+  mapping (address => uint) public mapUserPower;  // 实时维护用户的战斗力
 
   // ability does not support trade
-  mapping (address =&gt; bool) public mapUserHasSmartSpeed;  // 用户是否会凌波微步
+  mapping (address => bool) public mapUserHasSmartSpeed;  // 用户是否会凌波微步
   uint public currentSmartSpeedNumber = 0;
   // smartSpeedPrice = Min(0.1ether, 0.01ether*currentSmartSpeedNumber)
 
-  mapping (address =&gt; bool) public mapUserHasLuckyStone;  // 用户是否有幸运宝石
+  mapping (address => bool) public mapUserHasLuckyStone;  // 用户是否有幸运宝石
   uint public currentLuckyStoneNumber = 0;
   // luckyStonePrice = Min(0.1ether, 0.01*ether*currentLuckyStoneNumber)
 
-  mapping (address =&gt; bool) public mapUserHasHunterLicence;
+  mapping (address => bool) public mapUserHasHunterLicence;
   uint public currentHunterNumber = 0;
   // hunterPrice = Min(0.1ether, 0.01ether*currentHunterNumber)
 
@@ -154,9 +154,9 @@ contract EthWuxia is ERC721{
   uint public totalBuyCardNumber = 0;
   uint public totalSellCardNumber = 0;
   uint public totalDragonLotteryNumber = 0;
-  mapping (uint =&gt; uint) public mapMartialUserCount;  // martial total user count
-  mapping (uint =&gt; uint) public mapMartialLotteryCount;  // martial total lottery count
-  mapping (address =&gt; uint) public mapUserLotteryNumber;
+  mapping (uint => uint) public mapMartialUserCount;  // martial total user count
+  mapping (uint => uint) public mapMartialLotteryCount;  // martial total lottery count
+  mapping (address => uint) public mapUserLotteryNumber;
 
   // 合约支持动态增加新据点
   struct Martial {
@@ -168,7 +168,7 @@ contract EthWuxia is ERC721{
       uint rareNumber;  // 稀有的
       uint epicNumber;  // 史诗的
       uint mythNumber;  // 传说的
-      uint enterPrice;  // 入场费 =&gt; 剑冢入场费为1ether
+      uint enterPrice;  // 入场费 => 剑冢入场费为1ether
       uint[] cardTypeList;  // 该门派出产的卡片
   }
 
@@ -179,7 +179,7 @@ contract EthWuxia is ERC721{
   struct EtherMonster {
       uint monsterId;
       uint martialId;  // 该怪兽出现在哪个据点
-      uint balance;  // 奖金 =&gt; 奖励点的5%
+      uint balance;  // 奖金 => 奖励点的5%
       uint blood;  // 血量 对于0.2ether的以太怪是3*最高攻击力玩家的战斗力 对于1ether的以太怪是10*最高攻击力玩家的战斗力
       uint produceTime;  // 怪兽出现的时间 怪物需要在指定的时间内被击杀 掌门人将获得20%的收益
       uint currentBlood;  // 当前血量
@@ -187,7 +187,7 @@ contract EthWuxia is ERC721{
       address winner;  // 获奖者
   }
 
-  mapping (address =&gt; uint) public mapUserLastAttackMonsterTimestamp;
+  mapping (address => uint) public mapUserLastAttackMonsterTimestamp;
   uint public userAttackMonsterCDSeconds = 600;  // 用户每10分钟可以攻击一次EtherMonster怪
   uint public maxUserPower = 0;  // 用于etherMonster血量估计
   address public maxPowerUserAddress = address(0);
@@ -200,14 +200,14 @@ contract EthWuxia is ERC721{
       uint martialId;  // 卡片从属于那个门派
       uint initPower;  // 初始战斗力
       uint growthFactor;  // 成长系数
-      uint category;  // 卡片分类 =&gt; 1表示武侠 2表示武器 3表示武功 4表示阵法
+      uint category;  // 卡片分类 => 1表示武侠 2表示武器 3表示武功 4表示阵法
   }
 
   // 合成新卡的方式是: 两张旧卡片销毁 生成一张新卡片
   struct Card {
       uint cardId;
       uint typeId;
-      uint level;  // 卡片等级 =&gt; 0表示普通 1表示稀有 2表示史诗 3表示传说
+      uint level;  // 卡片等级 => 0表示普通 1表示稀有 2表示史诗 3表示传说
       bool onSell;
       uint sellPrice;
       address owner;
@@ -215,7 +215,7 @@ contract EthWuxia is ERC721{
 
 
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
 
   IItemRegistry private itemRegistry;
   uint public travelUnitFee = 1 finney; // 0.001ether for each step
@@ -229,10 +229,10 @@ contract EthWuxia is ERC721{
   uint smallMonsterPowerFactor = 3;
   uint bigMonsterPowerFactor = 5;
 
-  mapping (uint256 =&gt; address) public mapOwnerOfCard;
-  mapping (address =&gt; uint) private mapUserCurrentMartialId;  // 用户当前的门派
-  mapping (address =&gt; bool) public mapUesrAlreadyMartialOwner;
-  mapping (address =&gt; bytes32) public mapUserNickname;
+  mapping (uint256 => address) public mapOwnerOfCard;
+  mapping (address => uint) private mapUserCurrentMartialId;  // 用户当前的门派
+  mapping (address => bool) public mapUesrAlreadyMartialOwner;
+  mapping (address => bytes32) public mapUserNickname;
 
   bool public hasInitMartial = false;
   bool public hasInitCard1 = false;
@@ -284,23 +284,23 @@ contract EthWuxia is ERC721{
   }
 
   // 功能列表
-  // 1. 游戏更新 =&gt; 创建门派
+  // 1. 游戏更新 => 创建门派
   // 1.1 createNewMartial
   // 1.2 createNewCardType
   function createNewMartial (uint x, uint y, uint enterPrice) onlyOwner() public {
-    require(x&gt;=1);
-    require(y&gt;=1);
+    require(x>=1);
+    require(y>=1);
     Martial memory martial = Martial(x, y, address(0), now, listedMartials.length, unitRareGrowth * initialMartialTimes, unitEpicGrowth * initialMartialTimes, unitMythGrowth * initialMartialTimes, enterPrice, new uint[](0));
     listedMartials.push(martial);
   }
 
   // 1.2 创建卡片类型
   function createNewCardType (uint martialId, uint initPower, uint growthFactor, uint category) onlyOwner() public {
-    require(initPower&gt;=1);
-    require(growthFactor&gt;=2);
-    require(category&gt;=1);
-    require(category&lt;=4);  // 武侠, 装备, 武功, 阵法
-    require(martialId &lt; listedMartials.length);
+    require(initPower>=1);
+    require(growthFactor>=2);
+    require(category>=1);
+    require(category<=4);  // 武侠, 装备, 武功, 阵法
+    require(martialId < listedMartials.length);
     listedMartials[martialId].cardTypeList.push(listedCardType.length);
     CardType memory cardType = CardType(listedCardType.length, martialId, initPower, growthFactor, category);
     listedCardType.push(cardType);
@@ -316,7 +316,7 @@ contract EthWuxia is ERC721{
   // 2.7 战斗力维护
   // 2.8 掌门人
   // 2.9 交易市场
-  // 2.10 武林盟主 =&gt; 10percent of market exchage
+  // 2.10 武林盟主 => 10percent of market exchage
   // 2.11 龙女彩票
   // 2.12 etherMonster
 
@@ -332,12 +332,12 @@ contract EthWuxia is ERC721{
 
   function buySmartSpeed () public payable {
     uint currentSmartSpeedPrice = SafeMath.mul(SafeMath.min(10, currentSmartSpeedNumber), 10 finney);
-    require(msg.value &gt;= currentSmartSpeedPrice);
+    require(msg.value >= currentSmartSpeedPrice);
     require(!mapUserHasSmartSpeed[msg.sender]);
     uint excess = msg.value.sub(currentSmartSpeedPrice);
     currentSmartSpeedNumber += 1;
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       msg.sender.transfer(excess);
     }
     mapUserHasSmartSpeed[msg.sender] = true;
@@ -360,11 +360,11 @@ contract EthWuxia is ERC721{
 
   function buyLuckyStone() public payable {
     uint currentLuckyStonePrice = SafeMath.mul(SafeMath.min(10, currentLuckyStoneNumber), 10 finney);
-    require(msg.value &gt;= currentLuckyStonePrice);
+    require(msg.value >= currentLuckyStonePrice);
     require(!mapUserHasLuckyStone[msg.sender]);
     uint excess = msg.value.sub(currentLuckyStonePrice);
     currentLuckyStoneNumber += 1;
-    if (excess &gt; 0) {
+    if (excess > 0) {
       msg.sender.transfer(excess);
     }
     mapUserHasLuckyStone[msg.sender] = true;
@@ -375,10 +375,10 @@ contract EthWuxia is ERC721{
   }
 
   function createEtherMonster(uint martialId, uint balance, uint blood) public onlyOwner {
-      require(martialId&lt;listedMartials.length);
-      require(balance&gt;0);
-      require(blood&gt;0);
-      require(balance&lt;address(this).balance);
+      require(martialId<listedMartials.length);
+      require(balance>0);
+      require(blood>0);
+      require(balance<address(this).balance);
       EtherMonster memory monster = EtherMonster(listedEtherMonster.length, martialId, balance, blood, now, blood, false, address(0));
       listedEtherMonster.push(monster);
   }
@@ -395,11 +395,11 @@ contract EthWuxia is ERC721{
 
   function buyHunterLicence() public payable {
     uint currentHunterLicencePrice = SafeMath.mul(SafeMath.min(10, currentHunterNumber), 10 finney);
-    require(msg.value &gt;= currentHunterNumber);
+    require(msg.value >= currentHunterNumber);
     require(!mapUserHasHunterLicence[msg.sender]);
     uint excess = msg.value.sub(currentHunterLicencePrice);
     currentHunterNumber += 1;
-    if (excess &gt; 0) {
+    if (excess > 0) {
       msg.sender.transfer(excess);
     }
     mapUserHasHunterLicence[msg.sender] = true;
@@ -419,7 +419,7 @@ contract EthWuxia is ERC721{
   // workaround for struct
   // https://github.com/ethereum/remix-ide/issues/920#issuecomment-348069589
   function getMartialInfo(uint martialId) public view returns(uint, uint, address, uint, uint, uint, uint, uint, uint, uint[]) {
-    require(martialId &lt; listedMartials.length);
+    require(martialId < listedMartials.length);
     Martial memory martial = listedMartials[martialId];
     return (martial.x, martial.y, martial.owner, martial.lastProduceTime, martial.martialId, martial.rareNumber, martial.epicNumber, martial.mythNumber, martial.enterPrice, martial.cardTypeList);
   }
@@ -429,7 +429,7 @@ contract EthWuxia is ERC721{
       uint[] memory result = new uint[](listedMartials.length.mul(5)+1);
       uint index = 1;
       result[0] = listedMartials.length;
-      for (uint i=0; i&lt;listedMartials.length;i++) {
+      for (uint i=0; i<listedMartials.length;i++) {
           Martial memory martial = listedMartials[i];
           result[index] = martial.rareNumber;
           result[index+1] = martial.epicNumber;
@@ -443,7 +443,7 @@ contract EthWuxia is ERC721{
   
   function getMartialOwner() public view returns(address[]) {
     address[] memory result = new address[](listedMartials.length);
-    for (uint i=0;i&lt;listedMartials.length;i++) {
+    for (uint i=0;i<listedMartials.length;i++) {
         result[i] = listedMartials[i].owner;
     }
     return result;
@@ -454,7 +454,7 @@ contract EthWuxia is ERC721{
   }
 
   function absSub(uint a, uint b) private pure returns(uint) {
-    if (a&gt;b) return a.sub(b);
+    if (a>b) return a.sub(b);
     return b.sub(a);
   }
   // 用户当前旅行的成本
@@ -478,16 +478,16 @@ contract EthWuxia is ERC721{
   // 旅行
   function changeMartial(uint martialId) public payable {
     uint travelPrice = _getTravelPrice(msg.sender, martialId);
-    require(msg.value&gt;=travelPrice);
-    require(martialId&lt;listedMartials.length);
-    if (mapUserLotteryNumber[msg.sender] &gt; 0) {
-        if (mapMartialUserCount[mapUserCurrentMartialId[msg.sender]] &gt; 0) {
+    require(msg.value>=travelPrice);
+    require(martialId<listedMartials.length);
+    if (mapUserLotteryNumber[msg.sender] > 0) {
+        if (mapMartialUserCount[mapUserCurrentMartialId[msg.sender]] > 0) {
             mapMartialUserCount[mapUserCurrentMartialId[msg.sender]] = mapMartialUserCount[mapUserCurrentMartialId[msg.sender]].sub(1);
         }
         mapMartialUserCount[martialId] += 1;
     }
     uint excess = msg.value.sub(travelPrice);
-    if (excess&gt;0) {
+    if (excess>0) {
       msg.sender.transfer(excess);
     }
     mapUserCurrentMartialId[msg.sender] = martialId;
@@ -499,7 +499,7 @@ contract EthWuxia is ERC721{
   // 2.5 lottery
   // get random number in [0, maxNumber)
   function getRandomNumber(uint maxNumber) private returns(uint) {
-    require(maxNumber&gt;0);
+    require(maxNumber>0);
     randNonce += 1;
     return uint(keccak256(now, randNonce, block.blockhash(block.number - 1), block.coinbase)) % maxNumber;
   }
@@ -507,7 +507,7 @@ contract EthWuxia is ERC721{
   // whether user can lottery for free
   function _canLotteryFree(address userAddress) private view returns(bool) {
     uint lastLotteryTimestamp = mapUserLastFreeLotteryTimestamp[userAddress];
-    return now - lastLotteryTimestamp &gt; freeLotterySeconds;
+    return now - lastLotteryTimestamp > freeLotterySeconds;
   }
 
 // Test for Remix support of tuple params
@@ -525,7 +525,7 @@ contract EthWuxia is ERC721{
 //   }
   function debug() public view returns(uint, uint, uint, uint, bool) {
       uint lastLotteryTimestamp = mapUserLastFreeLotteryTimestamp[msg.sender];
-      return (now, lastLotteryTimestamp, now-lastLotteryTimestamp, freeLotterySeconds, now - lastLotteryTimestamp &gt; freeLotterySeconds);
+      return (now, lastLotteryTimestamp, now-lastLotteryTimestamp, freeLotterySeconds, now - lastLotteryTimestamp > freeLotterySeconds);
   }
 
   function getNowTimestamp() public view returns(uint) {
@@ -542,19 +542,19 @@ contract EthWuxia is ERC721{
 
   //获取某个门派的所有卡片
   function getMartialCardTypeIdList(uint martialId) public view returns(uint[]) {
-    require(martialId&lt;listedMartials.length);
+    require(martialId<listedMartials.length);
     return listedMartials[martialId].cardTypeList;
   }
 
   function getCardTypeInfo(uint typeId) public view returns(uint, uint, uint, uint, uint) {
-    require(typeId &lt; listedCardType.length);
+    require(typeId < listedCardType.length);
     CardType memory cardType = listedCardType[typeId];
     return (cardType.typeId, cardType.martialId, cardType.initPower, cardType.growthFactor, cardType.category);
   }
 
   function getCardPower(uint cardTypeId, uint cardLevel) public view returns(uint){
-    require(cardLevel&lt;=3);
-    require(cardTypeId&lt;listedCardType.length);
+    require(cardLevel<=3);
+    require(cardTypeId<listedCardType.length);
     CardType memory cardType = listedCardType[cardTypeId];
     if (cardLevel == 0) {
       return cardType.initPower;
@@ -572,7 +572,7 @@ contract EthWuxia is ERC721{
   }
   // 用户只能在自己的据点抽卡
   function lottery() public payable {
-    require((msg.value &gt;= lotteryPrice || _canLotteryFree(msg.sender)));
+    require((msg.value >= lotteryPrice || _canLotteryFree(msg.sender)));
     totalLotteryNumber = totalLotteryNumber.add(1);
     uint currentLotteryPrice = 0;
     if (_canLotteryFree(msg.sender)) {
@@ -583,7 +583,7 @@ contract EthWuxia is ERC721{
     uint excess = msg.value.sub(currentLotteryPrice);
     // 掌门抽成
     uint userCurrentMartialId = mapUserCurrentMartialId[msg.sender];
-    if (currentLotteryPrice &gt; 0) {
+    if (currentLotteryPrice > 0) {
       address martialOwner = listedMartials[userCurrentMartialId].owner;
       if (martialOwner != address(0)) {
         uint martialOwnerCut = currentLotteryPrice.mul(30).div(100);
@@ -591,11 +591,11 @@ contract EthWuxia is ERC721{
         // martialOwner.transfer(currentLotteryPrice);
       }
     }
-    if (excess&gt;0) {
+    if (excess>0) {
       msg.sender.transfer(excess);
     }
   
-    // cardType &amp;&amp; cardLevel
+    // cardType && cardLevel
     // cardType
     uint martialCardTypeCount = listedMartials[userCurrentMartialId].cardTypeList.length;
     // 3个随机 50%概率本据点的卡 epic_number%抽到特殊卡 lotteryId抽到的卡片数量
@@ -603,12 +603,12 @@ contract EthWuxia is ERC721{
 
     uint lotteryCardTypeId = listedMartials[userCurrentMartialId].cardTypeList[randomNumber % martialCardTypeCount];
     // 据点玩家有50%的概率抽到本据点的卡
-    if (randomNumber % 10 &gt;= 5) {
+    if (randomNumber % 10 >= 5) {
         lotteryCardTypeId = randomNumber % listedCardType.length;
     }
     randomNumber = randomNumber.div(10).div(martialCardTypeCount);
     // cardLevel
-    if (now - listedMartials[userCurrentMartialId].lastProduceTime &gt;= produceUnitSeconds) {
+    if (now - listedMartials[userCurrentMartialId].lastProduceTime >= produceUnitSeconds) {
       listedMartials[userCurrentMartialId].epicNumber += unitEpicGrowth;
       listedMartials[userCurrentMartialId].rareNumber += unitRareGrowth;
       listedMartials[userCurrentMartialId].mythNumber += unitMythGrowth;
@@ -623,13 +623,13 @@ contract EthWuxia is ERC721{
 
     // 如果用户拥有luckyStone 那么抽到好卡的概率翻倍
     // Free lottery can only get normal card
-    if (randomNumber % 100 &lt; userCurrentMartial.mythNumber.mul(luckyStoneFactor) &amp;&amp; userCurrentMartial.mythNumber &gt; 0 &amp;&amp; currentLotteryPrice&gt;0) {
+    if (randomNumber % 100 < userCurrentMartial.mythNumber.mul(luckyStoneFactor) && userCurrentMartial.mythNumber > 0 && currentLotteryPrice>0) {
       lotteryCardLevel = 3;
       listedMartials[userCurrentMartialId].mythNumber = listedMartials[userCurrentMartialId].mythNumber.sub(1);
-    } else if (randomNumber % 100 &lt; luckyStoneFactor.mul(userCurrentMartial.mythNumber.add(userCurrentMartial.epicNumber)) &amp;&amp; userCurrentMartial.epicNumber &gt; 0 &amp;&amp; currentLotteryPrice &gt; 0) {
+    } else if (randomNumber % 100 < luckyStoneFactor.mul(userCurrentMartial.mythNumber.add(userCurrentMartial.epicNumber)) && userCurrentMartial.epicNumber > 0 && currentLotteryPrice > 0) {
       lotteryCardLevel = 2;
       listedMartials[userCurrentMartialId].epicNumber = listedMartials[userCurrentMartialId].epicNumber.sub(1);
-    } else if (randomNumber % 100 &lt; luckyStoneFactor.mul(userCurrentMartial.mythNumber.add(userCurrentMartial.epicNumber.add(userCurrentMartial.rareNumber))) &amp;&amp; userCurrentMartial.rareNumber &gt; 0 &amp;&amp; currentLotteryPrice &gt; 0) {
+    } else if (randomNumber % 100 < luckyStoneFactor.mul(userCurrentMartial.mythNumber.add(userCurrentMartial.epicNumber.add(userCurrentMartial.rareNumber))) && userCurrentMartial.rareNumber > 0 && currentLotteryPrice > 0) {
       lotteryCardLevel = 1;
       listedMartials[userCurrentMartialId].rareNumber = listedMartials[userCurrentMartialId].rareNumber.sub(1);
     }
@@ -642,14 +642,14 @@ contract EthWuxia is ERC721{
         mapMartialUserCount[mapUserCurrentMartialId[msg.sender]] += 1;
     }
     mapUserLotteryNumber[msg.sender] += 1;
-    if (lotteryGiveHunt &amp;&amp; mapUserLotteryNumber[msg.sender] &gt;= lotteryGiveHuntMinimalNumber) {
+    if (lotteryGiveHunt && mapUserLotteryNumber[msg.sender] >= lotteryGiveHuntMinimalNumber) {
         if (mapUserHasHunterLicence[msg.sender] == false) {
             mapUserHasHunterLicence[msg.sender] = true;
         }
     }
     mapMartialLotteryCount[mapUserCurrentMartialId[msg.sender]] += 1;
     mapUserPower[msg.sender] = mapUserPower[msg.sender].add(getCardPower(lotteryCardTypeId, lotteryCardLevel));
-    if (mapUserPower[msg.sender] &gt; maxUserPower) {
+    if (mapUserPower[msg.sender] > maxUserPower) {
       maxUserPower = mapUserPower[msg.sender];
       maxPowerUserAddress = msg.sender;
     }
@@ -666,7 +666,7 @@ contract EthWuxia is ERC721{
   }
 
   function getCardInfo(uint cardId) public view returns(uint, uint, uint, bool, uint, address) {
-      require(cardId&lt;listedCard.length);
+      require(cardId<listedCard.length);
       Card memory card = listedCard[cardId];
       return (card.cardId, card.typeId, card.level, card.onSell, card.sellPrice, card.owner);
   }
@@ -678,11 +678,11 @@ contract EthWuxia is ERC721{
   // 2.6 卡片合成
   // 两张卡必须不能在卖出状态
   function mergeCard(uint a, uint b) public {
-    require(a&lt;listedCard.length);
-    require(b&lt;listedCard.length);
+    require(a<listedCard.length);
+    require(b<listedCard.length);
     require(listedCard[a].typeId==listedCard[b].typeId);
     require(listedCard[a].level==listedCard[b].level);
-    require(listedCard[a].level&lt;=2);  // 0 for normal, 1 for rare, 2 for epic, 3 for myth
+    require(listedCard[a].level<=2);  // 0 for normal, 1 for rare, 2 for epic, 3 for myth
     require(!listedCard[a].onSell);
     require(!listedCard[b].onSell);
     require(mapOwnerOfCard[a]==msg.sender);
@@ -696,7 +696,7 @@ contract EthWuxia is ERC721{
     listedCard.push(card);
     // 需要维护用户的战斗力
     mapUserPower[msg.sender] = mapUserPower[msg.sender].add(getCardPower(listedCard[a].typeId, listedCard[a].level.add(1)).sub(getCardPower(listedCard[a].typeId, listedCard[a].level).mul(2)));
-    if (mapUserPower[msg.sender] &gt; maxUserPower) {
+    if (mapUserPower[msg.sender] > maxUserPower) {
       maxUserPower = mapUserPower[msg.sender];
       maxPowerUserAddress = msg.sender;
     }
@@ -716,7 +716,7 @@ contract EthWuxia is ERC721{
       mapUesrAlreadyMartialOwner[martialOwner] = false;
       return true;
     } else {
-      if (mapUserPower[msg.sender] &gt; mapUserPower[martialOwner]) {
+      if (mapUserPower[msg.sender] > mapUserPower[martialOwner]) {
         listedMartials[myMartialId].owner = msg.sender;
         mapUesrAlreadyMartialOwner[msg.sender] = true;
         mapUesrAlreadyMartialOwner[martialOwner] = false;
@@ -737,13 +737,13 @@ contract EthWuxia is ERC721{
   }
 
   function buyWuxiaMaster() payable public {
-    require(msg.value&gt;=wuxiaMasterPrice);
+    require(msg.value>=wuxiaMasterPrice);
     require(msg.sender!=wuxiaMaster);
     // 给老的owner转出当时买入的价钱
     wuxiaMaster.transfer(wuxiaMasterPrice - 100 finney);
     uint excess = msg.value.sub(wuxiaMasterPrice);
     // 转出余额
-    if (excess&gt;0) {
+    if (excess>0) {
       msg.sender.transfer(excess);
     }
     // wuxiaMaster其实是亏钱买卖 不计入totalEarning
@@ -758,7 +758,7 @@ contract EthWuxia is ERC721{
 
   // 2.9 card Trading
   function sellCard(uint cardId, uint price) public {
-    require(cardId&lt;listedCard.length);
+    require(cardId<listedCard.length);
     totalSellCardNumber = totalSellCardNumber.add(1);
     address cardOwner = mapOwnerOfCard[cardId];
     require(cardOwner!=address(0));  // 不能卖出被销毁的卡
@@ -769,7 +769,7 @@ contract EthWuxia is ERC721{
   }
 
   function cancelSell(uint cardId) public {
-    require(cardId&lt;listedCard.length);
+    require(cardId<listedCard.length);
     address cardOwner = mapOwnerOfCard[cardId];
     require(cardOwner!=address(0));
     require(cardOwner==msg.sender);  // 只能取消自己的卡
@@ -784,10 +784,10 @@ contract EthWuxia is ERC721{
     require(listedCard[cardId].onSell);
     uint buyPrice = listedCard[cardId].sellPrice;
     totalBuyCardNumber = totalBuyCardNumber.add(1);
-    require(msg.value&gt;=buyPrice);
+    require(msg.value>=buyPrice);
     // 处理余额
     uint excess = msg.value.sub(buyPrice);
-    if (excess&gt;0) {
+    if (excess>0) {
       msg.sender.transfer(excess);
     }
     // 给开发5%
@@ -800,9 +800,9 @@ contract EthWuxia is ERC721{
       wuxiaMaster.transfer(masterCut);
     }
     // 修改wuxiaMaster的price
-    // 保证MasterPrice&gt;=100 finney
+    // 保证MasterPrice>=100 finney
     uint masterPriceMinus = masterCut.mul(100).div(110);
-    if (wuxiaMasterPrice &gt;= masterPriceMinus.add(100 finney)) {
+    if (wuxiaMasterPrice >= masterPriceMinus.add(100 finney)) {
         wuxiaMasterPrice = wuxiaMasterPrice.sub(masterPriceMinus);
     } else {
         wuxiaMasterPrice = 100 finney;
@@ -826,15 +826,15 @@ contract EthWuxia is ERC721{
     marketTotalEarning = marketTotalEarning.add(devCut);
   }
 
-  // 2.10 龙女彩票 =&gt; 每5张彩票开奖一次
+  // 2.10 龙女彩票 => 每5张彩票开奖一次
   // 获得一张普通的小龙女 cardType为0的卡片定义为小龙女
   function getCurrentDragonGirlLotteryNumber() public view returns(uint) {
     return dragonGirlLotteryNumber;
   }
 
   function buyLittleDragonGirlLottery() public payable{
-    require(msg.value&gt;=dragonGirlLotteryPrice);
-    require(listedCardType.length&gt;0);
+    require(msg.value>=dragonGirlLotteryPrice);
+    require(listedCardType.length>0);
     totalDragonLotteryNumber = totalDragonLotteryNumber.add(1);
     listedDragonGirlLotteryUser[dragonGirlLotteryNumber] = msg.sender;
     dragonGirlLotteryNumber = dragonGirlLotteryNumber.add(1);
@@ -856,7 +856,7 @@ contract EthWuxia is ERC721{
   function _tryCreateEtherMonster(uint price_a, uint price_b) private {
     uint priceTimes = price_b.div(0.5 ether);
     // 40% for little monster
-    if (price_a&lt;priceTimes*0.5 ether &amp;&amp; price_b&gt;=priceTimes*0.5 ether) {
+    if (price_a<priceTimes*0.5 ether && price_b>=priceTimes*0.5 ether) {
       // 生成小怪兽
       uint martialId = getRandomNumber(listedMartials.length);
       EtherMonster memory monster = EtherMonster(listedEtherMonster.length, martialId, 0.2 ether, maxUserPower.mul(smallMonsterPowerFactor), now, maxUserPower.mul(smallMonsterPowerFactor), false, address(0));
@@ -864,7 +864,7 @@ contract EthWuxia is ERC721{
     }
     priceTimes = price_b.div(5 ether);
     // 20% for large monster
-    if (price_a&lt;priceTimes*5 ether &amp;&amp; price_b&gt;=priceTimes*5 ether) {
+    if (price_a<priceTimes*5 ether && price_b>=priceTimes*5 ether) {
       // 生成大怪兽
       uint bigMartialId = (getRandomNumber(listedEtherMonster.length).add(10007)) % listedMartials.length;
       EtherMonster memory bigMonster = EtherMonster(listedEtherMonster.length, bigMartialId, 1 ether, maxUserPower.mul(bigMonsterPowerFactor), now, maxUserPower.mul(bigMonsterPowerFactor), false, address(0));
@@ -879,9 +879,9 @@ contract EthWuxia is ERC721{
   function getCanAttackMonsterIds() public view returns(uint[]) {
       uint[] memory result = new uint[](listedEtherMonster.length+1);
       uint index=0;
-      for (uint i=0; i&lt;listedEtherMonster.length; i++) {
+      for (uint i=0; i<listedEtherMonster.length; i++) {
         EtherMonster memory monster = listedEtherMonster[i];
-        if (monster.produceTime.add(etherMonsterHuntSeconds)&gt;now &amp;&amp; !monster.defeated) {
+        if (monster.produceTime.add(etherMonsterHuntSeconds)>now && !monster.defeated) {
             result[index] = i+1;
             index += 1;
         }
@@ -892,7 +892,7 @@ contract EthWuxia is ERC721{
   function getOnSellCardIds() public view returns(uint[]) {
       uint[] memory result = new uint[](listedCard.length+1);
       uint index = 0;
-      for (uint i=0; i&lt;listedCard.length; i++) {
+      for (uint i=0; i<listedCard.length; i++) {
           if (listedCard[i].onSell) {
               result[index] = i+1;
               index += 1;
@@ -902,7 +902,7 @@ contract EthWuxia is ERC721{
   }
 
   function getEtherMonsterInfo(uint monsterId) public view returns(uint, uint, uint, uint, uint, uint, bool, address) {
-      require(monsterId&lt;listedEtherMonster.length);
+      require(monsterId<listedEtherMonster.length);
       EtherMonster memory monster = listedEtherMonster[monsterId];
       return (monster.monsterId, monster.martialId, monster.balance, monster.blood, monster.produceTime, monster.currentBlood, monster.defeated, monster.winner);
   }
@@ -911,9 +911,9 @@ contract EthWuxia is ERC721{
   function attackMonster(uint monsterId) public {
     // 每个人只能攻击一次
     require(!listedEtherMonster[monsterId].defeated);  // 没有被打败过
-    require(address(this).balance&gt;=listedEtherMonster[monsterId].balance);  // 要有足够的奖金
-    require(mapUserLastAttackMonsterTimestamp[msg.sender].add(userAttackMonsterCDSeconds) &lt; now);
-    require(listedEtherMonster[monsterId].produceTime.add(etherMonsterHuntSeconds) &gt; now);
+    require(address(this).balance>=listedEtherMonster[monsterId].balance);  // 要有足够的奖金
+    require(mapUserLastAttackMonsterTimestamp[msg.sender].add(userAttackMonsterCDSeconds) < now);
+    require(listedEtherMonster[monsterId].produceTime.add(etherMonsterHuntSeconds) > now);
     require(mapUserHasHunterLicence[msg.sender]);  // 用户有狩猎凭证
     // 只要在该门派的人才能攻击
     require(mapUserCurrentMartialId[msg.sender]==listedEtherMonster[monsterId].martialId);
@@ -921,7 +921,7 @@ contract EthWuxia is ERC721{
     uint monsterCurrentBlood = listedEtherMonster[monsterId].currentBlood;
     uint monsterTotalBlood = listedEtherMonster[monsterId].blood;
     mapUserLastAttackMonsterTimestamp[msg.sender] = now;
-    if (mapUserPower[msg.sender] &gt;= monsterCurrentBlood) {
+    if (mapUserPower[msg.sender] >= monsterCurrentBlood) {
       // 战力取胜
       listedEtherMonster[monsterId].defeated = true;
       listedEtherMonster[monsterId].winner = msg.sender;
@@ -929,7 +929,7 @@ contract EthWuxia is ERC721{
     } else {
       // 判断能否概率取胜
       uint randomNumber = getRandomNumber(monsterTotalBlood);
-      if (randomNumber &lt; mapUserPower[msg.sender]) {
+      if (randomNumber < mapUserPower[msg.sender]) {
         listedEtherMonster[monsterId].defeated = true;
         listedEtherMonster[monsterId].winner = msg.sender;
         _sendMonsterPrize(monsterId, msg.sender);
@@ -1067,7 +1067,7 @@ contract EthWuxia is ERC721{
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -1082,11 +1082,11 @@ contract EthWuxia is ERC721{
   /* ERC721 */
 
   function name() public pure returns (string) {
-    return &quot;Ethwuxia.pro&quot;;
+    return "Ethwuxia.pro";
   }
 
   function symbol() public pure returns (string) {
-    return &quot;EWX&quot;;
+    return "EWX";
   }
 
   function totalSupply() public view returns (uint256) {
@@ -1096,7 +1096,7 @@ contract EthWuxia is ERC721{
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint counter = 0;
 
-    for (uint i = 0; i &lt; listedCard.length; i++) {
+    for (uint i = 0; i < listedCard.length; i++) {
       if (ownerOf(listedCard[i].cardId) == _owner) {
         counter++;
       }
@@ -1113,7 +1113,7 @@ contract EthWuxia is ERC721{
     uint[] memory result = new uint[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedCard.length; i++) {
+    for (uint256 i = 0; i < listedCard.length; i++) {
       if (ownerOf(i) == _owner) {
         result[itemCounter] = listedCard[i].cardId;
         itemCounter += 1;
@@ -1179,7 +1179,7 @@ contract EthWuxia is ERC721{
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }
 

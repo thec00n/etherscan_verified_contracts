@@ -2,11 +2,11 @@
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 pragma solidity ^0.4.13;
@@ -48,7 +48,7 @@ contract Auth is AuthEvents {
     function isAuthorized(address src, bytes4 sig) internal returns (bool) {
         if (src == address(this)) {
             return true;
-        } else if (src == owner &amp;&amp; authority == Authority(0)) {
+        } else if (src == owner && authority == Authority(0)) {
             /*the owner has privileges only as long as no Authority has been defined*/
             return true;
         } else if (authority == Authority(0)) {
@@ -62,14 +62,14 @@ contract Auth is AuthEvents {
 /*
    Copyright 2017 DappHub, LLC
 
-   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
@@ -98,11 +98,11 @@ contract ERC20 is ERC20Events{
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -113,28 +113,28 @@ contract Math {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         z = x * y;
-        require(z == 0 || z &gt;= (x &gt; y ? x : y));
+        require(z == 0 || z >= (x > y ? x : y));
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(y &gt; 0);
+        require(y > 0);
         z = x / y;
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -143,27 +143,27 @@ contract Math {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        require((z = x * y) &gt;= x);
+        require((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        require(y &gt; 0);
+        require(y > 0);
         z = x / y;
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -172,10 +172,10 @@ contract Math {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -230,10 +230,10 @@ contract Math {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -291,15 +291,15 @@ contract Migrations {
     upgraded.setCompleted(last_completed_migration);
   }
 }
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // Copyright (C) 2017  DappHub, LLC
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -333,11 +333,11 @@ contract Note {
 
 // Copyright (C) 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -360,11 +360,11 @@ contract Stoppable is Auth, Note {
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -448,7 +448,7 @@ contract Token is ERC20, Stoppable {
     }
 
     function () payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint wad = logic.handlePayment(msg.sender, msg.value);
         Transfer(this, msg.sender, wad);
     }
@@ -456,7 +456,7 @@ contract Token is ERC20, Stoppable {
 /*special functions for ICO*/
     function transferEth(address dst, uint wad) {
         require(msg.sender == address(logic));
-        require(wad &lt; this.balance);
+        require(wad < this.balance);
         dst.transfer(wad);
     }
 
@@ -475,8 +475,8 @@ contract Token is ERC20, Stoppable {
 
 contract TokenData is Auth {
     uint256 public supply;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public approvals;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public approvals;
     address token;
 
     modifier tokenOnly {
@@ -516,11 +516,11 @@ contract TokenData is Auth {
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -579,7 +579,7 @@ contract TokenLogic is ERC20Events, Math, Stoppable {
     }
 
     function setTokensPerWei(uint tokensPerWei_) auth {
-        require(tokensPerWei_ &gt; 0);
+        require(tokensPerWei_ > 0);
         tokensPerWei = tokensPerWei_;
     }
 
@@ -596,7 +596,7 @@ contract TokenLogic is ERC20Events, Math, Stoppable {
     }
     
     function transfer(address src, address dst, uint wad) tokenOnly returns (bool) {
-        require(balanceOf(src) &gt;= wad);
+        require(balanceOf(src) >= wad);
         
         data.setBalances(src, sub(data.balances(src), wad));
         data.setBalances(dst, add(data.balances(dst), wad));
@@ -605,8 +605,8 @@ contract TokenLogic is ERC20Events, Math, Stoppable {
     }
     
     function transferFrom(address src, address dst, uint wad) tokenOnly returns (bool) {
-        require(data.balances(src) &gt;= wad);
-        require(data.approvals(src, dst) &gt;= wad);
+        require(data.balances(src) >= wad);
+        require(data.approvals(src, dst) >= wad);
         
         data.setApprovals(src, dst, sub(data.approvals(src, dst), wad));
         data.setBalances(src, sub(data.balances(src), wad));
@@ -630,14 +630,14 @@ contract TokenLogic is ERC20Events, Math, Stoppable {
     }
 
     function burn(address src, uint128 wad) tokenOnly {
-        require(balanceOf(src) &gt;= wad);
+        require(balanceOf(src) >= wad);
         data.setBalances(src, sub(data.balances(src), wad));
         data.setSupply(sub(data.supply(), wad));
     }
 
     function returnIcoInvestments(uint contributorIndex) auth {
         /*this can only be done after the ICO close date and if less than 20mio tokens were sold*/
-        require(now &gt; icoEnd &amp;&amp; icoSale &lt; 20000000000000000000000000);
+        require(now > icoEnd && icoSale < 20000000000000000000000000);
 
         address src = contributors[contributorIndex];
         require(src != address(0));
@@ -657,37 +657,37 @@ contract TokenLogic is ERC20Events, Math, Stoppable {
     }
 
     function handlePayment(address src, uint eth) tokenOnly returns (uint){
-        require(eth &gt; 0);
+        require(eth > 0);
         /*the time stamp has to be between the start and end times of the ICO*/
-        require(now &gt;= icoStart &amp;&amp; now &lt;= icoEnd);
+        require(now >= icoStart && now <= icoEnd);
         /*no more than 90 mio tokens shall be sold in the ICO*/
-        require(icoSale &lt; maxIco);
+        require(icoSale < maxIco);
 
         uint tokenAmount = mul(tokensPerWei, eth);
         if (!presale) {
             //first 168 hours
-            if (now &lt; icoStart + (168 * 3600)) {
+            if (now < icoStart + (168 * 3600)) {
                 tokenAmount = tokenAmount * 150 / 100;
             }
             //168 to 312 hours
-            else if (now &lt; icoStart + (312 * 3600)) {
+            else if (now < icoStart + (312 * 3600)) {
                 tokenAmount = tokenAmount * 130 / 100;
             }
             //312 to 456 hours
-            else if (now &lt; icoStart + (456 * 3600)) {
+            else if (now < icoStart + (456 * 3600)) {
                 tokenAmount = tokenAmount * 110 / 100;
             }
         }
 
         icoSale += tokenAmount;
-        if(icoSale &gt; maxIco) {
+        if(icoSale > maxIco) {
             uint excess = sub(icoSale, maxIco);
             tokenAmount = sub(tokenAmount, excess);
             token.transferEth(src, div(excess, tokensPerWei));
             icoSale = maxIco;
         }
 
-        require(balanceOf(owner) &gt;= tokenAmount);
+        require(balanceOf(owner) >= tokenAmount);
 
         data.setBalances(owner, sub(data.balances(owner), tokenAmount));
         data.setBalances(src, add(data.balances(src), tokenAmount));

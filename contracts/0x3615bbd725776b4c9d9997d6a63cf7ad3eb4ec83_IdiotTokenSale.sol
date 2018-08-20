@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
-    // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // require(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -121,10 +121,10 @@ contract TimedVaultEvents {
  * @dev blocks an address from certain actions over a period of time
  */
 contract TimedVault is Ownable, TimedVaultEvents {
-  mapping (address =&gt; uint256) lockDeadline;
+  mapping (address => uint256) lockDeadline;
 
   modifier timedVaultIsOpen(address _target) {
-    require(now &gt; lockDeadline[_target]);
+    require(now > lockDeadline[_target]);
     _;
   }
 
@@ -154,8 +154,8 @@ contract ERC20Events {
  */
 contract ERC20 is ERC20Events {
   
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
   uint256 public totalSupply;
 
   /// @return total amount of tokens
@@ -175,8 +175,8 @@ contract ERC20 is ERC20Events {
   /// @return Whether the transfer was successful or not
   function transfer(address _to, uint256 _value) public returns (bool success) {
     //check if sender can afford and that there is no overflow on receiver side
-    if(balances[msg.sender] &gt;= _value 
-      &amp;&amp; balances[_to]+_value &gt; balances[_to]) {
+    if(balances[msg.sender] >= _value 
+      && balances[_to]+_value > balances[_to]) {
 
       balances[msg.sender] -= _value;
       balances[_to] += _value;
@@ -193,9 +193,9 @@ contract ERC20 is ERC20Events {
   /// @param _value The amount of token to be transferred
   /// @return Whether the transfer was successful or not
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    if (balances[_from] &gt;= _value 
-      &amp;&amp; allowed[_from][msg.sender] &gt;= _value 
-      &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[_from] >= _value 
+      && allowed[_from][msg.sender] >= _value 
+      && balances[_to] + _value > balances[_to]) {
 
       balances[_to] += _value;
       balances[_from] -= _value;
@@ -213,7 +213,7 @@ contract ERC20 is ERC20Events {
   /// @return Whether the approval was successful or not
   function approve(address _spender, uint256 _value) public returns (bool success) {
     // mitigates the ERC20 spend/approval race condition
-    if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+    if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
     
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -230,8 +230,8 @@ contract ERC20 is ERC20Events {
 
 contract IdiotToken is Lockable, ERC20, TimedVault {
   
-  string public name = &quot;Idiot Token&quot;;
-  string public symbol = &quot;IDT&quot;;
+  string public name = "Idiot Token";
+  string public symbol = "IDT";
   uint public decimals = 18;
   uint MULTIPLIER = 1000000000000000000; 
 
@@ -250,7 +250,7 @@ contract IdiotToken is Lockable, ERC20, TimedVault {
 
   function transferInitialAllocationWithTimedLock(address _to, uint256 _value, uint256 _timestamp) onlyOwner public returns (bool success) {
     //lock first, then transfer to avoid race condition
-    return (setVaultLock(_to, _timestamp) &amp;&amp; super.transfer(_to, _value));
+    return (setVaultLock(_to, _timestamp) && super.transfer(_to, _value));
   }
 
   function transferFrom(address _from, address _to, uint256 _value) whenUnlocked public returns (bool success) {
@@ -298,12 +298,12 @@ contract IdiotTokenSale is Ownable {
   uint MULTIPLIER = 1000000000000000000;
 
   modifier saleInProgress() {
-    require(tokenCap &gt; 0 &amp;&amp; (start &lt;= now &amp;&amp; now &lt; end) &amp;&amp; !saleFinished &amp;&amp; !forceFinished &amp;&amp; setupDone);
+    require(tokenCap > 0 && (start <= now && now < end) && !saleFinished && !forceFinished && setupDone);
     _;
   }
 
   modifier saleIsOver() {
-    require(tokenCap == 0 || (start &lt;= now &amp;&amp; now &lt; end) || forceFinished);
+    require(tokenCap == 0 || (start <= now && now < end) || forceFinished);
     _;
   }
 
@@ -323,15 +323,15 @@ contract IdiotTokenSale is Ownable {
   function setup() public onlyOwner returns(bool success){
     require(!setupDone);
 
-    start = 1509361200; // new Date(&quot;Oct 30 2017 11:00:00 GMT&quot;).getTime() / 1000
-    end = 1514199600; // new Date(&quot;Dec 25 2017 11:00:00 GMT&quot;).getTime() / 1000
+    start = 1509361200; // new Date("Oct 30 2017 11:00:00 GMT").getTime() / 1000
+    end = 1514199600; // new Date("Dec 25 2017 11:00:00 GMT").getTime() / 1000
 
     // 30% Idiot Foundation as working capital
     token.transferInitialAllocation(owner, 22800000*MULTIPLIER); 
     // 20% Founders, locked away for a year
     token.transferInitialAllocationWithTimedLock(founder1, 7600000*MULTIPLIER, now + 365 days);
     token.transferInitialAllocationWithTimedLock(founder2, 7600000*MULTIPLIER, now + 365 days);
-    // 10% Angel investors &amp; advisors
+    // 10% Angel investors & advisors
     token.transferInitialAllocation(angelPool, 6840000*MULTIPLIER); 
     token.transferInitialAllocation(advisoryPool, 760000*MULTIPLIER);
     // 40% crowdsale
@@ -346,10 +346,10 @@ contract IdiotTokenSale is Ownable {
   }
 
   function buyToken() public payable saleInProgress {
-    require (msg.value &gt;= 10 finney);
+    require (msg.value >= 10 finney);
     uint purchasedToken = rate.mul(msg.value).div(1 ether);
     
-    require(tokenCap &gt;= purchasedToken);
+    require(tokenCap >= purchasedToken);
     tokenCap -= purchasedToken;
     token.transferInitialAllocation(msg.sender, purchasedToken);
     
@@ -359,7 +359,7 @@ contract IdiotTokenSale is Ownable {
   }
 
   function finalizeCrowdsale() public onlyOwner saleIsOver returns(bool success) {
-    if (tokenCap &gt; 0) {
+    if (tokenCap > 0) {
       require(token.transferInitialAllocation(owner, tokenCap));
     }
     require(token.setNewOwner(owner));

@@ -22,37 +22,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    validate(b &gt; 0);
+    validate(b > 0);
     uint c = a / b;
     validate(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    validate(b &lt;= a);
+    validate(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    validate(c &gt;= a);
+    validate(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function validate(bool validation) internal {
@@ -83,13 +83,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -127,13 +127,13 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already revert() if this condition is not met
-    // if (value &gt; allowance) revert();
+    // if (value > allowance) revert();
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -186,8 +186,8 @@ contract SIMPLECOIN is StandardToken, Ownable {
     using SafeMath for uint;
 
     //--------------   Info for ERC20 explorers  -----------------//
-    string public name = &quot;SIMPLECOIN&quot;;
-    string public symbol = &quot;SIM&quot;;
+    string public name = "SIMPLECOIN";
+    string public symbol = "SIM";
     uint public decimals = 18;
 
     //---------------------   Constants   ------------------------//
@@ -236,7 +236,7 @@ contract SIMPLECOIN is StandardToken, Ownable {
     // Constructor
     function SIMPLECOIN() {
         // Some percentage of the tokens is already reserved by early employees and investors
-        // Here we&#39;re initializing their balances
+        // Here we're initializing their balances
         distributeMarketingShares();
     }
 
@@ -256,7 +256,7 @@ contract SIMPLECOIN is StandardToken, Ownable {
         }
 
         // prevent from buying before starting preico or ico
-        if (!isPreICOPrivateOpened &amp;&amp; !isPreICOPublicOpened &amp;&amp; !isICOOpened) {
+        if (!isPreICOPrivateOpened && !isPreICOPublicOpened && !isICOOpened) {
             revert();
         }
 
@@ -268,7 +268,7 @@ contract SIMPLECOIN is StandardToken, Ownable {
         uint tokens = getSMPTokensAmountPerEthInternal(msg.value);
 
         // Just in case
-        if (tokens &gt; balances[ICO_ADDRESS]) { 
+        if (tokens > balances[ICO_ADDRESS]) { 
             revert();
         }
 
@@ -463,37 +463,37 @@ contract SIMPLECOIN is StandardToken, Ownable {
 
     function getSMPTokensAmountPerEthInternal(uint value) public payable returns (uint result) {    
         if (isPreICOPrivateOpened) {
-            if (value &gt;= _FIFTY &amp;&amp; value &lt; _FIVEHUNDRED) {
+            if (value >= _FIFTY && value < _FIVEHUNDRED) {
                 return (value + (value * 35) / 100) * PRICE;
             }
 
-            if (value &gt;= _FIVEHUNDRED &amp;&amp; value &lt; _THOUSAND) {
+            if (value >= _FIVEHUNDRED && value < _THOUSAND) {
                 return (value + (value * 40) / 100) * PRICE;
             }
 
-            if (value &gt;= _THOUSAND &amp;&amp; value &lt; _FIVETHOUSAND) {
+            if (value >= _THOUSAND && value < _FIVETHOUSAND) {
                 return (value + (value * 60) / 100) * PRICE;
             }
 
-            if (value &gt;= _FIVETHOUSAND) {
+            if (value >= _FIVETHOUSAND) {
                 return (value + value) * PRICE;
             }
         }
 
         if (isPreICOPublicOpened) {
-            if (value &gt;= _ONE &amp;&amp; value &lt; _HUNDRED) {
+            if (value >= _ONE && value < _HUNDRED) {
                 return (value + (value * 20) / 100) * PRICE;
             }
 
-            if (value &gt;= _HUNDRED &amp;&amp; value &lt; _FIVEHUNDRED) {
+            if (value >= _HUNDRED && value < _FIVEHUNDRED) {
                 return (value + (value * 30) / 100) * PRICE;
             }
 
-            if (value &gt;= _FIVEHUNDRED &amp;&amp; value &lt; _THOUSAND) {
+            if (value >= _FIVEHUNDRED && value < _THOUSAND) {
                 return (value + (value * 40) / 100) * PRICE;
             }
 
-            if (value &gt;= _THOUSAND) {
+            if (value >= _THOUSAND) {
                 return (value + (value * 50) / 100) * PRICE;
             }
         }

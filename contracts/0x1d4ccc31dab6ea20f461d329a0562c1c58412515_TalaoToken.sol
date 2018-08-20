@@ -20,13 +20,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -115,7 +115,7 @@ contract TalaoMarketplace is Ownable {
       public
       onlyOwner
   {
-      require (newSellPrice &gt; 0 &amp;&amp; newBuyPrice &gt; 0 &amp;&amp; newUnitPrice &gt; 0, &quot;wrong inputs&quot;);
+      require (newSellPrice > 0 && newBuyPrice > 0 && newUnitPrice > 0, "wrong inputs");
       marketplace.sellPrice = newSellPrice;
       marketplace.buyPrice = newBuyPrice;
       marketplace.unitPrice = newUnitPrice;
@@ -145,7 +145,7 @@ contract TalaoMarketplace is Ownable {
       public
       returns (uint revenue)
   {
-      require(token.balanceOf(msg.sender) &gt;= amount, &quot;sender has not enough tokens&quot;);
+      require(token.balanceOf(msg.sender) >= amount, "sender has not enough tokens");
       token.transferFrom(msg.sender, this, amount);
       revenue = amount.mul(marketplace.sellPrice).div(marketplace.unitPrice);
       msg.sender.transfer(revenue);
@@ -162,7 +162,7 @@ contract TalaoMarketplace is Ownable {
       public
       onlyOwner
   {
-      if (this.balance &gt;= ethers) {
+      if (this.balance >= ethers) {
           msg.sender.transfer(ethers);
       }
   }
@@ -254,7 +254,7 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -262,10 +262,10 @@ contract TokenTimelock {
 
   /**
    * @notice Transfers tokens held by timelock to beneficiary.
-   * @dev Removed original require that amount released was &gt; 0 ; releasing 0 is fine
+   * @dev Removed original require that amount released was > 0 ; releasing 0 is fine
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
 
@@ -279,7 +279,7 @@ contract TokenTimelock {
  * @dev A token holder contract that can release its token balance gradually like a
  * typical vesting scheme, with a cliff and vesting period. Optionally revocable by the
  * owner.
- * @notice Talao token transfer function cannot fail thus there&#39;s no need for revocation.
+ * @notice Talao token transfer function cannot fail thus there's no need for revocation.
  */
 contract TokenVesting is Ownable {
   using SafeMath for uint256;
@@ -297,8 +297,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -311,7 +311,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -322,7 +322,7 @@ contract TokenVesting is Ownable {
 
   /**
    * @notice Transfers vested tokens to beneficiary.
-   * @dev Removed original require that amount released was &gt; 0 ; releasing 0 is fine
+   * @dev Removed original require that amount released was > 0 ; releasing 0 is fine
    * @param token ERC20 token which is being vested
    */
   function release(ERC20Basic token) public {
@@ -357,7 +357,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -372,9 +372,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -419,9 +419,9 @@ contract Crowdsale {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function Crowdsale(uint256 _rate, uint256 _startTime, uint256 _endTime, address _wallet) public {
-    require(_rate &gt; 0);
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    require(_rate > 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -470,14 +470,14 @@ contract Crowdsale {
   // @return true if the transaction can buy tokens
   // removed view to be overriden
   function validPurchase() internal returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -498,7 +498,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() public {
     require(!isFinalized);
@@ -531,7 +531,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -578,7 +578,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -590,12 +590,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -622,7 +622,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -638,7 +638,7 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -646,14 +646,14 @@ contract CappedCrowdsale is Crowdsale {
   // @return true if investors can buy at the moment
   // removed view to be overriden
   function validPurchase() internal returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -673,7 +673,7 @@ contract ProgressiveIndividualCappedCrowdsale is RefundableCrowdsale, CappedCrow
     uint public constant GAS_LIMIT_IN_WEI = 5E10 wei; // limit gas price -50 Gwei wales stopper
     uint256 public baseEthCapPerAddress;
 
-    mapping(address=&gt;uint) public participated;
+    mapping(address=>uint) public participated;
 
     function ProgressiveIndividualCappedCrowdsale(uint _baseEthCapPerAddress, uint _startGeneralSale)
         public
@@ -690,7 +690,7 @@ contract ProgressiveIndividualCappedCrowdsale is RefundableCrowdsale, CappedCrow
         public
         onlyOwner
     {
-        require(now &lt; startGeneralSale);
+        require(now < startGeneralSale);
         baseEthCapPerAddress = _newBaseCap;
     }
 
@@ -702,11 +702,11 @@ contract ProgressiveIndividualCappedCrowdsale is RefundableCrowdsale, CappedCrow
         internal
         returns(bool)
     {
-        bool gasCheck = tx.gasprice &lt;= GAS_LIMIT_IN_WEI;
+        bool gasCheck = tx.gasprice <= GAS_LIMIT_IN_WEI;
         uint ethCapPerAddress = getCurrentEthCapPerAddress();
         participated[msg.sender] = participated[msg.sender].add(msg.value);
-        bool enough = participated[msg.sender] &gt;= minimumParticipation;
-        return participated[msg.sender] &lt;= ethCapPerAddress &amp;&amp; enough &amp;&amp; gasCheck;
+        bool enough = participated[msg.sender] >= minimumParticipation;
+        return participated[msg.sender] <= ethCapPerAddress && enough && gasCheck;
     }
 
     /**
@@ -719,11 +719,11 @@ contract ProgressiveIndividualCappedCrowdsale is RefundableCrowdsale, CappedCrow
         constant
         returns(uint)
     {
-        if (block.timestamp &lt; startGeneralSale) return 0;
+        if (block.timestamp < startGeneralSale) return 0;
         uint timeSinceStartInSec = block.timestamp.sub(startGeneralSale);
         uint currentPeriod = timeSinceStartInSec.div(TIME_PERIOD_IN_SEC).add(1);
 
-        // for currentPeriod &gt; 256 will always return 0
+        // for currentPeriod > 256 will always return 0
         return (2 ** currentPeriod.sub(1)).mul(baseEthCapPerAddress);
     }
 }
@@ -735,7 +735,7 @@ contract ProgressiveIndividualCappedCrowdsale is RefundableCrowdsale, CappedCrow
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -744,7 +744,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -774,7 +774,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -785,8 +785,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -800,7 +800,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -849,7 +849,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -916,8 +916,8 @@ contract TalaoToken is MintableToken {
   using SafeMath for uint256;
 
   // token details
-  string public constant name = &quot;Talao&quot;;
-  string public constant symbol = &quot;TALAO&quot;;
+  string public constant name = "Talao";
+  string public constant symbol = "TALAO";
   uint8 public constant decimals = 18;
 
   // the talao marketplace address
@@ -948,10 +948,10 @@ contract TalaoToken is MintableToken {
   }
 
   // Vault allowance client x freelancer
-  mapping (address =&gt; mapping (address =&gt; ClientAccess)) public accessAllowance;
+  mapping (address => mapping (address => ClientAccess)) public accessAllowance;
 
   // Freelance data is public
-  mapping (address=&gt;FreelanceData) public data;
+  mapping (address=>FreelanceData) public data;
 
   enum VaultStatus {Closed, Created, PriceTooHigh, NotEnoughTokensDeposited, AgentRemoved, NewAgent, NewAccess, WrongAccessPrice}
 
@@ -968,7 +968,7 @@ contract TalaoToken is MintableToken {
 
   modifier onlyMintingFinished()
   {
-      require(mintingFinished == true, &quot;minting has not finished&quot;);
+      require(mintingFinished == true, "minting has not finished");
       _;
   }
 
@@ -1064,7 +1064,7 @@ contract TalaoToken is MintableToken {
       public
       onlyOwner
   {
-      require(balanceOf(this).sub(totalDeposit) &gt;= tokens, &quot;too much tokens asked&quot;);
+      require(balanceOf(this).sub(totalDeposit) >= tokens, "too much tokens asked");
       _transfer(this, msg.sender, tokens);
   }
 
@@ -1082,9 +1082,9 @@ contract TalaoToken is MintableToken {
       public
       onlyMintingFinished
   {
-      require(accessAllowance[msg.sender][msg.sender].clientAgreement==false, &quot;vault already created&quot;);
-      require(price&lt;=vaultDeposit, &quot;price asked is too high&quot;);
-      require(balanceOf(msg.sender)&gt;vaultDeposit, &quot;user has not enough tokens to send deposit&quot;);
+      require(accessAllowance[msg.sender][msg.sender].clientAgreement==false, "vault already created");
+      require(price<=vaultDeposit, "price asked is too high");
+      require(balanceOf(msg.sender)>vaultDeposit, "user has not enough tokens to send deposit");
       data[msg.sender].accessPrice=price;
       super.transfer(this, vaultDeposit);
       totalDeposit = totalDeposit.add(vaultDeposit);
@@ -1102,8 +1102,8 @@ contract TalaoToken is MintableToken {
       public
       onlyMintingFinished
   {
-      require(accessAllowance[msg.sender][msg.sender].clientAgreement==true, &quot;vault has not been created&quot;);
-      require(_transfer(this, msg.sender, data[msg.sender].userDeposit), &quot;token deposit transfer failed&quot;);
+      require(accessAllowance[msg.sender][msg.sender].clientAgreement==true, "vault has not been created");
+      require(_transfer(this, msg.sender, data[msg.sender].userDeposit), "token deposit transfer failed");
       accessAllowance[msg.sender][msg.sender].clientAgreement=false;
       totalDeposit=totalDeposit.sub(data[msg.sender].userDeposit);
       data[msg.sender].sharingPlan=0;
@@ -1125,8 +1125,8 @@ contract TalaoToken is MintableToken {
       internal
       returns (bool)
   {
-      require(_to != 0x0, &quot;destination cannot be 0x0&quot;);
-      require(balances[_from] &gt;= _value, &quot;not enough tokens in sender wallet&quot;);
+      require(_to != 0x0, "destination cannot be 0x0");
+      require(balances[_from] >= _value, "not enough tokens in sender wallet");
 
       balances[_from] = balances[_from].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -1145,8 +1145,8 @@ contract TalaoToken is MintableToken {
       public
       onlyMintingFinished
   {
-      require(newplan&gt;=0&amp;&amp;newplan&lt;=100, &quot;plan must be between 0 and 100&quot;);
-      require(accessAllowance[msg.sender][msg.sender].clientAgreement==true, &quot;vault has not been created&quot;);
+      require(newplan>=0&&newplan<=100, "plan must be between 0 and 100");
+      require(accessAllowance[msg.sender][msg.sender].clientAgreement==true, "vault has not been created");
       emit Vault(data[msg.sender].appointedAgent, msg.sender, VaultStatus.AgentRemoved);
       data[msg.sender].appointedAgent=newagent;
       data[msg.sender].sharingPlan=newplan;
@@ -1176,14 +1176,14 @@ contract TalaoToken is MintableToken {
       onlyMintingFinished
       returns (bool)
   {
-      require(accessAllowance[freelance][freelance].clientAgreement==true, &quot;vault does not exist&quot;);
-      require(accessAllowance[msg.sender][freelance].clientAgreement!=true, &quot;access was already granted&quot;);
-      require(balanceOf(msg.sender)&gt;data[freelance].accessPrice, &quot;user has not enough tokens to get access to vault&quot;);
+      require(accessAllowance[freelance][freelance].clientAgreement==true, "vault does not exist");
+      require(accessAllowance[msg.sender][freelance].clientAgreement!=true, "access was already granted");
+      require(balanceOf(msg.sender)>data[freelance].accessPrice, "user has not enough tokens to get access to vault");
 
       uint256 freelance_share = data[freelance].accessPrice.mul(data[freelance].sharingPlan).div(100);
       uint256 agent_share = data[freelance].accessPrice.sub(freelance_share);
-      if(freelance_share&gt;0) super.transfer(freelance, freelance_share);
-      if(agent_share&gt;0) super.transfer(data[freelance].appointedAgent, agent_share);
+      if(freelance_share>0) super.transfer(freelance, freelance_share);
+      if(agent_share>0) super.transfer(data[freelance].appointedAgent, agent_share);
       accessAllowance[msg.sender][freelance].clientAgreement=true;
       accessAllowance[msg.sender][freelance].clientDate=block.number;
       emit Vault(msg.sender, freelance, VaultStatus.NewAccess);

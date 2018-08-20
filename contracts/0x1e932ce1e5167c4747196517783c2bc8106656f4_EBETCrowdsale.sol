@@ -7,11 +7,11 @@
 // https://github.com/ethereum/EIPs/issues/20
 // -------------------------------------------------
 // Price configuration:
-// First Day Bonus    +50% = 1,500 EBET  = 1 ETH       [blocks: start   -&gt; s+3600]
-// First Week Bonus   +40% = 1,400 EBET  = 1 ETH       [blocks: s+3601  -&gt; s+25200]
-// Second Week Bonus  +30% = 1,300 EBET  = 1 ETH       [blocks: s+25201 -&gt; s+50400]
-// Third Week Bonus   +25% = 1,250 EBET  = 1 ETH       [blocks: s+50401 -&gt; s+75600]
-// Final Week Bonus   +15% = 1,150 EBET  = 1 ETH       [blocks: s+75601 -&gt; end]
+// First Day Bonus    +50% = 1,500 EBET  = 1 ETH       [blocks: start   -> s+3600]
+// First Week Bonus   +40% = 1,400 EBET  = 1 ETH       [blocks: s+3601  -> s+25200]
+// Second Week Bonus  +30% = 1,300 EBET  = 1 ETH       [blocks: s+25201 -> s+50400]
+// Third Week Bonus   +25% = 1,250 EBET  = 1 ETH       [blocks: s+50401 -> s+75600]
+// Final Week Bonus   +15% = 1,150 EBET  = 1 ETH       [blocks: s+75601 -> end]
 // -------------------------------------------------
 contract owned {
     address public owner;
@@ -36,20 +36,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -65,7 +65,7 @@ contract StandardToken is owned, safeMath {
 }
 
 contract EBETCrowdsale is owned, safeMath {
-  // owner/admin &amp; token reward
+  // owner/admin & token reward
   address        public admin                     = owner;   // admin address
   StandardToken  public tokenReward;                          // address of the token used as reward
 
@@ -82,7 +82,7 @@ contract EBETCrowdsale is owned, safeMath {
   uint256 public fundingMinCapInWei;                          //
 
   // loop control, ICO startup and limiters
-  string  public CurrentStatus                   = &quot;&quot;;        // current crowdsale status
+  string  public CurrentStatus                   = "";        // current crowdsale status
   uint256 public fundingStartBlock;                           // crowdsale start block#
   uint256 public fundingEndBlock;                             // crowdsale end block#
   bool    public isCrowdSaleClosed               = false;     // crowdsale completion boolean
@@ -94,13 +94,13 @@ contract EBETCrowdsale is owned, safeMath {
   event Buy(address indexed _sender, uint256 _eth, uint256 _EBET);
   event Refund(address indexed _refunder, uint256 _value);
   event Burn(address _from, uint256 _value);
-  mapping(address =&gt; uint256) balancesArray;
-  mapping(address =&gt; uint256) fundValue;
+  mapping(address => uint256) balancesArray;
+  mapping(address => uint256) fundValue;
 
   // default function, map admin
   function EBETCrowdsale() onlyOwner {
     admin = msg.sender;
-    CurrentStatus = &quot;Crowdsale deployed to chain&quot;;
+    CurrentStatus = "Crowdsale deployed to chain";
   }
 
   // total number of tokens initially
@@ -116,8 +116,8 @@ contract EBETCrowdsale is owned, safeMath {
   // setup the CrowdSale parameters
   function SetupCrowdsale(uint256 _fundingStartBlock, uint256 _fundingEndBlock) onlyOwner returns (bytes32 response) {
       if ((msg.sender == admin)
-      &amp;&amp; (!(isCrowdSaleSetup))
-      &amp;&amp; (!(beneficiaryWallet &gt; 0))){
+      && (!(isCrowdSaleSetup))
+      && (!(beneficiaryWallet > 0))){
           // init addresses
           tokenReward                             = StandardToken(0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d);  //mainnet is 0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d //testnet = 0x75508c2B1e46ea29B7cCf0308d4Cb6f6af6211e0
           beneficiaryWallet                       = 0x00F959866E977698D14a36eB332686304a4d6AbA;   // mainnet is 0x00F959866E977698D14a36eB332686304a4d6AbA //testnet = 0xDe6BE2434E8eD8F74C8392A9eB6B6F7D63DDd3D7
@@ -137,34 +137,34 @@ contract EBETCrowdsale is owned, safeMath {
           // configure crowdsale
           isCrowdSaleSetup                        = true;
           isCrowdSaleClosed                       = false;
-          CurrentStatus                           = &quot;Crowdsale is setup&quot;;
+          CurrentStatus                           = "Crowdsale is setup";
 
           //gas reduction experiment
           setPrice();
-          return &quot;Crowdsale is setup&quot;;
+          return "Crowdsale is setup";
       } else if (msg.sender != admin) {
-          return &quot;not authorized&quot;;
+          return "not authorized";
       } else  {
-          return &quot;campaign cannot be changed&quot;;
+          return "campaign cannot be changed";
       }
     }
 
     function setPrice() {
       // Price configuration:
-      // First Day Bonus    +50% = 1,500 EBET  = 1 ETH       [blocks: start -&gt; s+3600]
-      // First Week Bonus   +40% = 1,400 EBET  = 1 ETH       [blocks: s+3601  -&gt; s+25200]
-      // Second Week Bonus  +30% = 1,300 EBET  = 1 ETH       [blocks: s+25201 -&gt; s+50400]
-      // Third Week Bonus   +25% = 1,250 EBET  = 1 ETH       [blocks: s+50401 -&gt; s+75600]
-      // Final Week Bonus   +15% = 1,150 EBET  = 1 ETH       [blocks: s+75601 -&gt; endblock]
-      if (block.number &gt;= fundingStartBlock &amp;&amp; block.number &lt;= fundingStartBlock+3600) { // First Day Bonus    +50% = 1,500 EBET  = 1 ETH  [blocks: start -&gt; s+24]
+      // First Day Bonus    +50% = 1,500 EBET  = 1 ETH       [blocks: start -> s+3600]
+      // First Week Bonus   +40% = 1,400 EBET  = 1 ETH       [blocks: s+3601  -> s+25200]
+      // Second Week Bonus  +30% = 1,300 EBET  = 1 ETH       [blocks: s+25201 -> s+50400]
+      // Third Week Bonus   +25% = 1,250 EBET  = 1 ETH       [blocks: s+50401 -> s+75600]
+      // Final Week Bonus   +15% = 1,150 EBET  = 1 ETH       [blocks: s+75601 -> endblock]
+      if (block.number >= fundingStartBlock && block.number <= fundingStartBlock+3600) { // First Day Bonus    +50% = 1,500 EBET  = 1 ETH  [blocks: start -> s+24]
         tokensPerEthPrice=1500;
-      } else if (block.number &gt;= fundingStartBlock+3601 &amp;&amp; block.number &lt;= fundingStartBlock+25200) { // First Week Bonus   +40% = 1,400 EBET  = 1 ETH  [blocks: s+25 -&gt; s+45]
+      } else if (block.number >= fundingStartBlock+3601 && block.number <= fundingStartBlock+25200) { // First Week Bonus   +40% = 1,400 EBET  = 1 ETH  [blocks: s+25 -> s+45]
         tokensPerEthPrice=1400;
-      } else if (block.number &gt;= fundingStartBlock+25201 &amp;&amp; block.number &lt;= fundingStartBlock+50400) { // Second Week Bonus  +30% = 1,300 EBET  = 1 ETH  [blocks: s+46 -&gt; s+65]
+      } else if (block.number >= fundingStartBlock+25201 && block.number <= fundingStartBlock+50400) { // Second Week Bonus  +30% = 1,300 EBET  = 1 ETH  [blocks: s+46 -> s+65]
         tokensPerEthPrice=1300;
-      } else if (block.number &gt;= fundingStartBlock+50401 &amp;&amp; block.number &lt;= fundingStartBlock+75600) { // Third Week Bonus   +25% = 1,250 EBET  = 1 ETH  [blocks: s+66 -&gt; s+85]
+      } else if (block.number >= fundingStartBlock+50401 && block.number <= fundingStartBlock+75600) { // Third Week Bonus   +25% = 1,250 EBET  = 1 ETH  [blocks: s+66 -> s+85]
         tokensPerEthPrice=1250;
-      } else if (block.number &gt;= fundingStartBlock+75601 &amp;&amp; block.number &lt;= fundingEndBlock) { // Final Week Bonus   +15% = 1,150 EBET  = 1 ETH  [blocks: s+86 -&gt; endBlock]
+      } else if (block.number >= fundingStartBlock+75601 && block.number <= fundingEndBlock) { // Final Week Bonus   +15% = 1,150 EBET  = 1 ETH  [blocks: s+86 -> endBlock]
         tokensPerEthPrice=1150;
       }
     }
@@ -178,10 +178,10 @@ contract EBETCrowdsale is owned, safeMath {
     function BuyEBETtokens() payable {
       // 0. conditions (length, crowdsale setup, zero check, exceed funding contrib check, contract valid check, within funding block range check, balance overflow check etc)
       require(!(msg.value == 0)
-      &amp;&amp; (isCrowdSaleSetup)
-      &amp;&amp; (block.number &gt;= fundingStartBlock)
-      &amp;&amp; (block.number &lt;= fundingEndBlock)
-      &amp;&amp; (tokensRemaining &gt; 0));
+      && (isCrowdSaleSetup)
+      && (block.number >= fundingStartBlock)
+      && (block.number <= fundingEndBlock)
+      && (tokensRemaining > 0));
 
       // 1. vars
       uint256 rewardTransferAmount    = 0;
@@ -202,55 +202,55 @@ contract EBETCrowdsale is owned, safeMath {
     }
 
     function beneficiaryMultiSigWithdraw(uint256 _amount) onlyOwner {
-      require(areFundsReleasedToBeneficiary &amp;&amp; (amountRaisedInWei &gt;= fundingMinCapInWei));
+      require(areFundsReleasedToBeneficiary && (amountRaisedInWei >= fundingMinCapInWei));
       beneficiaryWallet.transfer(_amount);
     }
 
     function checkGoalReached() onlyOwner returns (bytes32 response) { // return crowdfund status to owner for each result case, update public constant
-      // update state &amp; status variables
+      // update state & status variables
       require (isCrowdSaleSetup);
-      if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &lt;= fundingEndBlock &amp;&amp; block.number &gt;= fundingStartBlock)) { // ICO in progress, under softcap
+      if ((amountRaisedInWei < fundingMinCapInWei) && (block.number <= fundingEndBlock && block.number >= fundingStartBlock)) { // ICO in progress, under softcap
         areFundsReleasedToBeneficiary = false;
         isCrowdSaleClosed = false;
-        CurrentStatus = &quot;In progress (Eth &lt; Softcap)&quot;;
-        return &quot;In progress (Eth &lt; Softcap)&quot;;
-      } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &lt; fundingStartBlock)) { // ICO has not started
+        CurrentStatus = "In progress (Eth < Softcap)";
+        return "In progress (Eth < Softcap)";
+      } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.number < fundingStartBlock)) { // ICO has not started
         areFundsReleasedToBeneficiary = false;
         isCrowdSaleClosed = false;
-        CurrentStatus = &quot;Crowdsale is setup&quot;;
-        return &quot;Crowdsale is setup&quot;;
-      } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &gt; fundingEndBlock)) { // ICO ended, under softcap
+        CurrentStatus = "Crowdsale is setup";
+        return "Crowdsale is setup";
+      } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.number > fundingEndBlock)) { // ICO ended, under softcap
         areFundsReleasedToBeneficiary = false;
         isCrowdSaleClosed = true;
-        CurrentStatus = &quot;Unsuccessful (Eth &lt; Softcap)&quot;;
-        return &quot;Unsuccessful (Eth &lt; Softcap)&quot;;
-      } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (tokensRemaining == 0)) { // ICO ended, all tokens gone
+        CurrentStatus = "Unsuccessful (Eth < Softcap)";
+        return "Unsuccessful (Eth < Softcap)";
+      } else if ((amountRaisedInWei >= fundingMinCapInWei) && (tokensRemaining == 0)) { // ICO ended, all tokens gone
           areFundsReleasedToBeneficiary = true;
           isCrowdSaleClosed = true;
-          CurrentStatus = &quot;Successful (EBET &gt;= Hardcap)!&quot;;
-          return &quot;Successful (EBET &gt;= Hardcap)!&quot;;
-      } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (block.number &gt; fundingEndBlock) &amp;&amp; (tokensRemaining &gt; 0)) { // ICO ended, over softcap!
+          CurrentStatus = "Successful (EBET >= Hardcap)!";
+          return "Successful (EBET >= Hardcap)!";
+      } else if ((amountRaisedInWei >= fundingMinCapInWei) && (block.number > fundingEndBlock) && (tokensRemaining > 0)) { // ICO ended, over softcap!
           areFundsReleasedToBeneficiary = true;
           isCrowdSaleClosed = true;
-          CurrentStatus = &quot;Successful (Eth &gt;= Softcap)!&quot;;
-          return &quot;Successful (Eth &gt;= Softcap)!&quot;;
-      } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (tokensRemaining &gt; 0) &amp;&amp; (block.number &lt;= fundingEndBlock)) { // ICO in progress, over softcap!
+          CurrentStatus = "Successful (Eth >= Softcap)!";
+          return "Successful (Eth >= Softcap)!";
+      } else if ((amountRaisedInWei >= fundingMinCapInWei) && (tokensRemaining > 0) && (block.number <= fundingEndBlock)) { // ICO in progress, over softcap!
         areFundsReleasedToBeneficiary = true;
         isCrowdSaleClosed = false;
-        CurrentStatus = &quot;In progress (Eth &gt;= Softcap)!&quot;;
-        return &quot;In progress (Eth &gt;= Softcap)!&quot;;
+        CurrentStatus = "In progress (Eth >= Softcap)!";
+        return "In progress (Eth >= Softcap)!";
       }
       setPrice();
     }
 
-    function refund() { // any contributor can call this to have their Eth returned. user&#39;s purchased EBET tokens are burned prior refund of Eth.
+    function refund() { // any contributor can call this to have their Eth returned. user's purchased EBET tokens are burned prior refund of Eth.
       //require minCap not reached
-      require ((amountRaisedInWei &lt; fundingMinCapInWei)
-      &amp;&amp; (isCrowdSaleClosed)
-      &amp;&amp; (block.number &gt; fundingEndBlock)
-      &amp;&amp; (fundValue[msg.sender] &gt; 0));
+      require ((amountRaisedInWei < fundingMinCapInWei)
+      && (isCrowdSaleClosed)
+      && (block.number > fundingEndBlock)
+      && (fundValue[msg.sender] > 0));
 
-      //burn user&#39;s token EBET token balance, refund Eth sent
+      //burn user's token EBET token balance, refund Eth sent
       uint256 ethRefund = fundValue[msg.sender];
       balancesArray[msg.sender] = 0;
       fundValue[msg.sender] = 0;

@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 contract MyMap {
     address public owner;
-    mapping(bytes32=&gt;bytes15) map;
+    mapping(bytes32=>bytes15) map;
 
     function MyMap() public {
         owner = msg.sender;

@@ -16,7 +16,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {		
+      if (balances[msg.sender] >= _value && _value > 0) {		
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -27,7 +27,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -52,8 +52,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract SMEToken is StandardToken {
@@ -66,10 +66,10 @@ contract SMEToken is StandardToken {
     Funder[] funder_list;
 	
     // metadata
-	string public constant name = &quot;Sumerian Token&quot;;
-    string public constant symbol = &quot;SUMER&quot;;
+	string public constant name = "Sumerian Token";
+    string public constant symbol = "SUMER";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 	
 	uint256 public constant LOCKPERIOD = 730 days;
 	uint256 public constant LOCKAMOUNT1 = 4000000 * 10**decimals;   //LOCK1
@@ -80,11 +80,11 @@ contract SMEToken is StandardToken {
     uint256 public constant PLATAMOUNT = 8000000 * 10**decimals;        //crowdfunding plat	
 
                         
-    address account1 = &#39;0x5a0A46f082C4718c73F5b30667004AC350E2E140&#39;;  //7.5%  First Game	
-	address account2 = &#39;0xcD4fC8e4DA5B25885c7d80b6C846afb6b170B49b&#39;;  //30%   Management Team ,Game Company ,Law Support 	
-	address account3 = &#39;0x3d382e76b430bF8fd65eA3AD9ADfc3741D4746A4&#39;;  //10%   Technology Operation
-	address account4 = &#39;0x005CD1194C1F088d9bd8BF9e70e5e44D2194C029&#39;;  //22.5%  Blockchain Technology
-	address account5 = &#39;0x5CA7F20427e4D202777Ea8006dc8f614a289Be2F&#39;;  //30%    Exchange Listing , Marketing , Finance
+    address account1 = '0x5a0A46f082C4718c73F5b30667004AC350E2E140';  //7.5%  First Game	
+	address account2 = '0xcD4fC8e4DA5B25885c7d80b6C846afb6b170B49b';  //30%   Management Team ,Game Company ,Law Support 	
+	address account3 = '0x3d382e76b430bF8fd65eA3AD9ADfc3741D4746A4';  //10%   Technology Operation
+	address account4 = '0x005CD1194C1F088d9bd8BF9e70e5e44D2194C029';  //22.5%  Blockchain Technology
+	address account5 = '0x5CA7F20427e4D202777Ea8006dc8f614a289Be2F';  //30%    Exchange Listing , Marketing , Finance
 						
     uint256 val1 = 1 wei;    // 1
     uint256 val2 = 1 szabo;  // 1 * 10 ** 12
@@ -148,9 +148,9 @@ contract SMEToken is StandardToken {
     }
 	
 	function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {	
+      if (balances[msg.sender] >= _value && _value > 0) {	
 	    if(msg.sender == account1 || msg.sender == account2 || msg.sender == account3 || msg.sender == account4){
-			if(now &lt; gcStartTime + LOCKPERIOD){
+			if(now < gcStartTime + LOCKPERIOD){
 			    return false;
 			}
 		}
@@ -168,15 +168,15 @@ contract SMEToken is StandardToken {
 	
 
     function createTokens() payable {
-	    if (now &lt; ccStartTime) throw;
-		if (now &gt; gcEndTime) throw;
-	    if (msg.value &lt; val3) throw;
+	    if (now < ccStartTime) throw;
+		if (now > gcEndTime) throw;
+	    if (msg.value < val3) throw;
 		
 		uint256 smtAmount;
-		if (msg.value &gt;= 10*val4 &amp;&amp; now &lt;= ccEndTime){
+		if (msg.value >= 10*val4 && now <= ccEndTime){
 			smtAmount = msg.value * ccExchangeRate;
-			if (totalSupply &lt; smtAmount) throw;
-            if (ccSupply &lt; smtAmount) throw;
+			if (totalSupply < smtAmount) throw;
+            if (ccSupply < smtAmount) throw;
             totalSupply -= smtAmount;  
             ccSupply -= smtAmount;    			
             balances[msg.sender] += smtAmount;
@@ -184,10 +184,10 @@ contract SMEToken is StandardToken {
 		    funder_list.push(new_cc_funder);
 		}
         else{
-		    if(now &lt; gcStartTime) throw;
+		    if(now < gcStartTime) throw;
 			smtAmount = msg.value * gcExchangeRate;
-			if (totalSupply &lt; smtAmount) throw;
-            if (gcSupply &lt; smtAmount) throw;
+			if (totalSupply < smtAmount) throw;
+            if (gcSupply < smtAmount) throw;
             totalSupply -= smtAmount;  
             gcSupply -= smtAmount;    			
             balances[msg.sender] += smtAmount;

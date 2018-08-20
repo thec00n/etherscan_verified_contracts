@@ -21,9 +21,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,14 +40,14 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -118,8 +118,8 @@ contract ShareXERC20 is Ownable{
     uint256 public totalSupply;													//Maximum amount of Token supplies
 
     //define dictionaries of balance
-    mapping (address =&gt; uint256) public balanceOf;								//Announce the dictionary of account&#39;s balance
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;			//Announce the dictionary of account&#39;s available balance
+    mapping (address => uint256) public balanceOf;								//Announce the dictionary of account's balance
+    mapping (address => mapping (address => uint256)) public allowance;			//Announce the dictionary of account's available balance
 	//===================public variables definition end==================
 
 	
@@ -130,30 +130,30 @@ contract ShareXERC20 is Ownable{
 	
 	//===================Contract Initialization Sequence Definition start===================
     function ShareXERC20 () public {
-		decimals=8;															//Assignment of Token&#39;s decimals
-		totalSupply = 1000000000 * 10 ** uint256(decimals);  				//Assignment of Token&#39;s total supply with decimals
-        balanceOf[owner] = totalSupply;                						//Assignment of Token&#39;s creator initial tokens
-        name = &quot;ShareX&quot;;                                   					//Set the name of Token
-        symbol = &quot;SEXC&quot;;                               						//Set the symbol of  Token
+		decimals=8;															//Assignment of Token's decimals
+		totalSupply = 1000000000 * 10 ** uint256(decimals);  				//Assignment of Token's total supply with decimals
+        balanceOf[owner] = totalSupply;                						//Assignment of Token's creator initial tokens
+        name = "ShareX";                                   					//Set the name of Token
+        symbol = "SEXC";                               						//Set the symbol of  Token
         
     }
 	//===================Contract Initialization Sequence definition end===================
 	
-	//===================Contract behavior &amp; funtions definition start===================
+	//===================Contract behavior & funtions definition start===================
 	
 	/*
 	*	Funtion: Transfer funtions
 	*	Type:Internal
 	*	Parameters:
-			@_from:	address of sender&#39;s account
-			@_to:	address of recipient&#39;s account
+			@_from:	address of sender's account
+			@_to:	address of recipient's account
 			@_value:transaction amount
 	*/
     function _transfer(address _from, address _to, uint _value) internal {
 		//Fault-tolerant processing
 		require(_to != 0x0);						//
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         //Execute transaction
 		uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -171,7 +171,7 @@ contract ShareXERC20 is Ownable{
 	*	Funtion: Transfer tokens
 	*	Type:Public
 	*	Parameters:
-			@_to:	address of recipient&#39;s account
+			@_to:	address of recipient's account
 			@_value:transaction amount
 	*/
     function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -184,14 +184,14 @@ contract ShareXERC20 is Ownable{
 	*	Funtion: Transfer tokens from other address
 	*	Type:Public
 	*	Parameters:
-			@_from:	address of sender&#39;s account
-			@_to:	address of recipient&#39;s account
+			@_from:	address of sender's account
+			@_to:	address of recipient's account
 			@_value:transaction amount
 	*/
 
     function transferFrom(address _from, address _to, uint256 _value) public 
 	returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     					//Allowance verification
+        require(_value <= allowance[_from][msg.sender]);     					//Allowance verification
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -201,7 +201,7 @@ contract ShareXERC20 is Ownable{
 	*	Funtion: Approve usable amount for an account
 	*	Type:Public
 	*	Parameters:
-			@_spender:	address of spender&#39;s account
+			@_spender:	address of spender's account
 			@_value:	approve amount
 	*/
     function approve(address _spender, uint256 _value) public 
@@ -227,7 +227,7 @@ contract ShareXERC20 is Ownable{
         }
     }
     /*
-	*	Funtion: Transfer owner&#39;s authority and account balance
+	*	Funtion: Transfer owner's authority and account balance
 	*	Type:Public and onlyOwner
 	*	Parameters:
 			@newOwner:	address of newOwner
@@ -238,7 +238,7 @@ contract ShareXERC20 is Ownable{
 		    owner = newOwner;
 		}
 	}
-   //===================Contract behavior &amp; funtions definition end===================
+   //===================Contract behavior & funtions definition end===================
 }
 
 
@@ -287,13 +287,13 @@ contract ShareXTokenVault is Ownable {
 
 
     /** Reserve allocations */
-    mapping(address =&gt; uint256) public allocations;
+    mapping(address => uint256) public allocations;
 
     /** When timeLocks are over (UNIX Timestamp)  */  
-    mapping(address =&gt; uint256) public timeLocks;
+    mapping(address => uint256) public timeLocks;
 
     /** How many tokens each reserve wallet has claimed */
-    mapping(address =&gt; uint256) public claimed;
+    mapping(address => uint256) public claimed;
 
     /** When this vault was locked (UNIX Timestamp)*/
     uint256 public lockedAt = 0;
@@ -311,21 +311,21 @@ contract ShareXTokenVault is Ownable {
 
     //Any of the two reserve wallets
     modifier onlyReserveWallets {
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     //Only ShareX team reserve wallet
     modifier onlyTeamReserve {
         require(msg.sender == teamReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     //Only first and second token reserve wallets
     modifier onlyTokenReserve {
         require(msg.sender == firstReserveWallet );
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
@@ -336,7 +336,7 @@ contract ShareXTokenVault is Ownable {
     }
 
     modifier locked {
-        require(lockedAt &gt; 0);
+        require(lockedAt > 0);
         _;
     }
 
@@ -409,8 +409,8 @@ contract ShareXTokenVault is Ownable {
 
         address reserveWallet = msg.sender;
 
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         // Must Only claim once
         require(claimed[reserveWallet] == 0);
@@ -444,10 +444,10 @@ contract ShareXTokenVault is Ownable {
         //Amount of tokens the team should have at this vesting stage
         uint256 totalUnlocked = vestingStage.mul(allocations[teamReserveWallet]).div(teamVestingStages);
 
-        require(totalUnlocked &lt;= allocations[teamReserveWallet]);
+        require(totalUnlocked <= allocations[teamReserveWallet]);
 
         //Previously claimed tokens must be less than what is unlocked
-        require(claimed[teamReserveWallet] &lt; totalUnlocked);
+        require(claimed[teamReserveWallet] < totalUnlocked);
 
         uint256 payment = totalUnlocked.sub(claimed[teamReserveWallet]);
 
@@ -469,8 +469,8 @@ contract ShareXTokenVault is Ownable {
         // uint256 stage = (block.timestamp.sub(lockedAt)).div(vestingMonths);
         uint256 stage  = (block.timestamp).sub(firstTime).div(vestingMonths);
 
-        //Ensures team vesting stage doesn&#39;t go past teamVestingStages
-        if(stage &gt; teamVestingStages){
+        //Ensures team vesting stage doesn't go past teamVestingStages
+        if(stage > teamVestingStages){
             stage = teamVestingStages;
         }
 
@@ -481,7 +481,7 @@ contract ShareXTokenVault is Ownable {
     // Checks if msg.sender can collect tokens
     function canCollect() public view onlyReserveWallets returns(bool) {
 
-        return block.timestamp &gt; timeLocks[msg.sender] &amp;&amp; claimed[msg.sender] == 0;
+        return block.timestamp > timeLocks[msg.sender] && claimed[msg.sender] == 0;
 
     }
 

@@ -15,13 +15,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -85,11 +85,11 @@ contract StandardToken is Token {
      * - Interger overflow = OK, checked
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -99,8 +99,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -123,9 +123,9 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -141,8 +141,8 @@ contract StandardToken is Token {
  */
 contract ARCToken is StandardToken, SafeMath {
 
-    string public name = &quot;Arcade Token&quot;;
-    string public symbol = &quot;ARC&quot;;
+    string public name = "Arcade Token";
+    string public symbol = "ARC";
     uint public decimals = 18;
     uint public startBlock; //crowdsale start block (set in constructor)
     uint public endBlock; //crowdsale end block (set in constructor)
@@ -193,8 +193,8 @@ contract ARCToken is StandardToken, SafeMath {
 
     // price() exposed for unit tests
     function testPrice(uint blockNumber) constant returns(uint) {
-        if (blockNumber&gt;=startBlock &amp;&amp; blockNumber&lt;startBlock+250) return 125; //power hour
-        if (blockNumber&lt;startBlock || blockNumber&gt;endBlock) return 75; //default price
+        if (blockNumber>=startBlock && blockNumber<startBlock+250) return 125; //power hour
+        if (blockNumber<startBlock || blockNumber>endBlock) return 75; //default price
         return 75 + 4*(endBlock - blockNumber)/(endBlock - startBlock + 1)*34/4; //crowdsale price
     }
 
@@ -217,7 +217,7 @@ contract ARCToken is StandardToken, SafeMath {
      *
      */
     function buyRecipient(address recipient) {
-        if (block.number&lt;startBlock || block.number&gt;endBlock || safeAdd(presaleEtherRaised,msg.value)&gt;etherCap || halted) throw;
+        if (block.number<startBlock || block.number>endBlock || safeAdd(presaleEtherRaised,msg.value)>etherCap || halted) throw;
         uint tokens = safeMul(msg.value, price());
         balances[recipient] = safeAdd(balances[recipient], tokens);
         totalSupply = safeAdd(totalSupply, tokens);
@@ -226,7 +226,7 @@ contract ARCToken is StandardToken, SafeMath {
         if (!multisig.send(msg.value)) throw; //immediately send Ether to multisig address
 
         // if etherCap is reached - activate the market
-        if (presaleEtherRaised == etherCap &amp;&amp; !marketactive){
+        if (presaleEtherRaised == etherCap && !marketactive){
             marketactive = true;
         }
 
@@ -253,9 +253,9 @@ contract ARCToken is StandardToken, SafeMath {
         // make sure founder/developer/rewards addresses are configured
         if(founder == 0x0 || developer == 0x0 || rewards == 0x0) throw;
         // owner/founder/developer/rewards addresses can call this function
-        if (msg.sender != owner &amp;&amp; msg.sender != founder &amp;&amp; msg.sender != developer &amp;&amp; msg.sender != rewards ) throw;
+        if (msg.sender != owner && msg.sender != founder && msg.sender != developer && msg.sender != rewards ) throw;
         // it should only continue if endBlock has passed OR presaleEtherRaised has reached the cap
-        if (block.number &lt;= endBlock &amp;&amp; presaleEtherRaised &lt; etherCap) throw;
+        if (block.number <= endBlock && presaleEtherRaised < etherCap) throw;
         if (allocated) throw;
         presaleTokenSupply = totalSupply;
         // total token allocations add up to 16% of total coins, so formula is reward=allocation_in_percent/84 .
@@ -280,12 +280,12 @@ contract ARCToken is StandardToken, SafeMath {
      * - Test unhalting, buying, and succeeding
      */
     function halt() {
-        if (msg.sender!=founder &amp;&amp; msg.sender != developer) throw;
+        if (msg.sender!=founder && msg.sender != developer) throw;
         halted = true;
     }
 
     function unhalt() {
-        if (msg.sender!=founder &amp;&amp; msg.sender != developer) throw;
+        if (msg.sender!=founder && msg.sender != developer) throw;
         halted = false;
     }
 
@@ -300,7 +300,7 @@ contract ARCToken is StandardToken, SafeMath {
      * - Test transfer after market activated
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= endBlock &amp;&amp; marketactive == false) throw;
+        if (block.number <= endBlock && marketactive == false) throw;
         return super.transfer(_to, _value);
     }
     /**
@@ -309,7 +309,7 @@ contract ARCToken is StandardToken, SafeMath {
      * Prevent transfers until token sale is over.
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= endBlock &amp;&amp; marketactive == false) throw;
+        if (block.number <= endBlock && marketactive == false) throw;
         return super.transferFrom(_from, _to, _value);
     }
 

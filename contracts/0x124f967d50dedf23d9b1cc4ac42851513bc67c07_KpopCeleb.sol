@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,8 +70,8 @@ contract KpopCeleb is ERC721 {
   address public author;
   address public coauthor;
 
-  string public constant NAME = &quot;KpopCeleb&quot;;
-  string public constant SYMBOL = &quot;KpopCeleb&quot;;
+  string public constant NAME = "KpopCeleb";
+  string public constant SYMBOL = "KpopCeleb";
 
   uint public GROWTH_BUMP = 0.5 ether;
   uint public MIN_STARTING_PRICE = 0.002 ether;
@@ -83,12 +83,12 @@ contract KpopCeleb is ERC721 {
 
   Celeb[] public celebs;
 
-  mapping(uint =&gt; address) public celebIdToOwner;
-  mapping(uint =&gt; uint) public celebIdToPrice; // in wei
-  mapping(address =&gt; uint) public userToNumCelebs;
-  mapping(uint =&gt; address) public celebIdToApprovedRecipient;
-  mapping(uint =&gt; uint[6]) public celebIdToTraitValues;
-  mapping(uint =&gt; uint[6]) public celebIdToTraitBoosters;
+  mapping(uint => address) public celebIdToOwner;
+  mapping(uint => uint) public celebIdToPrice; // in wei
+  mapping(address => uint) public userToNumCelebs;
+  mapping(uint => address) public celebIdToApprovedRecipient;
+  mapping(uint => uint[6]) public celebIdToTraitValues;
+  mapping(uint => uint[6]) public celebIdToTraitBoosters;
 
   address public KPOP_ARENA_CONTRACT_ADDRESS = 0x0;
 
@@ -104,7 +104,7 @@ contract KpopCeleb is ERC721 {
   function _transfer(address _from, address _to, uint _celebId) private {
     require(ownerOf(_celebId) == _from);
     require(!isNullAddress(_to));
-    require(balanceOf(_from) &gt; 0);
+    require(balanceOf(_from) > 0);
 
     uint prevBalances = balanceOf(_from) + balanceOf(_to);
     celebIdToOwner[_celebId] = _to;
@@ -125,7 +125,7 @@ contract KpopCeleb is ERC721 {
 
     require(prevOwner != msg.sender);
     require(!isNullAddress(msg.sender));
-    require(msg.value &gt;= currentPrice);
+    require(msg.value >= currentPrice);
 
     // Take a cut off the payment
     uint payment = uint(SafeMath.div(SafeMath.mul(currentPrice, 92), 100));
@@ -134,7 +134,7 @@ contract KpopCeleb is ERC721 {
 
     _transfer(prevOwner, msg.sender, _celebId);
 
-    if (currentPrice &lt; GROWTH_BUMP) {
+    if (currentPrice < GROWTH_BUMP) {
       newPrice = SafeMath.mul(currentPrice, 2);
     } else {
       newPrice = SafeMath.div(SafeMath.mul(currentPrice, PRICE_INCREASE_SCALE), 100);
@@ -171,7 +171,7 @@ contract KpopCeleb is ERC721 {
   /** START FUNCTIONS FOR AUTHORS **/
 
   function createCeleb(string _name, uint _price, address _owner, uint[6] _traitValues, uint[6] _traitBoosters) public onlyAuthors {
-    require(_price &gt;= MIN_STARTING_PRICE);
+    require(_price >= MIN_STARTING_PRICE);
 
     address owner = _owner == 0x0 ? author : _owner;
 
@@ -184,7 +184,7 @@ contract KpopCeleb is ERC721 {
   }
 
   function updateCeleb(uint _celebId, string _name, uint[6] _traitValues, uint[6] _traitBoosters) public onlyAuthors {
-    require(_celebId &gt;= 0 &amp;&amp; _celebId &lt; totalSupply());
+    require(_celebId >= 0 && _celebId < totalSupply());
 
     celebs[_celebId].name = _name;
     celebIdToTraitValues[_celebId] = _traitValues;
@@ -193,7 +193,7 @@ contract KpopCeleb is ERC721 {
 
   function withdraw(uint _amount, address _to) public onlyAuthors {
     require(!isNullAddress(_to));
-    require(_amount &lt;= this.balance);
+    require(_amount <= this.balance);
 
     _to.transfer(_amount);
   }
@@ -221,9 +221,9 @@ contract KpopCeleb is ERC721 {
   }
 
   function updateTraits(uint _celebId) public onlyArena {
-    require(_celebId &lt; totalSupply());
+    require(_celebId < totalSupply());
 
-    for (uint i = 0; i &lt; 6; i++) {
+    for (uint i = 0; i < 6; i++) {
       uint booster = celebIdToTraitBoosters[_celebId][i];
       celebIdToTraitValues[_celebId][i] = celebIdToTraitValues[_celebId][i].add(booster);
     }

@@ -2,7 +2,7 @@
 
 Author: psdev
 
-<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99e9d9e9eafdfcefb7f0f6">[email&#160;protected]</a>
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99e9d9e9eafdfcefb7f0f6">[email protected]</a>
 
 0x13370CA2e8426a82BcfcCE21C97817A243c521Cf
 
@@ -18,7 +18,7 @@ contract SellTokens {
     address constant THE_DAO_ADDRESS = 0xbb9bc244d798123fde783fcc1c72d3bb8c189413;
 
     TokenInterface public theDao;
-    mapping (address =&gt; uint) public allowedFreeExchanges;
+    mapping (address => uint) public allowedFreeExchanges;
 
     event TransferEvent(address _from, address _to, uint256 _value);
     event ReturnEvent(uint256 _value);
@@ -39,11 +39,11 @@ contract SellTokens {
     function buy100DaoFor1Eth(){
         var tokens_to_send = msg.value;
         uint daoBalance = theDao.balanceOf(this);
-        if (tokens_to_send &gt; daoBalance) {
+        if (tokens_to_send > daoBalance) {
             NotEnoughDaoErrorEvent(tokens_to_send, daoBalance);
             throw;
         }
-        if (msg.value &gt; this.balance) {
+        if (msg.value > this.balance) {
             NotEnoughEthErrorEvent(msg.value, this.balance);
             throw;
         }
@@ -56,7 +56,7 @@ contract SellTokens {
         ReturnEvent(msg.value);
     }
 
-    // accounts and amounts sent to dao, rounded down &amp; only txn &gt; 100 tokens
+    // accounts and amounts sent to dao, rounded down & only txn > 100 tokens
     function populateAllowedFreeExchanges() internal {
         // from etherscan
         allowedFreeExchanges[address(0x900b1d91f8931e3e1de3076341accb2f6011214f)] = 4000000000000000000;

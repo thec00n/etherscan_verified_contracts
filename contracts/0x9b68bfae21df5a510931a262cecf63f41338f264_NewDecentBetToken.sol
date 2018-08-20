@@ -30,37 +30,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -72,7 +72,7 @@ contract SafeMath {
 }
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="6112150407000f4f06040e13060421020e0f12040f1218124f0f0415">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="6112150407000f4f06040e13060421020e0f12040f1218124f0f0415">[email protected]</span>>
 contract MultiSigWallet {
 
     // flag to determine if address is for a real contract or not
@@ -90,9 +90,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -145,8 +145,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (ownerCount &gt; MAX_OWNER_COUNT) throw;
-        if (_required &gt; ownerCount) throw;
+        if (ownerCount > MAX_OWNER_COUNT) throw;
+        if (_required > ownerCount) throw;
         if (_required == 0) throw;
         if (ownerCount == 0) throw;
         _;
@@ -156,7 +156,7 @@ contract MultiSigWallet {
     function()
     payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         Deposit(msg.sender, msg.value);
     }
 
@@ -170,7 +170,7 @@ contract MultiSigWallet {
     public
     validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0) throw;
             isOwner[_owners[i]] = true;
         }
@@ -201,13 +201,13 @@ contract MultiSigWallet {
     ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
         if (owners[i] == owner) {
             owners[i] = owners[owners.length - 1];
             break;
         }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
         changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -289,7 +289,7 @@ contract MultiSigWallet {
     returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
             count += 1;
             if (count == required)
@@ -351,7 +351,7 @@ contract MultiSigWallet {
     constant
     returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
         if (confirmations[transactionId][owners[i]])
         count += 1;
     }
@@ -365,9 +365,9 @@ contract MultiSigWallet {
     constant
     returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-        if ((pending &amp;&amp; !transactions[i].executed) ||
-        (executed &amp;&amp; transactions[i].executed))
+        for (uint i=0; i<transactionCount; i++)
+        if ((pending && !transactions[i].executed) ||
+        (executed && transactions[i].executed))
         count += 1;
     }
 
@@ -392,13 +392,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
         if (confirmations[transactionId][owners[i]]) {
             confirmationsTemp[count] = owners[i];
             count += 1;
         }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
         _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -416,15 +416,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-        if ((pending &amp;&amp; !transactions[i].executed) ||
-        (executed &amp;&amp; transactions[i].executed))
+        for (i=0; i<transactionCount; i++)
+        if ((pending && !transactions[i].executed) ||
+        (executed && transactions[i].executed))
         {
             transactionIdsTemp[count] = i;
             count += 1;
         }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
         _transactionIds[i - from] = transactionIdsTemp[i];
     }
 
@@ -476,10 +476,10 @@ contract NewDecentBetVault is SafeMath {
         unlockedAtTime = safeAdd(getTime(), timeOffset);
     }
 
-    /// @notice Transfer locked tokens to Decent.bet&#39;s multisig wallet
+    /// @notice Transfer locked tokens to Decent.bet's multisig wallet
     function unlock() external {
         // Wait your turn!
-        if (getTime() &lt; unlockedAtTime) revert();
+        if (getTime() < unlockedAtTime) revert();
         // Will fail if allocation (and therefore toTransfer) is 0.
         if (!decentBetToken.transfer(decentBetMultisig, decentBetToken.balanceOf(this))) revert();
     }
@@ -500,9 +500,9 @@ contract NewDecentBetToken is ERC20, SafeMath {
     // Token information
     bool public isDecentBetToken;
 
-    string public constant name = &quot;Decent.Bet Token&quot;;
+    string public constant name = "Decent.Bet Token";
 
-    string public constant symbol = &quot;DBET&quot;;
+    string public constant symbol = "DBET";
 
     uint256 public constant decimals = 18;  // decimal places
 
@@ -518,9 +518,9 @@ contract NewDecentBetToken is ERC20, SafeMath {
     bool public isNewToken = false;
 
     // Token information
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Upgrade information
     NewUpgradeAgent public upgradeAgent;
@@ -571,7 +571,7 @@ contract NewDecentBetToken is ERC20, SafeMath {
         timeVault = new NewDecentBetVault(decentBetMultisig);
         if (!timeVault.isDecentBetVault()) revert();
 
-        // Founder&#39;s supply : 18% of total goes to vault, time locked for 1 year
+        // Founder's supply : 18% of total goes to vault, time locked for 1 year
         uint256 vaultTokens = safeDiv(safeMul(oldTokenTotalSupply, vaultPercentOfTotal),
         crowdfundPercentOfTotal);
         balances[timeVault] = safeAdd(balances[timeVault], vaultTokens);
@@ -608,7 +608,7 @@ contract NewDecentBetToken is ERC20, SafeMath {
         if (_to == address(upgradeAgent)) revert();
         if (_to == address(this)) revert();
         //if (_to == address(UpgradeAgent(upgradeAgent).oldToken())) revert();
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -623,7 +623,7 @@ contract NewDecentBetToken is ERC20, SafeMath {
         if (_to == address(upgradeAgent)) revert();
         if (_to == address(this)) revert();
         //if (_to == address(UpgradeAgent(upgradeAgent).oldToken())) revert();
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -664,7 +664,7 @@ contract NewDecentBetToken is ERC20, SafeMath {
 
         // Validate input value.
         if (value == 0) revert();
-        if (value &gt; balances[msg.sender]) revert();
+        if (value > balances[msg.sender]) revert();
 
         // update the balances here first before calling out (reentrancy)
         balances[msg.sender] = safeSub(balances[msg.sender], value);
@@ -679,7 +679,7 @@ contract NewDecentBetToken is ERC20, SafeMath {
     /// @param agent The address of the UpgradeAgent contract
     function setNextUpgradeAgent(address agent) external {
         if (agent == 0x0) revert();
-        // don&#39;t set agent to nothing
+        // don't set agent to nothing
         if (msg.sender != nextUpgradeMaster) revert();
         // Only a master can designate the next agent
         nextUpgradeAgent = NextUpgradeAgent(agent);
@@ -706,7 +706,7 @@ contract NewDecentBetToken is ERC20, SafeMath {
         if (msg.sender != nextUpgradeMaster) revert();
         // only upgradeMaster can finalize
         if (finalizedNextUpgrade) revert();
-        // can&#39;t finalize twice
+        // can't finalize twice
 
         finalizedNextUpgrade = true;
         // prevent future upgrades
@@ -745,7 +745,7 @@ contract NewUpgradeAgent is SafeMath {
 
     uint256 public correctOriginalSupply; // Correct original supply accounting for 30% minted at finalizeCrowdfunding
 
-    uint256 public mintedPercentOfTokens = 30; // Amount of tokens that&#39;re minted at finalizeCrowdfunding
+    uint256 public mintedPercentOfTokens = 30; // Amount of tokens that're minted at finalizeCrowdfunding
 
     uint256 public crowdfundPercentOfTokens = 70;
 
@@ -814,7 +814,7 @@ contract NewUpgradeAgent is SafeMath {
     function upgradeFrom(address _from, uint256 _value) public {
         if(finalizedUpgrade) revert();
         if (msg.sender != address(oldToken)) revert();
-        // Multisig can&#39;t upgrade since tokens are minted for it in new token constructor as it isn&#39;t part
+        // Multisig can't upgrade since tokens are minted for it in new token constructor as it isn't part
         // of totalSupply of oldToken.
         if (_from == decentBetMultisig) revert();
         // only upgrade from oldToken

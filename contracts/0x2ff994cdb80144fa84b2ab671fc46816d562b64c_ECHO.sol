@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function Div(uint a, uint b) internal pure returns (uint) {
-    //assert(b &gt; 0); // Solidity automatically throws when Dividing by 0
+    //assert(b > 0); // Solidity automatically throws when Dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function Sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   } 
 
   function Add(uint a, uint b) internal pure returns (uint) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   } 
 }
@@ -45,7 +45,7 @@ contract ERC223ReceivingContract {
 }
 
 /**
- * Contract &quot;Ownable&quot;
+ * Contract "Ownable"
  * Purpose: Defines Owner for contract and provide functionality to transfer ownership to another account
  */
 contract Ownable {
@@ -55,7 +55,7 @@ contract Ownable {
   //add another owner
   address deployer;
 
-  //Constructor for the contract to store owner&#39;s account on deployement
+  //Constructor for the contract to store owner's account on deployement
   function Ownable() public {
     owner = msg.sender;
     deployer = msg.sender;
@@ -67,7 +67,7 @@ contract Ownable {
       _;
   }
 
-  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner&#39;s account
+  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner's account
   function transferOwnership(address _newOwner) public onlyOwner {
     require (_newOwner != address(0));
     owner = _newOwner;
@@ -112,7 +112,7 @@ contract Pausable is Ownable {
     paused = true;
     //Record the pausing time only if any startTime is defined
     //in other cases, it will work as a toggle switch only
-    if(startTime &gt; 0){
+    if(startTime > 0){
         pauseTime = now;
     }
     emit Pause();
@@ -124,7 +124,7 @@ contract Pausable is Ownable {
   function unpause() onlyOwner whenPaused public {
     paused = false;
     //if endTime is defined, only then proceed with its updation
-    if(endTime &gt; 0 &amp;&amp; pauseTime &gt; startTime){
+    if(endTime > 0 && pauseTime > startTime){
         uint256 pauseDuration = pauseTime - startTime;
         endTime = endTime + pauseDuration;
     }
@@ -150,9 +150,9 @@ contract ECHO is ERC20 {
 
     using SafeMath for uint256;
     //The name of the  token
-    string public constant name = &quot;ECHO token&quot;;
+    string public constant name = "ECHO token";
     //The token symbol
-    string public constant symbol = &quot;ECHO&quot;;
+    string public constant symbol = "ECHO";
     //To denote the locking on transfer of tokens among token holders
     bool public locked;
     //The precision used in the calculations in contract
@@ -172,9 +172,9 @@ contract ECHO is ERC20 {
     
 
     //Mapping to relate owner and spender to the tokens allowed to transfer from owner
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
     //Mapping to relate number of token to the account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     function isSaleRunning() public view returns (bool){
         bool status = false;
@@ -184,13 +184,13 @@ contract ECHO is ERC20 {
         // 1531094400 = 9 july 2018
         
         //Presale is going on
-        if(now &gt;= startTime  &amp;&amp; now &lt;= 1525392000){
+        if(now >= startTime  && now <= 1525392000){
             //Aprill 6 to before 4 may
             status = true;
         }
     
         //ICO is going on
-        if(now &gt;= 1527811200 &amp;&amp; now &lt;= endTime){
+        if(now >= 1527811200 && now <= endTime){
             // june 1 to before july 9
             status = true;
         }
@@ -213,7 +213,7 @@ contract ECHO is ERC20 {
     }
     //To handle ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -250,7 +250,7 @@ contract ECHO is ERC20 {
         assembly{
             length := extcodesize(_address)
         }
-        if(length &gt; 0){
+        if(length > 0){
             return true;
         }
         else{
@@ -269,7 +269,7 @@ contract ECHO is ERC20 {
     }
 
     /**
-    * @dev Transfer sender&#39;s token to a given address
+    * @dev Transfer sender's token to a given address
     *
     * @param _to The address which you want to transfer to
     * @param _value the amount of tokens to be transferred
@@ -278,7 +278,7 @@ contract ECHO is ERC20 {
     function transfer(address _to, uint _value) onlyUnlocked onlyPayloadSize(2 * 32) public returns(bool _success) {
         require( _to != address(0) );
         bytes memory _empty;
-        assert((balances[msg.sender] &gt;= _value) &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0));
+        assert((balances[msg.sender] >= _value) && _value > 0 && _to != address(0));
         balances[msg.sender] = balances[msg.sender].Sub(_value);
         balances[_to] = balances[_to].Add(_value);
         if(isContract(_to)){
@@ -298,7 +298,7 @@ contract ECHO is ERC20 {
     * @return A bool if the transfer was a success or not
     */
     function transfer(address _to, uint _value, bytes _data) onlyUnlocked onlyPayloadSize(3 * 32) public returns(bool _success) {
-        assert((balances[msg.sender] &gt;= _value) &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0));
+        assert((balances[msg.sender] >= _value) && _value > 0 && _to != address(0));
         balances[msg.sender] = balances[msg.sender].Sub(_value);
         balances[_to] = balances[_to].Add(_value);
         if(isContract(_to)){
@@ -320,10 +320,10 @@ contract ECHO is ERC20 {
     */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3*32) public onlyUnlocked returns (bool){
         bytes memory _empty;
-        assert((_value &gt; 0)
-           &amp;&amp; (_to != address(0))
-           &amp;&amp; (_from != address(0))
-           &amp;&amp; (allowed[_from][msg.sender] &gt;= _value ));
+        assert((_value > 0)
+           && (_to != address(0))
+           && (_from != address(0))
+           && (allowed[_from][msg.sender] >= _value ));
        balances[_from] = balances[_from].Sub(_value);
        balances[_to] = balances[_to].Add(_value);
        allowed[_from][msg.sender] = allowed[_from][msg.sender].Sub(_value);
@@ -353,7 +353,7 @@ contract ECHO is ERC20 {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) public returns (bool){
-        if( _value &gt; 0 &amp;&amp; (balances[msg.sender] &gt;= _value)){
+        if( _value > 0 && (balances[msg.sender] >= _value)){
             allowed[msg.sender][_spender] = _value;
             emit Approval(msg.sender, _spender, _value);
             return true;
@@ -364,7 +364,7 @@ contract ECHO is ERC20 {
     }
 
     function mintAndTransfer(address beneficiary, uint256 tokensToBeTransferred) public validTimeframe onlyOwner {
-        require(totalSupply.Add(tokensToBeTransferred) &lt;= MAXCAP);
+        require(totalSupply.Add(tokensToBeTransferred) <= MAXCAP);
         totalSupply = totalSupply.Add(tokensToBeTransferred);
         balances[beneficiary] = balances[beneficiary].Add(tokensToBeTransferred);
         emit Transfer(0x0, beneficiary ,tokensToBeTransferred);
@@ -399,30 +399,30 @@ contract ECHO is ERC20 {
         // 1531094400 = 9 july 2018
         if(saleType == 1){
             //Presale is going on
-            if(now &gt;= 1522972800 &amp;&amp; now &lt; 1523664000){
+            if(now >= 1522972800 && now < 1523664000){
                 //6 april to before 14 april
                 bonus = _tokensBought*20/100;
             }
-            else if(now &gt;= 1523664000 &amp;&amp; now &lt; 1524355200){
+            else if(now >= 1523664000 && now < 1524355200){
                 //14 april to before 22 april
                 bonus = _tokensBought*10/100;
             }
-            else if(now &gt;= 1524355200 &amp;&amp; now &lt; 1525392000){
+            else if(now >= 1524355200 && now < 1525392000){
                 //Aprill 22 to before 4 may
                 bonus = _tokensBought*5/100;
             }
         }
         if(saleType == 2){
             //ICO is going on
-            if(now &gt;= 1527811200 &amp;&amp; now &lt; 1528588800){
+            if(now >= 1527811200 && now < 1528588800){
                 // 1 june to before 10 june
                 bonus = _tokensBought*20/100;
             }
-            else if(now &gt;= 1528588800 &amp;&amp; now &lt; 1529280000){
+            else if(now >= 1528588800 && now < 1529280000){
                 // june 10 to before june 18
                 bonus = _tokensBought*10/100;
             }
-            else if(now &gt;= 1529280000 &amp;&amp; now &lt; 1530403200){
+            else if(now >= 1529280000 && now < 1530403200){
                 // june 18 to before july 1
                 bonus = _tokensBought*5/100;
             }
@@ -435,7 +435,7 @@ contract ECHO is ERC20 {
         balances[beneficiary] = balances[beneficiary].Add(tokensBought);
         totalSupply = totalSupply.Add(tokensBought);
        
-        assert(totalSupply &lt;= HARD_CAP);
+        assert(totalSupply <= HARD_CAP);
         totalWeiReceived = totalWeiReceived.Add(msg.value);
         ethCollector.transfer(msg.value);
         emit Transfer(0x0, beneficiary, tokensBought);
@@ -447,7 +447,7 @@ contract ECHO is ERC20 {
     function finalize() public onlyUnlocked onlyOwner {
         //Make sure Sale is not running
         //If sale is running, then check if the hard cap has been reached or not
-        assert(!isSaleRunning() || (HARD_CAP.Sub(totalSupply)) &lt;= 1e18);
+        assert(!isSaleRunning() || (HARD_CAP.Sub(totalSupply)) <= 1e18);
         endTime = now;
 
         //enable transferring of tokens among token holders

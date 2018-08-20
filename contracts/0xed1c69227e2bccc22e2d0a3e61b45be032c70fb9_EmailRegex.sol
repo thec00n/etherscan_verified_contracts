@@ -6,7 +6,7 @@ contract EmailRegex {
     function (byte) constant internal returns (uint) func;
   }
 
-  string public constant regex = &quot;[a-zA-Z0-9._%+-]<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="557e15">[email&#160;protected]</a>[a-zA-Z0-9.-_]+\.[a-zA-Z]{2,}&quot;;
+  string public constant regex = "[a-zA-Z0-9._%+-]<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="557e15">[email protected]</a>[a-zA-Z0-9.-_]+\.[a-zA-Z]{2,}";
 
   function state(uint id) constant internal returns (State) {
     if (id == 1) {
@@ -44,7 +44,7 @@ contract EmailRegex {
   function matches(string input) constant returns (bool) {
     uint cur = 1;
 
-    for (var i = 0; i &lt; bytes(input).length; i++) {
+    for (var i = 0; i < bytes(input).length; i++) {
       var c = bytes(input)[i];
 
       cur = state(cur).func(c);
@@ -57,7 +57,7 @@ contract EmailRegex {
   }
 
   function s1(byte c) constant internal returns (uint) {
-    if (c &gt;= 37 &amp;&amp; c &lt;= 37 || c &gt;= 43 &amp;&amp; c &lt;= 43 || c &gt;= 45 &amp;&amp; c &lt;= 45 || c &gt;= 46 &amp;&amp; c &lt;= 46 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 95 &amp;&amp; c &lt;= 95 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 37 && c <= 37 || c >= 43 && c <= 43 || c >= 45 && c <= 45 || c >= 46 && c <= 46 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 95 && c <= 95 || c >= 97 && c <= 122) {
       return 2;
     }
 
@@ -65,10 +65,10 @@ contract EmailRegex {
   }
 
   function s2(byte c) constant internal returns (uint) {
-    if (c &gt;= 37 &amp;&amp; c &lt;= 37 || c &gt;= 43 &amp;&amp; c &lt;= 43 || c &gt;= 45 &amp;&amp; c &lt;= 45 || c &gt;= 46 &amp;&amp; c &lt;= 46 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 95 &amp;&amp; c &lt;= 95 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 37 && c <= 37 || c >= 43 && c <= 43 || c >= 45 && c <= 45 || c >= 46 && c <= 46 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 95 && c <= 95 || c >= 97 && c <= 122) {
       return 3;
     }
-    if (c &gt;= 64 &amp;&amp; c &lt;= 64) {
+    if (c >= 64 && c <= 64) {
       return 4;
     }
 
@@ -76,10 +76,10 @@ contract EmailRegex {
   }
 
   function s3(byte c) constant internal returns (uint) {
-    if (c &gt;= 37 &amp;&amp; c &lt;= 37 || c &gt;= 43 &amp;&amp; c &lt;= 43 || c &gt;= 45 &amp;&amp; c &lt;= 45 || c &gt;= 46 &amp;&amp; c &lt;= 46 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 95 &amp;&amp; c &lt;= 95 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 37 && c <= 37 || c >= 43 && c <= 43 || c >= 45 && c <= 45 || c >= 46 && c <= 46 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 95 && c <= 95 || c >= 97 && c <= 122) {
       return 3;
     }
-    if (c &gt;= 64 &amp;&amp; c &lt;= 64) {
+    if (c >= 64 && c <= 64) {
       return 4;
     }
 
@@ -87,7 +87,7 @@ contract EmailRegex {
   }
 
   function s4(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 91 &amp;&amp; c &lt;= 95 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 46 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 65 && c <= 90 || c >= 91 && c <= 95 || c >= 97 && c <= 122) {
       return 5;
     }
 
@@ -95,10 +95,10 @@ contract EmailRegex {
   }
 
   function s5(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 46) {
+    if (c >= 46 && c <= 46) {
       return 6;
     }
-    if (c &gt;= 47 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 91 &amp;&amp; c &lt;= 95 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 47 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 65 && c <= 90 || c >= 91 && c <= 95 || c >= 97 && c <= 122) {
       return 7;
     }
 
@@ -106,13 +106,13 @@ contract EmailRegex {
   }
 
   function s6(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 46) {
+    if (c >= 46 && c <= 46) {
       return 6;
     }
-    if (c &gt;= 47 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 91 &amp;&amp; c &lt;= 95) {
+    if (c >= 47 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 91 && c <= 95) {
       return 7;
     }
-    if (c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 65 && c <= 90 || c >= 97 && c <= 122) {
       return 8;
     }
 
@@ -120,10 +120,10 @@ contract EmailRegex {
   }
 
   function s7(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 46) {
+    if (c >= 46 && c <= 46) {
       return 6;
     }
-    if (c &gt;= 47 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 91 &amp;&amp; c &lt;= 95 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 47 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 65 && c <= 90 || c >= 91 && c <= 95 || c >= 97 && c <= 122) {
       return 7;
     }
 
@@ -131,13 +131,13 @@ contract EmailRegex {
   }
 
   function s8(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 46) {
+    if (c >= 46 && c <= 46) {
       return 6;
     }
-    if (c &gt;= 47 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 91 &amp;&amp; c &lt;= 95) {
+    if (c >= 47 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 91 && c <= 95) {
       return 7;
     }
-    if (c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 65 && c <= 90 || c >= 97 && c <= 122) {
       return 9;
     }
 
@@ -145,13 +145,13 @@ contract EmailRegex {
   }
 
   function s9(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 46) {
+    if (c >= 46 && c <= 46) {
       return 6;
     }
-    if (c &gt;= 47 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 91 &amp;&amp; c &lt;= 95) {
+    if (c >= 47 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 91 && c <= 95) {
       return 7;
     }
-    if (c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 65 && c <= 90 || c >= 97 && c <= 122) {
       return 10;
     }
 
@@ -159,13 +159,13 @@ contract EmailRegex {
   }
 
   function s10(byte c) constant internal returns (uint) {
-    if (c &gt;= 46 &amp;&amp; c &lt;= 46) {
+    if (c >= 46 && c <= 46) {
       return 6;
     }
-    if (c &gt;= 47 &amp;&amp; c &lt;= 47 || c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 58 &amp;&amp; c &lt;= 64 || c &gt;= 91 &amp;&amp; c &lt;= 95) {
+    if (c >= 47 && c <= 47 || c >= 48 && c <= 57 || c >= 58 && c <= 64 || c >= 91 && c <= 95) {
       return 7;
     }
-    if (c &gt;= 65 &amp;&amp; c &lt;= 90 || c &gt;= 97 &amp;&amp; c &lt;= 122) {
+    if (c >= 65 && c <= 90 || c >= 97 && c <= 122) {
       return 10;
     }
 

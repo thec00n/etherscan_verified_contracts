@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -122,10 +122,10 @@ contract CCCRSale is Pausable {
     }
 
     function getRate() constant internal returns (uint256) {
-        if      (block.timestamp &lt; startline + 19 days) return tokenPrice.mul(138).div(100); // 15.11.17-4.12.17 38%
-        else if (block.timestamp &lt;= startline + 46 days) return tokenPrice.mul(123).div(100); // 4.12.17-31.12.17 23%
-        else if (block.timestamp &lt;= startline + 60 days) return tokenPrice.mul(115).div(100); // 1.01.18-14.01.18 15%
-        else if (block.timestamp &lt;= startline + 74 days) return tokenPrice.mul(109).div(100); // 15.01.18-28.01.18 9%
+        if      (block.timestamp < startline + 19 days) return tokenPrice.mul(138).div(100); // 15.11.17-4.12.17 38%
+        else if (block.timestamp <= startline + 46 days) return tokenPrice.mul(123).div(100); // 4.12.17-31.12.17 23%
+        else if (block.timestamp <= startline + 60 days) return tokenPrice.mul(115).div(100); // 1.01.18-14.01.18 15%
+        else if (block.timestamp <= startline + 74 days) return tokenPrice.mul(109).div(100); // 15.01.18-28.01.18 9%
         return tokenPrice; // 29.01.18-31.03.18 
     }
 
@@ -140,7 +140,7 @@ contract CCCRSale is Pausable {
         investWallet.transfer(this.balance);
         totalRaised = totalRaised.add(tokens);
 
-        if (totalRaised &gt;= minCap) {
+        if (totalRaised >= minCap) {
           paused = true;
         }
     }
@@ -159,7 +159,7 @@ contract CCCRSale is Pausable {
        uint256 arrayLength = arrayAddress.length.sub(1);
        uint256 i = 0;
        
-       while (i &lt;= arrayLength) {
+       while (i <= arrayLength) {
            tokenReward.transfer(arrayAddress[i], arrayAmount[i]);
            i = i.add(1);
        }  

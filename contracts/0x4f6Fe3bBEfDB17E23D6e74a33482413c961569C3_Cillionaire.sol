@@ -21,12 +21,12 @@ contract owned {
 
 /// Cillionaire is a lottery where people can participate until a pot limit is reached. Then, a random participant is chosen to be the winner.
 /// 
-/// Randomness is achieved by XOR&#39;ing the following two numbers:
+/// Randomness is achieved by XOR'ing the following two numbers:
 /// ownerRandomNumber ... a random number supplied by the contract owner and submitted upon `start` as a hash, much like a concealed bid in an auction.
-/// minerRandomNumber ... timestamp of the block that contains the last participant&#39;s `particpate` transaction.
+/// minerRandomNumber ... timestamp of the block that contains the last participant's `particpate` transaction.
 /// Neither can the owner know the minerRandomNumber, nor can the miner know the ownerRandomNumber (unless the owner supplies a breakable hash, e.h. keccak256(1)).
 ///
-/// Many safeguards are in place to prevent loss of participants&#39; stakes and ensure fairness:
+/// Many safeguards are in place to prevent loss of participants' stakes and ensure fairness:
 /// - The owner can `cancel`, in which case participants must be refunded.
 /// - If the owner does not end the game via `chooseWinner` within 24 hours after PARTICIPATION `state` ended, then anyone can `cancel`.
 /// - The contract has no `kill` function which would allow the owner to run off with the pot.
@@ -51,7 +51,7 @@ contract Cillionaire is owned {
     uint public participationEndTimestamp;
     uint public pot;
     address public winner;
-    mapping (address =&gt; uint) public funds;
+    mapping (address => uint) public funds;
     uint public fees;
     uint public lastRefundedIndex;
     
@@ -79,9 +79,9 @@ contract Cillionaire is owned {
     // This was dangerous before Solidity version 0.4.0,
     // where it was possible to skip the part after `_;`.
     modifier costs(uint _amount) {
-        require(msg.value &gt;= _amount);
+        require(msg.value >= _amount);
         _;
-        if (msg.value &gt; _amount) {
+        if (msg.value > _amount) {
             msg.sender.transfer(msg.value - _amount);
         }
     }
@@ -99,7 +99,7 @@ contract Cillionaire is owned {
     }
     
     /// Starts the game, i.e. resets game variables and transitions to state `PARTICIPATION`
-    /// `_ownerRandomHash` is the owner&#39;s concealed random number. 
+    /// `_ownerRandomHash` is the owner's concealed random number. 
     /// It must be a keccak256 hash that can be verfied in `chooseWinner`.
     function start(bytes32 _ownerRandomHash) external onlyOwner onlyState(State.ENDED) {
         ownerRandomHash = _ownerRandomHash;
@@ -123,7 +123,7 @@ contract Cillionaire is owned {
         pot += stakeAfterFee;
         fees += fee;
         NewParticipant(msg.sender, msg.value, stakeAfterFee, msg.value - stake);
-        if (pot &gt;= potTarget) {
+        if (pot >= potTarget) {
             participationEndTimestamp = block.timestamp;
             minerRandomNumber = block.timestamp;
             MinerRandomNumber(minerRandomNumber);
@@ -131,12 +131,12 @@ contract Cillionaire is owned {
         }
     }
     
-    /// Reveal the owner&#39;s random number and choose a winner using all three random numbers.
+    /// Reveal the owner's random number and choose a winner using all three random numbers.
     /// The winner is credited the pot and can get their funds using `withdraw`.
     /// This function will only work when the contract is in `state` CHOOSE_WINNER.
     function chooseWinner(string _ownerRandomNumber, string _ownerRandomSecret) external onlyOwner onlyState(State.CHOOSE_WINNER) {
         require(keccak256(_ownerRandomNumber, _ownerRandomSecret) == ownerRandomHash);
-        require(!startsWithDigit(_ownerRandomSecret)); // This is needed because keccak256(&quot;12&quot;, &quot;34&quot;) == keccak256(&quot;1&quot;, &quot;234&quot;) to prevent owner from changing his initially comitted random number
+        require(!startsWithDigit(_ownerRandomSecret)); // This is needed because keccak256("12", "34") == keccak256("1", "234") to prevent owner from changing his initially comitted random number
         ownerRandomNumber = parseInt(_ownerRandomNumber);
         OwnerRandomNumber(ownerRandomNumber);
         uint randomNumber = ownerRandomNumber ^ minerRandomNumber;
@@ -150,18 +150,18 @@ contract Cillionaire is owned {
     }
     
     /// Cancel the game.
-    /// Participants&#39; stakes (including fee) are refunded. Use the `withdraw` function to get the refund.
+    /// Participants' stakes (including fee) are refunded. Use the `withdraw` function to get the refund.
     /// Owner can cancel at any time in `state` PARTICIPATION or CHOOSE_WINNER
     /// Anyone can cancel 24h after `state` PARTICIPATION ended. This is to make sure no funds get locked up due to inactivity of the owner.
     function cancel() external {
         if (msg.sender == owner) {
             require(state == State.PARTICIPATION || state == State.CHOOSE_WINNER);
         } else {
-            require((state == State.CHOOSE_WINNER) &amp;&amp; (participationEndTimestamp != 0) &amp;&amp; (block.timestamp &gt; participationEndTimestamp + 1 days));
+            require((state == State.CHOOSE_WINNER) && (participationEndTimestamp != 0) && (block.timestamp > participationEndTimestamp + 1 days));
         }
         Cancelled(msg.sender);
         // refund index 0 so lastRefundedIndex=0 is correct
-        if (participants.length &gt; 0) {
+        if (participants.length > 0) {
             funds[participants[0]] += stake;
             fees -= fee;
             lastRefundedIndex = 0;
@@ -178,23 +178,23 @@ contract Cillionaire is owned {
     }
     
     /// Refund a number of accounts specified by `_count`, beginning at the next un-refunded index which is lastRefundedIndex`+1.
-    /// This is so that refunds can be dimensioned such that they don&#39;t exceed block gas limit.
+    /// This is so that refunds can be dimensioned such that they don't exceed block gas limit.
     /// Once all participants are refunded `state` transitions to ENDED.
     /// Any user can do the refunds.
     function refund(uint _count) onlyState(State.REFUND) {
-        require(participants.length &gt; 0);
+        require(participants.length > 0);
         uint first = lastRefundedIndex + 1;
         uint last = lastRefundedIndex + _count;
-        if (last &gt; participants.length - 1) {
+        if (last > participants.length - 1) {
             last = participants.length - 1;
         }
-        for (uint i = first; i &lt;= last; i++) {
+        for (uint i = first; i <= last; i++) {
             funds[participants[i]] += stake;
             fees -= fee;
             Refund(participants[i], stake);
         }
         lastRefundedIndex = last;
-        if (lastRefundedIndex &gt;= participants.length - 1) {
+        if (lastRefundedIndex >= participants.length - 1) {
             setState(State.ENDED);
         }
     }
@@ -218,7 +218,7 @@ contract Cillionaire is owned {
     /// Adjust game parameters. All parameters are in Wei.
     /// Can be called by the contract owner in `state` ENDED.
     function setParams(uint _potTarget, uint _stake, uint _fee) external onlyOwner onlyState(State.ENDED) {
-        require(_fee &lt; _stake);
+        require(_fee < _stake);
         potTarget = _potTarget;
         stake = _stake; 
         fee = _fee;
@@ -227,7 +227,7 @@ contract Cillionaire is owned {
     
     function startsWithDigit(string str) internal returns (bool) {
         bytes memory b = bytes(str);
-        return b[0] &gt;= 48 &amp;&amp; b[0] &lt;= 57; // 0-9; see http://dev.networkerror.org/utf8/
+        return b[0] >= 48 && b[0] <= 57; // 0-9; see http://dev.networkerror.org/utf8/
     }
     
     // parseInt 
@@ -246,8 +246,8 @@ contract Cillionaire is owned {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -256,7 +256,7 @@ contract Cillionaire is owned {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 

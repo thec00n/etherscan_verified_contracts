@@ -13,8 +13,8 @@ interface Token {
 
 contract EbyteDistribution {
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => bool) public blacklist;
     Token public ebyteToken;
     address public owner;
     uint256 public rate = 100000000;
@@ -62,13 +62,13 @@ contract EbyteDistribution {
     }
     
     function enableWhitelist(address[] addresses) onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
@@ -99,15 +99,15 @@ contract EbyteDistribution {
     }
     
     function distributeEbyte(address[] addresses, uint256 value) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             sendTokens(addresses[i], value);
             ebyteToken.transfer(addresses[i], value);
         }
     }
 
     function distributeEbyteForETH(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            if (getEthBalance(addresses[i]) &lt; ethBalance) {
+        for (uint i = 0; i < addresses.length; i++) {
+            if (getEthBalance(addresses[i]) < ethBalance) {
                 continue;
             }
             uint256 ethMulti = getEthBalance(addresses[i]) / 1000000000;
@@ -118,8 +118,8 @@ contract EbyteDistribution {
     }
     
     function distributeEbyteForEBYTE(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            if (getTokenBalance(addresses[i]) &lt; ebyteBalance) {
+        for (uint i = 0; i < addresses.length; i++) {
+            if (getTokenBalance(addresses[i]) < ebyteBalance) {
                 continue;
             }
             uint256 toDistr = (getTokenBalance(addresses[i]) / 100) * percentage;
@@ -130,7 +130,7 @@ contract EbyteDistribution {
     
     function distribution(address[] addresses) onlyOwner public {
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             distributeEbyteForEBYTE(addresses);
             distributeEbyteForETH(addresses);
             break;

@@ -31,7 +31,7 @@ contract Ownable {
     }
 
     function transferOwnership(address newOwner) onlyOwner public {
-        require(newOwner != owner &amp;&amp; newOwner != address(0x0));
+        require(newOwner != owner && newOwner != address(0x0));
         address oldOwner = owner;
         owner = newOwner;
         OwnerChanged(oldOwner, newOwner);
@@ -80,27 +80,27 @@ contract TeamTokenLock is Ownable {
     }
 
     function isFirstLockTimeEnd() public view returns(bool) {
-        return now &gt; startTime + firstLockTime;
+        return now > startTime + firstLockTime;
     }
 
     function isSecondLockTimeEnd() public view returns(bool) {
-        return now &gt; startTime + secondLockTime;
+        return now > startTime + secondLockTime;
     }
 
     function unlockFirstTokens() public onlyOfficial firstLockTimeEnd {
-        require(firstLockAmount &gt; 0);
+        require(firstLockAmount > 0);
 
-        uint unlockAmount = firstLockAmount &lt; getTokenBalance() ? firstLockAmount : getTokenBalance();
-        require(unlockAmount &lt;= firstLockAmount);
+        uint unlockAmount = firstLockAmount < getTokenBalance() ? firstLockAmount : getTokenBalance();
+        require(unlockAmount <= firstLockAmount);
         firstLockAmount = firstLockAmount - unlockAmount;
         require(token.transfer(beneficiary, unlockAmount));
     }
 
     function unlockSecondTokens() public onlyOfficial secondLockTimeEnd {
-        require(secondLockAmount &gt; 0);
+        require(secondLockAmount > 0);
 
-        uint unlockAmount = secondLockAmount &lt; getTokenBalance() ? secondLockAmount : getTokenBalance();
-        require(unlockAmount &lt;= secondLockAmount);
+        uint unlockAmount = secondLockAmount < getTokenBalance() ? secondLockAmount : getTokenBalance();
+        require(unlockAmount <= secondLockAmount);
         secondLockAmount = secondLockAmount - unlockAmount;
         require(token.transfer(beneficiary, unlockAmount));
     }

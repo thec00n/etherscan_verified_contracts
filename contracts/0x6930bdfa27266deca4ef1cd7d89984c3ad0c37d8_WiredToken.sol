@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -121,27 +121,27 @@ contract BasicToken is ERC20Basic, Ownable {
     uint256 purchaseBlock;
   }
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; Purchase[]) public presaleInvestors;
-  mapping(address =&gt; uint256) public mainSaleInvestors;
+  mapping(address => uint256) balances;
+  mapping(address => Purchase[]) public presaleInvestors;
+  mapping(address => uint256) public mainSaleInvestors;
   
   uint256 totalSupply_;
   uint256 public secondsPerBlock = 147; // change to 14
-  uint256 public startLockUpSec = 3888000; // 45 days =&gt; 3888000 secs
-  uint256 public secondsPerMonth = 2592000; // 30 days =&gt; 2592000 secs
+  uint256 public startLockUpSec = 3888000; // 45 days => 3888000 secs
+  uint256 public secondsPerMonth = 2592000; // 30 days => 2592000 secs
   uint256 public percentagePerMonth = 10;
   
     function _checkLockUp(address senderAdr) public view returns (uint) {
         uint canTransfer = 0;
         if (presaleInvestors[senderAdr].length == 0) {
             canTransfer = 0;
-        } else if (presaleInvestors[senderAdr][0].purchaseBlock &gt; block.number.sub(startLockUpSec.div(secondsPerBlock).mul(10))) {
+        } else if (presaleInvestors[senderAdr][0].purchaseBlock > block.number.sub(startLockUpSec.div(secondsPerBlock).mul(10))) {
             canTransfer = 0;
         } else {
-            for (uint i = 0; i &lt; presaleInvestors[senderAdr].length; i++) {
-                if (presaleInvestors[senderAdr][i].purchaseBlock &lt;= (block.number).sub(startLockUpSec.div(secondsPerBlock).mul(10))) {
+            for (uint i = 0; i < presaleInvestors[senderAdr].length; i++) {
+                if (presaleInvestors[senderAdr][i].purchaseBlock <= (block.number).sub(startLockUpSec.div(secondsPerBlock).mul(10))) {
                     uint months = (block.number.sub(presaleInvestors[senderAdr][i].purchaseBlock)).div(secondsPerMonth);
-                    if (months &gt; 10) {
+                    if (months > 10) {
                         months = 10;
                     }
                     uint actAmount = (presaleInvestors[senderAdr][i].buyAmount).mul(months).mul(percentagePerMonth).div(100);
@@ -157,20 +157,20 @@ contract BasicToken is ERC20Basic, Ownable {
     
     function cleanTokensAmount(address senderAdr, uint256 currentTokens) public returns (bool) {
         if (presaleInvestors[senderAdr].length != 0) {
-            for (uint i = 0; i &lt; presaleInvestors[senderAdr].length; i++) {
+            for (uint i = 0; i < presaleInvestors[senderAdr].length; i++) {
                 if (presaleInvestors[senderAdr][i].transferredAmount == presaleInvestors[senderAdr][i].buyAmount) {
                     continue;
                 }
-                if (presaleInvestors[senderAdr][i].purchaseBlock &lt;= (block.number).sub(startLockUpSec.div(secondsPerBlock).mul(10))) {
+                if (presaleInvestors[senderAdr][i].purchaseBlock <= (block.number).sub(startLockUpSec.div(secondsPerBlock).mul(10))) {
                     uint months = (block.number.sub(presaleInvestors[senderAdr][i].purchaseBlock)).div(secondsPerMonth);
-                    if (months &gt; 10) {
+                    if (months > 10) {
                         months = 10;
                     }
-                    if ((presaleInvestors[senderAdr][i].buyAmount.div(100).mul(months).mul(percentagePerMonth) - presaleInvestors[senderAdr][i].transferredAmount) &gt;= currentTokens) {
+                    if ((presaleInvestors[senderAdr][i].buyAmount.div(100).mul(months).mul(percentagePerMonth) - presaleInvestors[senderAdr][i].transferredAmount) >= currentTokens) {
                         presaleInvestors[senderAdr][i].transferredAmount = presaleInvestors[senderAdr][i].transferredAmount + currentTokens;
                         currentTokens = 0;
                     } 
-                    if ((presaleInvestors[senderAdr][i].buyAmount.div(100).mul(months).mul(percentagePerMonth) - presaleInvestors[senderAdr][i].transferredAmount) &lt; currentTokens) {
+                    if ((presaleInvestors[senderAdr][i].buyAmount.div(100).mul(months).mul(percentagePerMonth) - presaleInvestors[senderAdr][i].transferredAmount) < currentTokens) {
                         uint remainder = currentTokens - (presaleInvestors[senderAdr][i].buyAmount.div(100).mul(months).mul(percentagePerMonth) - presaleInvestors[senderAdr][i].transferredAmount);
                         presaleInvestors[senderAdr][i].transferredAmount = presaleInvestors[senderAdr][i].buyAmount.div(100).mul(months).mul(percentagePerMonth);
                         currentTokens = remainder;
@@ -180,14 +180,14 @@ contract BasicToken is ERC20Basic, Ownable {
                 }
             }
             
-            if (currentTokens &lt;= mainSaleInvestors[senderAdr]) {
+            if (currentTokens <= mainSaleInvestors[senderAdr]) {
                 mainSaleInvestors[senderAdr] = mainSaleInvestors[senderAdr] - currentTokens;
                 currentTokens = 0;
             } else {
                 revert();
             }
         } else {
-            if (currentTokens &lt;= mainSaleInvestors[senderAdr]) {
+            if (currentTokens <= mainSaleInvestors[senderAdr]) {
                 mainSaleInvestors[senderAdr] = mainSaleInvestors[senderAdr] - currentTokens;
                 currentTokens = 0;
             } else {
@@ -214,9 +214,9 @@ contract BasicToken is ERC20Basic, Ownable {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
-    require(_checkLockUp(msg.sender) &gt;= _value);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
+    require(_checkLockUp(msg.sender) >= _value);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -274,10 +274,10 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
-    require(_checkLockUp(_who) &gt;= _value);
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_checkLockUp(_who) >= _value);
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -296,7 +296,7 @@ contract BurnableToken is BasicToken {
  */
 contract StandardToken is ERC20, BurnableToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -313,10 +313,10 @@ contract StandardToken is ERC20, BurnableToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &gt; 0);
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(_checkLockUp(_from) &gt;= _value);
+    require(_value <= balances[_from]);
+    require(_value > 0);
+    require(_value <= allowed[_from][msg.sender]);
+    require(_checkLockUp(_from) >= _value);
 
 
     balances[_from] = balances[_from].sub(_value);
@@ -333,7 +333,7 @@ contract StandardToken is ERC20, BurnableToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -402,7 +402,7 @@ contract StandardToken is ERC20, BurnableToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -472,8 +472,8 @@ contract MintableToken is StandardToken {
 
 contract WiredToken is MintableToken {
     
-    string public constant name = &quot;Wired Token&quot;;
-    string public constant symbol = &quot;WRD&quot;;
+    string public constant name = "Wired Token";
+    string public constant symbol = "WRD";
     uint8 public constant decimals = 8;
     uint256 public constant INITIAL_SUPPLY = 410000000000000000000; // 10^28
     
@@ -499,13 +499,13 @@ contract WiredToken is MintableToken {
      * @dev Function to distribute tokens to the list of addresses by the provided amount
      */
     function distributeAirdrop(address[] addresses, uint256 amount) external onlyAgent {
-        require(amount &gt; 0 &amp;&amp; addresses.length &gt; 0);
+        require(amount > 0 && addresses.length > 0);
 
         uint256 amounts = amount.mul(100000000);
         uint256 totalAmount = amounts.mul(addresses.length);
-        require(balances[address(this)] &gt;= totalAmount);
+        require(balances[address(this)] >= totalAmount);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(addresses[i] != 0x0);
 
             balances[addresses[i]] = balances[addresses[i]].add(amounts);
@@ -517,17 +517,17 @@ contract WiredToken is MintableToken {
     }
 
     function distributeAirdropMulti(address[] addresses, uint256[] amount) external onlyAgent {
-        require(addresses.length &gt; 0 &amp;&amp; addresses.length == amount.length);
+        require(addresses.length > 0 && addresses.length == amount.length);
         
         uint256 totalAmount = 0;
         
-        for(uint i = 0; i &lt; addresses.length; i++) {
-            require(amount[i] &gt; 0 &amp;&amp; addresses[i] != 0x0);
+        for(uint i = 0; i < addresses.length; i++) {
+            require(amount[i] > 0 && addresses[i] != 0x0);
                     
             uint256 amounts = amount[i].mul(100000000);
             totalAmount = totalAmount.add(amounts);
 
-            require(balances[address(this)] &gt;= totalAmount);
+            require(balances[address(this)] >= totalAmount);
         
             balances[addresses[i]] = balances[addresses[i]].add(amounts);
             emit Transfer(address(this), addresses[i], amounts);
@@ -539,17 +539,17 @@ contract WiredToken is MintableToken {
     }
     
     function distributeAirdropMultiPresale(address[] addresses, uint256[] amount, uint256[] blocks) external onlyAgent {
-        require(addresses.length &gt; 0 &amp;&amp; addresses.length == amount.length);
+        require(addresses.length > 0 && addresses.length == amount.length);
         
         uint256 totalAmount = 0;
         
-        for(uint i = 0; i &lt; addresses.length; i++) {
-            require(amount[i] &gt; 0 &amp;&amp; addresses[i] != 0x0);
+        for(uint i = 0; i < addresses.length; i++) {
+            require(amount[i] > 0 && addresses[i] != 0x0);
                     
             uint256 amounts = amount[i].mul(100000000);
             totalAmount = totalAmount.add(amounts);
 
-            require(balances[address(this)] &gt;= totalAmount);
+            require(balances[address(this)] >= totalAmount);
         
             presaleInvestors[addresses[i]].push(Purchase(amounts, 0, blocks[i]));
             balances[addresses[i]] = balances[addresses[i]].add(amounts);
@@ -586,7 +586,7 @@ contract WiredToken is MintableToken {
     }
     
     function transferTokens(uint256 amount) external onlyOwner {
-        require(balances[address(this)] &gt; 0);
+        require(balances[address(this)] > 0);
         
 
         balances[msg.sender] = balances[msg.sender].add(amount.mul(100000000));
@@ -598,10 +598,10 @@ contract WiredToken is MintableToken {
 
     /**
      * @dev Function to distribute tokens to the msg.sender automatically
-     *      If distributeAmount is 0, this function doesn&#39;t work
+     *      If distributeAmount is 0, this function doesn't work
      */
     function buy(address buyer) payable public {
-        require(msg.value &gt; 10000000000000 &amp;&amp; distributeAmount &gt; 0 &amp;&amp; balances[address(this)] &gt; distributeAmount);
+        require(msg.value > 10000000000000 && distributeAmount > 0 && balances[address(this)] > distributeAmount);
         
         uint256 amount = msg.value.mul(mulbonus).div(divbonus);
         balances[buyer] = balances[buyer].add(amount);

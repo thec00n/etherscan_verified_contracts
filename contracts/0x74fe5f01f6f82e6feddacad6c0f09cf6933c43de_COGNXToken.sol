@@ -77,12 +77,12 @@ contract SafeMath {
         return c;
     }
     function safeSub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -90,14 +90,14 @@ contract SafeMath {
 contract StandardToken is TokenERC20, SafeMath {
 
 	// Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Owner of account approves the transfer of an amount to another account
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
   
 
-	  // Transfer the balance from owner&#39;s account to another account
+	  // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 		balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -106,12 +106,12 @@ contract StandardToken is TokenERC20, SafeMath {
 
  	 // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 		uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -141,9 +141,9 @@ contract StandardToken is TokenERC20, SafeMath {
 //final implementation 
 contract COGNXToken is StandardToken {
     uint8 public constant decimals = 18;
-    string public constant name = &#39;COGNX&#39;;
-    string public constant symbol = &#39;COGNX&#39;;
-    string public constant version = &#39;1.0.0&#39;;
+    string public constant name = 'COGNX';
+    string public constant symbol = 'COGNX';
+    string public constant version = '1.0.0';
     uint256 public totalSupply = 15000000 * 10 ** uint256(decimals);
 		
 	//Constructor
@@ -156,10 +156,10 @@ contract COGNXToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

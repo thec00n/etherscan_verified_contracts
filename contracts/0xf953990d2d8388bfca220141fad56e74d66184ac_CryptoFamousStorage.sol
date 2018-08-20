@@ -114,8 +114,8 @@ contract CryptoFamousOwnership is CryptoFamousBase {
   /// @dev contains all the Cards in the system. Card with ID 0 is invalid.
   Card[] public allCards;
 
-  /// @dev SocialNetworkType -&gt; (SocialId -&gt; CardId)
-  mapping (uint8 =&gt; mapping (uint64 =&gt; uint256)) private socialIdentityMappings;
+  /// @dev SocialNetworkType -> (SocialId -> CardId)
+  mapping (uint8 => mapping (uint64 => uint256)) private socialIdentityMappings;
 
   /// @dev getter for `socialIdentityMappings`
   function socialIdentityToCardId(uint256 _socialNetworkType, uint256 _socialId) public view returns (uint256 cardId) {
@@ -129,7 +129,7 @@ contract CryptoFamousOwnership is CryptoFamousBase {
     return cardId;
   }
 
-  mapping (uint8 =&gt; mapping (address =&gt; uint256)) private claimerAddressToCardIdMappings;
+  mapping (uint8 => mapping (address => uint256)) private claimerAddressToCardIdMappings;
 
   /// @dev returns the last Card ID claimed by `_claimerAddress` in network with `_socialNetworkType`
   function lookUpClaimerAddress(uint256 _socialNetworkType, address _claimerAddress) public view returns (uint256 cardId) {
@@ -141,13 +141,13 @@ contract CryptoFamousOwnership is CryptoFamousBase {
   }
 
   /// @dev A mapping from Card ID to the timestamp of the first completed Claim of that Card
-  mapping (uint256 =&gt; uint128) public cardIdToFirstClaimTimestamp;
+  mapping (uint256 => uint128) public cardIdToFirstClaimTimestamp;
 
   /// @dev A mapping from Card ID to the current owner address of that Card
-  mapping (uint256 =&gt; address) public cardIdToOwner;
+  mapping (uint256 => address) public cardIdToOwner;
 
   /// @dev A mapping from owner address to the number of Cards currently owned by it
-  mapping (address =&gt; uint256) internal ownerAddressToCardCount;
+  mapping (address => uint256) internal ownerAddressToCardCount;
 
   function _changeOwnership(address _from, address _to, uint256 _cardId) internal whenNotPaused {
       ownerAddressToCardCount[_to]++;
@@ -218,7 +218,7 @@ contract CryptoFamousOwnership is CryptoFamousBase {
   }
 
   /// @notice Returns a list of all Card IDs currently owned by `_owner`
-  /// @dev (this thing iterates, don&#39;t call from smart contract code)
+  /// @dev (this thing iterates, don't call from smart contract code)
   function tokensOfOwner(address _owner) external view returns(uint256[] ownerTokens) {
       uint256 tokenCount = ownerAddressToCardCount[_owner];
 
@@ -232,7 +232,7 @@ contract CryptoFamousOwnership is CryptoFamousBase {
 
       uint256 cardId;
 
-      for (cardId = 1; cardId &lt;= total; cardId++) {
+      for (cardId = 1; cardId <= total; cardId++) {
           if (cardIdToOwner[cardId] == _owner) {
               result[resultIndex] = cardId;
               resultIndex++;
@@ -268,23 +268,23 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
       _;
   }
 
-  /// @dev mapping from Card ID to information about that card&#39;s last trade
-  mapping (uint256 =&gt; SaleInfo) public cardIdToSaleInfo;
+  /// @dev mapping from Card ID to information about that card's last trade
+  mapping (uint256 => SaleInfo) public cardIdToSaleInfo;
 
   /// @dev mapping from Card ID to the current value stashed away for a future claimer
-  mapping (uint256 =&gt; uint256) public cardIdToStashedPayout;
+  mapping (uint256 => uint256) public cardIdToStashedPayout;
   /// @dev total amount of stashed payouts
   uint256 public totalStashedPayouts;
 
-  /// @dev if we fail to send any value to a Card&#39;s previous owner as part of the
-  /// invite/steal transaction we&#39;ll hold it in this contract. This mapping records the amount
-  /// owed to that &quot;previous owner&quot;.
-  mapping (address =&gt; uint256) public addressToFailedOldOwnerTransferAmount;
+  /// @dev if we fail to send any value to a Card's previous owner as part of the
+  /// invite/steal transaction we'll hold it in this contract. This mapping records the amount
+  /// owed to that "previous owner".
+  mapping (address => uint256) public addressToFailedOldOwnerTransferAmount;
   /// @dev total amount of failed old owner transfers
   uint256 public totalFailedOldOwnerTransferAmounts;
 
-  /// @dev mapping from Card ID to that card&#39;s current perk text
-  mapping (uint256 =&gt; string) public cardIdToPerkText;
+  /// @dev mapping from Card ID to that card's current perk text
+  mapping (uint256 => string) public cardIdToPerkText;
 
   function authorized_setCardPerkText(uint256 _cardId, string _perkText) external requireAuthorizedLogicContract {
     cardIdToPerkText[_cardId] = _perkText;
@@ -331,7 +331,7 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
 
     uint256 stashedPayout = cardIdToStashedPayout[_cardId];
 
-    require(stashedPayout &gt; 0);
+    require(stashedPayout > 0);
 
     cardIdToStashedPayout[_cardId] = 0;
     totalStashedPayouts -= stashedPayout;
@@ -360,7 +360,7 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
     return balance;
   }
 
-  /// @dev the Bursar account can use this to withdraw the contract&#39;s net balance
+  /// @dev the Bursar account can use this to withdraw the contract's net balance
   function bursarPayOutNetContractBalance(address _to) external requireBursar {
       uint256 payout = netContractBalance();
 
@@ -371,12 +371,12 @@ contract CryptoFamousStorage is CryptoFamousOwnership {
       }
   }
 
-  /// @dev Any wallet owed value that&#39;s recorded under `addressToFailedOldOwnerTransferAmount`
+  /// @dev Any wallet owed value that's recorded under `addressToFailedOldOwnerTransferAmount`
   /// can use this function to withdraw that value.
   function withdrawFailedOldOwnerTransferAmount() external whenNotPaused {
       uint256 failedTransferAmount = addressToFailedOldOwnerTransferAmount[msg.sender];
 
-      require(failedTransferAmount &gt; 0);
+      require(failedTransferAmount > 0);
 
       addressToFailedOldOwnerTransferAmount[msg.sender] = 0;
       totalFailedOldOwnerTransferAmounts -= failedTransferAmount;

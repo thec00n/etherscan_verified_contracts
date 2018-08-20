@@ -34,7 +34,7 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
         //默认totalSupply 不会超过最大值 (2^256 - 1).
         //如果随着时间的推移将会有新的token生成，则可以用下面这句避免溢出的异常
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;//从消息发送者账户中减去token数量_value
         balances[_to] += _value;//往接收账户增加token数量_value
         Transfer(msg.sender, _to, _value);//触发转币交易事件
@@ -42,8 +42,8 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= 
-            _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= 
+            _value && balances[_to] + _value > balances[_to]);
         balances[_to] += _value;//接收账户增加token数量_value
         balances[_from] -= _value; //支出账户_from减去token数量_value
         allowed[_from][msg.sender] -= _value;//消息发送者可以从账户_from中转出的数量减少_value
@@ -59,16 +59,16 @@ contract StandardToken is Token {
     }
     
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
-        require(_addedValue &gt; 0);
+        require(_addedValue > 0);
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender] + _addedValue;
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
     }
     
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
-        require(_subtractedValue &gt; 0);
+        require(_subtractedValue > 0);
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -81,8 +81,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
     }
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MyToken is StandardToken {
@@ -110,7 +110,7 @@ contract MyToken is StandardToken {
         //发送者通知代币合约：1STORE币授权给了服务合约（通过调用代币合约的 approveAndCall()函数）
         //代币合约通知服务合约：1STORE币已经授权给了服务合约（通过调用服务合约的 receiveApproval()函数）
         //服务合约指示代币合约将代币从发送者的账户转移到服务合约的账户（通过调用服务合约的 transferFrom()函数 并且存储信息)
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }

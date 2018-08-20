@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -80,7 +80,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -95,7 +95,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -146,7 +146,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -196,19 +196,19 @@ contract Ownable {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -232,13 +232,13 @@ contract ContractReceiver {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -291,13 +291,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -326,10 +326,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -407,7 +407,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -426,15 +426,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -450,7 +450,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -459,7 +459,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -545,7 +545,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -570,7 +570,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -632,9 +632,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -649,9 +649,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -682,16 +682,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -707,7 +707,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -726,15 +726,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -824,8 +824,8 @@ contract MiniMeTokenFactory {
 contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
   using SafeMath for uint;
 
-  string public constant name = &quot;SPECTRE SUBSCRIBER2 TOKEN&quot;;
-  string public constant symbol = &quot;SXS2&quot;;
+  string public constant name = "SPECTRE SUBSCRIBER2 TOKEN";
+  string public constant symbol = "SXS2";
   uint256 public constant decimals = 18;
 
   uint256 public constant TOTAL_CAP = 91627765897795994966351100;
@@ -843,7 +843,7 @@ contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
 
   modifier isTransferable() {
     require(tokenAddressesSet);
-    require(getNow() &gt; transferTime);
+    require(getNow() > transferTime);
     _;
   }
 
@@ -853,7 +853,7 @@ contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
   }
 
   function mint(address _to, uint256 _amount) onlyOwner {
-    require(totalSupply.add(_amount) &lt;= TOTAL_CAP);
+    require(totalSupply.add(_amount) <= TOTAL_CAP);
     balances[_to] = balances[_to].add(_amount);
     totalSupply = totalSupply.add(_amount);
     Transfer(0, _to, _amount);
@@ -902,12 +902,12 @@ contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
       //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_addr)
     }
-    return (length&gt;0);
+    return (length>0);
   }
 
   //@notice function that is called when transaction target is a contract
   function transferToContract(address _from, address _to, uint256 _value, bytes _data) internal returns (bool success) {
-    require(balanceOf(_from) &gt;= _value);
+    require(balanceOf(_from) >= _value);
     balances[_from] = balanceOf(_from).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -926,7 +926,7 @@ contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
     require(_to == specDWallet || _to == specUWallet);
     require(isContract(_to));
     //owner can transfer tokens on behalf of users after 28 days
-    if (msg.sender == owner &amp;&amp; getNow() &gt; saleEnd + 30 days) {
+    if (msg.sender == owner && getNow() > saleEnd + 30 days) {
       OwnerTransfer(_from, _to, _value);
     } else {
       uint256 _allowance = allowed[_from][msg.sender];
@@ -943,8 +943,8 @@ contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
   // The 160 LSB is the address that wants to be added
   // The 96 MSB is the amount of to be minted for that address
   function multiMint(uint256[] data) public onlyOwner {
-    for (uint256 i = 0; i &lt; data.length; i++) {
-      address addr = address(data[i] &amp; (D160 - 1));
+    for (uint256 i = 0; i < data.length; i++) {
+      address addr = address(data[i] & (D160 - 1));
       uint256 amount = data[i] / D160;
       mint(addr, amount);
     }
@@ -954,8 +954,8 @@ contract SpectreSubscriber2Token is StandardToken, Ownable, TokenController {
   // The 160 LSB is the address that wants to be added
   // The 96 MSB is the amount of to be minted for that address
   function multiBurn(uint256[] data) public onlyOwner {
-    for (uint256 i = 0; i &lt; data.length; i++) {
-      address addr = address(data[i] &amp; (D160 - 1));
+    for (uint256 i = 0; i < data.length; i++) {
+      address addr = address(data[i] & (D160 - 1));
       uint256 amount = data[i] / D160;
       burn(addr, amount);
     }

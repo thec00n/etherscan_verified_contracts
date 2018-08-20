@@ -27,7 +27,7 @@ contract SeparateDistribution {
   
   function addExisitingContributors(address[] _address, uint256[] tokenAmount) public {
         require (msg.sender == address(0xc45e9c64eee1F987F9a5B7A8E0Ad1f760dEFa7d8));
-        for(uint256 a=0;a&lt;_address.length;a++){
+        for(uint256 a=0;a<_address.length;a++){
             if(!token.transferFrom(tokenWallet,_address[a],tokenAmount[a])){
                 revert();
             }

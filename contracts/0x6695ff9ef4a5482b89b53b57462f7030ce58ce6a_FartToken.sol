@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
 greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ greater than minuend).
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,7 +79,7 @@ value);
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -88,7 +88,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -118,7 +118,7 @@ https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -130,8 +130,8 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) public
 returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -148,7 +148,7 @@ tokens on behalf of msg.sender.
 that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One
 possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set
+   * race condition is to first reduce the spender's allowance to 0 and set
 the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
@@ -207,7 +207,7 @@ by.
   function decreaseApproval(address _spender, uint _subtractedValue) public
 returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -221,8 +221,8 @@ returns (bool) {
 contract FartToken is StandardToken {
     using SafeMath for uint256;
     uint256 public totalSupply = 100000000;
-    string public name = &quot;FartCoin&quot;;
-    string public symbol = &quot;FART&quot;;
+    string public name = "FartCoin";
+    string public symbol = "FART";
     uint8 public decimals = 0;
     address owner;
     
@@ -243,15 +243,15 @@ contract FartToken is StandardToken {
     }
 
     function BuyToken(uint256 amount) public payable {
-        require(amount &lt;= remainingSupply);
+        require(amount <= remainingSupply);
         require(amount.mul(0.0001 ether) == msg.value);
         remainingSupply = remainingSupply.sub(amount);
         balances[msg.sender] = balances[msg.sender].add(amount);
     }
 
     function SendFart(string message) public {
-        require(balances[msg.sender] &gt; 0);
-        require(bytes(message).length &lt; 100);
+        require(balances[msg.sender] > 0);
+        require(bytes(message).length < 100);
 
         balances[msg.sender] = balances[msg.sender].sub(1);
         remainingSupply =  remainingSupply.add(1);
@@ -261,8 +261,8 @@ contract FartToken is StandardToken {
 
     function GetFreeTokens() public {
         require(balances[msg.sender] == 0);
-        require(redeemed &gt; 0);
-        require(remainingSupply &gt; 10);
+        require(redeemed > 0);
+        require(remainingSupply > 10);
 
         redeemed = redeemed.sub(1);
         balances[msg.sender] = balances[msg.sender].add(10);

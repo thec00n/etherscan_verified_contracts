@@ -17,7 +17,7 @@ contract owned {
 
 //token contract used as reward
 contract token {
-    mapping (address =&gt; uint256) public totalInvestmentOf;
+    mapping (address => uint256) public totalInvestmentOf;
     function transfer(address receiver, uint amount){  }
     function updateInvestmentTotal(address _to, uint256 _value){ }
     function burnUnsoldCoins(address _removeCoinsFrom){ }
@@ -71,18 +71,18 @@ contract Crowdsale is owned {
 
     function () {
         //crowdsale period is over
-        if(now &gt; deadline) crowdsaleClosed = true;
+        if(now > deadline) crowdsaleClosed = true;
         if (crowdsaleClosed) throw;
         uint amount = msg.value;
 
         //refund if value sent is below token price
-        if(amount &lt; price) throw;
+        if(amount < price) throw;
 
         //week 1 price
-        if(now &lt; weekTwoPriceRiseBegin){
+        if(now < weekTwoPriceRiseBegin){
             //return any ETH in case of remainder
             remainderRefund = amount % price;
-            if(remainderRefund &gt; 0){
+            if(remainderRefund > 0){
                 //quietly refund any spare change
                 msg.sender.send(remainderRefund);
                 amountAfterRefund = amount-remainderRefund;
@@ -104,14 +104,14 @@ contract Crowdsale is owned {
         }
 
         //week 2 price
-        if(now &gt;= weekTwoPriceRiseBegin){
+        if(now >= weekTwoPriceRiseBegin){
             //price rise in week two
             //1 token for 1.5ETH
             if(price == 1 ether){price = (price*150)/100;}
             //tokenReward.transfer(msg.sender, amount / price, amount);
             //return any ETH in case of remainder
             remainderRefund = amount % price;
-            if(remainderRefund &gt; 0){
+            if(remainderRefund > 0){
                 //quietly refund any spare change
                 msg.sender.send(remainderRefund);
                 amountAfterRefund = amount-remainderRefund;
@@ -134,10 +134,10 @@ contract Crowdsale is owned {
     }
 
     //modifier for only after end of crowdsale
-    modifier afterDeadline() { if (now &gt;= deadline) _ }
+    modifier afterDeadline() { if (now >= deadline) _ }
 
     //modifier for only after week 1 price rise
-    modifier afterPriceRise() { if (now &gt;= weekTwoPriceRiseBegin) _ }
+    modifier afterPriceRise() { if (now >= weekTwoPriceRiseBegin) _ }
 
     /*checks if the time limit has been reached and ends the campaign
     anybody can call this after the deadline
@@ -178,7 +178,7 @@ contract Crowdsale is owned {
     function returnFunds()
         onlyOwner
     {
-        for (uint i = 0; i &lt; funders.length; ++i) {
+        for (uint i = 0; i < funders.length; ++i) {
           funders[i].addr.send(funders[i].amount);
           FundTransfer(funders[i].addr, funders[i].amount, false);
         }

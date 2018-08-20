@@ -20,7 +20,7 @@ contract Faucet {
     address public token;
     uint public decimals;
     uint public dripAmount;
-    mapping (address =&gt; bool) public alreadyReceived;
+    mapping (address => bool) public alreadyReceived;
     
     modifier newUser() {
         require(!alreadyReceived[msg.sender]);

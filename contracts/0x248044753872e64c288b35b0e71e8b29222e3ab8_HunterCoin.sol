@@ -7,8 +7,8 @@ contract HunterCoin {
     uint8   public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -20,8 +20,8 @@ contract HunterCoin {
     function HunterCoin() {
       balanceOf[msg.sender] = 210000;
       totalSupply = 210000;
-      name = &#39;Hunter Coin&#39;;
-      symbol = &#39;HTC&#39;;
+      name = 'Hunter Coin';
+      symbol = 'HTC';
       decimals = 100;
       owner = msg.sender;
     }
@@ -35,7 +35,7 @@ contract HunterCoin {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt; _value);
+      require(balanceOf[msg.sender] > _value);
 
       balanceOf[msg.sender] -= _value;
       balanceOf[_to] += _value;
@@ -51,9 +51,9 @@ contract HunterCoin {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt; _value);
-      require(balanceOf[_to] + _value &gt; balanceOf[_to]);
-      require(_value &lt; allowance[_from][msg.sender]);
+      require(balanceOf[_from] > _value);
+      require(balanceOf[_to] + _value > balanceOf[_to]);
+      require(_value < allowance[_from][msg.sender]);
 
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;
@@ -63,7 +63,7 @@ contract HunterCoin {
     }
 
     function burn(uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt; _value);
+      require(balanceOf[msg.sender] > _value);
 
       balanceOf[msg.sender] -= _value;
       totalSupply -= _value;
@@ -72,8 +72,8 @@ contract HunterCoin {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt; _value);
-      require(_value &lt; allowance[_from][msg.sender]);
+      require(balanceOf[_from] > _value);
+      require(_value < allowance[_from][msg.sender]);
 
       balanceOf[_from] -= _value;
       totalSupply -= _value;

@@ -26,11 +26,11 @@ contract ERC20 {
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) internal pure returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
     function safeSubtract(uint256 x, uint256 y) internal pure returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -67,9 +67,9 @@ contract LuckyBaby is Ownable, SafeMath {
             return;   
         }
         require(!activityClosed);
-        require(tx.gasprice &lt;= maxGasPrice);
-        require(msg.value &gt;= minTicket);
-        require(msg.value &lt;= maxTicket);
+        require(tx.gasprice <= maxGasPrice);
+        require(msg.value >= minTicket);
+        require(msg.value <= maxTicket);
         award(msg.value, msg.sender);
     }
     
@@ -77,12 +77,12 @@ contract LuckyBaby is Ownable, SafeMath {
         uint random_number = (uint(block.blockhash(block.number-1)) - uint(add)) % 100;
         if (random_number == 0) {
             uint reward = safeMult(amount, 100);
-            require(address(this).balance &gt;= reward);
+            require(address(this).balance >= reward);
             add.transfer(reward);
             LuckyItem memory item = LuckyItem({luckyMan:add, amount:reward});
             history.push(item);
         }
-        if (token.balanceOf(this) &gt;= tokenRewardRate) {
+        if (token.balanceOf(this) >= tokenRewardRate) {
             token.transfer(add, tokenRewardRate);
         }
     }
@@ -109,7 +109,7 @@ contract LuckyBaby is Ownable, SafeMath {
     }
     function withdrawToken(uint amount) onlyOwner public {
         uint256 leave = token.balanceOf(this);
-        if (leave &gt;= amount) {
+        if (leave >= amount) {
             token.transfer(owner, amount);
         }
     }
@@ -118,11 +118,11 @@ contract LuckyBaby is Ownable, SafeMath {
     }
     function clear() onlyOwner public {
         uint leave = token.balanceOf(this);
-        if (leave &gt; 0) {
+        if (leave > 0) {
             token.transfer(owner, leave);
         }
         uint balance = address(this).balance;
-        if (balance &gt; 0) {
+        if (balance > 0) {
             owner.transfer(balance);
         }
     }

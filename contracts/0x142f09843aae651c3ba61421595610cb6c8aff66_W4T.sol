@@ -3,8 +3,8 @@ pragma solidity ^0.4.19;
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
 
 contract W4T {
-    string public name = &#39;W4T&#39;;
-    string public symbol = &#39;W4T&#39;;
+    string public name = 'W4T';
+    string public symbol = 'W4T';
     uint8 public decimals = 18;
     uint256 public totalSupply = 1000000000000000000000000;
     uint public miningReward = 1000000000000000000;
@@ -17,13 +17,13 @@ contract W4T {
     uint public premiumDomainK = 10;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public successesOf;
-    mapping (address =&gt; uint256) public failsOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (bytes8 =&gt; bool) public zones;
-    mapping (bytes8 =&gt; mapping (bytes32 =&gt; address)) public domains;
-    mapping (bytes8 =&gt; mapping (bytes32 =&gt; mapping (bytes32 =&gt; string))) public pages;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public successesOf;
+    mapping (address => uint256) public failsOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (bytes8 => bool) public zones;
+    mapping (bytes8 => mapping (bytes32 => address)) public domains;
+    mapping (bytes8 => mapping (bytes32 => mapping (bytes32 => string))) public pages;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -60,8 +60,8 @@ contract W4T {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -76,7 +76,7 @@ contract W4T {
     
     /* Transfer tokens from other address */
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -98,7 +98,7 @@ contract W4T {
     }
     
     function burn(uint256 _value) internal returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -112,13 +112,13 @@ contract W4T {
     
     function registerDomain(bytes8 zone, string domain) external {
         uint domainLength = bytes(domain).length;
-        require(domainLength &gt;= 2 &amp;&amp; domainLength &lt;= 32);
+        require(domainLength >= 2 && domainLength <= 32);
         bytes32 domainBytes = stringToBytes32(domain);
         require(zones[zone]);
         require(domains[zone][domainBytes] == 0x0);
         
         uint amount = domainPrice;
-        if (domainLength &lt;= 4) {
+        if (domainLength <= 4) {
             amount *= premiumDomainK ** (5 - domainLength);
         }
         burn(amount);
@@ -128,7 +128,7 @@ contract W4T {
     
     function registerPage(bytes8 zone, string domain, bytes32 path, string content) external {
         uint domainLength = bytes(domain).length;
-        require(domainLength &gt;= 2 &amp;&amp; domainLength &lt;= 32);
+        require(domainLength >= 2 && domainLength <= 32);
         bytes32 domainBytes = stringToBytes32(domain);
         require(zones[zone]);
         require(domains[zone][domainBytes] == msg.sender);
@@ -140,7 +140,7 @@ contract W4T {
     
     function transferDomain(bytes8 zone, string domain, address newOwner) external {
         uint domainLength = bytes(domain).length;
-        require(domainLength &gt;= 2 &amp;&amp; domainLength &lt;= 32);
+        require(domainLength >= 2 && domainLength <= 32);
         bytes32 domainBytes = stringToBytes32(domain);
         require(zones[zone]);
         require(domains[zone][domainBytes] == msg.sender);
@@ -155,14 +155,14 @@ contract W4T {
             uint minedAtBlock = uint(block.blockhash(block.number - 1));
             uint minedHashRel = uint(sha256(minedAtBlock + randomNumber + uint(msg.sender))) % 100000;
             uint balanceRel = balanceOf[msg.sender] * 1000 / totalSupply;
-            if (balanceRel &gt;= 1) {
-                if (balanceRel &gt; 29) {
+            if (balanceRel >= 1) {
+                if (balanceRel > 29) {
                     balanceRel = 29;
                 }
                 balanceRel = 2 ** balanceRel;
                 balanceRel = 50000 / balanceRel;
                 balanceRel = 50000 - balanceRel;
-                if (minedHashRel &lt; balanceRel) {
+                if (minedHashRel < balanceRel) {
                     uint reward = miningReward + minedHashRel * 100000000000000;
                     balanceOf[msg.sender] += reward;
                     totalSupply += reward;

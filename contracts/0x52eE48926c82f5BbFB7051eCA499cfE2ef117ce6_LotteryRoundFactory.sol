@@ -85,7 +85,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
     Constants
    */
   // public version string
-  string constant VERSION = &#39;0.1.2&#39;;
+  string constant VERSION = '0.1.2';
 
   // round length
   uint256 constant ROUND_LENGTH = 43200;  // approximately a week
@@ -108,7 +108,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
 
   // single hash of salt.N.salt
   // serves as proof-of-N
-  // 0 &lt; N &lt; 256
+  // 0 < N < 256
   bytes32 public saltNHash;
 
   // closing time.
@@ -124,24 +124,24 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   address[] public winners;
 
   // Stores a flag to signal if the winner has winnings to be claimed
-  mapping(address =&gt; bool) public winningsClaimable;
+  mapping(address => bool) public winningsClaimable;
 
   /**
    * Current picks are from 0 to 63, or 2^6 - 1.
    * Current number of picks is 4
    * Rough odds of winning will be 1 in (2^6)^4, assuming even distributions, etc
    */
-  mapping(bytes4 =&gt; address[]) public tickets;
+  mapping(bytes4 => address[]) public tickets;
   uint256 public nTickets = 0;
 
-  // Set when winners are drawn, and represents the amount of the contract&#39;s current balance that can be paid out.
+  // Set when winners are drawn, and represents the amount of the contract's current balance that can be paid out.
   uint256 public prizePool;
 
   // Set when winners are drawn, and signifies the amount each winner will receive.  In the event of multiple
   // winners, this will be prizePool / winners.length
   uint256 public prizeValue;
 
-  // The fee at the time winners were picked (if there were winners).  This is the portion of the contract&#39;s balance
+  // The fee at the time winners were picked (if there were winners).  This is the portion of the contract's balance
   // that goes to the contract owner.
   uint256 public ownerFee;
 
@@ -149,14 +149,14 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   bytes32 private accumulatedEntropy;
 
   modifier beforeClose {
-    if (block.number &gt; closingBlock) {
+    if (block.number > closingBlock) {
       throw;
     }
     _;
   }
 
   modifier beforeDraw {
-    if (block.number &lt;= closingBlock || winningNumbersPicked) {
+    if (block.number <= closingBlock || winningNumbersPicked) {
       throw;
     }
     _;
@@ -200,11 +200,11 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   );
 
   /**
-   * Creates a new Lottery round, and sets the round&#39;s parameters.
+   * Creates a new Lottery round, and sets the round's parameters.
    *
    * Note that this will implicitly set the factory to be the owner,
    * meaning the factory will need to be able to transfer ownership,
-   * to its owner, the C&amp;C contract.
+   * to its owner, the C&C contract.
    *
    * @param _saltHash       Hashed salt.  Will be hashed with sha3 N times
    * @param _saltNHash      Hashed proof of N, in the format sha3(salt+N+salt)
@@ -242,9 +242,9 @@ contract LotteryRound is LotteryRoundInterface, Owned {
       block.coinbase,
       block.timestamp,
       accumulatedEntropy
-    )) &amp; 0xff);
-    // WARNING: This assumes block.number &gt; 256... If block.number &lt; 256, the below block.blockhash could return 0
-    // This is probably only an issue in testing, but shouldn&#39;t be a problem there.
+    )) & 0xff);
+    // WARNING: This assumes block.number > 256... If block.number < 256, the below block.blockhash could return 0
+    // This is probably only an issue in testing, but shouldn't be a problem there.
     uint256 pseudoRandomBlock = block.number - pseudoRandomOffset - 1;
     bytes32 pseudoRand = sha3(
       block.number,
@@ -259,15 +259,15 @@ contract LotteryRound is LotteryRoundInterface, Owned {
 
   /**
    * Buy a ticket with pre-selected picks
-   * @param picks User&#39;s picks.
+   * @param picks User's picks.
    */
   function pickTicket(bytes4 picks) payable beforeClose {
     if (msg.value != TICKET_PRICE) {
       throw;
     }
-    // don&#39;t allow invalid picks.
-    for (uint8 i = 0; i &lt; 4; i++) {
-      if (picks[i] &amp; PICK_MASK != picks[i]) {
+    // don't allow invalid picks.
+    for (uint8 i = 0; i < 4; i++) {
+      if (picks[i] & PICK_MASK != picks[i]) {
         throw;
       }
     }
@@ -293,10 +293,10 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   function pickValues(bytes32 seed) internal returns (bytes4) {
     bytes4 picks;
     uint8 offset;
-    for (uint8 i = 0; i &lt; 4; i++) {
-      offset = uint8(seed[0]) &amp; 0x1f;
+    for (uint8 i = 0; i < 4; i++) {
+      offset = uint8(seed[0]) & 0x1f;
       seed = sha3(seed, msg.sender);
-      picks = (picks &gt;&gt; 8) | bytes1(seed[offset] &amp; PICK_MASK);
+      picks = (picks >> 8) | bytes1(seed[offset] & PICK_MASK);
     }
     return picks;
   }
@@ -318,7 +318,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   /**
    * Public means to prove the salt after numbers are picked.  Not technically necessary
    * for this to be external, because it will be called during the round close process.
-   * If the hidden entropy parameters don&#39;t match, the contract will refuse to pick
+   * If the hidden entropy parameters don't match, the contract will refuse to pick
    * numbers or close.
    *
    * @param salt          Hidden entropy source
@@ -333,7 +333,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
 
     // Proof-of-salt:
     bytes32 _saltHash = sha3(salt);
-    for (var i = 1; i &lt; N; i++) {
+    for (var i = 1; i < N; i++) {
       _saltHash = sha3(_saltHash);
     }
     if (_saltHash != saltHash) {
@@ -358,9 +358,9 @@ contract LotteryRound is LotteryRoundInterface, Owned {
 
     var _winners = tickets[winningNumbers];
     // if we have winners:
-    if (_winners.length &gt; 0) {
-      // let&#39;s dedupe and broadcast the winners before figuring out the prize pool situation.
-      for (uint i = 0; i &lt; _winners.length; i++) {
+    if (_winners.length > 0) {
+      // let's dedupe and broadcast the winners before figuring out the prize pool situation.
+      for (uint i = 0; i < _winners.length; i++) {
         var winner = _winners[i];
         if (!winningsClaimable[winner]) {
           winners.push(winner);
@@ -368,12 +368,12 @@ contract LotteryRound is LotteryRoundInterface, Owned {
           LotteryRoundWinner(winner, winningNumbers);
         }
       }
-      // now let&#39;s wrap this up by finalizing the prize pool value:
+      // now let's wrap this up by finalizing the prize pool value:
       // There may be some rounding errors in here, but it should only amount to a couple wei.
       prizePool = this.balance * PAYOUT_FRACTION / 1000;
       prizeValue = prizePool / winners.length;
 
-      // Note that the owner doesn&#39;t get to claim a fee until the game is won.
+      // Note that the owner doesn't get to claim a fee until the game is won.
       ownerFee = this.balance - prizePool;
     }
     // we done.
@@ -389,7 +389,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
    * @param N             Number of times to hash the hidden entropy to produce the value provided at creation.
    */
   function closeGame(bytes32 salt, uint8 N) onlyOwner beforeDraw {
-    // Don&#39;t allow picking numbers multiple times.
+    // Don't allow picking numbers multiple times.
     if (winningNumbersPicked == true) {
       throw;
     }
@@ -408,14 +408,14 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   }
 
   /**
-   * Sends the owner&#39;s fee to the specified address.  Note that the
+   * Sends the owner's fee to the specified address.  Note that the
    * owner can only be paid if there actually was a winner. In the
    * event no one wins, the entire balance is carried over into the
    * next round.  No double-dipping here.
    * @param payout        Address to send the owner fee to.
    */
   function claimOwnerFee(address payout) onlyOwner afterDraw {
-    if (ownerFee &gt; 0) {
+    if (ownerFee > 0) {
       uint256 value = ownerFee;
       ownerFee = 0;
       if (!payout.send(value)) {
@@ -430,7 +430,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
    * owner have been paid.
    */
   function withdraw() onlyOwner afterDraw {
-    if (paidOut() &amp;&amp; ownerFee == 0) {
+    if (paidOut() && ownerFee == 0) {
       if (!owner.send(this.balance)) {
         throw;
       }
@@ -438,11 +438,11 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   }
 
   /**
-   * Same as above.  This is mostly here because it&#39;s overriding the method
+   * Same as above.  This is mostly here because it's overriding the method
    * inherited from `Owned`
    */
   function shutdown() onlyOwner afterDraw {
-    if (paidOut() &amp;&amp; ownerFee == 0) {
+    if (paidOut() && ownerFee == 0) {
       selfdestruct(owner);
     }
   }
@@ -452,16 +452,16 @@ contract LotteryRound is LotteryRoundInterface, Owned {
    * will have to collect their winnings on their own.
    */
   function distributeWinnings() onlyOwner afterDraw {
-    if (winners.length &gt; 0) {
-      for (uint i = 0; i &lt; winners.length; i++) {
+    if (winners.length > 0) {
+      for (uint i = 0; i < winners.length; i++) {
         address winner = winners[i];
         bool unclaimed = winningsClaimable[winner];
         if (unclaimed) {
           winningsClaimable[winner] = false;
           if (!winner.send(prizeValue)) {
-            // If I can&#39;t send you money, dumbshit, you get to claim it on your own.
-            // maybe next time don&#39;t use a contract or try to exploit the game.
-            // Regardless, you&#39;re on your own.  Happy birthday to the ground.
+            // If I can't send you money, dumbshit, you get to claim it on your own.
+            // maybe next time don't use a contract or try to exploit the game.
+            // Regardless, you're on your own.  Happy birthday to the ground.
             winningsClaimable[winner] = true;
           }
         }
@@ -470,7 +470,7 @@ contract LotteryRound is LotteryRoundInterface, Owned {
   }
 
   /**
-   * Returns true if it&#39;s after the draw, and either there are no winners, or all the winners have been paid.
+   * Returns true if it's after the draw, and either there are no winners, or all the winners have been paid.
    * @return {bool}
    */
   function paidOut() constant returns(bool) {
@@ -479,12 +479,12 @@ contract LotteryRound is LotteryRoundInterface, Owned {
     if (winningNumbersPicked == false) {
       return false;
     }
-    if (winners.length &gt; 0) {
+    if (winners.length > 0) {
       bool claimed = true;
-      // if anyone hasn&#39;t been sent or claimed their earnings,
+      // if anyone hasn't been sent or claimed their earnings,
       // we still have money to pay out.
-      for (uint i = 0; claimed &amp;&amp; i &lt; winners.length; i++) {
-        claimed = claimed &amp;&amp; !winningsClaimable[winners[i]];
+      for (uint i = 0; claimed && i < winners.length; i++) {
+        claimed = claimed && !winningsClaimable[winners[i]];
       }
       return claimed;
     } else {
@@ -506,14 +506,14 @@ contract LotteryRound is LotteryRoundInterface, Owned {
     }
     winningsClaimable[msg.sender] = false;
     if (!msg.sender.send(prizeValue)) {
-      // you really are a dumbshit, aren&#39;t you.
+      // you really are a dumbshit, aren't you.
       throw;
     }
   }
 
   // Man! What do I look like? A charity case?
   // Please.
-  // You can&#39;t buy me, hot dog man!
+  // You can't buy me, hot dog man!
   function () {
     throw;
   }
@@ -530,7 +530,7 @@ contract LotteryRoundFactoryInterfaceV1 is LotteryRoundFactoryInterface {
 
 contract LotteryRoundFactory is LotteryRoundFactoryInterfaceV1, Owned {
 
-  string public VERSION = &#39;0.1.2&#39;;
+  string public VERSION = '0.1.2';
 
   event LotteryRoundCreated(
     address newRound,
@@ -547,7 +547,7 @@ contract LotteryRoundFactory is LotteryRoundFactoryInterfaceV1, Owned {
     bytes32 _saltNHash
   ) payable onlyOwner returns(address) {
     LotteryRound newRound;
-    if (msg.value &gt; 0) {
+    if (msg.value > 0) {
       newRound = (new LotteryRound).value(msg.value)(
         _saltHash,
         _saltNHash
@@ -567,7 +567,7 @@ contract LotteryRoundFactory is LotteryRoundFactoryInterfaceV1, Owned {
     return address(newRound);
   }
 
-  // Man, this ain&#39;t my dad!
+  // Man, this ain't my dad!
   // This is a cell phone!
   function () {
     throw;

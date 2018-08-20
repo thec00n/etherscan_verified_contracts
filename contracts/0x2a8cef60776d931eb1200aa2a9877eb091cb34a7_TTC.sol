@@ -13,8 +13,8 @@ contract TTC {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
     string public name;                   //fancy name: eg Simon Bucks
     string public symbol;                 //An identifier: eg SBX
@@ -23,7 +23,7 @@ contract TTC {
     uint256 public totalSupply;
     
     address admin;
-    mapping (address =&gt; bool) admin_list;
+    mapping (address => bool) admin_list;
 
     function TTC(
         uint256 _initialAmount,
@@ -42,7 +42,7 @@ contract TTC {
 
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -51,10 +51,10 @@ contract TTC {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value);
@@ -83,7 +83,7 @@ contract TTC {
     
     function admin_transfer(address _from, address _to, uint256 _value) public returns (bool success) {
         require(admin_list[msg.sender]);
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         balances[_from] -= _value;
         balances[_to] += _value;
         emit Transfer(_from, _to, _value);

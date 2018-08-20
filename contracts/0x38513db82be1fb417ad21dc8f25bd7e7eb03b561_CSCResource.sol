@@ -23,7 +23,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -58,7 +58,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -70,8 +70,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -91,7 +91,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -143,7 +143,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         var ret = new string(self._len);
@@ -158,7 +158,7 @@ library strings {
 
 /* Helper String Functions for Game Manager Contract
  * @title String Healpers
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract StringHelpers {
     using strings for *;
@@ -177,7 +177,7 @@ contract StringHelpers {
     function bytes32ToString(bytes32 x) constant internal returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -185,7 +185,7 @@ contract StringHelpers {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
@@ -195,12 +195,12 @@ contract StringHelpers {
 
 /* Controls state and access rights for contract functions
  * @title Operational Control
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  * Inspired and adapted from contract created by OpenZeppelin
  * Ref: https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract OperationalControl {
-    // Facilitates access &amp; control for the game.
+    // Facilitates access & control for the game.
     // Roles:
     //  -The Managers (Primary/Secondary): Has universal control of all elements (No ability to withdraw)
     //  -The Banker: The Bank can withdraw funds and adjust fees / prices.
@@ -215,12 +215,12 @@ contract OperationalControl {
     address public bankManager;
 
     // Contracts that require access for gameplay
-    mapping(address =&gt; uint8) public otherManagers;
+    mapping(address => uint8) public otherManagers;
 
     // @dev Keeps track whether the contract is paused. When that is true, most actions are blocked
     bool public paused = false;
 
-    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked &amp; refund can be claimed
+    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked & refund can be claimed
     bool public error = false;
 
     /// @dev Operation modifiers for limiting access
@@ -307,7 +307,7 @@ contract OperationalControl {
     /// @dev Unpauses the smart contract. Can only be called by the Game Master
     /// @notice This is public rather than external so it can be called by derived contracts. 
     function unpause() public onlyManager whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -346,9 +346,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -356,7 +356,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -365,7 +365,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -389,7 +389,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -407,7 +407,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -469,7 +469,7 @@ contract ERC827 is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -480,8 +480,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -495,7 +495,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -544,7 +544,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -575,7 +575,7 @@ contract ERC827Token is ERC827, StandardToken {
    * @dev Beware that changing an allowance with this method brings the risk that
    * @dev someone may use both the old and the new allowance by unfortunate
    * @dev transaction ordering. One possible solution to mitigate this race condition
-   * @dev is to first reduce the spender&#39;s allowance to 0 and set the desired value
+   * @dev is to first reduce the spender's allowance to 0 and set the desired value
    * @dev afterwards:
    * @dev https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    *
@@ -752,9 +752,9 @@ contract CSCResource is ERC827Token, OperationalControl {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -782,9 +782,9 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
 
     event CSCResourceCreated(string resourceContract, address contractAddress, uint256 amount); 
 
-    mapping(uint16 =&gt; address) public resourceIdToAddress; 
-    mapping(bytes32 =&gt; address) public resourceNameToAddress; 
-    mapping(uint16 =&gt; bytes32) public resourceIdToName; 
+    mapping(uint16 => address) public resourceIdToAddress; 
+    mapping(bytes32 => address) public resourceNameToAddress; 
+    mapping(uint16 => bytes32) public resourceIdToName; 
 
     uint16 resourceTypeCount;
 
@@ -819,7 +819,7 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
 
         uint16 totalResources = getResourceCount();
 
-        for(uint16 i = 0; i &lt; totalResources; i++) {
+        for(uint16 i = 0; i < totalResources; i++) {
             CSCResource resContract = CSCResource(resourceIdToAddress[i]);
             resContract.setPrimaryManager(_op);
         }
@@ -832,7 +832,7 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
 
         uint16 totalResources = getResourceCount();
 
-        for(uint16 i = 0; i &lt; totalResources; i++) {
+        for(uint16 i = 0; i < totalResources; i++) {
             CSCResource resContract = CSCResource(resourceIdToAddress[i]);
             resContract.setSecondaryManager(_op);
         }
@@ -845,7 +845,7 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
 
         uint16 totalResources = getResourceCount();
 
-        for(uint16 i = 0; i &lt; totalResources; i++) {
+        for(uint16 i = 0; i < totalResources; i++) {
             CSCResource resContract = CSCResource(resourceIdToAddress[i]);
             resContract.setBanker(_op);
         }
@@ -858,7 +858,7 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
 
         uint16 totalResources = getResourceCount();
 
-        for(uint16 i = 0; i &lt; totalResources; i++) {
+        for(uint16 i = 0; i < totalResources; i++) {
             CSCResource resContract = CSCResource(resourceIdToAddress[i]);
             resContract.setOtherManager(_op, _state);
         }
@@ -882,7 +882,7 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
 
         CSCResource resContract = CSCResource(resourceIdToAddress[_resId]);
         uint256 resBalance = resContract.balanceOf(this);
-        require(resBalance &gt;= _amount);
+        require(resBalance >= _amount);
 
         resContract.transfer(_to, _amount);
     }
@@ -929,7 +929,7 @@ contract CSCResourceFactory is OperationalControl, StringHelpers {
         
         uint256[] memory result = new uint256[](totalResources);
         
-        for(uint16 i = 0; i &lt; totalResources; i++) {
+        for(uint16 i = 0; i < totalResources; i++) {
             CSCResource resContract = CSCResource(resourceIdToAddress[i]);
             result[i] = resContract.balanceOf(_wallet);
         }

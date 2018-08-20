@@ -15,18 +15,18 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         require(a == b * c + a % b);
         return c;
@@ -86,11 +86,11 @@ contract StandardToken is Token {
      * - Integer overflow = OK, checked
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -100,8 +100,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -124,9 +124,9 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 }
@@ -141,8 +141,8 @@ contract StandardToken is Token {
  */
 contract PIXToken is StandardToken, SafeMath {
 
-    string public name = &quot;PIX Token&quot;;
-    string public symbol = &quot;PIX&quot;;
+    string public name = "PIX Token";
+    string public symbol = "PIX";
 
     // Initial founder address (set in constructor)
     // This address is used as a controller address, in order to properly handle administration of the token.
@@ -217,7 +217,7 @@ contract PIXToken is StandardToken, SafeMath {
 
     bool public halted = false; //the founder address can set this to true to halt the crowdsale due to emergency.
 
-    mapping(address =&gt; uint256) presaleWhitelist; // Pre-sale Whitelist
+    mapping(address => uint256) presaleWhitelist; // Pre-sale Whitelist
 
     event Buy(address indexed sender, uint eth, uint fbt);
     event Withdraw(address indexed sender, address to, uint eth);
@@ -245,10 +245,10 @@ contract PIXToken is StandardToken, SafeMath {
     function getCurrentState() constant public returns (State) {
 
         if(halted) return State.Halted;
-        else if(block.timestamp &lt; publicSaleStart) return State.PreSale;
-        else if(block.timestamp &gt; publicSaleStart &amp;&amp; block.timestamp &lt;= day2Start) return State.Day1;
-        else if(block.timestamp &gt; day2Start &amp;&amp; block.timestamp &lt;= day3Start) return State.Day2;
-        else if(block.timestamp &gt; day3Start &amp;&amp; block.timestamp &lt;= saleEnd) return State.Day3;
+        else if(block.timestamp < publicSaleStart) return State.PreSale;
+        else if(block.timestamp > publicSaleStart && block.timestamp <= day2Start) return State.Day1;
+        else if(block.timestamp > day2Start && block.timestamp <= day3Start) return State.Day2;
+        else if(block.timestamp > day3Start && block.timestamp <= saleEnd) return State.Day3;
         else return State.Running;
     }
 
@@ -274,7 +274,7 @@ contract PIXToken is StandardToken, SafeMath {
     }
 
     /*
-        Entry point for purchasing for one&#39;s self.
+        Entry point for purchasing for one's self.
     */
     function buy() payable public {
         buyRecipient(msg.sender);
@@ -292,25 +292,25 @@ contract PIXToken is StandardToken, SafeMath {
 
         if(current_state == State.PreSale)
         {
-            require (presaleWhitelist[msg.sender] &gt; 0);
+            require (presaleWhitelist[msg.sender] > 0);
             raisePreSale = safeAdd(raisePreSale, usdCentsRaise); //add current raise to pre-sell amount
-            require(raisePreSale &lt; capPreSale &amp;&amp; usdCentsRaise &lt; presaleWhitelist[msg.sender]); //ensure pre-sale cap, 15m usd * 100 so we have cents
+            require(raisePreSale < capPreSale && usdCentsRaise < presaleWhitelist[msg.sender]); //ensure pre-sale cap, 15m usd * 100 so we have cents
             presaleWhitelist[msg.sender] = presaleWhitelist[msg.sender] - usdCentsRaise; // Remove the amount purchased from the pre-sale permitted for that user
         }
         else if (current_state == State.Day1)
         {
             raiseDay1 = safeAdd(raiseDay1, usdCentsRaise); //add current raise to pre-sell amount
-            require(raiseDay1 &lt; (capDay1 - raisePreSale)); //ensure day 1 cap, which is lower by the amount we pre-sold
+            require(raiseDay1 < (capDay1 - raisePreSale)); //ensure day 1 cap, which is lower by the amount we pre-sold
         }
         else if (current_state == State.Day2)
         {
             raiseDay2 = safeAdd(raiseDay2, usdCentsRaise); //add current raise to pre-sell amount
-            require(raiseDay2 &lt; capDay2); //ensure day 2 cap
+            require(raiseDay2 < capDay2); //ensure day 2 cap
         }
         else if (current_state == State.Day3)
         {
             raiseDay3 = safeAdd(raiseDay3, usdCentsRaise); //add current raise to pre-sell amount
-            require(raiseDay3 &lt; capDay3); //ensure day 3 cap
+            require(raiseDay3 < capDay3); //ensure day 3 cap
         }
         else revert();
 
@@ -340,35 +340,35 @@ contract PIXToken is StandardToken, SafeMath {
         require(getCurrentState() == State.Running);
         uint tokens = 0;
 
-        if(block.timestamp &gt; saleEnd &amp;&amp; !allocatedFounders)
+        if(block.timestamp > saleEnd && !allocatedFounders)
         {
             allocatedFounders = true;
             tokens = totalTokensCompany;
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year1Unlock &amp;&amp; !allocated1Year)
+        else if(block.timestamp > year1Unlock && !allocated1Year)
         {
             allocated1Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year2Unlock &amp;&amp; !allocated2Year)
+        else if(block.timestamp > year2Unlock && !allocated2Year)
         {
             allocated2Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year3Unlock &amp;&amp; !allocated3Year)
+        else if(block.timestamp > year3Unlock && !allocated3Year)
         {
             allocated3Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year4Unlock &amp;&amp; !allocated4Year)
+        else if(block.timestamp > year4Unlock && !allocated4Year)
         {
             allocated4Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
@@ -419,7 +419,7 @@ contract PIXToken is StandardToken, SafeMath {
         IE: 100 is $100 is 10000 cents.  The correct value to enter is 100
     */
     function addPresaleWhitelist(address toWhitelist, uint256 amount){
-        require(msg.sender==founder &amp;&amp; amount &gt; 0);
+        require(msg.sender==founder && amount > 0);
         presaleWhitelist[toWhitelist] = amount * 100;
     }
 
@@ -434,7 +434,7 @@ contract PIXToken is StandardToken, SafeMath {
      * - Test transfer after restricted period
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(block.timestamp &gt; coinTradeStart);
+        require(block.timestamp > coinTradeStart);
         return super.transfer(_to, _value);
     }
     /**
@@ -443,7 +443,7 @@ contract PIXToken is StandardToken, SafeMath {
      * Prevent transfers until freeze period is over.
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(block.timestamp &gt; coinTradeStart);
+        require(block.timestamp > coinTradeStart);
         return super.transferFrom(_from, _to, _value);
     }
 

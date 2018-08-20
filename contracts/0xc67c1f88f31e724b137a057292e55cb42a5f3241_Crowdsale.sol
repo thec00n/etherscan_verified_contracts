@@ -10,7 +10,7 @@ contract Crowdsale {
 	uint public amountLeft;
     uint public deadline;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
 
     event GoalReached(address recipient, uint totalAmountRaised);
@@ -53,7 +53,7 @@ contract Crowdsale {
 		}
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -73,7 +73,7 @@ contract Crowdsale {
      *
      */
     function safeWithdrawal() afterDeadline public{       
-        if (beneficiary == msg.sender&amp;&amp; amountLeft &gt; 0) {
+        if (beneficiary == msg.sender&& amountLeft > 0) {
             if (beneficiary.send(amountLeft)) {
                 FundTransfer(beneficiary, amountLeft, false);
             } else {

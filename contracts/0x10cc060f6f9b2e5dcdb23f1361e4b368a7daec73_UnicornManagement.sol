@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -61,7 +61,7 @@ contract UnicornManagement {
     bool public paused = true;
     bool public locked = false;
 
-    mapping(address =&gt; bool) tournaments;//address
+    mapping(address => bool) tournaments;//address
 
     event GamePaused();
     event GameResumed();
@@ -134,7 +134,7 @@ contract UnicornManagement {
         bool exists;
     }
 
-    mapping (address =&gt; InitItem) private initItems;
+    mapping (address => InitItem) private initItems;
     address[] private initList;
 
     function registerInit(address _contract) external whenPaused {
@@ -150,7 +150,7 @@ contract UnicornManagement {
     }
 
     function unregisterInit(address _contract) external onlyOwner whenPaused {
-        require(initItems[_contract].exists &amp;&amp; initList.length &gt; 0);
+        require(initItems[_contract].exists && initList.length > 0);
         uint lastIdx = initList.length - 1;
         initItems[initList[lastIdx]].listIndex = initItems[_contract].listIndex;
         initList[initItems[_contract].listIndex] = initList[lastIdx];
@@ -160,7 +160,7 @@ contract UnicornManagement {
     }
 
     function runInit() external onlyOwner whenPaused {
-        for(uint i = 0; i &lt; initList.length; i++) {
+        for(uint i = 0; i < initList.length; i++) {
             UnicornInit(initList[i]).init();
         }
     }
@@ -230,14 +230,14 @@ contract UnicornManagement {
 
 
     function setCreateDividendPercent(uint _percent) public onlyManager {
-        require(_percent &lt; 2500);
+        require(_percent < 2500);
         //no more then 25%
         createDividendPercent = _percent;
         emit NewCreateDividendPercent(_percent);
     }
 
     function setSellDividendPercent(uint _percent) public onlyManager {
-        require(_percent &lt; 2500);
+        require(_percent < 2500);
         //no more then 25%
         sellDividendPercent = _percent;
         emit NewSellDividendPercent(_percent);

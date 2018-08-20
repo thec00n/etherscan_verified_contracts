@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -12,11 +12,11 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -40,7 +40,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -53,7 +53,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -78,7 +78,7 @@ contract Utils {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -137,7 +137,7 @@ contract Owned is IOwned {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) {}
     function symbol() public constant returns (string) {}
     function decimals() public constant returns (uint8) {}
@@ -160,10 +160,10 @@ contract ITokenHolder is IOwned {
 
 
 /*
-    We consider every contract to be a &#39;token holder&#39; since it&#39;s currently not possible
+    We consider every contract to be a 'token holder' since it's currently not possible
     for a contract to deny receiving tokens.
 
-    The TokenHolder&#39;s contract sole purpose is to provide a safety mechanism that allows
+    The TokenHolder's contract sole purpose is to provide a safety mechanism that allows
     the owner to send tokens that were sent to the contract by mistake back to their sender.
 */
 contract TokenHolder is ITokenHolder, Owned, Utils {
@@ -209,18 +209,18 @@ contract ISmartToken is IOwned, IERC20Token {
 /*
     The smart token controller is an upgradable part of the smart token that allows
     more functionality as well as fixes for bugs/exploits.
-    Once it accepts ownership of the token, it becomes the token&#39;s sole controller
+    Once it accepts ownership of the token, it becomes the token's sole controller
     that can execute any of its functions.
 
     To upgrade the controller, ownership must be transferred to a new controller, along with
     any relevant data.
 
     The smart token must be set on construction and cannot be changed afterwards.
-    Wrappers are provided (as opposed to a single &#39;execute&#39; function) for each of the token&#39;s functions, for easier access.
+    Wrappers are provided (as opposed to a single 'execute' function) for each of the token's functions, for easier access.
 
     Note that the controller can transfer token ownership to a new controller that
-    doesn&#39;t allow executing any function on the token, for a trustless solution.
-    Doing that will also remove the owner&#39;s ability to upgrade the controller.
+    doesn't allow executing any function on the token, for a trustless solution.
+    Doing that will also remove the owner's ability to upgrade the controller.
 */
 contract SmartTokenController is TokenHolder {
     ISmartToken public token;   // smart token
@@ -234,13 +234,13 @@ contract SmartTokenController is TokenHolder {
         token = _token;
     }
 
-    // ensures that the controller is the token&#39;s owner
+    // ensures that the controller is the token's owner
     modifier active() {
         assert(token.owner() == address(this));
         _;
     }
 
-    // ensures that the controller is not the token&#39;s owner
+    // ensures that the controller is not the token's owner
     modifier inactive() {
         assert(token.owner() != address(this));
         _;
@@ -367,10 +367,10 @@ contract IBancorGasPriceLimit {
 
 /*
     The BancorGasPriceLimit contract serves as an extra front-running attack mitigation mechanism.
-    It sets a maximum gas price on all bancor conversions, which prevents users from &quot;cutting in line&quot;
+    It sets a maximum gas price on all bancor conversions, which prevents users from "cutting in line"
     in order to front-run other transactions.
     The gas price limit is universal to all converters and it can be updated by the owner to be in line
-    with the network&#39;s current gas price.
+    with the network's current gas price.
 */
 contract BancorGasPriceLimit is IBancorGasPriceLimit, Owned, Utils {
     uint256 public gasPrice = 0 wei;    // maximum gas price for bancor transactions
@@ -436,12 +436,12 @@ contract IEtherToken is ITokenHolder, IERC20Token {
     bancor network in a single transaction.
 
     A note on conversion paths -
-    Conversion path is a data structure that&#39;s used when converting a token to another token in the bancor network
-    when the conversion cannot necessarily be done by single converter and might require multiple &#39;hops&#39;.
+    Conversion path is a data structure that's used when converting a token to another token in the bancor network
+    when the conversion cannot necessarily be done by single converter and might require multiple 'hops'.
     The path defines which converters should be used and what kind of conversion should be done in each step.
 
-    The path format doesn&#39;t include complex structure and instead, it is represented by a single array
-    in which each &#39;hop&#39; is represented by a 2-tuple - smart token &amp; to token.
+    The path format doesn't include complex structure and instead, it is represented by a single array
+    in which each 'hop' is represented by a 2-tuple - smart token & to token.
     In addition, the first element is always the source token.
     The smart token is only used as a pointer to a converter (since converter addresses are more likely to change).
 
@@ -449,7 +449,7 @@ contract IEtherToken is ITokenHolder, IERC20Token {
     [source token, smart token, to token, smart token, to token...]
 */
 contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
-    mapping (address =&gt; bool) public etherTokens;   // list of all supported ether tokens
+    mapping (address => bool) public etherTokens;   // list of all supported ether tokens
 
     /**
         @dev constructor
@@ -457,9 +457,9 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
     function BancorQuickConverter() {
     }
 
-    // validates a conversion path - verifies that the number of elements is odd and that maximum number of &#39;hops&#39; is 10
+    // validates a conversion path - verifies that the number of elements is odd and that maximum number of 'hops' is 10
     modifier validConversionPath(IERC20Token[] _path) {
-        require(_path.length &gt; 2 &amp;&amp; _path.length &lt;= (1 + 2 * 10) &amp;&amp; _path.length % 2 == 1);
+        require(_path.length > 2 && _path.length <= (1 + 2 * 10) && _path.length % 2 == 1);
         _;
     }
 
@@ -498,7 +498,7 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
     {
         // if ETH is provided, ensure that the amount is identical to _amount and verify that the source token is an ether token
         IERC20Token fromToken = _path[0];
-        require(msg.value == 0 || (_amount == msg.value &amp;&amp; etherTokens[fromToken]));
+        require(msg.value == 0 || (_amount == msg.value && etherTokens[fromToken]));
 
         ISmartToken smartToken;
         IERC20Token toToken;
@@ -507,20 +507,20 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
 
         // if ETH was sent with the call, the source is an ether token - deposit the ETH in it
         // otherwise, we assume we already have the tokens
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             IEtherToken(fromToken).deposit.value(msg.value)();
 
         // iterate over the conversion path
-        for (uint256 i = 1; i &lt; pathLength; i += 2) {
+        for (uint256 i = 1; i < pathLength; i += 2) {
             smartToken = ISmartToken(_path[i]);
             toToken = _path[i + 1];
             converter = ITokenConverter(smartToken.owner());
 
-            // if the smart token isn&#39;t the source (from token), the converter doesn&#39;t have control over it and thus we need to approve the request
+            // if the smart token isn't the source (from token), the converter doesn't have control over it and thus we need to approve the request
             if (smartToken != fromToken)
                 ensureAllowance(fromToken, converter, _amount);
 
-            // make the conversion - if it&#39;s the last one, also provide the minimum return value
+            // make the conversion - if it's the last one, also provide the minimum return value
             _amount = converter.change(fromToken, toToken, _amount, i == pathLength - 2 ? _minReturn : 1);
             fromToken = toToken;
         }
@@ -537,7 +537,7 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
     }
 
     /**
-        @dev claims the caller&#39;s tokens, converts them to any other token in the bancor network
+        @dev claims the caller's tokens, converts them to any other token in the bancor network
         by following a predefined conversion path and transfers the result tokens to a target account
         note that allowance must be set beforehand
 
@@ -573,7 +573,7 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
     }
 
     /**
-        @dev claims the caller&#39;s tokens, converts them to any other token in the bancor network
+        @dev claims the caller's tokens, converts them to any other token in the bancor network
         by following a predefined conversion path and transfers the result tokens back to the sender
         note that allowance must be set beforehand
 
@@ -588,7 +588,7 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
     }
 
     /**
-        @dev utility, checks whether allowance for the given spender exists and approves one if it doesn&#39;t
+        @dev utility, checks whether allowance for the given spender exists and approves one if it doesn't
 
         @param _token   token to check the allowance in
         @param _spender approved address
@@ -596,7 +596,7 @@ contract BancorQuickConverter is IBancorQuickConverter, TokenHolder {
     */
     function ensureAllowance(IERC20Token _token, address _spender, uint256 _value) private {
         // check if allowance for the given amount already exists
-        if (_token.allowance(this, _spender) &gt;= _value)
+        if (_token.allowance(this, _spender) >= _value)
             return;
 
         // if the allowance is nonzero, must reset it to 0 first
@@ -699,7 +699,7 @@ contract BancorConverterExtensions is IBancorConverterExtensions, TokenHolder {
         - minimum return argument for each conversion provides a way to define a minimum/maximum price for the transaction
         - gas price limit prevents users from having control over the order of execution
       Other potential solutions might include a commit/reveal based schemes
-    - Possibly add getters for the connector fields so that the client won&#39;t need to rely on the order in the struct
+    - Possibly add getters for the connector fields so that the client won't need to rely on the order in the struct
 */
 contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
     uint32 private constant MAX_WEIGHT = 1000000;
@@ -713,13 +713,13 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
         bool isSet;                     // used to tell if the mapping element is defined
     }
 
-    string public version = &#39;0.5&#39;;
-    string public converterType = &#39;bancor&#39;;
+    string public version = '0.5';
+    string public converterType = 'bancor';
 
     IBancorConverterExtensions public extensions;       // bancor converter extensions contract
     IERC20Token[] public connectorTokens;               // ERC20 standard token addresses
-    IERC20Token[] public quickBuyPath;                  // conversion path that&#39;s used in order to buy the token with ETH
-    mapping (address =&gt; Connector) public connectors;   // connector token addresses -&gt; connector data
+    IERC20Token[] public quickBuyPath;                  // conversion path that's used in order to buy the token with ETH
+    mapping (address => Connector) public connectors;   // connector token addresses -> connector data
     uint32 private totalConnectorWeight = 0;            // used to efficiently prevent increasing the total connector weight above 100%
     uint32 public maxConversionFee = 0;                 // maximum conversion fee for the lifetime of the contract, represented in ppm, 0...1000000 (0 = no fee, 100 = 0.01%, 1000000 = 100%)
     uint32 public conversionFee = 0;                    // current conversion fee, represented in ppm, 0...maxConversionFee
@@ -764,35 +764,35 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
 
     // verifies that the gas price is lower than the universal limit
     modifier validGasPrice() {
-        assert(tx.gasprice &lt;= extensions.gasPriceLimit().gasPrice());
+        assert(tx.gasprice <= extensions.gasPriceLimit().gasPrice());
         _;
     }
 
     // validates maximum conversion fee
     modifier validMaxConversionFee(uint32 _conversionFee) {
-        require(_conversionFee &gt;= 0 &amp;&amp; _conversionFee &lt;= MAX_CONVERSION_FEE);
+        require(_conversionFee >= 0 && _conversionFee <= MAX_CONVERSION_FEE);
         _;
     }
 
     // validates conversion fee
     modifier validConversionFee(uint32 _conversionFee) {
-        require(_conversionFee &gt;= 0 &amp;&amp; _conversionFee &lt;= maxConversionFee);
+        require(_conversionFee >= 0 && _conversionFee <= maxConversionFee);
         _;
     }
 
     // validates connector weight range
     modifier validConnectorWeight(uint32 _weight) {
-        require(_weight &gt; 0 &amp;&amp; _weight &lt;= MAX_WEIGHT);
+        require(_weight > 0 && _weight <= MAX_WEIGHT);
         _;
     }
 
-    // validates a conversion path - verifies that the number of elements is odd and that maximum number of &#39;hops&#39; is 10
+    // validates a conversion path - verifies that the number of elements is odd and that maximum number of 'hops' is 10
     modifier validConversionPath(IERC20Token[] _path) {
-        require(_path.length &gt; 2 &amp;&amp; _path.length &lt;= (1 + 2 * 10) &amp;&amp; _path.length % 2 == 1);
+        require(_path.length > 2 && _path.length <= (1 + 2 * 10) && _path.length % 2 == 1);
         _;
     }
 
-    // allows execution only when conversions aren&#39;t disabled
+    // allows execution only when conversions aren't disabled
     modifier conversionsAllowed {
         assert(conversionsEnabled);
         _;
@@ -923,7 +923,7 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
         notThis(_token)
         validConnectorWeight(_weight)
     {
-        require(_token != token &amp;&amp; !connectors[_token].isSet &amp;&amp; totalConnectorWeight + _weight &lt;= MAX_WEIGHT); // validate input
+        require(_token != token && !connectors[_token].isSet && totalConnectorWeight + _weight <= MAX_WEIGHT); // validate input
 
         connectors[_token].virtualBalance = 0;
         connectors[_token].weight = _weight;
@@ -941,7 +941,7 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
         @param _connectorToken         address of the connector token
         @param _weight                 constant connector weight, represented in ppm, 1-1000000
         @param _enableVirtualBalance   true to enable virtual balance for the connector, false to disable it
-        @param _virtualBalance         new connector&#39;s virtual balance
+        @param _virtualBalance         new connector's virtual balance
     */
     function updateConnector(IERC20Token _connectorToken, uint32 _weight, bool _enableVirtualBalance, uint256 _virtualBalance)
         public
@@ -950,7 +950,7 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
         validConnectorWeight(_weight)
     {
         Connector storage connector = connectors[_connectorToken];
-        require(totalConnectorWeight - connector.weight + _weight &lt;= MAX_WEIGHT); // validate input
+        require(totalConnectorWeight - connector.weight + _weight <= MAX_WEIGHT); // validate input
 
         totalConnectorWeight = totalConnectorWeight - connector.weight + _weight;
         connector.weight = _weight;
@@ -975,7 +975,7 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
     }
 
     /**
-        @dev returns the connector&#39;s virtual balance if one is defined, otherwise returns the actual balance
+        @dev returns the connector's virtual balance if one is defined, otherwise returns the actual balance
 
         @param _connectorToken  connector token contract address
 
@@ -1094,7 +1094,7 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
         returns (uint256)
     {
         uint256 amount = getPurchaseReturn(_connectorToken, _depositAmount);
-        assert(amount != 0 &amp;&amp; amount &gt;= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
+        assert(amount != 0 && amount >= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
 
         // update virtual balance if relevant
         Connector storage connector = connectors[_connectorToken];
@@ -1131,22 +1131,22 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
         greaterThanZero(_minReturn)
         returns (uint256)
     {
-        require(_sellAmount &lt;= token.balanceOf(msg.sender)); // validate input
+        require(_sellAmount <= token.balanceOf(msg.sender)); // validate input
 
         uint256 amount = getSaleReturn(_connectorToken, _sellAmount);
-        assert(amount != 0 &amp;&amp; amount &gt;= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
+        assert(amount != 0 && amount >= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
 
         uint256 tokenSupply = token.totalSupply();
         uint256 connectorBalance = getConnectorBalance(_connectorToken);
         // ensure that the trade will only deplete the connector if the total supply is depleted as well
-        assert(amount &lt; connectorBalance || (amount == connectorBalance &amp;&amp; _sellAmount == tokenSupply));
+        assert(amount < connectorBalance || (amount == connectorBalance && _sellAmount == tokenSupply));
 
         // update virtual balance if relevant
         Connector storage connector = connectors[_connectorToken];
         if (connector.isVirtualBalanceEnabled)
             connector.virtualBalance = safeSub(connector.virtualBalance, amount);
 
-        // destroy _sellAmount from the caller&#39;s balance in the smart token
+        // destroy _sellAmount from the caller's balance in the smart token
         token.destroy(msg.sender, _sellAmount);
         // transfer funds to the caller in the connector token
         // the transfer might fail if the actual connector balance is smaller than the virtual balance
@@ -1186,7 +1186,7 @@ contract BancorConverter is ITokenConverter, SmartTokenController, Managed {
             // not ETH, send the source tokens to the quick converter
             // if the token is the smart token, no allowance is required - destroy the tokens from the caller and issue them to the quick converter
             if (fromToken == token) {
-                token.destroy(msg.sender, _amount); // destroy _amount tokens from the caller&#39;s balance in the smart token
+                token.destroy(msg.sender, _amount); // destroy _amount tokens from the caller's balance in the smart token
                 token.issue(quickConverter, _amount); // issue _amount new tokens to the quick converter
             }
             else {

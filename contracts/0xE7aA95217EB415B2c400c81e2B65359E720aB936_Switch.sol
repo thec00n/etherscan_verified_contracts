@@ -1,7 +1,7 @@
 contract Switch {
     address constant theWithdraw = 0xbf4ed7b27f1d666546e30d74d50d173d20bca754;
     function Switch() {
-        forked = theWithdraw.balance &gt; 10000 ether;
+        forked = theWithdraw.balance > 10000 ether;
     }
     
     function transferringETC(address to) {

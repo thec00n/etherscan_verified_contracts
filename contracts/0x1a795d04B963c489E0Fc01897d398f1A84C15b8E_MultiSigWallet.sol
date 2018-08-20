@@ -11,8 +11,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -96,9 +96,9 @@ contract ERC20 {
 contract StandardToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -141,7 +141,7 @@ contract StandardToken is ERC20 {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -154,7 +154,7 @@ contract StandardToken is ERC20 {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -179,8 +179,8 @@ contract StandardToken is ERC20 {
     public
     returns (bool)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);
@@ -229,7 +229,7 @@ contract StandardToken is ERC20 {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -282,9 +282,9 @@ library SafeERC20 {
 }
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="6516110003040b4b02000a17020025060a0b16000b161c164b0b0011">[email&#160;protected]</span>&gt;
-/// modified by Juwita Winadwiastuti - &lt;juwita.winadwiastuti[at]hara.ag&gt;
-///             Arkan Gilang - &lt;arkan.gilang[at]hara.ag&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="6516110003040b4b02000a17020025060a0b16000b161c164b0b0011">[email protected]</span>>
+/// modified by Juwita Winadwiastuti - <juwita.winadwiastuti[at]hara.ag>
+///             Arkan Gilang - <arkan.gilang[at]hara.ag>
 contract MultiSigWallet {
 
     /*
@@ -310,11 +310,11 @@ contract MultiSigWallet {
     /*
      *  Storage
      */
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
-    mapping (uint =&gt; address) public tokens;
-    mapping (uint =&gt; bool) public tokenset;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
+    mapping (uint => address) public tokens;
+    mapping (uint => bool) public tokenset;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -365,10 +365,10 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        require(ownerCount &lt;= MAX_OWNER_COUNT
-            &amp;&amp; _required &lt;= ownerCount
-            &amp;&amp; _required != 0
-            &amp;&amp; ownerCount != 0);
+        require(ownerCount <= MAX_OWNER_COUNT
+            && _required <= ownerCount
+            && _required != 0
+            && ownerCount != 0);
         _;
     }
 
@@ -387,7 +387,7 @@ contract MultiSigWallet {
         public
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             emit Deposit(msg.sender, msg.value);
     }
 
@@ -441,7 +441,7 @@ contract MultiSigWallet {
         changeRequirement(halfOwner + 1);
 
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
@@ -460,7 +460,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -570,13 +570,13 @@ contract MultiSigWallet {
         if (isConfirmed(transactionId)) {
             Transaction storage txn = transactions[transactionId];
             txn.executed = true;
-            if (txn.txType == 0 &amp;&amp; withdraw(txn.destination, txn.value))
+            if (txn.txType == 0 && withdraw(txn.destination, txn.value))
                 emit Execution(transactionId);
-            else if (txn.txType == 1 &amp;&amp; addOwner(txn.destination))
+            else if (txn.txType == 1 && addOwner(txn.destination))
                 emit Execution(transactionId);
-            else if (txn.txType == 2 &amp;&amp; removeOwner(txn.destination))
+            else if (txn.txType == 2 && removeOwner(txn.destination))
                 emit Execution(transactionId);
-            else if (txn.txType &gt; 3 &amp;&amp; tokenWithdraw(txn.txType-10,txn.destination,txn.value))
+            else if (txn.txType > 3 && tokenWithdraw(txn.txType-10,txn.destination,txn.value))
                 emit Execution(transactionId);
             else {
                 emit ExecutionFailure(transactionId);
@@ -618,7 +618,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -660,7 +660,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -674,9 +674,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -701,13 +701,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
     

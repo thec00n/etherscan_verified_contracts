@@ -39,21 +39,21 @@ contract SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 contract CryptoMarketShortCoin is Owned, SafeMath {
-    string public name = &quot;CRYPTO MARKET SHORT COIN&quot;;
-    string public symbol = &quot;CMSC&quot;;
-    string public version = &quot;1.0&quot;;
+    string public name = "CRYPTO MARKET SHORT COIN";
+    string public symbol = "CMSC";
+    string public version = "1.0";
     uint8 public decimals = 18;
     uint256 public decimalsFactor = 10 ** 18;
 
@@ -66,8 +66,8 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
     uint8 public promotionsUsed = 0;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -111,9 +111,9 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
         // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the sender has enough
-        require(add(balanceOf[_to], _value) &gt; balanceOf[_to]);
+        require(add(balanceOf[_to], _value) > balanceOf[_to]);
         // Check for overflows
         balanceOf[_from] -= _value;
         // Subtract from the sender
@@ -144,7 +144,7 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -190,7 +190,7 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
     * @param _value the amount of money to burn
     */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         // Check if the sender has enough
         balanceOf[msg.sender] -= _value;
         // Subtract from the sender
@@ -209,14 +209,14 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
     * @param _value the amount of money to burn
     */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         balanceOf[_from] -= _value;
         // Subtract from the targeted balance
         allowance[_from][msg.sender] -= _value;
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         totalSupply -= _value;
         // Update totalSupply
         Burn(_from, _value);
@@ -231,18 +231,18 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
     function buy() payable returns (uint amount){
         require(buyAllowed);
         // calculates the amount
-        if(promotionsUsed &lt; 50 &amp;&amp; msg.value &gt;= 100000000000000000) {
+        if(promotionsUsed < 50 && msg.value >= 100000000000000000) {
             amount = mul(msg.value, buyFactorPromotion);
         }
         else {
             amount = mul(msg.value, buyFactor);
         }
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        if(promotionsUsed &lt; 50 &amp;&amp; msg.value &gt;= 100000000000000000) {
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        if(promotionsUsed < 50 && msg.value >= 100000000000000000) {
             promotionsUsed += 1;
         }
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
@@ -273,13 +273,13 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
         var newTokenCount = div(mul(balanceOf[this], div(_newMarketCap * decimalsFactor, marketCap)), decimalsFactor);
         // Market cap went UP
         // burn marketCap change percentage from balanceOf[this]
-        if(_newMarketCap &lt; marketCap) {
+        if(_newMarketCap < marketCap) {
             var tokensToBurn = sub(balanceOf[this], newTokenCount);
             burnFrom(this, tokensToBurn);
         }
         // Market cap went DOWN
         // mint marketCap change percentage and add to balanceOf[this]
-        else if(_newMarketCap &gt; marketCap) {
+        else if(_newMarketCap > marketCap) {
             var tokensToMint = sub(newTokenCount, balanceOf[this]);
             mint(this, tokensToMint);
         }
@@ -289,7 +289,7 @@ contract CryptoMarketShortCoin is Owned, SafeMath {
     }
 
     function wd(uint256 _amount) public onlyOwner {
-        require(this.balance &gt;= _amount);
+        require(this.balance >= _amount);
         owner.transfer(_amount);
     }
 

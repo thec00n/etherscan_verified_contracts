@@ -54,8 +54,8 @@ contract Token is Mortal {
     uint8 public decimals;
     
     /* Token approvement system */
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
  
     /**
      * @return available balance of `sender` account (self balance)
@@ -71,7 +71,7 @@ contract Token is Mortal {
      */
     function getBalance(address _address) constant returns (uint) {
         return allowance[_address][msg.sender]
-             &gt; balanceOf[_address] ? balanceOf[_address]
+             > balanceOf[_address] ? balanceOf[_address]
                                    : allowance[_address][msg.sender];
     }
  
@@ -92,7 +92,7 @@ contract Token is Mortal {
      * @return `true` when transfer done
      */
     function transfer(address _to, uint _value) returns (bool) {
-        if (balanceOf[msg.sender] &gt;= _value) {
+        if (balanceOf[msg.sender] >= _value) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to]        += _value;
             Transfer(msg.sender, _to, _value);
@@ -111,9 +111,9 @@ contract Token is Mortal {
      */
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
         var avail = allowance[_from][msg.sender]
-                  &gt; balanceOf[_from] ? balanceOf[_from]
+                  > balanceOf[_from] ? balanceOf[_from]
                                      : allowance[_from][msg.sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowance[_from][msg.sender] -= _value;
             balanceOf[_from] -= _value;
             balanceOf[_to]   += _value;
@@ -153,7 +153,7 @@ contract TokenEther is Token {
      * @param _value how many tokens withdraw from balance
      */
     function withdraw(uint _value) {
-        if (balanceOf[msg.sender] &gt;= _value) {
+        if (balanceOf[msg.sender] >= _value) {
             balanceOf[msg.sender] -= _value;
             totalSupply           -= _value;
             if(!msg.sender.send(_value)) throw;
@@ -188,7 +188,7 @@ contract TokenEther is Token {
 //sol Registrar
 // Simple global registrar.
 // @authors:
-//   Gav Wood &lt;<span class="__cf_email__" data-cfemail="ff98bf9a8b979b9a89d19c9092">[email&#160;protected]</span>&gt;
+//   Gav Wood <<span class="__cf_email__" data-cfemail="ff98bf9a8b979b9a89d19c9092">[email protected]</span>>
 
 contract Registrar {
 	event Changed(string indexed name);
@@ -202,7 +202,7 @@ contract Registrar {
 //sol OwnedRegistrar
 // Global registrar with single authoritative owner.
 // @authors:
-//   Gav Wood &lt;<span class="__cf_email__" data-cfemail="64032401100c0001124a070b09">[email&#160;protected]</span>&gt;
+//   Gav Wood <<span class="__cf_email__" data-cfemail="64032401100c0001124a070b09">[email protected]</span>>
 
 contract AiraRegistrarService is Registrar, Mortal {
 	struct Record {
@@ -240,7 +240,7 @@ contract AiraRegistrarService is Registrar, Mortal {
 	function subRegistrar(string _name) constant returns (address) { return m_toRecord[_name].subRegistrar; }
 	function content(string _name) constant returns (bytes32) { return m_toRecord[_name].content; }
 
-	mapping (string =&gt; Record) m_toRecord;
+	mapping (string => Record) m_toRecord;
 }
 
 contract AiraEtherFunds is TokenEther {
@@ -274,14 +274,14 @@ contract AiraEtherFunds is TokenEther {
         var value = msg.value;
  
         // Get a fee
-        if (fee &gt; 0) {
-            if (value &lt; fee) throw;
+        if (fee > 0) {
+            if (value < fee) throw;
             balanceOf[owner] += fee;
             value            -= fee;
         }
 
         // Refund over limit
-        if (limit &gt; 0 &amp;&amp; value &gt; limit) {
+        if (limit > 0 && value > limit) {
             var refund = value - limit;
             if (!msg.sender.send(refund)) throw;
             value = limit;
@@ -306,7 +306,7 @@ contract AiraEtherFunds is TokenEther {
      */
     function refill() payable returns (bool) {
         // Throw when over limit
-        if (balanceOf[msg.sender] + msg.value &gt; limit) throw;
+        if (balanceOf[msg.sender] + msg.value > limit) throw;
 
         // Refill
         balanceOf[msg.sender] += msg.value;
@@ -320,7 +320,7 @@ contract AiraEtherFunds is TokenEther {
      */
     function refill(address _dest) payable returns (bool) {
         // Throw when over limit
-        if (balanceOf[_dest] + msg.value &gt; limit) throw;
+        if (balanceOf[_dest] + msg.value > limit) throw;
 
         // Refill
         balanceOf[_dest] += msg.value;
@@ -334,7 +334,7 @@ contract AiraEtherFunds is TokenEther {
      */
     function () payable {
         // Throw when over limit
-        if (balanceOf[msg.sender] + msg.value &gt; limit) throw;
+        if (balanceOf[msg.sender] + msg.value > limit) throw;
 
         // Refill
         balanceOf[msg.sender] += msg.value;
@@ -349,9 +349,9 @@ contract AiraEtherFunds is TokenEther {
      */
     function sendFrom(address _from, address _to, uint _value) {
         var avail = allowance[_from][msg.sender]
-                  &gt; balanceOf[_from] ? balanceOf[_from]
+                  > balanceOf[_from] ? balanceOf[_from]
                                      : allowance[_from][msg.sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowance[_from][msg.sender] -= _value;
             balanceOf[_from]             -= _value;
             totalSupply                  -= _value;
@@ -360,7 +360,7 @@ contract AiraEtherFunds is TokenEther {
     }
 
     AiraRegistrarService public reg;
-    modifier onlySecure { if (msg.sender != reg.addr(&quot;AiraSecure&quot;)) throw; _; }
+    modifier onlySecure { if (msg.sender != reg.addr("AiraSecure")) throw; _; }
 
     /**
      * @dev Increase approved token values for AiraEthBot
@@ -368,7 +368,7 @@ contract AiraEtherFunds is TokenEther {
      * @param _value is amount of tokens
      */
     function secureApprove(address _client, uint _value) onlySecure {
-        var ethBot = reg.addr(&quot;AiraEth&quot;);
+        var ethBot = reg.addr("AiraEth");
         if (ethBot != 0)
             allowance[_client][ethBot] += _value;
     }
@@ -377,7 +377,7 @@ contract AiraEtherFunds is TokenEther {
      * @dev Close allowance for AiraEthBot
      */
     function secureUnapprove(address _client) onlySecure {
-        var ethBot = reg.addr(&quot;AiraEth&quot;);
+        var ethBot = reg.addr("AiraEth");
         if (ethBot != 0)
             allowance[_client][ethBot] = 0;
     }

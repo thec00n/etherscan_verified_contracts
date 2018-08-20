@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -52,8 +52,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -68,9 +68,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -78,7 +78,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -87,7 +87,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -171,7 +171,7 @@ library SafeERC20 {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overridden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropriate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropriate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -267,9 +267,9 @@ contract Crowdsale {
 
   /**
    * @dev Validation of an incoming purchase. Use require statements to revert state when conditions are not met. Use `super` in contracts that inherit from Crowdsale to extend their validations.
-   * Example from CappedCrowdsale.sol&#39;s _preValidatePurchase method: 
+   * Example from CappedCrowdsale.sol's _preValidatePurchase method: 
    *   super._preValidatePurchase(_beneficiary, _weiAmount);
-   *   require(weiRaised.add(_weiAmount) &lt;= cap);
+   *   require(weiRaised.add(_weiAmount) <= cap);
    * @param _beneficiary Address performing the token purchase
    * @param _weiAmount Value in wei involved in the purchase
    */
@@ -365,7 +365,7 @@ contract WINECrowdsale is Ownable, Crowdsale {
       
   }
   
-  // validates an address - currently only checks that it isn&#39;t null
+  // validates an address - currently only checks that it isn't null
   modifier validAddress(address _address) {
       require(_address != 0x0);
       _;

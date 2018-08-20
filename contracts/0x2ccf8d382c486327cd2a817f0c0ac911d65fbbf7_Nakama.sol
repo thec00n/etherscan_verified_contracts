@@ -17,13 +17,13 @@ library SafeMath {
     }
  
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -77,12 +77,12 @@ contract Nakama is ERC20plus, Owned {
     uint public _totalSupply;
     bool public stopped = false;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     constructor() public {
-        symbol = &quot;NKM&quot;; 
-        name = &quot;Nakama&quot;;
+        symbol = "NKM"; 
+        name = "Nakama";
         decimals = 18;
         _totalSupply = 10422698937 * 10**uint(decimals);
         balances[owner] = _totalSupply;

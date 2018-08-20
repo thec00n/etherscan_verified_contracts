@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * SmartEth.co
  * ERC20 Token and ICO smart contracts development, smart contracts audit, ICO websites.
- * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d5e5253495c5e497d4e505c4f49584955135e52">[email&#160;protected]</a>
+ * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d5e5253495c5e497d4e505c4f49584955135e52">[email protected]</a>
  */
 
 /**
@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -176,11 +176,11 @@ contract QUIN_ICO is Pausable {
    * @dev Returns the rate of tokens per wei at the present time.
    */
   function getRate() public view returns (uint256) {
-    if (now &lt;= openingTime.add(14 days)) return 1000;   // 1st-14th July: 1 ETH = 1000 QUIN
-    if (now &gt; openingTime.add(14 days) &amp;&amp; now &lt;= openingTime.add(15 days)) return 667;   // 14th-15th July: 1 ETH = 667 QUIN
-    if (now &gt; openingTime.add(15 days) &amp;&amp; now &lt;= openingTime.add(16 days)) return 500;   // 15th-16th July: 1 ETH = 500 QUIN
-    if (now &gt; openingTime.add(16 days) &amp;&amp; now &lt;= openingTime.add(17 days)) return 400;   // 16th-17th July: 1 ETH = 400 QUIN
-    if (now &gt; openingTime.add(17 days)) return 333;   // 17th-18th July: 1 ETH = 333 QUIN
+    if (now <= openingTime.add(14 days)) return 1000;   // 1st-14th July: 1 ETH = 1000 QUIN
+    if (now > openingTime.add(14 days) && now <= openingTime.add(15 days)) return 667;   // 14th-15th July: 1 ETH = 667 QUIN
+    if (now > openingTime.add(15 days) && now <= openingTime.add(16 days)) return 500;   // 15th-16th July: 1 ETH = 500 QUIN
+    if (now > openingTime.add(16 days) && now <= openingTime.add(17 days)) return 400;   // 16th-17th July: 1 ETH = 400 QUIN
+    if (now > openingTime.add(17 days)) return 333;   // 17th-18th July: 1 ETH = 333 QUIN
   }
 
   // -----------------------------------------
@@ -226,8 +226,8 @@ contract QUIN_ICO is Pausable {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_beneficiary != address(0));
-    require(_weiAmount &gt;= minInvest);
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(_weiAmount >= minInvest);
+    require(now >= openingTime && now <= closingTime);
   }
 
   /**
@@ -269,14 +269,14 @@ contract QUIN_ICO is Pausable {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**
    * @dev called by the owner to withdraw all unsold tokens
    */
   function withdrawTokens() public onlyOwner {
-    require(now &gt; closingTime);
+    require(now > closingTime);
     uint256 unsold = token.balanceOf(this);
     token.transfer(owner, unsold);
   }
@@ -285,7 +285,7 @@ contract QUIN_ICO is Pausable {
    * @dev called by the owner to burn all unsold tokens
    */
   function burnTokens() public onlyOwner {
-    require(now &gt; closingTime);
+    require(now > closingTime);
     uint256 unsold = token.balanceOf(this);
     token.transfer(address(0), unsold);
   }

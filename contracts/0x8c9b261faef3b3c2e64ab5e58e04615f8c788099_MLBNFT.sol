@@ -1,7 +1,7 @@
 /**
  * Created on 2018-06-05 16:37
  * @summary: Our NFT Minting Contract which inherits ERC721 capability from LSNFT
- * @author: Fazri Zubair &amp; Farhan Khwaja
+ * @author: Fazri Zubair & Farhan Khwaja
  */
 pragma solidity ^0.4.23;
 
@@ -9,20 +9,20 @@ pragma solidity ^0.4.23;
 
 /* NFT Metadata Schema 
 {
-    &quot;title&quot;: &quot;Asset Metadata&quot;,
-    &quot;type&quot;: &quot;object&quot;,
-    &quot;properties&quot;: {
-        &quot;name&quot;: {
-            &quot;type&quot;: &quot;string&quot;,
-            &quot;description&quot;: &quot;Identifies the asset to which this NFT represents&quot;,
+    "title": "Asset Metadata",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Identifies the asset to which this NFT represents",
         },
-        &quot;description&quot;: {
-            &quot;type&quot;: &quot;string&quot;,
-            &quot;description&quot;: &quot;Describes the asset to which this NFT represents&quot;,
+        "description": {
+            "type": "string",
+            "description": "Describes the asset to which this NFT represents",
         },
-        &quot;image&quot;: {
-            &quot;type&quot;: &quot;string&quot;,
-            &quot;description&quot;: &quot;A URI pointing to a resource with mime type image/* representing the asset to which this NFT represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive.&quot;,
+        "image": {
+            "type": "string",
+            "description": "A URI pointing to a resource with mime type image/* representing the asset to which this NFT represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive.",
         }
     }
 }
@@ -38,8 +38,8 @@ library SafeMath {
   * @dev Multiplies two numbers, reverts on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // Gas optimization: this is cheaper than requiring &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -55,9 +55,9 @@ library SafeMath {
   * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    require(_b &gt; 0); // Solidity only automatically asserts when dividing by 0
+    require(_b > 0); // Solidity only automatically asserts when dividing by 0
     uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
 
     return c;
   }
@@ -66,7 +66,7 @@ library SafeMath {
   * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    require(_b &lt;= _a);
+    require(_b <= _a);
     uint256 c = _a - _b;
 
     return c;
@@ -77,7 +77,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
     uint256 c = _a + _b;
-    require(c &gt;= _a);
+    require(c >= _a);
 
     return c;
   }
@@ -105,7 +105,7 @@ library AddressUtils {
         // contracts then.
         // solium-disable-next-line security/no-inline-assembly
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -197,21 +197,21 @@ contract ERC721BasicToken is ERC721Basic {
     using SafeMath for uint256;
     using AddressUtils for address;
 
-    // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+    // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     bytes4 public constant ERC721_RECEIVED = 0x150b7a02;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     /**
     * @dev Guarantees msg.sender is owner of the given token
@@ -347,7 +347,7 @@ contract ERC721BasicToken is ERC721Basic {
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -363,14 +363,14 @@ contract ERC721BasicToken is ERC721Basic {
         canTransfer(_tokenId)
     {
         // solium-disable-next-line arg-overflow
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /**
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -511,7 +511,7 @@ contract ERC721BasicToken is ERC721Basic {
 contract ERC721Receiver {
     /**
     * @dev Magic value to be returned upon successful reception of an NFT
-    *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+    *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
     *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     */
     bytes4 public constant ERC721_RECEIVED = 0x150b7a02;
@@ -526,7 +526,7 @@ contract ERC721Receiver {
     * @param _from The sending address
     * @param _tokenId The NFT identifier which is being transfered
     * @param _data Additional data with no specified format
-    * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+    * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     */
     function onERC721Received(
         address _operator,
@@ -567,16 +567,16 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     string internal symbol_;
 
     // Mapping from owner to list of owned token IDs
-    mapping(address =&gt; uint256[]) internal ownedTokens;
+    mapping(address => uint256[]) internal ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
     // Array with all token ids, used for enumeration
     uint256[] internal allTokens;
 
     // Mapping from token id to position in the allTokens array
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
 
     // Base Server Address for Token MetaData URI
     string internal tokenURIBase;
@@ -585,7 +585,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     * @dev Returns an URI for a given token ID
     * @dev Throws if the token ID does not exist. May return an empty string.
     * @notice The user/developper needs to add the tokenID, in the end of URL, to 
-    * use the URI and get all details. Ex. www.&lt;apiURL&gt;.com/token/&lt;tokenID&gt;
+    * use the URI and get all details. Ex. www.<apiURL>.com/token/<tokenID>
     * @param _tokenId uint256 ID of the token to query
     */
     function tokenURI(uint256 _tokenId) public view returns (string) {
@@ -607,7 +607,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
         view
         returns (uint256)
     {
-        require (_index &lt; balanceOf(_owner));
+        require (_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -626,7 +626,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     * @return uint256 token ID at the given index of the tokens list
     */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require (_index &lt; totalSupply());
+        require (_index < totalSupply());
         return allTokens[_index];
     }
 
@@ -731,39 +731,39 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
     bytes4 constant InterfaceSignature_ERC165 = 0x01ffc9a7;
     /*
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
     */
 
     bytes4 constant InterfaceSignature_ERC721Enumerable = 0x780e9d63;
     /*
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;));
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+    bytes4(keccak256('tokenByIndex(uint256)'));
     */
 
     bytes4 constant InterfaceSignature_ERC721Metadata = 0x5b5e139f;
     /*
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;tokenURI(uint256)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('tokenURI(uint256)'));
     */
 
     bytes4 constant InterfaceSignature_ERC721 = 0x80ac58cd;
     /*
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-    bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;));
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('getApproved(uint256)')) ^
+    bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+    bytes4(keccak256('isApprovedForAll(address,address)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
     */
 
     bytes4 public constant InterfaceSignature_ERC721Optional =- 0x4f558e79;
     /*
-    bytes4(keccak256(&#39;exists(uint256)&#39;));
+    bytes4(keccak256('exists(uint256)'));
     */
 
     /**
@@ -787,7 +787,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 }
 /* Lucid Sight, Inc. ERC-721 Collectibles. 
  * @title LSNFT - Lucid Sight, Inc. Non-Fungible Token
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract LSNFT is ERC721Token {
   
@@ -881,12 +881,12 @@ contract LSNFT is ERC721Token {
 
 /** Controls state and access rights for contract functions
  * @title Operational Control
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  * Inspired and adapted from contract created by OpenZeppelin 
  * Ref: https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract OperationalControl {
-    /// Facilitates access &amp; control for the game.
+    /// Facilitates access & control for the game.
     /// Roles:
     ///  -The Managers (Primary/Secondary): Has universal control of all elements (No ability to withdraw)
     ///  -The Banker: The Bank can withdraw funds and adjust fees / prices.
@@ -901,12 +901,12 @@ contract OperationalControl {
     address public bankManager;
 
     // Contracts that require access for gameplay
-    mapping(address =&gt; uint8) public otherManagers;
+    mapping(address => uint8) public otherManagers;
 
     // @dev Keeps track whether the contract is paused. When that is true, most actions are blocked
     bool public paused = false;
 
-    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked &amp; refund can be claimed
+    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked & refund can be claimed
     bool public error = false;
 
     /**
@@ -1015,7 +1015,7 @@ contract OperationalControl {
      * @dev Unpauses the smart contract. Can only be called by the Game Master
      */
     function unpause() public onlyManager whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -1036,7 +1036,7 @@ contract OperationalControl {
 
 /** Base contract for MLBNFT Collectibles. Holds all commons, events and base variables.
  * @title Lucid Sight MLB NFT 2018
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract CollectibleBase is LSNFT {
 
@@ -1048,19 +1048,19 @@ contract CollectibleBase is LSNFT {
     /*** STORAGE ***/
 
     /// @dev A mapping of Team Id to Team Sequence Number to Collectible
-    mapping (uint256 =&gt; mapping (uint32 =&gt; uint256) ) public nftTeamIdToSequenceIdToCollectible;
+    mapping (uint256 => mapping (uint32 => uint256) ) public nftTeamIdToSequenceIdToCollectible;
 
     /// @dev A mapping from Team IDs to the Sequqence Number .
-    mapping (uint256 =&gt; uint32) public nftTeamIndexToCollectibleCount;
+    mapping (uint256 => uint32) public nftTeamIndexToCollectibleCount;
 
     /// @dev Array to hold details on attachment for each LS NFT Collectible
-    mapping(uint256 =&gt; uint256[]) public nftCollectibleAttachments;
+    mapping(uint256 => uint256[]) public nftCollectibleAttachments;
 
     /// @dev Mapping to control the asset generation per season.
-    mapping(uint256 =&gt; uint256) public generationSeasonController;
+    mapping(uint256 => uint256) public generationSeasonController;
 
     /// @dev Mapping for generation Season Dict.
-    mapping(uint256 =&gt; uint256) public generationSeasonDict;
+    mapping(uint256 => uint256) public generationSeasonDict;
 
     /// @dev internal function to update player override id
     function _updatePlayerOverrideId(uint256 _tokenId, uint256 _newPlayerOverrideId) internal {
@@ -1120,7 +1120,7 @@ contract CollectibleBase is LSNFT {
     }
 
     /** @param _owner The owner whose ships tokens we are interested in.
-      * @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+      * @dev This method MUST NEVER be called by smart contract code. First, it's fairly
       *  expensive (it walks the entire Collectibles owners array looking for NFT belonging to owner)
     */      
     function tokensOfOwner(address _owner) external view returns(uint256[] ownerTokens) {
@@ -1138,7 +1138,7 @@ contract CollectibleBase is LSNFT {
             // sequentially up to the total count.
             uint256 _assetId;
 
-            for (_assetId = 0; _assetId &lt; totalItems; _assetId++) {
+            for (_assetId = 0; _assetId < totalItems; _assetId++) {
                 result[resultIndex] = tokenOfOwnerByIndex(_owner,_assetId);
                 resultIndex++;
             }
@@ -1178,7 +1178,7 @@ contract CollectibleBase is LSNFT {
 
 /* Handles creating new Collectibles for promo and seed.
  * @title CollectibleMinting Minting
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  * Inspired and adapted from KittyCore.sol created by Axiom Zen
  * Ref: ETH Contract - 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
  */
@@ -1196,7 +1196,7 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
     bool public isBatchSupported = true;
     
     /// @dev A mapping of contracts that can trigger functions
-    mapping (address =&gt; bool) public contractsApprovedList;
+    mapping (address => bool) public contractsApprovedList;
     
     /**
      * @dev        Helps to toggle batch supported flag
@@ -1263,16 +1263,16 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
              nftOwner = managerPrimary;
         }
 
-        if(allNFTs.length &gt; 0) {
+        if(allNFTs.length > 0) {
             promoCreatedCount[_teamId]++;
         }
         
         uint32 _sequenceId = getSequenceId(_teamId);
         
         uint256 assetDetails = uint256(uint64(now));
-        assetDetails |= uint256(_sequenceId)&lt;&lt;64;
-        assetDetails |= uint256(_teamId)&lt;&lt;96;
-        assetDetails |= uint256(_posId)&lt;&lt;104;
+        assetDetails |= uint256(_sequenceId)<<64;
+        assetDetails |= uint256(_teamId)<<96;
+        assetDetails |= uint256(_posId)<<104;
 
         uint256[5] memory _nftData = [assetDetails, _attributes, _gameId, _playerOverrideId, _mlbPlayerId];
         
@@ -1313,9 +1313,9 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
         uint32 _sequenceId = getSequenceId(_teamId);
         
         uint256 assetDetails = uint256(uint64(now));
-        assetDetails |= uint256(_sequenceId)&lt;&lt;64;
-        assetDetails |= uint256(_teamId)&lt;&lt;96;
-        assetDetails |= uint256(_posId)&lt;&lt;104;
+        assetDetails |= uint256(_sequenceId)<<64;
+        assetDetails |= uint256(_teamId)<<96;
+        assetDetails |= uint256(_posId)<<104;
 
         uint256[5] memory _nftData = [assetDetails, _attributes, _gameId, _playerOverrideId, _mlbPlayerId];
         
@@ -1324,7 +1324,7 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
 
     /**
      * @dev Generate new Reward Collectible and transfer it to the owner, with isAttached as 0.
-     * @notice Helps in redeeming the Rewards using our Oracle. Creates &amp; transfers the asset to the redeemer (_owner)
+     * @notice Helps in redeeming the Rewards using our Oracle. Creates & transfers the asset to the redeemer (_owner)
      * The generation of an asset if limited via the generationSeasonController
      * @param _teamId           teamId of the asset/token/collectible
      * @param _posId            position of the asset/token/collectible
@@ -1357,9 +1357,9 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
         uint32 _sequenceId = getSequenceId(_teamId);
         
         uint256 assetDetails = uint256(uint64(now));
-        assetDetails |= uint256(_sequenceId)&lt;&lt;64;
-        assetDetails |= uint256(_teamId)&lt;&lt;96;
-        assetDetails |= uint256(_posId)&lt;&lt;104;
+        assetDetails |= uint256(_sequenceId)<<64;
+        assetDetails |= uint256(_teamId)<<96;
+        assetDetails |= uint256(_posId)<<104;
 
         uint256[5] memory _nftData = [assetDetails, _attributes, _gameId, _playerOverrideId, _mlbPlayerId];
         
@@ -1401,9 +1401,9 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
         uint32 _sequenceId = getSequenceId(_teamId);
         
         uint256 assetDetails = uint256(uint64(now));
-        assetDetails |= uint256(_sequenceId)&lt;&lt;64;
-        assetDetails |= uint256(_teamId)&lt;&lt;96;
-        assetDetails |= uint256(_posId)&lt;&lt;104;
+        assetDetails |= uint256(_sequenceId)<<64;
+        assetDetails |= uint256(_teamId)<<96;
+        assetDetails |= uint256(_posId)<<104;
 
         uint256[5] memory _nftData = [assetDetails, _attributes, _gameId, _playerOverrideId, _mlbPlayerId];
         
@@ -1412,7 +1412,7 @@ contract CollectibleMinting is CollectibleBase, OperationalControl {
 }
 
 /* @title Interface for MLBNFT Contract
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract SaleManager {
     function createSale(uint256 _tokenId, uint256 _startingPrice, uint256 _endingPrice, uint256 _duration, address _owner) external;
@@ -1421,14 +1421,14 @@ contract SaleManager {
 /**
  * MLBNFT manages all aspects of the Lucid Sight, Inc. CryptoBaseball.
  * @title MLBNFT
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract MLBNFT is CollectibleMinting {
     
     /// @dev Set in case the MLBNFT contract requires an upgrade
     address public newContractAddress;
 
-    string public constant MLB_Legal = &quot;Major League Baseball trademarks and copyrights are used with permission of the applicable MLB entity.  All rights reserved.&quot;;
+    string public constant MLB_Legal = "Major League Baseball trademarks and copyrights are used with permission of the applicable MLB entity.  All rights reserved.";
 
     // Time LS Oracle has to respond to detach requests
     uint32 public detachmentTime = 0;
@@ -1448,8 +1448,8 @@ contract MLBNFT is CollectibleMinting {
         managerPrimary = msg.sender;
         managerSecondary = msg.sender;
         bankManager = msg.sender;
-        name_ = &quot;LucidSight-MLB-NFT&quot;;
-        symbol_ = &quot;MLBCB&quot;;
+        name_ = "LucidSight-MLB-NFT";
+        symbol_ = "MLBCB";
     }
 
     /**
@@ -1475,7 +1475,7 @@ contract MLBNFT is CollectibleMinting {
                 otherManagers[msg.sender] == 1
             );
             updateIsAttached(_tokenId, 0);
-        } else if(attachedSystemActive == true &amp;&amp; isAttached &gt;= 1) {
+        } else if(attachedSystemActive == true && isAttached >= 1) {
             require (msg.sender == managerPrimary ||
                 msg.sender == managerSecondary ||
                 msg.sender == bankManager ||
@@ -1540,9 +1540,9 @@ contract MLBNFT is CollectibleMinting {
         mlbPlayerId = obj.mlbPlayerId;
 
         creationTime = uint64(obj.assetDetails);
-        sequenceId = uint32(obj.assetDetails&gt;&gt;64);
-        teamId = uint8(obj.assetDetails&gt;&gt;96);
-        positionId = uint8(obj.assetDetails&gt;&gt;104);
+        sequenceId = uint32(obj.assetDetails>>64);
+        teamId = uint8(obj.assetDetails>>96);
+        positionId = uint8(obj.assetDetails>>104);
         isAttached = obj.isAttached;
         earnedBy = obj.earnedBy;
 
@@ -1567,7 +1567,7 @@ contract MLBNFT is CollectibleMinting {
     function getTeamId(uint256 _tokenId) external view returns (uint256) {
         NFT memory obj  = _getAttributesOfToken(_tokenId);
 
-        uint256 teamId = uint256(uint8(obj.assetDetails&gt;&gt;96));
+        uint256 teamId = uint256(uint8(obj.assetDetails>>96));
         return uint256(teamId);
     }
 
@@ -1579,7 +1579,7 @@ contract MLBNFT is CollectibleMinting {
     function getPositionId(uint256 _tokenId) external view returns (uint256) {
         NFT memory obj  = _getAttributesOfToken(_tokenId);
 
-        uint256 positionId = uint256(uint8(obj.assetDetails&gt;&gt;104));
+        uint256 positionId = uint256(uint8(obj.assetDetails>>104));
 
         return positionId;
     }
@@ -1684,7 +1684,7 @@ contract MLBNFT is CollectibleMinting {
     /**
      * @dev responsible for setting the tokenURI.
      * @notice The user/developper needs to add the tokenID, in the end of URL, to 
-     * use the URI and get all details. Ex. www.&lt;apiURL&gt;.com/token/&lt;tokenID&gt;
+     * use the URI and get all details. Ex. www.<apiURL>.com/token/<tokenID>
      * @param _tokenURI  The token uri
      */
     function setTokenURIBase (string _tokenURI) public anyOperator {
@@ -1708,10 +1708,10 @@ contract MLBNFT is CollectibleMinting {
      * @dev Allowed to be called by onlyGameManager to update the generation season.
      * this helps to control the generation of collectible.
      * @param _season    Season UINT representation
-     * @param _value    0-Not allowed, 1-open, &gt;=2 Locked Forever
+     * @param _value    0-Not allowed, 1-open, >=2 Locked Forever
      */
     function updateGenerationStopTime(uint256 _season, uint8 _value ) public  onlyManager whenNotPaused {
-        require (generationSeasonController[_season] == 1 &amp;&amp; _value != 0);
+        require (generationSeasonController[_season] == 1 && _value != 0);
         _updateGenerationSeasonFlag(_season, _value);
     }
 
@@ -1733,7 +1733,7 @@ contract MLBNFT is CollectibleMinting {
      * @param _value    0-Not allowed,1-allowed
      */
     function updateGenerationDict(uint256 _season, uint64 _value) public onlyManager whenNotPaused {
-        require (generationSeasonDict[_season] &lt;= 1);
+        require (generationSeasonDict[_season] <= 1);
         generationSeasonDict[_season] = _value;
     }
 
@@ -1757,7 +1757,7 @@ contract MLBNFT is CollectibleMinting {
     function getAssetAttachment(uint256 _tokenId) external view returns (uint256[]) {
         uint256[] _attachments = nftCollectibleAttachments[_tokenId];
         uint256[] attachments;
-        for(uint i=0;i&lt;_attachments.length;i++){
+        for(uint i=0;i<_attachments.length;i++){
             attachments.push(_attachments[i]);
         }
         
@@ -1797,21 +1797,21 @@ contract MLBNFT is CollectibleMinting {
         whenNotPaused {
             require (isBatchSupported);
 
-            require (_teamId.length &gt; 0 &amp;&amp; _attributes.length &gt; 0 &amp;&amp; 
-                _playerOverrideId.length &gt; 0 &amp;&amp; _mlbPlayerId.length &gt; 0 &amp;&amp; 
-                _to.length &gt; 0);
+            require (_teamId.length > 0 && _attributes.length > 0 && 
+                _playerOverrideId.length > 0 && _mlbPlayerId.length > 0 && 
+                _to.length > 0);
 
             uint256 assetDetails;
             uint256[5] memory _nftData;
             
-            for(uint ii = 0; ii &lt; _attributes.length; ii++){
-                require (_to[ii] != address(0) &amp;&amp; _teamId[ii] != 0 &amp;&amp; _attributes.length != 0 &amp;&amp; 
+            for(uint ii = 0; ii < _attributes.length; ii++){
+                require (_to[ii] != address(0) && _teamId[ii] != 0 && _attributes.length != 0 && 
                     _mlbPlayerId[ii] != 0);
                 
                 assetDetails = uint256(uint64(now));
-                assetDetails |= uint256(getSequenceId(_teamId[ii]))&lt;&lt;64;
-                assetDetails |= uint256(_teamId[ii])&lt;&lt;96;
-                assetDetails |= uint256((_attributes[ii]/1000000000000000000000000000000000000000)-800)&lt;&lt;104;
+                assetDetails |= uint256(getSequenceId(_teamId[ii]))<<64;
+                assetDetails |= uint256(_teamId[ii])<<96;
+                assetDetails |= uint256((_attributes[ii]/1000000000000000000000000000000000000000)-800)<<104;
         
                 _nftData = [assetDetails, _attributes[ii], 0, _playerOverrideId[ii], _mlbPlayerId[ii]];
                 
@@ -1840,22 +1840,22 @@ contract MLBNFT is CollectibleMinting {
         whenNotPaused {
             require (isBatchSupported);
 
-            require (_teamId.length &gt; 0 &amp;&amp; _attributes.length &gt; 0
-                        &amp;&amp; _playerOverrideId.length &gt; 0 &amp;&amp;
-                        _mlbPlayerId.length &gt; 0 &amp;&amp; _to.length &gt; 0);
+            require (_teamId.length > 0 && _attributes.length > 0
+                        && _playerOverrideId.length > 0 &&
+                        _mlbPlayerId.length > 0 && _to.length > 0);
 
             uint256 assetDetails;
             uint256[5] memory _nftData;
 
-            for(uint ii = 0; ii &lt; _attributes.length; ii++){
+            for(uint ii = 0; ii < _attributes.length; ii++){
 
-                require (_to[ii] != address(0) &amp;&amp; _teamId[ii] != 0 &amp;&amp; _attributes.length != 0 &amp;&amp; 
+                require (_to[ii] != address(0) && _teamId[ii] != 0 && _attributes.length != 0 && 
                     _mlbPlayerId[ii] != 0);
         
                 assetDetails = uint256(uint64(now));
-                assetDetails |= uint256(getSequenceId(_teamId[ii]))&lt;&lt;64;
-                assetDetails |= uint256(_teamId[ii])&lt;&lt;96;
-                assetDetails |= uint256((_attributes[ii]/1000000000000000000000000000000000000000)-800)&lt;&lt;104;
+                assetDetails |= uint256(getSequenceId(_teamId[ii]))<<64;
+                assetDetails |= uint256(_teamId[ii])<<96;
+                assetDetails |= uint256((_attributes[ii]/1000000000000000000000000000000000000000)-800)<<104;
         
                 _nftData = [assetDetails, _attributes[ii], 0, _playerOverrideId[ii], _mlbPlayerId[ii]];
                 
@@ -1907,15 +1907,15 @@ contract MLBNFT is CollectibleMinting {
     {
         require (isBatchSupported);
 
-        require (_tokenIds.length &gt; 0 &amp;&amp; _fromB.length &gt; 0 &amp;&amp; _toB.length &gt; 0);
+        require (_tokenIds.length > 0 && _fromB.length > 0 && _toB.length > 0);
 
         uint256 _id;
         address _to;
         address _from;
         
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
 
-            require (_tokenIds[i] != 0 &amp;&amp; _fromB[i] != 0 &amp;&amp; _toB[i] != 0);
+            require (_tokenIds[i] != 0 && _fromB[i] != 0 && _toB[i] != 0);
 
             _id = _tokenIds[i];
             _to = _toB[i];
@@ -1928,7 +1928,7 @@ contract MLBNFT is CollectibleMinting {
     
     /**
      * @dev     Facilitates batch trasnfer of collectible, depending if batch is supported on contract
-     * @notice        Batch TransferFrom with the same to &amp; from address
+     * @notice        Batch TransferFrom with the same to & from address
      * @param      _tokenIds  The asset identifiers
      * @param      _from      the address sending from
      * @param      _to        the address sending to
@@ -1938,11 +1938,11 @@ contract MLBNFT is CollectibleMinting {
     {
         require (isBatchSupported);
 
-        require (_tokenIds.length &gt; 0 &amp;&amp; _from != address(0) &amp;&amp; _to != address(0));
+        require (_tokenIds.length > 0 && _from != address(0) && _to != address(0));
 
         uint256 _id;
         
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
             
             require (_tokenIds[i] != 0);
 
@@ -1969,15 +1969,15 @@ contract MLBNFT is CollectibleMinting {
     {
         require (isBatchSupported);
 
-        require (_tokenIds.length &gt; 0 &amp;&amp; _fromB.length &gt; 0 &amp;&amp; _toB.length &gt; 0);
+        require (_tokenIds.length > 0 && _fromB.length > 0 && _toB.length > 0);
 
         uint256 _id;
         address _to;
         address _from;
         
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
 
-            require (_tokenIds[i] != 0 &amp;&amp; _fromB[i] != 0 &amp;&amp; _toB[i] != 0);
+            require (_tokenIds[i] != 0 && _fromB[i] != 0 && _toB[i] != 0);
 
             _id = _tokenIds[i];
             _to  = _toB[i];
@@ -2004,10 +2004,10 @@ contract MLBNFT is CollectibleMinting {
     {   
         require (isBatchSupported);
 
-        require (_tokenIds.length &gt; 0 &amp;&amp; _from != address(0) &amp;&amp; _to != address(0));
+        require (_tokenIds.length > 0 && _from != address(0) && _to != address(0));
 
         uint256 _id;
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
             require (_tokenIds[i] != 0);
             _id = _tokenIds[i];
             safeTransferFrom(_from, _to, _id);
@@ -2028,10 +2028,10 @@ contract MLBNFT is CollectibleMinting {
     {   
         require (isBatchSupported);
 
-        require (_tokenIds.length &gt; 0 &amp;&amp; _spender != address(0));
+        require (_tokenIds.length > 0 && _spender != address(0));
         
         uint256 _id;
-        for (uint256 i = 0; i &lt; _tokenIds.length; ++i) {
+        for (uint256 i = 0; i < _tokenIds.length; ++i) {
 
             require (_tokenIds[i] != 0);
             
@@ -2056,10 +2056,10 @@ contract MLBNFT is CollectibleMinting {
     {   
         require (isBatchSupported);
 
-        require (_spenders.length &gt; 0);
+        require (_spenders.length > 0);
 
         address _spender;
-        for (uint256 i = 0; i &lt; _spenders.length; ++i) {        
+        for (uint256 i = 0; i < _spenders.length; ++i) {        
 
             require (address(_spenders[i]) != address(0));
                 
@@ -2086,13 +2086,13 @@ contract MLBNFT is CollectibleMinting {
         //If collectible is on a gamecard prevent detachment
         require(getGameCardId(_tokenId) == 0);
 
-        require (isAttached &gt;= 1);
+        require (isAttached >= 1);
 
         if(attachedSystemActive == true) {
             //Checks to see if request was made and if time elapsed
-            if(isAttached &gt; 1 &amp;&amp; block.timestamp - isAttached &gt; detachmentTime) {
+            if(isAttached > 1 && block.timestamp - isAttached > detachmentTime) {
                 isAttached = 0;
-            } else if(isAttached &gt; 1) {
+            } else if(isAttached > 1) {
                 //Forces Tx Fail if time is already set for attachment and not less than detachmentTime
                 require (isAttached == 1);
             } else {
@@ -2135,7 +2135,7 @@ contract MLBNFT is CollectibleMinting {
     function batchAttachAssets(uint256[] _tokenIds) public {
         require (isBatchSupported);
 
-        for(uint i = 0; i &lt; _tokenIds.length; i++) {
+        for(uint i = 0; i < _tokenIds.length; i++) {
             attachAsset(_tokenIds[i]);
         }
     }
@@ -2147,7 +2147,7 @@ contract MLBNFT is CollectibleMinting {
     function batchDetachAssets(uint256[] _tokenIds) public {
         require (isBatchSupported);
 
-        for(uint i = 0; i &lt; _tokenIds.length; i++) {
+        for(uint i = 0; i < _tokenIds.length; i++) {
             requestDetachment(_tokenIds[i]);
         }
     }
@@ -2177,7 +2177,7 @@ contract MLBNFT is CollectibleMinting {
      */
     function setDetachmentTime (uint256 _time) public onlyManager {
         //Detactment Time can not be set greater than 2 weeks.
-        require (_time &lt;= 1209600);
+        require (_time <= 1209600);
         detachmentTime = uint32(_time);
     }
 
@@ -2186,7 +2186,7 @@ contract MLBNFT is CollectibleMinting {
      * @param      _tokenId  The token iddentifier
      */
     function setNFTDetached(uint256 _tokenId) public anyOperator {
-        require (checkIsAttached(_tokenId) &gt; 0);
+        require (checkIsAttached(_tokenId) > 0);
 
         updateIsAttached(_tokenId, 0);
     }
@@ -2197,7 +2197,7 @@ contract MLBNFT is CollectibleMinting {
      */
     function setBatchDetachCollectibles(uint256[] _tokenIds) public anyOperator {
         uint256 _id;
-        for(uint i = 0; i &lt; _tokenIds.length; i++) {
+        for(uint i = 0; i < _tokenIds.length; i++) {
             _id = _tokenIds[i];
             setNFTDetached(_id);
         }
@@ -2218,7 +2218,7 @@ contract MLBNFT is CollectibleMinting {
     }
 
     /**
-    * @dev   Facilitates Creating Sale using the Sale Contract. Forces owner check &amp; collectibleId check
+    * @dev   Facilitates Creating Sale using the Sale Contract. Forces owner check & collectibleId check
     * @notice Helps a wallet to create a sale using our Sale Contract
     * @param      _tokenId        The token identifier
     * @param      _startingPrice  The starting price
@@ -2256,10 +2256,10 @@ contract MLBNFT is CollectibleMinting {
      */
     function batchCreateAssetSale(uint256[] _tokenIds, uint256[] _startingPrices, uint256[] _endingPrices, uint256[] _durations) external whenNotPaused {
 
-        require (_tokenIds.length &gt; 0 &amp;&amp; _startingPrices.length &gt; 0 &amp;&amp; _endingPrices.length &gt; 0 &amp;&amp; _durations.length &gt; 0);
+        require (_tokenIds.length > 0 && _startingPrices.length > 0 && _endingPrices.length > 0 && _durations.length > 0);
         
         // Sale contract checks input sizes
-        for(uint ii = 0; ii &lt; _tokenIds.length; ii++){
+        for(uint ii = 0; ii < _tokenIds.length; ii++){
 
             // Do not process for tokenId 0
             require (_tokenIds[ii] != 0);

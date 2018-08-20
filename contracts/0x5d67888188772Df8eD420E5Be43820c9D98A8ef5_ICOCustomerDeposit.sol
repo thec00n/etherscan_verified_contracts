@@ -4,7 +4,7 @@ pragma solidity ^0.4.8;
 // Unique ICO deposit contacts for customers to deposit ethers that are sent to different
 // wallets
 //
-// Enjoy. (c) Bok Consulting Pty Ltd &amp; Incent Rewards 2017. The MIT Licence.
+// Enjoy. (c) Bok Consulting Pty Ltd & Incent Rewards 2017. The MIT Licence.
 // ----------------------------------------------------------------------------------------------
 
 contract Owned {
@@ -56,7 +56,7 @@ contract ICOCustomerDeposit is Owned {
     address icoClientWallet = 0x994B085D71e0f9a7A36bE4BE691789DBf19009c8;
 
     function createNewDepositContract(uint256 number) onlyOwner {
-        for (uint256 i = 0; i &lt; number; i++) {
+        for (uint256 i = 0; i < number; i++) {
             ICODepositContract depositContract = new ICODepositContract(this);
             contracts.push(depositContract);
         }

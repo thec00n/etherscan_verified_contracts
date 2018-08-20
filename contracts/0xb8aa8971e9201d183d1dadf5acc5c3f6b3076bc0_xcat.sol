@@ -38,7 +38,7 @@ contract HTLC {
 /* only issuer */
     //if the time expires; the issuer can reclaim funds and destroy the contract
     function refund() onlyIssuer public returns(bool result) {
-        require(now &gt;= timeOut);
+        require(now >= timeOut);
         selfdestruct(issuer);
         return true;
     }
@@ -46,7 +46,7 @@ contract HTLC {
 
 
 contract xcat {
-    string public version = &quot;v1&quot;;
+    string public version = "v1";
     
     struct txLog{
         address issuer;
@@ -62,7 +62,7 @@ contract xcat {
     
     event newTrade(string onChain, string toChain, uint amount1, uint amount2);
     
-    mapping(bytes32 =&gt; txLog) public ledger;
+    mapping(bytes32 => txLog) public ledger;
     
     function testHash(string yourSecretPhrase) public returns (bytes32 SecretHash) {return(sha256(yourSecretPhrase));}
     
@@ -86,7 +86,7 @@ contract xcat {
     }
 
     //avoid taking funds
-    function() public { assert(0&gt;1);} 
+    function() public { assert(0>1);} 
 
     // allow actors to view their tx
     function viewXCAT(address _issuer, address _ReleaseFundsTo, bytes32 _SecretHash) public returns (address issuer, address receiver, uint amount1, string onChain, uint amount2, string toChain, uint atTime, address ContractAddress){
@@ -97,25 +97,25 @@ contract xcat {
 
 /////////////////////////////////////////////////////////////////////////////
   // 88888b   d888b  88b  88 8 888888         _.-----._
-  // 88   88 88   88 888b 88 P   88   \)|)_ ,&#39;         `. _))|)
-  // 88   88 88   88 88`8b88     88    );-&#39;/             \`-:(
+  // 88   88 88   88 888b 88 P   88   \)|)_ ,'         `. _))|)
+  // 88   88 88   88 88`8b88     88    );-'/             \`-:(
   // 88   88 88   88 88 `888     88   //  :               :  \\   .
-  // 88888P   T888P  88  `88     88  //_,&#39;; ,.         ,. |___\\
-  //    .           __,...,--.       `---&#39;:(  `-.___.-&#39;  );----&#39;
-  //              ,&#39; :    |   \            \`. `&#39;-&#39;-&#39;&#39; ,&#39;/
-  //             :   |    ;   ::            `.`-.,-.-.&#39;,&#39;
+  // 88888P   T888P  88  `88     88  //_,'; ,.         ,. |___\\
+  //    .           __,...,--.       `---':(  `-.___.-'  );----'
+  //              ,' :    |   \            \`. `'-'-'' ,'/
+  //             :   |    ;   ::            `.`-.,-.-.','
   //     |    ,-.|   :  _//`. ;|              ``---\` :
-  //   -(o)- (   \ .- \  `._// |    *               `.&#39;       *
+  //   -(o)- (   \ .- \  `._// |    *               `.'       *
   //     |   |\   :   : _ |.-  :              .        .
   //     .   :\: -:  _|\_||  .-(    _..----..
-  //         :_:  _\\_`.--&#39;  _  \,-&#39;      __ \
-  //         .` \\_,)--&#39;/ .&#39;    (      ..&#39;--`&#39;          ,-.
-  //         |.- `-&#39;.-               ,&#39;                (///)
-  //         :  ,&#39;     .            ;             *     `-&#39;
+  //         :_:  _\\_`.--'  _  \,-'      __ \
+  //         .` \\_,)--'/ .'    (      ..'--`'          ,-.
+  //         |.- `-'.-               ,'                (///)
+  //         :  ,'     .            ;             *     `-'
   //   *     :         :           /
-  //          \      ,&#39;         _,&#39;   88888b   888    88b  88 88  d888b  88
-  //           `._       `-  ,-&#39;      88   88 88 88   888b 88 88 88   `  88
+  //          \      ,'         _,'   88888b   888    88b  88 88  d888b  88
+  //           `._       `-  ,-'      88   88 88 88   888b 88 88 88   `  88
   //            : `--..     :        *88888P 88   88  88`8b88 88 88      88
-  //        .   |           |	        88    d8888888b 88 `888 88 88   ,  `&quot;
+  //        .   |           |	        88    d8888888b 88 `888 88 88   ,  `"
   //            |           | 	      88    88     8b 88  `88 88  T888P  88
   /////////////////////////////////////////////////////////////////////////

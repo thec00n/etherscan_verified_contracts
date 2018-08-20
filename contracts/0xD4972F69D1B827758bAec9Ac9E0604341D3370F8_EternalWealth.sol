@@ -18,9 +18,9 @@ contract EternalWealth {
     
     function ExtendLife() public payable {
 
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
 
-        if (now &gt; doomsday) {
+        if (now > doomsday) {
             revert();
         }
     
@@ -34,7 +34,7 @@ contract EternalWealth {
 
     function ClaimBlessings() public {
         require(msg.sender == savior);
-        require(now &gt; doomsday);
+        require(now > doomsday);
         uint pendingBlessings = blessings;
         blessings = 0;
         savior.transfer(pendingBlessings);

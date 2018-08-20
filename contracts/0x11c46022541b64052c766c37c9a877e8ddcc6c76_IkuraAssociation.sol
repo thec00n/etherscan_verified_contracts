@@ -9,11 +9,11 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.23;
 
-// import &#39;ds-auth/auth.sol&#39;;
+// import 'ds-auth/auth.sol';
 contract DSAuthority {
     function canCall(
         address src, address dst, bytes4 sig
@@ -68,29 +68,29 @@ contract DSAuth is DSAuthEvents {
     }
 }
 
-// import &#39;ds-math/math.sol&#39;;
+// import 'ds-math/math.sol';
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -109,10 +109,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -137,7 +137,7 @@ contract DSMath {
     }
 }
 
-// import &#39;./IkuraStorage.sol&#39;;
+// import './IkuraStorage.sol';
 /**
  *
  * ロジックの更新に影響されない永続化データを保持するクラス
@@ -148,13 +148,13 @@ contract IkuraStorage is DSMath, DSAuth {
   address[] ownerAddresses;
 
   // 各アドレスのdJPYの口座残高
-  mapping(address =&gt; uint) coinBalances;
+  mapping(address => uint) coinBalances;
 
   // 各アドレスのSHINJI tokenの口座残高
-  mapping(address =&gt; uint) tokenBalances;
+  mapping(address => uint) tokenBalances;
 
   // 各アドレスが指定したアドレスに対して許可する最大送金額
-  mapping(address =&gt; mapping (address =&gt; uint)) coinAllowances;
+  mapping(address => mapping (address => uint)) coinAllowances;
 
   // dJPYの発行高
   uint _totalSupply = 0;
@@ -173,7 +173,7 @@ contract IkuraStorage is DSMath, DSAuth {
   address multiSigAddress;
   address authorityAddress;
 
-  // @NOTE リリース時にcontractのdeploy -&gt; watch contract -&gt; setOwnerの流れを
+  // @NOTE リリース時にcontractのdeploy -> watch contract -> setOwnerの流れを
   //省略したい場合は、ここで直接controllerのアドレスを指定するとショートカットできます
   // 勿論テストは通らなくなるので、テストが通ったら試してね
   constructor() public DSAuth() {
@@ -310,7 +310,7 @@ contract IkuraStorage is DSMath, DSAuth {
 
     while (ownerAddresses[i] != addr) { i++; }
 
-    while (i &lt; ownerAddresses.length - 1) {
+    while (i < ownerAddresses.length - 1) {
       ownerAddresses[i] = ownerAddresses[i + 1];
       i++;
     }
@@ -337,7 +337,7 @@ contract IkuraStorage is DSMath, DSAuth {
    * @return オーナーに含まれている場合はtrue、含まれていない場合はfalse
    */
   function isOwnerAddress(address addr) public view auth returns (bool) {
-    for (uint i = 0; i &lt; ownerAddresses.length; i++) {
+    for (uint i = 0; i < ownerAddresses.length; i++) {
       if (ownerAddresses[i] == addr) return true;
     }
 
@@ -422,7 +422,7 @@ contract IkuraStorage is DSMath, DSAuth {
   function addTokenBalance(address addr, uint amount) public auth returns (bool) {
     tokenBalances[addr] = add(tokenBalances[addr], amount);
 
-    if (tokenBalances[addr] &gt; 0 &amp;&amp; !isOwnerAddress(addr)) {
+    if (tokenBalances[addr] > 0 && !isOwnerAddress(addr)) {
       addOwnerAddress(addr);
     }
 
@@ -440,7 +440,7 @@ contract IkuraStorage is DSMath, DSAuth {
   function subTokenBalance(address addr, uint amount) public auth returns (bool) {
     tokenBalances[addr] = sub(tokenBalances[addr], amount);
 
-    if (tokenBalances[addr] &lt;= 0) {
+    if (tokenBalances[addr] <= 0) {
       removeOwnerAddress(addr);
     }
 
@@ -528,7 +528,7 @@ contract IkuraStorage is DSMath, DSAuth {
 }
 
 
-// import &#39;./IkuraTokenEvent.sol&#39;;
+// import './IkuraTokenEvent.sol';
 /**
  * Tokenでの処理に関するイベント定義
  *
@@ -559,7 +559,7 @@ contract IkuraTokenEvent {
 }
 
 
-// import &#39;./IkuraToken.sol&#39;;
+// import './IkuraToken.sol';
 /**
  *
  * トークンロジック
@@ -599,7 +599,7 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
   IkuraAssociation _association;
 
   constructor() DSAuth() public {
-    // @NOTE リリース時にcontractのdeploy -&gt; watch contract -&gt; setOwnerの流れを
+    // @NOTE リリース時にcontractのdeploy -> watch contract -> setOwnerの流れを
     //省略したい場合は、ここで直接controllerのアドレスを指定するとショートカットできます
     // 勿論テストは通らなくなるので、テストが通ったら試してね
     /*address controllerAddress = 0x34c5605A4Ef1C98575DB6542179E55eE1f77A188;
@@ -646,9 +646,9 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
    * 指定したアドレスに対してdJPYを送金する
    * 以下の条件を満たす必要がある
    *
-   * - メッセージの送信者の残高 &gt;= 送金額
-   * - 送金額 &gt; 0
-   * - 送金先のアドレスの残高 + 送金額 &gt; 送金元のアドレスの残高（overflowのチェックらしい）
+   * - メッセージの送信者の残高 >= 送金額
+   * - 送金額 > 0
+   * - 送金先のアドレスの残高 + 送金額 > 送金元のアドレスの残高（overflowのチェックらしい）
    *
    * @param sender 送金元アドレス
    * @param to 送金対象アドレス
@@ -660,8 +660,8 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
     uint fee = transferFee(sender, sender, to, amount);
     uint totalAmount = add(amount, fee);
 
-    require(_storage.coinBalance(sender) &gt;= totalAmount);
-    require(amount &gt; 0);
+    require(_storage.coinBalance(sender) >= totalAmount);
+    require(amount > 0);
 
     // 実行者の口座からamount + feeの金額が控除される
     _storage.subCoinBalance(sender, totalAmount);
@@ -669,7 +669,7 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
     // toの口座にamountが振り込まれる
     _storage.addCoinBalance(to, amount);
 
-    if (fee &gt; 0) {
+    if (fee > 0) {
       // 手数料を受け取るオーナーのアドレスを選定
       address owner = selectOwnerAddressForTransactionFee(sender);
 
@@ -690,11 +690,11 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
    *
    * 以下の条件を満たす場合だけ送金を認める
    *
-   * - 送信元の残高 &gt;= 金額
-   * - 送金する金額 &gt; 0
-   * - 送信者に対して送信元が許可している金額 &gt;= 送金する金額
-   * - 送信先の残高 + 金額 &gt; 送信元の残高（overflowのチェックらしい）
-   # - 送金処理を行うユーザーの口座残高 &gt;= 送金処理の手数料
+   * - 送信元の残高 >= 金額
+   * - 送金する金額 > 0
+   * - 送信者に対して送信元が許可している金額 >= 送金する金額
+   * - 送信先の残高 + 金額 > 送信元の残高（overflowのチェックらしい）
+   # - 送金処理を行うユーザーの口座残高 >= 送金処理の手数料
    *
    * @param sender 実行アドレス
    * @param from 送金元アドレス
@@ -706,13 +706,13 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
   function transferFrom(address sender, address from, address to, uint amount) public auth returns (bool success) {
     uint fee = transferFee(sender, from, to, amount);
 
-    require(_storage.coinBalance(from) &gt;= amount);
-    require(_storage.coinAllowance(from, sender) &gt;= amount);
-    require(amount &gt; 0);
-    require(add(_storage.coinBalance(to), amount) &gt; _storage.coinBalance(to));
+    require(_storage.coinBalance(from) >= amount);
+    require(_storage.coinAllowance(from, sender) >= amount);
+    require(amount > 0);
+    require(add(_storage.coinBalance(to), amount) > _storage.coinBalance(to));
 
-    if (fee &gt; 0) {
-      require(_storage.coinBalance(sender) &gt;= fee);
+    if (fee > 0) {
+      require(_storage.coinBalance(sender) >= fee);
 
       // 手数料を受け取るオーナーのアドレスを選定
       address owner = selectOwnerAddressForTransactionFee(sender);
@@ -791,9 +791,9 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
   /**
    * 指定したアドレスに対してSHINJIトークンを送金する
    *
-   * - 送信元の残トークン量 &gt;= トークン量
-   * - 送信するトークン量 &gt; 0
-   * - 送信先の残高 + 金額 &gt; 送信元の残高（overflowのチェック）
+   * - 送信元の残トークン量 >= トークン量
+   * - 送信するトークン量 > 0
+   * - 送信先の残高 + 金額 > 送信元の残高（overflowのチェック）
    *
    * @param sender 実行アドレス
    * @param to 送金対象アドレス
@@ -802,9 +802,9 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
    * @return 条件を満たして処理に成功した場合はtrue、失敗した場合はfalse
    */
   function transferToken(address sender, address to, uint amount) public auth returns (bool success) {
-    require(_storage.tokenBalance(sender) &gt;= amount);
-    require(amount &gt; 0);
-    require(add(_storage.tokenBalance(to), amount) &gt; _storage.tokenBalance(to));
+    require(_storage.tokenBalance(sender) >= amount);
+    require(amount > 0);
+    require(add(_storage.tokenBalance(to), amount) > _storage.tokenBalance(to));
 
     _storage.subTokenBalance(sender, amount);
     _storage.addTokenBalance(to, amount);
@@ -827,7 +827,7 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
    */
   function transferFee(address sender, address from, address to, uint amount) public view returns (uint) {
     sender; from; to; // #avoid warning
-    if (_transferFeeRate &gt; 0) {
+    if (_transferFeeRate > 0) {
       uint denominator = 1000000; // 0.01 pips だから 100 * 100 * 100 で 100万
       uint numerator = mul(amount, _transferFeeRate);
 
@@ -835,11 +835,11 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
       uint remainder = sub(numerator, mul(denominator, fee));
 
       // 余りがある場合はfeeに1を足す
-      if (remainder &gt; 0) {
+      if (remainder > 0) {
         fee++;
       }
 
-      if (fee &lt; _transferMinimumFee) {
+      if (fee < _transferMinimumFee) {
         fee = _transferMinimumFee;
       }
 
@@ -900,9 +900,9 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
    * @param amount 鋳造する金額
    */
   function mint(address sender, uint amount) public auth returns (bool) {
-    require(amount &gt; 0);
+    require(amount > 0);
 
-    _association.newProposal(keccak256(&#39;mint&#39;), sender, amount, &#39;&#39;);
+    _association.newProposal(keccak256('mint'), sender, amount, '');
 
     return true;
     /*return proposalEntity.mint(sender, amount);*/
@@ -922,11 +922,11 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
    * @param amount 消却する金額
    */
   function burn(address sender, uint amount) public auth returns (bool) {
-    require(amount &gt; 0);
-    require(_storage.coinBalance(sender) &gt;= amount);
-    require(_storage.tokenBalance(sender) &gt;= amount);
+    require(amount > 0);
+    require(_storage.coinBalance(sender) >= amount);
+    require(_storage.tokenBalance(sender) >= amount);
 
-    _association.newProposal(keccak256(&#39;burn&#39;), sender, amount, &#39;&#39;);
+    _association.newProposal(keccak256('burn'), sender, amount, '');
 
     return true;
     /*return proposalEntity.burn(sender, amount);*/
@@ -944,7 +944,7 @@ contract IkuraToken is IkuraTokenEvent, DSMath, DSAuth {
   /**
    * 指定した種類の提案数を取得する
    *
-   * @param type_ 提案の種類（&#39;mint&#39; | &#39;burn&#39; | &#39;transferMinimumFee&#39; | &#39;transferFeeRate&#39;）
+   * @param type_ 提案の種類（'mint' | 'burn' | 'transferMinimumFee' | 'transferFeeRate'）
    *
    * @return 提案数（承認されていないものも含む）
    */
@@ -1010,7 +1010,7 @@ contract IkuraAssociation is DSMath, DSAuth {
   Proposal[] mintProposals;
   Proposal[] burnProposals;
 
-  mapping (bytes32 =&gt; Proposal[]) proposals;
+  mapping (bytes32 => Proposal[]) proposals;
 
   struct Proposal {
     address proposer;                     // 提案者
@@ -1035,10 +1035,10 @@ contract IkuraAssociation is DSMath, DSAuth {
   event BurnExecuted(uint proposalId, address proposer, uint amount);
 
   constructor() public {
-    proposals[keccak256(&#39;mint&#39;)] = mintProposals;
-    proposals[keccak256(&#39;burn&#39;)] = burnProposals;
+    proposals[keccak256('mint')] = mintProposals;
+    proposals[keccak256('burn')] = burnProposals;
 
-    // @NOTE リリース時にcontractのdeploy -&gt; watch contract -&gt; setOwnerの流れを
+    // @NOTE リリース時にcontractのdeploy -> watch contract -> setOwnerの流れを
     //省略したい場合は、ここで直接controllerのアドレスを指定するとショートカットできます
     // 勿論テストは通らなくなるので、テストが通ったら試してね
     /*address controllerAddress = 0x34c5605A4Ef1C98575DB6542179E55eE1f77A188;
@@ -1079,8 +1079,8 @@ contract IkuraAssociation is DSMath, DSAuth {
 
     // 提案の種類毎に実行すべき内容を実行する
     // @NOTE literal_stringとbytesは単純に比較できないのでkeccak256のハッシュ値で比較している
-    if (type_ == keccak256(&#39;mint&#39;)) emit MintProposalAdded(proposalId, proposer, amount);
-    if (type_ == keccak256(&#39;burn&#39;)) emit BurnProposalAdded(proposalId, proposer, amount);
+    if (type_ == keccak256('mint')) emit MintProposalAdded(proposalId, proposer, amount);
+    if (type_ == keccak256('burn')) emit BurnProposalAdded(proposalId, proposer, amount);
 
     // 本人は当然承認
     confirmProposal(type_, proposer, proposalId);
@@ -1106,16 +1106,16 @@ contract IkuraAssociation is DSMath, DSAuth {
 
     // 提案の種類毎に実行すべき内容を実行する
     // @NOTE literal_stringとbytesは単純に比較できないのでkeccak256のハッシュ値で比較している
-    if (type_ == keccak256(&#39;mint&#39;)) emit MintConfirmed(proposalId, confirmer, proposal.amount);
-    if (type_ == keccak256(&#39;burn&#39;)) emit BurnConfirmed(proposalId, confirmer, proposal.amount);
+    if (type_ == keccak256('mint')) emit MintConfirmed(proposalId, confirmer, proposal.amount);
+    if (type_ == keccak256('burn')) emit BurnConfirmed(proposalId, confirmer, proposal.amount);
 
-    if (isProposalExecutable(type_, proposalId, proposal.proposer, &#39;&#39;)) {
+    if (isProposalExecutable(type_, proposalId, proposal.proposer, '')) {
       proposal.executed = true;
 
       // 提案の種類毎に実行すべき内容を実行する
       // @NOTE literal_stringとbytesは単純に比較できないのでkeccak256のハッシュ値で比較している
-      if (type_ == keccak256(&#39;mint&#39;)) executeMintProposal(proposalId);
-      if (type_ == keccak256(&#39;burn&#39;)) executeBurnProposal(proposalId);
+      if (type_ == keccak256('mint')) executeMintProposal(proposalId);
+      if (type_ == keccak256('burn')) executeBurnProposal(proposalId);
     }
   }
 
@@ -1132,7 +1132,7 @@ contract IkuraAssociation is DSMath, DSAuth {
     Proposal storage proposal = proposals[type_][proposalId];
     uint length = proposal.confirmers.length;
 
-    for (uint i = 0; i &lt; length; i++) {
+    for (uint i = 0; i < length; i++) {
       if (proposal.confirmers[i] == addr) return true;
     }
 
@@ -1152,7 +1152,7 @@ contract IkuraAssociation is DSMath, DSAuth {
     uint length = proposal.confirmers.length;
     uint total = 0;
 
-    for (uint i = 0; i &lt; length; i++) {
+    for (uint i = 0; i < length; i++) {
       total = add(total, _storage.tokenBalance(proposal.confirmers[i]));
     }
 
@@ -1188,19 +1188,19 @@ contract IkuraAssociation is DSMath, DSAuth {
     Proposal storage proposal = proposals[type_][proposalId];
 
     // オーナーがcontrollerを登録したユーザーしか存在しない場合は
-    if (_storage.numOwnerAddress() &lt; 2) {
+    if (_storage.numOwnerAddress() < 2) {
       return true;
     }
 
-    return  proposal.digest == keccak256(proposer, proposal.amount, transactionBytecode) &amp;&amp;
-            isProposalNotExpired(type_, proposalId) &amp;&amp;
-            mul(100, confirmedTotalToken(type_, proposalId)) / _storage.totalSupply() &gt; confirmTotalTokenThreshold;
+    return  proposal.digest == keccak256(proposer, proposal.amount, transactionBytecode) &&
+            isProposalNotExpired(type_, proposalId) &&
+            mul(100, confirmedTotalToken(type_, proposalId)) / _storage.totalSupply() > confirmTotalTokenThreshold;
   }
 
   /**
    * 指定した種類の提案数を取得する
    *
-   * @param type_ 提案の種類（&#39;mint&#39; | &#39;burn&#39; | &#39;transferMinimumFee&#39; | &#39;transferFeeRate&#39;）
+   * @param type_ 提案の種類（'mint' | 'burn' | 'transferMinimumFee' | 'transferFeeRate'）
    *
    * @return 提案数（承認されていないものも含む）
    */
@@ -1211,14 +1211,14 @@ contract IkuraAssociation is DSMath, DSAuth {
   /**
    * 未承認で有効期限の切れていない提案の数を返す
    *
-   * @param type_ 提案の種類（&#39;mint&#39; | &#39;burn&#39; | &#39;transferMinimumFee&#39; | &#39;transferFeeRate&#39;）
+   * @param type_ 提案の種類（'mint' | 'burn' | 'transferMinimumFee' | 'transferFeeRate'）
    *
    * @return 提案数
    */
   function numberOfActiveProposals(bytes32 type_) public view returns (uint) {
     uint numActiveProposal = 0;
 
-    for(uint i = 0; i &lt; proposals[type_].length; i++) {
+    for(uint i = 0; i < proposals[type_].length; i++) {
       if (isProposalNotExpired(type_, i)) {
         numActiveProposal++;
       }
@@ -1238,8 +1238,8 @@ contract IkuraAssociation is DSMath, DSAuth {
   function isProposalNotExpired(bytes32 type_, uint proposalId) internal view returns (bool) {
     Proposal storage proposal = proposals[type_][proposalId];
 
-    return  !proposal.executed &amp;&amp;
-            now &lt; proposal.expireAt;
+    return  !proposal.executed &&
+            now < proposal.expireAt;
   }
 
   /**
@@ -1252,10 +1252,10 @@ contract IkuraAssociation is DSMath, DSAuth {
    * @param proposalId 提案ID
    */
   function executeMintProposal(uint proposalId) internal returns (bool) {
-    Proposal storage proposal = proposals[keccak256(&#39;mint&#39;)][proposalId];
+    Proposal storage proposal = proposals[keccak256('mint')][proposalId];
 
     // ここでも念のためチェックを入れる
-    require(proposal.amount &gt; 0);
+    require(proposal.amount > 0);
 
     emit MintExecuted(proposalId, proposal.proposer, proposal.amount);
 
@@ -1279,12 +1279,12 @@ contract IkuraAssociation is DSMath, DSAuth {
    * @param proposalId 提案ID
    */
   function executeBurnProposal(uint proposalId) internal returns (bool) {
-    Proposal storage proposal = proposals[keccak256(&#39;burn&#39;)][proposalId];
+    Proposal storage proposal = proposals[keccak256('burn')][proposalId];
 
     // ここでも念のためチェックを入れる
-    require(proposal.amount &gt; 0);
-    require(_storage.coinBalance(proposal.proposer) &gt;= proposal.amount);
-    require(_storage.tokenBalance(proposal.proposer) &gt;= proposal.amount);
+    require(proposal.amount > 0);
+    require(_storage.coinBalance(proposal.proposer) >= proposal.amount);
+    require(_storage.tokenBalance(proposal.proposer) >= proposal.amount);
 
     emit BurnExecuted(proposalId, proposal.proposer, proposal.amount);
 

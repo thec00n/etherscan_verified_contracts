@@ -16,20 +16,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -44,7 +44,7 @@ interface token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -120,9 +120,9 @@ contract Crowdsale {
 
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _token) public {
-        //require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        //require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         // token = createTokenContract();
@@ -147,14 +147,14 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
 
@@ -171,7 +171,7 @@ contract RefundVault is Ownable {
 
     enum State { Active, Refunding, Closed }
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
 
@@ -227,7 +227,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -251,7 +251,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
     using SafeMath for uint256;
@@ -263,12 +263,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     RefundVault public vault;
 
     function RefundableCrowdsale(uint256 _goal) public {
-        require(_goal &gt; 0);
+        require(_goal > 0);
         vault = new RefundVault(wallet);
         goal = _goal;
     }
 
-    // We&#39;re overriding the fund forwarding from Crowdsale.
+    // We're overriding the fund forwarding from Crowdsale.
     // In addition to sending the funds, we want to call
     // the RefundVault deposit function
     function forwardFunds() internal {
@@ -293,7 +293,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     }
 
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
 }
@@ -308,7 +308,7 @@ contract CappedCrowdsale is Crowdsale {
     uint256 public cap;
 
     function CappedCrowdsale(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
@@ -316,7 +316,7 @@ contract CappedCrowdsale is Crowdsale {
     // overriding Crowdsale#hasEnded to add cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        bool capReached = weiRaised &gt;= cap;
+        bool capReached = weiRaised >= cap;
         return super.hasEnded() || capReached;
     }
 
@@ -374,7 +374,7 @@ contract ControlledAccess is Ownable {
     {
         bytes32 hash = keccak256(this, _add);
         return signer == ecrecover(
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+            keccak256("\x19Ethereum Signed Message:\n32", hash),
             _v,
             _r,
             _s
@@ -428,8 +428,8 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
     uint256 public airDropsClaimed = 0;
     // ===================
 
-    mapping (address =&gt; bool) public airdrops;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => bool) public airdrops;
+    mapping (address => bool) public blacklist;
     
     
     // Events
@@ -452,7 +452,7 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
         address _signer
     ) 
     CappedCrowdsale(_cap) FinalizableCrowdsale() RefundableCrowdsale(_goal) Crowdsale( _startTime, _endTime,  _rate, _wallet, _token) public {
-        require(_goal &lt;= _cap);   // goal is softcap
+        require(_goal <= _cap);   // goal is softcap
         require(_signer != address(0));
         require(_communityAddress != address(0));
         require(_token != address(0));
@@ -471,7 +471,7 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
 
   // Change Crowdsale Stage. Available Options: PreICO, ICO1, ICO2, ICO3, ICO4
     function setCrowdsaleStage(uint value) public onlyOwner {
-        require(value &lt;= 4);
+        require(value <= 4);
         if (uint(CrowdsaleStage.PreICO) == value) {
             rate = 2380; // 1 EPG = 0.00042 ETH
             stage = CrowdsaleStage.PreICO;
@@ -518,11 +518,11 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
     // ================= Address Management Over ==================
 
 
-    // Token Purchase, function will be called when &#39;data&#39; is sent in 
+    // Token Purchase, function will be called when 'data' is sent in 
     // FOR KYC
     function donate(uint8 _v, bytes32 _r, bytes32 _s) 
     onlyValidAccess(_v,_r,_s) public payable{
-        require(msg.value &gt;= 150000000000000000); // minimum limit - no max
+        require(msg.value >= 150000000000000000); // minimum limit - no max
         require(blacklist[msg.sender] == false); // require that the sender is not in the blacklist      
         
         require(validPurchase()); // after ico start date and not value of 0  
@@ -530,32 +530,32 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
         uint256 tokensThatWillBeMintedAfterPurchase = msg.value.mul(rate);
 
         // if Pre-ICO sale limit is reached, refund sender
-        if ((stage == CrowdsaleStage.PreICO) &amp;&amp; (totalTokensPreICO + tokensThatWillBeMintedAfterPurchase &gt; totalTokensForSaleDuringPreICO)) {
+        if ((stage == CrowdsaleStage.PreICO) && (totalTokensPreICO + tokensThatWillBeMintedAfterPurchase > totalTokensForSaleDuringPreICO)) {
             msg.sender.transfer(msg.value); // Refund them
-            emit EthRefunded(&quot;PreICO Limit Hit&quot;);
+            emit EthRefunded("PreICO Limit Hit");
             return;
         } 
-        if ((stage == CrowdsaleStage.ICO1) &amp;&amp; (totalTokensICO1 + tokensThatWillBeMintedAfterPurchase &gt; totalTokensForSaleDuringICO1)) {
+        if ((stage == CrowdsaleStage.ICO1) && (totalTokensICO1 + tokensThatWillBeMintedAfterPurchase > totalTokensForSaleDuringICO1)) {
             msg.sender.transfer(msg.value); // Refund them
-            emit EthRefunded(&quot;ICO1 Limit Hit&quot;);
+            emit EthRefunded("ICO1 Limit Hit");
             return;
 
         }         
-        if ((stage == CrowdsaleStage.ICO2) &amp;&amp; (totalTokensICO2 + tokensThatWillBeMintedAfterPurchase &gt; totalTokensForSaleDuringICO2)) {
+        if ((stage == CrowdsaleStage.ICO2) && (totalTokensICO2 + tokensThatWillBeMintedAfterPurchase > totalTokensForSaleDuringICO2)) {
             msg.sender.transfer(msg.value); // Refund them
-            emit EthRefunded(&quot;ICO2 Limit Hit&quot;);
+            emit EthRefunded("ICO2 Limit Hit");
             return;
 
         }  
-        if ((stage == CrowdsaleStage.ICO3) &amp;&amp; (totalTokensICO3 + tokensThatWillBeMintedAfterPurchase &gt; totalTokensForSaleDuringICO3)) {
+        if ((stage == CrowdsaleStage.ICO3) && (totalTokensICO3 + tokensThatWillBeMintedAfterPurchase > totalTokensForSaleDuringICO3)) {
             msg.sender.transfer(msg.value); // Refund them
-            emit EthRefunded(&quot;ICO3 Limit Hit&quot;);
+            emit EthRefunded("ICO3 Limit Hit");
             return;        
         } 
 
-        if ((stage == CrowdsaleStage.ICO4) &amp;&amp; (totalTokensICO4 + tokensThatWillBeMintedAfterPurchase &gt; totalTokensForSaleDuringICO4)) {
+        if ((stage == CrowdsaleStage.ICO4) && (totalTokensICO4 + tokensThatWillBeMintedAfterPurchase > totalTokensForSaleDuringICO4)) {
             msg.sender.transfer(msg.value); // Refund them
-            emit EthRefunded(&quot;ICO4 Limit Hit&quot;);
+            emit EthRefunded("ICO4 Limit Hit");
             return;
         } else {                
             // calculate token amount to be created
@@ -600,9 +600,9 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
         // if Wei raised greater than softcap, send to wallet else put in refund vault
         if (goalReached()) {
             wallet.transfer(msg.value);
-            emit EthTransferred(&quot;forwarding funds to wallet&quot;);
+            emit EthTransferred("forwarding funds to wallet");
         } else  {
-            emit EthTransferred(&quot;forwarding funds to refundable vault&quot;);
+            emit EthTransferred("forwarding funds to refundable vault");
             super.forwardFunds();
         }
     }
@@ -623,7 +623,7 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
             tokens = 50000000000000000000;
         }
 
-        for(uint256 i = 0; i &lt; _recipient.length; i++)
+        for(uint256 i = 0; i < _recipient.length; i++)
         {
             if (!airdrops[_recipient[i]]) {
                 airdrops[_recipient[i]] = true;
@@ -642,7 +642,7 @@ contract ElepigCrowdsale is CappedCrowdsale, RefundableCrowdsale, ControlledAcce
 
         require(!isFinalized);
         
-        if(tokensMinted &lt; totalTokensForSale) {
+        if(tokensMinted < totalTokensForSale) {
 
             uint256 unsoldTokens = totalTokensForSale - tokensMinted;            
             tokenReward.mint(community, unsoldTokens);

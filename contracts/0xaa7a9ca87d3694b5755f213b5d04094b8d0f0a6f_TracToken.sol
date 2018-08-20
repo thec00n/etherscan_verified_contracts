@@ -12,20 +12,20 @@ pragma solidity ^0.4.18;
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
  contract Ownable {
   address public owner;
@@ -83,7 +83,7 @@ pragma solidity ^0.4.18;
  contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -92,7 +92,7 @@ pragma solidity ^0.4.18;
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -133,7 +133,7 @@ pragma solidity ^0.4.18;
  */
  contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -144,8 +144,8 @@ pragma solidity ^0.4.18;
    */
    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ pragma solidity ^0.4.18;
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -197,7 +197,7 @@ pragma solidity ^0.4.18;
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -254,8 +254,8 @@ pragma solidity ^0.4.18;
 
  contract TracToken is MintableToken {
 
-  string public constant name = &#39;Trace Token&#39;;
-  string public constant symbol = &#39;TRAC&#39;;
+  string public constant name = 'Trace Token';
+  string public constant symbol = 'TRAC';
   uint8 public constant decimals = 18; // one TRAC = 10^18 Tracks
   uint256 public startTime = 1516028400; // initial startTime from tokensale contract
   uint256 public constant bountyReward = 1e25;
@@ -315,7 +315,7 @@ pragma solidity ^0.4.18;
      uint256 amount;
      require(contributors.length == amounts.length);
 
-     for (uint i = 0; i &lt; contributors.length; i++) {
+     for (uint i = 0; i < contributors.length; i++) {
       contributor = contributors[i];
       amount = amounts[i];
       require(mint(contributor, amount));
@@ -331,48 +331,48 @@ pragma solidity ^0.4.18;
 
   function withdrawTokenToFounders() public {
   
-    if (now &gt; startTime + 720 days &amp;&amp; founderAmounts[7]&gt;0){
+    if (now > startTime + 720 days && founderAmounts[7]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[7]);
       founderAmounts[7] = 0;
     }
 
-    if (now &gt; startTime + 630 days &amp;&amp; founderAmounts[6]&gt;0){
+    if (now > startTime + 630 days && founderAmounts[6]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[6]);
       founderAmounts[6] = 0;
     }
-    if (now &gt; startTime + 540 days &amp;&amp; founderAmounts[5]&gt;0){
+    if (now > startTime + 540 days && founderAmounts[5]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[5]);
       founderAmounts[5] = 0;
     }
-    if (now &gt; startTime + 450 days &amp;&amp; founderAmounts[4]&gt;0){
+    if (now > startTime + 450 days && founderAmounts[4]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[4]);
       founderAmounts[4] = 0;
     }
-    if (now &gt; startTime + 360 days&amp;&amp; founderAmounts[3]&gt;0){
+    if (now > startTime + 360 days&& founderAmounts[3]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[3]);
       founderAmounts[3] = 0;
     }
-    if (now &gt; startTime + 270 days &amp;&amp; founderAmounts[2]&gt;0){
+    if (now > startTime + 270 days && founderAmounts[2]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[2]);
       founderAmounts[2] = 0;
     }
-    if (now &gt; startTime + 180 days &amp;&amp; founderAmounts[1]&gt;0){
+    if (now > startTime + 180 days && founderAmounts[1]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[1]);
       founderAmounts[1] = 0;
     }
-    if (now &gt; startTime + 90 days &amp;&amp; founderAmounts[0]&gt;0){
+    if (now > startTime + 90 days && founderAmounts[0]>0){
       this.transfer(teamAndFoundersWallet, founderAmounts[0]);
       founderAmounts[0] = 0;
     }
   }
 
   function withdrawTokensToAdvisors() public {
-    if (now &gt; startTime + 180 days &amp;&amp; preicoAndAdvisorsAmounts[1]&gt;0){
+    if (now > startTime + 180 days && preicoAndAdvisorsAmounts[1]>0){
       this.transfer(advisorsAndPreICO, preicoAndAdvisorsAmounts[1]);
       preicoAndAdvisorsAmounts[1] = 0;
     }
 
-    if (now &gt; startTime + 90 days &amp;&amp; preicoAndAdvisorsAmounts[0]&gt;0){
+    if (now > startTime + 90 days && preicoAndAdvisorsAmounts[0]>0){
       this.transfer(advisorsAndPreICO, preicoAndAdvisorsAmounts[0]);
       preicoAndAdvisorsAmounts[0] = 0;
     }
@@ -380,8 +380,8 @@ pragma solidity ^0.4.18;
 
 
   function allocateRestOfTokens() onlyOwner public{
-    require(totalSupply &gt; TOTAL_NUM_TOKENS.div(2));
-    require(totalSupply &lt; TOTAL_NUM_TOKENS);
+    require(totalSupply > TOTAL_NUM_TOKENS.div(2));
+    require(totalSupply < TOTAL_NUM_TOKENS);
     require(!mintingFinished);
     mint(wallet, bountyReward);
     mint(advisorsAndPreICO,  preicoAndAdvisors.div(5));

@@ -2,25 +2,25 @@ contract CMHome {
 address CMAdmin = 0xD97C2Ecbd1ba8C1785cf416a7111197fd677F638; 
 ////////////////////COYPRIGHT INFORMATION///////////////	
 /*copyright 2016 @coinmechanics.com. All rights reserved*/	
-///////////////DATA STRUCTURE &amp; STORES/////////
+///////////////DATA STRUCTURE & STORES/////////
 struct WhiteList{
 bool Valid;
 bool Created;
 bool Abitration;	
 }
-mapping(address =&gt; WhiteList) public whitelist;
+mapping(address => WhiteList) public whitelist;
 	
 struct MyContracts {
 bool Created;
 address Contr;	
 }		
-mapping(uint32 =&gt; mapping (address =&gt; MyContracts)) public mycontracts;
+mapping(uint32 => mapping (address => MyContracts)) public mycontracts;
 
 struct Factories {
 bool Authorised;
 bool Controlled;
 }
-mapping (address =&gt; Factories) public factory;
+mapping (address => Factories) public factory;
 
 /////////////CONFIGURE FACTORY//////////////
 
@@ -104,7 +104,7 @@ HomeCall = CMHome(_cmhome);
 (HomeCall.RegisterOne(pin,sender,atlantis));	
 }
 
-////////DATA STRUCTURE &amp; STORES////////
+////////DATA STRUCTURE & STORES////////
 
 struct Pricing {
 uint32 ServiceFee;
@@ -200,13 +200,13 @@ uint32 PayCounterParty;
 uint32 PayOwner;
 }
 ///////////////MAP DATA STORES///////////////////
-mapping (uint256 =&gt; fContr1) public contractPartOne;	
-mapping (uint256 =&gt; fContr2) public contractPartTwo;
-mapping (uint256 =&gt; fContr3) public contractPartThree;
-mapping (uint256 =&gt; Settlement) public settlement;
-mapping (uint256 =&gt; Arbitration) public arbitration;
-mapping (uint256 =&gt; Deposits) public deposits;
-mapping (uint256 =&gt; Status) public status;	
+mapping (uint256 => fContr1) public contractPartOne;	
+mapping (uint256 => fContr2) public contractPartTwo;
+mapping (uint256 => fContr3) public contractPartThree;
+mapping (uint256 => Settlement) public settlement;
+mapping (uint256 => Arbitration) public arbitration;
+mapping (uint256 => Deposits) public deposits;
+mapping (uint256 => Status) public status;	
 	
 ////////////INITIALIZE DATA STORES/////////////
 fContr1 c1;	
@@ -253,7 +253,7 @@ if(st.ActivePro == true) throw;
 if(st.ActiveSet == true) throw;   
 if(st.ActiveArb == true) throw; 
 c1.ContractID = ContractNum;	
-c1.ContractType = &#39;CONTRACT FOR DIFFERENCE&#39;;	
+c1.ContractType = 'CONTRACT FOR DIFFERENCE';	
 c1.AssetAndCurrency = AssetAndCurrency;
 c1.OwnerPosition = OwnerPosition;
 c1.PriceAddress = PriceAddress;
@@ -264,7 +264,7 @@ c3.ActivationTime = ActivationTime ;
 c3.ExpirationTime = ExpirationTime;
 c3.MovementRange = MovementRange;
 contractPartOne[ContractNum].ContractID = ContractNum;
-contractPartOne[ContractNum].ContractType = &#39;CONTRACT FOR DIFFERENCE&#39;;	
+contractPartOne[ContractNum].ContractType = 'CONTRACT FOR DIFFERENCE';	
 contractPartOne[ContractNum].AssetAndCurrency = AssetAndCurrency; 
 contractPartOne[ContractNum].OwnerPosition = OwnerPosition; 
 contractPartOne[ContractNum].PriceAddress = PriceAddress; 
@@ -322,8 +322,8 @@ if(st.ActivePro == false) throw;
 if(st.ActiveSet == true) throw;   
 if(de.CounterPartyFunded == false) throw;   
 if(de.OwnerFunded == false) throw;        
-if(CounterPartyPayout &lt; 100) throw; 
-if(OwnerPayout &lt; 100) throw;       
+if(CounterPartyPayout < 100) throw; 
+if(OwnerPayout < 100) throw;       
 se.CounterPartyPayout = CounterPartyPayout;
 se.OwnerPayout = OwnerPayout;
 settlement[ContractNum].CounterPartyPayout = CounterPartyPayout;
@@ -337,20 +337,20 @@ function Payout (){
 if(st.ActiveSet != true) throw;
 if(st.Dispute == true) throw;
 if(st.ActiveArb == true) throw;
-if((msg.sender != de.CounterPartyAddr) &amp;&amp; (msg.sender != de.OwnerAddr))throw; 
-if(msg.sender == de.OwnerAddr &amp;&amp; se.CounterPartySettled == false)throw;
+if((msg.sender != de.CounterPartyAddr) && (msg.sender != de.OwnerAddr))throw; 
+if(msg.sender == de.OwnerAddr && se.CounterPartySettled == false)throw;
 
 SkywalkerFactory
 FactoryCall = SkywalkerFactory(co.Factory);	
 ServiceFee = (FactoryCall.GetPrice(1));
 	
-if((msg.sender == de.OwnerAddr) &amp;&amp; (se.OwnerSettled == false)){
+if((msg.sender == de.OwnerAddr) && (se.OwnerSettled == false)){
 Pay = ((se.OwnerPayout * WeiConverter) / 100);
 se.OwnerSettled = true;
 settlement[ContractNum].OwnerSettled = true;
 if(!de.OwnerAddr.send(Pay)) throw;
 }
-if((msg.sender == de.CounterPartyAddr) &amp;&amp; (se.CounterPartySettled == false)){
+if((msg.sender == de.CounterPartyAddr) && (se.CounterPartySettled == false)){
 Fee = ((se.CounterPartyPayout * ServiceFee * WeiConverter) / Factor);
 Pay = ((se.CounterPartyPayout * WeiConverter) / 100);
 NetPayout = Pay - Fee;
@@ -362,13 +362,13 @@ if(!CMAccount.send(Fee)) throw;
 }	
 /////////////DISPUTE/////////////////
 function Dispute() {
-if((msg.sender != co.Owner) &amp;&amp; (msg.sender != de.CounterPartyAddr)) throw;     
+if((msg.sender != co.Owner) && (msg.sender != de.CounterPartyAddr)) throw;     
 if(st.Dispute == true) throw; 
 if(se.CounterPartySettled == true) throw;
 if(se.OwnerSettled == true) throw;
-if(de.OwnerFunded == false &amp;&amp; msg.sender == co.Owner)throw; 
-if(de.CounterPartyFunded == false &amp;&amp; msg.sender == de.CounterPartyAddr)throw;
-if(de.OwnerFunded != true &amp;&amp; de.CounterPartyFunded != true)throw; 
+if(de.OwnerFunded == false && msg.sender == co.Owner)throw; 
+if(de.CounterPartyFunded == false && msg.sender == de.CounterPartyAddr)throw;
+if(de.OwnerFunded != true && de.CounterPartyFunded != true)throw; 
 st.Dispute = true;
 status[ContractNum].Dispute = true;
 }
@@ -382,8 +382,8 @@ if(msg.sender != CMAdmin) throw;
 if(st.ActivePro == false) throw;  
 if(st.Dispute == false) throw;    
 if(st.ActiveArb == true) throw;  
-if(PayCounterParty &lt; 100) throw; 
-if(PayOwner &lt; 100) throw;       
+if(PayCounterParty < 100) throw; 
+if(PayOwner < 100) throw;       
 ar.PayCounterParty = PayCounterParty;
 ar.PayOwner = PayOwner;
 ar.OwnerDefault = OwnerDefault;	
@@ -405,7 +405,7 @@ FactoryCall = SkywalkerFactory(co.Factory);
 ServiceFee = (FactoryCall.GetPrice(1));
 DefaultFee = (FactoryCall.GetPrice(2));
 
-if((ar.OwnerDefault == true) &amp;&amp; (se.CounterPartySettled == false)){
+if((ar.OwnerDefault == true) && (se.CounterPartySettled == false)){
 Fee = ((ar.PayCounterParty * ServiceFee * WeiConverter) / Factor);	
 Pay = ((ar.PayCounterParty * WeiConverter) / 100);
 NetPayout = Pay - Fee;
@@ -414,7 +414,7 @@ settlement[ContractNum].CounterPartySettled = true;
 if(!de.CounterPartyAddr.send(NetPayout)) throw;
 if(!CMAccount.send(Fee)) throw;
 }
-if((ar.OwnerDefault == false) &amp;&amp; (se.CounterPartySettled == false)){
+if((ar.OwnerDefault == false) && (se.CounterPartySettled == false)){
 Fee = ((ar.PayCounterParty * DefaultFee * WeiConverter) / Factor);
 Pay = ((ar.PayCounterParty * WeiConverter) / 100);
 NetPayout = Pay - Fee;
@@ -436,14 +436,14 @@ FactoryCall = SkywalkerFactory(co.Factory);
 ServiceFee = (FactoryCall.GetPrice(1));
 DefaultFee = (FactoryCall.GetPrice(2));
 
-if((ar.OwnerDefault == false) &amp;&amp; (se.OwnerSettled == false)){
+if((ar.OwnerDefault == false) && (se.OwnerSettled == false)){
 Pay = ((ar.PayOwner * WeiConverter) / 100);
 if(!de.OwnerAddr.send(Pay)) throw;
 se.OwnerSettled = true;
 settlement[ContractNum].OwnerSettled = true;
 }
 
-if((ar.OwnerDefault == true) &amp;&amp; (se.OwnerSettled == false)){
+if((ar.OwnerDefault == true) && (se.OwnerSettled == false)){
 Fee = ((ar.PayOwner * DefaultFee * WeiConverter) / Factor);	
 Pay = ((ar.PayOwner * WeiConverter) / 100); 
 NetPayout = Pay - Fee;
@@ -461,8 +461,8 @@ if(st.ActiveSet == true) throw;
 if(st.ActiveArb == true) throw;
 if(st.Dispute == true) throw;
 
-if(msg.sender == co.Owner &amp;&amp; de.CounterPartyFunded == false 
-&amp;&amp; de.OwnerFunded == true){
+if(msg.sender == co.Owner && de.CounterPartyFunded == false 
+&& de.OwnerFunded == true){
 uint256 _OwnerDeposit = c2.OwnerDeposit * WeiConverter;
 if(!de.OwnerAddr.send(_OwnerDeposit)) throw;
 deposits[ContractNum].OwnerFunded = false;
@@ -471,8 +471,8 @@ settlement[ContractNum].OwnerSettled = true;
 se.OwnerSettled = true;
 }
 
-if(msg.sender == de.CounterPartyAddr &amp;&amp; de.CounterPartyFunded == true 
-&amp;&amp; de.OwnerFunded == false){
+if(msg.sender == de.CounterPartyAddr && de.CounterPartyFunded == true 
+&& de.OwnerFunded == false){
 uint256 _CounterPartyDeposit = c2.CounterPartyDeposit * WeiConverter;
 if(!de.CounterPartyAddr.send(_CounterPartyDeposit)) throw;
 deposits[ContractNum].CounterPartyFunded = false;
@@ -486,8 +486,8 @@ settlement[ContractNum].CounterPartySettled = true;
 ////////////////OWNER ADMINISTRATION////////////////
 function Reset(){
 if(msg.sender != co.Owner)throw;
-if(de.CounterPartyFunded == true &amp;&amp; se.CounterPartySettled == false) throw;	
-if(de.OwnerFunded == true &amp;&amp; se.OwnerSettled == false) throw;
+if(de.CounterPartyFunded == true && se.CounterPartySettled == false) throw;	
+if(de.OwnerFunded == true && se.OwnerSettled == false) throw;
 st.Dispute = false;
 st.ActivePro = false;
 st.ActiveSet = false;

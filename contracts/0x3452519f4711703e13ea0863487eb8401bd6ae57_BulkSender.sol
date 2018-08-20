@@ -78,8 +78,8 @@ contract BulkSender is Ownable {
      * Note: only the owner (creator) of this contract may call this.
      */
     function bulkTransfer(ERC20Basic token, address[] toAddresses, uint256[] values) public onlyOwner returns (bool) {
-        require((toAddresses.length &gt; 0) &amp;&amp; (toAddresses.length == values.length));
-        for (uint i = 0; i &lt; toAddresses.length; i++) {
+        require((toAddresses.length > 0) && (toAddresses.length == values.length));
+        for (uint i = 0; i < toAddresses.length; i++) {
             token.safeTransfer(toAddresses[i], values[i]);
         }
         return true;

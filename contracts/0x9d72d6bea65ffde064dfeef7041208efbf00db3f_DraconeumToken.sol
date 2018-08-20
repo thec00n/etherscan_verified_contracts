@@ -3,16 +3,16 @@ pragma solidity ^0.4.18;
 
 contract DraconeumToken {
     
-    string public name = &quot;Draconeum&quot;;
-    string public symbol = &quot;DRCM&quot;;
+    string public name = "Draconeum";
+    string public symbol = "DRCM";
     uint8 public decimals = 8;
     
     uint256 public totalSupply = 14000000;
     uint256 public initialSupply = 14000000;
 
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -29,8 +29,8 @@ contract DraconeumToken {
         public {
         totalSupply = initialSupply * 10 ** uint256(decimals);  
         balanceOf[msg.sender] = totalSupply;                
-        name = tokenName =&quot;Draconeum&quot;;                                   
-        symbol = tokenSymbol =&quot;DRCM&quot;;                               
+        name = tokenName ="Draconeum";                                   
+        symbol = tokenSymbol ="DRCM";                               
     }
 
     /**
@@ -39,8 +39,8 @@ contract DraconeumToken {
     function _transfer(address _from, address _to, uint _value) internal {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         Transfer(_from, _to, _value);

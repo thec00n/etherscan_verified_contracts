@@ -28,7 +28,7 @@ contract UfoPonzi {
     }
     
     function enter() {
-        if (msg.value &lt; 1 ether) {
+        if (msg.value < 1 ether) {
             msg.sender.send(msg.value);
             return;
         }
@@ -51,7 +51,7 @@ contract UfoPonzi {
         }
 
   // if there are enough ether on the balance we can pay out to an earlier participant
-        if (balance &gt; participants[payoutIdx].amount / 10 + participants[payoutIdx].amount) {
+        if (balance > participants[payoutIdx].amount / 10 + participants[payoutIdx].amount) {
             uint transactionAmount = (participants[payoutIdx].amount - participants[payoutIdx].amount / 10) / 10 + (participants[payoutIdx].amount - participants[payoutIdx].amount / 10);
             participants[payoutIdx].etherAddress.send(transactionAmount);
 

@@ -119,13 +119,13 @@ contract Crowdsale is Owned, Stateful {
         address investor;
     }
 
-    mapping(bytes32 =&gt; BtcDeposit) public btcDeposits;
+    mapping(bytes32 => BtcDeposit) public btcDeposits;
 
-    mapping(address =&gt; Investor) public investors;
-    mapping(uint =&gt; address) public investorsIter;
+    mapping(address => Investor) public investors;
+    mapping(uint => address) public investorsIter;
     uint public numberOfInvestors;
 
-    mapping(uint =&gt; address) public investorsToWithdrawIter;
+    mapping(uint => address) public investorsToWithdrawIter;
     uint public numberOfInvestorsToWithdraw;
 
     function Crowdsale() payable Owned() {}
@@ -142,7 +142,7 @@ contract Crowdsale is Owned, Stateful {
         uint valueUSDWEI = valueWEI * etherPriceUSDWEI / 1 ether;
         uint tokenPriceUSDWEI = getTokenPriceUSDWEI(valueUSDWEI);
 
-        if (collectedUSDWEI + valueUSDWEI &gt; totalLimitUSDWEI) { // don&#39;t need so much ether
+        if (collectedUSDWEI + valueUSDWEI > totalLimitUSDWEI) { // don't need so much ether
             valueUSDWEI = totalLimitUSDWEI - collectedUSDWEI;
             valueWEI = valueUSDWEI * 1 ether / etherPriceUSDWEI;
             uint weiToReturn = msg.value - valueWEI;
@@ -192,20 +192,20 @@ contract Crowdsale is Owned, Stateful {
             tokenPriceUSDWEI = 6000000000000000;
         }
         if (state == State.PreSale) {
-            require(now &lt; crowdsaleFinishTime);
+            require(now < crowdsaleFinishTime);
             tokenPriceUSDWEI = 7000000000000000;
         }
         if (state == State.Sale) {
-            require(now &lt; crowdsaleFinishTime);
-            if (now &lt; crowdsaleStartTime + 1 days) {
-                if (_valueUSDWEI &gt; 30000 * 1 ether) {
+            require(now < crowdsaleFinishTime);
+            if (now < crowdsaleStartTime + 1 days) {
+                if (_valueUSDWEI > 30000 * 1 ether) {
                     tokenPriceUSDWEI = 7500000000000000;
                 } else {
                     tokenPriceUSDWEI = 8500000000000000;
                 }
-            } else if (now &lt; crowdsaleStartTime + 1 weeks) {
+            } else if (now < crowdsaleStartTime + 1 weeks) {
                 tokenPriceUSDWEI = 9000000000000000;
-            } else if (now &lt; crowdsaleStartTime + 2 weeks) {
+            } else if (now < crowdsaleStartTime + 2 weeks) {
                 tokenPriceUSDWEI = 9500000000000000;
             } else {
                 tokenPriceUSDWEI = 10000000000000000;
@@ -269,8 +269,8 @@ contract Crowdsale is Owned, Stateful {
 
     function failSale(uint _investorsToProcess) public {
         require(state == State.Sale);
-        require(now &gt;= crowdsaleFinishTime &amp;&amp; collectedUSDWEI &lt; minimalSuccessUSDWEI);
-        while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestors &gt; 0) {
+        require(now >= crowdsaleFinishTime && collectedUSDWEI < minimalSuccessUSDWEI);
+        while (_investorsToProcess > 0 && numberOfInvestors > 0) {
             address addr = investorsIter[--numberOfInvestors];
             Investor memory inv = investors[addr];
             burnTokens(addr, inv.amountTokens);
@@ -280,7 +280,7 @@ contract Crowdsale is Owned, Stateful {
             investorsToWithdrawIter[numberOfInvestorsToWithdraw] = addr;
             numberOfInvestorsToWithdraw++;
         }
-        if (numberOfInvestors &gt; 0) {
+        if (numberOfInvestors > 0) {
             return;
         }
         setState(State.SaleFailed);
@@ -288,16 +288,16 @@ contract Crowdsale is Owned, Stateful {
 
     function completeSale(uint _investorsToProcess) public onlyOwner {
         require(state == State.Sale);
-        require(collectedUSDWEI &gt;= minimalSuccessUSDWEI);
+        require(collectedUSDWEI >= minimalSuccessUSDWEI);
 
-        while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestors &gt; 0) {
+        while (_investorsToProcess > 0 && numberOfInvestors > 0) {
             --numberOfInvestors;
             --_investorsToProcess;
             delete investors[investorsIter[numberOfInvestors]];
             delete investorsIter[numberOfInvestors];
         }
 
-        if (numberOfInvestors &gt; 0) {
+        if (numberOfInvestors > 0) {
             return;
         }
 
@@ -324,7 +324,7 @@ contract Crowdsale is Owned, Stateful {
     }
 
     function returnInvestments(uint _investorsToProcess) public saleFailedState {
-        while (_investorsToProcess &gt; 0 &amp;&amp; numberOfInvestorsToWithdraw &gt; 0) {
+        while (_investorsToProcess > 0 && numberOfInvestorsToWithdraw > 0) {
             address addr = investorsToWithdrawIter[--numberOfInvestorsToWithdraw];
             delete investorsToWithdrawIter[numberOfInvestorsToWithdraw];
             --_investorsToProcess;
@@ -339,14 +339,14 @@ contract Crowdsale is Owned, Stateful {
     function returnInvestmentsToInternal(address _to) internal {
         Investor memory inv = investors[_to];
         uint value = inv.amountWei;
-        if (value &gt; 0) {
+        if (value > 0) {
             delete investors[_to];
             require(_to.call.gas(3000000).value(value)());
         }
     }
 
     function withdrawFunds(uint _value) public onlyOwner {
-        require(state == State.PrivateSale || state == State.PreSale || (state == State.Sale &amp;&amp; collectedUSDWEI &gt; minimalSuccessUSDWEI));
+        require(state == State.PrivateSale || state == State.PreSale || (state == State.Sale && collectedUSDWEI > minimalSuccessUSDWEI));
         if (_value == 0) {
             _value = this.balance;
         }
@@ -355,7 +355,7 @@ contract Crowdsale is Owned, Stateful {
     }
 
     modifier limitNotExceeded {
-        require(collectedUSDWEI &lt; totalLimitUSDWEI);
+        require(collectedUSDWEI < totalLimitUSDWEI);
         _;
     }
 
@@ -377,8 +377,8 @@ contract Crowdsale is Owned, Stateful {
 
 contract Token is Crowdsale, ERC20 {
 
-    mapping(address =&gt; uint) internal balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+    mapping(address => uint) internal balances;
+    mapping(address => mapping(address => uint)) public allowed;
     uint8 public constant decimals = 8;
 
     function Token() payable Crowdsale() {}
@@ -388,17 +388,17 @@ contract Token is Crowdsale, ERC20 {
     }
 
     function transfer(address _to, uint _value) public completedSaleState onlyPayloadSize(2 * 32) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]); // overflow
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]); // overflow
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
     }
 
     function transferFrom(address _from, address _to, uint _value) public completedSaleState onlyPayloadSize(3 * 32) {
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         balances[_from] -= _value;
         balances[_to] += _value;
         allowed[_from][msg.sender] -= _value;
@@ -415,7 +415,7 @@ contract Token is Crowdsale, ERC20 {
     }
 
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 }
@@ -427,7 +427,7 @@ contract MigratableToken is Token {
     address public migrationAgent;
     uint public totalMigrated;
     address public migrationHost;
-    mapping(address =&gt; bool) migratedInvestors;
+    mapping(address => bool) migratedInvestors;
 
     event Migrated(address indexed from, address indexed to, uint value);
 
@@ -438,10 +438,10 @@ contract MigratableToken is Token {
 
     //manual migration by owner
     function migrateInvestorFromHost(address _address) external onlyOwner {
-        require(migrationHost != 0 &amp;&amp; state != State.SaleFailed &amp;&amp; migratedInvestors[_address] == false);
+        require(migrationHost != 0 && state != State.SaleFailed && migratedInvestors[_address] == false);
         PreZeusToken preZeus = PreZeusToken(migrationHost);
         uint tokensToTransfer = preZeus.balanceOf(_address);
-        require(tokensToTransfer &gt; 0);
+        require(tokensToTransfer > 0);
 
         balances[_address] = tokensToTransfer;
         totalSupply += tokensToTransfer;
@@ -476,18 +476,18 @@ contract MigratableToken is Token {
 
 contract ZeusToken is MigratableToken {
 
-    string public constant symbol = &quot;ZST&quot;;
+    string public constant symbol = "ZST";
 
-    string public constant name = &quot;Zeus Token&quot;;
+    string public constant name = "Zeus Token";
 
-    mapping(address =&gt; bool) public allowedContracts;
+    mapping(address => bool) public allowedContracts;
 
     function ZeusToken() payable MigratableToken() {}
 
     function emitTokens(address _investor, uint _tokenPriceUSDWEI, uint _valueUSDWEI) internal returns(uint tokensToEmit) {
         tokensToEmit = (_valueUSDWEI * (10 ** uint(decimals))) / _tokenPriceUSDWEI;
-        require(balances[_investor] + tokensToEmit &gt; balances[_investor]); // overflow
-        require(tokensToEmit &gt; 0);
+        require(balances[_investor] + tokensToEmit > balances[_investor]); // overflow
+        require(tokensToEmit > 0);
         balances[_investor] += tokensToEmit;
         totalSupply += tokensToEmit;
         Transfer(this, _investor, tokensToEmit);
@@ -495,8 +495,8 @@ contract ZeusToken is MigratableToken {
 
     function emitAdditionalTokens() internal {
         uint tokensToEmit = totalSupply * 1000 / 705 - totalSupply;
-        require(balances[beneficiary] + tokensToEmit &gt; balances[beneficiary]); // overflow
-        require(tokensToEmit &gt; 0);
+        require(balances[beneficiary] + tokensToEmit > balances[beneficiary]); // overflow
+        require(tokensToEmit > 0);
         balances[beneficiary] += tokensToEmit;
         totalSupply += tokensToEmit;
         Transfer(this, beneficiary, tokensToEmit);

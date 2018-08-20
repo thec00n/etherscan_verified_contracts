@@ -61,9 +61,9 @@ contract PMOSCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint256 amount = msg.value * price;
         tokenReward.transfer(msg.sender, amount);
         FundTransfer(msg.sender, amount, true);

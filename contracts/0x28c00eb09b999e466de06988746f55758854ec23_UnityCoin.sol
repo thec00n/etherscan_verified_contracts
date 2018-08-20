@@ -5,7 +5,7 @@ pragma solidity ^0.4.11;
 Unity Coin Smart Contract
 
 Credit	: Rejean Leclerc 
-Mail 	: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="483a2d222d292666242d2b242d3a2b797a7b082f25292124662b2725">[email&#160;protected]</a>
+Mail 	: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="483a2d222d292666242d2b242d3a2b797a7b082f25292124662b2725">[email protected]</a>
 
 --------------------------------------------------------------------------------
 */
@@ -26,20 +26,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,15 +48,15 @@ contract UnityCoin {
            
     using SafeMath for uint256;
     
-    string public constant name = &quot;Unity Coin&quot;;
-    string public constant symbol = &quot;UNT&quot;;
+    string public constant name = "Unity Coin";
+    string public constant symbol = "UNT";
     uint8 public constant decimals = 18;
     /* The initially supply is 100,000,000 UNT with 18 decimals */
     uint256 public constant initialSupply = 100000000000000000000000000;
 
     address public owner;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping (address => uint256)) public allowed;
     uint256 public RATE = 0;
 	bool canBuy = false;
 
@@ -76,14 +76,14 @@ contract UnityCoin {
     /* from begin Febuary to end Febuary   around 5 cent per token*/
     /* before and after ..... nothing  */
     function convertTokens() payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 		
 		canBuy = false;        
-        if (now &gt; 1512968674 &amp;&amp; now &lt; 1517356800 ) {
+        if (now > 1512968674 && now < 1517356800 ) {
             RATE = 75000;
             canBuy = true;
         }
-        if (now &gt;= 15173568001 &amp;&amp; now &lt; 1519776000 ) {
+        if (now >= 15173568001 && now < 1519776000 ) {
             RATE = 37500;
             canBuy = true;
         }
@@ -95,11 +95,11 @@ contract UnityCoin {
 		}
     }
 
-    /* Transfer the balance from the sender&#39;s address to the address _to */
+    /* Transfer the balance from the sender's address to the address _to */
     function transfer(address _to, uint _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             Transfer(msg.sender, _to, _value);
             return true;
         } else {
@@ -109,10 +109,10 @@ contract UnityCoin {
 
     /* Withdraws to address _to form the address _from up to the amount _value */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
 			
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -126,7 +126,7 @@ contract UnityCoin {
 
     /* Allows _spender to withdraw the _allowance amount form sender */
     function approve(address _spender, uint256 _allowance) returns (bool success) {
-        if (balances[msg.sender] &gt;= _allowance) {
+        if (balances[msg.sender] >= _allowance) {
             allowed[msg.sender][_spender] = _allowance;
             Approval(msg.sender, _spender, _allowance);
             return true;

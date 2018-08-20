@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,20 +57,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,7 +94,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -103,7 +103,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -143,7 +143,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -154,8 +154,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -169,7 +169,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -204,7 +204,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -216,8 +216,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract RecereumToken is StandardToken, Ownable {
-    string public name = &#39;Recereum Token&#39;;
-    string public symbol = &#39;RCR&#39;;
+    string public name = 'Recereum Token';
+    string public symbol = 'RCR';
     uint256 public decimals = 18;
 
     function RecereumToken() public {
@@ -229,10 +229,10 @@ contract RecereumToken is StandardToken, Ownable {
 contract RecereumPreSale is Ownable {
     using SafeMath for uint256;
 
-    // Start date of presale, &gt;= 2018-01-01
+    // Start date of presale, >= 2018-01-01
     uint256 public preSaleStartDate = 0;
 
-    // End date of presale, &lt; 2018-01-15
+    // End date of presale, < 2018-01-15
     uint256 public preSaleEndDate = 0;
 
     // Hard cap (in tokens) for presale
@@ -296,14 +296,14 @@ contract RecereumPreSale is Ownable {
     }
 
     function buyTokens(address recipient) public payable {
-        require(msg.value &gt;= minimalPurchaseWei);
+        require(msg.value >= minimalPurchaseWei);
         State state = getState();
         require(state == State.PreSale);
-        require(preSaleTokenSold &lt; preSaleTokenCap);
+        require(preSaleTokenSold < preSaleTokenCap);
         uint256 tokenAmount = msg.value.div(tokenPriceWei).mul(10**token.decimals());
         uint256 weiAccepted = 0;
         uint256 change = 0;
-        if (preSaleTokenSold.add(tokenAmount) &lt;= preSaleTokenCap) {
+        if (preSaleTokenSold.add(tokenAmount) <= preSaleTokenCap) {
             weiAccepted = msg.value;
             change = 0;
         } else {
@@ -314,17 +314,17 @@ contract RecereumPreSale is Ownable {
         preSaleTokenSold = preSaleTokenSold.add(tokenAmount);
         fundsWallet.transfer(weiAccepted);
         token.transferFrom(owner, recipient, tokenAmount);
-        if (change &gt; 0) {
+        if (change > 0) {
             msg.sender.transfer(change);
         }
     }
 
     function getState() public view returns (State) {
         uint256 _date = getTime();
-        if (_date &lt; preSaleStartDate) {
+        if (_date < preSaleStartDate) {
             return State.BeforePreSale;
         }
-        if (_date &gt;= preSaleStartDate &amp;&amp; _date &lt; preSaleEndDate) {
+        if (_date >= preSaleStartDate && _date < preSaleEndDate) {
             return State.PreSale;
         }
         return State.PreSaleDone;

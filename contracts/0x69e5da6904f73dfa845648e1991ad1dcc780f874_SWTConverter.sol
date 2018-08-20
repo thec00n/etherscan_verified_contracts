@@ -47,7 +47,7 @@ contract MiniMeToken {
 
 
 
-// Taken from Zeppelin&#39;s standard contracts.
+// Taken from Zeppelin's standard contracts.
 contract ERC20 {
   uint public totalSupply;
   function balanceOf(address who) constant returns (uint);

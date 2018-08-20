@@ -52,7 +52,7 @@ contract SilentNotary is Ownable {
 		uint timestamp;
 	}
 
-	mapping (bytes32 =&gt; Entry) public entryStorage;
+	mapping (bytes32 => Entry) public entryStorage;
 
 	event EntryAdded(bytes32 hash, uint blockNumber, uint timestamp);
 	event EntryExistAlready(bytes32 hash, uint timestamp);
@@ -86,7 +86,7 @@ contract SilentNotary is Ownable {
 	function makePayableRegistration(bytes32 hash) public {
 		address sender = msg.sender;
 	    uint allowed = token.allowance(sender, owner);
-	    assert(allowed &gt;= price);
+	    assert(allowed >= price);
 
 	    if(!token.transferFrom(sender, owner, price))
           revert();
@@ -97,7 +97,7 @@ contract SilentNotary is Ownable {
 	/// @param hash SHA-256 file hash
 	function makeRegistrationInternal(bytes32 hash) internal {
 			uint timestamp = now;
-	    // Checks documents isn&#39;t already registered
+	    // Checks documents isn't already registered
 	    if (exist(hash)) {
 	        EntryExistAlready(hash, timestamp);
 	        revert();

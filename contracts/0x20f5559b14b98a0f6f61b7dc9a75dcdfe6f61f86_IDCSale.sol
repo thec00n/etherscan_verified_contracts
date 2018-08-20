@@ -4,12 +4,12 @@ library SafeMath {
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -23,7 +23,7 @@ library SafeMath {
   }
   
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0);
+    require(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b); 
     return c;
@@ -118,8 +118,8 @@ contract StandToken is ERC20Interface {
   uint8 public decimals;
   uint256 public totalSupply;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function totalSupply() public view returns (uint256) {
     return totalSupply;
@@ -135,7 +135,7 @@ contract StandToken is ERC20Interface {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -155,8 +155,8 @@ contract StandToken is ERC20Interface {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -171,7 +171,7 @@ contract BurnableToken is StandToken {
   event Burn(address indexed burner, uint256 value);
 
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -186,9 +186,9 @@ contract IDCToken is BurnableToken, Pausable, Saleable {
   address public addrSale;
   address public addrMine;
 
-  mapping(address =&gt; uint256) public tokenAngel;
-  mapping(address =&gt; uint256) public tokenPrivate;
-  mapping(address =&gt; uint256) public tokenCrowd;
+  mapping(address => uint256) public tokenAngel;
+  mapping(address => uint256) public tokenPrivate;
+  mapping(address => uint256) public tokenCrowd;
 
   uint256 public release = 0;
   uint256 private teamLocked = 0;
@@ -205,8 +205,8 @@ contract IDCToken is BurnableToken, Pausable, Saleable {
   event TokenRelease(address caller, uint256 time);
 
   constructor(address _team, address _sale, address _mine) public {
-    name = &quot;IDC Token&quot;;
-    symbol = &quot;IT&quot;;
+    name = "IDC Token";
+    symbol = "IT";
     decimals = 18;
     totalSupply = 3*10**9*10**uint256(decimals); //3 billion        
     
@@ -225,50 +225,50 @@ contract IDCToken is BurnableToken, Pausable, Saleable {
   }
 
   function transfer(address _to, uint256 _value) notPaused public returns (bool) {
-    if(msg.sender == addrTeam || tokenAngel[msg.sender] &gt; 0 || tokenPrivate[msg.sender] &gt; 0) {
-      require(balanceOfUnlocked(msg.sender) &gt;= _value);
+    if(msg.sender == addrTeam || tokenAngel[msg.sender] > 0 || tokenPrivate[msg.sender] > 0) {
+      require(balanceOfUnlocked(msg.sender) >= _value);
     }
     StandToken.transfer(_to, _value);
     return true;
   }
   
   function transferFrom(address _from, address _to, uint256 _value) notPaused public returns (bool) {
-    if(_from == addrTeam || tokenAngel[_from] &gt; 0 || tokenPrivate[_from] &gt; 0) {
-      require(balanceOfUnlocked(_from) &gt;= _value);
+    if(_from == addrTeam || tokenAngel[_from] > 0 || tokenPrivate[_from] > 0) {
+      require(balanceOfUnlocked(_from) >= _value);
     }
     StandToken.transferFrom(_from, _to, _value);
     return true;
   }  
   
   function balanceOfUnlocked(address _sender) public view returns (uint256) {
-    require(release &gt; 0 &amp;&amp; now &gt; release);
+    require(release > 0 && now > release);
     uint256 tmPast = now.sub(release);
     uint256 balance = balanceOf(_sender);
     
     if(_sender == addrTeam) {
-      if(tmPast &lt; DAY_180) {
+      if(tmPast < DAY_180) {
         balance = balance.sub(teamLocked);
       }
-      else if(tmPast &gt;= DAY_180 &amp;&amp; tmPast &lt; DAY_360) {
+      else if(tmPast >= DAY_180 && tmPast < DAY_360) {
         balance = balance.sub(teamLocked.mul(7).div(10));
       }
-      else if(tmPast &gt;= DAY_360 &amp;&amp; tmPast &lt; DAY_720) {
+      else if(tmPast >= DAY_360 && tmPast < DAY_720) {
         balance = balance.sub(teamLocked.mul(4).div(10));
       }
     }
-    if(tokenAngel[_sender] &gt; 0) {
-      if(tmPast &lt; DAY_120) {
+    if(tokenAngel[_sender] > 0) {
+      if(tmPast < DAY_120) {
         balance = balance.sub(tokenAngel[_sender]);
       }
-      else if(tmPast &gt;= DAY_120 &amp;&amp; tmPast &lt; DAY_150) {
+      else if(tmPast >= DAY_120 && tmPast < DAY_150) {
         balance = balance.sub(tokenAngel[_sender].mul(7).div(10));
       }
-      else if(tmPast &gt;= DAY_150 &amp;&amp; tmPast &lt; DAY_180) {
+      else if(tmPast >= DAY_150 && tmPast < DAY_180) {
         balance = balance.sub(tokenAngel[_sender].mul(4).div(10));
       }
     }
-    if(tokenPrivate[_sender] &gt; 0) {
-      if(tmPast &lt; DAY_90) {
+    if(tokenPrivate[_sender] > 0) {
+      if(tmPast < DAY_90) {
         balance = balance.sub(tokenPrivate[_sender].div(2));
       }
     }
@@ -276,7 +276,7 @@ contract IDCToken is BurnableToken, Pausable, Saleable {
   }
   
   function transferToken(uint8 _stage, address _to, uint256 _tokens) onlySaler external payable {
-    require(_stage &gt;= 0 &amp;&amp; _stage &lt;= 2);
+    require(_stage >= 0 && _stage <= 2);
     if(_stage == 0) { 
       tokenAngel[_to] = tokenAngel[_to].add(_tokens);
     }
@@ -293,7 +293,7 @@ contract IDCToken is BurnableToken, Pausable, Saleable {
   }
 
   function burnToken(uint256 _tokens) onlySaler external returns (bool) {
-    require(_tokens &gt; 0);
+    require(_tokens > 0);
     balances[addrSale] = balances[addrSale].sub(_tokens);
     totalSupply = totalSupply.sub(_tokens);
     emit Burn(addrSale, _tokens);
@@ -332,14 +332,14 @@ contract IDCSale is Pausable {
   uint256 constant private MIN_ANGLE = 500 ether;
   uint256 constant private MIN_PRIV = 50 ether;
   
-  mapping(address =&gt; uint256) public recvEthers;
+  mapping(address => uint256) public recvEthers;
 
   event RecvEther(address sender, uint256 ethers);
   event WithdrawEther(address sender, uint256 ethers);
   event RefundEther(address sender, uint256 ethers);
   
   constructor(address _token, address _beneficiary) public {
-    require(_token != 0 &amp;&amp; _beneficiary != 0);
+    require(_token != 0 && _beneficiary != 0);
 
     token = IDCToken(_token); 
     beneficiary = _beneficiary;
@@ -351,26 +351,26 @@ contract IDCSale is Pausable {
   }
   
   function() external notPaused payable {
-    require(stage &lt; Stage.Finalized);
+    require(stage < Stage.Finalized);
     updateStageByTime();
     uint256 tokens = msg.value.mul(getPrice());
 
     if(stage == Stage.Angel) {
-      require(msg.value &gt;= MIN_ANGLE &amp;&amp; angelSaled.add(tokens) &lt;= angelGoal);
+      require(msg.value >= MIN_ANGLE && angelSaled.add(tokens) <= angelGoal);
       token.transferToken(0, msg.sender, tokens);
       angelSaled = angelSaled.add(tokens);
       recvEthers[msg.sender] = recvEthers[msg.sender].add(msg.value);
       emit RecvEther(msg.sender, msg.value);
     } 
     else if(stage == Stage.Private) {
-      require(msg.value &gt;= MIN_PRIV &amp;&amp; privSaled.add(tokens) &lt;= privGoal);
+      require(msg.value >= MIN_PRIV && privSaled.add(tokens) <= privGoal);
       token.transferToken(1, msg.sender, tokens);
       privSaled = privSaled.add(tokens);
       recvEthers[msg.sender] = recvEthers[msg.sender].add(msg.value);
       emit RecvEther(msg.sender, msg.value);
     }
     else if(stage == Stage.Crowd) {
-      require(privSaled.add(tokens) &lt;= privGoal);
+      require(privSaled.add(tokens) <= privGoal);
       token.transferToken(2, msg.sender, tokens);
       privSaled = privSaled.add(tokens);
       recvEthers[msg.sender] = recvEthers[msg.sender].add(msg.value);
@@ -380,10 +380,10 @@ contract IDCSale is Pausable {
     updateStageBySaled();
     if(stage == Stage.Finalized) {
       token.tokenRelease();
-      if(angelSaled &lt; angelGoal) {
+      if(angelSaled < angelGoal) {
         token.burnToken(angelGoal.sub(angelSaled));
       }
-      if(privSaled &lt; privGoal) {
+      if(privSaled < privGoal) {
         token.burnToken(privGoal.sub(privSaled));
       }
     }
@@ -395,8 +395,8 @@ contract IDCSale is Pausable {
     }
     uint256 stagePast = now.sub(stageBegin);
     if(stage == Stage.Angel) {
-      if(stagePast &gt; stageLength) {
-        if(angelSaled &gt;= angelSoftCap) {
+      if(stagePast > stageLength) {
+        if(angelSaled >= angelSoftCap) {
           stage = Stage.Private;
         }
         else {
@@ -407,14 +407,14 @@ contract IDCSale is Pausable {
       }
     }
     else if(stage == Stage.Private) {
-      if(stagePast &gt; stageLength) {
+      if(stagePast > stageLength) {
         stage = Stage.Crowd;
         stageBegin = now;
         stageLength = DAY_30;
       } 
     }
     else if(stage == Stage.Crowd) { 
-      if(stagePast &gt; stageLength) {
+      if(stagePast > stageLength) {
         stage = Stage.Finalized;
         stageBegin = now;
       } 
@@ -423,20 +423,20 @@ contract IDCSale is Pausable {
   
   function updateStageBySaled() private {
     if(stage == Stage.Angel) {
-      if(angelSaled &gt; angelGoal.sub(MIN_ANGLE.mul(getPrice()))) {
+      if(angelSaled > angelGoal.sub(MIN_ANGLE.mul(getPrice()))) {
         stage = Stage.Private;
         stageBegin = now;
         stageLength = DAY_30;
       }
     }
     else if(stage == Stage.Private) {
-      if(privSaled &gt; privGoal.sub(MIN_PRIV.mul(getPrice()))) {
+      if(privSaled > privGoal.sub(MIN_PRIV.mul(getPrice()))) {
         stage = Stage.Finalized;
         stageBegin = now;
       }
     }
     else if(stage == Stage.Crowd) { 
-      if(privSaled &gt;= privGoal) {
+      if(privSaled >= privGoal) {
         stage = Stage.Finalized;
         stageBegin = now;
       } 
@@ -452,13 +452,13 @@ contract IDCSale is Pausable {
     }
     else if(stage == Stage.Crowd) {
       uint256 stagePast = now.sub(stageBegin);
-      if(stagePast &lt;= DAY_10) {
+      if(stagePast <= DAY_10) {
         return 4000;  
       }
-      else if(stagePast &gt; DAY_10 &amp;&amp; stagePast &lt;= DAY_20) {
+      else if(stagePast > DAY_10 && stagePast <= DAY_20) {
         return 3000;  
       }
-      else if(stagePast &gt; DAY_20 &amp;&amp; stagePast &lt;= DAY_30) {
+      else if(stagePast > DAY_20 && stagePast <= DAY_30) {
         return 2000;  
       }
     }
@@ -476,19 +476,19 @@ contract IDCSale is Pausable {
       stageUnsold = privGoal - privSaled;  
     }
     uint256 stageRemain = 0;
-    if(stageBegin.add(stageLength) &gt; now) {
+    if(stageBegin.add(stageLength) > now) {
         stageRemain = stageBegin.add(stageLength).sub(now);
     }
     return (uint8(stage), stageUnsold, stageRemain);
   }
   
   function setStageLength(uint256 _seconds) onlyOwner external {
-    require(stageBegin + _seconds &gt; now);
+    require(stageBegin + _seconds > now);
     stageLength = _seconds;
   }
 
   function withdrawEther(uint256 _ethers) onlyOwner external returns (bool) {
-    require(_ethers &gt; 0 &amp;&amp; _ethers &lt;= address(this).balance);
+    require(_ethers > 0 && _ethers <= address(this).balance);
     
     beneficiary.transfer(_ethers);
     emit WithdrawEther(beneficiary, _ethers);
@@ -498,7 +498,7 @@ contract IDCSale is Pausable {
   function refundEther() external returns (bool) {
     require(stage == Stage.Failed); 
     uint256 ethers = recvEthers[msg.sender];
-    assert(ethers &gt; 0);
+    assert(ethers > 0);
     recvEthers[msg.sender] = 0;
     
     msg.sender.transfer(ethers);

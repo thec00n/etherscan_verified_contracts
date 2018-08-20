@@ -51,8 +51,8 @@ contract Etherization {
     Player[] public players;
     uint public numPlayers = 0;
     
-    mapping(address =&gt; uint) playerIDs;
-    mapping(uint =&gt; uint) public playerMsgs;
+    mapping(address => uint) playerIDs;
+    mapping(uint => uint) public playerMsgs;
     
     City city;
     City[] public cities;
@@ -71,7 +71,7 @@ contract Etherization {
     address utilsAddress;
     address utilsAddress2;
     
-    // Sum of all players&#39; balances
+    // Sum of all players' balances
     uint public totalBalances = 0;
 
     // Used to ensure only the owner can do some things.
@@ -91,15 +91,15 @@ contract Etherization {
         
         
         // If they paid too little, reject and refund their money.
-        if (msg.value &lt; START_PRICE) {
+        if (msg.value < START_PRICE) {
             //msg.sender.send(msg.value);
-            //playerMsgs[msg.sender] = &quot;Not enough ether sent to found a city and start playing. Sending back any eth sent...&quot;;
+            //playerMsgs[msg.sender] = "Not enough ether sent to found a city and start playing. Sending back any eth sent...";
             return;
         }
         // If the player already exists
-        if (playerIDs[msg.sender] &gt; 0) {
+        if (playerIDs[msg.sender] > 0) {
             //msg.sender.send(msg.value);
-            //playerMsgs[msg.sender] =  &quot;You already founded an etherization. Lookup your player ID by calling getMyPlayerID(). Sending back any eth sent...&quot;;
+            //playerMsgs[msg.sender] =  "You already founded an etherization. Lookup your player ID by calling getMyPlayerID(). Sending back any eth sent...";
             return;
         }
         
@@ -116,7 +116,7 @@ contract Etherization {
         city.owner = numPlayers;
         city.name = cityName;
         // the first city in the game has a quarry and a farm by default
-        if(numCities &lt;= 0) {
+        if(numCities <= 0) {
             city.buildings[0] = true;
             quarryCities.push(0);
             city.buildings[1] = true;
@@ -127,7 +127,7 @@ contract Etherization {
         } else {
             city.buildings[0] = false;
             city.buildings[1] = false;
-            if(row&gt;33 || col&gt;33 || rowref&gt;33 || colref&gt;33 || int(row)-int(rowref) &gt; int(1) || int(row)-int(rowref) &lt; int(-1) || int(col)-int(colref) &gt; int(1) || int(col)-int(colref) &lt; int(-1) || map[row][col]&gt;0 || map[rowref][colref]&lt;=0) {
+            if(row>33 || col>33 || rowref>33 || colref>33 || int(row)-int(rowref) > int(1) || int(row)-int(rowref) < int(-1) || int(col)-int(colref) > int(1) || int(col)-int(colref) < int(-1) || map[row][col]>0 || map[rowref][colref]<=0) {
                 throw;
             }
             city.rowcol[0] = row;
@@ -139,7 +139,7 @@ contract Etherization {
             uint productionCut;
             uint i;
             productionCut = START_PRICE / quarryCities.length;
-            for(i=0; i &lt; quarryCities.length; i++) {
+            for(i=0; i < quarryCities.length; i++) {
                 players[cities[quarryCities[i]].owner].treasury += productionCut;
             }
         }
@@ -163,15 +163,15 @@ contract Etherization {
     }
     
     function withdraw(uint amount) {
-        if(int(playerIDs[msg.sender])-1 &lt; 0) {
+        if(int(playerIDs[msg.sender])-1 < 0) {
             throw;
         }
         uint playerID = playerIDs[msg.sender]-1;
-        if(timePassed(playerID) &lt; WAIT_TIME) {
+        if(timePassed(playerID) < WAIT_TIME) {
             playerMsgs[playerIDs[msg.sender]-1] = 2;
             return;        
         }
-        if(amount &lt; players[playerID].treasury &amp;&amp; amount &gt; MIN_WTH) {
+        if(amount < players[playerID].treasury && amount > MIN_WTH) {
             players[playerID].treasury -= amount;
             totalBalances -= amount;
             players[playerID].etherAddress.send((amount*99)/100); //keep 1% as commission
@@ -205,7 +205,7 @@ contract Etherization {
 
     // Used only by the wizard to collect his commission.
     function sweepCommission(uint amount) onlywizard {
-        if(amount &lt; this.balance-totalBalances) {
+        if(amount < this.balance-totalBalances) {
             wizardAddress.send(amount);
         }
     }
@@ -221,7 +221,7 @@ contract Etherization {
     }
     
     function getPlayerID(address sender) onlyutils constant returns (uint playerID) {
-        if(int(playerIDs[sender])-1 &lt; 0) {
+        if(int(playerIDs[sender])-1 < 0) {
             throw;
         }
         return playerIDs[sender]-1;

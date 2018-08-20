@@ -1,6 +1,6 @@
 /**
  *  @title Arbitrable Permission List
- *  @author Cl&#233;ment Lesaege - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88ebe4ede5ede6fcc8e4edfbe9edefeda6ebe7e5">[email&#160;protected]</a>&gt;
+ *  @author Clément Lesaege - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88ebe4ede5ede6fcc8e4edfbe9edefeda6ebe7e5">[email protected]</a>>
  *  This code has undertaken a 15 ETH max price bug bounty program.
  */
 
@@ -24,7 +24,7 @@ interface PermissionInterface{
 /** @title Arbitrator
  *  Arbitrator abstract contract.
  *  When developing arbitrator contracts we need to:
- *  -Define the functions for dispute creation (createDispute) and appeal (appeal). Don&#39;t forget to store the arbitrated contract and the disputeID (which should be unique, use nbDisputes).
+ *  -Define the functions for dispute creation (createDispute) and appeal (appeal). Don't forget to store the arbitrated contract and the disputeID (which should be unique, use nbDisputes).
  *  -Define the functions for cost display (arbitrationCost and appealCost).
  *  -Allow giving rulings. For this a function must call arbitrable.rule(disputeID,ruling).
  */
@@ -32,8 +32,8 @@ contract Arbitrator{
 
     enum DisputeStatus {Waiting, Appealable, Solved}
 
-    modifier requireArbitrationFee(bytes _extraData) {require(msg.value&gt;=arbitrationCost(_extraData)); _;}
-    modifier requireAppealFee(uint _disputeID, bytes _extraData) {require(msg.value&gt;=appealCost(_disputeID, _extraData)); _;}
+    modifier requireArbitrationFee(bytes _extraData) {require(msg.value>=arbitrationCost(_extraData)); _;}
+    modifier requireAppealFee(uint _disputeID, bytes _extraData) {require(msg.value>=appealCost(_disputeID, _extraData)); _;}
 
     /** @dev To be raised when a dispute can be appealed.
      *  @param _disputeID ID of the dispute.
@@ -149,7 +149,7 @@ contract Arbitrable{
     /** @dev Give a ruling for a dispute. Must be called by the arbitrator.
      *  The purpose of this function is to ensure that the address calling it has the right to rule on the contract.
      *  @param _disputeID ID of the dispute in the Arbitrator contract.
-     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for &quot;Not able/wanting to make a decision&quot;.
+     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for "Not able/wanting to make a decision".
      */
     function rule(uint _disputeID, uint _ruling) public onlyArbitrator {
         emit Ruling(Arbitrator(msg.sender),_disputeID,_ruling);
@@ -160,7 +160,7 @@ contract Arbitrable{
 
     /** @dev Execute a ruling of a dispute.
      *  @param _disputeID ID of the dispute in the Arbitrator contract.
-     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for &quot;Not able/wanting to make a decision&quot;.
+     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for "Not able/wanting to make a decision".
      */
     function executeRuling(uint _disputeID, uint _ruling) internal;
 }
@@ -169,7 +169,7 @@ contract Arbitrable{
  *  @title Arbitrable Permission List
  *  @dev This is an arbitrator curated registry. Anyone can post an item with a deposit. If no one complains within a defined time period, the item is added to the registry.
  *  Anyone can complain and also post a deposit. If someone does, a dispute is created. The winner of the dispute gets the deposit of the other party and the item is added or removed accordingly.
- *  To make a request, parties have to deposit a stake and the arbitration fees. If the arbitration fees change between the submitter&#39;s payment and the challenger&#39;s payment, a part of the submitter stake can be used as an arbitration fee deposit.
+ *  To make a request, parties have to deposit a stake and the arbitration fees. If the arbitration fees change between the submitter's payment and the challenger's payment, a part of the submitter stake can be used as an arbitration fee deposit.
  *  In case the arbitrator refuses to rule, the item is put in the initial absent status and the balance is split equally between parties.
  */
 contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
@@ -200,7 +200,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
     /* Events */
 
     /**
-     *  @dev Called when the item&#39;s status changes or when it is contested/resolved.
+     *  @dev Called when the item's status changes or when it is contested/resolved.
      *  @param submitter Address of the submitter, if any.
      *  @param challenger Address of the challenger, if any.
      *  @param value The value of the item.
@@ -229,8 +229,8 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
     uint8 constant CLEAR = 2;
 
     // Items
-    mapping(bytes32 =&gt; Item) public items;
-    mapping(uint =&gt; bytes32) public disputeIDToItem;
+    mapping(bytes32 => Item) public items;
+    mapping(uint => bytes32) public disputeIDToItem;
     bytes32[] public itemsList;
 
     /* Constructor */
@@ -272,7 +272,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
     function requestRegistration(bytes32 _value) public payable {
         Item storage item = items[_value];
         uint arbitratorCost = arbitrator.arbitrationCost(arbitratorExtraData);
-        require(msg.value &gt;= stake + arbitratorCost);
+        require(msg.value >= stake + arbitratorCost);
 
         if (item.status == ItemStatus.Absent)
             item.status = ItemStatus.Submitted;
@@ -300,7 +300,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
         Item storage item = items[_value];
         uint arbitratorCost = arbitrator.arbitrationCost(arbitratorExtraData);
         require(!appendOnly);
-        require(msg.value &gt;= stake + arbitratorCost);
+        require(msg.value >= stake + arbitratorCost);
 
         if (item.status == ItemStatus.Registered)
             item.status = ItemStatus.ClearingRequested;
@@ -327,11 +327,11 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
     function challengeRegistration(bytes32 _value) public payable {
         Item storage item = items[_value];
         uint arbitratorCost = arbitrator.arbitrationCost(arbitratorExtraData);
-        require(msg.value &gt;= stake + arbitratorCost);
+        require(msg.value >= stake + arbitratorCost);
         require(item.status == ItemStatus.Resubmitted || item.status == ItemStatus.Submitted);
         require(!item.disputed);
 
-        if (item.balance &gt;= arbitratorCost) { // In the general case, create a dispute.
+        if (item.balance >= arbitratorCost) { // In the general case, create a dispute.
             item.challenger = msg.sender;
             item.balance += msg.value-arbitratorCost;
             item.disputed = true;
@@ -361,11 +361,11 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
     function challengeClearing(bytes32 _value) public payable {
         Item storage item = items[_value];
         uint arbitratorCost = arbitrator.arbitrationCost(arbitratorExtraData);
-        require(msg.value &gt;= stake + arbitratorCost);
+        require(msg.value >= stake + arbitratorCost);
         require(item.status == ItemStatus.ClearingRequested || item.status == ItemStatus.PreventiveClearingRequested);
         require(!item.disputed);
 
-        if (item.balance &gt;= arbitratorCost) { // In the general case, create a dispute.
+        if (item.balance >= arbitratorCost) { // In the general case, create a dispute.
             item.challenger = msg.sender;
             item.balance += msg.value-arbitratorCost;
             item.disputed = true;
@@ -403,7 +403,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
      */
     function executeRequest(bytes32 _value) public {
         Item storage item = items[_value];
-        require(now - item.lastAction &gt;= timeToChallenge);
+        require(now - item.lastAction >= timeToChallenge);
         require(!item.disputed);
 
         if (item.status == ItemStatus.Resubmitted || item.status == ItemStatus.Submitted)
@@ -428,8 +428,8 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
      */
     function isPermitted(bytes32 _value) public view returns (bool allowed) {
         Item storage item = items[_value];
-        bool _excluded = item.status &lt;= ItemStatus.Resubmitted ||
-            (item.status == ItemStatus.PreventiveClearingRequested &amp;&amp; !item.disputed);
+        bool _excluded = item.status <= ItemStatus.Resubmitted ||
+            (item.status == ItemStatus.PreventiveClearingRequested && !item.disputed);
         return blacklist ? _excluded : !_excluded; // Items excluded from blacklist should return true.
     }
 
@@ -438,16 +438,16 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
     /**
      *  @dev Execute the ruling of a dispute.
      *  @param _disputeID ID of the dispute in the Arbitrator contract.
-     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for &quot;Not able/wanting to make a decision&quot;.
+     *  @param _ruling Ruling given by the arbitrator. Note that 0 is reserved for "Not able/wanting to make a decision".
      */
     function executeRuling(uint _disputeID, uint _ruling) internal {
         Item storage item = items[disputeIDToItem[_disputeID]];
         require(item.disputed);
 
         if (_ruling == REGISTER) {
-            if (rechallengePossible &amp;&amp; item.status==ItemStatus.Submitted) {
+            if (rechallengePossible && item.status==ItemStatus.Submitted) {
                 uint arbitratorCost = arbitrator.arbitrationCost(arbitratorExtraData);
-                if (arbitratorCost + stake &lt; item.balance) { // Check that the balance is enough.
+                if (arbitratorCost + stake < item.balance) { // Check that the balance is enough.
                     uint toSend = item.balance - (arbitratorCost + stake);
                     item.submitter.send(toSend); // Keep the arbitration cost and the stake and send the remaining to the submitter.
                     item.balance -= toSend;
@@ -479,7 +479,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
         }
         
         item.disputed = false;
-        if (rechallengePossible &amp;&amp; item.status==ItemStatus.Submitted &amp;&amp; _ruling==REGISTER) 
+        if (rechallengePossible && item.status==ItemStatus.Submitted && _ruling==REGISTER) 
             item.lastAction=now; // If the item can be rechallenged, update the time and keep the remaining balance.
         else
             item.balance = 0;
@@ -502,7 +502,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
      *  @return The numbers of items in the list per status.
      */
     function itemsCounts() public view returns (uint pending, uint challenged, uint accepted, uint rejected) {
-        for (uint i = 0; i &lt; itemsList.length; i++) {
+        for (uint i = 0; i < itemsList.length; i++) {
             Item storage item = items[itemsList[i]];
             if (item.disputed) challenged++;
             else if (item.status == ItemStatus.Resubmitted || item.status == ItemStatus.Submitted) pending++;
@@ -528,7 +528,7 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
         if (_cursor == 0)
             _cursorIndex = 0;
         else {
-            for (uint j = 0; j &lt; itemsList.length; j++) {
+            for (uint j = 0; j < itemsList.length; j++) {
                 if (itemsList[j] == _cursor) {
                     _cursorIndex = j;
                     break;
@@ -539,21 +539,21 @@ contract ArbitrablePermissionList is PermissionInterface, Arbitrable {
 
         for (
                 uint i = _cursorIndex == 0 ? (_sort ? 0 : 1) : (_sort ? _cursorIndex + 1 : itemsList.length - _cursorIndex + 1);
-                _sort ? i &lt; itemsList.length : i &lt;= itemsList.length;
+                _sort ? i < itemsList.length : i <= itemsList.length;
                 i++
             ) { // Oldest or newest first
             Item storage item = items[itemsList[_sort ? i : itemsList.length - i]];
             if (
-                item.status != ItemStatus.Absent &amp;&amp; item.status != ItemStatus.PreventiveClearingRequested &amp;&amp; (
-                    (_filter[0] &amp;&amp; (item.status == ItemStatus.Resubmitted || item.status == ItemStatus.Submitted)) || // Pending
-                    (_filter[1] &amp;&amp; item.disputed) || // Challenged
-                    (_filter[2] &amp;&amp; item.status == ItemStatus.Registered) || // Accepted
-                    (_filter[3] &amp;&amp; item.status == ItemStatus.Cleared) || // Rejected
-                    (_filter[4] &amp;&amp; item.submitter == msg.sender) || // My Submissions
-                    (_filter[5] &amp;&amp; item.challenger == msg.sender) // My Challenges
+                item.status != ItemStatus.Absent && item.status != ItemStatus.PreventiveClearingRequested && (
+                    (_filter[0] && (item.status == ItemStatus.Resubmitted || item.status == ItemStatus.Submitted)) || // Pending
+                    (_filter[1] && item.disputed) || // Challenged
+                    (_filter[2] && item.status == ItemStatus.Registered) || // Accepted
+                    (_filter[3] && item.status == ItemStatus.Cleared) || // Rejected
+                    (_filter[4] && item.submitter == msg.sender) || // My Submissions
+                    (_filter[5] && item.challenger == msg.sender) // My Challenges
                 )
             ) {
-                if (_index &lt; _count) {
+                if (_index < _count) {
                     values[_index] = itemsList[_sort ? i : itemsList.length - i];
                     _index++;
                 } else {

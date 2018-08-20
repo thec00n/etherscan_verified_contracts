@@ -7,7 +7,7 @@ contract TimeStampingAuthority {
         string note;
     }
 
-    mapping(bytes =&gt; Entry) entries;
+    mapping(bytes => Entry) entries;
     
     function submitEntry(bytes _hash, string note) public {
         require(entries[_hash].timestamp == 0);

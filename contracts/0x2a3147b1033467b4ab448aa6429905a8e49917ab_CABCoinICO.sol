@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) constant public returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) constant public returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) constant public returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,8 +79,8 @@ contract CABCoinI{
 
 contract CABCoinICO is Constants{
   using SafeMath for uint256;
-  mapping(address =&gt; bool) public preICOHolders ;
-  mapping(address =&gt; uint256) public ethGiven ;
+  mapping(address => bool) public preICOHolders ;
+  mapping(address => uint256) public ethGiven ;
 	address public tokenAddress = 0;
 	DevTeamContractI public devTeam;
 	uint256 public _startBlock ;
@@ -120,26 +120,26 @@ contract CABCoinICO is Constants{
 	}
 	
 	function getAllTimes() public constant returns(uint256,uint256,uint256){
-		if(GetTime()&lt;_startBlock){
+		if(GetTime()<_startBlock){
 			return(_startBlock.sub(GetTime()),0,0);
 		}
-		if(GetTime()&lt;=_startBlock.add(delayOfICOEND))
+		if(GetTime()<=_startBlock.add(delayOfICOEND))
 		{
 			uint256 currentStageTime = 0;
-			if(GetTime()&lt;_startBlock.add(delayOfPreICO)){
+			if(GetTime()<_startBlock.add(delayOfPreICO)){
 				currentStageTime = _startBlock.add(delayOfPreICO) - GetTime();
 			}
 			else{
-				if(GetTime()&lt;_startBlock.add(delayOfICO1)){
+				if(GetTime()<_startBlock.add(delayOfICO1)){
 					currentStageTime = _startBlock.add(delayOfICO1) - GetTime();
 				}
 				else{
-					if(GetTime()&lt;_startBlock.add(delayOfICO2)){
+					if(GetTime()<_startBlock.add(delayOfICO2)){
 						currentStageTime = _startBlock.add(delayOfICO2) - GetTime();
 					}
 				}
 			}
-			if(GetTime()&gt;=_startBlock){
+			if(GetTime()>=_startBlock){
 				return(0,currentStageTime,_startBlock.add(delayOfICOEND)-GetTime());
 			}
 		}
@@ -178,26 +178,26 @@ contract CABCoinICO is Constants{
 	}
 	
 	function getCabCoinsAmount()  public constant returns(uint256) {
-		if(GetTime()&lt;_startBlock){
+		if(GetTime()<_startBlock){
 			return 0;	
 		}
-	    if(GetTime()&lt;_startBlock.add(delayOfPreICO)){
-	    	if(maxTokenSupplyPreICO&gt;coin.totalSupply()){
+	    if(GetTime()<_startBlock.add(delayOfPreICO)){
+	    	if(maxTokenSupplyPreICO>coin.totalSupply()){
 	        	return PRICE_PREICO;
 	    	}
 	    }
-	    if(GetTime()&lt;_startBlock.add(delayOfICO1) ){
-		    if(maxTokenSupplyICO1&gt;coin.totalSupply()){
+	    if(GetTime()<_startBlock.add(delayOfICO1) ){
+		    if(maxTokenSupplyICO1>coin.totalSupply()){
 		        return PRICE_ICO1;
 		    }	
 	    } 
-	    if(GetTime()&lt;_startBlock.add(delayOfICO2)){
-	    	if(maxTokenSupplyICO2&gt;coin.totalSupply()){
+	    if(GetTime()<_startBlock.add(delayOfICO2)){
+	    	if(maxTokenSupplyICO2>coin.totalSupply()){
 	        	return PRICE_ICO2;
 	    	}
 	    }
-	    if(GetTime()&lt;=_startBlock.add(delayOfICOEND)){
-	    	if(maxTokenSupplyICOEND&gt;=coin.totalSupply()){
+	    if(GetTime()<=_startBlock.add(delayOfICOEND)){
+	    	if(maxTokenSupplyICOEND>=coin.totalSupply()){
 	        	return PRICE_ICO4;
 	    	}
 	    }
@@ -206,7 +206,7 @@ contract CABCoinICO is Constants{
 	
 	function() payable public{
 		
-	  if(isAfterICO() &amp;&amp; coin.totalSupply()&lt;minimumGoal){
+	  if(isAfterICO() && coin.totalSupply()<minimumGoal){
 		this.refund.value(msg.value)(msg.sender);
 	  }else{
 	  	if(msg.value==0){
@@ -229,7 +229,7 @@ contract CABCoinICO is Constants{
 	  Buy(owner,msg.value);
 	  uint256 tokensAmountPerEth = getCabCoinsAmount();
 	  
-		if(GetTime()&lt;_startBlock){
+		if(GetTime()<_startBlock){
 			revert();
 		}
 		else{
@@ -245,7 +245,7 @@ contract CABCoinICO is Constants{
 		  		
 		  		uint256 valForTeam = val.mul(TEAM_SHARE_PERCENTAGE).div(100-TEAM_SHARE_PERCENTAGE);
 		  		
-		  		if(tokensAvailable&lt;val+valForTeam){
+		  		if(tokensAvailable<val+valForTeam){
 		  			AmountToLittle();
 		  			val = val.mul(tokensAvailable).div(val.add(valForTeam));
 		  			valForTeam = val.mul(TEAM_SHARE_PERCENTAGE).div(100-TEAM_SHARE_PERCENTAGE);
@@ -289,7 +289,7 @@ contract CABCoinICO is Constants{
 	}
 	
 	function IsPreICO() returns(bool){
-	  if(GetTime()&lt;_startBlock.add(delayOfPreICO)){
+	  if(GetTime()<_startBlock.add(delayOfPreICO)){
 	    return true;
 	  }
 	  else{
@@ -299,7 +299,7 @@ contract CABCoinICO is Constants{
 	
 	function sendAllFunds() public {
 	  SendAllFunds();
-	  if(coin.totalSupply()&gt;=minimumGoal){ // goal reached money Goes to devTeam
+	  if(coin.totalSupply()>=minimumGoal){ // goal reached money Goes to devTeam
 	    
 		devTeam.recieveFunds.value(this.balance)();
 	  }
@@ -312,14 +312,14 @@ contract CABCoinICO is Constants{
 	
 	function refund(address sender) payable public {
 	  Refund(sender,ethGiven[sender]);
-	  if(isAfterICO() &amp;&amp; coin.totalSupply()&lt;minimumGoal){ // goal not reached
+	  if(isAfterICO() && coin.totalSupply()<minimumGoal){ // goal not reached
 	    var sumToReturn = ethGiven[sender];
 	     ethGiven[sender] =0;
 	    if(preICOHolders[msg.sender]){
 	    	sumToReturn = sumToReturn.mul(100-PRE_ICO_RISK_PERCENTAGE).div(100);
 	    }
 	    sumToReturn = sumToReturn.add(msg.value);
-	    if(sumToReturn&gt;this.balance){
+	    if(sumToReturn>this.balance){
 	    	sender.transfer(this.balance);
 	    }
 	    else{
@@ -328,7 +328,7 @@ contract CABCoinICO is Constants{
 	  }
 	  else
 	  {
-	  	if(msg.value&gt;0){
+	  	if(msg.value>0){
 	  		sender.transfer(msg.value);
 	  	}
 	  }

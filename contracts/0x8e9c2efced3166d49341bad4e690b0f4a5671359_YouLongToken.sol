@@ -50,17 +50,17 @@ contract Token {
 
 /// PostDragon token, ERC20 compliant
 contract YouLongToken is Token {
-    string public symbol = &quot;YLO&quot;;
-    string public name = &quot;YouLongToken&quot;;       //The Token&#39;s name
+    string public symbol = "YLO";
+    string public name = "YouLongToken";       //The Token's name
     uint8 public constant decimals = 4;           //Number of decimals of the smallest unit
     uint256 _totalSupply = 1 * (10**9) * (10**4); // 1 Billion;
     address owner;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     modifier onlyOwner() {
       assert(msg.sender == owner);
@@ -68,7 +68,7 @@ contract YouLongToken is Token {
     }
 
     modifier onlyPayloadSize(uint size) {
-      if(msg.data.length &lt; size + 4) {
+      if(msg.data.length < size + 4) {
         throw;
       }
       _;
@@ -100,9 +100,9 @@ contract YouLongToken is Token {
     * @param _value The amount to be transferred.
     **/
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value
+            && _value > 0
+            && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -114,7 +114,7 @@ contract YouLongToken is Token {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -123,10 +123,10 @@ contract YouLongToken is Token {
         address _to,
         uint256 _amount
     ) onlyPayloadSize(3 * 32) public returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

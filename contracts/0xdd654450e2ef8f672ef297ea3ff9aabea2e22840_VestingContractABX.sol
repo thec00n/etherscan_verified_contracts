@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 contract ABXToken 
 {
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
   function transfer(address newTokensHolder, uint256 tokensNumber) 
     public 
     returns(bool);
@@ -23,7 +23,7 @@ contract VestingContractABX
   //storage
   address public owner;
   ABXToken public abx_token;
-  mapping (address =&gt; AccountData) public account_data;
+  mapping (address => AccountData) public account_data;
   uint public current_period;
   uint[] public periods;
   address[] public accounts;
@@ -73,7 +73,7 @@ contract VestingContractABX
     initData(0xf8767ced61c1f86f5572e64289247b1c86083ef1, 33333333 * 10**16);
   }
   
-  /// @dev Fallback function: don&#39;t accept ETH
+  /// @dev Fallback function: don't accept ETH
   function()
     public
     payable
@@ -117,9 +117,9 @@ contract VestingContractABX
     onlyOwner
   {
     uint current_balance_all = 0;
-    for (uint i = 0; i &lt; accounts.length; i++)
+    for (uint i = 0; i < accounts.length; i++)
       current_balance_all += account_data[accounts[i]].current_balance;
-    require(getBalance() &gt; current_balance_all &amp;&amp; value &lt;= getBalance() - current_balance_all);
+    require(getBalance() > current_balance_all && value <= getBalance() - current_balance_all);
     if (abx_token.transfer(to, value))
       emit OwnerTransfer(to, value);
   }
@@ -127,11 +127,11 @@ contract VestingContractABX
   function updateCurrentPeriod()
     public
   {
-    require(account_data[msg.sender].original_balance &gt; 0 || msg.sender == owner);
+    require(account_data[msg.sender].original_balance > 0 || msg.sender == owner);
     
     uint new_period = current_period;
-    for (uint i = current_period; i &lt; periods.length; i++)
-      if (periods[i] &gt; now)
+    for (uint i = current_period; i < periods.length; i++)
+      if (periods[i] > now)
       {
         new_period = i;
         break;
@@ -139,7 +139,7 @@ contract VestingContractABX
     if (new_period != current_period)
     {
       current_period = new_period;
-      for (i = 0; i &lt; accounts.length; i++)
+      for (i = 0; i < accounts.length; i++)
       {
         account_data[accounts[i]].current_transferred = 0;
         account_data[accounts[i]].current_limit = account_data[accounts[i]].limit_per_period;
@@ -154,9 +154,9 @@ contract VestingContractABX
     public
   {
     updateCurrentPeriod();
-    require(value &lt;= abx_token.balanceOf(this) 
-      &amp;&amp; value &lt;= account_data[msg.sender].current_balance 
-      &amp;&amp; account_data[msg.sender].current_transferred + value &lt;= account_data[msg.sender].current_limit);
+    require(value <= abx_token.balanceOf(this) 
+      && value <= account_data[msg.sender].current_balance 
+      && account_data[msg.sender].current_transferred + value <= account_data[msg.sender].current_limit);
 
     if (abx_token.transfer(to, value)) 
     {

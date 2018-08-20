@@ -54,13 +54,13 @@ contract SafeMath {
 
   function safeSub(uint256 x, uint256 y) internal pure returns (uint256) {
     uint256 z = x - y;
-    assert(z &lt;= x);
+    assert(z <= x);
 	  return z;
   }
 
   function safeAdd(uint256 x, uint256 y) internal pure returns (uint256) {
     uint256 z = x + y;
-	  assert(z &gt;= x);
+	  assert(z >= x);
 	  return z;
   }
 	
@@ -76,12 +76,12 @@ contract SafeMath {
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256) {
-    uint256 z = x &lt;= y ? x : y;
+    uint256 z = x <= y ? x : y;
     return z;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256) {
-    uint256 z = x &gt;= y ? x : y;
+    uint256 z = x >= y ? x : y;
     return z;
   }
 }
@@ -109,7 +109,7 @@ contract ContractReceiver {
 
 contract ERC223Token is ERC223,SafeMath ,Ownable {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   string public name;
   string public symbol;
@@ -189,12 +189,12 @@ contract ERC223Token is ERC223,SafeMath ,Ownable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     emit Transfer(msg.sender, _to, _value, _data);
@@ -203,10 +203,10 @@ contract ERC223Token is ERC223,SafeMath ,Ownable {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     bool flag = false;
-    for(uint i = 0; i &lt; addrCotracts.length; i++) {
+    for(uint i = 0; i < addrCotracts.length; i++) {
       if(_to == addrCotracts[i]) flag = true;
     }
     if(flag){
@@ -273,7 +273,7 @@ contract GoldVein is ERC223Token{
    */
   modifier onlyAgent() {
     bool flag = false;
-    for(uint i = 0; i &lt; addrCotracts.length; i++) {
+    for(uint i = 0; i < addrCotracts.length; i++) {
       if(msg.sender == addrCotracts[i]) flag = true;
     }
    assert(flag);
@@ -326,8 +326,8 @@ contract GoldVein is ERC223Token{
   }
  
   function delAddr (uint number) public onlyOwner {
-    require(number &lt; addrCotracts.length);
-    for(uint i = number; i &lt; addrCotracts.length-1; i++) {
+    require(number < addrCotracts.length);
+    for(uint i = number; i < addrCotracts.length-1; i++) {
       addrCotracts[i] = addrCotracts[i+1];
     }
     addrCotracts.length = addrCotracts.length-1;

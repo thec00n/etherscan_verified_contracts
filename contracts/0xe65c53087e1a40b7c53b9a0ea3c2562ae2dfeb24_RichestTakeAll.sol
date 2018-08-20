@@ -25,7 +25,7 @@ contract RichestTakeAll is Owned {
 
     function() public payable {
         // transfer contract ownership if player pay more than current jackpot
-        if (msg.value &gt;= jackpot) {
+        if (msg.value >= jackpot) {
             owner = msg.sender;
             withdrawDelay = block.timestamp + 5 days;
         }
@@ -34,7 +34,7 @@ contract RichestTakeAll is Owned {
     }
 
     function takeAll() public onlyOwner {
-        require(block.timestamp &gt;= withdrawDelay);
+        require(block.timestamp >= withdrawDelay);
 
         msg.sender.transfer(jackpot);
 

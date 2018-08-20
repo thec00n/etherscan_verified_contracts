@@ -11,7 +11,7 @@ contract Crowdsale {
     uint public amountRaised;
     uint public price = 300;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
 
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -34,7 +34,7 @@ contract Crowdsale {
         FundTransfer(msg.sender, msg.value, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     function closeSale() public afterDeadline {
         crowdsaleClosed = true;

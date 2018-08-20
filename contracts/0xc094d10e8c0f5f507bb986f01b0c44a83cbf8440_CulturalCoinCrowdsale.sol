@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -151,14 +151,14 @@ contract Crowdsale is Ownable, RateSetter {
   uint256 public HARD_CAP_IN_TOKENS = 810 * 10**24; //810m CC tokens
 
   /// Mapping for contributors - to limit max contribution and possibly to extract info for refund if soft cap is not reached
-  mapping (address =&gt; uint) public contributors;
+  mapping (address => uint) public contributors;
 
   function Crowdsale(uint256 _startTimePre, uint256 _endTimePre, uint256 _startTimeIco, uint256 _endTimeIco, uint32 _ethEurRate, uint32 _btcEthRate, address _wallet, address _tokenAddress, address _whitelistAddress) {
-    require(_startTimePre &gt;= now);
-    require(_endTimePre &gt;= _startTimePre);
-    require(_startTimeIco &gt;= _endTimePre);
-    require(_endTimeIco &gt;= _startTimeIco);
-    require(_ethEurRate &gt; 0 &amp;&amp; _btcEthRate &gt; 0);
+    require(_startTimePre >= now);
+    require(_endTimePre >= _startTimePre);
+    require(_startTimeIco >= _endTimePre);
+    require(_endTimeIco >= _startTimeIco);
+    require(_ethEurRate > 0 && _btcEthRate > 0);
     require(_wallet != address(0));
     require(_tokenAddress != address(0));
     require(_whitelistAddress != address(0));
@@ -186,7 +186,7 @@ contract Crowdsale is Ownable, RateSetter {
 
 
   function setRates(uint32 _ethEurRate, uint32 _btcEthRate) public onlyRateSetter {
-    require(_ethEurRate &gt; 0 &amp;&amp; _btcEthRate &gt; 0);
+    require(_ethEurRate > 0 && _btcEthRate > 0);
     ethEurRate = _ethEurRate;
     btcEthRate = _btcEthRate;
     RatesChanged(rateSetter, ethEurRate, btcEthRate);
@@ -203,23 +203,23 @@ contract Crowdsale is Ownable, RateSetter {
     require(beneficiary != address(0));
     require(whitelist.isWhitelisted(beneficiary));
     uint256 weiAmount = msg.value;
-    require(weiAmount &gt; 0);
-    require(contributors[beneficiary].add(weiAmount) &lt;= 200 ether);
+    require(weiAmount > 0);
+    require(contributors[beneficiary].add(weiAmount) <= 200 ether);
     uint256 tokenAmount = 0;
     if (isPresale()) {
       /// Minimum contribution of 1 ether during presale
-      require(weiAmount &gt;= 1 ether); 
+      require(weiAmount >= 1 ether); 
       tokenAmount = getTokenAmount(weiAmount, preDiscountPercentage);
       uint256 newTokensSoldPre = tokensSoldPre.add(tokenAmount);
-      require(newTokensSoldPre &lt;= preCap);
+      require(newTokensSoldPre <= preCap);
       tokensSoldPre = newTokensSoldPre;
     } else if (isIco()) {
       uint8 discountPercentage = getIcoDiscountPercentage();
       tokenAmount = getTokenAmount(weiAmount, discountPercentage);
       /// Minimum contribution 1 token during ICO
-      require(tokenAmount &gt;= 10**18); 
+      require(tokenAmount >= 10**18); 
       uint256 newTokensSoldIco = tokensSoldIco.add(tokenAmount); 
-      require(newTokensSoldIco &lt;= HARD_CAP_IN_TOKENS);
+      require(newTokensSoldIco <= HARD_CAP_IN_TOKENS);
       tokensSoldIco = newTokensSoldIco;
     } else {
       /// Stop execution and return remaining gas
@@ -230,11 +230,11 @@ contract Crowdsale is Ownable, RateSetter {
 
   /// @dev Internal function used for calculating ICO discount percentage depending on levels
   function getIcoDiscountPercentage() internal constant returns (uint8) {
-    if (tokensSoldIco &lt;= icoPhaseAmount1) {
+    if (tokensSoldIco <= icoPhaseAmount1) {
       return icoPhaseDiscountPercentage1;
-    } else if (tokensSoldIco &lt;= icoPhaseAmount1.add(icoPhaseAmount2)) {
+    } else if (tokensSoldIco <= icoPhaseAmount1.add(icoPhaseAmount2)) {
       return icoPhaseDiscountPercentage2;
-    } else if (tokensSoldIco &lt;= icoPhaseAmount1.add(icoPhaseAmount2).add(icoPhaseAmount3)) { 
+    } else if (tokensSoldIco <= icoPhaseAmount1.add(icoPhaseAmount2).add(icoPhaseAmount3)) { 
       return icoPhaseDiscountPercentage3;
     } else {
       return icoPhaseDiscountPercentage4;
@@ -244,7 +244,7 @@ contract Crowdsale is Ownable, RateSetter {
   /// @dev Internal function used to calculate amount of tokens based on discount percentage
   function getTokenAmount(uint256 weiAmount, uint8 discountPercentage) internal constant returns (uint256) {
     /// Less than 100 to avoid division with zero
-    require(discountPercentage &gt;= 0 &amp;&amp; discountPercentage &lt; 100); 
+    require(discountPercentage >= 0 && discountPercentage < 100); 
     uint256 baseTokenAmount = weiAmount.mul(ethEurRate);
     uint256 denominator = 3 * (100 - discountPercentage);
     uint256 tokenAmount = baseTokenAmount.mul(10000).div(denominator);
@@ -287,7 +287,7 @@ contract Crowdsale is Ownable, RateSetter {
   function changeIcoPhaseAmounts(uint256[] icoPhaseAmounts) public onlyOwner {
     require(icoPhaseAmounts.length == 4);
     uint256 sum = 0;
-    for (uint i = 0; i &lt; icoPhaseAmounts.length; i++) {
+    for (uint i = 0; i < icoPhaseAmounts.length; i++) {
       sum = sum.add(icoPhaseAmounts[i]);
     }
     require(sum == HARD_CAP_IN_TOKENS);
@@ -300,22 +300,22 @@ contract Crowdsale is Ownable, RateSetter {
 
   /// @dev Check if presale is active
   function isPresale() public constant returns (bool) {
-    return now &gt;= startTimePre &amp;&amp; now &lt;= endTimePre;
+    return now >= startTimePre && now <= endTimePre;
   }
 
   /// @dev Check if ICO is active
   function isIco() public constant returns (bool) {
-    return now &gt;= startTimeIco &amp;&amp; now &lt;= endTimeIco;
+    return now >= startTimeIco && now <= endTimeIco;
   }
 
   /// @dev Check if presale has ended
   function hasPresaleEnded() public constant returns (bool) {
-    return now &gt; endTimePre;
+    return now > endTimePre;
   }
 
   /// @dev Check if ICO has ended
   function hasIcoEnded() public constant returns (bool) {
-    return now &gt; endTimeIco;
+    return now > endTimeIco;
   }
 
   /// @dev Amount of tokens that have been sold during both presale and ICO phase

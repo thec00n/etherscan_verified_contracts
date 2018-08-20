@@ -7,9 +7,9 @@ pragma solidity ^0.4.17;
 // ALTHOUGH THIS SMART CONTRACT WAS CREATED WITH GREAT CARE AND IN THE HOPE OF BEING USEFUL, NO GUARANTEES OF FLAWLESS OPERATION CAN BE GIVEN.
 // IN PARTICULAR - SUBTILE BUGS, HACKER ATTACKS OR MALFUNCTION OF UNDERLYING TECHNOLOGY CAN CAUSE UNINTENTIONAL BEHAVIOUR.
 // YOU ARE STRONGLY ENCOURAGED TO STUDY THIS SMART CONTRACT CAREFULLY IN ORDER TO UNDERSTAND POSSIBLE EDGE CASES AND RISKS.
-// DON&#39;T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON&#39;T KNOW WHAT YOU ARE DOING.
+// DON'T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON'T KNOW WHAT YOU ARE DOING.
 //
-// THIS SOFTWARE IS PROVIDED &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 // AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
 // OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -26,12 +26,12 @@ pragma solidity ^0.4.17;
 //
 
 /// @author ethernian
-/// @notice report bugs to: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="06647361754663726e6374686f67682865696b">[email&#160;protected]</a>
+/// @notice report bugs to: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="06647361754663726e6374686f67682865696b">[email protected]</a>
 /// @title BnsPresale Contract
 
 contract BnsPresale {
 
-    string public constant VERSION = &quot;0.2.0-bns-test-03-max_1_eth&quot;;
+    string public constant VERSION = "0.2.0-bns-test-03-max_1_eth";
 
     /* ====== configuration START ====== */
     uint public constant PRESALE_START  = 4465500; /* approx. TUE OCT 31 2017 19:16:32 GMT+0100 (CET) */
@@ -46,12 +46,12 @@ contract BnsPresale {
 
     /* ====== configuration END ====== */
 
-    string[5] private stateNames = [&quot;BEFORE_START&quot;,  &quot;PRESALE_RUNNING&quot;, &quot;WITHDRAWAL_RUNNING&quot;, &quot;REFUND_RUNNING&quot;, &quot;CLOSED&quot; ];
+    string[5] private stateNames = ["BEFORE_START",  "PRESALE_RUNNING", "WITHDRAWAL_RUNNING", "REFUND_RUNNING", "CLOSED" ];
     enum State { BEFORE_START,  PRESALE_RUNNING, WITHDRAWAL_RUNNING, REFUND_RUNNING, CLOSED }
 
     uint public total_received_amount;
     uint public total_refunded;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     uint private constant MIN_TOTAL_AMOUNT_TO_RECEIVE = MIN_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
     uint private constant MAX_TOTAL_AMOUNT_TO_RECEIVE = MAX_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
@@ -144,7 +144,7 @@ contract BnsPresale {
 
     function receiveFunds() private notTooSmallAmountOnly {
       // no overflow is possible here: nobody have soo much money to spend.
-      if (total_received_amount + msg.value &gt; MAX_TOTAL_AMOUNT_TO_RECEIVE) {
+      if (total_received_amount + msg.value > MAX_TOTAL_AMOUNT_TO_RECEIVE) {
           // accept amount only and return change
           var change_to_return = total_received_amount + msg.value - MAX_TOTAL_AMOUNT_TO_RECEIVE;
           var acceptable_remainder = MAX_TOTAL_AMOUNT_TO_RECEIVE - total_received_amount;
@@ -162,16 +162,16 @@ contract BnsPresale {
 
     function currentState() private constant returns (State) {
         if (isAborted) {
-            return this.balance &gt; 0
+            return this.balance > 0
                    ? State.REFUND_RUNNING
                    : State.CLOSED;
-        } else if (block.number &lt; PRESALE_START) {
+        } else if (block.number < PRESALE_START) {
             return State.BEFORE_START;
-        } else if (block.number &lt;= PRESALE_END &amp;&amp; total_received_amount &lt; MAX_TOTAL_AMOUNT_TO_RECEIVE &amp;&amp; !isStopped) {
+        } else if (block.number <= PRESALE_END && total_received_amount < MAX_TOTAL_AMOUNT_TO_RECEIVE && !isStopped) {
             return State.PRESALE_RUNNING;
         } else if (this.balance == 0) {
             return State.CLOSED;
-        } else if (block.number &lt;= WITHDRAWAL_END &amp;&amp; total_received_amount &gt;= MIN_TOTAL_AMOUNT_TO_RECEIVE) {
+        } else if (block.number <= WITHDRAWAL_END && total_received_amount >= MIN_TOTAL_AMOUNT_TO_RECEIVE) {
             return State.WITHDRAWAL_RUNNING;
         } else {
             return State.REFUND_RUNNING;
@@ -179,7 +179,7 @@ contract BnsPresale {
     }
 
     function min(uint a, uint b) pure private returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 
@@ -187,7 +187,7 @@ contract BnsPresale {
     // ============ modifiers ============
     //
 
-    //fails if state doesn&#39;t match
+    //fails if state doesn't match
     modifier inState(State state) {
         assert(state == currentState());
         _;
@@ -195,7 +195,7 @@ contract BnsPresale {
 
     //fails if the current state is not before than the given one.
     modifier inStateBefore(State state) {
-        assert(currentState() &lt; state);
+        assert(currentState() < state);
         _;
     }
 
@@ -206,10 +206,10 @@ contract BnsPresale {
             || PRESALE_START == 0
             || PRESALE_END == 0
             || WITHDRAWAL_END ==0
-            || PRESALE_START &lt;= block.number
-            || PRESALE_START &gt;= PRESALE_END
-            || PRESALE_END   &gt;= WITHDRAWAL_END
-            || MIN_TOTAL_AMOUNT_TO_RECEIVE &gt; MAX_TOTAL_AMOUNT_TO_RECEIVE )
+            || PRESALE_START <= block.number
+            || PRESALE_START >= PRESALE_END
+            || PRESALE_END   >= WITHDRAWAL_END
+            || MIN_TOTAL_AMOUNT_TO_RECEIVE > MAX_TOTAL_AMOUNT_TO_RECEIVE )
                 revert();
         _;
     }
@@ -224,14 +224,14 @@ contract BnsPresale {
 
     //accepts calls from token holders only
     modifier tokenHoldersOnly(){
-        assert(balances[msg.sender] &gt; 0);
+        assert(balances[msg.sender] > 0);
         _;
     }
 
 
     // don`t accept transactions with value less than allowed minimum
     modifier notTooSmallAmountOnly(){
-        assert(msg.value &gt;= MIN_ACCEPTED_AMOUNT);
+        assert(msg.value >= MIN_ACCEPTED_AMOUNT);
         _;
     }
 

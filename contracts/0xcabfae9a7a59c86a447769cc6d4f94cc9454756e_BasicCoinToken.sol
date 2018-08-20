@@ -1,8 +1,8 @@
 pragma solidity ^0.4.4;
 
 contract BasicCoinToken{
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply = 0;
     string public name;                   
     uint8 public decimals;                
@@ -17,13 +17,13 @@ contract BasicCoinToken{
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
@@ -31,7 +31,7 @@ contract BasicCoinToken{
         if (!assertion) throw;
     }
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to],_value);
             Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ contract BasicCoinToken{
         } else { return false; }
     }
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -64,7 +64,7 @@ contract BasicCoinToken{
     }
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        Approval(msg.sender, _spender, _value);if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
     function BasicCoinToken(
@@ -75,7 +75,7 @@ contract BasicCoinToken{
         totalSupply = initialSupply * 10 ** uint256(decimals);  
         balances[msg.sender] = initialOwnerSupply * 10 ** uint256(decimals);
         owner = msg.sender;
-        name = &quot;Basic Coin&quot;;
-        symbol = &quot;BASIC&quot;;
+        name = "Basic Coin";
+        symbol = "BASIC";
     }
 }

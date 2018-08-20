@@ -9,10 +9,10 @@ contract SEO{
     address winner;
     address owner;
     bool owner_flag=false;
-    mapping(address=&gt;uint) own_tickets;
-    mapping(address=&gt;bool) claim_status;
+    mapping(address=>uint) own_tickets;
+    mapping(address=>bool) claim_status;
     modifier game_over(){
-        require(now&gt;stop_time);
+        require(now>stop_time);
         _;
     }
     function SEO() public{
@@ -21,8 +21,8 @@ contract SEO{
         owner=msg.sender;
     }
     function buy() public payable{
-        require(msg.value&gt;=price);
-        require(now&lt;stop_time);
+        require(msg.value>=price);
+        require(now<stop_time);
         own_tickets[msg.sender]++;
         balance+=msg.value;
         winner=msg.sender;

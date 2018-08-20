@@ -18,7 +18,7 @@ interface IERC165 {
 
 contract ERC165 is IERC165 {
   /// @dev You must not set element 0xffffffff to true
-  mapping (bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping (bytes4 => bool) internal supportedInterfaces;
 
   function ERC165() internal {
     supportedInterfaces[0x01ffc9a7] = true; // ERC-165
@@ -71,9 +71,9 @@ interface IERC721Base /* is IERC165  */ {
   ///  operator, or the approved address for this NFT. Throws if `_from` is
   ///  not the current owner. Throws if `_to` is the zero address. Throws if
   ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-  ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+  ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
   ///  `onERC721Received` on `_to` and throws if the return value is not
-  ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+  ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
   /// @param _from The current owner of the NFT
   /// @param _to The new owner
   /// @param _tokenId The NFT to transfer
@@ -109,7 +109,7 @@ interface IERC721Base /* is IERC165  */ {
   /// @param _tokenId The NFT to approve
   function approve(address _approved, uint256 _tokenId) external payable;
 
-  /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+  /// @notice Enable or disable approval for a third party ("operator") to manage
   ///  all your asset.
   /// @dev Emits the ApprovalForAll event
   /// @param _operator Address to add to the set of authorized operators.
@@ -141,14 +141,14 @@ interface IERC721Enumerable /* is IERC721Base */ {
   function totalSupply() external view returns (uint256);
 
   /// @notice Enumerate valid NFTs
-  /// @dev Throws if `_index` &gt;= `totalSupply()`.
+  /// @dev Throws if `_index` >= `totalSupply()`.
   /// @param _index A counter less than `totalSupply()`
   /// @return The token identifier for the `_index`th NFT,
   ///  (sort order not specified)
   function tokenByIndex(uint256 _index) external view returns (uint256);
 
   /// @notice Enumerate NFTs assigned to an owner
-  /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
   ///  `_owner` is the zero address, representing invalid NFTs.
   /// @param _owner An address where we are interested in NFTs owned by them
   /// @param _index A counter less than `balanceOf(_owner)`
@@ -170,7 +170,7 @@ interface IERC721TokenReceiver {
   /// @param _from The sending address
   /// @param _tokenId The NFT identifier which is being transfered
   /// @param _data Additional data with no specified format
-  /// @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  /// @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   ///  unless throwing
 	function onERC721Received(address _from, uint256 _tokenId, bytes _data) external returns (bytes4);
 }
@@ -205,10 +205,10 @@ contract AxieDependency {
   AxieMarketplaceManager public marketplaceManager;
   AxieGeneManager public geneManager;
 
-  mapping (address =&gt; bool) public whitelistedSpawner;
-  mapping (address =&gt; bool) public whitelistedByeSayer;
-  mapping (address =&gt; bool) public whitelistedMarketplace;
-  mapping (address =&gt; bool) public whitelistedGeneScientist;
+  mapping (address => bool) public whitelistedSpawner;
+  mapping (address => bool) public whitelistedByeSayer;
+  mapping (address => bool) public whitelistedMarketplace;
+  mapping (address => bool) public whitelistedGeneScientist;
 
   function AxieDependency() internal {
     whitelistSetterAddress = msg.sender;
@@ -281,7 +281,7 @@ contract AxieDependency {
 
   /*
    * @dev Setting the whitelist setter address to `address(0)` would be a irreversible process.
-   *  This is to lock changes to Axie&#39;s contracts after their development is done.
+   *  This is to lock changes to Axie's contracts after their development is done.
    */
   function setWhitelistSetter(address _newSetter) external onlyWhitelistSetter {
     whitelistSetterAddress = _newSetter;
@@ -419,20 +419,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -446,26 +446,26 @@ contract AxieERC721BaseEnumerable is ERC165, IERC721Base, IERC721Enumerable, Axi
   uint256 private _totalTokens;
 
   // @dev Mapping from token index to ID.
-  mapping (uint256 =&gt; uint256) private _overallTokenId;
+  mapping (uint256 => uint256) private _overallTokenId;
 
   // @dev Mapping from token ID to index.
-  mapping (uint256 =&gt; uint256) private _overallTokenIndex;
+  mapping (uint256 => uint256) private _overallTokenIndex;
 
   // @dev Mapping from token ID to owner.
-  mapping (uint256 =&gt; address) private _tokenOwner;
+  mapping (uint256 => address) private _tokenOwner;
 
   // @dev For a given owner and a given operator, store whether
   //  the operator is allowed to manage tokens on behalf of the owner.
-  mapping (address =&gt; mapping (address =&gt; bool)) private _tokenOperator;
+  mapping (address => mapping (address => bool)) private _tokenOperator;
 
   // @dev Mapping from token ID to approved address.
-  mapping (uint256 =&gt; address) private _tokenApproval;
+  mapping (uint256 => address) private _tokenApproval;
 
   // @dev Mapping from owner to list of owned token IDs.
-  mapping (address =&gt; uint256[]) private _ownedTokens;
+  mapping (address => uint256[]) private _ownedTokens;
 
   // @dev Mapping from token ID to index in the owned token list.
-  mapping (uint256 =&gt; uint256) private _ownedTokenIndex;
+  mapping (uint256 => uint256) private _ownedTokenIndex;
 
   function AxieERC721BaseEnumerable() internal {
     supportedInterfaces[0x6466353c] = true; // ERC-721 Base
@@ -595,7 +595,7 @@ contract AxieERC721BaseEnumerable is ERC165, IERC721Base, IERC721Enumerable, Axi
     uint _size;
     // solium-disable-next-line security/no-inline-assembly
     assembly { _size := extcodesize(_address) }
-    return _size &gt; 0;
+    return _size > 0;
   }
 
   function _transferFrom(
@@ -621,7 +621,7 @@ contract AxieERC721BaseEnumerable is ERC165, IERC721Base, IERC721Enumerable, Axi
 
     _addTokenTo(_to, _tokenId);
 
-    if (_check &amp;&amp; _isContract(_to)) {
+    if (_check && _isContract(_to)) {
       IERC721TokenReceiver(_to).onERC721Received.gas(50000)(_from, _tokenId, _data);
     }
 
@@ -635,11 +635,11 @@ contract AxieERC721BaseEnumerable is ERC165, IERC721Base, IERC721Enumerable, Axi
   }
 
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable {
-    _transferFrom(_from, _to, _tokenId, &quot;&quot;, true);
+    _transferFrom(_from, _to, _tokenId, "", true);
   }
 
   function transferFrom(address _from, address _to, uint256 _tokenId) external payable {
-    _transferFrom(_from, _to, _tokenId, &quot;&quot;, false);
+    _transferFrom(_from, _to, _tokenId, "", false);
   }
 
   // solium-enable arg-overflow
@@ -685,13 +685,13 @@ contract AxieERC721BaseEnumerable is ERC165, IERC721Base, IERC721Enumerable, Axi
   }
 
   function tokenByIndex(uint256 _index) external view returns (uint256) {
-    require(_index &lt; _totalTokens);
+    require(_index < _totalTokens);
     return _overallTokenId[_index];
   }
 
   function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256 _tokenId) {
     require(_owner != address(0));
-    require(_index &lt; _ownedTokens[_owner].length);
+    require(_index < _ownedTokens[_owner].length);
     return _ownedTokens[_owner][_index];
   }
 }
@@ -710,27 +710,27 @@ interface IERC721Metadata /* is IERC721Base */ {
 
   /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
   /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-  ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-  ///  Metadata JSON Schema&quot;.
+  ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+  ///  Metadata JSON Schema".
   function tokenURI(uint256 _tokenId) external view returns (string);
 }
 
 // File: contracts/core/erc721/AxieERC721Metadata.sol
 
 contract AxieERC721Metadata is AxieERC721BaseEnumerable, IERC721Metadata {
-  string public tokenURIPrefix = &quot;https://axieinfinity.com/erc/721/axies/&quot;;
-  string public tokenURISuffix = &quot;.json&quot;;
+  string public tokenURIPrefix = "https://axieinfinity.com/erc/721/axies/";
+  string public tokenURISuffix = ".json";
 
   function AxieERC721Metadata() internal {
     supportedInterfaces[0x5b5e139f] = true; // ERC-721 Metadata
   }
 
   function name() external pure returns (string) {
-    return &quot;Axie&quot;;
+    return "Axie";
   }
 
   function symbol() external pure returns (string) {
-    return &quot;AXIE&quot;;
+    return "AXIE";
   }
 
   function setTokenURIAffixes(string _prefix, string _suffix) external onlyCEO {
@@ -754,7 +754,7 @@ contract AxieERC721Metadata is AxieERC721BaseEnumerable, IERC721Metadata {
     do {
       _length++;
       _tmpTokenId /= 10;
-    } while (_tmpTokenId &gt; 0);
+    } while (_tmpTokenId > 0);
 
     bytes memory _tokenURIBytes = new bytes(_tokenURIPrefixBytes.length + _length + 5);
     uint256 _i = _tokenURIBytes.length - 6;
@@ -764,13 +764,13 @@ contract AxieERC721Metadata is AxieERC721BaseEnumerable, IERC721Metadata {
     do {
       _tokenURIBytes[_i--] = byte(48 + _tmpTokenId % 10);
       _tmpTokenId /= 10;
-    } while (_tmpTokenId &gt; 0);
+    } while (_tmpTokenId > 0);
 
-    for (_i = 0; _i &lt; _tokenURIPrefixBytes.length; _i++) {
+    for (_i = 0; _i < _tokenURIPrefixBytes.length; _i++) {
       _tokenURIBytes[_i] = _tokenURIPrefixBytes[_i];
     }
 
-    for (_i = 0; _i &lt; _tokenURISuffixBytes.length; _i++) {
+    for (_i = 0; _i < _tokenURISuffixBytes.length; _i++) {
       _tokenURIBytes[_tokenURIBytes.length + _i - 5] = _tokenURISuffixBytes[_i];
     }
 

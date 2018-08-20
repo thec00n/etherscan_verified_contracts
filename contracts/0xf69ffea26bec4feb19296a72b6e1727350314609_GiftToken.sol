@@ -5,7 +5,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -58,20 +58,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -243,10 +243,10 @@ contract BurnableToken is StandardToken, Ownable {
     * @param _amount The amount of token to be burned.
     */
     function burn(uint256 _amount) public {
-        require(_amount &gt; 0);
-        require(_amount &lt;= balances[msg.sender]);
-        // no need to require _amount &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_amount > 0);
+        require(_amount <= balances[msg.sender]);
+        // no need to require _amount <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_amount);
@@ -262,10 +262,10 @@ contract BurnableToken is StandardToken, Ownable {
     */
     function burnFrom(address _from, uint256 _amount) onlyOwner public {
         require(_from != address(0));
-        require(_amount &gt; 0);
-        require(_amount &lt;= balances[_from]);
-        // no need to require _amount &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_amount > 0);
+        require(_amount <= balances[_from]);
+        // no need to require _amount <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_from] = balances[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
@@ -324,8 +324,8 @@ contract Pausable is Ownable {
 // File: contracts/GiftToken.sol
 
 contract GiftToken is BurnableToken, Pausable {
-    string constant public name = &quot;Giftcoin&quot;;
-    string constant public symbol = &quot;GIFT&quot;;
+    string constant public name = "Giftcoin";
+    string constant public symbol = "GIFT";
     uint8 constant public decimals = 18;
 
     uint256 constant public INITIAL_TOTAL_SUPPLY = 1e8 * (uint256(10) ** decimals);
@@ -399,7 +399,7 @@ contract Whitelist is Ownable {
 
     address private addressApi;
 
-    mapping(address =&gt; WalletInfo) public whitelist;
+    mapping(address => WalletInfo) public whitelist;
 
     uint256 public whitelistLength = 0;
 
@@ -523,15 +523,15 @@ contract GiftCrowdsale is Pausable, Whitelistable {
 
     GiftToken public token = new GiftToken(this);
 
-    mapping(address =&gt; uint256) public investments;
+    mapping(address => uint256) public investments;
 
     modifier whenSaleIsOpen () {
-        require(now &gt;= startTimestamp &amp;&amp; now &lt; endTimestamp);
+        require(now >= startTimestamp && now < endTimestamp);
         _;
     }
 
     modifier whenSaleHasEnded () {
-        require(now &gt;= endTimestamp);
+        require(now >= endTimestamp);
         _;
     }
 
@@ -550,8 +550,8 @@ contract GiftCrowdsale is Pausable, Whitelistable {
         uint256 _minCap
     ) public
     {
-        require(_startTimestamp &gt;= now &amp;&amp; _endTimestamp &gt; _startTimestamp);
-        require(_exchangeRate &gt; 0);
+        require(_startTimestamp >= now && _endTimestamp > _startTimestamp);
+        require(_exchangeRate > 0);
 
         startTimestamp = _startTimestamp;
         endTimestamp = _endTimestamp;
@@ -566,18 +566,18 @@ contract GiftCrowdsale is Pausable, Whitelistable {
     }
 
     function discount() constant public returns (uint256) {
-        if (now &gt; endThirdPeriodTimestamp)
+        if (now > endThirdPeriodTimestamp)
             return 0;
-        if (now &gt; endSecondPeriodTimestamp)
+        if (now > endSecondPeriodTimestamp)
             return 5;
-        if (now &gt; endFirstPeriodTimestamp)
+        if (now > endFirstPeriodTimestamp)
             return 15;
         return 25;
     }
 
     function bonus(address _wallet) constant public returns (uint256) {
         uint256 _created = whitelist.walletCreatedTimestamp(_wallet);
-        if (_created &gt; 0 &amp;&amp; _created &lt; startTimestamp) {
+        if (_created > 0 && _created < startTimestamp) {
             return 10;
         }
         return 0;
@@ -588,7 +588,7 @@ contract GiftCrowdsale is Pausable, Whitelistable {
     * @dev Sells tokens only for wallets from Whitelist while ICO lasts
     */
     function sellTokens () whenSaleIsOpen whenWhitelisted(msg.sender) whenNotPaused public payable {
-        require(msg.value &gt; minimumInvestment);
+        require(msg.value > minimumInvestment);
         uint256 _bonus = bonus(msg.sender);
         uint256 _discount = discount();
         uint256 tokensAmount = (msg.value).mul(exchangeRate).mul(_bonus.add(100)).div((100 - _discount));
@@ -641,8 +641,8 @@ contract GiftCrowdsale is Pausable, Whitelistable {
     * @dev Function to return money to one customer, if mincap has not been reached
     */
     function refundPayment() whenWhitelisted(msg.sender) whenSaleHasEnded external {
-        require(tokensSold &lt; minCap);
-        require(investments[msg.sender] &gt; 0);
+        require(tokensSold < minCap);
+        require(investments[msg.sender] > 0);
 
         token.burnFrom(msg.sender, token.balanceOf(msg.sender));
 

@@ -8,7 +8,7 @@ contract ERC20 {
 contract TokenTrust {
 	address public owner;
 	uint256 start;
-	mapping(address=&gt;uint256) public trust;
+	mapping(address=>uint256) public trust;
 	event AddTrust(address indexed _token, uint256 indexed _trust);
 	modifier onlyOwner() {
       if (msg.sender!=owner) revert();
@@ -33,7 +33,7 @@ contract TokenTrust {
     }
     
     function withdrawTokens(address tadr, uint256 tokens) public onlyOwner  {
-        if (tokens==0 || ERC20(tadr).balanceOf(address(this))&lt;tokens) revert();
+        if (tokens==0 || ERC20(tadr).balanceOf(address(this))<tokens) revert();
         trust[tadr]+=1;
         AddTrust(tadr,trust[tadr]);
         ERC20(tadr).transfer(owner, tokens);
@@ -47,6 +47,6 @@ contract TokenTrust {
     }
     
     function () payable public {
-        if (msg.value&gt;0) owner.transfer(msg.value);
+        if (msg.value>0) owner.transfer(msg.value);
     }
 }

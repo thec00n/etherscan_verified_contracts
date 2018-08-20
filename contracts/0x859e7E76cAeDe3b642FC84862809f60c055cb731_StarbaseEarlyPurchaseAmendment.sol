@@ -1,6 +1,6 @@
 pragma solidity ^0.4.7;
 /// @title EarlyPurchase contract - Keep track of purchased amount by Early Purchasers
-/// @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f990979f96b98a8d988b9b988a9cd79a96">[email&#160;protected]</a>&gt;
+/// @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f990979f96b98a8d988b9b988a9cd79a96">[email protected]</a>>
 contract AbstractStarbaseCrowdsale {
     function startDate() constant returns (uint256 startDate) {}
 }
@@ -9,8 +9,8 @@ contract StarbaseEarlyPurchase {
     /*
      *  Constants
      */
-    string public constant PURCHASE_AMOUNT_UNIT = &#39;CNY&#39;;    // Chinese Yuan
-    string public constant PURCHASE_AMOUNT_RATE_REFERENCE = &#39;http://www.xe.com/currencytables/&#39;;
+    string public constant PURCHASE_AMOUNT_UNIT = 'CNY';    // Chinese Yuan
+    string public constant PURCHASE_AMOUNT_RATE_REFERENCE = 'http://www.xe.com/currencytables/';
     uint public constant PURCHASE_AMOUNT_CAP = 9000000;
 
     /*
@@ -38,7 +38,7 @@ contract StarbaseEarlyPurchase {
      *  Modifiers
      */
     modifier noEther() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
         _;
@@ -52,8 +52,8 @@ contract StarbaseEarlyPurchase {
     }
 
     modifier onlyBeforeCrowdsale() {
-        if (address(starbaseCrowdsale) != 0 &amp;&amp;
-            starbaseCrowdsale.startDate() &gt; 0)
+        if (address(starbaseCrowdsale) != 0 &&
+            starbaseCrowdsale.startDate() > 0)
         {
             throw;
         }
@@ -61,7 +61,7 @@ contract StarbaseEarlyPurchase {
     }
 
     modifier onlyEarlyPurchaseTerm() {
-        if (earlyPurchaseClosedAt &gt; 0) {
+        if (earlyPurchaseClosedAt > 0) {
             throw;
         }
         _;
@@ -70,7 +70,7 @@ contract StarbaseEarlyPurchase {
     /*
      *  Contract functions
      */
-    /// @dev Returns early purchased amount by purchaser&#39;s address
+    /// @dev Returns early purchased amount by purchaser's address
     /// @param purchaser Purchaser address
     function purchasedAmountBy(address purchaser)
         external
@@ -78,7 +78,7 @@ contract StarbaseEarlyPurchase {
         noEther
         returns (uint amount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             if (earlyPurchases[i].purchaser == purchaser) {
                 amount += earlyPurchases[i].amount;
             }
@@ -91,7 +91,7 @@ contract StarbaseEarlyPurchase {
         noEther
         returns (uint totalAmount)
     {
-        for (uint i; i &lt; earlyPurchases.length; i++) {
+        for (uint i; i < earlyPurchases.length; i++) {
             totalAmount += earlyPurchases[i].amount;
         }
     }
@@ -119,12 +119,12 @@ contract StarbaseEarlyPurchase {
         returns (bool)
     {
         if (amount == 0 ||
-            totalAmountOfEarlyPurchases() + amount &gt; PURCHASE_AMOUNT_CAP)
+            totalAmountOfEarlyPurchases() + amount > PURCHASE_AMOUNT_CAP)
         {
             return false;
         }
 
-        if (purchasedAt == 0 || purchasedAt &gt; now) {
+        if (purchasedAt == 0 || purchasedAt > now) {
             throw;
         }
 
@@ -142,7 +142,7 @@ contract StarbaseEarlyPurchase {
         earlyPurchaseClosedAt = now;
     }
 
-    /// @dev Setup function sets external contract&#39;s address
+    /// @dev Setup function sets external contract's address
     /// @param starbaseCrowdsaleAddress Token address
     function setup(address starbaseCrowdsaleAddress)
         external
@@ -188,13 +188,13 @@ contract StarbaseEarlyPurchaseAmendment {
     address public owner;
     uint[] public invalidEarlyPurchaseIndexes;
     uint[] public amendedEarlyPurchaseIndexes;
-    mapping (uint =&gt; StarbaseEarlyPurchase.EarlyPurchase) public amendedEarlyPurchases;
+    mapping (uint => StarbaseEarlyPurchase.EarlyPurchase) public amendedEarlyPurchases;
 
     /*
      *  Modifiers
      */
     modifier noEther() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
         _;
@@ -208,8 +208,8 @@ contract StarbaseEarlyPurchaseAmendment {
     }
 
     modifier onlyBeforeCrowdsale() {
-        if (address(starbaseCrowdsale) != 0 &amp;&amp;
-            starbaseCrowdsale.startDate() &gt; 0)
+        if (address(starbaseCrowdsale) != 0 &&
+            starbaseCrowdsale.startDate() > 0)
         {
             throw;
         }
@@ -237,7 +237,7 @@ contract StarbaseEarlyPurchaseAmendment {
         return starbaseEarlyPurchase.earlyPurchases(earlyPurchaseIndex);
     }
 
-    /// @dev Returns early purchased amount by purchaser&#39;s address
+    /// @dev Returns early purchased amount by purchaser's address
     /// @param purchaser Purchaser address
     function purchasedAmountBy(address purchaser)
         external
@@ -247,7 +247,7 @@ contract StarbaseEarlyPurchaseAmendment {
     {
         StarbaseEarlyPurchase.EarlyPurchase[] memory normalizedEP =
             normalizedEarlyPurchases();
-        for (uint i; i &lt; normalizedEP.length; i++) {
+        for (uint i; i < normalizedEP.length; i++) {
             if (normalizedEP[i].purchaser == purchaser) {
                 amount += normalizedEP[i].amount;
             }
@@ -262,7 +262,7 @@ contract StarbaseEarlyPurchaseAmendment {
     {
         StarbaseEarlyPurchase.EarlyPurchase[] memory normalizedEP =
             normalizedEarlyPurchases();
-        for (uint i; i &lt; normalizedEP.length; i++) {
+        for (uint i; i < normalizedEP.length; i++) {
             totalAmount += normalizedEP[i].amount;
         }
     }
@@ -277,7 +277,7 @@ contract StarbaseEarlyPurchaseAmendment {
         return normalizedEarlyPurchases().length;
     }
 
-    /// @dev Setup function sets external contract&#39;s address
+    /// @dev Setup function sets external contract's address
     /// @param starbaseCrowdsaleAddress Token address
     function setup(address starbaseCrowdsaleAddress)
         external
@@ -303,11 +303,11 @@ contract StarbaseEarlyPurchaseAmendment {
         onlyBeforeCrowdsale
         returns (bool)
     {
-        if (numberOfRawEarlyPurchases() &lt;= earlyPurchaseIndex) {
+        if (numberOfRawEarlyPurchases() <= earlyPurchaseIndex) {
             throw;  // Array Index Out of Bounds Exception
         }
 
-        for (uint i; i &lt; invalidEarlyPurchaseIndexes.length; i++) {
+        for (uint i; i < invalidEarlyPurchaseIndexes.length; i++) {
             if (invalidEarlyPurchaseIndexes[i] == earlyPurchaseIndex) {
                 throw;  // disallow duplicated invalidation
             }
@@ -323,11 +323,11 @@ contract StarbaseEarlyPurchaseAmendment {
         noEther
         returns (bool)
     {
-        if (numberOfRawEarlyPurchases() &lt;= earlyPurchaseIndex) {
+        if (numberOfRawEarlyPurchases() <= earlyPurchaseIndex) {
             throw;  // Array Index Out of Bounds Exception
         }
 
-        for (uint i; i &lt; invalidEarlyPurchaseIndexes.length; i++) {
+        for (uint i; i < invalidEarlyPurchaseIndexes.length; i++) {
             if (invalidEarlyPurchaseIndexes[i] == earlyPurchaseIndex) {
                 return true;
             }
@@ -343,11 +343,11 @@ contract StarbaseEarlyPurchaseAmendment {
         onlyBeforeCrowdsale
         returns (bool)
     {
-        if (purchasedAt == 0 || purchasedAt &gt; now) {
+        if (purchasedAt == 0 || purchasedAt > now) {
             throw;
         }
 
-        if (numberOfRawEarlyPurchases() &lt;= earlyPurchaseIndex) {
+        if (numberOfRawEarlyPurchases() <= earlyPurchaseIndex) {
             throw;  // Array Index Out of Bounds Exception
         }
 
@@ -370,11 +370,11 @@ contract StarbaseEarlyPurchaseAmendment {
         noEther
         returns (bool)
     {
-        if (numberOfRawEarlyPurchases() &lt;= earlyPurchaseIndex) {
+        if (numberOfRawEarlyPurchases() <= earlyPurchaseIndex) {
             throw;  // Array Index Out of Bounds Exception
         }
 
-        for (uint i; i &lt; amendedEarlyPurchaseIndexes.length; i++) {
+        for (uint i; i < amendedEarlyPurchaseIndexes.length; i++) {
             if (amendedEarlyPurchaseIndexes[i] == earlyPurchaseIndex) {
                 return true;
             }
@@ -425,7 +425,7 @@ contract StarbaseEarlyPurchaseAmendment {
             rawEPCount - invalidEarlyPurchaseIndexes.length);
 
         uint normalizedIdx;
-        for (uint i; i &lt; rawEPCount; i++) {
+        for (uint i; i < rawEPCount; i++) {
             if (isInvalidEarlyPurchase(i)) {
                 continue;   // invalid early purchase should be ignored
             }

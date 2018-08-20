@@ -2,12 +2,12 @@ pragma solidity ^0.4.21;
 
 contract Owned {
     
-    /// &#39;owner&#39; is the only address that can call a function with 
+    /// 'owner' is the only address that can call a function with 
     /// this modifier
     address public owner;
     address internal newOwner;
     
-    ///@notice The constructor assigns the message sender to be &#39;owner&#39;
+    ///@notice The constructor assigns the message sender to be 'owner'
     function Owned() public {
         owner = msg.sender;
     }
@@ -43,13 +43,13 @@ contract SafeMath {
     }
     
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
@@ -69,7 +69,7 @@ contract ERC20Token {
     uint256 public totalSupply;
     
     /// user tokens
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     
     /// @param _owner The address from which the balance will be retrieved
     /// @return The balance
@@ -105,18 +105,18 @@ contract ERC20Token {
 
 contract PUST is ERC20Token {
     
-    string public name = &quot;UST Put Option&quot;;
-    string public symbol = &quot;PUST&quot;;
+    string public name = "UST Put Option";
+    string public symbol = "PUST";
     uint public decimals = 0;
     
     uint256 public totalSupply = 0;
     uint256 public topTotalSupply = 0;
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
-    //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+    //Default assumes totalSupply can't be over max (2^256 - 1).
+    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
     //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -126,7 +126,7 @@ contract PUST is ERC20Token {
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
     //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowances[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowances[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
           balances[_to] += _value;
           balances[_from] -= _value;
           allowances[_from][msg.sender] -= _value;
@@ -149,9 +149,9 @@ contract PUST is ERC20Token {
         return allowances[_owner][_spender];
     }
     
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 }
 
 
@@ -160,7 +160,7 @@ contract ExchangeUST is SafeMath, Owned, PUST {
     // Exercise End Time 1/1/2019 0:0:0
     uint public ExerciseEndTime = 1546272000;
     uint public exchangeRate = 100000; //percentage times (1 ether)
-    //mapping (address =&gt; uint) ustValue; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+    //mapping (address => uint) ustValue; //mapping of token addresses to mapping of account balances (token=0 means Ether)
     
     // UST address
     address public ustAddress = address(0xFa55951f84Bfbe2E6F95aA74B58cc7047f9F0644);
@@ -182,11 +182,11 @@ contract ExchangeUST is SafeMath, Owned, PUST {
     }
 
     function exerciseOption(uint _pustBalance) public returns (bool) {
-        require (now &lt; ExerciseEndTime);
-        require (_pustBalance &lt;= balances[msg.sender]);
+        require (now < ExerciseEndTime);
+        require (_pustBalance <= balances[msg.sender]);
         
         uint _ether = _pustBalance * 10 ** 18;
-        require (address(this).balance &gt;= _ether); 
+        require (address(this).balance >= _ether); 
         
         uint _amount = _pustBalance * exchangeRate * 10**18;
         require (PUST(ustAddress).transferFrom(msg.sender, officialAddress, _amount) == true);
@@ -216,8 +216,8 @@ contract USTputOption is ExchangeUST {
     event buyPUST (address caller, uint PUST);
     
     function () payable public {
-        require (now &lt; ExerciseEndTime);
-        require (topTotalSupply &gt; totalSupply);
+        require (now < ExerciseEndTime);
+        require (topTotalSupply > totalSupply);
         bool firstCallReward = false;
         uint epochNow = whichEpoch(block.number);
         
@@ -234,12 +234,12 @@ contract USTputOption is ExchangeUST {
 
         uint _value = msg.value;
         uint _PUST = _value / eachPUSTprice;
-        require(_PUST &gt; 0);
-        if (safeAdd(totalSupply, _PUST) &gt; topTotalSupply) {
+        require(_PUST > 0);
+        if (safeAdd(totalSupply, _PUST) > topTotalSupply) {
             _PUST = safeSub(topTotalSupply, totalSupply);
         }
         uint _refound = _value - _PUST * eachPUSTprice;
-        if(_refound &gt; 0) {
+        if(_refound > 0) {
             msg.sender.transfer(_refound);
         }
         
@@ -248,14 +248,14 @@ contract USTputOption is ExchangeUST {
         emit buyPUST(msg.sender, _PUST);
         
         // alloc first reward in a new or init epoch
-        if(lastCallAddress == address(0) &amp;&amp; epochLast == 0) {
+        if(lastCallAddress == address(0) && epochLast == 0) {
              firstCallReward = true;
         }
         
         if (firstCallReward) {
             uint _firstReward = 0;
             _firstReward = (_PUST - 1) * 2 / 10 + 1;
-            if (safeAdd(totalSupply, _firstReward) &gt; topTotalSupply) {
+            if (safeAdd(totalSupply, _firstReward) > topTotalSupply) {
                 _firstReward = safeSub(topTotalSupply,totalSupply);
             }
             balances[msg.sender] = safeAdd(balances[msg.sender], _firstReward);
@@ -276,7 +276,7 @@ contract USTputOption is ExchangeUST {
     
     // 
     function whichEpoch(uint _blocknumber) internal view returns (uint _epochNow) {
-        if (lastEpochBlock &gt;= _blocknumber ) {
+        if (lastEpochBlock >= _blocknumber ) {
             _epochNow = epochLast;
         }
         else {
@@ -287,11 +287,11 @@ contract USTputOption is ExchangeUST {
     }
     
     function calcpustprice(uint _epochNow, uint _epochLast) public returns (uint _eachPUSTprice) {
-        require (_epochNow - _epochLast &gt; 0);    
+        require (_epochNow - _epochLast > 0);    
         uint dif = _epochNow - _epochLast;
         uint dif100 = dif/100;
         dif = dif - dif100*100;        
-        for(uint i=0;i&lt;dif100;i++)
+        for(uint i=0;i<dif100;i++)
             {
                 price1 = price1-price1*5/100;
                 price2 = price2-price2*7/1000;
@@ -310,7 +310,7 @@ contract USTputOption is ExchangeUST {
             _lastReward = (lastCallPUST-1) * 2 / 10 + 1;
         }
         
-        if (safeAdd(totalSupply, _lastReward) &gt; topTotalSupply) {
+        if (safeAdd(totalSupply, _lastReward) > topTotalSupply) {
             _lastReward = safeSub(topTotalSupply,totalSupply);
         }
         balances[lastCallAddress] = safeAdd(balances[lastCallAddress], _lastReward);
@@ -324,9 +324,9 @@ contract USTputOption is ExchangeUST {
         topTotalSupply += msg.value / 10**18;
     }
     
-    // only end time, onwer can transfer contract&#39;s ether out.
+    // only end time, onwer can transfer contract's ether out.
     function WithdrawETH() payable public onlyOwner {
-        require (now &gt;= ExerciseEndTime);
+        require (now >= ExerciseEndTime);
         officialAddress.transfer(address(this).balance);
     } 
     

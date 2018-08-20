@@ -20,20 +20,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,9 +71,9 @@ contract TipperToken {
   address private tprFundDeposit;
   address private founderCoinsDeposit;
 
-  mapping(address =&gt; uint256) internal balances;
+  mapping(address => uint256) internal balances;
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -81,8 +81,8 @@ contract TipperToken {
   
   function TipperToken () public {
       
-      name = &quot;Tipper&quot;;
-      symbol = &quot;TIPR&quot;;
+      name = "Tipper";
+      symbol = "TIPR";
       decimals = 18;
       
       tprFund = 420000000 * (10**decimals); // Reserved for TIPR User Fund and Tipper Inc. use
@@ -115,7 +115,7 @@ contract TipperToken {
    */
    
   function releaseTprFund() public {
-    require(now &gt;= tprFundReleaseTime); // Check that 3 months have passed
+    require(now >= tprFundReleaseTime); // Check that 3 months have passed
     require(!tprFundUnlocked); // Check that the fund has not been released yet
 
     balances[tprFundDeposit] = tprFund; // Assign the funds to the specified account
@@ -133,7 +133,7 @@ contract TipperToken {
    */
   
   function releaseFounderCoins() public {
-    require(now &gt;= founderCoinsReleaseTime); // Check that 1 year has passed
+    require(now >= founderCoinsReleaseTime); // Check that 1 year has passed
     require(!founderCoinsUnlocked); // Check that the coins have not been released yet
 
     balances[founderCoinsDeposit] = founderCoins; // Assign the coins to the founders accounts
@@ -150,8 +150,8 @@ contract TipperToken {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(_value &gt; 0);
+    require(_value <= balances[msg.sender]);
+    require(_value > 0);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -176,9 +176,9 @@ contract TipperToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(_value &gt; 0);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+    require(_value > 0);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -194,8 +194,8 @@ contract TipperToken {
    * @param _value The amount of tokens to be spent.
    */
   function approve(address _spender, uint256 _value) public returns (bool) {
-    require(_value&gt;0);
-    require(balances[msg.sender]&gt;_value);
+    require(_value>0);
+    require(balances[msg.sender]>_value);
     allowed[msg.sender][_spender] = 0;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -218,7 +218,7 @@ contract TipperToken {
      * @param _value The amount of tokens to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

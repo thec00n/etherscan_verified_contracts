@@ -12,18 +12,18 @@ contract EtherPennySlots is mortal {
     address[]  private currentTicketHolders;
     
     function placeWager() {
-       if (msg.value &gt; 0 finney &amp;&amp; msg.value &lt; 51 finney) {
+       if (msg.value > 0 finney && msg.value < 51 finney) {
             uint i = 0;
-            for (i = 0; i &lt; msg.value; i++){
+            for (i = 0; i < msg.value; i++){
                 currentTicketHolders.length++;
                 currentTicketHolders[currentTicketHolders.length-1] = msg.sender; 
             }
                        
-            if (this.balance &gt;= 601 finney) {
+            if (this.balance >= 601 finney) {
                 uint nr_tickets = currentTicketHolders.length;
                 uint randomTicket = block.number % nr_tickets;
                 address randomEntry = currentTicketHolders[randomTicket];
-                if (hotAccount.send(100 finney) &amp;&amp; randomEntry.send(500 finney)) {
+                if (hotAccount.send(100 finney) && randomEntry.send(500 finney)) {
                     lastWinner = randomEntry;
                     currentTicketHolders.length = 0;
                 }

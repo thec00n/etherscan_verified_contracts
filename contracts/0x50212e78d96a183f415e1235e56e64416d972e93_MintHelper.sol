@@ -8,13 +8,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -30,7 +30,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -157,7 +157,7 @@ contract MintHelper is Ownable {
     public onlyOwner
     returns (bool)
     {
-      require(fee &gt;= 0 &amp;&amp; fee &lt;= 100);
+      require(fee >= 0 && fee <= 100);
       minterFeePercent = fee;
       return true;
     }
@@ -203,7 +203,7 @@ contract MintHelper is Ownable {
       require(ERC20Interface(mintableToken).transfer(payoutsWallet, payoutReward));
 
       uint256 i = 0;
-      while (i &lt; tokens.length) {
+      while (i < tokens.length) {
          address mergedToken = tokens[i];
          if(ERC918Interface(mergedToken).merge())
          {

@@ -3,10 +3,10 @@ pragma solidity ^0.4.22;
 contract EthMashMount {
 
     address public owner;
-    mapping (address =&gt; uint) public withdrawals;
+    mapping (address => uint) public withdrawals;
 
     uint round;
-    mapping (uint =&gt; address[]) participants;
+    mapping (uint => address[]) participants;
     
     event Log(address indexed user, uint action, uint price);
 
@@ -46,7 +46,7 @@ contract EthMashMount {
     }
 
     function userWithdraw() public {
-        require(withdrawals[msg.sender] &gt; 0);
+        require(withdrawals[msg.sender] > 0);
         uint amount = withdrawals[msg.sender];
         withdrawals[msg.sender] = 0;
         msg.sender.transfer(amount);

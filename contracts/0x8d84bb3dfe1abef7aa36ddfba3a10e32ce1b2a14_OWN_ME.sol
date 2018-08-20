@@ -13,7 +13,7 @@ contract OWN_ME {
     }
    
     function BUY_ME() public payable {
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         address tmp = owner;
         owner = msg.sender;
         tmp.transfer(msg.value);

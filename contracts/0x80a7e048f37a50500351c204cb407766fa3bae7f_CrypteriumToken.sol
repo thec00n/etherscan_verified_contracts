@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -39,11 +39,11 @@ contract Ownable {
 contract CrypteriumToken is Ownable {
     
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
-    string public constant name = &quot;CrypteriumToken&quot;;
-    string public constant symbol = &quot;CRPT&quot;;
+    string public constant name = "CrypteriumToken";
+    string public constant symbol = "CRPT";
     uint32 public constant decimals = 18;
 
     uint constant restrictedPercent = 30; //should never be set above 100
@@ -63,7 +63,7 @@ contract CrypteriumToken is Ownable {
     }
 
     modifier saleIsOn() {
-        require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+        require(now > start && now < start + period * 1 days);
         _;
     }
     
@@ -74,11 +74,11 @@ contract CrypteriumToken is Ownable {
   
     function transfer(address _to, uint256 _value) whenTransferAllowed public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender] - _value;
         balances[_to] = balances[_to] + _value;
-        //assert(balances[_to] &gt;= _value); no need to check, since mint has limited hardcap
+        //assert(balances[_to] >= _value); no need to check, since mint has limited hardcap
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -89,12 +89,12 @@ contract CrypteriumToken is Ownable {
     
     function transferFrom(address _from, address _to, uint256 _value) whenTransferAllowed public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from] - _value;
         balances[_to] = balances[_to] + _value;
-        //assert(balances[_to] &gt;= _value); no need to check, since mint has limited hardcap
+        //assert(balances[_to] >= _value); no need to check, since mint has limited hardcap
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;
         Transfer(_from, _to, _value);
         return true;
@@ -124,16 +124,16 @@ contract CrypteriumToken is Ownable {
         
         uint restrictedTokens = _value * restrictedPercent / (100 - restrictedPercent);
         uint _amount = _value + restrictedTokens;
-        assert(_amount &gt;= _value);
+        assert(_amount >= _value);
         
-        if(_amount + totalSupply &lt;= hardcap){
+        if(_amount + totalSupply <= hardcap){
         
             totalSupply = totalSupply + _amount;
             
-            assert(totalSupply &gt;= _amount);
+            assert(totalSupply >= _amount);
             
             balances[msg.sender] = balances[msg.sender] + _amount;
-            assert(balances[msg.sender] &gt;= _amount);
+            assert(balances[msg.sender] >= _amount);
             Mint(msg.sender, _amount);
         
             transfer(_to, _value);
@@ -153,9 +153,9 @@ contract CrypteriumToken is Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         balances[msg.sender] = balances[msg.sender] - _value;
         totalSupply = totalSupply - _value;
         Burn(msg.sender, _value);
@@ -163,8 +163,8 @@ contract CrypteriumToken is Ownable {
     }
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from] - _value;
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;
         totalSupply = totalSupply - _value;

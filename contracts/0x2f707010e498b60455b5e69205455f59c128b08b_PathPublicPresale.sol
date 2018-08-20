@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,7 +87,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -105,7 +105,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,9 +134,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -168,7 +168,7 @@ library SafeERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -179,8 +179,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -270,8 +270,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -284,7 +284,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -300,7 +300,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -331,7 +331,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -346,9 +346,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -409,8 +409,8 @@ contract PATH is MintableToken, BurnableToken, SafePayloadChecker {
   /**
    * ERC20 Identification Functions
    */
-  string public constant name    = &quot;PATH Token&quot;; // solium-disable-line uppercase
-  string public constant symbol  = &quot;PATH&quot;; // solium-disable-line uppercase
+  string public constant name    = "PATH Token"; // solium-disable-line uppercase
+  string public constant symbol  = "PATH"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
 
   /**
@@ -430,7 +430,7 @@ contract PATH is MintableToken, BurnableToken, SafePayloadChecker {
    */
   modifier onlyWhenTransferEnabled()
   {
-    if (now &lt;= transferableStartTime) {
+    if (now <= transferableStartTime) {
       require(
         msg.sender == privatePresaleWallet || // solium-disable-line operator-whitespace
         msg.sender == publicPresaleContract || // solium-disable-line operator-whitespace
@@ -511,8 +511,8 @@ contract PATH is MintableToken, BurnableToken, SafePayloadChecker {
     onlyWhenTransferEnabled
     public
   {
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(_value &lt;= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -644,9 +644,9 @@ contract StandardCrowdsale {
   )
     public
   {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -689,7 +689,7 @@ contract StandardCrowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -705,9 +705,9 @@ contract StandardCrowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 }
 
@@ -720,7 +720,7 @@ contract FinalizableCrowdsale is StandardCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() public {
     require(!isFinalized);
@@ -755,7 +755,7 @@ contract BurnableCrowdsale is FinalizableCrowdsale {
 contract RateConfigurable is StandardCrowdsale, Ownable {
 
   modifier onlyBeforeStart() {
-    require(now &lt; startTime);
+    require(now < startTime);
     _;
   }
 
@@ -797,7 +797,7 @@ contract ReallocatableCrowdsale is StandardCrowdsale, Ownable {
 
 contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
 
-  mapping(address=&gt;bool) public registered;
+  mapping(address=>bool) public registered;
 
   event RegistrationStatusChanged(address target, bool isRegistered);
 
@@ -823,7 +823,7 @@ contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
     public
     onlyOwner
   {
-    for (uint i = 0; i &lt; targets.length; i++) {
+    for (uint i = 0; i < targets.length; i++) {
       changeRegistrationStatus(targets[i], isRegistered);
     }
   }
@@ -833,7 +833,7 @@ contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
     * @return true if investors can buy at the moment, false otherwise
     */
   function validPurchase() internal view returns (bool) {
-    return super.validPurchase() &amp;&amp; registered[msg.sender];
+    return super.validPurchase() && registered[msg.sender];
   }
 }
 

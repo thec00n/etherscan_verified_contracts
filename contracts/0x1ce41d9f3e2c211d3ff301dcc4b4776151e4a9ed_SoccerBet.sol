@@ -10,18 +10,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -31,7 +31,7 @@ contract BaseGame {
 	function canSetBanker() view public returns (bool _result);
     function setBanker(address _banker, uint256 _beginTime, uint256 _endTime) public returns(bool _result);
     
-    string public gameName = &quot;NO.1&quot;;
+    string public gameName = "NO.1";
     uint public gameType = 2004;
     string public officialGameUrl;
 
@@ -42,7 +42,7 @@ contract BaseGame {
 	function depositToken(uint256 _amount) public;
 	function withdrawAllToken() public;
     function withdrawToken(uint256 _amount) public;
-    mapping (address =&gt; uint256) public userTokenOf;
+    mapping (address => uint256) public userTokenOf;
 
 }
 interface IDonQuixoteToken{
@@ -120,7 +120,7 @@ contract Base is BaseGame{
 	
     function _withdrawToken(address _from, uint256 _amount) internal {
         require(_from != 0x0);
-		require(_amount &gt; 0 &amp;&amp; _amount &lt;= userTokenOf[_from]);
+		require(_amount > 0 && _amount <= userTokenOf[_from]);
 		userTokenOf[_from] = userTokenOf[_from].sub(_amount);
 		DonQuixoteToken.transfer(_from, _amount);
     }
@@ -165,14 +165,14 @@ contract SoccerBet is Base
 	
     modifier onlyBanker {
         require(msg.sender == currentBanker);
-        require(bankerBeginTime &lt;= now);
-        require(now &lt; bankerEndTime);
+        require(bankerBeginTime <= now);
+        require(now < bankerEndTime);
         _;
     }    
 	
 	function canSetBanker() public view returns (bool _result){
         _result =  false;
-		if(now &lt; bankerEndTime){
+		if(now < bankerEndTime){
 			return;
 		}
 		if(userTokenOf[this] == 0){
@@ -186,27 +186,27 @@ contract SoccerBet is Base
         _result = false;
         require(_banker != 0x0);
 
-        if(now &lt; bankerEndTime){
-            emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 1, now, getEventId());//&quot;bankerEndTime &gt; now&quot;
+        if(now < bankerEndTime){
+            emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 1, now, getEventId());//"bankerEndTime > now"
             return;
         }
 		
-		if(userTokenOf[this] &gt; 0){
-			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 5, now, getEventId());//&quot;userTokenOf[this] &gt; 0&quot;
+		if(userTokenOf[this] > 0){
+			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 5, now, getEventId());//"userTokenOf[this] > 0"
 			return;
 		}
         
-        if(_beginTime &gt; now){
-			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 3, now, getEventId());//&#39;_beginTime &gt; now&#39;
+        if(_beginTime > now){
+			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 3, now, getEventId());//'_beginTime > now'
             return;
         }
 
-        if(_endTime &lt;= now){
-			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 4, now, getEventId());//&#39;_endTime &lt;= now&#39;
+        if(_endTime <= now){
+			emit OnSetNewBanker(gameID, msg.sender, _banker,  _beginTime,  _endTime, 4, now, getEventId());//'_endTime <= now'
             return;
         }
 		
-		if(now &lt; donGameGiftLineTime){
+		if(now < donGameGiftLineTime){
             DonQuixoteToken.logPlaying(_banker);
         }
         currentBanker = _banker;
@@ -267,7 +267,7 @@ contract SoccerBet is Base
     }
 	function setGameResult(uint _gameResult) public onlyDecider{
 		require(!gameOver);
-		require(betLastTime + 90 minutes &lt; now);
+		require(betLastTime + 90 minutes < now);
 		require(gameResult == 9);
 		require( _gameResult == loseNum || _gameResult == winNum || _gameResult == sameNum);
 		gameResult = _gameResult;
@@ -283,15 +283,15 @@ contract SoccerBet is Base
     event OnNewGame(uint indexed _gameID, address _banker , uint _betLastTime, uint _gameBeginTime, uint256 _gameMinBetAmount, uint256 _gameMaxBetAmount, uint _eventTime, uint eventId);
 	event OnGameInfo(uint indexed _gameID, string _team1, string _team2, uint _loseOdd, uint _winOdd, uint _sameOdd, uint _eventTime, uint eventId);
     function newGame(string _team1, string _team2, uint _loseOdd, uint _winOdd, uint _sameOdd, uint _betLastTime, uint256 _gameMinBetAmount, uint256 _gameMaxBetAmount) public onlyBanker returns(bool _result){ //开局
-        require(bytes(_team1).length &lt; 100);
-		require(bytes(_team2).length &lt; 100);
+        require(bytes(_team1).length < 100);
+		require(bytes(_team2).length < 100);
 		
 		require(gameOver);
-        require(now &gt; bankerBeginTime);
-		require(_gameMinBetAmount &gt;= 10000000);
-        require(_gameMaxBetAmount &gt;= _gameMinBetAmount);
-		require(now &lt; _betLastTime);
-		require(_betLastTime+ 1 days &lt; bankerEndTime);
+        require(now > bankerBeginTime);
+		require(_gameMinBetAmount >= 10000000);
+        require(_gameMaxBetAmount >= _gameMinBetAmount);
+		require(now < _betLastTime);
+		require(_betLastTime+ 1 days < bankerEndTime);
 
         _result = _newGame(_team1, _team2, _loseOdd, _winOdd, _sameOdd, _betLastTime, _gameMinBetAmount,  _gameMaxBetAmount);
     }
@@ -342,7 +342,7 @@ contract SoccerBet is Base
         bool IsReturnAward;
     }
 
-    mapping (uint =&gt; betInfo) public playerBetInfoOf;
+    mapping (uint => betInfo) public playerBetInfoOf;
 
     event OnPlay(uint indexed _gameID, string _gameName, address _player, uint odd, string _team1, uint _betNum, uint256 _betAmount, uint _playNo, uint _eventTime, uint eventId);
     function play(uint _betNum, uint256 _betAmount) public returns(bool _result){ 
@@ -356,22 +356,22 @@ contract SoccerBet is Base
         require(_betNum == loseNum || _betNum == winNum || _betNum == sameNum);
         require(msg.sender != currentBanker);
 
-        require(now &lt; betLastTime);
+        require(now < betLastTime);
 		
-		require(_betAmount &gt;= gameMinBetAmount);
-        if (_betAmount &gt; gameMaxBetAmount){
+		require(_betAmount >= gameMinBetAmount);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
 
 		_betAmount = _betAmount / 100 * 100;
 
-        if(userTokenOf[msg.sender] &lt; _betAmount){
+        if(userTokenOf[msg.sender] < _betAmount){
             depositToken(_betAmount.sub(userTokenOf[msg.sender]));
         }
         
         uint BankerAmount = _betAmount.mul(bankerDepositPer).div(100);
-        require(userTokenOf[msg.sender] &gt;= _betAmount);
-        require(userTokenOf[currentBanker] &gt;= BankerAmount);
+        require(userTokenOf[msg.sender] >= _betAmount);
+        require(userTokenOf[currentBanker] >= BankerAmount);
 
 
         uint _odd = seekOdd(_betNum,_betAmount);
@@ -393,7 +393,7 @@ contract SoccerBet is Base
         emit OnPlay(gameID, gameName, msg.sender, _odd, team1, _betNum, _betAmount, playNo, now, getEventId());
 
         playNo = playNo.add(1); 
-		if(now &lt; donGameGiftLineTime){
+		if(now < donGameGiftLineTime){
             DonQuixoteToken.logPlaying(msg.sender);
         }
 		
@@ -428,14 +428,14 @@ contract SoccerBet is Base
         _result = false;
         _checkOpenGame();
 		uint256 allAmount = 0;
-		for(uint i = 0; nextRewardPlayNo &lt; playNo &amp;&amp; i &lt; currentRewardNum; i++ ){
+		for(uint i = 0; nextRewardPlayNo < playNo && i < currentRewardNum; i++ ){
 			betInfo storage p = playerBetInfoOf[nextRewardPlayNo];
 			if(!p.IsReturnAward){
 				_cashPrize(p, allAmount,nextRewardPlayNo);
 			}
 			nextRewardPlayNo = nextRewardPlayNo.add(1);
 		}
-		if(unpayPooling == 0 &amp;&amp; _canSetGameOver()){
+		if(unpayPooling == 0 && _canSetGameOver()){
 			userTokenOf[currentBanker] = userTokenOf[currentBanker].add(userTokenOf[this]);
 			userTokenOf[this] = 0;
 			gameOver = true;
@@ -451,7 +451,7 @@ contract SoccerBet is Base
 	
     function _openGamePlayNo(uint _playNo) private returns(bool _result){
         _result = false;
-		require(_playNo &gt;= gameBeginPlayNo &amp;&amp; _playNo &lt; playNo);
+		require(_playNo >= gameBeginPlayNo && _playNo < playNo);
 		_checkOpenGame();
 		
 		betInfo storage p = playerBetInfoOf[_playNo];
@@ -460,7 +460,7 @@ contract SoccerBet is Base
 		uint256 allAmount = 0;
 		_cashPrize(p, allAmount,_playNo);
 		
-		if(unpayPooling == 0 &amp;&amp; _canSetGameOver()){
+		if(unpayPooling == 0 && _canSetGameOver()){
 			userTokenOf[currentBanker] = userTokenOf[currentBanker].add(userTokenOf[this]);
 			userTokenOf[this] = 0;
 			gameOver = true;
@@ -478,9 +478,9 @@ contract SoccerBet is Base
         _result = false;
         _checkOpenGame();
 		uint256 allAmount = 0;
-		for (uint _index = 0; _index &lt; _playNos.length; _index++) {
+		for (uint _index = 0; _index < _playNos.length; _index++) {
 			uint _playNo = _playNos[_index];
-			if(_playNo &gt;= gameBeginPlayNo &amp;&amp; _playNo &lt; playNo){
+			if(_playNo >= gameBeginPlayNo && _playNo < playNo){
 				betInfo storage p = playerBetInfoOf[_playNo];
 				if(!p.IsReturnAward){
 					_cashPrize(p, allAmount,_playNo);
@@ -488,7 +488,7 @@ contract SoccerBet is Base
 			}
 		}
 		
-		if(unpayPooling == 0 &amp;&amp; _canSetGameOver()){
+		if(unpayPooling == 0 && _canSetGameOver()){
 			userTokenOf[currentBanker] = userTokenOf[currentBanker].add(userTokenOf[this]);
 			userTokenOf[this] = 0;
 			gameOver = true;
@@ -504,18 +504,18 @@ contract SoccerBet is Base
 	
     function _openGameRange(uint _beginPlayNo, uint _endPlayNo) private returns(bool _result){
         _result = false;
-		require(_beginPlayNo &lt; _endPlayNo);
-		require(_beginPlayNo &gt;= gameBeginPlayNo &amp;&amp; _endPlayNo &lt; playNo);
+		require(_beginPlayNo < _endPlayNo);
+		require(_beginPlayNo >= gameBeginPlayNo && _endPlayNo < playNo);
 		
 		_checkOpenGame();
 		uint256 allAmount = 0;
-		for (uint _indexPlayNo = _beginPlayNo; _indexPlayNo &lt;= _endPlayNo; _indexPlayNo++) {
+		for (uint _indexPlayNo = _beginPlayNo; _indexPlayNo <= _endPlayNo; _indexPlayNo++) {
 			betInfo storage p = playerBetInfoOf[_indexPlayNo];
 			if(!p.IsReturnAward){
 				_cashPrize(p, allAmount,_indexPlayNo);
 			}
 		}
-		if(unpayPooling == 0 &amp;&amp; _canSetGameOver()){
+		if(unpayPooling == 0 && _canSetGameOver()){
 			userTokenOf[currentBanker] = userTokenOf[currentBanker].add(userTokenOf[this]);
 			userTokenOf[this] = 0;
 			gameOver = true;
@@ -526,11 +526,11 @@ contract SoccerBet is Base
 	function _checkOpenGame() private{
 		require(!gameOver);
 		require( gameResult == loseNum || gameResult == winNum || gameResult == sameNum);
-		require(betLastTime + 90 minutes &lt; now);
+		require(betLastTime + 90 minutes < now);
 		
-		if(unpayPooling &gt; userTokenOf[this]){
+		if(unpayPooling > userTokenOf[this]){
 			uint shortOf = unpayPooling.sub(userTokenOf[this]);
-			if(shortOf &gt; userTokenOf[currentBanker]){
+			if(shortOf > userTokenOf[currentBanker]){
 				shortOf = userTokenOf[currentBanker];
 			}
 			userTokenOf[currentBanker] = userTokenOf[currentBanker].sub(shortOf);
@@ -542,7 +542,7 @@ contract SoccerBet is Base
 		if(_p.BetNum == gameResult){
 			_allAmount = _p.BetAmount.mul(_p.Odd).div(100);
 			_allAmount = _allAmount.sub(_p.loseToken);
-			if(userTokenOf[this] &gt;= _allAmount){
+			if(userTokenOf[this] >= _allAmount){
 				_p.IsReturnAward = true;
 				userTokenOf[_p.Player] = userTokenOf[_p.Player].add(_allAmount);
 				userTokenOf[this] = userTokenOf[this].sub(_allAmount);
@@ -582,7 +582,7 @@ contract SoccerBet is Base
 				samePooling = samePooling.sub(_allAmount);
 			}
 			
-			if(now &lt; donGameGiftLineTime){
+			if(now < donGameGiftLineTime){
 				DonQuixoteToken.sendGameGift(_p.Player);
 			}
 		}
@@ -590,13 +590,13 @@ contract SoccerBet is Base
 	
 
 	function _canSetGameOver() private view returns(bool){
-		return winPooling&lt;100 &amp;&amp; losePooling&lt;100 &amp;&amp; samePooling&lt;100;//todo
+		return winPooling<100 && losePooling<100 && samePooling<100;//todo
 	}
 	
     function _withdrawToken(address _from, uint256 _amount) internal {
         require(_from != 0x0);
 		require(_from != currentBanker || gameOver);
-		if(_amount &gt; 0 &amp;&amp; _amount &lt;= userTokenOf[_from]){  
+		if(_amount > 0 && _amount <= userTokenOf[_from]){  
 			userTokenOf[_from] = userTokenOf[_from].sub(_amount);
 			DonQuixoteToken.transfer(_from, _amount);
 		}

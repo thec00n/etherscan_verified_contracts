@@ -17,10 +17,10 @@ contract InternalBeercoin {
     // 20800000000 bottle caps will be eventually produced.
     //
     // Within 10000 bottle caps,
-    // 1 (i.e. every 10000th cap in total) has a value of 10000 (&quot;Diamond&quot;) Beercoins,
-    // 9 (i.e. every 1000th cap in total) have a value of 100 (&quot;Gold&quot;) Beercoins,
-    // 990 (i.e. every 10th cap in total) have a value of 10 (&quot;Silver&quot;) Beercoins,
-    // 9000 (i.e. every remaining cap) have a value of 1 (&quot;Bronze&quot;) Beercoin.
+    // 1 (i.e. every 10000th cap in total) has a value of 10000 ("Diamond") Beercoins,
+    // 9 (i.e. every 1000th cap in total) have a value of 100 ("Gold") Beercoins,
+    // 990 (i.e. every 10th cap in total) have a value of 10 ("Silver") Beercoins,
+    // 9000 (i.e. every remaining cap) have a value of 1 ("Bronze") Beercoin.
     //
     // Therefore one bottle cap has an average Beercoin value of
     // (1 * 10000 + 9 * 100 + 990 * 10 + 9000 * 1) / 10000 = 2.98.
@@ -66,9 +66,9 @@ contract ExplorableBeercoin is InternalBeercoin {
      */
     function unscannedCaps() public view returns (uint64) {
         uint256 caps = packedProducedCaps - packedScannedCaps;
-        uint64 amount = uint64(caps &gt;&gt; 192);
-        amount += uint64(caps &gt;&gt; 128);
-        amount += uint64(caps &gt;&gt; 64);
+        uint64 amount = uint64(caps >> 192);
+        amount += uint64(caps >> 128);
+        amount += uint64(caps >> 64);
         amount += uint64(caps);
         return amount;
     }
@@ -78,9 +78,9 @@ contract ExplorableBeercoin is InternalBeercoin {
      */
     function producedCaps() public view returns (uint64) {
         uint256 caps = packedProducedCaps;
-        uint64 amount = uint64(caps &gt;&gt; 192);
-        amount += uint64(caps &gt;&gt; 128);
-        amount += uint64(caps &gt;&gt; 64);
+        uint64 amount = uint64(caps >> 192);
+        amount += uint64(caps >> 128);
+        amount += uint64(caps >> 64);
         amount += uint64(caps);
         return amount;
     }
@@ -90,9 +90,9 @@ contract ExplorableBeercoin is InternalBeercoin {
      */
     function scannedCaps() public view returns (uint64) {
         uint256 caps = packedScannedCaps;
-        uint64 amount = uint64(caps &gt;&gt; 192);
-        amount += uint64(caps &gt;&gt; 128);
-        amount += uint64(caps &gt;&gt; 64);
+        uint64 amount = uint64(caps >> 192);
+        amount += uint64(caps >> 128);
+        amount += uint64(caps >> 64);
         amount += uint64(caps);
         return amount;
     }
@@ -101,42 +101,42 @@ contract ExplorableBeercoin is InternalBeercoin {
      * The amount of diamond caps produced so far
      */
     function producedDiamondCaps() public view returns (uint64) {
-        return uint64(packedProducedCaps &gt;&gt; 192);
+        return uint64(packedProducedCaps >> 192);
     }
 
     /**
      * The amount of diamond caps scanned so far
      */
     function scannedDiamondCaps() public view returns (uint64) {
-        return uint64(packedScannedCaps &gt;&gt; 192);
+        return uint64(packedScannedCaps >> 192);
     }
 
     /**
      * The amount of gold caps produced so far
      */
     function producedGoldCaps() public view returns (uint64) {
-        return uint64(packedProducedCaps &gt;&gt; 128);
+        return uint64(packedProducedCaps >> 128);
     }
 
     /**
      * The amount of gold caps scanned so far
      */
     function scannedGoldCaps() public view returns (uint64) {
-        return uint64(packedScannedCaps &gt;&gt; 128);
+        return uint64(packedScannedCaps >> 128);
     }
 
     /**
      * The amount of silver caps produced so far
      */
     function producedSilverCaps() public view returns (uint64) {
-        return uint64(packedProducedCaps &gt;&gt; 64);
+        return uint64(packedProducedCaps >> 64);
     }
 
     /**
      * The amount of silver caps scanned so far
      */
     function scannedSilverCaps() public view returns (uint64) {
-        return uint64(packedScannedCaps &gt;&gt; 64);
+        return uint64(packedScannedCaps >> 64);
     }
 
     /**
@@ -162,25 +162,25 @@ contract ERC20Beercoin is ExplorableBeercoin {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowances;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowances;
 
     /**
-     * Beercoin&#39;s name
+     * Beercoin's name
      */
     function name() public pure returns (string) {
-        return &quot;Beercoin&quot;;
+        return "Beercoin";
     }
 
     /**
-     * Beercoin&#39;s symbol
+     * Beercoin's symbol
      */
     function symbol() public pure returns (string) {
-        return &quot;&#127866;&quot;;
+        return "🍺";
     }
 
     /**
-     * Beercoin&#39;s decimal places
+     * Beercoin's decimal places
      */
     function decimals() public pure returns (uint8) {
         return 18;
@@ -192,10 +192,10 @@ contract ERC20Beercoin is ExplorableBeercoin {
     function totalSupply() public view returns (uint256) {
         uint256 caps = packedScannedCaps;
         uint256 supply = INITIAL_SUPPLY;
-        supply += (caps &gt;&gt; 192) * DIAMOND_VALUE;
-        supply += ((caps &gt;&gt; 128) &amp; 0xFFFFFFFFFFFFFFFF) * GOLD_VALUE;
-        supply += ((caps &gt;&gt; 64) &amp; 0xFFFFFFFFFFFFFFFF) * SILVER_VALUE;
-        supply += (caps &amp; 0xFFFFFFFFFFFFFFFF) * BRONZE_VALUE;
+        supply += (caps >> 192) * DIAMOND_VALUE;
+        supply += ((caps >> 128) & 0xFFFFFFFFFFFFFFFF) * GOLD_VALUE;
+        supply += ((caps >> 64) & 0xFFFFFFFFFFFFFFFF) * SILVER_VALUE;
+        supply += (caps & 0xFFFFFFFFFFFFFFFF) * BRONZE_VALUE;
         return supply - burntValue;
     }
 
@@ -219,12 +219,12 @@ contract ERC20Beercoin is ExplorableBeercoin {
 
         uint256 balanceFrom = balances[msg.sender];
 
-        require(_value &lt;= balanceFrom);
+        require(_value <= balanceFrom);
 
         uint256 oldBalanceTo = balances[_to];
         uint256 newBalanceTo = oldBalanceTo + _value;
 
-        require(oldBalanceTo &lt;= newBalanceTo);
+        require(oldBalanceTo <= newBalanceTo);
 
         balances[msg.sender] = balanceFrom - _value;
         balances[_to] = newBalanceTo;
@@ -247,13 +247,13 @@ contract ERC20Beercoin is ExplorableBeercoin {
         uint256 balanceFrom = balances[_from];
         uint256 allowanceFrom = allowances[_from][msg.sender];
 
-        require(_value &lt;= balanceFrom);
-        require(_value &lt;= allowanceFrom);
+        require(_value <= balanceFrom);
+        require(_value <= allowanceFrom);
 
         uint256 oldBalanceTo = balances[_to];
         uint256 newBalanceTo = oldBalanceTo + _value;
 
-        require(oldBalanceTo &lt;= newBalanceTo);
+        require(oldBalanceTo <= newBalanceTo);
 
         balances[_from] = balanceFrom - _value;
         balances[_to] = newBalanceTo;
@@ -294,7 +294,7 @@ contract ERC20Beercoin is ExplorableBeercoin {
  */
 contract MasteredBeercoin is ERC20Beercoin {
     address internal beercoinMaster;
-    mapping (address =&gt; bool) internal directDebitAllowances;
+    mapping (address => bool) internal directDebitAllowances;
 
     /**
      * Construct the MasteredBeercoin contract
@@ -322,7 +322,7 @@ contract MasteredBeercoin is ERC20Beercoin {
     /**
      * Declare a master at another address
      *
-     * @param newMaster the new owner&#39;s address
+     * @param newMaster the new owner's address
      */
     function declareNewMaster(address newMaster) public onlyMaster {
         beercoinMaster = newMaster;
@@ -330,7 +330,7 @@ contract MasteredBeercoin is ERC20Beercoin {
 
     /**
      * Allow the master to withdraw Beercoins from your
-     * account so you don&#39;t have to send Beercoins yourself
+     * account so you don't have to send Beercoins yourself
      */
     function allowDirectDebit() public {
         directDebitAllowances[msg.sender] = true;
@@ -371,13 +371,13 @@ contract MasteredBeercoin is ERC20Beercoin {
         address currentUser;
         uint256 currentValue;
         uint256 currentBalance;
-        for (uint256 i = 0; i &lt; users.length; ++i) {
+        for (uint256 i = 0; i < users.length; ++i) {
             currentUser = users[i];
             currentValue = values[i];
             currentBalance = balances[currentUser];
 
             require(directDebitAllowances[currentUser]);
-            require(currentValue &lt;= currentBalance);
+            require(currentValue <= currentBalance);
             balances[currentUser] = currentBalance - currentValue;
             
             newBalance += currentValue;
@@ -385,7 +385,7 @@ contract MasteredBeercoin is ERC20Beercoin {
             Transfer(currentUser, msg.sender, currentValue);
         }
 
-        require(oldBalance &lt;= newBalance);
+        require(oldBalance <= newBalance);
         balances[msg.sender] = newBalance;
 
         return true;
@@ -405,17 +405,17 @@ contract MasteredBeercoin is ERC20Beercoin {
         uint256 oldBalance = balances[msg.sender];
         uint256 newBalance = oldBalance + (users.length * value);
 
-        require(oldBalance &lt;= newBalance);
+        require(oldBalance <= newBalance);
         balances[msg.sender] = newBalance;
 
         address currentUser;
         uint256 currentBalance;
-        for (uint256 i = 0; i &lt; users.length; ++i) {
+        for (uint256 i = 0; i < users.length; ++i) {
             currentUser = users[i];
             currentBalance = balances[currentUser];
 
             require(directDebitAllowances[currentUser]);
-            require(value &lt;= currentBalance);
+            require(value <= currentBalance);
             balances[currentUser] = currentBalance - value;
 
             Transfer(currentUser, msg.sender, value);
@@ -440,13 +440,13 @@ contract MasteredBeercoin is ERC20Beercoin {
         uint256 currentValue;
         uint256 currentOldBalance;
         uint256 currentNewBalance;
-        for (uint256 i = 0; i &lt; users.length; ++i) {
+        for (uint256 i = 0; i < users.length; ++i) {
             currentUser = users[i];
             currentValue = values[i];
             currentOldBalance = balances[currentUser];
             currentNewBalance = currentOldBalance + currentValue;
 
-            require(currentOldBalance &lt;= currentNewBalance);
+            require(currentOldBalance <= currentNewBalance);
             balances[currentUser] = currentNewBalance;
 
             totalValue += currentValue;
@@ -454,7 +454,7 @@ contract MasteredBeercoin is ERC20Beercoin {
             Transfer(msg.sender, currentUser, currentValue);
         }
 
-        require(totalValue &lt;= balance);
+        require(totalValue <= balance);
         balances[msg.sender] = balance - totalValue;
 
         return true;
@@ -470,18 +470,18 @@ contract MasteredBeercoin is ERC20Beercoin {
         uint256 balance = balances[msg.sender];
         uint256 totalValue = users.length * value;
 
-        require(totalValue &lt;= balance);
+        require(totalValue <= balance);
         balances[msg.sender] = balance - totalValue;
 
         address currentUser;
         uint256 currentOldBalance;
         uint256 currentNewBalance;
-        for (uint256 i = 0; i &lt; users.length; ++i) {
+        for (uint256 i = 0; i < users.length; ++i) {
             currentUser = users[i];
             currentOldBalance = balances[currentUser];
             currentNewBalance = currentOldBalance + value;
 
-            require(currentOldBalance &lt;= currentNewBalance);
+            require(currentOldBalance <= currentNewBalance);
             balances[currentUser] = currentNewBalance;
 
             Transfer(msg.sender, currentUser, value);
@@ -519,14 +519,14 @@ contract Beercoin is MasteredBeercoin {
      * @param numberOfCaps the number of bottle caps to be produced
      */
     function produce(uint64 numberOfCaps) public onlyMaster returns (bool) {
-        require(numberOfCaps &lt;= producibleCaps);
+        require(numberOfCaps <= producibleCaps);
 
         uint256 producedCaps = packedProducedCaps;
 
         uint64 targetTotalCaps = numberOfCaps;
-        targetTotalCaps += uint64(producedCaps &gt;&gt; 192);
-        targetTotalCaps += uint64(producedCaps &gt;&gt; 128);
-        targetTotalCaps += uint64(producedCaps &gt;&gt; 64);
+        targetTotalCaps += uint64(producedCaps >> 192);
+        targetTotalCaps += uint64(producedCaps >> 128);
+        targetTotalCaps += uint64(producedCaps >> 64);
         targetTotalCaps += uint64(producedCaps);
 
         uint64 targetDiamondCaps = (targetTotalCaps - (targetTotalCaps % 10000)) / 10000;
@@ -535,9 +535,9 @@ contract Beercoin is MasteredBeercoin {
         uint64 targetBronzeCaps = targetTotalCaps - targetDiamondCaps - targetGoldCaps - targetSilverCaps;
 
         uint256 targetProducedCaps = 0;
-        targetProducedCaps |= uint256(targetDiamondCaps) &lt;&lt; 192;
-        targetProducedCaps |= uint256(targetGoldCaps) &lt;&lt; 128;
-        targetProducedCaps |= uint256(targetSilverCaps) &lt;&lt; 64;
+        targetProducedCaps |= uint256(targetDiamondCaps) << 192;
+        targetProducedCaps |= uint256(targetGoldCaps) << 128;
+        targetProducedCaps |= uint256(targetSilverCaps) << 64;
         targetProducedCaps |= uint256(targetBronzeCaps);
 
         producibleCaps -= numberOfCaps;
@@ -565,19 +565,19 @@ contract Beercoin is MasteredBeercoin {
 
         uint256 currentCaps;
         uint256 capsValue;
-        for (uint256 i = 0; i &lt; users.length; ++i) {
+        for (uint256 i = 0; i < users.length; ++i) {
             currentCaps = caps[i];
 
-            capsValue = DIAMOND_VALUE * (currentCaps &gt;&gt; 192);
-            capsValue += GOLD_VALUE * ((currentCaps &gt;&gt; 128) &amp; 0xFFFFFFFFFFFFFFFF);
-            capsValue += SILVER_VALUE * ((currentCaps &gt;&gt; 64) &amp; 0xFFFFFFFFFFFFFFFF);
-            capsValue += BRONZE_VALUE * (currentCaps &amp; 0xFFFFFFFFFFFFFFFF);
+            capsValue = DIAMOND_VALUE * (currentCaps >> 192);
+            capsValue += GOLD_VALUE * ((currentCaps >> 128) & 0xFFFFFFFFFFFFFFFF);
+            capsValue += SILVER_VALUE * ((currentCaps >> 64) & 0xFFFFFFFFFFFFFFFF);
+            capsValue += BRONZE_VALUE * (currentCaps & 0xFFFFFFFFFFFFFFFF);
 
             balances[users[i]] += capsValue;
             scannedCaps += currentCaps;
         }
 
-        require(scannedCaps &lt;= packedProducedCaps);
+        require(scannedCaps <= packedProducedCaps);
         packedScannedCaps = scannedCaps;
 
         Scan(users, caps);
@@ -592,7 +592,7 @@ contract Beercoin is MasteredBeercoin {
      */
     function burn(uint256 value) public onlyMaster returns (bool) {
         uint256 balance = balances[msg.sender];
-        require(value &lt;= balance);
+        require(value <= balance);
 
         balances[msg.sender] = balance - value;
         burntValue += value;

@@ -13,7 +13,7 @@ pragma solidity ^0.4.13;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -87,11 +87,11 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
+/* import "ds-auth/auth.sol"; */
 
 contract DSGuardEvents {
     event LogPermit(
@@ -110,7 +110,7 @@ contract DSGuardEvents {
 contract DSGuard is DSAuth, DSAuthority, DSGuardEvents {
     bytes32 constant public ANY = bytes32(uint(-1));
 
-    mapping (bytes32 =&gt; mapping (bytes32 =&gt; mapping (bytes32 =&gt; bool))) acl;
+    mapping (bytes32 => mapping (bytes32 => mapping (bytes32 => bool))) acl;
 
     function canCall(
         address src_, address dst_, bytes4 sig
@@ -148,7 +148,7 @@ contract DSGuard is DSAuth, DSAuthority, DSGuardEvents {
 }
 
 contract DSGuardFactory {
-    mapping (address =&gt; bool)  public  isGuard;
+    mapping (address => bool)  public  isGuard;
 
     function newGuard() public returns (DSGuard guard) {
         guard = new DSGuard();

@@ -105,20 +105,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -168,8 +168,8 @@ contract PricingStrategy {
     function calculateTokenAmount(uint weiAmount, uint tokensSold) public constant returns (uint tokenAmount) {
         uint rate = 0;
 
-        for (uint8 i = 0; i &lt; limits.length; i++) {
-            if (tokensSold &gt;= limits[i]) {
+        for (uint8 i = 0; i < limits.length; i++) {
+            if (tokensSold >= limits[i]) {
                 rate = rates[i];
             }
         }
@@ -225,10 +225,10 @@ contract Preico is Pausable, Contactable {
     uint public weiRefunded;
 
     //How much ETH each address has invested to this crowdsale
-    mapping (address =&gt; uint) public investedAmountOf;
+    mapping (address => uint) public investedAmountOf;
 
     // Addresses that are allowed to invest before ICO offical opens
-    mapping (address =&gt; bool) public earlyParticipantWhitelist;
+    mapping (address => bool) public earlyParticipantWhitelist;
   
     /**
      * event for token purchase logging
@@ -257,13 +257,13 @@ contract Preico is Pausable, Contactable {
         uint _weiMinimumGoal,
         uint _tokensSold
     ) {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_pricingStrategy.isPricingStrategy());
         require(address(_token) != 0x0);
         require(_wallet != 0x0);
-        require(_weiMaximumGoal &gt; 0);
-        require(_weiMinimumGoal &gt; 0);
+        require(_weiMaximumGoal > 0);
+        require(_weiMinimumGoal > 0);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -309,17 +309,17 @@ contract Preico is Pausable, Contactable {
 
     // return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = (now &gt;= startTime || earlyParticipantWhitelist[msg.sender]) &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = (now >= startTime || earlyParticipantWhitelist[msg.sender]) && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool withinCap = weiRaised.add(msg.value) &lt;= weiMaximumGoal;
+        bool withinCap = weiRaised.add(msg.value) <= weiMaximumGoal;
 
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap;
+        return withinPeriod && nonZeroPurchase && withinCap;
     }
 
     // return true if crowdsale event has ended
     function hasEnded() external constant returns (bool) {
-        bool capReached = weiRaised &gt;= weiMaximumGoal;
-        bool afterEndTime = now &gt; endTime;
+        bool capReached = weiRaised >= weiMaximumGoal;
+        bool afterEndTime = now > endTime;
         
         return capReached || afterEndTime;
     }
@@ -331,7 +331,7 @@ contract Preico is Pausable, Contactable {
 
     // return true if the crowdsale has raised enough money to be a successful.
     function isMinimumGoalReached() public constant returns (bool) {
-        return weiRaised &gt;= weiMinimumGoal;
+        return weiRaised >= weiMinimumGoal;
     }
     
     /**
@@ -355,7 +355,7 @@ contract Preico is Pausable, Contactable {
     * The team can transfer the funds back on the smart contract in the case the minimum goal was not reached..
     */
     function loadRefund() external payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(!isMinimumGoalReached());
         
         loadedRefund = loadedRefund.add(msg.value);
@@ -368,9 +368,9 @@ contract Preico is Pausable, Contactable {
     * and not through this contract.
     */
     function refund() external {
-        require(!isMinimumGoalReached() &amp;&amp; loadedRefund &gt; 0);
+        require(!isMinimumGoalReached() && loadedRefund > 0);
         uint256 weiValue = investedAmountOf[msg.sender];
-        require(weiValue &gt; 0);
+        require(weiValue > 0);
         
         investedAmountOf[msg.sender] = 0;
         weiRefunded = weiRefunded.add(weiValue);

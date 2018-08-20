@@ -17,9 +17,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -27,7 +27,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -70,11 +70,11 @@ contract WorldCupToken is ERC721 {
     event Transfer(address from, address to, uint256 tokenId);
 
     /*****------- CONSTANTS -------******/
-    mapping (uint256 =&gt; address) public worldCupIdToOwnerAddress;  //@dev A mapping from world cup team id to the address that owns them. 
-    mapping (address =&gt; uint256) private ownerAddressToTokenCount; //@dev A mapping from owner address to count of tokens that address owns.
-    mapping (uint256 =&gt; address) public worldCupIdToAddressForApproved; // @dev A mapping from token id to an address that has been approved to call.
-    mapping (uint256 =&gt; uint256) private worldCupIdToPrice; // @dev A mapping from token id to the price of the token.
-    //mapping (uint256 =&gt; uint256) private worldCupIdToOldPrice; // @dev A mapping from token id to the old price of the token.
+    mapping (uint256 => address) public worldCupIdToOwnerAddress;  //@dev A mapping from world cup team id to the address that owns them. 
+    mapping (address => uint256) private ownerAddressToTokenCount; //@dev A mapping from owner address to count of tokens that address owns.
+    mapping (uint256 => address) public worldCupIdToAddressForApproved; // @dev A mapping from token id to an address that has been approved to call.
+    mapping (uint256 => uint256) private worldCupIdToPrice; // @dev A mapping from token id to the price of the token.
+    //mapping (uint256 => uint256) private worldCupIdToOldPrice; // @dev A mapping from token id to the old price of the token.
     string[] private worldCupTeamDescribe;
 	uint256 private SHARE_BONUS_TIME = uint256(now);
     address public ceoAddress;
@@ -116,8 +116,8 @@ contract WorldCupToken is ERC721 {
     function WorldCupToken() public {
         ceoAddress = msg.sender;
         cooAddress = msg.sender;
-	    for (uint256 i = 0; i &lt; 32; i++) {
-		    uint256 newWorldCupTeamId = worldCupTeamDescribe.push(&quot;I love world cup!&quot;) - 1;
+	    for (uint256 i = 0; i < 32; i++) {
+		    uint256 newWorldCupTeamId = worldCupTeamDescribe.push("I love world cup!") - 1;
             worldCupIdToPrice[newWorldCupTeamId] = 0 ether;//SafeMath.sub(uint256(3.2 ether), SafeMath.mul(uint256(0.1 ether), i));
 	        //worldCupIdToOldPrice[newWorldCupTeamId] = 0 ether;
             _transfer(address(0), msg.sender, newWorldCupTeamId);
@@ -149,12 +149,12 @@ contract WorldCupToken is ERC721 {
 
     /// @dev Required for ERC-721 compliance.
     function name() public pure returns (string) {
-        return &quot;WorldCupToken&quot;;
+        return "WorldCupToken";
     }
   
     /// @dev Required for ERC-721 compliance.
     function symbol() public pure returns (string) {
-        return &quot;WCT&quot;;
+        return "WCT";
     }
 
     // @dev Required for ERC-721 compliance.
@@ -195,9 +195,9 @@ contract WorldCupToken is ERC721 {
 	        oldOwner.transfer(priceOfOldOwner);
         }
 	    ceoAddress.transfer(priceOfDevelop);
-	    if(this.balance &gt;= uint256(3.2 ether)){
-            if((uint256(now) - SHARE_BONUS_TIME) &gt;= 86400){
-		        for(uint256 i=0; i&lt;32; i++){
+	    if(this.balance >= uint256(3.2 ether)){
+            if((uint256(now) - SHARE_BONUS_TIME) >= 86400){
+		        for(uint256 i=0; i<32; i++){
 		            worldCupIdToOwnerAddress[i].transfer(0.1 ether);
 					ShareBonus(worldCupIdToOwnerAddress[i], i, uint256(now), this.balance);
 		        }
@@ -236,7 +236,7 @@ contract WorldCupToken is ERC721 {
             uint256 resultIndex = 0;
 
             uint256 carId;
-            for (carId = 0; carId &lt;= totalCars; carId++) {
+            for (carId = 0; carId <= totalCars; carId++) {
                 if (worldCupIdToOwnerAddress[carId] == _owner) {
                     result[resultIndex] = carId;
                     resultIndex++;

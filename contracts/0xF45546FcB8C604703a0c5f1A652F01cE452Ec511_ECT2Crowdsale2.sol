@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ contract ECT2Crowdsale2 {
   uint256 public stage3Bounty;
   uint256 public stage4Bounty;
  
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
   bool fundingGoalReached = false;
   bool crowdsaleClosed = false;
  
@@ -59,12 +59,12 @@ contract ECT2Crowdsale2 {
   event GoalReached(address recipient, uint totalAmountRaised);
   
   modifier isMinimum() {
-         if(msg.value &lt; 1000000000000000) return;
+         if(msg.value < 1000000000000000) return;
         _;
     }
     
   modifier afterDeadline() { 
-      if (now &lt;= endTime) return;
+      if (now <= endTime) return;
       _;
   }    
 
@@ -99,13 +99,13 @@ contract ECT2Crowdsale2 {
     // calculate token amount to be sent
     uint256 tokens = (weiAmount) * price;
     
-    if(now &lt; stage1Bounty){
+    if(now < stage1Bounty){
       tokens += (tokens * 50) / 100;
-    }else if(now &lt; stage2Bounty){
+    }else if(now < stage2Bounty){
       tokens += (tokens * 40) / 100;
-    }else if(now &lt; stage3Bounty){
+    }else if(now < stage3Bounty){
       tokens += (tokens * 25) / 100;
-    }else if(now &lt; stage4Bounty){
+    }else if(now < stage4Bounty){
       tokens += (tokens * 10) / 100;  
     }
     // update state
@@ -118,10 +118,10 @@ contract ECT2Crowdsale2 {
   
   //withdrawal or refund for investor and beneficiary
   function safeWithdrawal() afterDeadline {
-        if (weiRaised &lt; fundingGoal &amp;&amp; weiRaised &lt; minimumFundingGoal) {
+        if (weiRaised < fundingGoal && weiRaised < minimumFundingGoal) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                     /*tokenReward.burnFrom(msg.sender, price * amount);*/
@@ -131,7 +131,7 @@ contract ECT2Crowdsale2 {
             }
         }
 
-        if ((weiRaised &gt;= fundingGoal || weiRaised &gt;= minimumFundingGoal) &amp;&amp; wallet == msg.sender) {
+        if ((weiRaised >= fundingGoal || weiRaised >= minimumFundingGoal) && wallet == msg.sender) {
             if (wallet.send(weiRaised)) {
                 FundTransfer(wallet, weiRaised, false);
                 GoalReached(wallet, weiRaised);
@@ -145,7 +145,7 @@ contract ECT2Crowdsale2 {
     // withdrawEth when minimum cap is reached
   function withdrawEth() private{
         require(this.balance != 0);
-        require(weiRaised &gt;= minimumFundingGoal);
+        require(weiRaised >= minimumFundingGoal);
 
         pendingEthWithdrawal = this.balance;
   }
@@ -153,14 +153,14 @@ contract ECT2Crowdsale2 {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
  
 }

@@ -38,8 +38,8 @@ pragma solidity ^0.4.11;
  contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
   
  contract GreenMed is ERC20Interface {
-     string public constant symbol = &quot;GRMD&quot;;
-     string public constant name = &quot;GreenMed&quot;;
+     string public constant symbol = "GRMD";
+     string public constant name = "GreenMed";
      uint8 public constant decimals = 18;
      uint256 _totalSupply = 100000000000000000000000000;
      
@@ -49,16 +49,16 @@ pragma solidity ^0.4.11;
     uint256 public sellPrice;
     uint256 public buyPrice;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
   
      // Balances for each account
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
   
      // Owner of account approves the transfer of an amount to another account
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => mapping (address => uint256)) allowed;
   
      // Functions with this modifier can only be executed by the owner
      modifier onlyOwner() {
@@ -83,11 +83,11 @@ pragma solidity ^0.4.11;
          return balances[_owner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount) returns (bool success) {
-         if (balances[msg.sender] &gt;= _amount 
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[msg.sender] >= _amount 
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] -= _amount;
              balances[_to] += _amount;
              Transfer(msg.sender, _to, _amount);
@@ -99,7 +99,7 @@ pragma solidity ^0.4.11;
   
      // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
@@ -108,10 +108,10 @@ pragma solidity ^0.4.11;
          address _to,
          uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -156,17 +156,17 @@ pragma solidity ^0.4.11;
 
     function buy() payable {
         uint amount = msg.value / buyPrice;                // calculates the amount
-        if (balances[this] &lt; amount) throw;               // checks if it has enough to sell
-        balances[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-        balances[this] -= amount;                         // subtracts amount from seller&#39;s balance
+        if (balances[this] < amount) throw;               // checks if it has enough to sell
+        balances[msg.sender] += amount;                   // adds the amount to buyer's balance
+        balances[this] -= amount;                         // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);                // execute an event reflecting the change
     }
 
     function sell(uint256 amount) {
-        if (balances[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
-        balances[this] += amount;                         // adds the amount to owner&#39;s balance
-        balances[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
-        if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It&#39;s important
+        if (balances[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+        balances[this] += amount;                         // adds the amount to owner's balance
+        balances[msg.sender] -= amount;                   // subtracts the amount from seller's balance
+        if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It's important
             throw;                                         // to do this last to avoid recursion attacks
         } else {
             Transfer(msg.sender, this, amount);            // executes an event reflecting on the change

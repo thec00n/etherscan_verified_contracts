@@ -35,7 +35,7 @@ contract Ownable {
 
 contract Blacklist is BlacklistInterface, Ownable {
 
-    mapping (bytes32 =&gt; bool) blacklisted;
+    mapping (bytes32 => bool) blacklisted;
     
     /**
      * @dev Add a node to the blacklist.

@@ -18,11 +18,11 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -33,7 +33,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -128,7 +128,7 @@ contract Utils{
   //verifies the amount greater than zero
 
   modifier greaterThanZero(uint256 _value){
-    require(_value&gt;0);
+    require(_value>0);
     _;
   }
 
@@ -155,37 +155,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -194,10 +194,10 @@ contract SafeMath {
 
 
 contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
-	string public constant name = &quot;BlockAim Token&quot;;
-	string public constant symbol = &quot;BA&quot;;
+	string public constant name = "BlockAim Token";
+	string public constant symbol = "BA";
 	uint256 public constant decimals = 18;
-	string public version = &quot;1.0&quot;;
+	string public version = "1.0";
 	bool public tradingStarted = false;
 
     /**
@@ -226,7 +226,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
    }
 
    uint256 public investmentETH;
-   mapping(uint256 =&gt; bool) transactionsClaimed;
+   mapping(uint256 => bool) transactionsClaimed;
    uint256 public initialSupply;
    address wallet;
    uint256 public constant _totalSupply = 100 * (10**6) * 10 ** decimals; // 100M ~ 10 Crores
@@ -253,21 +253,21 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
         || fundingStartBlock == 0
         || totalSupply == 0
         || tokenCreationMax == 0
-        || fundingStartBlock &lt;= block.number)
+        || fundingStartBlock <= block.number)
       throw;
 
    }
 
-   // don&#39;t just send ether to the contract expecting to get tokens
+   // don't just send ether to the contract expecting to get tokens
    //function() { throw; }
    ////@dev This function manages the Crowdsale State machine
    ///We make it a function and do not assign to a variable//
    ///so that no chance of stale variable
    function getState() constant public returns(State){
    	///once we reach success lock the State
-   	if(block.number&lt;fundingStartBlock) return State.Inactive;
-   	else if(block.number&gt;fundingStartBlock &amp;&amp; initialSupply&lt;tokenCreationMax) return State.Funding;
-   	else if (initialSupply &gt;= tokenCreationMax) return State.Success;
+   	if(block.number<fundingStartBlock) return State.Inactive;
+   	else if(block.number>fundingStartBlock && initialSupply<tokenCreationMax) return State.Funding;
+   	else if (initialSupply >= tokenCreationMax) return State.Success;
    	else return State.Failure;
    }
 
@@ -284,7 +284,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
    	uint256 newCreatedTokens = safeMul(msg.value,tokensPerEther);
    	///since we are creating tokens we need to increase the total supply
    	initialSupply = safeAdd(initialSupply,newCreatedTokens);
-   	if(initialSupply&gt;tokenCreationMax) throw;
+   	if(initialSupply>tokenCreationMax) throw;
       if (balances[msg.sender] == 0) investors.push(msg.sender);
       investmentETH += msg.value;
       balances[msg.sender] = safeAdd(balances[msg.sender],newCreatedTokens);
@@ -305,7 +305,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
    	if (tokens == 0) throw;
    	uint256 newCreatedTokens = tokens * 1 ether;
    	initialSupply = safeAdd(initialSupply,newCreatedTokens);
-   	if(initialSupply&gt;tokenCreationMax) throw;
+   	if(initialSupply>tokenCreationMax) throw;
       if (balances[addr] == 0) investors.push(addr);
       balances[addr] = safeAdd(balances[addr],newCreatedTokens);
       Transfer(this, addr, newCreatedTokens);

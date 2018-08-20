@@ -45,7 +45,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -64,31 +64,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
         
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -130,14 +130,14 @@ contract Utils2 is Utils {
     function calcRateFromQty(uint srcAmount, uint destAmount, uint srcDecimals, uint dstDecimals)
         internal pure returns(uint)
     {
-        require(srcAmount &lt;= MAX_QTY);
-        require(destAmount &lt;= MAX_QTY);
+        require(srcAmount <= MAX_QTY);
+        require(destAmount <= MAX_QTY);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (destAmount * PRECISION / ((10 ** (dstDecimals - srcDecimals)) * srcAmount));
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (destAmount * PRECISION * (10 ** (srcDecimals - dstDecimals)) / srcAmount);
         }
     }
@@ -149,8 +149,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -221,7 +221,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -232,7 +232,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -246,7 +246,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -257,7 +257,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -342,7 +342,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
         require(_otc != address(0));
         require(_wethToken != address(0));
         require(_tradeToken != address(0));
-        require(_feeBps &lt; 10000);
+        require(_feeBps < 10000);
         require(getDecimals(_wethToken) == COMMON_DECIMALS);
         require(getDecimals(_tradeToken) == COMMON_DECIMALS);
 
@@ -434,19 +434,19 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
     event FeeBpsSet(uint feeBps);
 
     function setFeeBps(uint _feeBps) public onlyAdmin {
-        require(_feeBps &lt; 10000);
+        require(_feeBps < 10000);
 
         feeBps = _feeBps;
         FeeBpsSet(feeBps);
     }
 
     function valueAfterReducingFee(uint val) public view returns(uint) {
-        require(val &lt;= MAX_QTY);
+        require(val <= MAX_QTY);
         return ((10000 - feeBps) * val) / 10000;
     }
 
     function valueBeforeFeesWereReduced(uint val) public view returns(uint) {
-        require(val &lt;= MAX_QTY);
+        require(val <= MAX_QTY);
         return val * 10000 / (10000 - feeBps);
     }
 
@@ -462,7 +462,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
         blockNumber;
 
         if (!tradeEnabled) return 0;
-        if ((tradeToken != src) &amp;&amp; (tradeToken != dest)) return 0;
+        if ((tradeToken != src) && (tradeToken != dest)) return 0;
 
         if (src == ETH_TOKEN_ADDRESS) {
             wrappedSrc = wethToken;
@@ -472,7 +472,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
             wrappedSrc = src;
             wrappedDest = wethToken;
 
-            if (srcQty &lt; MIN_TRADE_TOKEN_SRC_AMOUNT) {
+            if (srcQty < MIN_TRADE_TOKEN_SRC_AMOUNT) {
                 /* Assuming token is stable, use a minimal amount to get rate also for small token quant. */
                 actualSrcQty = MIN_TRADE_TOKEN_SRC_AMOUNT;
             } else {
@@ -482,12 +482,12 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
             return 0;
         }
 
-        // getBestOffer&#39;s terminology is of offer maker, so their sellGem is our (the taker&#39;s) dest token.
+        // getBestOffer's terminology is of offer maker, so their sellGem is our (the taker's) dest token.
         bestOfferId = otc.getBestOffer(wrappedDest, wrappedSrc);
         (offerPayAmt, , offerBuyAmt,) = otc.getOffer(bestOfferId);
 
         // make sure to take only first level of order book to avoid gas inflation.
-        if (actualSrcQty &gt; offerBuyAmt) return 0;
+        if (actualSrcQty > offerBuyAmt) return 0;
 
         rate = calcRateFromQty(offerBuyAmt, offerPayAmt, COMMON_DECIMALS, COMMON_DECIMALS);
         return valueAfterReducingFee(rate);
@@ -511,7 +511,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
 
         // can skip validation if done at kyber network level
         if (validate) {
-            require(conversionRate &gt; 0);
+            require(conversionRate > 0);
             if (srcToken == ETH_TOKEN_ADDRESS)
                 require(msg.value == srcAmount);
             else
@@ -519,7 +519,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
         }
 
         uint userExpectedDestAmount = calcDstQty(srcAmount, COMMON_DECIMALS, COMMON_DECIMALS, conversionRate);
-        require(userExpectedDestAmount &gt; 0); // sanity check
+        require(userExpectedDestAmount > 0); // sanity check
 
         uint destAmountIncludingFees = valueBeforeFeesWereReduced(userExpectedDestAmount);
 
@@ -527,7 +527,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
             wethToken.deposit.value(msg.value)();
 
             actualDestAmount = otc.sellAllAmount(wethToken, msg.value, destToken, destAmountIncludingFees);
-            require(actualDestAmount &gt;= destAmountIncludingFees);
+            require(actualDestAmount >= destAmountIncludingFees);
 
             // transfer back only requested dest amount.
             require(destToken.transfer(destAddress, userExpectedDestAmount));
@@ -535,7 +535,7 @@ contract KyberOasisReserve is KyberReserveInterface, Withdrawable, Utils2 {
             require(srcToken.transferFrom(msg.sender, this, srcAmount));
  
             actualDestAmount = otc.sellAllAmount(srcToken, srcAmount, wethToken, destAmountIncludingFees);
-            require(actualDestAmount &gt;= destAmountIncludingFees);
+            require(actualDestAmount >= destAmountIncludingFees);
             wethToken.withdraw(actualDestAmount);
 
             // transfer back only requested dest amount.

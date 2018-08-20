@@ -10,11 +10,11 @@ contract ThisMustBeFirst {
 
 contract AuthorizedList {
 
-    bytes32 constant I_AM_ROOT = keccak256(&quot;I am root!&quot;);
-    bytes32 constant STAFF_MEMBER = keccak256(&quot;Staff Member.&quot;);
-    bytes32 constant ROUTER = keccak256(&quot;Router Contract.&quot;);
-    mapping (address =&gt; mapping(bytes32 =&gt; bool)) authorized;
-    mapping (bytes32 =&gt; bool) internal contractPermissions;
+    bytes32 constant I_AM_ROOT = keccak256("I am root!");
+    bytes32 constant STAFF_MEMBER = keccak256("Staff Member.");
+    bytes32 constant ROUTER = keccak256("Router Contract.");
+    mapping (address => mapping(bytes32 => bool)) authorized;
+    mapping (bytes32 => bool) internal contractPermissions;
 
 }
 
@@ -34,7 +34,7 @@ contract CodeTricks {
             let size := extcodesize(_addr)
             // set code pointer value to free memory
             code := mload(0x40)
-            // new &quot;memory end&quot; including padding
+            // new "memory end" including padding
             mstore(0x40, add(code, and(add(add(size, 0x20), 0x1f), not(0x1f))))
             // store length in memory
             mstore(code, size)
@@ -74,7 +74,7 @@ contract Authorized is AuthorizedList {
        require(_address != msg.sender);
 
        // No need for lower level authorization to linger
-       if (_authorization == I_AM_ROOT &amp;&amp; !authorized[_address][I_AM_ROOT])
+       if (_authorization == I_AM_ROOT && !authorized[_address][I_AM_ROOT])
            authorized[_address][STAFF_MEMBER] = false;
 
        authorized[_address][_authorization] = !authorized[_address][_authorization];
@@ -92,7 +92,7 @@ contract Router is ThisMustBeFirst, AuthorizedList, CodeTricks, Authorized {
      token_address = _token_address;
      bts_address1 = _storage_address;
 
-     // It is believed at this time that tampering with deployed contract&#39;s bytecode is not
+     // It is believed at this time that tampering with deployed contract's bytecode is not
      // possible. Therefore the two lines below are  not necessary
      // contractPermissions[getCodeHash(bts_address1)] = true;
      // contractPermissions[getCodeHash(token_address)] = true;
@@ -104,7 +104,7 @@ contract Router is ThisMustBeFirst, AuthorizedList, CodeTricks, Authorized {
      require(_token_address != address(0));
      token_address = _token_address;
 
-     // It is believed at this time that tampering with deployed contract&#39;s bytecode is not
+     // It is believed at this time that tampering with deployed contract's bytecode is not
      // possible. Therefore the line below is not necessary
      // contractPermissions[getCodeHash(token_address)] = true;
 
@@ -115,7 +115,7 @@ contract Router is ThisMustBeFirst, AuthorizedList, CodeTricks, Authorized {
      require(_storage_address != address(0));
      bts_address1 = _storage_address;
 
-     // It is believed at this time that tampering with deployed contract&#39;s bytecode is not
+     // It is believed at this time that tampering with deployed contract's bytecode is not
      // possible. Therefore the line below is not necessary
      // contractPermissions[getCodeHash(bts_address1)] = true;
 
@@ -126,7 +126,7 @@ contract Router is ThisMustBeFirst, AuthorizedList, CodeTricks, Authorized {
      require(_storage_address != address(0));
      bts_address2 = _storage_address;
 
-     // It is believed at this time that tampering with deployed contract&#39;s bytecode is not
+     // It is believed at this time that tampering with deployed contract's bytecode is not
      // possible. Therefore the line below is not necessary
      // contractPermissions[getCodeHash(bts_address2)] = true;
 
@@ -144,7 +144,7 @@ contract Router is ThisMustBeFirst, AuthorizedList, CodeTricks, Authorized {
 
   function() public payable {
 
-      // It is believed at this time that tampering with deployed contract&#39;s bytecode is not
+      // It is believed at this time that tampering with deployed contract's bytecode is not
       // possible. Therefore the two lines below are  not necessary
       // require (contractPermissions[getCodeHash(token_address)]);
       // require (contractPermissions[getCodeHash(bts_address1)]);

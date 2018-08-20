@@ -22,7 +22,7 @@ contract Token {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -67,22 +67,22 @@ contract StandardToken is Token {
     /*
      * Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /*
      * Public functions
      */
     /// @notice Send `_value` tokens to `_to` from `msg.sender`.
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -115,7 +115,7 @@ contract StandardToken is Token {
             codeLength := extcodesize(_to)
         }
 
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -137,9 +137,9 @@ contract StandardToken is Token {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -200,14 +200,14 @@ contract xChaingeToken is StandardToken {
      *  Terminology:
      *  1 token unit = Xei
      *  1 token = XCH = Xei * multiplier
-     *  multiplier set from token&#39;s number of decimals (i.e. 10 ** decimals)
+     *  multiplier set from token's number of decimals (i.e. 10 ** decimals)
      */
 
     /*
      *  Token metadata
      */
-    string constant public name = &quot;xChainge Token&quot;;
-    string constant public symbol = &quot;XCH&quot;;
+    string constant public name = "xChainge Token";
+    string constant public symbol = "XCH";
     uint8 constant public decimals = 18;
     uint constant multiplier = 10 ** uint(decimals);
 
@@ -246,9 +246,9 @@ contract xChaingeToken is StandardToken {
     /// @dev Allows to destroy token units (Xei).
     /// @param num Number of token units (Xei) to burn.
     function burn(uint num) public {
-        require(num &gt; 0);
-        require(balances[msg.sender] &gt;= num);
-        require(totalSupply &gt;= num);
+        require(num > 0);
+        require(balances[msg.sender] >= num);
+        require(totalSupply >= num);
 
         uint preBalance = balances[msg.sender];
 
@@ -271,7 +271,7 @@ contract DutchAuction {
      * Terminology:
      * 1 token unit = Xei
      * 1 token = XCH = Xei * multiplier
-     * multiplier set from token&#39;s number of decimals (i.e. 10 ** decimals)
+     * multiplier set from token's number of decimals (i.e. 10 ** decimals)
      */
 
     // Wait 10 days after the end of the auction, before anyone can claim tokens
@@ -311,8 +311,8 @@ contract DutchAuction {
     // Wei per XCH (Xei * multiplier)
     uint public finalPrice;
 
-    // Bidder address =&gt; bid value
-    mapping (address =&gt; uint) public bids;
+    // Bidder address => bid value
+    mapping (address => uint) public bids;
 
     Stages public stage;
 
@@ -411,7 +411,7 @@ contract DutchAuction {
 
         endTime = now;
 
-        if (receivedWei &lt; softCap)
+        if (receivedWei < softCap)
         {
             token.transfer(walletAddress, numTokensAuctioned);
             stage = Stages.AuctionCanceled;
@@ -423,7 +423,7 @@ contract DutchAuction {
         walletAddress.transfer(receivedWei);
 
         uint missingFunds = missingFundsToEndAuction();
-        if (missingFunds &gt; 0){
+        if (missingFunds > 0){
             uint soldTokens = tokenMultiplier * receivedWei / price();
             uint burnTokens = numTokensAuctioned - soldTokens;
             token.burn(burnTokens);
@@ -437,7 +437,7 @@ contract DutchAuction {
         stage = Stages.AuctionEnded;
         AuctionEnded(finalPrice);
 
-        assert(finalPrice &gt; 0);
+        assert(finalPrice > 0);
     }
 
     /// @notice Canceled the auction
@@ -455,22 +455,22 @@ contract DutchAuction {
     /// @dev Allows to send a bid to the auction.
     function bid() public payable atStage(Stages.AuctionStarted)
     {
-        require(msg.value &gt; 0);
-        assert(bids[msg.sender] + msg.value &gt;= msg.value);
+        require(msg.value > 0);
+        assert(bids[msg.sender] + msg.value >= msg.value);
 
         // Missing funds without the current bid value
         uint missingFunds = missingFundsToEndAuction();
 
         // We require bid values to be less than the funds missing to end the auction
         // at the current price.
-        require(msg.value &lt;= missingFunds);
+        require(msg.value <= missingFunds);
 
         bids[msg.sender] += msg.value;
         receivedWei += msg.value;
 
         BidSubmission(msg.sender, msg.value, missingFunds);
 
-        assert(receivedWei &gt;= msg.value);
+        assert(receivedWei >= msg.value);
     }
 
     /// @notice Claim auction tokens for `msg.sender` after the auction has ended.
@@ -488,7 +488,7 @@ contract DutchAuction {
         // Waiting period after the end of the auction, before anyone can claim tokens
         // Ensures enough time to check if auction was finalized correctly
         // before users start transacting tokens
-        require(now &gt; endTime + tokenClaimWaitingPeriod);
+        require(now > endTime + tokenClaimWaitingPeriod);
         require(receiverAddress != 0x0);
 
         if (bids[receiverAddress] == 0) {
@@ -502,7 +502,7 @@ contract DutchAuction {
         // than expected. Therefore, the number of remaining unassigned auction tokens
         // may be smaller than the number of tokens needed for the last claimTokens call
         uint auctionTokensBalance = token.balanceOf(address(this));
-        if (num &gt; auctionTokensBalance) {
+        if (num > auctionTokensBalance) {
             num = auctionTokensBalance;
         }
 
@@ -523,7 +523,7 @@ contract DutchAuction {
             TokensDistributed();
         }
 
-        assert(token.balanceOf(receiverAddress) &gt;= num);
+        assert(token.balanceOf(receiverAddress) >= num);
         assert(bids[receiverAddress] == 0);
         return true;
     }
@@ -573,11 +573,11 @@ contract DutchAuction {
 
         // numTokensAuctioned = total number of Xei (XCH * multiplier) that is auctioned
         uint requiredWeiAtPrice = numTokensAuctioned * price() / tokenMultiplier;
-        if (requiredWeiAtPrice &lt;= receivedWei) {
+        if (requiredWeiAtPrice <= receivedWei) {
             return 0;
         }
 
-        // assert(requiredWeiAtPrice - receivedWei &gt; 0);
+        // assert(requiredWeiAtPrice - receivedWei > 0);
         return requiredWeiAtPrice - receivedWei;
     }
 
@@ -601,6 +601,6 @@ contract DutchAuction {
 
         uint decayRate = elapsed ** 3 / 541000000000;
         uint currentPrice = priceStart * (1 + elapsed) / (1 + elapsed + decayRate);
-        return minPrice &gt; currentPrice ? minPrice : currentPrice;
+        return minPrice > currentPrice ? minPrice : currentPrice;
     }
 }

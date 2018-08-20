@@ -7,17 +7,17 @@ contract SafeMath {
         return c;
     }
     function div(uint256 a, uint256 b) internal  returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         return c;
     }
     function sub(uint256 a, uint256 b) internal   returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal  returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function pow( uint256 a , uint8 b ) internal returns ( uint256 ){
@@ -41,13 +41,13 @@ contract owned {
 }
 contract ERC20Token is owned, SafeMath{
     bool public tokenState;
-    string public name = &quot;BARTER COIN&quot;;
-    string public symbol = &quot;XBRC&quot;;
+    string public name = "BARTER COIN";
+    string public symbol = "XBRC";
     uint256 public decimals = 8;
     uint256 public totalSupply = mul(25,pow(10,8));
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; bool) public userBanned;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => bool) public userBanned;
+    mapping (address => mapping (address => uint256)) allowed;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     function init( string _name,string _symbol)
@@ -67,7 +67,7 @@ contract ERC20Token is owned, SafeMath{
     returns ( bool ) {
         require(tokenState == true);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = sub(balances[msg.sender],_value);
         balances[_to] = add(balances[_to],_value);
         Transfer(msg.sender, _to, _value);
@@ -77,8 +77,8 @@ contract ERC20Token is owned, SafeMath{
         public
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = sub(balances[_from],_value);
         balances[_to] = add(balances[_to],_value);
         allowed[_from][msg.sender] = sub(allowed[_from][msg.sender],_value);

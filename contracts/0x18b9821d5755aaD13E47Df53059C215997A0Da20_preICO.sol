@@ -6,20 +6,20 @@ contract Math {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -96,7 +96,7 @@ contract Token {
 You should inherit from StandardToken or, for a token like you would want to
 deploy in something like Mist, see HumanStandardToken.sol.
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -111,14 +111,14 @@ contract StandardToken is Token {
 
     modifier voteUpdater(address _to, address _from) {
         if (accounts[_from].lastVote == voteEnds) {
-            if (accounts[_to].lastVote &lt; voteEnds) {
+            if (accounts[_to].lastVote < voteEnds) {
                 accounts[_to].votes = balances[_to];
                 accounts[_to].lastVote = voteEnds;
             }
-        } else if (accounts[_from].lastVote &lt; voteEnds) {
+        } else if (accounts[_from].lastVote < voteEnds) {
             accounts[_from].votes = balances[_from];
             accounts[_from].lastVote = voteEnds;
-            if (accounts[_to].lastVote &lt; voteEnds) {
+            if (accounts[_to].lastVote < voteEnds) {
                 accounts[_to].votes = balances[_to];
                 accounts[_to].lastVote = voteEnds;
             }
@@ -128,7 +128,7 @@ contract StandardToken is Token {
     }
     modifier updateAccount(address account) {
       var owing = dividendsOwing(account);
-      if(owing &gt; 0) {
+      if(owing > 0) {
         account.send(owing);
         accounts[account].lastDividends = totalDividends;
       }
@@ -164,11 +164,11 @@ contract StandardToken is Token {
     voteUpdater(_to, msg.sender)
     returns (bool success) 
     {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -182,8 +182,8 @@ contract StandardToken is Token {
     returns (bool success) 
     {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -191,10 +191,10 @@ contract StandardToken is Token {
             return true;
         } else { return false; }
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; Account) accounts;
-    mapping (address =&gt; uint ) votes;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => Account) accounts;
+    mapping (address => uint ) votes;
 }
 
 // Created By: Strategic Investments in Strategic Areas Group
@@ -202,8 +202,8 @@ contract StandardToken is Token {
 contract SISA is StandardToken, Math {
 
 
-	string constant public name = &quot;SISA Token&quot;;
-	string constant public symbol = &quot;SISA&quot;;
+	string constant public name = "SISA Token";
+	string constant public symbol = "SISA";
 	uint constant public decimals = 18;
 
 	address public ico_tokens = 0x1111111111111111111111111111111111111111;
@@ -270,7 +270,7 @@ contract SISA is StandardToken, Math {
     function castVote(address proposal) 
     	public
     {
-    	if (accounts[msg.sender].lastVote &lt; voteEnds) {
+    	if (accounts[msg.sender].lastVote < voteEnds) {
     		accounts[msg.sender].votes = balances[msg.sender];
     		accounts[msg.sender].lastVote = voteEnds;
 
@@ -294,7 +294,7 @@ contract SISA is StandardToken, Math {
         onlyIssuer
         returns (bool)
     {
-        if(allowed[ico_tokens][issuer] &gt;= amount) { 
+        if(allowed[ico_tokens][issuer] >= amount) { 
             transferFrom(ico_tokens, _for, amount);
 
             // Issue(_for, msg.sender, amount);
@@ -358,10 +358,10 @@ contract preICO is Math {
 
 
 	modifier isExpired() {
-		if (now &lt; begins) {
+		if (now < begins) {
 			throw;
 		}
-		if(now &gt; ends) {
+		if(now > ends) {
 			throw;
 		}
 		_;

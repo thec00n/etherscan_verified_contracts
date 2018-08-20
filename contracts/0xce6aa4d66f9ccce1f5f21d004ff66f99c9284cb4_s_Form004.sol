@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
  
 contract s_Form004 {
     
-    mapping (bytes32 =&gt; string) data;
+    mapping (bytes32 => string) data;
     
     address owner;
     
@@ -48,6 +48,6 @@ contract s_Form004 {
 
 /*
 0xCe6Aa4d66f9CCCE1f5F21D004Ff66F99c9284Cb4
-Liechtensteinischer Sozialversicherung -Rentenversicherung AAD (association autonome et d&#233;centralis&#233;e/distribu&#233;e)
+Liechtensteinischer Sozialversicherung -Rentenversicherung AAD (association autonome et décentralisée/distribuée)
 */
 }

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 /**
 * A contract that pays off, if a user is able to produce a valid solution
-* for the Fermat&#39;s last theorem
+* for the Fermat's last theorem
 */
 
 contract Fermat {
@@ -44,7 +44,7 @@ contract Fermat {
      */
     function withdraw() public {
         require(msg.sender == owner);
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         msg.sender.transfer(this.balance);
     }
@@ -68,15 +68,15 @@ contract Fermat {
 
 
     /*
-     * The &quot;core&quot; logic of the smart contract.
-     * Calculates the equation with provided values for Fermat&#39;s last theorem.
-     * Returns the value of a^n + b^n - c^n, n &gt; 2
+     * The "core" logic of the smart contract.
+     * Calculates the equation with provided values for Fermat's last theorem.
+     * Returns the value of a^n + b^n - c^n, n > 2
      */
     function solve(uint256 a, uint256 b, uint256 c, uint256 n) pure public returns (uint256) {
-        assert(n &gt; 2);
-        assert(a &gt; 0);
-        assert(b &gt; 0);
-        assert(c &gt; 0);
+        assert(n > 2);
+        assert(a > 0);
+        assert(b > 0);
+        assert(c > 0);
         uint256 aExp = power(a, n);
         uint256 bExp = power(b, n);
         uint256 cExp = power(c, n);
@@ -90,14 +90,14 @@ contract Fermat {
      A safe way to handle exponentiation. Throws error on overflow.
     */
     function power(uint256 a, uint256 pow) pure public returns (uint256) {
-        assert(a &gt; 0);
-        assert(pow &gt; 0);
+        assert(a > 0);
+        assert(pow > 0);
         uint256 result = 1;
         if (a == 0) {
             return 1;
         }
         uint256 temp;
-        for (uint256 i = 0; i &lt; pow; i++) {
+        for (uint256 i = 0; i < pow; i++) {
             temp = result * a;
             assert((temp / a) == result);
             result = temp;
@@ -110,7 +110,7 @@ contract Fermat {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -118,7 +118,7 @@ contract Fermat {
      A safe way to handle subtraction. Throws error on underflow.
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 

@@ -2,12 +2,12 @@ pragma solidity ^0.4.21;
 
 // Written by EtherGuy
 // UI: GasWar.surge.sh 
-// Mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8ddccd0ddcadfcdc1f8d5d9d1d496dbd7d5">[email&#160;protected]</a>
+// Mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8ddccd0ddcadfcdc1f8d5d9d1d496dbd7d5">[email protected]</a>
 
 contract GasWar{
     
     
-    // OPEN 20:00 -&gt; 22:00 UTC 
+    // OPEN 20:00 -> 22:00 UTC 
   //  uint256 public UTCStart = (20 hours); 
 //    uint256 public UTCStop = (22 hours);
     
@@ -42,13 +42,13 @@ contract GasWar{
     
     function Open() public view returns (bool){
         uint256 sliced = now % (1 days);
-        return (sliced &gt;= UTCStart &amp;&amp; sliced &lt;= UTCStop);
+        return (sliced >= UTCStart && sliced <= UTCStop);
     }
     
     function NextOpen() public view returns (uint256, uint256){
         
         uint256 sliced = now % (1 days);
-        if (sliced &gt; UTCStop){
+        if (sliced > UTCStop){
             uint256 ret2 = (UTCStop) - sliced + UTCStop;
             return (ret2, now + ret2);
         }
@@ -72,7 +72,7 @@ contract GasWar{
     // please no re-entrancy
     function _withdraw(bool reduce_price) internal {
         // One call. 
-         require((now &gt; RoundEndTime));
+         require((now > RoundEndTime));
         require (Winner != 0x0);
         
         uint256 subber = 0;
@@ -93,10 +93,10 @@ contract GasWar{
         if (Winner != 0x0){
             // if game open remove price from balance 
             // this is to make sure winner does not get extra eth from new round.
-            _withdraw(remove_price &amp;&amp; Open()); // sorry mate, much gas.
+            _withdraw(remove_price && Open()); // sorry mate, much gas.
 
         }
-        if (Winner == 0x0 &amp;&amp; Open()){
+        if (Winner == 0x0 && Open()){
             Winner = msg.sender; // from withdraw the gas max is 0.
             RoundEndTime = now + RoundTime;
             emit GameStart(RoundEndTime);
@@ -107,7 +107,7 @@ contract GasWar{
     
     // Function to start game without spending gas. 
     //function PublicCheckGameStart() public {
-    //    require(now &gt; RoundEndTime);
+    //    require(now > RoundEndTime);
     //    CheckGameStart();
     //}
     // reverted; allows contract drain @ inactive, this should not be the case.
@@ -121,14 +121,14 @@ contract GasWar{
         require(msg.value == Price);
         
         
-        if (now &gt; RoundEndTime){
+        if (now > RoundEndTime){
             bool started = CheckGameStart(true);
             require(started);
             GasPrice = tx.gasprice;
             emit NewGameLeader(msg.sender, GasPrice, address(this).balance + (Price * 95)/100);
         }
         else{
-            if (tx.gasprice &gt; GasPrice){
+            if (tx.gasprice > GasPrice){
                 GasPrice = tx.gasprice;
                 Winner = msg.sender;
                 emit NewGameLeader(msg.sender, GasPrice, address(this).balance + (Price * 95)/100);
@@ -149,28 +149,28 @@ contract GasWar{
      // send v=10000 to this one 
     function SetTakePot(uint256 v) public {
         require(msg.sender==owner);
-        require (v &lt;= 10000);
-        require(v &gt;= 1000); // do not set v &lt;10% prevent contract blackhole; 
+        require (v <= 10000);
+        require(v >= 1000); // do not set v <10% prevent contract blackhole; 
         TakePot = v;
     }
     
     function SetTimes(uint256 NS, uint256 NE) public {
         require(msg.sender==owner);
-        require(NS &lt; (1 days));
-        require(NE &lt; (1 days));
+        require(NS < (1 days));
+        require(NE < (1 days));
         UTCStart = NS;
         UTCStop = NE;
     }
     
     function SetPrice(uint256 p) public {
         require(msg.sender == owner);
-        require(!Open() &amp;&amp; (Winner == 0x0)); // dont change game price while running you retard
+        require(!Open() && (Winner == 0x0)); // dont change game price while running you retard
         Price = p;
     }    
     
     function SetRoundTime(uint256 p) public{
         require(msg.sender == owner);
-        require(!Open() &amp;&amp; (Winner == 0x0));
+        require(!Open() && (Winner == 0x0));
         RoundTime = p;
     }   
  
@@ -186,20 +186,20 @@ contract GasWar{
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
  

@@ -22,7 +22,7 @@ string github;
 
   }
 
-  mapping(bytes32 =&gt; Team) public teamMap;
+  mapping(bytes32 => Team) public teamMap;
   bytes32[] public teamArray;
 
   function TeamContract() public {
@@ -69,7 +69,7 @@ string github;
   function  readTeamByIndex(uint index) constant public returns (address,uint,
       //generated fields
         string, string, string, string, string) {
-    require(index &lt; teamArray.length);
+    require(index < teamArray.length);
     bytes32 id = teamArray[index];
     return (teamMap[id].owner, teamMap[id].lastUpdated,
       //generated fields

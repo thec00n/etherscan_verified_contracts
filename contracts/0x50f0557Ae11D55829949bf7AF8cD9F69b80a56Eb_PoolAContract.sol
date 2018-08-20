@@ -10,7 +10,7 @@ contract PoolAllocations {
   ERC20Basic public token;
 
  // allocations map
-  mapping (address =&gt; lockEntry) public allocations;
+  mapping (address => lockEntry) public allocations;
 
   // lock entry
   struct lockEntry {
@@ -41,10 +41,10 @@ contract PoolAllocations {
    * @dev claims tokens held by time lock
    */
   function claim() public {
-    require(now &gt;= startDay);
+    require(now >= startDay);
 
      var elem = allocations[msg.sender];
-    require(elem.numPayoutCycles &gt; 0);
+    require(elem.numPayoutCycles > 0);
 
     uint256 tokens = 0;
     uint cycles = getPayoutCycles(elem.numPayoutCycles);
@@ -54,7 +54,7 @@ contract PoolAllocations {
       tokens += elem.firstReleaseAmount;
       tokens += elem.restOfTokens;
     } else {
-      require(cycles &gt; 0);
+      require(cycles > 0);
     }
 
     tokens += elem.nextRelease * cycles;
@@ -67,7 +67,7 @@ contract PoolAllocations {
   function getPayoutCycles(uint payoutCyclesLeft) private constant returns (uint) {
     uint cycles = uint((now - startDay) / payoutCycleInDays) + cyclesStartFrom;
 
-    if (cycles &gt; maxNumOfPayoutCycles) {
+    if (cycles > maxNumOfPayoutCycles) {
        cycles = maxNumOfPayoutCycles;
     }
 
@@ -219,20 +219,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -294,7 +294,7 @@ contract BlockvPublicLedger is Ownable {
   }
   uint256 public txCount = 0;
   uint256 public distributionEntryCount = 0;
-  mapping (string =&gt; index) distributionIndex;
+  mapping (string => index) distributionIndex;
   logEntry[] public transactionLog;
   distributionEntry[] public distributionList;
   bool public distributionFixed = false;
@@ -324,16 +324,16 @@ contract BlockvPublicLedger is Ownable {
           revert();
         }
 
-        if ( _discount &gt; 100 ) {
+        if ( _discount > 100 ) {
           revert();
         }
         /* build the log record and add it to the transaction log first */
         if ( !idx.set ) {
             ret = false;
-            le.txType = &quot;INSERT&quot;;
+            le.txType = "INSERT";
         } else {
             ret = true;
-            le.txType = &quot;UPDATE&quot;;          
+            le.txType = "UPDATE";          
         }
         le.to = _to;
         le.amountContributed = _amount;
@@ -378,16 +378,16 @@ contract BlockvPublicLedger is Ownable {
       revert();
     }
 
-    for(i = 0; i &lt; distributionEntryCount; i++) {
+    for(i = 0; i < distributionEntryCount; i++) {
       de = distributionList[i];
       de.tokenAmount = (de.amountContributed * _usdToEthConversionRate * 100) / (_tokenPrice  * de.discount / 100);
       distributionList[i] = de;
     }
     distributionFixed = true;
   
-    le.txType = &quot;FIXED&quot;;
+    le.txType = "FIXED";
     le.blockTimestamp = block.timestamp;
-    le.txId = &quot;__FIXED__DISTRIBUTION__&quot;;
+    le.txId = "__FIXED__DISTRIBUTION__";
     transactionLog.push(le);
     txCount++;
 
@@ -408,7 +408,7 @@ contract PoolAContract is Ownable {
 
     uint constant defaultDiscount = 100;
     uint256 constant discountMultiplier = 10 ** 24;
-    mapping(uint8 =&gt; uint256) discounts;
+    mapping(uint8 => uint256) discounts;
 
     address public ledgerContractAddr;
     address public blockVContractAddr;
@@ -439,7 +439,7 @@ contract PoolAContract is Ownable {
         require(!done);
 
         uint256 i = currentIndex;
-        for (; i &lt; currentIndex + chunkSize &amp;&amp; i &lt; ledgerContractSize; i++) {
+        for (; i < currentIndex + chunkSize && i < ledgerContractSize; i++) {
             var (, to, amount, discount,) = ledgerContract.distributionList(i);
             uint256 tokenAmount = getTokenAmount(amount, discount);
             assert(blockVContract.transferFrom(msg.sender, to, tokenAmount));
@@ -480,7 +480,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
@@ -522,7 +522,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -535,7 +535,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -576,8 +576,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract BlockvToken is StandardToken, Pausable {
 
-  string public constant name = &quot;BLOCKv Token&quot;; // Set the token name for display
-  string public constant symbol = &quot;VEE&quot;;        // Set the token symbol for display
+  string public constant name = "BLOCKv Token"; // Set the token name for display
+  string public constant symbol = "VEE";        // Set the token symbol for display
   uint8  public constant decimals = 18;         // Set the number of decimals for display
 
   PoolBLock public poolBLock;
@@ -670,7 +670,7 @@ contract BlockvToken is StandardToken, Pausable {
   function migrate(uint256 _value) external {
     require(migrationAgent != 0);
     require(_value != 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);

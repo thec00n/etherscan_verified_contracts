@@ -1,4 +1,4 @@
-pragma solidity &gt;0.4.23 &lt;0.5.0;
+pragma solidity >0.4.23 <0.5.0;
 library SafeMath {
 
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -43,7 +43,7 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
     function totalSupply() public view returns (uint256) {
         return totalSupply_;
@@ -51,7 +51,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -65,11 +65,11 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
     // delete extra methods
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -94,7 +94,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -106,21 +106,21 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract Art is StandardToken {
-    string public name = &quot;Northern Turquoise&quot;;
-    string public symbol = &quot;NT&quot;;
+    string public name = "Northern Turquoise";
+    string public symbol = "NT";
     uint256 public decimals = 18;
     uint256 public totalSupply = 1 ether;
 
     // Struct
     address public artist = msg.sender;
-    string public artistName = &quot;Zhang Ji&quot;;
-    string public artistEmail= &quot;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1a2b8a991b3b4a2bdb0b3ffa9a8ab">[email&#160;protected]</a>&quot;;
-    string public Explain= &quot;A liquid information poetry.&quot;;
-    string public Hash= &quot;39a6e92df56f29f0c9c961d2483df06b&quot;; //Art Hash
-    string public Description = &quot;A romanticized documentary for the true experience of different understandings of value that carried by objects through different ages, background and crew, etc.&quot;;
-    string public Copyright = &quot;Token holder has full copyright of this art piece including its interpretation, commercial use, ownership transfer, derivatives production, etc. &quot;;
+    string public artistName = "Zhang Ji";
+    string public artistEmail= "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1a2b8a991b3b4a2bdb0b3ffa9a8ab">[email protected]</a>";
+    string public Explain= "A liquid information poetry.";
+    string public Hash= "39a6e92df56f29f0c9c961d2483df06b"; //Art Hash
+    string public Description = "A romanticized documentary for the true experience of different understandings of value that carried by objects through different ages, background and crew, etc.";
+    string public Copyright = "Token holder has full copyright of this art piece including its interpretation, commercial use, ownership transfer, derivatives production, etc. ";
     uint256 public transferLimit = 1 ether;
-    string public artUrlList = &quot;https://www.dropbox.com/s/0v99yw0i7w8qwz6/northern%20turquoise.cryptoart?dl=0,https://drive.google.com/file/d/1CzezHZfrKDKvQkWdd_b5He5dQQD68EX8/view?usp=sharing&quot;;
+    string public artUrlList = "https://www.dropbox.com/s/0v99yw0i7w8qwz6/northern%20turquoise.cryptoart?dl=0,https://drive.google.com/file/d/1CzezHZfrKDKvQkWdd_b5He5dQQD68EX8/view?usp=sharing";
 
     constructor() public {
         totalSupply_ = totalSupply;
@@ -130,7 +130,7 @@ contract Art is StandardToken {
 
     event TransferOwner(address newOwner, address lastOwner);
     modifier onlyArtist() {
-        require(msg.sender == artist, &quot;Only artist can do this.&quot;);
+        require(msg.sender == artist, "Only artist can do this.");
         _;
     }
 
@@ -153,8 +153,8 @@ contract Art is StandardToken {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
-        require(_value == transferLimit, &quot;Art only one.&quot;);
+        require(_value <= balances[msg.sender]);
+        require(_value == transferLimit, "Art only one.");
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);

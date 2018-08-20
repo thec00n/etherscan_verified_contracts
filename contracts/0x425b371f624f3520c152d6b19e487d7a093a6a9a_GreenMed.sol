@@ -27,13 +27,13 @@ contract owned {
 
 library SafeMath {
     function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) pure internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -53,14 +53,14 @@ contract ERC20 {
 
 contract GreenMed  is ERC20, owned {
     using SafeMath for uint256;
-    string public name = &quot;GreenMed&quot;;
-    string public symbol = &quot;GRMD&quot;;
+    string public name = "GreenMed";
+    string public symbol = "GRMD";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowed;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
     event Burn(address indexed from, uint256 value);
@@ -81,8 +81,8 @@ contract GreenMed  is ERC20, owned {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(!frozenAccount[_from] &amp;&amp; !frozenAccount[_to]);
+        require(_value <= balances[_from]);
+        require(!frozenAccount[_from] && !frozenAccount[_to]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(_from, _to, _value);
@@ -94,7 +94,7 @@ contract GreenMed  is ERC20, owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -103,7 +103,7 @@ contract GreenMed  is ERC20, owned {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;

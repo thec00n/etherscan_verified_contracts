@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -38,8 +38,8 @@ contract Ownable {
 }
 
 contract BigbomContributorWhiteList is Ownable {
-    mapping(address=&gt;uint) public addressMinCap;
-    mapping(address=&gt;uint) public addressMaxCap;
+    mapping(address=>uint) public addressMinCap;
+    mapping(address=>uint) public addressMaxCap;
 
     function BigbomContributorWhiteList() public  {}
 
@@ -48,7 +48,7 @@ contract BigbomContributorWhiteList is Ownable {
     // Owner can delist by setting cap = 0.
     // Onwer can also change it at any time
     function listAddress( address _user, uint _mincap, uint _maxcap ) public onlyOwner {
-        require(_mincap &lt;= _maxcap);
+        require(_mincap <= _maxcap);
         require(_user != address(0x0));
 
         addressMinCap[_user] = _mincap;
@@ -60,7 +60,7 @@ contract BigbomContributorWhiteList is Ownable {
     function listAddresses( address[] _users, uint[] _mincap, uint[] _maxcap ) public  onlyOwner {
         require(_users.length == _mincap.length );
         require(_users.length == _maxcap.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _mincap[i], _maxcap[i] );
         }
     }

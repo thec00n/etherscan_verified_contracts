@@ -7,7 +7,7 @@ library SafeMath {
     */
     function ADD (uint256 a, uint256 b) pure internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -15,7 +15,7 @@ library SafeMath {
         @return difference of a and b
     */
     function SUB (uint256 a, uint256 b) pure internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
     
@@ -59,7 +59,7 @@ contract Crowdsale {
     uint256 public constant TIER4_PRICE = 895700;      //Price in 4th tier
 
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 
@@ -76,8 +76,8 @@ contract Crowdsale {
     function () public payable {
         require(!crowdsaleClosed);
         uint amount = msg.value;
-        require(amount &gt;= MIN_ETHER);
-        require (amount &lt;= MAX_ETHER);
+        require(amount >= MIN_ETHER);
+        require (amount <= MAX_ETHER);
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
         soldTokens += amount / price;
@@ -86,7 +86,7 @@ contract Crowdsale {
 
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -94,12 +94,12 @@ contract Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline public {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
 
-       	 if (soldTokens &gt;= hardCapInTokens)   {
+       	 if (soldTokens >= hardCapInTokens)   {
         crowdsaleClosed = true;
 
         tokenReward.burn(hardCapInTokens - soldTokens);
@@ -113,11 +113,11 @@ contract Crowdsale {
         constant
         returns (uint256)
     {
-        if (now &lt;= TIER2) {
+        if (now <= TIER2) {
             return TIER1_PRICE;
-        } else if (now &lt; TIER3) {
+        } else if (now < TIER3) {
             return TIER2_PRICE;
-        } else if (now &lt; TIER4) {
+        } else if (now < TIER4) {
             return TIER3_PRICE;
         }
         return TIER4_PRICE;
@@ -135,7 +135,7 @@ contract Crowdsale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -144,7 +144,7 @@ contract Crowdsale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {

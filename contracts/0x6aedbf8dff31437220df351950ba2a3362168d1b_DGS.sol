@@ -35,15 +35,15 @@ contract ERC20Interface {
 
 contract DGS is ERC20Interface {
 
-    string public constant NAME = &quot;Dragonglass&quot;;
-    string public constant SYMBOL = &quot;DGS&quot;;
+    string public constant NAME = "Dragonglass";
+    string public constant SYMBOL = "DGS";
     uint public constant DECIMALS = 8;
 
     uint256 supply = 0;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
-    mapping (address =&gt; uint) allowedToMine;
+    mapping (address => uint) allowedToMine;
 
     address public allocationAddressICO;
 
@@ -95,7 +95,7 @@ contract DGS is ERC20Interface {
     function transfer(address _to, uint256 _value)
     public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         mine(msg.sender, _to, _value);
         balances[_to] += _value;
@@ -106,8 +106,8 @@ contract DGS is ERC20Interface {
     function transferFrom(address _from, address _to, uint256 _value)
     public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(_to != address(0) &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; allowance &gt;= _value);
+        require(_to != address(0) && balances[_from] >= _value
+            && allowance >= _value);
             balances[_from] -= _value;
             mine(_from, _to, _value);
             balances[_to] += _value;
@@ -142,9 +142,9 @@ contract DGS is ERC20Interface {
 
         uint factor = _min * DECIMAL_INDEX /_max;
 
-        if(_value &gt; stake)
+        if(_value > stake)
             factor += factor * STAKE_PERCENTAGE / DECIMAL_INDEX;
-        if(factor &gt; DECIMAL_INDEX)
+        if(factor > DECIMAL_INDEX)
             factor = DECIMAL_INDEX;
 
         var totalStake = stake + _value;
@@ -166,7 +166,7 @@ contract DGS is ERC20Interface {
     function doMining(address _miner, uint _transactionValue)
     private {
         uint _minedAmount = calculateMinedCoinsForTX(balanceOf(_miner), _transactionValue);
-        if(allowedToMine[_miner] &lt;= _minedAmount) {
+        if(allowedToMine[_miner] <= _minedAmount) {
             _minedAmount = allowedToMine[_miner];
             allowedToMine[_miner] = 0;
         } else {
@@ -194,29 +194,29 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }

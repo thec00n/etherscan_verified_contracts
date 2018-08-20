@@ -2,8 +2,8 @@ pragma solidity ^0.4.11;
 
 contract Bills
 {
-    string public name          = &quot;Bills&quot;;
-    string public symbol        = &quot;BLS&quot;;
+    string public name          = "Bills";
+    string public symbol        = "BLS";
     uint public totalSupply     = 3000000;
     uint public decimals        = 0;
     uint public tokenPrice;
@@ -13,7 +13,7 @@ contract Bills
     uint ICOTill   = 1523145601;
 	uint ICOStart  = 1520467201;
     
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
     
     event Transfer(address indexed from, address indexed to, uint value);
     
@@ -31,7 +31,7 @@ contract Bills
     
     modifier isICOend()
     {
-        require(now &gt;= ICOTill);
+        require(now >= ICOTill);
         _;
     }
     
@@ -66,18 +66,18 @@ contract Bills
         address Address;
     }
     
-    mapping (uint =&gt; Advert) info;
+    mapping (uint => Advert) info;
     
-    mapping (address =&gt; Moderator) moderators;
+    mapping (address => Moderator) moderators;
     
     uint[] Adverts;
     address[] Moderators;
     
     function() public payable
     {
-        require(now &gt;= ICOStart || now &gt;= ICOTill);
+        require(now >= ICOStart || now >= ICOTill);
         
-        if(now &gt;= ICOStart &amp;&amp; now &lt;= ICOTill)
+        if(now >= ICOStart && now <= ICOTill)
         {
             require(
                 msg.value == 100000000000000000 || msg.value == 300000000000000000 || msg.value == 500000000000000000 || msg.value == 800000000000000000 || 
@@ -86,62 +86,62 @@ contract Bills
             
             if(msg.value == 100000000000000000)
             {
-                require(balanceOf[this] &gt;= 31);
+                require(balanceOf[this] >= 31);
                 balanceOf[msg.sender] += 31;
                 balanceOf[this] -= 31;
                 Transfer(this, msg.sender, 31);
             }
             if(msg.value == 300000000000000000)
             {
-                require(balanceOf[this] &gt;= 95);
+                require(balanceOf[this] >= 95);
                 balanceOf[msg.sender] += 95;
                 balanceOf[this] -= 95;
                 Transfer(this, msg.sender, 95);
             }
             if(msg.value == 500000000000000000)
             {
-                require(balanceOf[this] &gt;= 160);
+                require(balanceOf[this] >= 160);
                 balanceOf[msg.sender] += 160;
                 balanceOf[this] -= 160;
                 Transfer(this, msg.sender, 160);
             }
             if(msg.value == 800000000000000000)
             {
-                require(balanceOf[this] &gt;= 254);
+                require(balanceOf[this] >= 254);
                 balanceOf[msg.sender] += 254;
                 balanceOf[this] -= 254;
                 Transfer(this, msg.sender, 254);
             }
             if(msg.value == 1000000000000000000)
             {
-                require(balanceOf[this] &gt;= 317);
+                require(balanceOf[this] >= 317);
                 balanceOf[msg.sender] += 317;
                 balanceOf[this] -= 317;
                 Transfer(this, msg.sender, 317);
             }
             if(msg.value == 3000000000000000000)
             {
-                require(balanceOf[this] &gt;= 938);
+                require(balanceOf[this] >= 938);
                 balanceOf[msg.sender] += 938;
                 balanceOf[this] -= 938;
                 Transfer(this, msg.sender, 938);
             }
             if(msg.value == 5000000000000000000)
             {
-                require(balanceOf[this] &gt;= 1560);
+                require(balanceOf[this] >= 1560);
                 balanceOf[msg.sender] += 1560;
                 balanceOf[this] -= 1560;
                 Transfer(this, msg.sender, 1560);
             }
         }
         
-        if(now &gt;= ICOTill)
+        if(now >= ICOTill)
         {
-            require(msg.sender.balance &gt;= msg.value);
+            require(msg.sender.balance >= msg.value);
             
             uint _Amount = msg.value / tokenPrice;
             
-            require(balanceOf[this] &gt;= _Amount);
+            require(balanceOf[this] >= _Amount);
             
             balanceOf[msg.sender] += _Amount;
             balanceOf[this] -= _Amount;
@@ -161,15 +161,15 @@ contract Bills
         
         uint Price = Days * Advr.PricePerDay;
         
-        require(Advr.BoardId == BoardId &amp;&amp; BoardId &gt; 0);
-        require(bytes(AdvertSrc).length &gt; 0);
-        require(Days &lt;= Advr.MaxDays &amp;&amp; Days &gt; 0);
-        require(balanceOf[msg.sender] &gt;= Price);
-        require(Advr.Till &lt;= now);
+        require(Advr.BoardId == BoardId && BoardId > 0);
+        require(bytes(AdvertSrc).length > 0);
+        require(Days <= Advr.MaxDays && Days > 0);
+        require(balanceOf[msg.sender] >= Price);
+        require(Advr.Till <= now);
         require(Advr.AllowLeasing == true);
-        require(keccak256(Advr.Status) == keccak256(&quot;Free&quot;) || keccak256(Advr.Status) == keccak256(&quot;Published&quot;));
+        require(keccak256(Advr.Status) == keccak256("Free") || keccak256(Advr.Status) == keccak256("Published"));
         
-        require(balanceOf[this] + Price &gt;= balanceOf[this]);
+        require(balanceOf[this] + Price >= balanceOf[this]);
         balanceOf[msg.sender] -= Price;
         balanceOf[this] += Price;
         Transfer(msg.sender, this, Price);
@@ -179,30 +179,30 @@ contract Bills
         Advr.Till               = now + 86399 * Days;
         Advr.AddTime            = now;
         Advr.SpentTokens        = Price;
-        Advr.Status             = &quot;Moderate&quot;;
+        Advr.Status             = "Moderate";
     }
     
     function ModerateBill(uint BoardIdToModerate, bool Published) onlyModerator isICOend public
     {
         var Advr = info[BoardIdToModerate];
         
-        require(Advr.BoardId == BoardIdToModerate &amp;&amp; BoardIdToModerate &gt; 0);
+        require(Advr.BoardId == BoardIdToModerate && BoardIdToModerate > 0);
         
         if(Published == true)
         {
-            require(keccak256(Advr.Status) == keccak256(&quot;Moderate&quot;));
+            require(keccak256(Advr.Status) == keccak256("Moderate"));
         
             uint CompensateTime   = now - Advr.AddTime;
             
             Advr.Till             = Advr.Till + CompensateTime;
-            Advr.Status           = &quot;Published&quot;;
+            Advr.Status           = "Published";
         }
         
         if(Published == false)
         {
-            require(keccak256(Advr.Status) == keccak256(&quot;Moderate&quot;));
+            require(keccak256(Advr.Status) == keccak256("Moderate"));
             
-			require(balanceOf[this] &gt;= Advr.SpentTokens);
+			require(balanceOf[this] >= Advr.SpentTokens);
 			
             balanceOf[Advr.Advertiser] += Advr.SpentTokens;
             balanceOf[this] -= Advr.SpentTokens;
@@ -214,7 +214,7 @@ contract Bills
             delete Advr.AddTime;
             delete Advr.SpentTokens;
             
-            Advr.Status = &quot;Free&quot;;
+            Advr.Status = "Free";
         }
     }
     
@@ -222,7 +222,7 @@ contract Bills
     {
         var Advr = info[_BillToEdit];
         
-        require(Advr.BoardId == _BillToEdit &amp;&amp; _BillToEdit &gt; 0 &amp;&amp; _NewPricePerDay &gt; 0 &amp;&amp; _NewMaxDays &gt; 0);
+        require(Advr.BoardId == _BillToEdit && _BillToEdit > 0 && _NewPricePerDay > 0 && _NewMaxDays > 0);
         
         Advr.BoardId          = _BillToEdit;
         Advr.PricePerDay      = _NewPricePerDay;
@@ -234,12 +234,12 @@ contract Bills
     {
         var Advr              = info[NewBoardId];
         
-        require(Advr.BoardId  != NewBoardId &amp;&amp; NewBoardId &gt; 0 &amp;&amp; PricePerDay &gt; 0 &amp;&amp; MaxDays &gt; 0);
+        require(Advr.BoardId  != NewBoardId && NewBoardId > 0 && PricePerDay > 0 && MaxDays > 0);
         
         Advr.BoardId          = NewBoardId;
         Advr.PricePerDay      = PricePerDay;
         Advr.MaxDays          = MaxDays;
-        Advr.Status           = &quot;Free&quot;;
+        Advr.Status           = "Free";
         Advr.AllowLeasing     = _AllowLeasing;
         
         Adverts.push(NewBoardId);
@@ -275,8 +275,8 @@ contract Bills
 	
 	function transfer(address _to, uint _value) public
 	{
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;

@@ -28,20 +28,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,7 +82,7 @@ contract LockableOwned is Owned{
   event ContractLocked(uint256 _untilTime, string _reason);
 
   modifier lockAffected {
-      require(block.timestamp &gt; lockedUntilTime);
+      require(block.timestamp > lockedUntilTime);
       _;
   }
 
@@ -113,8 +113,8 @@ contract Token is IERC20Token, LockableOwned {
 
   /* Private variables of the token */
   uint256 supply = 0;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowances;
 
   /* Events */
   event Mint(address indexed _to, uint256 _value);
@@ -131,7 +131,7 @@ contract Token is IERC20Token, LockableOwned {
 
   /* Transfers tokens from your address to other */
   function transfer(address _to, uint256 _value) lockAffected returns (bool success) {
-    require(_to != 0x0 &amp;&amp; _to != address(this));
+    require(_to != 0x0 && _to != address(this));
     balances[msg.sender] = balances[msg.sender].sub(_value); // Deduct senders balance
     balances[_to] = balances[_to].add(_value);               // Add receivers balance
     Transfer(msg.sender, _to, _value);                       // Raise Transfer event
@@ -155,7 +155,7 @@ contract Token is IERC20Token, LockableOwned {
 
   /* A contract attempts to get the coins */
   function transferFrom(address _from, address _to, uint256 _value) lockAffected returns (bool success) {
-    require(_to != 0x0 &amp;&amp; _to != address(this));
+    require(_to != 0x0 && _to != address(this));
     balances[_from] = balances[_from].sub(_value);                              // Deduct senders balance
     balances[_to] = balances[_to].add(_value);                                  // Add recipient balance
     allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);  // Deduct allowance for this address
@@ -186,11 +186,11 @@ contract FutouristToken is Token {
 
   /* Initializes contract */
   function FutouristToken() {
-    standard = &quot; v1.0&quot;;
-    name = &quot;FutouristToken&quot;;
-    symbol = &quot;FTR&quot;;
+    standard = " v1.0";
+    name = "FutouristToken";
+    symbol = "FTR";
     decimals = 18;
     crowdsaleContractAddress = 0x642CE99AaD0cCc6fEd7930117b217A18ce4B4229;
-    lockFromSelf(1521561600, &quot;Lock before crowdsale starts&quot;);
+    lockFromSelf(1521561600, "Lock before crowdsale starts");
   }
 }

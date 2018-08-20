@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,8 +72,8 @@ contract GMPToken is Ownable, ERC20Interface {
   uint256 public totalSupply;
 
   /* This creates an array with all balances */
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowed;
 
   /* Constuctor: Initializes contract with initial supply tokens to the creator of the contract */
   function GMPToken(
@@ -98,8 +98,8 @@ contract GMPToken is Ownable, ERC20Interface {
   /* Internal transfer, only can be called by this contract */
   function _transfer(address _from, address _to, uint _amount) internal {
       require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-      require (balances[_from] &gt; _amount);                // Check if the sender has enough
-      require (balances[_to] + _amount &gt; balances[_to]); // Check for overflows
+      require (balances[_from] > _amount);                // Check if the sender has enough
+      require (balances[_to] + _amount > balances[_to]); // Check for overflows
       balances[_from] -= _amount;                         // Subtract from the sender
       balances[_to] += _amount;                            // Add the same to the recipient
       Transfer(_from, _to, _amount);
@@ -112,7 +112,7 @@ contract GMPToken is Ownable, ERC20Interface {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-    require (_value &lt; allowed[_from][msg.sender]);     // Check allowance
+    require (_value < allowed[_from][msg.sender]);     // Check allowance
     allowed[_from][msg.sender] -= _value;
     _transfer(_from, _to, _value);
     return true;
@@ -171,7 +171,7 @@ contract Crowdsale is Ownable {
   function Crowdsale(uint256 initialRate, address targetWallet, uint256 initialSupply, string tokenName, uint8 decimalUnits, string tokenSymbol) {
 
     //Checks
-    require(initialRate &gt; 0);
+    require(initialRate > 0);
     require(targetWallet != 0x0);
 
     //Init
@@ -218,7 +218,7 @@ contract Crowdsale is Ownable {
 
     require(msg.sender != 0x0);
     require(saleIsActive);
-    require(msg.value &gt; rate);
+    require(msg.value > rate);
 
     uint256 weiAmount = msg.value;
 

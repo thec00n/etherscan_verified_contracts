@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;EVE&#39; &#39;Devery EVE&#39; crowdsale and token contracts
+// 'EVE' 'Devery EVE' crowdsale and token contracts
 //
 // Symbol      : EVE
 // Name        : Devery EVE
@@ -31,18 +31,18 @@ contract ERC20Interface {
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Token Teleportation Service Interface v1.00
+// BokkyPooBah's Token Teleportation Service Interface v1.00
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
 contract BTTSTokenInterface is ERC20Interface {
     uint public constant bttsVersion = 100;
 
-    bytes public constant signingPrefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
-    bytes4 public constant signedTransferSig = &quot;\x75\x32\xea\xac&quot;;
-    bytes4 public constant signedApproveSig = &quot;\xe9\xaf\xa7\xa1&quot;;
-    bytes4 public constant signedTransferFromSig = &quot;\x34\x4b\xcc\x7d&quot;;
-    bytes4 public constant signedApproveAndCallSig = &quot;\xf1\x6f\x9b\x53&quot;;
+    bytes public constant signingPrefix = "\x19Ethereum Signed Message:\n32";
+    bytes4 public constant signedTransferSig = "\x75\x32\xea\xac";
+    bytes4 public constant signedApproveSig = "\xe9\xaf\xa7\xa1";
+    bytes4 public constant signedTransferFromSig = "\x34\x4b\xcc\x7d";
+    bytes4 public constant signedApproveAndCallSig = "\xf1\x6f\x9b\x53";
 
     event OwnershipTransferred(address indexed from, address indexed to);
     event MinterUpdated(address from, address to);
@@ -109,10 +109,10 @@ contract PICOPSCertifier {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -120,7 +120,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -172,7 +172,7 @@ contract DeveryVesting {
         uint periodLength;
         uint withdrawn;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     event NewEntry(address indexed holder, uint proportion, uint periods, uint periodLength);
     event Withdrawn(address indexed holder, uint withdrawn);
@@ -194,8 +194,8 @@ contract DeveryVesting {
     function addEntry(address holder, uint proportion, uint periods, uint periodLength) internal {
         require(msg.sender == crowdsale.owner());
         require(holder != address(0));
-        require(proportion &gt; 0);
-        require(periods &gt; 0);
+        require(proportion > 0);
+        require(periods > 0);
         require(entries[holder].proportion == 0);
         entries[holder] = Entry({
             proportion: proportion,
@@ -210,18 +210,18 @@ contract DeveryVesting {
     function tokenShare(address holder) public view returns (uint) {
         uint result = 0;
         Entry memory entry = entries[holder];
-        if (entry.proportion &gt; 0 &amp;&amp; totalProportion &gt; 0) {
+        if (entry.proportion > 0 && totalProportion > 0) {
             result = totalTokens.mul(entry.proportion).div(totalProportion);
         }
         return result;
     }
     function vested(address holder, uint time) public view returns (uint) {
         uint result = 0;
-        if (startDate &gt; 0 &amp;&amp; time &gt; startDate) {
+        if (startDate > 0 && time > startDate) {
             Entry memory entry = entries[holder];
-            if (entry.proportion &gt; 0 &amp;&amp; totalProportion &gt; 0) {
+            if (entry.proportion > 0 && totalProportion > 0) {
                 uint _tokenShare = totalTokens.mul(entry.proportion).div(totalProportion);
-                if (time &gt;= startDate.add(entry.periods.mul(entry.periodLength))) {
+                if (time >= startDate.add(entry.periods.mul(entry.periodLength))) {
                     result = _tokenShare;
                 } else {
                     uint periods = time.sub(startDate).div(entry.periodLength);
@@ -234,7 +234,7 @@ contract DeveryVesting {
     function withdrawable(address holder) public view returns (uint) {
         uint result = 0;
         Entry memory entry = entries[holder];
-        if (entry.proportion &gt; 0 &amp;&amp; totalProportion &gt; 0) {
+        if (entry.proportion > 0 && totalProportion > 0) {
             uint _vested = vested(holder, now);
             result = _vested.sub(entry.withdrawn);
         }
@@ -242,10 +242,10 @@ contract DeveryVesting {
     }
     function withdraw() public {
         Entry storage entry = entries[msg.sender];
-        require(entry.proportion &gt; 0 &amp;&amp; totalProportion &gt; 0);
+        require(entry.proportion > 0 && totalProportion > 0);
         uint _vested = vested(msg.sender, now);
         uint _withdrawn = entry.withdrawn;
-        require(_vested &gt; _withdrawn);
+        require(_vested > _withdrawn);
         uint _withdrawable = _vested.sub(_withdrawn);
         entry.withdrawn = _vested;
         require(crowdsale.bttsToken().transfer(msg.sender, _withdrawable));
@@ -280,7 +280,7 @@ contract DeveryCrowdsale is Owned {
     uint public constant PRESALE_BONUS_PERCENT = 5;
 
     uint public constant PER_ACCOUNT_ADDITIONAL_TOKENS = 200 * 10**uint(TOKEN_DECIMALS);
-    mapping(address =&gt; bool) bonusTokensAllocate;
+    mapping(address => bool) bonusTokensAllocate;
 
     PICOPSCertifier public picopsCertifier = PICOPSCertifier(0x1e2F058C43ac8965938F6e9CA286685A3E63F24E);
 
@@ -292,8 +292,8 @@ contract DeveryCrowdsale is Owned {
     uint public constant TARGET_EVE = 100000000 * 10**uint(TOKEN_DECIMALS);
     uint public constant PRESALEPLUSCROWDSALE_EVE = TARGET_EVE * (100 - TEAM_PERCENT_EVE - RESERVE_PERCENT_EVE) / 100;
 
-    // Start 18 Jan 2018 16:00 UTC =&gt; &quot;Fri, 19 Jan 2018 03:00:00 AEDT&quot;
-    // new Date(1516291200 * 1000).toUTCString() =&gt; &quot;Thu, 18 Jan 2018 16:00:00 UTC&quot;
+    // Start 18 Jan 2018 16:00 UTC => "Fri, 19 Jan 2018 03:00:00 AEDT"
+    // new Date(1516291200 * 1000).toUTCString() => "Thu, 18 Jan 2018 16:00:00 UTC"
     uint public startDate = 1516291200;
     uint public firstPeriodEndDate = startDate + 12 hours;
     uint public endDate = startDate + 14 days;
@@ -308,7 +308,7 @@ contract DeveryCrowdsale is Owned {
     uint public contributedUsd;
     uint public generatedEve;
 
-    mapping(address =&gt; uint) public accountEthAmount;
+    mapping(address => uint) public accountEthAmount;
 
     bool public finalised;
 
@@ -328,12 +328,12 @@ contract DeveryCrowdsale is Owned {
     }
 
     function setBTTSToken(address _bttsToken) public onlyOwner {
-        require(now &lt;= startDate);
+        require(now <= startDate);
         BTTSTokenUpdated(address(bttsToken), _bttsToken);
         bttsToken = BTTSTokenInterface(_bttsToken);
     }
     function setPICOPSCertifier(address _picopsCertifier) public onlyOwner {
-        require(now &lt;= startDate);
+        require(now <= startDate);
         PICOPSCertifierUpdated(address(picopsCertifier), _picopsCertifier);
         picopsCertifier = PICOPSCertifier(_picopsCertifier);
     }
@@ -346,29 +346,29 @@ contract DeveryCrowdsale is Owned {
         reserveWallet = _reserveWallet;
     }
     function setStartDate(uint _startDate) public onlyOwner {
-        require(_startDate &gt;= now);
+        require(_startDate >= now);
         StartDateUpdated(startDate, _startDate);
         startDate = _startDate;
     }
     function setFirstPeriodEndDate(uint _firstPeriodEndDate) public onlyOwner {
-        require(_firstPeriodEndDate &gt;= now);
-        require(_firstPeriodEndDate &gt;= startDate);
+        require(_firstPeriodEndDate >= now);
+        require(_firstPeriodEndDate >= startDate);
         FirstPeriodEndDateUpdated(firstPeriodEndDate, _firstPeriodEndDate);
         firstPeriodEndDate = _firstPeriodEndDate;
     }
     function setEndDate(uint _endDate) public onlyOwner {
-        require(_endDate &gt;= now);
-        require(_endDate &gt;= firstPeriodEndDate);
+        require(_endDate >= now);
+        require(_endDate >= firstPeriodEndDate);
         EndDateUpdated(endDate, _endDate);
         endDate = _endDate;
     }
     function setUsdPerKEther(uint _usdPerKEther) public onlyOwner {
-        require(now &lt;= startDate);
+        require(now <= startDate);
         UsdPerKEtherUpdated(usdPerKEther, _usdPerKEther);
         usdPerKEther = _usdPerKEther;
     }
     function setFirstPeriodCap(uint _firstPeriodCap) public onlyOwner {
-        require(_firstPeriodCap &gt;= MIN_CONTRIBUTION_ETH);
+        require(_firstPeriodCap >= MIN_CONTRIBUTION_ETH);
         FirstPeriodCapUpdated(firstPeriodCap, _firstPeriodCap);
         firstPeriodCap = _firstPeriodCap;
     }
@@ -411,11 +411,11 @@ contract DeveryCrowdsale is Owned {
     function generateTokensForPresaleAccounts(address[] accounts) public onlyOwner {
         require(bttsToken != address(0));
         require(!presaleProcessed);
-        for (uint i = 0; i &lt; accounts.length; i++) {
+        for (uint i = 0; i < accounts.length; i++) {
             address account = accounts[i];
             uint ethAmount = presaleToken.balanceOf(account);
             uint eveAmount = bttsToken.balanceOf(account);
-            if (eveAmount == 0 &amp;&amp; ethAmount != 0) {
+            if (eveAmount == 0 && ethAmount != 0) {
                 presaleEthAmountsProcessed = presaleEthAmountsProcessed.add(ethAmount);
                 accountEthAmount[account] = accountEthAmount[account].add(ethAmount);
                 eveAmount = eveFromEth(ethAmount, PRESALE_BONUS_PERCENT);
@@ -441,22 +441,22 @@ contract DeveryCrowdsale is Owned {
         if (msg.sender == owner) {
             require(msg.value == MIN_CONTRIBUTION_ETH);
         } else {
-            require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
-            if (now &lt;= firstPeriodEndDate) {
-                require(accountEthAmount[msg.sender].add(ethAmount) &lt;= firstPeriodCap);
+            require(now >= startDate && now <= endDate);
+            if (now <= firstPeriodEndDate) {
+                require(accountEthAmount[msg.sender].add(ethAmount) <= firstPeriodCap);
                 require(picopsCertifier.certified(msg.sender));
             }
         }
-        require(contributedEth &lt; capEth());
-        require(msg.value &gt;= MIN_CONTRIBUTION_ETH);
+        require(contributedEth < capEth());
+        require(msg.value >= MIN_CONTRIBUTION_ETH);
         uint ethRefund = 0;
-        if (contributedEth.add(ethAmount) &gt; capEth()) {
+        if (contributedEth.add(ethAmount) > capEth()) {
             ethAmount = capEth().sub(contributedEth);
             ethRefund = msg.value.sub(ethAmount);
         }
         uint usdAmount = ethAmount.mul(usdPerKEther).div(10**uint(3 + 18));
         uint eveAmount = eveFromEth(ethAmount, 0);
-        if (picopsCertifier.certified(msg.sender) &amp;&amp; !bonusTokensAllocate[msg.sender]) {
+        if (picopsCertifier.certified(msg.sender) && !bonusTokensAllocate[msg.sender]) {
             eveAmount = eveAmount.add(PER_ACCOUNT_ADDITIONAL_TOKENS);
             bonusTokensAllocate[msg.sender] = true;
         }
@@ -465,12 +465,12 @@ contract DeveryCrowdsale is Owned {
         contributedUsd = contributedUsd.add(usdAmount);
         accountEthAmount[msg.sender] = accountEthAmount[msg.sender].add(ethAmount);
         bttsToken.mint(msg.sender, eveAmount, false);
-        if (ethAmount &gt; 0) {
+        if (ethAmount > 0) {
             wallet.transfer(ethAmount);
         }
         Contributed(msg.sender, ethAmount, ethRefund, accountEthAmount[msg.sender], usdAmount, 0, eveAmount,
             contributedEth, contributedUsd, generatedEve);
-        if (ethRefund &gt; 0) {
+        if (ethRefund > 0) {
             msg.sender.transfer(ethRefund);
         }
     }
@@ -478,24 +478,24 @@ contract DeveryCrowdsale is Owned {
     function roundUp(uint a) internal pure returns (uint) {
         uint multiple = 10**uint(TOKEN_DECIMALS);
         uint remainder = a % multiple;
-        if (remainder &gt; 0) {
+        if (remainder > 0) {
             return a.add(multiple).sub(remainder);
         }
     }
     function finalise() public onlyOwner {
         require(!finalised);
-        require(now &gt; endDate || contributedEth &gt;= capEth());
+        require(now > endDate || contributedEth >= capEth());
         uint total = generatedEve.mul(100).div(uint(100).sub(TEAM_PERCENT_EVE).sub(RESERVE_PERCENT_EVE));
         uint amountTeam = total.mul(TEAM_PERCENT_EVE).div(100);
         uint amountReserve = total.mul(RESERVE_PERCENT_EVE).div(100);
         generatedEve = generatedEve.add(amountTeam).add(amountReserve);
         uint rounded = roundUp(generatedEve);
-        if (rounded &gt; generatedEve) {
+        if (rounded > generatedEve) {
             uint dust = rounded.sub(generatedEve);
             generatedEve = generatedEve.add(dust);
             amountReserve = amountReserve.add(dust);
         }
-        if (generatedEve &gt; TARGET_EVE) {
+        if (generatedEve > TARGET_EVE) {
             uint diff = generatedEve.sub(TARGET_EVE);
             generatedEve = TARGET_EVE;
             amountReserve = amountReserve.sub(diff);

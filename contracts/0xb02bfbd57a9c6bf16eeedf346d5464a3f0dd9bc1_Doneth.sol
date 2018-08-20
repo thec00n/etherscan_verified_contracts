@@ -60,7 +60,7 @@ contract Doneth is Ownable {
     uint256 public sharedExpenseWithdrawn;
 
     // Used to keep track of members
-    mapping(address =&gt; Member) public members;
+    mapping(address => Member) public members;
     address[] public memberKeys;
     struct Member {
         bool exists;
@@ -68,11 +68,11 @@ contract Doneth is Ownable {
         uint256 shares;
         uint256 withdrawn;
         string memberName;
-        mapping(address =&gt; uint256) tokensWithdrawn;
+        mapping(address => uint256) tokensWithdrawn;
     }
 
     // Used to keep track of ERC20 tokens used and how much withdrawn
-    mapping(address =&gt; Token) public tokens;
+    mapping(address => Token) public tokens;
     address[] public tokenKeys;
     struct Token {
         bool exists;
@@ -80,8 +80,8 @@ contract Doneth is Ownable {
     }
 
     function Doneth(string _contractName, string _founderName) {
-        if (bytes(_contractName).length &gt; 21) revert();
-        if (bytes(_founderName).length &gt; 21) revert();
+        if (bytes(_contractName).length > 21) revert();
+        if (bytes(_founderName).length > 21) revert();
         name = _contractName;
         genesisBlockNumber = block.number;
         addMember(msg.sender, 1, true, _founderName);
@@ -104,7 +104,7 @@ contract Doneth is Ownable {
     }
 
     modifier onlyAdmin() { 
-        if (msg.sender != owner &amp;&amp; !members[msg.sender].admin) revert();   
+        if (msg.sender != owner && !members[msg.sender].admin) revert();   
         _;
     }
 
@@ -137,7 +137,7 @@ contract Doneth is Ownable {
 
     function checkERC20Balance(address token) public constant returns(uint256) {
         uint256 balance = ERC20(token).balanceOf(address(this));
-        if (!tokens[token].exists &amp;&amp; balance &gt; 0) {
+        if (!tokens[token].exists && balance > 0) {
             tokens[token].exists = true;
         }
         return balance;
@@ -145,9 +145,9 @@ contract Doneth is Ownable {
 
     // Function to add members to the contract 
     function addMember(address who, uint256 shares, bool admin, string memberName) public onlyAdmin() {
-        // Don&#39;t allow the same member to be added twice
+        // Don't allow the same member to be added twice
         if (members[who].exists) revert();
-        if (bytes(memberName).length &gt; 21) revert();
+        if (bytes(memberName).length > 21) revert();
 
         Member memory newMember;
         newMember.exists = true;
@@ -165,10 +165,10 @@ contract Doneth is Ownable {
         if (members[who].shares != shares) allocateShares(who, shares);
     }
 
-    // Only owner, admin or member can change member&#39;s name
+    // Only owner, admin or member can change member's name
     function changeMemberName(address who, string newName) public onlyExisting(who) {
-        if (msg.sender != who &amp;&amp; msg.sender != owner &amp;&amp; !members[msg.sender].admin) revert();
-        if (bytes(newName).length &gt; 21) revert();
+        if (msg.sender != who && msg.sender != owner && !members[msg.sender].admin) revert();
+        if (bytes(newName).length > 21) revert();
         ChangeMemberName(who, members[who].memberName, newName);
         members[who].memberName = newName;
     }
@@ -180,7 +180,7 @@ contract Doneth is Ownable {
 
     // Only admins and owners can change the contract name
     function changeContractName(string newName) public onlyAdmin() {
-        if (bytes(newName).length &gt; 21) revert();
+        if (bytes(newName).length > 21) revert();
         ChangeContractName(name, newName);
         name = newName;
     }
@@ -189,8 +189,8 @@ contract Doneth is Ownable {
     // expenses. Shared expense allocation subtracts from the total balance of the contract. 
     // Only owner can change this amount.
     function changeSharedExpenseAllocation(uint256 newAllocation) public onlyOwner() {
-        if (newAllocation &lt; sharedExpenseWithdrawn) revert();
-        if (newAllocation.sub(sharedExpenseWithdrawn) &gt; this.balance) revert();
+        if (newAllocation < sharedExpenseWithdrawn) revert();
+        if (newAllocation.sub(sharedExpenseWithdrawn) > this.balance) revert();
 
         ChangeSharedExpense(this.balance, sharedExpense, newAllocation);
         sharedExpense = newAllocation;
@@ -200,7 +200,7 @@ contract Doneth is Ownable {
     function allocateShares(address who, uint256 amount) public onlyAdmin() onlyExisting(who) {
         uint256 currentShares = members[who].shares;
         if (amount == currentShares) revert();
-        if (amount &gt; currentShares) {
+        if (amount > currentShares) {
             addShare(who, amount.sub(currentShares));
         } else {
             removeShare(who, currentShares.sub(amount));
@@ -223,12 +223,12 @@ contract Doneth is Ownable {
 
     // Function for a member to withdraw Ether from the contract proportional
     // to the amount of shares they have. Calculates the totalWithdrawableAmount
-    // in Ether based on the member&#39;s share and the Ether balance of the contract,
+    // in Ether based on the member's share and the Ether balance of the contract,
     // then subtracts the amount of Ether that the member has already previously
     // withdrawn.
     function withdraw(uint256 amount) public onlyExisting(msg.sender) {
         uint256 newTotal = calculateTotalWithdrawableAmount(msg.sender);
-        if (amount &gt; newTotal.sub(members[msg.sender].withdrawn)) revert();
+        if (amount > newTotal.sub(members[msg.sender].withdrawn)) revert();
         
         members[msg.sender].withdrawn = members[msg.sender].withdrawn.add(amount);
         totalWithdrawn = totalWithdrawn.add(amount);
@@ -239,7 +239,7 @@ contract Doneth is Ownable {
     // Withdrawal function for ERC20 tokens
     function withdrawToken(uint256 amount, address token) public onlyExisting(msg.sender) {
         uint256 newTotal = calculateTotalWithdrawableTokenAmount(msg.sender, token);
-        if (amount &gt; newTotal.sub(members[msg.sender].tokensWithdrawn[token])) revert();
+        if (amount > newTotal.sub(members[msg.sender].tokensWithdrawn[token])) revert();
 
         members[msg.sender].tokensWithdrawn[token] = members[msg.sender].tokensWithdrawn[token].add(amount);
         tokens[token].totalWithdrawn = tokens[token].totalWithdrawn.add(amount);
@@ -250,7 +250,7 @@ contract Doneth is Ownable {
     // Withdraw from shared expense allocation. Total withdrawable is calculated as 
     // sharedExpense minus sharedExpenseWithdrawn. Only Admin can withdraw from shared expense.
     function withdrawSharedExpense(uint256 amount, address to) public onlyAdmin() {
-        if (amount &gt; calculateTotalExpenseWithdrawableAmount()) revert();
+        if (amount > calculateTotalExpenseWithdrawableAmount()) revert();
         
         sharedExpenseWithdrawn = sharedExpenseWithdrawn.add(amount);
         to.transfer(amount);
@@ -332,20 +332,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 

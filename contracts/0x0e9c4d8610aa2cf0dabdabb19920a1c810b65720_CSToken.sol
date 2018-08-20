@@ -27,38 +27,38 @@ contract CSToken is owned {
 	}
 
 	/* Public variables of the token */
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
 
-	string public name = &#39;KickCoin&#39;;
+	string public name = 'KickCoin';
 
-	string public symbol = &#39;KC&#39;;
+	string public symbol = 'KC';
 
 	uint8 public decimals = 8;
 
 	uint256 public totalSupply = 0;
 
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public matureBalanceOf;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public matureBalanceOf;
 
-	mapping (address =&gt; mapping (uint =&gt; uint256)) public agingBalanceOf;
+	mapping (address => mapping (uint => uint256)) public agingBalanceOf;
 
 	uint[] agingTimes;
 
 	Dividend[] dividends;
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+	mapping (address => mapping (address => uint256)) public allowance;
 	/* This generates a public event on the blockchain that will notify clients */
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	event AgingTransfer(address indexed from, address indexed to, uint256 value, uint agingTime);
 
 	uint countAddressIndexes = 0;
 
-	mapping (uint =&gt; address) addressByIndex;
+	mapping (uint => address) addressByIndex;
 
-	mapping (address =&gt; uint) indexByAddress;
+	mapping (address => uint) indexByAddress;
 
-	mapping (address =&gt; uint) agingTimesForPools;
+	mapping (address => uint) agingTimesForPools;
 
 	/* Initializes contract with initial supply tokens to the creator of the contract */
 	function CSToken() {
@@ -91,9 +91,9 @@ contract CSToken is owned {
 	}
 
 	function calculateDividends(uint which) {
-		require(now &gt;= dividends[which].time &amp;&amp; !dividends[which].isComplete);
+		require(now >= dividends[which].time && !dividends[which].isComplete);
 
-		for (uint i = 1; i &lt;= countAddressIndexes; i++) {
+		for (uint i = 1; i <= countAddressIndexes; i++) {
 			balanceOf[addressByIndex[i]] += balanceOf[addressByIndex[i]] * dividends[which].tenThousandth / 10000;
 			matureBalanceOf[addressByIndex[i]] += matureBalanceOf[addressByIndex[i]] * dividends[which].tenThousandth / 10000;
 		}
@@ -102,17 +102,17 @@ contract CSToken is owned {
 	/* Send coins */
 	function transfer(address _to, uint256 _value) {
 		checkMyAging(msg.sender);
-		require(matureBalanceOf[msg.sender] &gt;= _value);
+		require(matureBalanceOf[msg.sender] >= _value);
 
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]);
-		require(matureBalanceOf[_to] + _value &gt; matureBalanceOf[_to]);
+		require(balanceOf[_to] + _value > balanceOf[_to]);
+		require(matureBalanceOf[_to] + _value > matureBalanceOf[_to]);
 		// Check for overflows
 
 		balanceOf[msg.sender] -= _value;
 		matureBalanceOf[msg.sender] -= _value;
 		// Subtract from the sender
 
-		if (agingTimesForPools[msg.sender] &gt; 0 &amp;&amp; agingTimesForPools[msg.sender] &gt; now) {
+		if (agingTimesForPools[msg.sender] > 0 && agingTimesForPools[msg.sender] > now) {
 			addToAging(msg.sender, _to, agingTimesForPools[msg.sender], _value);
 		} else {
 			matureBalanceOf[_to] += _value;
@@ -122,7 +122,7 @@ contract CSToken is owned {
 	}
 
 	function mintToken(address target, uint256 mintedAmount, uint agingTime) onlyOwner {
-		if (agingTime &gt; now) {
+		if (agingTime > now) {
 			addToAging(owner, target, agingTime, mintedAmount);
 		} else {
 			matureBalanceOf[target] += mintedAmount;
@@ -142,7 +142,7 @@ contract CSToken is owned {
 			addressByIndex[countAddressIndexes] = target;
 		}
 		bool existTime = false;
-		for (uint i = 0; i &lt; agingTimes.length; i++) {
+		for (uint i = 0; i < agingTimes.length; i++) {
 			if (agingTimes[i] == agingTime)
 			existTime = true;
 		}
@@ -168,12 +168,12 @@ contract CSToken is owned {
 	/* A contract attempts to get the coins */
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 		checkMyAging(_from);
-		require(matureBalanceOf[_from] &gt;= _value);
+		require(matureBalanceOf[_from] >= _value);
 		// Check if the sender has enough
-		assert(balanceOf[_to] + _value &gt; balanceOf[_to]);
-		assert(matureBalanceOf[_to] + _value &gt; matureBalanceOf[_to]);
+		assert(balanceOf[_to] + _value > balanceOf[_to]);
+		assert(matureBalanceOf[_to] + _value > matureBalanceOf[_to]);
 		// Check for overflows
-		require(_value &lt;= allowance[_from][msg.sender]);
+		require(_value <= allowance[_from][msg.sender]);
 		// Check allowance
 		balanceOf[_from] -= _value;
 		matureBalanceOf[_from] -= _value;
@@ -182,7 +182,7 @@ contract CSToken is owned {
 		// Add the same to the recipient
 		allowance[_from][msg.sender] -= _value;
 
-		if (agingTimesForPools[_from] &gt; 0 &amp;&amp; agingTimesForPools[_from] &gt; now) {
+		if (agingTimesForPools[_from] > 0 && agingTimesForPools[_from] > now) {
 			addToAging(_from, _to, agingTimesForPools[_from], _value);
 		} else {
 			matureBalanceOf[_to] += _value;
@@ -199,10 +199,10 @@ contract CSToken is owned {
 	}
 
 	function checkMyAging(address sender) internal {
-		for (uint k = 0; k &lt; agingTimes.length; k++) {
-			if (agingTimes[k] &lt; now &amp;&amp; agingBalanceOf[sender][agingTimes[k]] &gt; 0) {
-				for(uint256 i = 0; i &lt; 24; i++) {
-					if(now &lt; dividends[i].time) break;
+		for (uint k = 0; k < agingTimes.length; k++) {
+			if (agingTimes[k] < now && agingBalanceOf[sender][agingTimes[k]] > 0) {
+				for(uint256 i = 0; i < 24; i++) {
+					if(now < dividends[i].time) break;
 					if(!dividends[i].isComplete) break;
 					agingBalanceOf[sender][agingTimes[k]] += agingBalanceOf[sender][agingTimes[k]] * dividends[i].tenThousandth / 10000;
 				}

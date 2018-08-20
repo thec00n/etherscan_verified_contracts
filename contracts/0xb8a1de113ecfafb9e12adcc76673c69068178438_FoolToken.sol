@@ -35,20 +35,20 @@ contract SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,8 +58,8 @@ contract StandardToken is ERC20, SafeMath {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     function totalSupply() public view returns (uint256) {
         return 1010000010011110100111101010000; // POOP in binary
@@ -68,7 +68,7 @@ contract StandardToken is ERC20, SafeMath {
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
@@ -123,7 +123,7 @@ contract Owned {
 
     /// @dev `owner` is the only address that can call a function with this
     /// modifier; the function body is inserted where the special symbol
-    /// &quot;_;&quot; in the definition of a modifier appears.
+    /// "_;" in the definition of a modifier appears.
         /// modifier
     modifier onlyOwner() {
         require (msg.sender == owner);
@@ -158,7 +158,7 @@ contract Owned {
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -193,7 +193,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) view public returns (bool) {
         return !escapeBlacklist[_token];
@@ -245,14 +245,14 @@ contract Campaign {
 }
 
 /// @title Token contract - Implements Standard Token Interface but adds Charity Support :)
-/// @author Rishab Hegde - &lt;<span class="__cf_email__" data-cfemail="d2b1bdbca6b3b1a692a0bba1bab3b0bab7b5b6b7fcb1bdbf">[email&#160;protected]</span>&gt;
+/// @author Rishab Hegde - <<span class="__cf_email__" data-cfemail="d2b1bdbca6b3b1a692a0bba1bab3b0bab7b5b6b7fcb1bdbf">[email protected]</span>>
 contract FoolToken is StandardToken, Escapable {
 
     /*
      * Token meta data
      */
-    string constant public name = &quot;FoolToken&quot;;
-    string constant public symbol = &quot;FOOL&quot;;
+    string constant public name = "FoolToken";
+    string constant public symbol = "FOOL";
     uint8 constant public decimals = 18;
     bool public alive = true;
     Campaign public beneficiary; // expected to be a Giveth campaign

@@ -1,4 +1,4 @@
-/* Author: Victor Mezrin  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a7c63697e65784a676f7078636424696567">[email&#160;protected]</a> */
+/* Author: Victor Mezrin  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a7c63697e65784a676f7078636424696567">[email protected]</a> */
 
 
 pragma solidity ^0.4.18;
@@ -30,20 +30,20 @@ contract SafeMath is SafeMathInterface {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -89,7 +89,7 @@ contract CommonModifiers is CommonModifiersInterface {
       //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_targetAddress)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
 }
 
@@ -122,7 +122,7 @@ contract AssetID is AssetIDInterface {
   /* Constructor */
 
   function AssetID(string _assetID) public {
-    require(bytes(_assetID).length &gt; 0);
+    require(bytes(_assetID).length > 0);
 
     assetID = _assetID;
   }
@@ -143,12 +143,12 @@ contract AssetID is AssetIDInterface {
 /**
  * @title OwnableInterface
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableInterface {
 
   /**
-   * @dev The getter for &quot;owner&quot; contract variable
+   * @dev The getter for "owner" contract variable
    */
   function getOwner() public constant returns (address);
 
@@ -166,7 +166,7 @@ contract OwnableInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable is OwnableInterface {
 
@@ -241,14 +241,14 @@ contract Ownable is OwnableInterface {
 
 
   /**
-   * @dev The getter for &quot;owner&quot; contract variable
+   * @dev The getter for "owner" contract variable
    */
   function getOwner() public constant returns (address) {
     return owner;
   }
 
   /**
-   * @dev The getter for &quot;proposedOwner&quot; contract variable
+   * @dev The getter for "proposedOwner" contract variable
    */
   function getProposedOwner() public constant returns (address) {
     return proposedOwner;
@@ -291,8 +291,8 @@ contract Manageable is OwnableInterface,
 
   /* Storage */
 
-  mapping (address =&gt; bool) managerEnabled;  // hard switch for a manager - on/off
-  mapping (address =&gt; mapping (string =&gt; bool)) managerPermissions;  // detailed info about manager`s permissions
+  mapping (address => bool) managerEnabled;  // hard switch for a manager - on/off
+  mapping (address => mapping (string => bool)) managerPermissions;  // detailed info about manager`s permissions
 
 
   /* Events */
@@ -417,7 +417,7 @@ contract Manageable is OwnableInterface,
     onlyValidPermissionName(_permissionName)
     returns (bool)
   {
-    return (managerEnabled[_manager] &amp;&amp; managerPermissions[_manager][_permissionName]);
+    return (managerEnabled[_manager] && managerPermissions[_manager][_permissionName]);
   }
 
 
@@ -445,7 +445,7 @@ contract Manageable is OwnableInterface,
 /**
  * @title PausableInterface
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract PausableInterface {
@@ -469,7 +469,7 @@ contract PausableInterface {
   function unpauseContract() public;
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() public constant returns (bool);
 
@@ -496,7 +496,7 @@ contract PausableInterface {
 /**
  * @title Pausable
  * @dev Base contract which allows children to implement an emergency stop mechanism.
- * @dev Based on zeppelin&#39;s Pausable, but integrated with Manageable
+ * @dev Based on zeppelin's Pausable, but integrated with Manageable
  * @dev Contract is in paused state by default and should be explicitly unlocked
  */
 contract Pausable is ManageableInterface,
@@ -512,7 +512,7 @@ contract Pausable is ManageableInterface,
   /**
    * @dev called by the manager to pause, triggers stopped state
    */
-  function pauseContract() public onlyAllowedManager(&#39;pause_contract&#39;) whenContractNotPaused {
+  function pauseContract() public onlyAllowedManager('pause_contract') whenContractNotPaused {
     paused = true;
     PauseEvent();
   }
@@ -520,13 +520,13 @@ contract Pausable is ManageableInterface,
   /**
    * @dev called by the manager to unpause, returns to normal state
    */
-  function unpauseContract() public onlyAllowedManager(&#39;unpause_contract&#39;) whenContractPaused {
+  function unpauseContract() public onlyAllowedManager('unpause_contract') whenContractPaused {
     paused = false;
     UnpauseEvent();
   }
 
   /**
-   * @dev The getter for &quot;paused&quot; contract variable
+   * @dev The getter for "paused" contract variable
    */
   function getPaused() public constant returns (bool) {
     return paused;
@@ -583,7 +583,7 @@ contract BytecodeExecutor is ManageableInterface,
     bytes _transactionBytecode
   )
     external
-    onlyAllowedManager(&#39;execute_call&#39;)
+    onlyAllowedManager('execute_call')
   {
     require(underExecution == false);
 
@@ -600,7 +600,7 @@ contract BytecodeExecutor is ManageableInterface,
     bytes _transactionBytecode
   )
     external
-    onlyAllowedManager(&#39;execute_delegatecall&#39;)
+    onlyAllowedManager('execute_delegatecall')
   {
     require(underExecution == false);
 
@@ -657,7 +657,7 @@ contract CrydrStorageBase is CommonModifiersInterface,
     public
     whenContractPaused
     onlyContractAddress(_crydrController)
-    onlyAllowedManager(&#39;set_crydr_controller&#39;)
+    onlyAllowedManager('set_crydr_controller')
   {
     require(_crydrController != address(crydrController));
     require(_crydrController != address(this));
@@ -723,8 +723,8 @@ contract CrydrStorageBlocks is SafeMathInterface,
 
   /* Storage */
 
-  mapping (address =&gt; uint256) accountBlocks;
-  mapping (address =&gt; uint256) accountBlockedFunds;
+  mapping (address => uint256) accountBlocks;
+  mapping (address => uint256) accountBlockedFunds;
 
 
   /* Constructor */
@@ -783,7 +783,7 @@ contract CrydrStorageBlocks is SafeMathInterface,
     require(msg.sender == getCrydrController());
 
     require(_account != address(0x0));
-    require(_value &gt; 0);
+    require(_value > 0);
 
     accountBlockedFunds[_account] = safeAdd(accountBlockedFunds[_account], _value);
     AccountFundsBlockedEvent(_account, _value);
@@ -798,7 +798,7 @@ contract CrydrStorageBlocks is SafeMathInterface,
     require(msg.sender == getCrydrController());
 
     require(_account != address(0x0));
-    require(_value &gt; 0);
+    require(_value > 0);
 
     accountBlockedFunds[_account] = safeSub(accountBlockedFunds[_account], _value);
     AccountFundsUnblockedEvent(_account, _value);
@@ -851,7 +851,7 @@ contract CrydrStorageBalance is SafeMathInterface,
 
   /* Storage */
 
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
   uint256 totalSupply = 0;
 
 
@@ -867,7 +867,7 @@ contract CrydrStorageBalance is SafeMathInterface,
     require(msg.sender == getCrydrController());
 
     require(_account != address(0x0));
-    require(_value &gt; 0);
+    require(_value > 0);
 
     balances[_account] = safeAdd(balances[_account], _value);
     totalSupply = safeAdd(totalSupply, _value);
@@ -884,7 +884,7 @@ contract CrydrStorageBalance is SafeMathInterface,
     require(msg.sender == getCrydrController());
 
     require(_account != address(0x0));
-    require(_value &gt; 0);
+    require(_value > 0);
 
     balances[_account] = safeSub(balances[_account], _value);
     totalSupply = safeSub(totalSupply, _value);
@@ -935,7 +935,7 @@ contract CrydrStorageAllowance is SafeMathInterface,
 
   /* Storage */
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /* Low-level change of allowance and getters */
@@ -953,7 +953,7 @@ contract CrydrStorageAllowance is SafeMathInterface,
     require(_owner != address(0x0));
     require(_spender != address(0x0));
     require(_owner != _spender);
-    require(_value &gt; 0);
+    require(_value > 0);
 
     allowed[_owner][_spender] = safeAdd(allowed[_owner][_spender], _value);
     AccountAllowanceIncreasedEvent(_owner, _spender, _value);
@@ -972,7 +972,7 @@ contract CrydrStorageAllowance is SafeMathInterface,
     require(_owner != address(0x0));
     require(_spender != address(0x0));
     require(_owner != _spender);
-    require(_value &gt; 0);
+    require(_value > 0);
 
     allowed[_owner][_spender] = safeSub(allowed[_owner][_spender], _value);
     AccountAllowanceDecreasedEvent(_owner, _spender, _value);
@@ -1041,7 +1041,7 @@ contract CrydrStorageERC20 is SafeMathInterface,
 
     require(_msgsender != _to);
     require(getAccountBlocks(_msgsender) == 0);
-    require(safeSub(getBalance(_msgsender), _value) &gt;= getAccountBlockedFunds(_msgsender));
+    require(safeSub(getBalance(_msgsender), _value) >= getAccountBlockedFunds(_msgsender));
 
     decreaseBalance(_msgsender, _value);
     increaseBalance(_to, _value);
@@ -1061,7 +1061,7 @@ contract CrydrStorageERC20 is SafeMathInterface,
 
     require(getAccountBlocks(_msgsender) == 0);
     require(getAccountBlocks(_from) == 0);
-    require(safeSub(getBalance(_from), _value) &gt;= getAccountBlockedFunds(_from));
+    require(safeSub(getBalance(_from), _value) >= getAccountBlockedFunds(_from));
     require(_from != _to);
 
     decreaseAllowance(_from, _msgsender, _value);
@@ -1085,7 +1085,7 @@ contract CrydrStorageERC20 is SafeMathInterface,
 
     uint256 currentAllowance = getAllowance(_msgsender, _spender);
     require(currentAllowance != _value);
-    if (currentAllowance &gt; _value) {
+    if (currentAllowance > _value) {
       decreaseAllowance(_msgsender, _spender, safeSub(currentAllowance, _value));
     } else {
       increaseAllowance(_msgsender, _spender, safeSub(_value, currentAllowance));
@@ -1122,5 +1122,5 @@ contract JCashCrydrStorage is SafeMath,
 
 
 contract JNTStorage is JCashCrydrStorage {
-  function JNTStorage() JCashCrydrStorage(&#39;JNT&#39;) public {}
+  function JNTStorage() JCashCrydrStorage('JNT') public {}
 }

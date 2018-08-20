@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 contract owned {
-    // Owner&#39;s address
+    // Owner's address
     address public owner;
 
     // Hardcoded address of super owner (for security reasons)
@@ -19,13 +19,13 @@ contract owned {
         super_owner = msg.sender; // DEBUG !!! 
     }
 
-    // Modifier for owner&#39;s functions of the contract
+    // Modifier for owner's functions of the contract
     modifier onlyOwner {
-        if ((msg.sender != owner) &amp;&amp; (msg.sender != super_owner)) revert();
+        if ((msg.sender != owner) && (msg.sender != super_owner)) revert();
         _;
     }
 
-    // Modifier for super-owner&#39;s functions of the contract
+    // Modifier for super-owner's functions of the contract
     modifier onlySuperOwner {
         if (msg.sender != super_owner) revert();
         _;
@@ -52,7 +52,7 @@ contract STE {
 
 contract STE_Poll is owned {
 	// ERC20 
-	string public standard = &#39;Token 0.1&#39;;
+	string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -69,8 +69,8 @@ contract STE_Poll is owned {
     uint256 public pStartBlock;
     uint256 public pStopBlock;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
     
@@ -80,8 +80,8 @@ contract STE_Poll is owned {
     	balanceOf[this] = totalSupply;
     	decimals = 8;
         
-        name = &quot;STE Poll&quot;;
-        symbol = &quot;STE(poll)&quot;;
+        name = "STE Poll";
+        symbol = "STE(poll)";
         
         pStartBlock = block.number;
         pStopBlock = block.number + 20;
@@ -89,8 +89,8 @@ contract STE_Poll is owned {
     
     // Calls when send Ethereum to the contract
     function() internal payable {
-        if ( balanceOf[msg.sender] &gt; 0 ) revert();
-        if ( ( block.number &gt;= pStopBlock ) || ( block.number &lt; pStartBlock ) ) revert();
+        if ( balanceOf[msg.sender] > 0 ) revert();
+        if ( ( block.number >= pStopBlock ) || ( block.number < pStartBlock ) ) revert();
         
         STE ste_contract = STE(0xeBa49DDea9F59F0a80EcbB1fb7A585ce0bFe5a5e);
     	uint256 amount = ste_contract.balanceOf(msg.sender);
@@ -123,12 +123,12 @@ contract STE_Poll is owned {
     // Withdraw
     function withdrawToFounders(uint256 amount) public onlyOwner {
     	uint256 amount_to_withdraw = amount * 1000000000000000; // 0.001 ETH
-        if (this.balance &lt; amount_to_withdraw) revert();
+        if (this.balance < amount_to_withdraw) revert();
         amount_to_withdraw = amount_to_withdraw / foundersAddresses.length;
         uint8 i = 0;
         uint8 errors = 0;
         
-        for (i = 0; i &lt; foundersAddresses.length; i++) {
+        for (i = 0; i < foundersAddresses.length; i++) {
 			if (!foundersAddresses[i].send(amount_to_withdraw)) {
 				errors++;
 			}

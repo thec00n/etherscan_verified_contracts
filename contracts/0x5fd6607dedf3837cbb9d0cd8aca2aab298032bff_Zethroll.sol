@@ -34,10 +34,10 @@ contract Zethroll is ZTHReceivingContract {
    * checks player profit, bet size and player number is within range
   */
   modifier betIsValid(uint _betSize, uint _playerNumber) {
-     require( calculateProfit(_betSize, _playerNumber) &lt; maxProfit
-             &amp;&amp; _betSize &gt;= minBet
-             &amp;&amp; _playerNumber &gt; minNumber
-             &amp;&amp; _playerNumber &lt; maxNumber);
+     require( calculateProfit(_betSize, _playerNumber) < maxProfit
+             && _betSize >= minBet
+             && _playerNumber > minNumber
+             && _playerNumber < maxNumber);
     _;
   }
 
@@ -77,7 +77,7 @@ contract Zethroll is ZTHReceivingContract {
 
   // Events
 
-  // Logs bets + output to web3 for precise &#39;payout on win&#39; field in UI
+  // Logs bets + output to web3 for precise 'payout on win' field in UI
   event LogBet(address sender, uint value, uint rollUnder);
 
   // Outputs to web3 UI on bet result
@@ -116,7 +116,7 @@ contract Zethroll is ZTHReceivingContract {
     // Init min bet (1 ZTH)
     ownerSetMinBet(1e18);
 
-    // Allow &#39;unlimited&#39; token transfer by the bankroll
+    // Allow 'unlimited' token transfer by the bankroll
     ZTHTKN.approve(zthbankrolladdr, MAX_INT);
 
     // Set the bankroll
@@ -154,7 +154,7 @@ contract Zethroll is ZTHReceivingContract {
   /*
    * public function
    * player submit bet
-   * only if game is active &amp; bet is valid
+   * only if game is active & bet is valid
   */
   event Debug(uint a, string b);
 
@@ -166,17 +166,17 @@ contract Zethroll is ZTHReceivingContract {
     uint8 rollUnder; // roll under 8 bits
   }
 
-  mapping(address =&gt; playerRoll) public playerRolls;
+  mapping(address => playerRoll) public playerRolls;
 
   function _playerRollDice(uint _rollUnder, TKN _tkn) private
     gameIsActive
     betIsValid(_tkn.value, _rollUnder)
   {
-    require(_tkn.value &lt; ((2 ** 200) - 1)); // smaller than the storage of 1 uint200;
-    //require(_rollUnder &lt; 255); // smaller than the storage of 1 uint8 [max roll under 100, checked in betIsValid]
-    require(block.number &lt; ((2 ** 48) - 1)); // current block number smaller than storage of 1 uint48
+    require(_tkn.value < ((2 ** 200) - 1)); // smaller than the storage of 1 uint200;
+    //require(_rollUnder < 255); // smaller than the storage of 1 uint8 [max roll under 100, checked in betIsValid]
+    require(block.number < ((2 ** 48) - 1)); // current block number smaller than storage of 1 uint48
     // Note that msg.sender is the Token Contract Address
-    // and &quot;_from&quot; is the sender of the tokens
+    // and "_from" is the sender of the tokens
 
     // Check that this is a non-contract sender 
     // contracts btfo we use next block need 2 tx 
@@ -249,11 +249,11 @@ contract Zethroll is ZTHReceivingContract {
    */
   function _finishBet(bool delete_it, address target) private {
     playerRoll memory roll = playerRolls[target];
-    require(roll.tokenValue &gt; 0); // no re-entracy
-    // If the block is more than 255 blocks old, we can&#39;t get the result
+    require(roll.tokenValue > 0); // no re-entracy
+    // If the block is more than 255 blocks old, we can't get the result
     // Also, if the result has alread happened, fail as well
     uint result;
-    if (block.number - roll.blockn &gt; 255) {
+    if (block.number - roll.blockn > 255) {
       // dont need this; 5k
       //playerDieResult[_rngId] = 1000;
       result = 1000; // cant win 
@@ -264,15 +264,15 @@ contract Zethroll is ZTHReceivingContract {
       result = random(100, roll.blockn, target) + 1;
     }
 
-    // Null out this bet so it can&#39;t be used again.
+    // Null out this bet so it can't be used again.
     //playerBlock[_rngId] = 0;
 
-   // emit Debug(playerDieResult[_rngId], &#39;LuckyNumber&#39;);
+   // emit Debug(playerDieResult[_rngId], 'LuckyNumber');
 
 
     uint rollUnder = roll.rollUnder;
 
-    if (result &lt; rollUnder) {
+    if (result < rollUnder) {
       // Player has won!
 
       // Safely map player profit
@@ -363,7 +363,7 @@ contract Zethroll is ZTHReceivingContract {
   onlyOwner
   {
     // Restricts each bet to a maximum profit of 1% contractBalance
-    require(newMaxProfitAsPercent &lt;= 10000);
+    require(newMaxProfitAsPercent <= 10000);
     maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
     setMaxProfit();
   }
@@ -453,9 +453,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -463,7 +463,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -472,7 +472,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

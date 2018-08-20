@@ -182,7 +182,7 @@ contract Congress is Object, Recipient {
     /**
      * @dev Get member identifier by account address
      */
-    mapping(address =&gt; uint256) public memberId;
+    mapping(address => uint256) public memberId;
 
     /**
      * @dev On proposal added 
@@ -246,7 +246,7 @@ contract Congress is Object, Recipient {
         int256  currentResult;
         bytes32 proposalHash;
         Vote[]  votes;
-        mapping(address =&gt; bool) voted;
+        mapping(address => bool) voted;
     }
 
     struct Member {
@@ -280,9 +280,9 @@ contract Congress is Object, Recipient {
     ) {
         changeVotingRules(minimumQuorumForProposals, minutesForDebate, marginOfVotesForMajority);
         // It’s necessary to add an empty first member
-        addMember(0, &#39;&#39;); // and let&#39;s add the founder, to save a step later
+        addMember(0, ''); // and let's add the founder, to save a step later
         if (congressLeader != 0)
-            addMember(congressLeader, &#39;The Founder&#39;);
+            addMember(congressLeader, 'The Founder');
     }
 
     /**
@@ -413,7 +413,7 @@ contract Congress is Object, Recipient {
         p.numberOfVotes++;                      // Increase the number of votes
         if (supportsProposal) {                 // If they support the proposal
             p.currentResult++;                  // Increase score
-        } else {                                // If they don&#39;t
+        } else {                                // If they don't
             p.currentResult--;                  // Decrease the score
         }
         // Create a log of this event
@@ -439,15 +439,15 @@ contract Congress is Object, Recipient {
            - Has a minimum quorum?
         */
 
-        if (now &lt; p.votingDeadline
+        if (now < p.votingDeadline
             || p.executed
             || p.proposalHash != sha3(p.recipient, p.amount, transactionBytecode)
-            || p.numberOfVotes &lt; minimumQuorum)
+            || p.numberOfVotes < minimumQuorum)
             throw;
 
         /* execute result */
         /* If difference between support and opposition is larger than margin */
-        if (p.currentResult &gt; majorityMargin) {
+        if (p.currentResult > majorityMargin) {
             // Avoid recursive calling
 
             p.executed = true;

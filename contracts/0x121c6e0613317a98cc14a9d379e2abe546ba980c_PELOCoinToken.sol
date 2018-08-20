@@ -10,12 +10,12 @@ contract Multiownable {
     address insideOnlyManyOwners;
     
     // Reverse lookup tables for owners and allOperations
-    mapping(address =&gt; uint) ownersIndices; // Starts from 1
-    mapping(bytes32 =&gt; uint) allOperationsIndicies;
+    mapping(address => uint) ownersIndices; // Starts from 1
+    mapping(bytes32 => uint) allOperationsIndicies;
     
     // Owners voting mask per operations
-    mapping(bytes32 =&gt; uint256) public votesMaskByOperation;
-    mapping(bytes32 =&gt; uint256) public votesCountByOperation;
+    mapping(bytes32 => uint256) public votesMaskByOperation;
+    mapping(bytes32 => uint256) public votesCountByOperation;
     
     // EVENTS
 
@@ -24,7 +24,7 @@ contract Multiownable {
     // ACCESSORS
 
     function isOwner(address wallet) public constant returns(bool) {
-        return ownersIndices[wallet] &gt; 0;
+        return ownersIndices[wallet] > 0;
     }
 
     function ownersCount() public constant returns(uint) {
@@ -62,7 +62,7 @@ contract Multiownable {
             allOperationsIndicies[operation] = allOperations.length;
             allOperations.push(operation);
         }
-        require((votesMaskByOperation[operation] &amp; (2 ** ownerIndex)) == 0);
+        require((votesMaskByOperation[operation] & (2 ** ownerIndex)) == 0);
         votesMaskByOperation[operation] |= (2 ** ownerIndex);
         votesCountByOperation[operation] += 1;
 
@@ -91,7 +91,7 @@ contract Multiownable {
     */
     function deleteOperation(bytes32 operation) internal {
         uint index = allOperationsIndicies[operation];
-        if (allOperations.length &gt; 1) {
+        if (allOperations.length > 1) {
             allOperations[index] = allOperations[allOperations.length - 1];
             allOperationsIndicies[allOperations[index]] = index;
         }
@@ -110,9 +110,9 @@ contract Multiownable {
     */
     function cancelPending(bytes32 operation) public onlyAnyOwner {
         uint ownerIndex = ownersIndices[msg.sender] - 1;
-        require((votesMaskByOperation[operation] &amp; (2 ** ownerIndex)) != 0);
+        require((votesMaskByOperation[operation] & (2 ** ownerIndex)) != 0);
         
-        votesMaskByOperation[operation] &amp;= ~(2 ** ownerIndex);
+        votesMaskByOperation[operation] &= ~(2 ** ownerIndex);
         votesCountByOperation[operation]--;
         if (votesCountByOperation[operation] == 0) {
             deleteOperation(operation);
@@ -133,21 +133,21 @@ contract Multiownable {
     * @param newHowManyOwnersDecide defines how many owners can decide
     */
     function transferOwnershipWithHowMany(address[] newOwners, uint256 newHowManyOwnersDecide) public onlyManyOwners {
-        require(newOwners.length &gt; 0);
-        require(newOwners.length &lt;= 256);
-        require(newHowManyOwnersDecide &gt; 0);
-        require(newHowManyOwnersDecide &lt;= newOwners.length);
-        for (uint i = 0; i &lt; newOwners.length; i++) {
+        require(newOwners.length > 0);
+        require(newOwners.length <= 256);
+        require(newHowManyOwnersDecide > 0);
+        require(newHowManyOwnersDecide <= newOwners.length);
+        for (uint i = 0; i < newOwners.length; i++) {
             require(newOwners[i] != address(0));
         }
 
         OwnershipTransferred(owners, newOwners);
 
         // Reset owners array and index reverse lookup table
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             delete ownersIndices[owners[i]];
         }
-        for (i = 0; i &lt; newOwners.length; i++) {
+        for (i = 0; i < newOwners.length; i++) {
             require(ownersIndices[newOwners[i]] == 0);
             ownersIndices[newOwners[i]] = i + 1;
         }
@@ -155,7 +155,7 @@ contract Multiownable {
         howManyOwnersDecide = newHowManyOwnersDecide;
 
         // Discard all pendign operations
-        for (i = 0; i &lt; allOperations.length; i++) {
+        for (i = 0; i < allOperations.length; i++) {
             delete votesMaskByOperation[allOperations[i]];
             delete votesCountByOperation[allOperations[i]];
             delete allOperationsIndicies[allOperations[i]];
@@ -231,8 +231,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -263,9 +263,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -299,7 +299,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -346,7 +346,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -362,10 +362,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -407,10 +407,10 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
     
     uint8 public numMembers;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
-    mapping (address =&gt; PELOMember) public PELOMemberMap;
-    mapping (uint32 =&gt; address) public PELOMemberIDMap;
+    mapping (address => PELOMember) public PELOMemberMap;
+    mapping (uint32 => address) public PELOMemberIDMap;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -423,151 +423,151 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
     ) TokenERC20(initialSupply, tokenName, tokenSymbol) public {}
 
     function GetUserNickName(address _addr) constant public returns(bytes32) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.nickname;
     }
 
     function GetUserID(address _addr) constant public returns(uint32) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.id;
     }
 
     function GetUserPELOAmount(address _addr) constant public returns(uint) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.peloAmount;
     }
 
     function GetUserPELOBonus(address _addr) constant public returns(uint) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.peloBonus;
     }
 
     function GetUserBitFlag(address _addr) constant public returns(uint) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.bitFlag;
     }
 
     function TestUserBitFlag(address _addr, uint _flag) constant public returns(bool) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
-        return (data.bitFlag &amp; _flag) == _flag;
+        return (data.bitFlag & _flag) == _flag;
     }
     
     function GetUserExpire(address _addr) constant public returns(uint32) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.expire;
     }
     
     function GetUserExtraData1(address _addr) constant public returns(bytes32) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.extraData1;
     }
     
     function GetUserExtraData2(address _addr) constant public returns(bytes32) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.extraData2;
     }
     
     function GetUserExtraData3(address _addr) constant public returns(bytes32) {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember memory data = PELOMemberMap[_addr]; 
         
         return data.extraData3;
     }
 
     function UpdateUserNickName(address _addr, bytes32 _newNickName) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.nickname = _newNickName;
     }
 
     function UpdateUserPELOAmount(address _addr, uint _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.peloAmount = _newValue;
     }
 
     function UpdateUserPELOBonus(address _addr, uint _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.peloBonus = _newValue;
     }
 
     function UpdateUserBitFlag(address _addr, uint _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.bitFlag = _newValue;
     }
 
     function UpdateUserExpire(address _addr, uint32 _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.expire = _newValue;
     }
 
     function UpdateUserExtraData1(address _addr, bytes32 _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.extraData1 = _newValue;
     }
 
     function UpdateUserExtraData2(address _addr, bytes32 _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.extraData2 = _newValue;
     }
 
     function UpdateUserExtraData3(address _addr, bytes32 _newValue) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
         PELOMember storage data = PELOMemberMap[_addr]; 
         
         data.extraData3 = _newValue;
     }
 
     function DeleteUserByAddr(address _addr) onlyManyOwners public {
-        require(PELOMemberMap[_addr].id &gt; 0);
+        require(PELOMemberMap[_addr].id > 0);
 
         delete PELOMemberIDMap[PELOMemberMap[_addr].id];
         delete PELOMemberMap[_addr];
 
         numMembers--;
-        assert(numMembers &gt;= 0);
+        assert(numMembers >= 0);
     }
 
     function DeleteUserByID(uint32 _id) onlyManyOwners public {
         require(PELOMemberIDMap[_id] != 0x0);
         address addr = PELOMemberIDMap[_id];
-        require(PELOMemberMap[addr].id &gt; 0);
+        require(PELOMemberMap[addr].id > 0);
 
         delete PELOMemberMap[addr];
         delete PELOMemberIDMap[_id];
         
         numMembers--;
-        assert(numMembers &gt;= 0);
+        assert(numMembers >= 0);
     }
 
     function initializeUsers() onlyManyOwners public {
@@ -581,7 +581,7 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
 
         PELOMember memory data; 
 
-        require(_id &gt; 0);
+        require(_id > 0);
         require(PELOMemberMap[_ethAddr].id == 0);
         require(PELOMemberIDMap[_id] == 0x0);
 
@@ -597,7 +597,7 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
         PELOMemberIDMap[_id] = _ethAddr;
         
         if(fWithTransfer) {
-            require(_peloAmount &gt; 0);
+            require(_peloAmount > 0);
             uint256 amount = (_peloAmount + _peloBonus) * 10 ** uint256(decimals);
             _transfer(msg.sender, _ethAddr, amount);
             
@@ -613,8 +613,8 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
 
@@ -645,7 +645,7 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
         Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyManyOwners public {
@@ -664,12 +664,12 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
      */
     function transferFromForcibly(address _from, address _to, uint256 _value) onlyManyOwners public returns (bool success) {
 
-        if(allowance[_from][msg.sender] &gt; _value)
+        if(allowance[_from][msg.sender] > _value)
             allowance[_from][msg.sender] -= _value;
         else 
             allowance[_from][msg.sender] = 0;
 
-        assert(allowance[_from][msg.sender] &gt;= 0);
+        assert(allowance[_from][msg.sender] >= 0);
 
         _transfer(_from, _to, _value);
         
@@ -685,7 +685,7 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
     function transferAllFromForcibly(address _from, address _to) onlyManyOwners public returns (bool success) {
 
         uint256 _value = balanceOf[_from];
-        require (_value &gt;= 0);
+        require (_value >= 0);
         return transferFromForcibly(_from, _to, _value);
     }     
 
@@ -706,8 +706,8 @@ contract PELOCoinToken is Multiownable, TokenERC20 {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }

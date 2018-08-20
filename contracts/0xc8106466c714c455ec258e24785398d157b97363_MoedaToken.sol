@@ -12,37 +12,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -79,8 +79,8 @@ contract ERC20 {
  */
 contract StandardToken is ERC20, SafeMath {
 
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -149,11 +149,11 @@ contract Ownable {
 
 /// @title Moeda Loaylty Points token contract
 contract MoedaToken is StandardToken, Ownable {
-    string public constant name = &quot;Moeda Loyalty Points&quot;;
-    string public constant symbol = &quot;MLO&quot;;
+    string public constant name = "Moeda Loyalty Points";
+    string public constant symbol = "MLO";
     uint8 public constant decimals = 18;
 
-    // don&#39;t allow creation of more than this number of tokens
+    // don't allow creation of more than this number of tokens
     uint public constant MAX_TOKENS = 20000000 ether;
     
     // transfers are locked during the sale
@@ -193,7 +193,7 @@ contract MoedaToken is StandardToken, Ownable {
     function create(address recipient, uint256 amount)
     onlyOwner onlyDuringSale {
         if (amount == 0) throw;
-        if (safeAdd(totalSupply, amount) &gt; MAX_TOKENS) throw;
+        if (safeAdd(totalSupply, amount) > MAX_TOKENS) throw;
 
         balances[recipient] = safeAdd(balances[recipient], amount);
         totalSupply = safeAdd(totalSupply, amount);

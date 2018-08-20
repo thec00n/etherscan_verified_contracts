@@ -72,8 +72,8 @@ contract SongRecordingRegistration is BaseRegistration{
         bool exists;
     }
     
-    mapping(uint =&gt; address) royaltyIndex; // index of royalty partner in array
-    mapping(address =&gt; RoyaltyPartner) royaltyPartners;
+    mapping(uint => address) royaltyIndex; // index of royalty partner in array
+    mapping(address => RoyaltyPartner) royaltyPartners;
     
     //contructor MusicRegistration and upto 5 Royalty partners
     /*****
@@ -107,10 +107,10 @@ contract SongRecordingRegistration is BaseRegistration{
         duration = _duration;
         checkingDispute(_addrDispute, address(this));
         assert(_arrRoyaltyAddress.length == _arrRoyaltyPercent.length);
-        assert(_arrRoyaltyPercent.length &lt;= uint(MAX_ROYALTY));
-        for (uint i = 0; i &lt; _arrRoyaltyAddress.length; i++){
+        assert(_arrRoyaltyPercent.length <= uint(MAX_ROYALTY));
+        for (uint i = 0; i < _arrRoyaltyAddress.length; i++){
             require(_arrRoyaltyAddress[i] != owner);
-            require(totalPercent &lt;= 100);
+            require(totalPercent <= 100);
             royaltyIndex[i] = _arrRoyaltyAddress[i];
             royaltyPartners[_arrRoyaltyAddress[i]] = RoyaltyPartner(_arrRoyaltyPercent[i], false, true);
             totalPercent += _arrRoyaltyPercent[i];
@@ -136,7 +136,7 @@ contract SongRecordingRegistration is BaseRegistration{
         _type = rtype;
         _duration = duration;
         _professionalName = professionalName;
-        for (uint i=0; i&lt;5; i++){
+        for (uint i=0; i<5; i++){
             _arrRoyaltyAddress[i] = royaltyIndex[i];
             _arrRoyaltyPercent[i] = royaltyPartners[_arrRoyaltyAddress[i]].percent;
         }
@@ -175,7 +175,7 @@ contract SongRecordingRegistration is BaseRegistration{
      *@return param2                        uint[5]                 Array of royalty partner percent
      */
     function getRoyaltyPartners() public constant returns(address[5] _arrRoyaltyAddress, uint[5] _arrRoyaltyPercent){
-        for (uint i = 0; i &lt; MAX_ROYALTY; i++){
+        for (uint i = 0; i < MAX_ROYALTY; i++){
             _arrRoyaltyAddress[i] = royaltyIndex[i];
             _arrRoyaltyPercent[i] = royaltyPartners[royaltyIndex[i]].percent;
         }
@@ -273,7 +273,7 @@ contract WorkRegistration is BaseRegistration{
         _hash = hash;
         _digital = digitalSignature;
         _type = rtype;
-        _professionalName = &quot;&quot;;
+        _professionalName = "";
     }
     
     //get composer
@@ -363,7 +363,7 @@ contract Licensing {
         if(isCompleted == true){
             return licensedState.Licensed;
         }else {
-            if(block.timestamp &gt;  (dateIssue + ExpiryTime)){
+            if(block.timestamp >  (dateIssue + ExpiryTime)){
                 return licensedState.Expired;
             }else{
                 return licensedState.Pending;
@@ -378,11 +378,11 @@ contract Licensing {
     function getContractStatus() constant public returns (string){
         licensedState currentState = getStatus();
         if(currentState == licensedState.Pending){
-            return &quot;Pending&quot;;
+            return "Pending";
         }else if(currentState == licensedState.Expired){
-            return &quot;Expired&quot;;
+            return "Expired";
         }else {
-            return &quot;Licensed&quot;;
+            return "Licensed";
         }
     }
     
@@ -396,8 +396,8 @@ contract Licensing {
         //find song with address
         assert(!isCompleted);
         //validate song address by checking publishPerson
-        assert (priceOfLicense &gt; 0);
-        assert (block.timestamp &lt;  (dateIssue + ExpiryTime));
+        assert (priceOfLicense > 0);
+        assert (block.timestamp <  (dateIssue + ExpiryTime));
         
         //update license price
         price = priceOfLicense;
@@ -425,7 +425,7 @@ contract Licensing {
      */
     function upgradeCompleted(bool _isCompleted) public{
         require(_isCompleted);
-        require(price &gt;0);
+        require(price >0);
         require(msg.sender == token);
         isCompleted = _isCompleted;
     }
@@ -433,10 +433,10 @@ contract Licensing {
     //check price of license
     /*****
      *@param _price                 uint256                 The price want to check 
-     *@return param1                bool                    return true if _price &gt; price of license
+     *@return param1                bool                    return true if _price > price of license
      */
     function checkPrice(uint256 _price) public constant returns(bool){
         require(msg.sender == token);
-        return (_price &gt;= price) ? true : false;
+        return (_price >= price) ? true : false;
     }
 }

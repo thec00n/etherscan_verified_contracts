@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,7 +102,7 @@ contract AbstractStarbaseToken is ERC20 {
 
 /**
  * @title Crowdsale contract - Starbase marketing campaign contract to reward supportors
- * @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e676068614e7d7a6f7c6c6f7d6b206d61">[email&#160;protected]</a>&gt;
+ * @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e676068614e7d7a6f7c6c6f7d6b206d61">[email protected]</a>>
  */
 contract StarbaseMarketingCampaign is Ownable {
     /*
@@ -123,7 +123,7 @@ contract StarbaseMarketingCampaign is Ownable {
     struct Contributor {
         uint256 rewardTokens;
         uint256 transferredRewardTokens;
-        mapping (bytes32 =&gt; bool) contributions;  // example: keccak256(bcm-xda98sdf) =&gt; true
+        mapping (bytes32 => bool) contributions;  // example: keccak256(bcm-xda98sdf) => true
     }
 
     /**
@@ -131,7 +131,7 @@ contract StarbaseMarketingCampaign is Ownable {
      */
     address public workshop;  // holds undelivered STARs
     address[] public contributors;
-    mapping (address =&gt; Contributor) public contributor;
+    mapping (address => Contributor) public contributor;
 
     /**
      *  Modifiers
@@ -161,7 +161,7 @@ contract StarbaseMarketingCampaign is Ownable {
      */
 
     /**
-     * @dev Allows for marketing contributor&#39;s reward withdrawl
+     * @dev Allows for marketing contributor's reward withdrawl
      * @param contributorAddress The address of the contributor
      * @param tokensToTransfer Token number to withdraw
      */
@@ -169,7 +169,7 @@ contract StarbaseMarketingCampaign is Ownable {
         external
         onlyOwnerOr(contributorAddress)
     {
-        require(contributor[contributorAddress].rewardTokens &gt; 0 &amp;&amp; tokensToTransfer &lt;= contributor[contributorAddress].rewardTokens &amp;&amp; address(starbaseToken) != 0);
+        require(contributor[contributorAddress].rewardTokens > 0 && tokensToTransfer <= contributor[contributorAddress].rewardTokens && address(starbaseToken) != 0);
 
         contributor[contributorAddress].rewardTokens = SafeMath.sub(contributor[contributorAddress].rewardTokens, tokensToTransfer);
 
@@ -180,7 +180,7 @@ contract StarbaseMarketingCampaign is Ownable {
     }
 
     /**
-     * @dev Setup function sets external contracts&#39; addresses.
+     * @dev Setup function sets external contracts' addresses.
      * @param starbaseTokenAddress Token address.
      */
     function setup(address starbaseTokenAddress)
@@ -195,7 +195,7 @@ contract StarbaseMarketingCampaign is Ownable {
 
     /**
      * @dev Include new contributor
-     * @param contributorAddress A contributor&#39;s address
+     * @param contributorAddress A contributor's address
      * @param tokenCount number of tokens assigned to contributor on their inclusion
      * @param contributionId Id of contribution from bounty app db
      */
@@ -211,7 +211,7 @@ contract StarbaseMarketingCampaign is Ownable {
         bytes32 id = keccak256(contributionId);
 
         require(!contributor[contributorAddress].contributions[id]);
-        assert(contributor[contributorAddress].rewardTokens == 0 &amp;&amp; contributor[contributorAddress].transferredRewardTokens == 0);
+        assert(contributor[contributorAddress].rewardTokens == 0 && contributor[contributorAddress].transferredRewardTokens == 0);
 
         contributor[contributorAddress].rewardTokens = tokenCount;
         contributor[contributorAddress].contributions[id] = true;
@@ -221,7 +221,7 @@ contract StarbaseMarketingCampaign is Ownable {
 
     /**
      * @dev Updates contributors rewardTokens
-     * @param contributorAddress A contributor&#39;s address
+     * @param contributorAddress A contributor's address
      * @param tokenCount number of tokens to update for the contributor
      * @param contributionId Id of contribution from bounty app db
      */
@@ -245,7 +245,7 @@ contract StarbaseMarketingCampaign is Ownable {
 
     /**
      * @dev Informs about contributors rewardTokens and transferredRewardTokens status
-     * @param contributorAddress A contributor&#39;s address
+     * @param contributorAddress A contributor's address
      * @param contributionId Id of contribution from bounty app db
      */
     function getContributorInfo(address contributorAddress, string contributionId)

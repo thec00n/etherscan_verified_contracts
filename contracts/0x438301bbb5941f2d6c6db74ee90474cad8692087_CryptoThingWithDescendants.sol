@@ -55,9 +55,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -65,7 +65,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -105,16 +105,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -325,11 +325,11 @@ contract CryptoThingWithDescendants is Ownable, ERC721Token {
   uint256 public floorPrice = 10 finney;
   uint256 public standardGrowthRate = 150;
   uint256 public numThings;
-  mapping (uint256 =&gt; Thing) public things;
-  mapping (uint256 =&gt; uint256[]) public descendantsOfThing;
+  mapping (uint256 => Thing) public things;
+  mapping (uint256 => uint256[]) public descendantsOfThing;
 
-  string constant public NAME = &#39;Star Card&#39;;
-  string constant public SYMBOL = &#39;CARD&#39;;
+  string constant public NAME = 'Star Card';
+  string constant public SYMBOL = 'CARD';
 
   event DividendPaid(address indexed recipient, uint256 amount);
   event OverpaymentRefunded(uint256 amountExpected, uint256 excessFunds);
@@ -382,7 +382,7 @@ contract CryptoThingWithDescendants is Ownable, ERC721Token {
   }
 
   function purchase(uint256 _thingId) public payable {
-    require(_thingId != 0 &amp;&amp; _thingId &lt;= numThings);
+    require(_thingId != 0 && _thingId <= numThings);
 
     address previousOwner = ownerOf(_thingId);
     require(previousOwner != msg.sender);
@@ -391,13 +391,13 @@ contract CryptoThingWithDescendants is Ownable, ERC721Token {
     uint256[] storage descendants = descendantsOfThing[_thingId];
 
     uint256 currentPrice = getCurrentPrice(_thingId);
-    require(msg.value &gt;= currentPrice);
-    if (msg.value &gt; currentPrice) {
+    require(msg.value >= currentPrice);
+    if (msg.value > currentPrice) {
       OverpaymentRefunded(currentPrice, msg.value.sub(currentPrice));
       msg.sender.transfer(msg.value.sub(currentPrice));
     }
 
-    if (thing.dividendRate != 0 &amp;&amp; (thing.parentId != 0 || descendants.length &gt; 0)) {
+    if (thing.dividendRate != 0 && (thing.parentId != 0 || descendants.length > 0)) {
       uint256 numDividends = thing.parentId == 0 ? descendants.length : descendants.length.add(1);
       uint256 dividendPerRecipient = getDividendPayout(
         currentPrice,
@@ -406,7 +406,7 @@ contract CryptoThingWithDescendants is Ownable, ERC721Token {
       );
 
       address dividendRecipient = address(this);
-      for (uint256 i = 0; i &lt; numDividends; i++) {
+      for (uint256 i = 0; i < numDividends; i++) {
         dividendRecipient = ownerOf(
           i == descendants.length ? thing.parentId : descendants[i]
         );
@@ -434,7 +434,7 @@ contract CryptoThingWithDescendants is Ownable, ERC721Token {
 
   function purchaseGame() public payable {
     require(msg.sender != owner);
-    require(msg.value &gt;= gameCost);
+    require(msg.value >= gameCost);
     owner.transfer(msg.value);
     owner = msg.sender;
     OwnershipTransferred(owner, msg.sender);
@@ -451,7 +451,7 @@ contract CryptoThingWithDescendants is Ownable, ERC721Token {
   function getCurrentPrice(
     uint256 _thingId
   ) public view returns (uint256 currentPrice) {
-    require(_thingId != 0 &amp;&amp; _thingId &lt;= numThings);
+    require(_thingId != 0 && _thingId <= numThings);
     Thing storage thing = things[_thingId];
     currentPrice = getPurchasePrice(thing.purchasePrice, thing.growthRate);
   }

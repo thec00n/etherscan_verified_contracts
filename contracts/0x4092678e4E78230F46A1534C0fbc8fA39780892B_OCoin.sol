@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -96,20 +96,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -139,14 +139,14 @@ contract DetailedERC20 is ERC20 {
 contract OCoin is Pausable, DetailedERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-  mapping(address =&gt; uint256) public lockedBalances;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
+  mapping(address => uint256) public lockedBalances;
 
   uint public unlocktime;
   address crowdsaleContract = 0;
 
-  function OCoin() DetailedERC20(&quot;OCoin&quot;, &quot;OCN&quot;, 18) public {
+  function OCoin() DetailedERC20("OCoin", "OCN", 18) public {
     unlocktime = 1524326400;                              // 2018/4/22 00:00:00
     totalSupply = 10000000000 * 10 ** uint256(decimals);
     balances[msg.sender] = totalSupply;
@@ -157,8 +157,8 @@ contract OCoin is Pausable, DetailedERC20 {
   }
 
   modifier timeLock(address from, uint value) { 
-    if (now &lt; unlocktime) {
-      require(value &lt;= balances[from] - lockedBalances[from]);
+    if (now < unlocktime) {
+      require(value <= balances[from] - lockedBalances[from]);
     } else {
       lockedBalances[from] = 0;
     }
@@ -167,7 +167,7 @@ contract OCoin is Pausable, DetailedERC20 {
 
   function transfer(address _to, uint256 _value) timeLock(msg.sender, _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -190,8 +190,8 @@ contract OCoin is Pausable, DetailedERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public timeLock(_from, _value) whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -218,7 +218,7 @@ contract OCoin is Pausable, DetailedERC20 {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

@@ -20,13 +20,13 @@ function div(uint256 a, uint256 b) internal returns (uint256) {
     }
  
 function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
     }
 
 function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
     }
 } 
@@ -51,7 +51,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
     
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
 
 
@@ -60,8 +60,8 @@ contract BasicToken is ERC20Basic {
 
 function transfer(address _to, uint256 _value) {
     
-    require ( balances[msg.sender] &gt;= _value);
-    require ( balances[_to] + _value &gt;= balances[_to]);
+    require ( balances[msg.sender] >= _value);
+    require ( balances[_to] + _value >= balances[_to]);
     
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -71,7 +71,7 @@ function transfer(address _to, uint256 _value) {
 
 function burn(uint256 _value) {
     
-    require ( balances[msg.sender] &gt;= _value);
+    require ( balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalSupply = totalSupply.sub(_value);
     
@@ -93,7 +93,7 @@ function balanceOf(address _owner) constant returns (uint256 balance) {
 
 contract StandardToken is ERC20, BasicToken {
    
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
    
    
    
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
     
     
     
-    require ( !((_value !=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)));
+    require ( !((_value !=0) && (allowed[msg.sender][_spender] !=0)));
     
     
     allowed[msg.sender][_spender] = _value;
@@ -182,8 +182,8 @@ function transferOwnership(address newOwner) onlyOwner {
 contract WanToken is StandardToken, Ownable {
     event Mint(address indexed to, uint256 amount);
     event MintFinished();
-    string public name = &quot;WanCoin&quot;;
-    string public symbol = &quot;WAN&quot;;
+    string public name = "WanCoin";
+    string public symbol = "WAN";
     uint256 public decimals = 18;
     
     bool public mintingFinished = false;
@@ -229,7 +229,7 @@ contract WanToken is StandardToken, Ownable {
 
 contract SwapToken is WanToken {
     WanToken BasicToken;
-    mapping(address =&gt; bool) migrated;
+    mapping(address => bool) migrated;
     
     function SwapToken (WanToken _basicToken) {
         BasicToken = _basicToken;
@@ -246,8 +246,8 @@ contract SwapToken is WanToken {
     
     function transfer(address _to, uint256 _value) {
         migration (msg.sender);
-        require ( balances[msg.sender] &gt;= _value);
-        require ( balances[_to] + _value &gt;= balances[_to]);
+        require ( balances[msg.sender] >= _value);
+        require ( balances[_to] + _value >= balances[_to]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -257,7 +257,7 @@ contract SwapToken is WanToken {
     
     function burn(uint256 _value) {
         migration (msg.sender);
-        require ( balances[msg.sender] &gt;= _value);
+        require ( balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         
@@ -294,7 +294,7 @@ contract SwapToken is WanToken {
         
         
         
-        require ( !((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)));
+        require ( !((_value != 0) && (allowed[msg.sender][_spender] != 0)));
         
         
         allowed[msg.sender][_spender] = _value;
@@ -337,7 +337,7 @@ contract Crowdsale is Ownable {
     
     function Crowdsale(WanToken tokenContract, uint256 durationInWeeks, uint256 _rate, address _wallet) {
         
-        require(_rate &gt; 0);
+        require(_rate > 0);
         require(_wallet != 0x0);
         
         
@@ -381,7 +381,7 @@ contract Crowdsale is Ownable {
         uint256 tokens = weiAmount.mul(rate);
         
         
-        require ( tokens &lt;= token.balanceOf(this) );
+        require ( tokens <= token.balanceOf(this) );
         
         
         weiRaised = updatedweiRaised;
@@ -405,15 +405,15 @@ contract Crowdsale is Ownable {
     
     function validPurchase() internal constant returns (bool) {
         uint256 current = block.number;
-        bool withinPeriod = now &lt;= deadline;
+        bool withinPeriod = now <= deadline;
         bool nonZeroPurchase = msg.value != 0;
         
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
     
     
     function hasEnded() public constant returns (bool) {
-        return ( now &gt; deadline);
+        return ( now > deadline);
         
         
     }

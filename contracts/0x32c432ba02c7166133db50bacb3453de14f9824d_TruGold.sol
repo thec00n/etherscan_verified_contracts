@@ -11,7 +11,7 @@ contract MultiOwnable {
   address public owner2;
 
   // the ongoing operations.
-  mapping(bytes32 =&gt; PendingState) public m_pending;
+  mapping(bytes32 => PendingState) public m_pending;
 
   // TYPES
 
@@ -44,7 +44,7 @@ contract MultiOwnable {
   }
 
 
-  // constructor is given number of sigs required to do protected &quot;onlyManyOwners&quot; transactions
+  // constructor is given number of sigs required to do protected "onlyManyOwners" transactions
   // as well as the selection of addresses capable of confirming them.
   constructor(address _owner1, address _owner2) public {
     require(_owner1 != address(0));
@@ -88,7 +88,7 @@ contract MultiOwnable {
     internal onlyOwner
     returns (bool) {
 
-    // Confirmation doesn&#39;t exists so create it
+    // Confirmation doesn't exists so create it
     if (m_pending[_operation].exists == 0) {
       if (msg.sender == owner1) { m_pending[_operation].confirmation1 = true; }
       if (msg.sender == owner2) { m_pending[_operation].confirmation2 = true; }
@@ -99,12 +99,12 @@ contract MultiOwnable {
     }
 
     // already confirmed
-    if (msg.sender == owner1 &amp;&amp; m_pending[_operation].confirmation1 == true) {
+    if (msg.sender == owner1 && m_pending[_operation].confirmation1 == true) {
       return false;
     }
 
     // already confirmed
-    if (msg.sender == owner2 &amp;&amp; m_pending[_operation].confirmation2 == true) {
+    if (msg.sender == owner2 && m_pending[_operation].confirmation2 == true) {
       return false;
     }
 
@@ -117,7 +117,7 @@ contract MultiOwnable {
     }
 
     // final verification
-    return m_pending[_operation].confirmation1 &amp;&amp; m_pending[_operation].confirmation2;
+    return m_pending[_operation].confirmation1 && m_pending[_operation].confirmation2;
   }
 }
 
@@ -129,11 +129,11 @@ contract MultiOwnable {
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
 
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
 
@@ -143,7 +143,7 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 }
@@ -192,9 +192,9 @@ contract TruGold is ERC20Interface, MultiOwnable {
   uint8 public decimals;
   uint _totalSupply;
 
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-  mapping (bytes32 =&gt; Transaction) public pendingTransactions; // pending transactions we have at present.
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowed;
+  mapping (bytes32 => Transaction) public pendingTransactions; // pending transactions we have at present.
 
   struct Transaction {
     address from;
@@ -208,8 +208,8 @@ contract TruGold is ERC20Interface, MultiOwnable {
   // ------------------------------------------------------------------------
   constructor(address target, address _owner1, address _owner2)
     MultiOwnable(_owner1, _owner2) public {
-    symbol = &quot;TruGold&quot;;
-    name = &quot;TruGold&quot;;
+    symbol = "TruGold";
+    name = "TruGold";
     decimals = 18;
     _totalSupply = 300000000 * 10**uint(decimals);
     balances[target] = _totalSupply;
@@ -232,8 +232,8 @@ contract TruGold is ERC20Interface, MultiOwnable {
   }
 
   // ------------------------------------------------------------------------
-  // Transfer the balance from token owner&#39;s account to `to` account
-  // - Owner&#39;s account must have sufficient balance to transfer
+  // Transfer the balance from token owner's account to `to` account
+  // - Owner's account must have sufficient balance to transfer
   // - 0 value transfers are allowed
   // ------------------------------------------------------------------------
   /* function transfer(address to, uint tokens) public onlyOwnerIfLocked returns (bool success) { */
@@ -254,7 +254,7 @@ contract TruGold is ERC20Interface, MultiOwnable {
 
     operation = keccak256(abi.encodePacked(msg.data, block.number));
 
-    if (!approveOwnerTransfer(operation) &amp;&amp; pendingTransactions[operation].to == 0) {
+    if (!approveOwnerTransfer(operation) && pendingTransactions[operation].to == 0) {
       pendingTransactions[operation].from = from;
       pendingTransactions[operation].to = to;
       pendingTransactions[operation].value = value;
@@ -287,7 +287,7 @@ contract TruGold is ERC20Interface, MultiOwnable {
 
   // ------------------------------------------------------------------------
   // Token owner can approve for `spender` to transferFrom(...) `tokens`
-  // from the token owner&#39;s account
+  // from the token owner's account
   //
   // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
   // recommends that there are no checks for the approval double-spend attack
@@ -320,7 +320,7 @@ contract TruGold is ERC20Interface, MultiOwnable {
 
   // ------------------------------------------------------------------------
   // Returns the amount of tokens approved by the owner that can be
-  // transferred to the spender&#39;s account
+  // transferred to the spender's account
   // ------------------------------------------------------------------------
   function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
     return allowed[tokenOwner][spender];
@@ -329,7 +329,7 @@ contract TruGold is ERC20Interface, MultiOwnable {
 
   // ------------------------------------------------------------------------
   // Token owner can approve for `spender` to transferFrom(...) `tokens`
-  // from the token owner&#39;s account. The `spender` contract function
+  // from the token owner's account. The `spender` contract function
   // `receiveApproval(...)` is then executed
   // ------------------------------------------------------------------------
   function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -342,7 +342,7 @@ contract TruGold is ERC20Interface, MultiOwnable {
 
 
   // ------------------------------------------------------------------------
-  // Don&#39;t accept ETH
+  // Don't accept ETH
   // ------------------------------------------------------------------------
   function () public payable {
     revert();

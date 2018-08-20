@@ -22,13 +22,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -130,9 +130,9 @@ contract BaseFixedERC20Token is Lockable {
     /// @dev ERC20 Total supply
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) private allowed;
+    mapping(address => mapping(address => uint)) private allowed;
 
     /// @dev Fired if Token transfered accourding to ERC20
     event Transfer(address indexed from, address indexed to, uint value);
@@ -155,7 +155,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ The amount to be transferred.
      */
     function transfer(address to_, uint value_) public whenNotLocked returns (bool) {
-        require(to_ != address(0) &amp;&amp; value_ &lt;= balances[msg.sender]);
+        require(to_ != address(0) && value_ <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(value_);
         balances[to_] = balances[to_].add(value_);
@@ -170,7 +170,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ uint the amount of tokens to be transferred
      */
     function transferFrom(address from_, address to_, uint value_) public whenNotLocked returns (bool) {
-        require(to_ != address(0) &amp;&amp; value_ &lt;= balances[from_] &amp;&amp; value_ &lt;= allowed[from_][msg.sender]);
+        require(to_ != address(0) && value_ <= balances[from_] && value_ <= allowed[from_][msg.sender]);
         balances[from_] = balances[from_].sub(value_);
         balances[to_] = balances[to_].add(value_);
         allowed[from_][msg.sender] = allowed[from_][msg.sender].sub(value_);
@@ -193,7 +193,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ The amount of tokens to be spent.
      */
     function approve(address spender_, uint value_) public whenNotLocked returns (bool) {
-        if (value_ != 0 &amp;&amp; allowed[msg.sender][spender_] != 0) {
+        if (value_ != 0 && allowed[msg.sender][spender_] != 0) {
             revert();
         }
         allowed[msg.sender][spender_] = value_;
@@ -270,7 +270,7 @@ contract BaseICOToken is BaseFixedERC20Token {
     }
 
     function isValidICOInvestment(address to_, uint amount_) internal view returns (bool) {
-        return to_ != address(0) &amp;&amp; amount_ &lt;= availableSupply;
+        return to_ != address(0) && amount_ <= availableSupply;
     }
 
 }
@@ -283,9 +283,9 @@ contract BaseICOToken is BaseFixedERC20Token {
 contract DWBTToken is BaseICOToken {
     using SafeMath for uint;
 
-    string public constant name = &quot;DWBT Tokens&quot;;
+    string public constant name = "DWBT Tokens";
 
-    string public constant symbol = &quot;DWBT&quot;;
+    string public constant symbol = "DWBT";
 
     uint8 public constant decimals = 18;
 
@@ -316,7 +316,7 @@ contract DWBTToken is BaseICOToken {
     }
 
     function burnRemain() public onlyOwner {
-        require(availableSupply &gt; 0);
+        require(availableSupply > 0);
         uint burned = availableSupply;
         totalSupply = totalSupply.sub(burned);
         availableSupply = 0;
@@ -331,8 +331,8 @@ contract DWBTToken is BaseICOToken {
 
     uint8 public constant RESERVED_RESERVE_GROUP = 0x4;
 
-    /// @dev Token reservation mapping: key(RESERVED_X) =&gt; value(number of tokens)
-    mapping(uint8 =&gt; uint) public reserved;
+    /// @dev Token reservation mapping: key(RESERVED_X) => value(number of tokens)
+    mapping(uint8 => uint) public reserved;
 
     /**
      * @dev Get reserved tokens for specific group
@@ -349,8 +349,8 @@ contract DWBTToken is BaseICOToken {
      * @param amount_ Number of tokens distributed with decimals part
      */
     function assignReserved(address to_, uint8 group_, uint amount_) public onlyOwner {
-        require(to_ != address(0) &amp;&amp; (group_ &amp; 0x7) != 0);
-        // SafeMath will check reserved[group_] &gt;= amount
+        require(to_ != address(0) && (group_ & 0x7) != 0);
+        // SafeMath will check reserved[group_] >= amount
         reserved[group_] = reserved[group_].sub(amount_);
         balances[to_] = balances[to_].add(amount_);
         ReservedTokensDistributed(to_, group_, amount_);

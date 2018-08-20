@@ -7,7 +7,7 @@ contract Lottery {
 
 
 
-    mapping(uint =&gt; address) public gamblers;// A mapping to store ethereum addresses of the gamblers
+    mapping(uint => address) public gamblers;// A mapping to store ethereum addresses of the gamblers
     uint8 public player_count; //keep track of how many people are signed up.
     uint public ante; //how big is the bet per person (in ether)
     uint8 public required_number_players; //how many sign ups trigger the lottery
@@ -45,7 +45,7 @@ contract Lottery {
 
 function refund() {
     if (msg.sender == owner) {
-        while (this.balance &gt; ante) {
+        while (this.balance > ante) {
                 gamblers[player_count].transfer(ante);
                 player_count -=1;    
             }
@@ -89,7 +89,7 @@ function () payable {
 0xA7aa3509d62B9f8B6ee02EA0cFd3738873D3ee4C.transfer((ante*required_number_players - ante*required_number_players*winner_percentage/100)/2);
             // move the gamblers who have joined the lottery but did not participate on this draw down on the mapping structure for next bets
             next_round_players = player_count-required_number_players;
-            while (player_count &gt; required_number_players) {
+            while (player_count > required_number_players) {
                 gamblers[player_count-required_number_players] = gamblers[player_count];
                 player_count -=1;    
             }

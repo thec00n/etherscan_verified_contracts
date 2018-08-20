@@ -48,9 +48,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -58,7 +58,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -67,7 +67,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,7 +77,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -122,7 +122,7 @@ contract BatchTransfer is Ownable {
     event TransferEther(address indexed sender, address indexed receiver, uint256 amount);
 
     modifier checkArrayArgument(address[] _receivers, uint256[] _amounts) {
-        require(_receivers.length == _amounts.length &amp;&amp; _receivers.length != 0);
+        require(_receivers.length == _amounts.length && _receivers.length != 0);
         _;
     }
 
@@ -130,18 +130,18 @@ contract BatchTransfer is Ownable {
         require(_token != address(0));
 
         ERC20 token = ERC20(_token);
-        require(allowanceForContract(_token) &gt;= getTotalSendingAmount(_tokenAmounts));
+        require(allowanceForContract(_token) >= getTotalSendingAmount(_tokenAmounts));
 
-        for (uint i = 0; i &lt; _receivers.length; i++) {
+        for (uint i = 0; i < _receivers.length; i++) {
             require(_receivers[i] != address(0));
             require(token.transferFrom(msg.sender, _receivers[i], _tokenAmounts[i]));
         }
     }
 
     function batchTransferEther(address[] _receivers, uint[] _amounts) public payable checkArrayArgument(_receivers, _amounts) {
-        require(msg.value != 0 &amp;&amp; msg.value == getTotalSendingAmount(_amounts));
+        require(msg.value != 0 && msg.value == getTotalSendingAmount(_amounts));
 
-        for (uint i = 0; i &lt; _receivers.length; i++) {
+        for (uint i = 0; i < _receivers.length; i++) {
             require(_receivers[i] != address(0));
             _receivers[i].transfer(_amounts[i]);
             emit TransferEther(msg.sender, _receivers[i], _amounts[i]);
@@ -151,7 +151,7 @@ contract BatchTransfer is Ownable {
     function withdraw(address _receiver, address _token) public onlyOwner {
         ERC20 token = ERC20(_token);
         uint tokenBalanceOfContract = token.balanceOf(this);
-        require(_receiver != address(0) &amp;&amp; tokenBalanceOfContract &gt; 0);
+        require(_receiver != address(0) && tokenBalanceOfContract > 0);
         require(token.transfer(_receiver, tokenBalanceOfContract));
         emit Withdraw(_receiver, _token, tokenBalanceOfContract);
     }
@@ -167,8 +167,8 @@ contract BatchTransfer is Ownable {
     }
 
     function getTotalSendingAmount(uint256[] _amounts) private pure returns (uint totalSendingAmount) {
-        for (uint i = 0; i &lt; _amounts.length; i++) {
-            require(_amounts[i] &gt; 0);
+        for (uint i = 0; i < _amounts.length; i++) {
+            require(_amounts[i] > 0);
             totalSendingAmount = totalSendingAmount.add(_amounts[i]);
         }
     }

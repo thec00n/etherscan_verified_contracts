@@ -4,7 +4,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -91,8 +91,8 @@ contract Pausable is Ownable {
 /// @title BlockchainCuties Presale
 contract BlockchainCutiesPresale is Pausable
 {
-	mapping (uint256 =&gt; address) public ownerOf;
-	mapping (uint256 =&gt; uint256) public prices;
+	mapping (uint256 => address) public ownerOf;
+	mapping (uint256 => uint256) public prices;
 
 	event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
@@ -104,7 +104,7 @@ contract BlockchainCutiesPresale is Pausable
 
 	function isAvailable(uint40 id) public view returns (bool)
 	{
-		return ownerOf[id] == address(0) &amp;&amp; prices[id] &gt; 0;
+		return ownerOf[id] == address(0) && prices[id] > 0;
 	}
 
 	function getPrice(uint40 id) public view returns (uint256 price, bool available)
@@ -116,7 +116,7 @@ contract BlockchainCutiesPresale is Pausable
 	function bid(uint40 id) public payable
 	{
 		require(isAvailable(id));
-		require(prices[id] &lt;= msg.value);
+		require(prices[id] <= msg.value);
 
 		ownerOf[id] = msg.sender;
 		emit Transfer(0, msg.sender, id);

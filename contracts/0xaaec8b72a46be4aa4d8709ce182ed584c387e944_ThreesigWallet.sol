@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 contract ThreesigWallet {
 
-  mapping (address =&gt; bool) public founders;
+  mapping (address => bool) public founders;
 
   struct Tx {
     address founder;

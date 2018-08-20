@@ -42,20 +42,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,10 +65,10 @@ contract ExtraHolderContract is TokenRecipient {
 
   /// @notice Map of recipients parts of total received tokens
   /// @dev Should be in range of 1 to 10000 (1 is 0.01% and 10000 is 100%)
-  mapping(address =&gt; uint) public shares;
+  mapping(address => uint) public shares;
 
   /// @notice Map of total values at moment of latest withdrawal per each recipient
-  mapping(address =&gt; uint) public totalAtWithdrawal;
+  mapping(address => uint) public totalAtWithdrawal;
 
   /// @notice Address of the affilated token
   /// @dev Should be defined at construction and no way to change in future
@@ -90,15 +90,15 @@ contract ExtraHolderContract is TokenRecipient {
   public
   {
     require(_holdingToken != address(0x0));
-    require(_recipients.length &gt; 0);
+    require(_recipients.length > 0);
     require(_recipients.length == _partions.length);
 
     uint ensureFullfield;
 
-    for(uint index = 0; index &lt; _recipients.length; index++) {
-      // overflow check isn&#39;t required.. I suppose :D
+    for(uint index = 0; index < _recipients.length; index++) {
+      // overflow check isn't required.. I suppose :D
       ensureFullfield = ensureFullfield + _partions[index];
-      require(_partions[index] &gt; 0);
+      require(_partions[index] > 0);
       require(_recipients[index] != address(0x0));
 
       shares[_recipients[index]] = _partions[index];
@@ -137,8 +137,8 @@ contract ExtraHolderContract is TokenRecipient {
     address _recipient)
   public returns (bool) 
   {
-    require(shares[_recipient] &gt; 0);
-    require(totalAtWithdrawal[_recipient] &lt; totalReceived);
+    require(shares[_recipient] > 0);
+    require(totalAtWithdrawal[_recipient] < totalReceived);
 
     uint left = totalReceived.sub(totalAtWithdrawal[_recipient]);
     uint share = left.mul(shares[_recipient]).div(10000);

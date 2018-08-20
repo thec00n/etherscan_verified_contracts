@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -125,7 +125,7 @@ contract Marketplace is Ownable {
         uint256 expiresAt;
     }
 
-    mapping (uint256 =&gt; Auction) public auctionByAssetId;
+    mapping (uint256 => Auction) public auctionByAssetId;
 
     uint256 public ownerCutPercentage;
     uint256 public publicationFeeInWei;
@@ -166,7 +166,7 @@ contract Marketplace is Ownable {
     }
 
     /**
-     * @dev Sets the publication fee that&#39;s charged to users to publish items
+     * @dev Sets the publication fee that's charged to users to publish items
      * @param publicationFee - Fee amount in wei this contract charges to publish an item
      */
     function setPublicationFee(uint256 publicationFee) onlyOwner public {
@@ -176,12 +176,12 @@ contract Marketplace is Ownable {
     }
 
     /**
-     * @dev Sets the share cut for the owner of the contract that&#39;s
+     * @dev Sets the share cut for the owner of the contract that's
      *  charged to the seller on a successful sale.
      * @param ownerCut - Share amount, from 0 to 100
      */
     function setOwnerCut(uint8 ownerCut) onlyOwner public {
-        require(ownerCut &lt; 100);
+        require(ownerCut < 100);
 
         ownerCutPercentage = ownerCut;
 
@@ -198,8 +198,8 @@ contract Marketplace is Ownable {
         address assetOwner = nonFungibleRegistry.ownerOf(assetId);
         require(msg.sender == assetOwner);
         require(nonFungibleRegistry.isAuthorized(address(this), assetId));
-        require(priceInWei &gt; 0);
-        require(expiresAt &gt; now.add(1 minutes));
+        require(priceInWei > 0);
+        require(expiresAt > now.add(1 minutes));
 
         bytes32 auctionId = keccak256(
             block.timestamp, 
@@ -215,9 +215,9 @@ contract Marketplace is Ownable {
             expiresAt: expiresAt
         });
 
-        // Check if there&#39;s a publication fee and
+        // Check if there's a publication fee and
         // transfer the amount to marketplace owner.
-        if (publicationFeeInWei &gt; 0) {
+        if (publicationFeeInWei > 0) {
             require(acceptedToken.transferFrom(
                 msg.sender,
                 owner,
@@ -259,13 +259,13 @@ contract Marketplace is Ownable {
         require(seller != address(0));
         require(seller != msg.sender);
         require(auctionByAssetId[assetId].price == price);
-        require(now &lt; auctionByAssetId[assetId].expiresAt);
+        require(now < auctionByAssetId[assetId].expiresAt);
 
         require(seller == nonFungibleRegistry.ownerOf(assetId));
 
         uint saleShareAmount = 0;
 
-        if (ownerCutPercentage &gt; 0) {
+        if (ownerCutPercentage > 0) {
 
             // Calculate sale share
             saleShareAmount = price.mul(ownerCutPercentage).div(100);

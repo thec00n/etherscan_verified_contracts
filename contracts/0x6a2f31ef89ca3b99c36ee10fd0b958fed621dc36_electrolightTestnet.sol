@@ -2,12 +2,12 @@ pragma solidity ^0.4.21; //tells that the source code is written for Solidity ve
 
 
 contract electrolightTestnet {
-    // The keyword &quot;public&quot; makes those variables readable from outside.
+    // The keyword "public" makes those variables readable from outside.
     
     address public minter;
     
     // Events allow light clients to react on changes efficiently.
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     
     // This is the constructor whose code is run only when the contract is created
     event Sent(address from, address to, uint amount);
@@ -26,7 +26,7 @@ contract electrolightTestnet {
     }
     
     function send(address receiver, uint amount) public {
-        if(balances[msg.sender] &lt; amount) return;
+        if(balances[msg.sender] < amount) return;
         balances[msg.sender]-=amount;
         balances[receiver]+=amount;
         emit Sent(msg.sender, receiver, amount);

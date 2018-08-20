@@ -15,19 +15,19 @@ contract ERC20 {
 contract StandardToken is ERC20 {
 
 	uint256 public totalSupply;
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     modifier when_can_transfer(address _from, uint256 _value) {
-        if (balances[_from] &gt;= _value) _;
+        if (balances[_from] >= _value) _;
     }
 
     modifier when_can_receive(address _recipient, uint256 _value) {
-        if (balances[_recipient] + _value &gt; balances[_recipient]) _;
+        if (balances[_recipient] + _value > balances[_recipient]) _;
     }
 
     modifier when_is_allowed(address _from, address _delegate, uint256 _value) {
-        if (allowed[_from][_delegate] &gt;= _value) _;
+        if (allowed[_from][_delegate] >= _value) _;
     }
 
     function transfer(address _recipient, uint256 _value)
@@ -72,8 +72,8 @@ contract StandardToken is ERC20 {
 contract GECToken is StandardToken {
 
 	//FIELDS
-	string public name = &quot;GECoin&quot;;
-    string public symbol = &quot;GEC&quot;;
+	string public name = "GECoin";
+    string public symbol = "GEC";
     uint public decimals = 3;
 
 	//INITIALIZATION
@@ -81,8 +81,8 @@ contract GECToken is StandardToken {
 	uint public icoEndTime; 
 
 	uint illiquidBalance_amount;
-	mapping (uint =&gt; address) illiquidBalance_index;
-	mapping (address =&gt; uint) public illiquidBalance; //Balance of &#39;Frozen funds&#39;
+	mapping (uint => address) illiquidBalance_index;
+	mapping (address => uint) public illiquidBalance; //Balance of 'Frozen funds'
 
 	// called by crowdsale contract
 	modifier only_minter {
@@ -92,14 +92,14 @@ contract GECToken is StandardToken {
 
 	// Token can be transferred immediately after crowdsale.
 	modifier when_transferable {
-		if (now &lt;= icoEndTime) throw;
+		if (now <= icoEndTime) throw;
 		_;
 	}
 
 	// Can only be called if the `crowdfunder` is allowed to mint tokens. Any
 	// time before `endMintingTime`.
 	modifier when_mintable {
-		if (now &gt; icoEndTime + 10 days) throw;
+		if (now > icoEndTime + 10 days) throw;
 		_;
 	}
 
@@ -136,11 +136,11 @@ contract GECToken is StandardToken {
 		return true;
 	}
 
-	// Make sender&#39;s illiquid balance liquid when called after lockout period.
+	// Make sender's illiquid balance liquid when called after lockout period.
 	function makeLiquid()
 		only_minter
 	{
-		for (uint i=0; i&lt;illiquidBalance_amount; i++) {
+		for (uint i=0; i<illiquidBalance_amount; i++) {
 			address investor = illiquidBalance_index[i];
 			balances[investor] += illiquidBalance[investor];
 			illiquidBalance[investor] = 0;

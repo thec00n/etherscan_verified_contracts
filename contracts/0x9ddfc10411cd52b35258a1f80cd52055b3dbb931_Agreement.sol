@@ -23,7 +23,7 @@ contract Agreement {
     }
 
 // we need mapping so for contract listing 
-    mapping (uint =&gt; Contract) public contracts;
+    mapping (uint => Contract) public contracts;
 
 // Contract Count holder
     uint public contractCount;
@@ -55,7 +55,7 @@ contract Agreement {
         ) public {
         require(owner == msg.sender);
         uint arrayLength = _participant.length;
-        for (uint i=0; i &lt; arrayLength; i++) {
+        for (uint i=0; i < arrayLength; i++) {
             contractCount += 1;
             contracts[contractCount] = Contract(
             contractCount, contractTitle, documentTitle,
@@ -66,7 +66,7 @@ contract Agreement {
 
 // To sign contract id needs to be valid and contract should assigned to participant and should not be signed already
     function signContract( uint id) public {
-        require(id &gt; 0 &amp;&amp; id &lt;= contractCount);
+        require(id > 0 && id <= contractCount);
         require(contracts[id].participant == msg.sender);
         require(!contracts[id].isSigned);
         contracts[id].isSigned = true;

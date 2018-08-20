@@ -3,7 +3,7 @@ contract CoinContract {
   address public owner;
   address public proxy;
   uint256 public x = 100; //coin multiplier
-  mapping (address =&gt; uint256) private etherClients;
+  mapping (address => uint256) private etherClients;
   event FundsGot(address indexed _sender, uint256 _value);
   event ContractEnabled();
   event ContractDisabled();
@@ -46,11 +46,11 @@ contract CoinContract {
   }
   //@title Contract payment function
   function pay(address _client, uint256 _amount) workingFlag returns (bool ret) {
-    require(x &gt; 0);
+    require(x > 0);
     etherClients[_client] += _amount;
     uint256 value = x * _amount;
     FundsGot(_client, etherClients[_client]);
-    ret = proxy.call(bytes4(sha3(&quot;generateTokens(address,uint256)&quot;)), _client, value);
+    ret = proxy.call(bytes4(sha3("generateTokens(address,uint256)")), _client, value);
   }
   //@title Sender funds getter
   function getSenderFunds(address _sender) workingFlag returns (uint256 amount) {

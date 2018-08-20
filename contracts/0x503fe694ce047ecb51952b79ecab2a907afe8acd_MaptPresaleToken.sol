@@ -12,7 +12,7 @@ contract MaptPricing {
 
   uint256[4] prices;
   uint256[3] dates;
-  mapping (uint256 =&gt; uint256[]) rules;
+  mapping (uint256 => uint256[]) rules;
 
   function MaptPricing() {
   }
@@ -39,26 +39,26 @@ contract MaptPricing {
     uint dp = Z;
     uint tokens;
 
-    require(valueWei &gt;= MIN_ETH);
+    require(valueWei >= MIN_ETH);
 
-    if (valueWei &gt;= prices[0]) ip = 0;
-    else for (uint i = 1; i &lt; prices.length &amp;&amp; ip == Z; i++) {
-      if (valueWei &lt; prices[i-1] &amp;&amp; valueWei &gt;= prices[i]) ip = i;
+    if (valueWei >= prices[0]) ip = 0;
+    else for (uint i = 1; i < prices.length && ip == Z; i++) {
+      if (valueWei < prices[i-1] && valueWei >= prices[i]) ip = i;
     }
 
     if (ip == Z) {
       m = DEFAULT_MULTIPLIER;
     } else {
-      if (timeSinceStart &lt;= dates[0]) {
+      if (timeSinceStart <= dates[0]) {
         dp = 0;
       } else {
-        for (i = 1; i &lt; dates.length &amp;&amp; dp == Z; i++) {
-          if (timeSinceStart &gt; dates[i-1] &amp;&amp; timeSinceStart &lt; dates[i]) {
+        for (i = 1; i < dates.length && dp == Z; i++) {
+          if (timeSinceStart > dates[i-1] && timeSinceStart < dates[i]) {
             dp = i;
           }
         }
         //later on
-        if (timeSinceStart &gt; dates[dates.length-1]) {
+        if (timeSinceStart > dates[dates.length-1]) {
           dp = dates.length-1;
         }
       }
@@ -95,8 +95,8 @@ contract MaptPresaleToken {
         priceRules.createPricing();
     }
 
-    string public constant name = &quot;MAT Presale Token&quot;;
-    string public constant symbol = &quot;MAPT&quot;;
+    string public constant name = "MAT Presale Token";
+    string public constant symbol = "MAPT";
     uint   public constant decimals = 18;
 
     uint public constant TOKEN_SUPPLY_LIMIT = 2800000 * 1 ether / 1 wei;
@@ -119,7 +119,7 @@ contract MaptPresaleToken {
 
     address public crowdsaleManager;
 
-    mapping (address =&gt; uint256) private balanceTable;
+    mapping (address => uint256) private balanceTable;
 
     modifier onlyTokenManager()     { if(msg.sender != tokenManager) throw; _; }
     modifier onlyCrowdsaleManager() { if(msg.sender != crowdsaleManager) throw; _; }
@@ -165,7 +165,7 @@ contract MaptPresaleToken {
         public
         onlyTokenManager
     {
-      require( uint(Phase.Migrated) &gt;= phase &amp;&amp; phase &gt;= 0 );
+      require( uint(Phase.Migrated) >= phase && phase >= 0 );
       setPresalePhase(Phase(phase));
     }
 
@@ -180,14 +180,14 @@ contract MaptPresaleToken {
         private
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         if(!canSwitchPhase) throw;
         currentPhase = _nextPhase;
@@ -216,19 +216,19 @@ contract MaptPresaleToken {
         public
         payable
     {
-        require(totalSupply &lt; TOKEN_SUPPLY_LIMIT);
+        require(totalSupply < TOKEN_SUPPLY_LIMIT);
         uint valueWei = msg.value;
 
         require(currentPhase == Phase.Running);
-        require(valueWei &gt;= MIN_TRANSACTION_AMOUNT_ETH);
-        require(now &gt;= PRESALE_START_DATE);
-        require(now &lt;= PRESALE_END_DATE);
+        require(valueWei >= MIN_TRANSACTION_AMOUNT_ETH);
+        require(now >= PRESALE_START_DATE);
+        require(now <= PRESALE_END_DATE);
 
         uint timeSinceStart = now - PRESALE_START_DATE;
         uint newTokens = priceRules.calculatePrice(valueWei, timeSinceStart, 18);
 
-        require(newTokens &gt; 0);
-        require(totalSupply + newTokens &lt;= TOKEN_SUPPLY_LIMIT);
+        require(newTokens > 0);
+        require(totalSupply + newTokens <= TOKEN_SUPPLY_LIMIT);
 
         totalSupply += newTokens;
         balanceTable[_buyer] += newTokens;
@@ -241,10 +241,10 @@ contract MaptPresaleToken {
         onlyTokenManager
     {
       require(currentPhase == Phase.Running);
-      require(tokens &gt; 0);
+      require(tokens > 0);
 
       uint newTokens = tokens;
-      require (totalSupply + newTokens &lt;= TOKEN_SUPPLY_LIMIT);
+      require (totalSupply + newTokens <= TOKEN_SUPPLY_LIMIT);
       totalSupply += newTokens;
       balanceTable[_buyer] += newTokens;
 
@@ -257,7 +257,7 @@ contract MaptPresaleToken {
         returns (uint)
     {
         LogEscrowReq(bal);
-        if(this.balance &gt;= bal) {
+        if(this.balance >= bal) {
             escrow.transfer(bal);
             LogEscrow(bal);
             return 0;

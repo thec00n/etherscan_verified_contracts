@@ -1,11 +1,11 @@
 /*
 Copyright 2018 Ethecom.com
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 pragma solidity ^0.4.21;
@@ -32,7 +32,7 @@ contract Utils {
     function sqrt(uint256 x) public pure returns (uint256 y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -40,17 +40,17 @@ contract Utils {
 
     function lowerCase(bytes32 value) public pure returns (bytes32) {
         bytes32 result = value;
-        for (uint i = 0; i &lt; 32; i++) {
-            if (uint(value[i]) &gt;= 65 &amp;&amp; uint(value[i]) &lt;= 90) {
-                result |= bytes32(0x20) &lt;&lt; (31-i)*8;
+        for (uint i = 0; i < 32; i++) {
+            if (uint(value[i]) >= 65 && uint(value[i]) <= 90) {
+                result |= bytes32(0x20) << (31-i)*8;
             }
         }
         return result;
     }
     
     function validateCompanyName(bytes32 name) public pure returns (bool) {
-        for (uint i = 0; i &lt; 32; i++) {
-            if (uint(name[i]) != 0 &amp;&amp; (uint(name[i]) &lt; 32 || uint(name[i]) &gt; 126)) {
+        for (uint i = 0; i < 32; i++) {
+            if (uint(name[i]) != 0 && (uint(name[i]) < 32 || uint(name[i]) > 126)) {
                 return false;
             }
         }
@@ -90,7 +90,7 @@ contract TopCompanyFactoryInterface is Ownable {
 
     uint256 public companyCount;
     TopCompany[] public companies;
-    mapping(bytes32 =&gt; uint256) public companiesIndex;
+    mapping(bytes32 => uint256) public companiesIndex;
     function canBuyCompany(bytes32 nameLowercase) public view returns (bool);
     function getCompanyByName(bytes32 nameLowercase) public view returns (bytes32 name, uint256 performance, bytes32 logoUrl);
     function getCompany(uint256 index) public view returns (bytes32 name, uint256 performance, bytes32 logoUrl);
@@ -138,16 +138,16 @@ contract Ethecom is Ownable {
     uint256 public blocksPerDay = 5000;
 
     // Map company name to company object
-    mapping(bytes32 =&gt; Company) public companies;
+    mapping(bytes32 => Company) public companies;
 
     // Total performance of all companies owned by a user
-    mapping(address =&gt; uint256) public ownedPerformance;
+    mapping(address => uint256) public ownedPerformance;
 
     // The last time a user claim their ECOM token so that it will be transferred to their eth account
-    mapping(address =&gt; uint256) public lastTokenClaimedBlock;
+    mapping(address => uint256) public lastTokenClaimedBlock;
 
     // Number of super privileges an account has 
-    mapping (address =&gt; uint256) public superPrivilegeCount;
+    mapping (address => uint256) public superPrivilegeCount;
 
     // Minimum random value required to get a super privilege
     uint256 public minRandomPrivilegeValue = 90;
@@ -210,7 +210,7 @@ contract Ethecom is Ownable {
         require(c.price == msg.value);
         require(c.isOnsale == true);
         if (superPrivilege) {
-            require(superPrivilegeCount[msg.sender] &gt; 0);
+            require(superPrivilegeCount[msg.sender] > 0);
         }
 
         address oldOwner = c.owner;
@@ -251,7 +251,7 @@ contract Ethecom is Ownable {
         // Check if it is avaialble for purchase
         require(factoryContract.canBuyCompany(nameLowercase));
         if (superPrivilege) {
-            require(superPrivilegeCount[msg.sender] &gt; 0);
+            require(superPrivilegeCount[msg.sender] > 0);
         }
 
         bytes32 name;
@@ -280,13 +280,13 @@ contract Ethecom is Ownable {
     // User can set the inital value for their company (without knowing it performance)
     // Newly created company will be put on sale immediately
     function createCompany(bytes32 name, bytes32 logoUrl, uint256 value) public {
-        require(value &gt;= minCompanyValue);
-        require(value &lt;= maxCompanyValue);
+        require(value >= minCompanyValue);
+        require(value <= maxCompanyValue);
         require(utils.validateCompanyName(name) == true);
 
         bytes32 nameLowercase = utils.lowerCase(name);
 
-        // If company doesn&#39;t exists, owner address will be address 0
+        // If company doesn't exists, owner address will be address 0
         require(factoryContract.companiesIndex(nameLowercase) == 0);
         require(companies[nameLowercase].owner == address(0));
 
@@ -308,7 +308,7 @@ contract Ethecom is Ownable {
     function permanentlyOwnMyCompany(bytes32 nameFromUser) public {
         bytes32 nameLowercase = utils.lowerCase(nameFromUser);
         Company storage c = companies[nameLowercase];
-        require(superPrivilegeCount[msg.sender] &gt; 0);
+        require(superPrivilegeCount[msg.sender] > 0);
         require(c.owner != address(0));
         require(c.owner == msg.sender);
         require(c.isOnsale == true);
@@ -321,8 +321,8 @@ contract Ethecom is Ownable {
 
     // Put a permanently owned company on sale again
     function putCompanyOnsale(bytes32 nameFromUser, uint256 startPrice) public {
-        require(startPrice &gt;= minCompanyValue);
-        require(startPrice &lt;= maxCompanyValue);
+        require(startPrice >= minCompanyValue);
+        require(startPrice <= maxCompanyValue);
         bytes32 nameLowercase = utils.lowerCase(nameFromUser);
         Company storage c = companies[nameLowercase];
         require(c.owner != address(0));
@@ -343,7 +343,7 @@ contract Ethecom is Ownable {
         uint256 rand = randContract.rand(msg.sender);
         rand = rand % 100;
         bool status = false;
-        if (rand &gt;= minRandomPrivilegeValue) {
+        if (rand >= minRandomPrivilegeValue) {
             superPrivilegeCount[msg.sender] = superPrivilegeCount[msg.sender] + 1;
             status = true;
         }
@@ -353,7 +353,7 @@ contract Ethecom is Ownable {
 
     // Anyone who owned some companies can claim their token
     function claimMyToken() public {
-        require(ownedPerformance[msg.sender] &gt; 0);
+        require(ownedPerformance[msg.sender] > 0);
 
         claimToken(msg.sender);
     }
@@ -398,7 +398,7 @@ contract Ethecom is Ownable {
         costContract.transferOwnership(addr);
         factoryContract.transferOwnership(addr);
 
-        // Random generator contract doesn&#39;t need to be transferred
+        // Random generator contract doesn't need to be transferred
     }
 
     /**
@@ -455,7 +455,7 @@ contract Ethecom is Ownable {
 
     // Private methods
     function transferECOMTokenToContract(uint256 amount) private {
-        require(tokenContract.balanceOf(msg.sender) &gt;= amount);
+        require(tokenContract.balanceOf(msg.sender) >= amount);
         tokenContract.ownerApprove(msg.sender, amount);
         tokenContract.transferFrom(msg.sender, address(this), amount);
     }
@@ -471,7 +471,7 @@ contract Ethecom is Ownable {
         uint256 numBlock = block.number - lastTokenClaimedBlock[receiver];
         uint256 profitPerBlock = ownedPerformance[receiver] * ECOMDecimal / blocksPerDay;
         uint256 profit = numBlock * profitPerBlock;
-        if (profit &gt; 0) {
+        if (profit > 0) {
             tokenContract.transfer(receiver, profit);
         }
         lastTokenClaimedBlock[receiver] = block.number;

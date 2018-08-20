@@ -30,37 +30,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -81,10 +81,10 @@ contract SafeMath {
 contract StandardToken is ERC20, SafeMath {
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -118,7 +118,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -141,8 +141,8 @@ contract StandardToken is ERC20, SafeMath {
  * Steps are
  * - Upgradeabletoken.upgradeMaster calls UpgradeableToken.setUpgradeAgent()
  * - Individual token holders can now call UpgradeableToken.upgrade()
- *   -&gt; This results to call UpgradeAgent.upgradeFrom() that issues new tokens
- *   -&gt; UpgradeableToken.upgrade() reduces the original total supply based on amount of upgraded tokens
+ *   -> This results to call UpgradeAgent.upgradeFrom() that issues new tokens
+ *   -> UpgradeableToken.upgrade() reduces the original total supply based on amount of upgraded tokens
  *
  * Upgrade agent itself can be the token contract, or just a middle man contract doing the heavy lifting.
  */
@@ -187,7 +187,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -346,7 +346,7 @@ contract CentrallyIssuedToken is UpgradeableToken {
       throw;
     }
 
-    if(bytes(name).length &gt; 0 || bytes(symbol).length &gt; 0) {
+    if(bytes(name).length > 0 || bytes(symbol).length > 0) {
       // Information already set
       // Allow owner to set this information only once
       throw;

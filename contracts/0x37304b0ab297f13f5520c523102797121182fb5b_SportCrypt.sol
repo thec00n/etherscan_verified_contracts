@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract SportCrypt {
     address private owner;
-    mapping(address =&gt; bool) private admins;
+    mapping(address => bool) private admins;
 
     function SportCrypt() public {
         owner = msg.sender;
@@ -41,15 +41,15 @@ contract SportCrypt {
     // Storage
 
     struct Match {
-        mapping(address =&gt; int) positions;
+        mapping(address => int) positions;
         uint64 firstTradeTimestamp;
         bool finalized;
         uint8 finalPrice;
     }
 
-    mapping(address =&gt; uint) private balances;
-    mapping(uint =&gt; Match) private matches;
-    mapping(uint =&gt; uint) private filledAmounts;
+    mapping(address => uint) private balances;
+    mapping(uint => Match) private matches;
+    mapping(uint => uint) private filledAmounts;
 
 
     // Memory
@@ -88,21 +88,21 @@ contract SportCrypt {
         o.amount = rawOrder[1];
 
         uint packed = rawOrder[2];
-        o.expiry = packed &gt;&gt; (8*27);
-        o.addr = address(packed &amp; 0x00ffffffffffffffffffffffffffffffffffffffff);
-        o.price = uint8((packed &gt;&gt; (8*21)) &amp; 0xff);
-        o.direction = uint8((packed &gt;&gt; (8*20)) &amp; 0xff);
+        o.expiry = packed >> (8*27);
+        o.addr = address(packed & 0x00ffffffffffffffffffffffffffffffffffffffff);
+        o.price = uint8((packed >> (8*21)) & 0xff);
+        o.direction = uint8((packed >> (8*20)) & 0xff);
     }
 
     function validateOrderParams(Order memory o) private pure returns(bool) {
-        if (o.amount &gt; MAX_SANE_AMOUNT) return false;
-        if (o.price == 0 || o.price &gt; 99) return false;
-        if (o.direction &gt; 1) return false;
+        if (o.amount > MAX_SANE_AMOUNT) return false;
+        if (o.price == 0 || o.price > 99) return false;
+        if (o.direction > 1) return false;
         return true;
     }
 
     function validateOrderSig(Order memory o, bytes32 r, bytes32 s, uint8 v) private pure returns(bool) {
-        if (ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, o.orderHash), v, r, s) != o.addr) return false;
+        if (ecrecover(keccak256("\x19Ethereum Signed Message:\n32", o.orderHash), v, r, s) != o.addr) return false;
         return true;
     }
 
@@ -126,7 +126,7 @@ contract SportCrypt {
     }
 
     function deposit() external payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             uint origAmount = balances[msg.sender];
             uint newAmount = safeAdd(origAmount, msg.value);
             balances[msg.sender] = newAmount;
@@ -140,7 +140,7 @@ contract SportCrypt {
         uint origAmount = balances[msg.sender];
         uint amountToWithdraw = minu256(origAmount, amount);
 
-        if (amountToWithdraw &gt; 0) {
+        if (amountToWithdraw > 0) {
             uint newAmount = origAmount - amountToWithdraw;
             balances[msg.sender] = newAmount;
 
@@ -154,11 +154,11 @@ contract SportCrypt {
     function cancelOrder(uint[3] order, bytes32 r, bytes32 s, uint8 v) external {
         Order memory o = parseOrder(order);
 
-        // Don&#39;t bother validating order params.
+        // Don't bother validating order params.
         require(validateOrderSig(o, r, s, v));
         require(o.addr == msg.sender);
 
-        if (block.timestamp &lt; o.expiry) {
+        if (block.timestamp < o.expiry) {
             filledAmounts[o.orderHash] = o.amount;
             LogOrderCancel(msg.sender, o.matchId, o.orderHash);
         }
@@ -189,7 +189,7 @@ contract SportCrypt {
         var m = matches[o.matchId];
 
         if (m.firstTradeTimestamp == 0) {
-            assert(block.timestamp &gt; 0);
+            assert(block.timestamp > 0);
             m.firstTradeTimestamp = uint64(block.timestamp);
         }
 
@@ -211,9 +211,9 @@ contract SportCrypt {
             require(m.finalPrice == finalPrice);
         } else {
             uint messageHash = uint(keccak256(this, matchId, finalPrice));
-            address signer = ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, messageHash), v, r, s);
+            address signer = ecrecover(keccak256("\x19Ethereum Signed Message:\n32", messageHash), v, r, s);
             require(admins[signer]);
-            require(finalPrice &lt;= 100);
+            require(finalPrice <= 100);
 
             m.finalized = true;
             m.finalPrice = finalPrice;
@@ -225,15 +225,15 @@ contract SportCrypt {
         int delta = 0;
         int senderPosition = m.positions[msg.sender];
 
-        if (senderPosition &gt; 0) {
+        if (senderPosition > 0) {
             delta = priceDivide(senderPosition, finalPrice);
-        } else if (senderPosition &lt; 0) {
+        } else if (senderPosition < 0) {
             delta = priceDivide(-senderPosition, 100 - finalPrice);
         } else {
             return;
         }
 
-        assert(delta &gt;= 0);
+        assert(delta >= 0);
 
         m.positions[msg.sender] = 0;
         adjustBalance(msg.sender, delta);
@@ -248,11 +248,11 @@ contract SportCrypt {
             return;
         }
 
-        uint recoveryTimestamp = uint(m.firstTradeTimestamp) + ((matchId &amp; 0xFF) * 7 * 86400);
+        uint recoveryTimestamp = uint(m.firstTradeTimestamp) + ((matchId & 0xFF) * 7 * 86400);
 
-        if (uint(block.timestamp) &gt; recoveryTimestamp) {
-            uint8 finalPrice = uint8((matchId &amp; 0xFF00) &gt;&gt; 8);
-            require(finalPrice &lt;= 100);
+        if (uint(block.timestamp) > recoveryTimestamp) {
+            uint8 finalPrice = uint8((matchId & 0xFF00) >> 8);
+            require(finalPrice <= 100);
 
             m.finalized = true;
             m.finalPrice = finalPrice;
@@ -265,14 +265,14 @@ contract SportCrypt {
 
     function adjustBalance(address addr, int delta) private {
         uint origAmount = balances[addr];
-        uint newAmount = delta &gt;= 0 ? safeAdd(origAmount, uint(delta)) : safeSub(origAmount, uint(-delta));
+        uint newAmount = delta >= 0 ? safeAdd(origAmount, uint(delta)) : safeSub(origAmount, uint(-delta));
         balances[addr] = newAmount;
 
         LogBalanceChange(addr, origAmount, newAmount);
     }
 
     function priceDivide(int amount, uint8 price) private pure returns(int) {
-        assert(amount &gt;= 0);
+        assert(amount >= 0);
         return int(safeMul(uint(amount), price) / 100);
     }
 
@@ -280,9 +280,9 @@ contract SportCrypt {
         uint effectiveBalance = balance;
 
         if (isLong) {
-            if (position &lt; 0) effectiveBalance += uint(priceDivide(-position, price));
+            if (position < 0) effectiveBalance += uint(priceDivide(-position, price));
         } else {
-            if (position &gt; 0) effectiveBalance += uint(priceDivide(position, 100 - price));
+            if (position > 0) effectiveBalance += uint(priceDivide(position, 100 - price));
         }
 
         return effectiveBalance;
@@ -295,7 +295,7 @@ contract SportCrypt {
         totalLongAmount = longAmount + (safeMul(longAmount, 100 - price) / price);
         totalShortAmount = shortAmount + (safeMul(shortAmount, price) / (100 - price));
 
-        if (totalLongAmount &gt; totalShortAmount) {
+        if (totalLongAmount > totalShortAmount) {
             return (totalShortAmount - shortAmount, shortAmount);
         } else {
             return (longAmount, totalLongAmount - longAmount);
@@ -304,8 +304,8 @@ contract SportCrypt {
 
     function computeExposureDelta(int longBalanceDelta, int shortBalanceDelta, int oldLongPosition, int newLongPosition, int oldShortPosition, int newShortPosition) private pure returns(int) {
         int positionDelta = 0;
-        if (newLongPosition &gt; 0) positionDelta += newLongPosition - max256(0, oldLongPosition);
-        if (oldShortPosition &gt; 0) positionDelta -= oldShortPosition - max256(0, newShortPosition);
+        if (newLongPosition > 0) positionDelta += newLongPosition - max256(0, oldLongPosition);
+        if (oldShortPosition > 0) positionDelta -= oldShortPosition - max256(0, newShortPosition);
 
         return positionDelta + longBalanceDelta + shortBalanceDelta;
     }
@@ -313,7 +313,7 @@ contract SportCrypt {
     function tradeCore(uint amount, Order memory o) private constant returns(Trade t) {
         var m = matches[o.matchId];
 
-        if (block.timestamp &gt;= o.expiry) {
+        if (block.timestamp >= o.expiry) {
             t.status = Status.ORDER_EXPIRED;
             return;
         }
@@ -328,7 +328,7 @@ contract SportCrypt {
             return;
         }
 
-        if (amount &gt; MAX_SANE_AMOUNT) {
+        if (amount > MAX_SANE_AMOUNT) {
             t.status = Status.AMOUNT_MALFORMED;
             return;
         }
@@ -376,11 +376,11 @@ contract SportCrypt {
         t.longBalanceDelta = 0;
         t.shortBalanceDelta = 0;
 
-        if (oldLongPosition &lt; 0) t.longBalanceDelta += priceDivide(-oldLongPosition + min256(0, newLongPosition), 100 - o.price);
-        if (newLongPosition &gt; 0) t.longBalanceDelta -= priceDivide(newLongPosition - max256(0, oldLongPosition), o.price);
+        if (oldLongPosition < 0) t.longBalanceDelta += priceDivide(-oldLongPosition + min256(0, newLongPosition), 100 - o.price);
+        if (newLongPosition > 0) t.longBalanceDelta -= priceDivide(newLongPosition - max256(0, oldLongPosition), o.price);
 
-        if (oldShortPosition &gt; 0) t.shortBalanceDelta += priceDivide(oldShortPosition - max256(0, newShortPosition), o.price);
-        if (newShortPosition &lt; 0) t.shortBalanceDelta -= priceDivide(-newShortPosition + min256(0, oldShortPosition), 100 - o.price);
+        if (oldShortPosition > 0) t.shortBalanceDelta += priceDivide(oldShortPosition - max256(0, newShortPosition), o.price);
+        if (newShortPosition < 0) t.shortBalanceDelta -= priceDivide(-newShortPosition + min256(0, oldShortPosition), 100 - o.price);
 
         int exposureDelta = computeExposureDelta(t.longBalanceDelta, t.shortBalanceDelta, oldLongPosition, newLongPosition, oldShortPosition, newShortPosition);
 
@@ -434,7 +434,7 @@ contract SportCrypt {
     }
 
     function checkMatchBatch(address myAddr, uint[16] matchIds) external view returns(int[16] myPosition, bool[16] finalized, uint8[16] finalPrice) {
-        for (uint i = 0; i &lt; 16; i++) {
+        for (uint i = 0; i < 16; i++) {
             if (matchIds[i] == 0) break;
 
             var m = matches[matchIds[i]];
@@ -446,7 +446,7 @@ contract SportCrypt {
     }
 
     function checkOrderBatch(uint[48] input) external view returns(uint16[16] status, uint[16] amount) {
-        for (uint i = 0; i &lt; 16; i++) {
+        for (uint i = 0; i < 16; i++) {
             uint[3] memory rawOrder;
             rawOrder[0] = input[(i*3)];
             rawOrder[1] = input[(i*3) + 1];
@@ -503,25 +503,25 @@ contract SportCrypt {
     }
 
     function safeSub(uint a, uint b) private pure returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) private pure returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     function minu256(uint a, uint b) private pure returns(uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(int a, int b) private pure returns(int) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(int a, int b) private pure returns(int) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }

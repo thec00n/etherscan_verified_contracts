@@ -1,7 +1,7 @@
 /**
  * @title Moderated
- * @dev restricts execution of &#39;onlyModerator&#39; modified functions to the contract moderator
- * @dev restricts execution of &#39;ifUnrestricted&#39; modified functions to when unrestricted
+ * @dev restricts execution of 'onlyModerator' modified functions to the contract moderator
+ * @dev restricts execution of 'ifUnrestricted' modified functions to when unrestricted
  *      boolean state is true
  * @dev allows for the extraction of ether or other ERC20 tokens mistakenly sent to this address
  */
@@ -22,7 +22,7 @@ contract Moderated {
     }
 
     modifier onlyPayloadSize(uint numWords) {
-        assert(msg.data.length &gt;= numWords * 32 + 4);
+        assert(msg.data.length >= numWords * 32 + 4);
         _;
     }
 
@@ -55,7 +55,7 @@ contract Moderated {
     function isContract(address _addr) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(_addr) }
-        return (size &gt; 0);
+        return (size > 0);
     }
 }
 
@@ -93,20 +93,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,14 +116,14 @@ library SafeMath {
 contract Touch is Moderated {
 	using SafeMath for uint256;
 
-		string public name = &quot;Touch. Token&quot;;
-		string public symbol = &quot;TST&quot;;
+		string public name = "Touch. Token";
+		string public symbol = "TST";
 		uint8 public decimals = 18;
 
         uint256 public maximumTokenIssue = 1000000000 * 10**18;
 
-		mapping(address =&gt; uint256) internal balances;
-		mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+		mapping(address => uint256) internal balances;
+		mapping (address => mapping (address => uint256)) internal allowed;
 
 		uint256 internal totalSupply_;
 
@@ -153,16 +153,16 @@ contract Touch is Moderated {
 		* @param _value uint256 the amount of tokens to be transferred
 		*/
 		function transferFrom(address _from, address _to, uint256 _value) public ifUnrestricted onlyPayloadSize(3) returns (bool) {
-		    require(_value &lt;= allowed[_from][msg.sender]);
+		    require(_value <= allowed[_from][msg.sender]);
 		    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 		    return _transfer(_from, _to, _value);
 		}
 
 		function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
 			// Do not allow transfers to 0x0 or to this contract
-			require(_to != address(0x0) &amp;&amp; _to != address(this));
-			// Do not allow transfer of value greater than sender&#39;s current balance
-			require(_value &lt;= balances[_from]);
+			require(_to != address(0x0) && _to != address(this));
+			// Do not allow transfer of value greater than sender's current balance
+			require(_value <= balances[_from]);
 			// Update balance of sending address
 			balances[_from] = balances[_from].sub(_value);
 			// Update balance of receiving address
@@ -186,7 +186,7 @@ contract Touch is Moderated {
 		*
 		* Beware that changing an allowance with this method brings the risk that someone may use both the old
 		* and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-		* race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+		* race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 		* https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 		* @param _spender The address which will spend the funds.
 		* @param _value The amount of tokens to be spent.
@@ -220,7 +220,7 @@ contract Touch is Moderated {
 		* @param _addedValue The amount of tokens to increase the allowance by.
 		*/
 		function increaseApproval(address _spender, uint256 _addedValue) public ifUnrestricted onlyPayloadSize(2) returns (bool) {
-			require(_addedValue &gt; 0);
+			require(_addedValue > 0);
 			allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
 			Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
 			return true;
@@ -238,8 +238,8 @@ contract Touch is Moderated {
 		*/
 		function decreaseApproval(address _spender, uint256 _subtractedValue) public ifUnrestricted onlyPayloadSize(2) returns (bool) {
 			uint256 oldValue = allowed[msg.sender][_spender];
-			require(_subtractedValue &gt; 0);
-			if (_subtractedValue &gt; oldValue) {
+			require(_subtractedValue > 0);
+			if (_subtractedValue > oldValue) {
 				allowed[msg.sender][_spender] = 0;
 			} else {
 				allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

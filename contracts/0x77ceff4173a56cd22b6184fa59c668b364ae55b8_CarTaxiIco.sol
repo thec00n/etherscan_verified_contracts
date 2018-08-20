@@ -20,18 +20,18 @@ contract SafeMath {
     function div(uint256 a, uint256 b) constant internal returns (uint256) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) constant internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) constant internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -42,12 +42,12 @@ contract SafeMath {
     // presale volume bonus calculation 
     function presaleVolumeBonus(uint256 price) internal returns (uint256) {
 
-        // preCTX &gt; ETH
+        // preCTX > ETH
         uint256 val = div(price, preIcoPrice);
 
-        if(val &gt;= 100 * BASE) return add(price, price * 1/20); // 5%
-        if(val &gt;= 50 * BASE) return add(price, price * 3/100); // 3%
-        if(val &gt;= 20 * BASE) return add(price, price * 1/50);  // 2%
+        if(val >= 100 * BASE) return add(price, price * 1/20); // 5%
+        if(val >= 50 * BASE) return add(price, price * 3/100); // 3%
+        if(val >= 20 * BASE) return add(price, price * 1/50);  // 2%
 
         return price;
     }
@@ -55,12 +55,12 @@ contract SafeMath {
     // ICO volume bonus calculation
     function volumeBonus(uint256 etherValue) internal returns (uint256) {
 
-        if(etherValue &gt;= 1000000000000000000000) return 15;// +15% tokens
-        if(etherValue &gt;=  500000000000000000000) return 10; // +10% tokens
-        if(etherValue &gt;=  300000000000000000000) return 7;  // +7% tokens
-        if(etherValue &gt;=  100000000000000000000) return 5;  // +5% tokens
-        if(etherValue &gt;=   50000000000000000000) return 3;   // +3% tokens
-        if(etherValue &gt;=   20000000000000000000) return 2;   // +2% tokens
+        if(etherValue >= 1000000000000000000000) return 15;// +15% tokens
+        if(etherValue >=  500000000000000000000) return 10; // +10% tokens
+        if(etherValue >=  300000000000000000000) return 7;  // +7% tokens
+        if(etherValue >=  100000000000000000000) return 5;  // +5% tokens
+        if(etherValue >=   50000000000000000000) return 3;   // +3% tokens
+        if(etherValue >=   20000000000000000000) return 2;   // +2% tokens
 
         return 0;
     }
@@ -89,7 +89,7 @@ contract SafeMath {
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -106,20 +106,20 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; bool) ownerAppended;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => bool) ownerAppended;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     address[] public owners;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             if(!ownerAppended[_to]) {
@@ -139,7 +139,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -187,8 +187,8 @@ contract CarTaxiToken is StandardToken, SafeMath {
     /*
      * Token meta data
      */
-    string public constant name = &quot;CarTaxi&quot;;
-    string public constant symbol = &quot;CTX&quot;;
+    string public constant name = "CarTaxi";
+    string public constant symbol = "CTX";
     uint public constant decimals = 18;
 
     // tottal supply
@@ -215,22 +215,22 @@ contract CarTaxiToken is StandardToken, SafeMath {
         icoContract = _icoContract;
     }
 
-    /// @dev Burns tokens from address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Burns tokens from address. It's can be applied by account with address this.icoContract
     /// @param _from Address of account, from which will be burned tokens
     /// @param _value Amount of tokens, that will be burned
     function burnTokens(address _from, uint _value) onlyIcoContract {
         assert(_from != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_from] = sub(balances[_from], _value);
     }
 
-    /// @dev Adds tokens to address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Adds tokens to address. It's can be applied by account with address this.icoContract
     /// @param _to Address of account to which the tokens will pass
     /// @param _value Amount of tokens
     function emitTokens(address _to, uint _value) onlyIcoContract {
         assert(_to != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_to] = add(balances[_to], _value);
 
@@ -297,7 +297,7 @@ contract CarTaxiIco is SafeMath {
     uint constant BASE = 1000000000000000000;
 
     // 2018.02.04 07:00 UTC
-    // founders&#39; reward time
+    // founders' reward time
     uint public foundersRewardTime = 1517727600;
 
     // Amount of imported tokens from pre-ICO
@@ -306,7 +306,7 @@ contract CarTaxiIco is SafeMath {
     uint public soldTokensOnIco = 0;
     // Amount of issued tokens on pre-ICO = 3047.999951828165582669 * 4101
     uint public constant soldTokensOnPreIco = 12499847802447308000000000;
-    // Tokens to founders can be sent only if sentTokensToFounders == false and time &gt; foundersRewardTime
+    // Tokens to founders can be sent only if sentTokensToFounders == false and time > foundersRewardTime
     bool public sentTokensToFounders = false;
     // Tokens to bounty owner can be sent only after ICO
     bool public sentTokensToBountyOwner = false;
@@ -319,7 +319,7 @@ contract CarTaxiIco is SafeMath {
 
     modifier whenInitialized() {
         // only when contract is initialized
-        require(currentState &gt;= State.Init);
+        require(currentState >= State.Init);
         _;
     }
 
@@ -413,10 +413,10 @@ contract CarTaxiIco is SafeMath {
         bountyOwner = _bountyOwner;
     }
 
-    // saves info if account&#39;s tokens were imported from pre-ICO
-    mapping (address =&gt; bool) private importedFromPreIco;
+    // saves info if account's tokens were imported from pre-ICO
+    mapping (address => bool) private importedFromPreIco;
 
-    /// @dev Imports account&#39;s tokens from pre-ICO. It can be done only by user, ICO manager or token importer
+    /// @dev Imports account's tokens from pre-ICO. It can be done only by user, ICO manager or token importer
     /// @param _account Address of account which tokens will be imported
     function importTokens(address _account) {
         // only token holder or manager can do migration
@@ -426,7 +426,7 @@ contract CarTaxiIco is SafeMath {
         uint preIcoBal = preIcoToken.balanceOf(_account);
         uint preIcoBalance = presaleVolumeBonus(preIcoBal);
 
-        if (preIcoBalance &gt; 0) {
+        if (preIcoBalance > 0) {
             cartaxiToken.emitTokens(_account, preIcoBalance);
             importedTokens = add(importedTokens, preIcoBalance);
         }
@@ -438,7 +438,7 @@ contract CarTaxiIco is SafeMath {
     /// @param _buyer Address of account which will receive tokens
     function buyTokens(address _buyer) private {
         assert(_buyer != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint tokensToEmit = msg.value * PRICE;
         //calculate date bonus
@@ -448,11 +448,11 @@ contract CarTaxiIco is SafeMath {
         //total bonus tokens
         uint totalBonusPercent = dateBonusPercent + volumeBonusPercent;
 
-        if(totalBonusPercent &gt; 0){
+        if(totalBonusPercent > 0){
             tokensToEmit =  tokensToEmit + mulByFraction(tokensToEmit, totalBonusPercent, 100);
         }
 
-        require(add(soldTokensOnIco, tokensToEmit) &lt;= supplyLimit);
+        require(add(soldTokensOnIco, tokensToEmit) <= supplyLimit);
 
         soldTokensOnIco = add(soldTokensOnIco, tokensToEmit);
 
@@ -467,7 +467,7 @@ contract CarTaxiIco is SafeMath {
         buyTokens(msg.sender);
     }
 
-    /// @dev Burn tokens from accounts only in state &quot;not migrated&quot;. Only manager can do it
+    /// @dev Burn tokens from accounts only in state "not migrated". Only manager can do it
     /// @param _from Address of account
     function burnTokens(address _from, uint _value) onlyManager notMigrated {
         cartaxiToken.burnTokens(_from, _value);
@@ -475,15 +475,15 @@ contract CarTaxiIco is SafeMath {
 
     /// @dev Partial withdraw. Only manager can do it
     function withdrawEther(uint _value) onlyManager {
-        require(_value &gt; 0);
-        assert(_value &lt;= this.balance);
+        require(_value > 0);
+        assert(_value <= this.balance);
         // send 123 to get 1.23
         escrow.transfer(_value * 10000000000000000); // 10^16
     }
 
     /// @dev Ether withdraw. Only manager can do it
     function withdrawAllEther() onlyManager {
-        if(this.balance &gt; 0)
+        if(this.balance > 0)
         {
             escrow.transfer(this.balance);
         }
@@ -506,7 +506,7 @@ contract CarTaxiIco is SafeMath {
 
     /// @dev Send tokens to founders. Can be sent only after cartaxiToken.rewardTime() (2018.02.04 0:00 UTC)
     function sendTokensToFounders() onlyManager whenInitialized {
-        require(!sentTokensToFounders &amp;&amp; now &gt;= foundersRewardTime);
+        require(!sentTokensToFounders && now >= foundersRewardTime);
 
         //Calculate total tokens sold on pre-ICO and ICO
         uint tokensSold = add(soldTokensOnIco, soldTokensOnPreIco);

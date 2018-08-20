@@ -41,8 +41,8 @@ contract Token {
 contract RegularToken is Token {
 
     function transfer(address _to, uint _value) returns (bool) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -51,7 +51,7 @@ contract RegularToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -74,8 +74,8 @@ contract RegularToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -83,8 +83,8 @@ contract BGGToken is RegularToken {
 
     uint public totalSupply = 10**28;
     uint8 constant public decimals = 18;
-    string constant public name = &quot;BGGToken&quot;;
-    string constant public symbol = &quot;BGG&quot;;
+    string constant public name = "BGGToken";
+    string constant public symbol = "BGG";
 
     function BGGToken() {
         balances[msg.sender] = totalSupply;

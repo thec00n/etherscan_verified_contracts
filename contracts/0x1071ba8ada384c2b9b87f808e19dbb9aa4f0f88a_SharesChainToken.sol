@@ -11,37 +11,37 @@ pragma solidity ^0.4.18;
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     }
 
@@ -131,16 +131,16 @@ pragma solidity ^0.4.18;
         * @dev Fix for the ERC20 short address attack.
         */
         modifier onlyPayloadSize(uint size) {
-            require(msg.data.length &gt;= size + 4);
+            require(msg.data.length >= size + 4);
             _;
         }
 
         function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public returns (bool success) {
-            //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-            //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+            //Default assumes totalSupply can't be over max (2^256 - 1).
+            //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
             //Replace the if with this one instead.
-            //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            if (balances[msg.sender] &gt;= _value) {
+            //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            if (balances[msg.sender] >= _value) {
                 balances[msg.sender] -= _value;
                 balances[_to] += _value;
                 Transfer(msg.sender, _to, _value);
@@ -150,8 +150,8 @@ pragma solidity ^0.4.18;
 
         function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) public returns (bool success) {
             //same as above. Replace this line with the following if you want to protect against wrapping uints.
-            //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+            //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
                 balances[_to] += _value;
                 balances[_from] -= _value;
                 allowed[_from][msg.sender] -= _value;
@@ -180,14 +180,14 @@ pragma solidity ^0.4.18;
         return allowed[_owner][_spender];
         }
 
-        mapping (address =&gt; uint) balances;
-        mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+        mapping (address => uint) balances;
+        mapping (address => mapping (address => uint)) allowed;
     }
 
     contract SharesChainToken is StandardToken {
         /// Constant token specific fields
-        string public constant name = &quot;SharesChainToken&quot;;
-        string public constant symbol = &quot;SCTK&quot;;
+        string public constant name = "SharesChainToken";
+        string public constant symbol = "SCTK";
         uint public constant decimals = 18;
 
         /// SharesChain total tokens supply
@@ -207,7 +207,7 @@ pragma solidity ^0.4.18;
         }
 
         modifier maxTokenAmountNotReached (uint amount){
-            assert(totalSupply.add(amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+            assert(totalSupply.add(amount) <= MAX_TOTAL_TOKEN_AMOUNT);
             _;
         }
 

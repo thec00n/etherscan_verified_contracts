@@ -26,13 +26,13 @@ contract LittleCactus {
   }
   
   function enter() {
-    if (msg.value &lt; 1/100 ether) {
+    if (msg.value < 1/100 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 50 ether) {
+		if (msg.value > 50 ether) {
 			msg.sender.send(msg.value - 50 ether);	
 			amount = 50 ether;
     }
@@ -58,7 +58,7 @@ contract LittleCactus {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 140) {
+    while (balance > persons[payoutIdx].amount / 100 * 140) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 140;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

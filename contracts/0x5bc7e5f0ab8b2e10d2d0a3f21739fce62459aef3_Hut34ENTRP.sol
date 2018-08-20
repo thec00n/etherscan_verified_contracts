@@ -15,7 +15,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 -------------
 Release Notes
@@ -34,10 +34,10 @@ pragma solidity ^0.4.17;
 contract Hut34Config
 {
     // ERC20 token name
-    string  public constant name            = &quot;Hut34 Entropy Token&quot;;
+    string  public constant name            = "Hut34 Entropy Token";
     
     // ERC20 trading symbol
-    string  public constant symbol          = &quot;ENTRP&quot;;
+    string  public constant symbol          = "ENTRP";
 
     // ERC20 decimal places
     uint8   public constant decimals        = 18;
@@ -70,13 +70,13 @@ library SafeMath
     // a add to b
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
     }
     
     // a subtract b
     function sub(uint a, uint b) internal pure returns (uint c) {
         c = a - b;
-        assert(c &lt;= a);
+        assert(c <= a);
     }
     
     // a multiplied by b
@@ -107,10 +107,10 @@ contract ERC20Token
     uint public totalSupply;
     
     /// @return Tokens owned by an address
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
     
     /// @return Tokens spendable by a thridparty
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
 /* Events */
 
@@ -163,7 +163,7 @@ contract ERC20Token
         public
         returns (bool)
     {
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         return xfer(_from, _to, _amount);
@@ -174,7 +174,7 @@ contract ERC20Token
         internal
         returns (bool)
     {
-        require(_amount &lt;= balances[_from]);
+        require(_amount <= balances[_from]);
 
         Transfer(_from, _to, _amount);
         
@@ -219,11 +219,11 @@ contract Hut34ENTRPAbstract
 // Constants
 //
 
-    // The Hut34 vesting &#39;psudo-address&#39; for transferring and releasing vested
+    // The Hut34 vesting 'psudo-address' for transferring and releasing vested
     // tokens to the Hut34 Wallet. The address is UTF8 encoding of the
-    // string and can only be accessed by the &#39;releaseVested()&#39; function.
+    // string and can only be accessed by the 'releaseVested()' function.
     // `0x48757433342056657374696e6700000000000000`
-    address public constant HUT34_VEST_ADDR = address(bytes20(&quot;Hut34 Vesting&quot;));
+    address public constant HUT34_VEST_ADDR = address(bytes20("Hut34 Vesting"));
 
 //
 // State Variables
@@ -333,7 +333,7 @@ contract Hut34ENTRP is
         public
         returns (bool)
     {
-        require(now &gt; nextReleaseDate);
+        require(now > nextReleaseDate);
         VestingReleased(nextReleaseDate);
         nextReleaseDate = nextReleaseDate.add(VESTING_PERIOD);
         return xfer(HUT34_VEST_ADDR, HUT34_RETAIN, VESTED_TOKENS / 4);
@@ -350,7 +350,7 @@ contract Hut34ENTRP is
     {
         require(_addrs.length == _amounts.length);
         uint len = _addrs.length;
-        for(uint i = 0; i &lt; len; i++) {
+        for(uint i = 0; i < len; i++) {
             xfer(msg.sender, _addrs[i], _amounts[i]);
         }
         return true;

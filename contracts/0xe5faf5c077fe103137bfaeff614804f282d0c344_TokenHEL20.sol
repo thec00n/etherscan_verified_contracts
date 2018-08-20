@@ -19,8 +19,8 @@ contract TokenHEL20 {
     uint256 public totalSupply;
 
     // this creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // this generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -52,10 +52,10 @@ contract TokenHEL20 {
         // prevents transfer to 0x0 address, should use burn() instead
         require(_to != 0x0);
 
-        // checks if there&#39;s enought from the sender and
+        // checks if there's enought from the sender and
         // then checks for overflows in the target buffer
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // saves this for an assertion in the future
         // this is basically the sum of both balances
@@ -97,9 +97,9 @@ contract TokenHEL20 {
      * @param _value The amount to send.
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        // checks for proper allowance and if there&#39;s enought
+        // checks for proper allowance and if there's enought
         // proceeds with the transfer operation
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -147,7 +147,7 @@ contract TokenHEL20 {
      * @param _value The amount of money to burn.
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -163,8 +163,8 @@ contract TokenHEL20 {
      * @param _value The amount of money to burn.
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

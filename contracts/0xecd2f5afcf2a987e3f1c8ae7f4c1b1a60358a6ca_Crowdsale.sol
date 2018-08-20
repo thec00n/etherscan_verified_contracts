@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -47,7 +47,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -131,7 +131,7 @@ contract Crowdsale is Ownable {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
     modifier onlyWhileOpen {
-        require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+        require(now >= openingTime && now <= closingTime);
         _;
     }
 
@@ -163,7 +163,7 @@ contract Crowdsale is Ownable {
 
         uint _diff =  weiAmount % tokenPriceInWei;
 
-        if (_diff &gt; 0) {
+        if (_diff > 0) {
             msg.sender.transfer(_diff);
             weiAmount = weiAmount.sub(_diff);
         }
@@ -181,8 +181,8 @@ contract Crowdsale is Ownable {
 
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal view onlyWhileOpen {
         require(_beneficiary != address(0));
-        require(weiRaised.add(_weiAmount) &lt;= cap);
-        require(_weiAmount &gt;= 20 ether);
+        require(weiRaised.add(_weiAmount) <= cap);
+        require(_weiAmount >= 20 ether);
     }
 
 
@@ -209,16 +209,16 @@ contract Crowdsale is Ownable {
 
 
     function hasClosed() public view returns (bool) {
-        return now &gt; closingTime;
+        return now > closingTime;
     }
 
     function capReached() public view returns (bool) {
-        return weiRaised &gt;= cap;
+        return weiRaised >= cap;
     }
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -238,7 +238,7 @@ contract Crowdsale is Ownable {
 
     function finalization() internal {
         uint _balance = token.balanceOf(this);
-        if (_balance &gt; 0) {
+        if (_balance > 0) {
             token.transfer(address(ico), _balance);
             ico.setTokenCountFromPreIco(_balance);
         }

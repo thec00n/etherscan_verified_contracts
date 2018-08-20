@@ -8,26 +8,26 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract Ownable {
-  mapping (address =&gt; bool) public owners;
+  mapping (address => bool) public owners;
 
   event OwnershipAdded(address indexed assigner, address indexed newOwner);
   event OwnershipDeleted(address indexed assigner, address indexed deletedOwner);
@@ -114,7 +114,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -252,8 +252,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract NineetToken is PausableToken {
-  string constant public name = &quot;Nineet Token&quot;;
-  string constant public symbol = &quot;NNT&quot;;
+  string constant public name = "Nineet Token";
+  string constant public symbol = "NNT";
   uint256 constant public decimals = 18;
 
   uint256 constant public initialSupply = 85000000 * (10**decimals); // 85 million
@@ -280,7 +280,7 @@ contract NineetToken is PausableToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public onlyOwner {
-    require(_value &gt; 0);
+    require(_value > 0);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -323,8 +323,8 @@ contract NineetPresale is Pausable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function NineetPresale(uint256 _startTime, uint256 _endTime, address _wallet) {
-    // require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    // require(_startTime >= now);
+    require(_endTime >= _startTime);
     require(_wallet != 0x0);
 
     startTime = _startTime;
@@ -355,7 +355,7 @@ contract NineetPresale is Pausable {
 
     // do not allow to buy over pre-sale limit
     uint256 newSoldTokens = soldTokens.add(tokens);
-    require(newSoldTokens &lt;= soldTokensLimit);
+    require(newSoldTokens <= soldTokensLimit);
 
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -368,10 +368,10 @@ contract NineetPresale is Pausable {
   }
 
   function getPrice(uint256 weiAmount) public returns(uint256) {
-    if (weiAmount &gt;= 20 * BASE) { // if &gt;= 20 ether
+    if (weiAmount >= 20 * BASE) { // if >= 20 ether
       // 60% discount
       return 400000000000000; // 0.0004 ether
-    } else if (weiAmount &gt;= 10 * BASE) { // if &gt;= 10 ether
+    } else if (weiAmount >= 10 * BASE) { // if >= 10 ether
       // 50% discount
       return 500000000000000; // 0.0005 ether
     } else {
@@ -388,20 +388,20 @@ contract NineetPresale is Pausable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = soldTokens &gt;= soldTokensLimit;
-    return (now &gt; endTime) || capReached;
+    bool capReached = soldTokens >= soldTokensLimit;
+    return (now > endTime) || capReached;
   }
 
   // @return true if presale is active
   function isActive() public constant returns (bool) {
-    return (now &gt; startTime) &amp;&amp; !(hasEnded());
+    return (now > startTime) && !(hasEnded());
   }
 
   function getTokensForPresale() public onlyOwner {
@@ -410,8 +410,8 @@ contract NineetPresale is Pausable {
 
   // transfer unsold tokens back to the wallet
   function returnTokensToWallet() public onlyOwner {
-    require (soldTokens &lt; soldTokensLimit);
-    require (now &gt; endTime);
+    require (soldTokens < soldTokensLimit);
+    require (now > endTime);
 
     token.transfer(wallet, soldTokensLimit - soldTokens);
   }

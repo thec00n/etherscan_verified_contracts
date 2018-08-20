@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 //
 // SVLightBallotBox
 // Single use contract to manage a ballot
-// Author: Max Kaye &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="375a564f774452544245521941584352">[email&#160;protected]</a>&gt;
+// Author: Max Kaye <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="375a564f774452544245521941584352">[email protected]</a>>
 // License: MIT
 //
 // Architecture:
@@ -40,16 +40,16 @@ contract SVLightBallotBox {
 
     // Maps to store ballots, along with corresponding log of voters.
     // Should only be modified through `addBallotAndVoter` internal function
-    mapping (uint256 =&gt; Ballot) public ballotMap;
-    mapping (uint256 =&gt; bytes32) public associatedPubkeys;
+    mapping (uint256 => Ballot) public ballotMap;
+    mapping (uint256 => bytes32) public associatedPubkeys;
     uint256 public nVotesCast = 0;
 
     // Use a map for voters to look up their ballot
-    mapping (address =&gt; uint256) public voterToBallotID;
+    mapping (address => uint256) public voterToBallotID;
 
-    // NOTE - We don&#39;t actually want to include the PublicKey because _it&#39;s included in the ballotSpec_.
-    // It&#39;s better to ensure ppl actually have the ballot spec by not including it in the contract.
-    // Plus we&#39;re already storing the hash of the ballotSpec anyway...
+    // NOTE - We don't actually want to include the PublicKey because _it's included in the ballotSpec_.
+    // It's better to ensure ppl actually have the ballot spec by not including it in the contract.
+    // Plus we're already storing the hash of the ballotSpec anyway...
 
     // Private key to be set after ballot conclusion - curve25519
     bytes32 public ballotEncryptionSeckey;
@@ -65,7 +65,7 @@ contract SVLightBallotBox {
     bytes32 public specHash;
     bool public useEncryption;
 
-    // deprecation flag - doesn&#39;t actually do anything besides signal that this contract is deprecated;
+    // deprecation flag - doesn't actually do anything besides signal that this contract is deprecated;
     bool public deprecated = false;
 
     //// ** Events
@@ -87,7 +87,7 @@ contract SVLightBallotBox {
     }
 
     modifier ballotOpen {
-        require(uint64(block.timestamp) &gt;= startTime &amp;&amp; uint64(block.timestamp) &lt; endTime);
+        require(uint64(block.timestamp) >= startTime && uint64(block.timestamp) < endTime);
         _;
     }
 
@@ -161,7 +161,7 @@ contract SVLightBallotBox {
 
     // Allow the owner to reveal the secret key after ballot conclusion
     function revealSeckey(bytes32 _secKey) onlyOwner public {
-        require(block.timestamp &gt; endTime);
+        require(block.timestamp > endTime);
 
         ballotEncryptionSeckey = _secKey;
         seckeyRevealed = true; // this flag allows the contract to be locked
@@ -189,7 +189,7 @@ contract SVLightBallotBox {
 
     // utils
     function max(uint64 a, uint64 b) pure internal returns(uint64) {
-        if (a &gt; b) {
+        if (a > b) {
             return a;
         }
         return b;
@@ -199,7 +199,7 @@ contract SVLightBallotBox {
 
 //
 // The Index by which democracies and ballots are tracked (and optionally deployed).
-// Author: Max Kaye &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec3cfd6eeddcbcddbdccb80d8c1dacb">[email&#160;protected]</a>&gt;
+// Author: Max Kaye <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec3cfd6eeddcbcddbdccb80d8c1dacb">[email protected]</a>>
 // License: MIT
 //
 
@@ -220,21 +220,21 @@ contract SVLightIndex {
         Ballot[] ballots;
     }
 
-    mapping (bytes32 =&gt; Democ) public democs;
+    mapping (bytes32 => Democ) public democs;
     bytes32[] public democList;
 
     // addresses that do not have to pay for democs
-    mapping (address =&gt; bool) public democWhitelist;
+    mapping (address => bool) public democWhitelist;
     // democs that do not have to pay for issues
-    mapping (address =&gt; bool) public ballotWhitelist;
+    mapping (address => bool) public ballotWhitelist;
 
     // payment details
     address public payTo;
-    // uint128&#39;s used because they account for amounts up to 3.4e38 wei or 3.4e20 ether
+    // uint128's used because they account for amounts up to 3.4e38 wei or 3.4e20 ether
     uint128 public democFee = 0.05 ether; // 0.05 ether; about $50 at 3 March 2018
-    mapping (address =&gt; uint128) democFeeFor;
+    mapping (address => uint128) democFeeFor;
     uint128 public ballotFee = 0.01 ether; // 0.01 ether; about $10 at 3 March 2018
-    mapping (address =&gt; uint128) ballotFeeFor;
+    mapping (address => uint128) ballotFeeFor;
     bool public paymentEnabled = true;
 
     uint8 constant PAY_DEMOC = 0;
@@ -267,7 +267,7 @@ contract SVLightIndex {
     }
 
     modifier payReq(uint8 paymentType) {
-        // get our whitelist, generalFee, and fee&#39;s for particular addresses
+        // get our whitelist, generalFee, and fee's for particular addresses
         bool wl;
         uint128 genFee;
         uint128 feeFor;
@@ -275,13 +275,13 @@ contract SVLightIndex {
         // init v to something large in case of exploit or something
         uint128 v = 1000 ether;
         // check whitelists - do not require payment in some cases
-        if (paymentEnabled &amp;&amp; !wl) {
+        if (paymentEnabled && !wl) {
             v = feeFor;
             if (v == 0){
-                // if there&#39;s no fee for the individual user then set it to the general fee
+                // if there's no fee for the individual user then set it to the general fee
                 v = genFee;
             }
-            require(msg.value &gt;= v);
+            require(msg.value >= v);
 
             // handle payments
             uint128 remainder = uint128(msg.value) - v;
@@ -408,7 +408,7 @@ contract SVLightIndex {
 
     // utils
     function max(uint64 a, uint64 b) pure internal returns(uint64) {
-        if (a &gt; b) {
+        if (a > b) {
             return a;
         }
         return b;

@@ -14,7 +14,7 @@ contract TemplateCrowdSale {
     uint public price;
     uint public minAmount = 1 ether;
     Token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
     
@@ -44,7 +44,7 @@ contract TemplateCrowdSale {
             revert();
         }
         uint amount = msg.value;
-        if (amount &lt; minAmount) {
+        if (amount < minAmount) {
             revert();
         }
         balanceOf[msg.sender] = amount;
@@ -54,13 +54,13 @@ contract TemplateCrowdSale {
     }
 
     modifier afterDeadline() { 
-        require(now &gt;= deadline);
+        require(now >= deadline);
         _;
     }
 
     /* checks if the goal or time limit has been reached and ends the campaign */
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= fundingGoal) {
+        if (amountRaised >= fundingGoal) {
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -71,7 +71,7 @@ contract TemplateCrowdSale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -80,7 +80,7 @@ contract TemplateCrowdSale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {

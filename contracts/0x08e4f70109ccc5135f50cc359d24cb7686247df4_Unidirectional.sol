@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,12 +83,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -112,7 +112,7 @@ contract Unidirectional {
         uint256 settlingUntil; // Starting with this block number, anyone can settle the channel.
     }
 
-    mapping (bytes32 =&gt; PaymentChannel) public channels;
+    mapping (bytes32 => PaymentChannel) public channels;
 
     event DidOpen(bytes32 indexed channelId, address indexed sender, address indexed receiver, uint256 value);
     event DidDeposit(bytes32 indexed channelId, uint256 deposit);
@@ -148,7 +148,7 @@ contract Unidirectional {
     function canDeposit(bytes32 channelId, address origin) public view returns(bool) {
         PaymentChannel memory channel = channels[channelId];
         bool isSender = channel.sender == origin;
-        return isOpen(channelId) &amp;&amp; isSender;
+        return isOpen(channelId) && isSender;
     }
 
     /// @notice Add more money to the contract.
@@ -168,7 +168,7 @@ contract Unidirectional {
     function canStartSettling(bytes32 channelId, address origin) public view returns(bool) {
         PaymentChannel memory channel = channels[channelId];
         bool isSender = channel.sender == origin;
-        return isOpen(channelId) &amp;&amp; isSender;
+        return isOpen(channelId) && isSender;
     }
 
     /// @notice Sender initiates settling of the contract.
@@ -188,8 +188,8 @@ contract Unidirectional {
     /// @param channelId Identifier of the channel.
     function canSettle(bytes32 channelId) public view returns(bool) {
         PaymentChannel memory channel = channels[channelId];
-        bool isWaitingOver = isSettling(channelId) &amp;&amp; block.number &gt;= channel.settlingUntil;
-        return isSettling(channelId) &amp;&amp; isWaitingOver;
+        bool isWaitingOver = isSettling(channelId) && block.number >= channel.settlingUntil;
+        return isSettling(channelId) && isWaitingOver;
     }
 
     /// @notice Move the money to sender, and close the channel.
@@ -216,7 +216,7 @@ contract Unidirectional {
         bytes32 hash = recoveryPaymentDigest(channelId, payment);
         bool isSigned = channel.sender == ECRecovery.recover(hash, signature);
 
-        return isReceiver &amp;&amp; isSigned;
+        return isReceiver && isSigned;
     }
 
     /// @notice Claim the funds, and close the channel.
@@ -229,7 +229,7 @@ contract Unidirectional {
 
         PaymentChannel memory channel = channels[channelId];
 
-        if (payment &gt;= channel.value) {
+        if (payment >= channel.value) {
             channel.receiver.transfer(channel.value);
         } else {
             channel.receiver.transfer(payment);
@@ -267,7 +267,7 @@ contract Unidirectional {
     /// @notice Check if the channel is open: present and not settling.
     /// @param channelId Identifier of the channel.
     function isOpen(bytes32 channelId) public view returns(bool) {
-        return isPresent(channelId) &amp;&amp; !isSettling(channelId);
+        return isPresent(channelId) && !isSettling(channelId);
     }
 
     /*** PAYMENT DIGEST ***/
@@ -279,11 +279,11 @@ contract Unidirectional {
         return keccak256(address(this), channelId, payment);
     }
 
-    /// @return Actually signed hash of the payment promise, considering &quot;Ethereum Signed Message&quot; prefix.
+    /// @return Actually signed hash of the payment promise, considering "Ethereum Signed Message" prefix.
     /// @param channelId Identifier of the channel.
     /// @param payment Amount to send, and to claim later.
     function recoveryPaymentDigest(bytes32 channelId, uint256 payment) internal view returns(bytes32) {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         return keccak256(prefix, paymentDigest(channelId, payment));
     }
 }

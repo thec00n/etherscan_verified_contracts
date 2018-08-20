@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;MNLTToken&#39; CROWDSALE token contract
+// 'MNLTToken' CROWDSALE token contract
 //
 // Deployed to : 0x158A4507A22a0b98EeAf9694b91a8Ddf1f49Dd7d
 // Symbol      : MNLT
@@ -11,7 +11,7 @@ pragma solidity ^0.4.18;
 //
 // Enjoy.
 //
-// (c) by Moritz Neto &amp; Daniel Bar with BokkyPooBah / Bok Consulting Pty Ltd Au 2017. The MIT Licence.
+// (c) by Moritz Neto & Daniel Bar with BokkyPooBah / Bok Consulting Pty Ltd Au 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
 
 
@@ -21,10 +21,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -32,7 +32,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -108,16 +108,16 @@ contract MNLTToken is ERC20Interface, Owned, SafeMath {
     uint256 public constant initialSupply = 100000000000000000000000000;
     uint256 totalSupply_;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function MNLTToken() public {
-        symbol = &quot;MNLT&quot;;
-        name = &quot;MNLTToken&quot;;
+        symbol = "MNLT";
+        name = "MNLTToken";
         decimals = 18;
         bonusEnds = now + 1 days;
         endDate = now + 1 days;
@@ -143,8 +143,8 @@ contract MNLTToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -160,7 +160,7 @@ contract MNLTToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -193,7 +193,7 @@ contract MNLTToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -202,7 +202,7 @@ contract MNLTToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -216,9 +216,9 @@ contract MNLTToken is ERC20Interface, Owned, SafeMath {
     // 6820 Tokens per 1 ETH 
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds) {
+        if (now <= bonusEnds) {
             tokens = msg.value *7000;
         } else {
             tokens = msg.value *6820;

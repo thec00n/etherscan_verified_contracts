@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -69,8 +69,8 @@ contract AlphaToken is Ownable {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
-    mapping(address =&gt; uint) balances; // List of user balances.
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint) balances; // List of user balances.
+    mapping(address => mapping (address => uint256)) allowed;
 
     string _name;
     string _symbol;
@@ -118,10 +118,10 @@ contract AlphaToken is Ownable {
     function _transfer(address _from, address _to, uint _value, bytes _data) internal {
         uint codeLength;
         require (_to != 0x0);
-        require(balances[_from]&gt;=_value);
+        require(balances[_from]>=_value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if (codeLength&gt;0) {
+        if (codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -149,7 +149,7 @@ contract AlphaToken is Ownable {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -166,14 +166,14 @@ contract AlphaToken is Ownable {
     }
 
     function approve(address spender, uint tokens) public returns (bool success) {
-        require(balances[msg.sender]&gt;=tokens);
+        require(balances[msg.sender]>=tokens);
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
         return true;
     }
     
     function transferFrom(address _from, address _to, uint _value) onlyOwner public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         bytes memory empty;
         _transfer(_from, _to, _value, empty);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -197,7 +197,7 @@ contract AlphaToken is Ownable {
     /// @notice Buy tokens from contract by sending ether
     function buyCoin() payable public returns (bool ok) {
         uint amount = ((msg.value * _buyPrice) * 10 ** uint256(DECIMALS))/1000000000000000000;               // calculates the amount
-        require ((_amounToSale - _saledTotal)&gt;=amount);
+        require ((_amounToSale - _saledTotal)>=amount);
         balances[msg.sender] = balances[msg.sender].add(amount);
         _saledTotal = _saledTotal.add(amount);
         _totalEther += msg.value;
@@ -205,14 +205,14 @@ contract AlphaToken is Ownable {
     }
 
     function dispatchTo(address target, uint256 amount) onlyOwner public returns (bool ok) {
-        require ((_amounToSale - _saledTotal)&gt;=amount);
+        require ((_amounToSale - _saledTotal)>=amount);
         balances[target] = balances[target].add(amount);
         _saledTotal = _saledTotal.add(amount);
         return true;
     }
 
     function withdrawTo(address _target, uint256 _value) onlyOwner public returns (bool ok) {
-        require(_totalEther &lt;= _value);
+        require(_totalEther <= _value);
         _totalEther -= _value;
         _target.transfer(_value);
         return true;

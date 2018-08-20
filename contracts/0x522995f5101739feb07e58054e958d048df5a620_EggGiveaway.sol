@@ -19,8 +19,8 @@ contract EggGiveaway {
     /*
      * The start and end dates respectively convert to the following
      * timestamps:
-     *  START_DATE  =&gt; February 2nd, 12:00:00 UTC
-     *  END_DATE    =&gt; February 9th, 11:59:59 UTC
+     *  START_DATE  => February 2nd, 12:00:00 UTC
+     *  END_DATE    => February 9th, 11:59:59 UTC
      */
     uint256 constant START_DATE = 1517572800;
     uint256 constant END_DATE = 1518177600;
@@ -38,37 +38,37 @@ contract EggGiveaway {
      *
      * The structure is as follows:
      * {
-     *  0   =&gt; 30,  February 2nd, 12:00:00 UTC until February 2nd, 17:59:59 UTC
-     *  1   =&gt; 30,  February 2nd, 18:00:00 UTC until February 2nd, 23:59:59 UTC
-     *  2   =&gt; 30,  February 3rd, 00:00:00 UTC until February 3rd, 05:59:59 UTC
-     *  3   =&gt; 30,  February 3rd, 06:00:00 UTC until February 3rd, 11:59:59 UTC
-     *  4   =&gt; 30,  February 3rd, 12:00:00 UTC until February 3rd, 17:59:59 UTC
-     *  5   =&gt; 30,  February 3rd, 18:00:00 UTC until February 3rd, 23:59:59 UTC
-     *  6   =&gt; 30,  February 4th, 00:00:00 UTC until February 4th, 05:59:59 UTC
-     *  7   =&gt; 30,  February 4th, 06:00:00 UTC until February 4th, 11:59:59 UTC
-     *  8   =&gt; 30,  February 4th, 12:00:00 UTC until February 4th, 17:59:59 UTC
-     *  9   =&gt; 30,  February 4th, 18:00:00 UTC until February 4th, 23:59:59 UTC
-     *  10  =&gt; 30,  February 5th, 00:00:00 UTC until February 5th, 05:59:59 UTC
-     *  11  =&gt; 30,  February 5th, 06:00:00 UTC until February 5th, 11:59:59 UTC
-     *  12  =&gt; 30,  February 5th, 12:00:00 UTC until February 5th, 17:59:59 UTC
-     *  13  =&gt; 30,  February 5th, 18:00:00 UTC until February 5th, 23:59:59 UTC
-     *  14  =&gt; 30,  February 6th, 00:00:00 UTC until February 6th, 05:59:59 UTC
-     *  15  =&gt; 30,  February 6th, 06:00:00 UTC until February 6th, 11:59:59 UTC
-     *  16  =&gt; 30,  February 6th, 12:00:00 UTC until February 6th, 17:59:59 UTC
-     *  17  =&gt; 30,  February 6th, 18:00:00 UTC until February 6th, 23:59:59 UTC
-     *  18  =&gt; 30,  February 7th, 00:00:00 UTC until February 7th, 05:59:59 UTC
-     *  19  =&gt; 30,  February 7th, 06:00:00 UTC until February 7th, 11:59:59 UTC
-     *  20  =&gt; 30,  February 7th, 12:00:00 UTC until February 7th, 17:59:59 UTC
-     *  21  =&gt; 30,  February 7th, 18:00:00 UTC until February 7th, 23:59:59 UTC
-     *  22  =&gt; 30,  February 8th, 00:00:00 UTC until February 8th, 05:59:59 UTC
-     *  23  =&gt; 30,  February 8th, 06:00:00 UTC until February 8th, 11:59:59 UTC
-     *  24  =&gt; 30,  February 8th, 12:00:00 UTC until February 8th, 17:59:59 UTC
-     *  25  =&gt; 30,  February 8th, 18:00:00 UTC until February 8th, 23:59:59 UTC
-     *  26  =&gt; 30,  February 9th, 00:00:00 UTC until February 8th, 05:59:59 UTC
-     *  27  =&gt; 30,  February 9th, 06:00:00 UTC until February 8th, 11:59:59 UTC
+     *  0   => 30,  February 2nd, 12:00:00 UTC until February 2nd, 17:59:59 UTC
+     *  1   => 30,  February 2nd, 18:00:00 UTC until February 2nd, 23:59:59 UTC
+     *  2   => 30,  February 3rd, 00:00:00 UTC until February 3rd, 05:59:59 UTC
+     *  3   => 30,  February 3rd, 06:00:00 UTC until February 3rd, 11:59:59 UTC
+     *  4   => 30,  February 3rd, 12:00:00 UTC until February 3rd, 17:59:59 UTC
+     *  5   => 30,  February 3rd, 18:00:00 UTC until February 3rd, 23:59:59 UTC
+     *  6   => 30,  February 4th, 00:00:00 UTC until February 4th, 05:59:59 UTC
+     *  7   => 30,  February 4th, 06:00:00 UTC until February 4th, 11:59:59 UTC
+     *  8   => 30,  February 4th, 12:00:00 UTC until February 4th, 17:59:59 UTC
+     *  9   => 30,  February 4th, 18:00:00 UTC until February 4th, 23:59:59 UTC
+     *  10  => 30,  February 5th, 00:00:00 UTC until February 5th, 05:59:59 UTC
+     *  11  => 30,  February 5th, 06:00:00 UTC until February 5th, 11:59:59 UTC
+     *  12  => 30,  February 5th, 12:00:00 UTC until February 5th, 17:59:59 UTC
+     *  13  => 30,  February 5th, 18:00:00 UTC until February 5th, 23:59:59 UTC
+     *  14  => 30,  February 6th, 00:00:00 UTC until February 6th, 05:59:59 UTC
+     *  15  => 30,  February 6th, 06:00:00 UTC until February 6th, 11:59:59 UTC
+     *  16  => 30,  February 6th, 12:00:00 UTC until February 6th, 17:59:59 UTC
+     *  17  => 30,  February 6th, 18:00:00 UTC until February 6th, 23:59:59 UTC
+     *  18  => 30,  February 7th, 00:00:00 UTC until February 7th, 05:59:59 UTC
+     *  19  => 30,  February 7th, 06:00:00 UTC until February 7th, 11:59:59 UTC
+     *  20  => 30,  February 7th, 12:00:00 UTC until February 7th, 17:59:59 UTC
+     *  21  => 30,  February 7th, 18:00:00 UTC until February 7th, 23:59:59 UTC
+     *  22  => 30,  February 8th, 00:00:00 UTC until February 8th, 05:59:59 UTC
+     *  23  => 30,  February 8th, 06:00:00 UTC until February 8th, 11:59:59 UTC
+     *  24  => 30,  February 8th, 12:00:00 UTC until February 8th, 17:59:59 UTC
+     *  25  => 30,  February 8th, 18:00:00 UTC until February 8th, 23:59:59 UTC
+     *  26  => 30,  February 9th, 00:00:00 UTC until February 8th, 05:59:59 UTC
+     *  27  => 30,  February 9th, 06:00:00 UTC until February 8th, 11:59:59 UTC
      * }
      */
-    mapping (uint8 =&gt; uint8) remainingFreeEggs;
+    mapping (uint8 => uint8) remainingFreeEggs;
 
     /*
      * Egg owners
@@ -77,7 +77,7 @@ contract EggGiveaway {
      * not prevent people from using multiple addresses to acquire multiple
      * eggs, it does increase the difficulty slightly.
      */
-    mapping (address =&gt; bool) eggOwners;
+    mapping (address => bool) eggOwners;
 
     /*
      * Store egg retrieval event on the blockchain.
@@ -102,7 +102,7 @@ contract EggGiveaway {
             secondsInGiveawayPeriod / SLOT_DURATION_IN_SECONDS
         );
 
-        for (uint8 i = 0; i &lt; timeSlotCount; i++) {
+        for (uint8 i = 0; i < timeSlotCount; i++) {
             remainingFreeEggs[i] = 30;
         }
     }
@@ -120,12 +120,12 @@ contract EggGiveaway {
      */
     function acquireFreeEgg() payable external {
         require(msg.value == 0);
-        require(START_DATE &lt;= now &amp;&amp; now &lt; END_DATE);
+        require(START_DATE <= now && now < END_DATE);
         require(eggOwners[msg.sender] == false);
 
         uint8 currentTimeSlot = getTimeSlot(now);
 
-        require(remainingFreeEggs[currentTimeSlot] &gt; 0);
+        require(remainingFreeEggs[currentTimeSlot] > 0);
 
         remainingFreeEggs[currentTimeSlot] -= 1;
         eggOwners[msg.sender] = true;

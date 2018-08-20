@@ -2,7 +2,7 @@
 pragma solidity ^0.4.24;
 
 ////// lib/ds-exec/src/exec.sol
-// exec.sol - base contract used by anything that wants to do &quot;untyped&quot; calls
+// exec.sol - base contract used by anything that wants to do "untyped" calls
 
 // Copyright (C) 2017  DappHub, LLC
 
@@ -17,7 +17,7 @@ pragma solidity ^0.4.24;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.23; */
 
@@ -62,7 +62,7 @@ contract DSExec {
 }
 
 ////// lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ contract DSExec {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.23; */
 
@@ -120,12 +120,12 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.24; */
 
-/* import &quot;ds-exec/exec.sol&quot;; */
-/* import &quot;ds-note/note.sol&quot;; */
+/* import "ds-exec/exec.sol"; */
+/* import "ds-note/note.sol"; */
 
 contract DaiUpdate is DSExec, DSNote {
 
@@ -142,20 +142,20 @@ contract DaiUpdate is DSExec, DSNote {
     function run() public note {
         require(!done);
         // increase cap to 100,000,000
-        exec(MOM, abi.encodeWithSignature(&quot;setCap(uint256)&quot;, CAP), 0);
+        exec(MOM, abi.encodeWithSignature("setCap(uint256)", CAP), 0);
        
         // set PIP to be the new ETH/USD OSM
-        exec(MOM, abi.encodeWithSignature(&quot;setPip(address)&quot;, PIP), 0);
+        exec(MOM, abi.encodeWithSignature("setPip(address)", PIP), 0);
         
         // set PEP to be the new MKR/USD OSM
-        exec(MOM, abi.encodeWithSignature(&quot;setPep(address)&quot;, PEP), 0);
+        exec(MOM, abi.encodeWithSignature("setPep(address)", PEP), 0);
 
         // Set 2 new feeds for MKR/USD Medianizer
-        exec(MKRUSD, abi.encodeWithSignature(&quot;set(address)&quot;, FEED1), 0);
-        exec(MKRUSD, abi.encodeWithSignature(&quot;set(address)&quot;, FEED2), 0);
+        exec(MKRUSD, abi.encodeWithSignature("set(address)", FEED1), 0);
+        exec(MKRUSD, abi.encodeWithSignature("set(address)", FEED2), 0);
         
         // Set MKR/USD Medianizer to be 3/5 feeds
-        exec(MKRUSD, abi.encodeWithSignature(&quot;setMin(uint96)&quot;, 3), 0);
+        exec(MKRUSD, abi.encodeWithSignature("setMin(uint96)", 3), 0);
 
         done = true;
     }

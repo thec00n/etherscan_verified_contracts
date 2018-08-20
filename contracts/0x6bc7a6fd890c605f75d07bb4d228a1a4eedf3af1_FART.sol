@@ -26,7 +26,7 @@ contract FART {
     =================================*/
     // only people with tokens
     modifier onlyTokenHolders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
@@ -38,7 +38,7 @@ contract FART {
     
     // only people with profits
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
     
@@ -47,13 +47,13 @@ contract FART {
         address _customerAddress = msg.sender;
         
         // are we open to the public?
-        if( onlyFounders &amp;&amp; ((totalEthereumBalance() - _amountOfEthereum) &lt;= preLiveTeamFoundersMaxPurchase_ )){
+        if( onlyFounders && ((totalEthereumBalance() - _amountOfEthereum) <= preLiveTeamFoundersMaxPurchase_ )){
             require(
                 // is the customer in the ambassador list?
-                foundingFARTers_[_customerAddress] == true &amp;&amp;
+                foundingFARTers_[_customerAddress] == true &&
                 
                 // does the customer purchase exceed the max quota needed to send contract live?
-                (contractQuotaToGoLive_[_customerAddress] + _amountOfEthereum) &lt;= preLiveIndividualFoundersMaxPurchase_
+                (contractQuotaToGoLive_[_customerAddress] + _amountOfEthereum) <= preLiveIndividualFoundersMaxPurchase_
                 
             );
             
@@ -63,7 +63,7 @@ contract FART {
             // execute
             _;
         } else {
-            // in case the ether count drops low, the ambassador phase won&#39;t reinitiate
+            // in case the ether count drops low, the ambassador phase won't reinitiate
             onlyFounders = false;
             _;    
         }
@@ -109,8 +109,8 @@ contract FART {
     /*=====================================
     =            CONFIGURABLES            =
     =====================================*/
-    string public name = &quot;FART&quot;;
-    string public symbol = &quot;FART&quot;;
+    string public name = "FART";
+    string public symbol = "FART";
     uint8 constant public decimals = 18;
     uint8 constant internal dividendFee_ = 15; //15% = (5% to charity + 10% divs)
     uint256 constant internal tokenPriceInitial_ = 0.0000001 ether;
@@ -121,7 +121,7 @@ contract FART {
     uint256 public referralLinkMinimum = 20e18; 
     
     // founders program (Founders initially put in 1 ETH and can add more later when contract is live)
-    mapping(address =&gt; bool) internal foundingFARTers_;
+    mapping(address => bool) internal foundingFARTers_;
     uint256 constant internal preLiveIndividualFoundersMaxPurchase_ = 2 ether;
     uint256 constant internal preLiveTeamFoundersMaxPurchase_ = 3 ether;
     
@@ -131,15 +131,15 @@ contract FART {
     =            DATASETS            =
     ================================*/
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; uint256) internal contractQuotaToGoLive_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => uint256) internal contractQuotaToGoLive_;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
     
     // administrator list (see above on what they can do)
-    mapping(bytes32 =&gt; bool) public administrators;
+    mapping(bytes32 => bool) public administrators;
     
     // when this is set to true, only founders can purchase tokens (this prevents an errored contract from being live to the public)
     bool public onlyFounders = true;
@@ -156,7 +156,7 @@ contract FART {
         public
     {
         
-        //No admin! True trust-less contracts don&#39;t have the ability to be alteredd! &#39;This is HUUUUUUUUUUGE!&#39; - Donald Trump
+        //No admin! True trust-less contracts don't have the ability to be alteredd! 'This is HUUUUUUUUUUGE!' - Donald Trump
         
         
         // add the founders here. Founders cannot sell or transfer FART tokens, thereby making the token increase in value over time
@@ -187,10 +187,10 @@ contract FART {
     }
     
     /**
-     * Converts all of caller&#39;s dividends to tokens.
+     * Converts all of caller's dividends to tokens.
      */
     function reinvest()
-        onlyStronghands()//  &lt;------Hey! We know this term!
+        onlyStronghands()//  <------Hey! We know this term!
         public
     {
         // fetch dividends
@@ -204,7 +204,7 @@ contract FART {
         _dividends += referralBalance_[_customerAddress];
         referralBalance_[_customerAddress] = 0;
         
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(_dividends, 0x0, 0x0);
         
         // fire event
@@ -217,10 +217,10 @@ contract FART {
     function eject()
         public
     {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens, 0x0);
+        if(_tokens > 0) sell(_tokens, 0x0);
         
         // get out now
         withdraw();
@@ -252,7 +252,7 @@ contract FART {
     }
     
     /**
-     * Withdraws all of charity&#39;s earnings.
+     * Withdraws all of charity's earnings.
      */
     function withdrawForCharity(address _charity)
         internal
@@ -279,19 +279,19 @@ contract FART {
      * Liquifies tokens to ethereum.
      */
     function sell(uint256 _amountOfTokens, address _charity)
-        onlyTokenHolders() //Can&#39;t sell what you don&#39;t have
-        onlyNonFounders() //Founders can&#39;t sell tokens
+        onlyTokenHolders() //Can't sell what you don't have
+        onlyNonFounders() //Founders can't sell tokens
         public
     {
         // setup data
         address _customerAddress = msg.sender;
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _charityDividends = SafeMath.div(_dividends, 3);
         
-        if(_charity != 0x0000000000000000000000000000000000000000 &amp;&amp; _charity != _customerAddress)//if not, it&#39;s an eject-call with no charity address
+        if(_charity != 0x0000000000000000000000000000000000000000 && _charity != _customerAddress)//if not, it's an eject-call with no charity address
         {    _charityDividends = SafeMath.div(_dividends, 3); // 1/3 of divs go to charity (5%)
              _dividends = SafeMath.sub(_dividends, _charityDividends); // 2/3 of divs go to everyone (10%)
              
@@ -310,7 +310,7 @@ contract FART {
         payoutsTo_[_customerAddress] -= _updatedPayouts;       
         
         // dividing by zero is a bad idea
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             // update the amount of dividends per token
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -325,7 +325,7 @@ contract FART {
      * No fee to transfer because I hate doing math.
      */
     function transfer(address _toAddress, uint256 _amountOfTokens)
-        onlyTokenHolders() // Can&#39;t tranfer what you don&#39;t have
+        onlyTokenHolders() // Can't tranfer what you don't have
         onlyNonFounders() // Founders cannot transfer their tokens to be able to sell them
         public
         returns(bool)
@@ -336,10 +336,10 @@ contract FART {
         // make sure we have the requested tokens
         // also disables transfers until ambassador phase is over
         // ( we dont want whale premines )
-        require(!onlyFounders &amp;&amp; _amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(!onlyFounders && _amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         
         // withdraw all outstanding dividends first
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
 
         // exchange tokens
         tokenBalanceLedger_[_customerAddress] = SafeMath.sub(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
@@ -487,7 +487,7 @@ contract FART {
         view 
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -514,20 +514,20 @@ contract FART {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
         
         // is the user referred by a masternode?
         if(
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
             
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= referralLinkMinimum
+            tokenBalanceLedger_[_referredBy] >= referralLinkMinimum
         ){
             // wealth redistribution
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -538,10 +538,10 @@ contract FART {
             _fee = _dividends * magnitude;
         }
         
-        //Let&#39;s check for foul play with the charity address
+        //Let's check for foul play with the charity address
         if(
             // is this a referred purchase?
-            _charity != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _charity != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
             _charity != _customerAddress 
@@ -559,8 +559,8 @@ contract FART {
             _fee = _dividends * magnitude;
         }
         
-        // we can&#39;t give people infinite ethereum
-        if(tokenSupply_ &gt; 0){
+        // we can't give people infinite ethereum
+        if(tokenSupply_ > 0){
             
             // add tokens to the pool
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -576,11 +576,11 @@ contract FART {
             tokenSupply_ = _amountOfTokens;
         }
         
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
         
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        //really i know you think you do but you don&#39;t
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        //really i know you think you do but you don't
         int256 _updatedPayouts = (int256) ((profitPerShare_ * _amountOfTokens) - _fee);
         payoutsTo_[_customerAddress] += _updatedPayouts;
         
@@ -594,7 +594,7 @@ contract FART {
 
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint256 _ethereum)
@@ -629,7 +629,7 @@ contract FART {
     
     /**
      * Calculate token sell value.
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
      function tokensToEthereum_(uint256 _tokens)
@@ -662,7 +662,7 @@ contract FART {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -691,9 +691,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -701,7 +701,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -710,7 +710,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
         
         // If you have read all the way to here, thank you.  You are one of the good players that does their OWN resarch! Way to go!

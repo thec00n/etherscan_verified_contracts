@@ -57,9 +57,9 @@ contract WeaponsCore is Ownable
 
     WeaponModel[] public weaponModels;
     WeaponEntity[] public weaponEntities;
-    mapping(uint256 =&gt; address) public weaponToOwner;
-    mapping(address =&gt; uint256[]) internal ownerToWeapons;
-    mapping(uint256 =&gt; address) public weaponToApproved;
+    mapping(uint256 => address) public weaponToOwner;
+    mapping(address => uint256[]) internal ownerToWeapons;
+    mapping(uint256 => address) public weaponToApproved;
 
     function WeaponsCore() public payable {
         //registering swords (type 0)
@@ -111,7 +111,7 @@ contract WeaponsCore is Ownable
     function getWeaponIds() external view returns (uint[]) {
         uint weaponsCount = nextWeaponID - 1;
         uint[] memory _weaponsList = new uint[](weaponsCount);
-        for (uint weaponId = 0; weaponId &lt; weaponsCount; weaponId++) {
+        for (uint weaponId = 0; weaponId < weaponsCount; weaponId++) {
             _weaponsList[weaponId] = weaponId;
         }
 
@@ -125,7 +125,7 @@ contract WeaponsCore is Ownable
     */
 
     function _generateWeapon(address _owner, uint256 _weaponId) internal returns (uint256 id) {
-        require(weaponModels[_weaponId].price &gt; 0);
+        require(weaponModels[_weaponId].price > 0);
         require(msg.value == weaponModels[_weaponId].price);
 
         id = weaponEntities.length;
@@ -149,12 +149,12 @@ contract WeaponsCore is Ownable
         weaponToApproved[_id] = address(0);
 
         uint256[] storage fromWeapons = ownerToWeapons[_from];
-        for (uint256 i = 0; i &lt; fromWeapons.length; i++) {
+        for (uint256 i = 0; i < fromWeapons.length; i++) {
             if (fromWeapons[i] == _id) {
                 break;
             }
         }
-        assert(i &lt; fromWeapons.length);
+        assert(i < fromWeapons.length);
 
         fromWeapons[i] = fromWeapons[fromWeapons.length - 1];
         delete fromWeapons[fromWeapons.length - 1];
@@ -228,15 +228,15 @@ contract WeaponToken is WeaponsCore, ERC721 {
     }
 
     function name() public pure returns (string) {
-        return &quot;GladiEther Weapon&quot;;
+        return "GladiEther Weapon";
     }
 
     function symbol() public pure returns (string) {
-        return &quot;GEW&quot;;
+        return "GEW";
     }
 
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-        require(_index &lt; ownerToWeapons[_owner].length);
+        require(_index < ownerToWeapons[_owner].length);
         return ownerToWeapons[_owner][_index];
     }
 
@@ -254,7 +254,7 @@ contract WeaponSales is WeaponToken {
     }
 
     function withdrawBalance(uint256 _amount) external onlyOwner {
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
 
         msg.sender.transfer(_amount);
     }

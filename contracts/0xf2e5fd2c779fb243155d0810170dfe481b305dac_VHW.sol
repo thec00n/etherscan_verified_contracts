@@ -4,10 +4,10 @@ pragma solidity ^0.4.2;
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
   function mul(uint a, uint b) internal pure returns (uint c) {
@@ -15,7 +15,7 @@ library SafeMath {
     require(a == 0 || c / a == b);
   }
   function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 }
@@ -61,13 +61,13 @@ contract VHW is Ownable, ERC20Interface {
   using SafeMath for uint;
 
   uint public _totalSupply = 352500000000000;
-  string public constant name = &quot;VHW&quot;;
-  string public constant symbol = &quot;VHW&quot;;
+  string public constant name = "VHW";
+  string public constant symbol = "VHW";
   uint public constant decimals = 6;
-  string public standard = &quot;VHW Token&quot;;
+  string public standard = "VHW Token";
 
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) allowances;
 
   event Burn(address indexed _from, uint _value);
 

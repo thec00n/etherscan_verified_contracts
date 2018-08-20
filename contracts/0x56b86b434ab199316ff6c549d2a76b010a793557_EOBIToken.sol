@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -98,8 +98,8 @@ contract ERC20Token {
 }
 
 contract standardToken is ERC20Token {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
     
 
     function balanceOf(address _owner) constant public returns (uint256) {
@@ -111,8 +111,8 @@ contract standardToken is ERC20Token {
         public 
         returns (bool success) 
     {
-        require (balances[msg.sender] &gt;= _value);           // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if owerflow detected
+        require (balances[msg.sender] >= _value);           // Throw if sender has insufficient balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers blaance
         emit Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -121,7 +121,7 @@ contract standardToken is ERC20Token {
 
     /* Approve other address to spend tokens on your account */
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowances[msg.sender][_spender] = _value;          // Set allowance
         emit Approval(msg.sender, _spender, _value);             // Raise Approval event
         return true;
@@ -137,9 +137,9 @@ contract standardToken is ERC20Token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require (balances[_from] &gt;= _value);                // Throw if sender does not have enough balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if overflow detected
-        require (_value &lt;= allowances[_from][msg.sender]);  // Throw if you do not have allowance
+        require (balances[_from] >= _value);                // Throw if sender does not have enough balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if overflow detected
+        require (_value <= allowances[_from][msg.sender]);  // Throw if you do not have allowance
         balances[_from] -= _value;                          // Deduct senders balance
         balances[_to] += _value;                            // Add recipient blaance
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address
@@ -157,8 +157,8 @@ contract standardToken is ERC20Token {
 contract EOBIToken is standardToken,Owned {
     using SafeMath for uint;
 
-    string public name=&quot;EOBI Token&quot;;
-    string public symbol=&quot;EOBI&quot;;
+    string public name="EOBI Token";
+    string public symbol="EOBI";
     uint256 public decimals=18;
     
     uint256 public totalSupply = 0;
@@ -194,16 +194,16 @@ contract EOBIToken is standardToken,Owned {
         uint256 tokenAlloc = buyPriceAt() * _value;
         require(tokenAlloc != 0);
         privateSupply = privateSupply.add(tokenAlloc);
-        require (privateSupply &lt;= privateTotalSupply);
+        require (privateSupply <= privateTotalSupply);
         mintTokens(msg.sender, tokenAlloc);
     }
     
     /// @dev Issue new tokens
     function mintTokens(address _to, uint256 _amount) internal {
-        require (balances[_to] + _amount &gt;= balances[_to]);     // Check for overflows
+        require (balances[_to] + _amount >= balances[_to]);     // Check for overflows
         balances[_to] = balances[_to].add(_amount);             // Set minted coins to target
         totalSupply = totalSupply.add(_amount);
-        require(totalSupply &lt;= topTotalSupply);
+        require(totalSupply <= topTotalSupply);
         emit Transfer(0x0, _to, _amount);                            // Create Transfer event from 0x
     }
     
@@ -223,9 +223,9 @@ contract EOBIToken is standardToken,Owned {
         symbol = _symbol;
         decimals = _decimals;
         topTotalSupply = 35*10**8*10**decimals;
-        require(totalSupply &lt;= topTotalSupply);
+        require(totalSupply <= topTotalSupply);
         privateTotalSupply = percent(10);
-        require(privateSupply &lt;= privateTotalSupply);
+        require(privateSupply <= privateTotalSupply);
     }
     
     /// @dev change ICO State
@@ -243,7 +243,7 @@ contract EOBIToken is standardToken,Owned {
     /// @dev allocate Token
     function allocateTokens(address[] _owners, uint256[] _values) public onlyOwner {
         require (_owners.length == _values.length);
-        for(uint256 i = 0; i &lt; _owners.length ; i++){
+        for(uint256 i = 0; i < _owners.length ; i++){
             address owner = _owners[i];
             uint256 value = _values[i];
             mintTokens(owner, value);

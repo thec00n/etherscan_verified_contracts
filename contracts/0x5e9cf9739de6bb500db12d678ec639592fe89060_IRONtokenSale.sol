@@ -40,20 +40,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,7 +84,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -121,9 +121,9 @@ contract Ownable {
 /**
  * @title PoolParty Token
  * @author Alber Erre
- * @notice Follow up token holders to give them collected fees in the future. Holders are stored in &quot;HOLDersList&quot;
+ * @notice Follow up token holders to give them collected fees in the future. Holders are stored in "HOLDersList"
  * @dev This is the first part of the functionality, this contract just enable tracking token holders
- * @dev Next part is defined as &quot;PoolPartyPayRoll&quot; contract
+ * @dev Next part is defined as "PoolPartyPayRoll" contract
  */
 contract PoolPartyToken is Ownable {
   using SafeMath for uint256;
@@ -137,7 +137,7 @@ contract PoolPartyToken is Ownable {
   function _alreadyInList(address _thisHODLer) internal view returns(bool HolderinList) {
 
     bool result = false;
-    for (uint256 r = 0; r &lt; HOLDersList.length; r++) {
+    for (uint256 r = 0; r < HOLDersList.length; r++) {
       if (HOLDersList[r].HOLDersAddress == _thisHODLer) {
         result = true;
         break;
@@ -146,7 +146,7 @@ contract PoolPartyToken is Ownable {
     return result;
   }
 
-  // Call AddHOLDer function every time a token is sold, &quot;_alreadyInList&quot; avoids duplicates
+  // Call AddHOLDer function every time a token is sold, "_alreadyInList" avoids duplicates
   function AddHOLDer(address _thisHODLer) internal {
 
     if (_alreadyInList(_thisHODLer) == false) {
@@ -156,7 +156,7 @@ contract PoolPartyToken is Ownable {
 
   function UpdateHOLDer(address _currentHODLer, address _newHODLer) internal {
 
-    for (uint256 r = 0; r &lt; HOLDersList.length; r++){
+    for (uint256 r = 0; r < HOLDersList.length; r++){
       // Send individual token holder payroll
       if (HOLDersList[r].HOLDersAddress == _currentHODLer) {
         // write new holders address
@@ -173,7 +173,7 @@ contract PoolPartyToken is Ownable {
 contract BasicToken is PoolPartyToken, ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -202,7 +202,7 @@ contract BasicToken is PoolPartyToken, ERC20Basic {
   */
   function transfer(address _to, uint256 _value) openBarrier public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -234,7 +234,7 @@ contract BasicToken is PoolPartyToken, ERC20Basic {
 contract PoolPartyPayRoll is BasicToken {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) PayRollCount;
+  mapping (address => uint256) PayRollCount;
 
   // Manually spread iron profits to token holders
   function _HOLDersPayRoll() onlyOwner public {
@@ -242,7 +242,7 @@ contract PoolPartyPayRoll is BasicToken {
     uint256 _amountToPay = address(this).balance;
     uint256 individualPayRoll = _amountToPay.div(uint256(HOLDersList.length));
 
-    for (uint256 r = 0; r &lt; HOLDersList.length; r++){
+    for (uint256 r = 0; r < HOLDersList.length; r++){
       // Send individual token holder payroll
       address HODLer = HOLDersList[r].HOLDersAddress;
       HODLer.transfer(individualPayRoll);
@@ -266,7 +266,7 @@ contract PoolPartyPayRoll is BasicToken {
  */
 contract StandardToken is PoolPartyPayRoll, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -276,8 +276,8 @@ contract StandardToken is PoolPartyPayRoll, ERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) openBarrier public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -295,7 +295,7 @@ contract StandardToken is PoolPartyPayRoll, ERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -344,7 +344,7 @@ contract StandardToken is PoolPartyPayRoll, ERC20 {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -405,7 +405,7 @@ contract MintableToken is StandardToken {
  * @title Contracts that should be able to recover tokens
  * @author SylTi
  * @dev This allow a contract to recover any ERC20 token received in a contract by transferring the balance to the contract owner.
- * This will prevent any accidental loss of tokens. - updated to &quot;recoverERC20Token_SendbyMistake&quot;
+ * This will prevent any accidental loss of tokens. - updated to "recoverERC20Token_SendbyMistake"
  */
 contract CanReclaimToken is Ownable {
   using SafeERC20 for ERC20Basic;
@@ -422,7 +422,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a584f4749456a18">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a584f4749456a18">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -449,8 +449,8 @@ contract HasEther is Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @notice updated to &quot;reclaimChildOwnership&quot;, ease to remember function&#39;s nature @AlberEre
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a485f5759557a08">[email&#160;protected]</a>π.com&gt;
+ * @notice updated to "reclaimChildOwnership", ease to remember function's nature @AlberEre
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a485f5759557a08">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -468,12 +468,12 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title iron Token Contract
- * @notice &quot;openBarrier&quot; modifier applied, security check during minting process
+ * @notice "openBarrier" modifier applied, security check during minting process
  */
 contract IRONtoken is MintableToken, CanReclaimToken, HasEther, HasNoContracts {
 
-  string public constant name = &quot;iron Bank Network token&quot;; // solium-disable-line uppercase
-  string public constant symbol = &quot;IRON&quot;; // solium-disable-line uppercase
+  string public constant name = "iron Bank Network token"; // solium-disable-line uppercase
+  string public constant symbol = "IRON"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
 
   function IRONtoken() public {
@@ -509,7 +509,7 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
       token = new IRONtoken();
       token.setBarrierAsOpen(false);
       tokensMinted = token.totalSupply();
-      require(_hardCap &gt; 0);
+      require(_hardCap > 0);
       hardCap = _hardCap;
       mintTokens(msg.sender, _initMinted);
     }
@@ -529,7 +529,7 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
     * @notice Mint tokens for multiple addresses for Airdrops (only external) - Alber Erre
     */
     function MultiplesaleAirdrop(address[] beneficiaries, uint256[] amounts) onlyOwner external {
-      for (uint256 r=0; r&lt;beneficiaries.length; r++){
+      for (uint256 r=0; r<beneficiaries.length; r++){
         mintTokens(address(beneficiaries[r]), uint256(amounts[r]));
       }
     }
@@ -538,7 +538,7 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
     * @notice Shows if crowdsale is running
     */ 
     function ironTokensaleRunning() view public returns(bool){
-        return (!finalized &amp;&amp; (tokensMinted &lt; hardCap));
+        return (!finalized && (tokensMinted < hardCap));
     }
 
     function currentTime() view public returns(uint256) {
@@ -550,8 +550,8 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
     */ 
     function RoundIndex() internal returns(uint256) {
       uint256 index = 0;
-      for (uint256 r=0; r&lt;rounds.length; r++){
-        if ( (rounds[r].start &lt; uint256(block.timestamp)) &amp;&amp; (uint256(block.timestamp) &lt; rounds[r].end) ) {
+      for (uint256 r=0; r<rounds.length; r++){
+        if ( (rounds[r].start < uint256(block.timestamp)) && (uint256(block.timestamp) < rounds[r].end) ) {
           index = r.add(1);
         }
       }
@@ -573,7 +573,7 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
     
     function _magic(uint256 _weiAmount) internal view returns (uint256) {
       uint256 tokenRate = currentRate();
-      require(tokenRate &gt; 0);
+      require(tokenRate > 0);
       uint256 preTransformweiAmount = tokenRate.mul(_weiAmount);
       uint256 transform = 10**18;
       uint256 TransformedweiAmount = preTransformweiAmount.div(transform);
@@ -584,7 +584,7 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
      * @dev fallback function ***DO NOT OVERRIDE***
      */
     function () external payable {
-      require(msg.value &gt; 0);
+      require(msg.value > 0);
       require(ironTokensaleRunning());
       uint256 weiAmount = msg.value;
       uint256 tokens = _magic(weiAmount);
@@ -599,7 +599,7 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
     function mintTokens(address beneficiary, uint256 amount) internal {
         tokensMinted = tokensMinted.add(amount);       
 
-        require(tokensMinted &lt;= hardCap);
+        require(tokensMinted <= hardCap);
         assert(token.mint(beneficiary, amount));
 
         // Add holder for future iron profits distribution
@@ -611,13 +611,13 @@ contract IRONtokenSale is PoolPartyToken, CanReclaimToken, HasNoContracts {
     }
 
     function forwardCollectedEther() onlyOwner public {
-        if(address(this).balance &gt; 0){
+        if(address(this).balance > 0){
             owner.transfer(address(this).balance);
         }
     }
 
     /**
-    * @notice ICO End: &quot;openBarrier&quot; no longer applied, allows token transfers
+    * @notice ICO End: "openBarrier" no longer applied, allows token transfers
     */
     function finalizeTokensale() onlyOwner public {
         finalized = true;

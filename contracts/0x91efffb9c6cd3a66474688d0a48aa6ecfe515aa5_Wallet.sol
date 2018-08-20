@@ -4,8 +4,8 @@
 //sol Wallet
 // Multi-sig, daily-limited account proxy/wallet.
 // @authors:
-// Gav Wood &lt;<span class="__cf_email__" data-cfemail="6106210415090504174f020e0c">[email&#160;protected]</span>&gt;
-// inheritable &quot;property&quot; contract that enables methods to be protected by requiring the acquiescence of either a
+// Gav Wood <<span class="__cf_email__" data-cfemail="6106210415090504174f020e0c">[email protected]</span>>
+// inheritable "property" contract that enables methods to be protected by requiring the acquiescence of either a
 // single, or, crucially, each of a number of, designated owners.
 // usage:
 // use modifiers onlyowner (just own owned) or onlymanyowners(hash), whereby the same hash must be provided by
@@ -31,9 +31,9 @@ contract multisig {
 
     // Funds has arrived into the wallet (record how much).
     event Deposit(address _from, uint value);
-    // Single transaction going out of the wallet (record who signed for it, how much, and to whom it&#39;s going).
+    // Single transaction going out of the wallet (record who signed for it, how much, and to whom it's going).
     event SingleTransact(address owner, uint value, address to, bytes data);
-    // Multi-sig transaction going out of the wallet (record who signed for it last, the operation hash, how much, and to whom it&#39;s going).
+    // Multi-sig transaction going out of the wallet (record who signed for it last, the operation hash, how much, and to whom it's going).
     event MultiTransact(address owner, bytes32 operation, uint value, address to, bytes data);
     // Confirmation still needed for a transaction.
     event ConfirmationNeeded(bytes32 operation, address initiator, uint value, address to, bytes data);
@@ -46,7 +46,7 @@ contract multisigAbi is multisig {
 
     function confirm(bytes32 _h) returns(bool);
 
-    // (re)sets the daily limit. needs many of the owners to confirm. doesn&#39;t alter the amount already spent today.
+    // (re)sets the daily limit. needs many of the owners to confirm. doesn't alter the amount already spent today.
     function setDailyLimit(uint _newLimit);
 
     function addOwner(address _owner);
@@ -101,14 +101,14 @@ contract WalletLibrary is multisig {
 
     // METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanyowners" transactions
     // as well as the selection of addresses capable of confirming them.
     // change from original: msg.sender is not automatically owner
     function initMultiowned(address[] _owners, uint _required) {
         m_numOwners = _owners.length ;
         m_required = _required;
 
-        for (uint i = 0; i &lt; _owners.length; ++i)
+        for (uint i = 0; i < _owners.length; ++i)
         {
             m_owners[1 + i] = uint(_owners[i]);
             m_ownerIndex[uint(_owners[i])] = 1 + i;
@@ -118,11 +118,11 @@ contract WalletLibrary is multisig {
     // Revokes a prior confirmation of the given operation
     function revoke(bytes32 _operation) {
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return;
         uint ownerIndexBit = 2**ownerIndex;
         var pending = m_pending[_operation];
-        if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+        if (pending.ownersDone & ownerIndexBit > 0) {
             pending.yetNeeded++;
             pending.ownersDone -= ownerIndexBit;
             Revoke(msg.sender, _operation);
@@ -146,9 +146,9 @@ contract WalletLibrary is multisig {
         if (isOwner(_owner)) return;
 
         clearPending();
-        if (m_numOwners &gt;= c_maxOwners)
+        if (m_numOwners >= c_maxOwners)
             reorganizeOwners();
-        if (m_numOwners &gt;= c_maxOwners)
+        if (m_numOwners >= c_maxOwners)
             return;
         m_numOwners++;
         m_owners[m_numOwners] = uint(_owner);
@@ -159,7 +159,7 @@ contract WalletLibrary is multisig {
     function removeOwner(address _owner) onlymanyowners(sha3(msg.data)) {
         uint ownerIndex = m_ownerIndex[uint(_owner)];
         if (ownerIndex == 0) return;
-        if (m_required &gt; m_numOwners - 1) return;
+        if (m_required > m_numOwners - 1) return;
 
         m_owners[ownerIndex] = 0;
         m_ownerIndex[uint(_owner)] = 0;
@@ -169,14 +169,14 @@ contract WalletLibrary is multisig {
     }
 
     function changeRequirement(uint _newRequired) onlymanyowners(sha3(msg.data)) {
-        if (_newRequired &gt; m_numOwners) return;
+        if (_newRequired > m_numOwners) return;
         m_required = _newRequired;
         clearPending();
         RequirementChanged(_newRequired);
     }
 
     function isOwner(address _addr) returns (bool) {
-        return m_ownerIndex[uint(_addr)] &gt; 0;
+        return m_ownerIndex[uint(_addr)] > 0;
     }
 
 
@@ -184,12 +184,12 @@ contract WalletLibrary is multisig {
         var pending = m_pending[_operation];
         uint ownerIndex = m_ownerIndex[uint(_owner)];
 
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return false;
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        return !(pending.ownersDone &amp; ownerIndexBit == 0);
+        return !(pending.ownersDone & ownerIndexBit == 0);
     }
 
     // INTERNAL METHODS
@@ -197,11 +197,11 @@ contract WalletLibrary is multisig {
     function confirmAndCheck(bytes32 _operation) internal returns (bool) {
         // determine what index the present sender is:
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return;
 
         var pending = m_pending[_operation];
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (pending.yetNeeded == 0) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_required;
@@ -212,11 +212,11 @@ contract WalletLibrary is multisig {
         }
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             Confirmation(msg.sender, _operation);
             // ok - check if count is enough to go ahead.
-            if (pending.yetNeeded &lt;= 1) {
+            if (pending.yetNeeded <= 1) {
                 // enough confirmations: reset and run interior.
                 delete m_pendingIndex[m_pending[_operation].index];
                 delete m_pending[_operation];
@@ -233,11 +233,11 @@ contract WalletLibrary is multisig {
 
     function reorganizeOwners() private {
         uint free = 1;
-        while (free &lt; m_numOwners)
+        while (free < m_numOwners)
         {
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) free++;
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) m_numOwners--;
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0)
+            while (free < m_numOwners && m_owners[free] != 0) free++;
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) m_numOwners--;
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0)
             {
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[m_owners[free]] = free;
@@ -248,7 +248,7 @@ contract WalletLibrary is multisig {
 
     function clearPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i)
+        for (uint i = 0; i < length; ++i)
             if (m_pendingIndex[i] != 0)
                 delete m_pending[m_pendingIndex[i]];
         delete m_pendingIndex;
@@ -269,12 +269,12 @@ contract WalletLibrary is multisig {
 
     // METHODS
 
-    // constructor - stores initial daily limit and records the present day&#39;s index.
+    // constructor - stores initial daily limit and records the present day's index.
     function initDaylimit(uint _limit) {
         m_dailyLimit = _limit;
         m_lastDay = today();
     }
-    // (re)sets the daily limit. needs many of the owners to confirm. doesn&#39;t alter the amount already spent today.
+    // (re)sets the daily limit. needs many of the owners to confirm. doesn't alter the amount already spent today.
     function setDailyLimit(uint _newLimit) onlymanyowners(sha3(msg.data)) {
         m_dailyLimit = _newLimit;
     }
@@ -288,21 +288,21 @@ contract WalletLibrary is multisig {
     // checks to see if there is at least `_value` left from the daily limit today. if there is, subtracts it and
     // returns true. otherwise just returns false.
     function underLimit(uint _value) internal onlyowner returns (bool) {
-        // reset the spend limit if we&#39;re on a different day to last time.
-        if (today() &gt; m_lastDay) {
+        // reset the spend limit if we're on a different day to last time.
+        if (today() > m_lastDay) {
             m_spentToday = 0;
             m_lastDay = today();
         }
-        // check to see if there&#39;s enough left - if so, subtract and return true.
+        // check to see if there's enough left - if so, subtract and return true.
         // overflow protection                    // dailyLimit check
-        if (m_spentToday + _value &gt;= m_spentToday &amp;&amp; m_spentToday + _value &lt;= m_dailyLimit) {
+        if (m_spentToday + _value >= m_spentToday && m_spentToday + _value <= m_dailyLimit) {
             m_spentToday += _value;
             return true;
         }
         return false;
     }
 
-    // determines today&#39;s index.
+    // determines today's index.
     function today() private constant returns (uint) { return now / 1 days; }
 
 
@@ -329,7 +329,7 @@ contract WalletLibrary is multisig {
     // shortcuts for the other confirmations (allowing them to avoid replicating the _to, _value
     // and _data arguments). They still get the option of using them if they want, anyways.
     function execute(address _to, uint _value, bytes _data) onlyowner returns(bool _callValue) {
-        // first, take the opportunity to check that we&#39;re under the daily limit.
+        // first, take the opportunity to check that we're under the daily limit.
         if (underLimit(_value)) {
             SingleTransact(msg.sender, _value, _to, _data);
             // yes - just execute the call.
@@ -337,7 +337,7 @@ contract WalletLibrary is multisig {
         } else {
             // determine our operation hash.
             bytes32 _r = sha3(msg.data, block.number);
-            if (!confirm(_r) &amp;&amp; m_txs[_r].to == 0) {
+            if (!confirm(_r) && m_txs[_r].to == 0) {
                 m_txs[_r].to = _to;
                 m_txs[_r].value = _value;
                 m_txs[_r].data = _data;
@@ -361,7 +361,7 @@ contract WalletLibrary is multisig {
 
     function clearWalletPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i)
+        for (uint i = 0; i < length; ++i)
             delete m_txs[m_pendingIndex[i]];
         clearPending();
     }
@@ -383,13 +383,13 @@ contract WalletLibrary is multisig {
     uint constant c_maxOwners = 250;
 
     // index on the list of owners to allow reverse lookup
-    mapping(uint =&gt; uint) m_ownerIndex;
+    mapping(uint => uint) m_ownerIndex;
     // the ongoing operations.
-    mapping(bytes32 =&gt; PendingState) m_pending;
+    mapping(bytes32 => PendingState) m_pending;
     bytes32[] m_pendingIndex;
 
     // pending transactions we have at present.
-    mapping (bytes32 =&gt; Transaction) m_txs;
+    mapping (bytes32 => Transaction) m_txs;
 }
 
 
@@ -398,8 +398,8 @@ contract Wallet is multisig {
     // WALLET CONSTRUCTOR
     //   calls the `initWallet` method of the Library in this context
     function Wallet(address[] _owners, uint _required, uint _daylimit) {
-        // Signature of the Wallet Library&#39;s init function
-        bytes4 sig = bytes4(sha3(&quot;initWallet(address[],uint256,uint256)&quot;));
+        // Signature of the Wallet Library's init function
+        bytes4 sig = bytes4(sha3("initWallet(address[],uint256,uint256)"));
         address target = _walletLibrary;
 
         // Compute the size of the call data : arrays has 2
@@ -424,9 +424,9 @@ contract Wallet is multisig {
     // gets called when no other function matches
     function() payable {
         // just being sent some cash?
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
-        else if (msg.data.length &gt; 0)
+        else if (msg.data.length > 0)
             _walletLibrary.delegatecall(msg.data);
     }
 

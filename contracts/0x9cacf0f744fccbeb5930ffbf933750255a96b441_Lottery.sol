@@ -14,8 +14,8 @@ contract Lottery {
 
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     // This generates a public event on the blockchain that will notify clients
@@ -62,9 +62,9 @@ contract Lottery {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Subtract from the sender
         balanceOf[_from] -= _value;
         // Add the same to the recipient
@@ -90,7 +90,7 @@ contract Lottery {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -168,7 +168,7 @@ contract Lottery {
     function takeAndPush(uint ticketsAmount) internal {
         transfer(this, ticketPrice * ticketsAmount);
         uint i = 0;
-        while(i &lt; ticketsAmount) {
+        while(i < ticketsAmount) {
             pool.push(msg.sender);
             i++;
         }
@@ -217,14 +217,14 @@ contract Lottery {
     
     
     function buyTickets(uint ticketsAmount) public  {
-        require(balanceOf[msg.sender] &gt;= ticketPrice * ticketsAmount);
-        require(balanceOf[this] + (ticketPrice * ticketsAmount) &gt;= balanceOf[this]);
+        require(balanceOf[msg.sender] >= ticketPrice * ticketsAmount);
+        require(balanceOf[this] + (ticketPrice * ticketsAmount) >= balanceOf[this]);
         require(stopFlag != 1);
-        require((ticketsAmount + pool.length) &lt;= ticketMax);
+        require((ticketsAmount + pool.length) <= ticketMax);
 
         takeAndPush(ticketsAmount);
         
-        if((pool.length + ticketsAmount) &gt;= ticketMax) {
+        if((pool.length + ticketsAmount) >= ticketMax) {
             FullPool(ticketMax);
         }
 

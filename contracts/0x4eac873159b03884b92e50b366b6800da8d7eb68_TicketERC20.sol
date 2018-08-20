@@ -39,12 +39,12 @@ contract TicketERC20 is ERC20Interface, Mortal {
     uint private myTotalSupply;
     uint8 public decimals;
 
-    mapping (address=&gt;uint) balances;
-    mapping (address=&gt;mapping (address=&gt;uint)) ownerAllowances;
+    mapping (address=>uint) balances;
+    mapping (address=>mapping (address=>uint)) ownerAllowances;
 
     constructor() public {
-        myName = &quot;XiboquinhaCoins-teste-01&quot;;
-        mySymbol = &quot;XBCT01&quot;;
+        myName = "XiboquinhaCoins-teste-01";
+        mySymbol = "XBCT01";
         myTotalSupply = 1000000;
         decimals = 0;
         balances[msg.sender] = myTotalSupply;
@@ -97,17 +97,17 @@ contract TicketERC20 is ERC20Interface, Mortal {
     modifier hasEnoughBalance(address owner, uint amount) {
         uint balance;
         balance = balances[owner];
-        require (balance &gt;= amount); 
+        require (balance >= amount); 
         _;
     }
 
     modifier isAllowed(address spender, address tokenOwner, uint amount) {
-        require (amount &lt;= ownerAllowances[tokenOwner][spender]);
+        require (amount <= ownerAllowances[tokenOwner][spender]);
         _;
     }
 
     modifier tokenAmountValid(uint amount) {
-        require(amount &gt; 0);
+        require(amount > 0);
         _;
     }
 

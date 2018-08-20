@@ -41,13 +41,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -141,7 +141,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -221,9 +221,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract IBFSTokenCoin is MintableToken {
     
-    string public constant name = &quot;IBFS Token Coin&quot;;
+    string public constant name = "IBFS Token Coin";
     
-    string public constant symbol = &quot;IBFS&quot;;
+    string public constant symbol = "IBFS";
     
     uint32 public constant decimals = 18;
     
@@ -275,12 +275,12 @@ contract Crowdsale is Ownable {
     }
 
     modifier saleIsOn() {
-    	require(now &gt; start &amp;&amp; now &lt; start + period * 1 days);
+    	require(now > start && now < start + period * 1 days);
     	_;
     }
 	
     modifier isUnderHardCap() {
-        require(multisig.balance &lt;= hardcap);
+        require(multisig.balance <= hardcap);
         _;
     }
 
@@ -296,10 +296,10 @@ contract Crowdsale is Ownable {
         /** uint tokens = rate.mul(msg.value).div(1 ether); */
         uint tokens = rate.mul(msg.value);
         uint bonusTokens = 0;
-        if(now &lt; start + ( 7 days)) { bonusTokens = tokens.div(4);} 
-           else if(now &gt;= start + (7 days) &amp;&amp; now &lt; start + (14 days)) {  bonusTokens = tokens.mul(15).div(100); } 
-              else if(now &gt;= start + (14 days) &amp;&amp; now &lt; start + (21 days)) { bonusTokens = tokens.div(10); }
-                 else if(now &gt;= start + (21 days) &amp;&amp; now &lt; start + (28 days)) { bonusTokens = tokens.div(20); }
+        if(now < start + ( 7 days)) { bonusTokens = tokens.div(4);} 
+           else if(now >= start + (7 days) && now < start + (14 days)) {  bonusTokens = tokens.mul(15).div(100); } 
+              else if(now >= start + (14 days) && now < start + (21 days)) { bonusTokens = tokens.div(10); }
+                 else if(now >= start + (21 days) && now < start + (28 days)) { bonusTokens = tokens.div(20); }
         tokens += bonusTokens;
         token.mint(msg.sender, tokens);
     }

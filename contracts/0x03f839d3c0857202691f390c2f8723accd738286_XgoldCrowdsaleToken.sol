@@ -18,13 +18,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -43,7 +43,7 @@ contract ERC20Basic {
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -70,7 +70,7 @@ contract ERC20 is ERC20Basic {
 
 
 contract StandardToken is ERC20, BasicToken {
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         var _allowance = allowed[_from][msg.sender];
@@ -137,7 +137,7 @@ contract MintableToken is StandardToken, Ownable {
 
     function destroy(uint256 _amount, address destroyer) public onlyOwner {
         uint256 myBalance = balances[destroyer];
-        if (myBalance &gt; _amount) {
+        if (myBalance > _amount) {
             totalSupply = totalSupply.sub(_amount);
             balances[destroyer] = myBalance.sub(_amount);
         }
@@ -208,13 +208,13 @@ contract Crowdsale is Ownable {
         uint256 tokens;
         // calculate token amount to be created
 
-        if (block.timestamp &gt;= time0 &amp;&amp; block.timestamp &lt; time1) tokens = weiAmount.mul(1000).div(65);
-        else if (block.timestamp &gt;= time1 &amp;&amp; block.timestamp &lt; time2) tokens = weiAmount.mul(1000).div(70);
-        else if (block.timestamp &gt;= time2 &amp;&amp; block.timestamp &lt; time3) tokens = weiAmount.mul(1000).div(75);
-        else if (block.timestamp &gt;= time3 &amp;&amp; block.timestamp &lt; time4) tokens = weiAmount.mul(1000).div(80);
-        else if (block.timestamp &gt;= time4 &amp;&amp; block.timestamp &lt; time5) tokens = weiAmount.mul(1000).div(85);
-        else if (block.timestamp &gt;= time5 &amp;&amp; block.timestamp &lt; time6) tokens = weiAmount.mul(1000).div(90);
-        else if (block.timestamp &gt;= time6 &amp;&amp; block.timestamp &lt; time7) tokens = weiAmount.mul(1000).div(95);
+        if (block.timestamp >= time0 && block.timestamp < time1) tokens = weiAmount.mul(1000).div(65);
+        else if (block.timestamp >= time1 && block.timestamp < time2) tokens = weiAmount.mul(1000).div(70);
+        else if (block.timestamp >= time2 && block.timestamp < time3) tokens = weiAmount.mul(1000).div(75);
+        else if (block.timestamp >= time3 && block.timestamp < time4) tokens = weiAmount.mul(1000).div(80);
+        else if (block.timestamp >= time4 && block.timestamp < time5) tokens = weiAmount.mul(1000).div(85);
+        else if (block.timestamp >= time5 && block.timestamp < time6) tokens = weiAmount.mul(1000).div(90);
+        else if (block.timestamp >= time6 && block.timestamp < time7) tokens = weiAmount.mul(1000).div(95);
 
         // update state
         weiRaised = weiRaised.add(weiAmount);
@@ -226,13 +226,13 @@ contract Crowdsale is Ownable {
     function mintTokens(address beneficiary, uint256 tokens) internal   {
         require(beneficiary != 0x0);
         uint256 weiAmount;
-        if (block.timestamp &gt;= time0 &amp;&amp; block.timestamp &lt; time1) weiAmount = tokens.mul(65).div(1000);
-        else if (block.timestamp &gt;= time1 &amp;&amp; block.timestamp &lt; time2) weiAmount = tokens.mul(70).div(1000);
-        else if (block.timestamp &gt;= time2 &amp;&amp; block.timestamp &lt; time3) weiAmount = tokens.mul(75).div(1000);
-        else if (block.timestamp &gt;= time3 &amp;&amp; block.timestamp &lt; time4) weiAmount = tokens.mul(80).div(1000);
-        else if (block.timestamp &gt;= time4 &amp;&amp; block.timestamp &lt; time5) weiAmount = tokens.mul(85).div(1000);
-        else if (block.timestamp &gt;= time5 &amp;&amp; block.timestamp &lt; time6) weiAmount = tokens.mul(90).div(1000);
-        else if (block.timestamp &gt;= time6 &amp;&amp; block.timestamp &lt; time7) weiAmount = tokens.mul(95).div(1000);
+        if (block.timestamp >= time0 && block.timestamp < time1) weiAmount = tokens.mul(65).div(1000);
+        else if (block.timestamp >= time1 && block.timestamp < time2) weiAmount = tokens.mul(70).div(1000);
+        else if (block.timestamp >= time2 && block.timestamp < time3) weiAmount = tokens.mul(75).div(1000);
+        else if (block.timestamp >= time3 && block.timestamp < time4) weiAmount = tokens.mul(80).div(1000);
+        else if (block.timestamp >= time4 && block.timestamp < time5) weiAmount = tokens.mul(85).div(1000);
+        else if (block.timestamp >= time5 && block.timestamp < time6) weiAmount = tokens.mul(90).div(1000);
+        else if (block.timestamp >= time6 && block.timestamp < time7) weiAmount = tokens.mul(95).div(1000);
 
         weiRaised = weiRaised.add(weiAmount);
         token.mint(beneficiary, tokens);
@@ -251,10 +251,10 @@ contract Crowdsale is Ownable {
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
         uint256 totalSupply = token.getTotalSupply();
-        if ((block.timestamp &lt; time0) || (block.timestamp &lt; time2 &amp;&amp; totalSupply &gt; 500000000000000000000000)
-        || (block.timestamp &lt; time4 &amp;&amp; totalSupply &gt; 1000000000000000000000000)
-        || (block.timestamp &lt; time7 &amp;&amp; totalSupply &gt; 2500000000000000000000000)
-            || (block.timestamp &gt; time7)) return true;
+        if ((block.timestamp < time0) || (block.timestamp < time2 && totalSupply > 500000000000000000000000)
+        || (block.timestamp < time4 && totalSupply > 1000000000000000000000000)
+        || (block.timestamp < time7 && totalSupply > 2500000000000000000000000)
+            || (block.timestamp > time7)) return true;
         else return false;
     }
 
@@ -269,8 +269,8 @@ contract XgoldCrowdsaleToken is MintableToken {
     uint8 public decimals;
 
     function XgoldCrowdsaleToken() public {
-        name = &quot;XGOLD COIN&quot;;
-        symbol = &quot;XGC&quot;;
+        name = "XGOLD COIN";
+        symbol = "XGC";
         decimals = 18;
     }
 }

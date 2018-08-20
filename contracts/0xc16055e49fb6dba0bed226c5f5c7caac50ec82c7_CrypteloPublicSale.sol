@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 contract CrypteloERC20{
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   function transfer(address to, uint amount);
   function burn(uint256 _value) public returns (bool success);
 }
@@ -12,17 +12,17 @@ contract CrypteloPreSale{
 
 contract TadamWhitelistPublicSale{
     function isWhiteListed(address _addr) returns (uint _group);
-    mapping (address =&gt; uint) public PublicSaleWhiteListed;
+    mapping (address => uint) public PublicSaleWhiteListed;
 }
 
 contract CrypteloPublicSale{
     using SafeMath for uint256;
-    mapping (address =&gt; bool) private owner;
+    mapping (address => bool) private owner;
 
     
     uint public contributorCounter = 0;
-    mapping (uint =&gt; address) contributor;
-    mapping (address =&gt; uint) contributorAmount;
+    mapping (uint => address) contributor;
+    mapping (address => uint) contributorAmount;
     
     /*
         Public Sale Timings and bonuses
@@ -74,13 +74,13 @@ contract CrypteloPublicSale{
     function currentTimeBonus () public returns (uint _bonus){
         uint bonus = 0;
         //ICO is running
-        if (now &gt;= firstDiscountStartTime &amp;&amp; now &lt;= firstDiscountEndTime){
+        if (now >= firstDiscountStartTime && now <= firstDiscountEndTime){
             bonus = 25;
-        }else if(now &gt;= secDiscountStartTime &amp;&amp; now &lt;= secDiscountEndTime){
+        }else if(now >= secDiscountStartTime && now <= secDiscountEndTime){
             bonus = 20;
-        }else if(now &gt;= thirdDiscountStartTime &amp;&amp; now &lt;= thirdDiscountEndTime){
+        }else if(now >= thirdDiscountStartTime && now <= thirdDiscountEndTime){
             bonus = 15;
-        }else if(now &gt;= fourthDiscountStartTime &amp;&amp; now &lt;= fourthDiscountEndTime){
+        }else if(now >= fourthDiscountStartTime && now <= fourthDiscountEndTime){
             bonus = 10;
         }else{
             bonus = 5;
@@ -97,7 +97,7 @@ contract CrypteloPublicSale{
     }
     /*
         States are
-            false - Paused - it doesn&#39;t accept payments
+            false - Paused - it doesn't accept payments
             true - Live - accepts payments and disburse tokens if conditions meet
     */
     bool public currentState = false;
@@ -123,30 +123,30 @@ contract CrypteloPublicSale{
         //check if its live
         
         require(currentState);
-        eLog(&quot;state OK&quot;, 0);
-        require(amountEthWei &gt;= minimumDonationWei);
-        eLog(&quot;amount OK&quot;, amountEthWei);
+        eLog("state OK", 0);
+        require(amountEthWei >= minimumDonationWei);
+        eLog("amount OK", amountEthWei);
         
         uint whiteListedLevel = isWhiteListed(sender);
-        require( whiteListedLevel &gt; 0);
+        require( whiteListedLevel > 0);
 
         tokensToSend = calculateTokensToSend(amountEthWei, whiteListedLevel);
         
-        require(tokensLeft &gt;= tokensToSend);
-        eLog(&quot;tokens left vs tokens to send ok&quot;, tokensLeft);    
-        eLog(&quot;tokensToSend&quot;, tokensToSend);
+        require(tokensLeft >= tokensToSend);
+        eLog("tokens left vs tokens to send ok", tokensLeft);    
+        eLog("tokensToSend", tokensToSend);
         
         //test for minus
-        if (tokensToSend &lt;= tokensLeft){
+        if (tokensToSend <= tokensLeft){
             tokensLeft = tokensLeft.sub(tokensToSend);    
         }
         
         addContributor(sender, tokensToSend);
         reservedTokens = reservedTokens.add(tokensToSend);
-        eLog(&quot;send tokens ok&quot;, 0);
+        eLog("send tokens ok", 0);
         
         forwardFunds(amountEthWei);
-        eLog(&quot;forward funds ok&quot;, amountEthWei);
+        eLog("forward funds ok", amountEthWei);
     }
     
     function  calculateTokensToSend(uint _amount_wei, uint _whiteListLevel) public returns (uint _tokensToSend){
@@ -154,22 +154,22 @@ contract CrypteloPublicSale{
         uint amountMicroEther = _amount_wei.div(1000000000000);
         uint tokens = amountMicroEther.mul(tokensPerMicroEther);
         
-        eLog(&quot;tokens: &quot;, tokens);
+        eLog("tokens: ", tokens);
         uint bonusPerc = calculateBonus(_whiteListLevel); 
         uint bonusTokens = 0;
-        if (bonusPerc &gt; 0){
+        if (bonusPerc > 0){
             bonusTokens = tokens.div(100).mul(bonusPerc);    
         }
-        eLog(&quot;bonusTokens&quot;, bonusTokens); 
+        eLog("bonusTokens", bonusTokens); 
         
         tokensToSend = tokens.add(bonusTokens);
 
-        eLog(&quot;tokensToSend&quot;, tokensToSend);  
+        eLog("tokensToSend", tokensToSend);  
         return tokensToSend;
     }
     
     function payContributorByNumber(uint _n) onlyOwner{
-        require(now &gt; ICOendTime);
+        require(now > ICOendTime);
         
         address adr = contributor[_n];
         uint amount = contributorAmount[adr];
@@ -178,7 +178,7 @@ contract CrypteloPublicSale{
     }
     
     function payContributorByAdress(address _adr) {
-        require(now &gt; ICOendTime);
+        require(now > ICOendTime);
         uint amount = contributorAmount[_adr];
         sendTokens(_adr, amount);
         contributorAmount[_adr] = 0;
@@ -186,7 +186,7 @@ contract CrypteloPublicSale{
     
     function addContributor(address _addr, uint _amount) private{
         contributor[contributorCounter] = _addr;
-        if (contributorAmount[_addr] &gt; 0){
+        if (contributorAmount[_addr] > 0){
             contributorAmount[_addr] += _amount;
         }else{
             contributorAmount[_addr] = _amount;    
@@ -227,9 +227,9 @@ contract CrypteloPublicSale{
         CrypteloERC20 _tadamerc20;
         _tadamerc20 = CrypteloERC20(ERC20Address);
         uint tokensToBurn = _tadamerc20.balanceOf(this);
-        require (tokensToBurn &gt; reservedTokens);
+        require (tokensToBurn > reservedTokens);
         tokensToBurn -= reservedTokens;
-        eLog(&quot;tokens burned&quot;, tokensToBurn);
+        eLog("tokens burned", tokensToBurn);
         _tadamerc20.burn(tokensToBurn);
     }
     
@@ -248,12 +248,12 @@ contract CrypteloPublicSale{
         
         uint256 PSaleGroup = whitelistPublic.PublicSaleWhiteListed(_address);
         //if we have it in the PublicSale add it
-        if (PSaleGroup &gt; 0){
+        if (PSaleGroup > 0){
             whiteListedStatus = PSaleGroup;
         }else{
             CrypteloPreSale _testPreSale;
             _testPreSale = CrypteloPreSale(preSaleContract);
-            if (_testPreSale.isWhiteList(_address) &gt; 0){
+            if (_testPreSale.isWhiteList(_address) > 0){
                 //exists in the pre-sale white list threfore give em early 1
                 whiteListedStatus = 1;
             }else{
@@ -274,7 +274,7 @@ contract CrypteloPublicSale{
         CrypteloERC20 _tadamerc20;
         _tadamerc20 = CrypteloERC20(ERC20Address);
         uint totalAmount = _tadamerc20.balanceOf(this);
-        require(totalAmount &gt; reservedTokens);
+        require(totalAmount > reservedTokens);
         uint toWithdraw = totalAmount.sub(reservedTokens);
         sendTokens(msg.sender, toWithdraw);
     }
@@ -312,9 +312,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -322,7 +322,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -331,7 +331,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

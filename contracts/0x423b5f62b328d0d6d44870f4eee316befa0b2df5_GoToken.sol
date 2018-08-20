@@ -14,7 +14,7 @@ contract Token {
     https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
     https://github.com/ethereum/EIPs/issues/20
 
-    We didn&#39;t implement a separate totalsupply() function. Instead the public variable
+    We didn't implement a separate totalsupply() function. Instead the public variable
     totalSupply will automatically create a getter function to access the supply
     of the token.
 ---------------------------------------------------------------------------------------------
@@ -49,8 +49,8 @@ contract StandardToken is Token {
     Storage data structures
 ---------------------------------------------------------------------------------------------
 */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 /*
 ---------------------------------------------------------------------------------------------
@@ -58,16 +58,16 @@ contract StandardToken is Token {
 ---------------------------------------------------------------------------------------------
 */
 
-    /// @notice Send &quot;_value&quot; tokens to &quot;_to&quot; from &quot;msg.sender&quot;.
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @notice Send "_value" tokens to "_to" from "msg.sender".
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -77,7 +77,7 @@ contract StandardToken is Token {
         return true;
     }
 
-    /// @notice Transfer &quot;_value&quot; tokens from &quot;_from&quot; to &quot;_to&quot; if &quot;msg.sender&quot; is allowed.
+    /// @notice Transfer "_value" tokens from "_from" to "_to" if "msg.sender" is allowed.
     /// @dev Allows for an approved third party to transfer tokens from one
     /// address to another. Returns success.
     /// @param _from Address from where tokens are withdrawn.
@@ -86,13 +86,13 @@ contract StandardToken is Token {
     /// @return Returns success of function call.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool)
     {
-        //Address shouldn&#39;t be null
+        //Address shouldn't be null
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -103,14 +103,14 @@ contract StandardToken is Token {
         return true;
     }
 
-    /// @notice Approves &quot;_who&quot; to transfer &quot;_value&quot; tokens from &quot;msg.sender&quot; to any address.
+    /// @notice Approves "_who" to transfer "_value" tokens from "msg.sender" to any address.
     /// @dev Sets approved amount of tokens for the spender. Returns success.
     /// @param _who Address of allowed account.
     /// @param _value Number of approved tokens.
     /// @return Returns success of function call.
     function approve(address _who, uint256 _value) public returns (bool) {
 
-        // Address shouldn&#39;t be null
+        // Address shouldn't be null
         require(_who != 0x0);
 
         // To change the approve amount you first have to reduce the addresses`
@@ -149,7 +149,7 @@ contract GoToken is StandardToken {
       All GoToken balances are transferable.
       Token name, ticker symbol and decimals
       1 token (GOT) = 1 indivisible unit * multiplier
-      The multiplier is set dynamically from token&#39;s number of decimals (i.e. 10 ** decimals)
+      The multiplier is set dynamically from token's number of decimals (i.e. 10 ** decimals)
 
 ---------------------------------------------------------------------------------------------
 */
@@ -159,8 +159,8 @@ contract GoToken is StandardToken {
     Storage data structures
 ---------------------------------------------------------------------------------------------
 */
-    string constant public name = &quot;GoToken&quot;;
-    string constant public symbol = &quot;GOT&quot;;
+    string constant public name = "GoToken";
+    string constant public symbol = "GOT";
     uint256 constant public decimals = 18;
     uint256 constant multiplier = 10 ** (decimals);
 
@@ -190,7 +190,7 @@ contract GoToken is StandardToken {
         require(wallet_address != 0x0);
 
         // Initial supply is in indivisible units e.g. 50e24
-        require(initial_supply &gt; multiplier);
+        require(initial_supply > multiplier);
 
         // Total supply of indivisible GOT units at deployment
         totalSupply = initial_supply;
@@ -238,7 +238,7 @@ contract GoTokenDutchAuction {
     All token balances are transferable.
     Token name, ticker symbol and decimals
     1 token (GOT) = 1 indivisible unit * multiplier
-    multiplier set from token&#39;s number of decimals (i.e. 10 ** decimals)
+    multiplier set from token's number of decimals (i.e. 10 ** decimals)
 
 ---------------------------------------------------------------------------------------------
 */
@@ -317,14 +317,14 @@ contract GoTokenDutchAuction {
   		uint256 received;	// the amount received, without bonus
   	}
 
-    // Address of the Bidder =&gt; bid value
-    mapping (address =&gt; Account) public bids;
+    // Address of the Bidder => bid value
+    mapping (address => Account) public bids;
 
     // privatesalewhitelist for private ETH addresses
-    mapping (address =&gt; bool) public privatesalewhitelist;
+    mapping (address => bool) public privatesalewhitelist;
 
     // publicsalewhitelist for addresses that want to bid in public sale excluding private sale accounts
-    mapping (address =&gt; bool) public publicsalewhitelist;
+    mapping (address => bool) public publicsalewhitelist;
 
 /*
 ---------------------------------------------------------------------------------------------
@@ -427,7 +427,7 @@ contract GoTokenDutchAuction {
         uint256 _price_exponent2)
         public
     {
-        // Address shouldn&#39;t be null
+        // Address shouldn't be null
         require(_wallet_address != 0x0);
         require(_whitelister_address != 0x0);
         require(_distributor_address != 0x0);
@@ -446,7 +446,7 @@ contract GoTokenDutchAuction {
         bid();
     }
 
-    /// @notice Set &quot;_token_address&quot; as the token address to be used in the auction.
+    /// @notice Set "_token_address" as the token address to be used in the auction.
     /// @dev Setup function sets external contracts addresses.
     /// @param _token_address Token address.
     function setup(address _token_address) public isOwner atStage(Stages.AuctionDeployed) {
@@ -465,8 +465,8 @@ contract GoTokenDutchAuction {
         Setup();
     }
 
-    /// @notice Set &quot;_price_start&quot;, &quot;_price_constant1&quot; and &quot;_price_exponent1&quot;
-    ///  &quot;_price_constant2&quot; and &quot;_price_exponent2&quot; as
+    /// @notice Set "_price_start", "_price_constant1" and "_price_exponent1"
+    ///  "_price_constant2" and "_price_exponent2" as
     /// the new starting price, price constant and price exponent for the auction price.
     /// @dev Changes auction price function parameters before auction is started.
     /// @param _price_start Updated start price.
@@ -483,11 +483,11 @@ contract GoTokenDutchAuction {
         internal
     {
         // You can change the price curve settings only when either the auction is Deployed
-        // or the auction is setup. You can&#39;t change during the auction is running or ended.
+        // or the auction is setup. You can't change during the auction is running or ended.
         require(stage == Stages.AuctionDeployed || stage == Stages.AuctionSetUp);
-        require(_price_start &gt; 0);
-        require(_price_constant1 &gt; 0);
-        require(_price_constant2 &gt; 0);
+        require(_price_start > 0);
+        require(_price_constant1 > 0);
+        require(_price_constant2 > 0);
 
         price_start = _price_start;
         price_constant1 = _price_constant1;
@@ -499,15 +499,15 @@ contract GoTokenDutchAuction {
 /*
 ---------------------------------------------------------------------------------------------
     Functions related to whitelisting of presale and public sale ETH addresses.
-    The Whitelister must add the participant&#39;s ETH address before they can bid.
+    The Whitelister must add the participant's ETH address before they can bid.
 ---------------------------------------------------------------------------------------------
 */
     // @notice Adds account addresses to public sale ETH whitelist.
     // @dev Adds account addresses to public sale ETH whitelist.
     // @param _bidder_addresses Array of addresses. Use double quoted array.
     function addToPublicSaleWhitelist(address[] _bidder_addresses) public isWhitelister {
-        for (uint32 i = 0; i &lt; _bidder_addresses.length; i++) {
-            require(!privatesalewhitelist[_bidder_addresses[i]]); //Can&#39;t be in public whitelist
+        for (uint32 i = 0; i < _bidder_addresses.length; i++) {
+            require(!privatesalewhitelist[_bidder_addresses[i]]); //Can't be in public whitelist
             publicsalewhitelist[_bidder_addresses[i]] = true;
             PublicSaleWhitelisted(_bidder_addresses[i]);
         }
@@ -517,7 +517,7 @@ contract GoTokenDutchAuction {
     // @dev Removes account addresses from public sale ETH whitelist.
     // @param _bidder_addresses Array of addresses.  Use double quoted array.
     function removeFromPublicSaleWhitelist(address[] _bidder_addresses) public isWhitelister {
-        for (uint32 i = 0; i &lt; _bidder_addresses.length; i++) {
+        for (uint32 i = 0; i < _bidder_addresses.length; i++) {
             publicsalewhitelist[_bidder_addresses[i]] = false;
             RemovedFromPublicSaleWhitelist(_bidder_addresses[i]);
         }
@@ -529,7 +529,7 @@ contract GoTokenDutchAuction {
     // @ Admin Adds presale account addresses to privatesalewhitelist.
     // @param _bidder_addresses Array of addresses.
     function addToPrivateSaleWhitelist(address[] _bidder_addresses) public isOwner {
-        for (uint32 i = 0; i &lt; _bidder_addresses.length; i++) {
+        for (uint32 i = 0; i < _bidder_addresses.length; i++) {
               privatesalewhitelist[_bidder_addresses[i]] = true;
   						PrivateSaleWhitelisted(_bidder_addresses[i]);
           }
@@ -539,7 +539,7 @@ contract GoTokenDutchAuction {
       // @ Admin Removes presale account addresses from privatesalewhitelist.
       // @param _bidder_addresses Array of addresses.
       function removeFromPrivateSaleWhitelist(address[] _bidder_addresses) public isOwner {
-          for (uint32 i = 0; i &lt; _bidder_addresses.length; i++) {
+          for (uint32 i = 0; i < _bidder_addresses.length; i++) {
               privatesalewhitelist[_bidder_addresses[i]] = false;
   						RemovedFromPrivateSaleWhitelist(_bidder_addresses[i]);
           }
@@ -554,11 +554,11 @@ contract GoTokenDutchAuction {
         AuctionStarted(auction_start_time, start_block);
     }
 
-    /// @notice Send &quot;msg.value&quot; WEI to the auction from the &quot;msg.sender&quot; account.
+    /// @notice Send "msg.value" WEI to the auction from the "msg.sender" account.
     /// @dev Allows to send a bid to the auction.
     function bid() public payable
     {
-        // Address shouldn&#39;t be null and the minimum bid amount of contribution is met.
+        // Address shouldn't be null and the minimum bid amount of contribution is met.
         // Private sale contributor can submit a bid at AuctionSetUp before AuctionStarted
         // When AuctionStarted only private sale and public sale whitelisted ETH addresses can participate
         require(stage == Stages.AuctionSetUp || stage == Stages.AuctionStarted);
@@ -566,13 +566,13 @@ contract GoTokenDutchAuction {
         if (stage == Stages.AuctionSetUp){
           require(privatesalewhitelist[msg.sender]);
         }
-        require(msg.value &gt; 0);
-        require(bids[msg.sender].received + msg.value &gt;= bid_threshold);
-        assert(bids[msg.sender].received + msg.value &gt;= msg.value);
+        require(msg.value > 0);
+        require(bids[msg.sender].received + msg.value >= bid_threshold);
+        assert(bids[msg.sender].received + msg.value >= msg.value);
 
         // Maximum public sale contribution per ETH account
-        //if (stage == Stages.AuctionStarted &amp;&amp; publicsalewhitelist[msg.sender]) {
-        //  require (bids[msg.sender].received + msg.value &lt;= MAX_CONTRIBUTION_PUBLICSALE);
+        //if (stage == Stages.AuctionStarted && publicsalewhitelist[msg.sender]) {
+        //  require (bids[msg.sender].received + msg.value <= MAX_CONTRIBUTION_PUBLICSALE);
         //}
 
         // Remaining funds without the current bid value to end the auction
@@ -580,7 +580,7 @@ contract GoTokenDutchAuction {
 
         // The bid value must be less than the funds remaining to end the auction
         // at the current price.
-        require(msg.value &lt;= remaining_funds_to_end_auction);
+        require(msg.value <= remaining_funds_to_end_auction);
 
 /*
 ---------------------------------------------------------------------------------------------
@@ -594,28 +594,28 @@ contract GoTokenDutchAuction {
         }
         else if (stage == Stages.AuctionStarted) {
           // private sale contributors bonus period settings
-      		if (privatesalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time  &amp;&amp; now &lt; auction_start_time + BONUS_DAY1_DURATION) {
+      		if (privatesalewhitelist[msg.sender] && now >= auction_start_time  && now < auction_start_time + BONUS_DAY1_DURATION) {
       				currentBonus = 25; //private sale contributor Day 1 bonus
       		}
-          else if (privatesalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time + BONUS_DAY1_DURATION &amp;&amp; now &lt; auction_start_time + BONUS_DAY2_DURATION ) {
+          else if (privatesalewhitelist[msg.sender] && now >= auction_start_time + BONUS_DAY1_DURATION && now < auction_start_time + BONUS_DAY2_DURATION ) {
       				currentBonus = 25; //private sale contributor Day 2 bonus
       		}
-      		else if (privatesalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time + BONUS_DAY2_DURATION &amp;&amp; now &lt; auction_start_time + BONUS_DAY3_DURATION) {
+      		else if (privatesalewhitelist[msg.sender] && now >= auction_start_time + BONUS_DAY2_DURATION && now < auction_start_time + BONUS_DAY3_DURATION) {
       				currentBonus = 25; //private sale contributor Day 3 bonus
       		}
-          else if (privatesalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time + BONUS_DAY3_DURATION) {
+          else if (privatesalewhitelist[msg.sender] && now >= auction_start_time + BONUS_DAY3_DURATION) {
               currentBonus = 25; //private sale contributor Day 4+ bonus
           }
-          else if (publicsalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time  &amp;&amp; now &lt; auction_start_time + BONUS_DAY1_DURATION) {
+          else if (publicsalewhitelist[msg.sender] && now >= auction_start_time  && now < auction_start_time + BONUS_DAY1_DURATION) {
       				currentBonus = 15; //private sale contributor Day 1 bonus
       		}
-          else if (publicsalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time + BONUS_DAY1_DURATION &amp;&amp; now &lt; auction_start_time + BONUS_DAY2_DURATION ) {
+          else if (publicsalewhitelist[msg.sender] && now >= auction_start_time + BONUS_DAY1_DURATION && now < auction_start_time + BONUS_DAY2_DURATION ) {
       				currentBonus = 10; //private sale contributor Day 2 bonus
       		}
-      		else if (publicsalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time + BONUS_DAY2_DURATION &amp;&amp; now &lt; auction_start_time + BONUS_DAY3_DURATION) {
+      		else if (publicsalewhitelist[msg.sender] && now >= auction_start_time + BONUS_DAY2_DURATION && now < auction_start_time + BONUS_DAY3_DURATION) {
       				currentBonus = 5; //private sale contributor Day 3 bonus
       		}
-          else if (publicsalewhitelist[msg.sender] &amp;&amp; now &gt;= auction_start_time + BONUS_DAY3_DURATION) {
+          else if (publicsalewhitelist[msg.sender] && now >= auction_start_time + BONUS_DAY3_DURATION) {
               currentBonus = 0; //private sale contributor Day 4+ bonus
           }
       		else {
@@ -643,8 +643,8 @@ contract GoTokenDutchAuction {
         //Log the bid
         BidSubmission(msg.sender, msg.value, accounted, remaining_funds_to_end_auction);
 
-        assert(received_wei &gt;= msg.value);
-        assert(received_wei_with_bonus &gt;= accounted);
+        assert(received_wei >= msg.value);
+        assert(received_wei_with_bonus >= accounted);
     }
 
     // @notice Finalize the auction - sets the final GoToken price and
@@ -665,11 +665,11 @@ contract GoTokenDutchAuction {
         stage = Stages.AuctionEnded;
         AuctionEnded(final_price);
 
-        assert(final_price &gt; 0);
+        assert(final_price > 0);
     }
 
-    // @notice Distribute GoTokens for &quot;receiver_address&quot; after the auction has ended by the owner.
-    // @dev Distribute GoTokens for &quot;receiver_address&quot; after auction has ended by the owner.
+    // @notice Distribute GoTokens for "receiver_address" after the auction has ended by the owner.
+    // @dev Distribute GoTokens for "receiver_address" after auction has ended by the owner.
     // @param receiver_address GoTokens will be assigned to this address if eligible.
     function distributeGoTokens(address receiver_address)
         public isDistributor atStage(Stages.AuctionEnded) returns (bool)
@@ -677,9 +677,9 @@ contract GoTokenDutchAuction {
         // Waiting period in days after the end of the auction, before anyone can claim GoTokens.
         // Ensures enough time to check if auction was finalized correctly
         // before users start transacting tokens
-        require(now &gt; end_time + TOKEN_CLAIM_WAIT_PERIOD);
+        require(now > end_time + TOKEN_CLAIM_WAIT_PERIOD);
         require(receiver_address != 0x0);
-        require(bids[receiver_address].received &gt; 0);
+        require(bids[receiver_address].received > 0);
 
         if (bids[receiver_address].received == 0 || bids[receiver_address].accounted == 0) {
             return false;
@@ -693,7 +693,7 @@ contract GoTokenDutchAuction {
         // than expected. Therefore, the number of remaining unassigned auction tokens
         // may be smaller than the number of tokens needed for the last claimTokens call
         uint256 auction_tokens_balance = token.balanceOf(address(this));
-        if (num &gt; auction_tokens_balance) {
+        if (num > auction_tokens_balance) {
             num = auction_tokens_balance;
         }
 
@@ -717,7 +717,7 @@ contract GoTokenDutchAuction {
             TokensDistributed();
         }
 
-        assert(token.balanceOf(receiver_address) &gt;= num);
+        assert(token.balanceOf(receiver_address) >= num);
         assert(bids[receiver_address].accounted == 0);
         assert(bids[receiver_address].received == 0);
         return true;
@@ -725,7 +725,7 @@ contract GoTokenDutchAuction {
 
     /// @notice Get the GOT price in WEI during the auction, at the time of
     /// calling this function. Returns 0 if auction has ended.
-    /// Returns &quot;price_start&quot; before auction has started.
+    /// Returns "price_start" before auction has started.
     /// @dev Calculates the current GOT token price in WEI.
     /// @return Returns WEI per indivisible GOT (token_multiplier * GOT).
     function price() public constant returns (uint256) {
@@ -744,7 +744,7 @@ contract GoTokenDutchAuction {
 
         // num_tokens_auctioned = total number of indivisible GOT (GOT * token_multiplier) that is auctioned
         uint256 required_wei_at_price = num_tokens_auctioned * price() / token_multiplier;
-        if (required_wei_at_price &lt;= received_wei) {
+        if (required_wei_at_price <= received_wei) {
             return 0;
         }
 
@@ -781,12 +781,12 @@ contract GoTokenDutchAuction {
         if (stage == Stages.AuctionStarted) {
             elapsed = now - auction_start_time;
             // The first eight days auction price curve
-            if (now &gt;= auction_start_time &amp;&amp; now &lt; auction_start_time + CURVE_CUTOFF_DURATION){
+            if (now >= auction_start_time && now < auction_start_time + CURVE_CUTOFF_DURATION){
               decay_rate1 = elapsed ** price_exponent1 / price_constant1;
               return price_start * (1 + elapsed) / (1 + elapsed + decay_rate1);
             }
             // The remaining days auction price curve
-            else if (now &gt;= auction_start_time &amp;&amp; now &gt;= auction_start_time + CURVE_CUTOFF_DURATION){
+            else if (now >= auction_start_time && now >= auction_start_time + CURVE_CUTOFF_DURATION){
               decay_rate2 = elapsed ** price_exponent2 / price_constant2;
               return price_start * (1 + elapsed) / (1 + elapsed + decay_rate2);
             }

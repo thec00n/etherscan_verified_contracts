@@ -16,15 +16,15 @@ contract Leaderboard {
     }
     
     function addScore(string name) public payable returns (bool) {
-        if (leaderboard[2].balance &gt;= msg.value)
-            // user didn&#39;t make it into top 3
+        if (leaderboard[2].balance >= msg.value)
+            // user didn't make it into top 3
             return false;
-        for (uint i=0; i&lt;3; i++) {
-            if (leaderboard[i].balance &lt; msg.value) {
+        for (uint i=0; i<3; i++) {
+            if (leaderboard[i].balance < msg.value) {
                 // resort
                 if (leaderboard[i].user != msg.sender) {
                     bool duplicate = false;
-                    for (uint j=i+1; j&lt;3; j++) {
+                    for (uint j=i+1; j<3; j++) {
                         if (leaderboard[j].user == msg.sender) {
                             duplicate = true;
                             delete leaderboard[j];

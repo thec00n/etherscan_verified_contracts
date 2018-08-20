@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,9 +84,9 @@ contract EtherZaarTwitter is Ownable {
   event EthereumDeposit(uint256 twitterId, address ethereumAddress, uint256 ethereumAmount);
   event TransferCreditDeposit(uint256 twitterId, uint256 transferCredits);
 
-  mapping (uint256 =&gt; address) public twitterIdToEthereumAddress;
-  mapping (uint256 =&gt; uint256) public twitterIdToEthereumBalance;
-  mapping (uint256 =&gt; uint256) public twitterIdToTransferCredits;
+  mapping (uint256 => address) public twitterIdToEthereumAddress;
+  mapping (uint256 => uint256) public twitterIdToEthereumBalance;
+  mapping (uint256 => uint256) public twitterIdToTransferCredits;
 
   function _addEthereumAddress(uint256 _twitterId, address _ethereumAddress) external onlyTwitterBot {
     twitterIdToEthereumAddress[_twitterId] = _ethereumAddress;
@@ -105,8 +105,8 @@ contract EtherZaarTwitter is Ownable {
   }
 
   function _transferEthereum(uint256 _senderTwitterId, uint256 _receiverTwitterId, uint256 _ethereumAmount) external onlyTwitterBot {
-      require(twitterIdToEthereumBalance[_senderTwitterId] &gt;= _ethereumAmount);
-      require(twitterIdToTransferCredits[_senderTwitterId] &gt; 0);
+      require(twitterIdToEthereumBalance[_senderTwitterId] >= _ethereumAmount);
+      require(twitterIdToTransferCredits[_senderTwitterId] > 0);
 
       twitterIdToEthereumBalance[_senderTwitterId] = twitterIdToEthereumBalance[_senderTwitterId] - _ethereumAmount;
       twitterIdToTransferCredits[_senderTwitterId] = twitterIdToTransferCredits[_senderTwitterId] - 1;
@@ -116,7 +116,7 @@ contract EtherZaarTwitter is Ownable {
   }
 
   function _withdrawEthereum(uint256 _twitterId) external {
-      require(twitterIdToEthereumBalance[_twitterId] &gt; 0);
+      require(twitterIdToEthereumBalance[_twitterId] > 0);
       require(twitterIdToEthereumAddress[_twitterId] == msg.sender);
 
       uint256 transferAmount = twitterIdToEthereumBalance[_twitterId];
@@ -128,8 +128,8 @@ contract EtherZaarTwitter is Ownable {
   }
 
   function _sendEthereum(uint256 _twitterId) external onlyTwitterBot {
-      require(twitterIdToEthereumBalance[_twitterId] &gt; 0);
-      require(twitterIdToTransferCredits[_twitterId] &gt; 0);
+      require(twitterIdToEthereumBalance[_twitterId] > 0);
+      require(twitterIdToTransferCredits[_twitterId] > 0);
 
       twitterIdToTransferCredits[_twitterId] = twitterIdToTransferCredits[_twitterId] - 1;
       uint256 sendAmount = twitterIdToEthereumBalance[_twitterId];

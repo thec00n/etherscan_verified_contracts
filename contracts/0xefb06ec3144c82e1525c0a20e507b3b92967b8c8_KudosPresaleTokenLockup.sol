@@ -13,25 +13,25 @@ library SafeMath {
    }
 
    function div(uint256 a, uint256 b) internal constant returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
    }
 
    function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
    }
 
    function add(uint256 a, uint256 b) internal constant returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
    }
 
    function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
    }
 }
 
@@ -64,8 +64,8 @@ contract ERC20Token {
 contract StandardToken is ERC20Token {
    using SafeMath for uint256;
 
-   mapping (address =&gt; uint256) balances;
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => uint256) balances;
+   mapping (address => mapping (address => uint256)) allowed;
 
    /**
     * @dev gets the balance of the specified address
@@ -142,7 +142,7 @@ contract StandardToken is ERC20Token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
    address public owner;
@@ -203,10 +203,10 @@ contract TokenHolder is Ownable {
  *
  * Kudos tokens are displayed using 18 decimal places of precision.
  *
- * The base units of Kudos tokens are referred to as &quot;kutoas&quot;.
+ * The base units of Kudos tokens are referred to as "kutoas".
  *
- * In Swahili, kutoa means &quot;to give&quot;.
- * In Finnish, kutoa means &quot;to weave&quot; or &quot;to knit&quot;.
+ * In Swahili, kutoa means "to give".
+ * In Finnish, kutoa means "to weave" or "to knit".
  *
  * 1 KUDOS is equivalent to:
  *
@@ -218,10 +218,10 @@ contract TokenHolder is Ownable {
  */
 contract KudosToken is StandardToken, Ownable, TokenHolder {
 
-   string public constant name = &quot;Kudos&quot;;
-   string public constant symbol = &quot;KUDOS&quot;;
+   string public constant name = "Kudos";
+   string public constant symbol = "KUDOS";
    uint8 public constant decimals = 18;
-   string public constant version = &quot;1.0&quot;;
+   string public constant version = "1.0";
 
    uint256 public constant tokenUnit = 10 ** 18;
    uint256 public constant oneBillion = 10 ** 9;
@@ -264,15 +264,15 @@ contract KudosPresaleTokenLockup {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
    function release() {
-      require(now &gt;= releaseTime);
+      require(now >= releaseTime);
 
       uint256 balance = kudosToken.balanceOf(this);
-      require(balance &gt; 0);
+      require(balance > 0);
 
       assert(kudosToken.transfer(beneficiary, balance));
    }
 
    function fundsAreAvailable() constant returns (bool) {
-      return now &gt;= releaseTime;
+      return now >= releaseTime;
    }
 }

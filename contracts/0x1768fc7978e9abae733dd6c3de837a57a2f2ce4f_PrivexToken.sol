@@ -16,7 +16,7 @@ contract Token {
     function transfer(address _to, uint256 _value) returns (bool success) {}
 
     /// @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
-    /// @param _from The sender&#39;s address
+    /// @param _from The sender's address
     /// @param _to The address of the recipient
     /// @param _value The number of tokens that are to be transferred
     /// @return Whether the transfer was successful or not
@@ -44,8 +44,8 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         //Assumes that the totalSupply cannot be over max (2^256 - 1)
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -55,8 +55,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //Prevent wrapping uints:
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -79,8 +79,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -94,18 +94,18 @@ contract PrivexToken is StandardToken {
     /* 
     Public variables - Note: that some wallets may not make use of this information.
     */
-    string public name = &#39;PrivexToken&#39;;
+    string public name = 'PrivexToken';
     uint8 public decimals = 8;
-    string public symbol = &#39;PRVX&#39;;
-    string public version = &#39;H1.0&#39;;      //human 0.1 standard.
+    string public symbol = 'PRVX';
+    string public version = 'H1.0';      //human 0.1 standard.
 
     function PrivexToken(
         ) {
         balances[msg.sender] = 2300000000000000;
         totalSupply = 2300000000000000;
-        name = &quot;Privex&quot;;
+        name = "Privex";
         decimals = 8;
-        symbol = &quot;PRIV&quot;;
+        symbol = "PRIV";
     }
 
     /* Approves then calls receiving contracts */
@@ -113,10 +113,10 @@ contract PrivexToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.4;
 
 // ----------------------------------------------------------------------------------------------
-// MANHATTAN:PROXY BY KEVIN ABOSCH &#169;2018
+// MANHATTAN:PROXY BY KEVIN ABOSCH ©2018
 // 7TH AVENUE (10,000 ERC-20 TOKENS)
 // VERIFY SMART CONTRACT ADDRESS WITH LIST AT HTTP://MANHATTANPROXY.COM
 // ----------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -48,7 +48,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -71,8 +71,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -91,16 +91,16 @@ contract MANHATTANPROXY7THAVE is StandardToken {
     string public name;                   
     uint8 public decimals;                
     string public symbol;                 
-    string public version = &#39;H1.0&#39;;       
+    string public version = 'H1.0';       
 
 
     function MANHATTANPROXY7THAVE (
         ) {
         totalSupply = 10000;                        
         balances[msg.sender] = 10000;               
-        name = &quot;MP7THAV&quot;;                                             
+        name = "MP7THAV";                                             
         decimals = 0;                            
-        symbol = &quot;MP7THAV&quot;;                               
+        symbol = "MP7THAV";                               
     }
 
     /* Approves and then calls the receiving contract */
@@ -109,7 +109,7 @@ contract MANHATTANPROXY7THAVE is StandardToken {
         Approval(msg.sender, _spender, _value);
 
         
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

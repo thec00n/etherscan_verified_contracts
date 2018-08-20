@@ -45,20 +45,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -139,9 +139,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -190,14 +190,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -249,21 +249,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -278,7 +278,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -309,7 +309,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -354,12 +354,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -386,7 +386,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public constant returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -426,7 +426,7 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
 
            @param _startTime time (Solidity UNIX timestamp) from when it is allowed to buy FINC.
            @param _endTime time (Solidity UNIX timestamp) until which it is allowed to buy FINC. (Should be larger than startTime)
-           @param _rate Number of tokens created per ether. (Since Ether and ZakemCoin use the same number of decimal places, this can be read as direct conversion rate of Ether -&gt; ZakemCoin.)
+           @param _rate Number of tokens created per ether. (Since Ether and ZakemCoin use the same number of decimal places, this can be read as direct conversion rate of Ether -> ZakemCoin.)
            @param _wallet The wallet of ZakemFans itself, to which some of the facilitating tokens will be sent.
            @param _bountiesWallet The wallet used to pay out bounties, to which some of the facilitating tokens will be sent.
            @param _foundersWallet The wallet used for the founders, to which some of the facilitating tokens will be sent.
@@ -451,7 +451,7 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
                 RefundableCrowdsale(_goal)
                 CappedCrowdsale(_cap)
         {
-                require(_goal &lt; _cap);
+                require(_goal < _cap);
 
                 bountiesWallet = _bountiesWallet;
                 foundersWallet = _foundersWallet;
@@ -475,7 +475,7 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
 
         /*
          * Overrides version of Crowdsale.buyTokens because:
-         * - The Wei-&gt;FFC rate depends on how many tokens have already been sold (see `currentBonusRate()`).
+         * - The Wei->FFC rate depends on how many tokens have already been sold (see `currentBonusRate()`).
          * - Also mint tokens sent to ZakemFans and the Founders at the same time.
          */
         function buyTokens(address beneficiary) public payable whenNotPaused {
@@ -507,7 +507,7 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
            @return true if crowdsale has reached more funds than the minimum goal.
         */
         function goalReached() public constant returns (bool) {
-                return purchasedTokensRaised &gt;= goal;
+                return purchasedTokensRaised >= goal;
         }
 
         /**
@@ -515,7 +515,7 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
            @return true if crowdsale event has ended
         */
         function hasEnded() public constant returns (bool) {
-                bool capReached = purchasedTokensRaised &gt;= cap;
+                bool capReached = purchasedTokensRaised >= cap;
                 return Crowdsale.hasEnded() || capReached;
         }
 
@@ -525,10 +525,10 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
            @return true if investors are allowed to purchase tokens at the moment.
         */
         function validPurchase(uint256 purchasedTokens) internal constant returns (bool) {
-                /* bool withinCap = purchasedTokensRaised.add(purchasedTokens) &lt;= cap; */
-                /* return Crowdsale.validPurchase() &amp;&amp; withinCap; */
-                bool withinCap = purchasedTokensRaised.add(purchasedTokens) &lt;= cap;
-                return Crowdsale.validPurchase() &amp;&amp; withinCap;
+                /* bool withinCap = purchasedTokensRaised.add(purchasedTokens) <= cap; */
+                /* return Crowdsale.validPurchase() && withinCap; */
+                bool withinCap = purchasedTokensRaised.add(purchasedTokens) <= cap;
+                return Crowdsale.validPurchase() && withinCap;
         }
 
         /**
@@ -537,9 +537,9 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
            @dev In total, (20/13) * `purchasedTokens` tokens are created.
            @dev 13/13th of these are for the Beneficiary.
            @dev 7/13th of these are minted for the Facilitators as follows:
-           @dev   1/13th -&gt; Founders
-           @dev   2/13th -&gt; Bounties
-           @dev   4/13th -&gt; ZakemFans
+           @dev   1/13th -> Founders
+           @dev   2/13th -> Bounties
+           @dev   4/13th -> ZakemFans
 
            @dev Note that all result rational amounts are floored since the EVM only works with integer arithmetic.
         */
@@ -558,17 +558,17 @@ contract ZakemFansCrowdsale is Pausable, RefundableCrowdsale, CappedCrowdsale {
 
            @return a fixed-size number that is the total percentage of tokens that will be created. (100 * the bonus ratio)
 
-           @dev When &lt; 2 million tokens purchased, this will be 125%, which is equivalent to a 20% discount
-           @dev When &lt; 4 million tokens purchased, 118%, which is equivalent to a 15% discount.
-           @dev When &lt; 6 million tokens purchased, 111%, which is equivalent to a 10% discount.
-           @dev When &lt; 9 million tokens purchased, 105%, which is equivalent to a 5% discount.
+           @dev When < 2 million tokens purchased, this will be 125%, which is equivalent to a 20% discount
+           @dev When < 4 million tokens purchased, 118%, which is equivalent to a 15% discount.
+           @dev When < 6 million tokens purchased, 111%, which is equivalent to a 10% discount.
+           @dev When < 9 million tokens purchased, 105%, which is equivalent to a 5% discount.
            @dev Otherwise, there is no bonus and the function returns 100%.
         */
         function currentBonusRate() public constant returns (uint) {
-                if(purchasedTokensRaised &lt; (2 * oneTwelfthOfCap)) return 125/*.25*/; // 20% discount
-                if(purchasedTokensRaised &lt; (4 * oneTwelfthOfCap)) return 118/*.1764705882352942*/; // 15% discount
-                if(purchasedTokensRaised &lt; (6 * oneTwelfthOfCap)) return 111/*.1111111111111112*/; // 10% discount
-                if(purchasedTokensRaised &lt; (9 * oneTwelfthOfCap)) return 105/*.0526315789473684*/; // 5% discount
+                if(purchasedTokensRaised < (2 * oneTwelfthOfCap)) return 125/*.25*/; // 20% discount
+                if(purchasedTokensRaised < (4 * oneTwelfthOfCap)) return 118/*.1764705882352942*/; // 15% discount
+                if(purchasedTokensRaised < (6 * oneTwelfthOfCap)) return 111/*.1111111111111112*/; // 10% discount
+                if(purchasedTokensRaised < (9 * oneTwelfthOfCap)) return 105/*.0526315789473684*/; // 5% discount
                 return 100;
         }
 }
@@ -578,7 +578,7 @@ contract TheZakemFansCrowdsale is ZakemFansCrowdsale {
         ZakemFansCrowdsale(
             1511380200, // _startTime time (Solidity UNIX timestamp) from when it is allowed to buy FINC.
             1511384400, // _endTime time (Solidity UNIX timestamp) until which it is allowed to buy FINC. (Should be larger than startTime)
-            2, // _rate Number of tokens created per ether. (Since Ether and ZakemCoin use the same number of decimal places, this can be read as direct conversion rate of Ether -&gt; ZakemCoin.)
+            2, // _rate Number of tokens created per ether. (Since Ether and ZakemCoin use the same number of decimal places, this can be read as direct conversion rate of Ether -> ZakemCoin.)
             0xd5D29f18B8C2C7157B6BF38111C9318b9604BdED, // _wallet The wallet of ZakemFans itself, to which some of the facilitating tokens will be sent.
             0x6B1964119841f3f5363D7EA08120642FE487410E, // _bountiesWallet The wallet used to pay out bounties, to which some of the facilitating tokens will be sent.
             0x9a123fDd708eD0931Fb4938C5b2E2462B6D23390, // _foundersWallet The wallet used for the founders, to which some of the facilitating tokens will be sent.
@@ -593,7 +593,7 @@ contract TheZakemFansCrowdsale is ZakemFansCrowdsale {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -608,7 +608,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -622,7 +622,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -659,7 +659,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -716,7 +716,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -742,11 +742,11 @@ contract ApprovedBurnableToken is BurnableToken {
            @param _value The amount of token to be burned.
         */
         function burnFrom(address _owner, uint256 _value) public {
-                require(_value &gt; 0);
-                require(_value &lt;= balances[_owner]);
-                require(_value &lt;= allowed[_owner][msg.sender]);
-                // no need to require value &lt;= totalSupply, since that would imply the
-                // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+                require(_value > 0);
+                require(_value <= balances[_owner]);
+                require(_value <= allowed[_owner][msg.sender]);
+                // no need to require value <= totalSupply, since that would imply the
+                // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
                 address burner = msg.sender;
                 balances[_owner] = balances[_owner].sub(_value);
@@ -833,12 +833,12 @@ contract ZakemCoin is UnlockedAfterMintingToken, ApprovedBurnableToken {
         /**
            @dev The name of the ZakemCoin, specified as indicated in ERC20.
          */
-        string public constant name = &quot;ZakemCoin&quot;;
+        string public constant name = "ZakemCoin";
 
         /**
            @dev The abbreviation FINC, specified as indicated in ERC20.
         */
-        string public constant symbol = &quot;FINC&quot;;
+        string public constant symbol = "FINC";
 
         /**
            @dev The smallest denomination of the ZakemCoin is 1 * 10^(-18) FINC. `decimals` is specified as indicated in ERC20.

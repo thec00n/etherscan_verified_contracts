@@ -39,10 +39,10 @@ contract ERC20Token {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     // Mapping for allowance
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -133,13 +133,13 @@ contract ERC20Token {
     	returns (bool success)
     {
 		// Do not allow transfer to 0x0 or the token contract itself or from address to itself
-		require((_to != address(0)) &amp;&amp; (_to != address(this)) &amp;&amp; (_to != _from));
+		require((_to != address(0)) && (_to != address(this)) && (_to != _from));
 
         // Check if the sender has enough
-        require((_value &gt; 0) &amp;&amp; (balances[_from] &gt;= _value));
+        require((_value > 0) && (balances[_from] >= _value));
 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Subtract from the sender
         balances[_from] -= _value;
@@ -181,7 +181,7 @@ contract ERC20Token {
     	returns (bool success)
     {
 		// Check allowance
-    	require(_value &lt;= allowed[_from][msg.sender]);
+    	require(_value <= allowed[_from][msg.sender]);
 
 		//decrement allowance
 		allowed[_from][msg.sender] -= _value;
@@ -213,9 +213,9 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -224,7 +224,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -234,7 +234,7 @@ library SafeMath {
         returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

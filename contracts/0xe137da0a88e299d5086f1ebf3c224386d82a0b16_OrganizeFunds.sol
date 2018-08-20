@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  *
  * Version: B
- * @author  &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bed0dbc9cac9d7cdcafececcd1cad1d0d3dfd7d290ddd1d3">[email&#160;protected]</a>&gt;
+ * @author  <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bed0dbc9cac9d7cdcafececcd1cad1d0d3dfd7d290ddd1d3">[email protected]</a>>
  *
  * Overview:
  * Divides all incoming funds among various `activity` accounts. The division cannot be changed
@@ -30,7 +30,7 @@ contract OrganizeFunds {
   bool public isLocked;
   string public name;
   address public owner;                                // deployer executor
-  mapping (uint =&gt; ActivityAccount) activityAccounts;  // accounts by index
+  mapping (uint => ActivityAccount) activityAccounts;  // accounts by index
   uint public activityCount;                           // how many activity accounts
   uint public totalFundsReceived;                      // amount received since begin of time
   uint public totalFundsDistributed;                   // amount distributed since begin of time
@@ -74,7 +74,7 @@ contract OrganizeFunds {
     totalFundsDistributed = 0;
     totalFundsWithdrawn = 0;
     activityCount = 0;
-    MessageEvent(&quot;ok: all accts reset&quot;);
+    MessageEvent("ok: all accts reset");
   }
 
 
@@ -84,7 +84,7 @@ contract OrganizeFunds {
   //
   function setWitdrawGas(uint256 _withdrawGas) public ownerOnly unlockedOnly {
     withdrawGas = _withdrawGas;
-    MessageEventI(&quot;ok: withdraw gas set&quot;, withdrawGas);
+    MessageEventI("ok: withdraw gas set", withdrawGas);
   }
 
 
@@ -92,8 +92,8 @@ contract OrganizeFunds {
   // add a new activity account
   //
   function addActivityAccount(address _addr, uint256 _pctx10, string _name) public ownerOnly unlockedOnly {
-    if (activityCount &gt;= MAX_ACCOUNTS) {
-      MessageEvent(&quot;err: max accounts&quot;);
+    if (activityCount >= MAX_ACCOUNTS) {
+      MessageEvent("err: max accounts");
       return;
     }
     activityAccounts[activityCount].addr = _addr;
@@ -102,7 +102,7 @@ contract OrganizeFunds {
     activityAccounts[activityCount].balance = 0;
     activityAccounts[activityCount].name = _name;
     ++activityCount;
-    MessageEvent(&quot;ok: acct added&quot;);
+    MessageEvent("ok: acct added");
   }
 
 
@@ -110,7 +110,7 @@ contract OrganizeFunds {
   // get acct info
   // ----------------------------
   function getActivityAccountInfo(address _addr) public constant returns(uint _idx, uint _pctx10, string _name, uint _credited, uint _balance) {
-    for (uint i = 0; i &lt; activityCount; i++ ) {
+    for (uint i = 0; i < activityCount; i++ ) {
       address addr = activityAccounts[i].addr;
       if (addr == _addr) {
         _idx = i;
@@ -129,7 +129,7 @@ contract OrganizeFunds {
   //
   function getTotalPctx10() public constant returns(uint _totalPctx10) {
     _totalPctx10 = 0;
-    for (uint i = 0; i &lt; activityCount; i++ ) {
+    for (uint i = 0; i < activityCount; i++ ) {
       _totalPctx10 += activityAccounts[i].pctx10;
     }
   }
@@ -141,7 +141,7 @@ contract OrganizeFunds {
   //
   function () public payable {
     totalFundsReceived += msg.value;
-    MessageEventI(&quot;ok: received&quot;, msg.value);
+    MessageEventI("ok: received", msg.value);
   }
 
 
@@ -150,18 +150,18 @@ contract OrganizeFunds {
   //
   function distribute() public {
     //only payout if we have more than 1000 wei
-    if (this.balance &lt; TENHUNDWEI) {
+    if (this.balance < TENHUNDWEI) {
       return;
     }
     //each account gets their prescribed percentage of this holdover.
     uint i;
     uint pctx10;
     uint acctDist;
-    for (i = 0; i &lt; activityCount; i++ ) {
+    for (i = 0; i < activityCount; i++ ) {
       pctx10 = activityAccounts[i].pctx10;
       acctDist = totalFundsReceived * pctx10 / TENHUNDWEI;
       //we also double check to ensure that the amount credited cannot exceed the total amount due to this acct
-      if (activityAccounts[i].credited &gt;= acctDist) {
+      if (activityAccounts[i].credited >= acctDist) {
         acctDist = 0;
       } else {
         acctDist = acctDist - activityAccounts[i].credited;
@@ -170,7 +170,7 @@ contract OrganizeFunds {
       activityAccounts[i].balance += acctDist;
       totalFundsDistributed += acctDist;
     }
-    MessageEvent(&quot;ok: distributed funds&quot;);
+    MessageEvent("ok: distributed funds");
   }
 
 
@@ -179,18 +179,18 @@ contract OrganizeFunds {
   // can be called by owner to push funds to another contract
   //
   function withdraw() public {
-    for (uint i = 0; i &lt; activityCount; i++ ) {
+    for (uint i = 0; i < activityCount; i++ ) {
       address addr = activityAccounts[i].addr;
       if (addr == msg.sender || msg.sender == owner) {
         uint amount = activityAccounts[i].balance;
-        if (amount &gt; 0) {
+        if (amount > 0) {
           activityAccounts[i].balance = 0;
           totalFundsWithdrawn += amount;
           if (!addr.call.gas(withdrawGas).value(amount)()) {
             //put back funds in case of err
             activityAccounts[i].balance = amount;
             totalFundsWithdrawn -= amount;
-            MessageEvent(&quot;err: error sending funds&quot;);
+            MessageEvent("err: error sending funds");
             return;
           }
         }

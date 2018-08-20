@@ -14,7 +14,7 @@ contract ExtendEvents {
     event RefundSuccessful(address from, bytes32 username);
     event GoldBought(uint price, address from, bytes32 to, string months, string priceUsd, string commentId, string nonce, string signature);
 
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
 
     modifier onlyOwners() {
         require(owners[msg.sender]);

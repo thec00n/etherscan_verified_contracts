@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 
 /*
-  Author: Victor Mezrin  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6a0bfb5a2b9a496bbb3aca4bfb8f8b5b9bb">[email&#160;protected]</a>
+  Author: Victor Mezrin  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6a0bfb5a2b9a496bbb3aca4bfb8f8b5b9bb">[email protected]</a>
 */
 
 
@@ -47,18 +47,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -70,8 +70,8 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
       Storage of the contract
     */
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     string public name;
     string public symbol;
@@ -137,7 +137,7 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool _success) {
-        if (allowances[_from][msg.sender] &lt; _value) throw;
+        if (allowances[_from][msg.sender] < _value) throw;
 
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender], _value);
         bytes memory emptyMetadata;
@@ -149,7 +149,7 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
     {
         if (_from == _to) throw;
         if (_value == 0) throw;
-        if (balanceOf(_from) &lt; _value) throw;
+        if (balanceOf(_from) < _value) throw;
 
         balances[_from] = safeSub(balanceOf(_from), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
@@ -176,7 +176,7 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 }
 
@@ -184,7 +184,7 @@ contract ERC223Token is ERC223TokenInterface, SafeMath {
 
 // ERC223 token with the ability for the owner to block any account
 contract DASToken is ERC223Token {
-    mapping (address =&gt; bool) blockedAccounts;
+    mapping (address => bool) blockedAccounts;
     address public secretaryGeneral;
 
 

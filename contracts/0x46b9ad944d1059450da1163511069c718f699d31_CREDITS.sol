@@ -19,8 +19,8 @@ contract Ownable {
 
 contract CREDITS is Ownable{
     /* Public variables of the token */
-    string public name = &#39;CREDITS&#39;;
-    string public symbol = &#39;CS&#39;;
+    string public name = 'CREDITS';
+    string public symbol = 'CS';
     uint8 public decimals = 6;
     uint256 public totalSupply = 1000000000000000;
     uint public TotalHoldersAmount;
@@ -31,21 +31,21 @@ contract CREDITS is Ownable{
     address public AddressForReturn;
     address[] Accounts;
     /* This creates an array with all balances */
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
    /*Individual Freeze*/
-    mapping(address =&gt; bool) public AccountIsFrozen;
+    mapping(address => bool) public AccountIsFrozen;
     /*Allow transfer for ICO, Admin accounts if IsFrozen==true*/
-    mapping(address =&gt; bool) public AccountIsNotFrozen;
+    mapping(address => bool) public AccountIsNotFrozen;
    /*Allow transfer tokens only to ReturnWallet*/
-    mapping(address =&gt; bool) public AccountIsNotFrozenForReturn;
-    mapping(address =&gt; uint) public AccountIsFrozenByDate;
+    mapping(address => bool) public AccountIsNotFrozenForReturn;
+    mapping(address => uint) public AccountIsFrozenByDate;
     
-    mapping (address =&gt; bool) public isHolder;
-    mapping (address =&gt; bool) public isArrAccountIsFrozen;
-    mapping (address =&gt; bool) public isArrAccountIsNotFrozen;
-    mapping (address =&gt; bool) public isArrAccountIsNotFrozenForReturn;
-    mapping (address =&gt; bool) public isArrAccountIsFrozenByDate;
+    mapping (address => bool) public isHolder;
+    mapping (address => bool) public isArrAccountIsFrozen;
+    mapping (address => bool) public isArrAccountIsNotFrozen;
+    mapping (address => bool) public isArrAccountIsNotFrozenForReturn;
+    mapping (address => bool) public isArrAccountIsFrozenByDate;
     address [] public Arrholders;
     address [] public ArrAccountIsFrozen;
     address [] public ArrAccountIsNotFrozen;
@@ -60,12 +60,12 @@ contract CREDITS is Ownable{
     event Burn(address indexed from, uint256 value);
     
     modifier IsNotFrozen{
-      require(((!Frozen&amp;&amp;AccountIsFrozen[msg.sender]!=true)||((Frozen)&amp;&amp;AccountIsNotFrozen[msg.sender]==true))&amp;&amp;now&gt;AccountIsFrozenByDate[msg.sender]);
+      require(((!Frozen&&AccountIsFrozen[msg.sender]!=true)||((Frozen)&&AccountIsNotFrozen[msg.sender]==true))&&now>AccountIsFrozenByDate[msg.sender]);
       _;
      }
      
      modifier isCanChange{
-      require((msg.sender==owner||msg.sender==Admin)&amp;&amp;CanChange==true);
+      require((msg.sender==owner||msg.sender==Admin)&&CanChange==true);
       _;
      }
      
@@ -130,9 +130,9 @@ contract CREDITS is Ownable{
     
     /* Send coins */
     function transfer(address _to, uint256 _value) public  {
-        require(((!Frozen&amp;&amp;AccountIsFrozen[msg.sender]!=true)||((Frozen)&amp;&amp;AccountIsNotFrozen[msg.sender]==true)||(AccountIsNotFrozenForReturn[msg.sender]==true&amp;&amp;_to==AddressForReturn))&amp;&amp;now&gt;AccountIsFrozenByDate[msg.sender]);
-        require(balanceOf[msg.sender] &gt;= _value); // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require(((!Frozen&&AccountIsFrozen[msg.sender]!=true)||((Frozen)&&AccountIsNotFrozen[msg.sender]==true)||(AccountIsNotFrozenForReturn[msg.sender]==true&&_to==AddressForReturn))&&now>AccountIsFrozenByDate[msg.sender]);
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
         Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
@@ -155,10 +155,10 @@ contract CREDITS is Ownable{
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value)public IsNotFrozen returns(bool success)  {
-        require(((!Frozen&amp;&amp;AccountIsFrozen[_from]!=true)||((Frozen)&amp;&amp;AccountIsNotFrozen[_from]==true))&amp;&amp;now&gt;AccountIsFrozenByDate[_from]);
-        require (balanceOf[_from] &gt;= _value) ; // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]) ; // Check for overflows
-        require (_value &lt;= allowance[_from][msg.sender]) ; // Check allowance
+        require(((!Frozen&&AccountIsFrozen[_from]!=true)||((Frozen)&&AccountIsNotFrozen[_from]==true))&&now>AccountIsFrozenByDate[_from]);
+        require (balanceOf[_from] >= _value) ; // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]) ; // Check for overflows
+        require (_value <= allowance[_from][msg.sender]) ; // Check allowance
         balanceOf[_from] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -172,7 +172,7 @@ contract CREDITS is Ownable{
  /* @param _value the amount of money to burn*/
    
     function burn(uint256 _value) public IsNotFrozen  returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -181,11 +181,11 @@ contract CREDITS is Ownable{
      /* Destroy tokens from other account  */
    
     function burnFrom(address _from, uint256 _value) public IsNotFrozen returns (bool success) {
-        require(((!Frozen&amp;&amp;AccountIsFrozen[_from]!=true)||((Frozen)&amp;&amp;AccountIsNotFrozen[_from]==true))&amp;&amp;now&gt;AccountIsFrozenByDate[_from]);
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(((!Frozen&&AccountIsFrozen[_from]!=true)||((Frozen)&&AccountIsNotFrozen[_from]==true))&&now>AccountIsFrozenByDate[_from]);
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

@@ -6,10 +6,10 @@ pragma solidity ^0.4.18;
   library SafeMath {
       function add(uint a, uint b) internal pure returns (uint c) {
           c = a + b;
-          require(c &gt;= a);
+          require(c >= a);
       }
       function sub(uint a, uint b) internal pure returns (uint c) {
-         require(b &lt;= a);
+         require(b <= a);
           c = a - b;
       }
       function mul(uint a, uint b) internal pure returns (uint c) {
@@ -17,7 +17,7 @@ pragma solidity ^0.4.18;
           require(a == 0 || c / a == b);
       }
       function div(uint a, uint b) internal pure returns (uint c) {
-          require(b &gt; 0);
+          require(b > 0);
           c = a / b;
       }
   }
@@ -75,20 +75,20 @@ pragma solidity ^0.4.18;
  contract JointEDU is ERC20Interface, Owned {
      using SafeMath for uint;
  
-     string public symbol= &quot;JOI&quot;;
-     string public  name = &quot;JointEDU&quot;;
+     string public symbol= "JOI";
+     string public  name = "JointEDU";
      uint8 public decimals;
      uint public _totalSupply;
      uint256 public constant RATE = 10000;
  
-     mapping(address =&gt; uint) balances;
-     mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+     mapping(address => uint) balances;
+     mapping(address => mapping(address => uint)) allowed;
  
  
     
      function JointEDU() public {
-         symbol = &quot;JOI&quot;;
-         name = &quot;JointEDU&quot;;
+         symbol = "JOI";
+         name = "JointEDU";
          decimals = 18;
          _totalSupply = 270000000 * 10**uint(decimals);
          balances[owner] = _totalSupply;
@@ -153,7 +153,7 @@ pragma solidity ^0.4.18;
 
     
          function creatTokens()payable public{
-         require(msg.value&gt;0 &amp;&amp; balances[owner]&gt;=1000000);
+         require(msg.value>0 && balances[owner]>=1000000);
          uint256 tokens = msg.value.mul(RATE);
          balances[msg.sender]= balances[msg.sender].add(tokens);
          owner.transfer(msg.value);

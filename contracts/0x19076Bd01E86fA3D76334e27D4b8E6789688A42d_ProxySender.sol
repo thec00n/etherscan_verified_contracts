@@ -28,7 +28,7 @@ contract ProxySender {
     uint public totalContributions;
     uint public totalTokens;
     uint public totalBalance;
-    mapping (address =&gt; uint) public contributions;
+    mapping (address => uint) public contributions;
     Stages public stage;
 
     enum Stages {
@@ -127,7 +127,7 @@ contract ProxySender {
         gnosisToken.transfer(msg.sender, amount);
         // Send possible refund share
         uint refund = totalBalance * contribution / totalContributions;
-        if (refund &gt; 0)
+        if (refund > 0)
             if (!msg.sender.send(refund)) throw;
     }
 }

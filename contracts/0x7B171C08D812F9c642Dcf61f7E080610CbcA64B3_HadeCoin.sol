@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,8 +39,8 @@ contract BasicToken is ERC20 {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -49,7 +49,7 @@ contract BasicToken is ERC20 {
   */
     function transfer(address _to, uint256 _value) external {
         address _from = msg.sender;
-        require (balances[_from] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require (balances[_from] >= _value && balances[_to] + _value > balances[_to]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(_from, _to, _value);
@@ -63,7 +63,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) external {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]){
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]){
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -108,10 +108,10 @@ contract HadeCoin is BasicToken {
     */
 
     // name of the token
-    string public name = &quot;HADE Platform&quot;;
+    string public name = "HADE Platform";
 
     // symbol of token
-    string public symbol = &quot;HADE&quot;;
+    string public symbol = "HADE";
 
     // decimals
     uint8 public decimals = 18;
@@ -162,7 +162,7 @@ contract HadeCoin is BasicToken {
     function mint(address _to, uint256 _value) external onlyAdmin {
 
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         totalSupply += _value;
         balances[_to] += _value;
         Transfer(address(0), _to, _value);
@@ -173,7 +173,7 @@ contract HadeCoin is BasicToken {
     // @dev note that admin can only burn their own tokens
     function burn(uint256 _value) external onlyAdmin {
 
-        require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value);
+        require(_value > 0 && balances[msg.sender] >= _value);
         totalSupply -= _value;
         balances[msg.sender] -= _value;
     }

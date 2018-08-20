@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
 contract THATCoin {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    string public name = &quot;THATCoin&quot;;
-    string public symbol = &quot;THAT&quot;;
+    string public name = "THATCoin";
+    string public symbol = "THAT";
     uint8 public decimals = 18;
 
     uint256 public totalSupply = 1000 * uint256(10)**decimals;
@@ -21,7 +21,7 @@ contract THATCoin {
       public
       returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= value);
+        require(balanceOf[msg.sender] >= value);
 
         balanceOf[msg.sender] -= value;
         balanceOf[to] += value;
@@ -32,7 +32,7 @@ contract THATCoin {
     event Approval(address indexed owner, address indexed spender,
         uint256 value);
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     function approve(address spender, uint256 value)
         public
@@ -47,8 +47,8 @@ contract THATCoin {
         public
         returns (bool success)
     {
-        require(value &lt;= balanceOf[from]);
-        require(value &lt;= allowance[from][msg.sender]);
+        require(value <= balanceOf[from]);
+        require(value <= allowance[from][msg.sender]);
 
         balanceOf[from] -= value;
         balanceOf[to] += value;

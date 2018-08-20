@@ -62,8 +62,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -78,9 +78,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -88,7 +88,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -97,7 +97,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -125,9 +125,9 @@ contract BGAudit is Ownable {
         address addr;
         uint totalEarned;
         uint completedAudits;
-        uint[] stakedAudits; // array of audit IDs they&#39;ve staked
-        mapping(uint =&gt; bool) stakedInAudit; // key is AuditID; useful so we don&#39;t need to loop through the audits array above
-        mapping(uint =&gt; bool) canWithdrawStake; // Audit ID =&gt; can withdraw stake or not
+        uint[] stakedAudits; // array of audit IDs they've staked
+        mapping(uint => bool) stakedInAudit; // key is AuditID; useful so we don't need to loop through the audits array above
+        mapping(uint => bool) canWithdrawStake; // Audit ID => can withdraw stake or not
     }
 
     struct Audit {
@@ -146,11 +146,11 @@ contract BGAudit is Ownable {
     uint public stakePeriod = 90 days; // number of days to wait before stake can be withdrawn
     uint public maxAuditDuration = 365 days; // max amount of time for a security audit
     Audit[] public audits;
-    mapping(address =&gt; Auditor) public auditors;
+    mapping(address => Auditor) public auditors;
 
     //=== Owner related
     function transfer(address _to, uint _amountInWei) external onlyOwner {
-        require(address(this).balance &gt; _amountInWei);
+        require(address(this).balance > _amountInWei);
         _to.transfer(_amountInWei);
     }
 
@@ -165,7 +165,7 @@ contract BGAudit is Ownable {
 
     //=== Auditors
     function addAuditor(address _auditor) external onlyOwner {
-        require(auditors[_auditor].addr == address(0)); // Only add if they&#39;re not already added
+        require(auditors[_auditor].addr == address(0)); // Only add if they're not already added
 
         auditors[_auditor].banned = false;
         auditors[_auditor].addr = _auditor;
@@ -190,9 +190,9 @@ contract BGAudit is Ownable {
     //=== Audits and Rewards
     function createAudit(uint _stake, uint _endTimeInDays, uint _maxAuditors) external payable onlyOwner {
         uint endTime = _endTimeInDays * 1 days;
-        require(endTime &lt; maxAuditDuration);
-        require(block.timestamp + endTime * 1 days &gt; block.timestamp);
-        require(msg.value &gt; 0 &amp;&amp; _maxAuditors &gt; 0 &amp;&amp; _stake &gt; 0);
+        require(endTime < maxAuditDuration);
+        require(block.timestamp + endTime * 1 days > block.timestamp);
+        require(msg.value > 0 && _maxAuditors > 0 && _stake > 0);
 
         Audit memory audit;
         audit.status = AuditStatus.New;
@@ -210,7 +210,7 @@ contract BGAudit is Ownable {
 
     function reviewAudit(uint _id) external onlyOwner {
         require(audits[_id].status == AuditStatus.InProgress);
-        require(block.timestamp &gt;= audits[_id].endTime);
+        require(block.timestamp >= audits[_id].endTime);
         audits[_id].endTime = block.timestamp; // override the endTime to when it actually ended
         audits[_id].status = AuditStatus.InReview;
         emit ReviewingAudit(_id);
@@ -239,19 +239,19 @@ contract BGAudit is Ownable {
     function stake(uint _id) public payable {
         // Check conditions of the Audit
         require(msg.value == audits[_id].stake);
-        require(block.timestamp &lt; audits[_id].endTime);
-        require(audits[_id].participants.length &lt; audits[_id].maxAuditors);
+        require(block.timestamp < audits[_id].endTime);
+        require(audits[_id].participants.length < audits[_id].maxAuditors);
         require(audits[_id].status == AuditStatus.New || audits[_id].status == AuditStatus.InProgress);
 
         // Check conditions of the Auditor
-        require(auditors[msg.sender].addr == msg.sender &amp;&amp; !auditors[msg.sender].banned); // auditor is authorized
+        require(auditors[msg.sender].addr == msg.sender && !auditors[msg.sender].banned); // auditor is authorized
         require(!auditors[msg.sender].stakedInAudit[_id]); //check if auditor has staked for this audit already
 
-        // Update audit&#39;s states
+        // Update audit's states
         audits[_id].status = AuditStatus.InProgress;
         audits[_id].participants.push(msg.sender);
 
-        // Update auditor&#39;s states
+        // Update auditor's states
         auditors[msg.sender].stakedInAudit[_id] = true;
         auditors[msg.sender].stakedAudits.push(_id);
         emit AuditorStaked(_id, msg.sender, msg.value);
@@ -260,7 +260,7 @@ contract BGAudit is Ownable {
     function withdrawStake(uint _id) public {
         require(audits[_id].status == AuditStatus.Completed);
         require(auditors[msg.sender].canWithdrawStake[_id]);
-        require(block.timestamp &gt;= audits[_id].endTime + stakePeriod);
+        require(block.timestamp >= audits[_id].endTime + stakePeriod);
 
         auditors[msg.sender].canWithdrawStake[_id] = false; //prevent replay attack
         address(msg.sender).transfer(audits[_id].stake); // do this last to prevent re-entrancy
@@ -273,7 +273,7 @@ contract BGAudit is Ownable {
     }
 
     function auditorCanWithdrawStake(uint _id, address _auditor) public view returns(bool) {
-        if(auditors[_auditor].stakedInAudit[_id] &amp;&amp; auditors[_auditor].canWithdrawStake[_id]) {
+        if(auditors[_auditor].stakedInAudit[_id] && auditors[_auditor].canWithdrawStake[_id]) {
             return true;
         }
         return false;

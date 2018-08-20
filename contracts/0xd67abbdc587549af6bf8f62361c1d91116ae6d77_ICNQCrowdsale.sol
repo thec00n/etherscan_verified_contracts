@@ -5,7 +5,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -354,32 +354,32 @@ contract PausableToken is StandardToken, Pausable {
 
 /**
  * @title ICNQ Token contract - ERC20 compatible token contract.
- * @author Gustavo Guimaraes - &lt;gustavoguimar<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d4c485e6d4a404c4441034e4240">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <gustavoguimar<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d4c485e6d4a404c4441034e4240">[email protected]</a>>
  */
 contract ICNQToken is PausableToken, MintableToken {
-    string public constant name = &quot;Iconiq Lab Token&quot;;
-    string public constant symbol = &quot;ICNQ&quot;;
+    string public constant name = "Iconiq Lab Token";
+    string public constant symbol = "ICNQ";
     uint8 public constant decimals = 18;
 }
 
 // File: contracts/Whitelist.sol
 
 contract Whitelist is Ownable {
-    mapping(address =&gt; bool) public allowedAddresses;
+    mapping(address => bool) public allowedAddresses;
 
     event WhitelistUpdated(uint256 timestamp, string operation, address indexed member);
 
     function addToWhitelist(address[] _addresses) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             allowedAddresses[_addresses[i]] = true;
-            WhitelistUpdated(now, &quot;Added&quot;, _addresses[i]);
+            WhitelistUpdated(now, "Added", _addresses[i]);
         }
     }
 
     function removeFromWhitelist(address[] _addresses) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             allowedAddresses[_addresses[i]] = false;
-            WhitelistUpdated(now, &quot;Removed&quot;, _addresses[i]);
+            WhitelistUpdated(now, "Removed", _addresses[i]);
         }
     }
 
@@ -428,9 +428,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -479,14 +479,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -508,7 +508,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -533,7 +533,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
 /**
  * @title ICNQ Crowdsale contract - crowdsale contract for the ICNQ tokens.
- * @author Gustavo Guimaraes - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96f1e3e5e2f7e0f9f1e3fffbf7e4f7f3e5d6f1fbf7fffab8f5f9fb">[email&#160;protected]</a>&gt;
+ * @author Gustavo Guimaraes - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96f1e3e5e2f7e0f9f1e3fffbf7e4f7f3e5d6f1fbf7fffab8f5f9fb">[email protected]</a>>
  */
 contract ICNQCrowdsale is FinalizableCrowdsale, Pausable {
     uint256 public presaleEndTime;
@@ -600,15 +600,15 @@ contract ICNQCrowdsale is FinalizableCrowdsale, Pausable {
 
     /**
      * @dev Mint tokens for private investors before crowdsale starts
-     * @param investorsAddress Purchaser&#39;s address
+     * @param investorsAddress Purchaser's address
      * @param tokensPurchased Tokens purchased during pre crowdsale
      */
     function mintTokenForPrivateInvestors(address investorsAddress, uint256 tokensPurchased)
         external
         onlyOwner
     {
-        require(now &lt; startTime &amp;&amp; investorsAddress != address(0));
-        require(token.totalSupply().add(tokensPurchased) &lt;= PRIVATE_SALE_TOTAL);
+        require(now < startTime && investorsAddress != address(0));
+        require(token.totalSupply().add(tokensPurchased) <= PRIVATE_SALE_TOTAL);
 
         token.mint(investorsAddress, tokensPurchased);
         PrivateInvestorTokenPurchase(investorsAddress, tokensPurchased);
@@ -633,8 +633,8 @@ contract ICNQCrowdsale is FinalizableCrowdsale, Pausable {
         // only able to set teamAndAdvisorsAllocation once.
         // TeamAndAdvisorsAllocation contract requires token contract already deployed.
         // token contract is created within crowdsale,
-        // thus the TeamAndAdvisorsAllocation must be set up after crowdsale&#39;s deployment
-        require(teamAndAdvisorsAllocation == address(0x0) &amp;&amp; _teamAndAdvisorsAllocation != address(0x0));
+        // thus the TeamAndAdvisorsAllocation must be set up after crowdsale's deployment
+        require(teamAndAdvisorsAllocation == address(0x0) && _teamAndAdvisorsAllocation != address(0x0));
 
         teamAndAdvisorsAllocation = _teamAndAdvisorsAllocation;
     }
@@ -650,24 +650,24 @@ contract ICNQCrowdsale is FinalizableCrowdsale, Pausable {
         payable
     {
         // minimum of 1 ether for purchase in the public presale and sale
-        require(beneficiary != address(0) &amp;&amp; msg.value &gt;= 1 ether);
-        require(validPurchase() &amp;&amp; token.totalSupply() &lt; TOTAL_TOKENS_FOR_CROWDSALE);
+        require(beneficiary != address(0) && msg.value >= 1 ether);
+        require(validPurchase() && token.totalSupply() < TOTAL_TOKENS_FOR_CROWDSALE);
 
         uint256 weiAmount = msg.value;
 
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate);
 
-        if (now &gt;= startTime &amp;&amp; now &lt;= presaleEndTime) {
+        if (now >= startTime && now <= presaleEndTime) {
             uint256 bonus = 50;
             uint256 bonusTokens = tokens.mul(bonus).div(100);
 
             tokens = tokens.add(bonusTokens);
-            require(token.totalSupply().add(tokens) &lt;= PRE_SALE_TOTAL_TOKENS);
+            require(token.totalSupply().add(tokens) <= PRE_SALE_TOTAL_TOKENS);
         }
 
         //remainder logic
-        if (token.totalSupply().add(tokens) &gt; TOTAL_TOKENS_FOR_CROWDSALE) {
+        if (token.totalSupply().add(tokens) > TOTAL_TOKENS_FOR_CROWDSALE) {
             tokens = TOTAL_TOKENS_FOR_CROWDSALE.sub(token.totalSupply());
             weiAmount = tokens.div(rate);
 
@@ -713,7 +713,7 @@ contract ICNQCrowdsale is FinalizableCrowdsale, Pausable {
         token.mint(wallet, BOUNTY_CAMPAIGN_SHARE); // allocate BOUNTY_CAMPAIGN_SHARE to company wallet as well
         token.mint(teamAndAdvisorsAllocation, TEAM_ADVISORS_SHARE);
 
-        if (TOTAL_TOKENS_SUPPLY &gt; token.totalSupply()) {
+        if (TOTAL_TOKENS_SUPPLY > token.totalSupply()) {
             uint256 remainingTokens = TOTAL_TOKENS_SUPPLY.sub(token.totalSupply());
             // burn remaining tokens
             token.mint(address(0), remainingTokens);

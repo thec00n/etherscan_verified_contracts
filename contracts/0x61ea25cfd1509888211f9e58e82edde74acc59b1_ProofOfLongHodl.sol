@@ -13,21 +13,21 @@ contract ProofOfLongHodl {
     event Reinvest(address user, uint dividends);
 
     address owner;
-    mapping(address =&gt; bool) preauthorized;
+    mapping(address => bool) preauthorized;
     bool gameStarted;
 
     uint constant depositTaxDivisor = 5;		// 20% of  deposits goes to  divs
     uint constant withdrawalTaxDivisor = 5;	// 20% of  withdrawals goes to  divs
     uint constant lotteryFee = 20; 				// 5% of deposits and withdrawals goes to dailyPool
 
-    mapping(address =&gt; uint) public investment;
+    mapping(address => uint) public investment;
 
-    mapping(address =&gt; uint) public stake;
+    mapping(address => uint) public stake;
     uint public totalStake;
     uint stakeValue;
 
-    mapping(address =&gt; uint) dividendCredit;
-    mapping(address =&gt; uint) dividendDebit;
+    mapping(address => uint) dividendCredit;
+    mapping(address => uint) dividendDebit;
 
     function ProofOfLongHodl() public {
         owner = msg.sender;
@@ -45,7 +45,7 @@ contract ProofOfLongHodl {
     }
 
     function depositHelper(uint _amount) private {
-    	require(_amount &gt; 0);
+    	require(_amount > 0);
         uint _tax = _amount.div(depositTaxDivisor);
         uint _lotteryPool = _amount.div(lotteryFee);
         uint _amountAfterTax = _amount.sub(_tax).sub(_lotteryPool);
@@ -74,7 +74,7 @@ contract ProofOfLongHodl {
         if (dailyPurchases.numPurchases == dailyPurchases.ticketsBought.length) {
             dailyPurchases.ticketsBought.length += 1;
         }
-        dailyPurchases.ticketsBought[dailyPurchases.numPurchases++] = dailyTicketPurchase(dailyTicketsBought, dailyTicketsBought + (tickets - 1)); // (eg: buy 10, get id&#39;s 0-9)
+        dailyPurchases.ticketsBought[dailyPurchases.numPurchases++] = dailyTicketPurchase(dailyTicketsBought, dailyTicketsBought + (tickets - 1)); // (eg: buy 10, get id's 0-9)
         
         // Finally update ticket total
         dailyPurchases.ticketsPurchased += tickets;
@@ -95,13 +95,13 @@ contract ProofOfLongHodl {
 		if (weeklyPurchases.numPurchases == weeklyPurchases.ticketsBought.length) {
 		    weeklyPurchases.ticketsBought.length += 1;
 		}
-		weeklyPurchases.ticketsBought[weeklyPurchases.numPurchases++] = weeklyTicketPurchase(weeklyTicketsBought, weeklyTicketsBought + (tickets - 1)); // (eg: buy 10, get id&#39;s 0-9)
+		weeklyPurchases.ticketsBought[weeklyPurchases.numPurchases++] = weeklyTicketPurchase(weeklyTicketsBought, weeklyTicketsBought + (tickets - 1)); // (eg: buy 10, get id's 0-9)
 
 		// Finally update ticket total
 		weeklyPurchases.ticketsPurchased += tickets;
 		weeklyTicketsBought += tickets;
 
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         uint _stakeIncrement = sqrt(totalStake.mul(totalStake).add(_amountAfterTax)).sub(totalStake);
         investment[msg.sender] = investment[msg.sender].add(_amountAfterTax);
@@ -117,8 +117,8 @@ contract ProofOfLongHodl {
     }
 
     function withdraw(uint _amount) public {
-        require(_amount &gt; 0);
-        require(_amount &lt;= investment[msg.sender]);
+        require(_amount > 0);
+        require(_amount <= investment[msg.sender]);
         uint _tax = _amount.div(withdrawalTaxDivisor);
         uint _lotteryPool = _amount.div(lotteryFee);
         uint _amountAfterTax = _amount.sub(_tax).sub(_lotteryPool);
@@ -135,7 +135,7 @@ contract ProofOfLongHodl {
         investment[msg.sender] = investment[msg.sender].sub(_amount);
         stake[msg.sender] = stake[msg.sender].sub(_stakeDecrement);
         totalStake = totalStake.sub(_stakeDecrement);
-        if (totalStake &gt; 0)
+        if (totalStake > 0)
             stakeValue = stakeValue.add(_tax.div(totalStake));
         dividendCredit[msg.sender] = dividendCredit[msg.sender].add(_dividendCredit);
         uint _creditDebitCancellation = min(dividendCredit[msg.sender], dividendDebit[msg.sender]);
@@ -174,13 +174,13 @@ contract ProofOfLongHodl {
     }
 
     function min(uint x, uint y) private pure returns (uint) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function sqrt(uint x) private pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -223,8 +223,8 @@ contract ProofOfLongHodl {
         uint256 endId;
     }
 
-    mapping(address =&gt; dailyTicketPurchases) private dailyTicketsBoughtByPlayer;
-    mapping(uint256 =&gt; address[]) private dailyLotteryPlayers;
+    mapping(address => dailyTicketPurchases) private dailyTicketsBoughtByPlayer;
+    mapping(uint256 => address[]) private dailyLotteryPlayers;
 
     // WEEKLY
     struct weeklyTicketPurchases {
@@ -240,8 +240,8 @@ contract ProofOfLongHodl {
         uint256 endId;
     }
 
-    mapping(address =&gt; weeklyTicketPurchases) private weeklyTicketsBoughtByPlayer;
-    mapping(uint256 =&gt; address[]) private weeklyLotteryPlayers;
+    mapping(address => weeklyTicketPurchases) private weeklyTicketsBoughtByPlayer;
+    mapping(uint256 => address[]) private weeklyLotteryPlayers;
 
     // DRAWS
     function drawDailyWinner() public {
@@ -272,10 +272,10 @@ contract ProofOfLongHodl {
 	    // Reduce gas by (optionally) offering an address to _check_ for winner
 	    if (checkWinner != 0) {
 	        dailyTicketPurchases storage tickets = dailyTicketsBoughtByPlayer[checkWinner];
-	        if (tickets.numPurchases &gt; 0 &amp;&amp; checkIndex &lt; tickets.numPurchases &amp;&amp; tickets.lotteryId == dailyLotteryRound) {
+	        if (tickets.numPurchases > 0 && checkIndex < tickets.numPurchases && tickets.lotteryId == dailyLotteryRound) {
 	            dailyTicketPurchase storage checkTicket = tickets.ticketsBought[checkIndex];
-	            if (dailyTicketThatWon &gt;= checkTicket.startId &amp;&amp; dailyTicketThatWon &lt;= checkTicket.endId) {
-	                if ( dailyPool &gt;= DAILY_LIMIT) {
+	            if (dailyTicketThatWon >= checkTicket.startId && dailyTicketThatWon <= checkTicket.endId) {
+	                if ( dailyPool >= DAILY_LIMIT) {
 	            		checkWinner.transfer(DAILY_LIMIT);
 	            		dailyPots.push(DAILY_LIMIT);
 	            		dailyPool = dailyPool.sub(DAILY_LIMIT);		
@@ -295,17 +295,17 @@ contract ProofOfLongHodl {
 	    }
 	    
 	    // Otherwise just naively try to find the winner (will work until mass amounts of players)
-	    for (uint256 i = 0; i &lt; dailyLotteryPlayers[dailyLotteryRound].length; i++) {
+	    for (uint256 i = 0; i < dailyLotteryPlayers[dailyLotteryRound].length; i++) {
 	        address player = dailyLotteryPlayers[dailyLotteryRound][i];
 	        dailyTicketPurchases storage playersTickets = dailyTicketsBoughtByPlayer[player];
 	        
 	        uint256 endIndex = playersTickets.numPurchases - 1;
 	        // Minor optimization to avoid checking every single player
-	        if (dailyTicketThatWon &gt;= playersTickets.ticketsBought[0].startId &amp;&amp; dailyTicketThatWon &lt;= playersTickets.ticketsBought[endIndex].endId) {
-	            for (uint256 j = 0; j &lt; playersTickets.numPurchases; j++) {
+	        if (dailyTicketThatWon >= playersTickets.ticketsBought[0].startId && dailyTicketThatWon <= playersTickets.ticketsBought[endIndex].endId) {
+	            for (uint256 j = 0; j < playersTickets.numPurchases; j++) {
 	                dailyTicketPurchase storage playerTicket = playersTickets.ticketsBought[j];
-	                if (dailyTicketThatWon &gt;= playerTicket.startId &amp;&amp; dailyTicketThatWon &lt;= playerTicket.endId) {
-	                	if ( dailyPool &gt;= DAILY_LIMIT) {
+	                if (dailyTicketThatWon >= playerTicket.startId && dailyTicketThatWon <= playerTicket.endId) {
+	                	if ( dailyPool >= DAILY_LIMIT) {
 	                		player.transfer(DAILY_LIMIT);
 	                		dailyPots.push(DAILY_LIMIT);
 	                		dailyPool = dailyPool.sub(DAILY_LIMIT);
@@ -337,9 +337,9 @@ contract ProofOfLongHodl {
 	    // Reduce gas by (optionally) offering an address to _check_ for winner
 	    if (checkWinner != 0) {
 	        weeklyTicketPurchases storage tickets = weeklyTicketsBoughtByPlayer[checkWinner];
-	        if (tickets.numPurchases &gt; 0 &amp;&amp; checkIndex &lt; tickets.numPurchases &amp;&amp; tickets.lotteryId == weeklyLotteryRound) {
+	        if (tickets.numPurchases > 0 && checkIndex < tickets.numPurchases && tickets.lotteryId == weeklyLotteryRound) {
 	            weeklyTicketPurchase storage checkTicket = tickets.ticketsBought[checkIndex];
-	            if (weeklyTicketThatWon &gt;= checkTicket.startId &amp;&amp; weeklyTicketThatWon &lt;= checkTicket.endId) {
+	            if (weeklyTicketThatWon >= checkTicket.startId && weeklyTicketThatWon <= checkTicket.endId) {
 	        		checkWinner.transfer(weeklyPool);
 
 	        		weeklyPots.push(weeklyPool);
@@ -354,16 +354,16 @@ contract ProofOfLongHodl {
 	    }
 	    
 	    // Otherwise just naively try to find the winner (will work until mass amounts of players)
-	    for (uint256 i = 0; i &lt; weeklyLotteryPlayers[weeklyLotteryRound].length; i++) {
+	    for (uint256 i = 0; i < weeklyLotteryPlayers[weeklyLotteryRound].length; i++) {
 	        address player = weeklyLotteryPlayers[weeklyLotteryRound][i];
 	        weeklyTicketPurchases storage playersTickets = weeklyTicketsBoughtByPlayer[player];
 	        
 	        uint256 endIndex = playersTickets.numPurchases - 1;
 	        // Minor optimization to avoid checking every single player
-	        if (weeklyTicketThatWon &gt;= playersTickets.ticketsBought[0].startId &amp;&amp; weeklyTicketThatWon &lt;= playersTickets.ticketsBought[endIndex].endId) {
-	            for (uint256 j = 0; j &lt; playersTickets.numPurchases; j++) {
+	        if (weeklyTicketThatWon >= playersTickets.ticketsBought[0].startId && weeklyTicketThatWon <= playersTickets.ticketsBought[endIndex].endId) {
+	            for (uint256 j = 0; j < playersTickets.numPurchases; j++) {
 	                weeklyTicketPurchase storage playerTicket = playersTickets.ticketsBought[j];
-	                if (weeklyTicketThatWon &gt;= playerTicket.startId &amp;&amp; weeklyTicketThatWon &lt;= playerTicket.endId) {
+	                if (weeklyTicketThatWon >= playerTicket.startId && weeklyTicketThatWon <= playerTicket.endId) {
 	            		player.transfer(weeklyPool);  
 
 	            		weeklyPots.push(weeklyPool);
@@ -427,7 +427,7 @@ contract ProofOfLongHodl {
 
     // If someone is generous and wants to add to pool
     function addToPool() public payable {
-    	require(msg.value &gt; 0);
+    	require(msg.value > 0);
     	uint _lotteryPool = msg.value;
 
     	// weekly and daily pool
@@ -466,9 +466,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0                                                                                                                               
+        // assert(b > 0); // Solidity automatically throws when dividing by 0                                                                                                                               
         // uint256 c = a / b;                                                                                                                                                                               
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold                                                                                                                       
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold                                                                                                                       
         return a / b;                                                                                                                                                                                       
     }
 
@@ -476,7 +476,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);                                                                                                                                                                                     
+        assert(b <= a);                                                                                                                                                                                     
         return a - b;                                                                                                                                                                                       
     }
 
@@ -485,7 +485,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;                                                                                                                                                                                  
-        assert(c &gt;= a);                                                                                                                                                                                     
+        assert(c >= a);                                                                                                                                                                                     
         return c;                                                                                                                                                                                           
     }
 }

@@ -7,13 +7,13 @@ pragma solidity ^0.4.24;
 
 library SafeMath {
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -56,8 +56,8 @@ contract YomiToken is Owned, ERC20{
     using SafeMath for uint256;
     
     // Public variables of the token
-    string constant public name = &quot;YOMI Token&quot;;
-    string constant public symbol = &quot;YOMI&quot;;
+    string constant public name = "YOMI Token";
+    string constant public symbol = "YOMI";
     uint8 constant public decimals = 18;
     uint256 total_supply = 1000000000e18; // Total supply of 1 billion Yomi Tokens
     uint256 constant public teamReserve = 100000000e18; //10%
@@ -69,9 +69,9 @@ contract YomiToken is Owned, ERC20{
     address public foundationAddr;
     
     // Array
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccounts;
     
     // This generates a public event on the blockchain that will notify clients
     event FrozenFunds(address _target, bool _freeze);
@@ -89,7 +89,7 @@ contract YomiToken is Owned, ERC20{
     }
     
     /**
-     * `freeze? Prevent | Allow` `_target` from sending &amp; receiving tokens
+     * `freeze? Prevent | Allow` `_target` from sending & receiving tokens
      * @param _freeze either to freeze it or not
      */
     function freezeAccount(address _target, bool _freeze) onlyOwner public {
@@ -125,18 +125,18 @@ contract YomiToken is Owned, ERC20{
         require(_to != 0x0);
         
         // Lock tokens of team
-        if (_from == teamAddr &amp;&amp; now &lt; lockReleaseDate6Month) {
-            require(balances[_from].sub(_value) &gt;= teamReserve);
+        if (_from == teamAddr && now < lockReleaseDate6Month) {
+            require(balances[_from].sub(_value) >= teamReserve);
         }
         // Lock tokens of foundation        
-        if (_from == foundationAddr &amp;&amp; now &lt; lockReleaseDate1Year) {
-            require(balances[_from].sub(_value) &gt;= foundationReserve);
+        if (_from == foundationAddr && now < lockReleaseDate1Year) {
+            require(balances[_from].sub(_value) >= foundationReserve);
         }
         
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value); 
+        require(balances[_from] >= _value); 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]); 
+        require(balances[_to] + _value > balances[_to]); 
         //Check if account is frozen
         require(!frozenAccounts[_from]);
         require(!frozenAccounts[_to]);
@@ -167,7 +167,7 @@ contract YomiToken is Owned, ERC20{
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_value);
         _transfer(_from, _to, _value);
         return true;

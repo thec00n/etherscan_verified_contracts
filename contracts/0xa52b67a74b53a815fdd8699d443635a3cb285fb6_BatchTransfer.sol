@@ -55,11 +55,11 @@ contract BatchTransfer is Owned {
         require(n == nonce);
 
         nonce += 1;
-        uint256 lomask = (1 &lt;&lt; 96) - 1;
+        uint256 lomask = (1 << 96) - 1;
         uint sum = 0;
-        for (uint i=0; i&lt;bits.length; i++) {
-            address a = address(bits[i]&gt;&gt;96);
-            uint value = bits[i]&amp;lomask;
+        for (uint i=0; i<bits.length; i++) {
+            address a = address(bits[i]>>96);
+            uint value = bits[i]&lomask;
             token.transfer(a, value);
         }
         Batch(n);

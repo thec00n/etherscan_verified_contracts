@@ -36,7 +36,7 @@ contract AirDrop is Ownable {
 
   // Function given below is used when you want to send same number of tokens to all the recipients
   function sendTokens(address[] recipient, uint256 value) onlyOwner external {
-    for (uint256 i = 0; i &lt; recipient.length; i++) {
+    for (uint256 i = 0; i < recipient.length; i++) {
         token.transfer(recipient[i],value * 10**8);
         emit TransferredToken(recipient[i], value);
     }

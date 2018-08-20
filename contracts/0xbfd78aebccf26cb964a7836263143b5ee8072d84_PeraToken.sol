@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,7 +116,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -125,7 +125,7 @@ contract BasicToken is ERC20Basic {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -143,7 +143,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(
     address _from,
@@ -153,8 +153,8 @@ contract StandardToken is ERC20, BasicToken {
     public
     returns (bool)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);
@@ -202,7 +202,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -275,12 +275,12 @@ contract PausableToken is StandardToken, Pausable {
 
 contract PeraToken is PausableToken {
 
-  string public constant name = &quot;PERA&quot;;
-  string public constant symbol = &quot;PERA&quot;;
+  string public constant name = "PERA";
+  string public constant symbol = "PERA";
   uint8 public constant decimals = 8;
   uint256 public constant INITIAL_SUPPLY = 92853735500000000;
 
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => bool) public frozenAccount;
 
   event FrozenFunds(address target, bool frozen);
 
@@ -318,14 +318,14 @@ contract PeraToken is PausableToken {
     uint256 i;
     uint256 sum = 0;
 
-    for(i = 0; i &lt; _amount.length; i++){
+    for(i = 0; i < _amount.length; i++){
         sum = sum.add(_amount[i]);
         require(_tos[i] != address(0));
     }
 
-    require(balances[msg.sender] &gt;= sum);
+    require(balances[msg.sender] >= sum);
 
-    for(i = 0; i &lt; _tos.length; i++){
+    for(i = 0; i < _tos.length; i++){
         transfer(_tos[i], _amount[i]);
     }
 
@@ -345,6 +345,6 @@ contract PeraToken is PausableToken {
             //retrieve the code length/size on target address
             length := extcodesize(_addr)
         }
-      return (length&gt;0);
+      return (length>0);
   }
 }

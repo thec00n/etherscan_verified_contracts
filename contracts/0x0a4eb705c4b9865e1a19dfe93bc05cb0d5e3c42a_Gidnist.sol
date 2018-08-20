@@ -12,19 +12,19 @@ contract ERC20TokenInterface {
 }
 
 contract Gidnist is ERC20TokenInterface {
-  string public constant name = &#39;Gidnist&#39;;
+  string public constant name = 'Gidnist';
   uint256 public constant decimals = 2;
-  string public constant symbol = &#39;GDNT&#39;;
-  string public constant version = &#39;v0.0.1&#39;;
+  string public constant symbol = 'GDNT';
+  string public constant version = 'v0.0.1';
 
   uint256 private constant totalTokens = 277000 * (10 ** decimals);
 
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowed;
 
   event MigrationInfoSet(string newMigrationInfo);
 
-  string public migrationInfo = &quot;&quot;;
+  string public migrationInfo = "";
 
   address public migrationInfoSetter;
 
@@ -46,7 +46,7 @@ contract Gidnist is ERC20TokenInterface {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    if (balances[msg.sender] &gt;= _value) {
+    if (balances[msg.sender] >= _value) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -56,7 +56,7 @@ contract Gidnist is ERC20TokenInterface {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
       balances[_to] += _value;

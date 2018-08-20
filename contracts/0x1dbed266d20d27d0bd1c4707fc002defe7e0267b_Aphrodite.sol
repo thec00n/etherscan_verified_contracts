@@ -6,7 +6,7 @@ pragma solidity ^0.4.21;
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -17,11 +17,11 @@ pragma solidity ^0.4.21;
 
 contract AuthorizedList {
 
-    bytes32 constant APHRODITE = keccak256(&quot;Goddess of Love!&quot;);
-    bytes32 constant CUPID = keccak256(&quot;Aphrodite&#39;s Little Helper.&quot;);
-    bytes32 constant BULKTRANSFER = keccak256(&quot;Bulk Transfer User.&quot;);
-    mapping (address =&gt; mapping(bytes32 =&gt; bool)) internal authorized;
-    mapping (bytes32 =&gt; bool) internal contractPermissions;
+    bytes32 constant APHRODITE = keccak256("Goddess of Love!");
+    bytes32 constant CUPID = keccak256("Aphrodite's Little Helper.");
+    bytes32 constant BULKTRANSFER = keccak256("Bulk Transfer User.");
+    mapping (address => mapping(bytes32 => bool)) internal authorized;
+    mapping (bytes32 => bool) internal contractPermissions;
 
 }
 
@@ -31,7 +31,7 @@ contract AuthorizedList {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -68,7 +68,7 @@ contract Authorized is AuthorizedList {
         require(_address != msg.sender);
 
         /// No need for lower level authorization to linger
-        if (_authorization == APHRODITE &amp;&amp; !authorized[_address][APHRODITE]) {
+        if (_authorization == APHRODITE && !authorized[_address][APHRODITE]) {
             authorized[_address][CUPID] = false;
         }
 
@@ -87,21 +87,21 @@ library SafeMath {
 
     /* Not needed
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     */
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -112,7 +112,7 @@ library SafeMath {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -136,7 +136,7 @@ contract IERC20Basic {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -172,7 +172,7 @@ contract RecoverCurrency is AuthorizedList, Authorized {
 /*
  * Created by Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -192,13 +192,13 @@ contract Freezable is AuthorizedList, Authorized {
     event Frozen(address indexed _account);
     event Unfrozen(address indexed _account);
     
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => bool) public frozenAccounts;
 
     /// Make sure access control is initialized
     function Freezable() public AuthorizedList() Authorized() { }
 
     /**
-    * @dev Throws if called by any account that&#39;s frozen.
+    * @dev Throws if called by any account that's frozen.
     */
     modifier notFrozen {
         require(!frozenAccounts[msg.sender]);
@@ -208,7 +208,7 @@ contract Freezable is AuthorizedList, Authorized {
     /**
     * @dev check if an account is frozen
     * @param account address to check
-    * @return true iff the address is in the list of frozen accounts and hasn&#39;t been unfrozen
+    * @return true iff the address is in the list of frozen accounts and hasn't been unfrozen
     */
     function isFrozen(address account) public view returns (bool) {
         return frozenAccounts[account];
@@ -231,7 +231,7 @@ contract Freezable is AuthorizedList, Authorized {
     * @dev remove an address from the list of frozen accounts
     * @param account address to unfreeze
     * @return true if the address was removed from the list of frozen accounts, 
-    * false if the address wasn&#39;t in the list in the first place 
+    * false if the address wasn't in the list in the first place 
     */
     function unfreezeAccount(address account) public ifAuthorized(msg.sender, APHRODITE) returns (bool success) {
         if (frozenAccounts[account]) {
@@ -248,7 +248,7 @@ contract Freezable is AuthorizedList, Authorized {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -311,7 +311,7 @@ contract Pausable is AuthorizedList, Authorized {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE 
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE, 
@@ -322,7 +322,7 @@ pragma solidity ^0.4.21;
 
 contract AllowancesLedger {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => mapping (address => uint256)) public allowances;
 
 }
 
@@ -332,7 +332,7 @@ contract AllowancesLedger {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -344,7 +344,7 @@ pragma solidity ^0.4.21;
 
 contract TokenLedger is AuthorizedList, Authorized {
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
     uint256 public totalsupply;
 
     struct SeenAddressRecord {
@@ -354,7 +354,7 @@ contract TokenLedger is AuthorizedList, Authorized {
 
     // Iterable accounts
     address[] internal accounts;
-    mapping(address =&gt; SeenAddressRecord) internal seenBefore;
+    mapping(address => SeenAddressRecord) internal seenBefore;
 
     /// @dev Keeping track of addresses in an array is useful as mappings are not iterable
     /// @return Number of addresses holding this token
@@ -368,7 +368,7 @@ contract TokenLedger is AuthorizedList, Authorized {
     }
 
     function balanceOf(uint256 _id) public view ifAuthorized(msg.sender, CUPID) returns (uint256 balance) {
-        require (_id &lt; accounts.length);
+        require (_id < accounts.length);
         return balances[accounts[_id]];
     }
 }
@@ -379,7 +379,7 @@ contract TokenLedger is AuthorizedList, Authorized {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -393,10 +393,10 @@ contract TokenSettings is AuthorizedList, Authorized {
 
     /// These strings should be set temporarily for testing on Rinkeby/Ropsten/Kovan to somethin else
     /// to avoid people squatting on names
-    /// Change back to &quot;intimate&quot; and &quot;ITM&quot; for mainnet deployment
+    /// Change back to "intimate" and "ITM" for mainnet deployment
 
-    string public name = &quot;intimate&quot;;
-    string public symbol = &quot;ITM&quot;;
+    string public name = "intimate";
+    string public symbol = "ITM";
 
     uint256 public INITIAL_SUPPLY = 100000000 * 10**18;  // 100 million of subdivisible tokens
     uint8 public constant decimals = 18;
@@ -421,7 +421,7 @@ contract TokenSettings is AuthorizedList, Authorized {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -434,14 +434,14 @@ pragma solidity ^0.4.21;
 
 
 
-/// Collect all the state variables for the token&#39;s functions into a single contract
+/// Collect all the state variables for the token's functions into a single contract
 contract BasicTokenStorage is AuthorizedList, Authorized, TokenSettings, AllowancesLedger, TokenLedger {
 
     /// @dev Ensure that authorization is set
     function BasicTokenStorage() public Authorized() TokenSettings() AllowancesLedger() TokenLedger() { }
 
     /// @dev Keep track of addresses seen before, push new ones into accounts list
-    /// @param _tokenholder address to check for &quot;newness&quot;
+    /// @param _tokenholder address to check for "newness"
     function trackAddresses(address _tokenholder) internal {
         if (!seenBefore[_tokenholder].seen) {
             seenBefore[_tokenholder].seen = true;
@@ -454,7 +454,7 @@ contract BasicTokenStorage is AuthorizedList, Authorized, TokenSettings, Allowan
     /// @param _tokenholder address to remove
     function removeSeenAddress(address _tokenholder) internal {
         uint index = seenBefore[_tokenholder].accountArrayIndex;
-        require(index &lt; accounts.length);
+        require(index < accounts.length);
 
         if (index != accounts.length - 1) {
             accounts[index] = accounts[accounts.length - 1];
@@ -470,7 +470,7 @@ contract BasicTokenStorage is AuthorizedList, Authorized, TokenSettings, Allowan
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -539,11 +539,11 @@ contract BasicToken is IERC20Basic, BasicTokenStorage, Pausable, Freezable {
         /// Temporarily set balance to 0 to mitigate the possibility of re-entrancy attacks
         balances[msg.sender] = 0;
 
-        for (uint256 i = 0; i &lt; _tos.length; i++) {
+        for (uint256 i = 0; i < _tos.length; i++) {
             uint256 currentValue = _values[i];
             address _to = _tos[i];
             require(_to != address(0));
-            require(currentValue &lt;= sourceBalance);
+            require(currentValue <= sourceBalance);
             require(msg.sender != _to);
 
             sourceBalance = sourceBalance.sub(currentValue);
@@ -582,7 +582,7 @@ contract BasicToken is IERC20Basic, BasicTokenStorage, Pausable, Freezable {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -607,7 +607,7 @@ contract IERC20 is IERC20Basic {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -635,11 +635,11 @@ contract StandardToken is IERC20Basic, BasicToken, IERC20 {
     /// @param _value The number/amount to transfer
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused notFrozen returns (bool) {
 
-        // Don&#39;t send tokens to 0x0 address, use burn function that updates totalSupply
-        // and don&#39;t waste gas sending tokens to yourself
-        require(_to != address(0) &amp;&amp; _from != _to);
+        // Don't send tokens to 0x0 address, use burn function that updates totalSupply
+        // and don't waste gas sending tokens to yourself
+        require(_to != address(0) && _from != _to);
 
-        require(!isFrozen(_from) &amp;&amp; !isFrozen(_to));
+        require(!isFrozen(_from) && !isFrozen(_to));
 
         /// This will revert if _value is larger than the allowance
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_value);
@@ -663,7 +663,7 @@ contract StandardToken is IERC20Basic, BasicToken, IERC20 {
     /// @param _value The amount of tokens to be spent.
     function approve(address _tokenspender, uint256 _value) public whenNotPaused notFrozen returns (bool) {
 
-        require(_tokenspender != address(0) &amp;&amp; msg.sender != _tokenspender);
+        require(_tokenspender != address(0) && msg.sender != _tokenspender);
 
         require(!isFrozen(_tokenspender));
 
@@ -687,7 +687,7 @@ contract StandardToken is IERC20Basic, BasicToken, IERC20 {
     /// @param _tokenspender Account address authorized to transfer tokens
     /// @return Amount of tokens still available to _tokenspender to transfer.
     function allowance(address _tokenholder, address _tokenspender) public view whenNotPaused returns (uint256) {
-        require(!isFrozen(_tokenholder) &amp;&amp; !isFrozen(_tokenspender));
+        require(!isFrozen(_tokenholder) && !isFrozen(_tokenspender));
         return allowances[_tokenholder][_tokenspender];
     }
 }
@@ -698,7 +698,7 @@ contract StandardToken is IERC20Basic, BasicToken, IERC20 {
  * Created by: alexo (Big Deeper Advisors, Inc)
  * For: Input Strategic Partners (ISP) and Intimate.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
  * TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE
  * SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
@@ -718,7 +718,7 @@ contract Aphrodite is AuthorizedList, Authorized, RecoverCurrency, StandardToken
     /// @dev Constructor that gives msg.sender/creator all of existing tokens.
     function Aphrodite() Authorized()  public {
     
-        /// We need to initialize totalsupply and creator&#39;s balance
+        /// We need to initialize totalsupply and creator's balance
         totalsupply = INITIAL_SUPPLY;
         balances[msg.sender] = INITIAL_SUPPLY;
 

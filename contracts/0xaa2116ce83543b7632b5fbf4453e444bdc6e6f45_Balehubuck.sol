@@ -18,9 +18,9 @@ library SafeMath {
     pure
     returns (uint256) 
     {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -30,7 +30,7 @@ library SafeMath {
     pure
     returns (uint256) 
     {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     returns (uint256) 
     {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -75,14 +75,14 @@ contract StandardToken is Token {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowances;
     uint256 public totalSupply;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param to Address of token receiver
     /// @param value Number of tokens to transfer
     /// @return Returns success of function call
@@ -91,7 +91,7 @@ contract StandardToken is Token {
         returns (bool)
     {
         require(to != address(0));
-        require(value &lt;= balances[msg.sender]);
+        require(value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
         Transfer(msg.sender, to, value);
@@ -107,12 +107,12 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        // if (balances[from] &lt; value || allowances[from][msg.sender] &lt; value)
+        // if (balances[from] < value || allowances[from][msg.sender] < value)
         //     // Balance or allowance too low
         //     revert();
         require(to != address(0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowances[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowances[from][msg.sender]);
         balances[to] = balances[to].add(value);
         balances[from] = balances[from].sub(value);
         allowances[from][msg.sender] = allowances[from][msg.sender].sub(value);
@@ -154,7 +154,7 @@ contract StandardToken is Token {
         returns (bool) 
     {
         uint oldValue = allowances[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -193,8 +193,8 @@ contract Balehubuck is StandardToken {
     /*
      *  Constants
      */
-    string public constant name = &quot;balehubuck&quot;;
-    string public constant symbol = &quot;BUX&quot;;
+    string public constant name = "balehubuck";
+    string public constant symbol = "BUX";
     uint8 public constant decimals = 18;
     uint256 public constant TOTAL_SUPPLY = 1000000000 * 10**18;
     // Presale Allocation = 500 * (5000 + 4500 + 4000 + 3500 + 3250 + 3000)

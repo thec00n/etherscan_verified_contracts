@@ -37,13 +37,13 @@ contract Integrity is Owned {
     }
 
     struct Namespace {
-        mapping(bytes32 =&gt; FileInfo) files;
-        mapping(address =&gt; bool) permissions;
+        mapping(bytes32 => FileInfo) files;
+        mapping(address => bool) permissions;
         address owner;
         bool isValid;
     }
 
-    mapping(string =&gt; Namespace) registry;
+    mapping(string => Namespace) registry;
 
     modifier onlyNamespaceOwner(string _namespace) {
         require(msg.sender == registry[_namespace].owner);
@@ -67,7 +67,7 @@ contract Integrity is Owned {
             isValid: true
         });
 
-        registry[&quot;default&quot;] = namespace;
+        registry["default"] = namespace;
     }
 
     function updateFee(uint256 _fee) public onlyOwner {
@@ -76,7 +76,7 @@ contract Integrity is Owned {
 
     function createNamespace(string _namespace) public payable {
         require(!registry[_namespace].isValid);
-        require(msg.value &gt;= fee * 10);
+        require(msg.value >= fee * 10);
 
         Namespace memory namespace = Namespace({
             owner: msg.sender,
@@ -115,7 +115,7 @@ contract Integrity is Owned {
     public onlyNamespaceMember(_namespace) payable {
         require(registry[_namespace].isValid);
         require(!registry[_namespace].files[_hash].isValid);
-        require(msg.value &gt;= fee);
+        require(msg.value >= fee);
 
         FileInfo memory info = FileInfo({
             name: _name,
@@ -130,20 +130,20 @@ contract Integrity is Owned {
     }
 
     function engrave(string _name, bytes32 _hash) public payable {
-        require(registry[&quot;default&quot;].isValid);
-        require(!registry[&quot;default&quot;].files[_hash].isValid);
-        require(msg.value &gt;= fee);
+        require(registry["default"].isValid);
+        require(!registry["default"].files[_hash].isValid);
+        require(msg.value >= fee);
 
         FileInfo memory info = FileInfo({
             name: _name,
             isValid: true
         });
 
-        registry[&quot;default&quot;].files[_hash] = info;
+        registry["default"].files[_hash] = info;
 
         beneficiary.payFee.value(msg.value)();
 
-        Engraved(msg.sender, &quot;default&quot;, _name, _hash);
+        Engraved(msg.sender, "default", _name, _hash);
     }
 
     function checkFileNamespace(string _namespace, bytes32 _hash)
@@ -153,7 +153,7 @@ contract Integrity is Owned {
 
     function checkFile(bytes32 _hash)
     public constant returns (string name) {
-        return registry[&quot;default&quot;].files[_hash].name;
+        return registry["default"].files[_hash].name;
     }
 
     function getHash(string _input) public pure returns (bytes32 hash) {

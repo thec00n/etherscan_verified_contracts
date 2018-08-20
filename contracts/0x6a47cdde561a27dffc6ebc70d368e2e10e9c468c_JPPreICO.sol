@@ -44,9 +44,9 @@ contract JPPreICO is owned{
     }
 
     function () public payable {
-        require(msg.value&gt;=minInvestmentInWei);
+        require(msg.value>=minInvestmentInWei);
         require(msg.data.length==0);
-        require((msg.value*tokenPerEth)/(10**16)&lt;=token.balanceOf(this));//Check if pre ICO has enough tokens to transfer
+        require((msg.value*tokenPerEth)/(10**16)<=token.balanceOf(this));//Check if pre ICO has enough tokens to transfer
         require(isICOUp());//Check for temporal limits
         uint256 coins = (msg.value * tokenPerEth)/(10**16);
         walletAddress.transfer(msg.value);
@@ -66,7 +66,7 @@ contract JPPreICO is owned{
     }
     
     function isICOUp() public view returns(bool){
-        return (block.number&gt;=startBlock &amp;&amp; block.number&lt;=endBlock);
+        return (block.number>=startBlock && block.number<=endBlock);
     }
     
     function setTokenPerEth (uint256 _change) public onlyOwner{

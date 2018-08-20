@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address owner) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -15,7 +15,7 @@ contract IOwned {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string name) { name; }
     function symbol() public constant returns (string symbol) { symbol; }
     function decimals() public constant returns (uint8 decimals) { decimals; }
@@ -64,7 +64,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -77,7 +77,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -100,15 +100,15 @@ contract SafeMath {
     ERC20 Standard Token implementation
 */
 contract ERC20Token is IERC20Token, SafeMath {
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;&#39;;
-    string public symbol = &#39;&#39;;
+    string public standard = 'Token 0.1';
+    string public name = '';
+    string public symbol = '';
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
     uint256 public maxSupplyGenerable = 1000000000*10**18;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -121,14 +121,14 @@ contract ERC20Token is IERC20Token, SafeMath {
         @param _decimals    decimal points, for display purposes
     */
     function ERC20Token(string _name, string _symbol, uint8 _decimals) {
-        require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0); // validate input
+        require(bytes(_name).length > 0 && bytes(_symbol).length > 0); // validate input
 
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -141,7 +141,7 @@ contract ERC20Token is IERC20Token, SafeMath {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transfer(address _to, uint256 _value)
         public
@@ -162,7 +162,7 @@ contract ERC20Token is IERC20Token, SafeMath {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value)
         public
@@ -188,14 +188,14 @@ contract ERC20Token is IERC20Token, SafeMath {
         @param _spender approved address
         @param _value   allowance amount
 
-        @return true if the approval was successful, false if it wasn&#39;t
+        @return true if the approval was successful, false if it wasn't
     */
     function approve(address _spender, uint256 _value)
         public
         validAddress(_spender)
         returns (bool success)
     {
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
+        // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
         require(_value == 0 || allowance[msg.sender][_spender] == 0);
 
         allowance[msg.sender][_spender] = _value;
@@ -250,10 +250,10 @@ contract Owned is IOwned {
 }
 
 /*
-    We consider every contract to be a &#39;token holder&#39; since it&#39;s currently not possible
+    We consider every contract to be a 'token holder' since it's currently not possible
     for a contract to deny receiving tokens.
 
-    The TokenHolder&#39;s contract sole purpose is to provide a safety mechanism that allows
+    The TokenHolder's contract sole purpose is to provide a safety mechanism that allows
     the owner to send tokens that were sent to the contract by mistake back to their sender.
 */
 contract TokenHolder is ITokenHolder, Owned {
@@ -263,7 +263,7 @@ contract TokenHolder is ITokenHolder, Owned {
     function TokenHolder() {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -297,10 +297,10 @@ contract TokenHolder is ITokenHolder, Owned {
 /*
     Smart Token v0.2
 
-    &#39;Owned&#39; is specified here for readability reasons
+    'Owned' is specified here for readability reasons
 */
 contract SmartToken is ISmartToken, ERC20Token, Owned, TokenHolder {
-    string public version = &#39;0.2&#39;;
+    string public version = '0.2';
 
     bool public transfersEnabled = true;    // true if transfer/transferFrom are enabled, false if not
 
@@ -321,11 +321,11 @@ contract SmartToken is ISmartToken, ERC20Token, Owned, TokenHolder {
     function SmartToken(string _name, string _symbol, uint8 _decimals)
         ERC20Token(_name, _symbol, _decimals)
     {
-        require(bytes(_symbol).length &lt;= 6); // validate input
+        require(bytes(_symbol).length <= 6); // validate input
         NewSmartToken(address(this));
     }
 
-    // allows execution only when transfers aren&#39;t disabled
+    // allows execution only when transfers aren't disabled
     modifier transfersAllowed {
         assert(transfersEnabled);
         _;
@@ -355,8 +355,8 @@ contract SmartToken is ISmartToken, ERC20Token, Owned, TokenHolder {
         notThis(_to)
     {
         totalSupply = safeAdd(totalSupply, _amount);
-        //Total supply can&#39;t be over 1 Billion
-        if (totalSupply &gt; maxSupplyGenerable) revert();
+        //Total supply can't be over 1 Billion
+        if (totalSupply > maxSupplyGenerable) revert();
         balanceOf[_to] = safeAdd(balanceOf[_to], _amount);
 
         Issuance(_amount);
@@ -386,12 +386,12 @@ contract SmartToken is ISmartToken, ERC20Token, Owned, TokenHolder {
     /**
         @dev send coins
         throws on any error rather then return a false flag to minimize user errors
-        note that when transferring to the smart token&#39;s address, the coins are actually destroyed
+        note that when transferring to the smart token's address, the coins are actually destroyed
 
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool success) {
         assert(super.transfer(_to, _value));
@@ -409,13 +409,13 @@ contract SmartToken is ISmartToken, ERC20Token, Owned, TokenHolder {
     /**
         @dev an account/contract attempts to get the coins
         throws on any error rather then return a false flag to minimize user errors
-        note that when transferring to the smart token&#39;s address, the coins are actually destroyed
+        note that when transferring to the smart token's address, the coins are actually destroyed
 
         @param _from    source address
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value) public transfersAllowed returns (bool success) {
         assert(super.transferFrom(_from, _to, _value));
@@ -434,7 +434,7 @@ contract SmartToken is ISmartToken, ERC20Token, Owned, TokenHolder {
 
 /// @title $Epm Smart Token
 contract SmartEPM is SmartToken {
-    function SmartEPM() SmartToken(&#39;Epocum&#39;, &#39;EPM&#39;, 18) {
+    function SmartEPM() SmartToken('Epocum', 'EPM', 18) {
         disableTransfers(false);
     }
 }

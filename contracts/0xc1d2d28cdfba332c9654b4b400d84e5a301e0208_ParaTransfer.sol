@@ -18,7 +18,7 @@ contract ParaTransfer {
     function multiTransfer(ERC20 token, address[] Airdrop, uint256 amount) public {
         require(msg.sender == parachute);
         
-        for (uint256 i = 0; i &lt; Airdrop.length; i++) {
+        for (uint256 i = 0; i < Airdrop.length; i++) {
             token.transfer( Airdrop[i], amount * 10 ** 18);
         }
     }

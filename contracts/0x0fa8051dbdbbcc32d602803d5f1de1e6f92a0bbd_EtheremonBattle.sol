@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="fa9995948e9b998ebabf8e929f889f979594d4999597">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="fa9995948e9b998ebabf8e929f889f979594d4999597">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -289,9 +289,9 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     address public paymentContract;
     
     // global variable
-    mapping(uint8 =&gt; uint8) typeAdvantages;
-    mapping(uint32 =&gt; CacheClassInfo) cacheClasses;
-    mapping(uint8 =&gt; uint32) levelExps;
+    mapping(uint8 => uint8) typeAdvantages;
+    mapping(uint32 => CacheClassInfo) cacheClasses;
+    mapping(uint8 => uint32) levelExps;
     uint8 public ancestorBuffPercentage = 10;
     uint8 public gasonBuffPercentage = 10;
     uint8 public typeBuffPercentage = 20;
@@ -346,7 +346,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         paymentContract = _paymentContract;
     }
     
-     // admin &amp; moderators
+     // admin & moderators
     function setTypeAdvantages() onlyModerators external {
         typeAdvantages[1] = 14;
         typeAdvantages[2] = 16;
@@ -381,7 +381,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         // add type
         i = data.getSizeArrayType(ArrayType.CLASS_TYPE, uint64(_classId));
         uint8[] memory aTypes = new uint8[](i);
-        for(; i &gt; 0 ; i--) {
+        for(; i > 0 ; i--) {
             aTypes[i-1] = data.getElementInArrayType(ArrayType.CLASS_TYPE, uint64(_classId), i-1);
         }
         classInfo.types = aTypes;
@@ -389,7 +389,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         // add steps
         i = data.getSizeArrayType(ArrayType.STAT_STEP, uint64(_classId));
         uint8[] memory steps = new uint8[](i);
-        for(; i &gt; 0 ; i--) {
+        for(; i > 0 ; i--) {
             steps[i-1] = data.getElementInArrayType(ArrayType.STAT_STEP, uint64(_classId), i-1);
         }
         classInfo.steps = steps;
@@ -397,7 +397,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         // add ancestor
         i = gateway.getClassPropertySize(_classId, PropertyType.ANCESTOR);
         uint32[] memory ancestors = new uint32[](i);
-        for(; i &gt; 0 ; i--) {
+        for(; i > 0 ; i--) {
             ancestors[i-1] = gateway.getClassPropertyValue(_classId, PropertyType.ANCESTOR, i-1);
         }
         classInfo.ancestors = ancestors;
@@ -416,11 +416,11 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     }    
      
     function withdrawEther(address _sendTo, uint _amount) onlyModerators external {
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             revert();
         }
         uint256 validAmount = safeSubtract(totalEarn, totalWithdraw);
-        if (_amount &gt; validAmount) {
+        if (_amount > validAmount) {
             revert();
         }
         totalWithdraw += _amount;
@@ -454,7 +454,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 level = 1;
         uint32 requirement = 100;
         uint32 sum = requirement;
-        while(level &lt;= 100) {
+        while(level <= 100) {
             levelExps[level] = sum;
             level += 1;
             requirement = (requirement * 11) / 10 + 5;
@@ -470,7 +470,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getRandom(uint8 maxRan, uint8 index, address priAddress) constant public returns(uint8) {
         uint256 genNum = uint256(block.blockhash(block.number-1)) + uint256(priAddress);
-        for (uint8 i = 0; i &lt; index &amp;&amp; i &lt; 6; i ++) {
+        for (uint8 i = 0; i < index && i < 6; i ++) {
             genNum /= 256;
         }
         return uint8(genNum % maxRan);
@@ -481,9 +481,9 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 maxIndex = 100;
         uint8 currentIndex;
      
-        while (minIndex &lt; maxIndex) {
+        while (minIndex < maxIndex) {
             currentIndex = (minIndex + maxIndex) / 2;
-            if (exp &lt; levelExps[currentIndex])
+            if (exp < levelExps[currentIndex])
                 maxIndex = currentIndex;
             else
                 minIndex = currentIndex + 1;
@@ -494,7 +494,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getGainExp(uint8 level2, uint8 level, bool _win) pure public returns(uint32){
         uint8 halfLevel1 = level;
-        if (level &gt; level2 + 3) {
+        if (level > level2 + 3) {
             halfLevel1 = (level2 + 3) / 2;
         } else {
             halfLevel1 = level / 2;
@@ -502,14 +502,14 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint32 gainExp = 1;
         uint256 rate = (21 ** uint256(halfLevel1)) * 1000 / (20 ** uint256(halfLevel1));
         rate = rate * rate;
-        if ((level &gt; level2 + 3 &amp;&amp; level2 + 3 &gt; 2 * halfLevel1) || (level &lt;= level2 + 3 &amp;&amp; level &gt; 2 * halfLevel1)) rate = rate * 21 / 20;
+        if ((level > level2 + 3 && level2 + 3 > 2 * halfLevel1) || (level <= level2 + 3 && level > 2 * halfLevel1)) rate = rate * 21 / 20;
         if (_win) {
             gainExp = uint32(30 * rate / 1000000);
         } else {
             gainExp = uint32(10 * rate / 1000000);
         }
         
-        if (level2 &gt;= level + 5) {
+        if (level2 >= level + 5) {
             gainExp /= uint32(2) ** ((level2 - level) / 5);
         }
         return gainExp;
@@ -531,7 +531,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         (classId, exp, stats) = getCurrentStats(_objId);
         
         uint256 total;
-        for(uint i=0; i &lt; STAT_COUNT; i+=1) {
+        for(uint i=0; i < STAT_COUNT; i+=1) {
             total += stats[i];
         }
         return uint64(total/STAT_COUNT);
@@ -546,7 +546,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         MonsterObjAcc memory obj;
         (obj.monsterId, obj.classId, obj.trainer, obj.exp, obj.createIndex, obj.lastClaimIndex, obj.createTime) = data.getMonsterObj(_objId);
         (castleId, castleIndex, price) = castle.getCastleBasicInfo(obj.trainer);
-        if (castleId &gt; 0 &amp;&amp; castleIndex &gt; 0)
+        if (castleId > 0 && castleIndex > 0)
             return castle.isOnCastle(castleId, _objId);
         return false;
     }
@@ -555,7 +555,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         EtheremonDataBase data = EtheremonDataBase(dataContract);
         MonsterObjAcc memory obj;
         (obj.monsterId, obj.classId, obj.trainer, obj.exp, obj.createIndex, obj.lastClaimIndex, obj.createTime) = data.getMonsterObj(_objId);
-        return (obj.trainer == _owner &amp;&amp; obj.classId != 21);
+        return (obj.trainer == _owner && obj.classId != 21);
     }
     
     function getObjExp(uint64 _objId) constant public returns(uint32, uint32) {
@@ -577,17 +577,17 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         
         uint i = 0;
         uint8 level = getLevel(exp);
-        for(i=0; i &lt; STAT_COUNT; i+=1) {
+        for(i=0; i < STAT_COUNT; i+=1) {
             stats[i] = data.getElementInArrayType(ArrayType.STAT_BASE, _objId, i);
         }
-        for(i=0; i &lt; cacheClasses[classId].steps.length; i++) {
+        for(i=0; i < cacheClasses[classId].steps.length; i++) {
             stats[i] += uint16(safeMult(cacheClasses[classId].steps[i], level*3));
         }
         return (classId, level, stats);
     }
     
     function safeDeduct(uint16 a, uint16 b) pure private returns(uint16){
-        if (a &gt; b) {
+        if (a > b) {
             return a - b;
         }
         return 0;
@@ -600,9 +600,9 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         }
         uint16 hpDeducted = safeDeduct(_attack, _defense * 3 /4);
         uint16 hpSpecialDeducted = safeDeduct(_specialAttack, _specialDefense* 3 / 4);
-        if (hpDeducted &lt; minHpDeducted &amp;&amp; hpSpecialDeducted &lt; minHpDeducted)
+        if (hpDeducted < minHpDeducted && hpSpecialDeducted < minHpDeducted)
             return minHpDeducted;
-        if (hpDeducted &gt; hpSpecialDeducted)
+        if (hpDeducted > hpSpecialDeducted)
             return hpDeducted;
         return hpSpecialDeducted;
     }
@@ -612,9 +612,9 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint i =0;
         uint8 countEffect = 0;
         uint ancestorSize = cacheClasses[_classId].ancestors.length;
-        if (ancestorSize &gt; 0) {
+        if (ancestorSize > 0) {
             uint32 ancestorClass = 0;
-            for (i=0; i &lt; ancestorSize; i ++) {
+            for (i=0; i < ancestorSize; i ++) {
                 ancestorClass = cacheClasses[_classId].ancestors[i];
                 if (ancestorClass == _support.classId1 || ancestorClass == _support.classId2 || ancestorClass == _support.classId3) {
                     countEffect += 1;
@@ -628,7 +628,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint i = 0;
         uint8 classType = 0;
         defenseSupport = 0;
-        for (i = 0; i &lt; cacheClasses[_classId].types.length; i++) {
+        for (i = 0; i < cacheClasses[_classId].types.length; i++) {
             classType = cacheClasses[_classId].types[i];
              if (_sup.isGason1) {
                 if (classType == _sup.type1) {
@@ -655,8 +655,8 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         // check types 
         bool aHasAdvantage;
         bool bHasAdvantage;
-        for (uint i = 0; i &lt; cacheClasses[_aClassId].types.length; i++) {
-            for (uint j = 0; j &lt; cacheClasses[_bClassId].types.length; j++) {
+        for (uint i = 0; i < cacheClasses[_aClassId].types.length; i++) {
+            for (uint j = 0; j < cacheClasses[_bClassId].types.length; j++) {
                 if (typeAdvantages[cacheClasses[_aClassId].types[i]] == cacheClasses[_bClassId].types[j]) {
                     aHasAdvantage = true;
                 }
@@ -707,8 +707,8 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         
         ran = getRandom(maxRandomRound+2, att.index, lastAttacker);
         uint16 round = 0;
-        while (round &lt; maxRandomRound &amp;&amp; aStats[0] &gt; 0 &amp;&amp; bStats[0] &gt; 0) {
-            if (aStats[5] &gt; bStats[5]) {
+        while (round < maxRandomRound && aStats[0] > 0 && bStats[0] > 0) {
+            if (aStats[5] > bStats[5]) {
                 if (round % 2 == 0) {
                     // a attack 
                     bStats[0] = safeDeduct(bStats[0], calHpDeducted(aStats[1], aStats[3], bStats[2], bStats[4], round==ran));
@@ -726,7 +726,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
             round+= 1;
         }
         
-        win = aStats[0] &gt;= bStats[0];
+        win = aStats[0] >= bStats[0];
     }
     
     function updateCastle(uint32 _castleId, address _castleOwner, bool win) requireCastleContract private{
@@ -739,16 +739,16 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         
         // if castle win, ignore
         if (win) {
-            if (totalWin &lt; brickNumber) {
+            if (totalWin < brickNumber) {
                  payment.giveBattleBonus(_castleOwner, winTokenReward);
             }
         } else {
-            if (totalWin/winBrickReturn &gt; brickNumber) {
+            if (totalWin/winBrickReturn > brickNumber) {
                 brickNumber = 2 * brickNumber;
             } else {
                 brickNumber += totalWin/winBrickReturn;
             }
-            if (brickNumber &lt;= totalLose + 1) {
+            if (brickNumber <= totalLose + 1) {
                 castle.removeCastleFromActive(_castleId);
                 // destroy
             }
@@ -765,18 +765,18 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
             return false;
         if (_a3 == _s1 || _a3 == _s2 || _a3 == _s3)
             return false;
-        if (_s1 &gt; 0 &amp;&amp; (_s1 == _s2 || _s1 == _s3))
+        if (_s1 > 0 && (_s1 == _s2 || _s1 == _s3))
             return false;
-        if (_s2 &gt; 0 &amp;&amp; (_s2 == _s3))
+        if (_s2 > 0 && (_s2 == _s3))
             return false;
         
         if (!isValidOwner(_a1, _trainer) || !isValidOwner(_a2, _trainer) || !isValidOwner(_a3, _trainer))
             return false;
-        if (_s1 &gt; 0 &amp;&amp; !isValidOwner(_s1, _trainer))
+        if (_s1 > 0 && !isValidOwner(_s1, _trainer))
             return false;
-        if (_s2 &gt; 0 &amp;&amp; !isValidOwner(_s2, _trainer))
+        if (_s2 > 0 && !isValidOwner(_s2, _trainer))
             return false;
-        if (_s3 &gt; 0 &amp;&amp; !isValidOwner(_s3, _trainer))
+        if (_s3 > 0 && !isValidOwner(_s3, _trainer))
             return false;
         return true;
     }
@@ -787,10 +787,10 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint castleIndex = 0;
         uint32 numberBrick = 0;
         (castleId, castleIndex, numberBrick) = castle.getCastleBasicInfo(_castleData.trainer);
-        if (castleId &gt; 0 || castleIndex &gt; 0)
+        if (castleId > 0 || castleIndex > 0)
             revert();
 
-        if (castle.countActiveCastle() &gt;= uint(maxActiveCastle))
+        if (castle.countActiveCastle() >= uint(maxActiveCastle))
             revert();
         castleId = castle.addCastle(_castleData.trainer, _castleData.name, _castleData.a1, _castleData.a2, _castleData.a3, 
             _castleData.s1, _castleData.s2, _castleData.s3, _castleData.brickNumber);
@@ -811,7 +811,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
             revert();
         
         uint32 numberBrick = uint32(msg.value / brickETHPrice);
-        if (numberBrick &lt; castleMinBrick) {
+        if (numberBrick < castleMinBrick) {
             revert();
         }
         
@@ -843,7 +843,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
             trade.isOnTrading(_s1) || trade.isOnTrading(_s2) || trade.isOnTrading(_s3))
             revert();
         
-        if (_noBrick &lt; castleMinBrick) {
+        if (_noBrick < castleMinBrick) {
             revert();
         }
         
@@ -879,7 +879,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         (index, owner, price) = castle.getCastleBasicInfoById(_castleId);
         if (owner != msg.sender)
             revert();
-        if (index &gt; 0) {
+        if (index > 0) {
             castle.removeCastleFromActive(_castleId);
         }
         EventRemoveCastle(_castleId);
@@ -889,11 +889,11 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint temp;
         uint32 __;
         EtheremonGateway gateway = EtheremonGateway(worldContract);
-        if (s1 &gt; 0)
+        if (s1 > 0)
             (sData.classId1, __, sData.isGason1, temp, temp) = gateway.getObjBattleInfo(s1);
-        if (s2 &gt; 0)
+        if (s2 > 0)
             (sData.classId2, __, sData.isGason2, temp, temp) = gateway.getObjBattleInfo(s2);
-        if (s3 &gt; 0)
+        if (s3 > 0)
             (sData.classId3, __, sData.isGason3, temp, temp) = gateway.getObjBattleInfo(s3);
 
         EtheremonDataBase data = EtheremonDataBase(dataContract);
@@ -961,8 +961,8 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
             countWin += 1; 
         
         
-        updateCastle(_castleId, log.castleOwner, countWin&gt;1);
-        if (countWin&gt;1) {
+        updateCastle(_castleId, log.castleOwner, countWin>1);
+        if (countWin>1) {
             log.result = BattleResult.CASTLE_WIN;
         } else {
             log.result = BattleResult.CASTLE_LOSE;

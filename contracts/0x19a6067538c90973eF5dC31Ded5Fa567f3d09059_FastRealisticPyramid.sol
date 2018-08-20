@@ -28,7 +28,7 @@ contract FastRealisticPyramid {
         }
 
         function enter() {
-                if (msg.value &lt; 1/100 ether || msg.value &gt; 50) {
+                if (msg.value < 1/100 ether || msg.value > 50) {
                         msg.sender.send(msg.value);
                         return;
                 }
@@ -49,7 +49,7 @@ contract FastRealisticPyramid {
                 }
 
 
-                if (balance &gt; person[payoutIdx].amount * 7/5) {
+                if (balance > person[payoutIdx].amount * 7/5) {
                         uint transactionAmount = 7/5 * (person[payoutIdx].amount - person[payoutIdx].amount / 10);
                         person[payoutIdx].etherAddress.send(transactionAmount);
 

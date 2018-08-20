@@ -22,7 +22,7 @@ contract AddressLottery is Ownable{
     
     uint luckyNumber = 13;
     uint private secretSeed;
-    mapping (address =&gt; bool) participated;
+    mapping (address => bool) participated;
 
 
     function AddressLottery() payable {

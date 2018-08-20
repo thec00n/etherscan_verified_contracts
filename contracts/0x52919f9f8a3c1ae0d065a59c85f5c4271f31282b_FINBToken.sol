@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_y &lt;= _x);
+        assert(_y <= _x);
         return _x - _y;
     }
 
     function add(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
         z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 }
@@ -64,8 +64,8 @@ contract Erc20Wrapper {
 contract StandardToken is Erc20Wrapper {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 totalSupply_;
 
@@ -79,7 +79,7 @@ contract StandardToken is Erc20Wrapper {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_value > 0 && _value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -91,7 +91,7 @@ contract StandardToken is Erc20Wrapper {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_from] &amp;&amp; _value &lt;= allowed[_from][msg.sender]);
+        require(_value > 0 && _value <= balances[_from] && _value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -124,7 +124,7 @@ contract StandardToken is Erc20Wrapper {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -186,8 +186,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract FINBToken is PausableToken {
-    string public name = &quot;FindBit.io Token&quot;;
-    string public symbol = &quot;FINB&quot;;
+    string public name = "FindBit.io Token";
+    string public symbol = "FINB";
     uint8  public decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 50000000 ether;
@@ -202,7 +202,7 @@ contract FINBToken is PausableToken {
         uint256 lastReleased;
     }
 
-    mapping (address =&gt; Schedule) freezed;
+    mapping (address => Schedule) freezed;
 
     event Freeze(address indexed _who, uint256 _value, uint256 _cliff, uint256 _duration);
     event Unfreeze(address indexed _who, uint256 _value);
@@ -221,9 +221,9 @@ contract FINBToken is PausableToken {
     }
 
     function freeze(uint256 _value, uint256 _duration) public {
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_value > 0 && _value <= balances[msg.sender]);
         require(freezed[msg.sender].amount == 0);
-        require(_duration &gt;= MIN_FREEZE_DURATION);
+        require(_duration >= MIN_FREEZE_DURATION);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -243,10 +243,10 @@ contract FINBToken is PausableToken {
 
     function freezeFrom(address _who, uint256 _value, uint256 _cliff, uint256 _duration) onlyOwner public {
         require(_who != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_who]);
+        require(_value > 0 && _value <= balances[_who]);
         require(freezed[_who].amount == 0);
-        require(_cliff &lt;= _duration);
-        require(_duration &gt;= MIN_FREEZE_DURATION);
+        require(_cliff <= _duration);
+        require(_duration >= MIN_FREEZE_DURATION);
 
         balances[_who] = balances[_who].sub(_value);
 
@@ -272,16 +272,16 @@ contract FINBToken is PausableToken {
         // solium-disable-next-line security/no-block-members
         uint256 timestamp = block.timestamp;
 
-        require(schedule.lastReleased.add(MIN_FREEZE_DURATION) &lt; timestamp);
-        require(schedule.amount &gt; 0 &amp;&amp; timestamp &gt; schedule.cliff);
+        require(schedule.lastReleased.add(MIN_FREEZE_DURATION) < timestamp);
+        require(schedule.amount > 0 && timestamp > schedule.cliff);
 
         uint256 unreleased = 0;
-        if (timestamp &gt;= schedule.start.add(schedule.duration)) {
+        if (timestamp >= schedule.start.add(schedule.duration)) {
             unreleased = schedule.amount;
         } else {
             unreleased = (schedule.amount.add(schedule.released)).mul(timestamp.sub(schedule.start)).div(schedule.duration).sub(schedule.released);
         }
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         schedule.released = schedule.released.add(unreleased);
         schedule.lastReleased = timestamp;
@@ -296,7 +296,7 @@ contract FINBToken is PausableToken {
 
     function mint(address _to, uint256 _value) onlyOwner public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
 
         totalSupply_ = totalSupply_.add(_value);
         balances[_to] = balances[_to].add(_value);
@@ -309,7 +309,7 @@ contract FINBToken is PausableToken {
 
     function burn(address _who, uint256 _value) onlyOwner public returns (bool success) {
         require(_who != address(0));
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_who]);
+        require(_value > 0 && _value <= balances[_who]);
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);

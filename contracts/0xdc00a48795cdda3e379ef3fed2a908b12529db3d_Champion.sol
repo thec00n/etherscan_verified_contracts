@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,15 +56,15 @@ contract Champion is Ownable {
     
     uint256[] public allGames;
     
-    mapping(uint256 =&gt; uint256) internal gameStartBlock;
+    mapping(uint256 => uint256) internal gameStartBlock;
     
-    mapping(uint256 =&gt; address[]) internal gamePlayers;
+    mapping(uint256 => address[]) internal gamePlayers;
     
-    mapping(uint256 =&gt; address) public winners;
+    mapping(uint256 => address) public winners;
     
-    mapping(uint256 =&gt; mapping(address =&gt; uint256[])) internal playerNumbersInGame;
+    mapping(uint256 => mapping(address => uint256[])) internal playerNumbersInGame;
 
-    mapping(uint256 =&gt; uint256) gamePrize;
+    mapping(uint256 => uint256) gamePrize;
     
     function Champion() {
         currentGameStatus = GS_NOT_STARTED;
@@ -117,7 +117,7 @@ contract Champion is Ownable {
         uint hi = uint8(b) / 16;
         uint lo = uint8(b) - 16 * uint8(hi);
         
-        if (lo &lt;= 9) {
+        if (lo <= 9) {
             return true;
         }
         
@@ -149,7 +149,7 @@ contract Champion is Ownable {
 
         uint256 steps = getCurrentGameSteps();
         uint256 startBlock = getStartBlock(_game);
-        require(startBlock + steps &lt; block.number);
+        require(startBlock + steps < block.number);
         
         uint256 lMin = 0;
         uint256 lMax = 0;
@@ -242,11 +242,11 @@ contract Champion is Ownable {
         uint8 right = 0;
         (left, right) = getGameRules(_gameBlock);
 
-        for (uint8 i = 1; i &lt;= BILLIONS_STEP; i++) {
+        for (uint8 i = 1; i <= BILLIONS_STEP; i++) {
             bool isNumberRes = isNumber(getStartBlock(_gameBlock) + i);
             
-            if ((isNumberRes &amp;&amp; left == NUMBER) ||
-                (!isNumberRes &amp;&amp; left == STRING)
+            if ((isNumberRes && left == NUMBER) ||
+                (!isNumberRes && left == STRING)
             ) {
                 if (lMin == lMax) {
                     rMin = lMin;
@@ -255,8 +255,8 @@ contract Champion is Ownable {
                 }
                 
                 rMax = lMax;
-            } else if (isNumberRes &amp;&amp; right == NUMBER ||
-                (!isNumberRes &amp;&amp; right == STRING)
+            } else if (isNumberRes && right == NUMBER ||
+                (!isNumberRes && right == STRING)
             ) {
                 if (rMin == rMax) {
                     lMin = rMin;
@@ -282,7 +282,7 @@ contract Champion is Ownable {
     function processStepsByStep(uint256 _gameBlock, uint256 step) 
             constant returns (uint256 lMin, uint256 lMax, uint256 rMin, uint256 rMax) {
         require(_gameBlock != 0);
-        require((getStartBlock(_gameBlock) + i) &lt; block.number);
+        require((getStartBlock(_gameBlock) + i) < block.number);
         
         lMin = 0;
         lMax = 0;
@@ -305,11 +305,11 @@ contract Champion is Ownable {
         uint8 right = 0;
         (left, right) = getGameRules(_gameBlock);
 
-        for (uint i = 1; i &lt;= step; i++) {
+        for (uint i = 1; i <= step; i++) {
             bool isNumberRes = isNumber(getStartBlock(_gameBlock) + i);
             
-            if ((isNumberRes &amp;&amp; left == NUMBER) ||
-                (!isNumberRes &amp;&amp; left == STRING)
+            if ((isNumberRes && left == NUMBER) ||
+                (!isNumberRes && left == STRING)
             ) {
                 if (lMin == lMax) {
                     rMin = lMin;
@@ -318,8 +318,8 @@ contract Champion is Ownable {
                 }
                 
                 rMax = lMax;
-            } else if (isNumberRes &amp;&amp; right == NUMBER ||
-                (!isNumberRes &amp;&amp; right == STRING)
+            } else if (isNumberRes && right == NUMBER ||
+                (!isNumberRes && right == STRING)
             ) {
                 if (rMin == rMax) {
                     lMin = rMin;

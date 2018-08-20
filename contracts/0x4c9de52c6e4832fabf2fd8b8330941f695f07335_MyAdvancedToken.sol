@@ -28,20 +28,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -49,16 +49,16 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract TokenERC20 is SafeMath {
     // Public variables of the token
-    string public name = &quot;World Trading Unit&quot;;
-    string public symbol = &quot;WTU&quot;;
+    string public name = "World Trading Unit";
+    string public symbol = "WTU";
     uint8 public decimals = 8;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public TotalToken = 21000000;
     uint256 public RemainingTokenStockForSale;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -83,7 +83,7 @@ contract TokenERC20 is SafeMath {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Save this for an assertion in the future
         uint previousBalances = safeAdd(balanceOf[_from],balanceOf[_to]);
         // Subtract from the sender
@@ -117,7 +117,7 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender],_value);
         _transfer(_from, _to, _value);
         return true;
@@ -164,7 +164,7 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender],_value);      // Subtract from the sender
         RemainingTokenStockForSale = safeSub(RemainingTokenStockForSale,_value);                // Updates RemainingTokenStockForSale
         Burn(msg.sender, _value);
@@ -180,10 +180,10 @@ contract TokenERC20 is SafeMath {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender]  = safeSub(allowance[_from][msg.sender],_value);             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender]  = safeSub(allowance[_from][msg.sender],_value);             // Subtract from the sender's allowance
         RemainingTokenStockForSale = safeSub(RemainingTokenStockForSale,_value);                              // Update RemainingTokenStockForSale
         Burn(_from, _value);
         return true;
@@ -199,7 +199,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
     uint256 public sellPrice = 0.001 ether;
     uint256 public buyPrice = 0.001 ether;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -207,8 +207,8 @@ contract MyAdvancedToken is owned, TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (safeAdd(balanceOf[_to],_value) &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (safeAdd(balanceOf[_to],_value) > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] = safeSub(balanceOf[_from],_value);                         // Subtract from the sender
@@ -216,7 +216,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
         Transfer(_from, _to, _value);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -241,9 +241,9 @@ contract MyAdvancedToken is owned, TokenERC20 {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance &gt;= safeMul(amount,sellPrice));      // checks if the contract has enough ether to buy
+        require(this.balance >= safeMul(amount,sellPrice));      // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(safeMul(amount, sellPrice));          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(safeMul(amount, sellPrice));          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
     //FallBack 
     function () payable public {
@@ -251,42 +251,42 @@ contract MyAdvancedToken is owned, TokenERC20 {
     }
 /*
 Fonction de repli FallBack (fonction sans nom)
-Un contrat peut avoir exactement une fonction sans nom. Cette fonction ne peut pas avoir d&#39;arguments et ne peut rien retourner. Il est ex&#233;cut&#233; sur un appel au contrat si aucune des autres fonctions ne correspond &#224; l&#39;identificateur de fonction donn&#233; (ou si aucune donn&#233;e n&#39;a &#233;t&#233; fournie).
+Un contrat peut avoir exactement une fonction sans nom. Cette fonction ne peut pas avoir d'arguments et ne peut rien retourner. Il est exécuté sur un appel au contrat si aucune des autres fonctions ne correspond à l'identificateur de fonction donné (ou si aucune donnée n'a été fournie).
 
-De plus, cette fonction est ex&#233;cut&#233;e chaque fois que le contrat re&#231;oit un Ether (sans donn&#233;es). De plus, afin de recevoir Ether, la fonction de repli doit &#234;tre marqu&#233;e payable. Si aucune fonction n&#39;existe, le contrat ne peut pas recevoir Ether via des transactions r&#233;guli&#232;res.
+De plus, cette fonction est exécutée chaque fois que le contrat reçoit un Ether (sans données). De plus, afin de recevoir Ether, la fonction de repli doit être marquée payable. Si aucune fonction n'existe, le contrat ne peut pas recevoir Ether via des transactions régulières.
 
-Dans le pire des cas, la fonction de repli ne peut compter que sur 2300 gaz disponibles (par exemple lorsque l&#39;envoi ou le transfert est utilis&#233;), ne laissant pas beaucoup de place pour effectuer d&#39;autres op&#233;rations sauf la journalisation de base.
-Les op&#233;rations suivantes consomment plus de gaz que l&#39;allocation de gaz 2300:
+Dans le pire des cas, la fonction de repli ne peut compter que sur 2300 gaz disponibles (par exemple lorsque l'envoi ou le transfert est utilisé), ne laissant pas beaucoup de place pour effectuer d'autres opérations sauf la journalisation de base.
+Les opérations suivantes consomment plus de gaz que l'allocation de gaz 2300:
 
  - Ecrire dans le stockage
- - Cr&#233;er un contrat
- - Appel d&#39;une fonction externe qui consomme une grande quantit&#233; de gaz
+ - Créer un contrat
+ - Appel d'une fonction externe qui consomme une grande quantité de gaz
  - Envoyer Ether
  
-Comme toute fonction, la fonction de repli peut ex&#233;cuter des op&#233;rations complexes tant qu&#39;il y a suffisamment de gaz.
+Comme toute fonction, la fonction de repli peut exécuter des opérations complexes tant qu'il y a suffisamment de gaz.
 
 Remarque
- M&#234;me si la fonction de remplacement ne peut pas avoir d&#39;arguments, vous pouvez toujours utiliser msg.data pour r&#233;cup&#233;rer les donn&#233;es utiles fournies avec l&#39;appel.
+ Même si la fonction de remplacement ne peut pas avoir d'arguments, vous pouvez toujours utiliser msg.data pour récupérer les données utiles fournies avec l'appel.
 
 Attention
- Les contrats qui re&#231;oivent directement Ether 
- (sans appel de fonction, c&#39;est-&#224;-dire en utilisant send ou transfer)
- mais ne d&#233;finissent pas de fonction de repli jettent une exception,
- renvoyant l&#39;Ether (ceci &#233;tait diff&#233;rent avant Solidity v0.4.0).
- Donc, si vous voulez que votre contrat re&#231;oive Ether, 
- vous devez impl&#233;menter une fonction de repli.
+ Les contrats qui reçoivent directement Ether 
+ (sans appel de fonction, c'est-à-dire en utilisant send ou transfer)
+ mais ne définissent pas de fonction de repli jettent une exception,
+ renvoyant l'Ether (ceci était différent avant Solidity v0.4.0).
+ Donc, si vous voulez que votre contrat reçoive Ether, 
+ vous devez implémenter une fonction de repli.
  
 
 Attention
  Un contrat sans fonction de repli payable peut recevoir Ether 
- en tant que destinataire d&#39;une transaction coinbase 
- (r&#233;compense de bloc minier) 
- ou en tant que destination d&#39;un selfdestruct.
+ en tant que destinataire d'une transaction coinbase 
+ (récompense de bloc minier) 
+ ou en tant que destination d'un selfdestruct.
 
-Un contrat ne peut pas r&#233;agir &#224; ces transferts Ether et ne peut donc pas les rejeter.
-C&#39;est un choix de conception de l&#39;EVM et Solidity ne peut pas contourner ce probl&#232;me.
+Un contrat ne peut pas réagir à ces transferts Ether et ne peut donc pas les rejeter.
+C'est un choix de conception de l'EVM et Solidity ne peut pas contourner ce problème.
 
-Cela signifie &#233;galement que cette valeur peut &#234;tre sup&#233;rieure &#224; la somme de certains comptes manuels impl&#233;ment&#233;s dans un contrat (c&#39;est-&#224;-dire avoir un compteur mis &#224; jour dans la fonction de repli).
+Cela signifie également que cette valeur peut être supérieure à la somme de certains comptes manuels implémentés dans un contrat (c'est-à-dire avoir un compteur mis à jour dans la fonction de repli).
 */
 
 

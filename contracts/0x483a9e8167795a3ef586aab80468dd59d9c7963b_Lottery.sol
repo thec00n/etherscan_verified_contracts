@@ -19,16 +19,16 @@ contract Lottery {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
+        if (b.length < minLength) minLength = b.length;
         //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -39,7 +39,7 @@ contract Lottery {
     }
     function enter(string message) public payable {
         require(lockGate == false);
-        require(msg.value == .05 ether &amp;&amp; equal(message, &quot;lotto&quot;) == true);
+        require(msg.value == .05 ether && equal(message, "lotto") == true);
         players.push(msg.sender);
     }
     function random() private restricted view returns (uint) {
@@ -70,7 +70,7 @@ contract Lottery {
         uint consolationPrize = this.balance;
         uint eachConsolationPrize = consolationPrize / consolationLength;
         uint consolationPrizeIndex;
-        for (uint index = 0; index &lt; consolationLength; index++) {
+        for (uint index = 0; index < consolationLength; index++) {
             consolationPrizeIndex = consolationPrizeIndexes[index];
             players[consolationPrizeIndex].transfer(eachConsolationPrize);
             lastConsolationPrize.push(players[consolationPrizeIndex]);

@@ -7,7 +7,7 @@ pragma solidity ^0.4.19;
 
 // Dev fee is 0.0005 per winner
 
-// Enjoy, don&#39;t forget to check this account
+// Enjoy, don't forget to check this account
 // I will refill it
 
 contract Countdown {
@@ -22,26 +22,26 @@ contract Countdown {
     }
     
     function click() public payable {
-        require(msg.value &gt;= 0.0001 ether);
+        require(msg.value >= 0.0001 ether);
         deadline = now + waittime;
         winner = msg.sender;
     }
     
     function withdraw() public {
-        require(now &gt; deadline);
+        require(now > deadline);
         require(msg.sender == winner);
         
         deadline = now + waittime;
 
         // Winner take 10% of the funds
         // And the game continues !
-        if(this.balance &lt; 0.0005 ether)
+        if(this.balance < 0.0005 ether)
             msg.sender.transfer(this.balance);
         else
             msg.sender.transfer(this.balance /  10);
 
         // The only fee I will take
-        if(this.balance &gt; 0.0005 ether)
+        if(this.balance > 0.0005 ether)
             owner.transfer(0.0005 ether);
     }
 }

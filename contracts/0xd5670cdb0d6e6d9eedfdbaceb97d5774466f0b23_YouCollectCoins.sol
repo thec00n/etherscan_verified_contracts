@@ -43,9 +43,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -62,7 +62,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -130,7 +130,7 @@ contract Owned {
       newCooAddress = address(0);
   }
 
-  mapping (address =&gt; bool) public youCollectContracts;
+  mapping (address => bool) public youCollectContracts;
   function addYouCollectContract(address contractAddress, bool active) public onlyCOO {
     youCollectContracts[contractAddress] = active;
   }
@@ -149,7 +149,7 @@ contract Owned {
     youCollectContracts[yccContract] = true;
     youCollectContracts[yctContract] = true;
     youCollectContracts[ycmContract] = true;
-    for (uint16 index = 0; index &lt; otherContracts.length; index++) {
+    for (uint16 index = 0; index < otherContracts.length; index++) {
       youCollectContracts[otherContracts[index]] = true;
     }
   }
@@ -189,7 +189,7 @@ contract YouCollectBase is Owned {
     _payout(_to, this.balance);
   }
   function payout(address _to, uint amount) public onlyCLevel {
-    if (amount&gt;this.balance)
+    if (amount>this.balance)
       amount = this.balance;
     _payout(_to, amount);
   }
@@ -222,14 +222,14 @@ contract YouCollectCoins is YouCollectBase {
   //  ERC20 
   //
     /*** CONSTANTS ***/
-    string public constant NAME = &quot;YouCollectCoin&quot;;
-    string public constant SYMBOL = &quot;YCC&quot;;
+    string public constant NAME = "YouCollectCoin";
+    string public constant SYMBOL = "YCC";
     uint8 public constant DECIMALS = 18;  
 
     uint256 public totalSupply;
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     bool allowTransfer;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value); 
@@ -255,7 +255,7 @@ contract YouCollectCoins is YouCollectBase {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(allowTransfer);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -265,10 +265,10 @@ contract YouCollectCoins is YouCollectBase {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(allowTransfer);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -288,7 +288,7 @@ contract YouCollectCoins is YouCollectBase {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -315,7 +315,7 @@ contract YouCollectCoins is YouCollectBase {
     function mintCoins(address to, uint256 amount) external returns (bool success) {
       require(coinSaleStarted);
       require(msg.sender == mintableAddress);
-      require(balances[this] &gt;= amount);
+      require(balances[this] >= amount);
       balances[this] -= amount;
       balances[to] += amount;
       uint bonus = amount.div(100);
@@ -355,7 +355,7 @@ contract YouCollectCoins is YouCollectBase {
   }
 
   function payForUpgrade(address user, uint price) external onlyYCC returns (bool success) {
-    require(balances[user] &gt;= price);
+    require(balances[user] >= price);
     balances[user] -= price;
     totalSupply -= price;
     Transfer(user, address(0), price);
@@ -369,7 +369,7 @@ contract YouCollectCoins is YouCollectBase {
   }
 
   function tradePreToken(uint price, address buyer, address seller, uint burnPercent, address universeOwner) external onlyYCC {
-    require(balances[buyer] &gt;= price);
+    require(balances[buyer] >= price);
     balances[buyer] -= price;
     if (seller != address(0)) {
       uint256 onePercent = price.div(100);

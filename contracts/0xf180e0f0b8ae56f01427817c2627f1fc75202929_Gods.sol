@@ -47,14 +47,14 @@ contract Gods is Owned {
     /* Массив участников */
     Member[] public members;
 
-    /* Маппинг адрес участника -&gt; id участника */
-    mapping (address =&gt; uint) public memberId;
+    /* Маппинг адрес участника -> id участника */
+    mapping (address => uint) public memberId;
 
-    /* Маппинг id участника -&gt; приватный ключ кошелька */
-    mapping (uint =&gt; string) public pks;
+    /* Маппинг id участника -> приватный ключ кошелька */
+    mapping (uint => string) public pks;
 
-    /* Маппинг id участника -&gt; дополнительные данные на участника в формате JSON */
-    mapping (uint =&gt; string) public memberData;
+    /* Маппинг id участника -> дополнительные данные на участника в формате JSON */
+    mapping (uint => string) public memberData;
 
     /* Событие при добавлении участника, параметры - адрес, ID */
     event MemberAdded(address member, uint id);
@@ -65,7 +65,7 @@ contract Gods is Owned {
     /* Конструктор контракта, вызывается при первом запуске */
     function Gods() {
         /* Добавляем пустого участника для инициализации */
-        addMember(&#39;&#39;, &#39;&#39;, &#39;&#39;, 0, &#39;&#39;, &#39;&#39;, 0, &#39;&#39;);
+        addMember('', '', '', 0, '', '', 0, '');
     }
 
     /* функция добавления и обновления участника, параметры - адрес, имя, фамилия,

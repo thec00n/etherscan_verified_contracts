@@ -57,9 +57,9 @@ contract DET is EIP20Interface {
     //创始者
     address public god;
     // 点卡余额
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     // 点卡授权维护
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     //服务节点
     struct ServiceStat {
@@ -70,7 +70,7 @@ contract DET is EIP20Interface {
     }
 
     //每个用户状态状态
-    mapping (address =&gt; mapping (uint64 =&gt; ServiceStat)) public serviceStatMap;
+    mapping (address => mapping (uint64 => ServiceStat)) public serviceStatMap;
 
     //服务价格
     struct ServiceConfig{
@@ -82,12 +82,12 @@ contract DET is EIP20Interface {
         string detail;
     }
     //服务价格配置
-    mapping (uint64 =&gt; ServiceConfig) public serviceConfgMap;
-    mapping (uint64 =&gt; uint256) public serviceWin;
+    mapping (uint64 => ServiceConfig) public serviceConfgMap;
+    mapping (uint64 => uint256) public serviceWin;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -112,7 +112,7 @@ contract DET is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -121,10 +121,10 @@ contract DET is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -173,12 +173,12 @@ contract DET is EIP20Interface {
 
     //购买服务
     function buyService(uint64 _serviceId,uint64 _count) public returns (uint256 cost, uint256 timestamp){
-        require(_count &gt;= 1);
+        require(_count >= 1);
         //计算多少点卡
         //ServiceConfig storage config = serviceConfgMap[_serviceId];
         cost = serviceConfgMap[_serviceId].price * serviceConfgMap[_serviceId].discount * _count / 100;
         address fitAddr = serviceConfgMap[_serviceId].fitAddr;
-        //require(balances[msg.sender]&gt;need);
+        //require(balances[msg.sender]>need);
         if( transfer(fitAddr,cost ) == true ){
             uint256 timeEx = serviceStatMap[msg.sender][_serviceId].timestamp;
             if(timeEx == 0){
@@ -189,7 +189,7 @@ contract DET is EIP20Interface {
                 serviceWin[_serviceId] += cost;
                 timestamp = serviceStatMap[msg.sender][_serviceId].timestamp;
             }else{
-                if(timeEx &lt; now){
+                if(timeEx < now){
                     timeEx = now;
                 }
                 timeEx += (_count * 86400);
@@ -205,13 +205,13 @@ contract DET is EIP20Interface {
     //购买服务
     function buyServiceByAdmin(uint64 _serviceId,uint64 _count,address addr) public returns (uint256 cost, uint256 timestamp){
         require(msg.sender==god);
-        require(_count &gt;= 1);
+        require(_count >= 1);
         //计算多少点卡
         //ServiceConfig storage config = serviceConfgMap[_serviceId];
         cost = serviceConfgMap[_serviceId].price * serviceConfgMap[_serviceId].discount * _count / 100;
         address fitAddr = serviceConfgMap[_serviceId].fitAddr;
         timestamp = 0;
-        require(balances[addr] &gt;= cost);
+        require(balances[addr] >= cost);
         balances[fitAddr] += cost;
         balances[addr] -= cost;
         emit Transfer(addr, fitAddr, cost); 
@@ -225,7 +225,7 @@ contract DET is EIP20Interface {
             serviceWin[_serviceId] += cost;
             timestamp = serviceStatMap[addr][_serviceId].timestamp;
         }else{
-            if(timeEx &lt; now){
+            if(timeEx < now){
                 timeEx = now;
             }
             timeEx += (_count * 86400);

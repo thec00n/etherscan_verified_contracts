@@ -17,10 +17,10 @@ contract mETHNetwork {
     uint256 public feeAmount;
 
     // Array definitions
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     // ERC20 event
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -41,8 +41,8 @@ contract mETHNetwork {
      */
     function mETHNetwork() public {
         director = msg.sender;
-        name = &quot;mETH&quot;;
-        symbol = &quot;METH&quot;;
+        name = "mETH";
+        symbol = "METH";
         decimals = 10;
         saleClosed = true;
         directorLock = false;
@@ -123,7 +123,7 @@ contract mETHNetwork {
         uint256 amount = msg.value * 100000000;
         
         // totalSupply limit is 9 billion mETH
-        require(totalSupply + amount &lt;= (9000000000 * 10 ** uint256(decimals)));
+        require(totalSupply + amount <= (9000000000 * 10 ** uint256(decimals)));
         
         // Increases the total supply
         totalSupply += amount;
@@ -151,10 +151,10 @@ contract mETHNetwork {
         require(_to != 0x0);
         
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         
         // Save this for an assertion in the future
         uint256 previousBalances = balances[_from] + balances[_to];
@@ -193,7 +193,7 @@ contract mETHNetwork {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -245,7 +245,7 @@ contract mETHNetwork {
         require(!buried[msg.sender]);
         
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         // Subtract from the sender
         balances[msg.sender] -= _value;
@@ -265,15 +265,15 @@ contract mETHNetwork {
         require(!buried[_from]);
         
         // Check if the targeted balance is enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         // Subtract from the targeted balance
         balances[_from] -= _value;
         
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
         
         // Update totalSupply

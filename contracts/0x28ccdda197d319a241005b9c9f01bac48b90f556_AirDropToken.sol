@@ -13,10 +13,10 @@ contract AirDropToken {
 
     bytes32 _rootHash;
 
-    mapping (address =&gt; uint256) _balances;
-    mapping (address =&gt; mapping(address =&gt; uint256)) _allowed;
+    mapping (address => uint256) _balances;
+    mapping (address => mapping(address => uint256)) _allowed;
 
-    mapping (uint256 =&gt; uint256) _redeemed;
+    mapping (uint256 => uint256) _redeemed;
 
     function MerkleAirDropToken(string name, string symbol, uint8 decimals, bytes32 rootHash, uint256 premine) public {
         _name = name;
@@ -24,7 +24,7 @@ contract AirDropToken {
         _decimals = decimals;
         _rootHash = rootHash;
 
-        if (premine &gt; 0) {
+        if (premine > 0) {
             _balances[msg.sender] = premine;
             _totalSupply = premine;
             Transfer(0, msg.sender, premine);
@@ -56,7 +56,7 @@ contract AirDropToken {
     }
 
     function transfer(address to, uint256 amount) public returns (bool success) {
-        if (_balances[msg.sender] &lt; amount) { return false; }
+        if (_balances[msg.sender] < amount) { return false; }
 
         _balances[msg.sender] -= amount;
         _balances[to] += amount;
@@ -68,7 +68,7 @@ contract AirDropToken {
 
     function transferFrom(address from, address to, uint256 amount) public returns (bool success) {
 
-        if (_allowed[from][msg.sender] &lt; amount || _balances[from] &lt; amount) {
+        if (_allowed[from][msg.sender] < amount || _balances[from] < amount) {
             return false;
         }
 
@@ -91,23 +91,23 @@ contract AirDropToken {
 
     function redeemed(uint256 index) public constant returns (bool redeemed) {
         uint256 redeemedBlock = _redeemed[index / 256];
-        uint256 redeemedMask = (uint256(1) &lt;&lt; uint256(index % 256));
-        return ((redeemedBlock &amp; redeemedMask) != 0);
+        uint256 redeemedMask = (uint256(1) << uint256(index % 256));
+        return ((redeemedBlock & redeemedMask) != 0);
     }
 
     function redeemPackage(uint256 index, address recipient, uint256 amount, bytes32[] merkleProof) public {
 
         // Make sure this package has not already been claimed (and claim it)
         uint256 redeemedBlock = _redeemed[index / 256];
-        uint256 redeemedMask = (uint256(1) &lt;&lt; uint256(index % 256));
-        require((redeemedBlock &amp; redeemedMask) == 0);
+        uint256 redeemedMask = (uint256(1) << uint256(index % 256));
+        require((redeemedBlock & redeemedMask) == 0);
         _redeemed[index / 256] = redeemedBlock | redeemedMask;
 
         // Compute the merkle root
         bytes32 node = keccak256(index, recipient, amount);
         uint256 path = index;
-        for (uint16 i = 0; i &lt; merkleProof.length; i++) {
-            if ((path &amp; 0x01) == 1) {
+        for (uint16 i = 0; i < merkleProof.length; i++) {
+            if ((path & 0x01) == 1) {
                 node = keccak256(merkleProof[i], node);
             } else {
                 node = keccak256(node, merkleProof[i]);

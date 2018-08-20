@@ -20,7 +20,7 @@ pragma solidity ^0.4.16;
 
 /**
  * @title Math
- * @dev Math operations with safety checks that throw on error. Added: random and &quot;float&quot; divide for numbers
+ * @dev Math operations with safety checks that throw on error. Added: random and "float" divide for numbers
  */
 library Math {
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -30,20 +30,20 @@ library Math {
     }
  
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
  
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
  
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -60,7 +60,7 @@ library Math {
 
 /**
  * @title Randomizer
- * @dev Fuck me... &gt;_&lt;
+ * @dev Fuck me... >_<
  */
 contract Randomizer {
     function getRandomNumber(int256 min, int256 max) public returns(int256);
@@ -99,7 +99,7 @@ contract DiceForSlice is Ownable {
     event OMGItIsJackPot(address winner);
 
     // Address storage for referral system
-    mapping(address =&gt; uint256) private bets;
+    mapping(address => uint256) private bets;
 
     // Randomizer contract
     Randomizer private rand;
@@ -145,11 +145,11 @@ contract DiceForSlice is Ownable {
     }
 
     /**
-     * @dev Check bank not empty (empty is &lt; betPrice eth)
+     * @dev Check bank not empty (empty is < betPrice eth)
      */
     modifier bankNotEmpty() {
-        require(bank &gt;= Math.percent(betPrice, rewardTwo));
-        require(address(this).balance &gt;= bank);
+        require(bank >= Math.percent(betPrice, rewardTwo));
+        require(address(this).balance >= bank);
         _;
     }
 
@@ -166,8 +166,8 @@ contract DiceForSlice is Ownable {
      * @dev Special method for fill contract bank 
      */
     function fillTheBank() external payable {
-        require(msg.value &gt;= sponsorDiff);
-        if (msg.value &gt;= sponsorValue + sponsorDiff) {
+        require(msg.value >= sponsorDiff);
+        if (msg.value >= sponsorValue + sponsorDiff) {
             sponsorValue = msg.value;
             sponsor      = msg.sender;
         }
@@ -179,8 +179,8 @@ contract DiceForSlice is Ownable {
      * @dev Restore value from stock
      */
     function appendStock(uint256 amount) external onlyOwner {
-        require(amount &gt; 0);
-        require(stock &gt;= amount);
+        require(amount > 0);
+        require(stock >= amount);
         bank  = Math.add(bank,  amount);
         stock = Math.sub(stock, amount);
     }
@@ -206,7 +206,7 @@ contract DiceForSlice is Ownable {
      * @dev Check is valid number
      */
     function isValidNumber(uint8 number) private view returns(bool) {
-        return number &gt;= minNumber &amp;&amp; number &lt;= maxNumber;
+        return number >= minNumber && number <= maxNumber;
     }
 
 
@@ -230,7 +230,7 @@ contract DiceForSlice is Ownable {
         owner.transfer(_partOwner);
         sponsor.transfer(_partSponsor);
 
-        if (referral != address(0) &amp;&amp; referral != msg.sender &amp;&amp; bets[referral] &gt; 0) {
+        if (referral != address(0) && referral != msg.sender && bets[referral] > 0) {
             referral.transfer(_partReferral);
         } else {
             stock = Math.add(stock, _partReferral);
@@ -243,9 +243,9 @@ contract DiceForSlice is Ownable {
      */
     function isWinner(uint8 required, uint8[5] numbers, uint8[5] randoms) private pure returns(bool) {
         uint8 count = 0;
-        for (uint8 i = 0; i &lt; numbers.length; i++) {
+        for (uint8 i = 0; i < numbers.length; i++) {
             if (numbers[i] == 0) continue;
-            for (uint8 j = 0; j &lt; randoms.length; j++) {
+            for (uint8 j = 0; j < randoms.length; j++) {
                 if (randoms[j] == 0) continue;
                 if (randoms[j] == numbers[i]) {
                     count++;
@@ -263,8 +263,8 @@ contract DiceForSlice is Ownable {
      */
     function rewardTheWinner(uint8 reward) private {
         uint256 rewardValue = Math.percent(bank, reward);
-        require(rewardValue &lt;= getBalance());
-        require(rewardValue &lt;= bank);
+        require(rewardValue <= getBalance());
+        require(rewardValue <= bank);
         bank = Math.sub(bank, rewardValue);
         msg.sender.transfer(rewardValue);
         emit WeHaveAWinner(msg.sender, rewardValue);
@@ -296,7 +296,7 @@ contract DiceForSlice is Ownable {
 
     function rollTwo(address referral, uint8 number1, uint8 number2)
     external payable isValidBet(rewardTwo) bankNotEmpty {
-        require(isValidNumber(number1) &amp;&amp; isValidNumber(number2));
+        require(isValidNumber(number1) && isValidNumber(number2));
         bets[msg.sender]++;
 
         splitTheBet(referral);
@@ -316,7 +316,7 @@ contract DiceForSlice is Ownable {
 
     function rollThree(address referral, uint8 number1, uint8 number2, uint8 number3)
     external payable isValidBet(rewardThree) bankNotEmpty {
-        require(isValidNumber(number1) &amp;&amp; isValidNumber(number2) &amp;&amp; isValidNumber(number3));
+        require(isValidNumber(number1) && isValidNumber(number2) && isValidNumber(number3));
         bets[msg.sender]++;
 
         splitTheBet(referral);
@@ -336,7 +336,7 @@ contract DiceForSlice is Ownable {
 
     function rollFour(address referral, uint8 number1, uint8 number2, uint8 number3, uint8 number4)
     external payable isValidBet(rewardFour) bankNotEmpty {
-        require(isValidNumber(number1) &amp;&amp; isValidNumber(number2) &amp;&amp; isValidNumber(number3) &amp;&amp; isValidNumber(number4));
+        require(isValidNumber(number1) && isValidNumber(number2) && isValidNumber(number3) && isValidNumber(number4));
         bets[msg.sender]++;
 
         splitTheBet(referral);
@@ -356,7 +356,7 @@ contract DiceForSlice is Ownable {
 
     function rollFive(address referral, uint8 number1, uint8 number2, uint8 number3, uint8 number4, uint8 number5)
     external payable isValidBet(jackPot) bankNotEmpty {
-        require(isValidNumber(number1) &amp;&amp; isValidNumber(number2) &amp;&amp; isValidNumber(number3) &amp;&amp; isValidNumber(number4) &amp;&amp; isValidNumber(number5));
+        require(isValidNumber(number1) && isValidNumber(number2) && isValidNumber(number3) && isValidNumber(number4) && isValidNumber(number5));
         bets[msg.sender]++;
 
         splitTheBet(referral);

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -66,8 +66,8 @@ contract BasicToken is ERC20Basic {
 
 contract ELTCoin is BasicToken {
 
-  string public constant name = &quot;ELTCoin&quot;;
-  string public constant symbol = &quot;ELTCoin&quot;;
+  string public constant name = "ELTCoin";
+  string public constant symbol = "ELTCoin";
   uint8 public constant decimals = 8;
 
   uint256 public constant INITIAL_SUPPLY = 84000000 * (10 ** uint256(decimals));

@@ -82,8 +82,8 @@ contract TokenVault is owned, halting {
         units       = _units;
 
         require(asset != 0);
-        require(sellPrice &gt; 0);
-        require(units &gt; 0);
+        require(sellPrice > 0);
+        require(units > 0);
     }
 
     // Withdraw asset ERC20 Token
@@ -104,27 +104,27 @@ contract TokenVault is owned, halting {
     }
 
     function min(uint a, uint b) private returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     // Primary function; called with Ether sent to contract
     function takerBuyAsset() payable halting {
 
         // Must request at least one asset
-        require(msg.value &gt;= sellPrice);
+        require(msg.value >= sellPrice);
 
         uint order    = msg.value / sellPrice;
         uint can_sell = getAssetBalance() / units;
         // start with no change
         uint256 change = 0;
-        if (msg.value &gt; (can_sell * sellPrice)) {
+        if (msg.value > (can_sell * sellPrice)) {
             change  = msg.value - (can_sell * sellPrice);
             order = can_sell;
         }
-        if (change &gt; 0) {
+        if (change > 0) {
             if (!msg.sender.send(change)) throw;
         }
-        if (order &gt; 0) {
+        if (order > 0) {
             if (!ERC20(asset).transfer(msg.sender, order * units)) throw;
         }
         SoldTokens(order);

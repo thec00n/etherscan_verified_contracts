@@ -31,20 +31,20 @@ contract AirDropContract {
 
         require(tokenAddress != 0x0);
         require(conTokenAddress != 0x0);
-        require(amount &gt; 0);
-        require(minmaxTokenBalance[1] &gt;= minmaxTokenBalance[0]);
-        require(minmaxConBalance[1] &gt;= minmaxConBalance[0]);
-        require(minmaxEthBalance[1] &gt;= minmaxEthBalance[0]);
+        require(amount > 0);
+        require(minmaxTokenBalance[1] >= minmaxTokenBalance[0]);
+        require(minmaxConBalance[1] >= minmaxConBalance[0]);
+        require(minmaxEthBalance[1] >= minmaxEthBalance[0]);
 
         ERC20 token = ERC20(tokenAddress);
         ERC20 contoken = ERC20(conTokenAddress);
 
         uint balance = token.balanceOf(msg.sender);
         uint allowance = token.allowance(msg.sender, address(this));
-        uint available = balance &gt; allowance ? allowance : balance;
+        uint available = balance > allowance ? allowance : balance;
 
-        for (uint i = 0; i &lt; recipients.length; i++) {
-            require(available &gt;= amount);
+        for (uint i = 0; i < recipients.length; i++) {
+            require(available >= amount);
             address recipient = recipients[i];
             if (isQualitifiedAddress(
                 token,
@@ -74,24 +74,24 @@ contract AirDropContract {
         view
         returns (bool result)
     {
-        result = addr != 0x0 &amp;&amp; addr != msg.sender &amp;&amp; !isContract(addr);
+        result = addr != 0x0 && addr != msg.sender && !isContract(addr);
 
         uint ethBalance = addr.balance;
         uint tokenBbalance = token.balanceOf(addr);
         uint conTokenBalance = contoken.balanceOf(addr);
 
-        result = result &amp;&amp; (ethBalance&gt;= minmaxEthBalance[0] &amp;&amp;
-            ethBalance &lt;= minmaxEthBalance[1] &amp;&amp;
-            tokenBbalance &gt;= minmaxTokenBalance[0] &amp;&amp;
-            tokenBbalance &lt;= minmaxTokenBalance[1] &amp;&amp;
-            conTokenBalance &gt;= minmaxConBalance[0] &amp;&amp;
-            conTokenBalance &lt;= minmaxConBalance[1]);
+        result = result && (ethBalance>= minmaxEthBalance[0] &&
+            ethBalance <= minmaxEthBalance[1] &&
+            tokenBbalance >= minmaxTokenBalance[0] &&
+            tokenBbalance <= minmaxTokenBalance[1] &&
+            conTokenBalance >= minmaxConBalance[0] &&
+            conTokenBalance <= minmaxConBalance[1]);
     }
 
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function () payable public {

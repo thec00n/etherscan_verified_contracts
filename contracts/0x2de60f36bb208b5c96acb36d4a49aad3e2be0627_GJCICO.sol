@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -235,7 +235,7 @@ contract GJCICO is Pausable{
   // Ico cap is determined by SaleCap + PreSaleCap - soldPreSaleTokens 
   function setSoldPreSaleTokens(uint256 _soldPreSaleTokens) external onlyOwner{
     require(!icoEnabled);
-    require(_soldPreSaleTokens &lt;= preSaleCap);
+    require(_soldPreSaleTokens <= preSaleCap);
     soldPreSaleTokens = _soldPreSaleTokens;
   }
 
@@ -244,9 +244,9 @@ contract GJCICO is Pausable{
   // the total amount to tranfered need to be less or equal to soldPreSaleTokens 
   function transferPreSaleTokens(uint256 tokens, address beneficiary) external onlyOwner {
     require(beneficiary != address(0));
-    require(soldPreSaleTokens &gt; 0);
+    require(soldPreSaleTokens > 0);
     uint256 newSentPreSaleTokens = sentPreSaleTokens.add(tokens);
-    require(newSentPreSaleTokens &lt;= soldPreSaleTokens);
+    require(newSentPreSaleTokens <= soldPreSaleTokens);
     sentPreSaleTokens = newSentPreSaleTokens;
     token.transfer(beneficiary, tokens);
   }
@@ -259,7 +259,7 @@ contract GJCICO is Pausable{
   // set multisign wallet
   function setMultisignWallet(address _multisignWallet) external onlyOwner{
     // need to be set before the ico start
-    require(!icoEnabled || now &lt; startTime);
+    require(!icoEnabled || now < startTime);
     require(_multisignWallet != address(0));
     multisignWallet = _multisignWallet;
   }
@@ -272,8 +272,8 @@ contract GJCICO is Pausable{
   // set contribution dates
   function setContributionDates(uint256 _startTime, uint256 _endTime) external onlyOwner{
     require(!icoEnabled);
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
     startTime = _startTime;
     endTime = _endTime;
   }
@@ -283,7 +283,7 @@ contract GJCICO is Pausable{
   // once ico is enabled, following parameters can not be changed anymore:
   // startTime, endTime, soldPreSaleTokens
   function enableICO() external onlyOwner{
-    require(startTime &gt;= now);
+    require(startTime >= now);
 
     require(multisignWallet != address(0));
     icoEnabled = true;
@@ -306,12 +306,12 @@ contract GJCICO is Pausable{
 
     // calculate token amount to be created
     uint rate = getRate();
-    assert(rate &gt; 0);
+    assert(rate > 0);
     uint256 tokens = weiAmount.mul(rate);
 
     uint256 newIcoSoldTokens = icoSoldTokens.add(tokens);
 
-    if (newIcoSoldTokens &gt; icoCap) {
+    if (newIcoSoldTokens > icoCap) {
         newIcoSoldTokens = icoCap;
         tokens = icoCap.sub(icoSoldTokens);
         uint256 newWeiAmount = tokens.div(rate);
@@ -324,7 +324,7 @@ contract GJCICO is Pausable{
 
     token.transfer(beneficiary, tokens);
     icoSoldTokens = newIcoSoldTokens;
-    if (returnWeiAmount &gt; 0){
+    if (returnWeiAmount > 0){
         msg.sender.transfer(returnWeiAmount);
     }
 
@@ -342,17 +342,17 @@ contract GJCICO is Pausable{
   // unsold ico tokens transfer automatically in endIco
   // function transferUnsoldIcoTokens() onlyOwner {
   // require(hasEnded());
-  // require(icoSoldTokens &lt; icoCap);
+  // require(icoSoldTokens < icoCap);
   // uint256 unsoldTokens = icoCap.sub(icoSoldTokens);
   // token.transfer(multisignWallet, unsoldTokens);
   //}
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-    bool nonMinimumPurchase = msg.value &gt;= minContribAmount;
-    bool icoTokensAvailable = icoSoldTokens &lt; icoCap;
-    return !icoEnded &amp;&amp; icoEnabled &amp;&amp; withinPeriod &amp;&amp; nonMinimumPurchase &amp;&amp; icoTokensAvailable;
+    bool withinPeriod = now >= startTime && now <= endTime;
+    bool nonMinimumPurchase = msg.value >= minContribAmount;
+    bool icoTokensAvailable = icoSoldTokens < icoCap;
+    return !icoEnded && icoEnabled && withinPeriod && nonMinimumPurchase && icoTokensAvailable;
   }
 
   // end ico by owner, not really needed in normal situation
@@ -366,22 +366,22 @@ contract GJCICO is Pausable{
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return (icoEnded || icoSoldTokens &gt;= icoCap || now &gt; endTime);
+    return (icoEnded || icoSoldTokens >= icoCap || now > endTime);
   }
 
 
   function getRate() public constant returns(uint){
-    require(now &gt;= startTime);
-    if (now &lt; startTime.add(1 weeks)){
+    require(now >= startTime);
+    if (now < startTime.add(1 weeks)){
       // week 1
       return RATE_FOR_WEEK1;
-    }else if (now &lt; startTime.add(2 weeks)){
+    }else if (now < startTime.add(2 weeks)){
       // week 2
       return RATE_FOR_WEEK2;
-    }else if (now &lt; startTime.add(3 weeks)){
+    }else if (now < startTime.add(3 weeks)){
       // week 3
       return RATE_FOR_WEEK3;
-    }else if (now &lt; endTime){
+    }else if (now < endTime){
       // no discount
       return RATE_NO_DISCOUNT;
     }
@@ -404,7 +404,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -413,7 +413,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -460,7 +460,7 @@ contract TokenVesting is Ownable {
 
     ERC20Basic token;
     // vesting
-    mapping (address =&gt; uint256) totalVestedAmount;
+    mapping (address => uint256) totalVestedAmount;
 
     struct Vesting {
         uint256 amount;
@@ -468,7 +468,7 @@ contract TokenVesting is Ownable {
     }
 
     address[] accountKeys;
-    mapping (address =&gt; Vesting[]) public vestingAccounts;
+    mapping (address => Vesting[]) public vestingAccounts;
 
     // events
     event Vest(address indexed beneficiary, uint256 amount);
@@ -495,13 +495,13 @@ contract TokenVesting is Ownable {
     // create vesting by introducing beneficiary addres, total token amount, start date, duration for each vest period and number of periods
     function createVestingByDurationAndSplits(address user, uint256 total_amount, uint256 startDate, uint256 durationPerVesting, uint256 times) public onlyOwner tokenSet {
         require(user != address(0));
-        require(startDate &gt;= now);
-        require(times &gt; 0);
-        require(durationPerVesting &gt; 0);
+        require(startDate >= now);
+        require(times > 0);
+        require(durationPerVesting > 0);
         uint256 vestingDate = startDate;
         uint256 i;
         uint256 amount = total_amount.div(times);
-        for (i = 0; i &lt; times; i++) {
+        for (i = 0; i < times; i++) {
             vestingDate = vestingDate.add(durationPerVesting);
             if (vestingAccounts[user].length == 0){
                 accountKeys.push(user);
@@ -515,8 +515,8 @@ contract TokenVesting is Ownable {
     function getVestingAmountByNow(address user) constant returns (uint256){
         uint256 amount;
         uint256 i;
-        for (i = 0; i &lt; vestingAccounts[user].length; i++) {
-            if (vestingAccounts[user][i].vestingDate &lt; now) {
+        for (i = 0; i < vestingAccounts[user].length; i++) {
+            if (vestingAccounts[user][i].vestingDate < now) {
                 amount = amount.add(vestingAccounts[user][i].amount);
             }
         }
@@ -535,8 +535,8 @@ contract TokenVesting is Ownable {
     function getAccountKeys(uint256 page) external constant returns (address[10]){
         address[10] memory accountList;
         uint256 i;
-        for (i=0 + page * 10; i&lt;10; i++){
-            if (i &lt; accountKeys.length){
+        for (i=0 + page * 10; i<10; i++){
+            if (i < accountKeys.length){
                 accountList[i - page * 10] = accountKeys[i];
             }
         }
@@ -546,7 +546,7 @@ contract TokenVesting is Ownable {
     // vest
     function vest() external tokenSet {
         uint256 availableAmount = getAvailableVestingAmount(msg.sender);
-        require(availableAmount &gt; 0);
+        require(availableAmount > 0);
         totalVestedAmount[msg.sender] = totalVestedAmount[msg.sender].add(availableAmount);
         token.transfer(msg.sender, availableAmount);
         Vest(msg.sender, availableAmount);
@@ -561,7 +561,7 @@ contract TokenVesting is Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -572,8 +572,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -587,7 +587,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -622,7 +622,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -665,8 +665,8 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract GJCToken is PausableToken {
-  string constant public name = &quot;GJC&quot;;
-  string constant public symbol = &quot;GJC&quot;;
+  string constant public name = "GJC";
+  string constant public symbol = "GJC";
   uint256 constant public decimals = 18;
   uint256 constant TOKEN_UNIT = 10 ** uint256(decimals);
   uint256 constant INITIAL_SUPPLY = 100000000 * TOKEN_UNIT;

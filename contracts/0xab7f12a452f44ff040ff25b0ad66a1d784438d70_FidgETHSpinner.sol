@@ -1,8 +1,8 @@
 pragma solidity ^0.4.16;
 
 contract FidgETHSpinner {
-  string public name = &quot;FidgETHSpinner&quot;;
-  string public symbol = &quot;FDGTHSPNNR&quot;;
+  string public name = "FidgETHSpinner";
+  string public symbol = "FDGTHSPNNR";
   uint public decimals = 18;
 
   address public wallet;
@@ -11,7 +11,7 @@ contract FidgETHSpinner {
   uint public endBlock;
 
   uint public totalSupply;
-  mapping(address =&gt; uint) public balanceOf;
+  mapping(address => uint) public balanceOf;
 
   uint public normalRate = 10;
   uint public juicyBonus = 1000;
@@ -41,7 +41,7 @@ contract FidgETHSpinner {
   }
 
   function icoActive() constant returns (bool) {
-    return block.number &lt;= endBlock;
+    return block.number <= endBlock;
   }
 
   // FIDGET SPINNIG
@@ -55,16 +55,16 @@ contract FidgETHSpinner {
     require(_to != 0x0); // Bingo
     require(_to != address(0)); // Bango
 
-    require(block.number &lt;= endBlock);
-    require(msg.value &gt;= 0.03 ether);
+    require(block.number <= endBlock);
+    require(msg.value >= 0.03 ether);
 
-    // remember, my dear friend, that this decrements juicyBonus *after* it is multiplied with normalRate. So juicyBonus is always &gt;=1 here
+    // remember, my dear friend, that this decrements juicyBonus *after* it is multiplied with normalRate. So juicyBonus is always >=1 here
     uint rate = normalRate * juicyBonus--;
 
     uint tokens = msg.value * rate;
     weiRaised += msg.value;
 
-    juicyBonus = (juicyBonus &lt; 1) ? 1 : juicyBonus;
+    juicyBonus = (juicyBonus < 1) ? 1 : juicyBonus;
 
     spin(_to, tokens);
     Fidget(msg.sender, _to, msg.value, juicyBonus, rate, tokens);
@@ -85,8 +85,8 @@ contract FidgETHSpinner {
     require(_to != 0x0);
     require(_to != address(0));
 
-    require(balanceOf[msg.sender] &gt;= _tokens); // haha gotcha
-    require(balanceOf[_to] + _tokens &gt; balanceOf[_to]); // lol
+    require(balanceOf[msg.sender] >= _tokens); // haha gotcha
+    require(balanceOf[_to] + _tokens > balanceOf[_to]); // lol
 
     balanceOf[msg.sender] -= _tokens; // :()
     balanceOf[_to] += _tokens; // woo!

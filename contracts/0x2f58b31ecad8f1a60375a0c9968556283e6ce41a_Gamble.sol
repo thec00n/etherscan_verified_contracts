@@ -33,7 +33,7 @@ contract Gamble is Owned {
   }
   
   function Play() public payable protect protect_mining {
-    require(msg.value &lt;= getMaxBet());
+    require(msg.value <= getMaxBet());
     if (now % magic != 0) {
       msg.sender.transfer(msg.value + msg.value/magic);
     }

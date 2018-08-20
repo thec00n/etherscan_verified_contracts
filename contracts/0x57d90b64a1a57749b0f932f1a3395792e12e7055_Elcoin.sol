@@ -45,7 +45,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -70,7 +70,7 @@ contract AmbiEnabled {
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) {
+    function remove() checkAccess("owner") {
         suicide(msg.sender);
     }
 }
@@ -79,7 +79,7 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
 
     event Error(uint8 indexed code, address indexed origin, address indexed sender);
 
-    mapping (address =&gt; uint) public recoveredIndex;
+    mapping (address => uint) public recoveredIndex;
     address[] public recovered;
 
     uint public totalSupply;
@@ -95,11 +95,11 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
     }
 
     function _db() internal constant returns (ElcoinDb) {
-        return ElcoinDb(getAddress(&quot;elcoinDb&quot;));
+        return ElcoinDb(getAddress("elcoinDb"));
     }
 
     function _setFeeStructure(uint _absMinFee, uint _feePercent, uint _absMaxFee) internal returns (bool) {
-        if(_absMinFee &lt; 0 || _feePercent &lt; 0 || _feePercent &gt; 10000 || _absMaxFee &lt; 0 || _absMaxFee &lt; _absMinFee) {
+        if(_absMinFee < 0 || _feePercent < 0 || _feePercent > 10000 || _absMaxFee < 0 || _absMaxFee < _absMinFee) {
             Error(1, tx.origin, msg.sender);
             return false;
         }
@@ -116,13 +116,13 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
         _db.deposit(_to, net, 0, 0);
 
         Transfer(_from, _to, _value);
-        if (fee &gt; 0) {
+        if (fee > 0) {
             _db.deposit(feeAddr, fee, 0, 0);
         }
     }
 
     function _transfer(ElcoinDb _db, address _from, address _to, uint _value) internal returns (bool) {
-        if (_value &lt; absMinFee) {
+        if (_value < absMinFee) {
             return false;
         }
         if (_from == _to) {
@@ -130,7 +130,7 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
         }
         uint balance = _db.getBalance(_from);
 
-        if (balance &lt; _value) {
+        if (balance < _value) {
             return false;
         }
         _rawTransfer(_db, _from, _to, _value);
@@ -144,8 +144,8 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
             return false;
         }
 
-        address pos = getAddress(&quot;elcoinPoS&quot;);
-        address pot = getAddress(&quot;elcoinPoT&quot;);
+        address pos = getAddress("elcoinPoS");
+        address pot = getAddress("elcoinPoT");
         if (pos != 0x0) {
             PosRewards(pos).transfer(_from, _to);
         }
@@ -186,19 +186,19 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
     function calculateFee(uint _amount) constant returns (uint) {
         uint fee = (_amount * feePercent) / 10000;
 
-        if (fee &lt; absMinFee) {
+        if (fee < absMinFee) {
             return absMinFee;
         }
 
-        if (fee &gt; absMaxFee) {
+        if (fee > absMaxFee) {
             return absMaxFee;
         }
 
         return fee;
     }
 
-    function issueCoin(address _to, uint _value, uint _totalSupply) checkAccess(&quot;currencyOwner&quot;) returns (bool) {
-        if (totalSupply &gt; 0) {
+    function issueCoin(address _to, uint _value, uint _totalSupply) checkAccess("currencyOwner") returns (bool) {
+        if (totalSupply > 0) {
             Error(6, tx.origin, msg.sender);
             return false;
         }
@@ -208,25 +208,25 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
         return dep;
     }
 
-    function batchTransfer(address[] _to, uint[] _value) checkAccess(&quot;currencyOwner&quot;) returns (bool) {
+    function batchTransfer(address[] _to, uint[] _value) checkAccess("currencyOwner") returns (bool) {
         if (_to.length != _value.length) {
             Error(7, tx.origin, msg.sender);
             return false;
         }
 
         uint totalToSend = 0;
-        for (uint8 i = 0; i &lt; _value.length; i++) {
+        for (uint8 i = 0; i < _value.length; i++) {
             totalToSend += _value[i];
         }
 
         ElcoinDb db = _db();
-        if (db.getBalance(msg.sender) &lt; totalToSend) {
+        if (db.getBalance(msg.sender) < totalToSend) {
             Error(8, tx.origin, msg.sender);
             return false;
         }
 
         db.withdraw(msg.sender, totalToSend, 0, 0);
-        for (uint8 j = 0; j &lt; _to.length; j++) {
+        for (uint8 j = 0; j < _to.length; j++) {
             db.deposit(_to[j], _value[j], 0, 0);
             Transfer(msg.sender, _to[j], _value[j]);
         }
@@ -243,11 +243,11 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
         return _refund(refund);
     }
 
-    function transferPool(address _from, address _to, uint _value) checkAccess(&quot;pool&quot;) returns (bool) {
+    function transferPool(address _from, address _to, uint _value) checkAccess("pool") returns (bool) {
         return _transferWithReward(_db(), _from, _to, _value);
     }
 
-    function rewardTo(address _to, uint _amount) checkAccess(&quot;reward&quot;) returns (bool) {
+    function rewardTo(address _to, uint _amount) checkAccess("reward") returns (bool) {
         bool result = _db().deposit(_to, _amount, 0, 0);
         if (result) {
             totalSupply += _amount;
@@ -256,15 +256,15 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
         return result;
     }
 
-    function recoverAccount(address _old, address _new) checkAccess(&quot;recovery&quot;) notRecoveredAccount(_old) returns (bool) {
+    function recoverAccount(address _old, address _new) checkAccess("recovery") notRecoveredAccount(_old) returns (bool) {
         return _recoverAccount(_db(), _old, _new);
     }
 
-    function setFeeAddr(address _feeAddr) checkAccess(&quot;currencyOwner&quot;) {
+    function setFeeAddr(address _feeAddr) checkAccess("currencyOwner") {
         feeAddr = _feeAddr;
     }
 
-    function setFee(uint _absMinFee, uint _feePercent, uint _absMaxFee) checkAccess(&quot;cron&quot;) returns (bool) {
+    function setFee(uint _absMinFee, uint _feePercent, uint _absMaxFee) checkAccess("cron") returns (bool) {
         return _setFeeStructure(_absMinFee, _feePercent, _absMaxFee);
     }
 
@@ -273,19 +273,19 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
     uint public refundGas = 15000;
     EtherTreasuryInterface treasury;
 
-    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess(&quot;currencyOwner&quot;) returns (bool) {
+    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess("currencyOwner") returns (bool) {
         if (_txGasPriceLimit == 0) {
             return false;
         }
         treasury = EtherTreasuryInterface(_treasury);
         txGasPriceLimit = _txGasPriceLimit;
-        if (msg.value &gt; 0 &amp;&amp; !address(treasury).send(msg.value)) {
+        if (msg.value > 0 && !address(treasury).send(msg.value)) {
             throw;
         }
         return true;
     }
 
-    function updateRefundGas() checkAccess(&quot;currencyOwner&quot;) returns (uint) {
+    function updateRefundGas() checkAccess("currencyOwner") returns (uint) {
         uint startGas = msg.gas;
         uint refund = (startGas - msg.gas + refundGas) * tx.gasprice; // just to simulate calculations, dunno if optimizer will remove this.
         if (!_refund(1)) {
@@ -295,13 +295,13 @@ contract Elcoin is AmbiEnabled, MetaCoinInterface {
         return refundGas;
     }
 
-    function setOperationsCallGas(uint _transfer) checkAccess(&quot;currencyOwner&quot;) returns (bool) {
+    function setOperationsCallGas(uint _transfer) checkAccess("currencyOwner") returns (bool) {
         transferCallGas = _transfer;
         return true;
     }
 
     function _refund(uint _value) internal returns (bool) {
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return false;
         }
         return treasury.withdraw(tx.origin, _value);

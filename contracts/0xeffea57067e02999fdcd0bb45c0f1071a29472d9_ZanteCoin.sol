@@ -65,20 +65,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -119,8 +119,8 @@ contract ERC20Coin is ERC20Interface, Owned {
   using SafeMath for uint;
 
   uint public coinsIssuedTotal = 0;
-  mapping(address =&gt; uint) public balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping(address => uint) public balances;
+  mapping(address => mapping (address => uint)) public allowed;
 
   // Functions ------------------------
 
@@ -136,11 +136,11 @@ contract ERC20Coin is ERC20Interface, Owned {
     return balances[_owner];
   }
 
-  /* Transfer the balance from owner&#39;s account to another account */
+  /* Transfer the balance from owner's account to another account */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
     // amount sent cannot exceed balance
-    require(balances[msg.sender] &gt;= _amount);
+    require(balances[msg.sender] >= _amount);
 
     // update balances
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -155,7 +155,7 @@ contract ERC20Coin is ERC20Interface, Owned {
 
   function approve(address _spender, uint _amount) public returns (bool success) {
     // approval amount cannot exceed the balance
-    require (balances[msg.sender] &gt;= _amount);
+    require (balances[msg.sender] >= _amount);
       
     // update allowed amount
     allowed[msg.sender][_spender] = _amount;
@@ -165,13 +165,13 @@ contract ERC20Coin is ERC20Interface, Owned {
     return true;
   }
 
-  /* Spender of coins transfers coins from the owner&#39;s balance */
+  /* Spender of coins transfers coins from the owner's balance */
   /* Must be pre-approved by owner */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
     // balance checks
-    require(balances[_from] &gt;= _amount);
-    require(allowed[_from][msg.sender] &gt;= _amount);
+    require(balances[_from] >= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
 
     // update balances and allowed amount
     balances[_from] = balances[_from].sub(_amount);
@@ -196,8 +196,8 @@ contract ZanteCoin is ERC20Coin {
 
     /* Basic coin data */
 
-    string public constant name = &quot;Zpay&quot;;
-    string public constant symbol = &quot;ZPAY&quot;;
+    string public constant name = "Zpay";
+    string public constant symbol = "ZPAY";
     uint8  public constant decimals = 18;
 
     /* ICO dates */
@@ -257,7 +257,7 @@ contract ZanteCoin is ERC20Coin {
 
     function issueIcoCoins(address _participant, uint _coins) public onlyOwner {
         // Check if enough supply remaining
-        require(_coins &lt;= COIN_SUPPLY_ICO_TOTAL.sub(coinsIssuedIco));
+        require(_coins <= COIN_SUPPLY_ICO_TOTAL.sub(coinsIssuedIco));
 
         // update balances
         balances[_participant] = balances[_participant].add(_coins);
@@ -272,7 +272,7 @@ contract ZanteCoin is ERC20Coin {
     /* Granting / minting of marketing coins by owner */
     function grantMarketingCoins(address _participant, uint _coins) public onlyOwner {
         // check amount
-        require(_coins &lt;= COIN_SUPPLY_MKT_TOTAL.sub(coinsIssuedMkt));
+        require(_coins <= COIN_SUPPLY_MKT_TOTAL.sub(coinsIssuedMkt));
 
         // update balances
         balances[_participant] = balances[_participant].add(_coins);
@@ -287,7 +287,7 @@ contract ZanteCoin is ERC20Coin {
     /* Granting / minting of Company bonus coins by owner */
     function grantCompanyCoins(address _participant, uint _coins) public onlyOwner {
         // check amount
-        require(_coins &lt;= COIN_SUPPLY_COMPANY_TOTAL.sub(coinsIssuedCmp));
+        require(_coins <= COIN_SUPPLY_COMPANY_TOTAL.sub(coinsIssuedCmp));
 
         // update balances
         balances[_participant] = balances[_participant].add(_coins);

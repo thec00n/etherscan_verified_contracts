@@ -78,24 +78,24 @@ contract ERC20Token {
 /*  ERC 20 token */
 contract StandardToken is ERC20Token {
     
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function transfer(address _to, uint256 _value) public returns (bool success) 
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -108,8 +108,8 @@ contract StandardToken is ERC20Token {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) 
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = sub(balances[_from],_value);
         balances[_to] = add(balances[_to],_value);
@@ -146,7 +146,7 @@ contract StandardToken is ERC20Token {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = sub(oldValue,_subtractedValue);
@@ -160,9 +160,9 @@ contract StandardToken is ERC20Token {
 contract SuperWalletToken is StandardToken, Owned
 {
     // metadata
-    string public constant name = &quot;Super Wallet Token&quot;;
-    string public constant symbol = &quot;SW&quot;;
-    string public version = &quot;1.0&quot;;
+    string public constant name = "Super Wallet Token";
+    string public constant symbol = "SW";
+    string public version = "1.0";
     uint256 public constant decimals = 8;
     bool public disabled;
     // constructor

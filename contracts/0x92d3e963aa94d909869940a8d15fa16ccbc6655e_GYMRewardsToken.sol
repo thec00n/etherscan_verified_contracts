@@ -84,13 +84,13 @@ return c;
 }
 
 function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-assert(b &lt;= a);
+assert(b <= a);
 return a - b;
 }
 
 function add(uint256 a, uint256 b) internal pure returns (uint256) {
 uint256 c = a + b;
-assert(c &gt;= a);
+assert(c >= a);
 return c;
 }
 }
@@ -99,11 +99,11 @@ return c;
 contract BasicToken is ERC20Basic {
 using SafeMath for uint256;
 
-mapping(address =&gt; uint256) balances;
+mapping(address => uint256) balances;
 
 function transfer(address _to, uint256 _value) public returns (bool) {
 require(_to != address(0));
-require(_value &lt;= balances[msg.sender]);
+require(_value <= balances[msg.sender]);
 
 balances[msg.sender] = balances[msg.sender].sub(_value);
 balances[_to] = balances[_to].add(_value);
@@ -118,12 +118,12 @@ return balances[_owner];
 
 contract StandardToken is ERC20, BasicToken {
 
-mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+mapping (address => mapping (address => uint256)) internal allowed;
 
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 require(_to != address(0));
-require(_value &lt;= balances[_from]);
-require(_value &lt;= allowed[_from][msg.sender]);
+require(_value <= balances[_from]);
+require(_value <= allowed[_from][msg.sender]);
 
 balances[_from] = balances[_from].sub(_value);
 balances[_to] = balances[_to].add(_value);
@@ -150,7 +150,7 @@ return true;
 
 function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 uint oldValue = allowed[msg.sender][_spender];
-if (_subtractedValue &gt; oldValue) {
+if (_subtractedValue > oldValue) {
 allowed[msg.sender][_spender] = 0;
 } else {
 allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -189,8 +189,8 @@ return true;
 
 contract TokenConfig {
 
-string  public constant TOKEN_SYMBOL   = &quot;GYM&quot;;
-string  public constant TOKEN_NAME     = &quot;GYM Rewards&quot;;
+string  public constant TOKEN_SYMBOL   = "GYM";
+string  public constant TOKEN_NAME     = "GYM Rewards";
 uint8   public constant TOKEN_DECIMALS = 18;
 
 uint256 public constant DECIMALSFACTOR = 10**uint256(TOKEN_DECIMALS);
@@ -260,7 +260,7 @@ contract GYMRewardsCrowdsale is Pausable, TokenSaleConfig {
 	event Finalized();
 
 	modifier onlyDuringSale() {
-		require(hasStarted() &amp;&amp; !hasEnded());
+		require(hasStarted() && !hasEnded());
 		_;
 	}
 
@@ -322,7 +322,7 @@ contract GYMRewardsCrowdsale is Pausable, TokenSaleConfig {
 
 	function buyTokens(address beneficiary) public payable whenNotPaused onlyDuringSale {
 		require(beneficiary != address(0));
-		require(msg.value &gt; 0); 
+		require(msg.value > 0); 
 
 
 		uint256 weiAmount = msg.value;
@@ -330,7 +330,7 @@ contract GYMRewardsCrowdsale is Pausable, TokenSaleConfig {
 		uint256 exchangeRate = calculateTierBonus();
 		uint256 tokens = weiAmount.mul(exchangeRate);
 
-		require (tokensMintedForSale &lt;= MAX_TOKENS_SALE);
+		require (tokensMintedForSale <= MAX_TOKENS_SALE);
 
 
 		weiRaised = weiRaised.add(weiAmount); 
@@ -340,7 +340,7 @@ contract GYMRewardsCrowdsale is Pausable, TokenSaleConfig {
 
 		TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
-		if (tokensMintedForSale &gt;= MAX_TOKENS_SALE) {
+		if (tokensMintedForSale >= MAX_TOKENS_SALE) {
 			finalizeInternal();
 		}
 
@@ -348,23 +348,23 @@ contract GYMRewardsCrowdsale is Pausable, TokenSaleConfig {
 	}
 
 	function calculateTierBonus() public view returns (uint256){
-			if(now &gt;= startTime &amp;&amp; now &lt; tier2Time){
+			if(now >= startTime && now < tier2Time){
 			return TIER1_RATE;
 			}
 
-			if(now &gt;= tier2Time &amp;&amp; now &lt; tier3Time){
+			if(now >= tier2Time && now < tier3Time){
 			return TIER2_RATE;
 			}
 
-			if(now &gt;= tier3Time &amp;&amp; now &lt;= tier4Time){
+			if(now >= tier3Time && now <= tier4Time){
 			return TIER3_RATE;
 			}
 
-			if(now &gt;= tier4Time &amp;&amp; now &lt;= tier5Time){
+			if(now >= tier4Time && now <= tier5Time){
 			return TIER4_RATE;
 			}
 
-			if(now &gt;= tier5Time &amp;&amp; now &lt;= endTime){
+			if(now >= tier5Time && now <= endTime){
 			return TIER5_RATE;
 			}
 	}
@@ -382,12 +382,12 @@ contract GYMRewardsCrowdsale is Pausable, TokenSaleConfig {
 	}
 
 	function hasEnded() public constant returns (bool) {
-		bool _saleIsOver = now &gt; endTime;
+		bool _saleIsOver = now > endTime;
 		return _saleIsOver || isFinalized;
 	}
 
 	function hasStarted() public constant returns (bool) {
-		return now &gt;= startTime;
+		return now >= startTime;
 	}
 
 	function tellTime() public constant returns (uint) {

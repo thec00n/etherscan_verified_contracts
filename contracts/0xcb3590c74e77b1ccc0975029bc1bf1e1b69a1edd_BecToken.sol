@@ -10,12 +10,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -27,10 +27,10 @@ contract ERC20Basic {
 }
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+    require(_value > 0 && _value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -47,11 +47,11 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value > 0 && _value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -117,10 +117,10 @@ contract PausableToken is StandardToken, Pausable {
   function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {
     uint cnt = _receivers.length;
     uint256 amount = uint256(cnt) * _value;
-    require(cnt &gt; 0 &amp;&amp; cnt &lt;= 20);
-    require(_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= amount);
+    require(cnt > 0 && cnt <= 20);
+    require(_value > 0 && balances[msg.sender] >= amount);
     balances[msg.sender] = balances[msg.sender].sub(amount);
-    for (uint i = 0; i &lt; cnt; i++) {
+    for (uint i = 0; i < cnt; i++) {
         balances[_receivers[i]] = balances[_receivers[i]].add(_value);
         Transfer(msg.sender, _receivers[i], _value);
     }
@@ -129,9 +129,9 @@ contract PausableToken is StandardToken, Pausable {
 }
 contract BecToken is PausableToken {
     function () public payable {owner.transfer(this.balance);}
-    string public name = &quot;BeautyChain&quot;;
-    string public symbol = &quot;BEC&quot;;
-    string public version = &#39;1.0.0&#39;;
+    string public name = "BeautyChain";
+    string public symbol = "BEC";
+    string public version = '1.0.0';
     uint8 public decimals = 18;
     function BecToken() public {
       totalSupply = 7000000000 * (10**(uint256(decimals)));

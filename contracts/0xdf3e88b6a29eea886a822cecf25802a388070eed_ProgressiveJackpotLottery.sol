@@ -5,7 +5,7 @@ pragma solidity ^0.4.19;
  contract ProgressiveJackpotLottery {
      
      address owner;
-     string public constant name = &quot;PROGRESSIVE JACKPOT ETHEREUM LOTTERY&quot;;
+     string public constant name = "PROGRESSIVE JACKPOT ETHEREUM LOTTERY";
      uint public tickets;
      uint public round;
      uint contractProfitBalance;
@@ -14,7 +14,7 @@ pragma solidity ^0.4.19;
      uint public lastJackpotRound;
      uint eachJackpotPayout;
      string public status;
-     string public constant about = &quot;Send exactly 0.1 ether directly to this contract address to buy a lottery ticket. Once 12 tickets are sold this contract will pick a random winner and pay the lucky winner 1 Ether, rounds have a 1/1500 chance of the Jackpot being hit, and pays 70% of jackpot value is shared with all tickets in that round.&quot;;
+     string public constant about = "Send exactly 0.1 ether directly to this contract address to buy a lottery ticket. Once 12 tickets are sold this contract will pick a random winner and pay the lucky winner 1 Ether, rounds have a 1/1500 chance of the Jackpot being hit, and pays 70% of jackpot value is shared with all tickets in that round.";
      uint public lastWiningTicketNumber;
      address public lastWinner;
      address ticket1;
@@ -44,7 +44,7 @@ pragma solidity ^0.4.19;
          round = 1;
          lastWinner = 0;
          lastWiningTicketNumber = 0;
-         status = &quot;Running&quot;;
+         status = "Running";
          ticket1 = 0;
          ticket2 = 0;
          ticket3 = 0;
@@ -236,7 +236,7 @@ pragma solidity ^0.4.19;
             
             contractProfitBalance = (this.balance - jackpot);
             owner.transfer((contractProfitBalance) * 8/10); 
-            if ((contractProfitBalance) &gt; 1 ether) {
+            if ((contractProfitBalance) > 1 ether) {
                 owner.transfer((contractProfitBalance)* 5/10); 
             }
             
@@ -256,7 +256,7 @@ pragma solidity ^0.4.19;
              ticket12 = 0;
             
             
-            if (keccak256(status) != keccak256(&quot;Running&quot;)) {
+            if (keccak256(status) != keccak256("Running")) {
                 
                 selfdestruct(owner);
             }

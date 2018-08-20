@@ -62,7 +62,7 @@ contract Linkable is Ownable {
 	 * Check if you have been linked to this contract
 	 */
 	function checkPermissions() public view returns (bool) {
-		for (uint i = 0; i &lt; linked.length; i++)
+		for (uint i = 0; i < linked.length; i++)
 			if (linked[i] == msg.sender) return true;
 		return false;
 	}
@@ -81,7 +81,7 @@ contract Activity is Ownable, Linkable {
   }
 
   /*
-   * Get an event by it&#39;s id (index)
+   * Get an event by it's id (index)
    */
   Event[] public events;
 
@@ -89,7 +89,7 @@ contract Activity is Ownable, Linkable {
    * Add a new event
    */
   function newEvent(uint _gameId, address[] _winners, uint _winningNumber, uint _amount) public onlyLinked {
-    require(_gameId &gt; 0);
+    require(_gameId > 0);
     events.push(Event(events.length, _gameId, msg.sender, _winners, _winningNumber, _amount, now));
   }
 
@@ -118,7 +118,7 @@ contract Activity is Ownable, Linkable {
     uint[] memory _amounts = new uint[](_events.length);
     uint[] memory _timestamps = new uint[](_events.length);
 
-    for (uint i = 0; i &lt; _events.length; i++) {
+    for (uint i = 0; i < _events.length; i++) {
       _ids[i] = _events[i].id;
       _gameIds[i] = _events[i].gameId;
       _amounts[i] = _events[i].amount;
@@ -141,7 +141,7 @@ contract Activity is Ownable, Linkable {
     uint[] memory _numWinners = new uint[](_events.length);
     uint[] memory _winningNumbers = new uint[](_events.length);
 
-    for (uint i = 0; i &lt; _events.length; i++) {
+    for (uint i = 0; i < _events.length; i++) {
       _winners[i] = chooseWinnerToDisplay(_events[i].winners, msg.sender);
       _numWinners[i] = _events[i].winners.length;
       _winningNumbers[i] = _events[i].winningNumber;
@@ -151,10 +151,10 @@ contract Activity is Ownable, Linkable {
   }
 
   function chooseWinnerToDisplay(address[] _winners, address _user) private pure returns (address) {
-    if (_winners.length &lt; 1) return address(0);
+    if (_winners.length < 1) return address(0);
     address _picked = _winners[0];
     if (_winners.length == 1) return _picked;
-    for (uint i = 1; i &lt; _winners.length; i++)
+    for (uint i = 1; i < _winners.length; i++)
       if (_winners[i] == _user) _picked = _user;
     return _picked;
   }
@@ -166,9 +166,9 @@ contract Activity is Ownable, Linkable {
     uint _maxIndex = _minIndex + _pageSize;
     uint _count;
 
-    for (uint i = events.length; i &gt; 0; i--) {
+    for (uint i = events.length; i > 0; i--) {
       if (_gameId == 0 || events[i - 1].gameId == _gameId) {
-        if (_filteredIndex &gt;= _minIndex &amp;&amp; _filteredIndex &lt; _maxIndex) {
+        if (_filteredIndex >= _minIndex && _filteredIndex < _maxIndex) {
           _filtered[_count] = events[i - 1];
           _count++;
         }
@@ -177,7 +177,7 @@ contract Activity is Ownable, Linkable {
     }
 
     Event[] memory _events = new Event[](_count);
-    for (uint b = 0; b &lt; _count; b++)
+    for (uint b = 0; b < _count; b++)
       _events[b] = _filtered[b];
 
     return _events;
@@ -213,9 +213,9 @@ contract Affiliates is Ownable, Linkable {
 
 	// -----------------------------------------------------------
 
-	mapping(uint =&gt; uint) balances; // (affiliateCode =&gt; balance)
-	mapping(address =&gt; uint) links; // (buyer =&gt; affiliateCode)
-	mapping(uint =&gt; bool) living; // whether a code has been used before (used for open/closing of program)
+	mapping(uint => uint) balances; // (affiliateCode => balance)
+	mapping(address => uint) links; // (buyer => affiliateCode)
+	mapping(uint => bool) living; // whether a code has been used before (used for open/closing of program)
 	
 	/*
 	 * PUBLIC
@@ -225,7 +225,7 @@ contract Affiliates is Ownable, Linkable {
 		return code(msg.sender);
 	}
 
-	// Convert an affiliate&#39;s address into a code
+	// Convert an affiliate's address into a code
 	function code(address _affiliate) private pure returns (uint) {
 		uint num = uint(uint256(keccak256(_affiliate)));
 		return num / 10000000000000000000000000000000000000000000000000000000000000000000000;
@@ -258,15 +258,15 @@ contract Affiliates is Ownable, Linkable {
 	 * equivalent to the sum of the _amounts array
 	 */
 	function deposit(uint[] _affiliateCodes, uint[] _amounts) public payable onlyLinked {
-		require(_affiliateCodes.length == _amounts.length &amp;&amp; _affiliateCodes.length &gt; 0);
+		require(_affiliateCodes.length == _amounts.length && _affiliateCodes.length > 0);
 
 		uint _total;
-		for (uint i = 0; i &lt; _affiliateCodes.length; i++) {
+		for (uint i = 0; i < _affiliateCodes.length; i++) {
 			balances[_affiliateCodes[i]] += _amounts[i];
 			_total += _amounts[i];
 		}
 
-		require(_total == msg.value &amp;&amp; _total &gt; 0);
+		require(_total == msg.value && _total > 0);
 	}
 
 	event Withdrawn(address affiliate, uint amount);
@@ -278,7 +278,7 @@ contract Affiliates is Ownable, Linkable {
 	function withdraw() public returns (uint) {
 		uint _code = code(msg.sender);
 		uint _amount = balances[_code];
-		require(_amount &gt; 0);
+		require(_amount > 0);
 		balances[_code] = 0;
 		msg.sender.transfer(_amount);	
 		Withdrawn(msg.sender, _amount);
@@ -305,7 +305,7 @@ contract Lottery is Ownable {
 	uint id;
 
 	function setId(uint _id) public onlyOwner {
-		require(_id &gt; 0);
+		require(_id > 0);
 		id = _id;
 	}
 
@@ -317,7 +317,7 @@ contract Lottery is Ownable {
 	 * activity: address pointing to the Activity instance
 	 */
 	function link(uint _id, address _activity, address _affiliates) public onlyOwner {
-		require(_id &gt; 0);
+		require(_id > 0);
 		id = _id;
 		linkActivity(_activity);
 		linkAffiliates(_affiliates);
@@ -415,7 +415,7 @@ contract SlotLottery is Lottery {
 
 	modifier oneOf(State[2] memory _states) {
 		bool _valid = false;
-		for (uint i = 0; i &lt; _states.length; i++)
+		for (uint i = 0; i < _states.length; i++)
 			if (state == _states[i]) _valid = true;
 		require(_valid);
 		_;
@@ -437,13 +437,13 @@ contract SlotLottery is Lottery {
 	 * Start up a new game with the given game rules
 	 */
 	function startGame(uint _jackpot, uint _slots, uint _price, uint _max) public only(State.NotRunning) onlyOwner {
-		require(_price * _slots &gt; _jackpot);
+		require(_price * _slots > _jackpot);
 		nextGame(verifiedGameRules(_jackpot, _slots, _price, _max));
 	}
 
 	/*
 	 * RESTRICTED
-	 * When the currently running game ends, a new game won&#39;t be automatically started
+	 * When the currently running game ends, a new game won't be automatically started
 	 */
 	function suspendGame() public onlyOwner {
 		game.loop = false;
@@ -494,14 +494,14 @@ contract SlotLottery is Lottery {
 			id: _newId, rules: _rules, nextGameRules: _rules, loop: true, startedAt: block.timestamp, 
 			ticketsSold: 0, winner: address(0), winningNumber: 0, finishedAt: 0
 		});
-		for(uint i = 1; i &lt;= game.rules.slots; i++)
+		for(uint i = 1; i <= game.rules.slots; i++)
 			game.tickets[i] = address(0);
 		state = State.Running;
 	}
 
 	function findWinner() internal only(State.Running) {
-		require(game.ticketsSold &gt;= game.rules.slots);
-		require(this.balance &gt;= game.rules.jackpot);
+		require(game.ticketsSold >= game.rules.slots);
+		require(this.balance >= game.rules.jackpot);
 
 		state = State.Pending;
 		uint _winningNumber = getRandomNumber(game.rules.slots);
@@ -549,7 +549,7 @@ contract SlotLottery is Lottery {
 	/*
 	 * PUBLIC
 	 * Buy tickets for the Lottery by passing in an array of ticket numbers (starting at 1 not 0)
-	 * This function doesn&#39;t revert when tickets fail to be purchased, it triggers events and
+	 * This function doesn't revert when tickets fail to be purchased, it triggers events and
 	 * refunds you for the tickets that failed to be purchased.
 	 *
 	 * Events:
@@ -573,13 +573,13 @@ contract SlotLottery is Lottery {
 		}
 
 		// Check sent funds
-		if (msg.value &lt; _tickets.length * game.rules.ticketPrice) 
+		if (msg.value < _tickets.length * game.rules.ticketPrice) 
 			return failPurchase(PurchaseError.NotEnoughFunds);
 
 		uint[] memory _userTickets = getMyTickets();
 
 		// Check max tickets (checked again in the loop below)
-		if (_userTickets.length &gt;= game.rules.maxTicketsPer)
+		if (_userTickets.length >= game.rules.maxTicketsPer)
 			return failPurchase(PurchaseError.TooManyTickets);
 
 		// Some tickets may fail while others succeed, lets keep track of all of that so it
@@ -590,11 +590,11 @@ contract SlotLottery is Lottery {
 		uint _successCount;
 		uint _errorCount;
 
-		for(uint i = 0; i &lt; _tickets.length; i++) {
+		for(uint i = 0; i < _tickets.length; i++) {
 			uint _ticket = _tickets[i];
 
 			// Check that the ticket is a valid number
-			if (_ticket &lt;= 0 || _ticket &gt; game.rules.slots) {
+			if (_ticket <= 0 || _ticket > game.rules.slots) {
 				_failed[_errorCount] = _ticket;
 				_errors[_errorCount] = PurchaseError.InvalidTicket;
 				_errorCount++;
@@ -609,8 +609,8 @@ contract SlotLottery is Lottery {
 				continue;
 			}
 
-			// Check that the user hasn&#39;t reached their max tickets
-			if (_userTickets.length + _successCount &gt;= game.rules.maxTicketsPer) {
+			// Check that the user hasn't reached their max tickets
+			if (_userTickets.length + _successCount >= game.rules.maxTicketsPer) {
 				_failed[_errorCount] = _ticket;
 				_errors[_errorCount] = PurchaseError.TooManyTickets;
 				_errorCount++;
@@ -626,11 +626,11 @@ contract SlotLottery is Lottery {
 
 		// Refund for failed tickets
 		// Cannot refund more than received, will send what was given if refunding the free ticket
-		if (_errorCount &gt; 0) refund(_errorCount * game.rules.ticketPrice);
+		if (_errorCount > 0) refund(_errorCount * game.rules.ticketPrice);
 		
 		// Affiliates
 		uint _userAffiliateCode = userAffiliate();
-		if (_affiliateCode != 0 &amp;&amp; _userAffiliateCode == 0)
+		if (_affiliateCode != 0 && _userAffiliateCode == 0)
 			_userAffiliateCode = setUserAffiliate(_affiliateCode);
 		if (_userAffiliateCode != 0) addAffiliate(_userAffiliateCode, _successCount);
 
@@ -638,7 +638,7 @@ contract SlotLottery is Lottery {
 		TicketsPurchased(msg.sender, _successful, _failed, _errors);
 
 		// If the last ticket was sold, signal to find a winner
-		if (game.ticketsSold &gt;= game.rules.slots) findWinner();
+		if (game.ticketsSold >= game.rules.slots) findWinner();
 	}
 
 	/*
@@ -647,12 +647,12 @@ contract SlotLottery is Lottery {
 	 */
 	function getMyTickets() public view returns (uint[]) {
 		uint _userTicketCount;
-		for(uint i = 0; i &lt; game.rules.slots; i++)
+		for(uint i = 0; i < game.rules.slots; i++)
 			if (game.tickets[i + 1] == msg.sender) _userTicketCount += 1;
 
 		uint[] memory _tickets = new uint[](_userTicketCount);
 		uint _index;
-		for(uint b = 0; b &lt; game.rules.slots; b++) {
+		for(uint b = 0; b < game.rules.slots; b++) {
 			if (game.tickets[b + 1] == msg.sender) {
 				_tickets[_index] = b + 1;
 				_index++;
@@ -673,15 +673,15 @@ contract SlotLottery is Lottery {
 	}
 
 	function verifiedGameRules(uint _jackpot, uint _slots, uint _price, uint _max) internal pure returns (GameRules) {
-		require((_price * _slots) - _jackpot &gt; 100000000000000000); // margin is greater than 0.1 ETH (for callback fees)
-		require(_max &lt;= _slots);
+		require((_price * _slots) - _jackpot > 100000000000000000); // margin is greater than 0.1 ETH (for callback fees)
+		require(_max <= _slots);
 		return GameRules(_jackpot, _slots, _price, _max);
 	}
 
 	struct Game {
 		uint id;
 		GameRules rules;
-		mapping(uint =&gt; address) tickets; // (ticketNumber =&gt; buyerAddress)
+		mapping(uint => address) tickets; // (ticketNumber => buyerAddress)
 		uint ticketsSold;
 		GameRules nextGameRules; // These rules will be used if the game recreates itself
 		address winner;
@@ -706,7 +706,7 @@ contract SlotLottery is Lottery {
 		bool[] memory _tickets = new bool[](game.rules.slots);
 		uint[] memory _userTickets = getMyTickets();
 
-		for (uint i = 0; i &lt; game.rules.slots; i++)
+		for (uint i = 0; i < game.rules.slots; i++)
 			_tickets[i] = game.tickets[i + 1] == address(0);
 
 		return (game.id, game.rules.jackpot, game.rules.slots, _remainingTickets, 
@@ -733,15 +733,15 @@ contract SlotLottery is Lottery {
 	uint affiliateCut = 2; // Example: 2 = 1/2 (50%), 3 = 1/3 (33%), etc.
 
 	function addAffiliate(uint _affiliate, uint _ticketCount) internal {
-		for (uint i = 0; i &lt; _ticketCount; i++) {
-			if (numAffiliates &gt;= currentGameAffiliates.length) currentGameAffiliates.length += 1;
+		for (uint i = 0; i < _ticketCount; i++) {
+			if (numAffiliates >= currentGameAffiliates.length) currentGameAffiliates.length += 1;
 			currentGameAffiliates[numAffiliates++] = _affiliate;
 		}
 	}
 
 	function payAffiliates() internal {
 		uint profit = (game.rules.slots * game.rules.ticketPrice) - game.rules.jackpot;
-		if (profit &gt; this.balance) profit = this.balance;
+		if (profit > this.balance) profit = this.balance;
 
 		uint _payment = (profit / game.rules.slots) / affiliateCut;
 		uint _pool = _payment * numAffiliates;
@@ -749,13 +749,13 @@ contract SlotLottery is Lottery {
 		uint[] memory _affiliates = new uint[](numAffiliates);
 		uint[] memory _amounts = new uint[](numAffiliates);
 
-		for (uint i = 0; i &lt; numAffiliates; i++) {
+		for (uint i = 0; i < numAffiliates; i++) {
 			_affiliates[i] = currentGameAffiliates[i];
 			_amounts[i] = _payment;
 		}
 
 		// payout to given affiliates with given amounts
-		if (numAffiliates &gt; 0)
+		if (numAffiliates > 0)
 			payoutToAffiliates(_affiliates, _amounts, _pool);
 
 		// Clear the affiliates
@@ -768,7 +768,7 @@ contract SlotLottery is Lottery {
 	function randomNumberFound(uint _number, uint _secret) internal {
 		require(state == State.Pending);
 		require(game.id == _secret);
-		require(_number &gt;= 1 &amp;&amp; _number &lt;= game.rules.slots);
+		require(_number >= 1 && _number <= game.rules.slots);
 		winnerChosen(_number);
 	}
 
@@ -778,9 +778,9 @@ contract SlotLottery is Lottery {
 	}
 
 	function refund(uint _amount) internal {
-		if (_amount &gt; 0 &amp;&amp; _amount &lt;= msg.value) {
+		if (_amount > 0 && _amount <= msg.value) {
 			msg.sender.transfer(_amount);
-		} else if (_amount &gt; msg.value) {
+		} else if (_amount > msg.value) {
 			msg.sender.transfer(msg.value);
 		}
 	}

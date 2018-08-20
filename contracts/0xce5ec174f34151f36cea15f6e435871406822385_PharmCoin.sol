@@ -20,9 +20,9 @@ contract PharmCoin
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ contract PharmCoin
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,15 +39,15 @@ contract PharmCoin
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
     //using SafeMath for uint256;
     
     uint public _totalSupply = 2000000000.0;
     
-    string public constant symbol = &quot;PHCX&quot;;
-    string public constant name = &quot;PharmCoin&quot;;
+    string public constant symbol = "PHCX";
+    string public constant name = "PharmCoin";
     
     //How many decimal places token can be split up into
     uint public constant decimals = 18;
@@ -58,8 +58,8 @@ contract PharmCoin
     address public owner;
 
  
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256) ) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256) ) allowed;
 
  
     function () public payable{
@@ -97,8 +97,8 @@ contract PharmCoin
     function transfer(address _to, uint256 _value) public returns (bool success){
     require
     (
-        balances[msg.sender] &gt;= _value
-        &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0)
+        balances[msg.sender] >= _value
+        && _value > 0 && _to != address(0)
     );
     balances[msg.sender] = sub(balances[msg.sender] , _value); 
     balances[_to] = add(balances[_to], _value); 
@@ -108,9 +108,9 @@ contract PharmCoin
     
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-    require(allowed[_from][msg.sender] &gt;= _value
-           &amp;&amp; balances[_from] &gt;= _value
-           &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(0) );
+    require(allowed[_from][msg.sender] >= _value
+           && balances[_from] >= _value
+           && _value > 0 && _to != address(0) );
     balances[_from] =  sub(balances[_from], _value);
     balances[_to] =  add (balances[_to], (_value) );
     allowed[_from][msg.sender] = sub(allowed[_from][msg.sender] , _value );
@@ -132,15 +132,15 @@ contract PharmCoin
 
     function setRate(uint256 rate) external returns (bool success)
     {
-        require(rate &gt; 0);
+        require(rate > 0);
         RATE = rate; 
         return true;
     }
 
     function setSupply(uint256 supply) external returns (bool success)
     {
-         //Check value to buy &gt; 0
-         require(supply &gt; 0);
+         //Check value to buy > 0
+         require(supply > 0);
         _totalSupply = supply; 
         return true;
     }

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /* 
-Welcome to the greates pyramid scheme of the Internet! And it&#39;s UNSTOPPABLE
+Welcome to the greates pyramid scheme of the Internet! And it's UNSTOPPABLE
 You can access it on IPFS here: https://ipfs.io/ipfs/Qmb6q3oWG33xeNoVppRHv1Mk23e5zMd8JK7dmKAhgiFk9H/
 */
 
@@ -21,15 +21,15 @@ contract UnstoppablePyramid {
         address playerAddr;
         uint parent;
         uint256 amountPlayed;   // We keep track of the amount invested
-        uint256 amountEarned;   // We keep track of the commissions received. It can&#39;t be more than 10x the amount invested
+        uint256 amountEarned;   // We keep track of the commissions received. It can't be more than 10x the amount invested
     }
     PonziFriend[] ponziFriends;
-    mapping (address =&gt; uint) public ponziFriendsToId;
+    mapping (address => uint) public ponziFriendsToId;
     
     /* Track Level 1, 2 and 3 commissions */
-    mapping (uint =&gt; uint) public ponziFriendToLevel1Ref;
-    mapping (uint =&gt; uint) public ponziFriendToLevel2Ref;
-    mapping (uint =&gt; uint) public ponziFriendToLevel3Ref;
+    mapping (uint => uint) public ponziFriendToLevel1Ref;
+    mapping (uint => uint) public ponziFriendToLevel2Ref;
+    mapping (uint => uint) public ponziFriendToLevel3Ref;
 
     // The main function, we call it when a new friend wants to join
     function newPonziFriend(uint _parentId) public payable isHuman() {
@@ -39,12 +39,12 @@ contract UnstoppablePyramid {
         uint256 comLevel2 = com1percent * 35; // 35%
         uint256 comLevel3 = com1percent * 15; // 15%
     
-        require(msg.value &gt;= basePricePonzi);
+        require(msg.value >= basePricePonzi);
 
-        /* Transfer commission to parents (level 1, 2 &amp; 3) */
+        /* Transfer commission to parents (level 1, 2 & 3) */
 
-        // Transfer to level 1 if parent[l1] hasn&#39;t reached its limit
-        if(ponziFriends[_parentId].amountEarned &lt; (ponziFriends[_parentId].amountPlayed * 5) &amp;&amp; _parentId &lt; ponziFriends.length) {
+        // Transfer to level 1 if parent[l1] hasn't reached its limit
+        if(ponziFriends[_parentId].amountEarned < (ponziFriends[_parentId].amountPlayed * 5) && _parentId < ponziFriends.length) {
             // Transfer commission
             ponziFriends[_parentId].playerAddr.transfer(comLevel1);
 
@@ -61,7 +61,7 @@ contract UnstoppablePyramid {
 
         // Transfer to level 2
         uint level2parent = ponziFriends[_parentId].parent;
-        if(ponziFriends[level2parent].amountEarned &lt; (ponziFriends[level2parent].amountPlayed *5 )) {
+        if(ponziFriends[level2parent].amountEarned < (ponziFriends[level2parent].amountPlayed *5 )) {
             // Transfer commission
             ponziFriends[level2parent].playerAddr.transfer(comLevel2);
 
@@ -78,7 +78,7 @@ contract UnstoppablePyramid {
 
         // Transfer to level 3
         uint level3parent = ponziFriends[level2parent].parent;
-        if(ponziFriends[level3parent].amountEarned &lt; (ponziFriends[level3parent].amountPlayed * 5)) {
+        if(ponziFriends[level3parent].amountEarned < (ponziFriends[level3parent].amountPlayed * 5)) {
             // Transfer commission
             ponziFriends[level3parent].playerAddr.transfer(comLevel3); 
 
@@ -96,11 +96,11 @@ contract UnstoppablePyramid {
 
         /* Save Ponzi Friend in struct */
 
-        if(ponziFriendsToId[msg.sender] &gt; 0) {
+        if(ponziFriendsToId[msg.sender] > 0) {
             // Player exists, update data
             ponziFriends[ponziFriendsToId[msg.sender]].amountPlayed += msg.value;
         } else {
-            // Player doesn&#39;t exist create it
+            // Player doesn't exist create it
             uint pzfId = ponziFriends.push(PonziFriend(msg.sender, _parentId, msg.value, 0)) - 1;
             ponziFriendsToId[msg.sender] = pzfId;
         }
@@ -141,7 +141,7 @@ contract UnstoppablePyramid {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
 

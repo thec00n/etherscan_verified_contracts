@@ -12,13 +12,13 @@ pragma solidity ^0.4.21;
 // You are allowed to create 16 offers in the game. Other people can find these offers and play with them
 // This is doable if you do not like the suggested offers, or simply want to put on more games. 
 // These are also cancellable. 
-// If you play someone&#39;s offer and send to much, excess is returned. 
+// If you play someone's offer and send to much, excess is returned. 
 
 contract EtherWild{
     // GLOBAL SETTINGS //
     uint8 constant MaxOffersPerADDR = 16; // per definition MAX 32 offers due to uint8 size
     uint16 CFee = 500; // FEE / 10000 , only paid per PLAYED TX. Cancel / create offer is no fee, only paid after play
-    uint16 HFeePart = 5000; // Part of creator fee -&gt; helper /10000 -&gt; 50%
+    uint16 HFeePart = 5000; // Part of creator fee -> helper /10000 -> 50%
     
     address Owner;
     address HelpOwner = 0x30B3E09d9A81D6B265A573edC7Cc4C4fBc0B0586;
@@ -27,7 +27,7 @@ contract EtherWild{
     // First two bits: Owner choice of offer. 0 means offer is closed (standard) to prevent double-withdrawals.
     // 1: blue / 2: red / 3: enemy choices. (This should not matter after infinite plays)
 
-    // Third bit: Game also has it&#39;s neighbour available. If you create a simple game you are allowed 
+    // Third bit: Game also has it's neighbour available. If you create a simple game you are allowed 
     // to create an offer too so it is visible (for manual amounts of inputs)
     // This makes sure both items are cancelled if you decide to cancel one 
     // Note: two items are cancelled, but double withdrawal is not availabe ;)
@@ -49,10 +49,10 @@ contract EtherWild{
     }
     
     // uint256 is wei paid: note only one offer is available per wei here. 
-    mapping(uint256 =&gt; SimpleGame) public SimpleGameList;
+    mapping(uint256 => SimpleGame) public SimpleGameList;
 
     // address can store 16 offers. lookup is done via events, saves gas. 
-    mapping(address =&gt; OfferGame[MaxOffersPerADDR]) public OfferGameList;
+    mapping(address => OfferGame[MaxOffersPerADDR]) public OfferGameList;
     
 
     // events for both to keep track 
@@ -82,14 +82,14 @@ contract EtherWild{
     
     // allows to change dev fee. max is 5%
     function SetDevFee(uint16 tfee) public OnlyOwner{
-        require(tfee &lt;= 500);
+        require(tfee <= 500);
         CFee = tfee;
     }
     
     // allows to change helper fee. minimum is 10%, max 100%. 
     function SetHFee(uint16 hfee) public OnlyOwner {
-        require(hfee &lt;= 10000);
-        require(hfee &gt;= 1000);
+        require(hfee <= 10000);
+        require(hfee >= 1000);
         HFeePart = hfee;
     
     }
@@ -98,8 +98,8 @@ contract EtherWild{
     // only used in UI. returns uint so you can see how much games you have uploaded. 
     function UserOffers(address who) public view returns(uint8){
         uint8 ids = 0;
-        for (uint8 i=0; i&lt;MaxOffersPerADDR; i++){
-            if ((OfferGameList[who][i].setting &amp; 3) == 0){
+        for (uint8 i=0; i<MaxOffersPerADDR; i++){
+            if ((OfferGameList[who][i].setting & 3) == 0){
                 ids++ ;
             }
         }
@@ -115,8 +115,8 @@ contract EtherWild{
     // create a new offer with setting. note; setting has to be 1,2 or 3.
     // connected to msg.sender.
     function CreateOffer(uint8 setting) public payable{
-        require(msg.value&gt;0);
-        require(setting&gt;0);
+        require(msg.value>0);
+        require(setting>0);
         CreateOffer_internal(setting, false);
     }
     
@@ -124,12 +124,12 @@ contract EtherWild{
     // internal function, necessary to keep track of simple game links 
     function CreateOffer_internal(uint8 setting, bool Sgame) internal returns (uint8 id){
         // find id. 
-        require(setting &lt;= 3);
+        require(setting <= 3);
 
         bool found = false;
         id = 0;
         // find available ID .
-        for (uint8 i=0; i&lt;MaxOffersPerADDR; i++){
+        for (uint8 i=0; i<MaxOffersPerADDR; i++){
             if (OfferGameList[msg.sender][i].setting == 0){
                 id = i;
                 found = true;
@@ -167,7 +167,7 @@ contract EtherWild{
             
             // if simple game available cancel it. put true in so no recall to this funciton 
             // also true will prevent to withdraw twice. 
-            if ((!skipSimple) &amp;&amp; game.SimpleGame){
+            if ((!skipSimple) && game.SimpleGame){
                 CancelSimpleOffer_internal(game.amount,true);
             }
             
@@ -185,10 +185,10 @@ contract EtherWild{
     function OfferPlay(address target, uint8 id, uint8 setting) public payable {
         var Game = OfferGameList[target][id];
         require(Game.setting != 0);
-        require(msg.value &gt;= Game.amount);
+        require(msg.value >= Game.amount);
         
         uint256 excess = msg.value - Game.amount;
-        if (excess &gt; 0){
+        if (excess > 0){
             msg.sender.transfer(excess); // return too much. 
         }
         
@@ -212,7 +212,7 @@ contract EtherWild{
         // also sgame? then cancel this too to prevent another cancel on this one 
         // otherwise you can always make sure you never lose money. hrm.
         if(sgame){
-            // cancel sgame -&gt; true prevents withdraw.
+            // cancel sgame -> true prevents withdraw.
             CancelSimpleOffer_internal(Game.amount, true);
         }
         
@@ -236,7 +236,7 @@ contract EtherWild{
         SimpleGameList[fee].setting = 0; // set to zero, prevent recalling.
         // prevent recall if offer available; 
         // offer cancel with not withdraw. 
-        if ((!SkipOffer) &amp;&amp; offer){
+        if ((!SkipOffer) && offer){
             OfferCancel_internal(id, true);
         }
         
@@ -276,14 +276,14 @@ contract EtherWild{
     // play game with setting, and a bool if you also want to create offer on the side. 
     // (all done in one TX)
     function PlaySimpleGame(uint8 setting, bool WantInOffer) payable public {
-        require(msg.value &gt; 0);
-        require(setting &gt; 0); // do not create cancelled one, otherwise withdraw not possible. 
+        require(msg.value > 0);
+        require(setting > 0); // do not create cancelled one, otherwise withdraw not possible. 
 
         var game = (SimpleGameList[msg.value]);
         uint8 id;
         if (game.setting != 0){
             // play game - NOT cancelled. 
-            // &gt;tfw msg.value is already correct lol no paybacks 
+            // >tfw msg.value is already correct lol no paybacks 
             require(game.Owner != msg.sender); // do not play against self, would send fee, unfair.
             
             // process logic
@@ -316,7 +316,7 @@ contract EtherWild{
                 id = CreateOffer_internal(setting, true); // id is returned to track this when cancel. 
             }
             
-            // convert setting. also checks for setting input &lt;= 3; 
+            // convert setting. also checks for setting input <= 3; 
             // bit magic 
             
             setting = DataToSetting(setting, WantInOffer, id);
@@ -335,7 +335,7 @@ contract EtherWild{
     function ProcessGame(address creator, address target, bool creatorWantsBlue, uint256 fee) internal returns (bool blue, bool cWon) {
         uint random = rand(1, creator);
         blue = (random==0);
-      //  cWon = (creatorWantsBlue &amp;&amp; (blue)) || (!creatorWantsBlue &amp;&amp; (!blue)); &gt;tfw retarded 
+      //  cWon = (creatorWantsBlue && (blue)) || (!creatorWantsBlue && (!blue)); >tfw retarded 
         cWon = (creatorWantsBlue == blue); // check if cwon via logic.
         if (cWon){
             creator.transfer(DoFee(fee*2)); // DoFee returns payment. 
@@ -372,18 +372,18 @@ contract EtherWild{
     
     // converts settings to uint8 using multiple bits to store this data.
      function DataToSetting(uint8 setting, bool offer, uint8 id) pure internal returns (uint8 output){
-        require(setting &lt;= 3);
+        require(setting <= 3);
 
         if (!offer){
             return setting; // no id necessary.
         }
-        require(id &lt;= 15);
+        require(id <= 15);
         uint8 out=setting;
         if (offer){
             out = out + 4; // enable bit 3;
         }
         // shift ID bits 4 bits to right so they are on bit 5 to 8
-        uint8 conv_id = id &lt;&lt; 4;
+        uint8 conv_id = id << 4;
         // add bits 
         out = out + conv_id; 
         return out;
@@ -392,11 +392,11 @@ contract EtherWild{
     // from setting, 3 data to retrieve above.
     function DataFromSetting(uint8 n) pure internal returns(uint8 set, bool offer, uint8 id){
         // setting simpmly extract first 2 bits. 
-        set = (n &amp; 3); 
+        set = (n & 3); 
         // offer extract 3rd bit and convert it to bool (cannot shift and check due to ID), or might have used MOD 1 
-        offer = (bool) ((n &amp; 4)==4); 
+        offer = (bool) ((n & 4)==4); 
         // shift n by 4 bits to extract id. throws away first 4 bits, nice.
-        id = (n) &gt;&gt; 4;
+        id = (n) >> 4;
         
     }
     

@@ -6,7 +6,7 @@ contract holder {
 
 contract BatchControl {
 
-    mapping (address =&gt; uint256) public allowed;
+    mapping (address => uint256) public allowed;
     address public owner;
     uint256 public price;
     holder public holderContract;
@@ -31,8 +31,8 @@ contract BatchControl {
     
     function buy(uint256 amount) payable public {
         uint256 total = price * amount;
-        assert(total &gt;= price);
-        require(msg.value &gt;= total);
+        assert(total >= price);
+        require(msg.value >= total);
         
         allowed[msg.sender] += amount;
         

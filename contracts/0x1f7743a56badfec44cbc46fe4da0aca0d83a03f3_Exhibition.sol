@@ -12,10 +12,10 @@ contract Exhibition {
     function Exhibition() public {
         organizer = msg.sender;
     }
-    mapping(address =&gt; Participant) private participants;
+    mapping(address => Participant) private participants;
     address[] private participantList;
     function registration(string _name, string _phone, string _email) public payable {
-        require(msg.value &gt; .00001 ether);
+        require(msg.value > .00001 ether);
         require(!isWinnerSelected);
         Participant storage participant = participants[msg.sender];
         participant.name = _name;
@@ -34,18 +34,18 @@ contract Exhibition {
         // Assign winner participant address
         winnerAddress = participantList[index];
 
-        // Change isWinnerSelected to &#39;true&#39;
+        // Change isWinnerSelected to 'true'
         isWinnerSelected = true;
     }
 
     // This function is used to send ether to winner address
     function transferAmount() public payable {
-        // check ether value should be greater than &#39;.0001&#39;
-        require(msg.value &gt; .0001 ether);
+        // check ether value should be greater than '.0001'
+        require(msg.value > .0001 ether);
         // Check the sender address should be equal to organizer address
         // since the organizer can only send ether to winner
         require(msg.sender == organizer);
-        // check isWinnerSelected should be &#39;true&#39;
+        // check isWinnerSelected should be 'true'
         require(isWinnerSelected);
         // send ether to winner
         sendAmount(msg.value, winnerAddress);
@@ -63,7 +63,7 @@ contract Exhibition {
 
     // This function is used to return winner name
     function getWinner() public view returns (string) {
-        // check isWinnerSelected should be &#39;true&#39;
+        // check isWinnerSelected should be 'true'
         require(isWinnerSelected);
         return participants[winnerAddress].name;
     }

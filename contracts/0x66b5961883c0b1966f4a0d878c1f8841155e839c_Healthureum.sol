@@ -1,7 +1,7 @@
 pragma solidity 0.4.18;
 
 /**
- * Contract &quot;Math&quot;
+ * Contract "Math"
  * Purpose: Math operations with safety checks
  * Status : Complete
  * 
@@ -23,7 +23,7 @@ contract Math {
     */
     function Div(uint a, uint b) pure internal returns (uint) {
       //overflow check; b must not be 0
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
@@ -34,7 +34,7 @@ contract Math {
     */
     function Sub(uint a, uint b) pure internal returns (uint) {
       //b must be greater that a as we need to store value in unsigned integer
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
@@ -44,7 +44,7 @@ contract Math {
     function Add(uint a, uint b) pure internal returns (uint) {
       uint c = a + b;
       //result must be greater as a or b can not be negative
-      assert(c&gt;=a &amp;&amp; c&gt;=b);
+      assert(c>=a && c>=b);
       return c;
     }
 }
@@ -63,8 +63,8 @@ contract Math {
 
 contract Healthureum is ERC20,Math
 {
-   string public constant symbol = &quot;HTH&quot;;
-     string public constant name = &quot;Healthureum&quot;;
+   string public constant symbol = "HTH";
+     string public constant name = "Healthureum";
      uint8 public constant decimals = 18;
      uint256 _totalSupply = Mul(150000000,(10 **18));
      
@@ -74,10 +74,10 @@ contract Healthureum is ERC20,Math
      address central_account;
   
      // Balances for each account
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
   
      // Owner of account approves the transfer of an amount to another account
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => mapping (address => uint256)) allowed;
      
      
   
@@ -113,12 +113,12 @@ contract Healthureum is ERC20,Math
          return balances[_owner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
          require( _to != 0x0);
-         require(balances[msg.sender] &gt;= _amount 
-             &amp;&amp; _amount &gt;= 0
-             &amp;&amp; balances[_to] + _amount &gt;= balances[_to]);
+         require(balances[msg.sender] >= _amount 
+             && _amount >= 0
+             && balances[_to] + _amount >= balances[_to]);
            balances[msg.sender] = Sub(balances[msg.sender], _amount);
              balances[_to] = Add(balances[_to], _amount);
              Transfer(msg.sender, _to, _amount);
@@ -128,7 +128,7 @@ contract Healthureum is ERC20,Math
   
      // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
@@ -138,10 +138,10 @@ contract Healthureum is ERC20,Math
          uint256 _amount
      )public returns (bool success) {
         require(_to != 0x0); 
-         require(balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt;= 0
-             &amp;&amp; balances[_to] + _amount &gt;= balances[_to]);
+         require(balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount >= 0
+             && balances[_to] + _amount >= balances[_to]);
         balances[_from] = Sub(balances[_from], _amount);
              allowed[_from][msg.sender] = Sub(allowed[_from][msg.sender], _amount);
              balances[_to] = Add(balances[_to], _amount);
@@ -165,14 +165,14 @@ contract Healthureum is ERC20,Math
    event check2(uint comtoken, uint totalToken);
    //  0.01 % = 1 and 100% = 10000
     function zero_fee_transaction(address _from, address _to, uint256 _amount, uint tax) external onlycentralAccount returns(bool success) {
-        require(_to != 0x0 &amp;&amp; tax &gt;=0);
+        require(_to != 0x0 && tax >=0);
 
       uint256 taxToken = Div((Mul(tax,  _amount)), 10000); 
       uint256 totalToken = Add(_amount, taxToken);
       check1(taxToken,totalToken);
-       require (balances[_from] &gt;= totalToken  &amp;&amp;
-            totalToken &gt; 0 &amp;&amp;
-            balances[_to] + totalToken &gt; balances[_to]);
+       require (balances[_from] >= totalToken  &&
+            totalToken > 0 &&
+            balances[_to] + totalToken > balances[_to]);
             balances[_from] = Sub(balances[_from], totalToken);
             balances[_to] = Add(balances[_to], _amount);
             balances[owner] = Add(balances[owner], taxToken);
@@ -183,13 +183,13 @@ contract Healthureum is ERC20,Math
 
    // .01 % = 1 and 100% = 10000
     function com_fee_transaction(address _from,address _to,address _taxCollector, uint256 _amount, uint commision) external onlycentralAccount returns(bool success) {
-      require(_to != 0x0 &amp;&amp; _taxCollector != 0x0 &amp;&amp; commision &gt;=0); 
+      require(_to != 0x0 && _taxCollector != 0x0 && commision >=0); 
       uint256 comToken = Div((Mul(commision,  _amount)), 10000); 
       uint256 totalToken = Sub(_amount, comToken);
        check2(comToken,totalToken);
-      require (balances[_from] &gt;= _amount &amp;&amp;
-            totalToken &gt;=0 &amp;&amp;
-        balances[_to] + totalToken &gt; balances[_to]);
+      require (balances[_from] >= _amount &&
+            totalToken >=0 &&
+        balances[_to] + totalToken > balances[_to]);
            balances[_from] = Sub(balances[_from], _amount);
            balances[_to] = Add(balances[_to], totalToken);
             balances[_taxCollector] = Add(balances[_taxCollector], comToken);

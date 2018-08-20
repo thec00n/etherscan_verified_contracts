@@ -9,9 +9,9 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// import &#39;ds-auth/auth.sol&#39;;
+// import 'ds-auth/auth.sol';
 pragma solidity ^0.4.23;
 
 contract DSAuthority {
@@ -81,32 +81,32 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.13;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -125,10 +125,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -154,7 +154,7 @@ contract DSMath {
 }
 
 
-// import &#39;./IkuraStorage.sol&#39;;
+// import './IkuraStorage.sol';
 
 /**
  *
@@ -166,13 +166,13 @@ contract IkuraStorage is DSMath, DSAuth {
   address[] ownerAddresses;
 
   // 各アドレスのdJPYの口座残高
-  mapping(address =&gt; uint) coinBalances;
+  mapping(address => uint) coinBalances;
 
   // 各アドレスのSHINJI tokenの口座残高
-  mapping(address =&gt; uint) tokenBalances;
+  mapping(address => uint) tokenBalances;
 
   // 各アドレスが指定したアドレスに対して許可する最大送金額
-  mapping(address =&gt; mapping (address =&gt; uint)) coinAllowances;
+  mapping(address => mapping (address => uint)) coinAllowances;
 
   // dJPYの発行高
   uint _totalSupply = 0;
@@ -191,7 +191,7 @@ contract IkuraStorage is DSMath, DSAuth {
   address multiSigAddress;
   address authorityAddress;
 
-  // @NOTE リリース時にcontractのdeploy -&gt; watch contract -&gt; setOwnerの流れを
+  // @NOTE リリース時にcontractのdeploy -> watch contract -> setOwnerの流れを
   //省略したい場合は、ここで直接controllerのアドレスを指定するとショートカットできます
   // 勿論テストは通らなくなるので、テストが通ったら試してね
   constructor() public DSAuth() {
@@ -328,7 +328,7 @@ contract IkuraStorage is DSMath, DSAuth {
 
     while (ownerAddresses[i] != addr) { i++; }
 
-    while (i &lt; ownerAddresses.length - 1) {
+    while (i < ownerAddresses.length - 1) {
       ownerAddresses[i] = ownerAddresses[i + 1];
       i++;
     }
@@ -355,7 +355,7 @@ contract IkuraStorage is DSMath, DSAuth {
    * @return オーナーに含まれている場合はtrue、含まれていない場合はfalse
    */
   function isOwnerAddress(address addr) public view auth returns (bool) {
-    for (uint i = 0; i &lt; ownerAddresses.length; i++) {
+    for (uint i = 0; i < ownerAddresses.length; i++) {
       if (ownerAddresses[i] == addr) return true;
     }
 
@@ -440,7 +440,7 @@ contract IkuraStorage is DSMath, DSAuth {
   function addTokenBalance(address addr, uint amount) public auth returns (bool) {
     tokenBalances[addr] = add(tokenBalances[addr], amount);
 
-    if (tokenBalances[addr] &gt; 0 &amp;&amp; !isOwnerAddress(addr)) {
+    if (tokenBalances[addr] > 0 && !isOwnerAddress(addr)) {
       addOwnerAddress(addr);
     }
 
@@ -458,7 +458,7 @@ contract IkuraStorage is DSMath, DSAuth {
   function subTokenBalance(address addr, uint amount) public auth returns (bool) {
     tokenBalances[addr] = sub(tokenBalances[addr], amount);
 
-    if (tokenBalances[addr] &lt;= 0) {
+    if (tokenBalances[addr] <= 0) {
       removeOwnerAddress(addr);
     }
 
@@ -556,12 +556,12 @@ contract IkuraAuthority is DSAuthority, DSAuth {
 
   // 対称アクションが投票を必要としている場かどうかのマッピング
   // #TODO 後から投票アクションを増減させたいのであれば、これもstorageクラスに持っていったほうがよい？
-  mapping(bytes4 =&gt; bool) actionsWithToken;
+  mapping(bytes4 => bool) actionsWithToken;
 
   // 誰からも呼び出すことができないアクション
-  mapping(bytes4 =&gt; bool) actionsForbidden;
+  mapping(bytes4 => bool) actionsForbidden;
 
-  // @NOTE リリース時にcontractのdeploy -&gt; watch contract -&gt; setOwnerの流れを
+  // @NOTE リリース時にcontractのdeploy -> watch contract -> setOwnerの流れを
   //省略したい場合は、ここで直接controllerのアドレスを指定するとショートカットできます
   // 勿論テストは通らなくなるので、テストが通ったら試してね
   constructor() public DSAuth() {
@@ -579,13 +579,13 @@ contract IkuraAuthority is DSAuthority, DSAuth {
     tokenStorage = IkuraStorage(storage_);
 
     // トークンの保有率による承認プロセスが必要なアクションを追加
-    actionsWithToken[stringToSig(&#39;mint(uint256)&#39;)] = true;
-    actionsWithToken[stringToSig(&#39;burn(uint256)&#39;)] = true;
-    actionsWithToken[stringToSig(&#39;confirmProposal(string, uint256)&#39;)] = true;
-    actionsWithToken[stringToSig(&#39;numberOfProposals(string)&#39;)] = true;
+    actionsWithToken[stringToSig('mint(uint256)')] = true;
+    actionsWithToken[stringToSig('burn(uint256)')] = true;
+    actionsWithToken[stringToSig('confirmProposal(string, uint256)')] = true;
+    actionsWithToken[stringToSig('numberOfProposals(string)')] = true;
 
     // 誰からも呼び出すことができないアクションを追加
-    actionsForbidden[stringToSig(&#39;forbiddenAction()&#39;)] = true;
+    actionsForbidden[stringToSig('forbiddenAction()')] = true;
   }
 
   /**
@@ -630,8 +630,8 @@ contract IkuraAuthority is DSAuthority, DSAuth {
     // warning抑制
     dst;
 
-    return tokenStorage.isOwnerAddress(src) &amp;&amp;
-           (tokenStorage.numOwnerAddress() == 1 || tokenStorage.tokenBalance(src) &gt; 0);
+    return tokenStorage.isOwnerAddress(src) &&
+           (tokenStorage.numOwnerAddress() == 1 || tokenStorage.tokenBalance(src) > 0);
   }
 
   /**

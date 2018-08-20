@@ -16,7 +16,7 @@ contract Ownable {
 /**
  * @title OwnableImpl
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableImpl is Ownable {
     address public owner;
@@ -164,20 +164,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -246,7 +246,7 @@ contract EtherReceiver {
 
 contract EtherReceiveAdapter is EtherReceiver, ReceiveAdapter {
     function () payable public {
-        receiveWithData(&quot;&quot;);
+        receiveWithData("");
     }
 
     function receiveWithData(bytes _data) payable public {
@@ -269,7 +269,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
 
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 sold = getSold(_token, _value);
-        require(sold &gt; 0);
+        require(sold > 0);
         uint256 bonus = getBonus(sold);
         address buyer;
         if (_data.length == 20) {
@@ -286,7 +286,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
 
     function getSold(address _token, uint256 _value) constant public returns (uint256) {
         uint256 rate = getRate(_token);
-        require(rate &gt; 0);
+        require(rate > 0);
         return _value.mul(rate).div(10**18);
     }
 
@@ -305,7 +305,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
     }
 
     function toBytes20(bytes b, uint256 _start) pure internal returns (bytes20 result) {
-        require(_start + 20 &lt;= b.length);
+        require(_start + 20 <= b.length);
         assembly {
             let from := add(_start, add(b, 0x20))
             result := mload(from)
@@ -368,14 +368,14 @@ contract Secured {
 }
 
 contract Whitelist is Secured {
-	mapping(address =&gt; bool) whitelist;
+	mapping(address => bool) whitelist;
 	event WhitelistChange(address indexed addr, bool allow);
 
 	function isInWhitelist(address addr) constant public returns (bool) {
 		return whitelist[addr];
 	}
 
-	function setWhitelist(address addr, bool allow) only(&quot;operator&quot;) public {
+	function setWhitelist(address addr, bool allow) only("operator") public {
 		setWhitelistInternal(addr, allow);
 	}
 
@@ -393,7 +393,7 @@ contract WhitelistSale is AbstractSale, Whitelist {
 }
 
 contract SecuredImpl is Ownable, Secured {
-	mapping(string =&gt; address) users;
+	mapping(string => address) users;
 	event RoleTransferred(address indexed previousUser, address indexed newUser, string role);
 
 	function getRole(string role) constant public returns (address) {
@@ -409,7 +409,7 @@ contract SecuredImpl is Ownable, Secured {
 
 contract RatesChangingSale is AbstractSale {
 	event RateChange(address token, uint256 rate);
-	mapping (address =&gt; uint256) rates;
+	mapping (address => uint256) rates;
 
 	function getRate(address _token) constant public returns (uint256) {
 		return rates[_token];

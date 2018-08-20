@@ -18,10 +18,10 @@ battle with other Warrior tokens holders, for profit or just for fun!
 - Persians and Immortals represent the Persian faction, Spartans and Athenians
   the Greek one.
 - During the first phase players send tokens to the battle contract
-  (NOTE: before calling the proper contract&#39;s function that assigning warriors
+  (NOTE: before calling the proper contract's function that assigning warriors
   to the battlefiled, players NEED TO CALL APPROVE on their token contract to
   allow Battle contract to move their tokens.
-- Once sent, troops can&#39;t be retired form the battlefield
+- Once sent, troops can't be retired form the battlefield
 - The battle will last for several days
 - When the battle period is over, following results can happpen:
     -- When the battle ends in a draw:
@@ -72,22 +72,22 @@ contract Timed {
     uint256 public endTime;             //seconds since Unix epoch time
     uint256 public avarageBlockTime;    //seconds
 
-    // This check is an helper function for &#208;App to check the effect of the NEXT transaction, NOT simply the current state of the contract
+    // This check is an helper function for ÐApp to check the effect of the NEXT transaction, NOT simply the current state of the contract
     function isInTime() constant returns (bool inTime) {
-        return block.timestamp &gt;= (startTime - avarageBlockTime) &amp;&amp; !isTimeExpired();
+        return block.timestamp >= (startTime - avarageBlockTime) && !isTimeExpired();
     }
 
-    // This check is an helper function for &#208;App to check the effect of the NEXT transacion, NOT simply the current state of the contract
+    // This check is an helper function for ÐApp to check the effect of the NEXT transacion, NOT simply the current state of the contract
     function isTimeExpired() constant returns (bool timeExpired) {
-        return block.timestamp + avarageBlockTime &gt;= endTime;
+        return block.timestamp + avarageBlockTime >= endTime;
     }
 
     modifier onlyIfInTime {
-        require(block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt;= endTime); _;
+        require(block.timestamp >= startTime && block.timestamp <= endTime); _;
     }
 
     modifier onlyIfTimePassed {
-        require(block.timestamp &gt; endTime); _;
+        require(block.timestamp > endTime); _;
     }
 
     function Timed(uint256 _startTime, uint256 life, uint8 _avarageBlockTime) {
@@ -103,11 +103,11 @@ library SafeMathLib {
     uint constant RAY = 10 ** 27;
 
     function add(uint x, uint y) internal returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint x, uint y) internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint x, uint y) internal returns (uint z) {
@@ -119,19 +119,19 @@ library SafeMathLib {
     }
 
     function min(uint x, uint y) internal returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function max(uint x, uint y) internal returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     function imin(int x, int y) internal returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function imax(int x, int y) internal returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     function wmul(uint x, uint y) internal returns (uint z) {
@@ -154,10 +154,10 @@ library SafeMathLib {
         return wmul(wdiv(x, 100), y);
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -244,13 +244,13 @@ contract BattleOfThermopylae is Timed, Upgradable {
     address public battles;                                             // Address of the Battle Tokens
     address public battlesOwner;                                        // Owner of the Battle Token contract
 
-    mapping (address =&gt; mapping (address =&gt; uint))   public  warriorsByPlayer;               // Troops currently allocated by each player
-    mapping (address =&gt; uint)                        public  warriorsOnTheBattlefield;       // Total troops fighting in the battle
+    mapping (address => mapping (address => uint))   public  warriorsByPlayer;               // Troops currently allocated by each player
+    mapping (address => uint)                        public  warriorsOnTheBattlefield;       // Total troops fighting in the battle
 
     event WarriorsAssignedToBattlefield (address indexed _from, address _faction, uint _battlePointsIncrementForecast);
     event WarriorsBackToHome            (address indexed _to, address _faction, uint _survivedWarriors);
 
-    function BattleOfThermopylae(uint _startTime, uint _life, uint8 _avarageBlockTime, address _persians, address _immortals, address _spartans, address _athenians) Timed(_startTime, _life, _avarageBlockTime) Upgradable(&quot;1.0.0&quot;) {
+    function BattleOfThermopylae(uint _startTime, uint _life, uint8 _avarageBlockTime, address _persians, address _immortals, address _spartans, address _athenians) Timed(_startTime, _life, _avarageBlockTime) Upgradable("1.0.0") {
         persians = _persians;
         immortals = _immortals;
         spartans = _spartans;
@@ -295,26 +295,26 @@ contract BattleOfThermopylae is Timed, Upgradable {
     }
 
     function redeemWarriors() onlyIfTimePassed external returns (bool success) {
-        if (getPersiansBattlePoints() &gt; getGreeksBattlePoints()) {
+        if (getPersiansBattlePoints() > getGreeksBattlePoints()) {
             // Persians won, compute slaves
             uint spartanSlaves = computeSlaves(msg.sender, spartans);
-            if (spartanSlaves &gt; 0) {
+            if (spartanSlaves > 0) {
                 // Send back Spartan slaves to winner
                 sendWarriors(msg.sender, spartans, spartanSlaves);
             }
             // Send back Persians but casualties
             retrieveWarriors(msg.sender, persians, BATTLE_CASUALTIES);
-        } else if (getPersiansBattlePoints() &lt; getGreeksBattlePoints()) {
+        } else if (getPersiansBattlePoints() < getGreeksBattlePoints()) {
             //Greeks won, send back Persian slaves
             uint persianSlaves = computeSlaves(msg.sender, persians);
-            if (persianSlaves &gt; 0) {
+            if (persianSlaves > 0) {
                 // Send back Persians slaves to winner
                 sendWarriors(msg.sender, persians, persianSlaves);                
             }
             // Send back Spartans but casualties
             retrieveWarriors(msg.sender, spartans, BATTLE_CASUALTIES);
         } else {
-            // It&#39;s a draw, send back Persians and Spartans but casualties
+            // It's a draw, send back Persians and Spartans but casualties
             retrieveWarriors(msg.sender, persians, BATTLE_CASUALTIES);
             retrieveWarriors(msg.sender, spartans, BATTLE_CASUALTIES);
         }
@@ -326,16 +326,16 @@ contract BattleOfThermopylae is Timed, Upgradable {
     }
 
     function assignWarriorsToBattle(address _player, address _faction, uint _warriors, uint _maxWarriors) private {
-        require(warriorsOnTheBattlefield[_faction].add(_warriors) &lt;= _maxWarriors);
+        require(warriorsOnTheBattlefield[_faction].add(_warriors) <= _maxWarriors);
         require(TokenEIP20(_faction).transferFrom(_player, address(this), _warriors));
         warriorsByPlayer[_player][_faction] = warriorsByPlayer[_player][_faction].add(_warriors);
         warriorsOnTheBattlefield[_faction] = warriorsOnTheBattlefield[_faction].add(_warriors);
     }
 
     function retrieveWarriors(address _player, address _faction, uint8 _deadPercentage) private {
-        if (warriorsByPlayer[_player][_faction] &gt; 0) {
+        if (warriorsByPlayer[_player][_faction] > 0) {
             uint _warriors = warriorsByPlayer[_player][_faction];
-            if (_deadPercentage &gt; 0) {
+            if (_deadPercentage > 0) {
                 _warriors = _warriors.sub(_warriors.wper(_deadPercentage));
             }
             warriorsByPlayer[_player][_faction] = 0;
@@ -410,20 +410,20 @@ contract BattleOfThermopylae is Timed, Upgradable {
 
     function getTemporaryWinningFaction() constant returns (string temporaryWinningFaction) {
         if (isDraw()) {
-            return &quot;It&#39;s currently a draw, but the battle is still in progress!&quot;;
+            return "It's currently a draw, but the battle is still in progress!";
         }
-        return getPersiansBattlePoints() &gt; getGreeksBattlePoints() ?
-            &quot;Persians are winning, but the battle is still in progress!&quot; : &quot;Greeks are winning, but the battle is still in progress!&quot;;
+        return getPersiansBattlePoints() > getGreeksBattlePoints() ?
+            "Persians are winning, but the battle is still in progress!" : "Greeks are winning, but the battle is still in progress!";
     }
 
     function getWinningFaction() constant returns (string winningFaction) {
         if (isInProgress()) {
-            return &quot;The battle is still in progress&quot;;
+            return "The battle is still in progress";
         }
         if (isDraw()) {
-            return &quot;The battle ended in a draw!&quot;;
+            return "The battle ended in a draw!";
         }
-        return getPersiansBattlePoints() &gt; getGreeksBattlePoints() ? &quot;Persians&quot; : &quot;Greeks&quot;;
+        return getPersiansBattlePoints() > getGreeksBattlePoints() ? "Persians" : "Greeks";
     }
 
 }

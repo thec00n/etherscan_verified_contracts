@@ -52,12 +52,12 @@ contract Ownable {
 }
 
 contract Token {
-    string public constant name = &quot;Crypto Shrooms&quot;; // ERC-721
-    string public constant symbol = &quot;SHRM&quot;; // ERC-721
+    string public constant name = "Crypto Shrooms"; // ERC-721
+    string public constant symbol = "SHRM"; // ERC-721
     uint256[] public tokenIdToDna;
-    mapping (address =&gt; uint256) public balanceOf; // ERC-721
-    mapping (uint256 =&gt; address) public tokenIdToApproved;
-    mapping (uint256 =&gt; address) tokenIdToOwner;
+    mapping (address => uint256) public balanceOf; // ERC-721
+    mapping (uint256 => address) public tokenIdToApproved;
+    mapping (uint256 => address) tokenIdToOwner;
 
     event Transfer(address from, address to, uint256 tokenId); // ERC-721
     event Approval(address owner, address approved, uint256 tokenId); // ERC-721
@@ -120,7 +120,7 @@ contract Token {
             uint256[] memory result = new uint256[](tokenCount);
             uint256 total = tokenIdToDna.length - 1;
             uint256 resultIndex = 0;
-            for (uint i = 1; i &lt;= total; i++) {
+            for (uint i = 1; i <= total; i++) {
                 if (tokenIdToOwner[i] == _owner) {
                     result[resultIndex] = i;
                     resultIndex++;
@@ -147,8 +147,8 @@ contract Token {
 }
 
 contract Shroom is Ownable, Token {
-    mapping (uint256 =&gt; bool) public kittyIdToDead;
-    mapping (uint256 =&gt; uint256) shroomIdToPrice;
+    mapping (uint256 => bool) public kittyIdToDead;
+    mapping (uint256 => uint256) shroomIdToPrice;
     uint256 salt;
 
     event SaleCreated(uint256 shroomId, uint256 price);
@@ -186,8 +186,8 @@ contract Shroom is Ownable, Token {
         address currentOwner = tokenIdToOwner[_shroomId];
         require(currentOwner != address(0));
         uint256 price = shroomIdToPrice[_shroomId];
-        require(price &gt; 0);
-        require(msg.value &gt;= price);
+        require(price > 0);
+        require(msg.value >= price);
         delete shroomIdToPrice[_shroomId];
         currentOwner.transfer(price);
         emit SaleSuccessful(_shroomId);
@@ -198,14 +198,14 @@ contract Shroom is Ownable, Token {
         address currentOwner = tokenIdToOwner[_shroomId];
         require(currentOwner != address(0));
         require(currentOwner == msg.sender);
-        require(shroomIdToPrice[_shroomId] &gt; 0);
+        require(shroomIdToPrice[_shroomId] > 0);
         delete shroomIdToPrice[_shroomId];
         emit SaleCancelled(_shroomId);
     }
 
     function getPrice(uint256 _shroomId) external view returns (uint256) {
         uint256 price = shroomIdToPrice[_shroomId];
-        require(price &gt; 0);
+        require(price > 0);
         return price;
     }
 }

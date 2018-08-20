@@ -29,7 +29,7 @@ contract Contributor {
     string moduleKey;
     }
 
-    mapping (string =&gt; Extension) private publications;
+    mapping (string => Extension) private publications;
 
     //Modifiers
     modifier onlyBy(address _account) {

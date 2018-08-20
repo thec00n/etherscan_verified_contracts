@@ -6,16 +6,16 @@ contract LocusToken {
     
     address public tokenOwner;
     
-    string public constant name = &quot;Locus Chain&quot;;
-    string public constant symbol = &quot;LOCUS&quot;;
+    string public constant name = "Locus Chain";
+    string public constant symbol = "LOCUS";
     
     uint8 public constant decimals = 18;
     uint public totalSupply;
     
     uint internal constant initialSupply = 7000000000 * (10 ** uint(decimals));
     
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint)) internal allowed;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => uint)) internal allowed;
 	
 	function balanceOfToken(address _owner) public view returns(uint) {
 	    return balanceOf[_owner];
@@ -37,8 +37,8 @@ contract LocusToken {
     
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != address(0));
-        require(_value &lt;= balanceOf[_from]);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(_value <= balanceOf[_from]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint prevBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -52,7 +52,7 @@ contract LocusToken {
     }
     
     function transferFrom(address _from, address _to, uint _value) public returns(bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -73,7 +73,7 @@ contract LocusToken {
     }
     
     function burn(uint _value) public returns(bool) {
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);

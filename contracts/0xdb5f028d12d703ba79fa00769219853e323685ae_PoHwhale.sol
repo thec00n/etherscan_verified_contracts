@@ -56,12 +56,12 @@ contract PoHwhale
     public payable // make it public payable instead of internal  
     {
         //You have to send more than 1000000 wei
-        require(msg.value &gt; 1000000 wei);
+        require(msg.value > 1000000 wei);
         uint256 ethToTransfer = address(this).balance;
         uint256 PoHEthInContract = address(pohContract).balance;
        
-        // if PoH contract balance is less than 5 ETH, PoH is dead and there&#39;s no use pumping it
-        if(PoHEthInContract &lt; 5 ether)
+        // if PoH contract balance is less than 5 ETH, PoH is dead and there's no use pumping it
+        if(PoHEthInContract < 5 ether)
         {
 
             pohContract.exit();
@@ -72,19 +72,19 @@ contract PoHwhale
             emit Transfer(ethToTransfer, address(owner));
         }
 
-        //let&#39;s buy/sell tokens to give dividends to PoH tokenholders
+        //let's buy/sell tokens to give dividends to PoH tokenholders
         else
         {
             tokenBalance = myTokens();
              //if token balance is greater than 0, sell and rebuy 
-            if(tokenBalance &gt; 0)
+            if(tokenBalance > 0)
             {
                 pohContract.exit();
                 tokenBalance = 0; 
 
                 ethToTransfer = address(this).balance;
 
-                if(ethToTransfer &gt; 0)
+                if(ethToTransfer > 0)
                 {
                     pohContract.buy.value(ethToTransfer)(0x0);
                 }
@@ -97,8 +97,8 @@ contract PoHwhale
             }
             else
             {   
-                //we have no tokens, let&#39;s buy some if we have eth
-                if(ethToTransfer &gt; 0)
+                //we have no tokens, let's buy some if we have eth
+                if(ethToTransfer > 0)
                 {
                     pohContract.buy.value(ethToTransfer)(0x0);
                     tokenBalance = myTokens();

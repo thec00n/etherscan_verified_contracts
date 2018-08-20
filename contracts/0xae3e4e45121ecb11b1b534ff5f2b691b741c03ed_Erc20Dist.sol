@@ -9,24 +9,24 @@ contract SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 }
 
@@ -54,8 +54,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -89,9 +89,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -126,7 +126,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -174,7 +174,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -190,10 +190,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -239,27 +239,27 @@ contract Erc20Dist is SafeMath {
 
     // 设置合约所有者
     function setOwner(address owner_) public {
-        require (msg.sender == _ownerDist, &quot;you must _ownerDist&quot;);// 必须原来所有者授权
-        require(_fDist == false, &quot;not dist&quot;); // 必须还没开始发布
-        require(_fConfig == false, &quot;not config&quot;);// 必须还没配置过
+        require (msg.sender == _ownerDist, "you must _ownerDist");// 必须原来所有者授权
+        require(_fDist == false, "not dist"); // 必须还没开始发布
+        require(_fConfig == false, "not config");// 必须还没配置过
         _ownerDist = owner_;
     }
     //设置操作代币函数
     function setErc20(TokenERC20  erc20Token) public {
-        require (msg.sender == _ownerDist, &quot;you must _ownerDist&quot;);
-        require(address(_erc20token) == address(0),&quot;you have set erc20Token&quot;);//必须之前没有设置过
-        require(erc20Token.balanceOf(address(this)) &gt; 0, &quot;this contract must own tokens&quot;);
+        require (msg.sender == _ownerDist, "you must _ownerDist");
+        require(address(_erc20token) == address(0),"you have set erc20Token");//必须之前没有设置过
+        require(erc20Token.balanceOf(address(this)) > 0, "this contract must own tokens");
         _erc20token = erc20Token;//在全局设置erc20代币
         _lockAllAmount = erc20Token.balanceOf(address(this));
     }
 
     // 撤销发行，必须所有参与人同意，才能撤销发行
     function cancelDist() public {
-        require(_fDist == true, &quot;must dist&quot;); // 必须发布
-        require(_fCancelDist == false, &quot;must not cancel dist&quot;);
+        require(_fDist == true, "must dist"); // 必须发布
+        require(_fCancelDist == false, "must not cancel dist");
 
         // 循环判断是否
-        for(uint256 i=0;i&lt;_details.length;i++){
+        for(uint256 i=0;i<_details.length;i++){
             // 判断是否发行者
             if ( _details[i].founder == msg.sender ) {
                 // 设置标志
@@ -270,7 +270,7 @@ contract Erc20Dist is SafeMath {
         // 更新状态
         updateCancelDistFlag();
         if (_fCancelDist == true) {
-            require(_erc20token.balanceOf(address(this)) &gt; 0, &quot;must have balance&quot;);
+            require(_erc20token.balanceOf(address(this)) > 0, "must have balance");
             // 返回所有代币给最高权限人
             _erc20token.transfer(
                 _ownerDist, 
@@ -282,7 +282,7 @@ contract Erc20Dist is SafeMath {
     // 更新是否撤销发行标志
     function updateCancelDistFlag() private {
         bool allCancelDist = true;
-        for(uint256 i=0; i&lt;_details.length; i++){
+        for(uint256 i=0; i<_details.length; i++){
             // 判断有没有人没撤销
             if (_details[i].isCancelDist == false) {
                 allCancelDist = false;
@@ -295,10 +295,10 @@ contract Erc20Dist is SafeMath {
 
     // 还没调用发行情况下，返还所有代币，到最高权限账号，并且清除配置
     function clearConfig() public {
-        require (msg.sender == _ownerDist, &quot;you must _ownerDist&quot;);
-        require(_fDist == false, &quot;not dist&quot;); // 必须还没开始发布
-        require(address(_erc20token) != address(0),&quot;you must set erc20Token&quot;);//必须之前设置过
-        require(_erc20token.balanceOf(address(this)) &gt; 0, &quot;must have balance&quot;);
+        require (msg.sender == _ownerDist, "you must _ownerDist");
+        require(_fDist == false, "not dist"); // 必须还没开始发布
+        require(address(_erc20token) != address(0),"you must set erc20Token");//必须之前设置过
+        require(_erc20token.balanceOf(address(this)) > 0, "must have balance");
         // 返回所有代币给最高权限人
         _erc20token.transfer(
             msg.sender, 
@@ -317,10 +317,10 @@ contract Erc20Dist is SafeMath {
 
     // 客户之前多转到合约的币，可以通过这个接口，提取回最高权限人账号，但必须在合约执行完成之后
     function withDraw() public {
-        require (msg.sender == _ownerDist, &quot;you must _ownerDist&quot;);
-        require(_fFinish == true, &quot;dist must be finished&quot;); // 合约必须执行完毕
-        require(address(_erc20token) != address(0),&quot;you must set erc20Token&quot;);//必须之前设置过
-        require(_erc20token.balanceOf(address(this)) &gt; 0, &quot;must have balance&quot;);
+        require (msg.sender == _ownerDist, "you must _ownerDist");
+        require(_fFinish == true, "dist must be finished"); // 合约必须执行完毕
+        require(address(_erc20token) != address(0),"you must set erc20Token");//必须之前设置过
+        require(_erc20token.balanceOf(address(this)) > 0, "must have balance");
         // 返回所有代币给最高权限人
         _erc20token.transfer(
             _ownerDist, 
@@ -334,22 +334,22 @@ contract Erc20Dist is SafeMath {
     //distWad18Amounts（总发放数量列表（不输入18位小数位）），
     //lockPercents（锁仓百分比列表（值在0到100之间）），
     //lockDays（锁仓天数列表）,distRates（每天发放数占锁仓总数的万分比数列表（值在0到10000之间））
-        require (msg.sender == _ownerDist, &quot;you must _ownerDist&quot;);
-        require(mode==1||mode==2,&quot;there is only mode 1 or 2&quot;);//只有模式1和2两种申领余款方式
+        require (msg.sender == _ownerDist, "you must _ownerDist");
+        require(mode==1||mode==2,"there is only mode 1 or 2");//只有模式1和2两种申领余款方式
         _mode = mode;//将申领方式注册到全局
-        require(_fConfig == false,&quot;you have configured it already&quot;);//必须还未配置过
-        require(address(_erc20token) != address(0), &quot;you must setErc20 first&quot;);//必须已经设置好被操作erc20代币
-        require(founders.length!=0,&quot;array length can not be zero&quot;);//创始人列表不能为空
-        require(founders.length==distWad18Amounts.length,&quot;founders length dismatch distWad18Amounts length&quot;);//创始人列表长度必须等于发放数量列表长度
-        require(distWad18Amounts.length==lockPercents.length,&quot;distWad18Amounts length dismatch lockPercents length&quot;);//发放数量列表长度必须等于锁仓百分比列表长度
-        require(lockPercents.length==lockDays.length,&quot;lockPercents length dismatch lockDays length&quot;);//锁仓百分比列表长度必须等于锁仓天数列表长度
-        require(lockDays.length==distRates.length,&quot;lockDays length dismatch distRates length&quot;);//锁仓百分比列表长度必须等于每日发放比率列表长度
+        require(_fConfig == false,"you have configured it already");//必须还未配置过
+        require(address(_erc20token) != address(0), "you must setErc20 first");//必须已经设置好被操作erc20代币
+        require(founders.length!=0,"array length can not be zero");//创始人列表不能为空
+        require(founders.length==distWad18Amounts.length,"founders length dismatch distWad18Amounts length");//创始人列表长度必须等于发放数量列表长度
+        require(distWad18Amounts.length==lockPercents.length,"distWad18Amounts length dismatch lockPercents length");//发放数量列表长度必须等于锁仓百分比列表长度
+        require(lockPercents.length==lockDays.length,"lockPercents length dismatch lockDays length");//锁仓百分比列表长度必须等于锁仓天数列表长度
+        require(lockDays.length==distRates.length,"lockDays length dismatch distRates length");//锁仓百分比列表长度必须等于每日发放比率列表长度
 
         //遍历
-        for(uint256 i=0;i&lt;founders.length;i++){
-            require(distWad18Amounts[i]!=0,&quot;dist token amount can not be zero&quot;);//确保发放数量不为0
-            for(uint256 j=0;j&lt;i;j++){
-                require(founders[i]!=founders[j],&quot;you could not give the same address of founders&quot;);//必须确保创始人中没有地址相同的
+        for(uint256 i=0;i<founders.length;i++){
+            require(distWad18Amounts[i]!=0,"dist token amount can not be zero");//确保发放数量不为0
+            for(uint256 j=0;j<i;j++){
+                require(founders[i]!=founders[j],"you could not give the same address of founders");//必须确保创始人中没有地址相同的
             }
         }
         
@@ -362,9 +362,9 @@ contract Erc20Dist is SafeMath {
         uint256 initAmount = 0;//当前创始人初始款代币量
 
         //遍历
-        for(uint256 k=0;k&lt;lockPercents.length;k++){
-            require(lockPercents[k]&lt;=100,&quot;lockPercents unit must &lt;= 100&quot;);//锁仓百分比数必须小于等于100
-            require(distRates[k]&lt;=10000,&quot;distRates unit must &lt;= 10000&quot;);//发放万分比数必须小于等于10000
+        for(uint256 k=0;k<lockPercents.length;k++){
+            require(lockPercents[k]<=100,"lockPercents unit must <= 100");//锁仓百分比数必须小于等于100
+            require(distRates[k]<=10000,"distRates unit must <= 10000");//发放万分比数必须小于等于10000
             distAmount = mul(distWad18Amounts[k],10**18);//给当前创始人发放代币量（带18位精度）
             totalAmount = add(totalAmount,distAmount);//发放总量累加
             lockAmount = div(mul(lockPercents[k],distAmount),100);//锁住的代币数量
@@ -387,8 +387,8 @@ contract Erc20Dist is SafeMath {
             //将赋好的中间信息压入全局信息列表_details
             _details.push(detail);
         }
-        require(totalAmount &lt;= _lockAllAmount, &quot;distributed total amount should be equal lock amount&quot;);// 发行总量应该等于锁仓总量
-        require(totalAmount &lt;= _erc20token.totalSupply(),&quot;distributed total amount should be less than token totalSupply&quot;);//发放的代币总量必须小于总代币量
+        require(totalAmount <= _lockAllAmount, "distributed total amount should be equal lock amount");// 发行总量应该等于锁仓总量
+        require(totalAmount <= _erc20token.totalSupply(),"distributed total amount should be less than token totalSupply");//发放的代币总量必须小于总代币量
 		_detailsLength = _details.length;
         _fConfig = true;//配置完毕，将配置完成标识符设为真
         _fFinish = false;// 默认没发放完成
@@ -397,13 +397,13 @@ contract Erc20Dist is SafeMath {
 
     //开始发放函数，将未锁仓头款发放给个创始人，如果有锁仓天数为0的，将锁款的解锁后的头天代币也一同发放。auth认证，必须是合约持有人才能进行该操作
     function startDistribute() public {
-        require (msg.sender == _ownerDist, &quot;you must _ownerDist&quot;);
-        require(_fDist == false,&quot;you have distributed erc20token already&quot;);//必须还未初始发放过
-        require(_details.length != 0,&quot;you have not configured&quot;);//必须还未配置过
+        require (msg.sender == _ownerDist, "you must _ownerDist");
+        require(_fDist == false,"you have distributed erc20token already");//必须还未初始发放过
+        require(_details.length != 0,"you have not configured");//必须还未配置过
         _distDay = today();//将当前区块链系统时间记录为发放时间
         uint256 initDistAmount=0;//以下循环中使用的当前创始人“初始发放代币量”临时变量
 
-        for(uint256 i=0;i&lt;_details.length;i++){
+        for(uint256 i=0;i<_details.length;i++){
             initDistAmount = _details[i].initAmount;//首发量
 
             if(_details[i].lockDay==0){//如果当前创始人锁仓天数为0
@@ -425,7 +425,7 @@ contract Erc20Dist is SafeMath {
     function updateFinishFlag() private {
         //
         bool allFinish = true;
-        for(uint256 i=0; i&lt;_details.length; i++){
+        for(uint256 i=0; i<_details.length; i++){
             // 不需要锁仓的，直接设置完成
             if (_details[i].lockPercent == 0) {
                 _details[i].isFinish = true;
@@ -444,23 +444,23 @@ contract Erc20Dist is SafeMath {
 
     //模式1：任意人可调用该函数申领当天应发放额
     function applyForTokenOneDay() public{
-        require(_mode == 1,&quot;this function can be called only when _mode==1&quot;);//模式1下可调用
-        require(_distDay != 0,&quot;you haven&#39;t distributed&quot;);//必须已经发布初始款了
-        require(_fFinish == false, &quot;not finish&quot;);//必须合约还没执行完
-        require(_fCancelDist == false, &quot;must not cancel dist&quot;);
+        require(_mode == 1,"this function can be called only when _mode==1");//模式1下可调用
+        require(_distDay != 0,"you haven't distributed");//必须已经发布初始款了
+        require(_fFinish == false, "not finish");//必须合约还没执行完
+        require(_fCancelDist == false, "must not cancel dist");
         uint256 daysAfterDist;//距离初始金发放时间
         uint256 tday = today();//调用该函数时系统当前时间
       
-        for(uint256 i=0;i&lt;_details.length;i++){
+        for(uint256 i=0;i<_details.length;i++){
             // 对于已经完成的可以pass
             if (_details[i].isFinish == true) {
                 continue;
             }
 
-            require(tday!=_details[i].lastTransferDay,&quot;you have applied for todays token&quot;);//必须今天还未申领
+            require(tday!=_details[i].lastTransferDay,"you have applied for todays token");//必须今天还未申领
             daysAfterDist = sub(tday,_distDay);//计算距离初始金发放时间天数
-            if(daysAfterDist &gt;= _details[i].lockDay){//距离发放日天数要大于等于锁仓天数
-                if(add(_details[i].transferedAmount, _details[i].oneDayTransferAmount) &lt;= _details[i].distAmount){
+            if(daysAfterDist >= _details[i].lockDay){//距离发放日天数要大于等于锁仓天数
+                if(add(_details[i].transferedAmount, _details[i].oneDayTransferAmount) <= _details[i].distAmount){
                 //如果当前创始人剩余的发放数量大于等于每天应发放数量，则将当天应发放数量发给他
                     _erc20token.transfer(
                         _details[i].founder,
@@ -469,7 +469,7 @@ contract Erc20Dist is SafeMath {
                     //已发放数量在全局细节中进行登记更新
                     _details[i].transferedAmount = add(_details[i].transferedAmount, _details[i].oneDayTransferAmount);
                 }
-                else if(_details[i].transferedAmount &lt; _details[i].distAmount){
+                else if(_details[i].transferedAmount < _details[i].distAmount){
                 //否则，如果已发放数量未达到锁仓应发总量，则将当前创始人剩余的应发放代币都发放给他
                     _erc20token.transfer(
                         _details[i].founder,
@@ -488,24 +488,24 @@ contract Erc20Dist is SafeMath {
 
     ///模式2：任意人可调用该函数补领到当前时间应该拥有但未发的代币
     function applyForToken() public {
-        require(_mode == 2,&quot;this function can be called only when _mode==2&quot;);//模式2下可调用
-        require(_distDay != 0,&quot;you haven&#39;t distributed&quot;);//必须已经发布初始款了
-        require(_fFinish == false, &quot;not finish&quot;);//必须合约还没执行完
-        require(_fCancelDist == false, &quot;must not cancel dist&quot;);
+        require(_mode == 2,"this function can be called only when _mode==2");//模式2下可调用
+        require(_distDay != 0,"you haven't distributed");//必须已经发布初始款了
+        require(_fFinish == false, "not finish");//必须合约还没执行完
+        require(_fCancelDist == false, "must not cancel dist");
         uint256 daysAfterDist;//距离初始金发放时间
         uint256 expectAmount;//下面循环中当前创始人到今天为止应该被发放的数量
         uint256 tday = today();//调用该函数时系统当前时间
         uint256 expectReleaseTimesNoLimit = 0;//解锁后到今天为止应该放的尾款次数(不考虑已放完款的情况)
 
-        for(uint256 i=0;i&lt;_details.length;i++){
+        for(uint256 i=0;i<_details.length;i++){
             // 对于已经完成的可以pass
             if (_details[i].isFinish == true) {
                 continue;
             }
             //必须今天还未申领
-            require(tday!=_details[i].lastTransferDay,&quot;you have applied for todays token&quot;);
+            require(tday!=_details[i].lastTransferDay,"you have applied for todays token");
             daysAfterDist = sub(tday,_distDay);//计算距离初始金发放时间天数
-            if(daysAfterDist &gt;= _details[i].lockDay){//距离发放日天数要大于等于锁仓天数
+            if(daysAfterDist >= _details[i].lockDay){//距离发放日天数要大于等于锁仓天数
                 expectReleaseTimesNoLimit = add(sub(daysAfterDist,_details[i].lockDay),1);//解锁后到今天为止应该放的尾款次数
                 //到目前为止应该发放的总数=（（应该释放款的次数x每次应该释放的币数）+初始款数量）与 当前创始人应得总发放数量 中的较小值
                 //因为释放款次数可能很大了，超过领完时间了

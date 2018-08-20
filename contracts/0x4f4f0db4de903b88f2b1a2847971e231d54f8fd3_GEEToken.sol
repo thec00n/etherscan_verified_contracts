@@ -7,7 +7,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -50,7 +50,7 @@ contract Trustable is Ownable {
 
 
     //Only trusted addresses are able to transfer tokens during the Crowdsale
-    mapping (address =&gt; bool) trusted;
+    mapping (address => bool) trusted;
 
     event AddTrusted (address indexed _trustable);
     event RemoveTrusted (address indexed _trustable);
@@ -140,7 +140,7 @@ library SafeMath {
     */
     function ADD (uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -148,7 +148,7 @@ library SafeMath {
         @return difference of a and b
     */
     function SUB (uint256 a, uint256 b) internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
     
@@ -198,9 +198,9 @@ contract Token is ERC20, Pausable {
     uint256 public constant MAX_END_BLOCK_NUMBER = 4890000;
 
     //Balances for each account
-    mapping (address =&gt; uint256)  balances;
+    mapping (address => uint256)  balances;
     //Owner of the account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //Notifies users about the amount burnt
     event Burn(address indexed _from, uint256 _value);
@@ -221,7 +221,7 @@ contract Token is ERC20, Pausable {
         return balances[_owner];
     }
 
-    //Transfer the balance from owner&#39;s account to another account
+    //Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)
         external
         notZeroAddress(_to)
@@ -237,7 +237,7 @@ contract Token is ERC20, Pausable {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -250,7 +250,7 @@ contract Token is ERC20, Pausable {
         returns (bool success)
     {
         //Require allowance to be not too big
-        require(allowed[_from][msg.sender] &gt;= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
         balances[_from] = balances[_from].SUB(_amount);
         balances[_to] = balances[_to].ADD(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].SUB(_amount);
@@ -291,7 +291,7 @@ contract Token is ERC20, Pausable {
         returns (bool success)
     {
         uint256 increased = allowed[msg.sender][_spender].ADD(_addedValue);
-        require(increased &lt;= balances[msg.sender]);
+        require(increased <= balances[msg.sender]);
         //Cannot approve more coins then you have
         allowed[msg.sender][_spender] = increased;
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
@@ -304,7 +304,7 @@ contract Token is ERC20, Pausable {
         returns (bool success)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.SUB(_subtractedValue);
@@ -325,9 +325,9 @@ contract Token is ERC20, Pausable {
 
     function updateCrowdsaleEndBlock (uint256 _crowdsaleEndBlock) external onlyOwner {
 
-        require(block.number &lt;= crowdsaleEndBlock);                 //Crowdsale must be active
-        require(_crowdsaleEndBlock &gt;= block.number);
-        require(_crowdsaleEndBlock &lt;= MAX_END_BLOCK_NUMBER);        //Transfers can only be unlocked earlier
+        require(block.number <= crowdsaleEndBlock);                 //Crowdsale must be active
+        require(_crowdsaleEndBlock >= block.number);
+        require(_crowdsaleEndBlock <= MAX_END_BLOCK_NUMBER);        //Transfers can only be unlocked earlier
 
         uint256 currentEndBlockNumber = crowdsaleEndBlock;
         crowdsaleEndBlock = _crowdsaleEndBlock;
@@ -345,7 +345,7 @@ contract Token is ERC20, Pausable {
     }
 
     modifier canTransferOnCrowdsale (address _address) {
-        if (block.number &lt;= crowdsaleEndBlock) {
+        if (block.number <= crowdsaleEndBlock) {
             //Require the end of funding or msg.sender to be trusted
             require(trusted[_address]);
         }
@@ -354,7 +354,7 @@ contract Token is ERC20, Pausable {
 
     //Some functions should work only after the Crowdsale
     modifier afterCrowdsale {
-        require(block.number &gt; crowdsaleEndBlock);
+        require(block.number > crowdsaleEndBlock);
         _;
     }
 
@@ -385,7 +385,7 @@ contract MigratableToken is Token {
      * Migrate states.
      *
      * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-     * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+     * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
      * - ReadyToMigrate: The agent is set, but not a single token has been upgraded yet
      * - Migrating: Upgrade agent is set and the balance holders can upgrade their tokens
      *
@@ -430,14 +430,14 @@ contract MigratableToken is Token {
         Migrating status
     */
     function getMigrateState() public constant returns (MigrateState) {
-        if (block.number &lt;= crowdsaleEndBlock) {
+        if (block.number <= crowdsaleEndBlock) {
             //Migration is not allowed on funding
             return MigrateState.NotAllowed;
         } else if (address(migrateAgent) == address(0)) {
             //Migrating address is not set
             return MigrateState.WaitingForAgent;
         } else if (totalMigrated == 0) {
-            //Migrating hasn&#39;t started yet
+            //Migrating hasn't started yet
             return MigrateState.ReadyToMigrate;
         } else {
             //Migrating
@@ -455,9 +455,9 @@ contract GEEToken is MigratableToken {
 
     
     //Name of the token
-    string public constant name = &quot;Geens Platform Token&quot;;
+    string public constant name = "Geens Platform Token";
     //Symbol of the token
-    string public constant symbol = &quot;GEE&quot;;
+    string public constant symbol = "GEE";
     //Number of decimals of GEE
     uint8 public constant decimals = 8;
 
@@ -514,14 +514,14 @@ contract GEEToken is MigratableToken {
     //Check if team wallet is unlocked
     function unlockTeamTokens(address _address) external onlyOwner {
         if (_address == TEAM1) {
-            require(UNLOCK_TEAM_1 &lt;= now);
-            require (team1Balance &gt; 0);
+            require(UNLOCK_TEAM_1 <= now);
+            require (team1Balance > 0);
             balances[TEAM1] = team1Balance;
             team1Balance = 0;
             Transfer (this, TEAM1, balances[TEAM1]);
         } else if (_address == TEAM2) {
-            require(UNLOCK_TEAM_2 &lt;= now);
-            require (team2Balance &gt; 0);
+            require(UNLOCK_TEAM_2 <= now);
+            require (team2Balance > 0);
             balances[TEAM2] = team2Balance;
             team2Balance = 0;
             Transfer (this, TEAM2, balances[TEAM2]);

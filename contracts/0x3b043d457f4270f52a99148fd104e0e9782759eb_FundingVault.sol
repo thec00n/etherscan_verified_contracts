@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="e984808a8290a987869e85809f8cc79b86">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="e984808a8290a987869e85809f8cc79b86">[email protected]</span>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Token Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="ff92969c9486bf9190889396899ad18d90">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="ff92969c9486bf9190889396899ad18d90">[email protected]</span>>
 
  Zeppelin ERC20 Standard Token
 
@@ -97,8 +97,8 @@ contract ABIToken {
     uint8 public   decimals;
     uint256 public totalSupply;
     string public  version;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
     address public manager;
     address public deployer;
     bool public mintingFinished = false;
@@ -126,7 +126,7 @@ contract ABIToken {
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="5c31353f37251c32332b30352a39722e33">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="5c31353f37251c32332b30352a39722e33">[email protected]</span>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -143,8 +143,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -168,7 +168,7 @@ contract ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="b1dcd8d2dac8f1dfdec6ddd8c7d49fc3de">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="b1dcd8d2dac8f1dfdec6ddd8c7d49fc3de">[email protected]</span>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -207,7 +207,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint8   index;
     }
 
-    mapping (uint8 =&gt; FundingStage) public Collection;
+    mapping (uint8 => FundingStage) public Collection;
     uint8 public FundingStageNum;
     uint8 public currentFundingStage;
     uint256 public AmountRaised;
@@ -228,7 +228,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint256 _time_start,
         uint256 _time_end,
         uint256 _amount_cap_soft,
-        uint256 _amount_cap_hard,   // required &gt; 0
+        uint256 _amount_cap_hard,   // required > 0
         uint8   _methods,
         uint256 _minimum_entry,
         uint256 _fixed_tokens,
@@ -257,7 +257,7 @@ contract ABIFunding is ABIApplicationAsset {
 
  * @name        Milestones Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="2a47434941536a44455d46435c4f045845">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="2a47434941536a44455d46435c4f045845">[email protected]</span>>
 
  Contains the Milestones Contract code deployed and linked to the Application Entity
 
@@ -276,7 +276,7 @@ contract ABIMilestones is ABIApplicationAsset {
         uint256 duration;
         uint256 time_start;                     // start at unixtimestamp
         uint256 last_state_change_time;         // time of last state change
-        uint256 time_end;                       // estimated end time &gt;&gt; can be increased by proposal
+        uint256 time_end;                       // estimated end time >> can be increased by proposal
         uint256 time_ended;                     // actual end time
         uint256 meeting_time;
         uint8 funding_percentage;
@@ -285,9 +285,9 @@ contract ABIMilestones is ABIApplicationAsset {
 
     uint8 public currentRecord;
     uint256 public MilestoneCashBackTime = 0;
-    mapping (uint8 =&gt; Record) public Collection;
-    mapping (bytes32 =&gt; bool) public MilestonePostponingHash;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
+    mapping (uint8 => Record) public Collection;
+    mapping (bytes32 => bool) public MilestonePostponingHash;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
 
     function getBylawsProjectDevelopmentStart() public view returns (uint256);
     function getBylawsMinTimeInTheFutureForMeetingCreation() public view returns (uint256);
@@ -315,7 +315,7 @@ contract ABIMilestones is ABIApplicationAsset {
 
  * @name        Proposals Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="711c18121a08311f1e061d1807145f031e">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="711c18121a08311f1e061d1807145f031e">[email protected]</span>>
 
  Contains the Proposals Contract code deployed and linked to the Application Entity
 
@@ -371,18 +371,18 @@ contract ABIProposals is ABIApplicationAsset {
     uint256 public VoteCountPerProcess;
     bool public EmergencyFundingReleaseApproved;
 
-    mapping (bytes32 =&gt; uint8) public ActionTypes;
-    mapping (uint8 =&gt; uint256) public ActiveProposalIds;
-    mapping (uint256 =&gt; bool) public ExpiredProposalIds;
-    mapping (uint256 =&gt; ProposalRecord) public ProposalsById;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
-    mapping (uint256 =&gt; mapping (uint256 =&gt; VoteStruct) ) public VotesByProposalId;
-    mapping (uint256 =&gt; mapping (address =&gt; VoteStruct) ) public VotesByCaster;
-    mapping (uint256 =&gt; uint256) public VotesNumByProposalId;
-    mapping (uint256 =&gt; ResultRecord ) public ResultsByProposalId;
-    mapping (uint256 =&gt; uint256) public lastProcessedVoteIdByProposal;
-    mapping (uint256 =&gt; uint256) public ProcessedVotesByProposal;
-    mapping (uint256 =&gt; uint256) public VoteCountAtProcessingStartByProposal;
+    mapping (bytes32 => uint8) public ActionTypes;
+    mapping (uint8 => uint256) public ActiveProposalIds;
+    mapping (uint256 => bool) public ExpiredProposalIds;
+    mapping (uint256 => ProposalRecord) public ProposalsById;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
+    mapping (uint256 => mapping (uint256 => VoteStruct) ) public VotesByProposalId;
+    mapping (uint256 => mapping (address => VoteStruct) ) public VotesByCaster;
+    mapping (uint256 => uint256) public VotesNumByProposalId;
+    mapping (uint256 => ResultRecord ) public ResultsByProposalId;
+    mapping (uint256 => uint256) public lastProcessedVoteIdByProposal;
+    mapping (uint256 => uint256) public ProcessedVotesByProposal;
+    mapping (uint256 => uint256) public VoteCountAtProcessingStartByProposal;
 
     function getRecordState(bytes32 name) public view returns (uint8);
     function getActionType(bytes32 name) public view returns (uint8);
@@ -423,7 +423,7 @@ contract ABIProposals is ABIApplicationAsset {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="b1dcd8d2dac8f1dfdec6ddd8c7d49fc3de">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="b1dcd8d2dac8f1dfdec6ddd8c7d49fc3de">[email protected]</span>>
 
 */
 
@@ -453,7 +453,7 @@ contract ABITokenManager is ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="e5888c868e9ca58b8a92898c9380cb978a">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="e5888c868e9ca58b8a92898c9380cb978a">[email protected]</span>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -472,9 +472,9 @@ contract ABIFundingManager is ABIApplicationAsset {
     uint256 public vaultNum;
     uint256 public LockedVotingTokens;
     bytes32 public currentTask;
-    mapping (bytes32 =&gt; bool) public taskByHash;
-    mapping  (address =&gt; address) public vaultList;
-    mapping  (uint256 =&gt; address) public vaultById;
+    mapping (bytes32 => bool) public taskByHash;
+    mapping  (address => address) public vaultList;
+    mapping  (uint256 => address) public vaultById;
 
     function receivePayment(address _sender, uint8 _payment_method, uint8 _funding_stage) payable public returns(bool);
     function getMyVaultAddress(address _sender) public view returns (address);
@@ -501,7 +501,7 @@ contract ABIFundingManager is ABIApplicationAsset {
 
  * @name        Token Stake Calculation And Distribution Algorithm - Type 3 - Sell a variable amount of tokens for a fixed price
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="dcb1b5bfb7a59cb2b3abb0b5aab9f2aeb3">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="dcb1b5bfb7a59cb2b3abb0b5aab9f2aeb3">[email protected]</span>>
 
 
     Inputs:
@@ -540,7 +540,7 @@ contract ABITokenSCADAVariable {
 
  * @name        Funding Vault
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<span class="__cf_email__" data-cfemail="e08d89838b99a08e8f978c899685ce928f">[email&#160;protected]</span>&gt;
+ * @author      Micky Socaci <<span class="__cf_email__" data-cfemail="e08d89838b99a08e8f978c899685ce928f">[email protected]</span>>
 
     each purchase creates a separate funding vault contract
 */
@@ -555,7 +555,7 @@ contract FundingVault {
         Addresses:
         vaultOwner - the address of the wallet that stores purchases in this vault ( investor address )
         outputAddress - address where funds go upon successful funding or successful milestone release
-        managerAddress - address of the &quot;FundingManager&quot;
+        managerAddress - address of the "FundingManager"
     */
     address public vaultOwner ;
     address public outputAddress;
@@ -600,7 +600,7 @@ contract FundingVault {
         uint16 index;
     }
 
-    mapping(uint16 =&gt; PurchaseStruct) public purchaseRecords;
+    mapping(uint16 => PurchaseStruct) public purchaseRecords;
     uint16 public purchaseRecordsNum;
 
     event EventPaymentReceived(uint8 indexed _payment_method, uint256 indexed _amount, uint16 indexed _index );
@@ -631,7 +631,7 @@ contract FundingVault {
         MilestonesEntity = ABIMilestones(_milestoneAddress);
         ProposalsEntity = ABIProposals(_proposalsAddress);
 
-        address TokenManagerAddress = FundingEntity.getApplicationAssetAddressByName(&quot;TokenManager&quot;);
+        address TokenManagerAddress = FundingEntity.getApplicationAssetAddressByName("TokenManager");
         ABITokenManager TokenManagerEntity = ABITokenManager(TokenManagerAddress);
 
         address TokenAddress = TokenManagerEntity.TokenEntity();
@@ -645,10 +645,10 @@ contract FundingVault {
         ApplicationEntityABI ApplicationEntity = ApplicationEntityABI(ApplicationEntityAddress);
 
         // get Application Bylaws
-        emergencyFundPercentage             = uint8( ApplicationEntity.getBylawUint256(&quot;emergency_fund_percentage&quot;) );
-        BylawsCashBackOwnerMiaDuration      = ApplicationEntity.getBylawUint256(&quot;cashback_owner_mia_dur&quot;) ;
-        BylawsCashBackVoteRejectedDuration  = ApplicationEntity.getBylawUint256(&quot;cashback_investor_no&quot;) ;
-        BylawsProposalVotingDuration        = ApplicationEntity.getBylawUint256(&quot;proposal_voting_duration&quot;) ;
+        emergencyFundPercentage             = uint8( ApplicationEntity.getBylawUint256("emergency_fund_percentage") );
+        BylawsCashBackOwnerMiaDuration      = ApplicationEntity.getBylawUint256("cashback_owner_mia_dur") ;
+        BylawsCashBackVoteRejectedDuration  = ApplicationEntity.getBylawUint256("cashback_investor_no") ;
+        BylawsProposalVotingDuration        = ApplicationEntity.getBylawUint256("proposal_voting_duration") ;
 
         // init
         _initialized = true;
@@ -658,12 +658,12 @@ contract FundingVault {
 
 
     /*
-        The funding contract decides if a vault should receive payments or not, since it&#39;s the one that creates them,
-        no point in creating one if you can&#39;t accept payments.
+        The funding contract decides if a vault should receive payments or not, since it's the one that creates them,
+        no point in creating one if you can't accept payments.
     */
 
-    mapping (uint8 =&gt; uint256) public stageAmounts;
-    mapping (uint8 =&gt; uint256) public stageAmountsDirect;
+    mapping (uint8 => uint256) public stageAmounts;
+    mapping (uint8 => uint256) public stageAmountsDirect;
 
     function addPayment(
         uint8 _payment_method,
@@ -675,7 +675,7 @@ contract FundingVault {
         onlyManager
         returns (bool)
     {
-        if(msg.value &gt; 0 &amp;&amp; FundingEntity.allowedPaymentMethod(_payment_method)) {
+        if(msg.value > 0 && FundingEntity.allowedPaymentMethod(_payment_method)) {
 
             // store payment
             PurchaseStruct storage purchase = purchaseRecords[++purchaseRecordsNum];
@@ -697,8 +697,8 @@ contract FundingVault {
 
             // in order to not iterate through purchase records, we just increase funding stage amount.
             // issue with iterating over them, while processing vaults, would be that someone could create a large
-            // number of payments, which would result in an &quot;out of gas&quot; / stack overflow issue, that would lock
-            // our contract, so we don&#39;t really want to do that.
+            // number of payments, which would result in an "out of gas" / stack overflow issue, that would lock
+            // our contract, so we don't really want to do that.
             // doing it this way also saves some gas
             stageAmounts[_funding_stage]+=purchase.amount;
 
@@ -718,8 +718,8 @@ contract FundingVault {
     }
 
 
-    mapping (uint8 =&gt; uint256) public etherBalances;
-    mapping (uint8 =&gt; uint256) public tokenBalances;
+    mapping (uint8 => uint256) public etherBalances;
+    mapping (uint8 => uint256) public tokenBalances;
     uint8 public BalanceNum = 0;
 
     bool public BalancesInitialised = false;
@@ -730,10 +730,10 @@ contract FundingVault {
             uint256 milestoneTokenBalance = TokenEntity.balanceOf(address(this));
             uint256 milestoneEtherBalance = this.balance;
 
-            // no need to worry about fractions because at the last milestone, we send everything that&#39;s left.
+            // no need to worry about fractions because at the last milestone, we send everything that's left.
 
-            // emergency fund takes it&#39;s percentage from initial balances.
-            if(emergencyFundPercentage &gt; 0) {
+            // emergency fund takes it's percentage from initial balances.
+            if(emergencyFundPercentage > 0) {
                 tokenBalances[0] = milestoneTokenBalance / 100 * emergencyFundPercentage;
                 etherBalances[0] = milestoneEtherBalance / 100 * emergencyFundPercentage;
 
@@ -741,8 +741,8 @@ contract FundingVault {
                 milestoneEtherBalance-=etherBalances[0];
             }
 
-            // milestones percentages are then taken from what&#39;s left.
-            for(uint8 i = 1; i &lt;= MilestonesEntity.RecordNum(); i++) {
+            // milestones percentages are then taken from what's left.
+            for(uint8 i = 1; i <= MilestonesEntity.RecordNum(); i++) {
 
                 uint8 perc = MilestonesEntity.getMilestoneFundingPercentage(i);
                 tokenBalances[i] = milestoneTokenBalance / 100 * perc;
@@ -760,13 +760,13 @@ contract FundingVault {
         onlyManager
         returns (bool)
     {
-        // first make sure cashback is not possible, and that we&#39;ve not processed everything in this vault
-        if(!canCashBack() &amp;&amp; allFundingProcessed == false) {
+        // first make sure cashback is not possible, and that we've not processed everything in this vault
+        if(!canCashBack() && allFundingProcessed == false) {
 
-            if(FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState(&quot;FUNDING_SUCCESSFUL_PROGRESS&quot;)) {
+            if(FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState("FUNDING_SUCCESSFUL_PROGRESS")) {
 
                 // case 1, direct funding only
-                if(amount_direct &gt; 0 &amp;&amp; amount_milestone == 0) {
+                if(amount_direct > 0 && amount_milestone == 0) {
 
                     // if we have direct funding and no milestone balance, transfer everything and lock vault
                     // to save gas in future processing runs.
@@ -774,7 +774,7 @@ contract FundingVault {
                     // transfer tokens to the investor
                     TokenEntity.transfer(vaultOwner, TokenEntity.balanceOf( address(this) ) );
 
-                    // transfer ether to the owner&#39;s wallet
+                    // transfer ether to the owner's wallet
                     outputAddress.transfer(this.balance);
 
                     // lock vault.. and enable black hole methods
@@ -783,9 +783,9 @@ contract FundingVault {
                 } else {
                 // case 2 and 3, direct funding only
 
-                    if(amount_direct &gt; 0 &amp;&amp; DirectFundingProcessed == false ) {
+                    if(amount_direct > 0 && DirectFundingProcessed == false ) {
                         TokenEntity.transfer(vaultOwner, getDirectBoughtTokens() );
-                        // transfer &quot;direct funding&quot; ether to the owner&#39;s wallet
+                        // transfer "direct funding" ether to the owner's wallet
                         outputAddress.transfer(amount_direct);
                         DirectFundingProcessed = true;
                     }
@@ -795,7 +795,7 @@ contract FundingVault {
                 }
                 return true;
 
-            } else if(FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState(&quot;MILESTONE_PROCESS_PROGRESS&quot;)) {
+            } else if(FundingManagerEntity.CurrentEntityState() == FundingManagerEntity.getEntityState("MILESTONE_PROCESS_PROGRESS")) {
 
                 // get current milestone so we know which one we need to release funds for.
                 uint8 milestoneId = MilestonesEntity.currentRecord();
@@ -804,21 +804,21 @@ contract FundingVault {
                 uint256 transferEther = etherBalances[milestoneId];
 
                 if(milestoneId == BalanceNum - 1) {
-                    // we&#39;re processing the last milestone and balance, this means we&#39;re transferring everything left.
-                    // this is done to make sure we&#39;ve transferred everything, even &quot;ether that got mistakenly sent to this address&quot;
+                    // we're processing the last milestone and balance, this means we're transferring everything left.
+                    // this is done to make sure we've transferred everything, even "ether that got mistakenly sent to this address"
                     // as well as the emergency fund if it has not been used.
                     transferTokens = TokenEntity.balanceOf(address(this));
                     transferEther = this.balance;
                 }
 
-                // set balances to 0 so we can&#39;t transfer multiple times.
+                // set balances to 0 so we can't transfer multiple times.
                 // tokenBalances[milestoneId] = 0;
                 // etherBalances[milestoneId] = 0;
 
                 // transfer tokens to the investor
                 TokenEntity.transfer(vaultOwner, transferTokens );
 
-                // transfer ether to the owner&#39;s wallet
+                // transfer ether to the owner's wallet
                 outputAddress.transfer(transferEther);
 
                 if(milestoneId == BalanceNum - 1) {
@@ -840,12 +840,12 @@ contract FundingVault {
         onlyManager
         returns (bool)
     {
-        if( emergencyFundReleased == false &amp;&amp; emergencyFundPercentage &gt; 0) {
+        if( emergencyFundReleased == false && emergencyFundPercentage > 0) {
 
             // transfer tokens to the investor
             TokenEntity.transfer(vaultOwner, tokenBalances[0] );
 
-            // transfer ether to the owner&#39;s wallet
+            // transfer ether to the owner's wallet
             outputAddress.transfer(etherBalances[0]);
 
             emergencyFundReleased = true;
@@ -861,24 +861,24 @@ contract FundingVault {
     {
         if(canCashBack()) {
 
-            // IF we&#39;re doing a cashback
+            // IF we're doing a cashback
             // transfer vault tokens back to owner address
             // send all ether to wallet owner
 
             // get token balance
             uint256 myBalance = TokenEntity.balanceOf(address(this));
             // transfer all vault tokens to owner
-            if(myBalance &gt; 0) {
+            if(myBalance > 0) {
                 TokenEntity.transfer(outputAddress, myBalance );
             }
 
             // now transfer all remaining ether back to investor address
             vaultOwner.transfer(this.balance);
 
-            // update FundingManager Locked Token Amount, so we don&#39;t break voting
+            // update FundingManager Locked Token Amount, so we don't break voting
             FundingManagerEntity.VaultRequestedUpdateForLockedVotingTokens( vaultOwner );
 
-            // disallow further processing, so we don&#39;t break Funding Manager.
+            // disallow further processing, so we don't break Funding Manager.
             // this method can still be called to collect future black hole ether to this vault.
             allFundingProcessed = true;
         }
@@ -910,15 +910,15 @@ contract FundingVault {
     }
 
     function checkFundingStateFailed() public view returns (bool) {
-        if(FundingEntity.CurrentEntityState() == FundingEntity.getEntityState(&quot;FAILED_FINAL&quot;) ) {
+        if(FundingEntity.CurrentEntityState() == FundingEntity.getEntityState("FAILED_FINAL") ) {
             return true;
         }
 
         // also check if funding period ended, and 7 days have passed and no processing was done.
-        if( FundingEntity.getTimestamp() &gt;= FundingEntity.Funding_Setting_cashback_time_start() ) {
+        if( FundingEntity.getTimestamp() >= FundingEntity.Funding_Setting_cashback_time_start() ) {
 
             // should only be possible if funding entity has been stuck in processing for more than 7 days.
-            if( FundingEntity.CurrentEntityState() != FundingEntity.getEntityState(&quot;SUCCESSFUL_FINAL&quot;) ) {
+            if( FundingEntity.CurrentEntityState() != FundingEntity.getEntityState("SUCCESSFUL_FINAL") ) {
                 return true;
             }
         }
@@ -927,7 +927,7 @@ contract FundingVault {
     }
 
     function checkMilestoneStateInvestorVotedNoVotingEndedNo() public view returns (bool) {
-        if(MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState(&quot;VOTING_ENDED_NO&quot;) ) {
+        if(MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState("VOTING_ENDED_NO") ) {
             // first we need to make sure we actually voted.
             if( ProposalsEntity.getHasVoteForCurrentMilestoneRelease(vaultOwner) == true) {
                 // now make sure we voted NO, and if so return true
@@ -945,7 +945,7 @@ contract FundingVault {
         // investors know when they need to show up for a progress report meeting
 
         // as they did not, we consider them missing in action and allow investors to retrieve their locked ether back
-        if( MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState(&quot;DEADLINE_MEETING_TIME_FAILED&quot;) ) {
+        if( MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState("DEADLINE_MEETING_TIME_FAILED") ) {
             return true;
         }
         return false;

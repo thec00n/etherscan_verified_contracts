@@ -26,18 +26,18 @@ contract ERC20 {
   {
       
     // Name of the token
-    string public constant name = &quot;Soarcoin&quot;;
+    string public constant name = "Soarcoin";
 
     // Symbol of token
-    string public constant symbol = &quot;Soar&quot;;
+    string public constant symbol = "Soar";
 
     uint public decimals = 6;
     uint public totalSupply = 5000000000000000 ; //5 billion includes 6 zero for decimal
     address central_account;
     address owner;
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
     
     // Functions with this modifier can only be executed by the owner
     modifier onlyOwner() {
@@ -72,9 +72,9 @@ contract ERC20 {
     // Transfer the balance from one account to another account
     function transfer(address _to, uint256 _amount) returns(bool success) {
         
-        if (balances[msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -91,7 +91,7 @@ contract ERC20 {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -101,10 +101,10 @@ contract ERC20 {
         address _to,
         uint256 _amount
     ) returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            allowed[_from][msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            allowed[_from][msg.sender] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -137,9 +137,9 @@ contract ERC20 {
         address _to,
         uint256 _amount
     ) onlycentralAccount returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             balances[_to] += _amount;
             Transfer(_from, _to, _amount);

@@ -26,7 +26,7 @@ library SafeMath
         pure
         returns (uint256)
     {
-        assert(b &lt;= a); 
+        assert(b <= a); 
         return a - b; 
     } 
   
@@ -36,7 +36,7 @@ library SafeMath
         returns (uint256)
     { 
         uint256 result = a + b; 
-        assert(result &gt;= a);
+        assert(result >= a);
         return result;
     }
  
@@ -47,7 +47,7 @@ library SafeMath
     {
         uint256 result = 0;
         
-        for (uint i = 0; i &lt; values.length; i++){
+        for (uint i = 0; i < values.length; i++){
             result = add(result, values[i]);
         }
         return result;
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic, Ownable {
         bool canFreezeTokens;
     }
    
-    mapping(address =&gt; WalletData) wallets;
+    mapping(address => WalletData) wallets;
 
     function transfer(address to, uint256 value)
         public
@@ -115,8 +115,8 @@ contract BasicToken is ERC20Basic, Ownable {
         returns(bool)
     {    
         require(to != address(0) 
-        &amp;&amp; wallets[msg.sender].tokensAmount &gt;= value 
-        &amp;&amp; (wallets[msg.sender].canFreezeTokens &amp;&amp; checkIfCanUseTokens(msg.sender, value)));
+        && wallets[msg.sender].tokensAmount >= value 
+        && (wallets[msg.sender].canFreezeTokens && checkIfCanUseTokens(msg.sender, value)));
 
         uint256 amount = wallets[msg.sender].tokensAmount.sub(value);
         wallets[msg.sender].tokensAmount = amount;
@@ -143,7 +143,7 @@ contract BasicToken is ERC20Basic, Ownable {
         returns(bool) 
     {
         uint256 unfreezedAmount = wallets[owner].tokensAmount - wallets[owner].freezedAmount;
-        return amount &lt;= unfreezedAmount;
+        return amount <= unfreezedAmount;
     }
 }
 
@@ -196,7 +196,7 @@ contract FreezableToken is BasicToken {
         returns(bool)
     {
         uint256 freezedAmount = wallets[msg.sender].freezedAmount.add(amount);
-        require(wallets[msg.sender].tokensAmount &gt;= freezedAmount);
+        require(wallets[msg.sender].tokensAmount >= freezedAmount);
         wallets[msg.sender].freezedAmount = freezedAmount;
         emit FreezeTokens(msg.sender, amount);
         return true;
@@ -249,7 +249,7 @@ contract MultisendableToken is FreezableToken
         onlyOwner
         returns(bool) 
     {
-        for (uint i = 0; i &lt; addresses.length; i++){
+        for (uint i = 0; i < addresses.length; i++){
             transferFromOwner(addresses[i], values[i]);
         }
         return true;
@@ -263,8 +263,8 @@ contract MultisendableToken is FreezableToken
         onlyOwner
     {
         require(to != address(0)
-        &amp;&amp; wallets[ownerAddress].tokensAmount &gt;= value
-        &amp;&amp; (freezeAllowance(ownerAddress) &amp;&amp; checkIfCanUseTokens(ownerAddress, value)));
+        && wallets[ownerAddress].tokensAmount >= value
+        && (freezeAllowance(ownerAddress) && checkIfCanUseTokens(ownerAddress, value)));
         
         uint256 freezeAmount = wallets[ownerAddress].tokensAmount.sub(value);
         wallets[ownerAddress].tokensAmount = freezeAmount;
@@ -295,7 +295,7 @@ contract Airdropper is MultisendableToken
         returns(bool) 
     {
         uint256 result = distributedTokensAmount + values.getAllValuesSum();
-        require(!airdropFinished &amp;&amp; result &lt;= airdropTotalSupply);
+        require(!airdropFinished && result <= airdropTotalSupply);
         
         distributedTokensAmount = result;
         airdropsCount++;
@@ -305,7 +305,7 @@ contract Airdropper is MultisendableToken
     }
     
     function finishAirdrops() public onlyOwner {
-        // Can&#39;t finish airdrop before send all tokens for airdrop.
+        // Can't finish airdrop before send all tokens for airdrop.
         require(distributedTokensAmount == airdropTotalSupply);
         airdropFinished = true;
         emit AirdropFinished();
@@ -317,8 +317,8 @@ contract CryptosoulToken is Airdropper {
     event AllowMinting();
     event Burn(address indexed from, uint256 value);
     
-    string constant public name = &quot;CryptoSoul&quot;;
-    string constant public symbol = &quot;SOUL&quot;;
+    string constant public name = "CryptoSoul";
+    string constant public symbol = "SOUL";
     uint constant public decimals = 6;
     
     uint256 constant public START_TOKENS = 500000000 * 10**decimals; //500M start
@@ -343,7 +343,7 @@ contract CryptosoulToken is Airdropper {
     onlyOwner
     {
         // Can start minting token after 01.10.2018
-        require(now &gt;= startMintingData);
+        require(now >= startMintingData);
         nextMintPossibleTime = now;
         canMint = true;
         emit AllowMinting();
@@ -354,9 +354,9 @@ contract CryptosoulToken is Airdropper {
         onlyOwner
         returns(bool)
     {
-        require(canMint &amp;&amp;
-        totalSupply + MINT_AMOUNT &lt;= MAX_BALANCE_VALUE
-        &amp;&amp; now &gt;= nextMintPossibleTime);
+        require(canMint &&
+        totalSupply + MINT_AMOUNT <= MAX_BALANCE_VALUE
+        && now >= nextMintPossibleTime);
         nextMintPossibleTime = nextMintPossibleTime.add(MINT_INTERVAL_SEC);
         uint256 freezeAmount = wallets[ownerAddress].tokensAmount.add(MINT_AMOUNT);
         wallets[ownerAddress].tokensAmount = freezeAmount;
@@ -372,7 +372,7 @@ contract CryptosoulToken is Airdropper {
         returns(bool)
     {
         require(checkIfCanUseTokens(ownerAddress, value)
-        &amp;&amp; wallets[ownerAddress].tokensAmount &gt;= value);
+        && wallets[ownerAddress].tokensAmount >= value);
         
         uint256 freezeAmount = wallets[ownerAddress].tokensAmount.sub(value);
         wallets[ownerAddress].tokensAmount = freezeAmount;
@@ -386,7 +386,7 @@ contract CryptosoulToken is Airdropper {
         public
         returns(bool)
     {
-        require(msg.sender == masterKey &amp;&amp; newOwner != address(0));
+        require(msg.sender == masterKey && newOwner != address(0));
         // Transfer token data from old owner to new.
         wallets[newOwner].tokensAmount = wallets[ownerAddress].tokensAmount;
         wallets[newOwner].canFreezeTokens = true;

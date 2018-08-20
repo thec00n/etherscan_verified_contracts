@@ -2,15 +2,15 @@ pragma solidity ^0.4.18;
 
 contract WorldBetToken {
     /* Token name */
-    string public name = &quot;World Bet Lottery Tickets&quot;;
+    string public name = "World Bet Lottery Tickets";
 
     /* Token Symbol */
-    string public symbol = &quot;WBT&quot;;
+    string public symbol = "WBT";
 
     /* Token digit*/
     uint public decimals = 0;
 
-    mapping(uint =&gt; uint) private userBalanceOf;                // user total amount of tickets
+    mapping(uint => uint) private userBalanceOf;                // user total amount of tickets
     bool public stopped = false;
 
     /* User*/
@@ -22,14 +22,14 @@ contract WorldBetToken {
     // installed when one country has won
     uint public WINNER_COUNTRY_CODE = 0;
 
-    mapping(uint =&gt; bool) private countryIsPlaying;
+    mapping(uint => bool) private countryIsPlaying;
 
-    /* Countries-&gt;Users*/
-    mapping(uint =&gt; Country[]) public users;       // countries
+    /* Countries->Users*/
+    mapping(uint => Country[]) public users;       // countries
 
 
-    /* Countries-&gt;Users*/
-    mapping(uint =&gt; uint[]) public countries;       // countries
+    /* Countries->Users*/
+    mapping(uint => uint[]) public countries;       // countries
 
     /* Jackpot Users*/
     uint[] public jackpotUsers;
@@ -38,10 +38,10 @@ contract WorldBetToken {
     uint[] activeCountries;
 
     /* Jackpot Eligibility*/
-    mapping(uint =&gt; bool) isJackpotEligible;
+    mapping(uint => bool) isJackpotEligible;
 
     /* Jackpot Location*/
-    mapping(uint =&gt; uint) jackpotLocation;
+    mapping(uint => uint) jackpotLocation;
 
     // JACKPOT WINNER
     uint public JACKPOT_WINNER = 0;
@@ -148,7 +148,7 @@ contract WorldBetToken {
 
         users[user].push(Country(user, value));
 
-        if (userBalanceOf[user] &gt;= jackpotMaxCap &amp;&amp; !isJackpotEligible[user]) {
+        if (userBalanceOf[user] >= jackpotMaxCap && !isJackpotEligible[user]) {
             jackpotUsers.push(user);
             jackpotLocation[user] = jackpotUsers.length - 1;
         }
@@ -175,7 +175,7 @@ contract WorldBetToken {
 
     function playJackpot() public {
         require(JACKPOT_WINNER == 0);
-        if (jackpotUsers.length &gt;= 2) {
+        if (jackpotUsers.length >= 2) {
             uint nonce = jackpotUsers.length;
             uint max = jackpotUsers.length - 1;
             uint randomNumber = uint(keccak256(nonce)) % max;

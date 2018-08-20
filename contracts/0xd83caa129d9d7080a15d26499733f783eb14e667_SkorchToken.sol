@@ -1,56 +1,56 @@
 pragma solidity ^0.4.18;
 
 
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNK0kxolc:;,,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,,;:cloxk0KNWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMWN0kdl:,&#39;&#39;&#39;&#39;&#39;,,;;:::::cc:::::;;,,&#39;&#39;&#39;&#39;&#39;;:ldk0NWMMMMMMMMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMMMMWN0xo:,&#39;&#39;&#39;,;:cloodxxkkkkkkkkkkkkkkxxdoolc:;,&#39;&#39;&#39;,:ox0NWMMMMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMWXOdc,&#39;&#39;&#39;;:lodxkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkxdoc:;&#39;&#39;&#39;,cdOXWMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMN0d:,&#39;&#39;,:loxkkkkkkkkkkkkkkkkkkkkkxodkkkkkkkkkkkkkkkkxol:,&#39;&#39;,:d0NMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMWXxc,&#39;&#39;,:ldxkkkkkkkkkkkkkkkkkkkkkxl:;cxkkkkkkkkkkkkkkkkkkkxdl:,&#39;&#39;,cxXWMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMWKd:&#39;&#39;&#39;;ldxkkkkkkkkkkkkkkkkkkkkkkxo:&#39;&#39;;dkkkkkkkkkkkkkkkkkkkkkkkxdl;&#39;&#39;&#39;:dKWMMMMMMMMMMMMM
-// MMMMMMMMMMMWKd;&#39;&#39;,:oxxkkxxkkxkkxxxxxxxxxkkxkkxl,&#39;&#39;,cxxkkxxxxxxxxxkkkxkkkxkkxkkxxo:,&#39;&#39;;dKWMMMMMMMMMMM
-// MMMMMMMMMMXx:&#39;&#39;,:oxxxxxxxxxxxxxxxxxxxxxxxxxxxl,&#39;&#39;,:oxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxo:,&#39;&#39;:xXMMMMMMMMMM
-// MMMMMMMMW0c&#39;&#39;&#39;:oxxxxxxxxxxxxxxxxxxxxxxxxxxxxd;&#39;&#39;&#39;;coxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxo:&#39;&#39;&#39;c0WMMMMMMMM
-// MMMMMMMXx;&#39;&#39;;ldxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc,&#39;&#39;&#39;;coxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdl;&#39;&#39;;xXMMMMMMM
-// MMMMMMKl,&#39;&#39;:oxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxd:&#39;&#39;&#39;&#39;,:lxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxo:&#39;&#39;,lKMMMMMM
-// MMMMW0c&#39;&#39;,cdxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxd:&#39;&#39;&#39;&#39;,;ldxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdc,&#39;&#39;c0WMMMM
-// MMMW0c&#39;&#39;,cdxddddddddddddddddddddddddddddxddo:&#39;&#39;&#39;&#39;&#39;&#39;:dddddddooddxddddddddddddddddddddddddxdl,&#39;&#39;c0WMMM
-// MMW0c&#39;&#39;,lddddddddddddddddddddddddddddddddddd:&#39;&#39;&#39;&#39;&#39;&#39;,lddddddoc:lddddddddddddddddddddddddddddl,&#39;&#39;c0MMM
-// MMKl&#39;&#39;,cddddddddddddddddddddddddddddddddddddc&#39;&#39;&#39;&#39;&#39;&#39;&#39;:oddddddl,,codddddddddddddddddddddddddddc,&#39;&#39;lKMM
-// MNd,&#39;&#39;coddddddddddddddddddddddddddddddddddddc,&#39;&#39;&#39;&#39;&#39;&#39;,cddddddo:&#39;&#39;;codddddddddddddddddddddddddoc&#39;&#39;,dNM
-// WO;&#39;&#39;;odddddddddddddddddddddddddddddddddddddl,&#39;&#39;&#39;&#39;&#39;&#39;&#39;;lddddddl,&#39;&#39;&#39;;loddddddddddddddddddddddddo:&#39;&#39;;OW
-// Xl&#39;&#39;,codoodddddddddddddddddddddddoddddoollodl;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;loddodo:&#39;&#39;&#39;&#39;,:odooddddddddddddddoodddool,&#39;&#39;lX
-// k;&#39;&#39;:oooooooooooooooooooooooooooooooooo:,cooo;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,cooooo:&#39;&#39;&#39;&#39;&#39;&#39;;loooooooooooooooooooooooo:&#39;&#39;;k
-// o&#39;&#39;,cooooooooooooooooooooooooooooooool;&#39;&#39;:ooo:&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:loooc,&#39;&#39;&#39;&#39;&#39;&#39;,:oooooooooooooooooooooooc,&#39;&#39;o
-// :&#39;&#39;;loooooooooooooooooooooooooooooooc;&#39;&#39;&#39;:ooo:&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;cll:&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;loooooooooooooooooooool;&#39;&#39;:
-// ,&#39;&#39;;loooooooooooooooooooooooooooool:,&#39;&#39;&#39;,coooc&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;looooooooooooooooooool;&#39;&#39;;
-// &#39;&#39;&#39;:loooooooooooooooooooooooooool:,&#39;&#39;&#39;&#39;&#39;;loooc,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;coooooooooooooooooool:&#39;&#39;&#39;
-// &#39;&#39;&#39;:loolllllllllllllllllloollllc;&#39;&#39;&#39;&#39;&#39;&#39;,cllllc,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;cllollllllllllllolll:&#39;&#39;&#39;
-// &#39;&#39;&#39;:lllllllllllllllllllllllllc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;lllllc,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;lllllllllllllllllll:&#39;&#39;&#39;
-// ,&#39;&#39;;lllllllllllllllllllllllc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,clllllc,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:llllllllllllllllll;&#39;&#39;,
-// ;&#39;&#39;;cllllllllllllllllllllc:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:llllll:,&#39;&#39;&#39;&#39;&#39;&#39;,,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:llllllllllllllllc;&#39;&#39;;
-// c&#39;&#39;,:lllllllllllllllllll:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:lllllc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;cc&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;clllllllllllllll:,&#39;&#39;l
-// x,&#39;&#39;;cllllllllllllccllc:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:cccc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,oo;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:clllllllcllcllc;&#39;&#39;,x
-// 0:&#39;&#39;,ccccccccccccccccc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,,,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:dd;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,ccccccccccccccc,&#39;&#39;:0
-// Nd,&#39;&#39;;ccccccccccccccc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;oxd;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:ccccccccccccc;&#39;&#39;,dN
-// MKc&#39;&#39;,:ccccccccccccc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;ldxo;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;cccccccccccc:,&#39;&#39;cKM
-// MWO;&#39;&#39;,:ccccccccccc:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;odl;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,lodddl,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;:cccccccccc:,&#39;&#39;;OWM
-// MMWx,&#39;&#39;,:cccccccccc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;ldddo:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:ldddddc&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:ccccccccc:,&#39;&#39;,xWMM
-// MMMNd,&#39;&#39;,:::c::c:c:,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,coooodolc;,,,;:looodddo;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:c::::ccc:,&#39;&#39;,dNMMM
-// MMMMNd,&#39;&#39;,:::::::::,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;loooooooooolloooooooooc,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;:::::::::,&#39;&#39;,xNMMMM
-// MMMMMNx;&#39;&#39;,;:::::::,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:looooooooooooooooooooo:&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;:::::::;,&#39;&#39;;xNMMMMM
-// MMMMMMWOc&#39;&#39;&#39;,::::::;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:llllllllllllllllllllll:&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,::::::;,&#39;&#39;&#39;cOWMMMMMM
-// MMMMMMMMKo,&#39;&#39;,;::::;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:llllllllllllllllllllll:&#39;&#39;&#39;&#39;&#39;&#39;;;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;:::::;,&#39;&#39;,oKMMMMMMMM
-// MMMMMMMMMNOc&#39;&#39;&#39;,;;:;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:lllllllllllllllllllcll:,&#39;&#39;&#39;&#39;,:c,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;;:::;,&#39;&#39;&#39;ckNMMMMMMMMM
-// MMMMMMMMMMWXx:&#39;&#39;&#39;,;;;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;:ccccccccccccccccccccccc:;,,,:cc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;;;;,&#39;&#39;&#39;:xXWMMMMMMMMMM
-// MMMMMMMMMMMMWKd;&#39;&#39;&#39;,,;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;;ccccccccccccccccccccccccc::cccc;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;;,,&#39;&#39;&#39;:dKWMMMMMMMMMMMM
-// MMMMMMMMMMMMMMWXxc,&#39;&#39;&#39;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:::::::::::::::::::::::::::::::;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,,,&#39;&#39;&#39;,:xXWMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMWXOo;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,::::::::::::::::::::::::::::::,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;lONWMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMWKkl;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;:::::::::::::::::::::::::::;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;;lkKWMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMMMWKko:,&#39;&#39;&#39;&#39;&#39;,,;;;;;;;;;;;;;;;;;;;;;;;;;;,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,:okKWMMMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMMMMMMWN0koc;,&#39;&#39;&#39;&#39;&#39;&#39;,,,,,,,,,,,,,,,,,,,,,&#39;&#39;&#39;&#39;&#39;&#39;&#39;,;cok0NWMMMMMMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNX0kdlc;,,&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;&#39;,,:cldk0XNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOxdlc:;,,&#39;&#39;&#39;&#39;&#39;&#39;,,;;cloxOKNWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNK0kxolc:;,,'''''''''',,;:cloxk0KNWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMWN0kdl:,''''',,;;:::::cc:::::;;,,''''';:ldk0NWMMMMMMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMMWN0xo:,''',;:cloodxxkkkkkkkkkkkkkkxxdoolc:;,''',:ox0NWMMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMWXOdc,''';:lodxkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkxdoc:;''',cdOXWMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMN0d:,'',:loxkkkkkkkkkkkkkkkkkkkkkxodkkkkkkkkkkkkkkkkxol:,'',:d0NMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMWXxc,'',:ldxkkkkkkkkkkkkkkkkkkkkkxl:;cxkkkkkkkkkkkkkkkkkkkxdl:,'',cxXWMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMWKd:''';ldxkkkkkkkkkkkkkkkkkkkkkkxo:'';dkkkkkkkkkkkkkkkkkkkkkkkxdl;''':dKWMMMMMMMMMMMMM
+// MMMMMMMMMMMWKd;'',:oxxkkxxkkxkkxxxxxxxxxkkxkkxl,'',cxxkkxxxxxxxxxkkkxkkkxkkxkkxxo:,'';dKWMMMMMMMMMMM
+// MMMMMMMMMMXx:'',:oxxxxxxxxxxxxxxxxxxxxxxxxxxxl,'',:oxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxo:,'':xXMMMMMMMMMM
+// MMMMMMMMW0c''':oxxxxxxxxxxxxxxxxxxxxxxxxxxxxd;''';coxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxo:'''c0WMMMMMMMM
+// MMMMMMMXx;'';ldxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc,''';coxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdl;'';xXMMMMMMM
+// MMMMMMKl,'':oxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxd:'''',:lxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxo:'',lKMMMMMM
+// MMMMW0c'',cdxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxd:'''',;ldxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdc,''c0WMMMM
+// MMMW0c'',cdxddddddddddddddddddddddddddddxddo:'''''':dddddddooddxddddddddddddddddddddddddxdl,''c0WMMM
+// MMW0c'',lddddddddddddddddddddddddddddddddddd:'''''',lddddddoc:lddddddddddddddddddddddddddddl,''c0MMM
+// MMKl'',cddddddddddddddddddddddddddddddddddddc''''''':oddddddl,,codddddddddddddddddddddddddddc,''lKMM
+// MNd,''coddddddddddddddddddddddddddddddddddddc,'''''',cddddddo:'';codddddddddddddddddddddddddoc'',dNM
+// WO;'';odddddddddddddddddddddddddddddddddddddl,''''''';lddddddl,''';loddddddddddddddddddddddddo:'';OW
+// Xl'',codoodddddddddddddddddddddddoddddoollodl;'''''''';loddodo:'''',:odooddddddddddddddoodddool,''lX
+// k;'':oooooooooooooooooooooooooooooooooo:,cooo;''''''''',cooooo:'''''';loooooooooooooooooooooooo:'';k
+// o'',cooooooooooooooooooooooooooooooool;'':ooo:'''''''''',:loooc,'''''',:oooooooooooooooooooooooc,''o
+// :'';loooooooooooooooooooooooooooooooc;''':ooo:'''''''''''';cll:''''''''';loooooooooooooooooooool;'':
+// ,'';loooooooooooooooooooooooooooool:,''',coooc'''''''''''''',,''''''''''';looooooooooooooooooool;'';
+// ''':loooooooooooooooooooooooooool:,''''';loooc,''''''''''''''''''''''''''';coooooooooooooooooool:'''
+// ''':loolllllllllllllllllloollllc;'''''',cllllc,'''''''''''''''''''''''''''';cllollllllllllllolll:'''
+// ''':lllllllllllllllllllllllllc;'''''''';lllllc,''''''''''''''''''''''''''''';lllllllllllllllllll:'''
+// ,'';lllllllllllllllllllllllc;''''''''',clllllc,'''''''''''''''''''''''''''''':llllllllllllllllll;'',
+// ;'';cllllllllllllllllllllc:,'''''''''':llllll:,'''''',,'''''''''''''''''''''',:llllllllllllllllc;'';
+// c'',:lllllllllllllllllll:,''''''''''',:lllllc;'''''''cc''''''''''''''''''''''';clllllllllllllll:,''l
+// x,'';cllllllllllllccllc:,''''''''''''',:cccc;''''''',oo;''''''''''''''''''''''':clllllllcllcllc;'',x
+// 0:'',ccccccccccccccccc;''''''''''''''''',,,''''''''':dd;''''''''''''''''''''''',ccccccccccccccc,'':0
+// Nd,'';ccccccccccccccc;''''''''''''''''''''''''''''';oxd;'''''''''''''''''''''''':ccccccccccccc;'',dN
+// MKc'',:ccccccccccccc;'''''''''''';:,''''''''''''',;ldxo;'''''''''''''''''''''''';cccccccccccc:,''cKM
+// MWO;'',:ccccccccccc:,''''''''''';odl;''''''''''',lodddl,'''''''''''''''''''''''';:cccccccccc:,'';OWM
+// MMWx,'',:cccccccccc;''''''''''';ldddo:,''''''',:ldddddc''''''''''''''''''''''''',:ccccccccc:,'',xWMM
+// MMMNd,'',:::c::c:c:,'''''''''',coooodolc;,,,;:looodddo;''''''''''''''''''''''''',:c::::ccc:,'',dNMMM
+// MMMMNd,'',:::::::::,'''''''''';loooooooooolloooooooooc,''''''''''''''''''''''''';:::::::::,'',xNMMMM
+// MMMMMNx;'',;:::::::,'''''''''':looooooooooooooooooooo:''''''''''''''''''''''''',;:::::::;,'';xNMMMMM
+// MMMMMMWOc''',::::::;''''''''',:llllllllllllllllllllll:''''''''''''''''''''''''',::::::;,'''cOWMMMMMM
+// MMMMMMMMKo,'',;::::;,'''''''',:llllllllllllllllllllll:'''''';;'''''''''''''''',;:::::;,'',oKMMMMMMMM
+// MMMMMMMMMNOc''',;;:;,'''''''',:lllllllllllllllllllcll:,'''',:c,''''''''''''''';;:::;,'''ckNMMMMMMMMM
+// MMMMMMMMMMWXx:''',;;;,'''''''':ccccccccccccccccccccccc:;,,,:cc;'''''''''''''',;;;;,''':xXWMMMMMMMMMM
+// MMMMMMMMMMMMWKd;''',,;,''''''';ccccccccccccccccccccccccc::cccc;''''''''''''',;;,,''':dKWMMMMMMMMMMMM
+// MMMMMMMMMMMMMMWXxc,''',''''''',:::::::::::::::::::::::::::::::;'''''''''''',,,''',:xXWMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMWXOo;'''''''''',::::::::::::::::::::::::::::::,'''''''''''''''';lONWMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMWKkl;'''''''',;:::::::::::::::::::::::::::;,''''''''''''';lkKWMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMWKko:,''''',,;;;;;;;;;;;;;;;;;;;;;;;;;;,'''''''''',:okKWMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMMMMWN0koc;,'''''',,,,,,,,,,,,,,,,,,,,,''''''',;cok0NWMMMMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNX0kdlc;,,'''''''''''''''''''',,:cldk0XNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOxdlc:;,,'''''',,;;cloxOKNWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 //
 // ----------------------------------------------------------------------------------------------------
 //
@@ -62,11 +62,11 @@ library SafeMath {
 
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -76,7 +76,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -84,7 +84,7 @@ library SafeMath {
 library ExtendedMath {
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
-        if(a &gt; b) return b;
+        if(a > b) return b;
         return a;
     }
 }
@@ -168,19 +168,19 @@ contract SkorchToken is ERC20Interface, Owned {
     uint public lastRewardAmount;
     uint public lastRewardEthBlockNumber;
 
-    mapping(bytes32 =&gt; bytes32) solutionForChallenge;
+    mapping(bytes32 => bytes32) solutionForChallenge;
 
     uint public tokensMinted;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
     
-    mapping(address =&gt; uint256) timer; // timer to check PoS 
+    mapping(address => uint256) timer; // timer to check PoS 
     
     // how to calculate doubleUnit: 
     // specify how much percent increase you want per year 
-    // e.g. 130% -&gt; 2.3 multiplier every year 
+    // e.g. 130% -> 2.3 multiplier every year 
     // now divide (1 years) by LOG(2.3) where LOG is the natural logarithm (not LOG10)
     // in this case LOG(2.3) is 0.83290912293
     // hence multiplying by 1/0.83290912293 is the same 
@@ -193,8 +193,8 @@ contract SkorchToken is ERC20Interface, Owned {
         public 
         onlyOwner()
     {
-        symbol = &quot;SKO&quot;;
-        name = &quot;Skorch Token&quot;;
+        symbol = "SKO";
+        name = "Skorch Token";
         decimals = 18;
         // uncomment this to test 
         //balances[msg.sender] = (20000) * (10 ** uint(decimals)); // change 20000 to some lower number than 20000 
@@ -215,7 +215,7 @@ contract SkorchToken is ERC20Interface, Owned {
         public 
         onlyOwner
     {
-        require(newTokens &gt;= 100000);
+        require(newTokens >= 100000);
         // note: newTokens should be multiplied with 10**uint(decimals) (10^18);
         // require is in place to prevent fuck up. for 1000 tokens you need to enter 1000* 10^18 
         MinimumPoStokens = newTokens;
@@ -224,7 +224,7 @@ contract SkorchToken is ERC20Interface, Owned {
         function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
             bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
             if (digest != challenge_digest) revert();
-            if(uint256(digest) &gt; miningTarget) revert();
+            if(uint256(digest) > miningTarget) revert();
              bytes32 solution = solutionForChallenge[challengeNumber];
              solutionForChallenge[challengeNumber] = digest;
              if(solution != 0x0) revert();  //prevent the same answer from awarding twice
@@ -232,7 +232,7 @@ contract SkorchToken is ERC20Interface, Owned {
             uint reward_amount = getMiningReward();
             balances[msg.sender] = balances[msg.sender].add(reward_amount);
             tokensMinted = tokensMinted.add(reward_amount);
-            assert(tokensMinted &lt;= maxSupplyForEra);
+            assert(tokensMinted <= maxSupplyForEra);
             lastRewardTo = msg.sender;
             lastRewardAmount = reward_amount;
             lastRewardEthBlockNumber = block.number;
@@ -242,7 +242,7 @@ contract SkorchToken is ERC20Interface, Owned {
         }
 
     function _startNewMiningEpoch() internal {
-      if( tokensMinted.add(getMiningReward()) &gt; maxSupplyForEra &amp;&amp; rewardEra &lt; 39)
+      if( tokensMinted.add(getMiningReward()) > maxSupplyForEra && rewardEra < 39)
       {
         rewardEra = rewardEra + 1;
       }
@@ -259,7 +259,7 @@ contract SkorchToken is ERC20Interface, Owned {
         uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;
         uint epochsMined = _BLOCKS_PER_READJUSTMENT; 
         uint targetEthBlocksPerDiffPeriod = epochsMined * 60; //should be 60 times slower than ethereum
-        if( ethBlocksSinceLastDifficultyPeriod &lt; targetEthBlocksPerDiffPeriod )
+        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerDiffPeriod )
         {
           uint excess_block_pct = (targetEthBlocksPerDiffPeriod.mul(100)).div( ethBlocksSinceLastDifficultyPeriod );
           uint excess_block_pct_extra = excess_block_pct.sub(100).limitLessThan(1000);
@@ -270,11 +270,11 @@ contract SkorchToken is ERC20Interface, Owned {
           miningTarget = miningTarget.add(miningTarget.div(2000).mul(shortage_block_pct_extra));   //by up to 50 %
         }
         latestDifficultyPeriodStarted = block.number;
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
           miningTarget = _MINIMUM_TARGET;
         }
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
           miningTarget = _MAXIMUM_TARGET;
         }
@@ -303,7 +303,7 @@ contract SkorchToken is ERC20Interface, Owned {
       
       function checkMintSolution(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number, uint testTarget) public view returns (bool success) {
           bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
-          if(uint256(digest) &gt; testTarget) revert();
+          if(uint256(digest) > testTarget) revert();
           return (digest == challenge_digest);
         }
 
@@ -381,7 +381,7 @@ contract SkorchToken is ERC20Interface, Owned {
     }
     
     function _getPoS(address target) internal view returns (uint256){
-        if (balances[target] &lt;= MinimumPoStokens){
+        if (balances[target] <= MinimumPoStokens){
             return 0;
         }
         int ONE_SECOND = 0x10000000000000000;
@@ -410,10 +410,10 @@ contract SkorchToken is ERC20Interface, Owned {
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 

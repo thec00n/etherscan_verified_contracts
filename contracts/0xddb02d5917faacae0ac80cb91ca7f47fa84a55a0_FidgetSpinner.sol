@@ -60,7 +60,7 @@ contract FidgetSpinner is Owned {
     int dir = -1;
     if(omega == 0) {
       return 0;
-    } else if(omega &lt; 0) {
+    } else if(omega < 0) {
       dir = 1;
     }
 
@@ -68,8 +68,8 @@ contract FidgetSpinner is Owned {
     uint deltaOmega = timeElapsed * decayRate;
     int newOmega = omega + (int(deltaOmega) * dir);
 
-    // make sure we didn&#39;t cross zero
-    if((omega &gt; 0 &amp;&amp; newOmega &lt; 0) || (omega &lt; 0 &amp;&amp; newOmega &gt; 0)) {
+    // make sure we didn't cross zero
+    if((omega > 0 && newOmega < 0) || (omega < 0 && newOmega > 0)) {
       return 0;
     }
 
@@ -86,11 +86,11 @@ contract FidgetSpinner is Owned {
     // find max time elapsed before v=0 (becomes max-height of trapezoid)
     int maxTime = omega / int(decayRate);
 
-    if (maxTime &lt; 0) {
+    if (maxTime < 0) {
       maxTime *= -1;
     }
 
-    if(timeElapsed &gt; maxTime) {
+    if(timeElapsed > maxTime) {
       timeElapsed = maxTime;
     }
 
@@ -114,9 +114,9 @@ contract FidgetSpinner is Owned {
     omega = newOmega;
     theta = newTheta;
 
-    if(-omega &gt; largestRetro) {
+    if(-omega > largestRetro) {
       largestRetro = -omega;
-    } else if(omega &gt; largestPro) {
+    } else if(omega > largestPro) {
       largestPro = omega;
     }
 

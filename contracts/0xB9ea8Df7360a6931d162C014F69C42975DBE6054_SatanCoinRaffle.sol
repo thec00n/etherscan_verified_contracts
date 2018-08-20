@@ -11,7 +11,7 @@ contract Random {
   }
 }
 
-//This contract is written as a fix for the SatanCoin contract&#39;s raffle functionality
+//This contract is written as a fix for the SatanCoin contract's raffle functionality
 //The winning index of every round will be randomly generated here. Remaining SATAN coins will then be manually issued based on the results.
 //The SatanCoin contract itself is located here: https://etherscan.io/address/0xCCcA48874780f9c42b162c9617bC6324c5142C22
 
@@ -70,8 +70,8 @@ contract SatanCoinRaffle {
         public
         onlyOwner
    {
-       require(roundNum &lt; 9 &amp;&amp; roundNum &gt; 0);
-       require(raffleAmount &lt; 74 &amp;&amp; raffleAmount &gt; 0);
+       require(roundNum < 9 && roundNum > 0);
+       require(raffleAmount < 74 && raffleAmount > 0);
        require(!roundResults[roundNum-1].raffleComplete);
        
        roundResults[roundNum-1] = RoundResults(roundNum, raffleAmount, false, 0, address(0));
@@ -85,7 +85,7 @@ contract SatanCoinRaffle {
         onlyOwner
         returns (bool)
    {
-       require(roundNum &lt; 9 &amp;&amp; roundNum &gt; 0);
+       require(roundNum < 9 && roundNum > 0);
        //the raffle must have already been run
        require(roundResults[roundNum-1].raffleComplete);
        //can only set winner once
@@ -103,7 +103,7 @@ contract SatanCoinRaffle {
         internal
         returns (bool)
     {
-        require(roundNum &lt; 9 &amp;&amp; roundNum &gt; 0);
+        require(roundNum < 9 && roundNum > 0);
         //can only run a raffle once
         require(!roundResults[roundNum-1].raffleComplete);
 

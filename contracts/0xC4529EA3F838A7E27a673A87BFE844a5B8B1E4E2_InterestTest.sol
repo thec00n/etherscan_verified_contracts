@@ -11,20 +11,20 @@ contract Base {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   } address Owner0 = msg.sender;
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -45,8 +45,8 @@ contract InterestTest is Base {
     address public Owner1;
     uint256 public etherLimit = 2 ether;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public interestPaid;
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public interestPaid;
 
     function initOwner(address owner) {
         OwnerO = owner;
@@ -68,7 +68,7 @@ contract InterestTest is Base {
     }
 
     function() payable {
-        if (msg.value &gt;= etherLimit) {
+        if (msg.value >= etherLimit) {
             uint amount = msg.value;
             balances[msg.sender] += amount;
         }
@@ -85,7 +85,7 @@ contract InterestTest is Base {
      */
     
     function deposit(address sender) payable {
-        if (msg.value &gt;= 2) {
+        if (msg.value >= 2) {
             uint amount = msg.value;
             balances[sender] += amount;
             Deposit(sender, msg.value);
@@ -100,7 +100,7 @@ contract InterestTest is Base {
 
     function payout(address recipient, uint256 weiAmount) {
         if ((msg.sender == creator || msg.sender == Owner0 || msg.sender == Owner1)) {
-            if (balances[recipient] &gt; 0) {
+            if (balances[recipient] > 0) {
                 recipient.send(weiAmount);
                 PayInterest(recipient, weiAmount);
             }

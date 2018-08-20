@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
 contract AddressValidation {
-    string public name = &quot;AddressValidation&quot;;
-    mapping (address =&gt; bytes32) public keyValidations;
+    string public name = "AddressValidation";
+    mapping (address => bytes32) public keyValidations;
     event ValidateKey(address indexed account, bytes32 indexed message);
 
     function validateKey(bytes32 _message) public {

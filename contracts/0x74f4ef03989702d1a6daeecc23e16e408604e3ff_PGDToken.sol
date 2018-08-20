@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -76,20 +76,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -137,7 +137,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -193,9 +193,9 @@ contract StandardToken is ERC20, BasicToken {
 contract PGDToken is StandardToken,Ownable{
 
 	//the base info of the token
-	string public constant name=&quot;pagoda coin&quot;;
-	string public constant symbol=&quot;PGD&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="pagoda coin";
+	string public constant symbol="PGD";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 	uint256 public constant MAX_SUPPLY=200000000*10**decimals;
@@ -212,7 +212,7 @@ contract PGDToken is StandardToken,Ownable{
 	uint256 public endBlock;
 	address[] public allFundingUsers;
 
-	mapping(address=&gt;uint256) public fundBalance;
+	mapping(address=>uint256) public fundBalance;
 	
 
 	function PGDToken(){
@@ -225,27 +225,27 @@ contract PGDToken is StandardToken,Ownable{
 	}
 
 	modifier beforeBlock(uint256 _blockNum){
-		assert(getCurrentBlockNum()&lt;_blockNum);
+		assert(getCurrentBlockNum()<_blockNum);
 		_;
 	}
 
 	modifier afterBlock(uint256 _blockNum){
-		assert(getCurrentBlockNum()&gt;=_blockNum);
+		assert(getCurrentBlockNum()>=_blockNum);
 		_;
 	}
 
 	modifier notReachTotalSupply(uint256 _value,uint256 _rate){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value.mul(_rate)));
+		assert(MAX_SUPPLY>=totalSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachFundingSupply(uint256 _value,uint256 _rate){
-		assert(MAX_FUNDING_SUPPLY&gt;=totalFundingSupply.add(_value.mul(_rate)));
+		assert(MAX_FUNDING_SUPPLY>=totalFundingSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachTeamWithdrawSupply(uint256 _value,uint256 _rate){
-		assert(TEAM_KEEPING&gt;=totalTeamWithdrawSupply.add(_value.mul(_rate)));
+		assert(TEAM_KEEPING>=totalTeamWithdrawSupply.add(_value.mul(_rate)));
 		_;
 	}
 

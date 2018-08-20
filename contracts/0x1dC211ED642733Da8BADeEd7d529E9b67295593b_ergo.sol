@@ -29,8 +29,8 @@ pragma solidity ^0.4.21;
     uint256 public unitsOneEthCanBuy;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -51,8 +51,8 @@ pragma solidity ^0.4.21;
     ) public {
         totalSupply = 81000000000000000000000000;  
         balanceOf[msg.sender] = totalSupply;                
-        name = &quot;ergo&quot;;                                 
-        symbol = &quot;RGO&quot;;                               
+        name = "ergo";                                 
+        symbol = "RGO";                               
         unitsOneEthCanBuy = 810;
     }
 
@@ -63,9 +63,9 @@ pragma solidity ^0.4.21;
         
         require(_to != 0x0);
         
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         
@@ -121,7 +121,7 @@ pragma solidity ^0.4.21;
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -168,7 +168,7 @@ pragma solidity ^0.4.21;
      * @param _value the amount of money to burn
      */
     function burnFrom(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         emit Burn(msg.sender, _value);
@@ -184,8 +184,8 @@ pragma solidity ^0.4.21;
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              
@@ -218,9 +218,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -228,7 +228,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -237,7 +237,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -258,8 +258,8 @@ contract ergoam is owned, ergo {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balanceOf[_from] &gt;= _value);               
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_from] >= _value);               
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         balanceOf[_from] -= _value;                         
         balanceOf[_to] += _value;                           
         emit Transfer(_from, _to, _value);
@@ -280,7 +280,7 @@ contract ergoam is owned, ergo {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(address(this).balance &gt;= amount * sellPrice);      
+        require(address(this).balance >= amount * sellPrice);      
         _transfer(msg.sender, this, amount);             
         msg.sender.transfer(amount * sellPrice);           
     }

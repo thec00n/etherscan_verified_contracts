@@ -20,19 +20,19 @@ contract CoinStacks {
   // where the second 16 bits represents the _y value as a 16-bit unsigned int
   // For example 0x0010000B corresponse to (_x,_y) = (0x10,0xB) = (16,11)
   // Decoding from _coord to (_x,_y):
-  // _x = _coord &gt;&gt; 16
-  // _y = _coord &amp; 0xFFFF
+  // _x = _coord >> 16
+  // _y = _coord & 0xFFFF
   // Encoding (_x,_y) to _coord:
-  // _coord = (_x &lt;&lt; 16) | _y
+  // _coord = (_x << 16) | _y
 
-  mapping(uint32 =&gt; address) public coordinatesToAddresses;
+  mapping(uint32 => address) public coordinatesToAddresses;
   uint32[] public coinCoordinates;
 
   // Prize
   uint256 public reserveForJackpot;
 
   // withdrawable address balance
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   // Event
   event coinPlacedEvent (
@@ -52,7 +52,7 @@ contract CoinStacks {
   }
 
   function isThereACoinAtCoordinates(uint16 _x, uint16 _y) public view returns (bool){
-    return coordinatesToAddresses[(uint32(_x) &lt;&lt; 16) | uint16(_y)] != 0;
+    return coordinatesToAddresses[(uint32(_x) << 16) | uint16(_y)] != 0;
   }
 
   function getNumCoins() external view returns (uint){
@@ -69,31 +69,31 @@ contract CoinStacks {
     // check the coin below has been placed
     require(_y==0 || isThereACoinAtCoordinates(_x,_y-1));
     // cannot place to locked column
-    require(_x&lt;INITIAL_UNLOCKED_COLUMNS || coinCoordinates.length &gt;= MIN_AVG_HEIGHT * _x);
+    require(_x<INITIAL_UNLOCKED_COLUMNS || coinCoordinates.length >= MIN_AVG_HEIGHT * _x);
 
-    uint256 betAmount = BOTTOM_LAYER_BET * (uint256(1) &lt;&lt; _y); // * pow(2,_y)
+    uint256 betAmount = BOTTOM_LAYER_BET * (uint256(1) << _y); // * pow(2,_y)
 
     // check if the user has enough balance to place the current coin
-    require(balances[msg.sender] + msg.value &gt;= betAmount);
+    require(balances[msg.sender] + msg.value >= betAmount);
 
-    // Add the transaction amount to the user&#39;s balance
-    // and deduct current coin cost from user&#39;s balance
+    // Add the transaction amount to the user's balance
+    // and deduct current coin cost from user's balance
     balances[msg.sender] += (msg.value - betAmount);
 
-    uint32 coinCoord = (uint32(_x) &lt;&lt; 16) | uint16(_y);
+    uint32 coinCoord = (uint32(_x) << 16) | uint16(_y);
 
     coinCoordinates.push(coinCoord);
     coordinatesToAddresses[coinCoord] = msg.sender;
 
     if(_y==0) { // placing a coin in the bottom layer
-      if(reserveForJackpot &lt; JACKPOT_PRIZE) { // goes to jackpot reserve
+      if(reserveForJackpot < JACKPOT_PRIZE) { // goes to jackpot reserve
         reserveForJackpot += BOTTOM_LAYER_BET;
       } else { // otherwise goes to admin
         balances[admin]+= BOTTOM_LAYER_BET;
       }
     } else { // reward the owner of the coin below, minus maintenance fee
       uint256 adminFee = betAmount * maintenanceFeePercent /100;
-      balances[coordinatesToAddresses[(uint32(_x) &lt;&lt; 16) | _y-1]] +=
+      balances[coordinatesToAddresses[(uint32(_x) << 16) | _y-1]] +=
         (betAmount - adminFee);
       balances[admin] += adminFee;
     }
@@ -111,8 +111,8 @@ contract CoinStacks {
   // Withdrawing balance
   function withdrawBalance(uint256 _amountToWithdraw) external{
     require(_amountToWithdraw != 0);
-    require(balances[msg.sender] &gt;= _amountToWithdraw);
-    // Subtract the withdrawn amount from the user&#39;s balance
+    require(balances[msg.sender] >= _amountToWithdraw);
+    // Subtract the withdrawn amount from the user's balance
     balances[msg.sender] -= _amountToWithdraw;
 
     msg.sender.transfer(_amountToWithdraw);
@@ -127,7 +127,7 @@ contract CoinStacks {
   //change maintenance fee
   function setFeePercent(uint256 _newPercent) external {
     require (msg.sender == admin);
-    if(_newPercent&lt;=2) // Fee will never exceed 2%
+    if(_newPercent<=2) // Fee will never exceed 2%
       maintenanceFeePercent = _newPercent;
   }
 

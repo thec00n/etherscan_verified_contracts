@@ -9,7 +9,7 @@ contract GithubHint {
         address owner;
     }
     
-    modifier when_edit_allowed(bytes32 _content) { if (entries[_content].owner != 0 &amp;&amp; entries[_content].owner != msg.sender) return; _ }
+    modifier when_edit_allowed(bytes32 _content) { if (entries[_content].owner != 0 && entries[_content].owner != msg.sender) return; _ }
     
     function hint(bytes32 _content, string _accountSlashRepo, bytes20 _commit) when_edit_allowed(_content) {
         entries[_content] = Entry(_accountSlashRepo, _commit, msg.sender);
@@ -23,5 +23,5 @@ contract GithubHint {
         delete entries[_content];
     }
     
-    mapping (bytes32 =&gt; Entry) public entries;
+    mapping (bytes32 => Entry) public entries;
 }

@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -101,7 +101,7 @@ contract ERC20Token {
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return The balance
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     //function balanceOf(address _owner) public constant returns (uint256 balance);
 
     /// @notice send `_value` token to `_to` from `msg.sender`
@@ -126,7 +126,7 @@ contract ERC20Token {
     /// @param _owner The address of the account owning tokens
     /// @param _spender The address of the account able to transfer the tokens
     /// @return Amount of remaining tokens allowed to spent
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     //function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -135,7 +135,7 @@ contract ERC20Token {
 
 contract TokenI is ERC20Token, Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals = 18;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
 
@@ -196,18 +196,18 @@ contract Token915 is TokenI {
 
     address public owner;
 
-    string public techProvider = &quot;WeYii Tech(https://weyii.co)&quot;;
-    string public officialSite = &quot;https://915club.com&quot;;
+    string public techProvider = "WeYii Tech(https://weyii.co)";
+    string public officialSite = "https://915club.com";
 
-    mapping (uint8 =&gt; uint256[]) public freezeOf; //所有数额，地址与数额合并为uint256，位运算拆分。
+    mapping (uint8 => uint256[]) public freezeOf; //所有数额，地址与数额合并为uint256，位运算拆分。
     //解锁信息
     uint8  currUnlockStep; //当前解锁step
     uint256 currUnlockSeq; //当前解锁step 内的游标
 
-    mapping (uint8 =&gt; bool) public stepUnlockInfo; //所有锁仓，key 使用序号向上增加，value,是否已解锁。
-    mapping (address =&gt; uint256) public freezeOfUser; //用户所有锁仓，方便用户查询自己锁仓余额
-    //mapping (uint8 =&gt; uint32) public lastFreezeSeq; //最后的 freezeOf 键值。key: step; value: sequence
-    mapping (uint8 =&gt; uint256) public stepLockend; //key:锁仓step，value：解锁时间
+    mapping (uint8 => bool) public stepUnlockInfo; //所有锁仓，key 使用序号向上增加，value,是否已解锁。
+    mapping (address => uint256) public freezeOfUser; //用户所有锁仓，方便用户查询自己锁仓余额
+    //mapping (uint8 => uint32) public lastFreezeSeq; //最后的 freezeOf 键值。key: step; value: sequence
+    mapping (uint8 => uint256) public stepLockend; //key:锁仓step，value：解锁时间
     //uint8[] public lockSteps;
 
     bool public transfersEnabled = true;
@@ -270,13 +270,13 @@ contract Token915 is TokenI {
     }
 
     modifier moreThanZero(uint256 _value){
-        require(_value &gt; 0);
+        require(_value > 0);
         _;
     }
 
     /// 余额足够
     modifier userEnough(address _user, uint256 _amount) {
-        require(balanceOf[_user] &gt;= _amount);
+        require(balanceOf[_user] >= _amount);
         _;
     }
 
@@ -291,7 +291,7 @@ contract Token915 is TokenI {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Internal function to determine if an address is a contract
@@ -301,8 +301,8 @@ contract Token915 is TokenI {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) realUser(_to) moreThanZero(_value) transable public returns (bool) {
-        //require(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        //require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        //require(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        //require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);                     // Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add(_value);                            // Add the same to the recipient
         emit Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -353,9 +353,9 @@ contract Token915 is TokenI {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) realUser(_from) realUser(_to) moreThanZero(_value) transable public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                 // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // Check for overflows
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(balanceOf[_from] >= _value);                 // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);  // Check for overflows
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         balanceOf[_from] = balanceOf[_from].sub(_value);                           // Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add(_value);                             // Add the same to the recipient
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
@@ -364,18 +364,18 @@ contract Token915 is TokenI {
     }
     
     function transferMulti(address[] _to, uint256[] _value) transable public returns (bool success, uint256 amount){
-        require(_to.length == _value.length &amp;&amp; _to.length &lt;= 1024);
+        require(_to.length == _value.length && _to.length <= 1024);
         uint256 balanceOfSender = balanceOf[msg.sender];
         uint256 len = _to.length;
-        for(uint256 j; j&lt;len; j++){
-            require(_value[j] &lt;= balanceOfSender); //limit transfer value
+        for(uint256 j; j<len; j++){
+            require(_value[j] <= balanceOfSender); //limit transfer value
             amount = amount.add(_value[j]);
         }
-        require(balanceOfSender &gt; amount ); //check enough and not overflow
+        require(balanceOfSender > amount ); //check enough and not overflow
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);
         address _toI;
         uint256 _valueI;
-        for(uint256 i; i&lt;len; i++){
+        for(uint256 i; i<len; i++){
             _toI = _to[i];
             _valueI = _value[i];
             balanceOf[_toI] = balanceOf[_toI].add(_valueI);
@@ -385,15 +385,15 @@ contract Token915 is TokenI {
     }
     
     function transferMultiSameVaule(address[] _to, uint256 _value) transable public returns (bool){
-        require(_to.length &lt;= 1024);
+        require(_to.length <= 1024);
         //uint256 balanceOfSender = balanceOf[msg.sender];
         uint256 len = _to.length;
         uint256 amount = _value.mul(len);
-        //require(balanceOfSender - amount &lt; balanceOfSender); //check enough and not overflow
+        //require(balanceOfSender - amount < balanceOfSender); //check enough and not overflow
         //TODO test
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount); //this maybe will check enough automatically
         address _toI;
-        for(uint256 i; i&lt;len; i++){
+        for(uint256 i; i<len; i++){
             _toI = _to[i];
             balanceOf[_toI] = balanceOf[_toI].add(_value);
             emit Transfer(msg.sender, _toI, _value);
@@ -403,10 +403,10 @@ contract Token915 is TokenI {
 
     //冻结账户
     function freeze(address _user, uint256 _value, uint8 _step) moreThanZero(_value) onlyController public returns (bool success) {
-        require(balanceOf[_user] &gt;= _value);
+        require(balanceOf[_user] >= _value);
         balanceOf[_user] = balanceOf[_user].sub(_value);
         freezeOfUser[_user] = freezeOfUser[_user].add(_value);
-        freezeOf[_step].push(uint256(_user)&lt;&lt;96|_value);
+        freezeOf[_step].push(uint256(_user)<<96|_value);
         emit Freeze(_user, _value);
         return true;
     }
@@ -417,22 +417,22 @@ contract Token915 is TokenI {
     
     //为用户解锁账户资金
     function unFreeze(uint8 _step) onlyController public returns (bool unlockOver) {
-        require(stepLockend[_step]&lt;now &amp;&amp; (currUnlockStep==_step || currUnlockSeq==uint256(0)));
+        require(stepLockend[_step]<now && (currUnlockStep==_step || currUnlockSeq==uint256(0)));
         require(stepUnlockInfo[_step]==false);
         uint256[] memory currArr = freezeOf[_step];
         currUnlockStep = _step;
         if(currUnlockSeq==uint256(0)){
             currUnlockSeq = currArr.length;
         }
-        uint256 start = ((currUnlockSeq&gt;99)?(currUnlockSeq-99): 0);
+        uint256 start = ((currUnlockSeq>99)?(currUnlockSeq-99): 0);
 
         uint256 userLockInfo;
         uint256 _amount;
         address userAddress;
-        for(uint256 end = currUnlockSeq; end&gt;start; end--){
+        for(uint256 end = currUnlockSeq; end>start; end--){
             userLockInfo = freezeOf[_step][end-1];
-            _amount = userLockInfo&amp;0xFFFFFFFFFFFFFFFFFFFFFFFF;
-            userAddress = address(userLockInfo&gt;&gt;96);
+            _amount = userLockInfo&0xFFFFFFFFFFFFFFFFFFFFFFFF;
+            userAddress = address(userLockInfo>>96);
             balanceOf[userAddress] += _amount;
             freezeOfUser[userAddress] = freezeOfUser[userAddress].sub(_amount);
             emit Unfreeze(userAddress, _amount);
@@ -463,7 +463,7 @@ contract Token915 is TokenI {
     /// @param _amount The quantity of tokens generated
     /// @return True if the tokens are generated correctly
     function generateTokens(address _user, uint _amount) onlyController public returns (bool) {
-        //require(balanceOf[owner] &gt;= _amount);
+        //require(balanceOf[owner] >= _amount);
         balanceOf[_user] += _amount;
         balanceOf[owner] -= _amount;
         emit Transfer(0, _user, _amount);
@@ -475,7 +475,7 @@ contract Token915 is TokenI {
     /// @param _amount The quantity of tokens to burn
     /// @return True if the tokens are burned correctly
     function destroyTokens(address _user, uint _amount) onlyController userEnough(_user, _amount) public returns (bool) {
-        require(balanceOf[_user] &gt;= _amount);
+        require(balanceOf[_user] >= _amount);
         balanceOf[owner] += _amount;
         balanceOf[_user] -= _amount;
         emit Transfer(_user, 0, _amount);
@@ -510,11 +510,11 @@ contract Token915 is TokenI {
     function claimTokens(address[] tokens) onlyOwner public {
         address _token;
         uint256 balance;
-        for(uint256 i; i&lt;tokens.length; i++){
+        for(uint256 i; i<tokens.length; i++){
             _token = tokens[i];
             if (_token == 0x0) {
                 balance = address(this).balance;
-                if(balance &gt; 0){
+                if(balance > 0){
                     owner.transfer(balance);
                 }
             }else{

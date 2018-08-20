@@ -1,6 +1,6 @@
 contract GradualPonzi {
     address[] public investors;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     uint public constant MINIMUM_INVESTMENT = 1e15;
 
     function GradualPonzi () public {
@@ -8,9 +8,9 @@ contract GradualPonzi {
     }
 
     function () public payable {
-        require(msg.value &gt;= MINIMUM_INVESTMENT);
+        require(msg.value >= MINIMUM_INVESTMENT);
         uint eachInvestorGets = msg.value / investors.length;
-        for (uint i=0; i &lt; investors.length; i++) {
+        for (uint i=0; i < investors.length; i++) {
             balances[investors[i]] += eachInvestorGets;
         }
         investors.push(msg.sender);

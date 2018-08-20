@@ -46,7 +46,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -97,20 +97,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -118,7 +118,7 @@ library SafeMath {
 /**
  * @title ModulumTokenHolder
  * @dev ModulumTokenHolder is a smart contract which purpose is to hold and lock
- * HTO&#39;s token supply for 1.5years following Modulum ICO
+ * HTO's token supply for 1.5years following Modulum ICO
  * 
 */
 contract ModulumTokenHolder is Ownable {
@@ -149,8 +149,8 @@ contract ModulumTokenHolder is Ownable {
    * @dev Release MDL tokens held by this smart contract only after the timelock period
    */
   function releaseHTOSupply(ERC20Basic token) onlyOwner public {
-    require(now &gt;= start.add(DURATION));
-    require(token.balanceOf(this) &gt; 0);
+    require(now >= start.add(DURATION));
+    require(token.balanceOf(this) > 0);
     uint256 releasable = token.balanceOf(this);
 
     token.safeTransfer(beneficiary, releasable);

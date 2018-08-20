@@ -2,18 +2,18 @@ pragma solidity ^0.4.15;
 
 library SafeMath {
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
      }
     function add(uint a, uint b) internal returns (uint) {
          uint c = a + b;
-         assert(c &gt;= a);
+         assert(c >= a);
          return c;
      }
 }
@@ -22,8 +22,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -39,8 +39,8 @@ contract ERC20 {
 contract ERT  is ERC20 {
     using SafeMath for uint;
 
-    string public name = &quot;Eristica TOKEN&quot;;
-    string public symbol = &quot;ERT&quot;;
+    string public name = "Eristica TOKEN";
+    string public symbol = "ERT";
     uint public decimals = 18;
 
     address public ico;

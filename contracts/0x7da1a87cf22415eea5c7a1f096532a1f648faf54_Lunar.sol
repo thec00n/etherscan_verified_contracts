@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -85,7 +85,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -136,8 +136,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -218,8 +218,8 @@ contract StandardToken is ERC20, BasicToken {
  * `StandardToken` functions.
  */
 contract FIN is StandardToken {
-  string public constant name = &quot;Financial Incentive Network Points&quot;;
-  string public constant symbol = &quot;FIN&quot;;
+  string public constant name = "Financial Incentive Network Points";
+  string public constant symbol = "FIN";
   uint8 public constant decimals = 18; // solium-disable-line uppercase
 
   uint256 private constant OFFSET = 10 ** uint256(decimals);
@@ -280,7 +280,7 @@ interface ValidatedToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -327,9 +327,9 @@ contract ReferenceToken is Ownable, ERC20, ValidatedToken {
     uint256 internal mGranularity;
     uint256 internal mTotalSupply;
 
-    mapping(address =&gt; uint) internal mBalances;
-    mapping(address =&gt; mapping(address =&gt; bool)) internal mAuthorized;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal mAllowed;
+    mapping(address => uint) internal mBalances;
+    mapping(address => mapping(address => bool)) internal mAuthorized;
+    mapping(address => mapping(address => uint256)) internal mAllowed;
 
     uint8 public decimals = 18;
 
@@ -342,7 +342,7 @@ contract ReferenceToken is Ownable, ERC20, ValidatedToken {
         uint256        _granularity,
         TokenValidator _validator
     ) public {
-        require(_granularity &gt;= 1);
+        require(_granularity >= 1);
 
         mName = _name;
         mSymbol = _symbol;
@@ -372,7 +372,7 @@ contract ReferenceToken is Ownable, ERC20, ValidatedToken {
     // Status Code Helpers
 
     function isOk(byte _statusCode) internal pure returns (bool) {
-        return (_statusCode &amp; hex&quot;0F&quot;) == 1;
+        return (_statusCode & hex"0F") == 1;
     }
 
     function requireOk(byte _statusCode) internal pure {
@@ -431,7 +431,7 @@ contract ReferenceToken is Ownable, ERC20, ValidatedToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-        require(_amount &lt;= mAllowed[_from][msg.sender]);
+        require(_amount <= mAllowed[_from][msg.sender]);
 
         mAllowed[_from][msg.sender] = mAllowed[_from][msg.sender].sub(_amount);
         doSend(_from, _to, _amount);
@@ -458,9 +458,9 @@ contract ReferenceToken is Ownable, ERC20, ValidatedToken {
     ) internal returns (bool) {
         return (
             (_to != address(0)) // Forbid sending to 0x0 (=burning)
-            &amp;&amp; isMultiple(_amount)
-            &amp;&amp; (mBalances[_from] &gt;= _amount) // Ensure enough funds
-            &amp;&amp; isOk(validate(_from, _to, _amount)) // Ensure passes validation
+            && isMultiple(_amount)
+            && (mBalances[_from] >= _amount) // Ensure enough funds
+            && isOk(validate(_from, _to, _amount)) // Ensure passes validation
         );
     }
 }
@@ -468,7 +468,7 @@ contract ReferenceToken is Ownable, ERC20, ValidatedToken {
 
 contract Lunar is ReferenceToken {
     constructor(TokenValidator _validator)
-      ReferenceToken(&quot;Lunar Token - SAMPLE NO VALUE&quot;, &quot;LNRX&quot;, 1, _validator)
+      ReferenceToken("Lunar Token - SAMPLE NO VALUE", "LNRX", 1, _validator)
       public {
           uint256 supply = 5000000;
 
@@ -481,7 +481,7 @@ contract Lunar is ReferenceToken {
 
 
 contract SimpleAuthorization is TokenValidator, Ownable {
-    mapping(address =&gt; bool) private auths;
+    mapping(address => bool) private auths;
 
     constructor() public {}
 
@@ -490,9 +490,9 @@ contract SimpleAuthorization is TokenValidator, Ownable {
         address _address
     ) external returns (byte resultCode) {
         if (auths[_address]) {
-            return hex&quot;11&quot;;
+            return hex"11";
         } else {
-            return hex&quot;10&quot;;
+            return hex"10";
         }
     }
 
@@ -502,10 +502,10 @@ contract SimpleAuthorization is TokenValidator, Ownable {
         address _to,
         uint256 /* _amount */
     ) external returns (byte resultCode) {
-        if (auths[_from] &amp;&amp; auths[_to]) {
-            return hex&quot;11&quot;;
+        if (auths[_from] && auths[_to]) {
+            return hex"11";
         } else {
-            return hex&quot;10&quot;;
+            return hex"10";
         }
     }
 

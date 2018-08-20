@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;PoWAdv Token&#39; contract
+// 'PoWAdv Token' contract
 // Mineable ERC20 Token using Proof Of Work
 //
 // Symbol      : POWA
@@ -17,11 +17,11 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -31,7 +31,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 library ExtendedMath {
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
-        if(a &gt; b) return b;
+        if(a > b) return b;
         return a;
     }
 }
@@ -115,7 +115,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
     uint public latestDifficultyPeriodStarted;
     uint public firstValidBlockNumber;
 
-    uint public epochCount; //number of &#39;blocks&#39; mined
+    uint public epochCount; //number of 'blocks' mined
 
     uint public _BLOCKS_PER_READJUSTMENT = 16;
     // avg ETH block period is ~10sec this is 60 roughly block per 10min
@@ -131,12 +131,12 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
     bool locked = false;
 
-    mapping(bytes32 =&gt; bytes32) solutionForChallenge;
+    mapping(bytes32 => bytes32) solutionForChallenge;
 
     uint public tokensMinted;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event Mint(address indexed from, uint reward_amount, uint epochCount, bytes32 newChallengeNumber);
 
@@ -145,8 +145,8 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     function PoWAdvCoinToken() public onlyOwner {
 
-        symbol = &quot;POWA&quot;;
-        name = &quot;PoWAdv Token&quot;;
+        symbol = "POWA";
+        name = "PoWAdv Token";
         decimals = 8;
         _totalSupply = 100000000 * 10**uint(decimals);
 
@@ -168,9 +168,9 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
  
 	function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
 
-        require(block.number &gt; firstValidBlockNumber);
+        require(block.number > firstValidBlockNumber);
             
-		//the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender&#39;s address to prevent MITM attacks
+		//the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender's address to prevent MITM attacks
 		bytes32 digest = keccak256(challengeNumber, msg.sender, nonce);
 
 		//the challenge digest must match the expected
@@ -178,7 +178,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 			revert();
 
 		//the digest must be smaller than the target
-		if(uint256(digest) &gt; discountedMiningTarget(msg.sender)) 
+		if(uint256(digest) > discountedMiningTarget(msg.sender)) 
 			revert();
 
 		//only allow one reward for each challenge
@@ -193,7 +193,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
         tokensMinted = tokensMinted.add(reward_amount);
         
-		assert(tokensMinted &lt;= _totalSupply);
+		assert(tokensMinted <= _totalSupply);
 	
 		_startNewMiningEpoch();
 
@@ -202,7 +202,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 		return true;
 	}
 
-    //a new &#39;block&#39; to be mined
+    //a new 'block' to be mined
     function _startNewMiningEpoch() internal {
 		epochCount = epochCount.add(1);
 
@@ -219,11 +219,11 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
         uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;
 
-        //we want miners to spend 10 minutes to mine each &#39;block&#39;, about 60 ethereum blocks = one POWA epoch
+        //we want miners to spend 10 minutes to mine each 'block', about 60 ethereum blocks = one POWA epoch
         uint targetEthBlocksPerDiffPeriod = _TARGET_EPOCH_PER_PEDIOD; //should be X times slower than ethereum
 
         //if there were less eth blocks passed in time than expected
-        if(ethBlocksSinceLastDifficultyPeriod &lt; targetEthBlocksPerDiffPeriod)
+        if(ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerDiffPeriod)
         {
 			uint excess_block_pct = (targetEthBlocksPerDiffPeriod.mul(100)).div(ethBlocksSinceLastDifficultyPeriod);
 			uint excess_block_pct_extra = excess_block_pct.sub(100).limitLessThan(1000);
@@ -240,12 +240,12 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
         latestDifficultyPeriodStarted = block.number;
 
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
 			miningTarget = _MINIMUM_TARGET;
         }
 
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
 			miningTarget = _MAXIMUM_TARGET;
         }
@@ -269,7 +269,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
         // the number of coins owned
         uint256 minerBalance = uint256(balanceOf(solver));
          
-        if(minerBalance &lt;= 2 * _BLOCK_REWARD)
+        if(minerBalance <= 2 * _BLOCK_REWARD)
             return getMiningTarget();
             
         // the number of full block rewards owned
@@ -277,7 +277,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
             
         discountedDiff = miningTarget.mul(minerDiscount.mul(minerDiscount));
         
-        if(discountedDiff &gt; _MAXIMUM_TARGET) //very easy
+        if(discountedDiff > _MAXIMUM_TARGET) //very easy
             discountedDiff = _MAXIMUM_TARGET;
       
         return discountedDiff;
@@ -302,8 +302,8 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are not allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -316,7 +316,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -348,7 +348,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -356,7 +356,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -367,7 +367,7 @@ contract PoWAdvCoinToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

@@ -8,8 +8,8 @@ contract Nines {
     uint256 cost;
   }    
 
-  mapping (uint256 =&gt; Nine) public nines;
-  mapping (address =&gt; string) public msgs;
+  mapping (uint256 => Nine) public nines;
+  mapping (address => string) public msgs;
 
   address public ceoAddress;
   uint256 public seatPrice = 1000000000000000;
@@ -27,7 +27,7 @@ contract Nines {
     nines[7] = Nine(msg.sender, 0);
     nines[8] = Nine(msg.sender, 0);
     nines[9] = Nine(msg.sender, 0);
-    msgs[msg.sender] = &quot;Claim this spot!&quot;;
+    msgs[msg.sender] = "Claim this spot!";
   }
 
   function getNine(uint256 _slot) public view returns (
@@ -44,7 +44,7 @@ contract Nines {
 
   function purchase() public payable {
     require(msg.sender != address(0));
-    require(msg.value &gt;= seatPrice);
+    require(msg.value >= seatPrice);
     uint256 excess = SafeMath.sub(msg.value, seatPrice);
     nines[1].owner.transfer(uint256(SafeMath.mul(SafeMath.div(seatPrice, 100), 9)));
     nines[2].owner.transfer(uint256(SafeMath.mul(SafeMath.div(seatPrice, 100), 9)));
@@ -88,12 +88,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ contract ERC20 is Owned {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 
     function transfer(address _to, uint _value) isStartedOnly returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -92,7 +92,7 @@ contract ERC20 is Owned {
     }
 
     function transferFrom(address _from, address _to, uint _value) isStartedOnly returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -125,8 +125,8 @@ contract ERC20 is Owned {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     uint public totalSupply;
     bool    public isStarted = false;
@@ -141,8 +141,8 @@ contract ERC20 is Owned {
 contract Token is ERC20 {
     using SafeMath for uint;
 
-    string public name = &quot;CrowdWizToken&quot;;
-    string public symbol = &quot;WIZ&quot;;
+    string public name = "CrowdWizToken";
+    string public symbol = "WIZ";
     uint8 public decimals = 18;
 
     address public crowdsaleMinter;

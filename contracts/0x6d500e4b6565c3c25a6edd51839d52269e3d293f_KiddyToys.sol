@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81e5e4f5e4c1e0f9e8eeecfbe4efafe2ee">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81e5e4f5e4c1e0f9e8eeecfbe4efafe2ee">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -98,18 +98,18 @@ contract KiddyToys is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;KiddyToys&quot;;
-  string public constant SYMBOL = &quot;ToyToken&quot;;
+  string public constant NAME = "KiddyToys";
+  string public constant SYMBOL = "ToyToken";
 
   uint256 private startingPrice = 0.01 ether;
 
-  mapping (uint256 =&gt; address) public toyIdToOwner;
+  mapping (uint256 => address) public toyIdToOwner;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public toyIdToApproved;
+  mapping (uint256 => address) public toyIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private toyIdToPrice;
+  mapping (uint256 => uint256) private toyIdToPrice;
 
   /*** DATATYPES ***/
   struct Toy {
@@ -136,28 +136,28 @@ contract KiddyToys is ERC721, Ownable {
   function create20ContractToy() public onlyContractOwner {
      uint256 totalToys = totalSupply();
 	 
-     require (totalToys &lt; 1);
+     require (totalToys < 1);
 	 
- 	 _createToy(&quot;Sandy train&quot;, address(this), startingPrice);
- 	 _createToy(&quot;Red Teddy&quot;, address(this), startingPrice);
-	 _createToy(&quot;Brown Teddy&quot;, address(this), startingPrice);
-	 _createToy(&quot;White Horsy&quot;, address(this), startingPrice);
-	 _createToy(&quot;Blue rocking Horsy&quot;, address(this), startingPrice);
-	 _createToy(&quot;Arch pyramid&quot;, address(this), startingPrice);
-	 _createToy(&quot;Sandy rocking Horsy&quot;, address(this), startingPrice);
-	 _createToy(&quot;Letter cubes&quot;, address(this), startingPrice);
-	 _createToy(&quot;Ride carousel&quot;, address(this), startingPrice);
-	 _createToy(&quot;Town car&quot;, address(this), startingPrice);
-	 _createToy(&quot;Nighty train&quot;, address(this), startingPrice);
-	 _createToy(&quot;Big circles piramid&quot;, address(this), startingPrice);
-	 _createToy(&quot;Small circles piramid&quot;, address(this), startingPrice);
-	 _createToy(&quot;Red lamp&quot;, address(this), startingPrice);
-	 _createToy(&quot;Ducky&quot;, address(this), startingPrice);
-	 _createToy(&quot;Small ball&quot;, address(this), startingPrice);
-	 _createToy(&quot;Big ball&quot;, address(this), startingPrice);
-	 _createToy(&quot;Digital cubes&quot;, address(this), startingPrice);
-	 _createToy(&quot;Small Dolly&quot;, address(this), startingPrice);
-	 _createToy(&quot;Big Dolly&quot;, address(this), startingPrice);
+ 	 _createToy("Sandy train", address(this), startingPrice);
+ 	 _createToy("Red Teddy", address(this), startingPrice);
+	 _createToy("Brown Teddy", address(this), startingPrice);
+	 _createToy("White Horsy", address(this), startingPrice);
+	 _createToy("Blue rocking Horsy", address(this), startingPrice);
+	 _createToy("Arch pyramid", address(this), startingPrice);
+	 _createToy("Sandy rocking Horsy", address(this), startingPrice);
+	 _createToy("Letter cubes", address(this), startingPrice);
+	 _createToy("Ride carousel", address(this), startingPrice);
+	 _createToy("Town car", address(this), startingPrice);
+	 _createToy("Nighty train", address(this), startingPrice);
+	 _createToy("Big circles piramid", address(this), startingPrice);
+	 _createToy("Small circles piramid", address(this), startingPrice);
+	 _createToy("Red lamp", address(this), startingPrice);
+	 _createToy("Ducky", address(this), startingPrice);
+	 _createToy("Small ball", address(this), startingPrice);
+	 _createToy("Big ball", address(this), startingPrice);
+	 _createToy("Digital cubes", address(this), startingPrice);
+	 _createToy("Small Dolly", address(this), startingPrice);
+	 _createToy("Big Dolly", address(this), startingPrice);
   }
   
   function getToy(uint256 _tokenId) public view returns (string toyName, uint256 sellingPrice, address owner) {
@@ -189,7 +189,7 @@ contract KiddyToys is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 9), 10)); //90% to previous owner
     uint256 win_payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 9), 180)); //5% to random owner
@@ -214,7 +214,7 @@ contract KiddyToys is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, toyIdToPrice[_tokenId], oldOwner, newOwner, toys[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
@@ -251,7 +251,7 @@ contract KiddyToys is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 toyId;
-      for (toyId = 0; toyId &lt;= totalToys; toyId++) {
+      for (toyId = 0; toyId <= totalToys; toyId++) {
         if (toyIdToOwner[toyId] == _owner) {
           result[resultIndex] = toyId;
           resultIndex++;
@@ -313,7 +313,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     toyIdToOwner[_tokenId] = _to;
 
-    // When creating new toys _from is 0x0, but we can&#39;t account that address.
+    // When creating new toys _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

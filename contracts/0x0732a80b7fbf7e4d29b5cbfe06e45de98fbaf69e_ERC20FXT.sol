@@ -45,9 +45,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -64,7 +64,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,8 +73,8 @@ contract ERC20FXT {
 
     using SafeMath for uint256;
 
-    string public name = &quot;ERC20FX Token&quot;;
-    string public symbol = &quot;ERC20FXT&quot;;
+    string public name = "ERC20FX Token";
+    string public symbol = "ERC20FXT";
     uint8 public decimals = 0;
 
     uint256 public totalSupply = 10000000 * (uint256(10) ** decimals);
@@ -118,19 +118,19 @@ contract ERC20FXT {
     uint256 public scaledRemainder = 0;
     uint256 public scaledRewardPerToken;
 
-    mapping(address =&gt;uint8) public addressKYCStatus;
-    mapping(address =&gt; uint256) public scaledRewardBalanceOf;
-    mapping(address =&gt; uint256) public scaledRewardCreditedTo;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address =>uint8) public addressKYCStatus;
+    mapping(address => uint256) public scaledRewardBalanceOf;
+    mapping(address => uint256) public scaledRewardCreditedTo;
+    mapping(address => mapping(address => uint256)) public allowance;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     constructor() public {
       admin = msg.sender;
       withdrawlState = 0;
       // Address KYCStatus
       addressKYCStatus[admin] = uint8(KYCStatus.cleared);
-      // Initially assign all  tokens to the contract&#39;s creator.
+      // Initially assign all  tokens to the contract's creator.
       balanceOf[msg.sender] = totalSupply;
       emit Transfer(address(0), msg.sender, totalSupply);
     }
@@ -141,7 +141,7 @@ contract ERC20FXT {
     }
 
     modifier onlyHolder() {
-        require(balanceOf[msg.sender] &gt; 0);
+        require(balanceOf[msg.sender] > 0);
         _;
     }
 
@@ -154,7 +154,7 @@ contract ERC20FXT {
 
 
     function transfer(address to, uint256 value) public returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= value);
+      require(balanceOf[msg.sender] >= value);
 
       update(msg.sender);
       update(to);
@@ -168,8 +168,8 @@ contract ERC20FXT {
 
     function transferFrom(address from, address to, uint256 value) public returns (bool success)
     {
-      require(value &lt;= balanceOf[from]);
-      require(value &lt;= allowance[from][msg.sender]);
+      require(value <= balanceOf[from]);
+      require(value <= allowance[from][msg.sender]);
 
       update(from);
       update(to);
@@ -218,7 +218,7 @@ contract ERC20FXT {
         revert();
       }
       // Only approved users are allowed to withdraw
-      if(withdrawlState == uint8(WithdrawlStatus.approved) &amp;&amp; status != uint8(KYCStatus.cleared)){
+      if(withdrawlState == uint8(WithdrawlStatus.approved) && status != uint8(KYCStatus.cleared)){
         revert();
       }
 
@@ -287,7 +287,7 @@ contract ERC20FXT {
     }
 
     function changeWithdrawState(uint8 status) public onlyOwner {
-      require(status &lt;= uint8(WithdrawlStatus.none));
+      require(status <= uint8(WithdrawlStatus.none));
       withdrawlState = status;
       emit WithdrawlStateChanged(withdrawlState, msg.sender);
     }

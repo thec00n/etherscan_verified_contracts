@@ -16,7 +16,7 @@ contract GodzSwapGodzEtherCompliance{
     }
 
     /*mapping of the acounts that send more than usd5000*/
-    mapping(uint=&gt;GodzBuyAccounts) public accountsHolding;
+    mapping(uint=>GodzBuyAccounts) public accountsHolding;
     
     /*index of the account information*/
     uint public indexAccount = 0;

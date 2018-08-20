@@ -61,18 +61,18 @@ contract ApproveAndCallFallBack {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
         c = a * b;
-        require(a == 0 || c / a == b); // the same as: if (a !=0 &amp;&amp; c / a != b) {throw;}
+        require(a == 0 || c / a == b); // the same as: if (a !=0 && c / a != b) {throw;}
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -89,15 +89,15 @@ contract IMOSToken is ERC20Interface, Ownable{
     uint8 public decimals;
     uint _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function IMOSToken() public {
-        symbol = &quot;IMOS&quot;;
-        name = &quot;Intelligent Manufacturing Operation System&quot;;
+        symbol = "IMOS";
+        name = "Intelligent Manufacturing Operation System";
         decimals = 18;
         _totalSupply = 500000000 * 10**uint(decimals);
         balances[msg.sender] = _totalSupply;
@@ -122,8 +122,8 @@ contract IMOSToken is ERC20Interface, Ownable{
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -135,7 +135,7 @@ contract IMOSToken is ERC20Interface, Ownable{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -166,7 +166,7 @@ contract IMOSToken is ERC20Interface, Ownable{
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -174,7 +174,7 @@ contract IMOSToken is ERC20Interface, Ownable{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -188,7 +188,7 @@ contract IMOSToken is ERC20Interface, Ownable{
     // send ERC20 Token to multi address
     // ------------------------------------------------------------------------
     function multiTransfer(address[] _addresses, uint256[] amounts) public returns (bool success){
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             transfer(_addresses[i], amounts[i]);
         }
         return true;
@@ -198,13 +198,13 @@ contract IMOSToken is ERC20Interface, Ownable{
     // send ERC20 Token to multi address with decimals
     // ------------------------------------------------------------------------
     function multiTransferDecimals(address[] _addresses, uint256[] amounts) public returns (bool success){
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             transfer(_addresses[i], amounts[i] * 10**uint(decimals));
         }
         return true;
     }
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

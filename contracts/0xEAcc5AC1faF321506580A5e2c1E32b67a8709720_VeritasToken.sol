@@ -32,7 +32,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -109,20 +109,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -136,7 +136,7 @@ library SafeMath {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -191,8 +191,8 @@ contract StandardToken is ERC20, BasicToken {
 contract VeritasToken is StandardToken, Ownable
 {
 
-    string public name = &quot;Veritas Group Limited Equity Token&quot;;
-    string public symbol = &quot;VGLE&quot;;
+    string public name = "Veritas Group Limited Equity Token";
+    string public symbol = "VGLE";
 
     uint public decimals = 8;
     uint public buyRate = 251;
@@ -229,7 +229,7 @@ contract VeritasToken is StandardToken, Ownable
     function ChangeBuyRate(uint newRate)
     onlyOwner
     {
-        require(newRate &gt; 0);
+        require(newRate > 0);
         uint oldRate = buyRate;
         buyRate = newRate;
         BuyRateChanged(oldRate, newRate);
@@ -238,7 +238,7 @@ contract VeritasToken is StandardToken, Ownable
     function ChangeSellRate(uint newRate)
     onlyOwner
     {
-        require(newRate &gt; 0);
+        require(newRate > 0);
         uint oldRate = sellRate;
         sellRate = newRate;
         SellRateChanged(oldRate, newRate);
@@ -250,7 +250,7 @@ contract VeritasToken is StandardToken, Ownable
     {
         require(beneficiary != 0x0);
         require(beneficiary != owner);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint weiAmount = msg.value;
         uint etherAmount = WeiToEther(weiAmount);
@@ -268,8 +268,8 @@ contract VeritasToken is StandardToken, Ownable
     {
         require(msg.sender != owner);
         require(msg.sender != 0x0);
-        require(amount &gt; 0);
-        require(balances[msg.sender] &gt;= amount);
+        require(amount > 0);
+        require(balances[msg.sender] >= amount);
         
         balances[owner] = balances[owner].add(amount);
         balances[msg.sender] = balances[msg.sender].sub(amount);
@@ -296,14 +296,14 @@ contract VeritasToken is StandardToken, Ownable
     function WeiToEther(uint v) internal 
     returns (uint)
     {
-        require(v &gt; 0);
+        require(v > 0);
         return v.div(1000000000000000000);
     }
 
     function EtherToWei(uint v) internal
     returns (uint)
     {
-      require(v &gt; 0);
+      require(v > 0);
       return v.mul(1000000000000000000);
     }
     

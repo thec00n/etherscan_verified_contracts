@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 // -------------------------------------------------
 // Assistive Reality ARX Token - ICO token sale contract
-// contact <span class="__cf_email__" data-cfemail="ee9d9a8f8888ae8f9c81808287808bc08781">[email&#160;protected]</span> for queries
+// contact <span class="__cf_email__" data-cfemail="ee9d9a8f8888ae8f9c81808287808bc08781">[email protected]</span> for queries
 // Revision 20b
 // Refunds integrated, full test suite 20r passed
 // -------------------------------------------------
@@ -46,20 +46,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -75,7 +75,7 @@ contract StandardToken is owned, safeMath {
 }
 
 contract ARXCrowdsale is owned, safeMath {
-  // owner/admin &amp; token reward
+  // owner/admin & token reward
   address        public admin                     = owner;    // admin address
   StandardToken  public tokenReward;                          // address of the token used as reward
 
@@ -92,7 +92,7 @@ contract ARXCrowdsale is owned, safeMath {
   uint256 public fundingMaxCapInWei;                          //
 
   // loop control, ICO startup and limiters
-  string  public CurrentStatus                    = &quot;&quot;;        // current crowdsale status
+  string  public CurrentStatus                    = "";        // current crowdsale status
   uint256 public fundingStartBlock;                           // crowdsale start block#
   uint256 public fundingEndBlock;                             // crowdsale end block#
   bool    public isCrowdSaleClosed               = false;     // crowdsale completion boolean
@@ -104,13 +104,13 @@ contract ARXCrowdsale is owned, safeMath {
   event Buy(address indexed _sender, uint256 _eth, uint256 _ARX);
   event Refund(address indexed _refunder, uint256 _value);
   event Burn(address _from, uint256 _value);
-  mapping(address =&gt; uint256) balancesArray;
-  mapping(address =&gt; uint256) usersARXfundValue;
+  mapping(address => uint256) balancesArray;
+  mapping(address => uint256) usersARXfundValue;
 
   // default function, map admin
   function ARXCrowdsale() public onlyOwner {
     admin = msg.sender;
-    CurrentStatus = &quot;Crowdsale deployed to chain&quot;;
+    CurrentStatus = "Crowdsale deployed to chain";
   }
 
   // total number of tokens initially
@@ -126,8 +126,8 @@ contract ARXCrowdsale is owned, safeMath {
   // setup the CrowdSale parameters
   function SetupCrowdsale(uint256 _fundingStartBlock, uint256 _fundingEndBlock) public onlyOwner returns (bytes32 response) {
     if ((msg.sender == admin)
-    &amp;&amp; (!(isCrowdSaleSetup))
-    &amp;&amp; (!(beneficiaryWallet &gt; 0))) {
+    && (!(isCrowdSaleSetup))
+    && (!(beneficiaryWallet > 0))) {
       // init addresses
       beneficiaryWallet                       = 0x98DE47A1F7F96500276900925B334E4e54b1caD5;
       tokenReward                             = StandardToken(0xb0D926c1BC3d78064F3e1075D5bD9A24F35Ae6C5);
@@ -146,33 +146,33 @@ contract ARXCrowdsale is owned, safeMath {
       // configure crowdsale
       isCrowdSaleSetup                        = true;
       isCrowdSaleClosed                       = false;
-      CurrentStatus                           = &quot;Crowdsale is setup&quot;;
-      return &quot;Crowdsale is setup&quot;;
+      CurrentStatus                           = "Crowdsale is setup";
+      return "Crowdsale is setup";
     } else if (msg.sender != admin) {
-      return &quot;not authorised&quot;;
+      return "not authorised";
     } else  {
-      return &quot;campaign cannot be changed&quot;;
+      return "campaign cannot be changed";
     }
   }
 
   function checkPrice() internal view returns (uint256 currentPriceValue) {
-    if (block.number &gt;= 5532293) {
+    if (block.number >= 5532293) {
       return (2250);
-    } else if (block.number &gt;= 5490292) {
+    } else if (block.number >= 5490292) {
       return (2500);
-    } else if (block.number &gt;= 5406291) {
+    } else if (block.number >= 5406291) {
       return (2750);
-    } else if (block.number &gt;= 5370290) {
+    } else if (block.number >= 5370290) {
       return (3000);
-    } else if (block.number &gt;= 5352289) {
+    } else if (block.number >= 5352289) {
       return (3250);
-    } else if (block.number &gt;= 5310289) {
+    } else if (block.number >= 5310289) {
       return (3500);
-    } else if (block.number &gt;= 5268288) {
+    } else if (block.number >= 5268288) {
       return (4000);
-    } else if (block.number &gt;= 5232287) {
+    } else if (block.number >= 5232287) {
       return (4500);
-    } else if (block.number &gt;= fundingStartBlock) {
+    } else if (block.number >= fundingStartBlock) {
       return (5000);
     }
   }
@@ -181,10 +181,10 @@ contract ARXCrowdsale is owned, safeMath {
   function () public payable {
     // 0. conditions (length, crowdsale setup, zero check, exceed funding contrib check, contract valid check, within funding block range check, balance overflow check etc)
     require(!(msg.value == 0)
-    &amp;&amp; (msg.data.length == 0)
-    &amp;&amp; (block.number &lt;= fundingEndBlock)
-    &amp;&amp; (block.number &gt;= fundingStartBlock)
-    &amp;&amp; (tokensRemaining &gt; 0));
+    && (msg.data.length == 0)
+    && (block.number <= fundingEndBlock)
+    && (block.number >= fundingStartBlock)
+    && (tokensRemaining > 0));
 
     // 1. vars
     uint256 rewardTransferAmount    = 0;
@@ -203,49 +203,49 @@ contract ARXCrowdsale is owned, safeMath {
   }
 
   function beneficiaryMultiSigWithdraw(uint256 _amount) public onlyOwner {
-    require(areFundsReleasedToBeneficiary &amp;&amp; (amountRaisedInWei &gt;= fundingMinCapInWei));
+    require(areFundsReleasedToBeneficiary && (amountRaisedInWei >= fundingMinCapInWei));
     beneficiaryWallet.transfer(_amount);
     Transfer(this, beneficiaryWallet, _amount);
   }
 
   function checkGoalReached() public onlyOwner { // return crowdfund status to owner for each result case, update public vars
-    // update state &amp; status variables
+    // update state & status variables
     require (isCrowdSaleSetup);
-    if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &lt;= fundingEndBlock &amp;&amp; block.number &gt;= fundingStartBlock)) { // ICO in progress, under softcap
+    if ((amountRaisedInWei < fundingMinCapInWei) && (block.number <= fundingEndBlock && block.number >= fundingStartBlock)) { // ICO in progress, under softcap
       areFundsReleasedToBeneficiary = false;
       isCrowdSaleClosed = false;
-      CurrentStatus = &quot;In progress (Eth &lt; Softcap)&quot;;
-    } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &lt; fundingStartBlock)) { // ICO has not started
+      CurrentStatus = "In progress (Eth < Softcap)";
+    } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.number < fundingStartBlock)) { // ICO has not started
       areFundsReleasedToBeneficiary = false;
       isCrowdSaleClosed = false;
-      CurrentStatus = &quot;Crowdsale is setup&quot;;
-    } else if ((amountRaisedInWei &lt; fundingMinCapInWei) &amp;&amp; (block.number &gt; fundingEndBlock)) { // ICO ended, under softcap
+      CurrentStatus = "Crowdsale is setup";
+    } else if ((amountRaisedInWei < fundingMinCapInWei) && (block.number > fundingEndBlock)) { // ICO ended, under softcap
       areFundsReleasedToBeneficiary = false;
       isCrowdSaleClosed = true;
-      CurrentStatus = &quot;Unsuccessful (Eth &lt; Softcap)&quot;;
-    } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (tokensRemaining == 0)) { // ICO ended, all tokens bought!
+      CurrentStatus = "Unsuccessful (Eth < Softcap)";
+    } else if ((amountRaisedInWei >= fundingMinCapInWei) && (tokensRemaining == 0)) { // ICO ended, all tokens bought!
       areFundsReleasedToBeneficiary = true;
       isCrowdSaleClosed = true;
-      CurrentStatus = &quot;Successful (ARX &gt;= Hardcap)!&quot;;
-    } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (block.number &gt; fundingEndBlock) &amp;&amp; (tokensRemaining &gt; 0)) { // ICO ended, over softcap!
+      CurrentStatus = "Successful (ARX >= Hardcap)!";
+    } else if ((amountRaisedInWei >= fundingMinCapInWei) && (block.number > fundingEndBlock) && (tokensRemaining > 0)) { // ICO ended, over softcap!
       areFundsReleasedToBeneficiary = true;
       isCrowdSaleClosed = true;
-      CurrentStatus = &quot;Successful (Eth &gt;= Softcap)!&quot;;
-    } else if ((amountRaisedInWei &gt;= fundingMinCapInWei) &amp;&amp; (tokensRemaining &gt; 0) &amp;&amp; (block.number &lt;= fundingEndBlock)) { // ICO in progress, over softcap!
+      CurrentStatus = "Successful (Eth >= Softcap)!";
+    } else if ((amountRaisedInWei >= fundingMinCapInWei) && (tokensRemaining > 0) && (block.number <= fundingEndBlock)) { // ICO in progress, over softcap!
       areFundsReleasedToBeneficiary = true;
       isCrowdSaleClosed = false;
-      CurrentStatus = &quot;In progress (Eth &gt;= Softcap)!&quot;;
+      CurrentStatus = "In progress (Eth >= Softcap)!";
     }
   }
 
-  function refund() public { // any contributor can call this to have their Eth returned. user&#39;s purchased ARX tokens are burned prior refund of Eth.
+  function refund() public { // any contributor can call this to have their Eth returned. user's purchased ARX tokens are burned prior refund of Eth.
     //require minCap not reached
-    require ((amountRaisedInWei &lt; fundingMinCapInWei)
-    &amp;&amp; (isCrowdSaleClosed)
-    &amp;&amp; (block.number &gt; fundingEndBlock)
-    &amp;&amp; (usersARXfundValue[msg.sender] &gt; 0));
+    require ((amountRaisedInWei < fundingMinCapInWei)
+    && (isCrowdSaleClosed)
+    && (block.number > fundingEndBlock)
+    && (usersARXfundValue[msg.sender] > 0));
 
-    //burn user&#39;s token ARX token balance, refund Eth sent
+    //burn user's token ARX token balance, refund Eth sent
     uint256 ethRefund = usersARXfundValue[msg.sender];
     balancesArray[msg.sender] = 0;
     usersARXfundValue[msg.sender] = 0;

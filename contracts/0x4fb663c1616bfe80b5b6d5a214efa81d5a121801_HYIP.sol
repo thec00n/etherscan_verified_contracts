@@ -6,7 +6,7 @@ contract HYIP {
 
 	uint constant PAYOUT_INTERVAL = 1 days;
 
-	/* NB: Solidity doesn&#39;t support fixed or floats yet, so we use promille instead of percent */	
+	/* NB: Solidity doesn't support fixed or floats yet, so we use promille instead of percent */	
 	uint constant BENEFICIARIES_INTEREST = 37;
 	uint constant INVESTORS_INTEREST = 33;
 	uint constant INTEREST_DENOMINATOR = 1000;
@@ -71,23 +71,23 @@ contract HYIP {
 	}
 
 
-	/* checks if it&#39;s time to make payouts. if so, send the ether */
+	/* checks if it's time to make payouts. if so, send the ether */
 	function performPayouts()
 	{
 		uint paidPeriods = 0;
 		uint investorsPayout;
 		uint beneficiariesPayout = 0;
 
-		while(m_latestPaidTime + PAYOUT_INTERVAL &lt; now)
+		while(m_latestPaidTime + PAYOUT_INTERVAL < now)
 		{						
 			uint idx;
 
 			/* pay the beneficiaries */		
-			if(m_beneficiaries.length &gt; 0) 
+			if(m_beneficiaries.length > 0) 
 			{
 				beneficiariesPayout = (this.balance * BENEFICIARIES_INTEREST) / INTEREST_DENOMINATOR;
 				uint eachBeneficiaryPayout = beneficiariesPayout / m_beneficiaries.length;  
-				for(idx = 0; idx &lt; m_beneficiaries.length; idx++)
+				for(idx = 0; idx < m_beneficiaries.length; idx++)
 				{
 					if(!m_beneficiaries[idx].send(eachBeneficiaryPayout))
 						throw;				
@@ -96,9 +96,9 @@ contract HYIP {
 
 			/* pay the investors  */
 			/* we use reverse iteration here */
-			for (idx = m_investors.length; idx-- &gt; 0; )
+			for (idx = m_investors.length; idx-- > 0; )
 			{
-				if(m_investors[idx].investmentTime &gt; m_latestPaidTime + PAYOUT_INTERVAL)
+				if(m_investors[idx].investmentTime > m_latestPaidTime + PAYOUT_INTERVAL)
 					continue;
 				uint payout = (m_investors[idx].deposit * INVESTORS_INTEREST) / INTEREST_DENOMINATOR;
 				if(!m_investors[idx].etherAddress.send(payout))

@@ -13,16 +13,16 @@ contract HodlerInvestmentClub {
         uint time;
     }
     
-    mapping(address =&gt; Hodler) public hodlers;
+    mapping(address => Hodler) public hodlers;
     
     modifier onlyHodler {
-        require(hodlers[msg.sender].value &gt; 0);
+        require(hodlers[msg.sender].value > 0);
         _;
     }
     
     /* Constructor */
     function HodlerInvestmentClub() payable public {
-        if (msg.value &gt; 0)  {
+        if (msg.value > 0)  {
             hodlers[msg.sender].value = msg.value;
             hodlers[msg.sender].time = now + hodl_interval;
         }
@@ -32,7 +32,7 @@ contract HodlerInvestmentClub {
     // make a deposit to another account if it exists 
     // or initialize a deposit for a new account
     function deposit(address _to) payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         if (_to == 0) _to = msg.sender;
         // if a new member, init a hodl time
         if (hodlers[_to].time == 0) {
@@ -44,7 +44,7 @@ contract HodlerInvestmentClub {
     
     // withdrawal can only occur after deposit time is exceeded
     function withdraw() public onlyHodler {
-        require(hodlers[msg.sender].time &lt;= now);
+        require(hodlers[msg.sender].time <= now);
         uint256 value = hodlers[msg.sender].value;
         delete hodlers[msg.sender];
         m_hodlers--;
@@ -54,7 +54,7 @@ contract HodlerInvestmentClub {
     // join the club!
     // simple deposit and hold time set for msg.sender
     function() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         hodlers[msg.sender].value += msg.value;
         // init for first deposit
         if (hodlers[msg.sender].time == 0) {

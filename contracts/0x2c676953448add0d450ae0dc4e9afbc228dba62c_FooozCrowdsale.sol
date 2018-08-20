@@ -9,37 +9,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -81,7 +81,7 @@ contract ERC20 {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * Protection against short address attack
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(transfersEnabled);
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -122,7 +122,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -132,8 +132,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(transfersEnabled);
 
         balances[_from] = balances[_from].sub(_value);
@@ -148,7 +148,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -183,7 +183,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -245,8 +245,8 @@ contract Ownable {
  */
 
 contract MintableToken is StandardToken, Ownable {
-    string public constant name = &quot;FOOOZ&quot;;
-    string public constant symbol = &quot;FOOOZ&quot;;
+    string public constant name = "FOOOZ";
+    string public constant symbol = "FOOOZ";
     uint8 public constant decimals = 18;
 
     event Mint(address indexed to, uint256 amount);
@@ -284,7 +284,7 @@ contract MintableToken is StandardToken, Ownable {
     }
 
     /**
-     * Peterson&#39;s Law Protection
+     * Peterson's Law Protection
      * Claim tokens
      */
     function claimTokens(address _token) public onlyOwner {
@@ -334,7 +334,7 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
     enum State {Active, Closed}
     State public state;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     uint256 public constant INITIAL_SUPPLY = 613333328 * (10 ** uint256(decimals));
     uint256 public fundForSale = 466133330 * (10 ** uint256(decimals));
@@ -353,8 +353,8 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
     uint256 public weiMinSalePreIco = 1190 * 10 ** 15;
     uint256 public weiMinSaleIco = 29 * 10 ** 15;
     uint256 priceToken = 3362;
-    // $0.25 = 1 token =&gt; $1,000 = 1.19 ETH =&gt;
-    //4,000 token = 1.19 ETH =&gt; 1 ETH = 4,000/1.19 = 3362 token
+    // $0.25 = 1 token => $1,000 = 1.19 ETH =>
+    //4,000 token = 1.19 ETH => 1 ETH = 4,000/1.19 = 3362 token
 
     uint256 public countInvestor;
     uint256 public currentAfterIcoPeriod;
@@ -371,7 +371,7 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
         require(_ownerTwo != address(0));
         owner = _owner;
         ownerTwo = _ownerTwo;
-        //owner = msg.sender; //for test&#39;s
+        //owner = msg.sender; //for test's
         transfersEnabled = true;
         mintingFinished = false;
         state = State.Active;
@@ -390,7 +390,7 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
     }
 
     function setPriceToken(uint256 _newPrice) public onlyOwner {
-        require(_newPrice &gt; 0);
+        require(_newPrice > 0);
         priceToken = _newPrice;
     }
 
@@ -415,16 +415,16 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function getTotalAmountOfTokens(uint256 _weiAmount) internal view returns (uint256) {
         uint256 currentDate = now;
-        //currentDate = 1534204800; //for test&#39;s (Tue, 14 Aug 2018 00:00:00 GMT)
+        //currentDate = 1534204800; //for test's (Tue, 14 Aug 2018 00:00:00 GMT)
         uint256 currentPeriod = getPeriod(currentDate);
         uint256 amountOfTokens = 0;
-        if(currentPeriod &lt; 5){
+        if(currentPeriod < 5){
             amountOfTokens = _weiAmount.mul(priceToken).mul(discount[currentPeriod] + 100).div(100);
         }
-        if(currentPeriod == 0 &amp;&amp; _weiAmount &lt; weiMinSalePreIco){
+        if(currentPeriod == 0 && _weiAmount < weiMinSalePreIco){
             amountOfTokens = 0;
         }
-        if(0 &lt; currentPeriod &amp;&amp; currentPeriod &lt; 5 &amp;&amp; _weiAmount &lt; weiMinSaleIco){
+        if(0 < currentPeriod && currentPeriod < 5 && _weiAmount < weiMinSaleIco){
             amountOfTokens = 0;
         }
         return amountOfTokens;
@@ -438,24 +438,24 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
     * 4th. Stage starts 06 of Aug, ends on 15  of Aug , 2018
     */
     function getPeriod(uint256 _currentDate) public pure returns (uint) {
-        //1530403200 - July, 01, 2018 00:00:00 &amp;&amp; 1530835199 - July, 05, 2018 23:59:59
-        if( 1530403200 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1530835199){
+        //1530403200 - July, 01, 2018 00:00:00 && 1530835199 - July, 05, 2018 23:59:59
+        if( 1530403200 <= _currentDate && _currentDate <= 1530835199){
             return 0;
         }
-        //1530835200 - July, 06, 2018 00:00:00 &amp;&amp; 1531699199 - July, 15, 2018 23:59:59
-        if( 1530835200 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1531699199){
+        //1530835200 - July, 06, 2018 00:00:00 && 1531699199 - July, 15, 2018 23:59:59
+        if( 1530835200 <= _currentDate && _currentDate <= 1531699199){
             return 1;
         }
-        //1531699200 - July, 16, 2018 00:00:00 &amp;&amp; 1532563199 - July, 25, 2018 23:59:59
-        if( 1531699200 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1532563199){
+        //1531699200 - July, 16, 2018 00:00:00 && 1532563199 - July, 25, 2018 23:59:59
+        if( 1531699200 <= _currentDate && _currentDate <= 1532563199){
             return 2;
         }
-        //1532563200 - July, 26, 2018 00:00:00 &amp;&amp; 1533513599 - August,   05, 2018 23:59:59
-        if( 1532563200 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1533513599){
+        //1532563200 - July, 26, 2018 00:00:00 && 1533513599 - August,   05, 2018 23:59:59
+        if( 1532563200 <= _currentDate && _currentDate <= 1533513599){
             return 3;
         }
-        //1533513600 - August,   06, 2018 00:00:00 &amp;&amp; 1534377599 - August,   15, 2018 23:59:59
-        if( 1533513600 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1534377599){
+        //1533513600 - August,   06, 2018 00:00:00 && 1534377599 - August,   15, 2018 23:59:59
+        if( 1533513600 <= _currentDate && _currentDate <= 1534377599){
             return 4;
         }
         return 10;
@@ -463,16 +463,16 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function getAfterIcoPeriod(uint256 _currentDate) public pure returns (uint) {
         uint256 endIco = 1534377600; // August,   16, 2018 00:00:00
-        if( endIco &lt; _currentDate &amp;&amp; _currentDate &lt;= endIco + 2*365 days){
+        if( endIco < _currentDate && _currentDate <= endIco + 2*365 days){
             return 100;
         }
-        if( endIco + 2*365 days &lt; _currentDate &amp;&amp; _currentDate &lt;= endIco + 4*365 days){
+        if( endIco + 2*365 days < _currentDate && _currentDate <= endIco + 4*365 days){
             return 200;
         }
-        if( endIco + 4*365 days &lt; _currentDate &amp;&amp; _currentDate &lt;= endIco + 6*365 days){
+        if( endIco + 4*365 days < _currentDate && _currentDate <= endIco + 6*365 days){
             return 300;
         }
-        if( endIco + 6*365 days &lt; _currentDate &amp;&amp; _currentDate &lt;= endIco + 8*365 days){
+        if( endIco + 6*365 days < _currentDate && _currentDate <= endIco + 8*365 days){
             return 400;
         }
         return 0;
@@ -487,11 +487,11 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
         uint256 nonSoldToken = totalSupply.sub(tokenAllocated);
         uint256 mintTokens = 0;
         result = false;
-        if (currentAfterIcoPeriod &lt; getAfterIcoPeriod(currentDate)){
+        if (currentAfterIcoPeriod < getAfterIcoPeriod(currentDate)){
             currentAfterIcoPeriod = currentAfterIcoPeriod.add(getAfterIcoPeriod(currentDate));
             changePeriod = true;
         }
-        if(totalCost.mul(100).div(weiRaised) &lt; 200 || changePeriod){
+        if(totalCost.mul(100).div(weiRaised) < 200 || changePeriod){
             mintTokens = nonSoldToken.div(4); // 25%
             fivePercent = mintTokens.div(20); // 5%
 
@@ -530,11 +530,11 @@ contract FooozCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function validPurchaseTokens(uint256 _weiAmount) public inState(State.Active) returns (uint256) {
         uint256 addTokens = getTotalAmountOfTokens(_weiAmount);
-        if (tokenAllocated.add(addTokens) &gt; fundForSale) {
+        if (tokenAllocated.add(addTokens) > fundForSale) {
             emit TokenLimitReached(tokenAllocated, addTokens);
             return 0;
         }
-        if (weiRaised.add(_weiAmount) &gt; hardWeiCap) {
+        if (weiRaised.add(_weiAmount) > hardWeiCap) {
             emit HardCapReached();
             return 0;
         }

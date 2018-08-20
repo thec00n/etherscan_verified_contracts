@@ -13,20 +13,20 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -53,8 +53,8 @@ contract Token {
 contract RegularToken is Token, SafeMath {
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
         emit Transfer(msg.sender, _to, _value);
@@ -62,9 +62,9 @@ contract RegularToken is Token, SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
+        require(allowed[_from][msg.sender] >= _value);
         balances[_from] = sub(balances[_from], _value);
         balances[_to] = add(balances[_to], _value);
         allowed[_from][msg.sender] = sub(allowed[_from][msg.sender], _value);
@@ -86,8 +86,8 @@ contract RegularToken is Token, SafeMath {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -96,8 +96,8 @@ contract PXGToken is RegularToken {
 
     uint256 public totalSupply = 100*10**(18+8);
     uint8 constant public decimals = 18;
-    string constant public name = &quot;PIEXGO&quot;;
-    string constant public symbol = &quot;PXG&quot;;
+    string constant public name = "PIEXGO";
+    string constant public symbol = "PXG";
 
     function PXGToken() {
         balances[msg.sender] = totalSupply;

@@ -33,7 +33,7 @@ contract tokenSPERT {
         
     }
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
 
     /* This unnamed function is called whenever someone tries to send ether to it */
@@ -44,8 +44,8 @@ contract tokenSPERT {
 
 contract Presale is owned, tokenSPERT {
 
-        string name = &#39;Pre-sale Eristica Token&#39;;
-        string symbol = &#39;SPERT&#39;;
+        string name = 'Pre-sale Eristica Token';
+        string symbol = 'SPERT';
         uint8 decimals = 18;
         
         
@@ -75,18 +75,18 @@ function Presale ()
 
 library SafeMath {
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
      }
     function add(uint a, uint b) internal returns (uint) {
          uint c = a + b;
-         assert(c &gt;= a);
+         assert(c >= a);
          return c;
      }
 }
@@ -95,8 +95,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -226,7 +226,7 @@ contract EristicaICO {
     function replaceToken(address _investor) managerOnly{
          require(statusICO != StatusICO.Finished);
          uint spertTokens = presale.balanceOf(_investor);
-         require(spertTokens &gt; 0);
+         require(spertTokens > 0);
          presale.burnTokens(_investor);
          ert.mint(_investor, spertTokens);
 
@@ -236,8 +236,8 @@ contract EristicaICO {
 
     function buy(address _investor, uint _ertValue) internal {
        require(statusICO == StatusICO.Started);
-       require(_ertValue &gt; 0);
-       require(Sold + _ertValue &lt;= Tokens_For_Sale);
+       require(_ertValue > 0);
+       require(Sold + _ertValue <= Tokens_For_Sale);
        ert.mint(_investor, _ertValue);
        Sold = Sold.add(_ertValue);
     }
@@ -256,8 +256,8 @@ contract EristicaICO {
 contract ERT  is ERC20 {
     using SafeMath for uint;
 
-    string public name = &quot;Eristica TOKEN&quot;;
-    string public symbol = &quot;ERT&quot;;
+    string public name = "Eristica TOKEN";
+    string public symbol = "ERT";
     uint public decimals = 18;
 
     address public ico;

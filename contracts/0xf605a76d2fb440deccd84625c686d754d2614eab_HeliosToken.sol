@@ -9,10 +9,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -20,7 +20,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -90,7 +90,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 	/*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public symbol;
@@ -104,16 +104,16 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 	//March 1, 2018
 	uint256 public startTime = 1519862400;
 	
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function HeliosToken() public {
-        symbol = &quot;HLS&quot;;
-        name = &quot;Helios Token&quot;;
+        symbol = "HLS";
+        name = "Helios Token";
         decimals = 18;
         _totalSupply = 350000000000000000000000000;
 		_yearTwoSupply = 30000000000000000000000000;
@@ -133,7 +133,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 	function teamClaim(uint year) public onlyOwner returns (bool success) {
 		if(year == 2)
 		{
-			require (now &gt; (startTime + 31536000)  &amp;&amp; _yearTwoClaimed == false);
+			require (now > (startTime + 31536000)  && _yearTwoClaimed == false);
 			balances[0x6BFAf995ffce7Be6e3073dC8AAf45E445cf234e2] = safeAdd(balances[0x6BFAf995ffce7Be6e3073dC8AAf45E445cf234e2], _yearTwoSupply);
 			Transfer(address(0), 0x6BFAf995ffce7Be6e3073dC8AAf45E445cf234e2, _yearTwoSupply);
 			_yearTwoClaimed = true;
@@ -141,7 +141,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 		}
 		if(year == 3)
 		{
-			require (now &gt; (startTime + 63072000) &amp;&amp; _yearThreeClaimed == false);
+			require (now > (startTime + 63072000) && _yearThreeClaimed == false);
 			balances[0x6BFAf995ffce7Be6e3073dC8AAf45E445cf234e2] = safeAdd(balances[0x6BFAf995ffce7Be6e3073dC8AAf45E445cf234e2], _yearThreeSupply);
 			Transfer(address(0), 0x6BFAf995ffce7Be6e3073dC8AAf45E445cf234e2, _yearThreeSupply);
 			_yearThreeClaimed = true;
@@ -167,8 +167,8 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
 	// - If the sender is a locked token storage address then do not allow
     // ------------------------------------------------------------------------
@@ -182,7 +182,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -215,7 +215,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -224,7 +224,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -236,7 +236,7 @@ contract HeliosToken is ERC20, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

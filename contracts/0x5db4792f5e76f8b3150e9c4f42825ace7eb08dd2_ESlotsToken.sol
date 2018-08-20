@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract DividendContract {
   uint256 totalDividendsAmount = 0;
   uint256 totalDividendsRounds = 0;
   uint256 totalUnPayedDividendsAmount = 0;
-  mapping(address =&gt; uint256) payedDividends;
+  mapping(address => uint256) payedDividends;
 
 
   function getTotalDividendsAmount() public constant returns (uint256) {
@@ -77,7 +77,7 @@ contract DividendContract {
   function claimDividends() payable public;
 
   function payDividends() payable public {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     totalDividendsAmount = totalDividendsAmount.add(msg.value);
     totalUnPayedDividendsAmount = totalUnPayedDividendsAmount.add(msg.value);
     totalDividendsRounds += 1;
@@ -116,8 +116,8 @@ contract ERC20 is ERC20Basic {
 
 contract ESlotsICOToken is ERC20, DividendContract {
 
-    string public constant name = &quot;Ethereum Slot Machine Token&quot;;
-    string public constant symbol = &quot;EST&quot;;
+    string public constant name = "Ethereum Slot Machine Token";
+    string public constant symbol = "EST";
     uint8 public constant decimals = 18;
 
     function maxTokensToSale() public view returns (uint256);
@@ -131,7 +131,7 @@ contract ESlotsICOToken is ERC20, DividendContract {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -177,7 +177,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -195,7 +195,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -230,9 +230,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -252,7 +252,7 @@ contract BurnableToken is BasicToken {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -263,8 +263,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -278,7 +278,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -327,7 +327,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -397,7 +397,7 @@ contract ESlotsToken is Ownable, StandardToken, ESlotsICOToken {
     state = State.CompletedICO;
     uint256 soldTokens = tokensToSale.sub(balances[owner]);
     uint256 foundersTokens = soldTokens.mul(foundersStake).div(100);
-    if(foundersTokens &gt; maxFoundersTokens) {
+    if(foundersTokens > maxFoundersTokens) {
       //normally we never reach this point
       foundersTokens = maxFoundersTokens;
     }
@@ -412,13 +412,13 @@ contract ESlotsToken is Ownable, StandardToken, ESlotsICOToken {
   function transfer(address _to, uint256 _value) public returns (bool) {
     if(msg.sender == founders) {
       //lock operation with tokens for founders
-      require(totalDividendsAmount &gt; 0 &amp;&amp; totalDividendsRounds &gt; dividendRoundsBeforeFoundersStakeUnlock);
+      require(totalDividendsAmount > 0 && totalDividendsRounds > dividendRoundsBeforeFoundersStakeUnlock);
     }
     //transfer is allowed only then all dividends are claimed
     require(payedDividends[msg.sender] == totalDividendsAmount);
     require(balances[_to] == 0 || payedDividends[_to] == totalDividendsAmount);
     bool res =  BasicToken.transfer(_to, _value);
-    if(res &amp;&amp; payedDividends[_to] != totalDividendsAmount) {
+    if(res && payedDividends[_to] != totalDividendsAmount) {
       payedDividends[_to] = totalDividendsAmount;
     }
     return res;
@@ -427,13 +427,13 @@ contract ESlotsToken is Ownable, StandardToken, ESlotsICOToken {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     if(msg.sender == founders) {
       //lock operation with tokens for founders
-      require(totalDividendsAmount &gt; 0 &amp;&amp; totalDividendsRounds &gt; dividendRoundsBeforeFoundersStakeUnlock);
+      require(totalDividendsAmount > 0 && totalDividendsRounds > dividendRoundsBeforeFoundersStakeUnlock);
     }
     //transfer is allowed only then all dividends are claimed
     require(payedDividends[_from] == totalDividendsAmount);
     require(balances[_to] == 0 || payedDividends[_to] == totalDividendsAmount);
     bool res = StandardToken.transferFrom(_from, _to, _value);
-    if(res &amp;&amp; payedDividends[_to] != totalDividendsAmount) {
+    if(res && payedDividends[_to] != totalDividendsAmount) {
       payedDividends[_to] = totalDividendsAmount;
     }
     return res;
@@ -449,7 +449,7 @@ contract ESlotsToken is Ownable, StandardToken, ESlotsICOToken {
   function dividendsAmount(address investor) public onlyThenCompletedICO constant returns (uint256)  {
     if(totalSupply_ == 0) {return 0;}
     if(balances[investor] == 0) {return 0;}
-    if(payedDividends[investor] &gt;= totalDividendsAmount) {return 0;}
+    if(payedDividends[investor] >= totalDividendsAmount) {return 0;}
     return (totalDividendsAmount - payedDividends[investor]).mul(balances[investor]).div(totalSupply_);
   }
 
@@ -459,7 +459,7 @@ contract ESlotsToken is Ownable, StandardToken, ESlotsICOToken {
 
   }
 
-  //force dividend payments if they hasn&#39;t been claimed by token holder before
+  //force dividend payments if they hasn't been claimed by token holder before
   function pushDividends(address investor) payable public onlyThenCompletedICO {
     //because we pay for gas
     sendDividends(investor, transferGASUsage.mul(tx.gasprice));
@@ -467,7 +467,7 @@ contract ESlotsToken is Ownable, StandardToken, ESlotsICOToken {
 
   function sendDividends(address investor, uint256 gasUsage) internal {
     uint256 value = dividendsAmount(investor);
-    require(value &gt; gasUsage);
+    require(value > gasUsage);
     payedDividends[investor] = totalDividendsAmount;
     totalUnPayedDividendsAmount = totalUnPayedDividendsAmount.sub(value);
     investor.transfer(value.sub(gasUsage));

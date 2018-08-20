@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 contract owned {
     address public owner;
-    mapping (address =&gt;  bool) public admins;
+    mapping (address =>  bool) public admins;
 
     function owned() public {
         owner = msg.sender;
@@ -41,7 +41,7 @@ contract Sivalicoin is owned {
     bool public usersCanUnfreeze;
 
     bool public ico = false; //turn ico on and of
-    mapping (address =&gt; bool) public admin;
+    mapping (address => bool) public admin;
 
 
     modifier notICO {
@@ -51,13 +51,13 @@ contract Sivalicoin is owned {
 
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt;  bool) public frozen;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address =>  bool) public frozen;
 
-    mapping (address =&gt;  bool) public canTrade; //user allowed to buy or sell
+    mapping (address =>  bool) public canTrade; //user allowed to buy or sell
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -87,8 +87,8 @@ contract Sivalicoin is owned {
         uint256 initialSupply = 26680000000000000000000000;
         balanceOf[msg.sender] = initialSupply ;              // Give the creator all initial tokens
         totalSupply = initialSupply;                        // Update total supply
-        name = &quot;Sivalicoin&quot;;                                   // Set the name for display purposes
-        symbol = &quot;SVC&quot;;                               // Set the symbol for display purposes
+        name = "Sivalicoin";                                   // Set the name for display purposes
+        symbol = "SVC";                               // Set the symbol for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
         minBalanceForAccounts = 1000000000000000;
         usersCanTrade=false;
@@ -147,7 +147,7 @@ contract Sivalicoin is owned {
      * function to freeze an account
      */
     function freeze (address target, bool froze ) public  {
-        if(froze || (!froze &amp;&amp; !usersCanUnfreeze)) {
+        if(froze || (!froze && !usersCanUnfreeze)) {
             require(admin[msg.sender]);
         }
 
@@ -163,8 +163,8 @@ contract Sivalicoin is owned {
         require(_to != 0x0);                                   // Prevent transfer to 0x0 address. Use burn() instead
 
         require(!frozen[_from]);                       //prevent transfer from frozen address
-        require(balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value);                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -196,7 +196,7 @@ contract Sivalicoin is owned {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(!frozen[_from]);                       //prevent transfer from frozen address
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -240,7 +240,7 @@ contract Sivalicoin is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -256,10 +256,10 @@ contract Sivalicoin is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -293,12 +293,12 @@ contract Sivalicoin is owned {
 
     //user is buying SVC
     function buy() payable public returns (uint256 amount){
-        if(!usersCanTrade &amp;&amp; !canTrade[msg.sender]) revert();
+        if(!usersCanTrade && !canTrade[msg.sender]) revert();
         amount = msg.value * buyPrice;                    // calculates the amount
 
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
@@ -306,14 +306,14 @@ contract Sivalicoin is owned {
     //user is selling us SVC, we are selling eth to the user
     function sell(uint256 amount) public returns (uint revenue){
         require(!frozen[msg.sender]);
-        if(!usersCanTrade &amp;&amp; !canTrade[msg.sender]) {
-            require(minBalanceForAccounts &gt; amount/sellPrice);
+        if(!usersCanTrade && !canTrade[msg.sender]) {
+            require(minBalanceForAccounts > amount/sellPrice);
         }
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[this] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[this] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount / sellPrice;
-        require(msg.sender.send(revenue));                // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        require(msg.sender.send(revenue));                // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }

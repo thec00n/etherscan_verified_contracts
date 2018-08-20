@@ -1,10 +1,10 @@
 pragma solidity ^0.4.8;
 contract Soarcoin {
 
-    mapping (address =&gt; uint256) balances;               // each address in this contract may have tokens. 
+    mapping (address => uint256) balances;               // each address in this contract may have tokens. 
     address internal owner = 0x4Bce8E9850254A86a1988E2dA79e41Bc6793640d;                // the owner is the creator of the smart contract
-    string public name = &quot;Soarcoin&quot;;                     // name of this contract and investment fund
-    string public symbol = &quot;SOAR&quot;;                       // token symbol
+    string public name = "Soarcoin";                     // name of this contract and investment fund
+    string public symbol = "SOAR";                       // token symbol
     uint8 public decimals = 6;                           // decimals (for humans)
     uint256 public totalSupply = 5000000000000000;  
            
@@ -28,11 +28,11 @@ contract Soarcoin {
     // transfer tokens from one address to another
     function transfer(address _to, uint256 _value) returns (bool success)
     {
-        if(_value &lt;= 0) throw;                                      // Check send token value &gt; 0;
-        if (balances[msg.sender] &lt; _value) throw;                   // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) throw;          // Check for overflows                          
+        if(_value <= 0) throw;                                      // Check send token value > 0;
+        if (balances[msg.sender] < _value) throw;                   // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) throw;          // Check for overflows                          
         balances[msg.sender] -= _value;                             // Subtract from the sender
-        balances[_to] += _value;                                    // Add the same to the recipient, if it&#39;s the contact itself then it signals a sell order of those tokens                       
+        balances[_to] += _value;                                    // Add the same to the recipient, if it's the contact itself then it signals a sell order of those tokens                       
         Transfer(msg.sender, _to, _value);                          // Notify anyone listening that this transfer took place
         return true;      
     }

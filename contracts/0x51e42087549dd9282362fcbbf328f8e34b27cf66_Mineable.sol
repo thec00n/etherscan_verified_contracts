@@ -2,17 +2,17 @@ pragma solidity ^0.4.11;
 
 contract Mineable {
     uint public supply = 1000000000000000000000000000;
-    string public name = &#39;MIT&#39;;
-    string public symbol = &#39;MIT&#39;;
+    string public name = 'MIT';
+    string public symbol = 'MIT';
     uint8 public decimals = 18;
     uint public miningReward = 1000000000000000000;
     uint private divider;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public successesOf;
-    mapping (address =&gt; uint256) public failsOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public successesOf;
+    mapping (address => uint256) public failsOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -27,8 +27,8 @@ contract Mineable {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -43,7 +43,7 @@ contract Mineable {
     
     /* Transfer tokens from other address */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -61,7 +61,7 @@ contract Mineable {
             uint minedHashRel = uint(sha256(minedAtBlock + uint(msg.sender))) / divider;
             uint balanceRel = balanceOf[msg.sender] * 1048576 / supply;
             
-            if (minedHashRel &lt; balanceRel * 933233 / 1048576 + 10485) {
+            if (minedHashRel < balanceRel * 933233 / 1048576 + 10485) {
                 uint reward = miningReward + minedHashRel * 1000000000000000;
                 balanceOf[msg.sender] += reward;
                 supply += reward;

@@ -29,7 +29,7 @@ contract Owned {
 }
 
 contract Support is Owned {
-    mapping (address =&gt; bool) public supportList;
+    mapping (address => bool) public supportList;
 
     event SupportAdded(address indexed _who);
     event SupportRemoved(address indexed _who);
@@ -57,13 +57,13 @@ contract Support is Owned {
 
 library SafeMath {
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -88,8 +88,8 @@ contract ERC20 {
 contract Skraps is ERC20, Support {
     using SafeMath for uint;
 
-    string public name = &quot;Skraps&quot;;
-    string public symbol = &quot;SKRP&quot;;
+    string public name = "Skraps";
+    string public symbol = "SKRP";
     uint8 public decimals = 18;
     uint public totalSupply;
 
@@ -98,8 +98,8 @@ contract Skraps is ERC20, Support {
 
     address public migrationAgent;
 
-    mapping (address =&gt; uint) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) private allowed;
+    mapping (address => uint) private balances;
+    mapping (address => mapping (address => uint)) private allowed;
 
     enum State { Enabled, Migration }
     State public state = State.Enabled;
@@ -122,8 +122,8 @@ contract Skraps is ERC20, Support {
 
     function transfer(address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(now &gt; endOfFreeze || msg.sender == owner || supportList[msg.sender]);
-        require(balances[msg.sender] &gt;= _value);
+        require(now > endOfFreeze || msg.sender == owner || supportList[msg.sender]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -132,7 +132,7 @@ contract Skraps is ERC20, Support {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -142,7 +142,7 @@ contract Skraps is ERC20, Support {
 
     function approve(address _spender, uint _value) public returns (bool success) {
         require(_spender != address(0));
-        require(now &gt; endOfFreeze || msg.sender == owner || supportList[msg.sender]);
+        require(now > endOfFreeze || msg.sender == owner || supportList[msg.sender]);
         require((_value == 0) || (allowed[msg.sender][_spender] == 0));
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -169,7 +169,7 @@ contract Skraps is ERC20, Support {
 
     function migrate() public {
         require(state == State.Migration);
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         uint value = balances[msg.sender];
         balances[msg.sender] = balances[msg.sender].sub(value);
         totalSupply = totalSupply.sub(value);
@@ -179,7 +179,7 @@ contract Skraps is ERC20, Support {
 
     function manualMigrate(address _who) public supportOrOwner {
         require(state == State.Migration);
-        require(balances[_who] &gt; 0);
+        require(balances[_who] > 0);
         uint value = balances[_who];
         balances[_who] = balances[_who].sub(value);
         totalSupply = totalSupply.sub(value);
@@ -188,7 +188,7 @@ contract Skraps is ERC20, Support {
     }
 
     function withdrawTokens(uint _value) public onlyOwner {
-        require(balances[address(this)] &gt; 0 &amp;&amp; balances[address(this)] &gt;= _value);
+        require(balances[address(this)] > 0 && balances[address(this)] >= _value);
         balances[address(this)] = balances[address(this)].sub(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
         Transfer(address(this), msg.sender, _value);

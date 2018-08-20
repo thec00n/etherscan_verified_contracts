@@ -58,28 +58,28 @@ contract ABECrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount;
         
         // Pre-Sale
-        if(now &gt; 1533682800 &amp;&amp; now &lt; 1535497200) {
+        if(now > 1533682800 && now < 1535497200) {
             amount = msg.value * 10000;
         }
         
         // Round 1
-        if(now &gt; 1536447600 &amp;&amp; now &lt; 1538262000) {
+        if(now > 1536447600 && now < 1538262000) {
             amount = msg.value * 8333;
         }
         
         // Round 2
-        if(now &gt; 1538262000 &amp;&amp; now &lt; 1540076400) {
+        if(now > 1538262000 && now < 1540076400) {
             amount = msg.value * 7142;
         }
         
         // Round 3
-        if(now &gt; 1540076400 &amp;&amp; now &lt; 1541894400) {
+        if(now > 1540076400 && now < 1541894400) {
             amount = msg.value * 6249;
         }
 

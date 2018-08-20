@@ -71,9 +71,9 @@ contract DSGroup is DSExec, DSNote {
     uint       public  window;
     uint       public  actionCount;
 
-    mapping (uint =&gt; Action)                     public  actions;
-    mapping (uint =&gt; mapping (address =&gt; bool))  public  confirmedBy;
-    mapping (address =&gt; bool)                    public  isMember;
+    mapping (uint => Action)                     public  actions;
+    mapping (uint => mapping (address => bool))  public  confirmedBy;
+    mapping (address => bool)                    public  isMember;
 
     // Legacy events
     event Proposed   (uint id, bytes calldata);
@@ -99,7 +99,7 @@ contract DSGroup is DSExec, DSNote {
         quorum   = quorum_;
         window   = window_;
 
-        for (uint i = 0; i &lt; members.length; i++) {
+        for (uint i = 0; i < members.length; i++) {
             isMember[members[i]] = true;
         }
     }
@@ -129,10 +129,10 @@ contract DSGroup is DSExec, DSNote {
     }
 
     function confirmed(uint id) constant returns (bool) {
-        return confirmations(id) &gt;= quorum;
+        return confirmations(id) >= quorum;
     }
     function expired(uint id) constant returns (bool) {
-        return now &gt; deadline(id);
+        return now > deadline(id);
     }
 
     function deposit() note payable {
@@ -213,7 +213,7 @@ contract DSGroup is DSExec, DSNote {
 }
 
 contract DSGroupFactory is DSNote {
-    mapping (address =&gt; bool)  public  isGroup;
+    mapping (address => bool)  public  isGroup;
 
     function newGroup(
         address[]  members,
@@ -281,8 +281,8 @@ contract Governance is DBC, Owned, DSGroup {
     address[] public authorities; // Addresses of all authorities
     // Methods fields
     Version[] public versions;
-    mapping (address =&gt; uint) public versionToProposalIds; // Links version addresses to proposal ids created through DSGroup
-    mapping (uint =&gt; uint) public versionIdToShutdownIds; // Links version ids to shutdown proposal ids created through DSGroup
+    mapping (address => uint) public versionToProposalIds; // Links version addresses to proposal ids created through DSGroup
+    mapping (uint => uint) public versionIdToShutdownIds; // Links version ids to shutdown proposal ids created through DSGroup
 
     // EVENTS
 
@@ -351,9 +351,9 @@ contract Governance is DBC, Owned, DSGroup {
 
     /**
     @return {
-        &quot;ofVersion&quot;: &quot;Address of the Version&quot;,
-        &quot;active&quot;: &quot;Whether the Version in question is active&quot;,
-        &quot;timestamp&quot;: &quot;When the Version in question was added to the list&quot;
+        "ofVersion": "Address of the Version",
+        "active": "Whether the Version in question is active",
+        "timestamp": "When the Version in question was added to the list"
     }
     */
     function getVersionById(uint id) view returns (address ofVersion, bool active, uint timestamp) {

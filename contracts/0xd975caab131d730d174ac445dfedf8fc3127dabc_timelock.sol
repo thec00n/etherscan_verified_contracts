@@ -1,7 +1,7 @@
 // Timelock
 // lock withdrawal for a set time period
 // @authors:
-// Cody Burns &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="34505b5a4044555a5d5774575b504d435641465a471a575b59">[email&#160;protected]</a>&gt;
+// Cody Burns <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="34505b5a4044555a5d5774575b504d435641465a471a575b59">[email protected]</a>>
 // license: Apache 2.0
 // version:
 
@@ -31,7 +31,7 @@ contract timelock {
       uint freedom;
       uint bal;
     }
-    mapping (address =&gt; locker) public lockers;
+    mapping (address => locker) public lockers;
 
 ///////////
 //EVENTS////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ contract timelock {
 
     function withdraw() public {
         locker storage l = lockers[msg.sender];
-        require (block.number &gt; l.freedom &amp;&amp; l.bal &gt; 0);
+        require (block.number > l.freedom && l.bal > 0);
 
         // avoid recursive call
 

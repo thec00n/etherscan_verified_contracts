@@ -12,17 +12,17 @@ contract Ownable {
 	}
 
 	modifier onlyOwner() {
-		require(msg.sender == owner, &quot;msg.sender == owner&quot;);
+		require(msg.sender == owner, "msg.sender == owner");
 		_;
 	}
 
 	function transferOwnership(address _newOwner) public onlyOwner {
-		require(address(0) != _newOwner, &quot;address(0) != _newOwner&quot;);
+		require(address(0) != _newOwner, "address(0) != _newOwner");
 		newOwner = _newOwner;
 	}
 
 	function acceptOwnership() public {
-		require(msg.sender == newOwner, &quot;msg.sender == newOwner&quot;);
+		require(msg.sender == newOwner, "msg.sender == newOwner");
 		emit OwnershipTransferred(owner, msg.sender);
 		owner = msg.sender;
 		newOwner = address(0);
@@ -50,15 +50,15 @@ contract Timelock is Ownable {
 	}
 	
 	function claim() onlyOwner private {
-	    require ( now &gt; releaseTime, &quot;now &gt; releaseTime&quot; );
+	    require ( now > releaseTime, "now > releaseTime" );
 	    
 	    uint256 tknToSend = tokenContract.balanceOf(this);
-		require(tknToSend &gt; 0,&quot;tknToSend &gt; 0&quot;);
+		require(tknToSend > 0,"tknToSend > 0");
 			
 		require ( tokenContract.transfer(msg.sender, tknToSend) );
 	}
 	
 	function unlocked() view public returns(bool) {
-	    return now &gt; releaseTime;
+	    return now > releaseTime;
 	}
 }

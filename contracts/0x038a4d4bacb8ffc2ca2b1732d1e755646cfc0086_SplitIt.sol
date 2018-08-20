@@ -10,16 +10,16 @@ contract SplitIt {
 
     address private owner;
 
-    // Sender -&gt; Agreement Owner
-    mapping (address =&gt; address) private senderToOwner;
-    // Agreement Owner -&gt; SplitAgreement
-    mapping (address =&gt; SplitAgreement) private splitAgreements;
+    // Sender -> Agreement Owner
+    mapping (address => address) private senderToOwner;
+    // Agreement Owner -> SplitAgreement
+    mapping (address => SplitAgreement) private splitAgreements;
 
     // Split sent
     event Sent(address from, address to, uint amount);
     // Sent failed, sender refunded
     event Refunded(address from, address to, uint amount);
-    // Refund failed, &#39;agreement owner&#39; refunded
+    // Refund failed, 'agreement owner' refunded
     event OwnerRefunded(address agreementOwner, address from, address to, uint amount);
     // All refunds failed, the balance will be kept by the Contract Owner.
     event Penalty(address agreementOwner, uint amount);
@@ -35,7 +35,7 @@ contract SplitIt {
     }
 
     function() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         // if odd number, the contract keep the difference as fee.
         uint splitValue = msg.value / 2;
         processSplit(msg.sender, splitValue);

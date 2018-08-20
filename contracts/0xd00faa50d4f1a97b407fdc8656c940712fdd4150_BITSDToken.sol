@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -78,13 +78,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -104,13 +104,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -160,8 +160,8 @@ contract BITSDToken is StandardToken, Ownable {
   event TokensCreated(address indexed _tokenHolder, uint256 _contributionAmount, uint256 _tokenAmount);
   event SaleStarted(uint _saleStartime);
 
-  string public name = &quot;BITSDToken&quot;;
-  string public symbol = &quot;BITSD&quot;;
+  string public name = "BITSDToken";
+  string public symbol = "BITSD";
 
   uint public decimals = 3;
   uint public multiplier = 10**decimals;
@@ -195,7 +195,7 @@ contract BITSDToken is StandardToken, Ownable {
     if (saleStartTime == 0) {
       return false;
     }
-    if (getNow() &gt; SafeMath.add(saleStartTime, 31 days)) {
+    if (getNow() > SafeMath.add(saleStartTime, 31 days)) {
       return false;
     }
     return true;
@@ -222,7 +222,7 @@ contract BITSDToken is StandardToken, Ownable {
   function createTokens(address recipient) payable {
 
     //Only allow purchases over the MIN_PURCHASE
-    if (msg.value &lt; MIN_PURCHASE) {
+    if (msg.value < MIN_PURCHASE) {
       throw;
     }
 
@@ -244,8 +244,8 @@ contract BITSDToken is StandardToken, Ownable {
 
     totalSupply = totalSupply.add(tokens);
 
-    //Don&#39;t allow totalSupply to be larger than TOTAL_SUPPLY
-    if (totalSupply &gt; TOTAL_SUPPLY) {
+    //Don't allow totalSupply to be larger than TOTAL_SUPPLY
+    if (totalSupply > TOTAL_SUPPLY) {
       throw;
     }
 
@@ -258,7 +258,7 @@ contract BITSDToken is StandardToken, Ownable {
 
   }
 
-  //Function to assign team &amp; bounty tokens to owner
+  //Function to assign team & bounty tokens to owner
   function allocateOwnerTokens() public {
 
     //Can only be called once
@@ -285,8 +285,8 @@ contract BITSDToken is StandardToken, Ownable {
 
     uint elapsed = SafeMath.sub(getNow(), saleStartTime);
 
-    if (elapsed &lt; 1 weeks) return 10;
-    if (elapsed &lt; 2 weeks) return 5;
+    if (elapsed < 1 weeks) return 10;
+    if (elapsed < 2 weeks) return 5;
 
     return 0;
   }

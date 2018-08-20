@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b; 
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -61,15 +61,15 @@ contract DefensorWallet is ERC20, Owner{
   string public name;
   string public symbol;
   uint8 public decimals;
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   struct FrozenToken {
     bool isFrozenAll;
     uint256 amount;
     uint256 unfrozenDate;
   }
-  mapping(address =&gt; FrozenToken) frozenTokens;
+  mapping(address => FrozenToken) frozenTokens;
 
   event FrozenAccount(address target,bool freeze);
   event FrozenAccountToken(address target,uint256 amount,uint256 unforzenDate);
@@ -96,8 +96,8 @@ contract DefensorWallet is ERC20, Owner{
   }
 
   function freezeAccountToken(address target,uint256 amount,uint256 date)  onlyOwner public {
-      require(amount &gt; 0);
-      require(date &gt; now);
+      require(amount > 0);
+      require(date > now);
       frozenTokens[target].amount = amount;
       frozenTokens[target].unfrozenDate = date;
 
@@ -110,12 +110,12 @@ contract DefensorWallet is ERC20, Owner{
 
   function transfer(address to,uint256 value) public returns (bool) {
     require(msg.sender != to);
-    require(value &gt; 0);
-    require(balances[msg.sender] &gt;= value);
+    require(value > 0);
+    require(balances[msg.sender] >= value);
     require(frozenTokens[msg.sender].isFrozenAll != true);
 
-    if (frozenTokens[msg.sender].unfrozenDate &gt; now) {
-        require(balances[msg.sender] - value &gt;= frozenTokens[msg.sender].amount);
+    if (frozenTokens[msg.sender].unfrozenDate > now) {
+        require(balances[msg.sender] - value >= frozenTokens[msg.sender].amount);
     }
 
     balances[msg.sender] = balances[msg.sender].sub(value);
@@ -134,9 +134,9 @@ contract DefensorWallet is ERC20, Owner{
   }
 
   function transferFrom(address from, address to, uint256 value) public returns (bool) {
-    require (balances[from] &gt;= value);
+    require (balances[from] >= value);
     var _allowance = allowed[from][msg.sender];
-    require (_allowance &gt;= value);
+    require (_allowance >= value);
     
     balances[to] = balances[to].add(value);
     balances[from] = balances[from].sub(value);

@@ -9,7 +9,7 @@ contract BTCRelay {
 contract BlockhashFetch {
 
   BTCRelay relay;
-  mapping(int =&gt; int) blockHashes; //Cache blockhashes
+  mapping(int => int) blockHashes; //Cache blockhashes
 
   function BlockhashFetch(address _relay){
     relay = BTCRelay(_relay);
@@ -22,7 +22,7 @@ contract BlockhashFetch {
 
     fee = uint(relay.getFeeAmount(currentHash));
 
-    if(fee &gt; this.balance) return (0,0);
+    if(fee > this.balance) return (0,0);
     bytes32 head = relay.getBlockHeader.value(fee)(currentHash)[2];
     bytes32 temp;
 
@@ -32,7 +32,7 @@ contract BlockhashFetch {
         temp := mload(add(x,0x04))
     }
 
-    for(int i; i&lt;32; i++){
+    for(int i; i<32; i++){
       parentHash = parentHash | int(temp[uint(i)]) * (0x100**i);
     }
 
@@ -42,9 +42,9 @@ contract BlockhashFetch {
   function getBlockHash (int blockHeight) returns (bytes32, uint totalFee){
     int highestBlock = relay.getLastBlockHeight();
     int currentHash = relay.getBlockchainHead();
-    if(blockHeight &gt; highestBlock) return (0x0, 0);
+    if(blockHeight > highestBlock) return (0x0, 0);
 
-    for(int i; i &lt; highestBlock - blockHeight; i++){
+    for(int i; i < highestBlock - blockHeight; i++){
       if(currentHash == 0) return (0x0,totalFee);
       uint fee;
       (currentHash, fee) = getPrevHash(currentHash);

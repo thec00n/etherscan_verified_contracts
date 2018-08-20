@@ -18,20 +18,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -121,7 +121,7 @@ contract ExternalCrowdsale is Ownable {
     /**
      * @dev Indicates whether payment identified by bytes32 id is already registered
      */
-    mapping (bytes32 =&gt; bool) public isPaymentRegistered;
+    mapping (bytes32 => bool) public isPaymentRegistered;
 
     /**
      * @dev Current amount of tokens available for sale
@@ -153,7 +153,7 @@ contract ExternalCrowdsale is Ownable {
     event SaleScheduled(uint256 startBlock, uint256 endBlock);
 
     modifier onlySufficientAvailableTokens(uint256 amount) {
-        require(availableAmount &gt;= amount);
+        require(availableAmount >= amount);
         _;
     }
 
@@ -195,7 +195,7 @@ contract ExternalCrowdsale is Ownable {
         onlyNotZero(_startBlock)
         onlyNotZero(_endBlock)
     {
-        require(_startBlock &lt; _endBlock);
+        require(_startBlock < _endBlock);
 
         startBlock = _startBlock;
         endBlock = _endBlock;
@@ -231,6 +231,6 @@ contract ExternalCrowdsale is Ownable {
      * @dev Check whether sale is currently active
      */
     function isActive() public view returns (bool) {
-        return block.number &gt;= startBlock &amp;&amp; block.number &lt;= endBlock;
+        return block.number >= startBlock && block.number <= endBlock;
     }
 }

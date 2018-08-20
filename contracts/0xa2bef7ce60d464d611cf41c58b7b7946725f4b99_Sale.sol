@@ -19,12 +19,12 @@ contract Sale {
         sendtoken = (msg.value)/cost1token;
         sendtoken = sendtoken*3/2;
 
-        if (msg.value &gt;= 45 ether) {
+        if (msg.value >= 45 ether) {
             sendtoken = (msg.value)/cost1token;
             sendtoken = sendtoken*2;
         }
 
-        if (msg.value &gt;= 100 ether) {
+        if (msg.value >= 100 ether) {
             sendtoken = (msg.value)/cost1token;
             sendtoken = sendtoken*3;
         }

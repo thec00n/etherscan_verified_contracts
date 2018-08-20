@@ -94,7 +94,7 @@ contract SheetMusic is OwnableContract {
      * Internal props
      */
 
-    mapping( uint =&gt; Beat ) private notes;
+    mapping( uint => Beat ) private notes;
 
     uint private numNotes;
 
@@ -173,7 +173,7 @@ contract SheetMusic is OwnableContract {
 
         //Check note min value
 
-        require( msg.value &gt;= minDonation );
+        require( msg.value >= minDonation );
 
 
         //Check valid notes
@@ -223,7 +223,7 @@ contract SheetMusic is OwnableContract {
 
         require( userNumberBeats == userNumberLength );
 
-        require( msg.value &gt;= ( minDonation * userNumberBeats ) );
+        require( msg.value >= ( minDonation * userNumberBeats ) );
 
         checkMidiNotesValue( userNotes );
 
@@ -233,7 +233,7 @@ contract SheetMusic is OwnableContract {
         uint noteDonation = msg.value / userNumberBeats;
         uint lastDivider = 0;
 
-        for( uint i = 0; i &lt; userNumberBeats; ++ i ) {
+        for( uint i = 0; i < userNumberBeats; ++ i ) {
 
             uint divide = userDivider[ i ];
             NoteLength length = lengths[ i ];
@@ -296,7 +296,7 @@ contract SheetMusic is OwnableContract {
 
     function checkGoal( address maker ) internal {
 
-        if( totalValue &gt;= DONATION_GOAL &amp;&amp; ! donationMet ) {
+        if( totalValue >= DONATION_GOAL && ! donationMet ) {
 
             donationMet = true;
 
@@ -304,7 +304,7 @@ contract SheetMusic is OwnableContract {
 
         }
 
-        if( milestoneValue &gt;= milestoneGoal ) {
+        if( milestoneValue >= milestoneGoal ) {
 
             transferMilestone();
             milestoneValue = 0;
@@ -399,7 +399,7 @@ contract SheetMusic is OwnableContract {
 
     function checkMidiNoteValue( uint8 midi ) pure internal {
 
-        require( midi &gt;= MIDI_LOWEST_NOTE &amp;&amp; midi &lt;= MIDI_HIGHEST_NOTE );
+        require( midi >= MIDI_LOWEST_NOTE && midi <= MIDI_HIGHEST_NOTE );
 
     }
 
@@ -409,9 +409,9 @@ contract SheetMusic is OwnableContract {
 
         //require less or equal to all notes allowed
 
-        require( num &lt;= ( MIDI_HIGHEST_NOTE - MIDI_LOWEST_NOTE ) );
+        require( num <= ( MIDI_HIGHEST_NOTE - MIDI_LOWEST_NOTE ) );
 
-        for( uint i = 0; i &lt; num; ++ i ) {
+        for( uint i = 0; i < num; ++ i ) {
 
             checkMidiNoteValue( midis[ i ] );
 
@@ -450,7 +450,7 @@ contract SheetMusic is OwnableContract {
         uint8[] memory output = new uint8[]( to - index );
         uint counter = 0;
 
-        for( uint i = index; i &lt; to; ++ i ) {
+        for( uint i = index; i < to; ++ i ) {
 
             output[ counter ] = arr[ i ];
 

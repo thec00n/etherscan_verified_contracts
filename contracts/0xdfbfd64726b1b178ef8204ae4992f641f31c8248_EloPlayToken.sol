@@ -22,7 +22,7 @@ library SafeMath {
      */
      function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
      }
 
@@ -34,7 +34,7 @@ library SafeMath {
      * @return            a - b
      */
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -92,7 +92,7 @@ contract Owned {
      */
     function acceptOwnership() {
         // Avoid multiple events triggering in case of several calls from owner
-        if (msg.sender == newOwner &amp;&amp; owner != newOwner) {
+        if (msg.sender == newOwner && owner != newOwner) {
             OwnershipTransferred(owner, newOwner);
             owner = newOwner;
         }
@@ -118,12 +118,12 @@ contract ERC20Token {
     /**
      * Balances for each account
      */
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     /**
      * Owner of account approves the transfer of an amount to another account
      */
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping(address => mapping (address => uint256)) public allowance;
 
     /**
      * Event fires when tokens are transferred
@@ -144,16 +144,16 @@ contract ERC20Token {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     /**
-     * Transfer the balance from owner&#39;s account to another account
+     * Transfer the balance from owner's account to another account
      *
      * @param _to         target address
      * @param _amount     amount of tokens
      * @return            true on success
      */
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balanceOf[msg.sender] &gt;= _amount                // User has balance
-            &amp;&amp; _amount &gt; 0                                 // Non-zero transfer
-            &amp;&amp; balanceOf[_to] + _amount &gt; balanceOf[_to]     // Overflow check
+        if (balanceOf[msg.sender] >= _amount                // User has balance
+            && _amount > 0                                 // Non-zero transfer
+            && balanceOf[_to] + _amount > balanceOf[_to]     // Overflow check
         ) {
             balanceOf[msg.sender] -= _amount;
             balanceOf[_to] += _amount;
@@ -180,8 +180,8 @@ contract ERC20Token {
     }
 
     /**
-     * Spender of tokens transfer an amount of tokens from the token owner&#39;s
-     * balance to the spender&#39;s account. The owner of the tokens must already
+     * Spender of tokens transfer an amount of tokens from the token owner's
+     * balance to the spender's account. The owner of the tokens must already
      * have approve(...)-d this transfer
      *
      * @param _from       spender address
@@ -190,10 +190,10 @@ contract ERC20Token {
      * @return            true on success
      */
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-        if (balanceOf[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowance[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balanceOf[_to] + _amount &gt; balanceOf[_to]  // Overflow check
+        if (balanceOf[_from] >= _amount                  // From a/c has balance
+            && allowance[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balanceOf[_to] + _amount > balanceOf[_to]  // Overflow check
         ) {
             balanceOf[_from] -= _amount;
             allowance[_from][msg.sender] -= _amount;
@@ -212,8 +212,8 @@ contract EloPlayToken is ERC20Token, Owned {
     /**
      * Token data
      */
-    string public constant symbol = &quot;ELT&quot;;
-    string public constant name = &quot;EloPlayToken&quot;;
+    string public constant symbol = "ELT";
+    string public constant name = "EloPlayToken";
     uint8 public constant decimals = 18;
 
     /**
@@ -304,10 +304,10 @@ contract EloPlayToken is ERC20Token, Owned {
      * @param _usdethrate   USD to ETH rate
      */
     function updateCap(uint256 _cap, uint256 _usdethrate) onlyOwner {
-        // Don&#39;t process if halted
+        // Don't process if halted
         require(!halted);
         // Make sure crowdsale isnt started yet
-        require(now &lt; START_TS);
+        require(now < START_TS);
         CAP = _cap;
         USDETHRATE = _usdethrate;
     }
@@ -337,21 +337,21 @@ contract EloPlayToken is ERC20Token, Owned {
      * @return            tokens/ETH rate for given timestamp
      */
     function buyPriceAt(uint256 _at) constant returns (uint256) {
-        if (_at &lt; START_TS) {
+        if (_at < START_TS) {
             return 0;
-        } else if (_at &lt; START_TS + 3600) {
+        } else if (_at < START_TS + 3600) {
             // 1st hour = 10000 + 20% = 12000
             return 12000;
-        } else if (_at &lt; START_TS + 3600 * 24) {
+        } else if (_at < START_TS + 3600 * 24) {
             // 1st day = 10000 + 15% = 11500
             return 11500;
-        } else if (_at &lt; START_TS + 3600 * 24 * 7) {
+        } else if (_at < START_TS + 3600 * 24 * 7) {
             // 1st week = 10000 + 10% = 11000
             return 11000;
-        } else if (_at &lt; START_TS + 3600 * 24 * 7 * 2) {
+        } else if (_at < START_TS + 3600 * 24 * 7 * 2) {
             // 2nd week = 10000 + 5% = 10500
             return 10500;
-        } else if (_at &lt;= END_TS) {
+        } else if (_at <= END_TS) {
             // More than 2 weeks = 10000
             return 10000;
         } else {
@@ -385,12 +385,12 @@ contract EloPlayToken is ERC20Token, Owned {
      *
      */
     function addPrecommitment(address _participant, uint256 _balance, uint256 _ethers) onlyOwner {
-        require(now &lt; START_TS);
+        require(now < START_TS);
         // Minimum value = 1ELT
         // Since we are using 18 decimals for token
-        require(_balance &gt;= 1 ether);
+        require(_balance >= 1 ether);
 
-        // To avoid overflow, first divide then multiply (to clearly show 70%+30%, result wasn&#39;t precalculated)
+        // To avoid overflow, first divide then multiply (to clearly show 70%+30%, result wasn't precalculated)
         uint additional_tokens = _balance / 70 * 30;
 
         balanceOf[_participant] = balanceOf[_participant].add(_balance);
@@ -419,21 +419,21 @@ contract EloPlayToken is ERC20Token, Owned {
      * @param _participant         address that will receive tokens
      */
     function proxyPayment(address _participant) payable {
-        // Don&#39;t process if halted
+        // Don't process if halted
         require(!halted);
         // No contributions before the start of the crowdsale
-        require(now &gt;= START_TS);
+        require(now >= START_TS);
         // No contributions after the end of the crowdsale
-        require(now &lt;= END_TS);
+        require(now <= END_TS);
         // No contributions after CAP is reached
-        require(totalEthers &lt; CAP);
+        require(totalEthers < CAP);
         // Require 0.1 eth minimum
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
 
         // Add ETH raised to total
         totalEthers = totalEthers.add(msg.value);
-        // Cannot exceed cap more than 0.1 ETH (to be able to finish ICO if CAP - totalEthers &lt; 0.1)
-        require(totalEthers &lt; CAP + 0.1 ether);
+        // Cannot exceed cap more than 0.1 ETH (to be able to finish ICO if CAP - totalEthers < 0.1)
+        require(totalEthers < CAP + 0.1 ether);
 
         // What is the ELT to ETH rate
         uint256 _buyPrice = buyPrice();
@@ -442,11 +442,11 @@ contract EloPlayToken is ERC20Token, Owned {
         // and msg.value is restricted to valid values
         uint tokens = msg.value * _buyPrice;
 
-        // Check tokens &gt; 0
-        require(tokens &gt; 0);
+        // Check tokens > 0
+        require(tokens > 0);
         // Compute tokens for foundation; user tokens = 70%; TARGET_ADDRESS = 30%
         // Number of tokens restricted so maths is safe
-        // To clearly show 70%+30%, result wasn&#39;t precalculated
+        // To clearly show 70%+30%, result wasn't precalculated
         uint additional_tokens = tokens * 30 / 70;
 
         // Add to total supply
@@ -469,7 +469,7 @@ contract EloPlayToken is ERC20Token, Owned {
     }
 
     /**
-     * Transfer the balance from owner&#39;s account to another account, with a
+     * Transfer the balance from owner's account to another account, with a
      * check that the crowdsale is finalized
      *
      * @param _to                tokens receiver
@@ -478,13 +478,13 @@ contract EloPlayToken is ERC20Token, Owned {
      */
     function transfer(address _to, uint _amount) returns (bool success) {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; END_TS || totalEthers &gt;= CAP);
+        require(now > END_TS || totalEthers >= CAP);
         // Standard transfer
         return super.transfer(_to, _amount);
     }
 
     /**
-     * Spender of tokens transfer an amount of tokens from the token owner&#39;s
+     * Spender of tokens transfer an amount of tokens from the token owner's
      * balance to another account, with a check that the crowdsale is
      * finalized
      *
@@ -496,7 +496,7 @@ contract EloPlayToken is ERC20Token, Owned {
     function transferFrom(address _from, address _to, uint _amount)
             returns (bool success) {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; END_TS || totalEthers &gt;= CAP);
+        require(now > END_TS || totalEthers >= CAP);
         // Standard transferFrom
         return super.transferFrom(_from, _to, _amount);
     }

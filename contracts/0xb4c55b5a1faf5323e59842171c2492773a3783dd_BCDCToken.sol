@@ -30,37 +30,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -71,7 +71,7 @@ contract SafeMath {
 }
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="1162657477707f3f76747e63767451727e7f62747f6268623f7f7465">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="1162657477707f3f76747e63767451727e7f62747f6268623f7f7465">[email protected]</span>>
 contract MultiSigWallet {
 
     // flag to determine if address is for a real contract or not
@@ -89,9 +89,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -144,8 +144,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (ownerCount &gt; MAX_OWNER_COUNT) throw;
-        if (_required &gt; ownerCount) throw;
+        if (ownerCount > MAX_OWNER_COUNT) throw;
+        if (_required > ownerCount) throw;
         if (_required == 0) throw;
         if (ownerCount == 0) throw;
         _;
@@ -155,7 +155,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -169,7 +169,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0) throw;
             isOwner[_owners[i]] = true;
         }
@@ -200,13 +200,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -220,7 +220,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -289,7 +289,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -351,7 +351,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -365,9 +365,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if ((pending &amp;&amp; !transactions[i].executed) ||
-                (executed &amp;&amp; transactions[i].executed))
+        for (uint i=0; i<transactionCount; i++)
+            if ((pending && !transactions[i].executed) ||
+                (executed && transactions[i].executed))
                 count += 1;
     }
 
@@ -392,13 +392,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -416,15 +416,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-          if ((pending &amp;&amp; !transactions[i].executed) ||
-              (executed &amp;&amp; transactions[i].executed))
+        for (i=0; i<transactionCount; i++)
+          if ((pending && !transactions[i].executed) ||
+              (executed && transactions[i].executed))
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
@@ -465,7 +465,7 @@ contract BCDCVault is SafeMath {
     // Constructor function sets the BCDC Multisig address and
     // total number of locked tokens to transfer
     function BCDCVault(address _bcdcMultisig,uint256 _numBlocksLockedForDev,uint256 _numBlocksLockedForFounders) {
-        // If it&#39;s not bcdcMultisig address then throw
+        // If it's not bcdcMultisig address then throw
         if (_bcdcMultisig == 0x0) throw;
         // Initalized bcdcToken
         bcdcToken = BCDCToken(msg.sender);
@@ -487,7 +487,7 @@ contract BCDCVault is SafeMath {
     // Transfer Development Team Tokens To MultiSigWallet - 30 Days Locked
     function unlockForDevelopment() external {
         // If it has not reached 30 days mark do not transfer
-        if (block.number &lt; unlockedBlockForDev) throw;
+        if (block.number < unlockedBlockForDev) throw;
         // If it is already unlocked then do not allowed
         if (unlockedAllTokensForDev) throw;
         // Mark it as unlocked
@@ -502,7 +502,7 @@ contract BCDCVault is SafeMath {
     //  Transfer Founders Team Tokens To MultiSigWallet - 365 Days Locked
     function unlockForFounders() external {
         // If it has not reached 365 days mark do not transfer
-        if (block.number &lt; unlockedBlockForFounders) throw;
+        if (block.number < unlockedBlockForFounders) throw;
         // If it is already unlocked then do not allowed
         if (unlockedAllTokensForFounders) throw;
         // Mark it as unlocked
@@ -515,7 +515,7 @@ contract BCDCVault is SafeMath {
 
     // disallow payment after unlock block
     function () payable {
-        if (block.number &gt;= unlockedBlockForFounders) throw;
+        if (block.number >= unlockedBlockForFounders) throw;
     }
 
 }
@@ -533,16 +533,16 @@ contract BCDCToken is SafeMath, ERC20 {
     enum State{PreFunding, Funding, Success, Failure}
 
     // Token related information
-    string public constant name = &quot;BCDC Token&quot;;
-    string public constant symbol = &quot;BCDC&quot;;
+    string public constant name = "BCDC Token";
+    string public constant symbol = "BCDC";
     uint256 public constant decimals = 18;  // decimal places
 
     // Mapping of token balance and allowed address for each address with transfer limit
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // This is only for refund purpose, as we have price range during different weeks of Crowdfunding,
     //  need to maintain total investment done so refund would be exactly same.
-    mapping (address =&gt; uint256) investment;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) investment;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Crowdsale information
     bool public finalizedCrowdfunding = false;
@@ -569,7 +569,7 @@ contract BCDCToken is SafeMath, ERC20 {
     address public bcdcMultisig;
     // Project Reserve Fund address
     address bcdcReserveFund;
-    // BCDC&#39;s time-locked vault
+    // BCDC's time-locked vault
     BCDCVault public timeVault;
 
     // Events for refund process
@@ -610,11 +610,11 @@ contract BCDCToken is SafeMath, ERC20 {
         // Is funding already started then throw
         if (_upgradeMaster == 0) throw;
 
-        if (_fundingStartBlock &lt;= block.number) throw;
+        if (_fundingStartBlock <= block.number) throw;
         // If fundingEndBlock or fundingStartBlock value is not correct then throw
-        if (_fundingEndBlock   &lt;= _fundingStartBlock) throw;
+        if (_fundingEndBlock   <= _fundingStartBlock) throw;
         // If tokenSaleMax or tokenSaleMin value is not correct then throw
-        if (_tokenSaleMax &lt;= _tokenSaleMin) throw;
+        if (_tokenSaleMax <= _tokenSaleMin) throw;
         // If tokensPerEther value is 0 then throw
         if (_tokensPerEther == 0) throw;
         // Mark it is BCDCToken
@@ -685,7 +685,7 @@ contract BCDCToken is SafeMath, ERC20 {
         return allowed[owner][spender];
     }
 
-    //  Transfer `value` BCDC tokens from sender&#39;s account
+    //  Transfer `value` BCDC tokens from sender's account
     // `msg.sender` to provided account address `to`.
     // @dev Required state: Success
     // @param to The address of the recipient
@@ -694,7 +694,7 @@ contract BCDCToken is SafeMath, ERC20 {
     function transfer(address to, uint value) returns (bool ok) {
         if (getState() != State.Success) throw; // Abort if crowdfunding was not a success.
         uint256 senderBalance = balances[msg.sender];
-        if ( senderBalance &gt;= value &amp;&amp; value &gt; 0) {
+        if ( senderBalance >= value && value > 0) {
             senderBalance = safeSub(senderBalance, value);
             balances[msg.sender] = senderBalance;
             balances[to] = safeAdd(balances[to], value);
@@ -704,7 +704,7 @@ contract BCDCToken is SafeMath, ERC20 {
         return false;
     }
 
-    //  Transfer `value` BCDC tokens from sender &#39;from&#39;
+    //  Transfer `value` BCDC tokens from sender 'from'
     // to provided account address `to`.
     // @dev Required state: Success
     // @param from The address of the sender
@@ -713,9 +713,9 @@ contract BCDCToken is SafeMath, ERC20 {
     // @return Whether the transfer was successful or not
     function transferFrom(address from, address to, uint value) returns (bool ok) {
         if (getState() != State.Success) throw; // Abort if crowdfunding was not a success.
-        if (balances[from] &gt;= value &amp;&amp;
-            allowed[from][msg.sender] &gt;= value &amp;&amp;
-            value &gt; 0)
+        if (balances[from] >= value &&
+            allowed[from][msg.sender] >= value &&
+            value > 0)
         {
             balances[to] = safeAdd(balances[to], value);
             balances[from] = safeSub(balances[from], value);
@@ -737,7 +737,7 @@ contract BCDCToken is SafeMath, ERC20 {
     }
 
     // Sale of the tokens. Investors can call this method to invest into BCDC Tokens
-    // Only when it&#39;s in funding mode. In case of emergecy it will be halted.
+    // Only when it's in funding mode. In case of emergecy it will be halted.
     function() payable stopIfHalted external {
         // Allow only to invest in funding state
         if (getState() != State.Funding) throw;
@@ -748,8 +748,8 @@ contract BCDCToken is SafeMath, ERC20 {
         // multiply by exchange rate to get newly created token amount
         uint256 createdTokens = safeMul(msg.value, tokensPerEther);
 
-        // Wait we crossed maximum token sale goal. It&#39;s successful token sale !!
-        if (safeAdd(createdTokens, totalSupply) &gt; tokenSaleMax) throw;
+        // Wait we crossed maximum token sale goal. It's successful token sale !!
+        if (safeAdd(createdTokens, totalSupply) > tokenSaleMax) throw;
 
         // Call to Internal function to assign tokens
         assignTokens(msg.sender, createdTokens);
@@ -781,7 +781,7 @@ contract BCDCToken is SafeMath, ERC20 {
     // BCDC Team will assign the tokens to investors manually through this function
     function earlyInvestment(address earlyInvestor, uint256 assignedTokens) onlyOwner stopIfHalted external {
         // Allow only in Pre Funding Mode And Funding Mode
-        if (getState() != State.PreFunding &amp;&amp; getState() != State.Funding) throw;
+        if (getState() != State.PreFunding && getState() != State.Funding) throw;
         // Check if earlyInvestor address is set or not
         if (earlyInvestor == 0x0) throw;
         // By mistake tokens mentioned as 0, save the cost of assigning tokens.
@@ -795,7 +795,7 @@ contract BCDCToken is SafeMath, ERC20 {
         //investment[earlyInvestor] = safeAdd(investment[earlyInvestor], etherValue);
     }
 
-    // Function will transfer the tokens to investor&#39;s address
+    // Function will transfer the tokens to investor's address
     // Common function code for Early Investor and Crowdsale Investor
     function assignTokens(address investor, uint256 tokens) internal {
         // Creating tokens and  increasing the totalSupply
@@ -812,8 +812,8 @@ contract BCDCToken is SafeMath, ERC20 {
     // Finally - Transfer the Ether to Multisig Wallet
     function finalizeCrowdfunding() stopIfHalted external {
         // Abort if not in Funding Success state.
-        if (getState() != State.Success) throw; // don&#39;t finalize unless we won
-        if (finalizedCrowdfunding) throw; // can&#39;t finalize twice (so sneaky!)
+        if (getState() != State.Success) throw; // don't finalize unless we won
+        if (finalizedCrowdfunding) throw; // can't finalize twice (so sneaky!)
 
         // prevent more creation of tokens
         finalizedCrowdfunding = true;
@@ -829,7 +829,7 @@ contract BCDCToken is SafeMath, ERC20 {
         Transfer(0, timeVault, vaultTokens);
 
         // Only transact if there are any unsold tokens
-        if(unsoldTokens &gt; 0) {
+        if(unsoldTokens > 0) {
             totalSupply = safeAdd(totalSupply, unsoldTokens);
             // Remaining unsold tokens assign to multisig wallet
             balances[bcdcMultisig] = safeAdd(balances[bcdcMultisig], unsoldTokens);// Assign Reward Tokens to Multisig wallet
@@ -847,7 +847,7 @@ contract BCDCToken is SafeMath, ERC20 {
         totalSupply = safeAdd(totalSupply, rewardTokens);
 
         // Total Supply Should not be greater than 1 Billion
-        if (totalSupply &gt; maxTokenSupply) throw;
+        if (totalSupply > maxTokenSupply) throw;
         // Transfer ETH to the BCDC Multisig address.
         if (!bcdcMultisig.send(this.balance)) throw;
     }
@@ -872,9 +872,9 @@ contract BCDCToken is SafeMath, ERC20 {
     // This will return the current state of Token Sale
     // Read only method so no transaction fees
     function getState() public constant returns (State){
-      if (block.number &lt; fundingStartBlock) return State.PreFunding;
-      else if (block.number &lt;= fundingEndBlock &amp;&amp; totalSupply &lt; tokenSaleMax) return State.Funding;
-      else if (totalSupply &gt;= tokenSaleMin || upgradeAgentStatus) return State.Success;
+      if (block.number < fundingStartBlock) return State.PreFunding;
+      else if (block.number <= fundingEndBlock && totalSupply < tokenSaleMax) return State.Funding;
+      else if (totalSupply >= tokenSaleMin || upgradeAgentStatus) return State.Success;
       else return State.Failure;
     }
 
@@ -891,7 +891,7 @@ contract BCDCToken is SafeMath, ERC20 {
 
         // Validate input value.
         if (value == 0) throw;
-        if (value &gt; balances[msg.sender]) throw;
+        if (value > balances[msg.sender]) throw;
 
         // update the balances here first before calling out (reentrancy)
         balances[msg.sender] = safeSub(balances[msg.sender], value);
@@ -907,7 +907,7 @@ contract BCDCToken is SafeMath, ERC20 {
     /// @param agent The address of the UpgradeAgent contract
     function setUpgradeAgent(address agent) external {
         if (getState() != State.Success) throw; // Abort if not in Success state.
-        if (agent == 0x0) throw; // don&#39;t set agent to nothing
+        if (agent == 0x0) throw; // don't set agent to nothing
         if (msg.sender != upgradeMaster) throw; // Only a master can designate the next agent
         upgradeAgent = UpgradeAgent(agent);
         if (!upgradeAgent.isUpgradeAgent()) throw;
@@ -961,7 +961,7 @@ contract BCDCToken is SafeMath, ERC20 {
       // Check if BCDC Reserve Fund is set or not
       if ( bcdcReserveFund == 0x0) throw;
       uint256 senderBalance = balances[msg.sender];
-      if(senderBalance &gt;= token &amp;&amp; token&gt;0){
+      if(senderBalance >= token && token>0){
         senderBalance = safeSub(senderBalance, token);
         balances[msg.sender] = senderBalance;
         balances[claimAddress] = safeAdd(balances[claimAddress], token);
@@ -975,7 +975,7 @@ contract BCDCToken is SafeMath, ERC20 {
 	  // @param tokens The number of tokens back for rewards
   	function backTokenForRewards(uint256 tokens) external{
   		// Check that token available for transfer
-  		if(balances[msg.sender] &lt; tokens &amp;&amp; tokens &lt;= 0) throw;
+  		if(balances[msg.sender] < tokens && tokens <= 0) throw;
 
   		// Debit tokens from msg.sender
   		balances[msg.sender] = safeSub(balances[msg.sender], tokens);

@@ -7,18 +7,18 @@ library SafeMath {
     uint256 constant public MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 }
@@ -26,7 +26,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Owned{
   address public owner;
@@ -106,9 +106,9 @@ contract ERC20StandardToken is ERC20Basic,Transferable{
     using SafeMath for uint256;
     
     /* This creates an array with all balances */
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
-    mapping (address =&gt; uint256) public freezeOf;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+    mapping (address => uint256) public freezeOf;
     
 
     function balanceOf(address _owner) public view returns (uint256 balance){
@@ -133,7 +133,7 @@ contract ERC20StandardToken is ERC20Basic,Transferable{
 
    /* A contract attempts to get the coins */
   function transferFrom(address _from,address _to,uint256 _value) public whenTransferable returns (bool success){
-    require(allowance[_from][msg.sender] &gt;= _value);
+    require(allowance[_from][msg.sender] >= _value);
     allowance[_from][msg.sender] = allowance[_from][msg.sender].safeSub(_value);
     
     _transfer(_from,_to,_value);
@@ -142,7 +142,7 @@ contract ERC20StandardToken is ERC20Basic,Transferable{
 
   /* Allow another contract to spend some tokens in your behalf */
   function approve(address _spender,uint256 _value) public whenTransferable returns (bool success){
-    require(_value &gt; 0);
+    require(_value > 0);
     require(_spender != 0x0);
     allowance[msg.sender][_spender] = _value;
     emit Approval(msg.sender,_spender,_value);
@@ -186,7 +186,7 @@ contract MyToken is ERC20StandardToken{
  
  /* Burn token */
   function burn(uint256 _value) onlyOwner public returns (bool success){
-    require(balanceOf[msg.sender] &gt;= _value);
+    require(balanceOf[msg.sender] >= _value);
     balanceOf[msg.sender] = balanceOf[msg.sender].safeSub(_value);
     totalSupply = totalSupply.safeSub(_value);
     emit Burn(msg.sender,_value);
@@ -195,7 +195,7 @@ contract MyToken is ERC20StandardToken{
 
  /* Burn token from one address */
   function burnFrom(address _from ,uint256 _value) onlyOwner public returns (bool success){
-    require(balanceOf[_from] &gt;= _value);
+    require(balanceOf[_from] >= _value);
     balanceOf[_from] = balanceOf[_from].safeSub(_value);
     totalSupply = totalSupply.safeSub(_value);
     emit Burn(_from,_value);
@@ -214,8 +214,8 @@ contract MyToken is ERC20StandardToken{
   
   /* Fress token from one address */
   function freeze(address _from,uint256 _value) onlyOwner public returns (bool success) {
-    require(_value &gt; 0);
-    require(balanceOf[_from] &gt;= _value);
+    require(_value > 0);
+    require(balanceOf[_from] >= _value);
     balanceOf[_from] = balanceOf[_from].safeSub( _value);                      
     freezeOf[_from] = freezeOf[_from].safeAdd(_value);               
     emit Freeze(_from, _value);
@@ -224,8 +224,8 @@ contract MyToken is ERC20StandardToken{
   
   /* UnFress token from one address */
   function unfreeze(address _from,uint256 _value) onlyOwner public returns (bool success) {
-    require(_value &gt; 0);
-    require(freezeOf[_from] &gt;= _value);
+    require(_value > 0);
+    require(freezeOf[_from] >= _value);
     freezeOf[_from] = freezeOf[_from].safeSub(_value);                      
     balanceOf[_from] = balanceOf[_from].safeAdd(_value);
     emit Unfreeze(_from, _value);

@@ -35,7 +35,7 @@ contract SvEnsRegistry is ENS {
         uint64 ttl;
     }
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     // Permits modifications only by the owner of the specified node.
     modifier only_owner(bytes32 node) {

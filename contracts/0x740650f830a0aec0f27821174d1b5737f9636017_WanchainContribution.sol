@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -137,8 +137,8 @@ contract ERC20Protocol {
 
 pragma solidity ^0.4.11;
 
-//import &quot;./ERC20Protocol.sol&quot;;
-//import &quot;./SafeMath.sol&quot;;
+//import "./ERC20Protocol.sol";
+//import "./SafeMath.sol";
 
 contract StandardToken is ERC20Protocol {
     using SafeMath for uint;
@@ -147,16 +147,16 @@ contract StandardToken is ERC20Protocol {
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -166,8 +166,8 @@ contract StandardToken is ERC20Protocol {
 
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -196,8 +196,8 @@ contract StandardToken is ERC20Protocol {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 }
 
 
@@ -210,14 +210,14 @@ pragma solidity ^0.4.11;
 
   Copyright 2017 Wanchain Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -226,7 +226,7 @@ pragma solidity ^0.4.11;
 
 //                            _           _           _
 //  __      ____ _ _ __   ___| |__   __ _(_)_ __   __| | _____   __
-//  \ \ /\ / / _` | &#39;_ \ / __| &#39;_ \ / _` | | &#39;_ \@/ _` |/ _ \ \ / /
+//  \ \ /\ / / _` | '_ \ / __| '_ \ / _` | | '_ \@/ _` |/ _ \ \ / /
 //   \ V  V / (_| | | | | (__| | | | (_| | | | | | (_| |  __/\ V /
 //    \_/\_/ \__,_|_| |_|\___|_| |_|\__,_|_|_| |_|\__,_|\___| \_/
 //
@@ -234,19 +234,19 @@ pragma solidity ^0.4.11;
 
 
 
-//import &quot;./StandardToken.sol&quot;;
-//import &quot;./SafeMath.sol&quot;;
+//import "./StandardToken.sol";
+//import "./SafeMath.sol";
 
 
 /// @title Wanchain Token Contract
 /// For more information about this token sale, please visit https://wanchain.org
-/// @author Cathy - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb888a9f8392ab9c8a8588838a8285c584998c">[email&#160;protected]</a>&gt;
+/// @author Cathy - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb888a9f8392ab9c8a8588838a8285c584998c">[email protected]</a>>
 contract WanToken is StandardToken {
     using SafeMath for uint;
 
     /// Constant token specific fields
-    string public constant name = &quot;WanCoin&quot;;
-    string public constant symbol = &quot;WAN&quot;;
+    string public constant name = "WanCoin";
+    string public constant symbol = "WAN";
     uint public constant decimals = 18;
 
     /// Wanchain total tokens supply
@@ -261,7 +261,7 @@ contract WanToken is StandardToken {
     uint public endTime;
 
     /// Fields that can be changed by functions
-    mapping (address =&gt; uint) public lockedBalances;
+    mapping (address => uint) public lockedBalances;
     /*
      * MODIFIERS
      */
@@ -272,12 +272,12 @@ contract WanToken is StandardToken {
     }
 
     modifier isLaterThan (uint x){
-    	  assert(now &gt; x);
+    	  assert(now > x);
     	  _;
     }
 
     modifier maxWanTokenAmountNotReached (uint amount){
-    	  assert(totalSupply.add(amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+    	  assert(totalSupply.add(amount) <= MAX_TOTAL_TOKEN_AMOUNT);
     	  _;
     }
 
@@ -343,14 +343,14 @@ pragma solidity ^0.4.11;
 
   Copyright 2017 Wanchain Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -359,7 +359,7 @@ pragma solidity ^0.4.11;
 
 //                            _           _           _
 //  __      ____ _ _ __   ___| |__   __ _(_)_ __   __| | _____   __
-//  \ \ /\ / / _` | &#39;_ \ / __| &#39;_ \ / _` | | &#39;_ \@/ _` |/ _ \ \ / /
+//  \ \ /\ / / _` | '_ \ / __| '_ \ / _` | | '_ \@/ _` |/ _ \ \ / /
 //   \ V  V / (_| | | | | (__| | | | (_| | | | | | (_| |  __/\ V /
 //    \_/\_/ \__,_|_| |_|\___|_| |_|\__,_|_|_| |_|\__,_|\___| \_/
 //
@@ -368,7 +368,7 @@ pragma solidity ^0.4.11;
 /// @title Wanchain Contribution Contract
 /// ICO Rules according: https://www.wanchain.org/crowdsale
 /// For more information about this token sale, please visit https://wanchain.org
-/// @author Zane Liang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5329323d363f3a323d341324323d303b323a3d7d3c2134">[email&#160;protected]</a>&gt;
+/// @author Zane Liang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5329323d363f3a323d341324323d303b323a3d7d3c2134">[email protected]</a>>
 contract WanchainContribution is Owned {
     using SafeMath for uint;
 
@@ -432,9 +432,9 @@ contract WanchainContribution is Owned {
     WanToken public wanToken;
 
     /// Quota for partners
-    mapping (address =&gt; uint256) public partnersLimit;
+    mapping (address => uint256) public partnersLimit;
     /// Accumulator for partner sold
-    mapping (address =&gt; uint256) public partnersBought;
+    mapping (address => uint256) public partnersBought;
 
     uint256 public normalBuyLimit = 65 ether;
 
@@ -465,22 +465,22 @@ contract WanchainContribution is Owned {
     }
 
     modifier notEarlierThan(uint x) {
-        require(now &gt;= x);
+        require(now >= x);
         _;
     }
 
     modifier earlierThan(uint x) {
-        require(now &lt; x);
+        require(now < x);
         _;
     }
 
     modifier ceilingNotReached() {
-        require(openSoldTokens &lt; MAX_OPEN_SOLD);
+        require(openSoldTokens < MAX_OPEN_SOLD);
         _;
     }
 
     modifier isSaleEnded() {
-        require(now &gt; endTime || openSoldTokens &gt;= MAX_OPEN_SOLD);
+        require(now > endTime || openSoldTokens >= MAX_OPEN_SOLD);
         _;
     }
 
@@ -549,7 +549,7 @@ contract WanchainContribution is Owned {
         onlyOwner
         earlierThan(endTime)
     {
-        require(limit &gt; 0 &amp;&amp; limit &lt;= MAX_OPEN_SOLD);
+        require(limit > 0 && limit <= MAX_OPEN_SOLD);
         partnersLimit[setPartnerAddress] = limit;
         partnerReservedSum += limit;
         PartnerAddressQuota(setPartnerAddress, limit);
@@ -568,12 +568,12 @@ contract WanchainContribution is Owned {
         returns (bool)
     {
     	require(receipient != 0x0);
-    	require(msg.value &gt;= 0.1 ether);
+    	require(msg.value >= 0.1 ether);
 
-    	if (partnersLimit[receipient] &gt; 0)
+    	if (partnersLimit[receipient] > 0)
     		buyFromPartner(receipient);
     	else {
-    		require(msg.value &lt;= normalBuyLimit);
+    		require(msg.value <= normalBuyLimit);
     		buyNormal(receipient);
     	}
 
@@ -599,23 +599,23 @@ contract WanchainContribution is Owned {
 
     /// @return true if sale has started, false otherwise.
     function saleStarted() constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     /// @return true if sale has ended, false otherwise.
     function saleEnded() constant returns (bool) {
-        return now &gt; endTime || openSoldTokens &gt;= MAX_OPEN_SOLD;
+        return now > endTime || openSoldTokens >= MAX_OPEN_SOLD;
     }
 
     /// CONSTANT METHODS
     /// @dev Get current exchange rate
     function priceRate() public constant returns (uint) {
         // Three price tiers
-        if (startTime &lt;= now &amp;&amp; now &lt; startTime + 1 days)
+        if (startTime <= now && now < startTime + 1 days)
             return PRICE_RATE_FIRST;
-        if (startTime + 1 days &lt;= now &amp;&amp; now &lt; startTime + 2 days)
+        if (startTime + 1 days <= now && now < startTime + 2 days)
             return PRICE_RATE_SECOND;
-        if (startTime + 2 days &lt;= now &amp;&amp; now &lt; endTime)
+        if (startTime + 2 days <= now && now < endTime)
             return PRICE_RATE_LAST;
         // Should not be called before or after contribution period
         assert(false);
@@ -641,7 +641,7 @@ contract WanchainContribution is Owned {
 	    uint allAvailable = MAX_OPEN_SOLD.sub(openSoldTokens);
       partnerAvailable = partnerAvailable.min256(allAvailable);
 
-    	require(partnerAvailable &gt; 0);
+    	require(partnerAvailable > 0);
 
     	uint toFund;
     	uint toCollect;
@@ -660,14 +660,14 @@ contract WanchainContribution is Owned {
 
         // protect partner quota in stage one
         uint tokenAvailable;
-        if(startTime &lt;= now &amp;&amp; now &lt; startTime + 1 days) {
+        if(startTime <= now && now < startTime + 1 days) {
             uint totalNormalAvailable = MAX_OPEN_SOLD.sub(partnerReservedSum);
             tokenAvailable = totalNormalAvailable.sub(normalSoldTokens);
         } else {
             tokenAvailable = MAX_OPEN_SOLD.sub(openSoldTokens);
         }
 
-        require(tokenAvailable &gt; 0);
+        require(tokenAvailable > 0);
 
     	uint toFund;
     	uint toCollect;
@@ -678,9 +678,9 @@ contract WanchainContribution is Owned {
 
     /// @dev Utility function for bug wanchain token
     function buyCommon(address receipient, uint toFund, uint wanTokenCollect) internal {
-        require(msg.value &gt;= toFund); // double check
+        require(msg.value >= toFund); // double check
 
-        if(toFund &gt; 0) {
+        if(toFund > 0) {
             require(wanToken.mintToken(receipient, wanTokenCollect));
             wanport.transfer(toFund);
             openSoldTokens = openSoldTokens.add(wanTokenCollect);
@@ -688,7 +688,7 @@ contract WanchainContribution is Owned {
         }
 
         uint toReturn = msg.value.sub(toFund);
-        if(toReturn &gt; 0) {
+        if(toReturn > 0) {
             msg.sender.transfer(toReturn);
         }
     }
@@ -699,7 +699,7 @@ contract WanchainContribution is Owned {
     	uint exchangeRate = priceRate();
     	getTokens = exchangeRate * msg.value;
 
-    	if(availableToken &gt;= getTokens){
+    	if(availableToken >= getTokens){
     		costValue = msg.value;
     	} else {
     		costValue = availableToken / exchangeRate;
@@ -717,6 +717,6 @@ contract WanchainContribution is Owned {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }

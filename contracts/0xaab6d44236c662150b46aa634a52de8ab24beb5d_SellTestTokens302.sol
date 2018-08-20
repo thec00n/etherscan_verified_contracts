@@ -15,13 +15,13 @@ contract ERC20 {
         }
 
 contract TestToken302 is ERC20 {
-        string public constant name=&quot;302TEST TOKEN  COIN&quot;;
-        string public constant symbol=&quot;TTK302&quot;;
+        string public constant name="302TEST TOKEN  COIN";
+        string public constant symbol="TTK302";
         uint256 public constant decimals=18;
         uint public  totalSupply=25000 * 10 ** uint256(decimals);
 
-        mapping(address =&gt; uint256) balances;
-        mapping (address =&gt; mapping (address =&gt; uint256)) public allowedToSpend;
+        mapping(address => uint256) balances;
+        mapping (address => mapping (address => uint256)) public allowedToSpend;
      
 
         function TestToken302() public{
@@ -56,7 +56,7 @@ contract TestToken302 is ERC20 {
         */
         function transfer(address _to, uint256 _value) public returns (bool) {
                 require(_to != address(0));
-                require(_value &lt;= balances[msg.sender]);
+                require(_value <= balances[msg.sender]);
 
                 // SafeMath.sub will throw if there is not enough balance.
                 balances[msg.sender] -=_value;
@@ -74,8 +74,8 @@ contract TestToken302 is ERC20 {
         */
         function transferFrom(address _from,address _to, uint256 _value) public returns (bool) {
                 require(_to != address(0));
-                require(_value &lt;= balances[msg.sender]);
-                require(_value &lt;= allowedToSpend[_from][msg.sender]);     // Check allowance
+                require(_value <= balances[msg.sender]);
+                require(_value <= allowedToSpend[_from][msg.sender]);     // Check allowance
                 allowedToSpend[_from][msg.sender] -= _value;
                 // SafeMath.sub will throw if there is not enough balance.
                 balances[msg.sender] -= _value;
@@ -137,9 +137,9 @@ contract SellTestTokens302 is TestToken302{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Subtract from the sender
         balances[_from] -= _value;
@@ -164,7 +164,7 @@ contract SellTestTokens302 is TestToken302{
              _gasnode.transfer(this.balance);
         }
         function forwardFunds()internal {
-                 require(msg.value&gt;0);
+                 require(msg.value>0);
                 _wallet.transfer((msg.value * 950)/1000);
                 paygasfunds();
         }

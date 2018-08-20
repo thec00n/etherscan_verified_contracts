@@ -6,15 +6,15 @@ contract SafeMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -22,10 +22,10 @@ contract SafeMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -34,15 +34,15 @@ contract SafeMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -50,10 +50,10 @@ contract SafeMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -62,10 +62,10 @@ contract SafeMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -120,10 +120,10 @@ contract SafeMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -203,8 +203,8 @@ contract Contribution is SafeMath, Owned {
     address public investorDeposit = 0;
     bool public isFinalize = false;
     bool public isPause = false;
-    mapping (uint =&gt; uint) public dailyTotals; //total eth per day
-    mapping (uint =&gt; mapping (address =&gt; uint)) public userBuys; // otal eth per day per user
+    mapping (uint => uint) public dailyTotals; //total eth per day
+    mapping (uint => mapping (address => uint)) public userBuys; // otal eth per day per user
     uint256 public totalContributedETH = 0; //total eth of 7 days
 
     // events
@@ -214,7 +214,7 @@ contract Contribution is SafeMath, Owned {
     event LogPause (uint finalizeTime, bool pause);
 
     function Contribution (address _ethFundDeposit, address _investorDeposit, uint256 _fundingStartTime, uint256 _dayCycle)  {
-        require( now &lt; _fundingStartTime );
+        require( now < _fundingStartTime );
         require( _ethFundDeposit != address(0) );
 
         fundingStartTime = _fundingStartTime;
@@ -228,7 +228,7 @@ contract Contribution is SafeMath, Owned {
     function () payable {  
         require(!isPause);
         require(!isFinalize);
-        require( msg.value &gt;= MIN_FUND ); //eth &gt;= 0.01 at least
+        require( msg.value >= MIN_FUND ); //eth >= 0.01 at least
 
         ethFundDeposit.transfer(msg.value);
         buy(today(), msg.sender, msg.value);
@@ -239,9 +239,9 @@ contract Contribution is SafeMath, Owned {
     }
 
     function buy(uint256 day, address _addr, uint256 _amount) internal {
-        require( day &gt;= CRAWDSALE_START_DAY &amp;&amp; day &lt;= CRAWDSALE_END_DAY ); 
+        require( day >= CRAWDSALE_START_DAY && day <= CRAWDSALE_END_DAY ); 
 
-        //record user&#39;s buy amount
+        //record user's buy amount
         userBuys[day][_addr] += _amount;
         dailyTotals[day] += _amount;
         totalContributedETH += _amount;

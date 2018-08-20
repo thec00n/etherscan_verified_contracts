@@ -2,7 +2,7 @@ pragma solidity 0.4.20;
 /**
 * @notice TOKEN CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa9cd49b948e95949395d49b919f96ba9d979b9396d4999597">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa9cd49b948e95949395d49b919f96ba9d979b9396d4999597">[email protected]</a>
 */
 
 /**
@@ -12,13 +12,13 @@ pragma solidity 0.4.20;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -45,8 +45,8 @@ contract ERC20TokenInterface {
 */
 contract ERC20Token is ERC20TokenInterface { //Standard definition of an ERC20Token
     using SafeMath for uint256; //SafeMath is used for uint256 operations
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
     uint256 public totalSupply;
     
     /**
@@ -127,16 +127,16 @@ contract Asset is ERC20Token {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;1&#39;;
+    string public version = '1';
     
     /**
     * @notice token constructor.
     */
     function Asset() public {
 
-        name = &#39;Big Balls Token&#39;;
+        name = 'Big Balls Token';
         decimals = 18;
-        symbol = &#39;BBT&#39;;
+        symbol = 'BBT';
         totalSupply = 150000000 * 10 ** uint256(decimals); //Tokens initial supply;
         balances[msg.sender] = totalSupply;
         Transfer(0, this, totalSupply);

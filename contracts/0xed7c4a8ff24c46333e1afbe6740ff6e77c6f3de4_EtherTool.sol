@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // SolIdity automatically throws when divIding by 0
+    // assert(b > 0); // SolIdity automatically throws when divIding by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,10 +49,10 @@ contract EtherTool {
         globalLocked = false;
     }    
 
-    mapping (address =&gt; uint256) public userEtherOf;    
+    mapping (address => uint256) public userEtherOf;    
     
     function depositEther() public payable {
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);  
         }
     }
@@ -69,7 +69,7 @@ contract EtherTool {
         require (_to != 0x0);  
         lock();
         uint256 amount = userEtherOf[msg.sender];   
-        if(amount &gt; 0) {
+        if(amount > 0) {
             userEtherOf[msg.sender] = 0;
             _to.transfer(amount); 
             _result = true;
@@ -91,17 +91,17 @@ contract EtherTool {
 
     function batchTransfer1(address[] _tos, uint256 _amount) public payable returns (uint256 _doneNum){
         lock();
-        if(msg.value &gt; 0) {          
+        if(msg.value > 0) {          
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
-        require(_amount &gt; 0);
-        require(_tos.length &gt; 0);
+        require(_amount > 0);
+        require(_tos.length > 0);
 
         _doneNum = 0;
-        for(uint i = 0; i &lt; _tos.length; i++){
+        for(uint i = 0; i < _tos.length; i++){
             bool done = false;
             address to = _tos[i];
-            if(to != 0x0 &amp;&amp; userEtherOf[msg.sender] &gt;= _amount){
+            if(to != 0x0 && userEtherOf[msg.sender] >= _amount){
                 userEtherOf[msg.sender] = userEtherOf[msg.sender].sub(_amount);
                 to.transfer(_amount);                                            
                 _doneNum = _doneNum.add(1);
@@ -114,19 +114,19 @@ contract EtherTool {
 
     function batchTransfer2(address[] _tos, uint256[] _amounts) public payable returns (uint256 _doneNum){
         lock();
-        if(msg.value &gt; 0) {          
+        if(msg.value > 0) {          
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
-        require(_amounts.length &gt; 0);
-        require(_tos.length &gt; 0);
+        require(_amounts.length > 0);
+        require(_tos.length > 0);
         require(_tos.length == _amounts.length);
 
         _doneNum = 0;
-        for(uint i = 0; i &lt; _tos.length; i++){
+        for(uint i = 0; i < _tos.length; i++){
             bool done = false;
             address to = _tos[i];
             uint256 amount = _amounts[i]; 
-            if((to != 0x0) &amp;&amp; (amount &gt; 0) &amp;&amp; (userEtherOf[msg.sender] &gt;= amount)){
+            if((to != 0x0) && (amount > 0) && (userEtherOf[msg.sender] >= amount)){
                 userEtherOf[msg.sender] = userEtherOf[msg.sender].sub(amount);
                 to.transfer(amount);                                            
                 _doneNum = _doneNum.add(1);
@@ -148,7 +148,7 @@ contract EtherTool {
         reversed[i++] = byte(48 + remainder);
         }
         bytes memory s = new bytes(i);
-        for (uint j = 0; j &lt; i; j++) {
+        for (uint j = 0; j < i; j++) {
         s[j] = reversed[i - j - 1];
         }
         string memory str = string(s);
@@ -168,7 +168,7 @@ contract EtherTool {
     }
 
     function () public payable {                                    //function depositEther() public payable 
-        if(msg.value &gt; 0) {          
+        if(msg.value > 0) {          
             userEtherOf[msg.sender] = userEtherOf[msg.sender].add(msg.value);
         }
     }

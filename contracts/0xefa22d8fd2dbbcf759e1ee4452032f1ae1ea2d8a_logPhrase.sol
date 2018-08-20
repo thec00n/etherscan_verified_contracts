@@ -11,7 +11,7 @@ contract logPhrase {
     address owner = msg.sender;
 
    //unique 16 bytes signatures and corresponding addresses
-    mapping (bytes16 =&gt; address) signatures;
+    mapping (bytes16 => address) signatures;
 
    //cost to by a signature (and get your address into the mapping)
     uint128 constant minimumPayment = 0.001 ether;
@@ -47,7 +47,7 @@ contract logPhrase {
     function buySignature(bytes16 sign) payable public
     {
         //signatures are unique
-        require(msg.value &gt; minimumPayment &amp;&amp; signatures[sign]==0);
+        require(msg.value > minimumPayment && signatures[sign]==0);
         signatures[sign]=msg.sender; //we got a new signer
         address contractAddr = this;
         owner.transfer(contractAddr.balance); //thanks

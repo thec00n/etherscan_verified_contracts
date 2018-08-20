@@ -12,20 +12,20 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,9 +112,9 @@ contract Controlled is Owned{
     // 是否启用账户锁定功能，true代表启用
     bool lockFlag=true;
 	// 锁定的账户集合，address账户，bool是否被锁，true:被锁定，当lockFlag=true时，恭喜，你转不了账了，哈哈
-    mapping(address =&gt; bool) locked;
+    mapping(address => bool) locked;
 	// 拥有特权用户，不受transferEnabled和lockFlag的限制，vip啊，bool为true代表vip有效
-    mapping(address =&gt; bool) exclude;
+    mapping(address => bool) exclude;
 
 	//设置transferEnabled值
     function enableTransfer(bool _enable) public onlyOwner returns (bool success){
@@ -149,9 +149,9 @@ contract Controlled is Owned{
 	//控制合约 核心实现
     modifier transferAllowed(address _addr) {
         if (!exclude[_addr]) {
-            require(transferEnabled,&quot;transfer is not enabeled now!&quot;);
+            require(transferEnabled,"transfer is not enabeled now!");
             if(lockFlag){
-                require(!locked[_addr],&quot;you are locked!&quot;);
+                require(!locked[_addr],"you are locked!");
             }
         }
         _;
@@ -163,20 +163,20 @@ contract Controlled is Owned{
 contract LiSaoToken is StandardToken,Controlled {
 
 	//账户集合
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) internal allowed;
 	
 	constructor() public {
         totalSupply = 1000000000;//10亿
-        name = &quot;LiSao Token&quot;;
-        symbol = &quot;LS&quot;;
+        name = "LiSao Token";
+        symbol = "LS";
         decimals = 0;
         balanceOf[msg.sender] = totalSupply;
     }
 
     function transfer(address _to, uint256 _value) public transferAllowed(msg.sender) returns (bool success) {
 		require(_to != address(0));
-		require(_value &lt;= balanceOf[msg.sender]);
+		require(_value <= balanceOf[msg.sender]);
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -186,8 +186,8 @@ contract LiSaoToken is StandardToken,Controlled {
 
     function transferFrom(address _from, address _to, uint256 _value) public transferAllowed(_from) returns (bool success) {
 		require(_to != address(0));
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);

@@ -38,7 +38,7 @@ contract DataContract is owned {
         uint time;
     }
 
-    mapping (bytes32 =&gt; Good) public goods;
+    mapping (bytes32 => Good) public goods;
 
     function setGood(bytes32 _preset, uint _price) onlyOwnerAndtokenContract external {
         goods[_preset] = Good({preset: _preset, price: _price, time: now});
@@ -52,7 +52,7 @@ contract DataContract is owned {
         return goods[_preset].price;
     }
 
-    mapping (bytes32 =&gt; address) public decisionOf;
+    mapping (bytes32 => address) public decisionOf;
 
     function setDecision(bytes32 _preset, address _address) onlyOwnerAndtokenContract external {
         decisionOf[_preset] = _address;
@@ -103,9 +103,9 @@ contract Token is owned {
     function _getFinalAddress(uint[] _amounts, address[] _buyers, uint result) internal pure returns (address finalAddress) {
         uint congest = 0;
         address _finalAddress = address(0);
-        for (uint j = 0; j &lt; _amounts.length; j++) {
+        for (uint j = 0; j < _amounts.length; j++) {
             congest += _amounts[j];
-            if (result &lt;= congest &amp;&amp; _finalAddress == address(0)) {
+            if (result <= congest && _finalAddress == address(0)) {
                 _finalAddress = _buyers[j];
             }
         }
@@ -113,7 +113,7 @@ contract Token is owned {
     }
 
     function postTrade(bytes32 _preset, uint _price) onlyOwner public {
-        require(DC.getGoodPreset(_preset) == &quot;&quot;);
+        require(DC.getGoodPreset(_preset) == "");
         DC.setGood(_preset, _price);
     }
 
@@ -127,7 +127,7 @@ contract Token is owned {
 
         // address added, parameter 1
         uint160 allAddress;
-        for (uint i = 0; i &lt; _buyers.length; i++) {
+        for (uint i = 0; i < _buyers.length; i++) {
             allAddress += uint160(_buyers[i]);
         }
         

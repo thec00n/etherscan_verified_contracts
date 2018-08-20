@@ -25,20 +25,20 @@ contract SafeMath{
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 	
 	function safeSub(uint a, uint b) internal returns (uint) {
-    	assert(b &lt;= a);
+    	assert(b <= a);
     	return a - b;
   }
 
 	function safeAdd(uint a, uint b) internal returns (uint) {
     	uint c = a + b;
-    	assert(c &gt;= a);
+    	assert(c >= a);
     	return c;
   }
 	function assert(bool assertion) internal {
@@ -65,7 +65,7 @@ contract ERC20{
 }
 contract PotatoCoin is ERC20, SafeMath, owned{
 	
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 public totalSupply;
     uint256 public mulFactor;
@@ -81,7 +81,7 @@ contract PotatoCoin is ERC20, SafeMath, owned{
 	    return true;
 	}
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 	    var _allowance = allowed[_from][msg.sender];
@@ -132,8 +132,8 @@ contract PotatoCoin is ERC20, SafeMath, owned{
     }
 
 	
-	string 	public name = &quot;Potato Coin&quot;;
-	string 	public symbol = &quot;PTCN&quot;;
+	string 	public name = "Potato Coin";
+	string 	public symbol = "PTCN";
 	uint 	public decimals = 0;
 	uint 	public INITIAL_SUPPLY = 50000000;
 	uint    public INITIAL_mulFactor=280;

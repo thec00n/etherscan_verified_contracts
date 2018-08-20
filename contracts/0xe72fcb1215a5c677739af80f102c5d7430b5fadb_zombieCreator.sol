@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,9 +64,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -74,7 +74,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -83,7 +83,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -105,7 +105,7 @@ contract zombieCreator is Ownable {
 
   event NewZombie(bytes32 dna, uint8 star,uint16 roletype, bool isfree);
 
-  mapping (address =&gt; bool) isGetFreeZombie;
+  mapping (address => bool) isGetFreeZombie;
 
   uint createRandomZombie_EtherPrice = 0.01 ether;
   uint createRandomZombie_ZOBToken_smallpack = 100 * 10 ** 18;
@@ -124,25 +124,25 @@ contract zombieCreator is Ownable {
 
     require(t.buyCard(msg.sender, createRandomZombie_ZOBToken_smallpack));
     
-    for(uint8 i = 0;i&lt;3;i++){
+    for(uint8 i = 0;i<3;i++){
        
        bytes32 dna;
 
        if(i == 0){
-         dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, &quot;CryptoDeads DNA Seed&quot;);
+         dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, "CryptoDeads DNA Seed");
        } else if(i == 1){
-         dna = keccak256(msg.sender, now, block.blockhash(block.number-1), &quot;CryptoDeads DNA Seed&quot;, block.coinbase, block.difficulty);
+         dna = keccak256(msg.sender, now, block.blockhash(block.number-1), "CryptoDeads DNA Seed", block.coinbase, block.difficulty);
        } else {
-         dna = keccak256(&quot;CryptoDeads DNA Seed&quot;, now, block.difficulty, block.coinbase, block.blockhash(block.number-1), msg.sender);
+         dna = keccak256("CryptoDeads DNA Seed", now, block.difficulty, block.coinbase, block.blockhash(block.number-1), msg.sender);
        }
 
        uint star = uint(dna) % 1000 +1;
        uint roletype = 1;
 
-       if(star&lt;=700){
+       if(star<=700){
             star = 1;
             roletype = uint(keccak256(msg.sender ,block.blockhash(block.number-1), block.coinbase, now, block.difficulty)) % 3 + 1;
-       }else if(star &lt;= 980){
+       }else if(star <= 980){
             star = 2;
             roletype = 4;
        }else{
@@ -159,25 +159,25 @@ contract zombieCreator is Ownable {
 
     require(t.buyCard(msg.sender, createRandomZombie_ZOBToken_goldpack));
     
-    for(uint8 i = 0;i&lt;3;i++){
+    for(uint8 i = 0;i<3;i++){
 
        bytes32 dna;
        
        if(i == 0){
-         dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, &quot;CryptoDeads DNA Seed&quot;);
+         dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, "CryptoDeads DNA Seed");
        } else if(i == 1){
-         dna = keccak256(msg.sender, now, block.blockhash(block.number-1), &quot;CryptoDeads DNA Seed&quot;, block.coinbase, block.difficulty);
+         dna = keccak256(msg.sender, now, block.blockhash(block.number-1), "CryptoDeads DNA Seed", block.coinbase, block.difficulty);
        } else {
-         dna = keccak256(&quot;CryptoDeads DNA Seed&quot;, now, block.difficulty, block.coinbase, block.blockhash(block.number-1), msg.sender);
+         dna = keccak256("CryptoDeads DNA Seed", now, block.difficulty, block.coinbase, block.blockhash(block.number-1), msg.sender);
        }
 
        uint star = uint(dna) % 1000 +1;
        uint roletype = 2;
 
-       if(star&lt;=700){
+       if(star<=700){
             star = 2;
             roletype = 4;
-       }else if(star &lt;= 950){
+       }else if(star <= 950){
             star = 3;
             roletype = uint(keccak256(msg.sender ,block.blockhash(block.number-1), block.coinbase, now, block.difficulty)) % 3 + 5;
        }else{
@@ -192,21 +192,21 @@ contract zombieCreator is Ownable {
 
   function createRandomZombie_FreeZombie() public {
     require(!isGetFreeZombie[msg.sender]);
-    require(FreeZombieCount&gt;=1);
+    require(FreeZombieCount>=1);
 
     uint ran = uint(keccak256(block.coinbase,block.difficulty,now, block.blockhash(block.number-1))) % 100 + 1;
 
     uint roletype = 1;
     uint8 star = 1;
 
-    if(ran&gt;=90){
+    if(ran>=90){
       roletype = 2;
       star = 4;
     } else {
       roletype = uint(keccak256(msg.sender ,block.blockhash(block.number-1), block.coinbase, now, block.difficulty)) % 3 + 1;
     }
     
-    bytes32 dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, &quot;CryptoDeads DNA Seed&quot;);
+    bytes32 dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, "CryptoDeads DNA Seed");
     
     c.createZombie(star,dna,uint16(roletype),true,msg.sender);
     isGetFreeZombie[msg.sender] = true;
@@ -218,23 +218,23 @@ contract zombieCreator is Ownable {
   function createRandomZombie_Ether() public payable{
     require(msg.value == createRandomZombie_EtherPrice);
     
-    for(uint8 i = 0;i&lt;3;i++){
+    for(uint8 i = 0;i<3;i++){
        bytes32 dna;
        
        if(i == 0){
-         dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, &quot;CryptoDeads DNA Seed&quot;);
+         dna = keccak256(block.blockhash(block.number-1), block.difficulty, block.coinbase, now, msg.sender, "CryptoDeads DNA Seed");
        } else if(i == 1){
-         dna = keccak256(msg.sender, now, block.blockhash(block.number-1), &quot;CryptoDeads DNA Seed&quot;, block.coinbase, block.difficulty);
+         dna = keccak256(msg.sender, now, block.blockhash(block.number-1), "CryptoDeads DNA Seed", block.coinbase, block.difficulty);
        } else {
-         dna = keccak256(&quot;CryptoDeads DNA Seed&quot;, now, block.difficulty, block.coinbase, block.blockhash(block.number-1), msg.sender);
+         dna = keccak256("CryptoDeads DNA Seed", now, block.difficulty, block.coinbase, block.blockhash(block.number-1), msg.sender);
        }
 
        uint star = uint(dna) % 1000 + 1;
        uint roletype = 4;
 
-       if(star&lt;=500){
+       if(star<=500){
             star = 2;
-       }else if(star &lt;= 850){
+       }else if(star <= 850){
             star = 3;
             roletype = uint(keccak256(msg.sender ,block.blockhash(block.number-1), block.coinbase, now, block.difficulty)) % 4 + 5;
        }else{

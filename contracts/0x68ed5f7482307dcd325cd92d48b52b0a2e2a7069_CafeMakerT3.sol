@@ -9,7 +9,7 @@ contract CafeMakerT3 {
 
 //	function CafeMaker(){
 //		PricePerCafe = 50000000000000000;
-//		Owner = msg.sender; //&quot;0x43e7948F4A71da12f6b79a82bf1C478E9eDB062a&quot;;
+//		Owner = msg.sender; //"0x43e7948F4A71da12f6b79a82bf1C478E9eDB062a";
 //	}
 
 	function GetFreeCnt() returns (uint cnt) {

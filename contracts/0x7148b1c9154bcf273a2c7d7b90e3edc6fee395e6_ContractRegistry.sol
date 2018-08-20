@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public view returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -22,7 +22,7 @@ contract IContractRegistry {
 }
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -33,11 +33,11 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != address(0));
         _;
@@ -61,7 +61,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -74,7 +74,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -156,7 +156,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         bool isSet;                 // used to tell if the mapping element is defined
     }
 
-    mapping (bytes32 =&gt; RegistryItem) private items;    // name -&gt; RegistryItem mapping
+    mapping (bytes32 => RegistryItem) private items;    // name -> RegistryItem mapping
     string[] public contractNames;                      // list of all registered contract names
 
     // triggered when an address pointed to by a contract name is modified
@@ -199,7 +199,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         ownerOnly
         validAddress(_contractAddress)
     {
-        require(_contractName.length &gt; 0); // validate input
+        require(_contractName.length > 0); // validate input
 
         // update the address in the registry
         items[_contractName].contractAddress = _contractAddress;
@@ -209,7 +209,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
             items[_contractName].isSet = true;
             // add the contract name to the name list
             uint256 i = contractNames.push(bytes32ToString(_contractName));
-            // update the item&#39;s index in the list
+            // update the item's index in the list
             items[_contractName].nameIndex = i - 1;
         }
 
@@ -223,7 +223,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         @param _contractName contract name
     */
     function unregisterAddress(bytes32 _contractName) public ownerOnly {
-        require(_contractName.length &gt; 0); // validate input
+        require(_contractName.length > 0); // validate input
 
         // remove the address from the registry
         items[_contractName].contractAddress = address(0);
@@ -232,13 +232,13 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
             // mark the item as empty
             items[_contractName].isSet = false;
 
-            // if there are multiple items in the registry, move the last element to the deleted element&#39;s position
-            if (contractNames.length &gt; 1)
+            // if there are multiple items in the registry, move the last element to the deleted element's position
+            if (contractNames.length > 1)
                 contractNames[items[_contractName].nameIndex] = contractNames[contractNames.length - 1];
 
             // remove the last element from the name list
             contractNames.length--;
-            // zero the deleted element&#39;s index
+            // zero the deleted element's index
             items[_contractName].nameIndex = 0;
         }
 
@@ -254,7 +254,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
     */
     function bytes32ToString(bytes32 _bytes) private pure returns (string) {
         bytes memory byteArray = new bytes(32);
-        for (uint256 i; i &lt; 32; i++) {
+        for (uint256 i; i < 32; i++) {
             byteArray[i] = _bytes[i];
         }
 

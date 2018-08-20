@@ -10,15 +10,15 @@ interface tokenRecipient {
  */
 contract xyjtoken {
     /* 公共变量 */
-    string public standard = &#39;https://tlw.im&#39;;
+    string public standard = 'https://tlw.im';
     string public name; //代币名称
     string public symbol; //代币符号比如
     uint8 public decimals = 18;  //代币单位，展示的小数点后面多少个0,和以太币一样后面是是18个0
     uint256 public totalSupply; //代币总量
 
     /*记录所有余额的映射*/
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* 在区块链上创建一个事件，用以通知客户端*/
     event Transfer(address indexed from, address indexed to, uint256 value);  //转帐通知事件
@@ -54,10 +54,10 @@ contract xyjtoken {
       require(_to != 0x0);
 
       //检查发送者是否拥有足够余额
-      require(balanceOf[_from] &gt;= _value);
+      require(balanceOf[_from] >= _value);
 
       //检查是否溢出
-      require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+      require(balanceOf[_to] + _value > balanceOf[_to]);
 
       //保存数据用于后面的判断
       uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -97,7 +97,7 @@ contract xyjtoken {
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //检查发送者是否拥有足够余额
-        require(_value &lt;= allowance[_from][msg.sender]);   // Check allowance
+        require(_value <= allowance[_from][msg.sender]);   // Check allowance
 
         allowance[_from][msg.sender] -= _value;
 
@@ -145,7 +145,7 @@ contract xyjtoken {
      */
     function burn(uint256 _value) public returns (bool success) {
         //检查帐户余额是否大于要减去的值
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
 
         //给指定帐户减去余额
         balanceOf[msg.sender] -= _value;
@@ -168,10 +168,10 @@ contract xyjtoken {
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
 
         //检查帐户余额是否大于要减去的值
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         //检查 其他帐户 的余额是否够使用
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         //减掉代币
         balanceOf[_from] -= _value;

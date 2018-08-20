@@ -21,8 +21,8 @@ contract ERC20Interface {
 contract ERC20 is ERC20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     string public name;
     uint8 public decimals;
@@ -42,7 +42,7 @@ contract ERC20 is ERC20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -51,10 +51,10 @@ contract ERC20 is ERC20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value);
@@ -78,12 +78,12 @@ contract ERC20 is ERC20Interface {
 
 contract EtherZaarFactory {
 
-    mapping(address =&gt; address[]) public created;
-    mapping(address =&gt; bool) public isERC20;
+    mapping(address => address[]) public created;
+    mapping(address => bool) public isERC20;
     bytes public ERC20ByteCode;
 
     function EtherZaarFactory() public {
-        address verifiedToken = createERC20(100, &quot;Verification Tokens&quot;, 0, &quot;EtherZaar&quot;);
+        address verifiedToken = createERC20(100, "Verification Tokens", 0, "EtherZaar");
         ERC20ByteCode = codeAt(verifiedToken);
     }
 
@@ -94,7 +94,7 @@ contract EtherZaarFactory {
             return false;
         }
 
-        for (uint i = 0; i &lt; fetchedTokenByteCode.length; i++) {
+        for (uint i = 0; i < fetchedTokenByteCode.length; i++) {
             if (fetchedTokenByteCode[i] != ERC20ByteCode[i]) {
                 return false;
             }

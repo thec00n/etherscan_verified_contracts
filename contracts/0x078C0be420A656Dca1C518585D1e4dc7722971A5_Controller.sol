@@ -9,7 +9,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -18,7 +18,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -26,7 +26,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address internal contractOwner;
@@ -97,13 +97,13 @@ contract MyCryptoChampCore{
     
     Champ[] public champs;
     Item[] public items;
-    mapping (uint =&gt; uint) public leaderboard;
-    mapping (address =&gt; AddressInfo) public addressInfo;
-    mapping (bool =&gt; mapping(address =&gt; mapping (address =&gt; bool))) public tokenOperatorApprovals;
-    mapping (bool =&gt; mapping(uint =&gt; address)) public tokenApprovals;
-    mapping (bool =&gt; mapping(uint =&gt; address)) public tokenToOwner;
-    mapping (uint =&gt; string) public champToName;
-    mapping (bool =&gt; uint) public tokensForSaleCount;
+    mapping (uint => uint) public leaderboard;
+    mapping (address => AddressInfo) public addressInfo;
+    mapping (bool => mapping(address => mapping (address => bool))) public tokenOperatorApprovals;
+    mapping (bool => mapping(uint => address)) public tokenApprovals;
+    mapping (bool => mapping(uint => address)) public tokenToOwner;
+    mapping (uint => string) public champToName;
+    mapping (bool => uint) public tokensForSaleCount;
     uint public pendingWithdrawal = 0;
 
     function addWithdrawal(address _address, uint _amount) public;
@@ -156,13 +156,13 @@ contract Strings {
         string memory ab = new string(_ba.length + _bb.length);
         bytes memory bab = bytes(ab);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+        for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
         return string(bab);
     }
 
     function uint2str(uint i) internal pure returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -215,7 +215,7 @@ contract Controller is Inherit, Strings {
         uint defencePower;
         uint cooldownReduction;
         uint price;
-        uint onChampId; //can not be used to decide if item is on champ, because champ&#39;s id can be 0, &#39;bool onChamp&#39; solves it.
+        uint onChampId; //can not be used to decide if item is on champ, because champ's id can be 0, 'bool onChamp' solves it.
         bool onChamp; 
         bool forSale; //is item for sale?
     }
@@ -226,7 +226,7 @@ contract Controller is Inherit, Strings {
     /// @notice People are allowed to withdraw only if min. balance (0.01 gwei) is reached
     modifier contractMinBalanceReached(){
         uint pendingWithdrawal = core.pendingWithdrawal();
-        require( (address(core).balance).sub(pendingWithdrawal) &gt; 1000000 );
+        require( (address(core).balance).sub(pendingWithdrawal) > 1000000 );
         _;
     }
     
@@ -237,10 +237,10 @@ contract Controller is Inherit, Strings {
     }
     
 
-    /// @notice Gets champ&#39;s reward in wei
+    /// @notice Gets champ's reward in wei
     function getChampReward(uint _position) public view returns(uint) 
     {
-        if(_position &lt;= 800){
+        if(_position <= 800){
             //percentageMultipier = 10,000
             //maxReward = 2000 = .2% * percentageMultipier
             //subtractPerPosition = 2 = .0002% * percentageMultipier
@@ -250,7 +250,7 @@ contract Controller is Inherit, Strings {
             //available funds are all funds - already pending
             uint availableWithdrawal = address(coreAddress).balance.sub(core.pendingWithdrawal());
 
-            //calculate reward for champ&#39;s position
+            //calculate reward for champ's position
             //1000000 = percentageMultipier * 100
             return availableWithdrawal / 1000000 * rewardPercentage;
         }else{
@@ -281,8 +281,8 @@ contract Controller is Inherit, Strings {
     onlyCore 
     {
         Champ memory champ = _getChamp(_id);
-        require(champ.position &lt;= 800); 
-        require(champ.withdrawCooldown &lt; block.timestamp); //isChampWithdrawReady
+        require(champ.position <= 800); 
+        require(champ.withdrawCooldown < block.timestamp); //isChampWithdrawReady
 
         champ.withdrawCooldown = block.timestamp + 1 days; //one withdrawal 1 per day
         _updateChamp(champ); //update core storage
@@ -291,7 +291,7 @@ contract Controller is Inherit, Strings {
     }
     
 
-    /// @dev Is called from from Attack function after the winner is already chosen. Updates abilities, champ&#39;s stats and swaps positions.
+    /// @dev Is called from from Attack function after the winner is already chosen. Updates abilities, champ's stats and swaps positions.
     function _attackCompleted(Champ memory _winnerChamp, Champ memory _defeatedChamp, uint _pointsGiven) private 
     {
         /*
@@ -301,17 +301,17 @@ contract Controller is Inherit, Strings {
         _winnerChamp.attackPower += _pointsGiven; //increase attack power
         _winnerChamp.defencePower += _pointsGiven; //max point that was given - already given to AP
                 
-        //defeated champ&#39;s abilities update
-        //checks for not cross minimal AP &amp; DP points
+        //defeated champ's abilities update
+        //checks for not cross minimal AP & DP points
         //_defeatedChamp.attackPower = _subAttack(_defeatedChamp.attackPower, _pointsGiven); //decrease attack power
-        _defeatedChamp.attackPower = (_defeatedChamp.attackPower &lt;= _pointsGiven + 2) ? 2 : _defeatedChamp.attackPower - _pointsGiven; //Subtracts ability points. Helps to not cross minimal attack ability points -&gt; 2
+        _defeatedChamp.attackPower = (_defeatedChamp.attackPower <= _pointsGiven + 2) ? 2 : _defeatedChamp.attackPower - _pointsGiven; //Subtracts ability points. Helps to not cross minimal attack ability points -> 2
 
         //_defeatedChamp.defencePower = _subDefence(_defeatedChamp.defencePower, _pointsGiven); // decrease defence power
-        _defeatedChamp.defencePower = (_defeatedChamp.defencePower &lt;= _pointsGiven) ? 1 : _defeatedChamp.defencePower - _pointsGiven; //Subtracts ability points. Helps to not cross minimal defence ability points -&gt; 1
+        _defeatedChamp.defencePower = (_defeatedChamp.defencePower <= _pointsGiven) ? 1 : _defeatedChamp.defencePower - _pointsGiven; //Subtracts ability points. Helps to not cross minimal defence ability points -> 1
 
 
         /*
-         * Update champs&#39; wins and losses
+         * Update champs' wins and losses
          */
         _winnerChamp.winCount++;
         _defeatedChamp.lossCount++;
@@ -320,7 +320,7 @@ contract Controller is Inherit, Strings {
         /*
          * Swap positions
          */
-        if(_winnerChamp.position &gt; _defeatedChamp.position) { //require loser to has better (lower) postion than attacker
+        if(_winnerChamp.position > _defeatedChamp.position) { //require loser to has better (lower) postion than attacker
             uint winnerPosition = _winnerChamp.position;
             uint loserPosition = _defeatedChamp.position;
         
@@ -343,7 +343,7 @@ contract Controller is Inherit, Strings {
         Champ memory myChamp = _getChamp(_champId); 
         Champ memory enemyChamp = _getChamp(_targetId); 
         
-        require (myChamp.readyTime &lt;= block.timestamp); /// Is champ ready to fight again?
+        require (myChamp.readyTime <= block.timestamp); /// Is champ ready to fight again?
         require(_champId != _targetId); /// Prevents from self-attack
         require(core.tokenToOwner(true, _targetId) != address(0)); /// Checks if champ does exist
     
@@ -356,14 +356,14 @@ contract Controller is Inherit, Strings {
         (,enemyChampDefencePower,) = core.getChampStats(_targetId);
 
 
-        //if attacker&#39;s AP is more than target&#39;s DP then attacker wins
-        if (myChampAttackPower &gt; enemyChampDefencePower) {
+        //if attacker's AP is more than target's DP then attacker wins
+        if (myChampAttackPower > enemyChampDefencePower) {
             
             //this should demotivate players from farming on way weaker champs than they are
-            //the bigger difference between AP &amp; DP is, the reward is smaller
-            if(myChampAttackPower - enemyChampDefencePower &lt; 5){
+            //the bigger difference between AP & DP is, the reward is smaller
+            if(myChampAttackPower - enemyChampDefencePower < 5){
                 pointsGiven = 6; //big experience - 6 ability points
-            }else if(myChampAttackPower - enemyChampDefencePower &lt; 10){
+            }else if(myChampAttackPower - enemyChampDefencePower < 10){
                 pointsGiven = 4; //medium experience - 4 ability points
             }else{
                 pointsGiven = 2; //small experience - 2 ability point to random ability (attack power or defence power)
@@ -389,7 +389,7 @@ contract Controller is Inherit, Strings {
 
      function _cancelChampSale(Champ memory _champ) private 
      {
-        //cancel champ&#39;s sale
+        //cancel champ's sale
         //no need waste gas to overwrite his price.
         _champ.forSale = false;
 
@@ -417,8 +417,8 @@ contract Controller is Inherit, Strings {
         (,uint toChampsCount,,) = core.addressInfo(_to); 
         (,uint fromChampsCount,,) = core.addressInfo(_from);
 
-        core.updateAddressInfo(_to,0,false,toChampsCount + 1,true,0,false,&quot;&quot;,false);
-        core.updateAddressInfo(_from,0,false,fromChampsCount - 1,true,0,false,&quot;&quot;,false);
+        core.updateAddressInfo(_to,0,false,toChampsCount + 1,true,0,false,"",false);
+        core.updateAddressInfo(_from,0,false,fromChampsCount - 1,true,0,false,"",false);
 
         core.setTokenToOwner(_champId, _to, true);
 
@@ -533,9 +533,9 @@ contract Controller is Inherit, Strings {
     function getTokenURIs(uint _id, bool _isTokenChamp) public pure returns(string)
     {
         if(_isTokenChamp){
-            return strConcat(&#39;https://mccapi.patrikmojzis.com/champ.php?id=&#39;, uint2str(_id));
+            return strConcat('https://mccapi.patrikmojzis.com/champ.php?id=', uint2str(_id));
         }else{
-            return strConcat(&#39;https://mccapi.patrikmojzis.com/item.php?id=&#39;, uint2str(_id));
+            return strConcat('https://mccapi.patrikmojzis.com/item.php?id=', uint2str(_id));
         }
     }
 
@@ -546,23 +546,23 @@ contract Controller is Inherit, Strings {
         Champ memory champ = _getChamp(_champId);
         if(_type == 1){
             itemId = champ.eq_sword; //Get item ID
-            if (itemId &gt; 0) { //0 = nothing
+            if (itemId > 0) { //0 = nothing
                 champ.eq_sword = 0; //take off sword
             }
         }
         if(_type == 2){
             itemId = champ.eq_shield; //Get item ID
-            if(itemId &gt; 0) {//0 = nothing
+            if(itemId > 0) {//0 = nothing
                 champ.eq_shield = 0; //take off shield
             }
         }
         if(_type == 3){
             itemId = champ.eq_helmet; //Get item ID
-            if(itemId &gt; 0) { //0 = nothing
+            if(itemId > 0) { //0 = nothing
                 champ.eq_helmet = 0; //take off 
             }
         }
-        if(itemId &gt; 0){
+        if(itemId > 0){
             Item memory item = _getItem(itemId);
             item.onChamp = false;
             _updateItem(item);
@@ -590,26 +590,26 @@ contract Controller is Inherit, Strings {
             }
 
             item.onChamp = true; //item is on champ
-            item.onChampId = _champId; //champ&#39;s id
+            item.onChampId = _champId; //champ's id
 
             //put on
             if(item.itemType == 1){
                 //take off actual sword 
-                if(champ.eq_sword &gt; 0){
+                if(champ.eq_sword > 0){
                     _takeOffItem(champ.id, 1);
                 }
                 champ.eq_sword = _itemId; //put on sword
             }
             if(item.itemType == 2){
                 //take off actual shield 
-                if(champ.eq_shield &gt; 0){
+                if(champ.eq_shield > 0){
                     _takeOffItem(champ.id, 2);
                 }
                 champ.eq_shield = _itemId; //put on shield
             }
             if(item.itemType == 3){
                 //take off actual helmet 
-                if(champ.eq_helmet &gt; 0){
+                if(champ.eq_helmet > 0){
                     _takeOffItem(champ.id, 3);
                 }
                 champ.eq_helmet = _itemId; //put on helmet
@@ -621,7 +621,7 @@ contract Controller is Inherit, Strings {
 
 
     function _cancelItemSale(Item memory item) private {
-      //No need to overwrite item&#39;s price
+      //No need to overwrite item's price
       item.forSale = false;
       
       /*
@@ -641,7 +641,7 @@ contract Controller is Inherit, Strings {
         }
 
         //take off      
-        if(item.onChamp &amp;&amp; _to != core.tokenToOwner(true, item.onChampId)){
+        if(item.onChamp && _to != core.tokenToOwner(true, item.onChampId)){
           _takeOffItem(item.onChampId, item.itemType);
         }
 
@@ -651,8 +651,8 @@ contract Controller is Inherit, Strings {
         (,,uint toItemsCount,) = core.addressInfo(_to);
         (,,uint fromItemsCount,) = core.addressInfo(_from);
 
-        core.updateAddressInfo(_to,0,false,0,false,toItemsCount + 1,true,&quot;&quot;,false);
-        core.updateAddressInfo(_from,0,false,0,false,fromItemsCount - 1,true,&quot;&quot;,false);
+        core.updateAddressInfo(_to,0,false,0,false,toItemsCount + 1,true,"",false);
+        core.updateAddressInfo(_from,0,false,0,false,fromItemsCount - 1,true,"",false);
         
         core.setTokenToOwner(_itemID, _to,false);
 
@@ -686,9 +686,9 @@ contract Controller is Inherit, Strings {
         }
 
         //update parent item
-        parentItem.attackPower = (parentItem.attackPower &gt; childItem.attackPower) ? parentItem.attackPower : childItem.attackPower;
-        parentItem.defencePower = (parentItem.defencePower &gt; childItem.defencePower) ? parentItem.defencePower : childItem.defencePower;
-        parentItem.cooldownReduction = (parentItem.cooldownReduction &gt; childItem.cooldownReduction) ? parentItem.cooldownReduction : childItem.cooldownReduction;
+        parentItem.attackPower = (parentItem.attackPower > childItem.attackPower) ? parentItem.attackPower : childItem.attackPower;
+        parentItem.defencePower = (parentItem.defencePower > childItem.defencePower) ? parentItem.defencePower : childItem.defencePower;
+        parentItem.cooldownReduction = (parentItem.cooldownReduction > childItem.cooldownReduction) ? parentItem.cooldownReduction : childItem.cooldownReduction;
         parentItem.itemRarity = uint8(6);
 
         _updateItem(parentItem);

@@ -17,10 +17,10 @@ contract SpiderFarm{
     bool public initialized=false;
     address public ceoAddress;
     address public owner;
-    mapping (address =&gt; uint256) public hatcheryShrimp;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryShrimp;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs;
     uint256 public snailmasterReq=100000;
    
@@ -29,14 +29,14 @@ contract SpiderFarm{
         uint256 eggCount=SafeMath.div(hasEggs,EGGS_TO_HATCH_1SHRIMP);
         require(initialized);
         require(msg.sender != ceoAddress);
-        require(eggCount&gt;=snailmasterReq);
+        require(eggCount>=snailmasterReq);
         claimedEggs[msg.sender]=0;
         snailmasterReq=SafeMath.add(snailmasterReq,100000);//+100k shrimps each time
         ceoAddress=msg.sender;
     }
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
@@ -45,7 +45,7 @@ contract SpiderFarm{
         hatcheryShrimp[msg.sender]=SafeMath.add(hatcheryShrimp[msg.sender],newShrimp);
         claimedEggs[msg.sender]=0;
         lastHatch[msg.sender]=now;
-        if (timer&gt;=1) {
+        if (timer>=1) {
         marketEggs=SafeMath.mul(SafeMath.div(marketEggs,5),4);
         startTime=now;
         }
@@ -142,7 +142,7 @@ contract SpiderFarm{
         return SafeMath.mul(secondsPassed,hatcheryShrimp[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     function tmp() public returns(uint){
          require(startTime != 0);
@@ -178,9 +178,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -188,7 +188,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -197,7 +197,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

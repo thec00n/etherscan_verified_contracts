@@ -9,37 +9,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal pure returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -83,7 +83,7 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
    /// Preparing: Waiting for ICO start
    /// Selling: Active sale
    /// ProlongedSelling: Prolonged active sale
-   /// TokenShortage: ICO period isn&#39;t over yet, but there are no tokens on the contract
+   /// TokenShortage: ICO period isn't over yet, but there are no tokens on the contract
    /// Finished: ICO has finished
   enum Status {Unknown, Preparing, Selling, ProlongedSelling, TokenShortage, Finished}
 
@@ -136,10 +136,10 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
   bool public prolongationPermitted;
 
   ///  How much ETH each address has invested to this crowdsale
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   ///  How much tokens this crowdsale has credited for each investor address
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /// Multiplier for token value
   uint public tokenValueMultiplier;
@@ -162,9 +162,9 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
     require(_token != 0);
     require(_ethMultisigWallet != 0);
     require(_tokenMultisigWallet != 0);
-    require(_duration &gt; 0);
-    require(_tokenPrice &gt; 0);
-    require(_minInvestment &gt; 0);
+    require(_duration > 0);
+    require(_tokenPrice > 0);
+    require(_minInvestment > 0);
 
     token = ERC20(_token);
     ethMultisigWallet = _ethMultisigWallet;
@@ -182,13 +182,13 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
   function() public payable {
     require(!stopped);
     require(getCurrentStatus() == Status.Selling || getCurrentStatus() == Status.ProlongedSelling);
-    require(msg.value &gt;= minInvestment);
+    require(msg.value >= minInvestment);
     address receiver = msg.sender;
 
     // Check if current sender is allowed to participate in this crowdsale
     var senderAllowed = false;
-    if (allowedSenders.length &gt; 0) {
-      for (uint i = 0; i &lt; allowedSenders.length; i++)
+    if (allowedSenders.length > 0) {
+      for (uint i = 0; i < allowedSenders.length; i++)
         if (allowedSenders[i] == receiver){
           senderAllowed = true;
           break;
@@ -201,11 +201,11 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
 
     uint weiAmount = msg.value;
     uint tokenAmount = safeDiv(safeMul(weiAmount, tokenValueMultiplier), tokenPrice);
-    assert(tokenAmount &gt; 0);
+    assert(tokenAmount > 0);
 
     uint changeWei = 0;
     var currentContractTokens = token.balanceOf(address(this));
-    if (currentContractTokens &lt; tokenAmount) {
+    if (currentContractTokens < tokenAmount) {
       var changeTokenAmount = safeSub(tokenAmount, currentContractTokens);
       changeWei = safeDiv(safeMul(changeTokenAmount, tokenPrice), tokenValueMultiplier);
       tokenAmount = currentContractTokens;
@@ -231,7 +231,7 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
     assert(transferSuccess);
 
     // Return change if any
-    if (changeWei &gt; 0) {
+    if (changeWei > 0) {
       receiver.transfer(changeWei);
     }
 
@@ -242,17 +242,17 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
    /// @dev Token sale state machine management.
    /// @return Status current status
   function getCurrentStatus() public constant returns (Status) {
-    if (startTime &gt; now)
+    if (startTime > now)
       return Status.Preparing;
-    if (now &gt; startTime + duration + prolongedDuration)
+    if (now > startTime + duration + prolongedDuration)
       return Status.Finished;
-    if (now &gt; startTime + duration &amp;&amp; !prolongationPermitted)
+    if (now > startTime + duration && !prolongationPermitted)
       return Status.Finished;
-    if (token.balanceOf(address(this)) &lt;= 0)
+    if (token.balanceOf(address(this)) <= 0)
       return Status.TokenShortage;
-    if (now &gt; startTime + duration)
+    if (now > startTime + duration)
       return Status.ProlongedSelling;
-    if (now &gt;= startTime)
+    if (now >= startTime)
         return Status.Selling;
     return Status.Unknown;
   }
@@ -260,7 +260,7 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
   /// @dev Withdraw remaining tokens to the team wallet
   /// @param value Amount of tokens to withdraw
   function withdrawTokens(uint value) public onlyOwner {
-    require(value &lt;= token.balanceOf(address(this)));
+    require(value <= token.balanceOf(address(this)));
     // Return the specified amount of tokens to team wallet
     token.transfer(tokenMultisigWallet, value);
     Withdraw(value);
@@ -269,7 +269,7 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
   /// @dev Change current token price
   /// @param newTokenPrice New token unit price in wei
   function changeTokenPrice(uint newTokenPrice) public onlyOwner {
-    require(newTokenPrice &gt; 0);
+    require(newTokenPrice > 0);
 
     tokenPrice = newTokenPrice;
     TokenPriceChanged(newTokenPrice);
@@ -277,7 +277,7 @@ contract SilentNotaryTokenSale is Ownable, SafeMath {
 
   /// @dev Prolong ICO if owner decides to do it
   function prolong() public onlyOwner {
-    require(!prolongationPermitted &amp;&amp; prolongedDuration &gt; 0);
+    require(!prolongationPermitted && prolongedDuration > 0);
     prolongationPermitted = true;
   }
 

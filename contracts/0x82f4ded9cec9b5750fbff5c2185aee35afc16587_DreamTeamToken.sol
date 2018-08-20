@@ -23,20 +23,20 @@ library SafeMath {
     }
     
     function div (uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
     
     function sub (uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add (uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
@@ -46,7 +46,7 @@ library SafeMath {
  * DreamTeam token contract. It implements the next capabilities:
  * 1. Standard ERC20 functionality.
  * 2. Additional utility function approveAndCall.
- * 3. Function to rescue &quot;lost forever&quot; tokens, which were accidentally sent to this smart contract.
+ * 3. Function to rescue "lost forever" tokens, which were accidentally sent to this smart contract.
  * 4. Additional transfer and approve functions which allow to distinct the transaction signer and executor,
  *    which enables accounts with no Ether on their balances to make token transfers and use DreamTeam services.
  * 5. Token sale distribution rules.
@@ -57,11 +57,11 @@ contract DreamTeamToken {
 
     string public name;
     string public symbol;
-    uint8 public decimals = 6; // Allows JavaScript to handle precise calculations (until totalSupply &lt; 9 billion)
+    uint8 public decimals = 6; // Allows JavaScript to handle precise calculations (until totalSupply < 9 billion)
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
-    mapping(address =&gt; mapping(uint =&gt; bool)) public usedSigIds; // Used in *ViaSignature(..)
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => mapping(uint => bool)) public usedSigIds; // Used in *ViaSignature(..)
     address public tokenDistributor; // Account authorized to distribute tokens only during the token distribution event
     address public rescueAccount; // Account authorized to withdraw tokens accidentally sent to this contract
 
@@ -74,48 +74,48 @@ contract DreamTeamToken {
     enum sigStandard { typed, personal, stringHex }
     enum sigDestination { transfer, approve, approveAndCall, transferFrom }
 
-    bytes constant public ethSignedMessagePrefix = &quot;\x19Ethereum Signed Message:\n&quot;;
+    bytes constant public ethSignedMessagePrefix = "\x19Ethereum Signed Message:\n";
     bytes32 constant public sigDestinationTransfer = keccak256(
-        &quot;address Token Contract Address&quot;,
-        &quot;address Sender&#39;s Address&quot;,
-        &quot;address Recipient&#39;s Address&quot;,
-        &quot;uint256 Amount to Transfer (last six digits are decimals)&quot;,
-        &quot;uint256 Fee in Tokens Paid to Executor (last six digits are decimals)&quot;,
-        &quot;address Account which Receives Fee&quot;,
-        &quot;uint256 Signature Expiration Timestamp (unix timestamp)&quot;,
-        &quot;uint256 Signature ID&quot;
+        "address Token Contract Address",
+        "address Sender's Address",
+        "address Recipient's Address",
+        "uint256 Amount to Transfer (last six digits are decimals)",
+        "uint256 Fee in Tokens Paid to Executor (last six digits are decimals)",
+        "address Account which Receives Fee",
+        "uint256 Signature Expiration Timestamp (unix timestamp)",
+        "uint256 Signature ID"
     ); // `transferViaSignature`: keccak256(address(this), from, to, value, fee, deadline, sigId)
     bytes32 constant public sigDestinationTransferFrom = keccak256(
-        &quot;address Token Contract Address&quot;,
-        &quot;address Address Approved for Withdraw&quot;,
-        &quot;address Account to Withdraw From&quot;,
-        &quot;address Withdrawal Recipient Address&quot;,
-        &quot;uint256 Amount to Transfer (last six digits are decimals)&quot;,
-        &quot;uint256 Fee in Tokens Paid to Executor (last six digits are decimals)&quot;,
-        &quot;address Account which Receives Fee&quot;,
-        &quot;uint256 Signature Expiration Timestamp (unix timestamp)&quot;,
-        &quot;uint256 Signature ID&quot;
+        "address Token Contract Address",
+        "address Address Approved for Withdraw",
+        "address Account to Withdraw From",
+        "address Withdrawal Recipient Address",
+        "uint256 Amount to Transfer (last six digits are decimals)",
+        "uint256 Fee in Tokens Paid to Executor (last six digits are decimals)",
+        "address Account which Receives Fee",
+        "uint256 Signature Expiration Timestamp (unix timestamp)",
+        "uint256 Signature ID"
     ); // `transferFromViaSignature`: keccak256(address(this), signer, from, to, value, fee, deadline, sigId)
     bytes32 constant public sigDestinationApprove = keccak256(
-        &quot;address Token Contract Address&quot;,
-        &quot;address Withdrawal Approval Address&quot;,
-        &quot;address Withdrawal Recipient Address&quot;,
-        &quot;uint256 Amount to Transfer (last six digits are decimals)&quot;,
-        &quot;uint256 Fee in Tokens Paid to Executor (last six digits are decimals)&quot;,
-        &quot;address Account which Receives Fee&quot;,
-        &quot;uint256 Signature Expiration Timestamp (unix timestamp)&quot;,
-        &quot;uint256 Signature ID&quot;
+        "address Token Contract Address",
+        "address Withdrawal Approval Address",
+        "address Withdrawal Recipient Address",
+        "uint256 Amount to Transfer (last six digits are decimals)",
+        "uint256 Fee in Tokens Paid to Executor (last six digits are decimals)",
+        "address Account which Receives Fee",
+        "uint256 Signature Expiration Timestamp (unix timestamp)",
+        "uint256 Signature ID"
     ); // `approveViaSignature`: keccak256(address(this), from, spender, value, fee, deadline, sigId)
     bytes32 constant public sigDestinationApproveAndCall = keccak256(
-        &quot;address Token Contract Address&quot;,
-        &quot;address Withdrawal Approval Address&quot;,
-        &quot;address Withdrawal Recipient Address&quot;,
-        &quot;uint256 Amount to Transfer (last six digits are decimals)&quot;,
-        &quot;bytes Data to Transfer&quot;,
-        &quot;uint256 Fee in Tokens Paid to Executor (last six digits are decimals)&quot;,
-        &quot;address Account which Receives Fee&quot;,
-        &quot;uint256 Signature Expiration Timestamp (unix timestamp)&quot;,
-        &quot;uint256 Signature ID&quot;
+        "address Token Contract Address",
+        "address Withdrawal Approval Address",
+        "address Withdrawal Recipient Address",
+        "uint256 Amount to Transfer (last six digits are decimals)",
+        "bytes Data to Transfer",
+        "uint256 Fee in Tokens Paid to Executor (last six digits are decimals)",
+        "address Account which Receives Fee",
+        "uint256 Signature Expiration Timestamp (unix timestamp)",
+        "uint256 Signature ID"
     ); // `approveAndCallViaSignature`: keccak256(address(this), from, spender, value, extraData, fee, deadline, sigId)
 
     /**
@@ -129,7 +129,7 @@ contract DreamTeamToken {
     } 		   	  				  	  	      		 			  		 	  	 		 	 		 		 	  	 			 	   		    	  	 			  			 	   		 	 		
 
     /**
-     * Utility internal function used to safely transfer `value` tokens `from` -&gt; `to`. Throws if transfer is impossible.
+     * Utility internal function used to safely transfer `value` tokens `from` -> `to`. Throws if transfer is impossible.
      * @param from - account to make the transfer from
      * @param to - account to transfer `value` tokens to
      * @param value - tokens to transfer to account `to`
@@ -142,8 +142,8 @@ contract DreamTeamToken {
     }
 
     /**
-     * Utility internal function used to safely transfer `value1` tokens `from` -&gt; `to1`, and `value2` tokens
-     * `from` -&gt; `to2`, minimizing gas usage (calling `internalTransfer` twice is more expensive). Throws if
+     * Utility internal function used to safely transfer `value1` tokens `from` -> `to1`, and `value2` tokens
+     * `from` -> `to2`, minimizing gas usage (calling `internalTransfer` twice is more expensive). Throws if
      * transfers are impossible.
      * @param from - account to make the transfer from
      * @param to1 - account to transfer `value1` tokens to
@@ -152,11 +152,11 @@ contract DreamTeamToken {
      * @param value2 - tokens to transfer to account `to2`
      */
     function internalDoubleTransfer (address from, address to1, uint value1, address to2, uint value2) internal {
-        require(to1 != 0x0 &amp;&amp; to2 != 0x0); // Prevent people from accidentally burning their tokens
+        require(to1 != 0x0 && to2 != 0x0); // Prevent people from accidentally burning their tokens
         balanceOf[from] = balanceOf[from].sub(value1.add(value2));
         balanceOf[to1] = balanceOf[to1].add(value1);
         emit Transfer(from, to1, value1);
-        if (value2 &gt; 0) {
+        if (value2 > 0) {
             balanceOf[to2] = balanceOf[to2].add(value2);
             emit Transfer(from, to2, value2);
         }
@@ -166,7 +166,7 @@ contract DreamTeamToken {
      * Internal method that makes sure that the given signature corresponds to a given data and is made by `signer`.
      * It utilizes three (four) standards of message signing in Ethereum, as at the moment of this smart contract
      * development there is no single signing standard defined. For example, Metamask and Geth both support
-     * personal_sign standard, SignTypedData is only supported by Matamask, Trezor does not support &quot;widely adopted&quot;
+     * personal_sign standard, SignTypedData is only supported by Matamask, Trezor does not support "widely adopted"
      * Ethereum personal_sign but rather personal_sign with fixed prefix and so on.
      * Note that it is always possible to forge any of these signatures using the private key, the problem is that
      * third-party wallets must adopt a single standard for signing messages.
@@ -174,7 +174,7 @@ contract DreamTeamToken {
      * @param signer - account which made a signature
      * @param deadline - until when the signature is valid
      * @param sigId - signature unique ID. Signatures made with the same signature ID cannot be submitted twice
-     * @param sig - signature made by `from`, which is the proof of `from`&#39;s agreement with the above parameters
+     * @param sig - signature made by `from`, which is the proof of `from`'s agreement with the above parameters
      * @param sigStd - chosen standard for signature validation. The signer must explicitly tell which standard they use
      * @param sigDest - for which type of action this signature was made
      */
@@ -195,9 +195,9 @@ contract DreamTeamToken {
             s := mload(add(sig, 64)) 		   	  				  	  	      		 			  		 	  	 		 	 		 		 	  	 			 	   		    	  	 			  			 	   		 	 		
             v := byte(0, mload(add(sig, 96)))
         }
-        if (v &lt; 27)
+        if (v < 27)
             v += 27;
-        require(block.timestamp &lt;= deadline &amp;&amp; !usedSigIds[signer][sigId]); // solium-disable-line security/no-block-members
+        require(block.timestamp <= deadline && !usedSigIds[signer][sigId]); // solium-disable-line security/no-block-members
         if (sigStd == sigStandard.typed) { // Typed signature. This is the most likely scenario to be used and accepted
             require(
                 signer == ecrecover(
@@ -216,15 +216,15 @@ contract DreamTeamToken {
             );
         } else if (sigStd == sigStandard.personal) { // Ethereum signed message signature (Geth and Trezor)
             require(
-                signer == ecrecover(keccak256(ethSignedMessagePrefix, &quot;32&quot;, data), v, r, s) // Geth-adopted
+                signer == ecrecover(keccak256(ethSignedMessagePrefix, "32", data), v, r, s) // Geth-adopted
                 ||
-                signer == ecrecover(keccak256(ethSignedMessagePrefix, &quot;\x20&quot;, data), v, r, s) // Trezor-adopted
+                signer == ecrecover(keccak256(ethSignedMessagePrefix, "\x20", data), v, r, s) // Trezor-adopted
             );
         } else { // == 2; Signed string hash signature (the most expensive but universal)
             require(
-                signer == ecrecover(keccak256(ethSignedMessagePrefix, &quot;64&quot;, hexToString(data)), v, r, s) // Geth
+                signer == ecrecover(keccak256(ethSignedMessagePrefix, "64", hexToString(data)), v, r, s) // Geth
                 ||
-                signer == ecrecover(keccak256(ethSignedMessagePrefix, &quot;\x40&quot;, hexToString(data)), v, r, s) // Trezor
+                signer == ecrecover(keccak256(ethSignedMessagePrefix, "\x40", hexToString(data)), v, r, s) // Trezor
             );
         }
         usedSigIds[signer][sigId] = true;
@@ -236,9 +236,9 @@ contract DreamTeamToken {
      */
     function hexToString (bytes32 sig) internal pure returns (bytes) {
         bytes memory str = new bytes(64);
-        for (uint8 i = 0; i &lt; 32; ++i) {
-            str[2 * i] = byte((uint8(sig[i]) / 16 &lt; 10 ? 48 : 87) + uint8(sig[i]) / 16);
-            str[2 * i + 1] = byte((uint8(sig[i]) % 16 &lt; 10 ? 48 : 87) + (uint8(sig[i]) % 16));
+        for (uint8 i = 0; i < 32; ++i) {
+            str[2 * i] = byte((uint8(sig[i]) / 16 < 10 ? 48 : 87) + uint8(sig[i]) / 16);
+            str[2 * i + 1] = byte((uint8(sig[i]) % 16 < 10 ? 48 : 87) + (uint8(sig[i]) % 16));
         }
         return str;
     }
@@ -257,10 +257,10 @@ contract DreamTeamToken {
      * This function distincts transaction signer from transaction executor. It allows anyone to transfer tokens
      * from the `from` account by providing a valid signature, which can only be obtained from the `from` account
      * owner.
-     * Note that passed parameter sigId is unique and cannot be passed twice (prevents replay attacks). When there&#39;s
+     * Note that passed parameter sigId is unique and cannot be passed twice (prevents replay attacks). When there's
      * a need to make signature once again (because the first one is lost or whatever), user should sign the message
-     * with the same sigId, thus ensuring that the previous signature can&#39;t be used if the new one passes.
-     * Use case: the user wants to send some tokens to another user or smart contract, but don&#39;t have Ether to do so.
+     * with the same sigId, thus ensuring that the previous signature can't be used if the new one passes.
+     * Use case: the user wants to send some tokens to another user or smart contract, but don't have Ether to do so.
      * @param from - the account giving its signature to transfer `value` tokens to `to` address
      * @param to - the account receiving `value` tokens
      * @param value - the value in tokens to transfer
@@ -268,7 +268,7 @@ contract DreamTeamToken {
      * @param feeRecipient - account which will receive fee
      * @param deadline - until when the signature is valid
      * @param sigId - signature unique ID. Signatures made with the same signature ID cannot be submitted twice
-     * @param sig - signature made by `from`, which is the proof of `from`&#39;s agreement with the above parameters
+     * @param sig - signature made by `from`, which is the proof of `from`'s agreement with the above parameters
      * @param sigStd - chosen standard for signature validation. The signer must explicitly tell which standard they use
      */
     function transferViaSignature ( 		   	  				  	  	      		 			  		 	  	 		 	 		 		 	  	 			 	   		    	  	 			  			 	   		 	 		
@@ -291,10 +291,10 @@ contract DreamTeamToken {
     }
 
     /**
-     * Allow `spender` to take `value` tokens from the transaction sender&#39;s account.
+     * Allow `spender` to take `value` tokens from the transaction sender's account.
      * Beware that changing an allowance with this method brings the risk that `spender` may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param spender - the address authorized to spend
      * @param value - the maximum amount they can spend
@@ -316,7 +316,7 @@ contract DreamTeamToken {
      * @param feeRecipient - account which will receive fee
      * @param deadline - until when the signature is valid
      * @param sigId - signature unique ID. Signatures made with the same signature ID cannot be submitted twice
-     * @param sig - signature made by `from`, which is the proof of `from`&#39;s agreement with the above parameters
+     * @param sig - signature made by `from`, which is the proof of `from`'s agreement with the above parameters
      * @param sigStd - chosen standard for signature validation. The signer must explicitly tell which standard they use
      */
     function approveViaSignature (
@@ -364,7 +364,7 @@ contract DreamTeamToken {
      * @param feeRecipient - account which will receive fee
      * @param deadline - until when the signature is valid
      * @param sigId - signature unique ID. Signatures made with the same signature ID cannot be submitted twice
-     * @param sig - signature made by `from`, which is the proof of `from`&#39;s agreement with the above parameters
+     * @param sig - signature made by `from`, which is the proof of `from`'s agreement with the above parameters
      * @param sigStd - chosen standard for signature validation. The signer must explicitly tell which standard they use
      */
     function transferFromViaSignature (
@@ -391,7 +391,7 @@ contract DreamTeamToken {
     /**
      * Utility function, which acts the same as approve(...), but also calls `receiveApproval` function on a
      * `spender` address, which is usually the address of the smart contract. In the same call, smart contract can
-     * withdraw tokens from the sender&#39;s account and receive additional `extraData` for processing.
+     * withdraw tokens from the sender's account and receive additional `extraData` for processing.
      * @param spender - the address to be authorized to spend tokens
      * @param value - the max amount the `spender` can withdraw
      * @param extraData - some extra information to send to the approved contract
@@ -413,7 +413,7 @@ contract DreamTeamToken {
      * @param feeRecipient - account which will receive fee
      * @param deadline - until when the signature is valid
      * @param sigId - signature unique ID. Signatures made with the same signature ID cannot be submitted twice
-     * @param sig - signature made by `from`, which is the proof of `from`&#39;s agreement with the above parameters
+     * @param sig - signature made by `from`, which is the proof of `from`'s agreement with the above parameters
      * @param sigStd - chosen standard for signature validation. The signer must explicitly tell which standard they use
      */
     function approveAndCallViaSignature (
@@ -453,7 +453,7 @@ contract DreamTeamToken {
 
         uint total = 0;
 
-        for (uint i = 0; i &lt; recipients.length; ++i) {
+        for (uint i = 0; i < recipients.length; ++i) {
             balanceOf[recipients[i]] = balanceOf[recipients[i]].add(amounts[i]);
             total = total.add(amounts[i]);
             emit Transfer(0x0, recipients[i], amounts[i]);
@@ -469,11 +469,11 @@ contract DreamTeamToken {
      */
     function lastMint () external tokenDistributionPeriodOnly {
 
-        require(totalSupply &gt; 0);
+        require(totalSupply > 0);
 
         uint256 remaining = totalSupply.mul(40).div(60); // Portion of tokens for DreamTeam (40%)
 
-        // To make the total supply rounded (no fractional part), subtract the fractional part from DreamTeam&#39;s balance
+        // To make the total supply rounded (no fractional part), subtract the fractional part from DreamTeam's balance
         uint256 fractionalPart = remaining.add(totalSupply) % (uint256(10) ** decimals);
         remaining = remaining.sub(fractionalPart); // Remove the fractional part to round the totalSupply
 
@@ -488,7 +488,7 @@ contract DreamTeamToken {
     /**
      * ERC20 tokens are not designed to hold any other tokens (or Ether) on their balances. There were thousands
      * of cases when people accidentally transfer tokens to a contract address while there is no way to get them
-     * back. This function adds a possibility to &quot;rescue&quot; tokens that were accidentally sent to this smart contract.
+     * back. This function adds a possibility to "rescue" tokens that were accidentally sent to this smart contract.
      * @param tokenContract - ERC20-compatible token
      * @param value - amount to rescue
      */
@@ -497,7 +497,7 @@ contract DreamTeamToken {
     }
 
     /**
-     * Utility function that allows to change the rescueAccount address, which can &quot;rescue&quot; tokens accidentally sent to
+     * Utility function that allows to change the rescueAccount address, which can "rescue" tokens accidentally sent to
      * this smart contract address.
      * @param newRescueAccount - account which will become authorized to rescue tokens
      */ 		   	  				  	  	      		 			  		 	  	 		 	 		 		 	  	 			 	   		    	  	 			  			 	   		 	 		

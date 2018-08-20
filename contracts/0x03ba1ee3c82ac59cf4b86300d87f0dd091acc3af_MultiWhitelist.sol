@@ -20,7 +20,7 @@ contract MultiWhitelist {
         require(msg.sender == owner);
         require(category == 4);
 
-        for(uint i = 0 ; i &lt; users.length ; i++ ) {
+        for(uint i = 0 ; i < users.length ; i++ ) {
             listContract.setUserCategory(users[i],category);
         }
     }

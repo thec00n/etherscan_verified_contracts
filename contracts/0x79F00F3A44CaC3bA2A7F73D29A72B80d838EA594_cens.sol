@@ -8,7 +8,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -47,23 +47,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -99,7 +99,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -122,18 +122,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -162,12 +162,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -177,7 +177,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -216,18 +216,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -267,33 +267,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / div;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             len = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             len = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             len = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             div = div / 256;
-            b = (word / div) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / div) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -317,7 +317,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -343,7 +343,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -372,7 +372,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -400,7 +400,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -427,8 +427,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -448,7 +448,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -465,8 +465,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -488,7 +488,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -610,7 +610,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint count) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             count++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -652,20 +652,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint len = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             len += parts[i]._len;
 
         var ret = new string(len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -689,13 +689,13 @@ contract cens{
         address directTo;
         string readableName;
     }
-    mapping (string =&gt; entry) Entries;
+    mapping (string => entry) Entries;
 
     uint numEntries;
     uint maxEntries = 10000;
     bool allowed = false;
 
-    string compare = &quot;.ceth&quot;;
+    string compare = ".ceth";
 
     address owner;
     function cens(){
@@ -736,7 +736,7 @@ contract cens{
             }
             Transfer(msg.sender, name, e.directTo);
         }else{
-            Error(&quot;name is not valid/registered.&quot;, name);
+            Error("name is not valid/registered.", name);
             if(!msg.sender.send(msg.value)){
                 throw;
             }
@@ -749,7 +749,7 @@ contract cens{
             AddressChanged(name, e.directTo, newAddress);
             e.directTo = newAddress;
         }else{
-            Error(&quot;insufficient permissions.&quot;, name);
+            Error("insufficient permissions.", name);
         }
     }
 
@@ -759,7 +759,7 @@ contract cens{
             OwnershipTransfer(name, e.owner, newOwner);
             e.owner = newOwner;
         }else{
-            Error(&quot;insufficient permissions.&quot;, name);
+            Error("insufficient permissions.", name);
         }
     }
 
@@ -768,14 +768,14 @@ contract cens{
         bytes memory a = bytes(name);
         var s = name.toSlice();
 
-        if(allowed &amp;&amp; e.owner == address(0x0) &amp;&amp; a.length &gt; 5 &amp;&amp; a.length &lt;= 20 &amp;&amp; numEntries &lt; maxEntries &amp;&amp; s.endsWith(&quot;.ceth&quot;.toSlice())){
+        if(allowed && e.owner == address(0x0) && a.length > 5 && a.length <= 20 && numEntries < maxEntries && s.endsWith(".ceth".toSlice())){
             e.readableName = name;
             e.owner = msg.sender;
             e.directTo = directAddress;
             Registered(msg.sender, name, directAddress);
             numEntries++;
         }else{
-            Error(&quot;either the name is taken, too long, has invalid characters, or the registry is full.&quot;, name);
+            Error("either the name is taken, too long, has invalid characters, or the registry is full.", name);
         }
     }
 }

@@ -7,7 +7,7 @@ pragma solidity ^0.4.24;
 // Name        : AXNET Private Sale token
 //
 // Website     : https://ax.net
-// Company     : Asset Exchange Network (AXNET O&#220;)
+// Company     : Asset Exchange Network (AXNET OÜ)
 // ----------------------------------------------------------------------------
 
 
@@ -17,10 +17,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -28,7 +28,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -96,8 +96,8 @@ contract AXPRV is Owned {
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;AXPRV&quot;;
-        name = &quot;AXNET Private Sale token&quot;;
+        symbol = "AXPRV";
+        name = "AXNET Private Sale token";
         decimals = 18;
     }
 
@@ -106,8 +106,8 @@ contract AXPRV is Owned {
     // Time limited deposit of ether
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= contract_start);
-        require(now &lt;= contract_finish);      
+        require(now >= contract_start);
+        require(now <= contract_finish);      
     }
 
   /**
@@ -115,7 +115,7 @@ contract AXPRV is Owned {
   * @param _payee The address whose funds will be withdrawn and transferred to.
   */
   function withdraw(address _payee, uint amount) public onlyOwner {
-    assert(address(this).balance &gt;= amount);
+    assert(address(this).balance >= amount);
 
     _payee.transfer(amount);
 

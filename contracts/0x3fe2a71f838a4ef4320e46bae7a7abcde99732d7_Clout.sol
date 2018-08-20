@@ -11,8 +11,8 @@ string public symbol;
 uint8 public decimals = 18;
 uint256 public totalSupply;
 
-mapping (address =&gt; uint256) public balanceOf;
-mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+mapping (address => uint256) public balanceOf;
+mapping (address => mapping (address => uint256)) public allowance;
 
 event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -29,8 +29,8 @@ symbol = tokenSymbol;
 
 function _transfer(address _from, address _to, uint _value) internal {
 require(_to != 0x0);
-require(balanceOf[_from] &gt;= _value);
-require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+require(balanceOf[_from] >= _value);
+require(balanceOf[_to] + _value > balanceOf[_to]);
 
 uint previousBalances = balanceOf[_from] + balanceOf[_to];
 balanceOf[_from] -= _value;
@@ -47,7 +47,7 @@ _transfer(msg.sender, _to, _value);
 
 
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+require(_value <= allowance[_from][msg.sender]); // Check allowance
 allowance[_from][msg.sender] -= _value;
 _transfer(_from, _to, _value);
 return true;
@@ -73,10 +73,10 @@ return true;
 }
 contract Clout is ERC20 {
 
-function Clout() ERC20(100000000, &quot;Clout&quot;, &quot;Clout&quot;) public {}
+function Clout() ERC20(100000000, "Clout", "Clout") public {}
 function multisend(address[] dests, uint256[] values) public returns (uint256) {
 uint256 i = 0;
-while (i &lt; dests.length) {
+while (i < dests.length) {
 transfer(dests[i], values[i]);
 i += 1;
 }

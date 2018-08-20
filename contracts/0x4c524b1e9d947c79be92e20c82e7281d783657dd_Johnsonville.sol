@@ -24,15 +24,15 @@ contract Johnsonville {
     }
 
     function Donate() payable {
-      if(msg.value &gt; patronOne.balance || patronOne == 0x0){
+      if(msg.value > patronOne.balance || patronOne == 0x0){
         patronOne = msg.sender;
         return;
       }
-      if(msg.value &gt; patronTwo.balance || patronTwo == 0x0){
+      if(msg.value > patronTwo.balance || patronTwo == 0x0){
         patronTwo = msg.sender;
         return;
       }
-      if(msg.value &gt; patronThree.balance || patronThree == 0x0){
+      if(msg.value > patronThree.balance || patronThree == 0x0){
         patronThree = msg.sender;
         return;
       }
@@ -51,7 +51,7 @@ contract Johnsonville {
     }
 
     function Withdrawal(address withdrawalAddress) onlyOwner {
-      if(patronOneWd &amp;&amp; patronTwoWd &amp;&amp; patronThreeWd){
+      if(patronOneWd && patronTwoWd && patronThreeWd){
         selfdestruct(withdrawalAddress);
       }
     }

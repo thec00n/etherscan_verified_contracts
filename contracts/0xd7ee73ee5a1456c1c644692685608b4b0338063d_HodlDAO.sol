@@ -6,24 +6,24 @@ pragma solidity ^0.4.10;
 * Date: 2017
 *
 * Deploy with the following args:
-* &quot;Hodl DAO&quot;, 18, &quot;HODL&quot;
+* "Hodl DAO", 18, "HODL"
 *
 */
 contract HodlDAO {
     /* ERC20 Public variables of the token */
-    string public version = &#39;HDAO 0.4&#39;;
+    string public version = 'HDAO 0.4';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* ERC20 This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* store the block number when a withdrawal has been requested*/
-    mapping (address =&gt; withdrawalRequest) public withdrawalRequests;
+    mapping (address => withdrawalRequest) public withdrawalRequests;
     struct withdrawalRequest {
     uint sinceBlock;
     uint256 amount;
@@ -54,7 +54,7 @@ contract HodlDAO {
 
     /**
      * Initializes contract with initial supply tokens to the creator of the contract
-     * In our case, there&#39;s no initial supply. Tokens will be created as ether is sent
+     * In our case, there's no initial supply. Tokens will be created as ether is sent
      * to the fall-back function. Then tokens are burned when ether is withdrawn.
      */
     function HodlDAO(
@@ -75,7 +75,7 @@ contract HodlDAO {
      * withdrawal has been requested and is currently pending
      */
     modifier notPendingWithdrawal {
-        if (withdrawalRequests[msg.sender].sinceBlock &gt; 0) throw;
+        if (withdrawalRequests[msg.sender].sinceBlock > 0) throw;
         _;
     }
 
@@ -86,8 +86,8 @@ contract HodlDAO {
      * @return Whether the transfer was successful or not
      */
     function transfer(address _to, uint256 _value) notPendingWithdrawal {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -100,8 +100,8 @@ contract HodlDAO {
      * @return Whether the approval was successful or not
      *
      *
-     * Note, there are some edge-cases with the ERC-20 approve mechanism. In this case a &#39;bounds check&#39;
-     * was added to make sure Alice cant&#39; approve Bob for more tokens than she has.
+     * Note, there are some edge-cases with the ERC-20 approve mechanism. In this case a 'bounds check'
+     * was added to make sure Alice cant' approve Bob for more tokens than she has.
      * The assumptions are that these scenarios could still happen if not mitigated by Alice:
      *
      * Scenario 1:
@@ -121,13 +121,13 @@ contract HodlDAO {
      * Scenario 2:
      *
      * This is a race condition. To mitigate this problem, Alice should set the allowance to 0 in step 2,
-     * then wait until it&#39;s mined, then if Bob didn&#39;t take the 100 she can set to 50. (Otherwise Bob may
+     * then wait until it's mined, then if Bob didn't take the 100 she can set to 50. (Otherwise Bob may
      * potentially get 150 tokens)
      *
      *
      *  1. Alice approves Bob for 100,
      *  2. Alice changes it to 50
-     *  3. Bob sees the change in the mempool before it&#39;s mined, and sends a new transaction
+     *  3. Bob sees the change in the mempool before it's mined, and sends a new transaction
      *     that will hopefully win the race and withdraw the 100 first, meanwhile the 50 will
      *     be mined after and allow Bob to withdraw another 50.
      *
@@ -141,13 +141,13 @@ contract HodlDAO {
         // eg. Alice may approve a total lifetime amount for her child to spend, but only fund her account monthly.
         // It also allows her to have multiple equal approvees
 
-        //if (balanceOf[msg.sender] &lt; _value) return false; // Don&#39;t allow more than they currently have (bounds check)
+        //if (balanceOf[msg.sender] < _value) return false; // Don't allow more than they currently have (bounds check)
 
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) throw;
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;                                      // we must return a bool as part of the ERC20
@@ -162,10 +162,10 @@ contract HodlDAO {
 
         if (!approve(_spender, _value)) return false;
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {
             throw;
         }
         return true;
@@ -182,13 +182,13 @@ contract HodlDAO {
      */
     function transferFrom(address _from, address _to, uint256 _value)
     returns (bool success) {
-        // note that we can&#39;t use notPendingWithdrawal modifier here since this function does a transfer
+        // note that we can't use notPendingWithdrawal modifier here since this function does a transfer
         // on the behalf of _from
-        if (withdrawalRequests[_from].sinceBlock &gt; 0) throw;  // can&#39;t move tokens when _from is pending withdrawal
-        if (withdrawalRequests[_to].sinceBlock &gt; 0) throw;    // can&#39;t move tokens when _to is pending withdrawal
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;     // Check allowance
+        if (withdrawalRequests[_from].sinceBlock > 0) throw;  // can't move tokens when _from is pending withdrawal
+        if (withdrawalRequests[_to].sinceBlock > 0) throw;    // can't move tokens when _to is pending withdrawal
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -198,7 +198,7 @@ contract HodlDAO {
 
     /**
      * withdrawalInitiate initiates the withdrawal by going into a waiting period
-     * It remembers the block number &amp; amount held at the time of request.
+     * It remembers the block number & amount held at the time of request.
      * Tokens cannot be moved out during the waiting period, locking the tokens until then.
      * After the waiting period finishes, the call withdrawalComplete
      *
@@ -221,7 +221,7 @@ contract HodlDAO {
     function withdrawalComplete() returns (bool) {
         withdrawalRequest r = withdrawalRequests[msg.sender];
         if (r.sinceBlock == 0) throw;
-        if ((r.sinceBlock + blockWait) &gt; block.number) {
+        if ((r.sinceBlock + blockWait) > block.number) {
             // holder needs to wait some more blocks
             WithdrawalPremature(msg.sender, r.sinceBlock + blockWait - block.number);
             return false;
@@ -231,8 +231,8 @@ contract HodlDAO {
         withdrawalRequests[msg.sender].sinceBlock = 0;  // This will unlock the holders tokens
         withdrawalRequests[msg.sender].amount = 0;      // clear the amount that was requested
 
-        if (reward &gt; 0) {
-            if (feePot - reward &gt; feePot) {
+        if (reward > 0) {
+            if (feePot - reward > feePot) {
                 feePot = 0; // overflow
             } else {
                 feePot -= reward;
@@ -249,7 +249,7 @@ contract HodlDAO {
      */
     function calculateReward(uint256 v) constant returns (uint256) {
         uint256 reward = 0;
-        if (feePot &gt; 0) {
+        if (feePot > 0) {
             reward = feePot * v / totalSupply;
         }
         return reward;
@@ -269,7 +269,7 @@ contract HodlDAO {
     */
     function quickWithdraw() payable notPendingWithdrawal returns (bool) {
         uint256 amount = balanceOf[msg.sender];
-        if (amount &lt;= 0) throw;
+        if (amount <= 0) throw;
         // calculate required fee
         uint256 feeRequired = calculateFee(amount);
         if (msg.value != feeRequired) {
@@ -287,13 +287,13 @@ contract HodlDAO {
      */
     function doWithdrawal(uint256 extra) internal {
         uint256 amount = balanceOf[msg.sender];
-        if (amount &lt;= 0) throw;                      // cannot withdraw
-        if (amount + extra &gt; this.balance) {
-            throw;                                   // contract doesn&#39;t have enough balance
+        if (amount <= 0) throw;                      // cannot withdraw
+        if (amount + extra > this.balance) {
+            throw;                                   // contract doesn't have enough balance
         }
         balanceOf[msg.sender] = 0;
-        if (totalSupply &gt; totalSupply - amount) {
-            totalSupply = 0;                         // don&#39;t let it overflow
+        if (totalSupply > totalSupply - amount) {
+            totalSupply = 0;                         // don't let it overflow
         } else {
             totalSupply -= amount;                   // deflate the supply!
         }
@@ -308,7 +308,7 @@ contract HodlDAO {
     */
     function () payable notPendingWithdrawal {
         uint256 amount = msg.value;         // amount that was sent
-        if (amount &lt;= 0) throw;             // need to send some ETH
+        if (amount <= 0) throw;             // need to send some ETH
         balanceOf[msg.sender] += amount;    // mint new tokens
         totalSupply += amount;              // track the supply
         Transfer(0, msg.sender, amount);    // notify of the event

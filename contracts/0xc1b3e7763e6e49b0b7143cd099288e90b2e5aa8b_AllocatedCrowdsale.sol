@@ -43,7 +43,7 @@ contract FractionalERC20 is ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -155,13 +155,13 @@ contract Crowdsale is Ownable {
   address public signerAddress;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => bool) public earlyParticipantWhitelist;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -218,8 +218,8 @@ contract Crowdsale is Ownable {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    if (startsAt &gt;= endsAt) {
+    // Don't mess the dates
+    if (startsAt >= endsAt) {
         revert();
     }
 
@@ -243,7 +243,7 @@ contract Crowdsale is Ownable {
    */
   function investInternal(address receiver, uint128 customerId) private {
     
-    // Determine if it&#39;s a good time to accept investment from this participant
+    // Determine if it's a good time to accept investment from this participant
     if (getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
       if (!earlyParticipantWhitelist[receiver]) {
@@ -421,7 +421,7 @@ contract Crowdsale is Ownable {
   function setFinalizeAgent(FinalizeAgent addr) onlyOwner {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if (!finalizeAgent.isFinalizeAgent()) {
       revert();
     }
@@ -467,8 +467,8 @@ contract Crowdsale is Ownable {
    *
    */
   function setEndsAt(uint time) onlyOwner {
-    if (now &gt; time) {
-      revert(); // Don&#39;t change past
+    if (now > time) {
+      revert(); // Don't change past
     }
 
     endsAt = time;
@@ -483,7 +483,7 @@ contract Crowdsale is Ownable {
   function setPricingStrategy(PricingStrategy _pricingStrategy) onlyOwner {
     pricingStrategy = _pricingStrategy;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if (!pricingStrategy.isPricingStrategy()) {
       revert();
     }
@@ -499,7 +499,7 @@ contract Crowdsale is Ownable {
   function setMultisig(address addr) public onlyOwner {
 
     // Change
-    if (investorCount &gt; MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
+    if (investorCount > MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
       revert();
     }
 
@@ -538,7 +538,7 @@ contract Crowdsale is Ownable {
    * @return true if the crowdsale has raised enough money to be a successful.
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -569,13 +569,13 @@ contract Crowdsale is Ownable {
       return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) 
       return State.Preparing;
-    else if (block.timestamp &lt; startsAt) 
+    else if (block.timestamp < startsAt) 
       return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) 
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) 
       return State.Funding;
     else if (isMinimumGoalReached()) 
       return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) 
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) 
       return State.Refunding;
     else 
       return State.Failure;
@@ -680,14 +680,14 @@ contract PricingStrategy {
  * A crowdsale that is selling tokens from a preallocated pool
  *
  *
- * - Tokens have precreated supply &quot;premined&quot;
+ * - Tokens have precreated supply "premined"
  *
  * - Token owner must transfer sellable tokens to the crowdsale contract using ERC20.approve()
  *
  */
 contract AllocatedCrowdsale is Crowdsale {
 
-  /* The party who holds the full token pool and has approve()&#39;ed tokens for this crowdsale */
+  /* The party who holds the full token pool and has approve()'ed tokens for this crowdsale */
   address public beneficiary;
 
   function AllocatedCrowdsale(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, address _beneficiary) 
@@ -699,7 +699,7 @@ contract AllocatedCrowdsale is Crowdsale {
    * Called from invest() to confirm if the curret investment does not break our cap rule.
    */
   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken) {
-    if (tokenAmount &gt; getTokensLeft()) {
+    if (tokenAmount > getTokensLeft()) {
       return true;
     } else {
       return false;
@@ -747,7 +747,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public constant returns (bool);
@@ -774,20 +774,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

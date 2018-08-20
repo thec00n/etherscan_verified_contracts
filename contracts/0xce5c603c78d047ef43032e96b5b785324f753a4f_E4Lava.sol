@@ -4,10 +4,10 @@ pragma solidity ^0.4.11;
                                                                                                                                    
                                                                                                                                    
 // --------------------------                                                                                                      
-// here&#39;s how this works:                                                                                                          
-// the current amount of dividends due to each token-holder&#39;s  is:                                                                 
+// here's how this works:                                                                                                          
+// the current amount of dividends due to each token-holder's  is:                                                                 
 //   previous_due + [ p(x) * t(x)/N ] + [ p(x+1) * t(x+1)/N ] + ...                                                                
-//   where p(x) is the x&#39;th payment received by the contract                                                                       
+//   where p(x) is the x'th payment received by the contract                                                                       
 //         t(x) is the number of tokens held by the token-holder at the time of p(x)                                               
 //         N    is the total number of tokens, which never changes                                                                 
 //                                                                                                                                 
@@ -29,15 +29,15 @@ pragma solidity ^0.4.11;
 //                      (t(b) * period_b_fees) +
 //                      (t(c) * period_c_fees) }
 //
-// or more succictly, if we recompute current points before a token-holder&#39;s number of
+// or more succictly, if we recompute current points before a token-holder's number of
 // tokens, T, is about to change:
 //
 //   currentPoints = previous_points + (T * current-period-fees)
 //
-// when we want to do a payout, we&#39;ll calculate:
+// when we want to do a payout, we'll calculate:
 //  current_due = current-points / N
 //
-// we&#39;ll keep track of a token-holder&#39;s current-period-points, which is:
+// we'll keep track of a token-holder's current-period-points, which is:
 //   T * current-period-fees
 // by taking a snapshot of fees collected exactly when the current period began; that is, the when the
 // number of tokens last changed. that is, we keep a running count of total fees received
@@ -135,7 +135,7 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 bool alloced;       // flag to ascert prior allocation
                 uint tokens;        // num tokens currently held in this acct
                 uint currentPoints; // updated before token balance changes, or before a withdrawal. credit for owning tokens
-                uint lastSnapshot;  // snapshot of global TotalPoints, last time we updated this acct&#39;s currentPoints
+                uint lastSnapshot;  // snapshot of global TotalPoints, last time we updated this acct's currentPoints
         }
 
 // -----------------------------
@@ -156,9 +156,9 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         uint public decimals;
         string public symbol;
 
-        mapping (address =&gt; tokenAccount) holderAccounts;          // who holds how many tokens (high two bytes contain curPayId)
-        mapping (uint =&gt; address) holderIndexes;                   // for iteration thru holder
-        mapping (address =&gt; mapping (address =&gt; uint256)) allowed; // approvals
+        mapping (address => tokenAccount) holderAccounts;          // who holds how many tokens (high two bytes contain curPayId)
+        mapping (uint => address) holderIndexes;                   // for iteration thru holder
+        mapping (address => mapping (address => uint256)) allowed; // approvals
         uint public numAccounts;
 
         uint public payoutThreshold;                  // no withdrawals less than this amount, to avoid remainders
@@ -178,7 +178,7 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 owner = msg.sender;
                 developers = msg.sender;
                 decimals = 2;
-                symbol = &quot;E4ROW&quot;;
+                symbol = "E4ROW";
         }
 
         // -----------------------------------
@@ -202,11 +202,11 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 settingsState = qState;
 
                 // this second test allows locking without changing other permanent settings
-                // WARNING, MAKE SURE YOUR&#39;RE HAPPY WITH ALL SETTINGS
+                // WARNING, MAKE SURE YOUR'RE HAPPY WITH ALL SETTINGS
                 // BEFORE LOCKING
 
                 if (qState == SettingStateValue.lockedRelease) {
-                        StatEvent(&quot;Locking!&quot;);
+                        StatEvent("Locking!");
                         return;
                 }
 
@@ -214,7 +214,7 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 // leave alloced on, leave num accounts
                 // cant delete them anyways
 
-                for (uint i = 0; i &lt; numAccounts; i++ ) {
+                for (uint i = 0; i < numAccounts; i++ ) {
                         address a = holderIndexes[i];
                         if (a != address(0)) {
                                 holderAccounts[a].tokens = 0;
@@ -227,11 +227,11 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 holdoverBalance = 0;
                 TotalFeesReceived = 0;
 
-                if (this.balance &gt; 0) {
+                if (this.balance > 0) {
                         if (!owner.call.gas(rwGas).value(this.balance)())
-                                StatEvent(&quot;ERROR!&quot;);
+                                StatEvent("ERROR!");
                 }
-                StatEvent(&quot;ok&quot;);
+                StatEvent("ok");
 
         }
 
@@ -265,16 +265,16 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         function transfer(address _to, uint256 _value) returns (bool success)
         {
                 if ((msg.sender == developers)
-                        &amp;&amp;  (now &lt; vestTime)) {
-                        //statEvent(&quot;Tokens not yet vested.&quot;);
+                        &&  (now < vestTime)) {
+                        //statEvent("Tokens not yet vested.");
                         return false;
                 }
 
-                //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-                //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+                //Default assumes totalSupply can't be over max (2^256 - 1).
+                //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
                 //Replace the if with this one instead.
-                //if (holderAccounts[msg.sender].tokens &gt;= _value &amp;&amp; balances[_to] + _value &gt; holderAccounts[_to]) {
-                if (holderAccounts[msg.sender].tokens &gt;= _value &amp;&amp; _value &gt; 0) {
+                //if (holderAccounts[msg.sender].tokens >= _value && balances[_to] + _value > holderAccounts[_to]) {
+                if (holderAccounts[msg.sender].tokens >= _value && _value > 0) {
                     //first credit sender with points accrued so far.. must do this before number of held tokens changes
                     calcCurPointsForAcct(msg.sender);
                     holderAccounts[msg.sender].tokens -= _value;
@@ -296,14 +296,14 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
 
         function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
                 if ((_from == developers)
-                        &amp;&amp;  (now &lt; vestTime)) {
-                        //statEvent(&quot;Tokens not yet vested.&quot;);
+                        &&  (now < vestTime)) {
+                        //statEvent("Tokens not yet vested.");
                         return false;
                 }
 
                 //same as above. Replace this line with the following if you want to protect against wrapping uints.
-                //if (holderAccounts[_from].tokens &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; holderAccounts[_to].tokens + _value &gt; holderAccounts[_to].tokens) {
-                if (holderAccounts[_from].tokens &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+                //if (holderAccounts[_from].tokens >= _value && allowed[_from][msg.sender] >= _value && holderAccounts[_to].tokens + _value > holderAccounts[_to].tokens) {
+                if (holderAccounts[_from].tokens >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 
                     calcCurPointsForAcct(_from);
                     holderAccounts[_from].tokens -= _value;
@@ -343,8 +343,8 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
 
         // ----------------------------
         // calc current points for a token holder; that is, points that are due to this token holder for all dividends
-        // received by the contract during the current &quot;period&quot;. the period began the last time this fcn was called, at which
-        // time we updated the account&#39;s snapshot of the running point count, TotalFeesReceived. during the period the account&#39;s
+        // received by the contract during the current "period". the period began the last time this fcn was called, at which
+        // time we updated the account's snapshot of the running point count, TotalFeesReceived. during the period the account's
         // number of tokens must not have changed. so always call this fcn before changing the number of tokens.
         // ----------------------------
         function calcCurPointsForAcct(address _acct) internal {
@@ -361,14 +361,14 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         function () payable {
                 holdoverBalance += msg.value;
                 TotalFeesReceived += msg.value;
-                StatEventI(&quot;Payment&quot;, msg.value);
+                StatEventI("Payment", msg.value);
         }
 
         // ---------------------------
         // one never knows if this will come in handy.
         // ---------------------------
         function blackHole() payable {
-                StatEventI(&quot;adjusted&quot;, msg.value);
+                StatEventI("adjusted", msg.value);
         }
 
         // ----------------------------
@@ -379,13 +379,13 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 calcCurPointsForAcct(msg.sender);
 
                 _amount = holderAccounts[msg.sender].currentPoints / NewTokenSupply;
-                if (_amount &lt;= payoutThreshold) {
-                        StatEventI(&quot;low Balance&quot;, _amount);
+                if (_amount <= payoutThreshold) {
+                        StatEventI("low Balance", _amount);
                         return;
                 } else {
                         if ((msg.sender == developers)
-                                &amp;&amp;  (now &lt; vestTime)) {
-                                StatEvent(&quot;Tokens not yet vested.&quot;);
+                                &&  (now < vestTime)) {
+                                StatEvent("Tokens not yet vested.");
                                 _amount = 0;
                                 return;
                         }
@@ -404,13 +404,13 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         function transferDividends(address _to) returns (bool success)
         {
                 if ((msg.sender == developers)
-                        &amp;&amp;  (now &lt; vestTime)) {
-                        //statEvent(&quot;Tokens not yet vested.&quot;);
+                        &&  (now < vestTime)) {
+                        //statEvent("Tokens not yet vested.");
                         return false;
                 }
                 calcCurPointsForAcct(msg.sender);
                 if (holderAccounts[msg.sender].currentPoints == 0) {
-                        StatEvent(&quot;Zero balance&quot;);
+                        StatEvent("Zero balance");
                         return false;
                 }
                 if (!holderAccounts[_to].alloced) {
@@ -419,7 +419,7 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 calcCurPointsForAcct(_to);
                 holderAccounts[_to].currentPoints += holderAccounts[msg.sender].currentPoints;
                 holderAccounts[msg.sender].currentPoints = 0;
-                StatEvent(&quot;Trasnfered Dividends&quot;);
+                StatEvent("Trasnfered Dividends");
                 return true;
         }
 
@@ -430,8 +430,8 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         // ----------------------------
         function setOpGas(uint _rw, uint _optXferGas, uint _optFcnGas)
         {
-                if (msg.sender != owner &amp;&amp; msg.sender != developers) {
-                        //StatEvent(&quot;only owner calls&quot;);
+                if (msg.sender != owner && msg.sender != developers) {
+                        //StatEvent("only owner calls");
                         return;
                 } else {
                         rwGas = _rw;
@@ -447,13 +447,13 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         function checkDividends(address _addr) constant returns(uint _amount)
         {
                 if (holderAccounts[_addr].alloced) {
-                   //don&#39;t call calcCurPointsForAcct here, cuz this is a constant fcn
+                   //don't call calcCurPointsForAcct here, cuz this is a constant fcn
                    uint _currentPoints = holderAccounts[_addr].currentPoints +
                         ((TotalFeesReceived - holderAccounts[_addr].lastSnapshot) * holderAccounts[_addr].tokens);
                    _amount = _currentPoints / NewTokenSupply;
 
                 // low balance? let him see it -Etansky
-                  // if (_amount &lt;= payoutThreshold) {
+                  // if (_amount <= payoutThreshold) {
                   //    _amount = 0;
                   // }
 
@@ -523,7 +523,7 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         // ----------------------------
         // OPT IN FROM CLASSIC.
         // All old token holders can opt into this new contract by calling this function.
-        // This &quot;transferFrom&quot;s tokens from the old addresses to the new recycleBin address
+        // This "transferFrom"s tokens from the old addresses to the new recycleBin address
         // which is a new address set up on the old contract.  Afterwhich new tokens
         // are credited to the old holder.  Also the lastSnapShot is set to 0 then
         // calcCredited points are called setting up the new signatoree all of his
@@ -532,17 +532,17 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
         function optInFromClassic() public
         {
                 if (oldE4 == address(0)) {
-                        StatEvent(&quot;config err&quot;);
+                        StatEvent("config err");
                         return;
                 }
                 // 1. check balance of msg.sender in old contract.
                 address nrequester = msg.sender;
 
-                // 2. make sure account not already allocd (in fact, it&#39;s ok if it&#39;s allocd, so long
+                // 2. make sure account not already allocd (in fact, it's ok if it's allocd, so long
                 // as it is empty now. the reason for this check is cuz we are going to credit him with
                 // dividends, according to his token count, from the begin of time.
                 if (holderAccounts[nrequester].tokens != 0) {
-                        StatEvent(&quot;Account has already has tokens!&quot;);
+                        StatEvent("Account has already has tokens!");
                         return;
                 }
 
@@ -550,19 +550,19 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                 Token iclassic = Token(oldE4);
                 uint _toks = iclassic.balanceOf(nrequester);
                 if (_toks == 0) {
-                        StatEvent(&quot;Nothing to do&quot;);
+                        StatEvent("Nothing to do");
                         return;
                 }
 
                 // must be 100 percent of holdings
-                if (iclassic.allowance(nrequester, address(this)) &lt; _toks) {
-                        StatEvent(&quot;Please approve this contract to transfer&quot;);
+                if (iclassic.allowance(nrequester, address(this)) < _toks) {
+                        StatEvent("Please approve this contract to transfer");
                         return;
                 }
 
                 // 4. before we do the transfer, make sure that we have at least enough gas for the
                 // transfer plus the remainder of this fcn.
-                if (msg.gas &lt; optInXferGas + optInFcnMinGas)
+                if (msg.gas < optInXferGas + optInFcnMinGas)
                         throw;
 
                 // 5. transfer his old toks to recyle bin
@@ -577,11 +577,11 @@ contract E4Lava is Token, E4LavaRewards, E4LavaOptIn {
                         holderAccounts[nrequester].lastSnapshot = 0;
                         calcCurPointsForAcct(nrequester);
                         numToksSwitchedOver += _toks;
-                        // no need to decrement points from a &quot;holding account&quot;
+                        // no need to decrement points from a "holding account"
                         // b/c there is no need to keep it.
-                        StatEvent(&quot;Success Switched Over&quot;);
+                        StatEvent("Success Switched Over");
                 } else
-                        StatEvent(&quot;Transfer Error! please contact Dev team!&quot;);
+                        StatEvent("Transfer Error! please contact Dev team!");
 
 
         }

@@ -15,8 +15,8 @@ contract ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
-    string public constant name = &quot;Token Name&quot;;
-    string public constant symbol = &quot;SYM&quot;;
+    string public constant name = "Token Name";
+    string public constant symbol = "SYM";
     uint8 public constant decimals = 18;  // 18 is the most common number of decimal places
 
 }
@@ -28,26 +28,26 @@ contract ERC20 {
  *	This contract represents an item listed on the marketboard at marketboard.io
  *
  *  Steps for listing:
- *  - Server creates a bunch of these contracts in &#39;idle&#39; state (async, in cron job, &#39;creating&#39; state until mined)
- *  - When a user starts a transaction, server returns an &#39;idle&#39; state one and marks it as &#39;pending:tokens&#39; state
+ *  - Server creates a bunch of these contracts in 'idle' state (async, in cron job, 'creating' state until mined)
+ *  - When a user starts a transaction, server returns an 'idle' state one and marks it as 'pending:tokens' state
  *  - User sets their price per token, this is saved on the servers.
  *  - User gets the contract address, and sends some tokens to the contract.
  *  - While webapp is open, constantly query for incoming tokens to this contract
- *  - If no query for 24 hours, put contract back to &#39;idle&#39; state. Do a token query just in case maybe?
- *  - Once tokens received, send a `finalize(tokenContractAddr, senderAddr, tokenPrice)` transaction to the contract from the server, mark as &#39;pending:finalize&#39;
+ *  - If no query for 24 hours, put contract back to 'idle' state. Do a token query just in case maybe?
+ *  - Once tokens received, send a `finalize(tokenContractAddr, senderAddr, tokenPrice)` transaction to the contract from the server, mark as 'pending:finalize'
  *  - Show success to user, item is now listed but with finalizing logo
- *  - Server contantly queries all &#39;pending:finalize&#39; contracts until they&#39;ve been mined
- *  - Once mined (ie calling `isReady()` returns true) state change to &#39;ready&#39;
+ *  - Server contantly queries all 'pending:finalize' contracts until they've been mined
+ *  - Once mined (ie calling `isReady()` returns true) state change to 'ready'
  *
  *  Steps for buyback:
- *  - REQUIRES &#39;ready&#39; state
- *  - User sends a call to the contract&#39;s `buyback()` function
+ *  - REQUIRES 'ready' state
+ *  - User sends a call to the contract's `buyback()` function
  *
  *  Steps for purchase:
- *  - REQUIRES &#39;ready&#39; state
+ *  - REQUIRES 'ready' state
  *  - User calls `purchase(recipientAddr)` and sends required money to the contract
- *  - Server constantly monitors &#39;ready&#39; contracts (maybe only when a user views it?)
- *  - Once contract has been reset, mark contract as &#39;idle&#39; state
+ *  - Server constantly monitors 'ready' contracts (maybe only when a user views it?)
+ *  - Once contract has been reset, mark contract as 'idle' state
  *
  *  Type IDs:
  *  - 0x01  :   ERC20 listing
@@ -183,7 +183,7 @@ contract MarketboardERC20Listing {
     function purchase(address recipient) public payable {
 
         // Check if the right amount of Ether was sent
-        require(msg.value &gt;= totalPrice());
+        require(msg.value >= totalPrice());
 
         // Send tokens to the recipient
         ERC20 erc = ERC20(tokenContract);
@@ -192,8 +192,8 @@ contract MarketboardERC20Listing {
 
 		// Get the amount of Ether to send to the seller
 		uint256 basePrice = tokenPrice * balance;
-		require(basePrice &gt; 0);
-		require(basePrice &lt; this.balance);
+		require(basePrice > 0);
+		require(basePrice < this.balance);
 
 		// Send Ether to the seller
 		seller.transfer(basePrice);
@@ -209,7 +209,7 @@ contract MarketboardERC20Listing {
     /// If somehow another unrelated type of token was sent to this contract, this can be used to claim those tokens back.
     function claimUnrelatedTokens(address unrelatedTokenContract, address recipient) moderatorOrSellerOnly public {
 
-        // Make sure we&#39;re not dealing with the known token
+        // Make sure we're not dealing with the known token
         require(tokenContract != unrelatedTokenContract);
 
         // Send tokens to the recipient

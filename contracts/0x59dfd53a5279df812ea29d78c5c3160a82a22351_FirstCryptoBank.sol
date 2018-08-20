@@ -28,8 +28,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -50,18 +50,18 @@ contract TokenERC20 {
         name = tokenName;                                
         symbol = tokenSymbol;  
         
-        name = &quot;FirstCryptoBank&quot;;                                
-        symbol = &quot;FCB&quot;;
+        name = "FirstCryptoBank";                                
+        symbol = "FCB";
     }
 
     function _transfer(address _from, address _to, uint _value) internal {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
-        require(_value&gt;0);
+        require(_value>0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -81,7 +81,7 @@ contract TokenERC20 {
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         if(statusTransferFrom){
-            require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+            require(_value <= allowance[_from][msg.sender]);     // Check allowance
             allowance[_from][msg.sender] -= _value;
             _transfer(_from, _to, _value);
             return true;
@@ -111,7 +111,7 @@ contract TokenERC20 {
 
     function burn(uint256 _value) public returns (bool success) {
         if(statusBurn){
-            require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+            require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
             balanceOf[msg.sender] -= _value;            // Subtract from the sender
             totalSupply -= _value;                      // Updates totalSupply
             Burn(msg.sender, _value);
@@ -123,10 +123,10 @@ contract TokenERC20 {
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
         if(statusBurnFrom){
-            require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-            require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+            require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+            require(_value <= allowance[_from][msg.sender]);    // Check allowance
             balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-            allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+            allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
             totalSupply -= _value;                              // Update totalSupply
             Burn(_from, _value);
             return true;
@@ -141,7 +141,7 @@ contract FirstCryptoBank is owned, TokenERC20 {
     uint256 public sellPrice;
     uint256 public buyPrice;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
 
@@ -153,9 +153,9 @@ contract FirstCryptoBank is owned, TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require(_value&gt;0);
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(_value>0);
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -213,7 +213,7 @@ contract FirstCryptoBank is owned, TokenERC20 {
 
     function sell(uint256 amount) public {
         require(statusSell==true);
-        require(this.balance &gt;= amount * sellPrice);     
+        require(this.balance >= amount * sellPrice);     
         _transfer(msg.sender, this, amount);             
         msg.sender.transfer(amount * sellPrice);        
     }

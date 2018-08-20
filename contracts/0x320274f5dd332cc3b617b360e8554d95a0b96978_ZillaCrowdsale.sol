@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -119,7 +119,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -128,7 +128,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -161,7 +161,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -172,8 +172,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -187,7 +187,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -222,7 +222,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -240,8 +240,8 @@ contract StandardToken is ERC20, BasicToken {
 contract ZillaToken is StandardToken, Ownable {
   uint256 constant zilla = 1 ether;
 
-  string public name = &#39;Zilla Token&#39;;
-  string public symbol = &#39;ZLA&#39;;
+  string public name = 'Zilla Token';
+  string public symbol = 'ZLA';
   uint public decimals = 18;
   uint256 public initialSupply = 60000000 * zilla;
   bool public tradeable;
@@ -345,7 +345,7 @@ contract ZillaCrowdsale is Ownable {
     bool    whitelist;
     uint256 remaining;
   }
-  mapping (address =&gt; Participant) private participants;
+  mapping (address => Participant) private participants;
 
   /**
    * @dev constructs ZillaCrowdsale
@@ -367,7 +367,7 @@ contract ZillaCrowdsale is Ownable {
    * @dev modifier to determine if the crowdsale is active
    */
   modifier isRunning() {
-    require( (state == CrowdsaleState.Running) &amp;&amp; (now &gt;= start) &amp;&amp; (now &lt; end) );
+    require( (state == CrowdsaleState.Running) && (now >= start) && (now < end) );
     _;
   }
 
@@ -379,10 +379,10 @@ contract ZillaCrowdsale is Ownable {
    */
   function startCrowdsale(uint256 _start, uint256 _unlimited, uint256 _end, address _vault) public onlyOwner {
     require(state == CrowdsaleState.Waiting);
-    require(_start &gt;= now);
-    require(_unlimited &gt; _start);
-    require(_unlimited &lt; _end);
-    require(_end &gt; _start);
+    require(_start >= now);
+    require(_unlimited > _start);
+    require(_unlimited < _end);
+    require(_end > _start);
     require(_vault != 0x0);
 
     start     = _start;
@@ -398,7 +398,7 @@ contract ZillaCrowdsale is Ownable {
    */
   function finalizeCrowdsale() public onlyOwner {
     require(state == CrowdsaleState.Running);
-    require(end &lt; now);
+    require(end < now);
     // transfer remaining tokens to vault
     _transferTokens( vault, 0, zilla_remaining );
     // end the crowdsale
@@ -414,9 +414,9 @@ contract ZillaCrowdsale is Ownable {
    */
   function setEndDate(uint256 _end) public onlyOwner {
     require(state == CrowdsaleState.Running);
-    require(_end &gt; now);
-    require(_end &gt; start);
-    require(_end &gt; end);
+    require(_end > now);
+    require(_end > start);
+    require(_end > end);
 
     end = _end;
   }
@@ -436,7 +436,7 @@ contract ZillaCrowdsale is Ownable {
    * @param _addresses array of addresses to add to the whitelist
    */
   function whitelistAdd(address[] _addresses) public onlyOwner {
-    for (uint i=0; i&lt;_addresses.length; i++) {
+    for (uint i=0; i<_addresses.length; i++) {
       Participant storage p = participants[ _addresses[i] ];
       p.whitelist = true;
       p.remaining = 15 ether;
@@ -448,7 +448,7 @@ contract ZillaCrowdsale is Ownable {
    * @param _addresses array of addresses to remove from the whitelist
    */
   function whitelistRemove(address[] _addresses) public onlyOwner {
-    for (uint i=0; i&lt;_addresses.length; i++) {
+    for (uint i=0; i<_addresses.length; i++) {
       delete participants[ _addresses[i] ];
     }
   }
@@ -466,7 +466,7 @@ contract ZillaCrowdsale is Ownable {
    */
   function _allocateTokens(uint256 eth) private view returns(uint256 tokens) {
     tokens = crowdsale_eth_to_zilla.mul(eth);
-    require( zilla_remaining &gt;= tokens );
+    require( zilla_remaining >= tokens );
   }
 
   /**
@@ -475,7 +475,7 @@ contract ZillaCrowdsale is Ownable {
    */
   function _allocatePresaleTokens(uint256 eth) private view returns(uint256 tokens) {
     tokens = presale_eth_to_zilla.mul(eth);
-    require( zilla_remaining &gt;= tokens );
+    require( zilla_remaining >= tokens );
   }
 
   /**
@@ -508,8 +508,8 @@ contract ZillaCrowdsale is Ownable {
     Participant storage p = participants[ recipient ];    
     require( p.whitelist );
     // check for the first session buy limits
-    if( unlimited &gt; now ) {
-      require( p.remaining &gt;= msg.value );
+    if( unlimited > now ) {
+      require( p.remaining >= msg.value );
       p.remaining.sub( msg.value );
     }
     uint256 tokens = _allocateTokens(msg.value);
@@ -523,7 +523,7 @@ contract ZillaCrowdsale is Ownable {
    * @param zla is the amount of Zilla to transfer
    */
   function grantTokens(address recipient, uint256 zla) public isStarted onlyOwner {
-    require( zilla_remaining &gt;= zla );
+    require( zilla_remaining >= zla );
     _transferTokens( recipient, 0, zla );
   }
 
@@ -534,7 +534,7 @@ contract ZillaCrowdsale is Ownable {
    */
   function grantPresaleTokens(address[] recipients, uint256[] eths) public isStarted onlyOwner {
     require( recipients.length == eths.length );
-    for (uint i=0; i&lt;recipients.length; i++) {
+    for (uint i=0; i<recipients.length; i++) {
       _grantPresaleTokens( recipients[i], eths[i] );
     }
   }

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -137,18 +137,18 @@ contract TokenBatchTransfer is Ownable {
   }
 
   function batchTransfer(address[] funders, uint256[] amounts) public onlyOwner {
-    require(funders.length &gt; 0 &amp;&amp; funders.length == amounts.length);
+    require(funders.length > 0 && funders.length == amounts.length);
 
     uint256 total = ERC20Token.balanceOf(this);
-    require(total &gt; 0);
+    require(total > 0);
 
     uint256 fundersTotal = 0;
-    for (uint i = 0; i &lt; amounts.length; i++) {
+    for (uint i = 0; i < amounts.length; i++) {
       fundersTotal = fundersTotal.add(amounts[i]);
     }
-    require(total &gt;= fundersTotal);
+    require(total >= fundersTotal);
 
-    for (uint j = 0; j &lt; funders.length; j++) {
+    for (uint j = 0; j < funders.length; j++) {
       ERC20Token.safeTransfer(funders[j], amounts[j]);
     }
   }

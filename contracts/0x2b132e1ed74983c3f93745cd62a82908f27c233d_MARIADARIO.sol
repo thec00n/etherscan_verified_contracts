@@ -29,18 +29,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,9 +48,9 @@ library SafeMath {
 contract SuperToken is ERC20i {
   address public EthDev = 0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe;
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
       modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -79,7 +79,7 @@ contract SuperToken is ERC20i {
  */
 contract StandardToken is ERC20, SuperToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   /*
     Transfer tokens from one address to another
@@ -91,7 +91,7 @@ contract StandardToken is ERC20, SuperToken {
     var _allowance = allowed[_from][msg.sender];
  
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
  
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -103,7 +103,7 @@ contract StandardToken is ERC20, SuperToken {
   /*
   Aprove the passed address to spend the specified amount of tokens on behalf of msg.sender.
    param _spender The address which will spend the funds.
-   param _value The amount of Roman Lanskoj&#39;s tokens to be spent.
+   param _value The amount of Roman Lanskoj's tokens to be spent.
    */
   function approve(address _spender, uint256 _value) returns (bool) {
  
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, SuperToken {
  
 /*
 The Ownable contract has an owner address, and provides basic authorization control
- functions, this simplifies the implementation of &quot;user permissions&quot;.
+ functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     //owner
@@ -158,12 +158,12 @@ contract Ownable {
 }
     
 contract MARIADARIO is StandardToken, Ownable {
-  string public constant name = &quot;MARIADARIO&quot;;
-  string public constant symbol = &quot;MARIADARIO&quot;;
+  string public constant name = "MARIADARIO";
+  string public constant symbol = "MARIADARIO";
   uint public constant decimals = 0;
-   string public description = &#39;From Mt Aragona with love&#39;;
+   string public description = 'From Mt Aragona with love';
   uint256 public initialSupply;
-  string public Supply = &#39;100 mil&#39;;
+  string public Supply = '100 mil';
     
   function MARIADARIO () { 
      totalSupply = 100000000 * 10 ** decimals;

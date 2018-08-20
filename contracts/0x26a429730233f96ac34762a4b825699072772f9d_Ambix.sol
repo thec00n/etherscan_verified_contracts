@@ -38,9 +38,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -89,7 +89,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -127,9 +127,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -162,7 +162,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -173,8 +173,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -237,7 +237,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -262,7 +262,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
    * @param _value uint256 The amount of token to be burned
    */
   function burnFrom(address _from, uint256 _value) public {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
     // this function needs to emit an event with the updated approval.
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -275,7 +275,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -316,19 +316,19 @@ contract Ownable {
 
 /**
   @dev Ambix contract is used for morph Token set to another
-  Token&#39;s by rule (recipe). In distillation process given
-  Token&#39;s are burned and result generated by emission.
+  Token's by rule (recipe). In distillation process given
+  Token's are burned and result generated by emission.
   
   The recipe presented as equation in form:
-  (N1 * A1 &amp; N&#39;1 * A&#39;1 &amp; N&#39;&#39;1 * A&#39;&#39;1 ...)
-  | (N2 * A2 &amp; N&#39;2 * A&#39;2 &amp; N&#39;&#39;2 * A&#39;&#39;2 ...) ...
-  | (Nn * An &amp; N&#39;n * A&#39;n &amp; N&#39;&#39;n * A&#39;&#39;n ...)
-  = M1 * B1 &amp; M2 * B2 ... &amp; Mm * Bm 
+  (N1 * A1 & N'1 * A'1 & N''1 * A''1 ...)
+  | (N2 * A2 & N'2 * A'2 & N''2 * A''2 ...) ...
+  | (Nn * An & N'n * A'n & N''n * A''n ...)
+  = M1 * B1 & M2 * B2 ... & Mm * Bm 
     where A, B - input and output tokens
           N, M - token value coeficients
           n, m - input / output dimetion size 
           | - is alternative operator (logical OR)
-          &amp; - is associative operator (logical AND)
+          & - is associative operator (logical AND)
   This says that `Ambix` should receive (approve) left
   part of equation and send (transfer) right part.
 */
@@ -348,7 +348,7 @@ contract Ambix is Ownable {
         uint256[] _n
     ) external onlyOwner {
         require(_a.length == _n.length);
-        for (uint256 i = 0; i &lt; _a.length; ++i)
+        for (uint256 i = 0; i < _a.length; ++i)
             require(_a[i] != 0);
 
         A.push(_a);
@@ -365,7 +365,7 @@ contract Ambix is Ownable {
         uint256[] _m
     ) external onlyOwner{
         require(_b.length == _m.length);
-        for (uint256 i = 0; i &lt; _b.length; ++i)
+        for (uint256 i = 0; i < _b.length; ++i)
             require(_b[i] != 0);
 
         B = _b;
@@ -377,26 +377,26 @@ contract Ambix is Ownable {
      * @param _ix Source alternative index
      */
     function run(uint256 _ix) public {
-        require(_ix &lt; A.length);
+        require(_ix < A.length);
         uint256 i;
 
-        if (N[_ix][0] &gt; 0) {
+        if (N[_ix][0] > 0) {
             // Static conversion
 
             StandardBurnableToken token = StandardBurnableToken(A[_ix][0]);
             // Token count multiplier
             uint256 mux = token.allowance(msg.sender, this) / N[_ix][0];
-            require(mux &gt; 0);
+            require(mux > 0);
 
             // Burning run
-            for (i = 0; i &lt; A[_ix].length; ++i) {
+            for (i = 0; i < A[_ix].length; ++i) {
                 token = StandardBurnableToken(A[_ix][i]);
                 require(token.transferFrom(msg.sender, this, mux * N[_ix][i]));
                 token.burn(mux * N[_ix][i]);
             }
 
             // Transfer up
-            for (i = 0; i &lt; B.length; ++i) {
+            for (i = 0; i < B.length; ++i) {
                 token = StandardBurnableToken(B[i]);
                 require(token.transfer(msg.sender, M[i] * mux));
             }
@@ -408,7 +408,7 @@ contract Ambix is Ownable {
             //         dynamicRate = balance(sink) / total(source)
 
             // Is available for single source and single sink only
-            require(A[_ix].length == 1 &amp;&amp; B.length == 1);
+            require(A[_ix].length == 1 && B.length == 1);
 
             StandardBurnableToken source = StandardBurnableToken(A[_ix][0]);
             StandardBurnableToken sink = StandardBurnableToken(B[0]);
@@ -416,12 +416,12 @@ contract Ambix is Ownable {
             uint256 scale = 10 ** 18 * sink.balanceOf(this) / source.totalSupply();
 
             uint256 allowance = source.allowance(msg.sender, this);
-            require(allowance &gt; 0);
+            require(allowance > 0);
             require(source.transferFrom(msg.sender, this, allowance));
             source.burn(allowance);
 
             uint256 reward = scale * allowance / 10 ** 18;
-            require(reward &gt; 0);
+            require(reward > 0);
             require(sink.transfer(msg.sender, reward));
         }
     }

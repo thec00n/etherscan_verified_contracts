@@ -1,6 +1,6 @@
 contract RipplePayExample {
 
-mapping(address =&gt; mapping(address =&gt; uint)) TrustSettings; // store trustLines for a given address
+mapping(address => mapping(address => uint)) TrustSettings; // store trustLines for a given address
 
 function updateTrustSettings(address _peer, uint newTrustLimit) {
 TrustSettings[msg.sender][_peer] = newTrustLimit;

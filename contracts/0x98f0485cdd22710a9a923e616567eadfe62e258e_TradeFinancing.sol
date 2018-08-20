@@ -114,7 +114,7 @@ contract TradeFinancing{
 		item = requestedItem;
 		dealAmount = price * amountOfItem;
 		
-		if(dealAmount &lt;minimumDealAmount){
+		if(dealAmount <minimumDealAmount){
 			return false;
 		}
 
@@ -139,7 +139,7 @@ contract TradeFinancing{
 		discountDivisor = desiredDiscountDivisor;
 		discountedDealAmount = dealAmount - (dealAmount/desiredDiscountDivisor);
 		
-		if(msg.value &lt; discountedDealAmount){
+		if(msg.value < discountedDealAmount){
 
 			return false;
 		}
@@ -187,7 +187,7 @@ contract TradeFinancing{
 
 	function receivePaymentForGoodsSoldEarly()  onlyExporter returns (bool){
 
-		if(bankersAcceptanceOfDeal==true &amp;&amp; exporterAcceptedIBankDraft == true){
+		if(bankersAcceptanceOfDeal==true && exporterAcceptedIBankDraft == true){
 			
 			exporterReceivedPayment= true;
 			BAInvestor = importerBanker;
@@ -210,7 +210,7 @@ contract TradeFinancing{
 			throw;
 		}
 
-		if(msg.value &gt; BASalesPrice){
+		if(msg.value > BASalesPrice){
 			importerBanker.send(msg.value);
 			BAInvestor = msg.sender;
 
@@ -223,7 +223,7 @@ contract TradeFinancing{
 
 
 	function payImporterBankForGoodsBought()  onlyImporter returns (bool){
-		if(msg.value &lt; dealAmount){
+		if(msg.value < dealAmount){
 			return false;
 		}
 		else{

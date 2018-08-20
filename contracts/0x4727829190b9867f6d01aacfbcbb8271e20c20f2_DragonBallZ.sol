@@ -50,12 +50,12 @@ contract DragonBallZ {
 		// Calculate the 10% value
 		uint256 devFee = (msg.value / 10);
 
-		// Calculate the hero owner commission on this sale &amp; transfer the commission to the owner.		
-		uint256 commissionOwner = msg.value - devFee; // =&gt; 90%
+		// Calculate the hero owner commission on this sale & transfer the commission to the owner.		
+		uint256 commissionOwner = msg.value - devFee; // => 90%
 		heroes[_heroId].ownerAddress.transfer(commissionOwner);
 
 		// Transfer the 10% commission to the developer
-		devFeeAddress.transfer(devFee); // =&gt; 10% 						
+		devFeeAddress.transfer(devFee); // => 10% 						
 
 		// Update the hero owner and set the new price
 		heroes[_heroId].ownerAddress = msg.sender;
@@ -67,9 +67,9 @@ contract DragonBallZ {
 	He can make the price lesser than the current price only.
 	*/
 	function modifyCurrentHeroPrice(uint _heroId, uint256 _newPrice) public {
-	    require(_newPrice &gt; 0);
+	    require(_newPrice > 0);
 	    require(heroes[_heroId].ownerAddress == msg.sender);
-	    require(_newPrice &lt; heroes[_heroId].currentPrice);
+	    require(_newPrice < heroes[_heroId].currentPrice);
 	    heroes[_heroId].currentPrice = _newPrice;
 	}
 	
@@ -98,7 +98,7 @@ contract DragonBallZ {
     
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -110,12 +110,12 @@ contract DragonBallZ {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     

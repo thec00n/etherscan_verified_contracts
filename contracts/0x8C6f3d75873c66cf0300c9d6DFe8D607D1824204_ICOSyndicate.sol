@@ -18,7 +18,7 @@ contract ERC20 {
 
 contract ICOSyndicate {
     // Store the amount of ETH deposited by each account.
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     // Track whether the contract has bought the tokens yet.
     bool public bought_tokens;
     // Record ETH value of tokens currently held by contract.
@@ -58,28 +58,28 @@ contract ICOSyndicate {
     function withdraw(address user) public {
         // Only allow withdrawals after the contract has had a chance to buy in.
         require(bought_tokens);
-        // Short circuit to save gas if the user doesn&#39;t have a balance.
+        // Short circuit to save gas if the user doesn't have a balance.
         if (balances[user] == 0) return;
-        // If the contract failed to buy into the sale, withdraw the user&#39;s ETH.
+        // If the contract failed to buy into the sale, withdraw the user's ETH.
         if (!bought_tokens) {
-            // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+            // Store the user's balance prior to withdrawal in a temporary variable.
             uint256 eth_to_withdraw = balances[user];
-            // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+            // Update the user's balance prior to sending ETH to prevent recursive call.
             balances[user] = 0;
-            // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+            // Return the user's funds.  Throws on failure to prevent loss of funds.
             user.transfer(eth_to_withdraw);
         }
-        // Withdraw the user&#39;s tokens if the contract has purchased them.
+        // Withdraw the user's tokens if the contract has purchased them.
         else {
             // Retrieve current token balance of contract.
             uint256 contract_token_balance = token.balanceOf(address(this));
             // Disallow token withdrawals if there are no tokens to withdraw.
             require(contract_token_balance != 0);
-            // Store the user&#39;s token balance in a temporary variable.
+            // Store the user's token balance in a temporary variable.
             uint256 tokens_to_withdraw = (balances[user] * contract_token_balance) / contract_eth_value;
             // Update the value of tokens currently held by the contract.
             contract_eth_value -= balances[user];
-            // Update the user&#39;s balance prior to sending to prevent recursive call.
+            // Update the user's balance prior to sending to prevent recursive call.
             balances[user] = 0;
             // Send the funds.  Throws on failure to prevent loss of funds.
             require(token.transfer(user, tokens_to_withdraw));
@@ -94,14 +94,14 @@ contract ICOSyndicate {
         if (bought_tokens) return;
         // Short circuit to save gas if kill switch is active.
         if (kill_switch) return;
-        // Disallow buying in if the developer hasn&#39;t set the sale address yet.
+        // Disallow buying in if the developer hasn't set the sale address yet.
         require(sale != 0x0);
         // Record that the contract has bought the tokens.
         bought_tokens = true;
-        // Record the amount of ETH sent as the contract&#39;s current value.
+        // Record the amount of ETH sent as the contract's current value.
         contract_eth_value = this.balance;
         // Transfer all the funds to the crowdsale address to buy tokens.
-        // Throws if the crowdsale hasn&#39;t started yet or has already completed, preventing loss of funds.
+        // Throws if the crowdsale hasn't started yet or has already completed, preventing loss of funds.
         require(sale.call.value(contract_eth_value)());
     }
 
@@ -109,10 +109,10 @@ contract ICOSyndicate {
     function () public payable {
         // Disallow deposits if kill switch is active.
         require(!kill_switch);
-        // Only allow deposits if the contract hasn&#39;t already purchased the tokens.
+        // Only allow deposits if the contract hasn't already purchased the tokens.
         require(!bought_tokens);
-        // Only allow deposits that won&#39;t exceed the contract&#39;s ETH cap.
-        require(this.balance &lt; eth_cap);
+        // Only allow deposits that won't exceed the contract's ETH cap.
+        require(this.balance < eth_cap);
         // Update records of deposited ETH to include the received amount.
         balances[msg.sender] += msg.value;
     }

@@ -14,13 +14,13 @@ contract Main0002_setupPreTokenSigners {
          * Set up PretokenSigners
          ******************************************************************************/
 
-        address[] memory signersToAdd = new address[](2); // dynamic array needed for addSigners() &amp; removeSigners()
+        address[] memory signersToAdd = new address[](2); // dynamic array needed for addSigners() & removeSigners()
         signersToAdd[0] = 0xf9ea0E2857405C859bb8647ECB11f931D1259753;
         signersToAdd[1] = 0xd8203A652452906586F2E6cB6e31f6f7fed094D4;
         preTokenProxy.addSigners(signersToAdd);
 
         // revoke deployer account signer rights
-        address[] memory signersToRemove = new address[](1); // dynamic array needed for addSigners() &amp; removeSigners()
+        address[] memory signersToRemove = new address[](1); // dynamic array needed for addSigners() & removeSigners()
         signersToRemove[0] = 0x7b534c2D0F9Ee973e0b6FE8D4000cA711A20f22e;
         preTokenProxy.removeSigners(signersToRemove);
     }
@@ -35,7 +35,7 @@ contract Main0002_setupPreTokenSigners {
     * APPROVED scripts can be executed only once.
         - if script succeeds then state set to DONE
         - If script runs out of gas or reverts then script state set to FAILEd and not allowed to run again
-          (To avoid leaving &quot;behind&quot; scripts which fail in a given state but eventually execute in the future)
+          (To avoid leaving "behind" scripts which fail in a given state but eventually execute in the future)
     * Scripts can be cancelled by an other multisig script approved and calling cancelScript()
     * Adding/removing signers is only via multisig approved scripts using addSigners / removeSigners fxs
 */
@@ -44,7 +44,7 @@ contract MultiSig {
 
     uint public constant CHUNK_SIZE = 100;
 
-    mapping(address =&gt; bool) public isSigner;
+    mapping(address => bool) public isSigner;
     address[] public allSigners; // all signers, even the disabled ones
                                 // NB: it can contain duplicates when a signer is added, removed then readded again
                                 //   the purpose of this array is to being able to iterate on signers in isSigner
@@ -55,11 +55,11 @@ contract MultiSig {
     struct Script {
         ScriptState state;
         uint signCount;
-        mapping(address =&gt; bool) signedBy;
+        mapping(address => bool) signedBy;
         address[] allSigners;
     }
 
-    mapping(address =&gt; Script) public scripts;
+    mapping(address => Script) public scripts;
     address[] public scriptAddresses;
 
     event SignerAdded(address signer);
@@ -72,8 +72,8 @@ contract MultiSig {
     event ScriptExecuted(address scriptAddress, bool result);
 
     constructor() public {
-        // deployer address is the first signer. Deployer can configure new contracts by itself being the only &quot;signer&quot;
-        // The first script which sets the new contracts live should add signers and revoke deployer&#39;s signature right
+        // deployer address is the first signer. Deployer can configure new contracts by itself being the only "signer"
+        // The first script which sets the new contracts live should add signers and revoke deployer's signature right
         isSigner[msg.sender] = true;
         allSigners.push(msg.sender);
         activeSignersCount = 1;
@@ -81,11 +81,11 @@ contract MultiSig {
     }
 
     function sign(address scriptAddress) public {
-        require(isSigner[msg.sender], &quot;sender must be signer&quot;);
+        require(isSigner[msg.sender], "sender must be signer");
         Script storage script = scripts[scriptAddress];
         require(script.state == ScriptState.Approved || script.state == ScriptState.New,
-                &quot;script state must be New or Approved&quot;);
-        require(!script.signedBy[msg.sender], &quot;script must not be signed by signer yet&quot;);
+                "script state must be New or Approved");
+        require(!script.signedBy[msg.sender], "script must not be signed by signer yet");
 
         if(script.allSigners.length == 0) {
             // first sign of a new script
@@ -106,11 +106,11 @@ contract MultiSig {
 
     function execute(address scriptAddress) public returns (bool result) {
         // only allow execute to signers to avoid someone set an approved script failed by calling it with low gaslimit
-        require(isSigner[msg.sender], &quot;sender must be signer&quot;);
+        require(isSigner[msg.sender], "sender must be signer");
         Script storage script = scripts[scriptAddress];
-        require(script.state == ScriptState.Approved, &quot;script state must be Approved&quot;);
+        require(script.state == ScriptState.Approved, "script state must be Approved");
 
-        /* init to failed because if delegatecall rans out of gas we won&#39;t have enough left to set it.
+        /* init to failed because if delegatecall rans out of gas we won't have enough left to set it.
            NB: delegatecall leaves 63/64 part of gasLimit for the caller.
                 Therefore the execute might revert with out of gas, leaving script in Approved state
                 when execute() is called with small gas limits.
@@ -118,7 +118,7 @@ contract MultiSig {
         script.state = ScriptState.Failed;
 
         // passing scriptAddress to allow called script access its own public fx-s if needed
-        if(scriptAddress.delegatecall(bytes4(keccak256(&quot;execute(address)&quot;)), scriptAddress)) {
+        if(scriptAddress.delegatecall(bytes4(keccak256("execute(address)")), scriptAddress)) {
             script.state = ScriptState.Done;
             result = true;
         } else {
@@ -128,22 +128,22 @@ contract MultiSig {
     }
 
     function cancelScript(address scriptAddress) public {
-        require(msg.sender == address(this), &quot;only callable via MultiSig&quot;);
+        require(msg.sender == address(this), "only callable via MultiSig");
         Script storage script = scripts[scriptAddress];
         require(script.state == ScriptState.Approved || script.state == ScriptState.New,
-                &quot;script state must be New or Approved&quot;);
+                "script state must be New or Approved");
 
         script.state= ScriptState.Cancelled;
 
         emit ScriptCancelled(scriptAddress);
     }
 
-    /* requires quorum so it&#39;s callable only via a script executed by this contract */
+    /* requires quorum so it's callable only via a script executed by this contract */
     function addSigners(address[] signers) public {
-        require(msg.sender == address(this), &quot;only callable via MultiSig&quot;);
-        for (uint i= 0; i &lt; signers.length; i++) {
+        require(msg.sender == address(this), "only callable via MultiSig");
+        for (uint i= 0; i < signers.length; i++) {
             if (!isSigner[signers[i]]) {
-                require(signers[i] != address(0), &quot;new signer must not be 0x0&quot;);
+                require(signers[i] != address(0), "new signer must not be 0x0");
                 activeSignersCount++;
                 allSigners.push(signers[i]);
                 isSigner[signers[i]] = true;
@@ -152,12 +152,12 @@ contract MultiSig {
         }
     }
 
-    /* requires quorum so it&#39;s callable only via a script executed by this contract */
+    /* requires quorum so it's callable only via a script executed by this contract */
     function removeSigners(address[] signers) public {
-        require(msg.sender == address(this), &quot;only callable via MultiSig&quot;);
-        for (uint i= 0; i &lt; signers.length; i++) {
+        require(msg.sender == address(this), "only callable via MultiSig");
+        for (uint i= 0; i < signers.length; i++) {
             if (isSigner[signers[i]]) {
-                require(activeSignersCount &gt; 1, &quot;must not remove last signer&quot;);
+                require(activeSignersCount > 1, "must not remove last signer");
                 activeSignersCount--;
                 isSigner[signers[i]] = false;
                 emit SignerRemoved(signers[i]);
@@ -174,7 +174,7 @@ contract MultiSig {
 
     // UI helper fx - Returns signers from offset as [signer id (index in allSigners), address as uint, isActive 0 or 1]
     function getAllSigners(uint offset) external view returns(uint[3][CHUNK_SIZE] signersResult) {
-        for (uint8 i = 0; i &lt; CHUNK_SIZE &amp;&amp; i + offset &lt; allSigners.length; i++) {
+        for (uint8 i = 0; i < CHUNK_SIZE && i + offset < allSigners.length; i++) {
             address signerAddress = allSigners[i + offset];
             signersResult[i] = [ i + offset, uint(signerAddress), isSigner[signerAddress] ? 1 : 0 ];
         }
@@ -187,7 +187,7 @@ contract MultiSig {
     // UI helper fx - Returns scripts from offset as
     //  [scriptId (index in scriptAddresses[]), address as uint, state, signCount]
     function getAllScripts(uint offset) external view returns(uint[4][CHUNK_SIZE] scriptsResult) {
-        for (uint8 i = 0; i &lt; CHUNK_SIZE &amp;&amp; i + offset &lt; scriptAddresses.length; i++) {
+        for (uint8 i = 0; i < CHUNK_SIZE && i + offset < scriptAddresses.length; i++) {
             address scriptAddress = scriptAddresses[i + offset];
             scriptsResult[i] = [ i + offset, uint(scriptAddress), uint(scripts[scriptAddress].state),
                             scripts[scriptAddress].signCount ];
@@ -206,32 +206,32 @@ contract MultiSig {
 library SafeMath {
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a * b;
-        require(a == 0 || c / a == b, &quot;mul overflow&quot;);
+        require(a == 0 || c / a == b, "mul overflow");
         return c;
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &gt; 0, &quot;div by 0&quot;); // Solidity automatically throws for div by 0 but require to emit reason
+        require(b > 0, "div by 0"); // Solidity automatically throws for div by 0 but require to emit reason
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a, &quot;sub underflow&quot;);
+        require(b <= a, "sub underflow");
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a, &quot;add overflow&quot;);
+        require(c >= a, "add overflow");
         return c;
     }
 
     function roundedDiv(uint a, uint b) internal pure returns (uint256) {
-        require(b &gt; 0, &quot;div by 0&quot;); // Solidity automatically throws for div by 0 but require to emit reason
+        require(b > 0, "div by 0"); // Solidity automatically throws for div by 0 but require to emit reason
         uint256 z = a / b;
-        if (a % b &gt;= b / 2) {
+        if (a % b >= b / 2) {
             z++;  // no need for safe add b/c it can happen only if we divided the input
         }
         return z;
@@ -241,6 +241,6 @@ library SafeMath {
 contract PreTokenProxy is MultiSig {
 
     function checkQuorum(uint signersCount) internal view returns(bool isQuorum) {
-        isQuorum = signersCount &gt; activeSignersCount / 2 ;
+        isQuorum = signersCount > activeSignersCount / 2 ;
     }
 }

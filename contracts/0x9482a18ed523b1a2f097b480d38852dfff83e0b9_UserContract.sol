@@ -45,18 +45,18 @@ library DRCTLibrary{
         address factory_contract;
         //Total supply of outstanding tokens in the contract
         uint total_supply;
-        //Mapping from: swap address -&gt; user balance struct (index for a particular user&#39;s balance can be found in swap_balances_index)
-        mapping(address =&gt; Balance[]) swap_balances;
-        //Mapping from: swap address -&gt; user -&gt; swap_balances index
-        mapping(address =&gt; mapping(address =&gt; uint)) swap_balances_index;
-        //Mapping from: user -&gt; dynamic array of swap addresses (index for a particular swap can be found in user_swaps_index)
-        mapping(address =&gt; address[]) user_swaps;
-        //Mapping from: user -&gt; swap address -&gt; user_swaps index
-        mapping(address =&gt; mapping(address =&gt; uint)) user_swaps_index;
-        //Mapping from: user -&gt; total balance accross all entered swaps
-        mapping(address =&gt; uint) user_total_balances;
-        //Mapping from: owner -&gt; spender -&gt; amount allowed
-        mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+        //Mapping from: swap address -> user balance struct (index for a particular user's balance can be found in swap_balances_index)
+        mapping(address => Balance[]) swap_balances;
+        //Mapping from: swap address -> user -> swap_balances index
+        mapping(address => mapping(address => uint)) swap_balances_index;
+        //Mapping from: user -> dynamic array of swap addresses (index for a particular swap can be found in user_swaps_index)
+        mapping(address => address[]) user_swaps;
+        //Mapping from: user -> swap address -> user_swaps index
+        mapping(address => mapping(address => uint)) user_swaps_index;
+        //Mapping from: user -> total balance accross all entered swaps
+        mapping(address => uint) user_total_balances;
+        //Mapping from: owner -> spender -> amount allowed
+        mapping(address => mapping(address => uint)) allowed;
     }   
 
     /*Events*/
@@ -111,7 +111,7 @@ library DRCTLibrary{
             self.user_swaps[_owner].push(address(0x0));
         //Add a new swap index for the owner
         self.user_swaps_index[_owner][_swap] = self.user_swaps[_owner].length;
-        //Push a new swap address to the owner&#39;s swaps
+        //Push a new swap address to the owner's swaps
         self.user_swaps[_owner].push(_swap);
         //Push a zeroed Balance struct to the swap balances mapping to prevent default value conflicts in swap_balances_index
         self.swap_balances[_swap].push(Balance({
@@ -120,7 +120,7 @@ library DRCTLibrary{
         }));
         //Add a new owner balance index for the swap
         self.swap_balances_index[_swap][_owner] = 1;
-        //Push the owner&#39;s balance to the swap
+        //Push the owner's balance to the swap
         self.swap_balances[_swap].push(Balance({
             owner: _owner,
             amount: _supply
@@ -136,7 +136,7 @@ library DRCTLibrary{
     function pay(TokenStorage storage self,address _party, address _swap) public{
         require(msg.sender == self.factory_contract);
         uint party_balance_index = self.swap_balances_index[_swap][_party];
-        require(party_balance_index &gt; 0);
+        require(party_balance_index > 0);
         uint party_swap_balance = self.swap_balances[_swap][party_balance_index].amount;
         //reduces the users totals balance by the amount in that swap
         self.user_total_balances[_party] = self.user_total_balances[_party].sub(party_swap_balance);
@@ -175,9 +175,9 @@ library DRCTLibrary{
         //If the address we want to remove is the final address in the swap
         if (last_address != _remove) {
             uint remove_index = self.swap_balances_index[_swap][_remove];
-            //Update the swap&#39;s balance index of the last address to that of the removed address index
+            //Update the swap's balance index of the last address to that of the removed address index
             self.swap_balances_index[_swap][last_address] = remove_index;
-            //Set the swap&#39;s Balance struct at the removed index to the Balance struct of the last address
+            //Set the swap's Balance struct at the removed index to the Balance struct of the last address
             self.swap_balances[_swap][remove_index] = self.swap_balances[_swap][last_address_index];
         }
         //Remove the swap_balances index for this address
@@ -195,15 +195,15 @@ library DRCTLibrary{
     function transferHelper(TokenStorage storage self,address _from, address _to, uint _amount) internal {
         //Get memory copies of the swap arrays for the sender and reciever
         address[] memory from_swaps = self.user_swaps[_from];
-        //Iterate over sender&#39;s swaps in reverse order until enough tokens have been transferred
-        for (uint i = from_swaps.length.sub(1); i &gt; 0; i--) {
-            //Get the index of the sender&#39;s balance for the current swap
+        //Iterate over sender's swaps in reverse order until enough tokens have been transferred
+        for (uint i = from_swaps.length.sub(1); i > 0; i--) {
+            //Get the index of the sender's balance for the current swap
             uint from_swap_user_index = self.swap_balances_index[from_swaps[i]][_from];
             Balance memory from_user_bal = self.swap_balances[from_swaps[i]][from_swap_user_index];
             //If the current swap will be entirely depleted - we remove all references to it for the sender
-            if (_amount &gt;= from_user_bal.amount) {
+            if (_amount >= from_user_bal.amount) {
                 _amount -= from_user_bal.amount;
-                //If this swap is to be removed, we know it is the (current) last swap in the user&#39;s user_swaps list, so we can simply decrement the length to remove it
+                //If this swap is to be removed, we know it is the (current) last swap in the user's user_swaps list, so we can simply decrement the length to remove it
                 self.user_swaps[_from].length = self.user_swaps[_from].length.sub(1);
                 //Remove the user swap index for this swap
                 delete self.user_swaps_index[_from][from_swaps[i]];
@@ -214,7 +214,7 @@ library DRCTLibrary{
                     assert(to_balance_index != 0);
                     //Add the _from tokens to _to
                     self.swap_balances[from_swaps[i]][to_balance_index].amount = self.swap_balances[from_swaps[i]][to_balance_index].amount.add(from_user_bal.amount);
-                    //Remove the _from address from this swap&#39;s balance array
+                    //Remove the _from address from this swap's balance array
                     removeFromSwapBalances(self,_from, from_swaps[i]);
                 } else {
                     //Prepare to add a new swap by assigning the swap an index for _to
@@ -224,9 +224,9 @@ library DRCTLibrary{
                 self.user_swaps_index[_to][from_swaps[i]] = self.user_swaps[_to].length;
                 //Add the new swap to _to
                 self.user_swaps[_to].push(from_swaps[i]);
-                //Give the reciever the sender&#39;s balance for this swap
+                //Give the reciever the sender's balance for this swap
                 self.swap_balances[from_swaps[i]][from_swap_user_index].owner = _to;
-                //Give the reciever the sender&#39;s swap balance index for this swap
+                //Give the reciever the sender's swap balance index for this swap
                 self.swap_balances_index[from_swaps[i]][_to] = self.swap_balances_index[from_swaps[i]][_from];
                 //Remove the swap balance index from the sending party
                 delete self.swap_balances_index[from_swaps[i]][_from];
@@ -257,7 +257,7 @@ library DRCTLibrary{
                         amount: _amount
                     }));
                 }
-                //Finally, update the _from user&#39;s swap balance
+                //Finally, update the _from user's swap balance
                 self.swap_balances[from_swaps[i]][from_swap_user_index].amount = self.swap_balances[from_swaps[i]][from_swap_user_index].amount.sub(_amount);
                 //Because we have transferred the last of the amount to the reciever, we break;
                 break;
@@ -278,7 +278,7 @@ library DRCTLibrary{
             _to == msg.sender ||
             _to == address(0) ||
             _amount == 0 ||
-            balance_owner &lt; _amount
+            balance_owner < _amount
         ) return false;
         transferHelper(self,msg.sender, _to, _amount);
         self.user_total_balances[msg.sender] = self.user_total_balances[msg.sender].sub(_amount);
@@ -301,8 +301,8 @@ library DRCTLibrary{
             _to == _from ||
             _to == address(0) ||
             _amount == 0 ||
-            balance_owner &lt; _amount ||
-            sender_allowed &lt; _amount
+            balance_owner < _amount ||
+            sender_allowed < _amount
         ) return false;
         transferHelper(self,_from, _to, _amount);
         self.user_total_balances[_from] = self.user_total_balances[_from].sub(_amount);
@@ -358,7 +358,7 @@ library DRCTLibrary{
     *@dev Look up how much the spender or contract is allowed to spend?
     *@param _owner 
     *@param _spender party approved for transfering funds 
-    *@return the allowed amount _spender can spend of _owner&#39;s balance
+    *@return the allowed amount _spender can spend of _owner's balance
     */
     function allowance(TokenStorage storage self, address _owner, address _spender) public constant returns (uint) {
         return self.allowed[_owner][_spender]; 
@@ -498,7 +498,7 @@ contract DRCT_Token {
     *@dev Look up how much the spender or contract is allowed to spend?
     *@param _owner address
     *@param _spender party approved for transfering funds 
-    *@return the allowed amount _spender can spend of _owner&#39;s balance
+    *@return the allowed amount _spender can spend of _owner's balance
     */
     function allowance(address _owner, address _spender) public constant returns (uint) {
         return drct.allowance(_owner,_spender); 
@@ -561,12 +561,12 @@ contract Factory {
     address[] public contracts;
     uint[] public startDates;
     address public memberContract;
-    mapping(uint =&gt; bool) whitelistedTypes;
-    mapping(address =&gt; uint) public created_contracts;
-    mapping(address =&gt; uint) public token_dates;
-    mapping(uint =&gt; address) public long_tokens;
-    mapping(uint =&gt; address) public short_tokens;
-    mapping(address =&gt; uint) public token_type; //1=short 2=long
+    mapping(uint => bool) whitelistedTypes;
+    mapping(address => uint) public created_contracts;
+    mapping(address => uint) public token_dates;
+    mapping(uint => address) public long_tokens;
+    mapping(uint => address) public short_tokens;
+    mapping(address => uint) public token_type; //1=short 2=long
 
     /*Events*/
     //Emitted when a Swap is created
@@ -608,7 +608,7 @@ contract Factory {
     */
     function setWhitelistedMemberTypes(uint[] _memberTypes) public onlyOwner(){
         whitelistedTypes[0] = false;
-        for(uint i = 0; i&lt;_memberTypes.length;i++){
+        for(uint i = 0; i<_memberTypes.length;i++){
             whitelistedTypes[_memberTypes[i]] = true;
         }
     }
@@ -625,7 +625,7 @@ contract Factory {
     /**
     *@dev Gets long and short token addresses based on specified date
     *@param _date 
-    *@return short and long tokens&#39; addresses
+    *@return short and long tokens' addresses
     */
     function getTokens(uint _date) public view returns(address, address){
         return(long_tokens[_date],short_tokens[_date]);
@@ -682,7 +682,7 @@ contract Factory {
     *@param _swapFee the swap fee
     */
     function setVariables(uint _token_ratio, uint _duration, uint _multiplier, uint _swapFee) public onlyOwner() {
-        require(_swapFee &lt; 10000);
+        require(_swapFee < 10000);
         token_ratio = _token_ratio;
         duration = _duration;
         multiplier = _multiplier;
@@ -701,10 +701,10 @@ contract Factory {
     *@dev Allows a user to deploy a new swap contract, if they pay the fee
     *@param _start_date the contract start date 
     *@return new_contract address for he newly created swap address and calls 
-    *event &#39;ContractCreation&#39;
+    *event 'ContractCreation'
     */
     function deployContract(uint _start_date) public payable returns (address) {
-        require(msg.value &gt;= fee &amp;&amp; isWhitelisted(msg.sender));
+        require(msg.value >= fee && isWhitelisted(msg.sender));
         require(_start_date % 86400 == 0);
         address new_contract = deployer.newContract(msg.sender, user_contract, _start_date);
         contracts.push(new_contract);
@@ -720,7 +720,7 @@ contract Factory {
     function deployTokenContract(uint _start_date) public{
         address _token;
         require(_start_date % 86400 == 0);
-        require(long_tokens[_start_date] == address(0) &amp;&amp; short_tokens[_start_date] == address(0));
+        require(long_tokens[_start_date] == address(0) && short_tokens[_start_date] == address(0));
         _token = new DRCT_Token();
         token_dates[_token] = _start_date;
         long_tokens[_start_date] = _token;
@@ -746,7 +746,7 @@ contract Factory {
         require(created_contracts[msg.sender] == _start_date);
         address ltoken = long_tokens[_start_date];
         address stoken = short_tokens[_start_date];
-        require(ltoken != address(0) &amp;&amp; stoken != address(0));
+        require(ltoken != address(0) && stoken != address(0));
             DRCT_Token drct_interface = DRCT_Token(ltoken);
             drct_interface.createToken(_supply.div(token_ratio), _party,msg.sender);
             drct_interface = DRCT_Token(stoken);
@@ -777,7 +777,7 @@ contract Factory {
     function withdrawFees() public onlyOwner(){
         Wrapped_Ether_Interface token_interface = Wrapped_Ether_Interface(token);
         uint _val = token_interface.balanceOf(address(this));
-        if(_val &gt; 0){
+        if(_val > 0){
             token_interface.withdraw(_val);
         }
         owner.transfer(address(this).balance);
@@ -808,7 +808,7 @@ contract Factory {
     *@param _token_add token to pay out
     */
     function payToken(address _party, address _token_add) public {
-        require(created_contracts[msg.sender] &gt; 0);
+        require(created_contracts[msg.sender] > 0);
         DRCT_Token drct_interface = DRCT_Token(_token_add);
         drct_interface.pay(_party, msg.sender);
     }
@@ -842,10 +842,10 @@ contract Wrapped_Ether {
     /*Variables*/
 
     //ERC20 fields
-    string public name = &quot;Wrapped Ether&quot;;
+    string public name = "Wrapped Ether";
     uint public total_supply;
-    mapping(address =&gt; uint) internal balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping(address => uint) internal balances;
+    mapping(address => mapping (address => uint)) internal allowed;
 
     /*Events*/
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -857,13 +857,13 @@ contract Wrapped_Ether {
     *@dev This function creates tokens equal in value to the amount sent to the contract
     */
     function createToken() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         balances[msg.sender] = balances[msg.sender].add(msg.value);
         total_supply = total_supply.add(msg.value);
     }
 
     /**
-    *@dev This function &#39;unwraps&#39; an _amount of Ether in the sender&#39;s balance by transferring 
+    *@dev This function 'unwraps' an _amount of Ether in the sender's balance by transferring 
     *Ether to them
     *@param _value The amount of the token to unwrap
     */
@@ -887,9 +887,9 @@ contract Wrapped_Ether {
     *@param _amount The amount of tokens to send
     */
     function transfer(address _to, uint _amount) public returns (bool) {
-        if (balances[msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] = balances[msg.sender] - _amount;
             balances[_to] = balances[_to] + _amount;
             emit Transfer(msg.sender, _to, _amount);
@@ -906,10 +906,10 @@ contract Wrapped_Ether {
     *@param _amount The amount of tokens to send
     */
     function transferFrom(address _from, address _to, uint _amount) public returns (bool) {
-        if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
             balances[_from] = balances[_from] - _amount;
             allowed[_from][msg.sender] = allowed[_from][msg.sender] - _amount;
             balances[_to] = balances[_to] + _amount;
@@ -959,25 +959,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function min(uint a, uint b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 

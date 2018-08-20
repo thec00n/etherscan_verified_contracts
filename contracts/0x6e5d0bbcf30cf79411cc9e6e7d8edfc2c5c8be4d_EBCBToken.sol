@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,7 +45,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -55,7 +55,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
 	require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -70,11 +70,11 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -112,8 +112,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract EBCBToken is StandardToken {
-    string public name = &#39;EBCBToken&#39;;
-	string public symbol = &#39;EBCB&#39;;
+    string public name = 'EBCBToken';
+	string public symbol = 'EBCB';
 	uint8 public decimals = 2;
 	uint public INITIAL_SUPPLY = 100000000;
 	address public ceoAddress;
@@ -149,7 +149,7 @@ contract EBCBToken is StandardToken {
 	
     function buy() payable public returns (uint amount){
         amount = msg.value.div(buyPrice);
-        require(balances[ceoAddress] &gt;= amount);
+        require(balances[ceoAddress] >= amount);
         balances[msg.sender] = balances[msg.sender].add(amount);
         balances[ceoAddress] = balances[ceoAddress].sub(amount);
         Transfer(ceoAddress, msg.sender, amount);
@@ -157,7 +157,7 @@ contract EBCBToken is StandardToken {
     }
 	
     function sell(uint amount) public returns (uint revenue){
-        require(balances[msg.sender] &gt;= amount);
+        require(balances[msg.sender] >= amount);
         balances[ceoAddress] = balances[ceoAddress].add(amount);
         balances[msg.sender] = balances[msg.sender].sub(amount);
         revenue = amount.mul(sellPrice);
@@ -167,7 +167,7 @@ contract EBCBToken is StandardToken {
     }
 	
 	function batchTransfer(address[] _tos, uint256 _value) public {
-	  for(uint i = 0; i &lt; _tos.length; i++) {
+	  for(uint i = 0; i < _tos.length; i++) {
         transfer( _tos[i], _value);
       }
 	}

@@ -13,7 +13,7 @@ contract GameRegistry {
     }
 
     // This mapping keeps the records of this Registry.
-    mapping(address =&gt; Record) private records;
+    mapping(address => Record) private records;
 
     // Keeps the total numbers of records in this Registry.
     uint private numRecords;
@@ -57,20 +57,20 @@ contract GameRegistry {
         uint valueForRegOwner = (ownerPercentage * msg.value) / 100;
         owner.send(valueForRegOwner);
         uint valueForEachOwner = (msg.value - valueForRegOwner) / numRecords;
-        if (valueForEachOwner &lt;= 0) {
+        if (valueForEachOwner <= 0) {
             return;
         }
-        for (uint k = 0; k &lt; numRecords; k++) {
+        for (uint k = 0; k < numRecords; k++) {
             records[keys[k]].owner.send(valueForEachOwner);
         }
     }
 
     // This is the function that actually inserts a record. 
     function addGame(address key, string description, string url) {
-        // Only allow registration if received value &gt;= REGISTRATION_COST
-        if (msg.value &lt; REGISTRATION_COST) {
+        // Only allow registration if received value >= REGISTRATION_COST
+        if (msg.value < REGISTRATION_COST) {
             // Return value back to sender.
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.send(msg.value);
             }
             return;
@@ -103,10 +103,10 @@ contract GameRegistry {
 /*
     // Transfer ownership of a given record.
     function transfer(address key, address newOwner) {
-        // Only allow transfer if received value &gt;= TRANSFER_COST
-        if (msg.value &lt; TRANSFER_COST) {
+        // Only allow transfer if received value >= TRANSFER_COST
+        if (msg.value < TRANSFER_COST) {
             // Return value back to sender
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 msg.sender.send(msg.value);
             }
             return;
@@ -162,7 +162,7 @@ contract GameRegistry {
     // This function is used by subcontracts when an error is detected and
     // the value needs to be returned to the transaction originator.
     function returnValue() internal {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             msg.sender.send(msg.value);
         }
     }

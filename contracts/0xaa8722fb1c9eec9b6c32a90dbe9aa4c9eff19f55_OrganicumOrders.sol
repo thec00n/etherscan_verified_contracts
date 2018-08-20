@@ -7,7 +7,7 @@ contract OrganicumOrders {
     uint256 tokens;
     }
 
-    mapping (address =&gt; order) public orders;
+    mapping (address => order) public orders;
     address[] public holders;
 
     uint256 public supplyTokens;
@@ -50,21 +50,21 @@ contract OrganicumOrders {
 
     function changeEtherCost(uint256 new_cost) isOwner external
     {
-        assert(new_cost &gt; 0);
+        assert(new_cost > 0);
         etherCost = new_cost*100;
     }
 
     function getPrice() constant returns(uint256)
     {
-        if(now &lt; firstPeriod)
+        if(now < firstPeriod)
         {
             return 95; // 0.95 $
         }
-        else if(now &lt; secondPeriod)
+        else if(now < secondPeriod)
         {
             return 100; // 1.00 $
         }
-        else if(now &lt; thirdPeriod)
+        else if(now < thirdPeriod)
         {
             return 110; // 1.10 $
         }
@@ -76,10 +76,10 @@ contract OrganicumOrders {
 
     function () payable
     {
-        assert(now &gt;= startDate &amp;&amp; now &lt; endDate);
-        assert((msg.value * etherCost)/10**18 &gt;= minAmount);
+        assert(now >= startDate && now < endDate);
+        assert((msg.value * etherCost)/10**18 >= minAmount);
 
-        if(orders[msg.sender].balance == 0 &amp;&amp; orders[msg.sender].tokens == 0)
+        if(orders[msg.sender].balance == 0 && orders[msg.sender].tokens == 0)
         {
             holders.push(msg.sender);
         }
@@ -95,10 +95,10 @@ contract OrganicumOrders {
 
     function orderFor(address to) payable
     {
-        assert(now &gt;= startDate &amp;&amp; now &lt; endDate);
-        assert((msg.value * etherCost)/10**18 &gt;= minAmount);
+        assert(now >= startDate && now < endDate);
+        assert((msg.value * etherCost)/10**18 >= minAmount);
 
-        if(orders[to].balance == 0 &amp;&amp; orders[to].tokens == 0)
+        if(orders[to].balance == 0 && orders[to].tokens == 0)
         {
             holders.push(to);
             if (to.balance == 0)
@@ -116,16 +116,16 @@ contract OrganicumOrders {
         supplyInvestmen += msg.value;
     }
 
-    mapping (address =&gt; bool) public voter;
+    mapping (address => bool) public voter;
     uint256 public sumVote = 0;
     uint256 public durationVoting = 24 hours;
 
     function vote()
     {
         assert(!voter[msg.sender]);
-        assert(now &gt;= endDate &amp;&amp; now &lt; endDate + durationVoting);
-        assert((supplyInvestmen * etherCost)/10**18 &gt;= softCap);
-        assert(orders[msg.sender].tokens &gt; 0);
+        assert(now >= endDate && now < endDate + durationVoting);
+        assert((supplyInvestmen * etherCost)/10**18 >= softCap);
+        assert(orders[msg.sender].tokens > 0);
 
         voter[msg.sender] = true;
         sumVote += orders[msg.sender].tokens;
@@ -133,21 +133,21 @@ contract OrganicumOrders {
 
     function refund(address holder)
     {
-        assert(orders[holder].balance &gt; 0);
+        assert(orders[holder].balance > 0);
 
         uint256 etherToSend = 0;
-        if ((supplyInvestmen * etherCost)/10**18 &gt;= softCap)
+        if ((supplyInvestmen * etherCost)/10**18 >= softCap)
         {
-            assert(sumVote &gt; supplyTokensSaved / 2); // &gt; 50%
+            assert(sumVote > supplyTokensSaved / 2); // > 50%
             etherToSend = orders[holder].balance * 95 / 100;
         }
         else
         {
             etherToSend = orders[holder].balance;
         }
-        assert(etherToSend &gt; 0);
+        assert(etherToSend > 0);
 
-        if (etherToSend &gt; this.balance) etherToSend = this.balance;
+        if (etherToSend > this.balance) etherToSend = this.balance;
 
         holder.transfer(etherToSend);
 
@@ -158,10 +158,10 @@ contract OrganicumOrders {
 
     function takeInvest() isOwner
     {
-        assert(now &gt;= endDate + durationVoting);
-        assert(this.balance &gt; 0);
+        assert(now >= endDate + durationVoting);
+        assert(this.balance > 0);
 
-        if(sumVote &gt; supplyTokensSaved / 2)
+        if(sumVote > supplyTokensSaved / 2)
         {
             assert(supplyTokens == 0);
         }

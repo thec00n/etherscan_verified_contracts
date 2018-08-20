@@ -8,14 +8,14 @@ contract LedgerSplitSingle {
 
     // Splits the funds on a single chain
     function split(bool forked, address target) returns(bool) {
-        if (amIOnTheFork.forked() &amp;&amp; forked &amp;&amp; target.send(msg.value)) {
+        if (amIOnTheFork.forked() && forked && target.send(msg.value)) {
             return true;
         } 
         else
-        if (!amIOnTheFork.forked() &amp;&amp; !forked &amp;&amp; target.send(msg.value)) {
+        if (!amIOnTheFork.forked() && !forked && target.send(msg.value)) {
             return true;
         } 
-        throw; // don&#39;t accept value transfer, otherwise it would be trapped.
+        throw; // don't accept value transfer, otherwise it would be trapped.
     }
 
     // Reject value transfers.

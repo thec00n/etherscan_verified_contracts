@@ -44,13 +44,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -60,12 +60,12 @@ contract SafeMath {
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 contract ERC20Token is IERC20Token, SafeMath {
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -75,7 +75,7 @@ contract ERC20Token is IERC20Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
@@ -109,8 +109,8 @@ contract YoYo is ERC20Token {
     constructor(address _owner) public {
         require(address(0) != _owner);
         
-        name = &quot;LLXXCC&quot;;
-        symbol = &quot;LXC&quot;;
+        name = "LLXXCC";
+        symbol = "LXC";
         decimals = 18;
         totalSupply = 3* 1000 * 1000 *1000 * 10**uint256(decimals);
         
@@ -121,8 +121,8 @@ contract YoYo is ERC20Token {
     function mint (address _toAddress, uint256 _amount) public returns (bool) {
         require(msg.sender == owner);
         require(address(0) != _toAddress);
-        require(_amount &gt;= 0);
-        require( safeAdd(_amount,mintTotal) &lt;= totalSupply);
+        require(_amount >= 0);
+        require( safeAdd(_amount,mintTotal) <= totalSupply);
         
         mintTotal = safeAdd(_amount, mintTotal);
         balances[_toAddress] = safeAdd(balances[_toAddress], _amount);

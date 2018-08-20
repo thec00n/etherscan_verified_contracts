@@ -48,13 +48,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -70,7 +70,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -175,17 +175,17 @@ contract FixedSupplyToken is ERC20Interface, Owned {
     uint public _totalSupply;
 
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
 
 
     function FixedSupplyToken() public {
 
-        symbol = &quot;PLE&quot;;
+        symbol = "PLE";
 
-        name = &quot;PolyETH&quot;;
+        name = "PolyETH";
 
         decimals = 18;
 

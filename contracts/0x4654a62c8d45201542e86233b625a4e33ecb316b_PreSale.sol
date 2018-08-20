@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -97,8 +97,8 @@ contract IToken {
 
 /**
  * @title Token Receivable
- * @dev Support transfer of ERC20 tokens out of this contract&#39;s address
- * @dev Even if we don&#39;t intend for people to send them here, somebody will
+ * @dev Support transfer of ERC20 tokens out of this contract's address
+ * @dev Even if we don't intend for people to send them here, somebody will
  */
 contract TokenReceivable is Ownable {
     event logTokenTransfer(address token, address to, uint256 amount);
@@ -131,9 +131,9 @@ contract EventDefinitions {
 contract Token is Finalizable, TokenReceivable, EventDefinitions {
     using SafeMath for uint256;
 
-    string public name = &quot;FairWin Token&quot;;
+    string public name = "FairWin Token";
     uint8 public decimals = 8;
-    string public symbol = &quot;FWIN&quot;;
+    string public symbol = "FWIN";
 
     Controller controller;
 
@@ -150,7 +150,7 @@ contract Token is Finalizable, TokenReceivable, EventDefinitions {
     }
 
     modifier onlyPayloadSize(uint256 numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 
@@ -201,7 +201,7 @@ contract Token is Finalizable, TokenReceivable, EventDefinitions {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -441,7 +441,7 @@ contract PreSale is Finalizable {
      * @param _wallet Address where collected funds will be forwarded to
      */
     constructor(uint256 _rate, address _wallet, address _ledger, address _controller) public {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         require(_wallet != address(0));
         require(_ledger != address(0));
         require(_controller != address(0));
@@ -453,7 +453,7 @@ contract PreSale is Finalizable {
     }
 
     function setRate(uint256 _rate) public notFinalized onlyOwner {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
@@ -501,8 +501,8 @@ contract Ledger is Finalizable {
     address public controller;
     address public sale;
 
-    mapping(address =&gt; uint256) internal balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) internal balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
     uint256 internal totalSupply_;
     bool public mintFinished = false;
 
@@ -566,7 +566,7 @@ contract Ledger is Finalizable {
      */
     function transfer(address _from, address _to, uint256 _value) public onlyController returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[_from] = balances[_from].sub(_value);
@@ -583,8 +583,8 @@ contract Ledger is Finalizable {
     function transferFrom(address _spender, address _from, address _to, uint256 _value) public onlyController returns (bool) {
         uint256 allow = allowed[_from][_spender];
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allow);
+        require(_value <= balances[_from]);
+        require(_value <= allow);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -597,14 +597,14 @@ contract Ledger is Finalizable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _owner, address _spender, uint256 _value) public onlyController returns (bool) {
         //require user to set to zero before resetting to nonzero
-        if ((_value != 0) &amp;&amp; (allowed[_owner][_spender] != 0)) {
+        if ((_value != 0) && (allowed[_owner][_spender] != 0)) {
             return false;
         }
 
@@ -639,7 +639,7 @@ contract Ledger is Finalizable {
      */
     function decreaseApproval(address _owner, address _spender, uint256 _subtractedValue) public onlyController returns (bool) {
         uint256 oldValue = allowed[_owner][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[_owner][_spender] = 0;
         } else {
             allowed[_owner][_spender] = oldValue.sub(_subtractedValue);
@@ -652,9 +652,9 @@ contract Ledger is Finalizable {
      * @param _amount The amount of token to be burned.
      */
     function burn(address _burner, uint256 _amount) public onlyController returns (bool) {
-        require(balances[_burner] &gt;= _amount);
-        // no need to require _amount &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(balances[_burner] >= _amount);
+        // no need to require _amount <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_burner] = balances[_burner].sub(_amount);
         totalSupply_ = totalSupply_.sub(_amount);

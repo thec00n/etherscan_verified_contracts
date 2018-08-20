@@ -54,7 +54,7 @@ contract Asset {
     }
 
     function transfer(address _to, uint _value) returns(bool) {
-        return transferWithReference(_to, _value, &quot;&quot;);
+        return transferWithReference(_to, _value, "");
     }
 
     function transferWithReference(address _to, uint _value, string _reference) returns(bool) {
@@ -65,7 +65,7 @@ contract Asset {
     }
 
     function transferToICAP(bytes32 _icap, uint _value) returns(bool) {
-        return transferToICAPWithReference(_icap, _value, &quot;&quot;);
+        return transferToICAPWithReference(_icap, _value, "");
     }
 
     function transferToICAPWithReference(bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -76,7 +76,7 @@ contract Asset {
     }
     
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        return transferFromWithReference(_from, _to, _value, &quot;&quot;);
+        return transferFromWithReference(_from, _to, _value, "");
     }
 
     function transferFromWithReference(address _from, address _to, uint _value, string _reference) returns(bool) {
@@ -87,7 +87,7 @@ contract Asset {
     }
 
     function transferFromToICAP(address _from, bytes32 _icap, uint _value) returns(bool) {
-        return transferFromToICAPWithReference(_from, _icap, _value, &quot;&quot;);
+        return transferFromToICAPWithReference(_from, _icap, _value, "");
     }
 
     function transferFromToICAPWithReference(address _from, bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -135,7 +135,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -160,7 +160,7 @@ contract AmbiEnabled {
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) {
+    function remove() checkAccess("owner") {
         suicide(msg.sender);
     }
 }
@@ -180,12 +180,12 @@ contract OpenDollar is Asset, AmbiEnabled {
     uint public forwardCallGas = 21000;
     uint public setCosignerCallGas = 21000;
     EtherTreasuryInterface public treasury;
-    mapping(uint32 =&gt; address) public allowedForwards;
+    mapping(uint32 => address) public allowedForwards;
 
-    function updateRefundGas() checkAccess(&quot;setup&quot;) returns(uint) {
+    function updateRefundGas() checkAccess("setup") returns(uint) {
         uint startGas = msg.gas;
         uint refund = (startGas - msg.gas + refundGas) * tx.gasprice;
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return 0;
         }
         if (!_refund(1)) {
@@ -208,7 +208,7 @@ contract OpenDollar is Asset, AmbiEnabled {
             uint _approve,
             uint _forward,
             uint _setCosigner
-        ) checkAccess(&quot;setup&quot;) returns(bool)
+        ) checkAccess("setup") returns(bool)
     {
         transferCallGas = _transfer;
         transferFromCallGas = _transferFrom;
@@ -224,19 +224,19 @@ contract OpenDollar is Asset, AmbiEnabled {
         return true;
     }
 
-    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess(&quot;admin&quot;) returns(bool) {
+    function setupTreasury(address _treasury, uint _txGasPriceLimit) checkAccess("admin") returns(bool) {
         if (_txGasPriceLimit == 0) {
             return false;
         }
         treasury = EtherTreasuryInterface(_treasury);
         txGasPriceLimit = _txGasPriceLimit;
-        if (msg.value &gt; 0 &amp;&amp; !address(treasury).send(msg.value)) {
+        if (msg.value > 0 && !address(treasury).send(msg.value)) {
             throw;
         }
         return true;
     }
 
-    function setForward(bytes4 _msgSig, address _forward) checkAccess(&quot;admin&quot;) returns(bool) {
+    function setForward(bytes4 _msgSig, address _forward) checkAccess("admin") returns(bool) {
         allowedForwards[uint32(_msgSig)] = _forward;
         return true;
     }
@@ -246,7 +246,7 @@ contract OpenDollar is Asset, AmbiEnabled {
     }
 
     function _applyRefund(uint _startGas) internal returns(bool) {
-        if (tx.gasprice &gt; txGasPriceLimit) {
+        if (tx.gasprice > txGasPriceLimit) {
             return false;
         }
         uint refund = (_startGas - msg.gas + refundGas) * tx.gasprice;
@@ -259,7 +259,7 @@ contract OpenDollar is Asset, AmbiEnabled {
 
     function _transfer(address _to, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferCallGas;
-        if (!multiAsset.proxyTransferWithReference(_to, _value, symbol, &quot;&quot;)) {
+        if (!multiAsset.proxyTransferWithReference(_to, _value, symbol, "")) {
             return (false, false);
         }
         return (true, _applyRefund(startGas));
@@ -267,7 +267,7 @@ contract OpenDollar is Asset, AmbiEnabled {
 
     function _transferFrom(address _from, address _to, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferFromCallGas;
-        if (!multiAsset.proxyTransferFromWithReference(_from, _to, _value, symbol, &quot;&quot;)) {
+        if (!multiAsset.proxyTransferFromWithReference(_from, _to, _value, symbol, "")) {
             return (false, false);
         }
         return (true, _applyRefund(startGas));
@@ -275,7 +275,7 @@ contract OpenDollar is Asset, AmbiEnabled {
 
     function _transferToICAP(bytes32 _icap, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferToICAPCallGas;
-        if (!multiAsset.proxyTransferToICAPWithReference(_icap, _value, &quot;&quot;)) {
+        if (!multiAsset.proxyTransferToICAPWithReference(_icap, _value, "")) {
             return (false, false);
         }
         return (true, _applyRefund(startGas));
@@ -283,7 +283,7 @@ contract OpenDollar is Asset, AmbiEnabled {
 
     function _transferFromToICAP(address _from, bytes32 _icap, uint _value) internal returns(bool, bool) {
         uint startGas = msg.gas + transferFromToICAPCallGas;
-        if (!multiAsset.proxyTransferFromToICAPWithReference(_from, _icap, _value, &quot;&quot;)) {
+        if (!multiAsset.proxyTransferFromToICAPWithReference(_from, _icap, _value, "")) {
             return (false, false);
         }
         return (true, _applyRefund(startGas));

@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,12 +43,12 @@ contract TrineChain is ERC20 {
     using SafeMath for uint256; 
     address owner = msg.sender; 
 
-    mapping (address =&gt; uint256) balances; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) locknum; 
+    mapping (address => uint256) balances; 
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) locknum; 
 
-    string public constant name = &quot;TrineChain&quot;;
-    string public constant symbol = &quot;TRCON&quot;;
+    string public constant name = "TrineChain";
+    string public constant symbol = "TRCON";
     uint public constant decimals = 18;
     uint256 _Rate = 10 ** decimals;    
     uint256 public totalSupply = 1000000000 * _Rate;
@@ -65,7 +65,7 @@ contract TrineChain is ERC20 {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -74,7 +74,7 @@ contract TrineChain is ERC20 {
     }
 
     function transferOwnership(address newOwner) onlyOwner public {
-        if (newOwner != address(0) &amp;&amp; newOwner != owner) {
+        if (newOwner != address(0) && newOwner != owner) {
              owner = newOwner;   
         }
     }
@@ -82,8 +82,8 @@ contract TrineChain is ERC20 {
 
     function lock(address _to, uint256 _amount) private returns (bool) {
         require(owner != _to);
-        require(_amount &gt;= 0);
-        require(_amount * _Rate  &lt;= balances[_to]);
+        require(_amount >= 0);
+        require(_amount * _Rate  <= balances[_to]);
         locknum[_to]=_amount * _Rate;
         Locked(_to, _amount * _Rate);
         return true;
@@ -91,18 +91,18 @@ contract TrineChain is ERC20 {
 
     function locked(address[] addresses, uint256[] amounts) onlyOwner public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        for (uint8 i = 0; i < addresses.length; i++) {
             lock(addresses[i], amounts[i]);
         }
     }
 
     function distr(address _to, uint256 _amount) private returns (bool) {
         require(owner != _to);
-        require(_amount &gt; 0);
-        require(balances[owner] &gt;= _amount * _Rate);
+        require(_amount > 0);
+        require(balances[owner] >= _amount * _Rate);
 
         balances[owner] = balances[owner].sub(_amount * _Rate);
         balances[_to] = balances[_to].add(_amount * _Rate);
@@ -113,29 +113,29 @@ contract TrineChain is ERC20 {
     }
 
     function lockcheck(uint256 _amount) internal pure returns (uint256) {
-        if(_amount &lt; 3000){
+        if(_amount < 3000){
         return _amount * 4/10;
         }
-        if(_amount &gt;= 3000 &amp;&amp; _amount &lt; 10000){
+        if(_amount >= 3000 && _amount < 10000){
         return _amount * 5/10;
         }
-        if(_amount &gt;= 10000 &amp;&amp; _amount &lt; 50000){
+        if(_amount >= 10000 && _amount < 50000){
         return _amount * 6/10;
         }
-        if(_amount &gt;= 50000 &amp;&amp; _amount &lt; 500000){
+        if(_amount >= 50000 && _amount < 500000){
         return _amount * 7/10;
         }
-        if(_amount &gt;= 500000){
+        if(_amount >= 500000){
         return _amount * 8/10;
         }
     }
     
     function distribute(address[] addresses, uint256[] amounts) onlyOwner public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        for (uint8 i = 0; i < addresses.length; i++) {
             distr(addresses[i], amounts[i]);
         }
     }
@@ -151,8 +151,8 @@ contract TrineChain is ERC20 {
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
-        require(_amount &lt;= balances[msg.sender].sub(locknum[msg.sender]));
+        require(_amount <= balances[msg.sender]);
+        require(_amount <= balances[msg.sender].sub(locknum[msg.sender]));
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -162,9 +162,9 @@ contract TrineChain is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= balances[_from].sub(locknum[_from]));
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= balances[_from].sub(locknum[_from]));
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -174,7 +174,7 @@ contract TrineChain is ERC20 {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;

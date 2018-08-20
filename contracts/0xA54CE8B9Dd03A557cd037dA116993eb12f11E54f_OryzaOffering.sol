@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,11 +58,11 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -79,8 +79,8 @@ contract BasicToken is ERC20Basic {
 
 contract Oryza is BasicToken, Ownable {
 
-  string public constant name = &quot;Oryza&quot;;
-  string public constant symbol = &quot;米&quot;;
+  string public constant name = "Oryza";
+  string public constant symbol = "米";
   uint256 public constant decimals = 0;
 
   event Mint(address indexed to, uint256 amount);
@@ -107,7 +107,7 @@ contract OryzaOffering is Ownable {
   }
 
   function purchase(address beneficiary) public payable {
-    require(beneficiary != address(0) &amp;&amp; msg.value != 0);
+    require(beneficiary != address(0) && msg.value != 0);
 
     uint256 value = msg.value;
     uint256 amount = value.div(price);

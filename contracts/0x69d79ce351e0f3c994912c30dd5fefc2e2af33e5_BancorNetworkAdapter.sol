@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,21 +56,21 @@ library Utils {
     uint  constant MAX_DECIMALS = 18;
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        if( dstDecimals &gt;= srcDecimals ) {
-            require((dstDecimals-srcDecimals) &lt;= MAX_DECIMALS);
+        if( dstDecimals >= srcDecimals ) {
+            require((dstDecimals-srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals-srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals-dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals-dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals-dstDecimals)));
         }
     }
 
     // function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-    //     if( srcDecimals &gt;= dstDecimals ) {
-    //         require((srcDecimals-dstDecimals) &lt;= MAX_DECIMALS);
+    //     if( srcDecimals >= dstDecimals ) {
+    //         require((srcDecimals-dstDecimals) <= MAX_DECIMALS);
     //         return (PRECISION * dstQty * (10**(srcDecimals - dstDecimals))) / rate;
     //     } else {
-    //         require((dstDecimals-srcDecimals) &lt;= MAX_DECIMALS);
+    //         require((dstDecimals-srcDecimals) <= MAX_DECIMALS);
     //         return (PRECISION * dstQty) / (rate * (10**(dstDecimals - srcDecimals)));
     //     }
     // }
@@ -127,7 +127,7 @@ contract ExchangeInterface is ComponentInterface {
      * For ETH, use 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
      * @param address _sourceAddress The token to sell for the destAddress.
      * @param address _destAddress The token to buy with the source token.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @return boolean whether or not the trading pair is supported by this exchange provider
      */
     function supportsTradingPair(address _srcAddress, address _destAddress, bytes32 _exchangeId)
@@ -139,7 +139,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of ETH used to buy this token. Make sure the value sent to this function is the same as the _amount.
      * @param uint _minimumRate The minimum amount of tokens to receive for 1 ETH.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here.
      * @return boolean whether or not the trade succeeded.
      */
@@ -155,7 +155,7 @@ contract ExchangeInterface is ComponentInterface {
      * @param uint _amount Amount of tokens to sell.
      * @param uint _minimumRate The minimum amount of ETH to receive for 1 ERC20Extended token.
      * @param address _depositAddress The address to send the bought tokens to.
-     * @param bytes32 _exchangeId The exchangeId to choose. If it&#39;s an empty string, then the exchange will be chosen automatically.
+     * @param bytes32 _exchangeId The exchangeId to choose. If it's an empty string, then the exchange will be chosen automatically.
      * @param address _partnerId If the exchange supports a partnerId, you can supply your partnerId here
      * @return boolean boolean whether or not the trade succeeded.
      */
@@ -185,7 +185,7 @@ contract KyberNetworkInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -329,19 +329,19 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
     ERC20Extended public constant ETH_TOKEN_ADDRESS = ERC20Extended(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
     ERC20Extended public constant bancorToken = ERC20Extended(0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C);
     ERC20Extended public constant bancorETHToken = ERC20Extended(0xc0829421C1d260BD3cB3E0F06cfE2D52db2cE315);
-    mapping(address =&gt; BancorConverterInterface) public tokenToConverter;
-    mapping(address =&gt; address) public tokenToRelay;
+    mapping(address => BancorConverterInterface) public tokenToConverter;
+    mapping(address => address) public tokenToRelay;
 
     bool public adapterEnabled;
 
     modifier checkArrayLengths(address[] tokenAddresses, BancorConverterInterface[] converterAddresses, address[] relayAddresses) {
-        require(tokenAddresses.length == converterAddresses.length &amp;&amp; relayAddresses.length == converterAddresses.length);
+        require(tokenAddresses.length == converterAddresses.length && relayAddresses.length == converterAddresses.length);
         _;
     }
 
     modifier checkTokenSupported(address _token) {
         BancorConverterInterface bancorConverter = tokenToConverter[_token];
-        require(address(bancorConverter) != 0x0, &quot;Token not supported&quot;);
+        require(address(bancorConverter) != 0x0, "Token not supported");
         _;
     }
 
@@ -361,7 +361,7 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
     function updateSupportedTokenList(address[] _tokenAddresses, BancorConverterInterface[] _converterAddresses, address[] _relayAddresses)
     checkArrayLengths(_tokenAddresses, _converterAddresses, _relayAddresses)
     public onlyOwner returns (bool success) {
-        for(uint i = 0; i &lt; _tokenAddresses.length; i++){
+        for(uint i = 0; i < _tokenAddresses.length; i++){
             tokenToConverter[_tokenAddresses[i]] = _converterAddresses[i];
             tokenToRelay[_tokenAddresses[i]] = _relayAddresses[i];
         }
@@ -376,7 +376,7 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
 
     function getPrice(ERC20Extended _sourceAddress, ERC20Extended _destAddress, uint _amount)
     external view returns(uint expectedRate, uint slippageRate) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         bool isBuying = _sourceAddress == ETH_TOKEN_ADDRESS;
         ERC20Extended targetToken = isBuying ? _destAddress : _sourceAddress;
         BancorConverterInterface BNTConverter = tokenToConverter[address(bancorToken)];
@@ -387,7 +387,7 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
         uint ETHToBNTRate = BNTConverter.getReturn(bancorETHToken, bancorToken, _amount);
 
 
-        // Bancor is a special case, it&#39;s their token
+        // Bancor is a special case, it's their token
         if (targetToken == bancorToken){
             if(isBuying) {
                 rate = ((ETHToBNTRate * 10**18) / _amount);
@@ -422,10 +422,10 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
         // When buying, we can get the path from Bancor easily, by getting the quickBuyPath from the converter address
         if(isBuying){
             pathLength = bancorConverter.getQuickBuyPathLength();
-            require(pathLength &gt; 0, &quot;Error with pathLength&quot;);
+            require(pathLength > 0, "Error with pathLength");
             path = new ERC20Extended[](pathLength);
 
-            for (uint i = 0; i &lt; pathLength; i++) {
+            for (uint i = 0; i < pathLength; i++) {
                 path[i] = bancorConverter.quickBuyPath(i);
             }
             return (path, pathLength);
@@ -436,7 +436,7 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
         address relayAddress = tokenToRelay[_token];
 
         if(relayAddress == 0x0){
-            // Bancor is a special case, it&#39;s their token
+            // Bancor is a special case, it's their token
             if(_token == bancorToken){
                 path = new ERC20Extended[](3);
                 path[0] = _token;
@@ -444,7 +444,7 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
                 path[2] = bancorETHToken;
                 return (path, 3);
             }
-            // It&#39;s a Bancor smart token, handle it accordingly
+            // It's a Bancor smart token, handle it accordingly
             path = new ERC20Extended[](5);
             path[0] = _token;
             path[1] = _token;
@@ -454,12 +454,12 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
             return (path, 5);
         }
 
-        // It&#39;s a relay token, handle it accordingly
+        // It's a relay token, handle it accordingly
         path = new ERC20Extended[](5);
         path[0] = _token;                              // ERC20 Token to sell
         path[1] = ERC20Extended(relayAddress);         // Relay address (automatically converted to converter address)
         path[2] = bancorToken;                         // BNT Smart token address, as converter
-        path[3] = bancorToken;                         // BNT Smart token address, as &quot;to&quot; and &quot;from&quot; token
+        path[3] = bancorToken;                         // BNT Smart token address, as "to" and "from" token
         path[4] = bancorETHToken;                      // The Bancor ETH token, this will signal we want our return in ETH
 
         return (path, 5);
@@ -484,14 +484,14 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
         ERC20Extended _token, uint _amount, uint _minimumRate,
         address _depositAddress
     ) checkTokenSupported(_token) external returns(bool success) {
-        require(_token.balanceOf(address(this)) &gt;= _amount, &quot;Balance of token is not sufficient in adapter&quot;);
+        require(_token.balanceOf(address(this)) >= _amount, "Balance of token is not sufficient in adapter");
         ERC20Extended[] memory internalPath;
         ERC20Extended[] memory path;
         uint pathLength;
         (internalPath,pathLength) = getPath(_token, false);
 
         path = new ERC20Extended[](pathLength);
-        for(uint i = 0; i &lt; pathLength; i++) {
+        for(uint i = 0; i < pathLength; i++) {
             path[i] = internalPath[i];
         }
 
@@ -501,7 +501,7 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
         ERC20NoReturn(_token).approve(address(bancorConverter), _amount);
         uint minimumReturn = convertMinimumRateToMinimumReturn(_token,_amount,_minimumRate, false);
         uint returnedAmountOfETH = bancorConverter.quickConvert(path,_amount,minimumReturn);
-        require(returnedAmountOfETH &gt; 0, &quot;BancorConverter did not return any ETH&quot;);
+        require(returnedAmountOfETH > 0, "BancorConverter did not return any ETH");
         _depositAddress.transfer(returnedAmountOfETH);
         return true;
     }
@@ -510,19 +510,19 @@ contract BancorNetworkAdapter is OlympusExchangeAdapterInterface {
         ERC20Extended _token, uint _amount, uint _minimumRate,
         address _depositAddress
     ) checkTokenSupported(_token) external payable returns(bool success){
-        require(msg.value == _amount, &quot;Amount of Ether sent is not the same as the amount parameter&quot;);
+        require(msg.value == _amount, "Amount of Ether sent is not the same as the amount parameter");
         ERC20Extended[] memory internalPath;
         ERC20Extended[] memory path;
         uint pathLength;
         (internalPath,pathLength) = getPath(_token, true);
         path = new ERC20Extended[](pathLength);
-        for(uint i = 0; i &lt; pathLength; i++) {
+        for(uint i = 0; i < pathLength; i++) {
             path[i] = internalPath[i];
         }
 
         uint minimumReturn = convertMinimumRateToMinimumReturn(_token,_amount,_minimumRate, true);
         uint returnedAmountOfTokens = tokenToConverter[address(bancorToken)].quickConvert.value(_amount)(path,_amount,minimumReturn);
-        require(returnedAmountOfTokens &gt; 0, &quot;BancorConverter did not return any tokens&quot;);
+        require(returnedAmountOfTokens > 0, "BancorConverter did not return any tokens");
         ERC20NoReturn(_token).transfer(_depositAddress, returnedAmountOfTokens);
         return true;
     }

@@ -24,9 +24,9 @@ library SafeMath {
   */
     function div(uint256 a, uint256 b) internal pure returns (uint256) 
     {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
   */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) 
     {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -133,7 +133,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     string public name;
     string public symbol;
     uint8 public decimals = 18;
@@ -150,7 +150,7 @@ contract BasicToken is ERC20Basic {
 //@param _value要转移的金额。
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -192,8 +192,8 @@ contract BurnableToken is BasicToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);  
-    //不需要value &lt;= totalSupply，因为这意味着
+        require(_value <= balances[_who]);  
+    //不需要value <= totalSupply，因为这意味着
     //发件人的余额大于totalSupply，这应该是断言失败
 
         balances[_who] = balances[_who].sub(_value);
@@ -210,7 +210,7 @@ contract BurnableToken is BasicToken {
 
 contract StandardToken is ERC20, BasicToken,Ownable{
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
 
@@ -219,8 +219,8 @@ contract StandardToken is ERC20, BasicToken,Ownable{
 //@param _value uint256要传输的令牌数量
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -278,7 +278,7 @@ contract StandardToken is ERC20, BasicToken,Ownable{
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) 
+        if (_subtractedValue > oldValue) 
         {
             allowed[msg.sender][_spender] = 0;
         } else {
@@ -293,14 +293,14 @@ contract StandardToken is ERC20, BasicToken,Ownable{
 /*  自定义的最终Token代码 */
 contract NDT2Token is BurnableToken, StandardToken,Pausable {
     /*这会在区块链上产生一个公共事件，通知客户端*/
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
     function NDT2Token() public 
     {
         totalSupply_ = 10000000000 ether;//代币总量,单位eth
         balances[msg.sender] = totalSupply_;               //为创建者提供所有初始令牌
-        name = &quot;NDT2Token&quot;;             //为显示目的设置交易名称
-        symbol = &quot;NDT2&quot;;                               //为显示目的设置交易符号简称
+        name = "NDT2Token";             //为显示目的设置交易名称
+        symbol = "NDT2";                               //为显示目的设置交易符号简称
     }
 
 //@dev从目标地址和减量津贴中焚烧特定数量的标记
@@ -308,7 +308,7 @@ contract NDT2Token is BurnableToken, StandardToken,Pausable {
 //@param _value uint256要被刻录的令牌数量
 
     function burnFrom(address _from, uint256 _value) public {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
         //此功能需要发布具有更新批准的事件。
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);

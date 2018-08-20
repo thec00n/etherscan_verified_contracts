@@ -19,7 +19,7 @@ interface TulipsSaleInterface {
 // File: contracts/ERC721.sol
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5c1c0d1c0e5c4ddcccac8dfc0cb8bc6ca">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5c1c0d1c0e5c4ddcccac8dfc0cb8bc6ca">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -42,17 +42,17 @@ contract ERC721Metadata {
     /// @dev Given a token Id, returns a byte array that is supposed to be converted into string.
     function getMetadata(uint256 _tokenId, string) public view returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello World! :D&quot;;
+            buffer[0] = "Hello World! :D";
             count = 15;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -63,7 +63,7 @@ contract ERC721Metadata {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -209,19 +209,19 @@ contract TulipsStorage is TulipsRoles {
     Tulip[] public tulips;
 
     /*
-    * @dev Maps tulipId&#39;s to owner addreses
+    * @dev Maps tulipId's to owner addreses
     */
-    mapping (uint256 =&gt; address) public tulipIdToOwner;
+    mapping (uint256 => address) public tulipIdToOwner;
 
     /*
     * @dev Maps owner adress to number of tulips owned.
-    * Bookkeeping for compliance with ERC20 and ERC721. Doesn&#39;t mean much in terms of
+    * Bookkeeping for compliance with ERC20 and ERC721. Doesn't mean much in terms of
     * value of individual unfungable assets.
     */
-    mapping (address =&gt; uint256) tulipOwnershipCount;
+    mapping (address => uint256) tulipOwnershipCount;
 
     /// @dev Maps tulipId to approved reciever of a pending token transfer.
-    mapping (uint256 =&gt; address) public tulipIdToApprovedTranserAddress;
+    mapping (uint256 => address) public tulipIdToApprovedTranserAddress;
 }
 
 // File: contracts/TulipsTokenInterface.sol
@@ -232,11 +232,11 @@ contract TulipsStorage is TulipsRoles {
 */
 contract TulipsTokenInterface is TulipsStorage, ERC721 {
 
-    //// TOKEN SPECS &amp; META DATA
+    //// TOKEN SPECS & META DATA
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;CryptoTulips&quot;;
-    string public constant symbol = &quot;CT&quot;;
+    string public constant name = "CryptoTulips";
+    string public constant symbol = "CT";
 
     /*
     * @dev This external contract will return Tulip metadata. We are making this changable in case
@@ -266,7 +266,7 @@ contract TulipsTokenInterface is TulipsStorage, ERC721 {
     /*
     * @dev Maps tulipId to approved transfer address
     */
-    mapping (uint256 =&gt; address) public tulipIdToApproved;
+    mapping (uint256 => address) public tulipIdToApproved;
 
 
     //// PUBLIC FACING FUNCTIONS
@@ -325,7 +325,7 @@ contract TulipsTokenInterface is TulipsStorage, ERC721 {
 
     /*
     * @notice Transfers a tulip to another address without confirmation.
-    * If the reciever&#39;s address is invalid tulip may be lost! Use approve() and transferFrom() instead.
+    * If the reciever's address is invalid tulip may be lost! Use approve() and transferFrom() instead.
     * @param _to The reciever address.
     * @param _tulipId The tulip to be transfered
     */
@@ -400,7 +400,7 @@ contract TulipsTokenInterface is TulipsStorage, ERC721 {
             tulipOwnershipCount[_from]--;
         }
 
-        // Update mapping of tulipID -&gt; ownerAddress
+        // Update mapping of tulipID -> ownerAddress
         tulipIdToOwner[_tulipId] = _to;
 
         // Emit the transfer event.
@@ -414,7 +414,7 @@ contract TulipsTokenInterface is TulipsStorage, ERC721 {
 
     //// UTILITY FUNCTIONS
 
-    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c6d7e6d6f646265684c62637868637822626978">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c6d7e6d6f646265684c62637868637822626978">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _toString(bytes32[4] _rawBytes, uint256 _stringLength)private view returns (string) {
@@ -434,7 +434,7 @@ contract TulipsTokenInterface is TulipsStorage, ERC721 {
 
     function _memcpy(uint dest, uint src, uint len) private view {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -456,12 +456,12 @@ contract TulipsTokenInterface is TulipsStorage, ERC721 {
 // File: contracts/TulipsCreation.sol
 
 /*
-* @title Crypto Tulips Creation Mechanisms &amp; Core Contract
+* @title Crypto Tulips Creation Mechanisms & Core Contract
 * @dev This contract provides methods in which we create new tulips.
 */
 contract TulipsCreation is TulipsTokenInterface {
 
-    //// STATS &amp; LIMITS
+    //// STATS & LIMITS
     uint256 public constant TOTAL_TULIP_SUPPLY = 100000;
     uint256 public totalTulipCount;
 
@@ -495,7 +495,7 @@ contract TulipsCreation is TulipsTokenInterface {
     function createTulip( uint256 _visualInfo, bytes32 _visualHash )  external onlyOperations
         returns (uint)
     {
-        require(totalTulipCount&lt;TOTAL_TULIP_SUPPLY);
+        require(totalTulipCount<TOTAL_TULIP_SUPPLY);
 
         Tulip memory tulip = Tulip({
             visualInfo: _visualInfo,

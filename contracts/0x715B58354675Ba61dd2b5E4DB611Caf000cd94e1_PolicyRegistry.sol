@@ -118,7 +118,7 @@ contract Upgradeable is Ownable{
    * @param newContract Address of upgraded contract 
    */
   function upgradeTo(Upgradeable newContract) public ownerOnly{
-    require(allowedToUpgrade &amp;&amp; !isOldVersion);
+    require(allowedToUpgrade && !isOldVersion);
     nextContract = newContract;
     isOldVersion = true;
     newContract.confirmUpgrade();   
@@ -148,8 +148,8 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
 
   ERC20Interface public tokenContract;
 
-  mapping(string =&gt; uint) private actionPrices;
-  mapping(address =&gt; bool) private allowed;
+  mapping(string => uint) private actionPrices;
+  mapping(address => bool) private allowed;
 
   /**
    * @dev Throws if called by non-allowed contract
@@ -183,7 +183,7 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
     } else {
       uint price = actionPrices[action];
 
-      if(price != 0 &amp;&amp; !tokenContract.transferFrom(from, to, price)){
+      if(price != 0 && !tokenContract.transferFrom(from, to, price)){
         return false;
       } else {
         emit IXTPayment(from, to, price, action);     
@@ -203,7 +203,7 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
   /**
    * @dev creates/updates action
    * @param action Action to be paid for 
-   * @param price Price (in units * 10 ^ (&lt;decimal places of token&gt;))
+   * @param price Price (in units * 10 ^ (<decimal places of token>))
    */
   function setAction(string action, uint price) public ownerOnly isNotPaused {
     actionPrices[action] = price;
@@ -211,7 +211,7 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
 
   /**
    * @dev retrieves price for action
-   * @param action Name of action, e.g. &#39;create_insurance_contract&#39;
+   * @param action Name of action, e.g. 'create_insurance_contract'
    */
   function getActionPrice(string action) public view returns (uint) {
     return actionPrices[action];
@@ -275,7 +275,7 @@ contract Policy is Ownable, EmergencySafe, Upgradeable{
 
   InsuranceProduct[] public insuranceProducts;
   PolicyInfo public policyInfo;
-  mapping(address =&gt; bool) private cancellations;
+  mapping(address => bool) private cancellations;
 
   /**
    * @dev Throws if called by other account than broker or client
@@ -296,7 +296,7 @@ contract Policy is Ownable, EmergencySafe, Upgradeable{
       numInsuranceProducts: 0,
       clientInfo: _clientInfo,
       ixlEnquiryId: _enquiryId,
-      status: &#39;In Force&#39;,
+      status: 'In Force',
       clientEtherAddress: _clientEtherAddress,
       brokerEtherAddress: _brokerEtherAddress
     });
@@ -326,9 +326,9 @@ contract Policy is Ownable, EmergencySafe, Upgradeable{
   function revokeContract() public participantOnly {
     cancellations[msg.sender] = true;
 
-    if (((cancellations[policyInfo.brokerEtherAddress] &amp;&amp; (cancellations[policyInfo.clientEtherAddress] || cancellations[owner]))
-        || (cancellations[policyInfo.clientEtherAddress] &amp;&amp; cancellations[owner]))){
-      policyInfo.status = &quot;REVOKED&quot;;
+    if (((cancellations[policyInfo.brokerEtherAddress] && (cancellations[policyInfo.clientEtherAddress] || cancellations[owner]))
+        || (cancellations[policyInfo.clientEtherAddress] && cancellations[owner]))){
+      policyInfo.status = "REVOKED";
       allowedToUpgrade = true;
     }
   }
@@ -344,7 +344,7 @@ contract PolicyRegistry is Ownable, EmergencySafe, Upgradeable{
 
   IXTPaymentContract public IXTPayment;
 
-  mapping (address =&gt; address[]) private policiesByParticipant;
+  mapping (address => address[]) private policiesByParticipant;
   address[] private policies;
 
 
@@ -370,13 +370,13 @@ contract PolicyRegistry is Ownable, EmergencySafe, Upgradeable{
       policiesByParticipant[_clientEtherAddress].push(policy);
     }
 
-    if (msg.sender != _clientEtherAddress &amp;&amp; msg.sender != _brokerEtherAddress) {
+    if (msg.sender != _clientEtherAddress && msg.sender != _brokerEtherAddress) {
       policiesByParticipant[msg.sender].push(policy);
     }
 
     policies.push(policy);
 
-    IXTPayment.transferIXT(_clientEtherAddress, owner, &quot;create_insurance&quot;);
+    IXTPayment.transferIXT(_clientEtherAddress, owner, "create_insurance");
     emit PolicyCreated(policy, msg.sender);
   }
 

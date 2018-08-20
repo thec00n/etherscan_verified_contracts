@@ -9,25 +9,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function min(uint a, uint b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -65,23 +65,23 @@ contract Exchange{
         uint amount;
     }
 
-    mapping(address =&gt; ListAsset) public listOfAssets;
+    mapping(address => ListAsset) public listOfAssets;
     //Maps an OrderID to the list of orders
-    mapping(uint256 =&gt; Order) public orders;
-    //An mapping of a token address to the orderID&#39;s
-    mapping(address =&gt;  uint256[]) public forSale;
+    mapping(uint256 => Order) public orders;
+    //An mapping of a token address to the orderID's
+    mapping(address =>  uint256[]) public forSale;
     //Index telling where a specific tokenId is in the forSale array
-    mapping(uint256 =&gt; uint256) internal forSaleIndex;
+    mapping(uint256 => uint256) internal forSaleIndex;
     //Index telling where a specific tokenId is in the forSale array
     address[] public openBooks;
     //mapping of address to position in openBooks
-    mapping (address =&gt; uint) internal openBookIndex;
+    mapping (address => uint) internal openBookIndex;
     //mapping of user to their orders
-    mapping(address =&gt; uint[]) public userOrders;
+    mapping(address => uint[]) public userOrders;
     //mapping from orderId to userOrder position
-    mapping(uint =&gt; uint) internal userOrderIndex;
+    mapping(uint => uint) internal userOrderIndex;
     //A list of the blacklisted addresses
-    mapping(address =&gt; bool) internal blacklist;
+    mapping(address => bool) internal blacklist;
     //order_nonce;
     uint internal order_nonce;
 
@@ -117,9 +117,9 @@ contract Exchange{
     */
     function list(address _tokenadd, uint256 _amount, uint256 _price) external {
         require(blacklist[msg.sender] == false);
-        require(_price &gt; 0);
+        require(_price > 0);
         ERC20_Interface token = ERC20_Interface(_tokenadd);
-        require(token.allowance(msg.sender,address(this)) &gt;= _amount);
+        require(token.allowance(msg.sender,address(this)) >= _amount);
         if(forSale[_tokenadd].length == 0){
             forSale[_tokenadd].push(0);
             }
@@ -163,7 +163,7 @@ contract Exchange{
     function buyPerUnit(address _asset, uint256 _amount) external payable {
         require(blacklist[msg.sender] == false);
         ListAsset storage listing = listOfAssets[_asset];
-        require(_amount &lt;= listing.amount);
+        require(_amount <= listing.amount);
         require(msg.value == _amount.mul(listing.price));
         listing.amount= listing.amount.sub(_amount);
     }
@@ -173,7 +173,7 @@ contract Exchange{
     *@param _orderId is the uint256 ID of order
     */
     function unlist(uint256 _orderId) external{
-        require(forSaleIndex[_orderId] &gt; 0);
+        require(forSaleIndex[_orderId] > 0);
         Order memory _order = orders[_orderId];
         require(msg.sender== _order.maker || msg.sender == owner);
         unLister(_orderId,_order);
@@ -186,12 +186,12 @@ contract Exchange{
     */
     function buy(uint256 _orderId) external payable {
         Order memory _order = orders[_orderId];
-        require(_order.price != 0 &amp;&amp; _order.maker != address(0) &amp;&amp; _order.asset != address(0) &amp;&amp; _order.amount != 0);
+        require(_order.price != 0 && _order.maker != address(0) && _order.asset != address(0) && _order.amount != 0);
         require(msg.value == _order.price);
         require(blacklist[msg.sender] == false);
         address maker = _order.maker;
         ERC20_Interface token = ERC20_Interface(_order.asset);
-        if(token.allowance(_order.maker,address(this)) &gt;= _order.amount){
+        if(token.allowance(_order.maker,address(this)) >= _order.amount){
             assert(token.transferFrom(_order.maker,msg.sender, _order.amount));
             maker.transfer(_order.price);
         }
@@ -257,7 +257,7 @@ contract Exchange{
     }
 
     /**
-    *@dev getOrders allows parties to get an array of all orderId&#39;s open for a given token
+    *@dev getOrders allows parties to get an array of all orderId's open for a given token
     *@param _token address of the drct token
     *@return _uint[] an array of the orders in the orderbook
     */
@@ -266,7 +266,7 @@ contract Exchange{
     }
 
     /**
-    *@dev getUserOrders allows parties to get an array of all orderId&#39;s open for a given user
+    *@dev getUserOrders allows parties to get an array of all orderId's open for a given user
     *@param _user address 
     *@return _uint[] an array of the orders in the orderbook for the user
     */
@@ -309,7 +309,7 @@ contract Exchange{
             amount:0,
             asset: address(0)
         });
-        if(userOrders[_order.maker].length &gt; 1){
+        if(userOrders[_order.maker].length > 1){
             tokenIndex = userOrderIndex[_orderId];
             lastTokenIndex = userOrders[_order.maker].length.sub(1);
             lastToken = userOrders[_order.maker][lastTokenIndex];

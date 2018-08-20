@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -57,7 +57,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -117,7 +117,7 @@ contract Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -128,8 +128,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -143,7 +143,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -198,10 +198,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -250,8 +250,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract HireGoToken is MintableToken, BurnableToken {
 
-    string public constant name = &quot;HireGo&quot;;
-    string public constant symbol = &quot;HGO&quot;;
+    string public constant name = "HireGo";
+    string public constant symbol = "HGO";
     uint32 public constant decimals = 18;
 
     function HireGoToken() public {
@@ -298,36 +298,36 @@ contract HireGoCrowdsale is Ownable {
     address[] public investors_number;
     address private wallet; // address where funds are collected
 
-    mapping (address =&gt; uint) public orderedTokens;
-    mapping (address =&gt; uint) contributors;
+    mapping (address => uint) public orderedTokens;
+    mapping (address => uint) contributors;
 
     event FundsWithdrawn(address _who, uint256 _amount);
 
     modifier hardCapNotReached() {
-        require(totalWeiRaised &lt; hardCap);
+        require(totalWeiRaised < hardCap);
         _;
     }
 
     modifier crowdsaleEnded() {
-        require(now &gt; icoEndTime);
+        require(now > icoEndTime);
         _;
     }
 
     modifier foundersTokensUnlocked() {
-        require(now &gt; foundersTokensUnlockTime);
+        require(now > foundersTokensUnlockTime);
         _;
     }
 
     modifier crowdsaleInProgress() {
-        bool withinPeriod = (now &gt;= icoStartTime &amp;&amp; now &lt;= icoEndTime);
+        bool withinPeriod = (now >= icoStartTime && now <= icoEndTime);
         require(withinPeriod);
         _;
     }
 
     function HireGoCrowdsale(uint _icoStartTime, uint _icoEndTime, address _wallet) public {
         require (
-          _icoStartTime &gt; now &amp;&amp;
-          _icoEndTime &gt; _icoStartTime
+          _icoStartTime > now &&
+          _icoEndTime > _icoStartTime
         );
 
         icoStartTime = _icoStartTime;
@@ -354,7 +354,7 @@ contract HireGoCrowdsale is Ownable {
 
     // low level token purchase function
     function buyTokens() public payable crowdsaleInProgress hardCapNotReached {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // check if the buyer exceeded the funding goal
         calculatePurchaseAndBonuses(msg.sender, msg.value);
@@ -376,10 +376,10 @@ contract HireGoCrowdsale is Ownable {
     function sendOrderedTokens() public onlyOwner crowdsaleEnded {
         address investor;
         uint tokensCount;
-        for(uint i = 0; i &lt; investors_number.length; i++) {
+        for(uint i = 0; i < investors_number.length; i++) {
             investor = investors_number[i];
             tokensCount = orderedTokens[investor];
-            assert(tokensCount &gt; 0);
+            assert(tokensCount > 0);
             orderedTokens[investor] = 0;
             token.transfer(investor, tokensCount);
         }
@@ -389,21 +389,21 @@ contract HireGoCrowdsale is Ownable {
     // WARNING: crowdsale contract should have all received funds to return them.
     // If you have already withdrawn them, send them back to crowdsale contract
     function refundInvestors() public onlyOwner {
-        require(now &gt;= icoEndTime);
+        require(now >= icoEndTime);
         require(isRefundAllowed);
-        require(msg.sender.balance &gt; 0);
+        require(msg.sender.balance > 0);
 
         address investor;
         uint contributedWei;
         uint tokens;
-        for(uint i = 0; i &lt; investors_number.length; i++) {
+        for(uint i = 0; i < investors_number.length; i++) {
             investor = investors_number[i];
             contributedWei = contributors[investor];
             tokens = orderedTokens[investor];
-            if(contributedWei &gt; 0) {
+            if(contributedWei > 0) {
                 totalWeiRaised = totalWeiRaised.sub(contributedWei);
                 weiRaised = weiRaised.sub(contributedWei);
-                if(weiRaised&lt;0){
+                if(weiRaised<0){
                   weiRaised = 0;
                 }
                 contributors[investor] = 0;
@@ -447,20 +447,20 @@ contract HireGoCrowdsale is Ownable {
 
     // Calculates purchase conditions and token bonuses
     function calculatePurchaseAndBonuses(address _beneficiary, uint _weiAmount) internal {
-        if (now &gt;= icoStartTime &amp;&amp; now &lt; icoEndTime) require(_weiAmount &gt;= icoMinPurchase);
+        if (now >= icoStartTime && now < icoEndTime) require(_weiAmount >= icoMinPurchase);
 
         uint cleanWei; // amount of wei to use for purchase excluding change and hardcap overflows
         uint change;
         uint _tokens;
 
         //check for hardcap overflow
-        if (_weiAmount.add(totalWeiRaised) &gt; hardCap) {
+        if (_weiAmount.add(totalWeiRaised) > hardCap) {
             cleanWei = hardCap.sub(totalWeiRaised);
             change = _weiAmount.sub(cleanWei);
         }
         else cleanWei = _weiAmount;
 
-        assert(cleanWei &gt; 4); // 4 wei is a price of minimal fracture of token
+        assert(cleanWei > 4); // 4 wei is a price of minimal fracture of token
 
         _tokens = cleanWei.div(rate).mul(1 ether);
 
@@ -475,14 +475,14 @@ contract HireGoCrowdsale is Ownable {
         tokensDistributed = tokensDistributed.add(_tokens);
         orderedTokens[_beneficiary] = orderedTokens[_beneficiary].add(_tokens);
 
-        if (change &gt; 0) _beneficiary.transfer(change);
+        if (change > 0) _beneficiary.transfer(change);
     }
 
     // Calculates bonuses based on current stage
     function calculateBonus(uint _baseAmount) internal returns (uint) {
-        require(_baseAmount &gt; 0);
+        require(_baseAmount > 0);
 
-        if (now &gt;= icoStartTime &amp;&amp; now &lt; icoEndTime) {
+        if (now >= icoStartTime && now < icoEndTime) {
             return calculateBonusIco(_baseAmount);
         }
         else return _baseAmount;
@@ -491,16 +491,16 @@ contract HireGoCrowdsale is Ownable {
     // Calculates bonuses, specific for the ICO
     // Contains date and volume based bonuses
     function calculateBonusIco(uint _baseAmount) internal returns(uint) {
-        if(totalWeiRaised &lt; waveCap1) {
+        if(totalWeiRaised < waveCap1) {
             return _baseAmount.mul(baseBonus1).div(100);
         }
-        else if(totalWeiRaised &gt;= waveCap1 &amp;&amp; totalWeiRaised &lt; waveCap2) {
+        else if(totalWeiRaised >= waveCap1 && totalWeiRaised < waveCap2) {
             return _baseAmount.mul(baseBonus2).div(100);
         }
-        else if(totalWeiRaised &gt;= waveCap2 &amp;&amp; totalWeiRaised &lt; waveCap3) {
+        else if(totalWeiRaised >= waveCap2 && totalWeiRaised < waveCap3) {
             return _baseAmount.mul(baseBonus3).div(100);
         }
-        else if(totalWeiRaised &gt;= waveCap3 &amp;&amp; totalWeiRaised &lt; waveCap4) {
+        else if(totalWeiRaised >= waveCap3 && totalWeiRaised < waveCap4) {
             return _baseAmount.mul(baseBonus4).div(100);
         }
         else {
@@ -513,6 +513,6 @@ contract HireGoCrowdsale is Ownable {
     // If there are not enough tokens, mint missing tokens
     function checkAndMint(uint _amount) internal {
         uint required = tokensDistributed.add(_amount);
-        if(required &gt; totalSupply) token.mint(this, required.sub(totalSupply));
+        if(required > totalSupply) token.mint(this, required.sub(totalSupply));
     }
 }

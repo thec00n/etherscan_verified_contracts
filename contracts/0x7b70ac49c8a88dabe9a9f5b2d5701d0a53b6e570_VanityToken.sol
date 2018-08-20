@@ -31,8 +31,8 @@ contract ERC20Interface {
 
 contract VanityToken is owned, ERC20Interface {
     // Public variables of the token
-    string  public name = &quot;Vanity Token&quot;;
-    string  public symbol = &quot;VNT&quot;;
+    string  public name = "Vanity Token";
+    string  public symbol = "VNT";
     uint8   public decimals = 18;
     
     uint256 public currentSupply = 0;
@@ -51,11 +51,11 @@ contract VanityToken is owned, ERC20Interface {
     uint    public windowBonusStep2 = 28800 seconds;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public _balanceOf;
-    mapping (address =&gt; uint256) public bonusOf;
-    mapping (address =&gt; uint) public timeBought;
-    mapping (address =&gt; uint256) public transferredAtSupplyValue;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public _allowance;
+    mapping (address => uint256) public _balanceOf;
+    mapping (address => uint256) public bonusOf;
+    mapping (address => uint) public timeBought;
+    mapping (address => uint256) public transferredAtSupplyValue;
+    mapping (address => mapping (address => uint256)) public _allowance;
 
 
     function setBonuses(bool _d) onlyOwner public {
@@ -86,7 +86,7 @@ contract VanityToken is owned, ERC20Interface {
     event Burn(address indexed from, uint256 value);
 
      modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4 || msg.data.length == 4);
+        assert(msg.data.length >= size + 4 || msg.data.length == 4);
         _;
     }
  
@@ -125,21 +125,21 @@ contract VanityToken is owned, ERC20Interface {
      */
     function _transfer(address _from, address _to, uint256 _value, uint256 _bonusValue) onlyPayloadSize(4*32) internal returns (bool) {
 
-        if (_value == 0 &amp;&amp; _bonusValue == 0) {return false;}
-        if (_value!=0&amp;&amp;_bonusValue!=0) {return false;}  
+        if (_value == 0 && _bonusValue == 0) {return false;}
+        if (_value!=0&&_bonusValue!=0) {return false;}  
 
         require(_to != 0x0);
        
         // Check for overflows[]       
-        require(_balanceOf[_to] + _value &gt;= _balanceOf[_to]);
-        require(bonusOf[_to] + _bonusValue &gt;= bonusOf[_to]);
+        require(_balanceOf[_to] + _value >= _balanceOf[_to]);
+        require(bonusOf[_to] + _bonusValue >= bonusOf[_to]);
         
-        if (_value &gt; 0) {
+        if (_value > 0) {
             _balanceOf[_from] += _value;
             _balanceOf[_to] += _value;
             timeBought[_to] = now;
             Transfer(_from, _to, _value);
-        } else if (_bonusValue &gt; 0) {
+        } else if (_bonusValue > 0) {
             _balanceOf[_from] += _bonusValue;
             _balanceOf[_to] += _bonusValue;
             bonusOf[_to] += _bonusValue;     
@@ -153,8 +153,8 @@ contract VanityToken is owned, ERC20Interface {
 
     function buy() public payable {
         require(purchasingAllowed);
-        require(msg.value &gt; 0);
-        require(msg.value &gt;= 0.01 ether || msg.value == bonusSignalValue);
+        require(msg.value > 0);
+        require(msg.value >= 0.01 ether || msg.value == bonusSignalValue);
         _buy(msg.value);
     }
 
@@ -165,13 +165,13 @@ contract VanityToken is owned, ERC20Interface {
     function _buy(uint256 value) internal {
 
         uint tPassed = now - icoStartTime;
-        if (tPassed &lt;= 3 days) {
+        if (tPassed <= 3 days) {
             tokenXchangeRate = 300;
-        } else if (tPassed &lt;= 5 days) {
+        } else if (tPassed <= 5 days) {
             tokenXchangeRate = 250;
-        } else if (tPassed &lt;= 7 days) {
+        } else if (tPassed <= 7 days) {
             tokenXchangeRate = 200;
-        } else if (tPassed &gt;= 10 days) {
+        } else if (tPassed >= 10 days) {
           tokenXchangeRate = 100;
         }
 
@@ -179,29 +179,29 @@ contract VanityToken is owned, ERC20Interface {
         uint256 amount = value * tokenXchangeRate;
         
         if (value == bonusSignalValue) {
-            require (timeBought[msg.sender] &gt; 0 &amp;&amp; transferredAtSupplyValue[msg.sender] &gt; 0);
+            require (timeBought[msg.sender] > 0 && transferredAtSupplyValue[msg.sender] > 0);
 
             uint dif = now - timeBought[msg.sender];
             //verify window
-            require (dif &lt;= windowBonusMax &amp;&amp; dif &gt;= windowBonusMin); 
+            require (dif <= windowBonusMax && dif >= windowBonusMin); 
             requestedBonus = true;
             amount = _balanceOf[msg.sender] - bonusOf[msg.sender];
-            assert (amount &gt; 0);
+            assert (amount > 0);
 
-            if (dif &gt;= windowBonusStep2) {
+            if (dif >= windowBonusStep2) {
                 amount = amount * 3;
-            } else if (dif &gt;= windowBonusStep1) {
+            } else if (dif >= windowBonusStep1) {
                 amount = amount * 2;
             } 
 
-            if (_balanceOf[address(this)] - transferredAtSupplyValue[msg.sender] &lt; bonusAmtThreshold) {
+            if (_balanceOf[address(this)] - transferredAtSupplyValue[msg.sender] < bonusAmtThreshold) {
                 owner.transfer(value);
                 return;
            }
         }
 
         uint256 newBalance = _balanceOf[address(this)] + amount;
-        require (newBalance &lt;= _totalSupply); 
+        require (newBalance <= _totalSupply); 
         owner.transfer(value);
 
         currentSupply = newBalance;
@@ -238,7 +238,7 @@ contract VanityToken is owned, ERC20Interface {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= _allowance[_from][msg.sender]);     // Check _allowance
+        require(_value <= _allowance[_from][msg.sender]);     // Check _allowance
         _allowance[_from][msg.sender] -= _value;
         return _transfer(_from, _to, _value, 0);
     }
@@ -266,7 +266,7 @@ contract VanityToken is owned, ERC20Interface {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(_balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(_balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         _balanceOf[msg.sender] -= _value;            // Subtract from the sender
         _totalSupply -= _value;                      // Updates _totalSupply
         Burn(msg.sender, _value);
@@ -274,10 +274,10 @@ contract VanityToken is owned, ERC20Interface {
     }
 
     function burnTokens(uint256 _value) onlyOwner public returns (bool success) {
-        require(_balanceOf[address(this)] &gt;= _value);   // Check if the sender has enough
+        require(_balanceOf[address(this)] >= _value);   // Check if the sender has enough
         _balanceOf[address(this)] -= _value;            // Subtract from the sender
         _totalSupply -= _value;                      // Updates _totalSupply
-        if (currentSupply &gt; _totalSupply) {
+        if (currentSupply > _totalSupply) {
             currentSupply = _totalSupply;
         }
         Burn(address(this), _value);
@@ -293,10 +293,10 @@ contract VanityToken is owned, ERC20Interface {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= _allowance[_from][msg.sender]);    // Check _allowance
+        require(_balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= _allowance[_from][msg.sender]);    // Check _allowance
         _balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        _allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s _allowance
+        _allowance[_from][msg.sender] -= _value;             // Subtract from the sender's _allowance
         _totalSupply -= _value;                              // Update _totalSupply
         Burn(_from, _value);
         return true;

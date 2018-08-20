@@ -26,13 +26,13 @@ contract The10ETHPyramid {
   }
   
   function enter() {
-    if (msg.value &lt; 10 ether) {
+    if (msg.value < 10 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 10 ether) {
+		if (msg.value > 10 ether) {
 			msg.sender.send(msg.value - 10 ether);	
 			amount = 10 ether;
     }
@@ -58,7 +58,7 @@ contract The10ETHPyramid {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 150) {
+    while (balance > persons[payoutIdx].amount / 100 * 150) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 150;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

@@ -19,9 +19,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -29,7 +29,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -38,7 +38,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;   
     }
 }
@@ -51,8 +51,8 @@ contract BasicToken {
     uint256 private total_supply;
     uint256 private remaining_supply;
 
-    mapping (address =&gt; uint256) private balance_of;
-    mapping (address =&gt; mapping(address =&gt; uint256)) private allowance_of;
+    mapping (address => uint256) private balance_of;
+    mapping (address => mapping(address => uint256)) private allowance_of;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approve(address indexed target, address indexed spender, uint256 value);
@@ -115,7 +115,7 @@ contract BasicToken {
         address spender_address,
         uint256 value
     ) public returns (bool) {
-        require(value &gt;= 0);
+        require(value >= 0);
         require(msg.sender != address(0));
         require(spender_address != address(0));
 
@@ -129,7 +129,7 @@ contract BasicToken {
         address spender_address,
         uint256 value
     ) internal returns (bool) {
-        require(value &gt;= 0);
+        require(value >= 0);
         require(msg.sender != address(0));
         require(spender_address != address(0));
 
@@ -175,10 +175,10 @@ contract BasicToken {
 
 
 contract VoltOwned {
-    mapping (address =&gt; uint) private voltOwners;
+    mapping (address => uint) private voltOwners;
     address[] private ownerList;
 
-    mapping (address =&gt; uint256) private voltFreeze;
+    mapping (address => uint256) private voltFreeze;
 
     modifier onlyOwner {
         require(voltOwners[msg.sender] == 99);
@@ -186,7 +186,7 @@ contract VoltOwned {
     }
 
     modifier noFreeze {
-        require(now &gt;= voltFreeze[msg.sender]);
+        require(now >= voltFreeze[msg.sender]);
         _;
     }
 
@@ -211,7 +211,7 @@ contract VoltOwned {
 
     function removeOwner(address removeVoltOwnerAddress) public onlyOwner noFreeze {
         require(removeVoltOwnerAddress != address(0));
-        require(ownerList.length &gt; 1);
+        require(ownerList.length > 1);
 
         voltOwners[removeVoltOwnerAddress] = 0;
         for (uint256 i = 0; i != ownerList.length; i++) {
@@ -227,7 +227,7 @@ contract VoltOwned {
     }
 
     function isFreeze(address who) internal view returns (bool) {
-        if (now &gt;= voltFreeze[who]) {
+        if (now >= voltFreeze[who]) {
             return false;
         } else {
             return true;
@@ -259,7 +259,7 @@ contract VoltToken is BasicToken, VoltOwned {
     event Burn(address indexed target, uint256 value);
 
     function VoltToken () public BasicToken (
-        &quot;VOLT&quot;, &quot;ACDC&quot;, 18, 4000000000
+        "VOLT", "ACDC", 18, 4000000000
     ) VoltOwned(
         msg.sender
     ) {
@@ -278,7 +278,7 @@ contract VoltToken is BasicToken, VoltOwned {
     ) public onlyOwner noFreeze canMint {
         uint256 ts = totalSupply();
         uint256 rs = remainingSupply();
-        require(ts &gt;= rs);
+        require(ts >= rs);
 
         superMint(to, value);
         setFreeze(to, freezeTimestamp);
@@ -286,7 +286,7 @@ contract VoltToken is BasicToken, VoltOwned {
 
     function superMint(address to, uint256 value) public onlyOwner noFreeze {
         uint256 rs = remainingSupply();
-        require(rs &gt;= value);
+        require(rs >= value);
 
         uint256 currentBalance = balanceOf(to);
         setBalance(to, currentBalance.add(value));
@@ -311,12 +311,12 @@ contract VoltToken is BasicToken, VoltOwned {
         address to,
         uint256 value
     ) public noFreeze returns (bool) {
-        require(value &gt; 0);
+        require(value > 0);
         require(msg.sender != address(0));
         require(to != address(0));
 
-        require(balanceOf(msg.sender) &gt;= value);
-        require(balanceOf(to).add(value) &gt;= balanceOf(to));
+        require(balanceOf(msg.sender) >= value);
+        require(balanceOf(to).add(value) >= balanceOf(to));
 
         voltTransfer(msg.sender, to, value);
         return true;
@@ -327,15 +327,15 @@ contract VoltToken is BasicToken, VoltOwned {
         address to,
         uint256 value
     ) public noFreeze returns(bool) {
-        require(value &gt; 0);
+        require(value > 0);
         require(msg.sender != address(0));
         require(from != address(0));
         require(to != address(0));
 
         require(isFreeze(from) == false);
-        require(allowance(from, msg.sender) &gt;= value);
-        require(balanceOf(from) &gt;= value);
-        require(balanceOf(to).add(value) &gt;= balanceOf(to));
+        require(allowance(from, msg.sender) >= value);
+        require(balanceOf(from) >= value);
+        require(balanceOf(to).add(value) >= balanceOf(to));
 
         voltTransfer(from, to, value);
 

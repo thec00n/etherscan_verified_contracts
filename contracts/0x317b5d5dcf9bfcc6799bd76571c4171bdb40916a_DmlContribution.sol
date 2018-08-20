@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -70,37 +70,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -130,11 +130,11 @@ contract BasicToken is ERC20Basic {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -193,11 +193,11 @@ contract StandardToken is ERC20, BasicToken {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -212,7 +212,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -226,7 +226,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -263,7 +263,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -335,15 +335,15 @@ contract Pausable is Ownable {
 contract DmlToken is StandardToken, Pausable{
 	using SafeMath for uint;
 
- 	string public constant name = &quot;DML Token&quot;;
+ 	string public constant name = "DML Token";
 	uint8 public constant decimals = 18;
-	string public constant symbol = &#39;DML&#39;;
+	string public constant symbol = 'DML';
 
 	uint public constant MAX_TOTAL_TOKEN_AMOUNT = 330000000 ether;
 	address public minter;
 	uint public endTime;
 
-	mapping (address =&gt; uint) public lockedBalances;
+	mapping (address => uint) public lockedBalances;
 
 	modifier onlyMinter {
     	  assert(msg.sender == minter);
@@ -351,7 +351,7 @@ contract DmlToken is StandardToken, Pausable{
     }
 
     modifier maxDmlTokenAmountNotReached (uint amount){
-    	  assert(totalSupply.add(amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+    	  assert(totalSupply.add(amount) <= MAX_TOTAL_TOKEN_AMOUNT);
     	  _;
     }
 
@@ -376,7 +376,7 @@ contract DmlToken is StandardToken, Pausable{
         maxDmlTokenAmountNotReached(amount)
         returns (bool)
     {
-        require(now &lt;= endTime);
+        require(now <= endTime);
       	lockedBalances[receipent] = lockedBalances[receipent].add(amount);
       	totalSupply = totalSupply.add(amount);
       	return true;
@@ -507,7 +507,7 @@ contract DmlContribution is Ownable {
     /// ERC20 compilant DML token contact instance
     DmlToken public dmlToken; 
 
-    mapping (address =&gt; WhitelistUser) private whitelisted;
+    mapping (address => WhitelistUser) private whitelisted;
     address[] private whitelistedIndex;
 
     struct WhitelistUser {
@@ -548,22 +548,22 @@ contract DmlContribution is Ownable {
     }    
 
     modifier notEarlierThan(uint x) {
-        require(now &gt;= x);
+        require(now >= x);
         _;
     }
 
     modifier earlierThan(uint x) {
-        require(now &lt; x);
+        require(now < x);
         _;
     }
 
     modifier ceilingNotReached() {
-        require(openSoldTokens &lt; MAX_PUBLIC_SOLD);
+        require(openSoldTokens < MAX_PUBLIC_SOLD);
         _;
     }  
 
     modifier isSaleEnded() {
-        require(now &gt; endTime || openSoldTokens &gt;= MAX_PUBLIC_SOLD);
+        require(now > endTime || openSoldTokens >= MAX_PUBLIC_SOLD);
         _;
     }
 
@@ -628,24 +628,24 @@ contract DmlContribution is Ownable {
 
         // Do not allow contracts to game the system
         require(!isContract(msg.sender));        
-        require( tx.gasprice &lt;= 99000000000 wei );
+        require( tx.gasprice <= 99000000000 wei );
 
-        if( now &lt; startTime &amp;&amp; now &gt;= earlyWhitelistBeginTime)
+        if( now < startTime && now >= earlyWhitelistBeginTime)
         {
-            if (whitelisted[receipient].level &gt;= 2)
+            if (whitelisted[receipient].level >= 2)
             {
-                require(msg.value &gt;= 1 ether);
+                require(msg.value >= 1 ether);
             }
             else
             {
-                require(msg.value &gt;= 0.5 ether);
+                require(msg.value >= 0.5 ether);
             }
             buyEarlyWhitelist(receipient);
         }
         else
         {
-            require(msg.value &gt;= 0.1 ether);
-            require(msg.value &lt;= maxBuyLimit);
+            require(msg.value >= 0.1 ether);
+            require(msg.value <= maxBuyLimit);
             buyRemaining(receipient);
         }
 
@@ -668,7 +668,7 @@ contract DmlContribution is Ownable {
         onlyOwner
         earlierThan(endTime)
     {
-        for( uint i = 0; i &lt; userAddresses.length; i++) {
+        for( uint i = 0; i < userAddresses.length; i++) {
             addWhiteListUser(userAddresses[i], quota[i], level[i]);
         }
     }
@@ -686,7 +686,7 @@ contract DmlContribution is Ownable {
     }
 
     /**
-    * @dev Get a user&#39;s whitelisted state
+    * @dev Get a user's whitelisted state
     * @param userAddress      address       the wallet address of the user
     * @return bool  true if the user is in the whitelist
     */
@@ -726,16 +726,16 @@ contract DmlContribution is Ownable {
 
     /// @return true if sale not ended, false otherwise.
     function saleNotEnd() constant returns (bool) {
-        return now &lt; endTime &amp;&amp; openSoldTokens &lt; MAX_PUBLIC_SOLD;
+        return now < endTime && openSoldTokens < MAX_PUBLIC_SOLD;
     }
 
     /// CONSTANT METHODS
     /// @dev Get current exchange rate
     function priceRate() public constant returns (uint) {
         // Two price tiers
-        if (earlyWhitelistBeginTime &lt;= now &amp;&amp; now &lt; startTime)
+        if (earlyWhitelistBeginTime <= now && now < startTime)
         {
-            if (whitelisted[msg.sender].level &gt;= 2)
+            if (whitelisted[msg.sender].level >= 2)
             {
                 return PRICE_RATE_SECOND;
             }
@@ -744,7 +744,7 @@ contract DmlContribution is Ownable {
                 return PRICE_RATE_FIRST;
             }
         }
-        if (startTime &lt;= now &amp;&amp; now &lt; endTime)
+        if (startTime <= now && now < endTime)
         {
             return PRICE_RATE_FIRST;
         }
@@ -765,11 +765,11 @@ contract DmlContribution is Ownable {
     /// @dev early_whitelist to buy token with quota
     function buyEarlyWhitelist(address receipient) internal {
         uint quotaAvailable = whitelisted[receipient].quota;
-        require(quotaAvailable &gt; 0);
+        require(quotaAvailable > 0);
 
         uint tokenAvailable = MAX_PUBLIC_SOLD.sub(openSoldTokens);
         ShowTokenAvailable(tokenAvailable);
-        require(tokenAvailable &gt; 0);
+        require(tokenAvailable > 0);
 
         uint validFund = quotaAvailable.min256(msg.value);
         ValidFundAmount(validFund);
@@ -786,7 +786,7 @@ contract DmlContribution is Ownable {
     function buyRemaining(address receipient) internal {
         uint tokenAvailable = MAX_PUBLIC_SOLD.sub(openSoldTokens);
         ShowTokenAvailable(tokenAvailable);
-        require(tokenAvailable &gt; 0);
+        require(tokenAvailable > 0);
 
         uint toFund;
         uint toCollect;
@@ -797,9 +797,9 @@ contract DmlContribution is Ownable {
 
     /// @dev Utility function for buy token
     function buyCommon(address receipient, uint toFund, uint dmlTokenCollect) internal {
-        require(msg.value &gt;= toFund); // double check
+        require(msg.value >= toFund); // double check
 
-        if(toFund &gt; 0) {
+        if(toFund > 0) {
             require(dmlToken.mintToken(receipient, dmlTokenCollect));
             ToFundAmount(toFund);
             dmlwallet.transfer(toFund);
@@ -808,7 +808,7 @@ contract DmlContribution is Ownable {
         }
 
         uint toReturn = msg.value.sub(toFund);
-        if(toReturn &gt; 0) {
+        if(toReturn > 0) {
             msg.sender.transfer(toReturn);
         }
     }
@@ -819,7 +819,7 @@ contract DmlContribution is Ownable {
         uint exchangeRate = priceRate();
         getTokens = exchangeRate * validFund;
 
-        if(availableToken &gt;= getTokens){
+        if(availableToken >= getTokens){
             costValue = validFund;
         } else {
             costValue = availableToken / exchangeRate;
@@ -835,6 +835,6 @@ contract DmlContribution is Ownable {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }

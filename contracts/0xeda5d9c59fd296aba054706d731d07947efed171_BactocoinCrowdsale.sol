@@ -3,7 +3,7 @@ pragma solidity 0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -61,7 +61,7 @@ pragma solidity 0.4.17;
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -70,7 +70,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -114,7 +114,7 @@ pragma solidity 0.4.17;
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -125,8 +125,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -175,7 +175,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -246,20 +246,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -304,9 +304,9 @@ contract Crowdsale {
 
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         token = createTokenContract();
@@ -355,24 +355,24 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 }
 
 pragma solidity 0.4.17;
 
 contract BactocoinToken is StandardToken {
-    string public name = &#39;BactoCoin&#39;;
+    string public name = 'BactoCoin';
     uint8 public decimals = 18;
-    string public symbol = &#39;BTNN&#39;;
-    string public version = &#39;1.0.0&#39;;
+    string public symbol = 'BTNN';
+    string public version = '1.0.0';
     uint256 public totalSupply = 4e24 ; // 4 mil
     address public originalTokenHolder;
 
@@ -405,8 +405,8 @@ contract BactocoinCrowdsale is Ownable {
 
     function BactocoinCrowdsale() Ownable() {
 
-        require(startTime &gt;= now);
-        require(endTime &gt;= startTime);
+        require(startTime >= now);
+        require(endTime >= startTime);
         require(wallet != address(0));
 
         token = new BactocoinToken(this);
@@ -436,7 +436,7 @@ contract BactocoinCrowdsale is Ownable {
 
         uint256 tokensAmountSatoshi = convertWeiToTokens(msg.value);
 
-        require(tokensAmountSatoshi &lt;= token.balanceOf(this)); // not enough tokens left ?
+        require(tokensAmountSatoshi <= token.balanceOf(this)); // not enough tokens left ?
         token.transfer(beneficiary, tokensAmountSatoshi);
         TokenPurchase(msg.sender, beneficiary, msg.value, tokensAmountSatoshi);
         weiRaised = weiRaised.add(msg.value);
@@ -450,14 +450,14 @@ contract BactocoinCrowdsale is Ownable {
 
     // after crowdsale ends this method withdraws all unsold tokens
     function allocateAllUnsoldTokens(address newOwner) onlyOwner {
-        require(token.balanceOf(this) &gt; 0);
+        require(token.balanceOf(this) > 0);
         require(hasEnded());
         token.transfer(newOwner, token.balanceOf(this));
     }
 
     // tokens bought with BTC are sent via this method
     function giveTokens(address newOwner, uint256 amount) onlyOwner {
-        require(token.balanceOf(this) &gt;= amount);
+        require(token.balanceOf(this) >= amount);
         token.transfer(newOwner, amount);
     }
 
@@ -469,19 +469,19 @@ contract BactocoinCrowdsale is Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     function bonusInEffect() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= (startTime + bonusTime);
+        bool withinPeriod = now >= startTime && now <= (startTime + bonusTime);
         return withinPeriod;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
 }

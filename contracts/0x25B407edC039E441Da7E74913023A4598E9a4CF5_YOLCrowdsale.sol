@@ -65,20 +65,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -141,7 +141,7 @@ library SafeERC20 {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 contract Crowdsale {
@@ -184,8 +184,8 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, uint256 _divisor, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
-    require(_divisor &gt; 0);
+    require(_rate > 0);
+    require(_divisor > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -344,7 +344,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -355,8 +355,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   constructor(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -368,7 +368,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -392,8 +392,8 @@ contract PhasedCrowdsale is TimedCrowdsale {
   uint256[] public divisors;
 
   constructor(uint256[] _phases, uint256[] _divisors) {
-    for(uint i = 0; i &lt; _phases.length; i++) {
-      require(openingTime &lt; _phases[i] &amp;&amp; closingTime &gt; _phases[i]);
+    for(uint i = 0; i < _phases.length; i++) {
+      require(openingTime < _phases[i] && closingTime > _phases[i]);
     }
 
     phases = _phases;
@@ -401,16 +401,16 @@ contract PhasedCrowdsale is TimedCrowdsale {
   }
   
   function getCurrentPhaseCloseTime() view returns (int256, int256) {
-    if(now &lt; openingTime) {
+    if(now < openingTime) {
       return (int256(openingTime), -2);
     }
 
-    for(uint i = 0; i &lt; phases.length; i++)  {
-      if(now &lt; phases[i])
+    for(uint i = 0; i < phases.length; i++)  {
+      if(now < phases[i])
         return (int256(phases[i]), int256(i));
     }
 
-    if(now &lt; closingTime) {
+    if(now < closingTime) {
       return (int256(closingTime), -1);
     }
 
@@ -420,7 +420,7 @@ contract PhasedCrowdsale is TimedCrowdsale {
   function getCurrentPhaseDivisor() view returns (uint256) {
     var (closingTime, phaseIndex) = getCurrentPhaseCloseTime();
 
-    for(uint i = 0; i &lt; phases.length; i++)  {
+    for(uint i = 0; i < phases.length; i++)  {
       if(uint256(closingTime) == phases[i]) {
         return divisors[i];
       }
@@ -441,7 +441,7 @@ contract YOLCrowdsale is Ownable, TimedCrowdsale, PhasedCrowdsale {
 
   modifier onlyClosed {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt; openingTime &amp;&amp; block.timestamp &gt; closingTime);
+    require(block.timestamp > openingTime && block.timestamp > closingTime);
     _;
   }
 

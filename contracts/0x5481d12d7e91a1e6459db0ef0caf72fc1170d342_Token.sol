@@ -3,13 +3,13 @@ pragma solidity ^0.4.8;
 contract Token {
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -19,8 +19,8 @@ contract Token {
     }
   }
 
-  string public constant symbol = &quot;GNC&quot;;
-  string public constant name = &quot;Generic&quot;;
+  string public constant symbol = "GNC";
+  string public constant name = "Generic";
   uint8 public constant decimals = 18;
   uint256 _totalSupply = 21000000 * 10**18;
 
@@ -28,8 +28,8 @@ contract Token {
 
   address public owner;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   // Constructor
   function Token() {
@@ -53,7 +53,7 @@ contract Token {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);

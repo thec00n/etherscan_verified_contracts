@@ -26,14 +26,14 @@ contract CryptoBetOn {
     uint8 constant HOUSE_EDGE_TOP_BAR = 12;
     uint8 constant HOUSE_EDGE_BOTTOM_BAR = 1;
 
-    uint8 constant TX_N01 = 1; // &quot;TX_N01. Not found match by id&quot;;
-    uint8 constant TX_N02 = 2; // &quot;TX_N02. Thanks, brother!&quot;;
-    uint8 constant TX_N03 = 3; // &quot;TX_N03. The number of matches should not exceed the limit&quot;;
-    uint8 constant TX_N04 = 4; // &quot;TX_N04. The percentage of the fee should not exceed the limits&quot;;
-    uint8 constant TX_N16 = 16; // &quot;TX_N16. Non-standard situation: We did not receive fees&quot;
-    uint8 constant TX_N17 = 17; // &quot;TX_N17. Abnormal situation: Failed to return some bets back&quot;
-    uint8 constant TX_N18 = 18; // &quot;TX_N18. Abnormal situation: Failed to return some bets back&quot;
-    uint8 constant TX_N19 = 19; // &quot;TX_N19. Match with id already exists&quot;;
+    uint8 constant TX_N01 = 1; // "TX_N01. Not found match by id";
+    uint8 constant TX_N02 = 2; // "TX_N02. Thanks, brother!";
+    uint8 constant TX_N03 = 3; // "TX_N03. The number of matches should not exceed the limit";
+    uint8 constant TX_N04 = 4; // "TX_N04. The percentage of the fee should not exceed the limits";
+    uint8 constant TX_N16 = 16; // "TX_N16. Non-standard situation: We did not receive fees"
+    uint8 constant TX_N17 = 17; // "TX_N17. Abnormal situation: Failed to return some bets back"
+    uint8 constant TX_N18 = 18; // "TX_N18. Abnormal situation: Failed to return some bets back"
+    uint8 constant TX_N19 = 19; // "TX_N19. Match with id already exists";
 
     // Fee is 4 percent of win amount
     uint8 private houseEdge = 3;
@@ -41,7 +41,7 @@ contract CryptoBetOn {
     uint jackpotAmount = 0;
     address private owner;
     uint16 matchCount = 0;
-    mapping (uint =&gt; Match) matchesMap;
+    mapping (uint => Match) matchesMap;
 
     modifier onlyowner {
         require(msg.sender == owner);
@@ -94,13 +94,13 @@ contract CryptoBetOn {
     event JackpotPayoff(uint _matchId, uint _amount, address _wallet);
 
     function() payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             TxMessage(0, TX_N02, msg.value);
         }
     }
 
     function setHouseEdge(uint8 _houseEdge) onlyowner {
-        if (houseEdge &lt; HOUSE_EDGE_BOTTOM_BAR || _houseEdge &gt; HOUSE_EDGE_TOP_BAR) {
+        if (houseEdge < HOUSE_EDGE_BOTTOM_BAR || _houseEdge > HOUSE_EDGE_TOP_BAR) {
             TxMessage(0, TX_N04, _houseEdge);
             return;
         }
@@ -136,7 +136,7 @@ contract CryptoBetOn {
             TxMessage(_matchId, TX_N19, m.number);
             return false;
         }
-        if (matchCount &gt;= MATCH_COUNT_LIMIT) {
+        if (matchCount >= MATCH_COUNT_LIMIT) {
             TxMessage(_matchId, TX_N03, matchCount);
             return false;
         }
@@ -165,7 +165,7 @@ contract CryptoBetOn {
 
     function cashBack(Gamer[] gamers) private returns(uint) {
         uint amount = 0;
-        for (uint index = 0; index &lt; gamers.length; index++) {
+        for (uint index = 0; index < gamers.length; index++) {
             if (!gamers[index].wallet.send(gamers[index].amount)) {
                 amount += gamers[index].amount;
             }
@@ -192,13 +192,13 @@ contract CryptoBetOn {
         address jackpotWinner = 0;
         uint tmpJackpotAmount = jackpotAmount;
         jackpotAmount = 0;
-        for (uint pos = 0; pos &lt; gamers.length; pos += 1) {
-            if (gamers[pos].amount &gt; tmpAmount) {
+        for (uint pos = 0; pos < gamers.length; pos += 1) {
+            if (gamers[pos].amount > tmpAmount) {
                 tmpAmount = gamers[pos].amount;
                 jackpotWinner = gamers[pos].wallet;
             }
         }
-        if (jackpotWinner != 0 &amp;&amp; jackpotWinner.send(tmpJackpotAmount)) {
+        if (jackpotWinner != 0 && jackpotWinner.send(tmpJackpotAmount)) {
             JackpotPayoff(_matchId, tmpJackpotAmount, jackpotWinner);
         }
     }
@@ -208,10 +208,10 @@ contract CryptoBetOn {
         if (m.number == 0 || m.bets) {
             return true;
         }
-        if ((m.winPotA == 0 &amp;&amp; _winner == 0) || (m.winPotD == 0 &amp;&amp; _winner == 1) || (m.winPotB == 0 &amp;&amp; _winner == 2)) {
+        if ((m.winPotA == 0 && _winner == 0) || (m.winPotD == 0 && _winner == 1) || (m.winPotB == 0 && _winner == 2)) {
             return true;
         }
-        if ((m.winPotA == 0 &amp;&amp; m.winPotB == 0) || (m.winPotA == 0 &amp;&amp; m.winPotD == 0) || (m.winPotB == 0 &amp;&amp; m.winPotD == 0)) {
+        if ((m.winPotA == 0 && m.winPotB == 0) || (m.winPotA == 0 && m.winPotD == 0) || (m.winPotB == 0 && m.winPotD == 0)) {
             return true;
         }
         return false;
@@ -240,7 +240,7 @@ contract CryptoBetOn {
         uint collectedFees = (losePot_ * houseEdge) / uint(100);
         uint jackpotFees = (losePot_ * JACKPOT_FEE) / uint(100);
         uint losePot = losePot_ - collectedFees - jackpotFees;
-        for (uint index = 0; index &lt; gamers.length; index += 1) {
+        for (uint index = 0; index < gamers.length; index += 1) {
             uint winAmount = gamers[index].amount + ((gamers[index].amount * losePot) / winPot);
             if (!gamers[index].wallet.send(winAmount)) {
                 fallbackAmount += winAmount;
@@ -250,14 +250,14 @@ contract CryptoBetOn {
         if (_jackpot) {
             payoutJackpot(_matchId, gamers);
         }
-        // pay housecut &amp; reset for next bet
-        if (collectedFees &gt; 0) {
+        // pay housecut & reset for next bet
+        if (collectedFees > 0) {
             if (!owner.send(collectedFees)) {
                 TxMessage(_matchId, TX_N16, collectedFees);
                    // There is a manual way of withdrawing money!
             }
         }
-        if (fallbackAmount &gt; 0) {
+        if (fallbackAmount > 0) {
             if (owner.send(fallbackAmount)) {
                 TxMessage(_matchId, TX_N17, fallbackAmount);
             } else {
@@ -286,7 +286,7 @@ contract CryptoBetOn {
             m = matchesMap[_matchId];
         }
         require(m.bets);
-        require(msg.value &gt;= 10 finney); //  &amp;&amp; msg.value &lt;= 100 ether
+        require(msg.value >= 10 finney); //  && msg.value <= 100 ether
         if (_betState == 0) {
             var gamerA = m.gamersA[m.gamersA.length++];
             gamerA.wallet = msg.sender;
@@ -312,8 +312,8 @@ contract CryptoBetOn {
 
     function saveCash(address _receiver, uint _amount) onlyowner {
          require(matchCount == 0);
-         require(_amount &gt; 0);
-         require(this.balance &gt; _amount);
+         require(_amount > 0);
+         require(this.balance > _amount);
          // send cash
          if (_receiver.send(_amount)) {
              // confirm

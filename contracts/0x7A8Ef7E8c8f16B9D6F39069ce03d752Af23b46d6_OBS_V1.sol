@@ -7,9 +7,9 @@ created by Igor Stulenkov
 contract OBS_V1{
  
 	address public owner; //Fabric owner
-    mapping(address =&gt; address)    public tokens2owners;        // tokens to owners    
-    mapping(address =&gt; address []) public owners2tokens;        // owners to tokens
-    mapping(address =&gt; address)    public tmpAddr2contractAddr; // tmp addr contract to contract
+    mapping(address => address)    public tokens2owners;        // tokens to owners    
+    mapping(address => address []) public owners2tokens;        // owners to tokens
+    mapping(address => address)    public tmpAddr2contractAddr; // tmp addr contract to contract
     
     //Event
     event evntCreateContract(address _addrTmp,
@@ -33,7 +33,7 @@ contract OBS_V1{
         if (owner != msg.sender) revert();
 
         //Create contract
-        address addrToken = new MyObs( _owner, _supply, _name, &quot;&quot;, 0, msg.sender);
+        address addrToken = new MyObs( _owner, _supply, _name, "", 0, msg.sender);
 
         //Save info for public
         tokens2owners[addrToken]       = _owner;	
@@ -53,13 +53,13 @@ contract MyObs{
     address public addrBroker;          //addr broker account, that may call transferFrom
 
     //Define token
-    string public  name;                //token name    =&#39;T_N&#39;, example T_1,T_12,...etc
-    string public  symbol;              //token symbol  =&#39;&#39;
+    string public  name;                //token name    ='T_N', example T_1,T_12,...etc
+    string public  symbol;              //token symbol  =''
     uint8  public  decimals;            //token decimal = 0
     uint256 public supply;              //token count
 
     //Balance of accounts
-    mapping (address =&gt; uint256) public balances; 
+    mapping (address => uint256) public balances; 
 
     //Events 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -95,8 +95,8 @@ contract MyObs{
     /* Send coins */
     function transfer(address _to, uint256 _value)public returns (bool) {
         /* if the sender doenst have enough balance then stop */
-        if (balances[msg.sender] &lt; _value) return false;
-        if (balances[_to] + _value &lt; balances[_to]) return false;
+        if (balances[msg.sender] < _value) return false;
+        if (balances[_to] + _value < balances[_to]) return false;
         
         /* Add and subtract new balances */
         balances[msg.sender] -= _value;
@@ -112,8 +112,8 @@ contract MyObs{
         if (addrBroker != msg.sender) return false;
         
         /* if the sender doenst have enough balance then stop */
-        if (balances[_from] &lt; _value) return false;
-        if (balances[_to] + _value &lt; balances[_to]) return false;
+        if (balances[_from] < _value) return false;
+        if (balances[_to] + _value < balances[_to]) return false;
         
         /* Add and subtract new balances */
         balances[_from] -= _value;

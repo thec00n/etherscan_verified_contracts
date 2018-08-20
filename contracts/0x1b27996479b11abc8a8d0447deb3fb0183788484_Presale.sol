@@ -4,7 +4,7 @@ pragma solidity ^0.4.6;
 //
 // **** START:  WORK IN PROGRESS DISCLAIMER ****
 // This is a work in progress and not intended for reuse.
-// So don&#39;t reuse unless you know exactly what are you doing! 
+// So don't reuse unless you know exactly what are you doing! 
 // **** END:  WORK IN PROGRESS DISCLAIMER ****
 //
 // **** START:  PARANOIA DISCLAIMER ****
@@ -20,7 +20,7 @@ pragma solidity ^0.4.6;
 
 contract Presale {
 
-    string public constant VERSION = &quot;0.1.3-beta&quot;;
+    string public constant VERSION = "0.1.3-beta";
 
 	/* ====== configuration START ====== */
 
@@ -37,11 +37,11 @@ contract Presale {
 
     /* ====== configuration END ====== */
 	
-    string[5] private stateNames = [&quot;BEFORE_START&quot;,  &quot;PRESALE_RUNNING&quot;, &quot;WITHDRAWAL_RUNNING&quot;, &quot;REFUND_RUNNING&quot;, &quot;CLOSED&quot; ];
+    string[5] private stateNames = ["BEFORE_START",  "PRESALE_RUNNING", "WITHDRAWAL_RUNNING", "REFUND_RUNNING", "CLOSED" ];
     enum State { BEFORE_START,  PRESALE_RUNNING, WITHDRAWAL_RUNNING, REFUND_RUNNING, CLOSED }
 
     uint public total_received_amount;
-	mapping (address =&gt; uint) public balances;
+	mapping (address => uint) public balances;
 	
     uint private constant MIN_TOTAL_AMOUNT_TO_RECEIVE = MIN_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
     uint private constant MAX_TOTAL_AMOUNT_TO_RECEIVE = MAX_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
@@ -85,7 +85,7 @@ contract Presale {
     noReentrancy
     {
         // transfer funds to owner if any
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             if (!OWNER.send(this.balance)) throw;
         }
     }
@@ -115,7 +115,7 @@ contract Presale {
 
     function receiveFunds() private notTooSmallAmountOnly {
       // no overflow is possible here: nobody have soo much money to spend.
-      if (total_received_amount + msg.value &gt; MAX_TOTAL_AMOUNT_TO_RECEIVE) {
+      if (total_received_amount + msg.value > MAX_TOTAL_AMOUNT_TO_RECEIVE) {
           // accept amount only and return change
           var change_to_return = total_received_amount + msg.value - MAX_TOTAL_AMOUNT_TO_RECEIVE;
           if (!msg.sender.send(change_to_return)) throw;
@@ -132,13 +132,13 @@ contract Presale {
 
 
     function currentState() private constant returns (State) {
-        if (block.number &lt; PRESALE_START) {
+        if (block.number < PRESALE_START) {
             return State.BEFORE_START;
-        } else if (block.number &lt;= PRESALE_END &amp;&amp; total_received_amount &lt; MAX_TOTAL_AMOUNT_TO_RECEIVE) {
+        } else if (block.number <= PRESALE_END && total_received_amount < MAX_TOTAL_AMOUNT_TO_RECEIVE) {
             return State.PRESALE_RUNNING;
-        } else if (block.number &lt;= WITHDRAWAL_END &amp;&amp; total_received_amount &gt;= MIN_TOTAL_AMOUNT_TO_RECEIVE) {
+        } else if (block.number <= WITHDRAWAL_END && total_received_amount >= MIN_TOTAL_AMOUNT_TO_RECEIVE) {
             return State.WITHDRAWAL_RUNNING;
-        } else if (this.balance &gt; 0){
+        } else if (this.balance > 0){
             return State.REFUND_RUNNING;
         } else {
             return State.CLOSED;		
@@ -149,7 +149,7 @@ contract Presale {
     // ============ modifiers ============
     //
 
-    //fails if state dosn&#39;t match
+    //fails if state dosn't match
     modifier inState(State state) {
         if (state != currentState()) throw;
         _;
@@ -162,10 +162,10 @@ contract Presale {
             || PRESALE_START == 0 
             || PRESALE_END == 0 
             || WITHDRAWAL_END ==0
-            || PRESALE_START &lt;= block.number
-            || PRESALE_START &gt;= PRESALE_END
-            || PRESALE_END   &gt;= WITHDRAWAL_END
-            || MIN_TOTAL_AMOUNT_TO_RECEIVE &gt; MAX_TOTAL_AMOUNT_TO_RECEIVE )
+            || PRESALE_START <= block.number
+            || PRESALE_START >= PRESALE_END
+            || PRESALE_END   >= WITHDRAWAL_END
+            || MIN_TOTAL_AMOUNT_TO_RECEIVE > MAX_TOTAL_AMOUNT_TO_RECEIVE )
 				throw;
         _;
     }
@@ -187,7 +187,7 @@ contract Presale {
 
     // don`t accept transactions with value less than allowed minimum
     modifier notTooSmallAmountOnly(){	
-        if (msg.value &lt; MIN_ACCEPTED_AMOUNT) throw;
+        if (msg.value < MIN_ACCEPTED_AMOUNT) throw;
         _;
     }
 

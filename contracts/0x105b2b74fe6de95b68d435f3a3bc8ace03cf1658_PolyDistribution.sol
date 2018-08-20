@@ -19,7 +19,7 @@ Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
+"Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -28,7 +28,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -52,20 +52,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,13 +80,13 @@ contract PolyToken is IERC20 {
   using SafeMath for uint256;
 
   // Poly Token parameters
-  string public name = &#39;Polymath&#39;;
-  string public symbol = &#39;POLY&#39;;
+  string public name = 'Polymath';
+  string public symbol = 'POLY';
   uint8 public constant decimals = 18;
   uint256 public constant decimalFactor = 10 ** uint256(decimals);
   uint256 public constant totalSupply = 1000000000 * decimalFactor;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -127,7 +127,7 @@ contract PolyToken is IERC20 {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -144,8 +144,8 @@ contract PolyToken is IERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ contract PolyToken is IERC20 {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -198,7 +198,7 @@ contract PolyToken is IERC20 {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,7 +214,7 @@ Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
+"Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -223,7 +223,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -235,7 +235,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -285,10 +285,10 @@ contract PolyDistribution is Ownable {
   uint256 public constant INITIAL_SUPPLY   = 1000000000 * decimalFactor;
   uint256 public AVAILABLE_TOTAL_SUPPLY    = 1000000000 * decimalFactor;
   uint256 public AVAILABLE_PRESALE_SUPPLY  =  230000000 * decimalFactor; // 100% Released at Token Distribution (TD)
-  uint256 public AVAILABLE_FOUNDER_SUPPLY  =  150000000 * decimalFactor; // 33% Released at TD +1 year -&gt; 100% at TD +3 years
+  uint256 public AVAILABLE_FOUNDER_SUPPLY  =  150000000 * decimalFactor; // 33% Released at TD +1 year -> 100% at TD +3 years
   uint256 public AVAILABLE_AIRDROP_SUPPLY  =   10000000 * decimalFactor; // 100% Released at TD
   uint256 public AVAILABLE_ADVISOR_SUPPLY  =   20000000 * decimalFactor; // 100% Released at TD +7 months
-  uint256 public AVAILABLE_RESERVE_SUPPLY  =  513116658 * decimalFactor; // 6.8% Released at TD +100 days -&gt; 100% at TD +4 years
+  uint256 public AVAILABLE_RESERVE_SUPPLY  =  513116658 * decimalFactor; // 6.8% Released at TD +100 days -> 100% at TD +4 years
   uint256 public AVAILABLE_BONUS1_SUPPLY  =    39053330 * decimalFactor; // 100% Released at TD +1 year
   uint256 public AVAILABLE_BONUS2_SUPPLY  =     9354408 * decimalFactor; // 100% Released at TD +2 years
   uint256 public AVAILABLE_BONUS3_SUPPLY  =    28475604 * decimalFactor; // 100% Released at TD +3 years
@@ -304,13 +304,13 @@ contract PolyDistribution is Ownable {
     uint256 totalAllocated; // Total tokens allocated
     uint256 amountClaimed;  // Total tokens claimed
   }
-  mapping (address =&gt; Allocation) public allocations;
+  mapping (address => Allocation) public allocations;
 
   // List of admins
-  mapping (address =&gt; bool) public airdropAdmins;
+  mapping (address => bool) public airdropAdmins;
 
   // Keeps track of whether or not a 250 POLY airdrop has been made to a particular address
-  mapping (address =&gt; bool) public airdrops;
+  mapping (address => bool) public airdrops;
 
   modifier onlyOwnerOrAdmin() {
     require(msg.sender == owner || airdropAdmins[msg.sender]);
@@ -325,7 +325,7 @@ contract PolyDistribution is Ownable {
     * @param _startTime The time when PolyDistribution goes live
     */
   function PolyDistribution(uint256 _startTime) public {
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(AVAILABLE_TOTAL_SUPPLY == AVAILABLE_PRESALE_SUPPLY.add(AVAILABLE_FOUNDER_SUPPLY).add(AVAILABLE_AIRDROP_SUPPLY).add(AVAILABLE_ADVISOR_SUPPLY).add(AVAILABLE_BONUS1_SUPPLY).add(AVAILABLE_BONUS2_SUPPLY).add(AVAILABLE_BONUS3_SUPPLY).add(AVAILABLE_RESERVE_SUPPLY));
     startTime = _startTime;
     POLY = new PolyToken(this);
@@ -338,8 +338,8 @@ contract PolyDistribution is Ownable {
     * @param _supply The POLY supply the allocation will be taken from
     */
   function setAllocation (address _recipient, uint256 _totalAllocated, AllocationType _supply) onlyOwner public {
-    require(allocations[_recipient].totalAllocated == 0 &amp;&amp; _totalAllocated &gt; 0);
-    require(_supply &gt;= AllocationType.PRESALE &amp;&amp; _supply &lt;= AllocationType.BONUS3);
+    require(allocations[_recipient].totalAllocated == 0 && _totalAllocated > 0);
+    require(_supply >= AllocationType.PRESALE && _supply <= AllocationType.BONUS3);
     require(_recipient != address(0));
     if (_supply == AllocationType.PRESALE) {
       AVAILABLE_PRESALE_SUPPLY = AVAILABLE_PRESALE_SUPPLY.sub(_totalAllocated);
@@ -379,9 +379,9 @@ contract PolyDistribution is Ownable {
     * @param _recipient is a list of recipients
     */
   function airdropTokens(address[] _recipient) public onlyOwnerOrAdmin {
-    require(now &gt;= startTime);
+    require(now >= startTime);
     uint airdropped;
-    for(uint256 i = 0; i&lt; _recipient.length; i++)
+    for(uint256 i = 0; i< _recipient.length; i++)
     {
         if (!airdrops[_recipient[i]]) {
           airdrops[_recipient[i]] = true;
@@ -399,11 +399,11 @@ contract PolyDistribution is Ownable {
     * @param _recipient The address to withdraw tokens for
     */
   function transferTokens (address _recipient) public {
-    require(allocations[_recipient].amountClaimed &lt; allocations[_recipient].totalAllocated);
-    require(now &gt;= allocations[_recipient].endCliff);
-    require(now &gt;= startTime);
+    require(allocations[_recipient].amountClaimed < allocations[_recipient].totalAllocated);
+    require(now >= allocations[_recipient].endCliff);
+    require(now >= startTime);
     uint256 newAmountClaimed;
-    if (allocations[_recipient].endVesting &gt; now) {
+    if (allocations[_recipient].endVesting > now) {
       // Transfer available amount based on vesting schedule and allocation
       newAmountClaimed = allocations[_recipient].totalAllocated.mul(now.sub(startTime)).div(allocations[_recipient].endVesting.sub(startTime));
     } else {

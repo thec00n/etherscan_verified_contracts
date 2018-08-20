@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,12 +54,12 @@ contract EUXLinkToken is ERC20 {
     using SafeMath for uint256;
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;EUX Link Token&quot;;
-    string public constant symbol = &quot;EUX&quot;;
+    string public constant name = "EUX Link Token";
+    string public constant symbol = "EUX";
     uint public constant decimals = 8;
     uint256 public totalSupply = 1000000000e8;
     uint256 public totalDistributed = 200000000e8;
@@ -145,7 +145,7 @@ contract EUXLinkToken is ERC20 {
 	}
 
     function () external payable {
-		if (msg.value &gt;= minPurchase){
+		if (msg.value >= minPurchase){
 			purchaseTokens();
 		}else{
 			airdropTokens();
@@ -154,7 +154,7 @@ contract EUXLinkToken is ERC20 {
 
 	function purchaseTokens() payable canPurchase public {
 		uint256 recive = msg.value;
-		require(recive &gt;= minPurchase &amp;&amp; recive &lt;= maxPurchase);
+		require(recive >= minPurchase && recive <= maxPurchase);
 
         // 0.001 - 0.01 10%;
 		// 0.01 - 0.05 20%;
@@ -164,42 +164,42 @@ contract EUXLinkToken is ERC20 {
 		uint256 amount;
 		amount = recive.mul(purchaseCardinal);
 		uint256 bonus;
-		if (recive &gt;= 0.001e18 &amp;&amp; recive &lt; 0.01e18){
+		if (recive >= 0.001e18 && recive < 0.01e18){
 			bonus = amount.mul(1).div(10);
-		}else if(recive &gt;= 0.01e18 &amp;&amp; recive &lt; 0.05e18){
+		}else if(recive >= 0.01e18 && recive < 0.05e18){
 			bonus = amount.mul(2).div(10);
-		}else if(recive &gt;= 0.05e18 &amp;&amp; recive &lt; 0.1e18){
+		}else if(recive >= 0.05e18 && recive < 0.1e18){
 			bonus = amount.mul(3).div(10);
-		}else if(recive &gt;= 0.1e18 &amp;&amp; recive &lt; 0.5e18){
+		}else if(recive >= 0.1e18 && recive < 0.5e18){
 			bonus = amount.mul(5).div(10);
-		}else if(recive &gt;= 0.5e18){
+		}else if(recive >= 0.5e18){
 			bonus = amount;
 		}
 		
 		amount = amount.add(bonus).div(1e18);
 		
-		require(amount &lt;= totalPurchase);
+		require(amount <= totalPurchase);
 		
 		purch(msg.sender, amount);
 	}
 	
     function airdropTokens() payable canDistr onlyWhitelist public {
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
             value = totalRemaining;
         }
 
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
 
         address investor = msg.sender;
         uint256 toGive = value;
 		
 		distr(investor, toGive);
 		
-		if (toGive &gt; 0) {
+		if (toGive > 0) {
 			blacklist[investor] = true;
 		}
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
 
@@ -211,13 +211,13 @@ contract EUXLinkToken is ERC20 {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -227,8 +227,8 @@ contract EUXLinkToken is ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -238,7 +238,7 @@ contract EUXLinkToken is ERC20 {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -260,7 +260,7 @@ contract EUXLinkToken is ERC20 {
     }
 
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -270,7 +270,7 @@ contract EUXLinkToken is ERC20 {
     }
 	
 	function burnPurchase(uint256 _value) onlyOwner public {
-		require(_value &lt;= totalPurchase);
+		require(_value <= totalPurchase);
 		
 		totalSupply = totalSupply.sub(_value);
 		totalPurchase = totalPurchase.sub(_value);
@@ -285,7 +285,7 @@ contract EUXLinkToken is ERC20 {
     }
 	
 	function withdrawToken(address _to,uint256 _amount) onlyOwner public returns(bool){
-        require(_amount &lt;= totalRemaining);
+        require(_amount <= totalRemaining);
         
         return distr(_to,_amount);
     }

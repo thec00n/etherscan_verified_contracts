@@ -7,7 +7,7 @@ contract Storage {
     function uploadData(bytes32[] _data) public {
         require(readOnly != true);
         uint index = data.length;
-        for(uint i = 0; i &lt; _data.length; i++) {
+        for(uint i = 0; i < _data.length; i++) {
             data.length++;
             data[index + i] = _data[i];
         }
@@ -17,7 +17,7 @@ contract Storage {
     }
     function getData() public view returns (bytes){
         bytes memory result = new bytes(data.length*0x20);
-        for(uint i = 0; i &lt; data.length; i++) {
+        for(uint i = 0; i < data.length; i++) {
             bytes32 word = data[i];
             assembly {
                 mstore(add(result, add(0x20, mul(i, 32))), word)

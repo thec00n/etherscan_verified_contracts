@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,17 +44,17 @@ interface IERC20 {
 
 contract MithrilMace is IERC20 {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public constant name = &quot;Mithyrl Mace&quot;;
-    string public constant symbol = &quot;MMACE&quot;;
+    string public standard = 'Token 0.1';
+    string public constant name = "Mithyrl Mace";
+    string public constant symbol = "MMACE";
     uint8 public constant decimals = 4;
     uint256 public initialSupply;
     uint256 public totalSupply;
 
     using SafeMath for uint256;
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -75,9 +75,9 @@ contract MithrilMace is IERC20 {
         return balanceOf[_owner];
     }
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
-        require(balanceOf[msg.sender] &gt;= _value &amp;&amp; balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
+        require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
 	    balanceOf[_to] = balanceOf[_to].add(_value);
 	    Transfer(msg.sender, _to, _value);
@@ -85,9 +85,9 @@ contract MithrilMace is IERC20 {
     }
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
         require(
-            allowance [_from][msg.sender] &gt;= _value
-            &amp;&amp; balanceOf[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            allowance [_from][msg.sender] >= _value
+            && balanceOf[_from] >= _value
+            && _value > 0
             );
         balanceOf[_from] = balanceOf[_from].sub(_value);
 	    balanceOf[_to] = balanceOf[_to].add(_value);

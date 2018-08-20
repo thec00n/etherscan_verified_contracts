@@ -56,23 +56,23 @@ contract WRTCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint amount = msg.value * price;
 
         // Pre-sale 12/27   01/27
-        if(now &gt; startDate &amp;&amp; now &lt; 1517094000) {
+        if(now > startDate && now < 1517094000) {
             amount += amount / 2;
         }
 
         // Pre-ICO  02/01   02/28
-        if(now &gt; 1517439600 &amp;&amp; now &lt; 1519772400) {
+        if(now > 1517439600 && now < 1519772400) {
             amount += amount / 3;
         }
 
         // ICO      03/10   03/20
-        if(now &gt; 1520636400 &amp;&amp; now &lt; 1521500400) {
+        if(now > 1520636400 && now < 1521500400) {
             amount += amount / 4;
         }
         

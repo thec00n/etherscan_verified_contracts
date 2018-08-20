@@ -11,7 +11,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -20,7 +20,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -30,7 +30,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -41,7 +41,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -68,7 +68,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }
@@ -122,24 +122,24 @@ library NameFilter {
         uint256 _length = _temp.length;
         
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
         
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
         
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -153,22 +153,22 @@ library NameFilter {
                     // require character is a space
                     _temp[i] == 0x20 || 
                     // OR lowercase a-z
-                    (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                    (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                     // or 0-9
-                    (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                    (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
                 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;    
             }
         }
         
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
         
         bytes32 _ret;
         assembly {
@@ -357,26 +357,26 @@ contract SuperFoMo3D is F3Devents {
     using NameFilter for string;
     using F3DKeysCalcLong for uint256;
     
-    string constant public name = &quot;SuperFoMo3D&quot;;
-    string constant public symbol = &quot;SuperF3D&quot;;
+    string constant public name = "SuperFoMo3D";
+    string constant public symbol = "SuperF3D";
     uint256 public airDropPot_;             
-    uint256 public airDropTracker_ = 0;     // incremented each time a &quot;qualified&quot; tx occurs.
+    uint256 public airDropTracker_ = 0;     // incremented each time a "qualified" tx occurs.
     uint256 public rID_;    // round id number / total rounds that have happened
     address actor = 0x0;
     bool public activated = false;
     
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) returns player id by address
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // (name =&gt; pID) returns player id by name
-    mapping (uint256 =&gt; F3Ddatasets.Player) public plyr_;   // (pID =&gt; data) player data
-    mapping (uint256 =&gt; mapping (uint256 =&gt; F3Ddatasets.PlayerRounds)) public plyrRnds_;    // player round data by player id &amp; round id
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // (pID =&gt; name =&gt; bool) list of names a player owns.
-    mapping (address =&gt; uint256) customerBalance;           // customer balance data
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) returns player id by address
+    mapping (bytes32 => uint256) public pIDxName_;          // (name => pID) returns player id by name
+    mapping (uint256 => F3Ddatasets.Player) public plyr_;   // (pID => data) player data
+    mapping (uint256 => mapping (uint256 => F3Ddatasets.PlayerRounds)) public plyrRnds_;    // player round data by player id & round id
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // (pID => name => bool) list of names a player owns.
+    mapping (address => uint256) customerBalance;           // customer balance data
     
-    mapping (uint256 =&gt; F3Ddatasets.Round) public round_;   // (rID =&gt; data) round data
-    mapping (uint256 =&gt; mapping(uint256 =&gt; uint256)) public rndTmEth_;      // eth in per team, by round id and team id
+    mapping (uint256 => F3Ddatasets.Round) public round_;   // (rID => data) round data
+    mapping (uint256 => mapping(uint256 => uint256)) public rndTmEth_;      // eth in per team, by round id and team id
     
-    mapping (uint256 =&gt; F3Ddatasets.TeamFee) public fees_;          // (team =&gt; fees) fee distribution by team
-    mapping (uint256 =&gt; F3Ddatasets.PotSplit) public potSplit_;     // (team =&gt; fees) pot split distribution by team
+    mapping (uint256 => F3Ddatasets.TeamFee) public fees_;          // (team => fees) fee distribution by team
+    mapping (uint256 => F3Ddatasets.PotSplit) public potSplit_;     // (team => fees) pot split distribution by team
     
     DiviesInterface constant private Divies = DiviesInterface(0xc7029Ed9EBa97A096e72607f4340c34049C7AF48);
     JIincForwarderInterface constant private Jekyll_Island_Inc = JIincForwarderInterface(0xdd4950F977EE28D2C132f1353D1595035Db444EE);
@@ -388,19 +388,19 @@ contract SuperFoMo3D is F3Devents {
     //==========================================================================
     modifier isActor
     {
-        require(msg.sender == actor,&#39;do not have permission&#39;);
+        require(msg.sender == actor,'do not have permission');
         _;
     }
     
     modifier isActivated {
-        require(activated == true, &quot;F3DPlus is not activated yet&quot;); 
+        require(activated == true, "F3DPlus is not activated yet"); 
         _;
     }
     
     modifier isInLimits(uint256 _value)
     {
-        require(_value &gt;= 1000000000,&#39;value too low&#39;);
-        require(_value &lt;= 100000000000000000000000,&#39;over the maximum limit&#39;);
+        require(_value >= 1000000000,'value too low');
+        require(_value <= 100000000000000000000000,'over the maximum limit');
         _;
     }
     
@@ -410,7 +410,7 @@ contract SuperFoMo3D is F3Devents {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;ether only&quot;);
+        require(_codeLength == 0, "ether only");
         _;
     }
     //==========================================================================
@@ -428,7 +428,7 @@ contract SuperFoMo3D is F3Devents {
         isActor
         isEther
     {
-        require(activated == false,&#39;is already activated&#39;);
+        require(activated == false,'is already activated');
         activated = true;
     }
     
@@ -458,7 +458,7 @@ contract SuperFoMo3D is F3Devents {
         isInLimits(_value)
         returns(uint256)
     {
-        require(customerBalance[msg.sender] &gt;= _value,&#39;please ensure you have enough balance&#39;);
+        require(customerBalance[msg.sender] >= _value,'please ensure you have enough balance');
         msg.sender.transfer(_value);
         customerBalance[msg.sender] = customerBalance[msg.sender].sub(_value);
         return customerBalance[msg.sender];
@@ -473,7 +473,7 @@ contract SuperFoMo3D is F3Devents {
         
         // from vaults 
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -535,13 +535,13 @@ contract SuperFoMo3D is F3Devents {
     {
         uint256 _com = _eth / 50;
         uint256 _p3d;
-        if (!address(Jekyll_Island_Inc).call.value(_com)(bytes4(keccak256(&quot;deposit()&quot;))))
+        if (!address(Jekyll_Island_Inc).call.value(_com)(bytes4(keccak256("deposit()"))))
         {
             _p3d = _com;
             _com = 0;
         }
         uint256 _aff = _eth / 10;
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit F3Devents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _rID, _pID, _aff, now);
         } else {
@@ -549,7 +549,7 @@ contract SuperFoMo3D is F3Devents {
         }
         
         _p3d = _p3d.add((_eth.mul(fees_[_team].p3d)) / (100));
-        if (_p3d &gt; 0)
+        if (_p3d > 0)
         {
             // set up event data
             _eventData_.P3DAmount = _p3d.add(_eventData_.P3DAmount);
@@ -574,7 +574,7 @@ contract SuperFoMo3D is F3Devents {
         uint256 _pot = _eth.sub(_gen);
 
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
 
         round_[_rID].pot = _pot.add(_dust).add(round_[_rID].pot);
@@ -608,7 +608,7 @@ contract SuperFoMo3D is F3Devents {
         // setup local rID
         uint256 _rID = rID_;
         
-        // grab our winning player and team id&#39;s
+        // grab our winning player and team id's
         uint256 _winPID = round_[_rID].plyr;
         uint256 _winTID = round_[_rID].team;
         
@@ -626,7 +626,7 @@ contract SuperFoMo3D is F3Devents {
         // calculate ppt for round mask
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _res = _res.add(_dust);
@@ -635,7 +635,7 @@ contract SuperFoMo3D is F3Devents {
         plyr_[_winPID].win = _win.add(plyr_[_winPID].win);
         
         // community rewards
-        if (!address(Jekyll_Island_Inc).call.value(_com)(bytes4(keccak256(&quot;deposit()&quot;))))
+        if (!address(Jekyll_Island_Inc).call.value(_com)(bytes4(keccak256("deposit()"))))
         {
             _p3d = _p3d.add(_com);
             _com = 0;
@@ -680,14 +680,14 @@ contract SuperFoMo3D is F3Devents {
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
             
-            if (_name != &quot;&quot;)
+            if (_name != "")
             {
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
             
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
             
             // set the new player bool to true
@@ -704,7 +704,7 @@ contract SuperFoMo3D is F3Devents {
         returns (bool)
     {
         //must have enough balance 
-        require(address(this).balance &gt;= _bonus,&#39;out of balance&#39;);
+        require(address(this).balance >= _bonus,'out of balance');
         _addr.transfer(_bonus);
         
         return true;
@@ -718,7 +718,7 @@ contract SuperFoMo3D is F3Devents {
         uint256 _rID = rID_;
         uint256 _now = now;
         
-        if (_now &gt; round_[_rID].strt &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else // rounds over.  need price for new round
             return ( (_keys).eth() );
@@ -729,7 +729,7 @@ contract SuperFoMo3D is F3Devents {
         pure
         returns (uint256)
     {
-        if (_team &lt; 0 || _team &gt; 3)
+        if (_team < 0 || _team > 3)
             return(2);
         else
             return(_team);
@@ -747,7 +747,7 @@ contract SuperFoMo3D is F3Devents {
         private
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rIDlast);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             // put in gen vault
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
@@ -766,7 +766,7 @@ contract SuperFoMo3D is F3Devents {
         if (plyr_[_pID].lrnd != 0)
             updateGenVault(_pID, plyr_[_pID].lrnd);
             
-        // update player&#39;s last round played
+        // update player's last round played
         plyr_[_pID].lrnd = rID_;
             
         // set the joined round bool to true
@@ -779,7 +779,7 @@ contract SuperFoMo3D is F3Devents {
         public
         payable
     {
-        revert(&#39;do not send eth directly&#39;);
+        revert('do not send eth directly');
     }
     
 }

@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -103,8 +103,8 @@ contract MultipleVesting is Ownable {
         bool revocable;
     }
 
-    mapping (address =&gt; Grant) public grants;
-    mapping (uint256 =&gt; address) public indexedGrants;
+    mapping (address => Grant) public grants;
+    mapping (uint256 => address) public indexedGrants;
     uint256 public index;
     uint256 public totalVesting;
     ERC20Token token;
@@ -182,13 +182,13 @@ contract MultipleVesting is Ownable {
      * @param _time Timestamp of time to check for
      */
     function calculateVestedTokens(Grant _grant, uint256 _time) private pure returns (uint256) {
-        // If we&#39;re before the cliff, then nothing is vested.
-        if (_time &lt; _grant.cliff) {
+        // If we're before the cliff, then nothing is vested.
+        if (_time < _grant.cliff) {
             return 0;
         }
 
-        // If we&#39;re after the end of the vesting period - everything is vested;
-        if (_time &gt;= _grant.duration) {
+        // If we're after the end of the vesting period - everything is vested;
+        if (_time >= _grant.duration) {
             return _grant.value;
         }
 
@@ -200,7 +200,7 @@ contract MultipleVesting is Ownable {
      * @dev Distribute tokens to grants
      */
     function vest() public onlyOwner {
-        for(uint16 i = 0; i &lt; index; i++) {
+        for(uint16 i = 0; i < index; i++) {
             Grant storage grant = grants[indexedGrants[i]];
             if(grant.value == 0) continue;
             uint256 vested = calculateVestedTokens(grant, now);
@@ -208,7 +208,7 @@ contract MultipleVesting is Ownable {
                 continue;
             }
 
-            // Make sure the holder doesn&#39;t transfer more than what he already has.
+            // Make sure the holder doesn't transfer more than what he already has.
             uint256 transferable = vested.sub(grant.transferred);
             if (transferable == 0) {
                 continue;
@@ -232,7 +232,7 @@ contract MultipleVesting is Ownable {
             return;
         }
 
-        // Make sure the holder doesn&#39;t transfer more than what he already has.
+        // Make sure the holder doesn't transfer more than what he already has.
         uint256 transferable = vested.sub(grant.transferred);
         if (transferable == 0) {
             return;

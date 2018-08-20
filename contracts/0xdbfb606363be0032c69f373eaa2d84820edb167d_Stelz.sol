@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,12 +69,12 @@ contract Ownable {
 contract Stelz is ERC20, Ownable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;STELZ&quot;;
-  string public constant symbol = &quot;STELZ&quot;;
+  string public constant name = "STELZ";
+  string public constant symbol = "STELZ";
   uint8 public constant decimals = 5;
   uint256 public constant initial_supply = 300000000 * (10 ** uint256(decimals));
 
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
 
   uint256 totalSupply_;
   uint256 wei_price;
@@ -112,7 +112,7 @@ contract Stelz is ERC20, Ownable {
     require(_to != address(0));
 
     uint256 _balance = balances[msg.sender];
-    require(_value &lt;= _balance);
+    require(_value <= _balance);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -134,7 +134,7 @@ contract Stelz is ERC20, Ownable {
   }
   
   modifier checkMinAmount(uint256 amount) {
-    require(amount &gt;= min_amount);
+    require(amount >= min_amount);
     _;
   }
   
@@ -151,8 +151,8 @@ contract Stelz is ERC20, Ownable {
   }
   
   function transferMany(address[] recipients, uint256[] values) public {
-    for (uint256 i = 0; i &lt; recipients.length; i++) {
-      require(balances[msg.sender] &gt;= values[i]);
+    for (uint256 i = 0; i < recipients.length; i++) {
+      require(balances[msg.sender] >= values[i]);
       require(recipients[i] != address(0));
       balances[msg.sender] = balances[msg.sender].sub(values[i]);
       balances[recipients[i]] = balances[recipients[i]].add(values[i]);
@@ -173,7 +173,7 @@ contract Stelz is ERC20, Ownable {
   public
   {
     uint256 _coinIncrease = msg.value.div(wei_price);
-    require(balances[owner] &gt;= _coinIncrease);
+    require(balances[owner] >= _coinIncrease);
     balances[owner] = balances[owner].sub(_coinIncrease);
     balances[msg.sender] = balances[msg.sender].add(_coinIncrease);
     emit Transfer(owner, msg.sender, _coinIncrease);

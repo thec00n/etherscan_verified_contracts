@@ -8,7 +8,7 @@ pragma solidity ^0.4.18;
 //   - embedded SafeMath due to missing utilization in some functions
 //    
 // ----------------------------------------------------------------------------
-// Based on FWD &#39;BitFwd&#39; token contract
+// Based on FWD 'BitFwd' token contract
 //
 // FWD tokens are mintable by the owner until the `disableMinting()` function
 // is executed. Tokens can be burnt by sending them to address 0x0
@@ -100,8 +100,8 @@ contract CorrentlyInvest is ERC20Interface, Owned {
     uint public _totalSupply;
     bool public mintable;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     event MintingDisabled();
 
@@ -110,8 +110,8 @@ contract CorrentlyInvest is ERC20Interface, Owned {
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;CORI&quot;;
-        name = &quot;Corrently Invest&quot;;
+        symbol = "CORI";
+        name = "Corrently Invest";
         decimals = 2;
         mintable = true;
     }
@@ -144,14 +144,14 @@ contract CorrentlyInvest is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         balances[msg.sender] -= tokens;
-        require( balances[to]+tokens &gt;=  balances[to]);
+        require( balances[to]+tokens >=  balances[to]);
         balances[to] += tokens;
         emit Transfer(msg.sender, to, tokens);
         return true;
@@ -160,7 +160,7 @@ contract CorrentlyInvest is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -183,10 +183,10 @@ contract CorrentlyInvest is ERC20Interface, Owned {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         balances[from] -= tokens;
         allowed[from][msg.sender] -= tokens;
-        require( balances[to]+tokens &gt;=  balances[to]);
+        require( balances[to]+tokens >=  balances[to]);
         balances[to] += tokens;
         emit Transfer(from, to, tokens);
         return true;
@@ -195,7 +195,7 @@ contract CorrentlyInvest is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -204,7 +204,7 @@ contract CorrentlyInvest is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -220,9 +220,9 @@ contract CorrentlyInvest is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     function mint(address tokenOwner, uint tokens) public onlyOwner returns (bool success) {
         require(mintable);
-        require( balances[tokenOwner]+tokens &gt;=  balances[tokenOwner]);
+        require( balances[tokenOwner]+tokens >=  balances[tokenOwner]);
         balances[tokenOwner] += tokens;
-        require(_totalSupply+tokens&gt;=_totalSupply);
+        require(_totalSupply+tokens>=_totalSupply);
         _totalSupply += tokens;
         
         emit Transfer(address(0), tokenOwner, tokens);
@@ -231,7 +231,7 @@ contract CorrentlyInvest is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers
+    // Don't accept ethers
     // ------------------------------------------------------------------------
     function ()  external  {
          revert();

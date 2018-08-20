@@ -11,20 +11,20 @@ contract SafeMath {
 	}
 
 	function safeDiv(uint256 a, uint256 b) pure internal returns (uint256) {
-		judgement(b &gt; 0);
+		judgement(b > 0);
 		uint256 c = a / b;
 		judgement(a == b * c + a % b);
 		return c;
 	}
 
 	function safeSub(uint256 a, uint256 b) pure internal returns (uint256) {
-		judgement(b &lt;= a);
+		judgement(b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint256 a, uint256 b) pure internal returns (uint256) {
 		uint256 c = a + b;
-		judgement(c&gt;=a &amp;&amp; c&gt;=b);
+		judgement(c>=a && c>=b);
 		return c;
 	}
 	function safeMulWithPresent(uint256 a , uint256 b) pure internal returns (uint256){
@@ -122,12 +122,12 @@ contract Token is SafeMath {
 contract BasicToken is Token ,HCBFreeze{
 
 	function transfer(address _to, uint256 _value) stoppable public returns (bool ind) {
-		//Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-		//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+		//Default assumes totalSupply can't be over max (2^256 - 1).
+		//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
 		//Replace the if with this one instead.
 		require(_to!= address(0));
 		require(frozenCheck(msg.sender,_to));
-		if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		if (balances[msg.sender] >= _value && _value > 0) {
 			balances[msg.sender] = safeSub(balances[msg.sender] , _value);
 			balances[_to]  = safeAdd(balances[_to],_value);
 			emit Transfer(msg.sender, _to, _value);
@@ -140,7 +140,7 @@ contract BasicToken is Token ,HCBFreeze{
 	}
 
 	function burn(uint256 amount) stoppable onlyOwner public returns (bool){
-		if(balances[msg.sender] &gt; amount ){
+		if(balances[msg.sender] > amount ){
 			balances[msg.sender] = safeSub(balances[msg.sender],amount);
 			totalSupply = safeSub(totalSupply,amount);
 			emit Burn(msg.sender,amount);
@@ -158,22 +158,22 @@ contract BasicToken is Token ,HCBFreeze{
 		frozenAccount[target] = freeze;
 	}
 	function register(string key) public returns(bool){
-		assert(bytes(key).length &lt;= 64);
+		assert(bytes(key).length <= 64);
 		require(!status());
 
 		keys[msg.sender] = key;
 		emit LogRegister(msg.sender,key);
 		return true;
 	}
-	mapping (address =&gt; uint256)                      internal balances;
-	mapping (address =&gt; bool)                         private  frozenAccount;    //Save frozen account
-	mapping (address =&gt; string)                       private  keys;            //mapping main chain&#39;s public key and Eth key
+	mapping (address => uint256)                      internal balances;
+	mapping (address => bool)                         private  frozenAccount;    //Save frozen account
+	mapping (address => string)                       private  keys;            //mapping main chain's public key and Eth key
 }
 contract HCBToken is BasicToken{
 
-	string public name = &quot;HiggsCandyBox&quot;;                         /// Set the full name of this contract
+	string public name = "HiggsCandyBox";                         /// Set the full name of this contract
 	uint256 public decimals = 18;                                 /// Set the decimal
-	string public symbol = &quot;HCB&quot;;                                 /// Set the symbol of this contract
+	string public symbol = "HCB";                                 /// Set the symbol of this contract
 
 	constructor() public {
 		owner = msg.sender;

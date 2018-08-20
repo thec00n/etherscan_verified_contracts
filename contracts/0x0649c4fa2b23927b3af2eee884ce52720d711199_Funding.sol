@@ -23,13 +23,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,11 +71,11 @@ contract Ownable {
 
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &gt; 0);
+    require(_value > 0);
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -93,12 +93,12 @@ contract ERC20 is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(_value &gt; 0);
+    require(_value > 0);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -108,7 +108,7 @@ contract StandardToken is ERC20, BasicToken {
   }
 
   function approve(address _spender, uint256 _value) public returns (bool) {
-    require(_value &gt; 0);
+    require(_value > 0);
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
     return true;
@@ -119,16 +119,16 @@ contract StandardToken is ERC20, BasicToken {
   }
 
   function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
-    require(_addedValue &gt; 0);
+    require(_addedValue > 0);
     allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
     Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     return true;
   }
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
-    require(_subtractedValue &gt; 0);
+    require(_subtractedValue > 0);
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -142,8 +142,8 @@ contract StandardToken is ERC20, BasicToken {
 contract BurnableToken is BasicToken {
   event Burn(address indexed burner, uint256 value);
   function burn(uint256 _value) public {
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -153,8 +153,8 @@ contract BurnableToken is BasicToken {
 }
 
 contract Funding is StandardToken, BurnableToken, Ownable {
-  string public constant name = &quot;HolographicPictureChain&quot;; 
-  string public constant symbol = &quot;HOLP&quot;; 
+  string public constant name = "HolographicPictureChain"; 
+  string public constant symbol = "HOLP"; 
   uint8 public constant decimals = 18; 
   uint256 public constant INITIAL_SUPPLY = 2000000000 * (10 ** uint256(decimals));
   address public agent;
@@ -172,20 +172,20 @@ contract Funding is StandardToken, BurnableToken, Ownable {
   }
   //do multiple transaction in on call
   function batchTransfer(address[] _tos, uint256[] _values) public returns (bool) {
-	require(_tos.length &gt; 0);
-	require(_values.length &gt; 0);
+	require(_tos.length > 0);
+	require(_values.length > 0);
 	require(_tos.length == _values.length);
 	address curOwner = msg.sender;
-	if(agent != address(0) &amp;&amp; agent == msg.sender){
+	if(agent != address(0) && agent == msg.sender){
 		curOwner = owner;
 	}
 	uint256 totalValue = 0;
         uint arrLen = _values.length;
-	for (uint i = 0; i &lt; arrLen; i ++){
+	for (uint i = 0; i < arrLen; i ++){
 		totalValue = totalValue.add( _values[i]);
 	}
-	require(totalValue &lt;= balances[curOwner]);
-	for (uint idx = 0; idx &lt; arrLen; idx ++){
+	require(totalValue <= balances[curOwner]);
+	for (uint idx = 0; idx < arrLen; idx ++){
 		address curAddress = _tos[idx];
 		balances[curOwner] = balances[curOwner].sub(_values[idx]);
 		balances[curAddress] = balances[curAddress].add( _values[idx]);
@@ -194,13 +194,13 @@ contract Funding is StandardToken, BurnableToken, Ownable {
 	return true;
   }
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &gt; 0);
+    require(_value > 0);
     require(_to != address(0));
     address curOwner = msg.sender;
-    if(agent != address(0) &amp;&amp; agent == msg.sender){
+    if(agent != address(0) && agent == msg.sender){
     	curOwner = owner;
     }
-    require(_value &lt;= balances[curOwner]);
+    require(_value <= balances[curOwner]);
     balances[curOwner] = balances[curOwner].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(curOwner, _to, _value);

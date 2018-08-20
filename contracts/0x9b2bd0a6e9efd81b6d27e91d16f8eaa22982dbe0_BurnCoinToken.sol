@@ -3,12 +3,12 @@ pragma solidity ^0.4.19;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -22,7 +22,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         return c;
     }
@@ -44,16 +44,16 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => uint) balances;
 
     function balanceOf(address _owner) public view returns (uint) {
         return balances[_owner];
     }
 
     function transfer(address _to, uint _value) public returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -63,7 +63,7 @@ contract StandardToken is ERC20 {
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
         var _allowance = allowed[_from][msg.sender];
 
-        require(_value &lt;= _allowance);
+        require(_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -111,11 +111,11 @@ interface tokenRecipient {
 }
 
 contract BurnCoinToken is StandardToken, Ownable {
-    string public constant name = &#39;Burn Coin&#39;;
-    string public constant symbol = &#39;BRN&#39;;
+    string public constant name = 'Burn Coin';
+    string public constant symbol = 'BRN';
     uint public constant decimals = 8;
     uint public totalSupply = 500000000 * 10 ** uint(decimals); //500,000,000
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => bool) public frozenAccounts;
 
     event FrozenFunds(address _target, bool frozen);
 
@@ -147,7 +147,7 @@ contract BurnCoinToken is StandardToken, Ownable {
     }
 
     function burn(uint _value) public returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(msg.sender, _value);
@@ -155,8 +155,8 @@ contract BurnCoinToken is StandardToken, Ownable {
     }
 
     function burnFrom(address _from, uint _value) public returns (bool) {
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);

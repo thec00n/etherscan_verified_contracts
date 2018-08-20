@@ -40,9 +40,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -50,7 +50,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,7 +79,7 @@ pragma solidity ^0.4.18;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -150,7 +150,7 @@ pragma solidity ^0.4.18;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -161,8 +161,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -225,7 +225,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -243,7 +243,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -375,9 +375,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -413,7 +413,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // creates the token to be sold.
@@ -435,9 +435,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
 }
@@ -551,8 +551,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -565,7 +565,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -581,7 +581,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -612,7 +612,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -627,9 +627,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -676,7 +676,7 @@ contract PausableToken is StandardToken, Pausable {
  * @title Dividend contract
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<span class="__cf_email__" data-cfemail="1b72757d745b6d7a77727f726f62777a79683574697c">[email&#160;protected]</span>&gt;
+ * @author Validity Labs AG <<span class="__cf_email__" data-cfemail="1b72757d745b6d7a77727f726f62777a79683574697c">[email protected]</span>>
  */
 pragma solidity ^0.4.18;
 
@@ -695,16 +695,16 @@ contract DividendToken is StandardToken, Ownable {
 
     uint256 public currentDividend;
 
-    mapping(address =&gt; uint256) unclaimedDividend;
+    mapping(address => uint256) unclaimedDividend;
 
     // tracks when the dividend balance has been updated last time
-    mapping(address =&gt; uint256) public lastUpdate;
+    mapping(address => uint256) public lastUpdate;
 
     uint256 public lastDividendIncreaseDate;
 
     // allow payment of dividend only by special treasury account (treasury can be set and altered by owner,
     // multiple treasurer accounts are possible
-    mapping(address =&gt; bool) public isTreasurer;
+    mapping(address => bool) public isTreasurer;
 
     uint256 public dividendEndTime = 0;
 
@@ -724,12 +724,12 @@ contract DividendToken is StandardToken, Ownable {
     }
 
     /**
-     * @dev Request payout dividend (claim) (requested by tokenHolder -&gt; pull)
+     * @dev Request payout dividend (claim) (requested by tokenHolder -> pull)
      * dividends that have not been claimed within 330 days expire and cannot be claimed anymore by the token holder.
      */
     function claimDividend() public returns (bool) {
         // unclaimed dividend fractions should expire after 330 days and the owner can reclaim that fraction
-        require(dividendEndTime &gt; 0 &amp;&amp; dividendEndTime.sub(claimTimeout) &gt; now);
+        require(dividendEndTime > 0 && dividendEndTime.sub(claimTimeout) > now);
 
         updateDividend(msg.sender);
 
@@ -765,8 +765,8 @@ contract DividendToken is StandardToken, Ownable {
      * @param _hodler address The Address of the hodler
      */
     function updateDividend(address _hodler) internal {
-        // last update in previous period -&gt; reset claimable dividend
-        if (lastUpdate[_hodler] &lt; lastDividendIncreaseDate) {
+        // last update in previous period -> reset claimable dividend
+        if (lastUpdate[_hodler] < lastDividendIncreaseDate) {
             unclaimedDividend[_hodler] = calcDividend(_hodler, totalSupply_);
             lastUpdate[_hodler] = now;
         }
@@ -777,7 +777,7 @@ contract DividendToken is StandardToken, Ownable {
      * @param _hodler address The Address of the hodler
      */
     function getClaimableDividend(address _hodler) public constant returns (uint256 claimableDividend) {
-        if (lastUpdate[_hodler] &lt; lastDividendIncreaseDate) {
+        if (lastUpdate[_hodler] < lastDividendIncreaseDate) {
             return calcDividend(_hodler, totalSupply_);
         } else {
             return (unclaimedDividend[_hodler]);
@@ -812,7 +812,7 @@ contract DividendToken is StandardToken, Ownable {
     }
 
     /**
-     * @dev Set / alter treasurer &quot;account&quot;. This can be done from owner only
+     * @dev Set / alter treasurer "account". This can be done from owner only
      * @param _treasurer address Address of the treasurer to create/alter
      * @param _active bool Flag that shows if the treasurer account is active
      */
@@ -828,7 +828,7 @@ contract DividendToken is StandardToken, Ownable {
      */
     function requestUnclaimed() public onlyOwner {
         // Send remaining ETH to beneficiary (back to owner) if dividend round is over
-        require(now &gt;= dividendEndTime.sub(claimTimeout));
+        require(now >= dividendEndTime.sub(claimTimeout));
 
         msg.sender.transfer(this.balance);
 
@@ -842,10 +842,10 @@ contract DividendToken is StandardToken, Ownable {
      */
     function() public payable {
         require(isTreasurer[msg.sender]);
-        require(dividendEndTime &lt; now);
+        require(dividendEndTime < now);
 
         // pay back unclaimed dividend that might not have been claimed by owner yet
-        if (this.balance &gt; msg.value) {
+        if (this.balance > msg.value) {
             uint256 payout = this.balance.sub(msg.value);
             owner.transfer(payout);
             Reclaimed(payout, dividendEndTime, now);
@@ -876,7 +876,7 @@ contract DividendToken is StandardToken, Ownable {
 /**
  * @title ICO token
  * @version 1.0
- * @author Validity Labs AG &lt;<span class="__cf_email__" data-cfemail="99f0f7fff6d9eff8f5f0fdf0ede0f5f8fbeab7f6ebfe">[email&#160;protected]</span>&gt;
+ * @author Validity Labs AG <<span class="__cf_email__" data-cfemail="99f0f7fff6d9eff8f5f0fdf0ede0f5f8fbeab7f6ebfe">[email protected]</span>>
  */
 pragma solidity ^0.4.18;
 
@@ -885,8 +885,8 @@ pragma solidity ^0.4.18;
 
 
 contract IcoToken is MintableToken, PausableToken, DividendToken {
-    string public constant name = &quot;Tend Token&quot;;
-    string public constant symbol = &quot;TND&quot;;
+    string public constant name = "Tend Token";
+    string public constant symbol = "TND";
     uint8 public constant decimals = 18;
 
     /**
@@ -904,7 +904,7 @@ contract IcoToken is MintableToken, PausableToken, DividendToken {
  * Simple time and capped based crowdsale.
  *
  * @version 1.0
- * @author Validity Labs AG &lt;<span class="__cf_email__" data-cfemail="bbd2d5ddd4fbcddad7d2dfd2cfc2d7dad9c895d4c9dc">[email&#160;protected]</span>&gt;
+ * @author Validity Labs AG <<span class="__cf_email__" data-cfemail="bbd2d5ddd4fbcddad7d2dfd2cfc2d7dad9c895d4c9dc">[email protected]</span>>
  */
 pragma solidity ^0.4.18;
 
@@ -924,7 +924,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
     uint256 public constant DEVELOPMENT_TEAM_CAP = 2e6 * 1e18;  // 2 million * 1e18
     uint256 public constant ICO_TOKEN_CAP = 9.5e6 * 1e18;        // 9.5 million  * 1e18
 
-    uint256 public constant CHF_CENT_PER_TOKEN = 1000;          // standard CHF per token rate - in cents - 10 CHF =&gt; 1000 CHF cents
+    uint256 public constant CHF_CENT_PER_TOKEN = 1000;          // standard CHF per token rate - in cents - 10 CHF => 1000 CHF cents
     uint256 public constant MIN_CONTRIBUTION_CHF = 250;
 
     uint256 public constant VESTING_CLIFF = 1 years;
@@ -951,10 +951,10 @@ contract IcoCrowdsale is Crowdsale, Ownable {
 
     // allow managers to blacklist and confirm contributions by manager accounts
     // (managers can be set and altered by owner, multiple manager accounts are possible
-    mapping(address =&gt; bool) public isManager;
+    mapping(address => bool) public isManager;
 
     // true if addess is not allowed to invest
-    mapping(address =&gt; bool) public isBlacklisted;
+    mapping(address => bool) public isBlacklisted;
 
     uint256 public confirmationPeriod;
     bool public confirmationPeriodOver;     // can be set by owner to finish confirmation in under 30 days
@@ -994,18 +994,18 @@ contract IcoCrowdsale is Crowdsale, Ownable {
 
     modifier onlyNoneZero(address _to, uint256 _amount) {
         require(_to != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     modifier onlyConfirmPayment() {
-        require(now &gt; endTime &amp;&amp; now &lt;= endTime.add(confirmationPeriod));
+        require(now > endTime && now <= endTime.add(confirmationPeriod));
         require(!confirmationPeriodOver);
         _;
     }
 
     modifier onlyConfirmationOver() {
-        require(confirmationPeriodOver || now &gt; endTime.add(confirmationPeriod));
+        require(confirmationPeriodOver || now > endTime.add(confirmationPeriod));
         _;
     }
 
@@ -1085,7 +1085,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
         if (!tier1Reached) {
 
             // tx tokens overflowed into next tier 2 - 10% discount - mark tier1Reached! else all tokens are tier 1 discounted
-            if (tempTotalTokensPurchased &gt; DISCOUNT_TOKEN_AMOUNT_T1) {
+            if (tempTotalTokensPurchased > DISCOUNT_TOKEN_AMOUNT_T1) {
                 tier1Reached = true;
                 overflowTokens = tempTotalTokensPurchased.sub(DISCOUNT_TOKEN_AMOUNT_T1);
                 tier1BonusTokens = purchasedTokens.sub(overflowTokens);
@@ -1099,17 +1099,17 @@ contract IcoCrowdsale is Crowdsale, Ownable {
         }
 
         // tier 2 10% discount - 2nd 3 million tokens purchased
-        if (tier1Reached &amp;&amp; !tier2Reached) {
+        if (tier1Reached && !tier2Reached) {
 
             // tx tokens overflowed into next tier 3 - 0% - marked tier2Reached! else all tokens are tier 2 discounted
-            if (tempTotalTokensPurchased &gt; DISCOUNT_TOKEN_AMOUNT_T2) {
+            if (tempTotalTokensPurchased > DISCOUNT_TOKEN_AMOUNT_T2) {
                 tier2Reached = true;
                 overflowTokens2 = tempTotalTokensPurchased.sub(DISCOUNT_TOKEN_AMOUNT_T2);
                 tier2BonusTokens = purchasedTokens.sub(overflowTokens2);
             // tx tokens did not overflow into next tier 3 (tier 3 == no discount)
             } else {
                 // tokens overflowed from tier1 else this tx started in tier2
-                if (overflowTokens &gt; 0) {
+                if (overflowTokens > 0) {
                     tier2BonusTokens = overflowTokens;
                 } else {
                     tier2BonusTokens = purchasedTokens;
@@ -1122,11 +1122,11 @@ contract IcoCrowdsale is Crowdsale, Ownable {
 
         // this triggers when both tier 1 and tier 2 discounted tokens have be filled - but ONLY afterwards, not if the flags got set during the same tx
         // aka this is tier 3
-        if (tier2Reached &amp;&amp; tier1Reached &amp;&amp; tier2BonusTokens == 0) {
+        if (tier2Reached && tier1Reached && tier2BonusTokens == 0) {
             tokenAmount = purchasedTokens;
         }
 
-        /*** Record &amp; update state variables  ***/
+        /*** Record & update state variables  ***/
         // Tracks purchased tokens for 2 tiers of discounts
         totalTokensPurchased = totalTokensPurchased.add(purchasedTokens);
         // Tracks total tokens pending to be minted - this includes presale tokens
@@ -1157,7 +1157,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
     function batchConfirmPayments(uint256[] _investmentIds) public onlyManager onlyConfirmPayment {
         uint256 investmentId;
 
-        for (uint256 c; c &lt; _investmentIds.length; c = c.add(1)) {
+        for (uint256 c; c < _investmentIds.length; c = c.add(1)) {
             investmentId = _investmentIds[c]; // gas optimization
             confirmPayment(investmentId);
         }
@@ -1180,7 +1180,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
     function batchMintTokenDirect(address[] _toList, uint256[] _tokenList) public onlyOwner {
         require(_toList.length == _tokenList.length);
 
-        for (uint256 i; i &lt; _toList.length; i = i.add(1)) {
+        for (uint256 i; i < _toList.length; i = i.add(1)) {
             mintTokenDirect(_toList[i], _tokenList[i]);
         }
     }
@@ -1191,7 +1191,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
      * @param _tokens uint256 of the token amount to mint
      */
     function mintTokenDirect(address _to, uint256 _tokens) public onlyOwner {
-        require(tokensToMint.add(_tokens) &lt;= ICO_TOKEN_CAP);
+        require(tokensToMint.add(_tokens) <= ICO_TOKEN_CAP);
 
         tokensToMint = tokensToMint.add(_tokens);
 
@@ -1207,19 +1207,19 @@ contract IcoCrowdsale is Crowdsale, Ownable {
      * @param _tokens uint256 token amount to mint
      */
     function mintIcoEnablersTokens(address _to, uint256 _tokens) public onlyOwner onlyNoneZero(_to, _tokens) {
-        require(icoEnablersTokensMinted.add(_tokens) &lt;= ICO_ENABLERS_CAP);
+        require(icoEnablersTokensMinted.add(_tokens) <= ICO_ENABLERS_CAP);
 
         token.mint(_to, _tokens);
         icoEnablersTokensMinted = icoEnablersTokensMinted.add(_tokens);
     }
 
     /**
-     * @dev allows contract owner to mint team tokens per DEVELOPMENT_TEAM_CAP and transfer to the development team&#39;s wallet (yes vesting)
+     * @dev allows contract owner to mint team tokens per DEVELOPMENT_TEAM_CAP and transfer to the development team's wallet (yes vesting)
      * @param _to address for beneficiary
      * @param _tokens uint256 token amount to mint
      */
     function mintDevelopmentTeamTokens(address _to, uint256 _tokens) public onlyOwner onlyNoneZero(_to, _tokens) {
-        require(developmentTeamTokensMinted.add(_tokens) &lt;= DEVELOPMENT_TEAM_CAP);
+        require(developmentTeamTokensMinted.add(_tokens) <= DEVELOPMENT_TEAM_CAP);
 
         developmentTeamTokensMinted = developmentTeamTokensMinted.add(_tokens);
         TokenVesting newVault = new TokenVesting(_to, now, VESTING_CLIFF, VESTING_DURATION, false);
@@ -1252,7 +1252,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
         require(!p.completedSettlement);
 
         // investments have to be processed in right order
-        // unless we&#39;re at first investment, the previous has needs to have undergone an attempted settlement
+        // unless we're at first investment, the previous has needs to have undergone an attempted settlement
 
         require(_investmentId == 0 || investments[_investmentId.sub(1)].attemptedSettlement);
 
@@ -1261,18 +1261,18 @@ contract IcoCrowdsale is Crowdsale, Ownable {
         // just so that we can see which one we attempted last time and can continue with next
         investmentIdLastAttemptedToSettle = _investmentId;
 
-        if (p.confirmed &amp;&amp; !capReached) {
-            // if confirmed -&gt; issue tokens, send ETH to wallet and complete settlement
+        if (p.confirmed && !capReached) {
+            // if confirmed -> issue tokens, send ETH to wallet and complete settlement
 
             // calculate number of tokens to be issued to investor
             uint256 tokens = p.tokenAmount;
 
             // check to see if this purchase sets it over the crowdsale token cap
             // if so, refund
-            if (tokensMinted.add(tokens) &gt; ICO_TOKEN_CAP) {
+            if (tokensMinted.add(tokens) > ICO_TOKEN_CAP) {
                 capReached = true;
-                if (p.weiAmount &gt; 0) {
-                    p.investor.send(p.weiAmount); // does not throw (otherwise we&#39;d block all further settlements)
+                if (p.weiAmount > 0) {
+                    p.investor.send(p.weiAmount); // does not throw (otherwise we'd block all further settlements)
                 }
             } else {
                 tokensToMint = tokensToMint.sub(tokens);
@@ -1280,7 +1280,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
 
                 // mint tokens for beneficiary
                 token.mint(p.beneficiary, tokens);
-                if (p.weiAmount &gt; 0) {
+                if (p.weiAmount > 0) {
                     // send Ether to project wallet (throws if wallet throws)
                     wallet.transfer(p.weiAmount);
                 }
@@ -1288,11 +1288,11 @@ contract IcoCrowdsale is Crowdsale, Ownable {
 
             p.completedSettlement = true;
         } else {
-            // if not confirmed -&gt; reimburse ETH or if fiat (presale) investor: do nothing
+            // if not confirmed -> reimburse ETH or if fiat (presale) investor: do nothing
             // only complete settlement if investor got their money back
             // (does not throw (as .transfer would)
             // otherwise we would block settlement process of all following investments)
-            if (p.investor != address(0) &amp;&amp; p.weiAmount &gt; 0) {
+            if (p.investor != address(0) && p.weiAmount > 0) {
                 if (p.investor.send(p.weiAmount)) {
                     p.completedSettlement = true;
                 }
@@ -1305,7 +1305,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
      * @param _investmentIds uint256[] array of uint256 of investment ids
      */
     function batchSettleInvestments(uint256[] _investmentIds) public {
-        for (uint256 c; c &lt; _investmentIds.length; c = c.add(1)) {
+        for (uint256 c; c < _investmentIds.length; c = c.add(1)) {
             settleInvestment(_investmentIds[c]);
         }
     }
@@ -1341,7 +1341,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
      */
     function validPurchase() internal view returns (bool) {
         // minimal investment: 250 CHF (represented in wei)
-        require (msg.value &gt;= minContributionInWei);
+        require (msg.value >= minContributionInWei);
         return super.validPurchase();
     }
 }

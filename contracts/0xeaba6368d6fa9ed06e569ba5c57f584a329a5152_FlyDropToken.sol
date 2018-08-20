@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -139,7 +139,7 @@ contract FlyDropToken is Claimable {
         require(_destAddrs.length == _values.length);
 
         uint256 i = 0;
-        for (; i &lt; _destAddrs.length; i = i.add(1)) {
+        for (; i < _destAddrs.length; i = i.add(1)) {
             if (!erc20tk.transfer(_destAddrs[i], _values[i])) {
                 break;
             }
@@ -159,7 +159,7 @@ contract FlyDropToken is Claimable {
         require(_destAddrs.length == _values.length);
 
         uint256 i = 0;
-        for (; i &lt; _destAddrs.length; i = i.add(1)) {
+        for (; i < _destAddrs.length; i = i.add(1)) {
             if (!erc20tk.transferFrom(_from, _destAddrs[i], _values[i])) {
                 break;
             }
@@ -174,7 +174,7 @@ contract FlyDropToken is Claimable {
      * @param _ind uint the index of record
      */
     function getApproveRecord(uint _ind) onlyOwner public view returns (bytes) {
-        require(_ind &lt; approveRecords.length);
+        require(_ind < approveRecords.length);
 
         return approveRecords[_ind];
     }

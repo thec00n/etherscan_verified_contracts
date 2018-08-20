@@ -1,8 +1,8 @@
 /**
  * The Edgeless token contract complies with the ERC20 standard (see https://github.com/ethereum/EIPs/issues/20).
  * Additionally tokens can be locked for a defined time interval by token holders.
- * The owner&#39;s share of tokens is locked for the first 360 days and all tokens not
- * being sold during the crowdsale but 60.000.000 (owner&#39;s share + bounty program) are burned.
+ * The owner's share of tokens is locked for the first 360 days and all tokens not
+ * being sold during the crowdsale but 60.000.000 (owner's share + bounty program) are burned.
  * Author: Julia Altenried
  * */
 
@@ -19,13 +19,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -36,9 +36,9 @@ contract SafeMath {
 
 contract EdgelessToken is SafeMath {
     /* Public variables of the token */
-    string public standard = &#39;ERC20&#39;;
-    string public name = &#39;Edgeless&#39;;
-    string public symbol = &#39;EDG&#39;;
+    string public standard = 'ERC20';
+    string public name = 'Edgeless';
+    string public symbol = 'EDG';
     uint8 public decimals = 0;
     uint256 public totalSupply;
     uint256 public currentInterval = 1;
@@ -50,11 +50,11 @@ contract EdgelessToken is SafeMath {
     bool burned;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* Defines how many tokens of which addresses are locked in which interval*/
-    mapping(address =&gt; mapping(uint256=&gt;uint256)) public locked;
+    mapping(address => mapping(uint256=>uint256)) public locked;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -62,19 +62,19 @@ contract EdgelessToken is SafeMath {
     event Lock(address indexed owner, uint256 interval, uint256 value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract,
-    *  locks the owner&#39;s final share of tokens for the first 12 intervals. */
+    *  locks the owner's final share of tokens for the first 12 intervals. */
     function EdgelessToken() {
         owner = 0x003230BBE64eccD66f62913679C8966Cf9F41166;
         balanceOf[owner] = 500000000;              // Give the owner all initial tokens
         totalSupply = 500000000;                   // Update total supply
-        for(uint8 i = 1; i &lt; 13; i++)		   // lock owner&#39;s final share of tokens for the first 12 months
+        for(uint8 i = 1; i < 13; i++)		   // lock owner's final share of tokens for the first 12 months
         	locked[owner][i] = 50000000;
     }
 
     /* Send some of your tokens to a given address */
     function transfer(address _to, uint256 _value) returns (bool success){
-        if (now &lt; startTime) throw; //check if the crowdsale is already over
-        if (locked[msg.sender][getInterval()] &gt;= balanceOf[msg.sender] || balanceOf[msg.sender]-locked[msg.sender][getInterval()] &lt; _value) throw;   // Check if the sender has enough
+        if (now < startTime) throw; //check if the crowdsale is already over
+        if (locked[msg.sender][getInterval()] >= balanceOf[msg.sender] || balanceOf[msg.sender]-locked[msg.sender][getInterval()] < _value) throw;   // Check if the sender has enough
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender],_value);                     // Subtract from the sender
         balanceOf[_to] = safeAdd(balanceOf[_to],_value);                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -92,8 +92,8 @@ contract EdgelessToken is SafeMath {
     /* A contract or  person attempts to get the tokens of somebody else.
     *  This is only allowed if the token holder approved. */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (now &lt; startTime &amp;&amp; _from!=owner) throw; //check if the crowdsale is already over
-        if (locked[_from][getInterval()] &gt;= balanceOf[_from] || balanceOf[_from]-locked[_from][getInterval()] &lt; _value) throw;     // Check if the sender has enough
+        if (now < startTime && _from!=owner) throw; //check if the crowdsale is already over
+        if (locked[_from][getInterval()] >= balanceOf[_from] || balanceOf[_from]-locked[_from][getInterval()] < _value) throw;     // Check if the sender has enough
         var _allowance = allowance[_from][msg.sender];
         balanceOf[_from] = safeSub(balanceOf[_from],_value); // Subtract from the sender
         balanceOf[_to] = safeAdd(balanceOf[_to],_value);     // Add the same to the recipient
@@ -117,7 +117,7 @@ contract EdgelessToken is SafeMath {
     /* Increase the interval, if sufficient time has passed.
     *  When a new interval starts, all tokens are unlocked. */
     function getInterval() returns (uint256 interval){
-        if (now &gt; safeAdd(safeMul(currentInterval, intervalLength), startTime)) {
+        if (now > safeAdd(safeMul(currentInterval, intervalLength), startTime)) {
             currentInterval = (now - startTime) / intervalLength + 1;
         }
         return currentInterval;
@@ -129,7 +129,7 @@ contract EdgelessToken is SafeMath {
     *  this ensures that the owner will not posses a majority of the tokens. */
     function burn(){
     	//if tokens have not been burned already and the ICO ended
-    	if(!burned &amp;&amp; now&gt;startTime){
+    	if(!burned && now>startTime){
     		uint difference = safeSub(balanceOf[owner], 60000000);//checked for overflow above
     		balanceOf[owner] = 60000000;
     		totalSupply = safeSub(totalSupply, difference);

@@ -18,11 +18,11 @@ contract EtherShrimpFutures{
     uint256 public marketEggs;
     address public ceoAddress;
     uint256 public numberOfFarmers;
-    mapping (address =&gt; uint256) public hatcheryShrimp;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
-    mapping (address =&gt; uint256) public lastHatchPrice;
+    mapping (address => uint256) public hatcheryShrimp;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
+    mapping (address => uint256) public lastHatchPrice;
     address[] farmers;
     constructor() public{
         ceoAddress=msg.sender;
@@ -30,7 +30,7 @@ contract EtherShrimpFutures{
     }
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
@@ -48,7 +48,7 @@ contract EtherShrimpFutures{
         require(initialized);
         uint256 hasEggs=getMyEggs();
         uint256 eggValue=calculateEggSell(hasEggs,msg.sender);
-        require(eggValue&gt;0);
+        require(eggValue>0);
         uint256 fee=devFee(eggValue);
         claimedEggs[msg.sender]=0;
         lastHatch[msg.sender]=now;
@@ -77,7 +77,7 @@ contract EtherShrimpFutures{
         uint currentPrice = getPrice();
         uint diff = getDiff(currentPrice,lastHatchPrice[adr]);
         uint bonusFactor = SafeMath.mul(diff,7);
-        if(bonusFactor &gt; 1e18) {
+        if(bonusFactor > 1e18) {
             bonusFactor = 1e18; //at max stay true to original
         }
         return SafeMath.mul(sellValue,bonusFactor).div(1e18);
@@ -92,7 +92,7 @@ contract EtherShrimpFutures{
         return SafeMath.div(SafeMath.mul(amount,2),100);
     }
     function seedMarket(uint256 eggs) public payable{
-        require(msg.sender==ceoAddress &amp;&amp; eggs != 0);
+        require(msg.sender==ceoAddress && eggs != 0);
         require(marketEggs==0);
         initialized=true;
         marketEggs=eggs;
@@ -123,12 +123,12 @@ contract EtherShrimpFutures{
         return lastHatchPrice[adr];
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     function getDiff(uint256 a, uint256 b) public view returns(uint256) {
         uint change;
         uint diff;
-        if( a &gt;= b ) change = a - b;
+        if( a >= b ) change = a - b;
         else change = b - a;
         if( change != 0 ) diff = SafeMath.div(change*1e18, b); //b is the final value
         return diff;
@@ -149,7 +149,7 @@ contract EtherShrimpFutures{
     }
     function getPoolAvgHatchPrice() public view returns(uint256) {
         uint256 poolSum;
-        for(uint i=0; i&lt;farmers.length; i++) {
+        for(uint i=0; i<farmers.length; i++) {
             poolSum = SafeMath.add(lastHatchPrice[farmers[i]],poolSum);
         }
         return SafeMath.div(poolSum,farmers.length);
@@ -174,9 +174,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -184,7 +184,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -193,7 +193,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

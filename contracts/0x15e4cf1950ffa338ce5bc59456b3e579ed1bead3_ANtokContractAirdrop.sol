@@ -43,13 +43,13 @@ contract ERC20 is ERC20I {
 
     uint256 constant MAX_UINT256 = 2**256 - 1;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public
         returns (bool success)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -60,10 +60,10 @@ contract ERC20 is ERC20I {
         returns (bool success)
     {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -96,7 +96,7 @@ contract ANtokContractAirdrop is ERC20, OwnableToken
 {
     event Wasted(address to, uint256 value, uint256 date);  // Wasted(_to, _amount, now);
 
-    string public version = &#39;1.2&#39;; //Just an arbitrary versioning scheme.
+    string public version = '1.2'; //Just an arbitrary versioning scheme.
 
     uint8  public decimals;
     string public name;
@@ -106,13 +106,13 @@ contract ANtokContractAirdrop is ERC20, OwnableToken
     uint256 public holdersCount;
     uint256 public tokensSpent;
 
-    mapping (address =&gt; bool) bounty; // show who got bounty
+    mapping (address => bool) bounty; // show who got bounty
 
     /* Autoconstructor */
     function ANtokContractAirdrop() public payable {
         decimals = 18;  // Amount of decimals for display purposes
-        name = &quot;ALFA NTOK&quot;;  // Set the name for display purposes
-        symbol = &quot;аNTOK&quot;;  // Set the symbol for display purposes
+        name = "ALFA NTOK";  // Set the name for display purposes
+        symbol = "аNTOK";  // Set the symbol for display purposes
         balances[msg.sender] = 20180000 * 10 ** uint(decimals); // Give the creator promo tokens (100000 for example)
         balances[this] = 50000 * 10 ** uint(decimals); // Stay some tokens for bounty from contract
         totalSupply = balances[msg.sender] + balances[this]; // Update total supply (100000 for example)
@@ -125,8 +125,8 @@ contract ANtokContractAirdrop is ERC20, OwnableToken
     function massTransfer(address [] _holders) public onlyOwner {
 
         uint256 count = _holders.length;
-        assert(paySize * count &lt;= balanceOf(msg.sender));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize * count <= balanceOf(msg.sender));
+        for (uint256 i = 0; i < count; i++) {
             transfer(_holders [i], paySize);
         }
         Wasted(owner, tokensSpent, now);

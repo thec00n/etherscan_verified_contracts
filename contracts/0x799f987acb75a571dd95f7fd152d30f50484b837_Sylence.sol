@@ -4,9 +4,9 @@ contract Sylence {
 
   struct User {
     uint16 pubKeysCount;
-    mapping(uint16 =&gt; string) pubKeys;
+    mapping(uint16 => string) pubKeys;
   }
-  mapping(bytes28 =&gt; User) users;
+  mapping(bytes28 => User) users;
 
   address owner;
 

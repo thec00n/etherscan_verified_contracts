@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -80,16 +80,16 @@ contract MultiOwnable {
     uint m_numOwners;
     uint m_multiRequires;
 
-    mapping (bytes32 =&gt; uint) internal m_pendings;
+    mapping (bytes32 => uint) internal m_pendings;
 
-    // constructor is given number of sigs required to do protected &quot;multiOwner&quot; transactions
+    // constructor is given number of sigs required to do protected "multiOwner" transactions
     // as well as the selection of addresses capable of confirming them.
     function MultiOwnable (address[] _otherOwners, uint _multiRequires) internal {
-        require(0 &lt; _multiRequires &amp;&amp; _multiRequires &lt;= _otherOwners.length + 1);
+        require(0 < _multiRequires && _multiRequires <= _otherOwners.length + 1);
         m_numOwners = _otherOwners.length + 1;
-        require(m_numOwners &lt;= 8);   // 不支持大于8人
+        require(m_numOwners <= 8);   // 不支持大于8人
         m_owners[0] = msg.sender;
-        for (uint i = 0; i &lt; _otherOwners.length; ++i) {
+        for (uint i = 0; i < _otherOwners.length; ++i) {
             m_owners[1 + i] = _otherOwners[i];
         }
         m_multiRequires = _multiRequires;
@@ -102,7 +102,7 @@ contract MultiOwnable {
         }
     }
 
-    // Requiring num &gt; m_multiRequires owners, to approve the action
+    // Requiring num > m_multiRequires owners, to approve the action
     modifier mostOwner(bytes32 operation) {
         if (checkAndConfirm(msg.sender, operation)) {
             _;
@@ -110,7 +110,7 @@ contract MultiOwnable {
     }
 
     function isOwner(address currentOwner) internal view returns (bool) {
-        for (uint i = 0; i &lt; m_numOwners; ++i) {
+        for (uint i = 0; i < m_numOwners; ++i) {
             if (m_owners[i] == currentOwner) {
                 return true;
             }
@@ -121,7 +121,7 @@ contract MultiOwnable {
     function checkAndConfirm(address currentOwner, bytes32 operation) internal returns (bool) {
         uint ownerIndex = m_numOwners;
         uint i;
-        for (i = 0; i &lt; m_numOwners; ++i) {
+        for (i = 0; i < m_numOwners; ++i) {
             if (m_owners[i] == currentOwner) {
                 ownerIndex = i;
             }
@@ -133,12 +133,12 @@ contract MultiOwnable {
         uint newBitFinger = (m_pendings[operation] | (2 ** ownerIndex));
 
         uint confirmTotal = 0;
-        for (i = 0; i &lt; m_numOwners; ++i) {
-            if ((newBitFinger &amp; (2 ** i)) &gt; 0) {
+        for (i = 0; i < m_numOwners; ++i) {
+            if ((newBitFinger & (2 ** i)) > 0) {
                 confirmTotal ++;
             }
         }
-        if (confirmTotal &gt;= m_multiRequires) {
+        if (confirmTotal >= m_multiRequires) {
             delete m_pendings[operation];
             return true;
         }
@@ -194,14 +194,14 @@ contract ParcelXToken is ERC20, MultiOwnable, Pausable, Buyable, Convertible {
 
     using SafeMath for uint256;
   
-    string public constant name = &quot;TestGPX-name&quot;;
-    string public constant symbol = &quot;TestGPX-symbol&quot;;
+    string public constant name = "TestGPX-name";
+    string public constant symbol = "TestGPX-symbol";
     uint8 public constant decimals = 18;
     uint256 public constant TOTAL_SUPPLY = uint256(1000000000) * (uint256(10) ** decimals);  // 10,0000,0000
 
     address internal tokenPool;      // Use a token pool holding all GPX. Avoid using sender address.
-    mapping(address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function ParcelXToken(address[] _otherOwners, uint _multiRequires) 
         MultiOwnable(_otherOwners, _multiRequires) public {
@@ -218,7 +218,7 @@ contract ParcelXToken is ERC20, MultiOwnable, Pausable, Buyable, Convertible {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -233,8 +233,8 @@ contract ParcelXToken is ERC20, MultiOwnable, Pausable, Buyable, Convertible {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -261,7 +261,7 @@ contract ParcelXToken is ERC20, MultiOwnable, Pausable, Buyable, Convertible {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,18 +290,18 @@ contract ParcelXToken is ERC20, MultiOwnable, Pausable, Buyable, Convertible {
 
     // minimum of 0.001 ether for purchase in the public, pre-ico, and private sale
     function buy() payable whenNotPaused public returns (uint256) {
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
         uint256 tokens = msg.value.mul(buyRate);  // calculates the amount
-        require(balances[tokenPool] &gt;= tokens);               // checks if it has enough to sell
-        balances[tokenPool] = balances[tokenPool].sub(tokens);                        // subtracts amount from seller&#39;s balance
-        balances[msg.sender] = balances[msg.sender].add(tokens);                  // adds the amount to buyer&#39;s balance
+        require(balances[tokenPool] >= tokens);               // checks if it has enough to sell
+        balances[tokenPool] = balances[tokenPool].sub(tokens);                        // subtracts amount from seller's balance
+        balances[msg.sender] = balances[msg.sender].add(tokens);                  // adds the amount to buyer's balance
         Transfer(tokenPool, msg.sender, tokens);               // execute an event reflecting the change
         return tokens;                                    // ends function and returns
     }
 
     // gets called when no other function matches
     function () public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             buy();
             Deposit(msg.sender, msg.value);
         }
@@ -317,11 +317,11 @@ contract ParcelXToken is ERC20, MultiOwnable, Pausable, Buyable, Convertible {
      * FEATURE 5): Convertible implements
      */
     function convertMainchainGPX(string destinationAccount, string extra) external returns (bool) {
-        require(bytes(destinationAccount).length &gt; 10 &amp;&amp; bytes(destinationAccount).length &lt; 128);
-        require(balances[msg.sender] &gt; 0);
+        require(bytes(destinationAccount).length > 10 && bytes(destinationAccount).length < 128);
+        require(balances[msg.sender] > 0);
         uint256 amount = balances[msg.sender];
         balances[msg.sender] = 0;
-        balances[tokenPool] = balances[tokenPool].add(amount);   // recycle ParcelX to tokenPool&#39;s init account
+        balances[tokenPool] = balances[tokenPool].add(amount);   // recycle ParcelX to tokenPool's init account
         Converted(msg.sender, destinationAccount, amount, extra);
         return true;
     }

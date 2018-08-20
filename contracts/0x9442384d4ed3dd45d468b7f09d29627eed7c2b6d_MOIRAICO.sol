@@ -5,7 +5,7 @@ Moira ICO Contract
 MOI is an ERC-20 Token Standar Compliant
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="61074f000f150e0f080e4f000a040d21060c00080d4f020e0c">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="61074f000f150e0f080e4f000a040d21060c00080d4f020e0c">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -23,7 +23,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -53,7 +53,7 @@ contract MOIRAICO {
     32200,35420,38640  //+0%,+10%,+20%
     ];
 
-    mapping (address =&gt; uint) balances; //balances mapping
+    mapping (address => uint) balances; //balances mapping
     //public variables
     uint public totalRaised;
     uint public currentBalance;
@@ -106,7 +106,7 @@ contract MOIRAICO {
 
     function contribute() public notFinished payable {
 
-        require(msg.value &gt; 1 finney); //minimun contribution
+        require(msg.value > 1 finney); //minimun contribution
 
         uint tokenBought;
         totalRaised =SafeMath.add(totalRaised, msg.value);
@@ -114,11 +114,11 @@ contract MOIRAICO {
         /**
          * Here price logic is made
          */
-        if(state == State.Preico &amp;&amp; now &lt; (startTime + 1 days)){ //if we are on preico first day
-            if(msg.value &lt; 10 ether){ //if the amount is less than 10 ether
+        if(state == State.Preico && now < (startTime + 1 days)){ //if we are on preico first day
+            if(msg.value < 10 ether){ //if the amount is less than 10 ether
                 tokenBought = SafeMath.mul(msg.value,tablePrices[0]);
             }
-            else if(msg.value &lt; 20 ether){//if the amount is more than 10 ether and less than 20
+            else if(msg.value < 20 ether){//if the amount is more than 10 ether and less than 20
                 tokenBought = SafeMath.mul(msg.value,tablePrices[1]);
             }
             else{//if the amount is more than 20 ether
@@ -126,10 +126,10 @@ contract MOIRAICO {
             }
         }
         else if(state == State.Preico) {//if we are on preico normal days
-            if(msg.value &lt; 10 ether){ //if the amount is less than 10 ether
+            if(msg.value < 10 ether){ //if the amount is less than 10 ether
                 tokenBought = SafeMath.mul(msg.value,tablePrices[3]);
             }
-            else if(msg.value &lt; 20 ether){//if the amount is more than 10 ether and less than 20
+            else if(msg.value < 20 ether){//if the amount is more than 10 ether and less than 20
                 tokenBought = SafeMath.mul(msg.value,tablePrices[4]);
             }
             else{//if the amount is more than 20 ether
@@ -137,10 +137,10 @@ contract MOIRAICO {
             }
         }
         else{//if we are on ico
-            if(msg.value &lt; 10 ether){ //if the amount is less than 10 ether
+            if(msg.value < 10 ether){ //if the amount is less than 10 ether
                 tokenBought = SafeMath.mul(msg.value,tablePrices[6]);
             }
-            else if(msg.value &lt; 20 ether){//if the amount is more than 10 ether and less than 20
+            else if(msg.value < 20 ether){//if the amount is more than 10 ether and less than 20
                 tokenBought = SafeMath.mul(msg.value,tablePrices[7]);
             }
             else{//if the amount is more than 20 ether
@@ -158,12 +158,12 @@ contract MOIRAICO {
 
     function checkIfFundingCompleteOrExpired() public {
         
-        if(now &lt; ICOdeadline &amp;&amp; state!=State.Successful){
-            if(now &gt; preICODeadline &amp;&amp; state==State.Preico){
+        if(now < ICOdeadline && state!=State.Successful){
+            if(now > preICODeadline && state==State.Preico){
                 state = State.Ico;    
             }
         }
-        else if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful) {
+        else if(now > ICOdeadline && state!=State.Successful) {
             state = State.Successful;
             completedAt = now;
             LogFundingSuccessful(totalRaised);
@@ -193,7 +193,7 @@ contract MOIRAICO {
     }
 
     function () public payable {
-        require(msg.value &gt; 1 finney);
+        require(msg.value > 1 finney);
         contribute();
     }
 }

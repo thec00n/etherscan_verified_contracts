@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -154,13 +154,13 @@ contract Subscription is Ownable {
     /// @dev Owner address.
     address owner;
 
-    /// @dev Timestamp of when Membership expires UserId=&gt;timestamp of expire.
-    mapping(uint256 =&gt; uint256) subscriptionExpiration;
+    /// @dev Timestamp of when Membership expires UserId=>timestamp of expire.
+    mapping(uint256 => uint256) subscriptionExpiration;
 
     Pricing[] prices;
   }
 
-  mapping(uint256 =&gt; Application) public applications;
+  mapping(uint256 => Application) public applications;
 
   /**
    * Event for subscription purchase logging
@@ -194,7 +194,7 @@ contract Subscription is Ownable {
   {
     require(_token != address(0));
     require(_fundWallet != address(0));
-    require(_fee &gt; 0);
+    require(_fee > 0);
     token = _token;
     wallet = _fundWallet;
     fee = _fee;
@@ -204,13 +204,13 @@ contract Subscription is Ownable {
   function renewSubscriptionByDays(uint256 _appId, uint256 _userId, uint _day) external {
     Application storage app = applications[_appId];
     require(app.appId == _appId);
-    require(_day &gt;= 1);
+    require(_day >= 1);
     uint256 amount = getPrice(_appId, _day);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     uint256 currentExpiration = app.subscriptionExpiration[_userId];
     // If their membership already expired...
-    if (currentExpiration &lt; now) {
+    if (currentExpiration < now) {
       // ...use `now` as the starting point of their new subscription
       currentExpiration = now;
     }
@@ -234,8 +234,8 @@ contract Subscription is Ownable {
     address _beneficiary)
   external
   {
-    require(_appName != &quot;&quot;);
-    require(_price &gt; 0);
+    require(_appName != "");
+    require(_price > 0);
     require(_beneficiary != address(0));
     lastAppId = lastAppId.add(1);
     Application storage app = applications[lastAppId];
@@ -259,9 +259,9 @@ contract Subscription is Ownable {
     Application storage app = applications[_appId];
     require(app.owner == msg.sender);
     app.prices.length = 0;
-    for (uint i = 0; i &lt; _days.length; i++) {
-      require(_days[i] &gt; 0);
-      require(_prices[i] &gt; 0);
+    for (uint i = 0; i < _days.length; i++) {
+      require(_days[i] > 0);
+      require(_prices[i] > 0);
       app.prices.push(Pricing({
         day : _days[i],
         price : _prices[i]
@@ -282,14 +282,14 @@ contract Subscription is Ownable {
   function getPrice(uint256 _appId, uint256 _day) public view returns (uint256) {
     Application storage app = applications[_appId];
     uint256 amount = UINT256_MAX;
-    for (uint i = 0; i &lt; app.prices.length; i++) {
+    for (uint i = 0; i < app.prices.length; i++) {
       if (_day == app.prices[i].day) {
         amount = app.prices[i].price;
         return amount;
-      } else if (_day &gt; app.prices[i].day) {
+      } else if (_day > app.prices[i].day) {
         uint256 rate = app.prices[i].price.div(app.prices[i].day);
         uint256 amountInPrice = _day.mul(rate);
-        if (amountInPrice &lt; amount) {
+        if (amountInPrice < amount) {
           amount = amountInPrice;
         }
       }

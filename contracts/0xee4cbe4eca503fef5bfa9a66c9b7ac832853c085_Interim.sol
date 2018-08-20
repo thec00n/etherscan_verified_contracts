@@ -63,11 +63,11 @@ contract Interim {
 
     // we can call this function to check the status of both crowdsale and blocklord
     function checkStatus () public returns(uint raisedBL, uint raisedCS, uint total, uint required, bool goalReached){
-      raisedBL = s.getUInt(keccak256(address(this), &quot;balance&quot;));
+      raisedBL = s.getUInt(keccak256(address(this), "balance"));
       raisedCS = CS.weiRaised();
       total = raisedBL + raisedCS;
       required = CS.goal();
-      goalReached = total &gt;= required;
+      goalReached = total >= required;
     }
 
     function completeContract (bool toSplit) public payable {
@@ -78,7 +78,7 @@ contract Interim {
       uint feeDue;
       if (toSplit == false) {
         feeDue = 20000 / rate * 1000000000000000000; // fee due in Wei
-        require(msg.value &gt;= feeDue);
+        require(msg.value >= feeDue);
       }
       BL.withdraw(); // withdraw ETH from Blocklord contract to Interim contract
        if (goalReached) { // if goal reached

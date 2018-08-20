@@ -16,7 +16,7 @@ contract GreedPit {
     uint timeOfLastDeposit = now;
     address private hero = 0x0;
     
-    mapping (address =&gt; User) private users;
+    mapping (address => User) private users;
     Entry[] private entries;
     
     event Jump(address who, uint deposit, uint payout);
@@ -51,15 +51,15 @@ contract GreedPit {
     }
     
     function init() private{
-        //Only deposits &gt;0.1ETH are allowed to join
-        if (msg.value &lt; 100 finney) {
+        //Only deposits >0.1ETH are allowed to join
+        if (msg.value < 100 finney) {
             return;
         }
         
         jumpIn();
         
         //Prevent cheap trolls from reviving the pit if it dies (death = ~3months without deposits)
-        if (msg.value &gt; 5)
+        if (msg.value > 5)
             timeOfLastDeposit = now;
     }
     
@@ -68,31 +68,31 @@ contract GreedPit {
         
         //Limit deposits to 50ETH
 		uint dValue = 100 finney;
-		if (msg.value &gt; 50 ether) {
+		if (msg.value > 50 ether) {
 		    //Make sure we receied the money before refunding the surplus
-		    if (this.balance &gt;= balance + collectedFees + msg.value)
+		    if (this.balance >= balance + collectedFees + msg.value)
 			    msg.sender.send(msg.value - 50 ether);	
 			dValue = 50 ether;
 		}
 		else { dValue = msg.value; }
 
-        //Add new users to the users array if he&#39;s a new player
+        //Add new users to the users array if he's a new player
         addNewUser(msg.sender);
         
         //Make sure that only up to 5 rescue tokens are spent at a time
-        uint tokensToUse = users[msg.sender].rescueTokens &gt;= 5 ? 5 : users[msg.sender].rescueTokens;
+        uint tokensToUse = users[msg.sender].rescueTokens >= 5 ? 5 : users[msg.sender].rescueTokens;
         uint tokensUsed = 0;
         
         //Enforce lower payouts if too many people stuck in the pit
         uint randMultiplier = rand(50);
         uint currentEntries = entries.length - payoutOrder;
-        randMultiplier = currentEntries &gt; 15 ? (randMultiplier / 2) : randMultiplier;
-        randMultiplier = currentEntries &gt; 25 ? 0 : randMultiplier;
+        randMultiplier = currentEntries > 15 ? (randMultiplier / 2) : randMultiplier;
+        randMultiplier = currentEntries > 25 ? 0 : randMultiplier;
         //Incentive to join if the pit is nearly empty (+50% random multiplier)
-        randMultiplier = currentEntries &lt;= 5 &amp;&amp; dValue &lt;= 20 ? randMultiplier * 3 / 2 : randMultiplier;
+        randMultiplier = currentEntries <= 5 && dValue <= 20 ? randMultiplier * 3 / 2 : randMultiplier;
         
         //Calculate the optimal amount of rescue tokens to spend
-        while (tokensToUse &gt; 0 &amp;&amp; (baseMultiplier + randMultiplier + tokensUsed*10) &lt; maxMultiplier)
+        while (tokensToUse > 0 && (baseMultiplier + randMultiplier + tokensUsed*10) < maxMultiplier)
         {
             tokensToUse--;
             tokensUsed++;
@@ -100,17 +100,17 @@ contract GreedPit {
         
         uint finalMultiplier = (baseMultiplier + randMultiplier + tokensUsed*10);
         
-        if (finalMultiplier &gt; maxMultiplier)
+        if (finalMultiplier > maxMultiplier)
             finalMultiplier = maxMultiplier;
             
         //Add new entry to the entries array    
-        if (msg.value &lt; 50 ether)
+        if (msg.value < 50 ether)
             entries.push(Entry(msg.sender, msg.value, (msg.value * (finalMultiplier) / 100), tokensUsed));
         else
             entries.push(Entry(msg.sender, 50 ether,((50 ether) * (finalMultiplier) / 100), tokensUsed));
 
         //Trigger jump event
-        if (msg.value &lt; 50 ether)
+        if (msg.value < 50 ether)
             Jump(msg.sender, msg.value, (msg.value * (finalMultiplier) / 100));
         else
             Jump(msg.sender, 50 ether, ((50 ether) * (finalMultiplier) / 100));
@@ -124,7 +124,7 @@ contract GreedPit {
         bool saviour = false;
         
         //Pay pending entries if the new balance allows for it
-        while (balance &gt; entries[payoutOrder].payout) {
+        while (balance > entries[payoutOrder].payout) {
             
             saviour = false;
             
@@ -133,14 +133,14 @@ contract GreedPit {
             uint profit = entryPayout - entryDeposit;
             uint saviourShare = 0;
             
-            //Give credit &amp; reward for the rescue if the user saved someone else
+            //Give credit & reward for the rescue if the user saved someone else
             if (users[msg.sender].addr != entries[payoutOrder].entryAddress)
             {
                 users[msg.sender].rescueCount++;
                 //Double or triple token bonus if the user is taking a moderate/high risk to help those trapped
-                if (entryDeposit &gt;= 1 ether) {
-                    users[msg.sender].rescueTokens += dValue &lt; 20 || currentEntries &lt; 15 ? 1 : 2;
-                    users[msg.sender].rescueTokens += dValue &lt; 40 || currentEntries &lt; 25 ? 0 : 1;
+                if (entryDeposit >= 1 ether) {
+                    users[msg.sender].rescueTokens += dValue < 20 || currentEntries < 15 ? 1 : 2;
+                    users[msg.sender].rescueTokens += dValue < 40 || currentEntries < 25 ? 0 : 1;
                 }
                 saviour = true;
             }
@@ -150,15 +150,15 @@ contract GreedPit {
             isHero = entries[payoutOrder].entryAddress == hero;
             
             //Share profit with saviour if the gain is substantial enough and the saviour invested enough (hero exempt)
-            if (saviour &amp;&amp; !isHero &amp;&amp; profit &gt; 20 * entryDeposit / 100 &amp;&amp; profit &gt; 100 finney &amp;&amp; dValue &gt;= 5 ether)
+            if (saviour && !isHero && profit > 20 * entryDeposit / 100 && profit > 100 finney && dValue >= 5 ether)
             {
-                if (dValue &lt; 10 ether)
+                if (dValue < 10 ether)
                    saviourShare = 3 + rand(5);
-                else if (dValue &gt;= 10 ether &amp;&amp; dValue &lt; 25 ether)
+                else if (dValue >= 10 ether && dValue < 25 ether)
                   saviourShare = 7 + rand(8);
-                else if (dValue &gt;= 25 ether &amp;&amp; dValue &lt; 40 ether)
+                else if (dValue >= 25 ether && dValue < 40 ether)
                    saviourShare = 12 + rand(13);
-                else if (dValue &gt;= 40 ether)
+                else if (dValue >= 40 ether)
                    saviourShare = rand(50);
                    
                 saviourShare *= profit / 100;
@@ -180,7 +180,7 @@ contract GreedPit {
         }
         
         //Check for new Hero of the Pit
-        if (saviour &amp;&amp; users[msg.sender].rescueCount &gt; rescueRecord)
+        if (saviour && users[msg.sender].rescueCount > rescueRecord)
         {
             rescueRecord = users[msg.sender].rescueCount;
             hero = msg.sender;
@@ -189,7 +189,7 @@ contract GreedPit {
         }
     }
     
-    //Generate random number between 1 &amp; max
+    //Generate random number between 1 & max
     uint256 constant private FACTOR =  1157920892373161954235709850086879078532699846656405640394575840079131296399;
     function rand(uint max) constant private returns (uint256 result){
         uint256 factor = FACTOR * 100 / max;
@@ -205,7 +205,7 @@ contract GreedPit {
         {
             users[Address].id = ++uniqueUsers;
             users[Address].addr = Address;
-            users[Address].nickname = &#39;UnnamedPlayer&#39;;
+            users[Address].nickname = 'UnnamedPlayer';
             users[Address].rescueCount = 0;
             users[Address].rescueTokens = 0;
         }
@@ -225,19 +225,19 @@ contract GreedPit {
     }
     
     function changeBaseMultiplier(uint multi) onlyowner {
-        if (multi &lt; 110 || multi &gt; 150) throw;
+        if (multi < 110 || multi > 150) throw;
         
         baseMultiplier = multi;
     }
     
     function changeMaxMultiplier(uint multi) onlyowner {
-        if (multi &lt; 200 || multi &gt; 300) throw;
+        if (multi < 200 || multi > 300) throw;
         
         maxMultiplier = multi;
     }
     
     function changeFee(uint fee) onlyowner {
-        if (fee &lt; 0 || fee &gt; 10) throw;
+        if (fee < 0 || fee > 10) throw;
         
         jumpFee = fee;
     }
@@ -247,20 +247,20 @@ contract GreedPit {
     function setNickname(string name) {
         addNewUser(msg.sender);
         
-        if (bytes(name).length &gt;= 2 &amp;&amp; bytes(name).length &lt;= 16)
+        if (bytes(name).length >= 2 && bytes(name).length <= 16)
             users[msg.sender].nickname = name;
     }
     
     function currentBalance() constant returns (uint pitBalance, string info) {
         pitBalance = balance / 1 finney;
-        info = &#39;The balance of the pit in Finneys (contract balance minus fees).&#39;;
+        info = 'The balance of the pit in Finneys (contract balance minus fees).';
     }
     
     function heroOfThePit() constant returns (address theHero, string nickname, uint peopleSaved, string info) {
         theHero = hero;  
         nickname = users[theHero].nickname;
         peopleSaved = rescueRecord;
-        info = &#39;The current rescue record holder. All hail!&#39;;
+        info = 'The current rescue record holder. All hail!';
     }
     
     function userName(address Address) constant returns (string nickname) {
@@ -269,84 +269,84 @@ contract GreedPit {
     
     function totalRescues() constant returns (uint rescueCount, string info) {
         rescueCount = rescues;
-        info = &#39;The number of times that people have been rescued from the pit (aka the number of times people made a profit).&#39;;
+        info = 'The number of times that people have been rescued from the pit (aka the number of times people made a profit).';
     }
     
     function multipliers() constant returns (uint BaseMultiplier, uint MaxMultiplier, string info) {
         BaseMultiplier = baseMultiplier;
         MaxMultiplier = maxMultiplier;
-        info = &#39;The multipliers applied to all deposits: the final multiplier is a random number between the multpliers shown divided by 100. By default x1.1~x1.5 (up to x2 if rescue tokens are used, granting +0.1 per token). It determines the amount of money you will get when rescued (a saviour share might be deducted).&#39;;
+        info = 'The multipliers applied to all deposits: the final multiplier is a random number between the multpliers shown divided by 100. By default x1.1~x1.5 (up to x2 if rescue tokens are used, granting +0.1 per token). It determines the amount of money you will get when rescued (a saviour share might be deducted).';
     }
     
     function pitFee() constant returns (uint feePercentage, string info) {
         feePercentage = jumpFee;
-        info = &#39;The fee percentage applied to all deposits. It can change to speed payouts (max 10%).&#39;;
+        info = 'The fee percentage applied to all deposits. It can change to speed payouts (max 10%).';
     }
     
     function nextPayoutGoal() constant returns (uint finneys, string info) {
         finneys = (entries[payoutOrder].payout - balance) / 1 finney;
-        info = &#39;The amount of Finneys (Ethers * 1000) that need to be deposited for the next payout to be executed.&#39;;
+        info = 'The amount of Finneys (Ethers * 1000) that need to be deposited for the next payout to be executed.';
     }
     
     function unclaimedFees() constant returns (uint ethers, string info) {
         ethers = collectedFees / 1 ether;
-        info = &#39;The amount of Ethers obtained through fees that have not yet been collected by the owner.&#39;;
+        info = 'The amount of Ethers obtained through fees that have not yet been collected by the owner.';
     }
     
     function totalEntries() constant returns (uint count, string info) {
         count = entries.length;
-        info = &#39;The number of times that people have jumped into the pit.&#39;;
+        info = 'The number of times that people have jumped into the pit.';
     }
     
     function totalUsers() constant returns (uint users, string info) {
         users = uniqueUsers;
-        info = &#39;The number of unique users that have joined the pit.&#39;;
+        info = 'The number of unique users that have joined the pit.';
     }
     
     function awaitingPayout() constant returns (uint count, string info) {
         count = entries.length - payoutOrder;
-        info = &#39;The number of people waiting to be saved.&#39;;
+        info = 'The number of people waiting to be saved.';
     }
     
     function entryDetails(uint index) constant returns (address user, string nickName, uint deposit, uint payout, uint tokensUsed, string info)
     {
-        if (index &lt;= entries.length) {
+        if (index <= entries.length) {
             user = entries[index].entryAddress;
             nickName = users[entries[index].entryAddress].nickname;
             deposit = entries[index].deposit / 1 finney;
             payout = entries[index].payout / 1 finney;
             tokensUsed = entries[index].tokens;
-            info = &#39;Entry info: user address, name, expected payout in Finneys (approximate), rescue tokens used.&#39;;
+            info = 'Entry info: user address, name, expected payout in Finneys (approximate), rescue tokens used.';
         }
     }
     
     function userId(address user) constant returns (uint id, string info) {
         id = users[user].id;
-        info = &#39;The id of the user, represents the order in which he first joined the pit.&#39;;
+        info = 'The id of the user, represents the order in which he first joined the pit.';
     }
     
     function userTokens(address user) constant returns (uint tokens, string info) {
         tokens = users[user].addr != address(0x0) ? users[user].rescueTokens : 0;
-        info = &#39;The number of Rescue Tokens the user has. Tokens are awarded when your deposits save people, and used automatically on your next deposit. They provide a 0.1 multiplier increase per token. (+0.5 max)&#39;;
+        info = 'The number of Rescue Tokens the user has. Tokens are awarded when your deposits save people, and used automatically on your next deposit. They provide a 0.1 multiplier increase per token. (+0.5 max)';
     }
     
     function userRescues(address user) constant returns(uint rescueCount, string info) {
         rescueCount = users[user].addr != address(0x0) ? users[user].rescueCount : 0;
-        info = &#39;The number of times the user has rescued someone from the pit.&#39;;
+        info = 'The number of times the user has rescued someone from the pit.';
     }
     
     function userProfits() constant returns(uint profits, string info) {
         profits = usersProfits / 1 finney;
-        info = &#39;The combined earnings of all users in Finney.&#39;;
+        info = 'The combined earnings of all users in Finney.';
     }
     
-    //Destroy the contract after ~3 months of inactivity at the owner&#39;s discretion
+    //Destroy the contract after ~3 months of inactivity at the owner's discretion
     function recycle() onlyowner
     {
-        if (now &gt;= timeOfLastDeposit + 10 weeks) 
+        if (now >= timeOfLastDeposit + 10 weeks) 
         { 
             //Refund the current balance
-            if (balance &gt; 0) 
+            if (balance > 0) 
             {
                 entries[0].entryAddress.send(balance);
             }

@@ -3,10 +3,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        assert(b &lt;= a);
+        assert(b <= a);
         c = a - b;
     }
 }
@@ -18,8 +18,8 @@ interface tokenRecipient {
 contract WhaleConfig {
     using SafeMath for uint;
 
-    string internal constant TOKEN_NAME     = &quot;Whale Chain&quot;;
-    string internal constant TOKEN_SYMBOL   = &quot;WAT&quot;;
+    string internal constant TOKEN_NAME     = "Whale Chain";
+    string internal constant TOKEN_SYMBOL   = "WAT";
     uint8  internal constant TOKEN_DECIMALS = 18;
     uint   internal constant INITIAL_SUPPLY = 20*1e8 * 10 ** uint(TOKEN_DECIMALS);
 }
@@ -53,7 +53,7 @@ contract Ownable is WhaleConfig {
 }
 
 contract Lockable is Ownable {
-    mapping (address =&gt; bool) public locked;
+    mapping (address => bool) public locked;
     
     event LogLockup(address indexed target);
     
@@ -79,8 +79,8 @@ contract TokenERC20 {
     uint8 public decimals;
     uint public totalSupply;
     
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event ERC20Token(address indexed owner, string name, string symbol, uint8 decimals, uint supply);
     event Transfer(address indexed from, address indexed to, uint value);
@@ -105,8 +105,8 @@ contract TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal returns (bool success) {
         require(_to != address(0));
-        require(balanceOf[_from] &gt;= _value);
-        require(SafeMath.add(balanceOf[_to], _value) &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(SafeMath.add(balanceOf[_to], _value) > balanceOf[_to]);
         
         uint previousBalances = SafeMath.add(balanceOf[_from], balanceOf[_to]);
         balanceOf[_from] = balanceOf[_from].sub(_value);
@@ -123,7 +123,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
@@ -153,9 +153,9 @@ contract TokenERC20 {
 }
 
 contract WhaleToken is Lockable, TokenERC20 {
-    string public version = &quot;v1.0.1&quot;;
+    string public version = "v1.0.1";
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event LogFrozenAccount(address indexed target, bool frozen);
     event LogBurn(address indexed owner, uint value);

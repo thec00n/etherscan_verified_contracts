@@ -17,30 +17,30 @@ contract ERC20 {
 contract SafeMath {
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
 }
 
 }
@@ -48,13 +48,13 @@ contract SafeMath {
 
 contract Rune is ERC20, SafeMath {
 
-    string public constant name = &quot;Rune&quot;;
-    string public constant symbol = &quot;RUNE&quot;;
+    string public constant name = "Rune";
+    string public constant symbol = "RUNE";
     uint256 public constant decimals = 18;
     uint256 public constant totalTokens = 1000000000 * (10 ** decimals);
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
      constructor () public {
         balances[msg.sender] = totalTokens;

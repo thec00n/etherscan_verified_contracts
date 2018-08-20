@@ -1,15 +1,15 @@
 pragma solidity ^0.4.0;
 
 /**
- * Author: Nick Johnson &lt;arachnid at notdot.net&gt;
+ * Author: Nick Johnson <arachnid at notdot.net>
  * 
- * WARNING: This contract is new and thus-far only lightly tested. I&#39;m fairly
+ * WARNING: This contract is new and thus-far only lightly tested. I'm fairly
  * confident it operates as described, but you may want to assure yourself of
  * its correctness - or wait for others to do so for you - before you trust your
  * ether to it. No guarantees, express or implied, are provided - use at your
  * own risk.
  * 
- * @dev Ether vault contract. Stores ether with a &#39;time lock&#39; on withdrawals,
+ * @dev Ether vault contract. Stores ether with a 'time lock' on withdrawals,
  *      giving a user the chance to reclaim funds if an account is compromised.
  *      A recovery address has the ability to immediately destroy the wallet and
  *      send its funds to a new contract (such as a new vault, if the wallet)
@@ -24,8 +24,8 @@ pragma solidity ^0.4.0;
  * 
  * Deposits:
  *   Simply deposit funds into this contract by sending them to them. This
- *   contract only uses the minimum gas stipend, so it&#39;s safe to use with
- *   sites that &quot;don&#39;t support smart contracts&quot;.
+ *   contract only uses the minimum gas stipend, so it's safe to use with
+ *   sites that "don't support smart contracts".
  * 
  * Withdrawals:
  *   Call unvault() with the amount you wish to withdraw (in wei - one ether is
@@ -67,7 +67,7 @@ contract Vault {
 
     /**
      * @dev Earliest time at which a withdrawal can be made.
-     *      Valid iff withdrawAmount &gt; 0.
+     *      Valid iff withdrawAmount > 0.
      */
     uint public withdrawTime;
     
@@ -120,7 +120,7 @@ contract Vault {
     }
     
     function max(uint a, uint b) internal returns (uint) {
-        if(a &gt; b)
+        if(a > b)
             return a;
         return b;
     }
@@ -132,11 +132,11 @@ contract Vault {
      * @param amount The amount requested for withdrawal.
      */
     function unvault(uint amount) only_owner {
-        if(amount &gt; this.balance)
+        if(amount > this.balance)
             throw;
             
-        // Update the withdraw time if we&#39;re withdrawing more than previously.
-        if(amount &gt; withdrawAmount)
+        // Update the withdraw time if we're withdrawing more than previously.
+        if(amount > withdrawAmount)
             withdrawTime = max(withdrawTime, block.timestamp + withdrawDelay);
         
         withdrawAmount = amount;
@@ -148,7 +148,7 @@ contract Vault {
      *      required interval has elapsed.
      */
     function withdraw() only_owner {
-        if(block.timestamp &lt; withdrawTime || withdrawAmount == 0)
+        if(block.timestamp < withdrawTime || withdrawAmount == 0)
             throw;
         
         uint amount = withdrawAmount;
@@ -179,7 +179,7 @@ contract Vault {
     }
     
     function() payable {
-        if(msg.value &gt; 0)
+        if(msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 }

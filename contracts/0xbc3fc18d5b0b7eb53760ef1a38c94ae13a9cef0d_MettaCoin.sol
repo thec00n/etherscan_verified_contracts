@@ -1,7 +1,7 @@
 /**
- * @title METTA platform token &amp; preICO crowdsale implementasion
- * @author Maxim Akimov - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7b7a696c6b66737a6c70796b687e6d7a5f78727e7673317c7072">[email&#160;protected]</a>&gt;
- * @author Dmitrii Bykov - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3052495b5f5656545e70575d51595c1e535f5d">[email&#160;protected]</a>&gt;
+ * @title METTA platform token & preICO crowdsale implementasion
+ * @author Maxim Akimov - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7b7a696c6b66737a6c70796b687e6d7a5f78727e7673317c7072">[email protected]</a>>
+ * @author Dmitrii Bykov - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3052495b5f5656545e70575d51595c1e535f5d">[email protected]</a>>
  */
 
 pragma solidity ^0.4.18;
@@ -19,20 +19,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
   
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
     
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	/**
 	* @dev transfer token for a specified address
@@ -102,7 +102,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	/**
 	* @dev Transfer tokens from one address to another
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, BasicToken {
 		var _allowance = allowed[_from][msg.sender];
 
 		// Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-		// require (_value &lt;= _allowance);
+		// require (_value <= _allowance);
 
 		balances[_to] = balances[_to].add(_value);
 		balances[_from] = balances[_from].sub(_value);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -210,7 +210,7 @@ contract BurnableToken is StandardToken, Ownable {
 	* @param _value The amount of token to be burned.
 	*/
 	function burn(uint256 _value) public onlyOwner {
-		require(_value &gt; 0);
+		require(_value > 0);
 
 		address burner = msg.sender;    
 										
@@ -226,8 +226,8 @@ contract BurnableToken is StandardToken, Ownable {
  
 contract MettaCoin is BurnableToken {
  
-	string public constant name = &quot;TOKEN METTA&quot;;   
-	string public constant symbol = &quot;METTA&quot;;   
+	string public constant name = "TOKEN METTA";   
+	string public constant symbol = "METTA";   
 	uint32 public constant decimals = 18;    
 	uint256 public constant initialSupply = 300000000 * 1 ether;
 

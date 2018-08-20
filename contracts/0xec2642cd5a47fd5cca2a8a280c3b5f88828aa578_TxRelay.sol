@@ -1,21 +1,21 @@
 pragma solidity 0.4.15;
 
 
-// This contract is meant as a &quot;singleton&quot; forwarding contract.
+// This contract is meant as a "singleton" forwarding contract.
 // Eventually, it will be able to forward any transaction to
 // Any contract that is built to accept it.
 contract TxRelay {
 
     // Note: This is a local nonce.
     // Different from the nonce defined w/in protocol.
-    mapping(address =&gt; uint) nonce;
+    mapping(address => uint) nonce;
 
     // This mapping specifies a whitelist of allowed senders for transactions.
     // There can be one whitelist per ethereum account, which is the owner of that
     // whitelist. Users can specify which whitelist they want to use when signing
     // a transaction. They can use their own whitelist, a whitelist belonging
     // to another account, or skip using a whitelist by specifying the zero address.
-    mapping(address =&gt; mapping(address =&gt; bool)) public whitelist;
+    mapping(address => mapping(address => bool)) public whitelist;
 
     /*
      * @dev Relays meta transactions
@@ -58,7 +58,7 @@ contract TxRelay {
      (Optimization based on work by tjade273)
      */
     function getAddress(bytes b) public constant returns (address a) {
-        if (b.length &lt; 36) return address(0);
+        if (b.length < 36) return address(0);
         assembly {
             let mask := 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
             a := and(mask, mload(add(b, 36)))
@@ -100,7 +100,7 @@ contract TxRelay {
      * @param newStatus whether to add or remove addresses
      */
     function updateWhitelist(address[] sendersToUpdate, bool newStatus) private {
-        for (uint i = 0; i &lt; sendersToUpdate.length; i++) {
+        for (uint i = 0; i < sendersToUpdate.length; i++) {
             whitelist[msg.sender][sendersToUpdate[i]] = newStatus;
         }
     }

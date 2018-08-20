@@ -33,10 +33,10 @@ contract Crowdsale {
 
 	function() payable {
 		tokenFree = sharesTokenAddress.balanceOf(this); // free tokens count
-		if (now &lt; startICO) {
+		if (now < startICO) {
 		    msg.sender.transfer(msg.value);
 		}
-		else if (now &gt; (stopICO + 1)) {
+		else if (now > (stopICO + 1)) {
 			msg.sender.transfer(msg.value); // if crowdsale closed - cash back
 			crowdsaleClosed = true;
 		} 
@@ -45,18 +45,18 @@ contract Crowdsale {
 		} 
 		else {
 			uint256 tokenToBuy = msg.value / price * coeff; // tokens to buy
-			require(tokenToBuy &gt; 0);
+			require(tokenToBuy > 0);
 			uint256 actualETHTransfer = tokenToBuy * price / coeff;
-			if (tokenFree &gt;= tokenToBuy) { // free tokens &gt;= tokens to buy, sell tokens
+			if (tokenFree >= tokenToBuy) { // free tokens >= tokens to buy, sell tokens
 				owner.transfer(actualETHTransfer);
-				if (msg.value &gt; actualETHTransfer){ // if more than need - cash back
+				if (msg.value > actualETHTransfer){ // if more than need - cash back
 					msg.sender.transfer(msg.value - actualETHTransfer);
 				}
 				sharesTokenAddress.transfer(msg.sender, tokenToBuy);
 				tokenSold += tokenToBuy;
 				tokenFree -= tokenToBuy;
 				if(tokenFree==0) crowdsaleClosed = true;
-			} else { // free tokens &lt; tokens to buy 
+			} else { // free tokens < tokens to buy 
 				uint256 sendETH = tokenFree * price / coeff; // price for all free tokens
 				owner.transfer(sendETH); 
 				sharesTokenAddress.transfer(msg.sender, tokenFree); 

@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,8 +56,8 @@ contract PricingStrategy {
     function calculateTokenAmount(uint weiAmount, uint tokensSold) public constant returns (uint tokenAmount) {
         uint rate = 0;
 
-        for (uint8 i = 0; i &lt; limits.length; i++) {
-            if (tokensSold &gt;= limits[i]) {
+        for (uint8 i = 0; i < limits.length; i++) {
+            if (tokensSold >= limits[i]) {
                 rate = rates[i];
             }
         }

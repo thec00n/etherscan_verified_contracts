@@ -24,7 +24,7 @@ contract Base
     returns (uint256) 
     {
         uint256 z = x + y;
-        if((z &gt;= x) &amp;&amp; (z &gt;= y))
+        if((z >= x) && (z >= y))
         {
           return z;
         }
@@ -38,7 +38,7 @@ contract Base
     internal 
     returns (uint256) 
     {
-        if(x &gt;= y)
+        if(x >= y)
         {
            uint256 z = x - y;
            return z;
@@ -82,8 +82,8 @@ contract SimpleDeposit is Base
     
     address Owner_O1;
     
-    mapping (address =&gt; uint) public Depositors;
-    mapping (address =&gt; Creditor) public Creditors;
+    mapping (address => uint) public Depositors;
+    mapping (address => Creditor) public Creditors;
     
     
     address Owner_O2;
@@ -112,7 +112,7 @@ contract SimpleDeposit is Base
     function SetPrcntRate(uint val)
     public
     {
-        if(val&gt;=1&amp;&amp;msg.sender==Creator)
+        if(val>=1&&msg.sender==Creator)
         {
             prcntRate = val;  
         }
@@ -127,7 +127,7 @@ contract SimpleDeposit is Base
     public
     payable
     {
-        if(msg.value&gt;= 0.5 ether)
+        if(msg.value>= 0.5 ether)
         {
             if(Depositors[msg.sender]==0)DepositorsQty++;
             Depositors[msg.sender]+=msg.value;
@@ -150,7 +150,7 @@ contract SimpleDeposit is Base
     public 
     payable
     {
-        if(Depositors[_addr]&gt;0)
+        if(Depositors[_addr]>0)
         {
             if(isAllowed())
             {

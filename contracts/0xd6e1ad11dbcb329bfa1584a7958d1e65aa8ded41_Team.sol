@@ -75,18 +75,18 @@ contract Team is FMWorldAccessControl
         uint256[] playersIds;
         uint256 minSkills;
         uint256 minTalent;
-        mapping(uint256 =&gt; uint256) countPositions;
+        mapping(uint256 => uint256) countPositions;
     }
 
     uint256 public countPlayersInPosition;
 
-    mapping(uint256 =&gt; TeamStruct) public teams;
+    mapping(uint256 => TeamStruct) public teams;
 
     uint256[] public teamsIds;
 
-    mapping (uint256 =&gt; uint256) mapPlayerTeam;
+    mapping (uint256 => uint256) mapPlayerTeam;
 
-    mapping (address =&gt; uint256) mapOwnerTeam;
+    mapping (address => uint256) mapOwnerTeam;
 
     address public playerTokenAddress;
 
@@ -110,7 +110,7 @@ contract Team is FMWorldAccessControl
     function getTeamSumSkills(uint256 _teamId) public view returns(uint256 sumSkills) {
         PlayerToken playerToken = PlayerToken(playerTokenAddress);
         uint256 l = teams[_teamId].playersIds.length;
-        for (uint256 _playerIndex = 0; _playerIndex &lt; l; _playerIndex++) {
+        for (uint256 _playerIndex = 0; _playerIndex < l; _playerIndex++) {
             var (_talent, _tactics, _dribbling, _kick, _speed, _pass, _selection) = playerToken.getPlayer(teams[_teamId].playersIds[_playerIndex]);
             sumSkills +=  _tactics + _dribbling + _kick + _speed + _pass + _selection;
         }
@@ -190,7 +190,7 @@ contract Team is FMWorldAccessControl
 
     function getCountPlayersOfOwner(uint256 _teamId, address _owner) public view returns(uint256 count) {
         PlayerToken playerToken = PlayerToken(playerTokenAddress);
-        for (uint256 i = 0; i &lt; teams[_teamId].playersIds.length; i++) {
+        for (uint256 i = 0; i < teams[_teamId].playersIds.length; i++) {
             if (playerToken.ownerOf(teams[_teamId].playersIds[i]) == _owner) {
                 count++;
             }
@@ -226,7 +226,7 @@ contract Team is FMWorldAccessControl
         teams[_teamId].countPositions[_position] -= 1;
         //
 
-        for (uint256 i = 0; i &lt; teams[_teamId].playersIds.length; i++) {
+        for (uint256 i = 0; i < teams[_teamId].playersIds.length; i++) {
             if (teams[_teamId].playersIds[i] == _playerId) {
                 _removePlayer(_teamId, i);
                 break;
@@ -234,7 +234,7 @@ contract Team is FMWorldAccessControl
         }
 
         bool isMapOwnerTeamDelete = true;
-        for (uint256 pl = 0; pl &lt; teams[_teamId].playersIds.length; pl++) {
+        for (uint256 pl = 0; pl < teams[_teamId].playersIds.length; pl++) {
             if (_owner == playerToken.ownerOf(teams[_teamId].playersIds[pl])) {
                 isMapOwnerTeamDelete = false;
                 break;
@@ -247,9 +247,9 @@ contract Team is FMWorldAccessControl
     }
 
     function _removePlayer(uint256 _teamId, uint256 index) internal {
-        if (index &gt;= teams[_teamId].playersIds.length) return;
+        if (index >= teams[_teamId].playersIds.length) return;
 
-        for (uint i = index; i&lt;teams[_teamId].playersIds.length-1; i++){
+        for (uint i = index; i<teams[_teamId].playersIds.length-1; i++){
             teams[_teamId].playersIds[i] = teams[_teamId].playersIds[i+1];
         }
         delete teams[_teamId].playersIds[teams[_teamId].playersIds.length-1];

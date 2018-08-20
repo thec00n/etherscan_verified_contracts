@@ -4,7 +4,7 @@
 
 pragma solidity ^0.4.11;
 
-//import &quot;ds-exec/exec.sol&quot;;
+//import "ds-exec/exec.sol";
 
 contract DSExec {
     function tryExec( address target, bytes calldata, uint value)
@@ -46,7 +46,7 @@ contract DSExec {
     }
 }
 
-//import &quot;ds-auth/auth.sol&quot;;
+//import "ds-auth/auth.sol";
 contract DSAuthority {
     function canCall(
     address src, address dst, bytes4 sig
@@ -103,7 +103,7 @@ contract DSAuth is DSAuthEvents {
     }
 }
 
-//import &quot;ds-note/note.sol&quot;;
+//import "ds-note/note.sol";
 contract DSNote {
     event LogNote(
     bytes4   indexed  sig,
@@ -130,7 +130,7 @@ contract DSNote {
 }
 
 
-//import &quot;ds-math/math.sol&quot;;
+//import "ds-math/math.sol";
 contract DSMath {
 
     /*
@@ -138,11 +138,11 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -155,10 +155,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -167,11 +167,11 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -184,10 +184,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -196,10 +196,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -254,10 +254,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -293,7 +293,7 @@ contract DSMath {
 
 }
 
-//import &quot;erc20/erc20.sol&quot;;
+//import "erc20/erc20.sol";
 contract ERC20 {
     function totalSupply() constant returns (uint supply);
     function balanceOf( address who ) constant returns (uint value);
@@ -309,11 +309,11 @@ contract ERC20 {
 
 
 
-//import &quot;ds-token/base.sol&quot;;
+//import "ds-token/base.sol";
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint256 supply) {
         _balances[msg.sender] = supply;
@@ -331,7 +331,7 @@ contract DSTokenBase is ERC20, DSMath {
     }
 
     function transfer(address dst, uint wad) returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
 
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -342,8 +342,8 @@ contract DSTokenBase is ERC20, DSMath {
     }
 
     function transferFrom(address src, address dst, uint wad) returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
 
         _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         _balances[src] = sub(_balances[src], wad);
@@ -365,7 +365,7 @@ contract DSTokenBase is ERC20, DSMath {
 }
 
 
-//import &quot;ds-stop/stop.sol&quot;;
+//import "ds-stop/stop.sol";
 contract DSStop is DSAuth, DSNote {
 
     bool public stopped;
@@ -384,7 +384,7 @@ contract DSStop is DSAuth, DSNote {
 }
 
 
-//import &quot;ds-token/token.sol&quot;;
+//import "ds-token/token.sol";
 contract DSToken is DSTokenBase(0), DSStop {
 
     bytes32  public  symbol;
@@ -436,7 +436,7 @@ contract DSToken is DSTokenBase(0), DSStop {
 
     // Optional token name
 
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
 
     function setName(bytes32 name_) auth {
         name = name_;
@@ -448,20 +448,20 @@ contract DSToken is DSTokenBase(0), DSStop {
 
 //////////////////////////////////////////////////
 //
-//import &quot;ds-token/token.sol&quot;;
+//import "ds-token/token.sol";
 //
-//    import &quot;ds-stop/stop.sol&quot;;
-//        import &quot;ds-auth/auth.sol&quot;;
-//        import &quot;ds-note/note.sol&quot;;
+//    import "ds-stop/stop.sol";
+//        import "ds-auth/auth.sol";
+//        import "ds-note/note.sol";
 //
-//    import &quot;ds-token/base.sol&quot;;
-//        import &quot;erc20/erc20.sol&quot;;
-//        import &quot;ds-math/math.sol&quot;;
+//    import "ds-token/base.sol";
+//        import "erc20/erc20.sol";
+//        import "ds-math/math.sol";
 //
-//import &quot;ds-exec/exec.sol&quot;;
-//import &quot;ds-auth/auth.sol&quot;;
-//import &quot;ds-note/note.sol&quot;;
-//import &quot;ds-math/math.sol&quot;;
+//import "ds-exec/exec.sol";
+//import "ds-auth/auth.sol";
+//import "ds-note/note.sol";
+//import "ds-math/math.sol";
 
 
 
@@ -487,7 +487,7 @@ contract KkkTokenSale is DSStop, DSMath, DSExec {
 
     bool public moreThanSoftLimit;
 
-    mapping (address =&gt; uint)  public  userBuys; // limit to 500 eth
+    mapping (address => uint)  public  userBuys; // limit to 500 eth
 
     address public destFoundation; //multisig account , 4-of-6
 
@@ -496,8 +496,8 @@ contract KkkTokenSale is DSStop, DSMath, DSExec {
 
     function KkkTokenSale(uint startTime_, address destFoundation_) {
 
-        key = new DSToken(&quot;KKK&quot;);
-//        key = new DSToken(&quot;KEY&quot;);
+        key = new DSToken("KKK");
+//        key = new DSToken("KEY");
 
         destFoundation = destFoundation_;
 
@@ -525,27 +525,27 @@ contract KkkTokenSale is DSStop, DSMath, DSExec {
         assembly {
         size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function canBuy(uint total) returns (bool) {
-        return total &lt;= USER_BUY_LIMIT;
+        return total <= USER_BUY_LIMIT;
     }
 
     function() payable stoppable note {
 
         require(!isContract(msg.sender));
-        require(msg.value &gt;= 0.01 ether);
-        require(tx.gasprice &lt;= MAX_GAS_PRICE);
+        require(msg.value >= 0.01 ether);
+        require(tx.gasprice <= MAX_GAS_PRICE);
 
-        assert(time() &gt;= startTime &amp;&amp; time() &lt; endTime);
+        assert(time() >= startTime && time() < endTime);
 
         var toFund = cast(msg.value);
 
         var requested = wmul(toFund, PUBLIC_SALE_PRICE);
 
         // selling SELL_HARD_LIMIT tokens ends the sale
-        if( add(sold, requested) &gt;= SELL_HARD_LIMIT) {
+        if( add(sold, requested) >= SELL_HARD_LIMIT) {
             requested = SELL_HARD_LIMIT - sold;
             toFund = wdiv(requested, PUBLIC_SALE_PRICE);
 
@@ -560,7 +560,7 @@ contract KkkTokenSale is DSStop, DSMath, DSExec {
         sold = hadd(sold, requested);
 
         // Soft limit triggers the sale to close in 24 hours
-        if( !moreThanSoftLimit &amp;&amp; sold &gt;= SELL_SOFT_LIMIT ) {
+        if( !moreThanSoftLimit && sold >= SELL_SOFT_LIMIT ) {
             moreThanSoftLimit = true;
             endTime = time() + 24 hours; // last 24 hours after soft limit,
         }
@@ -573,20 +573,20 @@ contract KkkTokenSale is DSStop, DSMath, DSExec {
 
         // return excess ETH to the user
         uint toReturn = sub(msg.value, toFund);
-        if(toReturn &gt; 0) {
+        if(toReturn > 0) {
             exec(msg.sender, toReturn);
         }
     }
 
     function setStartTime(uint startTime_) auth note {
-        require(time() &lt;= startTime &amp;&amp; time() &lt;= startTime_);
+        require(time() <= startTime && time() <= startTime_);
 
         startTime = startTime_;
         endTime = startTime + 14 days;
     }
 
     function finalize() auth note {
-        require(time() &gt;= endTime);
+        require(time() >= endTime);
 
         // enable transfer
         key.start();
@@ -594,7 +594,7 @@ contract KkkTokenSale is DSStop, DSMath, DSExec {
         // transfer undistributed KEY
         key.transfer(destFoundation, key.balanceOf(this));
 
-        // owner -&gt; destFoundation
+        // owner -> destFoundation
         key.setOwner(destFoundation);
     }
 

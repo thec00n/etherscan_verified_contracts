@@ -3,8 +3,8 @@
 /* 
 /* https://ether.online  The first RPG game of blockchain 
 /*  
-/* authors <span class="__cf_email__" data-cfemail="e89a818b83809d869c8d9ac69b808d86a88f85898184c68b8785">[email&#160;protected]</span>   
-/*         <span class="__cf_email__" data-cfemail="b8cbcbddcbcdd6dcd1d6dff8dfd5d9d1d496dbd7d5">[email&#160;protected]</span>            
+/* authors <span class="__cf_email__" data-cfemail="e89a818b83809d869c8d9ac69b808d86a88f85898184c68b8785">[email protected]</span>   
+/*         <span class="__cf_email__" data-cfemail="b8cbcbddcbcdd6dcd1d6dff8dfd5d9d1d496dbd7d5">[email protected]</span>            
 /* ==================================================================== */
 
 pragma solidity ^0.4.20;
@@ -81,10 +81,10 @@ contract AccessService is AccessAdmin {
         external 
     {
         require(msg.sender == addrFinance || msg.sender == addrAdmin);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         address receiver = _target == address(0) ? addrFinance : _target;
         uint256 balance = this.balance;
-        if (_amount &lt; balance) {
+        if (_amount < balance) {
             receiver.transfer(_amount);
         } else {
             receiver.transfer(this.balance);
@@ -113,9 +113,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -123,7 +123,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -132,7 +132,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -170,7 +170,7 @@ contract ActionAgonPlat is AccessService {
     IAgonFight fightContract;
     IBitGuildToken public bitGuildContract;
 
-    mapping (address =&gt; uint64[]) public ownerToAgonIdArray;
+    mapping (address => uint64[]) public ownerToAgonIdArray;
     uint256 public maxAgonCount = 6;
     uint256 public maxResolvedAgonId = 0; 
     uint256[5] public agonValues;
@@ -194,7 +194,7 @@ contract ActionAgonPlat is AccessService {
     function() external {}
 
     function setMaxAgonCount(uint256 _count) external onlyAdmin {
-        require(_count &gt; 0 &amp;&amp; _count &lt; 20);
+        require(_count > 0 && _count < 20);
         require(_count != maxAgonCount);
         maxAgonCount = _count;
     }
@@ -205,7 +205,7 @@ contract ActionAgonPlat is AccessService {
 
     function setMaxResolvedAgonId() external {
         uint256 length = agonArray.length;
-        for (uint256 i = maxResolvedAgonId; i &lt; length; ++i) {
+        for (uint256 i = maxResolvedAgonId; i < length; ++i) {
             if (agonArray[i].result == 0) {
                 maxResolvedAgonId = i - 1;
                 break;
@@ -214,12 +214,12 @@ contract ActionAgonPlat is AccessService {
     }
 
     function setAgonValues(uint256[5] values) external onlyAdmin {
-        require(values[0] &gt;= 100);
-        require(values[1] &gt;= values[0]);
-        require(values[2] &gt;= values[1]);
-        require(values[3] &gt;= values[2]);
-        require(values[4] &gt;= values[3]);
-        require(values[4] &lt;= 600000); 
+        require(values[0] >= 100);
+        require(values[1] >= values[0]);
+        require(values[2] >= values[1]);
+        require(values[3] >= values[2]);
+        require(values[4] >= values[3]);
+        require(values[4] <= 600000); 
         require(values[0] % 100 == 0);
         require(values[1] % 100 == 0);
         require(values[2] % 100 == 0);
@@ -238,7 +238,7 @@ contract ActionAgonPlat is AccessService {
         uint64 index = 2;
         uint256 val = 0;
         uint256 length = _extraData.length;
-        while (index &lt; length) {
+        while (index < length) {
             val += (uint256(_extraData[index]) * (256 ** (length - index - 1)));
             index += 1;
         }
@@ -250,7 +250,7 @@ contract ActionAgonPlat is AccessService {
         whenNotPaused 
     {
         require(msg.sender == address(bitGuildContract));
-        require(_extraData.length &gt; 2 &amp;&amp; _extraData.length &lt;= 10);
+        require(_extraData.length > 2 && _extraData.length <= 10);
         var (p1, p2, p3) = _getExtraParam(_extraData);
         if (p1 == 0) {
             _newAgon(p3, p2, _sender, _value);
@@ -262,8 +262,8 @@ contract ActionAgonPlat is AccessService {
     }
 
     function _newAgon(uint64 _outFlag, uint64 _valId, address _sender, uint256 _value) internal {
-        require(ownerToAgonIdArray[_sender].length &lt; maxAgonCount);
-        require(_valId &gt;= 0 &amp;&amp; _valId &lt;= 4);
+        require(ownerToAgonIdArray[_sender].length < maxAgonCount);
+        require(_valId >= 0 && _valId <= 4);
         require(_value == agonValues[_valId]);
         
         require(bitGuildContract.transferFrom(_sender, address(this), _value));
@@ -283,9 +283,9 @@ contract ActionAgonPlat is AccessService {
     function _removeAgonIdByOwner(address _owner, uint64 _agonId) internal {
         uint64[] storage agonIdArray = ownerToAgonIdArray[_owner];
         uint256 length = agonIdArray.length;
-        require(length &gt; 0);
+        require(length > 0);
         uint256 findIndex = 99;
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             if (_agonId == agonIdArray[i]) {
                 findIndex = i;
             }
@@ -298,7 +298,7 @@ contract ActionAgonPlat is AccessService {
     }
 
     function cancelAgon(uint64 _agonId) external {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
         require(agon.result == 0);
         require(agon.challenger == address(0));
@@ -312,7 +312,7 @@ contract ActionAgonPlat is AccessService {
     }
 
     function cancelAgonForce(uint64 _agonId) external onlyService {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
         require(agon.result == 0);
         require(agon.challenger == address(0));
@@ -325,7 +325,7 @@ contract ActionAgonPlat is AccessService {
     }
 
     function _newChallenge(uint64 _agonId, uint64 _flag, address _sender, uint256 _value) internal {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
         require(agon.result == 0);
         require(agon.master != _sender);
@@ -340,9 +340,9 @@ contract ActionAgonPlat is AccessService {
     }
 
     function fightAgon(uint64 _agonId, uint64 _mFlag, uint256 _aSeed, uint256 _fSeed) external onlyService {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon storage agon = agonArray[_agonId];
-        require(agon.result == 0 &amp;&amp; agon.challenger != address(0));
+        require(agon.result == 0 && agon.challenger != address(0));
         require(fightContract != address(0));
         uint64 fRet = fightContract.calcFight(_mFlag, agon.agonFlag, _aSeed, _fSeed);
         require(fRet == 1 || fRet == 2);
@@ -366,7 +366,7 @@ contract ActionAgonPlat is AccessService {
     function withdrawPlat() external {
         require(msg.sender == addrFinance || msg.sender == addrAdmin);
         uint256 balance = bitGuildContract.balanceOf(this);
-        require(balance &gt; 0);
+        require(balance > 0);
         bitGuildContract.transfer(addrFinance, balance);
     }
 
@@ -380,7 +380,7 @@ contract ActionAgonPlat is AccessService {
             uint64 result
         )
     {
-        require(_agonId &lt; agonArray.length);
+        require(_agonId < agonArray.length);
         Agon memory agon = agonArray[_agonId];
         master = agon.master;
         challenger = agon.challenger;
@@ -402,13 +402,13 @@ contract ActionAgonPlat is AccessService {
         ) 
     {
         uint64 length = uint64(agonArray.length);
-        require(_startAgonId &lt; length);
-        require(_startAgonId &gt; 0);
+        require(_startAgonId < length);
+        require(_startAgonId > 0);
         uint256 maxLen;
         if (_count == 0) {
             maxLen = length - _startAgonId;
         } else {
-            maxLen = (length - _startAgonId) &gt;= _count ? _count : (length - _startAgonId);
+            maxLen = (length - _startAgonId) >= _count ? _count : (length - _startAgonId);
         }
         agonIds = new uint64[](maxLen);
         masters = new address[](maxLen);
@@ -418,7 +418,7 @@ contract ActionAgonPlat is AccessService {
         agonFlags = new uint64[](maxLen);
         results = new uint64[](maxLen);
         uint256 counter = 0;
-        for (uint64 i = _startAgonId; i &lt; length; ++i) {
+        for (uint64 i = _startAgonId; i < length; ++i) {
             Agon storage tmpAgon = agonArray[i];
             agonIds[counter] = i;
             masters[counter] = tmpAgon.master;
@@ -428,7 +428,7 @@ contract ActionAgonPlat is AccessService {
             agonFlags[counter] = tmpAgon.agonFlag;
             results[counter] = tmpAgon.result;
             counter += 1;
-            if (counter &gt;= maxLen) {
+            if (counter >= maxLen) {
                 break;
             }
         }

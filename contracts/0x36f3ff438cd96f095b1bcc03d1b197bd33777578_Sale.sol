@@ -47,20 +47,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract PricingStrategy {
         tokenAmount = weiAmount.mul(rate);
 
         // if we crossed slot border, recalculate remaining tokens according to next slot price
-        if (weiRaised.add(weiAmount) &gt; limits[index]) {
+        if (weiRaised.add(weiAmount) > limits[index]) {
             uint currentSlotWei = limits[index].sub(weiRaised);
             uint currentSlotTokens = currentSlotWei.mul(rate);
             uint remainingWei = weiAmount.sub(currentSlotWei);
@@ -111,7 +111,7 @@ contract PricingStrategy {
         rate = rates[0];
         index = 0;
 
-        while (weiRaised &gt;= limits[index]) {
+        while (weiRaised >= limits[index]) {
             rate = rates[++index];
         }
     }
@@ -123,7 +123,7 @@ contract PricingStrategy {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -279,13 +279,13 @@ contract Sale is Pausable, Contactable {
     uint public weiRefunded;
 
     //How much ETH each address has invested to this crowdsale
-    mapping (address =&gt; uint) public investedAmountOf;
+    mapping (address => uint) public investedAmountOf;
 
     // Addresses that are allowed to invest before ICO offical opens
-    mapping (address =&gt; bool) public earlyParticipantWhitelist;
+    mapping (address => bool) public earlyParticipantWhitelist;
 
     // whether a buyer bought tokens through other currencies
-    mapping (address =&gt; bool) public isExternalBuyer;
+    mapping (address => bool) public isExternalBuyer;
 
     address public admin;
 
@@ -321,13 +321,13 @@ contract Sale is Pausable, Contactable {
         uint _weiMinimumGoal,
         uint _minAmount
     ) {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_pricingStrategy.isPricingStrategy());
         require(address(_token) != 0x0);
         require(_wallet != 0x0);
-        require(_weiMaximumGoal &gt; 0);
-        require(_weiMinimumGoal &gt; 0);
+        require(_weiMaximumGoal > 0);
+        require(_weiMinimumGoal > 0);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -377,17 +377,17 @@ contract Sale is Pausable, Contactable {
 
    // return true if the transaction can buy tokens
     function validPurchase(uint weiAmount) internal view returns (bool) {
-        bool withinPeriod = (now &gt;= startTime || earlyParticipantWhitelist[msg.sender]) &amp;&amp; now &lt;= endTime;
-        bool withinCap = weiRaised.add(weiAmount) &lt;= weiMaximumGoal;
-        bool moreThenMinimal = weiAmount &gt;= minAmount;
+        bool withinPeriod = (now >= startTime || earlyParticipantWhitelist[msg.sender]) && now <= endTime;
+        bool withinCap = weiRaised.add(weiAmount) <= weiMaximumGoal;
+        bool moreThenMinimal = weiAmount >= minAmount;
 
-        return withinPeriod &amp;&amp; withinCap &amp;&amp; moreThenMinimal;
+        return withinPeriod && withinCap && moreThenMinimal;
     }
 
     // return true if crowdsale event has ended
     function hasEnded() external view returns (bool) {
-        bool capReached = weiRaised &gt;= weiMaximumGoal;
-        bool afterEndTime = now &gt; endTime;
+        bool capReached = weiRaised >= weiMaximumGoal;
+        bool afterEndTime = now > endTime;
         
         return capReached || afterEndTime;
     }
@@ -399,7 +399,7 @@ contract Sale is Pausable, Contactable {
 
     // return true if the crowdsale has raised enough money to be a successful.
     function isMinimumGoalReached() public view returns (bool) {
-        return weiRaised &gt;= weiMinimumGoal;
+        return weiRaised >= weiMinimumGoal;
     }
     
     /**
@@ -423,7 +423,7 @@ contract Sale is Pausable, Contactable {
     * The team can transfer the funds back on the smart contract in the case the minimum goal was not reached..
     */
     function loadRefund() external payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(!isMinimumGoalReached());
         
         loadedRefund = loadedRefund.add(msg.value);
@@ -438,9 +438,9 @@ contract Sale is Pausable, Contactable {
     function refund() external {
         uint256 weiValue = investedAmountOf[msg.sender];
         
-        require(!isMinimumGoalReached() &amp;&amp; loadedRefund &gt; 0);
+        require(!isMinimumGoalReached() && loadedRefund > 0);
         require(!isExternalBuyer[msg.sender]);
-        require(weiValue &gt; 0);
+        require(weiValue > 0);
         
         investedAmountOf[msg.sender] = 0;
         weiRefunded = weiRefunded.add(weiValue);

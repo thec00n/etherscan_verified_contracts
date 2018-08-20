@@ -10,19 +10,19 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint256 c = a / b;
       return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
   }
 }
@@ -79,8 +79,8 @@ contract SocialMediaToken is ERC20,Ownable {
 	address[] private walletArr;
 	uint walletIdx = 0;
 
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	event TokenPurchase(address indexed purchaser, uint256 value,uint256 amount);
 	event FundTransfer(address fundWallet, uint256 amount);
@@ -93,8 +93,8 @@ contract SocialMediaToken is ERC20,Ownable {
 		
 	balanceOf[msg.sender] = 500000000000000000000000000;
 	totalSupply = 500000000000000000000000000;
-	name = &quot;SocialMedia&quot;;
-	symbol =&quot; SMT&quot;;
+	name = "SocialMedia";
+	symbol =" SMT";
 	
 	walletArr.push(0xd4b8C9Adaf7Cd401d72F9507fd869499B7FcEb60);
 	
@@ -106,8 +106,8 @@ contract SocialMediaToken is ERC20,Ownable {
 
 	function _transferFrom(address _from, address _to, uint256 _value)  internal {
 	    require(_to != 0x0);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to] + _value >= balanceOf[_to]);
 
 	    balanceOf[_from] = balanceOf[_from].sub(_value);
 	    balanceOf[_to] = balanceOf[_to].add(_value);
@@ -132,7 +132,7 @@ contract SocialMediaToken is ERC20,Ownable {
 
 	function _tokenPurchase( uint256 _value) internal {
 	   
-	    require(_value &gt;= 0.1 ether);
+	    require(_value >= 0.1 ether);
 
 	    address wallet = walletArr[walletIdx];
 	    walletIdx = (walletIdx+1) % walletArr.length;
@@ -164,7 +164,7 @@ contract SocialMediaToken is ERC20,Ownable {
 	function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
 	    var _allowance = allowed[_from][msg.sender];
 
-	    require (_value &lt;= _allowance);
+	    require (_value <= _allowance);
 		
 	     _transferFrom(_from,_to,_value);
 

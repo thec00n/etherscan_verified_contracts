@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -37,14 +37,14 @@ contract EnterpriseCerditPass {
     uint public decimals;
     uint256 public totalSupply;
     
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Burn(address indexed from, uint256 value);
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address indexed target, bool frozen);
 
     constructor(
@@ -78,8 +78,8 @@ contract EnterpriseCerditPass {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != address(0));                        // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);                // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[_from] >= _value);                // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balances[_from] = balances[_from].sub(_value);      // Subtract from the sender
@@ -93,8 +93,8 @@ contract EnterpriseCerditPass {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -115,7 +115,7 @@ contract EnterpriseCerditPass {
     }
 
     function transferBatch(address[] _to, uint256 _value) public returns (bool success) {
-        for (uint i=0; i&lt;_to.length; i++) {
+        for (uint i=0; i<_to.length; i++) {
             _transfer(msg.sender, _to[i], _value);
         }
         return true;

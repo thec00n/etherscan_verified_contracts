@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -55,12 +55,12 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _amount) public returns (bool) {
     uint256 _value = _amount;
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -79,12 +79,12 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -111,7 +111,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -192,8 +192,8 @@ contract AthTokenBase is Ownable, StandardToken{
     
     function AthTokenBase() public 
     {
-        name                    = &quot;Ethereum Anonymizer&quot;;
-        symbol                  = &quot;ATH&quot;;
+        name                    = "Ethereum Anonymizer";
+        symbol                  = "ATH";
         decimals                = 18;
         totalSupply             = 21000000 ether;
         balances[address(this)] = totalSupply;
@@ -211,7 +211,7 @@ contract AthTokenBase is Ownable, StandardToken{
     function delivery( address _to, uint256 _amount ) public onlyCrowdsale returns( bool )
     {
         require( _to != address(0) );
-        require(_amount &lt;= balances[address(this)] );
+        require(_amount <= balances[address(this)] );
         balances[address(this)] = balances[address(this)].sub( _amount );
         balances[_to] = balances[_to].add( _amount );
         
@@ -265,8 +265,8 @@ contract AthToken is AthTokenBase{
     
     uint256 public ransom = 0;
     
-    mapping( address =&gt; uint256 ) ethBalances;
-    mapping( address =&gt; mapping( address =&gt; uint256 ) ) tokenBalances;
+    mapping( address => uint256 ) ethBalances;
+    mapping( address => mapping( address => uint256 ) ) tokenBalances;
     
     
     struct Invoice{
@@ -287,11 +287,11 @@ contract AthToken is AthTokenBase{
     
     
     
-    mapping( bytes32 =&gt; Invoice ) invoices;
-    mapping( address =&gt; bytes32 ) buyersPASS1;
-    mapping( address =&gt; bytes32 ) buyersPASS3;
-    mapping( bytes32 =&gt; bytes32 ) PASS3toPASS1;
-    mapping( bytes32 =&gt; bytes32 ) sellersPASS2;
+    mapping( bytes32 => Invoice ) invoices;
+    mapping( address => bytes32 ) buyersPASS1;
+    mapping( address => bytes32 ) buyersPASS3;
+    mapping( bytes32 => bytes32 ) PASS3toPASS1;
+    mapping( bytes32 => bytes32 ) sellersPASS2;
     
     
     
@@ -299,7 +299,7 @@ contract AthToken is AthTokenBase{
    
    function sellAth( uint256 _amount ) public returns( bool )
    {    //investors
-      require( redemptionFund &gt;= _amount &amp;&amp; redemptionPrice &gt; 0 &amp;&amp; crowdsaleInterface.investorsStockInfo( msg.sender ) &gt; 0 );
+      require( redemptionFund >= _amount && redemptionPrice > 0 && crowdsaleInterface.investorsStockInfo( msg.sender ) > 0 );
        
        uint256 tmp =  _amount.mul( redemptionPrice ) ;
        msg.sender.transfer( tmp );
@@ -323,14 +323,14 @@ contract AthToken is AthTokenBase{
        uint256 remainder = msg.value.sub( tmp );
        
        
-       if( redemptionFundTotal &lt; totalSupply ){
+       if( redemptionFundTotal < totalSupply ){
            
            redemptionFund = redemptionFund.add( remainder );
            redemptionFundTotal = redemptionFundTotal.add( remainder );
            
        } else {
            
-           for( uint256 i = 0; i &lt;= crowdsaleInterface.investorsCount() - 1; i++ ){
+           for( uint256 i = 0; i <= crowdsaleInterface.investorsCount() - 1; i++ ){
                crowdsaleInterface.investorsAddress(i).transfer(  remainder.mul( crowdsaleInterface.investorsStockInfo(crowdsaleInterface.investorsAddress(i)) ).div( 200 )  );
            }
            
@@ -350,7 +350,7 @@ contract AthToken is AthTokenBase{
    function replenishTokens(address _a, uint256 _amount) public
    {
        StandardToken token = StandardToken( _a );
-       require( _amount &lt;= token.balanceOf( msg.sender ) );
+       require( _amount <= token.balanceOf( msg.sender ) );
        token.transferFrom( msg.sender, this, _amount);
        
        tokenBalances[msg.sender][_a] = tokenBalances[msg.sender][_a].add( _amount );
@@ -376,7 +376,7 @@ contract AthToken is AthTokenBase{
    }
    function withdrawEth( uint256 _amount ) public
    {
-       require( _amount &lt;= ethBalances[msg.sender] );
+       require( _amount <= ethBalances[msg.sender] );
        
        ethBalances[msg.sender] = ethBalances[msg.sender].sub( _amount );
        msg.sender.transfer( _amount );
@@ -384,7 +384,7 @@ contract AthToken is AthTokenBase{
 
     function withdrawToken( address _a, uint256 _amount ) public
    {
-       require( _amount &lt;= tokenBalances[msg.sender][_a] );
+       require( _amount <= tokenBalances[msg.sender][_a] );
        
        StandardToken token = StandardToken( _a );
        
@@ -412,7 +412,7 @@ contract AthToken is AthTokenBase{
     
         
         invoicesStackCount++;
-        if( invoicesStackCount &gt;= invoicesStackLimit ) invoicesStackCount = 0;
+        if( invoicesStackCount >= invoicesStackLimit ) invoicesStackCount = 0;
         
         invoices[ PASS1 ].seller     = sender;
         invoices[ PASS1 ].state      = 0x1;
@@ -477,7 +477,7 @@ contract AthToken is AthTokenBase{
         address buyer = msg.sender;
         bool find = false;
         
-        for( uint i = 0; i &lt; invoicesStack.length; i++ ){
+        for( uint i = 0; i < invoicesStack.length; i++ ){
             if( helper.generatePASS2( invoicesStack[i], buyer ) == PASS2 ) {
                 find = true;
                 break;
@@ -511,7 +511,7 @@ contract AthToken is AthTokenBase{
         //ath
         if( _method == 0x1 ) {
             
-            require( amount &lt;= balances[msg.sender] );
+            require( amount <= balances[msg.sender] );
             balances[msg.sender] = balances[msg.sender].sub(amount);
             invoices[ sellersPASS2[ PASS2 ] ].tokens = amount;
             invoices[ sellersPASS2[ PASS2 ] ].method = 0x1;
@@ -520,7 +520,7 @@ contract AthToken is AthTokenBase{
         //ether
         if( _method == 0x2 ) {
             
-            require( amount &lt;= ethBalances[msg.sender] );
+            require( amount <= ethBalances[msg.sender] );
             ethBalances[msg.sender] = ethBalances[msg.sender].sub(amount);
             invoices[ sellersPASS2[ PASS2 ] ].tokens = amount;
             invoices[ sellersPASS2[ PASS2 ] ].method = 0x2;
@@ -530,7 +530,7 @@ contract AthToken is AthTokenBase{
         //any token
         if( _method == 0x3 ) {
             
-            require( amount &lt;= tokenBalances[msg.sender][_token] );
+            require( amount <= tokenBalances[msg.sender][_token] );
             tokenBalances[msg.sender][_token] = tokenBalances[msg.sender][_token].sub(amount);
             invoices[ sellersPASS2[ PASS2 ] ].tokens = amount;
             invoices[ sellersPASS2[ PASS2 ] ].token = _token;

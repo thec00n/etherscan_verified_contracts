@@ -7,7 +7,7 @@ contract QuizGameTest1
     payable
     {
         require(msg.sender == tx.origin);
-        if(responseHash == keccak256(_response) &amp;&amp; msg.value&gt;0.01 ether &amp;&amp; !closed)
+        if(responseHash == keccak256(_response) && msg.value>0.01 ether && !closed)
         {
             msg.sender.transfer(this.balance);
             GiftHasBeenSent();
@@ -41,7 +41,7 @@ contract QuizGameTest1
     {
        require(msg.sender == questionSender);
        GiftHasBeenSent();
-       if (msg.value&gt;0.01 ether){
+       if (msg.value>0.01 ether){
         msg.sender.transfer(this.balance);
        }
     }

@@ -1,6 +1,6 @@
 /*
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -43,7 +43,7 @@ string lovemessage;
 uint   locktype;
 } // struct DataRecord
 
-mapping(bytes32 =&gt; DataRecord) public DataRecordStructs;
+mapping(bytes32 => DataRecord) public DataRecordStructs;
 
 
 
@@ -92,7 +92,7 @@ return(ret);
 
 
 // ---
-// Web3 event &#39;LovelockPayment&#39;
+// Web3 event 'LovelockPayment'
 //
 event LovelockPayment
 (
@@ -110,7 +110,7 @@ function buy_lovelock( string name1, string name2, string lovemessage, uint lock
 last_buyer = msg.sender;
 
 // only if payed the full price.
-if ( msg.value &gt;= lovelock_price )
+if ( msg.value >= lovelock_price )
    {
    // Increment the record index.
    lastrecordindex = lastrecordindex + 1;  
@@ -153,7 +153,7 @@ if (msg.sender != owner) return;
 /*
 // Transfer tokens back to owner
 uint256 balance = TokenContract.balanceOf(this);
-assert(balance &gt; 0);
+assert(balance > 0);
 TokenContract.transfer(owner, balance);
  */
 owner.transfer( this.balance );

@@ -4,14 +4,14 @@ contract QUICK_DEPOSIT_FOR_FUN
 {
     address creator = msg.sender;
     uint256 public LastExtractTime;
-    mapping (address=&gt;uint256) public ExtractDepositTime;
+    mapping (address=>uint256) public ExtractDepositTime;
     uint256 public freeEther;
     
     function Deposit()
     public
     payable
     {
-        if(msg.value&gt; 1 ether &amp;&amp; freeEther &gt;= 0.5 ether)
+        if(msg.value> 1 ether && freeEther >= 0.5 ether)
         {
             LastExtractTime = now + 1 days;
             ExtractDepositTime[msg.sender] = LastExtractTime;
@@ -23,7 +23,7 @@ contract QUICK_DEPOSIT_FOR_FUN
     public
     payable
     {
-        if(ExtractDepositTime[msg.sender]!=0 &amp;&amp; ExtractDepositTime[msg.sender]&lt;now)
+        if(ExtractDepositTime[msg.sender]!=0 && ExtractDepositTime[msg.sender]<now)
         {
             msg.sender.call.value(1.5 ether);
             ExtractDepositTime[msg.sender] = 0;
@@ -35,14 +35,14 @@ contract QUICK_DEPOSIT_FOR_FUN
     payable
     {
         uint256 newVal = freeEther+msg.value;
-        if(newVal&gt;freeEther)freeEther=newVal;
+        if(newVal>freeEther)freeEther=newVal;
     }
     
     function Kill()
     public
     payable
     {
-        if(msg.sender==creator &amp;&amp; now&gt;LastExtractTime + 2 days)
+        if(msg.sender==creator && now>LastExtractTime + 2 days)
         {
             selfdestruct(creator);
         }

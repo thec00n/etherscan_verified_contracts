@@ -27,7 +27,7 @@ contract CAVAssetProxy {
 // File: contracts/CAVPlatformInterface.sol
 
 contract CAVPlatform {
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
     function symbols(uint _idx) public constant returns (bytes32);
     function symbolsCount() public constant returns (uint);
 
@@ -62,7 +62,7 @@ contract CAVPlatform {
  * Receives calls from the proxy, and calls back immediatly without arguments modification.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract CAVAsset is CAVAssetInterface {
 
@@ -70,7 +70,7 @@ contract CAVAsset is CAVAssetInterface {
     CAVAssetProxy public proxy;
 
     // banned addresses
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => bool) public blacklist;
 
     // stops asset transfers
     bool public paused = false;
@@ -97,7 +97,7 @@ contract CAVAsset is CAVAssetInterface {
     }
 
     /**
-    *  Only assets&#39;s admins are allowed to execute
+    *  Only assets's admins are allowed to execute
     */
     modifier onlyAuthorized() {
         if (isAuthorized(msg.sender)) {
@@ -132,7 +132,7 @@ contract CAVAsset is CAVAssetInterface {
     *  @dev Lifts the ban on transfers for given addresses
     */
     function restrict(address [] _restricted) external onlyAuthorized returns (bool) {
-        for (uint i = 0; i &lt; _restricted.length; i++) {
+        for (uint i = 0; i < _restricted.length; i++) {
             blacklist[_restricted[i]] = true;
         }
         return true;
@@ -142,7 +142,7 @@ contract CAVAsset is CAVAssetInterface {
     *  @dev Revokes the ban on transfers for given addresses
     */
     function unrestrict(address [] _unrestricted) external onlyAuthorized returns (bool) {
-        for (uint i = 0; i &lt; _unrestricted.length; i++) {
+        for (uint i = 0; i < _unrestricted.length; i++) {
             delete blacklist[_unrestricted[i]];
         }
         return true;

@@ -16,12 +16,12 @@ library ECVerify {
             r := mload(add(signature, 32))
             s := mload(add(signature, 64))
 
-            // Here we are loading the last 32 bytes, including 31 bytes of &#39;s&#39;.
+            // Here we are loading the last 32 bytes, including 31 bytes of 's'.
             v := byte(0, mload(add(signature, 96)))
         }
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
 
@@ -43,7 +43,7 @@ contract Token {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -62,10 +62,10 @@ contract Token {
     /*
      * NOTE:
      * The following variables were optional. Now, they are included in ERC 223 interface.
-     * They allow one to customise the token contract &amp; in no way influences the core functionality.
+     * They allow one to customise the token contract & in no way influences the core functionality.
      */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
 
 
@@ -131,7 +131,7 @@ contract RaidenMicroTransferChannels {
     uint32 public challenge_period;
 
     // Contract semantic version
-    string public constant version = &#39;0.2.0&#39;;
+    string public constant version = '0.2.0';
 
     // We temporarily limit total token deposits in a channel to 100 tokens with 18 decimals.
     // This was calculated just for RDN with its current (as of 30/11/2017) price and should
@@ -141,10 +141,10 @@ contract RaidenMicroTransferChannels {
 
     Token public token;
 
-    mapping (bytes32 =&gt; Channel) public channels;
-    mapping (bytes32 =&gt; ClosingRequest) public closing_requests;
-    mapping (address =&gt; bool) public trusted_contracts;
-    mapping (bytes32 =&gt; uint192) public withdrawn_balances;
+    mapping (bytes32 => Channel) public channels;
+    mapping (bytes32 => ClosingRequest) public closing_requests;
+    mapping (address => bool) public trusted_contracts;
+    mapping (bytes32 => uint192) public withdrawn_balances;
 
     // 24 bytes (deposit) + 4 bytes (block number)
     struct Channel {
@@ -224,7 +224,7 @@ contract RaidenMicroTransferChannels {
     /// @param _token_address The address of the Token used by the uRaiden contract.
     /// @param _challenge_period A fixed number of blocks representing the challenge period.
     /// We enforce a minimum of 500 blocks waiting period.
-    /// after a sender requests the closing of the channel without the receiver&#39;s signature.
+    /// after a sender requests the closing of the channel without the receiver's signature.
     /// @param _trusted_contracts Array of contract addresses that can be trusted to
     /// open and top up channels on behalf of a sender.
     function RaidenMicroTransferChannels(
@@ -235,12 +235,12 @@ contract RaidenMicroTransferChannels {
     {
         require(_token_address != 0x0);
         require(addressHasCode(_token_address));
-        require(_challenge_period &gt;= 500);
+        require(_challenge_period >= 500);
 
         token = Token(_token_address);
 
         // Check if the contract is indeed a token contract
-        require(token.totalSupply() &gt; 0);
+        require(token.totalSupply() > 0);
 
         challenge_period = _challenge_period;
         owner_address = msg.sender;
@@ -308,7 +308,7 @@ contract RaidenMicroTransferChannels {
     /// @notice Function that allows a delegate contract to create a new channel between
     /// `_sender_address` and `_receiver_address` and transfers the token deposit to this contract.
     /// Can only be called by a trusted contract. Compatibility with ERC20 tokens.
-    /// @param _sender_address The sender&#39;s address in behalf of whom the delegate sends tokens.
+    /// @param _sender_address The sender's address in behalf of whom the delegate sends tokens.
     /// @param _receiver_address The address that receives tokens.
     /// @param _deposit The amount of tokens that the sender escrows.
     function createChannelDelegate(
@@ -351,7 +351,7 @@ contract RaidenMicroTransferChannels {
 
     /// @notice Function that allows a delegate contract to increase the channel deposit
     /// with `_added_deposit`. Can only be called by a trusted contract. Compatibility with ERC20 tokens.
-    /// @param _sender_address The sender&#39;s address in behalf of whom the delegate sends tokens.
+    /// @param _sender_address The sender's address in behalf of whom the delegate sends tokens.
     /// @param _receiver_address The address that receives tokens.
     /// @param _open_block_number The block number at which a channel between the
     /// sender and receiver was created.
@@ -391,7 +391,7 @@ contract RaidenMicroTransferChannels {
         bytes _balance_msg_sig)
         external
     {
-        require(_balance &gt; 0);
+        require(_balance > 0);
 
         // Derive sender address from signed balance proof
         address sender_address = extractBalanceProofSignature(
@@ -404,13 +404,13 @@ contract RaidenMicroTransferChannels {
         bytes32 key = getKey(sender_address, msg.sender, _open_block_number);
 
         // Make sure the channel exists
-        require(channels[key].open_block_number &gt; 0);
+        require(channels[key].open_block_number > 0);
 
         // Make sure the channel is not in the challenge period
         require(closing_requests[key].settle_block_number == 0);
 
-        require(_balance &lt;= channels[key].deposit);
-        require(withdrawn_balances[key] &lt; _balance);
+        require(_balance <= channels[key].deposit);
+        require(withdrawn_balances[key] < _balance);
 
         uint192 remaining_balance = _balance - withdrawn_balances[key];
         withdrawn_balances[key] = _balance;
@@ -428,7 +428,7 @@ contract RaidenMicroTransferChannels {
     /// sender and receiver was created.
     /// @param _balance The amount of tokens owed by the sender to the receiver.
     /// @param _balance_msg_sig The balance message signed by the sender.
-    /// @param _closing_sig The receiver&#39;s signed balance message, containing the sender&#39;s address.
+    /// @param _closing_sig The receiver's signed balance message, containing the sender's address.
     function cooperativeClose(
         address _receiver_address,
         uint32 _open_block_number,
@@ -472,13 +472,13 @@ contract RaidenMicroTransferChannels {
     {
         bytes32 key = getKey(msg.sender, _receiver_address, _open_block_number);
 
-        require(channels[key].open_block_number &gt; 0);
+        require(channels[key].open_block_number > 0);
         require(closing_requests[key].settle_block_number == 0);
-        require(_balance &lt;= channels[key].deposit);
+        require(_balance <= channels[key].deposit);
 
         // Mark channel as closed
         closing_requests[key].settle_block_number = uint32(block.number) + challenge_period;
-        require(closing_requests[key].settle_block_number &gt; block.number);
+        require(closing_requests[key].settle_block_number > block.number);
         closing_requests[key].closing_balance = _balance;
         ChannelCloseRequested(msg.sender, _receiver_address, _open_block_number, _balance);
     }
@@ -493,10 +493,10 @@ contract RaidenMicroTransferChannels {
         bytes32 key = getKey(msg.sender, _receiver_address, _open_block_number);
 
         // Make sure an uncooperativeClose has been initiated
-        require(closing_requests[key].settle_block_number &gt; 0);
+        require(closing_requests[key].settle_block_number > 0);
 
         // Make sure the challenge_period has ended
-	    require(block.number &gt; closing_requests[key].settle_block_number);
+	    require(block.number > closing_requests[key].settle_block_number);
 
         settleChannel(msg.sender, _receiver_address, _open_block_number,
             closing_requests[key].closing_balance
@@ -519,7 +519,7 @@ contract RaidenMicroTransferChannels {
         returns (bytes32, uint192, uint32, uint192, uint192)
     {
         bytes32 key = getKey(_sender_address, _receiver_address, _open_block_number);
-        require(channels[key].open_block_number &gt; 0);
+        require(channels[key].open_block_number > 0);
 
         return (
             key,
@@ -538,7 +538,7 @@ contract RaidenMicroTransferChannels {
     /// @param _trusted_contracts Array of contract addresses that can be trusted to
     /// open and top up channels on behalf of a sender.
     function addTrustedContracts(address[] _trusted_contracts) isOwner public {
-        for (uint256 i = 0; i &lt; _trusted_contracts.length; i++) {
+        for (uint256 i = 0; i < _trusted_contracts.length; i++) {
             if (addressHasCode(_trusted_contracts[i])) {
                 trusted_contracts[_trusted_contracts[i]] = true;
                 TrustedContract(_trusted_contracts[i], true);
@@ -550,7 +550,7 @@ contract RaidenMicroTransferChannels {
     /// @param _trusted_contracts Array of contract addresses to be removed from
     /// the trusted_contracts mapping.
     function removeTrustedContracts(address[] _trusted_contracts) isOwner public {
-        for (uint256 i = 0; i &lt; _trusted_contracts.length; i++) {
+        for (uint256 i = 0; i < _trusted_contracts.length; i++) {
             if (trusted_contracts[_trusted_contracts[i]]) {
                 trusted_contracts[_trusted_contracts[i]] = false;
                 TrustedContract(_trusted_contracts[i], false);
@@ -577,20 +577,20 @@ contract RaidenMicroTransferChannels {
     {
         // The variable names from below will be shown to the sender when signing
         // the balance proof, so they have to be kept in sync with the Dapp client.
-        // The hashed strings should be kept in sync with this function&#39;s parameters
+        // The hashed strings should be kept in sync with this function's parameters
         // (variable names and types).
         // ! Note that EIP712 might change how hashing is done, triggering a
         // new contract deployment with updated code.
         bytes32 message_hash = keccak256(
             keccak256(
-                &#39;string message_id&#39;,
-                &#39;address receiver&#39;,
-                &#39;uint32 block_created&#39;,
-                &#39;uint192 balance&#39;,
-                &#39;address contract&#39;
+                'string message_id',
+                'address receiver',
+                'uint32 block_created',
+                'uint192 balance',
+                'address contract'
             ),
             keccak256(
-                &#39;Sender balance proof signature&#39;,
+                'Sender balance proof signature',
                 _receiver_address,
                 _open_block_number,
                 _balance,
@@ -609,7 +609,7 @@ contract RaidenMicroTransferChannels {
     /// @param _open_block_number The block number at which a channel between the
     /// sender and receiver was created.
     /// @param _balance The amount of tokens owed by the sender to the receiver.
-    /// @param _closing_sig The receiver&#39;s signed balance message, containing the sender&#39;s address.
+    /// @param _closing_sig The receiver's signed balance message, containing the sender's address.
     /// @return Address of the closing signature signer.
     function extractClosingSignature(
         address _sender_address,
@@ -622,20 +622,20 @@ contract RaidenMicroTransferChannels {
     {
         // The variable names from below will be shown to the sender when signing
         // the balance proof, so they have to be kept in sync with the Dapp client.
-        // The hashed strings should be kept in sync with this function&#39;s parameters
+        // The hashed strings should be kept in sync with this function's parameters
         // (variable names and types).
         // ! Note that EIP712 might change how hashing is done, triggering a
         // new contract deployment with updated code.
         bytes32 message_hash = keccak256(
             keccak256(
-                &#39;string message_id&#39;,
-                &#39;address sender&#39;,
-                &#39;uint32 block_created&#39;,
-                &#39;uint192 balance&#39;,
-                &#39;address contract&#39;
+                'string message_id',
+                'address sender',
+                'uint32 block_created',
+                'uint192 balance',
+                'address contract'
             ),
             keccak256(
-                &#39;Receiver closing signature&#39;,
+                'Receiver closing signature',
                 _sender_address,
                 _open_block_number,
                 _balance,
@@ -679,7 +679,7 @@ contract RaidenMicroTransferChannels {
         uint192 _deposit)
         private
     {
-        require(_deposit &lt;= channel_deposit_bugbounty_limit);
+        require(_deposit <= channel_deposit_bugbounty_limit);
 
         uint32 open_block_number = uint32(block.number);
 
@@ -708,17 +708,17 @@ contract RaidenMicroTransferChannels {
         uint192 _added_deposit)
         private
     {
-        require(_added_deposit &gt; 0);
-        require(_open_block_number &gt; 0);
+        require(_added_deposit > 0);
+        require(_open_block_number > 0);
 
         bytes32 key = getKey(_sender_address, _receiver_address, _open_block_number);
 
-        require(channels[key].open_block_number &gt; 0);
+        require(channels[key].open_block_number > 0);
         require(closing_requests[key].settle_block_number == 0);
-        require(channels[key].deposit + _added_deposit &lt;= channel_deposit_bugbounty_limit);
+        require(channels[key].deposit + _added_deposit <= channel_deposit_bugbounty_limit);
 
         channels[key].deposit += _added_deposit;
-        assert(channels[key].deposit &gt;= _added_deposit);
+        assert(channels[key].deposit >= _added_deposit);
         ChannelToppedUp(_sender_address, _receiver_address, _open_block_number, _added_deposit);
     }
 
@@ -739,9 +739,9 @@ contract RaidenMicroTransferChannels {
         bytes32 key = getKey(_sender_address, _receiver_address, _open_block_number);
         Channel memory channel = channels[key];
 
-        require(channel.open_block_number &gt; 0);
-        require(_balance &lt;= channel.deposit);
-        require(withdrawn_balances[key] &lt;= _balance);
+        require(channel.open_block_number > 0);
+        require(_balance <= channel.deposit);
+        require(withdrawn_balances[key] <= _balance);
 
         // Remove closed channel structures
         // channel.open_block_number will become 0
@@ -802,6 +802,6 @@ contract RaidenMicroTransferChannels {
             size := extcodesize(_contract)
         }
 
-        return size &gt; 0;
+        return size > 0;
     }
 }

@@ -11,20 +11,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -68,11 +68,11 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 
 	using SafeMath for uint256;
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-        require(now &gt;= freezeTransferTime);
+        require(now >= freezeTransferTime);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -86,11 +86,11 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(now &gt;= freezeTransferTime);
+		require(now >= freezeTransferTime);
 
 		var _allowance = allowed[_from][msg.sender];
 		balances[_to] = balances[_to].add(_value);
@@ -140,8 +140,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SIGToken is MintableToken {
 
-	string public constant name = &quot;Saxinvest Group Coin&quot;;
-	string public constant symbol = &quot;SIG&quot;;
+	string public constant name = "Saxinvest Group Coin";
+	string public constant symbol = "SIG";
 	uint32 public constant decimals = 18;
 
 	function SIGToken(uint256 _freezeTransferTime) public {

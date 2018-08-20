@@ -34,10 +34,10 @@ contract DynamicCeiling {
 
 contract StatusBuyer {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public deposits;
-  // Track the amount of SNT each account&#39;s &quot;buy&quot; calls have purchased from the ICO.
+  mapping (address => uint256) public deposits;
+  // Track the amount of SNT each account's "buy" calls have purchased from the ICO.
   // Allows tracking which accounts would have made it into the ICO on their own.
-  mapping (address =&gt; uint256) public purchased_snt;
+  mapping (address => uint256) public purchased_snt;
   // Bounty for executing buy.
   uint256 public bounty;
   // Track whether the contract has started buying tokens yet.
@@ -54,16 +54,16 @@ contract StatusBuyer {
   
   // Withdraws all ETH/SNT owned by the user in the ratio currently owned by the contract.
   function withdraw() {
-    // Store the user&#39;s deposit prior to withdrawal in a temporary variable.
+    // Store the user's deposit prior to withdrawal in a temporary variable.
     uint256 user_deposit = deposits[msg.sender];
-    // Update the user&#39;s deposit prior to sending ETH to prevent recursive call.
+    // Update the user's deposit prior to sending ETH to prevent recursive call.
     deposits[msg.sender] = 0;
     // Retrieve current ETH balance of contract (less the bounty).
     uint256 contract_eth_balance = this.balance - bounty;
     // Retrieve current SNT balance of contract.
     uint256 contract_snt_balance = token.balanceOf(address(this));
     // Calculate total SNT value of ETH and SNT owned by the contract.
-    // 1 ETH Wei -&gt; 10000 SNT Wei
+    // 1 ETH Wei -> 10000 SNT Wei
     uint256 contract_value = (contract_eth_balance * 10000) + contract_snt_balance;
     // Calculate amount of ETH to withdraw.
     uint256 eth_amount = (user_deposit * contract_eth_balance * 10000) / contract_value;
@@ -72,7 +72,7 @@ contract StatusBuyer {
     // No fee for withdrawing if user would have made it into the crowdsale alone.
     uint256 fee = 0;
     // 1% fee on portion of tokens user would not have been able to buy alone.
-    if (purchased_snt[msg.sender] &lt; snt_amount) {
+    if (purchased_snt[msg.sender] < snt_amount) {
       fee = (snt_amount - purchased_snt[msg.sender]) / 100;
     }
     // Send the funds.  Throws on failure to prevent loss of funds.
@@ -94,37 +94,37 @@ contract StatusBuyer {
   
   // Buys tokens in the crowdsale and rewards the given address.  Callable by anyone.
   // Enables Sybil attacks, wherein a single user creates multiple accounts with which
-  // to call &quot;buy_for&quot; to reward their primary account.  Useful for bounty-seekers who
-  // haven&#39;t sent ETH to the contract, but don&#39;t want to clean up Sybil dust, or for users
+  // to call "buy_for" to reward their primary account.  Useful for bounty-seekers who
+  // haven't sent ETH to the contract, but don't want to clean up Sybil dust, or for users
   // who have sent a large amount of ETH to the contract and want to reduce/avoid their fee.
   function buy_for(address user) {
-    // Short circuit to save gas if the contract doesn&#39;t have any ETH left to buy tokens.
+    // Short circuit to save gas if the contract doesn't have any ETH left to buy tokens.
     if (this.balance == 0) return;
     // Store the current curve/cap index as temporary variable to avoid calling twice.
     uint256 currentIndex = dynamic.currentIndex();
     // Check whether the current curve/cap is the last one revealed so far.
-    if ((currentIndex + 1) &gt;= dynamic.revealedCurves()) {
+    if ((currentIndex + 1) >= dynamic.revealedCurves()) {
       // Extract the buy limit of the current curve/cap.
       uint256 limit;
       (,limit,,) = dynamic.curves(currentIndex);
       // Short circuit to save gas if the ICO is currently at the cap, waiting for a reveal.
-      if (limit &lt;= sale.totalNormalCollected()) return;
+      if (limit <= sale.totalNormalCollected()) return;
     }
     // Record that the contract has started buying tokens.
     bought_tokens = true;
-    // Store the contract&#39;s ETH balance prior to the purchase in a temporary variable.
+    // Store the contract's ETH balance prior to the purchase in a temporary variable.
     uint256 old_contract_eth_balance = this.balance;
     // Transfer all the funds (less the bounty) to the Status ICO contract 
-    // to buy tokens.  Throws if the crowdsale hasn&#39;t started yet or has 
+    // to buy tokens.  Throws if the crowdsale hasn't started yet or has 
     // already completed, preventing loss of funds.
     sale.proxyPayment.value(this.balance - bounty)(address(this));
     // Verify contract ETH balance has not increased instead of decreased.
-    if (this.balance &gt; old_contract_eth_balance) throw;
+    if (this.balance > old_contract_eth_balance) throw;
     // Calculate ETH spent to buy tokens.
     uint256 eth_spent = old_contract_eth_balance - this.balance;
-    // Update user&#39;s number of purchased SNT to include this purchase.
+    // Update user's number of purchased SNT to include this purchase.
     purchased_snt[user] += (eth_spent * 10000);
-    // Calculate the user&#39;s bounty proportionally to the amount purchased.
+    // Calculate the user's bounty proportionally to the amount purchased.
     uint256 user_bounty = (bounty * eth_spent) / old_contract_eth_balance;
     // Update the bounty prior to sending ETH to prevent recursive call.
     bounty -= user_bounty;
@@ -134,16 +134,16 @@ contract StatusBuyer {
   
   // A helper function for the default function, allowing contracts to interact.
   function default_helper() payable {
-    // Only allow deposits if the contract hasn&#39;t already purchased the tokens.
+    // Only allow deposits if the contract hasn't already purchased the tokens.
     if (!bought_tokens) {
       // Update records of deposited ETH to include the received amount.
       deposits[msg.sender] += msg.value;
     }
-    // Withdraw the sender&#39;s ETH and SNT if the contract has started purchasing SNT.
+    // Withdraw the sender's ETH and SNT if the contract has started purchasing SNT.
     else {
       // Reject ETH sent after the contract has already purchased tokens.
       if (msg.value != 0) throw;
-      // Withdraw user&#39;s funds if they sent 0 ETH to the contract after the ICO.
+      // Withdraw user's funds if they sent 0 ETH to the contract after the ICO.
       withdraw();
     }
   }

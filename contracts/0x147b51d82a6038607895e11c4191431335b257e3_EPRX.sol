@@ -59,11 +59,11 @@ contract Owned {
 library SafeMathMod {// Partial SafeMath Library
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a - b) &lt; a);
+        require((c = a - b) < a);
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a + b) &gt; a);
+        require((c = a + b) > a);
     }
 }
 
@@ -80,9 +80,9 @@ contract EPRX is Owned, ERC20Token  {
     * @storage allowed Holds the allowable balance to be transferable by another address.
     */
 
-    string constant public name = &quot;eProxy&quot;;
+    string constant public name = "eProxy";
 
-    string constant public symbol = &quot;ePRX&quot;;
+    string constant public symbol = "ePRX";
 
     uint8 constant public decimals = 8;
 
@@ -90,10 +90,10 @@ contract EPRX is Owned, ERC20Token  {
 	
 	address public issuingTokenOwner;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     // Flag that determines if the token is transferable or not.
     bool public transfersEnabled;
@@ -147,7 +147,7 @@ contract EPRX is Owned, ERC20Token  {
             require(transfersEnabled);
 
             // The standard ERC20 transferFrom functionality
-            // require(allowed[_from][msg.sender] &gt;= _amount);
+            // require(allowed[_from][msg.sender] >= _amount);
 			allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         }
 
@@ -168,7 +168,7 @@ contract EPRX is Owned, ERC20Token  {
 		}
 
 		// Do not allow transfer to 0x0 or the token contract itself
-		require((_to != 0) &amp;&amp; (_to != address(this)));
+		require((_to != 0) && (_to != address(this)));
 
 		/* SafeMathMOd.sub will throw if there is not enough balance
 		   and if the transfer value is 0. */
@@ -181,7 +181,7 @@ contract EPRX is Owned, ERC20Token  {
         return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public view returns (uint256) {
         return balanceOf[_owner];
@@ -196,7 +196,7 @@ contract EPRX is Owned, ERC20Token  {
     function approve(address _spender, uint256 _amount) public returns (bool) {
         require(transfersEnabled);
 
-        /* Ensures address &quot;0x0&quot; is not assigned allowance. */
+        /* Ensures address "0x0" is not assigned allowance. */
         require(_spender != address(0));
 
         // To change the approve amount you first have to reduce the addresses`
@@ -258,10 +258,10 @@ contract EPRX is Owned, ERC20Token  {
         ERC20Token oldToken = ERC20Token(0x81BE91c7E74Ad0957B4156F782263e7B0B88cF7b);
         uint256 oldTokenBalance = oldToken.balanceOf(msg.sender);
 
-        require(oldTokenBalance &gt; 0);
+        require(oldTokenBalance > 0);
 
         // User must first approve address(this) as a spender by calling the below
-        // approve(&lt;address of this contract&gt;, oldTokenBalance);
+        // approve(<address of this contract>, oldTokenBalance);
 		
         // Convert old proxy token to new token for any user authorizing the transfer
         if(oldToken.transferFrom(msg.sender, issuingTokenOwner, oldTokenBalance)) {

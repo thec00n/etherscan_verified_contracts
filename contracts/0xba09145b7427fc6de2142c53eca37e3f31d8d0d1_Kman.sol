@@ -159,6 +159,6 @@ contract ERC20Interface
 contract BIT
 {
     function transfer(address, uint256) public returns(bool);
-    mapping(address =&gt; mapping(address =&gt; uint256)) public gamePlayers;
+    mapping(address => mapping(address => uint256)) public gamePlayers;
     function balanceOf(address customerAddress) public view returns(uint256);
 }

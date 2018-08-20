@@ -205,7 +205,7 @@ contract Whitelist is IWhitelist, TransferableOwnership {
         uint index;
     }
 
-    mapping (address =&gt; Entry) internal list;
+    mapping (address => Entry) internal list;
     address[] internal listIndex;
 
 
@@ -216,7 +216,7 @@ contract Whitelist is IWhitelist, TransferableOwnership {
      * @return whether `_account` is has an entry in the whitelist
      */
     function hasEntry(address _account) public constant returns (bool) {
-        return listIndex.length &gt; 0 &amp;&amp; _account == listIndex[list[_account].index];
+        return listIndex.length > 0 && _account == listIndex[list[_account].index];
     }
 
 

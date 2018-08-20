@@ -34,9 +34,9 @@ contract Lotthereum is Mortal {
     bytes32 private hash;
 
     Round[] private rounds;
-    mapping (uint =&gt; Bet[]) bets;
-    mapping (address =&gt; uint) private balances;
-    mapping (uint =&gt; address[]) winners;
+    mapping (uint => Bet[]) bets;
+    mapping (address => uint) private balances;
+    mapping (uint => address[]) winners;
 
     struct Round {
         uint id;
@@ -88,7 +88,7 @@ contract Lotthereum is Mortal {
     }
 
     function payout() internal {
-        for (uint i = 0; i &lt; bets[currentRound].length; i++) {
+        for (uint i = 0; i < bets[currentRound].length; i++) {
             if (bets[currentRound][i].bet == rounds[currentRound].number) {
                 uint id = winners[currentRound].length;
                 winners[currentRound].length += 1;
@@ -96,9 +96,9 @@ contract Lotthereum is Mortal {
             }
         }
 
-        if (winners[currentRound].length &gt; 0) {
+        if (winners[currentRound].length > 0) {
             uint prize = rounds[currentRound].prize / winners[currentRound].length;
-            for (i = 0; i &lt; winners[currentRound].length; i++) {
+            for (i = 0; i < winners[currentRound].length; i++) {
                 balances[winners[currentRound][i]] += prize;
                 RoundWinner(winners[currentRound][i], prize);
             }
@@ -115,7 +115,7 @@ contract Lotthereum is Mortal {
     }
 
     function getBlockHash(uint i) constant returns (bytes32 blockHash) {
-        if (i &gt; 256) {
+        if (i > 256) {
             i = 256;
         }
         uint blockNumber = block.number - i;
@@ -126,8 +126,8 @@ contract Lotthereum is Mortal {
         uint8 _b = 1;
         uint8 mint = 0;
         bool decimals = false;
-        for (uint i = _a.length - 1; i &gt;= 0; i--) {
-            if ((_a[i] &gt;= 48) &amp;&amp; (_a[i] &lt;= 57)) {
+        for (uint i = _a.length - 1; i >= 0; i--) {
+            if ((_a[i] >= 48) && (_a[i] <= 57)) {
                 if (decimals) {
                     if (_b == 0) {
                         break;
@@ -150,7 +150,7 @@ contract Lotthereum is Mortal {
             return false;
         }
 
-        if (msg.value &lt; rounds[currentRound].minAmountByBet) {
+        if (msg.value < rounds[currentRound].minAmountByBet) {
             return false;
         }
 
@@ -172,7 +172,7 @@ contract Lotthereum is Mortal {
 
     function withdraw() public returns (uint) {
         uint amount = getBalance();
-        if (amount &gt; 0) {
+        if (amount > 0) {
             balances[msg.sender] = 0;
             msg.sender.transfer(amount);
             return amount;
@@ -182,7 +182,7 @@ contract Lotthereum is Mortal {
 
     function getBalance() constant returns (uint) {
         uint amount = balances[msg.sender];
-        if ((amount &gt; 0) &amp;&amp; (amount &lt; this.balance)) {
+        if ((amount > 0) && (amount < this.balance)) {
             return amount;
         }
         return 0;

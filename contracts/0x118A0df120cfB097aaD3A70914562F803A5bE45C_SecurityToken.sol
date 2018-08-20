@@ -6,19 +6,19 @@ pragma solidity ^0.4.24;
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -80,8 +80,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -96,9 +96,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -106,7 +106,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -115,7 +115,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -127,7 +127,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -173,7 +173,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -191,8 +191,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -275,7 +275,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -317,7 +317,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 
     /**
      * @notice mints new tokens and assigns them to the target _investor.
-     * Can only be called by the STO attached to the token (Or by the ST owner if there&#39;s no STO attached yet)
+     * Can only be called by the STO attached to the token (Or by the ST owner if there's no STO attached yet)
      */
     function mint(address _investor, uint256 _amount) public returns (bool success);
 
@@ -335,7 +335,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -518,8 +518,8 @@ contract IModuleFactory is Ownable {
 
     //Pull function sig from _data
     function getSig(bytes _data) internal pure returns (bytes4 sig) {
-        uint len = _data.length &lt; 4 ? _data.length : 4;
-        for (uint i = 0; i &lt; len; i++) {
+        uint len = _data.length < 4 ? _data.length : 4;
+        for (uint i = 0; i < len; i++) {
             sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (len - 1 - i))));
         }
     }
@@ -563,7 +563,7 @@ contract IModule {
 
     address public securityToken;
 
-    bytes32 public constant FEE_ADMIN = &quot;FEE_ADMIN&quot;;
+    bytes32 public constant FEE_ADMIN = "FEE_ADMIN";
 
     ERC20 public polyToken;
 
@@ -587,22 +587,22 @@ contract IModule {
     modifier withPerm(bytes32 _perm) {
         bool isOwner = msg.sender == ISecurityToken(securityToken).owner();
         bool isFactory = msg.sender == factory;
-        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), &quot;Permission check failed&quot;);
+        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), "Permission check failed");
         _;
     }
 
     modifier onlyOwner {
-        require(msg.sender == ISecurityToken(securityToken).owner(), &quot;Sender is not owner&quot;);
+        require(msg.sender == ISecurityToken(securityToken).owner(), "Sender is not owner");
         _;
     }
 
     modifier onlyFactory {
-        require(msg.sender == factory, &quot;Sender is not factory&quot;);
+        require(msg.sender == factory, "Sender is not factory");
         _;
     }
 
     modifier onlyFactoryOwner {
-        require(msg.sender == IModuleFactory(factory).owner(), &quot;Sender is not factory owner&quot;);
+        require(msg.sender == IModuleFactory(factory).owner(), "Sender is not factory owner");
         _;
     }
 
@@ -615,7 +615,7 @@ contract IModule {
      * @notice used to withdraw the fee by the factory owner
      */
     function takeFee(uint256 _amount) public withPerm(FEE_ADMIN) returns(bool) {
-        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), &quot;Unable to take fee&quot;);
+        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), "Unable to take fee");
         return true;
     }
 }
@@ -758,7 +758,7 @@ contract ReclaimTokens is Ownable {
  */
 contract PolymathRegistry is ReclaimTokens {
 
-    mapping (bytes32 =&gt; address) public storedAddresses;
+    mapping (bytes32 => address) public storedAddresses;
 
     event LogChangeAddress(string _nameKey, address indexed _oldAddress, address indexed _newAddress);
 
@@ -769,7 +769,7 @@ contract PolymathRegistry is ReclaimTokens {
      */
     function getAddress(string _nameKey) view public returns(address) {
         bytes32 key = keccak256(bytes(_nameKey));
-        require(storedAddresses[key] != address(0), &quot;Invalid address key&quot;);
+        require(storedAddresses[key] != address(0), "Invalid address key");
         return storedAddresses[key];
     }
 
@@ -801,17 +801,17 @@ contract RegistryUpdater is Ownable {
     }
 
     function updateFromRegistry() onlyOwner public {
-        moduleRegistry = PolymathRegistry(polymathRegistry).getAddress(&quot;ModuleRegistry&quot;);
-        securityTokenRegistry = PolymathRegistry(polymathRegistry).getAddress(&quot;SecurityTokenRegistry&quot;);
-        tickerRegistry = PolymathRegistry(polymathRegistry).getAddress(&quot;TickerRegistry&quot;);
-        polyToken = PolymathRegistry(polymathRegistry).getAddress(&quot;PolyToken&quot;);
+        moduleRegistry = PolymathRegistry(polymathRegistry).getAddress("ModuleRegistry");
+        securityTokenRegistry = PolymathRegistry(polymathRegistry).getAddress("SecurityTokenRegistry");
+        tickerRegistry = PolymathRegistry(polymathRegistry).getAddress("TickerRegistry");
+        polyToken = PolymathRegistry(polymathRegistry).getAddress("PolyToken");
     }
 
 }
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="74061119171b3446">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="74061119171b3446">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -850,7 +850,7 @@ contract ReentrancyGuard {
 contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     using SafeMath for uint256;
 
-    bytes32 public constant securityTokenVersion = &quot;0.0.1&quot;;
+    bytes32 public constant securityTokenVersion = "0.0.1";
 
     // Reference to token burner contract
     ITokenBurner public tokenBurner;
@@ -869,20 +869,20 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
         uint256 value;
     }
 
-    mapping (address =&gt; Checkpoint[]) public checkpointBalances;
+    mapping (address => Checkpoint[]) public checkpointBalances;
     Checkpoint[] public checkpointTotalSupply;
 
     bool public finishedIssuerMinting = false;
     bool public finishedSTOMinting = false;
 
-    mapping (bytes4 =&gt; bool) transferFunctions;
+    mapping (bytes4 => bool) transferFunctions;
 
     // Module list should be order agnostic!
-    mapping (uint8 =&gt; ModuleData[]) public modules;
+    mapping (uint8 => ModuleData[]) public modules;
 
     uint8 public constant MAX_MODULES = 20;
 
-    mapping (address =&gt; bool) public investorListed;
+    mapping (address => bool) public investorListed;
 
     // Emit at the time when module get added
     event LogModuleAdded(
@@ -919,22 +919,22 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     modifier onlyModule(uint8 _moduleType, bool _fallback) {
       //Loop over all modules of type _moduleType
         bool isModuleType = false;
-        for (uint8 i = 0; i &lt; modules[_moduleType].length; i++) {
+        for (uint8 i = 0; i < modules[_moduleType].length; i++) {
             isModuleType = isModuleType || (modules[_moduleType][i].moduleAddress == msg.sender);
         }
-        if (_fallback &amp;&amp; !isModuleType) {
+        if (_fallback && !isModuleType) {
             if (_moduleType == STO_KEY)
-                require(modules[_moduleType].length == 0 &amp;&amp; msg.sender == owner, &quot;Sender is not owner or STO module is attached&quot;);
+                require(modules[_moduleType].length == 0 && msg.sender == owner, "Sender is not owner or STO module is attached");
             else
-                require(msg.sender == owner, &quot;Sender is not owner&quot;);
+                require(msg.sender == owner, "Sender is not owner");
         } else {
-            require(isModuleType, &quot;Sender is not correct module type&quot;);
+            require(isModuleType, "Sender is not correct module type");
         }
         _;
     }
 
     modifier checkGranularity(uint256 _amount) {
-        require(_amount % granularity == 0, &quot;Unable to modify token balances at this granularity&quot;);
+        require(_amount % granularity == 0, "Unable to modify token balances at this granularity");
         _;
     }
 
@@ -942,9 +942,9 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     // for the finishedSTOMinting flag because only STOs and owner are allowed for minting
     modifier isMintingAllowed() {
         if (msg.sender == owner) {
-            require(!finishedIssuerMinting, &quot;Minting is finished for Issuer&quot;);
+            require(!finishedIssuerMinting, "Minting is finished for Issuer");
         } else {
-            require(!finishedSTOMinting, &quot;Minting is finished for STOs&quot;);
+            require(!finishedSTOMinting, "Minting is finished for STOs");
         }
         _;
     }
@@ -974,10 +974,10 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
         updateFromRegistry();
         tokenDetails = _tokenDetails;
         granularity = _granularity;
-        transferFunctions[bytes4(keccak256(&quot;transfer(address,uint256)&quot;))] = true;
-        transferFunctions[bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;))] = true;
-        transferFunctions[bytes4(keccak256(&quot;mint(address,uint256)&quot;))] = true;
-        transferFunctions[bytes4(keccak256(&quot;burn(uint256)&quot;))] = true;
+        transferFunctions[bytes4(keccak256("transfer(address,uint256)"))] = true;
+        transferFunctions[bytes4(keccak256("transferFrom(address,address,uint256)"))] = true;
+        transferFunctions[bytes4(keccak256("mint(address,uint256)"))] = true;
+        transferFunctions[bytes4(keccak256("burn(uint256)"))] = true;
     }
 
     /**
@@ -1012,15 +1012,15 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
         IModuleRegistry(moduleRegistry).useModule(_moduleFactory);
         IModuleFactory moduleFactory = IModuleFactory(_moduleFactory);
         uint8 moduleType = moduleFactory.getType();
-        require(modules[moduleType].length &lt; MAX_MODULES, &quot;Limit of MAX MODULES is reached&quot;);
+        require(modules[moduleType].length < MAX_MODULES, "Limit of MAX MODULES is reached");
         uint256 moduleCost = moduleFactory.setupCost();
-        require(moduleCost &lt;= _maxCost, &quot;Max Cost is always be greater than module cost&quot;);
+        require(moduleCost <= _maxCost, "Max Cost is always be greater than module cost");
         //Approve fee for module
-        require(ERC20(polyToken).approve(_moduleFactory, moduleCost), &quot;Not able to approve the module cost&quot;);
+        require(ERC20(polyToken).approve(_moduleFactory, moduleCost), "Not able to approve the module cost");
         //Creates instance of module from factory
         address module = moduleFactory.deploy(_data);
         //Approve ongoing budget
-        require(ERC20(polyToken).approve(module, _budget), &quot;Not able to approve the budget&quot;);
+        require(ERC20(polyToken).approve(module, _budget), "Not able to approve the budget");
         //Add to SecurityToken module map
         bytes32 moduleName = moduleFactory.getName();
         modules[moduleType].push(ModuleData(moduleName, module));
@@ -1034,10 +1034,10 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     * @param _moduleIndex is the index of the module within the chosen type
     */
     function removeModule(uint8 _moduleType, uint8 _moduleIndex) external onlyOwner {
-        require(_moduleIndex &lt; modules[_moduleType].length,
-        &quot;Module index doesn&#39;t exist as per the choosen module type&quot;);
+        require(_moduleIndex < modules[_moduleType].length,
+        "Module index doesn't exist as per the choosen module type");
         require(modules[_moduleType][_moduleIndex].moduleAddress != address(0),
-        &quot;Module contract address should not be 0x&quot;);
+        "Module contract address should not be 0x");
         //Take the last member of the list, and replace _moduleIndex with this, then shorten the list by one
         emit LogModuleRemoved(_moduleType, modules[_moduleType][_moduleIndex].moduleAddress, now);
         modules[_moduleType][_moduleIndex] = modules[_moduleType][modules[_moduleType].length - 1];
@@ -1052,13 +1052,13 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      * @return address
      */
     function getModule(uint8 _moduleType, uint _moduleIndex) public view returns (bytes32, address) {
-        if (modules[_moduleType].length &gt; 0) {
+        if (modules[_moduleType].length > 0) {
             return (
                 modules[_moduleType][_moduleIndex].name,
                 modules[_moduleType][_moduleIndex].moduleAddress
             );
         } else {
-            return (&quot;&quot;, address(0));
+            return ("", address(0));
         }
 
     }
@@ -1071,8 +1071,8 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      * @return address
      */
     function getModuleByName(uint8 _moduleType, bytes32 _name) public view returns (bytes32, address) {
-        if (modules[_moduleType].length &gt; 0) {
-            for (uint256 i = 0; i &lt; modules[_moduleType].length; i++) {
+        if (modules[_moduleType].length > 0) {
+            for (uint256 i = 0; i < modules[_moduleType].length; i++) {
                 if (modules[_moduleType][i].name == _name) {
                   return (
                       modules[_moduleType][i].name,
@@ -1080,9 +1080,9 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
                   );
                 }
             }
-            return (&quot;&quot;, address(0));
+            return ("", address(0));
         } else {
-            return (&quot;&quot;, address(0));
+            return ("", address(0));
         }
     }
 
@@ -1092,7 +1092,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     * @param _amount amount of POLY to withdraw
     */
     function withdrawPoly(uint256 _amount) public onlyOwner {
-        require(ERC20(polyToken).transfer(owner, _amount), &quot;In-sufficient balance&quot;);
+        require(ERC20(polyToken).transfer(owner, _amount), "In-sufficient balance");
     }
 
     /**
@@ -1102,13 +1102,13 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     * @param _budget new budget
     */
     function changeModuleBudget(uint8 _moduleType, uint8 _moduleIndex, uint256 _budget) public onlyOwner {
-        require(_moduleType != 0, &quot;Module type cannot be zero&quot;);
-        require(_moduleIndex &lt; modules[_moduleType].length, &quot;Incorrrect module index&quot;);
+        require(_moduleType != 0, "Module type cannot be zero");
+        require(_moduleIndex < modules[_moduleType].length, "Incorrrect module index");
         uint256 _currentAllowance = IERC20(polyToken).allowance(address(this), modules[_moduleType][_moduleIndex].moduleAddress);
-        if (_budget &lt; _currentAllowance) {
-            require(IERC20(polyToken).decreaseApproval(modules[_moduleType][_moduleIndex].moduleAddress, _currentAllowance.sub(_budget)), &quot;Insufficient balance to decreaseApproval&quot;);
+        if (_budget < _currentAllowance) {
+            require(IERC20(polyToken).decreaseApproval(modules[_moduleType][_moduleIndex].moduleAddress, _currentAllowance.sub(_budget)), "Insufficient balance to decreaseApproval");
         } else {
-            require(IERC20(polyToken).increaseApproval(modules[_moduleType][_moduleIndex].moduleAddress, _budget.sub(_currentAllowance)), &quot;Insufficient balance to increaseApproval&quot;);
+            require(IERC20(polyToken).increaseApproval(modules[_moduleType][_moduleIndex].moduleAddress, _budget.sub(_currentAllowance)), "Insufficient balance to increaseApproval");
         }
         emit LogModuleBudgetChanged(_moduleType, modules[_moduleType][_moduleIndex].moduleAddress, _budget);
     }
@@ -1127,7 +1127,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     * @param _granularity granularity level of the token
     */
     function changeGranularity(uint256 _granularity) public onlyOwner {
-        require(_granularity != 0, &quot;Granularity can not be 0&quot;);
+        require(_granularity != 0, "Granularity can not be 0");
         emit LogGranularityChanged(granularity, _granularity);
         granularity = _granularity;
     }
@@ -1143,7 +1143,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
             return;
         }
         // Check whether receiver is a new token holder
-        if ((balanceOf(_to) == 0) &amp;&amp; (_to != address(0))) {
+        if ((balanceOf(_to) == 0) && (_to != address(0))) {
             investorCount = investorCount.add(1);
         }
         // Check whether sender is moving all of their tokens
@@ -1151,7 +1151,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
             investorCount = investorCount.sub(1);
         }
         //Also adjust investor list
-        if (!investorListed[_to] &amp;&amp; (_to != address(0))) {
+        if (!investorListed[_to] && (_to != address(0))) {
             investors.push(_to);
             investorListed[_to] = true;
         }
@@ -1165,8 +1165,8 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
     * NB - pruning this list will mean you may not be able to iterate over investors on-chain as of a historical checkpoint
     */
     function pruneInvestors(uint256 _start, uint256 _iters) public onlyOwner {
-        for (uint256 i = _start; i &lt; Math.min256(_start.add(_iters), investors.length); i++) {
-            if ((i &lt; investors.length) &amp;&amp; (balanceOf(investors[i]) == 0)) {
+        for (uint256 i = _start; i < Math.min256(_start.add(_iters), investors.length); i++) {
+            if ((i < investors.length) && (balanceOf(investors[i]) == 0)) {
                 investorListed[investors[i]] = false;
                 investors[i] = investors[investors.length - 1];
                 investors.length--;
@@ -1257,7 +1257,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         adjustInvestorCount(msg.sender, _to, _value);
-        require(verifyTransfer(msg.sender, _to, _value), &quot;Transfer is not valid&quot;);
+        require(verifyTransfer(msg.sender, _to, _value), "Transfer is not valid");
         adjustBalanceCheckpoints(msg.sender);
         adjustBalanceCheckpoints(_to);
         require(super.transfer(_to, _value));
@@ -1273,7 +1273,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         adjustInvestorCount(_from, _to, _value);
-        require(verifyTransfer(_from, _to, _value), &quot;Transfer is not valid&quot;);
+        require(verifyTransfer(_from, _to, _value), "Transfer is not valid");
         adjustBalanceCheckpoints(_from);
         adjustBalanceCheckpoints(_to);
         require(super.transferFrom(_from, _to, _value));
@@ -1300,7 +1300,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
             bool isInvalid = false;
             bool isValid = false;
             bool isForceValid = false;
-            for (uint8 i = 0; i &lt; modules[TRANSFERMANAGER_KEY].length; i++) {
+            for (uint8 i = 0; i < modules[TRANSFERMANAGER_KEY].length; i++) {
                 ITransferManager.Result valid = ITransferManager(modules[TRANSFERMANAGER_KEY][i].moduleAddress).verifyTransfer(_from, _to, _amount, isTransfer);
                 if (valid == ITransferManager.Result.INVALID) {
                     isInvalid = true;
@@ -1335,15 +1335,15 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
 
     /**
      * @notice mints new tokens and assigns them to the target _investor.
-     * @dev Can only be called by the STO attached to the token (Or by the ST owner if there&#39;s no STO attached yet)
+     * @dev Can only be called by the STO attached to the token (Or by the ST owner if there's no STO attached yet)
      * @param _investor Address to whom the minted tokens will be dilivered
      * @param _amount Number of tokens get minted
      * @return success
      */
     function mint(address _investor, uint256 _amount) public onlyModule(STO_KEY, true) checkGranularity(_amount) isMintingAllowed() returns (bool success) {
-        require(_investor != address(0), &quot;Investor address should not be 0x&quot;);
+        require(_investor != address(0), "Investor address should not be 0x");
         adjustInvestorCount(address(0), _investor, _amount);
-        require(verifyTransfer(address(0), _investor, _amount), &quot;Transfer is not valid&quot;);
+        require(verifyTransfer(address(0), _investor, _amount), "Transfer is not valid");
         adjustBalanceCheckpoints(_investor);
         adjustTotalSupplyCheckpoints();
         totalSupply_ = totalSupply_.add(_amount);
@@ -1355,14 +1355,14 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
 
     /**
      * @notice mints new tokens and assigns them to the target _investor.
-     * Can only be called by the STO attached to the token (Or by the ST owner if there&#39;s no STO attached yet)
+     * Can only be called by the STO attached to the token (Or by the ST owner if there's no STO attached yet)
      * @param _investors A list of addresses to whom the minted tokens will be dilivered
      * @param _amounts A list of number of tokens get minted and transfer to corresponding address of the investor from _investor[] list
      * @return success
      */
     function mintMulti(address[] _investors, uint256[] _amounts) public onlyModule(STO_KEY, true) returns (bool success) {
-        require(_investors.length == _amounts.length, &quot;Mis-match in the length of the arrays&quot;);
-        for (uint256 i = 0; i &lt; _investors.length; i++) {
+        require(_investors.length == _amounts.length, "Mis-match in the length of the arrays");
+        for (uint256 i = 0; i < _investors.length; i++) {
             mint(_investors[i], _amounts[i]);
         }
         return true;
@@ -1382,7 +1382,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
             return false;
         }
 
-        for (uint8 i = 0; i &lt; modules[PERMISSIONMANAGER_KEY].length; i++) {
+        for (uint8 i = 0; i < modules[PERMISSIONMANAGER_KEY].length; i++) {
             if (IPermissionManager(modules[PERMISSIONMANAGER_KEY][i].moduleAddress).checkPermission(_delegate, _module, _perm)) {
                 return true;
             }
@@ -1403,16 +1403,16 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      */
     function burn(uint256 _value) checkGranularity(_value) public {
         adjustInvestorCount(msg.sender, address(0), _value);
-        require(tokenBurner != address(0), &quot;Token Burner contract address is not set yet&quot;);
-        require(verifyTransfer(msg.sender, address(0), _value), &quot;Transfer is not valid&quot;);
-        require(_value &lt;= balances[msg.sender], &quot;Value should no be greater than the balance of msg.sender&quot;);
+        require(tokenBurner != address(0), "Token Burner contract address is not set yet");
+        require(verifyTransfer(msg.sender, address(0), _value), "Transfer is not valid");
+        require(_value <= balances[msg.sender], "Value should no be greater than the balance of msg.sender");
         adjustBalanceCheckpoints(msg.sender);
         adjustTotalSupplyCheckpoints();
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
-        require(tokenBurner.burn(msg.sender, _value), &quot;Token burner process is not validated&quot;);
+        require(tokenBurner.burn(msg.sender, _value), "Token burner process is not validated");
         totalSupply_ = totalSupply_.sub(_value);
         emit Burnt(msg.sender, _value);
         emit Transfer(msg.sender, address(0), _value);
@@ -1424,8 +1424,8 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      * @return bytes4 sig
      */
     function getSig(bytes _data) internal pure returns (bytes4 sig) {
-        uint len = _data.length &lt; 4 ? _data.length : 4;
-        for (uint i = 0; i &lt; len; i++) {
+        uint len = _data.length < 4 ? _data.length : 4;
+        for (uint i = 0; i < len; i++) {
             sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (len - 1 - i))));
         }
     }
@@ -1435,7 +1435,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      * @return uint256
      */
     function createCheckpoint() public onlyModule(CHECKPOINT_KEY, true) returns(uint256) {
-        require(currentCheckpointId &lt; 2**256 - 1);
+        require(currentCheckpointId < 2**256 - 1);
         currentCheckpointId = currentCheckpointId + 1;
         emit LogCheckpointCreated(currentCheckpointId, now);
         return currentCheckpointId;
@@ -1458,7 +1458,7 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
      * @return uint256
      */
     function getValueAt(Checkpoint[] storage checkpoints, uint256 _checkpointId, uint256 _currentValue) internal view returns(uint256) {
-        require(_checkpointId &lt;= currentCheckpointId);
+        require(_checkpointId <= currentCheckpointId);
         //Checkpoint id 0 is when the token is first created - everyone has a zero balance
         if (_checkpointId == 0) {
           return 0;
@@ -1466,10 +1466,10 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
         if (checkpoints.length == 0) {
             return _currentValue;
         }
-        if (checkpoints[0].checkpointId &gt;= _checkpointId) {
+        if (checkpoints[0].checkpointId >= _checkpointId) {
             return checkpoints[0].value;
         }
-        if (checkpoints[checkpoints.length - 1].checkpointId &lt; _checkpointId) {
+        if (checkpoints[checkpoints.length - 1].checkpointId < _checkpointId) {
             return _currentValue;
         }
         if (checkpoints[checkpoints.length - 1].checkpointId == _checkpointId) {
@@ -1477,13 +1477,13 @@ contract SecurityToken is ISecurityToken, ReentrancyGuard, RegistryUpdater {
         }
         uint256 min = 0;
         uint256 max = checkpoints.length - 1;
-        while (max &gt; min) {
+        while (max > min) {
             uint256 mid = (max + min) / 2;
             if (checkpoints[mid].checkpointId == _checkpointId) {
                 max = mid;
                 break;
             }
-            if (checkpoints[mid].checkpointId &lt; _checkpointId) {
+            if (checkpoints[mid].checkpointId < _checkpointId) {
                 min = mid + 1;
             } else {
                 max = mid;

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82e6e7f6e7c2e3faebedeff8e7ecace1ed">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82e6e7f6e7c2e3faebedeff8e7ecace1ed">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function implementsERC721() public pure returns (bool);
@@ -26,14 +26,14 @@ contract YTIcons is ERC721 {
     /* CONSTANTS */
 
     /// Name and symbol of the non-fungible token (ERC721)
-    string public constant NAME = &quot;YTIcons&quot;;
-    string public constant SYMBOL = &quot;YTIcon&quot;;
+    string public constant NAME = "YTIcons";
+    string public constant SYMBOL = "YTIcon";
 
     /// The corporation address that will be used for its development (giveaway, game events...)
     address private _utilityFund = 0x6B06a2a15dCf3AE45b9F133Be6FD0Be5a9FAedC2;
 
-    /// When a card isn&#39;t verified, the normal share given to the beneficiary linked
-    /// to the card is given to the charity fund&#39;s address instead.
+    /// When a card isn't verified, the normal share given to the beneficiary linked
+    /// to the card is given to the charity fund's address instead.
     address private _charityFund = 0xF9864660c4aa89E241d7D44903D3c8A207644332;
 
     uint16 public _generation = 0;
@@ -55,25 +55,25 @@ contract YTIcons is ERC721 {
 
     Card[] private _cards;
 
-    /// A mapping from cards&#39; IDs to their prices [0], the last investment* [1] and their highest price [2].
+    /// A mapping from cards' IDs to their prices [0], the last investment* [1] and their highest price [2].
     /// *If someone buys an icon for 0.001 ETH, then the last investment of the card will be 0.001 ETH. If someone else buys it back at 0.002 ETH,
     /// then the last investment will be 0.002 ETH.
-    mapping (uint256 =&gt; uint256[3]) private _cardsPrices;
+    mapping (uint256 => uint256[3]) private _cardsPrices;
 
-    /// A mapping from cards&#39; names to the beneficiary addresses
-    mapping (uint256 =&gt; address) private _beneficiaryAddresses;
+    /// A mapping from cards' names to the beneficiary addresses
+    mapping (uint256 => address) private _beneficiaryAddresses;
 
-    /// A mapping from cards&#39; IDs to their owners
-    mapping (uint256 =&gt; address) private _cardsOwners;
+    /// A mapping from cards' IDs to their owners
+    mapping (uint256 => address) private _cardsOwners;
 
     /// A mapping from owner address to count of tokens that address owns.
-    /// Used for ERC721&#39;s method &#39;balanceOf()&#39; to resolve ownership count.
-    mapping (address =&gt; uint256) private _tokenPerOwners;
+    /// Used for ERC721's method 'balanceOf()' to resolve ownership count.
+    mapping (address => uint256) private _tokenPerOwners;
 
-    /// A mapping from cards&#39; ids to an address that has been approved to call
+    /// A mapping from cards' ids to an address that has been approved to call
     /// transferFrom(). Each Card can only have one approved address for transfer
     /// at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public _allowedAddresses;
+    mapping (uint256 => address) public _allowedAddresses;
 
 
     /* STRUCTURES */
@@ -92,7 +92,7 @@ contract YTIcons is ERC721 {
 
     /* ACCESS MODIFIERS */
 
-    /// Access modifier for owner&#39;s functionalities and actions only
+    /// Access modifier for owner's functionalities and actions only
     modifier ownerOnly() {
         require(msg.sender == _owner0x || msg.sender == _ownerA || msg.sender == _ownerB || msg.sender == _ownerC || msg.sender == _ownerD);
         _;
@@ -168,7 +168,7 @@ contract YTIcons is ERC721 {
         _transfer(oldOwner, newOwner, _tokenId);
     }
 
-    /// &quot;transfer&quot; lets the owner of a token send it to another user, similar to a standalone cryptocurrency.
+    /// "transfer" lets the owner of a token send it to another user, similar to a standalone cryptocurrency.
     function transfer(address _to, uint256 _tokenId) public {
         require(bytes(_cards[_tokenId].name).length != 0);
         require(!_cards[_tokenId].isLocked);
@@ -222,7 +222,7 @@ contract YTIcons is ERC721 {
 
     /// Create card
     function _createCard(string cardName, uint price, address cardOwner, address beneficiary, bool isLocked) private {
-        require(_cards.length &lt; 2^256 - 1);
+        require(_cards.length < 2^256 - 1);
         Card memory card = Card({
                                     generation: _generation,
                                     name: cardName,
@@ -281,7 +281,7 @@ contract YTIcons is ERC721 {
         _cards[tokenId].isLocked = false;
     }
 
-    /// Get the smart contract&#39;s balance out of the contract and transfers it to every related account.
+    /// Get the smart contract's balance out of the contract and transfers it to every related account.
     function payout() public ownerOnly {
         _payout();
     }
@@ -314,7 +314,7 @@ contract YTIcons is ERC721 {
 
     /* PUBLIC FUNCTIONS */
 
-    /// Get all of the useful card&#39;s informations.
+    /// Get all of the useful card's informations.
     function getCard(uint256 tokenId) public view returns (string cardName, uint16 generation, bool isLocked, uint256 price, address owner, address beneficiary, bool isVerified) {
         Card storage card = _cards[tokenId];
         cardName = card.name;
@@ -327,13 +327,13 @@ contract YTIcons is ERC721 {
         isVerified = _addressNotNull(_beneficiaryAddresses[tokenId]) ? true : false;
     }
 
-    /// Set a lower price if the sender is the card&#39;s owner.
+    /// Set a lower price if the sender is the card's owner.
     function setPrice(uint256 tokenId, uint256 newPrice) public {
         require(!_cards[tokenId].isLocked);
-        // If new price &gt; 0
+        // If new price > 0
         // If the new price is higher or equal to the basic investment of the owner (e.g. if someone buys a card 0.001 ETH, then the default investment will be 0.001)
         // If the new price is lower or equal than the highest price set by the algorithm.
-        require(newPrice &gt; 0 &amp;&amp; newPrice &gt;= _cardsPrices[tokenId][1] &amp;&amp; newPrice &lt;= _cardsPrices[tokenId][2]);
+        require(newPrice > 0 && newPrice >= _cardsPrices[tokenId][1] && newPrice <= _cardsPrices[tokenId][2]);
         require(msg.sender == _cardsOwners[tokenId]);
 
         _cardsPrices[tokenId][0] = newPrice;
@@ -342,20 +342,20 @@ contract YTIcons is ERC721 {
 
     function purchase(uint256 tokenId) public payable {
         require(!_cards[tokenId].isLocked);
-        require(_cardsPrices[tokenId][0] &gt; 0);
+        require(_cardsPrices[tokenId][0] > 0);
 
         address oldOwner = _cardsOwners[tokenId];
         address newOwner = msg.sender;
 
         uint256 sellingPrice = _cardsPrices[tokenId][0];
 
-        // Making sure the token owner isn&#39;t trying to purchase his/her own token.
+        // Making sure the token owner isn't trying to purchase his/her own token.
         require(oldOwner != newOwner);
 
         require(_addressNotNull(newOwner));
 
         // Making sure the amount sent is greater than or equal to the sellingPrice.
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
 
         uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 92), 100));
         uint256 beneficiaryPayment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 3), 100));
@@ -363,11 +363,11 @@ contract YTIcons is ERC721 {
         uint256 newPrice = 0;
 
         // Update prices
-        if (sellingPrice &lt; firstLimit) {
+        if (sellingPrice < firstLimit) {
             newPrice = SafeMath.div(SafeMath.mul(sellingPrice, 200), 92);
-        } else if (sellingPrice &lt; secondLimit) {
+        } else if (sellingPrice < secondLimit) {
             newPrice = SafeMath.div(SafeMath.mul(sellingPrice, 150), 92);
-        } else if (sellingPrice &lt; thirdLimit) {
+        } else if (sellingPrice < thirdLimit) {
             newPrice = SafeMath.div(SafeMath.mul(sellingPrice, 125), 92);
         } else {
             newPrice = SafeMath.div(SafeMath.mul(sellingPrice, 115), 92);
@@ -380,7 +380,7 @@ contract YTIcons is ERC721 {
         _transfer(oldOwner, newOwner, tokenId);
 
         // Pay previous owner
-        if (oldOwner != address(this) &amp;&amp; oldOwner != address(0)) {
+        if (oldOwner != address(this) && oldOwner != address(0)) {
             oldOwner.transfer(payment);
         }
 
@@ -405,7 +405,7 @@ contract YTIcons is ERC721 {
             uint256 resultIndex = 0;
 
             uint256 cardId;
-            for (cardId = 0; cardId &lt;= total; cardId++) {
+            for (cardId = 0; cardId <= total; cardId++) {
                 if (_cardsOwners[cardId] == owner) {
                     result[resultIndex] = cardId;
                     resultIndex++;
@@ -444,9 +444,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -454,7 +454,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 

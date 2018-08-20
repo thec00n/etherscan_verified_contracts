@@ -9,9 +9,9 @@ contract TC {
     uint256 public totalSupply;
  
     // 用mapping保存每个地址对应的余额
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     // 存储对账号的控制
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
  
     // 事件，用来通知客户端交易发生
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -36,9 +36,9 @@ contract TC {
         // 确保目标地址不为0x0，因为0x0地址代表销毁
         require(_to != 0x0);
         // 检查发送者余额
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // 确保转移为正数个
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
  
         // 以下用来检查交易，
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -70,7 +70,7 @@ contract TC {
      * @param _value 转移数额
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -112,7 +112,7 @@ contract TC {
      * 销毁我（创建交易者）账户中指定个代币
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -128,10 +128,10 @@ contract TC {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

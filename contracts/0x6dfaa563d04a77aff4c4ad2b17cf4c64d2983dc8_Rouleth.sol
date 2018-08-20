@@ -1,12 +1,12 @@
-//                       , ; ,   .-&#39;&quot;&quot;&quot;&#39;-.   , ; ,
-//                       \\|/  .&#39;          &#39;.  \|//
+//                       , ; ,   .-'"""'-.   , ; ,
+//                       \\|/  .'          '.  \|//
 //                        \-;-/   ()   ()   \-;-/
 //                        // ;               ; \\
 //                       //__; :.         .; ;__\\
-//                      `-----\&#39;.&#39;-.....-&#39;.&#39;/-----&#39;
-//                             &#39;.&#39;.-.-,_.&#39;.&#39;
-//                               &#39;(  (..-&#39;
-//                                 &#39;-&#39;
+//                      `-----\'.'-.....-'.'/-----'
+//                             '.'.-.-,_.'.'
+//                               '(  (..-'
+//                                 '-'
 //   WHYSOS3RIOUS   PRESENTS :   
 //   The ROULETH 
 //
@@ -36,7 +36,7 @@
 //  This will by default place a bet on number 7
 //  Wait 2 minutes (6 blocks) and send (with enough gas) 1 wei (or any amount, it will be refunded)
 //  This will spin the wheel and you will receive * 35 your bet if you win.
-//  Don&#39;t wait more than 200 blocks before you spin the wheel or your bet will expire.
+//  Don't wait more than 200 blocks before you spin the wheel or your bet will expire.
 //
 //  2) Advanced (via contract functions, e.g. Mist, cf. tutorial on my website for more details) :
 //  Import the contract in Mist wallet using the code of the ABI (link on my website)
@@ -45,7 +45,7 @@
 //  add the amount you want to bet.
 //  wait 6 blocks, then use the function spinTheWheel, this will solve the bet.
 //  You can only place one bet at a time before you spin the wheel.
-//  Don&#39;t wait more than 200 blocks before you spin the wheel or your bet will expire.
+//  Don't wait more than 200 blocks before you spin the wheel or your bet will expire.
 //
 //
 //
@@ -54,7 +54,7 @@
 //
 //   How to invest ?
 //   Import the contract in Mist Wallet using the code of the ABI (link on my website)
-//   Use the Invest function with an amount &gt;10 Ether (can change, check on my website)
+//   Use the Invest function with an amount >10 Ether (can change, check on my website)
 //   You will become an investor and share the profits and losses of the roulette
 //   proportionally to your investment. There is a 2% fee on investment to help with the server/website
 //   cost and also 2% on profit that go to the developper.
@@ -110,7 +110,7 @@ contract Rouleth
     uint maxBetsPerBlock; //limits the number of bets per blocks to prevent miner cheating
     uint nbBetsCurrentBlock; //counts the nb of bets in the block
     uint casinoStatisticalLimit;
-    //Current gamble value possibly lower than config (&lt;payroll/(20*35))
+    //Current gamble value possibly lower than config (<payroll/(20*35))
     uint256 currentMaxGamble; 
     //Gambles
     struct Gamble
@@ -127,12 +127,12 @@ contract Rouleth
     Gamble[] private gambles;
     uint firstActiveGamble; //pointer to track the first non spinned and non expired gamble.
     //Tracking progress of players
-    mapping (address=&gt;uint) gambleIndex; //current gamble index of the player
+    mapping (address=>uint) gambleIndex; //current gamble index of the player
     enum Status {waitingForBet, waitingForSpin} Status status; //gamble status
-    mapping (address=&gt;Status) playerStatus; //progress of the player&#39;s gamble
+    mapping (address=>Status) playerStatus; //progress of the player's gamble
 
     //**********************************************
-    //        Management &amp; Config FUNCTIONS        //
+    //        Management & Config FUNCTIONS        //
     //**********************************************
 	function  Rouleth() private //creation settings
     { 
@@ -140,7 +140,7 @@ contract Rouleth
         blockDelay=6; //delay to wait between bet and spin
 	blockExpiration=200; //delay after which gamble expires
         maxGamble=50 finney; //0.05 ether as max bet to start (payroll of 35 eth)
-        maxBetsPerBlock=2; // limit of 2 bets per block, to prevent multiple bets per miners (to keep max reward&lt;5ETH)
+        maxBetsPerBlock=2; // limit of 2 bets per block, to prevent multiple bets per miners (to keep max reward<5ETH)
         casinoStatisticalLimit=20;
     }
 	
@@ -184,26 +184,26 @@ contract Rouleth
 	onlyDeveloper
 	{
 	        // changes the statistical multiplier that guarantees the long run casino survival
-	        if (newCasinoStatLimit&lt;20) throw;
+	        if (newCasinoStatLimit<20) throw;
 	        casinoStatisticalLimit=newCasinoStatLimit;
 	        //Max number of bets per block to prevent miner cheating
 	        maxBetsPerBlock=newMaxBetsBlock;
                 //MAX BET : limited by payroll/(casinoStatisticalLimit*35) for statiscal confidence in longevity of casino
-		if (newMaxGamble&lt;=0 || newMaxGamble&gt;=this.balance/(20*35)) throw; 
+		if (newMaxGamble<=0 || newMaxGamble>=this.balance/(20*35)) throw; 
 		else { maxGamble=newMaxGamble; }
                 //MAX NB of INVESTORS (can only increase and max of 149)
-                if (newMaxInvestor&lt;setting_maxInvestors || newMaxInvestor&gt;149) throw;
+                if (newMaxInvestor<setting_maxInvestors || newMaxInvestor>149) throw;
                 else { setting_maxInvestors=newMaxInvestor;}
                 //MIN INVEST : 
                 setting_minInvestment=newMinInvestment;
                 //Invest LOCK PERIOD
-                if (setting_lockPeriod&gt;5184000) throw; //2 months max
+                if (setting_lockPeriod>5184000) throw; //2 months max
                 setting_lockPeriod=newLockPeriod;
 		        //Delay before roll :
-		if (blockDelay&lt;1) throw;
+		if (blockDelay<1) throw;
 		        blockDelay=newBlockDelay;
                 updateMaxBet();
-		if (newBlockExpiration&lt;100) throw;
+		if (newBlockExpiration<100) throw;
 		blockExpiration=newBlockExpiration;
 	}
  
@@ -226,7 +226,7 @@ contract Rouleth
     function updateMaxBet() private
     {
     //check that maxGamble setting is still within safety bounds
-        if (payroll/(casinoStatisticalLimit*35) &gt; maxGamble) 
+        if (payroll/(casinoStatisticalLimit*35) > maxGamble) 
 		{ 
 			currentMaxGamble=maxGamble;
                 }
@@ -240,7 +240,7 @@ contract Rouleth
     function checkBetValue() private returns(uint256 playerBetValue)
     {
         updateMaxBet();
-		if (msg.value &gt; currentMaxGamble) //if above max, send difference back
+		if (msg.value > currentMaxGamble) //if above max, send difference back
 		{
 		    msg.sender.send(msg.value-currentMaxGamble);
 		    playerBetValue=currentMaxGamble;
@@ -250,12 +250,12 @@ contract Rouleth
        }
 
 
-    //check number of bets in block (to prevent miner cheating and keep max reward per block &lt;5ETH)
+    //check number of bets in block (to prevent miner cheating and keep max reward per block <5ETH)
     modifier checkNbBetsCurrentBlock()
     {
-        if (gambles.length!=0 &amp;&amp; block.number==gambles[gambles.length-1].blockNumber) nbBetsCurrentBlock+=1;
+        if (gambles.length!=0 && block.number==gambles[gambles.length-1].blockNumber) nbBetsCurrentBlock+=1;
         else nbBetsCurrentBlock=0;
-        if (nbBetsCurrentBlock&gt;=maxBetsPerBlock) throw;
+        if (nbBetsCurrentBlock>=maxBetsPerBlock) throw;
         _
     }
     //check that the player is not playing already (unless it has expired)
@@ -264,7 +264,7 @@ contract Rouleth
         if (playerStatus[msg.sender]!=Status.waitingForBet)
         {
              //case not expired
-             if (gambles[gambleIndex[msg.sender]].blockNumber+blockExpiration&gt;block.number) throw;
+             if (gambles[gambleIndex[msg.sender]].blockNumber+blockExpiration>block.number) throw;
              //case expired
              else
              {
@@ -293,7 +293,7 @@ contract Rouleth
     checkNbBetsCurrentBlock
     {
         //check that number chosen is valid and records bet
-        if (numberChosen&gt;36) throw;
+        if (numberChosen>36) throw;
 		//check that wager is under limit
         uint256 betValue= checkBetValue();
 	    gambles.push(Gamble(msg.sender, false, false, BetTypes.number, numberChosen, betValue, block.number, 37));
@@ -439,7 +439,7 @@ contract Rouleth
     }
 
     //**********************************************
-    // Spin The Wheel &amp; Check Result FUNCTIONS//
+    // Spin The Wheel & Check Result FUNCTIONS//
     //**********************************************
 
 	event Win(address player, uint8 result, uint value_won);
@@ -450,10 +450,10 @@ contract Rouleth
         if (playerStatus[msg.sender]!=Status.waitingForSpin) throw;
 	_
 	}
-    //Prevents accidental sending of Eth when you shouldn&#39;t
+    //Prevents accidental sending of Eth when you shouldn't
     modifier noEthSent()
     {
-        if (msg.value&gt;0) msg.sender.send(msg.value);
+        if (msg.value>0) msg.sender.send(msg.value);
         _
     }
 
@@ -465,7 +465,7 @@ contract Rouleth
         //check that the player waited for the delay before spin
         //and also that the bet is not expired (200 blocks limit)
 	uint playerblock = gambles[gambleIndex[msg.sender]].blockNumber;
-	if (block.number&lt;playerblock+blockDelay || block.number&gt;playerblock+blockExpiration) throw;
+	if (block.number<playerblock+blockDelay || block.number>playerblock+blockExpiration) throw;
     else
 	{
 	    uint8 wheelResult;
@@ -486,7 +486,7 @@ function updateFirstActiveGamble(uint bet_id) private
               if (firstActiveGamble!=0) index=firstActiveGamble-1;
               while (true)
               {
-                 if (index&lt;gambles.length &amp;&amp; gambles[index].spinned)
+                 if (index<gambles.length && gambles[index].spinned)
                  {
                      index=index+1;
                  }
@@ -499,8 +499,8 @@ function updateFirstActiveGamble(uint bet_id) private
 	
 //checks if there are expired gambles
 modifier expireGambles{
-    if (  (gambles.length!=0 &amp;&amp; gambles.length-1&gt;=firstActiveGamble ) 
-          &amp;&amp; gambles[firstActiveGamble].blockNumber + blockExpiration &lt;= block.number &amp;&amp; !gambles[firstActiveGamble].spinned )  
+    if (  (gambles.length!=0 && gambles.length-1>=firstActiveGamble ) 
+          && gambles[firstActiveGamble].blockNumber + blockExpiration <= block.number && !gambles[firstActiveGamble].spinned )  
     { 
 	solveBet(gambles[firstActiveGamble].player, 255, false, 0);
         updateFirstActiveGamble(firstActiveGamble);
@@ -567,7 +567,7 @@ modifier expireGambles{
      {
             bool win;
             //win
-	    if (result%2==gambles[gambleIndex[msg.sender]].input &amp;&amp; result!=0)
+	    if (result%2==gambles[gambleIndex[msg.sender]].input && result!=0)
 	    {
                   win=true;                
              }
@@ -582,8 +582,8 @@ modifier expireGambles{
      {
             bool win;
             //win
-		 if (result!=0 &amp;&amp; ( (result&lt;19 &amp;&amp; gambles[gambleIndex[msg.sender]].input==0)
-			 || (result&gt;18 &amp;&amp; gambles[gambleIndex[msg.sender]].input==1)
+		 if (result!=0 && ( (result<19 && gambles[gambleIndex[msg.sender]].input==0)
+			 || (result>18 && gambles[gambleIndex[msg.sender]].input==1)
 			 ) )
 	    {
                   win=true;
@@ -599,7 +599,7 @@ modifier expireGambles{
       {
              bool red;
              //check if red
-             for (uint8 k; k&lt;18; k++)
+             for (uint8 k; k<18; k++)
              { 
                     if (red_list[k]==result) 
                     { 
@@ -610,8 +610,8 @@ modifier expireGambles{
              bool win;
              //win
              if ( result!=0
-                &amp;&amp; ( (gambles[gambleIndex[msg.sender]].input==0 &amp;&amp; red)  
-                || ( gambles[gambleIndex[msg.sender]].input==1 &amp;&amp; !red)  ) )
+                && ( (gambles[gambleIndex[msg.sender]].input==0 && red)  
+                || ( gambles[gambleIndex[msg.sender]].input==1 && !red)  ) )
              {
                   win=true;
              }
@@ -625,12 +625,12 @@ modifier expireGambles{
      { 
             bool win;
             //win on first dozen
-     		 if ( result!=0 &amp;&amp;
-                      ( (result&lt;13 &amp;&amp; gambles[gambleIndex[msg.sender]].input==0)
+     		 if ( result!=0 &&
+                      ( (result<13 && gambles[gambleIndex[msg.sender]].input==0)
      			||
-                     (result&gt;12 &amp;&amp; result&lt;25 &amp;&amp; gambles[gambleIndex[msg.sender]].input==1)
+                     (result>12 && result<25 && gambles[gambleIndex[msg.sender]].input==1)
                     ||
-                     (result&gt;24 &amp;&amp; gambles[gambleIndex[msg.sender]].input==2) ) )
+                     (result>24 && gambles[gambleIndex[msg.sender]].input==2) ) )
      	    {
                    win=true;                
              }
@@ -645,9 +645,9 @@ modifier expireGambles{
              bool win;
              //win
              if ( result!=0
-                &amp;&amp; ( (gambles[gambleIndex[msg.sender]].input==0 &amp;&amp; result%3==1)  
-                || ( gambles[gambleIndex[msg.sender]].input==1 &amp;&amp; result%3==2)
-                || ( gambles[gambleIndex[msg.sender]].input==2 &amp;&amp; result%3==0)  ) )
+                && ( (gambles[gambleIndex[msg.sender]].input==0 && result%3==1)  
+                || ( gambles[gambleIndex[msg.sender]].input==1 && result%3==2)
+                || ( gambles[gambleIndex[msg.sender]].input==2 && result%3==0)  ) )
              {
                   win=true;
              }
@@ -672,7 +672,7 @@ modifier expireGambles{
     }	
 	Investor[150] private investors ;
     //Balances of the investors
-    mapping (address=&gt;uint256) balance; 
+    mapping (address=>uint256) balance; 
     //Investor lockPeriod
     //lock time to avoid invest and withdraw for refresh only
     //also time during which you cannot be outbet by a new investor if it is full
@@ -692,7 +692,7 @@ modifier expireGambles{
      function invest()
      {
           // check that min 10 ETH is sent (variable setting)
-          if (msg.value&lt;setting_minInvestment) throw;
+          if (msg.value<setting_minInvestment) throw;
           // check if already investor
           bool alreadyInvestor;
           // reset the position counters to values out of bounds
@@ -701,9 +701,9 @@ modifier expireGambles{
           minCurrentInvest=10000000000000000000000000;//
           // update balances before altering the investor shares
           updateBalances();
-          // loop over investor&#39;s array to find if already investor, 
+          // loop over investor's array to find if already investor, 
           // or openPosition and cheapest UnlockedPosition
-          for (uint8 k = 0; k&lt;setting_maxInvestors; k++)
+          for (uint8 k = 0; k<setting_maxInvestors; k++)
           { 
                //captures an index of an open position
                if (investors[k].investor==0) openPosition=k; 
@@ -714,7 +714,7 @@ modifier expireGambles{
                     alreadyInvestor=true;
                 }
                //captures the index of the investor with the min investment (after lock period)
-               else if (investors[k].time+setting_lockPeriod&lt;now &amp;&amp; balance[investors[k].investor]&lt;minCurrentInvest &amp;&amp; investors[k].investor!=developer)
+               else if (investors[k].time+setting_lockPeriod<now && balance[investors[k].investor]<minCurrentInvest && investors[k].investor!=developer)
                {
                     cheapestUnlockedPosition=k;
                     minCurrentInvest=balance[investors[k].investor];
@@ -729,7 +729,7 @@ modifier expireGambles{
                     else
                     {
                          //subcase : investor has not outbid or all positions under lock period
-                         if (msg.value&lt;=minCurrentInvest || cheapestUnlockedPosition==255) throw;
+                         if (msg.value<=minCurrentInvest || cheapestUnlockedPosition==255) throw;
                          //subcase : investor outbid, record investor change and refund previous
                          else
                          {
@@ -764,10 +764,10 @@ modifier expireGambles{
         //before withdraw, update balances of the investors with the Profit and Loss sinceChange
         updateBalances();
 	//check that amount requested is authorized  
-	if (amountToWithdrawInWei&gt;balance[msg.sender]) throw;
+	if (amountToWithdrawInWei>balance[msg.sender]) throw;
         //retrieve investor ID
         uint8 investorID=255;
-        for (uint8 k = 0; k&lt;setting_maxInvestors; k++)
+        for (uint8 k = 0; k<setting_maxInvestors; k++)
         {
                if (investors[k].investor==msg.sender)
                {
@@ -777,9 +777,9 @@ modifier expireGambles{
         }
            if (investorID==255) throw; //stop if not an investor
            //check if investment lock period is over
-           if (investors[investorID].time+setting_lockPeriod&gt;now) throw;
+           if (investors[investorID].time+setting_lockPeriod>now) throw;
            //if balance left after withdraw is still above min investment accept partial withdraw
-           if (balance[msg.sender]-amountToWithdrawInWei&gt;=setting_minInvestment &amp;&amp; amountToWithdrawInWei!=0)
+           if (balance[msg.sender]-amountToWithdrawInWei>=setting_minInvestment && amountToWithdrawInWei!=0)
            {
                balance[msg.sender]-=amountToWithdrawInWei;
                payroll-=amountToWithdrawInWei;
@@ -789,7 +789,7 @@ modifier expireGambles{
            }
            else
            //if amountToWithdraw=0 : user wants full withdraw
-           //if balance after withdraw is &lt; min invest, withdraw all and delete investor
+           //if balance after withdraw is < min invest, withdraw all and delete investor
            {
                //send amount to investor (with security if transaction fails)
                uint256 fullAmount=balance[msg.sender];
@@ -816,14 +816,14 @@ modifier expireGambles{
          //split Profits
          uint256 profitToSplit;
          uint256 lossToSplit;
-         if (profitSinceChange==0 &amp;&amp; lossSinceChange==0)
+         if (profitSinceChange==0 && lossSinceChange==0)
          { return; }
          
          else
          {
              // Case : Global profit (more win than losses)
-             // 2% fees for developer on global profit (if profit&gt;loss)
-             if (profitSinceChange&gt;lossSinceChange)
+             // 2% fees for developer on global profit (if profit>loss)
+             if (profitSinceChange>lossSinceChange)
              {
                 profitToSplit=profitSinceChange-lossSinceChange;
                 uint256 developerFees=profitToSplit*2/100;
@@ -838,7 +838,7 @@ modifier expireGambles{
          //share the loss and profits between all invest 
          //(proportionnaly. to each investor balance)
          uint totalShared;
-             for (uint8 k=0; k&lt;setting_maxInvestors; k++)
+             for (uint8 k=0; k<setting_maxInvestors; k++)
              {
                  address inv=investors[k].investor;
                  if (inv==0) continue;

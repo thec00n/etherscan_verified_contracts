@@ -10,24 +10,24 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }}
 	/**
 		* @title Ownable
 		* @dev The Ownable contract has an owner address, and provides basic authorization control 
-		* functions, this simplifies the implementation of &quot;user permissions&quot;. 
+		* functions, this simplifies the implementation of "user permissions". 
 	*/
 contract Ownable {
   address public owner;
@@ -71,7 +71,7 @@ contract ERC20Basic {
 	*/
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 	/**
 		* @dev transfer token for a specified address
 		* @param _to The address to transfer to.
@@ -111,7 +111,7 @@ contract ERC20 is ERC20Basic {
 	*/
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 	/**
 		* @dev Transfer tokens from one address to another
         * @param _from address The address which you want to send tokens from
@@ -122,7 +122,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -161,8 +161,8 @@ contract StandardToken is ERC20, BasicToken {
 contract BIONEUM is StandardToken, Ownable {
     using SafeMath for uint256;
     // Token Info.
-    string  public constant name = &quot;BIONEUM&quot;;
-    string  public constant symbol = &quot;BIO&quot;;
+    string  public constant name = "BIONEUM";
+    string  public constant symbol = "BIO";
     uint256 public constant decimals = 8;
     uint256 public constant totalSupply = decVal(50000000);
 	
@@ -208,15 +208,15 @@ contract BIONEUM is StandardToken, Ownable {
         return balances[this];
     }
     function getRateAt(uint256 at, uint256 amount) constant returns (uint256) {
-        if (at &lt; startDate) {
+        if (at < startDate) {
             return 0;
-        } else if (at &lt; startDate.add(7 days)) {
+        } else if (at < startDate.add(7 days)) {
             return decVal(1300);
-        } else if (at &lt; startDate.add(14 days)) {
+        } else if (at < startDate.add(14 days)) {
             return decVal(1150);
-        } else if (at &lt; startDate.add(21 days)) {
+        } else if (at < startDate.add(21 days)) {
             return decVal(1050);
-        } else if (at &lt; startDate.add(28 days) || at &lt;= endDate) {
+        } else if (at < startDate.add(28 days) || at <= endDate) {
             return decVal(1000);
         } else {
             return 0;
@@ -231,14 +231,14 @@ contract BIONEUM is StandardToken, Ownable {
     }
     function buyTokens(address sender, uint256 value) internal {
         require(saleActive());
-        require(value &gt;= 0.001 ether);
+        require(value >= 0.001 ether);
         uint256 weiAmount = value;
         uint256 updatedWeiRaised = weiRaised.add(weiAmount);
         // Calculate token amount to be purchased
         uint256 actualRate = getRateAt(now, amount);
         uint256 amount = weiAmount.mul(actualRate).div(1 ether);
         // We have enough token to sell
-        require(supply() &gt;= amount);
+        require(supply() >= amount);
         // Transfer tokens
         balances[this] = balances[this].sub(amount);
         balances[sender] = balances[sender].add(amount);
@@ -252,7 +252,7 @@ contract BIONEUM is StandardToken, Ownable {
 	function internalSend(address recipient, uint256 bioAmount) onlyOwner{
 		// We have enough token to send
 		// Function used to provide tokens to users who participated in the 1.0 token sale
-        require(supply() &gt;= bioAmount);
+        require(supply() >= bioAmount);
         // Transfer tokens
         balances[this] = balances[this].sub(bioAmount);
         balances[recipient] = balances[recipient].add(bioAmount);
@@ -265,6 +265,6 @@ contract BIONEUM is StandardToken, Ownable {
         balances[this] = 0;
     }
     function saleActive() public constant returns (bool) {
-        return (now &gt;= startDate &amp;&amp; now &lt; endDate &amp;&amp; supply() &gt; 0);
+        return (now >= startDate && now < endDate && supply() > 0);
     }
 }

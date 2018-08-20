@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,7 +85,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -103,7 +103,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -149,8 +149,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -164,7 +164,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -297,8 +297,8 @@ contract Ownable {
 
 contract VestingToken is StandardToken {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) public vested;
-  mapping(address =&gt; uint256) public released;
+  mapping(address => uint256) public vested;
+  mapping(address => uint256) public released;
   uint256 public totalVested;
   uint256 public vestingStartTime;
   uint256 public vestingStageTime = 2592000; // 30 days
@@ -313,9 +313,9 @@ contract VestingToken is StandardToken {
 
   function getShare () internal view returns (uint8) {
     uint256 elapsedTime = now.sub(vestingStartTime);
-    if (elapsedTime &gt; vestingStageTime.mul(3)) return uint8(100);
-    if (elapsedTime &gt; vestingStageTime.mul(2)) return uint8(75);
-    if (elapsedTime &gt; vestingStageTime) return uint8(50);   
+    if (elapsedTime > vestingStageTime.mul(3)) return uint8(100);
+    if (elapsedTime > vestingStageTime.mul(2)) return uint8(75);
+    if (elapsedTime > vestingStageTime) return uint8(50);   
     return uint8(25);
   }
 
@@ -323,7 +323,7 @@ contract VestingToken is StandardToken {
     uint8 shareForRelease = getShare(); // in percent
     uint256 tokensForRelease = vested[msg.sender].mul(shareForRelease).div(100);
     tokensForRelease = tokensForRelease.sub(released[msg.sender]);
-    require(tokensForRelease &gt; 0);
+    require(tokensForRelease > 0);
     released[msg.sender] = released[msg.sender].add(tokensForRelease);
     balances[msg.sender] = balances[msg.sender].add(tokensForRelease);
     totalSupply_ = totalSupply_.add(tokensForRelease);
@@ -353,9 +353,9 @@ contract CrowdsaleToken is VestingToken, Ownable {
   enum Stages {Pause, PreSale, Ico1, Ico2, Ico3, Ico4, IcoEnd}
   Stages currentStage;
 
-  mapping(uint8 =&gt; uint64) public stageCap;
+  mapping(uint8 => uint64) public stageCap;
 
-  mapping(uint8 =&gt; uint256) public stageSupply;
+  mapping(uint8 => uint256) public stageSupply;
 
   constructor() public {
     currentStage = Stages.Pause;
@@ -389,7 +389,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function endIco () public onlyOwner returns (bool) {
-    if (currentStage != Stages.Ico1 &amp;&amp; currentStage != Stages.Ico2 &amp;&amp; currentStage != Stages.Ico3 &amp;&amp; currentStage != Stages.Ico4) revert();
+    if (currentStage != Stages.Ico1 && currentStage != Stages.Ico2 && currentStage != Stages.Ico3 && currentStage != Stages.Ico4) revert();
     currentStage = Stages.IcoEnd;
     icoEndDate = now;
     vestingStartTime = now;
@@ -400,14 +400,14 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function sendUnsold (address _to, uint256 _value) public onlyOwner {
-    require(_value &lt;= balances[address(this)]);
+    require(_value <= balances[address(this)]);
     balances[address(this)] = balances[address(this)].sub(_value);
     balances[_to] = balances[_to].add(_value);
     emit Transfer(address(this), _to, _value);
   }
 
   function getReserve () public onlyOwner returns (bool) {
-    require(reserved &gt; 0);
+    require(reserved > 0);
     balances[owner] = balances[owner].add(reserved);
     totalSupply_ = totalSupply_.add(reserved);
     emit Transfer(address(this), owner, reserved);
@@ -416,7 +416,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function vest2team (address _address) public onlyOwner returns (bool) {
-    require(team &gt; 0);
+    require(team > 0);
     vested[_address] = vested[_address].add(team);
     totalVested = totalVested.add(team);
     team = 0;
@@ -425,7 +425,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function vest2advisors (address _address) public onlyOwner returns (bool) {
-    require(advisors &gt; 0);
+    require(advisors > 0);
     vested[_address] = vested[_address].add(advisors);
     totalVested = totalVested.add(advisors);
     advisors = 0;
@@ -434,7 +434,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function send2marketing (address _address) public onlyOwner returns (bool) {
-    require(marketing &gt; 0);
+    require(marketing > 0);
     balances[_address] = balances[_address].add(marketing);
     totalSupply_ = totalSupply_.add(marketing);
     emit Transfer(address(this), _address, marketing);
@@ -443,7 +443,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function vest2mlDevelopers (address _address) public onlyOwner returns (bool) {
-    require(mlDevelopers &gt; 0);
+    require(mlDevelopers > 0);
     vested[_address] = vested[_address].add(mlDevelopers);
     totalVested = totalVested.add(mlDevelopers);
     mlDevelopers = 0;
@@ -452,19 +452,19 @@ contract CrowdsaleToken is VestingToken, Ownable {
   }
 
   function vest2all (address _address) public onlyOwner returns (bool) {
-    if (team &gt; 0) {
+    if (team > 0) {
       vested[_address] = vested[_address].add(team);
       totalVested = totalVested.add(team);
       team = 0;
       emit Vest(_address, team);      
     }
-    if (advisors &gt; 0) {
+    if (advisors > 0) {
       vested[_address] = vested[_address].add(advisors);
       totalVested = totalVested.add(advisors);
       advisors = 0;
       emit Vest(_address, advisors);      
     }
-    if (mlDevelopers &gt; 0) {
+    if (mlDevelopers > 0) {
       vested[_address] = vested[_address].add(mlDevelopers);
       totalVested = totalVested.add(mlDevelopers);
       mlDevelopers = 0;
@@ -494,7 +494,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
     require(currentStage != Stages.IcoEnd);
     require(_to != address(0));
     stageSupply[uint8(currentStage)] = stageSupply[uint8(currentStage)].add(_value);
-    require(stageSupply[uint8(currentStage)] &lt;= stageCap[uint8(currentStage)]);
+    require(stageSupply[uint8(currentStage)] <= stageCap[uint8(currentStage)]);
     vested[_to] = vested[_to].add(_value);
     sold = sold.add(_value);
     totalVested = totalVested.add(_value);
@@ -514,26 +514,26 @@ contract CrowdsaleToken is VestingToken, Ownable {
     uint256 change = 0;
     uint8 bonuses = 0;
     if (currentStage == Stages.PreSale) {
-      require(_wei &gt;= 100 finney);
+      require(_wei >= 100 finney);
       bonuses = getBonuses();
       extraTokens = tokens.mul(bonuses).div(100);
       tokens = tokens.add(extraTokens);
       stageSupply[uint8(currentStage)] = stageSupply[uint8(currentStage)].add(tokens);
-      require(stageSupply[uint8(currentStage)] &lt;= stageCap[uint8(currentStage)]);
+      require(stageSupply[uint8(currentStage)] <= stageCap[uint8(currentStage)]);
       return tokens;
     }
-    require(_wei &gt;= 1 ether);
+    require(_wei >= 1 ether);
     if (currentStage == Stages.Ico4) {
       stageSupply[uint8(currentStage)] = stageSupply[uint8(currentStage)].add(tokens);
-      require(stageSupply[uint8(currentStage)] &lt;= stageCap[uint8(currentStage)]);
+      require(stageSupply[uint8(currentStage)] <= stageCap[uint8(currentStage)]);
       return tokens;
     } else {
-      if (currentIcoPeriodStartDate.add(icoPeriodTime) &lt; now) nextStage(true);
+      if (currentIcoPeriodStartDate.add(icoPeriodTime) < now) nextStage(true);
       bonuses = getBonuses();
       stageRemains = stageCap[uint8(currentStage)].sub(stageSupply[uint8(currentStage)]);
       extraTokens = tokens.mul(bonuses).div(100);
       tokens = tokens.add(extraTokens);
-      if (stageRemains &gt; tokens) {
+      if (stageRemains > tokens) {
         stageSupply[uint8(currentStage)] = stageSupply[uint8(currentStage)].add(tokens);
         return tokens;
       } else {
@@ -553,12 +553,12 @@ contract CrowdsaleToken is VestingToken, Ownable {
   function nextStage (bool _time) internal returns (bool) {
     if (_time) {
       if (currentStage == Stages.Ico1) {
-        if (currentIcoPeriodStartDate.add(icoPeriodTime).mul(3) &lt; now) {
+        if (currentIcoPeriodStartDate.add(icoPeriodTime).mul(3) < now) {
           currentStage = Stages.Ico4;
           currentIcoPeriodStartDate = now;
           return true;
         }
-        if (currentIcoPeriodStartDate.add(icoPeriodTime).mul(2) &lt; now) {
+        if (currentIcoPeriodStartDate.add(icoPeriodTime).mul(2) < now) {
           currentStage = Stages.Ico3;
           currentIcoPeriodStartDate = now;
           return true;
@@ -568,7 +568,7 @@ contract CrowdsaleToken is VestingToken, Ownable {
         return true;
       }
       if (currentStage == Stages.Ico2) {
-        if (currentIcoPeriodStartDate.add(icoPeriodTime).mul(2) &lt; now) {
+        if (currentIcoPeriodStartDate.add(icoPeriodTime).mul(2) < now) {
           currentStage = Stages.Ico4;
           currentIcoPeriodStartDate = now;
           return true;
@@ -614,11 +614,11 @@ contract Multisign is Ownable {
   address public address1 = address(0);
   address public address2 = address(0);
   address public address3 = address(0);
-  mapping(address =&gt; address) public withdrawAddress;
+  mapping(address => address) public withdrawAddress;
 
   function setAddresses (address _address1, address _address2, address _address3) public onlyOwner returns (bool) {
-    require(address1 == address(0) &amp;&amp; address2 == address(0) &amp;&amp; address3 == address(0));
-    require(_address1 != address(0) &amp;&amp; _address2 != address(0) &amp;&amp; _address3 != address(0));
+    require(address1 == address(0) && address2 == address(0) && address3 == address(0));
+    require(_address1 != address(0) && _address2 != address(0) && _address3 != address(0));
     address1 = _address1;
     address2 = _address2;
     address3 = _address3;
@@ -630,15 +630,15 @@ contract Multisign is Ownable {
     require (msg.sender == address1 || msg.sender == address2 || msg.sender == address3);
     require (_address != address(0));
     withdrawAddress[msg.sender] = _address;
-    if (withdrawAddress[address1] == withdrawAddress[address2] &amp;&amp; withdrawAddress[address1] != address(0)) {
+    if (withdrawAddress[address1] == withdrawAddress[address2] && withdrawAddress[address1] != address(0)) {
       withdraw(withdrawAddress[address1]);
       return true;
     }
-    if (withdrawAddress[address1] == withdrawAddress[address3] &amp;&amp; withdrawAddress[address1] != address(0)) {
+    if (withdrawAddress[address1] == withdrawAddress[address3] && withdrawAddress[address1] != address(0)) {
       withdraw(withdrawAddress[address1]);
       return true;
     }
-    if (withdrawAddress[address2] == withdrawAddress[address3] &amp;&amp; withdrawAddress[address2] != address(0)) {
+    if (withdrawAddress[address2] == withdrawAddress[address3] && withdrawAddress[address2] != address(0)) {
       withdraw(withdrawAddress[address2]);
       return true;
     }
@@ -646,7 +646,7 @@ contract Multisign is Ownable {
   }
 
   function withdraw (address _address) internal returns (bool) {
-    require(address(this).balance &gt; 0);
+    require(address(this).balance > 0);
     withdrawAddress[address1] = address(0);
     withdrawAddress[address2] = address(0);
     withdrawAddress[address3] = address(0);
@@ -656,7 +656,7 @@ contract Multisign is Ownable {
 }
 
 contract NSD is CrowdsaleToken, Multisign {
-  string public constant name = &quot;NeuroSeed&quot;;
-  string public constant symbol = &quot;NSD&quot;;
+  string public constant name = "NeuroSeed";
+  string public constant symbol = "NSD";
   uint32 public constant decimals = 0;
 }

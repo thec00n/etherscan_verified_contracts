@@ -9,7 +9,7 @@ contract DGDb_Auction{
     
     address public highest_bidder;
     uint public highest_bid;
-    mapping(address =&gt; uint) pending_returns;
+    mapping(address => uint) pending_returns;
     
     
     function DGDb_Auction(address beneficiary_address, address badge_address, uint duration_in_days){
@@ -20,11 +20,11 @@ contract DGDb_Auction{
     
     // This function is called every time someone sends ether to this contract
     function() payable {
-        require(now &lt; (expiry_date));
-        require(msg.value &gt; highest_bid);
+        require(now < (expiry_date));
+        require(msg.value > highest_bid);
         
         uint num_badges = badge_obj.balanceOf(this);
-        require(num_badges &gt; 0);
+        require(num_badges > 0);
         
         if (highest_bidder != 0) {
             pending_returns[highest_bidder] += highest_bid;
@@ -37,7 +37,7 @@ contract DGDb_Auction{
     // Bidders that have been outbid can call this to retrieve their ETH
     function withdraw_ether() returns (bool) {
         uint amount = pending_returns[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             pending_returns[msg.sender] = 0;
             if (!msg.sender.send(amount)) {
                 pending_returns[msg.sender] = amount;
@@ -49,11 +49,11 @@ contract DGDb_Auction{
     
     // For winner (or creator if no bids) to retrieve badge
     function withdraw_badge() {
-        require(now &gt;= (expiry_date));
+        require(now >= (expiry_date));
         
         uint num_badges = badge_obj.balanceOf(this);
         
-        if (highest_bid &gt; 0){
+        if (highest_bid > 0){
             badge_obj.transfer(highest_bidder, num_badges);
         } else {
             badge_obj.transfer(beneficiary, num_badges);
@@ -63,7 +63,7 @@ contract DGDb_Auction{
     // For auction creator to retrieve ETH 1 day after auction ends
     function end_auction() {
         require(msg.sender == beneficiary);
-        require(now &gt; (expiry_date + 1 days));
+        require(now > (expiry_date + 1 days));
         selfdestruct(beneficiary);
     }
 }

@@ -33,9 +33,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,9 +116,9 @@ contract WinkIfYouLikeIt {
   event initialCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _cap, uint256 cap, uint256 _rate, uint256 rate, address _wallet);
 
   function WinkIfYouLikeIt(uint256 _startTime, uint256 _endTime, uint256 _cap, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_cap &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_cap > 0);
     require(_wallet != address(0));
     
     owner = msg.sender;
@@ -164,10 +164,10 @@ contract WinkIfYouLikeIt {
     rateUpgrade(tierTotal);
   }
 
-  // @return true if crowdsale event has ended &amp; limit has not been reached
+  // @return true if crowdsale event has ended & limit has not been reached
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    bool timeLimit = now &gt; endTime;
+    bool capReached = weiRaised >= cap;
+    bool timeLimit = now > endTime;
     return capReached || timeLimit;
   }
 
@@ -176,7 +176,7 @@ contract WinkIfYouLikeIt {
   function rateUpgrade(uint256 tierAmount) internal {
     uint256 tierEthLimit  = fundingLimit[tierNum].div(fundingRate[tierNum]);
     uint256 tierWeiLimit  = tierEthLimit.mul(1 ether);
-    if(tierAmount &gt;= tierWeiLimit) {
+    if(tierAmount >= tierWeiLimit) {
         tierNum = tierNum.add(1); //increment tier number
         rate = fundingRate[tierNum]; // set new rate in wei
         tierTotal = 0; //reset to 0 wei
@@ -193,12 +193,12 @@ contract WinkIfYouLikeIt {
     wallet.transfer(msg.value);
   }
   
-  // @return true if the transaction can buy tokens &amp; within cap &amp; nonzero
+  // @return true if the transaction can buy tokens & within cap & nonzero
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; withinCap &amp;&amp; nonZeroPurchase;
+    return withinPeriod && withinCap && nonZeroPurchase;
   }
   
   function tokensAvailable() public onlyOwner constant returns (uint256) {
@@ -216,7 +216,7 @@ contract WinkIfYouLikeIt {
   
   function destroy() public onlyOwner payable {
     uint256 balance = tokensAvailable();
-    if(balance &gt; 0) {
+    if(balance > 0) {
     token.transfer(owner, balance);
     }
     selfdestruct(owner);

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;Digipay&#39; CROWDSALE token contract
+// 'Digipay' CROWDSALE token contract
 //
 // Deployed to : 0x839e2ff740ec0d96ac613724141ae5bfa5fea136
 // Symbol      : DIP
@@ -17,10 +17,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -28,7 +28,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -105,16 +105,16 @@ contract DIPToken is ERC20Interface, Owned, SafeMath {
     uint public bonusEnds5;
     uint public endDate;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function DIPToken() public {
-        symbol = &quot;DIP&quot;;
-        name = &quot;DIP Token&quot;;
+        symbol = "DIP";
+        name = "DIP Token";
         decimals = 18;
         _totalSupply = 180000000000000000000000000;
         balances[0xce8f00911386b2bE473012468e54dCaA82C09F7e] = _totalSupply;
@@ -146,8 +146,8 @@ contract DIPToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -160,7 +160,7 @@ contract DIPToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
@@ -189,7 +189,7 @@ contract DIPToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -198,7 +198,7 @@ contract DIPToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -212,45 +212,45 @@ contract DIPToken is ERC20Interface, Owned, SafeMath {
     // 11,000 DIP Tokens per 1 ETH (No bonus)
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds50) {
-            if (msg.value &lt; 10000000000000000000) {
+        if (now <= bonusEnds50) {
+            if (msg.value < 10000000000000000000) {
             tokens = msg.value * 16500;
             } else {
             tokens = msg.value * 17490;
             }
         }
-        if (now &gt; bonusEnds50 &amp;&amp; now &lt;= bonusEnds20) {
-            if (msg.value &lt; 10000000000000000000) {
+        if (now > bonusEnds50 && now <= bonusEnds20) {
+            if (msg.value < 10000000000000000000) {
             tokens = msg.value * 13200;
             } else {
             tokens = msg.value * 13992;
             }
         }
-        if (now &gt; bonusEnds20 &amp;&amp; now &lt;= bonusEnds15) {
-            if (msg.value &lt; 10000000000000000000) {
+        if (now > bonusEnds20 && now <= bonusEnds15) {
+            if (msg.value < 10000000000000000000) {
             tokens = msg.value * 12650;
             } else {
             tokens = msg.value * 13409;
             }
         }
-        if (now &gt; bonusEnds15 &amp;&amp; now &lt;= bonusEnds10) {
-            if (msg.value &lt; 10000000000000000000) {
+        if (now > bonusEnds15 && now <= bonusEnds10) {
+            if (msg.value < 10000000000000000000) {
             tokens = msg.value * 12100;
             } else {
             tokens = msg.value * 12826;
             }
         }
-        if (now &gt; bonusEnds10 &amp;&amp; now &lt;= bonusEnds5) {
-            if (msg.value &lt; 10000000000000000000) {
+        if (now > bonusEnds10 && now <= bonusEnds5) {
+            if (msg.value < 10000000000000000000) {
             tokens = msg.value * 11550;
             } else {
             tokens = msg.value * 12243;
             }
         }
-        if (bonusEnds5 &lt; now) {
-            if (msg.value &lt; 10000000000000000000) {
+        if (bonusEnds5 < now) {
+            if (msg.value < 10000000000000000000) {
             tokens = msg.value * 11000;
             } else {
             tokens = msg.value * 11660;

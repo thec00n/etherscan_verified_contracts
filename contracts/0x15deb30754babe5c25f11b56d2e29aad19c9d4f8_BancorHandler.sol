@@ -96,7 +96,7 @@ interface BancorConverter {
 
 contract BancorHandler is ExchangeHandler {
     uint256 constant MAX_UINT = 2**256 - 1;
-    mapping(address =&gt; bool) public tokenAllowanceSet;
+    mapping(address => bool) public tokenAllowanceSet;
 
     // Public functions
     function getAvailableAmount(
@@ -145,9 +145,9 @@ contract BancorHandler is ExchangeHandler {
     ) internal returns (uint256 amountObtained, address destinationToken) {
         // Find the length of the conversion path
         uint256 len;
-        for(len = 1; len &lt; orderAddresses.length; len++) {
+        for(len = 1; len < orderAddresses.length; len++) {
             if(orderAddresses[len] == 0) {
-                require(len &gt; 1);
+                require(len > 1);
                 destinationToken = orderAddresses[len - 1];
                 len--;
                 break;
@@ -160,7 +160,7 @@ contract BancorHandler is ExchangeHandler {
         address[] memory conversionPath = new address[](len);
 
         // Move the contents from orderAddresses to conversionPath
-        for(uint256 i = 0; i &lt; len; i++) {
+        for(uint256 i = 0; i < len; i++) {
             conversionPath[i] = orderAddresses[i + 1];
         }
 

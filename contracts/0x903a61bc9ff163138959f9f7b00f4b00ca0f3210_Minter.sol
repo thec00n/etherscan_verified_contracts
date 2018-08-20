@@ -1,6 +1,6 @@
 /* Simple token - simple token for PreICO and ICO
-   Copyright (C) 2017  Sergey Sherkunov &lt;<span class="__cf_email__" data-cfemail="8ee2ebe7e0e2eff9fbe0cee2ebe7e0e2eff9fbe0a0e1fce9">[email&#160;protected]</span>&gt;
-   Copyright (C) 2017  OOM.AG &lt;in<span class="__cf_email__" data-cfemail="4f29200f202022612e28">[email&#160;protected]</span>&gt;
+   Copyright (C) 2017  Sergey Sherkunov <<span class="__cf_email__" data-cfemail="8ee2ebe7e0e2eff9fbe0cee2ebe7e0e2eff9fbe0a0e1fce9">[email protected]</span>>
+   Copyright (C) 2017  OOM.AG <in<span class="__cf_email__" data-cfemail="4f29200f202022612e28">[email protected]</span>>
 
    This file is part of simple token.
 
@@ -15,7 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 pragma solidity ^0.4.18;
 
@@ -23,11 +23,11 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         c = a - b;
     }
@@ -49,7 +49,7 @@ library SafeMath {
     function min(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a;
 
-        if(a &gt; b)
+        if(a > b)
            c = b;
     }
 }
@@ -69,9 +69,9 @@ contract ABXToken {
 
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     event Transfer(address indexed oldTokensHolder,
                    address indexed newTokensHolder, uint256 tokensNumber);
@@ -120,7 +120,7 @@ contract ABXToken {
         decimals = _decimals;
         totalSupply = _totalSupply.mul(10 ** uint256(decimals));
 
-        require(decimals &lt;= 77);
+        require(decimals <= 77);
 
         balanceOf[this] = totalSupply;
     }
@@ -257,7 +257,7 @@ contract Minter {
 
     bool public paused = false;
 
-    mapping(address =&gt; bool) public whiteList;
+    mapping(address => bool) public whiteList;
 
     ABXToken public token;
 
@@ -294,7 +294,7 @@ contract Minter {
     }
 
     modifier checkLimitsToBuyTokens {
-        require(tokenSale.tokensMinimumNumberForBuy &lt;=
+        require(tokenSale.tokensMinimumNumberForBuy <=
                 tokensNumberForBuy().div(10 ** uint256(token.decimals())));
 
         _;
@@ -363,7 +363,7 @@ contract Minter {
 
         uint256 restCoins = 0;
 
-        if(tokensNumber &gt;= aviableTokensNumber) {
+        if(tokensNumber >= aviableTokensNumber) {
             uint256 restTokensNumber = tokensNumber.sub(aviableTokensNumber);
 
             restCoins =
@@ -381,9 +381,9 @@ contract Minter {
     }
 
     function minterState() private constant returns(MinterState) {
-        if(tokenSale.startTime &gt; now) {
+        if(tokenSale.startTime > now) {
             return MinterState.tokenSaleWait;
-        } else if(tokenSale.endTime &gt; now) {
+        } else if(tokenSale.endTime > now) {
             return MinterState.tokenSaleStarted;
         } else {
             return MinterState.Over;

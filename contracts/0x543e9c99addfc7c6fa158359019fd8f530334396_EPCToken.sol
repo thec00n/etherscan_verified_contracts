@@ -2,15 +2,15 @@ pragma solidity ^0.4.13;
 
 contract Math {
   function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-    assert((z = x + y) &gt;= x);
+    assert((z = x + y) >= x);
   }
 
   function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-    assert((z = x - y) &lt;= x);
+    assert((z = x - y) <= x);
   }
 
   function mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
-    assert((z = x * y) &gt;= x);
+    assert((z = x * y) >= x);
   }
 
   function div(uint256 x, uint256 y) internal pure returns (uint256 z) {
@@ -37,7 +37,7 @@ contract ERC20 is Token {
   function decimals() public pure returns (uint8) { decimals; }
 
   function transfer(address _to, uint256 _value) public returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -48,7 +48,7 @@ contract ERC20 is Token {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
@@ -73,8 +73,8 @@ contract ERC20 is Token {
     return allowed[_owner][_spender];
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract owned {
@@ -130,7 +130,7 @@ contract EPCToken is ERC20, Math, owned {
    * burn the tokens, cant never get back
    */
   function burn(uint256 amount) public returns (bool success) {
-    require(balances[msg.sender] &gt;= amount);
+    require(balances[msg.sender] >= amount);
     balances[msg.sender] -= amount;
     totalSupply -= amount;
     Burn(msg.sender, amount);
@@ -182,12 +182,12 @@ contract EPCSale is Math, owned {
    */
   function crowdSale() public payable {
     require(!isFinalized);
-    assert(block.number &gt;= fundingStartBlock);
-    assert(block.number &lt;= fundingEndBlock);
-    require(msg.value &gt; 0);
-    uint256 tokens = mul(msg.value, exchangeRate()); // check that we&#39;re not over totals
+    assert(block.number >= fundingStartBlock);
+    assert(block.number <= fundingEndBlock);
+    require(msg.value > 0);
+    uint256 tokens = mul(msg.value, exchangeRate()); // check that we're not over totals
     funded = add(funded, tokens);
-    assert(funded &lt;= totalCap);
+    assert(funded <= totalCap);
     assert(epc.transfer(msg.sender, tokens));
   }
 
@@ -195,8 +195,8 @@ contract EPCSale is Math, owned {
    * caculate the crowdsale rate per eth
    */
   function exchangeRate() public constant returns(uint256) {
-    if (block.number&lt;=fundingStartBlock+43200) return 10000; // early price
-    if (block.number&lt;=fundingStartBlock+2*43200) return 8000; // crowdsale price
+    if (block.number<=fundingStartBlock+43200) return 10000; // early price
+    if (block.number<=fundingStartBlock+2*43200) return 8000; // crowdsale price
     return 7000; // default price
   }
 
@@ -204,8 +204,8 @@ contract EPCSale is Math, owned {
    * unit test for crowdsale exchange rate
    */
   function testExchangeRate(uint blockNumber) public constant returns(uint256) {
-    if (blockNumber &lt;= fundingStartBlock+43200) return 10000; // early price
-    if (blockNumber &lt;= fundingStartBlock+2*43200) return 8000; // crowdsale price
+    if (blockNumber <= fundingStartBlock+43200) return 10000; // early price
+    if (blockNumber <= fundingStartBlock+2*43200) return 8000; // crowdsale price
     return 7000; // default price
   }
 

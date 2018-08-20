@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,13 +56,13 @@ contract TokenCC is ERC20 {
 
     address private _owner;
     bool private _isStopped = false;
-    string private _name = &quot;CChain CCHN&quot;;
-    string private _symbol = &quot;CCHN&quot;;
+    string private _name = "CChain CCHN";
+    string private _symbol = "CCHN";
     uint8 private _decimals = 18;
     uint256 private _totalSupply;
 
-    mapping (address =&gt; uint256) private _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private _allowance;
+    mapping (address => uint256) private _balanceOf;
+    mapping (address => mapping (address => uint256)) private _allowance;
 
     event Mint(address indexed from, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -129,8 +129,8 @@ contract TokenCC is ERC20 {
 
     function transferImpl(address from, address to, uint256 value) internal {
         require(to != 0x0);
-        require(value &gt; 0);
-        require(_balanceOf[from] &gt;= value);
+        require(value > 0);
+        require(_balanceOf[from] >= value);
         _balanceOf[from] = _balanceOf[from].sub(value);
         _balanceOf[to] = _balanceOf[to].add(value);
         emit Transfer(from, to, value);
@@ -142,7 +142,7 @@ contract TokenCC is ERC20 {
     }
 
     function transferFrom(address from, address to, uint256 value) public unstopped returns (bool) {
-        require(value &lt;= _allowance[from][msg.sender]);
+        require(value <= _allowance[from][msg.sender]);
         _allowance[from][msg.sender] = _allowance[from][msg.sender].sub(value);
         transferImpl(from, to, value);
         return true;
@@ -161,7 +161,7 @@ contract TokenCC is ERC20 {
     }
 
     function burn(uint256 value) public unstopped returns (bool) {
-        require(_balanceOf[msg.sender] &gt;= value);
+        require(_balanceOf[msg.sender] >= value);
         _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(value);
         _totalSupply = _totalSupply.sub(value);
         emit Burn(msg.sender, value);

@@ -2,14 +2,14 @@
 
   Copyright 2018 bZeroX, LLC
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -21,7 +21,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -79,7 +79,7 @@ contract Ownable {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9be9fef6f8f4dba9">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9be9fef6f8f4dba9">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -257,27 +257,27 @@ contract BZxStorage is BZxObjects, ReentrancyGuard, Ownable, GasTracker {
     address public bZxTo0xContract;
     bool public DEBUG_MODE = false;
 
-    mapping (bytes32 =&gt; LoanOrder) public orders; // mapping of loanOrderHash to taken loanOrders
-    mapping (address =&gt; bytes32[]) public orderList; // mapping of lenders and trader addresses to array of loanOrderHashes
-    mapping (bytes32 =&gt; address) public orderLender; // mapping of loanOrderHash to lender address
-    mapping (bytes32 =&gt; address[]) public orderTraders; // mapping of loanOrderHash to array of trader addresses
-    mapping (bytes32 =&gt; uint) public orderFilledAmounts; // mapping of loanOrderHash to loanTokenAmount filled
-    mapping (bytes32 =&gt; uint) public orderCancelledAmounts; // mapping of loanOrderHash to loanTokenAmount cancelled
-    mapping (address =&gt; address) public oracleAddresses; // mapping of oracles to their current logic contract
-    mapping (bytes32 =&gt; mapping (address =&gt; LoanPosition)) public loanPositions; // mapping of loanOrderHash to mapping of traders to loanPositions
-    mapping (bytes32 =&gt; mapping (address =&gt; uint)) public interestPaid; // mapping of loanOrderHash to mapping of traders to amount of interest paid so far to a lender
+    mapping (bytes32 => LoanOrder) public orders; // mapping of loanOrderHash to taken loanOrders
+    mapping (address => bytes32[]) public orderList; // mapping of lenders and trader addresses to array of loanOrderHashes
+    mapping (bytes32 => address) public orderLender; // mapping of loanOrderHash to lender address
+    mapping (bytes32 => address[]) public orderTraders; // mapping of loanOrderHash to array of trader addresses
+    mapping (bytes32 => uint) public orderFilledAmounts; // mapping of loanOrderHash to loanTokenAmount filled
+    mapping (bytes32 => uint) public orderCancelledAmounts; // mapping of loanOrderHash to loanTokenAmount cancelled
+    mapping (address => address) public oracleAddresses; // mapping of oracles to their current logic contract
+    mapping (bytes32 => mapping (address => LoanPosition)) public loanPositions; // mapping of loanOrderHash to mapping of traders to loanPositions
+    mapping (bytes32 => mapping (address => uint)) public interestPaid; // mapping of loanOrderHash to mapping of traders to amount of interest paid so far to a lender
 
     LoanRef[] public loanList; // array of loans that need to be checked for liquidation or expiration
 }
 
 contract Proxiable {
-    mapping (bytes4 =&gt; address) public targets;
+    mapping (bytes4 => address) public targets;
 
     function initialize(address _target) public;
 
     function _replaceContract(address _target) internal {
-        // bytes4(keccak256(&quot;initialize(address)&quot;)) == 0xc4d66de8
-        require(_target.delegatecall(0xc4d66de8, _target), &quot;Proxiable::_replaceContract: failed&quot;);
+        // bytes4(keccak256("initialize(address)")) == 0xc4d66de8
+        require(_target.delegatecall(0xc4d66de8, _target), "Proxiable::_replaceContract: failed");
     }
 }
 
@@ -316,7 +316,7 @@ contract BZxProxy is BZxStorage, Proxiable {
     }
 
     function setTarget(
-        string _funcId,  // example: &quot;takeLoanOrderAsTrader(address[6],uint256[9],address,uint256,bytes)&quot;
+        string _funcId,  // example: "takeLoanOrderAsTrader(address[6],uint256[9],address,uint256,bytes)"
         address _target) // logic contract address
         public
         onlyOwner
@@ -335,7 +335,7 @@ contract BZxProxy is BZxStorage, Proxiable {
         public
         onlyOwner
     {
-        if (_bZRxToken != address(0) &amp;&amp; _vault != address(0) &amp;&amp; _oracleregistry != address(0) &amp;&amp; _exchange0xWrapper != address(0))
+        if (_bZRxToken != address(0) && _vault != address(0) && _oracleregistry != address(0) && _exchange0xWrapper != address(0))
         bZRxTokenContract = _bZRxToken;
         vaultContract = _vault;
         oracleRegistryContract = _oracleregistry;
@@ -402,7 +402,7 @@ contract BZxProxy is BZxStorage, Proxiable {
      */
 
     function getTarget(
-        string _funcId) // example: &quot;takeLoanOrderAsTrader(address[6],uint256[9],address,uint256,bytes)&quot;
+        string _funcId) // example: "takeLoanOrderAsTrader(address[6],uint256[9],address,uint256,bytes)"
         public
         view
         returns (address)

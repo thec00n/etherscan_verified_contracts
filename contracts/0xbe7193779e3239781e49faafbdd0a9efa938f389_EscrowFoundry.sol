@@ -45,7 +45,7 @@ contract EscrowContract {
         _
     }
     modifier only_before(state s) {
-        if (status &gt;= s)  throw;
+        if (status >= s)  throw;
         _
     }
     modifier only_buyer() {
@@ -57,7 +57,7 @@ contract EscrowContract {
         _
     }
     modifier only_buyer_seller() {
-        if (msg.sender != buyer &amp;&amp; msg.sender != seller) throw;
+        if (msg.sender != buyer && msg.sender != seller) throw;
         _
     }
     modifier only_escrow() {
@@ -80,7 +80,7 @@ contract EscrowContract {
         private
         constant
     {
-        if (val &gt; 100) throw;
+        if (val > 100) throw;
     }   
 
     // BUYER CANCEL
@@ -91,7 +91,7 @@ contract EscrowContract {
         only_no_value()
         check_mutex()
     {
-        if (this.balance &gt; 0)
+        if (this.balance > 0)
             if (!buyer.send(this.balance)) throw;
         status = state.Closed;
         CurrentStatus(uint8(status));
@@ -117,11 +117,11 @@ contract EscrowContract {
         only_no_value()
         check_mutex()
     {
-        if (amount &gt; 0)
+        if (amount > 0)
             if (!seller.send(amount)) throw;
-        if (fee &gt; 0)
+        if (fee > 0)
             if (!buyer.send(fee)) throw;
-        if (tip &gt; 0)
+        if (tip > 0)
             if (!developer.send(tip)) throw;
         status = state.Closed;
         CurrentStatus(uint8(status));
@@ -155,13 +155,13 @@ contract EscrowContract {
         uint256 tip_amount = uint256(fee * percent_tip)/100;
         uint256 escrow_amount = fee - tip_amount;
         tip_amount = tip_amount + tip;
-        if (buyer_amount &gt; 0)
+        if (buyer_amount > 0)
             if (!buyer.send(buyer_amount)) throw;
-        if (seller_amount &gt; 0)
+        if (seller_amount > 0)
             if (!seller.send(seller_amount)) throw;
-        if (escrow_amount &gt; 0)
+        if (escrow_amount > 0)
             if (!escrow.send(escrow_amount)) throw;
-        if (tip_amount &gt; 0)
+        if (tip_amount > 0)
             if (!developer.send(tip_amount)) throw;
         status = state.Closed;
         CurrentStatus(uint8(status));
@@ -175,15 +175,15 @@ contract EscrowContract {
         only_no_value()
         check_mutex()
     {
-        if (block.timestamp &lt; dispute_end) throw;
+        if (block.timestamp < dispute_end) throw;
         uint256 buyer_amount = uint256(amount * 50)/100;
         uint256 seller_amount = amount - buyer_amount;
         buyer_amount = buyer_amount + fee;
-        if (buyer_amount &gt; 0)
+        if (buyer_amount > 0)
             if (!buyer.send(buyer_amount)) throw;
-        if (seller_amount &gt; 0)
+        if (seller_amount > 0)
             if (!seller.send(seller_amount)) throw;
-        if (tip &gt; 0)
+        if (tip > 0)
             if (!developer.send(tip)) throw;
         status = state.Closed;
         CurrentStatus(uint8(status));
@@ -196,12 +196,12 @@ contract EscrowContract {
         check_mutex()
     {
         if (status == state.Funding) {
-            if (this.balance &gt;= (amount + fee + tip)) {
+            if (this.balance >= (amount + fee + tip)) {
                 status = state.Paid;
                 CurrentStatus(uint8(status));
             }
         }
-        if (status &gt;= state.Paid) tip = this.balance - (amount + fee);
+        if (status >= state.Paid) tip = this.balance - (amount + fee);
     }
     
 }
@@ -233,7 +233,7 @@ contract EscrowFoundry {
         private
         constant
     {
-        if (val &gt; 100) throw;
+        if (val > 100) throw;
     }
     
     // CREATE

@@ -3,7 +3,7 @@ pragma solidity^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable{
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -136,7 +136,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -195,10 +195,10 @@ contract VuePayTokenSale is StandardToken, Ownable {
 	event VUPRefundedForWei(address indexed _refunder, uint256 _amountOfWei);
 	event print(uint256 vup);
 	// Token data
-	string public constant name = &quot;VuePay Token&quot;;
-	string public constant symbol = &quot;VUP&quot;;
-	uint256 public constant decimals = 18;  // Since our decimals equals the number of wei per ether, we needn&#39;t multiply sent values when converting between VUP and ETH.
-	string public version = &quot;1.0&quot;;
+	string public constant name = "VuePay Token";
+	string public constant symbol = "VUP";
+	uint256 public constant decimals = 18;  // Since our decimals equals the number of wei per ether, we needn't multiply sent values when converting between VUP and ETH.
+	string public version = "1.0";
 	
 	// Addresses and contracts
 	address public executor;
@@ -224,7 +224,7 @@ contract VuePayTokenSale is StandardToken, Ownable {
 	bool public minCapReached;
 	bool public preSaleEnded;
 	bool public allowRefund;
-	mapping (address =&gt; uint256) public ETHContributed;
+	mapping (address => uint256) public ETHContributed;
 	uint256 public totalETHRaised;
 	uint256 public preSaleStartBlock;
 	uint256 public preSaleEndBlock;
@@ -282,15 +282,15 @@ contract VuePayTokenSale is StandardToken, Ownable {
 	function () payable public {
 		
 		//minimum .05 Ether required.
-		require(msg.value &gt;= .05 ether);
+		require(msg.value >= .05 ether);
 		// If sale is not active, do not create VUP
 		require(!saleHasEnded);
-		//Requires block to be &gt;= Pre-Sale start block 
-		require(block.number &gt;= preSaleStartBlock);
+		//Requires block to be >= Pre-Sale start block 
+		require(block.number >= preSaleStartBlock);
 		//Requires block.number to be less than icoEndBlock number
-		require(block.number &lt; icoEndBlock);
+		require(block.number < icoEndBlock);
 		//Has the Pre-Sale ended, after 14 days, Pre-Sale ends.
-		if (block.number &gt; preSaleEndBlock){
+		if (block.number > preSaleEndBlock){
 		    preSaleEnded=true;
 		}
 		// Do not do anything if the amount of ether sent is 0
@@ -306,7 +306,7 @@ contract VuePayTokenSale is StandardToken, Ownable {
         //Accrue VUP tokens
 		totalVUP=totalVUP.add(amountOfVUP);
 	    // if all tokens sold out , sale ends.
-		require(totalVUP&lt;= PRESALE_ICO_PORTION);
+		require(totalVUP<= PRESALE_ICO_PORTION);
 		
 		// Ensure that the transaction is safe
 		uint256 totalSupplySafe = totalSupply.sub(amountOfVUP);
@@ -327,25 +327,25 @@ contract VuePayTokenSale is StandardToken, Ownable {
 	        //default to the base rate
 	        curTokenRate = VUP_PER_ETH_BASE_RATE;
 
-	        //if VUP sold &lt; 100 mill and still in presale, use Pre-Sale rate
-	        if ((totalVUP &lt;= VUP_TOKEN_SUPPLY_TIER1) &amp;&amp; (!preSaleEnded)) {    
+	        //if VUP sold < 100 mill and still in presale, use Pre-Sale rate
+	        if ((totalVUP <= VUP_TOKEN_SUPPLY_TIER1) && (!preSaleEnded)) {    
 			        curTokenRate = VUP_PER_ETH_PRE_SALE_RATE;
 	        }
-		    //If VUP Sold &lt; 100 mill and Pre-Sale ended, use Tier2 rate
-	        if ((totalVUP &lt;= VUP_TOKEN_SUPPLY_TIER1) &amp;&amp; (preSaleEnded)) {
+		    //If VUP Sold < 100 mill and Pre-Sale ended, use Tier2 rate
+	        if ((totalVUP <= VUP_TOKEN_SUPPLY_TIER1) && (preSaleEnded)) {
 			     curTokenRate = VUP_PER_ETH_ICO_TIER2_RATE;
 		    }
-		    //if VUP Sold &gt; 100 mill, use Tier 2 rate irrespective of Pre-Sale end or not
-		    if (totalVUP &gt;VUP_TOKEN_SUPPLY_TIER1 ) {
+		    //if VUP Sold > 100 mill, use Tier 2 rate irrespective of Pre-Sale end or not
+		    if (totalVUP >VUP_TOKEN_SUPPLY_TIER1 ) {
 			    curTokenRate = VUP_PER_ETH_ICO_TIER2_RATE;
 		    }
 		    //if VUP sold more than 200 mill use Tier3 rate
-		    if (totalVUP &gt;VUP_TOKEN_SUPPLY_TIER2 ) {
+		    if (totalVUP >VUP_TOKEN_SUPPLY_TIER2 ) {
 			    curTokenRate = VUP_PER_ETH_ICO_TIER3_RATE;
 		        
 		    }
             //if VUP sod more than 300mill
-		    if (totalVUP &gt;VUP_TOKEN_SUPPLY_TIER3){
+		    if (totalVUP >VUP_TOKEN_SUPPLY_TIER3){
 		        curTokenRate = VUP_PER_ETH_BASE_RATE;
 		    }
 	}
@@ -355,8 +355,8 @@ contract VuePayTokenSale is StandardToken, Ownable {
     function createCustomVUP(address _clientVUPAddress,uint256 _value) public onlyOwner {
 	    //Check the address is valid
 	    require(_clientVUPAddress != address(0x0));
-		require(_value &gt;0);
-		require(advisoryTeamShare&gt;= _value);
+		require(_value >0);
+		require(advisoryTeamShare>= _value);
 	   
 	  	uint256 amountOfVUP = _value;
 	  	//Reduce from advisoryTeamShare
@@ -374,7 +374,7 @@ contract VuePayTokenSale is StandardToken, Ownable {
 	function endICO() public onlyOwner{
 		// Do not end an already ended sale
 		require(!saleHasEnded);
-		// Can&#39;t end a sale that hasn&#39;t hit its minimum cap
+		// Can't end a sale that hasn't hit its minimum cap
 		require(minCapReached);
 		
 		saleHasEnded = true;
@@ -405,17 +405,17 @@ contract VuePayTokenSale is StandardToken, Ownable {
 	}
 	function unlock() public onlyOwner{
 	   require(saleHasEnded);
-       require(now &gt; coreTeamUnlockedAt || now &gt; unsoldUnlockedAt);
-       if (now &gt; coreTeamUnlockedAt) {
+       require(now > coreTeamUnlockedAt || now > unsoldUnlockedAt);
+       if (now > coreTeamUnlockedAt) {
           balances[coreVUPDestination] = coreTeamShare;
           CreatedVUP(coreVUPDestination, coreTeamShare);
           balances[cofounderVUPDestination] = cofounderShare;
           CreatedVUP(cofounderVUPDestination, cofounderShare);
          
        }
-       if (now &gt; unsoldUnlockedAt) {
+       if (now > unsoldUnlockedAt) {
           uint256 unsoldTokens=PRESALE_ICO_PORTION.sub(totalVUP);
-          require(unsoldTokens &gt; 0);
+          require(unsoldTokens > 0);
           balances[unsoldVUPDestination] = unsoldTokens;
           CreatedVUP(coreVUPDestination, unsoldTokens);
          }
@@ -423,10 +423,10 @@ contract VuePayTokenSale is StandardToken, Ownable {
 
 	// Allows VuePay to withdraw funds
 	function withdrawFunds() public onlyOwner {
-		// Disallow withdraw if the minimum hasn&#39;t been reached
+		// Disallow withdraw if the minimum hasn't been reached
 		require(minCapReached);
-		require(this.balance &gt; 0);
-		if(this.balance &gt; 0) {
+		require(this.balance > 0);
+		if(this.balance > 0) {
 			vuePayETHDestination.transfer(this.balance);
 		}
 	}
@@ -443,7 +443,7 @@ contract VuePayTokenSale is StandardToken, Ownable {
 		// No refunds if minimum cap is hit
 		require(!minCapReached);
 		// No refunds if the sale is still progressing
-	    require(block.number &gt;icoEndBlock);
+	    require(block.number >icoEndBlock);
 		require(msg.sender == executor);
 		allowRefund = true;
 	}

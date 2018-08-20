@@ -10,7 +10,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -22,7 +22,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
     /// @dev Returns whether a multiply operation causes an overflow

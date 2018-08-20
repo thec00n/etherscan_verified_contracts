@@ -41,10 +41,10 @@ contract CofounditICO is owned{
 	uint256 public coreTeamTokenSupply;
 
 	ICofounditToken cofounditTokenContract;	
-	mapping (address =&gt; bool) presaleContributorAllowance;
+	mapping (address => bool) presaleContributorAllowance;
 	uint256 nextFreeParticipantIndex;
-	mapping (uint =&gt; address) participantIndex;
-	mapping (address =&gt; uint256) participantContribution;
+	mapping (uint => address) participantIndex;
+	mapping (address => uint256) participantContribution;
 
 	uint256 usedIcoSupply;
 	uint256 usedStrategicReserveSupply;
@@ -57,14 +57,14 @@ contract CofounditICO is owned{
 	bool icoHasSucessfulyEnded;
 
 	uint256 lastEthReturnIndex;
-	mapping (address =&gt; bool) hasClaimedEthWhenFail;
+	mapping (address => bool) hasClaimedEthWhenFail;
 	uint256 lastCfiIssuanceIndex;
 
-	string icoStartedMessage = &quot;Cofoundit is launching!&quot;;
-	string icoMinTresholdReachedMessage = &quot;Firing Stage 2!&quot;;
-	string icoEndedSuccessfulyMessage = &quot;Orbit achieved!&quot;;
-	string icoEndedSuccessfulyWithCapMessage = &quot;Leaving Earth orbit!&quot;;
-	string icoFailedMessage = &quot;Rocket crashed.&quot;;
+	string icoStartedMessage = "Cofoundit is launching!";
+	string icoMinTresholdReachedMessage = "Firing Stage 2!";
+	string icoEndedSuccessfulyMessage = "Orbit achieved!";
+	string icoEndedSuccessfulyWithCapMessage = "Leaving Earth orbit!";
+	string icoFailedMessage = "Rocket crashed.";
 
 	event ICOStarted(uint256 _blockNumber, string _message);
 	event ICOMinTresholdReached(uint256 _blockNumber, string _message);
@@ -93,9 +93,9 @@ contract CofounditICO is owned{
 	/* Users send ETH and enter the crowdsale*/ 	
 	function () payable { 		
 		if (msg.value == 0) throw;  												// Check if balance is not 0 		
-		if (icoHasSucessfulyEnded || block.number &gt; endBlock) throw;				// Throw if ico has already ended 		
+		if (icoHasSucessfulyEnded || block.number > endBlock) throw;				// Throw if ico has already ended 		
 		if (!icoHasStarted){														// Check if this is the first transaction of ico 			
-			if (block.number &lt; startBlock){											// Check if ico should start 				
+			if (block.number < startBlock){											// Check if ico should start 				
 				if (!presaleContributorAllowance[msg.sender]) throw;				// Check if this address is part of presale contributors 			
 			} 			
 			else{																	// If ICO should start 				
@@ -107,10 +107,10 @@ contract CofounditICO is owned{
 			participantIndex[nextFreeParticipantIndex] = msg.sender;				// Add new user to participant data structure 			
 			nextFreeParticipantIndex += 1; 		
 		} 		
-		if (maxEthToRaise &gt; (totalEthRaised + msg.value)){							// Check if user sent to much eth 			
+		if (maxEthToRaise > (totalEthRaised + msg.value)){							// Check if user sent to much eth 			
 			participantContribution[msg.sender] += msg.value;						// Add accounts contribution 			
 			totalEthRaised += msg.value;											// Add to total eth Raised 			
-			if (!minTresholdReached &amp;&amp; totalEthRaised &gt;= minEthToRaise){			// Check if min treshold has been reached(Do that one time) 				
+			if (!minTresholdReached && totalEthRaised >= minEthToRaise){			// Check if min treshold has been reached(Do that one time) 				
 				ICOMinTresholdReached(block.number, icoMinTresholdReachedMessage);	// Raise event 				
 				minTresholdReached = true;											// Set that treshold has been reached 			
 			} 		
@@ -129,7 +129,7 @@ contract CofounditICO is owned{
 
 	/* Users can claim eth by themself if they want to in instance of eth faliure*/ 	
 	function claimEthIfFailed(){ 		
-		if (block.number &lt;= endBlock || totalEthRaised &gt;= minEthToRaise) throw;	// Check that ico has failed :( 		
+		if (block.number <= endBlock || totalEthRaised >= minEthToRaise) throw;	// Check that ico has failed :( 		
 		if (participantContribution[msg.sender] == 0) throw;					// Check if user has even been at crowdsale 		
 		if (hasClaimedEthWhenFail[msg.sender]) throw;							// Check if this account has already claimed its eth 		
 		uint256 ethContributed = participantContribution[msg.sender];			// Get participant eth Contribution 		
@@ -145,7 +145,7 @@ contract CofounditICO is owned{
 
 	/* Adds addresses that are allowed to take part in presale */ 	
 	function addPresaleContributors(address[] _presaleContributors) onlyOwner { 		
-		for (uint cnt = 0; cnt &lt; _presaleContributors.length; cnt++){ 			
+		for (uint cnt = 0; cnt < _presaleContributors.length; cnt++){ 			
 			presaleContributorAllowance[_presaleContributors[cnt]] = true; 		
 		} 	
 	} 	
@@ -155,26 +155,26 @@ contract CofounditICO is owned{
 		if (!icoHasSucessfulyEnded) throw;																				// Check if ico has ended 		
 		address currentParticipantAddress; 		
 		uint256 tokensToBeIssued; 		
-		for (uint cnt = 0; cnt &lt; _numberOfIssuances; cnt++){ 			
+		for (uint cnt = 0; cnt < _numberOfIssuances; cnt++){ 			
 			currentParticipantAddress = participantIndex[lastCfiIssuanceIndex];	// Get next participant address
 			if (currentParticipantAddress == 0x0) continue; 			
 			tokensToBeIssued = icoSupply * participantContribution[currentParticipantAddress] / totalEthRaised;		// Calculate how much tokens will address get 			
-			cofounditTokenContract.mintTokens(currentParticipantAddress, tokensToBeIssued, &quot;Ico participation mint&quot;);	// Mint tokens @ CofounditToken 			
+			cofounditTokenContract.mintTokens(currentParticipantAddress, tokensToBeIssued, "Ico participation mint");	// Mint tokens @ CofounditToken 			
 			lastCfiIssuanceIndex += 1;	
 		} 
 
-		if (participantIndex[lastCfiIssuanceIndex] == 0x0 &amp;&amp; cofounditTokenContract.totalSupply() &lt; icoSupply){
+		if (participantIndex[lastCfiIssuanceIndex] == 0x0 && cofounditTokenContract.totalSupply() < icoSupply){
 			uint divisionDifference = icoSupply - cofounditTokenContract.totalSupply();
-			cofounditTokenContract.mintTokens(multisigAddress, divisionDifference, &quot;Mint division error&quot;);	// Mint divison difference @ CofounditToken so that total supply is whole number			
+			cofounditTokenContract.mintTokens(multisigAddress, divisionDifference, "Mint division error");	// Mint divison difference @ CofounditToken so that total supply is whole number			
 		}
 	} 	
 
 	/* Owner can return eth for multiple users in one call*/ 	
 	function batchReturnEthIfFailed(uint256 _numberOfReturns) onlyOwner{ 		
-		if (block.number &lt; endBlock || totalEthRaised &gt;= minEthToRaise) throw;		// Check that ico has failed :( 		
+		if (block.number < endBlock || totalEthRaised >= minEthToRaise) throw;		// Check that ico has failed :( 		
 		address currentParticipantAddress; 		
 		uint256 contribution;
-		for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++){ 			
+		for (uint cnt = 0; cnt < _numberOfReturns; cnt++){ 			
 			currentParticipantAddress = participantIndex[lastEthReturnIndex];		// Get next account 			
 			if (currentParticipantAddress == 0x0) return;							// If all the participants were reinbursed return 			
 			if (!hasClaimedEthWhenFail[currentParticipantAddress]) {				// Check if user has manually recovered eth 				
@@ -197,23 +197,23 @@ contract CofounditICO is owned{
 	function claimReservedTokens(string _which, address _to, uint256 _amount, string _reason) onlyOwner{ 		
 		if (!icoHasSucessfulyEnded) throw;                 
 		bytes32 hashedStr = sha3(_which);				
-		if (hashedStr == sha3(&quot;Reserve&quot;)){ 			
-			if (_amount &gt; strategicReserveSupply - usedStrategicReserveSupply) throw; 			
+		if (hashedStr == sha3("Reserve")){ 			
+			if (_amount > strategicReserveSupply - usedStrategicReserveSupply) throw; 			
 			cofounditTokenContract.mintTokens(_to, _amount, _reason); 			
 			usedStrategicReserveSupply += _amount; 		
 		} 		
-		else if (hashedStr == sha3(&quot;Cashila&quot;)){ 			
-			if (_amount &gt; cashilaTokenSupply - usedCashilaTokenSupply) throw; 			
-			cofounditTokenContract.mintTokens(_to, _amount, &quot;Reserved tokens for cashila&quot;); 			
+		else if (hashedStr == sha3("Cashila")){ 			
+			if (_amount > cashilaTokenSupply - usedCashilaTokenSupply) throw; 			
+			cofounditTokenContract.mintTokens(_to, _amount, "Reserved tokens for cashila"); 			
 			usedCashilaTokenSupply += _amount; 		} 		
-		else if (hashedStr == sha3(&quot;Iconomi&quot;)){ 			
-			if (_amount &gt; iconomiTokenSupply - usedIconomiTokenSupply) throw; 			
-			cofounditTokenContract.mintTokens(_to, _amount, &quot;Reserved tokens for iconomi&quot;); 			
+		else if (hashedStr == sha3("Iconomi")){ 			
+			if (_amount > iconomiTokenSupply - usedIconomiTokenSupply) throw; 			
+			cofounditTokenContract.mintTokens(_to, _amount, "Reserved tokens for iconomi"); 			
 			usedIconomiTokenSupply += _amount; 		
 		}
-		else if (hashedStr == sha3(&quot;Core&quot;)){ 			
-			if (_amount &gt; coreTeamTokenSupply - usedCoreTeamTokenSupply) throw; 			
-			cofounditTokenContract.mintTokens(_to, _amount, &quot;Reserved tokens for cofoundit team&quot;); 			
+		else if (hashedStr == sha3("Core")){ 			
+			if (_amount > coreTeamTokenSupply - usedCoreTeamTokenSupply) throw; 			
+			cofounditTokenContract.mintTokens(_to, _amount, "Reserved tokens for cofoundit team"); 			
 			usedCoreTeamTokenSupply += _amount; 		
 		} 		
 		else throw; 	
@@ -232,8 +232,8 @@ contract CofounditICO is owned{
 	/* Withdraw funds from contract */ 	
 	function withdrawEth() onlyOwner{ 		
 		if (this.balance == 0) throw;				// Check if there is something on the contract 		
-		if (totalEthRaised &lt; minEthToRaise) throw;	// Check if minEth treshold is surpassed 		
-		if (block.number &gt; endBlock){				// Check if ico has ended withouth reaching the maxCap 			
+		if (totalEthRaised < minEthToRaise) throw;	// Check if minEth treshold is surpassed 		
+		if (block.number > endBlock){				// Check if ico has ended withouth reaching the maxCap 			
 			icoHasSucessfulyEnded = true; 			
 			ICOEndedSuccessfuly(block.number, totalEthRaised, icoEndedSuccessfulyMessage); 		
 		} 		
@@ -243,7 +243,7 @@ contract CofounditICO is owned{
 	/* Withdraw remaining balance to manually return where contracts send has failed */ 	
 	function withdrawRemainingBalanceForManualRecovery() onlyOwner{ 		
 		if (this.balance == 0) throw;											// Check if there is something on the contract 		
-		if (block.number &lt; endBlock || totalEthRaised &gt;= minEthToRaise) throw;	// Check if ico has failed :( 		
+		if (block.number < endBlock || totalEthRaised >= minEthToRaise) throw;	// Check if ico has failed :( 		
 		if (participantIndex[lastEthReturnIndex] != 0x0) throw;					// Check if all the participants has been reinbursed 		
 		if(multisigAddress.send(this.balance)){}								// Send remainder so it can be manually processed 	
 	} 	
@@ -261,7 +261,7 @@ contract CofounditICO is owned{
 	} 	
 
 	function icoInProgress() constant returns (bool answer){ 		
-		return icoHasStarted &amp;&amp; !icoHasSucessfulyEnded; 	
+		return icoHasStarted && !icoHasSucessfulyEnded; 	
 	} 	
 
 	function isAddressAllowedInPresale(address _querryAddress) constant returns (bool answer){ 		

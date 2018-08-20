@@ -31,7 +31,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -71,7 +71,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner, &quot;Only owner can do that.&quot;);
+        require(msg.sender == owner, "Only owner can do that.");
         _;
     }
 
@@ -80,7 +80,7 @@ contract Ownable {
      */
     modifier onlyPendingOwner() {
         require(isOwnershipTransferActive);
-        require(msg.sender == pendingOwner, &quot;Only nominated pretender can do that.&quot;);
+        require(msg.sender == pendingOwner, "Only nominated pretender can do that.");
         _;
     }
 
@@ -125,14 +125,14 @@ contract ERC20 {
 
 /**
  * @title Aurum Services Token
- * @author Igor D&#235;min
+ * @author Igor Dëmin
  * @dev Token with predefined initial supply which could be reduced by owner.
  */
 contract AurumToken is ERC20, Ownable {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Aurum Services Token&quot;;
-    string public constant symbol = &quot;AURUM&quot;;
+    string public constant name = "Aurum Services Token";
+    string public constant symbol = "AURUM";
     uint8 public constant decimals = 18;
 
     uint256 public constant INITIAL_SUPPLY = 375 * (10 ** 6) * (10 ** uint256(decimals));
@@ -140,15 +140,15 @@ contract AurumToken is ERC20, Ownable {
     // Expected gradual reduction of total supply
     uint256 totalSupply_;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     event Burn(address indexed _owner, uint256 _value);
 
     constructor() public {
         // Initially total and initial supply are equal
         totalSupply_ = INITIAL_SUPPLY;
-        // Initially assign all tokens to the contract&#39;s creator, to rule them all :-)
+        // Initially assign all tokens to the contract's creator, to rule them all :-)
         balances[msg.sender] = INITIAL_SUPPLY;
         emit Transfer(address(0), msg.sender, INITIAL_SUPPLY);
     }
@@ -192,11 +192,11 @@ contract AurumToken is ERC20, Ownable {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
-        // subtract from sender&#39;s balance
+        // subtract from sender's balance
         balances[msg.sender] = balances[msg.sender].sub(_value);
-        // add to recipient&#39;s balance
+        // add to recipient's balance
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
         return true;
@@ -210,8 +210,8 @@ contract AurumToken is ERC20, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -246,7 +246,7 @@ contract AurumToken is ERC20, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public onlyOwner {
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
 
         balances[owner] = balances[owner].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);

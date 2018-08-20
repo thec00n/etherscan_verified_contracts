@@ -10,19 +10,19 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public admin;
@@ -61,9 +61,9 @@ contract Ownable {
   // amount of raised money in wei
   uint256 public weiRaised;
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
     startTime = _startTime;
     endTime = _endTime;
@@ -72,19 +72,19 @@ contract Ownable {
   }
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   // @return true if the transaction can mint tokens
   function validMintPurchase(uint256 _value) internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = _value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 }
 /**
@@ -97,25 +97,25 @@ contract Ownable {
   function CappedCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _cap) public
   Crowdsale(_startTime, _endTime, _rate, _wallet)
   {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can mint at the moment
   function validMintPurchase(uint256 _value) internal constant returns (bool) {
-    bool withinCap = weiRaised.add(_value) &lt;= cap;
-    return super.validMintPurchase(_value) &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(_value) <= cap;
+    return super.validMintPurchase(_value) && withinCap;
   }
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 }
@@ -138,9 +138,9 @@ contract HeartBoutPreICO is CappedCrowdsale, Ownable {
     function () payable public {}
     // low level token purchase function
     function buyTokens(string _account) public payable {
-        require(!stringEqual(_account, &quot;&quot;));
+        require(!stringEqual(_account, ""));
         require(validPurchase());
-        require(msg.value &gt;= minCount);
+        require(msg.value >= minCount);
         uint256 weiAmount = msg.value;
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate);
@@ -153,9 +153,9 @@ contract HeartBoutPreICO is CappedCrowdsale, Ownable {
     }
     // mintTokens function
     function mintTokens(address _to, uint256 _amount, string _account) onlyOwner public {
-        require(!stringEqual(_account, &quot;&quot;));
+        require(!stringEqual(_account, ""));
         require(validMintPurchase(_amount));
-        require(_amount &gt;= minCount);
+        require(_amount >= minCount);
         uint256 weiAmount = _amount;
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate);

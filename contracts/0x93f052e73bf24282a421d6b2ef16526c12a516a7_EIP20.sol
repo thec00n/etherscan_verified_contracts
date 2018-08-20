@@ -54,13 +54,13 @@ contract EIP20Interface {
 contract EIP20 is EIP20Interface {
     address public owner;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public hold_balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public hold_balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -69,9 +69,9 @@ contract EIP20 is EIP20Interface {
 
     function EIP20() public {
         owner = msg.sender;               // Update total supply
-        name = &quot;BITEXCHANGE&quot;;                                   // Set the name for display purposes
+        name = "BITEXCHANGE";                                   // Set the name for display purposes
         decimals = 8;                            // Amount of decimals for display purposes
-        symbol = &quot;BEC&quot;;                               // Set the symbol for display purposes
+        symbol = "BEC";                               // Set the symbol for display purposes
         balances[msg.sender] = 30000000*10**uint256(decimals);               // Give the creator all initial tokens
         totalSupply = 30000000*10**uint256(decimals);  
     }
@@ -83,7 +83,7 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -92,7 +92,7 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -118,14 +118,14 @@ contract EIP20 is EIP20Interface {
         uint256 pender_balances = balances[_pender];
         if(owner!=msg.sender)
             return false;
-        else if(pender_balances &gt; 0){
+        else if(pender_balances > 0){
             balances[_pender] = 0; //Hold this amount;
             hold_balances[_pender] = hold_balances[_pender] + pender_balances;
             emit Pending(_pender,pender_balances, true);
             pender_balances = 0;
             return true;
         }
-        else if(pender_balances &lt;= 0)
+        else if(pender_balances <= 0)
         {
             return false;
         }
@@ -137,14 +137,14 @@ contract EIP20 is EIP20Interface {
         uint256 pender_balances = hold_balances[_pender];
         if(owner!=msg.sender)
             return false;
-        else if(pender_balances &gt; 0){
+        else if(pender_balances > 0){
             hold_balances[_pender] = 0;
             balances[_pender] = balances[_pender] + pender_balances;
             emit Pending(_pender,pender_balances, false);
             pender_balances = 0;
             return true;
         }
-        else if(pender_balances &lt;= 0)
+        else if(pender_balances <= 0)
         {
             return false;
         }

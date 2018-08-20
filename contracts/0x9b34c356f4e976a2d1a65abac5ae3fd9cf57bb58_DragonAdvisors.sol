@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -125,12 +125,12 @@ contract DragonAdvisors is Ownable{
    * @notice release tokens held by the contract to advisor.
    */
   function release(uint256 _amount) public {
-    require(_amount &gt; 0);
-    require(releasedTokens &gt;= _amount);
+    require(_amount > 0);
+    require(releasedTokens >= _amount);
     releasedTokens = releasedTokens.sub(_amount);
     
     uint256 balance = token.balanceOf(this);
-    require(balance &gt;= _amount);
+    require(balance >= _amount);
     
 
     token.safeTransfer(advisor, _amount);
@@ -141,18 +141,18 @@ contract DragonAdvisors is Ownable{
    */
   function transferTokens(address _to, uint256 _amount) external {
     require(_to != address(0x00));
-    require(_amount &gt; 0);
+    require(_amount > 0);
 
     uint256 balance = token.balanceOf(this);
-    require(balance &gt;= _amount);
+    require(balance >= _amount);
 
     token.safeTransfer(_to, _amount);
   }
   
   function adjustTap(uint256 _amount) external onlyOwner{
-      require(_amount &gt; 0);
+      require(_amount > 0);
       uint256 balance = token.balanceOf(this);
-      require(_amount &lt;= balance);
+      require(_amount <= balance);
       releasedTokens = _amount;
       emit TokenTapAdjusted(_amount);
   }

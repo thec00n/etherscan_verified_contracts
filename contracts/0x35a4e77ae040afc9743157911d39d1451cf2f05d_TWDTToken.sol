@@ -8,8 +8,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -24,9 +24,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -34,7 +34,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -43,7 +43,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -101,7 +101,7 @@ contract BlackList is Ownable {
         return isBlackListed[_address];
     }
 
-    mapping (address =&gt; bool) public isBlackListed;
+    mapping (address => bool) public isBlackListed;
     
     function addBlackList(address _evilUser) public onlyOwnerAdmin {
         isBlackListed[_evilUser] = true;
@@ -127,7 +127,7 @@ contract WhiteList is Ownable {
         return isWhiteListed[_address];
     }
 
-    mapping (address =&gt; bool) public isWhiteListed;
+    mapping (address => bool) public isWhiteListed;
     
     function addWhiteList(address _User) public onlyOwnerAdmin {
         isWhiteListed[_User] = true;
@@ -149,7 +149,7 @@ contract WhiteList is Ownable {
 contract KYC is Ownable {
     bool public needVerified = false;
 
-    mapping (address =&gt; bool) public verifiedAccount;
+    mapping (address => bool) public verifiedAccount;
 
     event VerifiedAccount(address target, bool Verified);
     event Error_No_Binding_Address(address _from, address _to);
@@ -173,7 +173,7 @@ contract KYC is Ownable {
     }
 
     function checkIsKYC(address _from, address _to)public view returns (bool) {
-        return (!needVerified || (needVerified &amp;&amp; verifiedAccount[_from] &amp;&amp; verifiedAccount[_to]));
+        return (!needVerified || (needVerified && verifiedAccount[_from] && verifiedAccount[_to]));
     }
 }
 
@@ -198,10 +198,10 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     uint256 public minimumFee = 0;
     uint256 public maximumFee = 0;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; bool) public frozenAccountSend;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => bool) public frozenAccountSend;
 
     event FrozenFunds(address target, bool frozen);
     event FrozenFundsSend(address target, bool frozen);
@@ -213,8 +213,8 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     event Fee(uint256 feeRate, uint256 minFee, uint256 maxFee);
 
     constructor() public {
-        name = &quot;Taiwan Digital Token&quot;;
-        symbol = &quot;TWDT-ETH&quot;;
+        name = "Taiwan Digital Token";
+        symbol = "TWDT-ETH";
         totalSupply = 100000000000*(10**decimals);
         balanceOf[msg.sender] = totalSupply;	
     }
@@ -226,8 +226,8 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     function _transferFrom(address _from, address _to, uint256 _value) internal returns (bool) {
         require(_from != address(0));
         require(_to != address(0));
-        // require(balanceOf[_from] &gt;= _value);
-        // require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        // require(balanceOf[_from] >= _value);
+        // require(balanceOf[_to] + _value >= balanceOf[_to]);
         require(!frozenAccount[_from]);                  
         require(!frozenAccount[_to]); 
         require(!frozenAccountSend[_from]);
@@ -238,9 +238,9 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
             if(isWhiteListed[_from] || isWhiteListed[_to]){
                 fee = 0;
             }else if(fee != 0){
-                if (fee &gt; maximumFee) {
+                if (fee > maximumFee) {
                     fee = maximumFee;
-                } else if (fee &lt; minimumFee){
+                } else if (fee < minimumFee){
                     fee = minimumFee;
                 }
             }
@@ -249,7 +249,7 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
             uint256 sendAmount = _value.sub(fee);
             balanceOf[_from] = balanceOf[_from].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(sendAmount);
-            if (fee &gt; 0) {
+            if (fee > 0) {
                 balanceOf[feeWallet] = balanceOf[feeWallet].add(fee);
                 emit Transfer(_from, feeWallet, fee);
             }
@@ -290,11 +290,11 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_from != address(0));
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require(allowed[_from][msg.sender] &gt;= _value);
-        // require(balanceOf[_from] &gt;= _value);
-        // require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        // require(allowed[_from][msg.sender] >= _value);
+        // require(balanceOf[_from] >= _value);
+        // require(balanceOf[_to] + _value >= balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         require(!frozenAccountSend[_from]);
@@ -305,9 +305,9 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
             if(isWhiteListed[_from] || isWhiteListed[_to]){
                 fee = 0;
             }else if(fee != 0){
-                if (fee &gt; maximumFee) {
+                if (fee > maximumFee) {
                     fee = maximumFee;
-                } else if (fee &lt; minimumFee){
+                } else if (fee < minimumFee){
                     fee = minimumFee;
                 }
             }
@@ -317,7 +317,7 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
 
             balanceOf[_from] = balanceOf[_from].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(sendAmount);
-            if (fee &gt; 0) {
+            if (fee > 0) {
                 balanceOf[feeWallet] = balanceOf[feeWallet].add(fee);
                 emit Transfer(_from, feeWallet, fee);
             }
@@ -358,8 +358,8 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     // It can burn tokens from redeemWallet only.
     function redeem(uint256 amount) public onlyOwnerAdmin {
         require(redeemWallet != address(0));
-        require(totalSupply &gt;= amount);
-        require(balanceOf[redeemWallet] &gt;= amount);
+        require(totalSupply >= amount);
+        require(balanceOf[redeemWallet] >= amount);
 
         totalSupply = totalSupply.sub(amount);
         balanceOf[redeemWallet] = balanceOf[redeemWallet].sub(amount);
@@ -370,10 +370,10 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     // Mint a new amount of tokens.
     function mintToken(address _target, uint256 _mintedAmount) onlyOwner public {
         require(_target != address(0));
-        require(_mintedAmount &gt; 0);
+        require(_mintedAmount > 0);
         require(!frozenAccount[_target]);
-        // require(totalSupply + _mintedAmount &gt; totalSupply);
-        // require(balanceOf[_target] + _mintedAmount &gt; balanceOf[_target]);
+        // require(totalSupply + _mintedAmount > totalSupply);
+        // require(balanceOf[_target] + _mintedAmount > balanceOf[_target]);
         balanceOf[_target] = balanceOf[_target].add(_mintedAmount);
         totalSupply = totalSupply.add(_mintedAmount);
         emit Transfer(address(0), this, _mintedAmount);
@@ -399,9 +399,9 @@ contract TWDTToken is ERC20,Ownable,KYC,BlackList,WhiteList {
     // The maximum of feeRate is 0.1%.
     // The maximum of fee is 100 TWDT.
     function setFee(uint256 _feeRate, uint256 _minimumFee, uint256 _maximumFee) onlyOwner public {
-        require(_feeRate &lt;= 10);
-        require(_maximumFee &lt;= 100);
-        require(_minimumFee &lt;= _maximumFee);
+        require(_feeRate <= 10);
+        require(_maximumFee <= 100);
+        require(_minimumFee <= _maximumFee);
 
         feeRate = _feeRate;
         minimumFee = _minimumFee.mul(10**decimals);

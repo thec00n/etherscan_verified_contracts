@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,14 +81,14 @@ contract Owned {
 
 contract Rbank is Owned {
     using SafeMath for uint256;
-    string public constant name = &quot;RichBank&quot;;
-    string public constant symbol = &quot;Rbank&quot;;
+    string public constant name = "RichBank";
+    string public constant symbol = "Rbank";
     uint256 public constant decimals = 18;  // 18 is the most common number of decimal places
     bool private tradeable;
     uint256 private currentSupply;
-    mapping(address =&gt; uint256) private balances;
-    mapping(address =&gt; mapping(address=&gt; uint256)) private allowed;
-    mapping(address =&gt; bool) private lockedAccounts;  
+    mapping(address => uint256) private balances;
+    mapping(address => mapping(address=> uint256)) private allowed;
+    mapping(address => bool) private lockedAccounts;  
 	
 	/*
 		Incoming Ether
@@ -102,17 +102,17 @@ contract Rbank is Owned {
 	event TransferredEth(address indexed _to, uint256 _value);
 	function FoundationTransfer(address _to, uint256 amtEth, uint256 amtToken) public onlyOwner
 	{
-		require(address(this).balance &gt;= amtEth &amp;&amp; balances[this] &gt;= amtToken );
+		require(address(this).balance >= amtEth && balances[this] >= amtToken );
 		
-		if(amtEth &gt;0)
+		if(amtEth >0)
 		{
 			_to.transfer(amtEth);
 			emit TransferredEth(_to, amtEth);
 		}
 		
-		if(amtToken &gt; 0)
+		if(amtToken > 0)
 		{
-			require(balances[_to] + amtToken &gt; balances[_to]);
+			require(balances[_to] + amtToken > balances[_to]);
 			balances[this] -= amtToken;
 			balances[_to] += amtToken;
 			emit Transfer(this, _to, amtToken);
@@ -145,10 +145,10 @@ contract Rbank is Owned {
     event DayMinted(uint256 day,uint256 val, uint256 now);
     function DailyMint() public {
         uint256 day = (now-startTime)/(60*60*24);
-        require(startTime &lt;= now);
-        require(day &gt;= _lastDayPaid);
+        require(startTime <= now);
+        require(day >= _lastDayPaid);
         uint256 month = _lastDayPaid/30;
-        if(month &gt; _currentMonth){
+        if(month > _currentMonth){
             _currentMonth += 1;
             factor = (factor * 99)/100;
         }
@@ -174,7 +174,7 @@ contract Rbank is Owned {
 	}
 	
 	function DestroyToken(uint256 amt) public onlyOwner {
-	    require ( balances[this] &gt;= amt);
+	    require ( balances[this] >= amt);
 	    currentSupply -= amt;
 	    balances[this] -= amt;
 	    emit Transfer(this,address(0), amt);
@@ -185,7 +185,7 @@ contract Rbank is Owned {
     event SoldToken(address _buyer, uint256 _value, string note);
     function BuyToken(address _buyer, uint256 _value, string note) public onlyOwner
     {
-		require(balances[this] &gt;= _value &amp;&amp; balances[_buyer] + _value &gt; balances[_buyer]);
+		require(balances[this] >= _value && balances[_buyer] + _value > balances[_buyer]);
 		
         emit SoldToken( _buyer,  _value,  note);
         balances[this] -= _value;
@@ -222,7 +222,7 @@ contract Rbank is Owned {
     }
     function transfer(address _to, uint256 _value) public notLocked returns (bool success) {
         require(tradeable);
-         if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+         if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
              emit Transfer( msg.sender, _to,  _value);
              balances[msg.sender] -= _value;
              balances[_to] += _value;
@@ -232,11 +232,11 @@ contract Rbank is Owned {
          }
      }
     function transferFrom(address _from, address _to, uint _value)public notLocked returns (bool success) {
-        require(!lockedAccounts[_from] &amp;&amp; !lockedAccounts[_to]);
+        require(!lockedAccounts[_from] && !lockedAccounts[_to]);
 		require(tradeable);
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && balances[_to] + _value > balances[_to]) {
                 
             emit Transfer( _from, _to,  _value);
                 
@@ -254,7 +254,7 @@ contract Rbank is Owned {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -303,7 +303,7 @@ contract Rbank is Owned {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

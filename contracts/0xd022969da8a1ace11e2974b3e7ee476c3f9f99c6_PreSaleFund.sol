@@ -7,7 +7,7 @@ contract PreSaleFund
 
     event CashMove(uint amount,bytes32 logMsg,address target,address currentOwner);
     
-    mapping(address =&gt; uint) investors;
+    mapping(address => uint) investors;
     
     uint public MinInvestment = 0.1 ether;
    
@@ -25,7 +25,7 @@ contract PreSaleFund
     public 
     payable 
     {
-        if (msg.value &gt; MinInvestment)
+        if (msg.value > MinInvestment)
         {
             investors[msg.sender] += msg.value;
         }
@@ -34,9 +34,9 @@ contract PreSaleFund
     function Divest(uint amount) 
     public 
     {
-        if ( investors[msg.sender] &gt; 0 &amp;&amp; amount &gt; 0)
+        if ( investors[msg.sender] > 0 && amount > 0)
         {
-            this.loggedTransfer(amount, &quot;&quot;, msg.sender, owner);
+            this.loggedTransfer(amount, "", msg.sender, owner);
             investors[msg.sender] -= amount;
         }
     }
@@ -63,7 +63,7 @@ contract PreSaleFund
     {
         if(msg.sender==owner)
         {
-            this.loggedTransfer(this.balance, &quot;&quot;, msg.sender, owner);
+            this.loggedTransfer(this.balance, "", msg.sender, owner);
         }
     }
     

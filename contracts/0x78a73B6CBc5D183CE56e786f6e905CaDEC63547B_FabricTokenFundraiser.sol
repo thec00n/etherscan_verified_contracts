@@ -9,10 +9,10 @@ pragma solidity ^0.4.18;
  */
 contract FabricTokenConfig {
     // The name of the token.
-    string constant NAME = &quot;Fabric Token&quot;;
+    string constant NAME = "Fabric Token";
 
     // The symbol of the token.
-    string constant SYMBOL = &quot;FT&quot;;
+    string constant SYMBOL = "FT";
 
     // The number of decimals for the token.
     uint8 constant DECIMALS = 18;  // Same as ethers.
@@ -46,13 +46,13 @@ contract ERC20TokenInterface {
 library SafeMath {
     function plus(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
 
     function minus(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -82,15 +82,15 @@ contract ERC20Token is ERC20TokenInterface {
     using SafeMath for uint;
 
     // Token account balances.
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
 
     // Delegated number of tokens to transfer.
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     /**
      * @dev Checks the balance of a certain address.
      *
-     * @param _account The address which&#39;s balance will be checked.
+     * @param _account The address which's balance will be checked.
      *
      * @return Returns the balance of the `_account` address.
      */
@@ -107,7 +107,7 @@ contract ERC20Token is ERC20TokenInterface {
      * @return Whether the transfer was successful or not.
      */
     function transfer(address _to, uint _value) public returns (bool success) {
-        if (balances[msg.sender] &lt; _value || _value == 0) {
+        if (balances[msg.sender] < _value || _value == 0) {
 
             return false;
         }
@@ -130,7 +130,7 @@ contract ERC20Token is ERC20TokenInterface {
      * @return Whether the transfer was successful or not.
      */
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value || _value == 0) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value || _value == 0) {
             return false;
         }
 
@@ -254,14 +254,14 @@ contract Freezable is HasOwner {
   }
 
   /**
-   * @dev Allows the owner to &quot;freeze&quot; the contract.
+   * @dev Allows the owner to "freeze" the contract.
    */
   function freeze() onlyOwner public {
     frozen = true;
   }
 
   /**
-   * @dev Allows the owner to &quot;unfreeze&quot; the contract.
+   * @dev Allows the owner to "unfreeze" the contract.
    */
   function unfreeze() onlyOwner public {
     frozen = false;
@@ -410,11 +410,11 @@ contract TokenSafe {
         // Note: Unix timestamp fits uint32, however block.timestamp is uint
         uint releaseDate;
         // The balances for the FT locked token accounts.
-        mapping (address =&gt; uint) balances;
+        mapping (address => uint) balances;
     }
 
     // The account bundles of locked tokens grouped by release date
-    mapping (uint8 =&gt; AccountsBundle) public bundles;
+    mapping (uint8 => AccountsBundle) public bundles;
 
     // The `ERC20TokenInterface` contract.
     ERC20TokenInterface token;
@@ -459,9 +459,9 @@ contract TokenSafe {
      */
     function releaseAccount(uint8 _type, address _account) internal {
         var bundle = bundles[_type];
-        require(now &gt;= bundle.releaseDate);
+        require(now >= bundle.releaseDate);
         uint tokens = bundle.balances[_account];
-        require(tokens &gt; 0);
+        require(tokens > 0);
         bundle.balances[_account] = 0;
         bundle.lockedTokens = bundle.lockedTokens.minus(tokens);
         if (!token.transfer(_account, tokens)) {
@@ -551,7 +551,7 @@ contract FabricTokenSafe is TokenSafe, FabricTokenFundraiserConfig {
 contract Whitelist is HasOwner
 {
     // Whitelist mapping
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     /**
      * @dev The constructor.
@@ -577,7 +577,7 @@ contract Whitelist is HasOwner
      * @param _status The new status to apply
      */
     function setWhitelistEntries(address[] _entries, bool _status) internal {
-        for (uint32 i = 0; i &lt; _entries.length; ++i) {
+        for (uint32 i = 0; i < _entries.length; ++i) {
             whitelist[_entries[i]] = _status;
         }
     }
@@ -721,8 +721,8 @@ contract FabricTokenFundraiser is FabricToken, FabricTokenFundraiserConfig, Whit
      * @param _conversionRate The new number of Fabric Tokens per 1 ETH.
      */
     function setConversionRate(uint _conversionRate) public onlyOwner {
-        require(now &lt; startDate);
-        require(_conversionRate &gt; 0);
+        require(now < startDate);
+        require(_conversionRate > 0);
 
         conversionRate = _conversionRate;
         individualLimit = INDIVIDUAL_ETHER_LIMIT * _conversionRate;
@@ -731,7 +731,7 @@ contract FabricTokenFundraiser is FabricToken, FabricTokenFundraiserConfig, Whit
     }
 
     /**
-     * @dev The default function which will fire every time someone sends ethers to this contract&#39;s address.
+     * @dev The default function which will fire every time someone sends ethers to this contract's address.
      */
     function() public payable {
         buyTokens();
@@ -742,18 +742,18 @@ contract FabricTokenFundraiser is FabricToken, FabricTokenFundraiserConfig, Whit
      */
     function buyTokens() public payable onlyWhitelisted {
         require(!finalized);
-        require(now &gt;= startDate);
-        require(now &lt;= endDate);
-        require(tx.gasprice &lt;= MAX_GAS_PRICE);  // gas price limit
-        require(msg.value &gt;= minimumContribution);  // required minimum contribution
-        require(tokensSold &lt;= hardCap);
+        require(now >= startDate);
+        require(now <= endDate);
+        require(tx.gasprice <= MAX_GAS_PRICE);  // gas price limit
+        require(msg.value >= minimumContribution);  // required minimum contribution
+        require(tokensSold <= hardCap);
 
         // Calculate the number of tokens the buyer will receive.
         uint tokens = msg.value.mul(conversionRate);
         balances[msg.sender] = balances[msg.sender].plus(tokens);
 
         // Ensure that the individual contribution limit has not been reached
-        require(balances[msg.sender] &lt;= individualLimit);
+        require(balances[msg.sender] <= individualLimit);
 
         tokensSold = tokensSold.plus(tokens);
         totalSupply = totalSupply.plus(tokens);
@@ -774,7 +774,7 @@ contract FabricTokenFundraiser is FabricToken, FabricTokenFundraiserConfig, Whit
      */
     function claimPartnerTokens() public {
         require(!partnerTokensClaimed);
-        require(now &gt;= startDate);
+        require(now >= startDate);
 
         partnerTokensClaimed = true;
 
@@ -791,7 +791,7 @@ contract FabricTokenFundraiser is FabricToken, FabricTokenFundraiserConfig, Whit
      * @dev Finalize the fundraiser if `endDate` has passed or if `hardCap` is reached.
      */
     function finalize() public onlyOwner {
-        require((totalSupply &gt;= hardCap) || (now &gt;= endDate));
+        require((totalSupply >= hardCap) || (now >= endDate));
         require(!finalized);
 
         Finalized(beneficiary, this.balance, totalSupply);

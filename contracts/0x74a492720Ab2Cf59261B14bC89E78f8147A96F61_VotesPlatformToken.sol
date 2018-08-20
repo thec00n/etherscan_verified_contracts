@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -104,13 +104,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -145,7 +145,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -158,7 +158,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -203,12 +203,12 @@ contract MigrationAgent {
 /// @title Votes Platform Token
 contract VotesPlatformToken is StandardToken, Ownable {
 
-  string public name = &quot;Votes Platform Token&quot;;
-  string public symbol = &quot;VOTES&quot;;
+  string public name = "Votes Platform Token";
+  string public symbol = "VOTES";
   uint256 public decimals = 2;
   uint256 public INITIAL_SUPPLY = 100000000 * 100;
 
-  mapping(address =&gt; bool) refundAllowed;
+  mapping(address => bool) refundAllowed;
 
   address public migrationAgent;
   uint256 public totalMigrated;
@@ -248,8 +248,8 @@ contract VotesPlatformToken is StandardToken, Ownable {
     require(migrationAgent != 0);
 
     // Validate input value.
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] -= _value;
     totalSupply -= _value;
@@ -264,9 +264,9 @@ contract VotesPlatformToken is StandardToken, Ownable {
  * 2) owner: create presale contract
  * 3) owner: transfer required amount of tokens to presale contract
  * 4) owner: allow refund from presale contract by calling token.allowRefund
- * 5) &lt;wait for start time&gt;
+ * 5) <wait for start time>
  * 6) everyone sends ether to the presale contract and receives tokens in exchange
- * 7) &lt;wait until end time or until hard cap is reached&gt;
+ * 7) <wait until end time or until hard cap is reached>
  * 8) if soft cap is reached:
  * 8.1) beneficiary calls withdraw() and receives
  * 8.2) beneficiary calls withdrawTokens() and receives the rest of non-sold tokens
@@ -277,7 +277,7 @@ contract VotesPlatformToken is StandardToken, Ownable {
 contract VotesPlatformTokenPreSale is Ownable {
     using SafeMath for uint;
 
-    string public name = &quot;Votes Platform Token ICO&quot;;
+    string public name = "Votes Platform Token ICO";
 
     VotesPlatformToken public token;
     address public beneficiary;
@@ -298,7 +298,7 @@ contract VotesPlatformTokenPreSale is Ownable {
     bool public softCapReached = false;
     bool public crowdsaleFinished = false;
 
-    mapping(address =&gt; uint) sold;
+    mapping(address => uint) sold;
 
     event GoalReached(uint amountRaised);
     event SoftCapReached(uint softCap1);
@@ -306,12 +306,12 @@ contract VotesPlatformTokenPreSale is Ownable {
     event Refunded(address indexed holder, uint256 amount);
 
     modifier onlyAfter(uint time) {
-        require(now &gt;= time);
+        require(now >= time);
         _;
     }
 
     modifier onlyBefore(uint time) {
-        require(now &lt;= time);
+        require(now <= time);
         _;
     }
 
@@ -339,14 +339,14 @@ contract VotesPlatformTokenPreSale is Ownable {
     }
 
     function () payable {
-        require(msg.value / tokenPrice &gt; 0);
+        require(msg.value / tokenPrice > 0);
         doPurchase(msg.sender);
     }
 
     function refund() external onlyAfter(endTime) {
         require(!softCapReached);
         uint balance = sold[msg.sender];
-        require(balance &gt; 0);
+        require(balance > 0);
         uint refund = balance * tokenPrice;
         msg.sender.transfer(refund);
         delete sold[msg.sender];
@@ -369,15 +369,15 @@ contract VotesPlatformTokenPreSale is Ownable {
     function doPurchase(address _to) private onlyAfter(startTime) onlyBefore(endTime) {
         assert(crowdsaleFinished == false);
 
-        require(weiRaised.add(msg.value) &lt;= hardCap);
+        require(weiRaised.add(msg.value) <= hardCap);
 
-        if (!softCapReached &amp;&amp; weiRaised &lt; softCap &amp;&amp; weiRaised.add(msg.value) &gt;= softCap) {
+        if (!softCapReached && weiRaised < softCap && weiRaised.add(msg.value) >= softCap) {
             softCapReached = true;
             SoftCapReached(softCap);
         }
 
         uint tokens = msg.value / tokenPrice;
-        require(token.balanceOf(_to) + tokens &lt;= purchaseLimit);
+        require(token.balanceOf(_to) + tokens <= purchaseLimit);
 
         if (sold[_to] == 0)
             investorCount++;

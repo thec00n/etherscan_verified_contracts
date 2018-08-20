@@ -7,10 +7,10 @@ contract EtherFundMeIssueTokensCrowdfunding {
     ///////////////////////////////////////////////////////////////////////////////
     /// ERC20 Token fields
     ///////////////////////////////////////////////////////////////////////////////
-    /// Returns the name of the token - e.g. &quot;MyToken&quot;.
+    /// Returns the name of the token - e.g. "MyToken".
     string public name;
 
-    /// Returns the symbol of the token. E.g. &quot;HIX&quot;.
+    /// Returns the symbol of the token. E.g. "HIX".
     string public symbol;
 
     /// Returns the number of decimals the token uses - e.g. 8, means to divide the token amount by 100000000 to get its user representation
@@ -20,10 +20,10 @@ contract EtherFundMeIssueTokensCrowdfunding {
     uint public totalSupply;
 
     /// approve() allowances
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     /// holder balances
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// Crowdfunding fields
@@ -74,10 +74,10 @@ contract EtherFundMeIssueTokensCrowdfunding {
     bool public halted;
 
     ///  How much ETH each address has invested to this crowdfunding
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
     ///  How much tokens each address has invested to this crowdfunding
-    mapping (address =&gt; uint256) public tokenAmountOf;
+    mapping (address => uint256) public tokenAmountOf;
 
     /// etherfund.me final fee in %
     uint public constant ETHERFUNDME_FEE = 3;
@@ -180,7 +180,7 @@ contract EtherFundMeIssueTokensCrowdfunding {
     /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
     /// @param size payload size
     modifier onlyPayloadSize(uint size) {
-       require(msg.data.length &gt;= size + 4);
+       require(msg.data.length >= size + 4);
        _;
     }
 
@@ -219,9 +219,9 @@ contract EtherFundMeIssueTokensCrowdfunding {
         require(_fundingGoal != 0);
         require(_teamWallet != 0);
         require(_feeReceiverWallet != 0);
-        require(_decimals &gt;= 2);
-        require(_totalSupply &gt; 0);
-        require(_tokenPrice &gt; 0);
+        require(_decimals >= 2);
+        require(_totalSupply > 0);
+        require(_tokenPrice > 0);
 
         deployAgentWallet = msg.sender;
         projectName = _projectName;
@@ -248,13 +248,13 @@ contract EtherFundMeIssueTokensCrowdfunding {
     function getState() public constant returns (State) {
         if (finalized)
             return State.Finalized;
-        if (startsAt &gt; now)
+        if (startsAt > now)
             return State.Preparing;
-        if (now &gt;= startsAt &amp;&amp; now &lt; endsAt)
+        if (now >= startsAt && now < endsAt)
             return State.Funding;
         if (isGoalReached())
             return State.Success;
-        if (!isGoalReached() &amp;&amp; this.balance &gt; 0)
+        if (!isGoalReached() && this.balance > 0)
             return State.Refunding;
         return State.Failure;
     }
@@ -262,7 +262,7 @@ contract EtherFundMeIssueTokensCrowdfunding {
     /// @dev Goal was reached
     /// @return true if the crowdsale has raised enough money to be a succes
     function isGoalReached() public constant returns (bool reached) {
-        return this.balance &gt;= (fundingGoal * GOAL_REACHED_CRITERION) / 100;
+        return this.balance >= (fundingGoal * GOAL_REACHED_CRITERION) / 100;
     }
 
     /// @dev Fallback method
@@ -273,7 +273,7 @@ contract EtherFundMeIssueTokensCrowdfunding {
     /// @dev Allow contributions to this crowdfunding.
     function invest() public payable stopInEmergency  {
         require(getState() == State.Funding);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint weiAmount = msg.value;
         address investor = msg.sender;
@@ -285,13 +285,13 @@ contract EtherFundMeIssueTokensCrowdfunding {
 
         uint multiplier = 10 ** decimals;
         uint tokensAmount = (weiAmount * multiplier) / tokenPrice;
-        assert(tokensAmount &gt; 0);
+        assert(tokensAmount > 0);
         
-        if(getCurrentMilestone().bonus &gt; 0) {
+        if(getCurrentMilestone().bonus > 0) {
             tokensAmount += (tokensAmount * getCurrentMilestone().bonus) / 100;
         }
 
-        assert(tokensForSale - tokensAmount &gt;= 0);
+        assert(tokensForSale - tokensAmount >= 0);
         tokensForSale -= tokensAmount;
         investments.push(Investment(investor, tokensAmount));
         investmentsCount++;
@@ -330,7 +330,7 @@ contract EtherFundMeIssueTokensCrowdfunding {
         balances[teamWallet] += (teamTokensAmount + tokensForSale);
         
         // Distribute tokens to investors
-        for (uint i = 0; i &lt; investments.length; i++) {
+        for (uint i = 0; i < investments.length; i++) {
             balances[investments[i].source] += investments[i].tokensAmount;
             Transfer(0, investments[i].source, investments[i].tokensAmount);
         }
@@ -361,15 +361,15 @@ contract EtherFundMeIssueTokensCrowdfunding {
     /// @param _end end bonus  time
     /// @param _bonus bonus percent
     function addMilestone(uint _start, uint _end, uint _bonus) public onlyDeployAgent {
-        require(_bonus &gt; 0 &amp;&amp; _end &gt; _start);
+        require(_bonus > 0 && _end > _start);
         milestones.push(Milestone(_start, _end, _bonus));
     }
 
     /// @dev Get the current milestone or bail out if we are not in the milestone periods.
     /// @return Milestone current bonus milestone
     function getCurrentMilestone() private constant returns (Milestone) {
-        for (uint i = 0; i &lt; milestones.length; i++) {
-            if (milestones[i].start &lt;= now &amp;&amp; milestones[i].end &gt; now) {
+        for (uint i = 0; i < milestones.length; i++) {
+            if (milestones[i].start <= now && milestones[i].end > now) {
                 return milestones[i];
             }
         }
@@ -389,8 +389,8 @@ contract EtherFundMeIssueTokensCrowdfunding {
     /// @param _value tokens amount
     /// @return transfer result
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) canTransfer returns (bool success) {
-        require((_to != 0) &amp;&amp; (_to != address(this)));
-        require(balances[msg.sender] &gt;= _value);
+        require((_to != 0) && (_to != address(this)));
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -405,7 +405,7 @@ contract EtherFundMeIssueTokensCrowdfunding {
     /// @param _value tokens amount
     /// @return transfer result
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(2 * 32) canTransfer returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_to] += _value;
         balances[_from] -= _value;

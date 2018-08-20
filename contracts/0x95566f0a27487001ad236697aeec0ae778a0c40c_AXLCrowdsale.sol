@@ -6,7 +6,7 @@ interface Token {
 
 contract AXLCrowdsale {
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     Token public tokenReward;
     address public creator;
@@ -65,10 +65,10 @@ contract AXLCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
-        if(now &gt; every15) {
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
+        if(now > every15) {
             price += price / 20;
             every15 += 15 days;
         }

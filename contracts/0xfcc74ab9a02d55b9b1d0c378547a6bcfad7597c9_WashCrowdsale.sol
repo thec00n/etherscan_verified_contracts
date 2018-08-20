@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -45,7 +45,7 @@ contract WashCrowdsale {
     uint256 public price;
     uint256 public fundTransferred;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
 
     /**
@@ -78,12 +78,12 @@ contract WashCrowdsale {
         amountRaised = amountRaised.add(ethamount);
         
         //add bounus for funders
-        if(now &gt;= preSaleStartdate &amp;&amp; now &lt;= preSaleDeadline ){
+        if(now >= preSaleStartdate && now <= preSaleDeadline ){
             amount =  ethamount.div(price);
             bonus = amount.div(8);
             amount = amount.add(bonus);
         }
-        else if(now &gt;= mainSaleStartdate &amp;&amp; now &lt;= mainSaleDeadline){
+        else if(now >= mainSaleStartdate && now <= mainSaleDeadline){
             amount =  ethamount.div(price);
         }
         
@@ -93,7 +93,7 @@ contract WashCrowdsale {
         fundTransferred = fundTransferred.add(ethamount);
     }
 
-    modifier afterDeadline() { if (now &gt;= mainSaleDeadline) _; }
+    modifier afterDeadline() { if (now >= mainSaleDeadline) _; }
 
     /**
      *ends the campaign after deadline

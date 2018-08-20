@@ -21,13 +21,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,20 +62,20 @@ contract VikkyToken is ERC20 {
     using SafeMath for uint256;
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; 
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed; 
 
-    mapping (address =&gt; bool) public airdropClaimed;
-    mapping (address =&gt; bool) public refundClaimed;
-    mapping (address =&gt; bool) public locked;
+    mapping (address => bool) public airdropClaimed;
+    mapping (address => bool) public refundClaimed;
+    mapping (address => bool) public locked;
 
     /* Keep track of Ether contributed and tokens received during Crowdsale */
   
-    mapping(address =&gt; uint) public icoEtherContributed;
-    mapping(address =&gt; uint) public icoTokensReceived;
+    mapping(address => uint) public icoEtherContributed;
+    mapping(address => uint) public icoTokensReceived;
 
-    string public constant name = &quot;VikkyToken&quot;;
-    string public constant symbol = &quot;VIK&quot;;
+    string public constant name = "VikkyToken";
+    string public constant symbol = "VIK";
     uint public constant decimals = 18;
     
     uint constant E18 = 10**18;
@@ -148,7 +148,7 @@ contract VikkyToken is ERC20 {
     function icoThresholdReached() public constant returns (bool thresholdReached) {
         address myAddress = this;
         uint256 etherBalance = myAddress.balance;
-        if (etherBalance &lt; MIN_FUNDING_GOAL) return false;
+        if (etherBalance < MIN_FUNDING_GOAL) return false;
         return true;
     }  
     
@@ -186,14 +186,14 @@ contract VikkyToken is ERC20 {
     
     function distribution(address[] addresses, uint256 amount) onlyOwner canDistr public {
                 
-        require(amount &lt;= totalRemaining);
+        require(amount <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(amount &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(amount <= totalRemaining);
             distr(addresses[i], amount);
         }
     
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
@@ -202,11 +202,11 @@ contract VikkyToken is ERC20 {
         
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
             
-            if (totalDistributed &gt;= totalSupply) {
+            if (totalDistributed >= totalSupply) {
                 distributionFinished = true;
             }
         }
@@ -214,8 +214,8 @@ contract VikkyToken is ERC20 {
 
     function doAirdrop(address _participant, uint airdrop) internal {
         
-        require( airdrop &gt; 0 );
-        require(tokensClaimedAirdrop &lt; totalDistributedAirdrop);
+        require( airdrop > 0 );
+        require(tokensClaimedAirdrop < totalDistributedAirdrop);
 
         // update balances and token issue volume
         airdropClaimed[_participant] = true;
@@ -234,19 +234,19 @@ contract VikkyToken is ERC20 {
     }
 
     function adminClaimAirdropMultiple(address[] _addresses, uint airdrop) external {        
-        for (uint i = 0; i &lt; _addresses.length; i++) doAirdrop(_addresses[i], airdrop);
+        for (uint i = 0; i < _addresses.length; i++) doAirdrop(_addresses[i], airdrop);
     }
 
     function systemClaimAirdropMultiple(address[] _addresses) external {
         uint airdrop = tokensAirdrop;
-        for (uint i = 0; i &lt; _addresses.length; i++) doAirdrop(_addresses[i], airdrop);
+        for (uint i = 0; i < _addresses.length; i++) doAirdrop(_addresses[i], airdrop);
     }
 
  
     /* Change tokensPerEth before ICO start */
   
     function updateTokensPerEth(uint _tokensPerEth) public onlyOwner {
-        require( atNow() &lt; DATE_PRESALE_START );
+        require( atNow() < DATE_PRESALE_START );
         tokensPerEth = _tokensPerEth;
         emit TokensPerEthUpdated(_tokensPerEth);
     }
@@ -262,18 +262,18 @@ contract VikkyToken is ERC20 {
         uint tokens = 0;
 
         // minimum contribution
-        require( msg.value &gt;= MIN_CONTRIBUTION );
+        require( msg.value >= MIN_CONTRIBUTION );
 
         // one address transfer hard cap
-        require( icoEtherContributed[msg.sender].add(msg.value) &lt;= MAX_CONTRIBUTION );
+        require( icoEtherContributed[msg.sender].add(msg.value) <= MAX_CONTRIBUTION );
 
         // check dates for presale or ICO
-        if (ts &gt; DATE_PRESALE_START &amp;&amp; ts &lt; DATE_PRESALE_END) isPresale = true;  
-        if (ts &gt; DATE_ICO_START &amp;&amp; ts &lt; DATE_ICO_END) isIco = true;
+        if (ts > DATE_PRESALE_START && ts < DATE_PRESALE_END) isPresale = true;  
+        if (ts > DATE_ICO_START && ts < DATE_ICO_END) isIco = true;
         require( isPresale || isIco );
 
         // presale cap in Ether
-        if (isPresale) require( msg.value &gt;= MIN_CONTRIBUTION_PRESALE);
+        if (isPresale) require( msg.value >= MIN_CONTRIBUTION_PRESALE);
                 
         address investor = msg.sender;
         
@@ -283,26 +283,26 @@ contract VikkyToken is ERC20 {
         // apply bonuses (none for last week)
         if (isPresale) {
             tokens = tokens.mul(100 + BONUS_PRESALE) / 100;
-        } else if (ts &lt; DATE_ICO_START + 7 days) {
+        } else if (ts < DATE_ICO_START + 7 days) {
             // round 1 bonus
             tokens = tokens.mul(100 + BONUS_ICO_ROUND1) / 100;
-        } else if (ts &lt; DATE_ICO_START + 14 days) {
+        } else if (ts < DATE_ICO_START + 14 days) {
             // round 2 bonus
             tokens = tokens.mul(100 + BONUS_ICO_ROUND2) / 100;
-        } else if (ts &lt; DATE_ICO_START + 21 days) {
+        } else if (ts < DATE_ICO_START + 21 days) {
             // round 3 bonus
             tokens = tokens.mul(100 + BONUS_ICO_ROUND3) / 100;
         }
 
         // ICO token volume cap
-        require( totalDistributed.add(tokens) &lt;= totalRemaining );
+        require( totalDistributed.add(tokens) <= totalRemaining );
         
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             distr(investor, tokens);
         }
         
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }                
     }
@@ -313,7 +313,7 @@ contract VikkyToken is ERC20 {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -327,7 +327,7 @@ contract VikkyToken is ERC20 {
     }
 
     function removeLockMultiple(address[] _participants) public {        
-        for (uint i = 0; i &lt; _participants.length; i++) {
+        for (uint i = 0; i < _participants.length; i++) {
             removeLock(_participants[i]);
         }
     }
@@ -335,7 +335,7 @@ contract VikkyToken is ERC20 {
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         require( locked[msg.sender] == false );
         require( locked[_to] == false );
         
@@ -348,8 +348,8 @@ contract VikkyToken is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         require( locked[msg.sender] == false );
         require( locked[_to] == false );
         
@@ -362,7 +362,7 @@ contract VikkyToken is ERC20 {
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -385,9 +385,9 @@ contract VikkyToken is ERC20 {
     }
     
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -412,13 +412,13 @@ contract VikkyToken is ERC20 {
         uint amount; // refund amount
 
         // ico is finished and was not successful
-        require( atNow() &gt; DATE_ICO_END &amp;&amp; !icoThresholdReached() );
+        require( atNow() > DATE_ICO_END && !icoThresholdReached() );
 
         // check if refund has already been claimed
         require( !refundClaimed[_participant] );
 
         // check if there is anything to refund
-        require( icoEtherContributed[_participant] &gt; 0 );
+        require( icoEtherContributed[_participant] > 0 );
 
         // update variables affected by refund
         tokens = icoTokensReceived[_participant];
@@ -437,7 +437,7 @@ contract VikkyToken is ERC20 {
     }
 
     function reclaimFundMultiple(address[] _participants) public {        
-        for (uint i = 0; i &lt; _participants.length; i++) {
+        for (uint i = 0; i < _participants.length; i++) {
             reclaimFund(_participants[i]);
         }
     }

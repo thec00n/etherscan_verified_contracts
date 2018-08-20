@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 /*
-* LOK &#39;LookRev Token&#39; crowdfunding contract
+* LOK 'LookRev Token' crowdfunding contract
 *
 * Refer to https://lookrev.com/ for further information.
 * 
@@ -36,14 +36,14 @@ contract ERC20 {
 contract SafeMath {
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a &amp;&amp; c &gt;= b);
+    assert(c >= a && c >= b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     uint c = a - b;
-    assert(c &lt;= a);
+    assert(c <= a);
     return c;
   }
 }
@@ -82,8 +82,8 @@ contract Ownable {
  */
 contract StandardToken is ERC20, Ownable, SafeMath {
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) constant returns (uint balance) {
         return balances[_owner];
@@ -93,9 +93,9 @@ contract StandardToken is ERC20, Ownable, SafeMath {
         // avoid wasting gas on 0 token transfers
         if(_amount == 0) return true;
 
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] = safeSub(balances[msg.sender],_amount);
             balances[_to] = safeAdd(balances[_to],_amount);
             Transfer(msg.sender, _to, _amount);
@@ -109,10 +109,10 @@ contract StandardToken is ERC20, Ownable, SafeMath {
         // avoid wasting gas on 0 token transfers
         if(_amount == 0) return true;
 
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] = safeSub(balances[_from],_amount);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_amount);
             balances[_to] = safeAdd(balances[_to],_amount);
@@ -129,10 +129,10 @@ contract StandardToken is ERC20, Ownable, SafeMath {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
            return false;
         }
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         allowed[msg.sender][_spender] = _value;
@@ -156,15 +156,15 @@ contract LookRevToken is StandardToken {
     /*
     *  Token meta data
     */
-    string public constant name = &quot;LookRev&quot;;
-    string public constant symbol = &quot;LOK&quot;;
+    string public constant name = "LookRev";
+    string public constant symbol = "LOK";
     uint8 public constant decimals = 18;
-    string public VERSION = &#39;LOK1.0&#39;;
+    string public VERSION = 'LOK1.0';
     bool public finalised = false;
     
     address public wallet = 0x0;
 
-    mapping(address =&gt; bool) public kycRequired;
+    mapping(address => bool) public kycRequired;
 
     // Start - Wednesday, August 30, 2017 10:00:00 AM GMT-07:00 DST
     // End - Saturday, September 30, 2017 10:00:00 AM GMT-07:00 DST
@@ -201,8 +201,8 @@ contract LookRevToken is StandardToken {
     // Can only be set before the start of the crowdsale
     // Owner can change the rate before the crowdsale starts
     function setTokensPerKEther(uint _tokensPerKEther) onlyOwner {
-        require(now &lt; START_DATE);
-        require(_tokensPerKEther &gt; 0);
+        require(now < START_DATE);
+        require(_tokensPerKEther > 0);
         tokensPerKEther = _tokensPerKEther;
         TokensPerKEtherUpdated(tokensPerKEther);
     }
@@ -219,10 +219,10 @@ contract LookRevToken is StandardToken {
 
         require(!finalised);
 
-        require(now &lt;= END_DATE);
+        require(now <= END_DATE);
 
-        require(msg.value &gt; CONTRIBUTIONS_MIN);
-        require(CONTRIBUTIONS_MAX == 0 || msg.value &lt; CONTRIBUTIONS_MAX);
+        require(msg.value > CONTRIBUTIONS_MIN);
+        require(CONTRIBUTIONS_MAX == 0 || msg.value < CONTRIBUTIONS_MAX);
 
          // Calculate number of tokens for contributed ETH
          // `18` is the ETH decimals
@@ -230,9 +230,9 @@ contract LookRevToken is StandardToken {
          uint tokens = msg.value * tokensPerKEther / 10**uint(18 - decimals + 3);
 
          // Check if the hard cap will be exceeded
-         require(totalSupply + tokens &lt;= TOKENS_HARD_CAP);
+         require(totalSupply + tokens <= TOKENS_HARD_CAP);
 
-         // Add tokens purchased to account&#39;s balance and total supply
+         // Add tokens purchased to account's balance and total supply
          balances[participant] = safeAdd(balances[participant],tokens);
          totalSupply = safeAdd(totalSupply,tokens);
 
@@ -247,7 +247,7 @@ contract LookRevToken is StandardToken {
          TokensBought(participant, msg.value, balances[participant], tokens,
               totalSupply, tokensPerKEther);
 
-         if (msg.value &gt; KYC_THRESHOLD) {
+         if (msg.value > KYC_THRESHOLD) {
              // KYC verification required before participant can transfer the tokens
              kycRequired[participant] = true;
          }
@@ -262,8 +262,8 @@ contract LookRevToken is StandardToken {
         uint tokensPerKEther);
 
     function finalise() onlyOwner {
-        // Can only finalise if raised &gt; soft cap or after the end date
-        require(totalSupply &gt;= TOKENS_SOFT_CAP || now &gt; END_DATE);
+        // Can only finalise if raised > soft cap or after the end date
+        require(totalSupply >= TOKENS_SOFT_CAP || now > END_DATE);
 
         require(!finalised);
 
@@ -271,8 +271,8 @@ contract LookRevToken is StandardToken {
     }
 
    function addPrecommitment(address participant, uint balance) onlyOwner {
-        require(now &lt; START_DATE);
-        require(balance &gt; 0);
+        require(now < START_DATE);
+        require(balance > 0);
         balances[participant] = safeAdd(balances[participant],balance);
         totalSupply = safeAdd(totalSupply,balance);
         Transfer(0x0, participant, balance);
@@ -302,15 +302,15 @@ contract LookRevToken is StandardToken {
     }
     event KycVerified(address indexed participant, bool required);
 
-    // Any account can burn _from&#39;s tokens as long as the _from account has
+    // Any account can burn _from's tokens as long as the _from account has
     // approved the _amount to be burnt using approve(0x0, _amount)
     function burnFrom(address _from, uint _amount) returns (bool success) {
-        require(totalSupply &gt;= _amount);
+        require(totalSupply >= _amount);
 
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][0x0] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[0x0] + _amount &gt; balances[0x0]
+        if (balances[_from] >= _amount
+            && allowed[_from][0x0] >= _amount
+            && _amount > 0
+            && balances[0x0] + _amount > balances[0x0]
         ) {
             balances[_from] = safeSub(balances[_from],_amount);
             balances[0x0] = safeAdd(balances[0x0],_amount);

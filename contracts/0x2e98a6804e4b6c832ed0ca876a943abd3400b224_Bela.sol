@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,20 +106,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -133,7 +133,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -142,7 +142,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -190,7 +190,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -201,8 +201,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -265,7 +265,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -332,7 +332,7 @@ contract MintableToken is StandardToken, Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="1d6f78707e725d2f">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="1d6f78707e725d2f">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -369,8 +369,8 @@ contract HasNoEther is Ownable {
 
 
 ///* Remix format
-//import &quot;./MintableToken.sol&quot;;
-//import &quot;./HasNoEther.sol&quot;;
+//import "./MintableToken.sol";
+//import "./HasNoEther.sol";
 
 
 contract Bela is MintableToken, HasNoEther 
@@ -388,13 +388,13 @@ contract Bela is MintableToken, HasNoEther
     
     /**
     These state vars are handled in the OpenZeppelin libraries;
-    we display them here for the developer&#39;s information.
+    we display them here for the developer's information.
     ***
     // ERC20Basic - Store account balances
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     // StandardToken - Owner of account approves transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     // 
     uint256 public totalSupply;
@@ -403,8 +403,8 @@ contract Bela is MintableToken, HasNoEther
     //////////////////////
     // Human token state
     //////////////////////
-    string public constant name = &quot;Bela&quot;;
-    string public constant symbol = &quot;BELA&quot;;
+    string public constant name = "Bela";
+    string public constant symbol = "BELA";
     uint8 public constant  decimals = 18;
 
     ///////////////////////////////////////////////////////////
@@ -431,7 +431,7 @@ contract Bela is MintableToken, HasNoEther
     }
     
     // Track all tokens staked
-    mapping (address =&gt; TokenStakeData) public stakeBalances;
+    mapping (address => TokenStakeData) public stakeBalances;
 
     // Fire a loggable event when tokens are staked
     event Stake(address indexed staker, address indexed stakeSplitAddress, uint256 value);
@@ -459,7 +459,7 @@ contract Bela is MintableToken, HasNoEther
         // Set up state minting variables
         ////////////////////////////////////
 
-        // Set last minted to current block.timestamp (&#39;now&#39;)
+        // Set last minted to current block.timestamp ('now')
         ownerTimeLastMinted = now;
         
         // 4500 minted tokens per day, 86400 seconds in a day
@@ -480,7 +480,7 @@ contract Bela is MintableToken, HasNoEther
     function stakeBelaSplit(uint _stakeAmount, address _stakeSplitAddress) external
     {
         // Require that a Bela split actually be split with an address
-        require(_stakeSplitAddress &gt; 0);
+        require(_stakeSplitAddress > 0);
         // Store split address into stake mapping
         stakeBalances[msg.sender].stakeSplitAddress = _stakeSplitAddress;
         // Require that tokens are staked successfully
@@ -494,9 +494,9 @@ contract Bela is MintableToken, HasNoEther
     {
         /// Sanity checks: 
         // require that there was some amount vested
-        require(stakeBalances[msg.sender].initialStakeBalance &gt; 0);
+        require(stakeBalances[msg.sender].initialStakeBalance > 0);
         // require that time has elapsed
-        require(now &gt; stakeBalances[msg.sender].initialStakeTime);
+        require(now > stakeBalances[msg.sender].initialStakeTime);
 
         // Calculate the time elapsed since the tokens were originally staked
         uint _timePassedSinceStake = now.sub(stakeBalances[msg.sender].initialStakeTime);
@@ -504,14 +504,14 @@ contract Bela is MintableToken, HasNoEther
         // Calculate tokens to mint
         uint _tokensToMint = calculateStakeGains(_timePassedSinceStake);
 
-        // Add the original stake back to the user&#39;s balance
+        // Add the original stake back to the user's balance
         balances[msg.sender] += stakeBalances[msg.sender].initialStakeBalance;
         
         // Subtract stake balance from totalBelaStaked
         totalBelaStaked -= stakeBalances[msg.sender].initialStakeBalance;
         
-        // Mint the new tokens; the new tokens are added to the user&#39;s balance
-        if (stakeBalances[msg.sender].stakeSplitAddress &gt; 0) 
+        // Mint the new tokens; the new tokens are added to the user's balance
+        if (stakeBalances[msg.sender].stakeSplitAddress > 0) 
         {
             // Splitting stake, so mint half to sender and half to stakeSplitAddress
             mint(msg.sender, _tokensToMint.div(2));
@@ -542,8 +542,8 @@ contract Bela is MintableToken, HasNoEther
     /// @dev allows contract owner to claim their mint
     function ownerClaim() external onlyOwner
     {
-        // Sanity check: ensure that we didn&#39;t travel back in time
-        require(now &gt; ownerTimeLastMinted);
+        // Sanity check: ensure that we didn't travel back in time
+        require(now > ownerTimeLastMinted);
         
         uint _timePassedSinceLastMint;
         uint _tokenMintCount;
@@ -553,12 +553,12 @@ contract Bela is MintableToken, HasNoEther
         _timePassedSinceLastMint = now.sub(ownerTimeLastMinted);
 
         // Sanity check: ensure that some time has passed since the owner last claimed
-        assert(_timePassedSinceLastMint &gt; 0);
+        assert(_timePassedSinceLastMint > 0);
 
         // Determine the token mint amount, determined from the number of seconds passed and the ownerMintRate
         _tokenMintCount = calculateMintTotal(_timePassedSinceLastMint, ownerMintRate);
 
-        // Mint the owner&#39;s tokens; this also increases totalSupply
+        // Mint the owner's tokens; this also increases totalSupply
         _mintingSuccess = mint(msg.sender, _tokenMintCount);
 
         // Sanity check: ensure that the minting was successful
@@ -568,13 +568,13 @@ contract Bela is MintableToken, HasNoEther
         ownerTimeLastMinted = now;
     }
 
-    /// @dev stake function reduces the user&#39;s total available balance. totalSupply is unaffected
+    /// @dev stake function reduces the user's total available balance. totalSupply is unaffected
     /// @param _value determines how many tokens a user wants to stake
     function stakeTokens(uint256 _value) private returns (bool success)
     {
         /// Sanity Checks:
         // You can only stake as many tokens as you have
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         // You can only stake tokens if you have not already staked tokens
         require(stakeBalances[msg.sender].initialStakeBalance == 0);
 
@@ -610,9 +610,9 @@ contract Bela is MintableToken, HasNoEther
         uint _tokensToMint = 0;         // store number of new tokens to be minted
         
         // Determine the amount to be newly minted upon vesting, if any
-        if (_timePassedSinceStake &gt; _secondsPerDay) {
+        if (_timePassedSinceStake > _secondsPerDay) {
             
-            /// We&#39;ve passed the minimum staking time; calculate minting rate average ((initialRate + finalRate) / 2)
+            /// We've passed the minimum staking time; calculate minting rate average ((initialRate + finalRate) / 2)
             
             // First, calculate our final stake percentage based upon the total amount of Bela staked
             _finalStakePercentage = calculateFraction(stakeBalances[msg.sender].initialStakeBalance, totalBelaStaked, decimals);
@@ -625,7 +625,7 @@ contract Bela is MintableToken, HasNoEther
             _finalMintRate = _finalMintRate.div(1 ether);
             
             // Tokens were staked for enough time to mint new tokens; determine how many
-            if (_timePassedSinceStake &gt; _secondsPerDay.mul(30)) {
+            if (_timePassedSinceStake > _secondsPerDay.mul(30)) {
                 // Tokens were staked for the maximum amount of time (30 days)
                 _tokensToMint = calculateMintTotal(_secondsPerDay.mul(30), _finalMintRate);
             } else {

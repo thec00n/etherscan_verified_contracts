@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 contract Ownable {
@@ -42,7 +42,7 @@ contract Ownable {
 }
 
 
-/*** Dennis &amp; Bani welcome you ***/
+/*** Dennis & Bani welcome you ***/
 contract EtherCup is Ownable {
 
   // NOTE: Player is our global term used to describe unique tokens
@@ -65,10 +65,10 @@ contract EtherCup is Ownable {
 
 
   /*** STORAGE ***/
-  mapping (uint =&gt; address) public playerToOwner;
-  mapping (address =&gt; uint) ownerPlayerCount;
-  mapping (uint256 =&gt; uint256) public playerToPrice;
-  mapping (uint =&gt; address) playerApprovals;
+  mapping (uint => address) public playerToOwner;
+  mapping (address => uint) ownerPlayerCount;
+  mapping (uint256 => uint256) public playerToPrice;
+  mapping (uint => address) playerApprovals;
 
   // The address of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -94,7 +94,7 @@ contract EtherCup is Ownable {
   }
 
   /*** CONSTRUCTOR ***/
-  // In newer versions use &quot;constructor() public {  };&quot; instead of &quot;function PlayerLab() public {  };&quot;
+  // In newer versions use "constructor() public {  };" instead of "function PlayerLab() public {  };"
   constructor() public {
     ceoAddress = msg.sender;
 
@@ -126,16 +126,16 @@ contract EtherCup is Ownable {
 
   /*** Buy ***/
   function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; priceLimitOne) {
-      return _price.mul(200).div(95); // &lt; 0.05
-    } else if (_price &lt; priceLimitTwo) {
-      return _price.mul(175).div(95); // &lt; 0.5
-    } else if (_price &lt; priceLimitThree) {
-      return _price.mul(150).div(95); // &lt; 2
-    } else if (_price &lt; priceLimitFour) {
-      return _price.mul(125).div(95); // &lt; 5
+    if (_price < priceLimitOne) {
+      return _price.mul(200).div(95); // < 0.05
+    } else if (_price < priceLimitTwo) {
+      return _price.mul(175).div(95); // < 0.5
+    } else if (_price < priceLimitThree) {
+      return _price.mul(150).div(95); // < 2
+    } else if (_price < priceLimitFour) {
+      return _price.mul(125).div(95); // < 5
     } else {
-      return _price.mul(115).div(95); // &gt;= 5
+      return _price.mul(115).div(95); // >= 5
     }
   }
 
@@ -156,12 +156,12 @@ contract EtherCup is Ownable {
     require(oldOwner != newOwner);
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     _transfer(oldOwner, newOwner, _tokenId);
     playerToPrice[_tokenId] = nextPriceOf(_tokenId);
 
-    // Devevloper&#39;s cut which is left in contract and accesed by
+    // Devevloper's cut which is left in contract and accesed by
     // `withdrawAll` and `withdrawAmountTo` methods.
     uint256 devCut = calculateDevCut(sellingPrice);
 
@@ -172,7 +172,7 @@ contract EtherCup is Ownable {
       oldOwner.transfer(payment);
     }
 
-    if (purchaseExcess &gt; 0){
+    if (purchaseExcess > 0){
         newOwner.transfer(purchaseExcess);
     }
 
@@ -182,7 +182,7 @@ contract EtherCup is Ownable {
 
   /*** Withdraw Dev Cut ***/
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -207,7 +207,7 @@ contract EtherCup is Ownable {
   function priceOfMultiple(uint256[] _tokenIds) public view returns (uint256[]) {
     uint[] memory values = new uint[](_tokenIds.length);
 
-    for (uint256 i = 0; i &lt; _tokenIds.length; i++) {
+    for (uint256 i = 0; i < _tokenIds.length; i++) {
       values[i] = priceOf(_tokenIds[i]);
     }
     return values;
@@ -247,7 +247,7 @@ contract EtherCup is Ownable {
     emit Transfer(_from, _to, _tokenId);
   }
 
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -262,7 +262,7 @@ contract EtherCup is Ownable {
       uint256 resultIndex = 0;
 
       uint256 playerId;
-      for (playerId = 0; playerId &lt;= totalPlayers; playerId++) {
+      for (playerId = 0; playerId <= totalPlayers; playerId++) {
         if (playerToOwner[playerId] == _owner) {
           result[resultIndex] = playerId;
           resultIndex++;
@@ -296,9 +296,9 @@ function mul(uint256 a, uint256 b) internal pure returns (uint256) {
 * @dev Integer division of two numbers, truncating the quotient.
 */
 function div(uint256 a, uint256 b) internal pure returns (uint256) {
- // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+ // assert(b > 0); // Solidity automatically throws when dividing by 0
  uint256 c = a / b;
- // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+ // assert(a == b * c + a % b); // There is no case in which this doesn't hold
  return c;
 }
 
@@ -306,7 +306,7 @@ function div(uint256 a, uint256 b) internal pure returns (uint256) {
 * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 */
 function sub(uint256 a, uint256 b) internal pure returns (uint256) {
- assert(b &lt;= a);
+ assert(b <= a);
  return a - b;
 }
 
@@ -315,7 +315,7 @@ function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 */
 function add(uint256 a, uint256 b) internal pure returns (uint256) {
  uint256 c = a + b;
- assert(c &gt;= a);
+ assert(c >= a);
  return c;
 }
 }

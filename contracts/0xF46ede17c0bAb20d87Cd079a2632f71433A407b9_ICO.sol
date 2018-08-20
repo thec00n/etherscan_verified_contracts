@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -70,13 +70,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -96,13 +96,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -123,8 +123,8 @@ contract StandardToken is BasicToken, ERC20 {
 
 contract ATL is StandardToken {
 
-  string public name = &quot;ATLANT Token&quot;;
-  string public symbol = &quot;ATL&quot;;
+  string public name = "ATLANT Token";
+  string public symbol = "ATL";
   uint public decimals = 18;
   uint constant TOKEN_LIMIT = 150 * 1e6 * 1e18;
 
@@ -139,7 +139,7 @@ contract ATL is StandardToken {
   function mint(address _holder, uint _value) external {
     require(msg.sender == ico);
     require(_value != 0);
-    require(totalSupply + _value &lt;= TOKEN_LIMIT);
+    require(totalSupply + _value <= TOKEN_LIMIT);
 
     balances[_holder] += _value;
     totalSupply += _value;
@@ -211,7 +211,7 @@ contract ICO {
 
   function buyFor(address _investor) public payable {
     require(icoState == IcoState.Running);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint _total = buy(_investor, msg.value * MIN_TOKEN_PRICE);
     Buy(_investor, _total);
   }
@@ -224,11 +224,11 @@ contract ICO {
     uint _step = TOKENS_FOR_SALE / 10;
     uint _bonus = 0;
 
-    for (uint8 i = 0; _value &gt; 0 &amp;&amp; i &lt; _bonusPricePattern.length; ++i) {
+    for (uint8 i = 0; _value > 0 && i < _bonusPricePattern.length; ++i) {
       uint _min = _step * i;
       uint _max = _step * (i+1);
 
-      if (_sold &gt;= _min &amp;&amp; _sold &lt; _max) {
+      if (_sold >= _min && _sold < _max) {
         uint bonusedPart = min(_value, _max - _sold);
         _bonus += bonusedPart * _bonusPricePattern[i] / MIN_TOKEN_PRICE - bonusedPart;
         _value -= bonusedPart;
@@ -243,7 +243,7 @@ contract ICO {
     external robotOnly
   {
     require(icoState == IcoState.Running);
-    require(_atlValue &gt; 0);
+    require(_atlValue > 0);
     uint _total = buy(_investor, _atlValue);
     ForeignBuy(_investor, _total, _txHash);
   }
@@ -255,7 +255,7 @@ contract ICO {
 
 
   function migrateSome(address[] _investors) external robotOnly {
-    for (uint i = 0; i &lt; _investors.length; i++)
+    for (uint i = 0; i < _investors.length; i++)
       doMigration(_investors[i]);
   }
 
@@ -304,7 +304,7 @@ contract ICO {
 
 
   function min(uint a, uint b) internal constant returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 
@@ -312,7 +312,7 @@ contract ICO {
     uint _bonus = getBonus(_atlValue, tokensSold);
     uint _total = _atlValue + _bonus;
 
-    require(tokensSold + _total &lt;= TOKENS_FOR_SALE);
+    require(tokensSold + _total <= TOKENS_FOR_SALE);
 
     atl.mint(_investor, _total);
     tokensSold += _total;
@@ -322,7 +322,7 @@ contract ICO {
 
   function doMigration(address _investor) internal {
     uint _atpBalance = preICO.balanceOf(_investor);
-    require(_atpBalance &gt; 0);
+    require(_atpBalance > 0);
 
     preICO.burnTokens(_investor);
 

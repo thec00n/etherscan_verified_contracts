@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -114,7 +114,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -163,7 +163,7 @@ library SafeERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -192,7 +192,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -229,7 +229,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,7 +290,7 @@ contract TokenTimelock {
   uint64 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint64 _releaseTime) {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -309,10 +309,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -320,8 +320,8 @@ contract TokenTimelock {
 
 contract StarterCoin is MintableToken, LimitedTransferToken {
 
-    string public constant name = &quot;StarterCoin&quot;;
-    string public constant symbol = &quot;STAC&quot;;
+    string public constant name = "StarterCoin";
+    string public constant symbol = "STAC";
     uint8 public constant decimals = 18;
 
     uint256 public endTimeICO;
@@ -334,7 +334,7 @@ contract StarterCoin is MintableToken, LimitedTransferToken {
 
     function transferableTokens(address holder, uint64 time) public constant returns (uint256) {
         // allow transfers after the end of ICO
-        return (time &gt; endTimeICO) || (holder == bountyWallet) ? balanceOf(holder) : 0;
+        return (time > endTimeICO) || (holder == bountyWallet) ? balanceOf(holder) : 0;
     }
 
 }
@@ -393,10 +393,10 @@ contract StarterCoinCrowdsale is Ownable {
         address advisersWallet,
         uint64 advisersReleaseTime
         ) {
-            require(_timings[0] &gt;= now);
+            require(_timings[0] >= now);
 
-            for(uint i = 1; i &lt; timings.length; i++) {
-              require(_timings[i] &gt;= _timings[i-1]);
+            for(uint i = 1; i < timings.length; i++) {
+              require(_timings[i] >= _timings[i-1]);
             }
 
             timings = _timings;
@@ -404,10 +404,10 @@ contract StarterCoinCrowdsale is Ownable {
             startTime = timings[0];
             endTime = timings[timings.length-1];
 
-            require(devReleaseTime &gt;= endTime);
-            require(foundersReleaseTime &gt;= endTime);
-            require(teamReleaseTime &gt;= endTime);
-            require(advisersReleaseTime &gt;= endTime);
+            require(devReleaseTime >= endTime);
+            require(foundersReleaseTime >= endTime);
+            require(teamReleaseTime >= endTime);
+            require(advisersReleaseTime >= endTime);
 
             require(_wallets[0] != 0x0);
             require(_wallets[1] != 0x0);
@@ -464,15 +464,15 @@ contract StarterCoinCrowdsale is Ownable {
         // low level token purchase function
         function buyTokens(address beneficiary) public payable {
             require(beneficiary != 0x0);
-            require(msg.value &gt;= 100); // required for proper splitting funds between 3 wallets
+            require(msg.value >= 100); // required for proper splitting funds between 3 wallets
 
             uint256 weiAmount = msg.value;
 
             // calculate period bonus
             uint256 periodBonus;
 
-            for (uint8 i = 1; i &lt; timings.length; i++) {
-              if ( now &lt; timings[i] ) {
+            for (uint8 i = 1; i < timings.length; i++) {
+              if ( now < timings[i] ) {
                 periodBonus = RATE.mul(uint256(bonuses[i-1])).div(100);
                 break;
               }
@@ -480,15 +480,15 @@ contract StarterCoinCrowdsale is Ownable {
 
             // calculate bulk purchase bonus
             uint256 bulkPurchaseBonus;
-            if (weiAmount &gt;= 50 ether) {
+            if (weiAmount >= 50 ether) {
             bulkPurchaseBonus = 3600; // 80% bonus for RATE 4500
-            } else if (weiAmount &gt;= 30 ether) {
+            } else if (weiAmount >= 30 ether) {
             bulkPurchaseBonus = 3150; // 70% bonus for RATE 4500
-            } else if (weiAmount &gt;= 10 ether) {
+            } else if (weiAmount >= 10 ether) {
             bulkPurchaseBonus = 2250; // 50% bonus for RATE 4500
-            } else if (weiAmount &gt;= 5 ether) {
+            } else if (weiAmount >= 5 ether) {
             bulkPurchaseBonus = 1350; // 30% bonus for RATE 4500
-            } else if (weiAmount &gt;= 3 ether) {
+            } else if (weiAmount >= 3 ether) {
             bulkPurchaseBonus = 450; // 10% bonus for RATE 4500
             }
 
@@ -523,8 +523,8 @@ contract StarterCoinCrowdsale is Ownable {
         // add off chain contribution. BTC address of contribution added for transparency
         function addOffChainContribution(address beneficiar, uint256 weiAmount, uint256 tokenAmount, string btcAddress) onlyOwner public {
             require(beneficiar != 0x0);
-            require(weiAmount &gt; 0);
-            require(tokenAmount &gt; 0);
+            require(weiAmount > 0);
+            require(tokenAmount > 0);
             weiRaised += weiAmount;
             tokenSold += tokenAmount;
             require(validPurchase());
@@ -535,17 +535,17 @@ contract StarterCoinCrowdsale is Ownable {
         // overriding Crowdsale#validPurchase to add extra CAP logic
         // @return true if investors can buy at the moment
         function validPurchase() internal constant returns (bool) {
-            bool withinCap = weiRaised &lt;= CAP;
-            bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-            bool withinTokenCap = tokenSold &lt;= TOKEN_CAP;
-            return withinPeriod &amp;&amp; withinCap &amp;&amp; withinTokenCap;
+            bool withinCap = weiRaised <= CAP;
+            bool withinPeriod = now >= startTime && now <= endTime;
+            bool withinTokenCap = tokenSold <= TOKEN_CAP;
+            return withinPeriod && withinCap && withinTokenCap;
         }
 
         // overriding Crowdsale#hasEnded to add CAP logic
         // @return true if crowdsale event has ended
         function hasEnded() public constant returns (bool) {
-            bool capReached = weiRaised &gt;= CAP;
-            return now &gt; endTime || capReached;
+            bool capReached = weiRaised >= CAP;
+            return now > endTime || capReached;
         }
 
     }

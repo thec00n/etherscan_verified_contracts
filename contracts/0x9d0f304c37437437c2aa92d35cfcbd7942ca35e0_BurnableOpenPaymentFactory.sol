@@ -8,7 +8,7 @@
 //the payer can never directly recover the payment unless he becomes the recipient.
 
 //Anyone can become the recipient by contributing the commitThreshold.
-//The recipient cannot change once it&#39;s been set.
+//The recipient cannot change once it's been set.
 
 //The payer can at any time choose to burn or release to the recipient any amount of funds.
 
@@ -35,7 +35,7 @@ contract BurnableOpenPayment {
     modifier inState(State s) { if (s != state) throw; _; }
     modifier onlyPayer() { if (msg.sender != payer) throw; _; }
     modifier onlyRecipient() { if (msg.sender != recipient) throw; _; }
-    modifier onlyPayerOrRecipient() { if ((msg.sender != payer) &amp;&amp; (msg.sender != recipient)) throw; _; }
+    modifier onlyPayerOrRecipient() { if ((msg.sender != payer) && (msg.sender != recipient)) throw; _; }
     
     event FundsAdded(uint amount);
     event PayerStringUpdated(string newPayerString);
@@ -52,7 +52,7 @@ contract BurnableOpenPayment {
     function BurnableOpenPayment(address _payer, string _payerString, uint _commitThreshold, DefaultAction _defaultAction, uint _defaultTimeoutLength)
     public
     payable {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             state = State.Open;
         else
             state = State.Expended;
@@ -91,7 +91,7 @@ contract BurnableOpenPayment {
     inState(State.Open)
     payable
     {
-        if (msg.value &lt; commitThreshold) throw;
+        if (msg.value < commitThreshold) throw;
         recipient = msg.sender;
         state = State.Committed;
         Committed(recipient);
@@ -189,7 +189,7 @@ contract BurnableOpenPayment {
     inState(State.Committed)
     {
         if (defaultAction == DefaultAction.None) throw;
-        if (now &lt; defaultTriggerTime) throw;
+        if (now < defaultTriggerTime) throw;
         
         DefaultActionCalled();
         if (defaultAction == DefaultAction.Burn) {

@@ -40,7 +40,7 @@ contract Fundraiser {
   function Withdraw(address proposed_destination,
                     uint256 proposed_amount) {
     /* check amount */
-    if (proposed_amount &gt; this.balance) { throw; }
+    if (proposed_amount > this.balance) { throw; }
     /* update action */
     if (msg.sender == signer1) {
       signer1_proposal.action = Action.Withdraw;
@@ -57,9 +57,9 @@ contract Fundraiser {
 
   function MaybePerformWithdraw() internal {
     if (signer1_proposal.action == Action.Withdraw
-        &amp;&amp; signer2_proposal.action == Action.Withdraw
-        &amp;&amp; signer1_proposal.amount == signer2_proposal.amount
-        &amp;&amp; signer1_proposal.destination == signer2_proposal.destination) {
+        && signer2_proposal.action == Action.Withdraw
+        && signer1_proposal.amount == signer2_proposal.amount
+        && signer1_proposal.destination == signer2_proposal.destination) {
       signer1_proposal.action = Action.None;
       signer2_proposal.action = Action.None;
       signer1_proposal.destination.transfer(signer1_proposal.amount);

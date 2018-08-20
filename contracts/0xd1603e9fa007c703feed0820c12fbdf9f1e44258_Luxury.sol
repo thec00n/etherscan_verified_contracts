@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -100,8 +100,8 @@ contract TokenERC20 is Pausable {
     uint256 public TokenForSale;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -133,9 +133,9 @@ contract TokenERC20 is Pausable {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -169,7 +169,7 @@ contract TokenERC20 is Pausable {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] =  allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -215,7 +215,7 @@ contract Sale is owned, TokenERC20 {
     uint256 public soldTokens;
 
     modifier CheckSaleStatus() {
-        require (TokenForSale &gt;= soldTokens);
+        require (TokenForSale >= soldTokens);
         _;
     }
 
@@ -227,12 +227,12 @@ contract Luxury is TokenERC20, Sale {
     uint256 public  unitsOneEthCanBuy;
     uint256 public  minPurchaseQty;
 
-    mapping (address =&gt; bool) public airdrops;
+    mapping (address => bool) public airdrops;
 
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function Luxury()
-    TokenERC20(350000000, &#39;Luxury Ledger&#39;, &#39;LXRY&#39;, 1000000) public {
+    TokenERC20(350000000, 'Luxury Ledger', 'LXRY', 1000000) public {
         unitsOneEthCanBuy = 80000;
         soldTokens = 0;
         minPurchaseQty = 16000 * 10 ** uint256(decimals);
@@ -264,8 +264,8 @@ contract Luxury is TokenERC20, Sale {
     
     function airDrop(address[] _recipient, uint _totalTokensToDistribute) onlyOwner public {
         uint256 total_token_to_transfer = (_totalTokensToDistribute * 10 ** uint256(decimals)).mul(_recipient.length); 
-        require(balanceOf[owner] &gt;=  total_token_to_transfer);
-        for(uint256 i = 0; i&lt; _recipient.length; i++)
+        require(balanceOf[owner] >=  total_token_to_transfer);
+        for(uint256 i = 0; i< _recipient.length; i++)
         {
             if (!airdrops[_recipient[i]]) {
               airdrops[_recipient[i]] = true;
@@ -277,8 +277,8 @@ contract Luxury is TokenERC20, Sale {
         uint256 eth_amount = msg.value;
         uint256 amount = eth_amount.mul(unitsOneEthCanBuy);
         soldTokens = soldTokens.add(amount);
-        require(amount &gt;= minPurchaseQty );
-        require(balanceOf[owner] &gt;= amount );
+        require(amount >= minPurchaseQty );
+        require(balanceOf[owner] >= amount );
         _transfer(owner, msg.sender, amount);
         //Transfer ether to fundsWallet
         owner.transfer(msg.value);

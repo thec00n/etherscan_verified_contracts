@@ -1,15 +1,15 @@
 contract PreICOin {
-  string public constant symbol = &quot;PreICO&quot;;
-  string public constant name = &quot;PreICOin&quot;;
+  string public constant symbol = "PreICO";
+  string public constant name = "PreICOin";
   uint8 public constant decimals = 18;
   uint256 public _totalSupply = 0;
   bool private workingState = false;
   bool private transferAllowed = false;
   address public owner;
   address private cur_coin;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping (address =&gt; uint256) private etherClients;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => uint256) private etherClients;
   event FundsGot(address indexed _sender, uint256 _value);
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -60,10 +60,10 @@ contract PreICOin {
   }
   function contractState() returns (string state) {
     if (workingState) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
   //transfer controller functions
@@ -77,10 +77,10 @@ contract PreICOin {
   }
   function transferState() returns (string state) {
     if (transferAllowed) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
   //token controller functions
@@ -89,7 +89,7 @@ contract PreICOin {
     balances[_client] += _amount;
   }
   function destroyTokens(address _client, uint256 _amount) ownerAndCoin workingFlag returns (bool state) {
-    if (balances[_client] &gt;= _amount) {
+    if (balances[_client] >= _amount) {
       balances[_client] -= _amount;
       _totalSupply -= _amount;
       return true;
@@ -100,7 +100,7 @@ contract PreICOin {
   }
   //send ether function (working)
   function () workingFlag payable {
-    bool ret = cur_coin.call(bytes4(keccak256(&quot;pay(address,uint256)&quot;)), msg.sender, msg.value);
+    bool ret = cur_coin.call(bytes4(keccak256("pay(address,uint256)")), msg.sender, msg.value);
     ret;
   }
   function totalSupply() constant workingFlag returns (uint256 totalsupply) {
@@ -111,9 +111,9 @@ contract PreICOin {
     return balances[_owner];
   }
   function transfer(address _to, uint256 _value) transferFlag workingFlag returns (bool success) {
-    if (balances[msg.sender] &gt;= _value
-      &amp;&amp; _value &gt; 0
-      &amp;&amp; balances[_to] + _value &gt; balances[_to])
+    if (balances[msg.sender] >= _value
+      && _value > 0
+      && balances[_to] + _value > balances[_to])
       {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -125,10 +125,10 @@ contract PreICOin {
       }
   }
   function transferFrom(address _from, address _to, uint256 _value) transferFlag workingFlag returns (bool success) {
-    if (balances[_from] &gt;= _value
-      &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-      &amp;&amp; _value &gt; 0
-      &amp;&amp; balances[_to] + _value &gt; balances[_to])
+    if (balances[_from] >= _value
+      && allowed[_from][msg.sender] >= _value
+      && _value > 0
+      && balances[_to] + _value > balances[_to])
       {
         balances[msg.sender] -= _value;
         allowed[_from][msg.sender] -= _value;

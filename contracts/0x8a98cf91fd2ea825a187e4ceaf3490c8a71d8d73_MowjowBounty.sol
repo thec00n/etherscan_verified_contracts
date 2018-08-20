@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -102,7 +102,7 @@ contract Destructible is Ownable {
 contract PullPayment {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public payments;
+    mapping(address => uint256) public payments;
     uint256 public totalPayments;
 
     /**
@@ -123,7 +123,7 @@ contract PullPayment {
         uint256 payment = payments[payee];
 
         require(payment != 0);
-        require(this.balance &gt;= payment);
+        require(this.balance >= payment);
 
         totalPayments = totalPayments.sub(payment);
         payments[payee] = 0;
@@ -138,12 +138,12 @@ contract PullPayment {
  */
 contract Bounty is PullPayment, Destructible {
     bool public claimed;
-    mapping(address =&gt; address) public researchers;
+    mapping(address => address) public researchers;
 
     event TargetCreated(address createdAddress);
 
     /**
-     * @dev Fallback function allowing the contract to receive funds, if they haven&#39;t already been claimed.
+     * @dev Fallback function allowing the contract to receive funds, if they haven't already been claimed.
      */
     function() external payable {
         require(!claimed);
@@ -264,12 +264,12 @@ contract  TranchePricingStrategy is PricingStrategy, Target {
 
         tokensCap = _tokensCap;
         capInWei = _capInWei;
-        require(_bonuses.length == _valueForTranches.length &amp;&amp; _valueForTranches.length == _rates.length);
-        require(_bonuses.length &lt;= MAX_TRANCHES);
+        require(_bonuses.length == _valueForTranches.length && _valueForTranches.length == _rates.length);
+        require(_bonuses.length <= MAX_TRANCHES);
 
         tranchesCount = _bonuses.length;
 
-        for (uint i = 0; i &lt; _bonuses.length; i++) {
+        for (uint i = 0; i < _bonuses.length; i++) {
                 tranches.push(BonusSchedule({
                 bonus: _bonuses[i],
                 valueForTranche: _valueForTranches[i],
@@ -312,7 +312,7 @@ contract  TranchePricingStrategy is PricingStrategy, Target {
     function getFreeTokensInTranche(uint256 _requiredTokens) internal constant returns (bool) {
         bool hasTokens = false;
         uint256 indexOfTranche = defineTranchePeriod();
-        hasTokens = tranches[indexOfTranche].valueForTranche &gt; _requiredTokens;
+        hasTokens = tranches[indexOfTranche].valueForTranche > _requiredTokens;
 
         return hasTokens;
     }
@@ -323,7 +323,7 @@ contract  TranchePricingStrategy is PricingStrategy, Target {
     */
     function soldInTranche(uint256 _tokensAndBonus) internal {
         uint256 indexOfTranche = defineTranchePeriod();
-        require(tranches[indexOfTranche].valueForTranche &gt;= _tokensAndBonus);
+        require(tranches[indexOfTranche].valueForTranche >= _tokensAndBonus);
         tranches[indexOfTranche].valueForTranche = tranches[indexOfTranche].valueForTranche.sub(_tokensAndBonus);
         totalSoldTokens = totalSoldTokens.add(_tokensAndBonus);
     }
@@ -333,10 +333,10 @@ contract  TranchePricingStrategy is PricingStrategy, Target {
     */
     function isNoEmptyTranches() public constant returns(bool) {
         uint256 sumFreeTokens = 0;
-        for (uint i = 0; i &lt; tranches.length; i++) {
+        for (uint i = 0; i < tranches.length; i++) {
             sumFreeTokens = sumFreeTokens.add(tranches[i].valueForTranche);
         }
-        bool isValid = sumFreeTokens &gt; 0;
+        bool isValid = sumFreeTokens > 0;
         return isValid;
     }
 
@@ -345,8 +345,8 @@ contract  TranchePricingStrategy is PricingStrategy, Target {
     * @return uint256 number of current tranche in array tranches
     */
     function defineTranchePeriod() internal constant returns (uint256) {
-        for (uint256 i = 0; i &lt; tranches.length; i++) {
-            if (tranches[i].valueForTranche &gt; 0) {
+        for (uint256 i = 0; i < tranches.length; i++) {
+            if (tranches[i].valueForTranche > 0) {
                 return i;
             }
         }
@@ -363,10 +363,10 @@ contract  TranchePricingStrategy is PricingStrategy, Target {
         bool isTokensCapReached = tokensCap == totalSoldTokens;
         bool isWeiCapReached = weiRaised == capInWei;
 
-        bool isNoCapReached = isTranchesDone &amp;&amp;
+        bool isNoCapReached = isTranchesDone &&
             (!isTokensCapReached || !isWeiCapReached);
 
-        bool isExceededCap = !isTranchesDone &amp;&amp;
+        bool isExceededCap = !isTranchesDone &&
             (isTokensCapReached || isWeiCapReached);
 
         // Check the compromised flag.

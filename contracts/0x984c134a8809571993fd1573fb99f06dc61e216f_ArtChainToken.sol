@@ -14,13 +14,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -49,7 +49,7 @@ contract StandardToken is SafeMath {
 
         // 如果 from 地址中 没有那么多的 token， 停止交易
         // 如果 这个转账 数量 是 负数， 停止交易
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[msg.sender] - _value &lt; balances[msg.sender]) {
+        if (balances[msg.sender] >= _value && balances[msg.sender] - _value < balances[msg.sender]) {
 
             // sender的户头 减去 对应token的数量， 使用 safemath 交易
             balances[msg.sender] = super.safeSub(balances[msg.sender], _value);
@@ -68,7 +68,7 @@ contract StandardToken is SafeMath {
         // 如果 from 地址中 没有那么多的 token， 停止交易
         // 如果 from 地址的owner， 给这个msg.sender的权限没有这么多的token，停止交易
         // 如果 这个转账 数量 是 负数， 停止交易
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] - _value &lt; balances[_from]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_from] - _value < balances[_from]) {
 
             // 该 交易sender 对 from账户的可用权限 减少 相对应的 数量， 使用 safemath 交易
             allowed[_from][msg.sender] = super.safeSub(allowed[_from][msg.sender], _value);
@@ -99,9 +99,9 @@ contract StandardToken is SafeMath {
       return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 }
@@ -125,10 +125,10 @@ contract StandardToken is SafeMath {
 contract ArtChainToken is StandardToken {
 
     // 我们token的名字， 部署以后不可更改
-    string public constant name = &quot;Artchain Global Token&quot;;
+    string public constant name = "Artchain Global Token";
 
     // 我们token的代号， 部署以后不可更改
-    string public constant symbol = &quot;ACG&quot;;
+    string public constant symbol = "ACG";
 
     // 我们的 contract 部署的时候 之前已经有多少数量的 block
     uint public startBlock;
@@ -220,13 +220,13 @@ contract ArtChainToken is StandardToken {
      *
      *******************************************************************/
     function changeFounder(address newFounder) public returns (bool success){
-        // 只有 &quot;现founder&quot; 可以更改 Founder的地址
+        // 只有 "现founder" 可以更改 Founder的地址
         if (msg.sender!=founder) return false;
         founder = newFounder;
         return true;
     }
     function changePOI(address newPOI) public returns (bool success){
-        // 只有 &quot;现founder&quot; 可以更改 poi的地址
+        // 只有 "现founder" 可以更改 poi的地址
         if (msg.sender!=founder) return false;
         poi = newPOI;
         return true;
@@ -246,26 +246,26 @@ contract ArtChainToken is StandardToken {
       if (halted==true) return false;
 
       // poi_token 中的 token， 判断是否在冻结时间内 冻结时间为一年， 也就是 poiLockup 个block的时间
-      if (msg.sender==poi_token &amp;&amp; block.number &lt;= startBlock + poiLockup)  return false;
+      if (msg.sender==poi_token && block.number <= startBlock + poiLockup)  return false;
 
       // founder_token 中的 token， 根据规则分为48个月释放（初始状态有7亿）
       if (msg.sender==founder_token){
         // 前6个月 不能动 founder_token 账户的 余额 要维持 100% (7亿的100% = 7亿)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 6)  &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;700000000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 6)  && super.safeSub(balanceOf(msg.sender), _value)<700000000*10**uint(decimals)) return false;
         // 6个月到12个月  founder_token 账户的 余额 至少要 85% (7亿的85% = 5亿9千5百万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 12) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;595000000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 12) && super.safeSub(balanceOf(msg.sender), _value)<595000000*10**uint(decimals)) return false;
         // 12个月到18个月 founder_token 账户的 余额 至少要 70% (7亿的70% = 4亿9千万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 18) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;490000000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 18) && super.safeSub(balanceOf(msg.sender), _value)<490000000*10**uint(decimals)) return false;
         // 18个月到24个月 founder_token 账户的 余额 至少要 57.5% (7亿的57.5% = 4亿0千2百5十万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 24) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;402500000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 24) && super.safeSub(balanceOf(msg.sender), _value)<402500000*10**uint(decimals)) return false;
         // 24个月到30个月 founder_token 账户的 余额 至少要 45% (7亿的45% = 3亿1千5百万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 30) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;315000000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 30) && super.safeSub(balanceOf(msg.sender), _value)<315000000*10**uint(decimals)) return false;
         // 30个月到36个月 founder_token 账户的 余额 至少要 32.5% (7亿的32.5% = 2亿2千7百5十万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 36) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;227500000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 36) && super.safeSub(balanceOf(msg.sender), _value)<227500000*10**uint(decimals)) return false;
         // 36个月到42个月 founder_token 账户的 余额 至少要 20% (7亿的20% = 1亿4千万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 42) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt;140000000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 42) && super.safeSub(balanceOf(msg.sender), _value)<140000000*10**uint(decimals)) return false;
         // 42个月到48个月 founder_token 账户的 余额 至少要 10% (7亿的10% = 7千万)
-        if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 48) &amp;&amp; super.safeSub(balanceOf(msg.sender), _value)&lt; 70000000*10**uint(decimals)) return false;
+        if (block.number <= startBlock + super.safeMul(uint(one_month), 48) && super.safeSub(balanceOf(msg.sender), _value)< 70000000*10**uint(decimals)) return false;
         // 48个月以后 没有限制
       }
 
@@ -283,26 +283,26 @@ contract ArtChainToken is StandardToken {
         if (halted==true) return false;
 
         // poi_token 中的 token， 判断是否在冻结时间内 冻结时间为一年， 也就是 poiLockup 个block的时间
-        if (_from==poi_token &amp;&amp; block.number &lt;= startBlock + poiLockup) return false;
+        if (_from==poi_token && block.number <= startBlock + poiLockup) return false;
 
         // founder_token 中的 token， 根据规则分为48个月释放（初始状态有7亿）
         if (_from==founder_token){
           // 前6个月 不能动 founder_token 账户的 余额 要维持 100% (7亿的100% = 7亿)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 6)  &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;700000000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 6)  && super.safeSub(balanceOf(_from), _value)<700000000*10**uint(decimals)) return false;
           // 6个月到12个月  founder_token 账户的 余额 至少要 85% (7亿的85% = 5亿9千5百万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 12) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;595000000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 12) && super.safeSub(balanceOf(_from), _value)<595000000*10**uint(decimals)) return false;
           // 12个月到18个月 founder_token 账户的 余额 至少要 70% (7亿的70% = 4亿9千万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 18) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;490000000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 18) && super.safeSub(balanceOf(_from), _value)<490000000*10**uint(decimals)) return false;
           // 18个月到24个月 founder_token 账户的 余额 至少要 57.5% (7亿的57.5% = 4亿0千2百5十万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 24) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;402500000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 24) && super.safeSub(balanceOf(_from), _value)<402500000*10**uint(decimals)) return false;
           // 24个月到30个月 founder_token 账户的 余额 至少要 45% (7亿的45% = 3亿1千5百万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 30) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;315000000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 30) && super.safeSub(balanceOf(_from), _value)<315000000*10**uint(decimals)) return false;
           // 30个月到36个月 founder_token 账户的 余额 至少要 32.5% (7亿的32.5% = 2亿2千7百5十万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 36) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;227500000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 36) && super.safeSub(balanceOf(_from), _value)<227500000*10**uint(decimals)) return false;
           // 36个月到42个月 founder_token 账户的 余额 至少要 20% (7亿的20% = 1亿4千万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 42) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt;140000000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 42) && super.safeSub(balanceOf(_from), _value)<140000000*10**uint(decimals)) return false;
           // 42个月到48个月 founder_token 账户的 余额 至少要 10% (7亿的10% = 7千万)
-          if (block.number &lt;= startBlock + super.safeMul(uint(one_month), 48) &amp;&amp; super.safeSub(balanceOf(_from), _value)&lt; 70000000*10**uint(decimals)) return false;
+          if (block.number <= startBlock + super.safeMul(uint(one_month), 48) && super.safeSub(balanceOf(_from), _value)< 70000000*10**uint(decimals)) return false;
           // 48个月以后 没有限制
         }
 
@@ -329,16 +329,16 @@ contract ArtChainToken is StandardToken {
       if (halted==true) return false;
 
       // poi_token 中的 token， 判断是否在冻结时间内 冻结时间为 poiLockup 个block的时间
-      if (msg.sender==poi_token &amp;&amp; block.number &lt;= startBlock + poiLockup) return false;
+      if (msg.sender==poi_token && block.number <= startBlock + poiLockup) return false;
 
       // founder_token 中的 token， 不可以被销毁
       if (msg.sender==founder_token) return false;
 
 
       //如果 该账户 不足 输入的 token 数量， 终止交易
-      if (balances[msg.sender] &lt; _value) return false;
+      if (balances[msg.sender] < _value) return false;
       //如果 要销毁的 _value 是负数， 终止交易
-      if (balances[msg.sender] - _value &gt; balances[msg.sender]) return false;
+      if (balances[msg.sender] - _value > balances[msg.sender]) return false;
 
 
       // 除了以上的 情况， 下面进行 销毁过程
@@ -369,7 +369,7 @@ contract ArtChainToken is StandardToken {
 
       // 如果 要销毁 poi_token 中的 token，
       // 需要判断是否在冻结时间内 （冻结时间为 poiLockup 个block的时间）
-      if (_from==poi_token &amp;&amp; block.number &lt;= startBlock + poiLockup) return false;
+      if (_from==poi_token && block.number <= startBlock + poiLockup) return false;
 
       // 如果要销毁 founder_token 下的 token， 停止交易
       // founder_token 中的 token， 不可以被销毁
@@ -377,11 +377,11 @@ contract ArtChainToken is StandardToken {
 
 
       //如果 该账户 不足 输入的 token 数量， 终止交易
-      if (balances[_from] &lt; _value) return false;
+      if (balances[_from] < _value) return false;
       //如果 该账户 给这个 msg.sender 的权限不足 输入的 token 数量， 终止交易
-      if (allowed[_from][msg.sender] &lt; _value) return false;
+      if (allowed[_from][msg.sender] < _value) return false;
       //如果 要销毁的 _value 是负数， 终止交易
-      if (balances[_from] - _value &gt; balances[_from]) return false;
+      if (balances[_from] - _value > balances[_from]) return false;
 
 
       // 除了以上的 情况， 下面进行 销毁过程

@@ -53,8 +53,8 @@ contract PHS is Ownable {
     AHSInterface public ahs;
     bytes32 public ethBase; // .eth extension
 
-    mapping (bytes32 =&gt; bool) public ethHandleRegistred;
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) public ownsEthHandle;
+    mapping (bytes32 => bool) public ethHandleRegistred;
+    mapping (address => mapping (bytes32 => bool)) public ownsEthHandle;
 
 
     event HandleTransfered(bytes32 _handle, address indexed _to);
@@ -66,7 +66,7 @@ contract PHS is Ownable {
 
     function registerEthHandle(bytes32 _handle, address _addr) public payable {
         require(_addr != address(0));
-        if (ethHandleRegistred[_handle] &amp;&amp; ownsEthHandle[msg.sender][_handle]) {
+        if (ethHandleRegistred[_handle] && ownsEthHandle[msg.sender][_handle]) {
             ahs.registerHandle(ethBase, _handle, _addr);
         }
         if (!ethHandleRegistred[_handle]) {

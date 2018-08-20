@@ -29,7 +29,7 @@ contract DevTeamContract{
      revert operation if caller is not owner of wallet specified in constructor
     */
     modifier isOwner() {
-        if(owners[msg.sender]&gt;0){
+        if(owners[msg.sender]>0){
             _;   
         }
         else{
@@ -60,8 +60,8 @@ contract DevTeamContract{
     address constant USER_DEV_ACCOUNT1 = 0x94DA43C587c515AD30eA86a208603a7586D2C25F;
     address constant USER_DEV_ACCOUNT2 = 0x189891d02445D87e70d515fD2159416f023B0087;
     
-    mapping (address =&gt; uint256) public owners;
-    mapping (uint256 =&gt; uint256) public confirmations;
+    mapping (address => uint256) public owners;
+    mapping (uint256 => uint256) public confirmations;
     Transaction[] public transactions  ;
     
     /*
@@ -118,7 +118,7 @@ contract DevTeamContract{
             return 0;
         }
         //SUMS Number of bits set to 1
-        while(tmp&gt;0){
+        while(tmp>0){
             counter = counter + tmp%2 ;
             tmp = tmp/2;
         }
@@ -138,14 +138,14 @@ contract DevTeamContract{
     */
     function RegisterTransaction(address _to,uint256 amount) isHuman isOwner public{
     
-        if(owners[msg.sender]&gt;0 &amp;&amp; amount+pendingAmount&lt;=this.balance){
+        if(owners[msg.sender]>0 && amount+pendingAmount<=this.balance){
             transactions.push(Transaction(_to,amount,amount,this.GetNow(),address(0)));
             pendingAmount = amount+pendingAmount;
         }
     }
     function RegisterTokenTransaction(address _to,uint256 amount,address _from) isHuman isOwner public{
     
-        if(owners[msg.sender]&gt;0){
+        if(owners[msg.sender]>0){
             transactions.push(Transaction(_to,amount,amount,this.GetNow(),_from));
             pendingAmount = amount+pendingAmount;
         }
@@ -163,7 +163,7 @@ contract DevTeamContract{
         for transaction number i
     */
     function ReverseConfirmTransaction(uint256 i)  isHuman isOwner public{
-        confirmations[i] = confirmations[i] &amp; (~owners[msg.sender]);
+        confirmations[i] = confirmations[i] & (~owners[msg.sender]);
     }
     /*
       If Transaction number i has correct numbers of confirmations and
@@ -173,9 +173,9 @@ contract DevTeamContract{
     */
     function ProcessTransaction(uint256 i) isHuman isOwner public{
         uint256 tmp;
-        if(owners[msg.sender]&gt;0){
-            if(this.countConfirmations(i)&gt;=MINIMUM_CONFIRMATION_COUNT 
-            &amp;&amp; transactions[i].amount &gt; 0){
+        if(owners[msg.sender]>0){
+            if(this.countConfirmations(i)>=MINIMUM_CONFIRMATION_COUNT 
+            && transactions[i].amount > 0){
                 if(transactions[i].from==address(0)){
                     tmp = transactions[i].amount;
                     transactions[i].amount = 0;
@@ -192,7 +192,7 @@ contract DevTeamContract{
                 }
             }
             else{
-                if(transactions[i].registrationBlock&lt;this.GetNow()-WAIT_BLOCKS ){ 
+                if(transactions[i].registrationBlock<this.GetNow()-WAIT_BLOCKS ){ 
                     //if not confirmed sofar cancel
                     tmp = transactions[i].amount;
                     pendingAmount = pendingAmount -tmp;

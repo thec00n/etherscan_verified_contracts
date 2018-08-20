@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 /* 
- * IGNITE RATINGS &quot;SOFT CAP&quot; CROWDSALE CONTRACT. COPYRIGHT 2018 TRUSTIC HOLDING INC. Author - Damon Barnard (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ce8ede1e3e2cce5ebe2e5f8e9feedf8e5e2ebffa2efe3e1">[email&#160;protected]</a>)
+ * IGNITE RATINGS "SOFT CAP" CROWDSALE CONTRACT. COPYRIGHT 2018 TRUSTIC HOLDING INC. Author - Damon Barnard (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ce8ede1e3e2cce5ebe2e5f8e9feedf8e5e2ebffa2efe3e1">[email protected]</a>)
  * CONTRACT INITIATES A LIMITED SUPPLY SOFT CAP PERIOD FOR THE FIRST 24 HOURS, OR UNTIL TOTAL SOFT CAP TOKEN SUPPLY IS REACHED, WHICHEVER IS SOONER.
  */
 
@@ -31,20 +31,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ contract Crowdsale {
     uint256 public fullPrice; /* STANDARD TOKEN PRICE */
     uint256 public startTime; /* CROWDSALE START TIME */
     token public tokenReward; /* IGNT */
-    mapping(address =&gt; uint256) public contributionByAddress;
+    mapping(address => uint256) public contributionByAddress;
 
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -101,11 +101,11 @@ contract Crowdsale {
      */
     function () public payable {
         uint256 amount = msg.value;
-        require(now &gt; startTime);
+        require(now > startTime);
 
-        if(now &lt; startTime.add(24 hours) &amp;&amp; amountRaised &lt; softCapLimit) { /* CHECKS IF SOFT CAP PERIOD STILL IN EFFECT */
-            require(amount.add(contributionByAddress[msg.sender]) &gt; 1 ether &amp;&amp; amount.add(contributionByAddress[msg.sender]) &lt;= 5 ether); /* SOFT CAP MINIMUM CONTRIBUTION IS 1 ETH, MAXIMUM CONTRIBUTION IS 5 ETH PER CONTRIBUTOR */
-            require(amount.mul(10**18).div(discountPrice) &lt;= softCap.sub(tokensSold)); /* REQUIRES SUFFICIENT DISCOUNT TOKENS REMAINING TO COMPLETE PURCHASE */
+        if(now < startTime.add(24 hours) && amountRaised < softCapLimit) { /* CHECKS IF SOFT CAP PERIOD STILL IN EFFECT */
+            require(amount.add(contributionByAddress[msg.sender]) > 1 ether && amount.add(contributionByAddress[msg.sender]) <= 5 ether); /* SOFT CAP MINIMUM CONTRIBUTION IS 1 ETH, MAXIMUM CONTRIBUTION IS 5 ETH PER CONTRIBUTOR */
+            require(amount.mul(10**18).div(discountPrice) <= softCap.sub(tokensSold)); /* REQUIRES SUFFICIENT DISCOUNT TOKENS REMAINING TO COMPLETE PURCHASE */
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);
@@ -116,7 +116,7 @@ contract Crowdsale {
         }
 
         else { /* IMPOSES DEFAULT CROWDSALE TERMS IF SOFT CAP PERIOD NO LONGER IN EFFECT */
-            require(amount &lt;= 1000 ether);
+            require(amount <= 1000 ether);
             contributionByAddress[msg.sender] = contributionByAddress[msg.sender].add(amount);
             amountRaised = amountRaised.add(amount);
             amountRaisedPhase = amountRaisedPhase.add(amount);

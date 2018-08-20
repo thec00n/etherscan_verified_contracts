@@ -2,7 +2,7 @@ contract Skel {
   string public name;
   address public owner;
   function Skel() public {
-      name = &quot;test&quot;;
+      name = "test";
       owner = msg.sender;
   }
   modifier onlyowner {

@@ -53,13 +53,13 @@ contract PeerBet {
         uint16 category;
         uint64 locktime;
         GameStatus status;
-        mapping(uint =&gt; Book) books;
+        mapping(uint => Book) books;
         GameResult result;
     }
 
     address public owner;
     Game[] games;
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     function PeerBet() {
         owner = msg.sender;
@@ -74,14 +74,14 @@ contract PeerBet {
     }
     
     function cancelOpenBids(Book storage book) private returns (int) {
-        for (uint i=0; i &lt; book.homeBids.length; i++) {
+        for (uint i=0; i < book.homeBids.length; i++) {
             Bid bid = book.homeBids[i];
             if (bid.amount == 0)
                 continue;
             balances[bid.bidder] += bid.amount;
         }
         delete book.homeBids;
-        for (i=0; i &lt; book.awayBids.length; i++) {
+        for (i=0; i < book.awayBids.length; i++) {
             bid = book.awayBids[i];
             if (bid.amount == 0)
                 continue;
@@ -93,13 +93,13 @@ contract PeerBet {
     }
 
     function cancelBets(Book storage book, BookType book_type) private returns (int) {
-        for (uint i=0; i &lt; book.bets.length; i++) {
+        for (uint i=0; i < book.bets.length; i++) {
             Bet bet = book.bets[i];
             if (bet.status == BetStatus.Paid)
                 continue;
             uint awayBetAmount;
             if (book_type == BookType.MoneyLine) {
-                if (bet.line &lt; 0)
+                if (bet.line < 0)
                     awayBetAmount = bet.amount * 100 / uint(bet.line);
                 else
                     awayBetAmount = bet.amount * uint(bet.line) / 100;
@@ -116,14 +116,14 @@ contract PeerBet {
 
     function deleteGame(bytes32 game_id) returns (int) {
         Game game = getGameById(game_id);
-        if (msg.sender != game.creator &amp;&amp; (game.locktime + 86400*4) &gt; now) return 1;
+        if (msg.sender != game.creator && (game.locktime + 86400*4) > now) return 1;
 
-        for (uint i=1; i &lt; 4; i++) {
+        for (uint i=1; i < 4; i++) {
             Book book = game.books[i];
             cancelOpenBids(book);
             cancelBets(book, BookType(i));
         }
-        for (i=0; i &lt; games.length; i++) {
+        for (i=0; i < games.length; i++) {
             if (games[i].id == game_id) {
                 games[i] = games[games.length - 1];
                 games.length -= 1;
@@ -143,13 +143,13 @@ contract PeerBet {
         // Spread
         int resultSpread = game.result.away - game.result.home;
         resultSpread *= 10; // because bet.line is 10x the actual line
-        for (uint i = 0; i &lt; spreadBets.length; i++) {
+        for (uint i = 0; i < spreadBets.length; i++) {
             Bet bet = spreadBets[i];
             if (bet.status == BetStatus.Paid)
                 continue;
-            if (resultSpread &gt; bet.line) 
+            if (resultSpread > bet.line) 
                 balances[bet.away] += bet.amount * 2;
-            else if (resultSpread &lt; bet.line)
+            else if (resultSpread < bet.line)
                 balances[bet.home] += bet.amount * 2;
             else { // draw
                 balances[bet.away] += bet.amount;
@@ -160,13 +160,13 @@ contract PeerBet {
 
         // MoneyLine
         bool tie = game.result.home == game.result.away;
-        bool homeWin = game.result.home &gt; game.result.away;
-        for (i=0; i &lt; moneyLineBets.length; i++) {
+        bool homeWin = game.result.home > game.result.away;
+        for (i=0; i < moneyLineBets.length; i++) {
             bet = moneyLineBets[i];
             if (bet.status == BetStatus.Paid)
                 continue;
             uint awayAmount;
-            if (bet.line &lt; 0)
+            if (bet.line < 0)
                 awayAmount = bet.amount * 100 / uint(-bet.line);
             else
                 awayAmount = bet.amount * uint(bet.line) / 100;
@@ -183,13 +183,13 @@ contract PeerBet {
 
         // OverUnder - bet.line is 10x the actual line to allow half-point spreads
         int totalPoints = (game.result.home + game.result.away) * 10;
-        for (i=0; i &lt; overUnderBets.length; i++) {
+        for (i=0; i < overUnderBets.length; i++) {
             bet = overUnderBets[i];
             if (bet.status == BetStatus.Paid)
                 continue;
-            if (totalPoints &gt; bet.line)
+            if (totalPoints > bet.line)
                 balances[bet.home] += bet.amount * 2;
-            else if (totalPoints &lt; bet.line)
+            else if (totalPoints < bet.line)
                 balances[bet.away] += bet.amount * 2;
             else {
                 balances[bet.away] += bet.amount;
@@ -205,7 +205,7 @@ contract PeerBet {
         Game game = getGameById(game_id);
         if (msg.sender != game.creator) return 1;
         if (game.status != GameStatus.Scored) return 2;
-        if (now &lt; game.result.timestamp + 12*3600) return 3; // must wait 12 hours to verify 
+        if (now < game.result.timestamp + 12*3600) return 3; // must wait 12 hours to verify 
 
         payBets(game_id);
         game.status = GameStatus.Verified;
@@ -217,10 +217,10 @@ contract PeerBet {
     function setGameResult(bytes32 game_id, int homeScore, int awayScore) returns (int) {
         Game game = getGameById(game_id);
         if (msg.sender != game.creator) return 1;
-        if (game.locktime &gt; now) return 2;
+        if (game.locktime > now) return 2;
         if (game.status == GameStatus.Verified) return 3;
 
-        for (uint i = 1; i &lt; 4; i++)
+        for (uint i = 1; i < 4; i++)
             cancelOpenBids(game.books[i]);
 
         game.result.home = homeScore;
@@ -244,24 +244,24 @@ contract PeerBet {
         // validate inputs: game status, gametime, line amount
         if (game.status != GameStatus.Open)
             return 1;
-        if (now &gt; game.locktime) {
+        if (now > game.locktime) {
             game.status = GameStatus.Locked;    
-            for (uint i = 1; i &lt; 4; i++)
+            for (uint i = 1; i < 4; i++)
                 cancelOpenBids(game.books[i]);
             return 2;
         }
         if ((book_type == BookType.Spread || book_type == BookType.OverUnder)
-            &amp;&amp; line % 5 != 0)
+            && line % 5 != 0)
             return 3;
-        else if (book_type == BookType.MoneyLine &amp;&amp; line &lt; 100 &amp;&amp; line &gt;= -100)
+        else if (book_type == BookType.MoneyLine && line < 100 && line >= -100)
             return 4;
 
         Bid memory remainingBid = matchExistingBids(bid, game_id, book_type);
 
         // Use leftover funds to place open bids (maker)
-        if (bid.amount &gt; 0) {
+        if (bid.amount > 0) {
             Bid[] bidStack = home ? book.homeBids : book.awayBids;
-            if (book_type == BookType.OverUnder &amp;&amp; home)
+            if (book_type == BookType.OverUnder && home)
                 addBidToStack(remainingBid, bidStack, true);
             else
                 addBidToStack(remainingBid, bidStack, false);
@@ -283,8 +283,8 @@ contract PeerBet {
         uint nBids = book.homeBids.length + book.awayBids.length;
         bytes memory s = new bytes(57 * nBids);
         uint k = 0;
-        for (uint i=0; i &lt; nBids; i++) {
-            if (i &lt; book.homeBids.length)
+        for (uint i=0; i < nBids; i++) {
+            if (i < book.homeBids.length)
                 Bid bid = book.homeBids[i];
             else
                 bid = book.awayBids[i - book.homeBids.length];
@@ -293,10 +293,10 @@ contract PeerBet {
             byte home = bid.home ? byte(1) : byte(0);
             bytes4 line = bytes4(bid.line);
 
-            for (uint j=0; j &lt; 20; j++) { s[k] = bidder[j]; k++; }
-            for (j=0; j &lt; 32; j++) { s[k] = amount[j]; k++; }
+            for (uint j=0; j < 20; j++) { s[k] = bidder[j]; k++; }
+            for (j=0; j < 32; j++) { s[k] = amount[j]; k++; }
             s[k] = home; k++;
-            for (j=0; j &lt; 4; j++) { s[k] = line[j]; k++; }
+            for (j=0; j < 4; j++) { s[k] = line[j]; k++; }
 
         }
 
@@ -317,25 +317,25 @@ contract PeerBet {
         bool home = bid.home;
         Bid[] matchStack = home ?  book.awayBids : book.homeBids;
         int i = int(matchStack.length) - 1;
-        while (i &gt;= 0 &amp;&amp; bid.amount &gt; 0) {
+        while (i >= 0 && bid.amount > 0) {
             uint j = uint(i);
             if (matchStack[j].amount == 0) { // deleted bids
                 i--;
                 continue;
             }
             if (book_type == BookType.OverUnder) {
-                if (home &amp;&amp; bid.line &lt; matchStack[j].line 
-                || !home &amp;&amp; bid.line &gt; matchStack[j].line)
+                if (home && bid.line < matchStack[j].line 
+                || !home && bid.line > matchStack[j].line)
                 break;
             }
-            else if (-bid.line &lt; matchStack[j].line)
+            else if (-bid.line < matchStack[j].line)
                 break;
 
             // determined required bet amount to match stack bid
             uint requiredBet;
             if (book_type == BookType.Spread || book_type == BookType.OverUnder)
                 requiredBet = matchStack[j].amount;
-            else if (matchStack[j].line &gt; 0) { // implied MoneyLine
+            else if (matchStack[j].line > 0) { // implied MoneyLine
                 requiredBet = matchStack[j].amount * uint(matchStack[j].line) / 100;
             }
             else { // implied MoneyLine and negative line
@@ -345,11 +345,11 @@ contract PeerBet {
             // determine bet amounts on both sides
             uint betAmount;
             uint opposingBetAmount;
-            if (bid.amount &lt; requiredBet) {
+            if (bid.amount < requiredBet) {
                 betAmount = bid.amount;
                 if (book_type == BookType.Spread || book_type == BookType.OverUnder)
                     opposingBetAmount = bid.amount;
-                else if (matchStack[j].line &gt; 0)
+                else if (matchStack[j].line > 0)
                     opposingBetAmount = betAmount * 100 / uint(matchStack[j].line);
                 else
                     opposingBetAmount = bid.amount * uint(-matchStack[j].line) / 100;
@@ -388,8 +388,8 @@ contract PeerBet {
         address bidder = msg.sender;
 
         // Delete bid in stack, refund amount to user
-        for (uint i=0; i &lt; stack.length; i++) {
-            if (stack[i].amount &gt; 0 &amp;&amp; stack[i].bidder == bidder &amp;&amp; stack[i].line == line) {
+        for (uint i=0; i < stack.length; i++) {
+            if (stack[i].amount > 0 && stack[i].bidder == bidder && stack[i].line == line) {
                 balances[bidder] += stack[i].amount;
                 delete stack[i];
                 return -1;
@@ -413,17 +413,17 @@ contract PeerBet {
         uint length = a.length + b.length + c.length + d.length + e.length;
         bytes memory toHash = new bytes(length);
         uint k = 0;
-        for (i = 0; i &lt; a.length; i++) { toHash[k] = a[i]; k++; }
-        for (i = 0; i &lt; b.length; i++) { toHash[k] = b[i]; k++; }
-        for (i = 0; i &lt; c.length; i++) { toHash[k] = c[i]; k++; }
-        for (i = 0; i &lt; d.length; i++) { toHash[k] = d[i]; k++; }
-        for (i = 0; i &lt; e.length; i++) { toHash[k] = e[i]; k++; }
+        for (i = 0; i < a.length; i++) { toHash[k] = a[i]; k++; }
+        for (i = 0; i < b.length; i++) { toHash[k] = b[i]; k++; }
+        for (i = 0; i < c.length; i++) { toHash[k] = c[i]; k++; }
+        for (i = 0; i < d.length; i++) { toHash[k] = d[i]; k++; }
+        for (i = 0; i < e.length; i++) { toHash[k] = e[i]; k++; }
         return sha3(toHash);
     }
     
     function getActiveGames () constant returns (bytes32[]) {
         bytes32[] memory game_ids = new bytes32[](games.length);
-        for (uint i=0; i &lt; games.length; i++) {
+        for (uint i=0; i < games.length; i++) {
             game_ids[i] = (games[i].id);
         }
         return game_ids;
@@ -438,28 +438,28 @@ contract PeerBet {
         // determine position of new bid in stack
         uint insertIndex = stack.length;
         if (reverse) {
-            while (insertIndex &gt; 0 &amp;&amp; bid.line &lt;= stack[insertIndex-1].line)
+            while (insertIndex > 0 && bid.line <= stack[insertIndex-1].line)
                 insertIndex--;
         }
         else {
-            while (insertIndex &gt; 0 &amp;&amp; bid.line &gt;= stack[insertIndex-1].line)
+            while (insertIndex > 0 && bid.line >= stack[insertIndex-1].line)
                 insertIndex--;
         }
         
         // try to find deleted slot to fill
-        if (insertIndex &gt; 0 &amp;&amp; stack[insertIndex - 1].amount == 0) {
+        if (insertIndex > 0 && stack[insertIndex - 1].amount == 0) {
             stack[insertIndex - 1] = bid;
             return -1;
         }
         uint shiftEndIndex = insertIndex;
-        while (shiftEndIndex &lt; stack.length &amp;&amp; stack[shiftEndIndex].amount &gt; 0) {
+        while (shiftEndIndex < stack.length && stack[shiftEndIndex].amount > 0) {
             shiftEndIndex++;
         }
         
         // shift bids down (up to deleted index if one exists)
         if (shiftEndIndex == stack.length)
             stack.length += 1;
-        for (uint i = shiftEndIndex; i &gt; insertIndex; i--) {
+        for (uint i = shiftEndIndex; i > insertIndex; i--) {
             stack[i] = stack[i-1];
         } 
 
@@ -471,7 +471,7 @@ contract PeerBet {
 
     function getGameById(bytes32 game_id) constant private returns (Game storage) {
         bool game_exists = false;
-        for (uint i = 0; i &lt; games.length; i++) {
+        for (uint i = 0; i < games.length; i++) {
             if (games[i].id == game_id) {
                 Game game = games[i];
                 game_exists = true;

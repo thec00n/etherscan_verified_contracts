@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
 contract StateMigrator5 {
 
-    // don&#39;t need to worry about only being called once etc...
+    // don't need to worry about only being called once etc...
 
     // dummy for compilation
-    mapping (address =&gt; uint[]) public userToRobots;
+    mapping (address => uint[]) public userToRobots;
 
     function setData() {
   userToRobots[0x2903d1e356c90315c6a81003842dd4a494ccb440] = [71971669240318361587,69670063521660752659];

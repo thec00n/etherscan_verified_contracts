@@ -9,37 +9,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal pure returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -85,8 +85,8 @@ contract ERC20 {
 
  /// @title SilentNotaryToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
 contract SilentNotaryToken is SafeMath, ERC20, Killable {
-  string constant public name = &quot;Silent Notary Token&quot;;
-  string constant public symbol = &quot;SNTR&quot;;
+  string constant public name = "Silent Notary Token";
+  string constant public symbol = "SNTR";
  
   /// Holder list
   address[] public holders;
@@ -98,13 +98,13 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
     bool exist;
   }
   /// Holder balances
-  mapping(address =&gt; Balance) public balances;
+  mapping(address => Balance) public balances;
   /// Contract that is allowed to create new tokens and allows unlift the transfer limits on this token
   address public crowdsaleAgent;
   /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
   bool public released = false;
   /// approve() allowances
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /// @dev Limit token transfer until the crowdsale is over.
   modifier canTransfer() {
@@ -137,7 +137,7 @@ contract SilentNotaryToken is SafeMath, ERC20, Killable {
   /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
   /// @param size payload size
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
   }
 

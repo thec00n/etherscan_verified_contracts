@@ -18,7 +18,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -29,7 +29,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -54,8 +54,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -70,12 +70,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -91,10 +91,10 @@ contract SafeMath {
 contract MUSCToken is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Manchester United SC&quot;;
-    string public constant symbol = &quot;MUSC&quot;;
+    string public constant name = "Manchester United SC";
+    string public constant symbol = "MUSC";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public ethFundDeposit;      // deposit address for the raised ETH 
@@ -133,20 +133,20 @@ contract MUSCToken is StandardToken, SafeMath {
     function createTokens() payable external {
       // if (isFinalized) throw;
       require (!isFinalized); 
-      // if (block.number &lt; fundingStartBlock) throw;
-      require(block.number &gt; fundingStartBlock) ; 
-      // if (block.number &gt; fundingEndBlock) throw;
-      require(block.number &lt; fundingEndBlock) ; 
+      // if (block.number < fundingStartBlock) throw;
+      require(block.number > fundingStartBlock) ; 
+      // if (block.number > fundingEndBlock) throw;
+      require(block.number < fundingEndBlock) ; 
       // if (msg.value == 0) throw;
       require(msg.value != 0) ;
 
 
-      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
       // return money if something goes wrong
-      // if (tokenCreationCap &lt; checkedSupply) throw;  // odd fractions won&#39;t be found
-      require(tokenCreationCap &gt; checkedSupply) ; 
+      // if (tokenCreationCap < checkedSupply) throw;  // odd fractions won't be found
+      require(tokenCreationCap > checkedSupply) ; 
 
       totalSupply = checkedSupply;
       balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here
@@ -161,11 +161,11 @@ contract MUSCToken is StandardToken, SafeMath {
       // if (msg.sender != ethFundDeposit) throw; // locks finalize to the ultimate ETH owner
       require(msg.sender == ethFundDeposit) ; 
       
-      // if(totalSupply &lt; tokenCreationMin) throw;      // have to sell minimum to move to operational
-      require(totalSupply &gt; tokenCreationMin) ; 
+      // if(totalSupply < tokenCreationMin) throw;      // have to sell minimum to move to operational
+      require(totalSupply > tokenCreationMin) ; 
       
-      // if(block.number &lt;= fundingEndBlock &amp;&amp; totalSupply != tokenCreationCap) throw;
-      // require(block.number &gt; fundingEndBlock ) ; 
+      // if(block.number <= fundingEndBlock && totalSupply != tokenCreationCap) throw;
+      // require(block.number > fundingEndBlock ) ; 
       // move to operational
       isFinalized = true;
       
@@ -177,10 +177,10 @@ contract MUSCToken is StandardToken, SafeMath {
     function refund() external {
       // if(isFinalized) throw;                       // prevents refund if operational
       require(!isFinalized) ; 
-      // if (block.number &lt;= fundingEndBlock) throw; // prevents refund until sale period is over
-      require(block.number &gt; fundingEndBlock) ; 
-      // if(totalSupply &gt;= tokenCreationMin) throw;  // no refunds if we sold enough
-      require(totalSupply &lt; tokenCreationMin) ; 
+      // if (block.number <= fundingEndBlock) throw; // prevents refund until sale period is over
+      require(block.number > fundingEndBlock) ; 
+      // if(totalSupply >= tokenCreationMin) throw;  // no refunds if we sold enough
+      require(totalSupply < tokenCreationMin) ; 
       // if(msg.sender == muscFundDeposit) throw;    // MUSC fund not entitled ever to a refund
       require(msg.sender != muscFundDeposit) ; 
       uint256 muscVal = balances[msg.sender];
@@ -191,7 +191,7 @@ contract MUSCToken is StandardToken, SafeMath {
       totalSupply = safeSubtract(totalSupply, muscVal); // extra safe
       uint256 ethVal = muscVal / tokenExchangeRate;     // should be safe; previous throws covers edges
       LogRefund(msg.sender, ethVal);               // log it 
-      // if (!msg.sender.send(ethVal)) throw;       // if you&#39;re using a contract; make sure it works with .send gas limits
+      // if (!msg.sender.send(ethVal)) throw;       // if you're using a contract; make sure it works with .send gas limits
       require(msg.sender.send(ethVal)) ; 
     }
 

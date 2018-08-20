@@ -18,7 +18,7 @@ contract Videos is mortal {
         string team;
         uint amount;
     }
-    mapping (uint =&gt; Video) public videos;
+    mapping (uint => Video) public videos;
     
     function Videos(){
         numVideos=0;
@@ -37,7 +37,7 @@ contract Videos is mortal {
         uint payout;
         videos[videoID].amount=videos[videoID].amount+msg.value;
         payout = msg.value / ((block.number % 10)+1);
-	    if(payout &gt; 0){
+	    if(payout > 0){
 	        msg.sender.send(payout);
 	    }
     }

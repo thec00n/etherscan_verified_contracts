@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the NeuroDAO Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the NeuroDAO Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="244d0a57524d564d4a644a4b564045524d4a400a5651">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="244d0a57524d564d4a644a4b564045524d4a400a5651">[email protected]</span>>
 */
 
 
@@ -49,7 +49,7 @@ contract owned {
 contract Crowdsale is owned {
     
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -61,15 +61,15 @@ contract Crowdsale is owned {
     }
 
     function () payable {
-        require(balanceOf[this] &gt; 0);
+        require(balanceOf[this] > 0);
         uint256 tokens = 5000 * msg.value / 1000000000000000000;
-        if (tokens &gt; balanceOf[this]) {
+        if (tokens > balanceOf[this]) {
             tokens = balanceOf[this];
             uint valueWei = tokens * 1000000000000000000 / 5000;
             msg.sender.transfer(msg.value - valueWei);
         }
-        require(balanceOf[msg.sender] + tokens &gt; balanceOf[msg.sender]); // overflow
-        require(tokens &gt; 0);
+        require(balanceOf[msg.sender] + tokens > balanceOf[msg.sender]); // overflow
+        require(tokens > 0);
         balanceOf[msg.sender] += tokens;
         balanceOf[this] -= tokens;
         Transfer(this, msg.sender, tokens);
@@ -78,12 +78,12 @@ contract Crowdsale is owned {
 
 contract Token is Crowdsale {
     
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;NeuroDAO&#39;;
-    string  public symbol      = &quot;NDAO&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'NeuroDAO';
+    string  public symbol      = "NDAO";
     uint8   public decimals    = 0;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Burned(address indexed owner, uint256 value);
@@ -91,17 +91,17 @@ contract Token is Crowdsale {
     function Token() payable Crowdsale() {}
 
     function transfer(address _to, uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowed[_from][msg.sender] -= _value;
@@ -119,7 +119,7 @@ contract Token is Crowdsale {
     }
     
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burned(msg.sender, _value);
@@ -143,7 +143,7 @@ contract TokenMigration is Token {
     function migrate(uint256 _value) external {
         require(migrationAgent != 0);
         require(_value != 0);
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         totalMigrated += _value;

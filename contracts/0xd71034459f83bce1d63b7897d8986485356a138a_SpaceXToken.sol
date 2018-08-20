@@ -5,10 +5,10 @@ pragma solidity ^0.4.10;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -155,15 +155,15 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
     uint256 public totalPrice;
     uint256 public _totalSupply;        // Total number of presale tokens available
     
-    string public version = &#39;1.0&#39;;      // The current version of token
+    string public version = '1.0';      // The current version of token
     string public symbol;           
     string public  name;
     
     
     address public fundsWallet;             // Where should the raised ETH go?
 
-    mapping(address =&gt; uint) balances;    // Keeps the record of tokens with each owner address
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed; // Tokens allowed to be transferred
+    mapping(address => uint) balances;    // Keeps the record of tokens with each owner address
+    mapping(address => mapping(address => uint)) allowed; // Tokens allowed to be transferred
 
     /** @dev Constructor
       
@@ -174,9 +174,9 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
         startTimestamp = 1527080400;
         endTimeStamp = 1529672400;
         fundsWallet = owner;
-        name = &quot;SpaceXToken&quot;;                                     // Set the name for display purposes (CHANGE THIS)
+        name = "SpaceXToken";                                     // Set the name for display purposes (CHANGE THIS)
         decimals = 0;                                               // numberOfTokens of decimals for display purposes (CHANGE THIS)
-        symbol = &quot;SCX&quot;;                       // symbol for token
+        symbol = "SCX";                       // symbol for token
         _totalSupply = 4000 * 10**uint(decimals);       // total supply of tokens 
         balances[owner] = _totalSupply;               // assigning all tokens to owner
         tokensSold = 0;
@@ -207,14 +207,14 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
     }
 
 
-    /** @dev Transfer the tokens from token owner&#39;s account to `to` account
+    /** @dev Transfer the tokens from token owner's account to `to` account
      *  @param to address where token is to be sent
      *  @param tokens  number of tokens
       
      */
     
     // ------------------------------------------------------------------------
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -224,7 +224,7 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
         return true;
     }
 
-    /** @dev Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner&#39;s account
+    /** @dev Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner's account
      *  @param spender address of spender 
      *  @param tokens number of tokens
      
@@ -276,7 +276,7 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
     }
 
     /** 
-     *  @dev Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner&#39;s account. The `spender` contract function`receiveApproval(...)` is then executed
+     *  @dev Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner's account. The `spender` contract function`receiveApproval(...)` is then executed
      
       
      */
@@ -294,56 +294,56 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
         
         // All the required conditions for the sale of token
         
-        require(now &gt;= startTimestamp , &quot;Sale has not started yet.&quot;);
-        require(now &lt;= endTimeStamp, &quot;Sale has ended.&quot;);
-        require(balances[fundsWallet] &gt;= numberOfTokens , &quot;There are no more tokens to be sold.&quot; );
-        require(numberOfTokens &gt;= 1 , &quot;You must buy 1 or more tokens.&quot;);
-        require(numberOfTokens &lt;= 10 , &quot;You must buy at most 10 tokens in a single purchase.&quot;);
-        require(tokensSold.add(numberOfTokens) &lt;= _totalSupply);
-        require(tokensSold&lt;3700, &quot;There are no more tokens to be sold.&quot;);
+        require(now >= startTimestamp , "Sale has not started yet.");
+        require(now <= endTimeStamp, "Sale has ended.");
+        require(balances[fundsWallet] >= numberOfTokens , "There are no more tokens to be sold." );
+        require(numberOfTokens >= 1 , "You must buy 1 or more tokens.");
+        require(numberOfTokens <= 10 , "You must buy at most 10 tokens in a single purchase.");
+        require(tokensSold.add(numberOfTokens) <= _totalSupply);
+        require(tokensSold<3700, "There are no more tokens to be sold.");
         
         // Price step function
         
-        if(tokensSold &lt;= 1000){
+        if(tokensSold <= 1000){
           
             totalPrice = ((numberOfTokens) * (2*currentPrice + (numberOfTokens-1)*step1))/2;
             
         }
         
-        if(tokensSold &gt; 1000 &amp;&amp; tokensSold &lt;= 3000){
+        if(tokensSold > 1000 && tokensSold <= 3000){
             totalPrice = ((numberOfTokens) * (2*currentPrice + (numberOfTokens-1)*step2))/2;
         
             
         }
         
         
-        if(tokensSold &gt; 3000){
+        if(tokensSold > 3000){
             totalPrice = ((numberOfTokens) * (2*currentPrice + (numberOfTokens-1)*step3))/2;
         
             
         }
         
         
-        require (msg.value &gt;= totalPrice);  // Check if message value is enough to buy given number of tokens
+        require (msg.value >= totalPrice);  // Check if message value is enough to buy given number of tokens
 
         balances[fundsWallet] = balances[fundsWallet] - numberOfTokens;
         balances[msg.sender] = balances[msg.sender] + numberOfTokens;
 
         tokensSold = tokensSold + numberOfTokens;
         
-        if(tokensSold &lt;= 1000){
+        if(tokensSold <= 1000){
           
             currentPrice = basePrice + step1 * tokensSold;
             
         }
         
-        if(tokensSold &gt; 1000 &amp;&amp; tokensSold &lt;= 3000){
+        if(tokensSold > 1000 && tokensSold <= 3000){
             currentPrice = basePrice + (step1 * 1000) + (step2 * (tokensSold-1000));
         
             
         }
         
-        if(tokensSold &gt; 3000){
+        if(tokensSold > 3000){
             
             currentPrice = basePrice + (step1 * 1000) + (step2 * 2000) + (step3 * (tokensSold-3000));
           
@@ -357,7 +357,7 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
     
     /** 
      *  @dev Owner can transfer out any accidentally sent ERC20 tokens
-     *  @dev Transfer the tokens from token owner&#39;s account to `to` account
+     *  @dev Transfer the tokens from token owner's account to `to` account
      *  @param tokenAddress address where token is to be sent
      *  @param tokens  number of tokens
      */
@@ -371,19 +371,19 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
      */
     
     function viewCurrentPrice() view returns (uint) {
-        if(tokensSold &lt;= 1000){
+        if(tokensSold <= 1000){
           
             return basePrice + step1 * tokensSold;
             
         }
         
-        if(tokensSold &gt; 1000 &amp;&amp; tokensSold &lt;= 3000){
+        if(tokensSold > 1000 && tokensSold <= 3000){
             return basePrice + (step1 * 1000) + (step2 * (tokensSold-1000));
         
             
         }
         
-        if(tokensSold &gt; 3000){
+        if(tokensSold > 3000){
             
             return basePrice + (step1 * 1000) + (step2 * 2000) + (step3 * (tokensSold-3000));
           
@@ -414,7 +414,7 @@ contract SpaceXToken is ERC20Interface, Owned, Pausable {
      */
      
     function withdrawBalance(uint256 amount) onlyOwner returns(bool) {
-        require(amount &lt;= address(this).balance);
+        require(amount <= address(this).balance);
         owner.transfer(amount);
         return true;
 

@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -27,7 +27,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;
+ * functions, this simplifies the implementation of "user permissions"
  */
 contract Ownable {
   address public owner;
@@ -86,8 +86,8 @@ contract PitEur is Ownable, ERC20 {
   uint8 private _decimals = 18;
   uint256 private decimalMultiplier = 10**(uint256(_decimals));
 
-  string private _name = &quot;PIT-EUR&quot;;
-  string private _symbol = &quot;PIT-EUR&quot;;
+  string private _name = "PIT-EUR";
+  string private _symbol = "PIT-EUR";
   uint256 private _totalSupply = 100000000 * decimalMultiplier;
 
   bool public tradable = true;
@@ -115,9 +115,9 @@ contract PitEur is Ownable, ERC20 {
     return _totalSupply;
   }
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) releaseTimes;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) releaseTimes;
   address public migrationAgent;
   uint256 public totalMigrated;
 
@@ -141,7 +141,7 @@ contract PitEur is Ownable, ERC20 {
   // Added due to backwards compatibility reasons
   function transfer(address to, uint256 value) canTrade {
     require(!isLocked(msg.sender));
-    require (balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0);
+    require (balances[msg.sender] >= value && value > 0);
     balances[msg.sender] = balances[msg.sender].sub(value);
     balances[to] = balances[to].add(value);
     Transfer(msg.sender, to, value);
@@ -166,7 +166,7 @@ contract PitEur is Ownable, ERC20 {
     require(to != 0x0);
     require(!isLocked(from));
     uint256 _allowance = allowed[from][msg.sender];
-    require(value &gt; 0 &amp;&amp; _allowance &gt;= value);
+    require(value > 0 && _allowance >= value);
     balances[from] = balances[from].sub(value);
     balances[to] = balances[to].add(value);
     allowed[from][msg.sender] = _allowance.sub(value);
@@ -179,7 +179,7 @@ contract PitEur is Ownable, ERC20 {
    * @param value The amount of tokens to be spent
    */
   function approve(address spender, uint256 value) canTrade {
-    require((value &gt;= 0) &amp;&amp; (allowed[msg.sender][spender] &gt;= 0));
+    require((value >= 0) && (allowed[msg.sender][spender] >= 0));
     allowed[msg.sender][spender] = value;
     Approval(msg.sender, spender, value);
   }
@@ -218,7 +218,7 @@ contract PitEur is Ownable, ERC20 {
    * @return A boolean that indicates if the account is locked or not
    */
   function isLocked(address _spender) public view returns (bool) {
-    if (releaseTimes[_spender] == 0 || releaseTimes[_spender] &lt;= block.timestamp) {
+    if (releaseTimes[_spender] == 0 || releaseTimes[_spender] <= block.timestamp) {
       return false;
     }
     return true;
@@ -227,11 +227,11 @@ contract PitEur is Ownable, ERC20 {
   /**
    * @notice Set address of migration target contract and enable migration process
    * @dev Required state: Operational Normal
-   * @dev State transition: -&gt; Operational Migration
+   * @dev State transition: -> Operational Migration
    * @param _agent The address of the MigrationAgent contract
    */
   function setMigrationAgent(address _agent) external onlyOwner {
-    require(migrationAgent == 0x0 &amp;&amp; totalMigrated == 0);
+    require(migrationAgent == 0x0 && totalMigrated == 0);
     migrationAgent = _agent;
   }
 
@@ -242,8 +242,8 @@ contract PitEur is Ownable, ERC20 {
    */
   function migrate(uint256 value) external {
     require(migrationAgent != 0x0);
-    require(value &gt;= 0);
-    require(value &lt;= balances[msg.sender]);
+    require(value >= 0);
+    require(value <= balances[msg.sender]);
 
     balances[msg.sender] -= value;
     _totalSupply = _totalSupply.sub(value);

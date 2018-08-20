@@ -7,9 +7,9 @@ pragma solidity 0.4.15;
 library SafeMath {
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -52,13 +52,13 @@ contract ERC20TokenInterface {
 
 contract CanYaCoin is ERC20TokenInterface {
 
-    string public constant name = &quot;CanYaCoin&quot;;
-    string public constant symbol = &quot;CAN&quot;;
+    string public constant name = "CanYaCoin";
+    string public constant symbol = "CAN";
     uint256 public constant decimals = 6;
     uint256 public constant totalTokens = 100000000 * (10 ** decimals);
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function CanYaCoin() {
         balances[msg.sender] = totalTokens;
@@ -69,7 +69,7 @@ contract CanYaCoin is ERC20TokenInterface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -79,7 +79,7 @@ contract CanYaCoin is ERC20TokenInterface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;
@@ -135,7 +135,7 @@ contract Presale {
     /// @dev Sets up the amount of tokens available as per the whitepaper
     /// @param _token Address of the CanYaCoin contract
     function Presale(address _token, address _multisig) {
-        require (_token != address(0) &amp;&amp; _multisig != address(0));
+        require (_token != address(0) && _multisig != address(0));
         owner = msg.sender;
         CanYaCoinToken = CanYaCoin(_token);
         multisig = _multisig;
@@ -144,9 +144,9 @@ contract Presale {
     /// @dev Fallback function, this allows users to purchase tokens by simply sending ETH to the
     /// contract; they will however need to specify a higher amount of gas than the default (21000)
     function () notEnded payable public {
-        require(msg.value &gt;= MIN_CONTRIBUTION &amp;&amp; msg.value &lt;= MAX_CONTRIBUTION);
+        require(msg.value >= MIN_CONTRIBUTION && msg.value <= MAX_CONTRIBUTION);
         uint256 tokensPurchased = msg.value.div(pricePerToken);
-        if (tokensPurchased &gt; tokensAvailable) {
+        if (tokensPurchased > tokensAvailable) {
             ended = true;
             LogEnded(true);
             refundAmount = (tokensPurchased - tokensAvailable) * pricePerToken;
@@ -155,7 +155,7 @@ contract Presale {
         tokensAvailable -= tokensPurchased;
         
         //Refund the difference
-        if (ended &amp;&amp; refundAmount &gt; 0) {
+        if (ended && refundAmount > 0) {
             uint256 toRefund = refundAmount;
             refundAmount = 0;
             // reentry should not be possible

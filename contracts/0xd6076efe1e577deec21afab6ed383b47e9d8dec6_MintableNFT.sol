@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -159,7 +159,7 @@ pragma solidity ^0.4.21;
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -174,7 +174,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -202,7 +202,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -216,21 +216,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -354,7 +354,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -370,14 +370,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -511,19 +511,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -566,7 +566,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list owned by the requested address
    */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -585,7 +585,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -726,7 +726,7 @@ contract Pausable is Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b091e1618143b49">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b091e1618143b49">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be sent to this contract by:
@@ -837,7 +837,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0270676f616d4230">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0270676f616d4230">[email protected]</a>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -861,7 +861,7 @@ contract HasNoTokens is CanReclaimToken {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4b6a1a9a7ab84f6">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4b6a1a9a7ab84f6">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -880,7 +880,7 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="80f2e5ede3efc0b2">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="80f2e5ede3efc0b2">[email protected]</a>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -888,7 +888,7 @@ contract NoOwner is HasNoEther, HasNoTokens, HasNoContracts {
 }
 
 contract MintingUtility is Pausable, NoOwner {
-  mapping (address =&gt; bool) public _authorizedMinters;
+  mapping (address => bool) public _authorizedMinters;
 
   modifier onlyMinter() {
     bool isAuthorized = _authorizedMinters[msg.sender];
@@ -908,13 +908,13 @@ contract MintableNFT is ERC721Token, MintingUtility {
   uint8 public bitsMask;
   uint248 public maxMask;
 
-  mapping (uint256 =&gt; uint256) public tokenTypeQuantity;
-  mapping (uint256 =&gt; uint256) public tokenTypeAvailableQuantity;
+  mapping (uint256 => uint256) public tokenTypeQuantity;
+  mapping (uint256 => uint256) public tokenTypeAvailableQuantity;
 
   constructor(string _name, string _symbol, uint8 _bytesMask) ERC721Token(_name, _symbol) public {
-    require(_bytesMask &gt; 0); // The mask has to be bigger than zero
-    require(_bytesMask &lt; 32); // The mask can not occupy the entire length, because we need at least one byte to reflect the token type
-    bitsMask = _bytesMask * 8; // Mask is set at creation and can&#39;t be modified (max 248 bits, fits on uint8(256))
+    require(_bytesMask > 0); // The mask has to be bigger than zero
+    require(_bytesMask < 32); // The mask can not occupy the entire length, because we need at least one byte to reflect the token type
+    bitsMask = _bytesMask * 8; // Mask is set at creation and can't be modified (max 248 bits, fits on uint8(256))
     uint256 maximumValueOfMask = uint256(2) ** (uint256(bitsMask)) - 1; // Gets the maximum uint value for the mask;
     maxMask = uint248(maximumValueOfMask);
   }
@@ -935,8 +935,8 @@ contract MintableNFT is ERC721Token, MintingUtility {
   function mint(address _beneficiary,
                 uint256 _tokenType) public onlyMinter whenNotPaused  {
 
-    require(tokenTypeAvailableQuantity[_tokenType] &gt; 0);
-    bytes32 tokenIdMasked = bytes32(_tokenType) &lt;&lt; bitsMask;
+    require(tokenTypeAvailableQuantity[_tokenType] > 0);
+    bytes32 tokenIdMasked = bytes32(_tokenType) << bitsMask;
 
     tokenTypeAvailableQuantity[_tokenType] = tokenTypeAvailableQuantity[_tokenType].sub(1);
     bytes32 quantityId = bytes32(tokenTypeQuantity[_tokenType].sub(tokenTypeAvailableQuantity[_tokenType]));
@@ -947,17 +947,17 @@ contract MintableNFT is ERC721Token, MintingUtility {
   }
 
   function setTokensQuantity(uint256[] _tokenTypes, uint248[] _quantities) public onlyOwner {
-    require(_tokenTypes.length &gt; 0 &amp;&amp; _tokenTypes.length == _quantities.length);
+    require(_tokenTypes.length > 0 && _tokenTypes.length == _quantities.length);
     bytes32 normalizedToken;
-    for (uint i = 0; i &lt; _tokenTypes.length; i++) {
+    for (uint i = 0; i < _tokenTypes.length; i++) {
 
       normalizedToken = bytes32(_tokenTypes[i]); // Clears non relevant bytes
-      normalizedToken = normalizedToken &lt;&lt; bitsMask; // Clears non relevant bytes
-      normalizedToken = normalizedToken &gt;&gt; bitsMask; // Clears non relevant bytes
+      normalizedToken = normalizedToken << bitsMask; // Clears non relevant bytes
+      normalizedToken = normalizedToken >> bitsMask; // Clears non relevant bytes
 
       require(uint256(normalizedToken) == _tokenTypes[i]); // Avoids overflow mistakes when setting the tokens quantities
       require(tokenTypeQuantity[_tokenTypes[i]] == 0); // Ensures quantity is not set
-      require(_quantities[i] &gt; 0 &amp;&amp; _quantities[i] &lt;= maxMask); // Ensures no overflow by using maxMask as quantity.
+      require(_quantities[i] > 0 && _quantities[i] <= maxMask); // Ensures no overflow by using maxMask as quantity.
 
       tokenTypeQuantity[_tokenTypes[i]] = _quantities[i];
       tokenTypeAvailableQuantity[_tokenTypes[i]] = _quantities[i];
@@ -967,7 +967,7 @@ contract MintableNFT is ERC721Token, MintingUtility {
   function getOwnedTokensIds(address _owner) external view returns (uint[] tokensIds) {
     tokensIds = new uint[](balanceOf(_owner));
 
-    for (uint i = 0; i &lt; balanceOf(_owner); i++) {
+    for (uint i = 0; i < balanceOf(_owner); i++) {
       tokensIds[i] = tokenOfOwnerByIndex(_owner, i);
     }
 

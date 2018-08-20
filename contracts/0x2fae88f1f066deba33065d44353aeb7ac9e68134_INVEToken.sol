@@ -4,14 +4,14 @@ pragma solidity ^0.4.24;
 
   Copyright 2018 InterValue Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -29,37 +29,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -108,15 +108,15 @@ contract BasicToken is ERC20Basic {
   /// This is a switch to control the liquidity of INVE
   bool public transferable = true;
   
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   //The frozen accounts 
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => bool) public frozenAccount;
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -140,7 +140,7 @@ contract BasicToken is ERC20Basic {
       if (transferable) {
           _;
       } else {
-          LiquidityAlarm(&quot;The liquidity of INVE is switched off&quot;);
+          LiquidityAlarm("The liquidity of INVE is switched off");
           throw;
       }
   }
@@ -172,7 +172,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) unFrozenAccount onlyTransferable {
     if (frozenAccount[_to]) {
-        InvalidAccount(_to, &quot;The receiver account is frozen&quot;);
+        InvalidAccount(_to, "The receiver account is frozen");
     } else {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -190,7 +190,7 @@ contract BasicToken is ERC20Basic {
     return balances[_owner];
   }
 
-  ///@notice `freeze? Prevent | Allow` `target` from sending &amp; receiving INVE preconditions
+  ///@notice `freeze? Prevent | Allow` `target` from sending & receiving INVE preconditions
   ///@param target Address to be frozen
   ///@param freeze To freeze the target account or not
   function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -229,7 +229,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -242,10 +242,10 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
     
     // Check account _from and _to is not frozen
-    require(!frozenAccount[_from]&amp;&amp;!frozenAccount[_to]);
+    require(!frozenAccount[_from]&&!frozenAccount[_to]);
     
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -264,7 +264,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -285,8 +285,8 @@ contract StandardToken is BasicToken, ERC20 {
 /// @title InterValue Protocol Token.
 /// For more information about this token, please visit http://inve.one
 contract INVEToken is StandardToken {
-    string public constant NAME = &quot;InterValue&quot;;
-    string public constant SYMBOL = &quot;INVE&quot;;
+    string public constant NAME = "InterValue";
+    string public constant SYMBOL = "INVE";
     uint public constant DECIMALS = 18;
 
     /**

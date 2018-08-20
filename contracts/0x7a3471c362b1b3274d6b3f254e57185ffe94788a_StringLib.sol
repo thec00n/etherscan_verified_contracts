@@ -8,7 +8,7 @@ library StringLib {
   {
     uint256 v = _n;
     bytes16 num = 0;
-    while (v &gt; 0) {
+    while (v > 0) {
       num = bytes16(uint(num) / (2 ** 8));
       num |= bytes16(((v % 10) + 48) * 2 ** (8 * 15));
       v /= 10;

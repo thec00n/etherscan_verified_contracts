@@ -17,7 +17,7 @@ contract WithdrawTokensFlixxoVesting2 {
   uint public amount; // number of tokens (plus decimals) to be minted
 
   modifier afterDate() {
-    require(now &gt;= vesting);
+    require(now >= vesting);
 
     _;
   }
@@ -40,12 +40,12 @@ contract WithdrawTokensFlixxoVesting2 {
     amount = _amount;
   }
 
-  // Creates &quot;amount&quot; tokens to &quot;receiver&quot; address
-  // Only executed after &quot;vesting&quot; number of days
+  // Creates "amount" tokens to "receiver" address
+  // Only executed after "vesting" number of days
   // Only executed once
-  // Only executed by &quot;receiver&quot;
+  // Only executed by "receiver"
   function withdraw() public afterDate onlyReceiver {
-    require(amount &gt; 0);
+    require(amount > 0);
     uint tokens = amount;
 
     amount = 0;

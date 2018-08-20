@@ -8,13 +8,13 @@ contract SafeMath {
      }
 
      function safeSub(uint a, uint b) internal returns (uint) {
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
      }
 
      function safeAdd(uint a, uint b) internal returns (uint) {
           uint c = a + b;
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
      }
 
@@ -64,13 +64,13 @@ contract Token is SafeMath {
 
 contract StdToken is Token {
      // Fields:
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
      uint public totalSupply = 0;
 
      // Functions:
      function transfer(address _to, uint256 _value) {
-          if((balances[msg.sender] &lt; _value) || (balances[_to] + _value &lt;= balances[_to])) {
+          if((balances[msg.sender] < _value) || (balances[_to] + _value <= balances[_to])) {
                throw;
           }
 
@@ -80,9 +80,9 @@ contract StdToken is Token {
      }
 
      function transferFrom(address _from, address _to, uint256 _value) {
-          if((balances[_from] &lt; _value) || 
-               (allowed[_from][msg.sender] &lt; _value) || 
-               (balances[_to] + _value &lt;= balances[_to])) 
+          if((balances[_from] < _value) || 
+               (allowed[_from][msg.sender] < _value) || 
+               (balances[_to] + _value <= balances[_to])) 
           {
                throw;
           }
@@ -110,7 +110,7 @@ contract StdToken is Token {
      }
 
      modifier onlyPayloadSize(uint _size) {
-          if(msg.data.length &lt; _size + 4) {
+          if(msg.data.length < _size + 4) {
                throw;
           }
           _;
@@ -119,8 +119,8 @@ contract StdToken is Token {
 
 contract GOLD is StdToken {
 /// Fields:
-     string public constant name = &quot;Goldmint GOLD Token&quot;;
-     string public constant symbol = &quot;GOLD&quot;;
+     string public constant name = "Goldmint GOLD Token";
+     string public constant symbol = "GOLD";
      uint public constant decimals = 18;
 
      address public creator = 0x0;
@@ -131,7 +131,7 @@ contract GOLD is StdToken {
 
 /// Modifiers:
      modifier onlyCreator() { if(msg.sender != creator) throw; _; }
-     modifier onlyCreatorOrTokenManager() { if((msg.sender!=creator) &amp;&amp; (msg.sender!=tokenManager)) throw; _; }
+     modifier onlyCreatorOrTokenManager() { if((msg.sender!=creator) && (msg.sender!=tokenManager)) throw; _; }
 
      function setCreator(address _creator) onlyCreator {
           creator = _creator;
@@ -154,7 +154,7 @@ contract GOLD is StdToken {
 
      /// @dev Override
      function transfer(address _to, uint256 _value) public {
-          if(lock &amp;&amp; (msg.sender!=tokenManager)){
+          if(lock && (msg.sender!=tokenManager)){
                throw;
           }
 
@@ -163,7 +163,7 @@ contract GOLD is StdToken {
 
      /// @dev Override
      function transferFrom(address _from, address _to, uint256 _value)public{
-          if(lock &amp;&amp; (msg.sender!=tokenManager)){
+          if(lock && (msg.sender!=tokenManager)){
                throw;
           }
 
@@ -172,7 +172,7 @@ contract GOLD is StdToken {
 
      /// @dev Override
      function approve(address _spender, uint256 _value) public returns (bool) {
-          if(lock &amp;&amp; (msg.sender!=tokenManager)){
+          if(lock && (msg.sender!=tokenManager)){
                throw;
           }
 
@@ -180,7 +180,7 @@ contract GOLD is StdToken {
      }
 
      function issueTokens(address _who, uint _tokens) onlyCreatorOrTokenManager {
-          if(lock &amp;&amp; (msg.sender!=tokenManager)){
+          if(lock && (msg.sender!=tokenManager)){
                throw;
           }
 
@@ -189,7 +189,7 @@ contract GOLD is StdToken {
      }
 
      function burnTokens(address _who, uint _tokens) onlyCreatorOrTokenManager {
-          if(lock &amp;&amp; (msg.sender!=tokenManager)){
+          if(lock && (msg.sender!=tokenManager)){
                throw;
           }
 

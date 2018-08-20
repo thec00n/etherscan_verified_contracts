@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,10 +59,10 @@ contract CryptoBeauty {
   uint256 private increaseLimit4 = 90 ether;
 
   uint256[] private listedItems;
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; uint256) private priceOfItem;
-  mapping (uint256 =&gt; address) private approvedOfItem;
-  mapping (address =&gt; string) private ownerNameOfItem;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => uint256) private priceOfItem;
+  mapping (uint256 => address) private approvedOfItem;
+  mapping (address => string) private ownerNameOfItem;
 
   constructor() public {
     owner = msg.sender;
@@ -91,7 +91,7 @@ contract CryptoBeauty {
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -108,7 +108,7 @@ contract CryptoBeauty {
   }
 
   function listItem (uint256 _itemId, uint256 _price, address _owner) onlyOwner() public {
-    require(_price &gt; 0);
+    require(_price > 0);
     require(priceOfItem[_itemId] == 0);
     require(ownerOfItem[_itemId] == address(0));
 
@@ -128,13 +128,13 @@ contract CryptoBeauty {
 
   /* Buying */
   function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(200).div(98);
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(135).div(97);
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(125).div(96);
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(117).div(95);
     } else {
       return _price.mul(115).div(95);
@@ -142,13 +142,13 @@ contract CryptoBeauty {
   }
 
   function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(8).div(100); // 8%
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(7).div(100); // 7%
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(6).div(100); // 6%
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(5).div(100); // 5%
     } else {
       return _price.mul(5).div(100); // 5%
@@ -162,9 +162,9 @@ contract CryptoBeauty {
      directly to the previous owner and are never stored in the contract.
   */
   function buy (uint256 _itemId) payable public {
-    require(priceOf(_itemId) &gt; 0);
+    require(priceOf(_itemId) > 0);
     require(ownerOf(_itemId) != address(0));
-    require(msg.value &gt;= priceOf(_itemId));
+    require(msg.value >= priceOf(_itemId));
     require(ownerOf(_itemId) != msg.sender);
     require(!isContract(msg.sender));
     require(msg.sender != address(0));
@@ -180,14 +180,14 @@ contract CryptoBeauty {
     emit Bought(_itemId, newOwner, price);
     emit Sold(_itemId, oldOwner, price);
 
-    // Devevloper&#39;s cut which is left in contract and accesed by
+    // Devevloper's cut which is left in contract and accesed by
     // `withdrawAll` and `withdrawAmountTo` methods.
     uint256 devCut = calculateDevCut(price);
 
-    // Transfer payment to old owner minus the developer&#39;s cut.
+    // Transfer payment to old owner minus the developer's cut.
     oldOwner.transfer(price.sub(devCut));
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
   }
@@ -198,11 +198,11 @@ contract CryptoBeauty {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;CryptoBeauty&quot;;
+    return "CryptoBeauty";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;CRBT&quot;;
+    return "CRBT";
   }
 
   function totalSupply() public view returns (uint256 _totalSupply) {
@@ -212,7 +212,7 @@ contract CryptoBeauty {
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         counter++;
       }
@@ -229,7 +229,7 @@ contract CryptoBeauty {
     uint256[] memory items = new uint256[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         items[itemCounter] = listedItems[i];
         itemCounter += 1;
@@ -240,7 +240,7 @@ contract CryptoBeauty {
   }
 
   function tokenExists (uint256 _itemId) public view returns (bool _exists) {
-    return priceOf(_itemId) &gt; 0;
+    return priceOf(_itemId) > 0;
   }
 
   function approvedFor(uint256 _itemId) public view returns (address _approved) {
@@ -282,6 +282,6 @@ contract CryptoBeauty {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 }

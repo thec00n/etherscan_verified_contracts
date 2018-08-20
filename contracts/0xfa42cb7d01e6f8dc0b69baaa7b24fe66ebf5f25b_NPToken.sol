@@ -12,20 +12,20 @@ library SafeMath {
   }
  
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,12 +77,12 @@ contract NPToken is ERC20 {
 	// True if transfers are allowed
 	bool public transferable = true;
     /* This creates an array with all balances */
-	mapping (address =&gt; uint) freezes;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	mapping (address => uint) freezes;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     modifier onlyOwner {
-        require(msg.sender == owner);//&quot;Only owner can call this function.&quot;
+        require(msg.sender == owner);//"Only owner can call this function."
         _;
     }
 	
@@ -101,8 +101,8 @@ contract NPToken is ERC20 {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NPToken() public {
 		totalSupply = 1000*10**26; // Update total supply with the decimal amount
-		name = &quot;Nepal Token&quot;;
-		symbol = &quot;NPT&quot;;
+		name = "Nepal Token";
+		symbol = "NPT";
 		balances[msg.sender] = totalSupply; // Give the creator all initial tokens
 		owner = msg.sender;
 		emit Transfer(address(0), msg.sender, totalSupply);
@@ -111,9 +111,9 @@ contract NPToken is ERC20 {
     /* Send coins */
     function transfer(address _to, uint _value) public canTransfer returns (bool success) {
 		require(_to != address(0));// Prevent transfer to 0x0 address.
-		require(_value &gt; 0);
-        require(balances[msg.sender] &gt;= _value); // Check if the sender has enough
-        require(balances[_to] + _value &gt;= balances[_to]); // Check for overflows
+		require(_value > 0);
+        require(balances[msg.sender] >= _value); // Check if the sender has enough
+        require(balances[_to] + _value >= balances[_to]); // Check for overflows
 		
 		balances[msg.sender] = balances[msg.sender].sub(_value); // Subtract from the sender
         balances[_to] = balances[_to].add(_value);  // Add the same to the recipient
@@ -125,14 +125,14 @@ contract NPToken is ERC20 {
     function transferFrom(address _from, address _to, uint _value) public canTransfer returns (bool success) {
         uint allowance = allowed[_from][msg.sender];
 		require(_to != address(0));// Prevent transfer to 0x0 address.
-		require(_value &gt; 0);
-		require(balances[_from] &gt;= _value); // Check if the sender has enough
-		require(allowance &gt;= _value); // Check allowance
-        require(balances[_to] + _value &gt;= balances[_to]); // Check for overflows     
+		require(_value > 0);
+		require(balances[_from] >= _value); // Check if the sender has enough
+		require(allowance >= _value); // Check allowance
+        require(balances[_to] + _value >= balances[_to]); // Check for overflows     
         
         balances[_from] = balances[_from].sub(_value);      // Subtract from the sender
         balances[_to] = balances[_to].add(_value);          // Add the same to the recipient
-		if (allowance &lt; MAX_UINT256) {
+		if (allowance < MAX_UINT256) {
 			allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 		}
         emit Transfer(_from, _to, _value);
@@ -141,7 +141,7 @@ contract NPToken is ERC20 {
 	
     /* Allow another contract to spend some tokens in your behalf */
     function approve(address _spender, uint _value) public canTransfer returns (bool success) {
-		require(_value &gt;= 0);
+		require(_value >= 0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -160,8 +160,8 @@ contract NPToken is ERC20 {
     }
 	
     function burn(uint _value) public canTransfer returns (bool success) {
-		require(balances[msg.sender] &gt;= _value); // Check if the sender has enough
-		require(_value &gt; 0);
+		require(balances[msg.sender] >= _value); // Check if the sender has enough
+		require(_value > 0);
         balances[msg.sender] = balances[msg.sender].sub(_value);  // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                    // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -169,9 +169,9 @@ contract NPToken is ERC20 {
     }
 	
 	function freeze(uint _value) public canTransfer returns (bool success) {
-		require(balances[msg.sender] &gt;= _value); // Check if the sender has enough
-		require(_value &gt; 0);
-		require(freezes[msg.sender] + _value &gt;= freezes[msg.sender]); // Check for overflows
+		require(balances[msg.sender] >= _value); // Check if the sender has enough
+		require(_value > 0);
+		require(freezes[msg.sender] + _value >= freezes[msg.sender]); // Check for overflows
 		
         balances[msg.sender] = balances[msg.sender].sub(_value);  // Subtract from the sender
         freezes[msg.sender] = freezes[msg.sender].add(_value);  
@@ -180,9 +180,9 @@ contract NPToken is ERC20 {
     }
 	
 	function unfreeze(uint _value) public canTransfer returns (bool success) {
-		require(freezes[msg.sender] &gt;= _value);  // Check if the sender has enough          
-		require(_value &gt; 0);
-		require(balances[msg.sender] + _value &gt;= balances[msg.sender]); // Check for overflows
+		require(freezes[msg.sender] >= _value);  // Check if the sender has enough          
+		require(_value > 0);
+		require(balances[msg.sender] + _value >= balances[msg.sender]); // Check for overflows
 		
         freezes[msg.sender] = freezes[msg.sender].sub(_value);  // Subtract from the sender
 		balances[msg.sender] = balances[msg.sender].add(_value);
@@ -197,11 +197,11 @@ contract NPToken is ERC20 {
 	* @return True if the tokens are transferred correctly
 	*/
 	function transferForMultiAddresses(address[] _addresses, uint[] _amounts) public canTransfer returns (bool) {
-		for (uint i = 0; i &lt; _addresses.length; i++) {
+		for (uint i = 0; i < _addresses.length; i++) {
 		  require(_addresses[i] != address(0)); // Prevent transfer to 0x0 address.
-		  require(_amounts[i] &gt; 0);
-		  require(balances[msg.sender] &gt;= _amounts[i]); // Check if the sender has enough
-          require(balances[_addresses[i]] + _amounts[i] &gt;= balances[_addresses[i]]); // Check for overflows
+		  require(_amounts[i] > 0);
+		  require(balances[msg.sender] >= _amounts[i]); // Check if the sender has enough
+          require(balances[_addresses[i]] + _amounts[i] >= balances[_addresses[i]]); // Check for overflows
 
 		  // SafeMath.sub will throw if there is not enough balance.
 		  balances[msg.sender] = balances[msg.sender].sub(_amounts[i]);
@@ -225,7 +225,7 @@ contract NPToken is ERC20 {
 	
 	// transfer balance to owner
 	function withdrawEther(uint amount) public onlyOwner {
-		require(amount &gt; 0);
+		require(amount > 0);
 		owner.transfer(amount);
 	}
 	

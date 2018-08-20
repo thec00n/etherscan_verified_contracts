@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,7 +64,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -73,7 +73,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -115,7 +115,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -126,8 +126,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -141,7 +141,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -260,20 +260,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -317,9 +317,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -368,14 +368,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -391,29 +391,29 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
 }
 
 contract Vend is MintableToken {
-  	string public constant name = &quot;VEND&quot;;
-  	string public constant symbol = &quot;VEND&quot;;
+  	string public constant name = "VEND";
+  	string public constant symbol = "VEND";
   	uint8 public constant decimals = 18;
 
   	/**
@@ -443,14 +443,14 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
 	uint256 public publicAllocation = 120000000 * DECIMALFACTOR; //60% Public Allocation 
 	uint256 public advisorsAllocation = 20000000 * DECIMALFACTOR; // 10% Advisory and Legal Fund Allocation  
 	uint256 public marketAllocation = 20000000 * DECIMALFACTOR; //10% Market Place Incentive
-	uint256 public founderAllocation = 40000000* DECIMALFACTOR; //20% Founder &amp; Key Employee Allocation
+	uint256 public founderAllocation = 40000000* DECIMALFACTOR; //20% Founder & Key Employee Allocation
 
 	uint256 public softCap = 9000 ether;
              
 
 	bool public isGoalReached = false;
 	// How much ETH each address has invested to this crowdsale
-	mapping (address =&gt; uint256) public investedAmountOf;
+	mapping (address => uint256) public investedAmountOf;
 	// How many distinct addresses have invested
 	uint256 public investorCount;
 
@@ -493,7 +493,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
        	uint256 volumebasedBonus = tokens.mul(getVolumebasedBonusRate(weiAmount)).div(100);
        	tokens = tokens.add(timebasedBonus);
        	tokens = tokens.add(volumebasedBonus);
-		assert (tokens &lt;= publicAllocation);
+		assert (tokens <= publicAllocation);
 		   
        	if(investedAmountOf[beneficiary] == 0) {
            // A new investor
@@ -502,10 +502,10 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
         // Update investor
         investedAmountOf[beneficiary] = investedAmountOf[beneficiary].add(weiAmount);
         if (stage == Stage.PRESALE) {
-            assert (tokens &lt;= publicAllocation);
+            assert (tokens <= publicAllocation);
             publicAllocation = publicAllocation.sub(tokens);
         } else {
-            assert (tokens &lt;= publicAllocation);
+            assert (tokens <= publicAllocation);
             publicAllocation = publicAllocation.sub(tokens);
 
         }
@@ -513,7 +513,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
        weiRaised = weiRaised.add(weiAmount);
        token.mint(beneficiary, tokens);
        TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
-       if (!isGoalReached &amp;&amp; weiRaised &gt;= softCap) {
+       if (!isGoalReached && weiRaised >= softCap) {
              isGoalReached = true;
              MinimumGoalReached();
          }
@@ -521,11 +521,11 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
 
      // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-       bool minContribution = minContribAmount &lt;= msg.value;
-       bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+       bool minContribution = minContribAmount <= msg.value;
+       bool withinPeriod = now >= startTime && now <= endTime;
        bool nonZeroPurchase = msg.value != 0;
        bool Publicsale =publicAllocation !=0;
-       return withinPeriod &amp;&amp; minContribution &amp;&amp; nonZeroPurchase &amp;&amp; Publicsale;
+       return withinPeriod && minContribution && nonZeroPurchase && Publicsale;
     }
    // @return  current time
     function getNow() public constant returns (uint) {
@@ -541,13 +541,13 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
        uint256 week3 = startTime + (21 days);
        uint256 week4 = startTime + (14 days);
 
-       if (nowTime &lt;= week1) {
+       if (nowTime <= week1) {
            bonusRate = 15;
-       }else if (nowTime &lt;= week2) {
+       }else if (nowTime <= week2) {
            bonusRate = 15;
-       }else if (nowTime &lt;= week3) {
+       }else if (nowTime <= week3) {
            bonusRate = 10;
-       } else if (nowTime &lt;= week4) {
+       } else if (nowTime <= week4) {
            bonusRate = 10;
        }
          }
@@ -558,11 +558,11 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
         uint256 bonusRate = 0;
         if (stage == Stage.PRESALE) {
             uint256 volume = value.div(1 ether);
-        if (volume &gt;= 70 &amp;&amp; volume &lt;= 100 ) {
+        if (volume >= 70 && volume <= 100 ) {
             bonusRate = 15;
-        }else if (volume &gt;= 40 &amp;&amp; volume &lt;= 69 ) {
+        }else if (volume >= 40 && volume <= 69 ) {
             bonusRate = 10;
-        }else if (volume &gt;= 10 &amp;&amp; volume &lt;= 39 ) {
+        }else if (volume >= 10 && volume <= 39 ) {
             bonusRate = 5;
         }
         }
@@ -573,7 +573,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
  	* @dev change the State from presale to public sale
  	*/
   	function startPublicsale(uint256 _startTime, uint256 _endTime) public onlyOwner {
-      	require(_endTime &gt;= _startTime);
+      	require(_endTime >= _startTime);
       	stage = Stage.PUBLICSALE;
       	//Start Time endTime and price for PUBLICSALE
       	startTime = _startTime;
@@ -582,7 +582,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
 
   	// @return true if the crowdsale has raised enough money to be successful.
   	function isMinimumGoalReached() public constant returns (bool reached) {
-        return weiRaised &gt;= softCap;
+        return weiRaised >= softCap;
   	}
 
      // Change Start and Endtime for Testing Purpose
@@ -613,7 +613,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
  	*/
     function transferAdvisorsToken(address _to, uint256 _value) onlyOwner {
     	require (
-           _to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; advisorsAllocation &gt;= _value
+           _to != 0x0 && _value > 0 && advisorsAllocation >= _value
         );
         token.mint(_to, _value);
         advisorsAllocation = advisorsAllocation.sub(_value);
@@ -628,7 +628,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
  	*/
     function transferMarketallocationTokens(address _to, uint256 _value) onlyOwner {
         require (
-           _to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; marketAllocation &gt;= _value
+           _to != 0x0 && _value > 0 && marketAllocation >= _value
         );
         token.mint(_to, _value);
         marketAllocation = marketAllocation.sub(_value);
@@ -640,11 +640,11 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
  	* 
  	* @param _value  Amount if tokens
  	*   
- 	* @dev Allocated tokens transfer to 	Founder &amp; Key Employee team
+ 	* @dev Allocated tokens transfer to 	Founder & Key Employee team
  	*/
 	function transferFounderTokens(address _to, uint256 _value) onlyOwner {
         require (
-           _to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; founderAllocation &gt;= _value
+           _to != 0x0 && _value > 0 && founderAllocation >= _value
         );
         token.mint(_to, _value);
         founderAllocation = founderAllocation.sub(_value);
@@ -656,7 +656,7 @@ contract VendCrowdsale is Crowdsale , Ownable, CappedCrowdsale {
  	* @dev Burn the tokens
  	*/
 	function burnToken(uint256 _value) onlyOwner {
-    	require(_value &gt; 0);
+    	require(_value > 0);
      	publicAllocation = publicAllocation.sub(_value);
 
     	Burn(msg.sender, _value);

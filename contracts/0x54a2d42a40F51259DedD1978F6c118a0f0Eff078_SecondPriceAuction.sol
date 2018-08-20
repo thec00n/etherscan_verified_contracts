@@ -85,14 +85,14 @@ contract SecondPriceAuction {
 		flushEra();
 
 		// Flush bonus period:
-		if (currentBonus &gt; 0) {
+		if (currentBonus > 0) {
 			// Bonus is currently active...
-			if (now &gt;= beginTime + BONUS_MIN_DURATION				// ...but outside the automatic bonus period
-				&amp;&amp; lastNewInterest + BONUS_LATCH &lt;= block.number	// ...and had no new interest for some blocks
+			if (now >= beginTime + BONUS_MIN_DURATION				// ...but outside the automatic bonus period
+				&& lastNewInterest + BONUS_LATCH <= block.number	// ...and had no new interest for some blocks
 			) {
 				currentBonus--;
 			}
-			if (now &gt;= beginTime + BONUS_MAX_DURATION) {
+			if (now >= beginTime + BONUS_MAX_DURATION) {
 				currentBonus = 0;
 			}
 			if (buyins[msg.sender].received == 0) {	// We have new interest
@@ -158,7 +158,7 @@ contract SecondPriceAuction {
 		when_ended
 		only_buyins(_who)
 	{
-		// end the auction if we&#39;re the first one to finalise.
+		// end the auction if we're the first one to finalise.
 		if (endPrice == 0) {
 			endPrice = totalAccounted / tokenCap;
 			Ended(endPrice);
@@ -183,7 +183,7 @@ contract SecondPriceAuction {
 	/// Ensure the era tracker is prepared in case the current changed.
 	function flushEra() private {
 		uint currentEra = (now - beginTime) / ERA_PERIOD;
-		if (currentEra &gt; eraIndex) {
+		if (currentEra > eraIndex) {
 			Ticked(eraIndex, totalReceived, totalAccounted);
 		}
 		eraIndex = currentEra;
@@ -214,7 +214,7 @@ contract SecondPriceAuction {
 	 * At just over 10 days, the EC has reduced to $200m, and half way through
 	 * the 19th day it has reduced to $100m.
 	 *
-	 * Here&#39;s the curve: https://www.desmos.com/calculator/k6iprxzcrg?embed
+	 * Here's the curve: https://www.desmos.com/calculator/k6iprxzcrg?embed
 	 */
 
 	/// The current end time of the sale assuming that nobody else buys in.
@@ -224,7 +224,7 @@ contract SecondPriceAuction {
 	}
 
 	/// The current price for a single indivisible part of a token. If a buyin happens now, this is
-	/// the highest price per indivisible token part that the buyer will pay. This doesn&#39;t
+	/// the highest price per indivisible token part that the buyer will pay. This doesn't
 	/// include the discount which may be available.
 	function currentPrice() public constant when_active returns (uint weiPerIndivisibleTokenPart) {
 		return (USDWEI * 40000000 / (now - beginTime + 5760) - USDWEI * 5) / DIVISOR;
@@ -233,7 +233,7 @@ contract SecondPriceAuction {
 	/// Returns the total indivisible token parts available for purchase right now.
 	function tokensAvailable() public constant when_active returns (uint tokens) {
 		uint _currentCap = totalAccounted / currentPrice();
-		if (_currentCap &gt;= tokenCap) {
+		if (_currentCap >= tokenCap) {
 			return 0;
 		}
 		return tokenCap - _currentCap;
@@ -260,7 +260,7 @@ contract SecondPriceAuction {
 
 		uint available = tokensAvailable();
 		uint tokens = accounted / price;
-		refund = (tokens &gt; available);
+		refund = (tokens > available);
 	}
 
 	/// Any applicable bonus to `_value`.
@@ -274,10 +274,10 @@ contract SecondPriceAuction {
 	}
 
 	/// True if the sale is ongoing.
-	function isActive() public constant returns (bool) { return now &gt;= beginTime &amp;&amp; now &lt; endTime; }
+	function isActive() public constant returns (bool) { return now >= beginTime && now < endTime; }
 
 	/// True if all buyins have finalised.
-	function allFinalised() public constant returns (bool) { return now &gt;= endTime &amp;&amp; totalAccounted == totalFinalised; }
+	function allFinalised() public constant returns (bool) { return now >= endTime && totalAccounted == totalFinalised; }
 
 	/// Returns true if the sender of this transaction is a basic account.
 	function isBasicAccount(address _who) internal constant returns (bool) {
@@ -294,12 +294,12 @@ contract SecondPriceAuction {
 	modifier when_active { require (isActive()); _; }
 
 	/// Ensure the sale has not begun.
-	modifier before_beginning { require (now &lt; beginTime); _; }
+	modifier before_beginning { require (now < beginTime); _; }
 
 	/// Ensure the sale is ended.
-	modifier when_ended { require (now &gt;= endTime); _; }
+	modifier when_ended { require (now >= endTime); _; }
 
-	/// Ensure we&#39;re not halted.
+	/// Ensure we're not halted.
 	modifier when_not_halted { require (!halted); _; }
 
 	/// Ensure `_who` is a participant.
@@ -312,10 +312,10 @@ contract SecondPriceAuction {
 	/// the gas price is sufficiently low and the value is sufficiently high.
 	modifier only_eligible(address who, uint8 v, bytes32 r, bytes32 s) {
 		require (
-			ecrecover(STATEMENT_HASH, v, r, s) == who &amp;&amp;
-			certifier.certified(who) &amp;&amp;
-			isBasicAccount(who) &amp;&amp;
-			msg.value &gt;= DUST_LIMIT
+			ecrecover(STATEMENT_HASH, v, r, s) == who &&
+			certifier.certified(who) &&
+			isBasicAccount(who) &&
+			msg.value >= DUST_LIMIT
 		);
 		_;
 	}
@@ -326,17 +326,17 @@ contract SecondPriceAuction {
 	// State:
 
 	struct Account {
-		uint128 accounted;	// including bonus &amp; hit
-		uint128 received;	// just the amount received, without bonus &amp; hit
+		uint128 accounted;	// including bonus & hit
+		uint128 received;	// just the amount received, without bonus & hit
 	}
 
 	/// Those who have bought in to the auction.
-	mapping (address =&gt; Account) public buyins;
+	mapping (address => Account) public buyins;
 
-	/// Total amount of ether received, excluding phantom &quot;bonus&quot; ether.
+	/// Total amount of ether received, excluding phantom "bonus" ether.
 	uint public totalReceived = 0;
 
-	/// Total amount of ether accounted for, including phantom &quot;bonus&quot; ether.
+	/// Total amount of ether accounted for, including phantom "bonus" ether.
 	uint public totalAccounted = 0;
 
 	/// Total amount of ether which has been finalised.
@@ -394,8 +394,8 @@ contract SecondPriceAuction {
 	/// The hash of the statement which must be signed in order to buyin.
 	/// The meaning of this hash is:
 	///
-	/// parity.api.util.sha3(parity.api.util.asciiToHex(&quot;\x19Ethereum Signed Message:\n&quot; + tscs.length + tscs))
-	/// where `toUTF8 = x =&gt; unescape(encodeURIComponent(x))`
+	/// parity.api.util.sha3(parity.api.util.asciiToHex("\x19Ethereum Signed Message:\n" + tscs.length + tscs))
+	/// where `toUTF8 = x => unescape(encodeURIComponent(x))`
 	/// and `tscs` is the toUTF8 called on the contents of https://gist.githubusercontent.com/gavofyork/5a530cad3b19c1cafe9148f608d729d2/raw/a116b507fd6d96036037f3affd393994b307c09a/gistfile1.txt
 	bytes32 constant public STATEMENT_HASH = 0x2cedb9c5443254bae6c4f44a31abcb33ec27a0bd03eb58e22e38cdb8b366876d;
 

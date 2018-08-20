@@ -149,23 +149,23 @@ contract ChiSale is Owned {
         // Explicitly check that the number of bonus tiers is less than 256, as
         // it should fit within the 8 bit unsigned integer value that is used
         // as the index counter.
-        require(bonusThresholds.length &lt; 256);
+        require(bonusThresholds.length < 256);
 
         // Loop through one array, whilst simultaneously reading data from the
         // other array. This is possible because both arrays are of the same
         // length, as checked in the line above.
-        for (uint8 i = 0; i &lt; bonusThresholds.length; i++) {
+        for (uint8 i = 0; i < bonusThresholds.length; i++) {
 
             // Guard against human error, by checking that the new bonus
             // threshold is always a higher value than the previous threshold.
-            if (i &gt; 0) {
-                require(bonusThresholds[i] &gt; bonusThresholds[i - 1]);
+            if (i > 0) {
+                require(bonusThresholds[i] > bonusThresholds[i - 1]);
             }
 
             // It is already guaranteed that bonus thresholds are in ascending
             // order. For this reason, the maximum bonus threshold can be set
             // by selecting the final value in the bonus thresholds array.
-            if (i &gt; bonusThresholds.length - 1) {
+            if (i > bonusThresholds.length - 1) {
                 maxBonusThreshold = bonusThresholds[i];
             }
 
@@ -205,14 +205,14 @@ contract ChiSale is Owned {
         // and fewer tokens have been transferred to the contract than dictated
         // by the bonus tiers. This situation can still be resolved at a later
         // date by calling `resetMaxBonusThreshold`.
-        if (maxBonusThreshold &lt; tokenBalance) {
+        if (maxBonusThreshold < tokenBalance) {
             maxBonusThreshold = tokenBalance;
         }
 
         // A scenario is possible wherein a buyer attempts to buy more tokens
         // than the contract is offering. In this case the purchase is limited
         // to the available number of tokens.
-        if (tokensToBuy &gt; maxBonusThreshold) {
+        if (tokensToBuy > maxBonusThreshold) {
             tokensToBuy = maxBonusThreshold;
 
             // The actual number of tokens that can be bought is multiplied by
@@ -230,7 +230,7 @@ contract ChiSale is Owned {
 
         // Update the number of tokens sold. This number does not include the
         // number of bonus tokens that were given out, only the number of
-        // tokens that were &#39;bought&#39;.
+        // tokens that were 'bought'.
         tokensSold += tokensToBuy;
 
         // Guard against transfers where the contract attempts to transfer more
@@ -238,7 +238,7 @@ contract ChiSale is Owned {
         // as the proper amount of tokens should have been deposited within the
         // contract in accordance to the number calculated by the Python script
         // linked above. This is simply a guard against human error.
-        if (tokenBalance &lt; tokensToBuy + bonusTokens) {
+        if (tokenBalance < tokensToBuy + bonusTokens) {
             chiContract.transfer(msg.sender, tokenBalance);
         } else {
             chiContract.transfer(msg.sender, tokensToBuy + bonusTokens);
@@ -247,9 +247,9 @@ contract ChiSale is Owned {
         // The referral address has a default value set to the contract address
         // of this CHI sale contract in the web application. The application
         // changes this value to a different referral address if a special link
-        // is followed. If the referral address does not equal this contract&#39;s
+        // is followed. If the referral address does not equal this contract's
         // address, the revenue share percentage is paid out to that address.
-        if (referralAddress != address(this) &amp;&amp; referralAddress != address(0)) {
+        if (referralAddress != address(this) && referralAddress != address(0)) {
 
             // The value `msg.value * REVENUE_SHARE_PERCENTAGE / 100` is always
             // guaranteed to be a valid number (i.e. accepted by the `transfer`
@@ -263,10 +263,10 @@ contract ChiSale is Owned {
             );
         }
 
-        // In the case where a buyer sent in too much ether, or there weren&#39;t
+        // In the case where a buyer sent in too much ether, or there weren't
         // enough tokens available, the remaining ether is sent back to the
         // buyer.
-        if (remainder &gt; 0) {
+        if (remainder > 0) {
             msg.sender.transfer(remainder);
         }
 
@@ -469,7 +469,7 @@ contract ChiSale is Owned {
         // Copy the number of sold tokens to an `lvalue` to allow mutation.
         uint256 _tokensSold = tokensSold;
 
-        while (_boughtTokens &gt; 0) {
+        while (_boughtTokens > 0) {
             uint256 threshold = bonusTiers[bonusIndex].threshold;
             uint256 bonus = bonusTiers[bonusIndex].percentage;
 
@@ -478,14 +478,14 @@ contract ChiSale is Owned {
             //     in the current bonus tier; and
             //  2: the buyer purchases less CHI tokens than available in the
             //     current bonus tier.
-            if (_tokensSold + _boughtTokens &gt;= threshold) {
+            if (_tokensSold + _boughtTokens >= threshold) {
                 // The number of remaining tokens within the threshold is equal
                 // to the threshold minus the number of tokens that have been
                 // sold already.
                 _boughtTokens -= threshold - _tokensSold;
 
                 // The number of bonus tokens is equal to the remaining number
-                // of tokens in the bonus tier multiplied by the bonus tier&#39;s
+                // of tokens in the bonus tier multiplied by the bonus tier's
                 // percentage. A different bonus will be calculated for the
                 // remaining bought tokens. The number is first multiplied by
                 // the bonus percentage to work to the advantage of the buyer,
@@ -495,7 +495,7 @@ contract ChiSale is Owned {
                 // the other case.
                 bonusTokens += (threshold - _tokensSold) * bonus / 100;
 
-                // The number of sold tokens is &#39;normally&#39; incremented by the
+                // The number of sold tokens is 'normally' incremented by the
                 // number of tokens that have been bought (in that bonus tier).
                 // However, when all remaining tokens in a bonus tier are
                 // purchased, the resulting operation looks as follows:
@@ -506,7 +506,7 @@ contract ChiSale is Owned {
                 // If the bonus tier limit has not been reached, the bonus
                 // index is incremented, because all tokens in the current
                 // bonus tier have been sold.
-                if (bonusIndex &lt; bonusTiers.length) {
+                if (bonusIndex < bonusTiers.length) {
                     bonusIndex += 1;
                 }
             } else {

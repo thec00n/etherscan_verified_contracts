@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -101,13 +101,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -127,14 +127,14 @@ contract BasicToken is ERC20Basic {
 
 /**
  * @title FundableToken - accounts for funds to stand behind it
- * @author Dmitry Kochin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4823083d2a2d3a252d263b2b20663b3c273a2d">[email&#160;protected]</a>&gt;
+ * @author Dmitry Kochin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4823083d2a2d3a252d263b2b20663b3c273a2d">[email protected]</a>>
  * We need to store this data to be able to know how much funds are standing behind the tokens
  * It may come handy in token transformation. For example if prefund would not be successful we
  * will be able to refund all the invested money
  */
 contract FundableToken is BasicToken {
     ///Invested funds
-    mapping(address =&gt; uint) public funds;
+    mapping(address => uint) public funds;
 
     ///Total funds behind the tokens
     uint public totalFunds;
@@ -180,7 +180,7 @@ contract TransformableToken is FundableToken, Ownable {
      * Transform states.
      *
      * - NotAllowed: The child contract has not reached a condition where the transform can bgun
-     * - WaitingForAgent: Token allows transform, but we don&#39;t have a new agent yet
+     * - WaitingForAgent: Token allows transform, but we don't have a new agent yet
      * - ReadyToTransform: The agent is set, but not a single token has been transformed yet, so we
             still have a chance to reset agent to another value
      * - Transforming: Transform agent is set and the balance holders can transform their tokens
@@ -208,7 +208,7 @@ contract TransformableToken is FundableToken, Ownable {
 
         uint tokens = balances[msg.sender];
         uint investments = funds[msg.sender];
-        require(tokens &gt; 0); // Validate input value.
+        require(tokens > 0); // Validate input value.
 
         balances[msg.sender] = 0;
         funds[msg.sender] = 0;
@@ -282,10 +282,10 @@ contract MintableToken is BasicToken {
 
 
 /// @title Token contract - Implements Standard Token Interface with Ubermensch features.
-/// @author Dmitry Kochin - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2942695c4b4c5b444c475a4a41075a5d465b4c">[email&#160;protected]</a>&gt;
+/// @author Dmitry Kochin - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2942695c4b4c5b444c475a4a41075a5d465b4c">[email protected]</a>>
 contract UbermenschPrefundToken is MintableToken, TransformableToken {
-    string constant public name = &quot;Ubermensch Prefund&quot;;
-    string constant public symbol = &quot;UMP&quot;;
+    string constant public name = "Ubermensch Prefund";
+    string constant public symbol = "UMP";
     uint constant public decimals = 8;
 
     //The price of 1 token in Ether
@@ -323,9 +323,9 @@ contract UbermenschPrefundToken is MintableToken, TransformableToken {
      * even if the resulting totalSupply after an investment corresponds to different bonus
      */
     function getCurrentBonus() public constant returns (uint){
-        if(totalSupply &lt; 7000000 * (10 ** decimals))
+        if(totalSupply < 7000000 * (10 ** decimals))
             return 180;
-        if(totalSupply &lt; 14000000 * (10 ** decimals))
+        if(totalSupply < 14000000 * (10 ** decimals))
             return 155;
         return 140;
     }
@@ -337,7 +337,7 @@ contract UbermenschPrefundToken is MintableToken, TransformableToken {
         //Bonuses are in percents so the final value must be divided by 100
         uint tokenAmount = getCurrentBonus().mul(amount).mul(10 ** decimals / 100).div(TOKEN_PRICE);
 
-        require(tokenAmount &gt;= 0);
+        require(tokenAmount >= 0);
 
         if(funds[to] == 0) {
             // A new investor
@@ -352,9 +352,9 @@ contract UbermenschPrefundToken is MintableToken, TransformableToken {
         mint(to, tokenAmount);
 
         //We also should not break the token cap
-        //This is exactly &quot;require&#39; and not &#39;assert&#39; because it depends on msg.value - a user supplied parameters
-        //While &#39;assert&#39; should correspond to a broken business logic
-        require(totalSupply &lt;= TOKEN_CAP);
+        //This is exactly "require' and not 'assert' because it depends on msg.value - a user supplied parameters
+        //While 'assert' should correspond to a broken business logic
+        require(totalSupply <= TOKEN_CAP);
 
         // Pocket the money
         multisigWallet.transfer(amount);
@@ -376,7 +376,7 @@ contract UbermenschPrefundToken is MintableToken, TransformableToken {
         stopped = true;
     }
 
-    //We&#39;ll try to accept sending ether on the contract address, hope the gas supplied would be enough
+    //We'll try to accept sending ether on the contract address, hope the gas supplied would be enough
     function () payable{
         buy();
     }

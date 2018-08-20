@@ -10,14 +10,14 @@ contract WithDrawChildDAO {
         uint128 balance;
         uint128 totalSupply;
     }
-    mapping (address =&gt; SplitData) childDAOs;
+    mapping (address => SplitData) childDAOs;
 
     function WithDrawPreForkChildDAO() {
         // set balance and totalSupply at time of split for ChildDAO. Malicious childDAO (did not burn the right amount of DAO tokens
-        // at the time of split) are commented out with a &quot;b&quot; at the beginning of the comment. ChildDAOs which habe already executed a 
-        // proposal are commented out witha &quot;e&quot; in the beginning of the comment. Both types of childDAO have been taken from:
+        // at the time of split) are commented out with a "b" at the beginning of the comment. ChildDAOs which habe already executed a 
+        // proposal are commented out witha "e" in the beginning of the comment. Both types of childDAO have been taken from:
         // https://github.com/dsystems-io/childDaoWithdraw. Thanks for the work!
-        // Added by @ledgerwatch: childDAOs that are already paid off are commented out with a &quot;p&quot; in the beginning of the comment
+        // Added by @ledgerwatch: childDAOs that are already paid off are commented out with a "p" in the beginning of the comment
         
         // e - childDAOs[0xd4fe7bc31cedb7bfb8a345f31e668033056b2728] = SplitData(11727766784716799192555572, 11727751591980739956782275);
         // e - childDAOs[0x2c19c7f9ae8b751e37aeb2d93a699722395ae18f] = SplitData(11723955902593679358349542, 11723940714794427556781866);

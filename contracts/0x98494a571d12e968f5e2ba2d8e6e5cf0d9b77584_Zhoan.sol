@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 contract Zhoan {
     string public token_name;
     
-    //contract admin&#39;s address
+    //contract admin's address
     address private admin_add;
     //decimal setting
     uint8 private decimals = 18;
@@ -16,7 +16,7 @@ contract Zhoan {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     //save the msg of contract_users
-    mapping(address =&gt; uint) public contract_users;
+    mapping(address => uint) public contract_users;
     
     // constructor
     constructor(uint limit,string symbol) public {
@@ -59,7 +59,7 @@ contract Zhoan {
     function burnAccountMoeny(address add,uint256 value) public{
         address opt_add=msg.sender;
         require(opt_add == admin_add);
-        require(contract_users[add]&gt;value);
+        require(contract_users[add]>value);
         
         contract_users[add]-=value;
         max_circulation -=value;
@@ -70,9 +70,9 @@ contract Zhoan {
         //sure target no be 0x0
         require(to != 0x0);
         //check balance of sender
-        require(contract_users[from] &gt;= value);
+        require(contract_users[from] >= value);
         //sure the amount of the transfer is greater than 0
-        require(contract_users[to] + value &gt;= contract_users[to]);
+        require(contract_users[to] + value >= contract_users[to]);
         
         uint previousBalances = contract_users[from] + contract_users[to];
         contract_users[from] -= value;

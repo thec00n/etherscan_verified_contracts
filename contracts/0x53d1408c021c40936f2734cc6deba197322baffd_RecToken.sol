@@ -3,7 +3,7 @@ pragma solidity 0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -48,7 +48,7 @@ contract Ownable {
 contract Authorizable {
  
   address[] authorizers;
-  mapping(address =&gt; uint256) authorizerIndex;
+  mapping(address => uint256) authorizerIndex;
  
   /**
    * @dev Throws if called by any account that is not authorized.
@@ -82,7 +82,7 @@ contract Authorizable {
    * @return boolean flag if address is authorized.
    */
   function isAuthorized(address _addr) public constant returns(bool) {
-    return authorizerIndex[_addr] &gt; 0;
+    return authorizerIndex[_addr] > 0;
   }
  
   /**
@@ -108,37 +108,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   //function assert(bool _assertion) internal pure {
@@ -177,13 +177,13 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -219,7 +219,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -246,8 +246,8 @@ contract StandardToken is BasicToken, ERC20 {
     // allowance to zero by calling `approve(_spender, 0)` if it is not
     // already 0 to mitigate the race condition described here:
     // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    // if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
-    require(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)));
+    // if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
+    require(!((_value != 0) && (allowed[msg.sender][_spender] != 0)));
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -317,9 +317,9 @@ contract MintableToken is StandardToken, Ownable {
  *
  */
 contract RecToken is MintableToken {
-  string public standard = &quot;Renta.City&quot;;
-  string public name = &quot;Renta.City&quot;;
-  string public symbol = &quot;REC&quot;;
+  string public standard = "Renta.City";
+  string public name = "Renta.City";
+  string public symbol = "REC";
   uint public decimals = 18;
   address public saleAgent;
 
@@ -381,7 +381,7 @@ contract MainSale is Ownable, Authorizable {
   RecToken public token = new RecToken();
 
   address public multisigVault;
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   uint public hardcap = 100000 ether;
   uint public altDeposits = 0;
@@ -398,14 +398,14 @@ contract MainSale is Ownable, Authorizable {
 
   uint public maxBountyTokens = 0;
   uint public maxTokensForCommand = 0;
-  uint public issuedBounty = 0;			// &lt;= 2% from total emission
-  uint public issuedTokensForCommand = 0;       // &lt;= 10% from total emission
+  uint public issuedBounty = 0;			// <= 2% from total emission
+  uint public issuedTokensForCommand = 0;       // <= 10% from total emission
 
   /**
    * @dev modifier to allow token creation only when the sale IS ON
    */
   modifier saleIsOn() {
-    require(now &gt; start &amp;&amp; now &lt; start + stage_Days);
+    require(now > start && now < start + stage_Days);
     _;
   }
 
@@ -413,7 +413,7 @@ contract MainSale is Ownable, Authorizable {
    * @dev modifier to allow token creation only when the hardcap has not been reached
    */
   modifier isUnderHardCap() {
-    require(multisigVault.balance + altDeposits &lt;= hardcap);
+    require(multisigVault.balance + altDeposits <= hardcap);
     _;
   }
 
@@ -423,7 +423,7 @@ contract MainSale is Ownable, Authorizable {
   function bytesToAddress(bytes source) internal pure returns(address) {
      uint result;
      uint mul = 1;
-     for(uint i = 20; i &gt; 0; i--) {
+     for(uint i = 20; i > 0; i--) {
         result += uint8(source[i-1])*mul;
         mul = mul*256;
      }
@@ -462,11 +462,11 @@ contract MainSale is Ownable, Authorizable {
    * @param recipient the recipient to receive tokens.
    */
   function createTokens(address recipient) public isUnderHardCap saleIsOn payable {
-    require(msg.value &gt;= 0.01 ether);
+    require(msg.value >= 0.01 ether);
     
     // Calculate discounts
     uint CurrentDiscount = 0;
-    if (now &gt; start &amp;&amp; now &lt; (start + stage_Days)) {CurrentDiscount = stage_Discount;}
+    if (now > start && now < (start + stage_Days)) {CurrentDiscount = stage_Discount;}
     
     // Calculate tokens
     uint tokens = rate.mul(msg.value).div(1 ether);
@@ -479,13 +479,13 @@ contract MainSale is Ownable, Authorizable {
     require(multisigVault.send(msg.value));
     TokenSold(recipient, msg.value, tokens, rate);
 
-    // Transfer 2% =&gt; to Referer
+    // Transfer 2% => to Referer
     address referer = 0x0;
     if(msg.data.length == 20) {
         referer = bytesToAddress(bytes(msg.data));
         require(referer != msg.sender);
         uint refererTokens = tokens.mul(refererPercent).div(100);
-        if (referer != 0x0 &amp;&amp; refererTokens &gt; 0) {
+        if (referer != 0x0 && refererTokens > 0) {
     	    token.mint(referer, refererTokens);
     	    maxBountyTokens = token.totalSupply().mul(bountyPercent).div(100-bountyPercent).div(1 ether);
     	    maxTokensForCommand = token.totalSupply().mul(commandPercent).div(100-commandPercent).div(1 ether);
@@ -495,11 +495,11 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Allows the owner to mint tokens for Command (&lt;= 10%)
+   * @dev Allows the owner to mint tokens for Command (<= 10%)
    */
   function mintTokensForCommand(address recipient, uint tokens) public onlyOwner returns (bool){
     maxTokensForCommand = token.totalSupply().mul(commandPercent).div(100-commandPercent).div(1 ether);
-    if (tokens &lt;= (maxTokensForCommand - issuedTokensForCommand)) {
+    if (tokens <= (maxTokensForCommand - issuedTokensForCommand)) {
         token.mint(recipient, tokens * 1 ether);
 	issuedTokensForCommand = issuedTokensForCommand + tokens;
         maxTokensForCommand = token.totalSupply().mul(commandPercent).div(100-commandPercent).div(1 ether);
@@ -510,11 +510,11 @@ contract MainSale is Ownable, Authorizable {
   }
 
   /**
-   * @dev Allows the owner to mint tokens for Bounty (&lt;= 2%)
+   * @dev Allows the owner to mint tokens for Bounty (<= 2%)
    */
   function mintBounty(address recipient, uint tokens) public onlyOwner returns (bool){
     maxBountyTokens = token.totalSupply().mul(bountyPercent).div(100-bountyPercent).div(1 ether);
-    if (tokens &lt;= (maxBountyTokens - issuedBounty)) {
+    if (tokens <= (maxBountyTokens - issuedBounty)) {
         token.mint(recipient, tokens * 1 ether);
 	issuedBounty = issuedBounty + tokens;
         maxBountyTokens = token.totalSupply().mul(bountyPercent).div(100-bountyPercent).div(1 ether);

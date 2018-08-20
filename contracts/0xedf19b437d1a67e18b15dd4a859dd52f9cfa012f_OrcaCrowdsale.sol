@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -188,7 +188,7 @@ contract TokenRecoverable is Ownable {
 
     function recoverTokens(ERC20Basic token, address to, uint256 amount) public onlyOwner {
         uint256 balance = token.balanceOf(address(this));
-        require(balance &gt;= amount);
+        require(balance >= amount);
         token.safeTransfer(to, amount);
     }
 }
@@ -266,15 +266,15 @@ contract CommunityLock is ERC777TokensRecipient, ERC820Implementer, TokenRecover
     ERC777Token public token;
 
     constructor(address _token) public {
-        setInterfaceImplementation(&quot;ERC777TokensRecipient&quot;, this);
-        address tokenAddress = interfaceAddr(_token, &quot;ERC777Token&quot;);
+        setInterfaceImplementation("ERC777TokensRecipient", this);
+        address tokenAddress = interfaceAddr(_token, "ERC777Token");
         require(tokenAddress != address(0));
         token = ERC777Token(tokenAddress);
     }
 
     function burn(uint256 _amount) public onlyOwner {
-        require(_amount &gt; 0);
-        token.burn(_amount, &#39;&#39;);
+        require(_amount > 0);
+        token.burn(_amount, '');
     }
 
     function tokensReceived(address, address, address, uint256, bytes, bytes) public {
@@ -301,21 +301,21 @@ contract ERC777TokenScheduledTimelock is ERC820Implementer, ERC777TokensRecipien
         uint256 amount;
     }
 
-    mapping(address =&gt; Timelock[]) public schedule;
+    mapping(address => Timelock[]) public schedule;
 
     event Released(address to, uint256 amount);
 
     constructor(address _token) public {
-        setInterfaceImplementation(&quot;ERC777TokensRecipient&quot;, this);
-        address tokenAddress = interfaceAddr(_token, &quot;ERC777Token&quot;);
+        setInterfaceImplementation("ERC777TokensRecipient", this);
+        address tokenAddress = interfaceAddr(_token, "ERC777Token");
         require(tokenAddress != address(0));
         token = ERC777Token(tokenAddress);
     }
 
     function scheduleTimelock(address _beneficiary, uint256 _lockTokenAmount, uint256 _lockTill) public onlyOwner {
         require(_beneficiary != address(0));
-        require(_lockTill &gt; getNow());
-        require(token.balanceOf(address(this)) &gt;= totalVested.add(_lockTokenAmount));
+        require(_lockTill > getNow());
+        require(token.balanceOf(address(this)) >= totalVested.add(_lockTokenAmount));
         totalVested = totalVested.add(_lockTokenAmount);
 
         schedule[_beneficiary].push(Timelock({ till: _lockTill, amount: _lockTokenAmount }));
@@ -327,26 +327,26 @@ contract ERC777TokenScheduledTimelock is ERC820Implementer, ERC777TokensRecipien
         uint256 till;
         uint256 n = timelocks.length;
         uint256 timestamp = getNow();
-        for (uint256 i = 0; i &lt; n; i++) {
+        for (uint256 i = 0; i < n; i++) {
             Timelock storage timelock = timelocks[i];
             till = timelock.till;
-            if (till &gt; 0 &amp;&amp; till &lt;= timestamp) {
+            if (till > 0 && till <= timestamp) {
                 tokens = tokens.add(timelock.amount);
                 timelock.amount = 0;
                 timelock.till = 0;
             }
         }
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             totalVested = totalVested.sub(tokens);
-            token.send(_to, tokens, &#39;&#39;);
+            token.send(_to, tokens, '');
             emit Released(_to, tokens);
         }
     }
 
     function releaseBatch(address[] _to) public {
-        require(_to.length &gt; 0 &amp;&amp; _to.length &lt; 100);
+        require(_to.length > 0 && _to.length < 100);
 
-        for (uint256 i = 0; i &lt; _to.length; i++) {
+        for (uint256 i = 0; i < _to.length; i++) {
             release(_to[i]);
         }
     }
@@ -377,7 +377,7 @@ contract ExchangeRateConsumer is Ownable {
 
     function setExchangeRate(uint256 _exchangeRate) public {
         require(msg.sender == exchangeRateOracle || msg.sender == owner);
-        require(_exchangeRate &gt; 0);
+        require(_exchangeRate > 0);
         exchangeRate = _exchangeRate;
     }
 }
@@ -385,8 +385,8 @@ contract ExchangeRateConsumer is Ownable {
 contract OrcaToken is Ownable  {
     using SafeMath for uint256;
 
-    string private constant name_ = &quot;ORCA Token&quot;;
-    string private constant symbol_ = &quot;ORCA&quot;;
+    string private constant name_ = "ORCA Token";
+    string private constant symbol_ = "ORCA";
     uint256 private constant granularity_ = 1;
 
     function mint(address _tokenHolder, uint256 _amount, bytes _operatorData) public;
@@ -395,7 +395,7 @@ contract OrcaToken is Ownable  {
 }
 
 contract Whitelist {
-    mapping(address =&gt; uint256) public whitelist;
+    mapping(address => uint256) public whitelist;
 }
 
 contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
@@ -439,7 +439,7 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
     ERC777TokenScheduledTimelock public timelock;
     CommunityLock public communityLock;
 
-    mapping(address =&gt; uint256) public bountyBalances;
+    mapping(address => uint256) public bountyBalances;
 
     address public tokenMinter;
 
@@ -495,14 +495,14 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
     function initialize() public onlyOwner {
         require(!initialized);
 
-        token.mint(timelock, TEAM_TOKENS, &#39;&#39;);
+        token.mint(timelock, TEAM_TOKENS, '');
         timelock.scheduleTimelock(TEAM_WALLET, TEAM_TOKENS, TEAM_TOKEN_LOCK_DATE);
 
-        token.mint(ADVISORS_WALLET, ADVISORS_TOKENS, &#39;&#39;);
-        token.mint(PARTNER_WALLET, PARTNER_TOKENS, &#39;&#39;);
+        token.mint(ADVISORS_WALLET, ADVISORS_TOKENS, '');
+        token.mint(PARTNER_WALLET, PARTNER_TOKENS, '');
 
         communityLock = new CommunityLock(token);
-        token.mint(communityLock, COMMUNITY_TOKENS, &#39;&#39;);
+        token.mint(communityLock, COMMUNITY_TOKENS, '');
 
         initialized = true;
     }
@@ -513,28 +513,28 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
 
     function mintPreSaleTokens(address[] _receivers, uint256[] _amounts, uint256[] _lockPeroids) external onlyInitialized {
         require(msg.sender == tokenMinter || msg.sender == owner);
-        require(_receivers.length &gt; 0 &amp;&amp; _receivers.length &lt;= 100);
+        require(_receivers.length > 0 && _receivers.length <= 100);
         require(_receivers.length == _amounts.length);
         require(_receivers.length == _lockPeroids.length);
         require(!isFinalized);
         uint256 tokensInBatch = 0;
-        for (uint256 i = 0; i &lt; _amounts.length; i++) {
+        for (uint256 i = 0; i < _amounts.length; i++) {
             tokensInBatch = tokensInBatch.add(_amounts[i]);
         }
-        require(preSaleTokens &gt;= tokensInBatch);
+        require(preSaleTokens >= tokensInBatch);
 
         preSaleTokens = preSaleTokens.sub(tokensInBatch);
-        token.mint(timelock, tokensInBatch, &#39;&#39;);
+        token.mint(timelock, tokensInBatch, '');
 
         address receiver;
         uint256 lockTill;
         uint256 timestamp = getNow();
-        for (i = 0; i &lt; _receivers.length; i++) {
+        for (i = 0; i < _receivers.length; i++) {
             receiver = _receivers[i];
             require(receiver != address(0));
 
             lockTill = _lockPeroids[i];
-            require(lockTill &gt; timestamp);
+            require(lockTill > timestamp);
 
             timelock.scheduleTimelock(receiver, _amounts[i], lockTill);
         }
@@ -544,22 +544,22 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
         require(msg.sender == tokenMinter || msg.sender == owner);
         require(!isFinalized);
         require(_receiver != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         ensureCurrentStage();
 
         uint256 excessTokens = updateStageCap(_amount);
 
-        token.mint(_receiver, _amount.sub(excessTokens), &#39;&#39;);
+        token.mint(_receiver, _amount.sub(excessTokens), '');
 
-        if (excessTokens &gt; 0) {
+        if (excessTokens > 0) {
             emit ManualTokenMintRequiresRefund(_receiver, excessTokens); // solhint-disable-line
         }
     }
 
     function mintTokens(address[] _receivers, uint256[] _amounts) external onlyInitialized {
         require(msg.sender == tokenMinter || msg.sender == owner);
-        require(_receivers.length &gt; 0 &amp;&amp; _receivers.length &lt;= 100);
+        require(_receivers.length > 0 && _receivers.length <= 100);
         require(_receivers.length == _amounts.length);
         require(!isFinalized);
 
@@ -569,20 +569,20 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
         uint256 amount;
         uint256 excessTokens;
 
-        for (uint256 i = 0; i &lt; _receivers.length; i++) {
+        for (uint256 i = 0; i < _receivers.length; i++) {
             receiver = _receivers[i];
             amount = _amounts[i];
 
             require(receiver != address(0));
-            require(amount &gt; 0);
+            require(amount > 0);
 
             excessTokens = updateStageCap(amount);
 
             uint256 tokens = amount.sub(excessTokens);
 
-            token.mint(receiver, tokens, &#39;&#39;);
+            token.mint(receiver, tokens, '');
 
-            if (excessTokens &gt; 0) {
+            if (excessTokens > 0) {
                 emit ManualTokenMintRequiresRefund(receiver, excessTokens); // solhint-disable-line
             }
         }
@@ -590,20 +590,20 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
 
     function mintBounty(address[] _receivers, uint256[] _amounts) external onlyInitialized {
         require(msg.sender == tokenMinter || msg.sender == owner);
-        require(_receivers.length &gt; 0 &amp;&amp; _receivers.length &lt;= 100);
+        require(_receivers.length > 0 && _receivers.length <= 100);
         require(_receivers.length == _amounts.length);
         require(!isFinalized);
-        require(bountyTokensLeft &gt; 0);
+        require(bountyTokensLeft > 0);
 
         uint256 tokensLeft = bountyTokensLeft;
         address receiver;
         uint256 amount;
-        for (uint256 i = 0; i &lt; _receivers.length; i++) {
+        for (uint256 i = 0; i < _receivers.length; i++) {
             receiver = _receivers[i];
             amount = _amounts[i];
 
             require(receiver != address(0));
-            require(amount &gt; 0);
+            require(amount > 0);
 
             tokensLeft = tokensLeft.sub(amount);
             bountyBalances[receiver] = bountyBalances[receiver].add(amount);
@@ -626,7 +626,7 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
 
         uint256 excessTokens = updateStageCap(tokens);
 
-        if (excessTokens &gt; 0) {
+        if (excessTokens > 0) {
             uint256 usdToReturn = tokensToUsd(excessTokens, stageIndex);
             usdReceived = usdReceived.sub(usdToReturn);
             weiToReturn = weiToReturn.add(usdToWei(usdToReturn));
@@ -634,11 +634,11 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
             tokens = tokens.sub(excessTokens);
         }
 
-        token.mint(_beneficiary, tokens, &#39;&#39;);
+        token.mint(_beneficiary, tokens, '');
 
         WALLET.transfer(weiReceived);
         emit TokenPurchase(msg.sender, _beneficiary, weiReceived, usdReceived, exchangeRate, tokens); // solhint-disable-line
-        if (weiToReturn &gt; 0) {
+        if (weiToReturn > 0) {
             msg.sender.transfer(weiToReturn);
         }
     }
@@ -650,7 +650,7 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
         uint8 curStage = currentStage;
         uint8 nextStage = curStage + 1;
 
-        while (nextStage &lt; stageCount &amp;&amp; stages[nextStage].startDate &lt;= currentTime) {
+        while (nextStage < stageCount && stages[nextStage].startDate <= currentTime) {
             stages[nextStage].cap = stages[nextStage].cap.add(stages[curStage].cap);
             curStage = nextStage;
             nextStage = nextStage + 1;
@@ -662,13 +662,13 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
 
     /**
     * @dev Must be called after crowdsale ends, to do some extra finalization
-    * work. Calls the contract&#39;s finalization function.
+    * work. Calls the contract's finalization function.
     */
     function finalize() public onlyOwner onlyInitialized {
         require(!isFinalized);
         require(preSaleTokens == 0);
         Stage storage lastStage = stages[stages.length - 1];
-        require(getNow() &gt;= lastStage.endDate || (lastStage.cap == 0 &amp;&amp; icoTokensLeft == 0));
+        require(getNow() >= lastStage.endDate || (lastStage.cap == 0 && icoTokensLeft == 0));
 
         token.finishMinting();
         token.transferOwnership(owner);
@@ -686,10 +686,10 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
 
     function claimBounty(address beneficiary) public onlyInitialized {
         uint256 balance = bountyBalances[beneficiary];
-        require(balance &gt; 0);
+        require(balance > 0);
         bountyBalances[beneficiary] = 0;
 
-        token.mint(beneficiary, balance, &#39;&#39;);
+        token.mint(beneficiary, balance, '');
     }
 
     /// @notice Updates current stage cap and returns amount of excess tokens if ICO does not have enough tokens
@@ -697,14 +697,14 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
         Stage storage stage = stages[currentStage];
         uint256 cap = stage.cap;
         // normal situation, early exit
-        if (cap &gt;= _tokens) {
+        if (cap >= _tokens) {
             stage.cap = cap.sub(_tokens);
             return 0;
         }
 
         stage.cap = 0;
         uint256 excessTokens = _tokens.sub(cap);
-        if (icoTokensLeft &gt;= excessTokens) {
+        if (icoTokensLeft >= excessTokens) {
             icoTokensLeft = icoTokensLeft.sub(excessTokens);
             return 0;
         }
@@ -730,13 +730,13 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
 
     function addStage(uint256 startDate, uint256 endDate, uint256 cap, uint64 bonus, uint64 maxPriorityId, uint256 priorityTime) public onlyOwner onlyInitialized {
         require(!isFinalized);
-        require(startDate &gt; getNow());
-        require(endDate &gt; startDate);
+        require(startDate > getNow());
+        require(endDate > startDate);
         Stage storage lastStage = stages[stages.length - 1];
-        require(startDate &gt; lastStage.endDate);
-        require(startDate.add(priorityTime) &lt;= endDate);
-        require(icoTokensLeft &gt;= cap);
-        require(maxPriorityId &gt;= lastStage.maxPriorityId);
+        require(startDate > lastStage.endDate);
+        require(startDate.add(priorityTime) <= endDate);
+        require(icoTokensLeft >= cap);
+        require(maxPriorityId >= lastStage.maxPriorityId);
 
         stages.push(Stage({
             startDate: startDate,
@@ -752,23 +752,23 @@ contract OrcaCrowdsale is TokenRecoverable, ExchangeRateConsumer, Debuggable {
         require(!isFinalized);
         require(msg.value != 0);
 
-        require(currentStage &lt; stages.length);
+        require(currentStage < stages.length);
         Stage storage stage = stages[currentStage];
-        require(stage.cap &gt; 0);
+        require(stage.cap > 0);
 
         uint256 currentTime = getNow();
-        require(stage.startDate &lt;= currentTime &amp;&amp; currentTime &lt;= stage.endDate);
+        require(stage.startDate <= currentTime && currentTime <= stage.endDate);
 
         uint256 userId = whitelist.whitelist(msg.sender);
-        require(userId &gt; 0);
-        if (stage.priorityDate &gt; currentTime) {
-            require(userId &lt; stage.maxPriorityId);
+        require(userId > 0);
+        if (stage.priorityDate > currentTime) {
+            require(userId < stage.maxPriorityId);
         }
     }
 
     function setPreSaleTokens(uint256 amount) public onlyOwner onlyInitialized {
         require(!isPreSaleTokenSet);
-        require(amount &gt; 0);
+        require(amount > 0);
         preSaleTokens = amount;
         isPreSaleTokenSet = true;
     }

@@ -38,9 +38,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,14 +68,14 @@ library SafeMath {
 */
 contract MINERTA is ERC20Interface{
     //Token information
-    string public constant name = &quot;MINERTA&quot;;
-    string public constant symbol = &quot;MIT&quot;;
+    string public constant name = "MINERTA";
+    string public constant symbol = "MIT";
     uint8 public constant decimals = 18;
     uint _totalSupply ; 
     using SafeMath for uint256;
     uint256 public constant INITIAL_SUPPLY = 500 * (10**6) * (10 ** uint256(decimals));
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
   function MINERTA() public {
     _totalSupply = INITIAL_SUPPLY;
@@ -93,8 +93,8 @@ contract MINERTA is ERC20Interface{
     
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(_value&gt;0);
+    require(_value <= balances[msg.sender]);
+    require(_value>0);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -105,9 +105,9 @@ contract MINERTA is ERC20Interface{
   
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(_value&gt;0);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+    require(_value>0);
     
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -154,7 +154,7 @@ contract MINERTA is ERC20Interface{
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

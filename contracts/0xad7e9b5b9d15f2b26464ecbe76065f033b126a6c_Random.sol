@@ -4,8 +4,8 @@ contract Random {
 
     uint public ticketsNum = 0;
     
-    mapping(uint =&gt; uint) internal tickets;  // tickets for the current draw
-    mapping(uint =&gt; bool) internal payed_back; // ticket payment refunding identifier
+    mapping(uint => uint) internal tickets;  // tickets for the current draw
+    mapping(uint => bool) internal payed_back; // ticket payment refunding identifier
     
     address[] public addr; // addresses of all the draw participants
     
@@ -56,24 +56,24 @@ contract Random {
 
     /// function for straight tickets purchase (sending ETH to the contract address)
     function() public payable {
-        require(block.number &lt; endBlockNumber || msg.value &lt; 1000000000000000000);
-        if (msg.value &gt; 0 &amp;&amp; last_winner == 0) {
+        require(block.number < endBlockNumber || msg.value < 1000000000000000000);
+        if (msg.value > 0 && last_winner == 0) {
             uint val =  msg.value / onePotWei;
             uint i = 0;
             uint ix = checkAddress(msg.sender);
-            for(i; i &lt; val; i++) { tickets[ticketsNum+i] = ix; }
+            for(i; i < val; i++) { tickets[ticketsNum+i] = ix; }
             ticketsNum += i;
             Buy(msg.sender, msg.value);
         }
-        if (block.number &gt;= endBlockNumber) { 
+        if (block.number >= endBlockNumber) { 
             EndLottery(); 
         }
     }
 
 
-    /// function for ticket sending from owner&#39;s address to designated address
+    /// function for ticket sending from owner's address to designated address
     function transfer(address _to, uint _ticketNum) public {
-        if (msg.sender == getAddress(tickets[_ticketNum]) &amp;&amp; _to != address(0)) {
+        if (msg.sender == getAddress(tickets[_ticketNum]) && _to != address(0)) {
             uint ix = checkAddress(_to);
             tickets[_ticketNum] = ix;
             Transfer(msg.sender, _to, _ticketNum);
@@ -81,19 +81,19 @@ contract Random {
     }
 
 
-    /// manager&#39;s opportunity to write off ETH from the contract, in a case of unforseen contract blocking (possible in only case of more than 24 hours from the moment of lottery ending had passed and a new one has not started)
+    /// manager's opportunity to write off ETH from the contract, in a case of unforseen contract blocking (possible in only case of more than 24 hours from the moment of lottery ending had passed and a new one has not started)
     function manager_withdraw() onlyManager public {
-        require(block.number &gt;= endBlockNumber + liveBlocksNumber);
+        require(block.number >= endBlockNumber + liveBlocksNumber);
         msg.sender.transfer(this.balance);
     }
     
     /// lottery ending
     function EndLottery() public payable returns (bool success) {
-        require(block.number &gt;= endBlockNumber); 
+        require(block.number >= endBlockNumber); 
         uint tn = ticketsNum;
-        if(tn &lt; 3) { 
+        if(tn < 3) { 
             tn = 0;
-            if(msg.value &gt; 0) { msg.sender.transfer(msg.value); }
+            if(msg.value > 0) { msg.sender.transfer(msg.value); }
             startNewDraw(msg.value);
             return false;
         }
@@ -110,14 +110,14 @@ contract Random {
             uint prizes = jp1 + jp2 + jp3 + lastbet_prize*2;
             uint full_prizes = jp1 + jp2 + jp3 + (lastbet_prize * ( (winners_count+1)/10 ) );
 
-            if(winners_count &lt; 10) {
-                if(prizes &gt; pf) {
+            if(winners_count < 10) {
+                if(prizes > pf) {
                     others_prize = 0;
                 } else {
                     others_prize = pf - prizes;    
                 }
             } else {
-                if(full_prizes &gt; pf) {
+                if(full_prizes > pf) {
                     others_prize = 0;
                 } else {
                     others_prize = pf - full_prizes;    
@@ -133,15 +133,15 @@ contract Random {
             return true;
         } 
         
-        if(last_winner &lt; winners_count + 1 &amp;&amp; others_prize &gt; 0) {
+        if(last_winner < winners_count + 1 && others_prize > 0) {
             
             uint val = others_prize / winners_count;
             uint i;
             uint8 cnt = 0;
-            for(i = last_winner; i &lt; winners_count + 1; i++) {
+            for(i = last_winner; i < winners_count + 1; i++) {
                 sendEth(getAddress(tickets[getWinningNumber(i+3)]), val);
                 cnt++;
-                if(cnt &gt; 9) {
+                if(cnt > 9) {
                     last_winner = i;
                     return true;
                 }
@@ -172,7 +172,7 @@ contract Random {
     
     /// sending rewards to the investing, team and marketing contracts 
     function payfee() public {
-        require(fee_balance &gt; 0);
+        require(fee_balance > 0);
         uint val = fee_balance;
         inv_contract.transfer( percent(val, 20) );
         rtm_contract.transfer( percent(val, 49) );
@@ -182,7 +182,7 @@ contract Random {
     
     /// function for sending ETH with balance check (does not interrupt the program if balance is not sufficient)
     function sendEth(address _to, uint _val) internal returns(bool) {
-        if(this.balance &lt; _val) {
+        if(this.balance < _val) {
             TransferError(_to, _val);
             return false;
         }
@@ -238,7 +238,7 @@ contract Random {
             return 0;
         }
         uint num = 0;
-        for(uint i = 0; i &lt; ticketsNum; i++) {
+        for(uint i = 0; i < ticketsNum; i++) {
             if(tickets[i] == readAddress(_addr)) {
                 num++;
             }
@@ -250,7 +250,7 @@ contract Random {
     function getTicketsAtAdress(address _address) public view returns(uint[]) {
         uint[] memory result = new uint[](getTicketsCount(_address));
         uint num = 0;
-        for(uint i = 0; i &lt; ticketsNum; i++) {
+        for(uint i = 0; i < ticketsNum; i++) {
             if(getAddress(tickets[i]) == _address) {
                 result[num] = i;
                 num++;
@@ -285,7 +285,7 @@ contract Random {
     /// returns number of participant (in the list of participants) by belonging address and adding to the list, if not found
     function checkAddress(address _addr) public returns (uint addr_num)
     {
-        for(uint i=0; i&lt;addr.length; i++) {
+        for(uint i=0; i<addr.length; i++) {
             if(addr[i] == _addr) {
                 return i;
             }
@@ -296,7 +296,7 @@ contract Random {
     /// returns participants number (in the list of participants) be belonging address (read only)
     function readAddress(address _addr) public view returns (uint addr_num)
     {
-        for(uint i=0; i&lt;addr.length; i++) {
+        for(uint i=0; i<addr.length; i++) {
             if(addr[i] == _addr) {
                 return i;
             }
@@ -312,7 +312,7 @@ contract Random {
 
     /// method for direct contract replenishment with ETH
     function deposit() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
     }
     
 

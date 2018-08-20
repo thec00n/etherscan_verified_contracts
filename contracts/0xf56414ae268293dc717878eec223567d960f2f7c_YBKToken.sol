@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -123,9 +123,9 @@ contract BaseToken is Ownable, Pausable, Mortal{
   using SafeMath for uint256;
 
   // ERC20 State
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowances;
+  mapping (address => bool) public frozenAccount;
   uint256 public totalSupply;
 
   // Human State
@@ -168,7 +168,7 @@ contract BaseToken is Ownable, Pausable, Mortal{
   //ERC20 transfer
   function transfer(address _to, uint256 _value) whenNotPaused public returns (bool success)  {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     //REMOVED - SH 20180430 - WOULD PREVENT SENDING TO MULTISIG WALLET
     //require(isContract(_to) == false);
     require(!frozenAccount[msg.sender]);
@@ -185,7 +185,7 @@ contract BaseToken is Ownable, Pausable, Mortal{
   //      assembly {
   //          codeSize := extcodesize(_addr)
   //      }
-  //      return codeSize &gt; 0;
+  //      return codeSize > 0;
   //  }
 
   function approve(address _spender, uint256 _value) public returns (bool success) {
@@ -196,8 +196,8 @@ contract BaseToken is Ownable, Pausable, Mortal{
 
   function transferFrom(address _owner, address _to, uint256 _value) whenNotPaused public returns (bool success) {
     require(_to != address(0));
-    require(_value &lt;= balances[_owner]);
-    require(_value &lt;= allowances[_owner][msg.sender]);
+    require(_value <= balances[_owner]);
+    require(_value <= allowances[_owner][msg.sender]);
     require(!frozenAccount[_owner]);
 
     balances[_owner] = balances[_owner].sub(_value);
@@ -230,7 +230,7 @@ contract UpgradeableToken is BaseToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *

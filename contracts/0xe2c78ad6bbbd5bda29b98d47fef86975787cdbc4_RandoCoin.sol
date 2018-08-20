@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
 greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ greater than minuend).
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,7 +79,7 @@ value);
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -88,7 +88,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -118,7 +118,7 @@ https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -130,8 +130,8 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) public
 returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -148,7 +148,7 @@ tokens on behalf of msg.sender.
 that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One
 possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set
+   * race condition is to first reduce the spender's allowance to 0 and set
 the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
@@ -207,7 +207,7 @@ by.
   function decreaseApproval(address _spender, uint _subtractedValue) public
 returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -224,8 +224,8 @@ contract RandoCoin is StandardToken {
     // Standard token variables
     // Initial supply is 100MM RAND
     uint256 public totalSupply = (100000000) * 1000;
-    string public name = &quot;RandoCoin&quot;;
-    string public symbol = &quot;RAND&quot;;
+    string public name = "RandoCoin";
+    string public symbol = "RAND";
     uint8 public decimals = 3;
     uint BLOCK_WAIT_TIME = 30;
     uint INIT_BLOCK_WAIT = 250;
@@ -260,7 +260,7 @@ contract RandoCoin is StandardToken {
         // The contract holds the whole balance
         balances[this] = totalSupply;
         
-        // These numbers don&#39;t matter, they will be overriden when init() is called
+        // These numbers don't matter, they will be overriden when init() is called
         // Which will kick off the contract
         priceChangeBlock = block.number + INIT_BLOCK_WAIT;
         oldPriceChangeBlock = block.number;
@@ -288,7 +288,7 @@ contract RandoCoin is StandardToken {
     
     function buy() public requireNotExpired requireCooldown payable returns (uint amount){
         amount = msg.value / buyPrice;
-        require(balances[this] &gt;= amount);
+        require(balances[this] >= amount);
         balances[msg.sender] = balances[msg.sender].add(amount);
         balances[this] = balances[this].sub(amount);
         
@@ -297,7 +297,7 @@ contract RandoCoin is StandardToken {
     }
     
     function sell(uint amount) public requireNotExpired requireCooldown returns (uint revenue){
-        require(balances[msg.sender] &gt;= amount);
+        require(balances[msg.sender] >= amount);
         balances[this] += amount;
         balances[msg.sender] -= amount;
 
@@ -316,27 +316,27 @@ contract RandoCoin is StandardToken {
         // to wait for 1 more block
         // This will create a 1 block period where you cannot buy/sell or
         // change the price, sorry!
-        require(block.number &gt; priceChangeBlock + 1);
+        require(block.number > priceChangeBlock + 1);
         
         // Block is too far away to get hash, restart timer
         // Sorry, no reward here. At this point the contract
         // is probably dead anyway.
-        if (block.number - priceChangeBlock &gt; 250) {
+        if (block.number - priceChangeBlock > 250) {
             waitMoreTime();
             return;
         }
         
-        // I know this isn&#39;t good but
+        // I know this isn't good but
         // Open challenge if a miner can break this
         sellPrice = shittyRand(0);
         buyPrice = shittyRand(1);
         
         // Set minimum prices to avoid miniscule amounts
-        if (sellPrice &lt; PRICE_MIN) {
+        if (sellPrice < PRICE_MIN) {
             sellPrice = PRICE_MIN;
         }
         
-        if (buyPrice &lt; PRICE_MIN) {
+        if (buyPrice < PRICE_MIN) {
             buyPrice = PRICE_MIN;
         }
         
@@ -348,31 +348,31 @@ contract RandoCoin is StandardToken {
         
         // Reward the person who refreshed priceChangeBlock 0.1 RAND
         uint reward = 100;
-        if (balances[this] &gt; reward) {
+        if (balances[this] > reward) {
             balances[msg.sender] = balances[msg.sender].add(reward);
             balances[this] = balances[this].sub(reward);
         }
     }
     
-    // You don&#39;t want someone to be able to change the price and then
+    // You don't want someone to be able to change the price and then
     // Execute buy and sell in the same block, they could potentially
     // game the system (I think..), so freeze buying for 2 blocks after a price change.
     modifier requireCooldown() {
         // This should always be true..
-        if (block.number &gt;= oldPriceChangeBlock) {
-            require(block.number - priceChangeBlock &gt; 2);
+        if (block.number >= oldPriceChangeBlock) {
+            require(block.number - priceChangeBlock > 2);
         }
         _;
     }
     
     modifier requireNotExpired() {
-        require(block.number &lt; priceChangeBlock);
+        require(block.number < priceChangeBlock);
         _;
     }
     
     // Wait more time without changing the price
     // Used only when the blockhash is too far away
-    // If we didn&#39;t do this, and instead picked a block within 256
+    // If we didn't do this, and instead picked a block within 256
     // Someone could game the system and wait to call the function 
     // until a block which gave favorable prices.
     function waitMoreTime() internal {

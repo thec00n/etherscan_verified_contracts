@@ -68,17 +68,17 @@ contract Presale is Admins {
 
   uint public tokensPerEther;
 
-  mapping (address =&gt; uint) public balanceOf;
+  mapping (address => uint) public balanceOf;
 
   modifier goodDate {
-    require(start &gt; 0);
-    require(start &lt;= now);
-    require((start+duration) &gt; now);
+    require(start > 0);
+    require(start <= now);
+    require((start+duration) > now);
     _;
   }
 
   modifier belowHardCap {
-    require(raised &lt; hardCap);
+    require(raised < hardCap);
     _;
   }
 
@@ -131,7 +131,7 @@ contract Presale is Admins {
 
   function getFunds(uint amount) public onlyAdmins {
     require(benefit != 0x0);
-    require(amount &lt;= this.balance);
+    require(amount <= this.balance);
     Raise(benefit, amount);
     benefit.send(amount);
   }

@@ -16,8 +16,8 @@ contract ERC20 {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -26,7 +26,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -45,7 +45,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -106,20 +106,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,8 +128,8 @@ contract ANOToken is BasicToken {
 
 using SafeMath for uint256;
 
-string public name = &quot;Anonium&quot;;                                 // Name of the token
-string public symbol = &quot;ANO&quot;;                                   // Symbol of the token
+string public name = "Anonium";                                 // Name of the token
+string public symbol = "ANO";                                   // Symbol of the token
 uint8 public decimals = 18;                                     // Decimals
 uint256 public totalSupply = 21000000000 * 10**18;              // Total supply of SPC Tokens  
 

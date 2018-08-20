@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,18 +41,18 @@ contract Ryancoin {
     uint256 _totalSupply = 0;
     uint256 _totalSold = 0;
     
-    string public constant symbol = &quot;RYC&quot;;
-    string public constant name = &quot;Ryancoin&quot;;
+    string public constant symbol = "RYC";
+    string public constant name = "Ryancoin";
     uint8 public constant decimals = 6;
     uint256 public rate = 1 ether / (500 * (10 ** uint256(decimals)));
     address public owner;
     
     bool public _contractStatus = true;
     
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed; //control allow to spend
-    mapping (address =&gt; bool)  _frozenAccount;
-    mapping (address =&gt; bool)  _tokenAccount;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed; //control allow to spend
+    mapping (address => bool)  _frozenAccount;
+    mapping (address => bool)  _tokenAccount;
 
     address[] tokenHolders;
     
@@ -83,12 +83,12 @@ contract Ryancoin {
     
     function stopContract() public onlyOwner {
         _contractStatus = false;
-        UpdateStatus(&quot;Contract is stop&quot;);
+        UpdateStatus("Contract is stop");
     }
     
     function enableContract() public onlyOwner {
         _contractStatus = true;
-        UpdateStatus(&quot;Contract is enable&quot;);
+        UpdateStatus("Contract is enable");
     }
     
     function totalSupply() public constant returns (uint256){
@@ -105,7 +105,7 @@ contract Ryancoin {
     
    
     function updateRate(uint256 _value) onlyOwner public returns (bool success){
-        require(_value &gt; 0);
+        require(_value > 0);
         rate = 1 ether / (_value * (10 ** uint256(decimals)));
         return true;
     }
@@ -115,15 +115,15 @@ contract Ryancoin {
     }
     
     function createTokens() public payable{
-        require(msg.value &gt; 0 &amp;&amp; msg.value &gt; rate &amp;&amp; _contractStatus);
+        require(msg.value > 0 && msg.value > rate && _contractStatus);
         
         uint256 tokens = msg.value.div(rate);
         
-        require(tokens + _totalSold &lt; _totalSupply);
+        require(tokens + _totalSold < _totalSupply);
         
         require(
-            balances[owner]  &gt;= tokens
-            &amp;&amp; tokens &gt; 0
+            balances[owner]  >= tokens
+            && tokens > 0
         );
         
         _transfer(owner, msg.sender, tokens);
@@ -149,11 +149,11 @@ contract Ryancoin {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check value more than 0
-        require(_value &gt; 0);
+        require(_value > 0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint256 previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -187,8 +187,8 @@ contract Ryancoin {
     }
     
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &gt; 0);
-        require(balances[msg.sender] &gt;= _value);    // Check if the sender has enough
+        require(_value > 0);
+        require(balances[msg.sender] >= _value);    // Check if the sender has enough
         balances[msg.sender] -= _value;             // Subtract from the sender
         _totalSupply -= _value;                     // Updates totalSupply
         Burn(msg.sender, _value);
@@ -197,8 +197,8 @@ contract Ryancoin {
     
     function burnFromOwner(address _from, uint256 _value) onlyOwner public returns (bool success) {
         require(_from != address(0));
-        require(_value &gt; 0);
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
+        require(_value > 0);
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
         balances[_from] -= _value;                         // Subtract from the targeted balance
         _totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
@@ -207,7 +207,7 @@ contract Ryancoin {
     
     function mintToken(address _target, uint256 _mintedAmount) onlyOwner public {
         require(_target != address(0));
-        require(_mintedAmount &gt; 0);
+        require(_mintedAmount > 0);
         balances[_target] += _mintedAmount;
         _totalSupply += _mintedAmount;
         setTokenHolders(_target);
@@ -236,7 +236,7 @@ contract Ryancoin {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_from != address(0));
         require(_to != address(0));
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         _transfer(_from, _to, _value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         return true;
@@ -247,7 +247,7 @@ contract Ryancoin {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
    */
@@ -276,7 +276,7 @@ contract Ryancoin {
    */
   function increaseApproval (address _spender, uint _addedValue) public returns (bool success) {
         require(_spender != address(0));
-        require(_addedValue &gt; 0);
+        require(_addedValue > 0);
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
@@ -284,9 +284,9 @@ contract Ryancoin {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         require(_spender != address(0));
-        require(_subtractedValue &gt; 0);
+        require(_subtractedValue > 0);
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

@@ -31,7 +31,7 @@ contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
        
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -41,7 +41,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -64,8 +64,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -82,7 +82,7 @@ contract EmediFind is StandardToken {
     string public name;                   
     uint8 public decimals;                
     string public symbol;                 
-    string public version = &#39;H1.0&#39;;       
+    string public version = 'H1.0';       
 
 
 
@@ -90,9 +90,9 @@ contract EmediFind is StandardToken {
         ) {
         balances[msg.sender] = 300000000000000;              
         totalSupply = 3000000*10**8;                       
-        name = &quot;EMF&quot;;                                   
+        name = "EMF";                                   
         decimals = 8;                            
-        symbol = &quot;EMF&quot;;                              
+        symbol = "EMF";                              
     }
 
 
@@ -101,7 +101,7 @@ contract EmediFind is StandardToken {
         Approval(msg.sender, _spender, _value);
 
         
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

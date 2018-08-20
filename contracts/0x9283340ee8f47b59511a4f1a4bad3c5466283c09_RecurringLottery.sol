@@ -13,10 +13,10 @@ contract RecurringLottery {
 
     uint constant public TICKET_PRICE = 1e15;
 
-    mapping(uint =&gt; Round) public rounds;
+    mapping(uint => Round) public rounds;
     uint public round;
     uint public duration;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     // duration is in blocks. 1 day = ~5500 blocks
     function RecurringLottery (uint _duration) public {
@@ -29,7 +29,7 @@ contract RecurringLottery {
     function buy () payable public {
         require(msg.value % TICKET_PRICE == 0);
 
-        if (block.number &gt; rounds[round].endBlock) {
+        if (block.number > rounds[round].endBlock) {
             round += 1;
             rounds[round].endBlock = block.number + duration;
             rounds[round].drawBlock = block.number + duration + 5;
@@ -44,17 +44,17 @@ contract RecurringLottery {
     function drawWinner (uint roundNumber) public {
         Round storage drawing = rounds[roundNumber];
         require(drawing.winner ==  address(0));
-        require(block.number &gt; drawing.drawBlock);
-        require(drawing.entries.length &gt; 0);
+        require(block.number > drawing.drawBlock);
+        require(drawing.entries.length > 0);
 
         // pick winner
         bytes32 rand = keccak256(
             block.blockhash(drawing.drawBlock)
         );
         uint counter = uint(rand) % drawing.totalQuantity;
-        for (uint i=0; i &lt; drawing.entries.length; i++) {
+        for (uint i=0; i < drawing.entries.length; i++) {
             uint quantity = drawing.entries[i].quantity;
-            if (quantity &gt; counter) {
+            if (quantity > counter) {
                 drawing.winner = drawing.entries[i].buyer;
                 break;
             }
@@ -72,7 +72,7 @@ contract RecurringLottery {
     }
 
     function deleteRound (uint _round) public {
-        require(block.number &gt; rounds[_round].drawBlock + 100);
+        require(block.number > rounds[_round].drawBlock + 100);
         require(rounds[_round].winner != address(0));
         delete rounds[_round];
     }

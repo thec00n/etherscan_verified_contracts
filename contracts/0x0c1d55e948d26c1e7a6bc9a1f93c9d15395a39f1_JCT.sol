@@ -26,20 +26,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization
- *      control functions, this simplifies the implementation of &quot;user permissions&quot;.
+ *      control functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -173,21 +173,21 @@ contract ERC20 {
 
 /**
  * @title JCT
- * @author Daisuke Hirata &amp; Noriyuki Izawa
+ * @author Daisuke Hirata & Noriyuki Izawa
  * @dev JCT is an ERC20 Token. First envisioned by NANJCOIN
  */
 contract JCT is ERC20, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;JCT&quot;;
-    string public symbol = &quot;JCT&quot;;
+    string public name = "JCT";
+    string public symbol = "JCT";
     uint8 public decimals = 8;
     uint256 public totalSupply = 17e7 * 1e8;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint256) public unlockUnixTime;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint256) public unlockUnixTime;
 
     event FrozenFunds(address indexed target, bool frozen);
     event LockedFunds(address indexed target, uint256 locked);
@@ -230,9 +230,9 @@ contract JCT is ERC20, Ownable {
      * @param isFrozen either to freeze it or not
      */
     function freezeAccounts(address[] targets, bool isFrozen) onlyFreezer public {
-        require(targets.length &gt; 0);
+        require(targets.length > 0);
 
-        for (uint j = 0; j &lt; targets.length; j++) {
+        for (uint j = 0; j < targets.length; j++) {
             require(isNonZeroAccount(targets[j]));
             frozenAccount[targets[j]] = isFrozen;
             emit FrozenFunds(targets[j], isFrozen);
@@ -247,8 +247,8 @@ contract JCT is ERC20, Ownable {
     function lockupAccounts(address[] targets, uint[] unixTimes) onlyOwner public {
         require(hasSameArrayLength(targets, unixTimes));
 
-        for(uint j = 0; j &lt; targets.length; j++){
-            require(unlockUnixTime[targets[j]] &lt; unixTimes[j]);
+        for(uint j = 0; j < targets.length; j++){
+            require(unlockUnixTime[targets[j]] < unixTimes[j]);
             unlockUnixTime[targets[j]] = unixTimes[j];
             emit LockedFunds(targets[j], unixTimes[j]);
         }
@@ -259,8 +259,8 @@ contract JCT is ERC20, Ownable {
      */
     function transfer(address _to, uint _value) public returns (bool success) {
         require(hasEnoughBalance(msg.sender, _value)
-                &amp;&amp; isAvailableAccount(msg.sender)
-                &amp;&amp; isAvailableAccount(_to));
+                && isAvailableAccount(msg.sender)
+                && isAvailableAccount(_to));
 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -276,10 +276,10 @@ contract JCT is ERC20, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(isNonZeroAccount(_to)
-                &amp;&amp; hasEnoughBalance(_from, _value)
-                &amp;&amp; allowance[_from][msg.sender] &gt;= _value
-                &amp;&amp; isAvailableAccount(_from)
-                &amp;&amp; isAvailableAccount(_to));
+                && hasEnoughBalance(_from, _value)
+                && allowance[_from][msg.sender] >= _value
+                && isAvailableAccount(_from)
+                && isAvailableAccount(_to));
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -316,10 +316,10 @@ contract JCT is ERC20, Ownable {
 
         uint256 totalAmount = 0;
 
-        for (uint j = 0; j &lt; addresses.length; j++) {
-            require(amounts[j] &gt; 0
-                    &amp;&amp; isNonZeroAccount(addresses[j])
-                    &amp;&amp; isAvailableAccount(addresses[j]));
+        for (uint j = 0; j < addresses.length; j++) {
+            require(amounts[j] > 0
+                    && isNonZeroAccount(addresses[j])
+                    && isAvailableAccount(addresses[j]));
 
             require(hasEnoughBalance(addresses[j], amounts[j]));
             balanceOf[addresses[j]] = balanceOf[addresses[j]].sub(amounts[j]);
@@ -335,20 +335,20 @@ contract JCT is ERC20, Ownable {
      */
     function distributeTokens(address[] addresses, uint[] amounts) onlyDistributor public returns (bool) {
         require(hasSameArrayLength(addresses, amounts)
-                &amp;&amp; isAvailableAccount(msg.sender));
+                && isAvailableAccount(msg.sender));
 
         uint256 totalAmount = 0;
 
-        for(uint j = 0; j &lt; addresses.length; j++){
-            require(amounts[j] &gt; 0
-                    &amp;&amp; isNonZeroAccount(addresses[j])
-                    &amp;&amp; isAvailableAccount(addresses[j]));
+        for(uint j = 0; j < addresses.length; j++){
+            require(amounts[j] > 0
+                    && isNonZeroAccount(addresses[j])
+                    && isAvailableAccount(addresses[j]));
 
             totalAmount = totalAmount.add(amounts[j]);
         }
         require(hasEnoughBalance(msg.sender, totalAmount));
 
-        for (j = 0; j &lt; addresses.length; j++) {
+        for (j = 0; j < addresses.length; j++) {
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amounts[j]);
             emit Transfer(msg.sender, addresses[j], amounts[j]);
         }
@@ -358,12 +358,12 @@ contract JCT is ERC20, Ownable {
 
     // check if the given account is available
     function isAvailableAccount(address _addr) private view returns (bool is_valid_account) {
-        return isUnLockedAccount(_addr) &amp;&amp; isUnfrozenAccount(_addr);
+        return isUnLockedAccount(_addr) && isUnfrozenAccount(_addr);
     }
 
     // check if the given account is not locked up
     function isUnLockedAccount(address _addr) private view returns (bool is_unlocked_account) {
-        return now &gt; unlockUnixTime[_addr];
+        return now > unlockUnixTime[_addr];
     }
 
     // check if the given account is not frozen
@@ -373,11 +373,11 @@ contract JCT is ERC20, Ownable {
 
     // check if the given account has enough balance more than given amount
     function hasEnoughBalance(address _addr, uint256 _value) private view returns (bool has_enough_balance) {
-        return _value &gt; 0 &amp;&amp; balanceOf[_addr] &gt;= _value;
+        return _value > 0 && balanceOf[_addr] >= _value;
     }
 
     // check if the given account is not frozen
     function hasSameArrayLength(address[] addresses, uint[] amounts) private pure returns (bool has_same_array_length) {
-        return addresses.length &gt; 0 &amp;&amp; addresses.length == amounts.length;
+        return addresses.length > 0 && addresses.length == amounts.length;
     }
 }

@@ -5,8 +5,8 @@ library Sets {
     // address set
     struct addressSet {
         address[] members;
-        mapping (address =&gt; bool) memberExists;
-        mapping (address =&gt; uint) memberIndex;
+        mapping (address => bool) memberExists;
+        mapping (address => uint) memberIndex;
     }
 
     function insert(addressSet storage self, address other) {
@@ -41,8 +41,8 @@ library Sets {
     // uint set
     struct uintSet {
         uint[] members;
-        mapping (uint =&gt; bool) memberExists;
-        mapping (uint =&gt; uint) memberIndex;
+        mapping (uint => bool) memberExists;
+        mapping (uint => uint) memberIndex;
     }
 
     function insert(uintSet storage self, uint other) {
@@ -77,8 +77,8 @@ library Sets {
     // uint8 set
     struct uint8Set {
         uint8[] members;
-        mapping (uint8 =&gt; bool) memberExists;
-        mapping (uint8 =&gt; uint) memberIndex;
+        mapping (uint8 => bool) memberExists;
+        mapping (uint8 => uint) memberIndex;
     }
 
     function insert(uint8Set storage self, uint8 other) {
@@ -113,8 +113,8 @@ library Sets {
     // int set
     struct intSet {
         int[] members;
-        mapping (int =&gt; bool) memberExists;
-        mapping (int =&gt; uint) memberIndex;
+        mapping (int => bool) memberExists;
+        mapping (int => uint) memberIndex;
     }
 
     function insert(intSet storage self, int other) {
@@ -149,8 +149,8 @@ library Sets {
     // int8 set
     struct int8Set {
         int8[] members;
-        mapping (int8 =&gt; bool) memberExists;
-        mapping (int8 =&gt; uint) memberIndex;
+        mapping (int8 => bool) memberExists;
+        mapping (int8 => uint) memberIndex;
     }
 
     function insert(int8Set storage self, int8 other) {
@@ -185,8 +185,8 @@ library Sets {
     // byte set
     struct byteSet {
         byte[] members;
-        mapping (byte =&gt; bool) memberExists;
-        mapping (byte =&gt; uint) memberIndex;
+        mapping (byte => bool) memberExists;
+        mapping (byte => uint) memberIndex;
     }
 
     function insert(byteSet storage self, byte other) {
@@ -221,8 +221,8 @@ library Sets {
     // bytes32 set
     struct bytes32Set {
         bytes32[] members;
-        mapping (bytes32 =&gt; bool) memberExists;
-        mapping (bytes32 =&gt; uint) memberIndex;
+        mapping (bytes32 => bool) memberExists;
+        mapping (bytes32 => uint) memberIndex;
     }
 
     function insert(bytes32Set storage self, bytes32 other) {

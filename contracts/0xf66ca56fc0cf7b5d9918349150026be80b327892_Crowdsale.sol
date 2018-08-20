@@ -22,13 +22,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -57,7 +57,7 @@ contract Crowdsale is SafeMath {
 	/* the address of the token contract */
 	token public tokenReward;
 	/* the balances (in ETH) of all investors */
-	mapping(address =&gt; uint256) public balanceOf;
+	mapping(address => uint256) public balanceOf;
 	/* indicated if the funding goal has been reached. */
 	bool fundingGoalReached = false;
 	/* indicates if the crowdsale has been closed already */
@@ -82,16 +82,16 @@ contract Crowdsale is SafeMath {
     }
 
     /* make an investment
-    *  only callable if the crowdsale started and hasn&#39;t been closed already and the maxGoal wasn&#39;t reached yet.
+    *  only callable if the crowdsale started and hasn't been closed already and the maxGoal wasn't reached yet.
     *  the current token price is looked up and the corresponding number of tokens is transfered to the receiver.
     *  the sent value is directly forwarded to a safe multisig wallet.
     *  this method allows to purchase tokens in behalf of another address.*/
     function invest(address receiver) payable{
     	uint amount = msg.value;
     	uint price = getPrice();
-    	if(price &gt; amount) throw;
+    	if(price > amount) throw;
 		uint numTokens = amount / price;
-		if (crowdsaleClosed||now&lt;start||safeAdd(tokensSold,numTokens)&gt;maxGoal) throw;
+		if (crowdsaleClosed||now<start||safeAdd(tokensSold,numTokens)>maxGoal) throw;
 		if(!msWallet.send(amount)) throw;
 		balanceOf[receiver] = safeAdd(balanceOf[receiver],amount);
 		amountRaised = safeAdd(amountRaised, amount);
@@ -102,17 +102,17 @@ contract Crowdsale is SafeMath {
 
     /* looks up the current token price */
     function getPrice() constant returns (uint256 price){
-        for(var i = 0; i &lt; deadlines.length; i++)
-            if(now&lt;deadlines[i])
+        for(var i = 0; i < deadlines.length; i++)
+            if(now<deadlines[i])
                 return prices[i];
         return prices[prices.length-1];//should never be returned, but to be sure to not divide by 0
     }
 
-    modifier afterDeadline() { if (now &gt;= deadlines[deadlines.length-1]) _; }
+    modifier afterDeadline() { if (now >= deadlines[deadlines.length-1]) _; }
 
     /* checks if the goal or time limit has been reached and ends the campaign */
     function checkGoalReached() afterDeadline {
-        if (tokensSold &gt;= fundingGoal){
+        if (tokensSold >= fundingGoal){
             fundingGoalReached = true;
             tokenReward.burn(); //burn remaining tokens but 60 000 000
             GoalReached(beneficiary, amountRaised);
@@ -124,9 +124,9 @@ contract Crowdsale is SafeMath {
 	*  only works after funds have been returned from the multisig wallet. */
 	function safeWithdrawal() afterDeadline {
 		uint amount = balanceOf[msg.sender];
-		if(address(this).balance &gt;= amount){
+		if(address(this).balance >= amount){
 			balanceOf[msg.sender] = 0;
-			if (amount &gt; 0) {
+			if (amount > 0) {
 				if (msg.sender.send(amount)) {
 					FundTransfer(msg.sender, amount, false, amountRaised);
 				} else {

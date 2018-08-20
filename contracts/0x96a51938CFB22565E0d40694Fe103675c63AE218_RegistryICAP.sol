@@ -14,7 +14,7 @@ contract AmbiEnabled {
     bytes32 public name;
 
     modifier checkAccess(bytes32 _role) {
-        if(address(ambiC) != 0x0 &amp;&amp; ambiC.hasRelation(name, _role, msg.sender)){
+        if(address(ambiC) != 0x0 && ambiC.hasRelation(name, _role, msg.sender)){
             _
         }
     }
@@ -38,12 +38,12 @@ contract AmbiEnabled {
         return true;
     }
 
-    function immortality() checkAccess(&quot;owner&quot;) returns(bool) {
+    function immortality() checkAccess("owner") returns(bool) {
         isImmortal = true;
         return true;
     }
 
-    function remove() checkAccess(&quot;owner&quot;) returns(bool) {
+    function remove() checkAccess("owner") returns(bool) {
         if (isImmortal) {
             return false;
         }
@@ -72,7 +72,7 @@ library StackDepthLib {
 contract Safe {
     // Should always be placed as first modifier!
     modifier noValue {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             // Internal Out Of Gas/Throw: revert this transaction too;
             // Call Stack Depth Limit reached: revert this transaction too;
             // Recursive Call: safe, no any changes applied yet, we are inside of modifier.
@@ -109,7 +109,7 @@ contract Safe {
         if (stackDepthLib == 0x0) {
             throw;
         }
-        if (_depth &gt; 1023) {
+        if (_depth > 1023) {
             throw;
         }
         if (!stackDepthLib.delegatecall(0x32921690, stackDepthLib, _depth)) {
@@ -159,13 +159,13 @@ contract RegistryICAP is AmbiEnabled, Safe {
 
         uint8 k = 0;
 
-        for (uint8 i = 0; i &lt; asset.length; i++) {
+        for (uint8 i = 0; i < asset.length; i++) {
             asset[i] = _bban[k++];
         }
-        for (i = 0; i &lt; institution.length; i++) {
+        for (i = 0; i < institution.length; i++) {
             institution[i] = _bban[k++];
         }
-        for (i = 0; i &lt; client.length; i++) {
+        for (i = 0; i < client.length; i++) {
             client[i] = _bban[k++];
         }
         return (string(asset), string(institution), string(client));
@@ -177,13 +177,13 @@ contract RegistryICAP is AmbiEnabled, Safe {
             return (0, 0, false);
         }
         // Should have 12 zero bytes at the end.
-        for (uint8 j = 20; j &lt; 32; j++) {
+        for (uint8 j = 20; j < 32; j++) {
             if (_icap[j] != 0) {
                 return (0, 0, false);
             }
         }
         bytes memory bban = new bytes(18);
-        for (uint8 i = 0; i &lt; 16; i++) {
+        for (uint8 i = 0; i < 16; i++) {
              bban[i] = _icap[i + 4];
         }
         var (asset, institution, _) = decodeIndirect(bban);
@@ -199,9 +199,9 @@ contract RegistryICAP is AmbiEnabled, Safe {
     }
 
     function prepare(bytes _bban) constant returns(bytes) {
-        for (uint8 i = 0; i &lt; 16; i++) {
+        for (uint8 i = 0; i < 16; i++) {
             uint8 charCode = uint8(_bban[i]);
-            if (charCode &gt;= 65 &amp;&amp; charCode &lt;= 90) {
+            if (charCode >= 65 && charCode <= 90) {
                 _bban[i] = byte(charCode - 65 + 10);
             }
         }
@@ -214,9 +214,9 @@ contract RegistryICAP is AmbiEnabled, Safe {
 
     function mod9710(bytes _prepared) constant returns(uint8) {
         uint m = 0;
-        for (uint8 i = 0; i &lt; 18; i++) {
+        for (uint8 i = 0; i < 18; i++) {
             uint8 charCode = uint8(_prepared[i]);
-            if (charCode &gt;= 48) {
+            if (charCode >= 48) {
                 m *= 10;
                 m += charCode - 48; // number
                 m %= 97;
@@ -238,10 +238,10 @@ contract RegistryICAP is AmbiEnabled, Safe {
         return uint8(m);
     }
 
-    mapping(bytes32 =&gt; bool) public registered;
-    mapping(bytes32 =&gt; address) public institutions;
-    mapping(bytes32 =&gt; address) public institutionOwners;
-    mapping(bytes32 =&gt; bytes32) public assets;
+    mapping(bytes32 => bool) public registered;
+    mapping(bytes32 => address) public institutions;
+    mapping(bytes32 => address) public institutionOwners;
+    mapping(bytes32 => bytes32) public assets;
 
     modifier onlyInstitutionOwner(string _institution) {
         if (msg.sender == institutionOwners[sha3(_institution)]) {
@@ -256,10 +256,10 @@ contract RegistryICAP is AmbiEnabled, Safe {
 
     // web3js sendIBANTransaction interface
     function addr(bytes32 _institution) constant returns(address) {
-        return institutions[sha3(&quot;ETH&quot;, _institution[0], _institution[1], _institution[2], _institution[3])];
+        return institutions[sha3("ETH", _institution[0], _institution[1], _institution[2], _institution[3])];
     }
 
-    function registerInstitution(string _institution, address _address) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function registerInstitution(string _institution, address _address) noValue() checkAccess("admin") returns(bool) {
         if (bytes(_institution).length != 4) {
             return false;
         }
@@ -302,7 +302,7 @@ contract RegistryICAP is AmbiEnabled, Safe {
         return true;
     }
 
-    function registerAsset(string _asset, bytes32 _symbol) noValue() checkAccess(&quot;admin&quot;) returns(bool) {
+    function registerAsset(string _asset, bytes32 _symbol) noValue() checkAccess("admin") returns(bool) {
         if (bytes(_asset).length != 3) {
             return false;
         }

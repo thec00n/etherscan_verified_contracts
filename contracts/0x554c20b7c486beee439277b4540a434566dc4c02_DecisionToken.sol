@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,7 +136,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -174,7 +174,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -314,7 +314,7 @@ contract MintableToken is StandardToken, Ownable {
 * @author Nimo Naamani
 *
 * HST tokens have 18 decimal places. The smallest meaningful (and transferable)
-* unit is therefore 0.000000000000000001 HST. This unit is called a &#39;danni&#39;.
+* unit is therefore 0.000000000000000001 HST. This unit is called a 'danni'.
 *
 * 1 HST = 1 * 10**18 = 1000000000000000000 dannis.
 *
@@ -331,13 +331,13 @@ contract DecisionToken is MintableToken, Claimable {
   using SafeMath for uint256;
 
   // Name to appear in ERC20 wallets
-  string public constant name = &quot;Decision Token&quot;;
+  string public constant name = "Decision Token";
 
   // Symbol for the Decision Token to appear in ERC20 wallets
-  string public constant symbol = &quot;HST&quot;;
+  string public constant symbol = "HST";
 
   // Version of the source contract
-  string public constant version = &quot;1.0&quot;;
+  string public constant version = "1.0";
 
   // Number of decimals for token display
   uint8 public constant decimals = 18;
@@ -348,7 +348,7 @@ contract DecisionToken is MintableToken, Claimable {
 
   // @title modifier to allow actions only when the token can be released
   modifier onlyWhenReleased() {
-    require(now &gt;= triggerTime);
+    require(now >= triggerTime);
     _;
   }
 
@@ -433,7 +433,7 @@ contract DecisionTokenSale is Claimable {
 
   // Holds the addresses that are whitelisted to participate in the presale.
   // Sales to these addresses are allowed before saleStart
-  mapping (address =&gt; bool) whiteListedForPresale;
+  mapping (address => bool) whiteListedForPresale;
 
   // @title Event for token purchase logging
   event TokenPurchase(address indexed purchaser, uint256 value, uint256 amount);
@@ -449,7 +449,7 @@ contract DecisionTokenSale is Claimable {
   // @param _startTime: A timestamp for when the sale is to start.
   // @param _wallet - The wallet where the token sale proceeds are to be stored
   function DecisionTokenSale(uint256 _startTime, address _wallet) {
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(_wallet != 0x0);
     startTime = _startTime;
     endTime = startTime.add(14 days);
@@ -473,13 +473,13 @@ contract DecisionTokenSale is Claimable {
   function buyTokens() payable {
     require(msg.sender != 0x0);
     require(msg.value != 0);
-    require(whiteListedForPresale[msg.sender] || now &gt;= startTime);
+    require(whiteListedForPresale[msg.sender] || now >= startTime);
     require(!hasEnded());
 
     // Calculate token amount to be created
     uint256 tokens = calculateTokenAmount(msg.value);
 
-    if (token.totalSupply().add(tokens) &gt; tokenCap) {
+    if (token.totalSupply().add(tokens) > tokenCap) {
       revert();
     }
 
@@ -500,7 +500,7 @@ contract DecisionTokenSale is Claimable {
 
   // @title Calculate how many tokens per Ether
   // The token sale has different rates based on time of purchase, as per the token
-  // sale whitepaper and Horizon State&#39;s Token Sale page.
+  // sale whitepaper and Horizon State's Token Sale page.
   // Presale:  : 3750 tokens per Ether
   // Day 1     : 3500 tokens per Ether
   // Days 2-8  : 3250 tokens per Ether
@@ -513,13 +513,13 @@ contract DecisionTokenSale is Claimable {
   // @param _weiAmount : How much wei the buyer wants to spend on tokens
   // @return the number of tokens for this purchase.
   function calculateTokenAmount(uint256 _weiAmount) internal constant returns (uint256) {
-    if (now &gt;= startTime + 8 days) {
+    if (now >= startTime + 8 days) {
       return _weiAmount.mul(thirdStageTokenRate);
     }
-    if (now &gt;= startTime + 1 days) {
+    if (now >= startTime + 1 days) {
       return _weiAmount.mul(secondStageTokenRate);
     }
-    if (now &gt;= startTime) {
+    if (now >= startTime) {
       return _weiAmount.mul(earlyBirdTokenRate);
     }
     return _weiAmount.mul(presaleTokenRate);
@@ -528,11 +528,11 @@ contract DecisionTokenSale is Claimable {
   // @title Check whether this sale has ended.
   // @dev This is a utility function to help consumers figure out whether the sale
   // has already ended.
-  // The sale is considered done when the token&#39;s minting finished, or when the current
-  // time has passed the sale&#39;s end time
+  // The sale is considered done when the token's minting finished, or when the current
+  // time has passed the sale's end time
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // @title White list a buyer for the presale.
@@ -550,8 +550,8 @@ contract DecisionTokenSale is Claimable {
   // Whitelisted buyers may buy in the presale, i.e before the sale starts.
   // @param _buyers : The buyer addresses to whitelist
   function addWhiteListedAddressesInBatch(address[] _buyers) onlyOwner {
-    require(_buyers.length &lt; 1000);
-    for (uint i = 0; i &lt; _buyers.length; i++) {
+    require(_buyers.length < 1000);
+    for (uint i = 0; i < _buyers.length; i++) {
       whiteListAddress(_buyers[i]);
     }
   }

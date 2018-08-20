@@ -30,7 +30,7 @@ contract TossMyCoin {
   FirstRun = 0;
   }
   
-    if(msg.value &lt; 10 finney){
+    if(msg.value < 10 finney){
         msg.sender.send(msg.value);
         return;
     }
@@ -43,7 +43,7 @@ contract TossMyCoin {
     amount = msg.value * 9 / 10;
 	
     balanceLimit = balance * 8 / 10;
-    if (amount &gt; balanceLimit){
+    if (amount > balanceLimit){
         msg.sender.send(amount - balanceLimit);
         amount = balanceLimit;
     }

@@ -8,10 +8,10 @@ contract SpiceMembers {
         bytes32 info;
     }
 
-    mapping (address =&gt; Member) member;
+    mapping (address => Member) member;
 
     address public owner;
-    mapping (uint =&gt; address) public memberAddress;
+    mapping (uint => address) public memberAddress;
     uint public memberCount;
 
     event TransferOwnership(address indexed sender, address indexed owner);
@@ -34,7 +34,7 @@ contract SpiceMembers {
     }
 
     modifier onlyManager {
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt; MemberLevel.Manager) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) < MemberLevel.Manager) throw;
         _;
     }
     
@@ -69,7 +69,7 @@ contract SpiceMembers {
         // Make sure trying to remove a non-existing member throws an error
         if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure members are only allowed to delete members lower than their level
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt;= memberLevel(_target)) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
         member[_target].level = MemberLevel.None;
         RemoveMember(msg.sender, _target);
@@ -77,13 +77,13 @@ contract SpiceMembers {
 
     function setMemberLevel(address _target, MemberLevel level) {
         // Make sure all levels are larger than None but not higher than Director
-        if (level == MemberLevel.None || level &gt; MemberLevel.Director) throw;
+        if (level == MemberLevel.None || level > MemberLevel.Director) throw;
         // Make sure the _target is currently already a member
         if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure the new level is lower level than we are (we cannot overpromote)
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt;= level) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= level) throw;
         // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner &amp;&amp; memberLevel(msg.sender) &lt;= memberLevel(_target)) throw;
+        if (msg.sender != owner && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
         member[_target].level = level;
         SetMemberLevel(msg.sender, _target, level);
@@ -93,7 +93,7 @@ contract SpiceMembers {
         // Make sure the target is currently already a member
         if (memberLevel(_target) == MemberLevel.None) throw;
         // Make sure the member is currently on lower level than we are
-        if (msg.sender != owner &amp;&amp; msg.sender != _target &amp;&amp; memberLevel(msg.sender) &lt;= memberLevel(_target)) throw;
+        if (msg.sender != owner && msg.sender != _target && memberLevel(msg.sender) <= memberLevel(_target)) throw;
 
         member[_target].info = info;
         SetMemberInfo(msg.sender, _target, info);
@@ -144,15 +144,15 @@ contract SpiceControlled {
     }
 
     function hasDirectorAccess(address _target) internal returns (bool) {
-        return (members.memberLevel(_target) &gt;= SpiceMembers.MemberLevel.Director || hasOwnerAccess(_target));
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Director || hasOwnerAccess(_target));
     }
 
     function hasManagerAccess(address _target) internal returns (bool) {
-        return (members.memberLevel(_target) &gt;= SpiceMembers.MemberLevel.Manager || hasOwnerAccess(_target));
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Manager || hasOwnerAccess(_target));
     }
     
     function hasMemberAccess(address _target) internal returns (bool) {
-        return (members.memberLevel(_target) &gt;= SpiceMembers.MemberLevel.Member || hasOwnerAccess(_target));
+        return (members.memberLevel(_target) >= SpiceMembers.MemberLevel.Member || hasOwnerAccess(_target));
     }
 }
 
@@ -173,7 +173,7 @@ contract SpicePayroll is SpiceControlled {
     uint public fromBlock;
     uint public toBlock;
 
-    mapping (bytes32 =&gt; PayrollEntry) entries;
+    mapping (bytes32 => PayrollEntry) entries;
     bytes32[] infos;
 
     address calculator;
@@ -217,7 +217,7 @@ contract SpicePayroll is SpiceControlled {
     function addMarking(bytes32 _info, bytes32 _description, int _duration) onlyCreator onlyUnprocessed returns(bool) {
         // Check if the duration would become negative as a result of this marking
         // and if it does, mark this as failed and return false to indicate failure.
-        if (_duration &lt; 0 &amp;&amp; entries[_info].duration &lt; uint(-_duration)) {
+        if (_duration < 0 && entries[_info].duration < uint(-_duration)) {
           FailedMarking(_info, _description, entries[_info].duration, _duration);
           return false;
         }
@@ -230,7 +230,7 @@ contract SpicePayroll is SpiceControlled {
         }
 
         // Modify entry duration and send marking event
-        if (_duration &lt; 0) {
+        if (_duration < 0) {
             entry.duration -= uint(-_duration);
         } else {
             entry.duration += uint(_duration);
@@ -241,12 +241,12 @@ contract SpicePayroll is SpiceControlled {
 
     function processMarkings(address _calculator, uint _maxDuration) onlyCreator onlyUnprocessed {
         calculator = _calculator;
-        for (uint i = 0; i &lt; infos.length; i++) {
+        for (uint i = 0; i < infos.length; i++) {
             bytes32 info = infos[i];
             PayrollEntry entry = entries[info];
 
             uint originalDuration = entry.duration;
-            entry.duration = (originalDuration &lt;= _maxDuration) ? originalDuration : _maxDuration;
+            entry.duration = (originalDuration <= _maxDuration) ? originalDuration : _maxDuration;
             entry.payout = IPayoutCalculator(calculator).calculatePayout(info, entry.duration);
             ProcessMarkings(info, originalDuration, entry.duration, entry.payout);
         }
@@ -307,7 +307,7 @@ contract SpiceHours is SpiceControlled {
     }
 
     function markHours(bytes32 _info, bytes32 _description, int _duration) onlyMember {
-        if (!hasManagerAccess(msg.sender) &amp;&amp; members.memberInfo(msg.sender) != _info) throw;
+        if (!hasManagerAccess(msg.sender) && members.memberInfo(msg.sender) != _info) throw;
         if (_duration == 0) throw;
         if (_info == 0) throw;
 
@@ -330,7 +330,7 @@ contract SpiceHours is SpiceControlled {
     }
 
     function hasPayroll(address _address) constant returns (bool) {
-        for (uint i; i &lt; payrolls.length; i++) {
+        for (uint i; i < payrolls.length; i++) {
             if (payrolls[i] == _address) return true;
         }
         return false;

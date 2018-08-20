@@ -33,20 +33,20 @@ contract SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }
@@ -73,11 +73,11 @@ contract CoinMarketAlert is Owned, SafeMath {
     AlertCreatorStruct[]   public      alertCreators;
     
     // Alert Creator Entered (Used to prevetnt duplicates in creator array)
-    mapping (address =&gt; bool) public userRegistered;
+    mapping (address => bool) public userRegistered;
     // Tracks approval
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     //[addr][balance]
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _amount);
     event Approve(address indexed _owner, address indexed _spender, uint256 _amount);
@@ -88,8 +88,8 @@ contract CoinMarketAlert is Owned, SafeMath {
     event EnableTokenMinting(bool Enabled);
 
     function CoinMarketAlert() {
-        symbol = &quot;CMA&quot;;
-        name = &quot;Coin Market Alert&quot;;
+        symbol = "CMA";
+        name = "Coin Market Alert";
         decimals = 18;
         // 50 Mil in wei
         totalSupply = 50000000000000000000000000;
@@ -124,7 +124,7 @@ contract CoinMarketAlert is Owned, SafeMath {
     /// @param _amount The mount of CMA tokens in wei to send
     function singlePayout(address _user, uint256 _amount) onlyOwner returns (bool paid) {
         require(!tokenTransfersFrozen);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(transferCheck(owner, _user, _amount));
         if (!userRegistered[_user]) {
             registerUser(_user);
@@ -137,10 +137,10 @@ contract CoinMarketAlert is Owned, SafeMath {
 
     /// @dev low-level minting function not accessible externally
     function tokenMint(address _invoker, uint256 _amount) private returns (bool raised) {
-        require(add(balances[owner], _amount) &gt; balances[owner]);
-        require(add(balances[owner], _amount) &gt; 0);
-        require(add(totalSupply, _amount) &gt; 0);
-        require(add(totalSupply, _amount) &gt; totalSupply);
+        require(add(balances[owner], _amount) > balances[owner]);
+        require(add(balances[owner], _amount) > 0);
+        require(add(totalSupply, _amount) > 0);
+        require(add(totalSupply, _amount) > totalSupply);
         totalSupply = add(totalSupply, _amount);
         balances[owner] = add(balances[owner], _amount);
         MintTokens(_invoker, _amount, true);
@@ -150,7 +150,7 @@ contract CoinMarketAlert is Owned, SafeMath {
     /// @notice Used to mint tokens, only usable by the contract owner
     /// @param _amount The amount of CMA tokens in wei to mint
     function tokenFactory(uint256 _amount) onlyOwner returns (bool success) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(tokenMintingEnabled);
         if (!tokenMint(msg.sender, _amount))
             revert();
@@ -160,11 +160,11 @@ contract CoinMarketAlert is Owned, SafeMath {
     /// @notice Used to burn tokens
     /// @param _amount The amount of CMA tokens in wei to burn
     function tokenBurn(uint256 _amount) onlyOwner returns (bool burned) {
-        require(_amount &gt; 0);
-        require(_amount &lt; totalSupply);
-        require(balances[owner] &gt; _amount);
-        require(sub(balances[owner], _amount) &gt; 0);
-        require(sub(totalSupply, _amount) &gt; 0);
+        require(_amount > 0);
+        require(_amount < totalSupply);
+        require(balances[owner] > _amount);
+        require(sub(balances[owner], _amount) > 0);
+        require(sub(totalSupply, _amount) > 0);
         balances[owner] = sub(balances[owner], _amount);
         totalSupply = sub(totalSupply, _amount);
         TokenBurn(msg.sender, _amount, true);
@@ -206,7 +206,7 @@ contract CoinMarketAlert is Owned, SafeMath {
     /// @param _amount Amoun of CMA tokens in wei to send
     function transferFrom(address _owner, address _receiver, uint256 _amount) {
         require(!tokenTransfersFrozen);
-        require(sub(allowance[_owner][msg.sender], _amount) &gt;= 0);
+        require(sub(allowance[_owner][msg.sender], _amount) >= 0);
         if (transferCheck(_owner, _receiver, _amount)) {
             balances[_owner] = sub(balances[_owner], _amount);
             balances[_receiver] = add(balances[_receiver], _amount);
@@ -222,8 +222,8 @@ contract CoinMarketAlert is Owned, SafeMath {
     /// @param _spender The person you are allowing to spend on your behalf
     /// @param _amount The amount of CMA tokens in wei they are allowed to spend
     function approve(address _spender, uint256 _amount) returns (bool approved) {
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt; 0);
+        require(_amount > 0);
+        require(balances[msg.sender] > 0);
         allowance[msg.sender][_spender] = _amount;
         Approve(msg.sender, _spender, _amount);
         return true;
@@ -242,11 +242,11 @@ contract CoinMarketAlert is Owned, SafeMath {
         constant 
         returns (bool safe) 
     {
-        require(_value &gt; 0);
+        require(_value > 0);
         // prevents empty receiver
         require(_receiver != address(0));
-        require(sub(balances[_sender], _value) &gt;= 0);
-        require(add(balances[_receiver], _value) &gt; balances[_receiver]);
+        require(sub(balances[_sender], _value) >= 0);
+        require(add(balances[_receiver], _value) > balances[_receiver]);
         return true;
     }
 

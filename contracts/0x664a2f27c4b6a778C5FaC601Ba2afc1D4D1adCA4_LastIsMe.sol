@@ -68,13 +68,13 @@ contract LastIsMe is owned {
   }
 
   function buyTicket(address _ref) {
-    if( msg.value &gt;= price ) { //ticket bought
+    if( msg.value >= price ) { //ticket bought
 
-      if( msg.value &gt; price ) {
-        msg.sender.send(msg.value-price);  //payed more than required =&gt; refund
+      if( msg.value > price ) {
+        msg.sender.send(msg.value-price);  //payed more than required => refund
       }
 
-      if( remaining() == 0 &amp;&amp; lastPlayer != 0x0 ) {  //last player was the winner!
+      if( remaining() == 0 && lastPlayer != 0x0 ) {  //last player was the winner!
         WinnerPayedTicketBought(lastPlayer,msg.sender);
         winners[winners.length++] = Winners(lastPlayer, jackpot, block.timestamp);
         lastPlayer.send(jackpot);
@@ -92,7 +92,7 @@ contract LastIsMe is owned {
         lastPlayer = msg.sender;
         lastBlock  = block.number;
 
-        if(houseFeeVal&gt;0) {  //house fee could be zero
+        if(houseFeeVal>0) {  //house fee could be zero
           if(_ref==0x0) {
             owner.send(houseFeeVal);
           } else {
@@ -101,9 +101,9 @@ contract LastIsMe is owned {
           }
         }
 
-        if(leftLottery!=0x0 &amp;&amp; lotteryFeeVal&gt;0)
+        if(leftLottery!=0x0 && lotteryFeeVal>0)
           leftLottery.send(lotteryFeeVal);
-        if(rightLottery!=0x0 &amp;&amp; lotteryFeeVal&gt;0)
+        if(rightLottery!=0x0 && lotteryFeeVal>0)
           rightLottery.send(lotteryFeeVal);
 
         jackpot = this.balance;
@@ -127,12 +127,12 @@ contract LastIsMe is owned {
   }
 
   function elapsed() constant returns (uint) {
-    return block.number - lastBlock;  //&gt;=0
+    return block.number - lastBlock;  //>=0
   }
 
   function remaining() constant returns (uint) {
     var e=elapsed();
-    if(blocks&gt;e)
+    if(blocks>e)
       return blocks - elapsed() ;
     else
       return 0;
@@ -151,14 +151,14 @@ contract LastIsMe is owned {
   }
 
   function setLotteryFee(uint _newValue) onlyOwner {
-    if( _newValue &gt; MAX_LOTTERY_FEE_THOUSANDTHS ) throw;
+    if( _newValue > MAX_LOTTERY_FEE_THOUSANDTHS ) throw;
     lotteryFee    = _newValue;
     var aThousand = price/1000;
     lotteryFeeVal = aThousand*lotteryFee;
   }
 
   function setHouseFee(uint _newValue) onlyOwner {
-    if( _newValue &gt; MAX_HOUSE_FEE_THOUSANDTHS ) throw;
+    if( _newValue > MAX_HOUSE_FEE_THOUSANDTHS ) throw;
     houseFee      = _newValue;
     var aThousand = price/1000;
     houseFeeVal   = aThousand*houseFee;

@@ -8,21 +8,21 @@ contract Owned {
 
 contract ETHVault is Owned {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     
     function init() { Owner = msg.sender; }
     
     function() payable { deposit(); }
     
     function deposit() payable {
-        if( msg.value &gt;= 0.25 ether )
+        if( msg.value >= 0.25 ether )
             deposits[msg.sender] += msg.value;
         else throw;
     }
     
     function withdraw(uint amount) onlyOwner {
         uint depo = deposits[msg.sender];
-        if( amount &lt;= depo &amp;&amp; depo &gt; 0 )
+        if( amount <= depo && depo > 0 )
             msg.sender.send(amount);
     }
 

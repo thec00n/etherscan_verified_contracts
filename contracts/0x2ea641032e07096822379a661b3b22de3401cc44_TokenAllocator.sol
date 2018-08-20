@@ -14,7 +14,7 @@ contract SaleInterfaceForAllocations {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -69,7 +69,7 @@ contract TokenAllocator is Ownable {
 
     //function to allocate tokens for a set of contributors
     function allocateTokens(address[] _contributors) external {
-        for (uint256 i = 0; i &lt; _contributors.length; i++) {
+        for (uint256 i = 0; i < _contributors.length; i++) {
             sale.allocateTokens(_contributors[i]);
         }
     }

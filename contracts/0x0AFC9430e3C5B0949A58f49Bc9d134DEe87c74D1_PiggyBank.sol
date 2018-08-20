@@ -19,7 +19,7 @@ contract PiggyBank
 
     function deposit() payable returns (uint)
     {
-        if( msg.value &gt; 0 )
+        if( msg.value > 0 )
             deposits = deposits + 1;
 
         return getNumberOfDeposits();

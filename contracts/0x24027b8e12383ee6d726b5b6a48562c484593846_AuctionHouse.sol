@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,16 +71,16 @@ contract ERC721Token is ERC721 {
   uint256 internal totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -298,10 +298,10 @@ contract AuctionHouse {
     uint256 public ownerCut = 375; // Default is 3.75%
 
     // Map from token ID to their corresponding auction.
-    mapping (address =&gt; mapping (uint256 =&gt; Auction)) tokenIdToAuction;
+    mapping (address => mapping (uint256 => Auction)) tokenIdToAuction;
 
     // Allowed tokens
-    mapping (address =&gt; bool) supportedTokens;
+    mapping (address => bool) supportedTokens;
 
     event AuctionCreated(address indexed tokenAddress, uint256 indexed tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration, address seller);
     event AuctionSuccessful(address indexed tokenAddress, uint256 indexed tokenId, uint256 totalPrice, address winner);
@@ -324,7 +324,7 @@ contract AuctionHouse {
     // Set the owner cut for auctions
     function setOwnerCut(uint256 cut) external {
         require(msg.sender == owner);
-        require(cut &lt;= 10000);
+        require(cut <= 10000);
         ownerCut = cut;
     }
 
@@ -368,7 +368,7 @@ contract AuctionHouse {
     function _addAuction(address _tokenAddress, uint256 _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenAddress][_tokenId] = _auction;
 
@@ -399,28 +399,28 @@ contract AuctionHouse {
         Auction storage auction = tokenIdToAuction[_tokenAddress][_tokenId];
 
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenAddress, _tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+            // value <= price, so this subtraction can't go negative.)
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
@@ -430,7 +430,7 @@ contract AuctionHouse {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -461,7 +461,7 @@ contract AuctionHouse {
     /// @dev Returns true if the NFT is on auction.
     /// @param _auction - Auction to check.
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an NFT on auction. Broken into two
@@ -477,8 +477,8 @@ contract AuctionHouse {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -504,13 +504,13 @@ contract AuctionHouse {
         pure
         returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -518,7 +518,7 @@ contract AuctionHouse {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -531,14 +531,14 @@ contract AuctionHouse {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 
@@ -565,7 +565,7 @@ contract AuctionHouse {
         // Auctions must be made by the token contract or the token owner
         require(msg.sender == _tokenAddress || _owns(_tokenAddress, msg.sender, _tokenId));
 
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -596,7 +596,7 @@ contract AuctionHouse {
         _transfer(_tokenAddress, msg.sender, _tokenId);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -604,7 +604,7 @@ contract AuctionHouse {
     function cancelAuction(address _tokenAddress, uint256 _tokenId)
         external
     {
-        // We don&#39;t check if a token is supported here because we may remove supported
+        // We don't check if a token is supported here because we may remove supported
         // This allows users to cancel auctions for tokens that have been removed
         Auction storage auction = tokenIdToAuction[_tokenAddress][_tokenId];
         require(_isOnAuction(auction));

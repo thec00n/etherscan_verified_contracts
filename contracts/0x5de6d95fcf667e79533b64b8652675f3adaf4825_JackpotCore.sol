@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -183,7 +183,7 @@ contract JackpotBase is JackpotAccessControl {
 	uint256 public currentBalance;
 	
     function calculateTimeout() public view returns(uint256) {
-        if (wagerIndex &gt;= numberOfWagersToMinimumTimeout || numberOfWagersToMinimumTimeout == 0) {
+        if (wagerIndex >= numberOfWagersToMinimumTimeout || numberOfWagersToMinimumTimeout == 0) {
             return minimumTimeout;
         } else {
             uint256 difference = timeout - minimumTimeout;
@@ -198,7 +198,7 @@ contract JackpotBase is JackpotAccessControl {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   function withdrawPayments() public {
@@ -206,7 +206,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 	
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -238,7 +238,7 @@ contract JackpotFinance is JackpotBase, PullPayment {
 	uint256 public wagerPool13;
     
     function setGameStarterDividendPercentage(uint256 _gameStarterDividendPercentage) external onlyCFO {
-        require(_gameStarterDividendPercentage &lt;= 4000);
+        require(_gameStarterDividendPercentage <= 4000);
         
         gameStarterDividendPercentage = _gameStarterDividendPercentage;
     }
@@ -261,7 +261,7 @@ contract JackpotFinance is JackpotBase, PullPayment {
 contract JackpotCore is JackpotFinance {
     
     function JackpotCore(uint256 _price, uint256 _timeout, uint256 _minimumTimeout, uint256 _numberOfWagersToMinimumTimeout) public {
-        require(_timeout &gt;= _minimumTimeout);
+        require(_timeout >= _minimumTimeout);
         
         nextPrice = _price;
         nextTimeout = _timeout;
@@ -277,7 +277,7 @@ contract JackpotCore is JackpotFinance {
     event TopUpPrizePool(address indexed donater, uint256 ethAdded, string message, uint256 newPrizePool);
     
     function bet(bool startNewGameIfIdle) external payable {
-		require(msg.value &gt;= price);
+		require(msg.value >= price);
 		
         _processGameEnd();
 		
@@ -355,7 +355,7 @@ contract JackpotCore is JackpotFinance {
 		player4Timestamp = player3Timestamp;
 		player3Timestamp = player2Timestamp;
 		
-		if (lastWagerTimeoutTimestamp &gt; currentTimeout) {
+		if (lastWagerTimeoutTimestamp > currentTimeout) {
 			player2Timestamp = lastWagerTimeoutTimestamp.sub(currentTimeout);
 		}
 		
@@ -373,7 +373,7 @@ contract JackpotCore is JackpotFinance {
         
         uint256 excess = msg.value - price;
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
             msg.sender.transfer(excess);
         }
 		
@@ -383,7 +383,7 @@ contract JackpotCore is JackpotFinance {
     function topUp(string message) external payable {
         require(gameStarted || !paused);
         
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         prizePool = prizePool.add(msg.value);
         
@@ -391,7 +391,7 @@ contract JackpotCore is JackpotFinance {
     }
     
     function setNextGame(uint256 _price, uint256 _timeout, uint256 _minimumTimeout, uint256 _numberOfWagersToMinimumTimeout) external onlyCFO {
-        require(_timeout &gt;= _minimumTimeout);
+        require(_timeout >= _minimumTimeout);
     
         nextPrice = _price;
         nextTimeout = _timeout;
@@ -409,7 +409,7 @@ contract JackpotCore is JackpotFinance {
             return false;
         }
     
-        if (now &lt;= lastWagerTimeoutTimestamp) {
+        if (now <= lastWagerTimeoutTimestamp) {
             return false;
         }
         

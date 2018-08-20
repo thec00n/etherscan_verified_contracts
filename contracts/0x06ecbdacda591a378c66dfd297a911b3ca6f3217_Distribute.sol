@@ -40,7 +40,7 @@ contract ERC20Basic {
 
 contract Distribute is Owned {
 
-    mapping (address =&gt; uint) public tokensOwed;
+    mapping (address => uint) public tokensOwed;
     ERC20Basic token;
 
     event AmountSet(address contributor, uint amount);
@@ -51,7 +51,7 @@ contract Distribute is Owned {
     }
 
     function setAmount(address[] contributors, uint[] amounts) public onlyOwner {
-        for (uint256 i = 0; i &lt; contributors.length; i++) {
+        for (uint256 i = 0; i < contributors.length; i++) {
             tokensOwed[contributors[i]] = amounts[i];
         }
     }
@@ -66,7 +66,7 @@ contract Distribute is Owned {
 
     function collect() public {
         uint amount = tokensOwed[msg.sender];
-        require(amount &gt; 0);
+        require(amount > 0);
         tokensOwed[msg.sender] = 0;
         token.transfer(msg.sender, amount);
         AmountSent(msg.sender, amount);
@@ -74,14 +74,14 @@ contract Distribute is Owned {
 
     function withdrawOnBehalf(address beneficiary) public {
         uint amount = tokensOwed[beneficiary];
-        require(amount &gt; 0);
+        require(amount > 0);
         tokensOwed[beneficiary] = 0;
         token.transfer(beneficiary, amount);
         AmountSent(beneficiary, amount);
     }
 
     function multiWithdraw(address[] beneficiaries) public {
-        for (uint256 i = 0; i &lt; beneficiaries.length; i++) {
+        for (uint256 i = 0; i < beneficiaries.length; i++) {
             withdrawOnBehalf(beneficiaries[i]);
         }
     }

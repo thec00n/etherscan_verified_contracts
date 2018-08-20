@@ -34,13 +34,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -175,7 +175,7 @@ contract Crowdsale is Haltable {
   /* tokens will be transfered from this address */
   address public multisigWallet;
 
-  /* The party who holds the full token pool and has approve()&#39;ed tokens for this crowdsale */
+  /* The party who holds the full token pool and has approve()'ed tokens for this crowdsale */
   address public beneficiary;
 
   /* if the funding goal is not reached, investors may withdraw their funds */
@@ -206,10 +206,10 @@ contract Crowdsale is Haltable {
   bool public finalized;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** State machine
    *
@@ -256,8 +256,8 @@ contract Crowdsale is Haltable {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    if(startsAt &gt;= endsAt) {
+    // Don't mess the dates
+    if(startsAt >= endsAt) {
         throw;
     }
 
@@ -266,7 +266,7 @@ contract Crowdsale is Haltable {
   }
 
   /**
-   * Don&#39;t expect to just send in money and get tokens.
+   * Don't expect to just send in money and get tokens.
    */
   function() payable {
     throw;
@@ -351,7 +351,7 @@ contract Crowdsale is Haltable {
   function setFinalizeAgent(FinalizeAgent addr) onlyOwner inState(State.PreFunding) {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!finalizeAgent.isFinalizeAgent()) {
       throw;
     }
@@ -383,7 +383,7 @@ contract Crowdsale is Haltable {
    * @return true if the crowdsale has raised enough money to be a succes
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -393,10 +393,10 @@ contract Crowdsale is Haltable {
    */
   function getState() public constant returns (State) {
     if(finalized) return State.Finalized;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
 
@@ -450,7 +450,7 @@ contract Crowdsale is Haltable {
  * - Collect funds from pre-sale investors
  * - Send funds to the crowdsale when it opens
  * - Allow owner to set the crowdsale
- * - Have refund after X days as a safety hatch if the crowdsale doesn&#39;t materilize
+ * - Have refund after X days as a safety hatch if the crowdsale doesn't materilize
  *
  */
 contract PresaleFundCollector is Ownable {
@@ -467,7 +467,7 @@ contract PresaleFundCollector is Ownable {
   address[] public investors;
 
   /** How much they have invested */
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   /** When our refund freeze is over (UNIT timestamp) */
   uint public freezeEndsAt;
@@ -515,12 +515,12 @@ contract PresaleFundCollector is Ownable {
 
     address investor = msg.sender;
 
-    bool existing = balances[investor] &gt; 0;
+    bool existing = balances[investor] > 0;
 
     balances[investor] = balances[investor].plus(msg.value);
 
     // Need to fulfill minimum limit
-    if(balances[investor] &lt; weiMinimumLimit) {
+    if(balances[investor] < weiMinimumLimit) {
       throw;
     }
 
@@ -528,7 +528,7 @@ contract PresaleFundCollector is Ownable {
     if(!existing) {
 
       // Limit number of investors to prevent too long loops
-      if(investorCount &gt;= MAX_INVESTORS) throw;
+      if(investorCount >= MAX_INVESTORS) throw;
 
       investors.push(investor);
       investorCount++;
@@ -547,7 +547,7 @@ contract PresaleFundCollector is Ownable {
 
     moving = true;
 
-    if(balances[investor] &gt; 0) {
+    if(balances[investor] > 0) {
       uint amount = balances[investor];
       delete balances[investor];
       crowdsale.invest.value(amount)(investor);
@@ -562,7 +562,7 @@ contract PresaleFundCollector is Ownable {
 
     // We might hit a max gas limit in this loop,
     // and in this case you can simply call parcipateCrowdsaleInvestor() for all investors
-    for(uint i=0; i&lt;investors.length; i++) {
+    for(uint i=0; i<investors.length; i++) {
        parcipateCrowdsaleInvestor(investors[i]);
     }
   }
@@ -573,7 +573,7 @@ contract PresaleFundCollector is Ownable {
   function refund() {
 
     // Trying to ask refund too soon
-    if(now &lt; freezeEndsAt) throw;
+    if(now < freezeEndsAt) throw;
 
     // We have started to move funds
     moving = true;

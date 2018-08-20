@@ -40,7 +40,7 @@ contract AccEthRegCenter  is Ownable {
   // events
     event TransferTo(address indexed to, uint256 value);
     event TransferToName(address indexed to,string name, uint256 value);
-    mapping(string =&gt; User) recievermap ;
+    mapping(string => User) recievermap ;
     
     string[] public recieverList ;
     
@@ -75,13 +75,13 @@ contract AccEthRegCenter  is Ownable {
     }
     
     function TransferToAllAccounts() onlyOwner public {
-        for(uint i=0;i&lt;recieverList.length;i++)
+        for(uint i=0;i<recieverList.length;i++)
         {
             recievermap[recieverList[i]].lastTransfer = false;
             address to = recievermap[recieverList[i]].useraddress;
             uint256 val = recievermap[recieverList[i]].useramount;
-            require(address(this).balance &gt;= val);
-            if(val&gt;0)
+            require(address(this).balance >= val);
+            if(val>0)
             {
                 
                  to.transfer(val);
@@ -92,14 +92,14 @@ contract AccEthRegCenter  is Ownable {
     }
     
     function ResetAllAmount() onlyOwner public {
-        for(uint i=0;i&lt;recieverList.length;i++)
+        for(uint i=0;i<recieverList.length;i++)
         {
             recievermap[recieverList[i]].useramount = 0;
         }
     }
     
     function transfer(address to,uint val) onlyOwner public {
-        require(address(this).balance &gt;= val);
+        require(address(this).balance >= val);
         to.transfer( val);
         emit TransferTo(to, val);
         
@@ -107,7 +107,7 @@ contract AccEthRegCenter  is Ownable {
     
     function transfertoacc(string key,uint val) onlyOwner public {
         recievermap[key].lastTransfer = false;
-        require(address(this).balance &gt;= val);
+        require(address(this).balance >= val);
         address to = recievermap[key].useraddress;
          to.transfer(val);
         emit TransferToName(to,key, val);

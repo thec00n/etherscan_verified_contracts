@@ -10,25 +10,25 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,18 +110,18 @@ contract QuantstampSale is Pausable {
     bool public fundingCapReached = false;
     bool public saleClosed = false;
     // Whitelist data
-    mapping(address =&gt; bool) public registry;
+    mapping(address => bool) public registry;
     // For each user, specifies the cap (in wei) that can be contributed for each tier
     // Tiers are filled in the order 3, 2, 1, 4
-    mapping(address =&gt; uint256) public cap1;        // 100% bonus
-    mapping(address =&gt; uint256) public cap2;        // 40% bonus
-    mapping(address =&gt; uint256) public cap3;        // 20% bonus
-    mapping(address =&gt; uint256) public cap4;        // 0% bonus
+    mapping(address => uint256) public cap1;        // 100% bonus
+    mapping(address => uint256) public cap2;        // 40% bonus
+    mapping(address => uint256) public cap3;        // 20% bonus
+    mapping(address => uint256) public cap4;        // 0% bonus
     // Stores the amount contributed for each tier for a given address
-    mapping(address =&gt; uint256) public contributed1;
-    mapping(address =&gt; uint256) public contributed2;
-    mapping(address =&gt; uint256) public contributed3;
-    mapping(address =&gt; uint256) public contributed4;
+    mapping(address => uint256) public contributed1;
+    mapping(address => uint256) public contributed2;
+    mapping(address => uint256) public contributed3;
+    mapping(address => uint256) public contributed4;
     // Conversion rate by tier (QSP : ETHER)
     uint public rate1 = 10000;
     uint public rate2 = 7000;
@@ -137,17 +137,17 @@ contract QuantstampSale is Pausable {
     // The token being sold
     // QuantstampToken public tokenReward;
     // A map that tracks the amount of wei contributed by address
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     // A map that tracks the amount of QSP tokens that should be allocated to each address
-    mapping(address =&gt; uint256) public tokenBalanceOf;
+    mapping(address => uint256) public tokenBalanceOf;
     // Events
     event CapReached(address _beneficiary, uint _amountRaised);
     event FundTransfer(address _backer, uint _amount, bool _isContribution);
     event RegistrationStatusChanged(address target, bool isRegistered, uint c1, uint c2, uint c3, uint c4);
     // Modifiers
-    modifier beforeDeadline()   { require (currentTime() &lt; endTime); _; }
-    // modifier afterDeadline()    { require (currentTime() &gt;= endTime); _; } no longer used without fundingGoal
-    modifier afterStartTime()    { require (currentTime() &gt;= startTime); _; }
+    modifier beforeDeadline()   { require (currentTime() < endTime); _; }
+    // modifier afterDeadline()    { require (currentTime() >= endTime); _; } no longer used without fundingGoal
+    modifier afterStartTime()    { require (currentTime() >= startTime); _; }
     modifier saleNotClosed()    { require (!saleClosed); _; }
     modifier nonReentrant() {
         require(!rentrancy_lock);
@@ -172,9 +172,9 @@ contract QuantstampSale is Pausable {
         uint durationInMinutes
         // address addressOfTokenUsedAsReward
     ) {
-        require(ifSuccessfulSendTo != address(0) &amp;&amp; ifSuccessfulSendTo != address(this));
-        //require(addressOfTokenUsedAsReward != address(0) &amp;&amp; addressOfTokenUsedAsReward != address(this));
-        require(durationInMinutes &gt; 0);
+        require(ifSuccessfulSendTo != address(0) && ifSuccessfulSendTo != address(this));
+        //require(addressOfTokenUsedAsReward != address(0) && addressOfTokenUsedAsReward != address(this));
+        require(durationInMinutes > 0);
         beneficiary = ifSuccessfulSendTo;
         fundingCap = fundingCapInEthers * 1 ether;
         minContribution = minimumContributionInWei;
@@ -203,16 +203,16 @@ contract QuantstampSale is Pausable {
         saleNotClosed
         nonReentrant
     {
-        require(msg.value &gt;= minContribution);
+        require(msg.value >= minContribution);
         uint amount = msg.value;
         // ensure that the user adheres to whitelist restrictions
         require(registry[msg.sender]);
         uint numTokens = computeTokenAmount(msg.sender, amount);
-        assert(numTokens &gt; 0);
+        assert(numTokens > 0);
         // update the total amount raised
         amountRaised = amountRaised.add(amount);
-        require(amountRaised &lt;= fundingCap);
-        // update the sender&#39;s balance of wei contributed
+        require(amountRaised <= fundingCap);
+        // update the sender's balance of wei contributed
         balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);
         // add to the token balance of the sender
         tokenBalanceOf[msg.sender] = tokenBalanceOf[msg.sender].add(numTokens);
@@ -227,17 +227,17 @@ contract QuantstampSale is Pausable {
     */
     function computeTokenAmount(address addr, uint amount) internal
         returns (uint){
-        require(amount &gt; 0);
+        require(amount > 0);
         uint r3 = cap3[addr].sub(contributed3[addr]);
         uint r2 = cap2[addr].sub(contributed2[addr]);
         uint r1 = cap1[addr].sub(contributed1[addr]);
         uint r4 = cap4[addr].sub(contributed4[addr]);
         uint numTokens = 0;
         // cannot contribute more than the remaining sum
-        assert(amount &lt;= r3.add(r2).add(r1).add(r4));
+        assert(amount <= r3.add(r2).add(r1).add(r4));
         // Compute tokens for tier 3
-        if(r3 &gt; 0){
-            if(amount &lt;= r3){
+        if(r3 > 0){
+            if(amount <= r3){
                 contributed3[addr] = contributed3[addr].add(amount);
                 return rate3.mul(amount);
             }
@@ -248,8 +248,8 @@ contract QuantstampSale is Pausable {
             }
         }
         // Compute tokens for tier 2
-        if(r2 &gt; 0){
-            if(amount &lt;= r2){
+        if(r2 > 0){
+            if(amount <= r2){
                 contributed2[addr] = contributed2[addr].add(amount);
                 return numTokens.add(rate2.mul(amount));
             }
@@ -260,8 +260,8 @@ contract QuantstampSale is Pausable {
             }
         }
         // Compute tokens for tier 1
-        if(r1 &gt; 0){
-            if(amount &lt;= r1){
+        if(r1 > 0){
+            if(amount <= r1){
                 contributed1[addr] = contributed1[addr].add(amount);
                 return numTokens.add(rate1.mul(amount));
             }
@@ -286,7 +286,7 @@ contract QuantstampSale is Pausable {
         onlyOwner returns (bool)
     {
         // if caps for this customer exist, then the customer has previously been registered
-        return (cap1[contributor].add(cap2[contributor]).add(cap3[contributor]).add(cap4[contributor])) &gt; 0;
+        return (cap1[contributor].add(cap2[contributor]).add(cap3[contributor]).add(cap4[contributor])) > 0;
     }
     /*
     * If the user was already registered, ensure that the new caps do not conflict previous contributions
@@ -299,8 +299,8 @@ contract QuantstampSale is Pausable {
         constant
         onlyOwner returns(bool)
     {
-        return (contributed3[addr] &lt;= c3) &amp;&amp; (contributed2[addr] &lt;= c2)
-            &amp;&amp; (contributed1[addr] &lt;= c1) &amp;&amp; (contributed4[addr] &lt;= c4);
+        return (contributed3[addr] <= c3) && (contributed2[addr] <= c2)
+            && (contributed1[addr] <= c1) && (contributed4[addr] <= c4);
     }
     /**
      * @dev Sets registration status of an address for participation.
@@ -320,7 +320,7 @@ contract QuantstampSale is Pausable {
         if(hasPreviouslyRegistered(contributor)){
             require(validateUpdatedRegistration(contributor, c1, c2, c3, c4));
         }
-        require(c1.add(c2).add(c3).add(c4) &gt;= minContribution);
+        require(c1.add(c2).add(c3).add(c4) >= minContribution);
         registry[contributor] = true;
         cap1[contributor] = c1;
         cap2[contributor] = c2;
@@ -378,7 +378,7 @@ contract QuantstampSale is Pausable {
         require(contributors.length == caps2.length);
         require(contributors.length == caps3.length);
         require(contributors.length == caps4.length);
-        for (uint i = 0; i &lt; contributors.length; i++) {
+        for (uint i = 0; i < contributors.length; i++) {
             registerUser(contributors[i], caps1[i], caps2[i], caps3[i], caps4[i]);
         }
     }
@@ -404,7 +404,7 @@ contract QuantstampSale is Pausable {
     {
         require(addrs.length == weiAmounts.length);
         require(addrs.length == miniQspAmounts.length);
-        for(uint i = 0; i &lt; addrs.length; i++){
+        for(uint i = 0; i < addrs.length; i++){
             ownerAllocateTokens(addrs[i], weiAmounts[i], miniQspAmounts[i]);
         }
     }
@@ -425,10 +425,10 @@ contract QuantstampSale is Pausable {
     function ownerAllocateTokens(address _to, uint amountWei, uint amountMiniQsp)
             onlyOwner nonReentrant
     {
-        // don&#39;t allocate tokens for the admin
+        // don't allocate tokens for the admin
         // require(tokenReward.adminAddr() != _to);
         amountRaised = amountRaised.add(amountWei);
-        require(amountRaised &lt;= fundingCap);
+        require(amountRaised <= fundingCap);
         tokenBalanceOf[_to] = tokenBalanceOf[_to].add(amountMiniQsp);
         balanceOf[_to] = balanceOf[_to].add(amountWei);
         FundTransfer(_to, amountWei, true);
@@ -450,7 +450,7 @@ contract QuantstampSale is Pausable {
      * the CapReached event is triggered.
      */
     function updateFundingCap() internal {
-        assert (amountRaised &lt;= fundingCap);
+        assert (amountRaised <= fundingCap);
         if (amountRaised == fundingCap) {
             // Check if the funding cap has been reached
             fundingCapReached = true;
@@ -460,7 +460,7 @@ contract QuantstampSale is Pausable {
     }
     /**
      * Returns the current time.
-     * Useful to abstract calls to &quot;now&quot; for tests.
+     * Useful to abstract calls to "now" for tests.
     */
     function currentTime() constant returns (uint _currentTime) {
         return now;

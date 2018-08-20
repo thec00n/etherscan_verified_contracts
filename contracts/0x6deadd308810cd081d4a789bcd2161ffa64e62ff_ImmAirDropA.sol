@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract ImmAirDropA{
     address public owner;
     address public wallet;
     ERC20 public token;
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 	
     modifier onlyOwner {
        require(msg.sender == owner);
@@ -68,7 +68,7 @@ contract ImmAirDropA{
     }
 
 	function addAdminWhitelist(address _userlist) public onlyOwner onlyAdmin{
-		if(_userlist != address(0) &amp;&amp; !admins[_userlist]){
+		if(_userlist != address(0) && !admins[_userlist]){
 			admins[_userlist] = true;
 		}
 	}
@@ -84,8 +84,8 @@ contract ImmAirDropA{
 	}
 
     function signupUserWhitelist(address[] _userlist) public onlyAdmin{
-    	require(_userlist.length &gt; 0);
-    	for (uint256 i = 0; i &lt; _userlist.length; i++) {
+    	require(_userlist.length > 0);
+    	for (uint256 i = 0; i < _userlist.length; i++) {
     		if(_userlist[i] != address(0)){
     			token.transfer(_userlist[i], fixamt);
     		}

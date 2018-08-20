@@ -66,12 +66,12 @@ contract BCFMain {
 
 // TODO: Validate that the user has sent the correct ENTRY_FEE and refund them if more, revert if less
 // TODO: Validate formation type
-// TODO: Validate that there&#39;s at least 1 goalkeeper?
+// TODO: Validate that there's at least 1 goalkeeper?
 // TODO: Validate the team name is under a certain number of characters?
 // TODO: Do we need to copy these values across to the contract storage?
 // TODO: Should the frontend do the sorting and league tables? We still need the business logic to determine final positions, 
-//       but we don&#39;t need to calculate this every round, not doing so would reduce gas consumption
-// TODO: Need to work out whether it&#39;s more gas effecient to read player info every round or store it once and have it?
+//       but we don't need to calculate this every round, not doing so would reduce gas consumption
+// TODO: Need to work out whether it's more gas effecient to read player info every round or store it once and have it?
 contract BCFLeague is BCFBaseCompetition {
     
     struct Team {
@@ -107,13 +107,13 @@ contract BCFLeague is BCFBaseCompetition {
     CompetitionStatuses public competitionStatus;
     uint public startedAt;
     uint public nextRoundStartsAt;
-    int public currentRoundId = -1; // As we may have a round 0 so we don&#39;t want to default there
+    int public currentRoundId = -1; // As we may have a round 0 so we don't want to default there
 
     // Local Data Lookups
     Team[] public teams;
-    mapping(address =&gt; uint) internal managerToTeamId;
-    mapping(uint =&gt; bool) internal cardIdToEntryStatus;
-    mapping(uint =&gt; Match[]) internal roundIdToMatches;
+    mapping(address => uint) internal managerToTeamId;
+    mapping(uint => bool) internal cardIdToEntryStatus;
+    mapping(uint => Match[]) internal roundIdToMatches;
 
     // Data Source
     BCFMain public mainContract;
@@ -126,10 +126,10 @@ contract BCFLeague is BCFBaseCompetition {
 
     function BCFLeague(address dataStoreAddress, uint teamsTotal, uint entryFee, uint squadSize, uint roundTimeSecs) public {
         require(teamsTotal % 2 == 0); // We only allow an even number of teams, this reduces complexity
-        require(teamsTotal &gt; 0);
-        require(roundTimeSecs &gt; 30 seconds &amp;&amp; roundTimeSecs &lt; 60 minutes);
-        require(entryFee &gt;= 0);
-        require(squadSize &gt; 0);
+        require(teamsTotal > 0);
+        require(roundTimeSecs > 30 seconds && roundTimeSecs < 60 minutes);
+        require(entryFee >= 0);
+        require(squadSize > 0);
         
         // Initial state
         owner = msg.sender;
@@ -158,8 +158,8 @@ contract BCFLeague is BCFBaseCompetition {
         require(competitionStatus == CompetitionStatuses.Upcoming);
 
         // Generate the fixtures using a cycling algorithm:
-        for (uint round = 0; round &lt; TOTAL_ROUNDS; round++) {
-            for (uint matchIndex = 0; matchIndex &lt; MATCHES_PER_ROUND; matchIndex++) {
+        for (uint round = 0; round < TOTAL_ROUNDS; round++) {
+            for (uint matchIndex = 0; matchIndex < MATCHES_PER_ROUND; matchIndex++) {
                 uint home = (round + matchIndex) % (TEAMS_TOTAL - 1);
                 uint away = (TEAMS_TOTAL - 1 - matchIndex + round) % (TEAMS_TOTAL - 1);
 
@@ -178,15 +178,15 @@ contract BCFLeague is BCFBaseCompetition {
 
     function createPrizePool(uint[] prizeStructure) external payable onlyOwner {
         require(competitionStatus == CompetitionStatuses.Upcoming);
-        require(msg.value &gt; 0 &amp;&amp; msg.value &lt;= 2 ether); // Set some sensible top and bottom values
-        require(prizeStructure.length &gt; 0); // Can&#39;t create a prize pool with no breakdown structure
+        require(msg.value > 0 && msg.value <= 2 ether); // Set some sensible top and bottom values
+        require(prizeStructure.length > 0); // Can't create a prize pool with no breakdown structure
 
         uint allocationTotal = 0;
-        for (uint i = 0; i &lt; prizeStructure.length; i++) {
+        for (uint i = 0; i < prizeStructure.length; i++) {
             allocationTotal += prizeStructure[i];
         }
 
-        require(allocationTotal &gt; 0 &amp;&amp; allocationTotal &lt;= PRIZE_POT_PERCENTAGE_MAX); // Make sure we don&#39;t allocate more than 100% of the prize pool or 0%
+        require(allocationTotal > 0 && allocationTotal <= PRIZE_POT_PERCENTAGE_MAX); // Make sure we don't allocate more than 100% of the prize pool or 0%
         prizePool += msg.value;
         prizeBreakdown = prizeStructure;
     }
@@ -208,16 +208,16 @@ contract BCFLeague is BCFBaseCompetition {
 
     function calculateMatchOutcomesForRoundId(int roundId) external onlyReferee whenNotPaused {
         require(competitionStatus == CompetitionStatuses.Started);
-        require(nextRoundStartsAt &gt; 0);
-        require(roundId == currentRoundId + 1); // We&#39;re only allowed to process the next round, we can&#39;t skip ahead
-        require(now &gt; nextRoundStartsAt);
+        require(nextRoundStartsAt > 0);
+        require(roundId == currentRoundId + 1); // We're only allowed to process the next round, we can't skip ahead
+        require(now > nextRoundStartsAt);
 
         // Increment the round counter
         // We complete the below first as during the calculateScorersForTeamIds we go off to another contract to fetch the 
         // current player attributes so to avoid re-entrancy we bump this first 
         currentRoundId++;
 
-        // As the total rounds aren&#39;t index based we need to compare it to the index+1
+        // As the total rounds aren't index based we need to compare it to the index+1
         // this should never overrun as the gas cost of generating a league with more 20 teams makes this impossible
         if (TOTAL_ROUNDS == uint(currentRoundId + 1)) {
             competitionStatus = CompetitionStatuses.Finished;
@@ -227,7 +227,7 @@ contract BCFLeague is BCFBaseCompetition {
 
         // Actually calculate some of the outcomes 
         Match[] memory matches = roundIdToMatches[uint(roundId)];
-        for (uint i = 0; i &lt; matches.length; i++) {
+        for (uint i = 0; i < matches.length; i++) {
             Match memory _match = matches[i];
             var (homeScorers, awayScorers) = calculateScorersForTeamIds(_match.homeTeamId, _match.awayTeamId);
 
@@ -255,7 +255,7 @@ contract BCFLeague is BCFBaseCompetition {
         if (homeGoals == awayGoals) {            
             teams[homeTeamId].draws++;
             teams[awayTeamId].draws++;
-        } else if (homeGoals &gt; awayGoals) {
+        } else if (homeGoals > awayGoals) {
             teams[homeTeamId].wins++;
             teams[awayTeamId].losses++;
         } else {
@@ -271,7 +271,7 @@ contract BCFLeague is BCFBaseCompetition {
         uint[] memory _awayTeamIds = new uint[](matches.length);
         bool[] memory matchStates = new bool[](matches.length);
 
-        for (uint i = 0; i &lt; matches.length; i++) {
+        for (uint i = 0; i < matches.length; i++) {
             _homeTeamIds[i] = matches[i].homeTeamId;
             _awayTeamIds[i] = matches[i].awayTeamId;
             matchStates[i] = matches[i].isFinished;
@@ -295,12 +295,12 @@ contract BCFLeague is BCFBaseCompetition {
         require(mainContract != address(0)); // Must have a valid data store to check card ownership
         require(competitionStatus == CompetitionStatuses.OpenForEntry); // Competition must be open for entry
         require(cardIds.length == SQUAD_SIZE); // Require a valid number of players
-        require(teamName.length &gt; 3 &amp;&amp; teamName.length &lt; 18); // Require a valid team name
-        require(!hasEntered(msg.sender)); // Make sure the address hasn&#39;t already entered
+        require(teamName.length > 3 && teamName.length < 18); // Require a valid team name
+        require(!hasEntered(msg.sender)); // Make sure the address hasn't already entered
         require(!hasPreviouslyEnteredCardIds(cardIds)); // Require that none of the players have previously entered, avoiding managers swapping players between accounts
         require(mainContract.isOwnerOfAllPlayerCards(cardIds, msg.sender)); // User must actually own these cards
-        require(teams.length &lt; TEAMS_TOTAL); // We shouldn&#39;t ever hit this as the state should be managed, but just as a fallback
-        require(msg.value &gt;= ENTRY_FEE); // User must have paid a valid entry fee
+        require(teams.length < TEAMS_TOTAL); // We shouldn't ever hit this as the state should be managed, but just as a fallback
+        require(msg.value >= ENTRY_FEE); // User must have paid a valid entry fee
 
         // Create a team and hold the teamId
         Team memory _team;
@@ -314,11 +314,11 @@ contract BCFLeague is BCFBaseCompetition {
         managerToTeamId[msg.sender] = teamId;
 
         // Track which team each card plays for
-        for (uint i = 0; i &lt; cardIds.length; i++) {
+        for (uint i = 0; i < cardIds.length; i++) {
             cardIdToEntryStatus[cardIds[i]] = true;
         }
 
-        // If we&#39;ve hit the team limit we can move the contract into the PendingStart status
+        // If we've hit the team limit we can move the contract into the PendingStart status
         if (teams.length == TEAMS_TOTAL) {
             competitionStatus = CompetitionStatuses.PendingStart;
         }
@@ -330,7 +330,7 @@ contract BCFLeague is BCFBaseCompetition {
         }
 
         // This should only ever be a maximum of 5 iterations or 11
-        for (uint i = 0; i &lt; cardIds.length; i++) {
+        for (uint i = 0; i < cardIds.length; i++) {
             uint cardId = cardIds[i];
             bool hasEnteredCardPreviously = cardIdToEntryStatus[cardId];
             if (hasEnteredCardPreviously) {
@@ -347,7 +347,7 @@ contract BCFLeague is BCFBaseCompetition {
         }
 
         // We have to lookup the team AND check the fields because of some of the workings of solidity
-        // 1. We could have a team at index 0, so we CAN&#39;T just check the index is &gt; 0
+        // 1. We could have a team at index 0, so we CAN'T just check the index is > 0
         // 2. Solidity intializes with an empty set of struct values, so we need to do equality on the manager field
         uint teamIndex = managerToTeamId[manager];
         Team memory team = teams[teamIndex];
@@ -377,12 +377,12 @@ contract BCFLeague is BCFBaseCompetition {
         uint[] memory awayScorers = new uint[](awayGoals);
 
         // Home Scorers
-        for (uint i = 0; i &lt; homeScorers.length; i++) {
+        for (uint i = 0; i < homeScorers.length; i++) {
             homeScorers[i] = determineGoalScoringCardIds(teams[homeTeamId].cardIds, homeCardsShootingAttributes, i);
         }
 
         // Away Scorers
-        for (i = 0; i &lt; awayScorers.length; i++) {
+        for (i = 0; i < awayScorers.length; i++) {
             awayScorers[i] = determineGoalScoringCardIds(teams[awayTeamId].cardIds, awayCardsShootingAttributes, i);
         }
 
@@ -399,7 +399,7 @@ contract BCFLeague is BCFBaseCompetition {
         uint outcome = 0;
         uint seed = startSeed * homeTotals[0] * awayTotals[0];
 
-        for (uint i = 0; i &lt; 45; i++) {
+        for (uint i = 0; i < 45; i++) {
             
             attackingTeamId = determineAttackingOrDefendingOutcomeForAttributes(homeTeamId, awayTeamId, homeTotals[0], awayTotals[0], seed+now);
             seed++;
@@ -462,11 +462,11 @@ contract BCFLeague is BCFBaseCompetition {
         uint[] memory cardsShootingAttributes = new uint[](SQUAD_SIZE);
         Team memory _team = teams[teamId];
         
-        for (uint i = 0; i &lt; SQUAD_SIZE; i++) {
+        for (uint i = 0; i < SQUAD_SIZE; i++) {
             var (overall,pace,shooting,passing,dribbling,defending,physical,,,,) = mainContract.getPlayerForCard(_team.cardIds[i]);
 
-            // If it&#39;s a goalie we forego attack for increased shot stopping avbility
-            if (_team.cardIds[i] == _team.gkCardId &amp;&amp; _team.gkCardId &gt; 0) {
+            // If it's a goalie we forego attack for increased shot stopping avbility
+            if (_team.cardIds[i] == _team.gkCardId && _team.gkCardId > 0) {
                 totals[5] += (overall * 5);
                 totals[6] += overall;
                 cardsShootingAttributes[i] = 1; // Almost no chance for the GK to score
@@ -491,7 +491,7 @@ contract BCFLeague is BCFBaseCompetition {
         uint max = atkAttributeTotal + defAttributeTotal;
         uint randValue = uint(keccak256(block.blockhash(block.number-1), seed))%max;
 
-        if (randValue &lt;= atkAttributeTotal) {
+        if (randValue <= atkAttributeTotal) {
 		    return attackingTeamId;
 	    }
 
@@ -502,19 +502,19 @@ contract BCFLeague is BCFBaseCompetition {
 
         uint max = 0;
         uint min = 0;
-        for (uint i = 0; i &lt; shootingAttributes.length; i++) {
+        for (uint i = 0; i < shootingAttributes.length; i++) {
             max += shootingAttributes[i];
         }
 
         bytes32 randHash = keccak256(seed, now, block.blockhash(block.number - 1));
         uint randValue = uint(randHash) % max + min;
 
-        for (i = 0; i &lt; cardIds.length; i++) {
+        for (i = 0; i < cardIds.length; i++) {
             uint cardId = cardIds[i];
             randValue -= shootingAttributes[i];
 
             // We do the more than to handle wrap arounds on uint
-            if (randValue &lt;= 0 || randValue &gt;= max) {
+            if (randValue <= 0 || randValue >= max) {
                 return cardId;
             }
         }
@@ -539,45 +539,45 @@ contract BCFLeague is BCFBaseCompetition {
 
         // 1. Loop over all teams
         bool isReplacementWinner = false;
-        for (uint i = 0; i &lt; teams.length; i++) {
+        for (uint i = 0; i < teams.length; i++) {
             Team memory _team = teams[i];
 
             // 2. Grab their current points
             uint currPoints = (_team.wins * 3) + _team.draws;
 
             // 3. Compare the points to each team in the winning team points array
-            for (uint x = 0; x &lt; winningTeamPoints.length; x++) {
+            for (uint x = 0; x < winningTeamPoints.length; x++) {
                 
                 // 4. Check if the current entry is more
                 isReplacementWinner = false;
-                if (currPoints &gt; winningTeamPoints[x]) {
+                if (currPoints > winningTeamPoints[x]) {
                     isReplacementWinner = true;
                 // 5. We need to handle tie-break rules if 2 teams have the same number of points
                 } else if (currPoints == winningTeamPoints[x]) {
                     
-                    // 5a. Unfortunately in this scenario we need to refetch the team we&#39;re comparing
+                    // 5a. Unfortunately in this scenario we need to refetch the team we're comparing
                     Team memory _comparisonTeam = teams[winningTeamIds[x]];
 
                     int gdTeam = _team.goalsFor - _team.goalsAgainst;
                     int gdComparedTeam = _comparisonTeam.goalsFor - _comparisonTeam.goalsAgainst;
 
                     // 5b. GOAL DIFFERENCE
-                    if (gdTeam &gt; gdComparedTeam) {
+                    if (gdTeam > gdComparedTeam) {
                         isReplacementWinner = true;
                     } else if (gdTeam == gdComparedTeam) {
 
                         // 5c. MOST GOALS
-                        if (_team.goalsFor &gt; _comparisonTeam.goalsFor) {
+                        if (_team.goalsFor > _comparisonTeam.goalsFor) {
                             isReplacementWinner = true;
                         } else if (_team.goalsFor == _comparisonTeam.goalsFor) {
 
                             // 5d. NUMBER OF WINS
-                            if (_team.wins &gt; _comparisonTeam.wins) {
+                            if (_team.wins > _comparisonTeam.wins) {
                                 isReplacementWinner = true;
                             } else if (_team.wins == _comparisonTeam.wins) {
 
                                 // 5e. FIRST TO ENTER (LOWER INDEX)
-                                if (i &lt; winningTeamIds[x]) {
+                                if (i < winningTeamIds[x]) {
                                     isReplacementWinner = true;
                                 }
                             }
@@ -585,11 +585,11 @@ contract BCFLeague is BCFBaseCompetition {
                     }
                 }
 
-                // 6. Now we need to shift all elements down for the &quot;paid places&quot; for winning entries
+                // 6. Now we need to shift all elements down for the "paid places" for winning entries
                 if (isReplacementWinner) {
                     
                     // 7. We need to start by copying the current index into next one down, assuming it exists
-                    for (uint y = winningAddresses.length - 1; y &gt; x; y--) {
+                    for (uint y = winningAddresses.length - 1; y > x; y--) {
                         winningAddresses[y] = winningAddresses[y-1];
                         winningTeamPoints[y] = winningTeamPoints[y-1];
                         winningTeamIds[y] = winningTeamIds[y-1];
@@ -599,7 +599,7 @@ contract BCFLeague is BCFBaseCompetition {
                     winningAddresses[x] = _team.manager;
                     winningTeamPoints[x] = currPoints;
                     winningTeamIds[x] = i;
-                    break; // We don&#39;t need to compare values further down the chain
+                    break; // We don't need to compare values further down the chain
                 }
             }
         }
@@ -610,17 +610,17 @@ contract BCFLeague is BCFBaseCompetition {
 
     function settleLeague() external onlyOwner {
         require(competitionStatus == CompetitionStatuses.Finished);
-        require(winners.length &gt; 0);
+        require(winners.length > 0);
         require(prizeBreakdown.length == winners.length);
-        require(prizePool &gt;= this.balance);
+        require(prizePool >= this.balance);
 
         // Mark the contest as settled
         competitionStatus = CompetitionStatuses.Settled;
         
         // Payout each winner
-        for (uint i = 0; i &lt; winners.length; i++) {
+        for (uint i = 0; i < winners.length; i++) {
             address winner = winners[i];
-            uint percentageCut = prizeBreakdown[i]; // We can assume this index exists as we&#39;ve checked the lengths in the require
+            uint percentageCut = prizeBreakdown[i]; // We can assume this index exists as we've checked the lengths in the require
 
             uint winningAmount = calculateWinnerCut(prizePool, percentageCut);
             winner.transfer(winningAmount);
@@ -628,7 +628,7 @@ contract BCFLeague is BCFBaseCompetition {
     }
 
     function calculateWinnerCut(uint totalPot, uint cut) internal pure returns (uint256) {
-        // PRIZE_POT_PERCENTAGE_MAX = 10,000 = 100%, required&#39;d &lt;= PRIZE_POT_PERCENTAGE_MAX in the constructor so no requirement to validate here
+        // PRIZE_POT_PERCENTAGE_MAX = 10,000 = 100%, required'd <= PRIZE_POT_PERCENTAGE_MAX in the constructor so no requirement to validate here
         uint finalCut = totalPot * cut / PRIZE_POT_PERCENTAGE_MAX;
         return finalCut;
     }  
@@ -650,7 +650,7 @@ contract BCFLeague is BCFBaseCompetition {
         require(competitionStatus == CompetitionStatuses.Finished || competitionStatus == CompetitionStatuses.Settled);
 
         uint winningTeamId = 0;
-        for (uint i = 0; i &lt; teams.length; i++) {
+        for (uint i = 0; i < teams.length; i++) {
             if (teams[i].manager == winners[0]) {
                 winningTeamId = i;
                 break;

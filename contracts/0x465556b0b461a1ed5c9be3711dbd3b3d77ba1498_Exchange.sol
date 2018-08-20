@@ -23,11 +23,11 @@ contract Exchange {
     address public owner;
     uint public feeDeposit = 500;
     
-    mapping (uint =&gt; Order) orders;
+    mapping (uint => Order) orders;
     uint currentOrderId = 0;
     
-    /* Token address (0x0 - Ether) =&gt; User address =&gt; balance */
-    mapping (address =&gt; mapping (address =&gt; uint)) public balanceOf;
+    /* Token address (0x0 - Ether) => User address => balance */
+    mapping (address => mapping (address => uint)) public balanceOf;
     
     event FundTransfer(address backer, uint amount, bool isContribution);
     
@@ -54,12 +54,12 @@ contract Exchange {
     
     function safeAdd(uint a, uint b) private pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     
     function safeSub(uint a, uint b) private pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
@@ -89,15 +89,15 @@ contract Exchange {
     }
     
     function balanceSub(address tokenAddr, address user, uint amount) private {
-        require(balanceOf[tokenAddr][user] &gt;= amount);
+        require(balanceOf[tokenAddr][user] >= amount);
         balanceOf[tokenAddr][user] =
             safeSub(balanceOf[tokenAddr][user], amount);
     }
     
     function placeBuy(address tokenAddr, uint price, uint amount) external {
-        require(price &gt; 0 &amp;&amp; amount &gt; 0);
+        require(price > 0 && amount > 0);
         uint amountEther = calcAmountEther(tokenAddr, price, amount);
-        require(amountEther &gt; 0);
+        require(amountEther > 0);
         balanceSub(0x0, msg.sender, amountEther);
         BalanceChanged(0x0, msg.sender, balanceOf[0x0][msg.sender]);
         orders[currentOrderId] = Order({
@@ -112,9 +112,9 @@ contract Exchange {
     }
     
     function placeSell(address tokenAddr, uint price, uint amount) external {
-        require(price &gt; 0 &amp;&amp; amount &gt; 0);
+        require(price > 0 && amount > 0);
         uint amountEther = calcAmountEther(tokenAddr, price, amount);
-        require(amountEther &gt; 0);
+        require(amountEther > 0);
         balanceSub(tokenAddr, msg.sender, amount);
         BalanceChanged(tokenAddr, msg.sender, balanceOf[tokenAddr][msg.sender]);
         orders[currentOrderId] = Order({
@@ -129,10 +129,10 @@ contract Exchange {
     }
     
     function fillOrder(uint id, uint amount) external {
-        require(id &lt; currentOrderId);
-        require(amount &gt; 0);
+        require(id < currentOrderId);
+        require(amount > 0);
         require(orders[id].creator != msg.sender);
-        require(orders[id].amount &gt;= amount);
+        require(orders[id].amount >= amount);
         uint amountEther = calcAmountEther(orders[id].token, orders[id].price, amount);
         if (orders[id].buy) {
             /* send tokens from sender to creator */
@@ -190,9 +190,9 @@ contract Exchange {
     }
     
     function cancelOrder(uint id) external {
-        require(id &lt; currentOrderId);
+        require(id < currentOrderId);
         require(orders[id].creator == msg.sender);
-        require(orders[id].amount &gt; 0);
+        require(orders[id].amount > 0);
         if (orders[id].buy) {
             uint amountEther = calcAmountEther(orders[id].token, orders[id].price, orders[id].amount);
             balanceAdd(0x0, msg.sender, amountEther);
@@ -206,9 +206,9 @@ contract Exchange {
     }
     
     function () external payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint fee = msg.value * feeDeposit / 10000;
-        require(msg.value &gt; fee);
+        require(msg.value > fee);
         balanceAdd(0x0, owner, fee);
         
         uint toAdd = msg.value - fee;
@@ -222,7 +222,7 @@ contract Exchange {
     
     function depositToken(address tokenAddr, uint amount) external {
         require(tokenAddr != 0x0);
-        require(amount &gt; 0);
+        require(amount > 0);
         Token(tokenAddr).transferFrom(msg.sender, this, amount);
         balanceAdd(tokenAddr, msg.sender, amount);
         
@@ -231,7 +231,7 @@ contract Exchange {
     }
     
     function withdrawEther(uint amount) external {
-        require(amount &gt; 0);
+        require(amount > 0);
         balanceSub(0x0, msg.sender, amount);
         msg.sender.transfer(amount);
         
@@ -243,7 +243,7 @@ contract Exchange {
     
     function withdrawToken(address tokenAddr, uint amount) external {
         require(tokenAddr != 0x0);
-        require(amount &gt; 0);
+        require(amount > 0);
         balanceSub(tokenAddr, msg.sender, amount);
         Token(tokenAddr).transfer(msg.sender, amount);
         

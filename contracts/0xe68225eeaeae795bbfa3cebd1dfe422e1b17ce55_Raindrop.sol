@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -58,9 +58,9 @@ contract Raindrop is Ownable {
 
   address public hydroContract = 0x0;
 
-  mapping (uint =&gt; mapping (address =&gt; bool)) public whitelist;
-  mapping (uint =&gt; mapping (address =&gt; partnerValues)) public partnerMap;
-  mapping (uint =&gt; mapping (address =&gt; hydroValues)) public hydroPartnerMap;
+  mapping (uint => mapping (address => bool)) public whitelist;
+  mapping (uint => mapping (address => partnerValues)) public partnerMap;
+  mapping (uint => mapping (address => hydroValues)) public hydroPartnerMap;
 
   struct partnerValues {
       uint value;
@@ -93,7 +93,7 @@ contract Raindrop is Ownable {
   }
 
   function checkForValidChallenge(address _sender, uint _partnerId) public view returns (uint value){
-      if (hydroPartnerMap[_partnerId][_sender].timestamp &gt; block.timestamp){
+      if (hydroPartnerMap[_partnerId][_sender].timestamp > block.timestamp){
           return hydroPartnerMap[_partnerId][_sender].value;
       }
       return 1;
@@ -110,8 +110,8 @@ contract Raindrop is Ownable {
    */
   function validateAuthentication(address _sender, uint _challenge, uint _partnerId) public constant returns (bool _isValid) {
       if (partnerMap[_partnerId][_sender].value == hydroPartnerMap[_partnerId][_sender].value
-      &amp;&amp; block.timestamp &lt; hydroPartnerMap[_partnerId][_sender].timestamp
-      &amp;&amp; partnerMap[_partnerId][_sender].challenge == _challenge) {
+      && block.timestamp < hydroPartnerMap[_partnerId][_sender].timestamp
+      && partnerMap[_partnerId][_sender].challenge == _challenge) {
           return true;
       }
       return false;

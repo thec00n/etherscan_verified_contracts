@@ -23,7 +23,7 @@ contract BaseSafeMath {
 
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -34,7 +34,7 @@ contract BaseSafeMath {
 
     returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -69,7 +69,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -78,7 +78,7 @@ contract BaseSafeMath {
 
     returns (uint256 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -98,7 +98,7 @@ contract BaseSafeMath {
 
         uint128 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -109,7 +109,7 @@ contract BaseSafeMath {
 
     returns (uint128) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -144,7 +144,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -153,7 +153,7 @@ contract BaseSafeMath {
 
     returns (uint128 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -173,7 +173,7 @@ contract BaseSafeMath {
 
         uint64 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -184,7 +184,7 @@ contract BaseSafeMath {
 
     returns (uint64) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -219,7 +219,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
     }
 
@@ -228,7 +228,7 @@ contract BaseSafeMath {
 
     returns (uint64 z) {
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
     }
 
@@ -252,8 +252,8 @@ contract BaseERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -352,22 +352,22 @@ contract LockUtils {
     function getLockWFee(address account, uint8 decimals, uint256 createTime, address developer) internal view returns (uint256) {
         uint256 tempLockWFee = 0;
         if (account == developer) {
-            if (now &lt; (createTime + 10 minutes)) {
+            if (now < (createTime + 10 minutes)) {
                 tempLockWFee = 1500000000 * 10 ** uint256(decimals);
-            } else if (now &lt; (createTime + 20 minutes)) {
+            } else if (now < (createTime + 20 minutes)) {
                 tempLockWFee = 1125000000 * 10 ** uint256(decimals);
-            } else if (now &lt; (createTime + 30 minutes)) {
+            } else if (now < (createTime + 30 minutes)) {
                 tempLockWFee = 750000000 * 10 ** uint256(decimals);
-            } else if (now &lt; (createTime + 40 minutes)) {
+            } else if (now < (createTime + 40 minutes)) {
                 tempLockWFee = 375000000 * 10 ** uint256(decimals);
             }
-            //            if (now &lt; createTime + 2 years) {
+            //            if (now < createTime + 2 years) {
             //                tempLockWFee = 1500000000 * 10 ** uint256(decimals);
-            //            } else if (now &lt; createTime + 2 years + 6 * 30 days) {
+            //            } else if (now < createTime + 2 years + 6 * 30 days) {
             //                tempLockWFee = 1125000000 * 10 ** uint256(decimals);
-            //            } else if (now &lt; createTime + 3 years) {
+            //            } else if (now < createTime + 3 years) {
             //                tempLockWFee = 750000000 * 10 ** uint256(decimals);
-            //            } else if (now &lt; createTime + 3 years + 6 * 30 days) {
+            //            } else if (now < createTime + 3 years + 6 * 30 days) {
             //                tempLockWFee = 375000000 * 10 ** uint256(decimals);
             //            }
         }
@@ -377,13 +377,13 @@ contract LockUtils {
 }
 
 contract WFee is BaseERC20, BaseSafeMath, LockUtils {
-    string public name = &quot;WFee&quot;;
-    string public symbol = &quot;WFEE&quot;;
+    string public name = "WFee";
+    string public symbol = "WFEE";
     uint8 public decimals = 18;// 精度为18
     uint256 public totalSupply;// 100亿 构造方法初始化
     uint256 createTime;// 创建时间
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     address developer;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -401,10 +401,10 @@ contract WFee is BaseERC20, BaseSafeMath, LockUtils {
         require(_to != 0x0);
         // Check if the sender has enough
         // 转账必由之路，锁定的钱不可动
-        require((balanceOf[_from] - getLockWFee(_from, decimals, createTime, developer)) &gt;= _value);
-        // require(balanceOf[_from] &gt;= _value);
+        require((balanceOf[_from] - getLockWFee(_from, decimals, createTime, developer)) >= _value);
+        // require(balanceOf[_from] >= _value);
         // Check for overflows
-        require((balanceOf[_to] + _value) &gt; balanceOf[_to]);
+        require((balanceOf[_to] + _value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -421,7 +421,7 @@ contract WFee is BaseERC20, BaseSafeMath, LockUtils {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -445,7 +445,7 @@ contract WFee is BaseERC20, BaseSafeMath, LockUtils {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         // Check if the sender has enough
         balanceOf[msg.sender] -= _value;
         // Subtract from the sender
@@ -456,14 +456,14 @@ contract WFee is BaseERC20, BaseSafeMath, LockUtils {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         balanceOf[_from] -= _value;
         // Subtract from the targeted balance
         allowance[_from][msg.sender] -= _value;
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         totalSupply -= _value;
         // Update totalSupply
         Burn(_from, _value);

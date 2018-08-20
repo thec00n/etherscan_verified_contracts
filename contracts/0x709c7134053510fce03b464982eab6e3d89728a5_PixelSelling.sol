@@ -22,22 +22,22 @@ contract PixelSelling {
     uint public latestprice;
     uint public noShares;
     uint public noSales;
-    mapping (address=&gt;uint) public balances;
+    mapping (address=>uint) public balances;
 
     uint emptyLocationProvision;
     uint privSaleProvision;
     uint priceRise;
     address creator;
 
-    mapping (uint=&gt;Location) public locations;
-    mapping (uint=&gt;Share) public shares;
+    mapping (uint=>Location) public locations;
+    mapping (uint=>Share) public shares;
 
     uint[] provisions;
 
     event Change(uint id, string eventType);
 
     modifier isValidLocId(uint id){
-        if(!(id&gt;=0 &amp;&amp; id&lt;10000))
+        if(!(id>=0 && id<10000))
             throw;
         _;
     }
@@ -56,10 +56,10 @@ contract PixelSelling {
 
     function buyEmptyLocation(uint id) isValidLocId(id) payable{
         Location l=locations[id];
-        if(l.owner==0x0 &amp;&amp; msg.value==latestprice){
+        if(l.owner==0x0 && msg.value==latestprice){
             l.owner=msg.sender;
-            l.image=&#39;&#39;;
-            l.message=&#39;&#39;;
+            l.image='';
+            l.message='';
 
             l.sale=false;
             l.saleTo=0x0;
@@ -67,7 +67,7 @@ contract PixelSelling {
 
             shares[id] = Share(msg.sender,noSales,false,0x0,latestprice);
 
-            if(noShares&gt;0){
+            if(noShares>0){
                 balances[creator]+=(latestprice/100)*(100-emptyLocationProvision);
                 creditShareProvision(latestprice, emptyLocationProvision);
             }else{
@@ -80,7 +80,7 @@ contract PixelSelling {
 
             latestprice+=priceRise;
 
-            Change(id,&#39;owner&#39;);
+            Change(id,'owner');
         }else{
             throw;
         }
@@ -89,13 +89,13 @@ contract PixelSelling {
     function buyImagePriv(uint id) isValidLocId(id) payable{
         Location l=locations[id];
         if(
-            l.owner!=0x0 &amp;&amp;
-            l.sale==true &amp;&amp;
-            (l.saleTo==msg.sender||l.saleTo==0x0) &amp;&amp;
+            l.owner!=0x0 &&
+            l.sale==true &&
+            (l.saleTo==msg.sender||l.saleTo==0x0) &&
             msg.value==l.price
         ){
-            l.image=&#39;&#39;;
-            l.message=&#39;&#39;;
+            l.image='';
+            l.message='';
             l.sale=false;
             l.saleTo=0x0;
 
@@ -106,7 +106,7 @@ contract PixelSelling {
 
             creditShareProvision(msg.value, privSaleProvision);
 
-            Change(id,&#39;img owner&#39;);
+            Change(id,'img owner');
         }else{
             throw;
         }
@@ -115,9 +115,9 @@ contract PixelSelling {
     function buySharePriv(uint id) isValidLocId(id) payable{
         Share s=shares[id];
 		if(
-			s.owner!=0x0 &amp;&amp;
-			s.sale==true &amp;&amp;
-			(s.saleTo==msg.sender||s.saleTo==0x0) &amp;&amp;
+			s.owner!=0x0 &&
+			s.sale==true &&
+			(s.saleTo==msg.sender||s.saleTo==0x0) &&
 			msg.value==s.price
 		){
             s.sale=false;
@@ -130,7 +130,7 @@ contract PixelSelling {
 
             creditShareProvision(msg.value, privSaleProvision);
 
-            Change(id,&#39;share owner&#39;);
+            Change(id,'share owner');
         }else{
             throw;
         }
@@ -138,9 +138,9 @@ contract PixelSelling {
 
     function setImage(uint id, string img) isValidLocId(id) {
 		Location l=locations[id];
-        if(l.owner==msg.sender &amp;&amp; bytes(img).length&lt;5001){
+        if(l.owner==msg.sender && bytes(img).length<5001){
             l.image=img;
-            Change(id,&#39;image&#39;);
+            Change(id,'image');
         }else{
             throw;
         }
@@ -148,9 +148,9 @@ contract PixelSelling {
 
     function setMessage(uint id, string mssg) isValidLocId(id) {
 		Location l=locations[id];
-        if(l.owner==msg.sender &amp;&amp; bytes(mssg).length&lt;501){
+        if(l.owner==msg.sender && bytes(mssg).length<501){
             l.message=mssg;
-            Change(id,&#39;message&#39;);
+            Change(id,'message');
         }else{
 			throw;
 		}
@@ -162,7 +162,7 @@ contract PixelSelling {
             l.sale=setSale;
             l.price=p;
             l.saleTo=to;
-            Change(id,&#39;img sale&#39;);
+            Change(id,'img sale');
         }else{
 			throw;
 		}
@@ -174,7 +174,7 @@ contract PixelSelling {
             s.sale=setSale;
             s.price=p;
             s.saleTo=to;
-            Change(id,&#39;share sale&#39;);
+            Change(id,'share sale');
         }else{
 			throw;
 		}
@@ -205,7 +205,7 @@ contract PixelSelling {
     }
 
     function withdrawBalance() {
-        if(balances[msg.sender]&gt;0){
+        if(balances[msg.sender]>0){
             uint amtToWithdraw=balances[msg.sender];
             balances[msg.sender]=0;
             if(!msg.sender.send(amtToWithdraw)) throw;

@@ -6,12 +6,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -88,22 +88,22 @@ contract Haltable is Ownable {
 
 contract FluencePreSale is Haltable, SafeMath {
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /*/
      *  Constants
     /*/
 
-    string public constant name = &quot;Fluence Presale Token&quot;;
+    string public constant name = "Fluence Presale Token";
 
-    string public constant symbol = &quot;FPT&quot;;
+    string public constant symbol = "FPT";
 
     uint   public constant decimals = 18;
 
     // 6% of tokens
     uint256 public constant SUPPLY_LIMIT = 6000000 ether;
 
-    // What is given to contributors, &lt;= SUPPLY_LIMIT
+    // What is given to contributors, <= SUPPLY_LIMIT
     uint256 public totalSupply;
 
     // If soft cap is not reached, refund process is started
@@ -126,7 +126,7 @@ contract FluencePreSale is Haltable, SafeMath {
 
     // As we have different prices for different amounts,
     // we keep a mapping of contributions to make refund
-    mapping (address =&gt; uint256) public etherContributions;
+    mapping (address => uint256) public etherContributions;
 
     // Max balance of the contract
     uint256 public etherCollected;
@@ -152,33 +152,33 @@ contract FluencePreSale is Haltable, SafeMath {
 
     // If soft cap is reached, withdraw should be available
     modifier softCapReached {
-        if (etherCollected &lt; softCap) {
+        if (etherCollected < softCap) {
             revert();
         }
-        assert(etherCollected &gt;= softCap);
+        assert(etherCollected >= softCap);
         _;
     }
 
     // Allow contribution only during presale
     modifier duringPresale {
-        if (block.number &lt; startAtBlock || block.number &gt; endAtBlock || totalSupply &gt;= SUPPLY_LIMIT) {
+        if (block.number < startAtBlock || block.number > endAtBlock || totalSupply >= SUPPLY_LIMIT) {
             revert();
         }
-        assert(block.number &gt;= startAtBlock &amp;&amp; block.number &lt;= endAtBlock &amp;&amp; totalSupply &lt; SUPPLY_LIMIT);
+        assert(block.number >= startAtBlock && block.number <= endAtBlock && totalSupply < SUPPLY_LIMIT);
         _;
     }
 
     // Allow withdraw only during refund
     modifier duringRefund {
-        if(block.number &lt;= endAtBlock || etherCollected &gt;= softCap || this.balance == 0) {
+        if(block.number <= endAtBlock || etherCollected >= softCap || this.balance == 0) {
             revert();
         }
-        assert(block.number &gt; endAtBlock &amp;&amp; etherCollected &lt; softCap &amp;&amp; this.balance &gt; 0);
+        assert(block.number > endAtBlock && etherCollected < softCap && this.balance > 0);
         _;
     }
 
     function FluencePreSale(uint _startAtBlock, uint _endAtBlock, uint softCapInEther){
-        require(_startAtBlock &gt; 0 &amp;&amp; _endAtBlock &gt; 0);
+        require(_startAtBlock > 0 && _endAtBlock > 0);
         beneficiary = msg.sender;
         startAtBlock = _startAtBlock;
         endAtBlock = _endAtBlock;
@@ -191,41 +191,41 @@ contract FluencePreSale is Haltable, SafeMath {
         beneficiary = to;
     }
 
-    // Withdraw contract&#39;s balance to beneficiary account
+    // Withdraw contract's balance to beneficiary account
     function withdraw() onlyOwner softCapReached external {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         beneficiary.transfer(this.balance);
     }
 
     // Process contribution, issue tokens to user
     function contribute(address _address) private stopInEmergency duringPresale {
-        if(msg.value &lt; basicThreshold &amp;&amp; owner != _address) {
+        if(msg.value < basicThreshold && owner != _address) {
             revert();
         }
-        assert(msg.value &gt;= basicThreshold || owner == _address);
+        assert(msg.value >= basicThreshold || owner == _address);
         // Minimal contribution
 
         uint256 tokensToIssue;
 
-        if (msg.value &gt;= expertThreshold) {
+        if (msg.value >= expertThreshold) {
             tokensToIssue = safeMult(msg.value, expertTokensPerEth);
         }
-        else if (msg.value &gt;= advancedThreshold) {
+        else if (msg.value >= advancedThreshold) {
             tokensToIssue = safeMult(msg.value, advancedTokensPerEth);
         }
         else {
             tokensToIssue = safeMult(msg.value, basicTokensPerEth);
         }
 
-        assert(tokensToIssue &gt; 0);
+        assert(tokensToIssue > 0);
 
         totalSupply = safeAdd(totalSupply, tokensToIssue);
 
-        // Goal is already reached, can&#39;t issue any more tokens
-        if(totalSupply &gt; SUPPLY_LIMIT) {
+        // Goal is already reached, can't issue any more tokens
+        if(totalSupply > SUPPLY_LIMIT) {
             revert();
         }
-        assert(totalSupply &lt;= SUPPLY_LIMIT);
+        assert(totalSupply <= SUPPLY_LIMIT);
 
         // Saving ether contributions for the case of refund
         etherContributions[_address] = safeAdd(etherContributions[_address], msg.value);
@@ -242,7 +242,7 @@ contract FluencePreSale is Haltable, SafeMath {
         if (totalSupply == SUPPLY_LIMIT) {
             GoalReached(etherCollected);
         }
-        if (etherCollected &gt;= softCap &amp;&amp; collectedBefore &lt; softCap) {
+        if (etherCollected >= softCap && collectedBefore < softCap) {
             SoftCapReached(etherCollected);
         }
     }
@@ -256,7 +256,7 @@ contract FluencePreSale is Haltable, SafeMath {
 
 
         // Sender must have tokens
-        require(tokensToBurn &gt; 0);
+        require(tokensToBurn > 0);
 
         // Burn
         balanceOf[msg.sender] = 0;
@@ -265,7 +265,7 @@ contract FluencePreSale is Haltable, SafeMath {
         uint amount = etherContributions[msg.sender];
 
         // Amount must be positive -- refund is not processed yet
-        assert(amount &gt; 0);
+        assert(amount > 0);
 
         etherContributions[msg.sender] = 0;
         // Clear state

@@ -8,13 +8,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -28,12 +28,12 @@ library SafeMath {
 contract ShitToken {
   using SafeMath for uint256;
 
-  string public constant name = &quot;Shit&quot;;
-  string public constant symbol = &quot;SHT&quot;;
+  string public constant name = "Shit";
+  string public constant symbol = "SHT";
   uint8 public constant decimals = 18;
   uint256 public totalSupply;
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
   address crowdsaleWallet;
   address owner;
 
@@ -50,9 +50,9 @@ contract ShitToken {
   event Created(address indexed donor, uint256 amount, uint256 tokens);
 
   function () payable {
-    require(now &lt; saleEndDate);
-    require(msg.value &gt; 0);
-    require(totalEtherReceived.add(msg.value) &lt;= beerAndHookersCap);
+    require(now < saleEndDate);
+    require(msg.value > 0);
+    require(totalEtherReceived.add(msg.value) <= beerAndHookersCap);
     uint256 tokens = msg.value.mul(shitRate);
     balances[msg.sender] = balances[msg.sender].add(tokens);
     totalEtherReceived = totalEtherReceived.add(msg.value);
@@ -78,7 +78,7 @@ contract ShitToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);

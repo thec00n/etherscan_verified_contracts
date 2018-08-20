@@ -10,7 +10,7 @@
 // GNU Affero General Public License for more details.
 // 
 // You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.18;
 
@@ -70,26 +70,26 @@ contract DSAuth is DSAuthEvents {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -108,10 +108,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -181,7 +181,7 @@ contract TxManager is DSAuth, DSMath, DSNote {
 
     function execute(address[] tokens, bytes script) public note auth {
         // pull the entire allowance of each token from the sender
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             uint256 amount = min(ERC20(tokens[i]).balanceOf(msg.sender), ERC20(tokens[i]).allowance(msg.sender, this));
             require(ERC20(tokens[i]).transferFrom(msg.sender, this, amount));
         }
@@ -190,14 +190,14 @@ contract TxManager is DSAuth, DSMath, DSNote {
         invokeContracts(script);
 
         // return entire remaining balances of each token to the sender
-        for (uint j = 0; j &lt; tokens.length; j++) {
+        for (uint j = 0; j < tokens.length; j++) {
             require(ERC20(tokens[j]).transfer(msg.sender, ERC20(tokens[j]).balanceOf(this)));
         }
     }
 
     function invokeContracts(bytes script) internal {
         uint256 location = 0;
-        while (location &lt; script.length) {
+        while (location < script.length) {
             address contractAddress = addressAt(script, location);
             uint256 calldataLength = uint256At(script, location + 0x14);
             uint256 calldataStart = locationOf(script, location + 0x14 + 0x20);

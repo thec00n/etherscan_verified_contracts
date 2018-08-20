@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -146,16 +146,16 @@ contract Owned {
 contract TRNDToken is ERC223Interface, Owned {
     using SafeMath for uint;
     
-    string public constant symbol=&quot;TRND&quot;; 
-    string public constant name=&quot;trend42&quot;; 
+    string public constant symbol="TRND"; 
+    string public constant name="trend42"; 
     uint8 public constant decimals=2;
 
     //totalsupplyoftoken 
     uint public totalSupply = 42000000 * 10 ** uint(decimals);
     
     //map the addresses
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function TRNDToken() {
         owner = msg.sender;
@@ -173,9 +173,9 @@ contract TRNDToken is ERC223Interface, Owned {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[_who] = SafeMath.sub(balances[_who], _value);
         totalSupply = SafeMath.sub(totalSupply, _value);
@@ -195,7 +195,7 @@ contract TRNDToken is ERC223Interface, Owned {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -214,7 +214,7 @@ contract TRNDToken is ERC223Interface, Owned {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, empty);
         }
@@ -224,11 +224,11 @@ contract TRNDToken is ERC223Interface, Owned {
     
     function batch_transfer(address[] _to, uint[] _value) public whenNotPaused returns (bool success) {
         
-        require(_to.length &lt;= 255);
+        require(_to.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_to.length == _value.length);
         
-        for (uint8 i = 0; i &lt; _to.length; i++) {
+        for (uint8 i = 0; i < _to.length; i++) {
             transfer(_to[i], _value[i]);
         }
         

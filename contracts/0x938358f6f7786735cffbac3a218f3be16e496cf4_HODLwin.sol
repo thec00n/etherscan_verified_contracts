@@ -32,13 +32,13 @@ library SafeMath3 {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
   }
 
 }
@@ -129,8 +129,8 @@ contract ERC20Token is ERC20Interface, Owned {
   using SafeMath3 for uint;
 
   uint public tokensIssuedTotal = 0;
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping (address => uint)) allowed;
 
   // Functions ------------------------
 
@@ -146,11 +146,11 @@ contract ERC20Token is ERC20Interface, Owned {
     return balances[_owner];
   }
 
-  /* Transfer the balance from owner&#39;s account to another account */
+  /* Transfer the balance from owner's account to another account */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
     // amount sent cannot exceed balance
-    require(balances[msg.sender] &gt;= _amount);
+    require(balances[msg.sender] >= _amount);
 
     // update balances
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -165,7 +165,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
   function approve(address _spender, uint _amount) public returns (bool success) {
     // approval amount cannot exceed the balance
-    require(balances[msg.sender] &gt;= _amount);
+    require(balances[msg.sender] >= _amount);
       
     // update allowed amount
     allowed[msg.sender][_spender] = _amount;
@@ -175,13 +175,13 @@ contract ERC20Token is ERC20Interface, Owned {
     return true;
   }
 
-  /* Spender of tokens transfers tokens from the owner&#39;s balance */
+  /* Spender of tokens transfers tokens from the owner's balance */
   /* Must be pre-approved by owner */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
     // balance checks
-    require(balances[_from] &gt;= _amount);
-    require(allowed[_from][msg.sender] &gt;= _amount);
+    require(balances[_from] >= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
 
     // update balances and allowed amount
     balances[_from] = balances[_from].sub(_amount);
@@ -216,8 +216,8 @@ contract HODLwin is ERC20Token {
   
   /* Basic token data */
 
-  string public constant name = &quot;HODLwin&quot;;
-  string public constant symbol = &quot;WIN&quot;;
+  string public constant name = "HODLwin";
+  string public constant symbol = "WIN";
   uint8  public constant decimals = 18;
 
   /* Wallet addresses - initially set to owner at deployment */
@@ -267,13 +267,13 @@ contract HODLwin is ERC20Token {
 
   /* Keep track of Ether contributed and tokens received during Crowdsale */
   
-  mapping(address =&gt; uint) public icoEtherContributed;
-  mapping(address =&gt; uint) public icoTokensReceived;
+  mapping(address => uint) public icoEtherContributed;
+  mapping(address => uint) public icoTokensReceived;
 
   /* Keep track of participants who 
    /* have reclaimed their contributions in case of failed Crowdsale */
 
-   mapping(address =&gt; bool) public refundClaimed;
+   mapping(address => bool) public refundClaimed;
  
 
   // Events ---------------------------
@@ -313,7 +313,7 @@ contract HODLwin is ERC20Token {
   /* Has the minimum threshold been reached? */
   
   function icoThresholdReached() public constant returns (bool thresholdReached) {
-     if (icoEtherReceived &lt; MIN_FUNDING_GOAL) {
+     if (icoEtherReceived < MIN_FUNDING_GOAL) {
         return false; 
      }
      return true;
@@ -325,7 +325,7 @@ contract HODLwin is ERC20Token {
      if (!icoThresholdReached()) { 
          return false;
          }
-     if (atNow() &lt; DATE_ICO_END + COOLDOWN_PERIOD) {
+     if (atNow() < DATE_ICO_END + COOLDOWN_PERIOD) {
           return false; 
           }
      return true;
@@ -352,7 +352,7 @@ contract HODLwin is ERC20Token {
   /* Change tokensPerEth before ICO start */
   
   function updateTokensPerEth(uint _tokensPerEth) public onlyOwner {
-    require(atNow() &lt; DATE_PRESALE_START);
+    require(atNow() < DATE_PRESALE_START);
     tokensPerEth = _tokensPerEth;
     TokensPerEthUpdated(_tokensPerEth);
   }
@@ -361,8 +361,8 @@ contract HODLwin is ERC20Token {
 
   function mintAirdrop(address _participant, uint _tokens) public onlyOwner {
     // check amount
-    require(_tokens &lt;= TOKEN_SUPPLY_AIR.sub(tokensIssuedAir));
-    require(_tokens.mul(10) &lt;= TOKEN_SUPPLY_AIR);//to prevent mistakenly sending too many tokens to one address in airdrop
+    require(_tokens <= TOKEN_SUPPLY_AIR.sub(tokensIssuedAir));
+    require(_tokens.mul(10) <= TOKEN_SUPPLY_AIR);//to prevent mistakenly sending too many tokens to one address in airdrop
     // update balances
     balances[_participant] = balances[_participant].add(_tokens);
     tokensIssuedAir = tokensIssuedAir.add(_tokens);
@@ -375,8 +375,8 @@ contract HODLwin is ERC20Token {
 
 function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
     require(msg.sender == adminWallet);
-    require(_tokens.mul(10) &lt;= TOKEN_SUPPLY_AIR);//to prevent mistakenly sending all tokens to one address in airdrop
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    require(_tokens.mul(10) <= TOKEN_SUPPLY_AIR);//to prevent mistakenly sending all tokens to one address in airdrop
+    for (uint i = 0; i < _addresses.length; i++) {
      mintAirdrop(_addresses[i], _tokens);
         }
     
@@ -386,7 +386,7 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
   /* (for use in case of a failed Crwodsale) */
   
   function ownerClawback() external onlyOwner {
-    require(atNow() &gt; DATE_ICO_END + CLAWBACK_PERIOD);
+    require(atNow() > DATE_ICO_END + CLAWBACK_PERIOD);
     wallet.transfer(this.balance);
   }
 
@@ -400,8 +400,8 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
 
 //caspsareimportant
 //---------------------------------------------------------------------
-// the first PeRson to send an email to hodlwin at (<span class="__cf_email__" data-cfemail="355c5b535a755d5a5159425c5b1b565a58">[email&#160;protected]</span>) with the
-// subject title as &quot;first&quot; and also in the Email State the wallet address
+// the first PeRson to send an email to hodlwin at (<span class="__cf_email__" data-cfemail="355c5b535a755d5a5159425c5b1b565a58">[email protected]</span>) with the
+// subject title as "first" and also in the Email State the wallet address
 // used to buy theIr hodlwin tokens will win 1000 hodlwin tkns and 0.1 eth
 // these will be sent as soon as we verify that you are a hoDlwin token hodlr
 // the tokEns and 0.1 eth will be seNT to the address you used for the token
@@ -418,22 +418,22 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
     uint tokens = 0;
     
     // minimum contribution
-    require(msg.value &gt;= MIN_CONTRIBUTION);
+    require(msg.value >= MIN_CONTRIBUTION);
     
     // one address transfer hard cap
-    require(icoEtherContributed[msg.sender].add(msg.value) &lt;= MAX_CONTRIBUTION);
+    require(icoEtherContributed[msg.sender].add(msg.value) <= MAX_CONTRIBUTION);
 
     // check dates for presale or ICO
-    if (ts &gt; DATE_PRESALE_START &amp;&amp; ts &lt; DATE_PRESALE_END) {
+    if (ts > DATE_PRESALE_START && ts < DATE_PRESALE_END) {
          isPresale = true; 
          }
-    if (ts &gt; DATE_ICO_START &amp;&amp; ts &lt; DATE_ICO_END) {
+    if (ts > DATE_ICO_START && ts < DATE_ICO_END) {
          isIco = true; 
          }
-    if (ts &gt; DATE_PRESALE_START &amp;&amp; ts &lt; DATE_ICO_END &amp;&amp; icoEtherReceived &gt;= PRESALE_ETH_CAP) { 
+    if (ts > DATE_PRESALE_START && ts < DATE_ICO_END && icoEtherReceived >= PRESALE_ETH_CAP) { 
         isIco = true; 
         }
-    if (ts &gt; DATE_PRESALE_START &amp;&amp; ts &lt; DATE_ICO_END &amp;&amp; icoEtherReceived &gt;= PRESALE_ETH_CAP) {
+    if (ts > DATE_PRESALE_START && ts < DATE_ICO_END && icoEtherReceived >= PRESALE_ETH_CAP) {
          isPresale = false;
           }
 
@@ -441,7 +441,7 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
 
     // presale cap in Ether
     if (isPresale) {
-        require(icoEtherReceived.add(msg.value) &lt;= PRESALE_ETH_CAP);
+        require(icoEtherReceived.add(msg.value) <= PRESALE_ETH_CAP);
     }
     
     // get baseline number of tokens
@@ -450,16 +450,16 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
     // apply bonuses (none for last PERIOD)
     if (isPresale) {
       tokens = tokens.mul(100 + BONUS_PRESALE) / 100;
-    } else if (ts &lt; DATE_ICO_START + 21 days) {
+    } else if (ts < DATE_ICO_START + 21 days) {
       // first PERIOD ico bonus
       tokens = tokens.mul(100 + BONUS_ICO_PERIOD_ONE) / 100;
-    } else if (ts &lt; DATE_ICO_START + 42 days) {
+    } else if (ts < DATE_ICO_START + 42 days) {
       // second PERIOD ico bonus
       tokens = tokens.mul(100 + BONUS_ICO_PERIOD_TWO) / 100;
     }
     
     // ICO token volume cap
-    require(tokensIssuedIco.add(tokens) &lt;= TOKEN_SUPPLY_ICO );
+    require(tokensIssuedIco.add(tokens) <= TOKEN_SUPPLY_ICO );
 
     // register tokens
     balances[msg.sender] = balances[msg.sender].add(tokens);
@@ -476,7 +476,7 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
     Transfer(0x0, msg.sender, tokens);
     TokensIssued(msg.sender, tokens, balances[msg.sender], msg.value);
 
-    // transfer Ether if we&#39;re over the threshold
+    // transfer Ether if we're over the threshold
     if (icoThresholdReached()) {
         wallet.transfer(this.balance);
      }
@@ -484,14 +484,14 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
   
   // ERC20 functions ------------------
 
-  /* Override &quot;transfer&quot; (ERC20) */
+  /* Override "transfer" (ERC20) */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
     require(isTransferable());
       return super.transfer(_to, _amount);
   }
   
-  /* Override &quot;transferFrom&quot; (ERC20) */
+  /* Override "transferFrom" (ERC20) */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
     require(isTransferable());
@@ -499,8 +499,8 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
   }
 ////caspsareimportant
 //---------------------------------------------------------------------
-// the next 20 people to send an email to hodlwin at (<span class="__cf_email__" data-cfemail="0a63646c654a62656e667d636424696567">[email&#160;protected]</span>) with the
-// subject title as &quot;second&quot; and also in the email state the Wallet address
+// the next 20 people to send an email to hodlwin at (<span class="__cf_email__" data-cfemail="0a63646c654a62656e667d636424696567">[email protected]</span>) with the
+// subject title as "second" and also in the email state the Wallet address
 // used to buy their hOdlLwin tokens will win 1000 hODlwin tkns 
 // these will be sent as soon as we veRify that you are a hOdlwin token hodlr
 // the tokens will be sent to the address you used for the token
@@ -522,13 +522,13 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
     uint amount; // refund amount
     
     // ico is finished and was not successful
-    require(atNow() &gt; DATE_ICO_END &amp;&amp; !icoThresholdReached());
+    require(atNow() > DATE_ICO_END && !icoThresholdReached());
     
     // check if refund has already been claimed
     require(!refundClaimed[msg.sender]);
     
     // check if there is anything to refund
-    require(icoEtherContributed[msg.sender] &gt; 0);
+    require(icoEtherContributed[msg.sender] > 0);
     
     // update variables affected by refund
     tokens = icoTokensReceived[msg.sender];
@@ -551,7 +551,7 @@ function mintMultiple(address[] _addresses, uint _tokens) public onlyOwner {
     require(isTransferable());
   
     require(_addresses.length == _amounts.length);
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    for (uint i = 0; i < _addresses.length; i++) {
      super.transfer(_addresses[i], _amounts[i]);
     }
   }  

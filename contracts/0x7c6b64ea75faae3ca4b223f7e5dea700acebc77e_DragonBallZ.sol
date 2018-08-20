@@ -61,24 +61,24 @@ contract DragonBallZ {
 		require(isPaused == false);
 		
 		// Calculate the 10% of Tournament of Power prize fee
-		uint256 TournamentPrizeFee = (msg.value / 10); // =&gt; 10%
+		uint256 TournamentPrizeFee = (msg.value / 10); // => 10%
 	    
 		// Calculate the 5% - Dev fee
-		uint256 devFee = ((msg.value / 10)/2);  // =&gt; 5%
+		uint256 devFee = ((msg.value / 10)/2);  // => 5%
 		
 		// Calculate the 10% commission - Dragon Ball Z Hero Owner
-		uint256 DBZHeroOwnerCommission = (msg.value / 10); // =&gt; 10%
+		uint256 DBZHeroOwnerCommission = (msg.value / 10); // => 10%
 
-		// Calculate the current hero owner commission on this sale &amp; transfer the commission to the owner.		
+		// Calculate the current hero owner commission on this sale & transfer the commission to the owner.		
 		uint256 commissionOwner = (msg.value - (devFee + TournamentPrizeFee + DBZHeroOwnerCommission)); 
-		heroes[_heroId].ownerAddress.transfer(commissionOwner); // =&gt; 75%
+		heroes[_heroId].ownerAddress.transfer(commissionOwner); // => 75%
 
 		// Transfer the 10% commission to the DBZ Hero Owner
-		heroes[_heroId].DBZHeroOwnerAddress.transfer(DBZHeroOwnerCommission); // =&gt; 10% 								
+		heroes[_heroId].DBZHeroOwnerAddress.transfer(DBZHeroOwnerCommission); // => 10% 								
 
 		
 		// Transfer the 5% commission to the Dev
-		devFeeAddress.transfer(devFee); // =&gt; 5% 
+		devFeeAddress.transfer(devFee); // => 5% 
 		
 		//The hero will be leveled up after new purchase
 		heroes[_heroId].currentLevel +=1;
@@ -104,9 +104,9 @@ contract DragonBallZ {
 	The hero owner can make the price lesser than the current price only.
 	*/
 	function modifyCurrentHeroPrice(uint _heroId, uint256 _newPrice) public {
-	    require(_newPrice &gt; 0);
+	    require(_newPrice > 0);
 	    require(heroes[_heroId].ownerAddress == msg.sender);
-	    require(_newPrice &lt; heroes[_heroId].currentPrice);
+	    require(_newPrice < heroes[_heroId].currentPrice);
 	    heroes[_heroId].currentPrice = _newPrice;
 	}
 	
@@ -153,7 +153,7 @@ contract DragonBallZ {
     }
     
     /**
-    @dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+    @dev Multiplies two numbers, throws on overflow. => From the SafeMath library
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
@@ -165,12 +165,12 @@ contract DragonBallZ {
     }
 
     /**
-    @dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+    @dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -187,7 +187,7 @@ contract DragonBallZ {
         uint i;
 		
 		//Loop to generate 5 random hero IDs from 55 heroes	
-		for(i=0;i&lt;=4;i++){
+		for(i=0;i<=4;i++){
 		    //Block timestamp and number used to generate the random number
 			winners.push(uint256(sha256(block.timestamp, block.number-i-1)) % heroMax);
 		}
@@ -195,7 +195,7 @@ contract DragonBallZ {
 		return winners;
     }
 
-    // This function will return only the winner&#39;s hero id
+    // This function will return only the winner's hero id
     function getWinnerDetails(uint _winnerId) public view returns(uint256) {
         return(winners[_winnerId]);
     }
@@ -208,7 +208,7 @@ contract DragonBallZ {
         //Assign 20% of total contract eth
         uint256 TotalPrize20PercentShare = (this.balance/5);
         uint i;
-			for(i=0;i&lt;=4;i++){
+			for(i=0;i<=4;i++){
 			    // Get the hero ID from getWinnerDetails function - Randomly generated
 			    uint _heroID = getWinnerDetails(i);
 			    // Assign the owner address of hero ID - Randomly generated
@@ -219,7 +219,7 @@ contract DragonBallZ {
                  winner.transfer(TotalPrize20PercentShare);			       
 			    }
 			    
-			    // Reset the winner&#39;s address after payout for next loop
+			    // Reset the winner's address after payout for next loop
 			    winner = address(0);
 			}
     }

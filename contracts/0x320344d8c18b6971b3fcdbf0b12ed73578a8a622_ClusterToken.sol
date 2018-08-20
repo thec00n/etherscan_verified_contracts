@@ -12,35 +12,35 @@ library SafeMath {
 		return c;
 	}
 	function safeSub(uint a, uint b) internal returns (uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	function div(uint a, uint b) internal returns (uint) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		uint c = a / b;
 		assert(a == b * c + a % b);
 		return c;
 	}
 	function sub(uint a, uint b) internal returns (uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	function add(uint a, uint b) internal returns (uint) {
 		uint c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-		return a &gt;= b ? a : b;
+		return a >= b ? a : b;
 	}
 	function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-		return a &lt; b ? a : b;
+		return a < b ? a : b;
 	}
 	function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-		return a &gt;= b ? a : b;
+		return a >= b ? a : b;
 	}
 	function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-		return a &lt; b ? a : b;
+		return a < b ? a : b;
 	}
 	function assert(bool assertion) internal {
 		if (!assertion) {
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -111,7 +111,7 @@ contract Pausable is Ownable {
 contract PullPayment {
 	using SafeMath for uint;
 
-	mapping(address =&gt; uint) public payments;
+	mapping(address => uint) public payments;
 	event LogRefundETH(address to, uint value);
 	/**
 	*  Store sent amount as credit to be pulled, called by payer 
@@ -127,7 +127,7 @@ contract PullPayment {
 		if (payment == 0) {
 			throw;
 		}
-		if (this.balance &lt; payment) {
+		if (this.balance < payment) {
 		    throw;
 		}
 		payments[payee] = 0;
@@ -173,13 +173,13 @@ contract BasicToken is ERC20Basic {
   
 	using SafeMath for uint;
 
-	mapping(address =&gt; uint) balances;
+	mapping(address => uint) balances;
 
 	/*
 	* Fix for the ERC20 short address attack  
 	*/
 	modifier onlyPayloadSize(uint size) {
-	   if(msg.data.length &lt; size + 4) {
+	   if(msg.data.length < size + 4) {
 	     throw;
 	   }
 	 _;
@@ -203,7 +203,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is BasicToken, ERC20 {
-	mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	mapping (address => mapping (address => uint)) allowed;
 	function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
 		var _allowance = allowed[_from][msg.sender];
 		balances[_to] = balances[_to].add(_value);
@@ -212,7 +212,7 @@ contract StandardToken is BasicToken, ERC20 {
 		Transfer(_from, _to, _value);
     }
 	function approve(address _spender, uint _value) {
-		if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+		if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 		allowed[msg.sender][_spender] = _value;
 		Approval(msg.sender, _spender, _value);
 	}
@@ -240,8 +240,8 @@ contract ClusterToken is StandardToken, PullPayment, Ownable, Pausable {
     /**
      * Variables
     */
-    string public constant name = &quot;ClusterToken&quot;;
-    string public constant symbol = &quot;CLRT&quot;;
+    string public constant name = "ClusterToken";
+    string public constant symbol = "CLRT";
     uint256 public constant decimals = 18;
     uint256 private buyPriceEth = 10000000000000000;
     
@@ -255,7 +255,7 @@ contract ClusterToken is StandardToken, PullPayment, Ownable, Pausable {
     uint256 private UnitCurrent;
   
   
-    mapping(address =&gt; Backer) public backers;
+    mapping(address => Backer) public backers;
     
    
     /**
@@ -322,7 +322,7 @@ contract ClusterToken is StandardToken, PullPayment, Ownable, Pausable {
      */ 
     function buyClusterToken() payable returns (uint amount) {
         
-        if (balances[this] &lt; amount) throw;                          
+        if (balances[this] < amount) throw;                          
         amount = msg.value.mul(buyPriceEth).div(1 ether);
         balances[msg.sender] += amount;
         balances[this] -= amount;
@@ -415,7 +415,7 @@ contract ClusterToken is StandardToken, PullPayment, Ownable, Pausable {
      * @dev Allows owner to withdraw funds from the account.
      */ 
     function Drain() onlyOwner public {
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             if (!owner.send(this.balance)) throw;
         }
     }
@@ -442,7 +442,7 @@ contract ClusterToken is StandardToken, PullPayment, Ownable, Pausable {
         uint t1 = currentCluster().mul(1000).add(currentSegment()); 
         uint t2 = backers[_sender].withdrawnAtSegment;      
 
-        if (t1.sub(t2) &gt;= 1000) { return true; }
+        if (t1.sub(t2) >= 1000) { return true; }
         return false;
         
     }

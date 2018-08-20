@@ -22,7 +22,7 @@ contract sportEvent{
     address public manager ;
     uint8 public devPercentage;
     string public name;
-    mapping(address =&gt; uint) public index;
+    mapping(address => uint) public index;
 
     struct Player{
         
@@ -52,7 +52,7 @@ contract sportEvent{
         );
         
         Bettors[0].totalPlayerBet += msg.value;
-        for(uint a = 0;a&lt;12;a++){
+        for(uint a = 0;a<12;a++){
             Bettors[0].betsValue[a] += playerValue[a];    
         }
         
@@ -64,7 +64,7 @@ contract sportEvent{
         else{ 
             Player storage bettor = Bettors[index[msg.sender]];
             bettor.totalPlayerBet += msg.value;
-            for(uint b = 0;b&lt;12;b++){
+            for(uint b = 0;b<12;b++){
                 bettor.betsValue[b] += playerValue[b];    
             }
 
@@ -81,15 +81,15 @@ contract sportEvent{
         uint newBalance = address(this).balance;
         uint16 winnersCount;
         uint share = 0;
-        for(uint l = 1; l&lt;Bettors.length ;l++){
-            if(Bettors[l].betsValue[winnerIndex]&gt;0){
+        for(uint l = 1; l<Bettors.length ;l++){
+            if(Bettors[l].betsValue[winnerIndex]>0){
                 share = Bettors[l].betsValue[winnerIndex]*newBalance/Bettors[0].betsValue[winnerIndex];
                 (Bettors[l].playerAddress).transfer(share);
                 winnersCount++;
             }
         }
         if(winnersCount==0){
-            for(uint g = 1; g&lt;Bettors.length ;g++){
+            for(uint g = 1; g<Bettors.length ;g++){
                 
                 share=Bettors[g].totalPlayerBet*newBalance/Bettors[0].totalPlayerBet;
                 (Bettors[g].playerAddress).transfer(share);
@@ -109,9 +109,9 @@ contract sportEvent{
     function validPurchase()  internal  view
         returns(bool) 
     {
-        bool withinPeriod = now &lt;= endTime;
+        bool withinPeriod = now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
         bool nonInvalidAccount = msg.sender != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; nonInvalidAccount;
+        return withinPeriod && nonZeroPurchase && nonInvalidAccount;
     }
 }

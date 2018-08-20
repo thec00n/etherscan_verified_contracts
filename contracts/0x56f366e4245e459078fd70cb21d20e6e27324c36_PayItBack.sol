@@ -22,36 +22,36 @@ contract PayItBack {
 
     modifier ownerOnly() {
         require(msg.sender == creator, 
-                &quot;Sorry, you&#39;re not the owner of this contract&quot;);
+                "Sorry, you're not the owner of this contract");
 
         _;
     }
 
     modifier nilBalance() {
-        require(address(this).balance &lt;= 0, 
-                &quot;Balance is not 0&quot;);
+        require(address(this).balance <= 0, 
+                "Balance is not 0");
 
         _;
     }
     
     modifier afterHoldExpiry() {
-        require(contributionTime &gt; 0, 
-                &quot;No contributions have been received&quot;);
-        require(now &gt; (contributionTime + HOLD_TIME), 
-                &quot;Payments are on hold&quot;);
+        require(contributionTime > 0, 
+                "No contributions have been received");
+        require(now > (contributionTime + HOLD_TIME), 
+                "Payments are on hold");
 
         _;
     }
     
     modifier enabled() {
         require(!isDisabled, 
-                &quot;This contract has been disabled&quot;);
+                "This contract has been disabled");
 
         _;
     }
 
     modifier wontOverflow() {
-        require(totalContributions + msg.value &gt; totalContributions);
+        require(totalContributions + msg.value > totalContributions);
 
         _;
     }
@@ -67,8 +67,8 @@ contract PayItBack {
 
     function contribute() public payable enabled wontOverflow {
         // Hold time starts with first contribution
-        // Don&#39;t allow subsequent contributions to reset the expiry
-        if (contributionTime == 0 &amp;&amp; msg.value &gt; 0) {
+        // Don't allow subsequent contributions to reset the expiry
+        if (contributionTime == 0 && msg.value > 0) {
             contributionTime = now;
         }
 
@@ -83,7 +83,7 @@ contract PayItBack {
         totalContributions -= payment;
         if (totalContributions != 0) {
             // something has gone wrong
-            emit Warning(&quot;Balance is unexpectedly non-zero after payment&quot;);
+            emit Warning("Balance is unexpectedly non-zero after payment");
         }
         contributionTime = 0; // Reset expiry
         emit PaidOut(payment);

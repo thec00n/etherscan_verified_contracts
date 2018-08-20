@@ -141,7 +141,7 @@ contract WalletSimple {
    * Gets called when a transaction is received without calling a method
    */
   function() payable {
-    if (msg.value &gt; 0) {
+    if (msg.value > 0) {
       // Fire deposited event if we are receiving funds
       Deposited(msg.sender, msg.value, msg.data);
     }
@@ -169,7 +169,7 @@ contract WalletSimple {
    */
   function sendMultiSig(address toAddress, uint value, bytes data, uint expireTime, uint sequenceId, bytes signature) onlysigner {
     // Verify the other signer
-    var operationHash = sha3(&quot;ETHER&quot;, toAddress, value, data, expireTime, sequenceId);
+    var operationHash = sha3("ETHER", toAddress, value, data, expireTime, sequenceId);
     
     var otherSigner = verifyMultiSig(toAddress, operationHash, signature, expireTime, sequenceId);
 
@@ -195,7 +195,7 @@ contract WalletSimple {
    */
   function sendMultiSigToken(address toAddress, uint value, address tokenContractAddress, uint expireTime, uint sequenceId, bytes signature) onlysigner {
     // Verify the other signer
-    var operationHash = sha3(&quot;ERC20&quot;, toAddress, value, tokenContractAddress, expireTime, sequenceId);
+    var operationHash = sha3("ERC20", toAddress, value, tokenContractAddress, expireTime, sequenceId);
     
     var otherSigner = verifyMultiSig(toAddress, operationHash, signature, expireTime, sequenceId);
     
@@ -232,12 +232,12 @@ contract WalletSimple {
     var otherSigner = recoverAddressFromSignature(operationHash, signature);
 
     // Verify if we are in safe mode. In safe mode, the wallet can only send to signers
-    if (safeMode &amp;&amp; !isSigner(toAddress)) {
+    if (safeMode && !isSigner(toAddress)) {
       // We are in safe mode and the toAddress is not a signer. Disallow!
       throw;
     }
     // Verify that the transaction has not expired
-    if (expireTime &lt; block.timestamp) {
+    if (expireTime < block.timestamp) {
       // Transaction expired
       throw;
     }
@@ -272,7 +272,7 @@ contract WalletSimple {
    */
   function isSigner(address signer) returns (bool) {
     // Iterate through all signers on the wallet and
-    for (uint i = 0; i &lt; signers.length; i++) {
+    for (uint i = 0; i < signers.length; i++) {
       if (signers[i] == signer) {
         return true;
       }
@@ -281,7 +281,7 @@ contract WalletSimple {
   }
 
   /**
-   * Gets the second signer&#39;s address using ecrecover
+   * Gets the second signer's address using ecrecover
    * @param operationHash the sha3 of the toAddress, value, data/tokenContractAddress and expireTime
    * @param signature the tightly packed signature of r, s, and v as an array of 65 bytes (returned by eth.sign)
    * returns address recovered from the signature
@@ -299,7 +299,7 @@ contract WalletSimple {
       s := mload(add(signature, 64))
       v := and(mload(add(signature, 65)), 255)
     }
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27; // Ethereum versions are 27 or 28 as opposed to 0 or 1 which is submitted by some signing libs
     }
     return ecrecover(operationHash, v, r, s);
@@ -314,21 +314,21 @@ contract WalletSimple {
   function tryInsertSequenceId(uint sequenceId) onlysigner private {
     // Keep a pointer to the lowest value element in the window
     uint lowestValueIndex = 0;
-    for (uint i = 0; i &lt; SEQUENCE_ID_WINDOW_SIZE; i++) {
+    for (uint i = 0; i < SEQUENCE_ID_WINDOW_SIZE; i++) {
       if (recentSequenceIds[i] == sequenceId) {
         // This sequence ID has been used before. Disallow!
         throw;
       }
-      if (recentSequenceIds[i] &lt; recentSequenceIds[lowestValueIndex]) {
+      if (recentSequenceIds[i] < recentSequenceIds[lowestValueIndex]) {
         lowestValueIndex = i;
       }
     }
-    if (sequenceId &lt; recentSequenceIds[lowestValueIndex]) {
+    if (sequenceId < recentSequenceIds[lowestValueIndex]) {
       // The sequence ID being used is lower than the lowest value in the window
       // so we cannot accept it as it may have been used before
       throw;
     }
-    if (sequenceId &gt; (recentSequenceIds[lowestValueIndex] + 10000)) {
+    if (sequenceId > (recentSequenceIds[lowestValueIndex] + 10000)) {
       // Block sequence IDs which are much higher than the lowest value
       // This prevents people blocking the contract by using very large sequence IDs quickly
       throw;
@@ -342,8 +342,8 @@ contract WalletSimple {
    */
   function getNextSequenceId() returns (uint) {
     uint highestSequenceId = 0;
-    for (uint i = 0; i &lt; SEQUENCE_ID_WINDOW_SIZE; i++) {
-      if (recentSequenceIds[i] &gt; highestSequenceId) {
+    for (uint i = 0; i < SEQUENCE_ID_WINDOW_SIZE; i++) {
+      if (recentSequenceIds[i] > highestSequenceId) {
         highestSequenceId = recentSequenceIds[i];
       }
     }

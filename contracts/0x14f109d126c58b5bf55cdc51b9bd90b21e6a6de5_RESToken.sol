@@ -26,9 +26,9 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowanceEliminate;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowanceTransfer;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowanceEliminate;
+    mapping (address => mapping (address => uint256)) public allowanceTransfer;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -59,9 +59,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use Eliminate() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -95,7 +95,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowanceTransfer[_from][msg.sender]);     // Check allowance
+        require(_value <= allowanceTransfer[_from][msg.sender]);     // Check allowance
         allowanceTransfer[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -137,7 +137,7 @@ contract TokenERC20 {
      * @param _value the amount of money to Eliminate
      */
     function eliminate(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Eliminate(msg.sender, _value);
@@ -153,10 +153,10 @@ contract TokenERC20 {
      * @param _value the amount of money to Eliminate
      */
     function eliminateFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                    // Check if the targeted balance is enough
-        require(_value &lt;= allowanceEliminate[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                    // Check if the targeted balance is enough
+        require(_value <= allowanceEliminate[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                             // Subtract from the targeted balance
-        allowanceEliminate[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowanceEliminate[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                                  // Update totalSupply
         Eliminate(_from, _value);
         return true;
@@ -168,8 +168,8 @@ contract RESToken is owned, TokenERC20 {
     uint256 initialSellPrice = 1000; 
     uint256 initialBuyPrice = 1000;
     uint256 initialSupply = 8551000000; // the projected number of people in 2030
-    string tokenName = &quot;Resource&quot;;
-    string tokenSymbol = &quot;RES&quot;;
+    string tokenName = "Resource";
+    string tokenSymbol = "RES";
 
     uint256 public sellPrice; 
     uint256 public buyPrice;
@@ -196,9 +196,9 @@ contract RESToken is owned, TokenERC20 {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * sellPrice / 1000); // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice / 1000); // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);                // makes the transfers
-        msg.sender.transfer(amount * sellPrice / 1000);     // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice / 1000);     // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
     
 }

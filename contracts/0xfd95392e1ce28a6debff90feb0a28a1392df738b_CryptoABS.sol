@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -113,13 +113,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -156,7 +156,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -169,7 +169,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -188,7 +188,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -246,7 +246,7 @@ contract CryptoABS is StandardToken, Ownable {
     uint256 interestInWei;                              // 待領利息金額
   }
 
-  mapping (address =&gt; Payee) public payees; 
+  mapping (address => Payee) public payees; 
   address[] public payeeArray;                          // payee array
   uint256 public nextPayeeIndex;                        // payee deposite interest index
 
@@ -293,8 +293,8 @@ contract CryptoABS is StandardToken, Ownable {
    */
   modifier isContractOpen() {
     require(
-      getBlockNumber() &gt;= startBlock &amp;&amp;
-      getBlockNumber() &lt;= endBlock &amp;&amp;
+      getBlockNumber() >= startBlock &&
+      getBlockNumber() <= endBlock &&
       finalizedBlock == 0);
     _;
   }
@@ -303,7 +303,7 @@ contract CryptoABS is StandardToken, Ownable {
    * @dev Throws if token in lockout period. 
    */
   modifier notLockout() {
-    require(now &gt; (initializedTime + financingPeriod + tokenLockoutPeriod));
+    require(now > (initializedTime + financingPeriod + tokenLockoutPeriod));
     _;
   }
   
@@ -311,7 +311,7 @@ contract CryptoABS is StandardToken, Ownable {
    * @dev Throws if not over maturity date. 
    */
   modifier overMaturity() {
-    require(now &gt; (initializedTime + financingPeriod + tokenMaturityPeriod));
+    require(now > (initializedTime + financingPeriod + tokenMaturityPeriod));
     _;
   }
 
@@ -359,13 +359,13 @@ contract CryptoABS is StandardToken, Ownable {
     require(contractAddress == 0x0);
     require(totalSupply == 0);
     require(decimals == 0);
-    require(_startBlock &gt;= getBlockNumber());
-    require(_startBlock &lt; _endBlock);
+    require(_startBlock >= getBlockNumber());
+    require(_startBlock < _endBlock);
     require(financingPeriod == 0);
     require(tokenLockoutPeriod == 0);
     require(tokenMaturityPeriod == 0);
     require(initializedTime == 0);
-    require(_maxTokenSupply &gt;= totalSupply);
+    require(_maxTokenSupply >= totalSupply);
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
@@ -387,8 +387,8 @@ contract CryptoABS is StandardToken, Ownable {
    * @dev Finalize contract
    */
   function finalize() public isInitialized {
-    require(getBlockNumber() &gt;= startBlock);
-    require(msg.sender == owner || getBlockNumber() &gt; endBlock);
+    require(getBlockNumber() >= startBlock);
+    require(msg.sender == owner || getBlockNumber() > endBlock);
 
     finalizedBlock = getBlockNumber();
     finalizedTime = now;
@@ -408,14 +408,14 @@ contract CryptoABS is StandardToken, Ownable {
    * @param _payee The payee address
    */
   function proxyPayment(address _payee) public payable notPaused isInitialized isContractOpen returns (bool) {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
 
     uint256 amount = msg.value;
-    require(amount &gt;= minInvestInWei); 
+    require(amount >= minInvestInWei); 
 
     uint256 refund = amount % tokenExchangeRateInWei;
     uint256 tokens = (amount - refund) / tokenExchangeRateInWei;
-    require(totalSupply.add(tokens) &lt;= maxTokenSupply);
+    require(totalSupply.add(tokens) <= maxTokenSupply);
     totalSupply = totalSupply.add(tokens);
     balances[_payee] = balances[_payee].add(tokens);
 
@@ -426,7 +426,7 @@ contract CryptoABS is StandardToken, Ownable {
     }
 
     require(owner.send(amount - refund));
-    if (refund &gt; 0) {
+    if (refund > 0) {
       require(msg.sender.send(refund));
     }
     return true;
@@ -461,8 +461,8 @@ contract CryptoABS is StandardToken, Ownable {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
-    require(_allowance &gt;= _value);
+    // if (_value > _allowance) throw;
+    require(_allowance >= _value);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -481,10 +481,10 @@ contract CryptoABS is StandardToken, Ownable {
   function ownerDepositInterest() onlyOwner isPaused isInitialized {
     uint256 i = nextPayeeIndex;
     uint256 payeesLength = payeeArray.length;
-    while (i &lt; payeesLength &amp;&amp; msg.gas &gt; 2000000) {
+    while (i < payeesLength && msg.gas > 2000000) {
       address _payee = payeeArray[i];
       uint256 _balance = balances[_payee];
-      if (payees[_payee].isPayable == true &amp;&amp; _balance &gt; 0) {
+      if (payees[_payee].isPayable == true && _balance > 0) {
         uint256 _interestInWei = (_balance * interestArray[getInterestCount() - 1]) / totalSupply;
         payees[_payee].interestInWei += _interestInWei;
         DepositInterest(getInterestCount(), _payee, _balance, _interestInWei);
@@ -510,7 +510,7 @@ contract CryptoABS is StandardToken, Ownable {
   function payeeWithdrawInterest(uint256 _interestInWei) payable isPayee isInitialized notLockout {
     require(msg.value == 0);
     uint256 interestInWei = _interestInWei;
-    require(payees[msg.sender].isPayable == true &amp;&amp; _interestInWei &lt;= payees[msg.sender].interestInWei);
+    require(payees[msg.sender].isPayable == true && _interestInWei <= payees[msg.sender].interestInWei);
     require(msg.sender.send(interestInWei));
     payees[msg.sender].interestInWei -= interestInWei;
     PayeeWithdrawInterest(msg.sender, interestInWei, payees[msg.sender].interestInWei);
@@ -521,7 +521,7 @@ contract CryptoABS is StandardToken, Ownable {
    */
   function payeeWithdrawCapital() payable isPayee isPaused isInitialized overMaturity {
     require(msg.value == 0);
-    require(balances[msg.sender] &gt; 0 &amp;&amp; totalSupply &gt; 0);
+    require(balances[msg.sender] > 0 && totalSupply > 0);
     uint256 capital = (balances[msg.sender] * finalizedCapital) / totalSupply;
     balances[msg.sender] = 0;
     require(msg.sender.send(capital));
@@ -547,7 +547,7 @@ contract CryptoABS is StandardToken, Ownable {
    * @param _exchangeRateInWei change rate of ether
    */
   function ownerSetExchangeRateInWei(uint256 _exchangeRateInWei) onlyOwner {
-    require(_exchangeRateInWei &gt; 0);
+    require(_exchangeRateInWei > 0);
     var _exchangeRate = ExchangeRate( getBlockNumber(), _exchangeRateInWei);
     exchangeRateArray.push(_exchangeRate);
     nextExchangeRateIndex = exchangeRateArray.length;
@@ -604,7 +604,7 @@ contract CryptoABS is StandardToken, Ownable {
    * @dev put all capital in this contract
    */
   function ownerPutCapital() payable isInitialized isPaused onlyOwner {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     finalizedCapital = msg.value;
   }
 

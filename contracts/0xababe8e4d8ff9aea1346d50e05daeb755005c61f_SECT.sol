@@ -49,12 +49,12 @@ contract EIP20Interface {
 contract EIP20 is EIP20Interface {
 
     uint256 constant internal MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -62,7 +62,7 @@ contract EIP20 is EIP20Interface {
     string public symbol;                 //An identifier: eg SBX
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -71,10 +71,10 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value);
@@ -101,7 +101,7 @@ contract EIP20 is EIP20Interface {
      * @param _addedValue The amount of tokens to increase the allowance by.
      */
     function increaseApproval(address _spender, uint256 _addedValue) public returns (bool success) {
-        require(allowed[msg.sender][_spender] + _addedValue &gt; allowed[msg.sender][_spender]);
+        require(allowed[msg.sender][_spender] + _addedValue > allowed[msg.sender][_spender]);
         allowed[msg.sender][_spender] += _addedValue;
         emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
@@ -117,7 +117,7 @@ contract EIP20 is EIP20Interface {
      * @param _subtractedValue The amount of tokens to decrease the allowance by.
      */
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool success) {
-        if (_subtractedValue &gt; allowed[msg.sender][_spender]) {
+        if (_subtractedValue > allowed[msg.sender][_spender]) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] -= _subtractedValue;
@@ -164,10 +164,10 @@ contract Stoppable is Owned {
 }
 
 contract SECT is EIP20, Owned, Proof, Stoppable {
-    string public coinbase = &quot;Ampil landed  and EIP999 is still in the eye of typhoon&quot;;
+    string public coinbase = "Ampil landed  and EIP999 is still in the eye of typhoon";
     constructor () public {
-        name = &quot;SECBIT&quot;;                                  // Set the name for display purposes
-        symbol = &quot;SECT&quot;;                                  // Set the symbol for display purposes
+        name = "SECBIT";                                  // Set the name for display purposes
+        symbol = "SECT";                                  // Set the symbol for display purposes
         decimals = 18;                                    // Amount of decimals for display purposes
         totalSupply = (10**9) * (10**uint256(decimals));  // Update total supply
         balances[msg.sender] = totalSupply;               // Give the creator all initial tokens

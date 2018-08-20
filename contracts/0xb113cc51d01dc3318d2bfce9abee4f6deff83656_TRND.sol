@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -116,9 +116,9 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   // 1 denied / 0 allow
-  mapping(address =&gt; uint8) permissionsList;
+  mapping(address => uint8) permissionsList;
   
   function SetPermissionsList(address _address, uint8 _sign) public onlyOwner{
     permissionsList[_address] = _sign; 
@@ -142,7 +142,7 @@ contract BasicToken is ERC20Basic, Ownable {
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(permissionsList[msg.sender] == 0);
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -170,7 +170,7 @@ contract BasicToken is ERC20Basic, Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -181,8 +181,8 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(permissionsList[msg.sender] == 0);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -245,7 +245,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -410,9 +410,9 @@ contract BurnableByOwner is BasicToken {
 
   event Burn(address indexed burner, uint256 value);
   function burn(address _address, uint256 _value) public onlyOwner{
-    require(_value &lt;= balances[_address]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_address]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = _address;
     balances[burner] = balances[burner].sub(_value);
@@ -424,8 +424,8 @@ contract BurnableByOwner is BasicToken {
 
 contract TRND is Ownable, MintableToken, BurnableByOwner {
   using SafeMath for uint256;    
-  string public constant name = &quot;Trends&quot;;
-  string public constant symbol = &quot;TRND&quot;;
+  string public constant name = "Trends";
+  string public constant symbol = "TRND";
   uint32 public constant decimals = 18;
   
   address public addressPrivateSale;
@@ -476,7 +476,7 @@ contract Crowdsale is Ownable {
   uint256 hardcapMainSale;  
   TRND public token;
   // balances for softcap
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   // start and end timestamps where investments are allowed (both inclusive)
   //ico
@@ -499,7 +499,7 @@ contract Crowdsale is Ownable {
 
   //Unconfirmed sum
   uint256 public unconfirmedSum;
-  mapping(address =&gt; uint) public unconfirmedSumAddr;
+  mapping(address => uint) public unconfirmedSumAddr;
   // address where funds are collected
   address public wallet;
   
@@ -542,15 +542,15 @@ contract Crowdsale is Ownable {
   
   function setStartIcoPreICO(uint256 _startIcoPreICO) public onlyOwner  { 
     uint256 delta;
-    require(now &lt; startIcoPreICO);
-	if (startIcoPreICO &gt; _startIcoPreICO) {
+    require(now < startIcoPreICO);
+	if (startIcoPreICO > _startIcoPreICO) {
 	  delta = startIcoPreICO.sub(_startIcoPreICO);
 	  startIcoPreICO   = _startIcoPreICO;
 	  endIcoPreICO     = endIcoPreICO.sub(delta);
       startIcoMainSale = startIcoMainSale.sub(delta);
       endIcoMainSale   = endIcoMainSale.sub(delta);
 	}
-	if (startIcoPreICO &lt; _startIcoPreICO) {
+	if (startIcoPreICO < _startIcoPreICO) {
 	  delta = _startIcoPreICO.sub(startIcoPreICO);
 	  startIcoPreICO   = _startIcoPreICO;
 	  endIcoPreICO     = endIcoPreICO.add(delta);
@@ -578,29 +578,29 @@ contract Crowdsale is Ownable {
     uint256 bonus;
 	uint256 rateICO;
     //icoPreICO   
-    if (now &gt;= startIcoPreICO &amp;&amp; now &lt; endIcoPreICO){
+    if (now >= startIcoPreICO && now < endIcoPreICO){
       rateICO = rateIcoPreICO;
     }  
 
     //icoMainSale   
-    if (now &gt;= startIcoMainSale  &amp;&amp; now &lt; endIcoMainSale){
+    if (now >= startIcoMainSale  && now < endIcoMainSale){
       rateICO = rateIcoMainSale;
     }  
 
     //bonus
-    if (now &gt;= startIcoPreICO &amp;&amp; now &lt; startIcoPreICO.add( 2 * 7 * 1 days )){
+    if (now >= startIcoPreICO && now < startIcoPreICO.add( 2 * 7 * 1 days )){
       bonus = 10;
     }  
-    if (now &gt;= startIcoPreICO.add(2 * 7 * 1 days) &amp;&amp; now &lt; startIcoPreICO.add(4 * 7 * 1 days)){
+    if (now >= startIcoPreICO.add(2 * 7 * 1 days) && now < startIcoPreICO.add(4 * 7 * 1 days)){
       bonus = 8;
     } 
-    if (now &gt;= startIcoPreICO.add(4 * 7 * 1 days) &amp;&amp; now &lt; startIcoPreICO.add(6 * 7 * 1 days)){
+    if (now >= startIcoPreICO.add(4 * 7 * 1 days) && now < startIcoPreICO.add(6 * 7 * 1 days)){
       bonus = 6;
     } 
-    if (now &gt;= startIcoPreICO.add(6 * 7 * 1 days) &amp;&amp; now &lt; startIcoPreICO.add(8 * 7 * 1 days)){
+    if (now >= startIcoPreICO.add(6 * 7 * 1 days) && now < startIcoPreICO.add(8 * 7 * 1 days)){
       bonus = 4;
     } 
-    if (now &gt;= startIcoPreICO.add(8 * 7 * 1 days) &amp;&amp; now &lt; startIcoPreICO.add(10 * 7 * 1 days)){
+    if (now >= startIcoPreICO.add(8 * 7 * 1 days) && now < startIcoPreICO.add(10 * 7 * 1 days)){
       bonus = 2;
     } 
 
@@ -617,10 +617,10 @@ contract Crowdsale is Ownable {
     rate = getRateIcoWithBonus();
     //icoPreICO   
     hardCap = hardcapPreICO;
-    if (now &gt;= startIcoPreICO &amp;&amp; now &lt; endIcoPreICO &amp;&amp; totalSoldTokens &lt; hardCap){
-	  require(weiAmount &gt;= minPurchasePreICO);
+    if (now >= startIcoPreICO && now < endIcoPreICO && totalSoldTokens < hardCap){
+	  require(weiAmount >= minPurchasePreICO);
       tokens = weiAmount.mul(rate);
-      if (hardCap.sub(totalSoldTokens) &lt; tokens){
+      if (hardCap.sub(totalSoldTokens) < tokens){
         tokens = hardCap.sub(totalSoldTokens); 
         weiAmount = tokens.div(rate);
         backAmount = msg.value.sub(weiAmount);
@@ -628,31 +628,31 @@ contract Crowdsale is Ownable {
     }  
     //icoMainSale  
     hardCap = hardcapMainSale.add(hardcapPreICO);
-    if (now &gt;= startIcoMainSale  &amp;&amp; now &lt; endIcoMainSale  &amp;&amp; totalSoldTokens &lt; hardCap){
-	  require(weiAmount &gt;= minPurchaseMainSale);
+    if (now >= startIcoMainSale  && now < endIcoMainSale  && totalSoldTokens < hardCap){
+	  require(weiAmount >= minPurchaseMainSale);
       tokens = weiAmount.mul(rate);
-      if (hardCap.sub(totalSoldTokens) &lt; tokens){
+      if (hardCap.sub(totalSoldTokens) < tokens){
         tokens = hardCap.sub(totalSoldTokens); 
         weiAmount = tokens.div(rate);
         backAmount = msg.value.sub(weiAmount);
       }
     }     
-    require(tokens &gt; 0);
+    require(tokens > 0);
     totalSoldTokens = totalSoldTokens.add(tokens);
     balances[msg.sender] = balances[msg.sender].add(weiAmount);
     token.mint(msg.sender, tokens);
 	unconfirmedSum = unconfirmedSum.add(tokens);
 	unconfirmedSumAddr[msg.sender] = unconfirmedSumAddr[msg.sender].add(tokens);
 	token.SetPermissionsList(beneficiary, 1);
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);    
     }
     emit TokenProcurement(msg.sender, beneficiary, weiAmount, tokens);
   }
 
   function refund() public{
-    require(totalSoldTokens.sub(unconfirmedSum) &lt; softcap &amp;&amp; now &gt; endIcoMainSale);
-    require(balances[msg.sender] &gt; 0);
+    require(totalSoldTokens.sub(unconfirmedSum) < softcap && now > endIcoMainSale);
+    require(balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
@@ -660,13 +660,13 @@ contract Crowdsale is Ownable {
   
   function transferEthToMultisig() public onlyOwner {
     address _this = this;
-    require(totalSoldTokens.sub(unconfirmedSum) &gt;= softcap &amp;&amp; now &gt; endIcoMainSale);  
+    require(totalSoldTokens.sub(unconfirmedSum) >= softcap && now > endIcoMainSale);  
     wallet.transfer(_this.balance);
   } 
   
   function refundUnconfirmed() public{
-    require(now &gt; endIcoMainSale);
-    require(balances[msg.sender] &gt; 0);
+    require(now > endIcoMainSale);
+    require(balances[msg.sender] > 0);
     require(token.GetPermissionsList(msg.sender) == 1);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;

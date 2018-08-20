@@ -5,8 +5,8 @@ contract Doubler{
     address public winner = msg.sender;
     
     function() public payable {
-        require(msg.value &gt;= price); 
-        if (msg.value &gt; price){
+        require(msg.value >= price); 
+        if (msg.value > price){
             msg.sender.transfer(msg.value - price);
         }
         if (!winner.send(price)){

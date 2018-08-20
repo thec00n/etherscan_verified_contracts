@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -112,7 +112,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -199,9 +199,9 @@ contract Ownable {
  */
 contract EthereumLimited is StandardToken, Ownable {
 
-  string public name = &quot;Ethereum limited&quot;;
+  string public name = "Ethereum limited";
   uint8 public decimals = 18;                
-  string public symbol = &quot;ETL&quot;; 
+  string public symbol = "ETL"; 
                                            
 
     bool public transfersEnabled = false;
@@ -301,7 +301,7 @@ contract HybridHardFork is Ownable {
             return true;
         }
         else{
-            if (now &gt; endTime || currentSupply &gt;= maxSupply){
+            if (now > endTime || currentSupply >= maxSupply){
                 Finalized();
                 isFinalized=true;
                 return true;
@@ -313,7 +313,7 @@ contract HybridHardFork is Ownable {
    
     function validateEtherReceived() private  returns (bool) {
         uint256 requireEtherReceived=(msg.sender.balance+msg.value).div(1000);
-        if( msg.value &gt;  requireEtherReceived) {
+        if( msg.value >  requireEtherReceived) {
             msg.sender.transfer( msg.value.sub(requireEtherReceived));
             return true;
         }
@@ -326,7 +326,7 @@ contract HybridHardFork is Ownable {
         }
     }
     function withdraw(uint amount) public onlyOwner returns(bool) {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         owner.transfer(amount);
         return true;
 

@@ -8,7 +8,7 @@
 //the payer can never directly recover the payment unless he becomes the recipient.
 
 //Anyone can become the recipient by contributing the commitThreshold.
-//The recipient cannot change once it&#39;s been set.
+//The recipient cannot change once it's been set.
 
 //The payer can at any time choose to burn or release to the recipient any amount of funds.
 
@@ -27,7 +27,7 @@ contract BurnableOpenPayment {
     
     //payerString and recipientString enable rudimentary communication/publishing.
     //Although the two parties might quickly move to another medium with better privacy or convenience,
-    //beginning with this is nice because it&#39;s already trustless/transparent/signed/pseudonymous/etc.
+    //beginning with this is nice because it's already trustless/transparent/signed/pseudonymous/etc.
     string public payerString;
     string public recipientString;
     
@@ -56,7 +56,7 @@ contract BurnableOpenPayment {
     modifier inState(State s) { if (s != state) throw; _; }
     modifier onlyPayer() { if (msg.sender != payer) throw; _; }
     modifier onlyRecipient() { if (msg.sender != recipient) throw; _; }
-    modifier onlyPayerOrRecipient() { if ((msg.sender != payer) &amp;&amp; (msg.sender != recipient)) throw; _; }
+    modifier onlyPayerOrRecipient() { if ((msg.sender != payer) && (msg.sender != recipient)) throw; _; }
     
     event FundsAdded(uint amount);//The payer has added funds to the BOP.
     event PayerStringUpdated(string newPayerString);
@@ -73,7 +73,7 @@ contract BurnableOpenPayment {
     function BurnableOpenPayment(address _payer, uint _commitThreshold, DefaultAction _defaultAction, uint _defaultTimeoutLength, string _payerString)
     public
     payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             FundsAdded(msg.value);
             amountDeposited += msg.value;
         }
@@ -125,9 +125,9 @@ contract BurnableOpenPayment {
     inState(State.Open)
     payable
     {
-        if (msg.value &lt; commitThreshold) throw;
+        if (msg.value < commitThreshold) throw;
         
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             FundsAdded(msg.value);
             amountDeposited += msg.value;
         }
@@ -229,7 +229,7 @@ contract BurnableOpenPayment {
     inState(State.Committed)
     {
         if (defaultAction == DefaultAction.None) throw;
-        if (now &lt; defaultTriggerTime) throw;
+        if (now < defaultTriggerTime) throw;
         
         DefaultActionCalled();
         if (defaultAction == DefaultAction.Burn) {

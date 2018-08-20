@@ -14,8 +14,8 @@ contract ERC20 is ERC20Basic {
 
 contract Hodl {
 
-    mapping(address =&gt; mapping(address =&gt; uint)) private amounts;
-    mapping(address =&gt; mapping(address =&gt; uint)) private timestamps;
+    mapping(address => mapping(address => uint)) private amounts;
+    mapping(address => mapping(address => uint)) private timestamps;
 
     event Hodling(address indexed sender, address indexed tokenAddress, uint256 amount);
     event TokenReturn(address indexed sender, address indexed tokenAddress, uint256 amount);
@@ -37,8 +37,8 @@ contract Hodl {
 
     function getTokens(address tokenAddress) public {
         assert(tokenAddress != address(0));
-        assert(amounts[msg.sender][tokenAddress] &gt; 0);
-        assert(now &gt;= timestamps[msg.sender][tokenAddress]);
+        assert(amounts[msg.sender][tokenAddress] > 0);
+        assert(now >= timestamps[msg.sender][tokenAddress]);
 
         ERC20 erc20 = ERC20(tokenAddress);
         uint256 amount = amounts[msg.sender][tokenAddress];

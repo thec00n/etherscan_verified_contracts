@@ -11,37 +11,37 @@ pragma solidity ^0.4.18;
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     }
 
@@ -131,16 +131,16 @@ pragma solidity ^0.4.18;
         * @dev Fix for the ERC20 short address attack.
         */
         modifier onlyPayloadSize(uint size) {
-            require(msg.data.length &gt;= size + 4);
+            require(msg.data.length >= size + 4);
             _;
         }
 
         function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public returns (bool success) {
-            //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-            //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+            //Default assumes totalSupply can't be over max (2^256 - 1).
+            //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
             //Replace the if with this one instead.
-            //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            if (balances[msg.sender] &gt;= _value) {
+            //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            if (balances[msg.sender] >= _value) {
                 balances[msg.sender] -= _value;
                 balances[_to] += _value;
                 Transfer(msg.sender, _to, _value);
@@ -150,8 +150,8 @@ pragma solidity ^0.4.18;
 
         function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) public returns (bool success) {
             //same as above. Replace this line with the following if you want to protect against wrapping uints.
-            //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+            //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
                 balances[_to] += _value;
                 balances[_from] -= _value;
                 allowed[_from][msg.sender] -= _value;
@@ -180,14 +180,14 @@ pragma solidity ^0.4.18;
         return allowed[_owner][_spender];
         }
 
-        mapping (address =&gt; uint) balances;
-        mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+        mapping (address => uint) balances;
+        mapping (address => mapping (address => uint)) allowed;
     }
 
     contract SharesChainToken is StandardToken {
         /// Constant token specific fields
-        string public constant name = &quot;SharesChainToken&quot;;
-        string public constant symbol = &quot;SCTK&quot;;
+        string public constant name = "SharesChainToken";
+        string public constant symbol = "SCTK";
         uint public constant decimals = 18;
 
         /// SharesChain total tokens supply
@@ -207,7 +207,7 @@ pragma solidity ^0.4.18;
         }
 
         modifier maxTokenAmountNotReached (uint amount){
-            assert(totalSupply.add(amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+            assert(totalSupply.add(amount) <= MAX_TOTAL_TOKEN_AMOUNT);
             _;
         }
 
@@ -283,16 +283,16 @@ pragma solidity ^0.4.18;
     uint public crowdEther;
 
     /// tags show address can join in open sale
-    mapping (address =&gt; bool) public whiteList;
+    mapping (address => bool) public whiteList;
 
     /// 记录投资人地址
     address[] private investors;
 
     /// 记录剩余释放次数
-    mapping (address =&gt; uint8) leftReleaseTimes;
+    mapping (address => uint8) leftReleaseTimes;
 
     /// 记录投资人锁定的Token数量
-    mapping (address =&gt; uint) lockedTokens;
+    mapping (address => uint) lockedTokens;
 
     /// Due to an emergency, set this to true to halt the contribution
     bool public halted;
@@ -340,17 +340,17 @@ pragma solidity ^0.4.18;
     }
 
     modifier ceilingEtherNotReached(uint x) {
-        require(crowdEther.add(x) &lt;= MAX_CROWD_FUNDING_ETH);
+        require(crowdEther.add(x) <= MAX_CROWD_FUNDING_ETH);
         _;
     }
 
     modifier earlierThan(uint x) {
-        require(now &lt; x);
+        require(now < x);
         _;
     }
 
     modifier notEarlierThan(uint x) {
-        require(now &gt;= x);
+        require(now >= x);
         _;
     }
 
@@ -407,7 +407,7 @@ pragma solidity ^0.4.18;
         returns (bool)
     {
         require(receiver != 0x0);
-        require(costEth &gt;= 1 ether);
+        require(costEth >= 1 ether);
 
         // Do not allow contracts to game the system
         require(!isContract(receiver));
@@ -422,7 +422,7 @@ pragma solidity ^0.4.18;
         uint gotTokens = calculateGotTokens(costEth);
 
         // 累计预售的Token不能超过最大预售量
-        require(preSoldTokens.add(gotTokens) &lt;= MAX_PRE_SALE_AMOUNT);
+        require(preSoldTokens.add(gotTokens) <= MAX_PRE_SALE_AMOUNT);
         lockedTokens[receiver] = lockedTokens[receiver].add(gotTokens);
         preSoldTokens = preSoldTokens.add(gotTokens);
         crowdEther = crowdEther.add(costEth);
@@ -437,7 +437,7 @@ pragma solidity ^0.4.18;
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             whiteList[users[i]] = true;
         }
     }
@@ -459,9 +459,9 @@ pragma solidity ^0.4.18;
     // 根据投资者输入的以太坊数量确定赠送的SCTK数量
     function calculateGotTokens(uint costEther) pure internal returns (uint gotTokens) {
         gotTokens = costEther * EXCHANGE_RATE;
-        if (costEther &gt; 0 &amp;&amp; costEther &lt; 100 ether) {
+        if (costEther > 0 && costEther < 100 ether) {
             gotTokens = gotTokens.mul(1);
-        }else if (costEther &gt;= 100 ether &amp;&amp; costEther &lt; 500 ether) {
+        }else if (costEther >= 100 ether && costEther < 500 ether) {
             gotTokens = gotTokens.mul(115).div(100);
         }else {
             gotTokens = gotTokens.mul(130).div(100);
@@ -503,7 +503,7 @@ pragma solidity ^0.4.18;
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
 
@@ -527,8 +527,8 @@ pragma solidity ^0.4.18;
         isClose
         returns (bool)
     {
-        for (uint8 i = 0; i &lt; investors.length; i++) {
-            if (leftReleaseTimes[investors[i]] &gt; 0) {
+        for (uint8 i = 0; i < investors.length; i++) {
+            if (leftReleaseTimes[investors[i]] > 0) {
                 uint releasedTokens = lockedTokens[investors[i]] / leftReleaseTimes[investors[i]];
                 sharesChainToken.mintToken(investors[i], releasedTokens);
                 lockedTokens[investors[i]] = lockedTokens[investors[i]] - releasedTokens;

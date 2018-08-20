@@ -16,12 +16,12 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
 
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
 
 
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -109,16 +109,16 @@ contract WindGreenGainToken5 is ERC20Interface, Owned {
     uint8 public decimals;
     uint _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     /**
      * Constructor
      */
     constructor() public {
-        symbol = &quot;PDI5&quot;;
-        name = &quot;Wind Green Gain Token 5&quot;;
+        symbol = "PDI5";
+        name = "Wind Green Gain Token 5";
         decimals = 18;
         _totalSupply = 2160000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -148,8 +148,8 @@ contract WindGreenGainToken5 is ERC20Interface, Owned {
      *  - 交易額為 0 是可被允許的
      */
     function transfer(address to, uint tokens) public returns (bool success) {
-        require(balances[msg.sender] &gt;= (tokens * 10**uint(18)));            // 餘額夠不夠
-        require(balances[to] + (tokens * 10**uint(18)) &gt;= balances[to]);   // 防止異味
+        require(balances[msg.sender] >= (tokens * 10**uint(18)));            // 餘額夠不夠
+        require(balances[to] + (tokens * 10**uint(18)) >= balances[to]);   // 防止異味
 
         balances[msg.sender] = balances[msg.sender].sub((tokens * 10**uint(18)));
         balances[to] = balances[to].add((tokens * 10**uint(18)));

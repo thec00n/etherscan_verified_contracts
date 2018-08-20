@@ -9,7 +9,7 @@ pragma solidity ^0.4.4;
 // This caters for the Golem Network Token which does not implement the
 // ERC20 transferFrom(...), approve(...) and allowance(...) methods
 //
-// Enjoy. (c) JonnyLatte, Cintix &amp; BokkyPooBah 2016. The MIT licence.
+// Enjoy. (c) JonnyLatte, Cintix & BokkyPooBah 2016. The MIT licence.
 // ------------------------------------------------------------------------
 
 // https://github.com/ethereum/EIPs/issues/20
@@ -76,7 +76,7 @@ contract TokenSeller is Owned {
         ActivatedEvent(sellsTokens);
     }
 
-    // Maker can activate or deactivate this contract&#39;s
+    // Maker can activate or deactivate this contract's
     // selling status
     //
     // The ActivatedEvent() event is logged with the following
@@ -155,7 +155,7 @@ contract TokenSeller is Owned {
     //
     // This method was called withdraw() in the old version
     function makerWithdrawEther(uint256 ethers) onlyOwner returns (bool ok) {
-        if (this.balance &gt;= ethers) {
+        if (this.balance >= ethers) {
             MakerWithdrewEther(ethers);
             return owner.send(ethers);
         }
@@ -164,7 +164,7 @@ contract TokenSeller is Owned {
     // Taker buys asset tokens by sending ethers
     //
     // The TakerBoughtAsset() event is logged with the following parameters
-    //   buyer           is the buyer&#39;s address
+    //   buyer           is the buyer's address
     //   ethersSent      is the number of ethers sent by the buyer
     //   ethersReturned  is the number of ethers sent back to the buyer as
     //                   change
@@ -173,17 +173,17 @@ contract TokenSeller is Owned {
     // This method was called buy() in the old version
     function takerBuyAsset() payable {
         if (sellsTokens || msg.sender == owner) {
-            // Note that sellPrice has already been validated as &gt; 0
+            // Note that sellPrice has already been validated as > 0
             uint order    = msg.value / sellPrice;
-            // Note that units has already been validated as &gt; 0
+            // Note that units has already been validated as > 0
             uint can_sell = ERC20Partial(asset).balanceOf(address(this)) / units;
             uint256 change = 0;
-            if (order &gt; can_sell) {
+            if (order > can_sell) {
                 change = msg.value - (can_sell * sellPrice);
                 order = can_sell;
                 if (!msg.sender.send(change)) throw;
             }
-            if (order &gt; 0) {
+            if (order > 0) {
                 if(!ERC20Partial(asset).transfer(msg.sender, order * units)) throw;
             }
             TakerBoughtAsset(msg.sender, msg.value, change, order * units);
@@ -205,7 +205,7 @@ contract TokenSellerFactory is Owned {
         address indexed asset, uint256 sellPrice, uint256 units, bool sellsTokens);
     event OwnerWithdrewERC20Token(address indexed tokenAddress, uint256 tokens);
 
-    mapping(address =&gt; bool) _verify;
+    mapping(address => bool) _verify;
 
     // Anyone can call this method to verify the settings of a
     // TokenSeller contract. The parameters are:
@@ -256,7 +256,7 @@ contract TokenSellerFactory is Owned {
     //   sellsTokens  true
     //
     // The TradeListing() event is logged with the following parameters
-    //   ownerAddress        is the Maker&#39;s address
+    //   ownerAddress        is the Maker's address
     //   tokenSellerAddress  is the address of the newly created TokenSeller contract
     //   asset               is the ERC20 asset address
     //   sellPrice           is the sell price in ethers per `units` of asset tokens
@@ -274,9 +274,9 @@ contract TokenSellerFactory is Owned {
         // Cannot have invalid asset
         if (asset == 0x0) throw;
         // Cannot set zero or negative price
-        if (sellPrice &lt;= 0) throw;
+        if (sellPrice <= 0) throw;
         // Cannot sell zero or negative units
-        if (units &lt;= 0) throw;
+        if (units <= 0) throw;
         seller = new TokenSeller(
             asset,
             sellPrice,

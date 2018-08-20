@@ -21,7 +21,7 @@ pragma solidity ^0.4.24;
 // This product is protected under license.  Any unauthorized copy, modification, or use without 
 // express written consent from the creators is prohibited.
 // v 0.1.3
-// Any cooperation Please email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e99a8c9b9f808a8ca99d8c888491c78a859c8b">[email&#160;protected]</a>
+// Any cooperation Please email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e99a8c9b9f808a8ca99d8c888491c78a859c8b">[email protected]</a>
 // Follow these step to become a site owner:
 // 1. fork git repository: https://github.com/teamx-club/escape-mmm
 // 2. modify file: js/config.js
@@ -60,7 +60,7 @@ contract EscapeMmmEvents {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -130,8 +130,8 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     //  _ _  _  |`. _     _ _  .
     // (_(_)| |~|~|(_||_|| (/_ .  system settings
     //==============_|=========================================        
-    string constant public name = &quot;Escape Financial Mutual Aid Platform&quot;;
-    string constant public symbol = &quot;EFMAP&quot;;
+    string constant public name = "Escape Financial Mutual Aid Platform";
+    string constant public symbol = "EFMAP";
 
     address private xTokenAddress = 0xfe8b40a35ff222c8475385f74e77d33954531b41;
 
@@ -154,12 +154,12 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     //  _ | _ _|_|` _  _ _ _    _| _ _|_ _  .
     // |_)|(_| |~|~(_)| | | |  (_|(_| | (_| . platform data
     //=|=======================================================
-    mapping (address =&gt; FMAPDatasets.Player) public players_;
-    mapping (address =&gt; mapping (uint256 =&gt; FMAPDatasets.OfferInfo)) public playerOfferOrders_; // player =&gt; player offer count =&gt; offerInfo.
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) public playerAcceptOrders_; // player =&gt; count =&gt; orderId. player orders to accept;
+    mapping (address => FMAPDatasets.Player) public players_;
+    mapping (address => mapping (uint256 => FMAPDatasets.OfferInfo)) public playerOfferOrders_; // player => player offer count => offerInfo.
+    mapping (address => mapping (uint256 => uint256)) public playerAcceptOrders_; // player => count => orderId. player orders to accept;
     uint256 private restOfferAmount_ = 0; // offered amount that not been accepted;
     FMAPDatasets.AcceptOrder private currentOrder_; // unmatched current order;
-    mapping (uint256 =&gt; FMAPDatasets.AcceptOrder) public acceptOrders_; // accept orders;
+    mapping (uint256 => FMAPDatasets.AcceptOrder) public acceptOrders_; // accept orders;
 
     address private teamXWallet;
     uint256 public _totalFee;
@@ -195,7 +195,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     // | | |(_)(_||~|~|(/_| _\ . modifiers
     //=========================================================
     modifier isHuman() {
-        require(AddressUtils.isContract(msg.sender) == false, &quot;sorry, only human allowed&quot;);
+        require(AddressUtils.isContract(msg.sender) == false, "sorry, only human allowed");
         _;
     }
 
@@ -214,7 +214,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     function offerHelp(address siteOwner, address affiliate) isHuman() public payable {
         FMAPDatasets.OfferInfo memory offerInfo = packageOfferInfo(siteOwner, msg.value);
         bool updateAff = false;
-        if(affiliate != address(0) &amp;&amp; affiliate != offerInfo.affiliateAddress) {
+        if(affiliate != address(0) && affiliate != offerInfo.affiliateAddress) {
             offerInfo.affiliateAddress = affiliate;
             updateAff = true;
         }
@@ -224,10 +224,10 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     }
 
     function offerHelpUsingBalance(address siteOwner, address affiliate, uint256 ethAmount) isHuman() public {
-        require(ethAmount &lt;= players_[msg.sender].balance, &quot;sorry, you don&#39;t have enough balance&quot;);
+        require(ethAmount <= players_[msg.sender].balance, "sorry, you don't have enough balance");
         FMAPDatasets.OfferInfo memory offerInfo = packageOfferInfo(siteOwner, ethAmount);
         bool updateAff = false;
-        if(affiliate != address(0) &amp;&amp; affiliate != offerInfo.affiliateAddress) {
+        if(affiliate != address(0) && affiliate != offerInfo.affiliateAddress) {
             offerInfo.affiliateAddress = affiliate;
             updateAff = true;
         }
@@ -239,7 +239,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
 
     function acceptHelp(uint256 amount) isHuman() public returns (uint256 canAcceptLeft) {
         (canAcceptLeft, ) = calcCanAcceptAmount(msg.sender, true, 0);
-        require(amount &lt;= canAcceptLeft, &quot;sorry, you don&#39;t have enough acceptable amount&quot;);
+        require(amount <= canAcceptLeft, "sorry, you don't have enough acceptable amount");
 
         uint256 _nextOrderId = currentOrder_.nextOrder;
         FMAPDatasets.AcceptOrder memory acceptOrder;
@@ -257,7 +257,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
         players_[acceptOrder.playerAddress].totalAccepted = amount.add(players_[acceptOrder.playerAddress].totalAccepted);
         players_[acceptOrder.playerAddress].acceptOrderCount++;
 
-        if (restOfferAmount_ &gt; 0) {
+        if (restOfferAmount_ > 0) {
             matching();
         }
         calcAndSetPlayerTotalCanAccept(acceptOrder.playerAddress, amount);
@@ -268,7 +268,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     }
 
     function withdraw() isHuman() public {
-        require(players_[msg.sender].balance &gt;= 1 finney, &quot;sorry, withdraw at least 1 finney&quot;);
+        require(players_[msg.sender].balance >= 1 finney, "sorry, withdraw at least 1 finney");
 
         uint256 _balance = players_[msg.sender].balance;
         players_[msg.sender].balance = 0;
@@ -348,27 +348,27 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
 
         _totalFee = _totalFee.add(_fee);
         _totalXT = _totalXT.add(_xt);
-        if (_totalXT &gt; 1 finney) {
+        if (_totalXT > 1 finney) {
             xTokenAddress.transfer(_totalXT);
         }
 
         _leftAmount = _leftAmount.sub(_fee);
 
         // affiliate
-        if (_aff &gt; 0) {
+        if (_aff > 0) {
             players_[offerInfo.affiliateAddress].balance = _aff.add(players_[offerInfo.affiliateAddress].balance);
             players_[offerInfo.affiliateAddress].affiliateEarned = _aff.add(players_[offerInfo.affiliateAddress].affiliateEarned);
             _leftAmount = _leftAmount.sub(_aff);
         }
         // site
-        if (_sit &gt; 0) {
+        if (_sit > 0) {
             players_[offerInfo.siteOwner].balance = _sit.add(players_[offerInfo.siteOwner].balance);
             players_[offerInfo.siteOwner].siteEarned = _sit.add(players_[offerInfo.siteOwner].siteEarned);
             _leftAmount = _leftAmount.sub(_sit);
         }
 
         // air drop
-        if (offerInfo.offerAmount &gt;= 1 finney) {
+        if (offerInfo.offerAmount >= 1 finney) {
             airDropTracker_ = airDropTracker_ + FMAPMath.calcTrackerCount(offerInfo.offerAmount);
             if (airdrop() == true) {
                 uint256 _airdrop = FMAPMath.calcAirDropAmount(offerInfo.offerAmount);
@@ -385,7 +385,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
         }
 
         restOfferAmount_ = restOfferAmount_.add(_leftAmount);
-        if (currentOrder_.acceptAmount &gt; currentOrder_.acceptedAmount) {
+        if (currentOrder_.acceptAmount > currentOrder_.acceptedAmount) {
             matching();
         }
 
@@ -398,9 +398,9 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
     }
 
     function matching() private {
-        while (restOfferAmount_ &gt; 0 &amp;&amp; currentOrder_.acceptAmount &gt; currentOrder_.acceptedAmount) {
+        while (restOfferAmount_ > 0 && currentOrder_.acceptAmount > currentOrder_.acceptedAmount) {
             uint256 needAcceptAmount = (currentOrder_.acceptAmount).sub(currentOrder_.acceptedAmount);
-            if (needAcceptAmount &lt;= restOfferAmount_) { // currentOrder finished
+            if (needAcceptAmount <= restOfferAmount_) { // currentOrder finished
                 restOfferAmount_ = restOfferAmount_.sub(needAcceptAmount);
                 players_[currentOrder_.playerAddress].balance = needAcceptAmount.add(players_[currentOrder_.playerAddress].balance);
                 currentOrder_.acceptedAmount = (currentOrder_.acceptedAmount).add(needAcceptAmount);
@@ -418,26 +418,26 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
         uint256 _latestCalced = players_[pAddr].lastCalcOfferNo;
         uint256 _acceptedAmount = acceptAmount;
 
-        while(_latestCalced &lt; players_[pAddr].offeredCount) {
+        while(_latestCalced < players_[pAddr].offeredCount) {
             FMAPDatasets.OfferInfo storage oi = playerOfferOrders_[pAddr][_latestCalced];
             uint256 _ts = _now.sub(oi.timestamp);
             if (oi.interesting == true) {
-                if (_ts &gt;= maxInterestTime_) {                    
+                if (_ts >= maxInterestTime_) {                    
                     // stop interesting...
                     uint256 interest1 = oi.offerAmount.sub(oi.acceptAmount).mul(1).div(1000).mul(maxInterestTime_ / interestPeriod_); // 24 * 7
                     players_[pAddr].canAccept = (players_[pAddr].canAccept).add(oi.offerAmount).add(interest1);
                     oi.interesting = false;
 
                     // set accept
-                    if (oi.offerAmount.sub(oi.acceptAmount) &gt; _acceptedAmount) {
+                    if (oi.offerAmount.sub(oi.acceptAmount) > _acceptedAmount) {
                         _acceptedAmount = 0;
                         oi.acceptAmount = oi.acceptAmount.add(_acceptedAmount);
                     } else {
                         _acceptedAmount = _acceptedAmount.sub(oi.offerAmount.sub(oi.acceptAmount));
                         oi.acceptAmount = oi.offerAmount;
                     }
-                } else if (_acceptedAmount &gt; 0) {
-                    if (_acceptedAmount &lt; oi.offerAmount.sub(oi.acceptAmount)) {
+                } else if (_acceptedAmount > 0) {
+                    if (_acceptedAmount < oi.offerAmount.sub(oi.acceptAmount)) {
                         oi.acceptAmount = oi.acceptAmount.add(_acceptedAmount);
                         _acceptedAmount = 0;
                     } else {
@@ -450,9 +450,9 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
             
                     }
                 }
-            } else if (oi.offerAmount &gt; oi.acceptAmount &amp;&amp; _acceptedAmount &gt; 0) {
+            } else if (oi.offerAmount > oi.acceptAmount && _acceptedAmount > 0) {
                 // set accept
-                if (oi.offerAmount.sub(oi.acceptAmount) &gt; _acceptedAmount) {
+                if (oi.offerAmount.sub(oi.acceptAmount) > _acceptedAmount) {
                     _acceptedAmount = 0;
                     oi.acceptAmount = oi.acceptAmount.add(_acceptedAmount);
                 } else {
@@ -470,7 +470,7 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
 
     function airdrop() private view returns (bool) {
         uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, block.number, block.timestamp, block.difficulty, block.gaslimit, airDropTracker_, block.coinbase, msg.sender)));
-        if(seed - (seed / 10000).mul(10000) &lt; airDropTracker_) {
+        if(seed - (seed / 10000).mul(10000) < airDropTracker_) {
             return (true);
         }
         return (false);
@@ -481,17 +481,17 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
         uint256 i = players_[pAddr].offeredCount;
         uint256 _now = block.timestamp.add(offsetTime);
         uint256 _nextUpdateTime = _now.add(interestPeriod_);
-        for(;i &gt; 0; i--) {
+        for(;i > 0; i--) {
             FMAPDatasets.OfferInfo memory oi = playerOfferOrders_[pAddr][i - 1];
             if (oi.interesting == true) {
                 uint256 timepassed = _now.sub(oi.timestamp);
-                if (!isLimit || (timepassed &gt;= interestPeriod_)) { // at least 1 period
+                if (!isLimit || (timepassed >= interestPeriod_)) { // at least 1 period
                     uint256 interest;
-                    if (timepassed &lt; maxInterestTime_) {
+                    if (timepassed < maxInterestTime_) {
                         interest = oi.offerAmount.sub(oi.acceptAmount).mul(1).div(1000).mul(timepassed / interestPeriod_);
                         
                         uint256 oiNextUpdateTime = (timepassed / interestPeriod_).add(1).mul(interestPeriod_).add(oi.timestamp);
-                        if (_nextUpdateTime &gt; oiNextUpdateTime) {
+                        if (_nextUpdateTime > oiNextUpdateTime) {
                             _nextUpdateTime = oiNextUpdateTime;
                         }
                     } else {
@@ -518,35 +518,35 @@ contract EFMAPlatform is EscapeMmmEvents, Ownable {
 library FMAPMath {
     using SafeMath for uint256;
     function calcTrackerCount(uint256 ethAmount) internal pure returns (uint256) {
-        if (ethAmount &gt;= 1 finney &amp;&amp; ethAmount &lt; 10 finney) {
+        if (ethAmount >= 1 finney && ethAmount < 10 finney) {
             return (1);
-        } else if (ethAmount &lt; 50 finney) {
+        } else if (ethAmount < 50 finney) {
             return (2);
-        } else if (ethAmount &lt; 200 finney) {
+        } else if (ethAmount < 200 finney) {
             return (3);
-        } else if (ethAmount &lt; 500 finney) {
+        } else if (ethAmount < 500 finney) {
             return (4);
-        } else if (ethAmount &lt; 1 ether) {
+        } else if (ethAmount < 1 ether) {
             return (5);
-        } else if (ethAmount &gt;= 1 ether) {
+        } else if (ethAmount >= 1 ether) {
             return ethAmount.div(1 ether).add(5);
         }
         return (0);
     }
     function calcAirDropAmount(uint256 ethAmount) internal pure returns (uint256) {
-        if (ethAmount &gt;= 1 finney &amp;&amp; ethAmount &lt; 10 finney) {
+        if (ethAmount >= 1 finney && ethAmount < 10 finney) {
             return (5);
-        } else if (ethAmount &lt; 50 finney) {
+        } else if (ethAmount < 50 finney) {
             return (10);
-        } else if (ethAmount &lt; 200 finney) {
+        } else if (ethAmount < 200 finney) {
             return (15);
-        } else if (ethAmount &lt; 500 finney) {
+        } else if (ethAmount < 500 finney) {
             return (20);
-        } else if (ethAmount &lt; 1 ether) {
+        } else if (ethAmount < 1 ether) {
             return (25);
-        } else if (ethAmount &gt;= 1 ether) {
+        } else if (ethAmount >= 1 ether) {
             uint256 a = ethAmount.div(1 ether).add(5).mul(5);
-            return (a &gt; 75 ? 75 : a);
+            return (a > 75 ? 75 : a);
         }
         return (0);
     }
@@ -598,8 +598,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -614,9 +614,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -624,7 +624,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -633,7 +633,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -661,7 +661,7 @@ library AddressUtils {
         // contracts then.
         // solium-disable-next-line security/no-inline-assembly
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }

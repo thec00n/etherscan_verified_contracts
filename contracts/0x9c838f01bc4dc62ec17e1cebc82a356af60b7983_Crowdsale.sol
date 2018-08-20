@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,8 +78,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -135,7 +135,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -151,7 +151,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
 
@@ -172,7 +172,7 @@ contract MintableToken is StandardToken, Ownable {
     modifier canMint() { require(!mintingFinished); _; }
 
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns(bool success) {
-        require(totalSupply.add(_amount) &lt;= MAX_SUPPLY);
+        require(totalSupply.add(_amount) <= MAX_SUPPLY);
 
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -194,7 +194,7 @@ contract MintableToken is StandardToken, Ownable {
 
 /*
     ICO S Token
-    - Эмиссия токенов ограничена (всего 85&#160;600&#160;000 токенов, токены выпускаются во время ICO и PreICO)
+    - Эмиссия токенов ограничена (всего 85 600 000 токенов, токены выпускаются во время ICO и PreICO)
     - Цена токена фиксированная: 1 ETH = 1250 токенов
     - Бонусы на PreICO: +40% первые 3 дня, +30% с 4 по 6 день, +20% с 7 по 9 день 
     - Минимальная и максимальная сумма покупки: 0.001 ETH и 10000 ETH
@@ -207,8 +207,8 @@ contract MintableToken is StandardToken, Ownable {
 */
 
 contract Token is BurnableToken, MintableToken {
-    string public name = &quot;S Token&quot;;
-    string public symbol = &quot;SKK&quot;;
+    string public name = "S Token";
+    string public symbol = "SKK";
     uint256 public decimals = 18;
 
     function Token() {
@@ -246,20 +246,20 @@ contract Crowdsale is Pausable {
     
     function purchase() whenNotPaused payable {
         require(!crowdsaleFinished);
-        require(now &gt;= startTime &amp;&amp; now &lt; endTime);
-        require(tokensSold &lt; tokensForSale);
-        require(msg.value &gt;= 0.08 * 1 ether &amp;&amp; msg.value &lt;= 100 * 1 ether);
+        require(now >= startTime && now < endTime);
+        require(tokensSold < tokensForSale);
+        require(msg.value >= 0.08 * 1 ether && msg.value <= 100 * 1 ether);
 
         uint sum = msg.value;
         uint price = priceTokenWei.mul(100).div(
-            now &lt; startTime + 3 days ? 140
-                : (now &lt; startTime + 6 days ? 130
-                    : (now &lt; startTime + 9 days ? 120 : 100))
+            now < startTime + 3 days ? 140
+                : (now < startTime + 6 days ? 130
+                    : (now < startTime + 9 days ? 120 : 100))
         );
         uint amount = sum.div(price).mul(1 ether);
         uint retSum = 0;
         
-        if(tokensSold.add(amount) &gt; tokensForSale) {
+        if(tokensSold.add(amount) > tokensForSale) {
             uint retAmount = tokensSold.add(amount).sub(tokensForSale);
             retSum = retAmount.mul(price).div(1 ether);
 
@@ -273,7 +273,7 @@ contract Crowdsale is Pausable {
         beneficiary.transfer(sum);
         token.mint(msg.sender, amount);
 
-        if(retSum &gt; 0) {
+        if(retSum > 0) {
             msg.sender.transfer(retSum);
         }
 

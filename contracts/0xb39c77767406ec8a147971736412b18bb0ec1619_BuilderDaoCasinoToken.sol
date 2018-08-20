@@ -18,7 +18,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -26,7 +26,7 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -77,12 +77,12 @@ contract ERC20Token is Owned {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // ------------------------------------------------------------------------
     // Get the total token supply
@@ -99,12 +99,12 @@ contract ERC20Token is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount                // User has balance
-            &amp;&amp; _amount &gt; 0                                 // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]     // Overflow check
+        if (balances[msg.sender] >= _amount                // User has balance
+            && _amount > 0                                 // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]     // Overflow check
         ) {
             balances[msg.sender] = balances[msg.sender].sub(_amount);
             balances[_to] = balances[_to].add(_amount);
@@ -130,8 +130,8 @@ contract ERC20Token is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
-    // balance to the spender&#39;s account. The owner of the tokens must already
+    // Spender of tokens transfer an amount of tokens from the token owner's
+    // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
     function transferFrom(
@@ -139,10 +139,10 @@ contract ERC20Token is Owned {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -156,7 +156,7 @@ contract ERC20Token is Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner, 
@@ -176,8 +176,8 @@ contract DaoCasinoToken is ERC20Token {
     // ------------------------------------------------------------------------
     // Token information
     // ------------------------------------------------------------------------
-    string public constant symbol = &quot;BET&quot;;
-    string public constant name = &quot;Dao.Casino&quot;;
+    string public constant symbol = "BET";
+    string public constant name = "Dao.Casino";
     uint8 public constant decimals = 18;
 
     // Do not use `now` here
@@ -198,7 +198,7 @@ contract DaoCasinoToken is ERC20Token {
         multisig  = _multisig;
     }
 
-    // &gt; new Date(&quot;2017-06-29T13:00:00&quot;).getTime()/1000
+    // > new Date("2017-06-29T13:00:00").getTime()/1000
     // 1498741200
 
     uint256 public totalEthers;
@@ -218,21 +218,21 @@ contract DaoCasinoToken is ERC20Token {
     }
 
     function buyPriceAt(uint256 at) constant returns (uint256) {
-        if (at &lt; STARTDATE) {
+        if (at < STARTDATE) {
             return 0;
-        } else if (at &lt; (STARTDATE + 2 days)) {
+        } else if (at < (STARTDATE + 2 days)) {
             return 2000;
-        } else if (at &lt; (STARTDATE + 15 days)) {
+        } else if (at < (STARTDATE + 15 days)) {
             return 1800;
-        } else if (at &lt; (STARTDATE + 18 days)) {
+        } else if (at < (STARTDATE + 18 days)) {
             return 1700;
-        } else if (at &lt; (STARTDATE + 21 days)) {
+        } else if (at < (STARTDATE + 21 days)) {
             return 1600;
-        } else if (at &lt; (STARTDATE + 24 days)) {
+        } else if (at < (STARTDATE + 24 days)) {
             return 1500;
-        } else if (at &lt; (STARTDATE + 27 days)) {
+        } else if (at < (STARTDATE + 27 days)) {
             return 1400;
-        } else if (at &lt;= ENDDATE) {
+        } else if (at <= ENDDATE) {
             return 1300;
         } else {
             return 0;
@@ -253,16 +253,16 @@ contract DaoCasinoToken is ERC20Token {
     // ------------------------------------------------------------------------
     function proxyPayment(address participant) payable {
         // No contributions before the start of the crowdsale
-        require(now &gt;= STARTDATE);
+        require(now >= STARTDATE);
         // No contributions after the end of the crowdsale
-        require(now &lt;= ENDDATE);
+        require(now <= ENDDATE);
         // No 0 contributions
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Add ETH raised to total
         totalEthers = totalEthers.add(msg.value);
         // Cannot exceed cap
-        require(totalEthers &lt;= CAP);
+        require(totalEthers <= CAP);
 
         // What is the BET to ETH rate
         uint256 _buyPrice = buyPrice();
@@ -271,8 +271,8 @@ contract DaoCasinoToken is ERC20Token {
         // and msg.value is restricted to valid values
         uint tokens = msg.value * _buyPrice;
 
-        // Check tokens &gt; 0
-        require(tokens &gt; 0);
+        // Check tokens > 0
+        require(tokens > 0);
         // Compute tokens for foundation 30%
         // Number of tokens restricted so maths is safe
         uint multisigTokens = tokens * 3 / 7;
@@ -304,8 +304,8 @@ contract DaoCasinoToken is ERC20Token {
     // commences
     // ------------------------------------------------------------------------
     function addPrecommitment(address participant, uint balance) onlyOwner {
-        require(now &lt; STARTDATE);
-        require(balance &gt; 0);
+        require(now < STARTDATE);
+        require(balance > 0);
         balances[participant] = balances[participant].add(balance);
         _totalSupply = _totalSupply.add(balance);
         Transfer(0x0, participant, balance);
@@ -313,19 +313,19 @@ contract DaoCasinoToken is ERC20Token {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account, with a
+    // Transfer the balance from owner's account to another account, with a
     // check that the crowdsale is finalised
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) returns (bool success) {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; ENDDATE || totalEthers == CAP);
+        require(now > ENDDATE || totalEthers == CAP);
         // Standard transfer
         return super.transfer(_to, _amount);
     }
 
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account, with a check that the crowdsale is
     // finalised
     // ------------------------------------------------------------------------
@@ -333,7 +333,7 @@ contract DaoCasinoToken is ERC20Token {
         returns (bool success)
     {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; ENDDATE || totalEthers == CAP);
+        require(now > ENDDATE || totalEthers == CAP);
         // Standard transferFrom
         return super.transferFrom(_from, _to, _amount);
     }
@@ -354,7 +354,7 @@ library CreatorDaoCasinoToken {
     { return new DaoCasinoToken(_start, _end, _cap, _multisig); }
 
     function version() constant returns (string)
-    { return &quot;v0.6.3&quot;; }
+    { return "v0.6.3"; }
 }
 
 /**
@@ -367,7 +367,7 @@ contract Builder is Owned {
     event Builded(address indexed client, address indexed instance);
  
     /* Addresses builded contracts at sender */
-    mapping(address =&gt; address[]) public getContractsOf;
+    mapping(address => address[]) public getContractsOf;
  
     /**
      * @dev Get last address
@@ -419,18 +419,18 @@ contract BuilderDaoCasinoToken is Builder {
      * @return address new contract
      */
     function create(uint256 _start, uint256 _end, uint256 _cap, address _multisig, address _client) payable returns (address) {
-        if (buildingCostWei &gt; 0 &amp;&amp; beneficiary != 0) {
+        if (buildingCostWei > 0 && beneficiary != 0) {
             // Too low value
-            if (msg.value &lt; buildingCostWei) throw;
+            if (msg.value < buildingCostWei) throw;
             // Beneficiary send
             if (!beneficiary.send(buildingCostWei)) throw;
             // Refund
-            if (msg.value &gt; buildingCostWei) {
+            if (msg.value > buildingCostWei) {
                 if (!msg.sender.send(msg.value - buildingCostWei)) throw;
             }
         } else {
             // Refund all
-            if (msg.value &gt; 0) {
+            if (msg.value > 0) {
                 if (!msg.sender.send(msg.value)) throw;
             }
         }

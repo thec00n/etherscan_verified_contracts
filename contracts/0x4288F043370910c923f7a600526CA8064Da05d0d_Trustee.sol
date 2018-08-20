@@ -39,13 +39,13 @@ library SafeMath {
         // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
 
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -54,7 +54,7 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -153,12 +153,12 @@ contract OpsManaged is Owned {
 
 
     function isAdmin(address _address) internal view returns (bool) {
-        return (adminAddress != address(0) &amp;&amp; _address == adminAddress);
+        return (adminAddress != address(0) && _address == adminAddress);
     }
 
 
     function isOps(address _address) internal view returns (bool) {
-        return (opsAddress != address(0) &amp;&amp; _address == opsAddress);
+        return (opsAddress != address(0) && _address == opsAddress);
     }
 
 
@@ -167,7 +167,7 @@ contract OpsManaged is Owned {
     }
 
 
-    // Owner and Admin can change the admin address. Address can also be set to 0 to &#39;disable&#39; it.
+    // Owner and Admin can change the admin address. Address can also be set to 0 to 'disable' it.
     function setAdminAddress(address _adminAddress) external onlyOwnerOrAdmin returns (bool) {
         require(_adminAddress != owner);
         require(_adminAddress != address(this));
@@ -181,7 +181,7 @@ contract OpsManaged is Owned {
     }
 
 
-    // Owner and Admin can change the operations address. Address can also be set to 0 to &#39;disable&#39; it.
+    // Owner and Admin can change the operations address. Address can also be set to 0 to 'disable' it.
     function setOpsAddress(address _opsAddress) external onlyOwnerOrAdmin returns (bool) {
         require(_opsAddress != owner);
         require(_opsAddress != address(this));
@@ -197,8 +197,8 @@ contract OpsManaged is Owned {
 
 contract SimpleTokenConfig {
 
-    string  public constant TOKEN_SYMBOL   = &quot;ST&quot;;
-    string  public constant TOKEN_NAME     = &quot;Simple Token&quot;;
+    string  public constant TOKEN_SYMBOL   = "ST";
+    string  public constant TOKEN_NAME     = "Simple Token";
     uint8   public constant TOKEN_DECIMALS = 18;
 
     uint256 public constant DECIMALSFACTOR = 10**uint256(TOKEN_DECIMALS);
@@ -235,8 +235,8 @@ contract ERC20Token is ERC20Interface, Owned {
     uint8   private tokenDecimals;
     uint256 internal tokenTotalSupply;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
 
     function ERC20Token(string _symbol, string _name, uint8 _decimals, uint256 _totalSupply) public
@@ -285,8 +285,8 @@ contract ERC20Token is ERC20Interface, Owned {
 
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        // According to the EIP20 spec, &quot;transfers of 0 values MUST be treated as normal
-        // transfers and fire the Transfer event&quot;.
+        // According to the EIP20 spec, "transfers of 0 values MUST be treated as normal
+        // transfers and fire the Transfer event".
         // Also, should throw if not enough balance. This is taken care of by SafeMath.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -386,7 +386,7 @@ contract SimpleToken is ERC20Token, OpsManaged, SimpleTokenConfig {
     // Implement a burn function to permit msg.sender to reduce its balance
     // which also reduces tokenTotalSupply
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         tokenTotalSupply = tokenTotalSupply.sub(_value);
@@ -438,15 +438,15 @@ contract Trustee is OpsManaged {
         bool    revokable;
     }
 
-    // The trustee has a special &#39;revoke&#39; key which is allowed to revoke allocations.
+    // The trustee has a special 'revoke' key which is allowed to revoke allocations.
     address public revokeAddress;
 
     // Total number of tokens that are currently allocated.
     // This does not include tokens that have been processed (sent to an address) already or
-    // the ones in the trustee&#39;s account that have not been allocated yet.
+    // the ones in the trustee's account that have not been allocated yet.
     uint256 public totalLocked;
 
-    mapping (address =&gt; Allocation) public allocations;
+    mapping (address => Allocation) public allocations;
 
 
     //
@@ -481,11 +481,11 @@ contract Trustee is OpsManaged {
 
 
     function isRevoke(address _address) private view returns (bool) {
-        return (revokeAddress != address(0) &amp;&amp; _address == revokeAddress);
+        return (revokeAddress != address(0) && _address == revokeAddress);
     }
 
 
-    // Owner and revoke can change the revoke address. Address can also be set to 0 to &#39;disable&#39; it.
+    // Owner and revoke can change the revoke address. Address can also be set to 0 to 'disable' it.
     function setRevokeAddress(address _revokeAddress) external onlyOwnerOrRevoke returns (bool) {
         require(_revokeAddress != owner);
         require(!isAdmin(_revokeAddress));
@@ -503,9 +503,9 @@ contract Trustee is OpsManaged {
     function grantAllocation(address _account, uint256 _amount, bool _revokable) public onlyAdminOrOps returns (bool) {
         require(_account != address(0));
         require(_account != address(this));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
-        // Can&#39;t create an allocation if there is already one for this account.
+        // Can't create an allocation if there is already one for this account.
         require(allocations[_account].amountGranted == 0);
 
         if (isOps(msg.sender)) {
@@ -515,7 +515,7 @@ contract Trustee is OpsManaged {
         }
 
         totalLocked = totalLocked.add(_amount);
-        require(totalLocked &lt;= tokenContract.balanceOf(address(this)));
+        require(totalLocked <= tokenContract.balanceOf(address(this)));
 
         allocations[_account] = Allocation({
             amountGranted     : _amount,
@@ -555,15 +555,15 @@ contract Trustee is OpsManaged {
     // exceed what has been granted.
     function processAllocation(address _account, uint256 _amount) external onlyOps returns (bool) {
         require(_account != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         Allocation storage allocation = allocations[_account];
 
-        require(allocation.amountGranted &gt; 0);
+        require(allocation.amountGranted > 0);
 
         uint256 transferable = allocation.amountGranted.sub(allocation.amountTransferred);
 
-        if (transferable &lt; _amount) {
+        if (transferable < _amount) {
            return false;
         }
 
@@ -586,8 +586,8 @@ contract Trustee is OpsManaged {
     function reclaimTokens() external onlyAdmin returns (bool) {
         uint256 ownBalance = tokenContract.balanceOf(address(this));
 
-        // If balance &lt;= amount locked, there is nothing to reclaim.
-        require(ownBalance &gt; totalLocked);
+        // If balance <= amount locked, there is nothing to reclaim.
+        require(ownBalance > totalLocked);
 
         uint256 amountReclaimed = ownBalance.sub(totalLocked);
 

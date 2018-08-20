@@ -3,7 +3,7 @@
            `+hMMMMMMMMMMMMMMMMMMMMMMh+`           
          .yMMMMMMMmyo/:----:/oymMMMMMMMy.         
        `sMMMMMMy/`              `/yMMMMMMs`       
-      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        *** Secure Email &amp; File Storage ***
+      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        *** Secure Email & File Storage ***
      /MMMMMy`   .sNMMMMMMMMMMMMmo.   `yMMMMM/       
     :MMMMM+   `yMMMMMMNmddmMMMMMMMs`   +MMMMM:      https://safe.ad
     mMMMMo   .NMMMMNo-  ``  -sNMMMMm.   oMMMMm      
@@ -12,7 +12,7 @@
    hMMMM/   sMMMMs     :MMy     yMMMMo   /MMMMh     
    yMMMMo   +MMMMd     yMMN`   `mMMMM:   oMMMMy   
    /MMMMm   `mMMMMh`  `MMMM/   +MMMMd    mMMMM/     
-    mMMMMo   .mMMMMNs-`&#39;`&#39;`    /MMMMm- `sMMMMm    
+    mMMMMo   .mMMMMNs-`'`'`    /MMMMm- `sMMMMm    
     :MMMMM+   `sMMMMMMMmmmmy.   hMMMMMMMMMMMN-      
      /MMMMMy`   .omMMMMMMMMMy    +mMMMMMMMMy.     
       -NMMMMNo`    ./oyhhhho`      ./oso+:`       
@@ -64,9 +64,9 @@ contract SAFEToken{
 	address owner;
 	uint256 totalSupply_ = 0;
 	bool mintingFinished = false;
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-	mapping(address =&gt; bool) mintAgents;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) internal allowed;
+	mapping(address => bool) mintAgents;
 
 	modifier onlyOwner(){
 
@@ -110,7 +110,7 @@ contract SAFEToken{
 
 		if(transfersSuspended) return isError(ERROR_TRANSFER_NOT_ALLOWED);
 		if(_to == address(0)) return isError(ERROR_ZERO_ADDRESS);
-		if(balances[msg.sender] &lt; _value) return isError(ERROR_INSUFICIENT_BALANCE);
+		if(balances[msg.sender] < _value) return isError(ERROR_INSUFICIENT_BALANCE);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);
@@ -128,11 +128,11 @@ contract SAFEToken{
 
 		if(transfersSuspended) return isError(ERROR_TRANSFER_NOT_ALLOWED);
 		uint256 allowance = allowed[_from][msg.sender];
-		if(balances[_from] &lt; _value) return isError(ERROR_INSUFICIENT_BALANCE);
-		if(allowance &lt; _value) return isError(ERROR_INSUFICIENT_ALLOWENCE);
+		if(balances[_from] < _value) return isError(ERROR_INSUFICIENT_BALANCE);
+		if(allowance < _value) return isError(ERROR_INSUFICIENT_ALLOWENCE);
 		balances[_to] += _value;
 		balances[_from] -= _value;
-		if(allowance &lt; MAX_UINT256) allowed[_from][msg.sender] -= _value;
+		if(allowance < MAX_UINT256) allowed[_from][msg.sender] -= _value;
 		Transfer(_from, _to, _value);
 		return true;
 
@@ -158,14 +158,14 @@ contract SAFEToken{
 
 		if(_receivers.length != _values.length) return isError(ERROR_ARRAYS_LENGTH_DIFF);
 
-		for(uint256 i = 0; i &lt; _receivers.length; ++i){
+		for(uint256 i = 0; i < _receivers.length; ++i){
 
-			if(totalSupply_ + _values[i] &lt; totalSupply_) return isError(ERROR_INT_OVERFLOW);
+			if(totalSupply_ + _values[i] < totalSupply_) return isError(ERROR_INT_OVERFLOW);
 			totalSupply_ += _values[i];
 
 		}
 			
-		for(i = 0; i &lt; _receivers.length; ++i){
+		for(i = 0; i < _receivers.length; ++i){
 
 			balances[_receivers[i]] += _values[i];
 			Mint(_receivers[i], _values[i]);
@@ -224,7 +224,7 @@ contract SAFEToken{
 
 	function withdrawnTokens(address[] _tokens, address _to) public onlyOwner returns (bool){
 
-		for(uint256 i = 0; i &lt; _tokens.length; i++){
+		for(uint256 i = 0; i < _tokens.length; i++){
 
 			address token = _tokens[i];
 			uint256 balance = ERC20Interface(token).balanceOf(this);

@@ -6,33 +6,33 @@ pragma solidity ^0.4.18;
  * an example difussion graph.
  *
  *                                                                  +---+
- *                                                             +--&gt; | 9 |
+ *                                                             +--> | 9 |
  *                                                             |    +---+
  *                                                             |
  *                                                             |    +---+
- *                                                 +---+       +--&gt; |10 |
- *                                            +--&gt; | 4 |       |    +---+
+ *                                                 +---+       +--> |10 |
+ *                                            +--> | 4 |       |    +---+
  *                                            |    +---+    +--+
  *                                            |  (inactive) |  |    +---+
- *                                            |             |  +--&gt; |11 |
+ *                                            |             |  +--> |11 |
  *                                            |    +---+    |  |    +---+
- *                                       +-------&gt; | 5 +----+  |
+ *                                       +-------> | 5 +----+  |
  *                                       |    |    +---+       |    +---+
- *                              +----    |    |                +--&gt; |12 |
- *                        +--&gt;  | 1 +----+    |                     +---+
+ *                              +----    |    |                +--> |12 |
+ *                        +-->  | 1 +----+    |                     +---+
  *                        |     +---+         |    +---+
- *                        |                   +--&gt; | 6 | +------------------&gt;
+ *                        |                   +--> | 6 | +------------------>
  *                        |                        +---+
  *               +---+    |     +---+
- *               | 0 | +-----&gt;  | 2 |
+ *               | 0 | +----->  | 2 |
  *               +---+    |     +---+
  *                        |   (inactive)
  *                        |                        +---+
- *                        |     +---+         +--&gt; | 7 |
- *                        +--&gt;  | 3 +---------+    +---+
+ *                        |     +---+         +--> | 7 |
+ *                        +-->  | 3 +---------+    +---+
  *                              +---+         |
  *                                            |    +---+
- *                                            +--&gt; | 8 |
+ *                                            +--> | 8 |
  *                                                 +---+
  *
  */
@@ -45,7 +45,7 @@ library Referral {
         /// This node was referred by...
         address referrer;
         /// Invitees (and their shares) of this node
-        mapping (address =&gt; uint) invitees;
+        mapping (address => uint) invitees;
         /// Store keys separately
         address[] inviteeIndex;
         /// Reward accumulated
@@ -59,7 +59,7 @@ library Referral {
      */
     struct Tree {
         /// Nodes
-        mapping (address =&gt; Referral.Node) nodes;
+        mapping (address => Referral.Node) nodes;
         /// stores keys separately
         address[] treeIndex;
     }
@@ -92,7 +92,7 @@ library Referral {
     }
 
     /**
-     * @dev Creates a new node representing an invitee and adds to a node&#39;s list of invitees.
+     * @dev Creates a new node representing an invitee and adds to a node's list of invitees.
      */
     function addInvitee (
         Tree storage self,
@@ -158,12 +158,12 @@ library TieredPayoff {
      * For degree == 1:
      * tier% of shares of newly joined node
      *
-     * For 2 &lt;= degree &lt; 27:
+     * For 2 <= degree < 27:
      *   k-1
      * (  ∑  1% of shares(node_i) )  + tier% of shares of node_k
      *   i=1
      *
-     * For degree &gt; 27:
+     * For degree > 27:
      * tier% of shares of newly joined node
      */
     function payoff(
@@ -190,7 +190,7 @@ library TieredPayoff {
             return 0;
         }
 
-        assert(tierPercentage &gt; 0);
+        assert(tierPercentage > 0);
 
         if(degree == 1) {
             shares = node.invitees[node.inviteeIndex[0]];
@@ -199,17 +199,17 @@ library TieredPayoff {
         }
 
 
-        // For 2 &lt;= degree &lt;= 27
+        // For 2 <= degree <= 27
         //    add 1% from the first k-1 nodes
         //    add tier% from the last node
-        if(degree &gt;= 2 &amp;&amp; degree &lt;= 27) {
-            for (uint i = 0; i &lt; (degree - 1); i++) {
+        if(degree >= 2 && degree <= 27) {
+            for (uint i = 0; i < (degree - 1); i++) {
                 shares = node.invitees[node.inviteeIndex[i]];
                 reward = reward.add(shares.mul(1).div(100));
             }
         }
 
-        // For degree &gt; 27, referrer bonus remains constant at tier%
+        // For degree > 27, referrer bonus remains constant at tier%
         shares = node.invitees[node.inviteeIndex[degree - 1]];
         reward = reward.add(shares.mul(tierPercentage).div(100));
 
@@ -230,7 +230,7 @@ library TieredPayoff {
         if (_referrals == 0) {
             return 0;
         }
-        if (_referrals &gt;= 27) {
+        if (_referrals >= 27) {
             return 33;
         }
         return _referrals + 6;
@@ -330,9 +330,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -340,8 +340,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -373,7 +373,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -425,7 +425,7 @@ contract DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -454,7 +454,7 @@ contract DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -490,20 +490,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -520,24 +520,24 @@ library PresaleBonuses {
         uint day = dateTime.getDay(block.timestamp);
 
         /// First 4 hours bonus
-        if (day == 2 &amp;&amp; hour &gt;= 16 &amp;&amp; hour &lt; 20) {
+        if (day == 2 && hour >= 16 && hour < 20) {
             return applyPercentage(_purchased, 70);
         }
 
         /// First day bonus
-        if ((day == 2 &amp;&amp; hour &gt;= 20) || (day == 3 &amp;&amp; hour &lt; 5)) {
+        if ((day == 2 && hour >= 20) || (day == 3 && hour < 5)) {
             return applyPercentage(_purchased, 50);
         }
 
         /// Second day bonus
-        if ((day == 3 &amp;&amp; hour &gt;= 5) || (day == 4 &amp;&amp; hour &lt; 5)) {
+        if ((day == 3 && hour >= 5) || (day == 4 && hour < 5)) {
             return applyPercentage(_purchased, 45);
         } 
 
         /// Days 3 - 20 bonus
-        if (day &lt; 22) {
+        if (day < 22) {
             uint numDays = day - 3;
-            if (hour &lt; 5) {
+            if (hour < 5) {
                 numDays--;
             }
 
@@ -545,22 +545,22 @@ library PresaleBonuses {
         }
 
         /// Fill the gap
-        if (day == 22 &amp;&amp; hour &lt; 5) {
+        if (day == 22 && hour < 5) {
             return applyPercentage(_purchased, 27);
         }
 
         /// Day 21 bonus
-        if ((day == 22 &amp;&amp; hour &gt;= 5) || (day == 23 &amp;&amp; hour &lt; 5)) {
+        if ((day == 22 && hour >= 5) || (day == 23 && hour < 5)) {
             return applyPercentage(_purchased, 25);
         }
 
         /// Day 22 bonus
-        if ((day == 23 &amp;&amp; hour &gt;= 5) || (day == 24 &amp;&amp; hour &lt; 5)) {
+        if ((day == 23 && hour >= 5) || (day == 24 && hour < 5)) {
             return applyPercentage(_purchased, 20);
         }
 
         /// Day 23 bonus
-        if ((day == 24 &amp;&amp; hour &gt;= 5) || (day == 25 &amp;&amp; hour &lt; 5)) {
+        if ((day == 24 && hour >= 5) || (day == 25 && hour < 5)) {
             return applyPercentage(_purchased, 15);
         }
 
@@ -582,7 +582,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -678,11 +678,11 @@ pragma solidity ^0.4.8;
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -691,8 +691,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -714,8 +714,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 pragma solidity ^0.4.8;
@@ -726,13 +726,13 @@ contract HumanStandardToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(
         uint256 _initialAmount,
@@ -752,10 +752,10 @@ contract HumanStandardToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }
@@ -767,17 +767,17 @@ pragma solidity ^0.4.17;
 contract Share is HumanStandardToken, Ownable {
     using SafeMath for uint;
 
-    string public constant TOKEN_NAME = &quot;Vyral Token&quot;;
+    string public constant TOKEN_NAME = "Vyral Token";
 
-    string public constant TOKEN_SYMBOL = &quot;SHARE&quot;;
+    string public constant TOKEN_SYMBOL = "SHARE";
 
     uint8 public constant TOKEN_DECIMALS = 18;
 
     uint public constant TOTAL_SUPPLY = 777777777 * (10 ** uint(TOKEN_DECIMALS));
 
-    mapping (address =&gt; uint256) lockedBalances;
+    mapping (address => uint256) lockedBalances;
 
-    mapping (address =&gt; bool) public transferrers;
+    mapping (address => bool) public transferrers;
 
     /**
      * Init this contract with the same params as a HST.
@@ -812,7 +812,7 @@ contract Share is HumanStandardToken, Ownable {
         public
         returns (bool)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -831,11 +831,11 @@ contract Share is HumanStandardToken, Ownable {
         public
         returns (bool)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         /// Only transfer unlocked balance
         if(isBonusLocked) {
-            require(balances[msg.sender].sub(lockedBalances[msg.sender]) &gt;= _value);
+            require(balances[msg.sender].sub(lockedBalances[msg.sender]) >= _value);
         }
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -853,12 +853,12 @@ contract Share is HumanStandardToken, Ownable {
         public
         returns (bool)
     {
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
 
         /// Only transfer unlocked balance
         if(isBonusLocked) {
-            require(balances[_from].sub(lockedBalances[_from]) &gt;= _value);
+            require(balances[_from].sub(lockedBalances[_from]) >= _value);
         }
 
         allowed[_from][msg.sender] = allowed[_from][_to].sub(_value);
@@ -955,7 +955,7 @@ contract Campaign is Ownable {
     }
 
     modifier onlyIfFundsAvailable() {
-        require(getAvailableBalance() &gt;= 0);
+        require(getAvailableBalance() >= 0);
         _;
     }
 
@@ -987,7 +987,7 @@ contract Campaign is Ownable {
     /**
      * @dev Accept invitation and join contract. If referrer address is non-zero,
      * calculate reward and transfer tokens to referrer. Referrer address will be
-     * zero if referrer is not found in the referral tree. Don&#39;t throw in such a
+     * zero if referrer is not found in the referral tree. Don't throw in such a
      * scenario.
      */
     function join(
@@ -1012,7 +1012,7 @@ contract Campaign is Ownable {
         // Add invitee to the tree
         vyralTree.addInvitee(_referrer, _invitee, _shares);
 
-        // Calculate referrer&#39;s reward
+        // Calculate referrer's reward
         reward = vyralTree.payoff(_referrer);
 
         // Log event
@@ -1026,7 +1026,7 @@ contract Campaign is Ownable {
         onlyOwner //(ie, VyralSale)
         external returns (bool)
     {
-        if(getAvailableBalance() &gt;= _amount) {
+        if(getAvailableBalance() >= _amount) {
             token.transferReward(_who, _amount);
             cost = cost.add(_amount);
             return true;
@@ -1083,7 +1083,7 @@ contract Campaign is Ownable {
     }
 
     /**
-     * Fallback. Don&#39;t send ETH to a campaign.
+     * Fallback. Don't send ETH to a campaign.
      */
     function() public {
         revert();
@@ -1108,7 +1108,7 @@ contract Vesting is Ownable {
     }
 
     // The vesting schedule attached to a specific address.
-    mapping (address =&gt; VestingSchedule) vestingSchedules;
+    mapping (address => VestingSchedule) vestingSchedules;
 
     /// @dev Assigns a token to be vested in this contract.
     /// @param _token Address of the token to be vested.
@@ -1131,12 +1131,12 @@ contract Vesting is Ownable {
         require( vestingSchedules[_newAddress].depositor == 0x0 );
 
         // Validate that the times make sense.
-        require( _cliffTimestamp &gt;= _startTimestamp );
-        require( _endTimestamp &gt; _cliffTimestamp );
+        require( _cliffTimestamp >= _startTimestamp );
+        require( _endTimestamp > _cliffTimestamp );
 
         // Some lock period sanity checks.
         require( _lockPeriod != 0 ); 
-        require( _endTimestamp.sub(_startTimestamp) &gt; _lockPeriod );
+        require( _endTimestamp.sub(_startTimestamp) > _lockPeriod );
 
         // Register the new address.
         vestingSchedules[_newAddress] = VestingSchedule({
@@ -1203,15 +1203,15 @@ contract Vesting is Ownable {
     {
         VestingSchedule storage vestingSchedule = vestingSchedules[msg.sender];
 
-        // Check that the vesting schedule was registered and it&#39;s after cliff time.
+        // Check that the vesting schedule was registered and it's after cliff time.
         require( vestingSchedule.isConfirmed == true );
-        require( vestingSchedule.cliffTimestamp &lt;= now );
+        require( vestingSchedule.cliffTimestamp <= now );
 
         uint totalAmountVested = calculateTotalAmountVested(vestingSchedule);
         uint amountWithdrawable = totalAmountVested.sub(vestingSchedule.amountWithdrawn);
         vestingSchedule.amountWithdrawn = totalAmountVested;
 
-        if (amountWithdrawable &gt; 0) {
+        if (amountWithdrawable > 0) {
             canWithdraw(vestingSchedule, amountWithdrawable);
             require( vestingToken.transfer(msg.sender, amountWithdrawable) );
             Withdraw(msg.sender, amountWithdrawable);
@@ -1221,8 +1221,8 @@ contract Vesting is Ownable {
     function calculateTotalAmountVested(VestingSchedule _vestingSchedule)
         internal view returns (uint _amountVested)
     {
-        // If it&#39;s past the end time, the whole amount is available.
-        if (now &gt;= _vestingSchedule.endTimestamp) {
+        // If it's past the end time, the whole amount is available.
+        if (now >= _vestingSchedule.endTimestamp) {
             return _vestingSchedule.totalAmount;
         }
 
@@ -1244,8 +1244,8 @@ contract Vesting is Ownable {
         uint lockPeriods = (_vestingSchedule.endTimestamp.sub(_vestingSchedule.startTimestamp))
                                                          .div(_vestingSchedule.lockPeriod);
 
-        if (now &lt; _vestingSchedule.endTimestamp) {
-            require( _amountWithdrawable &gt;= _vestingSchedule.totalAmount.div(lockPeriods) );
+        if (now < _vestingSchedule.endTimestamp) {
+            require( _amountWithdrawable >= _vestingSchedule.totalAmount.div(lockPeriods) );
         }
     }
 
@@ -1262,14 +1262,14 @@ contract Vesting is Ownable {
         uint amountWithdrawable;
         uint amountRefundable;
 
-        if (now &lt; vestingSchedule.cliffTimestamp) {
-            // Vesting hasn&#39;t started yet, return the whole amount
+        if (now < vestingSchedule.cliffTimestamp) {
+            // Vesting hasn't started yet, return the whole amount
             amountRefundable = vestingSchedule.totalAmount;
 
             delete vestingSchedules[_addressToRevoke];
             require( vestingToken.transfer(_addressToRefund, amountRefundable) );
         } else {
-            // Vesting has started, need to figure out how much hasn&#39;t been vested yet
+            // Vesting has started, need to figure out how much hasn't been vested yet
             uint totalAmountVested = calculateTotalAmountVested(vestingSchedule);
             amountWithdrawable = totalAmountVested.sub(vestingSchedule.amountWithdrawn);
             amountRefundable = totalAmountVested.sub(vestingSchedule.amountWithdrawn);
@@ -1422,10 +1422,10 @@ contract VyralSale is Ownable {
         require(phase == Phase.Presale || phase == Phase.Crowdsale);
 
         if (_phase == Phase.Presale) {
-            require(block.timestamp &gt;= presaleStartTimestamp);
+            require(block.timestamp >= presaleStartTimestamp);
         }
         if (_phase == Phase.Crowdsale) {
-            require(block.timestamp &gt;= saleStartTimestamp);
+            require(block.timestamp >= saleStartTimestamp);
         }
         _;
     }
@@ -1466,9 +1466,9 @@ contract VyralSale is Ownable {
         external returns (bool)
     {
         require(_wallet != 0x0);
-        require(_presaleStartTimestamp &gt;= block.timestamp);
-        require(_presaleEndTimestamp &gt; _presaleStartTimestamp);
-        require(_presaleCap &lt; SALE_ALLOCATION.div(_presaleRate));
+        require(_presaleStartTimestamp >= block.timestamp);
+        require(_presaleEndTimestamp > _presaleStartTimestamp);
+        require(_presaleCap < SALE_ALLOCATION.div(_presaleRate));
 
         /// Campaign must be set first.
         require(address(campaign) != 0x0);
@@ -1514,8 +1514,8 @@ contract VyralSale is Ownable {
         onlyOwner
         external returns (bool)
     {
-        require(_saleStartTimestamp &gt;= block.timestamp);
-        require(_saleEndTimestamp &gt; _saleStartTimestamp);
+        require(_saleStartTimestamp >= block.timestamp);
+        require(_saleEndTimestamp > _saleStartTimestamp);
 
         saleStartTimestamp = _saleStartTimestamp;
         saleEndTimestamp = _saleEndTimestamp;
@@ -1572,7 +1572,7 @@ contract VyralSale is Ownable {
         stopInEmergency
         public payable
     {
-        require(msg.value &gt;= MIN_CONTRIBUTION);
+        require(msg.value >= MIN_CONTRIBUTION);
         require(!presaleCapReached);
 
         uint contribution = msg.value;
@@ -1582,9 +1582,9 @@ contract VyralSale is Ownable {
         uint excess;
 
         // extra ether sent
-        if (totalSold &gt;= presaleCap) {
+        if (totalSold >= presaleCap) {
             excess = totalSold.sub(presaleCap);
-            if (excess &gt; 0) {
+            if (excess > 0) {
                 purchased = purchased.sub(excess.mul(presaleRate));
                 contribution = contribution.sub(excess);
                 msg.sender.transfer(excess);
@@ -1615,7 +1615,7 @@ contract VyralSale is Ownable {
         stopInEmergency
         public payable
     {
-        require(msg.value &gt;= MIN_CONTRIBUTION);
+        require(msg.value >= MIN_CONTRIBUTION);
         require(!saleCapReached);
 
         uint contribution = msg.value;
@@ -1625,9 +1625,9 @@ contract VyralSale is Ownable {
         uint excess;
 
         // extra ether sent
-        if (totalSold &gt;= saleCap) {
+        if (totalSold >= saleCap) {
             excess = totalSold.sub(saleCap);
-            if (excess &gt; 0) {
+            if (excess > 0) {
                 purchased = purchased.sub(excess.mul(saleRate));
                 contribution = contribution.sub(excess);
                 msg.sender.transfer(excess);
@@ -1662,9 +1662,9 @@ contract VyralSale is Ownable {
         inPhase(Phase.Initialized)
         external returns (bool)
     {
-        require(_presaleStartTimestamp &gt;= block.timestamp);
-        require(_presaleEndTimestamp &gt; _presaleStartTimestamp);
-        require(_presaleCap &lt; SALE_ALLOCATION.div(_presaleRate));
+        require(_presaleStartTimestamp >= block.timestamp);
+        require(_presaleEndTimestamp > _presaleStartTimestamp);
+        require(_presaleCap < SALE_ALLOCATION.div(_presaleRate));
 
         presaleStartTimestamp = _presaleStartTimestamp;
         presaleEndTimestamp = _presaleEndTimestamp;
@@ -1681,8 +1681,8 @@ contract VyralSale is Ownable {
         inPhase(Phase.Ready)
         external returns (bool)
     {
-        require(_saleStartTimestamp &gt;= block.timestamp);
-        require(_saleEndTimestamp &gt; _saleStartTimestamp);
+        require(_saleStartTimestamp >= block.timestamp);
+        require(_saleEndTimestamp > _saleStartTimestamp);
 
         saleStartTimestamp = _saleStartTimestamp;
         saleEndTimestamp = _saleEndTimestamp;
@@ -1728,7 +1728,7 @@ contract VyralSale is Ownable {
         onlyOwner
         external returns (bool)
     {
-        require(address(campaign) != _newCampaign &amp;&amp; _newCampaign != 0x0);
+        require(address(campaign) != _newCampaign && _newCampaign != 0x0);
         campaign = Campaign(_newCampaign);
 
         return true;
@@ -1740,7 +1740,7 @@ contract VyralSale is Ownable {
         onlyOwner
         external returns (bool)
     {
-        require(address(vestingWallet) != _newVesting &amp;&amp; _newVesting != 0x0);
+        require(address(vestingWallet) != _newVesting && _newVesting != 0x0);
         vestingWallet = Vesting(_newVesting);
         shareToken.approve(address(vestingWallet), TEAM.add(PARTNERS));
 

@@ -24,15 +24,15 @@ contract BingoLight
       uint8 currentN = 1;
    
       uint256 blockNumber = 0;
-      while (blockNumber &lt; 255)
+      while (blockNumber < 255)
       {
           uint256 n = 0;
           blockHash = block.blockhash(targetBlock - 1 - blockNumber);
-          while (currentN &lt; numbersCountNeeded &amp;&amp; n &lt; 32) 
+          while (currentN < numbersCountNeeded && n < 32) 
           {              
               newRnd = (uint256(blockHash) / 256**n) % 10 + 1; // 1 to 10
               uint8 i = 0;
-              for(;i &lt; currentN;i++)
+              for(;i < currentN;i++)
               {
                   if (newRnd == lotteryLuckyNumbers[i]) 
                   {

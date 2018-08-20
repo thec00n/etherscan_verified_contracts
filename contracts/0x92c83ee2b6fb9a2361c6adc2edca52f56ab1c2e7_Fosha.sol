@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
     }
 }
@@ -28,9 +28,9 @@ contract Fosha {
     
     using SafeMath for uint256; 
 
-    string constant public standard = &quot;ERC20&quot;;
-    string constant public symbol = &quot;FOSHA&quot;;
-    string constant public name = &quot;Fosha&quot;;
+    string constant public standard = "ERC20";
+    string constant public symbol = "FOSHA";
+    string constant public name = "Fosha";
     uint8 constant public decimals = 18;
 
     uint256 constant public initialSupply = 78000000 * 1 ether;
@@ -39,8 +39,8 @@ contract Fosha {
     uint256 public startTransferTime;
     uint256 public tokensSold;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     
     uint256 constant public start = 1524391200;
     uint256 constant public end = 1525132799;
@@ -64,7 +64,7 @@ contract Fosha {
     function() payable {
 		uint256 amount = msg.value;
 		uint256 numTokens = amount.mul(tokenExchangeRate); 
-		require(!crowdsaleClosed &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end &amp;&amp; tokensSold.add(numTokens) &lt;= tokensForIco &amp;&amp; amount &lt;= 5);
+		require(!crowdsaleClosed && now >= start && now <= end && tokensSold.add(numTokens) <= tokensForIco && amount <= 5);
 		ethFundWallet.transfer(amount);
 		balanceOf[fundWallet] = balanceOf[fundWallet].sub(numTokens); 
 		balanceOf[msg.sender] = balanceOf[msg.sender].add(numTokens);
@@ -75,7 +75,7 @@ contract Fosha {
     }
 
     function transfer(address _to, uint256 _value) returns(bool success) {
-		require(now &gt;= startTransferTime); 
+		require(now >= startTransferTime); 
 		balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value); 
 		balanceOf[_to] = balanceOf[_to].add(_value); 
 		Transfer(msg.sender, _to, _value); 
@@ -90,11 +90,11 @@ contract Fosha {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-		if (now &lt; startTransferTime) {
+		if (now < startTransferTime) {
 		    require(_from == fundWallet);
 		}
 		var _allowance = allowance[_from][msg.sender];
-		require(_value &lt;= _allowance);
+		require(_value <= _allowance);
 		balanceOf[_from] = balanceOf[_from].sub(_value); 
 		balanceOf[_to] = balanceOf[_to].add(_value); 
 		allowance[_from][msg.sender] = _allowance.sub(_value);
@@ -103,7 +103,7 @@ contract Fosha {
     }
 
     function markCrowdsaleEnding() {
-		require(now &gt; end);
+		require(now > end);
 		crowdsaleClosed = true;
     }
 }

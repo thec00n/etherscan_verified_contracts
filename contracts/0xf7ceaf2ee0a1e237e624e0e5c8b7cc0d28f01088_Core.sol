@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,19 +41,19 @@ library SafeMath {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -66,7 +66,7 @@ contract MultiOwners {
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
 
     function MultiOwners() public {
         owners[msg.sender] = true;
@@ -119,16 +119,16 @@ contract ERC721Token is ERC721 {
   uint256 internal totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping (uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping (uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -367,7 +367,7 @@ contract Base is ERC721Token, MultiOwners {
 
   // We can withdraw eth balance of contract.
   function withdrawBalance() onlyOwner external {
-    require(this.balance &gt; 0);
+    require(this.balance > 0);
 
     msg.sender.transfer(this.balance);
   }
@@ -375,10 +375,10 @@ contract Base is ERC721Token, MultiOwners {
 
 contract LootboxStore is Base {
   // mapping between specific Lootbox contract address to price in wei
-  mapping(address =&gt; uint256) ethPricedLootboxes;
+  mapping(address => uint256) ethPricedLootboxes;
 
   // mapping between specific Lootbox contract address to price in NOS tokens
-  mapping(uint256 =&gt; uint256) NOSPackages;
+  mapping(uint256 => uint256) NOSPackages;
 
   uint256 UUID;
 
@@ -393,9 +393,9 @@ contract LootboxStore is Base {
   }
 
   function buyEthLootbox(address _lootboxAddress) payable external {
-    // Verify the given lootbox contract exists and they&#39;ve paid enough
+    // Verify the given lootbox contract exists and they've paid enough
     require(ethPricedLootboxes[_lootboxAddress] != 0);
-    require(msg.value &gt;= ethPricedLootboxes[_lootboxAddress]);
+    require(msg.value >= ethPricedLootboxes[_lootboxAddress]);
 
     LootboxInterface(_lootboxAddress).buy(msg.sender);
   }
@@ -410,7 +410,7 @@ contract LootboxStore is Base {
 
   function buyNOS(uint256 _NOSAmt) payable external {
     require(NOSPackages[_NOSAmt] != 0);
-    require(msg.value &gt;= NOSPackages[_NOSAmt]);
+    require(msg.value >= NOSPackages[_NOSAmt]);
     
     NOSPurchased(UUID, msg.sender, _NOSAmt);
     UUID++;
@@ -435,7 +435,7 @@ contract ExternalInterface {
 
 
 contract Core is LootboxStore, ExternalInterface {
-  mapping(address =&gt; uint256) authorizedExternal;
+  mapping(address => uint256) authorizedExternal;
 
   function addAuthorizedExternal(address _address) external onlyOwner {
     authorizedExternal[_address] = 1;
@@ -457,7 +457,7 @@ contract Core is LootboxStore, ExternalInterface {
   }
 
   function giveMultipleItems(address _recipient, uint256[] _traits) onlyAuthorized external {
-    for (uint i = 0; i &lt; _traits.length; ++i) {
+    for (uint i = 0; i < _traits.length; ++i) {
       _createToken(_recipient, _traits[i]);
     }
   }
@@ -465,17 +465,17 @@ contract Core is LootboxStore, ExternalInterface {
   function giveMultipleItemsToMultipleRecipients(address[] _recipients, uint256[] _traits) onlyAuthorized external {
     require(_recipients.length == _traits.length);
 
-    for (uint i = 0; i &lt; _traits.length; ++i) {
+    for (uint i = 0; i < _traits.length; ++i) {
       _createToken(_recipients[i], _traits[i]);
     }
   }
 
   function giveMultipleItemsAndDestroyMultipleItems(address _recipient, uint256[] _traits, uint256[] _tokenIds) onlyAuthorized external {
-    for (uint i = 0; i &lt; _traits.length; ++i) {
+    for (uint i = 0; i < _traits.length; ++i) {
       _createToken(_recipient, _traits[i]);
     }
 
-    for (i = 0; i &lt; _tokenIds.length; ++i) {
+    for (i = 0; i < _tokenIds.length; ++i) {
       _burnFor(ownerOf(_tokenIds[i]), _tokenIds[i]);
     }
   }
@@ -485,7 +485,7 @@ contract Core is LootboxStore, ExternalInterface {
   }
 
   function destroyMultipleItems(uint256[] _tokenIds) onlyAuthorized external {
-    for (uint i = 0; i &lt; _tokenIds.length; ++i) {
+    for (uint i = 0; i < _tokenIds.length; ++i) {
       _burnFor(ownerOf(_tokenIds[i]), _tokenIds[i]);
     }
   }

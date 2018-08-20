@@ -8,21 +8,21 @@ contract Owned {
 
 contract ETHVault is Owned {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     
     function init() { Owner = msg.sender; }
     
     function() payable { deposit(); }
     
     function deposit() payable {
-        if( msg.value &gt;= 100 finney )
+        if( msg.value >= 100 finney )
             deposits[msg.sender] += msg.value;
         else throw;
     }
     
     function withdraw(uint amount) onlyOwner {
         uint max = deposits[msg.sender];
-        if( amount &lt;= max &amp;&amp; max &gt; 0 )
+        if( amount <= max && max > 0 )
             msg.sender.send(amount);
     }
     

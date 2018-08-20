@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -32,8 +32,8 @@ contract Administration {
 
     address     public owner;
     
-    mapping (address =&gt; bool) public moderators;
-    mapping (address =&gt; string) privilegeStatus;
+    mapping (address => bool) public moderators;
+    mapping (address => string) privilegeStatus;
 
     event AddMod(address indexed _invoker, address indexed _newMod, bool indexed _modAdded);
     event RemoveMod(address indexed _invoker, address indexed _removeMod, bool indexed _modRemoved);
@@ -115,11 +115,11 @@ contract CoinMarketAlert is Administration {
     AlertCreatorStruct[]   public      alertCreators;
     
     // Alert Creator Entered (Used to prevetnt duplicates in creator array)
-    mapping (address =&gt; bool) public userRegistered;
+    mapping (address => bool) public userRegistered;
     // Tracks approval
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     //[addr][balance]
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _amount);
     event Approve(address indexed _owner, address indexed _spender, uint256 _amount);
@@ -131,8 +131,8 @@ contract CoinMarketAlert is Administration {
 
     function CoinMarketAlert()
         public {
-        symbol = &quot;CMA&quot;;
-        name = &quot;Coin Market Alert&quot;;
+        symbol = "CMA";
+        name = "Coin Market Alert";
         decimals = 18;
         // 50 Mil in wei
         totalSupply = 50000000000000000000000000;
@@ -178,7 +178,7 @@ contract CoinMarketAlert is Administration {
         returns (bool paid)
     {
         require(!tokenTransfersFrozen);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(transferCheck(owner, _user, _amount));
         if (!userRegistered[_user]) {
             registerUser(_user);
@@ -194,10 +194,10 @@ contract CoinMarketAlert is Administration {
         private
         returns (bool raised)
     {
-        require(balances[owner].add(_amount) &gt; balances[owner]);
-        require(balances[owner].add(_amount) &gt; 0);
-        require(totalSupply.add(_amount) &gt; 0);
-        require(totalSupply.add(_amount) &gt; totalSupply);
+        require(balances[owner].add(_amount) > balances[owner]);
+        require(balances[owner].add(_amount) > 0);
+        require(totalSupply.add(_amount) > 0);
+        require(totalSupply.add(_amount) > totalSupply);
         totalSupply = totalSupply.add(_amount);
         balances[owner] = balances[owner].add(_amount);
         MintTokens(_invoker, _amount, true);
@@ -211,7 +211,7 @@ contract CoinMarketAlert is Administration {
         onlyAdmin
         returns (bool success)
     {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(tokenMintingEnabled);
         require(tokenMint(msg.sender, _amount));
         return true;
@@ -224,11 +224,11 @@ contract CoinMarketAlert is Administration {
         onlyAdmin
         returns (bool burned)
     {
-        require(_amount &gt; 0);
-        require(_amount &lt; totalSupply);
-        require(balances[owner] &gt; _amount);
-        require(balances[owner].sub(_amount) &gt;= 0);
-        require(totalSupply.sub(_amount) &gt;= 0);
+        require(_amount > 0);
+        require(_amount < totalSupply);
+        require(balances[owner] > _amount);
+        require(balances[owner].sub(_amount) >= 0);
+        require(totalSupply.sub(_amount) >= 0);
         balances[owner] = balances[owner].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
         TokenBurn(msg.sender, _amount, true);
@@ -281,7 +281,7 @@ contract CoinMarketAlert is Administration {
         returns (bool _transferredFrom)
     {
         require(!tokenTransfersFrozen);
-        require(allowance[_owner][msg.sender].sub(_amount) &gt;= 0);
+        require(allowance[_owner][msg.sender].sub(_amount) >= 0);
         require(transferCheck(_owner, _receiver, _amount));
         balances[_owner] = balances[_owner].sub(_amount);
         balances[_receiver] = balances[_receiver].add(_amount);
@@ -297,8 +297,8 @@ contract CoinMarketAlert is Administration {
         public
         returns (bool approved)
     {
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt; 0);
+        require(_amount > 0);
+        require(balances[msg.sender] > 0);
         allowance[msg.sender][_spender] = _amount;
         Approve(msg.sender, _spender, _amount);
         return true;
@@ -317,10 +317,10 @@ contract CoinMarketAlert is Administration {
         view
         returns (bool safe) 
     {
-        require(_value &gt; 0);
+        require(_value > 0);
         require(_receiver != address(0));
-        require(balances[_sender].sub(_value) &gt;= 0);
-        require(balances[_receiver].add(_value) &gt; balances[_receiver]);
+        require(balances[_sender].sub(_value) >= 0);
+        require(balances[_receiver].add(_value) > balances[_receiver]);
         return true;
     }
 

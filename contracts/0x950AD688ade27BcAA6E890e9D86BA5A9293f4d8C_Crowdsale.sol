@@ -47,7 +47,7 @@ contract Crowdsale {
        emit FundTransfer(msg.sender, amount, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -55,7 +55,7 @@ contract Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() public afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             emit GoalReached(beneficiary, amountRaised);
         }
         else

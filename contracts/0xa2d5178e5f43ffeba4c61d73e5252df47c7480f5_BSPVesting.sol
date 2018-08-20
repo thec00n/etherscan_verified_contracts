@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -61,7 +61,7 @@ contract BSPVesting {
   function release() public {
 
     uint256 unreleased = releasableAmount();
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released = released.add(unreleased);
     BSPToken.safeTransfer(beneficiary, unreleased);
@@ -77,7 +77,7 @@ contract BSPVesting {
     uint256 currentBalance = BSPToken.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released);
 
-    if (block.timestamp &gt;= start.add(duration)) {
+    if (block.timestamp >= start.add(duration)) {
       return totalBalance;
     } else {
       return totalBalance.mul(block.timestamp.sub(start)).div(duration);

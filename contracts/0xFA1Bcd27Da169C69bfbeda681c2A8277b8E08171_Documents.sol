@@ -38,7 +38,7 @@ contract Documents is Owned {
         address creator;
         uint date;
         uint signsCount;
-        mapping (uint =&gt; Sign) signs;
+        mapping (uint => Sign) signs;
     }
 
     /* Структура представляющая подпись */
@@ -47,8 +47,8 @@ contract Documents is Owned {
         uint date;
     }
 
-    /* Маппинг ID документа -&gt; документ */
-    mapping (uint =&gt; Document) public documentsIds;
+    /* Маппинг ID документа -> документ */
+    mapping (uint => Document) public documentsIds;
 
     /* Кол-во документов */
     uint documentsCount = 0;
@@ -94,7 +94,7 @@ contract Documents is Owned {
         uint count = d.signsCount;
         bool signed = false;
         if (count != 0) {
-            for (uint i = 0; i &lt; count; i++) {
+            for (uint i = 0; i < count; i++) {
                 if (d.signs[i].member == member) {
                     signed = true;
                     break;

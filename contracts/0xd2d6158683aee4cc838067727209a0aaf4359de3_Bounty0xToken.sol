@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -49,7 +49,7 @@ contract Ownable {
 // A simple contract that stores a whitelist of addresses, which the owner may update
 contract AddressWhitelist is Ownable {
     // the addresses that are included in the whitelist
-    mapping (address =&gt; bool) public whitelisted;
+    mapping (address => bool) public whitelisted;
 
     function AddressWhitelist() public {
     }
@@ -62,7 +62,7 @@ contract AddressWhitelist is Ownable {
 
     // add these addresses to the whitelist
     function addToWhitelist(address[] addresses) public onlyOwner returns (bool) {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             if (!whitelisted[addresses[i]]) {
                 whitelisted[addresses[i]] = true;
                 LogWhitelistAdd(addresses[i]);
@@ -76,7 +76,7 @@ contract AddressWhitelist is Ownable {
 
     // remove these addresses from the whitelist
     function removeFromWhitelist(address[] addresses) public onlyOwner returns (bool) {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             if (whitelisted[addresses[i]]) {
                 whitelisted[addresses[i]] = false;
                 LogWhitelistRemove(addresses[i]);
@@ -115,20 +115,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -153,8 +153,8 @@ contract BntyExchangeRateCalculator is KnowsTime, Ownable {
     function BntyExchangeRateCalculator(uint _bntyMicrodollarPrice, uint _USDEtherPrice, uint _fixUSDPriceTime)
         public
     {
-        require(_bntyMicrodollarPrice &gt; 0);
-        require(_USDEtherPrice &gt; 0);
+        require(_bntyMicrodollarPrice > 0);
+        require(_USDEtherPrice > 0);
 
         bntyMicrodollarPrice = _bntyMicrodollarPrice;
         fixUSDPriceTime = _fixUSDPriceTime;
@@ -163,8 +163,8 @@ contract BntyExchangeRateCalculator is KnowsTime, Ownable {
 
     // the owner can change the usd ether price
     function setUSDEtherPrice(uint _USDEtherPrice) onlyOwner public {
-        require(currentTime() &lt; fixUSDPriceTime);
-        require(_USDEtherPrice &gt; 0);
+        require(currentTime() < fixUSDPriceTime);
+        require(_USDEtherPrice > 0);
 
         USDEtherPrice = _USDEtherPrice;
     }
@@ -241,13 +241,13 @@ contract TokenController {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -261,13 +261,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -296,10 +296,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -377,7 +377,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -396,15 +396,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -420,7 +420,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -429,7 +429,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -515,7 +515,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -540,7 +540,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -602,9 +602,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -619,9 +619,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -652,16 +652,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -677,7 +677,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -696,15 +696,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -797,9 +797,9 @@ contract Bounty0xToken is MiniMeToken {
             _tokenFactory,
             0x0,                        // no parent token
             0,                          // no snapshot block number from parent
-            &quot;Bounty0x Token&quot;,           // Token name
+            "Bounty0x Token",           // Token name
             18   ,                      // Decimals
-            &quot;BNTY&quot;,                     // Symbol
+            "BNTY",                     // Symbol
             false                       // Disable transfers
         )
         public
@@ -810,7 +810,7 @@ contract Bounty0xToken is MiniMeToken {
     function generateTokensAll(address[] _owners, uint[] _amounts) onlyController public {
         require(_owners.length == _amounts.length);
 
-        for (uint i = 0; i &lt; _owners.length; i++) {
+        for (uint i = 0; i < _owners.length; i++) {
             require(generateTokens(_owners[i], _amounts[i]));
         }
     }
@@ -860,19 +860,19 @@ interface Bounty0xPresaleI {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -888,7 +888,7 @@ contract Bounty0xPresaleDistributor is KnowsConstants, BntyExchangeRateCalculato
     Bounty0xPresaleI public deployedPresaleContract;
     Bounty0xToken public bounty0xToken;
 
-    mapping(address =&gt; uint) public tokensPaid;
+    mapping(address => uint) public tokensPaid;
 
     function Bounty0xPresaleDistributor(Bounty0xToken _bounty0xToken, Bounty0xPresaleI _deployedPresaleContract)
         BntyExchangeRateCalculator(MICRO_DOLLARS_PER_BNTY_PRESALE, FIXED_PRESALE_USD_ETHER_PRICE, 0)
@@ -905,14 +905,14 @@ contract Bounty0xPresaleDistributor is KnowsConstants, BntyExchangeRateCalculato
      */
     function compensatePreSaleInvestors(address[] preSaleInvestors) public {
         // iterate through each investor
-        for (uint i = 0; i &lt; preSaleInvestors.length; i++) {
+        for (uint i = 0; i < preSaleInvestors.length; i++) {
             address investorAddress = preSaleInvestors[i];
 
             // the deployed presale contract tracked the balance of each contributor
             uint weiContributed = deployedPresaleContract.balanceOf(investorAddress);
 
-            // they contributed and haven&#39;t been paid
-            if (weiContributed &gt; 0 &amp;&amp; tokensPaid[investorAddress] == 0) {
+            // they contributed and haven't been paid
+            if (weiContributed > 0 && tokensPaid[investorAddress] == 0) {
                 // convert the amount of wei they contributed to the bnty
                 uint bntyCompensation = Math.min256(weiToBnty(weiContributed), bounty0xToken.balanceOf(this));
 
@@ -955,10 +955,10 @@ contract Bounty0xReserveHolder is KnowsConstants, KnowsTime {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(currentTime() &gt;= UNFREEZE_DATE);
+        require(currentTime() >= UNFREEZE_DATE);
 
         uint amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         require(token.transfer(beneficiary, amount));
     }
@@ -1019,7 +1019,7 @@ contract Bounty0xCrowdsale is KnowsTime, KnowsConstants, Ownable, BntyExchangeRa
     Bounty0xToken public bounty0xToken;                                 // Reward tokens to compensate in
 
     // Contribution amounts
-    mapping (address =&gt; uint) public contributionAmounts;            // The amount that each address has contributed
+    mapping (address => uint) public contributionAmounts;            // The amount that each address has contributed
     uint public totalContributions;                                  // Total contributions given
 
     // Events
@@ -1044,24 +1044,24 @@ contract Bounty0xCrowdsale is KnowsTime, KnowsConstants, Ownable, BntyExchangeRa
         uint time = currentTime();
 
         // require the sale has started
-        require(time &gt;= SALE_START_DATE);
+        require(time >= SALE_START_DATE);
 
         // require that the sale has not ended
-        require(time &lt; SALE_END_DATE);
+        require(time < SALE_END_DATE);
 
         // maximum contribution from this transaction is tracked in this variable
         uint maximumContribution = usdToWei(HARD_CAP_USD).sub(totalContributions);
 
         // store whether the contribution is made during the whitelist period
-        bool isDuringWhitelistPeriod = time &lt; WHITELIST_END_DATE;
+        bool isDuringWhitelistPeriod = time < WHITELIST_END_DATE;
 
         // these limits are only checked during the limited period
-        if (time &lt; LIMITS_END_DATE) {
+        if (time < LIMITS_END_DATE) {
             // require that they have not overpaid their gas price
-            require(tx.gasprice &lt;= MAX_GAS_PRICE);
+            require(tx.gasprice <= MAX_GAS_PRICE);
 
-            // require that they haven&#39;t sent too much gas
-            require(msg.gas &lt;= MAX_GAS);
+            // require that they haven't sent too much gas
+            require(msg.gas <= MAX_GAS);
 
             // if we are in the WHITELIST period, we need to make sure the sender contributed to the presale
             if (isDuringWhitelistPeriod) {
@@ -1086,7 +1086,7 @@ contract Bounty0xCrowdsale is KnowsTime, KnowsConstants, Ownable, BntyExchangeRa
         uint refundWei = msg.value.sub(contribution);
 
         // require that they are allowed to contribute more
-        require(contribution &gt; 0);
+        require(contribution > 0);
 
         // account contribution towards total
         totalContributions = totalContributions.add(contribution);
@@ -1098,7 +1098,7 @@ contract Bounty0xCrowdsale is KnowsTime, KnowsConstants, Ownable, BntyExchangeRa
         uint amountBntyRewarded = Math.min256(weiToBnty(contribution), bounty0xToken.balanceOf(this));
         require(bounty0xToken.transfer(msg.sender, amountBntyRewarded));
 
-        if (refundWei &gt; 0) {
+        if (refundWei > 0) {
             msg.sender.transfer(refundWei);
         }
 

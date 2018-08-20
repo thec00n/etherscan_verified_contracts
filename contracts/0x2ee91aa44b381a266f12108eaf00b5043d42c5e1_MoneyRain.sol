@@ -12,13 +12,13 @@ contract ERC20Interface {
 }
 
 contract MoneyRain is ERC20Interface {
-  string public constant symbol = &quot;MRT&quot;;
-  string public constant name = &quot;MoneyRainToken&quot;;
+  string public constant symbol = "MRT";
+  string public constant name = "MoneyRainToken";
   uint8 public constant decimals = 0;
   uint256 _totalSupply = 49000000;
   address public owner;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
   modifier onlyOwner() {
     if (msg.sender != owner) {revert();}
     _;
@@ -40,7 +40,7 @@ contract MoneyRain is ERC20Interface {
   }
    
   function transfer(address _to, uint256 _amount) public returns (bool success) {
-    if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
       balances[msg.sender] -= _amount;
       balances[_to] += _amount;
       Transfer(msg.sender, _to, _amount);
@@ -49,7 +49,7 @@ contract MoneyRain is ERC20Interface {
   }
    
   function transferFrom(address _from,address _to,uint256 _amount) public returns (bool success) {
-    if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
       balances[_from] -= _amount;
        allowed[_from][msg.sender] -= _amount;
        balances[_to] += _amount;

@@ -53,7 +53,7 @@ contract Big2018Token {
     uint dayOld = 1; //counter to kep track of last day tokens were given
     /**********GameUsage**********/
     address public game;  //address of Game later in year
-    mapping (address =&gt; uint) public box; //record each persons box choice
+    mapping (address => uint) public box; //record each persons box choice
     uint boxRand = 0; //To start with random assignment of box used later in year, ignore use for token
     uint boxMax = 5; //Max random random assignment to box used later in year, ignore use for token
     event BoxChange(address who, uint newBox); //event that notifies of a box change in game
@@ -62,10 +62,10 @@ contract Big2018Token {
     string public symbol;
     uint8 public decimals = 18;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf; //record who owns what
+    mapping (address => uint256) public balanceOf; //record who owns what
     event Transfer(address indexed from, address indexed to, uint256 value);// This generates a public event on the blockchain that will notify clients
     event Burn(address indexed from, uint256 value); // This notifies clients about the amount burnt
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     /**********EscrowTrades**********/
     struct EscrowTrade {
         uint256 value; //value of number or tokens for sale
@@ -73,8 +73,8 @@ contract Big2018Token {
         address to; //specify who is to purchase the tokens
         bool open; //anyone can purchase rather than named buyer. false = closed. true = open to all.
     }
-    mapping (address =&gt; mapping (uint =&gt; EscrowTrade)) public escrowTransferInfo;
-    mapping (address =&gt; uint) userEscrowCount;
+    mapping (address => mapping (uint => EscrowTrade)) public escrowTransferInfo;
+    mapping (address => uint) userEscrowCount;
     event Escrow(address from, uint256 value, uint price, bool open, address to); // This notifies clients about the escrow
     struct EscrowTfr {
         address from; //who has defined this escrow trade
@@ -90,33 +90,33 @@ contract Big2018Token {
         game = msg.sender; //to be updated once game released with game address
         totalSupply = 3650000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[this] = totalSupply;     // Give the creator all initial tokens
-        name = &quot;BIG2018TOKEN&quot;;                // Set the name for display purposes
-        symbol = &quot;B18&quot;;                       // Set the symbol for display purposes
+        name = "BIG2018TOKEN";                // Set the name for display purposes
+        symbol = "B18";                       // Set the symbol for display purposes
     }
 
     ////////////////////////////////////////////////////////
     //The Price of the Token Each Day. 0 = today
     function getPriceWei(uint _day) public returns (uint) {
-        require(now &gt;= start2018 &amp;&amp; now &lt;= end2018); //must be in 2018
+        require(now >= start2018 && now <= end2018); //must be in 2018
         day = (now - start2018)/d + 1; //count number of days since opening
-        if (day &gt; dayOld) {  //resent counter if first tx per day
+        if (day > dayOld) {  //resent counter if first tx per day
             uint256 _value = ((day - dayOld - 1)*tokensDaily + leftToday) * 10 ** uint256(decimals);
             _transfer(this, creator, _value); //give remaining tokens from previous day to creator
-            tokensToday = 0; //reset no of tokens sold today, this wont stick as &#39;veiw&#39; f(x). will be saved in buy f(x)
+            tokensToday = 0; //reset no of tokens sold today, this wont stick as 'veiw' f(x). will be saved in buy f(x)
             dayOld = day; //reset dayOld counter
         }
         if (_day != 0) { //if _day = 0, calculate price for today
         day = _day; //which day should be calculated
         }
-        // Computes &#39;startPrice * (1+1/q) ^ n&#39; with precision p, needed as solidity does not allow decimal for compounding
-            //q &amp; startPrice defined at top
+        // Computes 'startPrice * (1+1/q) ^ n' with precision p, needed as solidity does not allow decimal for compounding
+            //q & startPrice defined at top
             uint n = day - 1; //n of days to compound the multipler by
             uint p = 3 + n * 5 / 100; //itterations to calculate compound daily multiplier. higher is greater precision but more expensive
             uint s = 0; //output. itterativly added to for result
             uint x = 1; //multiply side of binomial expansion
             uint y = 1; //divide side of binomial expansion
             //itterate top q lines binomial expansion to estimate compound multipler
-            for (uint i = 0; i &lt; p; ++i) { //each itteration gets closer, higher p = closer approximation but more costly
+            for (uint i = 0; i < p; ++i) { //each itteration gets closer, higher p = closer approximation but more costly
                 s += startPrice * x / y / (q**i); //iterate adding each time to s
                 x = x * (n-i); //calc multiply side
                 y = y * (i+1); //calc divide side
@@ -128,10 +128,10 @@ contract Big2018Token {
     //Giving New Tokens To Buyer
     function () external payable {
         // must buy whole token when minting new here, but can buy/sell fractions between eachother
-        require(now &gt;= start2018 &amp;&amp; now &lt;= end2018); //must be in 2018
+        require(now >= start2018 && now <= end2018); //must be in 2018
         uint priceWei = this.getPriceWei(0); //get todays price
         uint256 giveTokens = msg.value / priceWei; //rounds down to no of tokens that can afford
-            if (tokensToday + giveTokens &gt; tokensDaily) { //if asking for tokens than left today
+            if (tokensToday + giveTokens > tokensDaily) { //if asking for tokens than left today
                 giveTokens = tokensDaily - tokensToday;    //then limit giving to remaining tokens
                 }
         countBuy += 1; //count usage
@@ -139,7 +139,7 @@ contract Big2018Token {
         box[msg.sender] = this.boxChoice(0); //assign box number to buyer
         _transfer(this, msg.sender, giveTokens * 10 ** uint256(decimals)); //transfer tokens from this contract
         uint256 changeDue = msg.value - (giveTokens * priceWei) * 99 / 100; //calculate change due, charged 1% to disincentivise high volume full refund calls.
-        require(changeDue &lt; msg.value); //make sure refund is not more than input
+        require(changeDue < msg.value); //make sure refund is not more than input
         msg.sender.transfer(changeDue); //give change
         
     }
@@ -154,8 +154,8 @@ contract Big2018Token {
     //For transfering tokens to others
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value); // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value); // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         uint previousbalanceOf = balanceOf[_from] + balanceOf[_to]; // Save this for an assertion in the future
         balanceOf[_from] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
@@ -172,7 +172,7 @@ contract Big2018Token {
     ////////////////////////////////////////////////////////
     //Transfer tokens from other address
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+        require(_value <= allowance[_from][msg.sender]); // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -200,7 +200,7 @@ contract Big2018Token {
     function boxChoice(uint _newBox) public returns (uint) { 
         //for _newBox = 0 assign random 
         boxRand += 1; //count up for even start box assingment
-        if (boxRand &gt; boxMax) { //stop box assignment too high
+        if (boxRand > boxMax) { //stop box assignment too high
                     boxRand = 1; //return to box 1
             }
         if (_newBox == 0) {
@@ -226,21 +226,21 @@ contract Big2018Token {
         require(msg.sender == creator || msg.sender == game); //only alow creator or game to use
         //change Max Box Choice
         if (_option == 1) {
-            require(_newNo &gt; 0);
+            require(_newNo > 0);
             boxMax = _newNo;
-            return (&quot;boxMax Updated&quot;, boxMax);
+            return ("boxMax Updated", boxMax);
         }
         //change address of game smart contract
         if (_option == 2) {
             game = _newAddress;
-            return (&quot;Game Smart Contract Updated&quot;, 1);
+            return ("Game Smart Contract Updated", 1);
         }
     }
 
     ////////////////////////////////////////////////////////
     //Destroy tokens
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -250,10 +250,10 @@ contract Big2018Token {
     ////////////////////////////////////////////////////////
     //Destroy tokens from other account
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -292,7 +292,7 @@ contract Big2018Token {
             Escrow(_sender, 0, msg.value, escrowTransferInfo[_sender][_no].open, msg.sender); // This notifies clients about the escrow
             return (true);
         } else {
-            require(msg.value &gt;= escrowTransferInfo[_sender][_no].price); //Check _to is Paying Enough
+            require(msg.value >= escrowTransferInfo[_sender][_no].price); //Check _to is Paying Enough
             if (escrowTransferInfo[_sender][_no].open == false) {
                 require(msg.sender == escrowTransferInfo[_sender][_no].to); //Check _to is the intended purchaser
                 }

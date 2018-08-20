@@ -7,10 +7,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function Add(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function Sub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function Mul(uint a, uint b) public pure returns (uint c) {
@@ -18,7 +18,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function Div(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -86,16 +86,16 @@ contract BEAT is ERC20, Owned, SafeMath {
     uint public _totalSupply;
     uint8 public decimals;
     
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     /*
         Constructor to create BEAT token.
     */
     function BEAT() public {
-        symbol = &quot;BEAT&quot;;
-        name = &quot;BEAT&quot;;
+        symbol = "BEAT";
+        name = "BEAT";
         decimals = 8;
         _totalSupply = 100000000000000000;
         Owner = msg.sender;
@@ -150,7 +150,7 @@ contract BEAT is ERC20, Owned, SafeMath {
         Owner can distribute tokens
     */
     function airdrop(address[] addresses, uint256 _value) onlyOwner public {
-         for (uint j = 0; j &lt; addresses.length; j++) {
+         for (uint j = 0; j < addresses.length; j++) {
              balances[Owner] -= _value;
              balances[addresses[j]] += _value;
              emit Transfer(Owner, addresses[j], _value);

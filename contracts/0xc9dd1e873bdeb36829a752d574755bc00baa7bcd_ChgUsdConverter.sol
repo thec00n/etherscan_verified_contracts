@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -70,7 +70,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -108,7 +108,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -123,7 +123,7 @@ contract StandardToken is ERC20, BasicToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -173,7 +173,7 @@ contract StandardToken is ERC20, BasicToken {
     function decreaseApproval(address _spender, uint _subtractedValue)
     public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -229,9 +229,9 @@ contract Ownable {
  */
 contract ChargCoinContract is StandardToken, Ownable {
 
-    string public standard = &quot;CHG&quot;;
-    string public name = &quot;Charg Coin&quot;;
-    string public symbol = &quot;CHG&quot;;
+    string public standard = "CHG";
+    string public name = "Charg Coin";
+    string public symbol = "CHG";
 
     uint public decimals = 18;
 
@@ -255,16 +255,16 @@ contract ChargCoinContract is StandardToken, Ownable {
     uint256 predefinedAmount;
     }
 
-    mapping (address =&gt; uint256) public authorized;
+    mapping (address => uint256) public authorized;
 
-    mapping (address =&gt; uint256) public rateOfCharging;
-    mapping (address =&gt; uint256) public rateOfParking;
+    mapping (address => uint256) public rateOfCharging;
+    mapping (address => uint256) public rateOfParking;
 
-    mapping (address =&gt; ChargingData) public chargingSwitches;
-    mapping (address =&gt; ParkingData) public parkingSwitches;
+    mapping (address => ChargingData) public chargingSwitches;
+    mapping (address => ParkingData) public parkingSwitches;
 
-    mapping (address =&gt; uint256) public reservedFundsCharging;
-    mapping (address =&gt; uint256) public reservedFundsParking;
+    mapping (address => uint256) public reservedFundsCharging;
+    mapping (address => uint256) public reservedFundsParking;
 
     // 1 ETH = 500 CHARG tokens (1 CHARG = 0.59 USD)
     uint PRICE = 500;
@@ -278,11 +278,11 @@ contract ChargCoinContract is StandardToken, Ownable {
         balances[msg.sender] = totalSupply;
     }
 
-    mapping (address =&gt; ContributorData) public contributorList;
+    mapping (address => ContributorData) public contributorList;
 
     uint nextContributorIndex;
 
-    mapping (uint =&gt; address) contributorIndexes;
+    mapping (uint => address) contributorIndexes;
 
     state public crowdsaleState = state.pendingStart;
     enum state {pendingStart, crowdsale, crowdsaleEnded}
@@ -318,7 +318,7 @@ contract ChargCoinContract is StandardToken, Ownable {
 
     uint nextContributorToClaim;
 
-    mapping (address =&gt; bool) hasClaimedEthWhenFail;
+    mapping (address => bool) hasClaimedEthWhenFail;
 
     function() payable public {
         require(msg.value != 0);
@@ -342,21 +342,21 @@ contract ChargCoinContract is StandardToken, Ownable {
     // Check crowdsale state and calibrate it
     //
     function checkCrowdsaleState() internal returns (bool) {
-        if (ethRaised &gt;= maxCap &amp;&amp; crowdsaleState != state.crowdsaleEnded) {// Check if max cap is reached
+        if (ethRaised >= maxCap && crowdsaleState != state.crowdsaleEnded) {// Check if max cap is reached
             crowdsaleState = state.crowdsaleEnded;
             CrowdsaleEnded(block.number);
             // Raise event
             return true;
         }
 
-        if (now &gt;= END_TIME) {
+        if (now >= END_TIME) {
             crowdsaleState = state.crowdsaleEnded;
             CrowdsaleEnded(block.number);
             // Raise event
             return true;
         }
 
-        if (now &gt;= BEGIN_TIME &amp;&amp; now &lt; END_TIME) {// Check if we are in crowdsale state
+        if (now >= BEGIN_TIME && now < END_TIME) {// Check if we are in crowdsale state
             if (crowdsaleState != state.crowdsale) {// Check if state needs to be changed
                 crowdsaleState = state.crowdsale;
                 // Set new state
@@ -388,18 +388,18 @@ contract ChargCoinContract is StandardToken, Ownable {
         uint contributionAmount = _amount;
         uint returnAmount = 0;
 
-        if (_amount &gt; (maxCap - ethRaised)) {// Check if max contribution is lower than _amount sent
+        if (_amount > (maxCap - ethRaised)) {// Check if max contribution is lower than _amount sent
             contributionAmount = maxCap - ethRaised;
             // Set that user contibutes his maximum alowed contribution
             returnAmount = _amount - contributionAmount;
             // Calculate how much he must get back
         }
 
-        if (ethRaised + contributionAmount &gt; minCap &amp;&amp; minCap &gt; ethRaised) {
+        if (ethRaised + contributionAmount > minCap && minCap > ethRaised) {
             MinCapReached(block.number);
         }
 
-        if (ethRaised + contributionAmount == maxCap &amp;&amp; ethRaised &lt; maxCap) {
+        if (ethRaised + contributionAmount == maxCap && ethRaised < maxCap) {
             MaxCapReached(block.number);
         }
 
@@ -414,7 +414,7 @@ contract ChargCoinContract is StandardToken, Ownable {
 
         uint256 tokenAmount = calculateEthToChargcoin(contributionAmount);
         // Calculate how much tokens must contributor get
-        if (tokenAmount &gt; 0) {
+        if (tokenAmount > 0) {
             transferToContributor(_contributor, tokenAmount);
             contributorList[_contributor].tokensIssued += tokenAmount;
             // log token issuance
@@ -436,7 +436,7 @@ contract ChargCoinContract is StandardToken, Ownable {
         uint tokens = _eth.mul(getPrice());
         uint percentage = 0;
 
-        if (ethRaised &gt; 0) {
+        if (ethRaised > 0) {
             percentage = ethRaised * 100 / maxCap;
         }
 
@@ -446,12 +446,12 @@ contract ChargCoinContract is StandardToken, Ownable {
     function getAmountBonus(uint tokens) pure public returns (uint) {
         uint amountBonus = 0;
 
-        if (tokens &gt;= 10000) amountBonus = tokens;
-        else if (tokens &gt;= 5000) amountBonus = tokens * 60 / 100;
-        else if (tokens &gt;= 1000) amountBonus = tokens * 30 / 100;
-        else if (tokens &gt;= 500) amountBonus = tokens * 10 / 100;
-        else if (tokens &gt;= 100) amountBonus = tokens * 5 / 100;
-        else if (tokens &gt;= 10) amountBonus = tokens * 1 / 100;
+        if (tokens >= 10000) amountBonus = tokens;
+        else if (tokens >= 5000) amountBonus = tokens * 60 / 100;
+        else if (tokens >= 1000) amountBonus = tokens * 30 / 100;
+        else if (tokens >= 500) amountBonus = tokens * 10 / 100;
+        else if (tokens >= 100) amountBonus = tokens * 5 / 100;
+        else if (tokens >= 10) amountBonus = tokens * 1 / 100;
 
         return amountBonus;
     }
@@ -467,11 +467,11 @@ contract ChargCoinContract is StandardToken, Ownable {
     function batchReturnEthIfFailed(uint _numberOfReturns) onlyOwner public {
         require(crowdsaleState != state.crowdsaleEnded);
         // Check if crowdsale has ended
-        require(ethRaised &lt; minCap);
+        require(ethRaised < minCap);
         // Check if crowdsale has failed
         address currentParticipantAddress;
         uint contribution;
-        for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++) {
+        for (uint cnt = 0; cnt < _numberOfReturns; cnt++) {
             currentParticipantAddress = contributorIndexes[nextContributorToClaim];
             // Get next unclaimed participant
             if (currentParticipantAddress == 0x0) return;
@@ -541,12 +541,12 @@ contract ChargCoinContract is StandardToken, Ownable {
         uint endTime = now + time;
 
         // Prevent from past dates
-        if (endTime &lt;= now) revert();
+        if (endTime <= now) revert();
 
         // Calculate the amount of tokens has to be taken from users account
         uint256 predefinedAmount = (endTime - now) * rateOfCharging[node];
 
-        if (balances[msg.sender] &lt; predefinedAmount) revert();
+        if (balances[msg.sender] < predefinedAmount) revert();
 
         chargingSwitches[msg.sender] = ChargingData(node, now, endTime, rateOfCharging[node], true, predefinedAmount);
         balances[msg.sender] = balances[msg.sender].sub(predefinedAmount);
@@ -559,14 +559,14 @@ contract ChargCoinContract is StandardToken, Ownable {
         // Calculate the amount depending on rate
         uint256 amount = (now - chargingSwitches[msg.sender].startTime) * chargingSwitches[msg.sender].fixedRate;
         // Maximum can be predefinedAmount, if it less than that, return tokens
-        amount = amount &gt; chargingSwitches[msg.sender].predefinedAmount ? chargingSwitches[msg.sender].predefinedAmount : amount;
+        amount = amount > chargingSwitches[msg.sender].predefinedAmount ? chargingSwitches[msg.sender].predefinedAmount : amount;
 
         // Take tokens from reserFunds and put it on balance
         balances[node] = balances[node] + amount;
         reservedFundsCharging[msg.sender] = reservedFundsCharging[msg.sender] - amount;
 
         // When amount is less than predefinedAmount, return other tokens to user
-        if (reservedFundsCharging[msg.sender] &gt; 0) {
+        if (reservedFundsCharging[msg.sender] > 0) {
             balances[msg.sender] = balances[msg.sender] + reservedFundsCharging[msg.sender];
             reservedFundsCharging[msg.sender] = 0;
         }
@@ -586,12 +586,12 @@ contract ChargCoinContract is StandardToken, Ownable {
         // Prevent from double charging
         if (parkingSwitches[msg.sender].initialized) revert();
 
-        if (balances[msg.sender] &lt; predefinedAmount) revert();
+        if (balances[msg.sender] < predefinedAmount) revert();
 
         uint endTime = now + time;
 
         // Prevent from past dates
-        if (endTime &lt;= now) revert();
+        if (endTime <= now) revert();
 
         uint256 predefinedAmount = (endTime - now) * rateOfParking[node];
 
@@ -607,13 +607,13 @@ contract ChargCoinContract is StandardToken, Ownable {
         // Calculate the amount depending on rate
         uint256 amount = (now - parkingSwitches[msg.sender].startTime) * parkingSwitches[msg.sender].fixedRate;
         // Maximum can be predefinedAmount, if it less than that, return tokens
-        amount = amount &gt; parkingSwitches[msg.sender].predefinedAmount ? parkingSwitches[msg.sender].predefinedAmount : amount;
+        amount = amount > parkingSwitches[msg.sender].predefinedAmount ? parkingSwitches[msg.sender].predefinedAmount : amount;
 
         balances[node] = balances[node] + amount;
         reservedFundsParking[msg.sender] = reservedFundsParking[msg.sender] - amount;
 
         //  
-        if (reservedFundsParking[msg.sender] &gt; 0) {
+        if (reservedFundsParking[msg.sender] > 0) {
             balances[msg.sender] = balances[msg.sender] + reservedFundsParking[msg.sender];
             // all tokens taken, set to 0
             reservedFundsParking[msg.sender] = 0;
@@ -666,7 +666,7 @@ contract ChgUsdConverter is Ownable{
 
         ChargCoinContract c = ChargCoinContract(contractAddress);
 
-        if (currentBalance() &lt; calculatedAmount) {
+        if (currentBalance() < calculatedAmount) {
             revert();
         }
 

@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -120,7 +120,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
  uint256 totalSupply_;
 
@@ -139,7 +139,7 @@ contract BasicToken is ERC20Basic, Ownable {
   */
  function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -169,7 +169,7 @@ contract BasicToken is ERC20Basic, Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -180,8 +180,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -231,7 +231,7 @@ contract StandardToken is ERC20, BasicToken {
 
    // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-   // from the token owner&#39;s account. The `spender` contract function
+   // from the token owner's account. The `spender` contract function
   // `receiveApproval(...)` is then executed
    // ------------------------------------------------------------------------	
 	
@@ -246,11 +246,11 @@ contract StandardToken is ERC20, BasicToken {
     */
     function multiTransfer(address[] _toAddresses, uint256[] _amounts) public {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transfer(_toAddresses[i], _amounts[i]);
         }
     }
@@ -265,11 +265,11 @@ contract StandardToken is ERC20, BasicToken {
     */
     function multiTransferFrom(address _from, address[] _toAddresses, uint256[] _amounts) public {
         /* Ensures _toAddresses array is less than or equal to 255 */
-        require(_toAddresses.length &lt;= 255);
+        require(_toAddresses.length <= 255);
         /* Ensures _toAddress and _amounts have the same number of entries. */
         require(_toAddresses.length == _amounts.length);
 
-        for (uint8 i = 0; i &lt; _toAddresses.length; i++) {
+        for (uint8 i = 0; i < _toAddresses.length; i++) {
             transferFrom(_from, _toAddresses[i], _amounts[i]);
         }
     }
@@ -278,18 +278,18 @@ contract StandardToken is ERC20, BasicToken {
  /** 
 	 * @dev The following variables are OPTIONAL vanities. 
 	 */
-    string public constant number = &quot;7&quot;;   
-	string public constant fullname = &quot;Cristiano Ronaldo dos Santos Aveiro&quot;;
-	string public constant born = &quot;5th February, 1985&quot;;
-	string public constant country = &quot;Portugal&quot;;	
+    string public constant number = "7";   
+	string public constant fullname = "Cristiano Ronaldo dos Santos Aveiro";
+	string public constant born = "5th February, 1985";
+	string public constant country = "Portugal";	
 	
 }
 
  
 contract CR7Coin is StandardToken {
 
-  string public constant name = &quot;CR7Coin&quot;;
-  string public constant symbol = &quot;CR7&quot;;
+  string public constant name = "CR7Coin";
+  string public constant symbol = "CR7";
   uint8 public constant decimals = 18; 
 
   uint256 public constant INITIAL_SUPPLY = 7000000 * (10 ** uint256(decimals));

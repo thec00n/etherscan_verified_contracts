@@ -2,12 +2,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -35,8 +35,8 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token, SafeMath {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint numwords) {
         assert(msg.data.length == numwords * 32 + 4);
@@ -46,7 +46,7 @@ contract StandardToken is Token, SafeMath {
     function transfer(address _to, uint256 _value)
     returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -59,7 +59,7 @@ contract StandardToken is Token, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value)
     returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSubtract(balances[_from], _value);
             allowed[_from][msg.sender] = safeSubtract(allowed[_from][msg.sender], _value);
@@ -99,8 +99,8 @@ contract StandardToken is Token, SafeMath {
  */
 contract VibeCoin is StandardToken {
 
-  string public name = &quot;Vibe Coin&quot;;
-  string public symbol = &quot;VIBE&quot;;
+  string public name = "Vibe Coin";
+  string public symbol = "VIBE";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 267000000 * 1 ether;
 

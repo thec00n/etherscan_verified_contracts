@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract Ownable {
 contract Whitelisted is Ownable {
 
 	// variables
-	mapping (address =&gt; bool) public whitelist;
+	mapping (address => bool) public whitelist;
 
 	// events
 	event WhitelistChanged(address indexed account, bool state);
@@ -104,7 +104,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -113,7 +113,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0);
+    require(_value > 0);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -149,10 +149,10 @@ contract BurnableToken is BasicToken {
 contract FriendzToken is BurnableToken, Ownable {
 
 	// public variables
-	mapping(address =&gt; uint256) public release_dates;
-	mapping(address =&gt; uint256) public purchase_dates;
-	mapping(address =&gt; uint256) public blocked_amounts;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+	mapping(address => uint256) public release_dates;
+	mapping(address => uint256) public purchase_dates;
+	mapping(address => uint256) public blocked_amounts;
+	mapping (address => mapping (address => uint256)) public allowed;
 	bool public free_transfer = false;
 	uint256 public RELEASE_DATE = 1522540800; // 1th april 2018 00:00 UTC
 
@@ -178,8 +178,8 @@ contract FriendzToken is BurnableToken, Ownable {
 
 	function FriendzToken(string _name, string _symbol, uint256 _decimals, uint256 _supply) public {
 		// safety checks
-		require(_decimals &gt; 0);
-		require(_supply &gt; 0);
+		require(_decimals > 0);
+		require(_supply > 0);
 
 		// assign variables
 		name = _name;
@@ -206,14 +206,14 @@ contract FriendzToken is BurnableToken, Ownable {
 	 	_;
 	}
 
-	// check if we&#39;re in a free-transfter state
+	// check if we're in a free-transfter state
 	modifier isFreeTransfer() {
 		require(free_transfer);
 
 		_;
 	}
 
-	// check if we&#39;re in non free-transfter state
+	// check if we're in non free-transfter state
 	modifier isBlockingTransfer() {
 		require(!free_transfer);
 
@@ -235,8 +235,8 @@ contract FriendzToken is BurnableToken, Ownable {
 	function canTransferIfLocked(address _sender, uint256 _value) public view returns(bool) {
 		uint256 after_math = balances[_sender].sub(_value);
 		return (
-			now &gt;= RELEASE_DATE &amp;&amp;
-		    after_math &gt;= getMinimumAmount(_sender)
+			now >= RELEASE_DATE &&
+		    after_math >= getMinimumAmount(_sender)
         );
 	}
 
@@ -251,7 +251,7 @@ contract FriendzToken is BurnableToken, Ownable {
 
 	// set release date
 	function setReleaseDate(uint256 _date) onlyOwner public {
-		require(_date &gt; 0);
+		require(_date > 0);
 		require(_date != RELEASE_DATE);
 
 		RELEASE_DATE = _date;
@@ -266,7 +266,7 @@ contract FriendzToken is BurnableToken, Ownable {
 			return 0x0;
 
 		// if the purchase date is in the future block all the tokens
-		if(purchase_dates[_addr] &gt; now){
+		if(purchase_dates[_addr] > now){
 			return blocked_amounts[_addr];
 		}
 
@@ -289,7 +289,7 @@ contract FriendzToken is BurnableToken, Ownable {
 		uint256 final_value = _value;
 
 		if(release_dates[_addr] != 0x0){
-			// if it&#39;s not the first time this function is beign called for this address
+			// if it's not the first time this function is beign called for this address
 			// update its information instead of setting them (add value to previous value)
 			final_value = blocked_amounts[_addr].add(_value);
 		}
@@ -319,7 +319,7 @@ contract FriendzToken is BurnableToken, Ownable {
 	    // SafeMath.sub will throw if there is not enough balance.
 	    balances[_from] = balances[_from].sub(_value);
 	    balances[_to] = balances[_to].add(_value);
-		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // this will throw if we don&#39;t have enough allowance
+		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // this will throw if we don't have enough allowance
 
 	    // this event comes from BasicToken.sol
 	    Transfer(_from, _to, _value);
@@ -355,7 +355,7 @@ contract FriendzToken is BurnableToken, Ownable {
 
 	function decreaseApproval (address _spender, uint256 _subtractedValue) public returns (bool success) {
 		uint256 oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt;= oldValue) {
+		if (_subtractedValue >= oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

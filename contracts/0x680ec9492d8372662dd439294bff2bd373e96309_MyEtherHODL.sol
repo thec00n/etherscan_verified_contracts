@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-//import &#39;zeppelin-solidity/contracts/ownership/Ownable.sol&#39;;
-//import &#39;zeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol&#39;;
+//import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+//import 'zeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol';
 
 
 contract Ownable {
@@ -39,10 +39,10 @@ contract MyEtherHODL is Ownable {
     event Fee(address indexed hodler, uint indexed amount, uint elapsed);
 
     address[] public hodlers;
-    mapping(address =&gt; uint) public indexOfHodler; // Starts from 1
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; uint) public lockedUntil;
-    mapping (address =&gt; uint) public lockedFor;
+    mapping(address => uint) public indexOfHodler; // Starts from 1
+    mapping (address => uint) public balanceOf;
+    mapping (address => uint) public lockedUntil;
+    mapping (address => uint) public lockedFor;
 
     function get1(uint index) public constant 
         returns(address hodler1, uint balance1, uint lockedUntil1, uint lockedFor1)
@@ -94,7 +94,7 @@ contract MyEtherHODL is Ownable {
     }
 
     function() public payable {
-        if (balanceOf[msg.sender] &gt; 0) {
+        if (balanceOf[msg.sender] > 0) {
             hodlFor(0); // Do not extend time-lock
         } else {
             hodlFor(1 years);
@@ -119,8 +119,8 @@ contract MyEtherHODL is Ownable {
             indexOfHodler[msg.sender] = hodlers.length; // Store incremented value
         }
         balanceOf[msg.sender] += msg.value;
-        if (duration &gt; 0) { // Extend time-lock if needed only
-            require(lockedUntil[msg.sender] &lt; now + duration);
+        if (duration > 0) { // Extend time-lock if needed only
+            require(lockedUntil[msg.sender] < now + duration);
             lockedUntil[msg.sender] = now + duration;
             lockedFor[msg.sender] = duration;
         }
@@ -133,10 +133,10 @@ contract MyEtherHODL is Ownable {
 
     function partyTo(address hodler) public {
         uint value = balanceOf[hodler];
-        require(value &gt; 0);
+        require(value > 0);
         balanceOf[hodler] = 0;
 
-        if (now &lt; lockedUntil[hodler]) {
+        if (now < lockedUntil[hodler]) {
             require(msg.sender == hodler);
             uint fee = value * 10 / 100; // 10% 
             owner.transfer(fee);
@@ -148,8 +148,8 @@ contract MyEtherHODL is Ownable {
         Party(hodler, value, lockedFor[hodler]);
 
         uint index = indexOfHodler[hodler];
-        require(index &gt; 0);
-        if (index + 1 &lt; hodlers.length) {
+        require(index > 0);
+        if (index + 1 < hodlers.length) {
             hodlers[index - 1] = hodlers[hodlers.length - 1];
             indexOfHodler[hodlers[index - 1]] = index;
         }

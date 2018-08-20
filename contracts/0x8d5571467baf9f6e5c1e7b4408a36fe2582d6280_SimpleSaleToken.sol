@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  *
  * Version D
- * @author  Pratyush Bhatt &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b2612181f0208260405180404052b1b19041f0405060a020745080406">[email&#160;protected]</a>&gt;
+ * @author  Pratyush Bhatt <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b2612181f0208260405180404052b1b19041f0405060a020745080406">[email protected]</a>>
  *
  * Overview:
  * This is an implimentation of a simple sale token. The tokens do not pay any dividends -- they only exist
@@ -33,7 +33,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) pure internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -46,7 +46,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) pure internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -99,8 +99,8 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   uint    public contractSendGas = 100000;
   address public owner;
   address public beneficiary;
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) approvals;  //transfer approvals, from -&gt; to
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) approvals;  //transfer approvals, from -> to
 
 
   modifier ownerOnly {
@@ -114,14 +114,14 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   }
 
   modifier duringSale {
-    require(tokenPrice != 0 &amp;&amp; tokensRemaining &gt; 0);
+    require(tokenPrice != 0 && tokensRemaining > 0);
     _;
   }
 
   //this is to protect from short-address attack. use this to verify size of args, especially when an address arg preceeds
   //a value arg. see: https://www.reddit.com/r/ethereum/comments/63s917/worrysome_bug_exploit_with_erc20_token/dfwmhc3/
   modifier onlyPayloadSize(uint size) {
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
     _;
   }
 
@@ -145,7 +145,7 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
 
   function transfer(address _to, uint _value) public onlyPayloadSize(2*32) returns (bool success) {
     //prevent wrap
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       TransferEvent(msg.sender, _to, _value);
@@ -158,7 +158,7 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3*32) public returns (bool success) {
     //prevent wrap:
-    if (balances[_from] &gt;= _value &amp;&amp; approvals[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[_from] >= _value && approvals[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
       balances[_from] -= _value;
       balances[_to] += _value;
       approvals[_from][msg.sender] -= _value;
@@ -196,15 +196,15 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   //
   function () public payable duringSale {
     uint _quantity = msg.value / tokenPrice;
-    if (_quantity &gt; tokensRemaining)
+    if (_quantity > tokensRemaining)
        _quantity = tokensRemaining;
-    require(_quantity &gt;= 1);
+    require(_quantity >= 1);
     uint _cost = safeMul(_quantity, tokenPrice);
     uint _refund = safeSub(msg.value, _cost);
     balances[msg.sender] = safeAdd(balances[msg.sender], _quantity);
     tokenSupply = safeAdd(tokenSupply, _quantity);
     tokensRemaining = safeSub(tokensRemaining, _quantity);
-    if (_refund &gt; 0)
+    if (_refund > 0)
         msg.sender.transfer(_refund);
     PaymentEvent(msg.sender, msg.value);
   }
@@ -224,7 +224,7 @@ contract SimpleSaleToken is iERC20Token, SafeMath {
   }
 
   function lock() public ownerOnly {
-    require(beneficiary != 0 &amp;&amp; tokenPrice != 0);
+    require(beneficiary != 0 && tokenPrice != 0);
     isLocked = true;
   }
 

@@ -27,20 +27,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,8 +48,8 @@ library SafeMath {
 contract SkrillaToken is ERC20 {
     using SafeMath for uint;
 
-    string public constant name = &quot;Skrilla&quot;;
-    string public constant symbol = &quot;SKR&quot;;
+    string public constant name = "Skrilla";
+    string public constant symbol = "SKR";
     uint8 public constant decimals = 6;
     uint256 public totalSupply;
     //Multiply to get from a SKR to the number of subunits
@@ -57,10 +57,10 @@ contract SkrillaToken is ERC20 {
     uint256 internal constant SUBUNIT_MULTIPLIER = 10 ** uint256(decimals);
 
     //Token balances
-    mapping (address =&gt; uint256) tokenSaleBalances;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) whiteList;
+    mapping (address => uint256) tokenSaleBalances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) whiteList;
 
     //Contract conditions
     uint256 internal constant SALE_CAP = 600 * 10**6 * SUBUNIT_MULTIPLIER;
@@ -107,7 +107,7 @@ contract SkrillaToken is ERC20 {
     function getCurrentPrice(address _buyer) public constant returns (uint256) {
         uint256 price = whiteList[_buyer];
 
-        if (price &gt; 0) {
+        if (price > 0) {
             return SUBUNIT_MULTIPLIER.mul(price);
         } else {
             uint256 stage = getStage();
@@ -116,11 +116,11 @@ contract SkrillaToken is ERC20 {
     }
 
     function inPreSalePeriod() public constant returns (bool) {
-        return (now &gt;= getPreSaleStart() &amp;&amp; now &lt;= getPreSaleEnd());
+        return (now >= getPreSaleStart() && now <= getPreSaleEnd());
     }
 
     function inSalePeriod() public constant returns (bool) {
-        return (now &gt;= getSaleStart() &amp;&amp; now &lt;= getSaleEnd());
+        return (now >= getSaleStart() && now <= getSaleEnd());
         //In rounds 1 - 3 period
     }
 
@@ -129,7 +129,7 @@ contract SkrillaToken is ERC20 {
 
         owner = msg.sender;
 
-        require(owner != _team &amp;&amp; owner != _growth);
+        require(owner != _team && owner != _growth);
         require(_team != _growth);
         //Ensure there was no overflow
         require(SALE_CAP / SUBUNIT_MULTIPLIER == 600 * 10**6);
@@ -154,7 +154,7 @@ contract SkrillaToken is ERC20 {
         }
 
         uint256 preSaleEnd = _preSaleStart.add(3 days);
-        require(_saleStart &gt; preSaleEnd);
+        require(_saleStart > preSaleEnd);
 
         saleStageStartDates[0] = _preSaleStart;
         saleStageStartDates[1] = _preSaleStart.add(1 days);
@@ -167,10 +167,10 @@ contract SkrillaToken is ERC20 {
         ethRaised = 0;
     }
 
-    //Move a user&#39;s token sale balance into the ERC20 balances mapping.
+    //Move a user's token sale balance into the ERC20 balances mapping.
     //The user must call this before they can use their tokens as ERC20 tokens.
     function withdraw() public returns (bool) {
-        require(now &gt; getSaleEnd() + 14 days);
+        require(now > getSaleEnd() + 14 days);
 
         uint256 tokenSaleBalance = tokenSaleBalances[msg.sender];
         balances[msg.sender] = balances[msg.sender].add(tokenSaleBalance);
@@ -200,7 +200,7 @@ contract SkrillaToken is ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -226,7 +226,7 @@ contract SkrillaToken is ERC20 {
     }
 
     function addToWhitelist(address _buyer, uint256 _price) public onlyOwner {
-        require(_price &lt; 10000);
+        require(_price < 10000);
         whiteList[_buyer] = _price;
     }
 
@@ -242,25 +242,25 @@ contract SkrillaToken is ERC20 {
     // Low level token purchase function
     function buyTokens() public payable saleHasNotClosed {
         // No 0 contributions
-        require(msg.value &gt; 0);
-        require(ethRaised.add(msg.value) &lt;= 150000 ether);
+        require(msg.value > 0);
+        require(ethRaised.add(msg.value) <= 150000 ether);
 
         // Ignore inSalePeriod for whitelisted buyers, just check before saleEnd
-        require(inPreSalePeriod() || inSalePeriod() || (whiteList[msg.sender] &gt; 0));
+        require(inPreSalePeriod() || inSalePeriod() || (whiteList[msg.sender] > 0));
 
         if (inPreSalePeriod()) {
-            require(msg.value &gt;= 10 ether || whiteList[msg.sender] &gt; 0);
+            require(msg.value >= 10 ether || whiteList[msg.sender] > 0);
         }
 
         // Get price for buyer
         uint256 price = getCurrentPrice(msg.sender);
-        require (price &gt; 0);
+        require (price > 0);
 
         uint256 tokenAmount = price.mul(msg.value);
         tokenAmount = tokenAmount.div(1 ether);
 
-        require (tokenAmount &gt; 0);
-        require (totalSupply.add(tokenAmount) &lt;= TOTAL_SUPPLY_CAP);
+        require (tokenAmount > 0);
+        require (totalSupply.add(tokenAmount) <= TOTAL_SUPPLY_CAP);
 
         totalSupply = totalSupply.add(tokenAmount);
         ethRaised = ethRaised.add(msg.value);
@@ -273,7 +273,7 @@ contract SkrillaToken is ERC20 {
 
     // empty the contract ETH
     function transferEth() public onlyOwner {
-        require(now &gt; getSaleEnd() + 14 days);
+        require(now > getSaleEnd() + 14 days);
         withdrawAddress.transfer(this.balance);
     }
 
@@ -284,13 +284,13 @@ contract SkrillaToken is ERC20 {
 
     modifier saleHasNotClosed()  {
         //Sale must not have closed
-        require(now &lt;= getSaleEnd());
+        require(now <= getSaleEnd());
         _;
     }
 
     function getStage() public constant returns (uint256) {
-        for (uint256 i = 1; i &lt; saleStageStartDates.length; i++) {
-            if (now &lt; saleStageStartDates[i]) {
+        for (uint256 i = 1; i < saleStageStartDates.length; i++) {
+            if (now < saleStageStartDates[i]) {
                 return i - 1;
             }
         }

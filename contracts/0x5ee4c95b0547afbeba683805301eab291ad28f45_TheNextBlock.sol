@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,8 +78,8 @@ contract TheNextBlock {
         uint256 lastBlock;
     }
     
-    mapping(address =&gt; Player) public playersStorage;
-    mapping(address =&gt; uint256) public playersPoints;
+    mapping(address => Player) public playersStorage;
+    mapping(address => uint256) public playersPoints;
 
 
     modifier notContract(address sender)  {
@@ -97,12 +97,12 @@ contract TheNextBlock {
     }
 
     modifier notLess() {
-        require(msg.value &gt;= allowedBetAmount);
+        require(msg.value >= allowedBetAmount);
         _;
     }
 
     modifier notMore() {
-        if(msg.value &gt; allowedBetAmount) {
+        if(msg.value > allowedBetAmount) {
             msg.sender.transfer( SafeMath.sub(msg.value, allowedBetAmount) );
         }
         _;
@@ -153,7 +153,7 @@ contract TheNextBlock {
 
                 if(playersPoints[msg.sender] == requiredPoints) {
                     
-                    if(prizePool &gt;= allowedBetAmount) {
+                    if(prizePool >= allowedBetAmount) {
                         Jackpot(msg.sender, prizePool);
                         playersStorage[msg.sender].balance = playersStorage[msg.sender].balance.add(prizePool);
                         prizePool = nextPrizePool;

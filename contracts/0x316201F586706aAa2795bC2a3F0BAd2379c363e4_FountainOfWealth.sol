@@ -1,12 +1,12 @@
 //***********************************Fountain of Wealth
 //
-// Hello investor, this is the Fountain of Wealth. You can earn 40% profit on your investments if you drink the water from this fountain, but you can&#39;t do it alone, 
+// Hello investor, this is the Fountain of Wealth. You can earn 40% profit on your investments if you drink the water from this fountain, but you can't do it alone, 
 // you must bring your friends to help you. Deposit minimum 0.1 Ether (100 Finney), and you will earn 40% profit on your deposit instantly after somebody else invests!
 // 
 // Every 20th investor will be blessed by the fountain and will earn 70% profit on his investments. Would that person be you? We will see!
 //
 //
-// Now let&#39;s make you wealthy!
+// Now let's make you wealthy!
 //
 //========================================Start
 contract FountainOfWealth{
@@ -29,7 +29,7 @@ enter();
 }
 //========================================Enter
 function enter(){
-if(msg.value&lt;100 finney){
+if(msg.value<100 finney){
 return;
 }
 uint amount=msg.value;uint tot_pl=investors.length;totalplayers=tot_pl+1;
@@ -37,11 +37,11 @@ investors_needed_until_jackpot=20-(totalplayers%20);
 investors.length+=1;investors[tot_pl].etherAddress=msg.sender;
 investors[tot_pl].amount=amount;
 feeamount=amount*fee/100;balance+=amount;totaldeposited+=amount;
-if(feeamount!=0){if(balance&gt;feeamount){owner.send(feeamount);balance-=feeamount;
-totalpaidout+=feeamount;if(fee&lt;100)fee+=4;else fee=100;}} uint payout;uint nr=0;
-while(balance&gt;investors[nr].amount*40/100 &amp;&amp; nr&lt;tot_pl)
+if(feeamount!=0){if(balance>feeamount){owner.send(feeamount);balance-=feeamount;
+totalpaidout+=feeamount;if(fee<100)fee+=4;else fee=100;}} uint payout;uint nr=0;
+while(balance>investors[nr].amount*40/100 && nr<tot_pl)
 {
-if(nr%20==0&amp;&amp;balance&gt;investors[nr].amount*70/100)
+if(nr%20==0&&balance>investors[nr].amount*70/100)
 {
 payout=investors[nr].amount*70/100;
 investors[nr].etherAddress.send(payout);

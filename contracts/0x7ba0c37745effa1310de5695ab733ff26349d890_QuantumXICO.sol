@@ -13,13 +13,13 @@ contract SafeMath {
   }
 
   function safeSub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ contract ERC20 is ERC20Basic {
 }
 
 contract QuantumXICO is ERC20, SafeMath {
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 	uint256 public totalSupply;
 
 	function balanceOf(address _owner) constant returns (uint256 balance) {
@@ -53,7 +53,7 @@ contract QuantumXICO is ERC20, SafeMath {
 	    return true;
 	}
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 	    var _allowance = allowed[_from][msg.sender];
@@ -77,7 +77,7 @@ contract QuantumXICO is ERC20, SafeMath {
 	uint256 public endTime;
 
 	modifier during_offering_time(){
-		if (now &gt;= endTime) {
+		if (now >= endTime) {
 			throw;
 		}else {
 			_;
@@ -100,8 +100,8 @@ contract QuantumXICO is ERC20, SafeMath {
 		}
 	}
 
-	string 	public name = &quot;QuantumXCoin&quot;;
-	string 	public symbol = &quot;QTMX&quot;;
+	string 	public name = "QuantumXCoin";
+	string 	public symbol = "QTMX";
 	uint 	public decimals = 0;
 	uint256 public INITIAL_SUPPLY = 1000000;
 	uint256 public price;

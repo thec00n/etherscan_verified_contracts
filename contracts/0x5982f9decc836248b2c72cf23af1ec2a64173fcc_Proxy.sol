@@ -29,7 +29,7 @@ contract Ownable {
 
 contract Proxied is Ownable {
     address public target;
-    mapping (address =&gt; bool) public initialized;
+    mapping (address => bool) public initialized;
 
     event EventUpgrade(address indexed newTarget, address indexed oldTarget, address indexed admin);
     event EventInitialized(address indexed target);

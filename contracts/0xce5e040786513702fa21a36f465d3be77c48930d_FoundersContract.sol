@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,8 +49,8 @@ contract FoundersContract {
     uint64 public freezOne = 1538352000;
     uint64 public freezTwo = 1554076800;
 
-    mapping(address =&gt; uint256) public balances_freez_one;
-    mapping(address =&gt; uint256) public balances_freez_two;
+    mapping(address => uint256) public balances_freez_one;
+    mapping(address => uint256) public balances_freez_two;
 
     address muhtov = 0x0134111c40D59E8476FfabB7D0B2ED6F86513E6e; //13 680 000
     address scherbakov = 0x7B8E11cFE4E7aFec83276002dD246a71a4bD51EC;// 13 680 000
@@ -170,13 +170,13 @@ contract FoundersContract {
 
 
     function getFirstTokens() public {
-        require(freezOne &lt;= uint64(now));
+        require(freezOne <= uint64(now));
         token.transfer(msg.sender, balances_freez_one[msg.sender]);
     }
 
 
     function getSecondTokens() public {
-        require(freezTwo &lt;= uint64(now));
+        require(freezTwo <= uint64(now));
         token.transfer(msg.sender, balances_freez_two[msg.sender]);
     }
 }

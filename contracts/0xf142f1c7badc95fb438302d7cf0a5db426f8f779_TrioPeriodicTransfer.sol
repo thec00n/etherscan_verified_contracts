@@ -59,7 +59,7 @@ contract TPTData {
         uint256 head;
         uint256 tail;
         uint256 index;
-        mapping(uint256 =&gt; Contributor) nodes; // cid -&gt; Contributor
+        mapping(uint256 => Contributor) nodes; // cid -> Contributor
     }
 
     struct Schedule {
@@ -75,14 +75,14 @@ contract TPTData {
         uint256 head;
         uint256 tail;
         uint256 index;
-        mapping (uint256 =&gt; Schedule) nodes;
+        mapping (uint256 => Schedule) nodes;
     }
 
     // The contributors chain
     ContributorChain contributorChain;
 
     // The schedules chains
-    mapping (uint256 =&gt; ScheduleChain) scheduleChains;
+    mapping (uint256 => ScheduleChain) scheduleChains;
 
     /**
      * The contributor is valid
@@ -167,7 +167,7 @@ contract TPTContributors is TPTData, Owned {
                 delete contributorChain.nodes[_cid];
             }
         }
-        if(contributorChain.balance &gt; 0) {
+        if(contributorChain.balance > 0) {
             contributorChain.balance--;
         }
     }
@@ -177,8 +177,8 @@ contract TPTContributors is TPTData, Owned {
      * @param _contributors The contributor
      */
     function addContributors(address[] _contributors, bytes32[] _names) external onlyOwner {
-        require(_contributors.length == _names.length &amp;&amp; _contributors.length &gt; 0);
-        for(uint256 i = 0; i &lt; _contributors.length; i++) {
+        require(_contributors.length == _names.length && _contributors.length > 0);
+        for(uint256 i = 0; i < _contributors.length; i++) {
             _pushContributor(_contributors[i], _names[i]);
         }
 
@@ -188,10 +188,10 @@ contract TPTContributors is TPTData, Owned {
 
     /**
      * Remove contributor by `_cids`
-     * @param _cids The contributor&#39;s ids
+     * @param _cids The contributor's ids
      */
     function removeContributors(uint256[] _cids) external onlyOwner {
-        for(uint256 i = 0; i &lt; _cids.length; i++) {
+        for(uint256 i = 0; i < _cids.length; i++) {
             _removeContributor(_cids[i]);
         }
 
@@ -210,9 +210,9 @@ contract TPTContributors is TPTData, Owned {
         index = 0;
         next = contributorChain.head;
         count = contributorChain.balance;
-        if (count &gt; 0) {
+        if (count > 0) {
             uint256[] memory result = new uint256[](count);
-            while(next != 0 &amp;&amp; index &lt; count) {
+            while(next != 0 && index < count) {
                 result[index] = contributorChain.nodes[next].cid;
                 next = contributorChain.nodes[next].next;
                 index++;
@@ -256,8 +256,8 @@ contract TPTSchedules is TPTData, Owned {
         external 
         onlyOwner 
         contributorValid(_cid) {
-        require(_timestamps.length &gt; 0 &amp;&amp; _timestamps.length == _trios.length);
-        for (uint256 i = 0; i &lt; _timestamps.length; i++) {
+        require(_timestamps.length > 0 && _timestamps.length == _trios.length);
+        for (uint256 i = 0; i < _timestamps.length; i++) {
             uint256 prev = 0;
             uint256 next = 0;
             uint256 sid = scheduleChains[_cid].index + 1;
@@ -268,7 +268,7 @@ contract TPTSchedules is TPTData, Owned {
                 scheduleChains[_cid].index = sid;
                 scheduleChains[_cid].balance++;
                 prev = scheduleChains[_cid].tail;
-                while(scheduleChains[_cid].nodes[prev].timestamp &gt; _timestamps[i] &amp;&amp; prev != 0) {
+                while(scheduleChains[_cid].nodes[prev].timestamp > _timestamps[i] && prev != 0) {
                     prev = scheduleChains[_cid].nodes[prev].prev;
                 }
                 if (prev == 0) {
@@ -295,8 +295,8 @@ contract TPTSchedules is TPTData, Owned {
 
     /**
      * Remove schedule by `_cid` and `_sids`
-     * @param _cid The contributor&#39;s id
-     * @param _sids The schedule&#39;s ids
+     * @param _cid The contributor's id
+     * @param _sids The schedule's ids
      */
     function removeSchedules(uint _cid, uint256[] _sids) 
         public 
@@ -305,7 +305,7 @@ contract TPTSchedules is TPTData, Owned {
         uint256 next = 0;
         uint256 prev = 0;
         uint256 sid;
-        for (uint256 i = 0; i &lt; _sids.length; i++) {
+        for (uint256 i = 0; i < _sids.length; i++) {
             sid = _sids[i];
             require(scheduleChains[_cid].nodes[sid].sid == sid);
             next = scheduleChains[_cid].nodes[sid].next;
@@ -330,7 +330,7 @@ contract TPTSchedules is TPTData, Owned {
                     delete scheduleChains[_cid].nodes[sid];
                 }
             }
-            if(scheduleChains[_cid].balance &gt; 0) {
+            if(scheduleChains[_cid].balance > 0) {
                 scheduleChains[_cid].balance--;
             }   
         }
@@ -341,7 +341,7 @@ contract TPTSchedules is TPTData, Owned {
 
     /**
      * Return all the schedules of `_cid`
-     * @param _cid The contributor&#39;s id 
+     * @param _cid The contributor's id 
      * @return All the schedules of `_cid`
      */
     function schedules(uint256 _cid) 
@@ -355,9 +355,9 @@ contract TPTSchedules is TPTData, Owned {
         index = 0;
         next = scheduleChains[_cid].head;
         count = scheduleChains[_cid].balance;
-        if (count &gt; 0) {
+        if (count > 0) {
             uint256[] memory result = new uint256[](count);
-            while(next != 0 &amp;&amp; index &lt; count) {
+            while(next != 0 && index < count) {
                 result[index] = scheduleChains[_cid].nodes[next].sid;
                 next = scheduleChains[_cid].nodes[next].next;
                 index++;
@@ -370,8 +370,8 @@ contract TPTSchedules is TPTData, Owned {
 
     /**
      * Return the schedule by `_cid` and `_sid`
-     * @param _cid The contributor&#39;s id
-     * @param _sid The schedule&#39;s id
+     * @param _cid The contributor's id
+     * @param _sid The schedule's id
      * @return The schedule
      */
     function schedule(uint256 _cid, uint256 _sid) 
@@ -415,21 +415,21 @@ contract TPTTransfer is TPTContributors, TPTSchedules {
         
         // All contributors
         uint256[] memory _contributors = contributors();
-        for (uint256 i = 0; i &lt; _contributors.length; i++) {
+        for (uint256 i = 0; i < _contributors.length; i++) {
             // cid and contributor address
             uint256 _cid = _contributors[i];
             address _contributor = contributorChain.nodes[_cid].contributor;
             
             // All schedules
             uint256[] memory _schedules = schedules(_cid);
-            for (uint256 j = 0; j &lt; _schedules.length; j++) {
+            for (uint256 j = 0; j < _schedules.length; j++) {
                 // sid, trio and timestamp
                 uint256 _sid = _schedules[j];
                 uint256 _trio = scheduleChains[_cid].nodes[_sid].trio;
                 uint256 _timestamp = scheduleChains[_cid].nodes[_sid].timestamp;
 
-                // hasn&#39;t arrived
-                if(_timestamp &gt; now) {
+                // hasn't arrived
+                if(_timestamp > now) {
                     break;
                 }
                 // Transfer TRIO to contributor
@@ -454,16 +454,16 @@ contract TPTTransfer is TPTContributors, TPTSchedules {
         uint256[] memory _contributors = contributors();
         uint256 total = 0;
         uint256 amount = 0;
-        for (uint256 i = 0; i &lt; _contributors.length; i++) {
+        for (uint256 i = 0; i < _contributors.length; i++) {
             // cid and contributor address
             uint256 _cid = _contributors[i];            
             // All schedules
             uint256[] memory _schedules = schedules(_cid);
-            for (uint256 j = 0; j &lt; _schedules.length; j++) {
+            for (uint256 j = 0; j < _schedules.length; j++) {
                 // sid, trio and timestamp
                 uint256 _sid = _schedules[j];
                 uint256 _timestamp = scheduleChains[_cid].nodes[_sid].timestamp;
-                if(_timestamp &lt; now) {
+                if(_timestamp < now) {
                     total++;
                     amount += scheduleChains[_cid].nodes[_sid].trio;
                 }

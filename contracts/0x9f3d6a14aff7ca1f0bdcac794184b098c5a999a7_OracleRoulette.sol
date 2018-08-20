@@ -50,7 +50,7 @@ contract OracleRoulette {
         // when players are still playing the game.
         // This function can only be operated
         // after specified minutes has passed since gate guard is up.
-        require(shouldGateGuard == true &amp;&amp; (sinceGateGuarded - now) &gt; 10 minutes);
+        require(shouldGateGuard == true && (sinceGateGuarded - now) > 10 minutes);
         _;
     }
 
@@ -78,7 +78,7 @@ contract OracleRoulette {
 
     // only be called for maintenance reasons
     function withdrawFund(uint amount) external onlyDeveloper shouldGateGuardForEffectiveTime {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
         msg.sender.transfer(amount);
     }
 
@@ -87,7 +87,7 @@ contract OracleRoulette {
     function () external payable {}
 
     //*********************************************
-    // Game Settings &amp; House State Variables
+    // Game Settings & House State Variables
     //*********************************************
 
     uint BET_UNIT = 0.0002 ether;
@@ -98,12 +98,12 @@ contract OracleRoulette {
     uint MAX_GAME_PER_BLOCK = 10;
 
     function setBetUnit(uint newBetUnitInWei) external onlyDeveloperOrOperator shouldGateGuardForEffectiveTime {
-        require(newBetUnitInWei &gt; 0);
+        require(newBetUnitInWei > 0);
         BET_UNIT = newBetUnitInWei;
     }
 
     function setBlockTargetDelay(uint newTargetDelay) external onlyDeveloperOrOperator {
-        require(newTargetDelay &gt;= 0);
+        require(newTargetDelay >= 0);
         BLOCK_TARGET_DELAY = newTargetDelay;
     }
 
@@ -126,15 +126,15 @@ contract OracleRoulette {
     function placeBet(bytes32 betTypes, bytes32 first16, bytes32 second16) external payable {
         // check gate guard
         if (shouldGateGuard == true) {
-            emit GameError(msg.sender, &quot;Entrance not allowed!&quot;);
+            emit GameError(msg.sender, "Entrance not allowed!");
             revert();
         }
 
         // check if the received ether is the same as specified in the bets
         uint betAmount = rouletteRules.getTotalBetAmount(first16, second16) * BET_UNIT;
         // if the amount does not match
-        if (betAmount == 0 || msg.value != betAmount || msg.value &gt; MAX_BET) {
-            emit GameError(msg.sender, &quot;Wrong bet amount!&quot;);
+        if (betAmount == 0 || msg.value != betAmount || msg.value > MAX_BET) {
+            emit GameError(msg.sender, "Wrong bet amount!");
             revert();
         }
 
@@ -144,13 +144,13 @@ contract OracleRoulette {
 
         // check if MAX_GAME_PER_BLOCK is reached
         uint historyLength = gameHistory.length;
-        if (historyLength &gt; 0) {
+        if (historyLength > 0) {
             uint counter;
-            for (uint i = historyLength - 1; i &gt;= 0; i--) {
+            for (uint i = historyLength - 1; i >= 0; i--) {
                 if (gameHistory[i].targetBlock == targetBlock) {
                     counter++;
-                    if (counter &gt; MAX_GAME_PER_BLOCK) {
-                        emit GameError(msg.sender, &quot;Reached max game per block!&quot;);
+                    if (counter > MAX_GAME_PER_BLOCK) {
+                        emit GameError(msg.sender, "Reached max game per block!");
                         revert();
                     }
                 } else break;
@@ -170,21 +170,21 @@ contract OracleRoulette {
 
         // should not proceed if game status is not PENDING
         if (game.status != uint(GameStatus.PENDING)) {
-            emit GameError(game.player, &quot;Game is not pending!&quot;);
+            emit GameError(game.player, "Game is not pending!");
             revert();
         }
 
         // see if current block is early/late enough to get the block hash
-        // if it&#39;s too early to resolve bet
-        if (block.number &lt;= game.targetBlock) {
-            emit GameError(game.player, &quot;Too early to resolve bet!&quot;);
+        // if it's too early to resolve bet
+        if (block.number <= game.targetBlock) {
+            emit GameError(game.player, "Too early to resolve bet!");
             revert();
         }
-        // if it&#39;s too late to retrieve the block hash
-        if (block.number - game.targetBlock &gt; MAXIMUM_DISTANCE_FROM_BLOCK_TARGET_DELAY) {
+        // if it's too late to retrieve the block hash
+        if (block.number - game.targetBlock > MAXIMUM_DISTANCE_FROM_BLOCK_TARGET_DELAY) {
             // mark game status as rejected
             game.status = uint8(GameStatus.REJECTED);
-            emit GameError(game.player, &quot;Too late to resolve bet!&quot;);
+            emit GameError(game.player, "Too late to resolve bet!");
             revert();
         }
 
@@ -194,7 +194,7 @@ contract OracleRoulette {
         if (blockHash == 0) {
             // mark game status as rejected
             game.status = uint8(GameStatus.REJECTED);
-            emit GameError(game.player, &quot;blockhash() returned zero!&quot;);
+            emit GameError(game.player, "blockhash() returned zero!");
             revert();
         }
 
@@ -207,7 +207,7 @@ contract OracleRoulette {
         // set status first to prevent possible reentrancy attack within same transaction
         game.status = uint8(GameStatus.RESOLVED);
         // transfer if the amount is bigger than 0
-        if (wonAmount &gt; 0) {
+        if (wonAmount > 0) {
             game.player.transfer(wonAmount);
         }
         emit GameEnded(game.player, game.wheelResult, wonAmount);

@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,20 +98,20 @@ contract TSBToken is ERC20, NamedOwnedToken {
 	uint8 public decimals = 18; //Decimals, each 1 token = 10^decimals
 
     
-    mapping (address =&gt; uint256) public balances; // A map with all balances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed; //Implement allowence to support ERC20
+    mapping (address => uint256) public balances; // A map with all balances
+    mapping (address => mapping (address => uint256)) public allowed; //Implement allowence to support ERC20
 
-    mapping (address =&gt; uint256) public paidETH; //The sum have already been paid to token owner
+    mapping (address => uint256) public paidETH; //The sum have already been paid to token owner
 	uint256 public accrueDividendsPerXTokenETH = 0;
 	uint256 public tokenPriceETH = 0;
 
-    mapping (address =&gt; uint256) public paydCouponsETH;
+    mapping (address => uint256) public paydCouponsETH;
 	uint256 public accrueCouponsPerXTokenETH = 0;
 	uint256 public totalCouponsUSD = 0;
 	uint256 public MaxCouponsPaymentUSD = 150000;
 
-	mapping (address =&gt; uint256) public rebuySum;
-	mapping (address =&gt; uint256) public rebuyInformTime;
+	mapping (address => uint256) public rebuySum;
+	mapping (address => uint256) public rebuyInformTime;
 
 
 	uint256 public endSaleTime;
@@ -145,9 +145,9 @@ contract TSBToken is ERC20, NamedOwnedToken {
 		uint sumToPayDividendsTo = toTokens.mul(acrued);
 		uint sumTransfer = sumPaydFrom.div(startTokens);
 		sumTransfer = sumTransfer.mul(startTokens-fromTokens);
-		if (sumPaydFrom &gt; sumTransfer) {
+		if (sumPaydFrom > sumTransfer) {
 			sumPaydFrom -= sumTransfer;
-			if (sumPaydFrom &gt; sumToPayDividendsFrom) {
+			if (sumPaydFrom > sumToPayDividendsFrom) {
 				sumTransfer += sumPaydFrom - sumToPayDividendsFrom;
 				sumPaydFrom = sumToPayDividendsFrom;
 			}
@@ -156,11 +156,11 @@ contract TSBToken is ERC20, NamedOwnedToken {
 			sumPaydFrom = 0;
 		}
 		sumPaydTo = sumPaydTo.add(sumTransfer);
-		if (sumPaydTo &gt; sumToPayDividendsTo) {
+		if (sumPaydTo > sumToPayDividendsTo) {
 			uint differ = sumPaydTo - sumToPayDividendsTo;
 			sumPaydTo = sumToPayDividendsTo;
 			sumPaydFrom = sumPaydFrom.add(differ);
-			if (sumPaydFrom &gt; sumToPayDividendsFrom) {
+			if (sumPaydFrom > sumToPayDividendsFrom) {
 				sumPaydFrom = sumToPayDividendsFrom;
 			} 
 		}
@@ -174,8 +174,8 @@ contract TSBToken is ERC20, NamedOwnedToken {
      */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != address(0));                               // Prevent transfer to 0x0 address. Use burn() instead
-        require(balances[_from] &gt;= _value);                // Check if the sender has enough
-        require(balances[_to] + _value &gt; balances[_to]); // Check for overflows
+        require(balances[_from] >= _value);                // Check if the sender has enough
+        require(balances[_to] + _value > balances[_to]); // Check for overflows
 		uint startTokens = balances[_from].div(tokenDecimals);
         balances[_from] -= _value;                         // Subtract from the sender
         balances[_to] += _value;                           // Add the same to the recipient
@@ -231,7 +231,7 @@ contract TSBToken is ERC20, NamedOwnedToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -269,8 +269,8 @@ contract TSBToken is ERC20, NamedOwnedToken {
      * Internal function destroy tokens
      */
     function burnTo(uint256 _value, address adr) internal returns (bool success) {
-        require(balances[adr] &gt;= _value);   // Check if the sender has enough
-        require(_value &gt; 0);   // Check if the sender has enough
+        require(balances[adr] >= _value);   // Check if the sender has enough
+        require(_value > 0);   // Check if the sender has enough
 		uint startTokens = balances[adr].div(tokenDecimals);
         balances[adr] -= _value;            // Subtract from the sender
 		uint endTokens = balances[adr].div(tokenDecimals);
@@ -278,7 +278,7 @@ contract TSBToken is ERC20, NamedOwnedToken {
 		uint sumToPayFrom = endTokens.mul(accrueDividendsPerXTokenETH + accrueCouponsPerXTokenETH);
 		uint divETH = paidETH[adr].div(startTokens);
 		divETH = divETH.mul(endTokens);
-		if (divETH &gt; sumToPayFrom) {
+		if (divETH > sumToPayFrom) {
 			paidETH[adr] = sumToPayFrom;
 		} else {
 			paidETH[adr] = divETH;
@@ -361,7 +361,7 @@ contract TSBToken is ERC20, NamedOwnedToken {
 		uint sumPayd = paidETH[_sendadr];
 		uint sumToPayRes = tokensPerX.mul(accrueCouponsPerXTokenETH+accrueDividendsPerXTokenETH);
 		uint sumToPay = sumToPayRes.sub(comiss);
-		require(sumToPay&gt;sumPayd);
+		require(sumToPay>sumPayd);
 		sumToPay = sumToPay.sub(sumPayd);
 		_sendadr.transfer(sumToPay);
 		paidETH[_sendadr] = sumToPayRes;
@@ -401,8 +401,8 @@ contract TSBToken is ERC20, NamedOwnedToken {
 	}
 
 	function _informRebuyTo(uint sum, address adr) internal{
-		require (rebuyStarted || (now &gt;= startRebuyTime));
-		require (sum &lt;= balances[adr]);
+		require (rebuyStarted || (now >= startRebuyTime));
+		require (sum <= balances[adr]);
 		rebuyInformTime[adr] = now;
 		rebuySum[adr] = sum;
 		RebuyInformEvent(adr, sum);
@@ -428,10 +428,10 @@ contract TSBToken is ERC20, NamedOwnedToken {
 		_doRebuyTo(adr, tx.gasprice * block.gaslimit);
 	}
 	function _doRebuyTo(address adr, uint comiss) internal {
-		require (rebuyStarted || (now &gt;= startRebuyTime));
-		require (now &gt;= rebuyInformTime[adr].add(14 days));
+		require (rebuyStarted || (now >= startRebuyTime));
+		require (now >= rebuyInformTime[adr].add(14 days));
 		uint sum = rebuySum[adr];
-		require (sum &lt;= balances[adr]);
+		require (sum <= balances[adr]);
 		withdrawTo(adr, 0);
 		if (burnTo(sum, adr)) {
 			sum = sum.div(tokenDecimals);
@@ -473,7 +473,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	uint public amountRaisedUSD = 0; //Collected sum in USD
 	uint public TokenAmountToPay = 0; //Number of tokens to distribute (excluding bonus tokens)
 
-	mapping(address =&gt; uint256) public balanceMapPos;
+	mapping(address => uint256) public balanceMapPos;
 	struct mapStruct {
 		address mapAddress;
 		uint mapBalanceETH;
@@ -483,7 +483,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	mapStruct[] public balanceList; //Array of struct with information about invested sums
 
     uint public bonusCapUSD = 100000; //Bonus cap
-	mapping(bytes32 =&gt; uint256) public bonusesMapPos;
+	mapping(bytes32 => uint256) public bonusesMapPos;
 	struct bonusStruct {
 		uint balancePos;
 		bool notempty;
@@ -507,7 +507,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
         string tokenName,
         string tokenSymbol
 	) NamedOwnedToken(tokenName, tokenSymbol) public {
-	//	require(_startTime &gt;= now);
+	//	require(_startTime >= now);
 	    SetStartTime(_startTime, durationInHours);
 		bonusCapUSD = bonusCapUSD * USDDecimals;
 	}
@@ -524,11 +524,11 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	}
 
 	function () public payable {
-		bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+		bool withinPeriod = now >= startTime && now <= endTime;
 		bool nonZeroPurchase = msg.value != 0;
-		require( withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; (crowdSaleState == CrowdSaleState.NotFinished));
+		require( withinPeriod && nonZeroPurchase && (crowdSaleState == CrowdSaleState.NotFinished));
 		uint bonuspos = 0;
-		if (now &lt;= bonusEndTime) {
+		if (now <= bonusEndTime) {
 //		    lastdata = msg.data;
 			bytes32 code = sha3(msg.data);
 			bonuspos = bonusesMapPos[code];
@@ -545,7 +545,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
         require(ETHadress.length == BTCnum.length); 
         require(TransTime.length == bonusdata.length);
         require(ETHadress.length == bonusdata.length);
-        for (uint i = 0; i &lt; ETHadress.length; i++) {
+        for (uint i = 0; i < ETHadress.length; i++) {
             AddBTCTransaction(ETHadress[i], BTCnum[i], TransTime[i], bonusdata[i]);
         }
 	}
@@ -558,10 +558,10 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
      */
 	function AddBTCTransaction (address ETHadress, uint BTCnum, uint TransTime, bytes4 bonusdata) public onlyOwner {
 		require(CheckBTCtransaction());
-		require((TransTime &gt;= startTime) &amp;&amp; (TransTime &lt;= endTime));
+		require((TransTime >= startTime) && (TransTime <= endTime));
 		require(BTCnum != 0);
 		uint bonuspos = 0;
-		if (TransTime &lt;= bonusEndTime) {
+		if (TransTime <= bonusEndTime) {
 //		    lastdata = bonusdata;
 			bytes32 code = sha3(bonusdata);
 			bonuspos = bonusesMapPos[code];
@@ -569,7 +569,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 		ReceiveAmount(ETHadress, 0, BTCnum, TransTime, bonuspos);
 	}
 
-	modifier afterDeadline() { if (now &gt;= endTime) _; }
+	modifier afterDeadline() { if (now >= endTime) _; }
 
     /**
      * Set price for ETH and BTC, only owner could call
@@ -606,7 +606,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
      */
     function checkGoalReached() public afterDeadline {
 		amountRaisedUSD = collectedSum();
-        if (amountRaisedUSD &gt;= (fundingGoalUSD * USDDecimals) ){
+        if (amountRaisedUSD >= (fundingGoalUSD * USDDecimals) ){
 			crowdSaleState = CrowdSaleState.Success;
 			TokenAmountToPay = amountRaisedUSD;
             GoalReached(owner, amountRaisedUSD);
@@ -620,7 +620,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
      */
     function checkMaxCapReached() public {
 		amountRaisedUSD = collectedSum();
-        if (amountRaisedUSD &gt;= (fundingMaxCapUSD * USDDecimals) ){
+        if (amountRaisedUSD >= (fundingMaxCapUSD * USDDecimals) ){
 	        crowdSaleState = CrowdSaleState.Success;
 			TokenAmountToPay = amountRaisedUSD;
             GoalReached(owner, amountRaisedUSD);
@@ -631,9 +631,9 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 		require(investor != 0x0);
 
 		uint pos = balanceMapPos[investor];
-		if (pos&gt;0) {
+		if (pos>0) {
 			pos--;
-			assert(pos &lt; balanceList.length);
+			assert(pos < balanceList.length);
 			assert(balanceList[pos].mapAddress == investor);
 			balanceList[pos].mapBalanceETH = balanceList[pos].mapBalanceETH.add(sumETH);
 			balanceList[pos].mapBalanceBTC = balanceList[pos].mapBalanceBTC.add(sumBTC);
@@ -663,18 +663,18 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
      */
 	function DistributeNextNTokens(uint n) public payable onlyOwner {
 		require(BonusesDistributed);
-		require(DistributionNextPos&lt;balanceList.length);
+		require(DistributionNextPos<balanceList.length);
 		uint nextpos;
 		if (n == 0) {
 		    nextpos = balanceList.length;
 		} else {
     		nextpos = DistributionNextPos.add(n);
-    		if (nextpos &gt; balanceList.length) {
+    		if (nextpos > balanceList.length) {
     			nextpos = balanceList.length;
     		}
 		}
 		uint TokenAmountToPay_local = TokenAmountToPay;
-		for (uint i = DistributionNextPos; i &lt; nextpos; i++) {
+		for (uint i = DistributionNextPos; i < nextpos; i++) {
 			uint USDbalance = convertToUSD(balanceList[i].mapBalanceETH, balanceList[i].mapBalanceBTC);
 			uint tokensCount = USDbalance.mul(priceUSD);
 			tokenReward.mintToken(balanceList[i].mapAddress, tokensCount + balanceList[i].bonusTokens);
@@ -687,7 +687,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	}
 
 	function finishDistribution()  onlyOwner {
-		require ((TokenAmountToPay == 0)||(DistributionNextPos &gt;= balanceList.length));
+		require ((TokenAmountToPay == 0)||(DistributionNextPos >= balanceList.length));
 //		tokenReward.finishMinting();
 		tokenReward.transferOwnership(owner);
 		selfdestruct(owner);
@@ -702,11 +702,11 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
     function safeWithdrawal() public afterDeadline {
         require(crowdSaleState == CrowdSaleState.Failure);
 		uint pos = balanceMapPos[msg.sender];
-		require((pos&gt;0)&amp;&amp;(pos&lt;=balanceList.length));
+		require((pos>0)&&(pos<=balanceList.length));
 		pos--;
         uint amount = balanceList[pos].mapBalanceETH;
         balanceList[pos].mapBalanceETH = 0;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
             FundTransfer(msg.sender, amount, false);
         }
@@ -717,7 +717,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
      * In this case the token distribution or sum refund will be performed in mannual
      */
 	function killContract() public onlyOwner {
-		require(now &gt;= endTime + selfDestroyTime);
+		require(now >= endTime + selfDestroyTime);
 		tokenReward.transferOwnership(owner);
         selfdestruct(owner);
     }
@@ -728,7 +728,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	function AddBonusToListFromArray(bytes32[] bonusCode, uint[] ETHsumInFinney, uint[] BTCsumInFinney) public onlyOwner {
 	    require(bonusCode.length == ETHsumInFinney.length);
 	    require(bonusCode.length == BTCsumInFinney.length);
-	    for (uint i = 0; i &lt; bonusCode.length; i++) {
+	    for (uint i = 0; i < bonusCode.length; i++) {
 	        AddBonusToList(bonusCode[i], ETHsumInFinney[i], BTCsumInFinney[i] );
 	    }
 	}
@@ -738,7 +738,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	function AddBonusToList(bytes32 bonusCode, uint ETHsumInFinney, uint BTCsumInFinney) public onlyOwner {
 		uint pos = bonusesMapPos[bonusCode];
 
-		if (pos &gt; 0) {
+		if (pos > 0) {
 			pos -= 1;
 			bonusesList[pos].maxBonusETH = ETHsumInFinney * 1 finney;
 			bonusesList[pos].maxBonusBTC = BTCsumInFinney * 1 finney;
@@ -759,7 +759,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 	uint public BonusCalcPos = 0;
 //    bytes public lastdata;
 	function checkBonus(uint newBalancePos, uint sumETH, uint sumBTC, uint TransTime, uint pos) internal {
-			if (pos &gt; 0) {
+			if (pos > 0) {
 				pos--;
 				if (!bonusesList[pos].notempty) {
 					bonusesList[pos].balancePos = newBalancePos;
@@ -768,10 +768,10 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 				    if (bonusesList[pos].balancePos != newBalancePos) return;
 				}
 				bonusesList[pos].bonusETH = bonusesList[pos].bonusETH.add(sumETH);
-				// if (bonusesList[pos].bonusETH &gt; bonusesList[pos].maxBonusETH)
+				// if (bonusesList[pos].bonusETH > bonusesList[pos].maxBonusETH)
 				// 	bonusesList[pos].bonusETH = bonusesList[pos].maxBonusETH;
 				bonusesList[pos].bonusBTC = bonusesList[pos].bonusBTC.add(sumBTC);
-				// if (bonusesList[pos].bonusBTC &gt; bonusesList[pos].maxBonusBTC)
+				// if (bonusesList[pos].bonusBTC > bonusesList[pos].maxBonusBTC)
 				// 	bonusesList[pos].bonusBTC = bonusesList[pos].maxBonusBTC;
 			}
 	}
@@ -783,17 +783,17 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 		require(crowdSaleState == CrowdSaleState.Success);
 		require(!BonusesDistributed);
 		uint nextPos = BonusCalcPos + N;
-		if (nextPos &gt; bonusesList.length) 
+		if (nextPos > bonusesList.length) 
 			nextPos = bonusesList.length;
         uint bonusCapUSD_local = bonusCapUSD;    
-		for (uint i = BonusCalcPos; i &lt; nextPos; i++) {
-			if  ((bonusesList[i].notempty) &amp;&amp; (bonusesList[i].balancePos &lt; balanceList.length)) {
+		for (uint i = BonusCalcPos; i < nextPos; i++) {
+			if  ((bonusesList[i].notempty) && (bonusesList[i].balancePos < balanceList.length)) {
 				uint maxbonus = convertToUSD(bonusesList[i].maxBonusETH, bonusesList[i].maxBonusBTC);
 				uint bonus = convertToUSD(bonusesList[i].bonusETH, bonusesList[i].bonusBTC);
-				if (maxbonus &lt; bonus)
+				if (maxbonus < bonus)
 				    bonus = maxbonus;
 				bonus = bonus.mul(priceUSD);
-				if (bonusCapUSD_local &gt;= bonus) {
+				if (bonusCapUSD_local >= bonus) {
 					bonusCapUSD_local = bonusCapUSD_local - bonus;
 				} else {
 					bonus = bonusCapUSD_local;
@@ -809,7 +809,7 @@ contract TSBCrowdFundingContract is NamedOwnedToken{
 		}
         bonusCapUSD = bonusCapUSD_local;    
 		BonusCalcPos = nextPos;
-		if (nextPos &gt;= bonusesList.length) {
+		if (nextPos >= bonusesList.length) {
 			BonusesDistributed = true;
 		}
 	}

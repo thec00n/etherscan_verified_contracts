@@ -6,7 +6,7 @@
    This contract does require msg.value of $0.08-$0.15 USD to cover
    the price of sending a text message to the real world.
    
-   Documentation &amp; web3: https://hunterlong.github.io/textmessage.eth
+   Documentation & web3: https://hunterlong.github.io/textmessage.eth
    Github: https://github.com/hunterlong/textmessage.eth
    Author: Hunter Long
    
@@ -53,12 +53,12 @@ contract TextMessage is owned {
     
     function pauseContract() onlyOwner {
         enabled = false;
-        UpdateEnabled(&quot;Texting has been disabled&quot;);
+        UpdateEnabled("Texting has been disabled");
     }
     
     function enableContract() onlyOwner {
         enabled = true;
-        UpdateEnabled(&quot;Texting has been enabled&quot;);
+        UpdateEnabled("Texting has been enabled");
     }
     
     function withdraw() onlyOwner {
@@ -71,7 +71,7 @@ contract TextMessage is owned {
     
     function sendText(string phoneNumber, string textBody) public payable {
         if(!enabled) throw;
-        if(msg.value &lt; cost) throw;
+        if(msg.value < cost) throw;
         sendMsg(phoneNumber, textBody);
     }
     

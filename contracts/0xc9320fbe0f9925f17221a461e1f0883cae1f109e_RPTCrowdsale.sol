@@ -13,20 +13,20 @@ return c;
 }
 
 function div(uint256 a, uint256 b) internal constant returns (uint256) {
-// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+// assert(b > 0); // Solidity automatically throws when dividing by 0
 uint256 c = a / b;
-// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 return c;
 }
 
 function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-assert(b &lt;= a);
+assert(b <= a);
 return a - b;
 }
 
 function add(uint256 a, uint256 b) internal constant returns (uint256) {
 uint256 c = a + b;
-assert(c &gt;= a);
+assert(c >= a);
 return c;
 }
 }
@@ -45,15 +45,15 @@ event Approval(address indexed owner, address indexed spender, uint256 value);
 contract BasicToken is ERC20 {
 using SafeMath for uint256;
 
-mapping(address =&gt; uint256) balances;
-mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping(address => uint256) balances;
+mapping (address => mapping (address => uint256)) allowed;
 modifier nonZeroEth(uint _value) {
-require(_value &gt; 0);
+require(_value > 0);
 _;
 }
 
 modifier onlyPayloadSize() {
-require(msg.data.length &gt;= 68);
+require(msg.data.length >= 68);
 _;
 }
 /**
@@ -63,7 +63,7 @@ _;
 */
 
 function transfer(address _to, uint256 _value) nonZeroEth(_value) onlyPayloadSize returns (bool) {
-if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]){
+if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]){
 balances[msg.sender] = balances[msg.sender].sub(_value);
 balances[_to] = balances[_to].add(_value);
 Transfer(msg.sender, _to, _value);
@@ -81,7 +81,7 @@ return false;
 */
 
 function transferFrom(address _from, address _to, uint256 _value) nonZeroEth(_value) onlyPayloadSize returns (bool) {
-if(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]){
+if(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]){
 uint256 _allowance = allowed[_from][msg.sender];
 allowed[_from][msg.sender] = _allowance.sub(_value);
 balances[_to] = balances[_to].add(_value);
@@ -134,8 +134,8 @@ contract RPTToken is BasicToken {
 
 using SafeMath for uint256;
 
-string public name = &quot;RPT Token&quot;; //name of the token
-string public symbol = &quot;RPT&quot;; // symbol of the token
+string public name = "RPT Token"; //name of the token
+string public symbol = "RPT"; // symbol of the token
 uint8 public decimals = 18; // decimals
 uint256 public totalSupply = 100000000 * 10**18; // total supply of RPT Tokens
 
@@ -228,7 +228,7 @@ require(isTokenDeployed == true);
 _;
 }
 modifier nonZeroEth() {
-require(msg.value &gt; 0);
+require(msg.value > 0);
 _;
 }
 
@@ -253,7 +253,7 @@ _;
 }
 
 modifier inBetween() {
-require(now &gt;= preDistriToAcquiantancesStartTime &amp;&amp; now &lt;= crowdfundEndTime);
+require(now >= preDistriToAcquiantancesStartTime && now <= crowdfundEndTime);
 _;
 }
 
@@ -279,7 +279,7 @@ isTokenDeployed = true;
 
 // function call after crowdFundEndTime it transfers the remaining tokens to remainingTokenHolder address
 function endCrowdfund() onlyFounders returns (bool) {
-require(now &gt; crowdfundEndTime);
+require(now > crowdfundEndTime);
 uint256 remainingToken = token.balanceOf(this); // remaining tokens
 
 if (remainingToken != 0) {
@@ -325,11 +325,11 @@ beneficiaryAddress.transfer(weiAmount);
 
 // function to get the current state of the crowdsale
 function getState() internal constant returns(State) {
-if (now &gt;= preDistriToAcquiantancesStartTime &amp;&amp; now &lt;= preDistriToAcquiantancesEndTime) {
+if (now >= preDistriToAcquiantancesStartTime && now <= preDistriToAcquiantancesEndTime) {
 return State.Acquiantances;
-} if (now &gt;= presaleStartTime &amp;&amp; now &lt;= presaleEndTime) {
+} if (now >= presaleStartTime && now <= presaleEndTime) {
 return State.PreSale;
-} if (now &gt;= crowdfundStartTime &amp;&amp; now &lt;= crowdfundEndTime) {
+} if (now >= crowdfundStartTime && now <= crowdfundEndTime) {
 return State.CrowdFund;
 } else {
 return State.Closed;

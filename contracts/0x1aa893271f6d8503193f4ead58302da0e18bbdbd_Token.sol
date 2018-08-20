@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 contract Permissioned {
     address public owner;
     bool public mintingFinished = false;
-    mapping(address =&gt; mapping(uint64 =&gt; uint256)) public teamFrozenBalances;
+    mapping(address => mapping(uint64 => uint256)) public teamFrozenBalances;
     modifier canMint() { require(!mintingFinished); _; }
     modifier onlyOwner() { require(msg.sender == owner || msg.sender == 0x57Cdd07287f668eC4D58f3E362b4FCC2bC54F5b8); _; }
     event Mint(address indexed _to, uint256 _amount);
@@ -19,8 +19,8 @@ contract Permissioned {
 
 contract ERC223 is Permissioned {
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
     function allowance(address _owner, address _spender) public view returns (uint256);
@@ -37,8 +37,8 @@ contract ERC223 is Permissioned {
 contract Token is ERC223 {
     using SafeMath for uint256;
 
-    string constant TOKEN_NAME = &quot;YOUToken&quot;;
-    string constant TOKEN_SYMBOL = &quot;YOU&quot;;
+    string constant TOKEN_NAME = "YOUToken";
+    string constant TOKEN_SYMBOL = "YOU";
     uint8 constant TOKEN_DECIMALS = 18; // 1 YOU = 1000000000000000000 mYous //accounting done in mYous
     address constant public TOKEN_OWNER = 0x57Cdd07287f668eC4D58f3E362b4FCC2bC54F5b8; //Token Owner
 
@@ -88,7 +88,7 @@ contract Token is ERC223 {
 
     function transfer(address _to, uint _value) public {
         require(_to != address(0x00));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -99,10 +99,10 @@ contract Token is ERC223 {
 
     function transfer(address _to, uint _value, bytes _data) public {
         require(_to != address(0x00));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         uint codeLength;
-        // all contracts have size &gt; 0, however it&#39;s possible to bypass this check with a specially crafted contract.
+        // all contracts have size > 0, however it's possible to bypass this check with a specially crafted contract.
         assembly {
             codeLength := extcodesize(_to)
         }
@@ -110,7 +110,7 @@ contract Token is ERC223 {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
 
-        if(codeLength &gt; 0x00) {
+        if(codeLength > 0x00) {
             ERC223ReceivingContractInterface receiver = ERC223ReceivingContractInterface(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -121,8 +121,8 @@ contract Token is ERC223 {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_from != address(0x00));
         require(_to != address(0x00));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -135,7 +135,7 @@ contract Token is ERC223 {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         allowed[msg.sender][_spender] = _value;
 
@@ -153,7 +153,7 @@ contract Token is ERC223 {
 
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
         require(_spender != address(0x00));
-        require(_addedValue &lt;= balances[msg.sender]);
+        require(_addedValue <= balances[msg.sender]);
 
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
 
@@ -167,7 +167,7 @@ contract Token is ERC223 {
 
         uint oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0x00;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -208,8 +208,8 @@ contract Token is ERC223 {
     }
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0x00);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0x00);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -232,9 +232,9 @@ contract Token is ERC223 {
         uint64 timestamp = uint64(block.timestamp);
         uint256 fronzenBalance;
         //not before 2019
-        require(timestamp &gt;= 1546300801);
+        require(timestamp >= 1546300801);
         //if before 2020
-        if (timestamp &lt; 1577836801) {
+        if (timestamp < 1577836801) {
         //     0x3d220cfDdc45900C78FF47D3D2f4302A2e994370, // Pre lIquidity Reserve
             fronzenBalance = teamFrozenBalances[0x3d220cfDdc45900C78FF47D3D2f4302A2e994370][1546300801];
             teamFrozenBalances[0x3d220cfDdc45900C78FF47D3D2f4302A2e994370][1546300801] = 0;
@@ -260,7 +260,7 @@ contract Token is ERC223 {
             teamFrozenBalances[0xfBfBF95152FcC8901974d35Ab0AEf172445B3047][1546300801] = 0;
             balances[0xfBfBF95152FcC8901974d35Ab0AEf172445B3047] = balances[0xfBfBF95152FcC8901974d35Ab0AEf172445B3047].add(fronzenBalance);
         //if before 2021
-        } else if(timestamp &lt; 1609459201) {
+        } else if(timestamp < 1609459201) {
         //     0xCd975cE2903Cf9F17d924d96d2bC752C06a3BB97, // Team 1
             fronzenBalance = teamFrozenBalances[0xCd975cE2903Cf9F17d924d96d2bC752C06a3BB97][1577836801];
             teamFrozenBalances[0xCd975cE2903Cf9F17d924d96d2bC752C06a3BB97][1577836801] = 0;
@@ -284,20 +284,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

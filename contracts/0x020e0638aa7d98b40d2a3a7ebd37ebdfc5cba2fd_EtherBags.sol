@@ -116,7 +116,7 @@ contract EtherBags {
     uint256 sellingPrice = getBagSellingPrice(bag);
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     // Take a transaction fee
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 92), 100));
@@ -144,10 +144,10 @@ contract EtherBags {
 
   /*** PRIVATE FUNCTIONS ***/
 
-  // If a bag hasn&#39;t been purchased in over $timeout,
+  // If a bag hasn't been purchased in over $timeout,
   // reset its level back to 0 but retain the existing owner
   function getBagLevel(Bag bag) private view returns (uint256) {
-    if (now &lt;= (SafeMath.add(bag.purchasedAt, timeout))) {
+    if (now <= (SafeMath.add(bag.purchasedAt, timeout))) {
       return bag.level;
     } else {
       return 0;
@@ -167,7 +167,7 @@ contract EtherBags {
   function getPriceForLevel(Bag bag, uint256 level) private view returns (uint256) {
     uint256 sellingPrice = startingPrice;
 
-    for (uint256 i = 0; i &lt; level; i++) {
+    for (uint256 i = 0; i < level; i++) {
       sellingPrice = SafeMath.div(SafeMath.mul(sellingPrice, bag.multiplier), 100);
     }
 
@@ -198,9 +198,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -208,7 +208,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -217,7 +217,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

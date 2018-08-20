@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 contract Token {
     function transferFrom(address from, address to, uint amount) returns(bool);
@@ -104,7 +104,7 @@ contract Savings is Owned {
     Token public token;
 
     // face value deposited by an address before locking
-    mapping (address =&gt; uint) public deposited;
+    mapping (address => uint) public deposited;
 
     // total face value deposited; sum of deposited
     uint public totalfv;
@@ -119,7 +119,7 @@ contract Savings is Owned {
     uint public total;
 
     // the total value withdrawn
-    mapping (address =&gt; uint256) public withdrawn;
+    mapping (address => uint256) public withdrawn;
 
     bool public nullified;
 
@@ -135,7 +135,7 @@ contract Savings is Owned {
 
     modifier notNullified() { require(!nullified); _; }
 
-    modifier preLock() { require(!locked &amp;&amp; startBlockTimestamp == 0); _; }
+    modifier preLock() { require(!locked && startBlockTimestamp == 0); _; }
 
     /**
      * Lock called, deposits no longer available.
@@ -145,13 +145,13 @@ contract Savings is Owned {
     /**
      * Prestart, state is after lock, before start
      */
-    modifier preStart() { require(locked &amp;&amp; startBlockTimestamp == 0); _; }
+    modifier preStart() { require(locked && startBlockTimestamp == 0); _; }
 
     /**
      * Start called, the savings contract is now finalized, and withdrawals
      * are now permitted.
      */
-    modifier postStart() { require(locked &amp;&amp; startBlockTimestamp != 0); _; }
+    modifier postStart() { require(locked && startBlockTimestamp != 0); _; }
 
     /**
      * Uninitialized state, before init is called. Mainly used as a guard to
@@ -225,14 +225,14 @@ contract Savings is Owned {
 
     /**
      * Check withdrawal is live, useful for checking whether
-     * the savings contract is &quot;live&quot;, withdrawal enabled, started.
+     * the savings contract is "live", withdrawal enabled, started.
      */
     function isStarted() constant returns(bool) {
-        return locked &amp;&amp; startBlockTimestamp != 0;
+        return locked && startBlockTimestamp != 0;
     }
 
     // if someone accidentally transfers tokens to this contract,
-    // the owner can return them as long as distribution hasn&#39;t started
+    // the owner can return them as long as distribution hasn't started
 
     /**
      * Used to refund users who accidentaly transferred tokens to this
@@ -247,12 +247,12 @@ contract Savings is Owned {
      * Update the total balance, to be called in case of subsequent sales. Updates
      * the total recorded balance of the contract by the difference in expected
      * remainder and the current balance. This means any positive difference will
-     * be &quot;recorded&quot; into the contract, and distributed within the remaining
+     * be "recorded" into the contract, and distributed within the remaining
      * months of the TRS.
      */
     function updateTotal() onlyOwner postLock {
         uint current = token.balanceOf(this);
-        require(current &gt;= remainder); // for sanity
+        require(current >= remainder); // for sanity
 
         uint difference = (current - remainder);
         total += difference;
@@ -278,7 +278,7 @@ contract Savings is Owned {
          * Lower bound, consider period 0 to be the time between
          * start() and startBlockTimestamp
          */
-        if (startBlockTimestamp &gt; _blockTimestamp)
+        if (startBlockTimestamp > _blockTimestamp)
             return 0;
 
         /**
@@ -286,7 +286,7 @@ contract Savings is Owned {
          * periods - 1.
          */
         uint p = ((_blockTimestamp - startBlockTimestamp) / intervalSecs) + 1;
-        if (p &gt; periods)
+        if (p > periods)
             p = periods;
         return p;
     }
@@ -299,7 +299,7 @@ contract Savings is Owned {
 
     // deposit your tokens to be saved
     //
-    // the despositor must have approve()&#39;d the tokens
+    // the despositor must have approve()'d the tokens
     // to be transferred by this contract
     function deposit(uint tokens) notNullified {
         depositTo(msg.sender, tokens);
@@ -315,10 +315,10 @@ contract Savings is Owned {
 
     // convenience function for owner: deposit on behalf of many
     function bulkDepositTo(uint256[] bits) onlyOwner {
-        uint256 lomask = (1 &lt;&lt; 96) - 1;
-        for (uint i=0; i&lt;bits.length; i++) {
-            address a = address(bits[i]&gt;&gt;96);
-            uint val = bits[i]&amp;lomask;
+        uint256 lomask = (1 << 96) - 1;
+        for (uint i=0; i<bits.length; i++) {
+            address a = address(bits[i]>>96);
+            uint val = bits[i]&lomask;
             depositTo(a, val);
         }
     }
@@ -375,7 +375,7 @@ contract Savings is Owned {
         uint256 withdrawable = ((_deposit * fraction * _total) / totalfv) / precision;
 
         // check that we can withdraw something
-        if (withdrawable &gt; _withdrawn) {
+        if (withdrawable > _withdrawn) {
             return withdrawable - _withdrawn;
         }
         return 0;
@@ -397,7 +397,7 @@ contract Savings is Owned {
         }
 
         // check that we cannot withdraw more than max
-        require((diff + _w) &lt;= ((_d * total) / totalfv));
+        require((diff + _w) <= ((_d * total) / totalfv));
 
         // transfer and increment
         require(token.transfer(addr, diff));
@@ -410,25 +410,25 @@ contract Savings is Owned {
 
     // force withdrawal to many addresses
     function bulkWithdraw(address[] addrs) notNullified {
-        for (uint i=0; i&lt;addrs.length; i++)
+        for (uint i=0; i<addrs.length; i++)
             withdrawTo(addrs[i]);
     }
 
     // Code off the chain informs this contract about
     // tokens that were minted to it on behalf of a depositor.
     //
-    // Note: the function signature here is known to New Alchemy&#39;s
+    // Note: the function signature here is known to New Alchemy's
     // tooling, which is why it is arguably misnamed.
     uint public mintingNonce;
     function multiMint(uint nonce, uint256[] bits) onlyOwner preLock {
 
         if (nonce != mintingNonce) return;
         mintingNonce += 1;
-        uint256 lomask = (1 &lt;&lt; 96) - 1;
+        uint256 lomask = (1 << 96) - 1;
         uint sum = 0;
-        for (uint i=0; i&lt;bits.length; i++) {
-            address a = address(bits[i]&gt;&gt;96);
-            uint value = bits[i]&amp;lomask;
+        for (uint i=0; i<bits.length; i++) {
+            address a = address(bits[i]>>96);
+            uint value = bits[i]&lomask;
             deposited[a] += value;
             sum += value;
             Deposit(a, value);

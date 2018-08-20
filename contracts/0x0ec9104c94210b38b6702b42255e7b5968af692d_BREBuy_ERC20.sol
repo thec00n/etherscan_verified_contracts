@@ -109,7 +109,7 @@ contract BREBuy_ERC20 {
         addressArray.push(player);
        
         emit addPlayerEvent(gameIndex,player);
-        if(addressArray.length &gt;= curConfig.totalSize) {
+        if(addressArray.length >= curConfig.totalSize) {
             gameResult();
             startNewGame();
         }
@@ -147,7 +147,7 @@ contract BREBuy_ERC20 {
     
     function getRamdon() private view returns (uint) {
       bytes32 ramdon = keccak256(abi.encodePacked(ramdon,now,blockhash(block.number-1)));
-      for(uint i = 0; i &lt; addressArray.length; i++) {
+      for(uint i = 0; i < addressArray.length; i++) {
          ramdon = keccak256(abi.encodePacked(ramdon,now, addressArray[i]));
       }
       uint index  = uint(ramdon) % addressArray.length;

@@ -48,18 +48,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,9 +69,9 @@ library SafeMath {
  */
 contract SafeBasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   modifier onlyPayloadSize(uint size) {
-     assert(msg.data.length &gt;= size + 4);
+     assert(msg.data.length >= size + 4);
      _;
   }
   /**
@@ -114,7 +114,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract SafeStandardToken is ERC20, SafeBasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -125,7 +125,7 @@ contract SafeStandardToken is ERC20, SafeBasicToken {
     require(_to != address(0));
     uint256 _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -137,7 +137,7 @@ contract SafeStandardToken is ERC20, SafeBasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -171,7 +171,7 @@ contract SafeStandardToken is ERC20, SafeBasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) public
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -181,8 +181,8 @@ contract SafeStandardToken is ERC20, SafeBasicToken {
   }
 }
 contract LendConnect is SafeStandardToken{
-  string public constant name = &quot;LendConnect Token&quot;;
-  string public constant symbol = &quot;LCT&quot;;
+  string public constant name = "LendConnect Token";
+  string public constant symbol = "LCT";
   uint256 public constant decimals = 18;
   uint256 public constant INITIAL_SUPPLY = 6500000 * (10 ** uint256(decimals));
   function LendConnect(address _ownerAddress) public {
@@ -207,11 +207,11 @@ contract Crowdsale is Ownable {
   uint256 public phase_3_remaining_tokens  = 1000000 * (10 ** uint256(18));
   uint256 public phase_4_remaining_tokens  = 1000000 * (10 ** uint256(18));
   uint256 public phase_5_remaining_tokens  = 1000000 * (10 ** uint256(18));
-  mapping(address =&gt; uint256) phase_1_balances;
-  mapping(address =&gt; uint256) phase_2_balances;
-  mapping(address =&gt; uint256) phase_3_balances;
-  mapping(address =&gt; uint256) phase_4_balances;
-  mapping(address =&gt; uint256) phase_5_balances;
+  mapping(address => uint256) phase_1_balances;
+  mapping(address => uint256) phase_2_balances;
+  mapping(address => uint256) phase_3_balances;
+  mapping(address => uint256) phase_4_balances;
+  mapping(address => uint256) phase_5_balances;
   
   
   // address where funds are collected
@@ -261,48 +261,48 @@ contract Crowdsale is Ownable {
   function isTokenAvailable(uint256 _tokens) internal constant returns (bool){
     uint256 current_time = now;
     uint256 total_expected_tokens = 0;
-    if(current_time &gt; start_time &amp;&amp; current_time &lt; phase_1_Time){
+    if(current_time > start_time && current_time < phase_1_Time){
       total_expected_tokens = _tokens + phase_1_balances[msg.sender];
-      return total_expected_tokens &lt;= 10000 * (10 ** uint256(18)) &amp;&amp;
-        _tokens &lt;= phase_1_remaining_tokens;
+      return total_expected_tokens <= 10000 * (10 ** uint256(18)) &&
+        _tokens <= phase_1_remaining_tokens;
     }
-    else if(current_time &gt; phase_1_Time &amp;&amp; current_time &lt; phase_2_Time){
+    else if(current_time > phase_1_Time && current_time < phase_2_Time){
       total_expected_tokens = _tokens + phase_2_balances[msg.sender];
-      return total_expected_tokens &lt;= 2000 * (10 ** uint256(18)) &amp;&amp;
-        _tokens &lt;= phase_2_remaining_tokens;
+      return total_expected_tokens <= 2000 * (10 ** uint256(18)) &&
+        _tokens <= phase_2_remaining_tokens;
     }
-    else if(current_time &gt; phase_2_Time &amp;&amp; current_time &lt; phase_3_Time){
+    else if(current_time > phase_2_Time && current_time < phase_3_Time){
       total_expected_tokens = _tokens + phase_3_balances[msg.sender];
-      return total_expected_tokens &lt;= 2000 * (10 ** uint256(18)) &amp;&amp;
-        _tokens &lt;= phase_3_remaining_tokens;
+      return total_expected_tokens <= 2000 * (10 ** uint256(18)) &&
+        _tokens <= phase_3_remaining_tokens;
     }
-    else if(current_time &gt; phase_3_Time &amp;&amp; current_time &lt; phase_4_Time){
+    else if(current_time > phase_3_Time && current_time < phase_4_Time){
       total_expected_tokens = _tokens + phase_4_balances[msg.sender];
-      return total_expected_tokens &lt;= 3500 * (10 ** uint256(18)) &amp;&amp;
-        _tokens &lt;= phase_4_remaining_tokens;
+      return total_expected_tokens <= 3500 * (10 ** uint256(18)) &&
+        _tokens <= phase_4_remaining_tokens;
     }
     else{
       total_expected_tokens = _tokens + phase_5_balances[msg.sender];
-      return total_expected_tokens &lt;= 3500 * (10 ** uint256(18)) &amp;&amp;
-        _tokens &lt;= phase_5_remaining_tokens;
+      return total_expected_tokens <= 3500 * (10 ** uint256(18)) &&
+        _tokens <= phase_5_remaining_tokens;
     }
   }
   // decrease phase supply and add user phase balance
   function updatePhaseSupplyAndBalance(uint256 _tokens) internal {
     uint256 current_time = now;
-    if(current_time &gt; start_time &amp;&amp; current_time &lt; phase_1_Time){
+    if(current_time > start_time && current_time < phase_1_Time){
       phase_1_balances[msg.sender] = phase_1_balances[msg.sender].add(_tokens);
       phase_1_remaining_tokens = phase_1_remaining_tokens - _tokens;
     }
-    else if(current_time &gt; phase_1_Time &amp;&amp; current_time &lt; phase_2_Time){
+    else if(current_time > phase_1_Time && current_time < phase_2_Time){
       phase_2_balances[msg.sender] = phase_2_balances[msg.sender].add(_tokens);
       phase_2_remaining_tokens = phase_2_remaining_tokens - _tokens;
     }
-    else if(current_time &gt; phase_2_Time &amp;&amp; current_time &lt; phase_3_Time){
+    else if(current_time > phase_2_Time && current_time < phase_3_Time){
       phase_3_balances[msg.sender] = phase_3_balances[msg.sender].add(_tokens);
       phase_3_remaining_tokens = phase_3_remaining_tokens - _tokens;
     }
-    else if(current_time &gt; phase_3_Time &amp;&amp; current_time &lt; phase_4_Time){
+    else if(current_time > phase_3_Time && current_time < phase_4_Time){
       phase_4_balances[msg.sender] = phase_4_balances[msg.sender].add(_tokens);
       phase_4_remaining_tokens = phase_4_remaining_tokens - _tokens;
     }
@@ -318,13 +318,13 @@ contract Crowdsale is Ownable {
   }
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= start_time &amp;&amp; now &lt;= end_Time;
+    bool withinPeriod = now >= start_time && now <= end_Time;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; end_Time;
+    return now > end_Time;
   }
   // function to transfer token back to owner
   function transferBack(uint256 tokens) onlyOwner public returns (bool){

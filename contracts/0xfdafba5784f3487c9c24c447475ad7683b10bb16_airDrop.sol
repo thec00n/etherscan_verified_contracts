@@ -95,7 +95,7 @@ contract airDrop is Owned {
 
         uint i;
 
-        for (i=0;i&lt;lucky.length;i++){
+        for (i=0;i<lucky.length;i++){
             //if(!tokenLedger.transfer(lucky[i],value)){revert();}
             if(!tokenLedger.transferFrom(msg.sender,lucky[i],value)){revert();}
         }

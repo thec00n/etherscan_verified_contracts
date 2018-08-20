@@ -2,10 +2,10 @@ pragma solidity ^0.4.19;
 
 contract Love {
 
-  mapping (address =&gt; address) private propose;
-  mapping (address =&gt; address) private partner;
-  mapping (uint256 =&gt; string[]) private partnerMessages;
-  mapping (uint256 =&gt; bool) private isHiddenMessages;
+  mapping (address => address) private propose;
+  mapping (address => address) private partner;
+  mapping (uint256 => string[]) private partnerMessages;
+  mapping (uint256 => bool) private isHiddenMessages;
   uint public proposeCount;
   uint public partnerCount;
 
@@ -91,7 +91,7 @@ contract Love {
   function isPartner(address a, address b) public view returns (bool) {
     require(a != address(0));
     require(b != address(0));
-    return (a == partner[b]) &amp;&amp; (b == partner[a]);
+    return (a == partner[b]) && (b == partner[a]);
   }
 
   function getPropose(address a) public view returns (address) {
@@ -109,7 +109,7 @@ contract Love {
       require((msg.sender == a) || (msg.sender == b));
     }
     uint count = partnerMessages[key].length;
-    require(index &lt; count);
+    require(index < count);
     return partnerMessages[key][index];
   }
 
@@ -130,7 +130,7 @@ contract Love {
     bytes memory arr = new bytes(64);
     bytes32 first;
     bytes32 second;
-    if (uint160(a) &lt; uint160(b)) {
+    if (uint160(a) < uint160(b)) {
       first = keccak256(a);
       second = keccak256(b);
     } else {
@@ -138,7 +138,7 @@ contract Love {
       second = keccak256(a);
     }
 
-    for (uint i = 0; i &lt; 32; i++) {
+    for (uint i = 0; i < 32; i++) {
       arr[i] = first[i];
       arr[i + 32] = second[i];
     }

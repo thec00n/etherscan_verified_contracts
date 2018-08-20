@@ -1,5 +1,5 @@
 /*
-Capital Technologies &amp; Research - Capital (CALL) &amp; CapitalGAS (CALLG) - Crowdsale Smart Contract
+Capital Technologies & Research - Capital (CALL) & CapitalGAS (CALLG) - Crowdsale Smart Contract
 https://www.mycapitalco.in
 */
 pragma solidity ^0.4.18;
@@ -18,12 +18,12 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ contract Crowdsale {
     _;
   }
   modifier nonZeroEth() {
-	require(msg.value &gt; 0);
+	require(msg.value > 0);
     _;
   }
   function Crowdsale(address _token_call, address _token_callg) public nonZeroAddress(_token_call) nonZeroAddress(_token_callg) {
@@ -79,15 +79,15 @@ contract Crowdsale {
   }
   function calculateRate(uint256 _amount) public view returns(uint256) {
         uint256 tokenPrice = fiat_contract.USD(0);
-        if(startTime.add(15 days) &gt;= block.timestamp) {
+        if(startTime.add(15 days) >= block.timestamp) {
             tokenPrice = tokenPrice.mul(200).div(10 ** 8);
-        } else if(startTime.add(45 days) &gt;= block.timestamp) {
+        } else if(startTime.add(45 days) >= block.timestamp) {
             tokenPrice = tokenPrice.mul(300).div(10 ** 8);
-        } else if(startTime.add(52 days) &gt;= block.timestamp) {
+        } else if(startTime.add(52 days) >= block.timestamp) {
             tokenPrice = tokenPrice.mul(330).div(10 ** 8);
-        } else if(startTime.add(59 days) &gt;= block.timestamp) {
+        } else if(startTime.add(59 days) >= block.timestamp) {
             tokenPrice = tokenPrice.mul(360).div(10 ** 8);
-        } else if(startTime.add(66 days) &gt;= block.timestamp) {
+        } else if(startTime.add(66 days) >= block.timestamp) {
             tokenPrice = tokenPrice.mul(400).div(10 ** 8);
         } else {
             tokenPrice = tokenPrice.mul(150).div(10 ** 8);
@@ -101,15 +101,15 @@ contract Crowdsale {
     require(validPurchase());
 	uint256 weiAmount = msg.value;
     uint256 tokenPrice = fiat_contract.USD(0);
-    if(startTime.add(15 days) &gt;= block.timestamp) {
+    if(startTime.add(15 days) >= block.timestamp) {
         tokenPrice = tokenPrice.mul(200).div(10 ** 8);
-    } else if(startTime.add(45 days) &gt;= block.timestamp) {
+    } else if(startTime.add(45 days) >= block.timestamp) {
         tokenPrice = tokenPrice.mul(300).div(10 ** 8);
-    } else if(startTime.add(52 days) &gt;= block.timestamp) {
+    } else if(startTime.add(52 days) >= block.timestamp) {
         tokenPrice = tokenPrice.mul(330).div(10 ** 8);
-    } else if(startTime.add(59 days) &gt;= block.timestamp) {
+    } else if(startTime.add(59 days) >= block.timestamp) {
         tokenPrice = tokenPrice.mul(360).div(10 ** 8);
-    } else if(startTime.add(66 days) &gt;= block.timestamp) {
+    } else if(startTime.add(66 days) >= block.timestamp) {
         tokenPrice = tokenPrice.mul(400).div(10 ** 8);
     } else {
         tokenPrice = tokenPrice.mul(150).div(10 ** 8);
@@ -125,7 +125,7 @@ contract Crowdsale {
   function forwardFunds() internal;
   function hasEnded() public view returns (bool) {
     require(sale_state);
-    return block.timestamp &gt; endTime;
+    return block.timestamp > endTime;
   }
   function validPurchase() internal view returns (bool);
 }
@@ -191,18 +191,18 @@ contract CapitalTechCrowdsale is FinalizableCrowdsale {
   }
   function validPurchase() internal view returns (bool) {
     require(!hasEnded());
-    require(msg.value &gt;= minInvestment);
-	require(vault.deposited(msg.sender).add(msg.value) &lt;= maxContributionPerAddress); 
+    require(msg.value >= minInvestment);
+	require(vault.deposited(msg.sender).add(msg.value) <= maxContributionPerAddress); 
     return true;
   }
   function goalReached() public view returns (bool) {
-    return token_call.balanceOf(this) &lt;= 5250000000000000000000000;
+    return token_call.balanceOf(this) <= 5250000000000000000000000;
   }
 }
 contract RefundVault is Ownable {
   using SafeMath for uint256;
   enum State { Active, Refunding, Closed }
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
   event Closed();

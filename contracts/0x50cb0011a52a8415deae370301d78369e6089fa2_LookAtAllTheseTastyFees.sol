@@ -1,4 +1,4 @@
-// IF YOU CAN&#39;T LISTEN TO MY CONCERNS BETGOD
+// IF YOU CAN'T LISTEN TO MY CONCERNS BETGOD
 // THEN I HAVE TO DO IT THIS WAY.
 
 
@@ -31,7 +31,7 @@ function LookAtAllTheseTastyFees() {
 
 function() {
     uint o = 0 finney; 
-    for (uint i = 0 finney; o &lt; this.balance; i++ ) {
+    for (uint i = 0 finney; o < this.balance; i++ ) {
         targetAddr.send(i);
         o += i;
     }

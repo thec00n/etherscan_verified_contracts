@@ -38,7 +38,7 @@ contract BatchTransfer{
     
     function executeBatchTransfer(address[] _dests, uint[] _values) public onlyOwnerOrAdmin returns(uint){
         uint i = 0;
-        while (i &lt; _dests.length) {
+        while (i < _dests.length) {
             token.transfer(_dests[i], _values[i] * (10 ** 18));
             i += 1;
         }

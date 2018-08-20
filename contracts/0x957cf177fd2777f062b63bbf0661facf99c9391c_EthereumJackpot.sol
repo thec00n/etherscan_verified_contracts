@@ -13,11 +13,11 @@ contract BitOpterations {
             uint8 posOffset = uint8(pos%255);
         
             bytes32 one = 1;
-            bytes32 clearBit = (bytes32)(~(one &lt;&lt; posOffset));
+            bytes32 clearBit = (bytes32)(~(one << posOffset));
             
-            uint8 bytesIndex = pos&gt;255?1:0;
+            uint8 bytesIndex = pos>255?1:0;
             
-            allocator[bytesIndex] = (allocator[bytesIndex] &amp; clearBit) | (valueBits &lt;&lt; posOffset);
+            allocator[bytesIndex] = (allocator[bytesIndex] & clearBit) | (valueBits << posOffset);
             
             return allocator;
             
@@ -26,9 +26,9 @@ contract BitOpterations {
         function get512(bytes32[2] allocator,uint16 pos) internal pure returns(uint8){
             
             uint8 posOffset = uint8(pos%255);
-            uint8 bytesIndex = pos&gt;255?1:0;
+            uint8 bytesIndex = pos>255?1:0;
             
-            return (((allocator[bytesIndex] &gt;&gt; posOffset) &amp; 1) == 1)?1:0;   
+            return (((allocator[bytesIndex] >> posOffset) & 1) == 1)?1:0;   
         }    
         
         function clear512(bytes32[2] storage allocator) internal {
@@ -41,14 +41,14 @@ contract BitOpterations {
             bytes4 valueBits = (bytes4)(value);
         
             bytes4 one = 1;
-            bytes4 clearBit = (bytes4)(~(one &lt;&lt; pos));
-            allocator = (allocator &amp; clearBit) | (valueBits &lt;&lt; pos);
+            bytes4 clearBit = (bytes4)(~(one << pos));
+            allocator = (allocator & clearBit) | (valueBits << pos);
             
             return allocator;
         }
         
         function get32(bytes4 allocator,uint8 pos) internal pure returns(uint8){
-           return (((allocator &gt;&gt; pos) &amp; 1) == 1)?1:0;
+           return (((allocator >> pos) & 1) == 1)?1:0;
         }
 }
 
@@ -68,21 +68,21 @@ contract Random32BigInteger is BitOpterations {
         
         if (randomBlockStart[lotteryId] == 0) {
             // start random number generation from next block, 
-            // so we can&#39;t influence it 
+            // so we can't influence it 
              randomBlockStart[lotteryId] = block.number + startOffset;
         } else {
             uint256 blockDiffNumber = block.number - randomBlockStart[lotteryId];
             
-            // revert tx if we haven&#39;t enough blocks to calc rand int
-            require(blockDiffNumber &gt;= 32);
+            // revert tx if we haven't enough blocks to calc rand int
+            require(blockDiffNumber >= 32);
             
             // its not possible to calc fair random number with start at randomBlockStart
             // because part of blocks or all blocks are not visible from solidity anymore 
             // start generation process one more time
-            if (blockDiffNumber &gt; 256) {
+            if (blockDiffNumber > 256) {
                 randomBlockStart[lotteryId] = block.number + startOffset;
             } else {
-                for (uint8 i = 0; i &lt; 32; i++) {
+                for (uint8 i = 0; i < 32; i++) {
                     
                     // get hash of appropriate block
                     uint256 blockHash = uint256(block.blockhash(randomBlockStart[lotteryId]+i));
@@ -125,7 +125,7 @@ contract EthereumJackpot is Random32BigInteger {
         uint8 percent;
     }
     
-    mapping (address =&gt; address) public affiliates;
+    mapping (address => address) public affiliates;
     
     Winner[] private winners;
     
@@ -162,7 +162,7 @@ contract EthereumJackpot is Random32BigInteger {
         uint16 ticketsCount;
     }
     
-    mapping(address =&gt; Player)[10] private playerInfoMappings;
+    mapping(address => Player)[10] private playerInfoMappings;
     
     bytes32[2][10] bitMaskForPlayFields;
     
@@ -188,7 +188,7 @@ contract EthereumJackpot is Random32BigInteger {
     function getTickets(uint8 lotteryId) public view returns(uint8[]) {
         uint8[] memory result = new uint8[](maxTickets[lotteryId]);
         
-        for (uint16 i = 0; i &lt; maxTickets[lotteryId]; i++) {
+        for (uint16 i = 0; i < maxTickets[lotteryId]; i++) {
             result[i] = get512(bitMaskForPlayFields[lotteryId],i);
         }
         return result;
@@ -196,12 +196,12 @@ contract EthereumJackpot is Random32BigInteger {
     
     function setLotteryOptions(uint8 lotteryId,uint256 price,uint16 tickets,uint256 timeToRefund) public ownerOnly {
         
-        require(lotteryId &gt;= 0 &amp;&amp; lotteryId &lt; 10);
-        // only allow change of lottery opts when it&#39;s in pause state, unitialized or no tickets are sold there yet
+        require(lotteryId >= 0 && lotteryId < 10);
+        // only allow change of lottery opts when it's in pause state, unitialized or no tickets are sold there yet
         require(state[lotteryId] == State.Paused || state[lotteryId] == State.Uninitialized || ticketsSold[lotteryId] == 0);
-        require(price &gt; 0);
-        require(tickets &gt; 0 &amp;&amp; tickets &lt;= 500);
-        require(timeToRefund &gt;= 86400); // require at least one day to sell all tickets
+        require(price > 0);
+        require(tickets > 0 && tickets <= 500);
+        require(timeToRefund >= 86400); // require at least one day to sell all tickets
         
         ticketPrice[lotteryId] = price;
         maxTickets[lotteryId] = tickets;
@@ -243,7 +243,7 @@ contract EthereumJackpot is Random32BigInteger {
         }
     }
     function isInList(address element,address[] memory list) private pure returns (bool) {
-        for (uint16 i =0; i &lt; list.length; i++) {
+        for (uint16 i =0; i < list.length; i++) {
             if (list[i] == element) {
                 return true;
             }
@@ -261,7 +261,7 @@ contract EthereumJackpot is Random32BigInteger {
         address[] memory resultAddr = new address[](maxTickets[lotteryId]);
         uint16[] memory resultCount = new uint16[](maxTickets[lotteryId]);
         
-        for (uint16 t = 0; t &lt; maxTickets[lotteryId]; t++) {
+        for (uint16 t = 0; t < maxTickets[lotteryId]; t++) {
             uint8 ticketBoughtHere = get512(bitMaskForPlayFields[lotteryId],t);
             
             if (ticketBoughtHere != 0) {
@@ -282,20 +282,20 @@ contract EthereumJackpot is Random32BigInteger {
         return (currentUser,resultAddr,resultCount);
     }
     
-    // in case lottery tickets weren&#39;t sold due some time 
+    // in case lottery tickets weren't sold due some time 
     // anybody who bought a ticket can 
     // ask to refund money (- comission to send them) 
     function refund(uint8 lotteryId) public {
         
         // refund state could be reached only from `running` state
         require (state[lotteryId] == State.Running);
-        require (block.timestamp &gt; (started[lotteryId] + lifetime[lotteryId]));
-        require (ticketsSold[lotteryId] &lt; maxTickets[lotteryId]);
+        require (block.timestamp > (started[lotteryId] + lifetime[lotteryId]));
+        require (ticketsSold[lotteryId] < maxTickets[lotteryId]);
         
         // check if its a person which plays this lottery
-        // or it&#39;s a lottery owner
+        // or it's a lottery owner
         
-        require(msg.sender == owner  || playerInfoMappings[lotteryId][msg.sender].changedOn &gt; started[lotteryId]);
+        require(msg.sender == owner  || playerInfoMappings[lotteryId][msg.sender].changedOn > started[lotteryId]);
         
         uint256 notSend = 0;
         
@@ -303,7 +303,7 @@ contract EthereumJackpot is Random32BigInteger {
         // refund process
         state[lotteryId] = State.Refund; 
         
-        for (uint16 i = 0; i &lt; maxTickets[lotteryId]; i++) {
+        for (uint16 i = 0; i < maxTickets[lotteryId]; i++) {
             
             address tOwner = ticketsAllocator[lotteryId][i];
             
@@ -319,7 +319,7 @@ contract EthereumJackpot is Random32BigInteger {
         }
         
         // send rest to owner if there any
-        if (notSend &gt; 0) {
+        if (notSend > 0) {
             owner.send(notSend);
         }
         
@@ -378,7 +378,7 @@ contract EthereumJackpot is Random32BigInteger {
                     if (!afPResult) {
                         LostPayment(affiliate,affiliatePrize);
                     } else {
-                        // minus affiliate prize and &quot;gas price&quot; for that tx from owners com value
+                        // minus affiliate prize and "gas price" for that tx from owners com value
                         ownerComValue -= affiliatePrize;
                     }
                 }
@@ -407,11 +407,11 @@ contract EthereumJackpot is Random32BigInteger {
          
     function buyTicket(uint8 lotteryId,uint16[] tickets,address referer) payable public {
         
-        // we&#39;re actually in `running` state
+        // we're actually in `running` state
         require(state[lotteryId] == State.Running);
         
         // not all tickets are sold yet
-        require(maxTickets[lotteryId] &gt; ticketsSold[lotteryId]);
+        require(maxTickets[lotteryId] > ticketsSold[lotteryId]);
         
         if (referer != address(0)) {
             setReferer(referer);
@@ -421,23 +421,23 @@ contract EthereumJackpot is Random32BigInteger {
         
         // check payment for ticket
         uint256 valueRequired = ticketsToBuy*ticketPrice[lotteryId];
-        require(valueRequired &lt;= msg.value);
+        require(valueRequired <= msg.value);
         
         // soft check if player want to buy free tickets
-        require((maxTickets[lotteryId] - ticketsSold[lotteryId]) &gt;= ticketsToBuy); 
+        require((maxTickets[lotteryId] - ticketsSold[lotteryId]) >= ticketsToBuy); 
         
         Player storage pInfo = playerInfoMappings[lotteryId][msg.sender];
-        if (pInfo.changedOn &lt; started[lotteryId]) {
+        if (pInfo.changedOn < started[lotteryId]) {
             pInfo.changedOn = block.timestamp;
             pInfo.ticketsCount = 0;
         }
         
-        // check percentage of user&#39;s tickets
-        require ((pInfo.ticketsCount+ticketsToBuy) &lt;= ((maxTickets[lotteryId]*maxPercentPerPlayer)/100));
+        // check percentage of user's tickets
+        require ((pInfo.ticketsCount+ticketsToBuy) <= ((maxTickets[lotteryId]*maxPercentPerPlayer)/100));
         
-        for (uint16 i; i &lt; ticketsToBuy; i++) {
+        for (uint16 i; i < ticketsToBuy; i++) {
             
-            require((tickets[i] - 1) &gt;= 0);
+            require((tickets[i] - 1) >= 0);
             
             // if the ticket is taken you would get your ethers back
             require (get512(bitMaskForPlayFields[lotteryId],tickets[i]-1) == 0);
@@ -463,7 +463,7 @@ contract EthereumJackpot is Random32BigInteger {
     }
     
     function roomNeedsFinalization(uint8 lotteryId) internal view  returns (bool){
-          return (state[lotteryId] == State.Running &amp;&amp; (ticketsSold[lotteryId] &gt;= maxTickets[lotteryId]) &amp;&amp; ((randomBlockStart[lotteryId] == 0) || ((randomBlockStart[lotteryId] &gt; 0) &amp;&amp; (block.number - randomBlockStart[lotteryId]) &gt;= 32)));
+          return (state[lotteryId] == State.Running && (ticketsSold[lotteryId] >= maxTickets[lotteryId]) && ((randomBlockStart[lotteryId] == 0) || ((randomBlockStart[lotteryId] > 0) && (block.number - randomBlockStart[lotteryId]) >= 32)));
     }
     
     function EthereumJackpot(address ownerAddress) public {
@@ -502,11 +502,11 @@ contract EthereumJackpot is Random32BigInteger {
         int256 start = winnersCount - int256(10*(page+1));
         int256 end = start+10;
         
-        if (start &lt; 0) {
+        if (start < 0) {
             start = 0;
         }
         
-        if (end &lt;= 0) {
+        if (end <= 0) {
             return;
         }
          
@@ -516,7 +516,7 @@ contract EthereumJackpot is Random32BigInteger {
         uint16[] memory number = new uint16[](uint256(end- start));
         uint8[] memory percent = new uint8[](uint256(end- start));
         
-        for (uint256 i = uint256(start); i &lt; uint256(end); i++) {
+        for (uint256 i = uint256(start); i < uint256(end); i++) {
             
             Winner storage winner = winners[i];
             addr[i - uint256(start)] = winner.addr;
@@ -542,14 +542,14 @@ contract EthereumJackpot is Random32BigInteger {
         active = new bool[](roomsCount);
         ticketsBought = new uint16[](roomsCount);
         
-        for (uint8 i = 0; i &lt; roomsCount; i++) {
+        for (uint8 i = 0; i < roomsCount; i++) {
             price[i] = ticketPrice[i];
             ticketsBought[i] = ticketsSold[i];
             tickets[i] = maxTickets[i];
             prize[i] = maxTickets[i]*ticketPrice[i];
             lastActivity[i]  = lastTicketBought[i];
             comission[i] = ownerComission;
-            active[i] = state[i] != State.Paused &amp;&amp; state[i] != State.Uninitialized;
+            active[i] = state[i] != State.Paused && state[i] != State.Uninitialized;
         }
         
         return (active,price,tickets,ticketsBought,prize,lastActivity,comission);
@@ -558,7 +558,7 @@ contract EthereumJackpot is Random32BigInteger {
     // this function allows to destroy current contract in case all rooms are paused or not used
     function destroy() public ownerOnly {
         
-        for (uint8 i = 0; i &lt; 10; i++) {
+        for (uint8 i = 0; i < 10; i++) {
             // paused or uninitialized 
             require(state[i] == State.Paused || state[i] == State.Uninitialized);
         }
@@ -568,7 +568,7 @@ contract EthereumJackpot is Random32BigInteger {
     
     // finalize methods
     function needsFinalization() public view returns(bool) {
-        for (uint8 i = 0; i &lt; 10; i++) {
+        for (uint8 i = 0; i < 10; i++) {
             if (roomNeedsFinalization(i)) {
                 return true;
             }
@@ -577,7 +577,7 @@ contract EthereumJackpot is Random32BigInteger {
     }
     
     function finalize() public {
-        for (uint8 i = 0; i &lt; 10; i++) {
+        for (uint8 i = 0; i < 10; i++) {
             if (roomNeedsFinalization(i)) {
                 finalizeRoom(i);
             }

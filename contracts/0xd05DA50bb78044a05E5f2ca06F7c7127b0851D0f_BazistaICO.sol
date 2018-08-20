@@ -27,20 +27,20 @@ library SafeMath {
 	}
 
 	/* function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	} */
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -65,8 +65,8 @@ contract owned {
 contract BazistaToken is ERC20, owned {
 	using SafeMath for uint256;
 
-	string public name = &#39;Bazista Token&#39;;
-	string public symbol = &#39;BZS&#39;;
+	string public name = 'Bazista Token';
+	string public symbol = 'BZS';
 
 	uint256 public totalSupply = 44000000000000000;
 
@@ -85,11 +85,11 @@ contract BazistaToken is ERC20, owned {
 	address public bountyWallet;
 	uint256 public bountySupply = 880000000000000;
 
-	mapping(address =&gt; uint) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => uint) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	modifier onlyPayloadSize(uint size) {
-		require(msg.data.length &gt;= (size + 4));
+		require(msg.data.length >= (size + 4));
 		_;
 	}
 
@@ -139,7 +139,7 @@ contract BazistaToken is ERC20, owned {
 		return true;
 	}
 	function _transferFrom(address _from, address _to, uint256 _value) internal {
-		require(_value &gt; 0);
+		require(_value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(_from, _to, _value);
@@ -176,7 +176,7 @@ contract BazistaICO is owned {
 	uint256 public minTokens = 4180000000000000; //3800*salePrice
 	uint256 public maxWeis = 30300000000000000000000; //30300 eth
 
-	mapping(address =&gt; uint) deposits;
+	mapping(address => uint) deposits;
 
 	function BazistaICO (
 		address tokenAddress,
@@ -201,19 +201,19 @@ contract BazistaICO is owned {
 
 		require(_status == Status.SALE);
 
-		if(now &lt; (saleStart + 3 days)) {
+		if(now < (saleStart + 3 days)) {
 			return percentFrom(amount, 30);
 		}
-		if(now &lt; (saleStart + 11 days)) {
+		if(now < (saleStart + 11 days)) {
 			return (amount / 5); //20%
 		}
-		if(now &lt; (saleStart + 17 days)) {
+		if(now < (saleStart + 17 days)) {
 			return percentFrom(amount, 15);
 		}
-		if(now &lt; (saleStart + 23 days)) {
+		if(now < (saleStart + 23 days)) {
 			return (amount / 10); //10%
 		}
-		if(now &lt; (saleStart + 28 days)) {
+		if(now < (saleStart + 28 days)) {
 			return (amount / 20); //5%
 		}
 
@@ -221,7 +221,7 @@ contract BazistaICO is owned {
 	}
 
 	function icoFinished() public constant returns (bool yes) {
-		return (status == Status.FINISH || ((status == Status.REFUND) &amp;&amp; (now &gt; (saleEnd + 14 days))));
+		return (status == Status.FINISH || ((status == Status.REFUND) && (now > (saleEnd + 14 days))));
 	}
 
 	function status() public constant returns (Status _status){
@@ -232,16 +232,16 @@ contract BazistaICO is owned {
 			return status;
 		}
 
-		if(now &lt; presaleStart) {
+		if(now < presaleStart) {
 			return Status.WAIT_PRESALE;
 		}
-		else if((now &gt; presaleStart) &amp;&amp; (now &lt; presaleEnd)){
+		else if((now > presaleStart) && (now < presaleEnd)){
 			return Status.PRESALE;
 		}
-		else if((now &gt; presaleEnd) &amp;&amp; ((now &lt; saleStart))){
+		else if((now > presaleEnd) && ((now < saleStart))){
 			return Status.WAIT_SALE;
 		}
-		else if((now &gt; saleStart) &amp;&amp; (now &lt; saleEnd) &amp;&amp; (this.balance &lt; maxWeis)){
+		else if((now > saleStart) && (now < saleEnd) && (this.balance < maxWeis)){
 			return Status.SALE;
 		}
 		else {
@@ -263,7 +263,7 @@ contract BazistaICO is owned {
 			return true;
 		}
 		else if((status == Status.SALE)) {
-			if(presaleTokens&gt;0){
+			if(presaleTokens>0){
 				crowdsaleTokens = crowdsaleTokens.add(presaleTokens);
 				presaleTokens = 0;
 			}
@@ -282,7 +282,7 @@ contract BazistaICO is owned {
 
 	function saleStopped() public onlyOwner {
 		require(getStatus() == Status.STOP);
-		if(soldTokens &lt; minTokens){
+		if(soldTokens < minTokens){
 			status = Status.REFUND;
 		}
 		else{
@@ -292,7 +292,7 @@ contract BazistaICO is owned {
 
 	function _refund(address _to) internal {
 		require(status == Status.REFUND);
-		require(deposits[_to]&gt;0);
+		require(deposits[_to]>0);
 		uint256 val = deposits[_to];
 		deposits[_to] = 0;
 		require(_to.send(val));
@@ -305,7 +305,7 @@ contract BazistaICO is owned {
 	}
 
 	function buy() public payable returns (uint256 tokens) {
-		require((msg.value &gt; 0) &amp;&amp; canBuy());
+		require((msg.value > 0) && canBuy());
 
 		tokens = calcTokens(msg.value);
 		soldTokens = soldTokens.add(tokens);
@@ -323,14 +323,14 @@ contract BazistaICO is owned {
 		deposits[msg.sender]=deposits[msg.sender].add(msg.value);
 	}
 	function addWire(address _to, uint tokens, uint bonus) public onlyOwner {
-		require((tokens &gt; 0) &amp;&amp; (bonus &gt;= 0) &amp;&amp; canBuy());
+		require((tokens > 0) && (bonus >= 0) && canBuy());
 
 		soldTokens = soldTokens.add(tokens);
 
 		tokens = tokens.add(bonus);
 		wireLimit = wireLimit.sub(tokens);
 
-		require(wireLimit&gt;=0);
+		require(wireLimit>=0);
 		require(token.transfer(_to, tokens));
 
 		if(status == Status.PRESALE) {
@@ -342,7 +342,7 @@ contract BazistaICO is owned {
 	}
 
 	function addUnsoldTokens() public onlyOwner {
-		require((now &gt; (saleEnd + 60 days)) &amp;&amp; (token.balanceOf(this) &gt; 0));
+		require((now > (saleEnd + 60 days)) && (token.balanceOf(this) > 0));
 
 		require(token.transfer(token.marketingWallet(), token.balanceOf(this)));
 	}
@@ -356,6 +356,6 @@ contract BazistaICO is owned {
 		if(status == Status.REFUND){
 			status == Status.FINISH;
 		}
-		require((this.balance &gt;= amount) &amp;&amp; receiver.send(amount));
+		require((this.balance >= amount) && receiver.send(amount));
 	}
 }

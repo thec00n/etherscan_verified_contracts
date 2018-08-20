@@ -55,7 +55,7 @@ contract GiftEth {
 
   function withdraw() public {
     require(msg.sender == recipient);
-    require(now &gt;= lockTs);
+    require(now >= lockTs);
     msg.sender.transfer(this.balance);
   }
 

@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -35,15 +35,15 @@ contract BaseToken {
     uint8 public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != address(0));
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         Transfer(_from, _to, _value);
@@ -55,7 +55,7 @@ contract BaseToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -98,7 +98,7 @@ contract BurnToken is BaseToken {
     event Burn(address indexed from, uint256 value);
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(msg.sender, _value);
@@ -106,8 +106,8 @@ contract BurnToken is BaseToken {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] = balanceOf[_from].sub(_value);
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -121,13 +121,13 @@ contract AirdropToken is BaseToken, Ownable{
     address public airSender;
     uint256 public airLimitCount;
 
-    mapping (address =&gt; uint256) public airCountOf;
+    mapping (address => uint256) public airCountOf;
 
     event Airdrop(address indexed from, uint256 indexed count, uint256 tokenValue);
 
     function airdrop() public {
-        require(airAmount &gt; 0);
-        if (airLimitCount &gt; 0 &amp;&amp; airCountOf[msg.sender] &gt;= airLimitCount) {
+        require(airAmount > 0);
+        if (airLimitCount > 0 && airCountOf[msg.sender] >= airLimitCount) {
             revert();
         }
         _transfer(airSender, msg.sender, airAmount);
@@ -150,16 +150,16 @@ contract LockToken is BaseToken {
         uint256 endtime;
     }
     
-    mapping (address =&gt; LockMeta[]) public lockedAddresses;
+    mapping (address => LockMeta[]) public lockedAddresses;
 
     function _transfer(address _from, address _to, uint _value) internal {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         uint256 remain = balanceOf[_from].sub(_value);
         uint256 length = lockedAddresses[_from].length;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             LockMeta storage meta = lockedAddresses[_from][i];
             //拒绝转账
-            if(block.timestamp &lt; meta.endtime &amp;&amp; remain &lt; meta.remain){
+            if(block.timestamp < meta.endtime && remain < meta.remain){
                 revert();
             }
         }
@@ -172,8 +172,8 @@ contract TTest is BaseToken, BurnToken, AirdropToken, LockToken {
 
     function TTest() public {
         totalSupply = 36000000000000000;
-        name = &quot;ABCToken&quot;;
-        symbol = &quot;ABC&quot;;
+        name = "ABCToken";
+        symbol = "ABC";
         decimals = 8;
 		
         owner = msg.sender;

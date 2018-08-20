@@ -5,18 +5,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -35,7 +35,7 @@ contract ERC223ReceivingContract {
       igniter.sender = _from;
       igniter.value = _value;
       igniter.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       igniter.sig = bytes4(u);
 
     }
@@ -67,12 +67,12 @@ contract iGniter is SafeMath {
     uint256 private startBounty;
     uint256 private finishBounty;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; bool) public initialAddress;
-    mapping(address =&gt; bool) public bountyAddress;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
-    mapping (address =&gt; serPayment) ignPayments;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => uint) balances;
+    mapping(address => bool) public initialAddress;
+    mapping(address => bool) public bountyAddress;
+    mapping (address => mapping (address => uint)) internal _allowances;
+    mapping (address => serPayment) ignPayments;
     address private _owner;
 
     event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
@@ -109,9 +109,9 @@ contract iGniter is SafeMath {
 
     function assignInitialAddresses(address[] _address) isOwner public returns (bool success)
     {
-        if (block.number &lt;= 6969050)
+        if (block.number <= 6969050)
         {
-          for (uint i = 0; i &lt; _address.length; i++)
+          for (uint i = 0; i < _address.length; i++)
           {
             balanceOf[_address[i]] = initialSupplyPerAddress;
             initialAddress[_address[i]] = true;
@@ -126,9 +126,9 @@ contract iGniter is SafeMath {
     {
       startBounty = 2500000000;
 
-        if (block.number &lt;= 6969050)
+        if (block.number <= 6969050)
         {
-          for (uint i = 0; i &lt; _address.length; i++)
+          for (uint i = 0; i < _address.length; i++)
           {
             balanceOf[_address[i]] = startBounty;
             initialAddress[_address[i]] = true;
@@ -143,9 +143,9 @@ contract iGniter is SafeMath {
     {
       finishBounty = 7500000000;
 
-        if (block.number &lt;= 6969050)
+        if (block.number <= 6969050)
         {
-          for (uint i = 0; i &lt; _address.length; i++)
+          for (uint i = 0; i < _address.length; i++)
           {
             balanceOf[_address[i]] = balanceOf[_address[i]] + finishBounty;
             initialAddress[_address[i]] = true;
@@ -161,7 +161,7 @@ contract iGniter is SafeMath {
         if ((initialAddress[_address])) {
             minedBlocks = block.number - initialBlockCount;
 
-            if (minedBlocks &gt;= 105120000) return balanceOf[_address]; //app. 2058
+            if (minedBlocks >= 105120000) return balanceOf[_address]; //app. 2058
 
             availableAmount = rewardPerBlockPerAddress * minedBlocks;
             availableBalance = balanceOf[_address] + availableAmount;
@@ -174,13 +174,13 @@ contract iGniter is SafeMath {
 
     function name() constant returns (string _name)
     {
-        name = &quot;iGniter&quot;;
+        name = "iGniter";
         return name;
     }
 
     function symbol() constant returns (bytes32 _symbol)
     {
-        symbol = &quot;INR&quot;;
+        symbol = "INR";
         return symbol;
     }
 
@@ -221,7 +221,7 @@ contract iGniter is SafeMath {
         _totalSupply = iGniting + initialSupply;
 
         //burn time
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         _totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -229,7 +229,7 @@ contract iGniter is SafeMath {
     }
 
     function transfer(address _to, uint _value) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; !isContract(_to)) {
+        if (_value > 0 && _value <= balanceOf[msg.sender] && !isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -239,7 +239,7 @@ contract iGniter is SafeMath {
     }
 
     function transfer(address _to, uint _value, bytes _data) public returns (bool) {
-        if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; isContract(_to)) {
+        if (_value > 0 && _value <= balanceOf[msg.sender] && isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             ERC223ReceivingContract _contract = ERC223ReceivingContract(_to);
@@ -255,12 +255,12 @@ contract iGniter is SafeMath {
         assembly {
             codeSize := extcodesize(_addr)
         }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (_allowances[_from][msg.sender] &gt; 0 &amp;&amp; _value &gt; 0 &amp;&amp; _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            balanceOf[_from] &gt;= _value) {
+        if (_allowances[_from][msg.sender] > 0 && _value > 0 && _allowances[_from][msg.sender] >= _value &&
+            balanceOf[_from] >= _value) {
             balanceOf[_from] -= _value;
             balanceOf[_to] += _value;
             _allowances[_from][msg.sender] -= _value;
@@ -282,9 +282,9 @@ contract iGniter is SafeMath {
 
     function servicePayment(address _to, uint _value) public returns (bool, uint256, uint256) {
 
-      require(_value &gt;= currentCost);
+      require(_value >= currentCost);
 
-      if (_value &gt; 0 &amp;&amp; _value &lt;= balanceOf[msg.sender] &amp;&amp; !isContract(_to)) {
+      if (_value > 0 && _value <= balanceOf[msg.sender] && !isContract(_to)) {
             balanceOf[msg.sender] -= _value;
             balanceOf[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -300,8 +300,8 @@ contract iGniter is SafeMath {
 
     function serviceBurn(uint _value) public returns (bool, uint256, uint256) {
 
-      require(_value &gt;= currentCost);
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(_value >= currentCost);
+      require(balanceOf[msg.sender] >= _value);
 
       //get sum
       minedBlocks = block.number - initialBlockCount;

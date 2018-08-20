@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -232,9 +232,9 @@ contract BurnableByOwner is BasicToken, Ownable {
 
   event Burn(address indexed burner, uint256 value);
   function burn(address _address, uint256 _value) public onlyOwner{
-    require(_value &lt;= balances[_address]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_address]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = _address;
     balances[burner] = balances[burner].sub(_value);
@@ -246,8 +246,8 @@ contract BurnableByOwner is BasicToken, Ownable {
 
 contract Wolf is Ownable, MintableToken, BurnableByOwner {
   using SafeMath for uint256;    
-  string public constant name = &quot;Wolf&quot;;
-  string public constant symbol = &quot;Wolf&quot;;
+  string public constant name = "Wolf";
+  string public constant symbol = "Wolf";
   uint32 public constant decimals = 18;
 
   address public addressTeam;
@@ -295,14 +295,14 @@ contract Crowdsale is Ownable {
   // soft cap
   uint256 public softcap;
   // balances for softcap
-  mapping(address =&gt; uint) public balancesSoftCap;
+  mapping(address => uint) public balancesSoftCap;
   struct BuyInfo {
     uint summEth;
     uint summToken;
     uint dateEndRefund;
   }
-  mapping(address =&gt; mapping(uint =&gt; BuyInfo)) public payments;
-  mapping(address =&gt; uint) public paymentCounter;
+  mapping(address => mapping(uint => BuyInfo)) public payments;
+  mapping(address => uint) public paymentCounter;
   // The token being offered
   Wolf public token;
   // start and end timestamps where investments are allowed (both inclusive)
@@ -385,10 +385,10 @@ contract Crowdsale is Ownable {
     uint256 backAmount;
     require(beneficiary != address(0));
     //minimum/maximum amount in ETH
-    require(weiAmount &gt;= minNumbPerSubscr &amp;&amp; weiAmount &lt;= maxNumbPerSubscr);
-    if (now &gt;= startICO &amp;&amp; now &lt;= endICO &amp;&amp; totalICO &lt; hardCap){
+    require(weiAmount >= minNumbPerSubscr && weiAmount <= maxNumbPerSubscr);
+    if (now >= startICO && now <= endICO && totalICO < hardCap){
       tokens = weiAmount.mul(rate);
-      if (hardCap.sub(totalICO) &lt; tokens){
+      if (hardCap.sub(totalICO) < tokens){
         tokens = hardCap.sub(totalICO); 
         weiAmount = tokens.div(rate);
         backAmount = msg.value.sub(weiAmount);
@@ -396,7 +396,7 @@ contract Crowdsale is Ownable {
       totalICO = totalICO.add(tokens);
     }
 
-    require(tokens &gt; 0);
+    require(tokens > 0);
     token.mint(beneficiary, tokens);
     balancesSoftCap[beneficiary] = balancesSoftCap[beneficiary].add(weiAmount);
 
@@ -404,7 +404,7 @@ contract Crowdsale is Ownable {
     paymentCounter[beneficiary] = paymentCounter[beneficiary] + 1;
     payments[beneficiary][paymentCounter[beneficiary]] = BuyInfo(weiAmount, tokens, dateEndRefund); 
     
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);  
     }
     emit TokenProcurement(msg.sender, beneficiary, weiAmount, tokens);
@@ -412,17 +412,17 @@ contract Crowdsale is Ownable {
 
  
   function refund() public{
-    require(address(this).balance &lt; softcap &amp;&amp; now &gt; endICO);
-    require(balancesSoftCap[msg.sender] &gt; 0);
+    require(address(this).balance < softcap && now > endICO);
+    require(balancesSoftCap[msg.sender] > 0);
     uint value = balancesSoftCap[msg.sender];
     balancesSoftCap[msg.sender] = 0;
     msg.sender.transfer(value);
   }
   
   function revoke(uint _id) public{
-    require(now &lt;= payments[msg.sender][_id].dateEndRefund);
-    require(payments[msg.sender][_id].summEth &gt; 0);
-    require(payments[msg.sender][_id].summToken &gt; 0);
+    require(now <= payments[msg.sender][_id].dateEndRefund);
+    require(payments[msg.sender][_id].summEth > 0);
+    require(payments[msg.sender][_id].summToken > 0);
     uint value = payments[msg.sender][_id].summEth;
     uint valueToken = payments[msg.sender][_id].summToken;
     balancesSoftCap[msg.sender] = balancesSoftCap[msg.sender].sub(value);
@@ -433,7 +433,7 @@ contract Crowdsale is Ownable {
    }  
   
   function transferToMultisig() public onlyOwner {
-    require(address(this).balance &gt;= softcap &amp;&amp; now &gt; endICO14);  
+    require(address(this).balance >= softcap && now > endICO14);  
       wallet.transfer(address(this).balance);
   }  
 }

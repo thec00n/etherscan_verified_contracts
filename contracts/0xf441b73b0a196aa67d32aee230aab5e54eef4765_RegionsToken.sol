@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="e387869786a3829b8a8c8e99868dcd808c">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="e387869786a3829b8a8c8e99868dcd808c">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -43,8 +43,8 @@ contract RegionsToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoConquest&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;RegionsToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoConquest"; // solhint-disable-line
+  string public constant SYMBOL = "RegionsToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 5000;
@@ -55,19 +55,19 @@ contract RegionsToken is ERC721 {
 
   /// @dev A mapping from region IDs to the address that owns them. All regions have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public regionIndexToOwner;
+  mapping (uint256 => address) public regionIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from RegionIDs to an address that has been approved to call
   ///  transferFrom(). Each Region can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public regionIndexToApproved;
+  mapping (uint256 => address) public regionIndexToApproved;
 
   // @dev A mapping from RegionIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private regionIndexToPrice;
+  mapping (uint256 => uint256) private regionIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -137,14 +137,14 @@ contract RegionsToken is ERC721 {
 
   /// @dev Creates a new promo Region with the given name, with given _price and assignes it to an address.
   function createPromoRegion(address _owner, string _name, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address regionOwner = _owner;
     if (regionOwner == address(0)) {
       regionOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -209,16 +209,16 @@ contract RegionsToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       regionIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       regionIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
     } else {
@@ -280,7 +280,7 @@ contract RegionsToken is ERC721 {
   }
 
   /// @param _owner The owner whose tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Regions array looking for regions belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -295,7 +295,7 @@ contract RegionsToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 regionId;
-      for (regionId = 0; regionId &lt;= totalRegions; regionId++) {
+      for (regionId = 0; regionId <= totalRegions; regionId++) {
         if (regionIndexToOwner[regionId] == _owner) {
           result[resultIndex] = regionId;
           resultIndex++;
@@ -360,8 +360,8 @@ contract RegionsToken is ERC721 {
     });
     uint256 newRegionId = regions.push(_region) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newRegionId == uint256(uint32(newRegionId)));
 
     Birth(newRegionId, _name, _owner);
@@ -389,12 +389,12 @@ contract RegionsToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Region to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of regions is capped to 2^32 we can&#39;t overflow this
+    // Since the number of regions is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     regionIndexToOwner[_tokenId] = _to;
 
-    // When creating new regions _from is 0x0, but we can&#39;t account that address.
+    // When creating new regions _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -423,9 +423,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -433,7 +433,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -442,7 +442,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

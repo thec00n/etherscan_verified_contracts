@@ -4,7 +4,7 @@ The MIT License (MIT)
 Copyright (c) 2016 DFINITY Stiftung 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -13,7 +13,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -48,15 +48,15 @@ SOFTWARE.
 
 pragma solidity ^0.4.6;
 
-// import &quot;TokenTracker.sol&quot;;
+// import "TokenTracker.sol";
 
 /**
  * title:  A contract that tracks numbers of tokens assigned to addresses. 
  * author: Timo Hanke 
  *
- * Optionally, assignments can be chosen to be of &quot;restricted type&quot;. 
- * Being &quot;restricted&quot; means that the token assignment may later be partially
- * reverted (or the tokens &quot;burned&quot;) by the contract. 
+ * Optionally, assignments can be chosen to be of "restricted type". 
+ * Being "restricted" means that the token assignment may later be partially
+ * reverted (or the tokens "burned") by the contract. 
  *
  * After all token assignments are completed the contract
  *   - burns some restricted tokens
@@ -75,11 +75,11 @@ contract TokenTracker {
   uint public restrictedShare; 
 
   // Mapping from address to number of tokens assigned to the address
-  mapping(address =&gt; uint) public tokens;
+  mapping(address => uint) public tokens;
 
   // Mapping from address to number of tokens assigned to the address that
   // underly a restriction
-  mapping(address =&gt; uint) public restrictions;
+  mapping(address => uint) public restrictions;
   
   // Total number of (un)restricted tokens currently in existence
   uint public totalRestrictedTokens; 
@@ -102,8 +102,8 @@ contract TokenTracker {
   uint public burnMultNom;
 
   function TokenTracker(uint _restrictedShare) {
-    // Throw if restricted share &gt;= 100
-    if (_restrictedShare &gt;= 100) { throw; }
+    // Throw if restricted share >= 100
+    if (_restrictedShare >= 100) { throw; }
     
     restrictedShare = _restrictedShare;
   }
@@ -121,7 +121,7 @@ contract TokenTracker {
    * tokens left 
    */
   function isUnrestricted() constant returns (bool) {
-    return (assignmentsClosed &amp;&amp; totalRestrictedTokens == 0);
+    return (assignmentsClosed && totalRestrictedTokens == 0);
   }
 
   /**
@@ -145,9 +145,9 @@ contract TokenTracker {
    */
   function isRegistered(address addr, bool restricted) constant returns (bool) {
     if (restricted) {
-      return (restrictions[addr] &gt; 0);
+      return (restrictions[addr] > 0);
     } else {
-      return (tokens[addr] &gt; 0);
+      return (tokens[addr] > 0);
     }
   }
 
@@ -196,7 +196,7 @@ contract TokenTracker {
     // Return if assignments are not open
     if (assignmentsClosed) { return; } 
     
-    // Set the state to &quot;closed&quot;
+    // Set the state to "closed"
     assignmentsClosed = true;
 
     /*
@@ -214,10 +214,10 @@ contract TokenTracker {
     /*
      * The total number of tokens that need to be burned to bring the existing
      * number down to the target number. If the existing number is lower than
-     * the target then we won&#39;t burn anything.
+     * the target then we won't burn anything.
      */
     uint totalBurn = 0; 
-    if (totalTokensExisting &gt; totalTokensTarget) {
+    if (totalTokensExisting > totalTokensTarget) {
       totalBurn = totalTokensExisting - totalTokensTarget; 
     }
 
@@ -229,11 +229,11 @@ contract TokenTracker {
     /*
      * For verifying the correctness of the above calculation it may help to
      * note the following.
-     * Given 0 &lt;= restrictedShare &lt; 100, we have:
-     *  - totalTokensTarget &gt;= totalUnrestrictedTokens
-     *  - totalTokensExisting &lt;= totalRestrictedTokens + totalTokensTarget
-     *  - totalBurn &lt;= totalRestrictedTokens
-     *  - burnMultNom &lt;= burnMultDen
+     * Given 0 <= restrictedShare < 100, we have:
+     *  - totalTokensTarget >= totalUnrestrictedTokens
+     *  - totalTokensExisting <= totalRestrictedTokens + totalTokensTarget
+     *  - totalBurn <= totalRestrictedTokens
+     *  - burnMultNom <= burnMultDen
      * Also note that burnMultDen = 0 means totalRestrictedTokens = 0, in which
      * burnMultNom = 0 as well.
      */
@@ -262,7 +262,7 @@ contract TokenTracker {
     // (restrictionForAddr * burnMultNom) / burnMultDen
     uint burn = multFracCeiling(restrictionsForAddr, burnMultNom, burnMultDen);
 
-    // Remove the tokens to be burned from the address&#39;s balance
+    // Remove the tokens to be burned from the address's balance
     tokens[addr] -= burn;
     
     // Delete record of restrictions 
@@ -276,7 +276,7 @@ contract TokenTracker {
   }
 }
 
-// import &quot;Phased.sol&quot;;
+// import "Phased.sol";
 
 /*
  * title: Contract that advances through multiple configurable phases over time
@@ -324,7 +324,7 @@ contract Phased {
    *  maxDelay[i] is the maximum amount of time by which the transition
    *  phaseEndTime[i] can be delayed.
   */
-  mapping(uint =&gt; uint) public maxDelay; 
+  mapping(uint => uint) public maxDelay; 
 
   /*
    * The contract has no constructor.
@@ -343,16 +343,16 @@ contract Phased {
   /**
    * Return the number of the phase to which the given time belongs.
    *
-   * Return value i means phaseEndTime[i-1] &lt;= time &lt; phaseEndTime[i].
+   * Return value i means phaseEndTime[i-1] <= time < phaseEndTime[i].
    * The given time must not be in the future (because future phase numbers may
    * still be subject to change).
    */
   function getPhaseAtTime(uint time) constant returns (uint n) {
     // Throw if time is in the future
-    if (time &gt; now) { throw; }
+    if (time > now) { throw; }
     
-    // Loop until we have found the &quot;active&quot; phase
-    while (n &lt; N &amp;&amp; phaseEndTime[n] &lt;= time) {
+    // Loop until we have found the "active" phase
+    while (n < N && phaseEndTime[n] <= time) {
       n++;
     }
   }
@@ -361,23 +361,23 @@ contract Phased {
    * Return true if the given time belongs to the given phase.
    *
    * Returns the logical equivalent of the expression 
-   *   (phaseEndTime[i-1] &lt;= time &lt; phaseEndTime[i]).
+   *   (phaseEndTime[i-1] <= time < phaseEndTime[i]).
    *
    * The given time must not be in the future (because future phase numbers may
    * still be subject to change).
    */
   function isPhase(uint time, uint n) constant returns (bool) {
     // Throw if time is in the future
-    if (time &gt; now) { throw; }
+    if (time > now) { throw; }
     
     // Throw if index is out-of-range
-    if (n &gt;= N) { throw; }
+    if (n >= N) { throw; }
     
     // Condition 1
-    if (n &gt; 0 &amp;&amp; phaseEndTime[n-1] &gt; time) { return false; } 
+    if (n > 0 && phaseEndTime[n-1] > time) { return false; } 
     
     // Condition 2
-    if (n &lt; N &amp;&amp; time &gt;= phaseEndTime[n]) { return false; } 
+    if (n < N && time >= phaseEndTime[n]) { return false; } 
    
     return true; 
   }
@@ -419,10 +419,10 @@ contract Phased {
    */
   function addPhase(uint time) internal {
     // Throw if new transition time is not strictly increasing
-    if (N &gt; 0 &amp;&amp; time &lt;= phaseEndTime[N-1]) { throw; } 
+    if (N > 0 && time <= phaseEndTime[N-1]) { throw; } 
 
     // Throw if new transition time is not in the future
-    if (time &lt;= now) { throw; }
+    if (time <= now) { throw; }
    
     // Append new transition time to array 
     phaseEndTime.push(time);
@@ -437,7 +437,7 @@ contract Phased {
    */
   function setMaxDelay(uint i, uint timeDelta) internal {
     // Throw if index is out-of-range
-    if (i &gt;= N) { throw; }
+    if (i >= N) { throw; }
 
     maxDelay[i] = timeDelta;
   }
@@ -452,21 +452,21 @@ contract Phased {
    */
   function delayPhaseEndBy(uint n, uint timeDelta) internal {
     // Throw if index is out of range
-    if (n &gt;= N) { throw; }
+    if (n >= N) { throw; }
 
     // Throw if phase has already ended
-    if (now &gt;= phaseEndTime[n]) { throw; }
+    if (now >= phaseEndTime[n]) { throw; }
 
     // Throw if the requested delay is higher than the defined maximum for the
     // transition
-    if (timeDelta &gt; maxDelay[n]) { throw; }
+    if (timeDelta > maxDelay[n]) { throw; }
 
     // Subtract from the current max delay, so maxDelay is honored across
     // multiple calls
     maxDelay[n] -= timeDelta;
 
     // Push out all subsequent transitions by the same amount
-    for (uint i = n; i &lt; N; i++) {
+    for (uint i = n; i < N; i++) {
       phaseEndTime[i] += timeDelta;
     }
   }
@@ -488,7 +488,7 @@ contract Phased {
     uint n = getPhaseAtTime(now);
 
     // Throw if we are in the last phase
-    if (n &gt;= N) { throw; }
+    if (n >= N) { throw; }
    
     // Set timeDelta to the minimal allowed value
     if (timeDelta == 0) { 
@@ -496,14 +496,14 @@ contract Phased {
     }
     
     // The new phase end should be earlier than the currently defined phase
-    // end, otherwise we don&#39;t change it.
-    if (now + timeDelta &lt; phaseEndTime[n]) { 
+    // end, otherwise we don't change it.
+    if (now + timeDelta < phaseEndTime[n]) { 
       phaseEndTime[n] = now + timeDelta;
     }
   }
 }
 
-// import &quot;StepFunction.sol&quot;;
+// import "StepFunction.sol";
 
 /*
  * title:  A configurable step function 
@@ -524,7 +524,7 @@ contract StepFunction {
 
   function StepFunction(uint _phaseLength, uint _initialValue, uint _nSteps) {
     // Throw if phaseLength does not leave enough room for number of steps
-    if (_nSteps &gt; _phaseLength) { throw; } 
+    if (_nSteps > _phaseLength) { throw; } 
   
     // The reduction in value per step 
     step = _initialValue / _nSteps;
@@ -541,7 +541,7 @@ contract StepFunction {
    *   initialValue = 0: is valid and will create the constant zero function
    *   nSteps = 0: is valid and will create the constant zero function (only 1
    *   sub-interval)
-   *   phaseLength &lt; nSteps: is valid, but unlikely to be intended (so the
+   *   phaseLength < nSteps: is valid, but unlikely to be intended (so the
    *   constructor throws)
    */
   
@@ -553,7 +553,7 @@ contract StepFunction {
    */
   function getStepFunction(uint elapsedTime) constant returns (uint) {
     // Throw is elapsedTime is out-of-range
-    if (elapsedTime &gt;= phaseLength) { throw; }
+    if (elapsedTime >= phaseLength) { throw; }
     
     // The function value will bel calculated from the end value backwards.
     // Hence we need the time left, which will lie in the intervall
@@ -571,7 +571,7 @@ contract StepFunction {
   }
 }
 
-// import &quot;Targets.sol&quot;;
+// import "Targets.sol";
 
 /*
  * title: Contract implementing counters with configurable targets
@@ -587,14 +587,14 @@ contract StepFunction {
 contract Targets {
 
   // Mapping from counter id to counter value 
-  mapping(uint =&gt; uint) public counter;
+  mapping(uint => uint) public counter;
   
   // Mapping from counter id to target value 
-  mapping(uint =&gt; uint) public target;
+  mapping(uint => uint) public target;
 
   // A public getter that returns whether the target was reached
   function targetReached(uint id) constant returns (bool) {
-    return (counter[id] &gt;= target[id]);
+    return (counter[id] >= target[id]);
   }
   
   /*
@@ -613,13 +613,13 @@ contract Targets {
     internal 
     returns (bool firstReached) 
   {
-    firstReached = (counter[id] &lt; target[id]) &amp;&amp; 
-                   (counter[id] + amount &gt;= target[id]);
+    firstReached = (counter[id] < target[id]) && 
+                   (counter[id] + amount >= target[id]);
     counter[id] += amount;
   }
 }
 
-// import &quot;Parameters.sol&quot;;
+// import "Parameters.sol";
 
 /**
  * title:  Configuration parameters for the FDC
@@ -646,7 +646,7 @@ contract Parameters {
   uint public constant round0StartTime      = 1484676000; 
   
   // The start of round 1 is set to 2017-05-17 19:00 of timezone Europe/Zurich
-  // TZ=&quot;Europe/Zurich&quot; date -d &quot;2017-05-17 19:00&quot; &quot;+%s&quot;
+  // TZ="Europe/Zurich" date -d "2017-05-17 19:00" "+%s"
   uint public constant round1StartTime      = 1495040400; 
   
   // Transition times that are defined by duration
@@ -727,7 +727,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
   }
 
   // Mapping from phase number (from the base contract Phased) to FDC state 
-  mapping(uint =&gt; state) stateOfPhase;
+  mapping(uint => state) stateOfPhase;
 
   /*
    * Tokens
@@ -747,7 +747,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
    */
    
   // Mapping to store memos that have been used 
-  mapping(bytes32 =&gt; bool) memoUsed;
+  mapping(bytes32 => bool) memoUsed;
 
   // List of registered addresses (each address will appear in one)
   address[] public donorList;  
@@ -768,7 +768,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
   uint public totalWeiDonated; 
   
   // Mapping from address to total number of Wei donated for the address
-  mapping(address =&gt; uint) public weiDonated; 
+  mapping(address => uint) public weiDonated; 
 
   /*
    * Access control 
@@ -1016,7 +1016,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
     public constant
     returns (
       state currentState,     // current state (an enum)
-      uint fxRate,            // exchange rate of CHF -&gt; ETH (Wei/CHF)
+      uint fxRate,            // exchange rate of CHF -> ETH (Wei/CHF)
       uint currentMultiplier, // current bonus multiplier (0 if invalid)
       uint donationCount,     // total individual donations made (a count)
       uint totalTokenAmount,  // total DFN planned allocated to donors
@@ -1132,13 +1132,13 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
     
     // Reject registrations outside the two donation rounds (incl. their
     // extended registration periods for off-chain donations)
-    if (currentState != state.round0 &amp;&amp; currentState != state.round1 &amp;&amp;
+    if (currentState != state.round0 && currentState != state.round1 &&
         currentState != state.offChainReg) {
       throw;
     }
    
     // Throw if timestamp is in the future
-    if (timestamp &gt; now) { throw; }
+    if (timestamp > now) { throw; }
    
     // Phase number and corresponding state of the timestamp  
     uint timestampPhase = getPhaseAtTime(timestamp);
@@ -1146,14 +1146,14 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
    
     // Throw if called during a donation round and the timestamp does not match
     // that phase.
-    if ((currentState == state.round0 || currentState == state.round1) &amp;&amp;
+    if ((currentState == state.round0 || currentState == state.round1) &&
         (timestampState != currentState)) { 
       throw;
     }
     
     // Throw if called during the extended period for off-chain donations and
     // the timestamp does not lie in the immediately preceding donation phase.
-    if (currentState == state.offChainReg &amp;&amp; timestampPhase != currentPhase-1) {
+    if (currentState == state.offChainReg && timestampPhase != currentPhase-1) {
       throw;
     }
 
@@ -1201,7 +1201,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
     if (msg.sender != masterAuth) { throw; }
     
     // Require phase before round 0
-    if (getPhaseAtTime(now) &gt;= phaseOfRound0) { throw; }
+    if (getPhaseAtTime(now) >= phaseOfRound0) { throw; }
  
     foundationWallet = newAddr;
   }
@@ -1260,10 +1260,10 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
     state st = getState();
     
     // Throw if current state is not a donation round
-    if (st != state.round0 &amp;&amp; st != state.round1) { throw; }
+    if (st != state.round0 && st != state.round1) { throw; }
 
     // Throw if donation amount is below minimum
-    if (msg.value &lt; minDonation) { throw; }
+    if (msg.value < minDonation) { throw; }
 
     // Throw if the exchange rate is not yet defined
     if (weiPerCHF == 0) { throw; } 
@@ -1276,7 +1276,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
     uint chfCents = (msg.value * 100) / weiPerCHF;
     
     // Do the book-keeping
-    bookDonation(addr, now, chfCents, &quot;ETH&quot;, &quot;&quot;);
+    bookDonation(addr, now, chfCents, "ETH", "");
 
     // Forward balance to the foundation wallet
     return foundationWallet.call.value(this.balance)();
@@ -1302,7 +1302,7 @@ contract FDC is TokenTracker, Phased, StepFunction, Targets, Parameters {
     bool targetReached = addTowardsTarget(phase, chfCents);
     
     // If the target was crossed then start the grace period
-    if (targetReached &amp;&amp; phase == getPhaseAtTime(now)) {
+    if (targetReached && phase == getPhaseAtTime(now)) {
       if (phase == phaseOfRound0) {
         endCurrentPhaseIn(gracePeriodAfterRound0Target);
       } else if (phase == phaseOfRound1) {

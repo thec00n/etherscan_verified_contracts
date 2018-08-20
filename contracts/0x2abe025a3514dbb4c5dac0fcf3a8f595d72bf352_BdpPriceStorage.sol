@@ -60,14 +60,14 @@ contract BdpBase is BdpBaseData {
 	}
 
 	modifier whenContractActive() {
-		require(!paused &amp;&amp; setupComplete);
+		require(!paused && setupComplete);
 		_;
 	}
 
 	modifier storageAccessControl() {
 		require(
-			(! setupComplete &amp;&amp; (msg.sender == ownerAddress || msg.sender == managerAddress))
-			|| (setupComplete &amp;&amp; !paused &amp;&amp; (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
+			(! setupComplete && (msg.sender == ownerAddress || msg.sender == managerAddress))
+			|| (setupComplete && !paused && (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
 		);
 		_;
 	}
@@ -129,7 +129,7 @@ contract BdpPriceStorage is BdpBase {
 	}
 
 	function appendPricePoints(uint64[] _pricePoints) public storageAccessControl {
-		for (uint i = 0; i &lt; _pricePoints.length; i++) {
+		for (uint i = 0; i < _pricePoints.length; i++) {
 			pricePoints[pricePointsLength++] = _pricePoints[i];
 		}
 	}

@@ -30,11 +30,11 @@ contract LuckyPackage is ERC721{
   event RollDice(address indexed playerAddr, address indexed prizeIssuer, uint prizeId);
 
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
 
   uint256 private tokenSize;
-  mapping (uint256 =&gt; address) private ownerOfToken;
-  mapping (uint256 =&gt; address) private approvedOfToken;
+  mapping (uint256 => address) private ownerOfToken;
+  mapping (uint256 => address) private approvedOfToken;
   
   struct Package {
       uint256 tokenId;
@@ -77,7 +77,7 @@ contract LuckyPackage is ERC721{
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -92,11 +92,11 @@ contract LuckyPackage is ERC721{
   /* ERC721 */
 
   function name() public view returns (string _name) {
-    return &quot;luckyDraw&quot;;
+    return "luckyDraw";
   }
 
   function symbol() public view returns (string _symbol) {
-    return &quot;LCY&quot;;
+    return "LCY";
   }
 
   function totalSupply() public view returns (uint256 _totalSupply) {
@@ -106,7 +106,7 @@ contract LuckyPackage is ERC721{
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; tokenSize; i++) {
+    for (uint256 i = 0; i < tokenSize; i++) {
       if (ownerOf(i) == _owner) {
         counter++;
       }
@@ -123,7 +123,7 @@ contract LuckyPackage is ERC721{
     uint256[] memory Tokens = new uint256[](balanceOf(_owner));
 
     uint256 TokenCounter = 0;
-    for (uint256 i = 0; i &lt; tokenSize; i++) {
+    for (uint256 i = 0; i < tokenSize; i++) {
       if (ownerOf(i) == _owner) {
         Tokens[TokenCounter] = i;
         TokenCounter += 1;
@@ -189,7 +189,7 @@ contract LuckyPackage is ERC721{
     uint256[] memory ID = new uint[](packageSize);
     uint256[] memory RATIO = new uint[](packageSize);
     address[] memory ISSUER = new address[](packageSize);
-    for (uint i = 0; i &lt; packageSize; i++) {
+    for (uint i = 0; i < packageSize; i++) {
       ID[i] = package[i].tokenId;
       RATIO[i] = package[i].ratio;
       ISSUER[i] = package[i].issuer;
@@ -201,7 +201,7 @@ contract LuckyPackage is ERC721{
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
   
   function putIntoPackage(uint256 _tokenId, uint256 _ratio, address _issuer) onlyAdmins() public {      
@@ -209,7 +209,7 @@ contract LuckyPackage is ERC721{
       require(issuer.ownerOf(_tokenId) == msg.sender);
       issuer.transferFrom(msg.sender, address(this), _tokenId);      
       
-      if (packageSize &gt;= package.length) {
+      if (packageSize >= package.length) {
           package.push(Package(_tokenId, _ratio, _issuer));
       } else {
         package[packageSize].tokenId = _tokenId;
@@ -223,7 +223,7 @@ contract LuckyPackage is ERC721{
   
   function rollDice(uint256 _tokenId) public {
       require(msg.sender == ownerOfToken[_tokenId]);
-      require(packageSize &gt; 0);
+      require(packageSize > 0);
       
       /* recycle the token. */
       _transfer(msg.sender, owner, _tokenId);
@@ -232,8 +232,8 @@ contract LuckyPackage is ERC721{
       uint256 result = uint(keccak256(block.timestamp + block.difficulty)); // assume result is the random number
       result %= sigmaRatio;
       uint256 rt;
-      for (uint256 i = 0; i &lt; packageSize; i++) {
-          if (result &gt;= package[i].ratio) {
+      for (uint256 i = 0; i < packageSize; i++) {
+          if (result >= package[i].ratio) {
               result -= package[i].ratio;
           } else {
               rt = i;
@@ -257,7 +257,7 @@ contract LuckyPackage is ERC721{
   function issueToken(uint256 _count) onlyAdmins() public {
     uint256 l = tokenSize;
     uint256 r = tokenSize + _count;
-    for (uint256 i = l; i &lt; r; i++) {
+    for (uint256 i = l; i < r; i++) {
       ownerOfToken[i] = msg.sender;
     } 
     tokenSize += _count;    
@@ -265,7 +265,7 @@ contract LuckyPackage is ERC721{
   function issueTokenAndTransfer(uint256 _count, address to) onlyAdmins() public {
     uint256 l = tokenSize;
     uint256 r = tokenSize + _count;
-    for (uint256 i = l; i &lt; r; i++) {
+    for (uint256 i = l; i < r; i++) {
       ownerOfToken[i] = to;
     }      
     tokenSize += _count;    
@@ -273,7 +273,7 @@ contract LuckyPackage is ERC721{
   function issueTokenAndApprove(uint256 _count, address to) onlyAdmins() public {
     uint256 l = tokenSize;
     uint256 r = tokenSize + _count;
-    for (uint256 i = l; i &lt; r; i++) {
+    for (uint256 i = l; i < r; i++) {
       ownerOfToken[i] = msg.sender;
       approve(to, i);
     }          

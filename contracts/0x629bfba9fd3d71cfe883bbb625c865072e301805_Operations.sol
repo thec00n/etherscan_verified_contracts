@@ -8,13 +8,13 @@ contract ERC223Token {
 
 contract Operations {
 
-  mapping (address =&gt; uint) public balances;
-  mapping (address =&gt; bytes32) public activeCall;
+  mapping (address => uint) public balances;
+  mapping (address => bytes32) public activeCall;
 
   // remember who was call recipient based on callHash
-  mapping (bytes32 =&gt; address) public recipientsMap;
+  mapping (bytes32 => address) public recipientsMap;
 
-  mapping (address =&gt; uint) public endCallRequestDate;
+  mapping (address => uint) public endCallRequestDate;
 
   uint endCallRequestDelay = 1 hours;
 
@@ -36,7 +36,7 @@ contract Operations {
     uint balance = balances[msg.sender];
 
     // requested value cant be greater than balance
-    require(value &lt;= balance);
+    require(value <= balance);
 
     balances[msg.sender] -= value;
     bytes memory empty;
@@ -46,7 +46,7 @@ contract Operations {
   function startCall(uint timestamp, uint8 _v, bytes32 _r, bytes32 _s) public {
     // address caller == ecrecover(...)
     address recipient = msg.sender;
-    bytes32 callHash = keccak256(&#39;Experty.io startCall:&#39;, recipient, timestamp);
+    bytes32 callHash = keccak256('Experty.io startCall:', recipient, timestamp);
     address caller = ecrecover(callHash, _v, _r, _s);
 
     // caller cant start more than 1 call
@@ -68,14 +68,14 @@ contract Operations {
     // only recipient can push this transaction
     require(recipient == msg.sender);
 
-    bytes32 endHash = keccak256(&#39;Experty.io endCall:&#39;, recipient, callHash, amount);
+    bytes32 endHash = keccak256('Experty.io endCall:', recipient, callHash, amount);
     address caller = ecrecover(endHash, _v, _r, _s);
 
     // check if call hash was created by caller
     require(activeCall[caller] == callHash);
 
     uint maxAmount = amount;
-    if (maxAmount &gt; balances[caller]) {
+    if (maxAmount > balances[caller]) {
       maxAmount = balances[caller];
     }
 
@@ -104,7 +104,7 @@ contract Operations {
     require(activeCall[msg.sender] != 0x0);
     // endCallRequestDate needs to be set
     require(endCallRequestDate[msg.sender] != 0);
-    require(endCallRequestDate[msg.sender] + endCallRequestDelay &lt; block.timestamp);
+    require(endCallRequestDate[msg.sender] + endCallRequestDelay < block.timestamp);
 
     endCallRequestDate[msg.sender] = 0;
 

@@ -142,13 +142,13 @@ contract Agricoin is Owned
     // Transfer _value etheres to _to.
     function transfer(address _to, uint _value) onlyActivated() external returns (bool)
     {
-        require(balanceOf(msg.sender) &gt;= _value);
+        require(balanceOf(msg.sender) >= _value);
 
-        recalculate(msg.sender);// Recalculate user&#39;s struct.
+        recalculate(msg.sender);// Recalculate user's struct.
         
         if (_to != 0x00)// For normal transfer.
         {
-            recalculate(_to);// Recalculate recipient&#39;s struct.
+            recalculate(_to);// Recalculate recipient's struct.
 
             // Change balances.
             balances[msg.sender].balance -= _value;
@@ -158,13 +158,13 @@ contract Agricoin is Owned
         }
         else// For redemption transfer.
         {
-            require(payoutPeriodStart &lt;= now &amp;&amp; now &gt;= payoutPeriodEnd);// Check redemption period.
+            require(payoutPeriodStart <= now && now >= payoutPeriodEnd);// Check redemption period.
             
             uint amount = _value * redemptionPayouts[amountOfRedemptionPayouts].price;// Calculate amount of weis in redemption.
 
-            require(amount &lt;= balances[msg.sender].posibleRedemption);// Check redemption limits.
+            require(amount <= balances[msg.sender].posibleRedemption);// Check redemption limits.
 
-            // Change user&#39;s struct.
+            // Change user's struct.
             balances[msg.sender].posibleRedemption -= amount;
             balances[msg.sender].balance -= _value;
 
@@ -182,8 +182,8 @@ contract Agricoin is Owned
     function transferFrom(address _from, address _to, uint _value) onlyActivated() external returns (bool)
     {
         // Check transfer posibility.
-        require(balances[_from].balance &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from].balance >= _value);
+        require(allowed[_from][msg.sender] >= _value);
         require(_to != 0x00);
 
         // Recalculate structs.
@@ -231,7 +231,7 @@ contract Agricoin is Owned
         }
         else
         {
-            balances[_to].balance += _value;// Increase user&#39;s balance.
+            balances[_to].balance += _value;// Increase user's balance.
             totalSupply += _value;// Increase total supply.
 
             Transfer(0x00, _to, _value);// Call transfer event.
@@ -243,7 +243,7 @@ contract Agricoin is Owned
     // Pay dividends.
     function payDividends() onlyPayer() onlyActivated() external payable returns (bool)
     {
-        require(now &gt;= payoutPeriodStart &amp;&amp; now &lt;= payoutPeriodEnd);// Check payout period.
+        require(now >= payoutPeriodStart && now <= payoutPeriodEnd);// Check payout period.
 
         dividendPayouts[amountOfDividendsPayouts].amount = msg.value;// Set payout amount in weis.
         dividendPayouts[amountOfDividendsPayouts].momentTotalSupply = totalSupply;// Save total supply on that moment.
@@ -258,7 +258,7 @@ contract Agricoin is Owned
     // Pay redemption.
     function payRedemption(uint price) onlyPayer() onlyActivated() external payable returns (bool)
     {
-        require(now &gt;= payoutPeriodStart &amp;&amp; now &lt;= payoutPeriodEnd);// Check payout period.
+        require(now >= payoutPeriodStart && now <= payoutPeriodEnd);// Check payout period.
 
         redemptionPayouts[amountOfRedemptionPayouts].amount = msg.value;// Set payout amount in weis.
         redemptionPayouts[amountOfRedemptionPayouts].momentTotalSupply = totalSupply;// Save total supply on that moment.
@@ -274,7 +274,7 @@ contract Agricoin is Owned
     // Get back unpaid dividends and redemption.
     function getUnpaid() onlyPayer() onlyActivated() external returns (bool)
     {
-        require(now &gt;= payoutPeriodEnd);// Check end payout period.
+        require(now >= payoutPeriodEnd);// Check end payout period.
 
         GetUnpaid(this.balance);// Call getting unpaid ether event.
 
@@ -297,7 +297,7 @@ contract Agricoin is Owned
         }
 
         // Check for necessity of recalculation.
-        if (balances[user].lastDividensPayoutNumber == amountOfDividendsPayouts &amp;&amp;
+        if (balances[user].lastDividensPayoutNumber == amountOfDividendsPayouts &&
             balances[user].lastRedemptionPayoutNumber == amountOfRedemptionPayouts)
         {
             return true;
@@ -306,7 +306,7 @@ contract Agricoin is Owned
         uint addedDividend = 0;
 
         // For dividends.
-        for (uint i = balances[user].lastDividensPayoutNumber; i &lt; amountOfDividendsPayouts; i++)
+        for (uint i = balances[user].lastDividensPayoutNumber; i < amountOfDividendsPayouts; i++)
         {
             addedDividend += (balances[user].balance * dividendPayouts[i].amount) / dividendPayouts[i].momentTotalSupply;
         }
@@ -317,7 +317,7 @@ contract Agricoin is Owned
         uint addedRedemption = 0;
 
         // For redemption.
-        for (uint j = balances[user].lastRedemptionPayoutNumber; j &lt; amountOfRedemptionPayouts; j++)
+        for (uint j = balances[user].lastRedemptionPayoutNumber; j < amountOfRedemptionPayouts; j++)
         {
             addedRedemption += (balances[user].balance * redemptionPayouts[j].amount) / redemptionPayouts[j].momentTotalSupply;
         }
@@ -331,9 +331,9 @@ contract Agricoin is Owned
     // Get dividends.
     function () external payable
     {
-        if (payoutPeriodStart &gt;= now &amp;&amp; now &lt;= payoutPeriodEnd)// Check payout period.
+        if (payoutPeriodStart >= now && now <= payoutPeriodEnd)// Check payout period.
         {
-            if (posibleDividendsOf(msg.sender) &gt; 0)// Check posible dividends.
+            if (posibleDividendsOf(msg.sender) > 0)// Check posible dividends.
             {
                 uint dividendsAmount = posibleDividendsOf(msg.sender);// Get posible dividends amount.
 
@@ -347,10 +347,10 @@ contract Agricoin is Owned
     }
 
     // Token name.
-    string public constant name = &quot;Agricoin&quot;;
+    string public constant name = "Agricoin";
     
     // Token market symbol.
-    string public constant symbol = &quot;AGR&quot;;
+    string public constant symbol = "AGR";
     
     // Amount of digits after comma.
     uint public constant decimals = 2;
@@ -377,21 +377,21 @@ contract Agricoin is Owned
     uint public amountOfRedemptionPayouts = 0;
 
     // Dividend payouts.
-    mapping (uint =&gt; DividendPayout) public dividendPayouts;
+    mapping (uint => DividendPayout) public dividendPayouts;
     
     // Redemption payouts.
-    mapping (uint =&gt; RedemptionPayout) public redemptionPayouts;
+    mapping (uint => RedemptionPayout) public redemptionPayouts;
 
     // Dividend and redemption payers.
-    mapping (address =&gt; bool) public payers;
+    mapping (address => bool) public payers;
 
     // Balance records.
-    mapping (address =&gt; Balance) public balances;
+    mapping (address => Balance) public balances;
 
     // Allowed balances.
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => mapping (address => uint)) public allowed;
 
-    // Set true for activating token. If false then token isn&#39;t working.
+    // Set true for activating token. If false then token isn't working.
     bool public isActive = false;
 
     // Set true for activate ico minted tokens.
@@ -463,13 +463,13 @@ contract Ico is Owned
     // Returns true if date in Pre-ICO period.
     function isRunningPreIco(uint date) public view returns (bool)
     {
-        return startPreIcoDate &lt;= date &amp;&amp; date &lt;= endPreIcoDate;
+        return startPreIcoDate <= date && date <= endPreIcoDate;
     }
 
     // Returns true if date in ICO period.
     function isRunningIco(uint date) public view returns (bool)
     {
-        return startIcoDate &lt;= date &amp;&amp; date &lt;= endIcoDate;
+        return startIcoDate <= date && date <= endIcoDate;
     }
 
     // Fallback payable function.
@@ -501,9 +501,9 @@ contract Ico is Owned
 
         require(state == State.Runned);// Only for active contract.
 
-        if (now &gt;= endIcoDate)// After ICO period.
+        if (now >= endIcoDate)// After ICO period.
         {
-            if (Agricoin(token).totalSupply() + Agricoin(token).totalSupplyOnIco() &gt;= softCap)// Minted Agricoin amount above fixed SoftCap.
+            if (Agricoin(token).totalSupply() + Agricoin(token).totalSupplyOnIco() >= softCap)// Minted Agricoin amount above fixed SoftCap.
             {
                 state = State.Finished;// Set state to Finished.
 
@@ -512,41 +512,41 @@ contract Ico is Owned
                 uint supply = Agricoin(token).totalSupply() + Agricoin(token).totalSupplyOnIco();
                 
                 // Transfer bounty funds to Bounty contract.
-                if (supply &gt;= 1500000 * decimals)
+                if (supply >= 1500000 * decimals)
                 {
                     Agricoin(token).mint(bounty, 300000 * decimals, true);
                 }
-                else if (supply &gt;= 1150000 * decimals)
+                else if (supply >= 1150000 * decimals)
                 {
                     Agricoin(token).mint(bounty, 200000 * decimals, true);
                 }
-                else if (supply &gt;= 800000 * decimals)
+                else if (supply >= 800000 * decimals)
                 {
                     Agricoin(token).mint(bounty, 100000 * decimals, true);
                 }
                 
                 Agricoin(token).activate(true);// Activate Agricoin contract.
                 End(true);// Call successful end event.
-                msg.sender.transfer(msg.value);// Returns user&#39;s funds to user.
+                msg.sender.transfer(msg.value);// Returns user's funds to user.
                 return;
             }
             else// Unsuccessful end.
             {
                 state = State.Expired;// Set state to Expired.
                 Agricoin(token).activate(false);// Activate Agricoin contract.
-                msg.sender.transfer(msg.value);// Returns user&#39;s funds to user.
+                msg.sender.transfer(msg.value);// Returns user's funds to user.
                 End(false);// Call unsuccessful end event.
                 return;
             }
         }
         else if (isRunningPreIco(now))// During Pre-ICO.
         {
-            require(investedSumOnPreIco / preIcoPrice &lt; preIcoTarget);// Check for target.
+            require(investedSumOnPreIco / preIcoPrice < preIcoTarget);// Check for target.
 
-            if ((investedSumOnPreIco + msg.value) / preIcoPrice &gt;= preIcoTarget)// Check for target with new weis.
+            if ((investedSumOnPreIco + msg.value) / preIcoPrice >= preIcoTarget)// Check for target with new weis.
             {
                 value = preIcoTarget * preIcoPrice - investedSumOnPreIco;// Value of invested weis without change.
-                require(value != 0);// Check value isn&#39;t zero.
+                require(value != 0);// Check value isn't zero.
                 investedSumOnPreIco = preIcoTarget * preIcoPrice;// Max posible number of invested weis in to Pre-ICO.
                 investedOnPreIco[msg.sender] += value;// Increase invested funds by investor.
                 Invested(msg.sender, value);// Call investment event.
@@ -557,7 +557,7 @@ contract Ico is Owned
             else
             {
                 rest = msg.value % preIcoPrice;// Calculate rest/change.
-                require(msg.value - rest &gt;= preIcoPrice);
+                require(msg.value - rest >= preIcoPrice);
                 investedSumOnPreIco += msg.value - rest;
                 investedOnPreIco[msg.sender] += msg.value - rest;
                 Invested(msg.sender, msg.value - rest);// Call investment event.
@@ -568,12 +568,12 @@ contract Ico is Owned
         }
         else if (isRunningIco(now))// During ICO.
         {
-            require(investedSumOnIco / icoPrice &lt; icoTarget);// Check for target.
+            require(investedSumOnIco / icoPrice < icoTarget);// Check for target.
 
-            if ((investedSumOnIco + msg.value) / icoPrice &gt;= icoTarget)// Check for target with new weis.
+            if ((investedSumOnIco + msg.value) / icoPrice >= icoTarget)// Check for target with new weis.
             {
                 value = icoTarget * icoPrice - investedSumOnIco;// Value of invested weis without change.
-                require(value != 0);// Check value isn&#39;t zero.
+                require(value != 0);// Check value isn't zero.
                 investedSumOnIco = icoTarget * icoPrice;// Max posible number of invested weis in to ICO.
                 invested[msg.sender] += value;// Increase invested funds by investor.
                 Invested(msg.sender, value);// Call investment event.
@@ -584,7 +584,7 @@ contract Ico is Owned
             else
             {
                 rest = msg.value % icoPrice;// Calculate rest/change.
-                require(msg.value - rest &gt;= icoPrice);
+                require(msg.value - rest >= icoPrice);
                 investedSumOnIco += msg.value - rest;
                 invested[msg.sender] += msg.value - rest;
                 Invested(msg.sender, msg.value - rest);// Call investment event.
@@ -632,7 +632,7 @@ contract Ico is Owned
     // Get invested ethereum from Pre ICO.
     function getEthereumFromPreIco() onlyOwner external returns (uint)
     {
-        require(now &gt;= endPreIcoDate);
+        require(now >= endPreIcoDate);
         require(state == State.Runned || state == State.Finished);
         
         uint value = investedSumOnPreIco;
@@ -642,9 +642,9 @@ contract Ico is Owned
     }
 
     // Invested balances.
-    mapping (address =&gt; uint) invested;
+    mapping (address => uint) invested;
 
-    mapping (address =&gt; uint) investedOnPreIco;
+    mapping (address => uint) investedOnPreIco;
 
     // State of contract.
     State public state;

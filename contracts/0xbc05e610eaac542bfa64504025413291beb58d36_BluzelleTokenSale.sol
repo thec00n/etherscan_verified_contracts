@@ -108,7 +108,7 @@ contract OpsManaged is Owned {
 
 
    function isOps(address _address) public view returns (bool) {
-      return (opsAddress != address(0) &amp;&amp; _address == opsAddress);
+      return (opsAddress != address(0) && _address == opsAddress);
    }
 
 
@@ -143,14 +143,14 @@ library Math {
    function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 r = a + b;
 
-      require(r &gt;= a);
+      require(r >= a);
 
       return r;
    }
 
 
    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      require(a &gt;= b);
+      require(a >= b);
 
       return a - b;
    }
@@ -218,8 +218,8 @@ contract ERC20Token is ERC20Interface {
    uint8   private tokenDecimals;
    uint256 internal tokenTotalSupply;
 
-   mapping(address =&gt; uint256) internal balances;
-   mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping(address => uint256) internal balances;
+   mapping(address => mapping (address => uint256)) allowed;
 
 
    function ERC20Token(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply, address _initialTokenHolder) public {
@@ -459,7 +459,7 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
    function FlexibleTokenSale(uint256 _startTime, uint256 _endTime, address _walletAddress) public
       OpsManaged()
    {
-      require(_endTime &gt; _startTime);
+      require(_endTime > _startTime);
 
       require(_walletAddress != address(0));
       require(_walletAddress != address(this));
@@ -500,12 +500,12 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
 
       token = _token;
 
-      // This factor is used when converting cost &lt;-&gt; tokens.
-      // 18 is because of the ETH -&gt; Wei conversion.
+      // This factor is used when converting cost <-> tokens.
+      // 18 is because of the ETH -> Wei conversion.
       // 3 because prices are in K ETH instead of just ETH.
       // 4 because bonuses are expressed as 0 - 10000 for 0.00% - 100.00% (with 2 decimals).
       tokenConversionFactor = 10**(uint256(18).sub(_token.decimals()).add(3).add(4));
-      require(tokenConversionFactor &gt; 0);
+      require(tokenConversionFactor > 0);
 
       Initialized();
 
@@ -545,10 +545,10 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
    }
 
 
-   // Allows the owner to specify the conversion rate for ETH -&gt; tokens.
+   // Allows the owner to specify the conversion rate for ETH -> tokens.
    // For example, passing 1,000,000 would mean that 1 ETH would purchase 1000 tokens.
    function setTokensPerKEther(uint256 _tokensPerKEther) external onlyOwner returns(bool) {
-      require(_tokensPerKEther &gt; 0);
+      require(_tokensPerKEther > 0);
 
       tokensPerKEther = _tokensPerKEther;
 
@@ -562,7 +562,7 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
    // For example, setting it to 2000 means that instead of receiving 200 tokens,
    // for a given price, contributors would receive 240 tokens (20.00% bonus).
    function setBonus(uint256 _bonus) external onlyOwner returns(bool) {
-      require(_bonus &lt;= 10000);
+      require(_bonus <= 10000);
 
       bonus = _bonus;
 
@@ -576,8 +576,8 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
    // receive contributions between _startTime and _endTime. Once _endTime is reached,
    // the sale contract will automatically stop accepting incoming contributions.
    function setSaleWindow(uint256 _startTime, uint256 _endTime) external onlyOwner returns(bool) {
-      require(_startTime &gt; 0);
-      require(_endTime &gt; _startTime);
+      require(_startTime > 0);
+      require(_endTime > _startTime);
 
       startTime = _startTime;
       endTime   = _endTime;
@@ -635,24 +635,24 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
    function buyTokensInternal(address _beneficiary, uint256 _bonus) internal returns (uint256) {
       require(!finalized);
       require(!suspended);
-      require(currentTime() &gt;= startTime);
-      require(currentTime() &lt;= endTime);
-      require(msg.value &gt;= contributionMin);
+      require(currentTime() >= startTime);
+      require(currentTime() <= endTime);
+      require(msg.value >= contributionMin);
       require(_beneficiary != address(0));
       require(_beneficiary != address(this));
       require(_beneficiary != address(token));
 
-      // We don&#39;t want to allow the wallet collecting ETH to
+      // We don't want to allow the wallet collecting ETH to
       // directly be used to purchase tokens.
       require(msg.sender != address(walletAddress));
 
       // Check how many tokens are still available for sale.
       uint256 saleBalance = token.balanceOf(address(this));
-      require(saleBalance &gt; 0);
+      require(saleBalance > 0);
 
       // Calculate how many tokens the contributor could purchase based on ETH received.
       uint256 tokens = msg.value.mul(tokensPerKEther).mul(_bonus.add(10000)).div(tokenConversionFactor);
-      require(tokens &gt; 0);
+      require(tokens > 0);
 
       uint256 cost = msg.value;
       uint256 refund = 0;
@@ -661,22 +661,22 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
       // should be allowed to purchase
       uint256 maxTokens = saleBalance;
 
-      if (maxTokensPerAccount &gt; 0) {
+      if (maxTokensPerAccount > 0) {
          // There is a maximum amount of tokens per account in place.
          // Check if the user already hit that limit.
          uint256 userBalance = getUserTokenBalance(_beneficiary);
-         require(userBalance &lt; maxTokensPerAccount);
+         require(userBalance < maxTokensPerAccount);
 
          uint256 quotaBalance = maxTokensPerAccount.sub(userBalance);
 
-         if (quotaBalance &lt; saleBalance) {
+         if (quotaBalance < saleBalance) {
             maxTokens = quotaBalance;
          }
       }
 
-      require(maxTokens &gt; 0);
+      require(maxTokens > 0);
 
-      if (tokens &gt; maxTokens) {
+      if (tokens > maxTokens) {
          // The contributor sent more ETH than allowed to purchase.
          // Limit the amount of tokens that they can purchase in this transaction.
          tokens = maxTokens;
@@ -684,7 +684,7 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
          // Calculate the actual cost for that new amount of tokens.
          cost = tokens.mul(tokenConversionFactor).div(tokensPerKEther.mul(_bonus.add(10000)));
 
-         if (msg.value &gt; cost) {
+         if (msg.value > cost) {
             // If the contributor sent more ETH than needed to buy the tokens,
             // the balance should be refunded.
             refund = msg.value.sub(cost);
@@ -703,7 +703,7 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
       require(token.transfer(_beneficiary, tokens));
 
       // Issue a refund for the excess ETH, as needed.
-      if (refund &gt; 0) {
+      if (refund > 0) {
          msg.sender.transfer(refund);
       }
 
@@ -752,8 +752,8 @@ contract FlexibleTokenSale is Finalizable, OpsManaged {
 
 contract BluzelleTokenConfig {
 
-    string  public constant TOKEN_SYMBOL      = &quot;BLZ&quot;;
-    string  public constant TOKEN_NAME        = &quot;Bluzelle Token&quot;;
+    string  public constant TOKEN_SYMBOL      = "BLZ";
+    string  public constant TOKEN_NAME        = "Bluzelle Token";
     uint8   public constant TOKEN_DECIMALS    = 18;
 
     uint256 public constant DECIMALSFACTOR    = 10**uint256(TOKEN_DECIMALS);
@@ -875,22 +875,22 @@ contract BluzelleTokenSale is FlexibleTokenSale, BluzelleTokenSaleConfig {
    //
 
    // This is the stage or whitelist group that is currently in effect.
-   // Everybody that&#39;s been whitelisted for earlier stages should be able to
+   // Everybody that's been whitelisted for earlier stages should be able to
    // contribute in the current stage.
    uint256 public currentStage;
 
    // Keeps track of the amount of bonus to apply for a given stage. If set
    // to 0, the base class bonus will be used.
-   mapping(uint256 =&gt; uint256) public stageBonus;
+   mapping(uint256 => uint256) public stageBonus;
 
    // Keeps track of the amount of tokens that a specific account has received.
-   mapping(address =&gt; uint256) public accountTokensPurchased;
+   mapping(address => uint256) public accountTokensPurchased;
 
-   // This a mapping of address -&gt; stage that they are allowed to participate in.
+   // This a mapping of address -> stage that they are allowed to participate in.
    // For example, if someone has been whitelisted for stage 2, they will be able
    // to participate for stages 2 and above but they would not be able to participate
    // in stage 1. A stage value of 0 means that the participant is not whitelisted.
-   mapping(address =&gt; uint256) public whitelist;
+   mapping(address => uint256) public whitelist;
 
 
    //
@@ -915,7 +915,7 @@ contract BluzelleTokenSale is FlexibleTokenSale, BluzelleTokenSaleConfig {
    // Allows the admin to determine what is the current stage for
    // the sale. It can only move forward.
    function setCurrentStage(uint256 _stage) public onlyOwner returns(bool) {
-      require(_stage &gt; 0);
+      require(_stage > 0);
 
       if (currentStage == _stage) {
          return false;
@@ -931,8 +931,8 @@ contract BluzelleTokenSale is FlexibleTokenSale, BluzelleTokenSaleConfig {
 
    // Allows the admin to set a bonus amount to apply for a specific stage.
    function setStageBonus(uint256 _stage, uint256 _bonus) public onlyOwner returns(bool) {
-      require(_stage &gt; 0);
-      require(_bonus &lt;= 10000);
+      require(_stage > 0);
+      require(_bonus <= 10000);
 
       if (stageBonus[_stage] == _bonus) {
          // Nothing to change.
@@ -970,9 +970,9 @@ contract BluzelleTokenSale is FlexibleTokenSale, BluzelleTokenSaleConfig {
    // it easier/cheaper/faster to upload whitelist data in bulk. Note that the function is using an
    // unbounded loop so the call should take care to not exceed the tx gas limit or block gas limit.
    function setWhitelistedBatch(address[] _addresses, uint256 _stage) public onlyOwnerOrOps returns (bool) {
-      require(_addresses.length &gt; 0);
+      require(_addresses.length > 0);
 
-      for (uint256 i = 0; i &lt; _addresses.length; i++) {
+      for (uint256 i = 0; i < _addresses.length; i++) {
          require(setWhitelistedStatusInternal(_addresses[i], _stage));
       }
 
@@ -984,12 +984,12 @@ contract BluzelleTokenSale is FlexibleTokenSale, BluzelleTokenSaleConfig {
    // care of checking contributors against the whitelist. Since buyTokens supports proxy payments
    // we check that both the sender and the beneficiary have been whitelisted.
    function buyTokensInternal(address _beneficiary, uint256 _bonus) internal returns (uint256) {
-      require(whitelist[msg.sender] &gt; 0);
-      require(whitelist[_beneficiary] &gt; 0);
-      require(currentStage &gt;= whitelist[msg.sender]);
+      require(whitelist[msg.sender] > 0);
+      require(whitelist[_beneficiary] > 0);
+      require(currentStage >= whitelist[msg.sender]);
 
       uint256 _beneficiaryStage = whitelist[_beneficiary];
-      require(currentStage &gt;= _beneficiaryStage);
+      require(currentStage >= _beneficiaryStage);
 
       uint256 applicableBonus = stageBonus[_beneficiaryStage];
       if (applicableBonus == 0) {
@@ -1005,7 +1005,7 @@ contract BluzelleTokenSale is FlexibleTokenSale, BluzelleTokenSaleConfig {
 
 
    // Returns the number of tokens that the user has purchased. We keep a separate balance from
-   // the token contract in case we&#39;d like to do additional sales with new purchase limits. This behavior
+   // the token contract in case we'd like to do additional sales with new purchase limits. This behavior
    // is different from the base implementation which just checks the token balance from the token
    // contract directly.
    function getUserTokenBalance(address _beneficiary) internal view returns (uint256) {

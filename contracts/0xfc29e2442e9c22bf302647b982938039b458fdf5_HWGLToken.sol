@@ -2,13 +2,13 @@ pragma solidity ^0.4.19;
 
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -17,9 +17,9 @@ contract HWGLToken {
   using SafeMath for uint256;
 
   address public owner;
-  string public name = &quot;HWG Live&quot;;
-  string public symbol = &quot;HWGL&quot;;
-  string public icon = &quot;QmZgKEAM5wvV5epyCa2426g2SJfQJnZKtDmqzsXLRfbfsS&quot;;
+  string public name = "HWG Live";
+  string public symbol = "HWGL";
+  string public icon = "QmZgKEAM5wvV5epyCa2426g2SJfQJnZKtDmqzsXLRfbfsS";
   uint256 public decimals = 8;
   uint256 public totalSupply = 0;
   uint256 public cap = 1000000000000000000; // 100,000,000 x 10^10;
@@ -30,8 +30,8 @@ contract HWGLToken {
   event Burn(address indexed burner, uint256 amount);
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -43,7 +43,7 @@ contract HWGLToken {
   }
 
   function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
-    require(totalSupply.add(_amount) &lt;= cap);
+    require(totalSupply.add(_amount) <= cap);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
@@ -52,7 +52,7 @@ contract HWGLToken {
   }
 
   function burn(address _who, uint256 _value) onlyOwner public returns (bool) {
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -63,7 +63,7 @@ contract HWGLToken {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -77,8 +77,8 @@ contract HWGLToken {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);

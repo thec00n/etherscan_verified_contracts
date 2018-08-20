@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -122,7 +122,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 public totalSupply_;
   
@@ -168,7 +168,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => mapping (address => uint256)) public allowed;
 
 
   /**
@@ -179,8 +179,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -263,14 +263,14 @@ contract StandardToken is ERC20, BasicToken {
 contract CoinnupToken is StandardToken, Ownable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;Coinnup Coin&quot;; // solium-disable-line uppercase
-  string public constant symbol = &quot;CU&quot;; // solium-disable-line uppercase
+  string public constant name = "Coinnup Coin"; // solium-disable-line uppercase
+  string public constant symbol = "CU"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
 
   /// @dev store how much in eth users invested to give them a refund in case refund happens
-  mapping ( address =&gt; uint256 ) public investments;
+  mapping ( address => uint256 ) public investments;
   /// @dev to have how much one user bought tokens
-  mapping ( address =&gt; uint256 ) public tokensBought;
+  mapping ( address => uint256 ) public tokensBought;
 
   event investmentReceived(
     address sender, 
@@ -303,15 +303,15 @@ contract CoinnupToken is StandardToken, Ownable {
   /** @dev Token cunstructor
     */
   constructor () public {
-    require(maxSupply &gt; 0);
-    require(founder != address(0) &amp;&amp; founder != address(this));
-    require(rate &gt; 0);
-    require(bonus &gt;= 0 &amp;&amp; bonus &lt;= 100); // in percentage
-    require(allowedToBeSold &gt; 0 &amp;&amp; allowedToBeSold &lt; maxSupply);
+    require(maxSupply > 0);
+    require(founder != address(0) && founder != address(this));
+    require(rate > 0);
+    require(bonus >= 0 && bonus <= 100); // in percentage
+    require(allowedToBeSold > 0 && allowedToBeSold < maxSupply);
 
-    require(softCap &gt; 0);
+    require(softCap > 0);
 
-    for (uint8 i = 0; i &lt; 5; i++) {
+    for (uint8 i = 0; i < 5; i++) {
       rounds.push( Round(0, 0, 0, 0, 0, 0) );
     }
     
@@ -339,12 +339,12 @@ contract CoinnupToken is StandardToken, Ownable {
     uint256 amount_without_bonus = _getTokenAmount(_value, 0);
     uint8 _currentRound = _getCurrentRound(now);
 
-    require(rounds[_currentRound].allocatedCoins &gt;= amount + rounds[_currentRound].soldCoins);
-    require(totalSupply_ + amount &lt;= maxSupply); // if we have enough tokens to be minted
+    require(rounds[_currentRound].allocatedCoins >= amount + rounds[_currentRound].soldCoins);
+    require(totalSupply_ + amount <= maxSupply); // if we have enough tokens to be minted
 
     require(
-      rounds[_currentRound].minPurchase &lt;= amount_without_bonus &amp;&amp;
-      rounds[_currentRound].maxPurchase &gt;= amount_without_bonus
+      rounds[_currentRound].minPurchase <= amount_without_bonus &&
+      rounds[_currentRound].maxPurchase >= amount_without_bonus
     );
 
     _sold = _sold.add(_value); // in wei
@@ -368,10 +368,10 @@ contract CoinnupToken is StandardToken, Ownable {
   /// @dev system can mint tokens for users if they sent funds to BTC, LTC, etc wallets we allow
   function mintForInvestor(address _to, uint256 _tokens) public onlyOwner onlyWhileOpen isNotPaused {
     uint8 _round = _getCurrentRound(now);
-    require(_round &gt;= 0 &amp;&amp; _round &lt;= 4);
+    require(_round >= 0 && _round <= 4);
     require(_to != address(0)); // handling incorrect values from system in addresses
-    require(_tokens &gt;= 0); // handing incorrect values from system in tokens calculation
-    require(rounds[_currentRound].allocatedCoins &gt;= _tokens + rounds[_currentRound].soldCoins);
+    require(_tokens >= 0); // handing incorrect values from system in tokens calculation
+    require(rounds[_currentRound].allocatedCoins >= _tokens + rounds[_currentRound].soldCoins);
     
     uint8 _currentRound = _getCurrentRound(now);
 
@@ -421,7 +421,7 @@ contract CoinnupToken is StandardToken, Ownable {
    */
   function setRate(uint256 _rate) public {
     require(msg.sender == owner);
-    require(_rate &gt; 0);
+    require(_rate > 0);
 
     rate = _rate;
   }
@@ -442,14 +442,14 @@ contract CoinnupToken is StandardToken, Ownable {
    * @return bool - Changed or not
    */
   function setBonus(uint256 _bonus) onlyOwner public {
-    require(_bonus &gt;= 0 &amp;&amp; _bonus &lt;= 100); //%
+    require(_bonus >= 0 && _bonus <= 100); //%
     bonus = _bonus;
   }
 
-  // Don&#39;t like this code. Don&#39;t know yet how to make it nicer
+  // Don't like this code. Don't know yet how to make it nicer
   function _getCurrentRound(uint256 _time) public view returns (uint8) {
-    for (uint8 i = 0; i &lt; 5; i++) {
-      if (rounds[i].openingTime &lt; _time &amp;&amp; rounds[i].closingTime &gt; _time) {
+    for (uint8 i = 0; i < 5; i++) {
+      if (rounds[i].openingTime < _time && rounds[i].closingTime > _time) {
         return i;
       }
     }
@@ -475,7 +475,7 @@ contract CoinnupToken is StandardToken, Ownable {
   }
 
   /**
-   * @dev withdrawing funds to founder&#39;s wallet
+   * @dev withdrawing funds to founder's wallet
    * @return bool Whether success or not
    */
   function withdraw() public {
@@ -488,27 +488,27 @@ contract CoinnupToken is StandardToken, Ownable {
    * @dev Claims for refund if ICO finished and soft cap not reached
    */
   function refund() public whenICOFinished capNotReached {
-    require(investments[msg.sender] &gt; 0);
+    require(investments[msg.sender] > 0);
     msg.sender.transfer(investments[msg.sender]);
     investments[msg.sender] = 0;
   }
 
   modifier onlyWhileOpen {
     uint8 _round = _getCurrentRound(now);
-    require(_round &gt;= 0 &amp;&amp; _round &lt;= 4); // we hae 5 rounds, other values are invalid 
+    require(_round >= 0 && _round <= 4); // we hae 5 rounds, other values are invalid 
     _;
   }
 
   /// @dev when ico finishes we can perform other actions
   modifier whenICOFinished {
     uint8 _round = _getCurrentRound(now);
-    require(_round &lt; 0 || _round &gt; 4); // if we do not get current valid round number ICO finished
+    require(_round < 0 || _round > 4); // if we do not get current valid round number ICO finished
     _;
   }
 
   /// @dev _sold in weis, softCap in weis
   modifier capNotReached {
-    require(softCap &gt; _sold);
+    require(softCap > _sold);
     _;
   }
 

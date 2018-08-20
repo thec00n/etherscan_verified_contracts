@@ -16,16 +16,16 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     /**
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     /**
@@ -33,7 +33,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -98,7 +98,7 @@ contract TheWhaleWins {
         uint256 paidTooMuch;
         uint256 payment;
 
-        if (tokenPrice &lt; tokenPrice2) {
+        if (tokenPrice < tokenPrice2) {
             currentOwner = tokenOwner;
             currentPrice = tokenPrice;
             require(tokenOwner2 != msg.sender);
@@ -107,12 +107,12 @@ contract TheWhaleWins {
             currentPrice = tokenPrice2;
             require(tokenOwner != msg.sender);
         }
-        require(msg.value &gt;= currentPrice);
+        require(msg.value >= currentPrice);
 
         paidTooMuch = msg.value.sub(currentPrice);
         payment = currentPrice.div(2);
 
-        if (tokenPrice &lt; tokenPrice2) {
+        if (tokenPrice < tokenPrice2) {
             tokenPrice = currentPrice.mul(110).div(50);
             tokenOwner = msg.sender;
         } else {
@@ -128,12 +128,12 @@ contract TheWhaleWins {
             payoutRound = getRoundId()-3;
             currentOwner.call.value(payment).gas(24000)();
         }
-        if (paidTooMuch &gt; 0)
+        if (paidTooMuch > 0)
             msg.sender.transfer(paidTooMuch);
     }
 
     function getBlocksToNextRound() public view returns(uint) {
-        if (lastBuyBlock + newRoundDelay &lt; block.number) {
+        if (lastBuyBlock + newRoundDelay < block.number) {
             return 0;
         }
         return lastBuyBlock + newRoundDelay + 1 - block.number;
@@ -144,20 +144,20 @@ contract TheWhaleWins {
     }
 
     function finishRound() public {
-        require(tokenPrice &gt; tokenStartPrice);
-        require(lastBuyBlock + newRoundDelay &lt; block.number);
+        require(tokenPrice > tokenStartPrice);
+        require(lastBuyBlock + newRoundDelay < block.number);
 
         lastBuyBlock = block.number;
         address owner = tokenOwner;
         uint price = tokenPrice;
-        if (tokenPrice2&gt;tokenPrice) {
+        if (tokenPrice2>tokenPrice) {
             owner = tokenOwner2;
             price = tokenPrice2;
         }
         uint lastPaidPrice = price.mul(50).div(110);
         uint win = this.balance - lastPaidPrice;
 
-        if (highestPrice &lt; lastPaidPrice) {
+        if (highestPrice < lastPaidPrice) {
             richestPlayer = owner;
             highestPrice = lastPaidPrice;
             richestRoundId = getRoundId()-1;
@@ -186,7 +186,7 @@ contract TheWhaleWins {
         return payoutRound;
     }
     function getPrice() public view returns(uint) {
-        if (tokenPrice2&lt;tokenPrice)
+        if (tokenPrice2<tokenPrice)
             return tokenPrice2;
         return tokenPrice;
     }
@@ -196,13 +196,13 @@ contract TheWhaleWins {
         looser = tokenOwner2;
         price = tokenPrice2;
         nextPrice = tokenPrice;
-        if (tokenPrice2&gt;tokenPrice) {
+        if (tokenPrice2>tokenPrice) {
             winner = tokenOwner2;
             looser = tokenOwner;
             price = tokenPrice;
             nextPrice = tokenPrice2;
         }
-        canFinish = (tokenPrice &gt; tokenStartPrice) &amp;&amp; (lastBuyBlock + newRoundDelay &lt; block.number);
+        canFinish = (tokenPrice > tokenStartPrice) && (lastBuyBlock + newRoundDelay < block.number);
         pool = getPool();
         if (price == tokenStartPrice) {
             nextPool = pool + price;

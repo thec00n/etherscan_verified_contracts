@@ -48,27 +48,27 @@ interface Token {
 
 contract Pebbles is Token {
 
-    string public constant name = &quot;Pebbles&quot;;
-    string public constant symbol = &quot;PBL&quot;;
+    string public constant name = "Pebbles";
+    string public constant symbol = "PBL";
     uint8 public constant decimals = 18;
     uint256 public constant totalSupply = 33787150 * 10**18;
 
     uint public launched = 0; // Time of locking distribution and retiring founder; 0 means not launched
-    address public founder = 0xa99Ab2FcC5DdFd5c1Cbe6C3D760420D2dDb63d99; // Founder&#39;s address
-    address public team = 0xe32A4bb42AcE38DcaAa7f23aD94c41dE0334A500; // Team&#39;s address
+    address public founder = 0xa99Ab2FcC5DdFd5c1Cbe6C3D760420D2dDb63d99; // Founder's address
+    address public team = 0xe32A4bb42AcE38DcaAa7f23aD94c41dE0334A500; // Team's address
     address public treasury = 0xc46e5D11754129790B336d62ee90b12479af7cB5; // Treasury address
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
-    uint256 public balanceTeam = 0; // Actual Team&#39;s frozen balance = balanceTeam - withdrawnTeam
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
+    uint256 public balanceTeam = 0; // Actual Team's frozen balance = balanceTeam - withdrawnTeam
     uint256 public withdrawnTeam = 0;
-    uint256 public balanceTreasury = 0; // Treasury&#39;s frozen balance
+    uint256 public balanceTreasury = 0; // Treasury's frozen balance
 
     function Pebbles() public {
         balances[founder] = totalSupply;
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         balances[msg.sender] -= _value;
@@ -78,7 +78,7 @@ contract Pebbles is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             return false;
         }
         allowed[_from][msg.sender] -= _value;
@@ -114,7 +114,7 @@ contract Pebbles is Token {
      */
     function reserveTeam(uint256 _value) public {
         require(msg.sender == founder);
-        require(balances[founder] &gt;= _value);
+        require(balances[founder] >= _value);
         balances[founder] -= _value;
         balanceTeam += _value;
     }
@@ -124,7 +124,7 @@ contract Pebbles is Token {
      */
     function reserveTreasury(uint256 _value) public {
         require(msg.sender == founder);
-        require(balances[founder] &gt;= _value);
+        require(balances[founder] >= _value);
         balances[founder] -= _value;
         balanceTreasury += _value;
     }
@@ -135,7 +135,7 @@ contract Pebbles is Token {
         require(msg.sender == team);
         require(launched != 0);
         uint yearsSinceLaunch = (block.timestamp - launched) / 1 years;
-        if (yearsSinceLaunch &lt; 5) {
+        if (yearsSinceLaunch < 5) {
             uint256 teamTokensAvailable = balanceTeam / 5 * yearsSinceLaunch;
             balances[team] += teamTokensAvailable - withdrawnTeam;
             withdrawnTeam = teamTokensAvailable;
@@ -145,7 +145,7 @@ contract Pebbles is Token {
             withdrawnTeam = 0;
             team = 0x0;
         }
-        if (block.timestamp - launched &gt;= 90 days) {
+        if (block.timestamp - launched >= 90 days) {
             balances[treasury] += balanceTreasury;
             balanceTreasury = 0;
             treasury = 0x0;

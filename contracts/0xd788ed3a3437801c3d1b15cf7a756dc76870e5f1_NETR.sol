@@ -11,13 +11,13 @@ pragma solidity ^0.4.20;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -125,9 +125,9 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -174,7 +174,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
     */
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require(_spender != address(0)); // must be valid address
-        require(_value &gt; 0); // amount must be positive
+        require(_value > 0); // amount must be positive
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -225,10 +225,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 * @dev Initial supply creation
 */
 contract NETR is ERC20Token {
-    string public name = &#39;NETTERIUM&#39;;
+    string public name = 'NETTERIUM';
     uint8 public decimals = 18;
-    string public symbol = &#39;NETR&#39;;
-    string public version = &#39;2&#39;;
+    string public symbol = 'NETR';
+    string public version = '2';
 
     function NETR() public {
         totalSupply = 750000000 * (10**uint256(decimals)); //initial token creation

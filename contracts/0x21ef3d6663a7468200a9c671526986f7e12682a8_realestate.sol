@@ -1,6 +1,6 @@
 /**
  * @title smart real estate platform implementation
- * @author Maxim Akimov - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1571706366616c7970667a736162746770557278747c793b767a78">[email&#160;protected]</a>&gt;
+ * @author Maxim Akimov - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1571706366616c7970667a736162746770557278747c793b767a78">[email protected]</a>>
  */
 
 pragma solidity ^0.4.24;
@@ -15,20 +15,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
   
@@ -75,7 +75,7 @@ contract Ownable {
 }
 
 /*
-  пока не забыл -  контаркту &quot;хранилице&quot; нужно сделать несоклько владельцев
+  пока не забыл -  контаркту "хранилице" нужно сделать несоклько владельцев
   что б можно было основной контаркт с бищнес логикой новый выпускать 
   (дажеесли в старом еще есть незакрытые сделки)
 */
@@ -259,7 +259,7 @@ _sSigns[] public signs;
             );
     }
 
-    mapping (uint=&gt;uint) public dealNumbers;
+    mapping (uint=>uint) public dealNumbers;
     
    function addDeal(address buyer, address seller, address signer, uint sum, uint fee, uint objectType, uint _dealNumber, string comment, uint whoPay) onlyAgency public{
       
@@ -325,10 +325,10 @@ _sSigns[] public signs;
        uint deal = dealNumbers[_dealNumber];
        
        //If sign of buyer is mpty and sender it is buyer for this deal
-       require(deals[deal].signBuyer == 0x0 &amp;&amp; msg.sender == deals[deal].buyer);
+       require(deals[deal].signBuyer == 0x0 && msg.sender == deals[deal].buyer);
        require(deals[deal].signSeller == deals[deal].seller);
        
-       //Check, value of tx need &gt;= summ of deal
+       //Check, value of tx need >= summ of deal
        //TODO: need change maker!!!!
        require(deals[deal].sum == msg.value);
        
@@ -344,7 +344,7 @@ _sSigns[] public signs;
        uint deal = dealNumbers[_dealNumber];
        
        //If sign of seller is empty and sender it is seller for this deal
-       require(deals[deal].signSeller == 0x0 &amp;&amp; msg.sender == deals[deal].seller);
+       require(deals[deal].signSeller == 0x0 && msg.sender == deals[deal].seller);
        deals[deal].signSeller = msg.sender;
    }
    
@@ -363,7 +363,7 @@ _sSigns[] public signs;
    //возарт после истечения срока
  /*  function refound(uint deal) public{
        
-       require(now &gt; deals[deal].date &amp;&amp; deals[deal].isProlong == false &amp;&amp; deals[deal].balance &gt; 0);
+       require(now > deals[deal].date && deals[deal].isProlong == false && deals[deal].balance > 0);
        
        //или все таки возврат делать покупателю!!???
        deals[deal].agency.transfer(deals[deal].balance);
@@ -378,7 +378,7 @@ _sSigns[] public signs;
        
         uint deal = dealNumbers[_dealNumber];
         
-          require(deals[deal].balance &gt; 0 &amp;&amp;  deals[deal].status == statuses.signed );
+          require(deals[deal].balance > 0 &&  deals[deal].status == statuses.signed );
        
        if(msg.sender == deals[deal].buyer){
            signs[deal].finishSignBuyer = msg.sender;
@@ -397,7 +397,7 @@ _sSigns[] public signs;
        
        uint deal = dealNumbers[_dealNumber];
        
-       require(deals[deal].balance &gt; 0 &amp;&amp;  deals[deal].status == statuses.signed );
+       require(deals[deal].balance > 0 &&  deals[deal].status == statuses.signed );
        
        //SIGNING.....
        
@@ -426,7 +426,7 @@ _sSigns[] public signs;
            signCount++;
        }
        
-       if(signCount &gt;= 2){
+       if(signCount >= 2){
        
          //transfer fund to seller
           deals[deal].seller.transfer(deals[deal].sum - deals[deal].fee);
@@ -450,7 +450,7 @@ _sSigns[] public signs;
        
         uint deal = dealNumbers[_dealNumber];
        
-       require(deals[deal].balance &gt; 0 &amp;&amp;  deals[deal].status == statuses.signed);
+       require(deals[deal].balance > 0 &&  deals[deal].status == statuses.signed);
        
        deals[deal].buyer.transfer(deals[deal].balance);
        

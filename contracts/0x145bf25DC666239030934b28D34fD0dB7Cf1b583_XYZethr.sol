@@ -9,7 +9,7 @@ pragma solidity ^0.4.24;
 |  \  |  \|  \    /  \|        \|        \|        \|  \  |  \|       \ 
 | $$  | $$ \$$\  /  $$ \$$$$$$$$| $$$$$$$$ \$$$$$$$$| $$  | $$| $$$$$$$\
  \$$\/  $$  \$$\/  $$     /  $$ | $$__       | $$   | $$__| $$| $$__| $$
-  &gt;$$  $$    \$$  $$     /  $$  | $$  \      | $$   | $$    $$| $$    $$
+  >$$  $$    \$$  $$     /  $$  | $$  \      | $$   | $$    $$| $$    $$
  /  $$$$\     \$$$$     /  $$   | $$$$$      | $$   | $$$$$$$$| $$$$$$$\
 |  $$ \$$\    | $$     /  $$___ | $$_____    | $$   | $$  | $$| $$  | $$
 | $$  | $$    | $$    |  $$    \| $$     \   | $$   | $$  | $$| $$  | $$
@@ -22,9 +22,9 @@ pragma solidity ^0.4.24;
 .------..------..------..------.     .------..------..------..------..------..------..------.
 |M.--. ||O.--. ||R.--. ||E.--. |.-.  |L.--. ||E.--. ||T.--. ||T.--. ||E.--. ||R.--. ||S.--. |
 | (\/) || :/\: || :(): || (\/) ((5)) | :/\: || (\/) || :/\: || :/\: || (\/) || :(): || :/\: |
-| :\/: || :\/: || ()() || :\/: |&#39;-.-.| (__) || :\/: || (__) || (__) || :\/: || ()() || :\/: |
-| &#39;--&#39;M|| &#39;--&#39;O|| &#39;--&#39;R|| &#39;--&#39;E| ((1)) &#39;--&#39;L|| &#39;--&#39;E|| &#39;--&#39;T|| &#39;--&#39;T|| &#39;--&#39;E|| &#39;--&#39;R|| &#39;--&#39;S|
-`------&#39;`------&#39;`------&#39;`------&#39;  &#39;-&#39;`------&#39;`------&#39;`------&#39;`------&#39;`------&#39;`------&#39;`------&#39;
+| :\/: || :\/: || ()() || :\/: |'-.-.| (__) || :\/: || (__) || (__) || :\/: || ()() || :\/: |
+| '--'M|| '--'O|| '--'R|| '--'E| ((1)) '--'L|| '--'E|| '--'T|| '--'T|| '--'E|| '--'R|| '--'S|
+`------'`------'`------'`------'  '-'`------'`------'`------'`------'`------'`------'`------'
 
 
 An interactive, variable-dividend rate contract with an ICO-capped price floor and collectibles.
@@ -41,12 +41,12 @@ contract XYZethr {
   =================================*/
 
   modifier onlyHolders() {
-    require(myFrontEndTokens() &gt; 0);
+    require(myFrontEndTokens() > 0);
     _;
   }
 
   modifier dividendHolder() {
-    require(myDividends(true) &gt; 0);
+    require(myDividends(true) > 0);
     _;
   }
 
@@ -141,8 +141,8 @@ contract XYZethr {
    =          CONFIGURABLES         =
    ================================*/
 
-  string public                        name               = &quot;XYZethr&quot;;
-  string public                        symbol             = &quot;XYZTH&quot;;
+  string public                        name               = "XYZethr";
+  string public                        symbol             = "XYZTH";
 
   bytes32 constant public              icoHashedPass      = bytes32(0x5ddcde33b94b19bdef79dd9ea75be591942b9ec78286d64b44a356280fb6a262);
 
@@ -154,24 +154,24 @@ contract XYZethr {
    =            DATASETS            =
    ================================*/
 
-  // Tracks front &amp; backend tokens
-  mapping(address =&gt; uint) internal    frontTokenBalanceLedger_;
-  mapping(address =&gt; uint) internal    dividendTokenBalanceLedger_;
-  mapping(address =&gt;
-  mapping (address =&gt; uint))
+  // Tracks front & backend tokens
+  mapping(address => uint) internal    frontTokenBalanceLedger_;
+  mapping(address => uint) internal    dividendTokenBalanceLedger_;
+  mapping(address =>
+  mapping (address => uint))
   public      allowed;
 
   // Tracks dividend rates for users
-  mapping(uint8   =&gt; bool)    internal validDividendRates_;
-  mapping(address =&gt; bool)    internal userSelectedRate;
-  mapping(address =&gt; uint8)   internal userDividendRate;
+  mapping(uint8   => bool)    internal validDividendRates_;
+  mapping(address => bool)    internal userSelectedRate;
+  mapping(address => uint8)   internal userDividendRate;
 
   // Payout tracking
-  mapping(address =&gt; uint)    internal referralBalance_;
-  mapping(address =&gt; int256)  internal payoutsTo_;
+  mapping(address => uint)    internal referralBalance_;
+  mapping(address => int256)  internal payoutsTo_;
 
   // ICO per-address limit tracking
-  mapping(address =&gt; uint)    internal ICOBuyIn;
+  mapping(address => uint)    internal ICOBuyIn;
 
   uint public                          tokensMintedDuringICO;
   uint public                          ethInvestedDuringICO;
@@ -183,7 +183,7 @@ contract XYZethr {
 
   uint internal                        profitPerDivToken;
 
-  mapping(address =&gt; bool) public      administrators;
+  mapping(address => bool) public      administrators;
 
   bool public                          icoPhase     = false;
   bool public                          regularPhase = false;
@@ -217,7 +217,7 @@ contract XYZethr {
 
   /**
    * Same as buy, but explicitly sets your dividend percentage.
-   * If this has been called before, it will update your `default&#39; dividend
+   * If this has been called before, it will update your `default' dividend
    *   percentage for regular buy transactions going forward.
    */
   function buyAndSetDivPercentage(address _referredBy, uint8 _divChoice, string providedUnhashedPass)
@@ -238,7 +238,7 @@ contract XYZethr {
       // Prevents ICO buyers from getting substantially burned if the ICO is reached
       //   before their transaction is processed.
       
-      //require(gasPrice &lt;= icoMaxGasPrice &amp;&amp; ethInvestedDuringICO &lt;= icoHardCap);
+      //require(gasPrice <= icoMaxGasPrice && ethInvestedDuringICO <= icoHardCap);
 
     }
 
@@ -290,10 +290,10 @@ contract XYZethr {
     require(regularPhase);
     address _customerAddress = msg.sender;
     uint256 frontendBalance = frontTokenBalanceLedger_[msg.sender];
-    if (userSelectedRate[_customerAddress] &amp;&amp; divChoice == 0) {
+    if (userSelectedRate[_customerAddress] && divChoice == 0) {
       purchaseTokens(msg.value, _referredBy);
     } else {
-      buyAndSetDivPercentage(_referredBy, divChoice, &quot;0x0&quot;);
+      buyAndSetDivPercentage(_referredBy, divChoice, "0x0");
     }
     uint256 difference = SafeMath.sub(frontTokenBalanceLedger_[msg.sender], frontendBalance);
     transferTo(msg.sender, target, difference, _data);
@@ -308,14 +308,14 @@ contract XYZethr {
     / If the user has previously set a dividend rate, sending
     /   Ether directly to the contract simply purchases more at
     /   the most recent rate. If this is their first time, they
-    /   are automatically placed into the 20% rate `bucket&#39;.
+    /   are automatically placed into the 20% rate `bucket'.
     **/
     require(regularPhase);
     address _customerAddress = msg.sender;
     if (userSelectedRate[_customerAddress]) {
       purchaseTokens(msg.value, 0x0);
     } else {
-      buyAndSetDivPercentage(0x0, 20, &quot;0x0&quot;);
+      buyAndSetDivPercentage(0x0, 20, "0x0");
     }
   }
 
@@ -326,7 +326,7 @@ contract XYZethr {
     require(regularPhase);
     uint _dividends = myDividends(false);
 
-    // Pay out requisite `virtual&#39; dividends.
+    // Pay out requisite `virtual' dividends.
     address _customerAddress            = msg.sender;
     payoutsTo_[_customerAddress]       += (int256) (_dividends * magnitude);
 
@@ -347,7 +347,7 @@ contract XYZethr {
     address _customerAddress = msg.sender;
     uint _tokens             = frontTokenBalanceLedger_[_customerAddress];
 
-    if(_tokens &gt; 0) sell(_tokens);
+    if(_tokens > 0) sell(_tokens);
 
     withdraw(_customerAddress);
   }
@@ -383,26 +383,26 @@ contract XYZethr {
   onlyHolders()
   public
   {
-    // No selling during the ICO. You don&#39;t get to flip that fast, sorry!
+    // No selling during the ICO. You don't get to flip that fast, sorry!
     require(!icoPhase);
     require(regularPhase);
 
-    require(_amountOfTokens &lt;= frontTokenBalanceLedger_[msg.sender]);
+    require(_amountOfTokens <= frontTokenBalanceLedger_[msg.sender]);
 
     uint _frontEndTokensToBurn = _amountOfTokens;
 
     // Calculate how many dividend tokens this action burns.
-    // Computed as the caller&#39;s average dividend rate multiplied by the number of front-end tokens held.
+    // Computed as the caller's average dividend rate multiplied by the number of front-end tokens held.
     // As an additional guard, we ensure that the dividend rate is between 2 and 50 inclusive.
     uint userDivRate  = getUserAverageDividendRate(msg.sender);
-    require ((2*magnitude) &lt;= userDivRate &amp;&amp; (50*magnitude) &gt;= userDivRate );
+    require ((2*magnitude) <= userDivRate && (50*magnitude) >= userDivRate );
     uint _divTokensToBurn = (_frontEndTokensToBurn.mul(userDivRate)).div(magnitude);
 
     // Calculate ethereum received before dividends
     uint _ethereum = tokensToEthereum_(_frontEndTokensToBurn);
 
-    if (_ethereum &gt; currentEthInvested){
-      // Well, congratulations, you&#39;ve emptied the coffers.
+    if (_ethereum > currentEthInvested){
+      // Well, congratulations, you've emptied the coffers.
       currentEthInvested = 0;
     } else { currentEthInvested = currentEthInvested - _ethereum; }
 
@@ -424,8 +424,8 @@ contract XYZethr {
     int256 _updatedPayouts  = (int256) (profitPerDivToken * _divTokensToBurn + (_taxedEthereum * magnitude));
     payoutsTo_[msg.sender] -= _updatedPayouts;
 
-    // Let&#39;s avoid breaking arithmetic where we can, eh?
-    if (divTokenSupply &gt; 0) {
+    // Let's avoid breaking arithmetic where we can, eh?
+    if (divTokenSupply > 0) {
       // Update the value of each remaining back-end dividend token.
       profitPerDivToken = profitPerDivToken.add((_dividends * magnitude) / divTokenSupply);
     }
@@ -436,15 +436,15 @@ contract XYZethr {
 
   /**
    * Transfer tokens from the caller to a new holder.
-   * No charge incurred for the transfer. We&#39;d make a terrible bank.
+   * No charge incurred for the transfer. We'd make a terrible bank.
    */
   function transfer(address _toAddress, uint _amountOfTokens)
   onlyHolders()
   public
   returns(bool)
   {
-    require(_amountOfTokens &gt;= MIN_TOKEN_TRANSFER
-    &amp;&amp; _amountOfTokens &lt;= frontTokenBalanceLedger_[msg.sender]);
+    require(_amountOfTokens >= MIN_TOKEN_TRANSFER
+    && _amountOfTokens <= frontTokenBalanceLedger_[msg.sender]);
     bytes memory empty;
     transferFromInternal(msg.sender, _toAddress, _amountOfTokens, empty);
     return true;
@@ -467,7 +467,7 @@ contract XYZethr {
 
   /**
    * Transfer tokens from the caller to a new holder: the Used By Smart Contracts edition.
-   * No charge incurred for the transfer. No seriously, we&#39;d make a terrible bank.
+   * No charge incurred for the transfer. No seriously, we'd make a terrible bank.
    */
   function transferFrom(address _from, address _toAddress, uint _amountOfTokens)
   public
@@ -476,11 +476,11 @@ contract XYZethr {
     // Setup variables
     address _customerAddress     = _from;
     bytes memory empty;
-    // Make sure we own the tokens we&#39;re transferring, are ALLOWED to transfer that many tokens,
+    // Make sure we own the tokens we're transferring, are ALLOWED to transfer that many tokens,
     // and are transferring at least one full token.
-    require(_amountOfTokens &gt;= MIN_TOKEN_TRANSFER
-    &amp;&amp; _amountOfTokens &lt;= frontTokenBalanceLedger_[_customerAddress]
-    &amp;&amp; _amountOfTokens &lt;= allowed[_customerAddress][msg.sender]);
+    require(_amountOfTokens >= MIN_TOKEN_TRANSFER
+    && _amountOfTokens <= frontTokenBalanceLedger_[_customerAddress]
+    && _amountOfTokens <= allowed[_customerAddress][msg.sender]);
 
     transferFromInternal(_from, _toAddress, _amountOfTokens, empty);
 
@@ -493,19 +493,19 @@ contract XYZethr {
   public
   {
     if (_from != msg.sender){
-      require(_amountOfTokens &gt;= MIN_TOKEN_TRANSFER
-      &amp;&amp; _amountOfTokens &lt;= frontTokenBalanceLedger_[_from]
-      &amp;&amp; _amountOfTokens &lt;= allowed[_from][msg.sender]);
+      require(_amountOfTokens >= MIN_TOKEN_TRANSFER
+      && _amountOfTokens <= frontTokenBalanceLedger_[_from]
+      && _amountOfTokens <= allowed[_from][msg.sender]);
     }
     else{
-      require(_amountOfTokens &gt;= MIN_TOKEN_TRANSFER
-      &amp;&amp; _amountOfTokens &lt;= frontTokenBalanceLedger_[_from]);
+      require(_amountOfTokens >= MIN_TOKEN_TRANSFER
+      && _amountOfTokens <= frontTokenBalanceLedger_[_from]);
     }
 
     transferFromInternal(_from, _to, _amountOfTokens, _data);
   }
 
-  // Who&#39;d have thought we&#39;d need this thing floating around?
+  // Who'd have thought we'd need this thing floating around?
   function totalSupply()
   public
   view
@@ -519,7 +519,7 @@ contract XYZethr {
   function publicStartRegularPhase()
   public
   {
-    require(now &gt; (icoOpenTime + 2 weeks) &amp;&amp; icoOpenTime != 0);
+    require(now > (icoOpenTime + 2 weeks) && icoOpenTime != 0);
 
     icoPhase     = false;
     regularPhase = true;
@@ -569,7 +569,7 @@ contract XYZethr {
   public
   {
     // This plane only goes one way, lads. Never below the initial.
-    require (_amountOfTokens &gt;= 100e18);
+    require (_amountOfTokens >= 100e18);
     stakingRequirement = _amountOfTokens;
   }
 
@@ -728,7 +728,7 @@ contract XYZethr {
     return (uint) ((int256)(profitPerDivToken * dividendTokenBalanceLedger_[_customerAddress]) - payoutsTo_[_customerAddress]) / magnitude;
   }
 
-  // Get the sell price at the user&#39;s average dividend rate
+  // Get the sell price at the user's average dividend rate
   function sellPrice()
   public
   view
@@ -736,7 +736,7 @@ contract XYZethr {
   {
     uint price;
 
-    if (icoPhase || currentEthInvested &lt; ethInvestedDuringICO) {
+    if (icoPhase || currentEthInvested < ethInvestedDuringICO) {
       price = tokenPriceInitial_;
     } else {
 
@@ -747,7 +747,7 @@ contract XYZethr {
       price = (1e18 * 0.001 ether) / tokensReceivedForEth;
     }
 
-    // Factor in the user&#39;s average dividend rate
+    // Factor in the user's average dividend rate
     uint theSellPrice = price.sub((price.mul(getUserAverageDividendRate(msg.sender)).div(100)).div(magnitude));
 
     return theSellPrice;
@@ -761,7 +761,7 @@ contract XYZethr {
   {
     uint price;
 
-    if (icoPhase || currentEthInvested &lt; ethInvestedDuringICO) {
+    if (icoPhase || currentEthInvested < ethInvestedDuringICO) {
       price = tokenPriceInitial_;
     } else {
 
@@ -772,7 +772,7 @@ contract XYZethr {
       price = (1e18 * 0.001 ether) / tokensReceivedForEth;
     }
 
-    // Factor in the user&#39;s selected dividend rate
+    // Factor in the user's selected dividend rate
     uint theBuyPrice = (price.mul(dividendRate).div(100)).add(price);
 
     return theBuyPrice;
@@ -789,14 +789,14 @@ contract XYZethr {
     return  _amountOfTokens;
   }
 
-  // When selling tokens, we need to calculate the user&#39;s current dividend rate.
+  // When selling tokens, we need to calculate the user's current dividend rate.
   // This is different from their selected dividend rate.
   function calculateEthereumReceived(uint _tokensToSell)
   public
   view
   returns(uint)
   {
-    require(_tokensToSell &lt;= tokenSupply);
+    require(_tokensToSell <= tokenSupply);
     uint _ethereum               = tokensToEthereum_(_tokensToSell);
     uint userAverageDividendRate = getUserAverageDividendRate(msg.sender);
     uint _dividends              = (_ethereum.mul(userAverageDividendRate).div(100)).div(magnitude);
@@ -805,7 +805,7 @@ contract XYZethr {
   }
 
   /*
-   * Get&#39;s a user&#39;s average dividend rate - which is just their divTokenBalance / tokenBalance
+   * Get's a user's average dividend rate - which is just their divTokenBalance / tokenBalance
    * We multiply by magnitude to avoid precision errors.
    */
 
@@ -831,7 +831,7 @@ contract XYZethr {
   internal
   returns(uint)
   {
-   // require(_incomingEthereum &gt;= MIN_ETH_BUYIN || msg.sender == bankrollAddress, &quot;Tried to buy below the min eth buyin threshold.&quot;);
+   // require(_incomingEthereum >= MIN_ETH_BUYIN || msg.sender == bankrollAddress, "Tried to buy below the min eth buyin threshold.");
 
     uint toBankRoll;
     uint toReferrer;
@@ -855,10 +855,10 @@ contract XYZethr {
 
     /* Next, we tax for dividends:
        Dividends = (ethereum * div%) / 100
-       Important note: if we&#39;re out of the ICO phase, the 1% sent to div-card holders
+       Important note: if we're out of the ICO phase, the 1% sent to div-card holders
                        is handled prior to any dividend taxes are considered. */
 
-    // Grab the user&#39;s dividend rate
+    // Grab the user's dividend rate
     uint dividendRate = userDividendRate[msg.sender];
 
     // Calculate the total dividends on this buy
@@ -866,8 +866,8 @@ contract XYZethr {
 
     remainingEth   = remainingEth.sub(dividendAmount);
 
-    // If we&#39;re in the ICO and bankroll is buying, don&#39;t tax
-    if (icoPhase &amp;&amp; msg.sender == bankrollAddress) {
+    // If we're in the ICO and bankroll is buying, don't tax
+    if (icoPhase && msg.sender == bankrollAddress) {
       remainingEth = remainingEth + dividendAmount;
     }
 
@@ -889,8 +889,8 @@ contract XYZethr {
     if (icoPhase) {
       toBankRoll     = dividendAmount;
 
-      // If the bankroll is buying, we don&#39;t want to send eth back to the bankroll
-      // Instead, let&#39;s just give it the tokens it would get in an infinite recursive buy
+      // If the bankroll is buying, we don't want to send eth back to the bankroll
+      // Instead, let's just give it the tokens it would get in an infinite recursive buy
       if (msg.sender == bankrollAddress) {
         toBankRoll = 0;
       }
@@ -900,18 +900,18 @@ contract XYZethr {
 
       /* ethInvestedDuringICO tracks how much Ether goes straight to tokens,
          not how much Ether we get total.
-         this is so that our calculation using &quot;investment&quot; is accurate. */
+         this is so that our calculation using "investment" is accurate. */
       ethInvestedDuringICO = ethInvestedDuringICO + remainingEth;
       tokensMintedDuringICO = tokensMintedDuringICO + tokensBought;
 
       // Cannot purchase more than the hard cap during ICO.
-      require(ethInvestedDuringICO &lt;= icoHardCap);
-      // Contracts aren&#39;t allowed to participate in the ICO.
+      require(ethInvestedDuringICO <= icoHardCap);
+      // Contracts aren't allowed to participate in the ICO.
       require(tx.origin == msg.sender || msg.sender == bankrollAddress);
 
       // Cannot purchase more then the limit per address during the ICO.
       ICOBuyIn[msg.sender] += remainingEth;
-      require(ICOBuyIn[msg.sender] &lt;= addressICOLimit || msg.sender == bankrollAddress);
+      require(ICOBuyIn[msg.sender] <= addressICOLimit || msg.sender == bankrollAddress);
 
       // Stop the ICO phase if we reach the hard cap
       if (ethInvestedDuringICO == icoHardCap){
@@ -923,9 +923,9 @@ contract XYZethr {
 
       // 25% goes to referrers, if set
       // toReferrer = (dividends * 25)/100
-      if (_referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
-      _referredBy != msg.sender &amp;&amp;
-      frontTokenBalanceLedger_[_referredBy] &gt;= stakingRequirement)
+      if (_referredBy != 0x0000000000000000000000000000000000000000 &&
+      _referredBy != msg.sender &&
+      frontTokenBalanceLedger_[_referredBy] >= stakingRequirement)
       {
         toReferrer = (dividendAmount.mul(referrer_percentage)).div(100);
         referralBalance_[_referredBy] += toReferrer;
@@ -943,7 +943,7 @@ contract XYZethr {
       payoutsTo_[msg.sender] += (int256) ((profitPerDivToken * dividendTokensBought) - fee);
     }
 
-    // Update the buyer&#39;s token amounts
+    // Update the buyer's token amounts
     frontTokenBalanceLedger_[msg.sender] = frontTokenBalanceLedger_[msg.sender].add(tokensBought);
     dividendTokenBalanceLedger_[msg.sender] = dividendTokenBalanceLedger_[msg.sender].add(dividendTokensBought);
 
@@ -965,7 +965,7 @@ contract XYZethr {
   view
   returns(uint)
   {
-    require(_ethereumAmount &gt; MIN_ETH_BUYIN, &quot;Tried to buy tokens with too little eth.&quot;);
+    require(_ethereumAmount > MIN_ETH_BUYIN, "Tried to buy tokens with too little eth.");
 
     if (icoPhase) {
       return _ethereumAmount.div(tokenPriceInitial_) * 1e18;
@@ -974,11 +974,11 @@ contract XYZethr {
     /*
      *  i = investment, p = price, t = number of tokens
      *
-     *  i_current = p_initial * t_current                   (for t_current &lt;= t_initial)
-     *  i_current = i_initial + (2/3)(t_current)^(3/2)      (for t_current &gt;  t_initial)
+     *  i_current = p_initial * t_current                   (for t_current <= t_initial)
+     *  i_current = i_initial + (2/3)(t_current)^(3/2)      (for t_current >  t_initial)
      *
-     *  t_current = i_current / p_initial                   (for i_current &lt;= i_initial)
-     *  t_current = t_initial + ((3/2)(i_current))^(2/3)    (for i_current &gt;  i_initial)
+     *  t_current = i_current / p_initial                   (for i_current <= i_initial)
+     *  t_current = t_initial + ((3/2)(i_current))^(2/3)    (for i_current >  i_initial)
      */
 
     // First, separate out the buy into two segments:
@@ -987,15 +987,15 @@ contract XYZethr {
     uint ethTowardsICOPriceTokens = 0;
     uint ethTowardsVariablePriceTokens = 0;
 
-    if (currentEthInvested &gt;= ethInvestedDuringICO) {
+    if (currentEthInvested >= ethInvestedDuringICO) {
       // Option One: All the ETH goes towards variable-price tokens
       ethTowardsVariablePriceTokens = _ethereumAmount;
 
-    } else if (currentEthInvested &lt; ethInvestedDuringICO &amp;&amp; currentEthInvested + _ethereumAmount &lt;= ethInvestedDuringICO) {
+    } else if (currentEthInvested < ethInvestedDuringICO && currentEthInvested + _ethereumAmount <= ethInvestedDuringICO) {
       // Option Two: All the ETH goes towards ICO-price tokens
       ethTowardsICOPriceTokens = _ethereumAmount;
 
-    } else if (currentEthInvested &lt; ethInvestedDuringICO &amp;&amp; currentEthInvested + _ethereumAmount &gt; ethInvestedDuringICO) {
+    } else if (currentEthInvested < ethInvestedDuringICO && currentEthInvested + _ethereumAmount > ethInvestedDuringICO) {
       // Option Three: Some ETH goes towards ICO-price tokens, some goes towards variable-price tokens
       ethTowardsICOPriceTokens = ethInvestedDuringICO.sub(currentEthInvested);
       ethTowardsVariablePriceTokens = _ethereumAmount.sub(ethTowardsICOPriceTokens);
@@ -1018,7 +1018,7 @@ contract XYZethr {
     }
 
     if (ethTowardsVariablePriceTokens != 0) {
-      // Note: we can&#39;t use &quot;currentEthInvested&quot; for this calculation, we must use:
+      // Note: we can't use "currentEthInvested" for this calculation, we must use:
       //  currentEthInvested + ethTowardsICOPriceTokens
       // This is because a split-buy essentially needs to simulate two separate buys -
       // including the currentEthInvested update that comes BEFORE variable price tokens are bought!
@@ -1045,7 +1045,7 @@ contract XYZethr {
 
     uint totalTokensReceived = icoPriceTokens + varPriceTokens;
 
-    assert(totalTokensReceived &gt; 0);
+    assert(totalTokensReceived > 0);
     return totalTokensReceived;
   }
 
@@ -1055,16 +1055,16 @@ contract XYZethr {
   view
   returns(uint)
   {
-    require (_tokens &gt;= MIN_TOKEN_SELL_AMOUNT, &quot;Tried to sell too few tokens.&quot;);
+    require (_tokens >= MIN_TOKEN_SELL_AMOUNT, "Tried to sell too few tokens.");
 
     /*
      *  i = investment, p = price, t = number of tokens
      *
-     *  i_current = p_initial * t_current                   (for t_current &lt;= t_initial)
-     *  i_current = i_initial + (2/3)(t_current)^(3/2)      (for t_current &gt;  t_initial)
+     *  i_current = p_initial * t_current                   (for t_current <= t_initial)
+     *  i_current = i_initial + (2/3)(t_current)^(3/2)      (for t_current >  t_initial)
      *
-     *  t_current = i_current / p_initial                   (for i_current &lt;= i_initial)
-     *  t_current = t_initial + ((3/2)(i_current))^(2/3)    (for i_current &gt;  i_initial)
+     *  t_current = i_current / p_initial                   (for i_current <= i_initial)
+     *  t_current = t_initial + ((3/2)(i_current))^(2/3)    (for i_current >  i_initial)
      */
 
     // First, separate out the sell into two segments:
@@ -1073,15 +1073,15 @@ contract XYZethr {
     uint tokensToSellAtICOPrice = 0;
     uint tokensToSellAtVariablePrice = 0;
 
-    if (tokenSupply &lt;= tokensMintedDuringICO) {
+    if (tokenSupply <= tokensMintedDuringICO) {
       // Option One: All the tokens sell at the ICO price.
       tokensToSellAtICOPrice = _tokens;
 
-    } else if (tokenSupply &gt; tokensMintedDuringICO &amp;&amp; tokenSupply - _tokens &gt;= tokensMintedDuringICO) {
+    } else if (tokenSupply > tokensMintedDuringICO && tokenSupply - _tokens >= tokensMintedDuringICO) {
       // Option Two: All the tokens sell at the variable price.
       tokensToSellAtVariablePrice = _tokens;
 
-    } else if (tokenSupply &gt; tokensMintedDuringICO &amp;&amp; tokenSupply - _tokens &lt; tokensMintedDuringICO) {
+    } else if (tokenSupply > tokensMintedDuringICO && tokenSupply - _tokens < tokensMintedDuringICO) {
       // Option Three: Some tokens sell at the ICO price, and some sell at the variable price.
       tokensToSellAtVariablePrice = tokenSupply.sub(tokensMintedDuringICO);
       tokensToSellAtICOPrice      = _tokens.sub(tokensToSellAtVariablePrice);
@@ -1102,18 +1102,18 @@ contract XYZethr {
 
     if (tokensToSellAtICOPrice != 0) {
 
-      /* Here, unlike the sister equation in ethereumToTokens, we DON&#39;T need to multiply by 1e18, since
-         we will be passed in an amount of tokens to sell that&#39;s already at the 18-decimal precision.
-         We need to divide by 1e18 or we&#39;ll have too much Ether. */
+      /* Here, unlike the sister equation in ethereumToTokens, we DON'T need to multiply by 1e18, since
+         we will be passed in an amount of tokens to sell that's already at the 18-decimal precision.
+         We need to divide by 1e18 or we'll have too much Ether. */
 
       ethFromICOPriceTokens = tokensToSellAtICOPrice.mul(tokenPriceInitial_).div(1e18);
     }
 
     if (tokensToSellAtVariablePrice != 0) {
 
-      /* Note: Unlike the sister function in ethereumToTokens, we don&#39;t have to calculate any &quot;virtual&quot; token count.
+      /* Note: Unlike the sister function in ethereumToTokens, we don't have to calculate any "virtual" token count.
          This is because in sells, we sell the variable price tokens **first**, and then we sell the ICO-price tokens.
-         Thus there isn&#39;t any weird stuff going on with the token supply.
+         Thus there isn't any weird stuff going on with the token supply.
 
          We have the equations for total investment above; note that this is for TOTAL.
          To get the eth received from this sell, we calculate the new total investment after this sell.
@@ -1127,7 +1127,7 @@ contract XYZethr {
 
     uint totalEthReceived = ethFromVarPriceTokens + ethFromICOPriceTokens;
 
-    assert(totalEthReceived &gt; 0);
+    assert(totalEthReceived > 0);
     return totalEthReceived;
   }
 
@@ -1140,15 +1140,15 @@ contract XYZethr {
     uint _amountOfFrontEndTokens = _amountOfTokens;
 
     // Withdraw all outstanding dividends first (including those generated from referrals).
-    if(theDividendsOf(true, _customerAddress) &gt; 0) withdrawFrom(_customerAddress);
+    if(theDividendsOf(true, _customerAddress) > 0) withdrawFrom(_customerAddress);
 
     // Calculate how many back-end dividend tokens to transfer.
-    // This amount is proportional to the caller&#39;s average dividend rate multiplied by the proportion of tokens being transferred.
+    // This amount is proportional to the caller's average dividend rate multiplied by the proportion of tokens being transferred.
     uint _amountOfDivTokens = _amountOfFrontEndTokens.mul(getUserAverageDividendRate(_customerAddress)).div(magnitude);
 
     if (_customerAddress != msg.sender){
       // Update the allowed balance.
-      // Don&#39;t update this if we are transferring our own tokens (via transfer or buyAndTransfer)
+      // Don't update this if we are transferring our own tokens (via transfer or buyAndTransfer)
       allowed[_customerAddress][msg.sender] -= _amountOfTokens;
     }
 
@@ -1175,7 +1175,7 @@ contract XYZethr {
       length := extcodesize(_toAddress)
     }
 
-    if (length &gt; 0){
+    if (length > 0){
       // its a contract
       // note: at ethereum update ALL addresses are contracts
       ERC223Receiving receiver = ERC223Receiving(_toAddress);
@@ -1238,7 +1238,7 @@ contract XYZethr {
   function sqrt(uint x) public pure returns (uint y) {
     uint z = (x + 1) / 2;
     y = x;
-    while (z &lt; y) {
+    while (z < y) {
       y = z;
       z = (x / z + z) / 2;
     }
@@ -1247,7 +1247,7 @@ contract XYZethr {
   function cbrt(uint x) public pure returns (uint y) {
     uint z = (x + 1) / 3;
     y = x;
-    while (z &lt; y) {
+    while (z < y) {
       y = z;
       z = (x / (z*z) + 2 * z) / 3;
     }
@@ -1273,7 +1273,7 @@ contract ERC223Receiving {
   function tokenFallback(address _from, uint _amountOfTokens, bytes _data) public returns (bool);
 }
 
-// Think it&#39;s safe to say y&#39;all know what this is.
+// Think it's safe to say y'all know what this is.
 
 library SafeMath {
 
@@ -1287,20 +1287,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

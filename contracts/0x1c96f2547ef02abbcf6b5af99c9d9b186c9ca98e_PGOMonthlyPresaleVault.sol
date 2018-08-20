@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -142,7 +142,7 @@ pragma solidity ^0.4.23;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -160,7 +160,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -195,7 +195,7 @@ pragma solidity ^0.4.23;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -213,8 +213,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -228,7 +228,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -297,7 +297,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -315,7 +315,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -578,9 +578,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -633,8 +633,8 @@ pragma solidity ^0.4.24;
 
 
 contract GotToken is CanReclaimToken, MintableToken, PausableToken, BurnableToken {
-    string public constant name = &quot;GOToken&quot;;
-    string public constant symbol = &quot;GOT&quot;;
+    string public constant name = "GOToken";
+    string public constant symbol = "GOT";
     uint8 public constant decimals = 18;
 
     /**
@@ -688,13 +688,13 @@ contract PGOMonthlyInternalVault {
     //Investment[] public investments;
 
     // key: investor address; value: index in investments array.
-    //mapping(address =&gt; uint256) public investorLUT;
+    //mapping(address => uint256) public investorLUT;
 
-    mapping(address =&gt; Investment) public investments;
+    mapping(address => Investment) public investments;
 
     /**
      * @dev Function to be fired by the initPGOMonthlyInternalVault function from the GotCrowdSale contract to set the
-     * InternalVault&#39;s state after deployment.
+     * InternalVault's state after deployment.
      * @param beneficiaries Array of the internal investors addresses to whom vested tokens are transferred.
      * @param balances Array of token amount per beneficiary.
      * @param startTime Start time at which the first released will be executed, and from which the cliff for second
@@ -712,25 +712,25 @@ contract PGOMonthlyInternalVault {
 
         token = GotToken(_token);
 
-        for (uint256 i = 0; i &lt; beneficiaries.length; i = i.add(1)) {
+        for (uint256 i = 0; i < beneficiaries.length; i = i.add(1)) {
             investments[beneficiaries[i]] = Investment(beneficiaries[i], balances[i], 0);
         }
     }
 
     /**
-     * @dev Allows a sender to transfer vested tokens to the beneficiary&#39;s address.
+     * @dev Allows a sender to transfer vested tokens to the beneficiary's address.
      * @param beneficiary The address that will receive the vested tokens.
      */
     function release(address beneficiary) public {
         uint256 unreleased = releasableAmount(beneficiary);
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         investments[beneficiary].released = investments[beneficiary].released.add(unreleased);
         token.safeTransfer(beneficiary, unreleased);
     }
 
     /**
-     * @dev Transfers vested tokens to the sender&#39;s address.
+     * @dev Transfers vested tokens to the sender's address.
      */
     function release() public {
         release(msg.sender);
@@ -749,7 +749,7 @@ contract PGOMonthlyInternalVault {
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      * @param beneficiary The address that will receive the vested tokens.
      */
     function releasableAmount(address beneficiary) public view returns (uint256) {
@@ -762,8 +762,8 @@ contract PGOMonthlyInternalVault {
      */
     function vestedAmount(address beneficiary) public view returns (uint256) {
         uint256 vested = 0;
-        if (block.timestamp &gt;= cliff &amp;&amp; block.timestamp &lt; end) {
-            // after cliff -&gt; 1/21 of totalBalance every month, must skip first 3 months
+        if (block.timestamp >= cliff && block.timestamp < end) {
+            // after cliff -> 1/21 of totalBalance every month, must skip first 3 months
             uint256 totalBalance = investments[beneficiary].totalBalance;
             uint256 monthlyBalance = totalBalance.div(VESTING_DIV_RATE);
             uint256 time = block.timestamp.sub(cliff);
@@ -771,8 +771,8 @@ contract PGOMonthlyInternalVault {
             uint256 vestedToSum = elapsedOffsets.mul(monthlyBalance);
             vested = vested.add(vestedToSum);
         }
-        if (block.timestamp &gt;= end) {
-            // after end -&gt; all vested
+        if (block.timestamp >= end) {
+            // after end -> all vested
             vested = investments[beneficiary].totalBalance;
         }
         return vested;
@@ -807,12 +807,12 @@ contract PGOMonthlyPresaleVault is PGOMonthlyInternalVault {
     function vestedAmount(address beneficiary) public view returns (uint256) {
         uint256 vested = 0;
 
-        if (block.timestamp &gt;= start) {
-            // after start -&gt; 1/3 released (fixed)
+        if (block.timestamp >= start) {
+            // after start -> 1/3 released (fixed)
             vested = investments[beneficiary].totalBalance.div(3);
         }
-        if (block.timestamp &gt;= cliff &amp;&amp; block.timestamp &lt; end) {
-            // after cliff -&gt; 1/27 of totalBalance every month, must skip first 9 month 
+        if (block.timestamp >= cliff && block.timestamp < end) {
+            // after cliff -> 1/27 of totalBalance every month, must skip first 9 month 
             uint256 unlockedStartBalance = investments[beneficiary].totalBalance.div(3);
             uint256 totalBalance = investments[beneficiary].totalBalance;
             uint256 lockedBalance = totalBalance.sub(unlockedStartBalance);
@@ -822,8 +822,8 @@ contract PGOMonthlyPresaleVault is PGOMonthlyInternalVault {
             uint256 elapsedOffsets = time.div(VESTING_INTERVAL);
             vested = vested.add(elapsedOffsets.mul(monthlyBalance));
         }
-        if (block.timestamp &gt;= end) {
-            // after end -&gt; all vested
+        if (block.timestamp >= end) {
+            // after end -> all vested
             vested = investments[beneficiary].totalBalance;
         }
         return vested;

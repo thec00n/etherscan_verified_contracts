@@ -18,7 +18,7 @@ library SafeMath {
     internal constant
     returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     function sub(uint256 x, uint256 y)
     internal constant
     returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -53,7 +53,7 @@ library SafeMath {
     }
 
     /**
-    * @dev Parse a floating point number from String to uint, e.g. &quot;250.56&quot; to &quot;25056&quot;
+    * @dev Parse a floating point number from String to uint, e.g. "250.56" to "25056"
      */
     function parse(string s) 
     internal constant 
@@ -61,8 +61,8 @@ library SafeMath {
     {
     bytes memory b = bytes(s);
     uint result = 0;
-    for (uint i = 0; i &lt; b.length; i++) {
-        if (b[i] &gt;= 48 &amp;&amp; b[i] &lt;= 57) {
+    for (uint i = 0; i < b.length; i++) {
+        if (b[i] >= 48 && b[i] <= 57) {
             result = result * 10 + (uint(b[i]) - 48); 
         }
     }
@@ -97,8 +97,8 @@ contract Token {
  */
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint numwords) {
         assert(msg.data.length == numwords * 32 + 4);
@@ -120,7 +120,7 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value)
     public
     returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
             balances[_to] = SafeMath.add(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -148,7 +148,7 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value)
     public
     returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = SafeMath.add(balances[_to], _value);
             balances[_from] = SafeMath.sub(balances[_from], _value);
             allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -178,7 +178,7 @@ contract StandardToken is Token {
      * @dev NOTE: To prevent attack vectors like the one described in [1] and discussed in [2], clients 
      * @dev SHOULD make sure to create user interfaces in such a way that they set the allowance first 
      * @dev to 0 before setting it to another value for the same spender. THOUGH The contract itself 
-     * @dev shouldn&#39;t enforce it, to allow backwards compatilibilty with contracts deployed before.
+     * @dev shouldn't enforce it, to allow backwards compatilibilty with contracts deployed before.
      * @dev [1] https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      * @dev [2] https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
@@ -211,7 +211,7 @@ contract StandardToken is Token {
 }
 
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -219,7 +219,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -232,7 +232,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -291,35 +291,35 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 networkID) internal returns(bool){
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-            oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+            oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-            oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+            oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-            oraclize_setNetworkName(&quot;eth_kovan&quot;);
+            oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-            oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+            oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -346,65 +346,65 @@ contract usingOraclize {
     
     function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(0, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query.value(price)(timestamp, datasource, arg);
     }
     function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(0, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
     function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, string[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -552,25 +552,25 @@ contract usingOraclize {
     }
     function oraclize_query(string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(0, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource);
-        if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN.value(price)(timestamp, datasource, args);
     }
     function oraclize_query(uint timestamp, string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
     function oraclize_query(string datasource, bytes[] argN, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
-        if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = ba2cbor(argN);
         return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
@@ -745,16 +745,16 @@ contract usingOraclize {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 65)&amp;&amp;(b1 &lt;= 70)) b1 -= 55;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 65)&amp;&amp;(b2 &lt;= 70)) b2 -= 55;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 65)&&(b1 <= 70)) b1 -= 55;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 65)&&(b2 <= 70)) b2 -= 55;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -764,15 +764,15 @@ contract usingOraclize {
         bytes memory a = bytes(_a);
         bytes memory b = bytes(_b);
         uint minLength = a.length;
-        if (b.length &lt; minLength) minLength = b.length;
-        for (uint i = 0; i &lt; minLength; i ++)
-            if (a[i] &lt; b[i])
+        if (b.length < minLength) minLength = b.length;
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
                 return -1;
-            else if (a[i] &gt; b[i])
+            else if (a[i] > b[i])
                 return 1;
-        if (a.length &lt; b.length)
+        if (a.length < b.length)
             return -1;
-        else if (a.length &gt; b.length)
+        else if (a.length > b.length)
             return 1;
         else
             return 0;
@@ -781,19 +781,19 @@ contract usingOraclize {
     function indexOf(string _haystack, string _needle) internal returns (int) {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
-        if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length))
+        if(h.length < 1 || n.length < 1 || (n.length > h.length))
             return -1;
-        else if(h.length &gt; (2**128 -1))
+        else if(h.length > (2**128 -1))
             return -1;
         else
         {
             uint subindex = 0;
-            for (uint i = 0; i &lt; h.length; i ++)
+            for (uint i = 0; i < h.length; i ++)
             {
                 if (h[i] == n[0])
                 {
                     subindex = 1;
-                    while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex])
+                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])
                     {
                         subindex++;
                     }
@@ -814,24 +814,24 @@ contract usingOraclize {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     // parseInt
@@ -844,8 +844,8 @@ contract usingOraclize {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i=0; i&lt;bresult.length; i++){
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+        for (uint i=0; i<bresult.length; i++){
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
                 if (decimals){
                    if (_b == 0) break;
                     else _b--;
@@ -854,12 +854,12 @@ contract usingOraclize {
                 mint += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) mint *= 10**_b;
+        if (_b > 0) mint *= 10**_b;
         return mint;
     }
 
     function uint2str(uint i) internal returns (string){
-        if (i == 0) return &quot;0&quot;;
+        if (i == 0) return "0";
         uint j = i;
         uint len;
         while (j != 0){
@@ -881,7 +881,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -890,20 +890,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -923,7 +923,7 @@ contract usingOraclize {
             // get correct cbor output length
             uint outputlen = 0;
             bytes[] memory elemArray = new bytes[](arrlen);
-            for (uint i = 0; i &lt; arrlen; i++) {
+            for (uint i = 0; i < arrlen; i++) {
                 elemArray[i] = (bytes(arr[i]));
                 outputlen += elemArray[i].length + (elemArray[i].length - 1)/23 + 3; //+3 accounts for paired identifier types
             }
@@ -932,20 +932,20 @@ contract usingOraclize {
             outputlen += byte(cborlen).length;
             bytes memory res = new bytes(outputlen);
 
-            while (byte(cborlen).length &gt; ctr) {
+            while (byte(cborlen).length > ctr) {
                 res[ctr] = byte(cborlen)[ctr];
                 ctr++;
             }
-            for (i = 0; i &lt; arrlen; i++) {
+            for (i = 0; i < arrlen; i++) {
                 res[ctr] = 0x5F;
                 ctr++;
-                for (uint x = 0; x &lt; elemArray[i].length; x++) {
-                    // if there&#39;s a bug with larger strings, this may be the culprit
+                for (uint x = 0; x < elemArray[i].length; x++) {
+                    // if there's a bug with larger strings, this may be the culprit
                     if (x % 23 == 0) {
-                        uint elemcborlen = elemArray[i].length - x &gt;= 24 ? 23 : elemArray[i].length - x;
+                        uint elemcborlen = elemArray[i].length - x >= 24 ? 23 : elemArray[i].length - x;
                         elemcborlen += 0x40;
                         uint lctr = ctr;
-                        while (byte(elemcborlen).length &gt; ctr - lctr) {
+                        while (byte(elemcborlen).length > ctr - lctr) {
                             res[ctr] = byte(elemcborlen)[ctr - lctr];
                             ctr++;
                         }
@@ -970,7 +970,7 @@ contract usingOraclize {
     }
     
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
-        if ((_nbytes == 0)||(_nbytes &gt; 32)) throw;
+        if ((_nbytes == 0)||(_nbytes > 32)) throw;
         bytes memory nbytes = new bytes(1);
         nbytes[0] = byte(_nbytes);
         bytes memory unonce = new bytes(32);
@@ -983,7 +983,7 @@ contract usingOraclize {
             mstore(add(sessionKeyHash, 0x20), sessionKeyHash_bytes32)
         }
         bytes[3] memory args = [unonce, nbytes, sessionKeyHash]; 
-        bytes32 queryId = oraclize_query(_delay, &quot;random&quot;, args, _customGasLimit);
+        bytes32 queryId = oraclize_query(_delay, "random", args, _customGasLimit);
         oraclize_randomDS_setCommitment(queryId, sha3(bytes8(_delay), args[1], sha256(args[0]), args[2]));
         return queryId;
     }
@@ -992,8 +992,8 @@ contract usingOraclize {
         oraclize_randomDS_args[queryId] = commitment;
     }
     
-    mapping(bytes32=&gt;bytes32) oraclize_randomDS_args;
-    mapping(bytes32=&gt;bool) oraclize_randomDS_sessionKeysHashVerified;
+    mapping(bytes32=>bytes32) oraclize_randomDS_args;
+    mapping(bytes32=>bool) oraclize_randomDS_sessionKeysHashVerified;
 
     function verifySig(bytes32 tosignh, bytes dersig, bytes pubkey) internal returns (bool){
         bool sigok;
@@ -1036,7 +1036,7 @@ contract usingOraclize {
         bytes memory tosign2 = new bytes(1+65+32);
         tosign2[0] = 1; //role
         copyBytes(proof, sig2offset-65, 65, tosign2, 1);
-        bytes memory CODEHASH = hex&quot;fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c&quot;;
+        bytes memory CODEHASH = hex"fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c";
         copyBytes(CODEHASH, 0, 32, tosign2, 1+65);
         sigok = verifySig(sha256(tosign2), sig2, appkey1_pubkey);
         
@@ -1044,7 +1044,7 @@ contract usingOraclize {
         
         
         // Step 7: verify the APPKEY1 provenance (must be signed by Ledger)
-        bytes memory LEDGERKEY = hex&quot;7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4&quot;;
+        bytes memory LEDGERKEY = hex"7fb956469c5c9b89840d55b43537e66a98dd4811ea0a27224272c2e5622911e8537a2f8e86a46baec82864e98dd01e9ccc2f8bc5dfc9cbe5a91a290498dd96e4";
         
         bytes memory tosign3 = new bytes(1+65);
         tosign3[0] = 0xFE;
@@ -1059,8 +1059,8 @@ contract usingOraclize {
     }
     
     modifier oraclize_randomDS_proofVerify(bytes32 _queryId, string _result, bytes _proof) {
-        // Step 1: the prefix has to match &#39;LP\x01&#39; (Ledger Proof version 1)
-        if ((_proof[0] != &quot;L&quot;)||(_proof[1] != &quot;P&quot;)||(_proof[2] != 1)) throw;
+        // Step 1: the prefix has to match 'LP\x01' (Ledger Proof version 1)
+        if ((_proof[0] != "L")||(_proof[1] != "P")||(_proof[2] != 1)) throw;
         
         bool proofVerified = oraclize_randomDS_proofVerify__main(_proof, _queryId, bytes(_result), oraclize_getNetworkName());
         if (proofVerified == false) throw;
@@ -1071,7 +1071,7 @@ contract usingOraclize {
     function matchBytes32Prefix(bytes32 content, bytes prefix) internal returns (bool){
         bool match_ = true;
         
-        for (var i=0; i&lt;prefix.length; i++){
+        for (var i=0; i<prefix.length; i++){
             if (content[i] != prefix[i]) match_ = false;
         }
         
@@ -1093,7 +1093,7 @@ contract usingOraclize {
         copyBytes(proof, ledgerProofLength+(32+8+1+32), sig1.length, sig1, 0);
         
         
-        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if &#39;result&#39; is the prefix of sha256(sig1)
+        // Step 3: we assume sig1 is valid (it will be verified during step 5) and we verify if 'result' is the prefix of sha256(sig1)
         checkok = matchBytes32Prefix(sha256(sig1), result);
         if (checkok == false) return false;
         
@@ -1119,7 +1119,7 @@ contract usingOraclize {
         checkok = verifySig(sha256(tosign1), sig1, sessionPubkey);
         if (checkok == false) return false;
         
-        // verify if sessionPubkeyHash was verified already, if not.. let&#39;s do it!
+        // verify if sessionPubkeyHash was verified already, if not.. let's do it!
         if (oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] == false){
             oraclize_randomDS_sessionKeysHashVerified[sessionPubkeyHash] = oraclize_randomDS_proofVerify__sessionKeyValidity(proof, sig2offset);
         }
@@ -1132,7 +1132,7 @@ contract usingOraclize {
     function copyBytes(bytes from, uint fromOffset, uint length, bytes to, uint toOffset) internal returns (bytes) {
         uint minLength = length + toOffset;
 
-        if (to.length &lt; minLength) {
+        if (to.length < minLength) {
             // Buffer too small
             throw; // Should be a better way?
         }
@@ -1141,7 +1141,7 @@ contract usingOraclize {
         uint i = 32 + fromOffset;
         uint j = 32 + toOffset;
 
-        while (i &lt; (32 + fromOffset + length)) {
+        while (i < (32 + fromOffset + length)) {
             assembly {
                 let tmp := mload(add(from, i))
                 mstore(add(to, j), tmp)
@@ -1154,15 +1154,15 @@ contract usingOraclize {
     }
     
     // the following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         // We do our own memory management here. Solidity uses memory offset
         // 0x40 to store the current end of memory. We write past it (as
-        // writes are memory extensions), but don&#39;t update the offset so
+        // writes are memory extensions), but don't update the offset so
         // Solidity will reuse it. The memory used here is only needed for
         // this context.
 
-        // FIXME: inline assembly can&#39;t access return values
+        // FIXME: inline assembly can't access return values
         bool ret;
         address addr;
 
@@ -1199,13 +1199,13 @@ contract usingOraclize {
             s := mload(add(sig, 64))
 
             // Here we are loading the last 32 bytes. We exploit the fact that
-            // &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
             // Alternative solution:
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -1214,17 +1214,17 @@ contract usingOraclize {
         //
         // geth uses [0, 1] and some clients have followed. This might change, see:
         //  https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27)
+        if (v < 27)
           v += 27;
 
-        if (v != 27 &amp;&amp; v != 28)
+        if (v != 27 && v != 28)
             return (false, 0);
 
         return safer_ecrecover(hash, v, r, s);
     }
         
 }
-// &lt;/ORACLIZE_API&gt;
+// </ORACLIZE_API>
 
 
 /**
@@ -1236,10 +1236,10 @@ contract usingOraclize {
 contract EVNToken is StandardToken, usingOraclize {
 
     // Token metadata
-    string public constant name = &quot;Envion&quot;;
-    string public constant symbol = &quot;EVN&quot;;
+    string public constant name = "Envion";
+    string public constant symbol = "EVN";
     uint256 public constant decimals = 18;
-    string public constant version = &quot;0.9&quot;;
+    string public constant version = "0.9";
 
     // Fundraising goals: minimums and maximums
     uint256 public constant TOKEN_CREATION_CAP = 130 * (10**6) * 10**decimals; // 130 million EVNs
@@ -1271,32 +1271,32 @@ contract EVNToken is StandardToken, usingOraclize {
 
     //@dev Usecase related: Purchasing Tokens with Credit card  
     //@dev Usecase related: Canceling purchases done with credit card
-    mapping (string =&gt; Purchase) purchases;                 // in case CC payments get charged back, admins shall only be allowed to kill the exact amount of tokens associated with this payment
-    mapping (address =&gt; uint256) public ccLockedUpBalances; // tracking the total amount of tokens users have bought via CC - locked up until ccReleaseBlock
+    mapping (string => Purchase) purchases;                 // in case CC payments get charged back, admins shall only be allowed to kill the exact amount of tokens associated with this payment
+    mapping (address => uint256) public ccLockedUpBalances; // tracking the total amount of tokens users have bought via CC - locked up until ccReleaseBlock
     string[] public purchaseArray;                          // holding the IDs of all CC purchases
 
     // Keep track of holders and icoBuyers
-    mapping (address =&gt; bool) public isHolder; // track if a user is a known token holder to the smart contract - important for payouts later
+    mapping (address => bool) public isHolder; // track if a user is a known token holder to the smart contract - important for payouts later
     address[] public holders;                  // array of all known holders - important for payouts later
-    mapping (address =&gt; bool) isIcoBuyer;      // for tracking if user has to be kyc verified before being able to transfer tokens
+    mapping (address => bool) isIcoBuyer;      // for tracking if user has to be kyc verified before being able to transfer tokens
 
     // ETH balance per user
     // Since we have different exchange rates at different stages, we need to keep track
     // of how much ether each contributed in case that we need to issue a refund
-    mapping (address =&gt; uint256) private ethBalances;
-    mapping (address =&gt; uint256) private noKycEthBalances;
+    mapping (address => uint256) private ethBalances;
+    mapping (address => uint256) private noKycEthBalances;
 
     // Total received ETH balances
     // We need to keep track of how much ether have been contributed, since we have a cap for ETH too
     uint256 public allReceivedEth;
     uint256 public allUnKycedEth; // total amount of ETH we have no KYC for yet
 
-    // store the hashes of admins&#39; msg.data
-    mapping (address =&gt; bytes32) private multiSigHashes;
+    // store the hashes of admins' msg.data
+    mapping (address => bytes32) private multiSigHashes;
 
     // KYC
-    mapping (address =&gt; bool) public isKycTeam;   // to determine, if a user belongs to the KYC team or not
-    mapping (address =&gt; bool) public kycVerified; // to check if user has already undergone KYC or not, to lock up his tokens until then
+    mapping (address => bool) public isKycTeam;   // to determine, if a user belongs to the KYC team or not
+    mapping (address => bool) public kycVerified; // to check if user has already undergone KYC or not, to lock up his tokens until then
 
     // to track if team members already got their tokens
     bool public teamTokensDelivered;
@@ -1351,7 +1351,7 @@ contract EVNToken is StandardToken, usingOraclize {
     }
 
     modifier isFundraisingIgnorePaused() {
-        require(state == ContractState.Fundraising || (state == ContractState.Paused &amp;&amp; savedState == ContractState.Fundraising));
+        require(state == ContractState.Fundraising || (state == ContractState.Paused && savedState == ContractState.Fundraising));
         _;
     }
 
@@ -1385,8 +1385,8 @@ contract EVNToken is StandardToken, usingOraclize {
     }
 
     modifier minimumReached() {
-        require(allReceivedEth &gt;= ETH_RECEIVED_MIN);
-        require(totalSupply &gt;= TOKEN_CREATED_MIN);
+        require(allReceivedEth >= ETH_RECEIVED_MIN);
+        require(totalSupply >= TOKEN_CREATED_MIN);
         _;
     }
 
@@ -1401,9 +1401,9 @@ contract EVNToken is StandardToken, usingOraclize {
 
     modifier hasEnoughUnlockedTokens(address _user, uint256 _value) {
         // check if the user was a CC buyer and if the lockup period is not over,
-        if (ccLockedUpBalances[_user] &gt; 0 &amp;&amp; block.number &lt; ccReleaseBlock) {
+        if (ccLockedUpBalances[_user] > 0 && block.number < ccReleaseBlock) {
             // allow to only transfer the not-locked up tokens
-            require ((SafeMath.sub(balances[_user], _value)) &gt;= ccLockedUpBalances[_user]);
+            require ((SafeMath.sub(balances[_user], _value)) >= ccLockedUpBalances[_user]);
         }
         _;
     }
@@ -1435,16 +1435,16 @@ contract EVNToken is StandardToken, usingOraclize {
         // Check that the parameters make sense
 
         // The start of the fundraising should happen in the future
-        require (block.number &lt;= _fundingStartBlock);
+        require (block.number <= _fundingStartBlock);
 
         // The discount rate changes and ending should follow in their subsequent order
-        require (_fundingStartBlock &lt; _roundTwoBlock);
-        require (_roundTwoBlock &lt; _roundThreeBlock);
-        require (_roundThreeBlock &lt; _roundFourBlock);
-        require (_roundFourBlock &lt; _fundingEndBlock);
+        require (_fundingStartBlock < _roundTwoBlock);
+        require (_roundTwoBlock < _roundThreeBlock);
+        require (_roundThreeBlock < _roundFourBlock);
+        require (_roundFourBlock < _fundingEndBlock);
 
         // block when tokens bought with CC will be released must be in the future
-        require (_fundingEndBlock &lt; _ccReleaseBlock);
+        require (_fundingEndBlock < _ccReleaseBlock);
 
         // admin1 and admin2 address must be set and must be different
         require (_admin1 != 0x0);
@@ -1457,7 +1457,7 @@ contract EVNToken is StandardToken, usingOraclize {
         require (_tokenVendor != _admin2);
 
         // provide some ETH for oraclize price feed
-        require (msg.value &gt; 0);
+        require (msg.value > 0);
 
         // Init contract state
         state = ContractState.Fundraising;
@@ -1478,7 +1478,7 @@ contract EVNToken is StandardToken, usingOraclize {
         //oraclize 
         oraclize_setCustomGasPrice(100000000000 wei); // set the gas price a little bit higher, so the pricefeed definitely works
         updatePrice();
-        oraclizeQueryCost = oraclize_getPrice(&quot;URL&quot;);
+        oraclizeQueryCost = oraclize_getPrice("URL");
     }
 
     //// oraclize START
@@ -1495,16 +1495,16 @@ contract EVNToken is StandardToken, usingOraclize {
         updatePrice();
     }
 
-    function updatePrice() payable {    // can be left public as a way for replenishing contract&#39;s ETH balance, just in case
+    function updatePrice() payable {    // can be left public as a way for replenishing contract's ETH balance, just in case
         if (msg.sender != oraclize_cbAddress()) {
-            require(msg.value &gt;= 200 finney);
+            require(msg.value >= 200 finney);
         }
-        if (oraclize_getPrice(&quot;URL&quot;) &gt; this.balance) {
-            newOraclizeQuery(&quot;Oraclize query was NOT sent, please add some ETH to cover for the query fee&quot;);
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-            newOraclizeQuery(&quot;Oraclize sent, wait..&quot;);
+            newOraclizeQuery("Oraclize sent, wait..");
             // Schedule query in 1 hour. Set the gas amount to 220000, as parsing in __callback takes around 70000 - we play it safe.
-            oraclize_query(3600, &quot;URL&quot;, &quot;json(https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD).USD&quot;, 220000);
+            oraclize_query(3600, "URL", "json(https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD).USD", 220000);
         }
     }
     //// oraclize END
@@ -1549,7 +1549,7 @@ contract EVNToken is StandardToken, usingOraclize {
         return balances[_owner];
     }
 
-     // getting purchase details by ID - workaround, mappings with dynamically sized keys can&#39;t be made public yet.
+     // getting purchase details by ID - workaround, mappings with dynamically sized keys can't be made public yet.
     function getPurchaseById(string _id)
     constant
     returns (address _buyer, uint256 _tokenAmount, bool _active){
@@ -1605,15 +1605,15 @@ contract EVNToken is StandardToken, usingOraclize {
     external
     isFundraising
     {
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt;= fundingEndBlock);
-        require(msg.value &gt; 0);
+        require(block.number >= fundingStartBlock);
+        require(block.number <= fundingEndBlock);
+        require(msg.value > 0);
 
         // First we check the ETH cap: would adding this amount to the total unKYCed eth and the already KYCed eth exceed the eth cap?
         // return the contribution if the cap has been reached already
         uint256 totalKycedAndUnKycEdEth = SafeMath.add(allUnKycedEth, allReceivedEth);
         uint256 checkedReceivedEth = SafeMath.add(totalKycedAndUnKycEdEth, msg.value);
-        require(checkedReceivedEth &lt;= ETH_RECEIVED_CAP);
+        require(checkedReceivedEth <= ETH_RECEIVED_CAP);
 
         // If all is fine with the ETH cap, we continue to check the
         // minimum amount of tokens and the cap for how many tokens
@@ -1628,9 +1628,9 @@ contract EVNToken is StandardToken, usingOraclize {
         // apply discount multiplier
         tokens = safeMulPercentage(tokens, getCurrentDiscountRate());
 
-        require(tokens &gt;= TOKEN_MIN);
+        require(tokens >= TOKEN_MIN);
         uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
-        require(checkedSupply &lt;= TOKEN_CREATION_CAP);
+        require(checkedSupply <= TOKEN_CREATION_CAP);
 
         // Only when all the checks have passed, then we check if the address is already KYCEd and then 
         // update the state (noKycEthBalances, allReceivedEth, totalSupply, and balances) of the contract
@@ -1686,7 +1686,7 @@ contract EVNToken is StandardToken, usingOraclize {
 
         // we leave the ccLockedUpBalances[_owner] as is, because also KYCed users could cancel their CC payments
 
-        if (noKycEthBalances[_owner] &gt; 0) { // check if the user was an ETH buyer
+        if (noKycEthBalances[_owner] > 0) { // check if the user was an ETH buyer
 
             // now move the unKYCed eth balance to the regular ethBalance. 
             ethBalances[_owner] = noKycEthBalances[_owner];
@@ -1697,7 +1697,7 @@ contract EVNToken is StandardToken, usingOraclize {
             // subtract the now KYCed eth from total amount of unKYCed eth
             allUnKycedEth = SafeMath.sub(allUnKycedEth, noKycEthBalances[_owner]);
 
-            // and set the user&#39;s unKYCed eth balance to 0
+            // and set the user's unKYCed eth balance to 0
             noKycEthBalances[_owner] = 0; // preventing replay attacks
         }
     }
@@ -1710,18 +1710,18 @@ contract EVNToken is StandardToken, usingOraclize {
     external
     onlyKycTeam
     {
-        // once a user is verified, you can&#39;t kick him out.
+        // once a user is verified, you can't kick him out.
         require (kycVerified[_user] == false);
 
         // immediately stop, if a user has none or only CC contributions.
-        // we&#39;re managing kyc refusing of CC contributors off-chain
-        require(noKycEthBalances[_user]&gt;0);
+        // we're managing kyc refusing of CC contributors off-chain
+        require(noKycEthBalances[_user]>0);
 
         uint256 EVNVal = balances[_user];
-        require(EVNVal &gt; 0);
+        require(EVNVal > 0);
 
         uint256 ethVal = noKycEthBalances[_user]; // refund un-KYCd eth
-        require(ethVal &gt; 0);
+        require(ethVal > 0);
 
         // Update the state only after all the checks have passed
         allUnKycedEth = SafeMath.sub(allUnKycedEth, noKycEthBalances[_user]); // or if there was any unKYCed Eth, subtract it from the total unKYCed eth balance.
@@ -1733,7 +1733,7 @@ contract EVNToken is StandardToken, usingOraclize {
         LogKycRefused(_user, ethVal);
 
         // Send the contributions only after we have updated all the balances
-        // If you&#39;re using a contract, make sure it works with .transfer() gas limits
+        // If you're using a contract, make sure it works with .transfer() gas limits
         _user.transfer(ethVal);
     }
 
@@ -1744,18 +1744,18 @@ contract EVNToken is StandardToken, usingOraclize {
     onlyKycTeam{
         
         // CC payments are only cancelable until ccReleaseBlock
-        require (block.number &lt; ccReleaseBlock);
+        require (block.number < ccReleaseBlock);
 
         // check if the purchase to cancel is still active
         require (purchases[_purchaseID].active == true);
 
-        // now withdraw the canceled purchase&#39;s token amount from the user&#39;s balance
+        // now withdraw the canceled purchase's token amount from the user's balance
         balances[purchases[_purchaseID].buyer] = SafeMath.sub(balances[purchases[_purchaseID].buyer], purchases[_purchaseID].tokenAmount);
 
-        // and withdraw the canceled purchase&#39;s token amount from the lockedUp token balance
+        // and withdraw the canceled purchase's token amount from the lockedUp token balance
         ccLockedUpBalances[purchases[_purchaseID].buyer] = SafeMath.sub(ccLockedUpBalances[purchases[_purchaseID].buyer], purchases[_purchaseID].tokenAmount);
 
-        // set the purchase&#39;s status to inactive
+        // set the purchase's status to inactive
         purchases[_purchaseID].active = false;
 
         //correct th amount of tokens generated
@@ -1774,10 +1774,10 @@ contract EVNToken is StandardToken, usingOraclize {
     onlyVendor
     {
         require(_to != 0x0);
-        require(_tokens &gt; 0);
-        require(bytes(_purchaseId).length&gt;0);
-        require(block.number &gt;= fundingStartBlock);
-        require(block.number &lt;= fundingEndBlock + 168000); // allow delivery of tokens sold for fiat for 28 days after end of ICO for safety reasons
+        require(_tokens > 0);
+        require(bytes(_purchaseId).length>0);
+        require(block.number >= fundingStartBlock);
+        require(block.number <= fundingEndBlock + 168000); // allow delivery of tokens sold for fiat for 28 days after end of ICO for safety reasons
 
         // calculate the total amount of tokens and cut out the extra two decimal units,
         // because _tokens was in cents.
@@ -1786,7 +1786,7 @@ contract EVNToken is StandardToken, usingOraclize {
         // continue to check for how many tokens
         // have been generated so far
         uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
-        require(checkedSupply &lt;= TOKEN_CREATION_CAP);
+        require(checkedSupply <= TOKEN_CREATION_CAP);
 
         // Only when all the checks have passed, then we update the state (totalSupply, and balances) of the contract
         totalSupply = checkedSupply;
@@ -1804,11 +1804,11 @@ contract EVNToken is StandardToken, usingOraclize {
 
         // if tokens were not paid with BTC (but credit card), they need to be locked up 
         if (_btcBuyer == false) {
-        ccLockedUpBalances[_to] = SafeMath.add(ccLockedUpBalances[_to], tokens); // update user&#39;s locked up token balance
+        ccLockedUpBalances[_to] = SafeMath.add(ccLockedUpBalances[_to], tokens); // update user's locked up token balance
         }
 
         balances[_to] = SafeMath.add(balances[_to], tokens);                     // safeAdd not needed; bad semantics to use here
-        trackHolder(_to);                                                        // log holder&#39;s address
+        trackHolder(_to);                                                        // log holder's address
 
         // to force the check for KYC Status upon the user when he tries transferring tokens
         // and exclude every later token owner
@@ -1825,13 +1825,13 @@ contract EVNToken is StandardToken, usingOraclize {
     returns (uint256 currentDiscountRate)
     {
         // determine which discount to apply
-        if (block.number &lt; roundTwoBlock) {
+        if (block.number < roundTwoBlock) {
             // first round
             return TOKEN_FIRST_DISCOUNT_MULTIPLIER;
-        } else if (block.number &lt; roundThreeBlock){
+        } else if (block.number < roundThreeBlock){
             // second round
             return TOKEN_SECOND_DISCOUNT_MULTIPLIER;
-        } else if (block.number &lt; roundFourBlock) {
+        } else if (block.number < roundFourBlock) {
             // third round
             return TOKEN_THIRD_DISCOUNT_MULTIPLIER;
         } else {
@@ -1846,7 +1846,7 @@ contract EVNToken is StandardToken, usingOraclize {
     minimumReached
     onlyOwner
     {
-        require(SafeMath.sub(this.balance, _value) &gt;= allUnKycedEth); // make sure unKYCed eth cannot be withdrawn
+        require(SafeMath.sub(this.balance, _value) >= allUnKycedEth); // make sure unKYCed eth cannot be withdrawn
         // make sure a recipient was defined !
         require (_safe != 0x0);
 
@@ -1863,7 +1863,7 @@ contract EVNToken is StandardToken, usingOraclize {
     onlyOwner  // Only the admins calling this method exactly the same way can finalize the sale.
     {
         // Only allow to finalize the contract before the ending block if we already reached any of the two caps
-        require(block.number &gt; fundingEndBlock || totalSupply &gt;= TOKEN_CREATED_MIN || allReceivedEth &gt;= ETH_RECEIVED_MIN);
+        require(block.number > fundingEndBlock || totalSupply >= TOKEN_CREATED_MIN || allReceivedEth >= ETH_RECEIVED_MIN);
         // make sure a recipient was defined !
         require (_safe != 0x0);
 
@@ -1904,21 +1904,21 @@ contract EVNToken is StandardToken, usingOraclize {
     {
         // Allow refunds only a week after end of funding to give KYC-team time to verify contributors
         // and thereby move un-KYC-ed ETH over into allReceivedEth as well as deliver the tokens paid with CC
-        require(block.number &gt; (fundingEndBlock + 42000));
+        require(block.number > (fundingEndBlock + 42000));
 
         // No refunds if the minimum has been reached or minimum of 1 Million Tokens have been generated
-        require(allReceivedEth &lt; ETH_RECEIVED_MIN || totalSupply &lt; TOKEN_CREATED_MIN);
+        require(allReceivedEth < ETH_RECEIVED_MIN || totalSupply < TOKEN_CREATED_MIN);
 
         // to prevent CC buyers from accidentally calling refund and burning their tokens
-        require (ethBalances[msg.sender] &gt; 0 || noKycEthBalances[msg.sender] &gt; 0);
+        require (ethBalances[msg.sender] > 0 || noKycEthBalances[msg.sender] > 0);
 
         // Only refund if there are EVN tokens
         uint256 EVNVal = balances[msg.sender];
-        require(EVNVal &gt; 0);
+        require(EVNVal > 0);
 
         // refunds either KYCed eth or un-KYCd eth
         uint256 ethVal = SafeMath.add(ethBalances[msg.sender], noKycEthBalances[msg.sender]);
-        require(ethVal &gt; 0);
+        require(ethVal > 0);
 
         allReceivedEth = SafeMath.sub(allReceivedEth, ethBalances[msg.sender]);    // subtract only the KYCed ETH from allReceivedEth, because the latter is what admins will only be able to withdraw
         allUnKycedEth = SafeMath.sub(allUnKycedEth, noKycEthBalances[msg.sender]); // or if there was any unKYCed Eth, subtract it from the total unKYCed eth balance.
@@ -1934,7 +1934,7 @@ contract EVNToken is StandardToken, usingOraclize {
         LogRefund(msg.sender, ethVal);
 
         // Send the contributions only after we have updated all the balances
-        // If you&#39;re using a contract, make sure it works with .transfer() gas limits
+        // If you're using a contract, make sure it works with .transfer() gas limits
         msg.sender.transfer(ethVal);
     }
 
@@ -1951,7 +1951,7 @@ contract EVNToken is StandardToken, usingOraclize {
         
         // company and supporters gets 7% of a whole final pie, meaning we have to add ~7,5% to the
         // current totalSupply now, basically stretching it and taking 7% from the result, so the 93% that remain equals the amount of tokens created right now.
-        // e.g. (93 * x = 100, where x amounts to roughly about 1.07526 and 7 would be the team&#39;s part)
+        // e.g. (93 * x = 100, where x amounts to roughly about 1.07526 and 7 would be the team's part)
         uint256 newTotalSupply = safeMulPercentage(totalSupply, 107526);
 
         // give company and supporters their 7% 
@@ -1972,8 +1972,8 @@ contract EVNToken is StandardToken, usingOraclize {
     constant
     returns (uint256 resultValue)
     {
-        require(percentage &gt;= 100000);
-        require(percentage &lt; 200000);
+        require(percentage >= 100000);
+        require(percentage < 200000);
 
         // Multiply with percentage
         uint256 newValue = SafeMath.mul(value, percentage);
@@ -1982,18 +1982,18 @@ contract EVNToken is StandardToken, usingOraclize {
         return newValue;
     }
 
-    // customizing the gas price for oraclize calls during &quot;ICO Rush hours&quot;
+    // customizing the gas price for oraclize calls during "ICO Rush hours"
     function setOraclizeGas(uint256 _option)
     external
     onlyOwner
     {
-        if (_option &lt;= 30) {
+        if (_option <= 30) {
             oraclize_setCustomGasPrice(30000000000 wei);
-        } else if (_option &lt;= 50) {
+        } else if (_option <= 50) {
             oraclize_setCustomGasPrice(50000000000 wei);
-        } else if (_option &lt;= 70) {
+        } else if (_option <= 70) {
             oraclize_setCustomGasPrice(70000000000 wei);
-        } else if (_option &lt;= 100) {
+        } else if (_option <= 100) {
             oraclize_setCustomGasPrice(100000000000 wei);
         }
     }

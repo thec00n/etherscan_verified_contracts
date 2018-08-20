@@ -24,37 +24,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -75,11 +75,11 @@ contract E93Token is IERC20 {
        
        uint public maxSupply; // Total number of tokens that can be sold.
        
-       bool public optionsSet; // Allow the ETH93 admin to set how many ETH93 tokens can be sold and the cost per token only when the crowdsale is opened (this can&#39;t be changed after that of course).
+       bool public optionsSet; // Allow the ETH93 admin to set how many ETH93 tokens can be sold and the cost per token only when the crowdsale is opened (this can't be changed after that of course).
        
        address public owner = 0x44fc32c2a5d18700284cc9e0e2da3ad83e9a6c5d;
-       string public symbol = &quot;E93&quot;;
-       string public name = &quot;ETH93&quot;;
+       string public symbol = "E93";
+       string public name = "ETH93";
        uint8 public decimals = 18;
        uint256 public RATE;
        
@@ -87,8 +87,8 @@ contract E93Token is IERC20 {
        
        address public e93Contract;
        
-       mapping(address =&gt; uint256) balances;
-       mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+       mapping(address => uint256) balances;
+       mapping(address => mapping(address => uint256)) allowed;
        
        function start (uint _maxSupply, uint _RATE) onlyOwner {
            // Once this is called the contract can accept Ether for ETH93 tokens. The maxSupply and RATE can only be set the first time this function is called.
@@ -141,10 +141,10 @@ contract E93Token is IERC20 {
        }
        
        function createTokens() payable {
-           require(msg.value &gt; 0);
+           require(msg.value > 0);
            if (open != true) revert();
            uint256 tokens = msg.value.mul(RATE);
-           if (totalSupply.add(tokens) &gt; maxSupply) {
+           if (totalSupply.add(tokens) > maxSupply) {
                // If user wants to buy an amount of tokens that would put the supply above maxSupply, give them the max amount of tokens allowed and refund them anything over that.
                uint256 amountOver = totalSupply.add(tokens).sub(maxSupply);
                balances[msg.sender] = balances[msg.sender].add(maxSupply-totalSupply);
@@ -154,7 +154,7 @@ contract E93Token is IERC20 {
            } else {
                totalSupply = totalSupply.add(tokens);
                balances[msg.sender] = balances[msg.sender].add(tokens);
-               owner.transfer(msg.value); // Rather than storing raised Ether in this contract, it&#39;s sent straight to to the ETH93 account owner. This is because the only balance in this contract should be from the 1% cut of ETH93 lottery ticket sales in Ether, which ETH93 token holders can claim.
+               owner.transfer(msg.value); // Rather than storing raised Ether in this contract, it's sent straight to to the ETH93 account owner. This is because the only balance in this contract should be from the 1% cut of ETH93 lottery ticket sales in Ether, which ETH93 token holders can claim.
            }
        }
        
@@ -167,7 +167,7 @@ contract E93Token is IERC20 {
        }
        
        function transfer(address _to, uint256 _value) returns (bool) {
-           require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+           require(balances[msg.sender] >= _value && _value > 0);
            balances[msg.sender] = balances[msg.sender].sub(_value);
            balances[_to] = balances[_to].add(_value);
            Transfer(msg.sender, _to, _value);
@@ -175,7 +175,7 @@ contract E93Token is IERC20 {
        }
        
        function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-           require (allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; _value &gt; 0);
+           require (allowed[_from][msg.sender] >= _value && balances[_from] >= _value && _value > 0);
            balances[_from] = balances[_from].sub(_value);
            balances[_to] = balances[_to].add(_value);
            allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);

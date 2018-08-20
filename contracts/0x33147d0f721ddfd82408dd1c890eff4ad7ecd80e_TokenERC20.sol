@@ -16,21 +16,21 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,8 +62,8 @@ contract TokenERC20 is Ownable {
 	
     using SafeMath for uint256;
     
-    string public constant name       = &quot;Ethereum Ecology&quot;;
-    string public constant symbol     = &quot;ETH.E&quot;;
+    string public constant name       = "Ethereum Ecology";
+    string public constant symbol     = "ETH.E";
     uint32 public constant decimals   = 18;
     uint256 public totalSupply;
     uint256 public currentTotalSupply = 0;
@@ -71,10 +71,10 @@ contract TokenERC20 is Ownable {
     uint256 public startBalance;
   	uint256 public buyPrice ;
 	
-    mapping(address =&gt; bool) touched; 
-    mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
-	mapping(address =&gt; bool) public frozenAccount;   
+    mapping(address => bool) touched; 
+    mapping(address => uint256) balances;
+	mapping(address => mapping (address => uint256)) internal allowed;
+	mapping(address => bool) public frozenAccount;   
 	
 	event FrozenFunds(address target, bool frozen);
 	event Transfer(address indexed from, address indexed to, uint256 value);
@@ -95,14 +95,14 @@ contract TokenERC20 is Ownable {
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
 		 
-		if( !touched[msg.sender] &amp;&amp; currentTotalSupply &lt; totalSupply &amp;&amp; currentTotalSupply &lt; airdrop ){
+		if( !touched[msg.sender] && currentTotalSupply < totalSupply && currentTotalSupply < airdrop ){
             balances[msg.sender] = balances[msg.sender].add( startBalance );
             touched[msg.sender] = true;
             currentTotalSupply = currentTotalSupply.add( startBalance );
         }
 		
 		require(!frozenAccount[msg.sender]); 
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -112,11 +112,11 @@ contract TokenERC20 is Ownable {
 	
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);	
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);	
 		require(!frozenAccount[_from]); 
 		
-        if( !touched[_from] &amp;&amp; currentTotalSupply &lt; totalSupply &amp;&amp; currentTotalSupply &lt; airdrop  ){
+        if( !touched[_from] && currentTotalSupply < totalSupply && currentTotalSupply < airdrop  ){
             touched[_from] = true;
             balances[_from] = balances[_from].add( startBalance );
             currentTotalSupply = currentTotalSupply.add( startBalance );
@@ -148,7 +148,7 @@ contract TokenERC20 is Ownable {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -158,7 +158,7 @@ contract TokenERC20 is Ownable {
 	}
 	
 	function getBalance(address _a) internal constant returns(uint256) {
-        if( currentTotalSupply &lt; totalSupply ){
+        if( currentTotalSupply < totalSupply ){
             if( touched[_a] )
                 return balances[_a];
             else
@@ -178,7 +178,7 @@ contract TokenERC20 is Ownable {
 	}
 
 	function _burn(address _who, uint256 _value) internal {
-		require(_value &lt;= balances[_who]);
+		require(_value <= balances[_who]);
 		balances[_who] = balances[_who].sub(_value);
 		totalSupply = totalSupply.sub(_value);
 		emit Burn(_who, _value);

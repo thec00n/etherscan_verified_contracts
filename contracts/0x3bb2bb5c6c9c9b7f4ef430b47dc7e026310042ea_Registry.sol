@@ -17,7 +17,7 @@ contract Registry is Owned {
     struct Entry {
         address owner;
         address reverse;
-        mapping (string =&gt; bytes32) data;
+        mapping (string => bytes32) data;
     }
     
     event Drained(uint amount);
@@ -33,7 +33,7 @@ contract Registry is Owned {
     modifier when_unreserved(bytes32 _name) { if (entries[_name].owner != 0) return; _ }
     modifier only_owner_of(bytes32 _name) { if (entries[_name].owner != msg.sender) return; _ }
     modifier when_proposed(string _name) { if (entries[sha3(_name)].reverse != msg.sender) return; _ }
-    modifier when_fee_paid { if (msg.value &lt; fee) return; _ }
+    modifier when_fee_paid { if (msg.value < fee) return; _ }
 
     function reserve(bytes32 _name) when_unreserved(_name) when_fee_paid returns (bool success) {
         entries[_name].owner = msg.sender;
@@ -83,7 +83,7 @@ contract Registry is Owned {
     
     function proposeReverse(string _name, address _who) only_owner_of(sha3(_name)) returns (bool success) {
         var sha3Name = sha3(_name);
-        if (entries[sha3Name].reverse != 0 &amp;&amp; sha3(reverse[entries[sha3Name].reverse]) == sha3Name) {
+        if (entries[sha3Name].reverse != 0 && sha3(reverse[entries[sha3Name].reverse]) == sha3Name) {
             delete reverse[entries[sha3Name].reverse];
             ReverseRemoved(_name, entries[sha3Name].reverse);
         }
@@ -114,8 +114,8 @@ contract Registry is Owned {
         if (!msg.sender.send(this.balance)) throw;
     }
     
-    mapping (bytes32 =&gt; Entry) entries;
-    mapping (address =&gt; string) public reverse;
+    mapping (bytes32 => Entry) entries;
+    mapping (address => string) public reverse;
     
     uint public fee = 1 ether;
 }

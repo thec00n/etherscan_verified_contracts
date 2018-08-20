@@ -4,13 +4,13 @@ pragma solidity ^0.4.18;
 
 contract LANDStorage {
 
-  mapping (address =&gt; uint) latestPing;
+  mapping (address => uint) latestPing;
 
   uint256 constant clearLow = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000;
   uint256 constant clearHigh = 0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff;
   uint256 constant factor = 0x100000000000000000000000000000000;
 
-  mapping (address =&gt; bool) authorizedDeploy;
+  mapping (address => bool) authorizedDeploy;
 
 }
 
@@ -53,28 +53,28 @@ contract AssetRegistryStorage {
   /**
    * Stores an array of assets owned by a given account
    */
-  mapping(address =&gt; uint256[]) internal _assetsOf;
+  mapping(address => uint256[]) internal _assetsOf;
 
   /**
    * Stores the current holder of an asset
    */
-  mapping(uint256 =&gt; address) internal _holderOf;
+  mapping(uint256 => address) internal _holderOf;
 
   /**
    * Stores the index of an asset in the `_assetsOf` array of its holder
    */
-  mapping(uint256 =&gt; uint256) internal _indexOfAsset;
+  mapping(uint256 => uint256) internal _indexOfAsset;
 
   /**
    * Stores the data associated with an asset
    */
-  mapping(uint256 =&gt; string) internal _assetData;
+  mapping(uint256 => string) internal _assetData;
 
   /**
    * For a given account, for a given opperator, store whether that operator is
    * allowed to transfer and modify assets on behalf of them.
    */
-  mapping(address =&gt; mapping(address =&gt; bool)) internal _operators;
+  mapping(address => mapping(address => bool)) internal _operators;
 
   /**
    * Simple reentrancy lock
@@ -101,7 +101,7 @@ contract Ownable is Storage {
 
   function bytesToAddress (bytes b) pure public returns (address) {
     uint result = 0;
-    for (uint i = b.length-1; i+1 &gt; 0; i--) {
+    for (uint i = b.length-1; i+1 > 0; i--) {
       uint c = uint(b[i]);
       uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
       result += to_inc;
@@ -243,8 +243,8 @@ interface IAssetRegistry {
 
 contract InterfaceImplementationRegistry {
 
-    mapping (address =&gt; mapping(bytes32 =&gt; address)) interfaces;
-    mapping (address =&gt; address) public managers;
+    mapping (address => mapping(bytes32 => address)) interfaces;
+    mapping (address => address) public managers;
 
     modifier canManage(address addr) {
         require(msg.sender == addr || msg.sender == managers[addr]);
@@ -259,7 +259,7 @@ contract InterfaceImplementationRegistry {
     /// @notice Query if an address implements an interface and thru which contract
     /// @param addr Address that is being queried for the implementation of an interface
     /// @param iHash SHA3 of the name of the interface as a string
-    ///  Example `web3.utils.sha3(&#39;Ierc777`&#39;)`
+    ///  Example `web3.utils.sha3('Ierc777`')`
     /// @return The address of the contract that implements a speficic interface
     ///  or 0x0 if `addr` does not implement this interface
     function getInterfaceImplementer(address addr, bytes32 iHash) public constant returns (address) {
@@ -270,7 +270,7 @@ contract InterfaceImplementationRegistry {
     ///  the address itself or a `manager` defined for that address can set it
     /// @param addr Address that you want to define the interface for
     /// @param iHash SHA3 of the name of the interface as a string
-    ///  For example `web3.utils.sha3(&#39;Ierc777&#39;)` for the Ierc777
+    ///  For example `web3.utils.sha3('Ierc777')` for the Ierc777
     function setInterfaceImplementer(address addr, bytes32 iHash, address implementer) public canManage(addr)  {
         interfaces[addr][iHash] = implementer;
         InterfaceImplementerSet(addr, iHash, implementer);
@@ -325,20 +325,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -404,8 +404,8 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
   }
 
   function assetByIndex(address holder, uint256 index) public view returns (uint256) {
-    require(index &lt; _assetsOf[holder].length);
-    require(index &lt; (1&lt;&lt;127));
+    require(index < _assetsOf[holder].length);
+    require(index < (1<<127));
     return _assetsOf[holder][index];
   }
 
@@ -491,7 +491,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
   }
 
   function _removeAssetData(uint256 assetId) internal {
-    _assetData[assetId] = &#39;&#39;;
+    _assetData[assetId] = '';
   }
 
   //
@@ -503,7 +503,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
 
     _addAssetTo(beneficiary, assetId, data);
 
-    Transfer(0, beneficiary, assetId, msg.sender, bytes(data), &#39;&#39;);
+    Transfer(0, beneficiary, assetId, msg.sender, bytes(data), '');
   }
 
   function _destroy(uint256 assetId) internal {
@@ -513,7 +513,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
     _removeAssetFrom(holder, assetId);
     _removeAssetData(assetId);
 
-    Transfer(holder, 0, assetId, msg.sender, &#39;&#39;, &#39;&#39;);
+    Transfer(holder, 0, assetId, msg.sender, '', '');
   }
 
   //
@@ -542,11 +542,11 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
   }
 
   function transfer(address to, uint256 assetId) public {
-    return _doTransfer(to, assetId, &#39;&#39;, 0, &#39;&#39;);
+    return _doTransfer(to, assetId, '', 0, '');
   }
 
   function transfer(address to, uint256 assetId, bytes userData) public {
-    return _doTransfer(to, assetId, userData, 0, &#39;&#39;);
+    return _doTransfer(to, assetId, userData, 0, '');
   }
 
   function transfer(address to, uint256 assetId, bytes userData, bytes operatorData) public {
@@ -578,7 +578,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
       require(!_reentrancy);
       _reentrancy = true;
 
-      address recipient = interfaceAddr(to, &#39;IAssetHolder&#39;);
+      address recipient = interfaceAddr(to, 'IAssetHolder');
       require(recipient != 0);
 
       IAssetHolder(recipient).onAssetReceived(assetId, holder, to, userData, operator, operatorData);
@@ -606,7 +606,7 @@ contract StandardAssetRegistry is AssetRegistryStorage, IAssetRegistry, EIP820 {
   function _isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -618,9 +618,9 @@ contract LANDRegistry is Storage,
 {
 
   function initialize(bytes data) public {
-    _name = &#39;Decentraland LAND&#39;;
-    _symbol = &#39;LAND&#39;;
-    _description = &#39;Contract that stores the Decentraland LAND registry&#39;;
+    _name = 'Decentraland LAND';
+    _symbol = 'LAND';
+    _description = 'Contract that stores the Decentraland LAND registry';
     super.initialize(data);
   }
 
@@ -633,13 +633,13 @@ contract LANDRegistry is Storage,
 
   function assignNewParcel(int x, int y, address beneficiary) public {
     require(authorizedDeploy[msg.sender]);
-    _generate(encodeTokenId(x, y), beneficiary, &#39;&#39;);
+    _generate(encodeTokenId(x, y), beneficiary, '');
   }
 
   function assignMultipleParcels(int[] x, int[] y, address beneficiary) public {
     require(authorizedDeploy[msg.sender]);
-    for (uint i = 0; i &lt; x.length; i++) {
-      _generate(encodeTokenId(x[i], y[i]), beneficiary, &#39;&#39;);
+    for (uint i = 0; i < x.length; i++) {
+      _generate(encodeTokenId(x[i], y[i]), beneficiary, '');
     }
   }
 
@@ -661,10 +661,10 @@ contract LANDRegistry is Storage,
 
   function clearLand(int[] x, int[] y) public {
     require(x.length == y.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       uint landId = encodeTokenId(x[i], y[i]);
       address holder = holderOf(landId);
-      if (latestPing[holder] &lt; now - 1 years) {
+      if (latestPing[holder] < now - 1 years) {
         _destroy(landId);
       }
     }
@@ -675,17 +675,17 @@ contract LANDRegistry is Storage,
   //
 
   function encodeTokenId(int x, int y) view public returns (uint) {
-    return ((uint(x) * factor) &amp; clearLow) | (uint(y) &amp; clearHigh);
+    return ((uint(x) * factor) & clearLow) | (uint(y) & clearHigh);
   }
 
   function decodeTokenId(uint value) view public returns (int, int) {
-    uint x = (value &amp; clearLow) &gt;&gt; 128;
-    uint y = (value &amp; clearHigh);
+    uint x = (value & clearLow) >> 128;
+    uint y = (value & clearHigh);
     return (expandNegative128BitCast(x), expandNegative128BitCast(y));
   }
 
   function expandNegative128BitCast(uint value) view public returns (int) {
-    if (value &amp; (1&lt;&lt;127) != 0) {
+    if (value & (1<<127) != 0) {
       return int(value | clearLow);
     }
     return int(value);
@@ -700,11 +700,11 @@ contract LANDRegistry is Storage,
   }
 
   function ownerOfLandMany(int[] x, int[] y) view public returns (address[]) {
-    require(x.length &gt; 0);
+    require(x.length > 0);
     require(x.length == y.length);
 
     address[] memory addrs = new address[](x.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       addrs[i] = ownerOfLand(x[i], y[i]);
     }
 
@@ -718,7 +718,7 @@ contract LANDRegistry is Storage,
     int assetX;
     int assetY;
     uint length = _assetsOf[owner].length;
-    for (uint i = 0; i &lt; length; i++) {
+    for (uint i = 0; i < length; i++) {
       (assetX, assetY) = decodeTokenId(_assetsOf[owner][i]);
       x[i] = assetX;
       y[i] = assetY;
@@ -741,7 +741,7 @@ contract LANDRegistry is Storage,
 
   function transferManyLand(int[] x, int[] y, address to) public {
     require(x.length == y.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       transfer(to, encodeTokenId(x[i], y[i]));
     }
   }
@@ -756,7 +756,7 @@ contract LANDRegistry is Storage,
 
   function updateManyLandData(int[] x, int[] y, string data) public {
     require(x.length == y.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       updateLandData(x[i], y[i], data);
     }
   }

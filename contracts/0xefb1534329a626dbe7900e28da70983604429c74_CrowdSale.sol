@@ -52,7 +52,7 @@ contract CrowdSale {
     }
 
      modifier isMinimum() {
-        if(msg.value &lt; priceInWei) throw;
+        if(msg.value < priceInWei) throw;
         _;
     }
 
@@ -65,7 +65,7 @@ contract CrowdSale {
 
     
     modifier atEndOfLifecycle() {
-        if(!((state == State.Failed || state == State.Successful) &amp;&amp; completedAt + 1 hours &lt; now)) {
+        if(!((state == State.Failed || state == State.Successful) && completedAt + 1 hours < now)) {
             throw;
         }
         _;
@@ -135,14 +135,14 @@ contract CrowdSale {
     function checkIfFundingCompleteOrExpired() {
         
        
-        if (fundingMaximumTargetInWei != 0 &amp;&amp; totalRaised &gt; fundingMaximumTargetInWei) {
+        if (fundingMaximumTargetInWei != 0 && totalRaised > fundingMaximumTargetInWei) {
             state = State.Successful;
             LogFundingSuccessful(totalRaised);
             payOut();
             completedAt = now;
             
-            } else if ( now &gt; deadline )  {
-                if(totalRaised &gt;= fundingMinimumTargetInWei){
+            } else if ( now > deadline )  {
+                if(totalRaised >= fundingMinimumTargetInWei){
                     state = State.Successful;
                     LogFundingSuccessful(totalRaised);
                     payOut();  
@@ -175,7 +175,7 @@ contract CrowdSale {
         inState(State.Failed) 
         returns (bool)
         {
-            for(uint i=0; i&lt;=contributions.length; i++)
+            for(uint i=0; i<=contributions.length; i++)
             {
                 if(contributions[i].contributor == msg.sender){
                     uint amountToRefund = contributions[i].amount;

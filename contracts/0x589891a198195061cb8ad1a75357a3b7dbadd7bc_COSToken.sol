@@ -72,7 +72,7 @@ contract COSStop is COSAuth{
 contract Freezeable is COSAuth{
 
     // internal variables
-    mapping(address =&gt; bool) _freezeList;
+    mapping(address => bool) _freezeList;
 
     // events
     event Freezed(address indexed freezedAddr);
@@ -119,11 +119,11 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
     //address public administrator;
     // 18 decimals is the strongly suggested default, avoid changing it
     // Balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
     //register map
-    mapping (address =&gt; string)                  public  register_map;
+    mapping (address => string)                  public  register_map;
     // ----- Events -----
     event Burn(address indexed from, uint256 value);
     event LogRegister (address indexed user, string key);
@@ -152,9 +152,9 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -187,7 +187,7 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) stoppable public returns(bool) {
-        require(_value &lt;= allowances[_from][msg.sender]);     // Check allowance
+        require(_value <= allowances[_from][msg.sender]);     // Check allowance
         allowances[_from][msg.sender] -= _value;
         return _transfer(_from, _to, _value);
     }
@@ -229,7 +229,7 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) stoppable public returns(bool)  {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -244,8 +244,8 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
      * @param _value amount of money to mint
      */
     function mint(uint256 _value) auth stoppable public returns(bool){
-        require(balances[msg.sender] + _value &gt; balances[msg.sender]);
-        require(totalSupply + _value &gt; totalSupply);
+        require(balances[msg.sender] + _value > balances[msg.sender]);
+        require(totalSupply + _value > totalSupply);
         balances[msg.sender] += _value;
         totalSupply += _value;
         return true;
@@ -260,16 +260,16 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) stoppable public returns(bool) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowances[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowances[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowances[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowances[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
     }
     /**
-     * Transfer owner&#39;s power to others
+     * Transfer owner's power to others
      *
      * @param _to the address of the successor
      */
@@ -289,14 +289,14 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
      */
     function increaseApproval(address _spender, uint _addedValue) stoppable public returns (bool) {
         // Check for overflows
-        require(allowances[msg.sender][_spender] + _addedValue &gt; allowances[msg.sender][_spender]);
+        require(allowances[msg.sender][_spender] + _addedValue > allowances[msg.sender][_spender]);
         allowances[msg.sender][_spender] += _addedValue;
         emit Approval(msg.sender, _spender, allowances[msg.sender][_spender]);
         return true;
     }
     function decreaseApproval(address _spender, uint _subtractedValue) stoppable public returns (bool) {
         uint oldValue = allowances[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = oldValue - _subtractedValue;
@@ -307,7 +307,7 @@ contract COSTokenBase is ERC20, COSStop, Freezeable{
 }
 contract COSToken is COSTokenBase {
     
-    constructor() COSTokenBase(10000000000, &quot;Contentos&quot;, &quot;COS&quot;, 18) public {
+    constructor() COSTokenBase(10000000000, "Contentos", "COS", 18) public {
     }
     
     function finish() public{
@@ -316,8 +316,8 @@ contract COSToken is COSTokenBase {
     }
     
     function register(string key) public {
-        require(bytes(key).length &lt;= 64);
-        require(balances[msg.sender] &gt; 0);
+        require(bytes(key).length <= 64);
+        require(balances[msg.sender] > 0);
         register_map[msg.sender] = key;
         emit LogRegister(msg.sender, key);
     }

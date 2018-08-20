@@ -16,8 +16,8 @@ address public winner;
 // each ticket is 0.002 ether
 uint constant uprice = 0.002 ether;
 
-mapping (address =&gt; uint) public ownershipDistribute;
-mapping (address =&gt; uint) public tickets;
+mapping (address => uint) public ownershipDistribute;
+mapping (address => uint) public tickets;
 
 
 // constructor function

@@ -150,10 +150,10 @@ contract BotBase is BotAccessControl {
 
     Bot[] bots;
 
-    mapping (uint256 =&gt; address) public botIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) public botIndexToApproved;
-    mapping (uint256 =&gt; address) public sireAllowedToAddress;
+    mapping (uint256 => address) public botIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) public botIndexToApproved;
+    mapping (uint256 => address) public sireAllowedToAddress;
     uint32 public destroyedBots;
     SaleClockAuction public saleAuction;
     SiringClockAuction public siringAuction;
@@ -188,7 +188,7 @@ contract BotBase is BotAccessControl {
         require(_generation == uint256(uint16(_generation)));
 
         uint16 cooldownIndex = uint16(_generation / 2);
-        if (cooldownIndex &gt; 13) {
+        if (cooldownIndex > 13) {
             cooldownIndex = 13;
         }
 
@@ -221,7 +221,7 @@ contract BotBase is BotAccessControl {
     }
 
     function _destroyBot(uint256 _botId) internal {
-        require(_botId &gt; 0);
+        require(_botId > 0);
         address from = botIndexToOwner[_botId];
         require(from != address(0));
         destroyedBots++;
@@ -229,7 +229,7 @@ contract BotBase is BotAccessControl {
     }
 
     function setSecondsPerBlock(uint256 secs) external onlyCLevel {
-        require(secs &lt; cooldowns[0]);
+        require(secs < cooldowns[0]);
         secondsPerBlock = secs;
     }
 }
@@ -237,8 +237,8 @@ contract BotBase is BotAccessControl {
 
 contract BotExtension is BotBase {
     event Lock(uint256 botId, uint16 mask);
-    mapping (address =&gt; bool) extensions;
-    mapping (uint256 =&gt; uint16) locks;
+    mapping (address => bool) extensions;
+    mapping (uint256 => uint16) locks;
     uint16 constant LOCK_BREEDING = 1;
     uint16 constant LOCK_TRANSFER = 2;
     uint16 constant LOCK_ALL = LOCK_BREEDING | LOCK_TRANSFER;
@@ -289,17 +289,17 @@ contract BotExtension is BotBase {
     function _lockBot(uint256 _botId, uint16 _mask)
         internal
     {
-        require(_mask &gt; 0);
+        require(_mask > 0);
 
         uint16 mask = locks[_botId];
-        require(mask &amp; _mask == 0);
+        require(mask & _mask == 0);
 
-        if (_mask &amp; LOCK_BREEDING &gt; 0) {
+        if (_mask & LOCK_BREEDING > 0) {
             Bot storage bot = bots[_botId];
             require(bot.siringWithId == 0);
         }
 
-        if (_mask &amp; LOCK_TRANSFER &gt; 0) {
+        if (_mask & LOCK_TRANSFER > 0) {
             address owner = botIndexToOwner[_botId];
             require(owner != address(saleAuction));
             require(owner != address(siringAuction));
@@ -323,10 +323,10 @@ contract BotExtension is BotBase {
     function _unlockBot(uint256 _botId, uint16 _mask)
         internal
     {
-        require(_mask &gt; 0);
+        require(_mask > 0);
 
         uint16 mask = locks[_botId];
-        require(mask &amp; _mask == _mask);
+        require(mask & _mask == _mask);
         mask ^= _mask;
 
         locks[_botId] = mask;
@@ -346,8 +346,8 @@ contract BotExtension is BotBase {
 
 
 contract BotOwnership is BotExtension, ERC721 {
-    string public constant name = &quot;CryptoBots&quot;;
-    string public constant symbol = &quot;CBT&quot;;
+    string public constant name = "CryptoBots";
+    string public constant symbol = "CBT";
 
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return botIndexToOwner[_tokenId] == _claimant;
@@ -377,7 +377,7 @@ contract BotOwnership is BotExtension, ERC721 {
         require(_to != address(saleAuction));
         require(_to != address(siringAuction));
         require(_owns(msg.sender, _tokenId));
-        require(locks[_tokenId] &amp; LOCK_TRANSFER == 0);
+        require(locks[_tokenId] & LOCK_TRANSFER == 0);
         _transfer(msg.sender, _to, _tokenId);
     }
 
@@ -389,7 +389,7 @@ contract BotOwnership is BotExtension, ERC721 {
         whenNotPaused
     {
         require(_owns(msg.sender, _tokenId));
-        require(locks[_tokenId] &amp; LOCK_TRANSFER == 0);
+        require(locks[_tokenId] & LOCK_TRANSFER == 0);
         _approve(_tokenId, _to);
         Approval(msg.sender, _to, _tokenId);
     }
@@ -406,7 +406,7 @@ contract BotOwnership is BotExtension, ERC721 {
         require(_to != address(this));
         require(_approvedFor(msg.sender, _tokenId));
         require(_owns(_from, _tokenId));
-        require(locks[_tokenId] &amp; LOCK_TRANSFER == 0);
+        require(locks[_tokenId] & LOCK_TRANSFER == 0);
         _transfer(_from, _to, _tokenId);
     }
 
@@ -433,7 +433,7 @@ contract BotOwnership is BotExtension, ERC721 {
             uint256 totalBots = bots.length - 1;
             uint256 resultIndex = 0;
             uint256 botId;
-            for (botId = 0; botId &lt;= totalBots; botId++) {
+            for (botId = 0; botId <= totalBots; botId++) {
                 if (botIndexToOwner[botId] == _owner) {
                     result[resultIndex] = botId;
                     resultIndex++;
@@ -460,9 +460,9 @@ contract BotBreeding is BotOwnership {
 
     function _isReadyToBreed(uint256 _botId, Bot _bot) internal view returns (bool) {
         return
-            (_bot.siringWithId == 0) &amp;&amp;
-            (_bot.cooldownEndBlock &lt;= uint64(block.number)) &amp;&amp;
-            (locks[_botId] &amp; LOCK_BREEDING == 0);
+            (_bot.siringWithId == 0) &&
+            (_bot.cooldownEndBlock <= uint64(block.number)) &&
+            (locks[_botId] & LOCK_BREEDING == 0);
     }
 
     function _isSiringPermitted(uint256 _sireId, uint256 _matronId) internal view returns (bool) {
@@ -473,7 +473,7 @@ contract BotBreeding is BotOwnership {
 
     function _triggerCooldown(Bot storage _bot) internal {
         _bot.cooldownEndBlock = uint64((cooldowns[_bot.cooldownIndex]/secondsPerBlock) + block.number);
-        if (_bot.cooldownIndex &lt; 13) {
+        if (_bot.cooldownIndex < 13) {
             _bot.cooldownIndex += 1;
         }
     }
@@ -491,7 +491,7 @@ contract BotBreeding is BotOwnership {
     }
 
     function _isReadyToGiveBirth(Bot _matron) private view returns (bool) {
-        return (_matron.siringWithId != 0) &amp;&amp; (_matron.cooldownEndBlock &lt;= uint64(block.number));
+        return (_matron.siringWithId != 0) && (_matron.cooldownEndBlock <= uint64(block.number));
     }
 
     function isReadyToBreed(uint256 _botId)
@@ -500,7 +500,7 @@ contract BotBreeding is BotOwnership {
         returns (bool)
     {
         Bot storage bot = bots[_botId];
-        return _botId &gt; 0 &amp;&amp; _isReadyToBreed(_botId, bot);
+        return _botId > 0 && _isReadyToBreed(_botId, bot);
     }
 
     function isPregnant(uint256 _botId)
@@ -508,7 +508,7 @@ contract BotBreeding is BotOwnership {
         view
         returns (bool)
     {
-        return _botId &gt; 0 &amp;&amp; bots[_botId].siringWithId != 0;
+        return _botId > 0 && bots[_botId].siringWithId != 0;
     }
 
     function _isValidMatingPair(
@@ -557,11 +557,11 @@ contract BotBreeding is BotOwnership {
         view
         returns(bool)
     {
-        require(_matronId &gt; 0);
-        require(_sireId &gt; 0);
+        require(_matronId > 0);
+        require(_sireId > 0);
         Bot storage matron = bots[_matronId];
         Bot storage sire = bots[_sireId];
-        return _isValidMatingPair(matron, _matronId, sire, _sireId) &amp;&amp;
+        return _isValidMatingPair(matron, _matronId, sire, _sireId) &&
             _isSiringPermitted(_sireId, _matronId);
     }
 
@@ -582,7 +582,7 @@ contract BotBreeding is BotOwnership {
         payable
         whenNotPaused
     {
-        require(msg.value &gt;= autoBirthFee);
+        require(msg.value >= autoBirthFee);
         require(_owns(msg.sender, _matronId));
         require(_isSiringPermitted(_sireId, _matronId));
         Bot storage matron = bots[_matronId];
@@ -609,7 +609,7 @@ contract BotBreeding is BotOwnership {
         uint256 sireId = matron.siringWithId;
         Bot storage sire = bots[sireId];
         uint16 parentGen = matron.generation;
-        if (sire.generation &gt; matron.generation) {
+        if (sire.generation > matron.generation) {
             parentGen = sire.generation;
         }
         uint256 childGenes = geneScience.mixGenes(matron.genes, sire.genes, matron.cooldownEndBlock - 1);
@@ -633,7 +633,7 @@ contract ClockAuctionBase {
     }
     ERC721 public nonFungibleContract;
     uint256 public ownerCut;
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
     event AuctionCreated(
       address seller,
       uint256 tokenId,
@@ -658,7 +658,7 @@ contract ClockAuctionBase {
     }
 
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
         tokenIdToAuction[_tokenId] = _auction;
         AuctionCreated(
             _auction.seller,
@@ -683,10 +683,10 @@ contract ClockAuctionBase {
         Auction storage auction = tokenIdToAuction[_tokenId];
         require(_isOnAuction(auction));
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
         address seller = auction.seller;
         _removeAuction(_tokenId);
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
             seller.transfer(sellerProceeds);
@@ -702,7 +702,7 @@ contract ClockAuctionBase {
     }
 
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     function _currentPrice(Auction storage _auction)
@@ -711,7 +711,7 @@ contract ClockAuctionBase {
         returns (uint256)
     {
         uint256 secondsPassed = 0;
-        if (now &gt; _auction.startedAt) {
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
         return _computeCurrentPrice(
@@ -732,7 +732,7 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
@@ -779,7 +779,7 @@ contract Pausable is Ownable {
 
 contract ClockAuction is Pausable, ClockAuctionBase {
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -975,7 +975,7 @@ contract SaleClockAuction is ClockAuction {
 
     function averageGen0SalePrice() external view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             sum += lastGen0SalePrices[i];
         }
         return sum / 5;
@@ -1051,7 +1051,7 @@ contract BotAuction is BotBreeding {
         require(isReadyToBreed(_matronId));
         require(_canBreedWithViaAuction(_matronId, _sireId));
         uint256 currentPrice = siringAuction.getCurrentPrice(_sireId);
-        require(msg.value &gt;= currentPrice + autoBirthFee);
+        require(msg.value >= currentPrice + autoBirthFee);
         siringAuction.bid.value(msg.value - autoBirthFee)(_sireId);
         _breedWith(uint32(_matronId), uint32(_sireId));
     }
@@ -1076,14 +1076,14 @@ contract BotMinting is BotAuction {
         if (botOwner == address(0)) {
             botOwner = cooAddress;
         }
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         promoCreatedCount++;
         _createBot(0, 0, 0, _genes, botOwner);
     }
 
     function createGen0Auction(uint256 _genes) external onlyCOO {
-        require(gen0CreatedCount &lt; GEN0_CREATION_LIMIT);
+        require(gen0CreatedCount < GEN0_CREATION_LIMIT);
 
         uint256 botId = _createBot(0, 0, 0, _genes, address(this));
         _approve(botId, saleAuction);
@@ -1103,7 +1103,7 @@ contract BotMinting is BotAuction {
         uint256 avePrice = saleAuction.averageGen0SalePrice();
         require(avePrice == uint256(uint128(avePrice)));
         uint256 nextPrice = avePrice + (avePrice / 2);
-        if (nextPrice &lt; GEN0_STARTING_PRICE) {
+        if (nextPrice < GEN0_STARTING_PRICE) {
             nextPrice = GEN0_STARTING_PRICE;
         }
         return nextPrice;
@@ -1152,7 +1152,7 @@ contract BotCore is BotMinting {
         require(botIndexToOwner[_id] != address(0));
         Bot storage bot = bots[_id];
         isGestating = (bot.siringWithId != 0);
-        isReady = (bot.cooldownEndBlock &lt;= block.number);
+        isReady = (bot.cooldownEndBlock <= block.number);
         cooldownIndex = uint256(bot.cooldownIndex);
         nextActionAt = uint256(bot.cooldownEndBlock);
         siringWithId = uint256(bot.siringWithId);
@@ -1174,7 +1174,7 @@ contract BotCore is BotMinting {
     function withdrawBalance() external onlyCFO {
         uint256 balance = this.balance;
         uint256 subtractFees = (pregnantBots + 1) * autoBirthFee;
-        if (balance &gt; subtractFees) {
+        if (balance > subtractFees) {
             cfoAddress.send(balance - subtractFees);
         }
     }

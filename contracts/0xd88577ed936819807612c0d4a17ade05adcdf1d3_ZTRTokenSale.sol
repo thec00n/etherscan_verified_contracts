@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -58,8 +58,8 @@ contract ZTRToken{
 contract ZTRTokenSale
 {
     using SafeMath for uint;
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; uint) public ethBalance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => uint) public ethBalance;
     address public owner;
     address ZTRTokenContract;
     uint public fundingGoal;
@@ -74,8 +74,8 @@ contract ZTRTokenSale
     uint public remaining;
     
     modifier admin { if (msg.sender == owner) _; }
-    modifier afterUnlock { if(now&gt;unlockTime) _;}
-    modifier afterDeadline { if(now&gt;deadline) _;}
+    modifier afterUnlock { if(now>unlockTime) _;}
+    modifier afterDeadline { if(now>deadline) _;}
     
     function ZTRTokenSale()
     {
@@ -93,12 +93,12 @@ contract ZTRTokenSale
     }
     function () payable public//order processing and crediting to escrow
     {
-        require(now&gt;start);
-        require(now&lt;deadline);
-        require(amountRaised + msg.value &lt; fundingMax);//funding hard cap has not been reached
+        require(now>start);
+        require(now<deadline);
+        require(amountRaised + msg.value < fundingMax);//funding hard cap has not been reached
         uint purchase = msg.value;
         ethBalance[msg.sender] = ethBalance[msg.sender].add(purchase);//track the amount of eth contributed for refunds
-        if(amountRaised &lt; fundingGoal)//funding goal has not been met yet
+        if(amountRaised < fundingGoal)//funding goal has not been met yet
         {
             purchase = purchase.mul(ZTR_ETH_initial_price);
             amountRaised = amountRaised.add(msg.value);
@@ -118,13 +118,13 @@ contract ZTRTokenSale
     {
         ZTRToken t = ZTRToken(ZTRTokenContract);
         t.transfer(msg.sender, remaining);
-        require(amountRaised &gt;= fundingGoal);//allow admin withdrawl if funding goal is reached and the sale is over
+        require(amountRaised >= fundingGoal);//allow admin withdrawl if funding goal is reached and the sale is over
         owner.transfer(amountRaised);
     }
     
     function withdraw() afterDeadline//ETH/ZTR withdrawl for sale participants
     {
-        if(amountRaised &lt; fundingGoal)//funding goal was not met, withdraw ETH deposit
+        if(amountRaised < fundingGoal)//funding goal was not met, withdraw ETH deposit
         {
             uint ethVal = ethBalance[msg.sender];
             ethBalance[msg.sender] = 0;

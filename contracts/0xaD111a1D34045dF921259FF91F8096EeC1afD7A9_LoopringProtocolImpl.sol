@@ -1,33 +1,33 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 pragma solidity 0.4.18;
 /// @title Utility Functions for uint
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="debabfb0b7bbb29eb2b1b1aeacb7b0b9f0b1acb9">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="debabfb0b7bbb29eb2b1b1aeacb7b0b9f0b1acb9">[email protected]</a>>
 library MathUint {
     function mul(uint a, uint b) internal pure returns (uint c) {
         c = a * b;
         require(a == 0 || c / a == b);
     }
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function tolerantSub(uint a, uint b) internal pure returns (uint c) {
-        return (a &gt;= b) ? a - b : 0;
+        return (a >= b) ? a - b : 0;
     }
     /// @dev calculate the square of Coefficient of Variation (CV)
     /// https://en.wikipedia.org/wiki/Coefficient_of_variation
@@ -40,10 +40,10 @@ library MathUint {
         returns (uint)
     {
         uint len = arr.length;
-        require(len &gt; 1);
-        require(scale &gt; 0);
+        require(len > 1);
+        require(scale > 0);
         uint avg = 0;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             avg += arr[i];
         }
         avg = avg / len;
@@ -53,9 +53,9 @@ library MathUint {
         uint cvs = 0;
         uint s;
         uint item;
-        for (i = 0; i &lt; len; i++) {
+        for (i = 0; i < len; i++) {
             item = arr[i];
-            s = item &gt; avg ? item - avg : avg - item;
+            s = item > avg ? item - avg : avg - item;
             cvs += mul(s, s);
         }
         return ((mul(mul(cvs, scale), scale) / avg) / avg) / (len - 1);
@@ -63,31 +63,31 @@ library MathUint {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title ERC20 Token Interface
 /// @dev see https://github.com/ethereum/EIPs/issues/20
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec888d82858980ac8083839c9e85828bc2839e8b">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec888d82858980ac8083839c9e85828bc2839e8b">[email protected]</a>>
 contract ERC20 {
     uint public totalSupply;
 	
@@ -101,19 +101,19 @@ contract ERC20 {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Loopring Token Exchange Protocol Contract Interface
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680c0906010d0428040707181a01060f46071a0f">[email&#160;protected]</a>&gt;
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f1410111813161e11183f1310100f0d16111851100d18">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680c0906010d0428040707181a01060f46071a0f">[email protected]</a>>
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f1410111813161e11183f1310100f0d16111851100d18">[email protected]</a>>
 contract LoopringProtocol {
     ////////////////////////////////////////////////////////////////////////////
     /// Constants                                                            ///
@@ -149,8 +149,8 @@ contract LoopringProtocol {
     /// Functions                                                            ///
     ////////////////////////////////////////////////////////////////////////////
     /// @dev Submit a order-ring for validation and settlement.
-    /// @param addressList  List of each order&#39;s owner and tokenS. Note that next
-    ///                     order&#39;s `tokenS` equals this order&#39;s `tokenB`.
+    /// @param addressList  List of each order's owner and tokenS. Note that next
+    ///                     order's `tokenS` equals this order's `tokenB`.
     /// @param uintArgsList List of uint-type arguments in this order:
     ///                     amountS, amountB, timestamp, ttl, salt, lrcFee,
     ///                     rateAmountS.
@@ -159,7 +159,7 @@ contract LoopringProtocol {
     ///                     marginSplitPercentageList, feeSelectionList.
     /// @param buyNoMoreThanAmountBList -
     ///                     This indicates when a order should be considered
-    ///                     as &#39;completely filled&#39;.
+    ///                     as 'completely filled'.
     /// @param vList        List of v for each order. This list is 1-larger than
     ///                     the previous lists, with the last element being the
     ///                     v value of the ring signature.
@@ -171,7 +171,7 @@ contract LoopringProtocol {
     ///                     s value of the ring signature.
     /// @param ringminer    The address that signed this tx.
     /// @param feeRecepient The recepient address for fee collection. If this is
-    ///                     &#39;0x0&#39;, all fees will be paid to the address who had
+    ///                     '0x0', all fees will be paid to the address who had
     ///                     signed this transaction, not `msg.sender`. Noted if
     ///                     LRC need to be paid back to order owner as the result
     ///                     of fee selection model, LRC will also be sent from
@@ -194,7 +194,7 @@ contract LoopringProtocol {
     ///                           cancelAmountS, and cancelAmountB.
     /// @param buyNoMoreThanAmountB -
     ///                           This indicates when a order should be considered
-    ///                           as &#39;completely filled&#39;.
+    ///                           as 'completely filled'.
     /// @param marginSplitPercentage -
     ///                           Percentage of margin split to share with miner.
     /// @param v                  Order ECDSA signature parameter v.
@@ -210,7 +210,7 @@ contract LoopringProtocol {
         bytes32    s
         ) external;
     /// @dev   Set a cutoff timestamp to invalidate all orders whose timestamp
-    ///        is smaller than or equal to the new value of the address&#39;s cutoff
+    ///        is smaller than or equal to the new value of the address's cutoff
     ///        timestamp.
     /// @param cutoff The cutoff timestamp, will default to `block.timestamp`
     ///        if it is 0.
@@ -218,31 +218,31 @@ contract LoopringProtocol {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Utility Functions for byte32
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92f9fdfcf5fefbf3fcf5d2fefdfde2e0fbfcf5bcfde0f5">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb8f8a85828e87ab8784849b9982858cc584998c">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92f9fdfcf5fefbf3fcf5d2fefdfde2e0fbfcf5bcfde0f5">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb8f8a85828e87ab8784849b9982858cc584998c">[email protected]</a>>.
 library MathBytes32 {
     function xorReduce(
         bytes32[]   arr,
@@ -253,26 +253,26 @@ library MathBytes32 {
         returns (bytes32 res)
     {
         res = arr[0];
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             res ^= arr[i];
         }
     }
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Utility Functions for uint8
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c5aeaaaba2a9aca4aba285a9aaaab5b7acaba2ebaab7a2">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c383d323539301c3033332c2e35323b72332e3b">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c5aeaaaba2a9aca4aba285a9aaaab5b7acaba2ebaab7a2">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c383d323539301c3033332c2e35323b72332e3b">[email protected]</a>>.
 library MathUint8 {
     function xorReduce(
         uint8[] arr,
@@ -283,15 +283,15 @@ library MathUint8 {
         returns (uint8 res)
     {
         res = arr[0];
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             res ^= arr[i];
         }
     }
 }
 /// @title Ring Hash Registry Contract
 /// @dev This contracts help reserve ringhashes for miners.
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274c4849404b4e464940674b484857554e494009485540">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2c484d424549406c4043435c5e45424b02435e4b">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274c4849404b4e464940674b484857554e494009485540">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2c484d424549406c4043435c5e45424b02435e4b">[email protected]</a>>.
 contract RinghashRegistry {
     using MathBytes32   for bytes32[];
     using MathUint8     for uint8[];
@@ -300,7 +300,7 @@ contract RinghashRegistry {
         address ringminer;
         uint block;
     }
-    mapping (bytes32 =&gt; Submission) submissions;
+    mapping (bytes32 => Submission) submissions;
     ////////////////////////////////////////////////////////////////////////////
     /// Events                                                               ///
     ////////////////////////////////////////////////////////////////////////////
@@ -314,7 +314,7 @@ contract RinghashRegistry {
     function RinghashRegistry(uint _blocksToLive)
         public
     {
-        require(_blocksToLive &gt; 0);
+        require(_blocksToLive > 0);
         blocksToLive = _blocksToLive;
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ contract RinghashRegistry {
         )
         public
     {
-        require(canSubmit(ringhash, ringminer)); //, &quot;Ringhash submitted&quot;);
+        require(canSubmit(ringhash, ringminer)); //, "Ringhash submitted");
         submissions[ringhash] = Submission(ringminer, block.number);
         RinghashSubmitted(ringminer, ringhash);
     }
@@ -337,9 +337,9 @@ contract RinghashRegistry {
         external
     {
         uint size = ringminerList.length;
-        require(size &gt; 0);
+        require(size > 0);
         require(size == ringhashList.length);
-        for (uint i = 0; i &lt; size; i++) {
+        for (uint i = 0; i < size; i++) {
             submitRinghash(ringminerList[i], ringhashList[i]);
         }
     }
@@ -355,10 +355,10 @@ contract RinghashRegistry {
         returns (bytes32)
     {
         require(
-            ringSize == vList.length - 1 &amp;&amp; (
-            ringSize == rList.length - 1 &amp;&amp; (
+            ringSize == vList.length - 1 && (
+            ringSize == rList.length - 1 && (
             ringSize == sList.length - 1))
-        ); //, &quot;invalid ring data&quot;);
+        ); //, "invalid ring data");
         return keccak256(
             vList.xorReduce(ringSize),
             rList.xorReduce(ringSize),
@@ -387,7 +387,7 @@ contract RinghashRegistry {
         attributes[0] = canSubmit(ringhash, ringminer);
         attributes[1] = isReserved(ringhash, ringminer);
     }
-    /// @return true if a ring&#39;s hash can be submitted;
+    /// @return true if a ring's hash can be submitted;
     /// false otherwise.
     function canSubmit(
         bytes32 ringhash,
@@ -401,11 +401,11 @@ contract RinghashRegistry {
         address miner = submission.ringminer;
         return (
             miner == 0x0 || (
-            submission.block + blocksToLive &lt; block.number) || (
+            submission.block + blocksToLive < block.number) || (
             miner == ringminer)
         );
     }
-    /// @return true if a ring&#39;s hash was submitted and still valid;
+    /// @return true if a ring's hash was submitted and still valid;
     /// false otherwise.
     function isReserved(
         bytes32 ringhash,
@@ -416,43 +416,43 @@ contract RinghashRegistry {
     {
         var submission = submissions[ringhash];
         return (
-            submission.block + blocksToLive &gt;= block.number &amp;&amp; (
+            submission.block + blocksToLive >= block.number && (
             submission.ringminer == ringminer)
         );
     }
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -460,7 +460,7 @@ contract RinghashRegistry {
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic
 ///      authorization control functions, this simplifies the implementation of
-///      &quot;user permissions&quot;.
+///      "user permissions".
 contract Ownable {
     address public owner;
     event OwnershipTransferred(
@@ -499,7 +499,7 @@ contract Claimable is Ownable {
     /// @dev Allows the current owner to set the pendingOwner address.
     /// @param newOwner The address to transfer ownership to.
     function transferOwnership(address newOwner) onlyOwner public {
-        require(newOwner != 0x0 &amp;&amp; newOwner != owner);
+        require(newOwner != 0x0 && newOwner != owner);
         pendingOwner = newOwner;
     }
     /// @dev Allows the pendingOwner address to finalize the transfer.
@@ -511,12 +511,12 @@ contract Claimable is Ownable {
 }
 /// @title Token Register Contract
 /// @dev This contract maintains a list of tokens the Protocol supports.
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6460616863666e61684f6360607f7d66616821607d68">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5337323d3a363f133f3c3c23213a3d347d3c2134">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6460616863666e61684f6360607f7d66616821607d68">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5337323d3a363f133f3c3c23213a3d347d3c2134">[email protected]</a>>.
 contract TokenRegistry is Claimable {
     address[] public tokens;
-    mapping (address =&gt; bool) tokenMap;
-    mapping (string =&gt; address) tokenSymbolMap;
+    mapping (address => bool) tokenMap;
+    mapping (string => address) tokenSymbolMap;
     function registerToken(address _token, string _symbol)
         external
         onlyOwner
@@ -536,7 +536,7 @@ contract TokenRegistry is Claimable {
         require(tokenSymbolMap[_symbol] == _token);
         delete tokenSymbolMap[_symbol];
         delete tokenMap[_token];
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             if (tokens[i] == _token) {
                 tokens[i] = tokens[tokens.length - 1];
                 tokens.length --;
@@ -563,7 +563,7 @@ contract TokenRegistry is Claimable {
         view
         returns (bool)
     {
-        for (uint i = 0; i &lt; tokenList.length; i++) {
+        for (uint i = 0; i < tokenList.length; i++) {
             if (!tokenMap[tokenList[i]]) {
                 return false;
             }
@@ -580,12 +580,12 @@ contract TokenRegistry is Claimable {
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -593,13 +593,13 @@ contract TokenRegistry is Claimable {
 /// @title TokenTransferDelegate
 /// @dev Acts as a middle man to transfer ERC20 tokens on behalf of different
 /// versions of Loopring protocol to avoid ERC20 re-authorization.
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="badedbd4d3dfd6fad6d5d5cac8d3d4dd94d5c8dd">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="badedbd4d3dfd6fad6d5d5cac8d3d4dd94d5c8dd">[email protected]</a>>.
 contract TokenTransferDelegate is Claimable {
     using MathUint for uint;
     ////////////////////////////////////////////////////////////////////////////
     /// Variables                                                            ///
     ////////////////////////////////////////////////////////////////////////////
-    mapping(address =&gt; AddressInfo) private addressInfos;
+    mapping(address => AddressInfo) private addressInfos;
     address public latestAddress;
     ////////////////////////////////////////////////////////////////////////////
     /// Structs                                                              ///
@@ -678,7 +678,7 @@ contract TokenTransferDelegate is Claimable {
         address addr = latestAddress;
         AddressInfo memory addrInfo;
         uint count = 0;
-        while (addr != 0x0 &amp;&amp; count &lt; max) {
+        while (addr != 0x0 && count < max) {
             addrInfo = addressInfos[addr];
             if (addrInfo.index == 0) {
                 break;
@@ -700,7 +700,7 @@ contract TokenTransferDelegate is Claimable {
         onlyAuthorized
         external
     {
-        if (value &gt; 0 &amp;&amp; from != to) {
+        if (value > 0 && from != to) {
             require(
                 ERC20(token).transferFrom(from, to, value)
             );
@@ -716,12 +716,12 @@ contract TokenTransferDelegate is Claimable {
         uint len = batch.length;
         require(len % 6 == 0);
         var lrc = ERC20(lrcTokenAddress);
-        for (uint i = 0; i &lt; len; i += 6) {
+        for (uint i = 0; i < len; i += 6) {
             address owner = address(batch[i]);
             address prevOwner = address(batch[(i + len - 6) % len]);
             
-            // Pay token to previous order, or to miner as previous order&#39;s
-            // margin split or/and this order&#39;s margin split.
+            // Pay token to previous order, or to miner as previous order's
+            // margin split or/and this order's margin split.
             var token = ERC20(address(batch[i + 1]));
             // Here batch[i+2] has been checked not to be 0.
             if (owner != prevOwner) {
@@ -753,8 +753,8 @@ contract TokenTransferDelegate is Claimable {
     }
 }
 /// @title Loopring Token Exchange Protocol Implementation Contract v1
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="294d4847404c4569454646595b40474e07465b4e">[email&#160;protected]</a>&gt;,
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85eeeaebe2e9ece4ebe2c5e9eaeaf5f7ecebe2abeaf7e2">[email&#160;protected]</a>&gt;
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="294d4847404c4569454646595b40474e07465b4e">[email protected]</a>>,
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85eeeaebe2e9ece4ebe2c5e9eaeaf5f7ecebe2abeaf7e2">[email protected]</a>>
 ///
 /// Recognized contributing developers from the community:
 ///     https://github.com/Brechtpd
@@ -775,20 +775,20 @@ contract LoopringProtocolImpl is LoopringProtocol {
     // Exchange rate (rate) is the amount to sell or sold divided by the amount
     // to buy or bought.
     //
-    // Rate ratio is the ratio between executed rate and an order&#39;s original
+    // Rate ratio is the ratio between executed rate and an order's original
     // rate.
     //
-    // To require all orders&#39; rate ratios to have coefficient ofvariation (CV)
+    // To require all orders' rate ratios to have coefficient ofvariation (CV)
     // smaller than 2.5%, for an example , rateRatioCVSThreshold should be:
     //     `(0.025 * RATE_RATIO_SCALE)^2` or 62500.
     uint    public  rateRatioCVSThreshold       = 0;
     uint    public constant RATE_RATIO_SCALE    = 10000;
-    uint64  public constant ENTERED_MASK        = 1 &lt;&lt; 63;
+    uint64  public constant ENTERED_MASK        = 1 << 63;
     // The following map is used to keep trace of order fill and cancellation
     // history.
-    mapping (bytes32 =&gt; uint) public cancelledOrFilled;
+    mapping (bytes32 => uint) public cancelledOrFilled;
     // A map from address to its cutoff timestamp.
-    mapping (address =&gt; uint) public cutoffs;
+    mapping (address => uint) public cutoffs;
     ////////////////////////////////////////////////////////////////////////////
     /// Structs                                                              ///
     ////////////////////////////////////////////////////////////////////////////
@@ -803,7 +803,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
     /// @param timestamp    Indicating when this order is created/signed.
     /// @param ttl          Indicating after how many seconds from `timestamp`
     ///                     this order will expire.
-    /// @param salt         A random number to make this order&#39;s hash unique.
+    /// @param salt         A random number to make this order's hash unique.
     /// @param lrcFee       Max amount of LRC to pay for miner. The real amount
     ///                     to pay is proportional to fill amount.
     /// @param buyNoMoreThanAmountB -
@@ -825,7 +825,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
         uint8   marginSplitPercentage;
     }
     /// @param order        The original order
-    /// @param orderHash    The order&#39;s hash
+    /// @param orderHash    The order's hash
     /// @param feeSelection -
     ///                     A miner-supplied value indicating if LRC (value = 0)
     ///                     or margin split is choosen by the miner (value = 1).
@@ -865,8 +865,8 @@ contract LoopringProtocolImpl is LoopringProtocol {
         require(0x0 != _tokenRegistryAddress);
         require(0x0 != _ringhashRegistryAddress);
         require(0x0 != _delegateAddress);
-        require(_maxRingSize &gt; 1);
-        require(_rateRatioCVSThreshold &gt; 0);
+        require(_maxRingSize > 1);
+        require(_rateRatioCVSThreshold > 0);
         lrcTokenAddress = _lrcTokenAddress;
         tokenRegistryAddress = _tokenRegistryAddress;
         ringhashRegistryAddress = _ringhashRegistryAddress;
@@ -885,8 +885,8 @@ contract LoopringProtocolImpl is LoopringProtocol {
         revert();
     }
     /// @dev Submit a order-ring for validation and settlement.
-    /// @param addressList  List of each order&#39;s tokenS. Note that next order&#39;s
-    ///                     `tokenS` equals this order&#39;s `tokenB`.
+    /// @param addressList  List of each order's tokenS. Note that next order's
+    ///                     `tokenS` equals this order's `tokenB`.
     /// @param uintArgsList List of uint-type arguments in this order:
     ///                     amountS, amountB, timestamp, ttl, salt, lrcFee,
     ///                     rateAmountS.
@@ -895,7 +895,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
     ///                     marginSplitPercentageList,feeSelectionList.
     /// @param buyNoMoreThanAmountBList -
     ///                     This indicates when a order should be considered
-    ///                     as &#39;completely filled&#39;.
+    ///                     as 'completely filled'.
     /// @param vList        List of v for each order. This list is 1-larger than
     ///                     the previous lists, with the last element being the
     ///                     v value of the ring signature.
@@ -907,7 +907,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
     ///                     s value of the ring signature.
     /// @param ringminer    The address that signed this tx.
     /// @param feeRecipient The Recipient address for fee collection. If this is
-    ///                     &#39;0x0&#39;, all fees will be paid to the address who had
+    ///                     '0x0', all fees will be paid to the address who had
     ///                     signed this transaction, not `msg.sender`. Noted if
     ///                     LRC need to be paid back to order owner as the result
     ///                     of fee selection model, LRC will also be sent from
@@ -925,13 +925,13 @@ contract LoopringProtocolImpl is LoopringProtocol {
         )
         public
     {
-        // Check if the highest bit of ringIndex is &#39;1&#39;.
-        require(ringIndex &amp; ENTERED_MASK != ENTERED_MASK); // &quot;attempted to re-ent submitRing function&quot;);
-        // Set the highest bit of ringIndex to &#39;1&#39;.
+        // Check if the highest bit of ringIndex is '1'.
+        require(ringIndex & ENTERED_MASK != ENTERED_MASK); // "attempted to re-ent submitRing function");
+        // Set the highest bit of ringIndex to '1'.
         ringIndex |= ENTERED_MASK;
         //Check ring size
         uint ringSize = addressList.length;
-        require(ringSize &gt; 1 &amp;&amp; ringSize &lt;= maxRingSize); // &quot;invalid ring size&quot;);
+        require(ringSize > 1 && ringSize <= maxRingSize); // "invalid ring size");
         verifyInputDataIntegrity(
             ringSize,
             addressList,
@@ -953,7 +953,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             sList
         );
         //Check if we can submit this ringhash.
-        require(ringhashAttributes[0]); // &quot;Ring claimed by others&quot;);
+        require(ringhashAttributes[0]); // "Ring claimed by others");
         verifySignature(
             ringminer,
             ringhash,
@@ -991,7 +991,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
     ///                           cancelAmountS, and cancelAmountB.
     /// @param buyNoMoreThanAmountB -
     ///                           This indicates when a order should be considered
-    ///                           as &#39;completely filled&#39;.
+    ///                           as 'completely filled'.
     /// @param marginSplitPercentage -
     ///                           Percentage of margin split to share with miner.
     /// @param v                  Order ECDSA signature parameter v.
@@ -1009,7 +1009,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
         external
     {
         uint cancelAmount = orderValues[6];
-        require(cancelAmount &gt; 0); // &quot;amount to cancel is zero&quot;);
+        require(cancelAmount > 0); // "amount to cancel is zero");
         var order = Order(
             addresses[0],
             addresses[1],
@@ -1020,7 +1020,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             buyNoMoreThanAmountB,
             marginSplitPercentage
         );
-        require(msg.sender == order.owner); // &quot;cancelOrder not submitted by order owner&quot;);
+        require(msg.sender == order.owner); // "cancelOrder not submitted by order owner");
         bytes32 orderHash = calculateOrderHash(
             order,
             orderValues[2], // timestamp
@@ -1038,20 +1038,20 @@ contract LoopringProtocolImpl is LoopringProtocol {
         OrderCancelled(orderHash, cancelAmount);
     }
     /// @dev   Set a cutoff timestamp to invalidate all orders whose timestamp
-    ///        is smaller than or equal to the new value of the address&#39;s cutoff
+    ///        is smaller than or equal to the new value of the address's cutoff
     ///        timestamp.
     /// @param cutoff The cutoff timestamp, will default to `block.timestamp`
     ///        if it is 0.
     function setCutoff(uint cutoff)
         external
     {
-        uint t = (cutoff == 0 || cutoff &gt;= block.timestamp) ? block.timestamp : cutoff;
-        require(cutoffs[msg.sender] &lt; t); // &quot;attempted to set cutoff to a smaller value&quot;
+        uint t = (cutoff == 0 || cutoff >= block.timestamp) ? block.timestamp : cutoff;
+        require(cutoffs[msg.sender] < t); // "attempted to set cutoff to a smaller value"
         cutoffs[msg.sender] = t;
         CutoffTimestampChanged(msg.sender, t);
     }
     ////////////////////////////////////////////////////////////////////////////
-    /// Internal &amp; Private Functions                                         ///
+    /// Internal & Private Functions                                         ///
     ////////////////////////////////////////////////////////////////////////////
     /// @dev Validate a ring.
     function verifyRingHasNoSubRing(
@@ -1062,10 +1062,10 @@ contract LoopringProtocolImpl is LoopringProtocol {
         pure
     {
         // Check the ring has no sub-ring.
-        for (uint i = 0; i &lt; ringSize - 1; i++) {
+        for (uint i = 0; i < ringSize - 1; i++) {
             address tokenS = orders[i].order.tokenS;
-            for (uint j = i + 1; j &lt; ringSize; j++) {
-                require(tokenS != orders[j].order.tokenS); // &quot;found sub-ring&quot;);
+            for (uint j = i + 1; j < ringSize; j++) {
+                require(tokenS != orders[j].order.tokenS); // "found sub-ring");
             }
         }
     }
@@ -1078,13 +1078,13 @@ contract LoopringProtocolImpl is LoopringProtocol {
     {
         // Extract the token addresses
         var tokens = new address[](ringSize);
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             tokens[i] = addressList[i][1];
         }
         // Test all token addresses at once
         require(
             TokenRegistry(tokenRegistryAddress).areAllTokensRegistered(tokens)
-        ); // &quot;token not registered&quot;);
+        ); // "token not registered");
     }
     function handleRing(
         uint          ringSize,
@@ -1107,15 +1107,15 @@ contract LoopringProtocolImpl is LoopringProtocol {
         // these rates are correct.
         verifyMinerSuppliedFillRates(ringSize, orders);
         // Scale down each order independently by substracting amount-filled and
-        // amount-cancelled. Order owner&#39;s current balance and allowance are
+        // amount-cancelled. Order owner's current balance and allowance are
         // not taken into consideration in these operations.
         scaleRingBasedOnHistoricalRecords(delegate, ringSize, orders);
         // Based on the already verified exchange rate provided by ring-miners,
         // we can furthur scale down orders based on token balance and allowance,
-        // then find the smallest order of the ring, then calculate each order&#39;s
+        // then find the smallest order of the ring, then calculate each order's
         // `fillAmountS`.
         calculateRingFillAmount(ringSize, orders);
-        // Calculate each order&#39;s `lrcFee` and `lrcRewrard` and splict how much
+        // Calculate each order's `lrcFee` and `lrcRewrard` and splict how much
         // of `fillAmountS` shall be paid to matching order or miner as margin
         // split.
         calculateRingFees(
@@ -1159,7 +1159,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
         orderHashList = new bytes32[](ringSize);
         amountsList = new uint[4][](ringSize);
         uint p = 0;
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             var state = orders[i];
             var order = state.order;
             uint prevSplitB = orders[(i + ringSize - 1) % ringSize].splitB;
@@ -1198,16 +1198,16 @@ contract LoopringProtocolImpl is LoopringProtocol {
     {
         var rateRatios = new uint[](ringSize);
         uint _rateRatioScale = RATE_RATIO_SCALE;
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             uint s1b0 = orders[i].rate.amountS.mul(orders[i].order.amountB);
             uint s0b1 = orders[i].order.amountS.mul(orders[i].rate.amountB);
-            require(s1b0 &lt;= s0b1); // &quot;miner supplied exchange rate provides invalid discount&quot;);
+            require(s1b0 <= s0b1); // "miner supplied exchange rate provides invalid discount");
             rateRatios[i] = _rateRatioScale.mul(s1b0) / s0b1;
         }
         uint cvs = MathUint.cvsquare(rateRatios, _rateRatioScale);
-        require(cvs &lt;= rateRatioCVSThreshold); // &quot;miner supplied exchange rate is not evenly discounted&quot;);
+        require(cvs <= rateRatioCVSThreshold); // "miner supplied exchange rate is not evenly discounted");
     }
-    /// @dev Calculate each order&#39;s fee or LRC reward.
+    /// @dev Calculate each order's fee or LRC reward.
     function calculateRingFees(
         TokenTransferDelegate delegate,
         uint            ringSize,
@@ -1222,11 +1222,11 @@ contract LoopringProtocolImpl is LoopringProtocol {
         uint minerLrcSpendable = 0;
         uint8 _marginSplitPercentageBase = MARGIN_SPLIT_PERCENTAGE_BASE;
         uint nextFillAmountS;
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             var state = orders[i];
             uint lrcReceiable = 0;
             if (state.lrcFee == 0) {
-                // When an order&#39;s LRC fee is 0 or smaller than the specified fee,
+                // When an order's LRC fee is 0 or smaller than the specified fee,
                 // we help miner automatically select margin-split.
                 state.feeSelection = FEE_SELECT_MARGIN_SPLIT;
                 state.order.marginSplitPercentage = _marginSplitPercentageBase;
@@ -1247,8 +1247,8 @@ contract LoopringProtocolImpl is LoopringProtocol {
                     lrcReceiable = nextFillAmountS;
                 }
                 uint lrcTotal = lrcSpendable + lrcReceiable;
-                // If order doesn&#39;t have enough LRC, set margin split to 100%.
-                if (lrcTotal &lt; state.lrcFee) {
+                // If order doesn't have enough LRC, set margin split to 100%.
+                if (lrcTotal < state.lrcFee) {
                     state.lrcFee = lrcTotal;
                     state.order.marginSplitPercentage = _marginSplitPercentageBase;
                 }
@@ -1257,8 +1257,8 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 }
             }
             if (state.feeSelection == FEE_SELECT_LRC) {
-                if (lrcReceiable &gt; 0) {
-                    if (lrcReceiable &gt;= state.lrcFee) {
+                if (lrcReceiable > 0) {
+                    if (lrcReceiable >= state.lrcFee) {
                         state.splitB = state.lrcFee;
                         state.lrcFee = 0;
                     } else {
@@ -1268,13 +1268,13 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 }
             } else if (state.feeSelection == FEE_SELECT_MARGIN_SPLIT) {
                 // Only check the available miner balance when absolutely needed
-                if (!checkedMinerLrcSpendable &amp;&amp; minerLrcSpendable &lt; state.lrcFee) {
+                if (!checkedMinerLrcSpendable && minerLrcSpendable < state.lrcFee) {
                     checkedMinerLrcSpendable = true;
                     minerLrcSpendable = getSpendable(delegate, _lrcTokenAddress, feeRecipient);
                 }
                 // Only calculate split when miner has enough LRC;
                 // otherwise all splits are 0.
-                if (minerLrcSpendable &gt;= state.lrcFee) {
+                if (minerLrcSpendable >= state.lrcFee) {
                     nextFillAmountS = orders[(i + 1) % ringSize].fillAmountS;
                     uint split;
                     if (state.order.buyNoMoreThanAmountB) {
@@ -1303,18 +1303,18 @@ contract LoopringProtocolImpl is LoopringProtocol {
                     // This implicits order with smaller index in the ring will
                     // be paid LRC reward first, so the orders in the ring does
                     // mater.
-                    if (split &gt; 0) {
+                    if (split > 0) {
                         minerLrcSpendable -= state.lrcFee;
                         state.lrcReward = state.lrcFee;
                     }
                 }
                 state.lrcFee = 0;
             } else {
-                revert(); // &quot;unsupported fee selection value&quot;);
+                revert(); // "unsupported fee selection value");
             }
         }
     }
-    /// @dev Calculate each order&#39;s fill amount.
+    /// @dev Calculate each order's fill amount.
     function calculateRingFillAmount(
         uint          ringSize,
         OrderState[]  orders
@@ -1325,7 +1325,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
         uint smallestIdx = 0;
         uint i;
         uint j;
-        for (i = 0; i &lt; ringSize; i++) {
+        for (i = 0; i < ringSize; i++) {
             j = (i + 1) % ringSize;
             smallestIdx = calculateOrderFillAmount(
                 orders[i],
@@ -1335,7 +1335,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 smallestIdx
             );
         }
-        for (i = 0; i &lt; smallestIdx; i++) {
+        for (i = 0; i < smallestIdx; i++) {
             calculateOrderFillAmount(
                 orders[i],
                 orders[(i + 1) % ringSize],
@@ -1345,7 +1345,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             );
         }
     }
-    /// @return The smallest order&#39;s index.
+    /// @return The smallest order's index.
     function calculateOrderFillAmount(
         OrderState        state,
         OrderState        next,
@@ -1363,7 +1363,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             state.rate.amountB
         ) / state.rate.amountS;
         if (state.order.buyNoMoreThanAmountB) {
-            if (fillAmountB &gt; state.order.amountB) {
+            if (fillAmountB > state.order.amountB) {
                 fillAmountB = state.order.amountB;
                 state.fillAmountS = fillAmountB.mul(
                     state.rate.amountS
@@ -1378,14 +1378,14 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 state.fillAmountS
             ) / state.order.amountS;
         }
-        if (fillAmountB &lt;= next.fillAmountS) {
+        if (fillAmountB <= next.fillAmountS) {
             next.fillAmountS = fillAmountB;
         } else {
             newSmallestIdx = j;
         }
     }
     /// @dev Scale down all orders based on historical fill or cancellation
-    ///      stats but key the order&#39;s original exchange rate.
+    ///      stats but key the order's original exchange rate.
     function scaleRingBasedOnHistoricalRecords(
         TokenTransferDelegate delegate,
         uint ringSize,
@@ -1394,7 +1394,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
         private
         view
     {
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             var state = orders[i];
             var order = state.order;
             uint amount;
@@ -1413,13 +1413,13 @@ contract LoopringProtocolImpl is LoopringProtocol {
                 order.lrcFee = amount.mul(order.lrcFee) / order.amountS;
                 order.amountS = amount;
             }
-            require(order.amountS &gt; 0); // &quot;amountS is zero&quot;);
-            require(order.amountB &gt; 0); // &quot;amountB is zero&quot;);
+            require(order.amountS > 0); // "amountS is zero");
+            require(order.amountB > 0); // "amountB is zero");
             
             uint availableAmountS = getSpendable(delegate, order.tokenS, order.owner);
-            require(availableAmountS &gt; 0); // &quot;order spendable amountS is zero&quot;);
+            require(availableAmountS > 0); // "order spendable amountS is zero");
             state.fillAmountS = (
-                order.amountS &lt; availableAmountS ?
+                order.amountS < availableAmountS ?
                 order.amountS : availableAmountS
             );
         }
@@ -1440,9 +1440,9 @@ contract LoopringProtocolImpl is LoopringProtocol {
             address(delegate)
         );
         uint balance = token.balanceOf(tokenOwner);
-        return (allowance &lt; balance ? allowance : balance);
+        return (allowance < balance ? allowance : balance);
     }
-    /// @dev verify input data&#39;s basic integrity.
+    /// @dev verify input data's basic integrity.
     function verifyInputDataIntegrity(
         uint          ringSize,
         address[2][]  addressList,
@@ -1456,17 +1456,17 @@ contract LoopringProtocolImpl is LoopringProtocol {
         private
         pure
     {
-        require(ringSize == addressList.length); // &quot;ring data is inconsistent - addressList&quot;);
-        require(ringSize == uintArgsList.length); // &quot;ring data is inconsistent - uintArgsList&quot;);
-        require(ringSize == uint8ArgsList.length); // &quot;ring data is inconsistent - uint8ArgsList&quot;);
-        require(ringSize == buyNoMoreThanAmountBList.length); // &quot;ring data is inconsistent - buyNoMoreThanAmountBList&quot;);
-        require(ringSize + 1 == vList.length); // &quot;ring data is inconsistent - vList&quot;);
-        require(ringSize + 1 == rList.length); // &quot;ring data is inconsistent - rList&quot;);
-        require(ringSize + 1 == sList.length); // &quot;ring data is inconsistent - sList&quot;);
+        require(ringSize == addressList.length); // "ring data is inconsistent - addressList");
+        require(ringSize == uintArgsList.length); // "ring data is inconsistent - uintArgsList");
+        require(ringSize == uint8ArgsList.length); // "ring data is inconsistent - uint8ArgsList");
+        require(ringSize == buyNoMoreThanAmountBList.length); // "ring data is inconsistent - buyNoMoreThanAmountBList");
+        require(ringSize + 1 == vList.length); // "ring data is inconsistent - vList");
+        require(ringSize + 1 == rList.length); // "ring data is inconsistent - rList");
+        require(ringSize + 1 == sList.length); // "ring data is inconsistent - sList");
         // Validate ring-mining related arguments.
-        for (uint i = 0; i &lt; ringSize; i++) {
-            require(uintArgsList[i][6] &gt; 0); // &quot;order rateAmountS is zero&quot;);
-            require(uint8ArgsList[i][1] &lt;= FEE_SELECT_MAX_VALUE); // &quot;invalid order fee selection&quot;);
+        for (uint i = 0; i < ringSize; i++) {
+            require(uintArgsList[i][6] > 0); // "order rateAmountS is zero");
+            require(uint8ArgsList[i][1] <= FEE_SELECT_MAX_VALUE); // "invalid order fee selection");
         }
     }
     /// @dev        assmble order parameters into Order struct.
@@ -1486,7 +1486,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
     {
         uint ringSize = addressList.length;
         orders = new OrderState[](ringSize);
-        for (uint i = 0; i &lt; ringSize; i++) {
+        for (uint i = 0; i < ringSize; i++) {
             var uintArgs = uintArgsList[i];
         
             var order = Order(
@@ -1531,7 +1531,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             );
         }
     }
-    /// @dev validate order&#39;s parameters are OK.
+    /// @dev validate order's parameters are OK.
     function validateOrder(
         Order        order,
         uint         timestamp,
@@ -1541,17 +1541,17 @@ contract LoopringProtocolImpl is LoopringProtocol {
         private
         view
     {
-        require(order.owner != 0x0); // &quot;invalid order owner&quot;);
-        require(order.tokenS != 0x0); // &quot;invalid order tokenS&quot;);
-        require(order.tokenB != 0x0); // &quot;invalid order tokenB&quot;);
-        require(order.amountS != 0); // &quot;invalid order amountS&quot;);
-        require(order.amountB != 0); // &quot;invalid order amountB&quot;);
-        require(timestamp &lt;= block.timestamp); // &quot;order is too early to match&quot;);
-        require(timestamp &gt; cutoffs[order.owner]); // &quot;order is cut off&quot;);
-        require(ttl != 0); // &quot;order ttl is 0&quot;);
-        require(timestamp + ttl &gt; block.timestamp); // &quot;order is expired&quot;);
-        require(salt != 0); // &quot;invalid order salt&quot;);
-        require(order.marginSplitPercentage &lt;= MARGIN_SPLIT_PERCENTAGE_BASE); // &quot;invalid order marginSplitPercentage&quot;);
+        require(order.owner != 0x0); // "invalid order owner");
+        require(order.tokenS != 0x0); // "invalid order tokenS");
+        require(order.tokenB != 0x0); // "invalid order tokenB");
+        require(order.amountS != 0); // "invalid order amountS");
+        require(order.amountB != 0); // "invalid order amountB");
+        require(timestamp <= block.timestamp); // "order is too early to match");
+        require(timestamp > cutoffs[order.owner]); // "order is cut off");
+        require(ttl != 0); // "order ttl is 0");
+        require(timestamp + ttl > block.timestamp); // "order is expired");
+        require(salt != 0); // "invalid order salt");
+        require(order.marginSplitPercentage <= MARGIN_SPLIT_PERCENTAGE_BASE); // "invalid order marginSplitPercentage");
     }
     /// @dev Get the Keccak-256 hash of order with specified parameters.
     function calculateOrderHash(
@@ -1579,7 +1579,7 @@ contract LoopringProtocolImpl is LoopringProtocol {
             order.marginSplitPercentage
         );
     }
-    /// @dev Verify signer&#39;s signature.
+    /// @dev Verify signer's signature.
     function verifySignature(
         address signer,
         bytes32 hash,
@@ -1592,11 +1592,11 @@ contract LoopringProtocolImpl is LoopringProtocol {
     {
         require(
             signer == ecrecover(
-                keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+                keccak256("\x19Ethereum Signed Message:\n32", hash),
                 v,
                 r,
                 s
             )
-        ); // &quot;invalid signature&quot;);
+        ); // "invalid signature");
     }
 }

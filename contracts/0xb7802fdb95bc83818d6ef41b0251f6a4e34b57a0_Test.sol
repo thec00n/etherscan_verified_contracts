@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -262,7 +262,7 @@ contract MintableToken is StandardToken, Ownable, Pausable {
     }
 
     function mintInternal(address _to, uint256 _amount) internal canMint returns (bool) {
-        require(totalSupply.add(_amount) &lt;= maxTokensToMint);
+        require(totalSupply.add(_amount) <= maxTokensToMint);
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);
@@ -273,9 +273,9 @@ contract MintableToken is StandardToken, Ownable, Pausable {
 
 contract Test is MintableToken {
 
-    string public constant name = &quot;HIH&quot;;
+    string public constant name = "HIH";
 
-    string public constant symbol = &quot;HIH&quot;;
+    string public constant symbol = "HIH";
 
     bool public preIcoActive = false;
 
@@ -310,7 +310,7 @@ contract Test is MintableToken {
     * @param _value The amount to be transferred.
     */
     function transfer(address _to, uint _value) whenNotPaused canTransfer returns (bool) {
-        require(_to != address(this) &amp;&amp; _to != address(0));
+        require(_to != address(this) && _to != address(0));
         return super.transfer(_to, _value);
     }
 
@@ -321,7 +321,7 @@ contract Test is MintableToken {
     * @param _value uint256 the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint _value) whenNotPaused canTransfer returns (bool) {
-        require(_to != address(this) &amp;&amp; _to != address(0));
+        require(_to != address(this) && _to != address(0));
         return super.transferFrom(_from, _to, _value);
     }
 
@@ -352,14 +352,14 @@ contract Test is MintableToken {
     }
 
     function startPre() onlyOwner returns (bool) {
-        require(!preIcoActive &amp;&amp; !preIcoFinished &amp;&amp; !icoActive &amp;&amp; !icoFinished);
+        require(!preIcoActive && !preIcoFinished && !icoActive && !icoFinished);
         preIcoActive = true;
         dateStart = block.timestamp;
         return true;
     }
 
     function finishPre() onlyOwner returns (bool) {
-        require(preIcoActive &amp;&amp; !preIcoFinished &amp;&amp; !icoActive &amp;&amp; !icoFinished);
+        require(preIcoActive && !preIcoFinished && !icoActive && !icoFinished);
         preIcoActive = false;
         tokensForIco = maxTokensToBuy.sub(totalSupply);
         preIcoTokensCount = totalSupply;
@@ -368,13 +368,13 @@ contract Test is MintableToken {
     }
 
     function startIco() onlyOwner returns (bool) {
-        require(!preIcoActive &amp;&amp; preIcoFinished &amp;&amp; !icoActive &amp;&amp; !icoFinished);
+        require(!preIcoActive && preIcoFinished && !icoActive && !icoFinished);
         icoActive = true;
         return true;
     }
 
     function finishIco() onlyOwner returns (bool) {
-        require(!preIcoActive &amp;&amp; preIcoFinished &amp;&amp; icoActive &amp;&amp; !icoFinished);
+        require(!preIcoActive && preIcoFinished && icoActive && !icoFinished);
         icoActive = false;
         icoFinished = true;
         return true;
@@ -382,7 +382,7 @@ contract Test is MintableToken {
 
     modifier canBuyTokens() {
         require(preIcoActive || icoActive);
-        require(block.timestamp &gt;= dateStart);
+        require(block.timestamp >= dateStart);
         _;
     }
 
@@ -392,8 +392,8 @@ contract Test is MintableToken {
 
     function buyTokens(address beneficiary) whenNotPaused canBuyTokens payable {
         require(beneficiary != 0x0);
-        require(msg.value &gt; 0);
-        require(msg.value &gt;= 10 finney);
+        require(msg.value > 0);
+        require(msg.value >= 10 finney);
 
         uint256 weiAmount = msg.value;
         uint256 tokens = 0;
@@ -421,33 +421,33 @@ contract Test is MintableToken {
     function buyPreIcoTokens(uint256 _weiAmount) internal returns(uint256){
         uint8 percents = 0;
 
-        if(block.timestamp - dateStart &lt;= 10 days){
+        if(block.timestamp - dateStart <= 10 days){
             percents = 20;
         }
 
-        if(block.timestamp - dateStart &lt;= 8 days){
+        if(block.timestamp - dateStart <= 8 days){
             percents = 40;
         }
 
-        if(block.timestamp - dateStart &lt;= 6 days){
+        if(block.timestamp - dateStart <= 6 days){
             percents = 60;
         }
 
-        if(block.timestamp - dateStart &lt;= 4 days){
+        if(block.timestamp - dateStart <= 4 days){
             percents = 80;
         }
 
-        if(block.timestamp - dateStart &lt;= 2 days){  // first week
+        if(block.timestamp - dateStart <= 2 days){  // first week
             percents = 100;
         }
 
         uint256 tokens = _weiAmount.mul(rateBase).mul(2);
 
-        if(percents &gt; 0){
+        if(percents > 0){
             tokens = tokens.add(tokens.mul(percents).div(100));    // add bonus
         }
 
-        require(totalSupply.add(tokens) &lt;= maxPreIcoTokens);
+        require(totalSupply.add(tokens) <= maxPreIcoTokens);
 
         return tokens;
 
@@ -459,7 +459,7 @@ contract Test is MintableToken {
 
         tokens = tokens.add(tokens.mul(30).div(100));    // add bonus
 
-        require(totalSupply.add(tokens) &lt;= maxTokensToBuy);
+        require(totalSupply.add(tokens) <= maxTokensToBuy);
 
         return tokens;
 
@@ -472,29 +472,29 @@ contract Test is MintableToken {
 
         uint8 additionalPercents = 0;
 
-        if(totalSupply &lt; step){
+        if(totalSupply < step){
             additionalPercents = 0;
         }else{
             uint256 currentRound = totalSupply.sub(preIcoTokensCount).div(step);
 
-            if(currentRound &gt;= 4){
+            if(currentRound >= 4){
                 additionalPercents = 30;
             }
 
-            if(currentRound &gt;= 3 &amp;&amp; currentRound &lt; 4){
+            if(currentRound >= 3 && currentRound < 4){
                 additionalPercents = 30;
             }
 
-            if(currentRound &gt;= 2&amp;&amp; currentRound &lt; 3){
+            if(currentRound >= 2&& currentRound < 3){
                 additionalPercents = 20;
             }
 
-            if(currentRound &gt;= 1 &amp;&amp; currentRound &lt; 2){
+            if(currentRound >= 1 && currentRound < 2){
                 additionalPercents = 10;
             }
         }
 
-        if(additionalPercents &gt; 0){
+        if(additionalPercents > 0){
             rate -= rateBase.mul(additionalPercents).div(100);    // add bonus
         }
 
@@ -502,13 +502,13 @@ contract Test is MintableToken {
     }
 
     function setDateStart(uint256 _dateStart) onlyOwner returns (bool) {
-        require(_dateStart &gt; block.timestamp);
+        require(_dateStart > block.timestamp);
         dateStart = _dateStart;
         return true;
     }
 
     function setRate(uint256 _rate) onlyOwner returns (bool) {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rateBase = _rate;
         return true;
     }

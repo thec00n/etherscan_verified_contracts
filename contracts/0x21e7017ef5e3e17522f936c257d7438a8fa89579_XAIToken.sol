@@ -47,7 +47,7 @@ contract StandardXAIToken is BasicXAIToken {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(allowTransfer);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -56,7 +56,7 @@ contract StandardXAIToken is BasicXAIToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(allowTransfer);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -79,17 +79,17 @@ contract StandardXAIToken is BasicXAIToken {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
 contract XAIToken is StandardXAIToken {
 
-    string public name = &quot;AVALANCHE TOKEN&quot;;
+    string public name = "AVALANCHE TOKEN";
     uint8 public decimals = 18;
-    string public symbol = &quot;XAIT&quot;;
-    string public version = &#39;XAIT 0.1&#39;;
+    string public symbol = "XAIT";
+    string public version = 'XAIT 0.1';
     address public mintableAddress;
     address public creator;
 
@@ -122,7 +122,7 @@ contract XAIToken is StandardXAIToken {
 
     function mintToken(address to, uint256 amount) external returns (bool success) {
         require(msg.sender == mintableAddress);
-        require(balances[this] &gt;= amount);
+        require(balances[this] >= amount);
         balances[this] -= amount;
         balances[to] += amount;
         emit Transfer(this, to, amount);
@@ -133,7 +133,7 @@ contract XAIToken is StandardXAIToken {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
 
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

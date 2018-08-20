@@ -1,7 +1,7 @@
 /**
  * Decentraliced Grid Organization
  * Version: 0.0.1
- * Author: Thorsten Zoerner &lt;<span class="__cf_email__" data-cfemail="8ce1e9ccf8e4e3fefff8e9e2a1f6e3e9fee2e9fea2efe3e1">[email&#160;protected]</span>&gt;
+ * Author: Thorsten Zoerner <<span class="__cf_email__" data-cfemail="8ce1e9ccf8e4e3fefff8e9e2a1f6e3e9fee2e9fea2efe3e1">[email protected]</span>>
  * Donations: btc:1MvghD6TE2nurN4iCUSLdmcCRiwohgCA86 eth:0x697a040b13aefdd9553f3922dcb547be6efd88d2
  * Implementation: Ethereum/Solidity
  */
@@ -15,22 +15,22 @@ Introduces a smart contract for members of a power grid to facilitate P2P balanc
 - Provides tokens per GridMember for clearing
 - Handles simple prioty list for merit order 
 - Allow Exchange of Meter Device
-- Allow multiple &quot;Listeners&quot; (Push Clients) per MP (according to Smart Meter Gateway Concept)
+- Allow multiple "Listeners" (Push Clients) per MP (according to Smart Meter Gateway Concept)
 
 Requires independend smart meter operator.
 */
 /*
-[{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;from&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;to&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;switchMPO&quot;,&quot;outputs&quot;:[],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;mp&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;type&quot;:&quot;function&quot;}]
+[{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"}],"name":"switchMPO","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"mp","outputs":[{"name":"","type":"address"}],"type":"function"}]
 */
 contract MPO { 
 	uint256 public reading;
 	uint256 public time;
 	address public operator; 
 	uint256 shift;
-	string public name =&quot;MP&quot;;
-	string public symbol =&quot;Wh&quot;;
+	string public name ="MP";
+	string public symbol ="Wh";
 	event Transfer(address indexed from, address indexed to, uint256 value);
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	address[] public listeners;
 	
 	function MPO() {
@@ -40,12 +40,12 @@ contract MPO {
 	
 	function updateReading(uint256 last_reading,uint256 timeofreading) {		
 		if(msg.sender!=operator) throw;
-		if((timeofreading&lt;time)||(reading&gt;last_reading)) throw;	
+		if((timeofreading<time)||(reading>last_reading)) throw;	
 		var oldreading=last_reading;
 		reading=last_reading-shift;
 		time=timeofreading;	
 		balanceOf[this]=last_reading;
-		for(var i=0;i&lt;listeners.length;i++) {
+		for(var i=0;i<listeners.length;i++) {
 			balanceOf[listeners[i]]=last_reading;
 			Transfer(msg.sender,listeners[i],last_reading-oldreading);
 		}
@@ -59,7 +59,7 @@ contract MPO {
 	
 	function unregisterListening(address a) {
 	
-		for(var i=0;i&lt;listeners.length;i++) {
+		for(var i=0;i<listeners.length;i++) {
 			if(listeners[i]==a) listeners[i]=0;
 		}
 		
@@ -117,17 +117,17 @@ contract GridMember is operated,MPOListener {
 	uint256 public actual_feedout=0;	
 	uint256 public total_feedin;
 	uint256 public total_feedout;
-	string public symbol =&quot;Wh&quot;;
+	string public symbol ="Wh";
 	uint256 public managedbalance;
 	bool public feedin;
 	bool public autobalancepeers;
 	bool listening;
 	address public aggregate;
 	event Transfer(address indexed from, address indexed to, uint256 value);
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public allowance;	
+	mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public allowance;	
 	
-	mapping (address =&gt; uint256) public molist;
+	mapping (address => uint256) public molist;
 	
 	function GridMember(string membername,uint256 managablebalance,bool directionFeedin,address mpo,address aggregation) {			
 		name=membername;
@@ -159,7 +159,7 @@ contract GridMember is operated,MPOListener {
 	}
 	
 	function addPowerSource(address peer,uint256 manageallowed,uint merritorder) onlyOperator {
-		if(merritorder&gt;9) throw;
+		if(merritorder>9) throw;
 		if(feedin) throw;
  		allowance[peer]=manageallowed;
 		peers.push(peer);
@@ -172,8 +172,8 @@ contract GridMember is operated,MPOListener {
 	}
 		
 	function updateReading(uint256 reading) private {	
-		if(getActual()&gt;0) runPeerBalance();
-		if(reading&lt;lastreading) throw;
+		if(getActual()>0) runPeerBalance();
+		if(reading<lastreading) throw;
 		var actual = reading -lastreading;
 		if(feedin) actual_feedin+=actual; else actual_feedout+=actual;		
 		if(feedin) total_feedin+=actual; else total_feedout+=actual;										
@@ -190,8 +190,8 @@ contract GridMember is operated,MPOListener {
 	}
 	
 	function runPeerBalance() private {
-		for(var j=0;j&lt;10;j++) {
-			for(var i=0;i&lt;peers.length;i++) {
+		for(var j=0;j<10;j++) {
+			for(var i=0;i<peers.length;i++) {
 				if(molist[peers[i]]==j) {
 				GridMember peer = GridMember(peers[i]);
 				allowance[peer]=getActual();
@@ -217,7 +217,7 @@ contract GridMember is operated,MPOListener {
 	function doBalance(address requester) {		
 		updateWithMPO();
 		if(autobalancepeers) {
-			if((actual_feedin&gt;0)||(actual_feedout&gt;0)) {
+			if((actual_feedin>0)||(actual_feedout>0)) {
 				// Prevent Loop Condition!
 				
 			}				
@@ -229,12 +229,12 @@ contract GridMember is operated,MPOListener {
 		uint256 balance_amount=0;
 		//
 		if(feedin) { balance_amount=actual_feedin; } else { balance_amount=actual_feedout; }
-		if(peer_allowance&lt;balance_amount) { balance_amount=peer_allowance; }		
-		if(balanceOf[this]&lt;balance_amount) balance_amount=balanceOf[this];	
+		if(peer_allowance<balance_amount) { balance_amount=peer_allowance; }		
+		if(balanceOf[this]<balance_amount) balance_amount=balanceOf[this];	
 		
-		if((peer.managedbalance()-peer.balanceOf(requester))+peer.getActual()&lt;balance_amount) balance_amount=(peer.managedbalance()-peer.balanceOf(requester))+peer.getActual();
+		if((peer.managedbalance()-peer.balanceOf(requester))+peer.getActual()<balance_amount) balance_amount=(peer.managedbalance()-peer.balanceOf(requester))+peer.getActual();
 		
-		if(balance_amount&gt;0) {
+		if(balance_amount>0) {
 			balanceOf[this]-=balance_amount;
 			balanceOf[requester]+=balance_amount;
 			Transfer(this,requester,balance_amount);
@@ -262,10 +262,10 @@ contract Aggregation {
 	uint256 public balance_out;
 	uint256 public last_balance;
 	uint256 public next_balance;
-	string public name=&quot;Aggregation&quot;;
-	string public symbol=&quot;Wh&quot;;
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public lastbalancing;
+	string public name="Aggregation";
+	string public symbol="Wh";
+	mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public lastbalancing;
 	
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	function Aggregation() {
@@ -285,7 +285,7 @@ contract Aggregation {
 	
 	function doBalanceFor(address a) {
 		bool found=false;
-		for(var i=0;i&lt;members.length;i++) {
+		for(var i=0;i<members.length;i++) {
 			if(members[i]==a) found=true; 
 		}
 		if(!found) throw;
@@ -300,8 +300,8 @@ contract Aggregation {
 		
 	}	
 	function doBalance() {
-		if(now&lt;next_balance) throw;
-		for(var i=0;i&lt;members.length;i++) {
+		if(now<next_balance) throw;
+		for(var i=0;i<members.length;i++) {
 			doBalanceFor(members[i]);			
 		}
 		next_balance=now+3600;

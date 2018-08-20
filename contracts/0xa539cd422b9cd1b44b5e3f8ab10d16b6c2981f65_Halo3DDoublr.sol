@@ -102,7 +102,7 @@ contract Halo3DDoublr is Owned, AcceptsHalo3D {
     //The creditor line
     Participant[] public participants;
     //How much each person is owed
-    mapping(address =&gt; uint256) public creditRemaining;
+    mapping(address => uint256) public creditRemaining;
 
 
     /**
@@ -137,8 +137,8 @@ contract Halo3DDoublr is Owned, AcceptsHalo3D {
       onlyTokenContract
       returns (bool) {
         require(!_isContract(_from));
-        require(_value &lt;= 100 ether); // 100 H3D tokens
-        require(_value &gt;= 1 ether); // 1 H3D token
+        require(_value <= 100 ether); // 100 H3D tokens
+        require(_value >= 1 ether); // 1 H3D token
         //Compute how much to pay them
         uint256 amountCredited = (_value * multiplier) / 100;
         //Get in line to be paid back.
@@ -157,12 +157,12 @@ contract Halo3DDoublr is Owned, AcceptsHalo3D {
 
         //While we still have money to send
         reinvest(); // protect from people sending tokens to contract
-        while (balance &gt; 0) {
+        while (balance > 0) {
             //Either pay them what they are owed or however much we have, whichever is lower.
-            uint payoutToSend = balance &lt; participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
+            uint payoutToSend = balance < participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
             //if we have something to pay them
-            if(payoutToSend &gt; 0){
-                //subtract how much we&#39;ve spent
+            if(payoutToSend > 0){
+                //subtract how much we've spent
                 balance -= payoutToSend;
                 //subtract the amount paid from the amount owed
                 backlog -= payoutToSend;
@@ -171,7 +171,7 @@ contract Halo3DDoublr is Owned, AcceptsHalo3D {
                 //credit their account the amount they are being paid
                 participants[payoutOrder].payout -= payoutToSend;
 
-                //Try and pay them, making best effort. But if we fail? Run out of gas? That&#39;s not our problem any more
+                //Try and pay them, making best effort. But if we fail? Run out of gas? That's not our problem any more
                 if(tokenContract.transfer(participants[payoutOrder].etherAddress, payoutToSend)) {
                   //Record that they were paid
                   emit Payout(payoutToSend, participants[payoutOrder].etherAddress);
@@ -185,12 +185,12 @@ contract Halo3DDoublr is Owned, AcceptsHalo3D {
 
             }
             //If we still have balance left over
-            if(balance &gt; 0){
+            if(balance > 0){
                 // go to the next person in line
                 payoutOrder += 1;
             }
-            //If we&#39;ve run out of people to pay, stop
-            if(payoutOrder &gt;= participants.length){
+            //If we've run out of people to pay, stop
+            if(payoutOrder >= participants.length){
                 return true;
             }
         }
@@ -201,13 +201,13 @@ contract Halo3DDoublr is Owned, AcceptsHalo3D {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     // Reinvest Halo3D Doublr dividends
     // All the dividends this contract makes will be used to grow token fund for players
     function reinvest() public {
-       if(tokenContract.myDividends(true) &gt; 1) {
+       if(tokenContract.myDividends(true) > 1) {
          tokenContract.reinvest();
        }
     }

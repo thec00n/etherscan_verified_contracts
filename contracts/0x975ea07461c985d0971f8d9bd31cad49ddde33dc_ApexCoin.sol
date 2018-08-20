@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,17 +60,17 @@ contract ApexCoin is owned,IERC20{
     
     uint256 public constant _totalSupply = 28000000000000000000000000;
  
-    string public symbol = &#39;APC&#39;;
+    string public symbol = 'APC';
 
-    string public name = &#39;Apex Coin&#39;;
+    string public name = 'Apex Coin';
     
     uint8 public constant decimals = 18;
     
     // 1 ether equels to 1000 tokens
     //uint256 public constant tokensPerEther = 1000;
     
-    mapping(address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
    /* function () payable {
         createTokens();
@@ -89,7 +89,7 @@ contract ApexCoin is owned,IERC20{
     
   /* function createTokens() payable {
         require(
-            msg.value &gt; 0
+            msg.value > 0
         );
         uint256 baseTokens  = msg.value.mul(tokensPerEther);
         balances[msg.sender] = balances[msg.sender].add(baseTokens);
@@ -109,8 +109,8 @@ contract ApexCoin is owned,IERC20{
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
         );
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -121,9 +121,9 @@ contract ApexCoin is owned,IERC20{
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(
-            allowed[_from][msg.sender] &gt;= _value  // Check allowance
-            &amp;&amp; balances[_from] &gt;= _value    // Check if the sender has enough
-            &amp;&amp; _value &gt; 0    // Don&#39;t allow 0value transfer
+            allowed[_from][msg.sender] >= _value  // Check allowance
+            && balances[_from] >= _value    // Check if the sender has enough
+            && _value > 0    // Don't allow 0value transfer
         );
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

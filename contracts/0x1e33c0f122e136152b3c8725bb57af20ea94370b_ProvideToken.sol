@@ -17,30 +17,30 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assertTrue(bool val) internal {
@@ -85,13 +85,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping (address =&gt; uint) balances;
+  mapping (address => uint) balances;
 
   /**
    * Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if (msg.data.length &lt; size + 4) {
+     if (msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -127,7 +127,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    * Transfer tokens from one address to another
@@ -153,7 +153,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -322,7 +322,7 @@ contract LimitedTransferToken is ERC20 {
    * Checks whether it can transfer or otherwise throws
    */
   modifier canTransfer(address _sender, uint _value) {
-    if (_value &gt; transferableTokens(_sender, uint64(now))) revert();
+    if (_value > transferableTokens(_sender, uint64(now))) revert();
     _;
   }
 
@@ -399,7 +399,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states:
    *
    * - NotAllowed: the child contract has not reached a condition where the upgrade can begin
-   * - WaitingForAgent: token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: the agent is set, but not a single token has been upgraded yet
    * - Upgrading: upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -514,7 +514,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -540,11 +540,11 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   ) public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    if (_cliff &lt; _start || _vesting &lt; _cliff) {
+    if (_cliff < _start || _vesting < _cliff) {
       revert();
     }
 
-    if (tokenGrantsCount(_to) &gt; MAX_GRANTS_PER_ADDRESS) revert();  // To prevent a user being spammed and have his balance
+    if (tokenGrantsCount(_to) > MAX_GRANTS_PER_ADDRESS) revert();  // To prevent a user being spammed and have his balance
                                                                 // locked (out of gas attack when calculating vesting).
 
     uint count = grants[_to].push(
@@ -598,7 +598,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    *
    * @param holder address The address of the holder
    * @param time uint64 The specific time
-   * @return An uint representing a holder&#39;s total amount of transferable tokens
+   * @return An uint representing a holder's total amount of transferable tokens
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -606,7 +606,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = nonVested.add(nonVestedTokens(grants[holder][i], time));
     }
 
@@ -650,17 +650,17 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    *   |        .      |
    *   |      .        |(grants[_holder] == address(0)) return 0;
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(uint256 tokens, uint256 time, uint256 start, uint256 cliff, uint256 vesting) constant returns (uint256) {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       uint vestedTokens = tokens.mul(time.sub(start)).div(vesting.sub(start));
       return vestedTokens;
@@ -726,7 +726,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = SafeMath.max64(grants[holder][i].vesting, date);
     }
   }
@@ -738,8 +738,8 @@ contract VestedToken is StandardToken, LimitedTransferToken {
  */
 contract ProvideToken is BurnableToken, MintableToken, VestedToken, UpgradeableToken {
 
-  string public constant name = &#39;Provide&#39;;
-  string public constant symbol = &#39;PRVD&#39;;
+  string public constant name = 'Provide';
+  string public constant symbol = 'PRVD';
   uint public constant decimals = 8;
 
   function ProvideToken()  UpgradeableToken(msg.sender) { }
@@ -758,6 +758,6 @@ contract ProvideToken is BurnableToken, MintableToken, VestedToken, UpgradeableT
     assembly {
       size := extcodesize(_addr)
     }
-    return size &gt; 0;
+    return size > 0;
   }
 }

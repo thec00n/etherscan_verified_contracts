@@ -5,7 +5,7 @@ Token Contract with batch assignments
 ERC-20 Token Standar Compliant
 
 Contract developer: Fares A. Akel C.
-<span class="__cf_email__" data-cfemail="d9bff7b8b7adb6b7b0b6f7b8b2bcb599beb4b8b0b5f7bab6b4">[email&#160;protected]</span>
+<span class="__cf_email__" data-cfemail="d9bff7b8b7adb6b7b0b6f7b8b2bcb599beb4b8b0b5f7bab6b4">[email protected]</span>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -63,7 +63,7 @@ contract Sender is admined {
     * @param _amount amount to transfer per address.
     */
     function batch(address[] _data, uint256 _amount) onlyAdmin public { //It takes an array of addresses and an amount
-        for (uint i=0; i&lt;_data.length; i++) { //It moves over the array
+        for (uint i=0; i<_data.length; i++) { //It moves over the array
             ERC20Token.transfer(_data[i], _amount);
         }
     }

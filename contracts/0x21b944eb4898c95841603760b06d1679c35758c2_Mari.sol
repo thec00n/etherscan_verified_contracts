@@ -8,20 +8,20 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure  internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
     
     function safeDiv(uint a, uint b) pure internal returns (uint) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-     assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+     assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -40,10 +40,10 @@ contract ERC20 {
 contract Mari is ERC20, SafeMath
 {
     // Name of the token
-    string public constant name = &quot;Mari&quot;;
+    string public constant name = "Mari";
 
     // Symbol of token
-    string public constant symbol = &quot;MAR&quot;;
+    string public constant symbol = "MAR";
 
     uint8 public constant decimals = 18;
     uint public totalsupply = 2000000 * 10 ** 18; //
@@ -53,8 +53,8 @@ contract Mari is ERC20, SafeMath
     bool stopped = true;
     uint256 startdate;
     uint256 enddate;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     
      enum Stages {
@@ -90,7 +90,7 @@ contract Mari is ERC20, SafeMath
   
     function () public payable atStage(Stages.ICO)
     {
-        require(!stopped &amp;&amp; msg.sender != owner &amp;&amp; now &lt;= enddate);
+        require(!stopped && msg.sender != owner && now <= enddate);
         no_of_tokens = safeMul(msg.value , _price_tokn);
         transferTokens(msg.sender,no_of_tokens);
     }
@@ -140,10 +140,10 @@ contract Mari is ERC20, SafeMath
         address _to,
         uint256 _amount
     ) public returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            allowed[_from][msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            allowed[_from][msg.sender] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -165,11 +165,11 @@ contract Mari is ERC20, SafeMath
     function allowance(address _owner, address _spender) public constant returns(uint256 remaining) {
         return allowed[_owner][_spender];
     }
-      // Transfer the balance from owner&#39;s account to another account
+      // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) public returns(bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
          
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -183,11 +183,11 @@ contract Mari is ERC20, SafeMath
         }
     }
     
-          // Transfer the balance from owner&#39;s account to another account
+          // Transfer the balance from owner's account to another account
     function transferTokens(address _to, uint256 _amount) private returns(bool success) {
-        if (balances[address(this)] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[address(this)] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
          
             balances[address(this)] -= _amount;
             balances[_to] += _amount;

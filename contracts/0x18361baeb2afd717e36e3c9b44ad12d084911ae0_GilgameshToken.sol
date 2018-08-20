@@ -5,12 +5,12 @@ contract SafeMath {
 
 	function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 
 	function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -21,7 +21,7 @@ contract SafeMath {
 	}
 
 	function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		uint256 c = a / b;
 		assert(a == b * c + a % b);
 		return c;
@@ -90,24 +90,24 @@ contract SecureERC20Token is ERC20Token {
 	// State variables
 
 	// balances dictionary that maps addresses to balances
-	mapping (address =&gt; uint256) private balances;
+	mapping (address => uint256) private balances;
 
 	// locked account dictionary that maps addresses to boolean
-	mapping (address =&gt; bool) private lockedAccounts;
+	mapping (address => bool) private lockedAccounts;
 
 	 // allowed dictionary that allow transfer rights to other addresses.
-	mapping (address =&gt; mapping(address =&gt; uint256)) private allowed;
+	mapping (address => mapping(address => uint256)) private allowed;
 
-	// The Token&#39;s name: e.g. &#39;Gilgamesh Tokens&#39;
+	// The Token's name: e.g. 'Gilgamesh Tokens'
 	string public name;
 
-	// Symbol of the token: e.q &#39;GIL&#39;
+	// Symbol of the token: e.q 'GIL'
 	string public symbol;
 
-	// Number of decimals of the smallest unit: e.g &#39;18&#39;
+	// Number of decimals of the smallest unit: e.g '18'
 	uint8 public decimals;
 
-	// Number of total tokens: e,g: &#39;1000000000&#39;
+	// Number of total tokens: e,g: '1000000000'
 	uint256 public totalSupply;
 
 	// token version
@@ -189,7 +189,7 @@ contract SecureERC20Token is ERC20Token {
 		require(isTransferEnabled);
 
 		// if from allowed transferrable rights to sender for amount _value
-		if (allowed[_from][msg.sender] &lt; _value) revert();
+		if (allowed[_from][msg.sender] < _value) revert();
 
 		// subtreact allowance
 		allowed[_from][msg.sender] -= _value;
@@ -213,11 +213,11 @@ contract SecureERC20Token is ERC20Token {
 		// sender should first change the allowance to zero by calling approve(_spender, 0)
 		// race condition is explained below:
 		// https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-		if(_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) revert();
+		if(_value != 0 && allowed[msg.sender][_spender] != 0) revert();
 
 		if (
 			// if sender balance is less than _value return false;
-			balances[msg.sender] &lt; _value
+			balances[msg.sender] < _value
 		) {
 			// transaction failure
 			return false;
@@ -269,7 +269,7 @@ contract SecureERC20Token is ERC20Token {
 		lockedAccounts[_owner] = false;
 	}
 
-	/// @notice only the admin is allowed to burn tokens - in case if the user haven&#39;t verified identity or performed fraud
+	/// @notice only the admin is allowed to burn tokens - in case if the user haven't verified identity or performed fraud
 	/// @param _owner the address of the account that their tokens needs to be burnt
 	function burnUserTokens(address _owner)
 	public
@@ -279,7 +279,7 @@ contract SecureERC20Token is ERC20Token {
 		if (balances[_owner] == 0) revert();
 
 		// should never happen but just in case
-		if (balances[_owner] &gt; totalSupply) revert();
+		if (balances[_owner] > totalSupply) revert();
 
 		// decrease the total supply
 		totalSupply -= balances[_owner];
@@ -319,10 +319,10 @@ contract SecureERC20Token is ERC20Token {
 	validate_address(_owner)
 	returns (bool success) {
 		// preventing overflow on the totalSupply
-		if (totalSupply + _amount &lt; totalSupply) revert();
+		if (totalSupply + _amount < totalSupply) revert();
 
 		// preventing overflow on the receiver account
-		if (balances[_owner] + _amount &lt; balances[_owner]) revert();
+		if (balances[_owner] + _amount < balances[_owner]) revert();
 
 		// increase the total supply
 		totalSupply += _amount;
@@ -362,11 +362,11 @@ contract SecureERC20Token is ERC20Token {
 	returns (bool success) {
 		if (
 			// if the value is not more than 0 fail
-			_value &lt;= 0 ||
-			// if the sender doesn&#39;t have enough balance fail
-			balances[_from] &lt; _value ||
+			_value <= 0 ||
+			// if the sender doesn't have enough balance fail
+			balances[_from] < _value ||
 			// if token supply overflows (total supply exceeds 2^256 - 1) fail
-			balances[_to] + _value &lt; balances[_to]
+			balances[_to] + _value < balances[_to]
 		) {
 			// transaction failed
 			return false;
@@ -425,8 +425,8 @@ contract GilgameshToken is SecureERC20Token {
 	public
 	SecureERC20Token(
 		0, // no token in the begning
-		&quot;Gilgamesh Token&quot;, // Token Name
-		&quot;GIL&quot;, // Token Symbol
+		"Gilgamesh Token", // Token Name
+		"GIL", // Token Symbol
 		18, // Decimals
 		false // Enable token transfer
 	) {}
@@ -489,10 +489,10 @@ contract GilgameshTokenSale is SafeMath{
 	uint256 public totalParticipants;
 
 	// a map of userId to wei
-	mapping(uint256 =&gt; uint256) public paymentsByUserId;
+	mapping(uint256 => uint256) public paymentsByUserId;
 
 	// a map of user address to wei
-	mapping(address =&gt; uint256) public paymentsByAddress;
+	mapping(address => uint256) public paymentsByAddress;
 
 	// total number of bonus stages.
 	uint8 public totalStages;
@@ -554,14 +554,14 @@ contract GilgameshTokenSale is SafeMath{
 			_gilgameshToken == 0x0 ||
 			_tokenOwnerWallet == 0x0 ||
 			// start block needs to be in the future
-			_startBlock &lt; getBlockNumber()  ||
+			_startBlock < getBlockNumber()  ||
 			// start block should be less than ending block
-			_startBlock &gt;= _endBlock  ||
+			_startBlock >= _endBlock  ||
 			// minimum number of stages is 2
-			_totalStages &lt; 2 ||
+			_totalStages < 2 ||
 			// verify stage max bonus
-			_stageMaxBonusPercentage &lt; 0  ||
-			_stageMaxBonusPercentage &gt; 100 ||
+			_stageMaxBonusPercentage < 0  ||
+			_stageMaxBonusPercentage > 100 ||
 			// stage bonus percentage needs to be devisible by number of stages
 			_stageMaxBonusPercentage % (_totalStages - 1) != 0 ||
 			// total number of blocks needs to be devisible by the total stages
@@ -585,8 +585,8 @@ contract GilgameshTokenSale is SafeMath{
 		// spread bonuses evenly between stages - e.g 27 / 9 = 3%
 		uint spread = stageMaxBonusPercentage / (totalStages - 1);
 
-		// loop through [10 to 1] =&gt; ( 9 to 0) * 3% = [27%, 24%, 21%, 18%, 15%, 12%, 9%, 6%, 3%, 0%]
-		for (uint stageNumber = totalStages; stageNumber &gt; 0; stageNumber--) {
+		// loop through [10 to 1] => ( 9 to 0) * 3% = [27%, 24%, 21%, 18%, 15%, 12%, 9%, 6%, 3%, 0%]
+		for (uint stageNumber = totalStages; stageNumber > 0; stageNumber--) {
 			stageBonusPercentage.push((stageNumber - 1) * spread);
 		}
 
@@ -614,7 +614,7 @@ contract GilgameshTokenSale is SafeMath{
 
 	/// @notice Function to restart stopped sale.
 	/// @dev Only Gilgamesh Dev can do it after it has been disabled and sale has stopped.
-	/// can it&#39;s in a valid time range for sale
+	/// can it's in a valid time range for sale
 	function restartSale()
 	public
 	only_during_sale_period
@@ -655,12 +655,12 @@ contract GilgameshTokenSale is SafeMath{
 	function changeCap(uint256 _cap)
 	public
 	onlyOwner {
-		if (_cap &lt; minimumCap) revert();
-		if (_cap &lt;= totalRaised) revert();
+		if (_cap < minimumCap) revert();
+		if (_cap <= totalRaised) revert();
 
 		hardCap = _cap;
 
-		if (totalRaised + minimumInvestment &gt;= hardCap) {
+		if (totalRaised + minimumInvestment >= hardCap) {
 			isCapReached = true;
 			doFinalizeSale();
 		}
@@ -670,7 +670,7 @@ contract GilgameshTokenSale is SafeMath{
 	function changeMinimumCap(uint256 _cap)
 	public
 	onlyOwner {
-		if (minimumCap &lt; _cap) revert();
+		if (minimumCap < _cap) revert();
 		minimumCap = _cap;
 	}
 
@@ -726,15 +726,15 @@ contract GilgameshTokenSale is SafeMath{
 	minimum_contribution()
 	validate_address(userAddress) {
 		// if it passes hard cap throw
-		if (totalRaised + msg.value &gt; hardCap) revert();
+		if (totalRaised + msg.value > hardCap) revert();
 
 		uint256 userAssignedTokens = calculateTokens(msg.value);
 
 		// if user tokens are 0 throw
-		if (userAssignedTokens &lt;= 0) revert();
+		if (userAssignedTokens <= 0) revert();
 
 		// if number of tokens exceed the token cap stop execution
-		if (token.totalSupply() + userAssignedTokens &gt; tokenCap) revert();
+		if (token.totalSupply() + userAssignedTokens > tokenCap) revert();
 
 		// send funds to fund owner wallet
 		if (!fundOwnerWallet.send(msg.value)) revert();
@@ -746,12 +746,12 @@ contract GilgameshTokenSale is SafeMath{
 		totalRaised = safeAdd(totalRaised, msg.value);
 
 		// if cap is reached mark it
-		if (totalRaised &gt;= hardCap) {
+		if (totalRaised >= hardCap) {
 			isCapReached = true;
 		}
 
 		// if token supply has exceeded or reached the token cap stop
-		if (token.totalSupply() &gt;= tokenCap) {
+		if (token.totalSupply() >= tokenCap) {
 			isCapReached = true;
 		}
 
@@ -783,14 +783,14 @@ contract GilgameshTokenSale is SafeMath{
 	public
 	view
 	returns (uint256) {
-		// return 0 if the crowd fund has ended or it hasn&#39;t started
+		// return 0 if the crowd fund has ended or it hasn't started
 		if (!isDuringSalePeriod(getBlockNumber())) return 0;
 
 		// get the current stage number by block number
 		uint8 currentStage = getStageByBlockNumber(getBlockNumber());
 
 		// if current stage is more than the total stage return 0 - something is wrong
-		if (currentStage &gt; totalStages) return 0;
+		if (currentStage > totalStages) return 0;
 
 		// calculate number of tokens that needs to be issued for the purchaser
 		uint256 purchasedTokens = safeMul(amount, tokenPrice);
@@ -807,10 +807,10 @@ contract GilgameshTokenSale is SafeMath{
 	public
 	view
 	returns (uint256 rewardAmount) {
-		// throw if it&#39;s invalid stage number
+		// throw if it's invalid stage number
 		if (
-			stageNumber &lt; 1 ||
-			stageNumber &gt; totalStages
+			stageNumber < 1 ||
+			stageNumber > totalStages
 		) revert();
 
 		// get stage index for the array
@@ -846,7 +846,7 @@ contract GilgameshTokenSale is SafeMath{
 	view
 	internal
 	returns (bool) {
-		return (_blockNumber &gt;= startBlock &amp;&amp; _blockNumber &lt; endBlock);
+		return (_blockNumber >= startBlock && _blockNumber < endBlock);
 	}
 
 	/// @notice finalize the crowdfun sale
@@ -860,13 +860,13 @@ contract GilgameshTokenSale is SafeMath{
 		// calculate the number of tokens that needs to be assigned to Gilgamesh team
 		uint256 teamTokens = safeMul(token.totalSupply(), teamTokenRatio);
 
-		if (teamTokens &gt; 0){
+		if (teamTokens > 0){
 			// mint tokens for the team
 			if (!token.mint(tokenOwnerWallet, teamTokens)) revert();
 		}
 
 		// if there is any fund drain it
-		if(this.balance &gt; 0) {
+		if(this.balance > 0) {
 			// send ether funds to fund owner wallet
 			if (!fundOwnerWallet.send(this.balance)) revert();
 		}
@@ -897,7 +897,7 @@ contract GilgameshTokenSale is SafeMath{
 	}
 
 
-	/// validates an address - currently only checks that it isn&#39;t null
+	/// validates an address - currently only checks that it isn't null
 	modifier validate_address(address _address) {
 		if (_address == 0x0) revert();
 		_;
@@ -906,9 +906,9 @@ contract GilgameshTokenSale is SafeMath{
 	/// continue only during the sale period
 	modifier only_during_sale_period {
 		// if block number is less than starting block fail
-		if (getBlockNumber() &lt; startBlock) revert();
+		if (getBlockNumber() < startBlock) revert();
 		// if block number has reach to the end block fail
-		if (getBlockNumber() &gt;= endBlock) revert();
+		if (getBlockNumber() >= endBlock) revert();
 		// otherwise safe to continue
 		_;
 	}
@@ -922,16 +922,16 @@ contract GilgameshTokenSale is SafeMath{
 		// if cap is reached
 		if (isCapReached) revert();
 		// if block number is less than starting block fail
-		if (getBlockNumber() &lt; startBlock) revert();
+		if (getBlockNumber() < startBlock) revert();
 		// if block number has reach to the end block fail
-		if (getBlockNumber() &gt;= endBlock) revert();
+		if (getBlockNumber() >= endBlock) revert();
 		// otherwise safe to continue
 		_;
 	}
 
 	/// continue if minimum contribution has reached
 	modifier minimum_contribution() {
-		if (msg.value &lt; minimumInvestment) revert();
+		if (msg.value < minimumInvestment) revert();
 		_;
 	}
 

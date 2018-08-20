@@ -12,37 +12,37 @@ library SafeMathForBoost {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -56,18 +56,18 @@ library SafeMathForBoost {
 contract Boost {
     using SafeMathForBoost for uint256;
 
-    string public name = &quot;Boost&quot;;         // トークン名
+    string public name = "Boost";         // トークン名
     uint8 public decimals = 0;            // 小数点以下何桁か
-    string public symbol = &quot;BST&quot;;         // トークンの単位
+    string public symbol = "BST";         // トークンの単位
     uint256 public totalSupply = 100000000;  // 総供給量
 
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
     ///  given value, the block number attached is the one that last changed the
@@ -116,7 +116,7 @@ contract Boost {
         return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -155,7 +155,7 @@ contract Boost {
     /// @param _blockNumber The block number when the balance is queried
     /// @return The balance at `_blockNumber`
     function balanceOfAt(address _owner, uint _blockNumber) public view returns (uint) {
-        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
             return 0;
         } else {
             return getValueAt(balances[_owner], _blockNumber);
@@ -171,7 +171,7 @@ contract Boost {
     function doTransfer(address _from, address _to, uint _amount) internal {
 
         // Do not allow transfer to 0x0 or the token contract itself
-        require((_to != 0) &amp;&amp; (_to != address(this)) &amp;&amp; (_amount != 0));
+        require((_to != 0) && (_to != address(this)) && (_amount != 0));
 
         // First update the balance array with the new value for the address
         // sending the tokens
@@ -196,16 +196,16 @@ contract Boost {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length - 1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length - 1].fromBlock)
             return checkpoints[checkpoints.length - 1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length - 1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1) / 2;
-            if (checkpoints[mid].fromBlock &lt;= _block) {
+            if (checkpoints[mid].fromBlock <= _block) {
                 min = mid;
             } else {
                 max = mid - 1;
@@ -219,7 +219,7 @@ contract Boost {
     /// @param checkpoints The history of data being updated
     /// @param _value The new number of tokens
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock &lt; block.number)) {
+        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock < block.number)) {
             Checkpoint storage newCheckPoint = checkpoints[checkpoints.length++];
             newCheckPoint.fromBlock = block.number;
             newCheckPoint.value = _value;
@@ -231,7 +231,7 @@ contract Boost {
 
     /// @dev Helper function to return a min between the two uints
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -251,7 +251,7 @@ contract BoostContainer {
     InfoForDeposit[] public arrayInfoForDeposit;
 
     // Mapping to check this account has already withdrawn
-    mapping(address =&gt; uint256) public mapCompletionNumberForWithdraw;
+    mapping(address => uint256) public mapCompletionNumberForWithdraw;
 
     // Event
     event LogDepositForDividend(uint256 blockNumber, uint256 etherAountForDividend);
@@ -300,7 +300,7 @@ contract BoostContainer {
     /// @dev Deposit `msg.value` in arrayInfoForDeposit
     /// @param _blockNumber The blockNumber to specify the token amount that each address has at this blockNumber
     function depositForDividend(uint256 _blockNumber) public payable onlyMultiSig whenNotPaused {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         arrayInfoForDeposit.push(InfoForDeposit({blockNumber:_blockNumber, depositedEther:msg.value}));
 
@@ -313,7 +313,7 @@ contract BoostContainer {
         // get withdrawAmount that msg.sender can withdraw
         uint256 withdrawAmount = getWithdrawValue(msg.sender);
 
-        require(withdrawAmount &gt; 0);
+        require(withdrawAmount > 0);
 
         // set the arrayInfoForDeposit.length to mapCompletionNumberForWithdraw
         mapCompletionNumberForWithdraw[msg.sender] = arrayInfoForDeposit.length;
@@ -347,8 +347,8 @@ contract BoostContainer {
         uint256 depositedEther;
         uint256 tokenAmount;
 
-        for (uint256 i = 0; i &lt; arrayInfoForDeposit.length; i++) {
-            if (i &lt; validNumber) {
+        for (uint256 i = 0; i < arrayInfoForDeposit.length; i++) {
+            if (i < validNumber) {
                 continue;
             }
 
@@ -386,7 +386,7 @@ contract BoostContainer {
     /// @param _amount ether value that investor will receive
     function sendProfit(address _address, uint256 _amount) public isNotCompletedForWithdrawal(_address) onlyMultiSig whenPaused {
         require(_address != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         mapCompletionNumberForWithdraw[_address] = arrayInfoForDeposit.length;
 

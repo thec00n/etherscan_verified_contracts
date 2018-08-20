@@ -57,7 +57,7 @@ contract DataLayer{
     /**
     * groups1     scores of the first half of matches (8 bits each)
     * groups2     scores of the second half of matches (8 bits each)
-    * brackets    winner&#39;s team ids of each round (5 bits each)
+    * brackets    winner's team ids of each round (5 bits each)
     * timeStamp   creation timestamp
     * extra       number of yellow and red cards (16 bits each)
     */
@@ -76,8 +76,8 @@ contract DataLayer{
 
     struct BracketPhase{
         uint8[16] roundOfSixteenTeamsIds;
-        mapping (uint8 =&gt; bool) teamExists;
-        mapping (uint8 =&gt; teamState) middlePhaseTeamsIds;
+        mapping (uint8 => bool) teamExists;
+        mapping (uint8 => teamState) middlePhaseTeamsIds;
         uint8[4] finalsTeamsIds;
     }
 
@@ -101,11 +101,11 @@ contract DataLayer{
     uint256[] worstTokens;
     pointsValidationState public pValidationState = pointsValidationState.Unstarted;
 
-    mapping (address =&gt; uint256[]) public tokensOfOwnerMap;
-    mapping (uint256 =&gt; address) public ownerOfTokenMap;
-    mapping (uint256 =&gt; address) public tokensApprovedMap;
-    mapping (uint256 =&gt; uint256) public tokenToPayoutMap;
-    mapping (uint256 =&gt; uint16) public tokenToPointsMap;    
+    mapping (address => uint256[]) public tokensOfOwnerMap;
+    mapping (uint256 => address) public ownerOfTokenMap;
+    mapping (uint256 => address) public tokensApprovedMap;
+    mapping (uint256 => uint256) public tokenToPayoutMap;
+    mapping (uint256 => uint16) public tokenToPointsMap;    
 
 
     event LogTokenBuilt(address creatorAddress, uint256 tokenId, Token token);
@@ -185,7 +185,7 @@ contract AccessControlLayer is DataLayer{
     * @dev Modifier that checks that the contract has finished successfully
     */
     modifier hasFinished() {
-        require((gameFinishedTime != 0) &amp;&amp; now &gt;= (gameFinishedTime + (15 days)));
+        require((gameFinishedTime != 0) && now >= (gameFinishedTime + (15 days)));
         _;
     }
 
@@ -207,7 +207,7 @@ contract AccessControlLayer is DataLayer{
     }
 
     /**
-    * @dev Transfer contract&#39;s ownership
+    * @dev Transfer contract's ownership
     * @param _newAdmin Address to be set
     */
     function setAdmin(address _newAdmin) external onlyAdmin {
@@ -274,14 +274,14 @@ contract CryptocupToken is AccessControlLayer, ERC721 {
     */
     function _transfer(address fromAddress, address toAddress, uint256 tokenId) internal {
 
-      require(tokensOfOwnerMap[toAddress].length &lt; 100);
+      require(tokensOfOwnerMap[toAddress].length < 100);
       require(pValidationState == pointsValidationState.Unstarted);
       
       tokensOfOwnerMap[toAddress].push(tokenId);
       ownerOfTokenMap[tokenId] = toAddress;
 
       uint256[] storage tokenArray = tokensOfOwnerMap[fromAddress];
-      for (uint256 i = 0; i &lt; tokenArray.length; i++){
+      for (uint256 i = 0; i < tokenArray.length; i++){
         if(tokenArray[i] == tokenId){
           tokenArray[i] = tokenArray[tokenArray.length-1];
         }
@@ -317,11 +317,11 @@ contract CryptocupToken is AccessControlLayer, ERC721 {
 
     //ERC721 INTERFACE
     function name() public view returns (string){
-      return &quot;Cryptocup&quot;;
+      return "Cryptocup";
     }
 
     function symbol() public view returns (string){
-      return &quot;CC&quot;;
+      return "CC";
     }
 
     
@@ -409,9 +409,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -419,7 +419,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -428,7 +428,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -502,7 +502,7 @@ contract GameLogicLayer is CryptocupToken{
     function dataSourceCallbackGroup(uint matchId, uint8 result, uint8 result2) public {
 
         require (msg.sender == dataSourceAddress);
-        require (matchId &gt;= 0 &amp;&amp; matchId &lt;= 47);
+        require (matchId >= 0 && matchId <= 47);
 
         groupsResults[matchId].teamOneGoals = result;
         groupsResults[matchId].teamTwoGoals = result2;
@@ -533,14 +533,14 @@ contract GameLogicLayer is CryptocupToken{
 
         teamState state = bracketsResults.middlePhaseTeamsIds[result];
 
-        if (matchId &gt;= 48 &amp;&amp; matchId &lt;= 55){
-            if (state &lt; teamState.ROS)
+        if (matchId >= 48 && matchId <= 55){
+            if (state < teamState.ROS)
                 bracketsResults.middlePhaseTeamsIds[result] = teamState.ROS;
-        } else if (matchId &gt;= 56 &amp;&amp; matchId &lt;= 59){
-            if (state &lt; teamState.QUARTERS)
+        } else if (matchId >= 56 && matchId <= 59){
+            if (state < teamState.QUARTERS)
                 bracketsResults.middlePhaseTeamsIds[result] = teamState.QUARTERS;
         } else if (matchId == 60 || matchId == 61){
-            if (state &lt; teamState.SEMIS)
+            if (state < teamState.SEMIS)
                 bracketsResults.middlePhaseTeamsIds[result] = teamState.SEMIS;
         }
 
@@ -558,7 +558,7 @@ contract GameLogicLayer is CryptocupToken{
 
         uint256 i;
 
-        for(i = 0; i &lt; 4; i++){
+        for(i = 0; i < 4; i++){
             bracketsResults.finalsTeamsIds[i] = result[i];
         }
 
@@ -598,7 +598,7 @@ contract GameLogicLayer is CryptocupToken{
         int8 realR = int8(realResultOne - realResultTwo);
         int8 tokenR = int8(tokenResultOne - tokenResultTwo);
 
-        return (realR &gt; 0 &amp;&amp; tokenR &gt; 0) || (realR &lt; 0 &amp;&amp; tokenR &lt; 0) || (realR == 0 &amp;&amp; tokenR == 0);
+        return (realR > 0 && tokenR > 0) || (realR < 0 && tokenR < 0) || (realR == 0 && tokenR == 0);
 
     }
 
@@ -611,13 +611,13 @@ contract GameLogicLayer is CryptocupToken{
     */
     function getMatchPointsGroups (uint256 matchIndex, uint192 groupsPhase) internal view returns(uint16 matchPoints) {
 
-        uint8 tokenResultOne = uint8(groupsPhase &amp; TEAM_RESULT_MASK_GROUPS);
-        uint8 tokenResultTwo = uint8((groupsPhase &gt;&gt; 4) &amp; TEAM_RESULT_MASK_GROUPS);
+        uint8 tokenResultOne = uint8(groupsPhase & TEAM_RESULT_MASK_GROUPS);
+        uint8 tokenResultTwo = uint8((groupsPhase >> 4) & TEAM_RESULT_MASK_GROUPS);
 
         uint8 teamOneGoals = groupsResults[matchIndex].teamOneGoals;
         uint8 teamTwoGoals = groupsResults[matchIndex].teamTwoGoals;
 
-        if (teamOneGoals == tokenResultOne &amp;&amp; teamTwoGoals == tokenResultTwo){
+        if (teamOneGoals == tokenResultOne && teamTwoGoals == tokenResultTwo){
             matchPoints += 10;
         } else {
             if (matchWinnerOk(teamOneGoals, teamTwoGoals, tokenResultOne, tokenResultTwo)){
@@ -636,9 +636,9 @@ contract GameLogicLayer is CryptocupToken{
 
         uint8[3] memory teamsIds;
 
-        for (uint i = 0; i &lt;= 2; i++){
-            brackets = brackets &gt;&gt; 5; //discard 4th place
-            teamsIds[2-i] = uint8(brackets &amp; RESULT_MASK_BRACKETS);
+        for (uint i = 0; i <= 2; i++){
+            brackets = brackets >> 5; //discard 4th place
+            teamsIds[2-i] = uint8(brackets & RESULT_MASK_BRACKETS);
         }
 
         if (teamsIds[0] == bracketsResults.finalsTeamsIds[0]){
@@ -670,14 +670,14 @@ contract GameLogicLayer is CryptocupToken{
 
         uint8 teamId;
 
-        for (uint i = 0; i &lt; size; i++){
-            teamId = uint8(brackets &amp; RESULT_MASK_BRACKETS);
+        for (uint i = 0; i < size; i++){
+            teamId = uint8(brackets & RESULT_MASK_BRACKETS);
 
-            if (uint(bracketsResults.middlePhaseTeamsIds[teamId]) &gt;= uint(round) ) {
+            if (uint(bracketsResults.middlePhaseTeamsIds[teamId]) >= uint(round) ) {
                 middleRoundResults+=60;
             }
 
-            brackets = brackets &gt;&gt; 5;
+            brackets = brackets >> 5;
         }
 
     }
@@ -691,8 +691,8 @@ contract GameLogicLayer is CryptocupToken{
 
         uint8 teamId;
 
-        for (uint256 i = 0; i &lt;= 15; i++){
-            teamId = uint8(brackets &amp; RESULT_MASK_BRACKETS);
+        for (uint256 i = 0; i <= 15; i++){
+            teamId = uint8(brackets & RESULT_MASK_BRACKETS);
 
             if (teamId == bracketsResults.roundOfSixteenTeamsIds[15-i]){
                 qualifiersPoints+=30;
@@ -700,7 +700,7 @@ contract GameLogicLayer is CryptocupToken{
                 qualifiersPoints+=25;
             }
             
-            brackets = brackets &gt;&gt; 5;
+            brackets = brackets >> 5;
         }
 
     }
@@ -712,8 +712,8 @@ contract GameLogicLayer is CryptocupToken{
     */
     function getExtraPoints(uint32 extras) internal view returns(uint16 extraPoints){
 
-        uint16 redCards = uint16(extras &amp; EXTRA_MASK_BRACKETS);
-        extras = extras &gt;&gt; 16;
+        uint16 redCards = uint16(extras & EXTRA_MASK_BRACKETS);
+        extras = extras >> 16;
         uint16 yellowCards = uint16(extras);
 
         if (redCards == extraResults.redCards){
@@ -735,31 +735,31 @@ contract GameLogicLayer is CryptocupToken{
         
         //Groups phase 1
         uint192 g1 = t.groups1;
-        for (uint256 i = 0; i &lt;= 23; i++){
+        for (uint256 i = 0; i <= 23; i++){
             points+=getMatchPointsGroups(23-i, g1);
-            g1 = g1 &gt;&gt; 8;
+            g1 = g1 >> 8;
         }
 
         //Groups phase 2
         uint192 g2 = t.groups2;
-        for (i = 0; i &lt;= 23; i++){
+        for (i = 0; i <= 23; i++){
             points+=getMatchPointsGroups(47-i, g2);
-            g2 = g2 &gt;&gt; 8;
+            g2 = g2 >> 8;
         }
         
         uint160 bracketsLocal = t.brackets;
 
         //Brackets phase 1
         points+=getFinalRoundPoints(bracketsLocal);
-        bracketsLocal = bracketsLocal &gt;&gt; 20;
+        bracketsLocal = bracketsLocal >> 20;
 
         //Brackets phase 2 
         points+=getMiddleRoundPoints(4, teamState.QUARTERS, bracketsLocal);
-        bracketsLocal = bracketsLocal &gt;&gt; 20;
+        bracketsLocal = bracketsLocal >> 20;
 
         //Brackets phase 3 
         points+=getMiddleRoundPoints(8, teamState.ROS, bracketsLocal);
-        bracketsLocal = bracketsLocal &gt;&gt; 40;
+        bracketsLocal = bracketsLocal >> 40;
 
         //Brackets phase 4
         points+=getQualifiersPoints(bracketsLocal);
@@ -777,17 +777,17 @@ contract GameLogicLayer is CryptocupToken{
 	function calculatePointsBlock(uint32 amount) external{
 
         require (gameFinishedTime == 0);
-        require(amount + lastCheckedToken &lt;= tokens.length);
+        require(amount + lastCheckedToken <= tokens.length);
 
 
-        for (uint256 i = lastCalculatedToken; i &lt; (lastCalculatedToken + amount); i++) {
+        for (uint256 i = lastCalculatedToken; i < (lastCalculatedToken + amount); i++) {
             uint16 points = calculateTokenPoints(tokens[i]);
             tokenToPointsMap[i] = points;
-            if(worstTokens.length == 0 || points &lt;= auxWorstPoints){
-                if(worstTokens.length != 0 &amp;&amp; points &lt; auxWorstPoints){
+            if(worstTokens.length == 0 || points <= auxWorstPoints){
+                if(worstTokens.length != 0 && points < auxWorstPoints){
                   worstTokens.length = 0;
                 }
-                if(worstTokens.length &lt; 100){
+                if(worstTokens.length < 100){
                     auxWorstPoints = points;
                     worstTokens.push(i);
                 }
@@ -804,43 +804,43 @@ contract GameLogicLayer is CryptocupToken{
     * @dev Each of this structures is dynamic and is assigned depending on the total amount of tokens in the game  
     */
     function setPayoutDistributionId () internal {
-        if(tokens.length &lt; 101){
+        if(tokens.length < 101){
             payoutDistribution = [289700, 189700, 120000, 92500, 75000, 62500, 52500, 42500, 40000, 35600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             lastPosition = 0;
             superiorQuota = 10;
-        }else if(tokens.length &lt; 201){
+        }else if(tokens.length < 201){
             payoutDistribution = [265500, 165500, 105500, 75500, 63000, 48000, 35500, 20500, 20000, 19500, 18500, 17800, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             lastPosition = 0;
             superiorQuota = 20;
-        }else if(tokens.length &lt; 301){
+        }else if(tokens.length < 301){
             payoutDistribution = [260700, 155700, 100700, 70900, 60700, 45700, 35500, 20500, 17900, 12500, 11500, 11000, 10670, 0, 0, 0, 0, 0, 0, 0, 0];
             lastPosition = 0;
             superiorQuota = 30;
-        }else if(tokens.length &lt; 501){
+        }else if(tokens.length < 501){
             payoutDistribution = [238600, 138600, 88800, 63800, 53800, 43800, 33800, 18800, 17500, 12500, 9500, 7500, 7100, 6700, 0, 0, 0, 0, 0, 0, 0];
             lastPosition = 0;
             superiorQuota = 50;
-        }else if(tokens.length &lt; 1001){
+        }else if(tokens.length < 1001){
             payoutDistribution = [218300, 122300, 72300, 52400, 43900, 33900, 23900, 16000, 13000, 10000, 9000, 7000, 5000, 4000, 3600, 0, 0, 0, 0, 0, 0];
             lastPosition = 4000;
             superiorQuota = 100;
-        }else if(tokens.length &lt; 2001){
+        }else if(tokens.length < 2001){
             payoutDistribution = [204500, 114000, 64000, 44100, 35700, 26700, 22000, 15000, 11000, 9500, 8500, 6500, 4600, 2500, 2000, 1800, 0, 0, 0, 0, 0];
             lastPosition = 2500;
             superiorQuota = 200;
-        }else if(tokens.length &lt; 3001){
+        }else if(tokens.length < 3001){
             payoutDistribution = [189200, 104800, 53900, 34900, 29300, 19300, 15300, 14000, 10500, 8300, 8000, 6000, 3800, 2500, 2000, 1500, 1100, 0, 0, 0, 0];
             lastPosition = 2500;
             superiorQuota = 300;
-        }else if(tokens.length &lt; 5001){
+        }else if(tokens.length < 5001){
             payoutDistribution = [178000, 100500, 47400, 30400, 24700, 15500, 15000, 12000, 10200, 7800, 7400, 5500, 3300, 2000, 1500, 1200, 900, 670, 0, 0, 0];
             lastPosition = 2000;
             superiorQuota = 500;
-        }else if(tokens.length &lt; 10001){
+        }else if(tokens.length < 10001){
             payoutDistribution = [157600, 86500, 39000, 23100, 18900, 15000, 14000, 11000, 9300, 6100, 6000, 5000, 3800, 1500, 1100, 900, 700, 500, 360, 0, 0];
             lastPosition = 1500;
             superiorQuota = 1000;
-        }else if(tokens.length &lt; 25001){
+        }else if(tokens.length < 25001){
             payoutDistribution = [132500, 70200, 31300, 18500, 17500, 14000, 13500, 10500, 7500, 5500, 5000, 4000, 3000, 1000, 900, 700, 600, 400, 200, 152, 0];
             lastPosition = 1000;
             superiorQuota = 2500;
@@ -859,7 +859,7 @@ contract GameLogicLayer is CryptocupToken{
     * @param tokenId last token id
     */
     function setLimit(uint256 tokenId) external onlyAdmin{
-        require(tokenId &lt; tokens.length);
+        require(tokenId < tokens.length);
         require(pValidationState == pointsValidationState.Unstarted || pValidationState == pointsValidationState.LimitSet);
         pointsLimit = tokenId;
         pValidationState = pointsValidationState.LimitSet;
@@ -875,12 +875,12 @@ contract GameLogicLayer is CryptocupToken{
     * @param amount tokens in a chunk
     */
     function calculateWinners(uint32 amount) external onlyAdmin checkState(pointsValidationState.LimitSet){
-        require(amount + lastCheckedToken &lt;= tokens.length);
+        require(amount + lastCheckedToken <= tokens.length);
         uint256 points = tokenToPointsMap[pointsLimit];
 
-        for(uint256 i = lastCheckedToken; i &lt; lastCheckedToken + amount; i++){
-            if(tokenToPointsMap[i] &gt; points ||
-                (tokenToPointsMap[i] == points &amp;&amp; i &lt;= pointsLimit)){
+        for(uint256 i = lastCheckedToken; i < lastCheckedToken + amount; i++){
+            if(tokenToPointsMap[i] > points ||
+                (tokenToPointsMap[i] == points && i <= pointsLimit)){
                 winnerCounter++;
             }
         }
@@ -900,23 +900,23 @@ contract GameLogicLayer is CryptocupToken{
     * @param sortedChunk chunk sorted by points
     */
     function checkOrder(uint32[] sortedChunk) external onlyAdmin checkState(pointsValidationState.LimitCalculated){
-        require(sortedChunk.length + sortedWinners.length &lt;= winnerCounter);
+        require(sortedChunk.length + sortedWinners.length <= winnerCounter);
 
-        for(uint256 i=0;i &lt; sortedChunk.length-1;i++){
+        for(uint256 i=0;i < sortedChunk.length-1;i++){
             uint256 id = sortedChunk[i];
             uint256 sigId = sortedChunk[i+1];
-            require(tokenToPointsMap[id] &gt; tokenToPointsMap[sigId] ||
-                (tokenToPointsMap[id] == tokenToPointsMap[sigId] &amp;&amp;  id &lt; sigId));
+            require(tokenToPointsMap[id] > tokenToPointsMap[sigId] ||
+                (tokenToPointsMap[id] == tokenToPointsMap[sigId] &&  id < sigId));
         }
 
         if(sortedWinners.length != 0){
             uint256 id2 = sortedWinners[sortedWinners.length-1];
             uint256 sigId2 = sortedChunk[0];
-            require(tokenToPointsMap[id2] &gt; tokenToPointsMap[sigId2] ||
-                (tokenToPointsMap[id2] == tokenToPointsMap[sigId2] &amp;&amp; id2 &lt; sigId2));
+            require(tokenToPointsMap[id2] > tokenToPointsMap[sigId2] ||
+                (tokenToPointsMap[id2] == tokenToPointsMap[sigId2] && id2 < sigId2));
         }
 
-        for(uint256 j=0;j &lt; sortedChunk.length;j++){
+        for(uint256 j=0;j < sortedChunk.length;j++){
             sortedWinners.push(sortedChunk[j]);
         }
 
@@ -952,21 +952,21 @@ contract GameLogicLayer is CryptocupToken{
         uint256 lastTokenPoints;
         uint32 counter = 0;
         uint256 maxRange = 13;
-        if(tokens.length &lt; 201){
+        if(tokens.length < 201){
           maxRange = 10;
         }
         
 
-        while(payoutRange &lt; maxRange){
+        while(payoutRange < maxRange){
           uint256 inRangecounter = payDistributionAmount[payoutRange];
-          while(inRangecounter &gt; 0){
+          while(inRangecounter > 0){
             currentTokenId = sortedWinners[counter];
             currentTokenPoints = tokenToPointsMap[currentTokenId];
 
             inRangecounter--;
 
             //Special case for the last one
-            if(inRangecounter == 0 &amp;&amp; payoutRange == maxRange - 1){
+            if(inRangecounter == 0 && payoutRange == maxRange - 1){
                 if(currentTokenPoints == lastTokenPoints){
                   percent += payoutDistribution[payoutRange];
                   tokensEquals[tokenEqualsCounter] = currentTokenId;
@@ -976,8 +976,8 @@ contract GameLogicLayer is CryptocupToken{
                 }
             }
 
-            if(counter != 0 &amp;&amp; (currentTokenPoints != lastTokenPoints || (inRangecounter == 0 &amp;&amp; payoutRange == maxRange - 1))){ //Fix second condition
-                    for(uint256 i=0;i &lt; tokenEqualsCounter;i++){
+            if(counter != 0 && (currentTokenPoints != lastTokenPoints || (inRangecounter == 0 && payoutRange == maxRange - 1))){ //Fix second condition
+                    for(uint256 i=0;i < tokenEqualsCounter;i++){
                         tokenToPayoutMap[tokensEquals[i]] = percent.div(tokenEqualsCounter);
                     }
                     percent = 0;
@@ -1006,10 +1006,10 @@ contract GameLogicLayer is CryptocupToken{
     * @param amount tokens in a chunk
     */
     function setWinnerPrizes(uint32 amount) external onlyAdmin checkState(pointsValidationState.TopWinnersAssigned){
-        require(lastPrizeGiven + amount &lt;= winnerCounter);
+        require(lastPrizeGiven + amount <= winnerCounter);
         
         uint16 inRangeCounter = payDistributionAmount[payoutRange];
-        for(uint256 i = 0; i &lt; amount; i++){
+        for(uint256 i = 0; i < amount; i++){
           if (inRangeCounter == 0){
             payoutRange++;
             inRangeCounter = payDistributionAmount[payoutRange];
@@ -1037,7 +1037,7 @@ contract GameLogicLayer is CryptocupToken{
     function setLastPositions() external onlyAdmin checkState(pointsValidationState.WinnersAssigned){
         
             
-        for(uint256 j = 0;j &lt; worstTokens.length;j++){
+        for(uint256 j = 0;j < worstTokens.length;j++){
             uint256 tokenId = worstTokens[j];
             tokenToPayoutMap[tokenId] += lastPosition.div(worstTokens.length);
         }
@@ -1095,11 +1095,11 @@ contract CoreLayer is GameLogicLayer {
             extra: extra
         });
 
-        require(msg.value &gt;= _getTokenPrice());
+        require(msg.value >= _getTokenPrice());
         require(msg.sender != address(0));
-        require(tokens.length &lt; WCCTOKEN_CREATION_LIMIT);
-        require(tokensOfOwnerMap[msg.sender].length &lt; 100);
-        require(now &lt; WORLD_CUP_START); //World cup Start
+        require(tokens.length < WCCTOKEN_CREATION_LIMIT);
+        require(tokensOfOwnerMap[msg.sender].length < 100);
+        require(now < WORLD_CUP_START); //World cup Start
 
         uint256 tokenId = tokens.push(token) - 1;
         require(tokenId == uint256(uint32(tokenId)));
@@ -1145,12 +1145,12 @@ contract CoreLayer is GameLogicLayer {
         uint256 prize = 0;
         uint256[] memory tokenList = tokensOfOwnerMap[msg.sender];
         
-        for(uint256 i = 0;i &lt; tokenList.length; i++){
+        for(uint256 i = 0;i < tokenList.length; i++){
             prize += tokenToPayoutMap[tokenList[i]];
             tokenToPayoutMap[tokenList[i]] = 0;
         }
         
-        require(prize &gt; 0);
+        require(prize > 0);
         msg.sender.transfer((prizePool.mul(prize)).div(1000000));
       
     }
@@ -1161,17 +1161,17 @@ contract CoreLayer is GameLogicLayer {
     */
     function _getTokenPrice() internal view returns(uint256 tokenPrice){
 
-        if ( now &gt;= THIRD_PHASE){
+        if ( now >= THIRD_PHASE){
             tokenPrice = (150 finney);
-        } else if (now &gt;= SECOND_PHASE) {
+        } else if (now >= SECOND_PHASE) {
             tokenPrice = (110 finney);
-        } else if (now &gt;= FIRST_PHASE) {
+        } else if (now >= FIRST_PHASE) {
             tokenPrice = (75 finney);
         } else {
             tokenPrice = STARTING_PRICE;
         }
 
-        require(tokenPrice &gt;= STARTING_PRICE &amp;&amp; tokenPrice &lt;= (200 finney));
+        require(tokenPrice >= STARTING_PRICE && tokenPrice <= (200 finney));
 
     }
 
@@ -1264,7 +1264,7 @@ contract CoreLayer is GameLogicLayer {
     */
     function emergencyWithdrawAdmin() external hasFinalized onlyAdmin{
 
-        require(finalizedTime != 0 &amp;&amp;  now &gt;= finalizedTime + 10 days );
+        require(finalizedTime != 0 &&  now >= finalizedTime + 10 days );
         msg.sender.transfer(address(this).balance);
 
     }

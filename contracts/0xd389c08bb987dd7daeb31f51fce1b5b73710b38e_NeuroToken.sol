@@ -30,9 +30,9 @@ contract token {
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -57,8 +57,8 @@ contract token {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt; _value); // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] > _value); // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -76,7 +76,7 @@ contract token {
     /// @param _to The address of the recipient
     /// @param _value the amount to send
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(_value &lt; allowance[_from][msg.sender]); // Check allowance
+        require(_value < allowance[_from][msg.sender]); // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -107,7 +107,7 @@ contract token {
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt; _value); // Check if the sender has enough
+        require(balanceOf[msg.sender] > _value); // Check if the sender has enough
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(msg.sender, _value);
@@ -115,10 +115,10 @@ contract token {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value); // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+        require(balanceOf[_from] >= _value); // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]); // Check allowance
         balanceOf[_from] -= _value; // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value; // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value; // Subtract from the sender's allowance
         totalSupply -= _value; // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -129,7 +129,7 @@ contract token {
 contract MyAdvancedToken is owned, token {
     uint256 public sellPrice;
     uint256 public buyPrice;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -145,8 +145,8 @@ contract MyAdvancedToken is owned, token {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt; _value); // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] > _value); // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]); // Check if sender is frozen
         require(!frozenAccount[_to]); // Check if recipient is frozen
         balanceOf[_from] -= _value; // Subtract from the sender
@@ -164,7 +164,7 @@ contract MyAdvancedToken is owned, token {
         Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner {
@@ -189,9 +189,9 @@ contract MyAdvancedToken is owned, token {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) {
-        require(this.balance &gt;= amount * sellPrice); // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice); // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount); // makes the transfers
-        msg.sender.transfer(amount * sellPrice); // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice); // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }
 
@@ -200,14 +200,14 @@ contract NeuroToken is MyAdvancedToken {
     uint256 public frozenTokensSupply;
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function NeuroToken() MyAdvancedToken(17500000, &quot;NeuroToken&quot;, 0, &quot;NRT&quot;) {
+    function NeuroToken() MyAdvancedToken(17500000, "NeuroToken", 0, "NRT") {
         freezeTokens(17437000);
     }
 
     /// @notice Freeze `frozenAmount` tokens from being sold
     /// @param frozenAmount amount of tokens to be frozen
     function freezeTokens(uint256 frozenAmount) onlyOwner {
-        require(balanceOf[address(this)] &gt;= frozenAmount); // Check if the contract has enough
+        require(balanceOf[address(this)] >= frozenAmount); // Check if the contract has enough
 
         frozenTokensSupply += frozenAmount;
         balanceOf[address(this)] -= frozenAmount;
@@ -216,7 +216,7 @@ contract NeuroToken is MyAdvancedToken {
     /// @notice Release `releasedAmount` tokens to contract
     /// @param releasedAmount amount of tokens to be released
     function releaseTokens(uint256 releasedAmount) onlyOwner {
-        require(frozenTokensSupply &gt;= releasedAmount); // Check if the contract has enough released tokens
+        require(frozenTokensSupply >= releasedAmount); // Check if the contract has enough released tokens
 
         frozenTokensSupply -= releasedAmount;
         balanceOf[address(this)] += releasedAmount;
@@ -224,7 +224,7 @@ contract NeuroToken is MyAdvancedToken {
 
     // Withdraw the funds
     function safeWithdrawal(address target, uint256 amount) onlyOwner {
-        require(this.balance &gt;= amount); // checks if the contract has enough ether to withdraw
-        target.transfer(amount); // sends ether to the target. It&#39;s important to do this last to avoid recursion attacks
+        require(this.balance >= amount); // checks if the contract has enough ether to withdraw
+        target.transfer(amount); // sends ether to the target. It's important to do this last to avoid recursion attacks
     }
 }

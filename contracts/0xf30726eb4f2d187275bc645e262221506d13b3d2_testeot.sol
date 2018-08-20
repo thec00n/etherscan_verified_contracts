@@ -8,22 +8,22 @@ contract testeot {
     uint256 public circulatingSupply = 0;  	
     uint8   public decimals = 18;
     //   
-    string  public standard = &#39;ERC20 Token&#39;;
-    string  public name = &#39;testeot&#39;;
-    string  public symbol = &#39;testeot&#39;;            
+    string  public standard = 'ERC20 Token';
+    string  public name = 'testeot';
+    string  public symbol = 'testeot';            
     uint256 public crowdsalePrice = 100;                          	
     uint256 public crowdsaleClosed = 0;                 
     address public daoMultisig = msg.sender;
     address public owner = msg.sender;  
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;	
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;	
 	
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);    
     
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -32,7 +32,7 @@ contract testeot {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -65,14 +65,14 @@ contract testeot {
     }	
 	
     function () payable {
-        if (crowdsaleClosed &gt; 0) throw;		
+        if (crowdsaleClosed > 0) throw;		
         if (msg.value == 0) {
           throw;
         }		
         Transfer(msg.sender, daoMultisig, msg.value);		
         uint token = msg.value * crowdsalePrice;		
 		availableSupply = totalSupply - circulatingSupply;
-        if (token &gt; availableSupply) {
+        if (token > availableSupply) {
           throw;
         }		
         circulatingSupply += token;

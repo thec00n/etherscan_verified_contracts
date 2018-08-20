@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,16 +94,16 @@ contract MigrationSource {
 contract CashBetCoin is MigrationSource, ERC20 {
   using SafeMath for uint256;
 
-  string public constant name = &quot;CashBetCoin&quot;;
-  string public constant symbol = &quot;CBC&quot;;
+  string public constant name = "CashBetCoin";
+  string public constant symbol = "CBC";
   uint8 public constant decimals = 8;
   uint internal totalSupply_;
 
   address public owner;
 
-  mapping(bytes32 =&gt; bool) public operators;
-  mapping(address =&gt; User) public users;
-  mapping(address =&gt; mapping(bytes32 =&gt; bool)) public employees;
+  mapping(bytes32 => bool) public operators;
+  mapping(address => User) public users;
+  mapping(address => mapping(bytes32 => bool)) public employees;
   
   MigrationSource public migrateFrom;
   address public migrateTo;
@@ -115,7 +115,7 @@ contract CashBetCoin is MigrationSource, ERC20 {
     bytes32 operatorId;
     bytes32 playerId;
       
-    mapping(address =&gt; uint256) authorized;
+    mapping(address => uint256) authorized;
   }
 
   modifier only_owner(){
@@ -137,9 +137,9 @@ contract CashBetCoin is MigrationSource, ERC20 {
   // Value argument must be less than unlocked balance.
   modifier value_less_than_unlocked_balance(address _user, uint256 _value){
     User storage user = users[_user];
-    require(user.lock_endTime &lt; block.timestamp ||
-            _value &lt;= user.balance - user.lock_value);
-    require(_value &lt;= user.balance);
+    require(user.lock_endTime < block.timestamp ||
+            _value <= user.balance - user.lock_value);
+    require(_value <= user.balance);
     _;
   }
 
@@ -216,7 +216,7 @@ contract CashBetCoin is MigrationSource, ERC20 {
   function lockedValueOf(address _addr) public view returns (uint256 value) {
     User storage user = users[_addr];
     // Is the lock expired?
-    if (user.lock_endTime &lt; block.timestamp) {
+    if (user.lock_endTime < block.timestamp) {
       // Lock is expired, no locked value.
       return 0;
     } else {
@@ -241,17 +241,17 @@ contract CashBetCoin is MigrationSource, ERC20 {
     User storage user = users[msg.sender];
 
     // Is there a lock in effect?
-    if (block.timestamp &lt; user.lock_endTime) {
+    if (block.timestamp < user.lock_endTime) {
       // Lock in effect, ensure nothing gets smaller.
-      require(_value &gt;= user.lock_value);
-      require(_time &gt;= user.lock_endTime);
+      require(_value >= user.lock_value);
+      require(_time >= user.lock_endTime);
       // Ensure something has increased.
-      require(_value &gt; user.lock_value || _time &gt; user.lock_endTime);
+      require(_value > user.lock_value || _time > user.lock_endTime);
     }
 
     // Things we always require.
-    require(_value &lt;= user.balance);
-    require(_time &gt; block.timestamp);
+    require(_value <= user.balance);
+    require(_time > block.timestamp);
 
     user.lock_value = _value;
     user.lock_endTime = _time;
@@ -266,13 +266,13 @@ contract CashBetCoin is MigrationSource, ERC20 {
   function decreaseLock(uint256 _value, uint256 _time, address _user) public only_employees(_user) returns (bool success) {
     User storage user = users[_user];
 
-    // We don&#39;t modify expired locks (they are already 0)
-    require(user.lock_endTime &gt; block.timestamp);
+    // We don't modify expired locks (they are already 0)
+    require(user.lock_endTime > block.timestamp);
     // Ensure nothing gets bigger.
-    require(_value &lt;= user.lock_value);
-    require(_time &lt;= user.lock_endTime);
+    require(_value <= user.lock_value);
+    require(_time <= user.lock_endTime);
     // Ensure something has decreased.
-    require(_value &lt; user.lock_value || _time &lt; user.lock_endTime);
+    require(_value < user.lock_value || _time < user.lock_endTime);
 
     user.lock_value = _value;
     user.lock_endTime = _time;
@@ -284,10 +284,10 @@ contract CashBetCoin is MigrationSource, ERC20 {
     User storage user = users[msg.sender];
 
     // Players can associate their playerId once while the token is
-    // locked.  They can&#39;t change this association until the lock
+    // locked.  They can't change this association until the lock
     // expires ...
     require(user.lock_value == 0 ||
-            user.lock_endTime &lt; block.timestamp ||
+            user.lock_endTime < block.timestamp ||
             user.playerId == 0);
 
     // OperatorId argument must be empty or in the approved operators set.
@@ -383,15 +383,15 @@ contract CashBetCoin is MigrationSource, ERC20 {
 
     bool lockTimeIncreased = false;
     user.lock_value = user.lock_value.add(lock_value);
-    if (user.lock_endTime &lt; lock_endTime) {
+    if (user.lock_endTime < lock_endTime) {
       user.lock_endTime = lock_endTime;
       lockTimeIncreased = true;
     }
-    if (lock_value &gt; 0 || lockTimeIncreased) {
+    if (lock_value > 0 || lockTimeIncreased) {
       LockIncrease(msg.sender, user.lock_value, user.lock_endTime);
     }
 
-    if (user.operatorId == bytes32(0) &amp;&amp; opId != bytes32(0)) {
+    if (user.operatorId == bytes32(0) && opId != bytes32(0)) {
       user.operatorId = opId;
       user.playerId = playerId;
       Associate(msg.sender, msg.sender, opId, playerId);
@@ -413,7 +413,7 @@ contract CashBetCoin is MigrationSource, ERC20 {
                                                  bytes32 o_playerId) {
     require(msg.sender == migrateTo);
     User storage user = users[_addr];
-    require(user.balance &gt; 0);
+    require(user.balance > 0);
 
     o_balance = user.balance;
     o_lock_value = user.lock_value;
@@ -432,7 +432,7 @@ contract CashBetCoin is MigrationSource, ERC20 {
     Vacate(_addr, o_balance);
   }
 
-  // Don&#39;t accept ETH.
+  // Don't accept ETH.
   function () public payable {
     revert();
   }

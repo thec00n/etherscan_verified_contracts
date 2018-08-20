@@ -2,7 +2,7 @@ pragma solidity ^0.4.16;
 /**
 * @title UNR ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="6a0c440b041e05040305440b010f062a0d070b030644090507">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="6a0c440b041e05040305440b010f062a0d070b030644090507">[email protected]</span>
 */
 
 /**
@@ -25,7 +25,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -164,30 +164,30 @@ contract UNRICO is admined {
         uint256 required;
         totalRaised = totalRaised.add(msg.value);
 
-        if(totalDistributed &lt; 2000000 * (10 ** 8)){
+        if(totalDistributed < 2000000 * (10 ** 8)){
             tokenBought = msg.value.div(price[0]);
             required = SafeMath.div(10000,6);
-            require(tokenBought &gt;= required);
+            require(tokenBought >= required);
         }
-        else if (totalDistributed &lt; 20000000 * (10 ** 8)){
+        else if (totalDistributed < 20000000 * (10 ** 8)){
             tokenBought = msg.value.div(price[1]);
             required = SafeMath.div(10000,8);
-            require(tokenBought &gt;= required);
+            require(tokenBought >= required);
         }
-        else if (totalDistributed &lt; 40000000 * (10 ** 8)){
+        else if (totalDistributed < 40000000 * (10 ** 8)){
             tokenBought = msg.value.div(price[2]);
             required = SafeMath.div(10000,9);
-            require(tokenBought &gt;= required);
+            require(tokenBought >= required);
         }
-        else if (totalDistributed &lt; 60000000 * (10 ** 8)){
+        else if (totalDistributed < 60000000 * (10 ** 8)){
             tokenBought = msg.value.div(price[3]);
             required = SafeMath.div(100000,95);
-            require(tokenBought &gt;= required);
+            require(tokenBought >= required);
         }
-        else if (totalDistributed &lt; 80000000 * (10 ** 8)){
+        else if (totalDistributed < 80000000 * (10 ** 8)){
             tokenBought = msg.value.div(price[4]);
             required = 1000;
-            require(tokenBought &gt;= required);
+            require(tokenBought >= required);
 
         }
 
@@ -206,13 +206,13 @@ contract UNRICO is admined {
     */
     function checkIfFundingCompleteOrExpired() public {
         
-        if(now &lt; ICOdeadline &amp;&amp; state!=State.Successful){ //if we are on ICO period and its not Successful
-            if(state == State.Ongoin &amp;&amp; totalRaised &gt;= HardCap){ //if we are Ongoin and we pass the HardCap
+        if(now < ICOdeadline && state!=State.Successful){ //if we are on ICO period and its not Successful
+            if(state == State.Ongoin && totalRaised >= HardCap){ //if we are Ongoin and we pass the HardCap
                 state = State.Successful; //We are on Successful state
                 completedAt = now; //ICO is complete
             }
         }
-        else if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
+        else if(now > ICOdeadline && state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
             state = State.Successful; //ico becomes Successful
             completedAt = now; //ICO is complete
             LogFundingSuccessful(totalRaised); //we log the finish

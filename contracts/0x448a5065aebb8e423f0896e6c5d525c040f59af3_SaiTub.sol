@@ -13,7 +13,7 @@ pragma solidity ^0.4.18;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -72,7 +72,7 @@ contract DSAuth is DSAuthEvents {
 }
 
 ////// lib/ds-spell/lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -128,32 +128,32 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -172,10 +172,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -216,13 +216,13 @@ contract DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-auth/auth.sol&#39;; */
-/* import &#39;ds-note/note.sol&#39;; */
-/* import &#39;ds-math/math.sol&#39;; */
+/* import 'ds-auth/auth.sol'; */
+/* import 'ds-note/note.sol'; */
+/* import 'ds-math/math.sol'; */
 
 contract DSThing is DSAuth, DSNote, DSMath {
 
@@ -248,12 +248,12 @@ contract DSThing is DSAuth, DSNote, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
-/* import &quot;ds-note/note.sol&quot;; */
+/* import "ds-auth/auth.sol"; */
+/* import "ds-note/note.sol"; */
 
 contract DSStop is DSNote, DSAuth {
 
@@ -275,7 +275,7 @@ contract DSStop is DSNote, DSAuth {
 ////// lib/ds-token/lib/erc20/src/erc20.sol
 /// erc20.sol -- API for the ERC20 token standard
 
-// See &lt;https://github.com/ethereum/EIPs/issues/20&gt;.
+// See <https://github.com/ethereum/EIPs/issues/20>.
 
 // This file likely does not meet the threshold of originality
 // required for copyright to apply.  As a result, this is free and
@@ -316,17 +316,17 @@ contract ERC20 is ERC20Events {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;erc20/erc20.sol&quot;; */
-/* import &quot;ds-math/math.sol&quot;; */
+/* import "erc20/erc20.sol"; */
+/* import "ds-math/math.sol"; */
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
 
     function DSTokenBase(uint supply) public {
         _balances[msg.sender] = supply;
@@ -388,13 +388,13 @@ contract DSTokenBase is ERC20, DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &quot;ds-stop/stop.sol&quot;; */
+/* import "ds-stop/stop.sol"; */
 
-/* import &quot;./base.sol&quot;; */
+/* import "./base.sol"; */
 
 contract DSToken is DSTokenBase(0), DSStop {
 
@@ -421,7 +421,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         stoppable
         returns (bool)
     {
-        if (src != msg.sender &amp;&amp; _approvals[src][msg.sender] != uint(-1)) {
+        if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         }
 
@@ -455,7 +455,7 @@ contract DSToken is DSTokenBase(0), DSStop {
         Mint(guy, wad);
     }
     function burn(address guy, uint wad) public auth stoppable {
-        if (guy != msg.sender &amp;&amp; _approvals[guy][msg.sender] != uint(-1)) {
+        if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
@@ -465,7 +465,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     // Optional token name
-    bytes32   public  name = &quot;&quot;;
+    bytes32   public  name = "";
 
     function setName(bytes32 name_) public auth {
         name = name_;
@@ -488,11 +488,11 @@ contract DSToken is DSTokenBase(0), DSStop {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
-/* import &#39;ds-thing/thing.sol&#39;; */
+/* import 'ds-thing/thing.sol'; */
 
 contract DSValue is DSThing {
     bool    has;
@@ -517,9 +517,9 @@ contract DSValue is DSThing {
 ////// src/vox.sol
 /// vox.sol -- target price feed
 
-// Copyright (C) 2016, 2017  Nikolai Mushegian &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39d9a989c9f929ab3979283839b8691dd909c9e">[email&#160;protected]</a>&gt;
-// Copyright (C) 2016, 2017  Daniel Brockman &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e68287888f838aa6828796968e9384c885898b">[email&#160;protected]</a>&gt;
-// Copyright (C) 2017        Rain Break &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87f5e6eee9e5f5e2e6ecc7f5eef4e2f2f7a9e9e2f3">[email&#160;protected]</a>&gt;
+// Copyright (C) 2016, 2017  Nikolai Mushegian <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39d9a989c9f929ab3979283839b8691dd909c9e">[email protected]</a>>
+// Copyright (C) 2016, 2017  Daniel Brockman <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e68287888f838aa6828796968e9384c885898b">[email protected]</a>>
+// Copyright (C) 2017        Rain Break <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87f5e6eee9e5f5e2e6ecc7f5eef4e2f2f7a9e9e2f3">[email protected]</a>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -532,11 +532,11 @@ contract DSValue is DSThing {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;ds-thing/thing.sol&quot;; */
+/* import "ds-thing/thing.sol"; */
 
 contract SaiVox is DSThing {
     uint256  _par;
@@ -557,7 +557,7 @@ contract SaiVox is DSThing {
     }
 
     function mold(bytes32 param, uint val) public note auth {
-        if (param == &#39;way&#39;) _way = val;
+        if (param == 'way') _way = val;
     }
 
     // Dai Target Price (ref per dai)
@@ -586,25 +586,25 @@ contract SaiVox is DSThing {
 
         if (how == 0) return;  // optimised
         var wag = int128(how * age);
-        _way = inj(prj(_way) + (fix &lt; _par ? wag : -wag));
+        _way = inj(prj(_way) + (fix < _par ? wag : -wag));
     }
 
     function inj(int128 x) internal pure returns (uint256) {
-        return x &gt;= 0 ? uint256(x) + RAY
+        return x >= 0 ? uint256(x) + RAY
             : rdiv(RAY, RAY + uint256(-x));
     }
     function prj(uint256 x) internal pure returns (int128) {
-        return x &gt;= RAY ? int128(x - RAY)
+        return x >= RAY ? int128(x - RAY)
             : int128(RAY) - int128(rdiv(RAY, x));
     }
 }
 
 ////// src/tub.sol
-/// tub.sol -- simplified CDP engine (baby brother of `vat&#39;)
+/// tub.sol -- simplified CDP engine (baby brother of `vat')
 
-// Copyright (C) 2017  Nikolai Mushegian &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff91969490939e96bf9b9e8f8f978a9dd19c9092">[email&#160;protected]</a>&gt;
-// Copyright (C) 2017  Daniel Brockman &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7d3d6d9ded2dbf7d3d6c7c7dfc2d599d4d8da">[email&#160;protected]</a>&gt;
-// Copyright (C) 2017  Rain Break &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0674676f68647463676d46746f7563737628686372">[email&#160;protected]</a>&gt;
+// Copyright (C) 2017  Nikolai Mushegian <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff91969490939e96bf9b9e8f8f978a9dd19c9092">[email protected]</a>>
+// Copyright (C) 2017  Daniel Brockman <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7d3d6d9ded2dbf7d3d6c7c7dfc2d599d4d8da">[email protected]</a>>
+// Copyright (C) 2017  Rain Break <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0674676f68647463676d46746f7563737628686372">[email protected]</a>>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -617,15 +617,15 @@ contract SaiVox is DSThing {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &quot;ds-thing/thing.sol&quot;; */
-/* import &quot;ds-token/token.sol&quot;; */
-/* import &quot;ds-value/value.sol&quot;; */
+/* import "ds-thing/thing.sol"; */
+/* import "ds-token/token.sol"; */
+/* import "ds-value/value.sol"; */
 
-/* import &quot;./vox.sol&quot;; */
+/* import "./vox.sol"; */
 
 contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
@@ -665,7 +665,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  rum;  // Total normalised debt
 
     uint256                   public  cupi;
-    mapping (bytes32 =&gt; Cup)  public  cups;
+    mapping (bytes32 => Cup)  public  cups;
 
     struct Cup {
         address  lad;      // CDP owner
@@ -745,12 +745,12 @@ contract SaiTub is DSThing, SaiTubEvents {
     //--Risk-parameter-config-------------------------------------------
 
     function mold(bytes32 param, uint val) public note auth {
-        if      (param == &#39;cap&#39;) cap = val;
-        else if (param == &#39;mat&#39;) { require(val &gt;= RAY); mat = val; }
-        else if (param == &#39;tax&#39;) { require(val &gt;= RAY); drip(); tax = val; }
-        else if (param == &#39;fee&#39;) { require(val &gt;= RAY); drip(); fee = val; }
-        else if (param == &#39;axe&#39;) { require(val &gt;= RAY); axe = val; }
-        else if (param == &#39;gap&#39;) { require(val &gt;= WAD); gap = val; }
+        if      (param == 'cap') cap = val;
+        else if (param == 'mat') { require(val >= RAY); mat = val; }
+        else if (param == 'tax') { require(val >= RAY); drip(); tax = val; }
+        else if (param == 'fee') { require(val >= RAY); drip(); fee = val; }
+        else if (param == 'axe') { require(val >= RAY); axe = val; }
+        else if (param == 'gap') { require(val >= WAD); gap = val; }
         else return;
     }
 
@@ -789,7 +789,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function join(uint wad) public note {
         require(!off);
-        require(ask(wad) &gt; 0);
+        require(ask(wad) > 0);
         require(gem.transferFrom(msg.sender, this, ask(wad)));
         skr.mint(msg.sender, wad);
     }
@@ -844,7 +844,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var pro = rmul(tag(), ink(cup));
         var con = rmul(vox.par(), tab(cup));
         var min = rmul(con, mat);
-        return pro &gt;= min;
+        return pro >= min;
     }
 
 
@@ -867,20 +867,20 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         cups[cup].ink = add(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
-        require(cups[cup].ink == 0 || cups[cup].ink &gt; 0.005 ether);
+        require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
     function free(bytes32 cup, uint wad) public note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         skr.push(msg.sender, wad);
         require(safe(cup));
-        require(cups[cup].ink == 0 || cups[cup].ink &gt; 0.005 ether);
+        require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
 
     function draw(bytes32 cup, uint wad) public note {
         require(!off);
         require(msg.sender == cups[cup].lad);
-        require(rdiv(wad, chi()) &gt; 0);
+        require(rdiv(wad, chi()) > 0);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
         rum = add(rum, rdiv(wad, chi()));
@@ -889,7 +889,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
-        require(sai.totalSupply() &lt;= cap);
+        require(sai.totalSupply() <= cap);
     }
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
@@ -903,7 +903,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai.burn(msg.sender, wad);
 
         var (val, ok) = pep.peek();
-        if (ok &amp;&amp; val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
+        if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
     }
 
     function shut(bytes32 cup) public note {
@@ -927,7 +927,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         // Amount owed in SKR, including liquidation penalty
         var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
 
-        if (owe &gt; cups[cup].ink) {
+        if (owe > cups[cup].ink) {
             owe = cups[cup].ink;
         }
 
@@ -938,7 +938,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     //------------------------------------------------------------------
 
     function cage(uint fit_, uint jam) public note auth {
-        require(!off &amp;&amp; fit_ != 0);
+        require(!off && fit_ != 0);
         off = true;
         axe = RAY;
         gap = WAD;

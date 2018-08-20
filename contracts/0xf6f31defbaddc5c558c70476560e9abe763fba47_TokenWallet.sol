@@ -111,11 +111,11 @@ contract TokenWallet is admined {
     }
 
     function batchTransferDirectoryToken(uint256 _index,address[] _target,uint256[] _amount) onlyAdmin public {
-        require(_target.length &gt;= _amount.length);
+        require(_target.length >= _amount.length);
         uint256 length = _target.length;
         ERC20 token = tokenDirectory[_index];
 
-        for (uint i=0; i&lt;length; i++) { //It moves over the array
+        for (uint i=0; i<length; i++) { //It moves over the array
             token.transfer(_target[i],_amount[i]);
             emit LogTokenTransfer(token,_target[i],_amount[i]);       
         }
@@ -144,11 +144,11 @@ contract TokenWallet is admined {
     }
 
     function batchTransferToken(ERC20 _tokenContractAddress,address[] _target,uint256[] _amount) onlyAdmin public {
-        require(_target.length &gt;= _amount.length);
+        require(_target.length >= _amount.length);
         uint256 length = _target.length;
         ERC20 token = _tokenContractAddress;
 
-        for (uint i=0; i&lt;length; i++) { //It moves over the array
+        for (uint i=0; i<length; i++) { //It moves over the array
             token.transfer(_target[i],_amount[i]);
             emit LogTokenTransfer(token,_target[i],_amount[i]);       
         }
@@ -162,7 +162,7 @@ contract TokenWallet is admined {
 
 
     /**
-    * @notice this contract will revert on direct non-function calls, also it&#39;s not payable
+    * @notice this contract will revert on direct non-function calls, also it's not payable
     * @dev Function to handle callback calls to contract
     */
     function() public {

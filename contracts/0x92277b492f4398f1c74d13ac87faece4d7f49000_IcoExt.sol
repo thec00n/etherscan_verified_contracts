@@ -40,7 +40,7 @@ contract ERC223 {
 }
 
 contract Whitelist {
-  mapping (address =&gt; bool) public registered;
+  mapping (address => bool) public registered;
 }
 
 contract IcoExt {
@@ -109,9 +109,9 @@ contract IcoExt {
 
 	// Mapping to store swaps made and authorized callers
 
-    mapping(address =&gt; uint) public receivedFrom;
-    mapping(address =&gt; uint) public sentTo;
-    mapping(address =&gt; bool) public authorized;
+    mapping(address => uint) public receivedFrom;
+    mapping(address => uint) public sentTo;
+    mapping(address => bool) public authorized;
 
     // Event definitions
 
@@ -146,7 +146,7 @@ contract IcoExt {
 
    function makeSwapInternal() private isNotPaused { // Main function, called internally when ethers are received
 
-   	require(stage&gt;0 &amp;&amp; stage&lt;3 &amp;&amp; msg.value &gt;= minAcceptedETH);
+   	require(stage>0 && stage<3 && msg.value >= minAcceptedETH);
 
     Whitelist wl = Whitelist(whitelistAdd);
 
@@ -194,14 +194,14 @@ function calculatePrice(uint _when) constant public returns(uint _result){
 	uint factor = delay * increasePerBlock;
 	uint multip = initialPrice * factor;
 	uint result = initialPrice - multip / increasePerBlockDiv / 100; // 100 = percent
-	require (result&lt;=initialPrice);
+	require (result<=initialPrice);
 	return result;
    	//return initialPrice - initialPrice * (_when - initialTime) / 25 * increasePerBlock / increasePerBlockDiv;
 }
 
 
 function changeToStage(uint8 _stage) isAuthorized returns(bool) {
-	require(stage&lt;_stage &amp;&amp; _stage &lt; 4);
+	require(stage<_stage && _stage < 4);
 	stage = _stage;
 	return true;
 }

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -74,7 +74,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   
   /**
    * @dev Transfer tokens from one address to another
@@ -86,7 +86,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     // KYBER-NOTE! code changed to comply with ERC20 standard
     balances[_from] = balances[_from].sub(_value);
@@ -128,12 +128,12 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract TCGC is StandardToken {
-    string public constant name = &quot;TRILLION CLOUD GOLD&quot;;
-    string public constant symbol = &quot;TCGC&quot;;
+    string public constant name = "TRILLION CLOUD GOLD";
+    string public constant symbol = "TCGC";
     uint public constant decimals = 18;
     uint public freezeTime = now + 1 years;
     address public owner;
-    mapping(address=&gt;bool) public freezeList;
+    mapping(address=>bool) public freezeList;
     
     uint public freezeSupply;
     uint public distributeSupply;
@@ -183,14 +183,14 @@ contract TCGC is StandardToken {
     
     //setPrice
     function setPrice(uint _price) onlyOwner{
-        require( _price &gt; 0);
+        require( _price > 0);
         price= _price;
     }
     
     function transfer(address _to, uint _value) validUser(msg.sender) returns (bool){
-        if(msg.sender == owner &amp;&amp; now &lt; freezeTime){
-            require(balances[owner] &gt;_value &amp;&amp; balances[owner] - _value &gt;= freezeSupply);
-            require (distributed + _value &lt;= distributeSupply);
+        if(msg.sender == owner && now < freezeTime){
+            require(balances[owner] >_value && balances[owner] - _value >= freezeSupply);
+            require (distributed + _value <= distributeSupply);
             distributed = distributed.add(_value);
             super.transfer(_to,_value);
         }else{
@@ -210,7 +210,7 @@ contract TCGC is StandardToken {
     
     //burn tokens at will
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value); 
+        require(balances[msg.sender] >= _value); 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Transfer(msg.sender, address(0x0), _value);
@@ -221,7 +221,7 @@ contract TCGC is StandardToken {
     //send eth to get tokens
     function() payable {
         uint tokens = price.mul(msg.value);
-        require(tokens  &lt;= balances[owner] &amp;&amp; exchanged+tokens &lt;= exchangeSupply);
+        require(tokens  <= balances[owner] && exchanged+tokens <= exchangeSupply);
         balances[owner] = balances[owner].sub(tokens);
         balances[msg.sender] = balances[msg.sender].add(tokens);
         exchanged =  exchanged.add(tokens);

@@ -7,7 +7,7 @@ contract Utils {
     function Utils() internal {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -31,7 +31,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -44,7 +44,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -67,7 +67,7 @@ contract Utils {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) { name; }
     function symbol() public constant returns (string) { symbol; }
     function decimals() public constant returns (uint8) { decimals; }
@@ -85,7 +85,7 @@ contract IERC20Token {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -162,11 +162,11 @@ contract YoobaICO is  Owned,YooStop,Utils {
     uint256 public leftICOTokens = 0;
     uint256 public tatalEthFromBuyer = 0;
     uint256 public daysnumber = 0;
-    mapping (address =&gt; uint256) public pendingBalanceMap;
-    mapping (address =&gt; uint256) public totalBuyMap;
-    mapping (address =&gt; uint256) public totalBuyerETHMap;
-    mapping (uint256 =&gt; uint256) public daySellMap;
-    mapping (address =&gt; uint256) public withdrawYOOMap;
+    mapping (address => uint256) public pendingBalanceMap;
+    mapping (address => uint256) public totalBuyMap;
+    mapping (address => uint256) public totalBuyerETHMap;
+    mapping (uint256 => uint256) public daySellMap;
+    mapping (address => uint256) public withdrawYOOMap;
     uint256 internal milestone1 = 4000000000000000000000000000;
     uint256 internal milestone2 = 2500000000000000000000000000;
        uint256 internal dayLimit = 300000000000000000000000000;
@@ -202,7 +202,7 @@ contract YoobaICO is  Owned,YooStop,Utils {
     
     function withdrawTo(address _to, uint256 _amount) public ownerOnly notThis(_to)
     {   
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
         _to.transfer(_amount); // send the amount to the target account
     }
     
@@ -218,9 +218,9 @@ contract YoobaICO is  Owned,YooStop,Utils {
     }
     
     function withdrawToBuyer(IERC20Token _token,address[] _to)  public ownerOnly {
-        require(_to.length &gt; 0  &amp;&amp; _to.length &lt; 10000);
-        for(uint16 i = 0; i &lt; _to.length ;i++){
-            if(pendingBalanceMap[_to[i]] &gt; 0){
+        require(_to.length > 0  && _to.length < 10000);
+        for(uint16 i = 0; i < _to.length ;i++){
+            if(pendingBalanceMap[_to[i]] > 0){
                 assert(_token.transfer(_to[i],pendingBalanceMap[_to[i]])); 
                 withdrawYOOMap[_to[i]] = safeAdd(withdrawYOOMap[_to[i]],pendingBalanceMap[_to[i]]);
                 pendingBalanceMap[_to[i]] = 0;
@@ -243,10 +243,10 @@ contract YoobaICO is  Owned,YooStop,Utils {
     }
     
     function refund(address[] _to) public ownerOnly{
-        require(_to.length &gt; 0  &amp;&amp; _to.length &lt; 10000 );
-        for(uint16 i = 0; i &lt; _to.length ;i++){
-            if(pendingBalanceMap[_to[i]] &gt; 0 &amp;&amp; withdrawYOOMap[_to[i]] == 0 &amp;&amp; totalBuyerETHMap[_to[i]] &gt; 0 &amp;&amp; totalBuyMap[_to[i]] &gt; 0){
-                 if(totalBuyerETHMap[_to[i]] &lt;= this.balance){
+        require(_to.length > 0  && _to.length < 10000 );
+        for(uint16 i = 0; i < _to.length ;i++){
+            if(pendingBalanceMap[_to[i]] > 0 && withdrawYOOMap[_to[i]] == 0 && totalBuyerETHMap[_to[i]] > 0 && totalBuyMap[_to[i]] > 0){
+                 if(totalBuyerETHMap[_to[i]] <= this.balance){
                 _to[i].transfer(totalBuyerETHMap[_to[i]]); 
                 tatalEthFromBuyer = tatalEthFromBuyer - totalBuyerETHMap[_to[i]];
                 leftICOTokens = leftICOTokens + pendingBalanceMap[_to[i]];
@@ -262,16 +262,16 @@ contract YoobaICO is  Owned,YooStop,Utils {
   
     function buyToken() internal
     {
-        require(!stopped &amp;&amp; now &gt;= startICOTime &amp;&amp; now &lt;= endICOTime );
-        require(msg.value &gt;= 0.1 ether &amp;&amp; msg.value &lt;= 100 ether);
+        require(!stopped && now >= startICOTime && now <= endICOTime );
+        require(msg.value >= 0.1 ether && msg.value <= 100 ether);
         
         uint256  dayNum = ((now - startICOTime) / 1 days) + 1;
         daysnumber = dayNum;
-         assert(daySellMap[dayNum] &lt;= dayLimit);
+         assert(daySellMap[dayNum] <= dayLimit);
          uint256 amount = 0;
-        if(now &lt; (startICOTime + 1 weeks) &amp;&amp; leftICOTokens &gt; milestone1){
+        if(now < (startICOTime + 1 weeks) && leftICOTokens > milestone1){
                
-                if(msg.value * 320000 &lt;= (leftICOTokens - milestone1))
+                if(msg.value * 320000 <= (leftICOTokens - milestone1))
                 { 
                      amount = msg.value * 320000;
                 }else{
@@ -279,8 +279,8 @@ contract YoobaICO is  Owned,YooStop,Utils {
                      amount = (msg.value - priceOneEther1) * 250000 + priceOneEther1 * 320000;
                 }
         }else{
-           if(leftICOTokens &gt; milestone2){
-                if(msg.value * 250000 &lt;= (leftICOTokens - milestone2))
+           if(leftICOTokens > milestone2){
+                if(msg.value * 250000 <= (leftICOTokens - milestone2))
                 {
                    amount = msg.value * 250000;
                 }else{
@@ -288,15 +288,15 @@ contract YoobaICO is  Owned,YooStop,Utils {
                    amount = (msg.value - priceOneEther2) * 180000 + priceOneEther2 * 250000;
                 }
             }else{
-               assert(msg.value * 180000 &lt;= leftICOTokens);
-            if((leftICOTokens - msg.value * 180000) &lt; 18000 &amp;&amp; msg.value * 180000 &lt;= 100 * 180000 * (10 ** 18)){
+               assert(msg.value * 180000 <= leftICOTokens);
+            if((leftICOTokens - msg.value * 180000) < 18000 && msg.value * 180000 <= 100 * 180000 * (10 ** 18)){
                   amount = leftICOTokens;
             }else{
                  amount = msg.value * 180000;
             }
             }
         }
-           if(amount &gt;= 18000 * (10 ** 18) &amp;&amp; amount &lt;= 320000 * 100 * (10 ** 18)){
+           if(amount >= 18000 * (10 ** 18) && amount <= 320000 * 100 * (10 ** 18)){
               leftICOTokens = safeSub(leftICOTokens,amount);
               pendingBalanceMap[msg.sender] = safeAdd(pendingBalanceMap[msg.sender], amount);
               totalBuyMap[msg.sender] = safeAdd(totalBuyMap[msg.sender], amount);

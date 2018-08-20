@@ -1,11 +1,11 @@
 pragma solidity ^0.4.13; 
 
 
-////////////////// &gt;&gt;&gt;&gt;&gt; Wallet Contract &lt;&lt;&lt;&lt;&lt; ///////////////////
+////////////////// >>>>> Wallet Contract <<<<< ///////////////////
 
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="3f4c4b5a595e5111585a504d585a7f5c50514c5a514c464c11515a4b">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="3f4c4b5a595e5111585a504d585a7f5c50514c5a514c464c11515a4b">[email protected]</span>>
 contract MultiSigWallet {
 
     uint constant public MAX_OWNER_COUNT = 50;
@@ -20,9 +20,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address indexed owner);
     event RequirementChange(uint required);
 
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -83,8 +83,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (   ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        if (   ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0)
             throw;
@@ -95,7 +95,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -109,7 +109,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0)
                 throw;
             isOwner[_owners[i]] = true;
@@ -140,13 +140,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -160,7 +160,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -247,7 +247,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -290,7 +290,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -304,9 +304,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -331,13 +331,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -355,21 +355,21 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
 
 
-////////////////// &gt;&gt;&gt;&gt;&gt; Library Contracts &lt;&lt;&lt;&lt;&lt; ///////////////////
+////////////////// >>>>> Library Contracts <<<<< ///////////////////
 
 
 contract SafeMathLib {
@@ -380,13 +380,13 @@ contract SafeMathLib {
   }
 
   function safeSub(uint a, uint b) constant returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) constant returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 }
@@ -397,7 +397,7 @@ contract SafeMathLib {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -437,7 +437,7 @@ contract Ownable {
 }
 
 
-////////////////// &gt;&gt;&gt;&gt;&gt; Token Contracts &lt;&lt;&lt;&lt;&lt; ///////////////////
+////////////////// >>>>> Token Contracts <<<<< ///////////////////
 
 /**
  * @title ERC20Basic
@@ -476,15 +476,15 @@ contract StandardToken is ERC20, SafeMathLib {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value 
-        &amp;&amp; _value &gt; 0 
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]
+    if (balances[msg.sender] >= _value 
+        && _value > 0 
+        && balances[_to] + _value > balances[_to]
         ) {
       balances[msg.sender] = safeSub(balances[msg.sender],_value);
       balances[_to] = safeAdd(balances[_to],_value);
@@ -500,10 +500,10 @@ contract StandardToken is ERC20, SafeMathLib {
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
     uint _allowance = allowed[_from][msg.sender];
 
-    if (balances[_from] &gt;= _value   // From a/c has balance
-        &amp;&amp; _allowance &gt;= _value    // Transfer approved
-        &amp;&amp; _value &gt; 0              // Non-zero transfer
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]  // Overflow check
+    if (balances[_from] >= _value   // From a/c has balance
+        && _allowance >= _value    // Transfer approved
+        && _value > 0              // Non-zero transfer
+        && balances[_to] + _value > balances[_to]  // Overflow check
         ){
     balances[_to] = safeAdd(balances[_to],_value);
     balances[_from] = safeSub(balances[_from],_value);
@@ -554,7 +554,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
 
@@ -610,7 +610,7 @@ contract ReleasableToken is ERC20, Ownable {
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. 
    * These are crowdsale contracts and possible the team multisig itself. 
    */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -631,7 +631,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -716,7 +716,7 @@ contract UpgradeableToken is StandardToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -852,13 +852,13 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     uint256 public maxMintingDays = 1095;
 
     /* Mapping to store id of each minting address */
-    mapping (address =&gt; uint) public idOf;
+    mapping (address => uint) public idOf;
     /* Mapping from id of each minting address to their respective structures */
-    mapping (uint256 =&gt; Contributor) public contributors;
+    mapping (uint256 => Contributor) public contributors;
     /* mapping to store unix timestamp of when the minting address is issued to each team member */
-    mapping (address =&gt; uint256) public teamIssuedTimestamp;
-    mapping (address =&gt; bool) public soldAddresses;
-    mapping (address =&gt; uint256) public sellingPriceInDayOf;
+    mapping (address => uint256) public teamIssuedTimestamp;
+    mapping (address => bool) public soldAddresses;
+    mapping (address => uint256) public sellingPriceInDayOf;
 
     /* Stores the id of the first  contributor */
     uint256 public firstContributorId;
@@ -955,13 +955,13 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         // Create initially all balance on the team multisig
         balances[owner] = totalSupply; 
         maxAddresses = _maxAddresses;
-        require(maxAddresses &gt; 1); // else division by zero will occur in setInitialMintingPowerOf
+        require(maxAddresses > 1); // else division by zero will occur in setInitialMintingPowerOf
         
         firstContributorId = 1;
         totalNormalContributorIds = maxAddresses - _totalTeamContributorIds - _totalPostIcoContributorIds;
 
         // check timeMint total is sane
-        require(totalNormalContributorIds &gt;= 1);
+        require(totalNormalContributorIds >= 1);
 
         firstTeamContributorId = _firstTeamContributorId;
         totalTeamContributorIds = _totalTeamContributorIds;
@@ -982,7 +982,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         DayInSecs = _dayInSecs;
         teamLockPeriodInSec = _teamLockPeriodInSec;
         
-        if (totalSupply &gt; 0) {
+        if (totalSupply > 0) {
             Minted(owner, totalSupply); 
         }
 
@@ -1007,7 +1007,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     * check if mintining power is activated and Day token and Timemint transfer is enabled
     */
     function isDayTokenActivated() constant returns (bool isActivated) {
-        return (block.timestamp &gt;= initialBlockTimestamp);
+        return (block.timestamp >= initialBlockTimestamp);
     }
 
 
@@ -1016,8 +1016,8 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     * @param _id contributor id to check.
     */
     function isValidContributorId(uint _id) constant returns (bool isValidContributor) {
-        return (_id &gt; 0 &amp;&amp; _id &lt;= maxAddresses &amp;&amp; contributors[_id].adr != 0 
-            &amp;&amp; idOf[contributors[_id].adr] == _id); // cross checking
+        return (_id > 0 && _id <= maxAddresses && contributors[_id].adr != 0 
+            && idOf[contributors[_id].adr] == _id); // cross checking
     }
 
     /**
@@ -1036,7 +1036,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     function isTeamLockInPeriodOverIfTeamAddress(address _address) constant returns (bool isLockInPeriodOver) {
         isLockInPeriodOver = true;
         if (teamIssuedTimestamp[_address] != 0) {
-                if (block.timestamp - teamIssuedTimestamp[_address] &lt; teamLockPeriodInSec)
+                if (block.timestamp - teamIssuedTimestamp[_address] < teamLockPeriodInSec)
                     isLockInPeriodOver = false;
         }
 
@@ -1066,7 +1066,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         * Allow upgrade agent functionality kick in only if the crowdsale was success.
         */
     function canUpgrade() public constant returns(bool) {
-        return released &amp;&amp; super.canUpgrade(); 
+        return released && super.canUpgrade(); 
     }
 
     /**
@@ -1134,14 +1134,14 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         */
     function availableBalanceOf(uint256 _id, uint _dayCount) internal returns (uint256) {
         uint256 balance = balances[contributors[_id].adr]; 
-        uint maxUpdateDays = _dayCount &lt; maxMintingDays ? _dayCount : maxMintingDays;
+        uint maxUpdateDays = _dayCount < maxMintingDays ? _dayCount : maxMintingDays;
         uint i = contributors[_id].lastUpdatedOn + 1;
-        while(i &lt;= maxUpdateDays) {
+        while(i <= maxUpdateDays) {
              uint phase = getPhaseCount(i);
              uint phaseEndDay = phase * halvingCycle - 1; // as first day is 0
              uint constantFactor = contributors[_id].mintingPower / 2**(phase-1);
 
-            for (uint j = i; j &lt;= phaseEndDay &amp;&amp; j &lt;= maxUpdateDays; j++) {
+            for (uint j = i; j <= phaseEndDay && j <= maxUpdateDays; j++) {
                 balance = safeAdd( balance, constantFactor * balance / 10**(mintingDec + 2) );
             }
 
@@ -1162,7 +1162,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         if (isValidContributorId(_id)) {
             uint dayCount = getDayCount();
             // proceed only if not already updated today
-            if (contributors[_id].lastUpdatedOn != dayCount &amp;&amp; contributors[_id].lastUpdatedOn &lt; maxMintingDays) {
+            if (contributors[_id].lastUpdatedOn != dayCount && contributors[_id].lastUpdatedOn < maxMintingDays) {
                 address adr = contributors[_id].adr;
                 uint oldBalance = balances[adr];
                 totalSupply = safeSub(totalSupply, oldBalance);
@@ -1229,7 +1229,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         return updateBalanceOf(_id);
     }
 
-    /** Function to update balance of sender&#39;s Timemint
+    /** Function to update balance of sender's Timemint
         * returns true if balance updated, false otherwise
         */
     function updateMyTimeMintBalance() public returns (bool) {
@@ -1239,7 +1239,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
 
     /**
         * Standard ERC20 function overidden.
-        * Used to transfer day tokens from caller&#39;s address to another
+        * Used to transfer day tokens from caller's address to another
         * @param _to address to which Day tokens are to be transferred
         * @param _value Number of Day tokens to be transferred
         */
@@ -1251,7 +1251,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         updateBalanceOf(idOf[msg.sender]);
 
         // Check sender account has enough balance and transfer amount is non zero
-        require ( balanceOf(msg.sender) &gt;= _value &amp;&amp; _value != 0 ); 
+        require ( balanceOf(msg.sender) >= _value && _value != 0 ); 
         
         updateBalanceOf(idOf[_to]);
 
@@ -1278,7 +1278,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
 
         // Check from account has enough balance, transfer amount is non zero 
         // and _value is allowed to be transferred
-        require ( balanceOf(_from) &gt;= _value &amp;&amp; _value != 0  &amp;&amp;  _value &lt;= _allowance); 
+        require ( balanceOf(_from) >= _value && _value != 0  &&  _value <= _allowance); 
 
         updateBalanceOf(idOf[_to]);
 
@@ -1298,7 +1298,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         * @param _initialContributionDay Initial Contribution of the contributor to be added
         */
   function addContributor(uint contributorId, address _adr, uint _initialContributionDay) internal onlyOwner {
-        require(contributorId &lt;= maxAddresses);
+        require(contributorId <= maxAddresses);
         //address should not be an existing contributor
         require(!isValidContributorAddress(_adr));
         //TimeMint should not be already allocated
@@ -1319,7 +1319,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         */
     function sellMintingAddress(uint256 _minPriceInDay, uint _expiryBlockNumber) public returns (bool) {
         require(isDayTokenActivated());
-        require(_expiryBlockNumber &gt; block.number);
+        require(_expiryBlockNumber > block.number);
 
         // if Team address, check if lock-in period is over
         require(isTeamLockInPeriodOverIfTeamAddress(msg.sender));
@@ -1329,7 +1329,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
 
         // update balance of sender address before checking for minimum required balance
         updateBalanceOf(id);
-        require(balances[msg.sender] &gt;= minBalanceToSell);
+        require(balances[msg.sender] >= minBalanceToSell);
         contributors[id].minPriceInDay = _minPriceInDay;
         contributors[id].expiryBlockNumber = _expiryBlockNumber;
         contributors[id].status = sellingStatus.ONSALE;
@@ -1356,10 +1356,10 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     function getOnSaleIds() constant public returns(uint[]) {
         uint[] memory idsOnSale = new uint[](maxAddresses);
         uint j = 0;
-        for(uint i=1; i &lt;= maxAddresses; i++) {
+        for(uint i=1; i <= maxAddresses; i++) {
 
-            if ( isValidContributorId(i) &amp;&amp;
-                block.number &lt;= contributors[i].expiryBlockNumber &amp;&amp; 
+            if ( isValidContributorId(i) &&
+                block.number <= contributors[i].expiryBlockNumber && 
                 contributors[i].status == sellingStatus.ONSALE ) {
                     idsOnSale[j] = i;
                     j++;     
@@ -1377,7 +1377,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     function getSellingStatus(uint _id) constant public returns(sellingStatus status) {
         require(isValidContributorId(_id));
         status = contributors[_id].status;
-        if ( block.number &gt; contributors[_id].expiryBlockNumber &amp;&amp; 
+        if ( block.number > contributors[_id].expiryBlockNumber && 
                 status == sellingStatus.ONSALE )
             status = sellingStatus.EXPIRED;
 
@@ -1390,24 +1390,24 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         */
     function buyMintingAddress(uint _offerId, uint256 _offerInDay) public returns(bool) {
         if (contributors[_offerId].status == sellingStatus.ONSALE 
-            &amp;&amp; block.number &gt; contributors[_offerId].expiryBlockNumber)
+            && block.number > contributors[_offerId].expiryBlockNumber)
         {
             contributors[_offerId].status = sellingStatus.EXPIRED;
         }
         address soldAddress = contributors[_offerId].adr;
         require(contributors[_offerId].status == sellingStatus.ONSALE);
-        require(_offerInDay &gt;= contributors[_offerId].minPriceInDay);
+        require(_offerInDay >= contributors[_offerId].minPriceInDay);
 
         // prevent seller from cancelling sale in between
         contributors[_offerId].status = sellingStatus.NOTONSALE;
 
-        // first get the offered DayToken in the token contract &amp; 
+        // first get the offered DayToken in the token contract & 
         // then transfer the total sum (minBalanceToSend+_offerInDay) to the seller
         balances[msg.sender] = safeSub(balances[msg.sender], _offerInDay);
         balances[this] = safeAdd(balances[this], _offerInDay);
         Transfer(msg.sender, this, _offerInDay);
         if(transferMintingAddress(contributors[_offerId].adr, msg.sender)) {
-            //mark the offer as sold &amp; let seller pull the proceed to their own account.
+            //mark the offer as sold & let seller pull the proceed to their own account.
             sellingPriceInDayOf[soldAddress] = _offerInDay;
             soldAddresses[soldAddress] = true; 
             TimeMintSold(_offerId, msg.sender, _offerInDay);  
@@ -1467,7 +1467,7 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         */
     function refundFailedAuctionAmount() onlyContributor(idOf[msg.sender]) public returns(bool){
         uint id = idOf[msg.sender];
-        if(block.number &gt; contributors[id].expiryBlockNumber &amp;&amp; contributors[id].status == sellingStatus.ONSALE)
+        if(block.number > contributors[id].expiryBlockNumber && contributors[id].status == sellingStatus.ONSALE)
         {
             contributors[id].status = sellingStatus.EXPIRED;
         }
@@ -1485,13 +1485,13 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     }
 
 
-    /** Function to add a team address as a contributor and store it&#39;s time issued to calculate vesting period
+    /** Function to add a team address as a contributor and store it's time issued to calculate vesting period
         * Called by owner
         */
     function addTeamTimeMints(address _adr, uint _id, uint _tokens, bool _isTest) public onlyOwner {
         //check if Id is in range of team Ids
-        require(_id &gt;= firstTeamContributorId &amp;&amp; _id &lt; firstTeamContributorId + totalTeamContributorIds);
-        require(totalTeamContributorIdsAllocated &lt; totalTeamContributorIds);
+        require(_id >= firstTeamContributorId && _id < firstTeamContributorId + totalTeamContributorIds);
+        require(totalTeamContributorIdsAllocated < totalTeamContributorIds);
         addContributor(_id, _adr, 0);
         totalTeamContributorIdsAllocated++;
         // enforce lockin period if not test address
@@ -1509,8 +1509,8 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
     function postAllocateAuctionTimeMints(address _receiver, uint _customerId, uint _id) public onlyOwner {
 
         //check if Id is in range of Auction Ids
-        require(_id &gt;= firstPostIcoContributorId &amp;&amp; _id &lt; firstPostIcoContributorId + totalPostIcoContributorIds);
-        require(totalPostIcoContributorIdsAllocated &lt; totalPostIcoContributorIds);
+        require(_id >= firstPostIcoContributorId && _id < firstPostIcoContributorId + totalPostIcoContributorIds);
+        require(totalPostIcoContributorIdsAllocated < totalPostIcoContributorIds);
         
         require(released == true);
         addContributor(_id, _receiver, 0);
@@ -1528,8 +1528,8 @@ contract DayToken is  ReleasableToken, MintableToken, UpgradeableToken {
         */
     function allocateNormalTimeMints(address _receiver, uint _customerId, uint _id, uint _tokens, uint _weiAmount) public onlyOwner {
         // check if Id is in range of Normal Ids
-        require(_id &gt;= firstContributorId &amp;&amp; _id &lt;= totalNormalContributorIds);
-        require(totalNormalContributorIdsAllocated &lt; totalNormalContributorIds);
+        require(_id >= firstContributorId && _id <= totalNormalContributorIds);
+        require(totalNormalContributorIdsAllocated < totalNormalContributorIds);
         addContributor(_id, _receiver, _tokens);
         totalNormalContributorIdsAllocated++;
         mint(_receiver, _tokens);

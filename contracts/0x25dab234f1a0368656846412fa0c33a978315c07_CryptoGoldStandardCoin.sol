@@ -33,7 +33,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -42,7 +42,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -118,7 +118,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -129,8 +129,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -265,20 +265,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -297,9 +297,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -312,8 +312,8 @@ contract BurnableToken is BasicToken {
 contract CryptoGoldStandardCoin is MintableToken, BurnableToken {
   using SafeMath for uint;
   
-  string public name = &quot;CRYPTO GOLD STANDARD&quot;;
-  string public symbol = &quot;CGS&quot;;
+  string public name = "CRYPTO GOLD STANDARD";
+  string public symbol = "CGS";
   uint8 public decimals = 9;
   uint public INITIAL_SUPPLY = 100000000000;
   
@@ -322,31 +322,31 @@ contract CryptoGoldStandardCoin is MintableToken, BurnableToken {
   uint public priceExpirationBlockNumber = 0;
   
   function setPrices(uint newSellPrice, uint newBuyPrice, uint newPriceExpirationBlockNumber) onlyOwner public{
-      require(newPriceExpirationBlockNumber &gt; block.number);
-      require(newSellPrice &lt; newBuyPrice);
+      require(newPriceExpirationBlockNumber > block.number);
+      require(newSellPrice < newBuyPrice);
       sellPrice = newSellPrice;
       buyPrice = newBuyPrice;
       priceExpirationBlockNumber = newPriceExpirationBlockNumber;
   }
   
   function buy() payable public returns (uint amount){
-    require(block.number &lt;= priceExpirationBlockNumber);
+    require(block.number <= priceExpirationBlockNumber);
     amount = msg.value / buyPrice;                    // calculates the amount
-    require(amount&gt;0);                               // check if amount is more than zero
-    require(balances[this] &gt;= amount);               // checks if it has enough to sell
-    balances[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-    balances[this] -= amount;                        // subtracts amount from seller&#39;s balance
+    require(amount>0);                               // check if amount is more than zero
+    require(balances[this] >= amount);               // checks if it has enough to sell
+    balances[msg.sender] += amount;                  // adds the amount to buyer's balance
+    balances[this] -= amount;                        // subtracts amount from seller's balance
     Transfer(this, msg.sender, amount);               // execute an event reflecting the change
     return amount;                                    // ends function and returns
   }
 
   function sell(uint amount) public returns (uint revenue){
-    require(block.number &lt;= priceExpirationBlockNumber);
-    require(balances[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-    balances[this] += amount;                        // adds the amount to owner&#39;s balance
-    balances[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+    require(block.number <= priceExpirationBlockNumber);
+    require(balances[msg.sender] >= amount);         // checks if the sender has enough to sell
+    balances[this] += amount;                        // adds the amount to owner's balance
+    balances[msg.sender] -= amount;                  // subtracts the amount from seller's balance
     revenue = amount.mul(sellPrice);
-    msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+    msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
     Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
     return revenue;                                   // ends function and returns
   }
@@ -356,9 +356,9 @@ contract CryptoGoldStandardCoin is MintableToken, BurnableToken {
   }
   
   function forwardCoins(uint amount) onlyOwner public {
-    require(balances[this] &gt;= amount);         // checks if the sender has enough to sell
-    balances[this] -= amount;                        // adds the amount to owner&#39;s balance
-    balances[owner] += amount;                  // subtracts the amount from seller&#39;s balance
+    require(balances[this] >= amount);         // checks if the sender has enough to sell
+    balances[this] -= amount;                        // adds the amount to owner's balance
+    balances[owner] += amount;                  // subtracts the amount from seller's balance
     Transfer(this, owner, amount);              // executes an event reflecting on the change
   }
   

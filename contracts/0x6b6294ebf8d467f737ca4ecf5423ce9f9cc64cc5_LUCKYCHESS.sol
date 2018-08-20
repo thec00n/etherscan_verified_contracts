@@ -24,7 +24,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -33,7 +33,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -56,8 +56,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -72,14 +72,14 @@ contract LUCKYCHESS is StandardToken {
     string public name;                   
     uint8 public decimals;                
     string public symbol;                 
-    string public version = &#39;V01.0.0&#39;;    
+    string public version = 'V01.0.0';    
 
     function LUCKYCHESS() {
         balances[msg.sender] = 20000000;  // number of tokens             
         totalSupply = 20000000;                       
-        name = &quot;Lucky Chess Token&quot;;       
+        name = "Lucky Chess Token";       
         decimals = 0;                     
-        symbol = &quot;LCKY&quot;;                  // Token symbol
+        symbol = "LCKY";                  // Token symbol
     }
 
     /* Approves and then calls the receiving contract */
@@ -88,11 +88,11 @@ contract LUCKYCHESS is StandardToken {
         Approval(msg.sender, _spender, _value);
 
         //call the receiveApproval function on the contract you want to be notified. 
-        //This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
 		
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

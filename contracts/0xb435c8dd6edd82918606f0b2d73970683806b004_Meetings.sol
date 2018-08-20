@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5d8dcd6deccf5dbdac2d9dcc3d09bc7da">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5d8dcd6deccf5dbdac2d9dcc3d09bc7da">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="335e5a50584a735d5c445f5a45561d415c">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="335e5a50584a735d5c445f5a45561d415c">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Meetings Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="177a7e747c6e577978607b7e6172396578">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="177a7e747c6e577978607b7e6172396578">[email protected]</a>>
 
  Contains the Meetings Contract code deployed and linked to the Application Entity
 
@@ -291,5 +291,5 @@ contract Meetings is ApplicationAsset {
         uint256 duration;
         uint8 index;
     }
-    mapping (uint8 =&gt; Record) public Collection;
+    mapping (uint8 => Record) public Collection;
 }

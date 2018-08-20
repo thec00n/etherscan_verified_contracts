@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -96,8 +96,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * @dev Gets the balance of the specified address.
@@ -131,7 +131,7 @@ contract StandardToken is ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require (_value &lt;= allowed[_from][msg.sender]);
+        require (_value <= allowed[_from][msg.sender]);
     
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -168,8 +168,8 @@ contract StandardToken is ERC20 {
 }
 
 contract LifeBankerCoin is Owned, StandardToken{
-    string public constant name = &quot;LifeBanker Coin&quot;;
-    string public constant symbol = &quot;LBC&quot;;
+    string public constant name = "LifeBanker Coin";
+    string public constant symbol = "LBC";
     uint8 public constant decimals = 18;
 
     address public lockAddress;
@@ -186,8 +186,8 @@ contract LifeBankerCoin is Owned, StandardToken{
      * @param _sare address : The token storage address of the sales part
      */
     function initialization(address _team, address _lock, address _sale) onlyOwner public returns(bool) {
-        require(lockAddress == 0 &amp;&amp; teamAddress == 0);
-        require(_team != 0 &amp;&amp; _lock != 0);
+        require(lockAddress == 0 && teamAddress == 0);
+        require(_team != 0 && _lock != 0);
         require(_sale != 0);
         teamAddress = _team;
         lockAddress = _lock;
@@ -215,7 +215,7 @@ contract LifeBankerCoin is Owned, StandardToken{
  *    |       / :    :    :    :    :  
  *    |--- *    :    :    :    :    :  
  *    |  / :    :    :    :    :    :  
- *    +----*----*----*----*----*----*--&gt;
+ *    +----*----*----*----*----*----*-->
  *    0   0.5   1   1.5   2   2.5   3   Time(year)
  *
  */
@@ -256,7 +256,7 @@ contract TeamTokensHolder is Owned{
             revert();
         } 
 
-        if (amount &gt; balance) {
+        if (amount > balance) {
             amount = balance;
         }
 
@@ -291,7 +291,7 @@ contract TeamTokensHolder is Owned{
  *        10% for community promotion, and 10% for operation and maintenance.
  * @notice The tokens are locked for a total of five years, 
  *        and the number of tokens that can be unlocked each year is halved. 
- *        Each year&#39;s tokens are divided into 12 months equals to unlock.
+ *        Each year's tokens are divided into 12 months equals to unlock.
  *        Percentage per year : 50%, 25%, 12.5%, 6.25% ,6.25% 
  * Unlockable Amount(%)
  *    ^
@@ -312,7 +312,7 @@ contract TeamTokensHolder is Owned{
  *    |  *     :        :        :        :        : 
  *    | *      :        :        :        :        : 
  *    |*       :        :        :        :        : 
- *    +--------*--------*--------*--------*--------*---&gt; Time(year)
+ *    +--------*--------*--------*--------*--------*---> Time(year)
  *    0        1        2        3        4        5    
  */
 contract TokenLock is Owned{
@@ -335,7 +335,7 @@ contract TokenLock is Owned{
     uint256 _4stYear = totalLocked.mul(625).div(10000);   // 6.25%
     uint256 _5stYear = totalLocked.mul(625).div(10000);   // 6.25%
 
-    mapping (address =&gt; bool) whiteList;
+    mapping (address => bool) whiteList;
     
 
     event TokensWithdrawn(uint256 _amount);
@@ -367,7 +367,7 @@ contract TokenLock is Owned{
         return true;
     }
 
-    /* @dev Called by &#39;owner&#39; to unlock the token.   */
+    /* @dev Called by 'owner' to unlock the token.   */
     function unlock() public onlyWhite returns(bool success){
         uint256 canExtract = calculation();
         uint256 _amount = canExtract.sub(collectedTokens); // canExtract - collectedTokens
@@ -389,25 +389,25 @@ contract TokenLock is Owned{
             revert();
         }
 
-        if (_month &lt;= 12 ){
+        if (_month <= 12 ){
             _amount = _1stYear.mul(_month).div(12);
 
-        }else if(_month &lt;= 24){
+        }else if(_month <= 24){
             // _1stYear + [_2stYear * (moneth - 12) / 12]
             _amount = _1stYear;
             _amount = _amount.add(_2stYear.mul(_month.sub(12)).div(12));
 
-        }else if(_month &lt;= 36){
+        }else if(_month <= 36){
             // _1stYear + _2stYear + [_3stYear * (moneth - 24) / 12]
             _amount = _1stYear + _2stYear;
             _amount = _amount.add(_3stYear.mul(_month.sub(24)).div(12));
 
-        }else if(_month &lt;= 48){
+        }else if(_month <= 48){
             // _1stYear + _2stYear + _3stYear + [_4stYear * (moneth - 36) / 12]
             _amount = _1stYear + _2stYear + _3stYear;
             _amount = _amount.add(_4stYear.mul(_month.sub(36)).div(12));      
 
-        }else if(_month &lt;= 60){
+        }else if(_month <= 60){
             // _1stYear + _2stYear + _3stYear + _4stYear + [_5stYear * (moneth - 48) / 12]
             _amount = _1stYear + _2stYear + _3stYear + _4stYear;
             _amount = _amount.add(_5stYear.mul(_month.sub(48)).div(12)); 
@@ -464,12 +464,12 @@ contract CandyLBC is Owned {
 
     /*
      * @dev Transfer to multiple addresses to a different number of tokens.
-     * @param _addresses addressp[] : recipient&#39;s address list
+     * @param _addresses addressp[] : recipient's address list
      * @param _value     uint256[]  : a list of the number corresponding to each address
      */
     function mulPay(address[] _addresses, uint256[] _value) public onlyOwner returns(bool){
         require(_addresses.length == _value.length);
-        for(uint256 i = 0; i &lt; _addresses.length; i++){
+        for(uint256 i = 0; i < _addresses.length; i++){
             LBC.transfer(_addresses[i], _value[i]);
         }
         return true;
@@ -478,10 +478,10 @@ contract CandyLBC is Owned {
     /*
      * @dev Transfer the same token number to multiple addresses
      * @param _amount      uint256 : number of tokens
-     * @param _addresses uint256[] : recipient&#39;s address list
+     * @param _addresses uint256[] : recipient's address list
      */
     function mulTransfer(uint256 _amount, address[] _addresses) public onlyOwner returns(bool){
-        for(uint256 i = 0; i &lt; _addresses.length; i++){
+        for(uint256 i = 0; i < _addresses.length; i++){
             LBC.transfer(_addresses[i], _amount);
         }
         return true;

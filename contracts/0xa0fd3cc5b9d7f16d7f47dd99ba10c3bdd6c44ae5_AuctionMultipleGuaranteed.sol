@@ -14,7 +14,7 @@ contract Auction {
 
   address public owner;
   address public winner;
-  mapping(address =&gt; uint) public bids;
+  mapping(address => uint) public bids;
   address[] public accountsList; // so we can iterate: https://ethereum.stackexchange.com/questions/13167/are-there-well-solved-and-simple-storage-patterns-for-solidity
   function getAccountListLenght() public constant returns(uint) { return accountsList.length; } // lenght is not accessible from DApp, exposing convenience method: https://stackoverflow.com/questions/43016011/getting-the-length-of-public-array-variable-getter
 
@@ -28,9 +28,9 @@ contract Auction {
   event Refund(address indexed bidder, uint value, uint timestamp);
 
   
-  modifier onlyOwner { require(owner == msg.sender, &quot;only owner&quot;); _; }
-  modifier onlyWinner { require(winner == msg.sender, &quot;only winner&quot;); _; }
-  modifier ended { require(now &gt; timestampEnd, &quot;not ended yet&quot;); _; }
+  modifier onlyOwner { require(owner == msg.sender, "only owner"); _; }
+  modifier onlyWinner { require(winner == msg.sender, "only winner"); _; }
+  modifier ended { require(now > timestampEnd, "not ended yet"); _; }
 
 
   function setDescription(string _description) public onlyOwner() {
@@ -43,7 +43,7 @@ contract Auction {
   }
 
   constructor(uint _price, string _description, uint _timestampEnd, address _beneficiary) public {
-    require(_timestampEnd &gt; now, &quot;end of the auction must be in the future&quot;);
+    require(_timestampEnd > now, "end of the auction must be in the future");
     owner = msg.sender;
     price = _price;
     description = _description;
@@ -51,7 +51,7 @@ contract Auction {
     beneficiary = _beneficiary;
   }
 
-  // Same for all the derived contract, it&#39;s the implementation of refund() and bid() that differs
+  // Same for all the derived contract, it's the implementation of refund() and bid() that differs
   function() public payable {
     if (msg.value == 0) {
       refund();
@@ -61,9 +61,9 @@ contract Auction {
   }
 
   function bid() public payable {
-    require(now &lt; timestampEnd, &quot;auction has ended&quot;); // sending ether only allowed before the end
+    require(now < timestampEnd, "auction has ended"); // sending ether only allowed before the end
 
-    if (bids[msg.sender] &gt; 0) { // First we add the bid to an existing bid
+    if (bids[msg.sender] > 0) { // First we add the bid to an existing bid
       bids[msg.sender] += msg.value;
     } else {
       bids[msg.sender] = msg.value;
@@ -71,12 +71,12 @@ contract Auction {
     }
 
     if (initialPrice) {
-      require(bids[msg.sender] &gt;= price, &quot;bid too low, minimum is the initial price&quot;);
+      require(bids[msg.sender] >= price, "bid too low, minimum is the initial price");
     } else {
-      require(bids[msg.sender] &gt;= (price * 5 / 4), &quot;bid too low, minimum 25% increment&quot;);
+      require(bids[msg.sender] >= (price * 5 / 4), "bid too low, minimum 25% increment");
     }
     
-    if (now &gt; timestampEnd - increaseTimeIfBidBeforeEnd) {
+    if (now > timestampEnd - increaseTimeIfBidBeforeEnd) {
       timestampEnd = now + increaseTimeBy;
     }
 
@@ -87,16 +87,16 @@ contract Auction {
   }
 
   function finalize() public ended() onlyOwner() {
-    require(finalized == false, &quot;can withdraw only once&quot;);
-    require(initialPrice == false, &quot;can withdraw only if there were bids&quot;);
+    require(finalized == false, "can withdraw only once");
+    require(initialPrice == false, "can withdraw only if there were bids");
 
     finalized = true;
     beneficiary.transfer(price);
   }
 
   function refund(address addr) private {
-    require(addr != winner, &quot;winner cannot refund&quot;);
-    require(bids[addr] &gt; 0, &quot;refunds only allowed if you sent something&quot;);
+    require(addr != winner, "winner cannot refund");
+    require(bids[addr] > 0, "refunds only allowed if you sent something");
 
     uint refundValue = bids[addr];
     bids[addr] = 0; // reentrancy fix, setting to zero first
@@ -117,8 +117,8 @@ contract Auction {
 
 // File: contracts/AuctionMultiple.sol
 
-// 1, &quot;something&quot;, 1539659548, &quot;0xca35b7d915458ef540ade6068dfe2f44e8fa733c&quot;, 3
-// 1, &quot;something&quot;, 1539659548, &quot;0x315f80C7cAaCBE7Fb1c14E65A634db89A33A9637&quot;, 3
+// 1, "something", 1539659548, "0xca35b7d915458ef540ade6068dfe2f44e8fa733c", 3
+// 1, "something", 1539659548, "0x315f80C7cAaCBE7Fb1c14E65A634db89A33A9637", 3
 
 contract AuctionMultiple is Auction {
 
@@ -135,15 +135,15 @@ contract AuctionMultiple is Auction {
     address contributor;  // The contributor who placed the bid.
   }    
 
-  mapping (uint =&gt; Bid) public bids; // map bidID to actual Bid structure
-  mapping (address =&gt; uint) public contributors; // map address to bidID
+  mapping (uint => Bid) public bids; // map bidID to actual Bid structure
+  mapping (address => uint) public contributors; // map address to bidID
   
   event LogNumber(uint number);
   event LogText(string text);
   event LogAddress(address addr);
   
   constructor(uint _price, string _description, uint _timestampEnd, address _beneficiary, uint _howMany) Auction(_price, _description, _timestampEnd, _beneficiary) public {
-    require(_howMany &gt; 1, &quot;This auction is suited to multiple items. With 1 item only - use different code. Or remove this &#39;require&#39; - you&#39;ve been warned&quot;);
+    require(_howMany > 1, "This auction is suited to multiple items. With 1 item only - use different code. Or remove this 'require' - you've been warned");
     howMany = _howMany;
 
     bids[HEAD] = Bid({
@@ -161,16 +161,16 @@ contract AuctionMultiple is Auction {
   }
 
   function bid() public payable {
-    require(now &lt; timestampEnd, &quot;cannot bid after the auction ends&quot;);
+    require(now < timestampEnd, "cannot bid after the auction ends");
 
     uint myBidId = contributors[msg.sender];
     uint insertionBidId;
     
-    if (myBidId &gt; 0) { // sender has already placed bid, we increase the existing one
+    if (myBidId > 0) { // sender has already placed bid, we increase the existing one
         
       Bid storage existingBid = bids[myBidId];
       existingBid.value = existingBid.value + msg.value;
-      if (existingBid.value &gt; bids[existingBid.next].value) { // else do nothing (we are lower than the next one)
+      if (existingBid.value > bids[existingBid.next].value) { // else do nothing (we are lower than the next one)
         insertionBidId = searchInsertionPoint(existingBid.value, existingBid.next);
 
         bids[existingBid.prev].next = existingBid.next;
@@ -184,8 +184,8 @@ contract AuctionMultiple is Auction {
       } 
 
     } else { // bid from this guy does not exist, create a new one
-      require(msg.value &gt;= price, &quot;Not much sense sending less than the price, likely an error&quot;); // but it is OK to bid below the cut off bid, some guys may withdraw
-      require(lastBidID &lt; LIMIT, &quot;Due to blockGas limit we limit number of people in the auction to 4000 - round arbitrary number - check test gasLimit folder for more info&quot;);
+      require(msg.value >= price, "Not much sense sending less than the price, likely an error"); // but it is OK to bid below the cut off bid, some guys may withdraw
+      require(lastBidID < LIMIT, "Due to blockGas limit we limit number of people in the auction to 4000 - round arbitrary number - check test gasLimit folder for more info");
 
       lastBidID++;
 
@@ -210,9 +210,9 @@ contract AuctionMultiple is Auction {
 
   function refund(address addr) private {
     uint bidId = contributors[addr];
-    require(bidId &gt; 0, &quot;the guy with this address does not exist, makes no sense to witdraw&quot;);
+    require(bidId > 0, "the guy with this address does not exist, makes no sense to witdraw");
     uint position = getPosition(addr);
-    require(position &gt; howMany, &quot;only the non-winning bids can be withdrawn&quot;);
+    require(position > howMany, "only the non-winning bids can be withdrawn");
 
     uint refundValue = bids[ bidId ].value;
     _removeBid(bidId);
@@ -233,13 +233,13 @@ contract AuctionMultiple is Auction {
   }
 
   function finalize() public ended() onlyOwner() {
-    require(finalized == false, &quot;auction already finalized, can withdraw only once&quot;);
+    require(finalized == false, "auction already finalized, can withdraw only once");
     finalized = true;
 
     uint sumContributions = 0;
     uint counter = 0;
     Bid memory currentBid = bids[HEAD];
-    while(counter++ &lt; howMany &amp;&amp; currentBid.prev != TAIL) {
+    while(counter++ < howMany && currentBid.prev != TAIL) {
       currentBid = bids[ currentBid.prev ];
       sumContributions += currentBid.value;
     }
@@ -251,7 +251,7 @@ contract AuctionMultiple is Auction {
   // This is to simplify the case of increasing bids (can go upwards, cannot go lower)
   // NOTE: blockSize gas limit in case of so many bids (wishful thinking)
   function searchInsertionPoint(uint _contribution, uint _startSearch) view public returns (uint) {
-    require(_contribution &gt; bids[_startSearch].value, &quot;your contribution and _startSearch does not make sense, it will search in a wrong direction&quot;);
+    require(_contribution > bids[_startSearch].value, "your contribution and _startSearch does not make sense, it will search in a wrong direction");
 
     Bid memory lowerBid = bids[_startSearch];
     Bid memory higherBid;
@@ -259,7 +259,7 @@ contract AuctionMultiple is Auction {
     while(true) { // it is guaranteed to stop as we set the HEAD bid with very high maximum valuation
       higherBid = bids[lowerBid.next];
 
-      if (_contribution &lt; higherBid.value) {
+      if (_contribution < higherBid.value) {
         return higherBid.prev;
       } else {
         lowerBid = higherBid;
@@ -269,7 +269,7 @@ contract AuctionMultiple is Auction {
 
   function getPosition(address addr) view public returns(uint) {
     uint bidId = contributors[addr];
-    require(bidId != 0, &quot;cannot ask for a position of a guy who is not on the list&quot;);
+    require(bidId != 0, "cannot ask for a position of a guy who is not on the list");
     uint position = 1;
 
     Bid memory currentBid = bids[HEAD];
@@ -289,43 +289,43 @@ contract AuctionMultiple is Auction {
 
 // File: contracts/AuctionMultipleGuaranteed.sol
 
-// 100000000000000000, &quot;membership in Casa Crypto&quot;, 1546300799, &quot;0x8855Ef4b740Fc23D822dC8e1cb44782e52c07e87&quot;, 20, 5, 5000000000000000000
+// 100000000000000000, "membership in Casa Crypto", 1546300799, "0x8855Ef4b740Fc23D822dC8e1cb44782e52c07e87", 20, 5, 5000000000000000000
 
-// 100000000000000000, &quot;Ethereum coding workshop 24th August 2018&quot;, 1538351999, &quot;0x09b25F7627A8d509E5FaC01cB7692fdBc26A2663&quot;, 12, 3, 5000000000000000000
+// 100000000000000000, "Ethereum coding workshop 24th August 2018", 1538351999, "0x09b25F7627A8d509E5FaC01cB7692fdBc26A2663", 12, 3, 5000000000000000000
 
-// For instance: effering limited &quot;Early Bird&quot; tickets that are guaranteed
+// For instance: effering limited "Early Bird" tickets that are guaranteed
 contract AuctionMultipleGuaranteed is AuctionMultiple {
 
   uint public howManyGuaranteed; // after guaranteed slots are used, we decrease the number of slots available (in the parent contract)
   uint public priceGuaranteed;
   address[] public guaranteedContributors; // cannot iterate mapping, keeping addresses in an array
-  mapping (address =&gt; uint) public guaranteedContributions;
+  mapping (address => uint) public guaranteedContributions;
   function getGuaranteedContributorsLenght() public constant returns(uint) { return guaranteedContributors.length; } // lenght is not accessible from DApp, exposing convenience method: https://stackoverflow.com/questions/43016011/getting-the-length-of-public-array-variable-getter
 
   event GuaranteedBid(address indexed bidder, uint value, uint timestamp);
   
   constructor(uint _price, string _description, uint _timestampEnd, address _beneficiary, uint _howMany, uint _howManyGuaranteed, uint _priceGuaranteed) AuctionMultiple(_price, _description, _timestampEnd, _beneficiary, _howMany) public {
-    require(_howMany &gt;= _howManyGuaranteed, &quot;The number of guaranteed items should be less or equal than total items. If equal = fixed price sell, kind of OK with me&quot;);
-    require(_priceGuaranteed &gt; 0, &quot;Guranteed price must be greated than zero&quot;);
+    require(_howMany >= _howManyGuaranteed, "The number of guaranteed items should be less or equal than total items. If equal = fixed price sell, kind of OK with me");
+    require(_priceGuaranteed > 0, "Guranteed price must be greated than zero");
 
     howManyGuaranteed = _howManyGuaranteed;
     priceGuaranteed = _priceGuaranteed;
   }
 
   function bid() public payable {
-    require(now &lt; timestampEnd, &quot;cannot bid after the auction ends&quot;);
-    require(guaranteedContributions[msg.sender] == 0, &quot;already a guranteed contributor, cannot more than once&quot;);
+    require(now < timestampEnd, "cannot bid after the auction ends");
+    require(guaranteedContributions[msg.sender] == 0, "already a guranteed contributor, cannot more than once");
 
     uint myBidId = contributors[msg.sender];
-    if (myBidId &gt; 0) {
+    if (myBidId > 0) {
       uint newTotalValue = bids[myBidId].value + msg.value;
-      if (newTotalValue &gt;= priceGuaranteed &amp;&amp; howManyGuaranteed &gt; 0) {
+      if (newTotalValue >= priceGuaranteed && howManyGuaranteed > 0) {
         _removeBid(myBidId);
         _guarantedBid(newTotalValue);
       } else {
         super.bid(); // regular bid (sum is smaller than guranteed or guranteed already used)
       }
-    } else if (msg.value &gt;= priceGuaranteed &amp;&amp; howManyGuaranteed &gt; 0) {
+    } else if (msg.value >= priceGuaranteed && howManyGuaranteed > 0) {
       _guarantedBid(msg.value);
     } else {
        super.bid(); // regular bid (completely new one)
@@ -341,19 +341,19 @@ contract AuctionMultipleGuaranteed is AuctionMultiple {
   }
 
   function finalize() public ended() onlyOwner() {
-    require(finalized == false, &quot;auction already finalized, can withdraw only once&quot;);
+    require(finalized == false, "auction already finalized, can withdraw only once");
     finalized = true;
 
     uint sumContributions = 0;
     uint counter = 0;
     Bid memory currentBid = bids[HEAD];
-    while(counter++ &lt; howMany &amp;&amp; currentBid.prev != TAIL) {
+    while(counter++ < howMany && currentBid.prev != TAIL) {
       currentBid = bids[ currentBid.prev ];
       sumContributions += currentBid.value;
     }
 
-    // At all times we are aware of gas limits - that&#39;s why we limit auction to 2000 participants, see also `test-gasLimit` folder
-    for (uint i=0; i&lt;guaranteedContributors.length; i++) {
+    // At all times we are aware of gas limits - that's why we limit auction to 2000 participants, see also `test-gasLimit` folder
+    for (uint i=0; i<guaranteedContributors.length; i++) {
       sumContributions += guaranteedContributions[ guaranteedContributors[i] ];
     }
 

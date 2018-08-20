@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -57,9 +57,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -67,7 +67,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -76,7 +76,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -96,20 +96,20 @@ library SafeMath32 {
     }
 
     function div(uint32 a, uint32 b) internal pure returns (uint32) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint32 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint32 a, uint32 b) internal pure returns (uint32) {
         uint32 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -130,20 +130,20 @@ library SafeMath16 {
     }
 
     function div(uint16 a, uint16 b) internal pure returns (uint16) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint16 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint16 a, uint16 b) internal pure returns (uint16) {
         uint16 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -212,14 +212,14 @@ contract StudentFactory is Ownable{
     Student[] students;// 学生列表
     CET4[] CET4List; // 四级成绩列表
     CET6[] CET6List; // 六级成绩列表
-    mapping (address=&gt;Student) public addrToStudent;// 地址到学生的映射
-    mapping (uint=&gt;address) internal CET4IndexToAddr; // 四级成绩序号到地址的映射
-    mapping (uint=&gt;address) internal CET6IndexToAddr; // 六级成绩序号到地址的映射
-    mapping (address=&gt;uint) public addrCET4Count; //地址到四级成绩数量映射
-    mapping (address=&gt;uint) public addrCET6Count; //地址到六级成绩数量映射
-    mapping (address=&gt;Undergraduate) public addrToUndergaduate;// 地址到本科学籍的映射
-    mapping (address=&gt;Master) public addrToMaster;// 地址到硕士学籍的映射
-    mapping (address=&gt;Doctor) public addrToDoctor;// 地址到博士学籍的映射
+    mapping (address=>Student) public addrToStudent;// 地址到学生的映射
+    mapping (uint=>address) internal CET4IndexToAddr; // 四级成绩序号到地址的映射
+    mapping (uint=>address) internal CET6IndexToAddr; // 六级成绩序号到地址的映射
+    mapping (address=>uint) public addrCET4Count; //地址到四级成绩数量映射
+    mapping (address=>uint) public addrCET6Count; //地址到六级成绩数量映射
+    mapping (address=>Undergraduate) public addrToUndergaduate;// 地址到本科学籍的映射
+    mapping (address=>Master) public addrToMaster;// 地址到硕士学籍的映射
+    mapping (address=>Doctor) public addrToDoctor;// 地址到博士学籍的映射
    
     // 定义判断身份证是否被使用的modifier
     modifier availableIdOf(string _id) {
@@ -229,7 +229,7 @@ contract StudentFactory is Ownable{
 
     // 判断证件号码是否已注册
     function _isIdExisted(string _id) private view returns(bool){
-        for(uint i = 0;i&lt;students.length;i++){
+        for(uint i = 0;i<students.length;i++){
             if(keccak256(students[i].id)==keccak256(_id)){
                 return false;
             }
@@ -283,7 +283,7 @@ contract StudentHelper is StudentFactory{
         uint32[] memory timeList = new uint32[](addrCET4Count[_addr]); 
         uint32[] memory gradeList = new uint32[](addrCET4Count[_addr]);
         uint counter = 0;    
-        for (uint i = 0; i &lt; CET4List.length; i++) {
+        for (uint i = 0; i < CET4List.length; i++) {
             if(CET4IndexToAddr[i]==_addr){
                 timeList[counter] = CET4List[i].time;
                 gradeList[counter] = CET4List[i].grade;
@@ -298,7 +298,7 @@ contract StudentHelper is StudentFactory{
         uint32[] memory timeList = new uint32[](addrCET6Count[_addr]); 
         uint32[] memory gradeList = new uint32[](addrCET6Count[_addr]);
         uint counter = 0;    
-        for (uint i = 0; i &lt; CET6List.length; i++) {
+        for (uint i = 0; i < CET6List.length; i++) {
             if(CET6IndexToAddr[i]==_addr){
                 timeList[counter] = CET6List[i].time;
                 gradeList[counter] = CET6List[i].grade;

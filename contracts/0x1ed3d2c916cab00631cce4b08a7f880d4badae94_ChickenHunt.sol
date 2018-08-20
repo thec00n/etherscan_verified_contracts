@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
   }
 
 }
@@ -70,17 +70,17 @@ contract CHStock is ERC20Interface {
 
   /* STORAGE */
 
-  string public name = &quot;ChickenHuntStock&quot;;
-  string public symbol = &quot;CHS&quot;;
+  string public name = "ChickenHuntStock";
+  string public symbol = "CHS";
   uint8 public decimals = 18;
   uint256 public totalShares;
   uint256 public dividendsPerShare;
-  uint256 public constant CORRECTION = 1 &lt;&lt; 64;
-  mapping (address =&gt; uint256) public ethereumBalance;
-  mapping (address =&gt; uint256) internal shares;
-  mapping (address =&gt; uint256) internal refund;
-  mapping (address =&gt; uint256) internal deduction;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  uint256 public constant CORRECTION = 1 << 64;
+  mapping (address => uint256) public ethereumBalance;
+  mapping (address => uint256) internal shares;
+  mapping (address => uint256) internal refund;
+  mapping (address => uint256) internal deduction;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /* FUNCTION */
 
@@ -106,7 +106,7 @@ contract CHStock is ERC20Interface {
     public
     returns (bool)
   {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     allowed[_from][msg.sender] -= _value;
     _transfer(_from, _to, _value);
     return true;
@@ -141,7 +141,7 @@ contract CHStock is ERC20Interface {
   /* INTERNAL FUNCTION */
 
   function _giveShares(address _user, uint256 _ethereum) internal {
-    if (_ethereum &gt; 0) {
+    if (_ethereum > 0) {
       totalShares = totalShares.add(_ethereum);
       deduction[_user] = deduction[_user].add(dividendsPerShare.mul(_ethereum));
       shares[_user] = shares[_user].add(_ethereum);
@@ -153,11 +153,11 @@ contract CHStock is ERC20Interface {
 
   function _transfer(address _from, address _to, uint256 _value) internal {
     require(_to != address(0));
-    require(_value &lt;= shares[_from]);
+    require(_value <= shares[_from]);
     uint256 _rawProfit = dividendsPerShare.mul(_value);
 
     uint256 _refund = refund[_from].add(_rawProfit);
-    uint256 _min = _refund &lt; deduction[_from] ? _refund : deduction[_from];
+    uint256 _min = _refund < deduction[_from] ? _refund : deduction[_from];
     refund[_from] = _refund.sub(_min);
     deduction[_from] = deduction[_from].sub(_min);
     deduction[_to] = deduction[_to].add(_rawProfit);
@@ -215,9 +215,9 @@ contract CHGameBase is CHStock {
   uint256 public dividendRate;
   uint256 public totalChicken;
   address public chickenTokenDelegator;
-  mapping (address =&gt; uint256) public lastSaveTime;
-  mapping (address =&gt; uint256) public savedChickenOf;
-  mapping (address =&gt; House) internal houses;
+  mapping (address => uint256) public lastSaveTime;
+  mapping (address => uint256) public savedChickenOf;
+  mapping (address => House) internal houses;
 
   /* FUNCTION */
 
@@ -235,7 +235,7 @@ contract CHGameBase is CHStock {
     returns (bool)
   {
     require(msg.sender == chickenTokenDelegator);
-    require(saveChickenOf(_from) &gt;= _value);
+    require(saveChickenOf(_from) >= _value);
     savedChickenOf[_from] = savedChickenOf[_from] - _value;
     savedChickenOf[_to] = savedChickenOf[_to].add(_value);
 
@@ -252,9 +252,9 @@ contract CHGameBase is CHStock {
     uint256 _unclaimedChicken = _unclaimedChickenOf(_user);
     uint256 _extraChicken;
 
-    if (_chicken &gt; _unclaimedChicken) {
+    if (_chicken > _unclaimedChicken) {
       _extraChicken = _chicken - _unclaimedChicken;
-      require(savedChickenOf[_user] &gt;= _extraChicken);
+      require(savedChickenOf[_user] >= _extraChicken);
       savedChickenOf[_user] -= _extraChicken;
       totalChicken -= _extraChicken;
     } else {
@@ -282,9 +282,9 @@ contract CHGameBase is CHStock {
 
   function _payEthereum(uint256 _cost) internal {
     uint256 _extra;
-    if (_cost &gt; msg.value) {
+    if (_cost > msg.value) {
       _extra = _cost - msg.value;
-      require(ethereumBalance[msg.sender] &gt;= _extra);
+      require(ethereumBalance[msg.sender] >= _extra);
       ethereumBalance[msg.sender] -= _extra;
     } else {
       _extra = msg.value - _cost;
@@ -294,7 +294,7 @@ contract CHGameBase is CHStock {
 
   function _unclaimedChickenOf(address _user) internal view returns (uint256) {
     uint256 _timestamp = lastSaveTime[_user];
-    if (_timestamp &gt; 0 &amp;&amp; _timestamp &lt; block.timestamp) {
+    if (_timestamp > 0 && _timestamp < block.timestamp) {
       return houses[_user].huntingPower.mul(
         houses[_user].huntingMultiplier
       ).mul(block.timestamp - _timestamp) / 100;
@@ -309,7 +309,7 @@ contract CHGameBase is CHStock {
     returns (House storage _house)
   {
     _house = houses[_user];
-    require(_house.depots &gt; 0);
+    require(_house.depots > 0);
   }
 
 }
@@ -347,7 +347,7 @@ contract CHHunter is CHGameBase {
   function upgradeStrength(uint256 _to) external payable {
     House storage _house = _houseOf(msg.sender);
     uint256 _from = _house.hunter.strength;
-    require(typeA.max &gt;= _to &amp;&amp; _to &gt; _from);
+    require(typeA.max >= _to && _to > _from);
     _payForUpgrade(_from, _to, typeA);
 
     uint256 _increment = _house.hunter.dexterity.mul(2).add(8).mul(_to.square() - _from ** 2);
@@ -355,13 +355,13 @@ contract CHHunter is CHGameBase {
     _house.huntingPower = _house.huntingPower.add(_increment);
     _house.offensePower = _house.offensePower.add(_increment);
 
-    emit UpgradeHunter(msg.sender, &quot;strength&quot;, _to);
+    emit UpgradeHunter(msg.sender, "strength", _to);
   }
 
   function upgradeDexterity(uint256 _to) external payable {
     House storage _house = _houseOf(msg.sender);
     uint256 _from = _house.hunter.dexterity;
-    require(typeB.max &gt;= _to &amp;&amp; _to &gt; _from);
+    require(typeB.max >= _to && _to > _from);
     _payForUpgrade(_from, _to, typeB);
 
     uint256 _increment = _house.hunter.strength.square().mul((_to - _from).mul(2));
@@ -369,33 +369,33 @@ contract CHHunter is CHGameBase {
     _house.huntingPower = _house.huntingPower.add(_increment);
     _house.offensePower = _house.offensePower.add(_increment);
 
-    emit UpgradeHunter(msg.sender, &quot;dexterity&quot;, _to);
+    emit UpgradeHunter(msg.sender, "dexterity", _to);
   }
 
   function upgradeConstitution(uint256 _to) external payable {
     House storage _house = _houseOf(msg.sender);
     uint256 _from = _house.hunter.constitution;
-    require(typeA.max &gt;= _to &amp;&amp; _to &gt; _from);
+    require(typeA.max >= _to && _to > _from);
     _payForUpgrade(_from, _to, typeA);
 
     uint256 _increment = _house.hunter.resistance.mul(2).add(8).mul(_to.square() - _from ** 2);
     _house.hunter.constitution = _to;
     _house.defensePower = _house.defensePower.add(_increment);
 
-    emit UpgradeHunter(msg.sender, &quot;constitution&quot;, _to);
+    emit UpgradeHunter(msg.sender, "constitution", _to);
   }
 
   function upgradeResistance(uint256 _to) external payable {
     House storage _house = _houseOf(msg.sender);
     uint256 _from = _house.hunter.resistance;
-    require(typeB.max &gt;= _to &amp;&amp; _to &gt; _from);
+    require(typeB.max >= _to && _to > _from);
     _payForUpgrade(_from, _to, typeB);
 
     uint256 _increment = _house.hunter.constitution.square().mul((_to - _from).mul(2));
     _house.hunter.resistance = _to;
     _house.defensePower = _house.defensePower.add(_increment);
 
-    emit UpgradeHunter(msg.sender, &quot;resistance&quot;, _to);
+    emit UpgradeHunter(msg.sender, "resistance", _to);
   }
 
   /* INTERNAL FUNCTION */
@@ -422,7 +422,7 @@ contract CHHunter is CHGameBase {
     returns (uint256)
   {
     // max value is capped to uint32
-    return ((_after * (_after - 1)) ** 2 - (_before * (_before - 1)) ** 2) &gt;&gt; 2;
+    return ((_after * (_after - 1)) ** 2 - (_before * (_before - 1)) ** 2) >> 2;
   }
 
 }
@@ -496,14 +496,14 @@ contract CHHouse is CHHunter {
   function buyDepots(uint256 _amount) external payable {
     House storage _house = _houseOf(msg.sender);
     _house.depots = _house.depots.add(_amount);
-    require(_house.depots &lt;= depot.max);
+    require(_house.depots <= depot.max);
     _payEthereumAndDistribute(_amount.mul(depot.ethereum));
 
     emit UpgradeDepot(msg.sender, _house.depots);
   }
 
   function buyPets(uint256 _id, uint256 _amount) external payable {
-    require(_id &lt; pets.length);
+    require(_id < pets.length);
     Pet memory _pet = pets[_id];
     uint256 _chickenCost = _amount * _pet.chicken;
     _payChicken(msg.sender, _chickenCost);
@@ -511,11 +511,11 @@ contract CHHouse is CHHunter {
     _payEthereumAndDistribute(_ethereumCost);
 
     House storage _house = _houseOf(msg.sender);
-    if (_house.pets.length &lt; _id + 1) {
+    if (_house.pets.length < _id + 1) {
       _house.pets.length = _id + 1;
     }
     _house.pets[_id] = _house.pets[_id].add(_amount);
-    require(_house.pets[_id] &lt;= _pet.max);
+    require(_house.pets[_id] <= _pet.max);
 
     _house.huntingPower = _house.huntingPower.add(_pet.huntingPower * _amount);
     _house.offensePower = _house.offensePower.add(_pet.offensePower * _amount);
@@ -594,19 +594,19 @@ contract CHArena is CHHouse {
 
   /* STORAGE */
 
-  mapping(address =&gt; uint256) public attackCooldown;
+  mapping(address => uint256) public attackCooldown;
   uint256 public cooldownTime;
 
   /* FUNCTION */
 
   function attack(address _target) external {
-    require(attackCooldown[msg.sender] &lt; block.timestamp);
+    require(attackCooldown[msg.sender] < block.timestamp);
     House storage _attacker = houses[msg.sender];
     House storage _defender = houses[_target];
     if (_attacker.offensePower.mul(_attacker.offenseMultiplier)
-        &gt; _defender.defensePower.mul(_defender.defenseMultiplier)) {
+        > _defender.defensePower.mul(_defender.defenseMultiplier)) {
       uint256 _chicken = saveChickenOf(_target);
-      _chicken = _defender.depots &gt; 0 ? _chicken / _defender.depots : _chicken;
+      _chicken = _defender.depots > 0 ? _chicken / _defender.depots : _chicken;
       savedChickenOf[_target] = savedChickenOf[_target] - _chicken;
       savedChickenOf[msg.sender] = savedChickenOf[msg.sender].add(_chicken);
       attackCooldown[msg.sender] = block.timestamp + cooldownTime;
@@ -645,20 +645,20 @@ contract CHAltar is CHArena {
   /* STORAGE */
 
   uint256 public genesis;
-  mapping (uint256 =&gt; AltarRecord) public altarRecords;
-  mapping (address =&gt; TradeBook) public tradeBooks;
+  mapping (uint256 => AltarRecord) public altarRecords;
+  mapping (address => TradeBook) public tradeBooks;
 
   /* FUNCTION */
 
   function chickenToAltar(uint256 _chicken) external {
-    require(_chicken &gt; 0);
+    require(_chicken > 0);
 
     _payChicken(msg.sender, _chicken);
     uint256 _id = _getCurrentAltarRecordId();
     AltarRecord storage _altarRecord = _getAltarRecord(_id);
     require(_altarRecord.ethereum * _chicken / _chicken == _altarRecord.ethereum);
     TradeBook storage _tradeBook = tradeBooks[msg.sender];
-    if (_tradeBook.altarRecordId &lt; _id) {
+    if (_tradeBook.altarRecordId < _id) {
       _resolveTradeBook(_tradeBook);
       _tradeBook.altarRecordId = _id;
     }
@@ -671,7 +671,7 @@ contract CHAltar is CHArena {
   function ethereumFromAltar() external {
     uint256 _id = _getCurrentAltarRecordId();
     TradeBook storage _tradeBook = tradeBooks[msg.sender];
-    require(_tradeBook.altarRecordId &lt; _id);
+    require(_tradeBook.altarRecordId < _id);
     _resolveTradeBook(_tradeBook);
   }
 
@@ -692,13 +692,13 @@ contract CHAltar is CHArena {
     AltarRecord memory _altarRecord = altarRecords[_id];
     _totalChicken = _altarRecord.chicken;
     _ethereum = _altarRecord.ethereum;
-    _income = _totalChicken &gt; 0 ? _ethereum.mul(_chicken) / _totalChicken : 0;
+    _income = _totalChicken > 0 ? _ethereum.mul(_chicken) / _totalChicken : 0;
   }
 
   /* INTERNAL FUNCTION */
 
   function _resolveTradeBook(TradeBook storage _tradeBook) internal {
-    if (_tradeBook.chicken &gt; 0) {
+    if (_tradeBook.chicken > 0) {
       AltarRecord memory _oldAltarRecord = altarRecords[_tradeBook.altarRecordId];
       uint256 _ethereum = _oldAltarRecord.ethereum.mul(_tradeBook.chicken) / _oldAltarRecord.chicken;
       delete _tradeBook.chicken;
@@ -809,7 +809,7 @@ contract CHCommittee is CHAltar {
     public
     onlyCommittee
   {
-    require(_max &gt; 0);
+    require(_max > 0);
     require(_max == uint256(uint32(_max)));
     uint256 _newLength = pets.push(
       Pet(_huntingPower, _offensePower, _defense, _chicken, _ethereum, _max)
@@ -835,9 +835,9 @@ contract CHCommittee is CHAltar {
     public
     onlyCommittee
   {
-    require(_id &lt; pets.length);
+    require(_id < pets.length);
     Pet storage _pet = pets[_id];
-    require(_max &gt;= _pet.max &amp;&amp; _max == uint256(uint32(_max)));
+    require(_max >= _pet.max && _max == uint256(uint32(_max)));
 
     _pet.chicken = _chicken;
     _pet.ethereum = _ethereum;
@@ -855,11 +855,11 @@ contract CHCommittee is CHAltar {
     public
     onlyCommittee
   {
-    uint256 _cap = 1 &lt;&lt; 16;
+    uint256 _cap = 1 << 16;
     require(
-      _huntingMultiplier &lt; _cap &amp;&amp;
-      _offenseMultiplier &lt; _cap &amp;&amp;
-      _defenseMultiplier &lt; _cap
+      _huntingMultiplier < _cap &&
+      _offenseMultiplier < _cap &&
+      _defenseMultiplier < _cap
     );
     saveChickenOf(committee);
     House storage _house = _houseOf(committee);
@@ -887,7 +887,7 @@ contract CHCommittee is CHAltar {
   }
 
   function setDepot(uint256 _price, uint256 _max) public onlyCommittee {
-    require(_max &gt;= depot.max);
+    require(_max >= depot.max);
 
     depot.ethereum = _price;
     depot.max = _max;
@@ -906,8 +906,8 @@ contract CHCommittee is CHAltar {
     public
     onlyCommittee
   {
-    require(_maxA &gt;= typeA.max &amp;&amp; (_maxA == uint256(uint32(_maxA))));
-    require(_maxB &gt;= typeB.max &amp;&amp; (_maxB == uint256(uint32(_maxB))));
+    require(_maxA >= typeA.max && (_maxA == uint256(uint32(_maxA))));
+    require(_maxB >= typeB.max && (_maxB == uint256(uint32(_maxB))));
 
     typeA.chicken = _chickenA;
     typeA.ethereum = _ethereumA;
@@ -929,7 +929,7 @@ contract CHCommittee is CHAltar {
     public
     onlyCommittee
   {
-    require(_storeCut &gt; 0);
+    require(_storeCut > 0);
     require(
       _dividendRate.add(_altarCut).add(_storeCut).add(_devCut) == 100
     );

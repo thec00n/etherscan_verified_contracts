@@ -48,13 +48,13 @@ contract NeuroChainClausius is Owned, ERC20Interface {
   // Adding safe calculation methods to uint256
   using SafeMath for uint;
   // Defining balances mapping (ERC20)
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   // Defining allowances mapping (ERC20)
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
   // Defining addresses allowed to bypass global freeze
-  mapping(address =&gt; bool) public freezeBypassing;
+  mapping(address => bool) public freezeBypassing;
   // Defining addresses association between NeuroChain and ETH network
-  mapping(address =&gt; string) public neuroChainAddresses;
+  mapping(address => string) public neuroChainAddresses;
   // Event raised when a NeuroChain address is changed
   event NeuroChainAddressSet(
     address ethAddress,
@@ -68,9 +68,9 @@ contract NeuroChainClausius is Owned, ERC20Interface {
     uint timestamp
   );
   // Token Symbol
-  string public symbol = &quot;NCC&quot;;
+  string public symbol = "NCC";
   // Token Name
-  string public name = &quot;NeuroChain Clausius&quot;;
+  string public name = "NeuroChain Clausius";
   // Token Decimals
   uint8 public decimals = 18;
   // Total supply of token
@@ -85,7 +85,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @notice Sending Tokens to an address
    * @param to The receiver address
    * @param tokens The amount of tokens to send (without de decimal part)
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function distributeSupply(
     address to,
@@ -94,7 +94,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
   public onlyOwner returns (bool success)
   {
     uint tokenAmount = tokens.mul(10**uint(decimals));
-    require(_circulatingSupply.add(tokenAmount) &lt;= _totalSupply);
+    require(_circulatingSupply.add(tokenAmount) <= _totalSupply);
     _circulatingSupply = _circulatingSupply.add(tokenAmount);
     balances[to] = tokenAmount;
     return true;
@@ -102,7 +102,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
   /**
    * @notice Allowing a spender to bypass global frezze
    * @param sender The allowed address
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function allowFreezeBypass(
     address sender
@@ -198,7 +198,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @notice Get the token balance of `tokenOwner`
    * @dev This function is part of the ERC20 standard
    * @param tokenOwner The wallet to get the balance of
-   * @return {&quot;balance&quot;: &quot;The balance of `tokenOwner`&quot;}
+   * @return {"balance": "The balance of `tokenOwner`"}
    */
   function balanceOf(
     address tokenOwner
@@ -212,7 +212,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @dev This function is part of the ERC20 standard
    * @param to The address that receives the tokens
    * @param tokens Token amount to transfer
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function transfer(
     address to,
@@ -232,7 +232,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @param from The address sending the tokens
    * @param to The address recieving the tokens
    * @param tokens Token amount to transfer
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function transferFrom(
     address from,
@@ -252,7 +252,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @dev This function is part of the ERC20 standard
    * @param spender The allowed address
    * @param tokens The maximum amount allowed to spend
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function approve(
     address spender,
@@ -269,7 +269,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @dev This function is part of the ERC20 standard
    * @param tokenOwner The address that owns the tokens
    * @param spender The spender
-   * @return {&quot;remaining&quot;: &quot;The amount of tokens remaining in the allowance&quot;}
+   * @return {"remaining": "The amount of tokens remaining in the allowance"}
    */
   function allowance(
     address tokenOwner,
@@ -285,7 +285,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @param spender The allowed address
    * @param tokens The maximum amount allowed to spend
    * @param data The data sent back as parameter to the contract (bytes array)
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function approveAndCall(
     address spender,
@@ -303,7 +303,7 @@ contract NeuroChainClausius is Owned, ERC20Interface {
    * @notice Permits to withdraw any ERC20 tokens that have been mistakingly sent to this contract
    * @param tokenAddress The received ERC20 token address
    * @param tokens The amount of ERC20 tokens to withdraw from this contract
-   * @return {&quot;success&quot;: &quot;If the operation completed successfuly&quot;}
+   * @return {"success": "If the operation completed successfuly"}
    */
   function transferAnyERC20Token(
     address tokenAddress,
@@ -318,10 +318,10 @@ contract NeuroChainClausius is Owned, ERC20Interface {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -329,7 +329,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 

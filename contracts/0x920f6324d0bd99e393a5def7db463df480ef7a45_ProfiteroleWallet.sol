@@ -12,7 +12,7 @@ contract DepositWalletInterface {
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -107,7 +107,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -173,7 +173,7 @@ contract BaseWallet is Object, DepositWalletInterface {
         revert();
     }
 
-    /// Deposits some amount of tokens on wallet&#39;s account using ERC20 tokens
+    /// Deposits some amount of tokens on wallet's account using ERC20 tokens
     ///
     /// @dev Allowed only for rewards
     ///
@@ -189,7 +189,7 @@ contract BaseWallet is Object, DepositWalletInterface {
         return OK;
     }
 
-    /// Withdraws some amount of tokens from wallet&#39;s account using ERC20 tokens
+    /// Withdraws some amount of tokens from wallet's account using ERC20 tokens
     ///
     /// @dev Allowed only for rewards
     ///
@@ -205,7 +205,7 @@ contract BaseWallet is Object, DepositWalletInterface {
         return OK;
     }
 
-    /// Approve some amount of tokens from wallet&#39;s account using ERC20 tokens
+    /// Approve some amount of tokens from wallet's account using ERC20 tokens
     ///
     /// @dev Allowed only for rewards
     ///

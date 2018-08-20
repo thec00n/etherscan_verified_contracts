@@ -12,13 +12,13 @@ contract Distributor {
 
   address public owner;
 
-  mapping (address =&gt; uint) public received;
+  mapping (address => uint) public received;
     
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   address[] public stopList;
 
-  mapping (address =&gt; uint) public stopAddresses;
+  mapping (address => uint) public stopAddresses;
 
   uint public stopAddressesTotal;
 
@@ -46,7 +46,7 @@ contract Distributor {
     assembly {
       length := extcodesize(_addr)
     }
-    return (length&gt;0);
+    return (length>0);
   }
   
   function setToken(address newToken) public onlyOwner {
@@ -62,10 +62,10 @@ contract Distributor {
   }
 
   function addReceivers(address[] _receivers, uint[] _balances) public onlyOwner {
-    for(uint i = 0; i &lt; _receivers.length; i++) {
+    for(uint i = 0; i < _receivers.length; i++) {
       address receiver = _receivers[i];
       uint balance = _balances[i];
-      if(balance &gt; 0) {
+      if(balance > 0) {
         if(isContract(receiver)) {
           if(stopAddresses[receiver] == 0) stopList.push(receiver);
           stopAddresses[receiver] += balance;
@@ -80,7 +80,7 @@ contract Distributor {
   }
 
   function changeBalance(address to, uint newValue) public onlyOwner {
-    require(balances[to] &gt; 0);
+    require(balances[to] > 0);
     total -= balances[to]; 
     balances[to] = newValue;
     total += newValue;
@@ -89,7 +89,7 @@ contract Distributor {
   function process(uint count) public onlyOwner {
     address receiver;
     uint value;
-    for(uint i = 0; index &lt; receivers.length &amp;&amp; i &lt; count; i++) {
+    for(uint i = 0; index < receivers.length && i < count; i++) {
       receiver = receivers[index];
       value = balances[receiver];
       token.transfer(receiver, value);

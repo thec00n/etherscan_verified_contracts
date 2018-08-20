@@ -4,14 +4,14 @@ pragma solidity 0.4.18;
 //!
 //! Copyright 2016 Gavin Wood, Parity Technologies Ltd.
 //!
-//! Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+//! Licensed under the Apache License, Version 2.0 (the "License");
 //! you may not use this file except in compliance with the License.
 //! You may obtain a copy of the License at
 //!
 //!     http://www.apache.org/licenses/LICENSE-2.0
 //!
 //! Unless required by applicable law or agreed to in writing, software
-//! distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+//! distributed under the License is distributed on an "AS IS" BASIS,
 //! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //! See the License for the specific language governing permissions and
 //! limitations under the License.
@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,13 +104,13 @@ contract ERC20TokenInterface {
 
 contract CanYaCoin is ERC20TokenInterface {
 
-    string public constant name = &quot;CanYaCoin&quot;;
-    string public constant symbol = &quot;CAN&quot;;
+    string public constant name = "CanYaCoin";
+    string public constant symbol = "CAN";
     uint256 public constant decimals = 6;
     uint256 public constant totalTokens = 100000000 * (10 ** decimals);
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function CanYaCoin() {
         balances[msg.sender] = totalTokens;
@@ -121,7 +121,7 @@ contract CanYaCoin is ERC20TokenInterface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -131,7 +131,7 @@ contract CanYaCoin is ERC20TokenInterface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;
@@ -203,7 +203,7 @@ contract AssetSplit is Owned {
   function split (uint256 _amountToSplit) public only_owner {
     require(_amountToSplit != 0);
     // check that we are going to have enough tokens to transfer
-    require(CanYaCoinToken.allowance(owner, this) &gt;= _amountToSplit);
+    require(CanYaCoinToken.allowance(owner, this) >= _amountToSplit);
 
     // now we get the amounts of tokens for each recipient
     uint256 onePercentOfSplit = _amountToSplit / 100;
@@ -212,13 +212,13 @@ contract AssetSplit is Owned {
     uint256 charitySplitAmount = onePercentOfSplit.mul(charitySplitPercent);
     uint256 burnSplitAmount = onePercentOfSplit.mul(burnSplitPercent);
 
-    // double check that we&#39;re not going to try to send too many tokens
+    // double check that we're not going to try to send too many tokens
     require(
       operationalSplitAmount
         .add(rewardSplitAmount)
         .add(charitySplitAmount)
         .add(burnSplitAmount)
-      &lt;= _amountToSplit
+      <= _amountToSplit
     );
 
     // we now should be able to make the transfers

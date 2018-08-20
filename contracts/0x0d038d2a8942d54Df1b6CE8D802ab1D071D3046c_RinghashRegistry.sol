@@ -1,19 +1,19 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 pragma solidity 0.4.18;
 /// @title Token Register Contract
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1cacecfc6cdc8c0cfc6e1cdceced1d3c8cfc68fced3c6">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2246434c4b474e624e4d4d52504b4c450c4d5045">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1cacecfc6cdc8c0cfc6e1cdceced1d3c8cfc68fced3c6">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2246434c4b474e624e4d4d52504b4c450c4d5045">[email protected]</a>>.
 library MathUint8 {
     function xorReduce(
         uint8[] arr,
@@ -24,26 +24,26 @@ library MathUint8 {
         returns (uint8 res)
     {
         res = arr[0];
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             res ^= arr[i];
         }
     }
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Token Register Contract
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="abc0c4c5ccc7c2cac5ccebc7c4c4dbd9c2c5cc85c4d9cc">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1a5a0afa8a4ad81adaeaeb1b3a8afa6efaeb3a6">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="abc0c4c5ccc7c2cac5ccebc7c4c4dbd9c2c5cc85c4d9cc">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1a5a0afa8a4ad81adaeaeb1b3a8afa6efaeb3a6">[email protected]</a>>.
 library MathBytes32 {
     function xorReduce(
         bytes32[]   arr,
@@ -54,26 +54,26 @@ library MathBytes32 {
         returns (bytes32 res)
     {
         res = arr[0];
-        for (uint i = 1; i &lt; len; i++) {
+        for (uint i = 1; i < len; i++) {
             res ^= arr[i];
         }
     }
 }
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 /// @title Ring Hash Registry Contract
-/// @author Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a8acada4afaaa2ada483afacacb3b1aaada4edacb1a4">[email&#160;protected]</a>&gt;,
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6206030c0b070e220e0d0d12100b0c054c0d1005">[email&#160;protected]</a>&gt;.
+/// @author Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a8acada4afaaa2ada483afacacb3b1aaada4edacb1a4">[email protected]</a>>,
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6206030c0b070e220e0d0d12100b0c054c0d1005">[email protected]</a>>.
 contract RinghashRegistry {
     using MathBytes32   for bytes32[];
     using MathUint8     for uint8[];
@@ -82,7 +82,7 @@ contract RinghashRegistry {
         address ringminer;
         uint block;
     }
-    mapping (bytes32 =&gt; Submission) submissions;
+    mapping (bytes32 => Submission) submissions;
     ////////////////////////////////////////////////////////////////////////////
     /// Events                                                               ///
     ////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ contract RinghashRegistry {
     function RinghashRegistry(uint _blocksToLive)
         public
     {
-        require(_blocksToLive &gt; 0);
+        require(_blocksToLive > 0);
         blocksToLive = _blocksToLive;
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ contract RinghashRegistry {
         )
         public
     {
-        require(canSubmit(ringhash, ringminer)); //, &quot;Ringhash submitted&quot;);
+        require(canSubmit(ringhash, ringminer)); //, "Ringhash submitted");
         submissions[ringhash] = Submission(ringminer, block.number);
         RinghashSubmitted(ringminer, ringhash);
     }
@@ -119,9 +119,9 @@ contract RinghashRegistry {
         public
     {
         uint size = ringminerList.length;
-        require(size &gt; 0);
+        require(size > 0);
         require(size == ringhashList.length);
-        for (uint i = 0; i &lt; size; i++) {
+        for (uint i = 0; i < size; i++) {
             submitRinghash(ringminerList[i], ringhashList[i]);
         }
     }
@@ -137,10 +137,10 @@ contract RinghashRegistry {
         returns (bytes32)
     {
         require(
-            ringSize == vList.length - 1 &amp;&amp; (
-            ringSize == rList.length - 1 &amp;&amp; (
+            ringSize == vList.length - 1 && (
+            ringSize == rList.length - 1 && (
             ringSize == sList.length - 1))
-        ); //, &quot;invalid ring data&quot;);
+        ); //, "invalid ring data");
         return keccak256(
             vList.xorReduce(ringSize),
             rList.xorReduce(ringSize),
@@ -169,7 +169,7 @@ contract RinghashRegistry {
         attributes[0] = canSubmit(ringhash, ringminer);
         attributes[1] = isReserved(ringhash, ringminer);
     }
-    /// @return true if a ring&#39;s hash can be submitted;
+    /// @return true if a ring's hash can be submitted;
     /// false otherwise.
     function canSubmit(
         bytes32 ringhash,
@@ -181,11 +181,11 @@ contract RinghashRegistry {
         var submission = submissions[ringhash];
         return (
             submission.ringminer == address(0) || (
-            submission.block + blocksToLive &lt; block.number) || (
+            submission.block + blocksToLive < block.number) || (
             submission.ringminer == ringminer)
         );
     }
-    /// @return true if a ring&#39;s hash was submitted and still valid;
+    /// @return true if a ring's hash was submitted and still valid;
     /// false otherwise.
     function isReserved(
         bytes32 ringhash,
@@ -196,7 +196,7 @@ contract RinghashRegistry {
     {
         var submission = submissions[ringhash];
         return (
-            submission.block + blocksToLive &gt;= block.number &amp;&amp; (
+            submission.block + blocksToLive >= block.number && (
             submission.ringminer == ringminer)
         );
     }

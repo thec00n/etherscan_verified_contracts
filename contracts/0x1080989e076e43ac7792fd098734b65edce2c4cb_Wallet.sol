@@ -21,7 +21,7 @@ contract ERC20 {
 
 contract AddressManager is owned {
 
-    mapping (address =&gt; bool) _tankByAddress;
+    mapping (address => bool) _tankByAddress;
 
     function setTank(address tankAddress) public onlyOwner {
         _tankByAddress[tankAddress] = true;

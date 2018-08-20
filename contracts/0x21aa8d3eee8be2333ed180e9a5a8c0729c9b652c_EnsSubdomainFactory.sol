@@ -30,8 +30,8 @@ contract EnsResolver {
  * @title EnsSubdomainFactory
  * @dev Allows to create and configure a first level subdomain for Ethereum ENS in one call.
  * After deploying this contract, change the owner of the top level domain you want to use
- * to this deployed contract address. For example, transfer the ownership of &quot;startonchain.eth&quot;
- * so anyone can create subdomains like &quot;radek.startonchain.eth&quot;.
+ * to this deployed contract address. For example, transfer the ownership of "startonchain.eth"
+ * so anyone can create subdomains like "radek.startonchain.eth".
  */
 contract EnsSubdomainFactory {
 	address public owner;
@@ -63,10 +63,10 @@ contract EnsSubdomainFactory {
 	}
 
 	/**
-	 * @dev Allows to create a subdomain (e.g. &quot;radek.startonchain.eth&quot;), 
+	 * @dev Allows to create a subdomain (e.g. "radek.startonchain.eth"), 
 	 * set its resolver and set its target address
-	 * @param _subDomain - sub domain name only e.g. &quot;radek&quot;
-	 * @param _topLevelDomain - parent domain name e.g. &quot;startonchain&quot;
+	 * @param _subDomain - sub domain name only e.g. "radek"
+	 * @param _topLevelDomain - parent domain name e.g. "startonchain"
 	 * @param _owner - address that will become owner of this new subdomain
 	 * @param _target - address that this new domain will resolve to
 	 */
@@ -74,14 +74,14 @@ contract EnsSubdomainFactory {
 	    //create namehash for the top domain
 	    bytes32 topLevelNamehash = keccak256(abi.encodePacked(ethNameHash, keccak256(abi.encodePacked(_topLevelDomain))));
 	    //make sure this contract owns the top level domain
-        require(registry.owner(topLevelNamehash) == address(this), &quot;this contract should own top level domain&quot;);
+        require(registry.owner(topLevelNamehash) == address(this), "this contract should own top level domain");
 	    //create labelhash for the sub domain
 	    bytes32 subDomainLabelhash = keccak256(abi.encodePacked(_subDomain));
 	    //create namehash for the sub domain
 	    bytes32 subDomainNamehash = keccak256(abi.encodePacked(topLevelNamehash, subDomainLabelhash));
         //make sure it is free or owned by the sender
         require(registry.owner(subDomainNamehash) == address(0) ||
-            registry.owner(subDomainNamehash) == msg.sender, &quot;sub domain already owned&quot;);
+            registry.owner(subDomainNamehash) == msg.sender, "sub domain already owned");
 		//create new subdomain, temporarily this smartcontract is the owner
 		registry.setSubnodeOwner(topLevelNamehash, subDomainLabelhash, address(this));
 		//set public resolver for this domain
@@ -95,8 +95,8 @@ contract EnsSubdomainFactory {
 	}
 
 	/**
-	 * @dev Returns the owner of top level domain (e.g. &quot;startonchain.eth&quot;), 
-	 * @param _topLevelDomain - domain name e.g. &quot;startonchain&quot;
+	 * @dev Returns the owner of top level domain (e.g. "startonchain.eth"), 
+	 * @param _topLevelDomain - domain name e.g. "startonchain"
 	 */
 	function topLevelDomainOwner(string _topLevelDomain) public view returns(address) {
 		bytes32 namehash = keccak256(abi.encodePacked(ethNameHash, keccak256(abi.encodePacked(_topLevelDomain))));
@@ -104,9 +104,9 @@ contract EnsSubdomainFactory {
 	}
 	
 	/**
-	 * @dev Return the owner of a subdomain (e.g. &quot;radek.startonchain.eth&quot;), 
-	 * @param _subDomain - sub domain name only e.g. &quot;radek&quot;
-	 * @param _topLevelDomain - parent domain name e.g. &quot;startonchain&quot;
+	 * @dev Return the owner of a subdomain (e.g. "radek.startonchain.eth"), 
+	 * @param _subDomain - sub domain name only e.g. "radek"
+	 * @param _topLevelDomain - parent domain name e.g. "startonchain"
 	 */
 	function subDomainOwner(string _subDomain, string _topLevelDomain) public view returns(address) {
 		bytes32 topLevelNamehash = keccak256(abi.encodePacked(ethNameHash, keccak256(abi.encodePacked(_topLevelDomain))));
@@ -138,7 +138,7 @@ contract EnsSubdomainFactory {
 	 * @param _registry The address of new ENS registry to use.
 	 */
 	function updateRegistry(EnsRegistry _registry) public onlyOwner {
-		require(registry != _registry, &quot;new registry should be different from old&quot;);
+		require(registry != _registry, "new registry should be different from old");
 		emit RegistryUpdated(registry, _registry);
 		registry = _registry;
 	}
@@ -148,7 +148,7 @@ contract EnsSubdomainFactory {
 	 * @param _resolver The address of new ENS resolver to use.
 	 */
 	function updateResolver(EnsResolver _resolver) public onlyOwner {
-		require(resolver != _resolver, &quot;new resolver should be different from old&quot;);
+		require(resolver != _resolver, "new resolver should be different from old");
 		emit ResolverUpdated(resolver, _resolver);
 		resolver = _resolver;
 	}
@@ -158,7 +158,7 @@ contract EnsSubdomainFactory {
 	 * @param _owner The address to transfer ownership to.
 	 */
 	function transferContractOwnership(address _owner) public onlyOwner {
-		require(_owner != address(0), &quot;cannot transfer to address(0)&quot;);
+		require(_owner != address(0), "cannot transfer to address(0)");
 		emit OwnershipTransferred(owner, _owner);
 		owner = _owner;
 	}

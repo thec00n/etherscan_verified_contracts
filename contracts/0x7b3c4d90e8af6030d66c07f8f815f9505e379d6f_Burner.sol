@@ -131,7 +131,7 @@ contract Burner is Destructible {
         // ETH to convert on Kyber, by default the amount of ETH on the contract
         // If _maxSrcAmount is defined, ethToConvert = min(balance on contract, _maxSrcAmount)
         uint ethToConvert = address(this).balance;
-        if (_maxSrcAmount != 0 &amp;&amp; _maxSrcAmount &lt; ethToConvert) {
+        if (_maxSrcAmount != 0 && _maxSrcAmount < ethToConvert) {
             ethToConvert = _maxSrcAmount;
         }
 

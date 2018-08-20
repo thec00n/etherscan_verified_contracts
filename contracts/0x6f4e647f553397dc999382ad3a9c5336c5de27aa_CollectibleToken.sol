@@ -19,9 +19,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -115,14 +115,14 @@ contract YouCollectBase is Owned {
   using SafeMath for uint256;
 
   /*** CONSTANTS ***/
-  string public constant NAME = &quot;Crypto - YouCollect&quot;;
-  string public constant SYMBOL = &quot;CYC&quot;;
+  string public constant NAME = "Crypto - YouCollect";
+  string public constant SYMBOL = "CYC";
   uint8 public constant DECIMALS = 18;  
 
   uint256 public totalSupply;
   uint256 constant private MAX_UINT256 = 2**256 - 1;
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowed;
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value); 
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -142,7 +142,7 @@ contract YouCollectBase is Owned {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool success) {
-      require(balances[msg.sender] &gt;= _value);
+      require(balances[msg.sender] >= _value);
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -151,10 +151,10 @@ contract YouCollectBase is Owned {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
       uint256 allowance = allowed[_from][msg.sender];
-      require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+      require(balances[_from] >= _value && allowance >= _value);
       balances[_to] += _value;
       balances[_from] -= _value;
-      if (allowance &lt; MAX_UINT256) {
+      if (allowance < MAX_UINT256) {
           allowed[_from][msg.sender] -= _value;
       }
       Transfer(_from, _to, _value);
@@ -175,7 +175,7 @@ contract YouCollectBase is Owned {
       allowed[msg.sender][_spender] = _value;
       Approval(msg.sender, _spender, _value);
 
-      require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+      require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
       return true;
   }
 
@@ -189,7 +189,7 @@ contract YouCollectBase is Owned {
     _payout(_to, this.balance);
   }
   function payout(address _to, uint amount) public onlyCLevel {
-    if (amount&gt;this.balance)
+    if (amount>this.balance)
       amount = this.balance;
     _payout(_to, amount);
   }
@@ -205,19 +205,19 @@ contract YouCollectBase is Owned {
 contract ERC721YC is YouCollectBase {
   /*** STORAGE ***/
   uint256[] public tokens;
-  mapping (uint =&gt; bool) public unlocked;
+  mapping (uint => bool) public unlocked;
 
   /// @dev A mapping from collectible IDs to the address that owns them. All collectibles have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
+  mapping (uint256 => address) public tokenIndexToOwner;
 
   /// @dev A mapping from CollectibleIDs to an address that has been approved to call
   ///  transferFrom(). Each Collectible can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public tokenIndexToApproved;
+  mapping (uint256 => address) public tokenIndexToApproved;
 
   // @dev A mapping from CollectibleIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) public tokenIndexToPrice;
+  mapping (uint256 => uint256) public tokenIndexToPrice;
 
   /*** EVENTS ***/
   /// @dev The Birth event is fired whenever a new collectible comes into existence.
@@ -351,8 +351,8 @@ contract ERC721YC is YouCollectBase {
   // allows owners of tokens to decrease the price of them or if there is no owner the coo can do it
   bool isTokenChangePriceLocked = true;
   function changeTokenPrice(uint256 newPrice, uint256 _tokenId) public {
-    require((_ownsToken(msg.sender, _tokenId) &amp;&amp; !isTokenChangePriceLocked) || (_ownsToken(address(0), _tokenId) &amp;&amp; msg.sender == cooAddress));
-    require(newPrice&lt;tokenIndexToPrice[_tokenId]);
+    require((_ownsToken(msg.sender, _tokenId) && !isTokenChangePriceLocked) || (_ownsToken(address(0), _tokenId) && msg.sender == cooAddress));
+    require(newPrice<tokenIndexToPrice[_tokenId]);
     tokenIndexToPrice[_tokenId] = newPrice;
   }
   function unlockToken(uint tokenId) public onlyCOO {
@@ -375,7 +375,7 @@ contract ERC721YC is YouCollectBase {
       collectibleOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = getInitialPriceOfToken(tokenId);
     }
 
@@ -395,7 +395,7 @@ contract ERC721YC is YouCollectBase {
       uint256 tokenIndex;
       uint256 tokenId;
       result = 0;
-      for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
         tokenId = tokens[tokenIndex];
         if (tokenIndexToOwner[tokenId] == _owner) {
           result = result.add(1);
@@ -409,7 +409,7 @@ contract ERC721YC is YouCollectBase {
     //transfer ownership
     tokenIndexToOwner[_tokenId] = _to;
 
-    // When creating new collectibles _from is 0x0, but we can&#39;t account that address.
+    // When creating new collectibles _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       // clear any previously approved ownership exchange
       delete tokenIndexToApproved[_tokenId];
@@ -421,7 +421,7 @@ contract ERC721YC is YouCollectBase {
 
 
    /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire tokens array looking for tokens belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -437,7 +437,7 @@ contract ERC721YC is YouCollectBase {
 
       uint256 tokenIndex;
       uint256 tokenId;
-      for (tokenIndex = 0; tokenIndex &lt; totalTokens; tokenIndex++) {
+      for (tokenIndex = 0; tokenIndex < totalTokens; tokenIndex++) {
         tokenId = tokens[tokenIndex];
         if (tokenIndexToOwner[tokenId] == _owner) {
           result[resultIndex] = tokenId;
@@ -472,16 +472,16 @@ contract CollectibleToken is ERC721YC {
   }
 
   function getInitialPriceOfToken(uint _tokenId) public pure returns (uint) {
-    if (_tokenId &gt; 0)
+    if (_tokenId > 0)
       return STARTING_PRICE;
     return 10 ether;
   }
 
 
   function getNextPrice(uint sellingPrice) public pure returns (uint) {
-    if (sellingPrice &lt; FIRST_STEP_LIMIT) {
+    if (sellingPrice < FIRST_STEP_LIMIT) {
       return sellingPrice.mul(200).div(93);
-    } else if (sellingPrice &lt; SECOND_STEP_LIMIT) {
+    } else if (sellingPrice < SECOND_STEP_LIMIT) {
       return sellingPrice.mul(120).div(93);
     } else {
       return sellingPrice.mul(115).div(93);
@@ -509,7 +509,7 @@ contract CollectibleToken is ERC721YC {
   function purchase(uint256 _tokenId) public payable {
     address oldOwner = tokenIndexToOwner[_tokenId];
     uint256 sellingPrice = tokenIndexToPrice[_tokenId];
-    require(oldOwner!=msg.sender || sellingPrice &gt; 1 ether);
+    require(oldOwner!=msg.sender || sellingPrice > 1 ether);
 
     if (sellingPrice == 0) {
       sellingPrice = getInitialPriceOfToken(_tokenId);
@@ -518,7 +518,7 @@ contract CollectibleToken is ERC721YC {
     // Safety check to prevent against an unexpected 0x0 default.
     require(msg.sender != address(0));
 
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
     uint256 purchaseExcess = msg.value.sub(sellingPrice);
 
     uint256 payment = sellingPrice.mul(93).div(100);
@@ -536,7 +536,7 @@ contract CollectibleToken is ERC721YC {
       delete tokenIndexToApproved[_tokenId];
       // Payment for old owner and new owner
       _payoutMining(_tokenId, oldOwner, msg.sender);
-      if (sellingPrice &gt; 3 ether)
+      if (sellingPrice > 3 ether)
         levelUpMining(_tokenId);
       oldOwner.transfer(payment);
     } else {
@@ -546,12 +546,12 @@ contract CollectibleToken is ERC721YC {
       createMineForToken(_tokenId);
     }
 
-    if (_tokenId &gt; 0 &amp;&amp; tokenIndexToOwner[MASTER_TOKEN_ID]!=address(0)) {
+    if (_tokenId > 0 && tokenIndexToOwner[MASTER_TOKEN_ID]!=address(0)) {
       // Taxes for YouCollect-Token owner
       tokenIndexToOwner[MASTER_TOKEN_ID].transfer(feeOnce);
     }
     // refund when paid too much
-    if (purchaseExcess&gt;0)
+    if (purchaseExcess>0)
       msg.sender.transfer(purchaseExcess);
   }
   
@@ -564,17 +564,17 @@ contract CollectibleToken is ERC721YC {
     event MiningPayout(address indexed sender, uint indexed token, uint amount);
     event MiningStolenPayout(address indexed sender, address indexed oldOwner, uint indexed token, uint amount);
 
-    mapping (uint =&gt; uint) miningPower;
-    mapping (uint =&gt; uint) miningPushed;
-    mapping (uint =&gt; uint) miningNextLevelBreak;
-    mapping (uint =&gt; uint) miningLastPayoutBlock;
+    mapping (uint => uint) miningPower;
+    mapping (uint => uint) miningPushed;
+    mapping (uint => uint) miningNextLevelBreak;
+    mapping (uint => uint) miningLastPayoutBlock;
 
     uint earningsEachBlock = 173611111111111;
     uint FIRST_MINING_LEVEL_COST = 1333333333333333333;
 
     function changeEarnings(uint amount) public onlyCOO {
       earningsEachBlock = amount;
-      require(earningsEachBlock&gt;0);
+      require(earningsEachBlock>0);
     }
 
     function createMineForToken(uint tokenId) private {
@@ -590,16 +590,16 @@ contract CollectibleToken is ERC721YC {
     }
 
     function upgradeMining(uint tokenId, uint coins) public {
-      require(balanceOf(msg.sender)&gt;=coins);
+      require(balanceOf(msg.sender)>=coins);
       uint nextLevelBreak = miningNextLevelBreak[tokenId];
       balances[msg.sender] -= coins;
       uint xp = miningPushed[tokenId]+coins;
-      if (xp&gt;nextLevelBreak) {
+      if (xp>nextLevelBreak) {
         uint power = miningPower[tokenId];
-        if (miningLastPayoutBlock[tokenId] &lt; block.number) {
+        if (miningLastPayoutBlock[tokenId] < block.number) {
           _payoutMining(tokenId, ownerOf(tokenId));
         }
-        while (xp&gt;nextLevelBreak) {
+        while (xp>nextLevelBreak) {
           nextLevelBreak = nextLevelBreak.mul(13).div(4);
           power = power.mul(2);
           MiningLevelup(msg.sender, tokenId, power);
@@ -622,7 +622,7 @@ contract CollectibleToken is ERC721YC {
 
     function payoutMining(uint tokenId) public {
       require(_ownsToken(msg.sender, tokenId));
-      require(miningLastPayoutBlock[tokenId] &lt; block.number);
+      require(miningLastPayoutBlock[tokenId] < block.number);
       _payoutMining(tokenId, msg.sender);
     }
 
@@ -684,7 +684,7 @@ contract CollectibleToken is ERC721YC {
         collectibleOwner = cooAddress;
       }
 
-      if (_price &lt;= 0) {
+      if (_price <= 0) {
         _price = getInitialPriceOfToken(tokenId);
       }
 
@@ -699,7 +699,7 @@ contract CollectibleToken is ERC721YC {
     /// create Tokens for Token Owners in alpha Game
     function createPromoCollectiblesWithMining(uint256[] tokenId, address[] _owner, uint256[] _price, uint256[] power, uint256[] xp, uint256[] nextLevelBreak) public onlyCOO {
       address collectibleOwner;
-      for (uint i = 0; i &lt; tokenId.length; i++) {
+      for (uint i = 0; i < tokenId.length; i++) {
         require(tokenIndexToOwner[tokenId[i]]==address(0));
 
         collectibleOwner = _owner[i];
@@ -707,7 +707,7 @@ contract CollectibleToken is ERC721YC {
           collectibleOwner = cooAddress;
         }
 
-        if (_price[i] &lt;= 0) {
+        if (_price[i] <= 0) {
           _createCollectible(tokenId[i], getInitialPriceOfToken(tokenId[i]));
         } else {
           _createCollectible(tokenId[i], _price[i]);

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * SMARTRealty
 * ERC-20 Token Standard Compliant + Crowdsale
-* @author Oyewole A. Samuel <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f996809c8e96959c989b9880969490b99e94989095d79a9694">[email&#160;protected]</a>
+* @author Oyewole A. Samuel <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f996809c8e96959c989b9880969490b99e94989095d79a9694">[email protected]</a>
 */
 
 
@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -161,9 +161,9 @@ contract ERC20TokenInterface {
 contract StandardToken is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -180,7 +180,7 @@ contract StandardToken is ERC20TokenInterface, admined { //Standard definition o
     */
     function transfer(address _to, uint256 _value) transferLock public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(frozen[msg.sender]==false);
         balances[msg.sender] = balances[msg.sender].safeSub(_value);
         balances[_to] = balances[_to].safeAdd(_value);
@@ -196,7 +196,7 @@ contract StandardToken is ERC20TokenInterface, admined { //Standard definition o
     */
     function transferFrom(address _from, address _to, uint256 _value) transferLock public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         require(frozen[_from]==false);
         balances[_to] = balances[_to].safeAdd(_value);
         balances[_from] = balances[_from].safeSub(_value);
@@ -270,10 +270,10 @@ contract StandardToken is ERC20TokenInterface, admined { //Standard definition o
 contract SMARTRealty is StandardToken{
     //using SafeMath for uint256;
     
-    string public name = &quot;SMARTRealty&quot;;
-    string public symbol = &quot;RLTY&quot;;
+    string public name = "SMARTRealty";
+    string public symbol = "RLTY";
     uint8 public decimals = 8;
-    string public version = &quot;1.0.0&quot;;
+    string public version = "1.0.0";
 
     uint public constant RATE = 1250; //1 RLTY = 0.0008 ETH
     address public owner;
@@ -290,7 +290,7 @@ contract SMARTRealty is StandardToken{
         uint totalNumberOfTokenPurchase; //number of token allowed for each phase
     }
     
-    mapping(uint =&gt; ICOPhase) phases;
+    mapping(uint => ICOPhase) phases;
     uint icoPhaseCounter = 0;
     
     enum IcoStatus{Pending, Active, Inactive}
@@ -340,14 +340,14 @@ contract SMARTRealty is StandardToken{
     
     //Get current ICO Phase
     function getCurrentICOPhaseBonus() public view returns (uint _bonus, uint icoPhaseId) {
-        require(icoPhaseCounter &gt; 0);
+        require(icoPhaseCounter > 0);
         uint currentTimestamp = block.timestamp; //Get the current block timestamp
 
-        for (uint i = 0; i &lt; icoPhaseCounter; i++) {
+        for (uint i = 0; i < icoPhaseCounter; i++) {
             
             ICOPhase storage ico = phases[i];
 
-            if (currentTimestamp &gt;= ico.fromTimestamp &amp;&amp; currentTimestamp &lt;= ico.toTimestamp) {
+            if (currentTimestamp >= ico.fromTimestamp && currentTimestamp <= ico.toTimestamp) {
                 return (ico.bonus, i);
             }
         }
@@ -366,7 +366,7 @@ contract SMARTRealty is StandardToken{
     
     // low level token purchase function
     function _buyTokens(address beneficiary) public payable {
-        require(beneficiary != address(0) &amp;&amp; beneficiary != owner);
+        require(beneficiary != address(0) && beneficiary != owner);
         
         uint256 weiAmount = msg.value;
         

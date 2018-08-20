@@ -29,14 +29,14 @@ contract TokenRecipient {
 
 
 contract Token {
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -55,10 +55,10 @@ contract Token {
     }
     
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) {
+        if (balanceOf[msg.sender] < _value) {
             revert();           // Check if the sender has enough
         }
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) {
+        if (balanceOf[_to] + _value < balanceOf[_to]) {
             revert(); // Check for overflows
         }
 
@@ -69,7 +69,7 @@ contract Token {
     }
     
     function approve(address _spender, uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -92,13 +92,13 @@ contract Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) {
+        if (balanceOf[_from] < _value) {
             revert();                                        // Check if the sender has enough
         }                 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) {
+        if (balanceOf[_to] + _value < balanceOf[_to]) {
             revert();  // Check for overflows
         }
-        if (_value &gt; allowance[_from][msg.sender]) {
+        if (_value > allowance[_from][msg.sender]) {
             revert();   // Check allowance
         }
 
@@ -117,9 +117,9 @@ contract Token {
 
 contract ISeeVoiceToken is Token, Owner {
     uint256 public constant INITIAL_SUPPLY = 60000000000000000000000000;
-    string public constant NAME = &quot;I See Voice Token&quot;;
-    string public constant SYMBOL = &quot;ISVT&quot;;
-    // string public constant STANDARD = &quot;Token 1.0&quot;;
+    string public constant NAME = "I See Voice Token";
+    string public constant SYMBOL = "ISVT";
+    // string public constant STANDARD = "Token 1.0";
     uint8 public constant DECIMALS = 10;
     uint256 public constant BUY = 300000000000000000000000;
 
@@ -132,8 +132,8 @@ contract ISeeVoiceToken is Token, Owner {
     uint256 public buyPrice;
     uint minBalanceForAccounts;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) frozenAccount;
 
     event FrozenFunds(address indexed _target, bool _frozen);
     event Burn(address indexed from, uint256 value);
@@ -145,10 +145,10 @@ contract ISeeVoiceToken is Token, Owner {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) {
+        if (balanceOf[msg.sender] < _value) {
             revert();           // Check if the sender has enough
         }
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) {
+        if (balanceOf[_to] + _value < balanceOf[_to]) {
             revert(); // Check for overflows
         }
         if (frozenAccount[msg.sender]) {
@@ -165,13 +165,13 @@ contract ISeeVoiceToken is Token, Owner {
         if (frozenAccount[_from]) {
             revert();                        // Check if frozen       
         }     
-        if (balanceOf[_from] &lt; _value) {
+        if (balanceOf[_from] < _value) {
             revert();                 // Check if the sender has enough
         }
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) {
+        if (balanceOf[_to] + _value < balanceOf[_to]) {
             revert();  // Check for overflows
         }
-        if (_value &gt; allowance[_from][msg.sender]) {
+        if (_value > allowance[_from][msg.sender]) {
             revert();   // Check allowance
         }
 
@@ -195,8 +195,8 @@ contract ISeeVoiceToken is Token, Owner {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[msg.sender] + _value &gt;= balanceOf[msg.sender]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[msg.sender] + _value >= balanceOf[msg.sender]);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -204,9 +204,9 @@ contract ISeeVoiceToken is Token, Owner {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(allowance[_from][msg.sender] &gt;= _value);
-        require(balanceOf[_from] + _value &gt;= balanceOf[_from]);
+        require(balanceOf[_from] >= _value);
+        require(allowance[_from][msg.sender] >= _value);
+        require(balanceOf[_from] + _value >= balanceOf[_from]);
         balanceOf[_from] -= _value;
         totalSupply -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -221,7 +221,7 @@ contract ISeeVoiceToken is Token, Owner {
 
     function buy() payable returns (uint amount) {
         amount = msg.value / buyPrice;
-        require(balanceOf[this] &gt;= amount);
+        require(balanceOf[this] >= amount);
         balanceOf[this] -= amount;
         balanceOf[msg.sender] += amount;
         Transfer(this, msg.sender, amount);
@@ -229,7 +229,7 @@ contract ISeeVoiceToken is Token, Owner {
     }
 
     function sell(uint256 amount) returns (uint256 revenue) {
-        require(balanceOf[msg.sender] &gt;= amount);
+        require(balanceOf[msg.sender] >= amount);
         require(!frozenAccount[msg.sender]);
 
         revenue = amount * sellPrice;

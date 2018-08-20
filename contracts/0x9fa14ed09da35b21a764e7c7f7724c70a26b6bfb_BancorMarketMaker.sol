@@ -1,7 +1,7 @@
 pragma solidity ^0.4.16;
 
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string);
     function symbol() public constant returns (string);
     function decimals() public constant returns (uint8);
@@ -27,7 +27,7 @@ contract BancorMarketMaker {
     IERC20Token public constant bancorDaiSmartTokenRelay = IERC20Token(0xee01b3AB5F6728adc137Be101d99c678938E6E72);
     // sell dai price, will be less than normal conversion, _minReturn should be 1/(Dai/Eth price) * .95
     function sellDaiForEth(uint256 _amountDai, uint256 _minReturn) external returns (uint256) {
-        require(_amountDai &gt; 0);
+        require(_amountDai > 0);
         
         IERC20Token(dai).transferFrom(msg.sender, address(this), _amountDai);
         require(IERC20Token(dai).approve(address(bancorConverterAddress), _amountDai));
@@ -47,7 +47,7 @@ contract BancorMarketMaker {
 
     // buy dai price, will be more than normal conversion, _minReturn should be 1/(Dai/Eth price) * 1.05
     function buyDaiWithEth(uint256 _minReturn) payable external returns (uint256) {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         IERC20Token[] memory ethToDaiConversionPath;
         ethToDaiConversionPath[0] = bancorErc20Eth;
         ethToDaiConversionPath[1] = bancorToken;

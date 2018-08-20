@@ -119,7 +119,7 @@ contract Upgradeable is Ownable{
    * @param newContract Address of upgraded contract 
    */
   function upgradeTo(Upgradeable newContract) public ownerOnly{
-    require(allowedToUpgrade &amp;&amp; !isOldVersion);
+    require(allowedToUpgrade && !isOldVersion);
     nextContract = newContract;
     isOldVersion = true;
     newContract.confirmUpgrade();   
@@ -144,7 +144,7 @@ contract Upgradeable is Ownable{
  */ 
 contract Validator is Ownable, EmergencySafe, Upgradeable{
 
-  mapping(address =&gt; bool) private valid_contracts;
+  mapping(address => bool) private valid_contracts;
   string public whoAmI;
 
   function Validator(string _whoAmI) public {
@@ -153,7 +153,7 @@ contract Validator is Ownable, EmergencySafe, Upgradeable{
 
   /**
    * @dev adds validated contract
-   * @param addr Address of contract that&#39;s validated
+   * @param addr Address of contract that's validated
    */
   function add(address addr) public ownerOnly {
     valid_contracts[addr] = true;
@@ -187,8 +187,8 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
 
   ERC20Interface public tokenContract;
 
-  mapping(string =&gt; uint) private actionPrices;
-  mapping(address =&gt; bool) private allowed;
+  mapping(string => uint) private actionPrices;
+  mapping(address => bool) private allowed;
 
   /**
    * @dev Throws if called by non-allowed contract
@@ -222,7 +222,7 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
     } else {
       uint price = actionPrices[action];
 
-      if(price != 0 &amp;&amp; !tokenContract.transferFrom(from, to, price)){
+      if(price != 0 && !tokenContract.transferFrom(from, to, price)){
         return false;
       } else {
         emit IXTPayment(from, to, price, action);     
@@ -242,7 +242,7 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
   /**
    * @dev creates/updates action
    * @param action Action to be paid for 
-   * @param price Price (in units * 10 ^ (&lt;decimal places of token&gt;))
+   * @param price Price (in units * 10 ^ (<decimal places of token>))
    */
   function setAction(string action, uint price) public ownerOnly isNotPaused {
     actionPrices[action] = price;
@@ -250,7 +250,7 @@ contract IXTPaymentContract is Ownable, EmergencySafe, Upgradeable{
 
   /**
    * @dev retrieves price for action
-   * @param action Name of action, e.g. &#39;create_insurance_contract&#39;
+   * @param action Name of action, e.g. 'create_insurance_contract'
    */
   function getActionPrice(string action) public view returns (uint) {
     return actionPrices[action];

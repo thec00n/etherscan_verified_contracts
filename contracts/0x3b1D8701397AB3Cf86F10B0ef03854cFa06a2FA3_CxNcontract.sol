@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -83,9 +83,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -93,7 +93,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -102,7 +102,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -120,7 +120,7 @@ library SafeMath {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -282,7 +282,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -292,8 +292,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    //require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    //require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -304,7 +304,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   /**
@@ -334,7 +334,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -375,7 +375,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -384,7 +384,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -394,7 +394,7 @@ contract CappedCrowdsale is Crowdsale {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -421,7 +421,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -476,7 +476,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -492,7 +492,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @param _goal Funding goal
    */
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
@@ -512,7 +512,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
    * @return Whether funding goal was reached
    */
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /**
@@ -551,7 +551,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
 contract PostDeliveryCrowdsale is TimedCrowdsale, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   /**
    * @dev Overrides parent by storing balances instead of issuing tokens right away.
@@ -568,7 +568,7 @@ contract PostDeliveryCrowdsale is TimedCrowdsale, Ownable {
   function withdrawTokens(address _beneficiary) public onlyOwner {
     require(hasClosed());
     uint256 amount = balances[_beneficiary];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[_beneficiary] = 0;
     _deliverTokens(_beneficiary, amount);
   }
@@ -626,7 +626,7 @@ contract CxNcontract is CappedCrowdsale, RefundableCrowdsale, PostDeliveryCrowds
         //As goal needs to be met for a successful crowdsale
         //the value needs to less or equal than a cap which is limit for accepted funds
         partnerAddress = _partnerAddress;
-        require(_goal &lt;= _cap);
+        require(_goal <= _cap);
     }
 
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
@@ -639,21 +639,21 @@ contract CxNcontract is CappedCrowdsale, RefundableCrowdsale, PostDeliveryCrowds
     }
 
     function checkValue(uint256 amount) internal view returns (bool) {
-        if (now &gt; privSale1start &amp;&amp; now &lt; privSale1end) 
-            return (amount &gt;= 5 ether);
-        else if (now &gt; privSale2start &amp;&amp; now &lt; privSale2end) 
-            return (amount &gt;= 5 ether);
-        else if (now &gt; saleStart &amp;&amp; now &lt; saleEnd) 
-            return (amount &gt;= 0.1 ether);
+        if (now > privSale1start && now < privSale1end) 
+            return (amount >= 5 ether);
+        else if (now > privSale2start && now < privSale2end) 
+            return (amount >= 5 ether);
+        else if (now > saleStart && now < saleEnd) 
+            return (amount >= 0.1 ether);
         return false;
     }
 
     function getRate() public view returns (uint256) {
-        if (now &gt; privSale1start &amp;&amp; now &lt; privSale1end) 
+        if (now > privSale1start && now < privSale1end) 
             return 14375; // Stage I
-        else if (now &gt; privSale2start &amp;&amp; now &lt; privSale2end) 
+        else if (now > privSale2start && now < privSale2end) 
             return 13750; // Stage II
-        else if (now &gt; saleStart &amp;&amp; now &lt; saleEnd) 
+        else if (now > saleStart && now < saleEnd) 
             return 12500; // Public Sale
         return 0;
     }
@@ -662,7 +662,7 @@ contract CxNcontract is CappedCrowdsale, RefundableCrowdsale, PostDeliveryCrowds
         uint256 tokensForPartners = 2800000 ether;
         uint256 tokensNeededToClose = tokensForPartners.add(tokensDistributed);
         
-        require(token.balanceOf(wallet) &gt;= tokensNeededToClose);
+        require(token.balanceOf(wallet) >= tokensNeededToClose);
 
         token.transferFrom(wallet, partnerAddress, tokensForPartners);
 

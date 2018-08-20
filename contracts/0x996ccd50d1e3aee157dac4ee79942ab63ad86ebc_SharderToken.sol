@@ -1,14 +1,14 @@
 /*
   Copyright 2017 Sharder Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -17,7 +17,7 @@
     a) Adding the emergency transfer functionality for owner.
     b) Removing the logic of crowdsale according to standard MintToken in order to improve the neatness and
     legibility of the Sharder smart contract coding.
-    c) Adding the broadcast event &#39;Frozen&#39;.
+    c) Adding the broadcast event 'Frozen'.
     d) Changing the parameters of name, symbol, decimal, etc. to lower-case according to convention. Adjust format of input paramters.
     e) The global parameter is added to our smart contact in order to avoid that the exchanges trade Sharder tokens
     before officials partnering with Sharder.
@@ -26,7 +26,7 @@
     g) Lockup and lock-up query functions.
     The deplyed online contract you can found at: https://etherscan.io/address/XXXXXX
 
-    Sharder-Token-v1.0 is expired. You can check the code and get the details on branch &#39;sharder-token-v1.0&#39;.
+    Sharder-Token-v1.0 is expired. You can check the code and get the details on branch 'sharder-token-v1.0'.
 */
 pragma solidity ^0.4.18;
 
@@ -41,49 +41,49 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 /**
 * @title Sharder Token v2.0. SS(Sharder) is upgrade from SS(Sharder Storage).
-* @author Ben - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d05043d0e151c0f19180f53120f1a">[email&#160;protected]</a>&gt;.
+* @author Ben - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d05043d0e151c0f19180f53120f1a">[email protected]</a>>.
 * @dev ERC-20: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
 */
 contract SharderToken {
     using SafeMath for uint;
-    string public name = &quot;Sharder&quot;;
-    string public symbol = &quot;SS&quot;;
+    string public name = "Sharder";
+    string public symbol = "SS";
     uint8 public  decimals = 18;
 
     /// +--------------------------------------------------------------+
@@ -101,8 +101,8 @@ contract SharderToken {
     /// +--------------------------------------------------------------+
     uint256 public totalSupply = 350000000000000000000000000;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
 
     /// The owner of contract
     address public owner;
@@ -110,11 +110,11 @@ contract SharderToken {
     /// The admin account of contract
     address public admin;
 
-    mapping (address =&gt; bool) internal accountLockup;
-    mapping (address =&gt; uint) public accountLockupTime;
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => bool) internal accountLockup;
+    mapping (address => uint) public accountLockupTime;
+    mapping (address => bool) public frozenAccounts;
 
-    mapping (address =&gt; uint) internal holderIndex;
+    mapping (address => uint) internal holderIndex;
     address[] internal holders;
 
     ///First round tokens whether isssued.
@@ -168,7 +168,7 @@ contract SharderToken {
      * @dev Modifier to make a function callable only when account not frozen.
      */
     modifier isNotFrozen {
-        require(frozenAccounts[msg.sender] != true &amp;&amp; now &gt; accountLockupTime[msg.sender]);
+        require(frozenAccounts[msg.sender] != true && now > accountLockupTime[msg.sender]);
         _;
     }
 
@@ -176,7 +176,7 @@ contract SharderToken {
      * @dev Modifier to make a function callable only when the contract is not paused.
      */
     modifier isNotPaused() {
-        require((msg.sender == owner &amp;&amp; paused) || (msg.sender == admin &amp;&amp; paused) || !paused);
+        require((msg.sender == owner && paused) || (msg.sender == admin && paused) || !paused);
         _;
     }
 
@@ -195,9 +195,9 @@ contract SharderToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -230,7 +230,7 @@ contract SharderToken {
      * @param _transferTokensWithDecimal uint the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint _transferTokensWithDecimal) public isNotFrozen isNotPaused returns (bool success) {
-        require(_transferTokensWithDecimal &lt;= allowance[_from][msg.sender]);
+        require(_transferTokensWithDecimal <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] -= _transferTokensWithDecimal;
         _transfer(_from, _to, _transferTokensWithDecimal);
@@ -256,7 +256,7 @@ contract SharderToken {
      * @param _burnedTokensWithDecimal the amount of reserve tokens. !!IMPORTANT is 18 DECIMALS
     */
     function burn(uint256 _burnedTokensWithDecimal) public isNotFrozen isNotPaused returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _burnedTokensWithDecimal);
+        require(balanceOf[msg.sender] >= _burnedTokensWithDecimal);
         /// Check if the sender has enough
         balanceOf[msg.sender] -= _burnedTokensWithDecimal;
         /// Subtract from the sender
@@ -272,14 +272,14 @@ contract SharderToken {
      * @param _burnedTokensWithDecimal the amount of reserve tokens. !!! IMPORTANT is 18 DECIMALS
     */
     function burnFrom(address _from, uint256 _burnedTokensWithDecimal) public isNotFrozen isNotPaused returns (bool success) {
-        require(balanceOf[_from] &gt;= _burnedTokensWithDecimal);
+        require(balanceOf[_from] >= _burnedTokensWithDecimal);
         /// Check if the targeted balance is enough
-        require(_burnedTokensWithDecimal &lt;= allowance[_from][msg.sender]);
+        require(_burnedTokensWithDecimal <= allowance[_from][msg.sender]);
         /// Check allowance
         balanceOf[_from] -= _burnedTokensWithDecimal;
         /// Subtract from the targeted balance
         allowance[_from][msg.sender] -= _burnedTokensWithDecimal;
-        /// Subtract from the sender&#39;s allowance
+        /// Subtract from the sender's allowance
         totalSupply -= _burnedTokensWithDecimal;
         Burn(_from, _burnedTokensWithDecimal);
         return true;
@@ -352,11 +352,11 @@ contract SharderToken {
     }
 
     /**
-    * @dev Lockup account till the date. Can&#39;t lock-up again when this account locked already.
+    * @dev Lockup account till the date. Can't lock-up again when this account locked already.
     * 1 year = 31536000 seconds, 0.5 year = 15768000 seconds
     */
     function lockupAccount(address _address, uint _lockupSeconds) public onlyAdmin {
-        require((accountLockup[_address] &amp;&amp; now &gt; accountLockupTime[_address]) || !accountLockup[_address]);
+        require((accountLockup[_address] && now > accountLockupTime[_address]) || !accountLockup[_address]);
         // lock-up account
         accountLockupTime[_address] = now + _lockupSeconds;
         accountLockup[_address] = true;

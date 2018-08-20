@@ -29,7 +29,7 @@ library StringYokes {
         function zint_bytes32ToString(bytes32 x) public pure returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -37,13 +37,13 @@ library StringYokes {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
     }
     function zint_convert(string key) public pure returns (bytes32 ret) {
-        if (bytes(key).length &gt; 32) revert();
+        if (bytes(key).length > 32) revert();
         assembly {
           ret := mload(add(key, 32))
         }
@@ -63,19 +63,19 @@ contract Game is ExchangeAdmin {
         uint totalPledged;
         bytes32 sideName;
         address[] usedAddresses;
-        mapping (address =&gt; Better) contribDb;
+        mapping (address => Better) contribDb;
     }
     string gName;
     bytes32[] sides;
     uint allSidesPledged;
     uint expiry;
-    mapping (bytes32 =&gt; Side) public sideData;
-    mapping (bytes32 =&gt; uint) public idToNameRef;
+    mapping (bytes32 => Side) public sideData;
+    mapping (bytes32 => uint) public idToNameRef;
     
     constructor (string gameName, uint gameExpiry, bytes32[] gameSides) public {
         gName = gameName;
         expiry = gameExpiry;
-        for (uint i = 0; i&lt;gameSides.length; i++) {
+        for (uint i = 0; i<gameSides.length; i++) {
             sideData[gameSides[i]].sideName=gameSides[i];
             idToNameRef[gameSides[i]]=i;
             sides.push(gameSides[i]);
@@ -91,7 +91,7 @@ contract Game is ExchangeAdmin {
         return sides;
     }
     function isNotExpired() view public returns (bool) {
-        return ((now &lt; expiry) &amp;&amp; !expired);
+        return ((now < expiry) && !expired);
     }
     function getNumSides() view public returns (uint) {
         return sides.length;
@@ -131,7 +131,7 @@ contract Game is ExchangeAdmin {
         bytes32 winByte = StringYokes.zint_convert(winner);
         uint totalGameContrib = allSidesPledged;
         uint totalSideContrib = (sideData[winByte].totalPledged);
-        for (uint i = 0; i&lt;sideData[winByte].usedAddresses.length; i++) {
+        for (uint i = 0; i<sideData[winByte].usedAddresses.length; i++) {
             address recip = sideData[winByte].usedAddresses[i];
             uint contribAmount = sideData[winByte].contribDb[recip].contribAmount;
             uint winAddition = (925*1000*contribAmount*(totalGameContrib-totalSideContrib))/(1000000*totalSideContrib);
@@ -140,8 +140,8 @@ contract Game is ExchangeAdmin {
         profit.transfer(address(this).balance);
     }
     function refund() public onlyAdmin payable {
-        for (uint i = 0; i&lt;sides.length; i++) {
-            for (uint j = 0; j&lt;sideData[sides[i]].usedAddresses.length; j++) {
+        for (uint i = 0; i<sides.length; i++) {
+            for (uint j = 0; j<sideData[sides[i]].usedAddresses.length; j++) {
             address recip = sideData[sides[i]].usedAddresses[j];
             uint contribAmount = sideData[sides[i]].contribDb[recip].contribAmount;
             recip.transfer(contribAmount);
@@ -155,7 +155,7 @@ contract BEthy is ExchangeAdmin {
     Game[] current;
     uint etherBalance;
     
-    mapping (bytes32 =&gt; uint) public references;
+    mapping (bytes32 => uint) public references;
     
     constructor () public {
     }

@@ -10,18 +10,18 @@ library SafeMath {
     }
  
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -88,9 +88,9 @@ contract GTLToken is ERC20Token, owned {
     uint256 _totalSupply;
 
     // Balances for each account
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // Struct of Freeze Information
     struct FreezeAccountInfo {
@@ -102,7 +102,7 @@ contract GTLToken is ERC20Token, owned {
 
 
     // Freeze Information of accounts
-    mapping (address =&gt; FreezeAccountInfo) public freezeAccount;
+    mapping (address => FreezeAccountInfo) public freezeAccount;
 
     // Triggered when tokens are issue and freeze
     event IssueAndFreeze(address indexed to, uint256 _value, uint256 _freezePeriod);
@@ -127,15 +127,15 @@ contract GTLToken is ERC20Token, owned {
     }
 
     /// @notice Get balance of account
-    /// @dev Get balance of &#39;_owner&#39;
+    /// @dev Get balance of '_owner'
     /// @param _owner Target address
-    /// @return balance of &#39;_owner&#39;
+    /// @return balance of '_owner'
     function balanceOf(address _owner) public view returns (uint256 balance){
         return balances[_owner];
     }
 
     /// @notice Issue tokens to account and these tokens will be frozen for a period of time
-    /// @dev Issue &#39;_value&#39; tokens to the address &#39;_to&#39; and these tokens will be frozen for a period of &#39;_freezePeriod&#39; minutes
+    /// @dev Issue '_value' tokens to the address '_to' and these tokens will be frozen for a period of '_freezePeriod' minutes
     /// @param _to Receiving address
     /// @param _value The amount of frozen token to be issued
     /// @param _freezePeriod Freeze Period(minutes)
@@ -151,8 +151,8 @@ contract GTLToken is ERC20Token, owned {
         emit IssueAndFreeze(_to, _value, _freezePeriod);
     }
 
-    /// @notice Get account&#39;s freeze information
-    /// @dev Get freeze information of &#39;_target&#39;
+    /// @notice Get account's freeze information
+    /// @dev Get freeze information of '_target'
     /// @param _target Target address
     /// @return _freezeStartTime Freeze start time; _freezePeriod Freeze period(minutes); _freezeAmount Freeze token amount; _freezeDeadline Freeze deadline
     function getFreezeInfo(address _target) public view returns(
@@ -179,9 +179,9 @@ contract GTLToken is ERC20Token, owned {
         // Prevent transfer to 0x0 address
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to].add(_value) &gt; balances[_to]);
+        require(balances[_to].add(_value) > balances[_to]);
 
         uint256 freezeStartTime;
         uint256 freezePeriod;
@@ -196,8 +196,8 @@ contract GTLToken is ERC20Token, owned {
 
         //Check if it is a freeze account
         //Check if in Lock-up Period
-        //Check if the transfer amount &gt; free amount
-        require(freezeStartTime == 0 || freezeDeadline &lt; now || freeTotalFrom &gt;= _value); 
+        //Check if the transfer amount > free amount
+        require(freezeStartTime == 0 || freezeDeadline < now || freeTotalFrom >= _value); 
 
         // Save this for an assertion in the future
         uint previousBalances = balances[_from].add(balances[_to]);
@@ -213,7 +213,7 @@ contract GTLToken is ERC20Token, owned {
     }
 
     /// @notice Transfer tokens to account
-    /// @dev Send &#39;_value&#39; amount of tokens to address &#39;_to&#39;
+    /// @dev Send '_value' amount of tokens to address '_to'
     /// @param _to The address of the recipient
     /// @param _value The token amount to send
     /// @return Whether succeed
@@ -223,20 +223,20 @@ contract GTLToken is ERC20Token, owned {
     }
 
     /// @notice Transfer tokens from other address
-    /// @dev Send &#39;_value&#39; amount of tokens from address &#39;_from&#39; to address &#39;_to&#39;
+    /// @dev Send '_value' amount of tokens from address '_from' to address '_to'
     /// @param _from The address of the sender
     /// @param _to The address of the recipient
     /// @param _value The token amount to send
     /// @return Whether succeed
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
     }
 
     /// @notice Set allowance for other address
-    /// @dev Allows &#39;_spender&#39; to spend no more than &#39;_value&#39; tokens in your behalf. If this function is called again it overwrites the current allowance with _value
+    /// @dev Allows '_spender' to spend no more than '_value' tokens in your behalf. If this function is called again it overwrites the current allowance with _value
     /// @param _spender The address authorized to spend
     /// @param _value The max amount they can spend
     /// @return Whether succeed.
@@ -246,8 +246,8 @@ contract GTLToken is ERC20Token, owned {
         return true;
     }
 
-    /// @notice Get the amount which &#39;_spender&#39; is still allowed to withdraw from &#39;_owner&#39;
-    /// @dev Get the amount which &#39;_spender&#39; is still allowed to withdraw from &#39;_owner&#39;
+    /// @notice Get the amount which '_spender' is still allowed to withdraw from '_owner'
+    /// @dev Get the amount which '_spender' is still allowed to withdraw from '_owner'
     /// @param _owner Target address
     /// @param _spender The address authorized to spend
     /// @return The max amount can spend

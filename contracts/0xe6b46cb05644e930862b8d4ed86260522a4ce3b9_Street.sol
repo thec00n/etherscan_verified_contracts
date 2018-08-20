@@ -4,12 +4,12 @@ pragma solidity 0.4.19;
 contract Street {
 
   // Public Variables of the token
-    string public constant NAME = &quot;Street Credit&quot;;
-    string public constant SYMBOL = &quot;STREET&quot;;
+    string public constant NAME = "Street Credit";
+    string public constant SYMBOL = "STREET";
     uint8 public constant DECIMALS = 18;
     uint public constant TOTAL_SUPPLY = 100000000 * 10**uint(DECIMALS);
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint) public balances;
+    mapping(address => mapping (address => uint256)) internal allowed;
     uint public constant TOKEN_PRICE = 10 szabo;
 
     //Private variables
@@ -45,8 +45,8 @@ contract Street {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
-        require(balances[msg.sender] + _value &gt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
+        require(balances[msg.sender] + _value >= balances[msg.sender]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -57,7 +57,7 @@ contract Street {
     // Purchase tokens from my reserve
     function purchaseTokens(address _buyer) public payable returns (bool) {
         require(_buyer != address(0));
-        require(balances[BENEFICIARY] &gt; 0);
+        require(balances[BENEFICIARY] > 0);
         require(msg.value != 0);
 
         uint amount = msg.value / TOKEN_PRICE;
@@ -71,8 +71,8 @@ contract Street {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -100,7 +100,7 @@ contract Street {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue - _subtractedValue;

@@ -48,8 +48,8 @@ contract CryptoWorldCupToken is ERC721 {
   // ********************************************************************************************************
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoWorldCup&quot;;
-  string public constant SYMBOL = &quot;CryptoWorldCupToken&quot;;
+  string public constant NAME = "CryptoWorldCup";
+  string public constant SYMBOL = "CryptoWorldCupToken";
 
   //@dev network fee address
   address private netFee = 0x5e02f153d571C1FBB6851928975079812DF4c8cd;
@@ -84,32 +84,32 @@ contract CryptoWorldCupToken is ERC721 {
 
   /// @dev A mapping from Player IDs to the address that owns them. All Players have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public PlayerIndexToOwner;
+  mapping (uint256 => address) public PlayerIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PlayerIDs to an address that has been approved to call
   ///  transferFrom(). Each Player can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public PlayerIndexToApproved;
+  mapping (uint256 => address) public PlayerIndexToApproved;
 
   // @dev A mapping from PlayerIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private PlayerIndexToPrice;
-  mapping (uint256 =&gt; uint256) private PlayerInternalIndexToGlobalIndex;
+  mapping (uint256 => uint256) private PlayerIndexToPrice;
+  mapping (uint256 => uint256) private PlayerInternalIndexToGlobalIndex;
 
   //@dev A mapping from the UserIDs to the usernames.
-  mapping (uint256 =&gt; address) private UserIDsToWallet;
-  mapping (uint256 =&gt; string) private UserIDToUsername;
-  mapping (address =&gt; uint256) private UserWalletToID;
-  mapping (address =&gt; bool) private isUser;
+  mapping (uint256 => address) private UserIDsToWallet;
+  mapping (uint256 => string) private UserIDToUsername;
+  mapping (address => uint256) private UserWalletToID;
+  mapping (address => bool) private isUser;
 
-  mapping (address =&gt; uint256) private addressWealth;
+  mapping (address => uint256) private addressWealth;
 
-  mapping (address =&gt; bool) blacklist;
+  mapping (address => bool) blacklist;
 
-  mapping (uint256 =&gt; PlayerIDs) PlayerIDsToUniqueID;
+  mapping (uint256 => PlayerIDs) PlayerIDsToUniqueID;
 
   // ********************************************************************************************************
   // Individual datatypes
@@ -166,7 +166,7 @@ contract CryptoWorldCupToken is ERC721 {
   }
 
   // ********************************************************************************************************
-  // Constructor &amp; Needed stuff
+  // Constructor & Needed stuff
   // ********************************************************************************************************
   // @dev Called exactly once during the creation of the contract
   // ********************************************************************************************************
@@ -246,7 +246,7 @@ contract CryptoWorldCupToken is ERC721 {
      price: newPrice,
      pictureUrl: _pictureUrl,
      flagUrl: _flagUrl,
-     position: &quot;&quot;,
+     position: "",
      age: 0,
      offensive: 0,
      defensive: 0,
@@ -255,8 +255,8 @@ contract CryptoWorldCupToken is ERC721 {
 
     uint256 newPlayerId = players.push(_player) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPlayerId == uint256(uint32(newPlayerId)));
 
     emit NewPlayerCreated(newPlayerId, newPlayerId, _prename, _surname, _owner, _price);
@@ -476,9 +476,9 @@ contract CryptoWorldCupToken is ERC721 {
 
   function getIDMapping (uint256 _playerId, uint256 _countryId) public view returns (uint256 _uniqueId){
 
-        for (uint64 x=0; x&lt;totalSupply(); x++){
+        for (uint64 x=0; x<totalSupply(); x++){
             PlayerIDs memory _player = PlayerIDsToUniqueID[x];
-            if(_player.id == _playerId &amp;&amp; _player.countryId == _countryId){
+            if(_player.id == _playerId && _player.countryId == _countryId){
                 _uniqueId = x;
             }
         }
@@ -527,7 +527,7 @@ contract CryptoWorldCupToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
@@ -578,7 +578,7 @@ contract CryptoWorldCupToken is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Players array looking for Players belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -593,7 +593,7 @@ contract CryptoWorldCupToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 PlayerId;
-      for (PlayerId = 0; PlayerId &lt;= totalPlayers; PlayerId++) {
+      for (PlayerId = 0; PlayerId <= totalPlayers; PlayerId++) {
         if (PlayerIndexToOwner[PlayerId] == _owner) {
           result[resultIndex] = PlayerId;
           resultIndex++;
@@ -667,8 +667,8 @@ contract CryptoWorldCupToken is ERC721 {
 
     uint256 newUserId = users.push(_user) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newUserId == uint256(uint32(newUserId)));
 
     emit NewUserRegistered(_username);
@@ -781,12 +781,12 @@ contract CryptoWorldCupToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Player to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of Players is capped to 2^32 we can&#39;t overflow this
+    // Since the number of Players is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     PlayerIndexToOwner[_tokenId] = _to;
 
-    // When creating new Players _from is 0x0, but we can&#39;t account that address.
+    // When creating new Players _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -816,9 +816,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -826,7 +826,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -835,7 +835,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

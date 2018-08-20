@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * SmartEth.co
  * ERC20 Token and ICO smart contracts development, smart contracts audit, ICO websites.
- * <span class="__cf_email__" data-cfemail="ddbeb2b3a9bcbea99daeb0bcafa9b8a9b5f3beb2">[email&#160;protected]</span>
+ * <span class="__cf_email__" data-cfemail="ddbeb2b3a9bcbea99daeb0bcafa9b8a9b5f3beb2">[email protected]</span>
  */
 
 /**
@@ -57,7 +57,7 @@ contract Airdrop is Ownable {
 
   function airdrop(address[] recipient, uint256[] amount) public onlyOwner returns (uint256) {
     uint256 i = 0;
-      while (i &lt; recipient.length) {
+      while (i < recipient.length) {
         token.transfer(recipient[i], amount[i]);
         i += 1;
       }
@@ -66,7 +66,7 @@ contract Airdrop is Ownable {
   
   function airdropSameAmount(address[] recipient, uint256 amount) public onlyOwner returns (uint256) {
     uint256 i = 0;
-      while (i &lt; recipient.length) {
+      while (i < recipient.length) {
         token.transfer(recipient[i], amount);
         i += 1;
       }

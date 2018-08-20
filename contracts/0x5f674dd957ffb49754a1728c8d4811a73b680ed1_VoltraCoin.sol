@@ -4,7 +4,7 @@ pragma solidity ^0.4.22;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -77,9 +77,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -87,7 +87,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -96,7 +96,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -109,8 +109,8 @@ library SafeMath {
 
 contract TransferFilter is Ownable {
   bool public isTransferable;
-  mapping( address =&gt; bool ) public mapAddressPass;
-  mapping( address =&gt; bool ) public mapAddressBlock;
+  mapping( address => bool ) public mapAddressPass;
+  mapping( address => bool ) public mapAddressBlock;
 
   event LogFilterPass(address indexed target, bool status);
   event LogFilterBlock(address indexed target, bool status);
@@ -146,7 +146,7 @@ contract TransferFilter is Ownable {
   public
   onlyOwner
   {
-    for( uint i = 0 ; i &lt; target.length ; i++ ) {
+    for( uint i = 0 ; i < target.length ; i++ ) {
         address targetAddress = target[i];
         bool old = mapAddressPass[targetAddress];
         if (old != status) {
@@ -166,7 +166,7 @@ contract TransferFilter is Ownable {
   public
   onlyOwner
   {
-      for( uint i = 0 ; i &lt; target.length ; i++ ) {
+      for( uint i = 0 ; i < target.length ; i++ ) {
           address targetAddress = target[i];
           bool old = mapAddressBlock[targetAddress];
           if (old != status) {
@@ -210,12 +210,12 @@ contract ERC20 {
 contract StandardToken is ERC20, TransferFilter {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
   }
 
@@ -229,7 +229,7 @@ contract StandardToken is ERC20, TransferFilter {
   checkTokenTransfer(msg.sender)
   public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -258,8 +258,8 @@ contract StandardToken is ERC20, TransferFilter {
   checkTokenTransfer(_from)
   public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -298,7 +298,7 @@ contract BurnableToken is StandardToken {
   event Burn(address indexed from, uint256 value);
 
   function burn(address _from, uint256 _amount) public onlyOwner {
-    require(_amount &lt;= balances[_from]);
+    require(_amount <= balances[_from]);
     totalSupply = totalSupply.sub(_amount);
     balances[_from] = balances[_from].sub(_amount);
     emit Transfer(_from, address(0), _amount);
@@ -366,8 +366,8 @@ contract MintableToken is BurnableToken {
 
 contract VoltraCoin is MintableToken {
 
-  string public constant name = &quot;VoltraCoin&quot;; // solium-disable-line uppercase
-  string public constant symbol = &quot;VLT&quot;; // solium-disable-line uppercase
+  string public constant name = "VoltraCoin"; // solium-disable-line uppercase
+  string public constant symbol = "VLT"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
   /**
    * @dev Constructor that gives msg.sender all of existing tokens.

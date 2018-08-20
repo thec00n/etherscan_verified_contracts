@@ -9,12 +9,12 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -55,7 +55,7 @@ contract Enums {
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -137,7 +137,7 @@ contract AccessoryWrapper721 {
 //Storage
     address public creatorAddress;
     uint16 public totalMarketplaces = 0;
-    mapping (address =&gt; bool) public marketplaces;
+    mapping (address => bool) public marketplaces;
     address public accessoryDataContract = 0x466c44812835f57b736ef9F63582b8a6693A14D0;
     
         struct Accessory {

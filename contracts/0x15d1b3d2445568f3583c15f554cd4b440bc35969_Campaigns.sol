@@ -39,13 +39,13 @@ contract Campaigns is onlyOwner{
     }    
     
     function sendAmount(address[] _user, uint256 value) isOwner public returns(bool){
-        for(uint i=0; i&lt;_user.length; i++)
+        for(uint i=0; i<_user.length; i++)
         token.transfer(_user[i], value*10**18);
         return true;
     }
 	
 	function sendIndividualAmount(address[] _user, uint256[] value) isOwner public returns(bool){
-        for(uint i=0; i&lt;_user.length; i++)
+        for(uint i=0; i<_user.length; i++)
         token.transfer(_user[i], value[i]*10**18);
         return true;
     }

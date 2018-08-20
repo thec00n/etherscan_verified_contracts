@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,8 +72,8 @@ contract ERC223ReceivingContract {
     tkn.sender = _from;
     tkn.value = _value;
     tkn.data = _data;
-    if(_data.length &gt; 0) {
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+    if(_data.length > 0) {
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
     }
 
@@ -109,16 +109,16 @@ contract ERC223Interface {
 contract UnityToken is ERC223Interface {
   using SafeMath for uint;
 
-  string public constant name = &quot;Unity Token&quot;;
-  string public constant symbol = &quot;UNT&quot;;
+  string public constant name = "Unity Token";
+  string public constant symbol = "UNT";
   uint8 public constant decimals = 18;
 
 
   /* The supply is initially 100UNT to the precision of 18 decimals */
   uint public constant INITIAL_SUPPLY = 100000 * (10 ** uint(decimals));
 
-  mapping(address =&gt; uint) balances; // List of user balances.
-  mapping(address =&gt; bool) allowedAddresses;
+  mapping(address => uint) balances; // List of user balances.
+  mapping(address => bool) allowedAddresses;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -136,7 +136,7 @@ contract UnityToken is ERC223Interface {
 
   address public owner;
 
-  /* Constructor initializes the owner&#39;s balance and the supply  */
+  /* Constructor initializes the owner's balance and the supply  */
   function UnityToken() public {
     owner = msg.sender;
     totalSupply = INITIAL_SUPPLY;
@@ -151,7 +151,7 @@ contract UnityToken is ERC223Interface {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
     if (isContract(_to)) {
       require(allowedAddresses[_to]);
-      if (balanceOf(msg.sender) &lt; _value)
+      if (balanceOf(msg.sender) < _value)
         revert();
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -197,12 +197,12 @@ contract UnityToken is ERC223Interface {
     //retrieve the size of the code on target address, this needs assembly
       length := extcodesize(_addr)
     }
-    return (length &gt; 0);
+    return (length > 0);
   }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
       revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -213,7 +213,7 @@ contract UnityToken is ERC223Interface {
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
     require(allowedAddresses[_to]);
-    if (balanceOf(msg.sender) &lt; _value)
+    if (balanceOf(msg.sender) < _value)
       revert();
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);

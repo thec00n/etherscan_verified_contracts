@@ -29,16 +29,16 @@ contract ERC20Burnable is ERC20Interface
 contract VRFtoken is ERC20Burnable
 {
     // Public data
-    string public constant name = &quot;VRF token&quot;;
-    string public constant symbol = &quot;VRF&quot;;
+    string public constant name = "VRF token";
+    string public constant symbol = "VRF";
     uint256 public constant decimals = 2; 
     address public owner;  
 
     // Internal data
     uint256 private constant initialSupply = 690000000; // 690,000,000
     uint256 private currentSupply;
-    mapping(address =&gt; uint256) private balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(address => uint256) private balances;
+    mapping(address => mapping (address => uint256)) private allowed;
 
     function VRFtoken()
     {
@@ -66,8 +66,8 @@ contract VRFtoken is ERC20Burnable
     function transfer(address to, uint256 amount) public 
         returns (bool)
     {
-        if (balances[msg.sender] &gt;= amount &amp;&amp; // Sender has enough?
-            balances[to] + amount &gt; balances[to]) // Transfer won&#39;t cause overflow?
+        if (balances[msg.sender] >= amount && // Sender has enough?
+            balances[to] + amount > balances[to]) // Transfer won't cause overflow?
         {
             balances[msg.sender] -= amount;
             balances[to] += amount;
@@ -83,9 +83,9 @@ contract VRFtoken is ERC20Burnable
     function transferFrom(address from, address to, uint256 amount) public 
         returns (bool)
     {
-        if (balances[from] &gt;= amount &amp;&amp; // Account has enough?
-            allowed[from][msg.sender] &gt;= amount &amp;&amp; // Sender can act for account for this amount?
-            balances[to] + amount &gt; balances[to]) // Transfer won&#39;t cause overflow?
+        if (balances[from] >= amount && // Account has enough?
+            allowed[from][msg.sender] >= amount && // Sender can act for account for this amount?
+            balances[to] + amount > balances[to]) // Transfer won't cause overflow?
         {
             balances[from] -= amount;
             allowed[from][msg.sender] -= amount;
@@ -118,7 +118,7 @@ contract VRFtoken is ERC20Burnable
     {
         require(msg.sender == owner); // Only the owner can burn
 
-        if (balances[msg.sender] &gt;= amount) // Account has enough?
+        if (balances[msg.sender] >= amount) // Account has enough?
         {
             balances[msg.sender] -= amount;
             currentSupply -= amount;

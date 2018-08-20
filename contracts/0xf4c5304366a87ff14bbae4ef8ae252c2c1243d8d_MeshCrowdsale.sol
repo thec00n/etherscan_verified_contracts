@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -317,7 +317,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -328,7 +328,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply_.add(_amount) &lt;= cap);
+    require(totalSupply_.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -417,15 +417,15 @@ contract PausableToken is StandardToken, Pausable {
  * PausableToken overrides all transfers methods and adds a modifier to check if paused is set to false.
  */
 contract MeshToken is CappedToken, PausableToken {
-  string public name = &quot;DJANGO UNCHAIN&quot;;
-  string public symbol = &quot;DJANGO&quot;;
+  string public name = "DJANGO UNCHAIN";
+  string public symbol = "DJANGO";
   uint256 public decimals = 18;
   uint256 public cap = 129498559 ether;
 
   /**
    * @dev variable to keep track of what addresses are allowed to call transfer functions when token is paused.
    */
-  mapping (address =&gt; bool) public allowedTransfers;
+  mapping (address => bool) public allowedTransfers;
 
   /*------------------------------------constructor------------------------------------*/
   /**
@@ -450,7 +450,7 @@ contract MeshToken is CappedToken, PausableToken {
    * @dev overriding Pausable#pause method to do nothing
    * Paused is set to true in the constructor itself, making the token non-transferrable on deploy.
    * once unpaused the contract cannot be paused again.
-   * adding this to limit owner&#39;s ability to pause the token in future.
+   * adding this to limit owner's ability to pause the token in future.
    */
   function pause() onlyOwner whenNotPaused public {}
 
@@ -459,7 +459,7 @@ contract MeshToken is CappedToken, PausableToken {
    * solution based on this blog post https://blog.coinfabrik.com/smart-contract-short-address-attack-mitigation-failure
    */
   modifier onlyPayloadSize(uint size) {
-    assert(msg.data.length &gt;= size + 4);
+    assert(msg.data.length >= size + 4);
     _;
   }
 
@@ -483,7 +483,7 @@ contract MeshToken is CappedToken, PausableToken {
   onlyOwner
   returns (bool)
   {
-    // don&#39;t allow owner to change this for themselves
+    // don't allow owner to change this for themselves
     // otherwise whenNotPaused will not work as expected for owner,
     // therefore prohibiting them from calling pause/unpause.
     require(_address != owner);
@@ -535,9 +535,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, MintableToken _token) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -574,7 +574,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -590,9 +590,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
 }
@@ -609,22 +609,22 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return capReached || super.hasEnded();
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinCap &amp;&amp; super.validPurchase();
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinCap && super.validPurchase();
   }
 
 }
@@ -641,17 +641,17 @@ contract MeshCrowdsale is CappedCrowdsale, Ownable {
   /**
    * @dev weiLimits keeps track of amount of wei that can be contibuted by an address.
    */
-  mapping (address =&gt; uint256) public weiLimits;
+  mapping (address => uint256) public weiLimits;
 
   /**
    * @dev weiContributions keeps track of amount of wei that are contibuted by an address.
    */
-  mapping (address =&gt; uint256) public weiContributions;
+  mapping (address => uint256) public weiContributions;
 
   /**
    * @dev whitelistingAgents keeps track of who is allowed to call the setLimit method
    */
-  mapping (address =&gt; bool) public whitelistingAgents;
+  mapping (address => bool) public whitelistingAgents;
 
   /**
    * @dev minimumContribution keeps track of what should be the minimum contribution required per address
@@ -705,9 +705,9 @@ contract MeshCrowdsale is CappedCrowdsale, Ownable {
    * @return true if investors can buy at the moment
    */
   function validPurchase() internal view returns (bool) {
-    bool withinLimit = weiContributions[msg.sender] &lt;= weiLimits[msg.sender];
-    bool atleastMinimumContribution = weiContributions[msg.sender] &gt;= minimumContribution;
-    return atleastMinimumContribution &amp;&amp; withinLimit &amp;&amp; super.validPurchase();
+    bool withinLimit = weiContributions[msg.sender] <= weiLimits[msg.sender];
+    bool atleastMinimumContribution = weiContributions[msg.sender] >= minimumContribution;
+    return atleastMinimumContribution && withinLimit && super.validPurchase();
   }
 
 
@@ -732,11 +732,11 @@ contract MeshCrowdsale is CappedCrowdsale, Ownable {
   function setLimit(address[] _addresses, uint256 _weiLimit) external {
     require(whitelistingAgents[msg.sender] == true);
 
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    for (uint i = 0; i < _addresses.length; i++) {
       address _address = _addresses[i];
 
       // only allow changing the limit to be greater than current contribution
-      if(_weiLimit &gt;= weiContributions[_address]) {
+      if(_weiLimit >= weiContributions[_address]) {
         weiLimits[_address] = _weiLimit;
       }
     }
@@ -748,10 +748,10 @@ contract MeshCrowdsale is CappedCrowdsale, Ownable {
    */
   function setRate(uint256 _rate) external onlyOwner {
     // make sure the crowdsale has not started
-    require(weiRaised == 0 &amp;&amp; now &lt;= startTime);
+    require(weiRaised == 0 && now <= startTime);
 
     // make sure new rate is greater than 0
-    require(_rate &gt; 0);
+    require(_rate > 0);
 
     rate = _rate;
   }
@@ -763,10 +763,10 @@ contract MeshCrowdsale is CappedCrowdsale, Ownable {
    */
   function setCap(uint256 _cap) external onlyOwner {
     // make sure the crowdsale has not started
-    require(weiRaised == 0 &amp;&amp; now &lt;= startTime);
+    require(weiRaised == 0 && now <= startTime);
 
     // make sure new cap is greater than 0
-    require(_cap &gt; 0);
+    require(_cap > 0);
 
     cap = _cap;
   }
@@ -788,12 +788,12 @@ contract MeshCrowdsale is CappedCrowdsale, Ownable {
     require(!mintingFinished);
 
     // make sure the crowdsale has started
-    require(weiRaised &gt; 0);
+    require(weiRaised > 0);
 
     // loop through the list and call mint on token directly
     // this minting does not affect any crowdsale numbers
-    for (uint i = 0; i &lt; beneficiaries.length; i++) {
-      if (beneficiaries[i] != address(0) &amp;&amp; token.balanceOf(beneficiaries[i]) == 0) {
+    for (uint i = 0; i < beneficiaries.length; i++) {
+      if (beneficiaries[i] != address(0) && token.balanceOf(beneficiaries[i]) == 0) {
         token.mint(beneficiaries[i], beneficiaryAmounts[i]);
       }
     }

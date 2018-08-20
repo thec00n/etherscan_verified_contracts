@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -53,13 +53,13 @@ library MerkleProof {
     bytes32 proofElement;
     bytes32 computedHash = _leaf;
 
-    for (uint256 i = 32; i &lt;= _proof.length; i += 32) {
+    for (uint256 i = 32; i <= _proof.length; i += 32) {
       assembly {
         // Load the current element of the proof
         proofElement := mload(add(_proof, i))
       }
 
-      if (computedHash &lt; proofElement) {
+      if (computedHash < proofElement) {
         // Hash(current computed hash + current element of the proof)
         computedHash = keccak256(computedHash, proofElement);
       } else {
@@ -103,12 +103,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -120,7 +120,7 @@ library ECRecovery {
 library JobLib {
     using SafeMath for uint256;
     // Prefix hashed with message hash when a signature is produced by the eth_sign RPC call
-    string constant PERSONAL_HASH_PREFIX = &quot;\u0019Ethereum Signed Message:\n32&quot;;
+    string constant PERSONAL_HASH_PREFIX = "\u0019Ethereum Signed Message:\n32";
     // # of bytes used to store a video profile identifier as a utf8 encoded string
     // Video profile identifier is currently stored as bytes4(keccak256(PROFILE_NAME))
     // We use 2 * 4 = 8 bytes because we store the bytes in a utf8 encoded string so
@@ -135,7 +135,7 @@ library JobLib {
      */
     function validTranscodingOptions(string _transcodingOptions) public pure returns (bool) {
         uint256 transcodingOptionsLength = bytes(_transcodingOptions).length;
-        return transcodingOptionsLength &gt; 0 &amp;&amp; transcodingOptionsLength % VIDEO_PROFILE_SIZE == 0;
+        return transcodingOptionsLength > 0 && transcodingOptionsLength % VIDEO_PROFILE_SIZE == 0;
     }
 
     /*
@@ -170,7 +170,7 @@ library JobLib {
         returns (bool)
     {
         // Segment must be in segment range
-        if (_segmentNumber &lt; _segmentRange[0] || _segmentNumber &gt; _segmentRange[1]) {
+        if (_segmentNumber < _segmentRange[0] || _segmentNumber > _segmentRange[1]) {
             return false;
         }
 
@@ -258,7 +258,7 @@ library JobLib {
      * @param _segmentSequenceNumber Segment sequence number in stream
      * @param _dataHash Content-addressed storage hash of segment data
      * @param _transcodedDataHash Content-addressed storage hash of transcoded segment data
-     * @param _broadcasterSig Broadcaster&#39;s signature over segment
+     * @param _broadcasterSig Broadcaster's signature over segment
      */
     function transcodeReceiptHash(
         string _streamId,

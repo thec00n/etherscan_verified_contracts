@@ -8,8 +8,8 @@ contract MigrationAgent {
 
 // title ICO honestis networkToken (H.N Token) - crowdfunding code for ICO honestis network Token and merging with preICO
 contract HonestisNetworkETHmergedICO {
-    string public constant name = &quot;ICO token Honestis.Network on ETH&quot;;
-    string public constant symbol = &quot;HNT&quot;;
+    string public constant name = "ICO token Honestis.Network on ETH";
+    string public constant symbol = "HNT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETC/ETH.
 
     uint256 public constant tokenCreationRate = 1000;
@@ -49,8 +49,8 @@ contract HonestisNetworkETHmergedICO {
 	// 92,4%
     uint256 totalTokens =61168800 ether;
 	uint256 bonusCreationRate;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) balancesRAW;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) balancesRAW;
 
 
 	address public migrationAgent=0x0f32f4b37684be8a1ce1b2ed765d2d893fa1b419;
@@ -76,7 +76,7 @@ balances[0xD00aA14f4E5D651f29cE27426559eC7c39b14B3e]=5588000000000000000000;
 
     }
 
-    // notice Transfer `_value` H.N Token tokens from sender&#39;s account
+    // notice Transfer `_value` H.N Token tokens from sender's account
     // `msg.sender` to provided account address `_to`.
     // notice This function is disabled during the funding.
     // dev Required state: Operational
@@ -86,10 +86,10 @@ balances[0xD00aA14f4E5D651f29cE27426559eC7c39b14B3e]=5588000000000000000000;
     function transfer(address _to, uint256 _value) returns (bool) {
 
 // freez till end of crowdfunding + about week
-if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + oneweek)) throw;
+if ((msg.sender!=migrationMaster)&&(block.number < fundingEndBlock + oneweek)) throw;
 
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -118,14 +118,14 @@ if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 
         function createHNtokens(address holder) payable {
 
         if (!funding) throw;
-        if (block.number &lt; fundingStartBlock) throw;
+        if (block.number < fundingStartBlock) throw;
  
         // Do not allow creating 0 or more than the cap tokens.
         if (msg.value == 0) throw;
 		// check the maximum token creation cap
 		// final creation rate
 		bonusCreationRate = 250;
-        if (msg.value &gt; (tokenCreationCap - totalTokens) / bonusCreationRate)
+        if (msg.value > (tokenCreationCap - totalTokens) / bonusCreationRate)
           throw;
 		
 		//merged last about 8% ICO bonus structure
@@ -155,7 +155,7 @@ if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 
 	
 		//time bonuses for weekend additional 7% (0.5 * 14%)
 	// 1 block = 16-16.8 s
-		if (block.number &lt; (fundingStartBlock + 2*oneday )){
+		if (block.number < (fundingStartBlock + 2*oneday )){
 		 balances[migrationMaster] = balances[migrationMaster]-  additionalTokens/2;
 		  balances[holder] +=  additionalTokens/2;
         Transfer(0, holder, additionalTokens/2);
@@ -172,13 +172,13 @@ if ((msg.sender!=migrationMaster)&amp;&amp;(block.number &lt; fundingEndBlock + 
         
     function shifter2HNtokens(address _to, uint256 _value) returns (bool) {
        if (!funding) throw;
-        if (block.number &lt; fundingStartBlock) throw;
+        if (block.number < fundingStartBlock) throw;
 // freez till end of crowdfunding + 2 about weeks
 if (msg.sender!=migrationMaster) throw;
 		// check the maximum token creation cap
         // Do not allow creating more than the cap tokens.
 
-        if (totalTokens +  _value &lt; tokenCreationCap){
+        if (totalTokens +  _value < tokenCreationCap){
 			totalTokens += _value;
             balances[_to] += _value;
             Transfer(0, _to, _value);
@@ -236,7 +236,7 @@ function finalize() external {
 		if (!honestisFort.send(this.balance)) throw;
  }	
 function finalizebackup() external {
-        if (block.number &lt;= fundingEndBlock+oneweek) throw;
+        if (block.number <= fundingEndBlock+oneweek) throw;
         // Switch to Operational state. This is the only place this can happen.
         funding = false;	
 		finalstate= true;		
@@ -249,7 +249,7 @@ function finalizebackup() external {
         if (migratestate) throw;
         // Validate input value.
         if (_value == 0) throw;
-        if (_value &gt; balances[msg.sender]) throw;
+        if (_value > balances[msg.sender]) throw;
 
         balances[msg.sender] -= _value;
         totalTokens -= _value;
@@ -260,10 +260,10 @@ function finalizebackup() external {
 	
 
 function HonestisnetworkICOregulations() external returns(string wow) {
-	return &#39;Regulations of preICO and ICO are present at website  honestis.network and by using this smartcontract you commit that you accept and will follow those rules&#39;;
+	return 'Regulations of preICO and ICO are present at website  honestis.network and by using this smartcontract you commit that you accept and will follow those rules';
 }
 
 function HonestisnetworkICObalances() external returns(string balancesFORM) {
-	return &#39;if you are contributor before merge visit honestis.network/balances.xls to find your balance which will be deployed if have some suggestions please email us <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a393f3a3a25383e0a2225242f393e233964242f3e3d253821">[email&#160;protected]</a> and whitelist this email&#39;;
+	return 'if you are contributor before merge visit honestis.network/balances.xls to find your balance which will be deployed if have some suggestions please email us <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a393f3a3a25383e0a2225242f393e233964242f3e3d253821">[email protected]</a> and whitelist this email';
 }
 }

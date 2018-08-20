@@ -1,6 +1,6 @@
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88e5e1e3e0e9e1e4a6fee4e9ece1e5e1fae7fec8efe5e9e1e4a6ebe7e5">[email&#160;protected]</a>&gt;
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88e5e1e3e0e9e1e4a6fee4e9ece1e5e1fae7fec8efe5e9e1e4a6ebe7e5">[email protected]</a>>
  */
 pragma solidity ^0.4.20;
 
@@ -18,7 +18,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -32,7 +32,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -47,7 +47,7 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -169,8 +169,8 @@ contract AbstractToken is Token, SafeMath {
   function transfer (address _to, uint256 _value)
   public payable returns (bool success) {
     uint256 fromBalance = accounts [msg.sender];
-    if (fromBalance &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (fromBalance < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -190,14 +190,14 @@ contract AbstractToken is Token, SafeMath {
   function transferFrom (address _from, address _to, uint256 _value)
   public payable returns (bool success) {
     uint256 spenderAllowance = allowances [_from][msg.sender];
-    if (spenderAllowance &lt; _value) return false;
+    if (spenderAllowance < _value) return false;
     uint256 fromBalance = accounts [_from];
-    if (fromBalance &lt; _value) return false;
+    if (fromBalance < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (spenderAllowance, _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -241,25 +241,25 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) internal accounts;
+  mapping (address => uint256) internal accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowances;
+  mapping (address => mapping (address => uint256)) internal allowances;
 }
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef828684878e8683c199838e8b8682869d8099af88828e8683c18c8082">[email&#160;protected]</a>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef828684878e8683c199838e8b8682869d8099af88828e8683c18c8082">[email protected]</a>>
  */
 
 /**
  * Provides methods to safely add, subtract and multiply uint256 numbers.
  */
 /*
- * GHI Token Smart Contract.  Copyright &#169; 2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbd6d2d0d3dad2d795cdd7dadfd2d6d2c9d4cdfbdcd6dad2d795d8d4d6">[email&#160;protected]</a>&gt;
+ * GHI Token Smart Contract.  Copyright © 2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbd6d2d0d3dad2d795cdd7dadfd2d6d2c9d4cdfbdcd6dad2d795d8d4d6">[email protected]</a>>
  */
 
 /**
@@ -374,7 +374,7 @@ contract GHIToken is AbstractToken {
    * @return name of the token
    */
   function name () public delegatable view returns (string) {
-    return &quot;GHI Token&quot;;
+    return "GHI Token";
   }
 
   /**
@@ -383,7 +383,7 @@ contract GHIToken is AbstractToken {
    * @return symbol of the token
    */
   function symbol () public delegatable view returns (string) {
-    return &quot;GHI&quot;;
+    return "GHI";
   }
 
   /**
@@ -427,17 +427,17 @@ contract GHIToken is AbstractToken {
   public delegatable payable returns (bool) {
     if (frozen) return false;
     else if (
-      (addressFlags [msg.sender] | addressFlags [_to]) &amp; BLACK_LIST_FLAG ==
+      (addressFlags [msg.sender] | addressFlags [_to]) & BLACK_LIST_FLAG ==
       BLACK_LIST_FLAG)
       return false;
     else {
       uint256 fee =
-        (addressFlags [msg.sender] | addressFlags [_to]) &amp; ZERO_FEE_FLAG == ZERO_FEE_FLAG ?
+        (addressFlags [msg.sender] | addressFlags [_to]) & ZERO_FEE_FLAG == ZERO_FEE_FLAG ?
           0 :
           calculateFee (_value);
 
-      if (_value &lt;= accounts [msg.sender] &amp;&amp;
-          fee &lt;= safeSub (accounts [msg.sender], _value)) {
+      if (_value <= accounts [msg.sender] &&
+          fee <= safeSub (accounts [msg.sender], _value)) {
         require (AbstractToken.transfer (_to, _value));
         require (AbstractToken.transfer (feeCollector, fee));
         return true;
@@ -458,19 +458,19 @@ contract GHIToken is AbstractToken {
   public delegatable payable returns (bool) {
     if (frozen) return false;
     else if (
-      (addressFlags [_from] | addressFlags [_to]) &amp; BLACK_LIST_FLAG ==
+      (addressFlags [_from] | addressFlags [_to]) & BLACK_LIST_FLAG ==
       BLACK_LIST_FLAG)
       return false;
     else {
       uint256 fee =
-        (addressFlags [_from] | addressFlags [_to]) &amp; ZERO_FEE_FLAG == ZERO_FEE_FLAG ?
+        (addressFlags [_from] | addressFlags [_to]) & ZERO_FEE_FLAG == ZERO_FEE_FLAG ?
           0 :
           calculateFee (_value);
 
-      if (_value &lt;= allowances [_from][msg.sender] &amp;&amp;
-          fee &lt;= safeSub (allowances [_from][msg.sender], _value) &amp;&amp;
-          _value &lt;= accounts [_from] &amp;&amp;
-          fee &lt;= safeSub (accounts [_from], _value)) {
+      if (_value <= allowances [_from][msg.sender] &&
+          fee <= safeSub (allowances [_from][msg.sender], _value) &&
+          _value <= accounts [_from] &&
+          fee <= safeSub (accounts [_from], _value)) {
         require (AbstractToken.transferFrom (_from, _to, _value));
         require (AbstractToken.transferFrom (_from, feeCollector, fee));
         return true;
@@ -533,21 +533,21 @@ contract GHIToken is AbstractToken {
       if (_nonce != nonces [_from]) return false;
 
       if (
-        (addressFlags [_from] | addressFlags [_to]) &amp; BLACK_LIST_FLAG ==
+        (addressFlags [_from] | addressFlags [_to]) & BLACK_LIST_FLAG ==
         BLACK_LIST_FLAG)
         return false;
 
       uint256 fee =
-        (addressFlags [_from] | addressFlags [_to]) &amp; ZERO_FEE_FLAG == ZERO_FEE_FLAG ?
+        (addressFlags [_from] | addressFlags [_to]) & ZERO_FEE_FLAG == ZERO_FEE_FLAG ?
           0 :
           calculateFee (_value);
 
       uint256 balance = accounts [_from];
-      if (_value &gt; balance) return false;
+      if (_value > balance) return false;
       balance = safeSub (balance, _value);
-      if (fee &gt; balance) return false;
+      if (fee > balance) return false;
       balance = safeSub (balance, fee);
-      if (_fee &gt; balance) return false;
+      if (_fee > balance) return false;
       balance = safeSub (balance, _fee);
 
       nonces [_from] = _nonce + 1;
@@ -574,8 +574,8 @@ contract GHIToken is AbstractToken {
   public delegatable payable returns (bool) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &lt;= safeSub (MAX_TOKENS_COUNT, tokensCount)) {
+    if (_value > 0) {
+      if (_value <= safeSub (MAX_TOKENS_COUNT, tokensCount)) {
         accounts [msg.sender] = safeAdd (accounts [msg.sender], _value);
         tokensCount = safeAdd (tokensCount, _value);
 
@@ -595,8 +595,8 @@ contract GHIToken is AbstractToken {
   public delegatable payable returns (bool) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &lt;= accounts [msg.sender]) {
+    if (_value > 0) {
+      if (_value <= accounts [msg.sender]) {
         accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
         tokensCount = safeSub (tokensCount, _value);
 
@@ -682,8 +682,8 @@ contract GHIToken is AbstractToken {
     uint256 _variableFeeNumerator) public delegatable payable {
     require (msg.sender == owner);
 
-    require (_minVariableFee &lt;= _maxVariableFee);
-    require (_variableFeeNumerator &lt;= MAX_FEE_NUMERATOR);
+    require (_minVariableFee <= _maxVariableFee);
+    require (_variableFeeNumerator <= MAX_FEE_NUMERATOR);
 
     fixedFee = _fixedFee;
     minVariableFee = _minVariableFee;
@@ -718,11 +718,11 @@ contract GHIToken is AbstractToken {
    */
   function calculateFee (uint256 _amount)
     public delegatable view returns (uint256 _fee) {
-    require (_amount &lt;= MAX_TOKENS_COUNT);
+    require (_amount <= MAX_TOKENS_COUNT);
 
     _fee = safeMul (_amount, variableFeeNumerator) / FEE_DENOMINATOR;
-    if (_fee &lt; minVariableFee) _fee = minVariableFee;
-    if (_fee &gt; maxVariableFee) _fee = maxVariableFee;
+    if (_fee < minVariableFee) _fee = minVariableFee;
+    if (_fee > maxVariableFee) _fee = maxVariableFee;
     _fee = safeAdd (_fee, fixedFee);
   }
 
@@ -805,9 +805,9 @@ contract GHIToken is AbstractToken {
   bool internal frozen;
 
   /**
-   * Mapping from sender&#39;s address to the next delegated transfer nonce.
+   * Mapping from sender's address to the next delegated transfer nonce.
    */
-  mapping (address =&gt; uint256) internal nonces;
+  mapping (address => uint256) internal nonces;
 
   /**
    * Fixed fee amount in token units.
@@ -832,7 +832,7 @@ contract GHIToken is AbstractToken {
   /**
    * Maps address to its flags.
    */
-  mapping (address =&gt; uint256) internal addressFlags;
+  mapping (address => uint256) internal addressFlags;
 
   /**
    * Address of smart contract to delegate execution of delegatable methods to,
@@ -876,11 +876,11 @@ contract GHIToken is AbstractToken {
 }
 /*
  * EIP-20 Standard Token Smart Contract Interface.
- * Copyright &#169; 2016–2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7cacecccfc6cecb89d1cbc6c3cecaced5c8d1e7c0cac6cecb89c4c8ca">[email&#160;protected]</a>&gt;
+ * Copyright © 2016–2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7cacecccfc6cecb89d1cbc6c3cecaced5c8d1e7c0cac6cecb89c4c8ca">[email protected]</a>>
  */
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md&quot;&gt;here&lt;/a&gt;.
+ * <a href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md">here</a>.
  */

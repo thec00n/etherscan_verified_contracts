@@ -4,11 +4,11 @@ pragma solidity ^0.4.18;
 contract TopIvy {
 
   /*** CONSTANTS ***/
-  string public constant NAME = &quot;TopIvy&quot;;
+  string public constant NAME = "TopIvy";
   uint256 public constant voteCost = 0.001 ether;
   
   // You can use this string to verify the indices correspond to the school order below
-  string public constant schoolOrdering = &quot;BrownColumbiaCornellDartmouthHarvardPennPrincetonYale&quot;;
+  string public constant schoolOrdering = "BrownColumbiaCornellDartmouthHarvardPennPrincetonYale";
 
   /*** STORAGE ***/
   address public ceoAddress;
@@ -47,13 +47,13 @@ contract TopIvy {
   /// @param _id Which side gets the vote
   function buyVotes(uint8 _id) public payable {
       // Ensure at least one vote can be purchased
-      require(msg.value &gt;= voteCost);
+      require(msg.value >= voteCost);
       // Ensure vote is only for listed Ivys
-      require(_id &gt;= 0 &amp;&amp; _id &lt;= 7);
+      require(_id >= 0 && _id <= 7);
       // Calculate number of votes
       uint256 votes = msg.value / voteCost;
       voteCounts[_id] += votes;
-      // Don&#39;t bother sending remainder back because it is &lt;0.001 eth
+      // Don't bother sending remainder back because it is <0.001 eth
   }
 
   /// @dev Assigns a new address to act as the CEO. Only available to the current CEO.

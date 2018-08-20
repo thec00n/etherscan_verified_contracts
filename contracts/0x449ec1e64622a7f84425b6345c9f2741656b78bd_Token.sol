@@ -13,12 +13,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -68,8 +68,8 @@ contract StandardToken is ERC20 {
     string public name;
     string public symbol;
     uint8 public decimals;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     function StandardToken(string _name, string _symbol, uint8 _decimals) public {
         name = _name;
         symbol = _symbol;
@@ -82,7 +82,7 @@ function balanceOf(address _owner) public view returns(uint256 balance) {
 
 function transfer(address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -90,15 +90,15 @@ function transfer(address _to, uint256 _value) public returns(bool) {
 }
 function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
         require(_to.length == _value.length);
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             transfer(_to[i], _value[i]);
         }
         return true;
 }
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -124,7 +124,7 @@ function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -158,12 +158,12 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     function CappedToken(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns(bool) {
-        require(totalSupply.add(_amount) &lt;= cap);
+        require(totalSupply.add(_amount) <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -173,7 +173,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -188,25 +188,25 @@ contract RewardToken is StandardToken, Ownable {
     }
 
     Payment[] public repayments;
-    mapping(address =&gt; Payment[]) public rewards;
+    mapping(address => Payment[]) public rewards;
 
     event Reward(address indexed to, uint256 amount);
 
     function repayment() onlyOwner payable public {
-        require(msg.value &gt;= 0.01 * 1 ether);
+        require(msg.value >= 0.01 * 1 ether);
 
         repayments.push(Payment({time : now, amount : msg.value}));
     }
 
     function _reward(address _to) private returns(bool) {
-        if(rewards[_to].length &lt; repayments.length) {
+        if(rewards[_to].length < repayments.length) {
             uint sum = 0;
-            for(uint i = rewards[_to].length; i &lt; repayments.length; i++) {
-                uint amount = balances[_to] &gt; 0 ? (repayments[i].amount * balances[_to] / totalSupply) : 0;
+            for(uint i = rewards[_to].length; i < repayments.length; i++) {
+                uint amount = balances[_to] > 0 ? (repayments[i].amount * balances[_to] / totalSupply) : 0;
                 rewards[_to].push(Payment({time : now, amount : amount}));
                 sum += amount;
             }
-            if(sum &gt; 0) {
+            if(sum > 0) {
                 _to.transfer(sum);
                 emit Reward(_to, sum);
             }
@@ -226,7 +226,7 @@ contract RewardToken is StandardToken, Ownable {
 
     function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
         _reward(msg.sender);
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             _reward(_to[i]);
         }
 
@@ -241,7 +241,7 @@ contract RewardToken is StandardToken, Ownable {
 }
 
 contract Token is CappedToken, BurnableToken, RewardToken {
-    function Token() CappedToken(10000 * 1 ether) StandardToken(&quot;CRYPTtesttt&quot;, &quot;CRYPTtesttt&quot;, 18) public {
+    function Token() CappedToken(10000 * 1 ether) StandardToken("CRYPTtesttt", "CRYPTtesttt", 18) public {
         
     }
 }
@@ -261,19 +261,19 @@ contract Crowdsale is Pausable {
 	
     //uint public priceTokenWei = 7142857142857142; 
     uint private priceTokenWei = 12690355329949;  // 1 токен равен 0,01$ (1eth = 788$)
-    string public TokenPriceETH = &quot;0.000013&quot;;  // Стоимость токена 
+    string public TokenPriceETH = "0.000013";  // Стоимость токена 
     //uint public bonusPercent = 0; // Бонусная часть
     uint private Sb = 1 ether; // Цифры после запятой 18
     uint private oSb = Sb * 5000; // Токены для Владельца 
     uint private BountyCRYPT = Sb * 500; // Токены для Баунти-компании  
     uint private PRTC = Sb * 1000; // PreICO количество токенов для продажи 
     
-	string public IcoStatus = &quot;PreIco&quot;;
+	string public IcoStatus = "PreIco";
 
     bool public crowdsaleClosed = false;
     bool public crowdsaleRefund = false;
 	
-    mapping(address =&gt; uint256) public purchaseBalances; 
+    mapping(address => uint256) public purchaseBalances; 
     event Rurchase(address indexed holder, uint256 tokenAmount, uint256 etherAmount);
     event Refund(address indexed holder, uint256 etherAmount); // Возврат Средств
     event CrowdsaleClose();
@@ -301,12 +301,12 @@ contract Crowdsale is Pausable {
     }
 	function purchase() whenNotPaused payable public {
         require(!crowdsaleClosed);
-        require(tokensSold &lt; tokensForSale);
-        require(msg.value &gt;= 0.000013 ether);    // Минимальное количество Эфиров для покупки 
+        require(tokensSold < tokensForSale);
+        require(msg.value >= 0.000013 ether);    // Минимальное количество Эфиров для покупки 
         uint sum = msg.value;         // Сумма на которую хочет купить Токены
         uint amount = sum.mul(1 ether).div(priceTokenWei);
         uint retSum = 0;
-    if(tokensSold.add(amount) &gt; tokensForSale) {
+    if(tokensSold.add(amount) > tokensForSale) {
             uint retAmount = tokensSold.add(amount).sub(tokensForSale);
             retSum = retAmount.mul(priceTokenWei).div(1 ether);
             amount = amount.sub(retAmount);
@@ -316,22 +316,22 @@ contract Crowdsale is Pausable {
         collectedWei = collectedWei.add(sum);
         purchaseBalances[msg.sender] = purchaseBalances[msg.sender].add(sum);
         token.mint(msg.sender, amount);
-        if(retSum &gt; 0) {
+        if(retSum > 0) {
             msg.sender.transfer(retSum);
         }
 		/*Меняем статус ICO*/
-		if(tokensSold &gt; PRTC){
+		if(tokensSold > PRTC){
 			if(tokensForSale == tokensSold){
-				IcoStatus = &quot;The End :D&quot;;
+				IcoStatus = "The End :D";
 			}else{
-				IcoStatus = &quot;ICO&quot;;
+				IcoStatus = "ICO";
 			}
 		}
         emit Rurchase(msg.sender, amount, sum);
     }
     function refund() public {
         require(crowdsaleRefund);
-        require(purchaseBalances[msg.sender] &gt; 0);
+        require(purchaseBalances[msg.sender] > 0);
         uint sum = purchaseBalances[msg.sender]; // Cсумма отправителя
         purchaseBalances[msg.sender] = 0;
         refundedWei = refundedWei.add(sum);

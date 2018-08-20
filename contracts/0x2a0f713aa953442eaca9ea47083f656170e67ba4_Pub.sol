@@ -9,9 +9,9 @@ contract Pub {
         bytes body;
     }
 
-    mapping (address =&gt; uint256[]) public allByAuthor;
+    mapping (address => uint256[]) public allByAuthor;
     // anonymous by default
-    mapping (address =&gt; string) public authors;
+    mapping (address => string) public authors;
     Publication[] public all;
 
     function Pub() public { }

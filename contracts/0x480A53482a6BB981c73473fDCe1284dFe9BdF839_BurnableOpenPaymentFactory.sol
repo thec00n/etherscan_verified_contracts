@@ -8,7 +8,7 @@
 //the payer can never directly recover the payment unless he becomes the recipient.
 
 //Anyone can become the recipient by contributing the commitThreshold.
-//The recipient cannot change once it&#39;s been set.
+//The recipient cannot change once it's been set.
 
 //The payer can at any time choose to burn or release to the recipient any amount of funds.
 
@@ -71,7 +71,7 @@ contract BurnableOpenPayment {
     onlyWithoutRecipient()
     payable
     {
-        if (msg.value &lt; commitThreshold) throw;
+        if (msg.value < commitThreshold) throw;
         recipient = msg.sender;
     }
     

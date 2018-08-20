@@ -6,12 +6,12 @@
  .   /   ;.  \          *Cornerstone version 0.1        *
 .   ;   /  ` ;          *Daniel Pittman, CEO            *
 ;   |  ; \ ; |          *December 2017                  *
-|   :  | ; | &#39;          *********************************
-.   |  &#39; &#39; &#39; :   
-&#39;   ;  \; /  |   
- \   \  &#39;,  . \  
+|   :  | ; | '          *********************************
+.   |  ' ' ' :   
+'   ;  \; /  |   
+ \   \  ',  . \  
   ;   :      ; | 
-   \   \ .&#39;`--&quot; 
+   \   \ .'`--" 
 
 
 Tokenized Company Equity Right Transfer Agreement
@@ -20,7 +20,7 @@ Tokenized Company Equity Right Transfer Agreement
 
 Subject to an existing Right of Ownership Token Transfer Agreement or otherwise proclaimed possession of ownership of the underlying 
 
-asset (&quot;the Company Equity&quot;), referenced hereafter as &quot;P003_25793&quot;, Qwoyn Digital Investments, LLC, (hereafter the “Token Issuer”) 
+asset ("the Company Equity"), referenced hereafter as "P003_25793", Qwoyn Digital Investments, LLC, (hereafter the “Token Issuer”) 
 
 (the “Purchaser” or the “lien holder”) hereby agrees to tokenize his ownership of  the Company Equity Right granted under the 
 
@@ -257,19 +257,19 @@ pragma solidity ^0.4.18;
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
  
@@ -288,20 +288,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -326,13 +326,13 @@ library MerkleProof {
     bytes32 proofElement;
     bytes32 computedHash = _leaf;
 
-    for (uint256 i = 32; i &lt;= _proof.length; i += 32) {
+    for (uint256 i = 32; i <= _proof.length; i += 32) {
       assembly {
         // Load the current element of the proof
         proofElement := mload(add(_proof, i))
       }
 
-      if (computedHash &lt; proofElement) {
+      if (computedHash < proofElement) {
         // Hash(current computed hash + current element of the proof)
         computedHash = keccak256(computedHash, proofElement);
       } else {
@@ -348,7 +348,7 @@ library MerkleProof {
 
  /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="3042555d535f7002401e535f5d">[email&#160;protected]</span>&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="3042555d535f7002401e535f5d">[email protected]</span>>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -411,11 +411,11 @@ contract Cornerstone is owned{
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     // This creates an arroy for accounts to freeze
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -454,9 +454,9 @@ contract Cornerstone is owned{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         // Check if sender is frozen
         require(!frozenAccount[_from]);        
@@ -494,7 +494,7 @@ contract Cornerstone is owned{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -541,7 +541,7 @@ contract Cornerstone is owned{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -557,10 +557,10 @@ contract Cornerstone is owned{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -574,7 +574,7 @@ contract MyAdvancedToken is owned, Cornerstone {
     uint256 public sellPrice;
     uint256 public buyPrice;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -589,8 +589,8 @@ contract MyAdvancedToken is owned, Cornerstone {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -608,7 +608,7 @@ contract MyAdvancedToken is owned, Cornerstone {
         Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -633,8 +633,8 @@ contract MyAdvancedToken is owned, Cornerstone {
     /// @notice Sell `amount` tokens to contract
     /// @param amount amount of tokens to be sold
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }

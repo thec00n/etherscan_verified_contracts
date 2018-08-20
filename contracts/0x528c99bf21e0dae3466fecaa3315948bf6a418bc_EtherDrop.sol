@@ -37,12 +37,12 @@ contract Pausable is Ownable {
     bool public paused = false;
 
     modifier whenNotPaused() {
-        require(!paused, &#39;Contract Paused!&#39;);
+        require(!paused, 'Contract Paused!');
         _;
     }
 
     modifier whenPaused() {
-        require(paused, &#39;Contract Active!&#39;);
+        require(paused, 'Contract Active!');
         _;
     }
 
@@ -73,19 +73,19 @@ contract EtherDrop is Pausable {
 
     /*
      * randomness order construction conform to QMAX
-     * e.g. random [0 to 999] is of order 3 =&gt; rand = 100*x + 10*y + z
+     * e.g. random [0 to 999] is of order 3 => rand = 100*x + 10*y + z
      */
     uint constant DMAX = 2;
 
     /*
      * this event is when we have a new subscription
-     * note that it may be fired sequentially just before =&gt; NewWinner
+     * note that it may be fired sequentially just before => NewWinner
      */
     event NewDropIn(address addr, uint round, uint place, uint value);
 
     /*
      * this event is when we have a new winner
-     * it is as well a new round start =&gt; (round + 1)
+     * it is as well a new round start => (round + 1)
      */
     event NewWinner(address addr, uint round, uint place, uint value, uint price);
 
@@ -107,17 +107,17 @@ contract EtherDrop is Pausable {
         uint[] rounds;
 
         /*
-         * array of rounds subscription&#39;s inqueue indexes
+         * array of rounds subscription's inqueue indexes
          */
         uint[] places;
 
         /*
-         * array of rounds&#39;s ether value subscription &gt;= PRICE
+         * array of rounds's ether value subscription >= PRICE
          */
         uint[] values;
 
         /*
-         * array of 0&#39;s initially, update to REWARD PRICE in win situations
+         * array of 0's initially, update to REWARD PRICE in win situations
          */
         uint[] prices;
     }
@@ -170,7 +170,7 @@ contract EtherDrop is Pausable {
     /*
      * users history mapping
      */
-    mapping(address =&gt; history) private _history;
+    mapping(address => history) private _history;
 
     /**
      * get current round details
@@ -220,7 +220,7 @@ contract EtherDrop is Pausable {
         /*
          * check subscription price
          */
-        require(msg.value &gt;= PRICE_WEI, &#39;Insufficient Ether&#39;);
+        require(msg.value >= PRICE_WEI, 'Insufficient Ether');
 
         /*
          * start round ahead: on QUEUE_MAX + 1
@@ -236,8 +236,8 @@ contract EtherDrop is Pausable {
 
             bytes32 _a = blockhash(block.number - 1);
 
-            for (uint i = 31; i &gt;= 1; i--) {
-                if (uint8(_a[i]) &gt;= 48 &amp;&amp; uint8(_a[i]) &lt;= 57) {
+            for (uint i = 31; i >= 1; i--) {
+                if (uint8(_a[i]) >= 48 && uint8(_a[i]) <= 57) {
                     winpos = 10 * winpos + (uint8(_a[i]) - 48);
                     if (--r == 0) break;
                 }
@@ -292,7 +292,7 @@ contract EtherDrop is Pausable {
         /*
          * user is not allowed to subscribe twice
          */
-        require(h.size == 0 || h.rounds[h.size - 1] != _round, &#39;Already In Round&#39;);
+        require(h.size == 0 || h.rounds[h.size - 1] != _round, 'Already In Round');
 
         /*
          * create user subscription: N.B. places[_round] is the result proof
@@ -304,7 +304,7 @@ contract EtherDrop is Pausable {
         h.prices.push(0);
 
         /*
-         * initial round is a push, others are &#39;on set&#39; index
+         * initial round is a push, others are 'on set' index
          */
         if (_round == 0) {
             _queue.push(msg.sender);
@@ -339,8 +339,8 @@ contract EtherDrop is Pausable {
 
         address winner = _winners[round];
 
-        require(winner == msg.sender, &#39;not a winner&#39;);
-        require(_history[winner].blacklist != FLAG_BLACKLIST, &#39;blacklisted&#39;);
+        require(winner == msg.sender, 'not a winner');
+        require(_history[winner].blacklist != FLAG_BLACKLIST, 'blacklisted');
 
         _wincomma[round] = a;
         _wincommb[round] = b;
@@ -356,7 +356,7 @@ contract EtherDrop is Pausable {
      */
     function blackList(address user) public onlyOwner {
         history storage h = _history[user];
-        if (h.size &gt; 0) {
+        if (h.size > 0) {
             h.blacklist = FLAG_BLACKLIST;
         }
     }
@@ -378,7 +378,7 @@ contract EtherDrop is Pausable {
     }
 
     /*
-     * etherdrop team R&amp;D support collectibles
+     * etherdrop team R&D support collectibles
      */
     function collect() public onlyOwner {
         owner.transfer(_collectibles);

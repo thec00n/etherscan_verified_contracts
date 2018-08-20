@@ -11,13 +11,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -105,9 +105,9 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) public frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) public frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -124,7 +124,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
     */
     function transfer(address _to, uint256 _value) transferLock public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         require(frozen[msg.sender]==false);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -140,7 +140,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
     */
     function transferFrom(address _from, address _to, uint256 _value) transferLock public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         require(frozen[_from]==false);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -193,10 +193,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
 * @dev Initial supply creation
 */
 contract Asset is ERC20Token {
-    string public name = &#39;OMEGON&#39;;
+    string public name = 'OMEGON';
     uint8 public decimals = 18;
-    string public symbol = &#39;OMGN&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'OMGN';
+    string public version = '1';
 
     function Asset() public {
         totalSupply = 2000000000 * (10**uint256(decimals)); //2.000.000.000 initial token creation

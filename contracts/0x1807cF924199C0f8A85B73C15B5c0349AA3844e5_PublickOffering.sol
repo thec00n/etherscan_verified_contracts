@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 // An ERC20 standard
 //
 // author: Xender Team
-// Contact: <span class="__cf_email__" data-cfemail="8dfee8fffbe4eee8cdf5e8e3e9e8ffa3eee2e0">[email&#160;protected]</span>
+// Contact: <span class="__cf_email__" data-cfemail="8dfee8fffbe4eee8cdf5e8e3e9e8ffa3eee2e0">[email protected]</span>
 // ----------------------------------------------------------------------------------------------
 
 contract Authority {
@@ -67,7 +67,7 @@ contract PublickOffering is Authority {
     }
     
     // investors bills
-    mapping(uint =&gt; investorInfo) public bills;
+    mapping(uint => investorInfo) public bills;
     
     // recive ETH total amount
     uint256 public totalETHSold;
@@ -92,8 +92,8 @@ contract PublickOffering is Authority {
     
     function () public payable {
         if(!closed){
-            require(msg.value &gt;= minETH);
-            require(msg.value &lt;= maxETH);
+            require(msg.value >= minETH);
+            require(msg.value <= maxETH);
             bills[lastAccountNum].investor = msg.sender;
             bills[lastAccountNum].amount = msg.value;
             bills[lastAccountNum].utime = now;
@@ -112,7 +112,7 @@ contract PublickOffering is Authority {
     
     function backETH(uint pos) public onlyBeneficiary{
         if(!bills[pos].hadback){
-            require(pos &lt; lastAccountNum);
+            require(pos < lastAccountNum);
             bills[pos].investor.transfer(bills[pos].amount);
             bills[pos].hadback = true;
             Back(bills[pos].investor, bills[pos].amount, now);

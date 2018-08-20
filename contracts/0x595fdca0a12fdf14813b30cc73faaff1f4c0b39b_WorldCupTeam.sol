@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -62,7 +62,7 @@ contract WorldCupTeam {
         public
         payable 
     {
-        require(now &lt;= endTime, &quot;Betting period has ended&quot;);
+        require(now <= endTime, "Betting period has ended");
 
         parentAddr.transfer(msg.value);
         etherWorldCup.UpdateBetOnTeams(teamName, msg.sender, msg.value);
@@ -72,12 +72,12 @@ contract WorldCupTeam {
 contract EtherWorldCup is Ownable {
     using SafeMath for uint256;
 
-    mapping(address=&gt;bool) public isWorldCupTeam;
+    mapping(address=>bool) public isWorldCupTeam;
     uint public numOfTeam;
 
-    mapping(string=&gt;mapping(address=&gt;uint256)) playersBetOnTeams; // address that bet on each team
-    mapping(string=&gt;address[]) playersPick; // player addresses on each team
-    mapping(string=&gt;uint256) PlayersBet; // bets on each team
+    mapping(string=>mapping(address=>uint256)) playersBetOnTeams; // address that bet on each team
+    mapping(string=>address[]) playersPick; // player addresses on each team
+    mapping(string=>uint256) PlayersBet; // bets on each team
     uint public commission = 90; // number in percent
 
     uint256 public sharingPool;
@@ -94,7 +94,7 @@ contract EtherWorldCup is Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; _teams.length; i++) {
+        for (uint i = 0; i < _teams.length; i++) {
             if (!isWorldCupTeam[_teams[i]]) numOfTeam++;
             isWorldCupTeam[_teams[i]] = true;
         }
@@ -128,7 +128,7 @@ contract EtherWorldCup is Ownable {
         numOfWinner = winners.length;
 
         // for each address, to distribute the prize according to the ratio
-        for (uint i = 0; i &lt; winners.length; i++) {
+        for (uint i = 0; i < winners.length; i++) {
             uint256 sendAmt = distributeAmount.mul(playersBetOnTeams[_winTeam][winners[i]]).div(PlayersBet[_winTeam]);
             winners[i].transfer(sendAmt);
         }

@@ -7,10 +7,10 @@ pragma solidity ^0.4.20;
 * PROOF OF SECRET TOKEN                       
 *
 * ====================================*
-* -&gt; What?
+* -> What?
 * Are you guys actually fucking serious? 
 * DONT BUY THIS SHIT
-* Or do, if you want to. You&#39;re your own person. 
+* Or do, if you want to. You're your own person. 
 * 
 *
 * 
@@ -24,25 +24,25 @@ contract ProofOfSecret {
     =================================*/
     // only people with tokens
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
     // only people with profits
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
     
     // administrators can:
-    // -&gt; change the name of the contract
-    // -&gt; change the name of the token
-    // -&gt; change the PoS difficulty (How many tokens it costs to hold a masternode, in case it gets crazy high later)
+    // -> change the name of the contract
+    // -> change the name of the token
+    // -> change the PoS difficulty (How many tokens it costs to hold a masternode, in case it gets crazy high later)
     // they CANNOT:
-    // -&gt; take funds
-    // -&gt; disable withdrawals
-    // -&gt; kill the contract
-    // -&gt; change the price of tokens
+    // -> take funds
+    // -> disable withdrawals
+    // -> kill the contract
+    // -> change the price of tokens
     modifier onlyAdministrator(){
         address _customerAddress = msg.sender;
         require(administrators[_customerAddress]);
@@ -58,13 +58,13 @@ contract ProofOfSecret {
         
         // are we still in the vulnerable phase?
         // if so, enact anti early whale protocol 
-        if( onlyAmbassadors &amp;&amp; ((totalEthereumBalance() - _amountOfEthereum) &lt;= ambassadorQuota_ )){
+        if( onlyAmbassadors && ((totalEthereumBalance() - _amountOfEthereum) <= ambassadorQuota_ )){
             require(
                 // is the customer in the ambassador list?
-                ambassadors_[_customerAddress] == true &amp;&amp;
+                ambassadors_[_customerAddress] == true &&
                 
                 // does the customer purchase exceed the max ambassador quota?
-                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) &lt;= ambassadorMaxPurchase_
+                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) <= ambassadorMaxPurchase_
                 
             );
             
@@ -74,7 +74,7 @@ contract ProofOfSecret {
             // execute
             _;
         } else {
-            // in case the ether count drops low, the ambassador phase won&#39;t reinitiate
+            // in case the ether count drops low, the ambassador phase won't reinitiate
             onlyAmbassadors = false;
             _;    
         }
@@ -120,8 +120,8 @@ contract ProofOfSecret {
     /*=====================================
     =            CONFIGURABLES            =
     =====================================*/
-    string public name = &quot;ProofOfSecret&quot;;
-    string public symbol = &quot;POS&quot;;
+    string public name = "ProofOfSecret";
+    string public symbol = "POS";
     uint8 constant public decimals = 18;
     uint8 constant internal dividendFee_ = 3; // Look, strong Math
     uint256 constant internal tokenPriceInitial_ = 0.0000001 ether;
@@ -132,7 +132,7 @@ contract ProofOfSecret {
     uint256 public stakingRequirement = 50e18;
     
     // ambassador program
-    mapping(address =&gt; bool) internal ambassadors_;
+    mapping(address => bool) internal ambassadors_;
     uint256 constant internal ambassadorMaxPurchase_ = 1 ether;
     uint256 constant internal ambassadorQuota_ = 2 ether;
     
@@ -142,15 +142,15 @@ contract ProofOfSecret {
     =            DATASETS            =
     ================================*/
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; uint256) internal ambassadorAccumulatedQuota_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => uint256) internal ambassadorAccumulatedQuota_;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
     
     // administrator list (see above on what they can do)
-    mapping(address =&gt; bool) public administrators;
+    mapping(address => bool) public administrators;
     
     // when this is set to true, only ambassadors can purchase tokens (this prevents a whale premine, it ensures a fairly distributed upper pyramid)
     bool public onlyAmbassadors = true;
@@ -193,7 +193,7 @@ contract ProofOfSecret {
     }
     
     /**
-     * Converts all of caller&#39;s dividends to tokens.
+     * Converts all of caller's dividends to tokens.
     */
     function reinvest()
         onlyStronghands()
@@ -210,7 +210,7 @@ contract ProofOfSecret {
         _dividends += referralBalance_[_customerAddress];
         referralBalance_[_customerAddress] = 0;
         
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(_dividends, 0x0);
         
         // fire event
@@ -223,10 +223,10 @@ contract ProofOfSecret {
     function exit()
         public
     {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
         
         // lambo delivery service
         withdraw();
@@ -267,7 +267,7 @@ contract ProofOfSecret {
         // setup data
         address _customerAddress = msg.sender;
         // russian hackers BTFO
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
@@ -282,7 +282,7 @@ contract ProofOfSecret {
         payoutsTo_[_customerAddress] -= _updatedPayouts;       
         
         // dividing by zero is a bad idea
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             // update the amount of dividends per token
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -294,7 +294,7 @@ contract ProofOfSecret {
     
     /**
      * Transfer tokens from the caller to a new holder.
-     * Remember, there&#39;s a 10% fee here as well.
+     * Remember, there's a 10% fee here as well.
      */
     function transfer(address _toAddress, uint256 _amountOfTokens)
         onlyBagholders()
@@ -307,10 +307,10 @@ contract ProofOfSecret {
         // make sure we have the requested tokens
         // also disables transfers until ambassador phase is over
         // ( we dont want whale premines )
-        require(!onlyAmbassadors &amp;&amp; _amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(!onlyAmbassadors && _amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         
         // withdraw all outstanding dividends first
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
         
         // liquify 10% of the tokens that are transfered
         // these are dispersed to shareholders
@@ -533,7 +533,7 @@ contract ProofOfSecret {
         view 
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -561,20 +561,20 @@ contract ProofOfSecret {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
         
         // is the user referred by a masternode?
         if(
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
             
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ){
             // wealth redistribution
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -585,8 +585,8 @@ contract ProofOfSecret {
             _fee = _dividends * magnitude;
         }
         
-        // we can&#39;t give people infinite ethereum
-        if(tokenSupply_ &gt; 0){
+        // we can't give people infinite ethereum
+        if(tokenSupply_ > 0){
             
             // add tokens to the pool
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -602,11 +602,11 @@ contract ProofOfSecret {
             tokenSupply_ = _amountOfTokens;
         }
         
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
         
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        //really i know you think you do but you don&#39;t
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        //really i know you think you do but you don't
         int256 _updatedPayouts = (int256) ((profitPerShare_ * _amountOfTokens) - _fee);
         payoutsTo_[_customerAddress] += _updatedPayouts;
         
@@ -618,7 +618,7 @@ contract ProofOfSecret {
 
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint256 _ethereum)
@@ -653,7 +653,7 @@ contract ProofOfSecret {
     
     /**
      * Calculate token sell value.
-     * It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     * It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      * Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
      function tokensToEthereum_(uint256 _tokens)
@@ -686,7 +686,7 @@ contract ProofOfSecret {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -715,9 +715,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -725,7 +725,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -734,7 +734,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

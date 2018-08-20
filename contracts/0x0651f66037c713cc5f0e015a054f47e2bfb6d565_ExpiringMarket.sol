@@ -51,7 +51,7 @@ contract SimpleMarket is EventfulMarket
         address owner;
         bool active;
     }
-    mapping( uint =&gt; OfferInfo ) public offers;
+    mapping( uint => OfferInfo ) public offers;
 
     uint public last_offer_id;
 
@@ -85,7 +85,7 @@ contract SimpleMarket is EventfulMarket
 
     // non underflowing subtraction
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     // non overflowing multiplication
@@ -114,9 +114,9 @@ contract SimpleMarket is EventfulMarket
         exclusive
         returns (uint id)
     {
-        assert(sell_how_much &gt; 0);
+        assert(sell_how_much > 0);
         assert(sell_which_token != ERC20(0x0));
-        assert(buy_how_much &gt; 0);
+        assert(buy_how_much > 0);
         assert(buy_which_token != ERC20(0x0));
         assert(sell_which_token != buy_which_token);
 
@@ -148,10 +148,10 @@ contract SimpleMarket is EventfulMarket
         // inferred quantity that the buyer wishes to spend
         uint spend = safeMul(quantity, offer.buy_how_much) / offer.sell_how_much;
 
-        if ( spend &gt; offer.buy_how_much || quantity &gt; offer.sell_how_much ) {
+        if ( spend > offer.buy_how_much || quantity > offer.sell_how_much ) {
             // buyer wants more than is available
             success = false;
-        } else if ( spend == offer.buy_how_much &amp;&amp; quantity == offer.sell_how_much ) {
+        } else if ( spend == offer.buy_how_much && quantity == offer.sell_how_much ) {
             // buyer wants exactly what is available
             delete offers[id];
 
@@ -160,7 +160,7 @@ contract SimpleMarket is EventfulMarket
 
             ItemUpdate(id);
             success = true;
-        } else if ( spend &gt; 0 &amp;&amp; quantity &gt; 0 ) {
+        } else if ( spend > 0 && quantity > 0 ) {
             // buyer wants a fraction of what is available
             offers[id].sell_how_much = safeSub(offer.sell_how_much, quantity);
             offers[id].buy_how_much = safeSub(offer.buy_how_much, spend);
@@ -205,7 +205,7 @@ contract ExpiringMarket is SimpleMarket {
         return block.timestamp;
     }
     function isClosed() constant returns (bool closed) {
-        return (getTime() &gt; close_time);
+        return (getTime() > close_time);
     }
 
     // after market lifetime has elapsed, no new offers are allowed
@@ -233,8 +233,8 @@ contract ExpiringMarket is SimpleMarket {
 
 contract ERC20Base is ERC20
 {
-    mapping( address =&gt; uint ) _balances;
-    mapping( address =&gt; mapping( address =&gt; uint ) ) _approvals;
+    mapping( address => uint ) _balances;
+    mapping( address => mapping( address => uint ) ) _approvals;
     uint _supply;
     function ERC20Base( uint initial_balance ) {
         _balances[msg.sender] = initial_balance;
@@ -247,7 +247,7 @@ contract ERC20Base is ERC20
         return _balances[who];
     }
     function transfer( address to, uint value) returns (bool ok) {
-        if( _balances[msg.sender] &lt; value ) {
+        if( _balances[msg.sender] < value ) {
             throw;
         }
         if( !safeToAdd(_balances[to], value) ) {
@@ -259,12 +259,12 @@ contract ERC20Base is ERC20
         return true;
     }
     function transferFrom( address from, address to, uint value) returns (bool ok) {
-        // if you don&#39;t have enough balance, throw
-        if( _balances[from] &lt; value ) {
+        // if you don't have enough balance, throw
+        if( _balances[from] < value ) {
             throw;
         }
-        // if you don&#39;t have approval, throw
-        if( _approvals[from][msg.sender] &lt; value ) {
+        // if you don't have approval, throw
+        if( _approvals[from][msg.sender] < value ) {
             throw;
         }
         if( !safeToAdd(_balances[to], value) ) {
@@ -286,6 +286,6 @@ contract ERC20Base is ERC20
         return _approvals[owner][spender];
     }
     function safeToAdd(uint a, uint b) internal returns (bool) {
-        return (a + b &gt;= a);
+        return (a + b >= a);
     }
 }

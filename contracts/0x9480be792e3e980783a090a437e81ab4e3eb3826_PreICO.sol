@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ contract PreICO{
   // the number of administrator that must confirm the same operation before it is run.
   uint256 constant public required = 3;
 
-  mapping(address =&gt; bool) private administrators;
+  mapping(address => bool) private administrators;
  
   // Funds has arrived into the contract (record how much).
   event Deposit(address _from, uint256 value);
@@ -98,8 +98,8 @@ contract PreICO{
     
     // input validations
     require( recipient != 0x00 );
-    require( amount &gt; 0 );
-    require( this.balance &gt;= amount);
+    require( amount > 0 );
+    require( this.balance >= amount);
 
     uint remaining;
     
@@ -117,13 +117,13 @@ contract PreICO{
     
     // Compare amount of wei with previous confirmtaion
     if(pending.eth != amount){
-        transferViolated(&quot;Incorrect amount of wei passed&quot;);
+        transferViolated("Incorrect amount of wei passed");
         return;
     }
     
     // make sure signer is not trying to spam
     if(msg.sender == pending.signer[0]){
-        transferViolated(&quot;Signer is spamming&quot;);
+        transferViolated("Signer is spamming");
         return;
     }
     
@@ -134,7 +134,7 @@ contract PreICO{
     // make sure signer is not trying to spam
     if( remaining == 0){
         if(msg.sender == pending.signer[1]){
-            transferViolated(&quot;One of signers is spamming&quot;);
+            transferViolated("One of signers is spamming");
             return;
         }
     }
@@ -176,7 +176,7 @@ contract PreICO{
    */
   function() payable {
     // just being sent some cash?
-    if (msg.value &gt; 0)
+    if (msg.value > 0)
       Deposit(msg.sender, msg.value);
   }
 
@@ -231,20 +231,20 @@ contract PreICO{
     
     // violated consensus
     if(updating.oldAddress != _oldAddress){
-        Violated(&quot;Old addresses do not match&quot;,msg.sender);
+        Violated("Old addresses do not match",msg.sender);
         ResetUpdateState();
         return;
     }
     
     if(updating.newAddress != _newAddress){
-        Violated(&quot;New addresses do not match&quot;,msg.sender);
+        Violated("New addresses do not match",msg.sender);
         ResetUpdateState();
         return; 
     }
     
     // make sure admin is not trying to spam
     if(msg.sender == updating.signer[0]){
-        Violated(&quot;Signer is spamming&quot;,msg.sender);
+        Violated("Signer is spamming",msg.sender);
         ResetUpdateState();
         return;
     }
@@ -255,7 +255,7 @@ contract PreICO{
 
     if( remaining == 0){
         if(msg.sender == updating.signer[1]){
-            Violated(&quot;One of signers is spamming&quot;,msg.sender);
+            Violated("One of signers is spamming",msg.sender);
             ResetUpdateState();
             return;
         }

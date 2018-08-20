@@ -11,7 +11,7 @@ library SafeOpt {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0); 
+        assert(b > 0); 
         uint256 c = a / b;
         assert(a == b * c);
         return c;
@@ -19,14 +19,14 @@ library SafeOpt {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a - b;
-        assert(b &lt;= a);
+        assert(b <= a);
         assert(a == c + b);
         return c;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         assert(a == c - b);
         return c;
     }
@@ -46,7 +46,7 @@ contract TTBTokenIssue {
 
     function returnRate() internal returns (uint256){
         if(affectedCount == 10){
-            if(preRate &gt; 100){
+            if(preRate > 100){
                 preRate -= 100;
             }
             affectedCount = 0;
@@ -56,16 +56,16 @@ contract TTBTokenIssue {
 
     function issue() public  {
         if(initialYear){
-            require(SafeOpt.sub(block.number, lastBlockNumber) &gt; 2102400);
+            require(SafeOpt.sub(block.number, lastBlockNumber) > 2102400);
             initialYear = false;
         }
-        require(SafeOpt.sub(block.number, lastBlockNumber) &gt; 2102400);
+        require(SafeOpt.sub(block.number, lastBlockNumber) > 2102400);
         TTBToken tokenContract = TTBToken(tokenContractAddress);
         if(affectedCount == 10){
             lastYearTotalSupply = tokenContract.totalSupply();
         }
         uint256 amount = SafeOpt.div(SafeOpt.mul(lastYearTotalSupply, returnRate()), 10000);
-        require(amount &gt; 0);
+        require(amount > 0);
         tokenContract.issue(amount);
         lastBlockNumber = block.number;
         affectedCount += 1;
@@ -78,16 +78,16 @@ interface tokenRecipient {
 }
 
 contract TTBToken {
-    string public name = &#39;Tip-Top Block&#39;;
-    string public symbol = &#39;TTB&#39;;
+    string public name = 'Tip-Top Block';
+    string public symbol = 'TTB';
     uint8 public decimals = 18;
     uint256 public totalSupply = 100 * 10 ** 26;
 
     address public issueContractAddress;
     address public owner;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -113,8 +113,8 @@ contract TTBToken {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -128,14 +128,14 @@ contract TTBToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -154,7 +154,7 @@ contract TTBToken {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -162,8 +162,8 @@ contract TTBToken {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

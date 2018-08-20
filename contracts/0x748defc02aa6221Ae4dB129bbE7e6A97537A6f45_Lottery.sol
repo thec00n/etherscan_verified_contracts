@@ -12,7 +12,7 @@ contract Lottery
 	uint 		secretSum;
 	uint[] 		secrets;
 
-    mapping(address =&gt; Ticket[]) tickets;
+    mapping(address => Ticket[]) tickets;
 
     //buy a ticket and send a hidden integer
 	//that will take part in determining the 
@@ -23,7 +23,7 @@ contract Lottery
 		//incorrect submission amout. Return
 		//everything but 0.1E fee
 		if(msg.value != 1000000000000000000){
-			if(msg.value &gt; de)
+			if(msg.value > de)
 			msg.sender.send(msg.value-de);
 		}
 		//buy ticket
@@ -35,19 +35,19 @@ contract Lottery
 			count += 1;
 			senders.push(msg.sender);
 		}
-		//run lottery when &#39;limit&#39; tickets are bought
-		if(count &gt;= limit){
-			for(uint i = 0; i &lt; limit; ++i){
+		//run lottery when 'limit' tickets are bought
+		if(count >= limit){
+			for(uint i = 0; i < limit; ++i){
 				var tic = tickets[senders[i]][0];
 				secrets.push(tic.pickYourLuckyNumber);
 			}
 			//delete secret tickets
-			for(i = 0; i &lt; limit; ++i){
+			for(i = 0; i < limit; ++i){
 				delete tickets[senders[i]];
 			}
 			//find winner
 			secretSum = 0;
-			for(i = 0; i &lt; limit; ++i){
+			for(i = 0; i < limit; ++i){
 				secretSum = secretSum + secrets[i];
 			}
 			//send winnings to winner				

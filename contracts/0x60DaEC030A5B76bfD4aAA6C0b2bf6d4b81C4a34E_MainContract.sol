@@ -58,7 +58,7 @@ contract OwnerValidatorImpl is OwnerValidator, Owned {
 
     function indexOfOwners(address _address) private constant returns (uint pos) {
         pos = 0;
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (owners[i] == _address) {
                 pos = i + 1;
                 break;
@@ -86,7 +86,7 @@ contract OwnerValidatorImpl is OwnerValidator, Owned {
     function removeOwner(address addr) onlyWorking {
         if (validate(msg.sender)) {
             uint pos = indexOfOwners(addr);
-            if (pos &gt; 0) {
+            if (pos > 0) {
                 owners[pos - 1] = 0x0;
             }
         }
@@ -126,7 +126,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
     address public rootAddress;
     address[] public offChainAddreses;
 
-    mapping (address =&gt; uint256) refOffChainAddresses;
+    mapping (address => uint256) refOffChainAddresses;
 
     OwnerValidator public ownerValidator;
 
@@ -160,7 +160,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
 
     function offChainAddresesValidCount() constant returns (uint) {
         uint cnt = 0;
-        for (uint i = 0; i &lt; offChainAddreses.length; i++) {
+        for (uint i = 0; i < offChainAddreses.length; i++) {
             if (offChainAddreses[i] != 0) {
                 cnt++;
             }
@@ -177,7 +177,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
 
     function removeOffChainAddress(address _address) private {
         uint pos = refOffChainAddresses[_address];
-        if (pos &gt; 0) {
+        if (pos > 0) {
             offChainAddreses[pos - 1] = 0;
             refOffChainAddresses[_address] = 0x0;
         }
@@ -185,7 +185,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
 
     function addOffChainAddresses(address[] _addresses) onlyWorking {
         if (ownerValidator.validate(msg.sender)) {
-            for (uint i = 0; i &lt; _addresses.length; i++) {
+            for (uint i = 0; i < _addresses.length; i++) {
                 addOffChainAddress(_addresses[i]);
             }
         }
@@ -193,7 +193,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
 
     function removeOffChainAddresses(address[] _addresses) onlyWorking {
         if (ownerValidator.validate(msg.sender)) {
-            for (uint i = 0; i &lt; _addresses.length; i++) {
+            for (uint i = 0; i < _addresses.length; i++) {
                 removeOffChainAddress(_addresses[i]);
             }
         }
@@ -215,7 +215,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
     }
 
     function isToOffChainAddress(address addr) constant returns (bool) {
-        return refOffChainAddresses[addr] &gt; 0;
+        return refOffChainAddresses[addr] > 0;
     }
 
     function getOffChainRootAddress() constant returns (address) {
@@ -227,7 +227,7 @@ contract OffChainManagerImpl is OffChainManager, Owned {
     }
 
     function isToOffChainAddresses(address[] _addresses) constant returns (bool) {
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             if (!isToOffChainAddress(_addresses[i])) {
                 return false;
             }
@@ -246,20 +246,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-// assert(b &gt; 0);
+// assert(b > 0);
     uint256 c = a / b;
 // assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -267,20 +267,20 @@ library SafeMath {
 
 contract TokenContractImpl is TokenContract, Owned {
     using SafeMath for uint256;
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
     uint256 _totalSupply;
     uint8 _decimals;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     OwnerValidator public ownerValidator;
     OffChainManager public offChainManager;
 
     bool public isRedenominated;
     uint256 public redenomiValue;
-    mapping (address =&gt; uint256) public redenominatedBalances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public redenominatedAllowed;
+    mapping (address => uint256) public redenominatedBalances;
+    mapping (address => mapping (address => uint256)) public redenominatedAllowed;
 
     function TokenContractImpl(
         uint256 initialSupply,
@@ -308,7 +308,7 @@ contract TokenContractImpl is TokenContract, Owned {
 
     function balanceOf(address _owner) constant returns (uint256 balance) {
         if (isRedenominated) {
-            if (redenominatedBalances[_owner] &gt; 0) {
+            if (redenominatedBalances[_owner] > 0) {
                 return redenominatedBalances[_owner];
             }
             return redenominatedValue(balances[_owner]);
@@ -318,7 +318,7 @@ contract TokenContractImpl is TokenContract, Owned {
 
     function allowance(address _owner, address _spender) constant returns (uint remaining) {
         if (isRedenominated) {
-            if (redenominatedAllowed[_owner][_spender] &gt; 0) {
+            if (redenominatedAllowed[_owner][_spender] > 0) {
                 return redenominatedAllowed[_owner][_spender];
             }
             return redenominatedValue(allowed[_owner][_spender]);
@@ -370,7 +370,7 @@ contract TokenContractImpl is TokenContract, Owned {
     }
 
     function transferProcess(address _from, address _to, uint256 _value) private returns (bool success) {
-        if (balanceOf(_from) &lt; _value) throw;
+        if (balanceOf(_from) < _value) throw;
         subtractBalance(_from, _value);
         if (offChainManager.isToOffChainAddress(_to)) {
             addBalance(offChainManager.getOffChainRootAddress(), _value);
@@ -384,7 +384,7 @@ contract TokenContractImpl is TokenContract, Owned {
     function addBalance(address _address, uint256 _value) private {
         if (isRedenominated) {
             if (redenominatedBalances[_address] == 0) {
-                if (balances[_address] &gt; 0) {
+                if (balances[_address] > 0) {
                     redenominatedBalances[_address] = redenominatedValue(balances[_address]);
                     balances[_address] = 0;
                 }
@@ -398,7 +398,7 @@ contract TokenContractImpl is TokenContract, Owned {
     function subtractBalance(address _address, uint256 _value) private {
         if (isRedenominated) {
             if (redenominatedBalances[_address] == 0) {
-                if (balances[_address] &gt; 0) {
+                if (balances[_address] > 0) {
                     redenominatedBalances[_address] = redenominatedValue(balances[_address]);
                     balances[_address] = 0;
                 }
@@ -410,9 +410,9 @@ contract TokenContractImpl is TokenContract, Owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) onlyWorking returns (bool success) {
-        if (balanceOf(_from) &lt; _value) throw;
-        if (balanceOf(_to).add(_value) &lt; balanceOf(_to)) throw;
-        if (_value &gt; allowance(_from, tx.origin)) throw;
+        if (balanceOf(_from) < _value) throw;
+        if (balanceOf(_to).add(_value) < balanceOf(_to)) throw;
+        if (_value > allowance(_from, tx.origin)) throw;
         subtractBalance(_from, _value);
         if (offChainManager.isToOffChainAddress(_to)) {
             addBalance(offChainManager.getOffChainRootAddress(), _value);
@@ -453,7 +453,7 @@ contract TokenContractImpl is TokenContract, Owned {
     function subtractAllowed(address _from, address _spender, uint256 _value) private {
         if (isRedenominated) {
             if (redenominatedAllowed[_from][_spender] == 0) {
-                if (allowed[_from][_spender] &gt; 0) {
+                if (allowed[_from][_spender] > 0) {
                     redenominatedAllowed[_from][_spender] = redenominatedValue(allowed[_from][_spender]);
                     allowed[_from][_spender] = 0;
                 }
@@ -481,7 +481,7 @@ contract TokenContractImpl is TokenContract, Owned {
 // File: contracts/MainContract.sol
 
 contract MainContract {
-    string public standard = &quot;Token 0.1&quot;;
+    string public standard = "Token 0.1";
     string public name;
     string public symbol;
 

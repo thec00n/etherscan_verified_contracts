@@ -9,16 +9,16 @@ contract CryptoGems {
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 	uint256 constant private MAX_UINT256 = 2**256 - 1;
-	string public name = &quot;CryptoGem&quot;;
-	string public symbol = &quot;GEM&quot;;
+	string public name = "CryptoGem";
+	string public symbol = "GEM";
 	uint public decimals = 4;
 	uint256 public totalSupply = 0;
 
-	mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+	mapping (address => uint256) public balances;
+	mapping (address => mapping (address => uint256)) public allowed;
 
 	function transfer(address _to, uint256 _value) public returns (bool success) {
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		emit Transfer(msg.sender, _to, _value);
@@ -27,10 +27,10 @@ contract CryptoGems {
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 		uint256 allowance = allowed[_from][msg.sender];
-		require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+		require(balances[_from] >= _value && allowance >= _value);
 		balances[_to] += _value;
 		balances[_from] -= _value;
-		if (allowance &lt; MAX_UINT256) {
+		if (allowance < MAX_UINT256) {
 			allowed[_from][msg.sender] -= _value;
 		}
 		emit Transfer(_from, _to, _value);
@@ -105,28 +105,28 @@ contract CryptoGems {
 	//    Actions Payable   //
 	function buyGems() public payable { 
 		require( sale == true );
-		require( msg.value &gt; 0 );
+		require( msg.value > 0 );
 		balances[ msg.sender ] += (msg.value * gemPerEther)/(1 ether);
 		totalSupply += (msg.value * gemPerEther)/(1 ether);
 	}
 
 	function buyMinersWithEther(uint64 quantity) public payable {
 		require( sale == true );
-		require( quantity * etherPerMiner &lt;= msg.value);
-		for(uint64 i=1;i&lt;=quantity;i++) {
+		require( quantity * etherPerMiner <= msg.value);
+		for(uint64 i=1;i<=quantity;i++) {
 			createMiner();
 		}
 	}
 	function buyMinersWithGem(uint64 quantity) public {
 		require( sale == true );
-		require( quantity * gemPerMiner &lt;= balances[ msg.sender ]);
+		require( quantity * gemPerMiner <= balances[ msg.sender ]);
 		balances[ msg.sender ] -= quantity * gemPerMiner;
 		balances[ contractOwner ] += quantity * gemPerMiner;
 
 		emit Transfer(msg.sender, contractOwner, quantity * gemPerMiner);
 
 
-		for(uint64 i=1;i&lt;=quantity;i++) {
+		for(uint64 i=1;i<=quantity;i++) {
 			createMiner();
 		}
 	}
@@ -135,7 +135,7 @@ contract CryptoGems {
 		uint64 nonce = 1;
 		Miner memory _miner = Miner({
 			id: 0,
-			name: &quot;&quot;,
+			name: "",
 			workDuration:  uint64(keccak256(miners.length, msg.sender, nonce++))%(3000-2000)+2000,
 			sleepDuration: uint64(keccak256(miners.length, msg.sender, nonce))%(2200-1800)+1800,
 			difficulty: uint64(keccak256(miners.length, msg.sender, nonce))%(130-100)+100,
@@ -183,7 +183,7 @@ contract CryptoGems {
 			totalSupply += gemsMined;
 
 
-			if(curLvl &lt; lvl) {
+			if(curLvl < lvl) {
 				miners[id].difficulty = miners[id].difficulty - 2;
 			}
 			emit stateEvent(miners[id].owner, id, 2);
@@ -191,9 +191,9 @@ contract CryptoGems {
 	}
 
 	function setOnSale(uint256 id, bool _onSale, uint256 _salePrice) public payable { 
-		require( msg.value &gt;= etherPerSale );
+		require( msg.value >= etherPerSale );
 		require( msg.sender == miners[id].owner);
-		require( _salePrice &gt;= 0 );
+		require( _salePrice >= 0 );
 
 		miners[id].onSale = _onSale;
 		miners[id].salePrice = _salePrice;
@@ -203,7 +203,7 @@ contract CryptoGems {
 	function buyMinerFromSale(uint256 id) public {
 		require(msg.sender != miners[id].owner);
 		require(miners[id].onSale == true);
-		require(balances[msg.sender] &gt;= miners[id].salePrice);
+		require(balances[msg.sender] >= miners[id].salePrice);
 		transfer(miners[id].owner, miners[id].salePrice);
 
 		emit TransferMiner(miners[id].owner, msg.sender, id);
@@ -235,13 +235,13 @@ contract CryptoGems {
 	function getMinersByAddress(address _address) public constant returns(uint256[]) {
 		uint256[] memory m = new uint256[](miners.length);
 		uint256 cnt = 0;
-		for(uint256 i=0;i&lt;miners.length;i++) {
+		for(uint256 i=0;i<miners.length;i++) {
 			if(miners[i].owner == _address) {
 				m[cnt++] = i;
 			}
 		}
 		uint256[] memory ret = new uint256[](cnt);
-		for(i=0;i&lt;cnt;i++) {
+		for(i=0;i<cnt;i++) {
 			ret[i] = m[i];
 		}
 		return ret;
@@ -250,13 +250,13 @@ contract CryptoGems {
 	function getMinersOnSale() public constant returns(uint256[]) {
 		uint256[] memory m = new uint256[](miners.length);
 		uint256 cnt = 0;
-		for(uint256 i=0;i&lt;miners.length;i++) {
+		for(uint256 i=0;i<miners.length;i++) {
 			if(miners[i].onSale == true) {
 				m[cnt++] = i;
 			}
 		}
 		uint256[] memory ret = new uint256[](cnt);
-		for(i=0;i&lt;cnt;i++) {
+		for(i=0;i<cnt;i++) {
 			ret[i] = m[i];
 		}
 		return ret;
@@ -266,19 +266,19 @@ contract CryptoGems {
 		// require(msg.sender == miners[id].owner);
 
 		//working
-		if(miners[id].workBlock !=0 &amp;&amp; block.number - miners[id].workBlock &lt;= miners[id].workDuration) {
+		if(miners[id].workBlock !=0 && block.number - miners[id].workBlock <= miners[id].workDuration) {
 			return 0;
 		}
 		//sleeping
-		if(miners[id].sleepBlock !=0 &amp;&amp; block.number - miners[id].sleepBlock &lt;= miners[id].sleepDuration) {
+		if(miners[id].sleepBlock !=0 && block.number - miners[id].sleepBlock <= miners[id].sleepDuration) {
 			return 2;
 		}
 		//tired
-		if(miners[id].workBlock !=0 &amp;&amp; block.number - miners[id].workBlock &gt; miners[id].workDuration &amp;&amp; miners[id].workBlock &gt; miners[id].sleepBlock) {
+		if(miners[id].workBlock !=0 && block.number - miners[id].workBlock > miners[id].workDuration && miners[id].workBlock > miners[id].sleepBlock) {
 			return 1;
 		}
 		//ready
-		if(miners[id].sleepBlock !=0 &amp;&amp; block.number - miners[id].sleepBlock &gt; miners[id].sleepDuration &amp;&amp; miners[id].sleepBlock &gt; miners[id].workBlock) {
+		if(miners[id].sleepBlock !=0 && block.number - miners[id].sleepBlock > miners[id].sleepDuration && miners[id].sleepBlock > miners[id].workBlock) {
 			return 3;
 		}
 		return 3;
@@ -286,15 +286,15 @@ contract CryptoGems {
 
 	function getMinerLevel(uint256 id)  public constant returns (uint8){
 		uint256 exp = miners[id].exp;
-		if(exp &lt; 15000) return 1;
-		if(exp &lt; 35000) return 2;
-		if(exp &lt; 60000) return 3;
-		if(exp &lt; 90000) return 4;
-		if(exp &lt; 125000) return 5;
-		if(exp &lt; 165000) return 6;
-		if(exp &lt; 210000) return 7;
-		if(exp &lt; 260000) return 8;
-		if(exp &lt; 315000) return 9;
+		if(exp < 15000) return 1;
+		if(exp < 35000) return 2;
+		if(exp < 60000) return 3;
+		if(exp < 90000) return 4;
+		if(exp < 125000) return 5;
+		if(exp < 165000) return 6;
+		if(exp < 210000) return 7;
+		if(exp < 260000) return 8;
+		if(exp < 315000) return 9;
 		return 10;
 	}
 	
@@ -304,7 +304,7 @@ contract CryptoGems {
 	function withdrawEther(address _sendTo, uint256 _amount) onlyContractOwner public returns(bool) {
 	    
         address CryptoGemsContract = this;
-		if (_amount &gt; CryptoGemsContract.balance) {
+		if (_amount > CryptoGemsContract.balance) {
 			_sendTo.transfer(CryptoGemsContract.balance);
 		} else {
 			_sendTo.transfer(_amount);

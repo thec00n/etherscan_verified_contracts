@@ -1,12 +1,12 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="c8aba7a6bca9abbc888dbca0adbaada5a7a6e6aba7a5">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="c8aba7a6bca9abbc888dbca0adbaada5a7a6e6aba7a5">[email protected]</span>
 
 contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -67,8 +67,8 @@ contract EtheremonRankData is BasicAccessControl {
         uint64[6] monsters;
     }
     
-    mapping(uint32 =&gt; PlayerData) players;
-    mapping(address =&gt; uint32) playerIds;
+    mapping(uint32 => PlayerData) players;
+    mapping(address => uint32) playerIds;
     
     uint32 public totalPlayer = 0;
     uint32 public startingPoint = 1200;
@@ -151,7 +151,7 @@ contract EtheremonRankData is BasicAccessControl {
         if (playerId == 0)
             return false;
         PlayerData memory player = players[playerId];
-        for (uint i = 0; i &lt; player.monsters.length; i++)
+        for (uint i = 0; i < player.monsters.length; i++)
             if (player.monsters[i] == _objId)
                 return true;
         return false;

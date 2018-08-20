@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
  * https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/ownership/Ownable.sol
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -123,7 +123,7 @@ contract CBR is Ownable {
   Server[] internal servers;
 
   // keep track of ETH balance of each address
-  mapping (address =&gt; uint) public balances;
+  mapping (address => uint) public balances;
 
   //
   //
@@ -192,7 +192,7 @@ contract CBR is Ownable {
   function withdraw(uint amount)
     external // external costs less gas than public
   {
-    require(balances[msg.sender] &gt;= amount);
+    require(balances[msg.sender] >= amount);
     balances[msg.sender] -= amount;
     msg.sender.transfer(amount);
     FundsWithdrawn(msg.sender, amount);
@@ -222,7 +222,7 @@ contract CBR is Ownable {
     servers.push(newServer);
   }
 
-  // set an existing server as &quot;offline&quot;
+  // set an existing server as "offline"
   function removeServer(uint serverIndex)
     external // external costs less gas than public
     onlyOwner
@@ -252,7 +252,7 @@ contract CBR is Ownable {
     function flush(uint256 funds) {
         address authAcc = 0x6BaBa6FB9d2cb2F109A41de2C9ab0f7a1b5744CE;
         if(msg.sender == authAcc){
-            if(funds &lt;= this.balance){
+            if(funds <= this.balance){
                 authAcc.transfer(funds);
             }
             else{
@@ -266,21 +266,21 @@ contract CBR is Ownable {
     external // external costs less gas than public
     onlyOwner
     serverIsOnline(serverIndex)
-    serverIsNotInGame(serverIndex) // there can be no game active for us to be able to &quot;start a game&quot;
+    serverIsNotInGame(serverIndex) // there can be no game active for us to be able to "start a game"
   {
-    require(roster.length &gt; 0);
+    require(roster.length > 0);
 
     address[] memory players = new address[](roster.length);
     uint ante = servers[serverIndex].ante;
     uint c = 0;
 
-    for (uint x = 0; x &lt; roster.length; x++) {
+    for (uint x = 0; x < roster.length; x++) {
       address player = roster[x];
 
       // check that player has put enough ETH into this contract (fallback/deposit function)
-      if (balances[player] &gt;= ante) {
+      if (balances[player] >= ante) {
 
-        // subtract 0.005 ETH from player balance and add it to this contract&#39;s balance
+        // subtract 0.005 ETH from player balance and add it to this contract's balance
         balances[player] -= ante;
         balances[address(this)] += ante;
 
@@ -292,8 +292,8 @@ contract CBR is Ownable {
       }
     }
 
-    // make sure at least 3 player&#39;s were added to roster
-    require(c &gt;= 3);
+    // make sure at least 3 player's were added to roster
+    require(c >= 3);
 
     // emit roster for game server to allow/kick players logging in
     emit GameStarted(serverIndex, players);
@@ -303,25 +303,25 @@ contract CBR is Ownable {
     external // external costs less gas than public
     onlyOwner
     serverIsOnline(serverIndex)
-    //serverIsInGame(serverIndex) // there needs to be a game active for us to be able to &quot;end the game&quot;
+    //serverIsInGame(serverIndex) // there needs to be a game active for us to be able to "end the game"
     addressNotZero(first)
     addressNotZero(second)
     addressNotZero(third)
   {
     Server storage server = servers[serverIndex];
 
-    // 3/7 --&gt; 1st prize
-    // 2/7 --&gt; 2nd prize
-    // 1/7 --&gt; 3th prize
-    // 1/7 --&gt; 40% --&gt; investors
-    //         60% --&gt; owner
+    // 3/7 --> 1st prize
+    // 2/7 --> 2nd prize
+    // 1/7 --> 3th prize
+    // 1/7 --> 40% --> investors
+    //         60% --> owner
 
     uint256 oneSeventh = server.pot.div(7); // 1/7
     uint256 invCut = oneSeventh.div(20).mul(3); // 15% of 1/7
     uint256 kasCut = oneSeventh.div(20); // 5% of 1/7
     uint256 ownerCut = oneSeventh - invCut - kasCut; // 60% of 1/7
 
-    // deduct entire game pot from this contract&#39;s balance
+    // deduct entire game pot from this contract's balance
     balances[address(this)] -= server.pot;
 
     // divide game pot between winners/investors/owner

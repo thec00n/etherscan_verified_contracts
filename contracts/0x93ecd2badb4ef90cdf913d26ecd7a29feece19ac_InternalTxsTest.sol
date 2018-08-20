@@ -6,7 +6,7 @@ contract InternalTxsTest {
     {
         require(amounts.length == recipients.length);
 
-        for (uint8 i = 0; i &lt; amounts.length; i++) {
+        for (uint8 i = 0; i < amounts.length; i++) {
             recipients[i].transfer(amounts[i]);
         }
     }

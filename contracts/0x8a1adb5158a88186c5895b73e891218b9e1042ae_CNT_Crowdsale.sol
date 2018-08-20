@@ -45,7 +45,7 @@ contract WhiteListAccess {
     }
     
     address public owner;
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
 
     modifier onlyOwner {require(msg.sender == owner); _;}
     modifier onlyWhitelisted {require(whitelist[msg.sender]); _;}
@@ -92,7 +92,7 @@ contract CNT_Crowdsale is CNT_Common {
     uint public bgb_per_eos;
     uint public vpe_per_eos;
     uint public gvpe_per_eos;
-    mapping(address =&gt; uint) public paid;
+    mapping(address => uint) public paid;
 
     event Sale(address from, uint eos_tokens, address to, uint cnt_tokens, uint mana_tokens, uint vpe_tokens, uint gvpe_tokens);
     // --------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ contract CNT_Crowdsale is CNT_Common {
         bgb_per_eos = 300;
         vpe_per_eos = 100;
         gvpe_per_eos = 1;
-        name = &quot;CNT_Crowdsale&quot;;
+        name = "CNT_Crowdsale";
         remaining = 1000000 * 10**18; // 1 million
     }
 
@@ -136,7 +136,7 @@ contract CNT_Crowdsale is CNT_Common {
 
     function buy(uint _eos_amount) public {
         // calculate how much of each token must be sent
-        require(remaining &gt;= _eos_amount);
+        require(remaining >= _eos_amount);
 
         uint cnt_amount  = 0;
         uint bgb_amount = 0;
@@ -155,7 +155,7 @@ contract CNT_Crowdsale is CNT_Common {
         Sale(address(this), _eos_amount, msg.sender, cnt_amount, bgb_amount, vpe_amount, gvpe_amount);
         paid[msg.sender] = paid[msg.sender] + _eos_amount;
 
-        // env&#237;o los eos al owner
+        // envío los eos al owner
         ERC20Interface(EOS_address).transferFrom(msg.sender, owner, _eos_amount);
 
         raised = raised + _eos_amount;
@@ -189,7 +189,7 @@ contract CNT_Crowdsale is CNT_Common {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

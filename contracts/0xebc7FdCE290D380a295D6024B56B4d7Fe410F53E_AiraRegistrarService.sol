@@ -54,5 +54,5 @@ contract AiraRegistrarService is Registrar, Mortal {
 	function subRegistrar(string _name) constant returns (address) { return m_toRecord[_name].subRegistrar; }
 	function content(string _name) constant returns (bytes32) { return m_toRecord[_name].content; }
 
-	mapping (string =&gt; Record) m_toRecord;
+	mapping (string => Record) m_toRecord;
 }

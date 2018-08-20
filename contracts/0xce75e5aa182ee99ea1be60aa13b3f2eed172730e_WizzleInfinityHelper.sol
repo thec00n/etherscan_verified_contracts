@@ -46,7 +46,7 @@ contract ERC20 {
 /// @title WizzleInfinityHelper contract
 contract WizzleInfinityHelper is Mortal {
     
-    mapping (address =&gt; bool) public whitelisted;
+    mapping (address => bool) public whitelisted;
     ERC20 public token;
 
     function WizzleInfinityHelper(address _token) public {
@@ -70,7 +70,7 @@ contract WizzleInfinityHelper is Mortal {
     /// @dev Whitelist array of addresses
     /// @param arr Array of addresses to be whitelisted
     function bulkWhitelist(address[] arr) public onlyOwner {
-        for (uint i = 0; i &lt; arr.length; i++) {
+        for (uint i = 0; i < arr.length; i++) {
             whitelisted[arr[i]] = true;
         }
     }
@@ -88,7 +88,7 @@ contract WizzleInfinityHelper is Mortal {
     /// @return Number of transfers
     function airdrop(address[] dests, uint256[] values) public onlyOwner returns (uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            token.transfer(dests[i], values[i]);
            whitelisted[dests[i]] = true;
            i += 1;

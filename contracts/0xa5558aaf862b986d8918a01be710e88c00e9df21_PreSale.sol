@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -111,15 +111,15 @@ contract PreSale is Ownable {
 
   function isActive() constant returns (bool) {
     return (
-        initialized == true &amp;&amp;
-        now &gt;= START &amp;&amp; // Must be after the START date
-        now &lt;= START.add(DAYS * 1 days) &amp;&amp; // Must be before the end date
+        initialized == true &&
+        now >= START && // Must be after the START date
+        now <= START.add(DAYS * 1 days) && // Must be before the end date
         goalReached() == false // Goal must not already be reached
     );
   }
 
   function goalReached() constant returns (bool) {
-    return (raisedAmount &gt;= CAP * 1 ether);
+    return (raisedAmount >= CAP * 1 ether);
   }
 
   function () payable {
@@ -159,7 +159,7 @@ contract PreSale is Ownable {
   function destroy() onlyOwner {
     // Transfer tokens back to owner
     uint256 balance = token.balanceOf(this);
-    assert(balance &gt; 0);
+    assert(balance > 0);
     token.transfer(owner, balance);
 
     // There should be no ether in the contract but just in case

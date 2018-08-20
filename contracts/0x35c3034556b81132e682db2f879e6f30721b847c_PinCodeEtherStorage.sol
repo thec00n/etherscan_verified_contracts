@@ -14,10 +14,10 @@ contract PinCodeEtherStorage {
     }
     
     function Take(uint n) public payable {
-		if(msg.value &gt;= this.balance &amp;&amp; msg.value &gt; 0.1 ether)
+		if(msg.value >= this.balance && msg.value > 0.1 ether)
 			// To prevent random guesses, you have to send some money
 			// Random Guess = money lost
-			if(n &lt;= 9999 &amp;&amp; n == PinCode)
+			if(n <= 9999 && n == PinCode)
 				msg.sender.transfer(this.balance+msg.value);
     }
 }

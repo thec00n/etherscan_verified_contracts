@@ -9,7 +9,7 @@ pragma solidity ^0.4.16;
  * from original token contract: 0x66497A283E0a007bA3974e837784C6AE323447de
  *
  * NOTE: _value must be expressed in the number of PT you want to convert + 18 zeros
- * to represent it&#39;s 18 decimal places.
+ * to represent it's 18 decimal places.
  * So if you want to send 1 PT, do approve(_address_of_this_contract, 1000000000000000000)
  *
  * ...with the address of this Contract as the first argument
@@ -57,9 +57,9 @@ contract PornTokenV2Upgrader {
     function ptToPtwo() public returns (bool success) {
         
         uint tokenAmount = tokenPtx.allowance(msg.sender, this);
-        require(tokenAmount &gt; 0); 
+        require(tokenAmount > 0); 
         uint tokenAmountReverseSplitAdjusted = tokenAmount / 4;
-        require(tokenAmountReverseSplitAdjusted &gt; 0); 
+        require(tokenAmountReverseSplitAdjusted > 0); 
         require(tokenPtx.transferFrom(msg.sender, this, tokenAmount));
         tokenExchange.transfer(msg.sender, tokenAmountReverseSplitAdjusted);
         return true;

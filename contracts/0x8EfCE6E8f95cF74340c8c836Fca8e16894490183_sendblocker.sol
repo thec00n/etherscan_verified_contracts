@@ -1,7 +1,7 @@
 // sendblocker
 // prevent any funds from incoming
 // @authors:
-// Cody Burns &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="187c77766c687976717b587b777c616f7a6d6a766b367b7775">[email&#160;protected]</a>&gt;
+// Cody Burns <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="187c77766c687976717b587b777c616f7a6d6a766b367b7775">[email protected]</a>>
 // license: Apache 2.0
 // version:
 
@@ -15,6 +15,6 @@ pragma solidity ^0.4.19;
 //version 0.1.0
 
 contract sendblocker{
- function () public {assert(0&gt;0);}
+ function () public {assert(0>0);}
     
 }

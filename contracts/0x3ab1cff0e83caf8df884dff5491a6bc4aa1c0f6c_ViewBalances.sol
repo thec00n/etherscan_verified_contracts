@@ -7,7 +7,7 @@ contract ViewBalances {
     
   function checkBalances(address[] addresses) public constant returns(uint256[]){
       uint256[] storage balances;
-      for(uint256 i = 0; i &lt; addresses.length; i++){
+      for(uint256 i = 0; i < addresses.length; i++){
           balances.push(addresses[i].balance);
       }
       return balances;

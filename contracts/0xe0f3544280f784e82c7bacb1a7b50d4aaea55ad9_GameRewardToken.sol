@@ -25,41 +25,41 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal pure returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function toWei(uint256 a) internal pure returns (uint256){
-    assert(a&gt;0);
+    assert(a>0);
     return a * 10 ** 18;
   }
 }
@@ -79,8 +79,8 @@ contract TokenERC20 is SafeMath{
 
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -107,9 +107,9 @@ contract TokenERC20 is SafeMath{
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(safeAdd(balanceOf[_to], _value) &gt; balanceOf[_to]);
+        require(safeAdd(balanceOf[_to], _value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = safeAdd(balanceOf[_from],balanceOf[_to]);
         // Subtract from the sender
@@ -143,7 +143,7 @@ contract TokenERC20 is SafeMath{
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender],_value);
         _transfer(_from, _to, _value);
         return true;
@@ -190,7 +190,7 @@ contract TokenERC20 is SafeMath{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);            // Subtract from the sender
         totalSupply = safeSub(totalSupply,_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -206,10 +206,10 @@ contract TokenERC20 is SafeMath{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] = safeSub(balanceOf[_from], _value);                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender], _value);             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender], _value);             // Subtract from the sender's allowance
         totalSupply = safeSub(totalSupply,_value);                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -226,12 +226,12 @@ contract GameRewardToken is owned, TokenERC20 {
     enum State{PrivateFunding, PreFunding, Funding, Success, Failure}
 
 
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint256) public bounties;
-    mapping (address =&gt; uint256) public bonus;
-    mapping (address =&gt; address) public referrals;
-    mapping (address =&gt; uint256) public investors;
-    mapping (address =&gt; uint256) public funders;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint256) public bounties;
+    mapping (address => uint256) public bonus;
+    mapping (address => address) public referrals;
+    mapping (address => uint256) public investors;
+    mapping (address => uint256) public funders;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address indexed target, bool frozen);
@@ -289,8 +289,8 @@ contract GameRewardToken is owned, TokenERC20 {
                 address _releaseTokenHolder,
                 address _devsAddress,
                 address _multiSigWalletAddress
-    ) TokenERC20(&quot;GameReward&quot;, // Name
-                 &quot;GRD&quot;,        // Symbol 
+    ) TokenERC20("GameReward", // Name
+                 "GRD",        // Symbol 
                   18,          // Decimals
                   1000000000   // Total Supply 1 Billion
                   ) public {
@@ -309,8 +309,8 @@ contract GameRewardToken is owned, TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
         require (getState() == State.Success);
         require (_to != 0x0);                                      // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                      // Prevent transfer to 0x0 address. Use burn() instead
-        require (safeAdd(balanceOf[_to],_value) &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                      // Prevent transfer to 0x0 address. Use burn() instead
+        require (safeAdd(balanceOf[_to],_value) > balanceOf[_to]); // Check for overflows
         require (!frozenAccount[_from]);                           // Check if sender is frozen
         require (!frozenAccount[_to]);                             // Check if recipient is frozen
         require (_from != lockedTokenHolder);
@@ -319,13 +319,13 @@ contract GameRewardToken is owned, TokenERC20 {
         emit Transfer(_from, _to, _value);
     }
 
-    ///@notice change token&#39;s name and symbol
+    ///@notice change token's name and symbol
     function updateNameAndSymbol(string _newname, string _newsymbol) onlyOwner public{
       name = _newname;
       symbol = _newsymbol;
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param _target Address to be frozen
     /// @param _freeze either to freeze it or not
     function freezeAccount(address _target, bool _freeze) onlyOwner public {
@@ -351,10 +351,10 @@ contract GameRewardToken is owned, TokenERC20 {
     /// @param _fundingStartBlock start funding
     /// @param _fundingEndBlock  end funding
     function setCampaign(uint256 _fundingStartBlock, uint256 _fundingEndBlock) onlyOwner public{
-        if(block.number &lt; _fundingStartBlock){
+        if(block.number < _fundingStartBlock){
             fundingStartBlock = _fundingStartBlock;
         }
-        if(_fundingEndBlock &gt; fundingStartBlock &amp;&amp; _fundingEndBlock &gt; block.number){
+        if(_fundingEndBlock > fundingStartBlock && _fundingEndBlock > block.number){
             fundingEndBlock = _fundingEndBlock;
         }
         emit ChangeCampaign(_fundingStartBlock,_fundingEndBlock);
@@ -375,7 +375,7 @@ contract GameRewardToken is owned, TokenERC20 {
         require (_broker != 0x0);
         referrals[_target] = _broker;
         emit SetReferral(_target, _broker);
-        if(_amount&gt;0x0){
+        if(_amount>0x0){
             uint256 brokerBonus = safeDiv(safeMul(_amount,referralBonus),hundredPercent);
             bonus[_broker] = safeAdd(bonus[_broker],brokerBonus);
             emit ReferralBonus(_target,_broker,brokerBonus);
@@ -385,7 +385,7 @@ contract GameRewardToken is owned, TokenERC20 {
     /// @notice set token for bounty hunter to release when ICO success
     function addBounty(address _hunter, uint256 _amount) onlyOwner public{
         require(_hunter!=0x0);
-        require(toWei(_amount)&lt;=safeSub(bonusAndBountyTokens,toWei(_amount)));
+        require(toWei(_amount)<=safeSub(bonusAndBountyTokens,toWei(_amount)));
         bounties[_hunter] = safeAdd(bounties[_hunter],toWei(_amount));
         bonusAndBountyTokens = safeSub(bonusAndBountyTokens,toWei(_amount));
         emit AddBounty(_hunter, toWei(_amount));
@@ -393,7 +393,7 @@ contract GameRewardToken is owned, TokenERC20 {
 
     /// @notice Create tokens when funding is active. This fallback function require 90.000 gas or more
     /// @dev Required state: Funding
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function() payable public{
         // Abort if not in Funding Active state.
         // Do not allow creating 0 or more than the cap tokens.
@@ -402,11 +402,11 @@ contract GameRewardToken is owned, TokenERC20 {
         require (msg.value != 0);
 
         if(getState()==State.PrivateFunding){
-            require(msg.value&gt;=minPrivateContribution);
+            require(msg.value>=minPrivateContribution);
         }else if(getState()==State.PreFunding){
-            require(msg.value&gt;=minPreContribution &amp;&amp; msg.value &lt; maxContributionAmount);
+            require(msg.value>=minPreContribution && msg.value < maxContributionAmount);
         }else{
-            require(msg.value&gt;=minContributionAmount &amp;&amp; msg.value &lt; maxContributionAmount);
+            require(msg.value>=minContributionAmount && msg.value < maxContributionAmount);
         }
 
         // multiply by exchange rate to get newly created token amount
@@ -416,11 +416,11 @@ contract GameRewardToken is owned, TokenERC20 {
 
         createdTokens = safeAdd(createdTokens,earlyBonus);
 
-        // don&#39;t go over the limit!
+        // don't go over the limit!
         if(getState()==State.PrivateFunding){
-            require(safeAdd(tokensSold,createdTokens) &lt;= tokenPrivateMax);
+            require(safeAdd(tokensSold,createdTokens) <= tokenPrivateMax);
         }else{
-            require (safeAdd(tokensSold,createdTokens) &lt;= tokenCreationMax);
+            require (safeAdd(tokensSold,createdTokens) <= tokenCreationMax);
         }
 
         // we are creating tokens, so increase the tokenSold
@@ -449,8 +449,8 @@ contract GameRewardToken is owned, TokenERC20 {
     function requestBonus() external{
       require(getState()==State.Success);
       uint256 bonusAmount = bonus[msg.sender];
-      assert(bonusAmount&gt;0);
-      require(bonusAmount&lt;=safeSub(bonusAndBountyTokens,bonusAmount));
+      assert(bonusAmount>0);
+      require(bonusAmount<=safeSub(bonusAndBountyTokens,bonusAmount));
       balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender],bonusAmount);
       bonus[msg.sender] = 0;
       bonusAndBountyTokens = safeSub(bonusAndBountyTokens,bonusAmount);
@@ -463,8 +463,8 @@ contract GameRewardToken is owned, TokenERC20 {
     /// require tokens unlocked
     function releaseLockedToken() external {
         require (getState() == State.Success);
-        require (balanceOf[lockedTokenHolder] &gt; 0x0);
-        require (block.number &gt;= unlockedAtBlockNumber);
+        require (balanceOf[lockedTokenHolder] > 0x0);
+        require (block.number >= unlockedAtBlockNumber);
         balanceOf[devsHolder] = safeAdd(balanceOf[devsHolder],balanceOf[lockedTokenHolder]);
         emit Transfer(lockedTokenHolder,devsHolder,balanceOf[lockedTokenHolder]);
         balanceOf[lockedTokenHolder] = 0;
@@ -473,9 +473,9 @@ contract GameRewardToken is owned, TokenERC20 {
     /// @notice request to receive bounty tokens
     /// @dev require State == Succes
     function requestBounty() external{
-        require(releasedBountyTokens); //locked bounty hunter&#39;s token for 7 days after end of campaign
+        require(releasedBountyTokens); //locked bounty hunter's token for 7 days after end of campaign
         require(getState()==State.Success);
-        assert (bounties[msg.sender]&gt;0);
+        assert (bounties[msg.sender]>0);
         balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender],bounties[msg.sender]);
         emit BountyTransfer(msg.sender,bounties[msg.sender],block.number);
         emit Transfer(0,msg.sender,bounties[msg.sender]);
@@ -489,8 +489,8 @@ contract GameRewardToken is owned, TokenERC20 {
     /// @dev Required state: Success
     function finalizeCrowdfunding() external {
         // Abort if not in Funding Success state.
-        require (getState() == State.Success); // don&#39;t finalize unless we won
-        require (!finalizedCrowdfunding); // can&#39;t finalize twice (so sneaky!)
+        require (getState() == State.Success); // don't finalize unless we won
+        require (!finalizedCrowdfunding); // can't finalize twice (so sneaky!)
 
         // prevent more creation of tokens
         finalizedCrowdfunding = true;
@@ -512,9 +512,9 @@ contract GameRewardToken is owned, TokenERC20 {
     /// @notice send @param _unSoldTokens to all Investor base on their share
     function requestFreeDistribution() external{
       require(getState()==State.Success);
-      assert(investors[msg.sender]&gt;0);
+      assert(investors[msg.sender]>0);
       uint256 unSoldTokens = safeSub(tokenCreationMax,tokensSold);
-      require(unSoldTokens&gt;0);
+      require(unSoldTokens>0);
       uint256 freeTokens = safeDiv(safeMul(unSoldTokens,investors[msg.sender]),tokensSold);
       balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender],freeTokens);
       investors[msg.sender] = 0;
@@ -529,7 +529,7 @@ contract GameRewardToken is owned, TokenERC20 {
     function requestRefund() external {
         // Abort if not in Funding Failure state.
         assert (getState() == State.Failure);
-        assert (funders[msg.sender]&gt;0);
+        assert (funders[msg.sender]>0);
         msg.sender.transfer(funders[msg.sender]);  
         emit Refund( msg.sender, funders[msg.sender],block.number);
         funders[msg.sender]=0;
@@ -541,10 +541,10 @@ contract GameRewardToken is owned, TokenERC20 {
     function getState() public constant returns (State){
       // once we reach success, lock in the state
       if (finalizedCrowdfunding) return State.Success;
-      if(fundingStartBlock ==0 &amp;&amp; fundingEndBlock==0) return State.PrivateFunding;
-      else if (block.number &lt; fundingStartBlock) return State.PreFunding;
-      else if (block.number &lt;= fundingEndBlock &amp;&amp; tokensSold &lt; tokenCreationMax) return State.Funding;
-      else if (tokensSold &gt;= tokenCreationMin) return State.Success;
+      if(fundingStartBlock ==0 && fundingEndBlock==0) return State.PrivateFunding;
+      else if (block.number < fundingStartBlock) return State.PreFunding;
+      else if (block.number <= fundingEndBlock && tokensSold < tokenCreationMax) return State.Funding;
+      else if (tokensSold >= tokenCreationMin) return State.Success;
       else return State.Failure;
     }
 }

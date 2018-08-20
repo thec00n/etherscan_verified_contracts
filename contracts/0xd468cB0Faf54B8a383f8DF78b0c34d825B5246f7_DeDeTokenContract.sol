@@ -14,13 +14,13 @@ contract ERC20Interface {
 
 contract DeDeTokenContract is ERC20Interface {
 // ERC20 basic variables
-	string public constant symbol = &quot;DEDE&quot;;
-	string public constant name = &quot;DeDeToken&quot;;
+	string public constant symbol = "DEDE";
+	string public constant name = "DeDeToken";
 	uint8 public constant decimals = 18; // smallest unit is 10**-18, same as ether wei
 	uint256 public _totalSupply = (25 ether) * (10 ** 7); // total dede is 2.5 * 10**8
 
-	mapping (address =&gt; uint) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+	mapping (address => uint) public balances;
+	mapping (address => mapping (address => uint256)) public allowed;
 
 // variables for donation
 	address public dedeNetwork;
@@ -65,9 +65,9 @@ contract DeDeTokenContract is ERC20Interface {
 	}
 	//transfer tokens
 	function transfer(address _to, uint _value) returns (bool success){
-		if(balances[msg.sender] &gt;= _value
-			&amp;&amp; _value &gt; 0
-			&amp;&amp; balances[_to] + _value &gt; balances[_to]){
+		if(balances[msg.sender] >= _value
+			&& _value > 0
+			&& balances[_to] + _value > balances[_to]){
 			balances[msg.sender] -= _value;
 			balances[_to] += _value;
 			Transfer(msg.sender, _to, _value);
@@ -79,10 +79,10 @@ contract DeDeTokenContract is ERC20Interface {
 	}
 	//transfer tokens if you have a delegated wallet
 	function transferFrom(address _from, address _to, uint _value) returns (bool success){
-		if(balances[_from] &gt;= _value
-			&amp;&amp; allowed[_from][msg.sender] &gt;= _value
-			&amp;&amp; _value &gt; 0
-			&amp;&amp; balances[_to] + _value &gt; balances[_to]){
+		if(balances[_from] >= _value
+			&& allowed[_from][msg.sender] >= _value
+			&& _value > 0
+			&& balances[_to] + _value > balances[_to]){
 			balances[_from] -= _value;
 			allowed[_from][msg.sender] -= _value;
 			balances[_to] += _value;

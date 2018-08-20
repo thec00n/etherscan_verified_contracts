@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -163,7 +163,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -178,8 +178,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -194,9 +194,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -204,7 +204,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -213,7 +213,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -226,7 +226,7 @@ library SafeMath {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -241,7 +241,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _from,
@@ -260,21 +260,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -412,7 +412,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -428,14 +428,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -583,19 +583,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -645,7 +645,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -664,7 +664,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -758,24 +758,24 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
 // File: contracts/WorldCupPlayerToken.sol
 
-contract WorldCupPlayerToken is ERC721Token(&quot;WWWorld Cup&quot;, &quot;WWWC&quot;), Ownable {
+contract WorldCupPlayerToken is ERC721Token("WWWorld Cup", "WWWC"), Ownable {
 
-  string constant public PLAYER_METADATA = &quot;ipfs://ipfs/QmNgMeQT62pnUkkFcz4y59cQTmTZHBVFKmQ7Y7HQjh7tRw&quot;;
+  string constant public PLAYER_METADATA = "ipfs://ipfs/QmNgMeQT62pnUkkFcz4y59cQTmTZHBVFKmQ7Y7HQjh7tRw";
   uint256 constant DISTINCT_LEGENDARY_LIMIT = 1;
   uint256 constant DISTINCT_RARE_LIMIT = 2;
   uint256 constant DISTINCT_COMMON_LIMIT = 3;
   uint256 constant LEGENDARY_MAX_ID = 32;
   uint256 constant RARE_MAX_ID = 96;
   uint256 constant COMMON_MAX_ID = 736;
-  mapping (uint256 =&gt; uint256) public playerCount;
-  mapping (uint256 =&gt; uint256) internal tokenPlayerIds;
+  mapping (uint256 => uint256) public playerCount;
+  mapping (uint256 => uint256) internal tokenPlayerIds;
 
   /** @dev Enforces a scaricity of unique player cards by limiting.
     * @param playerId Player Id to enforce limit on.
     * @param limit Maximum number of tokens for that player id that can exist.
     */
   modifier enforcePlayerScarcity(uint256 playerId, uint256 limit) {
-    require(playerCount[playerId] &lt; limit, &quot;Player limit reached.&quot;);
+    require(playerCount[playerId] < limit, "Player limit reached.");
     _;
   }
 
@@ -785,8 +785,8 @@ contract WorldCupPlayerToken is ERC721Token(&quot;WWWorld Cup&quot;, &quot;WWWC&
     * @param max Maximum playerId of range.
     */
   modifier validatePlayerIdRange(uint256 playerId, uint256 min, uint256 max) {
-    require(playerId &gt; min, &quot;Player ID must be greater than the rarity minimum.&quot;);
-    require(playerId &lt;= max, &quot;Player ID must be less than or equal to rarity maximum.&quot;);
+    require(playerId > min, "Player ID must be greater than the rarity minimum.");
+    require(playerId <= max, "Player ID must be less than or equal to rarity maximum.");
     _;
   }
 
@@ -809,7 +809,7 @@ contract WorldCupPlayerToken is ERC721Token(&quot;WWWorld Cup&quot;, &quot;WWWC&
     * @param playerId Player Id to assign.
     */
   function _setPlayerId(uint256 tokenId, uint256 playerId) internal {
-    require(exists(tokenId), &quot;Token does not exist.&quot;);
+    require(exists(tokenId), "Token does not exist.");
     tokenPlayerIds[tokenId] = playerId;
   }
 
@@ -818,7 +818,7 @@ contract WorldCupPlayerToken is ERC721Token(&quot;WWWorld Cup&quot;, &quot;WWWC&
     * @return playerId for given token.
     */
   function playerId(uint256 tokenId) public view returns (uint256) {
-    require(exists(tokenId), &quot;Token does not exist.&quot;);
+    require(exists(tokenId), "Token does not exist.");
     return tokenPlayerIds[tokenId];
   }
 
@@ -840,7 +840,7 @@ contract AuctionableWorldCupPlayerToken is WorldCupPlayerToken {
   uint256 constant MIN_BID_INCREMENT = 0.01 ether;
   uint256 constant AUCTION_BLOCK_LENGTH = 257;
   uint256 public totalUnclaimedBidsAmount = 0;
-  mapping (uint256 =&gt; mapping(address =&gt; uint256)) public unclaimedBidsByAuctionIndexByBidder;
+  mapping (uint256 => mapping(address => uint256)) public unclaimedBidsByAuctionIndexByBidder;
 
   event AuctionCreated(uint256 playerId);
   event AuctionFinalized(uint256 auctionIndex, address highestBidder);
@@ -911,23 +911,23 @@ contract AuctionableWorldCupPlayerToken is WorldCupPlayerToken {
     _createAuction(playerId, tokenURI);
   }
 
-  /** @dev Increments a sender&#39;s bid for a given Auction.
+  /** @dev Increments a sender's bid for a given Auction.
     * @param auctionIndex Index in auctions of Auction to increment bid on.
     */
   function incrementBid(uint256 auctionIndex) public payable {
 
     // Require auction to exist:
-    require(auctionIndex + 1 &lt;= auctions.length, &quot;Auction does not exist.&quot;);
+    require(auctionIndex + 1 <= auctions.length, "Auction does not exist.");
 
     // Require auction to not be ended:
     uint256 auctionEndsAtBlock = auctions[auctionIndex].endsAtBlock;
-    require(auctionEndsAtBlock == 0 || block.number &lt; auctionEndsAtBlock, &quot;Auction has ended.&quot;);
+    require(auctionEndsAtBlock == 0 || block.number < auctionEndsAtBlock, "Auction has ended.");
 
     // Calculate new total bid from sender:
     uint256 newTotalBid = unclaimedBidsByAuctionIndexByBidder[auctionIndex][msg.sender] + msg.value;
 
     // Require new highest bid to be increased by minimum bid increment:
-    require(newTotalBid &gt;= auctions[auctionIndex].highestBidAmount + MIN_BID_INCREMENT, &quot;Must increment bid by MIN_BID_INCREMENT.&quot;);
+    require(newTotalBid >= auctions[auctionIndex].highestBidAmount + MIN_BID_INCREMENT, "Must increment bid by MIN_BID_INCREMENT.");
 
     // Start auction if this is the first bid:
     if (auctions[auctionIndex].endsAtBlock == 0) {
@@ -955,13 +955,13 @@ contract AuctionableWorldCupPlayerToken is WorldCupPlayerToken {
   function finalizeAuction(uint256 auctionIndex) public {
 
     // Require auction to exist:
-    require(auctionIndex + 1 &lt;= auctions.length, &quot;Auction does not exist.&quot;);
+    require(auctionIndex + 1 <= auctions.length, "Auction does not exist.");
 
     // Require auction to not already be finalized:
-    require(auctions[auctionIndex].finalized == false, &quot;Auction has already been finalized.&quot;);
+    require(auctions[auctionIndex].finalized == false, "Auction has already been finalized.");
 
     // Require auction to be ended:
-    require(block.number &gt; auctions[auctionIndex].endsAtBlock, &quot;Auction has not ended yet.&quot;);
+    require(block.number > auctions[auctionIndex].endsAtBlock, "Auction has not ended yet.");
 
     // Finalize auction:
     auctions[auctionIndex].finalized = true;
@@ -994,13 +994,13 @@ contract AuctionableWorldCupPlayerToken is WorldCupPlayerToken {
   function returnBids(uint256 auctionIndex, address bidder) public {
 
     // Require auction to exist:
-    require(auctionIndex + 1 &lt;= auctions.length, &quot;Auction does not exist.&quot;);
+    require(auctionIndex + 1 <= auctions.length, "Auction does not exist.");
 
     // Require auction to be ended:
-    require(block.number &gt; auctions[auctionIndex].endsAtBlock, &quot;Auction has not ended yet.&quot;);
+    require(block.number > auctions[auctionIndex].endsAtBlock, "Auction has not ended yet.");
 
     // Require bidder not the winning address:
-    require(bidder != auctions[auctionIndex].highestBidder, &quot;Bidder who won auction cannot return bids.&quot;);
+    require(bidder != auctions[auctionIndex].highestBidder, "Bidder who won auction cannot return bids.");
 
     // Cache refund amount:
     uint256 refund = unclaimedBidsByAuctionIndexByBidder[auctionIndex][bidder];

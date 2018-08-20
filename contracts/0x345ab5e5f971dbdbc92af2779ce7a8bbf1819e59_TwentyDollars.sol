@@ -16,7 +16,7 @@ contract TwentyDollars {
     
     Bid public highestBid;
     Bid public secondHighestBid;
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     
     /*
@@ -29,7 +29,7 @@ contract TwentyDollars {
     }
 
     modifier onlyBiddingOpen() {
-        require(block.number &lt; gameEndBlock);
+        require(block.number < gameEndBlock);
         _;
     }
 
@@ -61,7 +61,7 @@ contract TwentyDollars {
 
     function bid() public payable onlyBiddingOpen {
         // Must bid higher than current highest bid.
-        require(msg.value &gt; highestBid.amount);
+        require(msg.value > highestBid.amount);
 
         // Push out second highest bid and set new highest bid.
         balances[secondHighestBid.owner] += secondHighestBid.amount;
@@ -75,7 +75,7 @@ contract TwentyDollars {
     
     function withdraw() public {
         uint256 balance = balances[msg.sender];
-        require(balance &gt; 0);
+        require(balance > 0);
         balances[msg.sender] = 0;
         msg.sender.transfer(balance);
     }
@@ -102,7 +102,7 @@ contract TwentyDollars {
     }
     
     function biddingClosed() public view returns (bool) {
-        return block.number &gt;= gameEndBlock;
+        return block.number >= gameEndBlock;
     }
     
     

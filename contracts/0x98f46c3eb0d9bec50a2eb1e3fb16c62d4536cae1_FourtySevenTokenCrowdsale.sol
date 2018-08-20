@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -93,7 +93,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -141,7 +141,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -152,8 +152,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -337,10 +337,10 @@ contract PausableToken is StandardToken, Pausable {
 
 
 contract FSBToken is MintableToken, PausableToken {
-  string public constant name = &quot;Forty Seven Bank Token&quot;;
-  string public constant symbol = &quot;FSBT&quot;;
+  string public constant name = "Forty Seven Bank Token";
+  string public constant symbol = "FSBT";
   uint8 public constant decimals = 18;
-  string public constant version = &quot;H0.1&quot;; //human 0.1 standard. Just an arbitrary versioning scheme.
+  string public constant version = "H0.1"; //human 0.1 standard. Just an arbitrary versioning scheme.
 }
 
 /**
@@ -416,24 +416,24 @@ contract FourtySevenTokenCrowdsale is Ownable {
 
   function FourtySevenTokenCrowdsale(uint256 _preSaleStartTime, uint256 _preSaleEndTime, uint256 _preSaleWeiCap, uint256 _mainSaleStartTime, uint256 _mainSaleEndTime, uint256 _mainSaleWeiCap, uint256 _rate, address _wallet, address _tokenWallet) public {
 
-    // can&#39;t start pre-sale in the past
-    require(_preSaleStartTime &gt;= now);
+    // can't start pre-sale in the past
+    require(_preSaleStartTime >= now);
 
-    // can&#39;t start main sale in the past
-    require(_mainSaleStartTime &gt;= now);
+    // can't start main sale in the past
+    require(_mainSaleStartTime >= now);
 
-    // can&#39;t start main sale before the end of pre-sale
-    require(_preSaleEndTime &lt; _mainSaleStartTime);
+    // can't start main sale before the end of pre-sale
+    require(_preSaleEndTime < _mainSaleStartTime);
 
-    // the end of pre-sale can&#39;t happen before it&#39;s start
-    require(_preSaleStartTime &lt; _preSaleEndTime);
+    // the end of pre-sale can't happen before it's start
+    require(_preSaleStartTime < _preSaleEndTime);
 
-    // the end of main sale can&#39;t happen before it&#39;s start
-    require(_mainSaleStartTime &lt; _mainSaleEndTime);
+    // the end of main sale can't happen before it's start
+    require(_mainSaleStartTime < _mainSaleEndTime);
 
-    require(_rate &gt; 0);
-    require(_preSaleWeiCap &gt; 0);
-    require(_mainSaleWeiCap &gt; 0);
+    require(_rate > 0);
+    require(_preSaleWeiCap > 0);
+    require(_mainSaleWeiCap > 0);
     require(_wallet != 0x0);
     require(_tokenWallet != 0x0);
 
@@ -507,7 +507,7 @@ contract FourtySevenTokenCrowdsale is Ownable {
   // owner can mint tokens during crowdsale withing defined caps
   function mintTokens(address beneficiary, uint256 weiAmount, uint256 forcePercent) external onlyOwner returns (bool) {
 
-    require(forcePercent &lt;= 100);
+    require(forcePercent <= 100);
     require(beneficiary != 0x0);
     require(weiAmount != 0);
     require(!isFinalised);
@@ -535,7 +535,7 @@ contract FourtySevenTokenCrowdsale is Ownable {
   }
 
   // finish crowdsale,
-  // take totalSupply as 90% and mint 10% more to specified owner&#39;s wallet
+  // take totalSupply as 90% and mint 10% more to specified owner's wallet
   // then stop minting forever
 
   function finaliseCrowdsale() external onlyOwner {
@@ -551,8 +551,8 @@ contract FourtySevenTokenCrowdsale is Ownable {
   // set new dates for pre-salev (emergency case)
   function setPreSaleParameters(uint256 _preSaleStartTime, uint256 _preSaleEndTime, uint256 _preSaleWeiCap, uint256 _preSaleBonus, uint256 _preSaleMinimumWei) public onlyOwner {
     require(!isFinalised);
-    require(_preSaleStartTime &lt; _preSaleEndTime);
-    require(_preSaleWeiCap &gt; 0);
+    require(_preSaleStartTime < _preSaleEndTime);
+    require(_preSaleWeiCap > 0);
     preSaleStartTime = _preSaleStartTime;
     preSaleEndTime = _preSaleEndTime;
     preSaleWeiCap = _preSaleWeiCap;
@@ -563,8 +563,8 @@ contract FourtySevenTokenCrowdsale is Ownable {
   // set new dates for main-sale (emergency case)
   function setMainSaleParameters(uint256 _mainSaleStartTime, uint256 _mainSaleEndTime, uint256 _mainSaleWeiCap) public onlyOwner {
     require(!isFinalised);
-    require(_mainSaleStartTime &lt; _mainSaleEndTime);
-    require(_mainSaleWeiCap &gt; 0);
+    require(_mainSaleStartTime < _mainSaleEndTime);
+    require(_mainSaleWeiCap > 0);
     mainSaleStartTime = _mainSaleStartTime;
     mainSaleEndTime = _mainSaleEndTime;
     mainSaleWeiCap = _mainSaleWeiCap;
@@ -582,7 +582,7 @@ contract FourtySevenTokenCrowdsale is Ownable {
   // set new rate (emergency case)
   function setRate(uint256 _rate) public onlyOwner {
     require(!isFinalised);
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
   }
 
@@ -592,7 +592,7 @@ contract FourtySevenTokenCrowdsale is Ownable {
     FSBToken(token).pause();
   }
 
-  // unset token&#39;s pause
+  // unset token's pause
   function unpauseToken() external onlyOwner {
     FSBToken(token).unpause();
   }
@@ -604,12 +604,12 @@ contract FourtySevenTokenCrowdsale is Ownable {
 
   // @return true if main sale event has ended
   function mainSaleHasEnded() external constant returns (bool) {
-    return now &gt; mainSaleEndTime;
+    return now > mainSaleEndTime;
   }
 
   // @return true if pre sale event has ended
   function preSaleHasEnded() external constant returns (bool) {
-    return now &gt; preSaleEndTime;
+    return now > preSaleEndTime;
   }
 
   // send ether to the fund collection wallet
@@ -618,21 +618,21 @@ contract FourtySevenTokenCrowdsale is Ownable {
   }
 
   // we want to be able to check all bonuses in already deployed contract
-  // that&#39;s why we pass currentTime as a parameter instead of using &quot;now&quot;
+  // that's why we pass currentTime as a parameter instead of using "now"
 
   function getBonusPercent(uint256 tokens, uint256 currentTime) public constant returns (uint256 percent) {
-    //require(currentTime &gt;= preSaleStartTime);
-    bool isPreSale = currentTime &gt;= preSaleStartTime &amp;&amp; currentTime &lt;= preSaleEndTime;
+    //require(currentTime >= preSaleStartTime);
+    bool isPreSale = currentTime >= preSaleStartTime && currentTime <= preSaleEndTime;
     if (isPreSale) {
       return preSaleBonus;
     } else {
       uint256 diffInSeconds = currentTime.sub(mainSaleStartTime);
-      for (uint i = 0; i &lt; timeBonuses.length; i++) {
-        if (diffInSeconds &lt;= timeBonuses[i].bonusPeriodEndTime &amp;&amp; !timeBonuses[i].isAmountDependent) {
+      for (uint i = 0; i < timeBonuses.length; i++) {
+        if (diffInSeconds <= timeBonuses[i].bonusPeriodEndTime && !timeBonuses[i].isAmountDependent) {
           return timeBonuses[i].percent;
         } else if (timeBonuses[i].isAmountDependent) {
-          for (uint j = 0; j &lt; amountBonuses.length; j++) {
-            if (tokens &gt;= amountBonuses[j].amount) {
+          for (uint j = 0; j < amountBonuses.length; j++) {
+            if (tokens >= amountBonuses[j].amount) {
               return amountBonuses[j].percent;
             }
           }
@@ -649,21 +649,21 @@ contract FourtySevenTokenCrowdsale is Ownable {
 
   function validateWithinPeriods() internal constant {
     // within pre-sale or main sale
-    require((now &gt;= preSaleStartTime &amp;&amp; now &lt;= preSaleEndTime) || (now &gt;= mainSaleStartTime &amp;&amp; now &lt;= mainSaleEndTime));
+    require((now >= preSaleStartTime && now <= preSaleEndTime) || (now >= mainSaleStartTime && now <= mainSaleEndTime));
   }
 
   function validateWithinCaps(uint256 weiAmount) internal constant {
     uint256 expectedWeiRaised = weiRaised.add(weiAmount);
 
     // within pre-sale
-    if (now &gt;= preSaleStartTime &amp;&amp; now &lt;= preSaleEndTime) {
-      require(weiAmount &gt;= preSaleMinimumWei);
-      require(expectedWeiRaised &lt;= preSaleWeiCap);
+    if (now >= preSaleStartTime && now <= preSaleEndTime) {
+      require(weiAmount >= preSaleMinimumWei);
+      require(expectedWeiRaised <= preSaleWeiCap);
     }
 
     // within main sale
-    if (now &gt;= mainSaleStartTime &amp;&amp; now &lt;= mainSaleEndTime) {
-      require(expectedWeiRaised &lt;= mainSaleWeiCap);
+    if (now >= mainSaleStartTime && now <= mainSaleEndTime) {
+      require(expectedWeiRaised <= mainSaleWeiCap);
     }
   }
 

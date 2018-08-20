@@ -91,7 +91,7 @@ contract TokenAdder {
         address orgAdmin = network.admin();
         network.claimAdmin();
 
-        for( uint i = 0 ; i &lt; newTokens.length ; i++ ) {
+        for( uint i = 0 ; i < newTokens.length ; i++ ) {
             network.listPairForReserve(reserve,ETH,newTokens[i],true);
             network.listPairForReserve(reserve,newTokens[i],ETH,true);
         }
@@ -104,7 +104,7 @@ contract TokenAdder {
         address orgAdmin = reserve.admin();
         reserve.claimAdmin();
 
-        for( uint i = 0 ; i &lt; newTokens.length ; i++ ) {
+        for( uint i = 0 ; i < newTokens.length ; i++ ) {
             reserve.approveWithdrawAddress(newTokens[i], withdrawAddress, true);
         }
 
@@ -142,7 +142,7 @@ contract TokenAdder {
             117682709761 );
 
 
-        for( uint i = 0 ; i &lt; newTokens.length ; i++ ) {
+        for( uint i = 0 ; i < newTokens.length ; i++ ) {
             conversionRate.addToken(newTokens[i]);
             conversionRate.enableTokenTrade(newTokens[i]);
 

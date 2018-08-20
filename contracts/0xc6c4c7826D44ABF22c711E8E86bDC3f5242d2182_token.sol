@@ -2,14 +2,14 @@ pragma solidity ^0.4.6;
 
 contract token { 
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     
 	string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 	
-    mapping (address =&gt; uint256) public coinBalanceOf;
+    mapping (address => uint256) public coinBalanceOf;
     event CoinTransfer(address sender, address receiver, uint256 amount);
 
   /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -32,7 +32,7 @@ contract token {
 
   /* Very simple trade function */
     function sendCoin(address receiver, uint256 amount) returns(bool sufficient) {
-        if (coinBalanceOf[msg.sender] &lt; amount) return false;
+        if (coinBalanceOf[msg.sender] < amount) return false;
         coinBalanceOf[msg.sender] -= amount;
         coinBalanceOf[receiver] += amount;
         CoinTransfer(msg.sender, receiver, amount);

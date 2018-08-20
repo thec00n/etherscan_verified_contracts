@@ -18,9 +18,9 @@ contract MasterDataProviderLock {
   bool public allFundsCanBeUnlocked = false;
   uint public lastLockingTime;
 
-  // amount =&gt; lockedUntil
-  mapping(uint =&gt; uint) public validLockingAmountToPeriod;
-  mapping(address =&gt; mapping(string =&gt; uint)) lockingData;
+  // amount => lockedUntil
+  mapping(uint => uint) public validLockingAmountToPeriod;
+  mapping(address => mapping(string => uint)) lockingData;
 
   event Withdrawn(address indexed withdrawer, uint indexed withdrawnAmount);
   event FundsLocked(
@@ -40,7 +40,7 @@ contract MasterDataProviderLock {
 
   modifier onlyOnceLockingPeriodIsOver(address _user) {
     require(
-      (now &gt;= lockingData[_user][&quot;lockedUntil&quot;] || allFundsCanBeUnlocked)
+      (now >= lockingData[_user]["lockedUntil"] || allFundsCanBeUnlocked)
     );
     _;
   }
@@ -52,26 +52,26 @@ contract MasterDataProviderLock {
 
   modifier checkUsersTokenBalance(uint _fundsToTransfer) {
     require(
-      _fundsToTransfer &lt;= VerityToken(tokenAddress).balanceOf(msg.sender)
+      _fundsToTransfer <= VerityToken(tokenAddress).balanceOf(msg.sender)
     );
     _;
   }
 
   modifier onlyOncePerUser(address _user) {
     require(
-      lockingData[_user][&quot;amount&quot;] == 0 &amp;&amp;
-        lockingData[_user][&quot;lockedUntil&quot;] == 0
+      lockingData[_user]["amount"] == 0 &&
+        lockingData[_user]["lockedUntil"] == 0
     );
     _;
   }
 
   modifier checkValidLockingTime() {
-    require(now &lt;= lastLockingTime);
+    require(now <= lastLockingTime);
     _;
   }
 
   modifier lastLockingTimeIsInTheFuture(uint _lastLockingTime) {
-    require(now &lt; _lastLockingTime);
+    require(now < _lastLockingTime);
     _;
   }
 
@@ -93,7 +93,7 @@ contract MasterDataProviderLock {
     tokenAddress = _tokenAddress;
     lastLockingTime = _lastLockingTime;
 
-    // expects &quot;ether&quot; format. Number is converted to wei:  num * 10**18
+    // expects "ether" format. Number is converted to wei:  num * 10**18
     setValidLockingAmountToPeriod(_lockingAmounts, _lockingPeriods);
   }
 
@@ -109,8 +109,8 @@ contract MasterDataProviderLock {
       VerityToken(tokenAddress).transferFrom(msg.sender, address(this), _tokens)
     );
 
-    lockingData[msg.sender][&quot;amount&quot;] = _tokens;
-    lockingData[msg.sender][&quot;lockedUntil&quot;] = validLockingAmountToPeriod[_tokens];
+    lockingData[msg.sender]["amount"] = _tokens;
+    lockingData[msg.sender]["lockedUntil"] = validLockingAmountToPeriod[_tokens];
 
     emit FundsLocked(
       msg.sender,
@@ -123,8 +123,8 @@ contract MasterDataProviderLock {
     public
     onlyOnceLockingPeriodIsOver(msg.sender)
   {
-    uint amountToBeTransferred = lockingData[msg.sender][&quot;amount&quot;];
-    lockingData[msg.sender][&quot;amount&quot;] = 0;
+    uint amountToBeTransferred = lockingData[msg.sender]["amount"];
+    lockingData[msg.sender]["amount"] = 0;
     VerityToken(tokenAddress).transfer(msg.sender, amountToBeTransferred);
 
     emit Withdrawn(
@@ -143,7 +143,7 @@ contract MasterDataProviderLock {
   }
 
   function getUserData(address _user) public view returns (uint[2]) {
-    return [lockingData[_user][&quot;amount&quot;], lockingData[_user][&quot;lockedUntil&quot;]];
+    return [lockingData[_user]["amount"], lockingData[_user]["lockedUntil"]];
   }
 
   function setValidLockingAmountToPeriod(

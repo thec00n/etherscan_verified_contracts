@@ -65,7 +65,7 @@ contract Ownable {
 contract Issuer is Ownable {
 
   /** Map addresses whose tokens we have already issued. */
-  mapping(address =&gt; bool) public issued;
+  mapping(address => bool) public issued;
 
   /** Centrally issued token we are distributing to our contributors */
   ERC20 public token;

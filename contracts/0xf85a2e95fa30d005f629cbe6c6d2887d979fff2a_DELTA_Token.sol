@@ -7,7 +7,7 @@ pragma solidity ^0.4.21;
    // Telegram Chat: @deltacoin
    // Telegram News: @deltaico
    // CEO Nechesov Andrey http://facebook.com/Nechesov     
-   // Ltd. &quot;Delta&quot;   
+   // Ltd. "Delta"   
    // Tokens Delta: BUY and SELL into this smart contract on exchange
    // ----------------------------------------------------------------------------------------------
     
@@ -19,20 +19,20 @@ pragma solidity ^0.4.21;
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
   }
@@ -76,8 +76,8 @@ pragma solidity ^0.4.21;
 
       using SafeMath for uint;
 
-      string public constant symbol = &quot;DELTA&quot;;
-      string public constant name = &quot;DELTA token&quot;;
+      string public constant symbol = "DELTA";
+      string public constant name = "DELTA token";
       uint8 public constant decimals = 18; 
            
       uint256 public constant maxTokens = (2**32-1)*10**18; 
@@ -98,16 +98,16 @@ pragma solidity ^0.4.21;
       address public owner;
    
       // Balances for each account
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
    
       // Owner of account approves the transfer of an amount to another account
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
 
       // Orders holders who wish sell tokens, save amount
-      mapping(address =&gt; uint256) public orders_sell_amount;
+      mapping(address => uint256) public orders_sell_amount;
 
       // Orders holders who wish sell tokens, save price
-      mapping(address =&gt; uint256) public orders_sell_price;
+      mapping(address => uint256) public orders_sell_price;
 
       //orders list
       address[] public orders_sell_list;
@@ -127,8 +127,8 @@ pragma solidity ^0.4.21;
       function migrate(uint256 _value) external {
           require(migrationAllowed);
           require(migrationAddress != 0x0);
-          require(_value &gt; 0);
-          require(_value &lt;= balances[msg.sender]);
+          require(_value > 0);
+          require(_value <= balances[msg.sender]);
 
           balances[msg.sender] = balances[msg.sender].sub(_value);
           _totalSupply = _totalSupply.sub(_value);
@@ -181,7 +181,7 @@ pragma solidity ^0.4.21;
       function withdraw(uint256 _amount) onlyOwner returns (bool result) {
           uint256 balance;
           balance = this.balance;
-          if(_amount &gt; 0) balance = _amount;
+          if(_amount > 0) balance = _amount;
           owner.send(balance);
           return true;
       }
@@ -240,12 +240,12 @@ pragma solidity ^0.4.21;
           return balances[_owner];
       }
    
-      // Transfer the balance from owner&#39;s account to another account
+      // Transfer the balance from owner's account to another account
       function transfer(address _to, uint256 _amount) returns (bool success) {          
 
-          if (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+          if (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
               balances[msg.sender] -= _amount;
               balances[_to] += _amount;
               Transfer(msg.sender, _to, _amount);
@@ -257,7 +257,7 @@ pragma solidity ^0.4.21;
    
       // Send _value amount of tokens from address _from to address _to
       // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-      // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+      // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
       // fees in sub-currencies; the command should fail unless the _from account has
       // deliberately authorized the sender of the message via some mechanism; we propose
       // these standardized APIs for approval:
@@ -267,10 +267,10 @@ pragma solidity ^0.4.21;
           uint256 _amount
      ) returns (bool success) {         
 
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -300,31 +300,31 @@ pragma solidity ^0.4.21;
 
         uint tnow = now;        
         
-        require(tnow &lt;= ico_finish);
-        require(_totalSupply &lt; maxTokens);
-        require(msg.value &gt;= token_price);        
+        require(tnow <= ico_finish);
+        require(_totalSupply < maxTokens);
+        require(msg.value >= token_price);        
 
         uint tokens_buy = msg.value*10**18/token_price;
 
-        require(tokens_buy &gt; 0);   
+        require(tokens_buy > 0);   
         
-        if(tnow &lt; ico_start + 86400*0){          
+        if(tnow < ico_start + 86400*0){          
           tokens_buy = tokens_buy*p1/100;
         } 
-        if((ico_start + 86400*0 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*2)){
+        if((ico_start + 86400*0 <= tnow)&&(tnow < ico_start + 86400*2)){
           tokens_buy = tokens_buy*p2/100;
         } 
-        if((ico_start + 86400*2 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*7)){
+        if((ico_start + 86400*2 <= tnow)&&(tnow < ico_start + 86400*7)){
           tokens_buy = tokens_buy*p3/100;        
         } 
-        if((ico_start + 86400*7 &lt;= tnow)&amp;&amp;(tnow &lt; ico_start + 86400*14)){
+        if((ico_start + 86400*7 <= tnow)&&(tnow < ico_start + 86400*14)){
           tokens_buy = tokens_buy*p4/100;        
         }
-        if(ico_start + 86400*14 &lt;= tnow){
+        if(ico_start + 86400*14 <= tnow){
           tokens_buy = tokens_buy*p5/100;        
         }         
 
-        require(_totalSupply.add(tokens_buy) &lt;= maxTokens);
+        require(_totalSupply.add(tokens_buy) <= maxTokens);
         _totalSupply = _totalSupply.add(tokens_buy);
         balances[msg.sender] = balances[msg.sender].add(tokens_buy);         
 
@@ -339,10 +339,10 @@ pragma solidity ^0.4.21;
 
         uint _amount_max = 0;
 
-        if(!(orders_sell_amount[_from] &gt; 0)) return _amount_max;
+        if(!(orders_sell_amount[_from] > 0)) return _amount_max;
 
-        if(balanceOf(_from) &gt; 0) _amount_max = balanceOf(_from);
-        if(orders_sell_amount[_from] &lt; _amount_max) _amount_max = orders_sell_amount[_from];
+        if(balanceOf(_from) > 0) _amount_max = balanceOf(_from);
+        if(orders_sell_amount[_from] < _amount_max) _amount_max = orders_sell_amount[_from];
 
         return _amount_max;
       }
@@ -352,8 +352,8 @@ pragma solidity ^0.4.21;
       */
       function order_sell(uint256 _max_amount, uint256 _price) returns (bool) {
 
-        require(_max_amount &gt; 0);
-        require(_price &gt; 0);        
+        require(_max_amount > 0);
+        require(_price > 0);        
 
         orders_sell_amount[msg.sender] = _max_amount;
         orders_sell_price[msg.sender] = (_price*coef).div(100);
@@ -364,26 +364,26 @@ pragma solidity ^0.4.21;
 
       function order_buy(address _from, uint256 _max_price) payable returns (bool) {
         
-        require(msg.value &gt; 0);
-        require(_max_price &gt; 0);        
-        require(orders_sell_amount[_from] &gt; 0);
-        require(orders_sell_price[_from] &gt; 0); 
-        require(orders_sell_price[_from] &lt;= _max_price);
+        require(msg.value > 0);
+        require(_max_price > 0);        
+        require(orders_sell_amount[_from] > 0);
+        require(orders_sell_price[_from] > 0); 
+        require(orders_sell_price[_from] <= _max_price);
 
         uint _amount = (msg.value*10**18).div(orders_sell_price[_from]);
         uint _amount_from = get_orders_sell_amount(_from);
 
-        if(_amount &gt; _amount_from) _amount = _amount_from;        
-        require(_amount &gt; 0);        
+        if(_amount > _amount_from) _amount = _amount_from;        
+        require(_amount > 0);        
 
         uint _total_money = (orders_sell_price[_from]*_amount).div(10**18);        
-        require(_total_money &lt;= msg.value);
+        require(_total_money <= msg.value);
 
         uint _seller_money = (_total_money*100).div(coef);
         uint _buyer_money = msg.value - _total_money;
 
-        require(_seller_money &gt; 0);        
-        require(_seller_money + _buyer_money &lt;= msg.value);
+        require(_seller_money > 0);        
+        require(_seller_money + _buyer_money <= msg.value);
         
         _from.send(_seller_money);
         msg.sender.send(_buyer_money);

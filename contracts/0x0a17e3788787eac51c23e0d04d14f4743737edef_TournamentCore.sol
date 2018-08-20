@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -157,7 +157,7 @@ contract AccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCLevel whenNotPaused {
         paused = true;
@@ -226,7 +226,7 @@ contract TournamentBase {
     enum CompetitionStatus { None, Start, End, Cancel }
 
     struct SponsorsInfo {
-        mapping(address =&gt; uint256) sponsors;
+        mapping(address => uint256) sponsors;
         uint256 totalAmount;
     }
 
@@ -240,12 +240,12 @@ contract TournamentBase {
         uint8 userCount;
     }
 
-    mapping (address =&gt; Team) public userToTeam;
+    mapping (address => Team) public userToTeam;
     address[] teamUserInfo;
 
     uint256 nextCompetitionId;
-    mapping (uint256 =&gt; CompetitionInfo) public competitionInfos;
-    mapping (uint256 =&gt; mapping (uint256 =&gt; SponsorsInfo)) public sponsorInfos;
+    mapping (uint256 => CompetitionInfo) public competitionInfos;
+    mapping (uint256 => mapping (uint256 => SponsorsInfo)) public sponsorInfos;
 
     PlayerInterface bsCoreContract;
     RandomInterface randomContract;
@@ -265,7 +265,7 @@ contract PlayerSkill {
     }
 
     function _getSkill(uint16 skillId) internal pure returns(uint16, uint16) {
-        return (skillId &gt;&gt; 2, (skillId &amp; 0x03));
+        return (skillId >> 2, (skillId & 0x03));
     }
 
     function triggerSkill(uint32[11][32] _playerIds, uint8[32] _teamWinCounts, uint8[4][31] _gameScores,
@@ -273,10 +273,10 @@ contract PlayerSkill {
             uint32[3][11][32] _playerAwakeSkills) internal pure {
 
         SkillConfig[35] memory skillConfigs = _getSkillConfigs();
-        for (uint8 i = 0; i &lt; 32; i++) {
-            for (uint8 j = 0; j &lt; 11; j++) {
+        for (uint8 i = 0; i < 32; i++) {
+            for (uint8 j = 0; j < 11; j++) {
                 uint16 skillId = _playerUnAwakeSkillIds[i][j];
-                if (skillId &gt; 0) {
+                if (skillId > 0) {
                     uint16 addAttriType;
                     (skillId, addAttriType) = _getSkill(skillId);
                     SkillConfig memory skillConfig = skillConfigs[skillId];
@@ -340,12 +340,12 @@ contract PlayerSkill {
         uint256 i;
         uint256 accumulateValue = 0;
         if (SkillType.WinGamesInOneTournament == _skillConfig.skillType) {
-            return _teamWinCounts[_teamIndex] &gt;= _skillConfig.target;
+            return _teamWinCounts[_teamIndex] >= _skillConfig.target;
         }
 
         if (SkillType.ScoreInOneGame == _skillConfig.skillType) {
-            for (i = 0; i &lt; 5; i++) {
-                if (_playerBalls[_teamIndex][_playerIndex][i] &gt;= _skillConfig.target) {
+            for (i = 0; i < 5; i++) {
+                if (_playerBalls[_teamIndex][_playerIndex][i] >= _skillConfig.target) {
                     return true;
                 }
             }
@@ -353,16 +353,16 @@ contract PlayerSkill {
         }
 
         if (SkillType.ScoreInOneTournament == _skillConfig.skillType) {
-            for (i = 0; i &lt; 5; i++) {
+            for (i = 0; i < 5; i++) {
                 accumulateValue += _playerBalls[_teamIndex][_playerIndex][i];
             }
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
 
 /*         if (SkillType.ChampionWithPlayerID == _skillConfig.skillType) {
-            if (_teamWinCounts[_teamIndex] &gt;= 5) {
-                for (i = 0; i &lt; 11; i++) {
+            if (_teamWinCounts[_teamIndex] >= 5) {
+                for (i = 0; i < 11; i++) {
                     if (_playerIds[i] == _skillConfig.target) {
                         return true;
                     }
@@ -372,65 +372,65 @@ contract PlayerSkill {
         } */
 
         if (SkillType.HattricksInOneTuournament == _skillConfig.skillType) {
-            for (i = 0; i &lt; 5; i++) {
-                if (_playerBalls[_teamIndex][_playerIndex][i] &gt;= 3) {
+            for (i = 0; i < 5; i++) {
+                if (_playerBalls[_teamIndex][_playerIndex][i] >= 3) {
                     accumulateValue++;
                 }
             }
 
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
         if (SkillType.Terminator == _skillConfig.skillType) {
-            for (i = 0; i &lt; 31; i++) {
-                if ((_gameScores[i][0] == _teamIndex &amp;&amp; _gameScores[i][2] == _gameScores[i][3]+1)
-                    || (_gameScores[i][1] == _teamIndex &amp;&amp; _gameScores[i][2]+1 == _gameScores[i][3])) {
-                    if (_gameBalls[i][2][1] == _teamIndex &amp;&amp; _gameBalls[i][2][2] == _playerIndex) {
+            for (i = 0; i < 31; i++) {
+                if ((_gameScores[i][0] == _teamIndex && _gameScores[i][2] == _gameScores[i][3]+1)
+                    || (_gameScores[i][1] == _teamIndex && _gameScores[i][2]+1 == _gameScores[i][3])) {
+                    if (_gameBalls[i][2][1] == _teamIndex && _gameBalls[i][2][2] == _playerIndex) {
                         accumulateValue++;
                     }
                 }
             }
 
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
         if (SkillType.LonelyKiller == _skillConfig.skillType) {
-            for (i = 0; i &lt; 31; i++) {
-                if ((_gameScores[i][0] == _teamIndex &amp;&amp; _gameScores[i][2] == 1 &amp;&amp; _gameScores[i][3] == 0)
-                    || (_gameScores[i][1] == _teamIndex &amp;&amp; _gameScores[i][2] == 0 &amp;&amp; _gameScores[i][3] == 1)) {
-                    if (_gameBalls[i][2][1] == _teamIndex &amp;&amp; _gameBalls[i][2][2] == _playerIndex) {
+            for (i = 0; i < 31; i++) {
+                if ((_gameScores[i][0] == _teamIndex && _gameScores[i][2] == 1 && _gameScores[i][3] == 0)
+                    || (_gameScores[i][1] == _teamIndex && _gameScores[i][2] == 0 && _gameScores[i][3] == 1)) {
+                    if (_gameBalls[i][2][1] == _teamIndex && _gameBalls[i][2][2] == _playerIndex) {
                         accumulateValue++;
                     }
                 }
             }
 
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
         if (SkillType.VictoryBringer == _skillConfig.skillType) {
-            for (i = 0; i &lt; 31; i++) {
-                if ((_gameScores[i][0] == _teamIndex &amp;&amp; _gameScores[i][2] &gt; _gameScores[i][3])
-                    || (_gameScores[i][1] == _teamIndex &amp;&amp; _gameScores[i][2] &lt; _gameScores[i][3])) {
-                    if (_gameBalls[i][0][1] == _teamIndex &amp;&amp; _gameBalls[i][0][2] == _playerIndex) {
+            for (i = 0; i < 31; i++) {
+                if ((_gameScores[i][0] == _teamIndex && _gameScores[i][2] > _gameScores[i][3])
+                    || (_gameScores[i][1] == _teamIndex && _gameScores[i][2] < _gameScores[i][3])) {
+                    if (_gameBalls[i][0][1] == _teamIndex && _gameBalls[i][0][2] == _playerIndex) {
                         accumulateValue++;
                     }
                 }
             }
 
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
         if (SkillType.Saver == _skillConfig.skillType) {
-            for (i = 0; i &lt; 31; i++) {
-                if (_gameBalls[i][1][1] == _teamIndex &amp;&amp; _gameBalls[i][1][2] == _playerIndex) {
+            for (i = 0; i < 31; i++) {
+                if (_gameBalls[i][1][1] == _teamIndex && _gameBalls[i][1][2] == _playerIndex) {
                     accumulateValue++;
                 }
             }
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
         if (SkillType.ICanDoBetterTournament == _skillConfig.skillType) {
-            for (i = 0; i &lt; 31; i++) {
+            for (i = 0; i < 31; i++) {
                 if (_gameScores[i][0] == _teamIndex) {
                     accumulateValue += _gameScores[i][3];
                 }
@@ -439,31 +439,31 @@ contract PlayerSkill {
                     accumulateValue += _gameScores[i][2];
                 }
             }
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
 
         if (SkillType.ICanDoBetter == _skillConfig.skillType) {
-            for (i = 0; i &lt; 31; i++) {
-                if ((_gameScores[i][0] == _teamIndex &amp;&amp; _gameScores[i][3] &gt;= _skillConfig.target)
-                    || (_gameScores[i][1] == _teamIndex &amp;&amp; _gameScores[i][2] &gt;= _skillConfig.target)) {
+            for (i = 0; i < 31; i++) {
+                if ((_gameScores[i][0] == _teamIndex && _gameScores[i][3] >= _skillConfig.target)
+                    || (_gameScores[i][1] == _teamIndex && _gameScores[i][2] >= _skillConfig.target)) {
                     return true;
                 }
             }
             return false;
         }
 
-        if (SkillType.LearnFromFailure == _skillConfig.skillType &amp;&amp; _teamIndex == 0) {
-            for (i = 0; i &lt; 31; i++) {
-                if ((_gameScores[i][0] == _teamIndex &amp;&amp; _gameScores[i][3] &gt;= _skillConfig.target)
-                    || (_gameScores[i][1] == _teamIndex &amp;&amp; _gameScores[i][2] &gt;= _skillConfig.target)) {
+        if (SkillType.LearnFromFailure == _skillConfig.skillType && _teamIndex == 0) {
+            for (i = 0; i < 31; i++) {
+                if ((_gameScores[i][0] == _teamIndex && _gameScores[i][3] >= _skillConfig.target)
+                    || (_gameScores[i][1] == _teamIndex && _gameScores[i][2] >= _skillConfig.target)) {
                     return true;
                 }
             }
             return false;
         }
 
-        if (SkillType.LearnFromFailureTournament == _skillConfig.skillType &amp;&amp; _teamIndex == 0) {
-            for (i = 0; i &lt; 31; i++) {
+        if (SkillType.LearnFromFailureTournament == _skillConfig.skillType && _teamIndex == 0) {
+            for (i = 0; i < 31; i++) {
                 if (_gameScores[i][0] == _teamIndex) {
                     accumulateValue += _gameScores[i][3];
                 }
@@ -472,7 +472,7 @@ contract PlayerSkill {
                     accumulateValue += _gameScores[i][2];
                 }
             }
-            return accumulateValue &gt;= _skillConfig.target;
+            return accumulateValue >= _skillConfig.target;
         }
     }
 }
@@ -516,14 +516,14 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
         battleInfo.competitionId = _competitionId;
         battleInfo.seed = randomContract.maxRandom();
         battleInfo.teamLength = uint8(ci.userCount);
-        for (uint8 i = 0; i &lt; battleInfo.teamLength; i++) {
+        for (uint8 i = 0; i < battleInfo.teamLength; i++) {
             battleInfo.teamIndexs[i] = i;
         }
 
         _queryBattleInfo(ci, battleInfo, playerUnAwakeSkillIds);
-        while (battleInfo.teamLength &gt; 1) {
+        while (battleInfo.teamLength > 1) {
             _battle(ci, battleInfo, gameScores, gameBalls, playerBalls);
-            for (i = 0; i &lt; battleInfo.teamLength; i++) {
+            for (i = 0; i < battleInfo.teamLength; i++) {
                 _teamWinCounts[battleInfo.teamIndexs[i]] += 1;
             }
         }
@@ -535,7 +535,7 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
     }
 
     function _queryBattleInfo(CompetitionInfo storage ci, BattleInfo memory _battleInfo, uint16[11][32] memory _playerUnAwakeSkillIds) internal view {
-        for (uint8 i = 0; i &lt; _battleInfo.teamLength; i++) {
+        for (uint8 i = 0; i < _battleInfo.teamLength; i++) {
 
             Team storage team = userToTeam[ci.users[i]];
             _battleInfo.allPlayerIds[i] = team.playerIds;
@@ -559,7 +559,7 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
     function _battle(CompetitionInfo storage _ci, BattleInfo _battleInfo, uint8[4][31] _gameScores,
             uint8[3][3][31] _gameBalls, uint8[5][11][32] _playerBalls) internal {
         uint8 resultTeamLength = 0;
-        for (uint8 i = 0; i &lt; _battleInfo.teamLength; i+=2) {
+        for (uint8 i = 0; i < _battleInfo.teamLength; i+=2) {
             uint8 a = _battleInfo.teamIndexs[i];
             uint8 b = _battleInfo.teamIndexs[i+1];
             uint8 scoreA;
@@ -569,7 +569,7 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
             _battleInfo.addressA = _ci.users[a];
             _battleInfo.addressB = _ci.users[b];
             (scoreA, scoreB) = _battleTeam(_battleInfo, _gameScores, _gameBalls, _playerBalls);
-            if (scoreA &gt; scoreB) {
+            if (scoreA > scoreB) {
                 _battleInfo.teamIndexs[resultTeamLength++] = a;
             } else {
                 _battleInfo.teamIndexs[resultTeamLength++] = b;
@@ -597,7 +597,7 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
         _battleScore(_battleInfo, halfBattleMinutes, _playerBalls, _gameBalls);
 
         uint8 i = 0;
-        for (i = 0; i &lt; 11; i++) {
+        for (i = 0; i < 11; i++) {
             scoreA += _playerBalls[_battleInfo.indexA][i][_battleInfo.roundIndex];
             scoreB += _playerBalls[_battleInfo.indexB][i][_battleInfo.roundIndex];
         }
@@ -617,13 +617,13 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
 
     function _battleScore(BattleInfo _battleInfo, uint256 _timeoffset, uint8[5][11][32] _playerBalls, uint8[3][3][31] _gameBalls) internal {
         uint256 _battleMinutes = 0;
-        while (_battleMinutes &lt; halfBattleMinutes - minBattleMinutes) {
+        while (_battleMinutes < halfBattleMinutes - minBattleMinutes) {
             bool isAWin;
             uint256 scoreTime;
             uint8 index;
             (isAWin, scoreTime) = _battleOneScore(_battleInfo);
             _battleMinutes += scoreTime;
-            if (_battleMinutes &lt;= halfBattleMinutes) {
+            if (_battleMinutes <= halfBattleMinutes) {
                 uint8 teamIndex;
                 address addressWin;
 
@@ -651,7 +651,7 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
         uint256 tB;
         (_battleInfo.seed, tB) = randomContract.randomNext(_battleInfo.seed, _battleInfo.maxRangeB-minBattleMinutes+1);
         tB += minBattleMinutes;
-        if (tA &lt; tB || (tA == tB &amp;&amp; _battleInfo.seed % 2 == 0)) {
+        if (tA < tB || (tA == tB && _battleInfo.seed % 2 == 0)) {
            return (true, tA);
         } else {
            return (false, tB);
@@ -662,8 +662,8 @@ contract TournamentCompetition is TournamentBase, PlayerSkill {
         uint256 rand;
         (_seed, rand) = randomContract.randomNext(_seed, _atkWeight[_atkWeight.length-1]);
         rand += 1;
-        for (uint8 i = 0; i &lt; _atkWeight.length; i++) {
-            if (_atkWeight[i] &gt;= rand) {
+        for (uint8 i = 0; i < _atkWeight.length; i++) {
+            if (_atkWeight[i] >= rand) {
                 return (_seed, i);
             }
         }
@@ -762,13 +762,13 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
     function getOperationCost(uint256 teamCount) public view returns (uint256) {
         uint256 cost = 0;
-        if (teamCount &lt;= 2) {
+        if (teamCount <= 2) {
             cost = operatingCosts[0];
-        } else if(teamCount &lt;= 4) {
+        } else if(teamCount <= 4) {
             cost = operatingCosts[1];
-        } else if(teamCount &lt;= 8) {
+        } else if(teamCount <= 8) {
             cost = operatingCosts[2];
-        } else if(teamCount &lt;= 16) {
+        } else if(teamCount <= 16) {
             cost = operatingCosts[3];
         } else {
             cost = operatingCosts[4];
@@ -778,7 +778,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
     function isPlayerIdle(address _owner, uint256 _playerId) public view returns (bool) {
         Team storage teamInfo = userToTeam[_owner];
-        for (uint256 i = 0; i &lt; teamInfo.playerIds.length; i++) {
+        for (uint256 i = 0; i < teamInfo.playerIds.length; i++) {
             if (teamInfo.playerIds[i] == _playerId) {
                 return false;
             }
@@ -789,11 +789,11 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
     function enter(address _sender, uint256 _fees, uint8 _defenceCount, uint8 _midfieldCount, uint8 _forwardCount,
             uint32[11] _playerIds) external whenNotPaused {
-        require(_fees &gt;= minEnterFee);
+        require(_fees >= minEnterFee);
         require(_playerIds.length == 11);
-        require(_defenceCount &gt;= 1 &amp;&amp; _defenceCount &lt;= 5);
-        require(_midfieldCount &gt;= 1 &amp;&amp; _midfieldCount &lt;= 5);
-        require(_forwardCount &gt;= 1 &amp;&amp; _forwardCount &lt;= 5);
+        require(_defenceCount >= 1 && _defenceCount <= 5);
+        require(_midfieldCount >= 1 && _midfieldCount <= 5);
+        require(_forwardCount >= 1 && _forwardCount <= 5);
         require(_defenceCount + _midfieldCount + _forwardCount == 10);
 
         require(msg.sender == address(joyTokenContract) || msg.sender == _sender);
@@ -802,20 +802,20 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
         uint32[11] memory ids = _playerIds;
         _insertSortMemory(ids);
-        for (uint256 i = 0; i &lt; 11 - 1; i++) {
-            require(ids[i] &lt; ids[i + 1]);
+        for (uint256 i = 0; i < 11 - 1; i++) {
+            require(ids[i] < ids[i + 1]);
         }
 
         require(bsCoreContract.checkOwner(_sender, _playerIds));
         uint32[11] memory playerTypes = bsCoreContract.queryPlayerType(_playerIds);
         _insertSortMemory(playerTypes);
-        for (i = 0; i &lt; 11 - 1; i++) {
-            if (playerTypes[i] &gt; 0) {
+        for (i = 0; i < 11 - 1; i++) {
+            if (playerTypes[i] > 0) {
                 break;
             }
         }
-        for (; i &lt; 11 - 1; i++) {
-            require(playerTypes[i] &lt; playerTypes[i + 1]);
+        for (; i < 11 - 1; i++) {
+            require(playerTypes[i] < playerTypes[i + 1]);
         }
 
         Team storage teamInfo = userToTeam[_sender];
@@ -831,7 +831,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         uint256 fees = teamInfo.fees;
         uint128 index = teamInfo.index;
         require(teamUserInfo[index-1] == _user);
-        if (index &lt; teamUserInfo.length) {
+        if (index < teamUserInfo.length) {
             address user = teamUserInfo[teamUserInfo.length-1];
             teamUserInfo[index-1] = user;
             userToTeam[user].index = index;
@@ -844,7 +844,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
     }
 
     function cancelAllEnter() external onlyCOO {
-        for (uint256 i = 0; i &lt; teamUserInfo.length; i++) {
+        for (uint256 i = 0; i < teamUserInfo.length; i++) {
             address user = teamUserInfo[i];
             Team storage teamInfo = userToTeam[user];
             require(teamInfo.status == TeamStatus.Enter);
@@ -902,20 +902,20 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         _getAttribute(_playerIds, 0, PlayerPosType.GoalKeeper, 1, 0, playerAttrs);
         uint8 startIndex = 1;
         uint8 i;
-        for (i = startIndex; i &lt; startIndex + _defenceCount; i++) {
+        for (i = startIndex; i < startIndex + _defenceCount; i++) {
             _getAttribute(_playerIds, i, PlayerPosType.Defence, _defenceCount, i - startIndex, playerAttrs);
         }
         startIndex = startIndex + _defenceCount;
-        for (i = startIndex; i &lt; startIndex + _midfieldCount; i++) {
+        for (i = startIndex; i < startIndex + _midfieldCount; i++) {
             _getAttribute(_playerIds, i, PlayerPosType.Midfield, _midfieldCount, i - startIndex, playerAttrs);
         }
         startIndex = startIndex + _midfieldCount;
-        for (i = startIndex; i &lt; startIndex + _forwardCount; i++) {
+        for (i = startIndex; i < startIndex + _forwardCount; i++) {
             _getAttribute(_playerIds, i, PlayerPosType.Forward, _forwardCount, i - startIndex, playerAttrs);
         }
 
         uint16 lastAtkWeight = 0;
-        for (i = 0; i &lt; _playerIds.length; i++) {
+        for (i = 0; i < _playerIds.length; i++) {
             _attrs[0] += playerAttrs[i][0];
             _attrs[1] += playerAttrs[i][1];
             _attrs[2] += playerAttrs[i][2];
@@ -939,11 +939,11 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         uint256 dWeight;
         (aWeight, dWeight) = _getWeight(yPos);
         uint256 sWeight = 100 - aWeight - dWeight;
-        if (_type == PlayerPosType.GoalKeeper &amp;&amp; a[5] == 1) {
+        if (_type == PlayerPosType.GoalKeeper && a[5] == 1) {
             dWeight += dWeight;
         }
         uint256 xWeight = 50;
-        if (xPos + 1 &gt;= a[4] &amp;&amp; xPos &lt;= a[4] + 1) {
+        if (xPos + 1 >= a[4] && xPos <= a[4] + 1) {
             xWeight = 100;
         }
         playerAttrs[_i][0] = (a[1] * aWeight * xWeight);
@@ -1048,7 +1048,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
     ///
     function start(uint8 _minTeamCount) external onlyCOO whenNotPaused returns (uint256) {
-        require(teamUserInfo.length &gt;= _minTeamCount);
+        require(teamUserInfo.length >= _minTeamCount);
 
         uint256 competitionId = nextCompetitionId++;
         CompetitionInfo storage ci = competitionInfos[competitionId];
@@ -1059,16 +1059,16 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         uint256 i;
         uint256 startI = teamUserInfo.length - _minTeamCount;
         uint256 j;
-        require(ci.users.length &gt;= _minTeamCount);
+        require(ci.users.length >= _minTeamCount);
         ci.userCount = _minTeamCount;
         uint256 seed = randomContract.maxRandom();
         address[32] memory selectUserInfo;
-        for (i = startI; i &lt; teamUserInfo.length; i++) {
+        for (i = startI; i < teamUserInfo.length; i++) {
             selectUserInfo[i - startI] = teamUserInfo[i];
         }
         i = teamUserInfo.length;
         teamUserInfo.length = teamUserInfo.length - _minTeamCount;
-        for (; i &gt; startI; i--) {
+        for (; i > startI; i--) {
 
             //random from 0 to i
             uint256 m;
@@ -1076,7 +1076,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
             //take out [m], put into competitionInfo
             address user;
-            if (m &lt; startI) {
+            if (m < startI) {
                 user = teamUserInfo[m];
             } else {
                 user = selectUserInfo[m-startI];
@@ -1095,7 +1095,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
                 user = selectUserInfo[i - 1 - startI];
             
-                if (m &lt; startI) {
+                if (m < startI) {
                     teamUserInfo[m] = user;
                     userToTeam[user].index = uint128(m + 1);
                 } else {
@@ -1118,11 +1118,11 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
         CompetitionInfo storage ci = competitionInfos[_competitionId];
         require(ci.status == CompetitionStatus.Start);
-        //require(now &lt; ci.startTime + sponsorInterval);
+        //require(now < ci.startTime + sponsorInterval);
 
         require(joyTokenContract.transferFrom(_sender, address(this), _count));
 
-        require(_teamIdx &lt; ci.userCount);
+        require(_teamIdx < ci.userCount);
         address targetUser = ci.users[_teamIdx];
         Team storage teamInfo = userToTeam[targetUser];
         require(teamInfo.status == TeamStatus.Competition);
@@ -1135,22 +1135,22 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
     }
 
     function reward(uint256 _competitionId, uint256 _teamIdx) external whenNotPaused {
-        require(_teamIdx &lt; 32);
+        require(_teamIdx < 32);
 
         SponsorsInfo storage si = sponsorInfos[_competitionId][_teamIdx];
         uint256 baseValue = si.sponsors[msg.sender];
-        require(baseValue &gt; 0);
+        require(baseValue > 0);
         CompetitionInfo storage ci = competitionInfos[_competitionId];
         if (ci.status == CompetitionStatus.Cancel) {
             // if (msg.sender == ci.users[_teamIdx]) {
             //     Team storage teamInfo = userToTeam[msg.sender];
-            //     require(teamInfo.index == _competitionId &amp;&amp; teamInfo.status == TeamStatus.Competition);
+            //     require(teamInfo.index == _competitionId && teamInfo.status == TeamStatus.Competition);
             //     delete userToTeam[msg.sender];
             // }
             delete si.sponsors[msg.sender];
             require(joyTokenContract.transfer(msg.sender, baseValue));
         } else if (ci.status == CompetitionStatus.End) {
-            require(ci.teamWinCounts[_teamIdx] &gt; 0);
+            require(ci.teamWinCounts[_teamIdx] > 0);
 
             uint256 rewardValue = baseValue.mul(_getWinCountWeight(ci.teamWinCounts[_teamIdx]));
             rewardValue = ci.totalReward.mul(rewardValue) / ci.totalWeight;
@@ -1176,7 +1176,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
 
         bsCoreContract.tournamentResult(playerAwakeSkills);
 
-        for (uint256 i = 0; i &lt; ci.userCount; i++) {
+        for (uint256 i = 0; i < ci.userCount; i++) {
             delete userToTeam[ci.users[i]];
         }
     }
@@ -1186,9 +1186,9 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         require(ci.status == CompetitionStatus.Start);
         ci.status = CompetitionStatus.Cancel;
 
-        for (uint256 i = 0; i &lt; ci.userCount; i++) {
+        for (uint256 i = 0; i < ci.userCount; i++) {
             //Team storage teamInfo = userToTeam[ci.users[i]];
-            //require(teamInfo.index == _id &amp;&amp; teamInfo.status == TeamStatus.Competition);
+            //require(teamInfo.index == _id && teamInfo.status == TeamStatus.Competition);
 
             delete userToTeam[ci.users[i]];
         }
@@ -1217,7 +1217,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
             return 4;
         }
 
-        if (_winCount &gt;= 5) {
+        if (_winCount >= 5) {
             return 8;
         }
     }
@@ -1226,7 +1226,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         uint256 totalReward = 0;
         uint256 totalWeight = 0;
         uint256 i;
-        for (i = 0; i &lt; ci.userCount; i++) {
+        for (i = 0; i < ci.userCount; i++) {
             if (teamWinCounts[i] == 0) {
                 totalReward = totalReward.add(sponsorInfos[_competitionId][i].totalAmount);
             } else {
@@ -1239,7 +1239,7 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         uint256 cost = getOperationCost(ci.userCount);
 
         uint256 ownerCut;
-        if (totalReward &gt; cost) {
+        if (totalReward > cost) {
             ownerCut = cost.add((totalReward - cost).mul(3)/100);
             totalReward = totalReward.sub(ownerCut);
         } else {
@@ -1263,10 +1263,10 @@ contract TournamentCore is TournamentInterface, TournamentCompetition, AccessCon
         uint32 key;
         uint256 j;
 
-        for (i = 1; i &lt; n; i++) {
+        for (i = 1; i < n; i++) {
             key = arr[i];
 
-            for (j = i; j &gt; 0 &amp;&amp; arr[j-1] &gt; key; j--) {
+            for (j = i; j > 0 && arr[j-1] > key; j--) {
                 arr[j] = arr[j-1];
             }
 

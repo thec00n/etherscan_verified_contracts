@@ -8,21 +8,21 @@ contract Owned {
 
 contract SharedBank is Owned {
     address public Owner;
-    mapping (address=&gt;uint) public deposits;
+    mapping (address=>uint) public deposits;
     
     function init() { Owner = msg.sender; }
     
     function() payable { deposit(); }
     
     function deposit() payable {
-        if( msg.value &gt;= 1 ether )
+        if( msg.value >= 1 ether )
             deposits[msg.sender] += msg.value;
         else return;
     }
     
     function withdraw(uint amount) onlyOwner {
         uint depo = deposits[msg.sender];
-        if( amount &lt;= depo &amp;&amp; depo &gt; 0 )
+        if( amount <= depo && depo > 0 )
             msg.sender.send(amount);
     }
 

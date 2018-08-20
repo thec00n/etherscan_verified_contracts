@@ -1,10 +1,10 @@
 interface tokenRecipient { function receiveApproval(address from, uint256 value, address token, bytes extraData) public; }
 
 contract CoinDump {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
-    string public name = &#39;CoinDump&#39;;
-    string public symbol = &#39;CD&#39;;
+    string public name = 'CoinDump';
+    string public symbol = 'CD';
     uint8 public decimals = 6;
     
     function transfer(address _to, uint256 _value) public {

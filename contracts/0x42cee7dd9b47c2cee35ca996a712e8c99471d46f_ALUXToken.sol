@@ -26,8 +26,8 @@ contract TokenERC20 {
     string public symbol;
     uint8 public decimals = 0;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -44,8 +44,8 @@ contract TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -58,7 +58,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -78,7 +78,7 @@ contract ALUXToken is owned, TokenERC20 {
     bool public closeSell = false;
     address public commissionGetter = 0xCd8bf69ad65c5158F0cfAA599bBF90d7f4b52Bb0;
     uint256 public minimumCommission = 100000000000000;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
     event LogDeposit(address sender, uint amount);
@@ -92,8 +92,8 @@ contract ALUXToken is owned, TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt;= _value);
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require (balanceOf[_from] >= _value);
+        require (balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -108,20 +108,20 @@ contract ALUXToken is owned, TokenERC20 {
     function transfer(address _to, uint256 _value) public {
         uint market_value = _value * sellPrice;
         uint commission = market_value * 4 / 1000;
-        if (commission &lt; minimumCommission){ commission = minimumCommission; }
+        if (commission < minimumCommission){ commission = minimumCommission; }
         address contr = this;
-        require(contr.balance &gt;= commission);
+        require(contr.balance >= commission);
         commissionGetter.transfer(commission);
         _transfer(msg.sender, _to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         uint market_value = _value * sellPrice;
         uint commission = market_value * 4 / 1000;
-        if (commission &lt; minimumCommission){ commission = minimumCommission; }
+        if (commission < minimumCommission){ commission = minimumCommission; }
         address contr = this;
-        require(contr.balance &gt;= commission);
+        require(contr.balance >= commission);
         commissionGetter.transfer(commission);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -152,7 +152,7 @@ contract ALUXToken is owned, TokenERC20 {
 
     function deposit() payable public returns(bool success) {
         address contr = this;
-        require((contr.balance + msg.value) &gt; contr.balance);
+        require((contr.balance + msg.value) > contr.balance);
         LogDeposit(msg.sender, msg.value);
         return true;
     }
@@ -167,9 +167,9 @@ contract ALUXToken is owned, TokenERC20 {
         uint amount = msg.value / buyPrice;
         uint market_value = amount * buyPrice;
         uint commission = market_value * 4 / 1000;
-        if (commission &lt; minimumCommission){ commission = minimumCommission; }
+        if (commission < minimumCommission){ commission = minimumCommission; }
         address contr = this;
-        require(contr.balance &gt;= commission);
+        require(contr.balance >= commission);
         commissionGetter.transfer(commission);
         _transfer(this, msg.sender, amount);
     }
@@ -179,9 +179,9 @@ contract ALUXToken is owned, TokenERC20 {
         address contr = this;
         uint market_value = amount * sellPrice;
         uint commission = market_value * 4 / 1000;
-        if (commission &lt; minimumCommission){ commission = minimumCommission; }
+        if (commission < minimumCommission){ commission = minimumCommission; }
         uint amount_weis = market_value + commission;
-        require(contr.balance &gt;= amount_weis);
+        require(contr.balance >= amount_weis);
         commissionGetter.transfer(commission);
         _transfer(msg.sender, this, amount);
         msg.sender.transfer(market_value);

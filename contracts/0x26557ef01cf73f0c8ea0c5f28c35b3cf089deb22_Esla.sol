@@ -2,7 +2,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -41,9 +41,9 @@ contract Esla is Ownable{
 		string telephone;
 		string fax;
 	}
-	mapping (address =&gt; PersonalInfo) personalInfos;
+	mapping (address => PersonalInfo) personalInfos;
 	address[] public users;
-	mapping (address =&gt; bool) authorized;
+	mapping (address => bool) authorized;
 	event Authorized(address indexed user_wallet_address);
   event DeAuthorized(address indexed user_wallet_address);
   event PersonalInfoAdded(address indexed user_wallet_address, string full_name, string company, 

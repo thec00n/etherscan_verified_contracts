@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -236,7 +236,7 @@ contract Pausable is Ownable {
  * @dev ERC20 Hamster Marketplace Token Network Token (HMT)
  *
  * HMT Tokens are divisible by 1e8 (100,000,000) base
- * units referred to as &#39;Grains&#39;.
+ * units referred to as 'Grains'.
  *
  * HMT are displayed using 8 decimal places of precision.
  *
@@ -252,8 +252,8 @@ contract Pausable is Ownable {
  */
 contract HamsterMarketplaceToken is StandardToken, Pausable {
 
-  string public constant name = &#39;Hamster Marketplace Token&#39;;                       // Set the token name for display
-  string public constant symbol = &#39;HMT&#39;;                                       // Set the token symbol for display
+  string public constant name = 'Hamster Marketplace Token';                       // Set the token name for display
+  string public constant symbol = 'HMT';                                       // Set the token symbol for display
   uint8 public constant decimals = 8;                                          // Set the number of decimals for display
   uint256 public constant INITIAL_SUPPLY = 20000000 * 10**uint256(decimals); // 1 Billion HMT specified in Grains\
   uint256 public sellPrice;
@@ -300,26 +300,26 @@ contract HamsterMarketplaceToken is StandardToken, Pausable {
 
 
   function setPrice(uint256 newSellPrice) onlyOwner returns (bool success) {
-      require(newSellPrice &gt; 0);
+      require(newSellPrice > 0);
       sellPrice = newSellPrice;
       return true;
   }
 
 
   function sell(uint amount) returns (uint revenue){
-      require(balances[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-      balances[this] = balances[this].add(amount);                        // adds the amount to owner&#39;s balance
-      balances[msg.sender] = balances[msg.sender].sub(amount);                  // subtracts the amount from seller&#39;s balance
+      require(balances[msg.sender] >= amount);         // checks if the sender has enough to sell
+      balances[this] = balances[this].add(amount);                        // adds the amount to owner's balance
+      balances[msg.sender] = balances[msg.sender].sub(amount);                  // subtracts the amount from seller's balance
       revenue = amount.mul(sellPrice);
-      require(msg.sender.send(revenue));                // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+      require(msg.sender.send(revenue));                // sends ether to the seller: it's important to do this last to prevent recursion attacks
       Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
       return revenue;                                   // ends function and returns
   }
 
   function getTokens(uint amount) onlyOwner  returns (bool success) {
-      require(balances[this] &gt;= amount);               // checks if it has enough to sell
-      balances[msg.sender] = balances[msg.sender].add(amount);                    // adds the amount to buyer&#39;s balance
-      balances[this] = balances[this].sub(amount);                               // subtracts amount from seller&#39;s balance
+      require(balances[this] >= amount);               // checks if it has enough to sell
+      balances[msg.sender] = balances[msg.sender].add(amount);                    // adds the amount to buyer's balance
+      balances[this] = balances[this].sub(amount);                               // subtracts amount from seller's balance
       Transfer(this, msg.sender, amount);               // execute an event reflecting the change
       return true;                                    // ends function and returns
   }
@@ -330,7 +330,7 @@ contract HamsterMarketplaceToken is StandardToken, Pausable {
 
 
   function getEther(uint amount) onlyOwner returns (bool success) {
-      require(msg.sender.send(amount));                 // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+      require(msg.sender.send(amount));                 // sends ether to the seller: it's important to do this last to prevent recursion attacks
       return true;                                  // ends function and returns
   }
 

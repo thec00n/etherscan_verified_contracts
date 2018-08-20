@@ -29,8 +29,8 @@ contract LegendsCrowdfund {
 
     LegendsToken public legendsToken;
 
-    mapping (address =&gt; uint) public recipientETH;
-    mapping (address =&gt; uint) public recipientVIP;
+    mapping (address => uint) public recipientETH;
+    mapping (address => uint) public recipientVIP;
 
     uint public totalETH;
     uint public totalVIP;
@@ -41,7 +41,7 @@ contract LegendsCrowdfund {
         if (address(legendsToken) == 0) {
             throw;
         }
-        if (block.timestamp &lt; start) {
+        if (block.timestamp < start) {
             throw;
         }
         _;
@@ -118,7 +118,7 @@ contract LegendsCrowdfund {
         uint VIP = msg.value * 10;  // $1 / VIP based on $10 / ETH value.
 
         // Are we in the pre-sale?
-        if (block.timestamp - start &lt; 2 weeks) {
+        if (block.timestamp - start < 2 weeks) {
             VIP = (VIP * 10) / 9;   // 10% discount.
         }
 
@@ -127,7 +127,7 @@ contract LegendsCrowdfund {
         totalVIP += VIP;
 
         // Check we have not exceeded the maximum VIP.
-        if (totalVIP &gt; limitVIP) {
+        if (totalVIP > limitVIP) {
             throw;
         }
 
@@ -145,13 +145,13 @@ contract LegendsCrowdfund {
  * @title LegendsToken
  */
 contract LegendsToken is ERC20 {
-    string public name = &#39;VIP&#39;;             //The Token&#39;s name: e.g. DigixDAO Tokens
-    uint8 public decimals = 18;             // 1Token &#168;= 1$ (1ETH &#168;= 10$)
-    string public symbol = &#39;VIP&#39;;           //An identifier: e.g. REP
-    string public version = &#39;VIP_0.1&#39;;
+    string public name = 'VIP';             //The Token's name: e.g. DigixDAO Tokens
+    uint8 public decimals = 18;             // 1Token ¨= 1$ (1ETH ¨= 10$)
+    string public symbol = 'VIP';           //An identifier: e.g. REP
+    string public version = 'VIP_0.1';
 
-    mapping (address =&gt; uint) ownerVIP;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) ownerVIP;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalVIP;
     uint public start;
 
@@ -167,14 +167,14 @@ contract LegendsToken is ERC20 {
     }
 
     modifier isActive() {
-        if (block.timestamp &lt; start) {
+        if (block.timestamp < start) {
             throw;
         }
         _;
     }
 
     modifier isNotActive() {
-        if (!testing &amp;&amp; block.timestamp &gt;= start) {
+        if (!testing && block.timestamp >= start) {
             throw;
         }
         _;
@@ -188,11 +188,11 @@ contract LegendsToken is ERC20 {
     }
 
     modifier allowanceIsZero(address spender, uint value) {
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         // allowance to zero by calling `approve(_spender,0)` if it is not
         // already 0 to mitigate the race condition described here:
         // https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((value != 0) &amp;&amp; (allowed[msg.sender][spender] != 0)) {
+        if ((value != 0) && (allowed[msg.sender][spender] != 0)) {
             throw;
         }
         _;
@@ -240,7 +240,7 @@ contract LegendsToken is ERC20 {
      * @dev Implements ERC20 transfer()
      */
     function transfer(address _to, uint256 _value) isActive recipientIsValid(_to) returns (bool success) {
-        if (ownerVIP[msg.sender] &gt;= _value) {
+        if (ownerVIP[msg.sender] >= _value) {
             ownerVIP[msg.sender] -= _value;
             ownerVIP[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -254,7 +254,7 @@ contract LegendsToken is ERC20 {
      * @dev Implements ERC20 transferFrom()
      */
     function transferFrom(address _from, address _to, uint256 _value) isActive recipientIsValid(_to) returns (bool success) {
-        if (allowed[_from][msg.sender] &gt;= _value &amp;&amp; ownerVIP[_from] &gt;= _value) {
+        if (allowed[_from][msg.sender] >= _value && ownerVIP[_from] >= _value) {
             ownerVIP[_to] += _value;
             ownerVIP[_from] -= _value;
             allowed[_from][msg.sender] -= _value;

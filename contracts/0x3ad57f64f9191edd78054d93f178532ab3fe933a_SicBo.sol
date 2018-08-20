@@ -3,10 +3,10 @@ pragma solidity ^0.4.16;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -65,7 +65,7 @@ contract SicBo is Owned {
         address Buyer;
     }
     
-    mapping (bytes32 =&gt; Game) public TicketPool;
+    mapping (bytes32 => Game) public TicketPool;
     
     event SubmitTicket(bytes32 indexed SecretKey_D_hash, uint Bet_amount, bytes32 Bet, bytes32 SecretKey_P, address Player);   
     event Result(bytes32 indexed SecretKey_D_hash, bytes32 indexed SecretKey_D,address indexed Buyer, uint Dice1, uint Dice2, uint Dice3, uint Game_Result, uint time);
@@ -80,10 +80,10 @@ contract SicBo is Owned {
     function submit(bytes32 Bets, bytes32 secretKey_P, bytes32 secretKey_D_hash) payable public {
         
         require(TicketPool[secretKey_D_hash].Time == 0);
-        require(msg.value &gt;= LimitBottom &amp;&amp; msg.value &lt;= LimitTop);
+        require(msg.value >= LimitBottom && msg.value <= LimitTop);
 
         uint  bet_total_amount = 0;
-        for (uint i = 0; i &lt; 29; i++) {
+        for (uint i = 0; i < 29; i++) {
             if(Bets[i] == 0x00) continue;
             
             uint bet_amount_ = uint(Bets[i]).mul(10000000000000000);
@@ -108,21 +108,21 @@ contract SicBo is Owned {
         
         Game local_ = TicketPool[secretKey_D_hash];
         
-        require(local_.Time != 0 &amp;&amp; !local_.isPlay);
+        require(local_.Time != 0 && !local_.isPlay);
         
-        uint dice1 = uint(keccak256(&quot;Pig World ia a Awesome game place&quot;, local_.SecretKey_P, secretKey_D)) % 6 + 1;
-        uint dice2 = uint(keccak256(secretKey_D, &quot;So you will like us so much!!!!&quot;, local_.SecretKey_P)) % 6 + 1;
-        uint dice3 = uint(keccak256(local_.SecretKey_P, secretKey_D, &quot;Don&#39;t think this is unfair&quot;, &quot;Our game are always provably fair...&quot;)) % 6 + 1;
+        uint dice1 = uint(keccak256("Pig World ia a Awesome game place", local_.SecretKey_P, secretKey_D)) % 6 + 1;
+        uint dice2 = uint(keccak256(secretKey_D, "So you will like us so much!!!!", local_.SecretKey_P)) % 6 + 1;
+        uint dice3 = uint(keccak256(local_.SecretKey_P, secretKey_D, "Don't think this is unfair", "Our game are always provably fair...")) % 6 + 1;
     
         uint amount = 0;
         uint total = dice1 + dice2 + dice3;
         
-        for (uint ii = 0; ii &lt; 29; ii++) {
+        for (uint ii = 0; ii < 29; ii++) {
             if(local_.Bets[ii] == 0x00) continue;
             
             uint bet_amount = uint(local_.Bets[ii]) * 10000000000000000;
             
-            if(ii&gt;=23)
+            if(ii>=23)
                 if (dice1 == ii - 22 || dice2 == ii - 22 || dice3 == ii - 22) {
                     uint8 count = 1;
                     if (dice1 == ii - 22) count++;
@@ -131,68 +131,68 @@ contract SicBo is Owned {
                     amount += count * bet_amount;
                 }
 
-            if(ii&lt;=22)
-                if (dice1 == dice2 &amp;&amp; dice2 == dice3 &amp;&amp; dice1 == dice3) {
+            if(ii<=22)
+                if (dice1 == dice2 && dice2 == dice3 && dice1 == dice3) {
                     if (ii == 8) {
                         amount += 31 * bet_amount;
                     }
     
-                    if(ii &gt;= 2 &amp;&amp; ii &lt;= 7)
+                    if(ii >= 2 && ii <= 7)
                         if (dice1 == ii - 1) {
                             amount += 181 * bet_amount;
                         }
     
                 } else {
                     
-                    if (ii == 0 &amp;&amp; total &lt;= 10) {
+                    if (ii == 0 && total <= 10) {
                         amount += 2 * bet_amount;
                     }
                     
-                    if (ii == 1 &amp;&amp; total &gt;= 11) {
+                    if (ii == 1 && total >= 11) {
                         amount += 2 * bet_amount;
                     }
         
-                    if(ii&gt;=9){
-                        if (ii == 9 &amp;&amp; total == 4) {
+                    if(ii>=9){
+                        if (ii == 9 && total == 4) {
                             amount += 61 * bet_amount;
                         }
-                        if (ii == 10 &amp;&amp; total == 5) {
+                        if (ii == 10 && total == 5) {
                             amount += 31 * bet_amount;
                         }
-                        if (ii == 11 &amp;&amp; total == 6) {
+                        if (ii == 11 && total == 6) {
                             amount += 18 * bet_amount;
                         }
-                        if (ii == 12 &amp;&amp; total == 7) {
+                        if (ii == 12 && total == 7) {
                             amount += 13 * bet_amount;
                         }
-                        if (ii == 13 &amp;&amp; total == 8) {
+                        if (ii == 13 && total == 8) {
                             amount += 9 * bet_amount;
                         }
-                        if (ii == 14 &amp;&amp; total == 9) {
+                        if (ii == 14 && total == 9) {
                             amount += 8 * bet_amount;
                         }
-                        if (ii == 15 &amp;&amp; total == 10) {
+                        if (ii == 15 && total == 10) {
                             amount += 7 * bet_amount;
                         }
-                        if (ii == 16 &amp;&amp; total == 11) {
+                        if (ii == 16 && total == 11) {
                             amount += 7 * bet_amount;
                         }
-                        if (ii == 17 &amp;&amp; total == 12) {
+                        if (ii == 17 && total == 12) {
                             amount += 8 * bet_amount;
                         }
-                        if (ii == 18 &amp;&amp; total == 13) {
+                        if (ii == 18 && total == 13) {
                             amount += 9 * bet_amount;
                         }
-                        if (ii == 19 &amp;&amp; total == 14) {
+                        if (ii == 19 && total == 14) {
                             amount += 13 * bet_amount;
                         }
-                        if (ii == 20 &amp;&amp; total == 15) {
+                        if (ii == 20 && total == 15) {
                             amount += 18 * bet_amount;
                         }
-                        if (ii == 21 &amp;&amp; total == 16) {
+                        if (ii == 21 && total == 16) {
                             amount += 31 * bet_amount;
                         }
-                        if (ii == 22 &amp;&amp; total == 17) {
+                        if (ii == 22 && total == 17) {
                             amount += 61 * bet_amount;
                         }
                     }
@@ -201,7 +201,7 @@ contract SicBo is Owned {
         
         if(amount != 0){
             TicketPool[secretKey_D_hash].Result = amount;
-            if (address(this).balance &gt;= amount &amp;&amp; TicketPool[secretKey_D_hash].Buyer.send(amount)) {
+            if (address(this).balance >= amount && TicketPool[secretKey_D_hash].Buyer.send(amount)) {
                 TicketPool[secretKey_D_hash].isPay = true;
                 Pay(secretKey_D_hash,TicketPool[secretKey_D_hash].Buyer, amount);
             } else {
@@ -246,7 +246,7 @@ contract SicBo is Owned {
         require(TicketPool[secretKey_D_hash].isPlay);
         require(TicketPool[secretKey_D_hash].Result != 0);
         
-        if(address(this).balance &gt;= TicketPool[secretKey_D_hash].Result){
+        if(address(this).balance >= TicketPool[secretKey_D_hash].Result){
             if (TicketPool[secretKey_D_hash].Buyer.send(TicketPool[secretKey_D_hash].Result)) {
                 TicketPool[secretKey_D_hash].isPay = true;
                 OwePay(secretKey_D_hash, TicketPool[secretKey_D_hash].Buyer, TicketPool[secretKey_D_hash].Result);

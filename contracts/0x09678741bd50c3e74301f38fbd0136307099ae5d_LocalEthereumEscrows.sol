@@ -39,7 +39,7 @@ contract LocalEthereumEscrows {
         uint128 totalGasFeesSpentByRelayer;
     }
     // Mapping of active trades. Key is a hash of the trade data
-    mapping (bytes32 =&gt; Escrow) public escrows;
+    mapping (bytes32 => Escrow) public escrows;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -60,7 +60,7 @@ contract LocalEthereumEscrows {
       bytes32 _s // Signature value
     ) view private returns (address) {
         bytes32 _hash = keccak256(_tradeID, _actionByte, _maximumGasPrice);
-        if(tx.gasprice &gt; _maximumGasPrice) return;
+        if(tx.gasprice > _maximumGasPrice) return;
         return ecrecover(_hash, _v, _r, _s);
     }
 
@@ -109,8 +109,8 @@ contract LocalEthereumEscrows {
         bytes32 _tradeHash = keccak256(_tradeID, _seller, _buyer, _value, _fee);
         require(!escrows[_tradeHash].exists); // Require that trade does not already exist
         require(ecrecover(keccak256(_tradeHash, _paymentWindowInSeconds, _expiry), _v, _r, _s) == relayer); // Signature must have come from the relayer
-        require(block.timestamp &lt; _expiry);
-        require(msg.value == _value &amp;&amp; msg.value &gt; 0); // Check sent eth against signed _value and make sure is not 0
+        require(block.timestamp < _expiry);
+        require(msg.value == _value && msg.value > 0); // Check sent eth against signed _value and make sure is not 0
         uint32 _sellerCanCancelAfter = _paymentWindowInSeconds == 0 ? 1 : uint32(block.timestamp) + _paymentWindowInSeconds;
         escrows[_tradeHash] = Escrow(true, _sellerCanCancelAfter, 0);
         Created(_tradeHash);
@@ -201,7 +201,7 @@ contract LocalEthereumEscrows {
     ) private returns (bool) {
         var (_escrow, _tradeHash) = getEscrowAndHash(_tradeID, _seller, _buyer, _value, _fee);
         if (!_escrow.exists) return false;
-        if(_escrow.sellerCanCancelAfter &lt;= 1 || _escrow.sellerCanCancelAfter &gt; block.timestamp) return false;
+        if(_escrow.sellerCanCancelAfter <= 1 || _escrow.sellerCanCancelAfter > block.timestamp) return false;
         uint128 _gasFees = _escrow.totalGasFeesSpentByRelayer + (msg.sender == relayer ? (GAS_doSellerCancel + _additionalGas) * uint128(tx.gasprice) : 0);
         delete escrows[_tradeHash];
         CancelledBySeller(_tradeHash);
@@ -256,10 +256,10 @@ contract LocalEthereumEscrows {
 
         var (_escrow, _tradeHash) = getEscrowAndHash(_tradeID, _seller, _buyer, _value, _fee);
         require(_escrow.exists);
-        require(_buyerPercent &lt;= 100);
+        require(_buyerPercent <= 100);
 
         uint256 _totalFees = _escrow.totalGasFeesSpentByRelayer + GAS_doResolveDispute;
-        require(_value - _totalFees &lt;= _value); // Prevent underflow
+        require(_value - _totalFees <= _value); // Prevent underflow
         feesAvailableForWithdraw += _totalFees; // Add the the pot for localethereum to withdraw
 
         delete escrows[_tradeHash];
@@ -356,7 +356,7 @@ contract LocalEthereumEscrows {
     ) public returns (bool[]) {
         bool[] memory _results = new bool[](_tradeID.length);
         uint128 _additionalGas = uint128(msg.sender == relayer ? GAS_batchRelayBaseCost / _tradeID.length : 0);
-        for (uint8 i=0; i&lt;_tradeID.length; i++) {
+        for (uint8 i=0; i<_tradeID.length; i++) {
             _results[i] = relay(_tradeID[i], _seller[i], _buyer[i], _value[i], _fee[i], _maximumGasPrice[i], _v[i], _r[i], _s[i], _actionByte[i], _additionalGas);
         }
         return _results;
@@ -370,7 +370,7 @@ contract LocalEthereumEscrows {
 
     function transferMinusFees(address _to, uint256 _value, uint128 _totalGasFeesSpentByRelayer, uint16 _fee) private {
         uint256 _totalFees = (_value * _fee / 10000) + _totalGasFeesSpentByRelayer;
-        if(_value - _totalFees &gt; _value) return; // Prevent underflow
+        if(_value - _totalFees > _value) return; // Prevent underflow
         feesAvailableForWithdraw += _totalFees; // Add the the pot for localethereum to withdraw
         _to.transfer(_value - _totalFees);
     }
@@ -379,7 +379,7 @@ contract LocalEthereumEscrows {
       /**
        * Withdraw fees collected by the contract. Only the owner can call this.
        */
-        require(_amount &lt;= feesAvailableForWithdraw); // Also prevents underflow
+        require(_amount <= feesAvailableForWithdraw); // Also prevents underflow
         feesAvailableForWithdraw -= _amount;
         _to.transfer(_amount);
     }

@@ -56,23 +56,23 @@ contract JOUL3SCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         uint amount = msg.value * price;
 
         // period 1 : Early Backers 50%
-        if(now &gt; startDate &amp;&amp; now &lt; 1522533600) {
+        if(now > startDate && now < 1522533600) {
             amount += amount / 2;
         }
 
         // Pperiod 2 : Presale 25%
-        if(now &gt; 1522533600 &amp;&amp; now &lt; 1525384800) {
+        if(now > 1522533600 && now < 1525384800) {
             amount += amount / 4;
         }
 
         // period 3 : Launch 20%
-        if(now &gt; 1525384800 &amp;&amp; now &lt; 1526076000) {
+        if(now > 1525384800 && now < 1526076000) {
             amount += amount / 5;
         }
         

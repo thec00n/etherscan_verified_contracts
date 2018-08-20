@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract Ownable {
@@ -84,20 +84,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -114,7 +114,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -123,7 +123,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -169,7 +169,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -180,8 +180,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -195,7 +195,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -244,7 +244,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -264,9 +264,9 @@ contract VZToken is StandardToken, Ownable {
 
     /* metadata */
 
-    string public constant name = &quot;VectorZilla Token&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;VZT&quot;; // solium-disable-line uppercase
-    string public constant version = &quot;1.0&quot;; // solium-disable-line uppercase
+    string public constant name = "VectorZilla Token"; // solium-disable-line uppercase
+    string public constant symbol = "VZT"; // solium-disable-line uppercase
+    string public constant version = "1.0"; // solium-disable-line uppercase
     uint8 public constant decimals = 18; // solium-disable-line uppercase
 
     /* all accounts in wei */
@@ -282,7 +282,7 @@ contract VZToken is StandardToken, Ownable {
     address public tokenSaleContract;
 
     /* Following stuff is to manage regulatory hurdles on who can and cannot use VZT token  */
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
 
@@ -307,7 +307,7 @@ contract VZToken is StandardToken, Ownable {
     }
 
     modifier onlyWhenBurnable(uint256 _value) {
-        require(totalSupply - _value &gt;= INITIAL_SUPPLY - BURNABLE_UP_TO);
+        require(totalSupply - _value >= INITIAL_SUPPLY - BURNABLE_UP_TO);
         _;
     }
 
@@ -382,9 +382,9 @@ contract VZToken is StandardToken, Ownable {
         onlyWhenBurnable(_value)
         onlyWhenNotFrozen(msg.sender)
         returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
-      // no need to require value &lt;= totalSupply, since that would imply the
-      // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+      // no need to require value <= totalSupply, since that would imply the
+      // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -443,7 +443,7 @@ contract VZToken is StandardToken, Ownable {
     /* Owner withdrawal of an ether deposited from Token ether balance */
     function withdrawToOwner(uint256 weiAmt) public onlyOwner {
         // do not allow zero transfer
-        require(weiAmt &gt; 0);
+        require(weiAmt > 0);
         owner.transfer(weiAmt);
         // signal the event for communication only it is meaningful
         Withdraw(this, msg.sender, weiAmt);
@@ -485,7 +485,7 @@ contract VZToken is StandardToken, Ownable {
         assembly {
             size: = extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
     /**
@@ -501,9 +501,9 @@ contract VZToken is StandardToken, Ownable {
         returns(bool) {
         address _from = owner;
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         // Save this for an assertion in the future
         uint256 previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -516,7 +516,7 @@ contract VZToken is StandardToken, Ownable {
         return true;
     }
     /**
-     * @dev Batch transfer of tokens to addresses from owner&#39;s balance
+     * @dev Batch transfer of tokens to addresses from owner's balance
      * @param addresses address[] The address that will receive the minted tokens.
      * @param _values uint256[] The amount of tokens to be sent.
      * @return True if the operation was successful.
@@ -525,10 +525,10 @@ contract VZToken is StandardToken, Ownable {
         public onlyOwnerAndContract
         returns (bool) {
         require(addresses.length == _values.length);
-        require(addresses.length &lt;= 20); //only batches of 20 allowed
+        require(addresses.length <= 20); //only batches of 20 allowed
         uint i = 0;
         uint len = addresses.length;
-        for (;i &lt; len; i++) {
+        for (;i < len; i++) {
             sendToken(addresses[i], _values[i]);
         }
         return true;

@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -16,7 +16,7 @@ contract FTWCrowdsale {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     Token public tokenReward;
     address public creator;
@@ -75,8 +75,8 @@ contract FTWCrowdsale {
     }
 
     function claim() public {
-        require (now &gt; claimDate);
-        require (balanceOf[msg.sender] &gt; 0);
+        require (now > claimDate);
+        require (balanceOf[msg.sender] > 0);
         tokenReward.transferFrom(owner, msg.sender, balanceOf[msg.sender]);
         FundTransfer(msg.sender, balanceOf[msg.sender], true);
     }
@@ -87,9 +87,9 @@ contract FTWCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
         balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);
         owner.transfer(msg.value);

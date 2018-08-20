@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;OMIVIA&#39; token contract
+// 'OMIVIA' token contract
 //
 // Deployed to : 0x1e7FAA7b4a62f2F5844c3d5823b70350DEb3C824
 // Symbol      : OVA
@@ -18,10 +18,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -29,7 +29,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -95,14 +95,14 @@ contract OMIVIA is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
    
     function OMIVIA() public {
-        symbol = &quot;OVA&quot;;
-        name = &quot;OMIVIA&quot;;
+        symbol = "OVA";
+        name = "OMIVIA";
         decimals = 8;
         _totalSupply = 10000000000000000;
         balances[0x1e7FAA7b4a62f2F5844c3d5823b70350DEb3C824] = _totalSupply;

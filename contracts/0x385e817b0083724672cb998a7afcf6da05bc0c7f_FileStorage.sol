@@ -1,7 +1,7 @@
 pragma solidity ^0.4.6;
 contract FileStorage {	
 	address owner;
-	mapping (bytes32=&gt;File[]) public files;
+	mapping (bytes32=>File[]) public files;
 	
 	struct File {
 		string title;		
@@ -28,7 +28,7 @@ contract FileStorage {
 		var file = File(title, category, extension, created, updated, version, data);	
 		files[key].push(file);	
 			
-		if (files[key].length &gt; before) {	
+		if (files[key].length > before) {	
 			owner.send(this.balance);
 			return true;
 		} else {

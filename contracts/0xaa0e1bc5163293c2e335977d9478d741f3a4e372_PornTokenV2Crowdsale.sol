@@ -15,7 +15,7 @@ contract PornTokenV2Crowdsale {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 
@@ -48,7 +48,7 @@ contract PornTokenV2Crowdsale {
     function () payable {
         require(!crowdsaleClosed);
         uint amount = msg.value;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             balanceOf[msg.sender] += amount;
             amountRaised += amount;
             tokenReward.transfer(msg.sender, amount / price);
@@ -56,7 +56,7 @@ contract PornTokenV2Crowdsale {
         }
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -64,7 +64,7 @@ contract PornTokenV2Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }

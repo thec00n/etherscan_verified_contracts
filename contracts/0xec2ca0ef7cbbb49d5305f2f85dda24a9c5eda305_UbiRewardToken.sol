@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,13 +49,13 @@ contract UbiRewardToken is ERC20 {
 
   using SafeMath for uint256;
 
-  string public name = &quot;UbiTok.io Reward Token&quot;;
-  string public symbol = &quot;UBI&quot;;
+  string public name = "UbiTok.io Reward Token";
+  string public symbol = "UBI";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 12000000 ether;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function UbiRewardToken() {
     balances[msg.sender] = INITIAL_SUPPLY;
@@ -105,7 +105,7 @@ contract UbiRewardToken is ERC20 {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * Also potentially surprising: the approver need not own the funds at the time of approval.
    * @param _spender The address which will spend the funds.

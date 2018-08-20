@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,18 +45,18 @@ contract IBTCToken is IERC20 {
     using SafeMath for uint256;
 
     // Token properties
-    string public name = &quot;IBTC&quot;;
-    string public symbol = &quot;IBTC&quot;;
+    string public name = "IBTC";
+    string public symbol = "IBTC";
     uint public decimals = 18;
 
     uint public _totalSupply = 21000000e18;
     uint public _tokenLeft = 21000000e18;
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
 
     // Owner of Token
     address public owner;
@@ -73,7 +73,7 @@ contract IBTCToken is IERC20 {
     // @notice IBTCToken Contract
     // @return the transaction address
     function IBTCToken() public payable {
-        owner = &quot;0x26Dce88a69a0619b92894eEfADBcA25B1b53Fc6d&quot;;
+        owner = "0x26Dce88a69a0619b92894eEfADBcA25B1b53Fc6d";
 
         balances[owner] = _totalSupply; 
     }
@@ -92,7 +92,7 @@ contract IBTCToken is IERC20 {
 
         //uint tokens = weiAmount.mul(getPrice());
 
-        //require(_tokenLeft &gt;= tokens);
+        //require(_tokenLeft >= tokens);
 
         //balances[owner] = balances[owner].sub(tokens);
         //balances[recipient] = balances[recipient].add(tokens);
@@ -117,7 +117,7 @@ contract IBTCToken is IERC20 {
     // Token distribution to founder, develoment team, partners, charity, and bounty
     function sendIBTCToken(address to, uint256 value) public onlyOwner {
         require (
-            to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _tokenLeft &gt;= value
+            to != 0x0 && value > 0 && _tokenLeft >= value
         );
 
         balances[owner] = balances[owner].sub(value);
@@ -128,7 +128,7 @@ contract IBTCToken is IERC20 {
 
     function sendIBTCTokenToMultiAddr(address[] listAddresses, uint256[] amount) onlyOwner {
         require(listAddresses.length == amount.length); 
-         for (uint256 i = 0; i &lt; listAddresses.length; i++) {
+         for (uint256 i = 0; i < listAddresses.length; i++) {
                 require(listAddresses[i] != 0x0); 
                 balances[listAddresses[i]] = balances[listAddresses[i]].add(amount[i]);
                 balances[owner] = balances[owner].sub(amount[i]);
@@ -139,7 +139,7 @@ contract IBTCToken is IERC20 {
 
     function destroyIBTCToken(address to, uint256 value) public onlyOwner {
         require (
-                to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; _totalSupply &gt;= value
+                to != 0x0 && value > 0 && _totalSupply >= value
             );
         balances[to] = balances[to].sub(value);
     }
@@ -150,7 +150,7 @@ contract IBTCToken is IERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -164,7 +164,7 @@ contract IBTCToken is IERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -179,7 +179,7 @@ contract IBTCToken is IERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);

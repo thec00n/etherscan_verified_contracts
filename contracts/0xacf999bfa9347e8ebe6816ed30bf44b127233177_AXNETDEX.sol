@@ -12,13 +12,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -74,16 +74,16 @@ contract Token {
 contract AXNETDEX is SafeMath, Owned {
   address public feeAccount; //the account that will receive fees
 
-  mapping (address =&gt; mapping (address =&gt; uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => mapping (address => uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
 
-  mapping (address =&gt; bool) public admins;  //admins who is responsible for trading
+  mapping (address => bool) public admins;  //admins who is responsible for trading
   
   //mapping of order hash to mapping of uints (amount of order that has been filled)
-  mapping (bytes32 =&gt; uint256) public orderFills;
+  mapping (bytes32 => uint256) public orderFills;
   
   //to make sure withdraw and trade will be done only once
-  mapping (bytes32 =&gt; bool) public withdrawn;
-  mapping (bytes32 =&gt; bool) public traded;
+  mapping (bytes32 => bool) public withdrawn;
+  mapping (bytes32 => bool) public traded;
   
   event Cancel(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s);
   event Trade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, address get, address give);
@@ -130,11 +130,11 @@ contract AXNETDEX is SafeMath, Owned {
     require(!withdrawn[hash]);
     withdrawn[hash] = true;
     
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), v, r, s) == user);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s) == user);
     
-    if (feeWithdrawal &gt; 50 finney) feeWithdrawal = 50 finney;
+    if (feeWithdrawal > 50 finney) feeWithdrawal = 50 finney;
 
-    require(tokens[token][user] &gt;= amount);
+    require(tokens[token][user] >= amount);
     tokens[token][user] = safeSub(tokens[token][user], amount);
     tokens[token][feeAccount] = safeAdd(tokens[token][feeAccount], safeMul(feeWithdrawal, amount) / 1 ether);
     amount = safeMul((1 ether - feeWithdrawal), amount) / 1 ether;
@@ -162,16 +162,16 @@ contract AXNETDEX is SafeMath, Owned {
      */
   function trade(uint[8] tradeValues, address[4] tradeAddresses, uint8[2] v, bytes32[4] rs) public onlyAdmin {
     bytes32 orderHash = sha256(this, tradeAddresses[0], tradeValues[0], tradeAddresses[1], tradeValues[1], tradeValues[2], tradeValues[3], tradeAddresses[2]);
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, orderHash), v[0], rs[0], rs[1]) == tradeAddresses[2]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", orderHash), v[0], rs[0], rs[1]) == tradeAddresses[2]);
     bytes32 tradeHash = sha256(orderHash, tradeValues[4], tradeAddresses[3], tradeValues[5]);
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, tradeHash), v[1], rs[2], rs[3]) == tradeAddresses[3]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", tradeHash), v[1], rs[2], rs[3]) == tradeAddresses[3]);
     
     require(!traded[tradeHash]);
     traded[tradeHash] = true;
     
-    require(safeAdd(orderFills[orderHash], tradeValues[4]) &lt;= tradeValues[0]);
-    require(tokens[tradeAddresses[0]][tradeAddresses[3]] &gt;= tradeValues[4]);
-    require(tokens[tradeAddresses[1]][tradeAddresses[2]] &gt;= (safeMul(tradeValues[1], tradeValues[4]) / tradeValues[0]));
+    require(safeAdd(orderFills[orderHash], tradeValues[4]) <= tradeValues[0]);
+    require(tokens[tradeAddresses[0]][tradeAddresses[3]] >= tradeValues[4]);
+    require(tokens[tradeAddresses[1]][tradeAddresses[2]] >= (safeMul(tradeValues[1], tradeValues[4]) / tradeValues[0]));
     
     tokens[tradeAddresses[0]][tradeAddresses[3]] = safeSub(tokens[tradeAddresses[0]][tradeAddresses[3]], tradeValues[4]);
     tokens[tradeAddresses[0]][tradeAddresses[2]] = safeAdd(tokens[tradeAddresses[0]][tradeAddresses[2]], safeMul(tradeValues[4], ((1 ether) - tradeValues[6])) / (1 ether));
@@ -185,7 +185,7 @@ contract AXNETDEX is SafeMath, Owned {
 
   function cancelOrder(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, uint8 v, bytes32 r, bytes32 s, address user) public onlyAdmin {
     bytes32 hash = sha256(this, tokenGet, amountGet, tokenGive, amountGive, expires, nonce, msg.sender, user);
-    assert(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),v,r,s) == user);
+    assert(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash),v,r,s) == user);
     orderFills[hash] = amountGet;
     emit Cancel(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s);
   }

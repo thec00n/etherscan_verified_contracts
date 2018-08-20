@@ -40,7 +40,7 @@ contract StateTransferrable is Owned {
     PropertySet(msg.sender);
   }
   modifier onlyOwnerUnlocked {
-    assert(!locked &amp;&amp; msg.sender == owner);
+    assert(!locked && msg.sender == owner);
     _
   }
   function lock() onlyOwner onlyIfUnlocked {
@@ -65,13 +65,13 @@ contract TrustEvents {
 }
 
 contract Trust is StateTransferrable, TrustEvents {
-  mapping (address =&gt; bool) public masterKeys;
-  mapping (address =&gt; bytes32) public nameRegistry;
+  mapping (address => bool) public masterKeys;
+  mapping (address => bytes32) public nameRegistry;
   address[] public masterKeyIndex;
-  mapping (address =&gt; bool) public masterKeyActive;
-  mapping (address =&gt; bool) public trustedClients;
-  mapping (uint256 =&gt; address) public functionCalls;
-  mapping (address =&gt; uint256) public functionCalling;
+  mapping (address => bool) public masterKeyActive;
+  mapping (address => bool) public trustedClients;
+  mapping (uint256 => address) public functionCalls;
+  mapping (address => uint256) public functionCalling;
   function activateMasterKey(address addr) internal {
     if (!masterKeyActive[addr]) {
       masterKeyActive[addr] = true;
@@ -229,7 +229,7 @@ contract Relay {
   function relayReceiveApproval(address _caller, address _spender, uint256 _amount, bytes _extraData) returns (bool success);
 }
 contract TokenBase is Owned {
-    bytes32 public standard = &#39;Token 0.1&#39;;
+    bytes32 public standard = 'Token 0.1';
     bytes32 public name;
     bytes32 public symbol;
     uint256 public totalSupply;
@@ -237,8 +237,8 @@ contract TokenBase is Owned {
 
     event Approval(address indexed from, address indexed spender, uint256 amount);
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -258,19 +258,19 @@ contract Precision {
 contract Token is TokenBase, Precision {}
 contract Util {
   function pow10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a *= 10;
     }
     return a;
   }
   function div10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a /= 10;
     }
     return a;
   }
   function max(uint256 a, uint256 b) internal returns (uint256 res) {
-    if (a &gt;= b) return a;
+    if (a >= b) return a;
     return b;
   }
 }
@@ -278,31 +278,31 @@ contract Util {
 /**
  * @title DVIP Contract. DCAsset Membership Token contract.
  *
- * @author Ray Pulver, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ceefde5dcf8f9fff9f2e8eefdf0f5e6f9f8fffdecf5e8fdf0b2fff3f1">[email&#160;protected]</a>
+ * @author Ray Pulver, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ceefde5dcf8f9fff9f2e8eefdf0f5e6f9f8fffdecf5e8fdf0b2fff3f1">[email protected]</a>
  */
 contract DVIP is Token, StateTransferrable, TrustClient, Util {
 
   uint256 public totalSupply;
 
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => bool) public frozenAccount;
 
-  mapping (address =&gt; address[]) public allowanceIndex;
-  mapping (address =&gt; mapping (address =&gt; bool)) public allowanceActive;
+  mapping (address => address[]) public allowanceIndex;
+  mapping (address => mapping (address => bool)) public allowanceActive;
   address[] public accountIndex;
-  mapping (address =&gt; bool) public accountActive;
+  mapping (address => bool) public accountActive;
   address public oversightAddress;
   uint256 public expiry;
 
   uint256 public treasuryBalance;
 
   bool public isActive;
-  mapping (address =&gt; uint256) public exportFee;
+  mapping (address => uint256) public exportFee;
   address[] public exportFeeIndex;
-  mapping (address =&gt; bool) exportFeeActive;
+  mapping (address => bool) exportFeeActive;
 
-  mapping (address =&gt; uint256) public importFee;
+  mapping (address => uint256) public importFee;
   address[] public importFeeIndex;
-  mapping (address =&gt; bool) importFeeActive;
+  mapping (address => bool) importFeeActive;
 
   event FrozenFunds(address target, bool frozen);
   event PrecisionSet(address indexed from, uint8 precision);
@@ -318,8 +318,8 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
     isActive = true;
     treasuryBalance = 0;
     totalSupply = 0;
-    name = &quot;DVIP&quot;;
-    symbol = &quot;DVIP&quot;;
+    name = "DVIP";
+    symbol = "DVIP";
     decimals = 6;
     allowTransactions = true;
     expiry = 1514764800; //1 jan 2018
@@ -474,8 +474,8 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
   function transfer(address _to, uint256 _amount) returns (bool success) {
     assert(allowTransactions);
     assert(!frozenAccount[msg.sender]);
-    assert(balanceOf[msg.sender] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
+    assert(balanceOf[msg.sender] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
     activateAccount(msg.sender);
     activateAccount(_to);
     balanceOf[msg.sender] -= _amount;
@@ -497,9 +497,9 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
     assert(allowTransactions);
     assert(!frozenAccount[msg.sender]);
     assert(!frozenAccount[_from]);
-    assert(balanceOf[_from] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
-    assert(_amount &lt;= allowance[_from][msg.sender]);
+    assert(balanceOf[_from] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
+    assert(_amount <= allowance[_from][msg.sender]);
     balanceOf[_from] -= _amount;
     balanceOf[_to] += _amount;
     allowance[_from][msg.sender] -= _amount;
@@ -579,7 +579,7 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
    * @param destroyAmount Amount of new tokens to be minted.
    */
   function destroyTokens(uint256 destroyAmount) multisig(sha3(msg.data)) {
-    assert(treasuryBalance &gt;= destroyAmount);
+    assert(treasuryBalance >= destroyAmount);
     treasuryBalance -= destroyAmount;
     totalSupply -= destroyAmount;
   }
@@ -591,7 +591,7 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
    * @param amount Amount to transfer from treasury
    */
   function transferFromTreasury(address to, uint256 amount) multisig(sha3(msg.data)) {
-    assert(treasuryBalance &gt;= amount);
+    assert(treasuryBalance >= amount);
     treasuryBalance -= amount;
     balanceOf[to] += amount;
     activateAccount(to);
@@ -609,7 +609,7 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
   function setImportFee(address addr, uint256 fee) multisig(sha3(msg.data)) {
     uint256 max = 1;
     max = pow10(1, decimals);
-    assert(fee &lt;= max);
+    assert(fee <= max);
     importFee[addr] = fee;
     activateImportFeeChargeRecord(addr);
   }
@@ -624,7 +624,7 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
   function setExportFee(address addr, uint256 fee) multisig(sha3(msg.data)) {
     uint256 max = 1;
     max = pow10(1, decimals);
-    assert(fee &lt;= max);
+    assert(fee <= max);
     exportFee[addr] = fee;
     activateExportFeeChargeRecord(addr);
   }
@@ -669,7 +669,7 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
    * @param amount Amount of tokens to seize
    */
   function seizeTokens(address addr, uint256 amount) multisig(sha3(msg.data)) {
-    assert(balanceOf[addr] &gt;= amount);
+    assert(balanceOf[addr] >= amount);
     assert(frozenAccount[addr]);
     activateAccount(addr);
     balanceOf[addr] -= amount;
@@ -680,9 +680,9 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
 
 
   /**
-   * @notice &#39;Returns the fee for a transfer from `from` to `to` on an amount `amount`.
+   * @notice 'Returns the fee for a transfer from `from` to `to` on an amount `amount`.
    *
-   * Fee&#39;s consist of a possible
+   * Fee's consist of a possible
    *    - import fee on transfers to an address
    *    - export fee on transfers from an address
    * DVIP ownership on an address
@@ -703,14 +703,14 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
     uint256 amountHeld;
     bool discounted = true;
     uint256 oneDVIPUnit;
-    if (exportFee[from] == 0 &amp;&amp; balanceOf[from] != 0 &amp;&amp; now &lt; expiry) {
+    if (exportFee[from] == 0 && balanceOf[from] != 0 && now < expiry) {
       amountHeld = balanceOf[from];
-    } else if (importFee[to] == 0 &amp;&amp; balanceOf[to] != 0 &amp;&amp; now &lt; expiry) {
+    } else if (importFee[to] == 0 && balanceOf[to] != 0 && now < expiry) {
       amountHeld = balanceOf[to];
     } else discounted = false;
     if (discounted) {
       oneDVIPUnit = pow10(1, decimals);
-      if (amountHeld &gt; oneDVIPUnit) amountHeld = oneDVIPUnit;
+      if (amountHeld > oneDVIPUnit) amountHeld = oneDVIPUnit;
       uint256 remaining = oneDVIPUnit - amountHeld;
       return div10(amount*fee*remaining, decimals*2);
     }
@@ -779,11 +779,11 @@ contract DVIP is Token, StateTransferrable, TrustClient, Util {
 /**
  * @title DCAssetBackend Contract
  *
- * @author Ray Pulver, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5123302811353432343f2523303d382b34353230213825303d7f323e3c">[email&#160;protected]</a>
+ * @author Ray Pulver, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5123302811353432343f2523303d382b34353230213825303d7f323e3c">[email protected]</a>
  */
 contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Util {
 
-  bytes32 public standard = &#39;Token 0.1&#39;;
+  bytes32 public standard = 'Token 0.1';
   bytes32 public name;
   bytes32 public symbol;
 
@@ -791,8 +791,8 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
 
   event Approval(address indexed from, address indexed spender, uint256 amount);
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -803,19 +803,19 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
   address public oversightAddress;
   address public membershipAddress;
 
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => bool) public frozenAccount;
 
-  mapping (address =&gt; address[]) public allowanceIndex;
-  mapping (address =&gt; mapping (address =&gt; bool)) public allowanceActive;
+  mapping (address => address[]) public allowanceIndex;
+  mapping (address => mapping (address => bool)) public allowanceActive;
   address[] public accountIndex;
-  mapping (address =&gt; bool) public accountActive;
+  mapping (address => bool) public accountActive;
 
   bool public isActive;
   uint256 public treasuryBalance;
 
-  mapping (address =&gt; uint256) public feeCharge;
+  mapping (address => uint256) public feeCharge;
   address[] public feeChargeIndex;
-  mapping (address =&gt; bool) feeActive;
+  mapping (address => bool) feeActive;
 
   event FrozenFunds(address target, bool frozen);
   event PrecisionSet(address indexed from, uint8 precision);
@@ -996,8 +996,8 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
   function transfer(address _caller, address _to, uint256 _amount) onlyAsset returns (bool success) {
     assert(allowTransactions);
     assert(!frozenAccount[_caller]);
-    assert(balanceOf[_caller] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
+    assert(balanceOf[_caller] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
     activateAccount(_caller);
     activateAccount(_to);
     balanceOf[_caller] -= _amount;
@@ -1024,9 +1024,9 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
     assert(allowTransactions);
     assert(!frozenAccount[_caller]);
     assert(!frozenAccount[_from]);
-    assert(balanceOf[_from] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
-    assert(_amount &lt;= allowance[_from][_caller]);
+    assert(balanceOf[_from] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
+    assert(_amount <= allowance[_from][_caller]);
     balanceOf[_from] -= _amount;
     uint256 fee = feeFor(_from, _to, _amount);
     balanceOf[_to] += _amount - fee;
@@ -1100,7 +1100,7 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
    * @param destroyAmount Amount of new tokens to be minted.
    */
   function destroyTokens(uint256 destroyAmount) multisig(sha3(msg.data)) {
-    assert(balanceOf[hotWalletAddress] &gt;= destroyAmount);
+    assert(balanceOf[hotWalletAddress] >= destroyAmount);
     activateAccount(hotWalletAddress);
     balanceOf[hotWalletAddress] -= destroyAmount;
     totalSupply -= destroyAmount;
@@ -1113,7 +1113,7 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
    * @param amount Amount to transfer from treasury
    */
   function transferFromTreasury(address to, uint256 amount) multisig(sha3(msg.data)) {
-    assert(treasuryBalance &gt;= amount);
+    assert(treasuryBalance >= amount);
     treasuryBalance -= amount;
     balanceOf[to] += amount;
     activateAccount(to);
@@ -1158,7 +1158,7 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
    * @param amount Amount of tokens to seize
    */
   function seizeTokens(address addr, uint256 amount) multisig(sha3(msg.data)) {
-    assert(balanceOf[addr] &gt;= amount);
+    assert(balanceOf[addr] >= amount);
     assert(frozenAccount[addr]);
     activateAccount(addr);
     balanceOf[addr] -= amount;
@@ -1211,7 +1211,7 @@ contract DCAssetBackend is Owned, Precision, StateTransferrable, TrustClient, Ut
 /**
  * @title DCAssetFacade, Facade for the underlying back-end dcasset token contract. Allow to be updated later.
  *
- * @author P.S.D. Reitsma, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82f2e7f6e7f0c2e6e7e1e7ecf6f0e3eeebf8e7e6e1e3f2ebf6e3eeace1edef">[email&#160;protected]</a>
+ * @author P.S.D. Reitsma, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82f2e7f6e7f0c2e6e7e1e7ecf6f0e3eeebf8e7e6e1e3f2ebf6e3eeace1edef">[email protected]</a>
  *
  */
 contract DCAsset is TokenBase, StateTransferrable, TrustClient, Relay {

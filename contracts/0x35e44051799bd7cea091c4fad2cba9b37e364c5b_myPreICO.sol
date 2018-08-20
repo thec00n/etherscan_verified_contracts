@@ -19,11 +19,11 @@ contract Ownable {
 contract myPreICO is Ownable {
     uint public ETHRaised;
     uint public soft_cap = 1 ether; // once we raise min 1 ETH, we can get them and start the ICO preparation
-    uint public hard_cap = 10 ether;// once we&#39;ve raised 10 ETH, you can&#39;t withdraw them back, project will run to the ICO stage
+    uint public hard_cap = 10 ether;// once we've raised 10 ETH, you can't withdraw them back, project will run to the ICO stage
     address public owner = 0x0;
     uint public end_date;
     address[] public holders;
-    mapping (address =&gt; uint) public holder_balance;
+    mapping (address => uint) public holder_balance;
     
     function myICO() public {
         owner = msg.sender;
@@ -31,21 +31,21 @@ contract myPreICO is Ownable {
     }
 
     function sendFunds(address _addr) public onlyOwner {
-        require (ETHRaised &gt;= soft_cap); // can get $ETH only if soft_cap reached
+        require (ETHRaised >= soft_cap); // can get $ETH only if soft_cap reached
         _addr.transfer(address(this).balance);
     }
 
     function withdraw() public {
         uint amount;
-        require(now &gt; end_date);// holders can take their money back if pre-ICO failed ...
-        require(ETHRaised &lt; hard_cap);// ... and hard_cap has&#39;t been reached
+        require(now > end_date);// holders can take their money back if pre-ICO failed ...
+        require(ETHRaised < hard_cap);// ... and hard_cap has't been reached
         amount = holder_balance[msg.sender];
         holder_balance[msg.sender] = 0;
         msg.sender.transfer(amount);
     }
     
     function () public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         holders.push(msg.sender);
         holder_balance[msg.sender] += msg.value;
         ETHRaised += msg.value;

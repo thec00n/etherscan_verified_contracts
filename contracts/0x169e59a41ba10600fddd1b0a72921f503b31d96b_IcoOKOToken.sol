@@ -12,20 +12,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a &amp;&amp; c &gt;= b);
+    assert(c >= a && c >= b);
     return c;
   }
 
@@ -42,10 +42,10 @@ contract StandardToken is SafeMath {
   uint256 public totalSupply;
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
   /**
@@ -62,7 +62,7 @@ contract StandardToken is SafeMath {
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public returns (bool success) {
     require(_to != 0);
     uint256 balanceFrom = balances[msg.sender];
-    require(_value &lt;= balanceFrom);
+    require(_value <= balanceFrom);
 
     // SafeMath safeSub will throw if there is not enough balance.
     balances[msg.sender] = safeSub(balanceFrom, _value);
@@ -75,8 +75,8 @@ contract StandardToken is SafeMath {
     require(_to != 0);
     uint256 allowToTrans = allowed[_from][msg.sender];
     uint256 balanceFrom = balances[_from];
-    require(_value &lt;= balanceFrom);
-    require(_value &lt;= allowToTrans);
+    require(_value <= balanceFrom);
+    require(_value <= allowToTrans);
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balanceFrom, _value);
@@ -95,7 +95,7 @@ contract StandardToken is SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-//    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+//    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     // require((_value == 0) || (allowed[msg.sender][_spender] == 0));
 
     allowed[msg.sender][_spender] = _value;
@@ -133,7 +133,7 @@ contract StandardToken is SafeMath {
 
       uint256 oldVal = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldVal) {
+      if (_subtractedValue > oldVal) {
           allowed[msg.sender][_spender] = 0;
       } else {
           allowed[msg.sender][_spender] = safeSub(oldVal, _subtractedValue);
@@ -147,7 +147,7 @@ contract StandardToken is SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -211,7 +211,7 @@ contract UpgradeableToken is Ownable, StandardToken {
 
     function () public payable {
       require(migrationAgent != 0);
-      require(balances[msg.sender] &gt; 0);
+      require(balances[msg.sender] > 0);
       migrate();
       msg.sender.transfer(msg.value);
     }
@@ -228,8 +228,8 @@ contract OKOToken is UpgradeableToken {
 
 
   address public allTokenOwnerOnStart;
-  string public constant name = &quot;OKOIN&quot;;
-  string public constant symbol = &quot;OKO&quot;;
+  string public constant name = "OKOIN";
+  string public constant symbol = "OKO";
   uint256 public constant decimals = 6;
   
 
@@ -270,17 +270,17 @@ contract IcoOKOToken is Ownable, SafeMath {
   }
 
   function () external payable {
-    require(now &lt;= endTime &amp;&amp; now &gt;= startTime);
+    require(now <= endTime && now >= startTime);
     require(!emergencyFlagAndHiddenCap);
-    require(totalTokensSold &lt; maxTokensToSold);
+    require(totalTokensSold < maxTokensToSold);
     uint256 value = msg.value;
     uint256 tokensToSend = safeDiv(value, price);
-    require(tokensToSend &gt;= 1000000 &amp;&amp; tokensToSend &lt;= 350000000000);
+    require(tokensToSend >= 1000000 && tokensToSend <= 350000000000);
     uint256 valueToReturn = safeSub(value, tokensToSend * price);
     uint256 valueToWallet = safeSub(value, valueToReturn);
 
     wallet.transfer(valueToWallet);
-    if (valueToReturn &gt; 0) {
+    if (valueToReturn > 0) {
       msg.sender.transfer(valueToReturn);
     }
     token.transferFrom(allTokenAddress, msg.sender, tokensToSend);

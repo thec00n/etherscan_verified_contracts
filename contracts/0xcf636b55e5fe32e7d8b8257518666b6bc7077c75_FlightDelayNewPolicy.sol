@@ -43,7 +43,7 @@ contract FlightDelayConstants {
     * General events
     */
 
-// --&gt; test-mode
+// --> test-mode
 //        event LogUint(string _message, uint _uint);
 //        event LogUintEth(string _message, uint ethUint);
 //        event LogUintTime(string _message, uint timeUint);
@@ -55,7 +55,7 @@ contract FlightDelayConstants {
 //        event LogString(string _message, string _string);
 //        event LogBool(string _message, bool _bool);
 //        event Log(address);
-// &lt;-- test-mode
+// <-- test-mode
 
     event LogPolicyApplied(
         uint _policyId,
@@ -161,7 +161,7 @@ contract FlightDelayConstants {
     // reserve for tail risks
     uint8 constant RESERVE_PERCENT = 1;
     // the weight pattern; in future versions this may become part of the policy struct.
-    // currently can&#39;t be constant because of compiler restrictions
+    // currently can't be constant because of compiler restrictions
     // WEIGHT_PATTERN[0] is not used, just to be consistent
     uint8[6] WEIGHT_PATTERN = [
         0,
@@ -172,21 +172,21 @@ contract FlightDelayConstants {
         50
     ];
 
-// --&gt; prod-mode
+// --> prod-mode
     // DEFINITIONS FOR ROPSTEN AND MAINNET
     // minimum time before departure for applying
     uint constant MIN_TIME_BEFORE_DEPARTURE	= 24 hours; // for production
     // check for delay after .. minutes after scheduled arrival
     uint constant CHECK_PAYOUT_OFFSET = 15 minutes; // for production
-// &lt;-- prod-mode
+// <-- prod-mode
 
-// --&gt; test-mode
+// --> test-mode
 //        // DEFINITIONS FOR LOCAL TESTNET
 //        // minimum time before departure for applying
 //        uint constant MIN_TIME_BEFORE_DEPARTURE = 1 seconds; // for testing
 //        // check for delay after .. minutes after scheduled arrival
 //        uint constant CHECK_PAYOUT_OFFSET = 1 seconds; // for testing
-// &lt;-- test-mode
+// <-- test-mode
 
     // maximum duration of flight
     uint constant MAX_FLIGHT_DURATION = 2 days;
@@ -202,36 +202,36 @@ contract FlightDelayConstants {
     * URLs and query strings for oraclize
     */
 
-// --&gt; prod-mode
+// --> prod-mode
     // DEFINITIONS FOR ROPSTEN AND MAINNET
     string constant ORACLIZE_RATINGS_BASE_URL =
         // ratings api is v1, see https://developer.flightstats.com/api-docs/ratings/v1
-        &quot;[URL] json(https://api.flightstats.com/flex/ratings/rest/v1/json/flight/&quot;;
+        "[URL] json(https://api.flightstats.com/flex/ratings/rest/v1/json/flight/";
     string constant ORACLIZE_RATINGS_QUERY =
-        &quot;?${[decrypt] BJoM0BfTe82RtghrzzCbNA7b9E9tQIX8LtM+pRRh22RfQ5QhnVAv6Kk4SyaMwQKczC7YtinJ/Xm6PZMgKnWN7+/pFUfI2YcxaAW0vYuXJF4zCTxPYXa6j4shhce60AMBeKoZZsgn6Og+olgSpgpfi4MwkmmytwdCLHqat3gGUPklBhM1HR0x}).ratings[0][&#39;observations&#39;,&#39;late15&#39;,&#39;late30&#39;,&#39;late45&#39;,&#39;cancelled&#39;,&#39;diverted&#39;,&#39;arrivalAirportFsCode&#39;,&#39;departureAirportFsCode&#39;]&quot;;
+        "?${[decrypt] BJoM0BfTe82RtghrzzCbNA7b9E9tQIX8LtM+pRRh22RfQ5QhnVAv6Kk4SyaMwQKczC7YtinJ/Xm6PZMgKnWN7+/pFUfI2YcxaAW0vYuXJF4zCTxPYXa6j4shhce60AMBeKoZZsgn6Og+olgSpgpfi4MwkmmytwdCLHqat3gGUPklBhM1HR0x}).ratings[0]['observations','late15','late30','late45','cancelled','diverted','arrivalAirportFsCode','departureAirportFsCode']";
     string constant ORACLIZE_STATUS_BASE_URL =
         // flight status api is v2, see https://developer.flightstats.com/api-docs/flightstatus/v2/flight
-        &quot;[URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/&quot;;
+        "[URL] json(https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/";
     string constant ORACLIZE_STATUS_QUERY =
         // pattern:
-        &quot;?${[decrypt] BA3YyqF4iMQszBawvgG82bqX3fw7JoWA1thFsboUECR/L8JkBCgvaThg1LcUWbIntosEKs/kvqyzOtvdQfMgjYPV0c6hsq/gKQkmJYILZmLY4SgBebH8g0qbfrrjxF5gEbfCi2qoR6PSxcQzKIjgd4HvAaumlQd4CkJLmY463ymqNN9B8/PL}&amp;utc=true).flightStatuses[0][&#39;status&#39;,&#39;delays&#39;,&#39;operationalTimes&#39;]&quot;;
-// &lt;-- prod-mode
+        "?${[decrypt] BA3YyqF4iMQszBawvgG82bqX3fw7JoWA1thFsboUECR/L8JkBCgvaThg1LcUWbIntosEKs/kvqyzOtvdQfMgjYPV0c6hsq/gKQkmJYILZmLY4SgBebH8g0qbfrrjxF5gEbfCi2qoR6PSxcQzKIjgd4HvAaumlQd4CkJLmY463ymqNN9B8/PL}&utc=true).flightStatuses[0]['status','delays','operationalTimes']";
+// <-- prod-mode
 
-// --&gt; test-mode
+// --> test-mode
 //        // DEFINITIONS FOR LOCAL TESTNET
 //        string constant ORACLIZE_RATINGS_BASE_URL =
 //            // ratings api is v1, see https://developer.flightstats.com/api-docs/ratings/v1
-//            &quot;[URL] json(https://api-test.etherisc.com/flex/ratings/rest/v1/json/flight/&quot;;
+//            "[URL] json(https://api-test.etherisc.com/flex/ratings/rest/v1/json/flight/";
 //        string constant ORACLIZE_RATINGS_QUERY =
 //            // for testrpc:
-//            &quot;).ratings[0][&#39;observations&#39;,&#39;late15&#39;,&#39;late30&#39;,&#39;late45&#39;,&#39;cancelled&#39;,&#39;diverted&#39;,&#39;arrivalAirportFsCode&#39;,&#39;departureAirportFsCode&#39;]&quot;;
+//            ").ratings[0]['observations','late15','late30','late45','cancelled','diverted','arrivalAirportFsCode','departureAirportFsCode']";
 //        string constant ORACLIZE_STATUS_BASE_URL =
 //            // flight status api is v2, see https://developer.flightstats.com/api-docs/flightstatus/v2/flight
-//            &quot;[URL] json(https://api-test.etherisc.com/flex/flightstatus/rest/v2/json/flight/status/&quot;;
+//            "[URL] json(https://api-test.etherisc.com/flex/flightstatus/rest/v2/json/flight/status/";
 //        string constant ORACLIZE_STATUS_QUERY =
 //            // for testrpc:
-//            &quot;?utc=true).flightStatuses[0][&#39;status&#39;,&#39;delays&#39;,&#39;operationalTimes&#39;]&quot;;
-// &lt;-- test-mode
+//            "?utc=true).flightStatuses[0]['status','delays','operationalTimes']";
+// <-- test-mode
 }
 
 // File: contracts/FlightDelayControllerInterface.sol
@@ -293,7 +293,7 @@ contract FlightDelayDatabaseModel {
     //					        customer by the oracle.
     // 03 = PaidOut:	  The flight has ended with delay.
     //					        The oracle has checked and payed out.
-    // 04 = Expired:	  The flight has endet with &lt;15min. delay.
+    // 04 = Expired:	  The flight has endet with <15min. delay.
     //					        No payout.
     // 05 = Declined:	  The application was invalid.
     //					        The premium minus cancellation fee is payed back to the
@@ -605,7 +605,7 @@ contract ConvertLib {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
 
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -615,7 +615,7 @@ contract ConvertLib {
 
         bytes memory bytesStringTrimmed = new bytes(charCount);
 
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
 
@@ -624,14 +624,14 @@ contract ConvertLib {
 
     function b32toHexString(bytes32 x) returns (string) {
         bytes memory b = new bytes(64);
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             uint8 by = uint8(uint(x) / (2**(8*(31 - i))));
             uint8 high = by/16;
             uint8 low = by - 16*high;
-            if (high &gt; 9) {
+            if (high > 9) {
                 high += 39;
             }
-            if (low &gt; 9) {
+            if (low > 9) {
                 low += 39;
             }
             b[2*i] = byte(high+48);
@@ -650,8 +650,8 @@ contract ConvertLib {
         bytes memory bresult = bytes(_a);
         uint mint = 0;
         bool decimals = false;
-        for (uint i = 0; i&lt;bresult.length; i++) {
-            if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)) {
+        for (uint i = 0; i<bresult.length; i++) {
+            if ((bresult[i] >= 48)&&(bresult[i] <= 57)) {
                 if (decimals) {
                     if (_b == 0) {
                         break;
@@ -665,7 +665,7 @@ contract ConvertLib {
                 decimals = true;
             }
         }
-        if (_b &gt; 0) {
+        if (_b > 0) {
             mint *= 10**_b;
         }
         return mint;
@@ -729,14 +729,14 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
     }
 
     function setContracts() public onlyController {
-        FD_AC = FlightDelayAccessControllerInterface(getContract(&quot;FD.AccessController&quot;));
-        FD_DB = FlightDelayDatabaseInterface(getContract(&quot;FD.Database&quot;));
-        FD_LG = FlightDelayLedgerInterface(getContract(&quot;FD.Ledger&quot;));
-        FD_UW = FlightDelayUnderwriteInterface(getContract(&quot;FD.Underwrite&quot;));
+        FD_AC = FlightDelayAccessControllerInterface(getContract("FD.AccessController"));
+        FD_DB = FlightDelayDatabaseInterface(getContract("FD.Database"));
+        FD_LG = FlightDelayLedgerInterface(getContract("FD.Ledger"));
+        FD_UW = FlightDelayUnderwriteInterface(getContract("FD.Underwrite"));
 
         FD_AC.setPermissionByAddress(101, 0x0);
-        FD_AC.setPermissionById(102, &quot;FD.Controller&quot;);
-        FD_AC.setPermissionById(103, &quot;FD.Owner&quot;);
+        FD_AC.setPermissionById(102, "FD.Controller");
+        FD_AC.setPermissionById(103, "FD.Owner");
     }
 
     function bookAndCalcRemainingPremium() internal returns (uint) {
@@ -773,18 +773,18 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
         // solidity checks for valid _currency parameter
         if (_currency == Currency.ETH) {
             // ETH
-            if (msg.value &lt; MIN_PREMIUM || msg.value &gt; MAX_PREMIUM) {
-                LogPolicyDeclined(0, &quot;Invalid premium value ETH&quot;);
+            if (msg.value < MIN_PREMIUM || msg.value > MAX_PREMIUM) {
+                LogPolicyDeclined(0, "Invalid premium value ETH");
                 FD_LG.sendFunds(msg.sender, Acc.Premium, msg.value);
                 return;
             }
         } else {
-            require(msg.sender == getContract(&quot;FD.CustomersAdmin&quot;));
+            require(msg.sender == getContract("FD.CustomersAdmin"));
 
             if (_currency == Currency.EUR) {
                 // EUR
-                if (msg.value &lt; MIN_PREMIUM_EUR || msg.value &gt; MAX_PREMIUM_EUR) {
-                    LogPolicyDeclined(0, &quot;Invalid premium value EUR&quot;);
+                if (msg.value < MIN_PREMIUM_EUR || msg.value > MAX_PREMIUM_EUR) {
+                    LogPolicyDeclined(0, "Invalid premium value EUR");
                     FD_LG.sendFunds(msg.sender, Acc.Premium, msg.value);
                     return;
                 }
@@ -792,8 +792,8 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
 
             if (_currency == Currency.USD) {
                 // USD
-                if (msg.value &lt; MIN_PREMIUM_USD || msg.value &gt; MAX_PREMIUM_USD) {
-                    LogPolicyDeclined(0, &quot;Invalid premium value USD&quot;);
+                if (msg.value < MIN_PREMIUM_USD || msg.value > MAX_PREMIUM_USD) {
+                    LogPolicyDeclined(0, "Invalid premium value USD");
                     FD_LG.sendFunds(msg.sender, Acc.Premium, msg.value);
                     return;
                 }
@@ -801,8 +801,8 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
 
             if (_currency == Currency.GBP) {
                 // GBP
-                if (msg.value &lt; MIN_PREMIUM_GBP || msg.value &gt; MAX_PREMIUM_GBP) {
-                    LogPolicyDeclined(0, &quot;Invalid premium value GBP&quot;);
+                if (msg.value < MIN_PREMIUM_GBP || msg.value > MAX_PREMIUM_GBP) {
+                    LogPolicyDeclined(0, "Invalid premium value GBP");
                     FD_LG.sendFunds(msg.sender, Acc.Premium, msg.value);
                     return;
                 }
@@ -813,27 +813,27 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
         FD_LG.receiveFunds.value(msg.value)(Acc.Premium);
 
 
-        // don&#39;t Accept flights with departure time earlier than in 24 hours,
+        // don't Accept flights with departure time earlier than in 24 hours,
         // or arrivalTime before departureTime,
         // or departureTime after Mon, 26 Sep 2016 12:00:00 GMT
         uint dmy = toUnixtime(_departureYearMonthDay);
 
-// --&gt; debug-mode
-//            LogUintTime(&quot;NewPolicy: dmy: &quot;, dmy);
-//            LogUintTime(&quot;NewPolicy: _departureTime: &quot;, _departureTime);
-// &lt;-- debug-mode
+// --> debug-mode
+//            LogUintTime("NewPolicy: dmy: ", dmy);
+//            LogUintTime("NewPolicy: _departureTime: ", _departureTime);
+// <-- debug-mode
 
         if (
-            _arrivalTime &lt; _departureTime ||
-            _arrivalTime &gt; _departureTime + MAX_FLIGHT_DURATION ||
-            _departureTime &lt; now + MIN_TIME_BEFORE_DEPARTURE ||
-            _departureTime &gt; CONTRACT_DEAD_LINE ||
-            _departureTime &lt; dmy ||
-            _departureTime &gt; dmy + 24 hours ||
-            _departureTime &lt; FD_DB.MIN_DEPARTURE_LIM() ||
-            _departureTime &gt; FD_DB.MAX_DEPARTURE_LIM()
+            _arrivalTime < _departureTime ||
+            _arrivalTime > _departureTime + MAX_FLIGHT_DURATION ||
+            _departureTime < now + MIN_TIME_BEFORE_DEPARTURE ||
+            _departureTime > CONTRACT_DEAD_LINE ||
+            _departureTime < dmy ||
+            _departureTime > dmy + 24 hours ||
+            _departureTime < FD_DB.MIN_DEPARTURE_LIM() ||
+            _departureTime > FD_DB.MAX_DEPARTURE_LIM()
         ) {
-            LogPolicyDeclined(0, &quot;Invalid arrival/departure time&quot;);
+            LogPolicyDeclined(0, "Invalid arrival/departure time");
             FD_LG.sendFunds(msg.sender, Acc.Premium, msg.value);
             return;
         }
@@ -846,8 +846,8 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
         // (we Accept the inAccuracy that the real remaining premium is 3% lower),
         // but we are conservative;
         // if this is the first policy, the left side will be 0
-        if (msg.value * premiumMultiplier + cumulatedWeightedPremium &gt;= MAX_CUMULATED_WEIGHTED_PREMIUM) {
-            LogPolicyDeclined(0, &quot;Cluster risk&quot;);
+        if (msg.value * premiumMultiplier + cumulatedWeightedPremium >= MAX_CUMULATED_WEIGHTED_PREMIUM) {
+            LogPolicyDeclined(0, "Cluster risk");
             FD_LG.sendFunds(msg.sender, Acc.Premium, msg.value);
             return;
         } else if (cumulatedWeightedPremium == 0) {
@@ -860,7 +860,7 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
         uint premium = bookAndCalcRemainingPremium();
         uint policyId = FD_DB.createPolicy(msg.sender, premium, _currency, _customerExternalId, riskId);
 
-        if (premiumMultiplier &gt; 0) {
+        if (premiumMultiplier > 0) {
             FD_DB.setPremiumFactors(
                 riskId,
                 cumulatedWeightedPremium + premium * premiumMultiplier,
@@ -873,7 +873,7 @@ contract FlightDelayNewPolicy is FlightDelayControlledContract, FlightDelayConst
             policyId,
             policyState.Applied,
             now,
-            &quot;Policy applied by customer&quot;
+            "Policy applied by customer"
         );
 
         LogPolicyApplied(

@@ -73,7 +73,7 @@ contract EtherAds {
             msg.sender
         );
         charityFoundationIdx += 1;
-        if (charityFoundationIdx &gt;= charityFundations.length) {
+        if (charityFoundationIdx >= charityFundations.length) {
             charityFoundationIdx = 0;
         }
     }
@@ -82,14 +82,14 @@ contract EtherAds {
         uint value = msg.value;
         uint minimalDeposit = getMinimalDeposit();
         // dont allow to get in with too low deposit
-        if (value &lt; minimalDeposit) throw;
+        if (value < minimalDeposit) throw;
         // dont allow to invest more than 42
-        if (value &gt; maximumDeposit) {
+        if (value > maximumDeposit) {
             msg.sender.send(value - maximumDeposit);
             value = maximumDeposit;
         }
         // cancel buy if strings are too long
-        if (bytes(href).length &gt; 100 || bytes(anchor).length &gt; 50) throw;
+        if (bytes(href).length > 100 || bytes(anchor).length > 50) throw;
         // reset ads if last transaction reached outdateDuration
         resetContract();
         // store new ad id
@@ -119,7 +119,7 @@ contract EtherAds {
     }
     function getMinimalDeposit() returns (uint) {
         uint txsThresholdIndex = getCurrentLevel();
-        if (minDeposits[txsThresholdIndex] &gt; frozenMinDeposit) {
+        if (minDeposits[txsThresholdIndex] > frozenMinDeposit) {
             frozenMinDeposit = minDeposits[txsThresholdIndex];
         }
         return frozenMinDeposit;
@@ -127,12 +127,12 @@ contract EtherAds {
     function getCurrentLevel() returns (uint) {
         uint txsPerLast24hours = 0;
         uint i = 0;
-        while (i &lt; 24) {
+        while (i < 24) {
             txsPerLast24hours += txsPerHour[i];
             i += 1;
         }
         i = 0;
-        while (txsPerLast24hours &gt; txsThreshold[i]) {
+        while (txsPerLast24hours > txsThreshold[i]) {
             i = i + 1;
         }
         return i;
@@ -140,7 +140,7 @@ contract EtherAds {
     function updateTxStats() private {
         uint currtHour = now / (60 * 60);
         uint txsCounter = txsPerHour[currtHour];
-        if (lastHour &lt; currtHour) {
+        if (lastHour < currtHour) {
             txsCounter = 0;
             lastHour = currtHour;
         }
@@ -154,7 +154,7 @@ contract EtherAds {
             // calculate doubled payout
             uint amount = ads[payoutIdx].amount * 2;
             // if balance is enough to pay participant
-            if (balance &gt;= amount) {
+            if (balance >= amount) {
                 // send earnings - fee to participant
                 ads[payoutIdx].etherAddress.send(amount / 100 * 80);
                 PayoutEarnings(ads[payoutIdx].etherAddress, amount / 100 * 80, 0);
@@ -206,7 +206,7 @@ contract EtherAds {
     // since (now - outdateDuration) seconds and its going to reset
     function resetContract() private {
         // like in bible, the last are the first :-)
-        if (now &gt; contractExpirationTime) {
+        if (now > contractExpirationTime) {
             // pay 50% of balance to last investor
             balance = balance / 2;
             ads[ads.length-1].etherAddress.send(balance);
@@ -218,7 +218,7 @@ contract EtherAds {
             frozenMinDeposit = 0;
             // clear txs counter
             uint i = 0;
-            while (i &lt; 24) {
+            while (i < 24) {
                 txsPerHour[i] = 0;
                 i += 1;
             }
@@ -233,7 +233,7 @@ contract EtherAds {
         // which means that ad purshared was not referred by anyone
         int refId = -1;
         // go through all ads and try to find referral address in this array
-        while (i &lt; ads.length) {
+        while (i < ads.length) {
             // if ref was found end while
             if (ads[i].etherAddress == referral) {
                 refId = int(i);
@@ -250,7 +250,7 @@ contract EtherAds {
         if (fees == 0) return; // buy more ads
         uint sharedFee = fees / 3;
         uint i = 0;
-        while (i &lt; 3) {
+        while (i < 3) {
             owners[i].send(sharedFee);
             i += 1;
         }
@@ -260,7 +260,7 @@ contract EtherAds {
     // change single ownership
     function changeOwner(address newOwner) onlyowners {
         uint i = 0;
-        while (i &lt; 3) {
+        while (i < 3) {
             // check if you are owner
             if (msg.sender == owners[i]) {
                 // change ownership

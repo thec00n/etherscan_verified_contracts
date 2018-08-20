@@ -25,7 +25,7 @@ contract CrystalDoubler {
   uint public Balance = 0;
   uint public Total_Deposited=0;
   uint public Total_Paid_Out=0;
-string public Message=&quot;Welcome Player! Double your ETH Now!&quot;;
+string public Message="Welcome Player! Double your ETH Now!";
 	
   address public owner;
 
@@ -44,7 +44,7 @@ string public Message=&quot;Welcome Player! Double your ETH Now!&quot;;
 //====================ENTER
 
   function enter() {
-    if (msg.value &gt; 500 finney) {
+    if (msg.value > 500 finney) {
 
     uint Amount=msg.value;
 
@@ -58,7 +58,7 @@ string public Message=&quot;Welcome Player! Double your ETH Now!&quot;;
     uint payout;
     uint nr=0;
 
-    while (Balance &gt; depositors[nr].Amount * 200/100 &amp;&amp; nr&lt;Total_Players)
+    while (Balance > depositors[nr].Amount * 200/100 && nr<Total_Players)
      {
       payout = depositors[nr].Amount *200/100;                           //calculate pay out
       depositors[nr].EtherAddress.send(payout);                        //send pay out to participant

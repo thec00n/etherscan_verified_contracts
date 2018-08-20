@@ -97,19 +97,19 @@ contract HoresBasis is  JockeyControl {
 
     Jockey[] jockeys;
 
-    mapping (uint256 =&gt; address) jockeyOwnerIndex;
+    mapping (uint256 => address) jockeyOwnerIndex;
     
-    mapping (uint256 =&gt; uint256) public jockeyIndexPrice;
+    mapping (uint256 => uint256) public jockeyIndexPrice;
     
-    mapping (uint256 =&gt; uint256) public jockeyHair;
+    mapping (uint256 => uint256) public jockeyHair;
     
-    mapping (uint256 =&gt; uint256) public jockeySkin;
+    mapping (uint256 => uint256) public jockeySkin;
     
-    mapping (uint256 =&gt; uint256) public jockeyHLength;
+    mapping (uint256 => uint256) public jockeyHLength;
     
-    mapping (uint256 =&gt; bool)  jockeyIndexForSale;
+    mapping (uint256 => bool)  jockeyIndexForSale;
 
-    mapping (address =&gt; uint256) tokenOwnershipCount;
+    mapping (address => uint256) tokenOwnershipCount;
 
 
    uint256 public saleFee = 20;
@@ -136,7 +136,7 @@ contract HoresBasis is  JockeyControl {
          
               uint256 price = jockeyIndexPrice[_tokenId];
             
-            require(price&lt;=value);
+            require(price<=value);
             
          uint256 Fee = price / saleFee;
             
@@ -232,8 +232,8 @@ contract HoresBasis is  JockeyControl {
 
 contract JockeyOwnership is HoresBasis, ERC721{
 
-  string public constant  name = &quot;CryptoJockey&quot;;
-    string public constant symbol = &quot;CHJ&quot;;
+  string public constant  name = "CryptoJockey";
+    string public constant symbol = "CHJ";
      uint8 public constant decimals = 0; 
 
     function jockeyForSale(uint256 _tokenId, uint256 price) external {
@@ -356,7 +356,7 @@ contract JockeyMinting is JockeyOwnership {
     function createJockey(uint256 _genes1,uint256 _genes2,uint256 _genes3,uint256 _genes4,uint256 _genes5,uint256 _genes6,uint256 _genes7,uint256 _genes8,uint256 jHair,uint256 jHLenth,uint256 jSkin, address _owner) external onlyC {
         address jockeyOwner = _owner;
         
-   require(jockeys.length &lt; JOCKEY_LIMIT);
+   require(jockeys.length < JOCKEY_LIMIT);
 
             
               _newJockey(  _genes1, _genes2, _genes3, _genes4, _genes5, _genes6,_genes7, _genes8,  jockeyOwner);

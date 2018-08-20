@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 library DS {
   struct Proof {
     uint level;         // Audit level
-    uint insertedBlock; // Audit&#39;s block
+    uint insertedBlock; // Audit's block
     bytes32 ipfsHash;   // IPFS dag-cbor proof
     address auditedBy;  // Audited by address
   }
@@ -13,10 +13,10 @@ contract Audit {
   event AttachedEvidence(address indexed auditorAddr, bytes32 indexed codeHash, bytes32 ipfsHash);
   event NewAudit(address indexed auditorAddr, bytes32 indexed codeHash);
 
-  // Maps auditor address and code&#39;s keccak256 to Audit
-  mapping (address =&gt; mapping (bytes32 =&gt; DS.Proof)) public auditedContracts;
+  // Maps auditor address and code's keccak256 to Audit
+  mapping (address => mapping (bytes32 => DS.Proof)) public auditedContracts;
   // Maps auditor address to a list of audit code hashes
-  mapping (address =&gt; bytes32[]) public auditorContracts;
+  mapping (address => bytes32[]) public auditorContracts;
   
   // Returns code audit level, 0 if not present
   function isVerifiedAddress(address _auditorAddr, address _contractAddr) public view returns(uint) {
@@ -47,7 +47,7 @@ contract Audit {
   }
   
   // Add evidence to audited code, only author, if _newLevel is different from original
-  // updates the contract&#39;s level
+  // updates the contract's level
   function addEvidence(bytes32 _codeHash, uint _newLevel, bytes32 _ipfsHash) public {
     address auditor = msg.sender;
     require(auditedContracts[auditor][_codeHash].insertedBlock != 0);
@@ -63,7 +63,7 @@ contract Audit {
       // allocate output byte array - this could also be done without assembly
       // by using o_code = new bytes(size)
       code := mload(0x40)
-      // new &quot;memory end&quot; including padding
+      // new "memory end" including padding
       mstore(0x40, add(code, and(add(add(size, 0x20), 0x1f), not(0x1f))))
       // store length in memory
       mstore(code, size)
@@ -75,14 +75,14 @@ contract Audit {
 
 contract MonteLabsMS {
   // MonteLabs owners
-  mapping (address =&gt; bool) public owners;
+  mapping (address => bool) public owners;
   uint8 constant quorum = 2;
   Audit public auditContract;
 
   constructor(address[] _owners, Audit _auditContract) public {
     auditContract = _auditContract;
     require(_owners.length == 3);
-    for (uint i = 0; i &lt; _owners.length; ++i) {
+    for (uint i = 0; i < _owners.length; ++i) {
       owners[_owners[i]] = true;
     }
   }
@@ -93,7 +93,7 @@ contract MonteLabsMS {
     address sender = msg.sender;
     require(owners[sender]);
 
-    bytes32 prefixedHash = keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,
+    bytes32 prefixedHash = keccak256("\x19Ethereum Signed Message:\n32",
                            keccak256(audit, _codeHash, _level, _ipfsHash));
 
     address other = ecrecover(prefixedHash, _v, _r, _s);

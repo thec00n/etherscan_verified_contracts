@@ -41,7 +41,7 @@ contract Broker {
 
   struct Item{
     string name;
-    // At least 0.1 Finney, because it&#39;s the fee to the developer
+    // At least 0.1 Finney, because it's the fee to the developer
     uint   price;
     // this could be a link to an Web page explaining about this item
     string detail;
@@ -142,11 +142,11 @@ contract Broker {
     inState(State.Created)
     onlyCreator
   {
-    require(price &gt; minimumdeveloperfee);
+    require(price > minimumdeveloperfee);
     item.name = name;
     item.price = price;
     item.detail = detail;
-    developerfee = (price/1000)&lt;minimumdeveloperfee ? minimumdeveloperfee : (price/1000);
+    developerfee = (price/1000)<minimumdeveloperfee ? minimumdeveloperfee : (price/1000);
     ItemInfoChanged(name, price, detail, developerfee);
   }
 
@@ -186,7 +186,7 @@ contract Broker {
     SellerChanged(seller);
   }
 
-  // We will have some &#39;peculiar&#39; list of documents
+  // We will have some 'peculiar' list of documents
   // for each deals. 
   // For ex, for House we will require
   // proof of documents about the basic information of the House,
@@ -208,7 +208,7 @@ contract Broker {
   {
     require(state != State.Finished);
     require(state != State.Locked);
-    if(index&lt;item.documents.length){
+    if(index<item.documents.length){
       item.documents[index].state = FileState.Invalidated;
     }
   }
@@ -217,7 +217,7 @@ contract Broker {
     onlyBroker
     inState(State.Created)
   {
-    // if(index&lt;item.documents.length){
+    // if(index<item.documents.length){
     //   item.documents[index].state = FileState.Confirmed;
     // }
     Validated();

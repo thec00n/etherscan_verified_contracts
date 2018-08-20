@@ -51,8 +51,8 @@ if (unprocessedProfits != 0) {
     uint contriTotal;
     totalProfit += profitAmount;
     
-    if (contributors.length != 0 &amp;&amp; profitAmount != 0) {
-        for (uint proi = 0; proi &lt; contributors.length; proi++) {
+    if (contributors.length != 0 && profitAmount != 0) {
+        for (uint proi = 0; proi < contributors.length; proi++) {
                 contriTotal = contributors[proi].contribution + contributors[proi].profit;
                 profit = profitAmount * contriTotal / totalSUM;
                 contributors[proi].profit += profit;
@@ -67,7 +67,7 @@ bool recontri = false;
 totalContributions += contri;
 totalSUM += contri;
 
-for (uint recoi = 0; recoi &lt; contributors.length; recoi++) {
+for (uint recoi = 0; recoi < contributors.length; recoi++) {
     if (msg.sender == contributors[recoi].addr) {
         contributors[recoi].contribution += contri;
         recontri = true;

@@ -2,21 +2,21 @@
     Gold Reserve [XGR]
     1.0.0
     
-    Rajci &#39;iFA&#39; Andor @ <span class="__cf_email__" data-cfemail="f8919e99b89e8d8b9197968f9994949d8cd69197">[email&#160;protected]</span>
+    Rajci 'iFA' Andor @ <span class="__cf_email__" data-cfemail="f8919e99b89e8d8b9197968f9994949d8cd69197">[email protected]</span>
 */
 pragma solidity 0.4.18;
 
 contract SafeMath {
     /* Internals */
     function safeAdd(uint256 a, uint256 b) internal pure returns(uint256) {
-        if ( b &gt; 0 ) {
-            assert( a + b &gt; a );
+        if ( b > 0 ) {
+            assert( a + b > a );
         }
         return a + b;
     }
     function safeSub(uint256 a, uint256 b) internal pure returns(uint256) {
-        if ( b &gt; 0 ) {
-            assert( a - b &lt; a );
+        if ( b > 0 ) {
+            assert( a - b < a );
         }
         return a - b;
     }
@@ -55,8 +55,8 @@ contract Token is SafeMath, Owned {
     * @title Gold Reserve [XGR] token
     */
     /* Variables */
-    string  public name = &quot;GoldReserve&quot;;
-    string  public symbol = &quot;XGR&quot;;
+    string  public name = "GoldReserve";
+    string  public symbol = "XGR";
     uint8   public decimals = 8;
     uint256 public transactionFeeRate   = 20; // 0.02 %
     uint256 public transactionFeeRateM  = 1e3; // 1000
@@ -304,10 +304,10 @@ contract TokenDB is SafeMath, Owned {
         bool    valid;
     }
     /* Variables */
-    mapping(address =&gt; mapping(address =&gt; allowance_s)) public allowance;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(uint256 =&gt; deposits_s) private deposits;
-    mapping(address =&gt; uint256) public lockedBalances;
+    mapping(address => mapping(address => allowance_s)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(uint256 => deposits_s) private deposits;
+    mapping(address => uint256) public lockedBalances;
     address public tokenAddress;
     address public depositsAddress;
     uint256 public depositsCounter;
@@ -357,7 +357,7 @@ contract TokenDB is SafeMath, Owned {
         return true;
     }
     function decrease(address owner, uint256 value) external onlyForToken returns(bool success) {
-        require( safeSub(balanceOf[owner], safeAdd(lockedBalances[owner], value)) &gt;= 0 );
+        require( safeSub(balanceOf[owner], safeAdd(lockedBalances[owner], value)) >= 0 );
         balanceOf[owner] = safeSub(balanceOf[owner], value);
         totalSupply = safeSub(totalSupply, value);
         return true;
@@ -400,8 +400,8 @@ contract TokenLib is SafeMath, Owned {
     * @title Gold Reserve [XGR] token
     */
     /* Variables */
-    string  public name = &quot;GoldReserve&quot;;
-    string  public symbol = &quot;XGR&quot;;
+    string  public name = "GoldReserve";
+    string  public symbol = "XGR";
     uint8   public decimals = 8;
     uint256 public transactionFeeRate   = 20; // 0.02 %
     uint256 public transactionFeeRateM  = 1e3; // 1000
@@ -484,7 +484,7 @@ contract TokenLib is SafeMath, Owned {
         uint256 _fee;
         uint256 _payBack;
         uint256 _amount = amount;
-        require( from != 0x00 &amp;&amp; to != 0x00 );
+        require( from != 0x00 && to != 0x00 );
         if( fee ) {
             (_success, _fee) = getTransactionFee(amount);
             require( _success );
@@ -502,8 +502,8 @@ contract TokenLib is SafeMath, Owned {
             require( checkContract(to) );
             (_success, _payBack) = SampleContract(to).receiveToken(from, amount, extraData);
             require( _success );
-            require( amount &gt; _payBack );
-            if ( _payBack &gt; 0 ) {
+            require( amount > _payBack );
+            if ( _payBack > 0 ) {
                 bytes memory _data;
                 Transfer(to, from, _payBack);
                 Transfer2(to, from, _payBack, _data);
@@ -518,7 +518,7 @@ contract TokenLib is SafeMath, Owned {
     function _approve(address spender, uint256 amount, uint256 nonce) internal {
         require( msg.sender != spender );
         var (_success, _remaining, _nonce) = TokenDB(databaseAddress).getAllowance(msg.sender, spender);
-        require( _success &amp;&amp; ( _nonce == nonce ) );
+        require( _success && ( _nonce == nonce ) );
         require( TokenDB(databaseAddress).setAllowance(msg.sender, spender, amount, nonce) );
         Approval(msg.sender, spender, amount);
     }
@@ -527,7 +527,7 @@ contract TokenLib is SafeMath, Owned {
         assembly {
             _codeLength := extcodesize(addr)
         }
-        return _codeLength &gt; 0;
+        return _codeLength > 0;
     }
     function checkContract(address addr) internal view returns (bool appropriate) {
         return SampleContract(addr).XGRAddress() == address(this);
@@ -540,8 +540,8 @@ contract TokenLib is SafeMath, Owned {
     }
     function getTransactionFee(uint256 value) public constant returns (bool success, uint256 fee) {
         fee = safeMul(value, transactionFeeRate) / transactionFeeRateM / 100;
-        if ( fee &gt; transactionFeeMax ) { fee = transactionFeeMax; }
-        else if ( fee &lt; transactionFeeMin ) { fee = transactionFeeMin; }
+        if ( fee > transactionFeeMax ) { fee = transactionFeeMax; }
+        else if ( fee < transactionFeeMin ) { fee = transactionFeeMin; }
         return (true, fee);
     }
     function balanceOf(address owner) public constant returns (uint256 value) {
@@ -586,7 +586,7 @@ contract Deposits is Owned, SafeMath {
         bool    valid;
     }
     /* Variables */
-    mapping(uint256 =&gt; depositTypes_s) public depositTypes;
+    mapping(uint256 => depositTypes_s) public depositTypes;
     uint256 public depositTypesCounter;
     address public tokenAddress;
     address public databaseAddress;
@@ -630,10 +630,10 @@ contract Deposits is Owned, SafeMath {
     }
     function placeDeposit(uint256 amount, uint256 depositType) external checkSelf {
         require( depositTypes[depositType].valid );
-        require( depositTypes[depositType].baseFunds &lt;= amount );
+        require( depositTypes[depositType].baseFunds <= amount );
         uint256 balance = TokenDB(databaseAddress).balanceOf(msg.sender);
         uint256 locked = TokenDB(databaseAddress).lockedBalances(msg.sender);
-        require( safeSub(balance, locked) &gt;= amount );
+        require( safeSub(balance, locked) >= amount );
         var (success, DID) = TokenDB(databaseAddress).openDeposit(
             msg.sender,
             amount,
@@ -658,22 +658,22 @@ contract Deposits is Owned, SafeMath {
     }
     /* Internals */
     function _closeDeposit(address beneficary, uint256 DID, deposits_s data) internal {
-        require( data.valid &amp;&amp; data.addr == msg.sender );
+        require( data.valid && data.addr == msg.sender );
         var (interest, interestFee) = _calculateInterest(data);
-        if ( interest &gt; 0 ) {
+        if ( interest > 0 ) {
             require( Token(tokenAddress).mint(beneficary, interest) );
         }
-        if ( interestFee &gt; 0 ) {
+        if ( interestFee > 0 ) {
             require( Token(tokenAddress).mint(founderAddress, interestFee) );
         }
         require( TokenDB(databaseAddress).closeDeposit(DID) );
         EventDepositClosed(DID, interest, interestFee);
     }
     function _calculateInterest(deposits_s data) internal view returns (uint256 interest, uint256 interestFee) {
-        if ( ! data.valid || data.amount &lt;= 0 || data.end &lt;= data.start || block.number &lt;= data.start ) { return (0, 0); }
+        if ( ! data.valid || data.amount <= 0 || data.end <= data.start || block.number <= data.start ) { return (0, 0); }
         uint256 rate;
         uint256 delay;
-        if ( data.end &lt;= block.number ) {
+        if ( data.end <= block.number ) {
             rate = data.interestOnEnd;
             delay = safeSub(data.end, data.start);
         } else {
@@ -683,10 +683,10 @@ contract Deposits is Owned, SafeMath {
         }
         if ( rate == 0 ) { return (0, 0); }
         interest = safeDiv(safeMul(safeDiv(safeDiv(safeMul(data.amount, rate), 100), data.interestMultiplier), delay), safeSub(data.end, data.start));
-        if ( data.interestFee &gt; 0 &amp;&amp; interest &gt; 0) {
+        if ( data.interestFee > 0 && interest > 0) {
             interestFee = safeDiv(safeDiv(safeMul(interest, data.interestFee), 100), data.interestMultiplier);
         }
-        if ( interestFee &gt; 0 ) {
+        if ( interestFee > 0 ) {
             interest = safeSub(interest, interestFee);
         }
     }
@@ -724,7 +724,7 @@ contract Fork is Owned {
     }
     function upload(address[] addr, uint256[] amount) external onlyForUploader {
         require( addr.length == amount.length );
-        for ( uint256 a=0 ; a&lt;addr.length ; a++ ) {
+        for ( uint256 a=0 ; a<addr.length ; a++ ) {
             require( Token(tokenAddress).mint(addr[a], amount[a]) );
         }
     }
@@ -737,7 +737,7 @@ contract Fork is Owned {
 
 contract SampleContract is Owned, SafeMath {
     /* Variables */
-    mapping(address =&gt; uint256) public deposits; // Database of users balance
+    mapping(address => uint256) public deposits; // Database of users balance
     address public XGRAddress; // XGR Token address, please do not change this variable name!
     /* Constructor */
     function SampleContract(address newXGRTokenAddress) public {
@@ -751,7 +751,7 @@ contract SampleContract is Owned, SafeMath {
     function receiveToken(address addr, uint256 amount, bytes data) external onlyFromXGRToken returns(bool, uint256) {
         /*
             @addr has send @amount to ourself. The second return parameter is the refund amount.
-            If you don&#39;t need the whole amount, you can refund that for the address instantly.
+            If you don't need the whole amount, you can refund that for the address instantly.
             Please do not change this function name and parameter!
         */
         incomingToken(addr, amount);

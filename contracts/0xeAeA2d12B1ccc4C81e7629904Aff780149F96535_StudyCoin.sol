@@ -21,7 +21,7 @@ contract TokenERC20 {
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -38,8 +38,8 @@ contract TokenERC20 {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -59,12 +59,12 @@ contract TokenERC20 {
 contract StudyCoin is owned, TokenERC20 {
 
     function StudyCoin(
-    ) TokenERC20(2000000000, &quot;study Coin&quot;, &quot;STUDY&quot;) public {}
+    ) TokenERC20(2000000000, "study Coin", "STUDY") public {}
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                              
-        require (balanceOf[_from] &gt;= _value);               
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_from] >= _value);               
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         balanceOf[_from] -= _value;                         
         balanceOf[_to] += _value;                          
         Transfer(_from, _to, _value);

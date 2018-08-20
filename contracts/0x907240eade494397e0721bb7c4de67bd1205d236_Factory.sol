@@ -39,7 +39,7 @@ contract ENS_Permissions {
     struct Permissions {
         uint ownerMutability;
         uint addressMutability;
-        mapping(string =&gt; uint) textKeyMutability;
+        mapping(string => uint) textKeyMutability;
     }
 
     Permissions permissions;
@@ -50,41 +50,41 @@ contract ENS_Permissions {
 
     function activatePermissionsBot(bytes32 _namehash, bytes32 _labelhash) only_owner {
         require(registry.owner(_namehash) == address(this));
-        require(labelhash == 0 &amp;&amp; namehash == 0);
+        require(labelhash == 0 && namehash == 0);
         labelhash = _labelhash;
         namehash = _namehash;
     }
 
     function lockOwnership(uint _date) only_owner {
-        require(permissions.ownerMutability &lt; block.timestamp);
-        require(_date &gt; block.timestamp);
+        require(permissions.ownerMutability < block.timestamp);
+        require(_date > block.timestamp);
         permissions.ownerMutability == _date;
     }
     function lockAddress(uint _date) only_owner {
-        require(permissions.ownerMutability &gt; _date);
-        require(permissions.addressMutability &lt; block.timestamp);
-        require(_date &gt; block.timestamp);
+        require(permissions.ownerMutability > _date);
+        require(permissions.addressMutability < block.timestamp);
+        require(_date > block.timestamp);
         permissions.addressMutability == _date;
     }
     function lockTextKey(string _key, uint _date) only_owner {
-        require(permissions.ownerMutability &gt; _date);
-        require(permissions.textKeyMutability[_key] &lt; block.timestamp);
-        require(_date &gt; block.timestamp);
+        require(permissions.ownerMutability > _date);
+        require(permissions.textKeyMutability[_key] < block.timestamp);
+        require(_date > block.timestamp);
         permissions.textKeyMutability[_key] == _date;
     }
     
     // Transferring ownership from this contract also destroys the contract
     function transfer(address _newOwner) only_owner {
-        require(permissions.ownerMutability &lt; block.timestamp);
+        require(permissions.ownerMutability < block.timestamp);
         registrar.transfer(labelhash, _newOwner);
         selfdestruct(msg.sender);
     }
     function setAddr(address _addr) only_owner {
-        require(permissions.addressMutability &lt; block.timestamp);
+        require(permissions.addressMutability < block.timestamp);
         publicResolver.setAddr(namehash, _addr);
     }
     function setText(string _key, string _value) only_owner {
-        require(permissions.textKeyMutability[_key] &lt; block.timestamp);
+        require(permissions.textKeyMutability[_key] < block.timestamp);
         publicResolver.setText(namehash, _key, _value);
     }    
 }

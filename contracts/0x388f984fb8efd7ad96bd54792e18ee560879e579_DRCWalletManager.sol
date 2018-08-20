@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -243,7 +243,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner public {
 
     // Transfer tokens to owner
-    for (uint256 i = 0; i &lt; tokens.length; i++) {
+    for (uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -419,18 +419,18 @@ contract DepositWithdraw is Claimable, Pausable, withdrawable {
     function withdrawToken(address _token, address _params, uint256 _time, address _to, uint256 _value, uint256 _fee, address _tokenReturn) public onlyOwner whenNotPaused returns (bool) {
         require(_to != address(0));
         require(_token != address(0));
-        require(_value &gt; _fee);
+        require(_value > _fee);
         // require(_tokenReturn != address(0));
 
         DRCWalletMgrParams params = DRCWalletMgrParams(_params);
-        require(_value &lt;= params.singleWithdraw());
+        require(_value <= params.singleWithdraw());
 
         uint256 daysCount = _time.div(86400);
-        if (daysCount &lt;= dayWithdrawRec.mul) {
+        if (daysCount <= dayWithdrawRec.mul) {
             dayWithdrawRec.count = dayWithdrawRec.count.add(1);
             dayWithdrawRec.value = dayWithdrawRec.value.add(_value);
-            require(dayWithdrawRec.count &lt;= params.dayWithdrawCount());
-            require(dayWithdrawRec.value &lt;= params.dayWithdraw());
+            require(dayWithdrawRec.count <= params.dayWithdrawCount());
+            require(dayWithdrawRec.value <= params.dayWithdraw());
         } else {
             dayWithdrawRec.mul = daysCount;
             dayWithdrawRec.count = 1;
@@ -438,10 +438,10 @@ contract DepositWithdraw is Claimable, Pausable, withdrawable {
         }
         
         uint256 monthsCount = _time.div(86400 * 30);
-        if (monthsCount &lt;= monthWithdrawRec.mul) {
+        if (monthsCount <= monthWithdrawRec.mul) {
             monthWithdrawRec.count = monthWithdrawRec.count.add(1);
             monthWithdrawRec.value = monthWithdrawRec.value.add(_value);
-            require(monthWithdrawRec.value &lt;= params.monthWithdraw());
+            require(monthWithdrawRec.value <= params.monthWithdraw());
         } else {            
             monthWithdrawRec.mul = monthsCount;
             monthWithdrawRec.count = 1;
@@ -451,7 +451,7 @@ contract DepositWithdraw is Claimable, Pausable, withdrawable {
         ERC20 tk = ERC20(_token);
         uint256 realAmount = _value.sub(_fee);
         require(tk.transfer(_to, realAmount));
-        if (_tokenReturn != address(0) &amp;&amp; _fee &gt; 0) {
+        if (_tokenReturn != address(0) && _fee > 0) {
             require(tk.transfer(_tokenReturn, _fee));
         }
 
@@ -489,7 +489,7 @@ contract DepositWithdraw is Claimable, Pausable, withdrawable {
      * @param _ind the deposit record index
      */
     function getOneDepositRec(uint256 _ind) public view returns (uint256, address, uint256) {
-        require(_ind &lt; deposRecs.length);
+        require(_ind < deposRecs.length);
 
         return (deposRecs[_ind].timeStamp, deposRecs[_ind].account, deposRecs[_ind].value);
     }
@@ -508,7 +508,7 @@ contract DepositWithdraw is Claimable, Pausable, withdrawable {
      * @param _ind the withdraw record index
      */
     function getOneWithdrawRec(uint256 _ind) public view returns (uint256, address, uint256) {
-        require(_ind &lt; withdrRecs.length);
+        require(_ind < withdrRecs.length);
 
         return (withdrRecs[_ind].timeStamp, withdrRecs[_ind].account, withdrRecs[_ind].value);
     }
@@ -532,12 +532,12 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
         // uint256 balance;
         uint256 frozen;
         WithdrawWallet[] withdrawWallets;
-        // mapping (bytes32 =&gt; address) withdrawWallets;
+        // mapping (bytes32 => address) withdrawWallets;
     }
 
-    mapping (address =&gt; DepositRepository) depositRepos;
-    mapping (address =&gt; address) walletDeposits;
-    mapping (address =&gt; bool) public frozenDeposits;
+    mapping (address => DepositRepository) depositRepos;
+    mapping (address => address) walletDeposits;
+    mapping (address => bool) public frozenDeposits;
 
     ERC20 public tk; // the token will be managed
     DRCWalletMgrParams params; // the parameters that the management needs
@@ -573,7 +573,7 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
         address _deposit = address(deposWithdr);
         walletDeposits[_wallet] = _deposit;
         WithdrawWallet[] storage withdrawWalletList = depositRepos[_deposit].withdrawWallets;
-        withdrawWalletList.push(WithdrawWallet(&quot;default wallet&quot;, _wallet));
+        withdrawWalletList.push(WithdrawWallet("default wallet", _wallet));
         // depositRepos[_deposit].balance = 0;
         depositRepos[_deposit].frozen = 0;
 
@@ -633,7 +633,7 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
         bytes32[] memory names = new bytes32[](_indices.length);
         address[] memory wallets = new address[](_indices.length);
         
-        for (uint i = 0; i &lt; _indices.length; i = i.add(1)) {
+        for (uint i = 0; i < _indices.length; i = i.add(1)) {
             WithdrawWallet storage wallet = depositRepos[_deposit].withdrawWallets[_indices[i]];
             names[i] = wallet.name;
             wallets[i] = wallet.walletAddr;
@@ -689,11 +689,11 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
         require(_deposit != address(0));
 
         uint256 _balance = tk.balanceOf(_deposit);
-        require(_value &lt;= _balance);
+        require(_value <= _balance);
 
         // depositRepos[_deposit].balance = _balance;
         uint256 frozenAmount = depositRepos[_deposit].frozen;
-        require(_value &lt;= _balance.sub(frozenAmount));
+        require(_value <= _balance.sub(frozenAmount));
 
         DepositWithdraw deposWithdr = DepositWithdraw(_deposit);
         return (deposWithdr.withdrawTokenToDefault(address(tk), address(params), _time, _value, params.chargeFee(), params.chargeFeePool()));
@@ -708,7 +708,7 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
 	 */
     function checkWithdrawAddress(address _deposit, bytes32 _name, address _to) public view returns (bool, bool) {
         uint len = depositRepos[_deposit].withdrawWallets.length;
-        for (uint i = 0; i &lt; len; i = i.add(1)) {
+        for (uint i = 0; i < len; i = i.add(1)) {
             WithdrawWallet storage wallet = depositRepos[_deposit].withdrawWallets[i];
             if (_name == wallet.name) {
                 return(true, (_to == wallet.walletAddr));
@@ -739,12 +739,12 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
 
         uint256 _balance = tk.balanceOf(_deposit);
         if (_check) {
-            require(_value &lt;= _balance);
+            require(_value <= _balance);
         }
 
         uint256 available = _balance.sub(depositRepos[_deposit].frozen);
         if (_check) {
-            require(_value &lt;= available);
+            require(_value <= available);
         }
 
         bool exist;
@@ -757,7 +757,7 @@ contract DRCWalletManager is OwnerContract, withdrawable, Destructible, TokenDes
             return false;
         }
 
-        if (!_check &amp;&amp; _value &gt; available) {
+        if (!_check && _value > available) {
             tk.transfer(_deposit, _value.sub(available));
             _value = _value.sub(available);
         }

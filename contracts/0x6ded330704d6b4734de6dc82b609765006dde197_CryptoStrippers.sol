@@ -9,10 +9,10 @@ contract CryptoStrippers{
     uint256 PSNH = 5000;
     bool public initialized = true;
     address public ceoAddress;
-    mapping (address =&gt; uint256) public hatcheryStrippers;
-    mapping (address =&gt; uint256) public claimedCoins;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryStrippers;
+    mapping (address => uint256) public claimedCoins;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketCoins;
 
 
@@ -25,7 +25,7 @@ contract CryptoStrippers{
     */
     function hatchCoins(address ref) public{
         require(initialized);
-        if(referrals[msg.sender] == 0 &amp;&amp; referrals[msg.sender] != msg.sender){
+        if(referrals[msg.sender] == 0 && referrals[msg.sender] != msg.sender){
             referrals[msg.sender] = ref;
         }
         uint256 coinsUsed = getMyCoins();
@@ -111,7 +111,7 @@ contract CryptoStrippers{
     }
 
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -142,7 +142,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -151,7 +151,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

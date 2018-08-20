@@ -11,20 +11,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
    }
 }
@@ -39,12 +39,12 @@ contract BTBToken is SafeMath {
     bool public isContractFrozen;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
-    mapping (address =&gt; uint256) public freezeOf;
+    mapping (address => uint256) public freezeOf;
 
-    mapping (address =&gt; string) public btbAddressMapping;
+    mapping (address => string) public btbAddressMapping;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -64,8 +64,8 @@ contract BTBToken is SafeMath {
     function BTBToken() public {
         totalSupply = 10*10**26;                        // Update total supply
         balanceOf[msg.sender] = totalSupply;              // Give the creator all initial tokens
-        name = &quot;BiTBrothers&quot;;                                   // Set the name for display purposes
-        symbol = &quot;BTB&quot;;                               // Set the symbol for display purposes
+        name = "BiTBrothers";                                   // Set the name for display purposes
+        symbol = "BTB";                               // Set the symbol for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
         owner = msg.sender;
         isContractFrozen = false;
@@ -75,9 +75,9 @@ contract BTBToken is SafeMath {
     function transfer(address _to, uint256 _value) external returns (bool success) {
         assert(!isContractFrozen);
         assert(_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        assert(_value &gt; 0);
-        assert(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        assert(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        assert(_value > 0);
+        assert(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        assert(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);                     // Subtract from the sender
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);                            // Add the same to the recipient
         emit Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -87,7 +87,7 @@ contract BTBToken is SafeMath {
     /* Allow another contract to spend some tokens in your behalf */
     function approve(address _spender, uint256 _value) external returns (bool success) {
         assert(!isContractFrozen);
-        assert(_value &gt; 0);
+        assert(_value > 0);
         allowance[msg.sender][_spender] = _value;
         return true;
     }
@@ -97,10 +97,10 @@ contract BTBToken is SafeMath {
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
         assert(!isContractFrozen);
         assert(_to != 0x0);                                // Prevent transfer to 0x0 address. Use burn() instead
-        assert(_value &gt; 0);
-        assert(balanceOf[_from] &gt;= _value);                 // Check if the sender has enough
-        assert(balanceOf[_to] + _value &gt;= balanceOf[_to]);  // Check for overflows
-        assert(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        assert(_value > 0);
+        assert(balanceOf[_from] >= _value);                 // Check if the sender has enough
+        assert(balanceOf[_to] + _value >= balanceOf[_to]);  // Check for overflows
+        assert(_value <= allowance[_from][msg.sender]);     // Check allowance
         balanceOf[_from] = SafeMath.safeSub(balanceOf[_from], _value);                           // Subtract from the sender
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);                             // Add the same to the recipient
         allowance[_from][msg.sender] = SafeMath.safeSub(allowance[_from][msg.sender], _value);
@@ -111,8 +111,8 @@ contract BTBToken is SafeMath {
     function burn(uint256 _value) external returns (bool success) {
         assert(!isContractFrozen);
         assert(msg.sender == owner);
-        assert(balanceOf[msg.sender] &gt;= _value);            // Check if the sender has enough
-        assert(_value &gt; 0);
+        assert(balanceOf[msg.sender] >= _value);            // Check if the sender has enough
+        assert(_value > 0);
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);                      // Subtract from the sender
         totalSupply = SafeMath.safeSub(totalSupply,_value);                                // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -123,7 +123,7 @@ contract BTBToken is SafeMath {
         assert(!isContractFrozen);
         assert(msg.sender == owner);
         isContractFrozen = true;
-        emit Freeze(msg.sender, &quot;contract is frozen&quot;);
+        emit Freeze(msg.sender, "contract is frozen");
         return true;
     }
 	
@@ -131,7 +131,7 @@ contract BTBToken is SafeMath {
         assert(isContractFrozen);
         assert(msg.sender == owner);
         isContractFrozen = false;
-        emit Unfreeze(msg.sender, &quot;contract is unfrozen&quot;);
+        emit Unfreeze(msg.sender, "contract is unfrozen");
         return true;
     }
 

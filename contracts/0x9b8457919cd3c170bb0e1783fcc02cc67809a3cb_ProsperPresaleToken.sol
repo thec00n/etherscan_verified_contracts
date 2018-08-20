@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,9 +43,9 @@ contract StandardToken{
     using SafeMath for uint256;
     
     // create mapping from ether address to uint for balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     
-    mapping (address =&gt; mapping(address =&gt; uint256)) approved;
+    mapping (address => mapping(address => uint256)) approved;
     
     // public events on ether network for Transfer and Approval 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -58,7 +58,7 @@ contract StandardToken{
         return totalSupply;
     }
     
-    // returns address specified as &quot;_owner&quot;
+    // returns address specified as "_owner"
     function balanceOf(address _owner) constant returns (uint256 balance){
         return balances[_owner];
     }
@@ -109,7 +109,7 @@ contract StandardToken{
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = approved[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       approved[msg.sender][_spender] = 0;
     } else {
       approved[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -138,7 +138,7 @@ contract StandardToken{
  * @title Ownable
  * from OpenZeppelin
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -228,8 +228,8 @@ contract ProsperMintableToken is StandardToken, Ownable {
  * Steps are
  * - Upgradeabletoken.upgradeMaster calls UpgradeableToken.setUpgradeAgent()
  * - Individual token holders can now call UpgradeableToken.upgrade()
- *   -&gt; This results to call UpgradeAgent.upgradeFrom() that issues new tokens
- *   -&gt; UpgradeableToken.upgrade() reduces the original total supply based on amount of upgraded tokens
+ *   -> This results to call UpgradeAgent.upgradeFrom() that issues new tokens
+ *   -> UpgradeableToken.upgrade() reduces the original total supply based on amount of upgraded tokens
  *
  */
 
@@ -276,7 +276,7 @@ contract UpgradeableToken is ProsperMintableToken {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *

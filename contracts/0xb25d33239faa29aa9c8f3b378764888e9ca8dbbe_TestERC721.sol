@@ -5,13 +5,13 @@ contract TestERC721 {
     address private _admin;
 
     uint256 private _totalSupply;
-    mapping(address =&gt; uint) private balances;
+    mapping(address => uint) private balances;
     uint256 private index;
 
-    mapping(uint256 =&gt; address) private tokenOwners;
-    mapping(uint256 =&gt; bool) private tokenExists;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(uint256 =&gt; token) tokens;
+    mapping(uint256 => address) private tokenOwners;
+    mapping(uint256 => bool) private tokenExists;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(uint256 => token) tokens;
 
     struct token {
         string name;
@@ -31,11 +31,11 @@ contract TestERC721 {
     }
     
     function name() public pure returns (string) {
-        return &quot;Test Token&quot;;
+        return "Test Token";
     }
 
     function symbol() public pure returns (string) {
-        return &quot;TTE&quot;;
+        return "TTE";
     }
 
     function totalSupply() public constant returns (uint256) {
@@ -112,7 +112,7 @@ contract TestERC721 {
         address oldOwner = tokenOwners[_tokenId];
         require(tokenExists[_tokenId]);
         require(newOwner != ownerOf(_tokenId));
-        require(msg.value &gt;= tokens[_tokenId].price);
+        require(msg.value >= tokens[_tokenId].price);
         uint256 _remainder = msg.value - tokens[_tokenId].price;
         newOwner.transfer(_remainder);
         uint256 price20 = tokens[_tokenId].price/5;

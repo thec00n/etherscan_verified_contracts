@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 // Cancelot dapp on-chain component.
-// Forwards ENS .eth Registrar cancelBid(...) call if bid&#39;s Deed not yet cancelled.
+// Forwards ENS .eth Registrar cancelBid(...) call if bid's Deed not yet cancelled.
 // Author:  Noel Maersk (veox)
 // License: GPLv3.
 // Sources: https://gitlab.com/veox/cancelot (Not yet available during deployment time - stay tuned!..)
@@ -8,9 +8,9 @@ pragma solidity ^0.4.11;
 
 // Minimal implementation of the .eth Registrar interface.
 contract RegistrarFakeInterface {
-    // Short-circuit address-&gt;bytes32-&gt;Deed mapping. Signature 0x5e431709.
-    mapping (address =&gt; mapping(bytes32 =&gt; address)) public sealedBids;
-    //mapping (address =&gt; mapping(bytes32 =&gt; Deed)) public sealedBids;
+    // Short-circuit address->bytes32->Deed mapping. Signature 0x5e431709.
+    mapping (address => mapping(bytes32 => address)) public sealedBids;
+    //mapping (address => mapping(bytes32 => Deed)) public sealedBids;
     //function sealedBids(address bidder, bytes32 seal) constant returns(address);
 
     // Actual. Signature 0x2525f5c1.
@@ -18,7 +18,7 @@ contract RegistrarFakeInterface {
 }
 
 // Sir Cancelot, the cancellation bot - banger of coconuts, protector of nothing.
-// Game-theoretic looney. Sees the world burn, even if it doesn&#39;t. To be avoided.
+// Game-theoretic looney. Sees the world burn, even if it doesn't. To be avoided.
 contract Cancelot {
     address public owner;
     RegistrarFakeInterface registrar;

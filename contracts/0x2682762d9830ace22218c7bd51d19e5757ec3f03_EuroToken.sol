@@ -7,7 +7,7 @@ contract IAccessPolicy {
     // Public functions
     ////////////////////////
 
-    /// @notice We don&#39;t make this function constant to allow for state-updating access controls such as rate limiting.
+    /// @notice We don't make this function constant to allow for state-updating access controls such as rate limiting.
     /// @dev checks if subject belongs to requested role for particular object
     /// @param subject address to be checked against role, typically msg.sender
     /// @param role identifier of required role
@@ -65,14 +65,14 @@ contract StandardRoles {
     // Constants
     ////////////////////////
 
-    // @notice Soldity somehow doesn&#39;t evaluate this compile time
-    // @dev role which has rights to change permissions and set new policy in contract, keccak256(&quot;AccessController&quot;)
+    // @notice Soldity somehow doesn't evaluate this compile time
+    // @dev role which has rights to change permissions and set new policy in contract, keccak256("AccessController")
     bytes32 internal constant ROLE_ACCESS_CONTROLLER = 0xac42f8beb17975ed062dcb80c63e6d203ef1c2c335ced149dc5664cc671cb7da;
 }
 
 /// @title Granular code execution permissions
 /// @notice Intended to replace existing Ownable pattern with more granular permissions set to execute smart contract functions
-///     for each function where &#39;only&#39; modifier is applied, IAccessPolicy implementation is called to evaluate if msg.sender belongs to required role for contract being called.
+///     for each function where 'only' modifier is applied, IAccessPolicy implementation is called to evaluate if msg.sender belongs to required role for contract being called.
 ///     Access evaluation specific belong to IAccessPolicy implementation, see RoleBasedAccessPolicy for details.
 /// @dev Should be inherited by a contract requiring such permissions controll. IAccessPolicy must be provided in constructor. Access policy may be replaced to a different one
 ///     by msg.sender with ROLE_ACCESS_CONTROLLER role
@@ -88,7 +88,7 @@ contract AccessControlled is IAccessControlled, StandardRoles {
     // Modifiers
     ////////////////////////
 
-    /// @dev limits function execution only to senders assigned to required &#39;role&#39;
+    /// @dev limits function execution only to senders assigned to required 'role'
     modifier only(bytes32 role) {
         require(_accessPolicy.allowed(msg.sender, role, this, msg.sig));
         _;
@@ -184,8 +184,8 @@ contract EuroTokenMigrationTarget is
 
 /// @notice implemented in the contract that stores state to be migrated
 /// @notice contract is called migration source
-/// @dev migration target implements IMigrationTarget interface, when it is passed in &#39;enableMigration&#39; function
-/// @dev &#39;migrate&#39; function may be called to migrate part of state owned by msg.sender
+/// @dev migration target implements IMigrationTarget interface, when it is passed in 'enableMigration' function
+/// @dev 'migrate' function may be called to migrate part of state owned by msg.sender
 /// @dev in legal terms this corresponds to amending/changing agreement terms by co-signature of parties
 contract IMigrationSource {
 
@@ -309,7 +309,7 @@ contract AccessRoles {
 
     // NOTE: All roles are set to the keccak256 hash of the
     // CamelCased role name, i.e.
-    // ROLE_LOCKED_ACCOUNT_ADMIN = keccak256(&quot;LockedAccountAdmin&quot;)
+    // ROLE_LOCKED_ACCOUNT_ADMIN = keccak256("LockedAccountAdmin")
 
     // may setup LockedAccount, change disbursal mechanism and set migration
     bytes32 internal constant ROLE_LOCKED_ACCOUNT_ADMIN = 0x4675da546d2d92c5b86c4f726a9e61010dce91cccc2491ce6019e78b09d2572e;
@@ -332,10 +332,10 @@ contract AccessRoles {
     // may reclaim tokens/ether from contracts supporting IReclaimable interface
     bytes32 internal constant ROLE_RECLAIMER = 0x0542bbd0c672578966dcc525b30aa16723bb042675554ac5b0362f86b6e97dc5;
 
-    // represents legally platform operator in case of forks and contracts with legal agreement attached. keccak256(&quot;PlatformOperatorRepresentative&quot;)
+    // represents legally platform operator in case of forks and contracts with legal agreement attached. keccak256("PlatformOperatorRepresentative")
     bytes32 internal constant ROLE_PLATFORM_OPERATOR_REPRESENTATIVE = 0xb2b321377653f655206f71514ff9f150d0822d062a5abcf220d549e1da7999f0;
 
-    // allows to deposit EUR-T and allow addresses to send and receive EUR-T. keccak256(&quot;EurtDepositManager&quot;)
+    // allows to deposit EUR-T and allow addresses to send and receive EUR-T. keccak256("EurtDepositManager")
     bytes32 internal constant ROLE_EURT_DEPOSIT_MANAGER = 0x7c8ecdcba80ce87848d16ad77ef57cc196c208fc95c5638e4a48c681a34d4fe7;
 }
 
@@ -361,7 +361,7 @@ contract IBasicToken {
         constant
         returns (uint256);
 
-    /// @param owner The address that&#39;s balance is being requested
+    /// @param owner The address that's balance is being requested
     /// @return The balance of `owner` at the current block
     function balanceOf(address owner)
         public
@@ -382,7 +382,7 @@ contract IBasicToken {
 /// @notice note that this opens your contracts to claims from various people saying they lost tokens and they want them back
 ///     be ready to handle such claims
 /// @dev use with care!
-///     1. ROLE_RECLAIMER is allowed to claim tokens, it&#39;s not returning tokens to original owner
+///     1. ROLE_RECLAIMER is allowed to claim tokens, it's not returning tokens to original owner
 ///     2. in derived contract that holds any token by design you must override `reclaim` and block such possibility.
 ///         see LockedAccount as an example
 contract Reclaimable is AccessControlled, AccessRoles {
@@ -441,7 +441,7 @@ contract TokenMetadata is ITokenMetadata {
     // Immutable state
     ////////////////////////
 
-    // The Token&#39;s name: e.g. DigixDAO Tokens
+    // The Token's name: e.g. DigixDAO Tokens
     string private NAME;
 
     // An identifier: e.g. REP
@@ -572,7 +572,7 @@ contract IERC677Callback {
 
     // NOTE: This call can be initiated by anyone. You need to make sure that
     // it is send by the token (`require(msg.sender == token)`) or make sure
-    // amount is valid (`require(token.allowance(this) &gt;= amount)`).
+    // amount is valid (`require(token.allowance(this) >= amount)`).
     function receiveApproval(
         address from,
         uint256 amount,
@@ -618,7 +618,7 @@ contract Math {
         constant
         returns(uint256)
     {
-        return v1 &gt; v2 ? v1 - v2 : v2 - v1;
+        return v1 > v2 ? v1 - v2 : v2 - v1;
     }
 
     // divide v by d, round up if remainder is 0.5 or more
@@ -630,7 +630,7 @@ contract Math {
         return add(v, d/2) / d;
     }
 
-    // computes decimal decimalFraction &#39;frac&#39; of &#39;amount&#39; with maximum precision (multiplication first)
+    // computes decimal decimalFraction 'frac' of 'amount' with maximum precision (multiplication first)
     // both amount and decimalFraction must have 18 decimals precision, frac 10**18 represents a whole (100% of) amount
     // mind loss of precision as decimal fractions do not have finite binary expansion
     // do not use instead of division
@@ -639,7 +639,7 @@ contract Math {
         constant
         returns(uint256)
     {
-        // it&#39;s like 1 ether is 100% proportion
+        // it's like 1 ether is 100% proportion
         return proportion(amount, frac, 10**18);
     }
 
@@ -672,7 +672,7 @@ contract Math {
         constant
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -682,7 +682,7 @@ contract Math {
         returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -691,7 +691,7 @@ contract Math {
         constant
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max(uint256 a, uint256 b)
@@ -699,7 +699,7 @@ contract Math {
         constant
         returns (uint256)
     {
-        return a &gt; b ? a : b;
+        return a > b ? a : b;
     }
 }
 
@@ -713,7 +713,7 @@ contract BasicToken is IBasicToken, Math {
     // Mutable state
     ////////////////////////
 
-    mapping(address =&gt; uint256) internal _balances;
+    mapping(address => uint256) internal _balances;
 
     uint256 internal _totalSupply;
 
@@ -790,7 +790,7 @@ contract StandardToken is
     // Mutable state
     ////////////////////////
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) private _allowed;
+    mapping (address => mapping (address => uint256)) private _allowed;
 
     ////////////////////////
     // Public functions
@@ -895,9 +895,9 @@ contract EuroToken is
     // Constants
     ////////////////////////
 
-    string private constant NAME = &quot;Euro Token&quot;;
+    string private constant NAME = "Euro Token";
 
-    string private constant SYMBOL = &quot;EUR-T&quot;;
+    string private constant SYMBOL = "EUR-T";
 
     uint8 private constant DECIMALS = 18;
 
@@ -906,10 +906,10 @@ contract EuroToken is
     ////////////////////////
 
     // a list of addresses that are allowed to receive EUR-T
-    mapping(address =&gt; bool) private _allowedTransferTo;
+    mapping(address => bool) private _allowedTransferTo;
 
     // a list of of addresses that are allowed to send EUR-T
-    mapping(address =&gt; bool) private _allowedTransferFrom;
+    mapping(address => bool) private _allowedTransferFrom;
 
     ////////////////////////
     // Events
@@ -962,7 +962,7 @@ contract EuroToken is
     function EuroToken(IAccessPolicy accessPolicy)
         AccessControlled(accessPolicy)
         StandardToken()
-        TokenMetadata(NAME, DECIMALS, SYMBOL, &quot;&quot;)
+        TokenMetadata(NAME, DECIMALS, SYMBOL, "")
         MigrationSource(accessPolicy, ROLE_EURT_DEPOSIT_MANAGER)
         Reclaimable()
         public
@@ -973,8 +973,8 @@ contract EuroToken is
     // Public functions
     ////////////////////////
 
-    /// @notice deposit &#39;amount&#39; of EUR-T to address &#39;to&#39;
-    /// @dev address &#39;to&#39; is whitelisted as recipient of future transfers
+    /// @notice deposit 'amount' of EUR-T to address 'to'
+    /// @dev address 'to' is whitelisted as recipient of future transfers
     /// @dev deposit may happen only in case of succesful KYC of recipient and validation of banking data
     /// @dev which in this implementation is an off-chain responsibility of EURT_DEPOSIT_MANAGER
     function deposit(address to, uint256 amount)
@@ -991,13 +991,13 @@ contract EuroToken is
         return true;
     }
 
-    /// @notice withdraws &#39;amount&#39; of EUR-T by burning required amount and providing a proof of whithdrawal
+    /// @notice withdraws 'amount' of EUR-T by burning required amount and providing a proof of whithdrawal
     /// @dev proof is provided in form of log entry on which EURT_DEPOSIT_MANAGER
     /// @dev will act off-chain to return required Euro amount to EUR-T holder
     function withdraw(uint256 amount)
         public
     {
-        require(_balances[msg.sender] &gt;= amount);
+        require(_balances[msg.sender] >= amount);
         _balances[msg.sender] = sub(_balances[msg.sender], amount);
         _totalSupply = sub(_totalSupply, amount);
         LogWithdrawal(msg.sender, amount);
@@ -1051,9 +1051,9 @@ contract EuroToken is
         return BasicToken.transfer(to, amount);
     }
 
-    /// @dev broker acts in the name of &#39;from&#39; address so broker needs to have permission to transfer from
+    /// @dev broker acts in the name of 'from' address so broker needs to have permission to transfer from
     ///  this way we may give permissions to brokering smart contracts while investors do not have permissions
-    ///  to transfer. &#39;to&#39; address requires standard transfer to permission
+    ///  to transfer. 'to' address requires standard transfer to permission
     function transferFrom(address from, address to, uint256 amount)
         public
         onlyAllowedTransferFrom(msg.sender)
@@ -1074,7 +1074,7 @@ contract EuroToken is
     {
         // burn deposit
         uint256 amount = _balances[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             _balances[msg.sender] = 0;
             _totalSupply = sub(_totalSupply, amount);
         }

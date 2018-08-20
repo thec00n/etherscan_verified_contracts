@@ -1,6 +1,6 @@
 contract CapWhitelist {
     address public owner;
-    mapping (address =&gt; uint256) public whitelist;
+    mapping (address => uint256) public whitelist;
 
     event Set(address _address, uint256 _amount);
 

@@ -3,7 +3,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,9 +85,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -95,7 +95,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -104,7 +104,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -116,7 +116,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -134,7 +134,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -163,7 +163,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -174,8 +174,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -285,8 +285,8 @@ contract YUPTimelock is Ownable {
     ContractState public state;
     uint256 constant D160 = 0x0010000000000000000000000000000000000000000;
     StandardToken public token;
-    mapping(address =&gt; uint256) public allocations;
-    mapping(address =&gt; bool) public claimed;                //indicates whether beneficiary has claimed tokens
+    mapping(address => uint256) public allocations;
+    mapping(address => bool) public claimed;                //indicates whether beneficiary has claimed tokens
     uint256 public expectedAmount = 193991920 * (10**18);   //should hold 193,991,920 x 10^18 (43.59% of total supply)
     uint256 public amountLocked;
     uint256 public amountClaimed;
@@ -319,7 +319,7 @@ contract YUPTimelock is Ownable {
         address _fUseBeneficiary,
         uint256 _fUseReleaseTime
     ) public {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         
         releaseTime = _releaseTime;
         amountLocked = _amountLocked;
@@ -344,7 +344,7 @@ contract YUPTimelock is Ownable {
     
     /** Retrieves individual investor token balance **/
     function getUserBalance(address _owner) public view returns (uint256) {
-        if (claimed[_owner] == false &amp;&amp; allocations[_owner] &gt; 0)
+        if (claimed[_owner] == false && allocations[_owner] > 0)
             return allocations[_owner];
         else
             return 0;
@@ -358,7 +358,7 @@ contract YUPTimelock is Ownable {
     
     /** Allows owner to finalize contract (only after investor claimEnd time) **/
     function finalize() public isClaiming onlyOwner {
-        require(now &gt;= claimEndTime);
+        require(now >= claimEndTime);
         
         state = ContractState.Finalized;
         IsFinalized(now);
@@ -378,8 +378,8 @@ contract YUPTimelock is Ownable {
     function loadBalances(uint256[] data) public isLocked onlyOwner {
         require(token != address(0x0));  //Fail if token is not set
         
-        for (uint256 i = 0; i &lt; data.length; i++) {
-            address addr = address(data[i] &amp; (D160 - 1));
+        for (uint256 i = 0; i < data.length; i++) {
+            address addr = address(data[i] & (D160 - 1));
             uint256 amount = data[i] / D160;
             
             allocations[addr] = amount;
@@ -389,7 +389,7 @@ contract YUPTimelock is Ownable {
     
     /** Allows owner to claim future use tokens in favor of fUseBeneficiary account **/
     function claimFutureUse() public onlyOwner {
-        require(now &gt;= fUseReleaseTime);
+        require(now >= fUseReleaseTime);
         
         amountClaimed = amountClaimed.add(fUseAmount);
         amountLocked = amountLocked.sub(fUseAmount);
@@ -401,8 +401,8 @@ contract YUPTimelock is Ownable {
     /** Allows presale investors to claim tokens **/
     function claim() external isClaiming {
         require(token != address(0x0)); //Fail if token is not set
-        require(now &gt;= releaseTime);
-        require(allocations[msg.sender] &gt; 0);
+        require(now >= releaseTime);
+        require(allocations[msg.sender] > 0);
         
         uint256 amount = allocations[msg.sender];
         allocations[msg.sender] = 0;

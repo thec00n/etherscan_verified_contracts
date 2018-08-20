@@ -3,12 +3,12 @@ library ArrayLib {
 	function insertInPlace(uint8[] storage self, uint8 n) {
 		uint8 insertingIndex = 0;
 
-		while (self.length &gt; 0 &amp;&amp; insertingIndex &lt; self.length &amp;&amp; self[insertingIndex] &lt; n) {
+		while (self.length > 0 && insertingIndex < self.length && self[insertingIndex] < n) {
 			insertingIndex += 1;
 		}
 
 		self.length += 1;
-		for (uint8 i = uint8(self.length) - 1; i &gt; insertingIndex; i--) {
+		for (uint8 i = uint8(self.length) - 1; i > insertingIndex; i--) {
 			self[i] = self[i - 1];
 		}
 
@@ -39,11 +39,11 @@ library DeckLib {
 
 	function getCard(Deck storage self, uint256 blockNumber)  returns (uint8)  {
 		uint cardIndex = self.usedCards.length;
-		if (cardIndex &gt;= totalCards) throw;
+		if (cardIndex >= totalCards) throw;
 		uint8 r = uint8(getRandomNumber(blockNumber, self.player, self.gameID, cardIndex, totalCards - cardIndex));
 
-		for (uint8 i = 0; i &lt; cardIndex; i++) {
-			if (self.usedCards[i] &lt;= r) r += 1;
+		for (uint8 i = 0; i < cardIndex; i++) {
+			if (self.usedCards[i] <= r) r += 1;
 		}
 
 		self.usedCards.insertInPlace(r);
@@ -59,10 +59,10 @@ library DeckLib {
 		string memory emojiSuit;
 
 		var (suit, number) = cardDescription(self);
-		if (suit == Suit.Clubs) emojiSuit = &quot;♣️&quot;;
-		else if (suit == Suit.Diamonds) emojiSuit = &quot;♦️&quot;;
-		else if (suit == Suit.Hearts) emojiSuit = &quot;♥️&quot;;
-		else if (suit == Suit.Spades) emojiSuit = &quot;♠️&quot;;
+		if (suit == Suit.Clubs) emojiSuit = "♣️";
+		else if (suit == Suit.Diamonds) emojiSuit = "♦️";
+		else if (suit == Suit.Hearts) emojiSuit = "♥️";
+		else if (suit == Suit.Spades) emojiSuit = "♠️";
 
 		return (number, emojiSuit);
 	}
@@ -73,7 +73,7 @@ library DeckLib {
 
 	function blackjackValue(uint8 self) constant returns (uint8) {
 		uint8 cardValue = cardFacevalue(self);
-		return cardValue &lt; 10 ? cardValue : 10;
+		return cardValue < 10 ? cardValue : 10;
 	}
 
 	function getRandomNumber(uint b, address player, uint256 gameID, uint n, uint m) constant returns (uint) {
@@ -130,8 +130,8 @@ library GameLib {
   }
 
   function tick(Game storage self)  returns (bool) {
-    if (block.number &lt;= self.actionBlock) return false; // Can&#39;t tick yet
-    if (self.actionBlock + 255 &lt; block.number) {
+    if (block.number <= self.actionBlock) return false; // Can't tick yet
+    if (self.actionBlock + 255 < block.number) {
       endGame(self, GameResult.House);
       return true;
     }
@@ -160,7 +160,7 @@ library GameLib {
   function checkGameResult(Game storage self)  {
     uint8 houseHand = countHand(self.houseCards);
 
-    if (houseHand == target &amp;&amp; self.houseCards.length == 2) return endGame(self, GameResult.House); // House natural
+    if (houseHand == target && self.houseCards.length == 2) return endGame(self, GameResult.House); // House natural
 
     ComparaisonResult result = compareHands(houseHand, countHand(self.playerCards));
     if (result == ComparaisonResult.First) return endGame(self, GameResult.House);
@@ -171,8 +171,8 @@ library GameLib {
 
   function checkGameContinues(Game storage self)  {
     uint8 playerHand = countHand(self.playerCards);
-    if (playerHand == target &amp;&amp; self.playerCards.length == 2) return endGame(self, GameResult.PlayerNatural); // player natural
-    if (playerHand &gt; target) return endGame(self, GameResult.House); // Player busted
+    if (playerHand == target && self.playerCards.length == 2) return endGame(self, GameResult.PlayerNatural); // player natural
+    if (playerHand > target) return endGame(self, GameResult.House); // Player busted
     if (playerHand == target) {
       // Player is forced to stand with 21
       uint256 currentActionBlock = self.actionBlock;
@@ -184,7 +184,7 @@ library GameLib {
 
   function playerDecision(Game storage self, GameState decision)  {
     if (self.state != GameState.Waiting) throw;
-    if (decision != GameState.Hit &amp;&amp; decision != GameState.Stand) throw;
+    if (decision != GameState.Hit && decision != GameState.Stand) throw;
 
     self.state = decision;
     self.actionBlock = block.number;
@@ -207,7 +207,7 @@ library GameLib {
   function dealHouseCards(Game storage self) private {
     self.houseCards.push(self.deck.getCard(self.actionBlock));
 
-    if (countHand(self.houseCards) &lt; houseLimit) dealHouseCards(self);
+    if (countHand(self.houseCards) < houseLimit) dealHouseCards(self);
   }
 
   function endGame(Game storage self, GameResult result) {
@@ -224,7 +224,7 @@ library GameLib {
 
     self.closed = true;
 
-    if (self.payout &gt; 0) {
+    if (self.payout > 0) {
       if (!self.player.send(self.payout)) throw;
     }
   }
@@ -240,10 +240,10 @@ library GameLib {
   function countHand(uint8[] memory hand)  returns (uint8) {
     uint8[] memory possibleSums = new uint8[](1);
 
-    for (uint i = 0; i &lt; hand.length; i++) {
+    for (uint i = 0; i < hand.length; i++) {
       uint8 value = hand[i].blackjackValue();
       uint l = possibleSums.length;
-      for (uint j = 0; j &lt; l; j++) {
+      for (uint j = 0; j < l; j++) {
         possibleSums[j] += value;
         if (value == 1) { // is Ace
           possibleSums = appendArray(possibleSums, possibleSums[j] + 10); // Fork possible sum with 11 as ace value.
@@ -256,7 +256,7 @@ library GameLib {
 
   function bestSum(uint8[] possibleSums)  returns (uint8 bestSum) {
     bestSum = 50; // very bad hand
-    for (uint i = 0; i &lt; possibleSums.length; i++) {
+    for (uint i = 0; i < possibleSums.length; i++) {
       if (compareHands(bestSum, possibleSums[i]) == ComparaisonResult.Second) {
         bestSum = possibleSums[i];
       }
@@ -266,7 +266,7 @@ library GameLib {
 
   function appendArray(uint8[] memory array, uint8 n)  returns (uint8[] memory) {
     uint8[] memory newArray = new uint8[](array.length + 1);
-    for (uint8 i = 0; i &lt; array.length; i++) {
+    for (uint8 i = 0; i < array.length; i++) {
       newArray[i] = array[i];
     }
     newArray[array.length] = n;
@@ -274,18 +274,18 @@ library GameLib {
   }
 
   function compareHands(uint8 a, uint8 b)  returns (ComparaisonResult) {
-    if (a &lt;= target &amp;&amp; b &lt;= target) {
-      if (a &gt; b) return ComparaisonResult.First;
-      if (a &lt; b) return ComparaisonResult.Second;
+    if (a <= target && b <= target) {
+      if (a > b) return ComparaisonResult.First;
+      if (a < b) return ComparaisonResult.Second;
     }
 
-    if (a &gt; target &amp;&amp; b &gt; target) {
-      if (a &lt; b) return ComparaisonResult.First;
-      if (a &gt; b) return ComparaisonResult.Second;
+    if (a > target && b > target) {
+      if (a < b) return ComparaisonResult.First;
+      if (a > b) return ComparaisonResult.Second;
     }
 
-    if (a &gt; target) return ComparaisonResult.Second;
-    if (b &gt; target) return ComparaisonResult.First;
+    if (a > target) return ComparaisonResult.Second;
+    if (b > target) return ComparaisonResult.First;
 
     return ComparaisonResult.Tie;
   }
@@ -305,7 +305,7 @@ contract Blockjack {
   using GameLib for GameLib.Game;
 
   GameLib.Game[] games;
-  mapping (address =&gt; uint256) public currentGame;
+  mapping (address => uint256) public currentGame;
 
   bool contractCleared;
   // Initial settings
@@ -314,7 +314,7 @@ contract Blockjack {
   bool public allowsNewGames = false;
   uint256 public maxBlockActions = 10;
 
-  mapping (uint256 =&gt; uint256) blockActions;
+  mapping (uint256 => uint256) blockActions;
 
   // Admin
   address public DX =       0x296Ae1d2D9A8701e113EcdF6cE986a4a7D0A6dC5;
@@ -328,7 +328,7 @@ contract Blockjack {
   uint256 public initialBankroll;
   uint256 public currentBankroll;
 
-  mapping (address =&gt; bool) public isOwner;
+  mapping (address => bool) public isOwner;
 
   modifier onlyOwner {
     if (!isOwner[msg.sender]) throw;
@@ -347,7 +347,7 @@ contract Blockjack {
 
   modifier blockActionProtected {
     blockActions[block.number] += 1;
-    if (blockActions[block.number] &gt; maxBlockActions) throw;
+    if (blockActions[block.number] > maxBlockActions) throw;
     _;
   }
 
@@ -366,14 +366,14 @@ contract Blockjack {
 
   function startGame() blockActionProtected payable {
     if (!allowsNewGames) throw;
-    if (msg.value &lt; minBet) throw;
-    if (msg.value &gt; maxBet) throw;
+    if (msg.value < minBet) throw;
+    if (msg.value > maxBet) throw;
 
     // check if player has game opened
     uint256 currentGameId = currentGame[msg.sender];
-    if (games.length &gt; currentGameId) {
+    if (games.length > currentGameId) {
       GameLib.Game openedGame = games[currentGameId];
-      if (openedGame.player == msg.sender &amp;&amp; !openedGame.closed) { // Check for index 0 mapping problems
+      if (openedGame.player == msg.sender && !openedGame.closed) { // Check for index 0 mapping problems
 	if (!openedGame.tick()) throw;
 	if (!openedGame.closed) throw; // cannot start game with on-going game
 	recordEndedGame(currentGameId);
@@ -402,8 +402,8 @@ contract Blockjack {
     if (!game.tick()) throw;
 
     uint8 totalPlayer = GameLib.countHand(game.playerCards);
-    if (totalPlayer &lt; 9 || totalPlayer &gt; 11) throw;
-    if (game.bet &gt; maxBet) throw;
+    if (totalPlayer < 9 || totalPlayer > 11) throw;
+    if (game.bet > maxBet) throw;
 
     game.bet += msg.value;
     game.playerDecision(GameLib.GameState.Hit);
@@ -517,15 +517,15 @@ contract Blockjack {
   }
 
   function remainingBankroll() constant returns (uint256) {
-    return currentBankroll &gt; initialBankroll ? initialBankroll : currentBankroll;
+    return currentBankroll > initialBankroll ? initialBankroll : currentBankroll;
   }
 
   function removeBankroll() only(DX) {
-    if (initialBankroll &gt; currentBankroll - 5 ether &amp;&amp; bankrollLockedUntil &gt; now) throw;
+    if (initialBankroll > currentBankroll - 5 ether && bankrollLockedUntil > now) throw;
 
     stopBlockjack();
 
-    if (currentBankroll &gt; initialBankroll) { // there are profits
+    if (currentBankroll > initialBankroll) { // there are profits
       if (!DEV.send(currentBankroll - initialBankroll)) throw;
     }
 
@@ -536,7 +536,7 @@ contract Blockjack {
   function migrateBlockjack() only(ADMIN_CONTRACT) {
     stopBlockjack();
 
-    if (currentBankroll &gt; initialBankroll) { // there are profits, share them
+    if (currentBankroll > initialBankroll) { // there are profits, share them
       if (!ADMIN_CONTRACT.call.value(currentBankroll - initialBankroll)()) throw;
     }
     suicide(DX); // send rest to dx
@@ -544,8 +544,8 @@ contract Blockjack {
   }
 
   function shareProfits() onlyOwner {
-    if (profitsLockedUntil &gt; now) throw;
-    if (currentBankroll &lt;= initialBankroll) throw; // there are no profits
+    if (profitsLockedUntil > now) throw;
+    if (currentBankroll <= initialBankroll) throw; // there are no profits
 
     uint256 profit = currentBankroll - initialBankroll;
     if (!ADMIN_CONTRACT.call.value(profit)()) throw;

@@ -39,8 +39,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -55,9 +55,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -65,7 +65,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -74,7 +74,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -155,17 +155,17 @@ contract IcoRocketFuel is Ownable {
 
     // Use crowdsales[token] to get corresponding crowdsale.
     // The token is an ERC20 token address.
-    mapping(address =&gt; Crowdsale) public crowdsales;
+    mapping(address => Crowdsale) public crowdsales;
 
     // Use deposits[buyer][token] to get deposited Wei for buying the token.
     // The buyer is the buyer address.
     // The token is an ERC20 token address.
-    mapping (address =&gt; mapping(address =&gt; uint256)) public deposits;
+    mapping (address => mapping(address => uint256)) public deposits;
 
     modifier onlyCrowdsaleOwner(address _token) {
         require(
             msg.sender == crowdsales[_token].owner,
-            &quot;Failed to call function due to permission denied.&quot;
+            "Failed to call function due to permission denied."
         );
         _;
     }
@@ -173,7 +173,7 @@ contract IcoRocketFuel is Ownable {
     modifier inState(address _token, States _state) {
         require(
             crowdsales[_token].state == _state,
-            &quot;Failed to call function due to crowdsale is not in right state.&quot;
+            "Failed to call function due to crowdsale is not in right state."
         );
         _;
     }
@@ -181,7 +181,7 @@ contract IcoRocketFuel is Ownable {
     modifier nonZeroAddress(address _token) {
         require(
             _token != address(0),
-            &quot;Failed to call function due to address is 0x0.&quot;
+            "Failed to call function due to address is 0x0."
         );
         _;
     }
@@ -304,22 +304,22 @@ contract IcoRocketFuel is Ownable {
     {
         require(
             crowdsales[_token].owner == address(0),
-            &quot;Failed to create crowdsale due to the crowdsale is existed.&quot;
+            "Failed to create crowdsale due to the crowdsale is existed."
         );
 
         require(
-            _goal &lt;= _cap,
-            &quot;Failed to create crowdsale due to goal is larger than cap.&quot;
+            _goal <= _cap,
+            "Failed to create crowdsale due to goal is larger than cap."
         );
 
         require(
-            _minInvest &gt; 0,
-            &quot;Failed to create crowdsale due to minimum investment is 0.&quot;
+            _minInvest > 0,
+            "Failed to create crowdsale due to minimum investment is 0."
         );
 
         require(
-            _commission &lt;= 100,
-            &quot;Failed to create crowdsale due to commission is larger than 100.&quot;
+            _commission <= 100,
+            "Failed to create crowdsale due to commission is larger than 100."
         );
 
         // Leverage SafeMath to help potential overflow of maximum token untis.
@@ -373,21 +373,21 @@ contract IcoRocketFuel is Ownable {
         payable
     {
         require(
-            msg.value &gt;= crowdsales[_token].minInvest,
-            &quot;Failed to buy token due to less than minimum investment.&quot;
+            msg.value >= crowdsales[_token].minInvest,
+            "Failed to buy token due to less than minimum investment."
         );
 
         require(
-            crowdsales[_token].raised.add(msg.value) &lt;= (
+            crowdsales[_token].raised.add(msg.value) <= (
                 crowdsales[_token].cap
             ),
-            &quot;Failed to buy token due to exceed cap.&quot;
+            "Failed to buy token due to exceed cap."
         );
 
         require(
             // solium-disable-next-line security/no-block-members
-            block.timestamp &lt; crowdsales[_token].closingTime,
-            &quot;Failed to buy token due to crowdsale is closed.&quot;
+            block.timestamp < crowdsales[_token].closingTime,
+            "Failed to buy token due to crowdsale is closed."
         );
 
         deposits[msg.sender][_token] = (
@@ -401,7 +401,7 @@ contract IcoRocketFuel is Ownable {
      * Check whether crowdsale goal was reached or not.
      *
      * Goal reached condition:
-     * 1. total raised wei &gt;= goal (soft cap); and
+     * 1. total raised wei >= goal (soft cap); and
      * 2. Right amout of token is prepared for this contract.
      *
      * @param _token Deployed ERC20 token
@@ -415,8 +415,8 @@ contract IcoRocketFuel is Ownable {
         view
         returns(bool) 
     {
-        return (crowdsales[_token].raised &gt;= crowdsales[_token].goal) &amp;&amp; (
-            _token.balanceOf(address(this)) &gt;= 
+        return (crowdsales[_token].raised >= crowdsales[_token].goal) && (
+            _token.balanceOf(address(this)) >= 
             crowdsales[_token].raised.mul(crowdsales[_token].rate)
         );
     }
@@ -466,7 +466,7 @@ contract IcoRocketFuel is Ownable {
         uint256 _value = _token.balanceOf(address(this));
         emit CrowdsaleTokensRefunded(_token, _beneficiary, _value);
 
-        if (_value &gt; 0) {         
+        if (_value > 0) {         
             // Refund all tokens for crowdsale to refund wallet.
             _token.transfer(_beneficiary, _token.balanceOf(address(this)));
         }
@@ -508,8 +508,8 @@ contract IcoRocketFuel is Ownable {
         require(                    
             crowdsales[_token].earlyClosure || (
             // solium-disable-next-line security/no-block-members
-            block.timestamp &gt;= crowdsales[_token].closingTime),                   
-            &quot;Failed to finalize due to crowdsale is opening.&quot;
+            block.timestamp >= crowdsales[_token].closingTime),                   
+            "Failed to finalize due to crowdsale is opening."
         );
 
         if (_goalReached(ERC20(_token))) {
@@ -562,8 +562,8 @@ contract IcoRocketFuel is Ownable {
         external
     {
         require(
-            crowdsales[_token].raised &gt; 0,
-            &quot;Failed to claim raised Wei due to raised Wei is 0.&quot;
+            crowdsales[_token].raised > 0,
+            "Failed to claim raised Wei due to raised Wei is 0."
         );
 
         uint256 _raisedWei = crowdsales[_token].raised;
@@ -585,8 +585,8 @@ contract IcoRocketFuel is Ownable {
         external 
     {
         require(
-            deposits[msg.sender][_token] &gt; 0,
-            &quot;Failed to claim token due to deposit is 0.&quot;
+            deposits[msg.sender][_token] > 0,
+            "Failed to claim token due to deposit is 0."
         );
 
         // Calculate token unit amount to be transferred. 
@@ -611,8 +611,8 @@ contract IcoRocketFuel is Ownable {
         public 
     {
         require(
-            deposits[msg.sender][_token] &gt; 0,
-            &quot;Failed to claim refund due to deposit is 0.&quot;
+            deposits[msg.sender][_token] > 0,
+            "Failed to claim refund due to deposit is 0."
         );
 
         uint256 _value = deposits[msg.sender][_token];

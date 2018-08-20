@@ -22,7 +22,7 @@ contract IncomeSplit {
     // Can be changed using the changeOwner function.
     address OWNER = 0x00cf7440B6E554EC5EeCfA8306761EBc5Bf412b8;
     // We assign the Member structure to each address.
-    mapping (address =&gt; Member) private Members;
+    mapping (address => Member) private Members;
     address[] private index;
     uint totalShares;
     
@@ -92,7 +92,7 @@ contract IncomeSplit {
     
     function incomeAllocation() payable {
         uint toBeAllocated = msg.value;
-        for (uint i = 0; i &lt; index.length; i++) {
+        for (uint i = 0; i < index.length; i++) {
             uint allocationRatio = Members[index[i]].memberShares * 1000000000 / totalShares;
             Members[index[i]].memberBalance += (toBeAllocated * allocationRatio / 1000000000);
             LogIncomeAllocation(index[i], Members[index[i]].memberBalance);

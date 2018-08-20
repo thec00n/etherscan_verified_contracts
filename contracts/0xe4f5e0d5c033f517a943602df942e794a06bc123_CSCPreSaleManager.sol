@@ -1,9 +1,9 @@
 pragma solidity ^0.4.19;
 
-/* Adapted from strings.sol created by Nick Johnson &lt;<span class="__cf_email__" data-cfemail="04657665676c6a6d60446a6b70606b702a6a6170">[email&#160;protected]</span>&gt;
+/* Adapted from strings.sol created by Nick Johnson <<span class="__cf_email__" data-cfemail="04657665676c6a6d60446a6b70606b702a6a6170">[email protected]</span>>
  * Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<span class="__cf_email__" data-cfemail="4021322123282e2924002e2f34242f346e2e2534">[email&#160;protected]</span>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<span class="__cf_email__" data-cfemail="4021322123282e2924002e2f34242f346e2e2534">[email protected]</span>>
  */
 library strings {
     
@@ -27,7 +27,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -62,7 +62,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -74,8 +74,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -95,7 +95,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -147,7 +147,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         var ret = new string(self._len);
@@ -162,7 +162,7 @@ library strings {
 
 /* Helper String Functions for Game Manager Contract
  * @title String Healpers
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract StringHelpers {
     using strings for *;
@@ -181,7 +181,7 @@ contract StringHelpers {
     function bytes32ToString(bytes32 x) constant internal returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -189,7 +189,7 @@ contract StringHelpers {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
@@ -197,7 +197,7 @@ contract StringHelpers {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="abcfcedfceebcad3c2c4c6d1cec585c8c4">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="abcfcedfceebcad3c2c4c6d1cec585c8c4">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function balanceOf(address _owner) public view returns (uint256 balance);
@@ -224,12 +224,12 @@ contract ERC721 {
 
 /* Controls game play state and access rights for game functions
  * @title Operational Control
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  * Inspired and adapted from contract created by OpenZeppelin
  * Ref: https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract OperationalControl {
-    // Facilitates access &amp; control for the game.
+    // Facilitates access & control for the game.
     // Roles:
     //  -The Game Managers (Primary/Secondary): Has universal control of all game elements (No ability to withdraw)
     //  -The Banker: The Bank can withdraw funds and adjust fees / prices.
@@ -245,7 +245,7 @@ contract OperationalControl {
     // @dev Keeps track whether the contract is paused. When that is true, most actions are blocked
     bool public paused = false;
 
-    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked &amp; refund can be claimed
+    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked & refund can be claimed
     bool public error = false;
 
     /// @dev Operation modifiers for limiting access
@@ -318,7 +318,7 @@ contract OperationalControl {
     /// @dev Unpauses the smart contract. Can only be called by the Game Master
     /// @notice This is public rather than external so it can be called by derived contracts. 
     function unpause() public onlyGameManager whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -345,20 +345,20 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CSCPreSaleShip&quot;;
-  string public constant SYMBOL = &quot;CSC&quot;;
-  bytes4 constant InterfaceSignature_ERC165 = bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+  string public constant NAME = "CSCPreSaleShip";
+  string public constant SYMBOL = "CSC";
+  bytes4 constant InterfaceSignature_ERC165 = bytes4(keccak256('supportsInterface(bytes4)'));
   bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('tokensOfOwner(address)')) ^
+        bytes4(keccak256('tokenMetadata(uint256,string)'));
 
   /// @dev CSC Pre Sale Struct, having details of the ship
   struct CSCPreSaleItem {
@@ -387,12 +387,12 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
   }
   
   // @dev Mapping containing the reference to all CSC PreSaleItem
-  //mapping (uint256 =&gt; CSCPreSaleItem[]) public indexToPreSaleItem;
+  //mapping (uint256 => CSCPreSaleItem[]) public indexToPreSaleItem;
 
   // @dev array of CSCPreSaleItem type holding information on the Ships
   CSCPreSaleItem[] allPreSaleItems;
 
-  // Max Count for Voucher(s), Prometheus, Crosair &amp; Intrepid Ships
+  // Max Count for Voucher(s), Prometheus, Crosair & Intrepid Ships
   uint256 public constant PROMETHEUS_SHIP_LIMIT = 300;
   uint256 public constant INTREPID_SHIP_LIMIT = 1500;
   uint256 public constant CROSAIR_SHIP_LIMIT = 600;
@@ -409,33 +409,33 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
   uint256 public crosairVouchersMinted;
 
   // @dev mapping which holds all the possible addresses which are allowed to interact with the contract
-  mapping (address =&gt; bool) approvedAddressList;
+  mapping (address => bool) approvedAddressList;
 
-  // @dev mapping holds the preSaleItem -&gt; owner details
-  mapping (uint256 =&gt; address) public preSaleItemIndexToOwner;
+  // @dev mapping holds the preSaleItem -> owner details
+  mapping (uint256 => address) public preSaleItemIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from preSaleItem to an address that has been approved to call
   ///  transferFrom(). Each Ship can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public preSaleItemIndexToApproved;
+  mapping (uint256 => address) public preSaleItemIndexToApproved;
 
   /// @dev A mapping of preSaleItem Type to Type Sequence Number to Collectible
   /// 0 - Voucher
   /// 1 - Prometheus
   /// 2 - Crosair
   /// 3 - Intrepid
-  mapping (uint256 =&gt; mapping (uint256 =&gt; mapping ( uint256 =&gt; uint256 ) ) ) public preSaleItemTypeToSequenceIdToCollectible;
+  mapping (uint256 => mapping (uint256 => mapping ( uint256 => uint256 ) ) ) public preSaleItemTypeToSequenceIdToCollectible;
 
   /// @dev A mapping from Pre Sale Item Type IDs to the Sequqence Number .
   /// 0 - Voucher
   /// 1 - Prometheus
   /// 2 - Crosair
   /// 3 - Intrepid
-  mapping (uint256 =&gt; mapping ( uint256 =&gt; uint256 ) ) public preSaleItemTypeToCollectibleCount;
+  mapping (uint256 => mapping ( uint256 => uint256 ) ) public preSaleItemTypeToCollectibleCount;
 
   /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
   ///  Returns true for any standardized interfaces implemented by this contract. We implement
@@ -443,7 +443,7 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
   function supportsInterface(bytes4 _interfaceID) external view returns (bool)
   {
       // DEBUG ONLY
-      //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+      //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
       return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
   }
 
@@ -512,7 +512,7 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
   }
 
   /// @param _owner The owner whose ships tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire CSCShips array looking for emojis belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -531,7 +531,7 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
         // sequentially up to the total count.
         uint256 _assetId;
 
-        for (_assetId = 0; _assetId &lt; totalShips; _assetId++) {
+        for (_assetId = 0; _assetId < totalShips; _assetId++) {
             if (preSaleItemIndexToOwner[_assetId] == _owner) {
                 result[resultIndex] = _assetId;
                 resultIndex++;
@@ -629,13 +629,13 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
     _shipObj.owner = _to;
     allPreSaleItems[_assetId] = _shipObj;
 
-    // Since the number of emojis is capped to 2^32 we can&#39;t overflow this
+    // Since the number of emojis is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
 
     //transfer ownership
     preSaleItemIndexToOwner[_assetId] = _to;
 
-    // When creating new emojis _from is 0x0, but we can&#39;t account that address.
+    // When creating new emojis _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -711,14 +711,14 @@ contract CSCCollectibleBase is ERC721, OperationalControl, StringHelpers {
 
 /* Lucid Sight, Inc. ERC-721 CSC Collectilbe Sale Contract. 
  * @title CSCCollectibleSale
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract CSCCollectibleSale is CSCCollectibleBase {
   event CollectibleBought (uint256 _assetId, address owner);
   event PriceUpdated (uint256 collectibleClass, uint256 newPrice, uint256 oldPrice);
 
-  //  SHIP DATATYPES &amp; CONSTANTS
-  // @dev ship Prices &amp; price cap
+  //  SHIP DATATYPES & CONSTANTS
+  // @dev ship Prices & price cap
   uint256 public PROMETHEUS_SHIP_PRICE = 0.25 ether;
   uint256 public INTREPID_SHIP_PRICE = 0.005 ether;
   uint256 public CROSAIR_SHIP_PRICE = 0.1 ether;
@@ -739,7 +739,7 @@ contract CSCCollectibleSale is CSCCollectibleBase {
   uint256 public intrepidSoldCount;
   uint256 public crosairSoldCount;
 
-  //  VOUCHER DATATYPES &amp; CONSTANTS
+  //  VOUCHER DATATYPES & CONSTANTS
   uint256 public PROMETHEUS_VOUCHER_PRICE = 0.75 ether;
   uint256 public INTREPID_VOUCHER_PRICE = 0.2 ether;
   uint256 public CROSAIR_VOUCHER_PRICE = 0.35 ether;
@@ -749,15 +749,15 @@ contract CSCCollectibleSale is CSCCollectibleBase {
   uint256 public intrepidVoucherSoldCount;
   
   /// @dev Mapping created store the amount of value a wallet address used to buy assets
-  mapping(address =&gt; uint256) addressToValue;
+  mapping(address => uint256) addressToValue;
 
-  /// @dev Mapping to holde the balance of each address, i.e. addrs -&gt; collectibleType -&gt; collectibleClass -&gt; balance
-  mapping(address =&gt; mapping(uint256 =&gt; mapping (uint256 =&gt; uint256))) addressToCollectibleTypeBalance;
+  /// @dev Mapping to holde the balance of each address, i.e. addrs -> collectibleType -> collectibleClass -> balance
+  mapping(address => mapping(uint256 => mapping (uint256 => uint256))) addressToCollectibleTypeBalance;
 
   function _bid(uint256 _assetId, uint256 _price,uint256 _collectibleType,uint256 _collectibleClass, address _buyer) internal {
     CSCPreSaleItem memory _Obj = allPreSaleItems[_assetId];
 
-    if(_collectibleType == 1 &amp;&amp; _collectibleClass == 1) {
+    if(_collectibleType == 1 && _collectibleClass == 1) {
       require(_price == PROMETHEUS_SHIP_PRICE);
       _Obj.owner = _buyer;
       _Obj.boughtTimestamp = now;
@@ -766,13 +766,13 @@ contract CSCCollectibleSale is CSCCollectibleBase {
 
       prometheusSoldCount++;
       if(prometheusSoldCount % 10 == 0){
-        if(PROMETHEUS_SHIP_PRICE &lt; PROMETHEUS_PRICE_THRESHOLD){
+        if(PROMETHEUS_SHIP_PRICE < PROMETHEUS_PRICE_THRESHOLD){
           PROMETHEUS_SHIP_PRICE +=  PROMETHEUS_PRICE_INCREMENT;
         }
       }
     }
 
-    if(_collectibleType == 1 &amp;&amp; _collectibleClass == 2) {
+    if(_collectibleType == 1 && _collectibleClass == 2) {
       require(_price == CROSAIR_SHIP_PRICE);
       _Obj.owner = _buyer;
       _Obj.boughtTimestamp = now;
@@ -781,13 +781,13 @@ contract CSCCollectibleSale is CSCCollectibleBase {
 
       crosairSoldCount++;
       if(crosairSoldCount % 10 == 0){
-        if(CROSAIR_SHIP_PRICE &lt; CROSAIR_PRICE_THRESHOLD){
+        if(CROSAIR_SHIP_PRICE < CROSAIR_PRICE_THRESHOLD){
           CROSAIR_SHIP_PRICE += CROSAIR_PRICE_INCREMENT;
         }
       }
     }
 
-    if(_collectibleType == 1 &amp;&amp; _collectibleClass == 3) {
+    if(_collectibleType == 1 && _collectibleClass == 3) {
       require(_price == INTREPID_SHIP_PRICE);
       _Obj.owner = _buyer;
       _Obj.boughtTimestamp = now;
@@ -796,13 +796,13 @@ contract CSCCollectibleSale is CSCCollectibleBase {
 
       intrepidSoldCount++;
       if(intrepidSoldCount % 10 == 0){
-        if(INTREPID_SHIP_PRICE &lt; INTREPID_PRICE_THRESHOLD){
+        if(INTREPID_SHIP_PRICE < INTREPID_PRICE_THRESHOLD){
           INTREPID_SHIP_PRICE += INTREPID_PRICE_INCREMENT;
         }
       }
     }
 
-    if(_collectibleType == 0 &amp;&amp;_collectibleClass == 1) {
+    if(_collectibleType == 0 &&_collectibleClass == 1) {
         require(_price == PROMETHEUS_VOUCHER_PRICE);
         _Obj.owner = _buyer;
         _Obj.boughtTimestamp = now;
@@ -812,7 +812,7 @@ contract CSCCollectibleSale is CSCCollectibleBase {
         prometheusVoucherSoldCount++;
       }
 
-      if(_collectibleType == 0 &amp;&amp; _collectibleClass == 2) {
+      if(_collectibleType == 0 && _collectibleClass == 2) {
         require(_price == CROSAIR_VOUCHER_PRICE);
         _Obj.owner = _buyer;
         _Obj.boughtTimestamp = now;
@@ -822,7 +822,7 @@ contract CSCCollectibleSale is CSCCollectibleBase {
         crosairVoucherSoldCount++;
       }
       
-      if(_collectibleType == 0 &amp;&amp; _collectibleClass == 3) {
+      if(_collectibleType == 0 && _collectibleClass == 3) {
         require(_price == INTREPID_VOUCHER_PRICE);
         _Obj.owner = _buyer;
         _Obj.boughtTimestamp = now;
@@ -845,28 +845,28 @@ contract CSCCollectibleSale is CSCCollectibleBase {
   function getCollectiblePrice(uint256 _collectibleType, uint256 _collectibleClass) external view returns(uint256 _price){
 
     // For Ships
-    if(_collectibleType == 1 &amp;&amp; _collectibleClass == 1) {
+    if(_collectibleType == 1 && _collectibleClass == 1) {
       return PROMETHEUS_SHIP_PRICE;
     }
 
-    if(_collectibleType == 1 &amp;&amp; _collectibleClass == 2) {
+    if(_collectibleType == 1 && _collectibleClass == 2) {
       return CROSAIR_SHIP_PRICE;
     }
 
-    if(_collectibleType == 1 &amp;&amp; _collectibleClass == 3) {
+    if(_collectibleType == 1 && _collectibleClass == 3) {
       return INTREPID_SHIP_PRICE;
     }
 
     // For Vouchers
-    if(_collectibleType == 0 &amp;&amp; _collectibleClass == 1) {
+    if(_collectibleType == 0 && _collectibleClass == 1) {
       return PROMETHEUS_VOUCHER_PRICE;
     }
 
-    if(_collectibleType == 0 &amp;&amp; _collectibleClass == 2) {
+    if(_collectibleType == 0 && _collectibleClass == 2) {
       return CROSAIR_VOUCHER_PRICE;
     }
 
-    if(_collectibleType == 0 &amp;&amp; _collectibleClass == 3) {
+    if(_collectibleType == 0 && _collectibleClass == 3) {
       return INTREPID_VOUCHER_PRICE;
     }
   }
@@ -874,15 +874,15 @@ contract CSCCollectibleSale is CSCCollectibleBase {
 
 /* Lucid Sight, Inc. ERC-721 Collectibles. 
  * @title LSNFT - Lucid Sight, Inc. Non-Fungible Token
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  */
 contract CSCPreSaleManager is CSCCollectibleSale {
   event RefundClaimed(address owner, uint256 refundValue);
 
   // Ship Names
-  string private constant prometheusShipName = &quot;Vulcan Harvester&quot;;
-  string private constant crosairShipName = &quot;Phoenix Cruiser&quot;;
-  string private constant intrepidShipName = &quot;Reaper Interceptor&quot;;
+  string private constant prometheusShipName = "Vulcan Harvester";
+  string private constant crosairShipName = "Phoenix Cruiser";
+  string private constant intrepidShipName = "Reaper Interceptor";
 
   bool CSCPreSaleInit = false;
 
@@ -915,46 +915,46 @@ contract CSCPreSaleManager is CSCCollectibleSale {
     require(msg.sender != address(0));
     require(msg.sender != address(this));
 
-    require(_collectibleType &gt;= 0 &amp;&amp; _collectibleType &lt;= 1);
+    require(_collectibleType >= 0 && _collectibleType <= 1);
 
     require(_isActive(_assetId));
 
     bytes32 collectibleName;
 
     if(_collectibleType == 0){
-      collectibleName = bytes32(&quot;NoNameForVoucher&quot;);
+      collectibleName = bytes32("NoNameForVoucher");
       if(_collectibleClass == 1){
-        require(prometheusVouchersMinted &lt; PROMETHEUS_VOUCHER_LIMIT);
+        require(prometheusVouchersMinted < PROMETHEUS_VOUCHER_LIMIT);
         collectibleName = stringToBytes32(prometheusShipName);
         prometheusVouchersMinted++;
       }
       
       if(_collectibleClass == 2){
-        require(crosairVouchersMinted &lt; CROSAIR_VOUCHER_LIMIT);
+        require(crosairVouchersMinted < CROSAIR_VOUCHER_LIMIT);
         crosairVouchersMinted++;
       }
 
       if(_collectibleClass == 3){
-        require(intrepidVoucherSoldCount &lt; INTREPID_VOUCHER_LIMIT);
+        require(intrepidVoucherSoldCount < INTREPID_VOUCHER_LIMIT);
         intrepidVouchersMinted++;
       }
     }
 
     if(_collectibleType == 1){
       if(_collectibleClass == 1){
-        require(prometheusShipMinted &lt; PROMETHEUS_SHIP_LIMIT);
+        require(prometheusShipMinted < PROMETHEUS_SHIP_LIMIT);
         collectibleName = stringToBytes32(prometheusShipName);
         prometheusShipMinted++;
       }
       
       if(_collectibleClass == 2){
-        require(crosairShipMinted &lt; CROSAIR_VOUCHER_LIMIT);
+        require(crosairShipMinted < CROSAIR_VOUCHER_LIMIT);
         collectibleName = stringToBytes32(crosairShipName);
         crosairShipMinted++;
       }
 
       if(_collectibleClass == 3){
-        require(intrepidShipMinted &lt; INTREPID_SHIP_LIMIT);
+        require(intrepidShipMinted < INTREPID_SHIP_LIMIT);
         collectibleName = stringToBytes32(intrepidShipName);
         intrepidShipMinted++;
       }
@@ -975,12 +975,12 @@ contract CSCPreSaleManager is CSCCollectibleSale {
     require(msg.sender != address(0));
     require(msg.sender != address(this));
 
-    require(_collectibleType &gt;= 0 &amp;&amp; _collectibleType &lt;= 1);
+    require(_collectibleType >= 0 && _collectibleType <= 1);
 
     bytes32 collectibleName;
 
     if(_collectibleType == 0){
-      collectibleName = bytes32(&quot;ReferralGiveAwayVoucher&quot;);
+      collectibleName = bytes32("ReferralGiveAwayVoucher");
       if(_collectibleClass == 1){
         collectibleName = stringToBytes32(prometheusShipName);
       }
@@ -1016,7 +1016,7 @@ contract CSCPreSaleManager is CSCCollectibleSale {
   }
 
   /// @dev Override unpause so it requires all external contract addresses
-  ///  to be set before contract can be unpaused. Also, we can&#39;t have
+  ///  to be set before contract can be unpaused. Also, we can't have
   ///  newContractAddress set either, because then the contract was upgraded.
   /// @notice This is public rather than external so we can call super.unpause
   ///  without using an expensive CALL.
@@ -1025,7 +1025,7 @@ contract CSCPreSaleManager is CSCCollectibleSale {
       super.unpause();
   }
 
-  /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+  /// @dev Remove all Ether from the contract, which is the owner's cuts
   ///  as well as any Ether sent directly to the contract address.
   ///  Always transfers to the NFT (ERC721) contract, but can be called either by
   ///  the owner or the NFT (ERC721) contract.
@@ -1049,7 +1049,7 @@ contract CSCPreSaleManager is CSCCollectibleSale {
     CSCPreSaleInit = true;
 
     //Fill in index 0 to null requests
-    CSCPreSaleItem memory _Obj = CSCPreSaleItem(0, stringToBytes32(&quot;DummyAsset&quot;), 0, 0, 0, address(this), true);
+    CSCPreSaleItem memory _Obj = CSCPreSaleItem(0, stringToBytes32("DummyAsset"), 0, 0, 0, address(this), true);
     allPreSaleItems.push(_Obj);
   }
 

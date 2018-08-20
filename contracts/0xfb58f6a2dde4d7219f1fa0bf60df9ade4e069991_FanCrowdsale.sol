@@ -31,7 +31,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -41,7 +41,7 @@ library AddressUtils {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,7 +110,7 @@ contract Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -123,7 +123,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -165,13 +165,13 @@ library Roles {
  * See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  * for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  * to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address indexed operator, string role);
   event RoleRemoved(address indexed operator, string role);
@@ -248,7 +248,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] _roles) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; _roles.length; i++) {
+  //     for (uint8 i = 0; i < _roles.length; i++) {
   //         if (hasRole(msg.sender, _roles[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -266,10 +266,10 @@ contract RBAC {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * This simplifies the implementation of &quot;user permissions&quot;.
+ * This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable, RBAC {
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
    * @dev Throws if operator is not whitelisted.
@@ -313,7 +313,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       addAddressToWhitelist(_operators[i]);
     }
   }
@@ -322,7 +322,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param _operator address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address _operator)
     onlyOwner
@@ -335,13 +335,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param _operators addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _operators)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       removeAddressFromWhitelist(_operators[i]);
     }
   }
@@ -406,8 +406,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -422,9 +422,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -432,7 +432,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -441,7 +441,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -506,7 +506,7 @@ contract FanCrowdsale is Pausable {
   }
 
   uint8 public currentStage;
-  mapping (uint8 =&gt; Stage) public stages;
+  mapping (uint8 => Stage) public stages;
   uint8 public totalStages; //stages count
 
   // Amount raised
@@ -523,7 +523,7 @@ contract FanCrowdsale is Pausable {
    * @dev Reverts if not in crowdsale time range.
    */
   modifier onlyWhileOpen {
-    require(block.timestamp &gt;= openingTime &amp;&amp; !hasClosed());
+    require(block.timestamp >= openingTime && !hasClosed());
     _;
   }
 
@@ -553,13 +553,13 @@ contract FanCrowdsale is Pausable {
     address _wallet,
     uint256 _cap) public
   {
-    require(_wallet != address(0), &quot;need a good wallet to store fund&quot;);
-    require(_token != address(0), &quot;token is not deployed?&quot;);
-    // require(_startTime &gt; block.timestamp, &quot;startTime must be in future&quot;);
-    require(_endTime &gt; _startTime, &quot;endTime must be greater than startTime&quot;);
+    require(_wallet != address(0), "need a good wallet to store fund");
+    require(_token != address(0), "token is not deployed?");
+    // require(_startTime > block.timestamp, "startTime must be in future");
+    require(_endTime > _startTime, "endTime must be greater than startTime");
 
-    // make sure this crowdsale contract has ability to mint or make sure token&#39;s mint authority has me
-    // yet fan token contract doesn&#39;t expose a public check func must manually make sure crowdsale contract address is added to authorities of token contract
+    // make sure this crowdsale contract has ability to mint or make sure token's mint authority has me
+    // yet fan token contract doesn't expose a public check func must manually make sure crowdsale contract address is added to authorities of token contract
     mintableToken  = MintableERC20(_token);
     wallet = _wallet;
 
@@ -603,7 +603,7 @@ contract FanCrowdsale is Pausable {
     }
 
     // double check not to over sell
-    require(totalTokensSold &lt; totalTokensForSale);
+    require(totalTokensSold < totalTokensForSale);
 
     uint currentRate = stages[currentStage].rate;
     uint256 tokensToMint = _weiAmount.mul(currentRate);
@@ -611,7 +611,7 @@ contract FanCrowdsale is Pausable {
     // refund excess
     uint256 saleableTokens;
     uint256 acceptedWei;
-    if (currentStage == (totalStages - 1) &amp;&amp; totalTokensSold.add(tokensToMint) &gt; totalTokensForSale) {
+    if (currentStage == (totalStages - 1) && totalTokensSold.add(tokensToMint) > totalTokensForSale) {
       saleableTokens = totalTokensForSale - totalTokensSold;
       acceptedWei = saleableTokens.div(currentRate);
 
@@ -621,7 +621,7 @@ contract FanCrowdsale is Pausable {
       uint256 weiToRefund = _weiAmount.sub(acceptedWei);
       _buyer.transfer(weiToRefund);
       emit EthRefunded(_buyer, weiToRefund);
-    } else if (totalTokensSold.add(tokensToMint) &lt; stages[currentStage].tokenAllocated) {
+    } else if (totalTokensSold.add(tokensToMint) < stages[currentStage].tokenAllocated) {
       _buyTokensInCurrentStage(_buyer, _weiAmount, tokensToMint);
     } else {
       // cross stage yet within cap
@@ -632,12 +632,12 @@ contract FanCrowdsale is Pausable {
       _buyTokensInCurrentStage(_buyer, acceptedWei, saleableTokens);
 
       // update stage
-      if (totalTokensSold &gt;= stages[currentStage].tokenAllocated &amp;&amp; currentStage + 1 &lt; totalStages) {
+      if (totalTokensSold >= stages[currentStage].tokenAllocated && currentStage + 1 < totalStages) {
         _setCrowdsaleStage(currentStage + 1);
       }
 
       // buy next stage for the rest
-      if ( _weiAmount.sub(acceptedWei) &gt; 0)
+      if ( _weiAmount.sub(acceptedWei) > 0)
       {
         contribute(_buyer, _weiAmount.sub(acceptedWei));
       }
@@ -656,7 +656,7 @@ contract FanCrowdsale is Pausable {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime || totalTokensSold &gt;= totalTokensForSale;
+    return block.timestamp > closingTime || totalTokensSold >= totalTokensForSale;
   }
 
   /**
@@ -689,7 +689,7 @@ contract FanCrowdsale is Pausable {
   // =========================================================
   // Change Crowdsale Stage. Available Options: 0..4
   function _setCrowdsaleStage(uint8 _stageId) internal {
-    require(_stageId &gt;= 0 &amp;&amp; _stageId &lt; totalStages);
+    require(_stageId >= 0 && _stageId < totalStages);
 
     currentStage = _stageId;
 
@@ -724,7 +724,7 @@ contract FanCrowdsale is Pausable {
     totalWeiRaised = totalWeiRaised.add(_weiAmount);
     totalTokensSold = totalTokensSold.add(_tokenAmount);
 
-    // mint tokens to buyer&#39;s account
+    // mint tokens to buyer's account
     mintableToken.mint(_buyer, _tokenAmount);
     wallet.transfer(_weiAmount);
 

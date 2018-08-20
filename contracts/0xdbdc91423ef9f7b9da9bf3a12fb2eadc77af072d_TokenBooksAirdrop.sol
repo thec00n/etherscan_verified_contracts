@@ -62,27 +62,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 contract TokenBooksAirdrop is Ownable{
 	using SafeMath for uint256;
 
-	mapping (address =&gt; uint) public airdropSupplyMap;
+	mapping (address => uint) public airdropSupplyMap;
 	function TokenBooksAirdrop(){
 	}
 
@@ -98,8 +98,8 @@ contract TokenBooksAirdrop is Ownable{
 	{
 		ERC20 token = ERC20(tokenAddress);
         uint256 count = _holders.length;
-        assert(paySize.mul(count) &lt;= token.balanceOf(this));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize.mul(count) <= token.balanceOf(this));
+        for (uint256 i = 0; i < count; i++) {
 			processFunding(tokenAddress,_holders [i],paySize,1);
 			airdropSupplyMap[tokenAddress] = airdropSupplyMap[tokenAddress].add(paySize); 
         }
@@ -108,7 +108,7 @@ contract TokenBooksAirdrop is Ownable{
 	{
 		ERC20 token = ERC20(tokenAddress);
 		uint256 amount=_value.mul(_rate);
-		require(amount&lt;=token.balanceOf(this));
+		require(amount<=token.balanceOf(this));
 		if(!token.transfer(receiver,amount)){
 			revert();
 		}

@@ -8,13 +8,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -23,7 +23,7 @@ contract SafeMath {
   }
 }
 contract Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string name) { name; }
     function symbol() public constant returns (string symbol) { symbol; }
     function decimals() public constant returns (uint8 decimals) { decimals; }
@@ -41,8 +41,8 @@ contract Ethex is SafeMath {
   address public feeAccount; //the account that will receive fees
   uint public sellFee; //percentage times (1 ether)
   uint public buyFee; //percentage times (1 ether)
-  mapping (bytes32 =&gt; uint) public sellOrders; //a hash of available orders holds a number of tokens
-  mapping (bytes32 =&gt; uint) public buyOrders; //a hash of available orders. holds a number of eth
+  mapping (bytes32 => uint) public sellOrders; //a hash of available orders holds a number of tokens
+  mapping (bytes32 => uint) public buyOrders; //a hash of available orders. holds a number of eth
 
   event BuyOrder(bytes32 order, address token, uint amount, uint price, address buyer);
   event SellOrder(bytes32 order,address token, uint amount, uint price, address seller);
@@ -74,13 +74,13 @@ contract Ethex is SafeMath {
 
   function changeBuyFee(uint buyFee_) {
     if (msg.sender != admin) throw;
-    if (buyFee_ &gt; buyFee) throw;
+    if (buyFee_ > buyFee) throw;
     buyFee = buyFee_;
   }
 
   function changeSellFee(uint sellFee_) {
     if (msg.sender != admin) throw;
-    if (sellFee_ &gt; sellFee)
+    if (sellFee_ > sellFee)
     sellFee = sellFee_;
   }
 
@@ -93,7 +93,7 @@ contract Ethex is SafeMath {
   function buyOrder(address token, uint tokenAmount, uint price) payable {
     bytes32 h = sha256(token, price,  msg.sender);
     uint totalCost = tokenAmount*price;
-    if (totalCost &lt; msg.value) throw;
+    if (totalCost < msg.value) throw;
     buyOrders[h] = safeAdd(buyOrders[h],msg.value);
     BuyOrder(h, token, tokenAmount, price, msg.sender);
   }
@@ -124,14 +124,14 @@ contract Ethex is SafeMath {
     uint totalPriceNoFee = safeMul(amount, price);
     uint totalFee = safeMul(totalPriceNoFee, buyFee) / (1 ether);
     uint totalPrice = safeAdd(totalPriceNoFee,totalFee);
-    if (buyOrders[h] &lt; amount) throw;
-    if (totalPrice &gt; msg.value) throw;
-    if (Token(token).allowance(msg.sender,this) &lt; amount) throw;
+    if (buyOrders[h] < amount) throw;
+    if (totalPrice > msg.value) throw;
+    if (Token(token).allowance(msg.sender,this) < amount) throw;
     if (Token(token).transferFrom(msg.sender,buyer,amount)) throw;
     buyOrders[h] = safeSub(buyOrders[h], amount);
     if (!feeAccount.send(totalFee)) throw;
     uint leftOver = msg.value - totalPrice;
-    if (leftOver&gt;0)
+    if (leftOver>0)
       if (!msg.sender.send(leftOver)) throw;
     Buy(h, token, amount, totalPrice, buyer, msg.sender);
   }
@@ -148,8 +148,8 @@ contract Ethex is SafeMath {
     uint totalPriceNoFee = safeMul(amount, price);
     uint totalFee = safeMul(totalPriceNoFee, buyFee) / (1 ether);
     uint totalPrice = safeSub(totalPriceNoFee,totalFee);
-    if (sellOrders[h] &lt; amount) throw;
-    if (Token(token).allowance(seller,this) &lt; amount) throw;
+    if (sellOrders[h] < amount) throw;
+    if (Token(token).allowance(seller,this) < amount) throw;
     if (!Token(token).transferFrom(seller,msg.sender,amount)) throw;
     sellOrders[h] = safeSub(sellOrders[h],amount);
     if (!seller.send(totalPrice)) throw;

@@ -42,7 +42,7 @@ library iMath {
     internal 
     pure 
     returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -53,7 +53,7 @@ library iMath {
     pure 
     returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -165,8 +165,8 @@ contract iERC20 is iERC01Basic {
 }
 contract ICWToken is iERC01Basic {
     using iMath for uint256;
-    mapping(address =&gt; uint256)     balances;
-    mapping(address =&gt; bool)        operable;
+    mapping(address => uint256)     balances;
+    mapping(address => bool)        operable;
     address public                  contractModifierAddress;
     uint256                         _totalSupply;
     uint256                         _totalMintSupply;
@@ -247,7 +247,7 @@ contract ICWToken is iERC01Basic {
     public 
     onlyByOwned 
     returns(bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
         _rate = _value;
         return true;
     }
@@ -284,7 +284,7 @@ contract ICWToken is iERC01Basic {
         require(_minted == false);
         uint256 releaseAmount = _maxMintable.sub(_totalMintSupply);
         uint256 totalReleased = _totalMintSupply.add(releaseAmount);
-        require(_maxMintable &gt;= totalReleased);
+        require(_maxMintable >= totalReleased);
         _totalMintSupply = _totalMintSupply.add(releaseAmount);
         balances[contractModifierAddress] = balances[contractModifierAddress].add(releaseAmount);
         emit Transfer(0x0, contractModifierAddress, releaseAmount);
@@ -299,7 +299,7 @@ contract ICWToken is iERC01Basic {
     onlyByOwned
     returns(bool) {
         uint totalToken = _totalMintSupply.add(_value);
-        require(_maxMintable &gt;= totalToken);
+        require(_maxMintable >= totalToken);
         balances[_to] = balances[_to].add(_value);
         _totalMintSupply = _totalMintSupply.add(_value);
         emit Transfer(0x0, _to, _value);
@@ -313,7 +313,7 @@ contract ICWToken is iERC01Basic {
     onlyByOwned 
     returns(bool) {
         require(_to != _from);
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(_from, _to, _value);
@@ -342,10 +342,10 @@ contract ICWToken is iERC01Basic {
     function transferTokens()
     public 
     payable {
-        require(_mintingStarted == true &amp;&amp; msg.value &gt; 0);
+        require(_mintingStarted == true && msg.value > 0);
         uint tokens = msg.value.mul(_rate);
         uint totalToken = _totalMintSupply.add(tokens);
-        require(_maxMintable &gt;= totalToken);
+        require(_maxMintable >= totalToken);
         balances[msg.sender] = balances[msg.sender].add(tokens);
         _totalMintSupply = _totalMintSupply.add(tokens);
         contractModifierAddress.transfer(msg.value);
@@ -358,7 +358,7 @@ contract ICWToken is iERC01Basic {
     public 
     returns(bool) {
         require(_to != msg.sender);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -367,7 +367,7 @@ contract ICWToken is iERC01Basic {
 }
 contract iCashwebToken is iERC20, ICWToken {
     mapping(
-        address =&gt; mapping(address =&gt; uint256)
+        address => mapping(address => uint256)
     ) internal _allowed;
 
     function transferFrom(
@@ -376,8 +376,8 @@ contract iCashwebToken is iERC20, ICWToken {
     public 
     returns(bool) {
         require(_to != msg.sender);
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= _allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= _allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         _allowed[_from][msg.sender] = _allowed[_from][msg.sender].sub(_value);
@@ -420,7 +420,7 @@ contract iCashwebToken is iERC20, ICWToken {
     public 
     returns(bool) {
         uint oldValue = _allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             _allowed[msg.sender][_spender] = 0;
         } else {
             _allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -431,8 +431,8 @@ contract iCashwebToken is iERC20, ICWToken {
 }
 
 contract iCashweb is iCashwebToken {
-    string public constant name = &quot;iCashweb&quot;;
-    string public constant symbol = &quot;ICWeb&quot;;
+    string public constant name = "iCashweb";
+    string public constant symbol = "ICWeb";
     constructor() 
     public {
         _mintingStarted = false;

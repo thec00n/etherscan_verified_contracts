@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 
 /// @title Multisignature wallet - Allows multiple parties to agree on transactions before execution.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="681b1c0d0e0906460f0d071a0f0d280b07061b0d061b111b46060d1c">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="681b1c0d0e0906460f0d071a0f0d280b07061b0d061b111b46060d1c">[email protected]</span>>
 contract MultiSigWallet {
 
     event Confirmation(address sender, bytes32 transactionHash);
@@ -14,9 +14,9 @@ contract MultiSigWallet {
     event OwnerRemoval(address owner);
     event RequiredUpdate(uint required);
 
-    mapping (bytes32 =&gt; Transaction) public transactions;
-    mapping (bytes32 =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (bytes32 => Transaction) public transactions;
+    mapping (bytes32 => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] owners;
     bytes32[] transactionList;
     uint public required;
@@ -36,7 +36,7 @@ contract MultiSigWallet {
     }
 
     modifier signaturesFromOwners(bytes32 transactionHash, uint8[] v, bytes32[] rs) {
-        for (uint i=0; i&lt;v.length; i++)
+        for (uint i=0; i<v.length; i++)
             if (!isOwner[ecrecover(transactionHash, v[i], rs[i], rs[v.length + i])])
                 throw;
         _;
@@ -79,7 +79,7 @@ contract MultiSigWallet {
     }
 
     modifier validRequired(uint _ownerCount, uint _required) {
-        if (   _required &gt; _ownerCount
+        if (   _required > _ownerCount
             || _required == 0
             || _ownerCount == 0)
             throw;
@@ -102,13 +102,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             updateRequired(owners.length);
         OwnerRemoval(owner);
     }
@@ -177,7 +177,7 @@ contract MultiSigWallet {
         public
         signaturesFromOwners(transactionHash, v, rs)
     {
-        for (uint i=0; i&lt;v.length; i++)
+        for (uint i=0; i<v.length; i++)
             addConfirmation(transactionHash, ecrecover(transactionHash, v[i], rs[i], rs[i + v.length]));
         executeTransaction(transactionHash);
     }
@@ -208,7 +208,7 @@ contract MultiSigWallet {
     function MultiSigWallet(address[] _owners, uint _required)
         validRequired(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++)
+        for (uint i=0; i<_owners.length; i++)
             isOwner[_owners[i]] = true;
         owners = _owners;
         required = _required;
@@ -217,7 +217,7 @@ contract MultiSigWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -227,7 +227,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionHash][owners[i]])
                 count += 1;
             if (count == required)
@@ -239,7 +239,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionHash][owners[i]])
                 count += 1;
     }
@@ -250,16 +250,16 @@ contract MultiSigWallet {
     {
         bytes32[] memory _transactionListTemp = new bytes32[](transactionList.length);
         uint count = 0;
-        for (uint i=0; i&lt;transactionList.length; i++)
-            if (   isPending &amp;&amp; !transactions[transactionList[i]].executed
-                || !isPending &amp;&amp; transactions[transactionList[i]].executed)
+        for (uint i=0; i<transactionList.length; i++)
+            if (   isPending && !transactions[transactionList[i]].executed
+                || !isPending && transactions[transactionList[i]].executed)
             {
                 _transactionListTemp[count] = transactionList[i];
                 count += 1;
             }
         _transactionList = new bytes32[](count);
-        for (i=0; i&lt;count; i++)
-            if (_transactionListTemp[i] &gt; 0)
+        for (i=0; i<count; i++)
+            if (_transactionListTemp[i] > 0)
                 _transactionList[i] = _transactionListTemp[i];
     }
 

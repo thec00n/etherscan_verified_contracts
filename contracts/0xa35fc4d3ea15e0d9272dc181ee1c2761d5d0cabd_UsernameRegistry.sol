@@ -1,7 +1,7 @@
 contract UsernameRegistry {
 
-  mapping(address =&gt; string) addr_to_str;
-  mapping(string =&gt; address) str_to_addr;
+  mapping(address => string) addr_to_str;
+  mapping(string => address) str_to_addr;
 
   function register(string username) {
     if (str_to_addr[username] != address(0)) {

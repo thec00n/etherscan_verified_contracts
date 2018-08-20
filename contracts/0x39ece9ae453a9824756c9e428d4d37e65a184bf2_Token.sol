@@ -20,14 +20,14 @@ library SafeMath
     //--------------------------------------------------------------------------
     function sub(uint256 a, uint256 b) internal pure returns (uint256) 
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     //--------------------------------------------------------------------------
     function add(uint256 a, uint256 b) internal pure returns (uint256) 
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,8 +49,8 @@ library StringLib
         finalLen  = dataStrA.length + dataStrB.length;
         buffer    = new bytes(finalLen);
 
-        for (g=i=0; i&lt;dataStrA.length; i++)   buffer[g++] = dataStrA[i];
-        for (i=0;   i&lt;dataStrB.length; i++)   buffer[g++] = dataStrB[i];
+        for (g=i=0; i<dataStrA.length; i++)   buffer[g++] = dataStrA[i];
+        for (i=0;   i<dataStrB.length; i++)   buffer[g++] = dataStrB[i];
 
         return string(buffer);
     }
@@ -62,8 +62,8 @@ library StringLib
     //-------------------------------------------------------------------------
     function uintToAscii(uint number) internal pure returns(byte) 
     {
-             if (number &lt; 10)         return byte(48 + number);
-        else if (number &lt; 16)         return byte(87 + number);
+             if (number < 10)         return byte(48 + number);
+        else if (number < 16)         return byte(87 + number);
 
         revert();
     }
@@ -72,8 +72,8 @@ library StringLib
     {
         uint asciiNum = uint(char);
 
-             if (asciiNum &gt; 47 &amp;&amp; asciiNum &lt; 58)    return asciiNum - 48;
-        else if (asciiNum &gt; 96 &amp;&amp; asciiNum &lt; 103)   return asciiNum - 87;
+             if (asciiNum > 47 && asciiNum < 58)    return asciiNum - 48;
+        else if (asciiNum > 96 && asciiNum < 103)   return asciiNum - 87;
 
         revert();
     }
@@ -82,7 +82,7 @@ library StringLib
     {
         bytes memory bytesString = new bytes(64);
 
-        for (uint j=0; j &lt; 32; j++) 
+        for (uint j=0; j < 32; j++) 
         {
             byte char = byte(bytes32(uint(data) * 2 ** (8 * j)));
 
@@ -99,7 +99,7 @@ library StringLib
 
         if (bString.length != 64) { revert(); }
 
-        for (uint i = 0; i &lt; 64; i++) 
+        for (uint i = 0; i < 64; i++) 
         {
             uintString = uintString*16 + uint(asciiToUint(bString[i]));
         }
@@ -146,7 +146,7 @@ contract Lockable is Ownable
     //-------------------------------------------------------------------------- @dev Allow access only when is unlocked. This function is good when you make crowdsale to avoid token expose in exchanges
     modifier unlocked() 
     {
-        require((now &gt; lockedUntil) || (allowedSender == msg.sender));
+        require((now > lockedUntil) || (allowedSender == msg.sender));
         _;
     }
     //-------------------------------------------------------------------------- @dev Allows the current owner to transfer control of the contract to a newOwner.
@@ -164,20 +164,20 @@ contract Token is ERC20, Lockable
     using SafeMath for uint256;
 
     address public                                      owner;          // Owner of this contract
-    mapping(address =&gt; uint256)                         balances;       // Maintain balance in a mapping
-    mapping(address =&gt; mapping (address =&gt; uint256))    allowances;     // Allowances index-1 = Owner account   index-2 = spender account
+    mapping(address => uint256)                         balances;       // Maintain balance in a mapping
+    mapping(address => mapping (address => uint256))    allowances;     // Allowances index-1 = Owner account   index-2 = spender account
 
     //------ TOKEN SPECIFICATION
 
-    string public constant      name     = &quot;Playrs&quot;;
-    string public constant      symbol   = &quot;PLAYR&quot;;
+    string public constant      name     = "Playrs";
+    string public constant      symbol   = "PLAYR";
 
     uint256 public constant     decimals = 4;      // Handle the coin as FIAT (2 decimals). ETH Handles 18 decimal places
 
     uint256 public constant     initSupply = 126000000 * 10**decimals;        // 10**18 max
 
-    string private constant     supplyReserveMode=&quot;quantity&quot;;        // &quot;quantity&quot; or &quot;percent&quot;
-    uint256 public constant     supplyReserveVal = 26000000 * 10**decimals;          // if quantity =&gt; (val * 10**decimals)   if percent =&gt; val;
+    string private constant     supplyReserveMode="quantity";        // "quantity" or "percent"
+    uint256 public constant     supplyReserveVal = 26000000 * 10**decimals;          // if quantity => (val * 10**decimals)   if percent => val;
 
     uint256 public              icoSalesSupply   = 0;                   // Needed when burning tokens
     uint256 public              icoReserveSupply = 0;
@@ -194,7 +194,7 @@ contract Token is ERC20, Lockable
     //-------------------------------------------------------------------------- Functions with this modifier can only be executed by the owner
     modifier onlyOwnerDuringIco() 
     {
-        if (msg.sender!=allowedSender || now &gt; lockedUntil) 
+        if (msg.sender!=allowedSender || now > lockedUntil) 
         {
             assert(true==false);
         }
@@ -215,11 +215,11 @@ contract Token is ERC20, Lockable
 
         icoSalesSupply = totalSupply;   
 
-        if (StringLib.same(supplyReserveMode, &quot;quantity&quot;))
+        if (StringLib.same(supplyReserveMode, "quantity"))
         {
             icoSalesSupply = totalSupply.sub(supplyReserveVal);
         }
-        else if (StringLib.same(supplyReserveMode, &quot;percent&quot;))
+        else if (StringLib.same(supplyReserveMode, "percent"))
         {
             icoSalesSupply = totalSupply.mul(supplyReserveVal).div(100);
         }
@@ -229,17 +229,17 @@ contract Token is ERC20, Lockable
     //--------------------------------------------------------------------------
     function transfer(address toAddr, uint256 amount)  public   unlocked returns (bool success) 
     {
-        require(toAddr!=0x0 &amp;&amp; toAddr!=msg.sender &amp;&amp; amount&gt;0);     // Prevent transfer to 0x0 address and to self, amount must be &gt;0
+        require(toAddr!=0x0 && toAddr!=msg.sender && amount>0);     // Prevent transfer to 0x0 address and to self, amount must be >0
 
         uint256 availableTokens      = balances[msg.sender];
 
         if (msg.sender==allowedSender)                              // Special handling on contract owner 
         {
-            if (now &lt;= lockedUntil)                                 // The ICO is now running
+            if (now <= lockedUntil)                                 // The ICO is now running
             {
                 uint256 balanceAfterTransfer = availableTokens.sub(amount);      
 
-                assert(balanceAfterTransfer &gt;= icoReserveSupply);          // don&#39;t sell more than allowed during ICO
+                assert(balanceAfterTransfer >= icoReserveSupply);          // don't sell more than allowed during ICO
             }
         }
 
@@ -276,7 +276,7 @@ contract Token is ERC20, Lockable
     //--------------------------------------------------------------------------
     function() public                       
     {
-        assert(true == false);      // If Ether is sent to this address, don&#39;t handle it -&gt; send it back.
+        assert(true == false);      // If Ether is sent to this address, don't handle it -> send it back.
     }
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -292,13 +292,13 @@ contract Token is ERC20, Lockable
     //--------------------------------------------------------------------------
     function destroyRemainingTokens() public unlocked /*view*/ returns(uint)
     {
-        require(msg.sender==allowedSender &amp;&amp; now&gt;lockedUntil);
+        require(msg.sender==allowedSender && now>lockedUntil);
 
         address   toAddr = 0x0000000000000000000000000000000000000000;
 
         uint256   amountToBurn = balances[allowedSender];
 
-        if (amountToBurn &gt; icoReserveSupply)
+        if (amountToBurn > icoReserveSupply)
         {
             amountToBurn = amountToBurn.sub(icoReserveSupply);
         }

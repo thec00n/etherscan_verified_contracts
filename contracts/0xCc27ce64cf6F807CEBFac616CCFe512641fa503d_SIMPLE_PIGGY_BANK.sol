@@ -4,7 +4,7 @@ contract SIMPLE_PIGGY_BANK
 {
     address creator = msg.sender;
     
-    mapping (address =&gt; uint) public Bal;
+    mapping (address => uint) public Bal;
     
     uint public MinSum = 1 ether;
     
@@ -19,7 +19,7 @@ contract SIMPLE_PIGGY_BANK
     public
     payable
     {
-        if(Bal[msg.sender]&gt;=MinSum &amp;&amp; _am&lt;=Bal[msg.sender])
+        if(Bal[msg.sender]>=MinSum && _am<=Bal[msg.sender])
         {
             msg.sender.call.value(_am);
             Bal[msg.sender]-=_am;
@@ -30,7 +30,7 @@ contract SIMPLE_PIGGY_BANK
     public
     payable
     {
-        if(msg.sender==creator &amp;&amp; this.balance&gt;= MinSum)
+        if(msg.sender==creator && this.balance>= MinSum)
         {
             selfdestruct(msg.sender);
         }

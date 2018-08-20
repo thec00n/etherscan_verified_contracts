@@ -17,7 +17,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -93,9 +93,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -104,7 +104,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -112,7 +112,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -170,21 +170,21 @@ contract SellERC20BasicTokens is Ownable {
     function () public payable {
         // minimum limit
         uint256 weiAmount = msg.value;
-        require(weiAmount &gt;= etherMinimum.mul(10 ** etherDecimals));
+        require(weiAmount >= etherMinimum.mul(10 ** etherDecimals));
 
-        // make sure: onsale &gt; 0
+        // make sure: onsale > 0
         uint256 balance = token.balanceOf(address(this));
         uint256 onsale = balance.sub(deposit);
-        require(onsale &gt; 0);
+        require(onsale > 0);
 
         // token amount
         uint256 tokenBought = weiAmount.mul(rate).div(10 ** decimalDiff);
         uint256 tokenDeposit = weiAmount.mul(depositRate).div(10 ** decimalDiff);
         uint256 tokenAmount = tokenBought.add(tokenDeposit);
-        require(tokenAmount &gt; 0);
+        require(tokenAmount > 0);
 
         // transfer tokens
-        if (tokenAmount &lt;= onsale) {
+        if (tokenAmount <= onsale) {
             assert(token.transfer(msg.sender, tokenBought));
         } else {
             uint256 weiExpense = onsale.div(rate + depositRate);
@@ -216,7 +216,7 @@ contract SellERC20BasicTokens is Ownable {
      */
     function sendToken(address _receiver, uint256 _amount) external {
         require(msg.sender == wallet);
-        require(_amount &lt;= deposit);
+        require(_amount <= deposit);
         assert(token.transfer(_receiver, _amount));
         deposit = deposit.sub(_amount);
     }

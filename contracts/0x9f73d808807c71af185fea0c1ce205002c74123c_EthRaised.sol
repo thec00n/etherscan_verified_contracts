@@ -3,18 +3,18 @@
 // The following contract automatically distributes the Eth raised from the
 // token sale.
 
-// 1. 50% of the Eth raised will go into a &quot;development&quot; ethereum wallet, immediately
+// 1. 50% of the Eth raised will go into a "development" ethereum wallet, immediately
 // accessible to the team, to be used for marketing, promotion, development, 
 // running costs, exchange listing fees, bug bounties and other aspects of 
 // running the company.
 //
-// 2. 25% of the Eth will go into a &quot;Tote Liquidator&quot; ethereum wallet, which will be
+// 2. 25% of the Eth will go into a "Tote Liquidator" ethereum wallet, which will be
 // used by the team purely to to liquidate the ethertote over the the opening
 // 12 weeks. It will be very easy to see the transactions on Etherscan as 
 // they will match the CryptoPot smart contracts that make up the Ethertote
 // ecosystem.
 //
-// 3. 25% of the Eth will go into a time-locked smart contract called &quot;Team Eth&quot;
+// 3. 25% of the Eth will go into a time-locked smart contract called "Team Eth"
 // which will be available to claim by the Ethertote team over a 12-month period
 //
 //
@@ -33,8 +33,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -49,9 +49,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -68,7 +68,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -170,7 +170,7 @@ contract EthRaised {
     // move Eth to Ethertote development wallet
     function _B_sendToEthertoteDevelopmentWallet() onlyAdmin public {
        require(ethertoteDevelopmentTransferComplete == false);
-       require(ethToBeDistributed &gt; 0);
+       require(ethToBeDistributed > 0);
        // now allow a percentage of the balance
        // total balance divided by 5 = 50% of balance
        address(ethertoteDevelopmentWallet).transfer(ethToBeDistributed.div(divForEthertoteDevelopmentWallet));
@@ -182,7 +182,7 @@ contract EthRaised {
     // move Eth to tote liquidator wallet
     function _C_sendToToteLiquidatorWallet() onlyAdmin public {
        require(toteLiquidatorTransferComplete == false);
-       require(ethToBeDistributed &gt; 0);
+       require(ethToBeDistributed > 0);
        // now allow a percentage of the balance
        // total balance divided by 4 = 25% of balance
        address(toteLiquidatorWallet).transfer(ethToBeDistributed.div(divForEthertoteLiquidatorWallet));
@@ -194,7 +194,7 @@ contract EthRaised {
     // move Eth to team eth time-locked contract
     function _D_sendToTeamEthContract() onlyAdmin public {
        require(teamEthTransferComplete == false);
-       require(ethToBeDistributed &gt; 0);
+       require(ethToBeDistributed > 0);
        // now allow a percentage of the balance
        // total balance divided by 4 = 25% of balance
        address(teamEthContract).transfer(ethToBeDistributed.div(divForTeamEthContract));
@@ -214,7 +214,7 @@ contract EthRaised {
         require(teamEthTransferComplete == true);
         
         // now withdraw any accidental Eth sent to this contract
-        require(address(this).balance &gt; 0);
+        require(address(this).balance > 0);
         address(admin).transfer(address(this).balance);
 
     }

@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -83,20 +83,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -110,7 +110,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -167,7 +167,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -178,8 +178,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -193,7 +193,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -228,7 +228,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -275,8 +275,8 @@ contract GeocashToken is StandardToken, Destructible {
   uint public minBalanceForAccounts;
   address public companyWallet;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; bool) public frozenAccounts;
+  mapping(address => uint256) balances;
+  mapping (address => bool) public frozenAccounts;
   event FrozenFunds(address target, bool frozen);
 
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -287,8 +287,8 @@ contract GeocashToken is StandardToken, Destructible {
   }
 
   function GeocashToken(uint256 _minBalanceForAccountsInWei, uint256 _buyPriceInWei, uint256 _sellPriceInWei, address _companyWallet) public {
-    name = &#39;Geocash&#39;;
-    symbol = &#39;GEO&#39;;
+    name = 'Geocash';
+    symbol = 'GEO';
     decimals = 18;
     totalSupply = 500000000 * (10 ** uint256(decimals));
     balances[this] = totalSupply;
@@ -317,8 +317,8 @@ contract GeocashToken is StandardToken, Destructible {
     require(_to != address(0));
     require(!frozenAccounts[msg.sender]);
     require(!frozenAccounts[_to]);
-    require(_value &lt;= balances[msg.sender]);
-    if(msg.sender.balance &lt; minBalanceForAccounts){
+    require(_value <= balances[msg.sender]);
+    if(msg.sender.balance < minBalanceForAccounts){
       sell((minBalanceForAccounts.sub(msg.sender.balance)).div(sellPriceInWei));
     }
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -328,13 +328,13 @@ contract GeocashToken is StandardToken, Destructible {
   }
 
   function setBuyPrice(uint _buyPriceInWei) onlyOwner public returns (bool){
-    require(_buyPriceInWei &gt; 0);
+    require(_buyPriceInWei > 0);
     buyPriceInWei = _buyPriceInWei;
     return true;
   }
 
   function setSellPrice(uint _sellPriceInWei) onlyOwner public returns (bool){
-    require(_sellPriceInWei &gt; 0);
+    require(_sellPriceInWei > 0);
     sellPriceInWei = _sellPriceInWei;
     return true;
   }
@@ -347,10 +347,10 @@ contract GeocashToken is StandardToken, Destructible {
 
   function buy() public payable returns (uint){
     require(msg.sender != address(0));
-    require(msg.value &gt;= 0);
+    require(msg.value >= 0);
     uint amount = msg.value.div(buyPriceInWei).mul(1 ether);
-    require(amount &gt; 0);
-    require(balances[this] &gt;= amount);
+    require(amount > 0);
+    require(balances[this] >= amount);
     uint oldBalance = balances[this].add(balances[msg.sender]);
     balances[this] = balances[this].sub(amount);
     balances[msg.sender] = balances[msg.sender].add(amount);
@@ -361,13 +361,13 @@ contract GeocashToken is StandardToken, Destructible {
   }
 
   function sell(uint _amount) internal returns(uint revenue) {
-    require(_amount &gt; 0);
-    require(balances[msg.sender]&gt;= _amount);
+    require(_amount > 0);
+    require(balances[msg.sender]>= _amount);
     uint oldBalance =  balances[this].add(balances[msg.sender]);
     balances[this] = balances[this].add(_amount);
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     revenue = _amount.mul(sellPriceInWei).div(1 ether);
-    require(revenue &gt; 0);
+    require(revenue > 0);
     if(!msg.sender.send(revenue)){
       revert();
     }

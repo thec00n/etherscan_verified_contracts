@@ -11,20 +11,20 @@ function mul(uint256 a, uint256 b) internal constant returns (uint256) {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -56,13 +56,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -112,7 +112,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -125,7 +125,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -144,7 +144,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -166,7 +166,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -257,14 +257,14 @@ contract TimeLockToken is Ownable, MintableToken{
   }
 
   event MintLock(address indexed to, uint256 releaseTime, uint256 value);
-  mapping(address =&gt; LockedBalance) lockedBalances;
+  mapping(address => LockedBalance) lockedBalances;
   /**
    * @dev mint timelocked tokens
    */
   function mintTimelocked(address _to, uint256 _releaseTime, uint256 _amount)
     onlyOwner canMint returns (bool){
-    require(_releaseTime &gt; now);
-    require(_amount &gt; 0);
+    require(_releaseTime > now);
+    require(_amount > 0);
     LockedBalance exist = lockedBalances[_to];
     require(exist.amount == 0);
     LockedBalance memory balance = LockedBalance(_releaseTime,_amount);
@@ -279,8 +279,8 @@ contract TimeLockToken is Ownable, MintableToken{
    */
   function claim() {
     LockedBalance balance = lockedBalances[msg.sender];
-    require(balance.amount &gt; 0);
-    require(now &gt;= balance.releaseTime);
+    require(balance.amount > 0);
+    require(now >= balance.releaseTime);
     uint256 amount = balance.amount;
     delete lockedBalances[msg.sender];
     balances[msg.sender] = balances[msg.sender].add(amount);
@@ -316,15 +316,15 @@ contract BMBToken is TimeLockToken {
   event Freeze(address indexed to, uint256 value);
   event Unfreeze(address indexed to, uint256 value);
   event Burn(address indexed to, uint256 value);
-  mapping (address =&gt; uint256) public freezeOf;
-  string public name = &quot;BitmoreToken&quot;;
-  string public symbol = &quot;BMB&quot;;
+  mapping (address => uint256) public freezeOf;
+  string public name = "BitmoreToken";
+  string public symbol = "BMB";
   uint public decimals = 8;
 
 
   function burn(address _to,uint256 _value) onlyOwner returns (bool success) {
-    require(_value &gt;= 0);
-    require(balances[_to] &gt;= _value);
+    require(_value >= 0);
+    require(balances[_to] >= _value);
     
     balances[_to] = balances[_to].sub(_value);                      // Subtract from the sender
     totalSupply = totalSupply.sub(_value);                                // Updates totalSupply
@@ -333,8 +333,8 @@ contract BMBToken is TimeLockToken {
   }
   
   function freeze(address _to,uint256 _value) onlyOwner returns (bool success) {
-    require(_value &gt;= 0);
-    require(balances[_to] &gt;= _value);
+    require(_value >= 0);
+    require(balances[_to] >= _value);
     balances[_to] = balances[_to].sub(_value);                      // Subtract from the sender
     freezeOf[_to] = freezeOf[_to].add(_value);                                // Updates totalSupply
     Freeze(_to, _value);
@@ -342,8 +342,8 @@ contract BMBToken is TimeLockToken {
   }
   
   function unfreeze(address _to,uint256 _value) onlyOwner returns (bool success) {
-    require(_value &gt;= 0);
-    require(freezeOf[_to] &gt;= _value);
+    require(_value >= 0);
+    require(freezeOf[_to] >= _value);
     freezeOf[_to] = freezeOf[_to].sub(_value);                      // Subtract from the sender
     balances[_to] = balances[_to].add(_value);
     Unfreeze(_to, _value);

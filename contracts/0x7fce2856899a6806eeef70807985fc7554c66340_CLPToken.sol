@@ -14,18 +14,18 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         require(a == b * c + a % b);
         return c;
@@ -85,11 +85,11 @@ contract StandardToken is Token {
      * - Integer overflow = OK, checked
      */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            //if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -99,8 +99,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-            //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+            //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -123,9 +123,9 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 }
@@ -137,8 +137,8 @@ contract StandardToken is Token {
  */
 contract CLPToken is StandardToken, SafeMath {
 
-    string public name = &quot;CLP Token&quot;;
-    string public symbol = &quot;CLP&quot;;
+    string public name = "CLP Token";
+    string public symbol = "CLP";
 	uint public decimals = 9;
 
     // Initial founder address (set in constructor)
@@ -190,28 +190,28 @@ contract CLPToken is StandardToken, SafeMath {
         require(msg.sender==founder);
         uint tokens = 0;
 
-        if(block.timestamp &gt; month6companyUnlock &amp;&amp; !allocated6Months)
+        if(block.timestamp > month6companyUnlock && !allocated6Months)
         {
             allocated6Months = true;
             tokens = safeDiv(totalTokensCompany, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; month12companyUnlock &amp;&amp; !allocated12Months)
+        else if(block.timestamp > month12companyUnlock && !allocated12Months)
         {
             allocated12Months = true;
             tokens = safeDiv(totalTokensCompany, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; month18companyUnlock &amp;&amp; !allocated18Months)
+        else if(block.timestamp > month18companyUnlock && !allocated18Months)
         {
             allocated18Months = true;
             tokens = safeDiv(totalTokensCompany, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; month24companyUnlock &amp;&amp; !allocated24Months)
+        else if(block.timestamp > month24companyUnlock && !allocated24Months)
         {
             allocated24Months = true;
             tokens = safeDiv(totalTokensCompany, 4);
@@ -230,28 +230,28 @@ contract CLPToken is StandardToken, SafeMath {
         require(msg.sender==founder);
         uint tokens = 0;
 
-        if(block.timestamp &gt; year1Unlock &amp;&amp; !allocated1Year)
+        if(block.timestamp > year1Unlock && !allocated1Year)
         {
             allocated1Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year2Unlock &amp;&amp; !allocated2Year)
+        else if(block.timestamp > year2Unlock && !allocated2Year)
         {
             allocated2Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year3Unlock &amp;&amp; !allocated3Year)
+        else if(block.timestamp > year3Unlock && !allocated3Year)
         {
             allocated3Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
             balances[founder] = safeAdd(balances[founder], tokens);
             totalSupply = safeAdd(totalSupply, tokens);
         }
-        else if(block.timestamp &gt; year4Unlock &amp;&amp; !allocated4Year)
+        else if(block.timestamp > year4Unlock && !allocated4Year)
         {
             allocated4Year = true;
             tokens = safeDiv(totalTokensReserve, 4);
@@ -287,7 +287,7 @@ contract CLPToken is StandardToken, SafeMath {
     function addInvestorList(address investor, uint256 amountToken)  returns (bool success) {
 		require(msg.sender==founder);
 		
-		if(currentTokenSaled + amountToken &lt;= totalTokensSale)
+		if(currentTokenSaled + amountToken <= totalTokensSale)
 		{
 			balances[investor] = safeAdd(balances[investor], amountToken);
 			currentTokenSaled = safeAdd(currentTokenSaled, amountToken);

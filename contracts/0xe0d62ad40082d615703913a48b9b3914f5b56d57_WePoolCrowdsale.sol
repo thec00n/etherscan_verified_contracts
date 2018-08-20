@@ -41,20 +41,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     /**
     * @dev transfer token for a specified address
@@ -76,7 +76,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -106,7 +106,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -117,8 +117,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -132,7 +132,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -182,7 +182,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -235,10 +235,10 @@ contract BurnableToken is StandardToken, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public onlyOwner {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -250,8 +250,8 @@ contract BurnableToken is StandardToken, Ownable {
 
 contract WePoolToken is BurnableToken {
 
-    string public constant name = &quot;WePool&quot;;
-    string public constant symbol = &quot;WPL&quot;;
+    string public constant name = "WePool";
+    string public constant symbol = "WPL";
     uint32 public constant decimals = 18;
 
     function WePoolToken() public {
@@ -283,13 +283,13 @@ contract WePoolCrowdsale is Ownable {
 
 
     address[] public investorsArray;
-    mapping (address =&gt; uint256) public investors; //address -&gt; amount
+    mapping (address => uint256) public investors; //address -> amount
 
 
     WePoolToken public token;
      
     modifier icoEnded() {
-        require(now &gt; (icoStartTime + 30 days));
+        require(now > (icoStartTime + 30 days));
         _;        
     }
 
@@ -297,8 +297,8 @@ contract WePoolCrowdsale is Ownable {
      * @dev Constructor to WePoolCrowdsale contract
      */
     function WePoolCrowdsale(uint256 _preIcoStartTime, uint256 _icoStartTime) public {
-        require(_preIcoStartTime &gt; now);
-        require(_icoStartTime &gt; _preIcoStartTime + 7 days);
+        require(_preIcoStartTime > now);
+        require(_icoStartTime > _preIcoStartTime + 7 days);
         preIcoStartTime = _preIcoStartTime;
         icoStartTime = _icoStartTime;
 
@@ -341,7 +341,7 @@ contract WePoolCrowdsale is Ownable {
      @param newRate New preIco price per token
      */
     function changePreIcoRate(uint256 newRate) public onlyOwner {
-        require(newRate &gt; 0);
+        require(newRate > 0);
         preIcoRate = newRate;
     }
 
@@ -350,7 +350,7 @@ contract WePoolCrowdsale is Ownable {
      @param newRate New Ico price per token
      */
     function changeIcoRate(uint256 newRate) public onlyOwner {
-        require(newRate &gt; 0);
+        require(newRate > 0);
         icoRate = newRate;
     }
 
@@ -359,9 +359,9 @@ contract WePoolCrowdsale is Ownable {
      * @param newTime New preIco start time
      */
     function changePreIcoStartTime(uint256 newTime) public onlyOwner {
-        require(now &lt; preIcoStartTime);
-        require(newTime &gt; now);
-        require(icoStartTime &gt; newTime + 7 days);
+        require(now < preIcoStartTime);
+        require(newTime > now);
+        require(icoStartTime > newTime + 7 days);
         preIcoStartTime = newTime;
     }
 
@@ -370,9 +370,9 @@ contract WePoolCrowdsale is Ownable {
      * @param newTime New Ico start time
      */
     function changeIcoStartTime(uint256 newTime) public onlyOwner {
-        require(now &lt; icoStartTime);
-        require(newTime &gt; now);
-        require(newTime &gt; preIcoStartTime + 7 days);
+        require(now < icoStartTime);
+        require(newTime > now);
+        require(newTime > preIcoStartTime + 7 days);
         icoStartTime = newTime;
     }
 
@@ -397,7 +397,7 @@ contract WePoolCrowdsale is Ownable {
      * @dev Ico should be ended
      */
     function getReservedTokens() public onlyOwner icoEnded {
-        require(reserved &gt; 0);
+        require(reserved > 0);
         uint256 amount = reserved;
         reserved = 0;
         token.transfer(tokenWallet, amount);
@@ -417,24 +417,24 @@ contract WePoolCrowdsale is Ownable {
         address inv = msg.sender;
         
         uint256 weiAmount = msg.value;
-        require(weiAmount &gt;= minPurchase);
+        require(weiAmount >= minPurchase);
 
         uint256 rate;
         uint256 tokens;
         uint256 cleanWei; // amount of wei to use for purchase excluding change and hardcap overflows
         uint256 change;
 
-        if (now &gt; preIcoStartTime &amp;&amp; now &lt; (preIcoStartTime + 7 days)) {
+        if (now > preIcoStartTime && now < (preIcoStartTime + 7 days)) {
             rate = preIcoRate;
-        } else if (now &gt; icoStartTime &amp;&amp; now &lt; (icoStartTime + 30 days)) {
+        } else if (now > icoStartTime && now < (icoStartTime + 30 days)) {
             rate = icoRate;
         }
-        require(rate &gt; 0);
+        require(rate > 0);
     
         tokens = (weiAmount.mul(1E18)).div(rate);
 
         // check hardCap
-        if (tokensSold.add(tokens) &gt; hardCap) {
+        if (tokensSold.add(tokens) > hardCap) {
             tokens = hardCap.sub(tokensSold);
             cleanWei = tokens.mul(rate).div(1E18);
             change = weiAmount.sub(cleanWei);
@@ -456,7 +456,7 @@ contract WePoolCrowdsale is Ownable {
         token.transfer(inv, tokens);
 
         // send back change
-        if (change &gt; 0) {
+        if (change > 0) {
             inv.transfer(change); 
         }
     }

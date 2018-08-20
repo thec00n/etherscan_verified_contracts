@@ -18,7 +18,7 @@ contract SafetherStorage {
         uint256[3]  _data;
     }
     
-    mapping (address=&gt;Depositor) internal _depositor;
+    mapping (address=>Depositor) internal _depositor;
 }
 
 contract SafetherModifier is SafetherStorage {
@@ -34,8 +34,8 @@ contract SafetherModifier is SafetherStorage {
     
     modifier isValidDepositor(address depositor, bytes8 token) {
         require(_depositor[depositor]._token == token);
-        require(_depositor[depositor]._data[2] &gt; 0);
-        require(block.number &gt;= _depositor[depositor]._data[1]);
+        require(_depositor[depositor]._data[2] > 0);
+        require(block.number >= _depositor[depositor]._data[1]);
         _;
     }
 }

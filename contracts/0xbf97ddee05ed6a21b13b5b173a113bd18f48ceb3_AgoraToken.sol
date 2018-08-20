@@ -14,8 +14,8 @@ contract ERC20Interface {
 
 contract AgoraToken is ERC20Interface {
   address contractOwner;
-  string public constant name = &quot;Agora&quot;;
-  string public constant symbol = &quot;AGO&quot;;
+  string public constant name = "Agora";
+  string public constant symbol = "AGO";
   uint8 public constant decimals = 0;
 
   struct BalanceSnapshot {
@@ -23,9 +23,9 @@ contract AgoraToken is ERC20Interface {
     uint256 value;
   }
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(uint256 =&gt; mapping (address =&gt; BalanceSnapshot)) balancesAtBlock;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
+  mapping(uint256 => mapping (address => BalanceSnapshot)) balancesAtBlock;
 
   uint256 public constant creatorSupply = 30000000;
   uint256 public constant seriesASupply = 10000000;
@@ -52,7 +52,7 @@ contract AgoraToken is ERC20Interface {
 
   // Make a transfer of AGO between two addresses.
   function transfer(address _to, uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       // We need to register the balance known for the last reference block.
       // That way, we can be sure that when the Claimer wants to check the balance
       // the system can be protected against double-spending AGO tokens claiming.
@@ -68,7 +68,7 @@ contract AgoraToken is ERC20Interface {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-    if(balances[_from] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+    if(balances[_from] >= _value && _value > 0 && allowed[_from][msg.sender] >= _value) {
       // Same as `transfer` :
       // We need to register the balance known for the last reference block.
       // That way, we can be sure that when the Claimer wants to check the balance
@@ -107,23 +107,23 @@ contract AgoraToken is ERC20Interface {
   // Get tokens with a Ether payment.
   function() payable {
     // Require to be after block 4116800 to start the ICO.
-    require(block.number &gt; 4116800);
+    require(block.number > 4116800);
 
     // Require a value to be sent.
-    require(msg.value &gt;= 0);
+    require(msg.value >= 0);
 
     // Retrieve the current round information
     var(pricePerThousands, supplyRemaining) = currentRoundInformation();
 
     // Require a round to be started (currentRoundInformation return 0,0 if no
     // round is in progress).
-    require(pricePerThousands &gt; 0);
+    require(pricePerThousands > 0);
 
     // Make the calculation : how many AGO token for this Ether value.
     uint256 tokenToReceive = (msg.value * 1000 / pricePerThousands);
 
     // Require there is enough token remaining in the supply.
-    require(tokenToReceive &lt;= supplyRemaining);
+    require(tokenToReceive <= supplyRemaining);
 
     // Credits the user balance with this tokens.
     balances[msg.sender] += tokenToReceive;
@@ -135,11 +135,11 @@ contract AgoraToken is ERC20Interface {
   // pricePerThousands is the current X ether = 1000 AGO
   // supplyRemaining is the remaining supply of ether at this price
   function currentRoundInformation() constant returns (uint256 pricePerThousands, uint256 supplyRemaining) {
-    if(currentlyReleased &gt;= 30000000 &amp;&amp; currentlyReleased &lt; 40000000) {
+    if(currentlyReleased >= 30000000 && currentlyReleased < 40000000) {
       return(0.75 ether, 40000000-currentlyReleased);
-    } else if(currentlyReleased &gt;= 40000000 &amp;&amp; currentlyReleased &lt; 70000000) {
+    } else if(currentlyReleased >= 40000000 && currentlyReleased < 70000000) {
       return(1.25 ether, 70000000-currentlyReleased);
-    } else if(currentlyReleased &gt;= 70000000 &amp;&amp; currentlyReleased &lt; 130000000) {
+    } else if(currentlyReleased >= 70000000 && currentlyReleased < 130000000) {
       return(1.5 ether, 130000000-currentlyReleased);
     } else {
       return(0,0);
@@ -179,7 +179,7 @@ contract AgoraToken is ERC20Interface {
   // If the user have made (or received) a transfer of AGO token since the
   // last reference block, its balance will be written in the `balancesAtBlock`
   // mapping. So we can retrieve it from here.
-  // Otherwise, if the user havn&#39;t made a transaction since the last reference
+  // Otherwise, if the user havn't made a transaction since the last reference
   // block, the balance of AGO token is still good.
   function balanceAtBlock(address _owner, uint256 blockNumber) constant returns (uint256 balance) {
     if(balancesAtBlock[blockNumber][_owner].initialized) {

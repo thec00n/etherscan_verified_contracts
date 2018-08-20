@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,7 +94,7 @@ contract BeatTokenCrowdsale is Ownable {
     address public beatTeamWallet;
 
     uint256 public ethWeiRaised;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     uint public constant PRE_ICO_PERIOD = 28 days;
     uint public constant ICO_PHASE1_PERIOD = 28 days;
@@ -158,7 +158,7 @@ contract BeatTokenCrowdsale is Ownable {
 
     function start() onlyOwner public {
         require(stage == Stages.Deployed);
-        require(ethPriceInEuroCent &gt; 0);
+        require(ethPriceInEuroCent > 0);
 
         contractStartTime = now;
         BeatTokenPreIcoStarted();
@@ -200,7 +200,7 @@ contract BeatTokenCrowdsale is Ownable {
 
     function buyTokens(address beneficiary) payable public {
         require(isWithinValidIcoPhase());
-        require(ethPriceInEuroCent &gt; 0);
+        require(ethPriceInEuroCent > 0);
         require(beneficiary != address(0));
         require(msg.value != 0);
 
@@ -238,30 +238,30 @@ contract BeatTokenCrowdsale is Ownable {
             bonusPercentage = ICO_PHASE3_BONUS_PERCENTAGE;
         }
 
-        // implement poor man&#39;s rounding by adding 50 because all integer divisions rounds DOWN to nearest integer
+        // implement poor man's rounding by adding 50 because all integer divisions rounds DOWN to nearest integer
         return beatWeiAmount.mul(100 + bonusPercentage).add(50).div(100);
     }
 
     function isWithinTokenAllocLimit(uint256 beatWeiAmount) internal view returns (bool) {
-        return token.getTotalSupply().add(beatWeiAmount) &lt;= ICO_PHASE3_LIMIT;
+        return token.getTotalSupply().add(beatWeiAmount) <= ICO_PHASE3_LIMIT;
     }
 
     function determineCurrentStage(uint256 beatWeiAmount) internal {
         uint256 newTokenTotalSupply = token.getTotalSupply().add(beatWeiAmount);
 
-        if (stage == Stages.PreIco &amp;&amp; (newTokenTotalSupply &gt; PRE_ICO_LIMIT || now &gt;= contractStartTime + PRE_ICO_PERIOD)) {
+        if (stage == Stages.PreIco && (newTokenTotalSupply > PRE_ICO_LIMIT || now >= contractStartTime + PRE_ICO_PERIOD)) {
             preIcoEndTime = now;
             stage = Stages.IcoPhase1;
             BeatTokenIcoPhase1Started();
-        } else if (stage == Stages.IcoPhase1 &amp;&amp; (newTokenTotalSupply &gt; ICO_PHASE1_LIMIT || now &gt;= preIcoEndTime + ICO_PHASE1_PERIOD)) {
+        } else if (stage == Stages.IcoPhase1 && (newTokenTotalSupply > ICO_PHASE1_LIMIT || now >= preIcoEndTime + ICO_PHASE1_PERIOD)) {
             icoPhase1EndTime = now;
             stage = Stages.IcoPhase2;
             BeatTokenIcoPhase2Started();
-        } else if (stage == Stages.IcoPhase2 &amp;&amp; (newTokenTotalSupply &gt; ICO_PHASE2_LIMIT || now &gt;= icoPhase1EndTime + ICO_PHASE2_PERIOD)) {
+        } else if (stage == Stages.IcoPhase2 && (newTokenTotalSupply > ICO_PHASE2_LIMIT || now >= icoPhase1EndTime + ICO_PHASE2_PERIOD)) {
             icoPhase2EndTime = now;
             stage = Stages.IcoPhase3;
             BeatTokenIcoPhase3Started();
-        } else if (stage == Stages.IcoPhase3 &amp;&amp; (newTokenTotalSupply == ICO_PHASE3_LIMIT || now &gt;= icoPhase2EndTime + ICO_PHASE3_PERIOD)) {
+        } else if (stage == Stages.IcoPhase3 && (newTokenTotalSupply == ICO_PHASE3_LIMIT || now >= icoPhase2EndTime + ICO_PHASE3_PERIOD)) {
             icoPhase3EndTime = now;
             stage = Stages.IcoEnded;
         }
@@ -279,7 +279,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -288,7 +288,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -317,7 +317,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -328,8 +328,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -343,7 +343,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -392,7 +392,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -445,7 +445,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -456,7 +456,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply.add(_amount) &lt;= cap);
+    require(totalSupply.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -465,8 +465,8 @@ contract CappedToken is MintableToken {
 
 contract BeatToken is CappedToken {
 
-    string public constant name = &quot;BEAT Token&quot;;
-    string public constant symbol = &quot;BEAT&quot;;
+    string public constant name = "BEAT Token";
+    string public constant symbol = "BEAT";
     uint8 public constant decimals = 18;
 
     function BeatToken(uint256 _cap) CappedToken(_cap) public {

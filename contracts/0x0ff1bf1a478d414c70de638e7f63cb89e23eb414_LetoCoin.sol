@@ -2,13 +2,13 @@ pragma solidity ^0.4.18;
 
 contract LetoCoin{
 
-    string public constant name = &#39;LetoCoin&#39;;
-    string public constant symbol = &#39;LETO&#39;;
+    string public constant name = 'LetoCoin';
+    string public constant symbol = 'LETO';
     uint8 public constant decimals = 10;
     uint256 public constant totalSupply = 8000000 * 10**uint256(decimals);
     
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowed;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value); 
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -24,8 +24,8 @@ contract LetoCoin{
     
     function transfer(address _to, uint256 _value) public returns (bool success) {
         if (_value != 0){
-            require(balances[msg.sender] &gt;= _value);
-            require(balances[_to] + _value &gt; balances[_to]);
+            require(balances[msg.sender] >= _value);
+            require(balances[_to] + _value > balances[_to]);
             balances[msg.sender] -= _value;
             balances[_to] += _value;
         }
@@ -35,9 +35,9 @@ contract LetoCoin{
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
         if (_value != 0){
-            require(allowed[_from][msg.sender] &gt;= _value);
-            require(balances[_from] &gt;= _value);
-            require(balances[_to] + _value &gt; balances[_to]);
+            require(allowed[_from][msg.sender] >= _value);
+            require(balances[_from] >= _value);
+            require(balances[_to] + _value > balances[_to]);
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
             balances[_to] += _value;

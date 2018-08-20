@@ -22,9 +22,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
@@ -32,7 +32,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -41,7 +41,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -90,7 +90,7 @@ contract Ownable {
 *Standard ERC20 Token interface
 */
 contract ERC20 {
-	// these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+	// these functions aren't abstract since the compiler emits automatically generated getter functions as external
 
 	function totalSupply() public view returns (uint256);
 	function balanceOf(address who) public view returns (uint256);
@@ -116,8 +116,8 @@ contract StandardToken is ERC20 {
 
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 
 	uint256 totalSupply_;
@@ -136,7 +136,7 @@ contract StandardToken is ERC20 {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -163,8 +163,8 @@ contract StandardToken is ERC20 {
 	*/
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -178,7 +178,7 @@ contract StandardToken is ERC20 {
 	*
 	* Beware that changing an allowance with this method brings the risk that someone may use both the old
 	* and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	* race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	* race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	* https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	* @param _spender The address which will spend the funds.
 	* @param _value The amount of tokens to be spent.
@@ -227,7 +227,7 @@ contract StandardToken is ERC20 {
 	*/
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 				allowed[msg.sender][_spender] = 0;
 		} else {
 				allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -245,8 +245,8 @@ contract StandardToken is ERC20 {
 contract CYBC is StandardToken, Ownable{
 	using SafeMath for uint256;
 
-	string public name = &quot;CybCoin&quot;;
-	string public symbol = &quot;CYBC&quot;;
+	string public name = "CybCoin";
+	string public symbol = "CYBC";
 	uint8 public constant decimals = 8;
 
 	uint256 private _N = (10 ** uint256(decimals));
@@ -256,8 +256,8 @@ contract CYBC is StandardToken, Ownable{
 	uint256 public rate = 6666;
 	uint256 public totalTokenSales = 0;
 
-	mapping(address =&gt; uint8) public ACL;
-	mapping (address =&gt; string) public keys;
+	mapping(address => uint8) public ACL;
+	mapping (address => string) public keys;
 	event LogRegister (address _user, string _key);
 
 	address public wallet = 0x7a0035EA0F2c08aF87Cc863D860d669505EA0b20;
@@ -300,7 +300,7 @@ contract CYBC is StandardToken, Ownable{
 	}
 
 	function setRate(uint256 _rate)  public onlyOwner {
-		require(_rate &gt; 0);
+		require(_rate > 0);
 		rate = _rate;
 	}
 
@@ -331,14 +331,14 @@ contract CYBC is StandardToken, Ownable{
 	}
 
 	modifier isSaleOpen() {
-		require(totalTokenSales &lt; cap);
-		require(now &lt; endTime);
+		require(totalTokenSales < cap);
+		require(now < endTime);
 		_;
 	}
 
 	modifier isSaleClose() {
 		if( ACL[msg.sender] != 1 )  {
-			require(totalTokenSales &gt;= cap || now &gt;= endTime);
+			require(totalTokenSales >= cap || now >= endTime);
 		}
 		_;
 	}
@@ -369,8 +369,8 @@ contract CYBC is StandardToken, Ownable{
 
 	function setACL(address addr,uint8 flag) onlyOwner public {
 		require(addr != address(0));
-		require(flag &gt;= 0);
-		require(flag &lt;= 255);
+		require(flag >= 0);
+		require(flag <= 255);
 		ACL[addr] = flag;
 	}
 
@@ -384,7 +384,7 @@ contract CYBC is StandardToken, Ownable{
 
 	function register(string _key) public {
 		require(ACL[msg.sender] != 2);
-		require(bytes(_key).length &lt;= 128);
+		require(bytes(_key).length <= 128);
 		keys[msg.sender] = _key;
 		LogRegister(msg.sender, _key);
 	}

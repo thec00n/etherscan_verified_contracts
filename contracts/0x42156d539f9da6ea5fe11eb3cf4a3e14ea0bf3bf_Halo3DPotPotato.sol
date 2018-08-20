@@ -69,7 +69,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
         ceoAddress=msg.sender;
         hotPotatoHolder=0;
         contestStartTime=now;
-        for(uint i = 0; i&lt;NUM_POTATOES; i++){
+        for(uint i = 0; i<NUM_POTATOES; i++){
             Potato memory newpotato=Potato({owner:address(this),price: START_PRICE});
             potatoes.push(newpotato);
         }
@@ -97,7 +97,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
       external
       onlyTokenContract
       returns (bool) {
-        require(now &gt; contestStartTime);
+        require(now > contestStartTime);
         require(!_isContract(_from));
         if(_endContestIfNeeded(_from, _value)){
 
@@ -106,7 +106,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
             // Byte data to index how to transfer?
             uint64 index = uint64(_data[0]);
             Potato storage potato=potatoes[index];
-            require(_value &gt;= potato.price);
+            require(_value >= potato.price);
             //allow calling transfer() on these addresses without risking re-entrancy attacks
             require(_from != potato.owner);
             require(_from != ceoAddress);
@@ -138,12 +138,12 @@ contract Halo3DPotPotato is AcceptsHalo3D {
     // All the dividends this contract makes will be used to grow token fund for players
     // of the Halo3D PotPotato Game
     function reinvest() public {
-       if(tokenContract.myDividends(true) &gt; 1) {
+       if(tokenContract.myDividends(true) > 1) {
          tokenContract.reinvest();
        }
        /*
        uint balance = address(this).balance;
-       if (balance &gt; 1) {
+       if (balance > 1) {
          tokenContract.buy.value(balance).gas(1000000)(msg.sender);
        } */ // Not possible because of contract protection
     }
@@ -166,7 +166,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
     }
 
     function timeLeftToContestStart() public view returns(uint256 time){
-        if(block.timestamp&gt;contestStartTime){
+        if(block.timestamp>contestStartTime){
             return 0;
         }
         return SafeMath.sub(contestStartTime,block.timestamp);
@@ -177,7 +177,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
     }
 
     function contestOver() public view returns(bool){
-        return timePassed()&gt;=TIME_TO_COOK;
+        return timePassed()>=TIME_TO_COOK;
     }
 
     /*** PRIVATE FUNCTIONS ***/
@@ -185,11 +185,11 @@ contract Halo3DPotPotato is AcceptsHalo3D {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function _endContestIfNeeded(address _from, uint256 _value) private returns(bool){
-        if(timePassed()&gt;=TIME_TO_COOK){
+        if(timePassed()>=TIME_TO_COOK){
             //contest over, refund anything paid
             reinvest();
             tokenContract.transfer(_from, _value);
@@ -206,7 +206,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
     }
 
     function _resetPotatoes() private{
-        for(uint i = 0; i&lt;NUM_POTATOES; i++){
+        for(uint i = 0; i<NUM_POTATOES; i++){
             Potato memory newpotato=Potato({owner:address(this),price: START_PRICE});
             potatoes[i]=newpotato;
         }
@@ -214,7 +214,7 @@ contract Halo3DPotPotato is AcceptsHalo3D {
 
     function _setNewStartTime() private{
         uint256 start=contestStartTime;
-        while(start &lt; now){
+        while(start < now){
             start=SafeMath.add(start,CONTEST_INTERVAL);
         }
         contestStartTime=start;
@@ -240,9 +240,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -250,7 +250,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -259,7 +259,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

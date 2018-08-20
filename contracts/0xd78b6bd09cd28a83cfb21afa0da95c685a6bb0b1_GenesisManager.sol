@@ -58,20 +58,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -79,7 +79,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,7 +136,7 @@ contract TokenTimelock {
     uint256 public releaseTime;
 
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -146,10 +146,10 @@ contract TokenTimelock {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
     }
@@ -177,8 +177,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -191,7 +191,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -207,7 +207,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -238,7 +238,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -253,9 +253,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -283,15 +283,15 @@ contract GenesisManager is Ownable {
 
     // Initial token supply issued
     uint256 public initialSupply;
-    // Crowd&#39;s portion of the initial token supply
+    // Crowd's portion of the initial token supply
     uint256 public crowdSupply;
-    // Company&#39;s portion of the initial token supply
+    // Company's portion of the initial token supply
     uint256 public companySupply;
-    // Team&#39;s portion of the initial token supply
+    // Team's portion of the initial token supply
     uint256 public teamSupply;
-    // Investors&#39; portion of the initial token supply
+    // Investors' portion of the initial token supply
     uint256 public investorsSupply;
-    // Community&#39;s portion of the initial token supply
+    // Community's portion of the initial token supply
     uint256 public communitySupply;
 
     // Token amount in grants for the team
@@ -305,10 +305,10 @@ contract GenesisManager is Ownable {
     // and timelock grants release locked tokens
     uint256 public grantsStartTimestamp;
 
-    // Map receiver addresses =&gt; contracts holding receivers&#39; vesting tokens
-    mapping (address =&gt; address) public vestingHolders;
-    // Map receiver addresses =&gt; contracts holding receivers&#39; time locked tokens
-    mapping (address =&gt; address) public timeLockedHolders;
+    // Map receiver addresses => contracts holding receivers' vesting tokens
+    mapping (address => address) public vestingHolders;
+    // Map receiver addresses => contracts holding receivers' time locked tokens
+    mapping (address => address) public timeLockedHolders;
 
     enum Stages {
         // Stage for setting the allocations of the initial token supply
@@ -414,7 +414,7 @@ contract GenesisManager is Ownable {
     {
         uint256 updatedGrantsAmount = teamGrantsAmount.add(_amount);
         // Amount of tokens included in team grants cannot exceed the team supply during genesis
-        require(updatedGrantsAmount &lt;= teamSupply);
+        require(updatedGrantsAmount <= teamSupply);
 
         teamGrantsAmount = updatedGrantsAmount;
 
@@ -440,7 +440,7 @@ contract GenesisManager is Ownable {
     {
         uint256 updatedGrantsAmount = investorsGrantsAmount.add(_amount);
         // Amount of tokens included in investor grants cannot exceed the investor supply during genesis
-        require(updatedGrantsAmount &lt;= investorsSupply);
+        require(updatedGrantsAmount <= investorsSupply);
 
         investorsGrantsAmount = updatedGrantsAmount;
 
@@ -465,7 +465,7 @@ contract GenesisManager is Ownable {
         // Receiver must not have already received a grant with a vesting schedule
         require(vestingHolders[_receiver] == address(0));
 
-        // Create a vesting holder contract to act as the holder of the grant&#39;s tokens
+        // Create a vesting holder contract to act as the holder of the grant's tokens
         // Note: the vesting grant is revokable
         TokenVesting holder = new TokenVesting(_receiver, grantsStartTimestamp, _timeToCliff, _vestingDuration, true);
         vestingHolders[_receiver] = holder;
@@ -492,14 +492,14 @@ contract GenesisManager is Ownable {
     {
         uint256 updatedGrantsAmount = communityGrantsAmount.add(_amount);
         // Amount of tokens included in investor grants cannot exceed the community supply during genesis
-        require(updatedGrantsAmount &lt;= communitySupply);
+        require(updatedGrantsAmount <= communitySupply);
 
         communityGrantsAmount = updatedGrantsAmount;
 
         // Receiver must not have already received a grant with timelocked tokens
         require(timeLockedHolders[_receiver] == address(0));
 
-        // Create a timelocked holder contract to act as the holder of the grant&#39;s tokens
+        // Create a timelocked holder contract to act as the holder of the grant's tokens
         TokenTimelock holder = new TokenTimelock(token, _receiver, grantsStartTimestamp);
         timeLockedHolders[_receiver] = holder;
 

@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -118,7 +118,7 @@ contract BurnableToken is BasicToken, OwnableToken {
 
 
   function burn(uint256 _value) public onlyOwner {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -130,13 +130,13 @@ contract BurnableToken is BasicToken, OwnableToken {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -184,7 +184,7 @@ contract gsToken is OwnableToken, BurnableToken, StandardToken {
 	uint8 public decimals;
 
 	bool public paused = true;
-	mapping(address =&gt; bool) public whitelist;
+	mapping(address => bool) public whitelist;
 
 	modifier whenNotPaused() {
 		require(!paused || whitelist[msg.sender]);
@@ -246,7 +246,7 @@ contract Crowdsale {
 
 
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     rate = _rate;
@@ -319,17 +319,17 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   constructor(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
@@ -341,7 +341,7 @@ contract TimedCrowdsale is Crowdsale {
   uint256 public closingTime;
 
   modifier onlyWhileOpen {
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -352,7 +352,7 @@ contract TimedCrowdsale is Crowdsale {
   }
 
   function hasClosed() public view returns (bool) {
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
@@ -416,7 +416,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -466,7 +466,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
 
 
   constructor(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
@@ -479,7 +479,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   function finalization() internal {
@@ -515,6 +515,6 @@ contract gsCrowdsale is CappedCrowdsale, RefundableCrowdsale {
     TimedCrowdsale(_openingTime, _closingTime)
     RefundableCrowdsale(_goal)
   {
-    require(_goal &lt;= _cap);
+    require(_goal <= _cap);
   }
 }

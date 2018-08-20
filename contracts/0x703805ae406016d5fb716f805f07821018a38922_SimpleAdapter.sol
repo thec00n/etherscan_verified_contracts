@@ -2,26 +2,26 @@ pragma solidity ^0.4.13;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -40,10 +40,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -74,7 +74,7 @@ interface AssetInterface {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -109,15 +109,15 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
 
     // DATA STRUCTURES
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 
     // PUBLIC METHODS
 
     /**
      * @notice Send `_value` tokens to `_to` from `msg.sender`
-     * @dev Transfers sender&#39;s tokens to a given address
+     * @dev Transfers sender's tokens to a given address
      * @dev Similar to transfer(address, uint, bytes), but without _data parameter
      * @param _to Address of token receiver
      * @param _value Number of tokens to transfer
@@ -135,12 +135,12 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
             codeLength := extcodesize(_to)
         }
  
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
-        // if (codeLength &gt; 0) {
+        // if (codeLength > 0) {
         //     ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         //     receiver.tokenFallback(msg.sender, _value, empty);
         // }
@@ -167,12 +167,12 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
             codeLength := extcodesize(_to)
         }
 
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
-        // if (codeLength &gt; 0) {
+        // if (codeLength > 0) {
         //     ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         //     receiver.tokenFallback(msg.sender, _value, _data);
         // }
@@ -195,9 +195,9 @@ contract Asset is DSMath, AssetInterface, ERC223Interface {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         // require(_to == msg.sender); // can only use transferFrom to send to self
 
         balances[_to] += _value;
@@ -442,7 +442,7 @@ contract SimpleMarket is EventfulMarket, DSMath {
 
     uint public last_offer_id;
 
-    mapping (uint =&gt; OfferInfo) public offers;
+    mapping (uint => OfferInfo) public offers;
 
     bool locked;
 
@@ -525,7 +525,7 @@ contract SimpleMarket is EventfulMarket, DSMath {
 
         // For backwards semantic compatibility.
         if (quantity == 0 || spend == 0 ||
-            quantity &gt; offer.pay_amt || spend &gt; offer.buy_amt)
+            quantity > offer.pay_amt || spend > offer.buy_amt)
         {
             return false;
         }
@@ -605,9 +605,9 @@ contract SimpleMarket is EventfulMarket, DSMath {
     {
         require(uint128(pay_amt) == pay_amt);
         require(uint128(buy_amt) == buy_amt);
-        require(pay_amt &gt; 0);
+        require(pay_amt > 0);
         require(pay_gem != Asset(0x0));
-        require(buy_amt &gt; 0);
+        require(buy_amt > 0);
         require(buy_gem != Asset(0x0));
         require(pay_gem != buy_gem);
 

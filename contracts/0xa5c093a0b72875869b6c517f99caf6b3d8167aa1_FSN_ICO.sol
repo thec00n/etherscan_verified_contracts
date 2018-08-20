@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /**
  * SmartEth.co
  * ERC20 Token and ICO smart contracts development, smart contracts audit, ICO websites.
- * <span class="__cf_email__" data-cfemail="8eede1e0faefedfacefde3effcfaebfae6a0ede1">[email&#160;protected]</span>
+ * <span class="__cf_email__" data-cfemail="8eede1e0faefedfacefde3effcfaebfae6a0ede1">[email protected]</span>
  */
 
 /**
@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -175,8 +175,8 @@ contract FSN_ICO is Pausable {
    * @dev Returns the rate of tokens per wei at the present time.
    */
   function getCurrentRate() public view returns (uint256) {
-    if (now &lt;= openingTime.add(31 days)) return rate.add(rate/2);   // Stage 1: Bonus 50%
-    if (now &gt; openingTime.add(31 days) &amp;&amp; now &lt;= openingTime.add(61 days)) return rate.add(rate*3/10);   // Stage 2: Bonus 30%
+    if (now <= openingTime.add(31 days)) return rate.add(rate/2);   // Stage 1: Bonus 50%
+    if (now > openingTime.add(31 days) && now <= openingTime.add(61 days)) return rate.add(rate*3/10);   // Stage 2: Bonus 30%
   }
 
   // -----------------------------------------
@@ -222,8 +222,8 @@ contract FSN_ICO is Pausable {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_beneficiary != address(0));
-    require(_weiAmount &gt;= minInvest);
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(_weiAmount >= minInvest);
+    require(now >= openingTime && now <= closingTime);
   }
 
   /**
@@ -266,7 +266,7 @@ contract FSN_ICO is Pausable {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**

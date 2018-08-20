@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -186,11 +186,11 @@ contract FundRequestPublicSeed is Pausable, Whitelistable {
   // max amount of ETH that is allowed to deposit when whitelist is active
   uint256 public maxPurchaseSize;
   
-  mapping(address =&gt; uint) public deposits;
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public deposits;
+  mapping(address => uint) public balances;
   address[] public investors;
   uint public investorCount;
-  mapping(address =&gt; bool) public allowed;
+  mapping(address => bool) public allowed;
   /**
    * event for token purchase logging
    * @param purchaser who paid for the tokens
@@ -201,8 +201,8 @@ contract FundRequestPublicSeed is Pausable, Whitelistable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint value, uint amount);
 
   function FundRequestPublicSeed(uint _rate, uint256 _maxCap, address _wallet) {
-    require(_rate &gt; 0);
-    require(_maxCap &gt; 0);
+    require(_rate > 0);
+    require(_maxCap > 0);
     require(_wallet != 0x0);
 
     rate = _rate;
@@ -220,7 +220,7 @@ contract FundRequestPublicSeed is Pausable, Whitelistable {
       require(validPurchaseSize(beneficiary));  
     }
     
-    bool existing = deposits[beneficiary] &gt; 0;  
+    bool existing = deposits[beneficiary] > 0;  
     uint weiAmount = msg.value;
     uint updatedWeiRaised = weiRaised.add(weiAmount);
     // calculate token amount to be created
@@ -249,10 +249,10 @@ contract FundRequestPublicSeed is Pausable, Whitelistable {
   }
   // @return true if the amount is lower then 20ETH
   function validPurchaseSize(address beneficiary) internal constant returns (bool) {
-    return msg.value.add(deposits[beneficiary]) &lt;= maxPurchaseSize;
+    return msg.value.add(deposits[beneficiary]) <= maxPurchaseSize;
   }
   function maxCapNotReached() internal constant returns (bool) {
-    return SafeMath.add(weiRaised, msg.value) &lt;= weiMaxCap;
+    return SafeMath.add(weiRaised, msg.value) <= weiMaxCap;
   }
   function balanceOf(address _owner) constant returns (uint balance) {
     return balances[_owner];

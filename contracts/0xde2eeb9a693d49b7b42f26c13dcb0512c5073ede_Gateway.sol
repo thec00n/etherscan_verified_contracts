@@ -66,7 +66,7 @@ contract Gateway is Owned {
   bool public gatewayOpened = false;
 
     
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   
   event TargetWalletUpdated(address _newWallet);
@@ -97,7 +97,7 @@ contract Gateway is Owned {
 
   function addToWhitelistMultiple(address[] _participants) external{
     require(msg.sender == whitelistWallet || msg.sender == owner);
-    for (uint i = 0; i &lt; _participants.length; i++) {
+    for (uint i = 0; i < _participants.length; i++) {
       whitelist[_participants[i]] = true;
       emit WhitelistUpdated(_participants[i], true);
     }
@@ -113,7 +113,7 @@ contract Gateway is Owned {
 
   function removeFromWhitelistMultiple(address[] _participants) external{
     require(msg.sender == whitelistWallet || msg.sender == owner);
-    for (uint i = 0; i &lt; _participants.length; i++) {
+    for (uint i = 0; i < _participants.length; i++) {
       whitelist[_participants[i]] = false;
       emit WhitelistUpdated(_participants[i], false);
     }
@@ -155,7 +155,7 @@ contract Gateway is Owned {
     require(whitelist[msg.sender]);
 
 	  // sends Eth forward; covers edge case of mining/selfdestructing Eth to the contract address
-	  // note: address uses a different &quot;transfer&quot; than ERC20.
+	  // note: address uses a different "transfer" than ERC20.
     address(targetWallet).transfer(address(this).balance);
 
     // log event

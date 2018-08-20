@@ -15,8 +15,8 @@ contract TokenERC20 is token {
     uint8 public decimals = 18; // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // Notifies clients about token transfers
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -50,9 +50,9 @@ contract TokenERC20 is token {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -86,7 +86,7 @@ contract TokenERC20 is token {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -159,11 +159,11 @@ contract Presale is owned {
     uint public endBlock;
 
     uint256 defaultAuthorizedETH;
-    mapping (address =&gt; uint256) public authorizedETH;
+    mapping (address => uint256) public authorizedETH;
 
     uint256 public distributionRealized;
-    mapping (address =&gt; uint256) public realizedETH;
-    mapping (address =&gt; uint256) public realizedTokenBalance;
+    mapping (address => uint256) public realizedETH;
+    mapping (address => uint256) public realizedTokenBalance;
 
     /**
      * Constructor function
@@ -204,19 +204,19 @@ contract Presale is owned {
     function () payable public {
         if (msg.sender != owner)
         {
-            require(startBlock &lt;= block.number &amp;&amp; block.number &lt;= endBlock);
+            require(startBlock <= block.number && block.number <= endBlock);
 
             uint256 senderAuthorizedETH = authorizedETH[msg.sender];
-            uint256 effectiveAuthorizedETH = (senderAuthorizedETH &gt; 0)? senderAuthorizedETH: defaultAuthorizedETH;
-            require(msg.value + realizedETH[msg.sender] &lt;= effectiveAuthorizedETH);
+            uint256 effectiveAuthorizedETH = (senderAuthorizedETH > 0)? senderAuthorizedETH: defaultAuthorizedETH;
+            require(msg.value + realizedETH[msg.sender] <= effectiveAuthorizedETH);
 
             uint256 amountETH = msg.value;
             uint256 amountToken = amountETH / priceOfToken * factor;
             distributionRealized += amountToken;
             realizedETH[msg.sender] += amountETH;
-            require(distributionRealized &lt;= distributionSupply);
+            require(distributionRealized <= distributionSupply);
 
-            if (senderAuthorizedETH &gt; 0)
+            if (senderAuthorizedETH > 0)
             {
                 myToken.transfer(msg.sender, amountToken);
             }
@@ -229,7 +229,7 @@ contract Presale is owned {
 
     function transferBalance(address _account) onlyOperations public {
         uint256 amountToken = realizedTokenBalance[_account];
-	if (amountToken &gt; 0)
+	if (amountToken > 0)
         {
             realizedTokenBalance[_account] = 0;
             myToken.transfer(_account, amountToken);
@@ -245,13 +245,13 @@ contract Presale is owned {
     }
 
     function setBlocks(uint _startBlock, uint _endBlock) onlyOwner public {
-        require (_endBlock &gt; _startBlock);
+        require (_endBlock > _startBlock);
         startBlock = _startBlock;
         endBlock = _endBlock;
     }
 
     function setPrice(uint256 _priceOfToken) onlyOwner public {
-        require (_priceOfToken &gt; 0);
+        require (_priceOfToken > 0);
         priceOfToken = _priceOfToken;
     }
 }

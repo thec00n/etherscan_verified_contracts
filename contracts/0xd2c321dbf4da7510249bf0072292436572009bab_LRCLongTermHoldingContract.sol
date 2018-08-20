@@ -2,14 +2,14 @@
 
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,19 +54,19 @@ library SafeMath {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -121,7 +121,7 @@ contract Token {
 
 
 /// @title Long-Team Holding Incentive Program
-/// @author Daniel Wang - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680c0906010d0428040707181a01060f46071a0f">[email&#160;protected]</a>&gt;, Kongliang Zhong - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="573c3839303b3e363930173b383827253e393079382530">[email&#160;protected]</a>&gt;.
+/// @author Daniel Wang - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680c0906010d0428040707181a01060f46071a0f">[email protected]</a>>, Kongliang Zhong - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="573c3839303b3e363930173b383827253e393079382530">[email protected]</a>>.
 /// For more information, please visit https://loopring.org.
 contract LRCLongTermHoldingContract {
     using SafeMath for uint;
@@ -131,7 +131,7 @@ contract LRCLongTermHoldingContract {
     uint public constant DEPOSIT_PERIOD             = 60 days; // = 2 months
 
     // 18 months after deposit, user can withdrawal all or part of his/her LRC with bonus.
-    // The bonus is this contract&#39;s initial LRC balance.
+    // The bonus is this contract's initial LRC balance.
     uint public constant WITHDRAWAL_DELAY           = 540 days; // = 1 year and 6 months
 
     // This implies a 0.001ETH fee per 10000 LRC partial withdrawal;
@@ -150,7 +150,7 @@ contract LRCLongTermHoldingContract {
         uint timestamp;
     }
 
-    mapping (address =&gt; Record) records;
+    mapping (address => Record) records;
     
     /* 
      * EVENTS
@@ -193,11 +193,11 @@ contract LRCLongTermHoldingContract {
     }
 
     function () payable {
-        require(depositStartTime &gt; 0);
+        require(depositStartTime > 0);
 
-        if (now &gt;= depositStartTime &amp;&amp; now &lt;= depositStopTime) {
+        if (now >= depositStartTime && now <= depositStopTime) {
             depositLRC();
-        } else if (now &gt; depositStopTime){
+        } else if (now > depositStopTime){
             withdrawLRC();
         } else {
             revert();
@@ -211,16 +211,16 @@ contract LRCLongTermHoldingContract {
 
     /// @dev Deposit LRC.
     function depositLRC() payable {
-        require(depositStartTime &gt; 0);
+        require(depositStartTime > 0);
         require(msg.value == 0);
-        require(now &gt;= depositStartTime &amp;&amp; now &lt;= depositStopTime);
+        require(now >= depositStartTime && now <= depositStopTime);
         
         var lrcToken = Token(lrcTokenAddress);
         uint lrcAmount = lrcToken
             .balanceOf(msg.sender)
             .min256(lrcToken.allowance(msg.sender, address(this)));
 
-        require(lrcAmount &gt; 0);
+        require(lrcAmount > 0);
 
         var record = records[msg.sender];
         record.lrcAmount += lrcAmount;
@@ -235,15 +235,15 @@ contract LRCLongTermHoldingContract {
 
     /// @dev Withdrawal LRC.
     function withdrawLRC() payable {
-        require(depositStartTime &gt; 0);
-        require(lrcDeposited &gt; 0);
+        require(depositStartTime > 0);
+        require(lrcDeposited > 0);
 
         var record = records[msg.sender];
-        require(now &gt;= record.timestamp + WITHDRAWAL_DELAY);
-        require(record.lrcAmount &gt; 0);
+        require(now >= record.timestamp + WITHDRAWAL_DELAY);
+        require(record.lrcAmount > 0);
 
         uint lrcWithdrawalBase = record.lrcAmount;
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             lrcWithdrawalBase = lrcWithdrawalBase
                 .min256(msg.value.mul(WITHDRAWAL_SCALE));
         }
@@ -270,8 +270,8 @@ contract LRCLongTermHoldingContract {
     }
 
     function internalCalculateBonus(uint _totalBonusRemaining, uint _lrcDeposited, uint _lrcWithdrawalBase) internal constant returns (uint) {
-        require(_lrcDeposited &gt; 0);
-        require(_totalBonusRemaining &gt;= 0);
+        require(_lrcDeposited > 0);
+        require(_totalBonusRemaining >= 0);
 
         // The bonus is non-linear function to incentivize later withdrawal.
         // bonus = _totalBonusRemaining * power(_lrcWithdrawalBase/_lrcDeposited, 1.0625)
@@ -286,7 +286,7 @@ contract LRCLongTermHoldingContract {
             uint z = (y + (x / y)) / 2;
             uint w = (z + (x / z)) / 2;
             if (w == y) {
-                if (w &lt; y) return w;
+                if (w < y) return w;
                 else return y;
             }
             y = w;

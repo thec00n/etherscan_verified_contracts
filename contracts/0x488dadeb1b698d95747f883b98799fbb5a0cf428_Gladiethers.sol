@@ -5,10 +5,10 @@ contract Gladiethers
     address public m_Owner;
     address public partner;
 
-    mapping (address =&gt; uint) public gladiatorToPower; // gladiator power
-    mapping (address =&gt; uint) public gladiatorToCooldown;
-    mapping(address =&gt; uint) public gladiatorToQueuePosition;
-    mapping(address =&gt; bool)  public trustedContracts;
+    mapping (address => uint) public gladiatorToPower; // gladiator power
+    mapping (address => uint) public gladiatorToCooldown;
+    mapping(address => uint) public gladiatorToQueuePosition;
+    mapping(address => bool)  public trustedContracts;
     uint public m_OwnerFees = 0;
     uint public initGameAt = 1529532000;
     address public kingGladiator;
@@ -45,9 +45,9 @@ contract Gladiethers
 
     function joinArena() public payable returns (bool){
 
-        require( msg.value &gt;= 10 finney &amp;&amp; getGladiatorCooldown(msg.sender) != 9999999999999);
+        require( msg.value >= 10 finney && getGladiatorCooldown(msg.sender) != 9999999999999);
 
-        if(queue.length &gt; gladiatorToQueuePosition[msg.sender]){
+        if(queue.length > gladiatorToQueuePosition[msg.sender]){
 
             if(queue[gladiatorToQueuePosition[msg.sender]] == msg.sender){
                 gladiatorToPower[msg.sender] += msg.value;
@@ -70,7 +70,7 @@ contract Gladiethers
     }
     
     function checkKingFounder(address gladiator) internal{
-        if(gladiatorToPower[gladiator] &gt; gladiatorToPower[kingGladiatorFounder] &amp;&amp; now &lt; initGameAt){
+        if(gladiatorToPower[gladiator] > gladiatorToPower[kingGladiatorFounder] && now < initGameAt){
             kingGladiatorFounder = gladiator;
         }
     }
@@ -78,7 +78,7 @@ contract Gladiethers
 
     function remove(address gladiator) private returns(bool){
         
-        if(queue.length &gt; gladiatorToQueuePosition[gladiator]){
+        if(queue.length > gladiatorToQueuePosition[gladiator]){
 
             if(queue[gladiatorToQueuePosition[gladiator]] == gladiator){ // is on the line ?
             
@@ -135,7 +135,7 @@ contract Gladiethers
             uint randomNumber = uint(sha3(_result)) % 1000;
             address gladiator2 = queue[indexgladiator2];
             
-            require(gladiatorToPower[gladiator1] &gt;= 10 finney &amp;&amp; gladiator1 != gladiator2);
+            require(gladiatorToPower[gladiator1] >= 10 finney && gladiator1 != gladiator2);
     
             
             uint g1chance = gladiatorToPower[gladiator1];
@@ -144,7 +144,7 @@ contract Gladiethers
     
             g1chance = (g1chance*1000)/fightPower;
     
-            if(g1chance &lt;= 958){
+            if(g1chance <= 958){
                 g1chance = SafeMath.add(g1chance,40);
             }else{
                 g1chance = 998;
@@ -153,7 +153,7 @@ contract Gladiethers
             fightEvent( gladiator1, gladiator2,randomNumber,fightPower,gladiatorToPower[gladiator1]);
             uint devFee;
     
-            if(randomNumber &lt;= g1chance ){ // Wins the Attacker
+            if(randomNumber <= g1chance ){ // Wins the Attacker
                 devFee = SafeMath.div(SafeMath.mul(gladiatorToPower[gladiator2],5),100);
     
                 gladiatorToPower[gladiator1] =  SafeMath.add( gladiatorToPower[gladiator1], SafeMath.sub(gladiatorToPower[gladiator2],devFee) );
@@ -162,7 +162,7 @@ contract Gladiethers
                 gladiatorToPower[gladiator2] = 0;
                 gladiatorToCooldown[gladiator1] = now + 1 days; // reset atacker cooldown
     
-                if(gladiatorToPower[gladiator1] &gt; gladiatorToPower[kingGladiator] ){ // check if is the biggest guy in the arena
+                if(gladiatorToPower[gladiator1] > gladiatorToPower[kingGladiator] ){ // check if is the biggest guy in the arena
                     kingGladiator = gladiator1;
                 }
     
@@ -174,7 +174,7 @@ contract Gladiethers
                 gladiatorToPower[gladiator1] = 0;
                 gladiatorToCooldown[gladiator1] = 0;
                 
-                if(gladiatorToPower[gladiator2] &gt; gladiatorToPower[kingGladiator] ){
+                if(gladiatorToPower[gladiator2] > gladiatorToPower[kingGladiator] ){
                     kingGladiator = gladiator2;
                 }
 
@@ -215,12 +215,12 @@ contract Gladiethers
             withdrawalAmount = amount;
 
             // cooldown has been reached and the ammout i possible
-            if(gladiatorToCooldown[msg.sender] &lt; now &amp;&amp; gladiatorToPower[withdrawalAccount] &gt;= withdrawalAmount){
+            if(gladiatorToCooldown[msg.sender] < now && gladiatorToPower[withdrawalAccount] >= withdrawalAmount){
 
                 gladiatorToPower[withdrawalAccount] = SafeMath.sub(gladiatorToPower[withdrawalAccount],withdrawalAmount);
 
                 // gladiator have to be removed from areana if the power is less then 0.01 eth
-                if(gladiatorToPower[withdrawalAccount] &lt; 10 finney){
+                if(gladiatorToPower[withdrawalAccount] < 10 finney){
                     remove(msg.sender);
                 }
 
@@ -260,9 +260,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -270,7 +270,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -279,7 +279,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

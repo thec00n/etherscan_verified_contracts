@@ -32,7 +32,7 @@ contract helper {
         constant returns(bytes32 sha256_hash) {
         if (rounds == 0) rounds = 1;
         sha256_hash = sha256(key);  
-        for (uint i = 0; i &lt; rounds-1; i++) {
+        for (uint i = 0; i < rounds-1; i++) {
             sha256_hash = sha256(sha256_hash);  
         }
     }
@@ -41,7 +41,7 @@ contract helper {
         constant returns(bytes32 sha3_hash) {
         if (rounds == 0) rounds = 1;
         sha3_hash = sha3(key);  
-        for (uint i = 0; i &lt; rounds-1; i++) {
+        for (uint i = 0; i < rounds-1; i++) {
             sha3_hash = sha3(sha3_hash);  
         }
     }
@@ -50,7 +50,7 @@ contract helper {
         constant returns(bytes32 r160_hash) {
         if (rounds == 0) rounds = 1;
         r160_hash = sha3(key);  
-        for (uint i = 0; i &lt; rounds-1; i++) {
+        for (uint i = 0; i < rounds-1; i++) {
             r160_hash = ripemd160(r160_hash);  
         }
     }
@@ -85,7 +85,7 @@ contract Locksmith is owned, logger, helper {
     uint public m_proofs;
     bool public didProve;
     bytes32 public lock;
-    string public protocol = &quot;set by strong10, verify by strong7&quot;;
+    string public protocol = "set by strong10, verify by strong7";
     
     struct proof {
         address prover;
@@ -94,7 +94,7 @@ contract Locksmith is owned, logger, helper {
         bytes32 lock;
     }
     
-    mapping(uint =&gt; proof) public proofs;
+    mapping(uint => proof) public proofs;
     
     /* Constructor */
     function Locksmith() {
@@ -102,18 +102,18 @@ contract Locksmith is owned, logger, helper {
     }
     
     function setLock(bytes32 _lock, string _protocol) onlyOwner {
-        require(_lock != 0x0 &amp;&amp; lock != _lock);
+        require(_lock != 0x0 && lock != _lock);
         lock = _lock;
         didProve = false;
-        if (bytes(_protocol).length &gt; 0) protocol = _protocol;
+        if (bytes(_protocol).length > 0) protocol = _protocol;
         logEvent();
     }
     
     function unlock(string key, address receiver, bytes32 newLock, string _protocol) {
         bytes32 k = sha3(sha3(key),msg.sender);
-        if (uint(receiver) &gt; 0) k = sha3(k,receiver);
+        if (uint(receiver) > 0) k = sha3(k,receiver);
         if (k == lock) {
-            if (uint(receiver) &gt; 0) owner = receiver;
+            if (uint(receiver) > 0) owner = receiver;
             else owner = msg.sender;
             
             Unlock(msg.sender, key, lock);
@@ -125,9 +125,9 @@ contract Locksmith is owned, logger, helper {
             m_proofs++;
             lock = newLock;
             didProve = (uint(newLock) == 0);
-            if (bytes(_protocol).length &gt; 0) 
+            if (bytes(_protocol).length > 0) 
                 protocol = _protocol;
-            if (this.balance &gt; 0)
+            if (this.balance > 0)
                 require(owner.send(this.balance));
         }
         logEvent();
@@ -135,7 +135,7 @@ contract Locksmith is owned, logger, helper {
     
     function sendTo(address _to, uint value) onlyOwner {
         require(didProve);
-        require(this.balance &gt;= value &amp;&amp; value &gt; 0);
+        require(this.balance >= value && value > 0);
         require(_to.send(value));
         logEvent();
     }
@@ -150,7 +150,7 @@ contract Locksmith is owned, logger, helper {
     }
     
     function() payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         Deposit(msg.sender, msg.value);
     }
     

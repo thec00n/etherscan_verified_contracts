@@ -22,7 +22,7 @@ contract microICO is Ownable {
     uint public end_date = 1532254525;
     address public owner = 0xF08FE88Ed3120e19546EeEE1ebe5E7b2FF66b5e7;
     address[] public holders;
-    mapping (address =&gt; uint) public holder_balance;
+    mapping (address => uint) public holder_balance;
     
     function myICO() public {
         owner = msg.sender;
@@ -31,20 +31,20 @@ contract microICO is Ownable {
     }
     
     function sendFunds(address _addr) public onlyOwner {
-        require (address(this).balance &gt;= soft_cap); // getting $ETH only if soft_cap reached
+        require (address(this).balance >= soft_cap); // getting $ETH only if soft_cap reached
         _addr.transfer(address(this).balance);
     }
 
     function withdraw() public {
         uint amount;
-        require(now &gt; end_date);// holders can take their money back 30 days later
+        require(now > end_date);// holders can take their money back 30 days later
         amount = holder_balance[msg.sender];
         holder_balance[msg.sender] = 0;
         msg.sender.transfer(amount);
     }
     
     function () public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         holders.push(msg.sender);
         holder_balance[msg.sender] += msg.value;
     }

@@ -2,11 +2,11 @@ pragma solidity ^0.4.8;
 contract CryptoPunks {
 
     // You can use this hash to verify the image file containing all the punks
-    string public imageHash = &quot;ac39af4793119ee46bbff351d8cb6b5f23da60222126add4268e261199a2921b&quot;;
+    string public imageHash = "ac39af4793119ee46bbff351d8cb6b5f23da60222126add4268e261199a2921b";
 
     address owner;
 
-    string public standard = &#39;CryptoPunks&#39;;
+    string public standard = 'CryptoPunks';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -19,11 +19,11 @@ contract CryptoPunks {
     uint public numberOfPunksToReserve;
     uint public numberOfPunksReserved = 0;
 
-    //mapping (address =&gt; uint) public addressToPunkIndex;
-    mapping (uint =&gt; address) public punkIndexToAddress;
+    //mapping (address => uint) public addressToPunkIndex;
+    mapping (uint => address) public punkIndexToAddress;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     struct Offer {
         bool isForSale;
@@ -34,9 +34,9 @@ contract CryptoPunks {
     }
 
     // A record of punks that are offered for sale at a specific minimum value, and perhaps to a specific person
-    mapping (uint =&gt; Offer) public punksOfferedForSale;
+    mapping (uint => Offer) public punksOfferedForSale;
 
-    mapping (address =&gt; uint) public pendingWithdrawals;
+    mapping (address => uint) public pendingWithdrawals;
 
     event Assign(address indexed to, uint256 punkIndex);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -52,16 +52,16 @@ contract CryptoPunks {
         totalSupply = 10000;                        // Update total supply
         punksRemainingToAssign = totalSupply;
         numberOfPunksToReserve = 1000;
-        name = &quot;CRYPTOPUNKS&quot;;                                   // Set the name for display purposes
-        symbol = &quot;Ͼ&quot;;                               // Set the symbol for display purposes
+        name = "CRYPTOPUNKS";                                   // Set the name for display purposes
+        symbol = "Ͼ";                               // Set the symbol for display purposes
         decimals = 0;                                       // Amount of decimals for display purposes
     }
 
     function reservePunksForOwner(uint maxForThisRun) {
         if (msg.sender != owner) throw;
-        if (numberOfPunksReserved &gt;= numberOfPunksToReserve) throw;
+        if (numberOfPunksReserved >= numberOfPunksToReserve) throw;
         uint numberPunksReservedThisRun = 0;
-        while (numberOfPunksReserved &lt; numberOfPunksToReserve &amp;&amp; numberPunksReservedThisRun &lt; maxForThisRun) {
+        while (numberOfPunksReserved < numberOfPunksToReserve && numberPunksReservedThisRun < maxForThisRun) {
             punkIndexToAddress[nextPunkIndexToAssign] = msg.sender;
             Assign(msg.sender, nextPunkIndexToAssign);
             numberPunksReservedThisRun++;
@@ -112,8 +112,8 @@ contract CryptoPunks {
     function buyPunk(uint punkIndex) payable {
         Offer offer = punksOfferedForSale[punkIndex];
         if (!offer.isForSale) throw;                // punk not actually for sale
-        if (offer.onlySellTo != 0x0 &amp;&amp; offer.onlySellTo != msg.sender) throw;  // punk not supposed to be sold to this user
-        if (msg.value &lt; offer.minValue) throw;      // Didn&#39;t send enough ETH
+        if (offer.onlySellTo != 0x0 && offer.onlySellTo != msg.sender) throw;  // punk not supposed to be sold to this user
+        if (msg.value < offer.minValue) throw;      // Didn't send enough ETH
         if (offer.seller != punkIndexToAddress[punkIndex]) throw; // Seller no longer owner of punk
 
         punkIndexToAddress[punkIndex] = msg.sender;

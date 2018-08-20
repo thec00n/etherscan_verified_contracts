@@ -8,37 +8,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -148,7 +148,7 @@ contract StandardToken is ERC20Token ,Controlled{
 
         if(!transfersEnabled) throw;
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -161,7 +161,7 @@ contract StandardToken is ERC20Token ,Controlled{
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
         if(!transfersEnabled) throw;
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -202,7 +202,7 @@ contract StandardToken is ERC20Token ,Controlled{
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply;
-        if (curTotalSupply + _amount &lt; curTotalSupply) throw; // Check for overflow
+        if (curTotalSupply + _amount < curTotalSupply) throw; // Check for overflow
         totalSupply=curTotalSupply + _amount;
 
         balances[_owner]+=_amount;
@@ -210,16 +210,16 @@ contract StandardToken is ERC20Token ,Controlled{
         Transfer(0, _owner, _amount);
         return true;
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MiniMeTokenSimple is StandardToken {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     // `parentToken` is the Token address that was cloned to produce this token;
@@ -328,9 +328,9 @@ contract PFCContribution is Owned {
     }
 
     modifier contributionOpen() {
-        require(time() &gt;= startTime &amp;&amp;
-        time() &lt;= endTime &amp;&amp;
-        finalizedBlock == 0 &amp;&amp;
+        require(time() >= startTime &&
+        time() <= endTime &&
+        finalizedBlock == 0 &&
         address(PFC) != 0x0);
         _;
     }
@@ -372,7 +372,7 @@ contract PFCContribution is Owned {
         startTime = _startTime;
         endTime = _endTime;
 
-        assert(startTime &lt; endTime);
+        assert(startTime < endTime);
 
         require(_pfcController != 0x0);
         pfcController = _pfcController;
@@ -380,7 +380,7 @@ contract PFCContribution is Owned {
         require(_destEthFoundation != 0x0);
         destEthFoundation = _destEthFoundation;
 
-        require(_maxEth &gt;1 ether);
+        require(_maxEth >1 ether);
         MaxEth=_maxEth;
     }
 
@@ -388,7 +388,7 @@ contract PFCContribution is Owned {
     ///  getting PFCs.
     function () public payable notPaused {
 
-        if(totalContributedETH&gt;=MaxEth) throw;
+        if(totalContributedETH>=MaxEth) throw;
         proxyPayment(msg.sender);
     }
 
@@ -404,18 +404,18 @@ contract PFCContribution is Owned {
     function proxyPayment(address _account) public payable initialized contributionOpen returns (bool) {
         require(_account != 0x0);
 
-        require( msg.value &gt;= MIN_FUND );
+        require( msg.value >= MIN_FUND );
 
         uint256 tokenSaling;
         uint256 rValue;
         uint256 t_totalContributedEth=totalContributedETH+msg.value;
         uint256 reFund=0;
-        if(t_totalContributedEth&gt;MaxEth) {
+        if(t_totalContributedEth>MaxEth) {
             reFund=t_totalContributedEth-MaxEth;
         }
         rValue=msg.value-reFund;
         tokenSaling=rValue.mul(ratio);
-        if(reFund&gt;0)
+        if(reFund>0)
         msg.sender.transfer(reFund);
         assert(PFC.generateTokens(_account,tokenSaling));
         destEthFoundation.transfer(rValue);
@@ -446,7 +446,7 @@ contract PFCContribution is Owned {
     }
 
     function finalize() public onlyOwner initialized {
-        require(time() &gt;= startTime);
+        require(time() >= startTime);
 
         require(finalizedBlock == 0);
 

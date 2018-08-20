@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -193,7 +193,7 @@ contract MintDRCT is OwnerContract, Autonomy {
 
     uint8[] internal mainPercentages = [30, 40, 15, 15];
 
-    mapping (address =&gt; uint) internal accountCaps;
+    mapping (address => uint) internal accountCaps;
 
     modifier afterCapInit() {
         require(capInitialized);
@@ -205,7 +205,7 @@ contract MintDRCT is OwnerContract, Autonomy {
      *
      */
     function initialCaps() onlyOwner public returns (bool) {
-        for (uint i = 0; i &lt; mainAccounts.length; i = i.add(1)) {
+        for (uint i = 0; i < mainAccounts.length; i = i.add(1)) {
             accountCaps[mainAccounts[i]] = TOTAL_SUPPLY_CAP * mainPercentages[i] / 100;
         }
 
@@ -221,10 +221,10 @@ contract MintDRCT is OwnerContract, Autonomy {
      * @param _value uint256 the amounts of tokens to be minted
      */
     function mintUnderCap(uint _ind, uint256 _value) onlyOwner afterCapInit public returns (bool) {
-        require(_ind &lt; mainAccounts.length);
+        require(_ind < mainAccounts.length);
         address accountAddr = mainAccounts[_ind];
         uint256 accountBalance = MintableToken(ownedContract).balanceOf(accountAddr);
-        require(_value &lt;= accountCaps[accountAddr].sub(accountBalance));
+        require(_value <= accountCaps[accountAddr].sub(accountBalance));
 
         return MintableToken(ownedContract).mint(accountAddr, _value);
     }
@@ -238,8 +238,8 @@ contract MintDRCT is OwnerContract, Autonomy {
         require(_values.length == mainAccounts.length);
 
         bool res = true;
-        for(uint i = 0; i &lt; _values.length; i = i.add(1)) {
-            res = mintUnderCap(i, _values[i]) &amp;&amp; res;
+        for(uint i = 0; i < _values.length; i = i.add(1)) {
+            res = mintUnderCap(i, _values[i]) && res;
         }
 
         return res;
@@ -251,9 +251,9 @@ contract MintDRCT is OwnerContract, Autonomy {
      */
     function mintUptoCap() onlyOwner afterCapInit public returns (bool) {
         bool res = true;
-        for(uint i = 0; i &lt; mainAccounts.length; i = i.add(1)) {
+        for(uint i = 0; i < mainAccounts.length; i = i.add(1)) {
             require(MintableToken(ownedContract).balanceOf(mainAccounts[i]) == 0);
-            res = MintableToken(ownedContract).mint(mainAccounts[i], accountCaps[mainAccounts[i]]) &amp;&amp; res;
+            res = MintableToken(ownedContract).mint(mainAccounts[i], accountCaps[mainAccounts[i]]) && res;
         }
 
         require(res);
@@ -267,8 +267,8 @@ contract MintDRCT is OwnerContract, Autonomy {
      * @param _value uint256 the amounts of tokens to be added to capacity limitation
      */
     function raiseCap(uint _ind, uint256 _value) onlyCongress afterCapInit public returns (bool) {
-        require(_ind &lt; mainAccounts.length);
-        require(_value &gt; 0);
+        require(_ind < mainAccounts.length);
+        require(_value > 0);
 
         accountCaps[mainAccounts[_ind]] = accountCaps[mainAccounts[_ind]].add(_value);
         return true;
@@ -280,7 +280,7 @@ contract MintDRCT is OwnerContract, Autonomy {
      * @param _ind the index of the main account
      */
     function getMainAccount(uint _ind) public view returns (address) {
-        require(_ind &lt; mainAccounts.length);
+        require(_ind < mainAccounts.length);
         return mainAccounts[_ind];
     }
 
@@ -290,7 +290,7 @@ contract MintDRCT is OwnerContract, Autonomy {
      * @param _ind the index of the main account
      */
     function getAccountCap(uint _ind) public view returns (uint256) {
-        require(_ind &lt; mainAccounts.length);
+        require(_ind < mainAccounts.length);
         return accountCaps[mainAccounts[_ind]];
     }
 
@@ -301,7 +301,7 @@ contract MintDRCT is OwnerContract, Autonomy {
      * @param _newAddr address the new main account address
      */
     function setMainAccount(uint _ind, address _newAddr) onlyOwner public returns (bool) {
-        require(_ind &lt; mainAccounts.length);
+        require(_ind < mainAccounts.length);
         require(_newAddr != address(0));
 
         mainAccounts[_ind] = _newAddr;
@@ -319,7 +319,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -337,7 +337,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -366,7 +366,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -377,8 +377,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -392,7 +392,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -441,7 +441,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

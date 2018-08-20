@@ -59,11 +59,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -73,8 +73,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -97,13 +97,13 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
 
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract BitProCoinX is StandardToken, owned {
 
 
@@ -113,13 +113,13 @@ contract BitProCoinX is StandardToken, owned {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H1.0&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H1.0';       //human 0.1 standard. Just an arbitrary versioning scheme.
     uint256 public sellPrice; //in wei
     uint256 public buyPrice;  //in wei
     uint256 remaining;
@@ -131,21 +131,21 @@ contract BitProCoinX is StandardToken, owned {
     bytes32 email;
     bytes32 message;
   }
-  mapping(uint =&gt; Investor) public investors;
+  mapping(uint => Investor) public investors;
 
 //
 // CHANGE THESE VALUES FOR YOUR TOKEN
 //
 
-//make sure this function name matches the contract name above. So if you&#39;re token is called TutorialToken, make sure the //contract name above is also TutorialToken instead of ERC20Token
+//make sure this function name matches the contract name above. So if you're token is called TutorialToken, make sure the //contract name above is also TutorialToken instead of ERC20Token
 
     function BitProCoinX(
         ) public{
         balances[msg.sender] = 1000000000000;               // Give the creator all initial tokens (100000 for example)
         totalSupply = 1000000000000;                        // Update total supply (100000 for example)
-        name = &quot;BitProCoinX&quot;;                                   // Set the name for display purposes
+        name = "BitProCoinX";                                   // Set the name for display purposes
         decimals = 4;                            // Amount of decimals for display purposes
-        symbol = &quot;BPCVX&quot;;                               // Set the symbol for display purposes
+        symbol = "BPCVX";                               // Set the symbol for display purposes
         sellPrice = 7668200000;                         // price of subtoken , i.e. main token price need to be divided by (10 ** uint256(decimals)), here 1000
         buyPrice =  7668200000;                         // price of subtoken , i.e. main token price need to be divided by (10 ** uint256(decimals)), here 1000
         remaining = 0;
@@ -153,11 +153,11 @@ contract BitProCoinX is StandardToken, owned {
     }
      function() public payable{
          //if(msg.sender!=owner)
-         require(msg.value &gt; 0);
+         require(msg.value > 0);
         uint  amount = div(msg.value, buyPrice);                    // calculates the amount
-        require(balances[this] &gt;= amount);               // checks if it has enough to sell
-        balances[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balances[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balances[this] >= amount);               // checks if it has enough to sell
+        balances[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balances[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         //investors[numInvestors] = Investor(msg.value, msg.sender);
         numInvestors++;
@@ -168,10 +168,10 @@ contract BitProCoinX is StandardToken, owned {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 
@@ -180,11 +180,11 @@ contract BitProCoinX is StandardToken, owned {
         buyPrice =  div(newBuyPriceInwei , (10 ** uint256(decimals)));
     }
     function buy() payable returns (uint amount){
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         amount = div(msg.value, buyPrice);                    // calculates the amount
-        require(balances[this] &gt;= amount);               // checks if it has enough to sell
-        balances[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balances[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balances[this] >= amount);               // checks if it has enough to sell
+        balances[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balances[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         //investors[numInvestors] = Investor(msg.value, msg.sender);
         numInvestors++;
@@ -196,17 +196,17 @@ contract BitProCoinX is StandardToken, owned {
     }
 
     function sell(uint amount) returns (uint revenue){
-        require(balances[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balances[this] += amount;                        // adds the amount to owner&#39;s balance
-        balances[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balances[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balances[this] += amount;                        // adds the amount to owner's balance
+        balances[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        require(msg.sender.send(revenue));                // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        require(msg.sender.send(revenue));                // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }
 
     function withdraw(uint _amountInwei) onlyOwner{
-        require(this.balance &gt; _amountInwei);
+        require(this.balance > _amountInwei);
       require(msg.sender == owner);
       owner.send(_amountInwei);
      
@@ -222,20 +222,20 @@ contract BitProCoinX is StandardToken, owned {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
     

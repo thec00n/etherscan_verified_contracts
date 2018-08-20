@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -48,7 +48,7 @@ contract LoggedERC20 is Ownable {
     }
 
     /* Public variables of the token */
-    string public standard = &#39;LogValueBlockToken 0.1&#39;;
+    string public standard = 'LogValueBlockToken 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -59,13 +59,13 @@ contract LoggedERC20 is Ownable {
     uint256 public creationBlock;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; LogValueBlock[]) public loggedBalances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => LogValueBlock[]) public loggedBalances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -103,11 +103,11 @@ contract LoggedERC20 is Ownable {
 
         LogValueBlock memory prevLogValueBlock;
 
-        for(uint256 i = 0; i &lt; valueBlocks.length; i++) {
+        for(uint256 i = 0; i < valueBlocks.length; i++) {
 
             LogValueBlock memory valueBlock = valueBlocks[i];
 
-            if(valueBlock.block &gt; block) {
+            if(valueBlock.block > block) {
                 return prevLogValueBlock.value;
             }
 
@@ -141,11 +141,11 @@ contract LoggedERC20 is Ownable {
             return false;
         }
 
-        if(balanceFrom &lt; value) {
+        if(balanceFrom < value) {
             return false;
         }
 
-        if(balanceTo + value &lt;= balanceTo) {
+        if(balanceTo + value <= balanceTo) {
             return false;
         }
 
@@ -195,7 +195,7 @@ contract LoggedERC20 is Ownable {
             return false;
         }
 
-        if(allowance[_from][msg.sender] &lt; _value) {
+        if(allowance[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -226,13 +226,13 @@ contract LoggedDividend is Ownable, LoggedERC20 {
 
     bool recycled;
 
-    mapping (address =&gt; bool) claimed;
+    mapping (address => bool) claimed;
     }
 
     /* variables */
     Dividend [] public dividends;
 
-    mapping (address =&gt; uint256) dividendsClaimed;
+    mapping (address => uint256) dividendsClaimed;
 
     /* Events */
     event DividendTransfered(uint256 id, address indexed _address, uint256 _block, uint256 _amount, uint256 _totalSupply);
@@ -252,7 +252,7 @@ contract LoggedDividend is Ownable, LoggedERC20 {
     }
 
     function addDividend(uint256 recycleTime) payable onlyOwner {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint256 id = dividends.length;
         uint256 _totalSupply = valueAt(loggedTotalSupply, block.number);
@@ -275,7 +275,7 @@ contract LoggedDividend is Ownable, LoggedERC20 {
     }
 
     function claimDividend(uint256 dividendId) public returns (bool) {
-        if(dividends.length - 1 &lt; dividendId) {
+        if(dividends.length - 1 < dividendId) {
             return false;
         }
 
@@ -289,7 +289,7 @@ contract LoggedDividend is Ownable, LoggedERC20 {
             return false;
         }
 
-        if(now &gt;= dividend.time + dividend.recycleTime) {
+        if(now >= dividend.time + dividend.recycleTime) {
             return false;
         }
 
@@ -305,7 +305,7 @@ contract LoggedDividend is Ownable, LoggedERC20 {
 
         dividend.claimedAmount = dividend.claimedAmount + claim;
 
-        if (claim &gt; 0) {
+        if (claim > 0) {
             msg.sender.transfer(claim);
             DividendClaimed(dividendId, msg.sender, claim);
 
@@ -316,9 +316,9 @@ contract LoggedDividend is Ownable, LoggedERC20 {
     }
 
     function claimDividends() public {
-        require(dividendsClaimed[msg.sender] &lt; dividends.length);
-        for (uint i = dividendsClaimed[msg.sender]; i &lt; dividends.length; i++) {
-            if ((dividends[i].claimed[msg.sender] == false) &amp;&amp; (dividends[i].recycled == false)) {
+        require(dividendsClaimed[msg.sender] < dividends.length);
+        for (uint i = dividendsClaimed[msg.sender]; i < dividends.length; i++) {
+            if ((dividends[i].claimed[msg.sender] == false) && (dividends[i].recycled == false)) {
                 dividendsClaimed[msg.sender] = i + 1;
                 claimDividend(i);
             }
@@ -326,7 +326,7 @@ contract LoggedDividend is Ownable, LoggedERC20 {
     }
 
     function recycleDividend(uint256 dividendId) public onlyOwner returns (bool success) {
-        if(dividends.length - 1 &lt; dividendId) {
+        if(dividends.length - 1 < dividendId) {
             return false;
         }
 
@@ -342,14 +342,14 @@ contract LoggedDividend is Ownable, LoggedERC20 {
     }
 
     function refundUnclaimedEthers(uint256 dividendId) public onlyOwner returns (bool success) {
-        if(dividends.length - 1 &lt; dividendId) {
+        if(dividends.length - 1 < dividendId) {
             return false;
         }
 
         Dividend storage dividend = dividends[dividendId];
 
         if(dividend.recycled == false) {
-            if(now &lt; dividend.time + dividend.recycleTime) {
+            if(now < dividend.time + dividend.recycleTime) {
                 return false;
             }
         }
@@ -358,7 +358,7 @@ contract LoggedDividend is Ownable, LoggedERC20 {
 
         dividend.transferedBack = claimedBackAmount;
 
-        if(claimedBackAmount &gt; 0) {
+        if(claimedBackAmount > 0) {
             owner.transfer(claimedBackAmount);
 
             UnclaimedDividendTransfer(dividendId, claimedBackAmount);
@@ -393,7 +393,7 @@ contract LoggedPhaseICO is LoggedDividend {
     bool transferAllSupplyToOwner,
     bool _locked
     ) LoggedDividend(initialSupply, tokenName, precision, tokenSymbol, transferAllSupplyToOwner, _locked) {
-        standard = &#39;LoggedPhaseICO 0.1&#39;;
+        standard = 'LoggedPhaseICO 0.1';
 
         icoSince = _icoSince;
         icoTill = _icoTill;
@@ -405,11 +405,11 @@ contract LoggedPhaseICO is LoggedDividend {
         uint256 newCollectedEthers = collectedEthers;
         uint256 remainingValue = value;
 
-        for (uint i = 0; i &lt; phases.length; i++) {
+        for (uint i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
 
-            if(phase.maxAmount &gt; newCollectedEthers) {
-                if (newCollectedEthers + remainingValue &gt; phase.maxAmount) {
+            if(phase.maxAmount > newCollectedEthers) {
+                if (newCollectedEthers + remainingValue > phase.maxAmount) {
                     uint256 diff = phase.maxAmount - newCollectedEthers;
 
                     amount += diff * 1 ether / phase.price;
@@ -431,7 +431,7 @@ contract LoggedPhaseICO is LoggedDividend {
             }
         }
 
-        if (remainingValue &gt; 0) {
+        if (remainingValue > 0) {
             return 0;
         }
 
@@ -443,11 +443,11 @@ contract LoggedPhaseICO is LoggedDividend {
             return false;
         }
 
-        if (time &lt; icoSince) {
+        if (time < icoSince) {
             return false;
         }
 
-        if (time &gt; icoTill) {
+        if (time > icoTill) {
             return false;
         }
 
@@ -464,11 +464,11 @@ contract LoggedPhaseICO is LoggedDividend {
         uint256 selfBalance = valueAt(loggedBalances[this], block.number);
         uint256 holderBalance = valueAt(loggedBalances[_address], block.number);
 
-        if (selfBalance &lt; amount) {
+        if (selfBalance < amount) {
             return false;
         }
 
-        if (holderBalance + amount &lt; holderBalance) {
+        if (holderBalance + amount < holderBalance) {
             return false;
         }
 
@@ -500,7 +500,7 @@ contract Cajutel is LoggedPhaseICO {
     uint256 icoSince,
     uint256 icoTill
     ) LoggedPhaseICO(icoSince, icoTill, initialSupply, tokenName, tokenSymbol, 18, false, false) {
-        standard = &#39;Cajutel 0.1&#39;;
+        standard = 'Cajutel 0.1';
 
         phases.push(Phase(0.05 ether, 500 ether));
         phases.push(Phase(0.075 ether, 750 ether + 500 ether));

@@ -3,7 +3,7 @@ pragma solidity 0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,9 +106,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -116,7 +116,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -125,7 +125,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -149,7 +149,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -167,7 +167,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -207,7 +207,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -218,8 +218,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -282,7 +282,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -343,8 +343,8 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract StarCoin is MintableToken {
 
-  string public constant name = &quot;StarCoin&quot;;
-  string public constant symbol = &quot;STAR&quot;;
+  string public constant name = "StarCoin";
+  string public constant symbol = "STAR";
   uint8 public constant decimals = 18;
   uint public constant INITIAL_SUPPLY = 40000000 * 1 ether; //40M tokens accroding to https://starflow.com/ico/
   uint public constant MAXIMUM_SUPPLY = 100000000 * 1 ether; // 100M tokens is maximum according to https://starflow.com/ico/
@@ -356,7 +356,7 @@ contract StarCoin is MintableToken {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -381,7 +381,7 @@ contract StarCoin is MintableToken {
 
   /** Restrict minting by the MAXIMUM_SUPPLY allowed **/
   modifier bellowMaximumSupply(uint _amount) {
-    require(_amount + totalSupply_ &lt; MAXIMUM_SUPPLY);
+    require(_amount + totalSupply_ < MAXIMUM_SUPPLY);
     _;
   }
 
@@ -403,7 +403,7 @@ contract StarCoin is MintableToken {
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
     require(addr != 0x0);
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -451,27 +451,27 @@ contract StarCoin is MintableToken {
 }
 
 contract InvestorWhiteList is Ownable {
-  mapping (address =&gt; bool) public investorWhiteList;
+  mapping (address => bool) public investorWhiteList;
 
-  mapping (address =&gt; address) public referralList;
+  mapping (address => address) public referralList;
 
   function InvestorWhiteList() {
 
   }
 
   function addInvestorToWhiteList(address investor) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; !investorWhiteList[investor]);
+    require(investor != 0x0 && !investorWhiteList[investor]);
     investorWhiteList[investor] = true;
   }
 
   function removeInvestorFromWhiteList(address investor) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; investorWhiteList[investor]);
+    require(investor != 0x0 && investorWhiteList[investor]);
     investorWhiteList[investor] = false;
   }
 
   //when new user will contribute ICO contract will automatically send bonus to referral
   function addReferralOf(address investor, address referral) external onlyOwner {
-    require(investor != 0x0 &amp;&amp; referral != 0x0 &amp;&amp; referralList[investor] == 0x0 &amp;&amp; investor != referral);
+    require(investor != 0x0 && referral != 0x0 && referralList[investor] == 0x0 && investor != referral);
     referralList[investor] = referral;
   }
 
@@ -487,7 +487,7 @@ contract InvestorWhiteList is Ownable {
 contract StarCoinPreSale is Pausable {
   using SafeMath for uint;
 
-  string public constant name = &quot;StarCoin Token ICO&quot;;
+  string public constant name = "StarCoin Token ICO";
 
   StarCoin public token;
 
@@ -515,7 +515,7 @@ contract StarCoinPreSale is Pausable {
 
   bool public crowdsaleFinished = false;
 
-  mapping (address =&gt; uint) public deposited;
+  mapping (address => uint) public deposited;
 
   uint constant VOLUME_20_REF_7 = 5000 ether;
 
@@ -538,17 +538,17 @@ contract StarCoinPreSale is Pausable {
   event Refunded(address indexed holder, uint amount);
 
   modifier icoActive() {
-    require(block.number &gt;= startBlock &amp;&amp; block.number &lt; endBlock);
+    require(block.number >= startBlock && block.number < endBlock);
     _;
   }
 
   modifier icoEnded() {
-    require(block.number &gt;= endBlock);
+    require(block.number >= endBlock);
     _;
   }
 
   modifier minInvestment() {
-    require(msg.value &gt;= 0.1 * 1 ether);
+    require(msg.value >= 0.1 * 1 ether);
     _;
   }
 
@@ -587,7 +587,7 @@ contract StarCoinPreSale is Pausable {
 
   function refund() external icoEnded {
     require(softCapReached == false);
-    require(deposited[msg.sender] &gt; 0);
+    require(deposited[msg.sender] > 0);
 
     uint refund = deposited[msg.sender];
 
@@ -606,27 +606,27 @@ contract StarCoinPreSale is Pausable {
   }
 
   function calculateBonus(uint tokens) internal constant returns (uint bonus) {
-    if (msg.value &gt;= VOLUME_20_REF_7) {
+    if (msg.value >= VOLUME_20_REF_7) {
       return tokens.mul(20).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_15_REF_6) {
+    if (msg.value >= VOLUME_15_REF_6) {
       return tokens.mul(15).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_12d5_REF_5d5) {
+    if (msg.value >= VOLUME_12d5_REF_5d5) {
       return tokens.mul(125).div(1000);
     }
 
-    if (msg.value &gt;= VOLUME_10_REF_5) {
+    if (msg.value >= VOLUME_10_REF_5) {
       return tokens.mul(10).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_7_REF_4) {
+    if (msg.value >= VOLUME_7_REF_4) {
       return tokens.mul(7).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_5_REF_3) {
+    if (msg.value >= VOLUME_5_REF_3) {
       return tokens.mul(5).div(100);
     }
 
@@ -634,27 +634,27 @@ contract StarCoinPreSale is Pausable {
   }
 
   function calculateReferralBonus(uint tokens) internal constant returns (uint bonus) {
-    if (msg.value &gt;= VOLUME_20_REF_7) {
+    if (msg.value >= VOLUME_20_REF_7) {
       return tokens.mul(7).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_15_REF_6) {
+    if (msg.value >= VOLUME_15_REF_6) {
       return tokens.mul(6).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_12d5_REF_5d5) {
+    if (msg.value >= VOLUME_12d5_REF_5d5) {
       return tokens.mul(55).div(1000);
     }
 
-    if (msg.value &gt;= VOLUME_10_REF_5) {
+    if (msg.value >= VOLUME_10_REF_5) {
       return tokens.mul(5).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_7_REF_4) {
+    if (msg.value >= VOLUME_7_REF_4) {
       return tokens.mul(4).div(100);
     }
 
-    if (msg.value &gt;= VOLUME_5_REF_3) {
+    if (msg.value >= VOLUME_5_REF_3) {
       return tokens.mul(3).div(100);
     }
 
@@ -677,13 +677,13 @@ contract StarCoinPreSale is Pausable {
 
     uint newTokensSold = tokensSold.add(tokens);
 
-    if (referralBonus &gt; 0 &amp;&amp; referral != 0x0) {
+    if (referralBonus > 0 && referral != 0x0) {
       newTokensSold = newTokensSold.add(referralBonus);
     }
 
-    require(newTokensSold &lt;= hardCap);
+    require(newTokensSold <= hardCap);
 
-    if (!softCapReached &amp;&amp; newTokensSold &gt;= softCap) {
+    if (!softCapReached && newTokensSold >= softCap) {
       softCapReached = true;
       SoftCapReached(softCap);
     }
@@ -697,7 +697,7 @@ contract StarCoinPreSale is Pausable {
     token.transfer(msg.sender, tokens);
     NewContribution(msg.sender, tokens, msg.value);
 
-    if (referralBonus &gt; 0 &amp;&amp; referral != 0x0) {
+    if (referralBonus > 0 && referral != 0x0) {
       token.transfer(referral, referralBonus);
       NewReferralTransfer(msg.sender, referral, referralBonus);
     }

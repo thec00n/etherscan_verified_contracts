@@ -29,7 +29,7 @@ contract subSale{
     uint subExpiry;
   }
 
-  mapping(bytes32=&gt;Domain) records;
+  mapping(bytes32=>Domain) records;
 
   modifier node_owner(bytes32 node){
     if (ens.owner(node) != msg.sender) throw;
@@ -76,10 +76,10 @@ contract subSale{
 
   function subBuy(bytes32 rootNode,bytes32 subNode,address newOwner) payable {
     require(records[rootNode].subSale == true);
-    require(msg.value &gt;= records[rootNode].subPrice);
+    require(msg.value >= records[rootNode].subPrice);
 
     var newNode = sha3(subNode,rootNode);
-    require(records[newNode].regPeriod &lt; now);
+    require(records[newNode].regPeriod < now);
 
     uint fee = msg.value/20;
     uint netPrice = msg.value - fee;

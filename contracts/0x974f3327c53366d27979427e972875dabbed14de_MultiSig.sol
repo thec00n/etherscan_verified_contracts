@@ -4,13 +4,13 @@ pragma solidity 0.4.21;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) pure internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -67,7 +67,7 @@ contract MultiSig is ReentrancyGuard {
     // the number of administrator that must confirm the same operation before it is run.
     uint256 public required = 2;
 
-    mapping(address =&gt; bool) private administrators;
+    mapping(address => bool) private administrators;
 
     // Funds has arrived into the contract (record how much).
     event Deposit(address _from, uint256 value);
@@ -110,8 +110,8 @@ contract MultiSig is ReentrancyGuard {
 
         // input validations
         require( recipient != 0x00 );
-        require( amount &gt; 0 );
-        require( address(this).balance &gt;= amount );
+        require( amount > 0 );
+        require( address(this).balance >= amount );
 
         uint remaining;
 
@@ -129,13 +129,13 @@ contract MultiSig is ReentrancyGuard {
 
         // Compare amount of wei with previous confirmtaion
         if (pending.eth != amount) {
-            transferViolated(&quot;Incorrect amount of wei passed&quot;);
+            transferViolated("Incorrect amount of wei passed");
             return;
         }
 
         // make sure signer is not trying to spam
         if (msg.sender == pending.signer[0]) {
-            transferViolated(&quot;Signer is spamming&quot;);
+            transferViolated("Signer is spamming");
             return;
         }
 
@@ -147,7 +147,7 @@ contract MultiSig is ReentrancyGuard {
         if (remaining == 0) {
             
             if (msg.sender == pending.signer[0]) {
-                transferViolated(&quot;One of signers is spamming&quot;);
+                transferViolated("One of signers is spamming");
                 return;
             }
             
@@ -195,7 +195,7 @@ contract MultiSig is ReentrancyGuard {
      */
     function() payable public {
         // deposit ether
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             emit Deposit(msg.sender, msg.value);
         }
 
@@ -252,20 +252,20 @@ contract MultiSig is ReentrancyGuard {
 
         // violated consensus
         if (updating.oldAddress != _oldAddress) {
-            emit Violated(&quot;Old addresses do not match&quot;,msg.sender);
+            emit Violated("Old addresses do not match",msg.sender);
             ResetUpdateState();
             return;
         }
 
         if (updating.newAddress != _newAddress) {
-            emit Violated(&quot;New addresses do not match&quot;, msg.sender);
+            emit Violated("New addresses do not match", msg.sender);
             ResetUpdateState();
             return;
         }
 
         // make sure admin is not trying to spam
         if (msg.sender == updating.signer[0]) {
-            emit Violated(&quot;Signer is spamming&quot;, msg.sender);
+            emit Violated("Signer is spamming", msg.sender);
             ResetUpdateState();
             return;
         }
@@ -277,7 +277,7 @@ contract MultiSig is ReentrancyGuard {
         if (remaining == 0) {
             
             if (msg.sender == updating.signer[0]) {
-                emit Violated(&quot;One of signers is spamming&quot;,msg.sender);
+                emit Violated("One of signers is spamming",msg.sender);
                 ResetUpdateState();
                 return;
             }

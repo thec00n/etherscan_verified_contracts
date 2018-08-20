@@ -12,7 +12,7 @@ contract PiggyBank {
     }
     
     function buyLambo() {
-        require (block.timestamp &gt; lamboTime &amp;&amp; msg.sender == niece);
+        require (block.timestamp > lamboTime && msg.sender == niece);
         Lambo(this.balance);
         msg.sender.transfer(this.balance);
     }

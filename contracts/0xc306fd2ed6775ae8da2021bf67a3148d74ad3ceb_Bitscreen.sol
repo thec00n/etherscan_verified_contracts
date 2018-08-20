@@ -82,7 +82,7 @@ contract Bitscreen {
 
 
     function changeBid(bytes32 _ipfsHash, uint8 _ipfsHashFunc, uint8 _ipfsHashSize) payable external {
-            if(msg.value&gt;screenstate.currLargestAmount) {
+            if(msg.value>screenstate.currLargestAmount) {
                 screenstate.currLargestAmount=msg.value;
                 screenstate.currHolder=msg.sender;
                 screenstate.totalRaised+=msg.value;

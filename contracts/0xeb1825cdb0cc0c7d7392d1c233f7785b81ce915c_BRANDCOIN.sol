@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -84,7 +84,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -117,9 +117,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -149,7 +149,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -160,8 +160,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -175,7 +175,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -224,7 +224,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -279,8 +279,8 @@ contract Ownable {
 contract BRANDCOIN is StandardToken, BurnableToken, Ownable
 {
     // ERC20 token parameters
-    string public constant name = &quot;BRANDCOIN&quot;;
-    string public constant symbol = &quot;BRA&quot;;
+    string public constant name = "BRANDCOIN";
+    string public constant symbol = "BRA";
     uint256 public constant decimals = 18;
     
     // Crowdsale base price
@@ -310,7 +310,7 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     // End of ICO: 1 june
     uint256 private crowdsale_end_timestamp = 1527811200;
     
-    // The target of the crowdsale is 8000000 BRANDCOIN&#39;s.
+    // The target of the crowdsale is 8000000 BRANDCOIN's.
     // If the crowdsale has finished, and the target has not been reached,
     // all crowdsale participants will be able to call refund() and get their
     // ETH back. The refundMany() function can be used to refund multiple
@@ -320,23 +320,23 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     
     // Keep track of all participants, how much they bought and how much they spent.
     address[] public allParticipants;
-    mapping(address =&gt; uint256) public participantToEtherSpent;
-    mapping(address =&gt; uint256) public participantToBRAbought;
+    mapping(address => uint256) public participantToEtherSpent;
+    mapping(address => uint256) public participantToBRAbought;
     
     
     function crowdsaleTargetReached() public view returns (bool)
     {
-        return amountOfBRAsold() &gt;= crowdsaleTargetBRA;
+        return amountOfBRAsold() >= crowdsaleTargetBRA;
     }
     
     function crowdsaleStarted() public view returns (bool)
     {
-        return now &gt;= first_period_start_date;
+        return now >= first_period_start_date;
     }
     
     function crowdsaleFinished() public view returns (bool)
     {
-        return now &gt;= crowdsale_end_timestamp;
+        return now >= crowdsale_end_timestamp;
     }
     
     function amountOfParticipants() external view returns (uint256)
@@ -350,12 +350,12 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     }
     
     // If the crowdsale target has not been reached, or the crowdsale has not finished,
-    // don&#39;t allow the transfer of tokens purchased in the crowdsale.
+    // don't allow the transfer of tokens purchased in the crowdsale.
     function transfer(address _to, uint256 _amount) public returns (bool)
     {
         if (!crowdsaleTargetReached() || !crowdsaleFinished())
         {
-            require(balances[msg.sender] - participantToBRAbought[msg.sender] &gt;= _amount);
+            require(balances[msg.sender] - participantToBRAbought[msg.sender] >= _amount);
         }
         
         return super.transfer(_to, _amount);
@@ -364,7 +364,7 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     {
         if (!crowdsaleTargetReached() || !crowdsaleFinished())
         {
-            require(balances[_from] - participantToBRAbought[_from] &gt;= _amount);
+            require(balances[_from] - participantToBRAbought[_from] >= _amount);
         }
         
         return super.transferFrom(_from, _to, _amount);
@@ -398,7 +398,7 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     
     function destroyUnsoldTokens() external onlyOwner
     {
-        require(crowdsaleStarted() &amp;&amp; crowdsaleFinished());
+        require(crowdsaleStarted() && crowdsaleFinished());
         
         this.burn(balances[this]);
     }
@@ -418,36 +418,36 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
         require(crowdsaleStarted());
         require(!crowdsaleFinished());
         
-        // If the pre-ICO hasn&#39;t started yet, cancel the transaction
-        if (now &lt; first_period_start_date)
+        // If the pre-ICO hasn't started yet, cancel the transaction
+        if (now < first_period_start_date)
         {
             revert();
         }
         
-        else if (now &gt;= first_period_start_date &amp;&amp; now &lt; second_period_start_date)
+        else if (now >= first_period_start_date && now < second_period_start_date)
         {
-            if (amountOfBRApurchased &gt;= first_period_bonus_minimum_purchased_BRA)
+            if (amountOfBRApurchased >= first_period_bonus_minimum_purchased_BRA)
             {
                 amountOfBRApurchased = amountOfBRApurchased * (100 + first_period_bonus_percentage) / 100;
             }
         }
         
-        else if (now &gt;= second_period_start_date &amp;&amp; now &lt; third_period_start_date)
+        else if (now >= second_period_start_date && now < third_period_start_date)
         {
             amountOfBRApurchased = amountOfBRApurchased * (100 + second_period_bonus_percentage) / 100;
         }
         
-        else if (now &gt;= third_period_start_date &amp;&amp; now &lt; fourth_period_start_date)
+        else if (now >= third_period_start_date && now < fourth_period_start_date)
         {
             amountOfBRApurchased = amountOfBRApurchased * (100 + third_period_bonus_percentage) / 100;
         }
         
-        else if (now &gt;= fourth_period_start_date &amp;&amp; now &lt; fifth_period_start_date)
+        else if (now >= fourth_period_start_date && now < fifth_period_start_date)
         {
             amountOfBRApurchased = amountOfBRApurchased * (100 + fourth_period_bonus_percentage) / 100;
         }
         
-        else if (now &gt;= fifth_period_start_date &amp;&amp; now &lt; crowdsale_end_timestamp)
+        else if (now >= fifth_period_start_date && now < crowdsale_end_timestamp)
         {
             amountOfBRApurchased = amountOfBRApurchased * (100 + fifth_period_bonus_percentage) / 100;
         }
@@ -472,13 +472,13 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     
     function refund() external
     {
-        // If the crowdsale has not started yet, don&#39;t allow refund
+        // If the crowdsale has not started yet, don't allow refund
         require(crowdsaleStarted());
         
-        // If the crowdsale has not finished yet, don&#39;t allow refund
+        // If the crowdsale has not finished yet, don't allow refund
         require(crowdsaleFinished());
         
-        // If the target was reached, don&#39;t allow refund
+        // If the target was reached, don't allow refund
         require(!crowdsaleTargetReached());
         
         _refundParticipant(msg.sender);
@@ -486,16 +486,16 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     
     function refundMany(uint256 _startIndex, uint256 _endIndex) external
     {
-        // If the crowdsale has not started yet, don&#39;t allow refund
+        // If the crowdsale has not started yet, don't allow refund
         require(crowdsaleStarted());
         
-        // If the crowdsale has not finished yet, don&#39;t allow refund
+        // If the crowdsale has not finished yet, don't allow refund
         require(crowdsaleFinished());
         
-        // If the target was reached, don&#39;t allow refund
+        // If the target was reached, don't allow refund
         require(!crowdsaleTargetReached());
         
-        for (uint256 i=_startIndex; i&lt;=_endIndex &amp;&amp; i&lt;allParticipants.length; i++)
+        for (uint256 i=_startIndex; i<=_endIndex && i<allParticipants.length; i++)
         {
             _refundParticipant(allParticipants[i]);
         }
@@ -503,7 +503,7 @@ contract BRANDCOIN is StandardToken, BurnableToken, Ownable
     
     function _refundParticipant(address _participant) internal
     {
-        if (participantToEtherSpent[_participant] &gt; 0)
+        if (participantToEtherSpent[_participant] > 0)
         {
             // Return the BRA they bought to this contract
             uint256 refundBRA = participantToBRAbought[_participant];

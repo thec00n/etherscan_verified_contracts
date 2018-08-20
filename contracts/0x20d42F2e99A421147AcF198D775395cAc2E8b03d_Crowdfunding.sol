@@ -6,7 +6,7 @@ contract Token {
 
 // A Sub crowdfunding contract. Its only purpose is to redirect ether it receives to the 
 // main crowdfunding contract. This mecanism is usefull to know the sponsor to
-// reward for an indirect donation. You can&#39;t give for someone else when you give through
+// reward for an indirect donation. You can't give for someone else when you give through
 // these contracts
 contract AltCrowdfunding {
 	
@@ -57,11 +57,11 @@ contract Crowdfunding {
 	
 	address[] public backerList;							// Addresses of all backers
 	address[] public altList;					     		// List of alternative contracts for sponsoring (useless for this contract)
-	mapping(address =&gt; Sponsor) public sponsorList;	        // The sponsor linked to an alternative contract
-	mapping(address =&gt; Backer) public backers;            	// The Backer for a given address
+	mapping(address => Sponsor) public sponsorList;	        // The sponsor linked to an alternative contract
+	mapping(address => Backer) public backers;            	// The Backer for a given address
 
 	modifier onlyBy(address a){
-		if (msg.sender != a) throw;                         // Auth modifier, if the msg.sender isn&#39;t the expected address, throw.
+		if (msg.sender != a) throw;                         // Auth modifier, if the msg.sender isn't the expected address, throw.
 		_
 	}
 	
@@ -90,20 +90,20 @@ contract Crowdfunding {
 	
 	// Use this function to buy Nexiums for someone (can be you of course)
 	function giveFor(address beneficiary){
-		if (msg.value &lt; minInvest) throw;                                      // Throw when the minimum to invest isn&#39;t reached
-		if (endDate &lt; now || (now &lt; startDate &amp;&amp; now &gt; startDate - 3 hours )) throw;        // Check if the crowdfunding is started and not already over
+		if (msg.value < minInvest) throw;                                      // Throw when the minimum to invest isn't reached
+		if (endDate < now || (now < startDate && now > startDate - 3 hours )) throw;        // Check if the crowdfunding is started and not already over
 		
 		// Computing the current amount of Nxc we send per ether. 
 		uint currentEtherValue = getCurrEthValue();
 		
-		//it&#39;s possible to invest before the begining of the crowdfunding but the price is x10.
+		//it's possible to invest before the begining of the crowdfunding but the price is x10.
 		//Allow backers to test the contract before the begining.
-		if(now &lt; startDate) currentEtherValue /= 10;
+		if(now < startDate) currentEtherValue /= 10;
 		
 		// Computing the number of milli Nxc we will send to the beneficiary
 		uint givenNxc = (msg.value * currentEtherValue)/(1 ether);
 		nxcSold += givenNxc;                                                   //Updating the sold Nxc amount
-		if (nxcSold &gt;= perStageNxc) isLimitReached = true ; 
+		if (nxcSold >= perStageNxc) isLimitReached = true ; 
 		
 		Sponsor sp = sponsorList[msg.sender];
 		
@@ -113,7 +113,7 @@ contract Crowdfunding {
 		    
 		    // This part compute the bonus rate NxC the sponsor will have depending on the total of Nxc he sold.
 		    uint bonusRate = sp.nxcDirected / 80000000;
-		    if (bonusRate &gt; sp.sponsorBonus) bonusRate = sp.sponsorBonus;
+		    if (bonusRate > sp.sponsorBonus) bonusRate = sp.sponsorBonus;
 		    
 		    // Giving to the sponsor the amount of Nxc he earned by this last donation
 		    uint sponsorNxc = (sp.nxcDirected * bonusRate)/100 - sp.earnedNexium;
@@ -138,7 +138,7 @@ contract Crowdfunding {
 	
 	
 	// If you gave ether before the first stage is reached you might have some ungiven
-	// Nxc for your address. This function, if called, will give you the nexiums you didn&#39;t
+	// Nxc for your address. This function, if called, will give you the nexiums you didn't
 	// received. /!\ Nexium bonuses for your partner rank will not be given during the crowdfunding
 	function claimNxc(){
 	    if (!isLimitReached) throw;
@@ -154,7 +154,7 @@ contract Crowdfunding {
 	}
 	
 	function getBackEtherFor(address account){
-	    if (now &gt; endDate &amp;&amp; !isLimitReached){
+	    if (now > endDate && !isLimitReached){
 	        uint sentBack = backers[account].weiGiven;
 	        backers[account].weiGiven = 0;                                     // No DAO style re entrance ;)
 	        if(!account.send(sentBack))throw;
@@ -171,7 +171,7 @@ contract Crowdfunding {
     //Create a new sponsoring contract 
 	function addAlt(address sponsor, uint _sponsorBonus, uint _backerBonus)
 	onlyBy(owner){
-	    if (_sponsorBonus &gt; 10 || _backerBonus &gt; 10 || _sponsorBonus + _backerBonus &gt; 15) throw;
+	    if (_sponsorBonus > 10 || _backerBonus > 10 || _sponsorBonus + _backerBonus > 15) throw;
 		altList[altList.length++] = address(new AltCrowdfunding(this));
 		sponsorList[altList[altList.length -1]] = Sponsor(0, 0, sponsor, _sponsorBonus, _backerBonus);
 	}
@@ -179,8 +179,8 @@ contract Crowdfunding {
 	// Set the value of BCY gave by the SOG network. Only our BCY escrow can modify it.
     function setBCY(uint newValue)
     onlyBy(bitCrystalEscrow){
-        if (now &lt; startDate || now &gt; endDate) throw;
-        if (newValue != 0 &amp;&amp; newValue &lt; 714285714) collectedBcy = newValue; // 714285714 * 14 ~= 10 000 000 000 mili Nxc maximum to avoid wrong value
+        if (now < startDate || now > endDate) throw;
+        if (newValue != 0 && newValue < 714285714) collectedBcy = newValue; // 714285714 * 14 ~= 10 000 000 000 mili Nxc maximum to avoid wrong value
         else throw;
     }
     
@@ -199,7 +199,7 @@ contract Crowdfunding {
     //If there are still Nexiums or Ethers on the contract after 100 days after the end of the crowdfunding
     //This function send all of it to the multi sig of the beyond the void team (emergency case)
     function blackBox(){
-        if (now &lt; endDate + 100 days)throw;
+        if (now < endDate + 100 days)throw;
         nexium.transfer(beyond, nexium.balanceOf(this));
         var r = beyond.send(this.balance);
     }

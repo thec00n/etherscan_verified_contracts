@@ -6,8 +6,8 @@ pragma solidity ^0.4.24;
  */
 contract ERC20Token{
   uint256 public totalSupply;
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
   function transfer(address to, uint256 value) public returns (bool);
   function transferFrom(address from, address to, uint256 value) public returns (bool);
   function approve(address spender, uint256 value) public returns (bool);
@@ -23,9 +23,9 @@ contract ERC20Token{
  * https://github.com/ethereum/EIPs/issues/20
  */
 contract StandardToken is ERC20Token{
-  string public version = &quot;1.0&quot;;
-  string public name = &quot;preserve one&#39;s health&quot;;
-  string public symbol = &quot;POH&quot;;
+  string public version = "1.0";
+  string public name = "preserve one's health";
+  string public symbol = "POH";
   uint8 public  decimals = 18;
 
   bool public transfersEnabled = true;
@@ -40,7 +40,7 @@ contract StandardToken is ERC20Token{
 
   function transfer(address _to, uint256 _value) transable public returns (bool) {
     require(_to != address(0));
-    require(balanceOf[msg.sender]&gt;_value);
+    require(balanceOf[msg.sender]>_value);
     balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
     emit Transfer(msg.sender, _to, _value);
@@ -58,8 +58,8 @@ contract StandardToken is ERC20Token{
 
     uint256 _allowance = allowance[_from][msg.sender];
 
-    require (_value &lt;= _allowance);
-    require(balanceOf[_from]&gt;_value);
+    require (_value <= _allowance);
+    require(balanceOf[_from]>_value);
 
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
@@ -94,7 +94,7 @@ contract StandardToken is ERC20Token{
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowance[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowance[msg.sender][_spender] = 0;
     } else {
       allowance[msg.sender][_spender] -= _subtractedValue;
@@ -116,9 +116,9 @@ contract Token is StandardToken{
     uint256 currUnlockSeq; //当前解锁step 内的游标
 
     //Key1: step(募资阶段); Key2: user sequence(用户序列)
-    mapping (uint =&gt; uint256[]) public freezeOf; //所有数额，地址与数额合并为uint256，位运算拆分。
-    mapping (uint =&gt; bool) public stepUnlockInfo; //所有锁仓，key 使用序号向上增加，value,是否已解锁。
-    mapping (address =&gt; uint256) public freezeOfUser; //用户所有锁仓，方便用户查询自己锁仓余额
+    mapping (uint => uint256[]) public freezeOf; //所有数额，地址与数额合并为uint256，位运算拆分。
+    mapping (uint => bool) public stepUnlockInfo; //所有锁仓，key 使用序号向上增加，value,是否已解锁。
+    mapping (address => uint256) public freezeOfUser; //用户所有锁仓，方便用户查询自己锁仓余额
     
    
     uint256 internal constant INITIAL_SUPPLY = 1 * (10**8) * (10 **18);
@@ -138,8 +138,8 @@ contract Token is StandardToken{
     // transfer to and lock it
     function transferAndLock(address _to, uint256 _value, uint256 _lockValue, uint _step) transable public returns (bool success) {
         require(_to != 0x0);
-        require(_value &lt;= balanceOf[msg.sender]);
-        require(_value &gt; 0);
+        require(_value <= balanceOf[msg.sender]);
+        require(_value > 0);
 
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -153,10 +153,10 @@ contract Token is StandardToken{
     function transferFromAndLock(address _from, address _to, uint256 _value, uint256 _lockValue, uint _step) transable public returns (bool success) {
         uint256 _allowance = allowance[_from][msg.sender];
 
-        require (_value &lt;= _allowance);
+        require (_value <= _allowance);
         require(_to != 0x0);
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &gt; 0);
+        require(_value <= balanceOf[_from]);
+        require(_value > 0);
 
         allowance[_from][msg.sender] -= _value;
         balanceOf[_from] -= _value;
@@ -169,17 +169,17 @@ contract Token is StandardToken{
 
 
     function transferMulti(address[] _to, uint256[] _value) transable public returns (uint256 amount){
-        require(_to.length == _value.length &amp;&amp; _to.length &lt;= 1024);
+        require(_to.length == _value.length && _to.length <= 1024);
         uint256 balanceOfSender = balanceOf[msg.sender];
         uint256 len = _to.length;
-        for(uint256 j; j&lt;len; j++){
-            require(_value[j] &lt;= balanceOfSender); //limit transfer value
-            require(amount &lt;= balanceOfSender);
+        for(uint256 j; j<len; j++){
+            require(_value[j] <= balanceOfSender); //limit transfer value
+            require(amount <= balanceOfSender);
             amount += _value[j];
         }
-        require(balanceOfSender &gt;= amount); //check enough and not overflow
+        require(balanceOfSender >= amount); //check enough and not overflow
         balanceOf[msg.sender] -= amount;
-        for(uint256 i; i&lt;len; i++){
+        for(uint256 i; i<len; i++){
             address _toI = _to[i];
             uint256 _valueI = _value[i];
             balanceOf[_toI] += _valueI;
@@ -192,9 +192,9 @@ contract Token is StandardToken{
     function transferMultiSameVaule(address[] _to, uint256 _value) transable public returns (bool success){
         uint256 len = _to.length;
         uint256 amount = _value*len;
-        require(amount &lt;= balanceOf[msg.sender]);
+        require(amount <= balanceOf[msg.sender]);
         balanceOf[msg.sender] -= amount; //this will check enough automatically
-        for(uint256 i; i&lt;len; i++){
+        for(uint256 i; i<len; i++){
             address _toI = _to[i];
             balanceOf[_toI] += _value;
             emit Transfer(msg.sender, _toI, _value);
@@ -206,10 +206,10 @@ contract Token is StandardToken{
 
     //冻结账户
     function freeze(address _user, uint256 _value, uint _step) internal returns (bool success) {
-        require(balanceOf[_user] &gt;= _value);
+        require(balanceOf[_user] >= _value);
         balanceOf[_user] -= _value;
         freezeOfUser[_user] += _value;
-        freezeOf[_step].push(uint256(_user)&lt;&lt;92|_value);
+        freezeOf[_step].push(uint256(_user)<<92|_value);
         emit Freeze(_user, _value);
         return true;
     }
@@ -231,10 +231,10 @@ contract Token is StandardToken{
         uint256 _amount;
         address userAddress;
 
-        for(uint i = 0; i&lt;99&amp;&amp;currUnlockSeq&gt;0; i++){
+        for(uint i = 0; i<99&&currUnlockSeq>0; i++){
             userLockInfo = freezeOf[_step][currUnlockSeq-1];
-            _amount = userLockInfo&amp;0xFFFFFFFFFFFFFFFFFFFFFFF;
-            userAddress = address(userLockInfo&gt;&gt;92);
+            _amount = userLockInfo&0xFFFFFFFFFFFFFFFFFFFFFFF;
+            userAddress = address(userLockInfo>>92);
             balanceOf[userAddress] += _amount;
             freezeOfUser[userAddress] -= _amount;
             emit Unfreeze(userAddress, _amount);
@@ -252,8 +252,8 @@ contract Token is StandardToken{
      * param _value The amount of token to be burned.
      */
     function burn(uint256 _value) transable public returns (bool success) {
-        require(_value &gt; 0);
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value > 0);
+        require(_value <= balanceOf[msg.sender]);
    
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;

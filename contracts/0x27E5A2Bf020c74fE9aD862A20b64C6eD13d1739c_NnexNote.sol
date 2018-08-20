@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 contract Owned {
     
     address public owner;
-    mapping(address =&gt; bool) public owners;
+    mapping(address => bool) public owners;
 
     function Owned() public {
         owner = msg.sender;
@@ -55,8 +55,8 @@ contract TokenERC20 is Owned {
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -81,9 +81,9 @@ contract TokenERC20 is Owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -100,7 +100,7 @@ contract TokenERC20 is Owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success){
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+        require(_value <= allowance[_from][msg.sender]); // Check allowance
         allowance[_from][msg.sender] -= _value;
         transfer(_from, _to, _value);
         return true;
@@ -122,7 +122,7 @@ contract TokenERC20 is Owned {
     }
 
     function burn(uint256 _value) public returns(bool success){
-        require(balanceOf[msg.sender] &gt;= _value); // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         totalSupply -= _value; // Updates totalSupply
         Burn(msg.sender, _value);
@@ -130,10 +130,10 @@ contract TokenERC20 is Owned {
     }
 
     function burnFrom(address _from, uint256 _value) public returns(bool success){
-        require(balanceOf[_from] &gt;= _value); // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+        require(balanceOf[_from] >= _value); // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]); // Check allowance
         balanceOf[_from] -= _value; // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value; // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value; // Subtract from the sender's allowance
         totalSupply -= _value; // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -152,7 +152,7 @@ contract MifflinToken is Owned, TokenERC20 {
     uint256 public highestContribution = 0;
     uint256 public lowestContribution = 2 ** 256 - 1;
     uint256 public totalBought = 0;
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -178,8 +178,8 @@ contract MifflinToken is Owned, TokenERC20 {
 
     function transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value); // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value); // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]); // Check if sender is frozen
         require(!frozenAccount[_to]); // Check if recipient is frozen
         balanceOf[_from] -= _value; // Subtract from the sender
@@ -198,7 +198,7 @@ contract MifflinToken is Owned, TokenERC20 {
         return true;
     }
 
-    // / @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    // / @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     // / @param target Address to be frozen
     // / @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) public onlyOwners{
@@ -216,16 +216,16 @@ contract MifflinToken is Owned, TokenERC20 {
     function contribution(uint256 amount)internal returns(int highlow){
         owner.transfer(msg.value);
         totalContribution += msg.value;
-        if (amount &gt; highestContribution) {
+        if (amount > highestContribution) {
             uint256 oneper = buyPrice * 99 / 100; // lower by 1%*
             uint256 fullper = buyPrice *  highestContribution / amount; // lower by how much you beat the prior contribution
-            if(fullper &gt; oneper) buyPrice = fullper;
+            if(fullper > oneper) buyPrice = fullper;
             else buyPrice = oneper;
             highestContribution = amount;
             // give reward
             MifflinMarket(exchange).highContributionAward(msg.sender);
             return 1;
-        } else if(amount &lt; lowestContribution){
+        } else if(amount < lowestContribution){
             MifflinMarket(exchange).lowContributionAward(msg.sender);
             lowestContribution = amount;
             return -1;
@@ -244,7 +244,7 @@ contract MifflinToken is Owned, TokenERC20 {
 /******************************************/
 
 contract BeetBuck is Owned, MifflinToken {
-    function BeetBuck(address exchange)MifflinToken(exchange, 2, 2000000, &quot;Beet Buck&quot;, &quot;BEET&quot;, 8) public {
+    function BeetBuck(address exchange)MifflinToken(exchange, 2, 2000000, "Beet Buck", "BEET", 8) public {
         buyPrice = weiRate / ethDolRate / uint(10) ** decimals; // 1d
     }
 
@@ -252,13 +252,13 @@ contract BeetBuck is Owned, MifflinToken {
         contribution(msg.value);
         uint256 amountToGive = 0;
         uint256 price = buyPrice;
-        if (totalBought &lt; 10000) {
+        if (totalBought < 10000) {
             price -= price * 15 / 100;
-        } else if (totalBought &lt; 50000) {
+        } else if (totalBought < 50000) {
             price -= price / 10;
-        } else if (totalBought &lt; 100000) {
+        } else if (totalBought < 100000) {
             price -= price / 20;
-        } else if (totalBought &lt; 200000) {
+        } else if (totalBought < 200000) {
             price -= price / 100;
         }
         amountToGive += msg.value / price;
@@ -270,7 +270,7 @@ contract BeetBuck is Owned, MifflinToken {
 contract NapNickel is Owned, MifflinToken {
 
     function NapNickel(address exchange)
-	MifflinToken(exchange, 3, 1000000000, &quot;Nap Nickel&quot;, &quot;NAPP&quot;, 8) public {
+	MifflinToken(exchange, 3, 1000000000, "Nap Nickel", "NAPP", 8) public {
         buyPrice = weiRate / ethDolRate /  uint(10) ** decimals / 20; // 5c
     }
 
@@ -283,16 +283,16 @@ contract NapNickel is Owned, MifflinToken {
         uint8 hour;
         uint8 weekday;
         (, month,day,hour,,,weekday) = parseTimestampParts(estTime);
-        if (month == 4 &amp;&amp; day == 26) {
+        if (month == 4 && day == 26) {
             // its pretzel day
             price += buyPrice / 5;
         } else if (weekday == 0 || weekday == 6) {
             // buying during weekend, get off my property
             price += buyPrice * 15 / 100;
-        } else if (hour &lt; 9 || hour &gt;= 17) {
+        } else if (hour < 9 || hour >= 17) {
             // buying outside of work hours, im in my hot tub
             price += buyPrice / 10;
-        } else if (hour &gt; 12 &amp;&amp; hour &lt; 13) {
+        } else if (hour > 12 && hour < 13) {
             // buying during lunch, leave me alone dammit
             price += buyPrice / 20;
         }
@@ -373,9 +373,9 @@ contract NapNickel is Owned, MifflinToken {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -383,8 +383,8 @@ contract NapNickel is Owned, MifflinToken {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -416,7 +416,7 @@ contract NapNickel is Owned, MifflinToken {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -459,7 +459,7 @@ contract QuabityQuarter is Owned, MifflinToken {
     uint lastContributionTime = 0;
 
     function QuabityQuarter(address exchange)
-	MifflinToken(exchange, 4, 420000000, &quot;Quabity Quarter&quot;, &quot;QUAB&quot;, 8) public {
+	MifflinToken(exchange, 4, 420000000, "Quabity Quarter", "QUAB", 8) public {
         buyPrice = weiRate / ethDolRate / uint(10) ** decimals / 4; // 25c
     }
 
@@ -470,20 +470,20 @@ contract QuabityQuarter is Owned, MifflinToken {
         uint256 time = block.timestamp;
         uint256 diff = time - lastContributionTime / 60 / 60;
         uint256 chance = 0;
-        if (diff &gt; 96)
+        if (diff > 96)
 			chance = 50;
-        if (diff &gt; 48)
+        if (diff > 48)
 			chance = 40;
-        else if (diff &gt; 24)
+        else if (diff > 24)
 			chance = 30;
-        else if (diff &gt; 12)
+        else if (diff > 12)
 			chance = 20;
-        else if (diff &gt; 1)
+        else if (diff > 1)
 			chance = 10;
         else chance = 5;
-        if (chance &gt; 0) {
+        if (chance > 0) {
             uint256 lastBlockHash = uint256(keccak256(block.blockhash(block.number - 1), uint8(0)));
-            if (lastBlockHash % 100 &lt; chance) {
+            if (lastBlockHash % 100 < chance) {
                 // stole 10% extra!
                 amountToGive += amountToGive / 10;
             }}
@@ -495,7 +495,7 @@ contract QuabityQuarter is Owned, MifflinToken {
 contract KelevinKoin is Owned, MifflinToken {
     
     function KelevinKoin(address exchange)
-	MifflinToken(exchange, 5, 69000000, &quot;Kelevin Koin&quot;, &quot;KLEV&quot;, 8) public {
+	MifflinToken(exchange, 5, 69000000, "Kelevin Koin", "KLEV", 8) public {
         buyPrice = weiRate / ethDolRate / uint(10) ** decimals / 50; // 2c
     }
 
@@ -516,7 +516,7 @@ contract KelevinKoin is Owned, MifflinToken {
 contract NnexNote is Owned, MifflinToken {
     
     function NnexNote(address exchange) 
-	MifflinToken(exchange, 6, 666000000, &quot;Nnex Note&quot;, &quot;NNEX&quot;, 8) public {
+	MifflinToken(exchange, 6, 666000000, "Nnex Note", "NNEX", 8) public {
         buyPrice = weiRate / ethDolRate / uint(10) ** decimals / 100; // 1c
     }
 
@@ -527,7 +527,7 @@ contract NnexNote is Owned, MifflinToken {
         // you can get up to a 50% discount
         uint maxDiscountRange = buyPrice * 100;
         uint discountPercent;
-        if(msg.value &gt;= maxDiscountRange) discountPercent = 100;
+        if(msg.value >= maxDiscountRange) discountPercent = 100;
         else discountPercent = msg.value / maxDiscountRange * 100;
         uint price = buyPrice - (buyPrice / 2) * (discountPercent / 100);
         uint amountToGive = msg.value / price;
@@ -537,37 +537,37 @@ contract NnexNote is Owned, MifflinToken {
 
 
 contract DundieDollar is Owned, MifflinToken {
-    mapping(uint8 =&gt; string) public awards;
+    mapping(uint8 => string) public awards;
     uint8 public awardsCount;
-    mapping(address =&gt; mapping(uint8 =&gt; uint256)) public awardsOf;
+    mapping(address => mapping(uint8 => uint256)) public awardsOf;
 
     function DundieDollar(address exchange)
-	MifflinToken(exchange, 1, 1725000000, &quot;Dundie Dollar&quot;, &quot;DUND&quot;, 0) public {
+	MifflinToken(exchange, 1, 1725000000, "Dundie Dollar", "DUND", 0) public {
         buyPrice = weiRate / ethDolRate * 10; // 10d
-        awards[0] = &quot;Best Dad Award&quot;;
-        awards[1] = &quot;Best Mom Award&quot;;
-        awards[2] = &quot;Hottest in the Office Award&quot;;
-        awards[3] = &quot;Diabetes Award&quot;;
-        awards[4] = &quot;Promising Assistant Manager Award&quot;;
-        awards[5] = &quot;Cutest Redhead in the Office Award&quot;;
-        awards[6] = &quot;Best Host Award&quot;;
-        awards[7] = &quot;Doobie Doobie Pothead Stoner of the Year Award&quot;;
-        awards[8] = &quot;Extreme Repulsiveness Award&quot;;
-        awards[9] = &quot;Redefining Beauty Award&quot;;
-        awards[10] = &quot;Kind of A Bitch Award&quot;;
-        awards[11] = &quot;Moving On Up Award&quot;;
-        awards[12] = &quot;Worst Salesman of the Year&quot;;
-        awards[13] = &quot;Busiest Beaver Award&quot;;
-        awards[14] = &quot;Tight-Ass Award&quot;;
-        awards[15] = &quot;Spicy Curry Award&quot;;
-        awards[16] = &quot;Don&#39;t Go in There After Me&quot;;
-        awards[17] = &quot;Fine Work Award&quot;;
-        awards[18] = &quot;Whitest Sneakers Award&quot;;
-        awards[19] = &quot;Great Work Award&quot;;
-        awards[20] = &quot;Longest Engagement Award&quot;;
-        awards[21] = &quot;Show Me the Money Award&quot;;
-        awards[22] = &quot;Best Boss Award&quot;;
-        awards[23] = &quot;Grace Under Fire Award&quot;;
+        awards[0] = "Best Dad Award";
+        awards[1] = "Best Mom Award";
+        awards[2] = "Hottest in the Office Award";
+        awards[3] = "Diabetes Award";
+        awards[4] = "Promising Assistant Manager Award";
+        awards[5] = "Cutest Redhead in the Office Award";
+        awards[6] = "Best Host Award";
+        awards[7] = "Doobie Doobie Pothead Stoner of the Year Award";
+        awards[8] = "Extreme Repulsiveness Award";
+        awards[9] = "Redefining Beauty Award";
+        awards[10] = "Kind of A Bitch Award";
+        awards[11] = "Moving On Up Award";
+        awards[12] = "Worst Salesman of the Year";
+        awards[13] = "Busiest Beaver Award";
+        awards[14] = "Tight-Ass Award";
+        awards[15] = "Spicy Curry Award";
+        awards[16] = "Don't Go in There After Me";
+        awards[17] = "Fine Work Award";
+        awards[18] = "Whitest Sneakers Award";
+        awards[19] = "Great Work Award";
+        awards[20] = "Longest Engagement Award";
+        awards[21] = "Show Me the Money Award";
+        awards[22] = "Best Boss Award";
+        awards[23] = "Grace Under Fire Award";
         awardsCount = 24;
     }
 
@@ -598,10 +598,10 @@ contract DundieDollar is Owned, MifflinToken {
         } else { // only take awards that they have
             uint left = _value;
       
-      		for (uint8 i = 0; i &lt; awardsCount; i++) {
+      		for (uint8 i = 0; i < awardsCount; i++) {
                 uint256 bal = awardBalanceOf(_from,award);
-                if(bal &gt; 0){
-                    if(bal &lt; left) {
+                if(bal > 0){
+                    if(bal < left) {
                         transferAwards(_from,_to,award,bal);
                         left -= bal;
                     } else {
@@ -619,7 +619,7 @@ contract DundieDollar is Owned, MifflinToken {
     function transferAwards(address from, address to, uint8 award , uint value) internal {
         //dont try to take specific awards from the contract
         if(from != address(this)) {
-            require(awardBalanceOf(from,award) &gt;= value );
+            require(awardBalanceOf(from,award) >= value );
             awardsOf[from][award] -= value;
         }
         //dont try to send specific awards to the contract
@@ -638,9 +638,9 @@ contract DundieDollar is Owned, MifflinToken {
 
 
 contract MifflinMarket is Owned {
-    mapping(uint8 =&gt; address) public tokenIds;
-    //mapping(uint8 =&gt; mapping(uint8 =&gt; uint256)) exchangeRates;
-    mapping(uint8 =&gt; mapping(uint8 =&gt; int256)) public totalExchanged;
+    mapping(uint8 => address) public tokenIds;
+    //mapping(uint8 => mapping(uint8 => uint256)) exchangeRates;
+    mapping(uint8 => mapping(uint8 => int256)) public totalExchanged;
     uint8 rewardTokenId = 1;
     bool active;
     
@@ -672,7 +672,7 @@ contract MifflinMarket is Owned {
     }
 
     function getTokenById(uint8 id) public view returns(MifflinToken){
-        require(tokenIds[id] &gt; 0);
+        require(tokenIds[id] > 0);
         return MifflinToken(tokenIds[id]);
     }
     
@@ -714,7 +714,7 @@ contract MifflinMarket is Owned {
     function highContributionAward(address to) public onlyTokens {
         MifflinToken reward = getRewardToken();
         //dont throw an error if there are no more tokens
-        if(reward.balanceOf(reward) &gt; 0){
+        if(reward.balanceOf(reward) > 0){
             reward.give(to, 1);
         }
     }
@@ -722,7 +722,7 @@ contract MifflinMarket is Owned {
     function lowContributionAward(address to) public onlyTokens {
         MifflinToken reward = getRewardToken();
         //dont throw an error here since this is just sugar
-        if(reward.balanceOf(to) &gt; 0){
+        if(reward.balanceOf(to) > 0){
             reward.take(to, 1);
         }
     }

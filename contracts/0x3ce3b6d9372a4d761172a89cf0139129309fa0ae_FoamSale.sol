@@ -18,8 +18,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -203,7 +203,7 @@ contract DisbursementHandler is DisbursementHandlerI, Ownable {
 
     ERC20 public token;
     uint256 public totalAmount;
-    mapping(address =&gt; Disbursement[]) public disbursements;
+    mapping(address => Disbursement[]) public disbursements;
 
     constructor(ERC20 _token) public {
         require(_token != address(0));
@@ -222,7 +222,7 @@ contract DisbursementHandler is DisbursementHandlerI, Ownable {
         external
         onlyOwner
     {
-        require(block.timestamp &lt; _timestamp);
+        require(block.timestamp < _timestamp);
         disbursements[_beneficiary].push(Disbursement(_timestamp, _value));
         totalAmount = totalAmount.add(_value);
         emit Setup(_beneficiary, _timestamp, _value);
@@ -235,10 +235,10 @@ contract DisbursementHandler is DisbursementHandlerI, Ownable {
         external
     {
         Disbursement[] storage beneficiaryDisbursements = disbursements[_beneficiary];
-        require(_index &lt; beneficiaryDisbursements.length);
+        require(_index < beneficiaryDisbursements.length);
 
         Disbursement memory disbursement = beneficiaryDisbursements[_index];
-        require(disbursement.timestamp &lt; now &amp;&amp; disbursement.value &gt; 0);
+        require(disbursement.timestamp < now && disbursement.value > 0);
 
         // Remove the withdrawn disbursement
         delete beneficiaryDisbursements[_index];
@@ -267,25 +267,25 @@ interface VaultI {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
 // File: @tokenfoundry/sale-contracts/contracts/Vault.sol
 
-// Adapted from Open Zeppelin&#39;s RefundVault
+// Adapted from Open Zeppelin's RefundVault
 
 /**
  * @title Vault
@@ -301,7 +301,7 @@ contract Vault is VaultI, Ownable {
     // The timestamp of the first deposit
     uint256 public firstDepositTimestamp; 
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     // The amount to be disbursed to the wallet every month
     uint256 public disbursementWei;
@@ -370,18 +370,18 @@ contract Vault is VaultI, Ownable {
         transferToWallet(initialWei);
     }
 
-    /// @dev Called by the owner if the project didn&#39;t deliver the testnet contracts or if we need to stop disbursements for any reasone.
+    /// @dev Called by the owner if the project didn't deliver the testnet contracts or if we need to stop disbursements for any reasone.
     function enableRefunds() onlyOwner external {
         require(state != State.Refunding);
         state = State.Refunding;
         uint256 currentBalance = address(this).balance;
-        refundable = currentBalance &lt;= totalDeposited ? currentBalance : totalDeposited;
+        refundable = currentBalance <= totalDeposited ? currentBalance : totalDeposited;
         emit RefundsEnabled();
     }
 
     /// @dev Refunds ether to the contributors if in the Refunding state.
     function refund(address _contributor) external atState(State.Refunding) {
-        require(deposited[_contributor] &gt; 0);
+        require(deposited[_contributor] > 0);
         uint256 refundAmount = deposited[_contributor].mul(refundable).div(totalDeposited);
         deposited[_contributor] = 0;
         _contributor.transfer(refundAmount);
@@ -397,7 +397,7 @@ contract Vault is VaultI, Ownable {
 
     /// @dev Sends the disbursement amount to the wallet after the disbursement period has passed. Can be called by anyone.
     function sendFundsToWallet() external atState(State.Closed) {
-        require(nextDisbursement &lt;= now);
+        require(nextDisbursement <= now);
 
         if (disbursementDuration == 0) {
             trustedWallet.transfer(address(this).balance);
@@ -469,12 +469,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -484,7 +484,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * @dev and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -495,7 +495,7 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      &quot;\x19Ethereum Signed Message:\n32&quot;,
+      "\x19Ethereum Signed Message:\n32",
       hash
     );
   }
@@ -513,7 +513,7 @@ contract Whitelistable is WhitelistableI, Ownable {
     address public whitelistAdmin;
 
     // True if the hash has been invalidated
-    mapping(bytes32 =&gt; bool) public invalidHash;
+    mapping(bytes32 => bool) public invalidHash;
 
     event AdminUpdated(address indexed newAdmin);
 
@@ -557,7 +557,7 @@ contract Whitelistable is WhitelistableI, Ownable {
     }
 
     function invalidateHashes(bytes32[] _hashes) external onlyAdmin {
-        for (uint i = 0; i &lt; _hashes.length; i++) {
+        for (uint i = 0; i < _hashes.length; i++) {
             invalidHash[_hashes[i]] = true;
         }
     }
@@ -575,7 +575,7 @@ contract Whitelistable is WhitelistableI, Ownable {
         returns(bool)
     {
         bytes32 hash = _rawHash.toEthSignedMessageHash();
-        return !invalidHash[_rawHash] &amp;&amp; whitelistAdmin == hash.recover(_sig);
+        return !invalidHash[_rawHash] && whitelistAdmin == hash.recover(_sig);
     }
 }
 
@@ -604,12 +604,12 @@ contract StateMachine {
 
     struct State { 
         bytes32 nextStateId;
-        mapping(bytes4 =&gt; bool) allowedFunctions;
+        mapping(bytes4 => bool) allowedFunctions;
         function() internal[] transitionCallbacks;
         function(bytes32) internal returns(bool)[] startConditions;
     }
 
-    mapping(bytes32 =&gt; State) states;
+    mapping(bytes32 => State) states;
 
     // The current state id
     bytes32 private currentStateId;
@@ -633,9 +633,9 @@ contract StateMachine {
             checkNextState = false;
 
             bytes32 next = states[currentStateId].nextStateId;
-            // If one of the next state&#39;s conditions is met, go to this state and continue
+            // If one of the next state's conditions is met, go to this state and continue
 
-            for (uint256 i = 0; i &lt; states[next].startConditions.length; i++) {
+            for (uint256 i = 0; i < states[next].startConditions.length; i++) {
                 if (states[next].startConditions[i](next)) {
                     goToNextState();
                     checkNextState = true;
@@ -652,14 +652,14 @@ contract StateMachine {
     /// @dev Setup the state machine with the given states.
     /// @param _stateIds Array of state ids.
     function setStates(bytes32[] _stateIds) internal {
-        require(_stateIds.length &gt; 0);
+        require(_stateIds.length > 0);
         require(currentStateId == 0);
 
         require(_stateIds[0] != 0);
 
         currentStateId = _stateIds[0];
 
-        for (uint256 i = 1; i &lt; _stateIds.length; i++) {
+        for (uint256 i = 1; i < _stateIds.length; i++) {
             require(_stateIds[i] != 0);
 
             states[_stateIds[i - 1]].nextStateId = _stateIds[i];
@@ -684,7 +684,7 @@ contract StateMachine {
         require(next != 0);
 
         currentStateId = next;
-        for (uint256 i = 0; i &lt; states[next].transitionCallbacks.length; i++) {
+        for (uint256 i = 0; i < states[next].transitionCallbacks.length; i++) {
             states[next].transitionCallbacks[i]();
         }
 
@@ -729,8 +729,8 @@ contract TimedStateMachine is StateMachine {
 
     event StateStartTimeSet(bytes32 indexed _stateId, uint256 _startTime);
 
-    // Stores the start timestamp for each state (the value is 0 if the state doesn&#39;t have a start timestamp).
-    mapping(bytes32 =&gt; uint256) private startTime;
+    // Stores the start timestamp for each state (the value is 0 if the state doesn't have a start timestamp).
+    mapping(bytes32 => uint256) private startTime;
 
     /// @dev Returns the timestamp for the given state id.
     /// @param _stateId The id of the state for which we want to set the start timestamp.
@@ -743,7 +743,7 @@ contract TimedStateMachine is StateMachine {
     /// @param _stateId The id of the state for which we want to set the start timestamp.
     /// @param _timestamp The start timestamp for the given state. It should be bigger than the current one.
     function setStateStartTime(bytes32 _stateId, uint256 _timestamp) internal {
-        require(block.timestamp &lt; _timestamp);
+        require(block.timestamp < _timestamp);
 
         if (startTime[_stateId] == 0) {
             addStartCondition(_stateId, hasStartTimePassed);
@@ -755,7 +755,7 @@ contract TimedStateMachine is StateMachine {
     }
 
     function hasStartTimePassed(bytes32 _stateId) internal returns(bool) {
-        return startTime[_stateId] &lt;= block.timestamp;
+        return startTime[_stateId] <= block.timestamp;
     }
 
 }
@@ -782,7 +782,7 @@ contract TokenControllerI {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -800,7 +800,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -830,7 +830,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -848,8 +848,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -863,7 +863,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -932,7 +932,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -1046,18 +1046,18 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
     using SafeERC20 for Token;
 
     // State machine states
-    bytes32 private constant SETUP = &quot;setup&quot;;
-    bytes32 private constant FREEZE = &quot;freeze&quot;;
-    bytes32 private constant SALE_IN_PROGRESS = &quot;saleInProgress&quot;;
-    bytes32 private constant SALE_ENDED = &quot;saleEnded&quot;;
+    bytes32 private constant SETUP = "setup";
+    bytes32 private constant FREEZE = "freeze";
+    bytes32 private constant SALE_IN_PROGRESS = "saleInProgress";
+    bytes32 private constant SALE_ENDED = "saleEnded";
     // solium-disable-next-line arg-overflow
     bytes32[] public states = [SETUP, FREEZE, SALE_IN_PROGRESS, SALE_ENDED];
 
     // Stores the contribution for each user
-    mapping(address =&gt; uint256) public unitContributions;
+    mapping(address => uint256) public unitContributions;
 
     // Records extra tokens were allocated
-    mapping(address =&gt; bool) public extraTokensAllocated;
+    mapping(address => bool) public extraTokensAllocated;
 
     DisbursementHandler public disbursementHandler;
 
@@ -1112,9 +1112,9 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
         require(_totalSaleCapUnits != 0);
         require(_maxTokens != 0);
         require(_wallet != 0);
-        require(_minThresholdUnits &lt;= _totalSaleCapUnits);
+        require(_minThresholdUnits <= _totalSaleCapUnits);
         require(_ethPriceFeed != address(0));
-        require(now &lt; _startTime);
+        require(now < _startTime);
 
         totalSaleCapUnits = _totalSaleCapUnits;
         minContributionUnits = _minContributionUnits;
@@ -1170,10 +1170,10 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
         trustedToken.safeTransfer(disbursementHandler, disbursementHandler.totalAmount());
 
         tokensForSale = trustedToken.balanceOf(this);     
-        require(tokensForSale &gt;= totalSaleCapUnits);
+        require(tokensForSale >= totalSaleCapUnits);
 
         // Set the worst rate of tokens per unit
-        // If sale doesn&#39;t sell out, extra tokens will be disbursed after the sale ends.
+        // If sale doesn't sell out, extra tokens will be disbursed after the sale ends.
         saleTokensPerUnit = tokensForSale.div(totalSaleCapUnits);
 
         // Go to freeze state
@@ -1206,14 +1206,14 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
         ), _sig)
     {
         require(msg.sender == _contributor);
-        require(now &lt; _payloadExpiration); 
+        require(now < _payloadExpiration); 
 
         uint256 weiPerUnitRate = ethPriceFeed.getRate(); 
         require(weiPerUnitRate != 0);
 
         uint256 previouslyContributedUnits = unitContributions[_contributor];
 
-        // Check that the contribution amount doesn&#39;t go over the sale cap or personal contributionLimitUnits 
+        // Check that the contribution amount doesn't go over the sale cap or personal contributionLimitUnits 
         uint256 currentContributionUnits = min256(
             _contributionLimitUnits.sub(previouslyContributedUnits),
             totalSaleCapUnits.sub(totalContributedUnits),
@@ -1223,7 +1223,7 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
         require(currentContributionUnits != 0);
 
         // Check that it is higher than minContributionUnits
-        require(currentContributionUnits &gt;= minContributionUnits || previouslyContributedUnits != 0);
+        require(currentContributionUnits >= minContributionUnits || previouslyContributedUnits != 0);
 
         // Update the state
         unitContributions[_contributor] = previouslyContributedUnits.add(currentContributionUnits);
@@ -1233,14 +1233,14 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
         trustedVault.deposit.value(currentContributionWei)(msg.sender);
 
         // If the minThresholdUnits is reached for the first time, notify the vault
-        if (totalContributedUnits &gt;= minThresholdUnits &amp;&amp;
+        if (totalContributedUnits >= minThresholdUnits &&
             trustedVault.state() != Vault.State.Success) {
             trustedVault.saleSuccessful();
         }
 
         // If there is an excess, return it to the sender
         uint256 excessWei = msg.value.sub(currentContributionWei);
-        if (excessWei &gt; 0) {
+        if (excessWei > 0) {
             msg.sender.transfer(excessWei);
         }
 
@@ -1268,7 +1268,7 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
         require(!extraTokensAllocated[_contributor]);
         require(unitContributions[_contributor] != 0);
         // Allocate extra tokens only if total sale cap is not reached
-        require(totalContributedUnits &lt; totalSaleCapUnits);
+        require(totalContributedUnits < totalSaleCapUnits);
 
         // Transfer the respective tokens to the contributor
         extraTokensAllocated[_contributor] = true;
@@ -1281,13 +1281,13 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
     /// @dev Sets the end time for the sale
     /// @param _endTime The timestamp at which the sale will end.
     function setEndTime(uint256 _endTime) external onlyOwner checkAllowed {
-        require(now &lt; _endTime);
+        require(now < _endTime);
         require(getStateStartTime(SALE_ENDED) == 0);
         setStateStartTime(SALE_ENDED, _endTime);
     }
 
     /// @dev Called to enable refunds by the owner. Can only be called in any state (without triggering conditional transitions)
-    /// @dev This is only meant to be used if there is an emergency and the endSale() function can&#39;t be called
+    /// @dev This is only meant to be used if there is an emergency and the endSale() function can't be called
     function enableRefunds() external onlyOwner {
         trustedVault.enableRefunds();
     }
@@ -1328,7 +1328,7 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
    
     /// @dev Returns true if the cap was reached.
     function wasCapReached(bytes32) internal returns (bool) {
-        return totalSaleCapUnits &lt;= totalContributedUnits;
+        return totalSaleCapUnits <= totalContributedUnits;
     }
 
     /// @dev Callback that gets called when entering the SALE_ENDED state.
@@ -1341,9 +1341,9 @@ contract Sale is SaleI, Ownable, Whitelistable, TimedStateMachine, TokenControll
             // If no tokens were sold, transfer them back to the project team
             trustedToken.safeTransfer(trustedVault.trustedWallet(), tokensForSale);
 
-        } else if (totalContributedUnits &lt; minThresholdUnits) {
+        } else if (totalContributedUnits < minThresholdUnits) {
 
-            // If the minimum threshold wasn&#39;t reached, enable refunds
+            // If the minimum threshold wasn't reached, enable refunds
             trustedVault.enableRefunds();
 
         } else {
@@ -1383,8 +1383,8 @@ contract FoamSale is Sale {
             25000 ether, // Vault disbursement Wei
             0, // Vault disbursement duration (0 means transfer everything right away)
             1532803878, // Start time
-            &quot;FOAM Token&quot;, // Token name
-            &quot;FOAM&quot;, // Token symbol
+            "FOAM Token", // Token name
+            "FOAM", // Token symbol
             18, // Token decimals
             EthPriceFeedI(0x54bF24e1070784D7F0760095932b47CE55eb3A91) // Eth price feed
         )

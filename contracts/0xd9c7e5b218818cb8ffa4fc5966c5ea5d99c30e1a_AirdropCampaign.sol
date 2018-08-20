@@ -48,26 +48,26 @@ contract Ownable {
 
 contract InterfaceSignatureConstants {
   bytes4 constant InterfaceSignature_ERC165 =
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
 
   bytes4 constant InterfaceSignature_ERC20 =
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;allowance(address,address)&#39;));
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('allowance(address,address)'));
 
   bytes4 constant InterfaceSignature_ERC20_PlusOptions = 
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;decimals()&#39;)) ^
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;allowance(address,address)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('decimals()')) ^
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('transfer(address,uint256)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('allowance(address,address)'));
 }
 
 contract AirdropCampaign is Ownable, InterfaceSignatureConstants {
@@ -76,7 +76,7 @@ contract AirdropCampaign is Ownable, InterfaceSignatureConstants {
   uint256 public disbursementAmount;
   bool    public canDisburseMultipleTimes;
 
-  mapping (address =&gt; uint256) public disbursements;
+  mapping (address => uint256) public disbursements;
 
   modifier notHolder () {
     if (tokenHolderAddress == msg.sender) revert();
@@ -99,8 +99,8 @@ contract AirdropCampaign is Ownable, InterfaceSignatureConstants {
   }
 
   function register () public notHolder {
-    if (!canDisburseMultipleTimes &amp;&amp;
-        disbursements[msg.sender] &gt; uint256(0)) revert();
+    if (!canDisburseMultipleTimes &&
+        disbursements[msg.sender] > uint256(0)) revert();
 
     ERC20 tokenContract = ERC20(tokenAddress);
 
@@ -112,7 +112,7 @@ contract AirdropCampaign is Ownable, InterfaceSignatureConstants {
     ERC165 candidateContract = ERC165(candidate);
 
     // roundabout way of verifying this
-    // 1. this address must have the code for &#39;supportsInterface&#39; (ERC165), and,
+    // 1. this address must have the code for 'supportsInterface' (ERC165), and,
     // 2. this address must return true given the hash of the interface for ERC20
     if (!candidateContract.supportsInterface(InterfaceSignature_ERC20)) revert();
     tokenAddress = candidateContract;

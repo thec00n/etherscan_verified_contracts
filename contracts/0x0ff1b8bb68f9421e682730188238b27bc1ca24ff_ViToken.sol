@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,8 +49,8 @@ contract ERC20Token is IERC20Token {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     modifier validAddress(address _address) {
         require(_address != 0x0);
@@ -129,8 +129,8 @@ contract ViToken is ERC20Token, Owned {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;ViToken&quot;;
-    string public constant symbol = &quot;VIT&quot;;
+    string public constant name = "ViToken";
+    string public constant symbol = "VIT";
     uint32 public constant decimals = 18;
 
     // SET current initial token supply
@@ -151,7 +151,7 @@ contract ViToken is ERC20Token, Owned {
     // List wallets to allow transactions tokens
     uint[256] private nWallets;
     // Index on the list of wallets to allow reverse lookup
-    mapping(uint =&gt; uint) private iWallets;
+    mapping(uint => uint) private iWallets;
 
     event Finalize();
     event DisableTransfers();
@@ -164,7 +164,7 @@ contract ViToken is ERC20Token, Owned {
 
         totalSupply = initialSupply;
         // Initializing 72% of tokens for sale
-        // maxSaleToken = initialSupply * 72 / 100 (72% this is maxSaleToken &amp; 100% this is initialSupply)
+        // maxSaleToken = initialSupply * 72 / 100 (72% this is maxSaleToken & 100% this is initialSupply)
         // totalProjectToken will be calculated in function finalize()
         // 
         // |------------maxSaleToken------totalProjectToken|
@@ -185,7 +185,7 @@ contract ViToken is ERC20Token, Owned {
         nWallets[1] = uint(msg.sender);
         iWallets[uint(msg.sender)] = 1;
 
-        for (uint index = 0; index &lt; wallets.length; index++) {
+        for (uint index = 0; index < wallets.length; index++) {
             nWallets[2 + index] = uint(wallets[index]);
             iWallets[uint(wallets[index])] = index + 2;
         }
@@ -200,7 +200,7 @@ contract ViToken is ERC20Token, Owned {
     modifier transfersAllowed(address _address) {
         if (fundingEnabled) {
             uint index = iWallets[uint(_address)];
-            assert(index &gt; 0);
+            assert(index > 0);
         }
 
         require(transfersEnabled);
@@ -226,8 +226,8 @@ contract ViToken is ERC20Token, Owned {
 
         uint256 soldTokens = maxSaleToken;
 
-        for (uint index = 1; index &lt; nWallets.length; index++) {
-            if (balances[address(nWallets[index])] &gt; 0) {
+        for (uint index = 1; index < nWallets.length; index++) {
+            if (balances[address(nWallets[index])] > 0) {
                 // Get total sold tokens on the funding wallets
                 // totalSoldTokens is 72% of the total number of tokens
                 soldTokens = soldTokens.sub(balances[address(nWallets[index])]);
@@ -240,7 +240,7 @@ contract ViToken is ERC20Token, Owned {
 
         totalSoldTokens = soldTokens;
 
-        // totalProjectToken = totalSoldTokens * 28 / 72 (28% this is Vimarket Project &amp; 72% this is totalSoldTokens)
+        // totalProjectToken = totalSoldTokens * 28 / 72 (28% this is Vimarket Project & 72% this is totalSoldTokens)
         //
         // |----------totalSoldTokens-----totalProjectToken|
         // |================72%================|====28%====|
@@ -253,7 +253,7 @@ contract ViToken is ERC20Token, Owned {
         _transferProject(0xf1f815589e7B1Ba6cBfF04DCc1C2b898ECFfE4cb, totalSupply.mul(16).div(100));
         // 10% of totalSupply transfer to Advisors
         _transferProject(0x1c3a5aB190AF3f25aBfd797FDe49A3dB6f209B88, totalSupply.mul(10).div(100));
-        // 2% of totalSupply transfer to Bounties &amp; Rewards
+        // 2% of totalSupply transfer to Bounties & Rewards
         _transferProject(0xe098854748CBC70f151fa555399365A42e360269, totalSupply.mul(2).div(100));
 
         fundingEnabled = false;

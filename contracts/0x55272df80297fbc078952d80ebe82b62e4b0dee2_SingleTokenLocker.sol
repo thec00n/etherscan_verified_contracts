@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
 contract StandardContract {
-    // allows usage of &quot;require&quot; as a modifier
+    // allows usage of "require" as a modifier
     modifier requires(bool b) {
         require(b);
         _;
@@ -32,20 +32,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -198,16 +198,16 @@ contract HasNoEther is Ownable {
  *  - The owner creates a token locker for a particular ERC20 token type
  *  - The owner approves the locker up to some number of tokens: token.approve(tokenLockerAddress, tokenAmount)
  *    - Alternately, the owner can send tokens to the locker.  When locking tokens, the locker checks its balance first
- *  - The owner calls &quot;lockup&quot; with a particular recipient, amount, and unlock time.  The recipient will be allowed
+ *  - The owner calls "lockup" with a particular recipient, amount, and unlock time.  The recipient will be allowed
  *    to collect the tokens once the lockup period is ended.
- *  - The recipient calls &quot;confirm&quot; which confirms that the recipient&#39;s address is correct and is controlled by the
- *    intended recipient (e.g. not an exchange address).  The assumption is that if the recipient can call &quot;confirm&quot;
- *    they have demonstrated that they will also be able to call &quot;collect&quot; when the tokens are ready.
- *  - Once the lock expires, the recipient calls &quot;collect&quot; and the tokens are transferred from the locker to the
+ *  - The recipient calls "confirm" which confirms that the recipient's address is correct and is controlled by the
+ *    intended recipient (e.g. not an exchange address).  The assumption is that if the recipient can call "confirm"
+ *    they have demonstrated that they will also be able to call "collect" when the tokens are ready.
+ *  - Once the lock expires, the recipient calls "collect" and the tokens are transferred from the locker to the
  *    recipient.
  *
  * An owner can lockup his/her own tokens in order to demonstrate the they will not be moved until a particular time.
- * In this case, no separate &quot;confirm&quot; step is needed (confirm happens automatically)
+ * In this case, no separate "confirm" step is needed (confirm happens automatically)
  *
  * The following diagram shows the actual balance of the token locker and how it is tracked internally
  *
@@ -234,7 +234,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
   uint256 public nextPromiseId;
 
   // promise storage
-  mapping(uint256 =&gt; TokenPromise) public promises;
+  mapping(uint256 => TokenPromise) public promises;
 
   // The total amount of tokens locked or pending lock (in the non-fractional units, like wei)
   uint256 public promisedTokenBalance;
@@ -252,7 +252,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
   enum PromiseState { none, pending, confirmed, executed, canceled, failed }
 
   // a matrix designating the legal state transitions for a promise (see constructor)
-  mapping (uint =&gt; mapping(uint =&gt; bool)) stateTransitionMatrix;
+  mapping (uint => mapping(uint => bool)) stateTransitionMatrix;
 
   // true if the contract has been initialized
   bool initialized;
@@ -283,7 +283,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
    * Ensures the promiseId as actually in use.
    */
   modifier promiseExists(uint promiseId) {
-    require(promiseId &lt; nextPromiseId);
+    require(promiseId < nextPromiseId);
     _;
   }
 
@@ -293,8 +293,8 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
   modifier thenAssertState() {
     _;
     uint256 balance = tokenBalance();
-    assert(lockedTokenBalance &lt;= promisedTokenBalance);
-    assert(promisedTokenBalance &lt;= balance);
+    assert(lockedTokenBalance <= promisedTokenBalance);
+    assert(promisedTokenBalance <= balance);
   }
 
   // Constructor
@@ -317,7 +317,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
    *
    * Note 1: lockup is not guaranteed until the recipient confirms.
    * Note 2: Assumes the owner has already given approval for the TokenLocker to take out the tokens
-   *         or that the locker&#39;s balance is sufficient
+   *         or that the locker's balance is sufficient
    */
   function lockup(address recipient, uint256 amount, uint256 lockedUntil)
     onlyOwner
@@ -376,7 +376,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
   function collect(uint256 promiseId)
     promiseExists(promiseId)
     onlyRecipient(promiseId)
-    requires(block.timestamp &gt;= promises[promiseId].lockedUntil)
+    requires(block.timestamp >= promises[promiseId].lockedUntil)
     requiresOne(
       promises[promiseId].state == PromiseState.pending,
       promises[promiseId].state == PromiseState.confirmed
@@ -393,7 +393,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     else {
       // everything looked good, but the transfer failed.  :(  Now what?
       // There is no reason to think it will work the next time, so
-      // reverting probably won&#39;t help here; the tokens would remain locked
+      // reverting probably won't help here; the tokens would remain locked
       // forever.  Our only hope is that the token owner will resolve the
       // issue in the real world.  Since the amount has been deducted from the
       // locked and pending totals, it has effectively been returned to the owner.
@@ -407,7 +407,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
    */
   function withdrawUncommittedTokens(uint amount)
     onlyOwner
-    requires(amount &lt;= uncommittedTokenBalance())
+    requires(amount <= uncommittedTokenBalance())
     nonReentrant
     external
   {
@@ -438,7 +438,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     onlyOwner
     requiresOne(
       tokenAddress != address(token),
-      amount &lt;= uncommittedTokenBalance()
+      amount <= uncommittedTokenBalance()
     )
     nonReentrant
     external
@@ -464,7 +464,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     returns(bool)
   {
     return (promises[promiseId].state == PromiseState.confirmed || promises[promiseId].state == PromiseState.pending)
-      &amp;&amp; block.timestamp &gt;= promises[promiseId].lockedUntil;
+      && block.timestamp >= promises[promiseId].lockedUntil;
   }
 
   // @dev returns the total amount of tokens that are eligible to be collected
@@ -473,7 +473,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     returns(uint256 collectable)
   {
     collectable = 0;
-    for (uint i=0; i&lt;nextPromiseId; i++) {
+    for (uint i=0; i<nextPromiseId; i++) {
       if (canCollect(i)) {
         collectable = collectable.add(promises[i].amount);
       }
@@ -493,8 +493,8 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     constant
     returns (uint count)
   {
-    for (uint i=0; i&lt;nextPromiseId; i++) {
-      if (recipient != 0x0 &amp;&amp; recipient != promises[i].recipient)
+    for (uint i=0; i<nextPromiseId; i++) {
+      if (recipient != 0x0 && recipient != promises[i].recipient)
         continue;
 
         if (includeCompleted
@@ -518,8 +518,8 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     uint[] memory promiseIdsTemp = new uint[](nextPromiseId);
     uint count = 0;
     uint i;
-    for (i=0; i&lt;nextPromiseId &amp;&amp; count &lt; to; i++) {
-      if (recipient != 0x0 &amp;&amp; recipient != promises[i].recipient)
+    for (i=0; i<nextPromiseId && count < to; i++) {
+      if (recipient != 0x0 && recipient != promises[i].recipient)
         continue;
 
       if (includeCompleted
@@ -531,7 +531,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
       }
     }
     promiseIds = new uint[](to - from);
-    for (i=from; i&lt;to; i++)
+    for (i=from; i<to; i++)
       promiseIds[i - from] = promiseIdsTemp[i];
   }
 
@@ -586,7 +586,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     stateTransitionMatrix[uint(from)][uint(to)] = true;
   }
 
-  // @dev moves the promise to the new state as long as it&#39;s permitted by the state transition matrix
+  // @dev moves the promise to the new state as long as it's permitted by the state transition matrix
   function transition(TokenPromise storage promise, PromiseState newState)
     internal
   {
@@ -608,7 +608,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
    * @dev creates and stores a new promise object, updates the promisedTokenBalance
    */
   function createPromise(address recipient, uint256 amount, uint256 lockedUntil)
-    requires(amount &lt;= uncommittedTokenBalance())
+    requires(amount <= uncommittedTokenBalance())
     thenAssertState
     internal
     returns(TokenPromise storage promise)
@@ -630,7 +630,7 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
 
   /**
    * @dev Checks the uncommitted balance to ensure there the locker has enough tokens to guarantee the
-   * amount given can be promised.  If the locker&#39;s balance is not enough, the locker will attempt to transfer
+   * amount given can be promised.  If the locker's balance is not enough, the locker will attempt to transfer
    * tokens from the owner.
    */
   function ensureTokensAvailable(uint256 amount)
@@ -638,12 +638,12 @@ contract SingleTokenLocker is Claimable, ReentrancyGuard, StandardContract, HasN
     internal
   {
     uint256 uncommittedBalance = uncommittedTokenBalance();
-    if (uncommittedBalance &lt; amount) {
+    if (uncommittedBalance < amount) {
       token.transferFrom(owner, this, amount.sub(uncommittedBalance));
 
       // Just assert that the condition we really care about holds, rather
       // than relying on the return value.  see GavCoin and all the tokens copy/pasted therefrom.
-      assert(uncommittedTokenBalance() &gt;= amount);
+      assert(uncommittedTokenBalance() >= amount);
     }
   }
 }

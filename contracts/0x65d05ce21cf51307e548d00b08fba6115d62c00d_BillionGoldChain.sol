@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract BillionGoldChain {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract BillionGoldChain {
 
     function BillionGoldChain() {
         totalSupply = 21000000;
-        symbol = &#39;BGCN&#39;;
+        symbol = 'BGCN';
         owner = 0x51236C86b9bBbAD27e2c9874D6D64B09C4933fEf;
         balances[owner] = totalSupply;
         decimals = 0;

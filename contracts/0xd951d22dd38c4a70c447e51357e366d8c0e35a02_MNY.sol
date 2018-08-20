@@ -10,9 +10,9 @@ contract Target {
 
 contract MNY {
 
-    string public name = &quot;MNY by Monkey Capital&quot;;
+    string public name = "MNY by Monkey Capital";
     uint8 public decimals = 18;
-    string public symbol = &quot;MNY&quot;;
+    string public symbol = "MNY";
 
     address public owner;
     address public exchangeAdmin;
@@ -59,10 +59,10 @@ contract MNY {
     bool distributionCalculated = false;
 
     // Storage
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public tokenBalances;
-    mapping (address =&gt; uint256) public tokenShare;
-    mapping (address =&gt; uint256) public exchangeRates; // balance and rate in cents (where $1 = 1*10^18)
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public tokenBalances;
+    mapping (address => uint256) public tokenShare;
+    mapping (address => uint256) public exchangeRates; // balance and rate in cents (where $1 = 1*10^18)
 
     // events
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -73,7 +73,7 @@ contract MNY {
 
     function transfer(address _to, uint _value, bytes _data) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         if(_to == address(this)) {
             if(swap == false) {
@@ -87,7 +87,7 @@ contract MNY {
                 Transfer(msg.sender, _to, _value);
             }
             else {
-                require(div(_value, 1 ether) &gt; 0);   // whole tokens only in for swap
+                require(div(_value, 1 ether) > 0);   // whole tokens only in for swap
                 if(distributionCalculated = false) {
                     calculateHeldTokenDistribution();
                 }
@@ -107,7 +107,7 @@ contract MNY {
 
     function transfer(address _to, uint _value) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         if(_to == address(this)) {
             if(swap == false) {
@@ -142,11 +142,11 @@ contract MNY {
         uint256 _availableInTier = mul(tierTokens[tierLevel], costPerToken[tierLevel]);
         uint256 _allocation = 0;
 
-        if(_submitted &gt;= _availableInTier) {
+        if(_submitted >= _availableInTier) {
             _allocation = tierTokens[tierLevel];
             tierTokens[tierLevel] = 0;
             tierLevel++;
-            if(tierLevel &gt; maxTier) {
+            if(tierLevel > maxTier) {
                 swap = true;
             }
             _submitted = sub(_submitted, _availableInTier);
@@ -165,7 +165,7 @@ contract MNY {
         circulatingSupply = add(circulatingSupply, _allocation);
         totalSupply = sub(totalSupply, _allocation);
 
-        if((_submitted != 0) &amp;&amp; (tierLevel &lt;= maxTier)) {
+        if((_submitted != 0) && (tierLevel <= maxTier)) {
             allocateTokens(_submitted, _recipient);
         }
         else {
@@ -176,10 +176,10 @@ contract MNY {
 
     function exchangeTokensFromOtherContract(address _source, address _recipient, uint256 _sentTokens) public {
 
-        require(exchangeRates[msg.sender] &gt; 0);
+        require(exchangeRates[msg.sender] > 0);
         uint256 _exchanged = mul(_sentTokens, exchangeRates[_source]);
 
-        require(_exchanged &lt;= mul(totalSupply, 1 ether));
+        require(_exchanged <= mul(totalSupply, 1 ether));
         allocateTokens(_exchanged, _recipient);
     }
 
@@ -190,7 +190,7 @@ contract MNY {
         assembly {
             codeLength := extcodesize(_partner)
         }
-        require(codeLength &gt; 0);
+        require(codeLength > 0);
         exchangeRates[_partner] = _rate;
 
         bool isContract = existingContract(_partner);
@@ -230,7 +230,7 @@ contract MNY {
         // allows tokens transferred in for exchange to be converted to MNY and distributed
         // COE is able to interact directly with contract - other exchange partners cannot
         require((msg.sender == owner) || (msg.sender == exchangeAdmin));
-        require(exchangeRates[_source] &gt; 0);
+        require(exchangeRates[_source] > 0);
         maintainExternalContractTokenBalance(_source, _originalAmount);
         allocateTokens(_value, _recipient);
     }
@@ -255,7 +255,7 @@ contract MNY {
 
     function calculateHeldTokenDistribution() public {
         require(swap = true);
-        for(uint i=0; i&lt;contractCount; i++) {
+        for(uint i=0; i<contractCount; i++) {
 //            tokenShare[contracts[i]] = div(tokenBalances[contracts[i]], div(add(totalSupply, circulatingSupply), 1 ether));
             tokenShare[contracts[i]] = div(tokenBalances[contracts[i]], circulatingSupply);
         }
@@ -269,7 +269,7 @@ contract MNY {
     function shareStoredTokens(address _recipient, uint256 mny) internal {
         Target t;
         uint256 share = 0;
-        for(uint i=0; i&lt;contractCount; i++) {
+        for(uint i=0; i<contractCount; i++) {
             share = mul(mny, tokenShare[contracts[i]]);
 
             t = Target(contracts[i]);
@@ -279,7 +279,7 @@ contract MNY {
 
     function distributeMnyAfterSwap(address _recipient, uint256 _tokens) public {
         require(msg.sender == owner);
-        require(totalSupply &lt;= _tokens);
+        require(totalSupply <= _tokens);
         balances[_recipient] = add(balances[_recipient], _tokens);
         Transfer(this, _recipient, _tokens);
         totalSupply = sub(totalSupply, _tokens);
@@ -287,7 +287,7 @@ contract MNY {
     }
 
     function existingContract(address _contract) internal returns (bool) {
-        for(uint i=0; i&lt;contractCount; i++) {
+        for(uint i=0; i<contractCount; i++) {
             if(contracts[i] == _contract) return true;
         }
         return false;
@@ -304,20 +304,20 @@ contract MNY {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 }

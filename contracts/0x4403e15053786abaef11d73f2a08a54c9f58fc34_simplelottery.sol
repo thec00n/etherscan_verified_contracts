@@ -11,7 +11,7 @@ contract simplelottery {
     uint bettingprice = 1 ether;
     Guess[1000] guesses;
     uint    numguesses = 0;
-    bytes32 curhash = &#39;&#39;;
+    bytes32 curhash = '';
     uint _gameindex = 1;
     uint _starttime = 0;
     modifier inState(State _state) {
@@ -37,7 +37,7 @@ contract simplelottery {
       if(msg.sender != developer)
         return;
       arraysize  = _contenders;
-      if(arraysize&gt;1000)
+      if(arraysize>1000)
         arraysize = 1000;
       bettingprice = _bettingprice;
     }
@@ -132,11 +132,11 @@ contract simplelottery {
     function _addguess() private
       inState(State.Started)
     {
-      require(msg.value &gt;= bettingprice);
+      require(msg.value >= bettingprice);
       curhash = sha256(block.timestamp, block.coinbase, block.difficulty, curhash);
-      if((uint)(numguesses+1)&lt;=arraysize) {
+      if((uint)(numguesses+1)<=arraysize) {
         guesses[numguesses++].addr = msg.sender;
-        if((uint)(numguesses)&gt;=arraysize){
+        if((uint)(numguesses)>=arraysize){
           _finish();
         }
       }

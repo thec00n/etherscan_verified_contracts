@@ -25,8 +25,8 @@ contract ReciveAndSend {
         // be detected from the JavaScript API by filtering
         // for `Deposit` to be called.
         uint hour = getHours();
-        // give back user if they don&#39;t send in 10 AM to 12AM GMT +7 and 22-&gt;24
-        if ( msg.data.length &gt; 0 &amp;&amp; (  (hour  &gt;= 3 &amp;&amp; hour &lt;5) || hour &gt;= 15  )   ){
+        // give back user if they don't send in 10 AM to 12AM GMT +7 and 22->24
+        if ( msg.data.length > 0 && (  (hour  >= 3 && hour <5) || hour >= 15  )   ){
             // revert transaction
             receiver = owner;
         }else{
@@ -40,7 +40,7 @@ contract ReciveAndSend {
 
         receiver.transfer(msg.value);
         require(receiver == owner);
-        // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Deposit(msg.sender, receiver, msg.value, msg.data.length);
         
         

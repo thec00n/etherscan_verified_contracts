@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 /**
 * @author Jefferson Davis
-* Spank_ICO.sol creates the client&#39;s token for crowdsale and allows for subsequent token sales and minting of tokens
+* Spank_ICO.sol creates the client's token for crowdsale and allows for subsequent token sales and minting of tokens
 *   In addition, there is a quarterly dividend payout triggered by the owner, plus creates a transaction record prior to payout
 *   Crowdsale contracts edited from original contract code at https://www.ethereum.org/crowdsale#crowdfund-your-idea
 *   Additional crowdsale contracts, functions, libraries from OpenZeppelin
@@ -49,31 +49,31 @@ contract Owned {
 library SafeMath {
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }  
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
   
     function mul(uint256 a, uint256 b) internal returns (uint256) {
@@ -83,7 +83,7 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -104,12 +104,12 @@ contract Spank is ERC20, Owned {
     uint256 multiplier; 
 	
 	//Creates arrays for balances
-    mapping (address =&gt; uint256) balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balance;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //Creates modifier to prevent short address attack
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) revert();
+        if(msg.data.length < size + 4) revert();
         _;
     }
 
@@ -142,7 +142,7 @@ contract Spank is ERC20, Owned {
 
     //Allows contract owner to mint new tokens, prevents numerical overflow
 	function mintToken(address target, uint256 mintedAmount) onlyOwner returns (bool success) {
-		require(mintedAmount &gt; 0); 
+		require(mintedAmount > 0); 
         uint256 addTokens = mintedAmount; 
 		balance[target] += addTokens;
 		totalSupply += addTokens;
@@ -150,9 +150,9 @@ contract Spank is ERC20, Owned {
 		return true; 
 	}
 
-	//Sends tokens from sender&#39;s account
+	//Sends tokens from sender's account
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        if ((balance[msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[msg.sender] -= _value;
             balance[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -164,7 +164,7 @@ contract Spank is ERC20, Owned {
 	
 	//Transfers tokens from an approved account 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {
-        if ((balance[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[_to] += _value;
             balance[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -196,11 +196,11 @@ contract SpankICO is Owned, Spank {
     address[] recordTokenHolders; 
     address[] tokenHolders; 
     bool crowdsaleClosed = true; 
-    mapping (address =&gt; uint256) recordBalance; 
-    mapping (address =&gt; uint256) recordTokenHolderID;      
-    mapping (address =&gt; uint256) tokenHolderID;               
-    string tokenName = &quot;Spank&quot;; 
-    string tokenSymbol = &quot;SPNK&quot;; 
+    mapping (address => uint256) recordBalance; 
+    mapping (address => uint256) recordTokenHolderID;      
+    mapping (address => uint256) tokenHolderID;               
+    string tokenName = "Spank"; 
+    string tokenSymbol = "SPNK"; 
     uint256 initialTokens = 20000000000000000; 
     uint256 multiplier = 100000000; 
     uint8 decimalUnits = 8;  
@@ -223,8 +223,8 @@ contract SpankICO is Owned, Spank {
     //Fallback function creates tokens and sends to investor when crowdsale is open
     function () payable {
         require((!crowdsaleClosed) 
-            &amp;&amp; (now &lt; stopTime) 
-            &amp;&amp; (totalSupply.add(msg.value.mul(getPrice()).mul(multiplier).div(1 ether)) &lt;= hardcap)); 
+            && (now < stopTime) 
+            && (totalSupply.add(msg.value.mul(getPrice()).mul(multiplier).div(1 ether)) <= hardcap)); 
         address recipient = msg.sender; 
         amountRaised = amountRaised.add(msg.value.div(1 ether)); 
         uint256 tokens = msg.value.mul(getPrice()).mul(multiplier).div(1 ether);
@@ -262,7 +262,7 @@ contract SpankICO is Owned, Spank {
 
     //Allows the owner to create an record of token owners and their balances
     function createRecord() internal {
-        for (uint i = 0; i &lt; (tokenHolders.length.sub(1)); i++ ) {
+        for (uint i = 0; i < (tokenHolders.length.sub(1)); i++ ) {
             address holder = getTokenHolder(i);
             uint256 holderBal = balanceOf(holder); 
             addRecordEntry(holder); 
@@ -299,7 +299,7 @@ contract SpankICO is Owned, Spank {
     function payOutDividend() onlyOwner returns (bool success) { 
         createRecord(); 
         uint256 volume = totalSupply; 
-        for (uint i = 0; i &lt; (tokenHolders.length.sub(1)); i++) {
+        for (uint i = 0; i < (tokenHolders.length.sub(1)); i++) {
             address payee = getTokenHolder(i); 
             uint256 stake = volume.div(dividendPayment.div(multiplier));    
             uint256 dividendPayout = balanceOf(payee).div(stake).mul(multiplier); 
@@ -318,14 +318,14 @@ contract SpankICO is Owned, Spank {
 
     //Sets the token price 
     function setPrice(uint256 newPriceperEther) onlyOwner returns (uint256) {
-        require(newPriceperEther &gt; 0); 
+        require(newPriceperEther > 0); 
         price = newPriceperEther; 
         return price; 
     }
 
     //Allows owner to start the crowdsale from the time of execution until a specified stopTime
     function startSale(uint256 saleStart, uint256 saleStop) onlyOwner returns (bool success) {
-        require(saleStop &gt; now);     
+        require(saleStop > now);     
         startTime = saleStart; 
         stopTime = saleStop; 
         crowdsaleClosed = false; 

@@ -34,7 +34,7 @@ contract ContractReceiver {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -59,18 +59,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert(x &lt;= MAX_UINT256 - y);
+        assert(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert(x &gt;= y);
+        assert(x >= y);
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        assert(x &lt;= MAX_UINT256 / y);
+        assert(x <= MAX_UINT256 / y);
         return x * y;
     }
 }
@@ -128,10 +128,10 @@ contract Haltable is Ownable {
 
 contract Tablow is ERC223, SafeMath, Haltable {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
-  string public symbol = &quot;TC&quot;;
-    string public name = &quot;Tablow Club&quot;;
+  string public symbol = "TC";
+    string public name = "Tablow Club";
     uint8 public decimals = 18;
     uint256  _totalSupply = 0;
     uint256 _MaxDistribPublicSupply = 0;
@@ -172,8 +172,8 @@ contract Tablow is ERC223, SafeMath, Haltable {
     event Burn(address indexed _owner, uint256 _value);
 
    
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) public Claimed;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) public Claimed;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -187,7 +187,7 @@ contract Tablow is ERC223, SafeMath, Haltable {
     function() public payable {
         if (IsDistribRunning) {
             uint256 _amount;
-            if (((_CurrentDistribPublicSupply + _amount) &gt; _MaxDistribPublicSupply) &amp;&amp; _MaxDistribPublicSupply &gt; 0) revert();
+            if (((_CurrentDistribPublicSupply + _amount) > _MaxDistribPublicSupply) && _MaxDistribPublicSupply > 0) revert();
             if (!_DistribFundsReceiverAddress.send(msg.value)) revert();
             if (Claimed[msg.sender] == false) {
                 _amount = _FreeTokens * 1e18;
@@ -198,13 +198,13 @@ contract Tablow is ERC223, SafeMath, Haltable {
                 Claimed[msg.sender] = true;
             }
 
-            require(msg.value &lt;= _HighDonateLimit);
+            require(msg.value <= _HighDonateLimit);
 
-            if (msg.value &gt;= 1e15) {
-                if (msg.value &gt;= _LimitMultiplier2) {
+            if (msg.value >= 1e15) {
+                if (msg.value >= _LimitMultiplier2) {
                     _amount = msg.value * _BonusTokensPerETHdonated * _Multiplier2;
                 } else {
-                    if (msg.value &gt;= _LimitMultiplier1) {
+                    if (msg.value >= _LimitMultiplier1) {
                         _amount = msg.value * _BonusTokensPerETHdonated * _Multiplier1;
                     } else {
 
@@ -228,13 +228,13 @@ contract Tablow is ERC223, SafeMath, Haltable {
     }
 
     function SetupToken(string tokenName, string tokenSymbol, uint256 BonusTokensPerETHdonated, uint256 MaxDistribPublicSupply, uint256 OwnerDistribSupply, address remainingTokensReceiverAddress, address DistribFundsReceiverAddress, uint256 FreeTokens) public {
-        if (msg.sender == owner &amp;&amp; !setupDone) {
+        if (msg.sender == owner && !setupDone) {
             symbol = tokenSymbol;
             name = tokenName;
             _FreeTokens = FreeTokens;
             _BonusTokensPerETHdonated = BonusTokensPerETHdonated;
             _MaxDistribPublicSupply = MaxDistribPublicSupply * 1e18;
-            if (OwnerDistribSupply &gt; 0) {
+            if (OwnerDistribSupply > 0) {
                 _OwnerDistribSupply = OwnerDistribSupply * 1e18;
                 _totalSupply = _OwnerDistribSupply;
                 balances[owner] = _totalSupply;
@@ -266,7 +266,7 @@ contract Tablow is ERC223, SafeMath, Haltable {
     }
 
     function StartDistrib() public returns(bool success) {
-        if (msg.sender == owner &amp;&amp; !DistribStarted &amp;&amp; setupDone) {
+        if (msg.sender == owner && !DistribStarted && setupDone) {
             DistribStarted = true;
             IsDistribRunning = true;
         } else {
@@ -276,10 +276,10 @@ contract Tablow is ERC223, SafeMath, Haltable {
     }
 
     function StopDistrib() public returns(bool success) {
-        if (msg.sender == owner &amp;&amp; IsDistribRunning) {
-            if (_remainingTokensReceiverAddress != 0 &amp;&amp; _MaxDistribPublicSupply &gt; 0) {
+        if (msg.sender == owner && IsDistribRunning) {
+            if (_remainingTokensReceiverAddress != 0 && _MaxDistribPublicSupply > 0) {
                 uint256 _remainingAmount = _MaxDistribPublicSupply - _CurrentDistribPublicSupply;
-                if (_remainingAmount &gt; 0) {
+                if (_remainingAmount > 0) {
                     balances[_remainingTokensReceiverAddress] += _remainingAmount;
                     _totalSupply += _remainingAmount;
                     Transfer(this, _remainingTokensReceiverAddress, _remainingAmount);
@@ -296,12 +296,12 @@ contract Tablow is ERC223, SafeMath, Haltable {
     function distribution(address[] addresses, uint256 _amount) onlyOwner public {
 
         uint256 _remainingAmount = _MaxDistribPublicSupply - _CurrentDistribPublicSupply;
-        require(addresses.length &lt;= 255);
-        require(_amount &lt;= _remainingAmount);
+        require(addresses.length <= 255);
+        require(_amount <= _remainingAmount);
         _amount = _amount * 1e18;
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(_amount &lt;= _remainingAmount);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(_amount <= _remainingAmount);
             _CurrentDistribPublicSupply += _amount;
             balances[addresses[i]] += _amount;
             _totalSupply += _amount;
@@ -309,7 +309,7 @@ contract Tablow is ERC223, SafeMath, Haltable {
 
         }
 
-        if (_CurrentDistribPublicSupply &gt;= _MaxDistribPublicSupply) {
+        if (_CurrentDistribPublicSupply >= _MaxDistribPublicSupply) {
             DistribStarted = false;
             IsDistribRunning = false;
         }
@@ -320,19 +320,19 @@ contract Tablow is ERC223, SafeMath, Haltable {
         uint256 _remainingAmount = _MaxDistribPublicSupply - _CurrentDistribPublicSupply;
         uint256 _amount;
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
 
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        for (uint8 i = 0; i < addresses.length; i++) {
             _amount = amounts[i] * 1e18;
-            require(_amount &lt;= _remainingAmount);
+            require(_amount <= _remainingAmount);
             _CurrentDistribPublicSupply += _amount;
             balances[addresses[i]] += _amount;
             _totalSupply += _amount;
             Transfer(this, addresses[i], _amount);
 
 
-            if (_CurrentDistribPublicSupply &gt;= _MaxDistribPublicSupply) {
+            if (_CurrentDistribPublicSupply >= _MaxDistribPublicSupply) {
                 DistribStarted = false;
                 IsDistribRunning = false;
             }
@@ -341,7 +341,7 @@ contract Tablow is ERC223, SafeMath, Haltable {
 
  function BurnTokens(uint256 amount) public returns(bool success) {
         uint256 _amount = amount * 1e18;
-        if (balances[msg.sender] &gt;= _amount) {
+        if (balances[msg.sender] >= _amount) {
             balances[msg.sender] -= _amount;
             _totalSupply -= _amount;
             Burn(msg.sender, _amount);
@@ -441,7 +441,7 @@ function withdrawForeignTokens(address _tokenContract) onlyOwner public returns 
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -451,7 +451,7 @@ function withdrawForeignTokens(address _tokenContract) onlyOwner public returns 
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    assert(balanceOf(msg.sender) &gt;= _value);
+    assert(balanceOf(msg.sender) >= _value);
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -461,7 +461,7 @@ function withdrawForeignTokens(address _tokenContract) onlyOwner public returns 
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    assert(balanceOf(msg.sender) &gt;= _value);
+    assert(balanceOf(msg.sender) >= _value);
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver reciever = ContractReceiver(_to);

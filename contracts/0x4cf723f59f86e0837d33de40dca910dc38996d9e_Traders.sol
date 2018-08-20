@@ -2,14 +2,14 @@
 
   Copyright 2018 Dexdex.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -92,8 +92,8 @@ contract ITraders {
 
 contract Traders is ITraders, Ownable {
 
-  mapping(uint8 =&gt; ITrader) public traders; // Mappings of ids of allowed addresses
-  mapping(address =&gt; bool) public addresses; // Mappings of addresses of allowed addresses
+  mapping(uint8 => ITrader) public traders; // Mappings of ids of allowed addresses
+  mapping(address => bool) public addresses; // Mappings of addresses of allowed addresses
 
   /// @dev Add a valid trader address. Only owner.
   function addTrader(uint8 protocolId, ITrader trader) public onlyOwner {

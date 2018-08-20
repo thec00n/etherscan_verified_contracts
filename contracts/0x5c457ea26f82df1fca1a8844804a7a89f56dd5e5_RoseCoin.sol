@@ -30,8 +30,8 @@ contract ERC20Interface {
  
 contract RoseCoin is ERC20Interface {
     uint8 public constant decimals = 5;
-    string public constant symbol = &quot;RSC&quot;;
-    string public constant name = &quot;RoseCoin&quot;;
+    string public constant symbol = "RSC";
+    string public constant name = "RoseCoin";
 
     uint public _level = 0;
     bool public _selling = true;
@@ -43,10 +43,10 @@ contract RoseCoin is ERC20Interface {
     address public owner;
  
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
  
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
     
     uint public _icoSupply = _totalSupply;
     uint[4] public ratio = [12, 10, 10, 13];
@@ -68,7 +68,7 @@ contract RoseCoin is ERC20Interface {
     }
 
     modifier thresholdAll() {
-        if (!_selling || msg.value &lt; _minimumBuyAmount || _icoSupply &lt;= threshold[3]) { //
+        if (!_selling || msg.value < _minimumBuyAmount || _icoSupply <= threshold[3]) { //
             revert();
         }
         _;
@@ -89,11 +89,11 @@ contract RoseCoin is ERC20Interface {
         return balances[_owner];
     }
  
-    // Transfer the balance from sender&#39;s account to another account
+    // Transfer the balance from sender's account to another account
     function transfer(address _to, uint256 _amount) returns (bool) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -105,7 +105,7 @@ contract RoseCoin is ERC20Interface {
  
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -114,10 +114,10 @@ contract RoseCoin is ERC20Interface {
         address _to,
         uint256 _amount
     ) returns (bool) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -154,9 +154,9 @@ contract RoseCoin is ERC20Interface {
         amount = 0;
         uint remain = msg.value / _originalBuyPrice;
         
-        while (remain &gt; 0 &amp;&amp; _level &lt; 3) { //
+        while (remain > 0 && _level < 3) { //
             remain = remain * ratio[_level] / ratio[_level+1];
-            if (_icoSupply &lt;= remain + threshold[_level]) {
+            if (_icoSupply <= remain + threshold[_level]) {
                 remain = (remain + threshold[_level] - _icoSupply) * ratio[_level+1] / ratio[_level];
                 amount += _icoSupply - threshold[_level];
                 _icoSupply = threshold[_level];
@@ -170,10 +170,10 @@ contract RoseCoin is ERC20Interface {
             }
         }
         
-        if (balances[owner] &lt; amount)
+        if (balances[owner] < amount)
             revert();
         
-        if (remain &gt; 0) {
+        if (remain > 0) {
             remain *= _originalBuyPrice;
             msg.sender.transfer(remain);
         }

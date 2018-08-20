@@ -30,8 +30,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -46,9 +46,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -56,7 +56,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -65,7 +65,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,7 +93,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -162,7 +162,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -180,8 +180,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -261,7 +261,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -284,7 +284,7 @@ contract ERC223Token is StandardToken {
     event Transfer(address indexed from, address indexed to, uint value, bytes data);
 
     modifier enoughBalance(uint _value) {
-        require (_value &lt;= balanceOf(msg.sender));
+        require (_value <= balanceOf(msg.sender));
         _;
     }
 
@@ -312,7 +312,7 @@ contract ERC223Token is StandardToken {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to Receiver address.
@@ -337,7 +337,7 @@ contract ERC223Token is StandardToken {
             length := extcodesize(_addr)
         }
 
-        return (length &gt; 0);
+        return (length > 0);
     }
     
     /**
@@ -389,9 +389,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -414,7 +414,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken {
    * @param _value uint256 The amount of token to be burned
    */
   function burnFrom(address _from, uint256 _value) public {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     // Should https://github.com/OpenZeppelin/zeppelin-solidity/issues/707 be accepted,
     // this function needs to emit an event with the updated approval.
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -435,7 +435,7 @@ contract BaseToken is ERC223Token, StandardBurnableToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -503,8 +503,8 @@ contract Ownable {
 contract ShintakuToken is BaseToken, Ownable {
     using SafeMath for uint;
 
-    string public constant symbol = &quot;SHN&quot;;
-    string public constant name = &quot;Shintaku&quot;;
+    string public constant symbol = "SHN";
+    string public constant name = "Shintaku";
     uint8 public constant demicals = 18;
 
     // Unit of tokens
@@ -543,20 +543,20 @@ contract ShintakuToken is BaseToken, Ownable {
         uint minting;
 
         // Sealed purchases for each account
-        mapping (address =&gt; bytes32) sealedPurchaseOrders;
+        mapping (address => bytes32) sealedPurchaseOrders;
         // Balance received from each account
-        mapping (address =&gt; uint) receivedBalances;
+        mapping (address => uint) receivedBalances;
         // Locked balance for each account
-        mapping (address =&gt; uint) lockedBalances;
+        mapping (address => uint) lockedBalances;
 
         // When withdrawing, withdraw to an alias address (e.g. cold storage)
-        mapping (address =&gt; address) aliases;
+        mapping (address => address) aliases;
     }
 
     // Modifiers
 
     modifier validPeriod(uint _period) {
-        require(_period &lt;= currentPeriodIndex());
+        require(_period <= currentPeriodIndex());
         _;
     }
 
@@ -580,9 +580,9 @@ contract ShintakuToken is BaseToken, Ownable {
 
     constructor(address _alias, uint _periodBlocks, uint _ownerLockFactor, uint _userLockFactor) public {
         require(_alias != address(0));
-        require(_periodBlocks &gt;= 2);
-        require(_ownerLockFactor &gt; 0);
-        require(_userLockFactor &gt; 0);
+        require(_periodBlocks >= 2);
+        require(_ownerLockFactor > 0);
+        require(_userLockFactor > 0);
 
         periods.push(Period(block.number, 0, 0, calculateMinting(0)));
         ownerAlias = _alias;
@@ -598,7 +598,7 @@ contract ShintakuToken is BaseToken, Ownable {
     function nextPeriod() public {
         uint periodIndex = currentPeriodIndex();
         uint periodIndexNext = periodIndex.add(1);
-        require(block.number.sub(periods[periodIndex].started) &gt; PERIOD_BLOCKS);
+        require(block.number.sub(periods[periodIndex].started) > PERIOD_BLOCKS);
 
         periods.push(Period(block.number, 0, 0, calculateMinting(periodIndexNext)));
 
@@ -622,7 +622,7 @@ contract ShintakuToken is BaseToken, Ownable {
      * @param _sealedPurchaseOrder The sealed purchase order.
      */
     function placePurchaseOrder(bytes32 _sealedPurchaseOrder) public payable {
-        if (block.number.sub(periods[currentPeriodIndex()].started) &gt; PERIOD_BLOCKS) {
+        if (block.number.sub(periods[currentPeriodIndex()].started) > PERIOD_BLOCKS) {
             nextPeriod();
         }
         // Note: current period index may update from above call
@@ -654,13 +654,13 @@ contract ShintakuToken is BaseToken, Ownable {
         // Each address can only make a single purchase per period
         require(period.aliases[msg.sender] == address(0));
 
-        // Note: don&#39;t *need* to advance period here
+        // Note: don't *need* to advance period here
 
         bytes32 h = createPurchaseOrder(msg.sender, _period, _value, _salt);
         require(h == _sealedPurchaseOrder);
 
         // The value revealed must not be greater than the value previously sent
-        require(_value &lt;= period.receivedBalances[msg.sender]);
+        require(_value <= period.receivedBalances[msg.sender]);
 
         period.totalReceived = period.totalReceived.add(_value);
         uint remainder = period.receivedBalances[msg.sender].sub(_value);
@@ -681,7 +681,7 @@ contract ShintakuToken is BaseToken, Ownable {
         // Sanity check to make sure user enters an alias
         require(_alias != address(0));
 
-        if (block.number.sub(periods[currentPeriodIndex()].started) &gt; PERIOD_BLOCKS) {
+        if (block.number.sub(periods[currentPeriodIndex()].started) > PERIOD_BLOCKS) {
             nextPeriod();
         }
         // Note: current period index may update from above call
@@ -703,9 +703,9 @@ contract ShintakuToken is BaseToken, Ownable {
      */
     function claim(address _from, uint _period) public {
         // Claiming can only be done at least two periods after submitting sealed purchase order
-        require(currentPeriodIndex() &gt; _period.add(1));
+        require(currentPeriodIndex() > _period.add(1));
         Period storage period = periods[_period];
-        require(period.receivedBalances[_from] &gt; 0);
+        require(period.receivedBalances[_from] > 0);
 
         uint value = period.receivedBalances[_from];
         delete period.receivedBalances[_from];
@@ -731,16 +731,16 @@ contract ShintakuToken is BaseToken, Ownable {
      * @param _period Period to withdraw funds for.
      */
     function withdraw(address _from, uint _period) public {
-        require(currentPeriodIndex() &gt; _period);
+        require(currentPeriodIndex() > _period);
         Period storage period = periods[_period];
-        require(block.number.sub(period.started) &gt; USER_LOCK_BLOCKS);
+        require(block.number.sub(period.started) > USER_LOCK_BLOCKS);
 
         uint balance = period.lockedBalances[_from];
-        require(balance &lt;= address(this).balance);
+        require(balance <= address(this).balance);
         delete period.lockedBalances[_from];
 
         address alias = period.aliases[_from];
-        // Don&#39;t delete this, as a user may have unclaimed tokens
+        // Don't delete this, as a user may have unclaimed tokens
         //delete period.aliases[_from];
         alias.transfer(balance);
     }
@@ -750,12 +750,12 @@ contract ShintakuToken is BaseToken, Ownable {
      * @param _period Period to withdraw funds for.
      */
     function withdrawOwner(uint _period) public onlyOwner {
-        require(currentPeriodIndex() &gt; _period);
+        require(currentPeriodIndex() > _period);
         Period storage period = periods[_period];
-        require(block.number.sub(period.started) &gt; OWNER_LOCK_BLOCKS);
+        require(block.number.sub(period.started) > OWNER_LOCK_BLOCKS);
 
         uint balance = period.ownerLockedBalance;
-        require(balance &lt;= address(this).balance);
+        require(balance <= address(this).balance);
         delete period.ownerLockedBalance;
 
         ownerAlias.transfer(balance);
@@ -768,12 +768,12 @@ contract ShintakuToken is BaseToken, Ownable {
      */
     function withdrawOwnerUnrevealed(uint _period, address _from) public onlyOwner {
         // Must be past the reveal deadline of one period
-        require(currentPeriodIndex() &gt; _period.add(1));
+        require(currentPeriodIndex() > _period.add(1));
         Period storage period = periods[_period];
-        require(block.number.sub(period.started) &gt; OWNER_LOCK_BLOCKS);
+        require(block.number.sub(period.started) > OWNER_LOCK_BLOCKS);
 
         uint balance = period.receivedBalances[_from];
-        require(balance &lt;= address(this).balance);
+        require(balance <= address(this).balance);
         delete period.receivedBalances[_from];
 
         ownerAlias.transfer(balance);
@@ -787,7 +787,7 @@ contract ShintakuToken is BaseToken, Ownable {
     function calculateMinting(uint _period) internal pure returns (uint) {
         // Every period, decrease emission by 5% of initial, until tail emission
         return
-            _period &lt; INITIAL_EMISSION_FACTOR ?
+            _period < INITIAL_EMISSION_FACTOR ?
             TAIL_EMISSION.mul(INITIAL_EMISSION_FACTOR.sub(_period)) :
             TAIL_EMISSION
         ;
@@ -798,7 +798,7 @@ contract ShintakuToken is BaseToken, Ownable {
      * @return The array index of the current period.
      */
     function currentPeriodIndex() public view returns (uint) {
-        assert(periods.length &gt; 0);
+        assert(periods.length > 0);
 
         return periods.length.sub(1);
     }
@@ -816,7 +816,7 @@ contract ShintakuToken is BaseToken, Ownable {
         uint totalReceived = currentPeriod.totalReceived;
 
         uint scaledValue = _value;
-        if (totalReceived &gt; MAX_RECEIVED_PER_PERIOD) {
+        if (totalReceived > MAX_RECEIVED_PER_PERIOD) {
             // If the funds received this period exceed the maximum, scale
             // emission to refund remaining
             scaledValue = _value.mul(MAX_RECEIVED_PER_PERIOD).div(totalReceived);

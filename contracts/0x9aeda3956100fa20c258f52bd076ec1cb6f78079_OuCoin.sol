@@ -3,16 +3,16 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract OuCoin {
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public constant name = &quot;OuCoin&quot;;
-    string public constant symbol = &quot;IOU&quot;;
+    string public standard = 'Token 0.1';
+    string public constant name = "OuCoin";
+    string public constant symbol = "IOU";
     uint8 public constant decimals = 3;
     uint256 public constant initialSupply = 10000000;
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -29,8 +29,8 @@ contract OuCoin {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require (balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -56,9 +56,9 @@ contract OuCoin {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require (_to != 0x0);                                // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                 // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]);  // Check for overflows
-        require (_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require (balanceOf[_from] >= _value);                 // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]);  // Check for overflows
+        require (_value <= allowance[_from][msg.sender]);     // Check allowance
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -67,7 +67,7 @@ contract OuCoin {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        require (balanceOf[msg.sender] &gt;= _value);            // Check if the sender has enough
+        require (balanceOf[msg.sender] >= _value);            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -75,8 +75,8 @@ contract OuCoin {
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         totalSupply -= _value;                               // Updates totalSupply
         Burn(_from, _value);

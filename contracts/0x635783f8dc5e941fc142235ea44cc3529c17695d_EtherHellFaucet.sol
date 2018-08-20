@@ -58,10 +58,10 @@ contract EtherHellFaucet {
     address owner;
 
     // Mapping from addresses to amounts earned
-    mapping(address =&gt; uint) public earnings;
+    mapping(address => uint) public earnings;
 
     // Mapping from addresses to dividend shares
-    mapping(address =&gt; uint) public dividendShares;
+    mapping(address => uint) public dividendShares;
 
     // Total number of dividend shares
     uint public totalDividendShares;
@@ -85,7 +85,7 @@ contract EtherHellFaucet {
     uint public leaderBid;
 
     function EtherHellFaucet() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         owner = msg.sender;
         totalDividendShares = 0;
         dividendFund = 0;
@@ -101,7 +101,7 @@ contract EtherHellFaucet {
         uint _maxPayout = pot.mul(MAX_PAYOUT_FRAC_TOP).div(MAX_PAYOUT_FRAC_BOT);
         uint _numPayoutIntervals = now.sub(leaderTimestamp).div(PAYOUT_TIME);
         uint _totalPayout = _numPayoutIntervals.mul(leaderBid).mul(PAYOUT_FRAC_TOP).div(PAYOUT_FRAC_BOT);
-        if (_totalPayout &gt; _maxPayout) {
+        if (_totalPayout > _maxPayout) {
             _totalPayout = _maxPayout;
         }
         earnings[leader] = earnings[leader].add(_totalPayout);
@@ -123,7 +123,7 @@ contract EtherHellFaucet {
         dividendFund = dividendFund.add(_bidAmountToDividendFund);
         pot = pot.add(_bidAmountToPot);
 
-        if (msg.value &gt; _maxBid) {
+        if (msg.value > _maxBid) {
             uint _investment = msg.value.sub(_maxBid).mul(DIVIDEND_FUND_FRAC_TOP).div(DIVIDEND_FUND_FRAC_BOT);
             uint _dividendShares = _investment.div(_dividendSharePrice);
             dividendShares[msg.sender] = dividendShares[msg.sender].add(_dividendShares);
@@ -134,7 +134,7 @@ contract EtherHellFaucet {
         leader = msg.sender;
         leaderTimestamp = now;
         leaderBid = msg.value;
-        if (leaderBid &gt; _maxBid) {
+        if (leaderBid > _maxBid) {
             leaderBid = _maxBid;
         }
 
@@ -142,8 +142,8 @@ contract EtherHellFaucet {
     }
 
     function withdrawEarnings() public {
-        require(earnings[msg.sender] &gt; 0);
-        assert(earnings[msg.sender] &lt;= this.balance);
+        require(earnings[msg.sender] > 0);
+        assert(earnings[msg.sender] <= this.balance);
         uint _amount = earnings[msg.sender];
         earnings[msg.sender] = 0;
         msg.sender.transfer(_amount);
@@ -151,11 +151,11 @@ contract EtherHellFaucet {
     }
 
     function withdrawDividends() public {
-        require(dividendShares[msg.sender] &gt; 0);
+        require(dividendShares[msg.sender] > 0);
         uint _dividendShares = dividendShares[msg.sender];
-        assert(_dividendShares &lt;= totalDividendShares);
+        assert(_dividendShares <= totalDividendShares);
         uint _amount = dividendFund.mul(_dividendShares).div(totalDividendShares);
-        assert(_amount &lt;= this.balance);
+        assert(_amount <= this.balance);
         dividendShares[msg.sender] = 0;
         totalDividendShares = totalDividendShares.sub(_dividendShares);
         dividendFund = dividendFund.sub(_amount);
@@ -185,9 +185,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -195,7 +195,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -204,7 +204,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

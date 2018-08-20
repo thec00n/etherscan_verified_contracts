@@ -5,7 +5,7 @@ contract ERC20 {
 
 contract Batchdrop2 {
   function multisend(ERC20 token, address[] recipients, uint256 value) public {
-    for (uint256 i = 0; i &lt; recipients.length; i++) {
+    for (uint256 i = 0; i < recipients.length; i++) {
       token.transfer(recipients[i], value * 1000);
     }
   }

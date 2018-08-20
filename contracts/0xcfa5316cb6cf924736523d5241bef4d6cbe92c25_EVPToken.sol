@@ -13,20 +13,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		uint256 c = a / b;
 		assert(a == b * c + a % b);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -46,11 +46,11 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
 	
 	using SafeMath for uint256;
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -80,13 +80,13 @@ contract ERC20 is ERC20Basic {
 // Standard ERC20 token
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	// Transfer tokens from one address to another
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		
 		var _allowance = allowed[_from][msg.sender];
-		require (_value &lt;= _allowance);
+		require (_value <= _allowance);
 		balances[_to] = balances[_to].add(_value);
 		balances[_from] = balances[_from].sub(_value);
 		allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -117,7 +117,7 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 // The Ownable contract has an owner address, and provides basic authorization control
-// functions, this simplifies the implementation of &quot;user permissions&quot;.
+// functions, this simplifies the implementation of "user permissions".
 contract Ownable {
 	
 	address public owner;
@@ -178,9 +178,9 @@ contract Pausable is Ownable {
 contract EVPToken is StandardToken, Pausable {
 	
 	uint256 public totalSupply = 22000000 * 1 ether;
-	string public name = &quot;Evolution+ Token&quot;; 
+	string public name = "Evolution+ Token"; 
     uint8 public decimals = 18; 
-    string public symbol = &quot;EVP&quot;;
+    string public symbol = "EVP";
 	
 	// Contract constructor function sets initial token balances
 	function EVPToken() public {

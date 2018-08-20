@@ -9,11 +9,11 @@ interface DreamToken {
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -23,7 +23,7 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -83,7 +83,7 @@ contract Crowdsale is Owned, SafeMath {
     }
     
     function() external payable {
-        require(msg.value &gt;= minAmount);
+        require(msg.value >= minAmount);
         totalEthInWei = totalEthInWei + msg.value;
         
         if (owner != msg.sender) {

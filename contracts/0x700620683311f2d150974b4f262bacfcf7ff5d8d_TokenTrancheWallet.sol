@@ -6,15 +6,15 @@
  pragma solidity ^0.4.10;
 
 /*************************************************************************
- * import &quot;./TrancheWallet.sol&quot; : start
+ * import "./TrancheWallet.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : start
+ * import "../common/Owned.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;./IOwned.sol&quot; : start
+ * import "./IOwned.sol" : start
  *************************************************************************/
 
 /**@dev Simple interface to Owned base class */
@@ -22,7 +22,7 @@ contract IOwned {
     function owner() public constant returns (address) {}
     function transferOwnership(address _newOwner) public;
 }/*************************************************************************
- * import &quot;./IOwned.sol&quot; : end
+ * import "./IOwned.sol" : end
  *************************************************************************/
 
 contract Owned is IOwned {
@@ -45,13 +45,13 @@ contract Owned is IOwned {
     }
 }
 /*************************************************************************
- * import &quot;../common/Owned.sol&quot; : end
+ * import "../common/Owned.sol" : end
  *************************************************************************/
 
 /**@dev Distributes some amount of currency in small portions available to withdraw once in a period */
 contract TrancheWallet is Owned {
     address public beneficiary;         //funds are to withdraw to this account
-    uint256 public tranchePeriodInDays; //one tranche &#39;cooldown&#39; time
+    uint256 public tranchePeriodInDays; //one tranche 'cooldown' time
     uint256 public trancheAmountPct;    //one tranche amount 
         
     uint256 public lockStart;           //when funds were locked
@@ -79,7 +79,7 @@ contract TrancheWallet is Owned {
         beneficiary = newBeneficiary;
     }
 
-    //Locks all funds on account so that it&#39;s possible to withdraw only specific tranche amount.
+    //Locks all funds on account so that it's possible to withdraw only specific tranche amount.
     //Funds will be unlocked completely in a given amount of days 
     //Can be made only one time
     function lock(uint256 lockPeriodInDays) public ownerOnly {
@@ -96,7 +96,7 @@ contract TrancheWallet is Owned {
         uint256 tranchesToSend;
         (amountToWithdraw, tranchesToSend) = amountAvailableToWithdraw();
 
-        require(amountToWithdraw &gt; 0);
+        require(amountToWithdraw > 0);
 
         tranchesSent += tranchesToSend;
         doTransfer(amountToWithdraw);
@@ -106,8 +106,8 @@ contract TrancheWallet is Owned {
 
     /**@dev Calculates available amount to withdraw */
     function amountAvailableToWithdraw() constant returns (uint256 amount, uint256 tranches) {        
-        if (currentBalance() &gt; 0) {
-            if(now &gt; completeUnlockTime) {
+        if (currentBalance() > 0) {
+            if(now > completeUnlockTime) {
                 //withdraw everything
                 amount = currentBalance();
                 tranches = 0;
@@ -118,7 +118,7 @@ contract TrancheWallet is Owned {
                 amount = tranches * oneTrancheAmount();
 
                 //check if exceeding current limit
-                if(amount &gt; currentBalance()) {
+                if(amount > currentBalance()) {
                     amount = currentBalance();
                     tranches = amount / oneTrancheAmount();
                 }
@@ -141,15 +141,15 @@ contract TrancheWallet is Owned {
     function doTransfer(uint256 amount) internal;
 }
 /*************************************************************************
- * import &quot;./TrancheWallet.sol&quot; : end
+ * import "./TrancheWallet.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../token/IERC20Token.sol&quot; : start
+ * import "../token/IERC20Token.sol" : start
  *************************************************************************/
 
 contract IERC20Token {
 
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external    
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external    
     function name() public constant returns (string _name) { _name; }
     function symbol() public constant returns (string _symbol) { _symbol; }
     function decimals() public constant returns (uint8 _decimals) { _decimals; }
@@ -167,7 +167,7 @@ contract IERC20Token {
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 /*************************************************************************
- * import &quot;../token/IERC20Token.sol&quot; : end
+ * import "../token/IERC20Token.sol" : end
  *************************************************************************/
 
 /**@dev Wallet that contains some amount of tokens and allows to withdraw it in small portions */

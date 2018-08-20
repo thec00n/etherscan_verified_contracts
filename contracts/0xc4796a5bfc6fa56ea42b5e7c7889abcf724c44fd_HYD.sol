@@ -5,7 +5,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,20 +64,20 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -106,8 +106,8 @@ contract HYD is ERC20, SafeMath, Ownable{
     uint public totalSupply;
     bool public locked;
 
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
   // lock transfer during the ICO
     modifier onlyUnlocked() {
@@ -124,8 +124,8 @@ contract HYD is ERC20, SafeMath, Ownable{
     initialSupply = 50000000000000;
     totalSupply = initialSupply;
     balances[msg.sender] = initialSupply;// Give the creator all initial tokens                    
-    name = &#39;Hyde &amp; Co. Token&#39;;        // Set the name for display purposes     
-    symbol = &#39;HYD&#39;;                       // Set the symbol for display purposes  
+    name = 'Hyde & Co. Token';        // Set the name for display purposes     
+    symbol = 'HYD';                       // Set the symbol for display purposes  
     decimals = 6;                        // Amount of decimals for display purposes
   }
 
@@ -142,7 +142,7 @@ contract HYD is ERC20, SafeMath, Ownable{
 
   function transfer(address _to, uint _value) public onlyUnlocked returns (bool) {
     uint fromBalance = balances[msg.sender];
-    require((_value &gt; 0) &amp;&amp; (_value &lt;= fromBalance));
+    require((_value > 0) && (_value <= fromBalance));
     balances[msg.sender] = sub(balances[msg.sender], _value);
     balances[_to] = add(balances[_to], _value);
     Transfer(msg.sender, _to, _value);
@@ -152,7 +152,7 @@ contract HYD is ERC20, SafeMath, Ownable{
   function transferFrom(address _from, address _to, uint _value) public onlyUnlocked returns (bool) {
     uint _allowance = allowed[_from][msg.sender];
     uint fromBalance = balances[_from];
-    require(_value &lt;= _allowance &amp;&amp; _value &lt;= fromBalance &amp;&amp; _value &gt; 0);
+    require(_value <= _allowance && _value <= fromBalance && _value > 0);
     balances[_to] = add(balances[_to], _value);
     balances[_from] = sub(balances[_from], _value);
     allowed[_from][msg.sender] = sub(_allowance, _value);

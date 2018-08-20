@@ -34,20 +34,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -112,12 +112,12 @@ contract ClaimableTokens is Ownable {
 
 contract CromToken is Ownable, ERC20, ClaimableTokens {
     using SafeMath for uint256;
-    string public constant name = &quot;CROM Token&quot;;
-    string public constant symbol = &quot;CROM&quot;;
+    string public constant name = "CROM Token";
+    string public constant symbol = "CROM";
     uint8 public constant decimals = 0;
     uint256 public constant INITIAL_SUPPLY = 10 ** 7;
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function CromToken() Ownable() ClaimableTokens(msg.sender) {
         totalSupply = INITIAL_SUPPLY;
@@ -126,7 +126,7 @@ contract CromToken is Ownable, ERC20, ClaimableTokens {
 
     function transfer(address to, uint256 value) public returns (bool success) {
         require(to != 0x0);
-        require(balances[msg.sender] &gt;= value);
+        require(balances[msg.sender] >= value);
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
         Transfer(msg.sender, to, value);
@@ -149,8 +149,8 @@ contract CromToken is Ownable, ERC20, ClaimableTokens {
 
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
         require(to != 0x0);
-        require(balances[from] &gt;= value);
-        require(value &lt;= allowed[from][msg.sender]);
+        require(balances[from] >= value);
+        require(value <= allowed[from][msg.sender]);
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(value);

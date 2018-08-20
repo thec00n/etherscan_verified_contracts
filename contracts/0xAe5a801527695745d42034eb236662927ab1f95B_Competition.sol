@@ -44,7 +44,7 @@ interface AssetInterface {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -248,7 +248,7 @@ contract CompetitionCompliance is ComplianceInterface, DBC, Owned {
         view
         returns (bool)
     {
-        return CompetitionInterface(competitionAddress).isWhitelisted(x) &amp;&amp; CompetitionInterface(competitionAddress).isCompetitionActive();
+        return CompetitionInterface(competitionAddress).isWhitelisted(x) && CompetitionInterface(competitionAddress).isCompetitionActive();
     }
 
 
@@ -362,26 +362,26 @@ contract DSExec {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -400,10 +400,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -432,15 +432,15 @@ contract Asset is DSMath, ERC20Interface {
 
     // DATA STRUCTURES
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public _totalSupply;
 
     // PUBLIC METHODS
 
     /**
      * @notice Send `_value` tokens to `_to` from `msg.sender`
-     * @dev Transfers sender&#39;s tokens to a given address
+     * @dev Transfers sender's tokens to a given address
      * @dev Similar to transfer(address, uint, bytes), but without _data parameter
      * @param _to Address of token receiver
      * @param _value Number of tokens to transfer
@@ -450,8 +450,8 @@ contract Asset is DSMath, ERC20Interface {
         public
         returns (bool success)
     {
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
@@ -473,9 +473,9 @@ contract Asset is DSMath, ERC20Interface {
         require(_from != address(0));
         require(_to != address(0));
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         // require(_to == msg.sender); // can only use transferFrom to send to self
 
         balances[_to] += _value;
@@ -555,7 +555,7 @@ contract Shares is SharesInterface, Asset {
 
     /**
      * @notice Send `_value` tokens to `_to` from `msg.sender`
-     * @dev Transfers sender&#39;s tokens to a given address
+     * @dev Transfers sender's tokens to a given address
      * @dev Similar to transfer(address, uint, bytes), but without _data parameter
      * @param _to Address of token receiver
      * @param _value Number of tokens to transfer
@@ -565,8 +565,8 @@ contract Shares is SharesInterface, Asset {
         public
         returns (bool success)
     {
-        require(balances[msg.sender] &gt;= _value); // sanity checks
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value); // sanity checks
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] = sub(balances[msg.sender], _value);
         balances[_to] = add(balances[_to], _value);
@@ -655,8 +655,8 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         address exchangeAddress; // address of the exchange this order is on
         bytes32 orderId; // Id as returned from exchange
         UpdateType updateType; // Enum: make, take (cancel should be ignored)
-        address makerAsset; // Order maker&#39;s asset
-        address takerAsset; // Order taker&#39;s asset
+        address makerAsset; // Order maker's asset
+        address takerAsset; // Order taker's asset
         uint makerQuantity; // Quantity of makerAsset to be traded
         uint takerQuantity; // Quantity of takerAsset to be traded
         uint timestamp; // Time of order creation in seconds
@@ -678,13 +678,13 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     Exchange[] public exchanges; // Array containing exchanges this fund supports
     Calculations public atLastUnclaimedFeeAllocation; // Calculation results at last allocateUnclaimedFees() call
     Order[] public orders;  // append-only list of makes/takes from this fund
-    mapping (address =&gt; mapping(address =&gt; OpenMakeOrder)) public exchangesToOpenMakeOrders; // exchangeIndex to: asset to open make orders
+    mapping (address => mapping(address => OpenMakeOrder)) public exchangesToOpenMakeOrders; // exchangeIndex to: asset to open make orders
     bool public isShutDown; // Security feature, if yes than investing, managing, allocateUnclaimedFees gets blocked
     Request[] public requests; // All the requests this fund received from participants
-    mapping (address =&gt; bool) public isInvestAllowed; // If false, fund rejects investments from the key asset
+    mapping (address => bool) public isInvestAllowed; // If false, fund rejects investments from the key asset
     address[] public ownedAssets; // List of all assets owned by the fund or for which the fund has open make orders
-    mapping (address =&gt; bool) public isInAssetList; // Mapping from asset to whether the asset exists in ownedAssets
-    mapping (address =&gt; bool) public isInOpenMakeOrder; // Mapping from asset to whether the asset is in a open make order as buy asset
+    mapping (address => bool) public isInAssetList; // Mapping from asset to whether the asset exists in ownedAssets
+    mapping (address => bool) public isInOpenMakeOrder; // Mapping from asset to whether the asset is in a open make order as buy asset
 
     // METHODS
 
@@ -713,10 +713,10 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         address[] ofExchanges,
         address[] ofDefaultAssets
     )
-        Shares(withName, &quot;MLNF&quot;, 18, now)
+        Shares(withName, "MLNF", 18, now)
     {
-        require(ofManagementFee &lt; 10 ** 18); // Require management fee to be less than 100 percent
-        require(ofPerformanceFee &lt; 10 ** 18); // Require performance fee to be less than 100 percent
+        require(ofManagementFee < 10 ** 18); // Require management fee to be less than 100 percent
+        require(ofPerformanceFee < 10 ** 18); // Require performance fee to be less than 100 percent
         isInvestAllowed[ofQuoteAsset] = true;
         owner = ofManager;
         MANAGEMENT_FEE_RATE = ofManagementFee; // 1 percent is expressed as 0.01 * 10 ** 18
@@ -726,7 +726,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         modules.riskmgmt = RiskMgmtInterface(ofRiskMgmt);
         modules.pricefeed = CanonicalPriceFeed(ofPriceFeed);
         // Bridged to Melon exchange interface by exchangeAdapter library
-        for (uint i = 0; i &lt; ofExchanges.length; ++i) {
+        for (uint i = 0; i < ofExchanges.length; ++i) {
             require(modules.pricefeed.exchangeIsRegistered(ofExchanges[i]));
             var (ofExchangeAdapter, takesCustody, ) = modules.pricefeed.getExchangeInformation(ofExchanges[i]);
             exchanges.push(Exchange({
@@ -740,7 +740,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         ownedAssets.push(ofQuoteAsset);
         isInAssetList[ofQuoteAsset] = true;
         require(address(QUOTE_ASSET) == modules.pricefeed.getQuoteAsset()); // Sanity check
-        for (uint j = 0; j &lt; ofDefaultAssets.length; j++) {
+        for (uint j = 0; j < ofDefaultAssets.length; j++) {
             require(modules.pricefeed.assetIsRegistered(ofDefaultAssets[j]));
             isInvestAllowed[ofDefaultAssets[j]] = true;
         }
@@ -766,7 +766,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         external
         pre_cond(isOwner())
     {
-        for (uint i = 0; i &lt; ofAssets.length; ++i) {
+        for (uint i = 0; i < ofAssets.length; ++i) {
             require(modules.pricefeed.assetIsRegistered(ofAssets[i]));
             isInvestAllowed[ofAssets[i]] = true;
         }
@@ -778,7 +778,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         external
         pre_cond(isOwner())
     {
-        for (uint i = 0; i &lt; ofAssets.length; ++i) {
+        for (uint i = 0; i < ofAssets.length; ++i) {
             isInvestAllowed[ofAssets[i]] = false;
         }
     }
@@ -827,8 +827,8 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         pre_cond(
             _totalSupply == 0 ||
             (
-                now &gt;= add(requests[id].timestamp, modules.pricefeed.getInterval()) &amp;&amp;
-                modules.pricefeed.getLastUpdateId() &gt;= add(requests[id].atUpdateId, 2)
+                now >= add(requests[id].timestamp, modules.pricefeed.getInterval()) &&
+                modules.pricefeed.getLastUpdateId() >= add(requests[id].atUpdateId, 2)
             )
         )   // PriceFeed Module: Wait at least one interval time and two updates before continuing (unless it is the first investment)
 
@@ -849,8 +849,8 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         }
 
         if (
-            isInvestAllowed[request.requestAsset] &amp;&amp;
-            costQuantity &lt;= request.giveQuantity
+            isInvestAllowed[request.requestAsset] &&
+            costQuantity <= request.giveQuantity
         ) {
             request.status = RequestStatus.executed;
             require(AssetInterface(request.requestAsset).transferFrom(request.participant, address(this), costQuantity)); // Allocate Value
@@ -889,7 +889,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
 
     /// @notice Universal method for calling exchange functions through adapters
     /// @notice See adapter contracts for parameters needed for each exchange
-    /// @param exchangeIndex Index of the exchange in the &quot;exchanges&quot; array
+    /// @param exchangeIndex Index of the exchange in the "exchanges" array
     /// @param method Signature of the adapter method to call (as per ABI spec)
     /// @param orderAddresses [0] Order maker
     /// @param orderAddresses [1] Order taker
@@ -995,7 +995,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         address[] memory tempOwnedAssets;
         tempOwnedAssets = ownedAssets;
         delete ownedAssets;
-        for (uint i = 0; i &lt; tempOwnedAssets.length; ++i) {
+        for (uint i = 0; i < tempOwnedAssets.length; ++i) {
             address ofAsset = tempOwnedAssets[i];
             // assetHoldings formatting: mul(exchangeHoldings, 10 ** assetDecimal)
             uint assetHoldings = add(
@@ -1036,9 +1036,9 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     @notice Calculates unclaimed fees of the fund manager
     @param gav Gross asset value in QUOTE_ASSET and multiplied by 10 ** shareDecimals
     @return {
-      &quot;managementFees&quot;: &quot;A time (seconds) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals&quot;,
-      &quot;performanceFees&quot;: &quot;A performance (rise of sharePrice measured in QUOTE_ASSET) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals&quot;,
-      &quot;unclaimedfees&quot;: &quot;The sum of both managementfee and performancefee in QUOTE_ASSET and multiplied by 10 ** shareDecimals&quot;
+      "managementFees": "A time (seconds) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals",
+      "performanceFees": "A performance (rise of sharePrice measured in QUOTE_ASSET) based fee in QUOTE_ASSET and multiplied by 10 ** shareDecimals",
+      "unclaimedfees": "The sum of both managementfee and performancefee in QUOTE_ASSET and multiplied by 10 ** shareDecimals"
     }
     */
     function calcUnclaimedFees(uint gav)
@@ -1055,8 +1055,8 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
 
         // Performance fee calculation
         // Handle potential division through zero by defining a default value
-        uint valuePerShareExclMgmtFees = _totalSupply &gt; 0 ? calcValuePerShare(sub(gav, managementFee), _totalSupply) : toSmallestShareUnit(1);
-        if (valuePerShareExclMgmtFees &gt; atLastUnclaimedFeeAllocation.highWaterMark) {
+        uint valuePerShareExclMgmtFees = _totalSupply > 0 ? calcValuePerShare(sub(gav, managementFee), _totalSupply) : toSmallestShareUnit(1);
+        if (valuePerShareExclMgmtFees > atLastUnclaimedFeeAllocation.highWaterMark) {
             uint gainInSharePrice = sub(valuePerShareExclMgmtFees, atLastUnclaimedFeeAllocation.highWaterMark);
             uint investmentProfits = wmul(gainInSharePrice, _totalSupply);
             performanceFee = wmul(investmentProfits, PERFORMANCE_FEE_RATE);
@@ -1085,7 +1085,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     /// @return valuePerShare Share price denominated in QUOTE_ASSET and multiplied by 10 ** shareDecimals
     function calcValuePerShare(uint totalValue, uint numShares)
         view
-        pre_cond(numShares &gt; 0)
+        pre_cond(numShares > 0)
         returns (uint valuePerShare)
     {
         valuePerShare = toSmallestShareUnit(totalValue) / numShares;
@@ -1094,13 +1094,13 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     /**
     @notice Calculates essential fund metrics
     @return {
-      &quot;gav&quot;: &quot;Gross asset value of this fund denominated in [base unit of melonAsset]&quot;,
-      &quot;managementFee&quot;: &quot;A time (seconds) based fee&quot;,
-      &quot;performanceFee&quot;: &quot;A performance (rise of sharePrice measured in QUOTE_ASSET) based fee&quot;,
-      &quot;unclaimedFees&quot;: &quot;The sum of both managementFee and performanceFee denominated in [base unit of melonAsset]&quot;,
-      &quot;feesShareQuantity&quot;: &quot;The number of shares to be given as fees to the manager&quot;,
-      &quot;nav&quot;: &quot;Net asset value denominated in [base unit of melonAsset]&quot;,
-      &quot;sharePrice&quot;: &quot;Share price denominated in [base unit of melonAsset]&quot;
+      "gav": "Gross asset value of this fund denominated in [base unit of melonAsset]",
+      "managementFee": "A time (seconds) based fee",
+      "performanceFee": "A performance (rise of sharePrice measured in QUOTE_ASSET) based fee",
+      "unclaimedFees": "The sum of both managementFee and performanceFee denominated in [base unit of melonAsset]",
+      "feesShareQuantity": "The number of shares to be given as fees to the manager",
+      "nav": "Net asset value denominated in [base unit of melonAsset]",
+      "sharePrice": "Share price denominated in [base unit of melonAsset]"
     }
     */
     function performCalculations()
@@ -1123,7 +1123,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         feesShareQuantity = (gav == 0) ? 0 : mul(_totalSupply, unclaimedFees) / gav;
         // The total share supply including the value of unclaimedFees, measured in shares of this fund
         uint totalSupplyAccountingForFees = add(_totalSupply, feesShareQuantity);
-        sharePrice = _totalSupply &gt; 0 ? calcValuePerShare(gav, totalSupplyAccountingForFees) : toSmallestShareUnit(1); // Handle potential division through zero by defining a default value
+        sharePrice = _totalSupply > 0 ? calcValuePerShare(gav, totalSupplyAccountingForFees) : toSmallestShareUnit(1); // Handle potential division through zero by defining a default value
     }
 
     /// @notice Converts unclaimed fees of the manager into fund shares
@@ -1143,7 +1143,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         createShares(owner, feesShareQuantity); // Updates _totalSupply by creating shares allocated to manager
 
         // Update Calculations
-        uint highWaterMark = atLastUnclaimedFeeAllocation.highWaterMark &gt;= sharePrice ? atLastUnclaimedFeeAllocation.highWaterMark : sharePrice;
+        uint highWaterMark = atLastUnclaimedFeeAllocation.highWaterMark >= sharePrice ? atLastUnclaimedFeeAllocation.highWaterMark : sharePrice;
         atLastUnclaimedFeeAllocation = Calculations({
             gav: gav,
             managementFee: managementFee,
@@ -1171,7 +1171,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     /// @return Whether all assets sent to shareholder or not
     function emergencyRedeem(uint shareQuantity, address[] requestedAssets)
         public
-        pre_cond(balances[msg.sender] &gt;= shareQuantity)  // sender owns enough shares
+        pre_cond(balances[msg.sender] >= shareQuantity)  // sender owns enough shares
         returns (bool)
     {
         address ofAsset;
@@ -1179,10 +1179,10 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         address[] memory redeemedAssets = new address[](requestedAssets.length);
 
         // Check whether enough assets held by fund
-        for (uint i = 0; i &lt; requestedAssets.length; ++i) {
+        for (uint i = 0; i < requestedAssets.length; ++i) {
             ofAsset = requestedAssets[i];
             require(isInAssetList[ofAsset]);
-            for (uint j = 0; j &lt; redeemedAssets.length; j++) {
+            for (uint j = 0; j < redeemedAssets.length; j++) {
                 if (ofAsset == redeemedAssets[j]) {
                     revert();
                 }
@@ -1195,13 +1195,13 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
 
             if (assetHoldings == 0) continue;
 
-            // participant&#39;s ownership percentage of asset holdings
+            // participant's ownership percentage of asset holdings
             ownershipQuantities[i] = mul(assetHoldings, shareQuantity) / _totalSupply;
 
             // CRITICAL ERR: Not enough fund asset balance for owed ownershipQuantitiy, eg in case of unreturned asset quantity at address(exchanges[i].exchange) address
-            if (uint(AssetInterface(ofAsset).balanceOf(address(this))) &lt; ownershipQuantities[i]) {
+            if (uint(AssetInterface(ofAsset).balanceOf(address(this))) < ownershipQuantities[i]) {
                 isShutDown = true;
-                emit ErrorMessage(&quot;CRITICAL ERR: Not enough assetHoldings for owed ownershipQuantitiy&quot;);
+                emit ErrorMessage("CRITICAL ERR: Not enough assetHoldings for owed ownershipQuantitiy");
                 return false;
             }
         }
@@ -1210,7 +1210,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         annihilateShares(msg.sender, shareQuantity);
 
         // Transfer ownershipQuantity of Assets
-        for (uint k = 0; k &lt; requestedAssets.length; ++k) {
+        for (uint k = 0; k < requestedAssets.length; ++k) {
             // Failed to send owed ownershipQuantity from fund to participant
             ofAsset = requestedAssets[k];
             if (ownershipQuantities[k] == 0) {
@@ -1231,7 +1231,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     function quantityHeldInCustodyOfExchange(address ofAsset) returns (uint) {
         uint totalSellQuantity;     // quantity in custody across exchanges
         uint totalSellQuantityInApprove; // quantity of asset in approve (allowance) but not custody of exchange
-        for (uint i; i &lt; exchanges.length; i++) {
+        for (uint i; i < exchanges.length; i++) {
             if (exchangesToOpenMakeOrders[exchanges[i].exchange][ofAsset].id == 0) {
                 continue;
             }
@@ -1275,7 +1275,7 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
         address[] memory ofExchanges = new address[](exchanges.length);
         address[] memory ofAdapters = new address[](exchanges.length);
         bool[] memory takesCustody = new bool[](exchanges.length);
-        for (uint i = 0; i &lt; exchanges.length; i++) {
+        for (uint i = 0; i < exchanges.length; i++) {
             ofExchanges[i] = exchanges[i].exchange;
             ofAdapters[i] = exchanges[i].exchangeAdapter;
             takesCustody[i] = exchanges[i].takesCustody;
@@ -1284,8 +1284,8 @@ contract Fund is DSMath, DBC, Owned, Shares, FundInterface {
     }
     function orderExpired(address ofExchange, address ofAsset) view returns (bool) {
         uint expiryTime = exchangesToOpenMakeOrders[ofExchange][ofAsset].expiresAt;
-        require(expiryTime &gt; 0);
-        return block.timestamp &gt;= expiryTime;
+        require(expiryTime > 0);
+        return block.timestamp >= expiryTime;
     }
     function getOpenOrderInfo(address ofExchange, address ofAsset) view returns (uint, uint) {
         OpenMakeOrder order = exchangesToOpenMakeOrders[ofExchange][ofAsset];
@@ -1316,7 +1316,7 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
     // Constant fields
     // Competition terms and conditions as displayed on https://ipfs.io/ipfs/QmXuUfPi6xeYfuMwpVAughm7GjGUjkbEojhNR8DJqVBBxc
     // IPFS hash encoded using http://lenschulwitz.com/base58
-    bytes public constant TERMS_AND_CONDITIONS = hex&quot;12208E21FD34B8B2409972D30326D840C9D747438A118580D6BA8C0735ED53810491&quot;;
+    bytes public constant TERMS_AND_CONDITIONS = hex"12208E21FD34B8B2409972D30326D840C9D747438A118580D6BA8C0735ED53810491";
     uint public MELON_BASE_UNIT = 10 ** 18;
     // Constructor fields
     address public custodian; // Address of the custodian which holds the funds sent
@@ -1335,9 +1335,9 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
 
     // Methods fields
     Registrant[] public registrants; // List of all registrants, can be externally accessed
-    mapping (address =&gt; address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
-    mapping(address =&gt; RegistrantId) public registrantToRegistrantIds; // For registrant address indexed accessing of registrant ids
-    mapping(address =&gt; uint) public whitelistantToMaxBuyin; // For registrant address to respective max buyIn cap (Valued in Ether)
+    mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
+    mapping(address => RegistrantId) public registrantToRegistrantIds; // For registrant address indexed accessing of registrant ids
+    mapping(address => uint) public whitelistantToMaxBuyin; // For registrant address to respective max buyIn cap (Valued in Ether)
 
     //EVENTS
 
@@ -1381,11 +1381,11 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
             //  it will return rsv (same as geth; where v is [27, 28]).
-            // Note that if you are using ecrecover, v will be either &quot;00&quot; or &quot;01&quot;.
+            // Note that if you are using ecrecover, v will be either "00" or "01".
             //  As a result, in order to use this value, you will have to parse it to an
             //  integer and then add 27. This will result in either a 27 or a 28.
             //  https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-            keccak256(&quot;\x19Ethereum Signed Message:\n34&quot;, TERMS_AND_CONDITIONS),
+            keccak256("\x19Ethereum Signed Message:\n34", TERMS_AND_CONDITIONS),
             v,
             r,
             s
@@ -1394,10 +1394,10 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
 
     /// @dev Whether message sender is KYC verified through CERTIFIER
     /// @param x Address to be checked for KYC verification
-    function isWhitelisted(address x) view returns (bool) { return whitelistantToMaxBuyin[x] &gt; 0; }
+    function isWhitelisted(address x) view returns (bool) { return whitelistantToMaxBuyin[x] > 0; }
 
     /// @dev Whether the competition is on-going
-    function isCompetitionActive() view returns (bool) { return now &gt;= startTime &amp;&amp; now &lt; endTime; }
+    function isCompetitionActive() view returns (bool) { return now >= startTime && now < endTime; }
 
     // CONSTANT METHODS
 
@@ -1411,7 +1411,7 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
 
     /// @return Get time to end of the competition
     function getTimeTillEnd() view returns (uint) {
-        if (now &gt; endTime) {
+        if (now > endTime) {
             return 0;
         }
         return sub(endTime, now);
@@ -1435,8 +1435,8 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
     /**
     @notice Returns an array of fund addresses and an associated array of whether competing and whether disqualified
     @return {
-      &quot;fundAddrs&quot;: &quot;Array of addresses of Melon Funds&quot;,
-      &quot;fundRegistrants&quot;: &quot;Array of addresses of Melon fund managers, as used in the ipfs-frontend&quot;,
+      "fundAddrs": "Array of addresses of Melon Funds",
+      "fundRegistrants": "Array of addresses of Melon fund managers, as used in the ipfs-frontend",
     }
     */
     function getCompetitionStatusOfRegistrants()
@@ -1451,7 +1451,7 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
         address[] memory fundRegistrants = new address[](registrants.length);
         bool[] memory isRewarded = new bool[](registrants.length);
 
-        for (uint i = 0; i &lt; registrants.length; i++) {
+        for (uint i = 0; i < registrants.length; i++) {
             fundAddrs[i] = registrants[i].fund;
             fundRegistrants[i] = registrants[i].registrant;
             isRewarded[i] = registrants[i].isRewarded;
@@ -1474,15 +1474,15 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
         bytes32 s
     )
         payable
-        pre_cond(isCompetitionActive() &amp;&amp; !Version(COMPETITION_VERSION).isShutDown())
-        pre_cond(termsAndConditionsAreSigned(msg.sender, v, r, s) &amp;&amp; isWhitelisted(msg.sender))
+        pre_cond(isCompetitionActive() && !Version(COMPETITION_VERSION).isShutDown())
+        pre_cond(termsAndConditionsAreSigned(msg.sender, v, r, s) && isWhitelisted(msg.sender))
     {
-        require(registeredFundToRegistrants[fund] == address(0) &amp;&amp; registrantToRegistrantIds[msg.sender].exists == false);
-        require(add(currentTotalBuyin, msg.value) &lt;= totalMaxBuyin &amp;&amp; registrants.length &lt; maxRegistrants);
-        require(msg.value &lt;= whitelistantToMaxBuyin[msg.sender]);
+        require(registeredFundToRegistrants[fund] == address(0) && registrantToRegistrantIds[msg.sender].exists == false);
+        require(add(currentTotalBuyin, msg.value) <= totalMaxBuyin && registrants.length < maxRegistrants);
+        require(msg.value <= whitelistantToMaxBuyin[msg.sender]);
         require(Version(COMPETITION_VERSION).getFundByManager(msg.sender) == fund);
 
-        // Calculate Payout Quantity, invest the quantity in registrant&#39;s fund
+        // Calculate Payout Quantity, invest the quantity in registrant's fund
         uint payoutQuantity = calculatePayout(msg.value);
         registeredFundToRegistrants[fund] = msg.sender;
         registrantToRegistrantIds[msg.sender] = RegistrantId({id: registrants.length, exists: true});
@@ -1517,9 +1517,9 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
         address[] whitelistants
     )
         pre_cond(isOwner())
-        pre_cond(now &lt; endTime)
+        pre_cond(now < endTime)
     {
-        for (uint i = 0; i &lt; whitelistants.length; ++i) {
+        for (uint i = 0; i < whitelistants.length; ++i) {
             whitelistantToMaxBuyin[whitelistants[i]] = maxBuyinQuantity;
         }
     }
@@ -1536,7 +1536,7 @@ contract Competition is CompetitionInterface, DSMath, DBC, Owned {
     function claimReward()
         pre_cond(getRegistrantFund(msg.sender) != address(0))
     {
-        require(block.timestamp &gt;= endTime || Version(COMPETITION_VERSION).isShutDown());
+        require(block.timestamp >= endTime || Version(COMPETITION_VERSION).isShutDown());
         Registrant registrant  = registrants[getRegistrantId(msg.sender)];
         require(registrant.isRewarded == false);
         registrant.isRewarded = true;
@@ -1580,9 +1580,9 @@ contract DSGroup is DSExec, DSNote {
     uint       public  window;
     uint       public  actionCount;
 
-    mapping (uint =&gt; Action)                     public  actions;
-    mapping (uint =&gt; mapping (address =&gt; bool))  public  confirmedBy;
-    mapping (address =&gt; bool)                    public  isMember;
+    mapping (uint => Action)                     public  actions;
+    mapping (uint => mapping (address => bool))  public  confirmedBy;
+    mapping (address => bool)                    public  isMember;
 
     // Legacy events
     event Proposed   (uint id, bytes calldata);
@@ -1608,7 +1608,7 @@ contract DSGroup is DSExec, DSNote {
         quorum   = quorum_;
         window   = window_;
 
-        for (uint i = 0; i &lt; members.length; i++) {
+        for (uint i = 0; i < members.length; i++) {
             isMember[members[i]] = true;
         }
     }
@@ -1638,10 +1638,10 @@ contract DSGroup is DSExec, DSNote {
     }
 
     function confirmed(uint id) constant returns (bool) {
-        return confirmations(id) &gt;= quorum;
+        return confirmations(id) >= quorum;
     }
     function expired(uint id) constant returns (bool) {
-        return now &gt; deadline(id);
+        return now > deadline(id);
     }
 
     function deposit() note payable {
@@ -1722,7 +1722,7 @@ contract DSGroup is DSExec, DSNote {
 }
 
 contract DSGroupFactory is DSNote {
-    mapping (address =&gt; bool)  public  isGroup;
+    mapping (address => bool)  public  isGroup;
 
     function newGroup(
         address[]  members,
@@ -1788,7 +1788,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         address breakIn; // Break in contract on destination chain
         address breakOut; // Break out contract on this chain; A way to leave
         uint[] standards; // compliance with standards like ERC20, ERC223, ERC777, etc. (the uint is the standard number)
-        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund&lt;-&gt;Asset` as much as possible. I.e. name same concepts with the same functionSignature.
+        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund<->Asset` as much as possible. I.e. name same concepts with the same functionSignature.
         uint price; // Price of asset quoted against `QUOTE_ASSET` * 10 ** decimals
         uint timestamp; // Timestamp of last price update of this asset
     }
@@ -1798,7 +1798,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         address adapter; // adapter contract for this exchange
         // One-time note: takesCustody is inverse case of isApproveOnly
         bool takesCustody; // True in case of exchange implementation which requires  are approved when an order is made instead of transfer
-        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund&lt;-&gt;ExchangeAdapter` as much as possible. I.e. name same concepts with the same functionSignature.
+        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund<->ExchangeAdapter` as much as possible. I.e. name same concepts with the same functionSignature.
     }
     // TODO: populate each field here
     // TODO: add whitelistFunction function
@@ -1806,10 +1806,10 @@ contract CanonicalRegistrar is DSThing, DBC {
     // FIELDS
 
     // Methods fields
-    mapping (address =&gt; Asset) public assetInformation;
+    mapping (address => Asset) public assetInformation;
     address[] public registeredAssets;
 
-    mapping (address =&gt; Exchange) public exchangeInformation;
+    mapping (address => Exchange) public exchangeInformation;
     address[] public registeredExchanges;
 
     // METHODS
@@ -1948,7 +1948,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         require(registeredAssets[assetIndex] == ofAsset);
         delete assetInformation[ofAsset]; // Sets exists boolean to false
         delete registeredAssets[assetIndex];
-        for (uint i = assetIndex; i &lt; registeredAssets.length-1; i++) {
+        for (uint i = assetIndex; i < registeredAssets.length-1; i++) {
             registeredAssets[i] = registeredAssets[i+1];
         }
         registeredAssets.length--;
@@ -1969,7 +1969,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         require(registeredExchanges[exchangeIndex] == ofExchange);
         delete exchangeInformation[ofExchange];
         delete registeredExchanges[exchangeIndex];
-        for (uint i = exchangeIndex; i &lt; registeredExchanges.length-1; i++) {
+        for (uint i = exchangeIndex; i < registeredExchanges.length-1; i++) {
             registeredExchanges[i] = registeredExchanges[i+1];
         }
         registeredExchanges.length--;
@@ -1990,7 +1990,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         returns (bool)
     {
         bytes4[] memory signatures = assetInformation[ofAsset].functionSignatures;
-        for (uint i = 0; i &lt; signatures.length; i++) {
+        for (uint i = 0; i < signatures.length; i++) {
             if (signatures[i] == querySignature) {
                 return true;
             }
@@ -2023,7 +2023,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         returns (bool)
     {
         bytes4[] memory signatures = exchangeInformation[ofExchange].functionSignatures;
-        for (uint i = 0; i &lt; signatures.length; i++) {
+        for (uint i = 0; i < signatures.length; i++) {
             if (signatures[i] == querySignature) {
                 return true;
             }
@@ -2061,7 +2061,7 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     }
 
     // FIELDS
-    mapping(address =&gt; Data) public assetsToPrices;
+    mapping(address => Data) public assetsToPrices;
 
     // Constructor fields
     address public QUOTE_ASSET; // Asset of a portfolio against which all other assets are priced
@@ -2118,8 +2118,8 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     @dev Asset has been registered
     @param ofAsset Asset for which price should be returned
     @return {
-      &quot;price&quot;: &quot;Price formatting: mul(exchangePrice, 10 ** decimal), to avoid floating numbers&quot;,
-      &quot;timestamp&quot;: &quot;When the asset&#39;s price was updated&quot;
+      "price": "Price formatting: mul(exchangePrice, 10 ** decimal), to avoid floating numbers",
+      "timestamp": "When the asset's price was updated"
     }
     */
     function getPrice(address ofAsset)
@@ -2135,8 +2135,8 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     @dev Convention for price formatting: mul(price, 10 ** decimal), to avoid floating numbers
     @param ofAssets Assets for which prices should be returned
     @return {
-        &quot;prices&quot;:       &quot;Array of prices&quot;,
-        &quot;timestamps&quot;:   &quot;Array of timestamps&quot;,
+        "prices":       "Array of prices",
+        "timestamps":   "Array of timestamps",
     }
     */
     function getPrices(address[] ofAssets)
@@ -2145,7 +2145,7 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     {
         uint[] memory prices = new uint[](ofAssets.length);
         uint[] memory timestamps = new uint[](ofAssets.length);
-        for (uint i; i &lt; ofAssets.length; i++) {
+        for (uint i; i < ofAssets.length; i++) {
             var (price, timestamp) = getPrice(ofAssets[i]);
             prices[i] = price;
             timestamps[i] = timestamp;
@@ -2161,7 +2161,7 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
         pre_cond(ofAssets.length == newPrices.length)
     {
         updateId++;
-        for (uint i = 0; i &lt; ofAssets.length; ++i) {
+        for (uint i = 0; i < ofAssets.length; ++i) {
             require(registrar.assetIsRegistered(ofAssets[i]));
             require(assetsToPrices[ofAssets[i]].timestamp != now); // prevent two updates in one block
             assetsToPrices[ofAssets[i]].timestamp = now;
@@ -2295,14 +2295,14 @@ contract OperatorStaking is DBC {
     uint public minimumStake;
     uint public numOperators;
     uint public withdrawalDelay;
-    mapping (address =&gt; bool) public isRanked;
-    mapping (address =&gt; uint) public latestUnstakeTime;
-    mapping (address =&gt; uint) public stakeToWithdraw;
-    mapping (address =&gt; uint) public stakedAmounts;
+    mapping (address => bool) public isRanked;
+    mapping (address => uint) public latestUnstakeTime;
+    mapping (address => uint) public stakeToWithdraw;
+    mapping (address => uint) public stakedAmounts;
     uint public numStakers; // Current number of stakers (Needed because of array holes)
     AssetInterface public stakingToken;
 
-    // TODO: consider renaming &quot;operator&quot; depending on how this is implemented
+    // TODO: consider renaming "operator" depending on how this is implemented
     //  (i.e. is pricefeed staking itself?)
     function OperatorStaking(
         AssetInterface _stakingToken,
@@ -2328,7 +2328,7 @@ contract OperatorStaking is DBC {
         bytes data
     )
         public
-        pre_cond(amount &gt;= minimumStake)
+        pre_cond(amount >= minimumStake)
     {
         stakedAmounts[msg.sender] += amount;
         updateStakerRanking(msg.sender);
@@ -2343,8 +2343,8 @@ contract OperatorStaking is DBC {
     {
         uint preStake = stakedAmounts[msg.sender];
         uint postStake = preStake - amount;
-        require(postStake &gt;= minimumStake || postStake == 0);
-        require(stakedAmounts[msg.sender] &gt;= amount);
+        require(postStake >= minimumStake || postStake == 0);
+        require(stakedAmounts[msg.sender] >= amount);
         latestUnstakeTime[msg.sender] = block.timestamp;
         stakedAmounts[msg.sender] -= amount;
         stakeToWithdraw[msg.sender] += amount;
@@ -2354,8 +2354,8 @@ contract OperatorStaking is DBC {
 
     function withdrawStake()
         public
-        pre_cond(stakeToWithdraw[msg.sender] &gt; 0)
-        pre_cond(block.timestamp &gt;= latestUnstakeTime[msg.sender] + withdrawalDelay)
+        pre_cond(stakeToWithdraw[msg.sender] > 0)
+        pre_cond(block.timestamp >= latestUnstakeTime[msg.sender] + withdrawalDelay)
     {
         uint amount = stakeToWithdraw[msg.sender];
         stakeToWithdraw[msg.sender] = 0;
@@ -2367,7 +2367,7 @@ contract OperatorStaking is DBC {
     function isValidNode(uint id) view returns (bool) {
         // 0 is a sentinel and therefore invalid.
         // A valid node is the head or has a previous node.
-        return id != 0 &amp;&amp; (id == stakeNodes[0].next || stakeNodes[id].prev != 0);
+        return id != 0 && (id == stakeNodes[0].next || stakeNodes[id].prev != 0);
     }
 
     function searchNode(address staker) view returns (uint) {
@@ -2383,7 +2383,7 @@ contract OperatorStaking is DBC {
 
     function isOperator(address user) view returns (bool) {
         address[] memory operators = getOperators();
-        for (uint i; i &lt; operators.length; i++) {
+        for (uint i; i < operators.length; i++) {
             if (operators[i] == user) {
                 return true;
             }
@@ -2395,12 +2395,12 @@ contract OperatorStaking is DBC {
         view
         returns (address[])
     {
-        uint arrLength = (numOperators &gt; numStakers) ?
+        uint arrLength = (numOperators > numStakers) ?
             numStakers :
             numOperators;
         address[] memory operators = new address[](arrLength);
         uint current = stakeNodes[0].next;
-        for (uint i; i &lt; arrLength; i++) {
+        for (uint i; i < arrLength; i++) {
             operators[i] = stakeNodes[current].data.staker;
             current = stakeNodes[current].next;
         }
@@ -2414,7 +2414,7 @@ contract OperatorStaking is DBC {
         address[] memory stakers = new address[](numStakers);
         uint[] memory amounts = new uint[](numStakers);
         uint current = stakeNodes[0].next;
-        for (uint i; i &lt; numStakers; i++) {
+        for (uint i; i < numStakers; i++) {
             stakers[i] = stakeNodes[current].data.staker;
             amounts[i] = stakeNodes[current].data.amount;
             current = stakeNodes[current].next;
@@ -2437,7 +2437,7 @@ contract OperatorStaking is DBC {
         uint current = stakeNodes[0].next;
         if (current == 0) return insertNodeAfter(0, amount, staker);
         while (isValidNode(current)) {
-            if (amount &gt; stakeNodes[current].data.amount) {
+            if (amount > stakeNodes[current].data.amount) {
                 break;
             }
             current = stakeNodes[current].next;
@@ -2499,7 +2499,7 @@ contract OperatorStaking is DBC {
 
     function removeStakerFromArray(address _staker) internal {
         uint id = searchNode(_staker);
-        require(id &gt; 0);
+        require(id > 0);
         removeNode(id);
     }
 
@@ -2521,7 +2521,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     uint public minimumPriceCount = 1;
     uint public VALIDITY;
     uint public INTERVAL;
-    mapping (address =&gt; bool) public isStakingFeed; // If the Staking Feed has been created through this contract
+    mapping (address => bool) public isStakingFeed; // If the Staking Feed has been created through this contract
     HistoricalPrices[] public priceHistory;
 
     // METHODS
@@ -2605,7 +2605,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         stakedAmounts[user] = 0;
         stakeToWithdraw[user] = 0;
         updateStakerRanking(user);
-        emit StakeBurned(user, totalToBurn, &quot;&quot;);
+        emit StakeBurned(user, totalToBurn, "");
     }
 
     // PUBLIC METHODS
@@ -2663,12 +2663,12 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     {
         address[] memory operators = getOperators();
         uint[] memory newPrices = new uint[](ofAssets.length);
-        for (uint i = 0; i &lt; ofAssets.length; i++) {
+        for (uint i = 0; i < ofAssets.length; i++) {
             uint[] memory assetPrices = new uint[](operators.length);
-            for (uint j = 0; j &lt; operators.length; j++) {
+            for (uint j = 0; j < operators.length; j++) {
                 SimplePriceFeed feed = SimplePriceFeed(operators[j]);
                 var (price, timestamp) = feed.assetsToPrices(ofAssets[i]);
-                if (now &gt; add(timestamp, VALIDITY)) {
+                if (now > add(timestamp, VALIDITY)) {
                     continue; // leaves a zero in the array (dealt with later)
                 }
                 assetPrices[j] = price;
@@ -2684,27 +2684,27 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         returns (uint)
     {
         uint numValidEntries;
-        for (uint i = 0; i &lt; unsorted.length; i++) {
+        for (uint i = 0; i < unsorted.length; i++) {
             if (unsorted[i] != 0) {
                 numValidEntries++;
             }
         }
-        if (numValidEntries &lt; minimumPriceCount) {
+        if (numValidEntries < minimumPriceCount) {
             revert();
         }
         uint counter;
         uint[] memory out = new uint[](numValidEntries);
-        for (uint j = 0; j &lt; unsorted.length; j++) {
+        for (uint j = 0; j < unsorted.length; j++) {
             uint item = unsorted[j];
             if (item != 0) {    // skip zero (invalid) entries
-                if (counter == 0 || item &gt;= out[counter - 1]) {
+                if (counter == 0 || item >= out[counter - 1]) {
                     out[counter] = item;  // item is larger than last in array (we are home)
                 } else {
                     uint k = 0;
-                    while (item &gt;= out[k]) {
+                    while (item >= out[k]) {
                         k++;  // get to where element belongs (between smaller and larger items)
                     }
-                    for (uint m = counter; m &gt; k; m--) {
+                    for (uint m = counter; m > k; m--) {
                         out[m] = out[m - 1];    // bump larger elements rightward to leave slot
                     }
                     out[k] = item;
@@ -2748,7 +2748,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         returns (bool isRecent)
     {
         var ( , timestamp) = getPrice(ofAsset);
-        return (sub(now, timestamp) &lt;= VALIDITY);
+        return (sub(now, timestamp) <= VALIDITY);
     }
 
     /// @notice Whether prices of assets have been updated less than VALIDITY seconds ago
@@ -2758,7 +2758,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         view
         returns (bool areRecent)
     {
-        for (uint i; i &lt; ofAssets.length; i++) {
+        for (uint i; i < ofAssets.length; i++) {
             if (!hasRecentPrice(ofAssets[i])) {
                 return false;
             }
@@ -2781,9 +2781,9 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     @dev Existing price ofAssets quoted in QUOTE_ASSET (convention)
     @param ofAsset Asset for which inverted price should be return
     @return {
-        &quot;isRecent&quot;: &quot;Whether the price is fresh, given VALIDITY interval&quot;,
-        &quot;invertedPrice&quot;: &quot;Price based (instead of quoted) against QUOTE_ASSET&quot;,
-        &quot;assetDecimals&quot;: &quot;Decimal places for this asset&quot;
+        "isRecent": "Whether the price is fresh, given VALIDITY interval",
+        "invertedPrice": "Price based (instead of quoted) against QUOTE_ASSET",
+        "assetDecimals": "Decimal places for this asset"
     }
     */
     function getInvertedPriceInfo(address ofAsset)
@@ -2800,7 +2800,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         return (
             isRecent,
             mul(10 ** uint(quoteDecimals), 10 ** uint(assetDecimals)) / inputPrice,
-            quoteDecimals   // TODO: check on this; shouldn&#39;t it be assetDecimals?
+            quoteDecimals   // TODO: check on this; shouldn't it be assetDecimals?
         );
     }
 
@@ -2811,9 +2811,9 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     @param ofBase Address of base asset
     @param ofQuote Address of quote asset
     @return {
-        &quot;isRecent&quot;: &quot;Whether the price is fresh, given VALIDITY interval&quot;,
-        &quot;referencePrice&quot;: &quot;Reference price&quot;,
-        &quot;decimal&quot;: &quot;Decimal places for this asset&quot;
+        "isRecent": "Whether the price is fresh, given VALIDITY interval",
+        "referencePrice": "Reference price",
+        "decimal": "Decimal places for this asset"
     }
     */
     function getReferencePriceInfo(address ofBase, address ofQuote)
@@ -2857,9 +2857,9 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         returns (bool isExistent)
     {
         return
-            hasRecentPrice(sellAsset) &amp;&amp; // Is tradable asset (TODO cleaner) and datafeed delivering data
-            hasRecentPrice(buyAsset) &amp;&amp; // Is tradable asset (TODO cleaner) and datafeed delivering data
-            (buyAsset == QUOTE_ASSET || sellAsset == QUOTE_ASSET) &amp;&amp; // One asset must be QUOTE_ASSET
+            hasRecentPrice(sellAsset) && // Is tradable asset (TODO cleaner) and datafeed delivering data
+            hasRecentPrice(buyAsset) && // Is tradable asset (TODO cleaner) and datafeed delivering data
+            (buyAsset == QUOTE_ASSET || sellAsset == QUOTE_ASSET) && // One asset must be QUOTE_ASSET
             (buyAsset != QUOTE_ASSET || sellAsset != QUOTE_ASSET); // Pair must consists of diffrent assets
     }
 
@@ -2871,7 +2871,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         address[] memory ofPriceFeeds = new address[](numStakers);
         if (numStakers == 0) return ofPriceFeeds;
         uint current = stakeNodes[0].next;
-        for (uint i; i &lt; numStakers; i++) {
+        for (uint i; i < numStakers; i++) {
             StakingPriceFeed stakingFeed = StakingPriceFeed(stakeNodes[current].data.staker);
             if (stakingFeed.owner() == _owner) {
                 ofPriceFeeds[i] = address(stakingFeed);
@@ -2942,7 +2942,7 @@ contract Version is DBC, Owned, VersionInterface {
     bool public isShutDown; // Governance feature, if yes than setupFund gets blocked and shutDownFund gets opened
     address public COMPLIANCE; // restrict to Competition compliance module for this version
     address[] public listOfFunds; // A complete list of fund addresses created using this version
-    mapping (address =&gt; address) public managerToFunds; // Links manager address to fund address created using this version
+    mapping (address => address) public managerToFunds; // Links manager address to fund address created using this version
 
     // EVENTS
 
@@ -3047,11 +3047,11 @@ contract Version is DBC, Owned, VersionInterface {
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
             //  it will return rsv (same as geth; where v is [27, 28]).
-            // Note that if you are using ecrecover, v will be either &quot;00&quot; or &quot;01&quot;.
+            // Note that if you are using ecrecover, v will be either "00" or "01".
             //  As a result, in order to use this value, you will have to parse it to an
             //  integer and then add 27. This will result in either a 27 or a 28.
             //  https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, TERMS_AND_CONDITIONS),
+            keccak256("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
             v,
             r,
             s

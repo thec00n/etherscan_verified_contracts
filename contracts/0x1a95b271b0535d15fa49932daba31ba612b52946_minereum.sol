@@ -14,15 +14,15 @@ uint256 private minedBlocks;
 uint256 private totalMaxAvailableAmount;
 uint256 private balanceOfAddress;
 
-mapping (address =&gt; uint256) public balanceOf; 
-mapping (address =&gt; bool) public genesisAddress; 
+mapping (address => uint256) public balanceOf; 
+mapping (address => bool) public genesisAddress; 
 
 event Transfer(address indexed from, address indexed to, uint256 value); 
 
 function minereum() { 
 
-name = &quot;minereum&quot;; 
-symbol = &quot;MNE&quot;; 
+name = "minereum"; 
+symbol = "MNE"; 
 decimals = 8; 
 initialSupplyPerAddress = 3200000000000;
 initialBlockCount = 3516521;
@@ -44,11 +44,11 @@ function currentBlock() constant returns (uint256 blockNumber)
 
 function setGenesisAddressArray(address[] _address) public returns (bool success)
 {
-	if (block.number &lt;= 3597381)
+	if (block.number <= 3597381)
 	{
 		if (msg.sender == genesisCallerAddress)
 		{
-			for (uint i = 0; i &lt; _address.length; i++)
+			for (uint i = 0; i < _address.length; i++)
 			{
 				balanceOf[_address[i]] = initialSupplyPerAddress;
 				genesisAddress[_address[i]] = true;
@@ -66,7 +66,7 @@ function availableBalanceOf(address _address) constant returns (uint256 Balance)
 	{
 		minedBlocks = block.number - initialBlockCount;
 		
-		if (minedBlocks &gt;= 100000000) return balanceOf[_address];
+		if (minedBlocks >= 100000000) return balanceOf[_address];
 		
 		availableAmount = rewardPerBlockPerAddress*minedBlocks;
 		
@@ -96,14 +96,14 @@ function transfer(address _to, uint256 _value) {
 
 if (genesisAddress[_to]) throw;
 
-if (balanceOf[msg.sender] &lt; _value) throw; 
+if (balanceOf[msg.sender] < _value) throw; 
 
-if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; 
+if (balanceOf[_to] + _value < balanceOf[_to]) throw; 
 
 if (genesisAddress[msg.sender])
 {
 	minedBlocks = block.number - initialBlockCount;
-	if (minedBlocks &lt; 100000000)
+	if (minedBlocks < 100000000)
 	{
 		availableAmount = rewardPerBlockPerAddress*minedBlocks;
 			
@@ -111,7 +111,7 @@ if (genesisAddress[msg.sender])
 		
 		availableBalance = balanceOf[msg.sender] - totalMaxAvailableAmount;
 			
-		if (_value &gt; availableBalance) throw;
+		if (_value > availableBalance) throw;
 	}
 }
 

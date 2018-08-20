@@ -80,20 +80,20 @@ contract Ownable {
 
 contract LegolasBase is Ownable {
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    // Initial amount received from the pre-sale (doesn&#39;t include bonus)
-    mapping (address =&gt; uint256) public initialAllocations;
+    // Initial amount received from the pre-sale (doesn't include bonus)
+    mapping (address => uint256) public initialAllocations;
     // Initial amount received from the pre-sale (includes bonus)
-    mapping (address =&gt; uint256) public allocations;
+    mapping (address => uint256) public allocations;
     // False if part of the allocated amount is spent
-    mapping (uint256 =&gt; mapping(address =&gt; bool)) public eligibleForBonus;
+    mapping (uint256 => mapping(address => bool)) public eligibleForBonus;
     // unspent allocated amount by period
-    mapping (uint256 =&gt; uint256) public unspentAmounts;
+    mapping (uint256 => uint256) public unspentAmounts;
     // List of founders addresses
-    mapping (address =&gt; bool) public founders;
+    mapping (address => bool) public founders;
     // List of advisors addresses
-    mapping (address =&gt; bool) public advisors;
+    mapping (address => bool) public advisors;
 
     // Release dates for adviors: one twelfth released each month.
     uint256[12] public ADVISORS_LOCK_DATES = [1521072000, 1523750400, 1526342400,
@@ -113,12 +113,12 @@ contract LegolasBase is Ownable {
     /// @return The amount locked for _address.
     function getLockedAmount(address _address) internal view returns (uint256 lockedAmount) {
         // Only founders and advisors have locks
-        if (!advisors[_address] &amp;&amp; !founders[_address]) return 0;
+        if (!advisors[_address] && !founders[_address]) return 0;
         // Determine release dates
         uint256[12] memory lockDates = advisors[_address] ? ADVISORS_LOCK_DATES : FOUNDERS_LOCK_DATES;
         // Determine how many twelfths are locked
-        for (uint8 i = 11; i &gt;= 0; i--) {
-            if (now &gt;= lockDates[i]) {
+        for (uint8 i = 11; i >= 0; i--) {
+            if (now >= lockDates[i]) {
                 return (allocations[_address] / 12) * (11 - i);
             }
         }
@@ -126,11 +126,11 @@ contract LegolasBase is Ownable {
     }
 
     function updateBonusEligibity(address _from) internal {
-        if (now &lt; BONUS_DATES[3] &amp;&amp;
-            initialAllocations[_from] &gt; 0 &amp;&amp;
-            balances[_from] &lt; allocations[_from]) {
-            for (uint8 i = 0; i &lt; 4; i++) {
-                if (now &lt; BONUS_DATES[i] &amp;&amp; eligibleForBonus[BONUS_DATES[i]][_from]) {
+        if (now < BONUS_DATES[3] &&
+            initialAllocations[_from] > 0 &&
+            balances[_from] < allocations[_from]) {
+            for (uint8 i = 0; i < 4; i++) {
+                if (now < BONUS_DATES[i] && eligibleForBonus[BONUS_DATES[i]][_from]) {
                     unspentAmounts[BONUS_DATES[i]] -= initialAllocations[_from];
                     eligibleForBonus[BONUS_DATES[i]][_from] = false;
                 }
@@ -142,13 +142,13 @@ contract LegolasBase is Ownable {
 contract EIP20 is EIP20Interface, LegolasBase {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
 
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -169,9 +169,9 @@ contract EIP20 is EIP20Interface, LegolasBase {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         // Check locked amount
-        require(balances[msg.sender] - _value &gt;= getLockedAmount(msg.sender));
+        require(balances[msg.sender] - _value >= getLockedAmount(msg.sender));
         balances[msg.sender] -= _value;
         balances[_to] += _value;
 
@@ -184,14 +184,14 @@ contract EIP20 is EIP20Interface, LegolasBase {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
 
         // Check locked amount
-        require(balances[_from] - _value &gt;= getLockedAmount(_from));
+        require(balances[_from] - _value >= getLockedAmount(_from));
 
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
 
@@ -220,8 +220,8 @@ contract EIP20 is EIP20Interface, LegolasBase {
 contract Legolas is EIP20 {
 
     // Standard ERC20 information
-    string  constant NAME = &quot;LGO Token&quot;;
-    string  constant SYMBOL = &quot;LGO&quot;;
+    string  constant NAME = "LGO Token";
+    string  constant SYMBOL = "LGO";
     uint8   constant DECIMALS = 8;
     uint256 constant UNIT = 10**uint256(DECIMALS);
 
@@ -248,7 +248,7 @@ contract Legolas is EIP20 {
     // list of all initial holders
     address[] initialHolders;
     // not distributed because the defaut value is false
-    mapping (uint256 =&gt; mapping(address =&gt; bool)) bonusNotDistributed;
+    mapping (uint256 => mapping(address => bool)) bonusNotDistributed;
 
     event Allocate(address _address, uint256 _value);
 
@@ -269,21 +269,21 @@ contract Legolas is EIP20 {
 
         if (_type == 0) { // advisor
             // check allocated amount
-            require(advisorsAllocatedAmount + _amount &lt;= ADVISORS_AMOUNT);
+            require(advisorsAllocatedAmount + _amount <= ADVISORS_AMOUNT);
             // increase allocated amount
             advisorsAllocatedAmount += _amount;
             // mark address as advisor
             advisors[_address] = true;
         } else if (_type == 1) { // founder
             // check allocated amount
-            require(foundersAllocatedAmount + _amount &lt;= FOUNDERS_AMOUNT);
+            require(foundersAllocatedAmount + _amount <= FOUNDERS_AMOUNT);
             // increase allocated amount
             foundersAllocatedAmount += _amount;
             // mark address as founder
             founders[_address] = true;
         } else {
             // check allocated amount
-            require(holdersAllocatedAmount + _amount &lt;= HOLDERS_AMOUNT + RESERVE_AMOUNT);
+            require(holdersAllocatedAmount + _amount <= HOLDERS_AMOUNT + RESERVE_AMOUNT);
             // increase allocated amount
             holdersAllocatedAmount += _amount;
         }
@@ -295,7 +295,7 @@ contract Legolas is EIP20 {
         balances[_address] += _amount;
 
         // update variables for bonus distribution
-        for (uint8 i = 0; i &lt; 4; i++) {
+        for (uint8 i = 0; i < 4; i++) {
             // increase unspent amount
             unspentAmounts[BONUS_DATES[i]] += _amount;
             // initialize bonus eligibility
@@ -316,7 +316,7 @@ contract Legolas is EIP20 {
     /// @return Whether the bonus distribution was successful or not
     function claimBonus(address _address, uint256 _bonusDate) public returns (bool success) {
         /// bonus date must be past
-        require(_bonusDate &lt;= now);
+        require(_bonusDate <= now);
         /// disrtibute bonus only once
         require(bonusNotDistributed[_bonusDate][_address]);
         /// disrtibute bonus only if eligible

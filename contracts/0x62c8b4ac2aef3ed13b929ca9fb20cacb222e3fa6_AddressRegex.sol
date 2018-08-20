@@ -6,7 +6,7 @@ contract AddressRegex {
     function (byte) constant internal returns (State memory) func;
   }
 
-  string public constant regex = &quot;0x[0-9a-fA-F]{40}&quot;;
+  string public constant regex = "0x[0-9a-fA-F]{40}";
 
   function s0(byte c) constant internal returns (State memory) {
     c = c;
@@ -30,7 +30,7 @@ contract AddressRegex {
   }
 
   function s3(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s4);
     }
 
@@ -38,7 +38,7 @@ contract AddressRegex {
   }
 
   function s4(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s5);
     }
 
@@ -46,7 +46,7 @@ contract AddressRegex {
   }
 
   function s5(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s6);
     }
 
@@ -54,7 +54,7 @@ contract AddressRegex {
   }
 
   function s6(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s7);
     }
 
@@ -62,7 +62,7 @@ contract AddressRegex {
   }
 
   function s7(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s8);
     }
 
@@ -70,7 +70,7 @@ contract AddressRegex {
   }
 
   function s8(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s9);
     }
 
@@ -78,7 +78,7 @@ contract AddressRegex {
   }
 
   function s9(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s10);
     }
 
@@ -86,7 +86,7 @@ contract AddressRegex {
   }
 
   function s10(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s11);
     }
 
@@ -94,7 +94,7 @@ contract AddressRegex {
   }
 
   function s11(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s12);
     }
 
@@ -102,7 +102,7 @@ contract AddressRegex {
   }
 
   function s12(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s13);
     }
 
@@ -110,7 +110,7 @@ contract AddressRegex {
   }
 
   function s13(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s14);
     }
 
@@ -118,7 +118,7 @@ contract AddressRegex {
   }
 
   function s14(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s15);
     }
 
@@ -126,7 +126,7 @@ contract AddressRegex {
   }
 
   function s15(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s16);
     }
 
@@ -134,7 +134,7 @@ contract AddressRegex {
   }
 
   function s16(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s17);
     }
 
@@ -142,7 +142,7 @@ contract AddressRegex {
   }
 
   function s17(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s18);
     }
 
@@ -150,7 +150,7 @@ contract AddressRegex {
   }
 
   function s18(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s19);
     }
 
@@ -158,7 +158,7 @@ contract AddressRegex {
   }
 
   function s19(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s20);
     }
 
@@ -166,7 +166,7 @@ contract AddressRegex {
   }
 
   function s20(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s21);
     }
 
@@ -174,7 +174,7 @@ contract AddressRegex {
   }
 
   function s21(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s22);
     }
 
@@ -182,7 +182,7 @@ contract AddressRegex {
   }
 
   function s22(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s23);
     }
 
@@ -190,7 +190,7 @@ contract AddressRegex {
   }
 
   function s23(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s24);
     }
 
@@ -198,7 +198,7 @@ contract AddressRegex {
   }
 
   function s24(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s25);
     }
 
@@ -206,7 +206,7 @@ contract AddressRegex {
   }
 
   function s25(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s26);
     }
 
@@ -214,7 +214,7 @@ contract AddressRegex {
   }
 
   function s26(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s27);
     }
 
@@ -222,7 +222,7 @@ contract AddressRegex {
   }
 
   function s27(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s28);
     }
 
@@ -230,7 +230,7 @@ contract AddressRegex {
   }
 
   function s28(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s29);
     }
 
@@ -238,7 +238,7 @@ contract AddressRegex {
   }
 
   function s29(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s30);
     }
 
@@ -246,7 +246,7 @@ contract AddressRegex {
   }
 
   function s30(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s31);
     }
 
@@ -254,7 +254,7 @@ contract AddressRegex {
   }
 
   function s31(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s32);
     }
 
@@ -262,7 +262,7 @@ contract AddressRegex {
   }
 
   function s32(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s33);
     }
 
@@ -270,7 +270,7 @@ contract AddressRegex {
   }
 
   function s33(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s34);
     }
 
@@ -278,7 +278,7 @@ contract AddressRegex {
   }
 
   function s34(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s35);
     }
 
@@ -286,7 +286,7 @@ contract AddressRegex {
   }
 
   function s35(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s36);
     }
 
@@ -294,7 +294,7 @@ contract AddressRegex {
   }
 
   function s36(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s37);
     }
 
@@ -302,7 +302,7 @@ contract AddressRegex {
   }
 
   function s37(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s38);
     }
 
@@ -310,7 +310,7 @@ contract AddressRegex {
   }
 
   function s38(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s39);
     }
 
@@ -318,7 +318,7 @@ contract AddressRegex {
   }
 
   function s39(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s40);
     }
 
@@ -326,7 +326,7 @@ contract AddressRegex {
   }
 
   function s40(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s41);
     }
 
@@ -334,7 +334,7 @@ contract AddressRegex {
   }
 
   function s41(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(false, s42);
     }
 
@@ -342,7 +342,7 @@ contract AddressRegex {
   }
 
   function s42(byte c) constant internal returns (State memory) {
-    if (c &gt;= 48 &amp;&amp; c &lt;= 57 || c &gt;= 65 &amp;&amp; c &lt;= 70 || c &gt;= 97 &amp;&amp; c &lt;= 102) {
+    if (c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102) {
       return State(true, s43);
     }
 
@@ -359,7 +359,7 @@ contract AddressRegex {
   function matches(string input) constant returns (bool) {
     var cur = State(false, s1);
 
-    for (uint i = 0; i &lt; bytes(input).length; i++) {
+    for (uint i = 0; i < bytes(input).length; i++) {
       var c = bytes(input)[i];
 
       cur = cur.func(c);

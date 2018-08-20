@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,8 +55,8 @@ library SafeMath {
  * @dev Crowd Sale Authorizer
  */
 contract CrowdsaleAuthorizer {
-    mapping(address =&gt; uint256)    public participated;
-    mapping(address =&gt; bool)       public whitelistAddresses;
+    mapping(address => uint256)    public participated;
+    mapping(address => bool)       public whitelistAddresses;
 
     address                        public admin;
     uint256                        public saleStartTime;
@@ -103,13 +103,13 @@ contract CrowdsaleAuthorizer {
         validAddress(_admin)
         public
     {
-        require(_saleStartTime &gt; now);
-        require(_saleEndTime &gt; now);
-        require(_increaseMaxContribTime &gt; now);
-        require(_saleStartTime &lt; _saleEndTime);
-        require(_increaseMaxContribTime &gt; _saleStartTime);
-        require(_maxContribution &gt; 0);
-        require(_minContribution &lt; _maxContribution);
+        require(_saleStartTime > now);
+        require(_saleEndTime > now);
+        require(_increaseMaxContribTime > now);
+        require(_saleStartTime < _saleEndTime);
+        require(_increaseMaxContribTime > _saleStartTime);
+        require(_maxContribution > 0);
+        require(_minContribution < _maxContribution);
 
         admin = _admin;
         saleStartTime = _saleStartTime;
@@ -145,7 +145,7 @@ contract CrowdsaleAuthorizer {
         onlyAdmin
     {
         require(_users.length == _allows.length);
-        for (uint i = 0 ; i &lt; _users.length ; i++) {
+        for (uint i = 0 ; i < _users.length ; i++) {
             address _user = _users[i];
             bool _allow = _allows[i];
             whitelistAddresses[_user] = _allow;
@@ -163,19 +163,19 @@ contract CrowdsaleAuthorizer {
         view
         returns(uint256)
     {
-        // If sales has not started or sale ended, there&#39;s no allocation
+        // If sales has not started or sale ended, there's no allocation
         if (!saleStarted() || saleEnded()) {
             return 0;
         }
 
         // Amount lesser than minimum contribution will be rejected
-        if (_amount &lt; minContribution) {
+        if (_amount < minContribution) {
             return 0;
         }
 
         uint256 userMaxContribution = maxContribution;
         // If sale has past 24hrs, increase max cap
-        if (now &gt;= increaseMaxContribTime) {
+        if (now >= increaseMaxContribTime) {
             userMaxContribution = maxContribution.mul(10);
         }
 
@@ -183,21 +183,21 @@ contract CrowdsaleAuthorizer {
         uint256 remainingCap = userMaxContribution.sub(participated[_contributor]);
 
         // Return either the amount contributed or cap whichever is lower
-        return (remainingCap &gt; _amount) ? _amount : remainingCap;
+        return (remainingCap > _amount) ? _amount : remainingCap;
     }
 
     /**
      * @dev Get if sale has started
      */
     function saleStarted() public view returns(bool) {
-        return now &gt;= saleStartTime;
+        return now >= saleStartTime;
     }
 
     /**
      * @dev Get if sale has ended
      */
     function saleEnded() public view returns(bool) {
-        return now &gt; saleEndTime;
+        return now > saleEndTime;
     }
 
     /**
@@ -226,7 +226,7 @@ contract CrowdsaleAuthorizer {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -286,7 +286,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -304,7 +304,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -339,9 +339,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -374,7 +374,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -385,8 +385,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -400,7 +400,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -449,7 +449,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -470,8 +470,8 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     /**
     * @dev Token Contract Constants
     */
-    string    public constant name     = &quot;PolicyPal Network Token&quot;;
-    string    public constant symbol   = &quot;PAL&quot;;
+    string    public constant name     = "PolicyPal Network Token";
+    string    public constant symbol   = "PAL";
     uint8     public constant decimals = 18;
 
     /**
@@ -485,7 +485,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     * @dev   Token Contract Modifier
     *
     * Check if a transfer is allowed
-    * Transfers are restricted to token creator &amp; owner(admin) during token sale duration
+    * Transfers are restricted to token creator & owner(admin) during token sale duration
     * Transfers after token sale is limited by `isTokenTransferable` toggle
     *
     */
@@ -531,7 +531,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
         public
         isValidDestination(_adminAddr)
     {
-        require(_tokenTotalAmount &gt; 0);
+        require(_tokenTotalAmount > 0);
 
         totalSupply_ = _tokenTotalAmount;
 
@@ -551,7 +551,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     * @param _to - Address to transfer to
     * @param _value - Value to transfer
     * @return bool - Result of transfer
-    * &quot;Overloaded&quot; Function of ERC20Basic&#39;s transfer
+    * "Overloaded" Function of ERC20Basic's transfer
     *
     */
     function transfer(address _to, uint256 _value) public
@@ -569,7 +569,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     * @param _value - Value to transfer
     * @return bool - Result of transferFrom
     *
-    * &quot;Overloaded&quot; Function of ERC20&#39;s transferFrom
+    * "Overloaded" Function of ERC20's transferFrom
     * Added with modifiers,
     *    1. onlyWhenTransferAllowed
     *    2. isValidDestination
@@ -586,7 +586,7 @@ contract PolicyPalNetworkToken is StandardToken, BurnableToken, Ownable {
     /**
     * @dev Token Contract burn
     * @param _value - Value to burn
-    * &quot;Overloaded&quot; Function of BurnableToken&#39;s burn
+    * "Overloaded" Function of BurnableToken's burn
     */
     function burn(uint256 _value)
         public
@@ -675,13 +675,13 @@ contract PolicyPalNetworkCrowdsale is CrowdsaleAuthorizer {
         validAddress(_multiSigWallet)
         public
     {
-        require(_totalTokenSupply &gt; 0);
-        require(_premintedTokenSupply &gt; 0);
-        require(_presaleTokenSupply &gt; 0);
-        require(_rate &gt; 0);
+        require(_totalTokenSupply > 0);
+        require(_premintedTokenSupply > 0);
+        require(_presaleTokenSupply > 0);
+        require(_rate > 0);
         
-        require(_premintedTokenSupply &lt; _totalTokenSupply);
-        require(_presaleTokenSupply &lt; _totalTokenSupply);
+        require(_premintedTokenSupply < _totalTokenSupply);
+        require(_presaleTokenSupply < _totalTokenSupply);
 
         multiSigWallet = _multiSigWallet;
         rate = _rate;
@@ -724,20 +724,20 @@ contract PolicyPalNetworkCrowdsale is CrowdsaleAuthorizer {
         validAddress(_recipient)
         returns(uint256)
     {
-        // Get the contributor&#39;s eligible amount
+        // Get the contributor's eligible amount
         uint256 weiContributionAllowed = eligibleAmountCheck(_recipient, msg.value);
-        require(weiContributionAllowed &gt; 0);
+        require(weiContributionAllowed > 0);
 
         // Get tokens remaining for sale
         uint256 tokensRemaining = token.balanceOf(address(this));
-        require(tokensRemaining &gt; 0);
+        require(tokensRemaining > 0);
 
         // Get tokens that the contributor will receive
         uint256 receivedTokens = weiContributionAllowed.mul(rate);
 
         // Check remaining tokens
         // If lesser, update tokens to be transfer and contribution allowed
-        if (receivedTokens &gt; tokensRemaining) {
+        if (receivedTokens > tokensRemaining) {
             receivedTokens = tokensRemaining;
             weiContributionAllowed = tokensRemaining.div(rate);
         }
@@ -751,7 +751,7 @@ contract PolicyPalNetworkCrowdsale is CrowdsaleAuthorizer {
 
         // Check weiContributionAllowed is larger than value sent
         // If larger, transfer the excess back to the contributor
-        if (msg.value &gt; weiContributionAllowed) {
+        if (msg.value > weiContributionAllowed) {
             msg.sender.transfer(msg.value.sub(weiContributionAllowed));
         }
 
@@ -770,7 +770,7 @@ contract PolicyPalNetworkCrowdsale is CrowdsaleAuthorizer {
         onlyAdmin
         returns(bool)
     {
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             sendETHToMultiSig(this.balance);
         }
         if (_anyToken != address(0x0)) {

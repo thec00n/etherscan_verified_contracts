@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,19 +39,19 @@ library SafeMath {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -78,7 +78,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -129,7 +129,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -142,7 +142,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -203,7 +203,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -255,7 +255,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -278,9 +278,9 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   ) public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
+    require(_cliff >= _start && _vesting >= _cliff);
 
-    require(tokenGrantsCount(_to) &lt; MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(tokenGrantsCount(_to) < MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint256 count = grants[_to].push(
                 TokenGrant(
@@ -330,7 +330,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint256 representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint256 representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -339,7 +339,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = SafeMath.add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -381,7 +381,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(
@@ -392,12 +392,12 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     uint256 vesting) constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = tokens * (time - start) / (vesting - start)
       uint256 vestedTokens = SafeMath.div(
@@ -467,7 +467,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = Math.max64(grants[holder][i].vesting, date);
     }
   }
@@ -476,8 +476,8 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 
 contract EGLToken is VestedToken {
   //FIELDS
-  string public name = &quot;eGold&quot;;
-  string public symbol = &quot;EGL&quot;;
+  string public name = "eGold";
+  string public symbol = "EGL";
   uint public decimals = 4;
   
   //CONSTANTS
@@ -530,9 +530,9 @@ contract EGLToken is VestedToken {
     returns (bool) 
   {
     if (
-      now &gt; publicEndTime
-      || EGLSold &gt;= ALLOC_CROWDSALE
-      || weiRaised &gt;= hardcapInWei
+      now > publicEndTime
+      || EGLSold >= ALLOC_CROWDSALE
+      || weiRaised >= hardcapInWei
     ) return true;
 
     return false;
@@ -570,7 +570,7 @@ contract EGLToken is VestedToken {
     
     balances[0x8c6a58B551F38d4D51C0db7bb8b7ad29f7488702] += ALLOC_SC;
 
-    // will be transferred to the team address when it&#39;s vested
+    // will be transferred to the team address when it's vested
     balances[ownerAddress] += ALLOC_TEAM;
 
     balances[ownerAddress] += ALLOC_CROWDSALE;
@@ -601,13 +601,13 @@ contract EGLToken is VestedToken {
   {
       uint delta = SafeMath.sub(now, publicStartTime);
 
-      if (delta &gt; STAGE_TWO_TIME_END) return PRICE_STAGE_THREE;
-      if (delta &gt; STAGE_ONE_TIME_END) return PRICE_STAGE_TWO;
+      if (delta > STAGE_TWO_TIME_END) return PRICE_STAGE_THREE;
+      if (delta > STAGE_ONE_TIME_END) return PRICE_STAGE_TWO;
 
       return (PRICE_STAGE_ONE);
   }
 
-  // calculates wmount of EGL we get, given the wei and the rates we&#39;ve defined per 1 eth
+  // calculates wmount of EGL we get, given the wei and the rates we've defined per 1 eth
   function calcAmount(uint _wei, uint _rate) 
     constant
     returns (uint) 
@@ -624,7 +624,7 @@ contract EGLToken is VestedToken {
   {
     o_amount = calcAmount(msg.value, _rate);
 
-    require(o_amount &lt;= _remaining);
+    require(o_amount <= _remaining);
     require(multisigAddress.send(msg.value));
 
     balances[ownerAddress] = balances[ownerAddress].sub(o_amount);
@@ -644,7 +644,7 @@ contract EGLToken is VestedToken {
 
     uint amount;
 
-    if (now &lt; publicStartTime) {
+    if (now < publicStartTime) {
       // pre-sale
       amount = processPurchase(PRICE_PREBUY, SafeMath.sub(ALLOC_MAX_PRE, prebuyPortionTotal));
       prebuyPortionTotal += amount;
@@ -675,18 +675,18 @@ contract EGLToken is VestedToken {
     public
     returns (string)
   {
-    if (EGLSold &gt;= ALLOC_CROWDSALE) return &quot;tokensSoldOut&quot;;
-    if (weiRaised &gt;= hardcapInWei) return &quot;hardcapReached&quot;;
+    if (EGLSold >= ALLOC_CROWDSALE) return "tokensSoldOut";
+    if (weiRaised >= hardcapInWei) return "hardcapReached";
     
-    if (now &lt; publicStartTime) {
+    if (now < publicStartTime) {
       // presale
-      if (prebuyPortionTotal &gt;= ALLOC_MAX_PRE) return &quot;presaleSoldOut&quot;;
-      return &quot;presale&quot;;
-    } else if (now &lt; publicEndTime) {
+      if (prebuyPortionTotal >= ALLOC_MAX_PRE) return "presaleSoldOut";
+      return "presale";
+    } else if (now < publicEndTime) {
       // public sale
-      return &quot;public&quot;;
+      return "public";
     } else {
-      return &quot;saleOver&quot;;
+      return "saleOver";
     }
   }
 }

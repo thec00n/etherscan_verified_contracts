@@ -1,6 +1,6 @@
 pragma solidity 0.4.19;
 contract loglibs {
-   mapping (address =&gt; uint256) public sendList;
+   mapping (address => uint256) public sendList;
 
    /*function logSendEvent() payable public{
         sendList[msg.sender] = 1 ether;

@@ -24,13 +24,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -45,8 +45,8 @@ contract ETHACE is IERC20{
 	bool public purchasingAllowed = true;
 	bool public bonusAllowed = true;	
 
-	string public symbol = &quot;ETA&quot;;
-	string public constant name = &quot;ETHACE&quot;;
+	string public symbol = "ETA";
+	string public constant name = "ETHACE";
 	uint256 public constant decimals = 18;
 
 	uint256 public CREATOR_TOKEN = 20000000 * 10**decimals;
@@ -55,8 +55,8 @@ contract ETHACE is IERC20{
 	
 	address public owner;
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	function() payable{
 		require(purchasingAllowed);		
@@ -69,7 +69,7 @@ contract ETHACE is IERC20{
 	}
    
 	function createTokens() payable{
-		require(msg.value &gt;= 0);
+		require(msg.value >= 0);
 		uint256 tokens = msg.value.mul(10 ** decimals);
 		tokens = tokens.mul(RATE);
 		tokens = tokens.div(10 ** 18);
@@ -114,7 +114,7 @@ contract ETHACE is IERC20{
 	}   
 
 	function transfer(address _to, uint256 _value) returns (bool success){
-		require(balances[msg.sender] &gt;= _value	&amp;&amp; _value &gt; 0);
+		require(balances[msg.sender] >= _value	&& _value > 0);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -122,7 +122,7 @@ contract ETHACE is IERC20{
 	}
    
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-		require(allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[msg.sender] &gt;= _value	&amp;&amp; _value &gt; 0);
+		require(allowed[_from][msg.sender] >= _value && balances[msg.sender] >= _value	&& _value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -146,7 +146,7 @@ contract ETHACE is IERC20{
 		uint256 total = balances[burner];
 		total = 0;
 		balances[burner] = total;
-		if (_totalSupply &gt;= total){
+		if (_totalSupply >= total){
 			_totalSupply = _totalSupply.sub(total);
 		}
 		Burn(burner, total);
@@ -154,13 +154,13 @@ contract ETHACE is IERC20{
 	
 	function burn(uint256 _value) public {
 		require(msg.sender == owner);
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 		_value = _value.mul(10 ** decimals);
         address burner = msg.sender;
 		uint t = balances[burner].sub(_value);
         balances[burner] = balances[burner].sub(_value);
-        if (_totalSupply &gt;= _value){
+        if (_totalSupply >= _value){
 			_totalSupply = _totalSupply.sub(_value);
 		}
         Burn(burner, _value);
@@ -168,7 +168,7 @@ contract ETHACE is IERC20{
 		
     function mintToken(uint256 _value) public {
 		require(msg.sender == owner);
-        require(_value &gt; 0);
+        require(_value > 0);
 		_value = _value.mul(10 ** decimals);
         balances[owner] = balances[owner].add(_value);
         _totalSupply = _totalSupply.add(_value);

@@ -29,9 +29,9 @@ contract EtherealFoundationOwned {
 }
 
 contract EtherealTipJar  is EtherealFoundationOwned{
-    string public constant CONTRACT_NAME = &quot;EtherealTipJar&quot;;
-    string public constant CONTRACT_VERSION = &quot;A&quot;;
-    string public constant QUOTE = &quot;&#39;The universe never did make sense; I suspect it was built on government contract.&#39; -Robert A. Heinlein&quot;;
+    string public constant CONTRACT_NAME = "EtherealTipJar";
+    string public constant CONTRACT_VERSION = "A";
+    string public constant QUOTE = "'The universe never did make sense; I suspect it was built on government contract.' -Robert A. Heinlein";
     
     
     event RecievedTip(address indexed from, uint256 value);
@@ -41,9 +41,9 @@ contract EtherealTipJar  is EtherealFoundationOwned{
 	
 	event TransferedEth(address indexed to, uint256 value);
 	function TransferEth(address to, uint256 value) public onlyOwner{
-	    require(this.balance &gt;= value);
+	    require(this.balance >= value);
 	    
-        if(value &gt; 0)
+        if(value > 0)
 		{
 			to.transfer(value);
 			TransferedEth(to, value);

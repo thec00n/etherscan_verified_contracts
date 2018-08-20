@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     //Variables
@@ -107,7 +107,7 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -116,7 +116,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -146,7 +146,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -156,8 +156,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -171,7 +171,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -206,7 +206,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -243,7 +243,7 @@ contract SparkERC20 is StandardToken, Ownable {
         bool _transferAllSupplyToOwner,
         bool _locked
     ) public {
-        standard = &quot;ERC20 0.1&quot;;
+        standard = "ERC20 0.1";
         locked = _locked;
         totalSupply = _totalSupply;
 
@@ -307,7 +307,7 @@ contract MintingERC20 is SparkERC20 {
     // Variables
     uint256 public maxSupply;
 
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     // Modifiers
     modifier onlyMinters() {
@@ -332,7 +332,7 @@ contract MintingERC20 is SparkERC20 {
         _locked
     )
     {
-        standard = &quot;MintingERC20 0.1&quot;;
+        standard = "MintingERC20 0.1";
         minters[msg.sender] = true;
         maxSupply = _maxSupply;
     }
@@ -350,7 +350,7 @@ contract MintingERC20 is SparkERC20 {
             return uint256(0);
         }
 
-        if (totalSupply.add(_amount) &gt; maxSupply) {
+        if (totalSupply.add(_amount) > maxSupply) {
             return uint256(0);
         }
 
@@ -379,7 +379,7 @@ contract Spark is MintingERC20 {
         bool _locked
     ) public MintingERC20(0, _maxSupply, _tokenName, _decimals, _symbol, false, _locked)
     {
-        standard = &quot;Spark 0.1&quot;;
+        standard = "Spark 0.1";
     }
 
     function setICO(address _ico) public onlyOwner {
@@ -401,7 +401,7 @@ contract Spark is MintingERC20 {
         uint256 mintedAmount;
         if (msg.sender == owner) {
             require(address(ico) != address(0));
-            if (!ico.isActive() &amp;&amp; block.timestamp &gt;= ico.startTime()) {
+            if (!ico.isActive() && block.timestamp >= ico.startTime()) {
                 mintedAmount = super.mint(_addr, _amount);
             }
         } else {
@@ -418,7 +418,7 @@ contract Spark is MintingERC20 {
 
     // Allow token transfer.
     function freezing(bool _transferFrozen) public onlyOwner {
-        if (address(ico) != address(0) &amp;&amp; !ico.isActive() &amp;&amp; block.timestamp &gt;= ico.startTime()) {
+        if (address(ico) != address(0) && !ico.isActive() && block.timestamp >= ico.startTime()) {
             transferFrozen = _transferFrozen;
         }
     }
@@ -456,7 +456,7 @@ contract Spark is MintingERC20 {
 
 contract WhiteList is Ownable {
 
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     /* events */
     event WhitelistSet(address contributorAddress);
@@ -494,7 +494,7 @@ contract SparkDividends is Ownable {
 
     address public treasuryAddress;
 
-    mapping(address =&gt; DividendData[]) public accounts;
+    mapping(address => DividendData[]) public accounts;
 
     FundsData[] public funds;
 
@@ -521,7 +521,7 @@ contract SparkDividends is Ownable {
         address _ico,
         address _treasuryAddress
     ) public {
-        require(_spark != address(0) &amp;&amp; _ico != address(0) &amp;&amp; _treasuryAddress != address(0));
+        require(_spark != address(0) && _ico != address(0) && _treasuryAddress != address(0));
         spark = Spark(_spark);
         ico = ICO(_ico);
         treasuryAddress = _treasuryAddress;
@@ -550,12 +550,12 @@ contract SparkDividends is Ownable {
         uint256 day = 0;
         uint256 period = 1;
 
-        if (now &gt; ico.endTime()) {
+        if (now > ico.endTime()) {
             (period, day) = getPeriod(now);
         }
 
-        if (_address != address(0) &amp;&amp; period &gt; 0) {
-            if (day != 0 &amp;&amp; _amount &gt; 0) {
+        if (_address != address(0) && period > 0) {
+            if (day != 0 && _amount > 0) {
                 logData(_address, period, 0, _amount);
             }
 
@@ -575,7 +575,7 @@ contract SparkDividends is Ownable {
         uint256 day = 0;
         uint256 period = 1;
 
-        if (now &gt; ico.endTime()) {
+        if (now > ico.endTime()) {
             (period, day) = getPeriod(now);
         }
 
@@ -609,7 +609,7 @@ contract SparkDividends is Ownable {
 
         msg.sender.transfer(dividendAmount);
 
-        if (outdatedAmount &gt; 0) {
+        if (outdatedAmount > 0) {
             treasuryAddress.transfer(outdatedAmount);
         }
 
@@ -627,8 +627,8 @@ contract SparkDividends is Ownable {
         uint256 _currentPeriod,
         uint256 _currentDay
     ) public view returns (uint256 totalAmount, uint256 totalOutdated) {
-        for (uint256 i = 0; i &lt; accounts[_address].length; i++) {
-            if (accounts[_address][i].period &lt; _currentPeriod) {
+        for (uint256 i = 0; i < accounts[_address].length; i++) {
+            if (accounts[_address][i].period < _currentPeriod) {
                 uint256 index = getFundsDataIndex(accounts[_address][i].period);
                 if (index == funds.length) {
                     continue;
@@ -638,15 +638,15 @@ contract SparkDividends is Ownable {
                 uint256 to = 90;
 
                 if (
-                    accounts[_address].length &gt; i.add(1) &amp;&amp;
+                    accounts[_address].length > i.add(1) &&
                     accounts[_address][i.add(1)].period == accounts[_address][i].period
                 ) {
                     to = accounts[_address][i.add(1)].day;
                 }
 
-                for (uint256 j = accounts[_address][i].day; j &lt; to; j++) {
+                for (uint256 j = accounts[_address][i].day; j < to; j++) {
                     balance = getBalanceByDay(_address, accounts[_address][i].period, j);
-                    if (_currentPeriod.sub(accounts[_address][i].period) &gt; 1 &amp;&amp; _currentDay &gt; 2) {
+                    if (_currentPeriod.sub(accounts[_address][i].period) > 1 && _currentDay > 2) {
                         totalOutdated = totalOutdated.add(balance.mul(dayEthers).div(spark.maxSupply()));
                     } else {
                         totalAmount = totalAmount.add(balance.mul(dayEthers).div(spark.maxSupply()));
@@ -673,9 +673,9 @@ contract SparkDividends is Ownable {
     }
 
     function cleanDividendsData(address _address, uint256 _currentPeriod) internal returns (bool) {
-        for (uint256 i = 0; i &lt; accounts[_address].length; i++) {
-            if (accounts[_address][i].period &lt; _currentPeriod) {
-                for (uint256 j = i; j &lt; accounts[_address].length.sub(1); j++) {
+        for (uint256 i = 0; i < accounts[_address].length; i++) {
+            if (accounts[_address][i].period < _currentPeriod) {
+                for (uint256 j = i; j < accounts[_address].length.sub(1); j++) {
                     DividendData storage dividend = accounts[_address][j];
 
                     dividend.period = accounts[_address][j.add(1)].period;
@@ -692,7 +692,7 @@ contract SparkDividends is Ownable {
     }
 
     function getFundsDataIndex(uint256 _period) internal view returns (uint256) {
-        for (uint256 i = 0; i &lt; funds.length; i++) {
+        for (uint256 i = 0; i < funds.length; i++) {
             if (funds[i].period == _period) {
                 return i;
             }
@@ -702,8 +702,8 @@ contract SparkDividends is Ownable {
     }
 
     function getBalanceByDay(address _address, uint256 _period, uint256 _day) internal view returns (uint256) {
-        for (uint256 i = accounts[_address].length.sub(1); i &gt;= 0; i--) {
-            if (accounts[_address][i].period == _period &amp;&amp; accounts[_address][i].day &lt;= _day) {
+        for (uint256 i = accounts[_address].length.sub(1); i >= 0; i--) {
+            if (accounts[_address][i].period == _period && accounts[_address][i].day <= _day) {
                 return accounts[_address][i].balance;
             }
         }
@@ -712,8 +712,8 @@ contract SparkDividends is Ownable {
     }
 
     function getDividendDataIndex(address _address, uint256 _period, uint256 _day) internal view returns (uint256) {
-        for (uint256 i = 0; i &lt; accounts[_address].length; i++) {
-            if (accounts[_address][i].period == _period &amp;&amp; accounts[_address][i].day == _day) {
+        for (uint256 i = 0; i < accounts[_address].length; i++) {
+            if (accounts[_address][i].period == _period && accounts[_address][i].day == _day) {
                 return i;
             }
         }
@@ -725,7 +725,7 @@ contract SparkDividends is Ownable {
 
 contract Multivest is Ownable {
     /* public variables */
-    mapping (address =&gt; bool) public allowedMultivests;
+    mapping (address => bool) public allowedMultivests;
 
     /* events */
     event MultivestSet(address multivest);
@@ -764,11 +764,11 @@ contract Multivest is Ownable {
         bytes32 _r,
         bytes32 _s
     ) public payable onlyAllowedMultivests(verify(keccak256(msg.sender), _v, _r, _s)) {
-        require(_address == msg.sender &amp;&amp; buy(msg.sender, msg.value) == true);
+        require(_address == msg.sender && buy(msg.sender, msg.value) == true);
     }
 
     function verify(bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s) internal pure returns(address) {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 
         return ecrecover(keccak256(prefix, _hash), _v, _r, _s);
     }
@@ -815,12 +815,12 @@ contract SellableToken is Multivest {
         uint256 _endTime
     ) public Multivest(_multivestAddress)
     {
-        require(_spark != address(0) &amp;&amp; _etherHolder != address(0) &amp;&amp; _tokensHolder != address(0));
+        require(_spark != address(0) && _etherHolder != address(0) && _tokensHolder != address(0));
         spark = Spark(_spark);
         etherHolder = _etherHolder;
         tokensHolder = _tokensHolder;
 
-        require(_startTime &lt; _endTime);
+        require(_startTime < _endTime);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -855,7 +855,7 @@ contract SellableToken is Multivest {
 
     // @return true if the transaction can buy tokens
     function withinPeriod() public constant returns (bool) {
-        return block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt;= endTime;
+        return block.timestamp >= startTime && block.timestamp <= endTime;
     }
 }
 
@@ -879,7 +879,7 @@ contract ICO is SellableToken, WhiteList {
         _startTime,
         _endTime
     ) WhiteList() {
-        require(_price &gt; 0);
+        require(_price > 0);
         price = _price;
 
         bonuses.push(Bonus(uint(10000000).mul(uint(10) ** spark.decimals()), uint256(150)));
@@ -892,9 +892,9 @@ contract ICO is SellableToken, WhiteList {
     }
 
     function allocateUnsoldTokens() public {
-        if (!isActive() &amp;&amp; block.timestamp &gt;= startTime) {
+        if (!isActive() && block.timestamp >= startTime) {
             uint256 amount = spark.maxSupply().sub(soldTokens);
-            require(amount &gt; 0 &amp;&amp; spark.mint(tokensHolder, amount) == amount);
+            require(amount > 0 && spark.mint(tokensHolder, amount) == amount);
             soldTokens = spark.maxSupply();
         }
     }
@@ -918,11 +918,11 @@ contract ICO is SellableToken, WhiteList {
             return false;
         }
 
-        require(withinPeriod() &amp;&amp; _address != address(0));
+        require(withinPeriod() && _address != address(0));
 
         uint256 amount = calculateTokensAmount(_value);
 
-        require(amount &gt; 0 &amp;&amp; spark.mint(_address, amount) == amount);
+        require(amount > 0 && spark.mint(_address, amount) == amount);
 
         collectedEthers = collectedEthers.add(_value);
         soldTokens = soldTokens.add(amount);
@@ -936,11 +936,11 @@ contract ICO is SellableToken, WhiteList {
         uint256 newSoldTokens = soldTokens;
         uint256 remainingValue = _amount;
 
-        for (uint i = 0; i &lt; bonuses.length; i++) {
+        for (uint i = 0; i < bonuses.length; i++) {
 
-            if (bonuses[i].maxAmount &gt; soldTokens) {
+            if (bonuses[i].maxAmount > soldTokens) {
                 uint256 amount = remainingValue.mul(bonuses[i].bonus).div(100);
-                if (newSoldTokens.add(amount) &gt; bonuses[i].maxAmount) {
+                if (newSoldTokens.add(amount) > bonuses[i].maxAmount) {
                     uint256 diff = bonuses[i].maxAmount.sub(newSoldTokens);
                     remainingValue = remainingValue.sub(diff.mul(100).div(bonuses[i].bonus));
                     newSoldTokens = newSoldTokens.add(diff);

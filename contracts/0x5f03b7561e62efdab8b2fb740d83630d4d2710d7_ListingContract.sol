@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afc2c6ccc4d6efc1c0d8c3c6d9ca81ddc0">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="afc2c6ccc4d6efc1c0d8c3c6d9ca81ddc0">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="04696d676f7d446a6b73686d72612a766b">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="04696d676f7d446a6b73686d72612a766b">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Listing Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a07030901132a04051d06031c0f441805">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a07030901132a04051d06031c0f441805">[email protected]</a>>
 
  Contains the Listing Contract
  - used by the platform to find child campaigns
@@ -297,7 +297,7 @@ contract ListingContract is ApplicationAsset {
         uint256 index;
     }
 
-    mapping ( uint256 =&gt; item ) public items;
+    mapping ( uint256 => item ) public items;
     uint256 public itemNum = 0;
 
     event EventNewChildItem(bytes32 _name, address _address, uint256 _index);
@@ -344,8 +344,8 @@ contract ListingContract is ApplicationAsset {
         if(child.status == true) {
             ApplicationEntityABI ChildApp = ApplicationEntityABI(child.itemAddress);
             if(
-                ChildApp.CurrentEntityState() == ChildApp.getEntityState(&quot;WAITING&quot;) ||
-                ChildApp.CurrentEntityState() == ChildApp.getEntityState(&quot;NEW&quot;))
+                ChildApp.CurrentEntityState() == ChildApp.getEntityState("WAITING") ||
+                ChildApp.CurrentEntityState() == ChildApp.getEntityState("NEW"))
             {
                 return true;
             }
@@ -359,7 +359,7 @@ contract ListingContract is ApplicationAsset {
     }
 
     // update so that this checks the child status, and only delists IF funding has not started yet.
-    function delistChild( uint256 _childId ) public onlyAsset(&quot;Proposals&quot;) requireInitialised {
+    function delistChild( uint256 _childId ) public onlyAsset("Proposals") requireInitialised {
         require(canBeDelisted(_childId) == true );
 
         item storage child = items[_childId];

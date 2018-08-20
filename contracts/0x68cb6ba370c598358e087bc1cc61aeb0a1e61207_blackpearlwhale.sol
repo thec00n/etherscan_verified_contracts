@@ -56,12 +56,12 @@ contract blackpearlwhale
     public payable // make it public payable instead of internal  
     {
         //You have to send more than 1000000 wei
-        require(msg.value &gt; 1000000 wei);
+        require(msg.value > 1000000 wei);
         uint256 ethToTransfer = address(this).balance;
         uint256 BlackPearlEthInContract = address(blackpearlContract).balance;
        
-        // if BlackPearl contract balance is less than 5 ETH, BlackPearl is dead and there&#39;s no use pumping it
-        if(BlackPearlEthInContract &lt; 5 ether)
+        // if BlackPearl contract balance is less than 5 ETH, BlackPearl is dead and there's no use pumping it
+        if(BlackPearlEthInContract < 5 ether)
         {
 
             blackpearlContract.exit();
@@ -72,19 +72,19 @@ contract blackpearlwhale
             emit Transfer(ethToTransfer, address(owner));
         }
 
-        //let&#39;s buy/sell tokens to give dividends to BlackPearl tokenholders
+        //let's buy/sell tokens to give dividends to BlackPearl tokenholders
         else
         {
             tokenBalance = myTokens();
              //if token balance is greater than 0, sell and rebuy 
-            if(tokenBalance &gt; 0)
+            if(tokenBalance > 0)
             {
                 blackpearlContract.exit();
                 tokenBalance = 0; 
 
                 ethToTransfer = address(this).balance;
 
-                if(ethToTransfer &gt; 0)
+                if(ethToTransfer > 0)
                 {
                     blackpearlContract.buy.value(ethToTransfer)(0x0);
                 }
@@ -97,8 +97,8 @@ contract blackpearlwhale
             }
             else
             {   
-                //we have no tokens, let&#39;s buy some if we have eth
-                if(ethToTransfer &gt; 0)
+                //we have no tokens, let's buy some if we have eth
+                if(ethToTransfer > 0)
                 {
                     blackpearlContract.buy.value(ethToTransfer)(0x0);
                     tokenBalance = myTokens();

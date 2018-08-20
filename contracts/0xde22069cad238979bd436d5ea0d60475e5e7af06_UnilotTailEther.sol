@@ -84,7 +84,7 @@ contract UnilotPrizeCalculator {
     {
         var (numWinners, numFixedAmountWinners) = getNumWinners(numPlayers);
 
-        require( uint(numWinners + numFixedAmountWinners) &lt;= prizes.length );
+        require( uint(numWinners + numFixedAmountWinners) <= prizes.length );
 
         uint[] memory y = new uint[]((numWinners - 1));
         uint z = 0; // Sum of all Y values
@@ -93,23 +93,23 @@ contract UnilotPrizeCalculator {
             prizes[0] = getPrizeAmount(uint(bet*numPlayers));
 
             return prizes;
-        } else if ( numWinners &lt; 1 ) {
+        } else if ( numWinners < 1 ) {
             return prizes;
         }
 
-        for (uint i = 0; i &lt; y.length; i++) {
+        for (uint i = 0; i < y.length; i++) {
             y[i] = formula( (calculateStep(numWinners) * i) );
             z += y[i];
         }
 
         bool stop = false;
 
-        for (i = 0; i &lt; 10; i++) {
+        for (i = 0; i < 10; i++) {
             uint[5] memory chunk = distributePrizeCalculation(
                 i, z, y, numPlayers, bet);
 
-            for ( uint j = 0; j &lt; chunk.length; j++ ) {
-                if ( ( (i * chunk.length) + j ) &gt;= ( numWinners + numFixedAmountWinners ) ) {
+            for ( uint j = 0; j < chunk.length; j++ ) {
+                if ( ( (i * chunk.length) + j ) >= ( numWinners + numFixedAmountWinners ) ) {
                     stop = true;
                     break;
                 }
@@ -139,8 +139,8 @@ contract UnilotPrizeCalculator {
 
         uint startPoint = chunkNumber * prizes.length;
 
-        for ( uint i = 0; i &lt; prizes.length; i++ ) {
-            if ( i &gt;= uint(numWinners + numFixedAmountWinners) ) {
+        for ( uint i = 0; i < prizes.length; i++ ) {
+            if ( i >= uint(numWinners + numFixedAmountWinners) ) {
                 break;
             }
             prizes[ i ] = (bet * minPrizeCoeficent);
@@ -148,9 +148,9 @@ contract UnilotPrizeCalculator {
 
             if ( i == ( numWinners - 1 ) ) {
                 extraPrize = undeligatedAmount;
-            } else if ( i == 0 &amp;&amp; chunkNumber == 0 ) {
+            } else if ( i == 0 && chunkNumber == 0 ) {
                 extraPrize = mainWinnerBaseAmount;
-            } else if ( ( startPoint + i ) &lt; numWinners ) {
+            } else if ( ( startPoint + i ) < numWinners ) {
                 extraPrize = ( ( y[ ( startPoint + i ) - 1 ] * (prizeAmountForDeligation - mainWinnerBaseAmount) ) / z);
             }
 
@@ -197,7 +197,7 @@ contract BaseUnilotGame is Game {
     address administrator;
     uint bet;
 
-    mapping (address =&gt; TicketLib.Ticket) internal tickets;
+    mapping (address => TicketLib.Ticket) internal tickets;
     address[] internal ticketIndex;
 
     UnilotPrizeCalculator calculator;
@@ -317,7 +317,7 @@ contract BaseUnilotGame is Game {
         uint[50] memory prizes = calculator.calcaultePrizes(
         bet, ticketIndex.length);
 
-        for (uint16 i = 0; i &lt; totalNumWinners; i++) {
+        for (uint16 i = 0; i < totalNumWinners; i++) {
             result[i] = prizes[i];
         }
 
@@ -329,7 +329,7 @@ contract BaseUnilotGame is Game {
         onlyAdministrator
         activeGame
     {
-        for (uint24 i = 0; i &lt; ticketIndex.length; i++) {
+        for (uint24 i = 0; i < ticketIndex.length; i++) {
             ticketIndex[i].transfer(bet);
         }
 
@@ -368,8 +368,8 @@ contract UnilotTailEther is BaseUnilotGame {
 
         uint index;
 
-        for (uint i = 0; i &lt; totalNumWinners; i++) {
-            if ( i &gt; winnerIndex ) {
+        for (uint i = 0; i < totalNumWinners; i++) {
+            if ( i > winnerIndex ) {
                 index = ( ( players.length ) - ( i - winnerIndex ) );
             } else {
                 index = ( winnerIndex - i );
@@ -389,7 +389,7 @@ contract UnilotTailEther is BaseUnilotGame {
         onlyPlayer
     {
         require(tickets[msg.sender].block_number == 0);
-        require(ticketIndex.length &lt;= 1000);
+        require(ticketIndex.length <= 1000);
 
         tickets[msg.sender].block_number = uint40(block.number);
         tickets[msg.sender].block_time   = uint32(block.timestamp);
@@ -407,13 +407,13 @@ contract UnilotTailEther is BaseUnilotGame {
         uint64 max_votes;
         uint64[] memory num_votes = new uint64[](ticketIndex.length);
 
-        for (uint i = 0; i &lt; ticketIndex.length; i++) {
+        for (uint i = 0; i < ticketIndex.length; i++) {
             TicketLib.Ticket memory ticket = tickets[ticketIndex[i]];
             uint64 vote = uint64( ( ( ticket.block_number * ticket.block_time ) + uint( ticketIndex[i]) ) % ticketIndex.length );
 
             num_votes[vote] += 1;
 
-            if ( num_votes[vote] &gt; max_votes ) {
+            if ( num_votes[vote] > max_votes ) {
                 max_votes = num_votes[vote];
                 winnerIndex = vote;
             }
@@ -423,11 +423,11 @@ contract UnilotTailEther is BaseUnilotGame {
 
         uint lastId = winnerIndex;
 
-        for ( i = 0; i &lt; prizes.length; i++ ) {
+        for ( i = 0; i < prizes.length; i++ ) {
             tickets[ticketIndex[lastId]].prize = prizes[i];
             ticketIndex[lastId].transfer(prizes[i]);
 
-            if ( lastId &lt;= 0 ) {
+            if ( lastId <= 0 ) {
                 lastId = ticketIndex.length;
             }
 

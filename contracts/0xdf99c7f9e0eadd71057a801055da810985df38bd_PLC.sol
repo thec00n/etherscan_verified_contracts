@@ -7,19 +7,19 @@ pragma solidity ^0.4.13;
 
 contract Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -27,7 +27,7 @@ contract Math {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -89,37 +89,37 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -131,7 +131,7 @@ contract SafeMath {
  */
 contract BasicToken is SafeMath, ERC20Basic {
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -176,7 +176,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -188,7 +188,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = add(balances[_to],_value);
     balances[_from] = sub(balances[_from],_value);
@@ -358,7 +358,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -409,7 +409,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -432,9 +432,9 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
   ) public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
+    require(_cliff >= _start && _vesting >= _cliff);
 
-    require(tokenGrantsCount(_to) &lt; MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(tokenGrantsCount(_to) < MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint256 count = grants[_to].push(
                 TokenGrant(
@@ -484,7 +484,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint256 representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint256 representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -493,7 +493,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -535,7 +535,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(
@@ -546,12 +546,12 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
     uint256 vesting) constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = tokens * (time - start) / (vesting - start)
       uint256 vestedTokens = div(
@@ -621,7 +621,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = max64(grants[holder][i].vesting, date);
     }
   }
@@ -644,7 +644,7 @@ contract BurnableToken is SafeMath, StandardToken {
     function burn(uint _value)
         public
     {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = sub(balances[burner], _value);
@@ -660,7 +660,7 @@ contract BurnableToken is SafeMath, StandardToken {
  * VestedToken, BurnableToken contract from open zeppelin.
  */
 contract PLC is MintableToken, PausableToken, VestedToken, BurnableToken {
-  string public name = &quot;PlusCoin&quot;;
-  string public symbol = &quot;PLC&quot;;
+  string public name = "PlusCoin";
+  string public symbol = "PLC";
   uint256 public decimals = 18;
 }

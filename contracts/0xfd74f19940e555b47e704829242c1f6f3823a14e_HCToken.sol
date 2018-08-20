@@ -2,13 +2,13 @@ pragma solidity ^0.4.19;
 
 contract HCToken {
     address public owner;
-    string public constant name = &quot;Hash Credit Token&quot;;
-    string public constant symbol = &quot;HCT&quot;;
+    string public constant name = "Hash Credit Token";
+    string public constant symbol = "HCT";
     uint256 public constant decimals = 6;
     uint256 public constant totalSupply = 15 * 100 * 1000 * 1000 * 10 ** decimals;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint size) {
         if (msg.data.length != size + 4) {
@@ -23,7 +23,7 @@ contract HCToken {
     }
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -31,7 +31,7 @@ contract HCToken {
     }
 
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -45,7 +45,7 @@ contract HCToken {
     }
 
     function approve(address _spender, uint _value) returns (bool success) {
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);

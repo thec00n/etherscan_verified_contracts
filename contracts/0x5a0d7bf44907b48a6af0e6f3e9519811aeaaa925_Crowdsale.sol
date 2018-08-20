@@ -15,27 +15,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -139,7 +139,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -148,7 +148,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -191,7 +191,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -202,8 +202,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -252,7 +252,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -297,8 +297,8 @@ contract CostumeToken is PausableToken {
   using SafeMath for uint256;
 
   // Token Details
-  string public constant name = &#39;Costume Token&#39;;
-  string public constant symbol = &#39;COST&#39;;
+  string public constant name = 'Costume Token';
+  string public constant symbol = 'COST';
   uint8 public constant decimals = 18;
 
   // 200 Million Total Supply
@@ -342,10 +342,10 @@ contract CostumeToken is PausableToken {
   // @param tokens The amount of tokens to send to that address
   function distributeCrowdsaleTokens(address _buyer, uint tokens) external onlyCrowdsale whenNotPaused {
     require(_buyer != address(0));
-    require(tokens &gt; 0);
+    require(tokens > 0);
 
-    require(tokensDistributedCrowdsale &lt; limitCrowdsale);
-    require(tokensDistributedCrowdsale.add(tokens) &lt;= limitCrowdsale);
+    require(tokensDistributedCrowdsale < limitCrowdsale);
+    require(tokensDistributedCrowdsale.add(tokens) <= limitCrowdsale);
 
     // Tick up the distributed amount
     tokensDistributedCrowdsale = tokensDistributedCrowdsale.add(tokens);
@@ -404,10 +404,10 @@ contract Crowdsale is Pausable {
    // -- DATA-SETS
 
    // Amount each address paid for tokens
-   mapping(address =&gt; uint256) public crowdsaleBalances;
+   mapping(address => uint256) public crowdsaleBalances;
 
    // Amount of tokens each address received
-   mapping(address =&gt; uint256) public tokensBought;
+   mapping(address => uint256) public tokensBought;
 
    // -- EVENTS
 
@@ -421,7 +421,7 @@ contract Crowdsale is Pausable {
 
    // Only allow the execution of the function before the crowdsale starts
    modifier beforeStarting() {
-      require(now &lt; startTime);
+      require(now < startTime);
       _;
    }
 
@@ -439,18 +439,18 @@ contract Crowdsale is Pausable {
       require(_wallet != address(0));
       require(_tokenAddress != address(0));
 
-      if (_startTime &gt; 0 &amp;&amp; _endTime &gt; 0) {
-          require(_startTime &lt; _endTime);
+      if (_startTime > 0 && _endTime > 0) {
+          require(_startTime < _endTime);
       }
 
       wallet = _wallet;
       token = CostumeToken(_tokenAddress);
 
-      if (_startTime &gt; 0) {
+      if (_startTime > 0) {
           startTime = _startTime;
       }
 
-      if (_endTime &gt; 0) {
+      if (_endTime > 0) {
           endTime = _endTime;
       }
 
@@ -468,38 +468,38 @@ contract Crowdsale is Pausable {
       uint256 tokens = 0;
       uint256 amountPaid = adjustAmountValue();
 
-      if (tokensRaised &lt; limitTier1) {
+      if (tokensRaised < limitTier1) {
 
          // Tier 1
          tokens = amountPaid.mul(rate);
 
          // If the amount of tokens that you want to buy gets out of this tier
-         if (tokensRaised.add(tokens) &gt; limitTier1) {
+         if (tokensRaised.add(tokens) > limitTier1) {
 
             tokens = adjustTokenTierValue(amountPaid, limitTier1, 1, rate);
          }
 
-      } else if (tokensRaised &gt;= limitTier1 &amp;&amp; tokensRaised &lt; limitTier2) {
+      } else if (tokensRaised >= limitTier1 && tokensRaised < limitTier2) {
 
          // Tier 2
          tokens = amountPaid.mul(rateTier2);
 
           // Breaks tier cap
-         if (tokensRaised.add(tokens) &gt; limitTier2) {
+         if (tokensRaised.add(tokens) > limitTier2) {
             tokens = adjustTokenTierValue(amountPaid, limitTier2, 2, rateTier2);
          }
 
-      } else if (tokensRaised &gt;= limitTier2 &amp;&amp; tokensRaised &lt; limitTier3) {
+      } else if (tokensRaised >= limitTier2 && tokensRaised < limitTier3) {
 
          // Tier 3
          tokens = amountPaid.mul(rateTier3);
 
          // Breaks tier cap
-         if (tokensRaised.add(tokens) &gt; limitTier3) {
+         if (tokensRaised.add(tokens) > limitTier3) {
             tokens = adjustTokenTierValue(amountPaid, limitTier3, 3, rateTier3);
          }
 
-      } else if (tokensRaised &gt;= limitTier3) {
+      } else if (tokensRaised >= limitTier3) {
 
          // Tier 4
          tokens = amountPaid.mul(rateTier4);
@@ -535,11 +535,11 @@ contract Crowdsale is Pausable {
       uint256 differenceWei = 0;
 
       // Check final tier
-      if(tokensRaised &gt;= limitTier3) {
+      if(tokensRaised >= limitTier3) {
          uint256 addedTokens = tokensRaised.add(amountPaid.mul(rateTier4));
 
          // Have we reached the max?
-         if(addedTokens &gt; maxTokensRaised) {
+         if(addedTokens > maxTokensRaised) {
 
             // Find the amount over the max
             uint256 difference = addedTokens.sub(maxTokensRaised);
@@ -552,7 +552,7 @@ contract Crowdsale is Pausable {
       crowdsaleBalances[msg.sender] = crowdsaleBalances[msg.sender].add(amountPaid);
 
       // Transfer at the end
-      if (differenceWei &gt; 0) msg.sender.transfer(differenceWei);
+      if (differenceWei > 0) msg.sender.transfer(differenceWei);
 
       return amountPaid;
    }
@@ -562,8 +562,8 @@ contract Crowdsale is Pausable {
    function setTierRates(uint256 tier1, uint256 tier2, uint256 tier3, uint256 tier4)
       external onlyOwner whenNotPaused {
 
-      require(tier1 &gt; 0 &amp;&amp; tier2 &gt; 0 &amp;&amp; tier3 &gt; 0 &amp;&amp; tier4 &gt; 0);
-      require(tier1 &gt; tier2 &amp;&amp; tier2 &gt; tier3 &amp;&amp; tier3 &gt; tier4);
+      require(tier1 > 0 && tier2 > 0 && tier3 > 0 && tier4 > 0);
+      require(tier1 > tier2 && tier2 > tier3 && tier3 > tier4);
 
       rate = tier1;
       rateTier2 = tier2;
@@ -582,15 +582,15 @@ contract Crowdsale is Pausable {
       uint256 tierSelected,
       uint256 _rate
    ) internal returns(uint256 totalTokens) {
-      require(amount &gt; 0 &amp;&amp; tokensThisTier &gt; 0 &amp;&amp; _rate &gt; 0);
-      require(tierSelected &gt;= 1 &amp;&amp; tierSelected &lt;= 4);
+      require(amount > 0 && tokensThisTier > 0 && _rate > 0);
+      require(tierSelected >= 1 && tierSelected <= 4);
 
       uint weiThisTier = tokensThisTier.sub(tokensRaised).div(_rate);
       uint weiNextTier = amount.sub(weiThisTier);
       uint tokensNextTier = 0;
       bool returnTokens = false;
 
-      // If there&#39;s excessive wei for the last tier, refund those
+      // If there's excessive wei for the last tier, refund those
       if(tierSelected != 4) {
 
          tokensNextTier = calculateTokensPerTier(weiNextTier, tierSelected.add(1));
@@ -613,8 +613,8 @@ contract Crowdsale is Pausable {
    function calculateTokensPerTier(uint256 weiPaid, uint256 tierSelected)
         internal constant returns(uint256 calculatedTokens)
     {
-      require(weiPaid &gt; 0);
-      require(tierSelected &gt;= 1 &amp;&amp; tierSelected &lt;= 4);
+      require(weiPaid > 0);
+      require(tierSelected >= 1 && tierSelected <= 4);
 
       if (tierSelected == 1) {
 
@@ -636,17 +636,17 @@ contract Crowdsale is Pausable {
 
    // Confirm valid purchase
    function validPurchase() internal constant returns(bool) {
-      bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-      bool nonZeroPurchase = msg.value &gt; 0;
-      bool withinTokenLimit = tokensRaised &lt; maxTokensRaised;
-      bool minimumPurchase = msg.value &gt;= minPurchase;
+      bool withinPeriod = now >= startTime && now <= endTime;
+      bool nonZeroPurchase = msg.value > 0;
+      bool withinTokenLimit = tokensRaised < maxTokensRaised;
+      bool minimumPurchase = msg.value >= minPurchase;
 
-      return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinTokenLimit &amp;&amp; minimumPurchase;
+      return withinPeriod && nonZeroPurchase && withinTokenLimit && minimumPurchase;
    }
 
    // Check if sale ended
    function hasEnded() public constant returns(bool) {
-       return now &gt; endTime || tokensRaised &gt;= maxTokensRaised;
+       return now > endTime || tokensRaised >= maxTokensRaised;
    }
 
    // Finalize if ended
@@ -663,7 +663,7 @@ contract Crowdsale is Pausable {
    // Transfer any remaining tokens from Crowdsale
    function transferTokensLeftOver() internal {
        require(!remainingTransfered);
-       require(maxTokensRaised &gt; tokensRaised);
+       require(maxTokensRaised > tokensRaised);
 
        remainingTransfered = true;
 
@@ -678,15 +678,15 @@ contract Crowdsale is Pausable {
         external onlyOwner beforeStarting
     {
 
-       if (_startTime &gt; 0 &amp;&amp; _endTime &gt; 0) {
-           require(_startTime &lt; _endTime);
+       if (_startTime > 0 && _endTime > 0) {
+           require(_startTime < _endTime);
        }
 
-       if (_startTime &gt; 0) {
+       if (_startTime > 0) {
            startTime = _startTime;
        }
 
-       if (_endTime &gt; 0) {
+       if (_endTime > 0) {
            endTime = _endTime;
        }
    }
@@ -694,11 +694,11 @@ contract Crowdsale is Pausable {
    // Change the end date
    // @param _endTime - New end time
    function changeEndDate(uint256 _endTime) external onlyOwner {
-       require(_endTime &gt; startTime);
-       require(_endTime &gt; now);
+       require(_endTime > startTime);
+       require(_endTime > now);
        require(!hasEnded());
 
-       if (_endTime &gt; 0) {
+       if (_endTime > 0) {
            endTime = _endTime;
        }
    }

@@ -2,19 +2,19 @@ pragma solidity ^0.4.0;
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -36,9 +36,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -64,7 +64,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,7 +98,7 @@ contract EtherCityConfig
     address private owner;
     address private admin;
 
-    mapping(uint256 =&gt; BuildingData) private buildingData;
+    mapping(uint256 => BuildingData) private buildingData;
     
     constructor() public payable
     {
@@ -145,7 +145,7 @@ contract EtherCityConfig
 
     function SetCreditsPerEth(uint256 crdteth) external
     {
-        require(crdteth &gt; 0);
+        require(crdteth > 0);
         require(msg.sender == owner || msg.sender == admin);
 
         creditsPerEth = crdteth;
@@ -192,8 +192,8 @@ contract EtherCityConfig
     {
         BuildingData storage bdata = buildingData[bid];
 
-        require(0 &lt; cnstsale &amp;&amp; cnstsale &lt;= 100);
-        require(0 &lt; updsale &amp;&amp; updsale &lt;= 100);
+        require(0 < cnstsale && cnstsale <= 100);
+        require(0 < updsale && updsale <= 100);
         require(msg.sender == owner || msg.sender == admin);
 
         bdata.constructSale = cnstsale;
@@ -206,7 +206,7 @@ contract EtherCityConfig
         require(data.length % 8 == 0);
         require(msg.sender == owner || msg.sender == admin);
 
-        for(uint256 index = 0; index &lt; data.length; index += 8)
+        for(uint256 index = 0; index < data.length; index += 8)
         {
             BuildingData storage bdata = buildingData[data[index]];
 
@@ -282,8 +282,8 @@ contract EtherCityRank
     uint256 private constant LINK_COUNT = 10;
     uint256 private constant LINK_ENDIDX = LINK_COUNT - 1;
 
-    mapping(uint256 =&gt; LINKNODE) private linkNodes; // 30 * 10 = 300rank
-    mapping(uint256 =&gt; LEAFNODE) private leafNodes;
+    mapping(uint256 => LINKNODE) private linkNodes; // 30 * 10 = 300rank
+    mapping(uint256 => LEAFNODE) private leafNodes;
     uint256 private leafCount;
 
     address private owner;
@@ -294,7 +294,7 @@ contract EtherCityRank
     {
         owner = msg.sender;
 
-        for(uint256 index = 1; index &lt; LINK_COUNT; index++)
+        for(uint256 index = 1; index < LINK_COUNT; index++)
             linkNodes[index] = LINKNODE({count:0, leafLast:LINK_NULL});
 
         // very first rank
@@ -385,7 +385,7 @@ contract EtherCityRank
     {
         require(owner == msg.sender || admin == msg.sender);
 
-        for(uint256 index = 1; index &lt; LINK_COUNT; index++)
+        for(uint256 index = 1; index < LINK_COUNT; index++)
             linkNodes[index] = LINKNODE({count:0, leafLast:LINK_NULL});
 
         // very first rank
@@ -402,30 +402,30 @@ contract EtherCityRank
 
         found = false;
 
-        for(linkidx = 0; linkidx &lt; LINK_COUNT; linkidx++)
+        for(linkidx = 0; linkidx < LINK_COUNT; linkidx++)
         {
             LINKNODE storage lknode = linkNodes[linkidx];
-            if (lknode.count &lt; LEAF_PER_LINK)
+            if (lknode.count < LEAF_PER_LINK)
                 break;
 
             LEAFNODE storage lfnode = leafNodes[lknode.leafLast];
-            if ((compareLeaf(pop, time, lfnode.population, lfnode.time) &gt;= 1))
+            if ((compareLeaf(pop, time, lfnode.population, lfnode.time) >= 1))
                 break;
         }
 
         if (linkidx == LINK_COUNT)
         {
-            linkidx = (linkNodes[LINK_ENDIDX].count &lt; LEAF_PER_LINK) ? LINK_ENDIDX : LINK_NULL;
+            linkidx = (linkNodes[LINK_ENDIDX].count < LEAF_PER_LINK) ? LINK_ENDIDX : LINK_NULL;
             leafidx = LINK_NULL;
             return;
         }
             
         leafidx = lknode.leafLast;
-        for(uint256 index = 0; index &lt; lknode.count; index++)
+        for(uint256 index = 0; index < lknode.count; index++)
         {
             lfnode = leafNodes[leafidx];
             comp = compareLeaf(pop, time, lfnode.population, lfnode.time);
-            if (comp == 0)  // &lt;
+            if (comp == 0)  // <
             {
                 leafidx = lfnode.next;
                 break;
@@ -436,7 +436,7 @@ contract EtherCityRank
                 break;
             }
 
-            if (index + 1 &lt; lknode.count)
+            if (index + 1 < lknode.count)
                 leafidx = lfnode.prev;
         }
     }
@@ -464,10 +464,10 @@ contract EtherCityRank
         ConnectLeaf(leafidx_new, leafidx_before);
 
         leafLast = LINK_NULL;
-        for(uint256 index = linkidx; index &lt; LINK_COUNT; index++)
+        for(uint256 index = linkidx; index < LINK_COUNT; index++)
         {
             leafOnLink = linkNodes[index].count;
-            if (leafOnLink &lt; LEAF_PER_LINK)
+            if (leafOnLink < LEAF_PER_LINK)
             {
                 if (leafOnLink == 0) // add new
                     linkNodes[index].leafLast = leafLast;
@@ -485,7 +485,7 @@ contract EtherCityRank
     {
         uint256 next;
 
-        for(uint256 index = linkidx; index &lt; LINK_COUNT; index++)
+        for(uint256 index = linkidx; index < LINK_COUNT; index++)
         {
             LINKNODE storage link = linkNodes[index];
             
@@ -510,12 +510,12 @@ contract EtherCityRank
 
     function RemovePlayer(address player) private returns(uint256 leafidx)
     {
-        for(uint256 linkidx = 0; linkidx &lt; LINK_COUNT; linkidx++)
+        for(uint256 linkidx = 0; linkidx < LINK_COUNT; linkidx++)
         {
             LINKNODE storage lknode = linkNodes[linkidx];
 
             leafidx = lknode.leafLast;
-            for(uint256 index = 0; index &lt; lknode.count; index++)
+            for(uint256 index = 0; index < lknode.count; index++)
             {
                 LEAFNODE storage lfnode = leafNodes[leafidx];
 
@@ -543,14 +543,14 @@ contract EtherCityRank
 
     function compareLeaf(uint256 pop1, uint256 time1, uint256 pop2, uint256 time2) private pure returns(uint256)
     {
-        if (pop1 &gt; pop2)
+        if (pop1 > pop2)
             return 2;
-        else if (pop1 &lt; pop2)
+        else if (pop1 < pop2)
             return 0;
 
-        if (time1 &gt; time2)
+        if (time1 > time2)
             return 2;
-        else if (time1 &lt; time2)
+        else if (time1 < time2)
             return 0;
 
         return 1;
@@ -633,13 +633,13 @@ contract EtherCityData
     bool private enabled;
 
     WORLDDATA private worldData;
-    mapping(uint256 =&gt; WORLDSNAPSHOT) private worldSnapshot;
+    mapping(uint256 => WORLDSNAPSHOT) private worldSnapshot;
 
     address[] private playerlist;
-    mapping(address =&gt; CITYDATA) private cityData;
-    mapping(address =&gt; mapping(uint256 =&gt; CITYSNAPSHOT)) private citySnapshot;
-    mapping(address =&gt; mapping(uint256 =&gt; BUILDINGDATA)) private buildings;
-    mapping(address =&gt; uint256) private ethBalance;
+    mapping(address => CITYDATA) private cityData;
+    mapping(address => mapping(uint256 => CITYSNAPSHOT)) private citySnapshot;
+    mapping(address => mapping(uint256 => BUILDINGDATA)) private buildings;
+    mapping(address => uint256) private ethBalance;
 
 
     constructor() public payable
@@ -658,7 +658,7 @@ contract EtherCityData
 
     function IsPlayer(address player) external view returns(bool)
     {
-        for(uint256 index = 0; index &lt; playerlist.length; index++)
+        for(uint256 index = 0; index < playerlist.length; index++)
          {
              if (playerlist[index] == player)
                 return true;
@@ -669,7 +669,7 @@ contract EtherCityData
 
     function IsCityNameExist(bytes32 cityname) external view returns(bool)
     {
-        for(uint256 index = 0; index &lt; playerlist.length; index++)
+        for(uint256 index = 0; index < playerlist.length; index++)
         {
             if (cityData[playerlist[index]].name == cityname)
                return false;
@@ -683,7 +683,7 @@ contract EtherCityData
         uint256 day;
 
         require(cityData[player].starttime == 0);
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         playerlist.push(player);    // new player
 
@@ -705,7 +705,7 @@ contract EtherCityData
 
     function SetWorldData(uint256 ethBal, uint256 ethDev, uint256 population, uint256 credits, uint256 starttime) external
     {
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         worldData.ethBalance = ethBal;
         worldData.ethDev = ethDev;
@@ -718,7 +718,7 @@ contract EtherCityData
     {
         WORLDSNAPSHOT storage wss = worldSnapshot[day];
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         wss.valid = valid;
         wss.population = population;
@@ -746,7 +746,7 @@ contract EtherCityData
     {
         CITYDATA storage cdata = cityData[player];
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         cdata.credits = credits;
         cdata.population = population;
@@ -763,7 +763,7 @@ contract EtherCityData
 
     function SetCityName(address player, bytes32 name) external
     {
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         cityData[player].name = name;
     }
@@ -785,7 +785,7 @@ contract EtherCityData
     {
         CITYSNAPSHOT storage css = citySnapshot[player][day];
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         css.valid = valid;
         css.population = population;
@@ -810,7 +810,7 @@ contract EtherCityData
     {
         BUILDINGDATA storage bdata = buildings[player][id];
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         bdata.constructCount = constructCount;
         bdata.upgradeCount = upgradeCount;
@@ -827,14 +827,14 @@ contract EtherCityData
 
     function SetEthBalance(address player, uint256 eth) external
     {
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         ethBalance[player] = eth;
     }
 
     function AddEthBalance(address player, uint256 eth) external
     {
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         ethBalance[player] += eth;
     }
@@ -848,7 +848,7 @@ contract EtherCityData
         ethBal = ethBalance[player];
 
         startday = cityData[player].withdrawSS;
-        for(uint256 day = nowday() - 1; day &gt;= startday; day--)
+        for(uint256 day = nowday() - 1; day >= startday; day--)
         {
             WORLDSNAPSHOT memory wss = TestWorldSnapshotInternal(day);
             CITYSNAPSHOT memory css = TestCitySnapshotInternal(player, day);
@@ -863,17 +863,17 @@ contract EtherCityData
         uint256 eth;
         CITYDATA storage cdata = cityData[player];
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         ethBal = ethBalance[player];
 
         startday = cdata.withdrawSS;
-        for(uint256 day = nowday() - 1; day &gt;= startday; day--)
+        for(uint256 day = nowday() - 1; day >= startday; day--)
         {
             WORLDSNAPSHOT storage wss = ValidateWorldSnapshotInternal(day);
             CITYSNAPSHOT storage css = ValidateCitySnapshotInternal(player, day);
 
-            if (wss.ethRankFundRemain &gt; 0)
+            if (wss.ethRankFundRemain > 0)
             {
                 eth = Math.min256(SafeMath.muldiv(wss.ethRankFund, css.population, wss.population), wss.ethRankFundRemain);
                 wss.ethRankFundRemain -= eth;
@@ -881,7 +881,7 @@ contract EtherCityData
             }
         }
 
-        require(0 &lt; ethBal);
+        require(0 < ethBal);
 
         ethBalance[player] = 0;
         cdata.withdrawSS = nowday() - 1;
@@ -898,7 +898,7 @@ contract EtherCityData
         require(owner == msg.sender || admin == msg.sender || city == msg.sender);
 
         day = nowday() - 1;
-        if (day &lt; cityData[player].starttime / 24 hours)
+        if (day < cityData[player].starttime / 24 hours)
         {
             shopEth = 0;
             shopCredits = 0;
@@ -917,16 +917,16 @@ contract EtherCityData
         uint256 day;
         uint256 shopEth;
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         day = nowday() - 1;
-        require(day &gt;= cityData[player].starttime / 24 hours);
+        require(day >= cityData[player].starttime / 24 hours);
 
         WORLDSNAPSHOT storage wss = ValidateWorldSnapshotInternal(day);
         CITYSNAPSHOT storage css = ValidateCitySnapshotInternal(player, day);
 
-        require(wss.ethShopFundRemain &gt; 0);
-        require((0 &lt; credits) &amp;&amp; (credits &lt;= css.shopCredits));
+        require(wss.ethShopFundRemain > 0);
+        require((0 < credits) && (credits <= css.shopCredits));
 
         shopEth = Math.min256(SafeMath.muldiv(wss.ethShopFund, css.shopCredits, wss.credits), wss.ethShopFundRemain);
 
@@ -938,7 +938,7 @@ contract EtherCityData
 
     function UpdateEthBalance(uint256 bal, uint256 devf, uint256 rnkf, uint256 shpf) external payable
     {
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         worldData.ethBalance += bal + devf + rnkf + shpf;
         worldData.ethDev += devf;
@@ -959,7 +959,7 @@ contract EtherCityData
     {
         WORLDSNAPSHOT storage wss = ValidateWorldSnapshotInternal(day);
 
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         ethRankFund = wss.ethRankFund;
         population = wss.population;
@@ -983,7 +983,7 @@ contract EtherCityData
     {
         CITYSNAPSHOT storage css = ValidateCitySnapshotInternal(player, day);
     
-        require(owner == msg.sender || admin == msg.sender || (enabled &amp;&amp; city == msg.sender));
+        require(owner == msg.sender || admin == msg.sender || (enabled && city == msg.sender));
 
         population = css.population;
         credits = css.credits;
@@ -1141,7 +1141,7 @@ contract EtherCityData
         ethBal = 0;
 
         startday = worldData.starttime / 24 hours;
-        for(uint256 day = nowday() - 2; day &gt;= startday; day--)
+        for(uint256 day = nowday() - 2; day >= startday; day--)
         {
             wss = TestWorldSnapshotInternal(day);
             ethBal += wss.ethShopFundRemain;
@@ -1158,7 +1158,7 @@ contract EtherCityData
         ethBal = ethBalance[owner];
 
         startday = worldData.starttime / 24 hours;
-        for(uint256 day = nowday() - 2; day &gt;= startday; day--)
+        for(uint256 day = nowday() - 2; day >= startday; day--)
         {
             WORLDSNAPSHOT storage wss = ValidateWorldSnapshotInternal(day);
 
@@ -1182,7 +1182,7 @@ contract EtherCityData
         require(msg.sender == owner || msg.sender == admin);
 
         WORLDSNAPSHOT storage wss = ValidateWorldSnapshotInternal(nowday());
-        require(eth &lt;= wss.ethBalance);
+        require(eth <= wss.ethBalance);
 
         ethBalance[owner] += eth;
         wss.ethBalance -= eth;
@@ -1231,7 +1231,7 @@ contract EtherCityData
         WORLDSNAPSHOT storage prev = worldSnapshot[sday];
         sday++;
 
-        while (sday &lt;= day)
+        while (sday <= day)
         {
             worldSnapshot[sday] = WORLDSNAPSHOT({valid:true, ethDay:0, ethBalance:0, ethRankFund:0, ethShopFund:0, ethRankFundRemain:0, ethShopFundRemain:0, population:prev.population, credits:prev.credits, lasttime:prev.lasttime / 24 hours + 1});
             WORLDSNAPSHOT storage wss = worldSnapshot[sday];
@@ -1263,7 +1263,7 @@ contract EtherCityData
         WORLDSNAPSHOT memory prev = worldSnapshot[sday];
         sday++;
 
-        while (sday &lt;= day)
+        while (sday <= day)
         {
             WORLDSNAPSHOT memory wss = WORLDSNAPSHOT({valid:true, ethDay:0, ethBalance:0, ethRankFund:0, ethShopFund:0, ethRankFundRemain:0, ethShopFundRemain:0, population:prev.population, credits:prev.credits, lasttime:prev.lasttime / 24 hours + 1});
             wss.ethBalance = prev.ethBalance * 90 /100;
@@ -1293,7 +1293,7 @@ contract EtherCityData
         CITYSNAPSHOT storage css = citySnapshot[player][sday];
         sday++;
 
-        while (sday &lt;= day)
+        while (sday <= day)
         {
             citySnapshot[player][sday] = CITYSNAPSHOT({valid:true, population:css.population, credits:css.credits, shopCredits:css.credits, lasttime:sday * 24 hours});
             css = citySnapshot[player][sday];
@@ -1314,7 +1314,7 @@ contract EtherCityData
         CITYSNAPSHOT memory css = citySnapshot[player][sday];
         sday++;
 
-        while (sday &lt;= day)
+        while (sday <= day)
         {
             css = CITYSNAPSHOT({valid:true, population:css.population, credits:css.credits, shopCredits:css.credits, lasttime:sday * 24 hours});
             sday++;
@@ -1491,7 +1491,7 @@ contract EtherCity
     {
         CITYDATA memory cdata = dtGetCityData(msg.sender);
 
-        require(count &gt; 0);
+        require(count > 0);
         if (!ConstructBuilding(cdata, id, count, true))
             require(false);
 
@@ -1504,7 +1504,7 @@ contract EtherCity
     {
         CITYDATA memory cdata = dtGetCityData(msg.sender);
 
-        require(count &gt; 0);
+        require(count > 0);
         if (!ConstructBuilding(cdata, id, count, false))
             require(false);
 
@@ -1518,12 +1518,12 @@ contract EtherCity
         uint256 ethland;
         uint256 maxland;
 
-        require(count &gt; 0);
+        require(count > 0);
 
         (ethland, maxland) = config.GetLandData();
 
         CITYDATA memory cdata = dtGetCityData(msg.sender);
-        require(cdata.landOccupied + cdata.landUnoccupied + count &lt;= maxland);
+        require(cdata.landOccupied + cdata.landUnoccupied + count <= maxland);
 
         UpdateEthBalance(ethland * count, msg.value);
         UpdateCityData(cdata, 0, 0, 0, 0);
@@ -1539,7 +1539,7 @@ contract EtherCity
     {
         CITYDATA memory cdata = dtGetCityData(msg.sender);
 
-        require(eth &gt; 0);
+        require(eth > 0);
 
         UpdateEthBalance(eth, msg.value);
         UpdateCityData(cdata, 0, 0, 0, 0);
@@ -1563,10 +1563,10 @@ contract EtherCity
         uint256 updcrdt;
         CITYDATA memory cdata = dtGetCityData(msg.sender);
         
-        require(count &gt; 0);
+        require(count > 0);
 
         (a_population, a_crdtsec) = UpdateBuildingParam(cdata, id, 0, count);
-        require((a_population &gt; 0) || (a_crdtsec &gt; 0));
+        require((a_population > 0) || (a_crdtsec > 0));
 
         updcrdt = config.GetUpgradeCost(id, count);
 
@@ -1581,7 +1581,7 @@ contract EtherCity
 
     function GetDemolishCost(uint256 id, uint256 count) external view returns (uint256)
     {
-        require(count &gt; 0);
+        require(count > 0);
 
         return config.GetDemolishCost(id, count);
     }
@@ -1593,10 +1593,10 @@ contract EtherCity
         uint256 dmlcrdt;
         CITYDATA memory cdata = dtGetCityData(msg.sender);
         
-        require(count &gt; 0);
+        require(count > 0);
 
         (a_population, a_crdtsec) = UpdateBuildingParam(cdata, id, -count, 0);
-        require((a_population &gt; 0) || (a_crdtsec &gt; 0));
+        require((a_population > 0) || (a_crdtsec > 0));
 
         dmlcrdt = config.GetDemolishCost(id, count);
 
@@ -1662,7 +1662,7 @@ contract EtherCity
 
     function adminAddWorldBalance() external payable
     {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(msg.sender == owner || msg.sender == admin);
 
         UpdateEthBalance(msg.value, msg.value);
@@ -1697,12 +1697,12 @@ contract EtherCity
         uint256 cnstcrdt;
         uint256 cnsteth;
 
-        if (count &gt; cdata.landUnoccupied)
+        if (count > cdata.landUnoccupied)
             return false;
 
         (a_population, a_crdtsec) = UpdateBuildingParam(cdata, id, count, 0);
 
-        if ((a_population == 0) &amp;&amp; (a_crdtsec == 0))
+        if ((a_population == 0) && (a_crdtsec == 0))
             return false;
 
         (cnstcrdt, cnsteth) = config.GetConstructCost(id, count);
@@ -1731,13 +1731,13 @@ contract EtherCity
         a_crdtsec = 0;
 
         (population, crdtsec, maxupd) = config.GetBuildingParam(id);
-        if (cnstcount &gt; cdata.landUnoccupied)
+        if (cnstcount > cdata.landUnoccupied)
             return;
 
         cdata.landOccupied += cnstcount;
         cdata.landUnoccupied -= cnstcount;
 
-        if (bdata.upgradeCount + updcount &gt; maxupd)
+        if (bdata.upgradeCount + updcount > maxupd)
             return;
 
         (a_population, a_crdtsec) = CalcBuildingParam(bdata);
@@ -1774,7 +1774,7 @@ contract EtherCity
         day = nowday();
 
         inccrdt += CalcIncCredits(cdata);
-        require((cdata.credits + inccrdt) &gt;= deccrdt);
+        require((cdata.credits + inccrdt) >= deccrdt);
 
         inccrdt -= deccrdt;
 
@@ -1808,10 +1808,10 @@ contract EtherCity
         uint256 fndf;
         uint256 rnkf;
 
-        if (eth &gt; val)
+        if (eth > val)
         {
             fndf = dtGetEthBalance(msg.sender);
-            require(eth - val &lt;= fndf);
+            require(eth - val <= fndf);
             dtSetEthBalance(msg.sender, fndf - eth + val);
         }
 

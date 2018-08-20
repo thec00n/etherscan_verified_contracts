@@ -6,7 +6,7 @@ pragma solidity^0.4.11;
 
 library AttributeStore {
     struct Data {
-        mapping(bytes32 =&gt; uint) store;
+        mapping(bytes32 => uint) store;
     }
 
     function getAttribute(Data storage self, bytes32 _UUID, string _attrName)
@@ -36,7 +36,7 @@ library DLL {
   }
 
   struct Data {
-    mapping(uint =&gt; Node) dll;
+    mapping(uint => Node) dll;
   }
 
   function isEmpty(Data storage self) public view returns (bool) {
@@ -48,8 +48,8 @@ library DLL {
       return false;
     } 
 
-    bool isSingleNode = (getStart(self) == _curr) &amp;&amp; (getEnd(self) == _curr);
-    bool isNullNode = (getNext(self, _curr) == NULL_NODE_ID) &amp;&amp; (getPrev(self, _curr) == NULL_NODE_ID);
+    bool isSingleNode = (getStart(self) == _curr) && (getEnd(self) == _curr);
+    bool isNullNode = (getNext(self, _curr) == NULL_NODE_ID) && (getPrev(self, _curr) == NULL_NODE_ID);
     return isSingleNode || !isNullNode;
   }
 
@@ -174,20 +174,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -225,8 +225,8 @@ contract PLCRVoting {
         uint voteQuorum;	    /// number of votes required for a proposal to pass
         uint votesFor;		    /// tally of votes supporting proposal
         uint votesAgainst;      /// tally of votes countering proposal
-        mapping(address =&gt; bool) didCommit;  /// indicates whether an address committed a vote for this poll
-        mapping(address =&gt; bool) didReveal;   /// indicates whether an address revealed a vote for this poll
+        mapping(address => bool) didCommit;  /// indicates whether an address committed a vote for this poll
+        mapping(address => bool) didReveal;   /// indicates whether an address revealed a vote for this poll
     }
 
     // ============
@@ -236,10 +236,10 @@ contract PLCRVoting {
     uint constant public INITIAL_POLL_NONCE = 0;
     uint public pollNonce;
 
-    mapping(uint =&gt; Poll) public pollMap; // maps pollID to Poll struct
-    mapping(address =&gt; uint) public voteTokenBalance; // maps user&#39;s address to voteToken balance
+    mapping(uint => Poll) public pollMap; // maps pollID to Poll struct
+    mapping(address => uint) public voteTokenBalance; // maps user's address to voteToken balance
 
-    mapping(address =&gt; DLL.Data) dllMap;
+    mapping(address => DLL.Data) dllMap;
     AttributeStore.Data store;
 
     EIP20Interface public token;
@@ -249,7 +249,7 @@ contract PLCRVoting {
     @param _token The address where the ERC20 token contract is deployed
     */
     function init(address _token) public {
-        require(_token != 0 &amp;&amp; address(token) == 0);
+        require(_token != 0 && address(token) == 0);
 
         token = EIP20Interface(_token);
         pollNonce = INITIAL_POLL_NONCE;
@@ -265,7 +265,7 @@ contract PLCRVoting {
     @param _numTokens The number of votingTokens desired in exchange for ERC20 tokens
     */
     function requestVotingRights(uint _numTokens) public {
-        require(token.balanceOf(msg.sender) &gt;= _numTokens);
+        require(token.balanceOf(msg.sender) >= _numTokens);
         voteTokenBalance[msg.sender] += _numTokens;
         require(token.transferFrom(msg.sender, this, _numTokens));
         emit _VotingRightsGranted(_numTokens, msg.sender);
@@ -277,7 +277,7 @@ contract PLCRVoting {
     */
     function withdrawVotingRights(uint _numTokens) external {
         uint availableTokens = voteTokenBalance[msg.sender].sub(getLockedTokens(msg.sender));
-        require(availableTokens &gt;= _numTokens);
+        require(availableTokens >= _numTokens);
         voteTokenBalance[msg.sender] -= _numTokens;
         require(token.transfer(msg.sender, _numTokens));
         emit _VotingRightsWithdrawn(_numTokens, msg.sender);
@@ -301,7 +301,7 @@ contract PLCRVoting {
     */
     function rescueTokensInMultiplePolls(uint[] _pollIDs) public {
         // loop through arrays, rescuing tokens from all
-        for (uint i = 0; i &lt; _pollIDs.length; i++) {
+        for (uint i = 0; i < _pollIDs.length; i++) {
             rescueTokens(_pollIDs[i]);
         }
     }
@@ -313,28 +313,28 @@ contract PLCRVoting {
     /**
     @notice Commits vote using hash of choice and secret salt to conceal vote until reveal
     @param _pollID Integer identifier associated with target poll
-    @param _secretHash Commit keccak256 hash of voter&#39;s choice and salt (tightly packed in this order)
+    @param _secretHash Commit keccak256 hash of voter's choice and salt (tightly packed in this order)
     @param _numTokens The number of tokens to be committed towards the target poll
     @param _prevPollID The ID of the poll that the user has voted the maximum number of tokens in which is still less than or equal to numTokens
     */
     function commitVote(uint _pollID, bytes32 _secretHash, uint _numTokens, uint _prevPollID) public {
         require(commitPeriodActive(_pollID));
 
-        // if msg.sender doesn&#39;t have enough voting rights,
+        // if msg.sender doesn't have enough voting rights,
         // request for enough voting rights
-        if (voteTokenBalance[msg.sender] &lt; _numTokens) {
+        if (voteTokenBalance[msg.sender] < _numTokens) {
             uint remainder = _numTokens.sub(voteTokenBalance[msg.sender]);
             requestVotingRights(remainder);
         }
 
         // make sure msg.sender has enough voting rights
-        require(voteTokenBalance[msg.sender] &gt;= _numTokens);
+        require(voteTokenBalance[msg.sender] >= _numTokens);
         // prevent user from committing to zero node placeholder
         require(_pollID != 0);
         // prevent user from committing a secretHash of 0
         require(_secretHash != 0);
 
-        // Check if _prevPollID exists in the user&#39;s DLL or if _prevPollID is 0
+        // Check if _prevPollID exists in the user's DLL or if _prevPollID is 0
         require(_prevPollID == 0 || dllMap[msg.sender].contains(_prevPollID));
 
         uint nextPollID = dllMap[msg.sender].getNext(_prevPollID);
@@ -349,8 +349,8 @@ contract PLCRVoting {
 
         bytes32 UUID = attrUUID(msg.sender, _pollID);
 
-        store.setAttribute(UUID, &quot;numTokens&quot;, _numTokens);
-        store.setAttribute(UUID, &quot;commitHash&quot;, uint(_secretHash));
+        store.setAttribute(UUID, "numTokens", _numTokens);
+        store.setAttribute(UUID, "commitHash", uint(_secretHash));
 
         pollMap[_pollID].didCommit[msg.sender] = true;
         emit _VoteCommitted(_pollID, _numTokens, msg.sender);
@@ -359,7 +359,7 @@ contract PLCRVoting {
     /**
     @notice                 Commits votes using hashes of choices and secret salts to conceal votes until reveal
     @param _pollIDs         Array of integer identifiers associated with target polls
-    @param _secretHashes    Array of commit keccak256 hashes of voter&#39;s choices and salts (tightly packed in this order)
+    @param _secretHashes    Array of commit keccak256 hashes of voter's choices and salts (tightly packed in this order)
     @param _numsTokens      Array of numbers of tokens to be committed towards the target polls
     @param _prevPollIDs     Array of IDs of the polls that the user has voted the maximum number of tokens in which is still less than or equal to numTokens
     */
@@ -370,13 +370,13 @@ contract PLCRVoting {
         require(_pollIDs.length == _prevPollIDs.length);
 
         // loop through arrays, committing each individual vote values
-        for (uint i = 0; i &lt; _pollIDs.length; i++) {
+        for (uint i = 0; i < _pollIDs.length; i++) {
             commitVote(_pollIDs[i], _secretHashes[i], _numsTokens[i], _prevPollIDs[i]);
         }
     }
 
     /**
-    @dev Compares previous and next poll&#39;s committed tokens for sorting purposes
+    @dev Compares previous and next poll's committed tokens for sorting purposes
     @param _prevID Integer identifier associated with previous poll in sorted order
     @param _nextID Integer identifier associated with next poll in sorted order
     @param _voter Address of user to check DLL position for
@@ -384,10 +384,10 @@ contract PLCRVoting {
     @return valid Boolean indication of if the specified position maintains the sort
     */
     function validPosition(uint _prevID, uint _nextID, address _voter, uint _numTokens) public constant returns (bool valid) {
-        bool prevValid = (_numTokens &gt;= getNumTokens(_voter, _prevID));
+        bool prevValid = (_numTokens >= getNumTokens(_voter, _prevID));
         // if next is zero node, _numTokens does not need to be greater
-        bool nextValid = (_numTokens &lt;= getNumTokens(_voter, _nextID) || _nextID == 0);
-        return prevValid &amp;&amp; nextValid;
+        bool nextValid = (_numTokens <= getNumTokens(_voter, _nextID) || _nextID == 0);
+        return prevValid && nextValid;
     }
 
     /**
@@ -429,7 +429,7 @@ contract PLCRVoting {
         require(_pollIDs.length == _salts.length);
 
         // loop through arrays, revealing each individual vote values
-        for (uint i = 0; i &lt; _pollIDs.length; i++) {
+        for (uint i = 0; i < _pollIDs.length; i++) {
             revealVote(_pollIDs[i], _voteOptions[i], _salts[i]);
         }
     }
@@ -489,7 +489,7 @@ contract PLCRVoting {
         require(pollEnded(_pollID));
 
         Poll memory poll = pollMap[_pollID];
-        return (100 * poll.votesFor) &gt; (poll.voteQuorum * (poll.votesFor + poll.votesAgainst));
+        return (100 * poll.votesFor) > (poll.voteQuorum * (poll.votesFor + poll.votesAgainst));
     }
 
     // ----------------
@@ -512,7 +512,7 @@ contract PLCRVoting {
 
     /**
     @notice Determines if poll is over
-    @dev Checks isExpired for specified poll&#39;s revealEndDate
+    @dev Checks isExpired for specified poll's revealEndDate
     @return Boolean indication of whether polling period is over
     */
     function pollEnded(uint _pollID) constant public returns (bool ended) {
@@ -523,7 +523,7 @@ contract PLCRVoting {
 
     /**
     @notice Checks if the commit period is still active for the specified poll
-    @dev Checks isExpired for the specified poll&#39;s commitEndDate
+    @dev Checks isExpired for the specified poll's commitEndDate
     @param _pollID Integer identifier associated with target poll
     @return Boolean indication of isCommitPeriodActive for target poll
     */
@@ -535,13 +535,13 @@ contract PLCRVoting {
 
     /**
     @notice Checks if the reveal period is still active for the specified poll
-    @dev Checks isExpired for the specified poll&#39;s revealEndDate
+    @dev Checks isExpired for the specified poll's revealEndDate
     @param _pollID Integer identifier associated with target poll
     */
     function revealPeriodActive(uint _pollID) constant public returns (bool active) {
         require(pollExists(_pollID));
 
-        return !isExpired(pollMap[_pollID].revealEndDate) &amp;&amp; !commitPeriodActive(_pollID);
+        return !isExpired(pollMap[_pollID].revealEndDate) && !commitPeriodActive(_pollID);
     }
 
     /**
@@ -574,7 +574,7 @@ contract PLCRVoting {
     @return Boolean Indicates whether a poll exists for the provided pollID
     */
     function pollExists(uint _pollID) constant public returns (bool exists) {
-        return (_pollID != 0 &amp;&amp; _pollID &lt;= pollNonce);
+        return (_pollID != 0 && _pollID <= pollNonce);
     }
 
     // ---------------------------
@@ -588,17 +588,17 @@ contract PLCRVoting {
     @return Bytes32 hash property attached to target poll
     */
     function getCommitHash(address _voter, uint _pollID) constant public returns (bytes32 commitHash) {
-        return bytes32(store.getAttribute(attrUUID(_voter, _pollID), &quot;commitHash&quot;));
+        return bytes32(store.getAttribute(attrUUID(_voter, _pollID), "commitHash"));
     }
 
     /**
-    @dev Wrapper for getAttribute with attrName=&quot;numTokens&quot;
+    @dev Wrapper for getAttribute with attrName="numTokens"
     @param _voter Address of user to check against
     @param _pollID Integer identifier associated with target poll
     @return Number of tokens committed to poll in sorted poll-linked-list
     */
     function getNumTokens(address _voter, uint _pollID) constant public returns (uint numTokens) {
-        return store.getAttribute(attrUUID(_voter, _pollID), &quot;numTokens&quot;);
+        return store.getAttribute(attrUUID(_voter, _pollID), "numTokens");
     }
 
     /**
@@ -620,7 +620,7 @@ contract PLCRVoting {
     }
 
     /*
-    @dev Takes the last node in the user&#39;s DLL and iterates backwards through the list searching
+    @dev Takes the last node in the user's DLL and iterates backwards through the list searching
     for a node with a value less than or equal to the provided _numTokens value. When such a node
     is found, if the provided _pollID matches the found nodeID, this operation is an in-place
     update. In that case, return the previous node of the node being updated. Otherwise return the
@@ -639,7 +639,7 @@ contract PLCRVoting {
       while(nodeID != 0) {
         // Get the number of tokens in the current node
         tokensInNode = getNumTokens(_voter, nodeID);
-        if(tokensInNode &lt;= _numTokens) { // We found the insert point!
+        if(tokensInNode <= _numTokens) { // We found the insert point!
           if(nodeID == _pollID) {
             // This is an in-place update. Return the prev node of the node being updated
             nodeID = dllMap[_voter].getPrev(nodeID);
@@ -665,7 +665,7 @@ contract PLCRVoting {
     @return expired Boolean indication of whether the terminationDate has passed
     */
     function isExpired(uint _terminationDate) constant public returns (bool expired) {
-        return (block.timestamp &gt; _terminationDate);
+        return (block.timestamp > _terminationDate);
     }
 
     /**
@@ -684,13 +684,13 @@ contract PLCRVoting {
 * Shoutouts:
 * 
 * Bytecode origin https://www.reddit.com/r/ethereum/comments/6ic49q/any_assembly_programmers_willing_to_write_a/dj5ceuw/
-* Modified version of Vitalik&#39;s https://www.reddit.com/r/ethereum/comments/6c1jui/delegatecall_forwarders_how_to_save_5098_on/
+* Modified version of Vitalik's https://www.reddit.com/r/ethereum/comments/6c1jui/delegatecall_forwarders_how_to_save_5098_on/
 * Credits to Jorge Izquierdo (@izqui) for coming up with this design here: https://gist.github.com/izqui/7f904443e6d19c1ab52ec7f5ad46b3a8
 * Credits to Stefan George (@Georgi87) for inspiration for many of the improvements from Gnosis Safe: https://github.com/gnosis/gnosis-safe-contracts
 * 
-* This version has many improvements over the original @izqui&#39;s library like using REVERT instead of THROWing on failed calls.
+* This version has many improvements over the original @izqui's library like using REVERT instead of THROWing on failed calls.
 * It also implements the awesome design pattern for initializing code as seen in Gnosis Safe Factory: https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/ProxyFactory.sol
-* but unlike this last one it doesn&#39;t require that you waste storage on both the proxy and the proxied contracts (v. https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/Proxy.sol#L8 &amp; https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/GnosisSafe.sol#L14)
+* but unlike this last one it doesn't require that you waste storage on both the proxy and the proxied contracts (v. https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/Proxy.sol#L8 & https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/GnosisSafe.sol#L14)
 * 
 * 
 * v0.0.2
@@ -698,13 +698,13 @@ contract PLCRVoting {
 * No functionalities were added. The change was just to make the proxy leaner.
 * 
 * v0.0.3
-* Thanks @dacarley for noticing the incorrect check for the subsequent call to the proxy. &#128588;
-* Note: I&#39;m creating a new version of this that doesn&#39;t need that one call.
+* Thanks @dacarley for noticing the incorrect check for the subsequent call to the proxy. 🙌
+* Note: I'm creating a new version of this that doesn't need that one call.
 *       Will add tests and put this in its own repository soon™. 
 * 
 * v0.0.4
-* All the merit in this fix + update of the factory is @dacarley &#39;s. &#128588;
-* Thank you! &#128516;
+* All the merit in this fix + update of the factory is @dacarley 's. 🙌
+* Thank you! 😄
 *
 * Potential updates can be found at https://gist.github.com/GNSPS/ba7b88565c947cfd781d44cf469c2ddb
 * 
@@ -723,7 +723,7 @@ contract ProxyFactory {
     {
         address[] memory proxyAddresses = new address[](_count);
 
-        for (uint256 i = 0; i &lt; _count; ++i) {
+        for (uint256 i = 0; i < _count; ++i) {
             proxyAddresses[i] = createProxyImpl(_target, _data);
         }
 
@@ -744,7 +744,7 @@ contract ProxyFactory {
         returns (address proxyContract)
     {
         assembly {
-            let contractCode := mload(0x40) // Find empty storage location using &quot;free memory pointer&quot;
+            let contractCode := mload(0x40) // Find empty storage location using "free memory pointer"
            
             mstore(add(contractCode, 0x0b), _target) // Add target address, with a 11 bytes [i.e. 23 - (32 - 20)] offset to later accomodate first part of the bytecode
             mstore(sub(contractCode, 0x09), 0x000000000000000000603160008181600b9039f3600080808080368092803773) // First part of the bytecode, shifted left by 9 bytes, overwrites left padding of target address
@@ -755,7 +755,7 @@ contract ProxyFactory {
                 revert(0, 0)
             }
            
-            // check if the _data.length &gt; 0 and if it is forward it to the newly created contract
+            // check if the _data.length > 0 and if it is forward it to the newly created contract
             let dataLength := mload(_data) 
             if iszero(iszero(dataLength)) {
                 if iszero(call(gas, proxyContract, 0, add(_data, 0x20), dataLength, 0, 0)) {
@@ -781,7 +781,7 @@ contract EIP20 is EIP20Interface {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -802,11 +802,11 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -815,12 +815,12 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -842,8 +842,8 @@ contract EIP20 is EIP20Interface {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 // File: contracts/PLCRFactory.sol
@@ -867,7 +867,7 @@ contract PLCRFactory {
   @param _token an EIP20 token to be consumed by the new PLCR contract
   */
   function newPLCRBYOToken(EIP20 _token) public returns (PLCRVoting) {
-    PLCRVoting plcr = PLCRVoting(proxyFactory.createProxy(canonizedPLCR, &quot;&quot;));
+    PLCRVoting plcr = PLCRVoting(proxyFactory.createProxy(canonizedPLCR, ""));
     plcr.init(_token);
 
     emit newPLCR(msg.sender, _token, plcr);
@@ -876,7 +876,7 @@ contract PLCRFactory {
   }
   
   /*
-  @dev deploys and initializes a new PLCRVoting contract and an EIP20 to be consumed by the PLCR&#39;s
+  @dev deploys and initializes a new PLCRVoting contract and an EIP20 to be consumed by the PLCR's
   initializer.
   @param _supply the total number of tokens to mint in the EIP20 contract
   @param _name the name of the new EIP20 token
@@ -894,7 +894,7 @@ contract PLCRFactory {
     token.transfer(msg.sender, _supply);
 
     // Create and initialize a new PLCR contract
-    PLCRVoting plcr = PLCRVoting(proxyFactory.createProxy(canonizedPLCR, &quot;&quot;));
+    PLCRVoting plcr = PLCRVoting(proxyFactory.createProxy(canonizedPLCR, ""));
     plcr.init(token);
 
     emit newPLCR(msg.sender, token, plcr);

@@ -48,13 +48,13 @@ contract FSTSaleServiceWindowReferral {
     uint256 purchaseAmount = msg.value.div(fstPrice);
 
     require(
-      isEnabled &amp;&amp;
-      finalized == false &amp;&amp;
-      available &gt; 0 &amp;&amp;
-      purchaseAmount &gt; 0
+      isEnabled &&
+      finalized == false &&
+      available > 0 &&
+      purchaseAmount > 0
     );
 
-    if (available &gt;= purchaseAmount) {
+    if (available >= purchaseAmount) {
       revenue = msg.value;
     } else {
       purchaseAmount = available;
@@ -73,7 +73,7 @@ contract FSTSaleServiceWindowReferral {
   
   function declareRF(string _secret) public {
     require(
-      secretHash == keccak256(abi.encodePacked(_secret)) &amp;&amp;
+      secretHash == keccak256(abi.encodePacked(_secret)) &&
       rf == address(0)
     );
 
@@ -84,9 +84,9 @@ contract FSTSaleServiceWindowReferral {
 
   function finalize (address _receiver) public {
     require(
-      msg.sender == owner &amp;&amp;
-      isEnabled == false &amp;&amp;
-      finalized == false &amp;&amp;
+      msg.sender == owner &&
+      isEnabled == false &&
+      finalized == false &&
       rf != address(0)
     );
 
@@ -97,7 +97,7 @@ contract FSTSaleServiceWindowReferral {
     _receiver.transfer(address(this).balance);
 
     uint256 available = funderSmartToken.balanceOf(address(this));
-    if (available &gt; 0) {
+    if (available > 0) {
       funderSmartToken.transfer(_receiver, available);
     }
 
@@ -117,8 +117,8 @@ contract FSTSaleServiceWindowReferral {
   function setFSTPrice(uint256 numerator, uint256 denominator) public {
     require(msg.sender == owner);
     require(
-      numerator &gt; 0 &amp;&amp;
-      denominator &gt; 0
+      numerator > 0 &&
+      denominator > 0
     );
 
     fstPrice.numerator = numerator;
@@ -140,7 +140,7 @@ library Math {
   }
 
   function isPositive(Fraction memory fraction) internal pure returns (bool) {
-    return fraction.numerator &gt; 0 &amp;&amp; fraction.denominator &gt; 0;
+    return fraction.numerator > 0 && fraction.denominator > 0;
   }
 
   function mul(uint256 a, uint256 b) internal pure returns (uint256 r) {
@@ -153,19 +153,19 @@ library Math {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a - b) &lt;= a);
+    require((r = a - b) <= a);
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a + b) &gt;= a);
+    require((r = a + b) >= a);
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &lt;= y ? x : y;
+    return x <= y ? x : y;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &gt;= y ? x : y;
+    return x >= y ? x : y;
   }
 
   function mulDiv(uint256 value, uint256 m, uint256 d) internal pure returns (uint256 r) {

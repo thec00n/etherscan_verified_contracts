@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -108,13 +108,13 @@ contract CryptoCopyToken is Owned, Token {
     using SafeMath for uint256;
 
     // Ethereum token standaard
-    string public standard = &quot;Token 0.2&quot;;
+    string public standard = "Token 0.2";
 
     // Full name
-    string public name = &quot;CryptoCopy token&quot;;
+    string public name = "CryptoCopy token";
 
     // Symbol
-    string public symbol = &quot;CCOPY&quot;;
+    string public symbol = "CCOPY";
 
     // No decimal points
     uint8 public decimals = 8;
@@ -125,8 +125,8 @@ contract CryptoCopyToken is Owned, Token {
     // Token starts if the locked state restricting transfers
     bool public locked;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * Get balance of `_owner`
@@ -153,12 +153,12 @@ contract CryptoCopyToken is Owned, Token {
         }
 
         // Check if the sender has enough tokens
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             throw;
         }
 
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to])  {
+        if (balances[_to] + _value < balances[_to])  {
             throw;
         }
 
@@ -188,17 +188,17 @@ contract CryptoCopyToken is Owned, Token {
         }
 
         // Check if the sender has enough
-        if (balances[_from] &lt; _value) {
+        if (balances[_from] < _value) {
             throw;
         }
 
         // Check for overflows
-        if (balances[_to] + _value &lt; balances[_to]) {
+        if (balances[_to] + _value < balances[_to]) {
             throw;
         }
 
         // Check allowance
-        if (_value &gt; allowed[_from][msg.sender]) {
+        if (_value > allowed[_from][msg.sender]) {
             throw;
         }
 
@@ -305,7 +305,7 @@ contract CryptoCopyToken is Owned, Token {
      */
     function issue(address _recipient, uint256 _value) onlyOwner returns (bool success) {
 
-        if (totalSupply + _value &gt; maxTotalSupply) {
+        if (totalSupply + _value > maxTotalSupply) {
             return;
         }
         

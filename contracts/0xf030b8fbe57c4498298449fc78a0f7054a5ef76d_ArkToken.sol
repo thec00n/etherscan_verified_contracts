@@ -18,12 +18,12 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
 
-  mapping (address =&gt; bool) public admins;
+  mapping (address => bool) public admins;
 
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -79,20 +79,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -109,34 +109,34 @@ contract ArkToken is ERC721, Ownable {
   uint256 public developerCut;
 
   // Animal Data
-  mapping (uint256 =&gt; Animal) public arkData;
+  mapping (uint256 => Animal) public arkData;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
-  // mom ID =&gt; baby ID
-  mapping (uint256 =&gt; uint256) public babies;
+  // mom ID => baby ID
+  mapping (uint256 => uint256) public babies;
   
-  // baby ID =&gt; parents
-  mapping (uint256 =&gt; uint256[2]) public babyMommas;
+  // baby ID => parents
+  mapping (uint256 => uint256[2]) public babyMommas;
   
-  // token ID =&gt; their baby-makin&#39; partner
-  mapping (uint256 =&gt; uint256) public mates;
+  // token ID => their baby-makin' partner
+  mapping (uint256 => uint256) public mates;
 
-  // baby ID =&gt; sum price of mom and dad needed to make this babby
-  mapping (uint256 =&gt; uint256) public babyMakinPrice;
+  // baby ID => sum price of mom and dad needed to make this babby
+  mapping (uint256 => uint256) public babyMakinPrice;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   // Balances from % payouts.
-  mapping (address =&gt; uint256) public birtherBalances; 
+  mapping (address => uint256) public birtherBalances; 
 
   // Events
   event Purchase(uint256 indexed _tokenId, address indexed _buyer, address indexed _seller, uint256 _purchasePrice);
@@ -151,7 +151,7 @@ contract ArkToken is ERC721, Ownable {
   // Struct to store Animal Data
   struct Animal {
     uint256 price;         // Current price of the item.
-    uint256 lastPrice;     // Last price needed to calculate whether baby-makin&#39; limit has made it
+    uint256 lastPrice;     // Last price needed to calculate whether baby-makin' limit has made it
     address owner;         // Current owner of the item.
     address birther;       // Address that birthed the animal.
     uint256 birtherPct;    // Percent that birther will get for sales. The actual percent is this / 10.
@@ -159,9 +159,9 @@ contract ArkToken is ERC721, Ownable {
   }
 
   function createToken(uint256 _tokenId, uint256 _startingPrice, uint256 _cut, address _owner, uint8 _gender) onlyAdmin() public {
-    // make sure price &gt; 0
-    require(_startingPrice &gt; 0);
-    // make sure token hasn&#39;t been used yet
+    // make sure price > 0
+    require(_startingPrice > 0);
+    // make sure token hasn't been used yet
     require(arkData[_tokenId].price == 0);
     
     // create new token
@@ -179,7 +179,7 @@ contract ArkToken is ERC721, Ownable {
   }
 
   function createMultiple (uint256[] _itemIds, uint256[] _prices, uint256[] _cuts, address[] _owners, uint8[] _genders) onlyAdmin() external {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       createToken(_itemIds[i], _prices[i], _cuts[i], _owners[i], _genders[i]);
     }
   }
@@ -194,8 +194,8 @@ contract ArkToken is ERC721, Ownable {
   }
   
   function createBabies(uint256[] _dads, uint256[] _moms, uint256[] _babies, uint256[] _prices) external onlyAdmin() {
-      require(_moms.length == _babies.length &amp;&amp; _babies.length == _dads.length);
-      for (uint256 i = 0; i &lt; _moms.length; i++) {
+      require(_moms.length == _babies.length && _babies.length == _dads.length);
+      for (uint256 i = 0; i < _moms.length; i++) {
           createBaby(_dads[i], _moms[i], _babies[i], _prices[i]);
       }
   }
@@ -205,13 +205,13 @@ contract ArkToken is ERC721, Ownable {
   * @param _price uint256 ID of current price
   */
   function getNextPrice (uint256 _price) private view returns (uint256 _nextPrice) {
-    if (_price &lt; firstCap) {
+    if (_price < firstCap) {
       return _price.mul(150).div(95);
-    } else if (_price &lt; secondCap) {
+    } else if (_price < secondCap) {
       return _price.mul(135).div(96);
-    } else if (_price &lt; thirdCap) {
+    } else if (_price < thirdCap) {
       return _price.mul(125).div(97);
-    } else if (_price &lt; finalCap) {
+    } else if (_price < finalCap) {
       return _price.mul(117).div(97);
     } else {
       return _price.mul(115).div(98);
@@ -235,10 +235,10 @@ contract ArkToken is ERC721, Ownable {
     uint256 excess = msg.value.sub(price);
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(oldOwner != msg.sender);
-    require(oldOwner != address(0) &amp;&amp; oldOwner != address(1)); // We&#39;re gonna put unbirthed babbies at 0x1
+    require(oldOwner != address(0) && oldOwner != address(1)); // We're gonna put unbirthed babbies at 0x1
     
     uint256 totalCut = price.mul(4).div(100);
     
@@ -257,10 +257,10 @@ contract ArkToken is ERC721, Ownable {
     animal.price = getNextPrice(price);
     animal.lastPrice = price;
 
-    // Transfer payment to old owner minus the developer&#39;s and birther&#39;s cut.
+    // Transfer payment to old owner minus the developer's and birther's cut.
     oldOwner.transfer(price.sub(totalCut));
     // Send refund to owner if needed
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
     
@@ -283,11 +283,11 @@ contract ArkToken is ERC721, Ownable {
       mom = _tokenId;
     }
     
-    if (babies[mom] &gt; 0) {
+    if (babies[mom] > 0) {
       if (tokenOwner[mates[_tokenId]] == msg.sender) {
         // Check if the sum price to make a baby for these mates has been passed.
         uint256 sumPrice = arkData[_tokenId].lastPrice + arkData[mates[_tokenId]].lastPrice;
-        if (sumPrice &gt;= babyMakinPrice[babies[mom]]) {
+        if (sumPrice >= babyMakinPrice[babies[mom]]) {
           autoBirth(babies[mom]);
           
           Birth(msg.sender, mom, mates[mom], babies[mom]);
@@ -342,7 +342,7 @@ contract ArkToken is ERC721, Ownable {
   }
 
   /**
-  * @dev Withdraw dev&#39;s cut
+  * @dev Withdraw dev's cut
   */
   function withdraw(uint256 _amount) public onlyAdmin() {
     if (_amount == 0) { 
@@ -353,7 +353,7 @@ contract ArkToken is ERC721, Ownable {
   }
 
   /**
-   * @dev Withdraw anyone&#39;s birther balance.
+   * @dev Withdraw anyone's birther balance.
    * @param _beneficiary The person whose balance shall be sent to them.
   */
   function withdrawBalance(address _beneficiary) external {
@@ -418,11 +418,11 @@ contract ArkToken is ERC721, Ownable {
   }
 
   /**
-  * @dev Determines if token exists by checking it&#39;s price
+  * @dev Determines if token exists by checking it's price
   * @param _tokenId uint256 ID of token
   */
   function tokenExists (uint256 _tokenId) public view returns (bool _exists) {
-    return arkData[_tokenId].price &gt; 0;
+    return arkData[_tokenId].price > 0;
   }
 
   /**
@@ -614,11 +614,11 @@ contract ArkToken is ERC721, Ownable {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;EthersArk Token&quot;;
+    return "EthersArk Token";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;EARK&quot;;
+    return "EARK";
   }
 
 }

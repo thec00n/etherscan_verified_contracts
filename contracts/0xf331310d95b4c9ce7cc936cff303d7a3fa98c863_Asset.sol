@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -87,20 +87,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -300,7 +300,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -351,28 +351,28 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
     struct Member {
         address addr;
         uint groupsCount;
-        mapping(bytes32 =&gt; uint) groupName2index;
-        mapping(uint =&gt; uint) index2globalIndex;
+        mapping(bytes32 => uint) groupName2index;
+        mapping(uint => uint) index2globalIndex;
     }
 
     struct Group {
         bytes32 name;
         uint priority;
         uint membersCount;
-        mapping(address =&gt; uint) memberAddress2index;
-        mapping(uint =&gt; uint) index2globalIndex;
+        mapping(address => uint) memberAddress2index;
+        mapping(uint => uint) index2globalIndex;
     }
 
     uint public membersCount;
-    mapping(uint =&gt; address) index2memberAddress;
-    mapping(address =&gt; uint) memberAddress2index;
-    mapping(address =&gt; Member) address2member;
+    mapping(uint => address) index2memberAddress;
+    mapping(address => uint) memberAddress2index;
+    mapping(address => Member) address2member;
 
     uint public groupsCount;
-    mapping(uint =&gt; bytes32) index2groupName;
-    mapping(bytes32 =&gt; uint) groupName2index;
-    mapping(bytes32 =&gt; Group) groupName2group;
-    mapping(bytes32 =&gt; bool) public groupsBlocked; // if groupName =&gt; true, then couldn&#39;t be used for confirmation
+    mapping(uint => bytes32) index2groupName;
+    mapping(bytes32 => uint) groupName2index;
+    mapping(bytes32 => Group) groupName2group;
+    mapping(bytes32 => bool) public groupsBlocked; // if groupName => true, then couldn't be used for confirmation
 
     function() payable public {
         revert();
@@ -481,7 +481,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
         Group storage _group = groupName2group[_groupName];
         uint _groupMembersCount = _group.membersCount;
 
-        for (uint _userIdx = 0; _userIdx &lt; _users.length; ++_userIdx) {
+        for (uint _userIdx = 0; _userIdx < _users.length; ++_userIdx) {
             address _user = _users[_userIdx];
             uint _memberIndex = memberAddress2index[_user];
             require(_memberIndex != 0);
@@ -516,7 +516,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
         Group storage _group = groupName2group[_groupName];
         uint _groupMembersCount = _group.membersCount;
 
-        for (uint _userIdx = 0; _userIdx &lt; _users.length; ++_userIdx) {
+        for (uint _userIdx = 0; _userIdx < _users.length; ++_userIdx) {
             address _user = _users[_userIdx];
             uint _memberIndex = memberAddress2index[_user];
             uint _groupMemberIndex = _group.memberAddress2index[_user];
@@ -560,7 +560,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
     ///
     /// @return status
     function isUserInGroup(bytes32 _groupName, address _user) public view returns (bool) {
-        return isRegisteredUser(_user) &amp;&amp; address2member[_user].groupName2index[_groupName] != 0;
+        return isRegisteredUser(_user) && address2member[_user].groupName2index[_groupName] != 0;
     }
 
     /// @notice Check is group exist
@@ -578,7 +578,7 @@ contract GroupsAccessManager is Object, GroupsAccessManagerEmitter {
     function getGroups() public view returns (bytes32[] _groups) {
         uint _groupsCount = groupsCount;
         _groups = new bytes32[](_groupsCount);
-        for (uint _groupIdx = 0; _groupIdx &lt; _groupsCount; ++_groupIdx) {
+        for (uint _groupIdx = 0; _groupIdx < _groupsCount; ++_groupIdx) {
             _groups[_groupIdx] = index2groupName[_groupIdx + 1];
         }
     }
@@ -702,15 +702,15 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     struct Policy {
         uint groupsCount;
-        mapping(uint =&gt; Requirements) participatedGroups; // index =&gt; globalGroupIndex
-        mapping(bytes32 =&gt; uint) groupName2index; // groupName =&gt; localIndex
+        mapping(uint => Requirements) participatedGroups; // index => globalGroupIndex
+        mapping(bytes32 => uint) groupName2index; // groupName => localIndex
         
         uint totalAcceptedLimit;
         uint totalDeclinedLimit;
 
         uint securesCount;
-        mapping(uint =&gt; uint) index2txIndex;
-        mapping(uint =&gt; uint) txIndex2index;
+        mapping(uint => uint) index2txIndex;
+        mapping(uint => uint) txIndex2index;
     }
 
     struct Vote {
@@ -725,24 +725,24 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         uint alreadyAccepted;
         uint alreadyDeclined;
         
-        mapping(address =&gt; Vote) votes; // member address =&gt; vote
-        mapping(bytes32 =&gt; uint) acceptedCount; // groupName =&gt; how many from group has already accepted
-        mapping(bytes32 =&gt; uint) declinedCount; // groupName =&gt; how many from group has already declined
+        mapping(address => Vote) votes; // member address => vote
+        mapping(bytes32 => uint) acceptedCount; // groupName => how many from group has already accepted
+        mapping(bytes32 => uint) declinedCount; // groupName => how many from group has already declined
     }
 
     address public accessManager;
 
-    mapping(address =&gt; bool) public authorized;
+    mapping(address => bool) public authorized;
 
     uint public policiesCount;
-    mapping(uint =&gt; bytes32) index2PolicyId; // index =&gt; policy hash
-    mapping(bytes32 =&gt; uint) policyId2Index; // policy hash =&gt; index
-    mapping(bytes32 =&gt; Policy) policyId2policy; // policy hash =&gt; policy struct
+    mapping(uint => bytes32) index2PolicyId; // index => policy hash
+    mapping(bytes32 => uint) policyId2Index; // policy hash => index
+    mapping(bytes32 => Policy) policyId2policy; // policy hash => policy struct
 
     uint public txCount;
-    mapping(uint =&gt; bytes32) index2txKey;
-    mapping(bytes32 =&gt; uint) txKey2index; // tx key =&gt; index
-    mapping(bytes32 =&gt; Guard) txKey2guard;
+    mapping(uint => bytes32) index2txKey;
+    mapping(bytes32 => uint) txKey2index; // tx key => index
+    mapping(bytes32 => Guard) txKey2guard;
 
     /// @dev Execution is allowed only by authorized contract
     modifier onlyAuthorized {
@@ -751,9 +751,9 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         }
     }
 
-    /// @dev Pending Manager&#39;s constructor
+    /// @dev Pending Manager's constructor
     ///
-    /// @param _accessManager access manager&#39;s address
+    /// @param _accessManager access manager's address
     function PendingManager(address _accessManager) public {
         require(_accessManager != 0x0);
         accessManager = _accessManager;
@@ -765,7 +765,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     /// @notice Update access manager address
     ///
-    /// @param _accessManager access manager&#39;s address
+    /// @param _accessManager access manager's address
     function setAccessManager(address _accessManager) external onlyContractOwner returns (uint) {
         require(_accessManager != 0x0);
         accessManager = _accessManager;
@@ -774,7 +774,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     /// @notice Sign in contract
     ///
-    /// @param _contract contract&#39;s address
+    /// @param _contract contract's address
     function signIn(address _contract) external onlyContractOwner returns (uint) {
         require(_contract != 0x0);
         authorized[_contract] = true;
@@ -783,7 +783,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
 
     /// @notice Sign out contract
     ///
-    /// @param _contract contract&#39;s address
+    /// @param _contract contract's address
     function signOut(address _contract) external onlyContractOwner returns (uint) {
         require(_contract != 0x0);
         delete authorized[_contract];
@@ -795,7 +795,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
     ///
     /// @param _sig target method signature
     /// @param _contract target contract address
-    /// @param _groupName group&#39;s name
+    /// @param _groupName group's name
     /// @param _acceptLimit accepted vote limit
     /// @param _declineLimit decline vote limit
     ///
@@ -850,7 +850,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
     /// @notice Remove policy rule
     /// Can be called only by contract owner
     ///
-    /// @param _groupName group&#39;s name
+    /// @param _groupName group's name
     ///
     /// @return code
     function removePolicyRule(
@@ -992,7 +992,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
-        if (_guard.votes[msg.sender].groupName != bytes32(0) &amp;&amp; _guard.votes[msg.sender].accepted) {
+        if (_guard.votes[msg.sender].groupName != bytes32(0) && _guard.votes[msg.sender].accepted) {
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
@@ -1038,7 +1038,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
-        if (_guard.votes[msg.sender].groupName != bytes32(0) &amp;&amp; !_guard.votes[msg.sender].accepted) {
+        if (_guard.votes[msg.sender].groupName != bytes32(0) && !_guard.votes[msg.sender].accepted) {
             return _emitError(PENDING_MANAGER_INVALID_INVOCATION);
         }
 
@@ -1133,7 +1133,7 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
         _acceptLimits = new uint[](_policyGroupsCount);
         _declineLimits = new uint[](_policyGroupsCount);
 
-        for (uint _idx = 0; _idx &lt; _policyGroupsCount; ++_idx) {
+        for (uint _idx = 0; _idx < _policyGroupsCount; ++_idx) {
             Requirements storage _requirements = _policy.participatedGroups[_idx + 1];
             _groupNames[_idx] = _requirements.groupName;
             _acceptLimits[_idx] = _requirements.acceptLimit;
@@ -1167,9 +1167,9 @@ contract PendingManager is Object, PendingManagerEmitter, PendingManagerInterfac
     }
 
     function _updateTxState(Policy storage _policy, Guard storage _guard, uint confirmedAmount, uint declineAmount) private {
-        if (declineAmount != 0 &amp;&amp; _guard.state != GuardState.Decline) {
+        if (declineAmount != 0 && _guard.state != GuardState.Decline) {
             _guard.state = GuardState.Decline;
-        } else if (confirmedAmount &gt;= _policy.groupsCount &amp;&amp; _guard.state != GuardState.Confirmed) {
+        } else if (confirmedAmount >= _policy.groupsCount && _guard.state != GuardState.Confirmed) {
             _guard.state = GuardState.Confirmed;
         } else if (_guard.state != GuardState.InProcess) {
             _guard.state = GuardState.InProcess;
@@ -1283,21 +1283,21 @@ contract ServiceController is MultiSigAdapter {
     address public proxy;
 
     uint public sideServicesCount;
-    mapping(uint =&gt; address) public index2sideService;
-    mapping(address =&gt; uint) public sideService2index;
-    mapping(address =&gt; bool) public sideServices;
+    mapping(uint => address) public index2sideService;
+    mapping(address => uint) public sideService2index;
+    mapping(address => bool) public sideServices;
 
     uint public emissionProvidersCount;
-    mapping(uint =&gt; address) public index2emissionProvider;
-    mapping(address =&gt; uint) public emissionProvider2index;
-    mapping(address =&gt; bool) public emissionProviders;
+    mapping(uint => address) public index2emissionProvider;
+    mapping(address => uint) public emissionProvider2index;
+    mapping(address => bool) public emissionProviders;
 
     uint public burningMansCount;
-    mapping(uint =&gt; address) public index2burningMan;
-    mapping(address =&gt; uint) public burningMan2index;
-    mapping(address =&gt; bool) public burningMans;
+    mapping(uint => address) public index2burningMan;
+    mapping(address => uint) public burningMan2index;
+    mapping(address => bool) public burningMans;
 
-    /// @notice Default ServiceController&#39;s constructor
+    /// @notice Default ServiceController's constructor
     ///
     /// @param _pendingManager pending manager address
     /// @param _proxy ERC20 proxy address
@@ -1519,7 +1519,7 @@ contract ServiceController is MultiSigAdapter {
     returns (address[] _emissionProviders)
     {
         _emissionProviders = new address[](emissionProvidersCount);
-        for (uint _idx = 0; _idx &lt; _emissionProviders.length; ++_idx) {
+        for (uint _idx = 0; _idx < _emissionProviders.length; ++_idx) {
             _emissionProviders[_idx] = index2emissionProvider[_idx + 1];
         }
     }
@@ -1530,7 +1530,7 @@ contract ServiceController is MultiSigAdapter {
     returns (address[] _burningMans)
     {
         _burningMans = new address[](burningMansCount);
-        for (uint _idx = 0; _idx &lt; _burningMans.length; ++_idx) {
+        for (uint _idx = 0; _idx < _burningMans.length; ++_idx) {
             _burningMans[_idx] = index2burningMan[_idx + 1];
         }
     }
@@ -1541,7 +1541,7 @@ contract ServiceController is MultiSigAdapter {
     returns (address[] _sideServices)
     {
         _sideServices = new address[](sideServicesCount);
-        for (uint _idx = 0; _idx &lt; _sideServices.length; ++_idx) {
+        for (uint _idx = 0; _idx < _sideServices.length; ++_idx) {
             _sideServices[_idx] = index2sideService[_idx + 1];
         }
     }
@@ -1572,7 +1572,7 @@ contract OracleMethodAdapter is Object {
     event OracleAdded(bytes4 _sig, address _oracle);
     event OracleRemoved(bytes4 _sig, address _oracle);
 
-    mapping(bytes4 =&gt; mapping(address =&gt; bool)) public oracles;
+    mapping(bytes4 => mapping(address => bool)) public oracles;
 
     /// @dev Allow access only for oracle
     modifier onlyOracle {
@@ -1598,11 +1598,11 @@ contract OracleMethodAdapter is Object {
         require(_signatures.length == _oracles.length);
         bytes4 _sig;
         address _oracle;
-        for (uint _idx = 0; _idx &lt; _signatures.length; ++_idx) {
+        for (uint _idx = 0; _idx < _signatures.length; ++_idx) {
             (_sig, _oracle) = (_signatures[_idx], _oracles[_idx]);
             if (_oracle != 0x0 
-                &amp;&amp; _sig != bytes4(0) 
-                &amp;&amp; !oracles[_sig][_oracle]
+                && _sig != bytes4(0) 
+                && !oracles[_sig][_oracle]
             ) {
                 oracles[_sig][_oracle] = true;
                 _emitOracleAdded(_sig, _oracle);
@@ -1622,11 +1622,11 @@ contract OracleMethodAdapter is Object {
         require(_signatures.length == _oracles.length);
         bytes4 _sig;
         address _oracle;
-        for (uint _idx = 0; _idx &lt; _signatures.length; ++_idx) {
+        for (uint _idx = 0; _idx < _signatures.length; ++_idx) {
             (_sig, _oracle) = (_signatures[_idx], _oracles[_idx]);
             if (_oracle != 0x0 
-                &amp;&amp; _sig != bytes4(0) 
-                &amp;&amp; oracles[_sig][_oracle]
+                && _sig != bytes4(0) 
+                && oracles[_sig][_oracle]
             ) {
                 delete oracles[_sig][_oracle];
                 _emitOracleRemoved(_sig, _oracle);
@@ -1648,7 +1648,7 @@ contract OracleMethodAdapter is Object {
 
 
 contract Platform {
-    mapping(bytes32 =&gt; address) public proxies;
+    mapping(bytes32 => address) public proxies;
     function name(bytes32 _symbol) public view returns (string);
     function setProxy(address _address, bytes32 _symbol) public returns (uint errorCode);
     function isOwner(address _owner, bytes32 _symbol) public view returns (bool);
@@ -1795,7 +1795,7 @@ contract ATxAssetProxy is ERC20, Object, ServiceAllowance {
      */
     function transfer(address _to, uint _value) public returns (bool) {
         if (_to != 0x0) {
-            return _transferWithReference(_to, _value, &quot;&quot;);
+            return _transferWithReference(_to, _value, "");
         }
         else {
             return false;
@@ -1807,7 +1807,7 @@ contract ATxAssetProxy is ERC20, Object, ServiceAllowance {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      *
      * @return success.
      */
@@ -1827,7 +1827,7 @@ contract ATxAssetProxy is ERC20, Object, ServiceAllowance {
      *
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -1847,7 +1847,7 @@ contract ATxAssetProxy is ERC20, Object, ServiceAllowance {
      */
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
         if (_to != 0x0) {
-            return _getAsset().__transferFromWithReference(_from, _to, _value, &quot;&quot;, msg.sender);
+            return _getAsset().__transferFromWithReference(_from, _to, _value, "", msg.sender);
         }
         else {
             return false;
@@ -1862,7 +1862,7 @@ contract ATxAssetProxy is ERC20, Object, ServiceAllowance {
      * @param _from holder address to take from.
      * @param _to holder address to give to.
      * @param _value amount to transfer.
-     * @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+     * @param _reference transfer comment to be included in a platform's Transfer event.
      * @param _sender initial caller.
      *
      * @return success.
@@ -2053,7 +2053,7 @@ contract DataController is OracleMethodAdapter, DataControllerEmitter {
 
     /* STRUCTS */
 
-    /// @title HoldersData couldn&#39;t be public because of internal structures, so needed to provide getters for different parts of _holderData
+    /// @title HoldersData couldn't be public because of internal structures, so needed to provide getters for different parts of _holderData
     struct HoldersData {
         uint countryCode;
         uint sendLimPerDay;
@@ -2061,8 +2061,8 @@ contract DataController is OracleMethodAdapter, DataControllerEmitter {
         bool operational;
         bytes text;
         uint holderAddressCount;
-        mapping(uint =&gt; address) index2Address;
-        mapping(address =&gt; uint) address2Index;
+        mapping(uint => address) index2Address;
+        mapping(address => uint) address2Index;
     }
 
     struct CountryLimits {
@@ -2077,19 +2077,19 @@ contract DataController is OracleMethodAdapter, DataControllerEmitter {
     address assetAddress;
     address public serviceController;
 
-    mapping(address =&gt; uint) public allowance;
+    mapping(address => uint) public allowance;
 
     // Iterable mapping pattern is used for holders.
     /// @dev This is an access address mapping. Many addresses may have access to a single holder.
     uint public holdersCount;
-    mapping(uint =&gt; HoldersData) holders;
-    mapping(address =&gt; bytes32) holderAddress2Id;
-    mapping(bytes32 =&gt; uint) public holderIndex;
+    mapping(uint => HoldersData) holders;
+    mapping(address => bytes32) holderAddress2Id;
+    mapping(bytes32 => uint) public holderIndex;
 
     // This is an access address mapping. Many addresses may have access to a single holder.
     uint public countriesCount;
-    mapping(uint =&gt; CountryLimits) countryLimitsList;
-    mapping(uint =&gt; uint) countryIndex;
+    mapping(uint => CountryLimits) countryLimitsList;
+    mapping(uint => uint) countryIndex;
 
     /* MODIFIERS */
 
@@ -2161,7 +2161,7 @@ contract DataController is OracleMethodAdapter, DataControllerEmitter {
         HoldersData storage _holderData = holders[holderIndex[_externalHolderId]];
         uint _addressesCount = _holderData.holderAddressCount;
         _addresses = new address[](_addressesCount);
-        for (uint _holderAddressIdx = 0; _holderAddressIdx &lt; _addressesCount; ++_holderAddressIdx) {
+        for (uint _holderAddressIdx = 0; _holderAddressIdx < _addressesCount; ++_holderAddressIdx) {
             _addresses[_holderAddressIdx] = _holderData.index2Address[_holderAddressIdx + 1];
         }
     }
@@ -2439,7 +2439,7 @@ contract DataController is OracleMethodAdapter, DataControllerEmitter {
         require(_countryIndex != 0);
 
         uint _currentTokenHolderNumber = countryLimitsList[_countryIndex].currentTokenHolderNumber;
-        if (_currentTokenHolderNumber &gt; _limit) {
+        if (_currentTokenHolderNumber > _limit) {
             return _emitError(DATA_CONTROLLER_CURRENT_WRONG_LIMIT);
         }
 
@@ -2488,14 +2488,14 @@ contract DataController is OracleMethodAdapter, DataControllerEmitter {
     returns (uint) 
     {
         CountryLimits storage _data = countryLimitsList[countryIndex[_countryCode]];
-        assert(_data.maxTokenHolderNumber &gt;= _updatedHolderCount);
+        assert(_data.maxTokenHolderNumber >= _updatedHolderCount);
         _data.currentTokenHolderNumber = _updatedHolderCount;
         return OK;
     }
 
     function changeAllowance(address _from, uint _value) public onlyWithdrawal returns (uint) {
         ATxAssetProxy token = _getATxToken();
-        if (token.balanceOf(_from) &lt; _value) {
+        if (token.balanceOf(_from) < _value) {
             return _emitError(DATA_CONTROLLER_WRONG_ALLOWANCE);
         }
         allowance[_from] = _value;
@@ -2563,7 +2563,7 @@ contract ATxProxy is ERC20 {
 /// Receives calls from the proxy, and calls back immediately without arguments modification.
 ///
 /// Note: all the non constant functions return false instead of throwing in case if state change
-/// didn&#39;t happen yet.
+/// didn't happen yet.
 contract ATxAsset is BasicAsset, Owned {
 
     uint public constant OK = 1;
@@ -2607,7 +2607,7 @@ contract ATxAsset is BasicAsset, Owned {
         require(_serviceController != 0x0);
         require(_dataController != 0x0);
         require(_proxy != 0x0);
-        require(_lockupDate &gt; now || _lockupDate == 0);
+        require(_lockupDate > now || _lockupDate == 0);
 
         if (!super.init(ATxProxy(_proxy))) {
             return false;
@@ -2625,7 +2625,7 @@ contract ATxAsset is BasicAsset, Owned {
     ///
     /// @param _to holder address to give to.
     /// @param _value amount to transfer.
-    /// @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+    /// @param _reference transfer comment to be included in a platform's Transfer event.
     /// @param _sender initial caller.
     ///
     /// @return success.
@@ -2666,7 +2666,7 @@ contract ATxAsset is BasicAsset, Owned {
     /// @param _from holder address to take from.
     /// @param _to holder address to give to.
     /// @param _value amount to transfer.
-    /// @param _reference transfer comment to be included in a platform&#39;s Transfer event.
+    /// @param _reference transfer comment to be included in a platform's Transfer event.
     /// @param _sender initial caller.
     ///
     /// @return success.
@@ -2684,9 +2684,9 @@ contract ATxAsset is BasicAsset, Owned {
         var (_fromRole, _toRole) = _getParticipantRoles(_from, _to);
 
         // @note Special check for operational withdraw.
-        bool _isTransferFromHolderToContractOwner = (_fromRole == Roles.Holder) &amp;&amp; 
-            (contractOwner == _to) &amp;&amp; 
-            (dataController.allowance(_from) &gt;= _value) &amp;&amp; 
+        bool _isTransferFromHolderToContractOwner = (_fromRole == Roles.Holder) && 
+            (contractOwner == _to) && 
+            (dataController.allowance(_from) >= _value) && 
             super.__transferFromWithReference(_from, _to, _value, _reference, _sender);
         if (_isTransferFromHolderToContractOwner) {
             return true;
@@ -2718,7 +2718,7 @@ contract ATxAsset is BasicAsset, Owned {
             _codeLength := extcodesize(_to)
         }
 
-        if (_codeLength &gt; 0) {
+        if (_codeLength > 0) {
             ERC223ReceivingInterface _receiver = ERC223ReceivingInterface(_to);
             bytes memory _empty;
             _receiver.tokenFallback(_from, _value, _empty);
@@ -2726,7 +2726,7 @@ contract ATxAsset is BasicAsset, Owned {
     }
 
     function _isTokenActive() internal view returns (bool) {
-        return now &gt; lockupDate;
+        return now > lockupDate;
     }
 
     function _checkTransferAllowance(address _to, Roles _toRole, uint _value, address _from, Roles _fromRole) internal view returns (bool) {
@@ -2734,19 +2734,19 @@ contract ATxAsset is BasicAsset, Owned {
             return false;
         }
 
-        bool _canTransferFromService = _fromRole == Roles.Service &amp;&amp; ServiceAllowance(_from).isTransferAllowed(_from, _to, _from, proxy, _value);
-        bool _canTransferToService = _toRole == Roles.Service &amp;&amp; ServiceAllowance(_to).isTransferAllowed(_from, _to, _from, proxy, _value);
-        bool _canTransferToHolder = _toRole == Roles.Holder &amp;&amp; _couldDepositToHolder(_to, _value);
+        bool _canTransferFromService = _fromRole == Roles.Service && ServiceAllowance(_from).isTransferAllowed(_from, _to, _from, proxy, _value);
+        bool _canTransferToService = _toRole == Roles.Service && ServiceAllowance(_to).isTransferAllowed(_from, _to, _from, proxy, _value);
+        bool _canTransferToHolder = _toRole == Roles.Holder && _couldDepositToHolder(_to, _value);
 
         bool _canTransferFromHolder;
 
         if (_isTokenActive()) {
-            _canTransferFromHolder = _fromRole == Roles.Holder &amp;&amp; _couldWithdrawFromHolder(_from, _value);
+            _canTransferFromHolder = _fromRole == Roles.Holder && _couldWithdrawFromHolder(_from, _value);
         } else {
-            _canTransferFromHolder = _fromRole == Roles.Holder &amp;&amp; _couldWithdrawFromHolder(_from, _value) &amp;&amp; _from == contractOwner;
+            _canTransferFromHolder = _fromRole == Roles.Holder && _couldWithdrawFromHolder(_from, _value) && _from == contractOwner;
         }
 
-        return (_canTransferFromHolder || _canTransferFromService) &amp;&amp; (_canTransferToHolder || _canTransferToService);
+        return (_canTransferFromHolder || _canTransferFromService) && (_canTransferToHolder || _canTransferToService);
     }
 
     function _checkTransferAllowanceFrom(
@@ -2765,7 +2765,7 @@ contract ATxAsset is BasicAsset, Owned {
     }
 
     function _isValidWithdrawLimits(uint _sendLimPerDay, uint _sendLimPerMonth, uint _value) internal pure returns (bool) {
-        return !(_value &gt; _sendLimPerDay || _value &gt; _sendLimPerMonth);
+        return !(_value > _sendLimPerDay || _value > _sendLimPerMonth);
     }
 
     function _isValidDepositCountry(
@@ -2803,7 +2803,7 @@ contract ATxAsset is BasicAsset, Owned {
         bool _needToDecrementCountryHolderCount = _withdrawBalance == _value;
         bool _shouldOverflowCountryHolderCount = _currentHolderCount == _maxHolderNumber;
 
-        return _withdrawCountryCode == _countryCode &amp;&amp; _needToDecrementCountryHolderCount &amp;&amp; _needToIncrementCountryHolderCount &amp;&amp; _shouldOverflowCountryHolderCount;
+        return _withdrawCountryCode == _countryCode && _needToDecrementCountryHolderCount && _needToIncrementCountryHolderCount && _shouldOverflowCountryHolderCount;
     }
 
     function _updateCountries(
@@ -2834,7 +2834,7 @@ contract ATxAsset is BasicAsset, Owned {
     )
     internal
     {
-        if (_value == _balance &amp;&amp; OK != dataController.updateCountryHoldersCount(_countryCode, _currentHolderCount.sub(1))) {
+        if (_value == _balance && OK != dataController.updateCountryHoldersCount(_countryCode, _currentHolderCount.sub(1))) {
             revert();
         }
     }
@@ -2846,7 +2846,7 @@ contract ATxAsset is BasicAsset, Owned {
     )
     internal
     {
-        if (_balance == 0 &amp;&amp; OK != dataController.updateCountryHoldersCount(_countryCode, _currentHolderCount.add(1))) {
+        if (_balance == 0 && OK != dataController.updateCountryHoldersCount(_countryCode, _currentHolderCount.add(1))) {
             revert();
         }
     }
@@ -2870,7 +2870,7 @@ contract ATxAsset is BasicAsset, Owned {
 
     //TODO need additional check: not clear check of country limit:
     function _isValidDepositCountry(uint _balance, uint _currentHolderCount, uint _maxHolderNumber) private pure returns (bool) {
-        return !(_balance == 0 &amp;&amp; _currentHolderCount == _maxHolderNumber);
+        return !(_balance == 0 && _currentHolderCount == _maxHolderNumber);
     }
 
     function _getHoldersInfo(address _to, Roles _toRole, uint, address _from, Roles _fromRole)
@@ -2910,8 +2910,8 @@ contract ATxAsset is BasicAsset, Owned {
         ) = _getHoldersInfo(_to, _toRole, _value, _from, _fromRole);
 
         //TODO not clear for which case this check
-        bool _isValidLimitFromHolder = _fromRole == _toRole &amp;&amp; _fromRole == Roles.Holder &amp;&amp; !_isValidDepositCountry(_value, _fromCountryCode, _fromBalance, _toCountryCode, _toBalance, _toCountryCurrentHolderCount, _toCountryMaxHolderNumber);
-        bool _isValidLimitsToHolder = _toRole == Roles.Holder &amp;&amp; !_isValidDepositCountry(_toBalance, _toCountryCurrentHolderCount, _toCountryMaxHolderNumber);
+        bool _isValidLimitFromHolder = _fromRole == _toRole && _fromRole == Roles.Holder && !_isValidDepositCountry(_value, _fromCountryCode, _fromBalance, _toCountryCode, _toBalance, _toCountryCurrentHolderCount, _toCountryMaxHolderNumber);
+        bool _isValidLimitsToHolder = _toRole == Roles.Holder && !_isValidDepositCountry(_toBalance, _toCountryCurrentHolderCount, _toCountryMaxHolderNumber);
 
         return !(_isValidLimitFromHolder || _isValidLimitsToHolder);
     }
@@ -2926,16 +2926,16 @@ contract ATxAsset is BasicAsset, Owned {
         _toBalance
         ) = _getHoldersInfo(_to, _toRole, _value, _from, _fromRole);
 
-        if (_fromRole == Roles.Holder &amp;&amp; OK != dataController.withdrawFrom(_from, _value)) {
+        if (_fromRole == Roles.Holder && OK != dataController.withdrawFrom(_from, _value)) {
             revert();
         }
 
-        if (_toRole == Roles.Holder &amp;&amp; OK != dataController.depositTo(_from, _value)) {
+        if (_toRole == Roles.Holder && OK != dataController.depositTo(_from, _value)) {
             revert();
         }
 
         uint _fromCountryCurrentHolderCount;
-        if (_fromRole == Roles.Holder &amp;&amp; _fromRole == _toRole) {
+        if (_fromRole == Roles.Holder && _fromRole == _toRole) {
             (_fromCountryCurrentHolderCount,) = dataController.getCountryInfo(_fromCountryCode);
             _updateCountries(
                 _value,
@@ -2963,6 +2963,6 @@ contract ATxAsset is BasicAsset, Owned {
 /// Receives calls from the proxy, and calls back immediately without arguments modification.
 ///
 /// Note: all the non constant functions return false instead of throwing in case if state change
-/// didn&#39;t happen yet.
+/// didn't happen yet.
 contract Asset is ATxAsset {
 }

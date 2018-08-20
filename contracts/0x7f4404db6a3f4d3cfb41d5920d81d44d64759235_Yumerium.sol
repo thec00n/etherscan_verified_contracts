@@ -90,11 +90,11 @@ contract TokenERC20 {
 
  
 
-    string public name = &quot;Yumerium Token&quot;;
+    string public name = "Yumerium Token";
 
  
 
-    string public symbol = &quot;YUM&quot;;
+    string public symbol = "YUM";
 
  
 
@@ -112,11 +112,11 @@ contract TokenERC20 {
 
  
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
  
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
  
     
@@ -204,7 +204,7 @@ contract TokenERC20 {
 
  
 
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
  
 
@@ -212,7 +212,7 @@ contract TokenERC20 {
 
  
 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
  
 
@@ -351,7 +351,7 @@ contract TokenERC20 {
 
  
 
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
 
  
 
@@ -539,7 +539,7 @@ contract TokenERC20 {
 
  
 
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
 
  
 
@@ -603,11 +603,11 @@ contract TokenERC20 {
 
  
 
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
 
  
 
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
 
  
 
@@ -615,7 +615,7 @@ contract TokenERC20 {
 
  
 
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
 
  
 
@@ -664,7 +664,7 @@ contract Yumerium is owned, TokenERC20 {
     address public saleAddress;
     
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     
 
@@ -695,7 +695,7 @@ contract Yumerium is owned, TokenERC20 {
     
     function sale(address _to, uint256 _value) public {
         require (msg.sender == saleAddress);
-        require (balanceOf[this] &gt;= _value);
+        require (balanceOf[this] >= _value);
         
         balanceOf[this] -= _value;
         balanceOf[_to] += _value;
@@ -705,7 +705,7 @@ contract Yumerium is owned, TokenERC20 {
     
     
     function privateSale(address _to, uint256 _value) onlyOwner public {
-        require (balanceOf[this] &gt;= _value);
+        require (balanceOf[this] >= _value);
         
         balanceOf[this] -= _value;
         balanceOf[_to] += _value;
@@ -732,11 +732,11 @@ contract Yumerium is owned, TokenERC20 {
 
  
 
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
 
  
 
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
 
  
 
@@ -808,7 +808,7 @@ contract Yumerium is owned, TokenERC20 {
 
  
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
 
  
 

@@ -37,9 +37,9 @@ interface ERC721 /* is ERC165 */ {
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -48,7 +48,7 @@ interface ERC721 /* is ERC165 */ {
 
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;.
+    ///  except this function just sets data to "".
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -74,8 +74,8 @@ interface ERC721 /* is ERC165 */ {
     /// @param _tokenId The NFT to approve
     function approve(address _approved, uint256 _tokenId) external;
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
-    ///  all of `msg.sender`&#39;s assets
+    /// @notice Enable or disable approval for a third party ("operator") to manage
+    ///  all of `msg.sender`'s assets
     /// @dev Emits the ApprovalForAll event. The contract MUST allow
     ///  multiple operators per owner.
     /// @param _operator Address to add to the set of authorized operators
@@ -106,7 +106,7 @@ interface AvatarService {
 
 /**
  * @title BitGuildAccessAdmin
- * @dev Allow two roles: &#39;owner&#39; or &#39;operator&#39;
+ * @dev Allow two roles: 'owner' or 'operator'
  *      - owner: admin/superuser (e.g. with financial rights)
  *      - operator: can update configurations
  */
@@ -116,7 +116,7 @@ contract BitGuildAccessAdmin {
 
   uint public MAX_OPS = 20; // Default maximum number of operators allowed
 
-  mapping(address =&gt; bool) public isOperator;
+  mapping(address => bool) public isOperator;
 
   event OwnershipTransferred(
       address indexed previousOwner,
@@ -140,7 +140,7 @@ contract BitGuildAccessAdmin {
   modifier onlyOperator {
     require(
       isOperator[msg.sender] || msg.sender == owner,
-      &quot;Permission denied. Must be an operator or the owner.&quot;);
+      "Permission denied. Must be an operator or the owner.");
     _;
   }
 
@@ -151,7 +151,7 @@ contract BitGuildAccessAdmin {
   function transferOwnership(address _newOwner) public onlyOwner {
     require(
       _newOwner != address(0),
-      &quot;Invalid new owner address.&quot;
+      "Invalid new owner address."
     );
     emit OwnershipTransferred(owner, _newOwner);
     owner = _newOwner;
@@ -164,19 +164,19 @@ contract BitGuildAccessAdmin {
   function addOperator(address _newOperator) public onlyOwner {
     require(
       _newOperator != address(0),
-      &quot;Invalid new operator address.&quot;
+      "Invalid new operator address."
     );
 
     // Make sure no dups
     require(
       !isOperator[_newOperator],
-      &quot;New operator exists.&quot;
+      "New operator exists."
     );
 
     // Only allow so many ops
     require(
-      operators.length &lt; MAX_OPS,
-      &quot;Overflow.&quot;
+      operators.length < MAX_OPS,
+      "Overflow."
     );
 
     operators.push(_newOperator);
@@ -192,21 +192,21 @@ contract BitGuildAccessAdmin {
   function removeOperator(address _operator) public onlyOwner {
     // Make sure operators array is not empty
     require(
-      operators.length &gt; 0,
-      &quot;No operator.&quot;
+      operators.length > 0,
+      "No operator."
     );
 
     // Make sure the operator exists
     require(
       isOperator[_operator],
-      &quot;Not an operator.&quot;
+      "Not an operator."
     );
 
     // Manual array manipulation:
     // - replace the _operator with last operator in array
     // - remove the last item from array
     address lastOperator = operators[operators.length - 1];
-    for (uint i = 0; i &lt; operators.length; i++) {
+    for (uint i = 0; i < operators.length; i++) {
       if (operators[i] == _operator) {
         operators[i] = lastOperator;
       }
@@ -219,7 +219,7 @@ contract BitGuildAccessAdmin {
 
   // @dev Remove ALL operators
   function removeAllOps() public onlyOwner {
-    for (uint i = 0; i &lt; operators.length; i++) {
+    for (uint i = 0; i < operators.length; i++) {
       isOperator[operators[i]] = false;
     }
     operators.length = 0;
@@ -239,12 +239,12 @@ contract AvatarOperator is BitGuildAccessAdmin {
 
   modifier nameValid(string _name){
     bytes memory nameBytes = bytes(_name);
-    require(nameBytes.length &gt; 0);
-    require(nameBytes.length &lt; 16);
-    for(uint8 i = 0; i &lt; nameBytes.length; ++i) {
+    require(nameBytes.length > 0);
+    require(nameBytes.length < 16);
+    for(uint8 i = 0; i < nameBytes.length; ++i) {
       uint8 asc = uint8(nameBytes[i]);
       require (
-        asc == 95 || (asc &gt;= 48 &amp;&amp; asc &lt;= 57) || (asc &gt;= 65 &amp;&amp; asc &lt;= 90) || (asc &gt;= 97 &amp;&amp; asc &lt;= 122), &quot;Invalid name&quot;); 
+        asc == 95 || (asc >= 48 && asc <= 57) || (asc >= 65 && asc <= 90) || (asc >= 97 && asc <= 122), "Invalid name"); 
     }
     _;
   }
@@ -263,7 +263,7 @@ contract AvatarOperator is BitGuildAccessAdmin {
   }
 
   function createAvatar(string _name, uint256 _dna) external nameValid(_name) returns (uint256 _tokenId){
-    require(ERC721(avatarAddress).balanceOf(msg.sender) &lt; PER_USER_MAX_AVATAR_COUNT);
+    require(ERC721(avatarAddress).balanceOf(msg.sender) < PER_USER_MAX_AVATAR_COUNT);
     _tokenId = avatarService.createAvatar(msg.sender, _name, _dna);
     emit AvatarCreateSuccess(msg.sender, _tokenId);
   }

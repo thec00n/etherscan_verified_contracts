@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -313,7 +313,7 @@ contract UnicornBreeding is UnicornAccessControl {
         require(unicornToken.owns(msg.sender, _unicornId));
         require(isUnfreezed(_unicornId));
         require(!breedingDB.hybridizationExists(_unicornId));
-        require(unicornToken.getUnicornGenByte(_unicornId, 10) &gt; 0);
+        require(unicornToken.getUnicornGenByte(_unicornId, 10) > 0);
 
         checkFreeze(_unicornId);
         breedingDB.createHybridization(_unicornId, _price);
@@ -327,15 +327,15 @@ contract UnicornBreeding is UnicornAccessControl {
     function acceptHybridization(uint _firstUnicornId, uint _secondUnicornId) whenNotPaused public payable {
         require(unicornToken.owns(msg.sender, _secondUnicornId));
         require(_secondUnicornId != _firstUnicornId);
-        require(isUnfreezed(_firstUnicornId) &amp;&amp; isUnfreezed(_secondUnicornId));
+        require(isUnfreezed(_firstUnicornId) && isUnfreezed(_secondUnicornId));
         require(breedingDB.hybridizationExists(_firstUnicornId));
 
-        require(unicornToken.getUnicornGenByte(_firstUnicornId, 10) &gt; 0 &amp;&amp; unicornToken.getUnicornGenByte(_secondUnicornId, 10) &gt; 0);
+        require(unicornToken.getUnicornGenByte(_firstUnicornId, 10) > 0 && unicornToken.getUnicornGenByte(_secondUnicornId, 10) > 0);
         require(msg.value == unicornManagement.oraclizeFee());
 
         uint price = breedingDB.hybridizationPrice(_firstUnicornId);
 
-        if (price &gt; 0) {
+        if (price > 0) {
             uint fullPrice = unicornManagement.getHybridizationFullPrice(price);
 
             require(balances.transferWithFee(candyTokenAddress, msg.sender, fullPrice, balances, unicornToken.ownerOf(_firstUnicornId), price));
@@ -353,15 +353,15 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     function selfHybridization(uint _firstUnicornId, uint _secondUnicornId) whenNotPaused public payable {
-        require(unicornToken.owns(msg.sender, _firstUnicornId) &amp;&amp; unicornToken.owns(msg.sender, _secondUnicornId));
+        require(unicornToken.owns(msg.sender, _firstUnicornId) && unicornToken.owns(msg.sender, _secondUnicornId));
         require(_secondUnicornId != _firstUnicornId);
-        require(isUnfreezed(_firstUnicornId) &amp;&amp; isUnfreezed(_secondUnicornId));
-        require(unicornToken.getUnicornGenByte(_firstUnicornId, 10) &gt; 0 &amp;&amp; unicornToken.getUnicornGenByte(_secondUnicornId, 10) &gt; 0);
+        require(isUnfreezed(_firstUnicornId) && isUnfreezed(_secondUnicornId));
+        require(unicornToken.getUnicornGenByte(_firstUnicornId, 10) > 0 && unicornToken.getUnicornGenByte(_secondUnicornId, 10) > 0);
 
         require(msg.value == unicornManagement.oraclizeFee());
 
-        if (selfHybridizationPrice &gt; 0) {
-            //            require(balances.balanceOf(candyTokenAddress,msg.sender) &gt;= selfHybridizationPrice);
+        if (selfHybridizationPrice > 0) {
+            //            require(balances.balanceOf(candyTokenAddress,msg.sender) >= selfHybridizationPrice);
             require(balances.transfer(candyTokenAddress, msg.sender, balances, selfHybridizationPrice));
         }
 
@@ -398,16 +398,16 @@ contract UnicornBreeding is UnicornAccessControl {
     function createUnicornForCandy() public payable whenNotPaused returns(uint256)   {
         require(msg.value == unicornManagement.oraclizeFee());
         uint price = getCreateUnicornPriceInCandy();
-        //        require(balances.balanceOf(candyTokenAddress,msg.sender) &gt;= price);
+        //        require(balances.balanceOf(candyTokenAddress,msg.sender) >= price);
         require(balances.transfer(candyTokenAddress, msg.sender, balances, price));
         return _createUnicorn(msg.sender);
     }
 
     function createPresaleUnicorns(uint _count, address _owner) public payable onlyManager whenPaused returns(bool) {
-        require(breedingDB.gen0PresaleCount().add(_count) &lt;= breedingDB.gen0PresaleLimit());
+        require(breedingDB.gen0PresaleCount().add(_count) <= breedingDB.gen0PresaleLimit());
         uint256 newUnicornId;
         address owner = _owner == address(0) ? msg.sender : _owner;
-        for (uint i = 0; i &lt; _count; i++){
+        for (uint i = 0; i < _count; i++){
             newUnicornId = unicornToken.createUnicorn(owner);
             blackBox.createGen0(newUnicornId);
             emit CreateUnicorn(owner, newUnicornId, 0, 0);
@@ -418,7 +418,7 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     function _createUnicorn(address _owner) private returns(uint256) {
-        require(breedingDB.gen0Count() &lt; breedingDB.gen0Limit());
+        require(breedingDB.gen0Count() < breedingDB.gen0Limit());
         uint256 newUnicornId = unicornToken.createUnicorn(_owner);
         blackBox.createGen0.value(unicornManagement.oraclizeFee())(newUnicornId);
         emit CreateUnicorn(_owner, newUnicornId, 0, 0);
@@ -429,10 +429,10 @@ contract UnicornBreeding is UnicornAccessControl {
     function plusFreezingTime(uint _unicornId) private {
         checkFreeze(_unicornId);
         //если меньше 3 спарок увеличиваю просто спарки, если 3 тогда увеличиваю индекс
-        if (breedingDB.freezeHybridizationsCount(_unicornId) &lt; 3) {
+        if (breedingDB.freezeHybridizationsCount(_unicornId) < 3) {
             breedingDB.incFreezeHybridizationsCount(_unicornId);
         } else {
-            if (breedingDB.freezeIndex(_unicornId) &lt; freezing.length - 1) {
+            if (breedingDB.freezeIndex(_unicornId) < freezing.length - 1) {
                 breedingDB.incFreezeIndex(_unicornId);
                 breedingDB.setFreezeHybridizationsCount(_unicornId,0);
             }
@@ -459,7 +459,7 @@ contract UnicornBreeding is UnicornAccessControl {
         //        [224; 243] rare
         //        [244; 253] epic
         //        [254; 255] legendary
-        return _b &lt; 1 ? 0 : _b &lt; 189 ? 1 : _b &lt; 224 ? 2 : _b &lt; 244 ? 3 : _b &lt; 254 ? 4 : 5;
+        return _b < 1 ? 0 : _b < 189 ? 1 : _b < 224 ? 2 : _b < 244 ? 3 : _b < 254 ? 4 : 5;
     }
 
     function _getStatsSumHours(uint _unicornId) internal view returns (uint) {
@@ -500,11 +500,11 @@ contract UnicornBreeding is UnicornAccessControl {
 
         uint sum = 0;
         uint i;
-        for(i = 0; i &lt; 5; i++) {
+        for(i = 0; i < 5; i++) {
             sum += unicornToken.getUnicornGenByte(_unicornId, physStatBytes[i]);
         }
 
-        for(i = 0; i &lt; 10; i++) {
+        for(i = 0; i < 10; i++) {
             //get v.2 rarity
             uint rarity = unicornToken.getUnicornGenByte(_unicornId, rarity2Bytes[i]);
             if (rarity == 0) {
@@ -517,7 +517,7 @@ contract UnicornBreeding is UnicornAccessControl {
     }
 
     function isUnfreezed(uint _unicornId) public view returns (bool) {
-        return unicornToken.isUnfreezed(_unicornId) &amp;&amp; breedingDB.freezeEndTime(_unicornId) &lt;= now;
+        return unicornToken.isUnfreezed(_unicornId) && breedingDB.freezeEndTime(_unicornId) <= now;
     }
 
     function enableFreezePriceRateRecalc(uint _unicornId) onlyGeneLab external {
@@ -546,7 +546,7 @@ contract UnicornBreeding is UnicornAccessControl {
         uint price = getUnfreezingPrice(_unicornId);
         require(megaCandyToken.burn(msg.sender, price.mul(_count)));
         //не минусуем на уже размороженных конях
-        require(breedingDB.freezeEndTime(_unicornId) &gt; now);
+        require(breedingDB.freezeEndTime(_unicornId) > now);
         //не используем safeMath, т.к. subFreezingTime в теории не должен быть больше now %)
         breedingDB.minusFreezeEndTime(_unicornId, uint(unicornManagement.subFreezingTime()).mul(_count));
         emit MinusFreezingTime(_unicornId,_count);
@@ -601,7 +601,7 @@ contract UnicornMarket is UnicornBreeding {
 
         emit OfferAdd(_unicornId, _priceEth, _priceCandy);
         //налетай)
-        if (_priceEth == 0 &amp;&amp; _priceCandy == 0) {
+        if (_priceEth == 0 && _priceCandy == 0) {
             emit FreeOffer(_unicornId);
         }
     }
@@ -633,7 +633,7 @@ contract UnicornMarket is UnicornBreeding {
 
         address owner = unicornToken.ownerOf(_unicornId);
 
-        if (price &gt; 0) {
+        if (price > 0) {
             uint fullPrice = getOfferPriceCandy(_unicornId);
             require(balances.transferWithFee(candyTokenAddress, msg.sender, fullPrice, balances, owner, price));
         }
@@ -678,7 +678,7 @@ contract UnicornMarket is UnicornBreeding {
 
     function setSellDividendPercent(uint _percentCandy, uint _percentEth) public onlyManager {
         //no more then 25%
-        require(_percentCandy &lt; 2500 &amp;&amp; _percentEth &lt; 2500);
+        require(_percentCandy < 2500 && _percentEth < 2500);
 
         sellDividendPercentCandy = _percentCandy;
         sellDividendPercentEth = _percentEth;
@@ -696,8 +696,8 @@ contract UnicornMarket is UnicornBreeding {
 
 contract UnicornCoinMarket is UnicornMarket {
     uint public feeTake = 5000000000000000; // 0.5% percentage times (1 ether)
-    mapping (address =&gt; mapping (bytes32 =&gt; uint)) public orderFills; // mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
-    mapping (address =&gt; bool) public tokensWithoutFee;
+    mapping (address => mapping (bytes32 => uint)) public orderFills; // mapping of user accounts to mapping of order hashes to uints (amount of order that has been filled)
+    mapping (address => bool) public tokensWithoutFee;
 
     /// Logging Events
     event Trade(bytes32 indexed hash, address tokenGet, uint amountGet, address tokenGive, uint amountGive, address get, address give);
@@ -720,11 +720,11 @@ contract UnicornCoinMarket is UnicornMarket {
 
     /**
     * Facilitates a trade from one user to another.
-    * Requires that the transaction is signed properly, the trade isn&#39;t past its expiration, and all funds are present to fill the trade.
+    * Requires that the transaction is signed properly, the trade isn't past its expiration, and all funds are present to fill the trade.
     * Calls tradeBalances().
     * Updates orderFills with the amount traded.
     * Emits a Trade event.
-    * Note: tokenGet &amp; tokenGive can be the Ethereum contract address.
+    * Note: tokenGet & tokenGive can be the Ethereum contract address.
     * Note: amount is in amountGet / tokenGet terms.
     * @param tokenGet Ethereum contract address of the token to receive
     * @param amountGet uint amount of tokens being received
@@ -736,14 +736,14 @@ contract UnicornCoinMarket is UnicornMarket {
     * @param v part of signature for the order hash as signed by user
     * @param r part of signature for the order hash as signed by user
     * @param s part of signature for the order hash as signed by user
-    * @param amount uint amount in terms of tokenGet that will be &quot;buy&quot; in the trade
+    * @param amount uint amount in terms of tokenGet that will be "buy" in the trade
     */
     function trade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount) external {
         bytes32 hash = sha256(balances, tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
         require(
-            ecrecover(keccak256(keccak256(&quot;bytes32 Order hash&quot;), keccak256(hash)), v, r, s) == user &amp;&amp;
-            block.number &lt;= expires &amp;&amp;
-            orderFills[user][hash].add(amount) &lt;= amountGet
+            ecrecover(keccak256(keccak256("bytes32 Order hash"), keccak256(hash)), v, r, s) == user &&
+            block.number <= expires &&
+            orderFills[user][hash].add(amount) <= amountGet
         );
         uint amount2 =  tradeBalances(tokenGet, amountGet, tokenGive, amountGive, user, amount);
         orderFills[user][hash] = orderFills[user][hash].add(amount);
@@ -755,14 +755,14 @@ contract UnicornCoinMarket is UnicornMarket {
     * Handles the movement of funds when a trade occurs.
     * Takes fees.
     * Updates token balances for both buyer and seller.
-    * Note: tokenGet &amp; tokenGive can be the Ethereum contract address.
+    * Note: tokenGet & tokenGive can be the Ethereum contract address.
     * Note: amount is in amountGet / tokenGet terms.
     * @param tokenGet Ethereum contract address of the token to receive
     * @param amountGet uint amount of tokens being received
     * @param tokenGive Ethereum contract address of the token to give
     * @param amountGive uint amount of tokens being given
     * @param user Ethereum address of the user who placed the order
-    * @param amount uint amount in terms of tokenGet that will be &quot;buy&quot; in the trade
+    * @param amount uint amount in terms of tokenGet that will be "buy" in the trade
     */
     function tradeBalances(address tokenGet, uint amountGet, address tokenGive, uint amountGive, address user, uint amount) private returns(uint amount2){
 
@@ -817,13 +817,13 @@ contract UnicornContract is UnicornCoinMarket {
 
 
     function transferTokensToDividendManager(address _token) onlyManager public {
-        require(ERC20(_token).balanceOf(this) &gt; 0);
+        require(ERC20(_token).balanceOf(this) > 0);
         ERC20(_token).transfer(unicornManagement.walletAddress(), ERC20(_token).balanceOf(this));
     }
 
 
     function transferEthersToDividendManager(uint _value) onlyManager public {
-        require(address(this).balance &gt;= _value);
+        require(address(this).balance >= _value);
         DividendManagerInterface dividendManager = DividendManagerInterface(unicornManagement.dividendManagerAddress());
         dividendManager.payDividend.value(_value)();
         emit FundsTransferred(unicornManagement.dividendManagerAddress(), _value);

@@ -39,7 +39,7 @@ contract Mortal is Owned {
 //sol Registrar
 // Simple global registrar.
 // @authors:
-//   Gav Wood &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f89fb89d8c909c9d8ed69b9795">[email&#160;protected]</a>&gt;
+//   Gav Wood <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f89fb89d8c909c9d8ed69b9795">[email protected]</a>>
 contract Registrar {
 	event Changed(string indexed name);
 
@@ -51,7 +51,7 @@ contract Registrar {
 //sol OwnedRegistrar
 // Global registrar with single authoritative owner.
 // @authors:
-//   Gav Wood &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13745376677b7776653d707c7e">[email&#160;protected]</a>&gt;
+//   Gav Wood <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13745376677b7776653d707c7e">[email protected]</a>>
 contract AiraRegistrarService is Registrar, Mortal {
 	struct Record {
 		address addr;
@@ -88,5 +88,5 @@ contract AiraRegistrarService is Registrar, Mortal {
 	function subRegistrar(string _name) constant returns (address) { return m_toRecord[_name].subRegistrar; }
 	function content(string _name) constant returns (bytes32) { return m_toRecord[_name].content; }
 
-	mapping (string =&gt; Record) m_toRecord;
+	mapping (string => Record) m_toRecord;
 }

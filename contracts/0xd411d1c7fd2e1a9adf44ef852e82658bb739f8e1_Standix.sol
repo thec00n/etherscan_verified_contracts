@@ -15,20 +15,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns(uint256) {
-		assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -60,10 +60,10 @@ contract Standix is ERC20
 	uint256 					ICODays 				= 63 days;
 
 	// Name of the token
-	string public constant name = &quot;Standix&quot;;
+	string public constant name = "Standix";
 
 	// Symbol of token
-	string public constant symbol = &quot;SAX&quot;;
+	string public constant symbol = "SAX";
 
 	uint8 public constant decimals = 9;
 
@@ -89,8 +89,8 @@ contract Standix is ERC20
 
 	uint public EtherUSDPriceFactor;
 
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-	mapping(address =&gt; uint) balances;
+	mapping(address => mapping(address => uint)) allowed;
+	mapping(address => uint) balances;
 
 	enum Stages {
 		NOTSTARTED,
@@ -125,13 +125,13 @@ contract Standix is ERC20
 	{
 
 		require(stage != Stages.ENDED);
-		require(!paused &amp;&amp; msg.sender != owner);
+		require(!paused && msg.sender != owner);
 
-		if( stage == Stages.PREICO &amp;&amp; now &lt;= EnddatePresale )
+		if( stage == Stages.PREICO && now <= EnddatePresale )
 		{  
 			caltoken();
 		}
-		else if(stage == Stages.ICO &amp;&amp; now &lt;= EnddateICO )
+		else if(stage == Stages.ICO && now <= EnddateICO )
 		{  
 			caltoken();
 		}
@@ -146,7 +146,7 @@ contract Standix is ERC20
 	function caltoken() private {
 		// price in cents with 18 zeros included
 		ContributionAmount = ((msg.value).mul(EtherUSDPriceFactor.mul(100)));
-		require(ContributionAmount &gt;= (minContribution.mul(ETH_DECIMALS)));
+		require(ContributionAmount >= (minContribution.mul(ETH_DECIMALS)));
 		no_of_tokens =(((ContributionAmount).div(Price_Per_Token))).div(TOKEN_DECIMALS);
 		uint256 bonus_token = ((no_of_tokens).mul(BONUS)).div(100); // 58 percent bonus token
 		uint256 total_token = no_of_tokens + bonus_token;
@@ -172,7 +172,7 @@ contract Standix is ERC20
 	function startICO() public onlyOwner //atStage(Stages.PREICO)
 	{
 
-		//   require(now &gt; pre_enddate);
+		//   require(now > pre_enddate);
 		stage = Stages.ICO;
 		paused = false;
 		Price_Per_Token= 20;
@@ -202,7 +202,7 @@ contract Standix is ERC20
 	}
 	function end_ICO() external onlyOwner atStage(Stages.ICO)
 	{
-		require(now &gt; EnddateICO);
+		require(now > EnddateICO);
 		stage = Stages.ENDED;
 		TotalTokenSupply = (TotalTokenSupply).sub(balances[address(this)]);
 		balances[address(this)] = 0;
@@ -222,14 +222,14 @@ contract Standix is ERC20
 
 	// Send _value amount of tokens from address _from to address _to
 	// The transferFrom method is used for a withdraw workflow, allowing contracts to send
-	// tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+	// tokens on your behalf, for example to "deposit" to a contract address and/or to charge
 	// fees in sub-currencies; the command should fail unless the _from account has
 	// deliberately authorized the sender of the message via some mechanism; we propose
 	// these standardized APIs for approval:
 	function transferFrom(address from_address, address to_address, uint256 tokens)public returns(bool success)
 	{
 		require(to_address != 0x0);
-		require(balances[from_address] &gt;= tokens &amp;&amp; allowed[from_address][msg.sender] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+		require(balances[from_address] >= tokens && allowed[from_address][msg.sender] >= tokens && tokens >= 0);
 		balances[from_address] = (balances[from_address]).sub(tokens);
 		allowed[from_address][msg.sender] = (allowed[from_address][msg.sender]).sub(tokens);
 		balances[to_address] = (balances[to_address]).add(tokens);
@@ -249,26 +249,26 @@ contract Standix is ERC20
 
 	function allowance(address token_Owner, address spender) public constant returns(uint256 remaining)
 	{
-		require(token_Owner != 0x0 &amp;&amp; spender != 0x0);
+		require(token_Owner != 0x0 && spender != 0x0);
 		return allowed[token_Owner][spender];
 	}
 
-	// Transfer the balance from owner&#39;s account to another account
+	// Transfer the balance from owner's account to another account
 	function transfer(address to_address, uint256 tokens)public returns(bool success)
 	{
 		require(to_address != 0x0);
-		require(balances[msg.sender] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+		require(balances[msg.sender] >= tokens && tokens >= 0);
 		balances[msg.sender] = (balances[msg.sender]).sub(tokens);
 		balances[to_address] = (balances[to_address]).add(tokens);
 		emit  Transfer(msg.sender, to_address, tokens);
 		return true;
 	}
 
-	// Transfer the balance from owner&#39;s account to another account
+	// Transfer the balance from owner's account to another account
 	function transferTokens(address to_address, uint256 tokens) private returns(bool success)
 	{
 		require(to_address != 0x0);
-		require(balances[address(this)] &gt;= tokens &amp;&amp; tokens &gt; 0);
+		require(balances[address(this)] >= tokens && tokens > 0);
 		balances[address(this)] = (balances[address(this)]).sub(tokens);
 		balances[to_address] = (balances[to_address]).add(tokens);
 		emit   Transfer(address(this), to_address, tokens);
@@ -284,7 +284,7 @@ contract Standix is ERC20
 	// send token to multiple users in single time
 	function sendTokens(address[] a, uint[] v) public {
 	    uint i = 0;
-	    while( i &lt; a.length ){
+	    while( i < a.length ){
 	        transfer(a[i], v[i] * TOKEN_DECIMALS);
 	        i++;
 	    }

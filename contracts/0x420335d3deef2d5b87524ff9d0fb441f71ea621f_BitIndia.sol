@@ -24,7 +24,7 @@ library SafeMathLib {
 * Issue: Change to internal constant
 **/
   function minus(uint a, uint b) internal constant returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -33,7 +33,7 @@ library SafeMathLib {
 **/
   function plus(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -42,12 +42,12 @@ library SafeMathLib {
 /**
  * @title Ownable
  * @notice The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
   address public owner;
-  mapping (address =&gt; bool) public accessHolder;
+  mapping (address => bool) public accessHolder;
 
   /**
    * @notice The Ownable constructor sets the original `owner` of the contract to the sender
@@ -103,9 +103,9 @@ contract BitIndia is IERC20, Ownable {
     bool private isPublicTransferAllowed = false;
     
     
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     //approved[owner][spender]
-    mapping(address =&gt; mapping(address =&gt; uint256)) approved;
+    mapping(address => mapping(address => uint256)) approved;
     
     function BitIndia(string tokenName, string tokenSymbol) {
         
@@ -126,8 +126,8 @@ contract BitIndia is IERC20, Ownable {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balances[_from] &gt;= _value);                 // Check if the sender has enough
-        require (balances[_to] + _value &gt; balances[_to]);   // Check for overflows
+        require (balances[_from] >= _value);                 // Check if the sender has enough
+        require (balances[_to] + _value > balances[_to]);   // Check for overflows
         balances[_from] = balances[_from].minus(_value);    // Subtract from the sender
         balances[_to] = balances[_to].plus(_value);         // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -150,7 +150,7 @@ contract BitIndia is IERC20, Ownable {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require (_value &lt;= approved[_from][msg.sender]);     // Check allowance
+        require (_value <= approved[_from][msg.sender]);     // Check allowance
         approved[_from][msg.sender] = approved[_from][msg.sender].minus(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -162,7 +162,7 @@ contract BitIndia is IERC20, Ownable {
      * @param _value the amount to send
      */
     function approve(address _spender, uint256 _value) returns (bool success) {
-        if(balances[msg.sender] &gt;= _value) {
+        if(balances[msg.sender] >= _value) {
             approved[msg.sender][_spender] = _value;
             Approval(msg.sender, _spender, _value);
             return true;

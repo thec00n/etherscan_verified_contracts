@@ -31,10 +31,10 @@ contract Fibonzi{
         bool isUsed;
     }
     
-    mapping(address =&gt; Player) players;
-    mapping(address =&gt; Fiboken[]) playersFibokens;
-    mapping(address =&gt; uint) playersBalance;
-    mapping(uint8 =&gt; Pool) pools;
+    mapping(address => Player) players;
+    mapping(address => Fiboken[]) playersFibokens;
+    mapping(address => uint) playersBalance;
+    mapping(uint8 => Pool) pools;
     
     event PlayerCreated(address indexed wallet, uint timestamp);
     event PlayerBalance(address playerWallet, uint playerBalance, uint timestamp);
@@ -52,17 +52,17 @@ contract Fibonzi{
     }
     
     function openPool(uint8 poolId) payable{
-        assert(poolCount &gt;= poolId);
+        assert(poolCount >= poolId);
         assert(isPlayer());
-        assert(msg.value &gt;= pools[poolId].price);
-        assert(getUsablePlayerFibokens(msg.sender) &gt; 0);
+        assert(msg.value >= pools[poolId].price);
+        assert(getUsablePlayerFibokens(msg.sender) > 0);
         assert(usePlayerFiboken());
         
         uint price = pools[poolId].price;
         owner.transfer(price);
         pools[poolId].owner = msg.sender;
         
-        if(msg.value &gt; pools[poolId].price){
+        if(msg.value > pools[poolId].price){
             msg.sender.transfer(msg.value - pools[poolId].price);
         }
         
@@ -70,24 +70,24 @@ contract Fibonzi{
         PoolJoined(poolId,msg.sender,pools[poolId].price,now);
         ++transactionsCount;
         
-        if(fibonacciIndex &lt;= fibonacciMax){
+        if(fibonacciIndex <= fibonacciMax){
             createPoolsIfNeeded();
         }
         getPoolPrices();
     }
     
     function joinPool(uint8 poolId) payable{
-        assert(poolCount &gt;= poolId);
+        assert(poolCount >= poolId);
         assert(msg.sender != pools[poolId].owner);
-        assert(msg.value &gt;= pools[poolId].price);
-        assert( ( pools[poolId].owner == owner &amp;&amp; poolCount == 1) || (pools[poolId].owner != owner) );
+        assert(msg.value >= pools[poolId].price);
+        assert( ( pools[poolId].owner == owner && poolCount == 1) || (pools[poolId].owner != owner) );
         
         //Register the player if not registered
         if(!isPlayer()){
             createPlayer();   
         }
         
-        if(msg.value &gt; pools[poolId].price){
+        if(msg.value > pools[poolId].price){
             msg.sender.transfer(msg.value - pools[poolId].price);
         }
         
@@ -101,7 +101,7 @@ contract Fibonzi{
         PoolJoined(poolId,msg.sender,pools[poolId].price,now);
         ++transactionsCount;
         
-        if(fibonacciIndex &lt;= fibonacciMax){
+        if(fibonacciIndex <= fibonacciMax){
             createPoolsIfNeeded();
         }
         
@@ -111,10 +111,10 @@ contract Fibonzi{
     
     function withdrawComission(){
         assert(isPlayer());
-        assert(players[msg.sender].balance &gt; 0);
-        assert(getUsablePlayerFibokens(msg.sender) &gt;= 10);
+        assert(players[msg.sender].balance > 0);
+        assert(getUsablePlayerFibokens(msg.sender) >= 10);
         
-        for(uint i=0;i&lt;10;i++){
+        for(uint i=0;i<10;i++){
             usePlayerFiboken();
         }
         
@@ -125,7 +125,7 @@ contract Fibonzi{
     
     function isPlayer() internal returns (bool){
         bool isPlayerFlag = false;
-        for(uint8 i=0; i&lt; playersCount;i++){
+        for(uint8 i=0; i< playersCount;i++){
             if(playersList[i] == msg.sender){
                 isPlayerFlag = true;
             }
@@ -152,26 +152,26 @@ contract Fibonzi{
     function createPoolsIfNeeded() internal{
         uint currentFibonacci = getFibonacci(fibonacciIndex);
         if(transactionsCount == currentFibonacci){
-            if(currentFibonacci &gt; poolCount){
+            if(currentFibonacci > poolCount){
                 poolsToCreate = currentFibonacci - poolCount;
-                for(uint8 i =0; i &lt; poolsToCreate; i++ ){
+                for(uint8 i =0; i < poolsToCreate; i++ ){
                     createPool();
                     rewardFiboken();
                 }
             }
         }
-        else if(transactionsCount &gt; currentFibonacci){
+        else if(transactionsCount > currentFibonacci){
             fibonacciIndex++;
             createPoolsIfNeeded();
         }
     }
     
     function splitComissions(uint price) internal{
-        if(fibokenCreatedCount &gt; fibokenUsedCount){
+        if(fibokenCreatedCount > fibokenUsedCount){
             uint share = price/(fibokenCreatedCount - fibokenUsedCount);
-            for(uint8 i=0; i&lt; playersCount;i++){
+            for(uint8 i=0; i< playersCount;i++){
                 uint8 usableTokens = getUsablePlayerFibokens(playersList[i]);
-                if(usableTokens &gt; 0){
+                if(usableTokens > 0){
                     players[playersList[i]].balance += share*usableTokens;
                     PlayerBalance(playersList[i],players[playersList[i]].balance,now);
                 }
@@ -196,8 +196,8 @@ contract Fibonzi{
     
     function usePlayerFiboken() internal returns (bool){
         var used = false;
-        for(uint8 i=0; i&lt;playersFibokens[msg.sender].length;i++){
-            if(!playersFibokens[msg.sender][i].isUsed &amp;&amp; !used){
+        for(uint8 i=0; i<playersFibokens[msg.sender].length;i++){
+            if(!playersFibokens[msg.sender][i].isUsed && !used){
                 playersFibokens[msg.sender][i].isUsed = true;
                 used = true;
                 ++fibokenUsedCount;
@@ -210,7 +210,7 @@ contract Fibonzi{
     
     function getUsablePlayerFibokens(address someAddress) internal returns (uint8){
         uint8 playerFibokens = 0;
-        for(uint8 i=0; i&lt; playersFibokens[someAddress].length;i++){
+        for(uint8 i=0; i< playersFibokens[someAddress].length;i++){
             if(!playersFibokens[someAddress][i].isUsed){
                 ++playerFibokens;       
             }
@@ -219,7 +219,7 @@ contract Fibonzi{
     }
     
     function getFibonacci(uint n) internal returns (uint){
-        if(n&lt;=1){
+        if(n<=1){
             return n;
         }
         else{
@@ -229,7 +229,7 @@ contract Fibonzi{
     
     function getPoolIds() constant returns(uint8[]){
         uint8[] memory poolIds = new uint8[](poolCount);
-        for(uint8 i = 1; i&lt; poolCount+1; i++){
+        for(uint8 i = 1; i< poolCount+1; i++){
             poolIds[i-1] = pools[i].poolId;
         }
         return poolIds;
@@ -237,7 +237,7 @@ contract Fibonzi{
     
     function getPoolPrices() constant returns(uint[]){
         uint[] memory poolPrices = new uint[](poolCount);
-        for(uint8 i = 1; i&lt; poolCount+1; i++){
+        for(uint8 i = 1; i< poolCount+1; i++){
             poolPrices[i-1] = pools[i].price;
         }
         return poolPrices;
@@ -245,7 +245,7 @@ contract Fibonzi{
     
     function getPoolOwners() constant returns(address[]){
         address[] memory poolOwners = new address[](poolCount);
-        for(uint8 i = 1; i&lt; poolCount+1; i++){
+        for(uint8 i = 1; i< poolCount+1; i++){
             poolOwners[i-1] = pools[i].owner;
         }
         return poolOwners;
@@ -253,7 +253,7 @@ contract Fibonzi{
     
     function getFibonziPlayers() constant returns(address[]){
         address[] memory fibonziPlayers = new address[](playersCount);
-        for(uint8 i = 0; i&lt; playersCount ; i++){
+        for(uint8 i = 0; i< playersCount ; i++){
             fibonziPlayers[i] = playersList[i];
         }
         return fibonziPlayers;
@@ -261,7 +261,7 @@ contract Fibonzi{
     
     function getPlayersBalances() constant returns(uint[]){
         uint[] memory playersBalances = new uint[](playersCount);
-        for(uint8 i = 0; i&lt; playersCount ; i++){
+        for(uint8 i = 0; i< playersCount ; i++){
             playersBalances[i] = players[playersList[i]].balance;
         }
         return playersBalances;
@@ -269,9 +269,9 @@ contract Fibonzi{
     
     function getPlayersFibokens() constant returns(uint[]){
         uint[] memory playersTokens = new uint[](playersCount);
-        for(uint8 i = 0; i&lt; playersCount ; i++){
+        for(uint8 i = 0; i< playersCount ; i++){
             uint sum = 0;
-            for(uint j = 0; j &lt;playersFibokens[playersList[i]].length;j++){
+            for(uint j = 0; j <playersFibokens[playersList[i]].length;j++){
                 if(!playersFibokens[playersList[i]][j].isUsed){
                     sum++;
                 }

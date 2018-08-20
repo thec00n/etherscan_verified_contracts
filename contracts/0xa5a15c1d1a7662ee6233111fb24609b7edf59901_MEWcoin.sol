@@ -23,22 +23,22 @@ library SafeMath
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256)
   {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,11 +80,11 @@ contract BasicToken is ERC20Basic
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   
   // all initialised to false - do we want multi-state? maybe... 
-  mapping(address =&gt; uint256) public mCanSpend;
-  mapping(address =&gt; uint256) public mEtherSpent;
+  mapping(address => uint256) public mCanSpend;
+  mapping(address => uint256) public mEtherSpent;
   
   int256 public mEtherValid;
   int256 public mEtherInvalid;
@@ -99,12 +99,12 @@ contract BasicToken is ERC20Basic
   uint256 public constant FINAL_AML_DAYS = 90;
   uint256 public constant DAYSECONDS = 24*60*60;//86400; // 1 day in seconds // 1 minute vesting
   
-  mapping(address =&gt; uint256) public mVestingDays;  // number of days to fully vest
-  mapping(address =&gt; uint256) public mVestingBalance; // total balance which will vest
-  mapping(address =&gt; uint256) public mVestingSpent; // total spent
-  mapping(address =&gt; uint256) public mVestingBegins; // total spent
+  mapping(address => uint256) public mVestingDays;  // number of days to fully vest
+  mapping(address => uint256) public mVestingBalance; // total balance which will vest
+  mapping(address => uint256) public mVestingSpent; // total spent
+  mapping(address => uint256) public mVestingBegins; // total spent
   
-  mapping(address =&gt; uint256) public mVestingAllowed; // really just for checking
+  mapping(address => uint256) public mVestingAllowed; // really just for checking
   
   // used to enquire about the ether spent to buy the tokens
   function GetEtherSpent(address from) view public returns (uint256)
@@ -116,7 +116,7 @@ contract BasicToken is ERC20Basic
   // this is called if 
   function RevokeTokens(address target) internal
   {
-      //require(mCanSpend[from]==0),&quot;Can only call this if AML hasn&#39;t been completed correctly&quot;);
+      //require(mCanSpend[from]==0),"Can only call this if AML hasn't been completed correctly");
       // block this address from further spending
       require(mCanSpend[target]!=9);
       mCanSpend[target]=9;
@@ -133,7 +133,7 @@ contract BasicToken is ERC20Basic
   
   function LockedCrowdSale(address target) view internal returns (bool)
   {
-      if (mCanSpend[target]==0 &amp;&amp; mEtherSpent[target]&gt;0)
+      if (mCanSpend[target]==0 && mEtherSpent[target]>0)
       {
           return true;
       }
@@ -147,7 +147,7 @@ contract BasicToken is ERC20Basic
       // we know if they took part in the crowdsale by checking if they spent ether
       if (LockedCrowdSale(target))
       {
-         if (block.timestamp&gt;FINAL_AML_DATE)
+         if (block.timestamp>FINAL_AML_DATE)
          {
              RevokeTokens(target);
              return true;
@@ -164,13 +164,13 @@ contract BasicToken is ERC20Basic
       int256 vestingProgress = (int256(block.timestamp)-int256(mVestingBegins[target]))/(int256(DAYSECONDS));
       
       // cap the vesting
-      if (vestingProgress&gt;vestingDays)
+      if (vestingProgress>vestingDays)
       {
           vestingProgress=vestingDays;
       }
           
       // whole day vesting e.g. day 0 nothing vested, day 1 = 1 day vested    
-      if (vestingProgress&gt;0)
+      if (vestingProgress>0)
       {
               
         int256 allowedVest = ((int256(mVestingBalance[target])*vestingProgress))/vestingDays;
@@ -219,7 +219,7 @@ contract BasicToken is ERC20Basic
       if (mCanSpend[from]==1)
       {
           // tokens can only move when sale is finished
-          if (currentTime&gt;PRIME_VESTING_DATE)
+          if (currentTime>PRIME_VESTING_DATE)
           {
              return true;
           }
@@ -230,7 +230,7 @@ contract BasicToken is ERC20Basic
       if (mCanSpend[from]==2)
       {
               
-        if (ComputeVestSpend(from)&gt;=amount)
+        if (ComputeVestSpend(from)>=amount)
             {
               return true;
             }
@@ -272,7 +272,7 @@ contract BasicToken is ERC20Basic
       if (mCanSpend[from]==1)
       {
           // tokens can only move when sale is finished
-          if (currentTime&gt;PRIME_VESTING_DATE)
+          if (currentTime>PRIME_VESTING_DATE)
           {
              return true;
           }
@@ -302,10 +302,10 @@ contract BasicToken is ERC20Basic
           return false;
       }
      
-    require(canSpend(msg.sender, _value)==true);//, &quot;Cannot spend this amount - AML or not vested&quot;)
+    require(canSpend(msg.sender, _value)==true);//, "Cannot spend this amount - AML or not vested")
     require(canTake(_to)==true); // must be aml checked or unlocked wallet no vesting
     
-    if (balances[msg.sender] &gt;= _value) 
+    if (balances[msg.sender] >= _value) 
     {
       // deduct the spend first (this is unlikely attack vector as only a few people will have vesting tokens)
       // special tracker for vestable funds - if have a date up
@@ -333,9 +333,9 @@ contract BasicToken is ERC20Basic
   // in the light of our sanity allow a utility to whole number of tokens and 1/10000 token transfer
   function simpletransfer(address _to, uint256 _whole, uint256 _fraction) public returns (bool success) 
   {
-    require(_fraction&lt;10000);//, &quot;Fractional part must be less than 10000&quot;);
+    require(_fraction<10000);//, "Fractional part must be less than 10000");
     
-    uint256 main = _whole.mul(10**decimals); // works fine now i&#39;ve removed the retarded divide by 0 assert in safemath
+    uint256 main = _whole.mul(10**decimals); // works fine now i've removed the retarded divide by 0 assert in safemath
     uint256 part = _fraction.mul(10**14);
     uint256 value = main + part;
     
@@ -381,7 +381,7 @@ contract StandardToken is ERC20, BasicToken
   // also need
   // invalidate - used to drop all unauthorised buyers, return their tokens to reserve
   // freespend - all transactions now allowed - this could be used to vest tokens?
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -397,10 +397,10 @@ contract StandardToken is ERC20, BasicToken
           return false;
       }
       
-      require(canSpend(_from, _value)== true);//, &quot;Cannot spend this amount - AML or not vested&quot;)
+      require(canSpend(_from, _value)== true);//, "Cannot spend this amount - AML or not vested")
       require(canTake(_to)==true); // must be aml checked or unlocked wallet no vesting
      
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) 
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) 
     {
       balances[_to] = balances[_to].add(_value);
       balances[_from] = balances[_from].sub(_value);
@@ -430,7 +430,7 @@ contract StandardToken is ERC20, BasicToken
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -443,7 +443,7 @@ contract StandardToken is ERC20, BasicToken
           return false;
       }
       
-      require(canSpend(msg.sender, _value)==true);//, &quot;Cannot spend this amount - AML or not vested&quot;);
+      require(canSpend(msg.sender, _value)==true);//, "Cannot spend this amount - AML or not vested");
       
     allowed[msg.sender][_spender] = _value;
     emit Approval(msg.sender, _spender, _value);
@@ -474,7 +474,7 @@ contract StandardToken is ERC20, BasicToken
       {
           return false;
       }
-      require(canSpend(msg.sender, _addedValue)==true);//, &quot;Cannot spend this amount - AML or not vested&quot;);
+      require(canSpend(msg.sender, _addedValue)==true);//, "Cannot spend this amount - AML or not vested");
       
     allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
@@ -489,7 +489,7 @@ contract StandardToken is ERC20, BasicToken
           return false;
       }
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -504,7 +504,7 @@ contract StandardToken is ERC20, BasicToken
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &#39;user permissions&#39;.
+ * functions, this simplifies the implementation of 'user permissions'.
  */
 contract Ownable
 {
@@ -586,7 +586,7 @@ contract MintableToken is StandardToken, Ownable
   
   function allocateVestable(address target, uint256 amount, uint256 vestdays, uint256 vestingdate) public onlyOwner
   {
-      //require(msg.sender==CONTRACT_CREATOR, &quot;You are not authorised to create vestable token users&quot;);
+      //require(msg.sender==CONTRACT_CREATOR, "You are not authorised to create vestable token users");
       // check if we have permission to get in here
       //checksigning();
       
@@ -609,7 +609,7 @@ contract MintableToken is StandardToken, Ownable
       // this means we can create new vesting tokens if necessary but only if crowdsale fund has been preload with MEW using multisig wallet
       if (mCanPurchase==0)
       {
-        require(vestingAmount &lt;= balances[MEW_CROWDSALE_FUND]);//, &quot;Not enough MEW to allocate vesting post crowdsale&quot;);
+        require(vestingAmount <= balances[MEW_CROWDSALE_FUND]);//, "Not enough MEW to allocate vesting post crowdsale");
         balances[MEW_CROWDSALE_FUND] = balances[MEW_CROWDSALE_FUND].sub(vestingAmount); 
         // log transfer
         emit Transfer(MEW_CROWDSALE_FUND, target, vestingAmount);
@@ -617,7 +617,7 @@ contract MintableToken is StandardToken, Ownable
       else
       {
         // deduct tokens from reserve before crowdsale
-        require(vestingAmount &lt;= balances[MEW_RESERVE_FUND]);//, &quot;Not enough MEW to allocate vesting during setup&quot;);
+        require(vestingAmount <= balances[MEW_RESERVE_FUND]);//, "Not enough MEW to allocate vesting during setup");
         balances[MEW_RESERVE_FUND] = balances[MEW_RESERVE_FUND].sub(vestingAmount);
         // log transfer
         emit Transfer(MEW_RESERVE_FUND, target, vestingAmount);
@@ -626,7 +626,7 @@ contract MintableToken is StandardToken, Ownable
   
   function SetAuxOwner(address aux) onlyOwner public
   {
-      require(auxOwner == 0);//, &quot;Cannot replace aux owner once it has been set&quot;);
+      require(auxOwner == 0);//, "Cannot replace aux owner once it has been set");
       // sets the auxilliary owner as the contract owns this address not the creator
       auxOwner = aux;
   }
@@ -634,14 +634,14 @@ contract MintableToken is StandardToken, Ownable
   function Purchase(address _to, uint256 _ether, uint256 _amount, uint256 exchange) onlyOwner public returns (bool) 
   {
     require(mCanSpend[_to]==0); // cannot purchase to a validated or vesting wallet (probably works but more debug checks)
-    require(mSetupCrowd==1);//, &quot;Only purchase during crowdsale&quot;);
-    require(mCanPurchase==1);//,&quot;Can only purchase during a sale&quot;);
+    require(mSetupCrowd==1);//, "Only purchase during crowdsale");
+    require(mCanPurchase==1);//,"Can only purchase during a sale");
       
-    require( _amount &gt;= MINIMUM_ETHER_SPEND * exchange);//, &quot;Must spend at least minimum ether&quot;);
-    require( (_amount+balances[_to]) &lt;= MAXIMUM_ETHER_SPEND * exchange);//, &quot;Must not spend more than maximum ether&quot;);
+    require( _amount >= MINIMUM_ETHER_SPEND * exchange);//, "Must spend at least minimum ether");
+    require( (_amount+balances[_to]) <= MAXIMUM_ETHER_SPEND * exchange);//, "Must not spend more than maximum ether");
    
-    // bail if we&#39;re out of tokens (will be amazing if this happens but hey!)
-    if (balances[MEW_CROWDSALE_FUND]&lt;_amount)
+    // bail if we're out of tokens (will be amazing if this happens but hey!)
+    if (balances[MEW_CROWDSALE_FUND]<_amount)
     {
          return false;
     }
@@ -682,7 +682,7 @@ contract MintableToken is StandardToken, Ownable
   function Unlock_Tokens(address target) public onlyOwner
   {
       
-      require(mCanSpend[target]==0);//,&quot;Unlocking would fail&quot;);
+      require(mCanSpend[target]==0);//,"Unlocking would fail");
       
       // unlocks locked tokens - must be called on every token wallet after AML check
       //unlocktokens(target);
@@ -722,8 +722,8 @@ contract MintableToken is StandardToken, Ownable
   
   function SetupReserve(address multiSig) public onlyOwner
   {
-      require(mSetupReserve==0);//, &quot;Reserve has already been initialised&quot;);
-      require(multiSig&gt;0);//, &quot;Wallet is not valid&quot;);
+      require(mSetupReserve==0);//, "Reserve has already been initialised");
+      require(multiSig>0);//, "Wallet is not valid");
       
       // address the mew reserve fund as the multisig wallet
       //MEW_RESERVE_FUND = multiSig;
@@ -739,7 +739,7 @@ contract MintableToken is StandardToken, Ownable
   
   function SetupCrowdSale() public onlyOwner
   {
-      require(mSetupCrowd==0);//, &quot;Crowdsale has already been initalised&quot;);
+      require(mSetupCrowd==0);//, "Crowdsale has already been initalised");
       // create the reserve
       mint(MEW_CROWDSALE_FUND, TOTAL_CROWDSALE_FUND);
       
@@ -802,7 +802,7 @@ contract MintableToken is StandardToken, Ownable
 
 contract MEWcoin is MintableToken 
 {
-    string public constant name = &quot;MEWcoin (Official vFloorplan Ltd 30/07/18)&quot;;
-    string public constant symbol = &quot;MEW&quot;;
-    string public version = &quot;1.0&quot;;
+    string public constant name = "MEWcoin (Official vFloorplan Ltd 30/07/18)";
+    string public constant symbol = "MEW";
+    string public version = "1.0";
 }

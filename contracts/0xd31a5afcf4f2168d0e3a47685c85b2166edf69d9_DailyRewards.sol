@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 // written by garry from Team Chibi Fighters
 // find us at https://chibifighters.io
-// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e7848f8e858e818e808f93829594a7808a868e8bc984888a">[email&#160;protected]</a>
+// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e7848f8e858e818e808f93829594a7808a868e8bc984888a">[email protected]</a>
 // version 1.0.0
 
 
@@ -52,10 +52,10 @@ contract DailyRewards is Owned {
 	);
 	
 	// what day the player is on in his reward chain
-	mapping (address =&gt; uint) private daysInRow;
+	mapping (address => uint) private daysInRow;
 
 	// timeout after which row is broken
-	mapping (address =&gt; uint) private timeout;
+	mapping (address => uint) private timeout;
 	
 	// how often the reward can be claimed, e.g. every 24h
 	uint waitingTime = 24 hours;
@@ -72,10 +72,10 @@ contract DailyRewards is Owned {
 	
 	function requestReward() public returns (uint _days) {
 	    require (msg.sender != address(0));
-	    require (now &gt; timeout[msg.sender]);
+	    require (now > timeout[msg.sender]);
 	    
 	    // waited too long, reset
-	    if (now &gt; timeout[msg.sender] + waitingTimeBuffer) {
+	    if (now > timeout[msg.sender] + waitingTimeBuffer) {
 	        daysInRow[msg.sender] = 1;    
 	    } else {
 	        // no limit to being logged in, looking forward to the longest streak
@@ -95,7 +95,7 @@ contract DailyRewards is Owned {
 	 **/
 	function nextReward() public view returns (uint _day, uint _nextClaimTime, uint _nextClaimExpire) {
 	    uint _dayCheck;
-	    if (now &gt; timeout[msg.sender] + waitingTimeBuffer) _dayCheck = 1; else _dayCheck = daysInRow[msg.sender] + 1;
+	    if (now > timeout[msg.sender] + waitingTimeBuffer) _dayCheck = 1; else _dayCheck = daysInRow[msg.sender] + 1;
 	    
 	    return (_dayCheck, timeout[msg.sender], timeout[msg.sender] + waitingTimeBuffer);
 	}
@@ -136,7 +136,7 @@ contract DailyRewards is Owned {
     * @param _amountWei Amount in WEI to send
     **/
     function weiToOwner(address _address, uint _amountWei) public onlyOwner returns (bool) {
-        require(_amountWei &lt;= address(this).balance);
+        require(_amountWei <= address(this).balance);
         _address.transfer(_amountWei);
         return true;
     }

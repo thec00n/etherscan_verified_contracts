@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,7 +92,7 @@ contract Pausable is Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbc9ded6d8d4fb89">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbc9ded6d8d4fb89">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -181,7 +181,7 @@ interface StoreInterface {
 
 /**
  * @title StoreManager
- * @author Francesco Sullo &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e6809487888583958589a695938a8a89c88589">[email&#160;protected]</a>&gt;
+ * @author Francesco Sullo <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e6809487888583958589a695938a8a89c88589">[email protected]</a>>
  * @dev Sets and removes tweedentities in the store,
  * adding more logic to the simple logic of the store
  */
@@ -191,7 +191,7 @@ contract StoreManager
 is Pausable, HasNoEther
 {
 
-  string public fromVersion = &quot;1.0.0&quot;;
+  string public fromVersion = "1.0.0";
 
   struct Store {
     StoreInterface store;
@@ -199,16 +199,16 @@ is Pausable, HasNoEther
     bool active;
   }
 
-  mapping(uint =&gt; Store) private __stores;
+  mapping(uint => Store) private __stores;
   uint public totalStores;
 
-  mapping(uint =&gt; bytes32) public appNicknames32;
-  mapping(uint =&gt; string) public appNicknames;
-  mapping(string =&gt; uint) private __appIds;
+  mapping(uint => bytes32) public appNicknames32;
+  mapping(uint => string) public appNicknames;
+  mapping(string => uint) private __appIds;
 
   address public claimer;
   address public newClaimer;
-  mapping(address =&gt; bool) public customerService;
+  mapping(address => bool) public customerService;
   address[] private __customerServiceAddress;
 
   uint public upgradable = 0;
@@ -268,7 +268,7 @@ is Pausable, HasNoEther
 
   /**
    * @dev Sets a store to be used by the manager
-   * @param _appNickname The nickname of the app for which the store&#39;s been configured
+   * @param _appNickname The nickname of the app for which the store's been configured
    * @param _address The address of the store
    */
   function setAStore(
@@ -278,7 +278,7 @@ is Pausable, HasNoEther
   public
   onlyOwner
   {
-    require(bytes(_appNickname).length &gt; 0);
+    require(bytes(_appNickname).length > 0);
     bytes32 _appNickname32 = keccak256(_appNickname);
     require(_address != address(0));
     StoreInterface _store = StoreInterface(_address);
@@ -326,7 +326,7 @@ is Pausable, HasNoEther
   public
   onlyOwner
   {
-    require(_address != address(0) &amp;&amp; claimer != address(0));
+    require(_address != address(0) && claimer != address(0));
     newClaimer = _address;
     ClaimerSet(_address, true);
   }
@@ -361,7 +361,7 @@ is Pausable, HasNoEther
     require(_address != address(0));
     customerService[_address] = _status;
     bool found;
-    for (uint i = 0; i &lt; __customerServiceAddress.length; i++) {
+    for (uint i = 0; i < __customerServiceAddress.length; i++) {
       if (__customerServiceAddress[i] == _address) {
         found = true;
         break;
@@ -403,7 +403,7 @@ is Pausable, HasNoEther
 
 
   modifier onlyClaimer() {
-    require(msg.sender == claimer || (newClaimer != address(0) &amp;&amp; msg.sender == newClaimer));
+    require(msg.sender == claimer || (newClaimer != address(0) && msg.sender == newClaimer));
     _;
   }
 
@@ -448,7 +448,7 @@ is Pausable, HasNoEther
   constant returns (bool)
   {
     uint lastUpdate = _store.getAddressLastUpdate(_address);
-    return lastUpdate == 0 || now &gt;= lastUpdate + minimumTimeBeforeUpdate;
+    return lastUpdate == 0 || now >= lastUpdate + minimumTimeBeforeUpdate;
   }
 
 

@@ -11,12 +11,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,7 +56,7 @@ contract ERC20 {
     // Отправляет токены _value с адреса _from на адрес _to
     function transferFrom(address _from, address _to, uint _value) returns (bool success);
     
-    // Позволяет адресу _spender снимать &lt;= _value с вашего аккаунта
+    // Позволяет адресу _spender снимать <= _value с вашего аккаунта
     function approve(address _spender, uint _value) returns (bool success);
     
     // Возвращает сколько _spender может снимать с вашего аккаунта
@@ -66,8 +66,8 @@ contract ERC20 {
 }
 contract RelestToken is ERC20, Ownable {
     using SafeMath for uint256;
-    string public name = &quot;Relest&quot;;
-    string public symbol = &quot;REST&quot;;
+    string public name = "Relest";
+    string public symbol = "REST";
     uint256 public decimals = 8;
     uint public ethRaised = 0;
     address wallet = 0xC487f60b6fA6d7CC1e51908b383385CbfC6c30B5;
@@ -97,8 +97,8 @@ contract RelestToken is ERC20, Ownable {
     bool public SaleEnded = false;
     bool public isFinalized = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event TokenPurchase(address indexed sender, address indexed beneficiary, uint ethAmount, uint tokenAmount);
     event Mint(address indexed to, uint256 amount);
@@ -107,11 +107,11 @@ contract RelestToken is ERC20, Ownable {
     // MODIFIERS
     
     modifier validPurchase() {
-        assert(msg.value &gt;= minEth &amp;&amp; msg.sender != 0x0);
+        assert(msg.value >= minEth && msg.sender != 0x0);
         _;
     }
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -124,18 +124,18 @@ contract RelestToken is ERC20, Ownable {
     }
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        require(preSaleEnded &amp;&amp; SaleEnded);
-        require(_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; 
-            balances[_to] + _value &gt; balances[_to]);
+        require(preSaleEnded && SaleEnded);
+        require(_to != 0x0 && _value > 0 && balances[msg.sender] >= _value && 
+            balances[_to] + _value > balances[_to]);
         balances[_to] += _value;
         balances[msg.sender] -= _value;
         Transfer(msg.sender, _to, _value);
         return true;
     }
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        require(preSaleEnded &amp;&amp; SaleEnded);
-        require(_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; 
-            balances[_to] + _value &gt; balances[_to] &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(preSaleEnded && SaleEnded);
+        require(_to != 0x0 && _value > 0 && balances[msg.sender] >= _value && 
+            balances[_to] + _value > balances[_to] && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -156,21 +156,21 @@ contract RelestToken is ERC20, Ownable {
     }
     function checkPeriod() returns (bool) {
     	bool within = false;
-        if(now &gt; startPreICOTimestamp &amp;&amp; now &lt; endPreICOTimestamp &amp;&amp; !preSaleGoalReached) { // pre-ICO
+        if(now > startPreICOTimestamp && now < endPreICOTimestamp && !preSaleGoalReached) { // pre-ICO
             preSaleStarted = true;
             preSaleEnded = false;
             SaleStarted = false;
             SaleEnded = false;
             within = true;
-        } else if(now &gt; startICOTimestamp &amp;&amp; now &lt; endICOTimestamp) { // ICO
+        } else if(now > startICOTimestamp && now < endICOTimestamp) { // ICO
             SaleStarted = true;
             SaleEnded = false;
             preSaleEnded = true;
             within = true;
-        } else if(now &gt; endICOTimestamp) { // after ICO
+        } else if(now > endICOTimestamp) { // after ICO
             preSaleEnded = true;
             SaleEnded = true;
-        } else if(now &lt; startPreICOTimestamp) { // before pre-ICO
+        } else if(now < startPreICOTimestamp) { // before pre-ICO
             preSaleStarted = false;
             preSaleEnded = false;
             SaleStarted = false;
@@ -186,17 +186,17 @@ contract RelestToken is ERC20, Ownable {
     function buyTokens(address beneficiary) payable validPurchase {
     	assert(checkPeriod());
         uint256 ethAmount = msg.value;
-        if(preSaleStarted &amp;&amp; !preSaleEnded) {
+        if(preSaleStarted && !preSaleEnded) {
             priceRate = 2000;
         }
-        if(SaleStarted &amp;&amp; !SaleEnded) {
-            if(now &gt;= startICOTimestamp &amp;&amp; now &lt;= step1End) {
+        if(SaleStarted && !SaleEnded) {
+            if(now >= startICOTimestamp && now <= step1End) {
                 priceRate = step1Price;
             }
-            else if(now &gt; step1End &amp;&amp; now &lt;= step2End) {
+            else if(now > step1End && now <= step2End) {
                 priceRate = step2Price;
             }
-            else if(now &gt; step2End &amp;&amp; now &lt;= step3End) {
+            else if(now > step2End && now <= step3End) {
                 priceRate = step3Price;
             }
             else {
@@ -209,14 +209,14 @@ contract RelestToken is ERC20, Ownable {
         mint(beneficiary, tokenAmount);
         TokenPurchase(msg.sender, beneficiary, ethAmount, tokenAmount);
         wallet.transfer(msg.value);
-        if(preSaleStarted &amp;&amp; !preSaleEnded &amp;&amp; ethRaised &gt;= ethGoal) {
+        if(preSaleStarted && !preSaleEnded && ethRaised >= ethGoal) {
             preSaleEnded = true;
             preSaleGoalReached = true;
         }
     }
 
     function finalize() onlyOwner {
-        require(now &gt; endICOTimestamp &amp;&amp; SaleEnded &amp;&amp; !isFinalized);
+        require(now > endICOTimestamp && SaleEnded && !isFinalized);
         uint256 tokensLeft = (totalSupply * 30) / 70; // rest 30% of tokens
         Bounty(wallet, tokensLeft);
         mint(wallet, tokensLeft);
@@ -230,4 +230,4 @@ contract RelestToken is ERC20, Ownable {
         return true;
     }
 }
-// &#175;\_(ツ)_/&#175;
+// ¯\_(ツ)_/¯

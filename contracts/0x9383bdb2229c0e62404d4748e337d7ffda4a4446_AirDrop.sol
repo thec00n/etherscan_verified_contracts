@@ -11,7 +11,7 @@
 // Private SALE IS OPEN now
 // 1BTC=20000$+bonus
 // 1ETH=2000$+bonus
-// for booking: <span class="__cf_email__" data-cfemail="88ebede7c8eee9e1e5e9a6e9e1">[email&#160;protected]</span>
+// for booking: <span class="__cf_email__" data-cfemail="88ebede7c8eee9e1e5e9a6e9e1">[email protected]</span>
 
 pragma solidity 0.4.18;
 
@@ -36,7 +36,7 @@ contract Ownable {
 contract Withdrawable is Ownable {
     function withdrawEther(address _to, uint _value) onlyOwner public returns(bool) {
         require(_to != address(0));
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
 
         _to.transfer(_value);
 
@@ -77,7 +77,7 @@ contract AirDrop is Withdrawable {
     function tokenTransfer(ERC20 _token, uint _value, address[] _to) onlyOwner public {
         require(_token != address(0));
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             require(_token.transfer(_to[i], _value));
         }
     }
@@ -85,13 +85,13 @@ contract AirDrop is Withdrawable {
     function tokenTransferFrom(ERC20 _token, address spender, uint _value, address[] _to) onlyOwner public {
         require(_token != address(0));
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             require(_token.transferFrom(spender, _to[i], _value));
         }
     }
 
     function etherTransfer(uint _value, address[] _to) onlyOwner payable public {
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             _to[i].transfer(_value);
             TransferEther(_to[i], _value);
         }

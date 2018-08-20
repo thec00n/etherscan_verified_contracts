@@ -31,7 +31,7 @@ contract UnicornCrowdsale is Ownable {
     uint public amountRaised;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     /**
      * Constrctor function

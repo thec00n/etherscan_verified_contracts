@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -79,7 +79,7 @@ contract Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     var _allowance = allowed[_from][msg.sender];
@@ -132,8 +132,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract EndtimesToken is MintableToken {
-  string public name = &quot;Endtimes&quot;;
-  string public symbol = &quot;END&quot;;
+  string public name = "Endtimes";
+  string public symbol = "END";
   uint256 public decimals = 18;
 }
 
@@ -184,15 +184,15 @@ contract EndtimesCrowdsale {
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
-    require(ICOBeginsAt &lt; now);
-    require(msg.value &gt; 0);
+    require(ICOBeginsAt < now);
+    require(msg.value > 0);
 
     uint256 weiAmount = msg.value;
 
     // calculate token amount to be created
     uint currentRate = getCurrentRate();
     uint256 tokens = weiAmount.mul(currentRate);
-    assert(tokens &gt; 0);
+    assert(tokens > 0);
     
     // update state
     weiRaised = weiRaised.add(weiAmount);
@@ -208,19 +208,19 @@ contract EndtimesCrowdsale {
   {
       uint timeFrame = 1 weeks;
       
-      if (ICOBeginsAt &lt; now &amp;&amp; now &lt; ICOBeginsAt + 1 * timeFrame)
+      if (ICOBeginsAt < now && now < ICOBeginsAt + 1 * timeFrame)
         return (2 * rate);           // 100 % bonus
 
-      if (ICOBeginsAt + 1 * timeFrame &lt; now &amp;&amp; now &lt; ICOBeginsAt + 2 * timeFrame) 
+      if (ICOBeginsAt + 1 * timeFrame < now && now < ICOBeginsAt + 2 * timeFrame) 
         return (175 * rate / 100);   // 75 % bonus
 
-      if (ICOBeginsAt + 2 * timeFrame &lt; now &amp;&amp; now &lt; ICOBeginsAt + 3 * timeFrame)
+      if (ICOBeginsAt + 2 * timeFrame < now && now < ICOBeginsAt + 3 * timeFrame)
         return (150 * rate / 100);   // 50 % bonus
 
-      if (ICOBeginsAt + 3 * timeFrame &lt; now &amp;&amp; now &lt; ICOBeginsAt + 4 * timeFrame)
+      if (ICOBeginsAt + 3 * timeFrame < now && now < ICOBeginsAt + 4 * timeFrame)
         return (140 * rate / 100);   // 40 % bonus
 
-      if (ICOBeginsAt + 4 * timeFrame &lt; now &amp;&amp; now &lt; ICOBeginsAt + 5 * timeFrame)
+      if (ICOBeginsAt + 4 * timeFrame < now && now < ICOBeginsAt + 5 * timeFrame)
         return (125 * rate / 100);   // 25 % bonus
 
         return rate;                 // 0 % bonus

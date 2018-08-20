@@ -46,26 +46,26 @@ contract SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -85,18 +85,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -112,7 +112,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -152,7 +152,7 @@ contract StandardToken is AbstractToken {
 
 
 /// @title Token contract - Implements Standard Token Interface for TrueFlip.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="70191e121f08300a1502191f1e5e191f">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="70191e121f08300a1502191f1e5e191f">[email protected]</span>>
 contract TrueFlipToken is StandardToken, SafeMath, Owned {
     /*
      * External contracts
@@ -161,12 +161,12 @@ contract TrueFlipToken is StandardToken, SafeMath, Owned {
     /*
      * Token meta data
      */
-    string constant public name = &quot;TrueFlip&quot;;
-    string constant public symbol = &quot;TFL&quot;;
+    string constant public name = "TrueFlip";
+    string constant public symbol = "TFL";
     uint8 constant public decimals = 8;
 
     // 1 050 000 TFL tokens were minted during PreICO
-    // 13&#160;650&#160;000 TFL tokens can be minted during ICO
+    // 13 650 000 TFL tokens can be minted during ICO
     // 2 100 000 TFL tokens can be minted for Advisory
     // 4 200 000 TFL tokens can be minted for Team
     // Overall, 21 000 000 TFL tokens can be minted
@@ -208,7 +208,7 @@ contract TrueFlipToken is StandardToken, SafeMath, Owned {
         returns (bool success)
     {
         require(mintingAllowed == true);
-        require(add(totalSupply, amount) &lt;= maxSupply);
+        require(add(totalSupply, amount) <= maxSupply);
         totalSupply = add(totalSupply, amount);
         if (transfer) {
             balances[beneficiary] = add(balances[beneficiary], amount);

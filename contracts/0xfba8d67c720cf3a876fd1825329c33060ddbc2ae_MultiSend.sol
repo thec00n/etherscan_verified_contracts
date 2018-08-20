@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 /*
     Copyright 2016, Jordi Baylina
-    Contributor: Adri&#224; Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5d4d1c7dcd4f5d6dad1d0d6dadbc1d0cdc19bdcda">[email&#160;protected]</a>&gt;
+    Contributor: Adrià Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5d4d1c7dcd4f5d6dad1d0d6dadbc1d0cdc19bdcda">[email protected]</a>>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,16 +15,16 @@ pragma solidity ^0.4.19;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
     
     This is just some extra garbage to check about comments
 */
 /// Add an extra comment here see if I care
 /// @title Owned
-/// @author Adri&#224; Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0b1b4a2b9b190b3bfb4b5b3bfbea4b5a8a4feb9bf">[email&#160;protected]</a>&gt;
+/// @author Adrià Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0b1b4a2b9b190b3bfb4b5b3bfbea4b5a8a4feb9bf">[email protected]</a>>
 /// @notice The Owned contract has an owner address, and provides basic 
-///  authorization control functions, this simplifies &amp; the implementation of
+///  authorization control functions, this simplifies & the implementation of
 ///  user permissions; this contract has three work flows for a change in
 ///  ownership, the first requires the new owner to validate that they have the
 ///  ability to accept ownership, the second allows the ownership to be
@@ -122,7 +122,7 @@ contract ERC20 {
     /// @dev Transfers _value number of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
-    /// @dev Allows _spender to withdraw from the msg.sender&#39;s account up to the _value amount
+    /// @dev Allows _spender to withdraw from the msg.sender's account up to the _value amount
     function approve(address _spender, uint256 _value) public returns (bool success);
 
     /// @dev Returns the amount which _spender is still allowed to withdraw from _owner
@@ -142,7 +142,7 @@ contract ERC20 {
 contract Escapable is Owned {
     address public escapeHatchCaller;
     address public escapeHatchDestination;
-    mapping (address=&gt;bool) private escapeBlacklist; // Token contract addresses
+    mapping (address=>bool) private escapeBlacklist; // Token contract addresses
 
     /// @notice The Constructor assigns the `escapeHatchDestination` and the
     ///  `escapeHatchCaller`
@@ -177,7 +177,7 @@ contract Escapable is Owned {
 
     /// @notice Checks to see if `_token` is in the blacklist of tokens
     /// @param _token the token address being queried
-    /// @return False if `_token` is in the blacklist and can&#39;t be taken out of
+    /// @return False if `_token` is in the blacklist and can't be taken out of
     ///  the contract via the `escapeHatch()`
     function isTokenEscapable(address _token) constant public returns (bool) {
         return !escapeBlacklist[_token];
@@ -230,7 +230,7 @@ contract Escapable is Owned {
 ///  with multiple amounts. There are also TightlyPacked functions which in
 ///  some situations allow for gas savings. TightlyPacked is cheaper if you
 ///  need to store input data and if amount is less than 12 bytes. Normal is
-///  cheaper if you don&#39;t need to store input data or if amounts are greater
+///  cheaper if you don't need to store input data or if amounts are greater
 ///  than 12 bytes. Supports deterministic deployment. As explained
 ///  here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
 contract MultiSend is Escapable {
@@ -280,8 +280,8 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i &lt; _addressesAndAmounts.length; i++) {
-            address to = address(_addressesAndAmounts[i] &gt;&gt; 96);
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeTransfer(to, amount);
             MultiTransfer(msg.sender, msg.value, to, amount);
@@ -299,7 +299,7 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             _safeTransfer(_addresses[i], _amounts[i]);
             MultiTransfer(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
@@ -322,8 +322,8 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i &lt; _addressesAndAmounts.length; i++) {
-            address to = address(_addressesAndAmounts[i] &gt;&gt; 96);
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeCall(to, amount);
             MultiCall(msg.sender, msg.value, to, amount);
@@ -340,7 +340,7 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             _safeCall(_addresses[i], _amounts[i]);
             MultiCall(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
@@ -365,8 +365,8 @@ contract MultiSend is Escapable {
         bytes32[] _addressesAndAmounts
     ) public
     {
-        for (uint i = 0; i &lt; _addressesAndAmounts.length; i++) {
-            address to = address(_addressesAndAmounts[i] &gt;&gt; 96);
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeERC20Transfer(_token, to, amount);
             MultiERC20Transfer(msg.sender, msg.value, to, amount, _token);
@@ -384,7 +384,7 @@ contract MultiSend is Escapable {
         uint[] _amounts
     ) public
     {
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             _safeERC20Transfer(_token, _addresses[i], _amounts[i]);
             MultiERC20Transfer(
                 msg.sender,

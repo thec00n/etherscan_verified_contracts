@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,13 +75,13 @@ contract KahnAirDrop2{
     ERC20 public token;
 
     /* @dev To record the different reward amount for each bounty  */
-    mapping(address =&gt; User) public bounties;
+    mapping(address => User) public bounties;
 	
     /* @dev to include the bounty in the list */
-	mapping(address =&gt; bool) public signups;
+	mapping(address => bool) public signups;
 	
     /* @dev Admin with permission to manage the signed up bounty */
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 	
     /**
     * @param _token Token smart contract address
@@ -120,8 +120,8 @@ contract KahnAirDrop2{
 	/*******************/
     /* @dev Add admin to whitelist */
 	function addAdminWhitelist(address[] _userlist) public onlyOwner onlyAdmin{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			if(baddr != address(0)){
 				if(!admins[baddr]){
@@ -134,8 +134,8 @@ contract KahnAirDrop2{
 	
     /* @dev Remove admin from whitelist */
 	function removeAdminWhitelist(address[] _userlist) public onlyAdmin{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			if(baddr != address(0)){
 				if(admins[baddr]){
@@ -157,15 +157,15 @@ contract KahnAirDrop2{
 	}
 
 	/***************************/
-	/* Admin &amp; Staff Function **/
+	/* Admin & Staff Function **/
 	/***************************/
 	/* @dev Admin/Staffs Update Contract Configuration */
 
     /* @dev Add user to whitelist */
     function signupUserWhitelist(address[] _userlist, uint256[] _amount) public onlyAdmin{
-    	require(_userlist.length &gt; 0);
-		require(_amount.length &gt; 0);
-    	for (uint256 i = 0; i &lt; _userlist.length; i++) {
+    	require(_userlist.length > 0);
+		require(_amount.length > 0);
+    	for (uint256 i = 0; i < _userlist.length; i++) {
     		address baddr = _userlist[i];
     		uint256 bval = _amount[i];
     		if(baddr != address(0)){

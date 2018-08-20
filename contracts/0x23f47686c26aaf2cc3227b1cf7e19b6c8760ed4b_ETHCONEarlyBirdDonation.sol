@@ -14,8 +14,8 @@ contract ETHCONEarlyBirdDonation {
   ETHCONEarlyBirdToken token;
 
   uint256 public donations;
-  mapping (address =&gt; uint256) public donationMap;
-  mapping (address =&gt; uint256) public failedDonations;
+  mapping (address => uint256) public donationMap;
+  mapping (address => uint256) public failedDonations;
   uint256 public minimum = 3960400000000000000;
 
   event ErrMsg(address indexed _from, string _msg);
@@ -26,7 +26,7 @@ contract ETHCONEarlyBirdDonation {
     _;
   }
 
-  function(){ ErrMsg(msg.sender, &#39;No function called&#39;); }
+  function(){ ErrMsg(msg.sender, 'No function called'); }
 
   function ETHCONEarlyBirdDonation(address _token){
     token = ETHCONEarlyBirdToken(_token);
@@ -35,22 +35,22 @@ contract ETHCONEarlyBirdDonation {
 
   function donate() payable returns (bool){
     uint256 totalDonation = donationMap[msg.sender] + msg.value;
-    if(totalDonation &lt; minimum){
+    if(totalDonation < minimum){
       failedDonations[msg.sender] += msg.value;
-      ErrMsg(msg.sender, &quot;Donation too low, call withdrawDonation()&quot;);
+      ErrMsg(msg.sender, "Donation too low, call withdrawDonation()");
       return false;
     }
 
     bool success = token.transferFrom(majoolr,msg.sender,1);
     if(!success){
       failedDonations[msg.sender] += msg.value;
-      ErrMsg(msg.sender, &quot;Transer failed, call withdrawDonation()&quot;);
+      ErrMsg(msg.sender, "Transer failed, call withdrawDonation()");
       return false;
     }
 
     donationMap[msg.sender] += msg.value;
     donations += msg.value;
-    ThxMsg(msg.sender, &quot;Thank you for your donation!&quot;);
+    ThxMsg(msg.sender, "Thank you for your donation!");
     return true;
   }
 
@@ -58,13 +58,13 @@ contract ETHCONEarlyBirdDonation {
     uint256 tokensLeft = token.allowance(majoolr, this);
     if(tokensLeft == 0){
       failedDonations[msg.sender] += msg.value;
-      ErrMsg(msg.sender, &quot;No more donations here check Majoolr.io, call withdrawDonation()&quot;);
+      ErrMsg(msg.sender, "No more donations here check Majoolr.io, call withdrawDonation()");
       return false;
     }
 
     donationMap[msg.sender] += msg.value;
     donations += msg.value;
-    ThxMsg(msg.sender, &quot;Thank you for your donation!&quot;);
+    ThxMsg(msg.sender, "Thank you for your donation!");
     return true;
   }
 
@@ -86,8 +86,8 @@ contract ETHCONEarlyBirdToken {
 
    ERC20Lib.TokenStorage token;
 
-   string public name = &quot;ETHCON-Early-Bird&quot;;
-   string public symbol = &quot;THX&quot;;
+   string public name = "ETHCON-Early-Bird";
+   string public symbol = "THX";
    uint public decimals = 0;
    uint public INITIAL_SUPPLY = 600;
 
@@ -113,7 +113,7 @@ contract ETHCONEarlyBirdToken {
      if(token.balanceOf(to) == 0){
        return token.transfer(to, value);
      } else {
-       ErrorMsg(&quot;Recipient already has token&quot;);
+       ErrorMsg("Recipient already has token");
        return false;
      }
 
@@ -123,7 +123,7 @@ contract ETHCONEarlyBirdToken {
      if(token.balanceOf(to) == 0){
        return token.transferFrom(from, to, value);
      } else {
-       ErrorMsg(&quot;Recipient already has token&quot;);
+       ErrorMsg("Recipient already has token");
        return false;
      }
    }
@@ -140,8 +140,8 @@ library ERC20Lib {
   using BasicMathLib for uint256;
 
   struct TokenStorage {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint totalSupply;
   }
 
@@ -157,7 +157,7 @@ library ERC20Lib {
     self.balances[msg.sender] = _initial_supply;
   }
 
-  /// @dev Transfer tokens from caller&#39;s account to another account.
+  /// @dev Transfer tokens from caller's account to another account.
   /// @param self Stored token from token contract
   /// @param _to Address to send tokens
   /// @param _value Number of tokens to send
@@ -168,11 +168,11 @@ library ERC20Lib {
 
     (err,balance) = self.balances[msg.sender].minus(_value);
     if(err) {
-      ErrorMsg(&quot;Balance too low for transfer&quot;);
+      ErrorMsg("Balance too low for transfer");
       return false;
     }
     self.balances[msg.sender] = balance;
-    //It&#39;s not possible to overflow token supply
+    //It's not possible to overflow token supply
     self.balances[_to] = self.balances[_to] + _value;
     Transfer(msg.sender, _to, _value);
     return true;
@@ -196,13 +196,13 @@ library ERC20Lib {
 
     (err,balanceOwner) = self.balances[_from].minus(_value);
     if(err) {
-      ErrorMsg(&quot;Balance too low for transfer&quot;);
+      ErrorMsg("Balance too low for transfer");
       return false;
     }
 
     (err,balanceSpender) = _allowance.minus(_value);
     if(err) {
-      ErrorMsg(&quot;Transfer exceeds allowance&quot;);
+      ErrorMsg("Transfer exceeds allowance");
       return false;
     }
     self.balances[_from] = balanceOwner;
@@ -221,7 +221,7 @@ library ERC20Lib {
     return self.balances[_owner];
   }
 
-  /// @dev Authorize an account to send tokens on caller&#39;s behalf
+  /// @dev Authorize an account to send tokens on caller's behalf
   /// @param self Stored token from token contract
   /// @param _spender Address to authorize
   /// @param _value Number of tokens authorized account may send
@@ -236,7 +236,7 @@ library ERC20Lib {
   /// @param self Stored token from token contract
   /// @param _owner Address of token holder
   /// @param _spender Address of authorized spender
-  /// @return remaining Number of tokens spender has left in owner&#39;s account
+  /// @return remaining Number of tokens spender has left in owner's account
   function allowance(TokenStorage storage self, address _owner, address _spender) constant returns (uint256 remaining) {
     return self.allowed[_owner][_spender];
   }
@@ -260,7 +260,7 @@ library BasicMathLib {
       allGood:
     }
     if (err)
-      Err(&quot;times func overflow&quot;);
+      Err("times func overflow");
   }
 
   /// @dev Divides two numbers but checks for 0 in the divisor first.
@@ -277,7 +277,7 @@ library BasicMathLib {
       return(mload(0x40),0x40)
       e:
     }
-    Err(&quot;tried to divide by zero&quot;);
+    Err("tried to divide by zero");
     return (true, 0);
   }
 
@@ -296,7 +296,7 @@ library BasicMathLib {
       allGood:
     }
     if (err)
-      Err(&quot;plus func overflow&quot;);
+      Err("plus func overflow");
   }
 
   /// @dev Subtracts two numbers and checks for underflow before returning.
@@ -314,6 +314,6 @@ library BasicMathLib {
       allGood:
     }
     if (err)
-      Err(&quot;minus func underflow&quot;);
+      Err("minus func underflow");
   }
 }

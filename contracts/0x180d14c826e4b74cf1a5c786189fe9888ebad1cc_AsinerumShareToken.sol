@@ -3,16 +3,16 @@ pragma solidity ^0.4.16;
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 ////
 contract AsinerumShareToken {
-  string public name = &quot;Asinerum Share&quot;;
-  string public symbol = &quot;ARS&quot;;
+  string public name = "Asinerum Share";
+  string public symbol = "ARS";
   uint8 public decimals = 15;
   uint64 public totalTokens = 172000000;
   uint64 public priceTokenToCoin = 5000;
   uint256 public totalSupply;
   address public ownerWallet;
   ////
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
   event Transfer(address indexed from, address indexed to, uint256 value);
   ////
   function AsinerumShareToken() public {
@@ -22,8 +22,8 @@ contract AsinerumShareToken {
   }
   function _transfer(address _from, address _to, uint256 _value) internal {
     require(_to != 0x0);
-    require(balanceOf[_from] &gt;= _value);
-    require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require(balanceOf[_from] >= _value);
+    require(balanceOf[_to] + _value > balanceOf[_to]);
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
     Transfer(_from, _to, _value);
@@ -32,7 +32,7 @@ contract AsinerumShareToken {
     _transfer(msg.sender, _to, _value);
   }
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    require(_value &lt;= allowance[_from][msg.sender]);
+    require(_value <= allowance[_from][msg.sender]);
     allowance[_from][msg.sender] -= _value;
     _transfer(_from, _to, _value);
     return true;

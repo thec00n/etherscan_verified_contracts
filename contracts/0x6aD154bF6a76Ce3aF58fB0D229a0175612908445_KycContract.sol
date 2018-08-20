@@ -3,12 +3,12 @@ contract SafeMath {
     uint256 constant MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -16,7 +16,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -68,7 +68,7 @@ contract Lockable is Owned {
     event ContractLocked(uint256 _untilBlock, string _reason);
 
     modifier lockAffected {
-        require(block.number &gt; lockedUntilBlock);
+        require(block.number > lockedUntilBlock);
         _;
     }
 
@@ -118,7 +118,7 @@ contract KycContractInterface {
 
 contract KycContract is Owned {
     
-    mapping (address =&gt; bool) verifiedAddresses;
+    mapping (address => bool) verifiedAddresses;
     
     function isAddressVerified(address _address) public view returns (bool) {
         return verifiedAddresses[_address];
@@ -137,7 +137,7 @@ contract KycContract is Owned {
     }
     
     function batchAddAddresses(address[] _addresses) public onlyOwner {
-        for (uint cnt = 0; cnt &lt; _addresses.length; cnt++) {
+        for (uint cnt = 0; cnt < _addresses.length; cnt++) {
             assert(!verifiedAddresses[_addresses[cnt]]);
             verifiedAddresses[_addresses[cnt]] = true;
         }

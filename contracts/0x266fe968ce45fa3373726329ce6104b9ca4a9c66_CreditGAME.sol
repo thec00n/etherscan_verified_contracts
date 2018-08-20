@@ -66,12 +66,12 @@ contract SafeMath {
     uint256 constant MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -79,7 +79,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -97,8 +97,8 @@ contract LinkedList {
     uint public size;
     uint public tail;
     uint public head;
-    mapping(uint =&gt; Element) elements;
-    mapping(address =&gt; uint) elementLocation;
+    mapping(uint => Element) elements;
+    mapping(address => uint) elementLocation;
 
     function addItem(address _newItem) public returns (bool) {
         Element memory elem = Element(0, 0, _newItem);
@@ -148,7 +148,7 @@ contract LinkedList {
         address[] memory tempElementArray = new address[](size);
         uint cnt = 0;
         uint currentElemId = head;
-        while (cnt &lt; size) {
+        while (cnt < size) {
             tempElementArray[cnt] = elements[currentElemId].data;
             currentElemId = elements[currentElemId].next;
             cnt += 1;
@@ -175,10 +175,10 @@ contract ICreditBIT{
 
 contract CreditGAME is Owned, SafeMath, LinkedList{
     
-    mapping(address =&gt; bool) approvedGames;
-    mapping(address =&gt; GameLock) gameLocks;
-    mapping(address =&gt; bool) public isGameLocked;
-    mapping(uint =&gt; address) public concludedGames;
+    mapping(address => bool) approvedGames;
+    mapping(address => GameLock) gameLocks;
+    mapping(address => bool) public isGameLocked;
+    mapping(uint => address) public concludedGames;
     
     uint public amountLocked = 0;
     uint public concludedGameIndex = 0;
@@ -365,7 +365,7 @@ contract CreditGAME is Owned, SafeMath, LinkedList{
         require(approvedGames[_gameAddress] == true);
         require(isGameLocked[_gameAddress] == true);
         GameLock memory gameLock = gameLocks[_gameAddress];
-        if(gameLock.lockDuration &lt; block.number){
+        if(gameLock.lockDuration < block.number){
             return true;
         }else{
             return false;

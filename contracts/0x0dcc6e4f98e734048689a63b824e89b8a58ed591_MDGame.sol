@@ -53,8 +53,8 @@ contract MDGame is Owned {
     
     event voteEvent(address Addr, uint256 option, uint256 ethvalue, uint256 round, address ref);
     
-    mapping(uint =&gt; turnInfos) public TurnInfo;
-    mapping(uint =&gt; mapping (address =&gt; myturnInfo)) public RoundMyticket;
+    mapping(uint => turnInfos) public TurnInfo;
+    mapping(uint => mapping (address => myturnInfo)) public RoundMyticket;
     
     constructor () public {
         theTurn = 0;
@@ -63,7 +63,7 @@ contract MDGame is Owned {
     }
     
     function StartNewGame (string question, string option1name, string option2name) public onlyOwner{
-        require(TurnInfo[theTurn].endTime &lt; now || theTurn == 0);
+        require(TurnInfo[theTurn].endTime < now || theTurn == 0);
         theTurn++;
         TurnInfo[theTurn].question = question;
         TurnInfo[theTurn].option1name = option1name;
@@ -73,9 +73,9 @@ contract MDGame is Owned {
     
     function vote (uint option,address referred) public payable{
         require(msg.sender == tx.origin);
-        require(TurnInfo[theTurn].endTime&gt;now);
+        require(TurnInfo[theTurn].endTime>now);
         emit voteEvent(msg.sender, option, msg.value.mul(1000000000000000000).div(calculateTicketPrice()), theTurn, referred);
-        if (referred != address(0) &amp;&amp; referred != msg.sender){
+        if (referred != address(0) && referred != msg.sender){
             if(option == 1){
                 RoundMyticket[theTurn][msg.sender].option1 += msg.value.mul(1000000000000000000).div(calculateTicketPrice());
                 RoundMyticket[theTurn][referred].option1 += msg.value.mul(10000000000000000).div(calculateTicketPrice());
@@ -105,12 +105,12 @@ contract MDGame is Owned {
     }
     
     function win (uint turn) public{
-        require(TurnInfo[turn].endTime&lt;now);
+        require(TurnInfo[turn].endTime<now);
         require(!RoundMyticket[turn][msg.sender].isWithdraw);
         
-        if(TurnInfo[turn].option1&lt;TurnInfo[turn].option2){
+        if(TurnInfo[turn].option1<TurnInfo[turn].option2){
             msg.sender.transfer(calculateYourValue1(turn));
-        }else if(TurnInfo[turn].option1&gt;TurnInfo[turn].option2){
+        }else if(TurnInfo[turn].option1>TurnInfo[turn].option2){
             msg.sender.transfer(calculateYourValue2(turn));
         }else{
             msg.sender.transfer(calculateYourValueEven(turn));
@@ -120,7 +120,7 @@ contract MDGame is Owned {
     }
     
     function calculateYourValue1(uint turn) public view returns (uint value){
-        if(TurnInfo[turn].option1&gt;0){
+        if(TurnInfo[turn].option1>0){
             return RoundMyticket[turn][msg.sender].option1.mul(TurnInfo[turn].pool).mul(98)/100/TurnInfo[turn].option1;
         }else{
            return 0;
@@ -128,7 +128,7 @@ contract MDGame is Owned {
     }
     
     function calculateYourValue2(uint turn) public view returns (uint value){
-        if(TurnInfo[turn].option2&gt;0){
+        if(TurnInfo[turn].option2>0){
             return RoundMyticket[turn][msg.sender].option2.mul(TurnInfo[turn].pool).mul(98)/100/TurnInfo[turn].option2;
         }else{
             return 0;
@@ -136,7 +136,7 @@ contract MDGame is Owned {
     }
     
     function calculateYourValueEven(uint turn) public view returns (uint value){
-        if(TurnInfo[turn].option1+TurnInfo[turn].option2&gt;0){
+        if(TurnInfo[turn].option1+TurnInfo[turn].option2>0){
             return (RoundMyticket[turn][msg.sender].option2+RoundMyticket[turn][msg.sender].option1).mul(TurnInfo[turn].pool).mul(98)/100/(TurnInfo[turn].option1+TurnInfo[turn].option2);
         }else{
             return 0;
@@ -152,7 +152,7 @@ contract MDGame is Owned {
     }
     
     function withdrawFee(uint turn) public onlyOwner{
-        require(TurnInfo[turn].endTime&lt;now);
+        require(TurnInfo[turn].endTime<now);
         require(!TurnInfo[turn].feeTake);
         owner.transfer(calculateFee(turn));
         TurnInfo[turn].feeTake = true;
@@ -163,7 +163,7 @@ contract MDGame is Owned {
     }
     
     function changeTicketMag(uint mag) public onlyOwner{
-        require(TurnInfo[theTurn].endTime&lt;now);
+        require(TurnInfo[theTurn].endTime<now);
         ticketMag = mag;
     }
     
@@ -177,7 +177,7 @@ contract MDGame is Owned {
     //Get Time Left
     function getTimeLeft() public view returns(uint256)
     {
-        if(TurnInfo[theTurn].endTime == 0 || TurnInfo[theTurn].endTime &lt; now) 
+        if(TurnInfo[theTurn].endTime == 0 || TurnInfo[theTurn].endTime < now) 
             return 0;
         else 
             return(TurnInfo[theTurn].endTime.sub(now) );
@@ -193,40 +193,40 @@ contract MDGame is Owned {
         bool[] memory withd = new bool[](theTurn);
         uint counter = 0;
 
-        for (uint i = 1; i &lt; theTurn+1; i++) {
-            if(TurnInfo[i].pool&gt;0){
+        for (uint i = 1; i < theTurn+1; i++) {
+            if(TurnInfo[i].pool>0){
                 totalPool[counter] = TurnInfo[i].pool;
             }else{
                 totalPool[counter]=0;
             }
             
-            if(TurnInfo[i].option1&gt;0){
+            if(TurnInfo[i].option1>0){
                 option1[counter] = TurnInfo[i].option1;
             }else{
                 option1[counter] = 0;
             }
             
-            if(TurnInfo[i].option2&gt;0){
+            if(TurnInfo[i].option2>0){
                 option2[counter] = TurnInfo[i].option2;
             }else{
                 option2[counter] = 0;
             }
             
-            if(TurnInfo[i].option1&lt;TurnInfo[i].option2){
+            if(TurnInfo[i].option1<TurnInfo[i].option2){
                 myMoney[counter] = calculateYourValue1(i);
-            }else if(TurnInfo[i].option1&gt;TurnInfo[i].option2){
+            }else if(TurnInfo[i].option1>TurnInfo[i].option2){
                 myMoney[counter] = calculateYourValue2(i);
             }else{
                 myMoney[counter] = calculateYourValueEven(i);
             }
             
-            if(RoundMyticket[i][msg.sender].option1&gt;0){
+            if(RoundMyticket[i][msg.sender].option1>0){
                 myoption1[counter] = RoundMyticket[i][msg.sender].option1;
             }else{
                 myoption1[counter]=0;
             }
             
-            if(RoundMyticket[i][msg.sender].option2&gt;0){
+            if(RoundMyticket[i][msg.sender].option2>0){
                 myoption2[counter] = RoundMyticket[i][msg.sender].option2;
             }else{
                 myoption2[counter]=0;
@@ -257,7 +257,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -269,7 +269,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -282,16 +282,16 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     /**
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
 
     return c;
   }
@@ -306,7 +306,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -339,7 +339,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

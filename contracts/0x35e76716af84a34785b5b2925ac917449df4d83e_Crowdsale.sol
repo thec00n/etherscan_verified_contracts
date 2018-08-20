@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -86,9 +86,9 @@ contract FeeCalculator is Ownable, SafeMath {
 
         uint fee = safeDiv(safeMul(value, feeNumerator), feeDenominator);
 
-        if (fee &lt; minFee) return minFee;
+        if (fee < minFee) return minFee;
 
-        if (fee &gt; maxFee) return maxFee;
+        if (fee > maxFee) return maxFee;
 
         return fee;
     }
@@ -115,7 +115,7 @@ contract EIP20Interface {
 }
 
 contract Mintable is Ownable {
-    mapping(address =&gt; bool) public minters;
+    mapping(address => bool) public minters;
 
     modifier onlyMinter {
         require(minters[msg.sender] == true);
@@ -136,11 +136,11 @@ contract Mintable is Ownable {
 
 contract Token is EIP20Interface, Ownable, SafeMath, Mintable, Lockable, FeeCalculator {
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => mapping(address => uint256)) public allowed;
 
-    mapping(address =&gt; bool) frozenAddresses;
+    mapping(address => bool) frozenAddresses;
 
     string public name;
 
@@ -244,7 +244,7 @@ contract Token is EIP20Interface, Ownable, SafeMath, Mintable, Lockable, FeeCalc
     function burn(uint256 value) public returns (bool success) {
         require(isBurnable);
 
-        if (!canAnyoneBurn &amp;&amp; msg.sender != owner) {
+        if (!canAnyoneBurn && msg.sender != owner) {
             return false;
         }
 
@@ -266,7 +266,7 @@ contract Crowdsale is Ownable, SafeMath {
 
     uint256 public maxSupply;
 
-    mapping(address =&gt; uint256) public participants;
+    mapping(address => uint256) public participants;
 
     Token public token;
 
@@ -275,8 +275,8 @@ contract Crowdsale is Ownable, SafeMath {
     bool private initialised;
 
     modifier participationOpen  {
-        require(block.number &gt;= startBlock);
-        require(block.number &lt;= endBlock);
+        require(block.number >= startBlock);
+        require(block.number <= endBlock);
         _;
     }
 
@@ -310,25 +310,25 @@ contract Crowdsale is Ownable, SafeMath {
     function participate(address participant, uint256 value) internal participationOpen {
         require(participant != address(0x0));
 
-        require(tx.gasprice &lt;= maxGasPrice);
+        require(tx.gasprice <= maxGasPrice);
 
         require(initialised);
 
         uint256 totalSupply = token.totalSupply();
-        require(totalSupply &lt; maxSupply);
+        require(totalSupply < maxSupply);
 
         uint256 tokenCount = safeMul(value, exchangeRate);
         uint256 remaining = 0;
 
         uint256 newTotalSupply = safeAdd(totalSupply, tokenCount);
-        if (newTotalSupply &gt; maxSupply) {
+        if (newTotalSupply > maxSupply) {
             uint256 newTokenCount = newTotalSupply - maxSupply;
 
             remaining = safeDiv(tokenCount - newTokenCount, exchangeRate);
             tokenCount = newTokenCount;
         }
 
-        if (remaining &gt; 0) {
+        if (remaining > 0) {
             msg.sender.transfer(remaining);
             value = safeSub(value, remaining);
         }

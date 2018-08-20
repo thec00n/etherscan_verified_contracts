@@ -24,8 +24,8 @@ contract TokenWithDates {
     function getFirstBatch(address _address) public constant returns(uint _quant,uint _age);
     function resetBatches(address _address);
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool);
-    mapping(address =&gt; uint) public maxIndex; 
-    mapping(address =&gt; uint) public minIndex;
+    mapping(address => uint) public maxIndex; 
+    mapping(address => uint) public minIndex;
     uint8 public decimals;
 }
 
@@ -33,7 +33,7 @@ contract TokenWithDates {
 
 contract JeiCoinSwapper {
 
-    string public version = &quot;v1.5&quot;;
+    string public version = "v1.5";
     address public rootAddress;
     address public Owner;
     bool public locked;
@@ -41,14 +41,14 @@ contract JeiCoinSwapper {
     address public tokenSpender;
     TokenWithDates public token;
     uint fortNight = 15;
-    mapping(address =&gt; uint) public lastFortnightPayed;
+    mapping(address => uint) public lastFortnightPayed;
     uint public initialDate;
     uint[] public yearlyInterest;
 
     // Modifiers
 
     modifier onlyOwner() {
-        if ( msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+        if ( msg.sender != rootAddress && msg.sender != Owner ) revert();
         _;
     }
 
@@ -90,12 +90,12 @@ contract JeiCoinSwapper {
     // Main function to pay interests
     function payInterests() isUnlocked public {
         if (fortnightsFromLast() == 0) { // Check for a fortnight passed
-            emit Message(&quot;0 fortnights passed&quot;);
+            emit Message("0 fortnights passed");
             return;
         }
         uint amountToPay = calculateInterest(msg.sender);
         if (amountToPay == 0) {
-            emit Message(&quot;There are not 150 tokens with interests to pay&quot;);
+            emit Message("There are not 150 tokens with interests to pay");
             return;
             }
         // Success
@@ -123,11 +123,11 @@ contract JeiCoinSwapper {
         uint batchInterest; // Interests for each batch in absolute value
         uint batchAmount;
         uint batchDate;
-        for (uint i = token.minIndex(_address); i &lt; token.maxIndex(_address); i++) {
+        for (uint i = token.minIndex(_address); i < token.maxIndex(_address); i++) {
             ( batchAmount , batchDate) = token.getBatch(_address,i); // Get batch data
             intBatch = interest(batchDate); // Calculate interest of this batch
             batchInterest = batchAmount * intBatch / 1 ether / 100; // Apply interest to the batch amount
-            if (intBatch &gt; 0) tokenCounted += batchAmount; // Count valid tokens (those with interests)
+            if (intBatch > 0) tokenCounted += batchAmount; // Count valid tokens (those with interests)
             totalAmount += batchInterest; // Count total to pay
             emit Batch(
                 batchAmount,
@@ -136,23 +136,23 @@ contract JeiCoinSwapper {
                 );
         }
         // Only pays if there are 150 valid tokens or more
-        if ( tokenCounted &gt;= 150 ether ) return totalAmount; else return 0;
+        if ( tokenCounted >= 150 ether ) return totalAmount; else return 0;
     }
 
     // Sub-function to calculate interest of each batch. Called by calculateInterest for each batch found
     function interest(uint _batchDate) private view returns (uint _interest) {
         uint _age = secToDays(softSub(now,_batchDate)); // Calculate age in days
-        while ( _age &gt;= 106 ) { // If it has more than 3 months + 12 days + 3 (eligible to be paid again)
+        while ( _age >= 106 ) { // If it has more than 3 months + 12 days + 3 (eligible to be paid again)
             _age = _age - 103; // Rest every cycle of 91 + 12
         }
-        if (_age &lt; 3 ) return 0;
-        if (_age &gt; 91) return 0;
+        if (_age < 3 ) return 0;
+        if (_age > 91) return 0;
         // uint _months = _age / 30; 
         uint _tokenFortnights = _age / fortNight;
         uint _fortnightsFromLast = fortnightsFromLast();
-        if ( _tokenFortnights &gt; _fortnightsFromLast ) _tokenFortnights = _fortnightsFromLast;
+        if ( _tokenFortnights > _fortnightsFromLast ) _tokenFortnights = _fortnightsFromLast;
         uint yearsNow = secToDays(now - initialDate) / 365; // years from initial date
-        if (yearsNow &gt; 3) yearsNow = 3;
+        if (yearsNow > 3) yearsNow = 3;
         _interest = 1 ether * yearlyInterest[yearsNow] * _tokenFortnights / 24 ; // Prorated interest to a fortnight, per each fortnight of token
     }
 
@@ -170,12 +170,12 @@ contract JeiCoinSwapper {
 
     // Safe math
     function safeAdd(uint x, uint y) private pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     // Returns 0 if operation overflows
     function softSub(uint x, uint y) private pure returns (uint z) {
         z = x - y;
-        if (z &gt; x ) z = 0;
+        if (z > x ) z = 0;
     }
 
     // Admin functions

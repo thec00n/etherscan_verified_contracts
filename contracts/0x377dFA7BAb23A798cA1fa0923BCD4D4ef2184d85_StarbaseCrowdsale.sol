@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,13 +110,13 @@ contract AbstractStarbaseCrowdsale {
 }
 
 // @title EarlyPurchase contract - Keep track of purchased amount by Early Purchasers
-/// @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c0c7cfc6e9daddc8dbcbc8dacc87cac6">[email&#160;protected]</a>&gt;
+/// @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c0c7cfc6e9daddc8dbcbc8dacc87cac6">[email protected]</a>>
 contract StarbaseEarlyPurchase {
     /*
      *  Constants
      */
-    string public constant PURCHASE_AMOUNT_UNIT = &#39;CNY&#39;;    // Chinese Yuan
-    string public constant PURCHASE_AMOUNT_RATE_REFERENCE = &#39;http://www.xe.com/currencytables/&#39;;
+    string public constant PURCHASE_AMOUNT_UNIT = 'CNY';    // Chinese Yuan
+    string public constant PURCHASE_AMOUNT_RATE_REFERENCE = 'http://www.xe.com/currencytables/';
     uint256 public constant PURCHASE_AMOUNT_CAP = 9000000;
 
     /*
@@ -159,7 +159,7 @@ contract StarbaseEarlyPurchase {
     }
 
     modifier onlyEarlyPurchaseTerm() {
-        assert(earlyPurchaseClosedAt &lt;= 0);
+        assert(earlyPurchaseClosedAt <= 0);
         _;
     }
 
@@ -168,7 +168,7 @@ contract StarbaseEarlyPurchase {
      */
 
     /**
-     * @dev Returns early purchased amount by purchaser&#39;s address
+     * @dev Returns early purchased amount by purchaser's address
      * @param purchaser Purchaser address
      */
     function purchasedAmountBy(address purchaser)
@@ -177,7 +177,7 @@ contract StarbaseEarlyPurchase {
         noEther
         returns (uint256 amount)
     {
-        for (uint256 i; i &lt; earlyPurchases.length; i++) {
+        for (uint256 i; i < earlyPurchases.length; i++) {
             if (earlyPurchases[i].purchaser == purchaser) {
                 amount += earlyPurchases[i].amount;
             }
@@ -193,7 +193,7 @@ contract StarbaseEarlyPurchase {
         public
         returns (uint256 totalAmount)
     {
-        for (uint256 i; i &lt; earlyPurchases.length; i++) {
+        for (uint256 i; i < earlyPurchases.length; i++) {
             totalAmount += earlyPurchases[i].amount;
         }
     }
@@ -225,12 +225,12 @@ contract StarbaseEarlyPurchase {
         returns (bool)
     {
         if (amount == 0 ||
-            totalAmountOfEarlyPurchases() + amount &gt; PURCHASE_AMOUNT_CAP)
+            totalAmountOfEarlyPurchases() + amount > PURCHASE_AMOUNT_CAP)
         {
             return false;
         }
 
-        assert(purchasedAt != 0 || purchasedAt &lt;= now);
+        assert(purchasedAt != 0 || purchasedAt <= now);
 
         earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));
         return true;
@@ -249,7 +249,7 @@ contract StarbaseEarlyPurchase {
     }
 
     /**
-     * @dev Setup function sets external contract&#39;s address
+     * @dev Setup function sets external contract's address
      * @param starbaseCrowdsaleAddress Token address
      */
     function setup(address starbaseCrowdsaleAddress)
@@ -275,7 +275,7 @@ contract StarbaseEarlyPurchase {
 
 
 /// @title EarlyPurchaseAmendment contract - Amend early purchase records of the original contract
-/// @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8bf8fefbfbe4f9ffcbf8ffeaf9e9eaf8eea5e8e4">[email&#160;protected]</a>&gt;
+/// @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8bf8fefbfbe4f9ffcbf8ffeaf9e9eaf8eea5e8e4">[email protected]</a>>
 contract StarbaseEarlyPurchaseAmendment {
     /*
      *  Events
@@ -295,7 +295,7 @@ contract StarbaseEarlyPurchaseAmendment {
     address public owner;
     uint256[] public invalidEarlyPurchaseIndexes;
     uint256[] public amendedEarlyPurchaseIndexes;
-    mapping (uint256 =&gt; StarbaseEarlyPurchase.EarlyPurchase) public amendedEarlyPurchases;
+    mapping (uint256 => StarbaseEarlyPurchase.EarlyPurchase) public amendedEarlyPurchases;
 
     /*
      *  Modifiers
@@ -338,7 +338,7 @@ contract StarbaseEarlyPurchaseAmendment {
     }
 
     /**
-     * @dev Returns early purchased amount by purchaser&#39;s address
+     * @dev Returns early purchased amount by purchaser's address
      * @param purchaser Purchaser address
      */
     function purchasedAmountBy(address purchaser)
@@ -349,7 +349,7 @@ contract StarbaseEarlyPurchaseAmendment {
     {
         StarbaseEarlyPurchase.EarlyPurchase[] memory normalizedEP =
             normalizedEarlyPurchases();
-        for (uint256 i; i &lt; normalizedEP.length; i++) {
+        for (uint256 i; i < normalizedEP.length; i++) {
             if (normalizedEP[i].purchaser == purchaser) {
                 amount += normalizedEP[i].amount;
             }
@@ -367,7 +367,7 @@ contract StarbaseEarlyPurchaseAmendment {
     {
         StarbaseEarlyPurchase.EarlyPurchase[] memory normalizedEP =
             normalizedEarlyPurchases();
-        for (uint256 i; i &lt; normalizedEP.length; i++) {
+        for (uint256 i; i < normalizedEP.length; i++) {
             totalAmount += normalizedEP[i].amount;
         }
     }
@@ -385,7 +385,7 @@ contract StarbaseEarlyPurchaseAmendment {
     }
 
     /**
-     * @dev Sets up function sets external contract&#39;s address
+     * @dev Sets up function sets external contract's address
      * @param starbaseCrowdsaleAddress Token address
      */
     function setup(address starbaseCrowdsaleAddress)
@@ -417,9 +417,9 @@ contract StarbaseEarlyPurchaseAmendment {
         onlyBeforeCrowdsale
         returns (bool)
     {
-        assert(numberOfRawEarlyPurchases() &gt; earlyPurchaseIndex); // Array Index Out of Bounds Exception
+        assert(numberOfRawEarlyPurchases() > earlyPurchaseIndex); // Array Index Out of Bounds Exception
 
-        for (uint256 i; i &lt; invalidEarlyPurchaseIndexes.length; i++) {
+        for (uint256 i; i < invalidEarlyPurchaseIndexes.length; i++) {
             assert(invalidEarlyPurchaseIndexes[i] != earlyPurchaseIndex);
         }
 
@@ -438,10 +438,10 @@ contract StarbaseEarlyPurchaseAmendment {
         public
         returns (bool)
     {
-        assert(numberOfRawEarlyPurchases() &gt; earlyPurchaseIndex); // Array Index Out of Bounds Exception
+        assert(numberOfRawEarlyPurchases() > earlyPurchaseIndex); // Array Index Out of Bounds Exception
 
 
-        for (uint256 i; i &lt; invalidEarlyPurchaseIndexes.length; i++) {
+        for (uint256 i; i < invalidEarlyPurchaseIndexes.length; i++) {
             if (invalidEarlyPurchaseIndexes[i] == earlyPurchaseIndex) {
                 return true;
             }
@@ -452,7 +452,7 @@ contract StarbaseEarlyPurchaseAmendment {
     /**
      * @dev Amends a given early purchase with data
      * @param earlyPurchaseIndex Index number of the purchase
-     * @param purchaser Purchaser&#39;s address
+     * @param purchaser Purchaser's address
      * @param amount Value of purchase
      * @param purchasedAt Purchase timestamp
      */
@@ -464,9 +464,9 @@ contract StarbaseEarlyPurchaseAmendment {
         onlyBeforeCrowdsale
         returns (bool)
     {
-        assert(purchasedAt != 0 || purchasedAt &lt;= now);
+        assert(purchasedAt != 0 || purchasedAt <= now);
 
-        assert(numberOfRawEarlyPurchases() &gt; earlyPurchaseIndex);
+        assert(numberOfRawEarlyPurchases() > earlyPurchaseIndex);
 
         assert(!isInvalidEarlyPurchase(earlyPurchaseIndex)); // Invalid early purchase cannot be amended
 
@@ -489,9 +489,9 @@ contract StarbaseEarlyPurchaseAmendment {
         noEther
         returns (bool)
     {
-        assert(numberOfRawEarlyPurchases() &gt; earlyPurchaseIndex); // Array Index Out of Bounds Exception
+        assert(numberOfRawEarlyPurchases() > earlyPurchaseIndex); // Array Index Out of Bounds Exception
 
-        for (uint256 i; i &lt; amendedEarlyPurchaseIndexes.length; i++) {
+        for (uint256 i; i < amendedEarlyPurchaseIndexes.length; i++) {
             if (amendedEarlyPurchaseIndexes[i] == earlyPurchaseIndex) {
                 return true;
             }
@@ -543,7 +543,7 @@ contract StarbaseEarlyPurchaseAmendment {
             rawEPCount - invalidEarlyPurchaseIndexes.length);
 
         uint256 normalizedIdx;
-        for (uint256 i; i &lt; rawEPCount; i++) {
+        for (uint256 i; i < rawEPCount; i++) {
             if (isInvalidEarlyPurchase(i)) {
                 continue;   // invalid early purchase should be ignored
             }
@@ -590,7 +590,7 @@ contract StarbaseEarlyPurchaseAmendment {
 
 /**
  * @title Crowdsale contract - Starbase crowdsale to create STAR.
- * @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4821262e27083b3c293a2a293b2d662b27">[email&#160;protected]</a>&gt;
+ * @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4821262e27083b3c293a2a293b2d662b27">[email protected]</a>>
  */
 contract StarbaseCrowdsale is Ownable {
     /*
@@ -618,7 +618,7 @@ contract StarbaseCrowdsale is Ownable {
     uint256 constant public earlyPurchaseTokenAmount = 50000000e18;
     uint256 constant public MIN_INVESTMENT = 1; // min is 1 Wei
     uint256 constant public MAX_CROWDSALE_CAP = 60000000; // approximately 9M USD for the crowdsale(CS). 1M (by EP) + 9M (by CS) = 10M (Total)
-    string public constant PURCHASE_AMOUNT_UNIT = &#39;CNY&#39;;  // Chinese Yuan
+    string public constant PURCHASE_AMOUNT_UNIT = 'CNY';  // Chinese Yuan
 
     /**
      * Types
@@ -649,8 +649,8 @@ contract StarbaseCrowdsale is Ownable {
     uint256 public numOfLoadedEarlyPurchases = 0; // index to keep the number of early purchases that have already been loaded by `loadEarlyPurchases`
 
     address[] public earlyPurchasers;
-    mapping (address =&gt; QualifiedPartners) public qualifiedPartners;
-    mapping (address =&gt; uint256) public earlyPurchasedAmountBy; // early purchased amount in CNY per purchasers&#39; address
+    mapping (address => QualifiedPartners) public qualifiedPartners;
+    mapping (address => uint256) public earlyPurchasedAmountBy; // early purchased amount in CNY per purchasers' address
     bool public earlyPurchasesLoaded = false;  // returns whether all early purchases are loaded into this contract
 
     // crowdsale
@@ -658,7 +658,7 @@ contract StarbaseCrowdsale is Ownable {
     uint256 public startDate;
     uint256 public endedAt;
     CrowdsalePurchase[] public crowdsalePurchases;
-    uint256 public cnyBtcRate; // this rate won&#39;t be used from a smart contract function but external system
+    uint256 public cnyBtcRate; // this rate won't be used from a smart contract function but external system
     uint256 public cnyEthRate;
 
     // bonus milestones
@@ -675,18 +675,18 @@ contract StarbaseCrowdsale is Ownable {
     uint256 public sixthExtendedBonusSalesEnds;
 
     // after the crowdsale
-    mapping(uint256 =&gt; CrowdsalePurchase) public invalidatedOrigPurchases;  // Original purchase which was invalidated by owner
-    mapping(uint256 =&gt; CrowdsalePurchase) public amendedOrigPurchases;      // Original purchase which was amended by owner
+    mapping(uint256 => CrowdsalePurchase) public invalidatedOrigPurchases;  // Original purchase which was invalidated by owner
+    mapping(uint256 => CrowdsalePurchase) public amendedOrigPurchases;      // Original purchase which was amended by owner
 
-    mapping (address =&gt; uint256) public numOfPurchasedTokensOnCsBy;    // the number of tokens purchased on the crowdsale by a purchaser
-    mapping (address =&gt; uint256) public numOfPurchasedTokensOnEpBy;    // the number of tokens early purchased by a purchaser
+    mapping (address => uint256) public numOfPurchasedTokensOnCsBy;    // the number of tokens purchased on the crowdsale by a purchaser
+    mapping (address => uint256) public numOfPurchasedTokensOnEpBy;    // the number of tokens early purchased by a purchaser
 
     /**
      *  Modifiers
      */
     modifier minInvestment() {
         // User has to send at least the ether value of one token.
-        assert(msg.value &gt;= MIN_INVESTMENT);
+        assert(msg.value >= MIN_INVESTMENT);
         _;
     }
 
@@ -696,7 +696,7 @@ contract StarbaseCrowdsale is Ownable {
     }
 
     modifier hasBalance() {
-        assert(this.balance &gt; 0);
+        assert(this.balance > 0);
         _;
     }
     modifier rateIsSet(uint256 _rate) {
@@ -731,7 +731,7 @@ contract StarbaseCrowdsale is Ownable {
      * @param starbaseEpAddr The address that holds the early purchasers Star tokens
      */
     function StarbaseCrowdsale(address workshopAddr, address starbaseEpAddr) {
-        require(workshopAddr != 0 &amp;&amp; starbaseEpAddr != 0);
+        require(workshopAddr != 0 && starbaseEpAddr != 0);
 
         owner = msg.sender;
         workshop = workshopAddr;
@@ -750,7 +750,7 @@ contract StarbaseCrowdsale is Ownable {
      */
 
     /**
-     * @dev Setup function sets external contracts&#39; addresses.
+     * @dev Setup function sets external contracts' addresses.
      * @param starbaseTokenAddress Token address.
      * @param _purchaseStartBlock Block number to start crowdsale
      */
@@ -784,7 +784,7 @@ contract StarbaseCrowdsale is Ownable {
         rateIsSet(cnyBtcRate)
         returns (bool)
     {
-        require(purchaseStartBlock &gt; 0 &amp;&amp; block.number &gt;= purchaseStartBlock);
+        require(purchaseStartBlock > 0 && block.number >= purchaseStartBlock);
         if (startDate == 0) {
             startCrowdsale(block.timestamp);
         }
@@ -797,7 +797,7 @@ contract StarbaseCrowdsale is Ownable {
     }
 
     /**
-     * @dev Transfers raised funds to company&#39;s wallet address at any given time.
+     * @dev Transfers raised funds to company's wallet address at any given time.
      */
     function withdrawForCompany()
         external
@@ -842,7 +842,7 @@ contract StarbaseCrowdsale is Ownable {
         external
         onlyOwner
     {
-        assert(startDate == 0 &amp;&amp; block.number &gt;= purchaseStartBlock);   // overwriting startDate is not permitted and it should be after the crowdsale start block
+        assert(startDate == 0 && block.number >= purchaseStartBlock);   // overwriting startDate is not permitted and it should be after the crowdsale start block
         startCrowdsale(timestamp);
 
     }
@@ -855,7 +855,7 @@ contract StarbaseCrowdsale is Ownable {
         external
         onlyOwner
     {
-        assert(timestamp &gt; 0 &amp;&amp; timestamp &lt;= now);
+        assert(timestamp > 0 && timestamp <= now);
         assert(endedAt == 0);   // overwriting time is not permitted
         endedAt = timestamp;
         CrowdsaleEnded(endedAt);
@@ -873,7 +873,7 @@ contract StarbaseCrowdsale is Ownable {
         returns (bool)
     {
         CrowdsalePurchase memory purchase = crowdsalePurchases[purchaseIdx];
-        assert(purchase.purchaser != 0 &amp;&amp; purchase.amount != 0);
+        assert(purchase.purchaser != 0 && purchase.amount != 0);
 
         crowdsalePurchases[purchaseIdx].amount = 0;
         crowdsalePurchases[purchaseIdx].rawAmount = 0;
@@ -908,7 +908,7 @@ contract StarbaseCrowdsale is Ownable {
         returns (bool)
     {
         CrowdsalePurchase memory purchase = crowdsalePurchases[purchaseIdx];
-        assert(purchase.purchaser != 0 &amp;&amp; purchase.amount != 0);
+        assert(purchase.purchaser != 0 && purchase.amount != 0);
 
         amendedOrigPurchases[purchaseIdx] = purchase;
         crowdsalePurchases[purchaseIdx] =
@@ -931,7 +931,7 @@ contract StarbaseCrowdsale is Ownable {
 
         uint256 totalAmountOfPurchasesInCny = totalRaisedAmountInCny(); // totalPreSale + totalCrowdsale
 
-        for (uint256 i = numOfDeliveredCrowdsalePurchases; i &lt; crowdsalePurchases.length &amp;&amp; msg.gas &gt; 200000; i++) {
+        for (uint256 i = numOfDeliveredCrowdsalePurchases; i < crowdsalePurchases.length && msg.gas > 200000; i++) {
             CrowdsalePurchase memory purchase = crowdsalePurchases[i];
             if (purchase.amount == 0) {
                 continue;   // skip invalidated purchase
@@ -956,7 +956,7 @@ contract StarbaseCrowdsale is Ownable {
             numOfDeliveredCrowdsalePurchases = SafeMath.add(i, 1);
         }
 
-        for (uint256 j = numOfDeliveredEarlyPurchases; j &lt; earlyPurchasers.length &amp;&amp; msg.gas &gt; 200000; j++) {
+        for (uint256 j = numOfDeliveredEarlyPurchases; j < earlyPurchasers.length && msg.gas > 200000; j++) {
             address earlyPurchaser = earlyPurchasers[j];
 
             /*
@@ -1000,7 +1000,7 @@ contract StarbaseCrowdsale is Ownable {
             .starbaseEarlyPurchase()
             .numberOfEarlyPurchases();
 
-        for (uint256 i = numOfLoadedEarlyPurchases; i &lt; numOfOrigEp &amp;&amp; msg.gas &gt; 200000; i++) {
+        for (uint256 i = numOfLoadedEarlyPurchases; i < numOfOrigEp && msg.gas > 200000; i++) {
             if (starbaseEpAmendment.isInvalidEarlyPurchase(i)) {
                 continue;
             }
@@ -1008,7 +1008,7 @@ contract StarbaseCrowdsale is Ownable {
                 starbaseEpAmendment.isAmendedEarlyPurchase(i)
                 ? starbaseEpAmendment.amendedEarlyPurchases(i)
                 : starbaseEpAmendment.earlyPurchases(i);
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (earlyPurchasedAmountBy[purchaser] == 0) {
                     earlyPurchasers.push(purchaser);
                 }
@@ -1021,7 +1021,7 @@ contract StarbaseCrowdsale is Ownable {
         }
 
         numOfLoadedEarlyPurchases += i;
-        assert(numOfLoadedEarlyPurchases &lt;= numOfOrigEp);
+        assert(numOfLoadedEarlyPurchases <= numOfOrigEp);
         if (numOfLoadedEarlyPurchases == numOfOrigEp) {
             earlyPurchasesLoaded = true;    // enable the flag
         }
@@ -1072,7 +1072,7 @@ contract StarbaseCrowdsale is Ownable {
      * @dev Returns boolean for whether crowdsale has ended
      */
     function isEnded() constant public returns (bool) {
-        return (endedAt &gt; 0 &amp;&amp; endedAt &lt;= now);
+        return (endedAt > 0 && endedAt <= now);
     }
 
     /**
@@ -1086,7 +1086,7 @@ contract StarbaseCrowdsale is Ownable {
      * @dev Calculates total amount of tokens purchased includes bonus tokens.
      */
     function totalAmountOfCrowdsalePurchases() constant public returns (uint256 amount) {
-        for (uint256 i; i &lt; crowdsalePurchases.length; i++) {
+        for (uint256 i; i < crowdsalePurchases.length; i++) {
             amount = SafeMath.add(amount, crowdsalePurchases[i].amount);
         }
     }
@@ -1095,7 +1095,7 @@ contract StarbaseCrowdsale is Ownable {
      * @dev Calculates total amount of tokens purchased without bonus conversion.
      */
     function totalAmountOfCrowdsalePurchasesWithoutBonus() constant public returns (uint256 amount) {
-        for (uint256 i; i &lt; crowdsalePurchases.length; i++) {
+        for (uint256 i; i < crowdsalePurchases.length; i++) {
             amount = SafeMath.add(amount, crowdsalePurchases[i].rawAmount);
         }
     }
@@ -1126,13 +1126,13 @@ contract StarbaseCrowdsale is Ownable {
         require(qualifiedPartners[msg.sender].bonaFide);
         qualifiedPartners[msg.sender].amountRaised = SafeMath.add(msg.value, qualifiedPartners[msg.sender].amountRaised);
 
-        assert(qualifiedPartners[msg.sender].amountRaised &lt;= qualifiedPartners[msg.sender].amountCap);
+        assert(qualifiedPartners[msg.sender].amountRaised <= qualifiedPartners[msg.sender].amountCap);
 
         uint256 bonusTier = 30; // Pre sale purchasers get 30 percent bonus
         uint256 rawAmount = SafeMath.mul(msg.value, cnyEthRate) / 1e18;
-        uint amount = recordPurchase(msg.sender, rawAmount, now, &#39;&#39;, bonusTier);
+        uint amount = recordPurchase(msg.sender, rawAmount, now, '', bonusTier);
 
-        if (qualifiedPartners[msg.sender].commissionFeePercentage &gt; 0) {
+        if (qualifiedPartners[msg.sender].commissionFeePercentage > 0) {
             sendQualifiedPartnerCommissionFee(msg.sender, msg.value);
         }
 
@@ -1151,7 +1151,7 @@ contract StarbaseCrowdsale is Ownable {
         rateIsSet(cnyEthRate)
         returns (bool)
     {
-        require(purchaseStartBlock &gt; 0 &amp;&amp; block.number &gt;= purchaseStartBlock);
+        require(purchaseStartBlock > 0 && block.number >= purchaseStartBlock);
         if (startDate == 0) {
             startCrowdsale(block.timestamp);
         }
@@ -1159,7 +1159,7 @@ contract StarbaseCrowdsale is Ownable {
         uint256 bonusTier = getBonusTier();
 
         uint256 rawAmount = SafeMath.mul(msg.value, cnyEthRate) / 1e18;
-        uint amount = recordPurchase(msg.sender, rawAmount, now, &#39;&#39;, bonusTier);
+        uint amount = recordPurchase(msg.sender, rawAmount, now, '', bonusTier);
 
         StarBasePurchasedWithEth(msg.sender, amount, rawAmount, cnyEthRate, bonusTier);
         return true;
@@ -1212,14 +1212,14 @@ contract StarbaseCrowdsale is Ownable {
         amount = rawAmount; // amount to check reach of max cap. it does not care for bonus tokens here
 
         // presale transfers which occurs before the crowdsale ignores the crowdsale hard cap
-        if (block.number &gt;= purchaseStartBlock) {
+        if (block.number >= purchaseStartBlock) {
 
-            assert(totalAmountOfCrowdsalePurchasesWithoutBonus() &lt;= MAX_CROWDSALE_CAP);
+            assert(totalAmountOfCrowdsalePurchasesWithoutBonus() <= MAX_CROWDSALE_CAP);
 
             uint256 crowdsaleTotalAmountAfterPurchase = SafeMath.add(totalAmountOfCrowdsalePurchasesWithoutBonus(), amount);
 
             // check whether purchase goes over the cap and send the difference back to the purchaser.
-            if (crowdsaleTotalAmountAfterPurchase &gt; MAX_CROWDSALE_CAP) {
+            if (crowdsaleTotalAmountAfterPurchase > MAX_CROWDSALE_CAP) {
               uint256 difference = SafeMath.sub(crowdsaleTotalAmountAfterPurchase, MAX_CROWDSALE_CAP);
               uint256 ethValueToReturn = SafeMath.mul(difference, 1e18) / cnyEthRate;
               purchaser.transfer(ethValueToReturn);
@@ -1241,19 +1241,19 @@ contract StarbaseCrowdsale is Ownable {
      * @dev Fetchs Bonus tier percentage per bonus milestones
      */
     function getBonusTier() internal returns (uint256) {
-        bool firstBonusSalesPeriod = now &gt;= startDate &amp;&amp; now &lt;= firstBonusSalesEnds; // 1st ~ 7th day get 20% bonus
-        bool secondBonusSalesPeriod = now &gt; firstBonusSalesEnds &amp;&amp; now &lt;= secondBonusSalesEnds; // 8th ~ 21st day get 15% bonus
-        bool thirdBonusSalesPeriod = now &gt; secondBonusSalesEnds &amp;&amp; now &lt;= thirdBonusSalesEnds; // 22nd ~ 35th day get 10% bonus
-        bool fourthBonusSalesPeriod = now &gt; thirdBonusSalesEnds &amp;&amp; now &lt;= fourthBonusSalesEnds; // 36th ~ 42nd day get 5% bonus
-        bool fifthBonusSalesPeriod = now &gt; fourthBonusSalesEnds &amp;&amp; now &lt;= fifthBonusSalesEnds; // 43rd and 45th day get 0% bonus
+        bool firstBonusSalesPeriod = now >= startDate && now <= firstBonusSalesEnds; // 1st ~ 7th day get 20% bonus
+        bool secondBonusSalesPeriod = now > firstBonusSalesEnds && now <= secondBonusSalesEnds; // 8th ~ 21st day get 15% bonus
+        bool thirdBonusSalesPeriod = now > secondBonusSalesEnds && now <= thirdBonusSalesEnds; // 22nd ~ 35th day get 10% bonus
+        bool fourthBonusSalesPeriod = now > thirdBonusSalesEnds && now <= fourthBonusSalesEnds; // 36th ~ 42nd day get 5% bonus
+        bool fifthBonusSalesPeriod = now > fourthBonusSalesEnds && now <= fifthBonusSalesEnds; // 43rd and 45th day get 0% bonus
 
         // extended bonus sales
-        bool firstExtendedBonusSalesPeriod = now &gt; fifthBonusSalesEnds &amp;&amp; now &lt;= firstExtendedBonusSalesEnds; // extended sales 46th ~ 48th day get 20% bonus
-        bool secondExtendedBonusSalesPeriod = now &gt; firstExtendedBonusSalesEnds &amp;&amp; now &lt;= secondExtendedBonusSalesEnds; // 49th ~ 51st 15% bonus
-        bool thirdExtendedBonusSalesPeriod = now &gt; secondExtendedBonusSalesEnds &amp;&amp; now &lt;= thirdExtendedBonusSalesEnds; // 52nd ~ 54th day get 10% bonus
-        bool fourthExtendedBonusSalesPeriod = now &gt; thirdExtendedBonusSalesEnds &amp;&amp; now &lt;= fourthExtendedBonusSalesEnds; // 55th ~ 57th day day get 5% bonus
-        bool fifthExtendedBonusSalesPeriod = now &gt; fourthExtendedBonusSalesEnds &amp;&amp; now &lt;= fifthExtendedBonusSalesEnds; // 58th ~ 60th day get 0% bonus
-        bool sixthExtendedBonusSalesPeriod = now &gt; fifthExtendedBonusSalesEnds &amp;&amp; now &lt;= sixthExtendedBonusSalesEnds; // 61st ~ 120th day get {number_of_days} - 60 * 1% bonus
+        bool firstExtendedBonusSalesPeriod = now > fifthBonusSalesEnds && now <= firstExtendedBonusSalesEnds; // extended sales 46th ~ 48th day get 20% bonus
+        bool secondExtendedBonusSalesPeriod = now > firstExtendedBonusSalesEnds && now <= secondExtendedBonusSalesEnds; // 49th ~ 51st 15% bonus
+        bool thirdExtendedBonusSalesPeriod = now > secondExtendedBonusSalesEnds && now <= thirdExtendedBonusSalesEnds; // 52nd ~ 54th day get 10% bonus
+        bool fourthExtendedBonusSalesPeriod = now > thirdExtendedBonusSalesEnds && now <= fourthExtendedBonusSalesEnds; // 55th ~ 57th day day get 5% bonus
+        bool fifthExtendedBonusSalesPeriod = now > fourthExtendedBonusSalesEnds && now <= fifthExtendedBonusSalesEnds; // 58th ~ 60th day get 0% bonus
+        bool sixthExtendedBonusSalesPeriod = now > fifthExtendedBonusSalesEnds && now <= sixthExtendedBonusSalesEnds; // 61st ~ 120th day get {number_of_days} - 60 * 1% bonus
 
         if (firstBonusSalesPeriod || firstExtendedBonusSalesPeriod) return 20;
         if (secondBonusSalesPeriod || secondExtendedBonusSalesPeriod) return 15;
@@ -1287,7 +1287,7 @@ contract StarbaseCrowdsale is Ownable {
      * @dev redirectToPurchase Redirect to adequate purchase function within the smart contract
      */
     function redirectToPurchase() internal {
-        if (block.number &lt; purchaseStartBlock) {
+        if (block.number < purchaseStartBlock) {
             purchaseAsQualifiedPartner();
         } else {
             purchaseWithEth();

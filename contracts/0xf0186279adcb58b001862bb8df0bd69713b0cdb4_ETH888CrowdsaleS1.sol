@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -86,7 +86,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -99,7 +99,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -200,15 +200,15 @@ contract MintableToken is StandardToken, Ownable {
 
 contract VanilCoin is MintableToken {
   	
-	string public name = &quot;Vanil&quot;;
-  	string public symbol = &quot;VAN&quot;;
+	string public name = "Vanil";
+  	string public symbol = "VAN";
   	uint256 public decimals = 18;
   
   	// tokens locked for one week after ICO, 8 Oct 2017, 0:0:0 GMT: 1507420800
   	uint public releaseTime = 1507420800;
   
 	modifier canTransfer(address _sender, uint256 _value) {
-		require(_value &lt;= transferableTokens(_sender, now));
+		require(_value <= transferableTokens(_sender, now));
 	   	_;
 	}
 	
@@ -224,7 +224,7 @@ contract VanilCoin is MintableToken {
 		
 		uint256 result = 0;
 				
-		if(time &gt; releaseTime){
+		if(time > releaseTime){
 			result = balanceOf(holder);
 		}
 		
@@ -316,20 +316,20 @@ contract ETH888CrowdsaleS1 {
 	
 	// @return true if investors can buy at the moment
 	function validPurchase() internal constant returns (bool) {
-		bool withinCap = weiRaised.add(msg.value) &lt;= cap;
+		bool withinCap = weiRaised.add(msg.value) <= cap;
 		
 		uint current = now;
-		bool withinPeriod = current &gt;= startTimestamp &amp;&amp; current &lt;= endTimestamp;
+		bool withinPeriod = current >= startTimestamp && current <= endTimestamp;
 		bool nonZeroPurchase = msg.value != 0;
 		
-		return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap &amp;&amp; msg.value &gt;= 1000 szabo;
+		return withinPeriod && nonZeroPurchase && withinCap && msg.value >= 1000 szabo;
 	}
 
 	// @return true if crowdsale event has ended
 	function hasEnded() public constant returns (bool) {
-		bool capReached = weiRaised &gt;= cap;
+		bool capReached = weiRaised >= cap;
 		
-		return now &gt; endTimestamp || capReached;
+		return now > endTimestamp || capReached;
 	}
 	
 	// creates the token to be sold.

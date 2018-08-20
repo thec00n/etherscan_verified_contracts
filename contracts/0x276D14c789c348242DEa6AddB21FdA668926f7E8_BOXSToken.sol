@@ -10,12 +10,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -44,7 +44,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -55,7 +55,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value)  public returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -80,17 +80,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract BOXSToken is StandardToken,SafeMath {
 
     // metadata
-    string public constant name = &quot;boxs.io&quot;;
-    string public constant symbol = &quot;BOXS&quot;;
+    string public constant name = "boxs.io";
+    string public constant symbol = "BOXS";
     uint256 public constant decimals = 8;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     
     // total cap
     uint256 public constant tokenCreationCap = 100 * (10**8) * 10**decimals;
@@ -102,7 +102,7 @@ contract BOXSToken is StandardToken,SafeMath {
     address public initDepositAccount;
     address public mintDepositAccount;
     
-    mapping (address =&gt; bool) hadDoubles;
+    mapping (address => bool) hadDoubles;
     
     address public owner;
 	modifier onlyOwner() {
@@ -129,9 +129,9 @@ contract BOXSToken is StandardToken,SafeMath {
     
     function doubleBalances(address _to) public  onlyOwner returns (bool) {
         if(hadDoubles[_to] == true) return false;
-        if(balances[_to] &lt;= 0) return false;
+        if(balances[_to] <= 0) return false;
         uint256 temptotalSupply = safeAdd(totalSupply, balances[_to]);
-        if(temptotalSupply &gt; tokenCreationCap) return false;
+        if(temptotalSupply > tokenCreationCap) return false;
         balances[_to] = safeMult(balances[_to], 2);
         totalSupply = temptotalSupply;
         hadDoubles[_to] = true;
@@ -139,8 +139,8 @@ contract BOXSToken is StandardToken,SafeMath {
     }
     
     function batchDoubleBalances(address[] toArray) public  onlyOwner returns (bool) {
-        if(toArray.length &lt; 1) return false;
-        for(uint i = 0; i&lt;toArray.length; i++){
+        if(toArray.length < 1) return false;
+        for(uint i = 0; i<toArray.length; i++){
             doubleBalances(toArray[i]);
         }
         return true;
@@ -148,7 +148,7 @@ contract BOXSToken is StandardToken,SafeMath {
 	
 	// Do not allow direct deposits.
     function () external {
-      require(0&gt;1);
+      require(0>1);
     }
 	
 }

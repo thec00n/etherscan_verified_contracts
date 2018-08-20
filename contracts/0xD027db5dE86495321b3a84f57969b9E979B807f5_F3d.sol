@@ -51,12 +51,12 @@ contract F3d is F3Devents {
   uint256 public ownerPool;
   address public admin;
 
-  mapping(address =&gt; PlayerStatus) public players;
-  mapping(address =&gt; uint256) public playerIds;
-  mapping(uint256 =&gt; address) public id2Players;
-  mapping(uint256 =&gt; Round) public rounds;
-  mapping(address =&gt; mapping (uint256 =&gt; PlayerRound)) public playerRoundData;
-  // uint256 public currentRound;                       seems we don&#39;t need this
+  mapping(address => PlayerStatus) public players;
+  mapping(address => uint256) public playerIds;
+  mapping(uint256 => address) public id2Players;
+  mapping(uint256 => Round) public rounds;
+  mapping(address => mapping (uint256 => PlayerRound)) public playerRoundData;
+  // uint256 public currentRound;                       seems we don't need this
   uint256 public nextRound;
   
     
@@ -73,7 +73,7 @@ contract F3d is F3Devents {
       }  
   }
   function ownerTake(uint256 amount, address to) public onlyOwner {
-      require(!owner1OK &amp;&amp; !owner2OK);
+      require(!owner1OK && !owner2OK);
       ownerWithdrawTo = to;
       ownerWithdraw = amount;
       if (msg.sender == owner1) {
@@ -85,7 +85,7 @@ contract F3d is F3Devents {
   }
   
   function agree(uint256 amount, address to) public onlyOwner {
-      require(amount == ownerWithdraw &amp;&amp; to == ownerWithdrawTo);
+      require(amount == ownerWithdraw && to == ownerWithdrawTo);
       if(msg.sender == owner1) {
           require(owner2OK);
       }
@@ -93,7 +93,7 @@ contract F3d is F3Devents {
           require(owner1OK);
       }
       assert(ownerWithdrawTo != address(0));
-      require(amount &lt;= ownerPool);
+      require(amount <= ownerPool);
       ownerPool = ownerPool.sub(amount);
       ownerWithdrawTo.transfer(amount);
       owner1OK = false;
@@ -183,7 +183,7 @@ contract F3d is F3Devents {
     registerFee = _registerFee;
     withdrawFee = _withdrawFee;
     
-    assert(maxRound &lt;= 12); //can&#39;t be more than 12, otherwise the game time will be zero
+    assert(maxRound <= 12); //can't be more than 12, otherwise the game time will be zero
     
     // split less than 100%
     assert(toSpread.add(toOwner).add(toNext).add(toRefer).add(toPool) == 1000);
@@ -197,7 +197,7 @@ contract F3d is F3Devents {
     playersCount = 1;  //by default there is one player
     
     uint256 _miniMumPool = 0;
-    for(uint256 i = 0; i &lt; maxRound; i ++) {
+    for(uint256 i = 0; i < maxRound; i ++) {
         //TESTING uint256 roundTime = 12 * 60 * 60 - 60 * 60 * (i);   //roundTime
         uint256 roundTime = 12 * 60 - 60 * (i);   //roundTime
 
@@ -211,7 +211,7 @@ contract F3d is F3Devents {
           luckyNumber,                        //luckyNumber
           0,                                  //luckyCounter
           0,                                  //luckyPool
-          0,                                  //endTime it&#39;s not accurate
+          0,                                  //endTime it's not accurate
           roundTime,                          //roundTime
           false,                              //finalized
           false                               //activated
@@ -257,7 +257,7 @@ contract F3d is F3Devents {
 
   function profit(address _pAddr) public view returns (uint256) {
       uint256 userProfit = 0;
-      for(uint256 i = 0; i &lt; nextRound; i ++) {
+      for(uint256 i = 0; i < nextRound; i ++) {
           userProfit = userProfit.add(roundProfit(_pAddr, i));
       }
       return userProfit;
@@ -272,7 +272,7 @@ contract F3d is F3Devents {
    * user register a link
    */
   function register(uint256 ref) public payable {
-      require(playerIds[msg.sender] == 0 &amp;&amp; msg.value &gt;= registerFee);
+      require(playerIds[msg.sender] == 0 && msg.value >= registerFee);
       ownerPool = msg.value.add(ownerPool);
       playerIds[msg.sender] = playersCount;
       id2Players[playersCount] = msg.sender;
@@ -285,7 +285,7 @@ contract F3d is F3Devents {
   }
   
   function logRef(address addr, uint256 ref) public {
-      if(players[addr].referer == 0 &amp;&amp; ref != 0) {
+      if(players[addr].referer == 0 && ref != 0) {
           players[addr].referer = ref;
     
           emit Referer(addr, ref);
@@ -296,7 +296,7 @@ contract F3d is F3Devents {
   function finalize(uint256 _round) public {
       Round storage round = rounds[_round];
       // round must be finished
-      require(block.timestamp &gt; round.endTime &amp;&amp; round.activated &amp;&amp; !round.finalized);
+      require(block.timestamp > round.endTime && round.activated && !round.finalized);
       
       // register the user if necessary
       // no automated registration now?
@@ -320,9 +320,9 @@ contract F3d is F3Devents {
       emit FinalizeRound(_round);
       
       if (_round == (maxRound.sub(1))) {
-          // if we&#39;re finalizing the last round
+          // if we're finalizing the last round
           // things will be a little different
-          // first there&#39;ll be no more next round
+          // first there'll be no more next round
           ownerPool = ownerPool.add(pool2Next);
           return;
       }
@@ -335,8 +335,8 @@ contract F3d is F3Devents {
       
       next.pool = pool2Next.add(next.pool);
       
-      if(!next.activated &amp;&amp; nextRound == (_round.add(1))) {
-          // if this is the last unactivated round, and there&#39;s still next Round
+      if(!next.activated && nextRound == (_round.add(1))) {
+          // if this is the last unactivated round, and there's still next Round
           // activate it
           next.activated = true;
           next.endTime = block.timestamp.add(next.roundTime);
@@ -344,7 +344,7 @@ contract F3d is F3Devents {
 
           emit NewRound(nextRound, next.pool);
 
-          if(nextRound &lt; maxRound) {
+          if(nextRound < maxRound) {
             nextRound = nextRound.add(1);
           }
       }
@@ -352,20 +352,20 @@ contract F3d is F3Devents {
   
   // _pID spent _eth to buy keys in _round
   function core(uint256 _round, address _pAddr, uint256 _eth) internal {
-      require(_round &lt; maxRound);
+      require(_round < maxRound);
       Round storage current = rounds[_round];
-      require(current.activated &amp;&amp; !current.finalized);
+      require(current.activated && !current.finalized);
 
       // new to this round
-      // we can&#39;t update user profit into one wallet
+      // we can't update user profit into one wallet
       // since user may attend mulitple rounds in this mode
-      // the client should check each rounds&#39; profit and do withdrawal
+      // the client should check each rounds' profit and do withdrawal
       /*
       if (playerRoundData[_pID][_round].keys == 0) {
           updatePlayer(_pID);
       }*/
       
-      if (block.timestamp &gt; current.endTime) {
+      if (block.timestamp > current.endTime) {
           //we need to do finalzing
           finalize(_round);
           players[_pAddr].wallet = _eth.add(players[_pAddr].wallet);
@@ -377,7 +377,7 @@ contract F3d is F3Devents {
           */
       }
       
-      if (_eth &lt; 1000000000) {
+      if (_eth < 1000000000) {
           players[_pAddr].wallet = _eth.add(players[_pAddr].wallet);
           return;
       }
@@ -385,25 +385,25 @@ contract F3d is F3Devents {
       // calculate the keys that he could buy
       uint256 _keys = keys(current.eth, _eth);
       
-      if (_keys &lt;= 0) {
+      if (_keys <= 0) {
           // put the eth to the sender
-          // sorry, you&#39;re bumped
+          // sorry, you're bumped
           players[_pAddr].wallet = _eth.add(players[_pAddr].wallet);
           return;
       }
 
-      if (_keys &gt;= decimals) {
+      if (_keys >= decimals) {
           // buy at least one key to be the winner 
           current.winner = _pAddr;
           current.endTime = timeIncrease.add(current.endTime.mul(_keys / decimals));
-          if (current.endTime.sub(block.timestamp) &gt; current.roundTime) {
+          if (current.endTime.sub(block.timestamp) > current.roundTime) {
               current.endTime = block.timestamp.add(current.roundTime);
           }
           
-          if (_keys &gt;= decimals.mul(10)) {
+          if (_keys >= decimals.mul(10)) {
               // if one has bought more than 10 keys
               current.luckyCounter = current.luckyCounter.add(1);
-              if(current.luckyCounter &gt;= current.nextLucky) {
+              if(current.luckyCounter >= current.nextLucky) {
                   players[_pAddr].lucky = current.luckyPool.add(players[_pAddr].lucky);
                   playerRoundData[_pAddr][_round].lucky = current.luckyPool.add(playerRoundData[_pAddr][_round].lucky);
                   
@@ -448,7 +448,7 @@ contract F3d is F3Devents {
       current.keys = _keys.add(current.keys);
       current.eth = _eth.add(current.eth);
 
-      // for the new keys, remove the user&#39;s free earnings
+      // for the new keys, remove the user's free earnings
       // this may cause some loose
       playerRoundData[_pAddr][_round].mask = (current.mask.mul(_keys) / (10**18)).add(playerRoundData[_pAddr][_round].mask);
       
@@ -463,10 +463,10 @@ contract F3d is F3Devents {
       }
 
       // to unopened round
-      // round 12 will always be the nextRound even after it&#39;s been activated
+      // round 12 will always be the nextRound even after it's been activated
       Round storage next = rounds[nextRound];
       
-      if (nextRound &gt;= maxRound) {	 
+      if (nextRound >= maxRound) {	 
           next = rounds[maxRound - 1];	 
       }
       
@@ -474,7 +474,7 @@ contract F3d is F3Devents {
       // current.luckyPool = _eth.mul(toLucky).add(current.luckyPool);
         
       // open next round if necessary
-      if(next.pool &gt;= next.minimumPool &amp;&amp; !next.activated) {
+      if(next.pool >= next.minimumPool && !next.activated) {
         next.activated = true;
         next.endTime = block.timestamp.add(next.roundTime);
         // ??? winner鏄皝
@@ -504,7 +504,7 @@ contract F3d is F3Devents {
   
   function reloadRound(address _pAddr, uint256 _round) internal returns (uint256) {
       uint256 _earn = calculateMasked(_pAddr, _round);
-      if (_earn &gt; 0) {
+      if (_earn > 0) {
           playerRoundData[_pAddr][_round].mask = _earn.add(playerRoundData[_pAddr][_round].mask);
       }
       return _earn;
@@ -532,7 +532,7 @@ contract F3d is F3Devents {
       player.affiliate = 0;
       player.win = 0;
       player.lucky = 0;
-      for(uint256 i = 0; i &lt;= nextRound; i ++) {
+      for(uint256 i = 0; i <= nextRound; i ++) {
           uint256 roundEarnings = reloadRound(_pAddr, i);
           earnings = earnings.add(roundEarnings);
       }
@@ -552,7 +552,7 @@ contract F3d is F3Devents {
   // withdrawal all the earning of the game
   function withdrawal() whenNotPaused public {
       uint256 ret = retrieveEarnings(msg.sender);
-      require(ret &gt;= minimumWithdraw);
+      require(ret >= minimumWithdraw);
       uint256 fee = ret.mul(withdrawFee) / 1000;
       ownerPool = ownerPool.add(fee);
       ret = ret.sub(fee);
@@ -562,7 +562,7 @@ contract F3d is F3Devents {
   }
 
   function priceForKeys(uint256 keys, uint256 round) public view returns(uint256) {
-      require(round &lt; maxRound);
+      require(round < maxRound);
       return eth(rounds[round].keys, keys);
   }
   
@@ -575,7 +575,7 @@ contract F3d is F3Devents {
           return -1;
       }
       
-      if (rounds[_round].endTime &lt;= block.timestamp) {
+      if (rounds[_round].endTime <= block.timestamp) {
           return 0;
       } else {
           return int256(rounds[_round].endTime - block.timestamp);
@@ -600,7 +600,7 @@ contract F3d is F3Devents {
     
     /**
         * @dev calculates how much eth would be in contract given a number of keys
-        * @param _keys number of keys &quot;in contract&quot; 
+        * @param _keys number of keys "in contract" 
         * @return eth that would exists
         */
     function eth(uint256 _keys) 
@@ -637,7 +637,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -649,7 +649,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -662,7 +662,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -676,7 +676,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -709,7 +709,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

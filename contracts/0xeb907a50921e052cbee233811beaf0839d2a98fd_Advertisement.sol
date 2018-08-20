@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 
 contract AppCoins {
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     function balanceOf (address _owner) public constant returns (uint256);
     function transfer(address _to, uint256 _value) public returns (bool success);
     function transferFrom(address _from, address _to, uint256 _value) public returns (uint);
@@ -44,12 +44,12 @@ contract Advertisement {
 
 	ValidationRules public rules;
 	bytes32[] bidIdList;
-	mapping (bytes32 =&gt; Campaign) campaigns;
-	mapping (bytes =&gt; bytes32[]) campaignsByCountry;
+	mapping (bytes32 => Campaign) campaigns;
+	mapping (bytes => bytes32[]) campaignsByCountry;
 	AppCoins appc;
 	bytes2[] countryList;
     address public owner;
-	mapping (address =&gt; mapping (bytes32 =&gt; bool)) userAttributions;
+	mapping (address => mapping (bytes32 => bool)) userAttributions;
 
 
 
@@ -90,7 +90,7 @@ contract Advertisement {
 		newCampaign.endDate = endDate;
 
 		//Transfers the budget to contract address
-        require(appc.allowance(msg.sender, address(this)) &gt;= budget);
+        require(appc.allowance(msg.sender, address(this)) >= budget);
 
         appc.transferFrom(msg.sender, address(this), budget);
 
@@ -123,10 +123,10 @@ contract Advertisement {
 		bytes memory countriesInBytes = bytes(campaign.filters.countries);
 		uint countryLength = 0;
 
-		for (uint i=0; i&lt;countriesInBytes.length; i++){
+		for (uint i=0; i<countriesInBytes.length; i++){
 
-			//if &#39;,&#39; is found, new country ahead
-			if(countriesInBytes[i]==&quot;,&quot; || i == countriesInBytes.length-1){
+			//if ',' is found, new country ahead
+			if(countriesInBytes[i]=="," || i == countriesInBytes.length-1){
 
 				if(i == countriesInBytes.length-1){
 					country[countryLength]=countriesInBytes[i];
@@ -168,7 +168,7 @@ contract Advertisement {
 
 		require (timestampList.length == nonces.length);
 		//Expect ordered array arranged in ascending order
-		for(uint i = 0; i &lt; timestampList.length-1; i++){
+		for(uint i = 0; i < timestampList.length-1; i++){
 			uint256 timestamp_diff = timestampList[i+1]-timestampList[i];
 
 			require((timestamp_diff / 1000) == 10);
@@ -293,8 +293,8 @@ contract Advertisement {
 		//Search bid price
 		Campaign storage campaign = campaigns[bidId];
 
-		require (campaign.budget &gt; 0);
-		require (campaign.budget &gt;= campaign.price);
+		require (campaign.budget > 0);
+		require (campaign.budget >= campaign.price);
 
 		//transfer to user, appstore and oem
 		appc.transfer(msg.sender, division(campaign.price * dev_share,100));

@@ -1,10 +1,10 @@
 pragma solidity ^0.4.23;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c585d4a597c5d5753515e5d125f5351">[email&#160;protected]</a>
+// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c585d4a597c5d5753515e5d125f5351">[email protected]</a>
 // released under Apache 2.0 licence
 contract GoConfig {
-    string public constant NAME = &quot;GOeureka&quot;;
-    string public constant SYMBOL = &quot;GOT&quot;;
+    string public constant NAME = "GOeureka";
+    string public constant SYMBOL = "GOT";
     uint8 public constant DECIMALS = 18;
     uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
     uint public constant TOTALSUPPLY = 1000000000 * DECIMALSFACTOR;
@@ -80,9 +80,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -90,7 +90,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -99,7 +99,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -177,7 +177,7 @@ contract Pausable is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -195,7 +195,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -315,9 +315,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -338,7 +338,7 @@ contract Salvageable is Operatable {
 }
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -356,8 +356,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -371,7 +371,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -440,7 +440,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -531,7 +531,7 @@ contract GOeureka is  Salvageable, PausableToken, BurnableToken, GoConfig {
     }
 
     function mint(address _to, uint _amount) ownerOrMinter canMint public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= TOTALSUPPLY);
+        require(totalSupply_.add(_amount) <= TOTALSUPPLY);
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Mint(_to, _amount);
@@ -548,10 +548,10 @@ contract GOeureka is  Salvageable, PausableToken, BurnableToken, GoConfig {
     function sendBatchCS(address[] _recipients, uint[] _values) external ownerOrMinter returns (bool) {
         require(_recipients.length == _values.length);
         uint senderBalance = balances[msg.sender];
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             uint value = _values[i];
             address to = _recipients[i];
-            require(senderBalance &gt;= value);        
+            require(senderBalance >= value);        
             senderBalance = senderBalance - value;
             balances[to] += value;
             emit Transfer(msg.sender, to, value);
@@ -618,7 +618,7 @@ contract GOeurekaSale is Claimable, gotTokenSaleConfig, Pausable, Salvageable {
     uint256 public tokensRaised;
 
     // number of participants
-    mapping(address =&gt; uint256) public contributions;
+    mapping(address => uint256) public contributions;
     uint256 public numberOfContributors = 0;
 
     //  for rate
@@ -667,9 +667,9 @@ contract GOeurekaSale is Claimable, gotTokenSaleConfig, Pausable, Salvageable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        if (now &gt; saleEnd)
+        if (now > saleEnd)
             return true;
-        if (tokensRaised &gt;= SALE_CAP)
+        if (tokensRaised >= SALE_CAP)
             return true; // if we reach the tokensForSale
         return false;
     }
@@ -680,17 +680,17 @@ contract GOeurekaSale is Claimable, gotTokenSaleConfig, Pausable, Salvageable {
     }
 
     modifier onlyAuthorised(address beneficiary) {
-        require(isWhiteListed(beneficiary),&quot;Not authorised&quot;);
+        require(isWhiteListed(beneficiary),"Not authorised");
         
-        require (!hasEnded(),&quot;ended&quot;);
-        require (multiSig != 0x0,&quot;MultiSig empty&quot;);
-        require ((msg.value &gt; minContribution) || (tokensRaised.add(getTokens(msg.value)) == SALE_CAP),&quot;Value too small&quot;);
+        require (!hasEnded(),"ended");
+        require (multiSig != 0x0,"MultiSig empty");
+        require ((msg.value > minContribution) || (tokensRaised.add(getTokens(msg.value)) == SALE_CAP),"Value too small");
         _;
     }
 
     function setNewRate(uint newRate) onlyOwner public {
         require(weiRaised == 0);
-        require(1000 &lt; newRate &amp;&amp; newRate &lt; 10000);
+        require(1000 < newRate && newRate < 10000);
         basicRate = newRate;
         calculateRates();
     }
@@ -705,12 +705,12 @@ contract GOeurekaSale is Claimable, gotTokenSaleConfig, Pausable, Salvageable {
     view
     returns (uint256 tokens)
     {
-        if (now &lt;= presaleEnd) {
+        if (now <= presaleEnd) {
             uint theseTokens = amountInWei.mul(basicRate).mul(1125).div(1000);
-            require((amountInWei &gt;= 1 ether) || (tokensRaised.add(theseTokens)==SALE_CAP));
+            require((amountInWei >= 1 ether) || (tokensRaised.add(theseTokens)==SALE_CAP));
             return (theseTokens);
         }
-        if (now &lt;= saleEnd) { 
+        if (now <= saleEnd) { 
             return (amountInWei.mul(basicRate));
         }
         revert();

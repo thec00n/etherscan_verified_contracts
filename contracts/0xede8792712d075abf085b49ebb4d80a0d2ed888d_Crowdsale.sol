@@ -16,9 +16,9 @@ library SafeMath {
     * Division with safety check
     */
     function Div(uint256 a, uint256 b) pure internal returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
@@ -27,7 +27,7 @@ library SafeMath {
     */
     function Sub(uint256 a, uint256 b) pure internal returns (uint256) {
       //b must be greater that a as we need to store value in unsigned integer
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
@@ -38,13 +38,13 @@ library SafeMath {
       uint256 c = a + b;
       //We need to check result greater than only one number for valid Addition
       //refer https://ethereum.stackexchange.com/a/15270/16048
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 }
 
 /**
- * Contract &quot;ERC20Basic&quot;
+ * Contract "ERC20Basic"
  * Purpose: Defining ERC20 standard with basic functionality like - CheckBalance and Transfer including Transfer event
  */
 contract ERC20Basic {
@@ -63,12 +63,12 @@ contract ERC20Basic {
 }
 
 /**
- * Contract &quot;ERC20&quot;
+ * Contract "ERC20"
  * Purpose: Defining ERC20 standard with more advanced functionality like - Authorize spender to transfer IAC token
  */
 contract ERC20 is ERC20Basic {
 
-  //Get IAC token amount that spender can spend from provided owner&#39;s account
+  //Get IAC token amount that spender can spend from provided owner's account
   function allowance(address owner, address spender) public view returns (uint256);
 
   //Transfer initiated by spender
@@ -83,7 +83,7 @@ contract ERC20 is ERC20Basic {
 
 
 /**
- * Contract &quot;Ownable&quot;
+ * Contract "Ownable"
  * Purpose: Defines Owner for contract and provide functionality to transfer ownership to another account
  */
 contract Ownable {
@@ -91,7 +91,7 @@ contract Ownable {
   //owner variable to store contract owner account
   address public owner;
 
-  //Constructor for the contract to store owner&#39;s account on deployment
+  //Constructor for the contract to store owner's account on deployment
   function Ownable() public {
     owner = msg.sender;
   }
@@ -102,7 +102,7 @@ contract Ownable {
       _;
   }
 
-  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner&#39;s account
+  //ownership can be transferred to provided newOwner. Function can only be initiated by contract owner's account
   function transferOwnership(address newOwner) public onlyOwner {
     require (newOwner != address(0));
       owner = newOwner;
@@ -111,7 +111,7 @@ contract Ownable {
 }
 
 /**
- * Contract &quot;Pausable&quot;
+ * Contract "Pausable"
  * Purpose: Contract to provide functionality to pause and resume Sale in case of emergency
  */
 contract Pausable is Ownable {
@@ -151,7 +151,7 @@ contract Pausable is Ownable {
 }
 
 /**
- * Contract &quot;IAC&quot;
+ * Contract "IAC"
  * Purpose: Create IAC token
  */
 contract Injii is ERC20, Ownable {
@@ -160,29 +160,29 @@ contract Injii is ERC20, Ownable {
 
   /* Public variables of the token */
   //To store name for token
-  string public constant name = &quot;Injii Access Coins&quot;;
+  string public constant name = "Injii Access Coins";
 
   //To store symbol for token
-  string public constant symbol = &quot;IAC&quot;;
+  string public constant symbol = "IAC";
 
   //To store decimal places for token
   uint8 public constant decimals = 0;
 
   //To store decimal version for token
-  string public version = &#39;v1.0&#39;;
+  string public version = 'v1.0';
 
   //flag to indicate whether transfer of IAC Token is allowed or not
   bool public locked;
 
   //map to store IAC Token balance corresponding to address
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  //To store spender with allowed amount of IAC Token to spend corresponding to IAC Token holder&#39;s account
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  //To store spender with allowed amount of IAC Token to spend corresponding to IAC Token holder's account
+  mapping (address => mapping (address => uint256)) allowed;
 
   //To handle ERC20 short address attack
   modifier onlyPayloadSize(uint256 size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -205,7 +205,7 @@ contract Injii is ERC20, Ownable {
   function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public onlyUnlocked returns (bool){
 
     //Check provided IAC Token should not be 0
-    if (_to != address(0) &amp;&amp; _value &gt;= 1) {
+    if (_to != address(0) && _value >= 1) {
       //deduct IAC Token amount from transaction initiator
       balances[msg.sender] = balances[msg.sender].Sub(_value);
       //Add IAC Token to balace of target account
@@ -223,10 +223,10 @@ contract Injii is ERC20, Ownable {
   function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) public onlyUnlocked returns (bool) {
 
     //Check provided IAC Token should not be 0
-    if (_to != address(0) &amp;&amp; _from != address(0)) {
+    if (_to != address(0) && _from != address(0)) {
       //Get amount of IAC Token for which spender is authorized
       var _allowance = allowed[_from][msg.sender];
-      //Add amount of IAC Token in trarget account&#39;s balance
+      //Add amount of IAC Token in trarget account's balance
       balances[_to] = balances[_to].Add(_value);
       //Deduct IAC Token amount from _from account
       balances[_from] = balances[_from].Sub(_value);
@@ -256,7 +256,7 @@ contract Injii is ERC20, Ownable {
     return true;
   }
 
-  //Get IAC Token amount that spender can spend from provided owner&#39;s account
+  //Get IAC Token amount that spender can spend from provided owner's account
   function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
     return allowed[_owner][_spender];
   }
@@ -267,7 +267,7 @@ contract Metadata {
     
     address public owner;
     
-    mapping (uint =&gt; address) registerMap;
+    mapping (uint => address) registerMap;
 
     function Metadata() public {
         owner = msg.sender;
@@ -372,7 +372,7 @@ contract CompanyInventory is Ownable{
     }
     
     function initiateLocking (uint256 _alreadyTransferredTokens) public {
-        require(msg.sender == objMetadata.getAddress(crowdsaleContractID) &amp;&amp; startBlock == 0);
+        require(msg.sender == objMetadata.getAddress(crowdsaleContractID) && startBlock == 0);
         startBlock = now;
         unlockedTokens = 0;
         balance = objCrowdsale.balanceOf(this);
@@ -382,14 +382,14 @@ contract CompanyInventory is Ownable{
     }
     
     function releaseTokens () public onlyOwner {
-        require(startBlock &gt; 0);
+        require(startBlock > 0);
         if(initialReleaseDone == 0){
-            require(now &gt;= startBlock.Add(1 years));
+            require(now >= startBlock.Add(1 years));
             unlockedTokens =  balance/2;
             initialReleaseDone = 1;
         }
         else if(secondReleaseDone == 0){
-            require(now &gt;= startBlock.Add(2 years));
+            require(now >= startBlock.Add(2 years));
             unlockedTokens = balance;
             secondReleaseDone = 1;
         }
@@ -401,7 +401,7 @@ contract CompanyInventory is Ownable{
     */
     function TransferFromCompanyInventory(address beneficiary,uint256 iacToCredit,bytes32 comment) onlyOwner external {
         require(beneficiary != address(0));
-        require(totalSuppliedAfterLock.Add(iacToCredit) &lt;= unlockedTokens);
+        require(totalSuppliedAfterLock.Add(iacToCredit) <= unlockedTokens);
         objCrowdsale.transfer(beneficiary,iacToCredit);
         //Update total supply for IAC Token
         totalSuppliedAfterLock = totalSuppliedAfterLock.Add(iacToCredit);
@@ -451,9 +451,9 @@ contract Crowdsale is Injii, Pausable {
     //number of tokens per ether
     uint256 public getPrice;
     // To indicate Sale status
-    //crowdsaleStatus=0 =&gt; crowdsale not started
-    //crowdsaleStatus=1 =&gt; crowdsale started;
-    //crowdsaleStatus=2 =&gt; crowdsale finished
+    //crowdsaleStatus=0 => crowdsale not started
+    //crowdsaleStatus=1 => crowdsale started;
+    //crowdsaleStatus=2 => crowdsale finished
     uint256 public crowdsaleStatus;
     //type of CrowdSale:
     //1 = crowdsale
@@ -516,9 +516,9 @@ contract Crowdsale is Injii, Pausable {
     //Modifier to make sure transaction is happening during sale when it is not stopped
     modifier respectTimeFrame() {
       // When contract is deployed, startblock is 0. When sale is started, startBlock should not be zero
-      assert(startBlock != 0 &amp;&amp; !stopped &amp;&amp; crowdsaleStatus == 1);
+      assert(startBlock != 0 && !stopped && crowdsaleStatus == 1);
       //check if requirest is made after time is up
-      if(now &gt; endBlock){
+      if(now > endBlock){
           //tokens cannot be bought after time is up
           revert();
       }
@@ -587,10 +587,10 @@ contract Crowdsale is Injii, Pausable {
     function startSecondaryCrowdsale (uint256 durationSecondaryCrowdSale) public onlyOwner {
       //crowdsale should have been stopped
       //startBlock should have a value. It show that sale was started at some point of time
-      //endBlock &gt; the duration of crowdsale: this ensures endblock was updated by finalize
-      assert(crowdsaleStatus == 2 &amp;&amp; crowdSaleType == 1);
-      if(now &gt; endBlock.Add(gapInPrimaryCrowdsaleAndSecondaryCrowdsale)){
-          //crowdsale status set to &quot;running&quot;
+      //endBlock > the duration of crowdsale: this ensures endblock was updated by finalize
+      assert(crowdsaleStatus == 2 && crowdSaleType == 1);
+      if(now > endBlock.Add(gapInPrimaryCrowdsaleAndSecondaryCrowdsale)){
+          //crowdsale status set to "running"
           crowdsaleStatus = 1;
           //change the type of CrowdSale
           crowdSaleType = 2;
@@ -629,15 +629,15 @@ contract Crowdsale is Injii, Pausable {
         //calculate price of tokens at 25% discount
         uint256 priceToAvail25PercentDiscount = 3*numberOfTokensToAvail25percentDiscount.Div(4*getPrice).Mul(1e18);
         //Check if less than minimum number of tokens are bought
-        if(iacToSend &lt; minimumNumberOfTokens){
+        if(iacToSend < minimumNumberOfTokens){
             revert();
         }
-        else if(msg.value &gt;= priceToAvail25PercentDiscount &amp;&amp; msg.value &lt; priceToAvail50PercentDiscount){
+        else if(msg.value >= priceToAvail25PercentDiscount && msg.value < priceToAvail50PercentDiscount){
             //grant tokens according to 25% discount
             iacToSend = (((msg.value.Mul(getPrice)).Mul(4)).Div(3))/1e18;
         }
         //check if user is eligible for 50% discount
-        else if(msg.value &gt;= priceToAvail50PercentDiscount){
+        else if(msg.value >= priceToAvail50PercentDiscount){
             //here tokens are given at 50% discount
             iacToSend = (msg.value.Mul(2*getPrice))/1e18;
         }
@@ -646,13 +646,13 @@ contract Crowdsale is Injii, Pausable {
             iacToSend = (msg.value.Mul(getPrice))/1e18;
         }
         //we should not be supplying more tokens than maxCap
-        assert(iacToSend.Add(totalSupplyForCrowdsaleAndMint) &lt;= maxCap);
+        assert(iacToSend.Add(totalSupplyForCrowdsaleAndMint) <= maxCap);
         //increase totalSupply
         totalSupply = totalSupply.Add(iacToSend);
 
         totalSupplyForCrowdsaleAndMint = totalSupplyForCrowdsaleAndMint.Add(iacToSend);
 
-        if(ETHReceived &lt; targetToAchieve){
+        if(ETHReceived < targetToAchieve){
             //transfer ether to coinbase account
             coinbase.transfer(msg.value);
         }
@@ -676,13 +676,13 @@ contract Crowdsale is Injii, Pausable {
     */
     function MintAndTransferToken(address beneficiary,uint256 iacToCredit,bytes32 comment) external onlyOwner {
         //Available after the crowdsale is started
-        assert(crowdsaleStatus == 1 &amp;&amp; beneficiary != address(0));
+        assert(crowdsaleStatus == 1 && beneficiary != address(0));
         //number of tokens to mint should be whole number
-        require(iacToCredit &gt;= 1);
+        require(iacToCredit >= 1);
         //Check whether tokens are available or not
-        assert(totalSupplyForCrowdsaleAndMint &lt;= maxCap);
+        assert(totalSupplyForCrowdsaleAndMint <= maxCap);
         //Check whether the amount of token are available to transfer
-        require(totalSupplyForCrowdsaleAndMint.Add(iacToCredit) &lt;= maxCap);
+        require(totalSupplyForCrowdsaleAndMint.Add(iacToCredit) <= maxCap);
         //Update IAC Token balance for beneficiary
         balances[beneficiary] = balances[beneficiary].Add(iacToCredit);
         //Update total supply for IAC Token
@@ -699,13 +699,13 @@ contract Crowdsale is Injii, Pausable {
     */
     function TransferFromCompanyInventory(address beneficiary,uint256 iacToCredit,bytes32 comment) external onlyOwner {
         //Available after the crowdsale is started
-        assert(startBlock != 0 &amp;&amp; beneficiary != address(0));
+        assert(startBlock != 0 && beneficiary != address(0));
         //Check whether tokens are available or not
-        assert(totalSupplyFromInventory &lt;= maxCapCompanyInventory &amp;&amp; !inventoryLocked);
+        assert(totalSupplyFromInventory <= maxCapCompanyInventory && !inventoryLocked);
         //number of tokens to transfer should be whole number
-        require(iacToCredit &gt;= 1);
+        require(iacToCredit >= 1);
         //Check whether the amount of token are available to transfer
-        require(totalSupplyFromInventory.Add(iacToCredit) &lt;= maxCapCompanyInventory);
+        require(totalSupplyFromInventory.Add(iacToCredit) <= maxCapCompanyInventory);
         //Update IAC Token balance for beneficiary
         balances[beneficiary] = balances[beneficiary].Add(iacToCredit);
         //Update total supply for IAC Token
@@ -721,7 +721,7 @@ contract Crowdsale is Injii, Pausable {
     }
 
     function LockInventory () public onlyOwner {
-        require(startBlock &gt; 0 &amp;&amp; now &gt;= startBlock.Add(durationCrowdSale.Add(90 days)) &amp;&amp; !inventoryLocked);
+        require(startBlock > 0 && now >= startBlock.Add(durationCrowdSale.Add(90 days)) && !inventoryLocked);
         address inventoryContractAddress = objMetada.getAddress(inventoryContractID);
         require(inventoryContractAddress != address(0));
         balances[inventoryContractAddress] = totalRemainInInventory;
@@ -737,9 +737,9 @@ contract Crowdsale is Injii, Pausable {
     function finalize() public onlyOwner {
           //Make sure Sale is running
           //finalize should be called only if crowdsale is running
-          assert(crowdsaleStatus == 1 &amp;&amp; (crowdSaleType == 1 || crowdSaleType == 2));
+          assert(crowdsaleStatus == 1 && (crowdSaleType == 1 || crowdSaleType == 2));
           //finalize only if less than minimum number of tokens are left or if time is up
-          assert(maxCap.Sub(totalSupplyForCrowdsaleAndMint) &lt; minimumNumberOfTokens || now &gt;= endBlock);
+          assert(maxCap.Sub(totalSupplyForCrowdsaleAndMint) < minimumNumberOfTokens || now >= endBlock);
           //crowdsale is ended
           crowdsaleStatus = 2;
           //update endBlock to the actual ending of crowdsale
@@ -755,7 +755,7 @@ contract Crowdsale is Injii, Pausable {
     {
         //unlock will happen after 90 days of ending of crowdsale
         //crowdsale itself being of 25 days
-        assert(crowdsaleStatus==2 &amp;&amp; now &gt;= startBlock.Add(durationCrowdSale.Add(90 days)));
+        assert(crowdsaleStatus==2 && now >= startBlock.Add(durationCrowdSale.Add(90 days)));
         locked = false;
         //Emit event when crowdsale state changes
         StateChanged(true);

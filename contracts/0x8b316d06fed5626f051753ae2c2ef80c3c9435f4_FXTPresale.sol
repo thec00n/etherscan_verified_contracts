@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -134,7 +134,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -193,20 +193,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -389,14 +389,14 @@ contract SaleBase is Sudo, Pausable, PaymentFallbackReceiver {
   address public fuzexAccount;
 
   // common sale parameters
-  mapping (address =&gt; uint256) public beneficiaryFunded;
+  mapping (address => uint256) public beneficiaryFunded;
   uint256 public weiRaised;
 
   bool public isFinalized; // whether sale is finalized
 
   /**
    * @dev After sale finalized, token and other contract ownership is transferred to
-   * another contract or account. So this modifier doesn&#39;t effect contract logic, just
+   * another contract or account. So this modifier doesn't effect contract logic, just
    * make sure of it.
    */
   modifier onlyNotFinalized() {
@@ -415,9 +415,9 @@ contract SaleBase is Sudo, Pausable, PaymentFallbackReceiver {
     public
   {
     require(_token != address(0)
-     &amp;&amp; _kyc != address(0)
-     &amp;&amp; _vault != address(0)
-     &amp;&amp; _fuzexAccount != address(0));
+     && _kyc != address(0)
+     && _vault != address(0)
+     && _fuzexAccount != address(0));
 
     token = FXTI(_token);
     kyc = KYCI(_kyc);
@@ -497,7 +497,7 @@ contract FXTPresale is SaleBase {
   uint256 public presaleMaxEtherCap;
   uint256 public presaleMinPurchase;
 
-  uint256 public maxEtherCap;   // max ether cap for both private-sale &amp; presale
+  uint256 public maxEtherCap;   // max ether cap for both private-sale & presale
 
   uint64 public startTime;     // when presale starts
   uint64 public endTime;       // when presale ends
@@ -506,7 +506,7 @@ contract FXTPresale is SaleBase {
 
   /**
    * @dev only presale registered address can participate presale.
-   * private-sale doesn&#39;t require to check address because owner deals with it.
+   * private-sale doesn't require to check address because owner deals with it.
    */
   modifier onlyRegistered(address _addr) {
     require(kyc.isRegistered(_addr, true));
@@ -528,14 +528,14 @@ contract FXTPresale is SaleBase {
     SaleBase(_token, _kyc, _vault, _payment, _fuzexAccount)
     public
   {
-    require(now &lt; _startTime &amp;&amp; _startTime &lt; _endTime);
+    require(now < _startTime && _startTime < _endTime);
 
-    require(_privateEtherFunded &gt;= 0);
-    require(_privateMaxEtherCap &gt; 0);
-    require(_presaleMaxEtherCap &gt; 0);
-    require(_presaleMinPurchase &gt; 0);
+    require(_privateEtherFunded >= 0);
+    require(_privateMaxEtherCap > 0);
+    require(_presaleMaxEtherCap > 0);
+    require(_presaleMinPurchase > 0);
 
-    require(_presaleMinPurchase &lt; _presaleMaxEtherCap);
+    require(_presaleMinPurchase < _presaleMaxEtherCap);
 
     startTime = _startTime;
     endTime = _endTime;
@@ -549,7 +549,7 @@ contract FXTPresale is SaleBase {
     maxEtherCap = privateMaxEtherCap.add(presaleMaxEtherCap);
     weiRaised = _privateEtherFunded; // ether funded during private-sale
 
-    require(weiRaised &lt;= maxEtherCap);
+    require(weiRaised <= maxEtherCap);
   }
 
   function () external payable {
@@ -557,7 +557,7 @@ contract FXTPresale is SaleBase {
   }
 
   /**
-   * @dev paymentFallBack() assumes that paid BTC doesn&#39;t exceed the max ether cap.
+   * @dev paymentFallBack() assumes that paid BTC doesn't exceed the max ether cap.
    * BTC / ETH price (or rate) is determined using reliable outer resources.
    * @param _beneficiary ethereum address who receives tokens
    * @param _tokens amount of FXT to mint
@@ -567,17 +567,17 @@ contract FXTPresale is SaleBase {
     onlyPayment
   {
     // only check time and parameters
-    require(startTime &lt;= now &amp;&amp; now &lt;= endTime);
+    require(startTime <= now && now <= endTime);
     require(_beneficiary != address(0));
-    require(_tokens &gt; 0);
+    require(_tokens > 0);
 
     uint256 rate = getRate();
     uint256 weiAmount = _tokens.div(rate);
 
-    require(weiAmount &gt;= presaleMinPurchase);
+    require(weiAmount >= presaleMinPurchase);
 
     // funded ether should not exceed max ether cap.
-    require(weiRaised.add(weiAmount) &lt;= maxEtherCap);
+    require(weiRaised.add(weiAmount) <= maxEtherCap);
 
     weiRaised = weiRaised.add(weiAmount);
     beneficiaryFunded[_beneficiary] = beneficiaryFunded[_beneficiary].add(weiAmount);
@@ -594,7 +594,7 @@ contract FXTPresale is SaleBase {
   {
     // check validity
     require(_beneficiary != address(0));
-    require(msg.value &gt;= presaleMinPurchase);
+    require(msg.value >= presaleMinPurchase);
     require(validPurchase());
 
     uint256 toFund;
@@ -613,14 +613,14 @@ contract FXTPresale is SaleBase {
     uint256 weiAmount = msg.value;
     uint256 totalAmount = weiRaised.add(weiAmount);
 
-    if (totalAmount &gt; maxEtherCap) {
+    if (totalAmount > maxEtherCap) {
       toFund = maxEtherCap.sub(weiRaised);
     } else {
       toFund = weiAmount;
     }
 
-    require(toFund &gt; 0);
-    require(weiAmount &gt;= toFund);
+    require(toFund > 0);
+    require(weiAmount >= toFund);
 
     uint256 rate = getRate();
     tokens = toFund.mul(rate);
@@ -631,7 +631,7 @@ contract FXTPresale is SaleBase {
 
     token.generateTokens(_beneficiary, tokens);
 
-    if (toReturn &gt; 0) {
+    if (toReturn > 0) {
       msg.sender.transfer(toReturn);
     }
 
@@ -640,8 +640,8 @@ contract FXTPresale is SaleBase {
 
   function validPurchase() internal view returns (bool) {
     bool nonZeroPurchase = msg.value != 0;
-    bool validTime = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-    return nonZeroPurchase &amp;&amp; !maxReached() &amp;&amp; validTime;
+    bool validTime = now >= startTime && now <= endTime;
+    return nonZeroPurchase && !maxReached() && validTime;
   }
 
   /**
@@ -674,7 +674,7 @@ contract FXTPresale is SaleBase {
 
   function finalizePresale(address _mainsale) public onlyOwner {
       require(!isFinalized);
-      require(maxReached() || now &gt; endTime);
+      require(maxReached() || now > endTime);
 
       PresaleFallbackReceiver mainsale = PresaleFallbackReceiver(_mainsale);
 

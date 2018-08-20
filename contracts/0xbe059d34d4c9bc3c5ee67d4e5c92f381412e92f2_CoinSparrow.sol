@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -75,8 +75,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -91,9 +91,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -101,7 +101,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -110,7 +110,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -160,12 +160,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       // solium-disable-next-line arg-overflow
@@ -175,7 +175,7 @@ library ECRecovery {
 
   /**
    * toEthSignedMessageHash
-   * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+   * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
    * @dev and hash the result
    */
   function toEthSignedMessageHash(bytes32 hash)
@@ -186,7 +186,7 @@ library ECRecovery {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(
-      &quot;\x19Ethereum Signed Message:\n32&quot;,
+      "\x19Ethereum Signed Message:\n32",
       hash
     );
   }
@@ -249,7 +249,7 @@ contract Pausable is Ownable {
 
 contract Arbitrator is Ownable {
 
-  mapping(address =&gt; bool) private aribitratorWhitelist;
+  mapping(address => bool) private aribitratorWhitelist;
   address private primaryArbitrator;
 
   event ArbitratorAdded(address indexed newArbitrator);
@@ -279,7 +279,7 @@ contract Arbitrator is Ownable {
 
   function deleteArbitrator(address arbitrator) public onlyOwner {
     require(arbitrator != address(0));
-    require(arbitrator != msg.sender); //ensure owner isn&#39;t removed
+    require(arbitrator != msg.sender); //ensure owner isn't removed
     emit ArbitratorRemoved(arbitrator);
     delete aribitratorWhitelist[arbitrator];
   }
@@ -298,7 +298,7 @@ contract Arbitrator is Ownable {
 
 contract ApprovedWithdrawer is Ownable {
 
-  mapping(address =&gt; bool) private withdrawerWhitelist;
+  mapping(address => bool) private withdrawerWhitelist;
   address private primaryWallet;
 
   event WalletApproved(address indexed newAddress);
@@ -328,7 +328,7 @@ contract ApprovedWithdrawer is Ownable {
 
   function deleteApprovedWalletAddress(address walletAddress) public onlyOwner {
     require(walletAddress != address(0));
-    require(walletAddress != msg.sender); //ensure owner isn&#39;t removed
+    require(walletAddress != msg.sender); //ensure owner isn't removed
     emit WalletRemoved(walletAddress);
     delete withdrawerWhitelist[walletAddress];
   }
@@ -347,7 +347,7 @@ contract ApprovedWithdrawer is Ownable {
 
 contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
 
-  //Who wouldn&#39;t?
+  //Who wouldn't?
   using SafeMath for uint256;
 
   /**
@@ -356,7 +356,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    * ------------------------------------
    */
 
-  //Some of these are not used in the contract, but are for reference and are used in the front-end&#39;s database.
+  //Some of these are not used in the contract, but are for reference and are used in the front-end's database.
   uint8 constant private STATUS_JOB_NOT_EXIST = 1; //Not used in contract. Here for reference (used externally)
   uint8 constant private STATUS_JOB_CREATED = 2; //Job has been created. Set by createJobEscrow()
   uint8 constant private STATUS_JOB_STARTED = 3; //Contractor flags job as started. Set by jobStarted()
@@ -373,7 +373,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
   uint8 constant private STATUS_MUTUAL_CANCELLATION_PROCESSED = 12; //Not used in contract. Here for reference
 
   //Deployment script will check for existing CoinSparrow contracts, and only
-  //deploy if this value is &gt; than existing version.
+  //deploy if this value is > than existing version.
   //TODO: to be implemented
   uint8 constant private COINSPARROW_CONTRACT_VERSION = 1;
 
@@ -427,7 +427,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     // Set in createJobEscrow(). If the Contractor has not called jobStarted() within this time, then the hirer
     // can call hirerCancel() to get a full refund (minus gas fees)
     uint32 hirerCanCancelAfter;
-    //Job&#39;s current status (see STATUS_JOB_* constants above). Updated in multiple functions
+    //Job's current status (see STATUS_JOB_* constants above). Updated in multiple functions
     uint8 status;
     //timestamp for job completion. Set when jobCompleted() is called.
     uint32 jobCompleteDate;
@@ -451,7 +451,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
 
   /*
    * Set max limit for how much (in wei) contract will accept. Can be modified by owner using setMaxSend()
-   * This ensures that arbitrarily large amounts of ETH can&#39;t be sent.
+   * This ensures that arbitrarily large amounts of ETH can't be sent.
    * Front end will check this value before processing new jobs
    */
   uint256 private MAX_SEND;
@@ -462,13 +462,13 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    * Once job is complete, and refunds released, the
    * mapping for that job is deleted to conserve space.
    */
-  mapping(bytes32 =&gt; JobEscrow) private jobEscrows;
+  mapping(bytes32 => JobEscrow) private jobEscrows;
 
   /*
-   * mapping of Hirer&#39;s funds in Escrow for each job.
+   * mapping of Hirer's funds in Escrow for each job.
    * This is referenced when any ETH transactions occur
    */
-  mapping(address =&gt; mapping(bytes32 =&gt; uint256)) private hirerEscrowMap;
+  mapping(address => mapping(bytes32 => uint256)) private hirerEscrowMap;
 
   /**
    * ---------
@@ -518,8 +518,8 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    */
 
   constructor(uint256 _maxSend) public {
-    require(_maxSend &gt; 0);
-    //a bit of protection. Set a limit, so users can&#39;t send stupid amounts of ETH
+    require(_maxSend > 0);
+    //a bit of protection. Set a limit, so users can't send stupid amounts of ETH
     MAX_SEND = _maxSend;
   }
 
@@ -549,9 +549,9 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    * @param _value The ether amount being held in escrow. I.e. job cost - amount hirer is paying contractor
    * @param _fee CoinSparrow fee for this job. Pre-calculated
    * @param _jobStartedWindowInSeconds time within which the contractor must flag as job started
-   *                                   if job hasn&#39;t started AFTER this time, hirer can cancel contract.
+   *                                   if job hasn't started AFTER this time, hirer can cancel contract.
    *                                   Hirer cannot cancel contract before this time.
-   * @param _secondsToComplete agreed time to complete job once it&#39;s flagged as STATUS_JOB_STARTED
+   * @param _secondsToComplete agreed time to complete job once it's flagged as STATUS_JOB_STARTED
    */
   function createJobEscrow(
     bytes16 _jobId,
@@ -565,19 +565,19 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
   {
 
     // Check sent eth against _value and also make sure is not 0
-    require(msg.value == _value &amp;&amp; msg.value &gt; 0);
+    require(msg.value == _value && msg.value > 0);
 
-    //CoinSparrow&#39;s Fee should be less than the Job Value, because anything else would be daft.
-    require(_fee &lt; _value);
+    //CoinSparrow's Fee should be less than the Job Value, because anything else would be daft.
+    require(_fee < _value);
 
     //Check the amount sent is below the acceptable threshold
-    require(msg.value &lt;= MAX_SEND);
+    require(msg.value <= MAX_SEND);
 
     //needs to be more than 0 seconds
-    require(_jobStartedWindowInSeconds &gt; 0);
+    require(_jobStartedWindowInSeconds > 0);
 
     //needs to be more than 0 seconds
-    require(_secondsToComplete &gt; 0);
+    require(_secondsToComplete > 0);
 
     //generate the job hash. Used to reference the job in all future function calls/transactions.
     bytes32 jobHash = getJobHash(
@@ -602,7 +602,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     //update total held in escrow
     totalInEscrow = totalInEscrow.add(msg.value);
 
-    //Update hirer&#39;s job =&gt; value mapping
+    //Update hirer's job => value mapping
     hirerEscrowMap[msg.sender][jobHash] = msg.value;
 
     //Let the world know.
@@ -645,19 +645,19 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     require(jobEscrows[jobHash].exists);
 
     //check hirer has funds in the Smart Contract assigned to this job
-    require(hirerEscrowMap[msg.sender][jobHash] &gt; 0);
+    require(hirerEscrowMap[msg.sender][jobHash] > 0);
 
-    //get the value from the stored hirer =&gt; job =&gt; value mapping
+    //get the value from the stored hirer => job => value mapping
     uint256 jobValue = hirerEscrowMap[msg.sender][jobHash];
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
      //Log event
     emit HirerReleased(
@@ -674,7 +674,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     //no longer required. Remove to save storage. Also prevents reentrancy
     delete hirerEscrowMap[msg.sender][jobHash];
 
-    //add to CoinSparrow&#39;s fee pool
+    //add to CoinSparrow's fee pool
     feesAvailableForWithdraw = feesAvailableForWithdraw.add(_fee);
 
     //update total in escrow
@@ -717,19 +717,19 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     //check job is actually completed
     require(jobEscrows[jobHash].status == STATUS_JOB_COMPLETED);
     //can only self-release 4 weeks after completion
-    require(block.timestamp &gt; jobEscrows[jobHash].jobCompleteDate + 4 weeks);
+    require(block.timestamp > jobEscrows[jobHash].jobCompleteDate + 4 weeks);
 
     //get value for job
     uint256 jobValue = hirerEscrowMap[_hirer][jobHash];
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
     emit ContractorReleased(
       jobHash,
@@ -783,19 +783,19 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     //check job is started
     require(jobEscrows[jobHash].status == STATUS_JOB_STARTED);
     //can only self-refund 4 weeks after agreed completion date
-    require(block.timestamp &gt; jobEscrows[jobHash].agreedCompletionDate + 4 weeks);
+    require(block.timestamp > jobEscrows[jobHash].agreedCompletionDate + 4 weeks);
 
     //get value for job
     uint256 jobValue = hirerEscrowMap[msg.sender][jobHash];
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
     emit HirerLastResortRefund(
       jobHash,
@@ -858,7 +858,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
 
   /**
    * @dev Flags job completed to inform hirer. Also sets flag to allow contractor to get their funds 4 weeks after
-   * completion in the event that the hirer is unresponsive and doesn&#39;t release the funds.
+   * completion in the event that the hirer is unresponsive and doesn't release the funds.
    * Can only be called the contractor when job complete.
    * Following parameters are used to regenerate the jobHash:
    * @param _jobId The unique ID of the job, from the CoinSparrow database
@@ -928,13 +928,13 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     require(jobEscrows[jobHash].exists);
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
     delete jobEscrows[jobHash];
     delete  hirerEscrowMap[_hirer][jobHash];
@@ -975,20 +975,20 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     //check the job exists in the contract
     require(jobEscrows[jobHash].exists);
 
-    require(jobEscrows[jobHash].hirerCanCancelAfter &gt; 0);
+    require(jobEscrows[jobHash].hirerCanCancelAfter > 0);
     require(jobEscrows[jobHash].status == STATUS_JOB_CREATED);
-    require(jobEscrows[jobHash].hirerCanCancelAfter &lt; block.timestamp);
+    require(jobEscrows[jobHash].hirerCanCancelAfter < block.timestamp);
 
     uint256 jobValue = hirerEscrowMap[_hirer][jobHash];
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
     delete jobEscrows[jobHash];
     delete  hirerEscrowMap[msg.sender][jobHash];
@@ -1077,24 +1077,24 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     require(jobEscrows[jobHash].exists);
 
     require(msg.sender == _hirer || msg.sender == _contractor);
-    require(_contractorPercent &lt;= 100 &amp;&amp; _contractorPercent &gt;= 0);
+    require(_contractorPercent <= 100 && _contractorPercent >= 0);
 
     //Checks the signature of both parties to ensure % is correct.
     //Attempts to prevent the party calling the function from modifying the pre-agreed %
     require(
-      checkRefundSignature(_contractorPercent,_hirerMsgSig,_hirer)&amp;&amp;
+      checkRefundSignature(_contractorPercent,_hirerMsgSig,_hirer)&&
       checkRefundSignature(_contractorPercent,_contractorMsgSig,_contractor));
 
     uint256 jobValue = hirerEscrowMap[_hirer][jobHash];
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
     totalInEscrow = totalInEscrow.sub(jobValue);
     feesAvailableForWithdraw = feesAvailableForWithdraw.add(_fee);
@@ -1113,10 +1113,10 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
 
     emit AddFeesToCoinSparrowPool(jobHash, _fee);
 
-    if (contractorAmount &gt; 0) {
+    if (contractorAmount > 0) {
       _contractor.transfer(contractorAmount);
     }
-    if (hirerAmount &gt; 0) {
+    if (hirerAmount > 0) {
       _hirer.transfer(hirerAmount);
     }
   }
@@ -1200,18 +1200,18 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     require(jobEscrows[jobHash].exists);
 
     require(jobEscrows[jobHash].status == STATUS_JOB_IN_DISPUTE);
-    require(_contractorPercent &lt;= 100);
+    require(_contractorPercent <= 100);
 
     uint256 jobValue = hirerEscrowMap[_hirer][jobHash];
 
     //Check values in contract and sent are valid
-    require(jobValue &gt; 0 &amp;&amp; jobValue == _value);
+    require(jobValue > 0 && jobValue == _value);
 
     //check fee amount is valid
-    require(jobValue &gt;= jobValue.sub(_fee));
+    require(jobValue >= jobValue.sub(_fee));
 
     //check there is enough in escrow
-    require(totalInEscrow &gt;= jobValue &amp;&amp; totalInEscrow &gt; 0);
+    require(totalInEscrow >= jobValue && totalInEscrow > 0);
 
     totalInEscrow = totalInEscrow.sub(jobValue);
     feesAvailableForWithdraw = feesAvailableForWithdraw.add(_fee);
@@ -1251,8 +1251,8 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
      * Withdraw fees collected by the contract. Only the owner can call this.
      * Can only be sent to an approved wallet address
      */
-    require(_amount &gt; 0);
-    require(_amount &lt;= feesAvailableForWithdraw &amp;&amp; feesAvailableForWithdraw &gt; 0);
+    require(_amount > 0);
+    require(_amount <= feesAvailableForWithdraw && feesAvailableForWithdraw > 0);
 
     feesAvailableForWithdraw = feesAvailableForWithdraw.sub(_amount);
 
@@ -1285,7 +1285,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    */
 
   function setMaxSend(uint256 _maxSend) onlyOwner external {
-    require(_maxSend &gt; 0);
+    require(_maxSend > 0);
     MAX_SEND = _maxSend;
   }
 
@@ -1299,7 +1299,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
   }
 
   /**
-   * @dev returns THIS contract instance&#39;s version
+   * @dev returns THIS contract instance's version
    * @return COINSPARROW_CONTRACT_VERSION version number of THIS instance of the contract
    */
 
@@ -1321,7 +1321,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    * @param _contractor The wallet address of the contractor (selling) party
    * @param _value The ether amount being held in escrow. I.e. job cost - amount hirer is paying contractor
    * @param _fee CoinSparrow fee for this job. Pre-calculated
-   * @return status job&#39;s current status
+   * @return status job's current status
    */
 
   function getJobStatus(
@@ -1491,7 +1491,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
    * @param _contractor The wallet address of the contractor (selling) party
    * @param _value The ether amount being held in escrow. I.e. job cost - amount hirer is paying contractor
    * @param _fee CoinSparrow fee for this job. Pre-calculated
-   * @return amount job&#39;s value
+   * @return amount job's value
    */
 
   function getJobValue(
@@ -1547,7 +1547,7 @@ contract CoinSparrow  is Ownable, Arbitrator, ApprovedWithdrawer, Pausable {
     address _signer) private pure returns(bool)
   {
     bytes32 percHash = keccak256(abi.encodePacked(_contractorPercent));
-    bytes32 msgHash = keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;,percHash));
+    bytes32 msgHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32",percHash));
 
     address addr = ECRecovery.recover(msgHash,_sigMsg);
     return addr == _signer;

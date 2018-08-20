@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;Ethernational&#39; CROWDSALE token contract
+// 'Ethernational' CROWDSALE token contract
 //
 // Deployed to : 0xD0FDf2ECd4CadE671a7EE1063393eC0eB90816FD
 // Symbol      : EIT
@@ -17,10 +17,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -28,7 +28,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -116,16 +116,16 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
     uint public endDate;
     uint public ETHinvested;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function Ethernational() public {
-        symbol = &quot;EIT&quot;;
-        name = &quot;Ethernational&quot;;
+        symbol = "EIT";
+        name = "Ethernational";
         decimals = 18;
         bonus1Ends = now + 1 weeks;
         bonus2Ends = now + 2 weeks;
@@ -162,8 +162,8 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -178,7 +178,7 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -213,7 +213,7 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -222,7 +222,7 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -236,13 +236,13 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
     // 500 ELG Tokens per 1 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate &amp;&amp; msg.value &gt; 1000000000000000);
+        require(now >= startDate && now <= endDate && msg.value > 1000000000000000);
         uint tokens;
-        if (now &lt;= bonus1Ends) {
+        if (now <= bonus1Ends) {
             tokens = msg.value * 1000;
-        } else if (now &lt;= bonus2Ends) {
+        } else if (now <= bonus2Ends) {
             tokens = msg.value * 750;
-        } else if (now &lt;= bonus3Ends) {
+        } else if (now <= bonus3Ends) {
             tokens = msg.value * 625;
         } else {
             tokens = msg.value * 500;
@@ -256,13 +256,13 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
     }
     
     function buyEIT() public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate &amp;&amp; msg.value &gt; 1000000000000000);
+        require(now >= startDate && now <= endDate && msg.value > 1000000000000000);
         uint tokens;
-        if (now &lt;= bonus1Ends) {
+        if (now <= bonus1Ends) {
             tokens = msg.value * 1000;
-        } else if (now &lt;= bonus2Ends) {
+        } else if (now <= bonus2Ends) {
             tokens = msg.value * 750;
-        } else if (now &lt;= bonus3Ends) {
+        } else if (now <= bonus3Ends) {
             tokens = msg.value * 625;
         } else {
             tokens = msg.value * 500;
@@ -277,11 +277,11 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
     
     
     function bonusInfo() constant returns (uint,uint){
-        if (now &lt;= bonus1Ends) {
+        if (now <= bonus1Ends) {
             return (100, (bonus1Ends - now));
-        } else if (now &lt;= bonus2Ends) {
+        } else if (now <= bonus2Ends) {
             return (50, (bonus2Ends - now));
-        } else if (now &lt;= bonus3Ends) {
+        } else if (now <= bonus3Ends) {
             return (25, (bonus3Ends - now));
         } else {
             return (0, 0);
@@ -289,7 +289,7 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
     }
     
     function ICOTimer() constant returns (uint){
-        if (now &lt; endDate){
+        if (now < endDate){
             return (endDate - now);
         }
     }
@@ -315,7 +315,7 @@ contract Ethernational is ERC20Interface, Owned, SafeMath {
 contract dividendsContract is Owned{
     
     Ethernational dc;
-    mapping(address =&gt; uint) paid;
+    mapping(address => uint) paid;
     uint public totalSupply;
     uint public totalPaid;
     address public ICOaddress;
@@ -330,7 +330,7 @@ contract dividendsContract is Owned{
     }
     
     function collectDividends(address member) public returns (uint result) {
-        require (msg.sender == member &amp;&amp; dc.endDate() &lt; now);
+        require (msg.sender == member && dc.endDate() < now);
         uint Ownes = dc.balanceOf(member) / 1000000000000;
         uint payout = (((address(this).balance + totalPaid)/totalSupply)*Ownes) - paid[member];
         member.transfer(payout);
@@ -372,10 +372,10 @@ contract DailyDraw is Owned{
         uint time;
     }
     
-    mapping (uint =&gt; Ticket) Tickets;
+    mapping (uint => Ticket) Tickets;
 
     function start(bytes32 _var1) public {
-        if (timeLimit&lt;1){
+        if (timeLimit<1){
             timeLimit = now;
             number = _var1 ;
         }
@@ -383,9 +383,9 @@ contract DailyDraw is Owned{
 
     function () payable{
         uint value = (msg.value)/10000000000000000;
-        require (now&lt;(timeLimit+86400));
+        require (now<(timeLimit+86400));
             uint i = 0;
-            while (i++ &lt; value) {
+            while (i++ < value) {
                 uint TicketNumber = ticketsSold + i;
                 Tickets[TicketNumber].addr = msg.sender;
                 Tickets[TicketNumber].time = now;
@@ -395,9 +395,9 @@ contract DailyDraw is Owned{
 
     function Play() payable{
         uint value = msg.value/10000000000000000;
-        require (now&lt;(timeLimit+86400));
+        require (now<(timeLimit+86400));
             uint i = 1;
-            while (i++ &lt; value) {
+            while (i++ < value) {
                 uint TicketNumber = ticketsSold + i;
                 Tickets[TicketNumber].addr = msg.sender;
                 Tickets[TicketNumber].time = now;
@@ -412,7 +412,7 @@ contract DailyDraw is Owned{
 
 
     function winner(uint _theNumber, bytes32 newNumber) onlyOwner payable {
-        require ((timeLimit+86400)&lt;now &amp;&amp; number == keccak256(_theNumber));
+        require ((timeLimit+86400)<now && number == keccak256(_theNumber));
                 
                 uint8 add1 = uint8 (Tickets[ticketsSold/4].addr);
                 uint8 add2 = uint8 (Tickets[ticketsSold/3].addr);
@@ -461,10 +461,10 @@ contract WeeklyDraw is Owned{
         uint time;
     }
     
-    mapping (uint =&gt; Ticket) Tickets;
+    mapping (uint => Ticket) Tickets;
 
     function start(bytes32 _var1) public {
-        if (timeLimit&lt;1){
+        if (timeLimit<1){
             timeLimit = now;
             number = _var1 ;
         }
@@ -472,9 +472,9 @@ contract WeeklyDraw is Owned{
 
     function () payable{
         uint value = (msg.value)/100000000000000000;
-        require (now&lt;(timeLimit+604800));
+        require (now<(timeLimit+604800));
             uint i = 0;
-            while (i++ &lt; value) {
+            while (i++ < value) {
                 uint TicketNumber = ticketsSold + i;
                 Tickets[TicketNumber].addr = msg.sender;
                 Tickets[TicketNumber].time = now;
@@ -484,9 +484,9 @@ contract WeeklyDraw is Owned{
 
     function Play() payable{
         uint value = msg.value/100000000000000000;
-        require (now&lt;(timeLimit+604800));
+        require (now<(timeLimit+604800));
             uint i = 1;
-            while (i++ &lt; value) {
+            while (i++ < value) {
                 uint TicketNumber = ticketsSold + i;
                 Tickets[TicketNumber].addr = msg.sender;
                 Tickets[TicketNumber].time = now;
@@ -501,7 +501,7 @@ contract WeeklyDraw is Owned{
 
 
     function winner(uint _theNumber, bytes32 newNumber) onlyOwner payable {
-        require ((timeLimit+604800)&lt;now &amp;&amp; number == keccak256(_theNumber));
+        require ((timeLimit+604800)<now && number == keccak256(_theNumber));
                 
                 uint8 add1 = uint8 (Tickets[ticketsSold/4].addr);
                 uint8 add2 = uint8 (Tickets[ticketsSold/3].addr);

@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -170,10 +170,10 @@ contract Nihilum is Crowdsaleable {
 
     uint256 private lastUnpaidIteration;
 
-    mapping (address =&gt; bool) registeredShareholders;
-    mapping (uint =&gt; address) shareholders;
+    mapping (address => bool) registeredShareholders;
+    mapping (uint => address) shareholders;
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
 
     uint256 public totalNihilum;
@@ -184,15 +184,15 @@ contract Nihilum is Crowdsaleable {
         bool blacklisted;
         bool whitelisted;
     }
-    mapping (address =&gt; Account) accounts;
+    mapping (address => Account) accounts;
 
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function Nihilum() public {
         balanceOf[msg.sender] = 0;
-        name = &quot;Nihilum&quot;;
-        symbol = &quot;NH&quot;;
+        name = "Nihilum";
+        symbol = "NH";
         decimals = 0;
         _tokenPrice = 0.0024 ether;
         _minimumTokens = 50;
@@ -207,19 +207,19 @@ contract Nihilum is Crowdsaleable {
     
     /* Send coins */
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
-        if (balanceOf[msg.sender] &lt; _value) return false;              // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return false;    // Check for overflows
+        if (balanceOf[msg.sender] < _value) return false;              // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) return false;    // Check for overflows
         if (_to == owner || _to == address(this)) return false;         // makes it illegal to send tokens to owner or this contract
         _transfer(msg.sender, _to, _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);                        // Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add(_value);                               // Add the same to the recipient
 
         /* Adding to shareholders count if tokens spent from owner to others */
-        if (msg.sender == owner &amp;&amp; _to != owner) {
+        if (msg.sender == owner && _to != owner) {
             totalSupply += _value;
         }
         /* Remove from shareholders count if tokens spent from holder to owner */
-        if (msg.sender != owner &amp;&amp; _to == owner) {
+        if (msg.sender != owner && _to == owner) {
             totalSupply = totalSupply.sub(_value);
         }
 
@@ -240,12 +240,12 @@ contract Nihilum is Crowdsaleable {
         require(!accounts[_from].blacklisted);
         require(!accounts[_to].blacklisted);
         require(_to != address(0));
-        require(_value &lt;= accounts[_from].balance);
-        require(accounts[_to].balance + _value &gt; accounts[_to].balance);
+        require(_value <= accounts[_from].balance);
+        require(accounts[_to].balance + _value > accounts[_to].balance);
  
         var fromOwing = nihilumBalanceOf(_from);
         var toOwing = nihilumBalanceOf(_to);
-        require(fromOwing &lt;= 0 &amp;&amp; toOwing &lt;= 0);
+        require(fromOwing <= 0 && toOwing <= 0);
  
         accounts[_from].balance = accounts[_from].balance.sub(_value);
         
@@ -294,11 +294,11 @@ contract Nihilum is Crowdsaleable {
     /* Buy Token 1 token for x ether */
     function buyTokens() public whenCrowdsaleNotPaused payable {
         require(!accounts[msg.sender].blacklisted);
-        require(msg.value &gt; 0);
-        require(msg.value &gt;= _tokenPrice);
+        require(msg.value > 0);
+        require(msg.value >= _tokenPrice);
         require(msg.value % _tokenPrice == 0);
         var numTokens = msg.value / _tokenPrice;
-        require(numTokens &gt;= _minimumTokens);
+        require(numTokens >= _minimumTokens);
         balanceOf[msg.sender] += numTokens;
         Transfer(0, msg.sender, numTokens);
         wallet.transfer(msg.value);
@@ -310,11 +310,11 @@ contract Nihilum is Crowdsaleable {
     }
 
     function payNihilum() public onlyOwner {
-        if (this.balance &gt; 0 &amp;&amp; totalShareholders &gt; 0) {
-            for (uint i = lastUnpaidIteration; i &lt;= totalShareholders; i++) {
+        if (this.balance > 0 && totalShareholders > 0) {
+            for (uint i = lastUnpaidIteration; i <= totalShareholders; i++) {
                 uint256 currentBalance = balanceOf[shareholders[i]];
                 lastUnpaidIteration = i;
-                if (currentBalance &gt; 0 &amp;&amp; nihilumBalanceOf(shareholders[i]) &gt; 0 &amp;&amp; !accounts[shareholders[i]].isClaiming &amp;&amp; msg.gas &gt; 2000) {
+                if (currentBalance > 0 && nihilumBalanceOf(shareholders[i]) > 0 && !accounts[shareholders[i]].isClaiming && msg.gas > 2000) {
                     accounts[shareholders[i]].isClaiming = true;
                     shareholders[i].transfer(nihilumBalanceOf(shareholders[i]));
                     accounts[shareholders[i]].lastNihilum = totalNihilum;
@@ -328,7 +328,7 @@ contract Nihilum is Crowdsaleable {
     function nihilumBalanceOf(address account) public constant returns (uint256) {
         var newNihilum = totalNihilum.sub(accounts[account].lastNihilum);
         var product = accounts[account].balance.mul(newNihilum);
-        if (totalSupply &lt;= 0) return 0;
+        if (totalSupply <= 0) return 0;
         if (account == owner) return 0;
         return product.div(totalSupply);
     }
@@ -336,7 +336,7 @@ contract Nihilum is Crowdsaleable {
     function claimNihilum() public {
         require(!accounts[msg.sender].blacklisted);
         var owing = nihilumBalanceOf(msg.sender);
-        if (owing &gt; 0 &amp;&amp; !accounts[msg.sender].isClaiming) {
+        if (owing > 0 && !accounts[msg.sender].isClaiming) {
             accounts[msg.sender].isClaiming = true;
             accounts[msg.sender].lastNihilum = totalNihilum;
             msg.sender.transfer(owing);

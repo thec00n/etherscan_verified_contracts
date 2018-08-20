@@ -23,15 +23,15 @@ contract ERC20 {
 
 
 contract MainToken is ERC20{
-    string public constant name = &quot;MemRobot&quot;;
-    string public constant symbol = &quot;ROBOT&quot;;
+    string public constant name = "MemRobot";
+    string public constant symbol = "ROBOT";
     uint8 public constant decimals = 18;
     
     address founder;
     uint256 public totalAmount;
     
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function MainToken() public{
         founder = msg.sender;
@@ -50,7 +50,7 @@ contract MainToken is ERC20{
     }
     
     function _transfer(address from, address to, uint tokens) private returns (bool success){
-        require(tokens &lt;= balances[from]);
+        require(tokens <= balances[from]);
         balances[from] -= tokens;
         balances[to] += tokens;
         Transfer(from, to, tokens);
@@ -72,7 +72,7 @@ contract MainToken is ERC20{
     }
     
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require(allowed[from][msg.sender] &gt;= tokens);
+        require(allowed[from][msg.sender] >= tokens);
         
         allowed[from][msg.sender] -= tokens;
         _transfer(from, to, tokens);

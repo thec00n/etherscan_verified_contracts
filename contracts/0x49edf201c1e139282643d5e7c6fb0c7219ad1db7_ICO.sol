@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.4;
+pragma solidity >=0.4.4;
 
 contract Sale {
     uint public startTime;
@@ -7,7 +7,7 @@ contract Sale {
     uint public raised;
     uint public collected;
     uint public numContributors;
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     function buyTokens(address _a, uint _eth, uint _time) returns (uint); 
     function getTokens(address holder) constant returns (uint); 
@@ -95,13 +95,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
@@ -121,7 +121,7 @@ contract Token is SafeMath, Owned, Constants {
     string public symbol;     
 
     modifier onlyControllers() {
-        if (msg.sender != ico &amp;&amp;
+        if (msg.sender != ico &&
             msg.sender != controller) throw;
         _;
     }
@@ -133,9 +133,9 @@ contract Token is SafeMath, Owned, Constants {
 
     function Token() { 
         owner = msg.sender;
-        name = &quot;Monolith TKN&quot;;
+        name = "Monolith TKN";
         decimals = uint8(DECIMALS);
-        symbol = &quot;TKN&quot;;
+        symbol = "TKN";
     }
 
     function setICO(address _ico) onlyOwner {
@@ -151,21 +151,21 @@ contract Token is SafeMath, Owned, Constants {
     event Approval(address indexed owner, address indexed spender, uint value);
     event Mint(address owner, uint amount);
 
-    //only called from contracts so don&#39;t need msg.data.length check
+    //only called from contracts so don't need msg.data.length check
     function mint(address addr, uint amount) onlyControllers {
-        if (maxSupply &gt; 0 &amp;&amp; safeAdd(totalSupply, amount) &gt; maxSupply) throw;
+        if (maxSupply > 0 && safeAdd(totalSupply, amount) > maxSupply) throw;
         balanceOf[addr] = safeAdd(balanceOf[addr], amount);
         totalSupply = safeAdd(totalSupply, amount);
         Mint(addr, amount);
     }
 
-    mapping(address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     function transfer(address _to, uint _value) 
     onlyPayloadSize(2)
     returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) return false;
+        if (balanceOf[msg.sender] < _value) return false;
 
         balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -176,10 +176,10 @@ contract Token is SafeMath, Owned, Constants {
     function transferFrom(address _from, address _to, uint _value) 
     onlyPayloadSize(3)
     returns (bool success) {
-        if (balanceOf[_from] &lt; _value) return false; 
+        if (balanceOf[_from] < _value) return false; 
 
         var allowed = allowance[_from][msg.sender];
-        if (allowed &lt; _value) return false;
+        if (allowed < _value) return false;
 
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
         balanceOf[_from] = safeSub(balanceOf[_from], _value);
@@ -192,7 +192,7 @@ contract Token is SafeMath, Owned, Constants {
     onlyPayloadSize(2)
     returns (bool success) {
         //require user to set to zero before resetting to nonzero
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) {
             return false;
         }
     
@@ -213,7 +213,7 @@ contract Token is SafeMath, Owned, Constants {
     onlyPayloadSize(2)
     returns (bool success) {
         uint oldValue = allowance[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[msg.sender][_spender] = 0;
         } else {
             allowance[msg.sender][_spender] = safeSub(oldValue, _subtractedValue);
@@ -243,7 +243,7 @@ contract Token is SafeMath, Owned, Constants {
     event Burn(address burner, uint amount);
 
     function burn(uint _amount) returns (bool result) {
-        if (_amount &gt; balanceOf[msg.sender]) return false;
+        if (_amount > balanceOf[msg.sender]) return false;
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _amount);
         totalSupply = safeSub(totalSupply, _amount);
         result = tokenholder.burn(msg.sender, _amount);
@@ -255,7 +255,7 @@ contract Token is SafeMath, Owned, Constants {
 
     function setMaxSupply(uint _maxSupply) {
         if (msg.sender != controller) throw;
-        if (maxSupply &gt; 0) throw;
+        if (maxSupply > 0) throw;
         maxSupply = _maxSupply;
     }
 }
@@ -275,14 +275,14 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
 
     Sale[] public sales;
     
-    //salenum =&gt; minimum wei
-    mapping (uint =&gt; uint) saleMinimumPurchases;
+    //salenum => minimum wei
+    mapping (uint => uint) saleMinimumPurchases;
 
     //next sale number user can claim from
-    mapping (address =&gt; uint) public nextClaim;
+    mapping (address => uint) public nextClaim;
 
     //net contributed ETH by each user (in case of stop/refund)
-    mapping (address =&gt; uint) refundInStop;
+    mapping (address => uint) refundInStop;
 
     modifier tokenIsSet() {
         if (address(token) == 0) throw;
@@ -303,7 +303,7 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     //payee can only be changed once
     //intent is to lock payee to a contract that holds or distributes funds
     //in deployment, be sure to do this before changing owner!
-    //we initialize to owner to keep things simple if there&#39;s no payee contract
+    //we initialize to owner to keep things simple if there's no payee contract
     function changePayee(address newPayee) 
     onlyOwner notAllStopped {
         payee = newPayee;
@@ -389,11 +389,11 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     function doDeposit(address _for, uint _value) private {
         uint currSale = getCurrSale();
         if (!currSaleActive()) throw;
-        if (_value &lt; saleMinimumPurchases[currSale]) throw;
+        if (_value < saleMinimumPurchases[currSale]) throw;
 
         uint tokensToMintNow = sales[currSale].buyTokens(_for, _value, currTime());
 
-        if (tokensToMintNow &gt; 0) {
+        if (tokensToMintNow > 0) {
             token.mint(_for, tokensToMintNow);
         }
     }
@@ -403,7 +403,7 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     //********************************************************
 
     //Support for purchase via other tokens
-    //We don&#39;t attempt to deal with those tokens directly
+    //We don't attempt to deal with those tokens directly
     //We just give admin ability to tell us what deposit to credit
     //We only allow for first sale 
     //because first sale normally has no refunds
@@ -418,13 +418,13 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
                         address indexed purchaser, uint ethValue, 
                         bytes32 _reference);
 
-    mapping (bytes32 =&gt; bool) public mintRefs;
-    mapping (address =&gt; uint) public raisedFromToken;
+    mapping (bytes32 => bool) public mintRefs;
+    mapping (address => uint) public raisedFromToken;
     uint public raisedFromFiat;
 
     function depositFiat(address _for, uint _ethValue, bytes32 _reference) 
     notAllStopped onlyOwner {
-        if (getCurrSale() &gt; 0) throw; //only first sale allows this
+        if (getCurrSale() > 0) throw; //only first sale allows this
         if (mintRefs[_reference]) throw; //already minted for this reference
         mintRefs[_reference] = true;
         raisedFromFiat = safeAdd(raisedFromFiat, _ethValue);
@@ -437,7 +437,7 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
                            uint _ethValue, uint _depositedTokens, 
                            bytes32 _reference) 
     notAllStopped onlyOwner {
-        if (getCurrSale() &gt; 0) throw; //only first sale allows this
+        if (getCurrSale() > 0) throw; //only first sale allows this
         if (mintRefs[_reference]) throw; //already minted for this reference
         mintRefs[_reference] = true;
         raisedFromToken[_token] = safeAdd(raisedFromToken[_token], _ethValue);
@@ -457,14 +457,14 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     //protect against roundoff in payouts
     //this prevents last person getting refund from not being able to collect
     function safebalance(uint bal) private returns (uint) {
-        if (bal &gt; this.balance) {
+        if (bal > this.balance) {
             return this.balance;
         } else {
             return bal;
         }
     }
 
-    //It&#39;d be nicer if last person got full amount
+    //It'd be nicer if last person got full amount
     //instead of getting shorted by safebalance()
     //topUp() allows admin to deposit excess ether to cover it
     //and later get back any left over 
@@ -485,18 +485,18 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     //Claims
     //********************************************************
 
-    //Claim whatever you&#39;re owed, 
-    //from whatever completed sales you haven&#39;t already claimed
+    //Claim whatever you're owed, 
+    //from whatever completed sales you haven't already claimed
     //this covers refunds, and any tokens not minted immediately
     //(i.e. auction tokens, not firstsale tokens)
     function claim() notAllStopped {
         var (tokens, refund, nc) = claimable(msg.sender, true);
         nextClaim[msg.sender] = nc;
         logClaim(msg.sender, refund, tokens);
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             token.mint(msg.sender, tokens);
         }
-        if (refund &gt; 0) {
+        if (refund > 0) {
             refundInStop[msg.sender] = safeSub(refundInStop[msg.sender], refund);
             if (!msg.sender.send(safebalance(refund))) throw;
         }
@@ -516,10 +516,10 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
 
         logClaim(_from, refund, tokens);
 
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             token.mint(_to, tokens);
         }
-        if (refund &gt; 0) {
+        if (refund > 0) {
             refundInStop[_from] = safeSub(refundInStop[_from], refund);
             if (!_to.send(safebalance(refund))) throw;
         }
@@ -530,10 +530,10 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     returns (uint tokens, uint refund, uint nc) {
         nc = nextClaim[_a];
 
-        while (nc &lt; sales.length &amp;&amp;
-               sales[nc].isComplete(currTime()) &amp;&amp;
+        while (nc < sales.length &&
+               sales[nc].isComplete(currTime()) &&
                ( _includeRecent || 
-                 sales[nc].stopTime() + 1 years &lt; currTime() )) 
+                 sales[nc].stopTime() + 1 years < currTime() )) 
         {
             refund = safeAdd(refund, sales[nc].getRefund(_a));
             tokens = safeAdd(tokens, sales[nc].getTokens(_a));
@@ -563,7 +563,7 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     //Withdraw ETH
     //********************************************************
 
-    mapping (uint =&gt; bool) ownerClaimed;
+    mapping (uint => bool) ownerClaimed;
 
     function claimableOwnerEth(uint salenum) constant returns (uint) {
         uint time = currTime();
@@ -575,7 +575,7 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
         if (ownerClaimed[salenum]) throw;
 
         uint ownereth = claimableOwnerEth(salenum);
-        if (ownereth &gt; 0) {
+        if (ownereth > 0) {
             ownerClaimed[salenum] = true;
             if ( !payee.call.value(safebalance(ownereth))() ) throw;
         }
@@ -585,8 +585,8 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     //Sweep tokens sent here
     //********************************************************
 
-    //Support transfer of erc20 tokens out of this contract&#39;s address
-    //Even if we don&#39;t intend for people to send them here, somebody will
+    //Support transfer of erc20 tokens out of this contract's address
+    //Even if we don't intend for people to send them here, somebody will
 
     event logTokenTransfer(address token, address to, uint amount);
 
@@ -605,7 +605,7 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     bool permastopped;
 
     //allow allStopper to be more secure address than owner
-    //in which case it doesn&#39;t make sense to let owner change it again
+    //in which case it doesn't make sense to let owner change it again
     address allStopper;
     function setAllStopper(address _a) onlyOwner {
         if (allStopper != owner) return;
@@ -645,22 +645,22 @@ contract ICO is EventDefinitions, Testable, SafeMath, Owned {
     allStopped 
     onlyAllStopper {
         //if you start actually calling this refund, the disaster is real.
-        //Don&#39;t allow restart, so this can&#39;t be abused 
+        //Don't allow restart, so this can't be abused 
         permastopped = true;
 
         uint amt = _amt;
 
         uint ethbal = refundInStop[_a];
 
-        //convenient default so owner doesn&#39;t have to look up balances
+        //convenient default so owner doesn't have to look up balances
         //this is fine as long as no funds have been stolen
         if (amt == 0) amt = ethbal; 
 
         //nobody can be refunded more than they contributed
-        if (amt &gt; ethbal) amt = ethbal;
+        if (amt > ethbal) amt = ethbal;
 
         //since everything is halted, safer to call.value
-        //so we don&#39;t have to worry about expensive fallbacks
+        //so we don't have to worry about expensive fallbacks
         if ( !_a.call.value(safebalance(amt))() ) throw;
     }
 

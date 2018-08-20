@@ -20,13 +20,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -72,11 +72,11 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -104,12 +104,12 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -158,7 +158,7 @@ contract ReleasableToken is StandardToken, Ownable {
 
     event TransferAgentSet(address transferAgent, bool status);
 
-    mapping (address =&gt; bool) public transferAgents;
+    mapping (address => bool) public transferAgents;
 
     modifier canTransfer(address _sender) {
         require(released || transferAgents[_sender]);
@@ -228,7 +228,7 @@ contract TruMintableToken is ReleasableToken {
     }
 
     function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_to != address(0));
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -305,8 +305,8 @@ contract TruUpgradeableToken is StandardToken {
     function upgrade(uint256 _value) public {
         UpgradeState state = getUpgradeState();
         require((state == UpgradeState.ReadyToUpgrade) || (state == UpgradeState.Upgrading));
-        require(_value &gt; 0);
-        require(balances[msg.sender] &gt;= _value);
+        require(_value > 0);
+        require(balances[msg.sender] >= _value);
         uint256 upgradedAmount = totalUpgraded.add(_value);
         uint256 senderBalance = balances[msg.sender];
         uint256 newSenderBalance = senderBalance.sub(_value);      
@@ -360,9 +360,9 @@ contract TruReputationToken is TruMintableToken, TruUpgradeableToken {
 
     uint8 public constant decimals = 18;
 
-    string public constant name = &quot;Tru Reputation Token&quot;;
+    string public constant name = "Tru Reputation Token";
 
-    string public constant symbol = &quot;TRU&quot;;
+    string public constant symbol = "TRU";
 
     address public execBoard = 0x0;
 
@@ -389,7 +389,7 @@ contract TruReputationToken is TruMintableToken, TruUpgradeableToken {
     }
 
     function canUpgrade() public constant returns(bool) {
-        return released &amp;&amp; super.canUpgrade();
+        return released && super.canUpgrade();
     }
 
     function setUpgradeMaster(address _master) public onlyOwner {
@@ -462,11 +462,11 @@ contract TruSale is Ownable, Haltable {
 
     uint256 public soldTokens = 0;
 
-    mapping(address =&gt; uint256) public purchasedAmount;
+    mapping(address => uint256) public purchasedAmount;
 
-    mapping(address =&gt; uint256) public tokenAmount;
+    mapping(address => uint256) public tokenAmount;
 
-    mapping (address =&gt; bool) public purchaserWhiteList;
+    mapping (address => bool) public purchaserWhiteList;
 
     event TokenPurchased(
         address indexed purchaser, 
@@ -519,27 +519,27 @@ contract TruSale is Ownable, Haltable {
     }
 
     function changeEndTime(uint256 _endTime) public onlyOwner {
-        require(_endTime &gt;= saleStartTime);
+        require(_endTime >= saleStartTime);
         EndChanged(saleEndTime, _endTime, msg.sender);
         saleEndTime = _endTime;
     }
 
     function hasEnded() public constant returns (bool) {
-        bool isCapHit = weiRaised &gt;= cap;
-        bool isExpired = now &gt; saleEndTime;
+        bool isCapHit = weiRaised >= cap;
+        bool isExpired = now > saleEndTime;
         return isExpired || isCapHit;
     }
     
     function checkSaleValid() internal constant returns (bool) {
-        bool afterStart = now &gt;= saleStartTime;
-        bool beforeEnd = now &lt;= saleEndTime;
-        bool capNotHit = weiRaised.add(msg.value) &lt;= cap;
-        return afterStart &amp;&amp; beforeEnd &amp;&amp; capNotHit;
+        bool afterStart = now >= saleStartTime;
+        bool beforeEnd = now <= saleEndTime;
+        bool capNotHit = weiRaised.add(msg.value) <= cap;
+        return afterStart && beforeEnd && capNotHit;
     }
 
     function validatePurchase(address _purchaser) internal stopInEmergency {
         require(_purchaser != address(0));
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         buyTokens(_purchaser);
     }
 
@@ -555,8 +555,8 @@ contract TruSale is Ownable, Haltable {
         address _tokenOwner) 
         internal onlyTokenOwner(_tokenOwner) 
     {
-        require(now &lt;= _startTime);
-        require(_endTime &gt;= _startTime);
+        require(now <= _startTime);
+        require(_endTime >= _startTime);
         require(_saleWallet != address(0));
         truToken = TruReputationToken(_token);
         multiSigWallet = _saleWallet;
@@ -566,14 +566,14 @@ contract TruSale is Ownable, Haltable {
 
     function buyTokens(address _purchaser) private {
         uint256 weiTotal = msg.value;
-        require(weiTotal &gt;= MIN_AMOUNT);
-        if (weiTotal &gt; MAX_AMOUNT) {
+        require(weiTotal >= MIN_AMOUNT);
+        if (weiTotal > MAX_AMOUNT) {
             require(purchaserWhiteList[msg.sender]); 
         }
-        if (purchasedAmount[msg.sender] != 0 &amp;&amp; !purchaserWhiteList[msg.sender]) {
+        if (purchasedAmount[msg.sender] != 0 && !purchaserWhiteList[msg.sender]) {
             uint256 totalPurchased = purchasedAmount[msg.sender];
             totalPurchased = totalPurchased.add(weiTotal);
-            require(totalPurchased &lt; MAX_AMOUNT);
+            require(totalPurchased < MAX_AMOUNT);
         }
         uint256 tokenRate = BASE_RATE;    
         if (isPreSale) {

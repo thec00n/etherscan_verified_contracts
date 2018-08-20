@@ -2,15 +2,15 @@ pragma solidity ^0.4.15;
 
 /**
  * @title MultiSigStub  
- * @author Ricardo Guilherme Schmidt (Status Research &amp; Development GmbH)
+ * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
  * @dev Contract that delegates calls to a library to build a full MultiSigWallet that is cheap to create. 
  */
 contract MultiSigStub {
 
     address[] public owners;
     address[] public tokens;
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
     uint public transactionCount;
 
     struct Transaction {
@@ -21,7 +21,7 @@ contract MultiSigStub {
     }
     
     function MultiSigStub(address[] _owners, uint256 _required) {
-        //bytes4 sig = bytes4(sha3(&quot;constructor(address[],uint256)&quot;));
+        //bytes4 sig = bytes4(sha3("constructor(address[],uint256)"));
         bytes4 sig = 0x36756a23;
         uint argarraysize = (2 + _owners.length);
         uint argsize = (1 + argarraysize) * 32;
@@ -166,14 +166,14 @@ contract MultiSigStub {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         }
         _confirmations = new address[](count);
-        for (i = 0; i &lt; count; i++) {
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
         }
     }
@@ -192,14 +192,14 @@ contract MultiSigStub {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed) {
+        for (i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         }
         _transactionIds = new uint[](to - from);
-        for (i = from; i &lt; to; i++) {
+        for (i = from; i < to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }
@@ -264,13 +264,13 @@ contract MultiSigTokenWallet {
 
     address[] public owners;
     address[] public tokens;
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
     uint public transactionCount;
     
-    mapping (address =&gt; uint) public tokenBalances;
-    mapping (address =&gt; bool) public isOwner;
-    mapping (address =&gt; address[]) public userList;
+    mapping (address => uint) public tokenBalances;
+    mapping (address => bool) public isOwner;
+    mapping (address => address[]) public userList;
     uint public required;
     uint public nonce;
 
@@ -335,7 +335,7 @@ contract MultiSigTokenWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        require (ownerCount &lt;= MAX_OWNER_COUNT &amp;&amp; _required &lt;= ownerCount &amp;&amp; _required != 0 &amp;&amp; ownerCount != 0);
+        require (ownerCount <= MAX_OWNER_COUNT && _required <= ownerCount && _required != 0 && ownerCount != 0);
         _;
     }
 
@@ -343,7 +343,7 @@ contract MultiSigTokenWallet {
     function()
         payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -358,9 +358,9 @@ contract MultiSigTokenWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        require(owners.length == 0 &amp;&amp; required == 0);
-        for (uint i = 0; i &lt; _owners.length; i++) {
-            require(!isOwner[_owners[i]] &amp;&amp; _owners[i] != 0);
+        require(owners.length == 0 && required == 0);
+        for (uint i = 0; i < _owners.length; i++) {
+            require(!isOwner[_owners[i]] && _owners[i] != 0);
             isOwner[_owners[i]] = true;
         }
         owners = _owners;
@@ -407,7 +407,7 @@ contract MultiSigTokenWallet {
     {
         uint oldBal = tokenBalances[_tokenAddr];
         uint newBal = ERC20(_tokenAddr).balanceOf(this);
-        if (newBal &gt; oldBal) {
+        if (newBal > oldBal) {
             _deposited(0x0, newBal-oldBal, _tokenAddr, new bytes(0));
         }
     }
@@ -470,14 +470,14 @@ contract MultiSigTokenWallet {
     {
         isOwner[owner] = false;
         uint _len = owners.length - 1;
-        for (uint i = 0; i &lt; _len; i++) {
+        for (uint i = 0; i < _len; i++) {
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -491,7 +491,7 @@ contract MultiSigTokenWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -516,7 +516,7 @@ contract MultiSigTokenWallet {
         address[] memory _owners = owners;
         uint numOwners = _owners.length;
         addOwner(_dest);
-        for (uint i = 0; i &lt; numOwners; i++) {
+        for (uint i = 0; i < numOwners; i++) {
             removeOwner(_owners[i]);
         }
     }
@@ -611,16 +611,16 @@ contract MultiSigTokenWallet {
         onlyWallet
     {
         address[] memory _tokenList;
-        if (userList[_dest].length &gt; 0) {
+        if (userList[_dest].length > 0) {
             _tokenList = userList[_dest];
         } else {
             _tokenList = tokens;
         }
         uint len = _tokenList.length;
-        for (uint i = 0;i &lt; len; i++) {
+        for (uint i = 0;i < len; i++) {
             address _tokenAddr = _tokenList[i];
             uint _amount = tokenBalances[_tokenAddr];
-            if (_amount &gt; 0) {
+            if (_amount > 0) {
                 delete tokenBalances[_tokenAddr];
                 ERC20(_tokenAddr).transfer(_dest, _amount);
             }
@@ -638,9 +638,9 @@ contract MultiSigTokenWallet {
         notNull(_dest)
         onlyWallet 
     {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         uint _balance = tokenBalances[_tokenAddr];
-        require(_amount &lt;= _balance);
+        require(_amount <= _balance);
         tokenBalances[_tokenAddr] = _balance - _amount;
         bool result = ERC20(_tokenAddr).transfer(_dest, _amount);
         assert(result);
@@ -655,7 +655,7 @@ contract MultiSigTokenWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -714,7 +714,7 @@ contract MultiSigTokenWallet {
         constant
         returns (uint count)
     {
-        for (uint i = 0; i &lt; owners.length; i++) {
+        for (uint i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
         }
@@ -729,8 +729,8 @@ contract MultiSigTokenWallet {
         constant
         returns (uint count)
     {
-        for (uint i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed)
+        for (uint i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed)
                 count += 1;
         }
     }
@@ -766,14 +766,14 @@ contract MultiSigTokenWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         }
         _confirmations = new address[](count);
-        for (i = 0; i &lt; count; i++) {
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
         }
     }
@@ -792,14 +792,14 @@ contract MultiSigTokenWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed) {
+        for (i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         }
         _transactionIds = new uint[](to - from);
-        for (i = from; i &lt; to; i++) {
+        for (i = from; i < to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }

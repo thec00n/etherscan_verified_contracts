@@ -18,13 +18,13 @@ library BobbySafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -116,8 +116,8 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
     uint private _Billion = _Thousand * _Thousand * _Thousand;
 
     //代币基本信息
-    string private _name = &quot;BOBBYTest&quot;;     //代币名称
-    string private _symbol = &quot;BOBBYTest&quot;;   //代币标识
+    string private _name = "BOBBYTest";     //代币名称
+    string private _symbol = "BOBBYTest";   //代币标识
     uint8 private _decimals = 9;        //小数点后位数
     uint256 private _totalSupply = 10 * _Billion * (10 ** uint256(_decimals));
 
@@ -133,7 +133,7 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
         uint256 unlockLastTime; // 上次解锁时间
     }
 
-    mapping(address=&gt;UserToken) private _balancesMap;           //用户可用代币映射
+    mapping(address=>UserToken) private _balancesMap;           //用户可用代币映射
     address[] private _balancesArray;                           //用户可用代币数组,from 1
 
     uint32 private actionTransfer = 0;
@@ -205,13 +205,13 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
         require(msg.sender != _to);
 
         //先判断是否有可以解禁
-        if(_balancesMap[msg.sender].unlockLeft &gt; 0){
+        if(_balancesMap[msg.sender].unlockLeft > 0){
             UserToken storage sender = _balancesMap[msg.sender];
             uint256 diff = now.sub(sender.unlockLastTime);
             uint256 round = diff.div(sender.unlockPeriod);
-            if(round &gt; 0) {
+            if(round > 0) {
                 uint256 unlocked = sender.unlockUnit.mul(round);
-                if (unlocked &gt; sender.unlockLeft) {
+                if (unlocked > sender.unlockLeft) {
                     unlocked = sender.unlockLeft;
                 }
 
@@ -224,7 +224,7 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
             }
         }
 
-        require(_balancesMap[msg.sender].tokens &gt;= _value);
+        require(_balancesMap[msg.sender].tokens >= _value);
         _balancesMap[msg.sender].tokens = _balancesMap[msg.sender].tokens.sub(_value);
 
         uint index = _balancesMap[_to].index;
@@ -266,7 +266,7 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
 
     function grant(address _to, uint256 _value, uint256 _duration, uint256 _periods) public returns (bool success){
         require(msg.sender != _to);
-        require(_balancesMap[msg.sender].tokens &gt;= _value);
+        require(_balancesMap[msg.sender].tokens >= _value);
         require(_balancesMap[_to].unlockLastTime == 0);
 
         _balancesMap[msg.sender].tokens = _balancesMap[msg.sender].tokens.sub(_value);
@@ -298,8 +298,8 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
     }
 
     function getBalanceAddr(uint256 _index) public view returns(address addr){
-        require(_index &lt; _balancesArray.length);
-        require(_index &gt;= 0);
+        require(_index < _balancesArray.length);
+        require(_index >= 0);
         addr = _balancesArray[_index];
     }
 
@@ -332,8 +332,8 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
     }
 
     function getLog(uint256 _index) public view returns(uint time, uint32 action, address from, address to, uint256 _v1, uint256 _v2, uint256 _v3){
-        require(_index &lt; _logs.length);
-        require(_index &gt;= 0);
+        require(_index < _logs.length);
+        require(_index >= 0);
         LogEntry storage entry = _logs[_index];
         action = entry.action;
         time = entry.time;

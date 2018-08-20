@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,8 +46,8 @@ contract ERC20Token is ERC20 {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_;
 
@@ -59,7 +59,7 @@ contract ERC20Token is ERC20 {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     emit Transfer(msg.sender, _to, _value);
@@ -72,8 +72,8 @@ contract ERC20Token is ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -100,7 +100,7 @@ contract ERC20Token is ERC20 {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -110,7 +110,7 @@ contract ERC20Token is ERC20 {
   }  
 
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -127,8 +127,8 @@ contract BuToken is ERC20Token {
   uint8 public decimals;
 
   function BuToken() public {
-    name = &quot;BUY Payment Token&quot;;
-    symbol = &quot;BUY&quot;;
+    name = "BUY Payment Token";
+    symbol = "BUY";
     decimals = 0;  
     balances[msg.sender] = 10**9;
     totalSupply_ = 10**9;

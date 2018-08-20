@@ -47,9 +47,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -66,7 +66,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,8 +82,8 @@ contract ERC20 is ERC20Interface{
     /// Token supply, balances and allowance
     // ------------------------------------------------------------------------
     uint internal supply;
-    mapping (address =&gt; uint) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => uint) internal balances;
+    mapping (address => mapping (address => uint)) internal allowed;
 
     // ------------------------------------------------------------------------
     // Token Information
@@ -140,7 +140,7 @@ contract ERC20 is ERC20Interface{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address _spender, uint _amount) 
     public 
@@ -186,7 +186,7 @@ contract ERC20 is ERC20Interface{
     public 
     returns (bool success) {
         balances[_from] = balances[_from].sub(_amount);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);             // Subtract from the sender's allowance
         supply = supply.sub(_amount);                              // Update supply
         emit LogBurn(_from, _amount);
         emit Transfer(_from, address(0), _amount);
@@ -226,7 +226,7 @@ contract ERC20 is ERC20Interface{
 
     // ------------------------------------------------------------------------
     // Fallback function
-    // Won&#39;t accept ETH
+    // Won't accept ETH
     // ------------------------------------------------------------------------
     function () 
     public 
@@ -291,7 +291,7 @@ contract TokenSwap {
     oldCirculatingSupply = ERC20Interface(oldTokenAddress).totalSupply(); 
     assert ((circulatingSupply.div(oldCirculatingSupply.mul(tenDecimalPlaces))) == scalingFactor);
     assert (oldCirculatingSupply.mul(scalingFactor.mul(tenDecimalPlaces)) == circulatingSupply); 
-    newToken = new ERC20(totalSupply, &quot;MyBit&quot;, 18, &quot;MYB&quot;); 
+    newToken = new ERC20(totalSupply, "MyBit", 18, "MYB"); 
     newToken.transfer(_myBitFoundation, foundationSupply);
   }
 
@@ -305,7 +305,7 @@ contract TokenSwap {
   returns (bool){ 
     require(ERC20Interface(oldTokenAddress).transferFrom(msg.sender, this, _amount));
     uint256 newTokenAmount = _amount.mul(scalingFactor).mul(tenDecimalPlaces);   // Add 10 more decimals to number of tokens
-    assert(tokensRedeemed.add(newTokenAmount) &lt;= circulatingSupply);       // redeemed tokens should never exceed circulatingSupply
+    assert(tokensRedeemed.add(newTokenAmount) <= circulatingSupply);       // redeemed tokens should never exceed circulatingSupply
     tokensRedeemed = tokensRedeemed.add(newTokenAmount);
     require(newToken.transfer(msg.sender, newTokenAmount));
     emit LogTokenSwap(msg.sender, _amount, block.timestamp);
@@ -323,7 +323,7 @@ contract TokenSwap {
     require(_token == oldTokenAddress);
     require(ERC20Interface(oldTokenAddress).transferFrom(_from, this, _amount));
     uint256 newTokenAmount = _amount.mul(scalingFactor).mul(tenDecimalPlaces);   // Add 10 more decimals to number of tokens
-    assert(tokensRedeemed.add(newTokenAmount) &lt;= circulatingSupply);    // redeemed tokens should never exceed circulatingSupply
+    assert(tokensRedeemed.add(newTokenAmount) <= circulatingSupply);    // redeemed tokens should never exceed circulatingSupply
     tokensRedeemed = tokensRedeemed.add(newTokenAmount);
     require(newToken.transfer(_from, newTokenAmount));
     emit LogTokenSwap(_from, _amount, block.timestamp);
@@ -342,7 +342,7 @@ contract TokenSwap {
 
 
   // ------------------------------------------------------------------------
-  // This ensures that the owner of the previous token doesn&#39;t mint more 
+  // This ensures that the owner of the previous token doesn't mint more 
   // tokens during swap
   // ------------------------------------------------------------------------
   modifier noMint { 

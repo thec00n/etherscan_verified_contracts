@@ -15,7 +15,7 @@ contract FreeMoney {
         remaining += msg.value;
     }
     
-    // You&#39;re welcome?!
+    // You're welcome?!
     function withdraw() public {
         remaining = 0;
         msg.sender.transfer(this.balance);

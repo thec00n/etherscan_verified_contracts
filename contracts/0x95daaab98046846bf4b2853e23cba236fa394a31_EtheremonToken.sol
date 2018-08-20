@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="f0939f9e84919384b0b584989582959d9f9ede939f9d">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="f0939f9e84919384b0b584989582959d9f9ede939f9d">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -89,16 +89,16 @@ interface TokenRecipient {
 contract TokenERC20 {
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -111,7 +111,7 @@ contract TokenERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true; 
@@ -131,7 +131,7 @@ contract TokenERC20 {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -139,8 +139,8 @@ contract TokenERC20 {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -157,10 +157,10 @@ contract PaymentInterface {
 
 contract EtheremonToken is BasicAccessControl, TokenERC20 {
     // metadata
-    string public constant name = &quot;EtheremonToken&quot;;
-    string public constant symbol = &quot;EMONT&quot;;
+    string public constant name = "EtheremonToken";
+    string public constant symbol = "EMONT";
     uint256 public constant decimals = 8;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     
     // deposit address
     address public inGameRewardAddress;
@@ -174,7 +174,7 @@ contract EtheremonToken is BasicAccessControl, TokenERC20 {
     uint256 public sellPrice;
     uint256 public buyPrice;
     bool public trading = false;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
     
     modifier isTrading {
@@ -215,7 +215,7 @@ contract EtheremonToken is BasicAccessControl, TokenERC20 {
     
     // public
     function withdrawEther(address _sendTo, uint _amount) onlyModerators external {
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -223,8 +223,8 @@ contract EtheremonToken is BasicAccessControl, TokenERC20 {
     
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt;= _value);
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require (balanceOf[_from] >= _value);
+        require (balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -243,38 +243,38 @@ contract EtheremonToken is BasicAccessControl, TokenERC20 {
     }
 
     function sell(uint256 amount) isTrading public {
-        require(this.balance &gt;= amount * sellPrice);
+        require(this.balance >= amount * sellPrice);
         _transfer(msg.sender, this, amount);
         msg.sender.transfer(amount * sellPrice);
     }
     
     // Etheremon 
     function createCastle(uint _tokens, string _name, uint64 _a1, uint64 _a2, uint64 _a3, uint64 _s1, uint64 _s2, uint64 _s3) isActive requirePaymentContract external {
-        if (_tokens &gt; balanceOf[msg.sender])
+        if (_tokens > balanceOf[msg.sender])
             revert();
         PaymentInterface payment = PaymentInterface(paymentContract);
         uint deductedTokens = payment.createCastle(msg.sender, _tokens, _name, _a1, _a2, _a3, _s1, _s2, _s3);
-        if (deductedTokens == 0 || deductedTokens &gt; _tokens)
+        if (deductedTokens == 0 || deductedTokens > _tokens)
             revert();
         _transfer(msg.sender, inGameRewardAddress, deductedTokens);
     }
     
     function catchMonster(uint _tokens, uint32 _classId, string _name) isActive requirePaymentContract external {
-        if (_tokens &gt; balanceOf[msg.sender])
+        if (_tokens > balanceOf[msg.sender])
             revert();
         PaymentInterface payment = PaymentInterface(paymentContract);
         uint deductedTokens = payment.catchMonster(msg.sender, _tokens, _classId, _name);
-        if (deductedTokens == 0 || deductedTokens &gt; _tokens)
+        if (deductedTokens == 0 || deductedTokens > _tokens)
             revert();
         _transfer(msg.sender, inGameRewardAddress, deductedTokens);
     }
     
     function payService(uint _tokens, uint32 _type, string _text, uint64 _param1, uint64 _param2, uint64 _param3, uint64 _param4, uint64 _param5, uint64 _param6) isActive requirePaymentContract external {
-        if (_tokens &gt; balanceOf[msg.sender])
+        if (_tokens > balanceOf[msg.sender])
             revert();
         PaymentInterface payment = PaymentInterface(paymentContract);
         uint deductedTokens = payment.payService(msg.sender, _tokens, _type, _text, _param1, _param2, _param3, _param4, _param5, _param6);
-        if (deductedTokens == 0 || deductedTokens &gt; _tokens)
+        if (deductedTokens == 0 || deductedTokens > _tokens)
             revert();
         _transfer(msg.sender, inGameRewardAddress, deductedTokens);
     }

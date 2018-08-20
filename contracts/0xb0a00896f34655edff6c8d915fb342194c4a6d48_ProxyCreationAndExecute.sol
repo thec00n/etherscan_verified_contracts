@@ -2,26 +2,26 @@ pragma solidity ^0.4.16;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -40,10 +40,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -92,7 +92,7 @@ contract OasisDirectProxy is DSMath {
 
     function sellAllAmount(OtcInterface otc, TokenInterface payToken, uint payAmt, TokenInterface buyToken, uint minBuyAmt) public returns (uint buyAmt) {
         require(payToken.transferFrom(msg.sender, this, payAmt));
-        if (payToken.allowance(this, otc) &lt; payAmt) {
+        if (payToken.allowance(this, otc) < payAmt) {
             payToken.approve(otc, uint(-1));
         }
         buyAmt = otc.sellAllAmount(payToken, payAmt, buyToken, minBuyAmt);
@@ -101,7 +101,7 @@ contract OasisDirectProxy is DSMath {
 
     function sellAllAmountPayEth(OtcInterface otc, TokenInterface wethToken, TokenInterface buyToken, uint minBuyAmt) public payable returns (uint buyAmt) {
         wethToken.deposit.value(msg.value)();
-        if (wethToken.allowance(this, otc) &lt; msg.value) {
+        if (wethToken.allowance(this, otc) < msg.value) {
             wethToken.approve(otc, uint(-1));
         }
         buyAmt = otc.sellAllAmount(wethToken, msg.value, buyToken, minBuyAmt);
@@ -110,7 +110,7 @@ contract OasisDirectProxy is DSMath {
 
     function sellAllAmountBuyEth(OtcInterface otc, TokenInterface payToken, uint payAmt, TokenInterface wethToken, uint minBuyAmt) public returns (uint wethAmt) {
         require(payToken.transferFrom(msg.sender, this, payAmt));
-        if (payToken.allowance(this, otc) &lt; payAmt) {
+        if (payToken.allowance(this, otc) < payAmt) {
             payToken.approve(otc, uint(-1));
         }
         wethAmt = otc.sellAllAmount(payToken, payAmt, wethToken, minBuyAmt);
@@ -119,9 +119,9 @@ contract OasisDirectProxy is DSMath {
 
     function buyAllAmount(OtcInterface otc, TokenInterface buyToken, uint buyAmt, TokenInterface payToken, uint maxPayAmt) public returns (uint payAmt) {
         uint payAmtNow = otc.getPayAmount(payToken, buyToken, buyAmt);
-        require(payAmtNow &lt;= maxPayAmt);
+        require(payAmtNow <= maxPayAmt);
         require(payToken.transferFrom(msg.sender, this, payAmtNow));
-        if (payToken.allowance(this, otc) &lt; payAmtNow) {
+        if (payToken.allowance(this, otc) < payAmtNow) {
             payToken.approve(otc, uint(-1));
         }
         payAmt = otc.buyAllAmount(buyToken, buyAmt, payToken, payAmtNow);
@@ -131,7 +131,7 @@ contract OasisDirectProxy is DSMath {
     function buyAllAmountPayEth(OtcInterface otc, TokenInterface buyToken, uint buyAmt, TokenInterface wethToken) public payable returns (uint wethAmt) {
         // In this case user needs to send more ETH than a estimated value, then contract will send back the rest
         wethToken.deposit.value(msg.value)();
-        if (wethToken.allowance(this, otc) &lt; msg.value) {
+        if (wethToken.allowance(this, otc) < msg.value) {
             wethToken.approve(otc, uint(-1));
         }
         wethAmt = otc.buyAllAmount(buyToken, buyAmt, wethToken, msg.value);
@@ -141,9 +141,9 @@ contract OasisDirectProxy is DSMath {
 
     function buyAllAmountBuyEth(OtcInterface otc, TokenInterface wethToken, uint wethAmt, TokenInterface payToken, uint maxPayAmt) public returns (uint payAmt) {
         uint payAmtNow = otc.getPayAmount(payToken, wethToken, wethAmt);
-        require(payAmtNow &lt;= maxPayAmt);
+        require(payAmtNow <= maxPayAmt);
         require(payToken.transferFrom(msg.sender, this, payAmtNow));
-        if (payToken.allowance(this, otc) &lt; payAmtNow) {
+        if (payToken.allowance(this, otc) < payAmtNow) {
             payToken.approve(otc, uint(-1));
         }
         payAmt = otc.buyAllAmount(wethToken, wethAmt, payToken, payAmtNow);
@@ -255,7 +255,7 @@ contract DSProxy is DSAuth, DSNote {
     {
         target = cache.read(_code);
         if (target == 0x0) {
-            // deploy contract &amp; store its address in cache
+            // deploy contract & store its address in cache
             target = cache.write(_code);
         }
 
@@ -301,7 +301,7 @@ contract DSProxy is DSAuth, DSNote {
 // Deployed proxy addresses are logged
 contract DSProxyFactory {
     event Created(address indexed sender, address proxy, address cache);
-    mapping(address=&gt;bool) public isProxy;
+    mapping(address=>bool) public isProxy;
     DSProxyCache public cache = new DSProxyCache();
 
     // deploys a new proxy instance
@@ -327,10 +327,10 @@ contract DSProxyFactory {
 
 // By default, all proxies deployed from the same factory store
 // contracts in the same cache. The cache a proxy instance uses can be
-// changed.  The cache uses the sha3 hash of a contract&#39;s bytecode to
+// changed.  The cache uses the sha3 hash of a contract's bytecode to
 // lookup the address
 contract DSProxyCache {
-    mapping(bytes32 =&gt; address) cache;
+    mapping(bytes32 => address) cache;
 
     function read(bytes _code) public view returns (address) {
         bytes32 hash = keccak256(_code);

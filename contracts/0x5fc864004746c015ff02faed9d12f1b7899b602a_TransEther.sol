@@ -10,7 +10,7 @@ contract TransEther{
     address owener ;
     address bossAddr =   0x40e899a8a0Ca7d1a79b6b1bb0f03AD090F0Ad747;     // 99.9% 받는 주소1 (주소 변경 시 이곳 수정)
     address customAddr = 0xEc61C896C8F638e3970ed729E072f7AB03a10b5A;     // 0.1 받는 주소2   (주소 변경 시 이곳 수정)
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     
     event EthValueLog(address from, uint vlaue,uint cur);
     
@@ -21,7 +21,7 @@ contract TransEther{
     function() payable public{
         
         uint value = msg.value; 
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         uint firstValue = value * 999 / 1000;
         uint secondValue = value * 1 / 1000;

@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -71,20 +71,20 @@ library SafeMath {
     }
     
     function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure  returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
     
     using SafeMath for uint256;
     
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev Transfers tokens to a specified address.
@@ -128,7 +128,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     /**
     * @dev Transfers tokens from one address to another.
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
     * @param _value The amount of tokens to be transfered.
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         var _allowance = allowed[_from][msg.sender];
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) public returns (bool) {
-        require((_value &gt; 0)&amp;&amp;(_value &lt;= balances[msg.sender]));
+        require((_value > 0)&&(_value <= balances[msg.sender]));
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -224,7 +224,7 @@ contract BurnableToken is MintableToken {
     * @param _value The amount of token to be burned.
     */
     function burn(uint _value) public returns (bool success) {
-        require((_value &gt; 0) &amp;&amp; (_value &lt;= balances[msg.sender]));
+        require((_value > 0) && (_value <= balances[msg.sender]));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(msg.sender, _value);
@@ -237,7 +237,7 @@ contract BurnableToken is MintableToken {
     * @param _from The address which you want to burn tokens from.
     */
     function burnFrom(address _from, uint _value) public returns (bool success) {
-        require((balances[_from] &gt; _value) &amp;&amp; (_value &lt;= allowed[_from][msg.sender]));
+        require((balances[_from] > _value) && (_value <= allowed[_from][msg.sender]));
         var _allowance = allowed[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -255,9 +255,9 @@ contract BurnableToken is MintableToken {
  */
 contract BitcoinCityCoin is BurnableToken {
     
-    string public constant name = &quot;Bitcoin City&quot;;
+    string public constant name = "Bitcoin City";
     
-    string public constant symbol = &quot;BCKEY&quot;;
+    string public constant symbol = "BCKEY";
     
     uint32 public constant decimals = 8;
     

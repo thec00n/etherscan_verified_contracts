@@ -2,10 +2,10 @@ pragma solidity 0.4.4;
 
 contract AddressNames{
 
-	mapping(address =&gt; string) addressNames;
+	mapping(address => string) addressNames;
 
 	function setName(string name){
-		if(bytes(name).length &gt;= 3){
+		if(bytes(name).length >= 3){
 			addressNames[msg.sender] = name;
 		}
 	}

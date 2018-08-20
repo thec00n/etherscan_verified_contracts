@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,13 +113,13 @@ contract ICOEngineInterface {
 contract KYCBase {
     using SafeMath for uint256;
 
-    mapping (address =&gt; bool) public isKycSigner;
-    mapping (uint64 =&gt; uint256) public alreadyPayed;
+    mapping (address => bool) public isKycSigner;
+    mapping (uint64 => uint256) public alreadyPayed;
 
     event KycVerified(address indexed signer, address buyerAddress, uint64 buyerId, uint maxAmount);
 
     function KYCBase(address [] kycSigners) internal {
-        for (uint i = 0; i &lt; kycSigners.length; i++) {
+        for (uint i = 0; i < kycSigners.length; i++) {
             isKycSigner[kycSigners[i]] = true;
         }
     }
@@ -151,13 +151,13 @@ contract KYCBase {
         private returns (bool)
     {
         // check the signature
-        bytes32 hash = sha256(&quot;Eidoo icoengine authorization&quot;, this, buyerAddress, buyerId, maxAmount);
+        bytes32 hash = sha256("Eidoo icoengine authorization", this, buyerAddress, buyerId, maxAmount);
         address signer = ecrecover(hash, v, r, s);
         if (!isKycSigner[signer]) {
             revert();
         } else {
             uint256 totalPayed = alreadyPayed[buyerId].add(msg.value);
-            require(totalPayed &lt;= maxAmount);
+            require(totalPayed <= maxAmount);
             alreadyPayed[buyerId] = totalPayed;
             emit KycVerified(signer, buyerAddress, buyerId, maxAmount);
             return releaseTokensTo(buyerAddress);
@@ -176,7 +176,7 @@ contract RC is ICOEngineInterface, KYCBase {
     
     uint256 public oneTokenInUsdWei;
 	
-	mapping(address =&gt; uint256) public balanceUser; // address =&gt; token amount
+	mapping(address => uint256) public balanceUser; // address => token amount
 	uint256[] public tokenThreshold; // array of token threshold reached in wei of token
     uint256[] public bonusThreshold; // array of bonus of each tokenThreshold reached - 20% = 20
 
@@ -227,10 +227,10 @@ contract RC is ICOEngineInterface, KYCBase {
     event BuyRC(address indexed buyer, bytes trackID, uint256 value, uint256 soldToken, uint256 valueTokenInUsdWei );
     
     function releaseTokensTo(address buyer) internal returns(bool) {
-        require( now &gt; startTime );
-        require( now &lt; endTime );
-        //require( msg.value &gt;= 1*10**18); //1 Ether
-        require( remainingTokens &gt; 0 );
+        require( now > startTime );
+        require( now < endTime );
+        //require( msg.value >= 1*10**18); //1 Ether
+        require( remainingTokens > 0 );
         
         uint256 tokenAmount = tokenSaleContract.buyFromRC.value(msg.value)(buyer, oneTokenInUsdWei, remainingTokens);
         
@@ -243,11 +243,11 @@ contract RC is ICOEngineInterface, KYCBase {
     }
     
     function started() public view returns(bool) {
-        return now &gt; startTime || remainingTokens == 0;
+        return now > startTime || remainingTokens == 0;
     }
     
     function ended() public view returns(bool) {
-        return now &gt; endTime || remainingTokens == 0;
+        return now > endTime || remainingTokens == 0;
     }
     
     function startTime() public view returns(uint) {
@@ -272,15 +272,15 @@ contract RC is ICOEngineInterface, KYCBase {
     }
 	
 	function () public {
-        require( now &gt; endTime );
-        require( balanceUser[msg.sender] &gt; 0 );
+        require( now > endTime );
+        require( balanceUser[msg.sender] > 0 );
         uint256 bonusApplied = 0;
-        for (uint i = 0; i &lt; tokenThreshold.length; i++) {
-            if ( soldTokens &gt; tokenThreshold[i] ) {
+        for (uint i = 0; i < tokenThreshold.length; i++) {
+            if ( soldTokens > tokenThreshold[i] ) {
                 bonusApplied = bonusThreshold[i];
 			}
 		}    
-		require( bonusApplied &gt; 0 );
+		require( bonusApplied > 0 );
 		
 		uint256 addTokenAmount = balanceUser[msg.sender].mul( bonusApplied ).div(10**2);
 		balanceUser[msg.sender] = 0; 
@@ -303,7 +303,7 @@ contract TokenSale is Ownable {
     uint256 public endTime;  // seconds from 1970-01-01T00:00:00Z
     uint256 public startTime;  // seconds from 1970-01-01T00:00:00Z
 
-    mapping(address =&gt; bool) public rc;
+    mapping(address => bool) public rc;
 
 
     function TokenSale(address _tokenAddress, address _rateAddress, uint256 _startTime, uint256 _endTime) public {
@@ -316,18 +316,18 @@ contract TokenSale is Ownable {
     }
     
     function tokenValueInEther(uint256 _oneTokenInUsdWei) public view returns(uint256 tknValue) {
-        uint256 oneEtherInUsd = rateContract.readRate(&quot;usd&quot;);
+        uint256 oneEtherInUsd = rateContract.readRate("usd");
         tknValue = _oneTokenInUsdWei.mul(10 ** uint256(decimals)).div(oneEtherInUsd);
         return tknValue;
     } 
     
     modifier isBuyable() {
-        require( now &gt; startTime ); // check if started
-        require( now &lt; endTime ); // check if ended
-        require( msg.value &gt; 0 );
+        require( now > startTime ); // check if started
+        require( now < endTime ); // check if ended
+        require( msg.value > 0 );
 		
 		uint256 remainingTokens = tokenContract.balanceOf(this);
-        require( remainingTokens &gt; 0 ); // Check if there are any remaining tokens 
+        require( remainingTokens > 0 ); // Check if there are any remaining tokens 
         _;
     }
     
@@ -346,11 +346,11 @@ contract TokenSale is Ownable {
         
         
         uint256 remainingTokens = tokenContract.balanceOf(this);
-        if ( _remainingTokens &lt; remainingTokens ) {
+        if ( _remainingTokens < remainingTokens ) {
             remainingTokens = _remainingTokens;
         }
         
-        if ( remainingTokens &lt; tokenAmount ) {
+        if ( remainingTokens < tokenAmount ) {
             uint256 refund = (tokenAmount - remainingTokens).mul(tokenValue).div(oneToken);
             tokenAmount = remainingTokens;
             forward(msg.value-refund);

@@ -8,10 +8,10 @@ contract EthereuMMM {
 	struct Invest {uint amount; bool used;}
 	struct Refs {address addr; bool used;}
 	
-	mapping(address =&gt; Invest) public investments;
-    mapping(address =&gt; uint) public investorWallet;
-	mapping(uint =&gt; address) public investorsIndex;
-	mapping(address =&gt; Refs) public Referrals;
+	mapping(address => Invest) public investments;
+    mapping(address => uint) public investorWallet;
+	mapping(uint => address) public investorsIndex;
+	mapping(address => Refs) public Referrals;
 
     function EthereuMMM() public {
         owner = msg.sender;
@@ -26,7 +26,7 @@ contract EthereuMMM {
 		allInvestments -= investments[msg.sender].amount;
 		investments[msg.sender].amount = 0;
 		
-		if(this.balance &lt; tempWithdraw) tempWithdraw = this.balance;
+		if(this.balance < tempWithdraw) tempWithdraw = this.balance;
 
 		msg.sender.transfer(tempWithdraw);
 	}
@@ -34,7 +34,7 @@ contract EthereuMMM {
     function bytesToAddress(bytes source) internal pure returns(address) {
         uint result;
         uint mul = 1;
-        for(uint i = 20; i &gt; 0; i--) {
+        for(uint i = 20; i > 0; i--) {
             result += uint8(source[i-1])*mul;
             mul = mul*256;
         }
@@ -56,7 +56,7 @@ contract EthereuMMM {
         
         uint rewardToInvestors;
 		
-		if(!Referrals[msg.sender].used &amp;&amp; msg.data.length == 20) {
+		if(!Referrals[msg.sender].used && msg.data.length == 20) {
             address referer = bytesToAddress(bytes(msg.data));
             if(referer != msg.sender){
 				Referrals[msg.sender].addr = referer;
@@ -72,7 +72,7 @@ contract EthereuMMM {
             rewardToInvestors = (msg.value * 3) / 20;
         }
 		
-		for(uint i = 0; i &lt;= lastID; ++i){
+		for(uint i = 0; i <= lastID; ++i){
 			investorWallet[investorsIndex[i]] += (rewardToInvestors * investments[investorsIndex[i]].amount) / allInvestments;
 		}
 		

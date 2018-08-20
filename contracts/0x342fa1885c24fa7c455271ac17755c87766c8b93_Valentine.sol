@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
   }
   function sub(uint a, uint b) internal pure returns (uint c) {
-    require(b &lt;= a);
+    require(b <= a);
     c = a - b;
   }
   function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
     require(a == 0 || c / a == b);
   }
   function div(uint a, uint b) internal pure returns (uint c) {
-    require(b &gt; 0);
+    require(b > 0);
     c = a / b;
   }
 }
@@ -60,13 +60,13 @@ contract Owned {
 contract Valentine is ERC20Interface, Owned {
   using SafeMath for uint;
 
-  string public constant name     = &quot;Will You Be My Valentine?&quot;;
-  string public constant symbol   = &quot;VAL&quot;;
+  string public constant name     = "Will You Be My Valentine?";
+  string public constant symbol   = "VAL";
   uint   public constant decimals = 18;
   uint   public _totalSupply      = 1000000 * 10**uint(decimals);
 
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping(address => uint)) allowed;
 
 
   function Valentine() public {

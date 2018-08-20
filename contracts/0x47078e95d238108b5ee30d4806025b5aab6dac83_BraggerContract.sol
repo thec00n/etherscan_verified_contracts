@@ -21,10 +21,10 @@ contract BraggerContract {
 
     function becomeRichest(string newString) public payable {
         // Ensure the sender is paying more than the highest so far.
-        require(msg.value &gt; highestBalance);
+        require(msg.value > highestBalance);
         
         // Cap the string length for the website.
-        require(bytes(newString).length &lt; 500);
+        require(bytes(newString).length < 500);
         
         highestBalance = msg.value;
         richest = msg.sender;

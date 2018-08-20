@@ -2,7 +2,7 @@ pragma solidity ^0.4.15;
 
 /**
  *
- * @author  David Rosen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b303a3a353f34322f1b363834357534293c">[email&#160;protected]</a>&gt;
+ * @author  David Rosen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b303a3a353f34322f1b363834357534293c">[email protected]</a>>
  *
  * Version Test-D
  *
@@ -14,7 +14,7 @@ pragma solidity ^0.4.15;
  * the user includes an encrypted bid tuple, using the public key of the party running the
  * auction, and of course a deposit sufficient to pay for the bid.
  *
- * At the end of the bidding period, the party running the auction sets a &#39;strike price&#39;,
+ * At the end of the bidding period, the party running the auction sets a 'strike price',
  * thereby signaling the start of the sale period. During this period all bidders must
  * execute their bids. To execute a bid a user reveals their bid-tuple. All bids with a
  * price at least as high as the strike price are filled, and all bids under the strike
@@ -95,7 +95,7 @@ contract SafeMath {
     */
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -108,7 +108,7 @@ contract SafeMath {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -171,7 +171,7 @@ contract TokenAuction is SafeMath {
   uint public auctionStart;
   uint public auctionEnd;
   uint public saleEnd;
-  mapping (address =&gt; SecretBid) public secretBids;
+  mapping (address => SecretBid) public secretBids;
 
   //
   //tunables
@@ -189,22 +189,22 @@ contract TokenAuction is SafeMath {
   }
 
   modifier duringAuction {
-    require((stateMask &amp; (AUCTION_START_EVENT | AUCTION_END_EVENT)) == AUCTION_START_EVENT);
+    require((stateMask & (AUCTION_START_EVENT | AUCTION_END_EVENT)) == AUCTION_START_EVENT);
     _;
   }
 
   modifier afterAuction {
-    require((stateMask &amp; AUCTION_END_EVENT) != 0);
+    require((stateMask & AUCTION_END_EVENT) != 0);
     _;
   }
 
   modifier duringSale {
-    require((stateMask &amp; (SALE_START_EVENT | SALE_END_EVENT)) == SALE_START_EVENT);
+    require((stateMask & (SALE_START_EVENT | SALE_END_EVENT)) == SALE_START_EVENT);
     _;
   }
 
   modifier afterSale {
-    require((stateMask &amp; SALE_END_EVENT) != 0);
+    require((stateMask & SALE_END_EVENT) != 0);
     _;
   }
 
@@ -253,13 +253,13 @@ contract TokenAuction is SafeMath {
   //
   function houseKeep() public {
     uint _oldMask = stateMask;
-    if (now &gt;= auctionStart) {
+    if (now >= auctionStart) {
       stateMask |= AUCTION_START_EVENT;
-      if (now &gt;= auctionEnd) {
+      if (now >= auctionEnd) {
         stateMask |= AUCTION_END_EVENT;
-        if (strikePrice &gt; 0) {
+        if (strikePrice > 0) {
           stateMask |= SALE_START_EVENT;
-          if (now &gt;= saleEnd)
+          if (now >= saleEnd)
             stateMask |= SALE_END_EVENT;
         }
       }
@@ -287,19 +287,19 @@ contract TokenAuction is SafeMath {
 
   //
   // nobody should be sending funds via this function.... bizarre...
-  // the fact that we adjust proceeds here means that this fcn will OOG if called with a send or transfer. that&#39;s
+  // the fact that we adjust proceeds here means that this fcn will OOG if called with a send or transfer. that's
   // probably good, cuz it prevents the caller from losing their funds.
   //
   function () payable {
     proceeds = safeAdd(proceeds, msg.value);
-    BizarreEvent(msg.sender, &quot;bizarre payment&quot;, msg.value);
+    BizarreEvent(msg.sender, "bizarre payment", msg.value);
   }
 
 
   function depositSecretBid(bytes32 _hash, bytes _message) public duringAuction payable {
     //each address can only submit one bid -- and once a bid is submitted it is imutable
     //for testing, an exception is made for the owner -- but only while the contract is unlocked
-    if (!(msg.sender == owner &amp;&amp; !isLocked) &amp;&amp;
+    if (!(msg.sender == owner && !isLocked) &&
          (_hash == 0 || secretBids[msg.sender].hash != 0) )
         revert();
     secretBids[msg.sender].hash = _hash;
@@ -325,26 +325,26 @@ contract TokenAuction is SafeMath {
   // * purchases tokens if the specified price is above the strike price
   // * refunds whatever remains of the deposit
   //
-  // call only during the sale period (strikePrice &gt; 0)
+  // call only during the sale period (strikePrice > 0)
   //
   function executeBid(uint256 _secret, uint256 _price, uint256 _quantity) public duringSale {
     executeBidFor(msg.sender, _secret, _price, _quantity);
   }
   function executeBidFor(address _addr, uint256 _secret, uint256 _price, uint256 _quantity) public duringSale {
     bytes32 computedHash = keccak256(_secret, _price, _quantity);
-    //MessageBytes32Event(&quot;computedHash&quot;, computedHash);
+    //MessageBytes32Event("computedHash", computedHash);
     require(secretBids[_addr].hash == computedHash);
     //
-    if (secretBids[_addr].deposit &gt; 0) {
+    if (secretBids[_addr].deposit > 0) {
       uint _cost = 0;
       uint _refund = 0;
-      if (_price &gt;= strikePrice &amp;&amp; !secretBids[_addr].disqualified) {
-        uint256 _purchaseCount = (_price &gt; strikePrice) ? _quantity : (safeMul(strikePricePctX10, _quantity) / 1000);
+      if (_price >= strikePrice && !secretBids[_addr].disqualified) {
+        uint256 _purchaseCount = (_price > strikePrice) ? _quantity : (safeMul(strikePricePctX10, _quantity) / 1000);
         var _maxPurchase = token.balanceOf(this) - developerReserve;
-        if (_purchaseCount &gt; _maxPurchase)
+        if (_purchaseCount > _maxPurchase)
           _purchaseCount = _maxPurchase;
         _cost = safeMul(_purchaseCount, strikePrice);
-        if (secretBids[_addr].deposit &gt;= _cost) {
+        if (secretBids[_addr].deposit >= _cost) {
           secretBids[_addr].deposit -= _cost;
           proceeds = safeAdd(proceeds, _cost);
           secretBids[_addr].tokens += _purchaseCount;
@@ -356,7 +356,7 @@ contract TokenAuction is SafeMath {
       }
       //refund whatever remains
       //use pull here, to prevent any bidder from reverting their purchase
-      if (secretBids[_addr].deposit &gt; 0) {
+      if (secretBids[_addr].deposit > 0) {
         _refund = secretBids[_addr].deposit;
         secretBids[_addr].refund += _refund;
         secretBids[_addr].deposit = 0;
@@ -376,7 +376,7 @@ contract TokenAuction is SafeMath {
   // * the bidder does not receive an tokens
   //
   function expireBid(address _addr) public ownerOnly afterSale {
-    if (secretBids[_addr].deposit &gt; 0) {
+    if (secretBids[_addr].deposit > 0) {
       uint _forfeit = secretBids[_addr].deposit / 2;
       proceeds = safeAdd(proceeds, _forfeit);
       //refund whatever remains
@@ -408,9 +408,9 @@ contract TokenAuction is SafeMath {
   function doDeveloperGrant() public afterSale {
     uint _quantity = purchasedCount * developerPctX10 / 1000;
     var _tokensLeft = token.balanceOf(this);
-    if (_quantity &gt; _tokensLeft)
+    if (_quantity > _tokensLeft)
       _quantity = _tokensLeft;
-    if (_quantity &gt; 0) {
+    if (_quantity > 0) {
       //transfer pct tokens to developers
       _tokensLeft -= _quantity;
       if (!token.transfer(developers, _quantity))

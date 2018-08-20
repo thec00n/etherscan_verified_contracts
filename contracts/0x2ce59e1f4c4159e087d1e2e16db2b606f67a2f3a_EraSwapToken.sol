@@ -16,27 +16,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -110,7 +110,7 @@ contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
   //balance in each address account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -119,8 +119,8 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+    require(balances[msg.sender] >= _amount && _amount > 0
+        && balances[_to].add(_amount) > balances[_to]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -149,7 +149,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -160,9 +160,9 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[_from] &gt;= _amount);
-    require(allowed[_from][msg.sender] &gt;= _amount);
-    require(_amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+    require(balances[_from] >= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
+    require(_amount > 0 && balances[_to].add(_amount) > balances[_to]);
 
     balances[_from] = balances[_from].sub(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _amount The amount of tokens to be spent.
@@ -220,9 +220,9 @@ contract BurnableToken is StandardToken, Ownable {
 
   function _burn(address _who, uint256 _value) internal {
 
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
     balances[_who] = balances[_who].sub(_value);
     totalSupply = totalSupply.sub(_value);
     emit Burn(_who, _value);
@@ -239,7 +239,7 @@ contract BurnableToken is StandardToken, Ownable {
 contract MintableToken is StandardToken, Ownable {
     using SafeMath for uint256;
 
-  mapping(address =&gt; uint256)public shares;
+  mapping(address => uint256)public shares;
   
   address[] public beneficiaries;
  
@@ -258,7 +258,7 @@ contract MintableToken is StandardToken, Ownable {
 
   modifier canMint() {
     require(!mintingFinished);
-    require(totalSupply &lt; 910000000000000000);// Total minting has not yet been finished
+    require(totalSupply < 910000000000000000);// Total minting has not yet been finished
     require(beneficiaries.length == 7);//Check beneficiaries has been added
     _;
   }
@@ -280,7 +280,7 @@ contract MintableToken is StandardToken, Ownable {
     totalSupply = totalSupply.add(_amount);
     
     
-    for(uint8 i = 0; i&lt;beneficiaries.length; i++){
+    for(uint8 i = 0; i<beneficiaries.length; i++){
         
         balances[beneficiaries[i]] = balances[beneficiaries[i]].add(_amount.mul(shares[beneficiaries[i]]).div(100));
         emit Mint(beneficiaries[i], _amount.mul(shares[beneficiaries[i]]).div(100));
@@ -298,9 +298,9 @@ contract MintableToken is StandardToken, Ownable {
       
       uint8 tiersToBeMinted = currentTier() - getTierForLastMiniting();
       
-      require(tiersToBeMinted&gt;0);
+      require(tiersToBeMinted>0);
       
-      for(uint8 i = 0;i&lt;tiersToBeMinted;i++){
+      for(uint8 i = 0;i<tiersToBeMinted;i++){
           _tokensToMint = _tokensToMint.add(lastMintedTokens.sub(lastMintedTokens.mul(10).div(100)));
           lastMintedTokens = lastMintedTokens.sub(lastMintedTokens.mul(10).div(100));
       }
@@ -315,7 +315,7 @@ contract MintableToken is StandardToken, Ownable {
       
       uint256 nextTierStartTime = mintingStartTime;
       
-      while(nextTierStartTime &lt; currentTime) {
+      while(nextTierStartTime < currentTime) {
           nextTierStartTime = nextTierStartTime.add(mintingThreshold);
           _tier++;
       }
@@ -328,7 +328,7 @@ contract MintableToken is StandardToken, Ownable {
       
        uint256 nextTierStartTime = mintingStartTime;
       
-      while(nextTierStartTime &lt; lastMintingTime) {
+      while(nextTierStartTime < lastMintingTime) {
           nextTierStartTime = nextTierStartTime.add(mintingThreshold);
           _tier++;
       }
@@ -357,9 +357,9 @@ function beneficiariesPercentage(address[] _beneficiaries, uint256[] percentages
     
     uint256 sumOfPercentages;
     
-    if(beneficiaries.length&gt;0) {
+    if(beneficiaries.length>0) {
         
-        for(uint8 j = 0;j&lt;beneficiaries.length;j++) {
+        for(uint8 j = 0;j<beneficiaries.length;j++) {
             
             shares[beneficiaries[j]] = 0;
             delete beneficiaries[j];
@@ -370,10 +370,10 @@ function beneficiariesPercentage(address[] _beneficiaries, uint256[] percentages
         
     }
 
-    for(uint8 i = 0; i &lt; _beneficiaries.length; i++){
+    for(uint8 i = 0; i < _beneficiaries.length; i++){
 
       require(_beneficiaries[i] != 0x0);
-      require(percentages[i] &gt; 0);
+      require(percentages[i] > 0);
       beneficiaries.push(_beneficiaries[i]);
       
       shares[_beneficiaries[i]] = percentages[i];

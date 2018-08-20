@@ -27,7 +27,7 @@ contract ERC721 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -121,9 +121,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -131,7 +131,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -140,7 +140,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -173,20 +173,20 @@ contract ChemistryBase is Ownable {
 
     /// @dev A mapping from element IDs to the address that owns them. All elements have
     ///  some valid owner address, even miner elements are created with a non-zero owner.
-    mapping (uint256 =&gt; address) public elementToOwner;
+    mapping (uint256 => address) public elementToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) internal ownersTokenCount;
+    mapping (address => uint256) internal ownersTokenCount;
 
     /// @dev A mapping from element IDs to an address that has been approved to call
     ///  transferFrom(). Each Element can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public elementToApproved;
+    mapping (uint256 => address) public elementToApproved;
     
-    mapping (address =&gt; bool) public authorized;
+    mapping (address => bool) public authorized;
     
-    mapping (uint256 =&gt; uint256) public currentPrice;
+    mapping (uint256 => uint256) public currentPrice;
     
 	function addAuthorization (address _authorized) onlyOwner external {
 		authorized[_authorized] = true;
@@ -203,11 +203,11 @@ contract ChemistryBase is Ownable {
     
     /// @dev Assigns ownership of a specific element to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
-        // Since the number of elements is capped to &#39;numberOfElements&#39;(173) we can&#39;t overflow this
+        // Since the number of elements is capped to 'numberOfElements'(173) we can't overflow this
         ownersTokenCount[_to]++;
         // transfer ownership
         elementToOwner[_tokenId] = _to;
-        // When creating new element _from is 0x0, but we can&#39;t account that address.
+        // When creating new element _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownersTokenCount[_from]--;
             // clear any previously approved ownership exchange
@@ -218,7 +218,7 @@ contract ChemistryBase is Ownable {
     }
 
     /// @dev An internal method that creates a new element and stores it. This
-    ///  method doesn&#39;t do any checking and should only be called when the
+    ///  method doesn't do any checking and should only be called when the
     ///  input data is known to be valid. Will generate both a Arise event
     ///  and a Transfer event.
     function _createElement(bytes32 _symbol, uint256 _price)
@@ -257,23 +257,23 @@ contract ChemistryBase is Ownable {
 contract ElementTokenImpl is ChemistryBase, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;CryptoChemistry&quot;;
-    string public constant symbol = &quot;CC&quot;;
+    string public constant name = "CryptoChemistry";
+    string public constant symbol = "CC";
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;takeOwnership(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('takeOwnership(uint256)')) ^
+        bytes4(keccak256('tokensOfOwner(address)'));
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     ///  Returns true for any standardized interfaces implemented by this contract. We implement
@@ -292,7 +292,7 @@ contract ElementTokenImpl is ChemistryBase, ERC721 {
     }
 
     function _ownerApproved(address _claimant, uint256 _tokenId) internal view returns (bool) {
-        return elementToOwner[_tokenId] == _claimant &amp;&amp; elementToApproved[_tokenId] == address(0);    
+        return elementToOwner[_tokenId] == _claimant && elementToApproved[_tokenId] == address(0);    
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular element.
@@ -416,7 +416,7 @@ contract ElementTokenImpl is ChemistryBase, ERC721 {
 
             uint256 elementId;
 
-            for (elementId = 0; elementId &lt; totalElements; elementId++) {
+            for (elementId = 0; elementId < totalElements; elementId++) {
                 if (elementToOwner[elementId] == _owner) {
                     result[resultIndex] = elementId;
                     resultIndex++;
@@ -441,13 +441,13 @@ contract ContractOfSale is ElementTokenImpl {
   	
   	/* Buying */
   	function calculateNextPrice (uint256 _price) public pure returns (uint256 _nextPrice) {
-	    if (_price &lt; LIMIT_1) {
+	    if (_price < LIMIT_1) {
 	      return _price.mul(2);//100%
-	    } else if (_price &lt; LIMIT_2) {
+	    } else if (_price < LIMIT_2) {
 	      return _price.mul(13500).div(10000);//35%
-	    } else if (_price &lt; LIMIT_3) {
+	    } else if (_price < LIMIT_3) {
 	      return _price.mul(12500).div(10000);//25%
-	    } else if (_price &lt; LIMIT_4) {
+	    } else if (_price < LIMIT_4) {
 	      return _price.mul(11700).div(10000);//17%
 	    } else {
 	      return _price.mul(11500).div(10000);//15%
@@ -455,13 +455,13 @@ contract ContractOfSale is ElementTokenImpl {
   	}
 
 	function _calculateOwnerCut (uint256 _price) internal pure returns (uint256 _devCut) {
-		if (_price &lt; LIMIT_1) {
+		if (_price < LIMIT_1) {
 	      return _price.mul(1500).div(10000); // 15%
-	    } else if (_price &lt; LIMIT_2) {
+	    } else if (_price < LIMIT_2) {
 	      return _price.mul(500).div(10000); // 5%
-	    } else if (_price &lt; LIMIT_3) {
+	    } else if (_price < LIMIT_3) {
 	      return _price.mul(400).div(10000); // 4%
-	    } else if (_price &lt; LIMIT_4) {
+	    } else if (_price < LIMIT_4) {
 	      return _price.mul(300).div(10000); // 3%
 	    } else {
 	      return _price.mul(200).div(10000); // 2%
@@ -471,11 +471,11 @@ contract ContractOfSale is ElementTokenImpl {
 	function buy (uint256 _itemId) external payable{
         uint256 price = currentPrice[_itemId];
 	    //
-        require(currentPrice[_itemId] &gt; 0);
+        require(currentPrice[_itemId] > 0);
         //
         require(elementToOwner[_itemId] != address(0));
         //
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         //
         require(elementToOwner[_itemId] != msg.sender);
         //
@@ -497,7 +497,7 @@ contract ContractOfSale is ElementTokenImpl {
         uint256 ownerCut = _calculateOwnerCut(price);
 
         oldOwner.transfer(price.sub(ownerCut));
-        if (excess &gt; 0) {
+        if (excess > 0) {
             newOwner.transfer(excess);
         }
     }
@@ -510,7 +510,7 @@ contract ContractOfSale is ElementTokenImpl {
 	    uint256 length = _elementIds.length;
 	    _prices = new uint256[](length);
 	    
-	    for(uint256 i = 0; i &lt; length; i++) {
+	    for(uint256 i = 0; i < length; i++) {
 	        _prices[i] = currentPrice[_elementIds[i]];
 	    }
 	}
@@ -527,7 +527,7 @@ contract ChemistryCore is ContractOfSale {
         owner = msg.sender;
         authorized[msg.sender] = true;
         
-        _createElement(&quot;0&quot;, 2 ** 255);//philosophers stone is priceless
+        _createElement("0", 2 ** 255);//philosophers stone is priceless
     }
     
     function addElement(bytes32 _symbol) external onlyAuthorized() {
@@ -535,7 +535,7 @@ contract ChemistryCore is ContractOfSale {
         
         require(currentPrice[elementId] == 0);
         require(elementToOwner[elementId] == address(0));
-        require(elementId &lt;= tableSize + 1);
+        require(elementId <= tableSize + 1);
         
         _createElement(_symbol, 1 finney);
     }
@@ -545,11 +545,11 @@ contract ChemistryCore is ContractOfSale {
         
         uint256 length = _symbols.length;
         uint256 size = tableSize + 1;
-        for(uint256 i = 0; i &lt; length; i ++) {
+        for(uint256 i = 0; i < length; i ++) {
             
             require(currentPrice[elementId] == 0);
             require(elementToOwner[elementId] == address(0));
-            require(elementId &lt;= size);
+            require(elementId <= size);
             
             _createElement(_symbols[i], 1 finney);
             elementId++;
@@ -571,10 +571,10 @@ contract ChemistryCore is ContractOfSale {
     
     function getElementsFromIndex(uint32 indexFrom, uint32 count) external view returns (bytes32[] memory elementsData) {
         //check length
-        uint256 lenght = (elements.length - indexFrom &gt;= count ? count : elements.length - indexFrom);
+        uint256 lenght = (elements.length - indexFrom >= count ? count : elements.length - indexFrom);
         
         elementsData = new bytes32[](lenght);
-        for(uint256 i = 0; i &lt; lenght; i ++) {
+        for(uint256 i = 0; i < lenght; i ++) {
             elementsData[i] = elements[indexFrom + i].symbol;
         }
     }
@@ -583,7 +583,7 @@ contract ChemistryCore is ContractOfSale {
         uint256 lenght = _elementIds.length;
         owners = new address[](lenght);
         
-        for(uint256 i = 0; i &lt; lenght; i ++) {
+        for(uint256 i = 0; i < lenght; i ++) {
             owners[i] = elementToOwner[_elementIds[i]];
         }
     }
@@ -598,7 +598,7 @@ contract ChemistryCore is ContractOfSale {
     
     function getElements(uint256[] _elementIds) external view returns (bytes32[] memory elementsData) {
         elementsData = new bytes32[](_elementIds.length);
-        for(uint256 i = 0; i &lt; _elementIds.length; i++) {
+        for(uint256 i = 0; i < _elementIds.length; i++) {
             elementsData[i] = elements[_elementIds[i]].symbol;
         }
     }
@@ -616,7 +616,7 @@ contract ChemistryCore is ContractOfSale {
     function _bytes32ToString(bytes32 data) internal pure returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint256(data) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -624,7 +624,7 @@ contract ChemistryCore is ContractOfSale {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);

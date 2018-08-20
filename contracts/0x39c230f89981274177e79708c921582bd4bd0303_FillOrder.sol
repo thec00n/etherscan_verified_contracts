@@ -114,16 +114,16 @@ contract CashAutoConverter is Controlled {
     }
 
     function ethToCash() private returns (bool) {
-        if (msg.value &gt; 0) {
-            ICash(controller.lookup(&quot;Cash&quot;)).depositEtherFor.value(msg.value)(msg.sender);
+        if (msg.value > 0) {
+            ICash(controller.lookup("Cash")).depositEtherFor.value(msg.value)(msg.sender);
         }
         return true;
     }
 
     function cashToEth() private returns (bool) {
-        ICash _cash = ICash(controller.lookup(&quot;Cash&quot;));
+        ICash _cash = ICash(controller.lookup("Cash"));
         uint256 _tokenBalance = _cash.balanceOf(msg.sender);
-        if (_tokenBalance &gt; 0) {
+        if (_tokenBalance > 0) {
             IAugur augur = controller.getAugur();
             augur.trustedTransfer(_cash, msg.sender, this, _tokenBalance);
             _cash.withdrawEtherTo(msg.sender, _tokenBalance);
@@ -190,25 +190,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -216,7 +216,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -469,7 +469,7 @@ library Trade {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function tradeMakerSharesForFillerShares(Data _data) internal returns (uint256, uint256) {
@@ -480,7 +480,7 @@ library Trade {
 
         // transfer shares to this contract from each participant
         _data.contracts.longShareToken.trustedFillOrderTransfer(getLongShareSellerSource(_data), this, _numberOfCompleteSets);
-        for (uint256 _i = 0; _i &lt; _data.contracts.shortShareTokens.length; ++_i) {
+        for (uint256 _i = 0; _i < _data.contracts.shortShareTokens.length; ++_i) {
             _data.contracts.shortShareTokens[_i].trustedFillOrderTransfer(getShortShareSellerSource(_data), this, _numberOfCompleteSets);
         }
 
@@ -512,7 +512,7 @@ library Trade {
         if (_data.creator.direction == Direction.Short) {
             _data.contracts.longShareToken.trustedFillOrderTransfer(_data.contracts.market, _data.filler.participantAddress, _numberOfSharesToTrade);
         } else {
-            for (uint256 _i = 0; _i &lt; _data.contracts.shortShareTokens.length; ++_i) {
+            for (uint256 _i = 0; _i < _data.contracts.shortShareTokens.length; ++_i) {
                 _data.contracts.shortShareTokens[_i].trustedFillOrderTransfer(_data.contracts.market, _data.filler.participantAddress, _numberOfSharesToTrade);
             }
         }
@@ -536,7 +536,7 @@ library Trade {
         if (_data.filler.direction == Direction.Short) {
             _data.contracts.longShareToken.trustedFillOrderTransfer(_data.filler.participantAddress, _data.creator.participantAddress, _numberOfSharesToTrade);
         } else {
-            for (uint256 _i = 0; _i &lt; _data.contracts.shortShareTokens.length; ++_i) {
+            for (uint256 _i = 0; _i < _data.contracts.shortShareTokens.length; ++_i) {
                 _data.contracts.shortShareTokens[_i].trustedFillOrderTransfer(_data.filler.participantAddress, _data.creator.participantAddress, _numberOfSharesToTrade);
             }
         }
@@ -575,7 +575,7 @@ library Trade {
 
         // buy complete sets
         uint256 _cost = _numberOfCompleteSets.mul(_data.contracts.market.getNumTicks());
-        if (_data.contracts.denominationToken.allowance(this, _data.contracts.augur) &lt; _cost) {
+        if (_data.contracts.denominationToken.allowance(this, _data.contracts.augur) < _cost) {
             require(_data.contracts.denominationToken.approve(_data.contracts.augur, _cost));
         }
         _data.contracts.completeSets.buyCompleteSets(this, _data.contracts.market, _numberOfCompleteSets);
@@ -584,7 +584,7 @@ library Trade {
         address _longBuyer = getLongShareBuyerDestination(_data);
         address _shortBuyer = getShortShareBuyerDestination(_data);
         require(_data.contracts.longShareToken.transfer(_longBuyer, _numberOfCompleteSets));
-        for (uint256 _i = 0; _i &lt; _data.contracts.shortShareTokens.length; ++_i) {
+        for (uint256 _i = 0; _i < _data.contracts.shortShareTokens.length; ++_i) {
             require(_data.contracts.shortShareTokens[_i].transfer(_shortBuyer, _numberOfCompleteSets));
         }
 
@@ -652,13 +652,13 @@ library Trade {
     //
 
     function getContracts(IController _controller, bytes32 _orderId) private view returns (Contracts memory) {
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IMarket _market = _orders.getMarket(_orderId);
         uint256 _outcome = _orders.getOutcome(_orderId);
         return Contracts({
             orders: _orders,
             market: _market,
-            completeSets: ICompleteSets(_controller.lookup(&quot;CompleteSets&quot;)),
+            completeSets: ICompleteSets(_controller.lookup("CompleteSets")),
             denominationToken: _market.getDenominationToken(),
             longShareToken: _market.getShareToken(_outcome),
             shortShareTokens: getShortShareTokens(_market, _outcome),
@@ -714,11 +714,11 @@ library Trade {
 
     function getShortShareTokens(IMarket _market, uint256 _longOutcome) private view returns (IShareToken[] memory) {
         IShareToken[] memory _shortShareTokens = new IShareToken[](_market.getNumberOfOutcomes() - 1);
-        for (uint256 _outcome = 0; _outcome &lt; _shortShareTokens.length + 1; ++_outcome) {
+        for (uint256 _outcome = 0; _outcome < _shortShareTokens.length + 1; ++_outcome) {
             if (_outcome == _longOutcome) {
                 continue;
             }
-            uint256 _index = (_outcome &lt; _longOutcome) ? _outcome : _outcome - 1;
+            uint256 _index = (_outcome < _longOutcome) ? _outcome : _outcome - 1;
             _shortShareTokens[_index] = _market.getShareToken(_outcome);
         }
         return _shortShareTokens;
@@ -736,7 +736,7 @@ library Trade {
         if (_fillerDirection == Direction.Short) {
             _sharesAvailable = _longShareToken.balanceOf(_filler);
         } else {
-            for (uint256 _outcome = 0; _outcome &lt; _shortShareTokens.length; ++_outcome) {
+            for (uint256 _outcome = 0; _outcome < _shortShareTokens.length; ++_outcome) {
                 _sharesAvailable = _shortShareTokens[_outcome].balanceOf(_filler).min(_sharesAvailable);
             }
         }
@@ -769,7 +769,7 @@ contract FillOrder is CashAutoConverter, ReentrancyGuard, IFillOrder {
     // CONSIDER: Do we want the API to be in terms of shares as it is now, or would the desired amount of ETH to place be preferable? Would both be useful?
     function publicFillOrder(bytes32 _orderId, uint256 _amountFillerWants, bytes32 _tradeGroupId) external payable convertToAndFromCash onlyInGoodTimes returns (uint256) {
         uint256 _result = this.fillOrder(msg.sender, _orderId, _amountFillerWants, _tradeGroupId);
-        IMarket _market = IOrders(controller.lookup(&quot;Orders&quot;)).getMarket(_orderId);
+        IMarket _market = IOrders(controller.lookup("Orders")).getMarket(_orderId);
         _market.assertBalances();
         return _result;
     }
@@ -785,7 +785,7 @@ contract FillOrder is CashAutoConverter, ReentrancyGuard, IFillOrder {
         // Turn any remaining Cash balance the creator has into ETH. This is done for the filler though the use of a CashAutoConverter modifier. If someone is taking their own order we skip this step since the modifier will do it and they may need the ETH in the tx to make an order later in the context of publicTrade
         uint256 _creatorCashBalance = _tradeData.contracts.denominationToken.balanceOf(_tradeData.creator.participantAddress);
         bool _isOwnOrder = _tradeData.creator.participantAddress == _tradeData.filler.participantAddress;
-        if (_creatorCashBalance &gt; 0 &amp;&amp; !_isOwnOrder) {
+        if (_creatorCashBalance > 0 && !_isOwnOrder) {
             _tradeData.contracts.augur.trustedTransfer(_tradeData.contracts.denominationToken, _tradeData.creator.participantAddress, this, _creatorCashBalance);
             _tradeData.contracts.denominationToken.withdrawEtherToIfPossible(_tradeData.creator.participantAddress, _creatorCashBalance);
         }
@@ -878,10 +878,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -902,7 +902,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -946,7 +946,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -954,17 +954,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -982,14 +982,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }

@@ -2,12 +2,12 @@ pragma solidity 0.4.24;
 
 contract EternalStorage {
 
-    mapping(bytes32 =&gt; uint256) internal uintStorage;
-    mapping(bytes32 =&gt; string) internal stringStorage;
-    mapping(bytes32 =&gt; address) internal addressStorage;
-    mapping(bytes32 =&gt; bytes) internal bytesStorage;
-    mapping(bytes32 =&gt; bool) internal boolStorage;
-    mapping(bytes32 =&gt; int256) internal intStorage;
+    mapping(bytes32 => uint256) internal uintStorage;
+    mapping(bytes32 => string) internal stringStorage;
+    mapping(bytes32 => address) internal addressStorage;
+    mapping(bytes32 => bytes) internal bytesStorage;
+    mapping(bytes32 => bool) internal boolStorage;
+    mapping(bytes32 => int256) internal intStorage;
 
 }
 

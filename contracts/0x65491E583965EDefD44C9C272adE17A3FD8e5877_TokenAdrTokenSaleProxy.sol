@@ -43,13 +43,13 @@ contract TokenAdrTokenSaleProxy is Ownable {
   /// @dev Constructor
   /// @param _targetAddress Address of the target Buyable contract
   function TokenAdrTokenSaleProxy(address _targetAddress) public {
-    require(_targetAddress &gt; 0);
+    require(_targetAddress > 0);
     targetContract = Buyable(_targetAddress);
   }
 
   /// @dev Fallback function - forward investment request to the target contract
   function() public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(!stopped);
     totalWeiVolume += msg.value;
     targetContract.buy.value(msg.value).gas(buyGasLimit)(msg.sender);
@@ -58,14 +58,14 @@ contract TokenAdrTokenSaleProxy is Ownable {
   /// @dev Change target address where investment requests are forwarded
   /// @param newTargetAddress New target address to forward investments
   function changeTargetAddress(address newTargetAddress) public onlyOwner {
-    require(newTargetAddress &gt; 0);
+    require(newTargetAddress > 0);
     targetContract = Buyable(newTargetAddress);
   }
 
   /// @dev Change gas limit for buy() method call
   /// @param newGasLimit New gas limit
   function changeGasLimit(uint newGasLimit) public onlyOwner {
-    require(newGasLimit &gt; 0);
+    require(newGasLimit > 0);
     buyGasLimit = newGasLimit;
   }
 

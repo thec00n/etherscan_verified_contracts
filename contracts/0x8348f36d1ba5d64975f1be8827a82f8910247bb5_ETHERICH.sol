@@ -10,22 +10,22 @@ contract ETHERICH {
     uint256 private _increase = 1000000000000000;
 
     uint256 private _highestBid = 1000000000000000;
-    string private _highestNickName = &quot;ETHERICH&quot;;
-    string private _highestQuote = &quot;Your quote here!&quot;;
+    string private _highestNickName = "ETHERICH";
+    string private _highestQuote = "Your quote here!";
 
     constructor() public {
         owner = msg.sender;
     }
 
     function buy(string _nickname, string _quote) public payable {
-        require(msg.value &gt; 0);
-        require(msg.value &gt;= (_highestBid + _increase));
+        require(msg.value > 0);
+        require(msg.value >= (_highestBid + _increase));
 
         uint nickname_len = bytes(_nickname).length;
         uint quote_len = bytes(_quote).length ;
 
-        require(nickname_len &gt; 0 &amp;&amp; nickname_len &lt;= 28);
-        require(quote_len &gt; 0 &amp;&amp; quote_len &lt;= 60);
+        require(nickname_len > 0 && nickname_len <= 28);
+        require(quote_len > 0 && quote_len <= 60);
 
         _highestNickName = _nickname;
         _highestQuote = _quote;
@@ -48,8 +48,8 @@ contract ETHERICH {
         uint nickname_len = bytes(_nickname).length;
         uint quote_len = bytes(_quote).length ;
 
-        require(nickname_len &gt; 0 &amp;&amp; nickname_len &lt;= 28);
-        require(quote_len &gt; 0 &amp;&amp; quote_len &lt;= 60);
+        require(nickname_len > 0 && nickname_len <= 28);
+        require(quote_len > 0 && quote_len <= 60);
 
         _highestNickName = _nickname;
         _highestQuote = _quote;

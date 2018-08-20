@@ -2,8 +2,8 @@ pragma solidity 0.4.11;
 
 contract contractSKbasic{
 
-    string name1 = &quot;Persona 1&quot;;
-    string name2 = &quot;Persona 2&quot;;
+    string name1 = "Persona 1";
+    string name2 = "Persona 2";
     uint date = now;
 
     function setContractSK(string intervener1, string intervener2){

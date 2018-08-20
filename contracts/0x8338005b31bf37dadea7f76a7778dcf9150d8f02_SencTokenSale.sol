@@ -22,7 +22,7 @@ pragma solidity ^0.4.18;
 // contributors are assigned to in the WhiteListed smart contract to prevent a
 // gas war. Each batch will be assigned a timestamp. Contributors can only 
 // make purchase once the current timestamp on the main net is above the 
-// batch&#39;s assigned timestamp.
+// batch's assigned timestamp.
 //    - batch 0: start_date 00:01   (guaranteed allocations)
 //    - batch 1: start_date+1 00:01 (guaranteed allocations)
 //    - batch 2: start_date+2 00:01 (guaranteed and non-guaranteed allocations)
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -106,7 +106,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -123,12 +123,12 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -267,9 +267,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -277,7 +277,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -286,15 +286,15 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 
 contract SencTokenConfig {
-    string public constant NAME = &quot;Sentinel Chain Token&quot;;
-    string public constant SYMBOL = &quot;SENC&quot;;
+    string public constant NAME = "Sentinel Chain Token";
+    string public constant SYMBOL = "SENC";
     uint8 public constant DECIMALS = 18;
     uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
     uint public constant TOTALSUPPLY = 500000000 * DECIMALSFACTOR;
@@ -329,7 +329,7 @@ contract SencToken is PausableToken, SencTokenConfig, Salvageable {
     }
 
     function mint(address _to, uint _amount) onlyOwner canMint public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= TOTALSUPPLY);
+        require(totalSupply_.add(_amount) <= TOTALSUPPLY);
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);
@@ -347,7 +347,7 @@ contract SencToken is PausableToken, SencTokenConfig, Salvageable {
     function airdrop(address bountyWallet, address[] dests, uint[] values) public onlyOwner returns (uint) {
         require(dests.length == values.length);
         uint i = 0;
-        while (i &lt; dests.length &amp;&amp; balances[bountyWallet] &gt;= values[i]) {
+        while (i < dests.length && balances[bountyWallet] >= values[i]) {
             this.transferFrom(bountyWallet, dests[i], values[i]);
             i += 1;
         }
@@ -382,7 +382,7 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
     WhiteListedBasic public whiteListed;
     uint public numContributors;        // Discrete number of contributors
 
-    mapping (address =&gt; uint) public contributions; // to allow them to have multiple spends
+    mapping (address => uint) public contributions; // to allow them to have multiple spends
 
     event Finalized();
     event TokenPurchase(address indexed beneficiary, uint value, uint amount);
@@ -395,13 +395,13 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
         WhiteListedBasic _whiteListed, address _agTechWallet,  address _foundingTeamWallet,
         address _earlySupportersWallet, address _treasuryWallet, address _presaleWallet, address _tokenIssuer
     ) public {
-        require(_batchStartTimes.length &gt; 0);
-        // require (now &lt; batchStartTimes[0]);
-        for (uint i = 0; i &lt; _batchStartTimes.length - 1; i++) {
-            require(_batchStartTimes[i+1] &gt; _batchStartTimes[i]);
+        require(_batchStartTimes.length > 0);
+        // require (now < batchStartTimes[0]);
+        for (uint i = 0; i < _batchStartTimes.length - 1; i++) {
+            require(_batchStartTimes[i+1] > _batchStartTimes[i]);
         }
-        require(_endTime &gt;= _batchStartTimes[_batchStartTimes.length - 1]);
-        require(_usdPerMEth &gt; 0);
+        require(_endTime >= _batchStartTimes[_batchStartTimes.length - 1]);
+        require(_usdPerMEth > 0);
         require(_whiteListed != address(0));
         require(_agTechWallet != address(0));
         require(_foundingTeamWallet != address(0));
@@ -436,18 +436,18 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
 
     function updateBatchStartTime(uint _batchNumber, uint _batchStartTime) public canOperate {
         batchStartTimes[_batchNumber] = _batchStartTime;
-	for (uint i = 0; i &lt; batchStartTimes.length - 1; i++) {
-            require(batchStartTimes[i+1] &gt; batchStartTimes[i]);
+	for (uint i = 0; i < batchStartTimes.length - 1; i++) {
+            require(batchStartTimes[i+1] > batchStartTimes[i]);
         }
     }
 
     function updateEndTime(uint _endTime) public canOperate {
-	require(_endTime &gt;= batchStartTimes[batchStartTimes.length - 1]);
+	require(_endTime >= batchStartTimes[batchStartTimes.length - 1]);
         endTime = _endTime;
     }
 
     function updateUsdPerMEth(uint _usdPerMEth) public canOperate {
-        require(now &lt; batchStartTimes[0]);
+        require(now < batchStartTimes[0]);
         usdPerMEth = _usdPerMEth;
         publicSaleSencPerMEth = usdPerMEth.mul(MILLION).div(PUBLICSALE_USD_PER_MSENC);
         privateSaleSencPerMEth = usdPerMEth.mul(MILLION).div(PRIVATESALE_USD_PER_MSENC);
@@ -522,13 +522,13 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
 
     // Batch is in 0..n-1 format
     function isBatchActive(uint batch) public view returns (bool) {
-        if (now &gt; endTime) {
+        if (now > endTime) {
             return false;
         }
-        if (uint(batch) &gt;= batchStartTimes.length) {
+        if (uint(batch) >= batchStartTimes.length) {
             return false;
         }
-        if (now &gt; batchStartTimes[batch]) {
+        if (now > batchStartTimes[batch]) {
             return true;
         }
         return false;
@@ -539,11 +539,11 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
     // 1..batchStartTimes.length   - batch plus 1
     // batchStartTimes.length + 1  - ended
     function batchActive() public view returns (uint) {
-        if (now &gt; endTime) {
+        if (now > endTime) {
             return batchStartTimes.length + 1;
         }
-        for (uint i = batchStartTimes.length; i &gt; 0; i--) {
-            if (now &gt; batchStartTimes[i-1]) {
+        for (uint i = batchStartTimes.length; i > 0; i--) {
+            if (now > batchStartTimes[i-1]) {
                 return i;
             }
         }
@@ -552,7 +552,7 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
 
     // Return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     // Send ether to the fund collection wallet
@@ -568,13 +568,13 @@ contract SencTokenSale is SencTokenSaleConfig, Ownable, Pausable, Salvageable {
     // Buyer must by within assigned batch period
     function isWithinPeriod(address beneficiary) internal view returns (bool) {
         uint batchNumber = whiteListed.getBatchNumber(beneficiary);
-        return now &gt;= batchStartTimes[batchNumber] &amp;&amp; now &lt;= endTime;
+        return now >= batchStartTimes[batchNumber] && now <= endTime;
     }
 
     // Buyer must by withint allocated amount
     function isWithinAllocation(address beneficiary, uint weiAmount) internal view returns (bool) {
         uint allocation = whiteListed.getAllocated(beneficiary);
-        return (weiAmount &gt;= MIN_CONTRIBUTION) &amp;&amp; (weiAmount.add(contributions[beneficiary]) &lt;= allocation);
+        return (weiAmount >= MIN_CONTRIBUTION) && (weiAmount.add(contributions[beneficiary]) <= allocation);
     }
 
     // Must be called after crowdsale ends, to do some extra finalization

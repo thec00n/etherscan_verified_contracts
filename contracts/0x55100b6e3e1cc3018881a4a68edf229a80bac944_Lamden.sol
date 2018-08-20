@@ -41,8 +41,8 @@ contract ERC20 is Ownable {
     uint256 public initialSupply;
     bool public locked;
     uint256 public creationBlock;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -61,7 +61,7 @@ contract ERC20 is Ownable {
     bool transferAllSupplyToOwner,
     bool _locked
     ) {
-        standard = &#39;ERC20 0.1&#39;;
+        standard = 'ERC20 0.1';
 
         initialSupply = _initialSupply;
 
@@ -93,11 +93,11 @@ contract ERC20 is Ownable {
             return true;
         }
 
-        if (balances[_from] &lt; value) {
+        if (balances[_from] < value) {
             return false;
         }
 
-        if (balances[_to] + value &lt;= balances[_to]) {
+        if (balances[_to] + value <= balances[_to]) {
             return false;
         }
 
@@ -156,7 +156,7 @@ contract ERC20 is Ownable {
             return false;
         }
 
-        if (allowance[_from][msg.sender] &lt; _value) {
+        if (allowance[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -173,7 +173,7 @@ contract ERC20 is Ownable {
 
 contract MintingERC20 is ERC20 {
 
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     uint256 public maxSupply;
 
@@ -189,7 +189,7 @@ contract MintingERC20 is ERC20 {
     ERC20(_initialSupply, _tokenName, _decimals, _symbol, _transferAllSupplyToOwner, _locked)
 
     {
-        standard = &quot;MintingERC20 0.1&quot;;
+        standard = "MintingERC20 0.1";
         minters[msg.sender] = true;
         maxSupply = _maxSupply;
     }
@@ -213,10 +213,10 @@ contract MintingERC20 is ERC20 {
         if (_amount == uint256(0)) {
             return uint256(0);
         }
-        if (initialSupply + _amount &lt;= initialSupply){
+        if (initialSupply + _amount <= initialSupply){
             return uint256(0);
         }
-        if (initialSupply + _amount &gt; maxSupply) {
+        if (initialSupply + _amount > maxSupply) {
             return uint256(0);
         }
 
@@ -238,9 +238,9 @@ contract Lamden is MintingERC20 {
 
     uint8 public decimals = 18;
 
-    string public tokenName = &quot;Lamden Tau&quot;;
+    string public tokenName = "Lamden Tau";
 
-    string public tokenSymbol = &quot;TAU&quot;;
+    string public tokenSymbol = "TAU";
 
     uint256 public  maxSupply = 500 * 10 ** 6 * uint(10) ** decimals; // 500,000,000
 
@@ -251,7 +251,7 @@ contract Lamden is MintingERC20 {
     uint256 initialSupply,
     bool _locked
     ) MintingERC20(initialSupply, maxSupply, tokenName, decimals, tokenSymbol, false, _locked) {
-        standard = &#39;Lamden 0.1&#39;;
+        standard = 'Lamden 0.1';
     }
 
     function setLocked(bool _locked) onlyOwner {

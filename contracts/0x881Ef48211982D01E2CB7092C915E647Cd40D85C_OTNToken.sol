@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,7 +66,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract BasicToken is ERC20Basic {
 
 /**
  * @title Shareable
- * @dev inheritable &quot;property&quot; contract that enables methods to be protected by requiring the
+ * @dev inheritable "property" contract that enables methods to be protected by requiring the
  * acquiescence of either a single, or, crucially, each of a number of, designated owners.
  * @dev Usage: use modifiers onlyOwner (just own owned) or onlyManyOwners(hash), whereby the same hash must be provided by some number (specified in constructor) of the set of owners (specified in the constructor) before the interior is executed.
  */
@@ -112,7 +112,7 @@ contract Shareable {
     struct PendingState {
         uint256 index;
         uint256 yetNeeded;
-        mapping (address =&gt; bool) ownersDone;
+        mapping (address => bool) ownersDone;
     }
 
     // the number of owners that must confirm the same operation before it is run.
@@ -122,10 +122,10 @@ contract Shareable {
     address[] owners;
 
     // hash table of owners by address
-    mapping (address =&gt; bool) internal isOwner;
+    mapping (address => bool) internal isOwner;
 
     // the ongoing operations.
-    mapping (bytes32 =&gt; PendingState) internal pendings;
+    mapping (bytes32 => PendingState) internal pendings;
 
     // the ongoing operations by index
     bytes32[] internal pendingsIndex;
@@ -145,7 +145,7 @@ contract Shareable {
      * @param _required New or old required param, min: 2
      */
     modifier validRequirement(uint256 _ownersCount, uint _required) {
-        require(_required &gt; 1 &amp;&amp; _ownersCount &gt;= _required);
+        require(_required > 1 && _ownersCount >= _required);
         _;
     }
 
@@ -187,7 +187,7 @@ contract Shareable {
     }
 
     /**
-     * @dev Constructor is given the number of sigs required to do protected &quot;onlyManyOwners&quot;
+     * @dev Constructor is given the number of sigs required to do protected "onlyManyOwners"
      * transactions as well as the selection of addresses capable of confirming them.
      * @param _additionalOwners A list of owners.
      * @param _required The amount required for a operation to be approved.
@@ -198,8 +198,8 @@ contract Shareable {
         owners.push(msg.sender);
         isOwner[msg.sender] = true;
 
-        for (uint i = 0; i &lt; _additionalOwners.length; i++) {
-            require(!isOwner[_additionalOwners[i]] &amp;&amp; _additionalOwners[i] != address(0));
+        for (uint i = 0; i < _additionalOwners.length; i++) {
+            require(!isOwner[_additionalOwners[i]] && _additionalOwners[i] != address(0));
 
             owners.push(_additionalOwners[i]);
             isOwner[_additionalOwners[i]] = true;
@@ -215,7 +215,7 @@ contract Shareable {
     function changeRequirement(uint _required)
         external
         validRequirement(owners.length, _required)
-        onlyManyOwners(keccak256(&quot;change-requirement&quot;, _required))
+        onlyManyOwners(keccak256("change-requirement", _required))
     {
         required = _required;
 
@@ -230,7 +230,7 @@ contract Shareable {
         external
         addressNotNull(_owner)
         ownerDoesNotExist(_owner)
-        onlyManyOwners(keccak256(&quot;add-owner&quot;, _owner))
+        onlyManyOwners(keccak256("add-owner", _owner))
     {
         owners.push(_owner);
         isOwner[_owner] = true;
@@ -246,7 +246,7 @@ contract Shareable {
         external
         addressNotNull(_owner)
         ownerExists(_owner)
-        onlyManyOwners(keccak256(&quot;remove-owner&quot;, _owner))
+        onlyManyOwners(keccak256("remove-owner", _owner))
         validRequirement(owners.length - 1, required)
     {
         // clear all pending operation list
@@ -254,7 +254,7 @@ contract Shareable {
 
         isOwner[_owner] = false;
 
-        for (uint256 i = 0; i &lt; owners.length - 1; i++) {
+        for (uint256 i = 0; i < owners.length - 1; i++) {
             if (owners[i] == _owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
@@ -281,13 +281,13 @@ contract Shareable {
             pending.ownersDone[msg.sender] = false;
 
             uint256 count = 0;
-            for (uint256 i = 0; i &lt; owners.length; i++) {
+            for (uint256 i = 0; i < owners.length; i++) {
                 if (hasConfirmed(_operation, owners[i])) {
                     count++;
                 }
             }
 
-            if (count &lt;= 0) {
+            if (count <= 0) {
                 pendingsIndex[pending.index] = pendingsIndex[pendingsIndex.length - 1];
                 pendingsIndex.length--;
                 delete pendings[_operation];
@@ -313,7 +313,7 @@ contract Shareable {
     }
 
     /**
-     * @dev Confirm and operation and checks if it&#39;s already executable.
+     * @dev Confirm and operation and checks if it's already executable.
      * @param _operation The operation identifier.
      * @return Returns true when operation can be executed.
      */
@@ -324,7 +324,7 @@ contract Shareable {
     {
         var pending = pendings[_operation];
 
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (pending.yetNeeded == 0) {
             clearOwnersDone(_operation);
             // reset count of confirmations needed.
@@ -335,12 +335,12 @@ contract Shareable {
             pendingsIndex[pending.index] = _operation;
         }
 
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
+        // make sure we (the message sender) haven't confirmed this operation previously.
         if (!hasConfirmed(_operation, msg.sender)) {
             Confirmation(msg.sender, _operation);
 
             // ok - check if count is enough to go ahead.
-            if (pending.yetNeeded &lt;= 1) {
+            if (pending.yetNeeded <= 1) {
                 // enough confirmations: reset and run interior.
                 clearOwnersDone(_operation);
                 pendingsIndex[pending.index] = pendingsIndex[pendingsIndex.length - 1];
@@ -368,7 +368,7 @@ contract Shareable {
         internal
         onlyOwner
     {
-        for (uint256 i = 0; i &lt; owners.length; i++) {
+        for (uint256 i = 0; i < owners.length; i++) {
             if (pendings[_operation].ownersDone[owners[i]]) {
                 pendings[_operation].ownersDone[owners[i]] = false;
             }
@@ -384,7 +384,7 @@ contract Shareable {
     {
         uint256 length = pendingsIndex.length;
 
-        for (uint256 i = 0; i &lt; length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             clearOwnersDone(pendingsIndex[i]);
             delete pendings[pendingsIndex[i]];
         }
@@ -402,7 +402,7 @@ contract Shareable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -417,7 +417,7 @@ contract StandardToken is ERC20, BasicToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -431,7 +431,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -468,7 +468,7 @@ contract StandardToken is ERC20, BasicToken {
     function decreaseApproval(address _spender, uint _subtractedValue)
         returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -507,13 +507,13 @@ contract MintableToken is StandardToken, Shareable {
      */
     modifier canMint(uint256 _amount) {
         // check block height
-        require(block.number &gt;= nextSupplyAfterBlock);
+        require(block.number >= nextSupplyAfterBlock);
 
         // check total supply limit
-        require(totalSupply.add(_amount) &lt;= totalSupplyLimit);
+        require(totalSupply.add(_amount) <= totalSupplyLimit);
 
         // check supply amount in current iteration
-        require(_amount &lt;= currentIterationSupplyLimit());
+        require(_amount <= currentIterationSupplyLimit());
 
         _;
     }
@@ -539,7 +539,7 @@ contract MintableToken is StandardToken, Shareable {
     )
         Shareable(_additionalOwners, _required)
     {
-        require(_initialSupplyAddress != address(0) &amp;&amp; _initialSupply &gt; 0);
+        require(_initialSupplyAddress != address(0) && _initialSupply > 0);
 
         prevIterationSupplyLimit = _firstIterationSupplyLimit;
         totalSupplyLimit = _totalSupplyLimit;
@@ -563,7 +563,7 @@ contract MintableToken is StandardToken, Shareable {
         } else {
             maxSupply = prevIterationSupplyLimit.mul(9881653713).div(10000000000);
 
-            if (maxSupply &gt; (totalSupplyLimit.sub(totalSupply))) {
+            if (maxSupply > (totalSupplyLimit.sub(totalSupply))) {
                 maxSupply = totalSupplyLimit.sub(totalSupply);
             }
         }
@@ -578,7 +578,7 @@ contract MintableToken is StandardToken, Shareable {
     function mint(address _to, uint256 _amount)
         external
         canMint(_amount)
-        onlyManyOwners(keccak256(&quot;mint&quot;, _to, _amount))
+        onlyManyOwners(keccak256("mint", _to, _amount))
         returns (bool)
     {
         prevIterationSupplyLimit = currentIterationSupplyLimit();
@@ -603,10 +603,10 @@ contract MintableToken is StandardToken, Shareable {
  */
 contract OTNToken is MintableToken {
     // token name
-    string public name = &quot;Open Trading Network&quot;;
+    string public name = "Open Trading Network";
 
     // token symbol
-    string public symbol = &quot;OTN&quot;;
+    string public symbol = "OTN";
 
     // token decimals
     uint256 public decimals = 18;

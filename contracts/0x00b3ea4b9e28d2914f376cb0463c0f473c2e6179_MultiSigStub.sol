@@ -2,15 +2,15 @@ pragma solidity ^0.4.15;
 
 /**
  * @title MultiSigStub  
- * @author Ricardo Guilherme Schmidt (Status Research &amp; Development GmbH)
+ * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
  * @dev Contract that delegates calls to a library to build a full MultiSigWallet that is cheap to create. 
  */
 contract MultiSigStub {
 
     address[] public owners;
     address[] public tokens;
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
     uint public transactionCount;
 
     struct Transaction {
@@ -21,7 +21,7 @@ contract MultiSigStub {
     }
     
     function MultiSigStub(address[] _owners, uint256 _required) {
-        //bytes4 sig = bytes4(sha3(&quot;constructor(address[],uint256)&quot;));
+        //bytes4 sig = bytes4(sha3("constructor(address[],uint256)"));
         bytes4 sig = 0x36756a23;
         uint argarraysize = (2 + _owners.length);
         uint argsize = (1 + argarraysize) * 32;
@@ -166,14 +166,14 @@ contract MultiSigStub {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; owners.length; i++) {
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         }
         _confirmations = new address[](count);
-        for (i = 0; i &lt; count; i++) {
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
         }
     }
@@ -192,14 +192,14 @@ contract MultiSigStub {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i = 0; i &lt; transactionCount; i++) {
-            if (pending &amp;&amp; !transactions[i].executed || executed &amp;&amp; transactions[i].executed) {
+        for (i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         }
         _transactionIds = new uint[](to - from);
-        for (i = from; i &lt; to; i++) {
+        for (i = from; i < to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
         }
     }

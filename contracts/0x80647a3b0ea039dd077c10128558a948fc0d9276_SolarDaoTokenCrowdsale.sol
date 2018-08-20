@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
  /// @title Ownable contract - base contract with an owner
- /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7b7a695f6c727e6d6b7c70716b6d7e7c6b7a7e72317c7072">[email&#160;protected]</a>
+ /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7b7a695f6c727e6d6b7c70716b6d7e7c6b7a7e72317c7072">[email protected]</a>
 contract Ownable {
   address public owner;
 
@@ -22,7 +22,7 @@ contract Ownable {
 }
 
 /// @title Haltable contract - abstract contract that allows children to implement an emergency stop mechanism.
-/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aecacbd8eeddc3cfdcdacdc1c0dadccfcddacbcfc380cdc1c3">[email&#160;protected]</a>
+/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aecacbd8eeddc3cfdcdacdc1c0dadccfcddacbcfc380cdc1c3">[email protected]</a>
 /// Originally envisioned in FirstBlood ICO contract.
 contract Haltable is Ownable {
   bool public halted;
@@ -51,7 +51,7 @@ contract Haltable is Ownable {
 
 
  /// @title ERC20 interface see https://github.com/ethereum/EIPs/issues/20
- /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="583c3d2e182b35392a2c3b37362c2a393b2c3d3935763b3735">[email&#160;protected]</a>
+ /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="583c3d2e182b35392a2c3b37362c2a393b2c3d3935763b3735">[email protected]</a>
 contract ERC20 {
   uint public totalSupply;
   function balanceOf(address who) constant returns (uint);
@@ -65,7 +65,7 @@ contract ERC20 {
 }
 
  /// @title SafeMath contract - math operations with safety checks
- /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8cccddee8dbc5c9dadccbc7c6dcdac9cbdccdc9c586cbc7c5">[email&#160;protected]</a>
+ /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8cccddee8dbc5c9dadccbc7c6dcdac9cbdccdc9c586cbc7c5">[email protected]</a>
 contract SafeMath {
   function safeMul(uint a, uint b) internal returns (uint) {
     uint c = a * b;
@@ -74,37 +74,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -114,10 +114,10 @@ contract SafeMath {
 
 
 /// @title SolarDaoToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
-/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="debabba89eadb3bfacaabdb1b0aaacbfbdaabbbfb3f0bdb1b3">[email&#160;protected]</a>
+/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="debabba89eadb3bfacaabdb1b0aaacbfbdaabbbfb3f0bdb1b3">[email protected]</a>
 contract SolarDaoToken is SafeMath, ERC20, Ownable {
- string public name = &quot;Solar DAO Token&quot;;
- string public symbol = &quot;SDAO&quot;;
+ string public name = "Solar DAO Token";
+ string public symbol = "SDAO";
  uint public decimals = 4;
 
  /// contract that is allowed to create new tokens and allows unlift the transfer limits on this token
@@ -125,9 +125,9 @@ contract SolarDaoToken is SafeMath, ERC20, Ownable {
  /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
  bool public released = false;
  /// approve() allowances
- mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+ mapping (address => mapping (address => uint)) allowed;
  /// holder balances
- mapping(address =&gt; uint) balances;
+ mapping(address => uint) balances;
 
  /// @dev Limit token transfer until the crowdsale is over.
  modifier canTransfer() {
@@ -153,7 +153,7 @@ contract SolarDaoToken is SafeMath, ERC20, Ownable {
  /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
  /// @param size payload size
  modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
     _;
  }
 
@@ -251,7 +251,7 @@ contract SolarDaoToken is SafeMath, ERC20, Ownable {
 
 
 /// @title SolarDaoTokenCrowdsale contract - contract for token sales.
-/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dabebfac9aa9b7bba8aeb9b5b4aea8bbb9aebfbbb7f4b9b5b7">[email&#160;protected]</a>
+/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dabebfac9aa9b7bba8aeb9b5b4aea8bbb9aebfbbb7f4b9b5b7">[email protected]</a>
 contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
 
   /// Prefunding goal in USD cents, if the prefunding goal is reached, ico will start
@@ -260,7 +260,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
   /// Tokens funding goal in USD cents, if the funding goal is reached, ico will stop
   uint public constant ICO_GOAL = 8e7 * PRICE;
 
-  /// Miminal tokens funding goal in USD cents, if this goal isn&#39;t reached during ICO, refund will begin
+  /// Miminal tokens funding goal in USD cents, if this goal isn't reached during ICO, refund will begin
   uint public constant MIN_ICO_GOAL = 1e7;
 
   /// Percent of bonus tokens team receives from each investment
@@ -315,10 +315,10 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
   address public exchangeRateAgent;
 
   /// How much ETH each address has invested to this crowdsale
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /// How much tokens this crowdsale has credited for each investor address
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /// Define preICO pricing schedule using milestones.
   struct Milestone {
@@ -373,8 +373,8 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
     require(_preInvestStart != 0);
     require(_start != 0);
     require(_end != 0);
-    require(_start &lt; _end);
-    require(_end &gt; _preInvestStart + PRE_ICO_DURATION);
+    require(_start < _end);
+    require(_end > _preInvestStart + PRE_ICO_DURATION);
 
     owner = msg.sender;
     token = SolarDaoToken(_token);
@@ -385,7 +385,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
     preInvestStart = _preInvestStart;
 
     var preIcoBonuses = [uint(100), 80, 70, 60, 50];
-    for (uint i = 0; i &lt; preIcoBonuses.length; i++) {
+    for (uint i = 0; i < preIcoBonuses.length; i++) {
       milestones.push(Milestone(preInvestStart + i * 1 weeks, preInvestStart + (i + 1) * 1 weeks, preIcoBonuses[i]));
     }
     milestones.push(Milestone(startsAt, startsAt + 4 days, 25));
@@ -393,7 +393,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
     delete preIcoBonuses;
 
     var icoBonuses = [uint(15), 10, 5];
-    for (i = 1; i &lt;= icoBonuses.length; i++) {
+    for (i = 1; i <= icoBonuses.length; i++) {
       milestones.push(Milestone(startsAt + i * 1 weeks, startsAt + (i + 1) * 1 weeks, icoBonuses[i - 1]));
     }
     delete icoBonuses;
@@ -406,8 +406,8 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
   /// @dev Get the current milestone or bail out if we are not in the milestone periods.
   /// @return Milestone current bonus milestone
   function getCurrentMilestone() private constant returns (Milestone) {
-      for (uint i = 0; i &lt; milestones.length; i++) {
-        if (milestones[i].start &lt;= now &amp;&amp; milestones[i].end &gt; now) {
+      for (uint i = 0; i < milestones.length; i++) {
+        if (milestones[i].start <= now && milestones[i].end > now) {
           return milestones[i];
         }
       }
@@ -421,7 +421,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
 
     uint weiAmount = msg.value;
     uint tokensAmount = calculateTokens(weiAmount);
-    assert (tokensAmount &gt; 0);
+    assert (tokensAmount > 0);
 
     if(state == State.PreFunding) {
         tokensAmount += safeDiv(safeMul(tokensAmount, getCurrentMilestone().bonus), 100);
@@ -483,10 +483,10 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
    /// @param value USD amout in cents for 1 Ether
    /// @param time timestamp
   function setExchangeRate(uint value, uint time) onlyExchangeRateAgent {
-    require(value &gt; 0);
-    require(time &gt; 0);
-    require(exchangeRateTimestamp == 0 || getDifference(int(time), int(now)) &lt;= 1 minutes);
-    require(exchangeRate == 0 || (getDifference(int(value), int(exchangeRate)) * 100 / exchangeRate &lt;= 30));
+    require(value > 0);
+    require(time > 0);
+    require(exchangeRateTimestamp == 0 || getDifference(int(time), int(now)) <= 1 minutes);
+    require(exchangeRate == 0 || (getDifference(int(value), int(exchangeRate)) * 100 / exchangeRate <= 30));
 
     ExchangeRateChanged(exchangeRate, value);
     exchangeRate = value;
@@ -503,7 +503,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
 
   function getDifference(int one, int two) private constant returns (uint) {
     var diff = one - two;
-    if (diff &lt; 0)
+    if (diff < 0)
       diff = -diff;
     return uint(diff);
   }
@@ -511,14 +511,14 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
   /// @dev Allow crowdsale owner to close early or extend the crowdsale.
   /// @param time timestamp
   function setEndsAt(uint time) onlyOwner {
-    require(time &gt;= now);
+    require(time >= now);
     endsAt = time;
     EndsAtChanged(endsAt);
   }
 
   /// @dev Allow load refunds back on the contract for the refunding.
   function loadRefund() public payable inState(State.Failure) {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     loadedRefund = safeAdd(loadedRefund, msg.value);
   }
 
@@ -536,13 +536,13 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
   /// @dev Minimum goal was reached
   /// @return true if the crowdsale has raised enough money to not initiate the refunding
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiToUsdCents(weiRaised) &gt;= MIN_ICO_GOAL;
+    return weiToUsdCents(weiRaised) >= MIN_ICO_GOAL;
   }
 
   /// @dev Check if the ICO goal was reached.
   /// @return true if the crowdsale has raised enough money to be a success
   function isCrowdsaleFull() public constant returns (bool) {
-    return weiToUsdCents(weiRaised) &gt;= ICO_GOAL;
+    return weiToUsdCents(weiRaised) >= ICO_GOAL;
   }
 
   /// @dev Crowdfund state machine management.
@@ -552,13 +552,13 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
       return State.Finalized;
     if (address(token) == 0 || address(multisigWallet) == 0)
       return State.Preparing;
-    if (preInvestStart &lt;= now &amp;&amp; now &lt; startsAt &amp;&amp; !isMaximumPreFundingGoalReached())
+    if (preInvestStart <= now && now < startsAt && !isMaximumPreFundingGoalReached())
       return State.PreFunding;
-    if (now &lt;= endsAt &amp;&amp; !isCrowdsaleFull())
+    if (now <= endsAt && !isCrowdsaleFull())
       return State.Funding;
     if (isMinimumGoalReached())
       return State.Success;
-    if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised)
+    if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised)
       return State.Refunding;
     return State.Failure;
   }
@@ -570,7 +570,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
     var multiplier = 10 ** token.decimals();
 
     uint usdAmount = weiToUsdCents(weiAmount);
-    assert (usdAmount &gt;= PRICE);
+    assert (usdAmount >= PRICE);
 
     return safeMul(usdAmount, safeDiv(multiplier, PRICE));
   }
@@ -588,7 +588,7 @@ contract SolarDaoTokenCrowdsale is Haltable, SafeMath {
    /// @dev Check if the pre ICO goal was reached.
    /// @return true if the preICO has raised enough money to be a success
    function isMaximumPreFundingGoalReached() public constant returns (bool reached) {
-     return weiToUsdCents(weiRaised) &gt;= PRE_FUNDING_GOAL;
+     return weiToUsdCents(weiRaised) >= PRE_FUNDING_GOAL;
    }
 
    /// @dev Converts wei value into USD cents according to current exchange rate

@@ -9,20 +9,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         require(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a &amp;&amp; c &gt;= b);
+        require(c >= a && c >= b);
         return c;
     }
 }
@@ -78,27 +78,27 @@ contract AlsIco is Owned, SafeMath {
     }
 
     modifier onlyAfterStart() {
-        require(now &gt;= crowdsaleStartTime);
+        require(now >= crowdsaleStartTime);
         _;
     }
 
     modifier onlyBeforeEnd() {
-        require(now &lt;= crowdsaleEndTime);
+        require(now <= crowdsaleEndTime);
         _;
     }
 
     // Returns how many ALS are given in exchange for 1 ETH.
     function getPrice() public constant onlyAfterStart onlyBeforeEnd returns (uint256) {
-        if (tokensSold &lt; 1600 * oneThousandAls) {
+        if (tokensSold < 1600 * oneThousandAls) {
             // Firs 2% (equivalent to first 1.600.000 ALS) get 70% bonus (equivalent to 17000 ALS per 1 ETH).
             return 17000;
-        } else if (tokensSold &lt; 8000 * oneThousandAls) {
+        } else if (tokensSold < 8000 * oneThousandAls) {
             // Firs 10% (equivalent to first 8.000.000 ALS) get 30% bonus (equivalent to 13000 ALS per 1 ETH).
             return 13000;
-        } else if (tokensSold &lt; 16000 * oneThousandAls) {
+        } else if (tokensSold < 16000 * oneThousandAls) {
             // Firs 20% (equivalent to first 16.000.000 ALS) get 10% bonus (equivalent to 11000 ALS per 1 ETH).
             return 11000;
-        } else if (tokensSold &lt; 40000 * oneThousandAls) {
+        } else if (tokensSold < 40000 * oneThousandAls) {
             // Firs 50% (equivalent to first 40.000.000 ALS) get 5% bonus (equivalent to 10500 ALS per 1 ETH).
             return 10500;
         } else {
@@ -109,15 +109,15 @@ contract AlsIco is Owned, SafeMath {
 
     function () payable public onlyAfterStart onlyBeforeEnd {
         uint256 availableTokens = alsToken.balanceOf(this);
-        require (availableTokens &gt; 0);
+        require (availableTokens > 0);
 
         uint256 etherAmount = msg.value;
-        require(etherAmount &gt; 0);
+        require(etherAmount > 0);
 
         uint256 price = getPrice();
         uint256 tokenAmount = safeMul(etherAmount, price);
 
-        if (tokenAmount &lt;= availableTokens) {
+        if (tokenAmount <= availableTokens) {
             amountRaised = safeAdd(amountRaised, etherAmount);
             tokensSold = safeAdd(tokensSold, tokenAmount);
 
@@ -138,7 +138,7 @@ contract AlsIco is Owned, SafeMath {
     }
 
     function withdrawEther(uint _amount) external onlyOwner {
-        require(this.balance &gt;= _amount);
+        require(this.balance >= _amount);
         owner.transfer(_amount);
         FundTransfer(owner, _amount, false);
     }

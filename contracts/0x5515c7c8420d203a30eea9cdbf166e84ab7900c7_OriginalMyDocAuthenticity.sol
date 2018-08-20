@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 contract OriginalMyDocAuthenticity {
     
-  mapping (string =&gt; uint) private authenticity;
+  mapping (string => uint) private authenticity;
 
   function storeAuthenticity(string sha256) {
     if (checkAuthenticity(sha256) == 0) {

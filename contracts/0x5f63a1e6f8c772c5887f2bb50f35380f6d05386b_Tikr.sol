@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 contract Tikr {
 
-    mapping (bytes32 =&gt; uint256) tokenValues;
+    mapping (bytes32 => uint256) tokenValues;
     address adminAddress;
     address managerAddress;
 

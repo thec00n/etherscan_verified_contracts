@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,9 +70,9 @@ contract TokenDistributor is Ownable {
     
   MintTokensInterface public crowdsale = MintTokensInterface(0x2D3E7D4870a51b918919E7B851FE19983E4c38d5);
   
-  mapping(address =&gt; bool) public authorized;
+  mapping(address => bool) public authorized;
 
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   address[] public rewardHolders;
 
@@ -96,11 +96,11 @@ contract TokenDistributor is Ownable {
   }
     
   function mintBatch(address[] wallets, uint[] tokens) public onlyOwner {
-    for(uint i=0; i&lt;wallets.length; i++) crowdsale.mint(wallets[i], tokens[i]);
+    for(uint i=0; i<wallets.length; i++) crowdsale.mint(wallets[i], tokens[i]);
   }
 
   function mintAuthorizedBatch(address[] wallets, uint[] tokens) public onlyAuthorized {
-    for(uint i=0; i&lt;wallets.length; i++) crowdsale.mint(wallets[i], tokens[i]);
+    for(uint i=0; i<wallets.length; i++) crowdsale.mint(wallets[i], tokens[i]);
   }
 
   function isContract(address addr) public view returns(bool) {
@@ -109,17 +109,17 @@ contract TokenDistributor is Ownable {
       // Retrieve the size of the code on target address, this needs assembly .
       codeLength := extcodesize(addr)
     }
-    return codeLength &gt; 0;
+    return codeLength > 0;
   }
   
   function mintAuthorizedBatchWithBalances(address[] wallets, uint[] tokens) public onlyAuthorized {
     address wallet;
     uint reward;
     bool isItContract;
-    for(uint i=0; i&lt;wallets.length; i++) {
+    for(uint i=0; i<wallets.length; i++) {
       wallet = wallets[i];
       isItContract = isContract(wallet);
-      if(!isItContract || (isItContract &amp;&amp; !stopContract)) {
+      if(!isItContract || (isItContract && !stopContract)) {
         reward = tokens[i];
         crowdsale.mint(wallet, reward);
         if(balances[wallet] == 0) {

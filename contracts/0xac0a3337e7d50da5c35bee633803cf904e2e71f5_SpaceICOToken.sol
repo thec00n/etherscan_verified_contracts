@@ -12,28 +12,28 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract SpaceICOToken {
 	using SafeMath for uint256;
-	string public name = &quot;SpaceICO Token&quot;;
-    string public symbol = &quot;SIO&quot;;
+	string public name = "SpaceICO Token";
+    string public symbol = "SIO";
     uint256 public decimals = 18;
 
     uint256 private saleStart;
@@ -42,8 +42,8 @@ contract SpaceICOToken {
     uint256 private constant TOTAL_SUPPLY = 50000000 * 1 ether;
     uint256 private constant SOFT_CAP = 500 * 1 ether;
 
-	mapping (address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
 	address private owner;
 
@@ -62,11 +62,11 @@ contract SpaceICOToken {
     }
 
     function softCapReached() constant returns (bool) {
-        return this.balance &gt; SOFT_CAP;
+        return this.balance > SOFT_CAP;
     }
 
     function inSalePeriod() constant returns (bool) {
-        return now &gt; saleStart &amp;&amp; now &lt; saleEnd;
+        return now > saleStart && now < saleEnd;
     }
 
     function balanceOf(address _owner) constant returns (uint256 balance) {
@@ -97,9 +97,9 @@ contract SpaceICOToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-        require(now &gt; saleEnd + 14 days);
+        require(now > saleEnd + 14 days);
 
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) {
 
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -125,7 +125,7 @@ contract SpaceICOToken {
     }
 
     function buyTokens() payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(inSalePeriod());
 
         uint amountInWei = msg.value;
@@ -140,7 +140,7 @@ contract SpaceICOToken {
     }
 
     function refund() {
-        if (softCapReached() == false &amp;&amp; now &gt; saleEnd) {
+        if (softCapReached() == false && now > saleEnd) {
 
             uint tokenAmount = balanceOf(msg.sender);
             uint amount = tokenAmount.div(1 ether);
@@ -153,7 +153,7 @@ contract SpaceICOToken {
     function withdraw() {
         require(msg.sender == owner);
 
-        if (softCapReached() == true &amp;&amp; now &gt; saleEnd) {
+        if (softCapReached() == true && now > saleEnd) {
             msg.sender.transfer(this.balance);
         }
     }

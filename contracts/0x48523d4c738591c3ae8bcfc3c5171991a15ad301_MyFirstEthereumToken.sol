@@ -3,12 +3,12 @@ pragma solidity ^0.4.0;
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 
 contract MyFirstEthereumToken {
-    // The keyword &quot;public&quot; makes those variables
+    // The keyword "public" makes those variables
     // readable from outside.
     address public owner;
 	// Public variables of the token
-    string public name = &quot;MyFirstEthereumToken&quot;;
-    string public symbol = &quot;MFET&quot;;
+    string public name = "MyFirstEthereumToken";
+    string public symbol = "MFET";
     uint8 public decimals = 18;	// 18 decimals is the strongly suggested default, avoid changing it
  
     uint256 public totalSupply; 
@@ -18,8 +18,8 @@ contract MyFirstEthereumToken {
 	bool public onSale = false;
 
 	/* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balances;
+	mapping (address => mapping (address => uint256)) public allowance;
 
     // Events allow light clients to react on
     // changes efficiently.
@@ -73,15 +73,15 @@ contract MyFirstEthereumToken {
     function _transfer(address _from, address _to, uint _value) internal returns (bool success)
 	{
 		// mitigates the ERC20 short address attack
-		//require(msg.data.length &gt;= (2 * 32) + 4);
+		//require(msg.data.length >= (2 * 32) + 4);
 		// checks for minimum transfer amount
-		require(_value &gt; 0);
+		require(_value > 0);
 		// Prevent transfer to 0x0 address. Use burn() instead  
         require(_to != 0x0);	      
 		// Check if the sender has enough
-        require(balances[_from] &gt;= _value);	
+        require(balances[_from] >= _value);	
 		// Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);	// Check for overflows
+        require(balances[_to] + _value > balances[_to]);	// Check for overflows
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -117,15 +117,15 @@ contract MyFirstEthereumToken {
 		address _from = msg.sender;
 		
 		// mitigates the ERC20 short address attack
-		//require(msg.data.length &gt;= (2 * 32) + 4);
+		//require(msg.data.length >= (2 * 32) + 4);
 		// checks for minimum transfer amount
-		require(_value &gt; 0);
+		require(_value > 0);
 		// Prevent transfer to 0x0 address. Use burn() instead  
         require(_to != 0x0);	      
 		// Check if the sender has enough
-        require(balances[_from] &gt;= _value);	
+        require(balances[_from] >= _value);	
 		// Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);	// Check for overflows
+        require(balances[_to] + _value > balances[_to]);	// Check for overflows
         // Save this for an assertion in the future
         uint previousBalances = balances[_from] + balances[_to];
         // Subtract from the sender
@@ -149,7 +149,7 @@ contract MyFirstEthereumToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) 
 	{
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -218,7 +218,7 @@ contract MyFirstEthereumToken {
 		
 		uint256 _gasPrice = 30000000000;
 		
-		require(this.balance &gt; _gasPrice);
+		require(this.balance > _gasPrice);
 		
 		uint256 _totalAmount = this.balance - _gasPrice;
 		
@@ -240,11 +240,11 @@ contract MyFirstEthereumToken {
 		
 		uint256 _gasPrice = 30000000000;
 		
-		require(_amount &gt; 0);
+		require(_amount > 0);
 		
 		uint256 totalAmount = _amount + _gasPrice; 
 		
-		require(this.balance &gt;= totalAmount);
+		require(this.balance >= totalAmount);
 		
 		owner.transfer(totalAmount);
 		
@@ -266,7 +266,7 @@ contract MyFirstEthereumToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -282,10 +282,10 @@ contract MyFirstEthereumToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -302,7 +302,7 @@ contract MyFirstEthereumToken {
 	function buyTokens () public payable 
 	{
 		// checks for minimum transfer amount
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		
 		require(onSale == true);
 		
@@ -312,7 +312,7 @@ contract MyFirstEthereumToken {
 		
 		uint256 tokensAmount = msg.value * 1000;
 		
-		if(totalContributed &gt;= 1 ether)
+		if(totalContributed >= 1 ether)
 		{
 			
 			uint256 multiplier = (totalContributed / 1 ether);

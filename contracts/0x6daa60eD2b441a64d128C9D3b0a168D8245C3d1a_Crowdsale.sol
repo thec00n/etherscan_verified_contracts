@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,10 +58,10 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
  
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
  
   function transfer(address _to, uint256 _value) public returns (bool) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(this) &amp;&amp; _to != address(0)) {
+    if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0 && _to != address(this) && _to != address(0)) {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -76,10 +76,10 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0 &amp;&amp; _to != address(this) &amp;&amp; _to != address(0)) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0 && _to != address(this) && _to != address(0)) {
         var _allowance = allowed[_from][msg.sender];
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -90,7 +90,7 @@ contract StandardToken is ERC20, BasicToken {
   }
 
   function approve(address _spender, uint256 _value) public returns (bool) {
-      if (((_value == 0) || (allowed[msg.sender][_spender] == 0)) &amp;&amp; _spender != address(this) &amp;&amp; _spender != address(0)) {
+      if (((_value == 0) || (allowed[msg.sender][_spender] == 0)) && _spender != address(this) && _spender != address(0)) {
           allowed[msg.sender][_spender] = _value;
           Approval(msg.sender, _spender, _value);
           return true;
@@ -105,15 +105,15 @@ contract StandardToken is ERC20, BasicToken {
 
 contract UNICToken is owned, StandardToken {
     
-    string public constant name = &#39;UNICToken&#39;;
-    string public constant symbol = &#39;UNIC&#39;;
+    string public constant name = 'UNICToken';
+    string public constant symbol = 'UNIC';
     uint8 public constant decimals = 18;
     
     uint256 public initialSupply = 250000000 * 10 ** uint256(decimals);
     
     address public icoManager;
     
-    mapping (address =&gt; uint256) public WhiteList;
+    mapping (address => uint256) public WhiteList;
 
     modifier onlyManager() {
         require(msg.sender == icoManager);
@@ -167,9 +167,9 @@ contract Crowdsale is owned, UNICToken {
   uint public tokensSoldWhitelist;
 
   modifier saleIsOn() {
-    require((now &gt;= presaleStart &amp;&amp; now &lt;= presaleEnd) ||
-      (now &gt;= firstRoundICOStart &amp;&amp; now &lt;= firstRoundICOEnd)
-      || (now &gt;= secondRoundICOStart &amp;&amp; now &lt;= secondRoundICOEnd)
+    require((now >= presaleStart && now <= presaleEnd) ||
+      (now >= firstRoundICOStart && now <= firstRoundICOEnd)
+      || (now >= secondRoundICOStart && now <= secondRoundICOEnd)
       );
     _;
   }
@@ -186,29 +186,29 @@ contract Crowdsale is owned, UNICToken {
 
   function buyTokens(address _buyer) saleIsOn public payable {
     assert(_buyer != 0x0);
-    if(msg.value &gt; 0){
+    if(msg.value > 0){
 
       uint tokens = rate.mul(msg.value).div(1 ether);
       uint discountTokens = 0;
-      if(now &gt;= presaleStart &amp;&amp; now &lt;= presaleEnd) {
+      if(now >= presaleStart && now <= presaleEnd) {
           if(WhiteList[_buyer]==1) {
               discountTokens = tokens.mul(presaleWhitelistDiscount).div(100);
           }else{
               discountTokens = tokens.mul(presaleDiscount).div(100);
           }
       }
-      if(now &gt;= firstRoundICOStart &amp;&amp; now &lt;= firstRoundICOEnd) {
+      if(now >= firstRoundICOStart && now <= firstRoundICOEnd) {
           discountTokens = tokens.mul(firstRoundICODiscount).div(100);
       }
 
       uint tokensWithBonus = tokens.add(discountTokens);
       
       if(
-          (now &gt;= presaleStart &amp;&amp; now &lt;= presaleEnd &amp;&amp; presaleTokensLimit &gt; tokensSold + tokensWithBonus &amp;&amp;
-            ((WhiteList[_buyer]==1 &amp;&amp; presaleWhitelistTokensLimit &gt; tokensSoldWhitelist + tokensWithBonus) || WhiteList[_buyer]!=1)
+          (now >= presaleStart && now <= presaleEnd && presaleTokensLimit > tokensSold + tokensWithBonus &&
+            ((WhiteList[_buyer]==1 && presaleWhitelistTokensLimit > tokensSoldWhitelist + tokensWithBonus) || WhiteList[_buyer]!=1)
           ) ||
-          (now &gt;= firstRoundICOStart &amp;&amp; now &lt;= firstRoundICOEnd &amp;&amp; firstRoundICOTokensLimit &gt; tokensSold + tokensWithBonus) ||
-          (now &gt;= secondRoundICOStart &amp;&amp; now &lt;= secondRoundICOEnd &amp;&amp; secondRoundICOTokensLimit &gt; tokensSold + tokensWithBonus)
+          (now >= firstRoundICOStart && now <= firstRoundICOEnd && firstRoundICOTokensLimit > tokensSold + tokensWithBonus) ||
+          (now >= secondRoundICOStart && now <= secondRoundICOEnd && secondRoundICOTokensLimit > tokensSold + tokensWithBonus)
       ){
       
         multisig.transfer(msg.value);

@@ -10,7 +10,7 @@ pragma solidity ^0.4.16;
 /// (4) Unsold tokens during the Crowdsale Period
 
 /// Total Supply is 90,000,000 tokens, for test purposes we will use 90,000 tokens
-/// We&#39;ve set a standard rate of:
+/// We've set a standard rate of:
 /// 1 ETH = 3,000 tokens or 1 x 10^18 wei for ICO price
 
 /// Deployments:
@@ -48,13 +48,13 @@ contract SafeMath {
      }
 
      function safeSub(uint a, uint b) internal pure returns (uint) {
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
      }
 
      function safeAdd(uint a, uint b) internal pure returns (uint) {
           uint c = a + b;
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
      }
 }
@@ -106,14 +106,14 @@ contract Token is SafeMath {
 
 contract StdToken is Token {
      // Fields:
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
      uint public supply = 0;  /// initialized supply is zero
 
      // Functions:
      function transfer(address _to, uint256 _value) public returns(bool) {
-          require(balances[msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[msg.sender] = safeSub(balances[msg.sender],_value);
           balances[_to] = safeAdd(balances[_to],_value);
@@ -123,9 +123,9 @@ contract StdToken is Token {
      }
 
      function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
-          require(balances[_from] &gt;= _value);
-          require(allowed[_from][msg.sender] &gt;= _value);
-          require(balances[_to] + _value &gt; balances[_to]);
+          require(balances[_from] >= _value);
+          require(allowed[_from][msg.sender] >= _value);
+          require(balances[_to] + _value > balances[_to]);
 
           balances[_to] = safeAdd(balances[_to],_value);
           balances[_from] = safeSub(balances[_from],_value);
@@ -184,8 +184,8 @@ contract LotusToken is StdToken {
         uint icoTwoSold;
     }
 
-    string public name = &quot;Lotus Token Inc&quot;;
-    string public symbol = &quot;LTO&quot;;
+    string public name = "Lotus Token Inc";
+    string public symbol = "LTO";
     uint public decimals = 18;
 
     /// The address that owns this contract.
@@ -197,7 +197,7 @@ contract LotusToken is StdToken {
     uint public cliff = 0;
     /// Timespan to schedule allocation of vested shares.
     uint private vestingSchedule = 30 days; // Testing code has this set to 1 minute for the production
-    /// deploy set this to &quot;30 days&quot;. &lt;-----&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+    /// deploy set this to "30 days". <-----<<<<<<<<<
 
     /// wallet declarations (added 11/9/2017 1:30PM GMT + 8) by Sam
     /// venture capitalists (shareholders)
@@ -228,20 +228,20 @@ contract LotusToken is StdToken {
     uint public tokensSold = 0;
 
     /// Allocation of collected eth from sale to respective wallets.
-    mapping(address =&gt; uint256) internal ethDistribution;
+    mapping(address => uint256) internal ethDistribution;
 
     /// Allocation of tokens left over from crowdsale. Note that these are reserved under a vesting scheme described in the whitepaper.
-    mapping(address =&gt; uint256) private vestingTokens;
-    mapping(address =&gt; uint256) private withdrawnVestedTokens;
+    mapping(address => uint256) private vestingTokens;
+    mapping(address => uint256) private withdrawnVestedTokens;
 
     Sale public EARLYADOPTERS;
     Sale public ICO_ONE;
     Sale public ICO_TWO;
 
     /// Per sale stage ledger. Used to track and set limits on tokens purchased by an address per sale stage.
-    mapping(address =&gt; uint256) private earlyAdoptersAddressPurchased;
-    mapping(address =&gt; uint256) private icoOneAddressPurchased;
-    mapping(address =&gt; uint256) private icoTwoAddressPurchased;
+    mapping(address => uint256) private earlyAdoptersAddressPurchased;
+    mapping(address => uint256) private icoOneAddressPurchased;
+    mapping(address => uint256) private icoTwoAddressPurchased;
 
     enum SaleStage { Waiting, EarlyAdopters, EarlyAdoptersClosed,  IcoOne, IcoOneClosed, IcoTwo, Closed }
     SaleStage currentStage = SaleStage.Waiting;
@@ -322,7 +322,7 @@ contract LotusToken is StdToken {
         ICO_TWO = Sale(supply * 15 / 100, 333333333333334, 0, 2 * 10 ** 17, 20 * 10 ** 18, 75000000000000000000000);
 
         // Technically this check should  not be required as the limits are computed above as fractions of the total supply.
-        require(safeAdd(safeAdd(EARLYADOPTERS.tokenLimit, ICO_ONE.tokenLimit), ICO_ONE.tokenLimit)  &lt;= supply);
+        require(safeAdd(safeAdd(EARLYADOPTERS.tokenLimit, ICO_ONE.tokenLimit), ICO_ONE.tokenLimit)  <= supply);
 
         /// For safety zero out the allocation for the 0 address.
         ethDistribution[0X0] = 0;
@@ -368,10 +368,10 @@ contract LotusToken is StdToken {
     // function coded by Dondi
     function () public payable mustBeSelling {
         // Must have sent some ether.
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Must be purchasing at least the min allowed and not more than the max allowed ETH.
-        require(msg.value &gt;= currentMinPurchase() &amp;&amp; msg.value &lt;= currentMaxPurchase());
+        require(msg.value >= currentMinPurchase() && msg.value <= currentMaxPurchase());
 
 
         // The price at the current sale stage.
@@ -393,10 +393,10 @@ contract LotusToken is StdToken {
 
         // make sure the payment does not exceed the supply (11/5/2017 10AM)
         //  backer with exact ETH sent equivalent to supply left will get accepted
-        require(tokensAtPrice + currentSold &lt;= currentLimit);
+        require(tokensAtPrice + currentSold <= currentLimit);
 
-        // Buyer can&#39;t exceed the per address limit
-        require(tokensAtPrice + currentStageTokensBought &lt;= currentLimitPerAddress);
+        // Buyer can't exceed the per address limit
+        require(tokensAtPrice + currentStageTokensBought <= currentLimitPerAddress);
 
         // remove conditional statements and proceed with credit of tokens to backer (11/5/2017 10AM)
         balances[msg.sender] = safeAdd(balances[msg.sender], tokensAtPrice);  /// send tokens
@@ -429,7 +429,7 @@ contract LotusToken is StdToken {
     **/
 
     /// Allocate eth to the appropriate accounts.
-    /// To transfer the share of the collected ETH, accounts need to call the &#39;withdraw allocation&#39; function from the addresses passed to this contract during deployment.
+    /// To transfer the share of the collected ETH, accounts need to call the 'withdraw allocation' function from the addresses passed to this contract during deployment.
     /// Note that due to the implementation below it is not possible to use the same address for multiple recipients. If the same address is used twice or more, only the last allocation will apply.
 
     /// TODO: Update the Crowdsale Fund division (11/9/2017)
@@ -534,7 +534,7 @@ contract LotusToken is StdToken {
         // TODO: At this point all tokens have been allocated.
         //   1) Should the tokensSold value be updated as well?
         //   2) Verify that there are no edge cases that will result in inadverdently mining additional tokens.
-        //      One possiblity is to keep a &#39;tokensIssued&#39; counter and validate against that when issuing (not transfering) tokens.
+        //      One possiblity is to keep a 'tokensIssued' counter and validate against that when issuing (not transfering) tokens.
 
         /// transfer the rest of the token supply minus the crowdsale supply to the Lotus Wallet
         uint reservedSupply = supply * 55 / 100;
@@ -587,8 +587,8 @@ contract LotusToken is StdToken {
         currentStage = SaleStage.Closed;
         distributeRemainingTokens(); // 11/22/2017 by Dondi
         /// Start countdown to cliff
-        cliff = now + 180 days; // Testing code has this set to &quot;now + 5 minutes&quot;
-        /// in the live deploy set this to &quot;now + 180 days&quot;.
+        cliff = now + 180 days; // Testing code has this set to "now + 5 minutes"
+        /// in the live deploy set this to "now + 180 days".
     }
 
     modifier doneSelling {
@@ -607,7 +607,7 @@ contract LotusToken is StdToken {
         // 3. interacting with other contracts
 
         // Checking Conditions
-        require(ethDistribution[msg.sender] &gt; 0);
+        require(ethDistribution[msg.sender] > 0);
         // Must be at least after a sale stage but not during a sale.
         require(currentStage == SaleStage.EarlyAdoptersClosed || currentStage == SaleStage.IcoOneClosed || currentStage == SaleStage.Closed);
         // 75% allocation can only be withdrawn when the crowd sale has completed
@@ -711,11 +711,11 @@ contract LotusToken is StdToken {
     function withdrawVestedTokens() public doneSelling {
         // 1. checking conditions
         // Cliff must have been previously set (This is set in closeSale).
-        require(cliff &gt; 0);
+        require(cliff > 0);
         // Must be past the cliff. (and equal or greater than the initial value of cliff upon CloseSale)
-        require(now &gt;= cliff);
+        require(now >= cliff);
         // Must have some (remaining) vested tokens for withdrawal.
-        require(withdrawnVestedTokens[msg.sender] &lt; vestingTokens[msg.sender]);
+        require(withdrawnVestedTokens[msg.sender] < vestingTokens[msg.sender]);
 
         // 2. performing actions (potentially changing conditions)
         // How many scheduled allocations have passed.

@@ -83,7 +83,7 @@ contract LightAirdrop is OwnableContract{
         
         uint256 i = 0;
         uint256 n = tos.length;
-        for( ; i&lt;n; i++) {
+        for( ; i<n; i++) {
             tokenContract.transfer(tos[i], amount);
         }
     }
@@ -94,7 +94,7 @@ contract LightAirdrop is OwnableContract{
         
         uint256 i = 0;
         uint256 n = tos.length;
-        for( ; i&lt;n; i++) {
+        for( ; i<n; i++) {
             tokenContract.transfer(tos[i], amounts[i]);
         }
     }

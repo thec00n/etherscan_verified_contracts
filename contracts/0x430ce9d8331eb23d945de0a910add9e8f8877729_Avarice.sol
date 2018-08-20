@@ -36,8 +36,8 @@ pragma solidity ^0.4.8;
   }
    
   contract Avarice is TokenERC20 {
-     string public constant symbol = &quot;AVARICE&quot;;
-      string public constant name = &quot;Avarice Token&quot;;
+     string public constant symbol = "AVARICE";
+      string public constant name = "Avarice Token";
       uint8 public constant decimals = 18;
       uint256 _totalSupply = 50000000;
       
@@ -45,10 +45,10 @@ pragma solidity ^0.4.8;
      address public owner;
    
       // Balances for each account
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
    
       // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
    
       // Functions with this modifier can only be executed by the owner
       modifier onlyOwner() {
@@ -73,11 +73,11 @@ pragma solidity ^0.4.8;
          return balances[_owner];
       }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
       function transfer(address _to, uint256 _amount) returns (bool success) {
-          if (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+          if (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
               balances[msg.sender] -= _amount;
              balances[_to] += _amount;
               Transfer(msg.sender, _to, _amount);
@@ -92,10 +92,10 @@ pragma solidity ^0.4.8;
          address _to,
           uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

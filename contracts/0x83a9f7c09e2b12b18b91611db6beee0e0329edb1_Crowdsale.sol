@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,20 +85,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,7 +112,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -121,7 +121,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -169,7 +169,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -180,8 +180,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -195,7 +195,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -255,10 +255,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -271,8 +271,8 @@ contract BurnableToken is StandardToken {
 
 contract CJToken is BurnableToken, Ownable {
 
-    string public constant name = &quot;ConnectJob&quot;;
-    string public constant symbol = &quot;CJT&quot;;
+    string public constant name = "ConnectJob";
+    string public constant symbol = "CJT";
     uint public constant decimals = 18;
     uint256 public constant initialSupply = 300000000 * (10 ** uint256(decimals));
 
@@ -316,7 +316,7 @@ contract Crowdsale is Ownable {
         multisigVault = _to;
         maxCap = _maxCap;
 
-        // startTime = 1518651000; // new Date(&quot;Feb 14 2018 23:30:00 GMT&quot;).getTime() / 1000;
+        // startTime = 1518651000; // new Date("Feb 14 2018 23:30:00 GMT").getTime() / 1000;
         startTime = now; // for testing we use now
         endTime = startTime + 75 days; // ICO end on Apr 30 2018 00:00:00 GMT
     }
@@ -335,19 +335,19 @@ contract Crowdsale is Ownable {
     // compute amount of token based on 1 ETH = 2400 CJT
     function getTokenAmount(uint256 _weiAmount) internal returns(uint256) {
         // minimum deposit amount is 0.4 ETH
-        if (_weiAmount &lt; 0.001 * (10 ** 18)) {
+        if (_weiAmount < 0.001 * (10 ** 18)) {
           return 0;
         }
 
         uint256 tokens = _weiAmount.mul(2400);
         // compute bonus
-        if(now &lt; startTime + 7 * 1 days) {
+        if(now < startTime + 7 * 1 days) {
             tokens += (tokens * 12) / 100; // 12% for first week
-        } else if(now &lt; startTime + 14 * 1 days) {
+        } else if(now < startTime + 14 * 1 days) {
             tokens += (tokens * 9) / 100; // 9% for second week
-        } else if(now &lt; startTime + 21 * 1 days) {
+        } else if(now < startTime + 21 * 1 days) {
             tokens += (tokens * 6) / 100; // 6% for third week
-        } else if(now &lt; startTime + 28 * 1 days) {
+        } else if(now < startTime + 28 * 1 days) {
             tokens += (tokens * 3) / 100; // 3% for fourth week
         }
 
@@ -359,17 +359,17 @@ contract Crowdsale is Ownable {
         require(beneficiary != 0x0);
         require(msg.value != 0);
         require(!hasEnded());
-        require(now &gt; startTime);
+        require(now > startTime);
 
         uint256 weiAmount = msg.value;
         uint256 refundWeiAmount = 0;
 
         // calculate token amount to be sent
         uint256 tokens = getTokenAmount(weiAmount);
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         // check if we are over maxCap
-        if (tokensSold + tokens &gt; maxCap) {
+        if (tokensSold + tokens > maxCap) {
           // send remaining tokens to user
           uint256 overSoldTokens = (tokensSold + tokens) - maxCap;
           refundWeiAmount = weiAmount * overSoldTokens / tokens;
@@ -386,21 +386,21 @@ contract Crowdsale is Ownable {
         multisigVault.transfer(weiAmount);
 
         // return extra ether to last user
-        if (refundWeiAmount &gt; 0) {
+        if (refundWeiAmount > 0) {
           beneficiary.transfer(refundWeiAmount);
         }
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || tokensSold &gt;= maxCap;
+        return now > endTime || tokensSold >= maxCap;
     }
 
     // Finalize crowdsale buy burning the remaining tokens
     // can only be called when the ICO is over
     function finalizeCrowdsale() {
         require(hasEnded());
-        require(coin.balanceOf(this) &gt; 0);
+        require(coin.balanceOf(this) > 0);
 
         coin.burn(coin.balanceOf(this));
     }

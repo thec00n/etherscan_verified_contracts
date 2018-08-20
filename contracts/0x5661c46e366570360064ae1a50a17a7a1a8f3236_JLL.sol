@@ -2,13 +2,13 @@ pragma solidity ^0.4.6;
 
 contract JLL {
 
-  string public name = &quot;JLL&quot;;
-  string public symbol = &quot;JLL&quot;;
+  string public name = "JLL";
+  string public symbol = "JLL";
   uint public decimals = 18;
   uint public INITIAL_SUPPLY = 200000000000000000000000000000;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
   uint256 public _totalSupply;
   address public _creator;
   bool bIsFreezeAll = false;
@@ -17,13 +17,13 @@ contract JLL {
   event Approval(address indexed owner, address indexed spender, uint value);
   
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
   

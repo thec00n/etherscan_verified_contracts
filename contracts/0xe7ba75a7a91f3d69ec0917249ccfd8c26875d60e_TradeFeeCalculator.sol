@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,15 +83,15 @@ contract TradeFeeCalculator is Ownable {
      */
     function updateFeeSchedule(uint256 _baseTokenFee, uint256 _etherFee, uint256 _normalTokenFee) public onlyOwner {
         // Base token fee should not exceed 1 ether worth of tokens (ex: 3792 wand = 1 ether), since 1 ether is our fee unit
-        require(_baseTokenFee &gt;= 0 &amp;&amp; _baseTokenFee &lt;=  1 * 1 ether);
+        require(_baseTokenFee >= 0 && _baseTokenFee <=  1 * 1 ether);
         
         // If the incoming trade is on Ether, then fee should not exceed 1 Ether
-        require(_etherFee &gt;= 0 &amp;&amp; _etherFee &lt;=  1 * 1 ether);
+        require(_etherFee >= 0 && _etherFee <=  1 * 1 ether);
        
         // If the incoming trade is on diffrent coins and if the exchange should allow diff tokens as fee, then 
         // input must be in wei converted value to suppport decimal - Special Case 
         /** Caution: Max value check must be done by Owner who is updating this value */
-        require(_normalTokenFee &gt;= 0);
+        require(_normalTokenFee >= 0);
         require(exFees.length == 3);
         
         // Stores the fee structure
@@ -108,15 +108,15 @@ contract TradeFeeCalculator is Ownable {
      * Caution: _value is expected to be in wei units and it works for single token payment
      */
     function calcTradeFee(uint256 _value, uint256 _feeIndex) public view returns (uint256) {
-        require(_feeIndex &gt;= 0 &amp;&amp; _feeIndex &lt;= 2);
-        require(_value &gt; 0);
-        require(exFees.length == 3 &amp;&amp; exFees[_feeIndex] &gt; 0 );
+        require(_feeIndex >= 0 && _feeIndex <= 2);
+        require(_value > 0);
+        require(exFees.length == 3 && exFees[_feeIndex] > 0 );
         
         //Calculation Formula TotalFees = (_value * exFees[_feeIndex])/ (1 ether) 
         uint256 _totalFees = (_value.mul(exFees[_feeIndex])).div(1 ether);
         
-        // Calculated total fee must be gretae than 0 for a given base fee &gt; 0
-        require(_totalFees &gt; 0);
+        // Calculated total fee must be gretae than 0 for a given base fee > 0
+        require(_totalFees > 0);
         
         return _totalFees;
     } 
@@ -129,17 +129,17 @@ contract TradeFeeCalculator is Ownable {
      * Caution: _values is expected to be in wei units and it works for multiple token payment
      */
     function calcTradeFeeMulti(uint256[] _values, uint256[] _feeIndexes) public view returns (uint256[]) {
-        require(_values.length &gt; 0); 
-        require(_feeIndexes.length &gt; 0);  
+        require(_values.length > 0); 
+        require(_feeIndexes.length > 0);  
         require(_values.length == _feeIndexes.length); 
         require(exFees.length == 3);
         
         uint256[] memory _totalFees = new uint256[](_values.length);
         // For Every token Value 
-        for (uint256 i = 0; i &lt; _values.length; i++){  
+        for (uint256 i = 0; i < _values.length; i++){  
             _totalFees[i] =  calcTradeFee(_values[i], _feeIndexes[i]);
         }
-        require(_totalFees.length &gt; 0);
+        require(_totalFees.length > 0);
         require(_values.length == _totalFees.length);  
         return _totalFees;
     }

@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -162,7 +162,7 @@ contract Token is Ownable, ERC20 {
         assembly {
             codeLength := extcodesize(_to)
         }
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract untrustedReceiver = ERC223ReceivingContract(_to);
             // untrusted contract call
             untrustedReceiver.tokenFallback(_from, _value, _data);
@@ -176,8 +176,8 @@ contract Token is Ownable, ERC20 {
  */
 contract Force is  Token {
 
-    string public constant name = &quot;Force&quot;;
-    string public constant symbol = &quot;FORCE&quot;;
+    string public constant name = "Force";
+    string public constant symbol = "FORCE";
     uint8 public constant decimals = 18;
 
 }

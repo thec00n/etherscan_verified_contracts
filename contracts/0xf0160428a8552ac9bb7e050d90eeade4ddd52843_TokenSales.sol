@@ -2,11 +2,11 @@
 
 contract ConfigInterface {
   address public owner;
-  mapping (address =&gt; bool) admins;
-  mapping (bytes32 =&gt; address) addressMap;
-  mapping (bytes32 =&gt; bool) boolMap;
-  mapping (bytes32 =&gt; bytes32) bytesMap;
-  mapping (bytes32 =&gt; uint256) uintMap;
+  mapping (address => bool) admins;
+  mapping (bytes32 => address) addressMap;
+  mapping (bytes32 => bool) boolMap;
+  mapping (bytes32 => bytes32) bytesMap;
+  mapping (bytes32 => uint256) uintMap;
 
   /// @notice setConfigAddress sets configuration `_key` to `_val` 
   /// @param _key The key name of the configuration.
@@ -32,22 +32,22 @@ contract ConfigInterface {
   /// @return Whether the configuration setting was successful or not.
   function setConfigUint(bytes32 _key, uint256 _val) returns (bool success);
 
-  /// @notice getConfigAddress gets configuration `_key`&#39;s value
+  /// @notice getConfigAddress gets configuration `_key`'s value
   /// @param _key The key name of the configuration.
   /// @return The configuration value 
   function getConfigAddress(bytes32 _key) returns (address val);
 
-  /// @notice getConfigBool gets configuration `_key`&#39;s value
+  /// @notice getConfigBool gets configuration `_key`'s value
   /// @param _key The key name of the configuration.
   /// @return The configuration value 
   function getConfigBool(bytes32 _key) returns (bool val);
 
-  /// @notice getConfigBytes gets configuration `_key`&#39;s value
+  /// @notice getConfigBytes gets configuration `_key`'s value
   /// @param _key The key name of the configuration.
   /// @return The configuration value 
   function getConfigBytes(bytes32 _key) returns (bytes32 val);
 
-  /// @notice getConfigUint gets configuration `_key`&#39;s value
+  /// @notice getConfigUint gets configuration `_key`'s value
   /// @param _key The key name of the configuration.
   /// @return The configuration value 
   function getConfigUint(bytes32 _key) returns (uint256 val);
@@ -56,7 +56,7 @@ contract ConfigInterface {
   /// @return Whether the configuration setting was successful or not.  
   function addAdmin(address _admin) returns (bool success);
 
-  /// @notice removeAdmin removes  `_admin`&#39;s rights
+  /// @notice removeAdmin removes  `_admin`'s rights
   /// @param _admin The key name of the configuration.
   /// @return Whether the configuration setting was successful or not.  
   function removeAdmin(address _admin) returns (bool success);
@@ -69,13 +69,13 @@ contract TokenInterface {
     bool locked;
     uint256 balance;
     uint256 badges;
-    mapping (address =&gt; uint256) allowed;
+    mapping (address => uint256) allowed;
   }
 
-  mapping (address =&gt; User) users;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping (address =&gt; bool) seller;
+  mapping (address => User) users;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => bool) seller;
 
   address config;
   address owner;
@@ -194,10 +194,10 @@ contract TokenSalesInterface {
 
   uint256 public ethToCents;
 
-  mapping (address =&gt; Buyer) buyers;
-  mapping (address =&gt; SaleProxy) proxies;
+  mapping (address => Buyer) buyers;
+  mapping (address => SaleProxy) proxies;
 
-  /// @notice Calculates the parts per billion 1&#226;„1,000,000,000 of `_a` to `_b`
+  /// @notice Calculates the parts per billion 1â„1,000,000,000 of `_a` to `_b`
   /// @param _a The antecedent
   /// @param _c The consequent
   /// @return Part per billion value
@@ -344,7 +344,7 @@ contract TokenSales is TokenSalesInterface {
     _
   }
 
-  mapping (address =&gt; address) proxyPayouts;
+  mapping (address => address) proxyPayouts;
   uint256 public WEI_PER_ETH = 1000000000000000000;
   uint256 public BILLION = 1000000000;
   uint256 public CENTS = 100;
@@ -357,16 +357,16 @@ contract TokenSales is TokenSalesInterface {
     saleStatus.releasedTokens = 0;
     saleStatus.releasedBadges = 0;
     saleStatus.claimers = 0;
-    saleConfig.startDate = ConfigInterface(_config).getConfigUint(&quot;sale1:period1&quot;);
-    saleConfig.periodTwo = ConfigInterface(_config).getConfigUint(&quot;sale1:period2&quot;);
-    saleConfig.periodThree = ConfigInterface(_config).getConfigUint(&quot;sale1:period3&quot;);
-    saleConfig.endDate = ConfigInterface(_config).getConfigUint(&quot;sale1:end&quot;);
-    saleConfig.founderAmount = ConfigInterface(_config).getConfigUint(&quot;sale1:famount&quot;) * BILLION;
-    saleConfig.founderWallet = ConfigInterface(_config).getConfigAddress(&quot;sale1:fwallet&quot;);
-    saleConfig.goal = ConfigInterface(_config).getConfigUint(&quot;sale1:goal&quot;) * CENTS;
-    saleConfig.cap = ConfigInterface(_config).getConfigUint(&quot;sale1:cap&quot;) * CENTS;
-    saleConfig.badgeCost = ConfigInterface(_config).getConfigUint(&quot;sale1:badgecost&quot;) * CENTS;
-    saleInfo.amount = ConfigInterface(_config).getConfigUint(&quot;sale1:amount&quot;) * BILLION;
+    saleConfig.startDate = ConfigInterface(_config).getConfigUint("sale1:period1");
+    saleConfig.periodTwo = ConfigInterface(_config).getConfigUint("sale1:period2");
+    saleConfig.periodThree = ConfigInterface(_config).getConfigUint("sale1:period3");
+    saleConfig.endDate = ConfigInterface(_config).getConfigUint("sale1:end");
+    saleConfig.founderAmount = ConfigInterface(_config).getConfigUint("sale1:famount") * BILLION;
+    saleConfig.founderWallet = ConfigInterface(_config).getConfigAddress("sale1:fwallet");
+    saleConfig.goal = ConfigInterface(_config).getConfigUint("sale1:goal") * CENTS;
+    saleConfig.cap = ConfigInterface(_config).getConfigUint("sale1:cap") * CENTS;
+    saleConfig.badgeCost = ConfigInterface(_config).getConfigUint("sale1:badgecost") * CENTS;
+    saleInfo.amount = ConfigInterface(_config).getConfigUint("sale1:amount") * BILLION;
     saleInfo.totalWei = 0;
     saleInfo.totalCents = 0;
     saleInfo.realCents;
@@ -392,7 +392,7 @@ contract TokenSales is TokenSalesInterface {
 
   function purchase(address _user, uint256 _amount) private returns (bool success) {
     uint256 _cents = weiToCents(_amount);
-    if ((saleInfo.realCents + _cents) &gt; saleConfig.cap) return false;
+    if ((saleInfo.realCents + _cents) > saleConfig.cap) return false;
     uint256 _wei = _amount;
     uint256 _modifier;
     uint _period = getPeriod();
@@ -451,7 +451,7 @@ contract TokenSales is TokenSalesInterface {
   }
 
   function goalReached() public constant returns (bool reached) {
-    reached = (saleInfo.totalCents &gt;= saleConfig.goal);
+    reached = (saleInfo.totalCents >= saleConfig.goal);
     return reached;
   }
 
@@ -460,7 +460,7 @@ contract TokenSales is TokenSalesInterface {
   }
 
   function claimFor(address _user) returns (bool success) {
-    if ( (now &lt; saleConfig.endDate) || (buyers[_user].claimed == true) ) {
+    if ( (now < saleConfig.endDate) || (buyers[_user].claimed == true) ) {
       return true;
     }
   
@@ -471,10 +471,10 @@ contract TokenSales is TokenSalesInterface {
     }
 
     if (goalReached()) {
-      address _tokenc = ConfigInterface(config).getConfigAddress(&quot;ledger&quot;);
+      address _tokenc = ConfigInterface(config).getConfigAddress("ledger");
       uint256 _tokens = calcShare(buyers[_user].centsTotal, saleInfo.totalCents); 
       uint256 _badges = buyers[_user].centsTotal / saleConfig.badgeCost;
-      if ((TokenInterface(_tokenc).mint(msg.sender, _tokens)) &amp;&amp; (TokenInterface(_tokenc).mintBadge(_user, _badges))) {
+      if ((TokenInterface(_tokenc).mint(msg.sender, _tokens)) && (TokenInterface(_tokenc).mintBadge(_user, _badges))) {
         saleStatus.releasedTokens += _tokens;
         saleStatus.releasedBadges += _badges;
         saleStatus.claimers += 1;
@@ -490,13 +490,13 @@ contract TokenSales is TokenSalesInterface {
 
   function claimFounders() returns (bool success) {
     if (saleStatus.founderClaim == true) return false;
-    if (now &lt; saleConfig.endDate) return false;
+    if (now < saleConfig.endDate) return false;
     if (!goalReached()) return false;
-    address _tokenc = ConfigInterface(config).getConfigAddress(&quot;ledger&quot;);
+    address _tokenc = ConfigInterface(config).getConfigAddress("ledger");
     uint256 _tokens = saleConfig.founderAmount;
     uint256 _badges = 4;
     address _faddr = saleConfig.founderWallet;
-    if ((TokenInterface(_tokenc).mint(_faddr, _tokens)) &amp;&amp; (TokenInterface(_tokenc).mintBadge(_faddr, _badges))) {
+    if ((TokenInterface(_tokenc).mint(_faddr, _tokens)) && (TokenInterface(_tokenc).mintBadge(_faddr, _badges))) {
       saleStatus.founderClaim = true;
       saleStatus.releasedTokens += _tokens;
       saleStatus.releasedBadges += _badges;
@@ -509,19 +509,19 @@ contract TokenSales is TokenSalesInterface {
   }
 
   function getPeriod() public constant returns (uint saleperiod) {
-    if ((now &gt; saleConfig.endDate) || (now &lt; saleConfig.startDate)) {
+    if ((now > saleConfig.endDate) || (now < saleConfig.startDate)) {
       saleperiod = 0;
       return saleperiod;
     }
-    if (now &gt;= saleConfig.periodThree) {
+    if (now >= saleConfig.periodThree) {
       saleperiod = 3;
       return saleperiod;
     }
-    if (now &gt;= saleConfig.periodTwo) {
+    if (now >= saleConfig.periodTwo) {
       saleperiod = 2;
       return saleperiod;
     }
-    if (now &lt; saleConfig.periodTwo) {
+    if (now < saleConfig.periodTwo) {
       saleperiod = 1;
       return saleperiod;
     }
@@ -562,14 +562,14 @@ contract TokenSales is TokenSalesInterface {
   }
 
   function isEnded() public constant returns (bool ended) {
-    return (now &gt;= endDate());
+    return (now >= endDate());
   }
   
   function sendFunds() public returns (bool success) {
     if (locked) return false;
     if (!goalReached()) return false;
     if (!isEnded()) return false;
-    address _dao = ConfigInterface(config).getConfigAddress(&quot;sale1:dao&quot;);
+    address _dao = ConfigInterface(config).getConfigAddress("sale1:dao");
     if (_dao == 0x0000000000000000000000000000000000000000) return false;
     return _dao.send(totalWei());
   }

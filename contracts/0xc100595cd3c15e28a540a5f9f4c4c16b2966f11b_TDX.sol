@@ -21,13 +21,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) pure public returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) pure public returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -36,7 +36,7 @@ library SafeMathLib {
 /**
  * @title Ownable
  * @notice The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract TDX {
 
@@ -134,8 +134,8 @@ contract Sale is TDX {
    */
   function isSaleLive() public constant returns (bool) {
     return ( 
-        initialized == true &amp;&amp;
-        getPhase() != 0 &amp;&amp;
+        initialized == true &&
+        getPhase() != 0 &&
         goalReached() == false // Goal must not already be reached
     );
   }
@@ -144,7 +144,7 @@ contract Sale is TDX {
    * @notice Checks whether the Goal is Reached.
    */
   function goalReached() public constant returns (bool) {
-    if (tokensSold &gt;= CAP) {
+    if (tokensSold >= CAP) {
       token.transfer(tokenAddressWallet, token.balanceOf(this));
       return true;
     }
@@ -156,7 +156,7 @@ contract Sale is TDX {
   }
 
   function sellTokens() payable IsLive {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 tokens;
     uint8 phase = getPhase();
     
@@ -169,7 +169,7 @@ contract Sale is TDX {
     }
     
     uint256 afterPayment = tokensSoldPerPhase[phase].plus(tokens);
-    require(afterPayment &lt;= tokensPerPhase);
+    require(afterPayment <= tokensPerPhase);
     tokensSold = tokensSold.plus(tokens);
     tokensSoldPerPhase[phase] = afterPayment;
     transferTokens(tokens);
@@ -177,13 +177,13 @@ contract Sale is TDX {
   }
   
   function getPhase() public constant returns (uint8) {
-      if (now &gt;= PHASE1_START &amp;&amp; now &lt;= PHASE1_END) {
+      if (now >= PHASE1_START && now <= PHASE1_END) {
         return 1;
-      } else if (now &gt;= PHASE2_START &amp;&amp; now &lt;= PHASE2_END) {
+      } else if (now >= PHASE2_START && now <= PHASE2_END) {
         return 2;
-      } else if (now &gt;= PHASE3_START &amp;&amp; now &lt;= PHASE3_END) {
+      } else if (now >= PHASE3_START && now <= PHASE3_END) {
         return 3;
-      } else if(now &gt;= PHASE3_END) {
+      } else if(now >= PHASE3_END) {
           terminateSale();
       } else {
         return 0;

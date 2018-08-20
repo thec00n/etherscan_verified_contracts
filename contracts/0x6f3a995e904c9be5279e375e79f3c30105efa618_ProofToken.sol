@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the PROOF Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the PROOF Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="026b2c71746b706b6c4272706d7467702c6b6d">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="026b2c71746b706b6c4272706d7467702c6b6d">[email protected]</span>>
 */
 
 pragma solidity ^0.4.11;
@@ -57,10 +57,10 @@ contract ManualMigration is owned {
 
     address                      public original = 0x5B5d8A8A732A3c73fF0fB6980880Ef399ecaf72E;
     uint                         public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     uint                         public numberOfInvestors;
-    mapping (address =&gt; bool)    public investors;
+    mapping (address => bool)    public investors;
 
     event Transfer(address indexed from, address indexed to, uint value);
 
@@ -83,7 +83,7 @@ contract ManualMigration is owned {
     }
     
     function migrateListManual(address [] _who, bool _preico) public onlyOwner {
-        for(uint i = 0; i &lt; _who.length; ++i) {
+        for(uint i = 0; i < _who.length; ++i) {
             migrateManual(_who[i], _preico);
         }
     }
@@ -107,12 +107,12 @@ contract Crowdsale is ManualMigration {
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     modifier isCrowdsale() {
-        require(now &gt;= crowdsaleStartTime &amp;&amp; now &lt;= crowdsaleFinishTime);
+        require(now >= crowdsaleStartTime && now <= crowdsaleFinishTime);
         _;
     }
 
@@ -144,16 +144,16 @@ contract Crowdsale is ManualMigration {
 
     function mintTokens(address _who, uint _valueUSD) internal {
         uint tokensPerUSD = 100;
-        if (_valueUSD &gt;= 50000) {
+        if (_valueUSD >= 50000) {
             tokensPerUSD = 120;
-        } else if (now &lt; crowdsaleStartTime + 1 days) {
+        } else if (now < crowdsaleStartTime + 1 days) {
             tokensPerUSD = 115;
-        } else if (now &lt; crowdsaleStartTime + 1 weeks) {
+        } else if (now < crowdsaleStartTime + 1 weeks) {
             tokensPerUSD = 110;
         }
         uint tokens = tokensPerUSD * _valueUSD * 100000000;
-        require(balanceOf[_who] + tokens &gt; balanceOf[_who]); // overflow
-        require(tokens &gt; 0);
+        require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
+        require(tokens > 0);
         balanceOf[_who] += tokens;
         if (!investors[_who]) {
             investors[_who] = true;
@@ -167,8 +167,8 @@ contract Crowdsale is ManualMigration {
         require(msg.sender == backend || msg.sender == owner);
         // decimals in CPT and PROOF are the same and equal 8
         uint tokens = 15 * _valueCPT / 10;
-        require(balanceOf[_who] + tokens &gt; balanceOf[_who]); // overflow
-        require(tokens &gt; 0);
+        require(balanceOf[_who] + tokens > balanceOf[_who]); // overflow
+        require(tokens > 0);
         balanceOf[_who] += tokens;
         totalSupply += tokens;
         collectedUSD += _valueCPT / 100;
@@ -202,12 +202,12 @@ contract Crowdsale is ManualMigration {
 
 contract ProofToken is Crowdsale {
 
-    string  public standard = &#39;Token 0.1&#39;;
-    string  public name     = &#39;PROOF&#39;;
-    string  public symbol   = &#39;PF&#39;;
+    string  public standard = 'Token 0.1';
+    string  public name     = 'PROOF';
+    string  public symbol   = 'PF';
     uint8   public decimals = 8;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => mapping (address => uint)) public allowed;
     event Approval(address indexed owner, address indexed spender, uint value);
     event Burn(address indexed owner, uint value);
 
@@ -216,17 +216,17 @@ contract ProofToken is Crowdsale {
     }
 
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
     }
     
     function transferFrom(address _from, address _to, uint _value) public onlyPayloadSize(3 * 32) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowed[_from][msg.sender] -= _value;
@@ -243,7 +243,7 @@ contract ProofToken is Crowdsale {
     }
     
     function burn(uint _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);

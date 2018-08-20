@@ -26,13 +26,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 	
@@ -42,11 +42,11 @@ contract BasicToken is ERC20Basic {
 	
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -70,12 +70,12 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -117,8 +117,8 @@ contract CerttifyToken is StandardToken {
     event Burn(address indexed burner, uint256 value, string message);
     event IssueCert(bytes32 indexed id, address certIssuer, uint256 value, bytes cert);
 
-    string public name = &quot;Certtify Token&quot;;
-    string public symbol = &quot;CTF&quot;;
+    string public name = "Certtify Token";
+    string public symbol = "CTF";
     uint8 public decimals = 18;
 
     address public deployer;
@@ -149,8 +149,8 @@ contract CerttifyToken is StandardToken {
     }
 
     function burn(uint256 _value, string _message) public afterLockup() {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         totalSupply = totalSupply.sub(_value);
         balances[burner] = balances[burner].sub(_value);
@@ -158,8 +158,8 @@ contract CerttifyToken is StandardToken {
     }
 
     function issueCert(uint256 _value, bytes _cert) external afterLockup() {
-        if (_value &gt; 0) { 
-            burn(_value, &quot;&quot;);
+        if (_value > 0) { 
+            burn(_value, "");
         }
         emit IssueCert(keccak256(block.number, msg.sender, _value, _cert), msg.sender, _value, _cert);
     }

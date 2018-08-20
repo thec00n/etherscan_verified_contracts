@@ -30,7 +30,7 @@ contract TokenSender {
     function bulkTransfer(address[] receivers, uint256[] amounts, address token) external {
         address sender = msg.sender;
         uint256 length = receivers.length;
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             if (!ERC20(token).transferFrom(sender, receivers[i], amounts[i])) {
                 emit TransferFail(i, receivers[i], amounts[i]);
                 return;

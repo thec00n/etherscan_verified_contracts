@@ -13,7 +13,7 @@ contract LotteryRecharge
     address public constant OfficialWalletAddr = 0x12961096767E28fFEB63180B83e946F45D16c4f8;
     
     // find player recharge at this contract, key=address,value=uint256
-    mapping(address =&gt; uint256) private mapSenderAddr2Recharge;
+    mapping(address => uint256) private mapSenderAddr2Recharge;
     address[]  private ArrayAddress;
     uint256 public LatestRechargeTime;
 
@@ -30,11 +30,11 @@ contract LotteryRecharge
     
     function transfer(address _to, uint256 _value) private returns (bool bTranferSuccess)
     {
-        require( _to != address(0) &amp;&amp; (_to == contractAddress) &amp;&amp; (_value &gt;= leastRecharge));
+        require( _to != address(0) && (_to == contractAddress) && (_value >= leastRecharge));
         uint256 nRetFlag = CheckTime(OpenRewardClockSeconds);
         
         require(nRetFlag != 1);     //1 means can not open reward and recharge
-        if( (nRetFlag == 2 ) &amp;&amp; (IsCanAllotAward() == true)) 
+        if( (nRetFlag == 2 ) && (IsCanAllotAward() == true)) 
         {
             // open reward time
             AllotAward();
@@ -46,7 +46,7 @@ contract LotteryRecharge
     function transferToContractAddr(address _to, uint256 _value) private returns (bool success)
     {
         require(_to != address(0) );
-        require(mapSenderAddr2Recharge[msg.sender] &lt;= MAX_UINT256 - _value);
+        require(mapSenderAddr2Recharge[msg.sender] <= MAX_UINT256 - _value);
         if(mapSenderAddr2Recharge[msg.sender] == 0)
         {
             ArrayAddress.push(msg.sender);
@@ -68,7 +68,7 @@ contract LotteryRecharge
 
     function IsCanAllotAward() private constant returns(bool CanAllotAward)
     {
-        if (nPlatCurTotalEth &gt;= nCanOpenRewardMinEth)
+        if (nPlatCurTotalEth >= nCanOpenRewardMinEth)
         {
             return true;
         }
@@ -78,15 +78,15 @@ contract LotteryRecharge
     event AllotAwardEvent(bool AllotAwardSuccess);
     function AllotAward() private returns(bool AllotAwardSuccess)
     {
-        require(nPlatCurTotalEth &gt;= nCanOpenRewardMinEth);
+        require(nPlatCurTotalEth >= nCanOpenRewardMinEth);
         bytes32 byteHashValue = block.blockhash(block.number-1);
         uint256 nIntHash = uint256(byteHashValue);
         uint256 nRandomValue= (nIntHash + now) % (nPlatCurTotalEth);
 
         uint256 nSum = 0;
-        for(uint256 i = 0; i &lt; ArrayAddress.length; i++)
+        for(uint256 i = 0; i < ArrayAddress.length; i++)
         {
-            if( nSum &lt;= nRandomValue &amp;&amp; nRandomValue &lt; nSum + mapSenderAddr2Recharge[ArrayAddress[i]] )
+            if( nSum <= nRandomValue && nRandomValue < nSum + mapSenderAddr2Recharge[ArrayAddress[i]] )
             {
                 uint256 nOfficalGetEth = nPlatCurTotalEth/10;
                 uint256 nParticipantGetEth = nPlatCurTotalEth - nOfficalGetEth;
@@ -94,7 +94,7 @@ contract LotteryRecharge
                 OfficialWalletAddr.transfer(nOfficalGetEth);
                 ArrayAddress[i].transfer(nParticipantGetEth);
 
-                for(uint256 j = 0; j &lt; ArrayAddress.length; j++)
+                for(uint256 j = 0; j < ArrayAddress.length; j++)
                 {   //clear mapping
                     mapSenderAddr2Recharge[ArrayAddress[j] ]= 0;
                 }
@@ -110,12 +110,12 @@ contract LotteryRecharge
 
     function CheckTime(uint256 startTimeSeconds) private constant returns(uint256 nFlag)
     {
-        if( LatestRechargeTime != 0 &amp;&amp; (now % MaxClockSeconds &gt; OpenRewardClockSeconds || (LatestRechargeTime + (MaxClockSeconds-OpenRewardClockSeconds) + 300 &lt;= now)) )
+        if( LatestRechargeTime != 0 && (now % MaxClockSeconds > OpenRewardClockSeconds || (LatestRechargeTime + (MaxClockSeconds-OpenRewardClockSeconds) + 300 <= now)) )
         {
             //open reward time
             return 2;
         }
-        else if ( (startTimeSeconds &lt;= (now % MaxClockSeconds + 300) ) &amp;&amp; (now % MaxClockSeconds &lt;= startTimeSeconds ) )
+        else if ( (startTimeSeconds <= (now % MaxClockSeconds + 300) ) && (now % MaxClockSeconds <= startTimeSeconds ) )
         {
             //no permit recharge
             return 1;

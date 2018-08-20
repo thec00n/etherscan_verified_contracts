@@ -8,7 +8,7 @@ pragma solidity 0.4.23;
 
 contract Owner {
     /**
-    * @dev Get smart contract&#39;s owner
+    * @dev Get smart contract's owner
     * @return The owner of the smart contract
     */
     function owner() public view returns (address);
@@ -70,9 +70,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -80,7 +80,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -89,7 +89,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -109,22 +109,22 @@ contract Timeline {
     uint public endTime;
 
     modifier started() {
-        require(now &gt;= startTime);
+        require(now >= startTime);
         _;
     }
 
     modifier notEnded() {
-        require(now &lt;= endTime);
+        require(now <= endTime);
         _;
     }
 
     modifier isEnded() {
-        require(now &gt;= endTime);
+        require(now >= endTime);
         _;
     }
 
     modifier onlyWhileOpen() {
-        require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        require(now >= startTime && now <= endTime);
         _;
     }
 
@@ -140,8 +140,8 @@ contract Timeline {
     )
         public 
     {
-        require(_startTime &gt; now);
-        require(_endTime &gt; _startTime);
+        require(_startTime > now);
+        require(_endTime > _startTime);
         startTime = _startTime;
         endTime = _endTime;
     }
@@ -164,7 +164,7 @@ contract Timeline {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -182,7 +182,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -281,7 +281,7 @@ contract ChainOwner is Owner {
  
 contract ChainCoOwner is ChainOwner {
 
-    mapping(address=&gt;bool) internal coOwner;
+    mapping(address=>bool) internal coOwner;
     
     address[] internal coOwnerList;
 
@@ -295,7 +295,7 @@ contract ChainCoOwner is ChainOwner {
     
     function _addCoOwners(address[] _coOwner) internal {
         uint len = _coOwner.length;
-        for (uint i=0; i &lt; len; i++) {
+        for (uint i=0; i < len; i++) {
             coOwner[_coOwner[i]] = true;
             coOwnerList.push(_coOwner[i]);
         }
@@ -308,7 +308,7 @@ contract ChainCoOwner is ChainOwner {
 
     function _disableCoOwners(address[] _coOwner) internal {
         uint len = _coOwner.length;
-        for (uint i=0; i &lt; len; i++) {
+        for (uint i=0; i < len; i++) {
             coOwner[_coOwner[i]] = false;
         }
     }
@@ -360,10 +360,10 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
     using SafeMath for uint;
 
     //sale token name, use in ICO phase only
-    string public constant name = &quot;Mozo Sale Token&quot;;
+    string public constant name = "Mozo Sale Token";
 
     //sale token symbol, use in ICO phase only
-    string public constant symbol = &quot;SMZO&quot;;
+    string public constant symbol = "SMZO";
 
     //token symbol
     uint8 public constant decimals = 2;
@@ -378,7 +378,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
     uint public totalBonusToken;
 
     //bonus transferred flags
-    mapping(address =&gt; bool) bonus_transferred_repicients;
+    mapping(address => bool) bonus_transferred_repicients;
 
     //maximum transferring per function
     uint public constant MAX_TRANSFER = 80;
@@ -402,14 +402,14 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
     address[] public transferAddresses;
 
     //whitelist (Already register KYC/AML)
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     //contain map of address that buy over the threshold for KYC/AML 
     //but buyer is not in the whitelist yes
-    mapping(address =&gt; uint) public pendingAmounts;
+    mapping(address => uint) public pendingAmounts;
 
     /**
-     * @dev Throws if called by any account that&#39;s not whitelisted.
+     * @dev Throws if called by any account that's not whitelisted.
      */
     modifier onlyWhitelisted() {
         require(whitelist[msg.sender]);
@@ -471,8 +471,8 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
     Timeline(_openingTime, _closingTime)
     onlyOwner()
     {
-        require(_supply &gt; 0);
-        require(_rate &gt; 0);
+        require(_supply > 0);
+        require(_rate > 0);
 
         rate = _rate;
         totalSupply_ = _supply;
@@ -534,7 +534,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
             whitelist[_address] = true;
             //transfer pending amount of tokens to user
             uint noOfTokens = pendingAmounts[_address];
-            if (noOfTokens &gt; 0) {
+            if (noOfTokens > 0) {
                 pendingAmounts[_address] = 0;
                 transfer(_address, noOfTokens);
             }
@@ -550,7 +550,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
      */
     function addAddressesToWhitelist(address[] _addresses) onlyOwnerOrCoOwner public returns (bool success) {
         uint length = _addresses.length;
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             if (addAddressToWhitelist(_addresses[i])) {
                 success = true;
             }
@@ -561,7 +561,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
      * @dev remove an address from the whitelist
      * @param _address address
      * @return true if the address was removed from the whitelist, 
-     * false if the address wasn&#39;t in the whitelist in the first place 
+     * false if the address wasn't in the whitelist in the first place 
      */
     function removeAddressFromWhitelist(address _address) onlyOwnerOrCoOwner public returns (bool success) {
         if (whitelist[_address]) {
@@ -574,11 +574,11 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
      * @dev remove addresses from the whitelist
      * @param _addresses addresses
      * @return true if at least one address was removed from the whitelist, 
-     * false if all addresses weren&#39;t in the whitelist in the first place
+     * false if all addresses weren't in the whitelist in the first place
      */
     function removeAddressesFromWhitelist(address[] _addresses) onlyOwnerOrCoOwner public returns (bool success) {
         uint length = _addresses.length;
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             if (removeAddressFromWhitelist(_addresses[i])) {
                 success = true;
             }
@@ -620,7 +620,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
      */
     function getUnsoldToken() public view returns (uint) {
         uint unsold = balances[owner()];
-        for (uint j = 0; j &lt; coOwnerList.length; j++) {
+        for (uint j = 0; j < coOwnerList.length; j++) {
             unsold = unsold.add(balances[coOwnerList[j]]);
         }
 
@@ -643,17 +643,17 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
         //required this contract has enough Mozo tokens
         //obsolete
         //if (msg.sender == owner()) {
-        //    require(parent.balanceOf(this) &gt;= getDistributedToken().add(_value));
+        //    require(parent.balanceOf(this) >= getDistributedToken().add(_value));
         //}
         //we will check it when releasing smart contract
 
         //owners or balances already greater than 0, no need to add to list
-        bool notAddToList = isValidOwner(_to) || (balances[_to] &gt; 0);
+        bool notAddToList = isValidOwner(_to) || (balances[_to] > 0);
 
         //check AML threshold
         if (!isStopped) {
             if (!whitelist[_to]) {
-                if ((_value + balances[_to]) &gt; AML_THRESHOLD) {
+                if ((_value + balances[_to]) > AML_THRESHOLD) {
                     pendingAmounts[_to] = pendingAmounts[_to].add(_value);
                     return true;
                 }
@@ -708,7 +708,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
      * @dev Investor claim tokens
      */
     function claim() public isEnded {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         uint investorBalance = balances[msg.sender];
 
         balances[msg.sender] = 0;
@@ -723,10 +723,10 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
         uint len = _recipients.length;
         uint len1 = _amount.length;
         require(len == len1);
-        require(len &lt;= MAX_TRANSFER);
+        require(len <= MAX_TRANSFER);
         uint i;
         uint total = 0;
-        for (i = 0; i &lt; len; i++) {
+        for (i = 0; i < len; i++) {
             if (bonus_transferred_repicients[_recipients[i]] == false) {
                 bonus_transferred_repicients[_recipients[i]] = transfer(_recipients[i], _amount[i]);
                 total = total.add(_amount[i]);
@@ -737,7 +737,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
     }
 
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     /**
@@ -750,7 +750,7 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
 
         if (isCapped) {
             //Reach hardcap, burn all owner sale token
-            for (; i &lt; length; i++) {
+            for (; i < length; i++) {
                 address ad = transferAddresses[i];
                 uint b = balances[ad];
                 if (b == 0) {
@@ -765,11 +765,11 @@ contract MozoSaleToken is BasicToken, Timeline, ChainCoOwner, ICO {
             uint unsold = getUnsoldToken();
             uint sold = totalSupply_.sub(unsold);
 
-            if (sold &lt;= 0) {
+            if (sold <= 0) {
                 //very bad if we reach here
                 return;
             }
-            for (; i &lt; length; i++) {
+            for (; i < length; i++) {
                 ad = transferAddresses[i];
                 //obsolete
                 //no need to check because we checked before adding

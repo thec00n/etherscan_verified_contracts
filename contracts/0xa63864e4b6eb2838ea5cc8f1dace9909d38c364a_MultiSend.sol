@@ -16,29 +16,29 @@ contract MultiSend {
         address c = 0x420C42cE1370c0Ec3ca87D9Be64A7002E78e6709; // set STCn contract address
         _STCnContract = ERC20Token(c); 
         _multiSendOwner = msg.sender;
-        tokensApproved = 0; // set to 0 first as allowance to contract can&#39;t be set yet
+        tokensApproved = 0; // set to 0 first as allowance to contract can't be set yet
     }
     
     /* Before first sending, make sure to allow this contract spending from token contract with function approve(address _spender, uint256 _value)
     ** and to update tokensApproved with function updateTokensApproved () */
     
     function dropCoinsSingle(address[] dests, uint256 tokens) {
-        require(msg.sender == _multiSendOwner &amp;&amp; tokensApproved &gt;= (dests.length * tokens));
+        require(msg.sender == _multiSendOwner && tokensApproved >= (dests.length * tokens));
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             _STCnContract.transferFrom(_multiSendOwner, dests[i], tokens);
             i += 1;
         }
         updateTokensApproved();
     }
     
-    /* Be careful to this function to be sure you approved enough before you send as contract can&#39;t check first total amount in array
+    /* Be careful to this function to be sure you approved enough before you send as contract can't check first total amount in array
     ** If not enough amount is approved, transaction will fail */
     
     function dropCoinsMulti(address[] dests, uint256[] tokens) {
         require(msg.sender == _multiSendOwner);
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             _STCnContract.transferFrom(_multiSendOwner, dests[i], tokens[i]);
             i += 1;
         }

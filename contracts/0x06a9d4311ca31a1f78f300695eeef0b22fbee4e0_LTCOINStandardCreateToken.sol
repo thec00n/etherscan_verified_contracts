@@ -28,8 +28,8 @@ contract LTCOINToken{
 contract LTCOINStandardToken is LTCOINToken {
     function transfer(address _to, uint256 _value)public returns (bool success) {
         require(_to!=address(0));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to]+_value&gt;=balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to]+_value>=balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -40,8 +40,8 @@ contract LTCOINStandardToken is LTCOINToken {
     function transferFrom(address _from, address _to, uint256 _value)public returns 
     (bool success) {
         require(_to!=address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] +_value&gt;=balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
+        require(balances[_to] +_value>=balances[_to]);
         balances[_to]+=_value;
         balances[_from] -= _value; 
         allowed[_from][msg.sender] -= _value;
@@ -64,8 +64,8 @@ contract LTCOINStandardToken is LTCOINToken {
     function allowance(address _owner, address _spender)public  returns (uint256 remaining) {
         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract LTCOINStandardCreateToken is LTCOINStandardToken { 

@@ -38,7 +38,7 @@ contract DividendDistributor is Ownable{
         uint lastDividend;
     }
 
-    mapping(address =&gt; Investor) investors;
+    mapping(address => Investor) investors;
 
     uint public minInvestment;
     uint public sumInvested;
@@ -56,7 +56,7 @@ contract DividendDistributor is Ownable{
     }
     
     function invest() public payable {
-        if (msg.value &gt;= minInvestment)
+        if (msg.value >= minInvestment)
         {
             investors[msg.sender].investment += msg.value;
             sumInvested += msg.value;
@@ -68,15 +68,15 @@ contract DividendDistributor is Ownable{
     function divest(uint amount) public {
         if ( investors[msg.sender].investment == 0 || amount == 0)
             throw;
-        // no need to test, this will throw if amount &gt; investment
+        // no need to test, this will throw if amount > investment
         investors[msg.sender].investment -= amount;
         sumInvested -= amount; 
-        this.loggedTransfer(amount, &quot;&quot;, msg.sender, owner);
+        this.loggedTransfer(amount, "", msg.sender, owner);
     }
 
     function calculateDividend() constant public returns(uint dividend) {
         uint lastDividend = investors[msg.sender].lastDividend;
-        if (sumDividend &gt; lastDividend)
+        if (sumDividend > lastDividend)
             throw;
         // no overflows here, because not that much money will be handled
         dividend = (sumDividend - lastDividend) * investors[msg.sender].investment / sumInvested;
@@ -91,7 +91,7 @@ contract DividendDistributor is Ownable{
         if (dividend == 0)
             throw;
         investors[msg.sender].lastDividend = sumDividend;
-        this.loggedTransfer(dividend, &quot;Dividend payment&quot;, msg.sender, owner);
+        this.loggedTransfer(dividend, "Dividend payment", msg.sender, owner);
     }
     
     // OWNER FUNCTIONS TO DO BUSINESS
@@ -100,7 +100,7 @@ contract DividendDistributor is Ownable{
     }
     
     function doTransfer(address target, uint amount) public onlyOwner {
-        this.loggedTransfer(amount, &quot;Owner transfer&quot;, target, owner);
+        this.loggedTransfer(amount, "Owner transfer", target, owner);
     }
     
     function setMinInvestment(uint amount) public onlyOwner {

@@ -5,7 +5,7 @@ library IdeaUint {
     function add(uint a, uint b) constant internal returns (uint result) {
         uint c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -13,7 +13,7 @@ library IdeaUint {
     function sub(uint a, uint b) constant internal returns (uint result) {
         uint c = a - b;
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return c;
     }
@@ -40,10 +40,10 @@ contract IdeaBasicCoin {
     string public symbol;
     uint8 public decimals;
     uint public totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     address[] public accounts;
-    mapping(address =&gt; bool) internal accountsMap;
+    mapping(address => bool) internal accountsMap;
     address public owner;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -106,7 +106,7 @@ contract IdeaBasicCoin {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -133,9 +133,9 @@ contract IdeaCoin is IdeaBasicCoin {
     uint public soldIdeaWeiIco;
     uint public soldIdeaWeiPostIco;
     uint public icoStartTimestamp;
-    mapping(address =&gt; uint) public pieBalances;
+    mapping(address => uint) public pieBalances;
     address[] public pieAccounts;
-    mapping(address =&gt; bool) internal pieAccountsMap;
+    mapping(address => bool) internal pieAccountsMap;
     uint public nextRoundReserve;
     address[] public projects;
     address public projectAgent;
@@ -156,8 +156,8 @@ contract IdeaCoin is IdeaBasicCoin {
     IcoStates public icoState;
 
     function IdeaCoin() {
-        name = &#39;IdeaCoin&#39;;
-        symbol = &#39;IDEA&#39;;
+        name = 'IdeaCoin';
+        symbol = 'IDEA';
         decimals = 18;
         totalSupply = 100000000 ether;
 
@@ -167,35 +167,35 @@ contract IdeaCoin is IdeaBasicCoin {
 
     function() payable {
         uint tokens;
-        bool moreThenPreIcoMin = msg.value &gt;= 0 ether;
+        bool moreThenPreIcoMin = msg.value >= 0 ether;
         uint totalVal = msg.value + bankValReserve;
         uint halfVal = totalVal / 2;
 
-        if (icoState == IcoStates.PreIco &amp;&amp; moreThenPreIcoMin &amp;&amp; soldIdeaWeiPreIco &lt;= 2500000 ether) {
+        if (icoState == IcoStates.PreIco && moreThenPreIcoMin && soldIdeaWeiPreIco <= 2500000 ether) {
 
             tokens = msg.value * 15000;
             balances[msg.sender] += tokens;
             soldIdeaWeiPreIco += tokens;
 
-        } else if (icoState == IcoStates.Ico &amp;&amp; soldIdeaWeiIco &lt;= 35000000 ether) {
+        } else if (icoState == IcoStates.Ico && soldIdeaWeiIco <= 35000000 ether) {
             uint elapsed = now - icoStartTimestamp;
 
-            if (elapsed &lt;= 1 days) {
+            if (elapsed <= 1 days) {
 
                 tokens = msg.value * 12500;
                 balances[msg.sender] += tokens;
 
-            } else if (elapsed &lt;= 6 days &amp;&amp; elapsed &gt; 1 days) {
+            } else if (elapsed <= 6 days && elapsed > 1 days) {
 
                 tokens = msg.value * 11500;
                 balances[msg.sender] += tokens;
 
-            } else if (elapsed &lt;= 11 days &amp;&amp; elapsed &gt; 6 days) {
+            } else if (elapsed <= 11 days && elapsed > 6 days) {
 
                 tokens = msg.value * 11000;
                 balances[msg.sender] += tokens;
 
-            } else if (elapsed &lt;= 16 days &amp;&amp; elapsed &gt; 11 days) {
+            } else if (elapsed <= 16 days && elapsed > 11 days) {
 
                 tokens = msg.value * 10500;
                 balances[msg.sender] += tokens;
@@ -209,7 +209,7 @@ contract IdeaCoin is IdeaBasicCoin {
 
             soldIdeaWeiIco += tokens;
 
-        } else if (icoState == IcoStates.PostIco &amp;&amp; soldIdeaWeiPostIco &lt;= 12000000 ether) {
+        } else if (icoState == IcoStates.PostIco && soldIdeaWeiPostIco <= 12000000 ether) {
 
             tokens = msg.value * 5000;
             balances[msg.sender] += tokens;
@@ -297,7 +297,7 @@ contract IdeaCoin is IdeaBasicCoin {
             bank2Val = 0;
         }
 
-        if (bank1Val == 0 &amp;&amp; bank2Val == 0 &amp;&amp; this.balance != 0) {
+        if (bank1Val == 0 && bank2Val == 0 && this.balance != 0) {
             owner.transfer(this.balance);
         }
     }
@@ -330,10 +330,10 @@ contract IdeaCoin is IdeaBasicCoin {
     }
 
     function calcPieSize(uint _minBalance) constant internal returns (uint _pieSize) {
-        for (uint i = 0; i &lt; pieAccounts.length; i += 1) {
+        for (uint i = 0; i < pieAccounts.length; i += 1) {
             var balance = pieBalances[pieAccounts[i]];
 
-            if (balance &gt;= _minBalance) {
+            if (balance >= _minBalance) {
                 _pieSize = _pieSize.add(balance);
             }
         }
@@ -342,11 +342,11 @@ contract IdeaCoin is IdeaBasicCoin {
     function accrueDividends(uint _minBalance, uint _pieSize, uint _amount) internal {
         uint accrued;
 
-        for (uint i = 0; i &lt; pieAccounts.length; i += 1) {
+        for (uint i = 0; i < pieAccounts.length; i += 1) {
             address account = pieAccounts[i];
             uint balance = pieBalances[account];
 
-            if (balance &gt;= _minBalance) {
+            if (balance >= _minBalance) {
                 uint dividends = (balance * _amount) / _pieSize;
 
                 accrued = accrued.add(dividends);
@@ -421,14 +421,14 @@ contract IdeaProject {
     uint public requiredDays;
     uint public fundingEndTime;
     uint public earned;
-    mapping(address =&gt; bool) public isCashBack;
+    mapping(address => bool) public isCashBack;
     uint public currentWorkStagePercent;
     uint internal lastWorkStageStartTimestamp;
     int8 public failStage = -1;
     uint public failInvestPercents;
     address[] public products;
     uint public cashBackVotes;
-    mapping(address =&gt; uint) public cashBackWeight;
+    mapping(address => uint) public cashBackWeight;
 
     enum States {
     Initial,
@@ -469,7 +469,7 @@ contract IdeaProject {
     modifier onlyProduct() {
         bool permissionGranted;
 
-        for (uint8 i; i &lt; products.length; i += 1) {
+        for (uint8 i; i < products.length; i += 1) {
             if (msg.sender == products[i]) {
                 permissionGranted = true;
             }
@@ -488,11 +488,11 @@ contract IdeaProject {
     uint _required,
     uint _requiredDays
     ) {
-        require(bytes(_name).length &gt; 0);
+        require(bytes(_name).length > 0);
         require(_required != 0);
 
-        require(_requiredDays &gt;= 10);
-        require(_requiredDays &lt;= 100);
+        require(_requiredDays >= 10);
+        require(_requiredDays <= 100);
 
         engine = msg.sender;
         owner = _owner;
@@ -526,7 +526,7 @@ contract IdeaProject {
     }
 
     function markAsComingAndFreeze() public onlyState(States.Initial) onlyOwner {
-        require(products.length &gt; 0);
+        require(products.length > 0);
         require(currentWorkStagePercent == 100);
 
         state = States.Coming;
@@ -551,7 +551,7 @@ contract IdeaProject {
 
         state = States.Workflow;
 
-        for (uint8 i; i &lt; len; i += 1) {
+        for (uint8 i; i < len; i += 1) {
             current = earned.mul(workStages[i].percent).div(100);
             workStages[i].sum = current;
             used = used.add(current);
@@ -561,7 +561,7 @@ contract IdeaProject {
     }
 
     function projectDone() public onlyState(States.Workflow) onlyOwner {
-        require(now &gt; lastWorkStageStartTimestamp);
+        require(now > lastWorkStageStartTimestamp);
 
         state = States.SuccessDone;
     }
@@ -573,10 +573,10 @@ contract IdeaProject {
     function projectWorkFail() internal {
         state = States.WorkFail;
 
-        for (uint8 i = 1; i &lt; workStages.length; i += 1) {
+        for (uint8 i = 1; i < workStages.length; i += 1) {
             failInvestPercents += workStages[i - 1].percent;
 
-            if (workStages[i].withdrawTime &gt; now) {
+            if (workStages[i].withdrawTime > now) {
                 failStage = int8(i - 1);
 
                 i = uint8(workStages.length);
@@ -593,11 +593,11 @@ contract IdeaProject {
     uint _percent,
     uint _stageDays
     ) public onlyState(States.Initial) {
-        require(workStages.length &lt;= 10);
-        require(_stageDays &gt;= 10);
-        require(_stageDays &lt;= 100);
+        require(workStages.length <= 10);
+        require(_stageDays >= 10);
+        require(_stageDays <= 100);
 
-        if (currentWorkStagePercent.add(_percent) &gt; 100) {
+        if (currentWorkStagePercent.add(_percent) > 100) {
             revert();
         } else {
             currentWorkStagePercent = currentWorkStagePercent.add(_percent);
@@ -614,13 +614,13 @@ contract IdeaProject {
     function calcLastWorkStageStart() internal {
         lastWorkStageStartTimestamp = fundingEndTime;
 
-        for (uint8 i; i &lt; workStages.length - 1; i += 1) {
+        for (uint8 i; i < workStages.length - 1; i += 1) {
             lastWorkStageStartTimestamp += workStages[i].stageDays * 1 days;
         }
     }
 
     function calcWithdrawTime() internal {
-        for (uint8 i; i &lt; workStages.length; i += 1) {
+        for (uint8 i; i < workStages.length; i += 1) {
             if (i == 0) {
                 workStages[i].withdrawTime = now + requiredDays * 1 days;
             } else {
@@ -632,7 +632,7 @@ contract IdeaProject {
     function withdraw(uint _stage) public onlyEngine returns (uint _sum) {
         WorkStage memory stageStruct = workStages[_stage];
 
-        if (stageStruct.withdrawTime &lt;= now) {
+        if (stageStruct.withdrawTime <= now) {
             _sum = stageStruct.sum;
 
             workStages[_stage].sum = 0;
@@ -652,7 +652,7 @@ contract IdeaProject {
     }
 
     function voteForCashBackInPercentOfWeightForAccount(address _account, uint _percent) internal {
-        require(_percent &lt;= 100);
+        require(_percent <= 100);
 
         updateFundingStateIfNeed();
 
@@ -661,7 +661,7 @@ contract IdeaProject {
             uint supply;
             uint part;
 
-            for (uint8 i; i &lt; products.length; i += 1) {
+            for (uint8 i; i < products.length; i += 1) {
                 supply += IdeaSubCoin(products[i]).totalSupply();
                 part += IdeaSubCoin(products[i]).balanceOf(_account);
             }
@@ -669,7 +669,7 @@ contract IdeaProject {
             cashBackVotes += ((part * (10 ** 10)) / supply) * (_percent - currentWeight);
             cashBackWeight[_account] = _percent;
 
-            if (cashBackVotes &gt; 50 * (10 ** 10)) {
+            if (cashBackVotes > 50 * (10 ** 10)) {
                 projectWorkFail();
             }
         }
@@ -688,7 +688,7 @@ contract IdeaProject {
     uint _price,
     uint _limit
     ) public onlyState(States.Initial) onlyOwner returns (address _productAddress) {
-        require(products.length &lt;= 25);
+        require(products.length <= 25);
 
         IdeaSubCoin product = new IdeaSubCoin(msg.sender, _name, _symbol, _price, _limit, engine);
 
@@ -700,7 +700,7 @@ contract IdeaProject {
     function calcInvesting(address _account) public onlyEngine returns (uint _sum) {
         require(!isCashBack[_account]);
 
-        for (uint8 i = 0; i &lt; products.length; i += 1) {
+        for (uint8 i = 0; i < products.length; i += 1) {
             IdeaSubCoin product = IdeaSubCoin(products[i]);
 
             _sum = _sum.add(product.balanceOf(_account) * product.price());
@@ -714,8 +714,8 @@ contract IdeaProject {
     }
 
     function updateFundingStateIfNeed() internal {
-        if (isFundingState() &amp;&amp; now &gt; fundingEndTime) {
-            if (earned &gt;= required) {
+        if (isFundingState() && now > fundingEndTime) {
+            if (earned >= required) {
                 startWorkflow();
             } else {
                 state = States.FundingFail;
@@ -776,7 +776,7 @@ contract ProjectAgent {
         if (project.isWorkflowState() || project.isSuccessDoneState()) {
             _value = project.withdraw(_stage);
 
-            if (_value &gt; 0) {
+            if (_value > 0) {
                 _success = true;
             } else {
                 _success = false;
@@ -809,10 +809,10 @@ contract ProjectAgent {
         IdeaProject project = IdeaProject(_project);
 
         if (
-        project.isFundingState() &amp;&amp;
-        now &gt; project.fundingEndTime()
+        project.isFundingState() &&
+        now > project.fundingEndTime()
         ) {
-            if (project.earned() &gt;= project.required()) {
+            if (project.earned() >= project.required()) {
                 project.projectWorkStarted();
             } else {
                 project.projectFundingFail();
@@ -842,7 +842,7 @@ contract IdeaSubCoin is IdeaBasicCoin {
     uint public price;
     address public project;
     address public engine;
-    mapping(address =&gt; string) public shipping;
+    mapping(address => string) public shipping;
 
     modifier onlyProject() {
         require(msg.sender == project);
@@ -907,7 +907,7 @@ contract IdeaSubCoin is IdeaBasicCoin {
         uint total = totalSupply.add(_amount);
 
         if (limit != 0) {
-            require(total &lt;= limit);
+            require(total <= limit);
         }
 
         totalSupply = totalSupply.add(_amount);
@@ -916,7 +916,7 @@ contract IdeaSubCoin is IdeaBasicCoin {
     }
 
     function setShipping(string _shipping) public {
-        require(bytes(_shipping).length &gt; 0);
+        require(bytes(_shipping).length > 0);
 
         shipping[msg.sender] = _shipping;
     }

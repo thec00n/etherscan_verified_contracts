@@ -24,7 +24,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -32,9 +32,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -46,7 +46,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -59,7 +59,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -73,7 +73,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -106,7 +106,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }
@@ -192,13 +192,13 @@ contract NTechToken is ERC20, Ownable, Pausable{
     /**
      代币基本信息
      */
-    string public                   name = &quot;NTech&quot;;
-    string public                   symbol = &quot;NT&quot;;
+    string public                   name = "NTech";
+    string public                   symbol = "NT";
     uint8 constant public           decimals = 18;
     uint256                         supply;
 
-    mapping (address =&gt; uint256)                        balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))   approvals;
+    mapping (address => uint256)                        balances;
+    mapping (address => mapping (address => uint256))   approvals;
     uint256 public constant initSupply = 10000000000;       // 10,000,000,000
 
     constructor() public {
@@ -219,7 +219,7 @@ contract NTechToken is ERC20, Ownable, Pausable{
     }
     
     function transfer(address dst, uint wad) whenNotPaused public returns (bool) {
-        require(balances[msg.sender] &gt;= wad);                   // 要有足够余额
+        require(balances[msg.sender] >= wad);                   // 要有足够余额
         require(dst != 0x0);                                    // 不能送到无效地址
 
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], wad);  // -    
@@ -231,8 +231,8 @@ contract NTechToken is ERC20, Ownable, Pausable{
     }
 
     function transferFrom(address src, address dst, uint wad) whenNotPaused public returns (bool) {
-        require(balances[src] &gt;= wad);                          // 要有足够余额
-        require(approvals[src][msg.sender] &gt;= wad);
+        require(balances[src] >= wad);                          // 要有足够余额
+        require(approvals[src][msg.sender] >= wad);
         
         approvals[src][msg.sender] = SafeMath.sub(approvals[src][msg.sender], wad);
         balances[src] = SafeMath.sub(balances[src], wad);

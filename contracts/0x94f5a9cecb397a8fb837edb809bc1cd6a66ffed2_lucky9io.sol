@@ -7,7 +7,7 @@ contract lucky9io {
     uint private value = 0;
 
     modifier onlyOwner() {
-     require(msg.sender == owner, &quot;Sender not authorized.&quot;);
+     require(msg.sender == owner, "Sender not authorized.");
      _;
     }
 
@@ -22,7 +22,7 @@ contract lucky9io {
             return;
         }
 
-        if(msg.value * 1000 &lt; 9) {
+        if(msg.value * 1000 < 9) {
             msg.sender.transfer(msg.value);
             return;
         }

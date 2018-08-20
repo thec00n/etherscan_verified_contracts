@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18; // solhint-disable-line
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492d2c3d2c092831202624332c27672a26">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492d2c3d2c092831202624332c27672a26">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -40,8 +40,8 @@ contract EtherNumbers is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;EtherNumbers&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;NumberToken&quot;; // solhint-disable-line
+  string public constant NAME = "EtherNumbers"; // solhint-disable-line
+  string public constant SYMBOL = "NumberToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 10000;
@@ -52,19 +52,19 @@ contract EtherNumbers is ERC721 {
 
   /// @dev A mapping from gem IDs to the address that owns them. All gems have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public gemIndexToOwner;
+  mapping (uint256 => address) public gemIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from GemIDs to an address that has been approved to call
   ///  transferFrom(). Each Gem can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public gemIndexToApproved;
+  mapping (uint256 => address) public gemIndexToApproved;
 
   // @dev A mapping from GemIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private gemIndexToPrice;
+  mapping (uint256 => uint256) private gemIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -134,14 +134,14 @@ contract EtherNumbers is ERC721 {
 
   /// @dev Creates a new promo Person with the given name, with given _price and assignes it to an address.
   function createPromoNumber(address _owner, string _name, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address personOwner = _owner;
     if (personOwner == address(0)) {
       personOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -207,17 +207,17 @@ contract EtherNumbers is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 82), 100));
     uint256 dividends = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 10), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       gemIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 92);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       gemIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 140), 92);
     } else {
@@ -226,61 +226,61 @@ contract EtherNumbers is ERC721 {
     }
 
 
-    if (balanceOf(ownerOf(0)) &gt;= 3 || ownerOf(0) == ownerOf(getNumberOne()) || ownerOf(0) == ownerOf(getNumberTwo()) || ownerOf(0) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(0)) >= 3 || ownerOf(0) == ownerOf(getNumberOne()) || ownerOf(0) == ownerOf(getNumberTwo()) || ownerOf(0) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(0).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 15));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 15));
     }
 
-    if (balanceOf(ownerOf(1)) &gt;= 3 || ownerOf(1) == ownerOf(getNumberOne()) || ownerOf(1) == ownerOf(getNumberTwo()) || ownerOf(1) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(1)) >= 3 || ownerOf(1) == ownerOf(getNumberOne()) || ownerOf(1) == ownerOf(getNumberTwo()) || ownerOf(1) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(1).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 14));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 14));
     }
 
-    if (balanceOf(ownerOf(2)) &gt;= 3 || ownerOf(2) == ownerOf(getNumberOne()) || ownerOf(2) == ownerOf(getNumberTwo()) || ownerOf(2) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(2)) >= 3 || ownerOf(2) == ownerOf(getNumberOne()) || ownerOf(2) == ownerOf(getNumberTwo()) || ownerOf(2) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(2).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 13));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 13));
     }
 
-    if (balanceOf(ownerOf(3)) &gt;= 3 || ownerOf(3) == ownerOf(getNumberOne()) || ownerOf(3) == ownerOf(getNumberTwo()) || ownerOf(3) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(3)) >= 3 || ownerOf(3) == ownerOf(getNumberOne()) || ownerOf(3) == ownerOf(getNumberTwo()) || ownerOf(3) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(3).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 12));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 12));
     }
 
-    if (balanceOf(ownerOf(4)) &gt;= 3 || ownerOf(4) == ownerOf(getNumberOne()) || ownerOf(4) == ownerOf(getNumberTwo()) || ownerOf(4) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(4)) >= 3 || ownerOf(4) == ownerOf(getNumberOne()) || ownerOf(4) == ownerOf(getNumberTwo()) || ownerOf(4) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(4).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 11));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 11));
     }
 
-    if (balanceOf(ownerOf(5)) &gt;= 3 || ownerOf(5) == ownerOf(getNumberOne()) || ownerOf(5) == ownerOf(getNumberTwo()) || ownerOf(5) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(5)) >= 3 || ownerOf(5) == ownerOf(getNumberOne()) || ownerOf(5) == ownerOf(getNumberTwo()) || ownerOf(5) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(5).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 9));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 9));
     }
 
-    if (balanceOf(ownerOf(6)) &gt;= 3 || ownerOf(6) == ownerOf(getNumberOne()) || ownerOf(6) == ownerOf(getNumberTwo()) || ownerOf(6) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(6)) >= 3 || ownerOf(6) == ownerOf(getNumberOne()) || ownerOf(6) == ownerOf(getNumberTwo()) || ownerOf(6) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(6).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 8));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 8));
     }
 
-    if (balanceOf(ownerOf(7)) &gt;= 3 || ownerOf(7) == ownerOf(getNumberOne()) || ownerOf(7) == ownerOf(getNumberTwo()) || ownerOf(7) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(7)) >= 3 || ownerOf(7) == ownerOf(getNumberOne()) || ownerOf(7) == ownerOf(getNumberTwo()) || ownerOf(7) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(7).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 7));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 7));
     }
 
-    if (balanceOf(ownerOf(8)) &gt;= 3 || ownerOf(8) == ownerOf(getNumberOne()) || ownerOf(8) == ownerOf(getNumberTwo()) || ownerOf(8) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(8)) >= 3 || ownerOf(8) == ownerOf(getNumberOne()) || ownerOf(8) == ownerOf(getNumberTwo()) || ownerOf(8) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(8).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 6));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 6));
     }
 
-    if (balanceOf(ownerOf(9)) &gt;= 3 || ownerOf(9) == ownerOf(getNumberOne()) || ownerOf(9) == ownerOf(getNumberTwo()) || ownerOf(9) == ownerOf(getNumberThree()) &amp;&amp; oldOwner != address(this)) {
+    if (balanceOf(ownerOf(9)) >= 3 || ownerOf(9) == ownerOf(getNumberOne()) || ownerOf(9) == ownerOf(getNumberTwo()) || ownerOf(9) == ownerOf(getNumberThree()) && oldOwner != address(this)) {
         ownerOf(9).transfer(SafeMath.mul(SafeMath.div(dividends, 100), 5));
     } else {
         oldOwner.transfer(SafeMath.mul(SafeMath.div(dividends, 100), 5));
@@ -387,7 +387,7 @@ contract EtherNumbers is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Gems array looking for gems belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -402,7 +402,7 @@ contract EtherNumbers is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 gemId;
-      for (gemId = 0; gemId &lt;= totalGems; gemId++) {
+      for (gemId = 0; gemId <= totalGems; gemId++) {
         if (gemIndexToOwner[gemId] == _owner) {
           result[resultIndex] = gemId;
           resultIndex++;
@@ -467,8 +467,8 @@ contract EtherNumbers is ERC721 {
     });
     uint256 newGemId = gems.push(_gem) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newGemId == uint256(uint32(newGemId)));
 
     Birth(newGemId, _name, _owner);
@@ -496,12 +496,12 @@ contract EtherNumbers is ERC721 {
 
   /// @dev Assigns ownership of a specific Gem to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of gems is capped to 2^32 we can&#39;t overflow this
+    // Since the number of gems is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     gemIndexToOwner[_tokenId] = _to;
 
-    // When creating new gems _from is 0x0, but we can&#39;t account that address.
+    // When creating new gems _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -530,9 +530,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -540,7 +540,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -549,7 +549,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

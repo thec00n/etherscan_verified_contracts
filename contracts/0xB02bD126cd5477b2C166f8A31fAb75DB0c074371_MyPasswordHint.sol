@@ -5,7 +5,7 @@ contract MyPasswordHint {
     address public owner;
     /* Constructor */
     function MyPasswordHint() {
-        hint = &quot;&quot;;
+        hint = "";
         owner = msg.sender;
     }
     function setHint(string nHint) {

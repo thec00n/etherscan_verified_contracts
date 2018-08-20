@@ -13,8 +13,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -29,9 +29,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,29 +107,29 @@ contract IMultiToken {
 contract BancorBuyer {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public tokenBalances; // [owner][token]
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public tokenBalances; // [owner][token]
 
     function sumWeightOfMultiToken(IMultiToken mtkn) public view returns(uint256 sumWeight) {
-        for (uint i = mtkn.changeableTokenCount(); i &gt; 0; i--) {
+        for (uint i = mtkn.changeableTokenCount(); i > 0; i--) {
             sumWeight += mtkn.weights(mtkn.tokens(i - 1));
         }
     }
     
     function allBalances(address _account, address[] _tokens) public view returns(uint256[]) {
         uint256[] memory tokenValues = new uint256[](_tokens.length);
-        for (uint i = 0; i &lt; _tokens.length; i++) {
+        for (uint i = 0; i < _tokens.length; i++) {
             tokenValues[i] = tokenBalances[_account][_tokens[i]];
         }
         return tokenValues;
     }
 
     function deposit(address _beneficiary, address[] _tokens, uint256[] _tokenValues) payable external {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             balances[_beneficiary] = balances[_beneficiary].add(msg.value);
         }
 
-        for (uint i = 0; i &lt; _tokens.length; i++) {
+        for (uint i = 0; i < _tokens.length; i++) {
             ERC20 token = ERC20(_tokens[i]);
             uint256 tokenValue = _tokenValues[i];
 
@@ -141,12 +141,12 @@ contract BancorBuyer {
     }
     
     function withdrawInternal(address _to, uint256 _value, address[] _tokens, uint256[] _tokenValues) internal {
-        if (_value &gt; 0) {
+        if (_value > 0) {
             _to.transfer(_value);
             balances[msg.sender] = balances[msg.sender].sub(_value);
         }
 
-        for (uint i = 0; i &lt; _tokens.length; i++) {
+        for (uint i = 0; i < _tokens.length; i++) {
             ERC20 token = ERC20(_tokens[i]);
             uint256 tokenValue = _tokenValues[i];
 
@@ -168,7 +168,7 @@ contract BancorBuyer {
 
     // function approveAndCall(address _to, uint256 _value, bytes _data, address[] _tokens, uint256[] _tokenValues) payable external {
     //     uint256[] memory tempBalances = new uint256[](_tokens.length);
-    //     for (uint i = 0; i &lt; _tokens.length; i++) {
+    //     for (uint i = 0; i < _tokens.length; i++) {
     //         ERC20 token = ERC20(_tokens[i]);
     //         uint256 tokenValue = _tokenValues[i];
 
@@ -179,7 +179,7 @@ contract BancorBuyer {
     //     require(_to.call.value(_value)(_data));
     //     balances[msg.sender] = balances[msg.sender].add(msg.value).sub(_value);
 
-    //     for (i = 0; i &lt; _tokens.length; i++) {
+    //     for (i = 0; i < _tokens.length; i++) {
     //         token = ERC20(_tokens[i]);
     //         tokenValue = _tokenValues[i];
 
@@ -199,12 +199,12 @@ contract BancorBuyer {
     {
         require(
             // 0xa9059cbb - transfer(address,uint256)
-            !(_data[0] == 0xa9 &amp;&amp; _data[1] == 0x05 &amp;&amp; _data[2] == 0x9c &amp;&amp; _data[3] == 0xbb) &amp;&amp;
+            !(_data[0] == 0xa9 && _data[1] == 0x05 && _data[2] == 0x9c && _data[3] == 0xbb) &&
             // 0x095ea7b3 - approve(address,uint256)
-            !(_data[0] == 0x09 &amp;&amp; _data[1] == 0x5e &amp;&amp; _data[2] == 0xa7 &amp;&amp; _data[3] == 0xb3) &amp;&amp;
+            !(_data[0] == 0x09 && _data[1] == 0x5e && _data[2] == 0xa7 && _data[3] == 0xb3) &&
             // 0x23b872dd - transferFrom(address,address,uint256)
-            !(_data[0] == 0x23 &amp;&amp; _data[1] == 0xb8 &amp;&amp; _data[2] == 0x72 &amp;&amp; _data[3] == 0xdd),
-            &quot;buyInternal: Do not try to call transfer, approve or transferFrom&quot;
+            !(_data[0] == 0x23 && _data[1] == 0xb8 && _data[2] == 0x72 && _data[3] == 0xdd),
+            "buyInternal: Do not try to call transfer, approve or transferFrom"
         );
         uint256 tokenBalance = token.balanceOf(this);
         require(_exchange.call.value(_value)(_data));
@@ -222,7 +222,7 @@ contract BancorBuyer {
         uint256 totalSupply = _mtkn.totalSupply();
         uint256 bestAmount = uint256(-1);
         uint256 tokensCount = _mtkn.changeableTokenCount();
-        for (uint i = 0; i &lt; tokensCount; i++) {
+        for (uint i = 0; i < tokensCount; i++) {
             ERC20 token = _mtkn.tokens(i);
 
             // Approve XXX to mtkn
@@ -232,7 +232,7 @@ contract BancorBuyer {
             token.approve(_mtkn, thisTokenBalance);
             
             uint256 amount = totalSupply.mul(thisTokenBalance).div(mtknTokenBalance);
-            if (amount &lt; bestAmount) {
+            if (amount < bestAmount) {
                 bestAmount = amount;
             }
         }
@@ -240,7 +240,7 @@ contract BancorBuyer {
         // Mint mtkn
         _mtkn.mint(msg.sender, bestAmount);
         
-        for (i = 0; i &lt; tokensCount; i++) {
+        for (i = 0; i < tokensCount; i++) {
             token = _mtkn.tokens(i);
             token.approve(_mtkn, 0);
             tokenBalances[msg.sender][token] = tokenBalances[msg.sender][token]
@@ -258,7 +258,7 @@ contract BancorBuyer {
     // ) 
     //     internal
     // {
-    //     for (uint i = 0; i &lt; _tokens.length; i++) {
+    //     for (uint i = 0; i < _tokens.length; i++) {
     //         buyInternal(ERC20(_tokens[i]), _exchanges[i], _values[i], _datas[i]);
     //     }
     //     mintInternal(_mtkn, _minAmount, _values);
@@ -374,7 +374,7 @@ contract BancorBuyer {
     //     public
     // {
     //     balances[msg.sender] = balances[msg.sender].add(msg.value);
-    //     for (uint i = 0; i &lt; _tokens.length; i++) {
+    //     for (uint i = 0; i < _tokens.length; i++) {
     //         buyInternal(ERC20(_tokens[i]), _exchanges[i], _values[i], _datas[i]);
     //     }
     // }
@@ -388,17 +388,17 @@ contract BancorBuyer {
     //     payable
     //     public
     // {
-    //     require(_mtkn.changeableTokenCount() == _exchanges.length, &quot;&quot;);
+    //     require(_mtkn.changeableTokenCount() == _exchanges.length, "");
 
     //     balances[msg.sender] = balances[msg.sender].add(msg.value);
-    //     for (uint i = 0; i &lt; _exchanges.length; i++) {
+    //     for (uint i = 0; i < _exchanges.length; i++) {
     //         if (_exchanges[i] == 0) {
     //             continue;
     //         }
 
     //         ERC20 token = _mtkn.tokens(i);
             
-    //         // ETH =&gt; XXX
+    //         // ETH => XXX
     //         uint256 tokenBalance = token.balanceOf(this);
     //         require(_exchanges[i].call.value(_values[i])(_datas[i]));
     //         balances[msg.sender] = balances[msg.sender].sub(_values[i]);
@@ -420,7 +420,7 @@ contract BancorBuyer {
 
     //     uint256 totalSupply = _mtkn.totalSupply();
     //     uint256 bestAmount = uint256(-1);
-    //     for (uint i = 0; i &lt; _exchanges.length; i++) {
+    //     for (uint i = 0; i < _exchanges.length; i++) {
     //         ERC20 token = _mtkn.tokens(i);
 
     //         // Approve XXX to mtkn
@@ -430,15 +430,15 @@ contract BancorBuyer {
     //         token.approve(_mtkn, thisTokenBalance);
             
     //         uint256 amount = totalSupply.mul(thisTokenBalance).div(mtknTokenBalance);
-    //         if (amount &lt; bestAmount) {
+    //         if (amount < bestAmount) {
     //             bestAmount = amount;
     //         }
     //     }
 
-    //     require(bestAmount &gt;= _minAmount);
+    //     require(bestAmount >= _minAmount);
     //     _mtkn.mint(msg.sender, bestAmount);
 
-    //     for (i = 0; i &lt; _exchanges.length; i++) {
+    //     for (i = 0; i < _exchanges.length; i++) {
     //         token = _mtkn.tokens(i);
     //         token.approve(_mtkn, 0);
     //         tokenBalances[msg.sender][token] = tokenBalances[msg.sender][token].sub(token.balanceOf(this).sub(_values[i]));

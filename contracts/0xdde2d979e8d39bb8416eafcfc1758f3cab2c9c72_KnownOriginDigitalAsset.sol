@@ -77,7 +77,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -92,7 +92,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -114,7 +114,7 @@ library AddressUtils {
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -143,9 +143,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -153,7 +153,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -162,7 +162,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -177,21 +177,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -316,7 +316,7 @@ contract ERC721BasicToken is ERC721Basic {
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -324,14 +324,14 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _tokenId uint256 ID of the token to be transferred
   */
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
   * @dev Safely transfers the ownership of a given token ID to another address
   * @dev If the target address is a contract, it must implement `onERC721Received`,
   *  which is called upon a safe transfer, and return the magic value
-  *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+  *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
   *  the transfer is reverted.
   * @dev Requires the msg sender to be the owner, approved, or operator
   * @param _from current owner of the token
@@ -449,19 +449,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
   * @dev Constructor function
@@ -515,7 +515,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list owned by the requested address
   */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -534,7 +534,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   * @return uint256 token ID at the given index of the tokens list
   */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -628,30 +628,30 @@ library Strings {
     string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
     bytes memory babcde = bytes(abcde);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-    for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-    for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-    for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+    for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+    for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+    for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+    for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
     return string(babcde);
   }
 
   function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-    return strConcat(_a, _b, _c, _d, &quot;&quot;);
+    return strConcat(_a, _b, _c, _d, "");
   }
 
   function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-    return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+    return strConcat(_a, _b, _c, "", "");
   }
 
   function strConcat(string _a, string _b) internal pure returns (string) {
-    return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+    return strConcat(_a, _b, "", "", "");
   }
 
   function bytes16ToStr(bytes16 _bytes16, uint8 _start, uint8 _end) internal pure returns (string) {
     bytes memory bytesArray = new bytes(_end - _start);
     uint8 pos = 0;
-    for (uint8 i = _start; i &lt; _end; i++) {
+    for (uint8 i = _start; i < _end; i++) {
       bytesArray[pos] = _bytes16[i];
       pos++;
     }
@@ -675,39 +675,39 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
 
   bytes4 constant InterfaceSignature_ERC165 = 0x01ffc9a7;
     /*
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
     */
 
   bytes4 constant InterfaceSignature_ERC721Enumerable = 0x780e9d63;
     /*
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;));
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+    bytes4(keccak256('tokenByIndex(uint256)'));
     */
 
   bytes4 constant InterfaceSignature_ERC721Metadata = 0x5b5e139f;
     /*
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;tokenURI(uint256)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('tokenURI(uint256)'));
     */
 
   bytes4 constant InterfaceSignature_ERC721 = 0x80ac58cd;
     /*
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-    bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;));
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('getApproved(uint256)')) ^
+    bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+    bytes4(keccak256('isApprovedForAll(address,address)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
     */
 
   bytes4 public constant InterfaceSignature_ERC721Optional =- 0x4f558e79;
     /*
-    bytes4(keccak256(&#39;exists(uint256)&#39;));
+    bytes4(keccak256('exists(uint256)'));
     */
 
   /**
@@ -729,7 +729,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
     uint8 developer;
   }
 
-  string internal tokenBaseURI = &quot;https://ipfs.infura.io/ipfs/&quot;;
+  string internal tokenBaseURI = "https://ipfs.infura.io/ipfs/";
 
   // creates and owns the original assets all primary purchases transferred to this account
   address public curatorAccount;
@@ -748,15 +748,15 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
 
   enum PurchaseState {Unsold, EtherPurchase, FiatPurchase}
 
-  mapping(string =&gt; CommissionStructure) internal editionTypeToCommission;
-  mapping(uint256 =&gt; PurchaseState) internal tokenIdToPurchased;
+  mapping(string => CommissionStructure) internal editionTypeToCommission;
+  mapping(uint256 => PurchaseState) internal tokenIdToPurchased;
 
-  mapping(uint256 =&gt; bytes16) internal tokenIdToEdition;
-  mapping(uint256 =&gt; uint256) internal tokenIdToPriceInWei;
-  mapping(uint256 =&gt; uint32) internal tokenIdToPurchaseFromTime;
+  mapping(uint256 => bytes16) internal tokenIdToEdition;
+  mapping(uint256 => uint256) internal tokenIdToPriceInWei;
+  mapping(uint256 => uint32) internal tokenIdToPurchaseFromTime;
 
-  mapping(bytes16 =&gt; uint256) internal editionToEditionNumber;
-  mapping(bytes16 =&gt; address) internal editionToArtistAccount;
+  mapping(bytes16 => uint256) internal editionToEditionNumber;
+  mapping(bytes16 => address) internal editionToArtistAccount;
 
   event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
 
@@ -790,16 +790,16 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
   }
 
   modifier onlyAfterPurchaseFromTime(uint256 _tokenId) {
-    require(tokenIdToPurchaseFromTime[_tokenId] &lt;= block.timestamp);
+    require(tokenIdToPurchaseFromTime[_tokenId] <= block.timestamp);
     _;
   }
 
-  function KnownOriginDigitalAsset(address _curatorAccount) public ERC721Token(&quot;KnownOriginDigitalAsset&quot;, &quot;KODA&quot;) {
+  function KnownOriginDigitalAsset(address _curatorAccount) public ERC721Token("KnownOriginDigitalAsset", "KODA") {
     developerAccount = msg.sender;
     curatorAccount = _curatorAccount;
   }
 
-  // don&#39;t accept payment directly to contract
+  // don't accept payment directly to contract
   function() public payable {
     revert();
   }
@@ -896,9 +896,9 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
    * @param _developer the developers commission
    */
   function updateCommission(string _type, uint8 _curator, uint8 _developer) external onlyKnownOrigin {
-    require(_curator &gt; 0);
-    require(_developer &gt; 0);
-    require((_curator + _developer) &lt; 100);
+    require(_curator > 0);
+    require(_developer > 0);
+    require((_curator + _developer) < 100);
 
     editionTypeToCommission[_type] = CommissionStructure({curator : _curator, developer : _developer});
   }
@@ -917,7 +917,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
    * @dev Purchase the provide token in Ether
    * @dev Reverts if token not unsold and not available to be purchased
    * msg.sender will become the owner of the token
-   * msg.value needs to be &gt;= to the token priceInWei
+   * msg.value needs to be >= to the token priceInWei
    * @param _tokenId the KODA token ID
    * @return true/false depending on success
    */
@@ -925,7 +925,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
     require(exists(_tokenId));
 
     uint256 priceInWei = tokenIdToPriceInWei[_tokenId];
-    require(msg.value &gt;= priceInWei);
+    require(msg.value >= priceInWei);
 
     // approve sender as they have paid the required amount
     _approvePurchaser(msg.sender, _tokenId);
@@ -933,14 +933,14 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
     // transfer assets from contract creator (curator) to new owner
     safeTransferFrom(ownerOf(_tokenId), msg.sender, _tokenId);
 
-    // now purchased - don&#39;t allow re-purchase!
+    // now purchased - don't allow re-purchase!
     tokenIdToPurchased[_tokenId] = PurchaseState.EtherPurchase;
 
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
     totalNumberOfPurchases = totalNumberOfPurchases.add(1);
 
     // Only apply commission if the art work has value
-    if (priceInWei &gt; 0) {
+    if (priceInWei > 0) {
       _applyCommission(_tokenId);
     }
 
@@ -956,7 +956,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
   function purchaseWithFiat(uint256 _tokenId) public onlyKnownOrigin onlyUnsold(_tokenId) onlyAfterPurchaseFromTime(_tokenId) {
     require(exists(_tokenId));
 
-    // now purchased - don&#39;t allow re-purchase!
+    // now purchased - don't allow re-purchase!
     tokenIdToPurchased[_tokenId] = PurchaseState.FiatPurchase;
 
     totalNumberOfPurchases = totalNumberOfPurchases.add(1);
@@ -990,11 +990,11 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
 
     CommissionStructure memory commission = editionTypeToCommission[typeCode];
 
-    // split &amp; transfer fee for curator
+    // split & transfer fee for curator
     uint curatorAccountFee = msg.value / 100 * commission.curator;
     curatorAccount.transfer(curatorAccountFee);
 
-    // split &amp; transfer fee for developer
+    // split & transfer fee for developer
     uint developerAccountFee = msg.value / 100 * commission.developer;
     developerAccount.transfer(developerAccountFee);
 

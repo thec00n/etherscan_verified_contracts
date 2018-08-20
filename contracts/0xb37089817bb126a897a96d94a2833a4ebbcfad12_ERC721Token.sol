@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -98,23 +98,23 @@ contract ERC721 {
 contract ERC721Token is ERC721, Ownable {
     using SafeMath for uint256;
 
-    string public constant NAME = &quot;ERC-ME Contribution&quot;;
-    string public constant SYMBOL = &quot;MEC&quot;;
+    string public constant NAME = "ERC-ME Contribution";
+    string public constant SYMBOL = "MEC";
 
     // Total amount of tokens
     uint256 private totalTokens;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) private tokenOwner;
+    mapping (uint256 => address) private tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) private tokenApprovals;
+    mapping (uint256 => address) private tokenApprovals;
 
     // Mapping from owner to list of owned token IDs
-    mapping (address =&gt; uint256[]) private ownedTokens;
+    mapping (address => uint256[]) private ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+    mapping(uint256 => uint256) private ownedTokensIndex;
 
     struct Contribution {
         address contributor; // The address of the contributor in the crowdsale

@@ -8,13 +8,13 @@ contract ClientReceipt {
     }
     function deposit(bytes32 _id) public payable {
         Deposit(this, _id, msg.value);
-        if(msg.value &gt; 0) {
+        if(msg.value > 0) {
             owner.transfer(msg.value);
         }
     }
     function () public payable { 
         Deposit(this, 0, msg.value);
-        if(msg.value &gt; 0) {
+        if(msg.value > 0) {
             owner.transfer(msg.value);
         }
     }

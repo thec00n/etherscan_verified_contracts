@@ -21,37 +21,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -76,10 +76,10 @@ contract UnicornRanch {
   address public cardboardUnicornTokenAddress;
   address public groveAddress;
   address public owner = msg.sender;
-  mapping (address =&gt; Visit[]) bookings;
-  mapping (bytes32 =&gt; VisitMeta) public bookingMetadataForKey;
-  mapping (uint8 =&gt; uint) public visitLength;
-  mapping (uint8 =&gt; uint) public visitCost;
+  mapping (address => Visit[]) bookings;
+  mapping (bytes32 => VisitMeta) public bookingMetadataForKey;
+  mapping (uint8 => uint) public visitLength;
+  mapping (uint8 => uint) public visitCost;
   uint public visitingUnicorns = 0;
   uint public repossessionBlocks = 120960;
   uint8 public repossessionBountyPerTen = 2;
@@ -146,7 +146,7 @@ contract UnicornRanch {
     if (_type == VisitType.Afternoon) {
       return donateUnicorns(availableBalance(msg.sender));
     }
-    require(msg.value &gt;= visitCost[uint8(_type)].mul(_unicornCount)); // Must be paying proper amount
+    require(msg.value >= visitCost[uint8(_type)].mul(_unicornCount)); // Must be paying proper amount
 
     ERC20Token cardboardUnicorns = ERC20Token(cardboardUnicornTokenAddress);
     cardboardUnicorns.transferFrom(msg.sender, address(this), _unicornCount); // Transfer the actual asset
@@ -170,10 +170,10 @@ contract UnicornRanch {
       newIndex
     );
     
-    if (groveAddress &gt; 0) {
+    if (groveAddress > 0) {
       // Insert into Grove index for applications to query
       GroveAPI g = GroveAPI(groveAddress);
-      g.insert(&quot;bookingExpiration&quot;, uniqueKey, int(expiresBlock));
+      g.insert("bookingExpiration", uniqueKey, int(expiresBlock));
     }
     
     // Send event about this new booking
@@ -181,9 +181,9 @@ contract UnicornRanch {
   }
   
   function completeBooking(uint _index) {
-    require(bookings[msg.sender].length &gt; _index); // Sender must have at least this many bookings
+    require(bookings[msg.sender].length > _index); // Sender must have at least this many bookings
     Visit storage v = bookings[msg.sender][_index];
-    require(block.number &gt;= v.expiresBlock); // Expired time must be past
+    require(block.number >= v.expiresBlock); // Expired time must be past
     require(v.state == VisitState.InProgress); // Visit must not be complete or repossessed
     
     uint unicornsToReturn = v.unicornCount;
@@ -191,16 +191,16 @@ contract UnicornRanch {
 
     // Determine if any births occurred
     uint birthCount = 0;
-    if (SafeMath.sub(block.number, v.startBlock) &gt;= birthBlockThreshold) {
-      if (v.unicornCount &gt;= 100) {
+    if (SafeMath.sub(block.number, v.startBlock) >= birthBlockThreshold) {
+      if (v.unicornCount >= 100) {
         birthCount = uint(birthPerHundred).mul(v.unicornCount / 100);
-      } else if (v.unicornCount &gt;= 10) {
+      } else if (v.unicornCount >= 10) {
         birthCount = uint(birthPerTen).mul(v.unicornCount / 10);
       }
     }
-    if (birthCount &gt; 0) {
+    if (birthCount > 0) {
       uint availableUnicorns = cardboardUnicorns.balanceOf(address(this)) - visitingUnicorns;
-      if (availableUnicorns &lt; birthCount) {
+      if (availableUnicorns < birthCount) {
         birthCount = availableUnicorns;
       }
       unicornsToReturn = unicornsToReturn.add(birthCount);
@@ -219,9 +219,9 @@ contract UnicornRanch {
   }
   
   function repossessBooking(address _who, uint _index) {
-    require(bookings[_who].length &gt; _index); // Address in question must have at least this many bookings
+    require(bookings[_who].length > _index); // Address in question must have at least this many bookings
     Visit storage v = bookings[_who][_index];
-    require(block.number &gt; v.expiresBlock.add(repossessionBlocks)); // Repossession time must be past
+    require(block.number > v.expiresBlock.add(repossessionBlocks)); // Repossession time must be past
     require(v.state == VisitState.InProgress); // Visit must not be complete or repossessed
     
     // Update the status of the Visit
@@ -234,9 +234,9 @@ contract UnicornRanch {
     
     // Calculate Bounty amount
     uint bountyCount = 1;
-    if (v.unicornCount &gt;= 100) {
+    if (v.unicornCount >= 100) {
         bountyCount = uint(repossessionBountyPerHundred).mul(v.unicornCount / 100);
-    } else if (v.unicornCount &gt;= 10) {
+    } else if (v.unicornCount >= 10) {
       bountyCount = uint(repossessionBountyPerTen).mul(v.unicornCount / 10);
     }
     
@@ -255,7 +255,7 @@ contract UnicornRanch {
       return 0;
     }
     uint balance = cardboardUnicorns.balanceOf(_who);
-    if (balance &lt; count) {
+    if (balance < count) {
       return balance;
     }
     return count;
@@ -337,11 +337,11 @@ contract UnicornRanch {
   }
 
   function withdraw() onlyOwner {
-    owner.transfer(this.balance); // Send all ether in this contract to this contract&#39;s owner
+    owner.transfer(this.balance); // Send all ether in this contract to this contract's owner
   }
   function withdrawForeignTokens(address _tokenContract) onlyOwner {
     ERC20Token token = ERC20Token(_tokenContract);
-    token.transfer(owner, token.balanceOf(address(this))); // Send all owned tokens to this contract&#39;s owner
+    token.transfer(owner, token.balanceOf(address(this))); // Send all owned tokens to this contract's owner
   }
   
 }

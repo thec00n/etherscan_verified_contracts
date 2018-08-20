@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,8 +78,8 @@ contract Propthereum is Ownable, ERC20{
     using SafeMath for uint256;
 
     //ERC20
-    string public name = &quot;Propthereum&quot;;
-    string public symbol = &quot;PTC&quot;;
+    string public name = "Propthereum";
+    string public symbol = "PTC";
     uint8 public decimals;
     uint256 public totalSupply;
 
@@ -93,8 +93,8 @@ contract Propthereum is Ownable, ERC20{
     uint16[6] public tokens = [1800,1650,1500,1450,1425,1400];
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     address public constant WITHDRAW_ADDRESS = 0x35528E0c694D3c3B3e164FFDcC1428c076B9467d;
 
@@ -121,7 +121,7 @@ contract Propthereum is Ownable, ERC20{
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -163,11 +163,11 @@ contract Propthereum is Ownable, ERC20{
     }
 
     function inSalePeriod() public constant returns (bool) {
-        return (now &gt;= getSaleStart() &amp;&amp; now &lt;= getSaleEnd());
+        return (now >= getSaleStart() && now <= getSaleEnd());
     }
 
     function inpreSalePeriod() public constant returns (bool) {
-        return (now &gt;= getPreSaleStart() &amp;&amp; now &lt;= getPreSaleEnd());
+        return (now >= getPreSaleStart() && now <= getPreSaleEnd());
     }
 
     function() public payable {
@@ -175,7 +175,7 @@ contract Propthereum is Ownable, ERC20{
     }
 
     function buyTokens() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(inSalePeriod() == true || inpreSalePeriod()== true );
         require(msg.sender != address(0));
 
@@ -194,15 +194,15 @@ contract Propthereum is Ownable, ERC20{
     }
 
    function burn() public onlyOwner {
-        require (now &gt; getSaleEnd());
+        require (now > getSaleEnd());
         //Burn outstanding
         totalSupply = totalSupply.sub(balances[address(this)]);
         balances[address(this)] = 0;
     }
 
   function getStage() public constant returns (uint256) {
-        for (uint8 i = 1; i &lt; saleStageStartDates.length; i++) {
-            if (now &lt; saleStageStartDates[i]) {
+        for (uint8 i = 1; i < saleStageStartDates.length; i++) {
+            if (now < saleStageStartDates[i]) {
                 return i -1;
             }
         }

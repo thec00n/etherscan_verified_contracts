@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -41,12 +41,12 @@ contract BattleToken is Ownable {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     uint256 public totalSupply;
-    string public name = &quot;https://cryptobots.me/cbtb - CryptoBotsBattle&quot;;
+    string public name = "https://cryptobots.me/cbtb - CryptoBotsBattle";
     uint8 public decimals = 0;
-    string public symbol = &quot;CBTB&quot;;
+    string public symbol = "CBTB";
 
     address public fights;
 
@@ -70,7 +70,7 @@ contract BattleToken is Ownable {
         balances[msg.sender] = safeSub(
             balances[msg.sender], _to.length * _value
         );
-        for (uint i = 0; i &lt; _to.length; i++) {
+        for (uint i = 0; i < _to.length; i++) {
             balances[_to[i]] = safeAdd(balances[_to[i]], _value);
             Transfer(msg.sender, _to[i], _value);
         }
@@ -102,12 +102,12 @@ contract BattleToken is Ownable {
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }

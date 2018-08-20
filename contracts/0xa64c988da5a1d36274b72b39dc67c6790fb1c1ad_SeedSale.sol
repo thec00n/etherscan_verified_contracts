@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -117,7 +117,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -135,7 +135,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -163,7 +163,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -174,8 +174,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -301,8 +301,8 @@ contract ufoodoToken is StandardToken, Ownable {
     // Token where will be stored and managed
     address public vault = this;
 
-    string public name = &quot;ufoodo Token&quot;;
-    string public symbol = &quot;UFT&quot;;
+    string public name = "ufoodo Token";
+    string public symbol = "UFT";
     uint8 public decimals = 18;
 
     // Total Supply DAICO: 500,000,000 UFT
@@ -311,7 +311,7 @@ contract ufoodoToken is StandardToken, Ownable {
     uint256 public supplyDAICO = INITIAL_SUPPLY.mul(80).div(100);
 
     address public salesAgent;
-    mapping (address =&gt; bool) public owners;
+    mapping (address => bool) public owners;
 
     event SalesAgentPermissionsTransferred(address indexed previousSalesAgent, address indexed newSalesAgent);
     event SalesAgentRemoved(address indexed currentSalesAgent);
@@ -349,7 +349,7 @@ contract ufoodoToken is StandardToken, Ownable {
     // Lock the DAICO supply until 2018-09-01 14:00:00
     // Which can then transferred to the created DAICO contract
     function transferDaico(address _to) public onlyOwner returns(bool) {
-        require(now &gt;= 1535810400);
+        require(now >= 1535810400);
 
         balances[vault] = balances[vault].sub(supplyDAICO);
         balances[_to] = balances[_to].add(supplyDAICO);
@@ -406,11 +406,11 @@ contract SeedSale is Ownable, Pausable {
     address public fundWallet = 0xf7d4C80DE0e2978A1C5ef3267F488B28499cD22E;
 
     // Amount of ether in wei, needs to be validated first
-    mapping(address =&gt; uint256) public weiContributedPending;
+    mapping(address => uint256) public weiContributedPending;
     // Amount of ether in wei validated
-    mapping(address =&gt; uint256) public weiContributedConclude;
+    mapping(address => uint256) public weiContributedConclude;
     // Amount of UFT which will reserved first until the contributor is validated
-    mapping(address =&gt; uint256) public pendingAmountUFT;
+    mapping(address => uint256) public pendingAmountUFT;
 
     event OpenTier(uint256 activeTier);
     event LogContributionPending(address contributor, uint256 amountWei, uint256 tokenAmount, uint256 activeTier, uint256 timestamp);
@@ -466,11 +466,11 @@ contract SeedSale is Ownable, Pausable {
     }
 
     function seedStarted() public view returns (bool) {
-        return now &gt;= seedStartTime;
+        return now >= seedStartTime;
     }
 
     function seedEnded() public view returns (bool) {
-        return now &gt;= seedEndTime || fundsRaised &gt;= hardCap;
+        return now >= seedEndTime || fundsRaised >= hardCap;
     }
 
     modifier checkContribution() {
@@ -482,7 +482,7 @@ contract SeedSale is Ownable, Pausable {
         if(!seedStarted() || seedEnded()) {
             return false;
         }
-        if(msg.value &lt; minContrib) {
+        if(msg.value < minContrib) {
             return false;
         }
         return true;
@@ -501,14 +501,14 @@ contract SeedSale is Ownable, Pausable {
         uint256 _activeTierCap = tierCap[_tierIndex];
         uint256 _activeFundRaisedTier = activeFundRaisedTier[_tierIndex];
 
-        require(_activeFundRaisedTier &lt; _activeTierCap);
+        require(_activeFundRaisedTier < _activeTierCap);
 
         // Checks Amoount of eth still can contributed to the active Tier
         uint256 tierCapOverSold = _activeTierCap.sub(_activeFundRaisedTier);
 
         // if contributer amount will oversold the active tier cap, partial
         // purchase will proceed, rest contributer amount will refunded to contributor
-        if(tierCapOverSold &lt; weiAmount) {
+        if(tierCapOverSold < weiAmount) {
             weiAmount = tierCapOverSold;
             refund = msg.value.sub(weiAmount);
 
@@ -524,7 +524,7 @@ contract SeedSale is Ownable, Pausable {
         pendingUFT = pendingUFT.add(amountUFT);
 
         // partial process, refund rest value
-        if(refund &gt; 0) {
+        if(refund > 0) {
             msg.sender.transfer(refund);
         }
 
@@ -532,7 +532,7 @@ contract SeedSale is Ownable, Pausable {
     }
 
     function softCapReached() public returns (bool) {
-        if (fundsRaisedFinalized &gt;= softCap) {
+        if (fundsRaisedFinalized >= softCap) {
             SoftCapReached = true;
             return true;
         }
@@ -544,7 +544,7 @@ contract SeedSale is Ownable, Pausable {
     // For contributor safety we pause the seedSale process
     function nextTier() onlyOwner public {
         require(paused == true);
-        require(activeTier &lt; 7);
+        require(activeTier < 7);
         uint256 _tierIndex = activeTier;
         activeTier = _tierIndex +1;
         emit OpenTier(activeTier);
@@ -578,7 +578,7 @@ contract SeedSale is Ownable, Pausable {
     // By updating the address, the contributor will receive his contribution back
     function validationFailed(address contributor) onlyOwner public returns (bool) {
         require(contributor != 0x0);
-        require(weiContributedPending[contributor] &gt; 0);
+        require(weiContributedPending[contributor] > 0);
 
         uint256 currentBalance = weiContributedPending[contributor];
 
@@ -592,7 +592,7 @@ contract SeedSale is Ownable, Pausable {
     function refund() public {
         require(refundAllowed);
         require(!SoftCapReached);
-        require(weiContributedPending[msg.sender] &gt; 0);
+        require(weiContributedPending[msg.sender] > 0);
 
         uint256 currentBalance = weiContributedPending[msg.sender];
 
@@ -632,22 +632,22 @@ contract SeedSale is Ownable, Pausable {
       uint256 lockedAmount_3 = lockedTeamUFT.mul(25).div(100);
       uint256 lockedAmount_4 = lockedTeamUFT.mul(25).div(100);
 
-      if(seedStartTime &gt;= release_1 &amp;&amp; releasedLockedAmount &lt; lockedAmount_1) {
+      if(seedStartTime >= release_1 && releasedLockedAmount < lockedAmount_1) {
         token.transferFromVault(token, _beneficiary, lockedAmount_1 );
         releasedLockedAmount = releasedLockedAmount.add(lockedAmount_1);
         return true;
 
-      } else if(seedStartTime &gt;= release_2 &amp;&amp; releasedLockedAmount &lt; lockedAmount_2.mul(2)) {
+      } else if(seedStartTime >= release_2 && releasedLockedAmount < lockedAmount_2.mul(2)) {
         token.transferFromVault(token, _beneficiary, lockedAmount_2 );
         releasedLockedAmount = releasedLockedAmount.add(lockedAmount_2);
         return true;
 
-      } else if(seedStartTime &gt;= release_3 &amp;&amp; releasedLockedAmount &lt; lockedAmount_3.mul(3)) {
+      } else if(seedStartTime >= release_3 && releasedLockedAmount < lockedAmount_3.mul(3)) {
         token.transferFromVault(token, _beneficiary, lockedAmount_3 );
         releasedLockedAmount = releasedLockedAmount.add(lockedAmount_3);
         return true;
 
-      } else if(seedStartTime &gt;= release_4 &amp;&amp; releasedLockedAmount &lt; lockedAmount_4.mul(4)) {
+      } else if(seedStartTime >= release_4 && releasedLockedAmount < lockedAmount_4.mul(4)) {
         token.transferFromVault(token, _beneficiary, lockedAmount_4 );
         releasedLockedAmount = releasedLockedAmount.add(lockedAmount_4);
         return true;
@@ -658,8 +658,8 @@ contract SeedSale is Ownable, Pausable {
     // Total Reserved from Private Sale Contributor 4,000,000 UFT
     function transferPrivateReservedUFT(address _beneficiary, uint256 _amount) public onlyOwner {
         require(SoftCapReached);
-        require(_amount &gt; 0);
-        require(privateReservedUFT &gt;= _amount);
+        require(_amount > 0);
+        require(privateReservedUFT >= _amount);
 
         token.transferFromVault(token, _beneficiary, _amount);
         privateReservedUFT = privateReservedUFT.sub(_amount);
@@ -667,7 +667,7 @@ contract SeedSale is Ownable, Pausable {
     }
 
      function finalizeSeedSale() public onlyOwner {
-        if(seedStartTime &gt;= seedEndTime &amp;&amp; SoftCapReached) {
+        if(seedStartTime >= seedEndTime && SoftCapReached) {
 
         // Bounty Campaign: 5,000,000 UFT
         uint256 bountyAmountUFT = token.supplySeed().mul(5).div(100);
@@ -677,7 +677,7 @@ contract SeedSale is Ownable, Pausable {
         uint256 reservedCompanyUFT = token.supplySeed().mul(20).div(100);
         token.transferFromVault(token, fundWallet, reservedCompanyUFT);
 
-        } else if(seedStartTime &gt;= seedEndTime &amp;&amp; !SoftCapReached) {
+        } else if(seedStartTime >= seedEndTime && !SoftCapReached) {
 
             // Enable fund`s crowdsale refund if soft cap is not reached
             refundAllowed = true;

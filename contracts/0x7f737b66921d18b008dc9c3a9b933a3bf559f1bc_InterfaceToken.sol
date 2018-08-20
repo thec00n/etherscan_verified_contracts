@@ -13,24 +13,24 @@ library Strings {
     string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
     bytes memory babcde = bytes(abcde);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-    for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-    for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-    for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+    for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+    for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+    for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+    for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
     return string(babcde);
   }
 
   function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-    return strConcat(_a, _b, _c, _d, &quot;&quot;);
+    return strConcat(_a, _b, _c, _d, "");
   }
 
   function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-    return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+    return strConcat(_a, _b, _c, "", "");
   }
 
   function strConcat(string _a, string _b) internal pure returns (string) {
-    return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+    return strConcat(_a, _b, "", "", "");
   }
 }
 
@@ -39,7 +39,7 @@ library Strings {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -108,7 +108,7 @@ contract Ownable {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -121,7 +121,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -163,13 +163,13 @@ library Roles {
  * See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  * for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  * to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address indexed operator, string role);
   event RoleRemoved(address indexed operator, string role);
@@ -246,7 +246,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] _roles) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; _roles.length; i++) {
+  //     for (uint8 i = 0; i < _roles.length; i++) {
   //         if (hasRole(msg.sender, _roles[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -264,10 +264,10 @@ contract RBAC {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * This simplifies the implementation of &quot;user permissions&quot;.
+ * This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable, RBAC {
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
    * @dev Throws if operator is not whitelisted.
@@ -311,7 +311,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       addAddressToWhitelist(_operators[i]);
     }
   }
@@ -320,7 +320,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param _operator address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address _operator)
     onlyOwner
@@ -333,13 +333,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param _operators addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _operators)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       removeAddressFromWhitelist(_operators[i]);
     }
   }
@@ -358,8 +358,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -374,9 +374,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -384,7 +384,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -393,7 +393,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -429,13 +429,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
-   *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+   *   bytes4(keccak256('supportsInterface(bytes4)'))
    */
 
   /**
-   * @dev a mapping of interface id to whether or not it&#39;s supported
+   * @dev a mapping of interface id to whether or not it's supported
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev A contract implementing SupportsInterfaceWithLookup
@@ -579,7 +579,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -594,7 +594,7 @@ library AddressUtils {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
@@ -610,7 +610,7 @@ contract ERC721Receiver {
    * @param _from The address which previously owned the token
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _operator,
@@ -633,41 +633,41 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
   bytes4 private constant InterfaceId_ERC721 = 0x80ac58cd;
   /*
    * 0x80ac58cd ===
-   *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-   *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-   *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-   *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+   *   bytes4(keccak256('balanceOf(address)')) ^
+   *   bytes4(keccak256('ownerOf(uint256)')) ^
+   *   bytes4(keccak256('approve(address,uint256)')) ^
+   *   bytes4(keccak256('getApproved(uint256)')) ^
+   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
    */
 
   bytes4 private constant InterfaceId_ERC721Exists = 0x4f558e79;
   /*
    * 0x4f558e79 ===
-   *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+   *   bytes4(keccak256('exists(uint256)'))
    */
 
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -811,7 +811,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    *
    * Requires the msg sender to be the owner, approved, or operator
@@ -828,14 +828,14 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    * Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -981,17 +981,17 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   bytes4 private constant InterfaceId_ERC721Enumerable = 0x780e9d63;
   /**
    * 0x780e9d63 ===
-   *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+   *   bytes4(keccak256('totalSupply()')) ^
+   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+   *   bytes4(keccak256('tokenByIndex(uint256)'))
    */
 
   bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
   /**
    * 0x5b5e139f ===
-   *   bytes4(keccak256(&#39;name()&#39;)) ^
-   *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+   *   bytes4(keccak256('name()')) ^
+   *   bytes4(keccak256('symbol()')) ^
+   *   bytes4(keccak256('tokenURI(uint256)'))
    */
 
   // Token name
@@ -1001,19 +1001,19 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -1067,7 +1067,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -1086,7 +1086,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -1189,23 +1189,23 @@ contract InterfaceToken is ERC721Token, Whitelist {
 
   event Minted(address indexed _owner, uint256 indexed _tokenId, bytes32 _blockhash, bytes32 _nickname);
 
-  string internal tokenBaseURI = &quot;https://ipfs.infura.io/ipfs/&quot;;
-  string internal defaultTokenURI = &quot;Qma4QoWXq7YzFUkREXW9wKVYPZmKzS5pkckaSjwY8Gc489&quot;;
+  string internal tokenBaseURI = "https://ipfs.infura.io/ipfs/";
+  string internal defaultTokenURI = "Qma4QoWXq7YzFUkREXW9wKVYPZmKzS5pkckaSjwY8Gc489";
 
   uint256 public purchaseTokenPointer = 1000000000;
   uint256 public costOfToken = 0.01 ether;
 
-  mapping(uint256 =&gt; bytes32) internal tokenIdToNickname;
+  mapping(uint256 => bytes32) internal tokenIdToNickname;
 
-  mapping(uint256 =&gt; bytes32) internal tokenIdToBlockhash;
-  mapping(bytes32 =&gt; uint256) internal blockhashToTokenId;
+  mapping(uint256 => bytes32) internal tokenIdToBlockhash;
+  mapping(bytes32 => uint256) internal blockhashToTokenId;
 
-  constructor() public ERC721Token(&quot;Interface Token&quot;, &quot;TOKN&quot;) {
+  constructor() public ERC721Token("Interface Token", "TOKN") {
     super.addAddressToWhitelist(msg.sender);
   }
 
   function() public payable {
-    buyTokens(&quot;&quot;);
+    buyTokens("");
   }
 
   /**
@@ -1216,7 +1216,7 @@ contract InterfaceToken is ERC721Token, Whitelist {
    * @param _nickname char stamp of token owner
    */
   function mint(bytes32 _blockhash, uint256 _tokenId, bytes32 _nickname) external onlyIfWhitelisted(msg.sender) {
-    require(_tokenId &lt; purchaseTokenPointer); // ensure under number where buying tokens takes place
+    require(_tokenId < purchaseTokenPointer); // ensure under number where buying tokens takes place
     _mint(_blockhash, _tokenId, _nickname, msg.sender);
   }
 
@@ -1229,7 +1229,7 @@ contract InterfaceToken is ERC721Token, Whitelist {
    * @param _recipient owner of the newly minted token
    */
   function mintTransfer(bytes32 _blockhash, uint256 _tokenId, bytes32 _nickname, address _recipient) external onlyIfWhitelisted(msg.sender) {
-    require(_tokenId &lt; purchaseTokenPointer); // ensure under number where buying tokens takes place
+    require(_tokenId < purchaseTokenPointer); // ensure under number where buying tokens takes place
     _mint(_blockhash, _tokenId, _nickname, _recipient);
   }
 
@@ -1239,7 +1239,7 @@ contract InterfaceToken is ERC721Token, Whitelist {
    * @param _nickname char stamp of token owner
    */
   function buyToken(bytes32 _nickname) public payable {
-    require(msg.value &gt;= costOfToken);
+    require(msg.value >= costOfToken);
 
     _mint(keccak256(abi.encodePacked(purchaseTokenPointer, _nickname)), purchaseTokenPointer, _nickname, msg.sender);
     purchaseTokenPointer = purchaseTokenPointer.add(1);
@@ -1255,10 +1255,10 @@ contract InterfaceToken is ERC721Token, Whitelist {
    * @param _nickname char stamp of token owner
    */
   function buyTokens(bytes32 _nickname) public payable {
-    require(msg.value &gt;= costOfToken);
+    require(msg.value >= costOfToken);
 
     uint i = 0;
-    for (i; i &lt; (msg.value / costOfToken); i++) {
+    for (i; i < (msg.value / costOfToken); i++) {
       _mint(keccak256(abi.encodePacked(purchaseTokenPointer, _nickname)), purchaseTokenPointer, _nickname, msg.sender);
       purchaseTokenPointer = purchaseTokenPointer.add(1);
     }
@@ -1316,7 +1316,7 @@ contract InterfaceToken is ERC721Token, Whitelist {
    * @param _owner address to query
    */
   function hasTokens(address _owner) public view returns (bool) {
-    return ownedTokens[_owner].length &gt; 0;
+    return ownedTokens[_owner].length > 0;
   }
 
   /**

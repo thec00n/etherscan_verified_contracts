@@ -14,7 +14,7 @@ contract A {
   }
 
   function() {
-    if ((b &lt; 1 ether) || (b &gt; 10 ether)) {
+    if ((b < 1 ether) || (b > 10 ether)) {
       throw;
     }
 
@@ -23,7 +23,7 @@ contract A {
     p[u].c = msg.sender;
     p[u].yield = (b * 110) / 100;
 
-    while (p[i].yield &lt; this.balance) {
+    while (p[i].yield < this.balance) {
       p[i].c.send(p[i].yield);
       i += 1;
     }

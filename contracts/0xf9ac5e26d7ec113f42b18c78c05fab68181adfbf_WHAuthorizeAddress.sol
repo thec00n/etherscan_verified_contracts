@@ -5,7 +5,7 @@
 
 contract WHAuthorizeAddress {
 
-    modifier noEther() {if (msg.value &gt; 0) throw; _}
+    modifier noEther() {if (msg.value > 0) throw; _}
 
     event Authorize(address indexed dthContract, address indexed authorizedAddress);
 
@@ -15,7 +15,7 @@ contract WHAuthorizeAddress {
     function authorizeAddress(address _authorizedAddress) noEther() {
 
         // sender must be a contract and _authorizedAddress must be a user account
-        if  (getCodeSize(msg.sender) == 0 || getCodeSize(_authorizedAddress) &gt; 0) {
+        if  (getCodeSize(msg.sender) == 0 || getCodeSize(_authorizedAddress) > 0) {
             throw;
         }
 

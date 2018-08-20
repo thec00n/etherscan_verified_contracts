@@ -24,7 +24,7 @@ contract Owned {
     *
     *  Changes ownership of this contract. Only owner can call this method.
     *
-    * @param newOwner - new owner&#39;s address
+    * @param newOwner - new owner's address
     */
     function changeOwner(address newOwner) onlyOwner public {
         require(newOwner != address(0));
@@ -36,9 +36,9 @@ contract Owned {
 
 contract FHFTokenInterface {
     /* Public parameters of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;Forever Has Fallen&#39;;
-    string public symbol = &#39;FC&#39;;
+    string public standard = 'Token 0.1';
+    string public name = 'Forever Has Fallen';
+    string public symbol = 'FC';
     uint8 public decimals = 18;
 
     function approveCrowdsale(address _crowdsaleAddress) external;
@@ -96,11 +96,11 @@ contract CrowdsaleParameters {
 
 contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
     /* Arrays of all balances, vesting, approvals, and approval uses */
-    mapping (address =&gt; uint256) private balances;              // Total token balances
-    mapping (address =&gt; uint256) private balancesEndIcoFreeze;  // Balances frozen for ICO end by address
-    mapping (address =&gt; uint256) private balances2yearFreeze;  // Balances frozen for 2 years after ICO end by address
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
-    mapping (address =&gt; mapping (address =&gt; bool)) private allowanceUsed;
+    mapping (address => uint256) private balances;              // Total token balances
+    mapping (address => uint256) private balancesEndIcoFreeze;  // Balances frozen for ICO end by address
+    mapping (address => uint256) private balances2yearFreeze;  // Balances frozen for 2 years after ICO end by address
+    mapping (address => mapping (address => uint256)) private allowed;
+    mapping (address => mapping (address => bool)) private allowanceUsed;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -133,7 +133,7 @@ contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -169,10 +169,10 @@ contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
     * @return balance that has vested
     */
     function vestedBalanceOf(address _address) public constant returns (uint256 balance) {
-        if (now &lt; vestingBounty) {
+        if (now < vestingBounty) {
             return balances[_address] - balances2yearFreeze[_address] - balancesEndIcoFreeze[_address];
         }
-        if (now &lt; vestingTeam) {
+        if (now < vestingTeam) {
             return balances[_address] - balances2yearFreeze[_address];
         } else {
             return balances[_address];
@@ -242,14 +242,14 @@ contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
     }
 
     /**
-    *  Send coins from sender&#39;s address to address specified in parameters
+    *  Send coins from sender's address to address specified in parameters
     *
     * @param _to - address to send to
     * @param _value - amount to send in Wei
     */
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2*32) returns (bool success) {
         // Check if the sender has enough
-        require(vestedBalanceOf(msg.sender) &gt;= _value);
+        require(vestedBalanceOf(msg.sender) >= _value);
 
         // Subtract from the sender
         // _value is never greater than balance of input validation above
@@ -259,10 +259,10 @@ contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
         balances[_to] += _value;
 
         // If tokens issued from this address need to vest (i.e. this address is a team pool), freeze them here
-        if ((msg.sender == bounty.addr) &amp;&amp; (now &lt; vestingBounty)) {
+        if ((msg.sender == bounty.addr) && (now < vestingBounty)) {
             balancesEndIcoFreeze[_to] += _value;
         }
-        if ((msg.sender == team.addr) &amp;&amp; (now &lt; vestingTeam)) {
+        if ((msg.sender == team.addr) && (now < vestingTeam)) {
             balances2yearFreeze[_to] += _value;
         }
 
@@ -280,10 +280,10 @@ contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
     */
     function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3*32) returns (bool success) {
         // Check if the sender has enough
-        require(vestedBalanceOf(_from) &gt;= _value);
+        require(vestedBalanceOf(_from) >= _value);
 
         // Check allowed
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Subtract from the sender
         // _value is never greater than balance because of input validation above
@@ -297,10 +297,10 @@ contract FHFToken is Owned, CrowdsaleParameters, FHFTokenInterface {
         allowed[_from][msg.sender] -= _value;
 
         // If tokens issued from this address need to vest (i.e. this address is a team pool), freeze them here
-        if ((_from == bounty.addr) &amp;&amp; (now &lt; vestingBounty)) {
+        if ((_from == bounty.addr) && (now < vestingBounty)) {
             balancesEndIcoFreeze[_to] += _value;
         }
-        if ((_from == team.addr) &amp;&amp; (now &lt; vestingTeam)) {
+        if ((_from == team.addr) && (now < vestingTeam)) {
             balances2yearFreeze[_to] += _value;
         }
 

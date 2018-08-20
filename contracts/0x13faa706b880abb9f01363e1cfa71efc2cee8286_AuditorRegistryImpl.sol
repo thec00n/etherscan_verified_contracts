@@ -2,7 +2,7 @@ pragma solidity 0.4.15;
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control
-/// functions, this simplifies the implementation of &quot;user permissions&quot;.
+/// functions, this simplifies the implementation of "user permissions".
 contract Ownable {
 
   // EVENTS
@@ -115,7 +115,7 @@ contract AuditorRegistryImpl is AuditorRegistry, DaoOwnable {
     }
 
     // This mapping keeps the records of this Registry.
-    mapping(address =&gt; Auditor) records;
+    mapping(address => Auditor) records;
 
     // Keeps the total numbers of records in this Registry.
     uint public numRecords;
@@ -191,7 +191,7 @@ contract AuditorRegistryImpl is AuditorRegistry, DaoOwnable {
         karmas = new uint256[2][](numRecords);
         recordOwners = new address[](numRecords);
         uint i;
-        for(i = 0; i &lt; numRecords; i++) {
+        for(i = 0; i < numRecords; i++) {
             Auditor storage auditor = records[keys[i]];
             addresses[i] = auditor.auditorAddress;
             karmas[i] = auditor.karma;

@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -109,33 +109,33 @@ contract CryptoHuntIco is Ownable {
 
     // An array of all the people who participated in the crowdsale. Append-only, unique elements.
     address[] public tokenBuyersArray;
-    // A sum of tokenbuyers&#39; tokens
+    // A sum of tokenbuyers' tokens
     uint256 public tokenBuyersAmount;
     // A mapping of buyers and their amounts of total tokens due
-    mapping(address =&gt; uint256) public tokenBuyersMapping;
+    mapping(address => uint256) public tokenBuyersMapping;
     /**
-    * A mapping of buyers and the amount of tokens they&#39;re due per week.
+    * A mapping of buyers and the amount of tokens they're due per week.
     * Calculated when claimTokens is called for a given address.
     */
-    mapping(address =&gt; uint256) public tokenBuyersFraction;
+    mapping(address => uint256) public tokenBuyersFraction;
 
     /**
     * A mapping of remaining tokens per contributor.
     * Reduced by amount withdrawn on each claimMyTokens call post finalization()
     */
-    mapping(address =&gt; uint256) public tokenBuyersRemaining;
+    mapping(address => uint256) public tokenBuyersRemaining;
 
     /**
     * A mapping of how much wei each contributor sent in.
     * Used when tracking whitelist contribution maximum and not for much else.
     */
-    mapping(address =&gt; uint256) public tokenBuyersContributed;
+    mapping(address => uint256) public tokenBuyersContributed;
 
     /**
     * List of addresses who can purchase in pre-sale whitelisted period
     * Addresses are defined with whitelistAddresses method
     */
-    mapping(address =&gt; bool) public wl;
+    mapping(address => bool) public wl;
 
     // Flag to set when whitesale has finished and finalize() method is called
     bool public isFinalized = false;
@@ -176,8 +176,8 @@ contract CryptoHuntIco is Ownable {
     * @param _token Address of the ERC20 token being used in the crowdsale
     */
     function CryptoHuntIco(uint256 _durationSeconds, uint256 _wlDurationSeconds, address _wallet, address _token) public {
-        require(_durationSeconds &gt; 0);
-        require(_wlDurationSeconds &gt; 0);
+        require(_durationSeconds > 0);
+        require(_wlDurationSeconds > 0);
         require(_wallet != address(0));
         require(_token != address(0));
         duration = _durationSeconds;
@@ -206,16 +206,16 @@ contract CryptoHuntIco is Ownable {
     */
     function setRateAndStart(uint256 _rate, uint256 _softcap, uint256 _hardcap) external onlyOwner {
 
-        require(_rate &gt; 0 &amp;&amp; rate &lt; 1);
-        require(_softcap &gt; 0);
-        require(_hardcap &gt; 0);
-        require(_softcap &lt; _hardcap);
+        require(_rate > 0 && rate < 1);
+        require(_softcap > 0);
+        require(_hardcap > 0);
+        require(_softcap < _hardcap);
         rate = _rate;
 
         softcap = _softcap;
         hardcap = _hardcap;
 
-//        if (now &gt; 1519941600) {
+//        if (now > 1519941600) {
 //            startTime = now;
 //        } else {
             startTime = 1519941600;
@@ -238,12 +238,12 @@ contract CryptoHuntIco is Ownable {
     *
     * Some example addresses:
     *
-    * [&quot;0x1dF184eA46b58719A7213f4c8a03870A309BcD64&quot;, &quot;0xb794f5ea0ba39494ce839613fffba74279579268&quot;, &quot;0x281055afc982d96fab65b3a49cac8b878184cb16&quot;, &quot;0x6f46cf5569aefa1acc1009290c8e043747172d89&quot;, &quot;0xa1dc8d31493681411a5137c6D67bD01935b317D3&quot;, &quot;0x90e63c3d53e0ea496845b7a03ec7548b70014a91&quot;, &quot;0x53d284357ec70ce289d6d64134dfac8e511c8a3d&quot;, &quot;0xf4b51b14b9ee30dc37ec970b50a486f37686e2a8&quot;, &quot;0xe853c56864a2ebe4576a807d26fdc4a0ada51919&quot;, &quot;0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98&quot;, &quot;0xf27daff52c38b2c373ad2b9392652ddf433303c4&quot;, &quot;0x3d2e397f94e415d7773e72e44d5b5338a99e77d9&quot;, &quot;0x6f52730dba7b02beefcaf0d6998c9ae901ea04f9&quot;, &quot;0xdc870798b30f74a17c4a6dfc6fa33f5ff5cf5770&quot;, &quot;0x1b3cb81e51011b549d78bf720b0d924ac763a7c2&quot;, &quot;0xb8487eed31cf5c559bf3f4edd166b949553d0d11&quot;, &quot;0x51f9c432a4e59ac86282d6adab4c2eb8919160eb&quot;, &quot;0xfe9e8709d3215310075d67e3ed32a380ccf451c8&quot;, &quot;0xfca70e67b3f93f679992cd36323eeb5a5370c8e4&quot;, &quot;0x07ee55aa48bb72dcc6e9d78256648910de513eca&quot;, &quot;0x900d0881a2e85a8e4076412ad1cefbe2d39c566c&quot;, &quot;0x3bf86ed8a3153ec933786a02ac090301855e576b&quot;, &quot;0xbf09d77048e270b662330e9486b38b43cd781495&quot;, &quot;0xdb6fd484cfa46eeeb73c71edee823e4812f9e2e1&quot;, &quot;0x847ed5f2e5dde85ea2b685edab5f1f348fb140ed&quot;, &quot;0x9d2bfc36106f038250c01801685785b16c86c60d&quot;, &quot;0x2b241f037337eb4acc61849bd272ac133f7cdf4b&quot;, &quot;0xab5801a7d398351b8be11c439e05c5b3259aec9b&quot;, &quot;0xa7e4fecddc20d83f36971b67e13f1abc98dfcfa6&quot;, &quot;0x9f1de00776811f916790be357f1cabf6ac1eca65&quot;, &quot;0x7d04d2edc058a1afc761d9c99ae4fc5c85d4c8a6&quot;]
+    * ["0x1dF184eA46b58719A7213f4c8a03870A309BcD64", "0xb794f5ea0ba39494ce839613fffba74279579268", "0x281055afc982d96fab65b3a49cac8b878184cb16", "0x6f46cf5569aefa1acc1009290c8e043747172d89", "0xa1dc8d31493681411a5137c6D67bD01935b317D3", "0x90e63c3d53e0ea496845b7a03ec7548b70014a91", "0x53d284357ec70ce289d6d64134dfac8e511c8a3d", "0xf4b51b14b9ee30dc37ec970b50a486f37686e2a8", "0xe853c56864a2ebe4576a807d26fdc4a0ada51919", "0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98", "0xf27daff52c38b2c373ad2b9392652ddf433303c4", "0x3d2e397f94e415d7773e72e44d5b5338a99e77d9", "0x6f52730dba7b02beefcaf0d6998c9ae901ea04f9", "0xdc870798b30f74a17c4a6dfc6fa33f5ff5cf5770", "0x1b3cb81e51011b549d78bf720b0d924ac763a7c2", "0xb8487eed31cf5c559bf3f4edd166b949553d0d11", "0x51f9c432a4e59ac86282d6adab4c2eb8919160eb", "0xfe9e8709d3215310075d67e3ed32a380ccf451c8", "0xfca70e67b3f93f679992cd36323eeb5a5370c8e4", "0x07ee55aa48bb72dcc6e9d78256648910de513eca", "0x900d0881a2e85a8e4076412ad1cefbe2d39c566c", "0x3bf86ed8a3153ec933786a02ac090301855e576b", "0xbf09d77048e270b662330e9486b38b43cd781495", "0xdb6fd484cfa46eeeb73c71edee823e4812f9e2e1", "0x847ed5f2e5dde85ea2b685edab5f1f348fb140ed", "0x9d2bfc36106f038250c01801685785b16c86c60d", "0x2b241f037337eb4acc61849bd272ac133f7cdf4b", "0xab5801a7d398351b8be11c439e05c5b3259aec9b", "0xa7e4fecddc20d83f36971b67e13f1abc98dfcfa6", "0x9f1de00776811f916790be357f1cabf6ac1eca65", "0x7d04d2edc058a1afc761d9c99ae4fc5c85d4c8a6"]
     *
     * @param users An array of wallet addresses to whitelist
     */
     function whitelistAddresses(address[] users) onlyOwner external {
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             wl[users[i]] = true;
             // todo Look into making a mass event instead of a one by one if Events use gas
             Whitelisted(users[i], true);
@@ -258,7 +258,7 @@ contract CryptoHuntIco is Ownable {
     * Useful if a whitelisted contributor oversteps, breaks rules, becomes abusive, etc.
     */
     function unwhitelistAddresses(address[] users) onlyOwner external {
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             wl[users[i]] = false;
             Whitelisted(users[i], false);
         }
@@ -319,35 +319,35 @@ contract CryptoHuntIco is Ownable {
     }
 
     /**
-    * @param _beneficiary Address for which we&#39;re checking if the purchase is valid
+    * @param _beneficiary Address for which we're checking if the purchase is valid
     *
     * @return true if the transaction can buy tokens
     */
     function validPurchase(address _beneficiary) internal view returns (bool) {
         // Sent more than 0 eth
-        bool nonZeroPurchase = msg.value &gt; 0;
+        bool nonZeroPurchase = msg.value > 0;
 
         // Still under hardcap
-        bool withinCap = weiRaised.add(msg.value) &lt;= hardcap;
+        bool withinCap = weiRaised.add(msg.value) <= hardcap;
 
         // if in regular period, ok
-        bool withinPeriod = now &gt;= whitelistEndTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= whitelistEndTime && now <= endTime;
 
-        // if whitelisted, and in wl period, and value is &lt;= 5, ok
-        bool whitelisted = now &gt;= startTime &amp;&amp; now &lt;= whitelistEndTime &amp;&amp; tokenBuyersContributed[_beneficiary].add(msg.value) &lt;= 15 ether &amp;&amp; wl[msg.sender];
+        // if whitelisted, and in wl period, and value is <= 5, ok
+        bool whitelisted = now >= startTime && now <= whitelistEndTime && tokenBuyersContributed[_beneficiary].add(msg.value) <= 15 ether && wl[msg.sender];
 
         bool superbuyer = msg.sender == 0xEa17f66d28d11a7C1ECd8F591d136795130901A7;
 
-        return withinCap &amp;&amp; (superbuyer || withinPeriod || whitelisted) &amp;&amp; nonZeroPurchase;
+        return withinCap && (superbuyer || withinPeriod || whitelisted) && nonZeroPurchase;
     }
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
-        require((weiRaised == hardcap) || now &gt; endTime);
+        require((weiRaised == hardcap) || now > endTime);
 
         finalization();
         Finalized();
@@ -367,7 +367,7 @@ contract CryptoHuntIco is Ownable {
     }
 
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= softcap;
+        return weiRaised >= softcap;
     }
 
     /**
@@ -412,18 +412,18 @@ contract CryptoHuntIco is Ownable {
     */
     function claimTokens(address _beneficiary) public {
         require(isFinalized);
-        require(weeksFromEndPlusMonth() &gt; 0);
+        require(weeksFromEndPlusMonth() > 0);
 
         // Determine fraction of deserved tokens for user
         fractionalize(_beneficiary);
 
         // Need to be able to withdraw by having some
-        require(tokenBuyersMapping[_beneficiary] &gt; 0 &amp;&amp; tokenBuyersRemaining[_beneficiary] &gt; 0);
+        require(tokenBuyersMapping[_beneficiary] > 0 && tokenBuyersRemaining[_beneficiary] > 0);
 
-        // Max 8 because we&#39;re giving out 12.5% per week and 8 * 12.5% = 100%
+        // Max 8 because we're giving out 12.5% per week and 8 * 12.5% = 100%
 //        uint256 w = weeksFromEnd();
         uint256 w = weeksFromEndPlusMonth();
-        if (w &gt; 8) {
+        if (w > 8) {
             w = 8;
         }
         // Total number of tokens user was due by now
@@ -432,9 +432,9 @@ contract CryptoHuntIco is Ownable {
         // How much the user has withdrawn so far
         uint256 totalWithdrawnByNow = totalWithdrawn(_beneficiary);
 
-        if (totalDueByNow &gt; totalWithdrawnByNow) {
+        if (totalDueByNow > totalWithdrawnByNow) {
             uint256 diff = totalDueByNow.sub(totalWithdrawnByNow);
-            if (diff &gt; tokenBuyersRemaining[_beneficiary]) {
+            if (diff > tokenBuyersRemaining[_beneficiary]) {
                 diff = tokenBuyersRemaining[_beneficiary];
             }
             token.transfer(_beneficiary, diff);
@@ -451,16 +451,16 @@ contract CryptoHuntIco is Ownable {
     }
 
     function massClaimLimited(uint start, uint end) public onlyOwner {
-        for (uint i = start; i &lt;= end; i++) {
-            if (tokenBuyersRemaining[tokenBuyersArray[i]] &gt; 0) {
+        for (uint i = start; i <= end; i++) {
+            if (tokenBuyersRemaining[tokenBuyersArray[i]] > 0) {
                 claimTokens(tokenBuyersArray[i]);
             }
         }
     }
 
-    // Determine 1/8th of every user&#39;s contribution in their deserved tokens
+    // Determine 1/8th of every user's contribution in their deserved tokens
     function fractionalize(address _beneficiary) internal {
-        require(tokenBuyersMapping[_beneficiary] &gt; 0);
+        require(tokenBuyersMapping[_beneficiary] > 0);
         if (tokenBuyersFraction[_beneficiary] == 0) {
             tokenBuyersRemaining[_beneficiary] = tokenBuyersMapping[_beneficiary];
             // 8 because 100% / 12.5% = 8
@@ -478,20 +478,20 @@ contract CryptoHuntIco is Ownable {
 
     // How many weeks, as a whole number, have passed since the end of the crowdsale
     function weeksFromEnd() public view returns (uint256){
-        require(now &gt; endTime);
+        require(now > endTime);
         return percent(now - endTime, 604800, 0);
         //return percent(now - endTime, 60, 0);
     }
 
     function weeksFromEndPlusMonth() public view returns (uint256) {
-        require(now &gt; (endTime + 30 days));
+        require(now > (endTime + 30 days));
         return percent(now - endTime + 30 days, 604800, 0);
         //return percent(now - endTime + 30 days, 60, 0);
     }
 
     // Withdraw all the leftover tokens if more than 2 weeks since the last withdraw opportunity for contributors has passed
     function withdrawRest() external onlyOwner {
-        require(weeksFromEnd() &gt; 9);
+        require(weeksFromEnd() > 9);
         token.transfer(owner, token.balanceOf(address(this)));
     }
 
@@ -521,7 +521,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -581,7 +581,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -599,7 +599,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -628,7 +628,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -639,8 +639,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -654,7 +654,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -703,7 +703,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

@@ -12,37 +12,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -123,8 +123,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
@@ -134,7 +134,7 @@ contract StandardToken is ERC20 {
      * fix for ERC20 short address attack
      */
     modifier onlyPayloadSize(uint256 size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -171,8 +171,8 @@ contract StandardToken is ERC20 {
 }
 
 contract CyberCapitalInvestToken is StandardToken {
-    string public name = &quot;Cyber Capital Invest Token&quot;;
-    string public symbol = &quot;CCI&quot;;
+    string public name = "Cyber Capital Invest Token";
+    string public symbol = "CCI";
     uint256 public decimals = 18;
     uint256 public INITIAL_SUPPLY = 250000000 * 1 ether;
 

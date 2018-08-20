@@ -81,8 +81,8 @@ contract StandardToken is Token,Mortal,Pausable {
     
     function transfer(address _to, uint256 _value)public whenNotPaused returns (bool success) {
         require(_to!=0x0);
-        require(_value&gt;0);
-         if (balances[msg.sender] &gt;= _value) {
+        require(_value>0);
+         if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -93,9 +93,9 @@ contract StandardToken is Token,Mortal,Pausable {
     function transferFrom(address _from, address _to, uint256 totalTokensToTransfer)public whenNotPaused returns (bool success) {
         require(_from!=0x0);
         require(_to!=0x0);
-        require(totalTokensToTransfer&gt;0);
+        require(totalTokensToTransfer>0);
     
-       if (balances[_from] &gt;= totalTokensToTransfer&amp;&amp;allowance(_from,_to)&gt;=totalTokensToTransfer) {
+       if (balances[_from] >= totalTokensToTransfer&&allowance(_from,_to)>=totalTokensToTransfer) {
             balances[_to] += totalTokensToTransfer;
             balances[_from] -= totalTokensToTransfer;
             allowed[_from][msg.sender] -= totalTokensToTransfer;
@@ -118,13 +118,13 @@ contract StandardToken is Token,Mortal,Pausable {
       return allowed[_owner][_spender];
     }
    
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 contract Care is StandardToken{
-    string public constant name = &quot;CareX&quot;;
+    string public constant name = "CareX";
     uint256 public constant decimals = 2;
-    string public constant symbol = &quot;CARE&quot;;
+    string public constant symbol = "CARE";
 
     function Care() public{
        totalSupply=100000000 * (10 ** decimals);  //Hunderd Million

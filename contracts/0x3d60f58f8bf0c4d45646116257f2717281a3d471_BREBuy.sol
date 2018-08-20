@@ -4,7 +4,7 @@ contract BREBuy {
 
     struct ContractParam {
         uint32  totalSize ; 
-        uint256 singlePrice;  // 一个eth &#39;
+        uint256 singlePrice;  // 一个eth '
         uint8  pumpRate;
         bool hasChange;
     }
@@ -82,7 +82,7 @@ contract BREBuy {
         addressArray.push(msg.sender);
        
         emit addPlayerEvent(gameIndex,msg.sender);
-        if(addressArray.length &gt;= curConfig.totalSize) {
+        if(addressArray.length >= curConfig.totalSize) {
             gameResult();
             startNewGame();
         }
@@ -99,7 +99,7 @@ contract BREBuy {
     
     function getSelfCount() private view returns (uint32) {
         uint32 count = 0;
-        for(uint i = 0; i &lt; addressArray.length; i++) {
+        for(uint i = 0; i < addressArray.length; i++) {
             if(msg.sender == addressArray[i]) {
                 count++;
             }
@@ -127,7 +127,7 @@ contract BREBuy {
     
     function getRamdon() private view returns (uint) {
       bytes32 ramdon = keccak256(abi.encodePacked(ramdon,now,blockhash(block.number-1)));
-      for(uint i = 0; i &lt; addressArray.length; i++) {
+      for(uint i = 0; i < addressArray.length; i++) {
             ramdon = keccak256(abi.encodePacked(ramdon,now, addressArray[i]));
       }
       uint index  = uint(ramdon) % addressArray.length;

@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -92,7 +92,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -121,7 +121,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -158,7 +158,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -182,7 +182,7 @@ contract AbstractStarbaseCrowdsale {
 contract AbstractStarbaseMarketingCampaign {}
 
 /// @title Token contract - ERC20 compatible Starbase token contract.
-/// @author Starbase PTE. LTD. - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="771e191118370403160515160412591418">[email&#160;protected]</a>&gt;
+/// @author Starbase PTE. LTD. - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="771e191118370403160515160412591418">[email protected]</a>>
 contract StarbaseToken is StandardToken {
     /*
      *  Events
@@ -212,15 +212,15 @@ contract StarbaseToken is StandardToken {
      */
     address public company;
     PublicOfferingPlan[] public publicOfferingPlans;  // further crowdsales
-    mapping(address =&gt; uint256) public initialEcTokenAllocation;    // Initial token allocations for Early Contributors
+    mapping(address => uint256) public initialEcTokenAllocation;    // Initial token allocations for Early Contributors
     uint256 public mvpLaunchedAt;  // 0 until a MVP of Starbase Platform launches
-    mapping(address =&gt; bool) private fundraisers; // Fundraisers are vetted addresses that are allowed to execute functions within the contract
+    mapping(address => bool) private fundraisers; // Fundraisers are vetted addresses that are allowed to execute functions within the contract
 
     /*
      *  Constants / Token meta data
      */
-    string constant public name = &quot;TESTER&quot;;  // Token name
-    string constant public symbol = &quot;TESTAR&quot;;  // Token symbol
+    string constant public name = "TESTER";  // Token name
+    string constant public symbol = "TESTAR";  // Token symbol
     uint8 constant public decimals = 18;
     uint256 constant public initialSupply = 1000000000e18; // 1B STAR tokens
     uint256 constant public initialCompanysTokenAllocation = 750000000e18;  // 750M
@@ -278,8 +278,8 @@ contract StarbaseToken is StandardToken {
         address starbaseMarketingCampaignAddr
     ) {
         assert(
-            starbaseCompanyAddr != 0 &amp;&amp;
-            starbaseCrowdsaleAddr != 0 &amp;&amp;
+            starbaseCompanyAddr != 0 &&
+            starbaseCrowdsaleAddr != 0 &&
             starbaseMarketingCampaignAddr != 0);
 
         starbaseCrowdsale = AbstractStarbaseCrowdsale(starbaseCrowdsaleAddr);
@@ -306,7 +306,7 @@ contract StarbaseToken is StandardToken {
     }
 
     /**
-     * @dev Setup function sets external contracts&#39; addresses
+     * @dev Setup function sets external contracts' addresses
      * @param starbaseCrowdsaleAddr Crowdsale contract address.
      * @param starbaseMarketingCampaignAddr Marketing campaign contract address
      */
@@ -316,7 +316,7 @@ contract StarbaseToken is StandardToken {
         onlyBeforeCrowdsale
         returns (bool)
     {
-        require(starbaseCrowdsaleAddr != 0 &amp;&amp; starbaseMarketingCampaignAddr != 0);
+        require(starbaseCrowdsaleAddr != 0 && starbaseMarketingCampaignAddr != 0);
         assert(balances[address(starbaseCrowdsale)] == initialBalanceForCrowdsale);
         assert(balances[address(starbaseMarketingCampaign)] == initialBalanceForMarketingCampaign);
 
@@ -348,7 +348,7 @@ contract StarbaseToken is StandardToken {
     }
 
     /**
-     * @dev Declares a public offering plan to make company&#39;s tokens transferable
+     * @dev Declares a public offering plan to make company's tokens transferable
      * @param tokenCount Number of tokens to transfer.
      * @param unlockCompanysTokensAt Time of the tokens will be unlocked
      */
@@ -358,22 +358,22 @@ contract StarbaseToken is StandardToken {
         onlyAfterCrowdsale
         returns (bool)
     {
-        assert(tokenCount &lt;= 100000000e18);    // shall not exceed 100M tokens
-        assert(SafeMath.sub(now, starbaseCrowdsale.endedAt()) &gt;= 180 days);   // shall not be declared for 6 months after the crowdsale ended
-        assert(SafeMath.sub(unlockCompanysTokensAt, now) &gt;= 60 days);   // tokens must be untransferable at least for 2 months
+        assert(tokenCount <= 100000000e18);    // shall not exceed 100M tokens
+        assert(SafeMath.sub(now, starbaseCrowdsale.endedAt()) >= 180 days);   // shall not be declared for 6 months after the crowdsale ended
+        assert(SafeMath.sub(unlockCompanysTokensAt, now) >= 60 days);   // tokens must be untransferable at least for 2 months
 
         // check if last declaration was more than 6 months ago
-        if (publicOfferingPlans.length &gt; 0) {
+        if (publicOfferingPlans.length > 0) {
             uint256 lastDeclaredAt =
                 publicOfferingPlans[publicOfferingPlans.length - 1].declaredAt;
-            assert(SafeMath.sub(now, lastDeclaredAt) &gt;= 180 days);
+            assert(SafeMath.sub(now, lastDeclaredAt) >= 180 days);
         }
 
         uint256 totalDeclaredTokenCount = tokenCount;
-        for (uint8 i; i &lt; publicOfferingPlans.length; i++) {
+        for (uint8 i; i < publicOfferingPlans.length; i++) {
             totalDeclaredTokenCount = SafeMath.add(totalDeclaredTokenCount, publicOfferingPlans[i].tokenCount);
         }
-        assert(totalDeclaredTokenCount &lt;= initialCompanysTokenAllocation);   // shall not exceed the initial token allocation
+        assert(totalDeclaredTokenCount <= initialCompanysTokenAllocation);   // shall not exceed the initial token allocation
 
         publicOfferingPlans.push(
             PublicOfferingPlan(tokenCount, unlockCompanysTokensAt, now));
@@ -424,7 +424,7 @@ contract StarbaseToken is StandardToken {
     {
         require(_for != address(0));
         // check if the value under the limits
-        assert(value &lt;= numOfInflatableTokens());
+        assert(value <= numOfInflatableTokens());
 
         totalSupply = SafeMath.add(totalSupply, value);
         balances[_for] = SafeMath.add(balances[_for], value);
@@ -442,7 +442,7 @@ contract StarbaseToken is StandardToken {
         returns (bool)
     {
         require(mvpLaunchedAt == 0); // overwriting the launch date is not permitted
-        require(launchedAt &lt;= now);
+        require(launchedAt <= now);
         require(starbaseCrowdsale.isEnded());
 
         mvpLaunchedAt = launchedAt;
@@ -470,7 +470,7 @@ contract StarbaseToken is StandardToken {
      */
 
     /**
-     * @dev Transfers sender&#39;s tokens to a given address. Returns success.
+     * @dev Transfers sender's tokens to a given address. Returns success.
      * @param to Address of token receiver.
      * @param value Number of tokens to transfer.
      */
@@ -537,37 +537,37 @@ contract StarbaseToken is StandardToken {
         public
         returns (bool)
     {
-        if (tokenCount == 0 || balances[from] &lt; tokenCount) {
+        if (tokenCount == 0 || balances[from] < tokenCount) {
             return false;
         }
 
-        // company&#39;s tokens may be locked up
+        // company's tokens may be locked up
         if (from == company) {
-            if (tokenCount &gt; numOfTransferableCompanysTokens()) {
+            if (tokenCount > numOfTransferableCompanysTokens()) {
                 return false;
             }
         }
 
         uint256 untransferableTokenCount = 0;
 
-        // early contributor&#39;s tokens may be locked up
-        if (initialEcTokenAllocation[from] &gt; 0) {
+        // early contributor's tokens may be locked up
+        if (initialEcTokenAllocation[from] > 0) {
             untransferableTokenCount = SafeMath.add(
                 untransferableTokenCount,
                 numOfUntransferableEcTokens(from));
         }
 
-        // EP and CS purchasers&#39; tokens should be untransferable initially
+        // EP and CS purchasers' tokens should be untransferable initially
         if (starbaseCrowdsale.isEnded()) {
             uint256 passedDays =
                 SafeMath.sub(now, starbaseCrowdsale.endedAt()) / 86400; // 1d = 86400s
-            if (passedDays &lt; 7) {  // within a week
+            if (passedDays < 7) {  // within a week
                 // crowdsale purchasers cannot transfer their tokens for a week
                 untransferableTokenCount = SafeMath.add(
                     untransferableTokenCount,
                     starbaseCrowdsale.numOfPurchasedTokensOnCsBy(from));
             }
-            if (passedDays &lt; 14) {  // within two weeks
+            if (passedDays < 14) {  // within two weeks
                 // early purchasers cannot transfer their tokens for two weeks
                 untransferableTokenCount = SafeMath.add(
                     untransferableTokenCount,
@@ -578,7 +578,7 @@ contract StarbaseToken is StandardToken {
         uint256 transferableTokenCount =
             SafeMath.sub(balances[from], untransferableTokenCount);
 
-        if (transferableTokenCount &lt; tokenCount) {
+        if (transferableTokenCount < tokenCount) {
             return false;
         } else {
             return true;
@@ -586,13 +586,13 @@ contract StarbaseToken is StandardToken {
     }
 
     /**
-     * @dev Returns the number of transferable company&#39;s tokens
+     * @dev Returns the number of transferable company's tokens
      */
     function numOfTransferableCompanysTokens() constant public returns (uint256) {
         uint256 unlockedTokens = 0;
-        for (uint8 i; i &lt; publicOfferingPlans.length; i++) {
+        for (uint8 i; i < publicOfferingPlans.length; i++) {
             PublicOfferingPlan memory plan = publicOfferingPlans[i];
-            if (plan.unlockCompanysTokensAt &lt;= now) {
+            if (plan.unlockCompanysTokensAt <= now) {
                 unlockedTokens = SafeMath.add(unlockedTokens, plan.tokenCount);
             }
         }
@@ -612,14 +612,14 @@ contract StarbaseToken is StandardToken {
         }
 
         uint256 passedWeeks = SafeMath.sub(now, mvpLaunchedAt) / 7 days;
-        if (passedWeeks &lt;= 52) {    // a year ≈ 52 weeks
+        if (passedWeeks <= 52) {    // a year ≈ 52 weeks
             // all tokens should be locked up for a year
             return initialCount;
         }
 
         // unlock 1/52 tokens every weeks after a year
         uint256 transferableTokenCount = initialCount / 52 * (passedWeeks - 52);
-        if (transferableTokenCount &gt;= initialCount) {
+        if (transferableTokenCount >= initialCount) {
             return 0;
         } else {
             return SafeMath.sub(initialCount, transferableTokenCount);
@@ -636,12 +636,12 @@ contract StarbaseToken is StandardToken {
         uint256 passedDays = SafeMath.sub(now, starbaseCrowdsale.endedAt()) / 86400;  // 1d = 60s * 60m * 24h = 86400s
         uint256 passedYears = passedDays * 100 / 36525;    // about 365.25 days in a year
         uint256 inflatedSupply = initialSupply;
-        for (uint256 i; i &lt; passedYears; i++) {
+        for (uint256 i; i < passedYears; i++) {
             inflatedSupply = SafeMath.add(inflatedSupply, SafeMath.mul(inflatedSupply, 25) / 1000); // 2.5%/y = 0.025/y
         }
 
         uint256 remainderedDays = passedDays * 100 % 36525 / 100;
-        if (remainderedDays &gt; 0) {
+        if (remainderedDays > 0) {
             uint256 inflatableTokensOfNextYear =
                 SafeMath.mul(inflatedSupply, 25) / 1000;
             inflatedSupply = SafeMath.add(inflatedSupply, SafeMath.mul(
@@ -662,7 +662,7 @@ contract StarbaseToken is StandardToken {
      * @param value Number of tokens to transfer
      */
     function allocateFrom(address from, address to, uint256 value) internal returns (bool) {
-        assert(value &gt; 0 &amp;&amp; balances[from] &gt;= value);
+        assert(value > 0 && balances[from] >= value);
         balances[from] = SafeMath.sub(balances[from], value);
         balances[to] = SafeMath.add(balances[to], value);
         Transfer(from, to, value);

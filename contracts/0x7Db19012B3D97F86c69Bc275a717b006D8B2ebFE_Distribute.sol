@@ -63,7 +63,7 @@ contract Distribute is Ownable {
     event TokenReleased(address indexed buyer, uint256 amount);
 
     ERC20 public Token;
-    mapping (address =&gt; bool) released;
+    mapping (address => bool) released;
 
     constructor(address token) public {
         require(token != address(0));
@@ -85,7 +85,7 @@ contract Distribute is Ownable {
         onlyOwner
     {
         require(beneficiaries.length == amounts.length);
-        for (uint256 i = 0; i &lt; beneficiaries.length; i++) {
+        for (uint256 i = 0; i < beneficiaries.length; i++) {
             release(beneficiaries[i], amounts[i]);
         }
     }

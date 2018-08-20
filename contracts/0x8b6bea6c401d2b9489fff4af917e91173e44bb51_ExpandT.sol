@@ -6,7 +6,7 @@ pragma solidity ^0.4.11;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract ERC20Interface {
   /**
@@ -144,7 +144,7 @@ contract SafeMath {
    */
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -156,7 +156,7 @@ contract SafeMath {
    * @return a - b
    */
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -205,12 +205,12 @@ contract TokenRecipient {
  */
 contract ExpandT is ERC20Interface, SafeMath, Owned {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    string public constant name = &quot;ExpandT&quot;;
-    string public constant symbol = &quot;EXT&quot;;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    string public constant name = "ExpandT";
+    string public constant symbol = "EXT";
     uint8 public constant decimals = 8;
-    string public version = &#39;0.0.2&#39;;
+    string public version = '0.0.2';
 
     bool public transfersFrozen = false;
 
@@ -260,7 +260,7 @@ contract ExpandT is ERC20Interface, SafeMath, Owned {
 
 
     /**
-     * Transfer sender&#39;s tokens to a given address
+     * Transfer sender's tokens to a given address
      */
     function transfer(address _to, uint256 _value) whenNotFrozen onlyPayloadSize(2) returns (bool success) {
         require(_to != 0x0);
@@ -273,11 +273,11 @@ contract ExpandT is ERC20Interface, SafeMath, Owned {
 
 
     /**
-     * Transfer _from&#39;s tokens to _to&#39;s address
+     * Transfer _from's tokens to _to's address
      */
     function transferFrom(address _from, address _to, uint256 _value) whenNotFrozen onlyPayloadSize(3) returns (bool success) {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_from] = sub(balances[_from], _value);
         balances[_to] += _value;
@@ -327,7 +327,7 @@ contract ExpandT is ERC20Interface, SafeMath, Owned {
 
 
     /**
-     * Peterson&#39;s Law Protection
+     * Peterson's Law Protection
      * Claim tokens
      */
     function claimTokens(address _token) ownerOnly {

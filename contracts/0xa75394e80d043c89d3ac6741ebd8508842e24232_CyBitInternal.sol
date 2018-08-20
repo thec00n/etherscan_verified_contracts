@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ contract owned {
     }
 
     modifier onlyOwner {
-        require(msg.sender == owner , &quot;Unauthorized Access&quot;);
+        require(msg.sender == owner , "Unauthorized Access");
         _;
     }
 
@@ -118,7 +118,7 @@ contract ERC223ReceivingContract {
 contract ERC223Token is ERC223Interface, Pausable {
     using SafeMath for uint;
     uint256 public _CAP;
-    mapping(address =&gt; uint256) balances; // List of user balances.
+    mapping(address => uint256) balances; // List of user balances.
     
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
@@ -134,7 +134,7 @@ contract ERC223Token is ERC223Interface, Pausable {
     function transfer(address _to, uint _value, bytes _data) whenNotPaused external returns (bool success){
         // Standard function transfer similar to ERC20 transfer with no _data .
         // Added due to backwards compatibility reasons .
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         if(isContract(_to)){
            return transferToContract(_to, _value, _data);
         }
@@ -147,14 +147,14 @@ contract ERC223Token is ERC223Interface, Pausable {
     /**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
      * @param _value Amount of tokens that will be transferred.
      */
     function transfer(address _to, uint _value) whenNotPaused external returns (bool success){
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         bytes memory empty;
         if(isContract(_to)){
            return transferToContract(_to, _value, empty);
@@ -171,7 +171,7 @@ contract ERC223Token is ERC223Interface, Pausable {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    if (length &gt; 0)
+    if (length > 0)
     return true;
     else
     return false;
@@ -179,7 +179,7 @@ contract ERC223Token is ERC223Interface, Pausable {
   // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private whenNotPaused returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -189,7 +189,7 @@ contract ERC223Token is ERC223Interface, Pausable {
     // function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private whenNotPaused returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balances[msg.sender] >= _value && _value > 0);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
@@ -212,13 +212,13 @@ contract ERC20BackedERC223 is ERC223Token{
     
     
   modifier onlyPayloadSize(uint size) {
-     assert(msg.data.length &gt;= size.add(4));
+     assert(msg.data.length >= size.add(4));
      _;
    } 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) whenNotPaused external returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -233,7 +233,7 @@ contract ERC20BackedERC223 is ERC223Token{
     /// @param _value The amount of wei to be approved for transfer
     /// @return Whether the approval was successful or not
     function approve(address _spender, uint256 _value) whenNotPaused public returns (bool success) {
-        require((balances[msg.sender] &gt;= _value) &amp;&amp; ((_value == 0) || (allowed[msg.sender][_spender] == 0)));
+        require((balances[msg.sender] >= _value) && ((_value == 0) || (allowed[msg.sender][_spender] == 0)));
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -246,7 +246,7 @@ contract ERC20BackedERC223 is ERC223Token{
         return true;
     }
    function increaseApproval(address _spender, uint _addedValue) whenNotPaused public returns (bool success) {
-    require(balances[msg.sender] &gt;= allowed[msg.sender][_spender].add(_addedValue), &quot;Callers balance not enough&quot;);
+    require(balances[msg.sender] >= allowed[msg.sender][_spender].add(_addedValue), "Callers balance not enough");
     allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     return true;
@@ -254,7 +254,7 @@ contract ERC20BackedERC223 is ERC223Token{
 
   function decreaseApproval(address _spender, uint _subtractedValue) whenNotPaused public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    require((_subtractedValue != 0) &amp;&amp; (oldValue &gt; _subtractedValue) , &quot;The amount to be decreased is incorrect&quot;);
+    require((_subtractedValue != 0) && (oldValue > _subtractedValue) , "The amount to be decreased is incorrect");
     allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     return true;
@@ -268,7 +268,7 @@ contract ERC20BackedERC223 is ERC223Token{
       return allowed[_owner][_spender];
     }
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 contract burnableERC223 is ERC20BackedERC223{
          // This notifies clients about the amount burnt
@@ -282,7 +282,7 @@ contract burnableERC223 is ERC20BackedERC223{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value, &quot;Sender doesn&#39;t have enough balance&quot;);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value, "Sender doesn't have enough balance");   // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);            // Subtract from the sender
         _CAP = _CAP.sub(_value);                      // Updates totalSupply
         _totalBurnedTokens = _totalBurnedTokens.add(_value);
@@ -300,10 +300,10 @@ contract burnableERC223 is ERC20BackedERC223{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value , &quot;target balance is not enough&quot;);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value , "target balance is not enough");                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         _CAP = _CAP.sub(_value);                              // Update totalSupply
         emit Burn(_from, _value);
         emit Transfer(_from, address(0), _value);
@@ -334,9 +334,9 @@ contract mintableERC223 is burnableERC223{
       bytes memory empty;
       uint256 availableMinedSupply;
       availableMinedSupply =  (_totalMinedSupply.sub(_totalBurnedTokens)).add(_amount);
-    require(_CAP &gt;= availableMinedSupply , &quot;All tokens minted, Cap reached&quot;);
+    require(_CAP >= availableMinedSupply , "All tokens minted, Cap reached");
     _totalMinedSupply = _totalMinedSupply.add(_amount);
-    if(_CAP &lt;= _totalMinedSupply.sub(_totalBurnedTokens))
+    if(_CAP <= _totalMinedSupply.sub(_totalBurnedTokens))
     mintingFinished = true;
     balances[_to] = balances[_to].add(_amount);
     emit Mint(_to, _amount);
@@ -384,11 +384,11 @@ contract CyBitInternal is mintableERC223{
     /*
     NOTE:
     
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //Name Of Token
-    uint256 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint256 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
     string public version;                 //An Arbitrary versioning scheme.
 
@@ -398,9 +398,9 @@ contract CyBitInternal is mintableERC223{
  constructor() public
  {
      decimals = 8;
-     name = &quot;CyBit-Internal-Token&quot;;                                    // Set the name for display purposes
-     symbol = &quot;iCBT&quot;;                                   // Set the symbol for display purposes
-     version = &quot;V1.0&quot;;                                  //Version.
+     name = "CyBit-Internal-Token";                                    // Set the name for display purposes
+     symbol = "iCBT";                                   // Set the symbol for display purposes
+     version = "V1.0";                                  //Version.
      
      totalsupply = 5000000000;                         //Total Tokens
      _CAP = totalsupply.mul(10 ** decimals);

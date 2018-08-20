@@ -63,7 +63,7 @@ contract Owned {
 // ----------------------------------------------------------------------------
 contract Admined is Owned {
 
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 
     event AdminAdded(address addr);
     event AdminRemoved(address addr);
@@ -77,7 +77,7 @@ contract Admined is Owned {
         return (admins[addr] || owner == addr);
     }
     function addAdmin(address addr) public onlyOwner {
-        require(!admins[addr] &amp;&amp; addr != owner);
+        require(!admins[addr] && addr != owner);
         admins[addr] = true;
         AdminAdded(addr);
     }
@@ -120,11 +120,11 @@ contract DeveryRegistry is Admined {
     ERC20Interface public token; 
     address public feeAccount;
     uint public fee;
-    mapping(address =&gt; App) public apps;
-    mapping(address =&gt; Brand) public brands;
-    mapping(address =&gt; Product) public products;
-    mapping(address =&gt; mapping(address =&gt; bool)) permissions;
-    mapping(bytes32 =&gt; address) markings;
+    mapping(address => App) public apps;
+    mapping(address => Brand) public brands;
+    mapping(address => Product) public products;
+    mapping(address => mapping(address => bool)) permissions;
+    mapping(bytes32 => address) markings;
     address[] public appAccounts;
     address[] public brandAccounts;
     address[] public productAccounts;
@@ -226,7 +226,7 @@ contract DeveryRegistry is Admined {
         require(app.appAccount != address(0));
         appAccount = app.appAccount;
         appFeeAccount = app.feeAccount;
-        active = app.active &amp;&amp; brand.active;
+        active = app.active && brand.active;
     }
     function brandAccountsLength() public constant returns (uint) {
         return brandAccounts.length;
@@ -280,7 +280,7 @@ contract DeveryRegistry is Admined {
         brandAccount = product.brandAccount;
         appAccount = app.appAccount;
         appFeeAccount = app.feeAccount;
-        active = app.active &amp;&amp; brand.active &amp;&amp; brand.active;
+        active = app.active && brand.active && brand.active;
     }
     function productAccountsLength() public constant returns (uint) {
         return productAccounts.length;
@@ -308,19 +308,19 @@ contract DeveryRegistry is Admined {
     // ------------------------------------------------------------------------
     function mark(address productAccount, bytes32 itemHash) public {
         Product storage product = products[productAccount];
-        require(product.brandAccount != address(0) &amp;&amp; product.active);
+        require(product.brandAccount != address(0) && product.active);
         Brand storage brand = brands[product.brandAccount];
-        require(brand.brandAccount != address(0) &amp;&amp; brand.active);
+        require(brand.brandAccount != address(0) && brand.active);
         App storage app = apps[brand.appAccount];
-        require(app.appAccount != address(0) &amp;&amp; app.active);
+        require(app.appAccount != address(0) && app.active);
         bool permissioned = permissions[msg.sender][brand.brandAccount];
         require(permissioned);
         markings[itemHash] = productAccount;
         Marked(msg.sender, productAccount, app.feeAccount, feeAccount, app.fee, fee, itemHash);
-        if (app.fee &gt; 0) {
+        if (app.fee > 0) {
             token.transferFrom(brand.brandAccount, app.feeAccount, app.fee);
         }
-        if (fee &gt; 0) {
+        if (fee > 0) {
             token.transferFrom(brand.brandAccount, feeAccount, fee);
         }
     }

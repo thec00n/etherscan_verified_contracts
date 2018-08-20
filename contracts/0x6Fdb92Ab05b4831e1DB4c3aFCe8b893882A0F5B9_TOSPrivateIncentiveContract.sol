@@ -34,13 +34,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 contract TOSPrivateIncentiveContract {
     using SafeERC20 for ERC20;
     using SafeMath for uint;
-    string public constant name = &quot;TOSPrivateIncentiveContract&quot;;
+    string public constant name = "TOSPrivateIncentiveContract";
     uint[6] public unlockePercentages = [
         15,  //15%
         35,   //20%
@@ -75,7 +75,7 @@ contract TOSPrivateIncentiveContract {
             totalLockAmount = tosToken.balanceOf(this);
         }
 
-        if (num &gt;= unlockePercentages.length.sub(1)) {
+        if (num >= unlockePercentages.length.sub(1)) {
             tosToken.safeTransfer(beneficiary, tosToken.balanceOf(this));
             unlocked = 100;
         }

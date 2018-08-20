@@ -20,7 +20,7 @@ contract EscrowChecker {
     {
         uint[16] memory _result;
         uint schedules = havven_escrow.numVestingEntries(account);
-        for (uint i=0; i &lt; schedules; i++) {
+        for (uint i=0; i < schedules; i++) {
             uint[2] memory pair = havven_escrow.getVestingScheduleEntry(account, i);
             _result[i*2] = pair[0];
             _result[i*2 + 1] = pair[1];

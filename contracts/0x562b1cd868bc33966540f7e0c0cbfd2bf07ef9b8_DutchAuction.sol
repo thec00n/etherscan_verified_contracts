@@ -26,8 +26,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -42,9 +42,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -61,7 +61,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) internal balances;
+  mapping(address => uint256) internal balances;
 
   uint256 internal totalSupply_;
 
@@ -92,7 +92,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -144,7 +144,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -161,8 +161,8 @@ contract StandardToken is ERC20, BasicToken {
     public
     returns (bool)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -243,7 +243,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt;= oldValue) {
+    if (_subtractedValue >= oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -259,7 +259,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -394,9 +394,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -408,8 +408,8 @@ contract BurnableToken is BasicToken {
 // File: contracts/robonomics/XRT.sol
 
 contract XRT is MintableToken, BurnableToken {
-    string public constant name     = &quot;Robonomics Beta&quot;;
-    string public constant symbol   = &quot;XRT&quot;;
+    string public constant name     = "Robonomics Beta";
+    string public constant symbol   = "XRT";
     uint   public constant decimals = 9;
 
     uint256 public constant INITIAL_SUPPLY = 1000 * (10 ** uint256(decimals));
@@ -424,8 +424,8 @@ contract XRT is MintableToken, BurnableToken {
 // File: contracts/robonomics/DutchAuction.sol
 
 /// @title Dutch auction contract - distribution of XRT tokens using an auction.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="c3b0b7a6a5a2adeda4a6acb1a4a683a0acadb0a6adb0bab0edada6b7">[email&#160;protected]</span>&gt;
-/// @author Airalab - &lt;<span class="__cf_email__" data-cfemail="7f0d1a0c1a1e0d1c173f1e160d1e511316191a">[email&#160;protected]</span>&gt; 
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="c3b0b7a6a5a2adeda4a6acb1a4a683a0acadb0a6adb0bab0edada6b7">[email protected]</span>>
+/// @author Airalab - <<span class="__cf_email__" data-cfemail="7f0d1a0c1a1e0d1c173f1e160d1e511316191a">[email protected]</span>> 
 contract DutchAuction {
 
     /*
@@ -452,7 +452,7 @@ contract DutchAuction {
     uint public endTime;
     uint public totalReceived;
     uint public finalPrice;
-    mapping (address =&gt; uint) public bids;
+    mapping (address => uint) public bids;
     Stages public stage;
 
     /*
@@ -493,9 +493,9 @@ contract DutchAuction {
     }
 
     modifier timedTransitions() {
-        if (stage == Stages.AuctionStarted &amp;&amp; calcTokenPrice() &lt;= calcStopPrice())
+        if (stage == Stages.AuctionStarted && calcTokenPrice() <= calcStopPrice())
             finalizeAuction();
-        if (stage == Stages.AuctionEnded &amp;&amp; now &gt; endTime + WAITING_PERIOD)
+        if (stage == Stages.AuctionEnded && now > endTime + WAITING_PERIOD)
             stage = Stages.TradingStarted;
         _;
     }
@@ -510,7 +510,7 @@ contract DutchAuction {
     constructor(address _wallet, uint _ceiling, uint _priceFactor)
         public
     {
-        require(_wallet != 0 &amp;&amp; _ceiling != 0 &amp;&amp; _priceFactor != 0);
+        require(_wallet != 0 && _ceiling != 0 && _priceFactor != 0);
         owner = msg.sender;
         wallet = _wallet;
         ceiling = _ceiling;
@@ -518,7 +518,7 @@ contract DutchAuction {
         stage = Stages.AuctionDeployed;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses.
+    /// @dev Setup function sets external contracts' addresses.
     /// @param _xrt Robonomics token address.
     /// @param _ambix Distillation cube address.
     function setup(address _xrt, address _ambix)
@@ -527,7 +527,7 @@ contract DutchAuction {
         atStage(Stages.AuctionDeployed)
     {
         // Validate argument
-        require(_xrt != 0 &amp;&amp; _ambix != 0);
+        require(_xrt != 0 && _ambix != 0);
         xrt = XRT(_xrt);
         ambix = _ambix;
 
@@ -591,7 +591,7 @@ contract DutchAuction {
         atStage(Stages.AuctionStarted)
         returns (uint amount)
     {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         amount = msg.value;
 
         // If a bid is done on behalf of a user via ShapeShift, the receiver address is set.
@@ -601,11 +601,11 @@ contract DutchAuction {
         // Prevent that more than 90% of tokens are sold. Only relevant if cap not reached.
         uint maxWei = MAX_TOKENS_SOLD * calcTokenPrice() / 10**9 - totalReceived;
         uint maxWeiBasedOnTotalReceived = ceiling - totalReceived;
-        if (maxWeiBasedOnTotalReceived &lt; maxWei)
+        if (maxWeiBasedOnTotalReceived < maxWei)
             maxWei = maxWeiBasedOnTotalReceived;
 
         // Only invest maximum possible amount.
-        if (amount &gt; maxWei) {
+        if (amount > maxWei) {
             amount = maxWei;
             // Send change back to receiver address. In case of a ShapeShift bid the user receives the change back directly.
             receiver.transfer(msg.value - amount);

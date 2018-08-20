@@ -9,13 +9,13 @@ contract HashRegistry {
         address storedBy; 
     }
     
-    mapping(uint =&gt; StoredIn) storeMap;
+    mapping(uint => StoredIn) storeMap;
     string[] storageNames;
     
     function store(uint hash, uint storageId) public {
         address storedBy = storeMap[hash].storedBy;  
         require(storedBy == 0 || storedBy == msg.sender);
-        require(storageId &lt; storageNames.length);
+        require(storageId < storageNames.length);
         storeMap[hash] = StoredIn(storageId, msg.sender);
     }
     

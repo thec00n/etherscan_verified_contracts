@@ -24,7 +24,7 @@ contract DeltaBalances {
         admin = 0xf6E914D07d12636759868a61E52973d17ED7111B; // in case of deploy using MEW with no arguments
 	}
 
-	//default function, don&#39;t accept any ETH
+	//default function, don't accept any ETH
 	function() public payable {
 		revert();
 	}
@@ -61,7 +61,7 @@ contract DeltaBalances {
 		Exchange ex = Exchange(exchange);
 	    uint[] memory balances = new uint[](tokens.length);
 	    
-		for(uint i = 0; i&lt; tokens.length; i++){
+		for(uint i = 0; i< tokens.length; i++){
 			balances[i] = ex.balanceOf(tokens[i], user);
 		}	
 		return balances;
@@ -77,10 +77,10 @@ contract DeltaBalances {
 	function multiDeltaBalances(address[] exchanges, address user,  address[] tokens) public view returns (uint[]) {
 	    uint[] memory balances = new uint[](tokens.length * exchanges.length);
 	    
-	    for(uint i = 0; i &lt; exchanges.length; i++){
+	    for(uint i = 0; i < exchanges.length; i++){
 			Exchange ex = Exchange(exchanges[i]);
 			
-    		for(uint j = 0; j&lt; tokens.length; j++){
+    		for(uint j = 0; j< tokens.length; j++){
     		    
     			balances[(j * exchanges.length) + i] = ex.balanceOf(tokens[j], user);
     		}
@@ -98,11 +98,11 @@ contract DeltaBalances {
        //  check if token is actually a contract
         uint256 tokenCode;
         assembly { tokenCode := extcodesize(token) } // contract code size
-        if(tokenCode &gt; 0)
+        if(tokenCode > 0)
         {
             Token tok = Token(token);
             //  check if balanceOf succeeds
-            if(tok.call(bytes4(keccak256(&quot;balanceOf(address)&quot;)), user)) {
+            if(tok.call(bytes4(keccak256("balanceOf(address)")), user)) {
                 return tok.balanceOf(user);
             } else {
                   return 0; // not a valid balanceOf, return 0 instead of error
@@ -113,16 +113,16 @@ contract DeltaBalances {
    }
   
     /* Check the token balances of a wallet for multiple tokens
-       Uses tokenBalance() to be able to return, even if a token isn&#39;t valid 
+       Uses tokenBalance() to be able to return, even if a token isn't valid 
 	   Possible error throws:
 	       - extremely large arrays (gas cost too high) 
 	       
 	   Returns array of token balances in wei units. */
 	function walletBalances(address user,  address[] tokens) public view returns (uint[]) {
-	    require(tokens.length &gt; 0);
+	    require(tokens.length > 0);
 		uint[] memory balances = new uint[](tokens.length);
 		
-		for(uint i = 0; i&lt; tokens.length; i++){
+		for(uint i = 0; i< tokens.length; i++){
 			if( tokens[i] != address(0x0) ) { // ETH address in Etherdelta config
 			    balances[i] = tokenBalance(user, tokens[i]);
 			}
@@ -144,7 +144,7 @@ contract DeltaBalances {
 		Exchange ex = Exchange(exchange);
 		uint[] memory balances = new uint[](tokens.length * 2);
 		
-		for(uint i = 0; i&lt; tokens.length; i++){
+		for(uint i = 0; i< tokens.length; i++){
 		    uint j = i * 2;
 			balances[j] = ex.balanceOf(tokens[i], user);
 			if( tokens[i] != address(0x0) ) { // ETH address in Etherdelta config

@@ -65,7 +65,7 @@ contract TokenTransferProxy is Ownable {
         _;
     }
 
-    mapping (address =&gt; bool) public authorized;
+    mapping (address => bool) public authorized;
     address[] public authorities;
 
     event LogAuthorizedAddressAdded(address indexed target, address indexed caller);
@@ -95,7 +95,7 @@ contract TokenTransferProxy is Ownable {
         targetAuthorized(target)
     {
         delete authorized[target];
-        for (uint i = 0; i &lt; authorities.length; i++) {
+        for (uint i = 0; i < authorities.length; i++) {
             if (authorities[i] == target) {
                 authorities[i] = authorities[authorities.length - 1];
                 authorities.length -= 1;

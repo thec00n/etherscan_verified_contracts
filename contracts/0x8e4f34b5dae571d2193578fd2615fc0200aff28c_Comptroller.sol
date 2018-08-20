@@ -13,7 +13,7 @@ THE CROWDSALE
 
   The owner can configure the CrowdSale via .initSale().
   Owner is allowed to change the terms of the CrowdSale at any time,
-  as long as it hasn&#39;t started yet. Configurable parameters are:
+  as long as it hasn't started yet. Configurable parameters are:
     - dateSaleStarted: when the sale will start
     - daleSaleEnded: when the sale will end
     - softCap: amount required for the sale to be considered successful
@@ -23,7 +23,7 @@ THE CROWDSALE
 
   The CrowdSale is started as soon as one user buys tokens, and ends
   if the hardCap is met, or dateSaleEnded is reached. The CrowdSale
-  will be considered &quot;successful&quot; if the SoftCap is reached. The 
+  will be considered "successful" if the SoftCap is reached. The 
   exchange rate is 1 Ether = 1 Token, plus a bonus amount that 
   starts at 50% for the 1st Ether, sliding down to 0% at `bonusCap`.
 
@@ -43,7 +43,7 @@ RAISING CAPITAL
 
   The Treasury has a method called .capitalNeeded(). This value is 
   changable by Admin, via a governance described in Treasury. When this
-  value is &gt; 0, Comptroller will accept Ether in exchange for tokens at
+  value is > 0, Comptroller will accept Ether in exchange for tokens at
   a rate of 1 Ether per Token, until Treasury.capitalNeeded() is zero.
 
   For each Ether raised, a token is minted, and the Ether is sent to
@@ -63,14 +63,14 @@ PERMISSIONS
 
   The following addresses have permission on Comptroller:
     - Owner Wallet (permanent):
-        - Can set CrowdSale parameters, if it hasn&#39;t started yet.
+        - Can set CrowdSale parameters, if it hasn't started yet.
     - Anybody:
         - During CrowdSale:
             .fund(): Send Ether, get Tokens. Refunds on failure.
             .endSale(): End the sales, provided conditions are met.
         - After unsuccessful Crowdsale:
             .refund(): Receive a full refund of amount sent to .fund()
-        - If Treasury.capitalNeeded() &gt; 0
+        - If Treasury.capitalNeeded() > 0
             .fundCapital(): Send Ether, get Tokens. Refunds on failure.
 
 CONCLUSION
@@ -101,7 +101,7 @@ contract Comptroller {
     address public wallet;              // Wallet can call .initSale().
     _ICompTreasury public treasury;     // Location of the treasury.
     DividendToken public token;         // Token contract
-    DividendTokenLocker public locker;  // Locker that holds PennyEther&#39;s tokens.
+    DividendTokenLocker public locker;  // Locker that holds PennyEther's tokens.
 
     // These values are set on .initSale()
     uint public dateSaleStarted;    // date sale begins
@@ -117,7 +117,7 @@ contract Comptroller {
     bool public wasSaleEnded;               // True if sale was ended
     bool public wasSoftCapMet;              // True if softCap was met
     // Stores amtFunded for useres contributing before softCap is met
-    mapping (address =&gt; uint) public amtFunded; 
+    mapping (address => uint) public amtFunded; 
 
     event Created(uint time, address wallet, address treasury, address token, address locker);
     // CrowdSale Meta Events
@@ -136,7 +136,7 @@ contract Comptroller {
     {
         wallet = _wallet;
         treasury = _ICompTreasury(_treasury);
-        token = new DividendToken(&quot;PennyEtherToken&quot;, &quot;PENNY&quot;);
+        token = new DividendToken("PennyEtherToken", "PENNY");
         locker = new DividendTokenLocker(token, _wallet);
         token.freeze(true);
         emit Created(now, wallet, treasury, token, locker);
@@ -154,9 +154,9 @@ contract Comptroller {
     {
         require(msg.sender == wallet);
         require(!wasSaleStarted);
-        require(_softCap &lt;= _hardCap);
-        require(_bonusCap &lt;= _hardCap);
-        require(_capitalPctBips &lt;= 10000);
+        require(_softCap <= _hardCap);
+        require(_bonusCap <= _hardCap);
+        require(_capitalPctBips <= 10000);
         dateSaleStarted = _dateStarted;
         dateSaleEnded = _dateEnded;
         softCap = _softCap;
@@ -184,7 +184,7 @@ contract Comptroller {
     //  - Non-even amount of GWei sent.
     //
     // Otherwise:
-    //  - Starts sale (if it&#39;s not already started)
+    //  - Starts sale (if it's not already started)
     //  - Issues tokens to user (takes into account bonus period)
     //  - If SoftCap not yet met, records amtFunded (so can refund)
     //  - Refunds any excess amount sent (if HardCap was just met)
@@ -192,23 +192,23 @@ contract Comptroller {
         public
         payable
     {
-        if (dateSaleStarted==0 || now &lt; dateSaleStarted)
-            return _errorBuyingTokens(&quot;CrowdSale has not yet started.&quot;);
-        if (now &gt; dateSaleEnded)
-            return _errorBuyingTokens(&quot;CrowdSale has ended.&quot;);
-        if (totalRaised &gt;= hardCap)
-            return _errorBuyingTokens(&quot;HardCap has been reached.&quot;);
+        if (dateSaleStarted==0 || now < dateSaleStarted)
+            return _errorBuyingTokens("CrowdSale has not yet started.");
+        if (now > dateSaleEnded)
+            return _errorBuyingTokens("CrowdSale has ended.");
+        if (totalRaised >= hardCap)
+            return _errorBuyingTokens("HardCap has been reached.");
         if (msg.value % 1000000000 != 0)
-            return _errorBuyingTokens(&quot;Must send an even amount of GWei.&quot;);
+            return _errorBuyingTokens("Must send an even amount of GWei.");
 
-        // Mark sale as started if haven&#39;t done so already.
+        // Mark sale as started if haven't done so already.
         if (!wasSaleStarted) {
             wasSaleStarted = true;
             emit SaleStarted(now);
         }
 
         // Only allow up to (hardCap - totalRaised) to be raised.
-        uint _amtToFund = (totalRaised + msg.value) &gt; hardCap
+        uint _amtToFund = (totalRaised + msg.value) > hardCap
             ? hardCap - totalRaised
             : msg.value;
 
@@ -219,13 +219,13 @@ contract Comptroller {
         emit BuyTokensSuccess(now, msg.sender, _amtToFund, _numTokens);
 
         // Increment the amount they funded, if softCap not met.
-        if (totalRaised &lt; softCap) {
+        if (totalRaised < softCap) {
             amtFunded[msg.sender] += _amtToFund;
         }
 
         // Refund the user any amount sent over _amtToFund
-        uint _refund = msg.value &gt; _amtToFund ? msg.value - _amtToFund : 0;
-        if (_refund &gt; 0){
+        uint _refund = msg.value > _amtToFund ? msg.value - _amtToFund : 0;
+        if (_refund > 0){
             require(msg.sender.call.value(_refund)());
             emit UserRefunded(now, msg.sender, _refund);
         }
@@ -250,13 +250,13 @@ contract Comptroller {
         public
     {
         // Require sale has been started but not yet ended.
-        require(wasSaleStarted &amp;&amp; !wasSaleEnded);
+        require(wasSaleStarted && !wasSaleEnded);
         // Require hardCap met, or date is after sale ended.
-        require(totalRaised &gt;= hardCap || now &gt; dateSaleEnded);
+        require(totalRaised >= hardCap || now > dateSaleEnded);
         
         // Mark sale as over, and if it was successful.
         wasSaleEnded = true;
-        wasSoftCapMet = totalRaised &gt;= softCap;
+        wasSoftCapMet = totalRaised >= softCap;
 
         // Softcap not met. Mint tokens so wallet owns ~100%.
         if (!wasSoftCapMet) {
@@ -275,7 +275,7 @@ contract Comptroller {
 
         // Send up to `_capitalAmt` ETH to treasury as capital
         uint _capitalAmt = (totalRaised * capitalPctBips) / 10000;
-        if (address(this).balance &lt; _capitalAmt) _capitalAmt = address(this).balance;
+        if (address(this).balance < _capitalAmt) _capitalAmt = address(this).balance;
         treasury.addCapital.value(_capitalAmt)();
         
         // Send remaining balance to wallet
@@ -294,8 +294,8 @@ contract Comptroller {
         public
     {
         // Ensure softCap not met, and user funded.
-        require(wasSaleEnded &amp;&amp; !wasSoftCapMet);
-        require(amtFunded[msg.sender] &gt; 0);
+        require(wasSaleEnded && !wasSoftCapMet);
+        require(amtFunded[msg.sender] > 0);
         // Send the user the amount they funded, or throw
         uint _amt = amtFunded[msg.sender];
         amtFunded[msg.sender] = 0;
@@ -303,7 +303,7 @@ contract Comptroller {
         emit UserRefunded(now, msg.sender, _amt);
     }
 
-    // Callable any time Treasury.capitalNeeded() &gt; 0.
+    // Callable any time Treasury.capitalNeeded() > 0.
     //
     // For each Ether received, 1 Token is minted, and the Ether is sent
     //  to the Treasury as Captial.
@@ -318,15 +318,15 @@ contract Comptroller {
         payable
     {
         if (!wasSaleEnded)
-            return _errorBuyingTokens(&quot;Sale has not ended.&quot;);
+            return _errorBuyingTokens("Sale has not ended.");
         if (!wasSoftCapMet)
-            return _errorBuyingTokens(&quot;SoftCap was not met.&quot;);
+            return _errorBuyingTokens("SoftCap was not met.");
             
         // Cap _amount to the amount we need. Error if 0.
         uint _amtNeeded = capitalFundable();
-        uint _amount = msg.value &gt; _amtNeeded ? _amtNeeded : msg.value;
+        uint _amount = msg.value > _amtNeeded ? _amtNeeded : msg.value;
         if (_amount == 0) {
-            return _errorBuyingTokens(&quot;No capital is needed.&quot;);
+            return _errorBuyingTokens("No capital is needed.");
         }
 
         // Mint tokens, send capital.
@@ -336,8 +336,8 @@ contract Comptroller {
         emit BuyTokensSuccess(now, msg.sender, _amount, _amount);
 
         // Refund excess
-        uint _refund = msg.value &gt; _amount ? msg.value - _amount : 0;
-        if (_refund &gt; 0) {
+        uint _refund = msg.value > _amount ? msg.value - _amount : 0;
+        if (_refund > 0) {
             require(msg.sender.call.value(_refund)());
             emit UserRefunded(now, msg.sender, _refund);
         }
@@ -362,7 +362,7 @@ contract Comptroller {
     /********** PUBLIC VIEWS *************************************/
     /*************************************************************/
 
-    // Returns the amount of Ether that can be sent to &quot;.fundCapital()&quot;
+    // Returns the amount of Ether that can be sent to ".fundCapital()"
     function capitalFundable()
         public
         view
@@ -380,10 +380,10 @@ contract Comptroller {
         view
         returns (uint _numTokens)
     {
-        if (_ethAmt &gt; hardCap) {
+        if (_ethAmt > hardCap) {
             // Past HardCap. Return the full bonus amount, plus the rest
             _numTokens = (5*bonusCap/4) + (hardCap - bonusCap);
-        } else if (_ethAmt &gt; bonusCap) {
+        } else if (_ethAmt > bonusCap) {
             // Past Bonus Period. Return the full bonus amount, plus the non-bonus amt.
             _numTokens = (5*bonusCap/4) + (_ethAmt - bonusCap);
         } else {
@@ -397,7 +397,7 @@ contract Comptroller {
             //      Test: with c=20000: (0, 0), (10000, 13750), (20000, 25000)
             //
             // Note: if _ethAmt = bonusCap, _numTokens = (5*bonusCap)/4
-            // Note: Overflows if _ethAmt^2 &gt; 2^256, or ~3e38 Eth. Bonus Cap &lt;&lt; 3e38
+            // Note: Overflows if _ethAmt^2 > 2^256, or ~3e38 Eth. Bonus Cap << 3e38
             _numTokens = (3*_ethAmt/2) - (_ethAmt*_ethAmt)/(4*bonusCap);
         }
     }
@@ -423,8 +423,8 @@ contract ERC20 {
     string public symbol;
     uint8 public decimals = 18;
     uint public totalSupply;
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event Created(uint time);
     event Transfer(address indexed from, address indexed to, uint amount);
@@ -462,7 +462,7 @@ contract ERC20 {
         returns (bool success)
     {
         address _spender = msg.sender;
-        require(allowance[_from][_spender] &gt;= _value);
+        require(allowance[_from][_spender] >= _value);
         allowance[_from][_spender] -= _value;
         emit AllowanceUsed(_from, _spender, _value);
         return _transfer(_from, _to, _value);
@@ -474,8 +474,8 @@ contract ERC20 {
         private
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
@@ -511,7 +511,7 @@ contract ERC667 is ERC20 {
 **********************************************************
 
 An ERC20 token that can accept Ether and distribute it
-perfectly to all Token Holders relative to each account&#39;s
+perfectly to all Token Holders relative to each account's
 balance at the time the dividend is received.
 
 The Token is owned by the creator, and can be frozen,
@@ -524,7 +524,7 @@ Notes:
     - Per above, upon transfers, dividends are not
       transferred. They are kept by the original sender, and
       not credited to the receiver.
-    - Uses &quot;pull&quot; instead of &quot;push&quot;. Token holders must pull
+    - Uses "pull" instead of "push". Token holders must pull
       their own dividends.
 
 Comptroller Permissions:
@@ -544,7 +544,7 @@ contract DividendToken is ERC667
 
     // How dividends work:
     //
-    // - A &quot;point&quot; is a fraction of a Wei (1e-32), it&#39;s used to reduce rounding errors.
+    // - A "point" is a fraction of a Wei (1e-32), it's used to reduce rounding errors.
     //
     // - totalPointsPerToken represents how many points each token is entitled to
     //   from all the dividends ever received. Each time a new deposit is made, it
@@ -563,15 +563,15 @@ contract DividendToken is ERC667
     // - .collectOwedDividends() calls .updateCreditedPoints(account), converts points
     //   to wei and pays account, then resets creditedPoints[account] to 0.
     //
-    // - &quot;Credit&quot; goes to Nick Johnson for the concept.
+    // - "Credit" goes to Nick Johnson for the concept.
     //
     uint constant POINTS_PER_WEI = 1e32;
     uint public dividendsTotal;
     uint public dividendsCollected;
     uint public totalPointsPerToken;
     uint public totalBurned;
-    mapping (address =&gt; uint) public creditedPoints;
-    mapping (address =&gt; uint) public lastPointsPerToken;
+    mapping (address => uint) public creditedPoints;
+    mapping (address => uint) public lastPointsPerToken;
 
     // Events
     event Frozen(uint time);
@@ -593,7 +593,7 @@ contract DividendToken is ERC667
     {
         if (msg.value == 0) return;
         // POINTS_PER_WEI is 1e32.
-        // So, no multiplication overflow unless msg.value &gt; 1e45 wei (1e27 ETH)
+        // So, no multiplication overflow unless msg.value > 1e45 wei (1e27 ETH)
         totalPointsPerToken += (msg.value * POINTS_PER_WEI) / totalSupply;
         dividendsTotal += msg.value;
         emit DividendReceived(now, msg.sender, msg.value);
@@ -618,7 +618,7 @@ contract DividendToken is ERC667
         onlyComptroller
         public
     {
-        require(balanceOf[_account] &gt;= _amount);
+        require(balanceOf[_account] >= _amount);
         _updateCreditedPoints(_account);
         balanceOf[_account] -= _amount;
         totalSupply -= _amount;
@@ -696,9 +696,9 @@ contract DividendToken is ERC667
     /*************************************************************/
     /********** PRIVATE METHODS / VIEWS **************************/
     /*************************************************************/
-    // Credits _account with whatever dividend points they haven&#39;t yet been credited.
-    //  This needs to be called before any user&#39;s balance changes to ensure their
-    //  &quot;lastPointsPerToken&quot; credits their current balance, and not an altered one.
+    // Credits _account with whatever dividend points they haven't yet been credited.
+    //  This needs to be called before any user's balance changes to ensure their
+    //  "lastPointsPerToken" credits their current balance, and not an altered one.
     function _updateCreditedPoints(address _account)
         private
     {
@@ -706,7 +706,7 @@ contract DividendToken is ERC667
         lastPointsPerToken[_account] = totalPointsPerToken;
     }
 
-    // For a given account, returns how many Wei they haven&#39;t yet been credited.
+    // For a given account, returns how many Wei they haven't yet been credited.
     function _getUncreditedPoints(address _account)
         private
         view
@@ -715,7 +715,7 @@ contract DividendToken is ERC667
         uint _pointsPerToken = totalPointsPerToken - lastPointsPerToken[_account];
         // The upper bound on this number is:
         //   ((1e32 * TOTAL_DIVIDEND_AMT) / totalSupply) * balances[_account]
-        // Since totalSupply &gt;= balances[_account], this will overflow only if
+        // Since totalSupply >= balances[_account], this will overflow only if
         //   TOTAL_DIVIDEND_AMT is around 1e45 wei. Not ever going to happen.
         return _pointsPerToken * balanceOf[_account];
     }
@@ -822,7 +822,7 @@ contract DividendTokenLocker {
         uint _amount = address(this).balance;
 
         // Send amount (if any), emit event.
-        if (_amount &gt; 0) require(owner.call.value(_amount)());
+        if (_amount > 0) require(owner.call.value(_amount)());
         emit Collected(now, owner, _amount);
     }
 
@@ -833,10 +833,10 @@ contract DividendTokenLocker {
     {
         require(msg.sender == owner);
         uint _available = tokensAvailable();
-        if (_numTokens &gt; _available) _numTokens = _available;
+        if (_numTokens > _available) _numTokens = _available;
 
-        // Transfer (if _numTokens &gt; 0), and emit event.
-        if (_numTokens &gt; 0) {
+        // Transfer (if _numTokens > 0), and emit event.
+        if (_numTokens > 0) {
             token.transfer(_to, _numTokens);
         }
         emit Transferred(now, _to, _numTokens);
@@ -873,7 +873,7 @@ contract DividendTokenLocker {
         returns (uint)
     {
         uint _daysElapsed = _today() - vestingStartDay;
-        return _daysElapsed &gt;= vestingDays
+        return _daysElapsed >= vestingDays
             ? vestingAmt
             : (vestingAmt * _daysElapsed) / vestingDays;
     }
@@ -888,7 +888,7 @@ contract DividendTokenLocker {
         // token.balanceOf() and getMinTokenBalance() can never be greater than
         //   all the Ether in the world, so we dont worry about overflow.
         int _available = int(tokens()) - int(tokensUnvested());
-        return _available &gt; 0 ? uint(_available) : 0;
+        return _available > 0 ? uint(_available) : 0;
     }
 
     // Returns the current day.

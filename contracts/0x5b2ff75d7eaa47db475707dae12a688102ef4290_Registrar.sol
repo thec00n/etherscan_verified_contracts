@@ -19,13 +19,13 @@ contract Message {
 	
 	function ack(string _hash) {
 		if(msg.sender!=to) throw;
-		if(timestamp_ack&gt;0) throw;
+		if(timestamp_ack>0) throw;
 		hash_ack=_hash;
 		timestamp_ack=now;		
 	}
 	
 	function() {
-		if(msg.value&gt;0) {
+		if(msg.value>0) {
 			if(msg.sender==from) {			
 				to.send(msg.value);
 			} else {
@@ -49,10 +49,10 @@ contract Registrar
 		string gnid;
 	}	
 	
-	mapping(address=&gt;Registration) public regadr;	
-	mapping(address=&gt;Message[]) public msgs;
-	mapping(address=&gt;Message[]) public sent;
-	mapping(address=&gt;bool) public preregister;	
+	mapping(address=>Registration) public regadr;	
+	mapping(address=>Message[]) public msgs;
+	mapping(address=>Message[]) public sent;
+	mapping(address=>bool) public preregister;	
 	
 	Registration[] public regs;
 	
@@ -61,7 +61,7 @@ contract Registrar
 	}
 	
 	function register(string hash) {
-		updateRegistration(hash,&#39;&#39;);		
+		updateRegistration(hash,'');		
 	}
 	
 	function unregister() {
@@ -69,10 +69,10 @@ contract Registrar
 	}
 	
 	function updateRegistration(string hash,string gnid) {		
-		if((msg.value&gt;=fee_registration)||(preregister[msg.sender])) {			
+		if((msg.value>=fee_registration)||(preregister[msg.sender])) {			
 			regadr[msg.sender]=Registration(msg.sender,hash,gnid);
 			regs.push(regadr[msg.sender]);
-			if(fee_registration&gt;0) registrar.send(this.balance);
+			if(fee_registration>0) registrar.send(this.balance);
 			preregister[msg.sender]=false;
 			cnt_registrations++;
 		} else throw;
@@ -99,11 +99,11 @@ contract Registrar
 	}
 	
 	function sendMsg(address to,string hash) {
-		if(msg.value&gt;=fee_msg) {	
+		if(msg.value>=fee_msg) {	
 			    Message m = new  Message(this,msg.sender,to,hash);
 				msgs[to].push(m);	
 			    sent[msg.sender].push(m);
-			if(fee_msg&gt;0) registrar.send(this.balance);
+			if(fee_msg>0) registrar.send(this.balance);
 		} else throw;		
 	}
 	
@@ -113,7 +113,7 @@ contract Registrar
 	}
 	
 	function() {
-		if(msg.value&gt;0) {
+		if(msg.value>0) {
 			registrar.send(msg.value);
 		}
 	}

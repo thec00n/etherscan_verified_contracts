@@ -16,13 +16,13 @@ contract SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
      return a - b;
    }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
      uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
      return c;
    }
 }
@@ -41,12 +41,12 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-   mapping(address =&gt; uint256) balances;
-   mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+   mapping(address => uint256) balances;
+   mapping (address => mapping (address => uint256)) internal allowed;
 
    function transfer(address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[msg.sender]);
+     require(_value <= balances[msg.sender]);
      balances[msg.sender] = sub(balances[msg.sender], _value);
      balances[_to] = add(balances[_to], _value);
      Transfer(msg.sender, _to, _value);
@@ -59,8 +59,8 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-     require(_value &lt;= balances[_from]);
-     require(_value &lt;= allowed[_from][msg.sender]);
+     require(_value <= balances[_from]);
+     require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = sub(balances[_from], _value);
      balances[_to] = add(balances[_to], _value);
@@ -87,7 +87,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
      uint oldValue = allowed[msg.sender][_spender];
-     if (_subtractedValue &gt; oldValue) {
+     if (_subtractedValue > oldValue) {
        allowed[msg.sender][_spender] = 0;
      } else {
        allowed[msg.sender][_spender] = sub(oldValue, _subtractedValue);
@@ -99,13 +99,13 @@ contract StandardToken is ERC20, SafeMath {
 }
 
 contract AnnJouCoin is StandardToken {
-   string public name = &quot;AnnJouCoin&quot;;
-   string public symbol = &quot;ANJ&quot;;
+   string public name = "AnnJouCoin";
+   string public symbol = "ANJ";
    uint public decimals = 18;
    uint public INITIAL_SUPPLY = 108000000000000000000000000;
-    string public version = &#39;A0.1&#39;; 
+    string public version = 'A0.1'; 
     uint256 public unitsOneEthCanBuy = 106;     // How many units of your coin can be bought by 1 ETH?
-    uint256 public totalEthInWei = totalEthInWei + msg.value;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.  
+    uint256 public totalEthInWei = totalEthInWei + msg.value;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.  
     address public fundsWallet = msg.sender;           // Where should the raised ETH go?
 
 

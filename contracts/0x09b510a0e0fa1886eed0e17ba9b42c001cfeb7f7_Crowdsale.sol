@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -162,17 +162,17 @@ contract BasicToken is ERC20Basic, Pausable {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 public storageTime = 1522749600; // 04/03/2018 @ 10:00am (UTC)
 
   modifier checkStorageTime() {
-    require(now &gt;= storageTime);
+    require(now >= storageTime);
     _;
   }
 
   modifier onlyPayloadSize(uint256 numwords) {
-    assert(msg.data.length &gt;= numwords * 32 + 4);
+    assert(msg.data.length >= numwords * 32 + 4);
     _;
   }
 
@@ -188,7 +188,7 @@ contract BasicToken is ERC20Basic, Pausable {
   function transfer(address _to, uint256 _value) public
   onlyPayloadSize(2) whenNotPaused checkStorageTime returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -217,7 +217,7 @@ contract BasicToken is ERC20Basic, Pausable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -229,8 +229,8 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) public 
   onlyPayloadSize(3) whenNotPaused checkStorageTime returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -300,7 +300,7 @@ contract StandardToken is ERC20, BasicToken {
   onlyPayloadSize(2)
   returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -369,9 +369,9 @@ contract BurnableToken is MintableToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public onlyPayloadSize(1) {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -382,10 +382,10 @@ contract BurnableToken is MintableToken {
   function burnFrom(address _from, uint256 _value) public 
   onlyPayloadSize(2)
   returns (bool success) {
-    require(balances[_from] &gt;= _value);// Check if the targeted balance is enough
-    require(_value &lt;= allowed[_from][msg.sender]);// Check allowance
+    require(balances[_from] >= _value);// Check if the targeted balance is enough
+    require(_value <= allowed[_from][msg.sender]);// Check allowance
     balances[_from] = balances[_from].sub(_value); // Subtract from the targeted balance
-    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Subtract from the sender&#39;s allowance
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Subtract from the sender's allowance
     totalSupply = totalSupply.sub(_value);
     Burn(_from, _value);
     return true;
@@ -393,8 +393,8 @@ contract BurnableToken is MintableToken {
 }
 
 contract AlttexToken is BurnableToken {
-    string public constant name = &quot;Alttex&quot;;
-    string public constant symbol = &quot;ALTX&quot;;
+    string public constant name = "Alttex";
+    string public constant symbol = "ALTX";
     uint8 public constant decimals = 8;
 }
 
@@ -454,8 +454,8 @@ contract Crowdsale is Ownable {
         address _TeamAndAdvisors,
         address _Investors) public {
         require(_token != address(0));
-        require(_endTimeRound1 &gt; _startTimeRound1);
-        require(_endTimeRound2 &gt; _startTimeRound2);
+        require(_endTimeRound1 > _startTimeRound1);
+        require(_endTimeRound2 > _startTimeRound2);
         require(_wallet != address(0));
         require(_TeamAndAdvisors != address(0));
         require(_Investors != address(0));
@@ -479,8 +479,8 @@ contract Crowdsale is Ownable {
 
     modifier saleIsOn() {
         uint tokenSupply = token.totalSupply();
-        require(now &gt; startTimeRound1 &amp;&amp; now &lt; endTimeRound2);
-        require(tokenSupply &lt;= tokensToSale);
+        require(now > startTimeRound1 && now < endTimeRound2);
+        require(tokenSupply <= tokensToSale);
         _;
     }
 
@@ -524,7 +524,7 @@ contract Crowdsale is Ownable {
     function setRoundTime(
       uint256 _newStartTimeRound2,
       uint256 _newEndTimeRound2) onlyOwner public {
-      require(_newEndTimeRound2 &gt; _newStartTimeRound2);
+      require(_newEndTimeRound2 > _newStartTimeRound2);
         startTimeRound2 = _newStartTimeRound2;
         endTimeRound2 = _newEndTimeRound2;
     }
@@ -554,26 +554,26 @@ contract Crowdsale is Ownable {
         uint256 amount = 0;
         uint256 all = 100;
         uint256 tokenSupply = token.totalSupply();
-        if(now &gt;= startTimeRound1 &amp;&amp; now &lt; endTimeRound1) { // Round 1
+        if(now >= startTimeRound1 && now < endTimeRound1) { // Round 1
             amount = _value.mul(rateRound1);
             amount = amount.add(amount.mul(timeBonus1).div(all));
-        } else if(now &gt;= startTimeRound2 &amp;&amp; now &lt; endTimeRound2) { // Round 2
+        } else if(now >= startTimeRound2 && now < endTimeRound2) { // Round 2
             amount = _value.mul(rateRound2);
             amount = amount.add(amount.mul(timeBonus2).div(all));
         } 
-        require(amount &gt;= minTokensToSale);
-        require(amount != 0 &amp;&amp; amount.add(tokenSupply) &lt; tokensToSale);
+        require(amount >= minTokensToSale);
+        require(amount != 0 && amount.add(tokenSupply) < tokensToSale);
         return amount;
     }
 
     function getBonus(uint256 _value) internal view returns (uint256) {
-        if(_value &gt;= amount1 &amp;&amp; _value &lt; amount2) { 
+        if(_value >= amount1 && _value < amount2) { 
             return bonus1;
-        } else if(_value &gt;= amount2 &amp;&amp; _value &lt; amount3) {
+        } else if(_value >= amount2 && _value < amount3) {
             return bonus2;
-        } else if(_value &gt;= amount3 &amp;&amp; _value &lt; amount4) {
+        } else if(_value >= amount3 && _value < amount4) {
             return bonus3;
-        } else if(_value &gt;= amount4) {
+        } else if(_value >= amount4) {
             return bonus4;
         }
     }
@@ -618,7 +618,7 @@ contract Crowdsale is Ownable {
 
     // @return true if tokensale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTimeRound2;
+        return now > endTimeRound2;
     }
 
     function kill() onlyOwner public { selfdestruct(owner); }

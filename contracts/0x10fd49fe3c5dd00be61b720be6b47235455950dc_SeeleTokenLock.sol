@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -201,7 +201,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -327,8 +327,8 @@ contract SeeleToken is PausableToken {
     using SafeMath for uint;
 
     /// Constant token specific fields
-    string public constant name = &quot;SeeleToken&quot;;
-    string public constant symbol = &quot;Seele&quot;;
+    string public constant name = "SeeleToken";
+    string public constant symbol = "Seele";
     uint public constant decimals = 18;
 
     /// seele total tokens supply
@@ -339,7 +339,7 @@ contract SeeleToken is PausableToken {
     address public minter; 
 
     /// Fields that can be changed by functions
-    mapping (address =&gt; uint) public lockedBalances;
+    mapping (address => uint) public lockedBalances;
 
     /// claim flag
     bool public claimedFlag;  
@@ -358,7 +358,7 @@ contract SeeleToken is PausableToken {
     }
 
     modifier maxTokenAmountNotReached (uint amount){
-        require(currentSupply.add(amount) &lt;= totalSupply);
+        require(currentSupply.add(amount) <= totalSupply);
         _;
     }
 
@@ -430,7 +430,7 @@ contract SeeleToken is PausableToken {
         onlyOwner
         canClaimed
     {        
-        for (uint i = 0; i &lt; receipents.length; i++) {
+        for (uint i = 0; i < receipents.length; i++) {
             address receipent = receipents[i];
             balances[receipent] = balances[receipent].add(lockedBalances[receipent]);
             lockedBalances[receipent] = 0;
@@ -440,10 +440,10 @@ contract SeeleToken is PausableToken {
     function airdrop(address[] receipents, uint[] tokens)
         external
     {        
-        for (uint i = 0; i &lt; receipents.length; i++) {
+        for (uint i = 0; i < receipents.length; i++) {
             address receipent = receipents[i];
             uint token = tokens[i];
-            if(balances[msg.sender] &gt;= token ){
+            if(balances[msg.sender] >= token ){
                 balances[msg.sender] = balances[msg.sender].sub(token);
                 balances[receipent] = balances[receipent].add(token);
             }
@@ -487,7 +487,7 @@ contract SeeleTokenLock is Ownable {
     }
 
     modifier locked {
-        require(lockedAt &gt; 0);
+        require(lockedAt > 0);
         _;
     }
 
@@ -540,10 +540,10 @@ contract SeeleTokenLock is Ownable {
         locked 
         onlyOwner
         {
-        require(block.timestamp &gt;= privateReleaseTime);
-        require(privateLockedAmount &gt; 0);
+        require(block.timestamp >= privateReleaseTime);
+        require(privateLockedAmount > 0);
         uint256 amount = token.balanceOf(this);
-        require(amount &gt;= privateLockedAmount);
+        require(amount >= privateLockedAmount);
         token.transfer(privateLockAddress, privateLockedAmount);
 
         privateLockedAmount = 0;
@@ -556,10 +556,10 @@ contract SeeleTokenLock is Ownable {
         locked 
         onlyOwner
         {
-        require(block.timestamp &gt;= minerRelaseTime);
-        require(minerLockedAmount &gt; 0);
+        require(block.timestamp >= minerRelaseTime);
+        require(minerLockedAmount > 0);
         uint256 amount = token.balanceOf(this);
-        require(amount &gt;= minerLockedAmount);
+        require(amount >= minerLockedAmount);
         token.transfer(minerLockAddress, minerLockedAmount);
 
         minerLockedAmount = 0;

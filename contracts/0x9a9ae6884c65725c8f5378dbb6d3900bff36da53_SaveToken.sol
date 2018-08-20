@@ -13,20 +13,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) pure internal returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) pure internal returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -34,7 +34,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -104,11 +104,11 @@ contract ERC20 {
 contract SaveToken is ERC20, Ownable {
 	using SafeMath for uint;
 
-	string public name = &quot;SaveToken&quot;;
-	string public symbol = &quot;SAVE&quot;;
+	string public name = "SaveToken";
+	string public symbol = "SAVE";
 	uint public decimals = 18;
 
-	mapping(address =&gt; uint256) affiliate;
+	mapping(address => uint256) affiliate;
 	function getAffiliate(address who) public view returns(uint256) {
 		return affiliate[who];
 	}
@@ -118,10 +118,10 @@ contract SaveToken is ERC20, Ownable {
         uint256 amount;
     }
     uint public no_aff = 0;
-	mapping(uint =&gt; AffSender) affiliate_senders;
+	mapping(uint => AffSender) affiliate_senders;
 	function getAffiliateSender(bytes32 who) public view returns(uint256) {
 	    
-	    for (uint i = 0; i &lt; no_aff; i++) {
+	    for (uint i = 0; i < no_aff; i++) {
             if(affiliate_senders[i].aff_code == who)
             {
                 return affiliate_senders[i].amount;
@@ -131,14 +131,14 @@ contract SaveToken is ERC20, Ownable {
 		return 1;
 	}
 	function getAffiliateSenderPosCode(uint pos) public view returns(bytes32) {
-	    if(pos &gt;= no_aff)
+	    if(pos >= no_aff)
 	    {
 	        return 1;
 	    }
 	    return affiliate_senders[pos].aff_code;
 	}
 	function getAffiliateSenderPosAmount(uint pos) public view returns(uint256) {
-	    if(pos &gt;= no_aff)
+	    if(pos >= no_aff)
 	    {
 	        return 2;
 	    }
@@ -188,14 +188,14 @@ contract SaveToken is ERC20, Ownable {
 	//uint256 public maximumTokensForReserve = 89 * 1000000 * (10 ** decimals); // 89 million
 	address public ownerVault;
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	/**
 	 * @dev Fix for the ERC20 short address attack.
 	 */
 	modifier onlyPayloadSize(uint size) {
-		if (msg.data.length &lt; size + 4) {
+		if (msg.data.length < size + 4) {
 			revert();
 		}
 		_;
@@ -205,7 +205,7 @@ contract SaveToken is ERC20, Ownable {
 	 * @dev modifier to allow token creation only when the hardcap has not been reached
 	 */
 	modifier isUnderHardCap() {
-		require(tokenTotalSupply &lt;= hardcap);
+		require(tokenTotalSupply <= hardcap);
 		_;
 	}
 
@@ -286,7 +286,7 @@ contract SaveToken is ERC20, Ownable {
 		//  allowance to zero by calling `approve(_spender, 0)` if it is not
 		//  already 0 to mitigate the race condition described here:
 		//  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-		if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+		if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
 			revert();
 		}
 
@@ -355,8 +355,8 @@ contract SaveToken is ERC20, Ownable {
 	{
 	    if(disown == 1) revert();
 	    
-		if (amount + tokenTotalSupply &gt; hardcap) revert();
-		if (amount &lt; 1) revert();
+		if (amount + tokenTotalSupply > hardcap) revert();
+		if (amount < 1) revert();
 
 		//add tokens to balance
 		balances[_address] = balances[_address] + amount;
@@ -440,57 +440,57 @@ contract SaveToken is ERC20, Ownable {
 
         if(saleOn == 0) revert();
         
-		if (now &lt; presaleStart) revert();
+		if (now < presaleStart) revert();
 
 		//this is pause period
-		if (now &gt;= presaleEnd &amp;&amp; now &lt;= weekOneStart) revert();
+		if (now >= presaleEnd && now <= weekOneStart) revert();
 
 		//sale has ended
-		if (now &gt;= tokenSaleEnd) revert();
+		if (now >= tokenSaleEnd) revert();
 
 		//pre-sale
-		if (now &gt;= presaleStart &amp;&amp; now &lt;= presaleEnd)
+		if (now >= presaleStart && now <= presaleEnd)
 		{
 			bonus = ethToToken.mul(msg.value).mul(tokenBonusForFirst).div(100);
 			tokens = ethToToken.mul(msg.value).add(bonus);
 			soldForFirst = soldForFirst.add(tokens);
-			if (soldForFirst &gt; maximumTokensForFirst) revert();
+			if (soldForFirst > maximumTokensForFirst) revert();
 		}
 
 		//public first week
-		if (now &gt;= weekOneStart &amp;&amp; now &lt;= weekTwoStart)
+		if (now >= weekOneStart && now <= weekTwoStart)
 		{
 			bonus = ethToToken.mul(msg.value).mul(tokenBonusForSecond).div(100);
 			tokens = ethToToken.mul(msg.value).add(bonus);
 			soldForSecond = soldForSecond.add(tokens);
-			if (soldForSecond &gt; maximumTokensForSecond.add(maximumTokensForFirst).sub(soldForFirst)) revert();
+			if (soldForSecond > maximumTokensForSecond.add(maximumTokensForFirst).sub(soldForFirst)) revert();
 		}
 
 		//public second week
-		if (now &gt;= weekTwoStart &amp;&amp; now &lt;= weekThreeStart)
+		if (now >= weekTwoStart && now <= weekThreeStart)
 		{
 			bonus = ethToToken.mul(msg.value).mul(tokenBonusForThird).div(100);
 			tokens = ethToToken.mul(msg.value).add(bonus);
 			soldForThird = soldForThird.add(tokens);
-			if (soldForThird &gt; maximumTokensForThird.add(maximumTokensForFirst).sub(soldForFirst).add(maximumTokensForSecond).sub(soldForSecond)) revert();
+			if (soldForThird > maximumTokensForThird.add(maximumTokensForFirst).sub(soldForFirst).add(maximumTokensForSecond).sub(soldForSecond)) revert();
 		}
 
 		//public third week
-		if (now &gt;= weekThreeStart &amp;&amp; now &lt;= weekFourStart)
+		if (now >= weekThreeStart && now <= weekFourStart)
 		{
 			bonus = ethToToken.mul(msg.value).mul(tokenBonusForForth).div(100);
 			tokens = ethToToken.mul(msg.value).add(bonus);
 			soldForForth = soldForForth.add(tokens);
-			if (soldForForth &gt; maximumTokensForForth.add(maximumTokensForFirst).sub(soldForFirst).add(maximumTokensForSecond).sub(soldForSecond).add(maximumTokensForThird).sub(soldForThird)) revert();
+			if (soldForForth > maximumTokensForForth.add(maximumTokensForFirst).sub(soldForFirst).add(maximumTokensForSecond).sub(soldForSecond).add(maximumTokensForThird).sub(soldForThird)) revert();
 		}
 
 		//public forth week
-		if (now &gt;= weekFourStart &amp;&amp; now &lt;= tokenSaleEnd)
+		if (now >= weekFourStart && now <= tokenSaleEnd)
 		{
 			bonus = ethToToken.mul(msg.value).mul(tokenBonusForFifth).div(100);
 			tokens = ethToToken.mul(msg.value).add(bonus);
 			soldForFifth = soldForFifth.add(tokens);
-			if (soldForFifth &gt; maximumTokensForFifth.add(maximumTokensForFirst).sub(soldForFirst).add(maximumTokensForSecond).sub(soldForSecond).add(maximumTokensForThird).sub(soldForThird).add(maximumTokensForForth).sub(soldForForth)) revert();
+			if (soldForFifth > maximumTokensForFifth.add(maximumTokensForFirst).sub(soldForFirst).add(maximumTokensForSecond).sub(soldForSecond).add(maximumTokensForThird).sub(soldForThird).add(maximumTokensForForth).sub(soldForForth)) revert();
 		}
 
 		if (tokens == 0)
@@ -498,7 +498,7 @@ contract SaveToken is ERC20, Ownable {
 			revert();
 		}
 
-        if (tokens + tokenTotalSupply &gt; hardcap) revert();
+        if (tokens + tokenTotalSupply > hardcap) revert();
 		
 		//add tokens to balance
 		balances[msg.sender] = balances[msg.sender] + tokens;
@@ -514,7 +514,7 @@ contract SaveToken is ERC20, Ownable {
     * @param _amount the amount in wei to send
     */
 	function withdrawEthereum(uint256 _amount) public onlyOwner {
-		require(_amount &lt;= this.balance); // wei
+		require(_amount <= this.balance); // wei
 
 		if (!ownerVault.send(_amount)) {
 			revert();
@@ -533,9 +533,9 @@ contract SaveToken is ERC20, Ownable {
 	{
 	    if(disown == 1) revert();
 	    
-		if (now &lt;= tokenSaleEnd) revert();
+		if (now <= tokenSaleEnd) revert();
 
-		assert(_amount &lt;= (hardcap - tokenTotalSupply) );
+		assert(_amount <= (hardcap - tokenTotalSupply) );
 
 		balances[ownerVault] = balances[ownerVault] + _amount;
 		tokenTotalSupply = tokenTotalSupply + _amount;

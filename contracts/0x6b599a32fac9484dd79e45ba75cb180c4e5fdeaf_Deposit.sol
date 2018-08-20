@@ -9,7 +9,7 @@ contract Deposit {
     event Received(address from, address to, uint value);
 
     function() payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             Received(msg.sender, this, msg.value);
             m_account.transfer(msg.value);
         }

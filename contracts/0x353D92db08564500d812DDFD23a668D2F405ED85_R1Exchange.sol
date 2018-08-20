@@ -5,12 +5,12 @@ contract SafeMath {
 
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -72,15 +72,15 @@ contract Token {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 contract R1Exchange is SafeMath, Ownable {
-    mapping(address =&gt; bool) public admins;
-    mapping(address =&gt; bool) public feeAccounts;
+    mapping(address => bool) public admins;
+    mapping(address => bool) public feeAccounts;
     bool public withdrawEnabled = false;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public tokenList;
-    mapping(address =&gt; mapping(bytes32 =&gt; uint256)) public orderFilled;//tokens filled
-    mapping(bytes32 =&gt; bool) public withdrawn;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public withdrawAllowance;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public applyList;//withdraw apply list
-    mapping(address =&gt; mapping(address =&gt; uint)) public latestApply;//save the latest apply timestamp
+    mapping(address => mapping(address => uint256)) public tokenList;
+    mapping(address => mapping(bytes32 => uint256)) public orderFilled;//tokens filled
+    mapping(bytes32 => bool) public withdrawn;
+    mapping(address => mapping(address => uint256)) public withdrawAllowance;
+    mapping(address => mapping(address => uint256)) public applyList;//withdraw apply list
+    mapping(address => mapping(address => uint)) public latestApply;//save the latest apply timestamp
     uint public applyWait = 7 days;
     uint public feeRate = 1;
     event Deposit(address indexed token, address indexed user, uint256 amount, uint256 balance);
@@ -113,11 +113,11 @@ contract R1Exchange is SafeMath, Ownable {
         withdrawEnabled = enabled;
     }
     function changeLockTime(uint lock) public onlyOwner {
-        require(lock &lt;= 7 days);
+        require(lock <= 7 days);
         applyWait = lock;
     }
     function changeFeeRate(uint fr) public onlyOwner {
-        require(fr &gt; 0);
+        require(fr > 0);
         feeRate = fr;
     }
     function deposit() public payable {
@@ -132,13 +132,13 @@ contract R1Exchange is SafeMath, Ownable {
     }
     function applyWithdraw(address token, uint256 amount) public {
         uint256 apply = safeAdd(applyList[token][msg.sender], amount);
-        require(safeAdd(apply, withdrawAllowance[token][msg.sender]) &lt;= tokenList[token][msg.sender]);
+        require(safeAdd(apply, withdrawAllowance[token][msg.sender]) <= tokenList[token][msg.sender]);
         applyList[token][msg.sender] = apply;
         latestApply[token][msg.sender] = block.timestamp;
         ApplyWithdraw(token, msg.sender, amount, block.timestamp);
     }
     /**
-    * approve user&#39;s withdraw application
+    * approve user's withdraw application
     **/
     function approveWithdraw(address token, address user) public onlyAdmin {
         withdrawAllowance[token][user] = safeAdd(withdrawAllowance[token][user], applyList[token][user]);
@@ -146,19 +146,19 @@ contract R1Exchange is SafeMath, Ownable {
         latestApply[token][user] = 0;
     }
     /**
-    * user&#39;s withdraw will success in two cases:
+    * user's withdraw will success in two cases:
     *    1. when the admin calls the approveWithdraw function;
     * or 2. when the lock time has passed since the application;
     **/
     function withdraw(address token, uint256 amount) public {
-        require(amount &lt;= tokenList[token][msg.sender]);
-        if (amount &gt; withdrawAllowance[token][msg.sender]) {
+        require(amount <= tokenList[token][msg.sender]);
+        if (amount > withdrawAllowance[token][msg.sender]) {
             //withdraw wait over time
-            require(latestApply[token][msg.sender] != 0 &amp;&amp; safeSub(block.timestamp, latestApply[token][msg.sender]) &gt; applyWait);
+            require(latestApply[token][msg.sender] != 0 && safeSub(block.timestamp, latestApply[token][msg.sender]) > applyWait);
             withdrawAllowance[token][msg.sender] = safeAdd(withdrawAllowance[token][msg.sender], applyList[token][msg.sender]);
             applyList[token][msg.sender] = 0;
         }
-        require(amount &lt;= withdrawAllowance[token][msg.sender]);
+        require(amount <= withdrawAllowance[token][msg.sender]);
         withdrawAllowance[token][msg.sender] = safeSub(withdrawAllowance[token][msg.sender], amount);
         tokenList[token][msg.sender] = safeSub(tokenList[token][msg.sender], amount);
         latestApply[token][msg.sender] = 0;
@@ -173,7 +173,7 @@ contract R1Exchange is SafeMath, Ownable {
     * withdraw directly when withdrawEnabled=true
     **/
     function withdrawNoLimit(address token, uint256 amount) public isWithdrawEnabled {
-        require(amount &lt;= tokenList[token][msg.sender]);
+        require(amount <= tokenList[token][msg.sender]);
         tokenList[token][msg.sender] = safeSub(tokenList[token][msg.sender], amount);
         if (token == 0) {//withdraw ether
             require(msg.sender.send(amount));
@@ -183,7 +183,7 @@ contract R1Exchange is SafeMath, Ownable {
         Withdraw(token, msg.sender, amount, tokenList[token][msg.sender]);
     }
     /**
-    * admin withdraw according to user&#39;s signed withdraw info
+    * admin withdraw according to user's signed withdraw info
     * PARAMS:
     * addresses:
     * [0] user
@@ -205,12 +205,12 @@ contract R1Exchange is SafeMath, Ownable {
         uint256 amount = values[0];
         uint256 nonce = values[1];
         uint256 fee = values[2];
-        require(amount &lt;= tokenList[token][user]);
-        require(safeMul(fee, feeRate) &lt; amount);
+        require(amount <= tokenList[token][user]);
+        require(safeMul(fee, feeRate) < amount);
         bytes32 hash = keccak256(user, token, amount, nonce);
         require(!withdrawn[hash]);
         withdrawn[hash] = true;
-        require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash), v, r, s) == user);
+        require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s) == user);
         tokenList[token][user] = safeSub(tokenList[token][user], amount);
         tokenList[token][feeAccount] = safeAdd(tokenList[token][feeAccount], fee);
         amount = safeSub(amount, fee);
@@ -241,7 +241,7 @@ contract R1Exchange is SafeMath, Ownable {
         address feeToken;//0:default;others:payed with erc-20 token
     }
     /**
-    * swap maker and taker&#39;s tokens according to their signed order info.
+    * swap maker and taker's tokens according to their signed order info.
     *
     * PARAMS:
     * addresses:
@@ -268,7 +268,7 @@ contract R1Exchange is SafeMath, Ownable {
     * [8]:maker nonce
     * [9]:taker nonce
     * [10]:tradeAmount of token
-    * v,r,s:maker and taker&#39;s signature
+    * v,r,s:maker and taker's signature
     **/
     function trade(
         address[11] addresses,
@@ -308,28 +308,28 @@ contract R1Exchange is SafeMath, Ownable {
             });
         uint256 tradeAmount = values[10];
         //check expires
-        require(makerOrder.expires &gt;= block.number &amp;&amp; takerOrder.expires &gt;= block.number);
+        require(makerOrder.expires >= block.number && takerOrder.expires >= block.number);
         //make sure both is the same trade pair
-        require(makerOrder.baseToken == takerOrder.baseToken &amp;&amp; makerOrder.tokenBuy == takerOrder.tokenSell &amp;&amp; makerOrder.tokenSell == takerOrder.tokenBuy);
+        require(makerOrder.baseToken == takerOrder.baseToken && makerOrder.tokenBuy == takerOrder.tokenSell && makerOrder.tokenSell == takerOrder.tokenBuy);
         require(takerOrder.baseToken == takerOrder.tokenBuy || takerOrder.baseToken == takerOrder.tokenSell);
         makerOrder.orderHash = getOrderHash(makerOrder.tokenBuy, makerOrder.amountBuy, makerOrder.tokenSell, makerOrder.amountSell, makerOrder.baseToken, makerOrder.expires, makerOrder.nonce, makerOrder.feeToken);
         takerOrder.orderHash = getOrderHash(takerOrder.tokenBuy, takerOrder.amountBuy, takerOrder.tokenSell, takerOrder.amountSell, takerOrder.baseToken, takerOrder.expires, takerOrder.nonce, takerOrder.feeToken);
-        require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, makerOrder.orderHash), v[0], r[0], s[0]) == makerOrder.user);
-        require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, takerOrder.orderHash), v[1], r[1], s[1]) == takerOrder.user);
+        require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", makerOrder.orderHash), v[0], r[0], s[0]) == makerOrder.user);
+        require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32", takerOrder.orderHash), v[1], r[1], s[1]) == takerOrder.user);
         balance(makerOrder, takerOrder, addresses[10], tradeAmount);
     }
     function balance(Order makerOrder, Order takerOrder, address feeAccount, uint256 tradeAmount) internal {
         ///check the price meets the condition.
-        ///match condition: (makerOrder.amountSell*takerOrder.amountSell)/(makerOrder.amountBuy*takerOrder.amountBuy) &gt;=1
-        require(safeMul(makerOrder.amountSell, takerOrder.amountSell) &gt;= safeMul(makerOrder.amountBuy, takerOrder.amountBuy));
-        ///If the price is ok,always use maker&#39;s price first!
+        ///match condition: (makerOrder.amountSell*takerOrder.amountSell)/(makerOrder.amountBuy*takerOrder.amountBuy) >=1
+        require(safeMul(makerOrder.amountSell, takerOrder.amountSell) >= safeMul(makerOrder.amountBuy, takerOrder.amountBuy));
+        ///If the price is ok,always use maker's price first!
         uint256 takerBuy = 0;
         uint256 takerSell = 0;
         if (takerOrder.baseToken == takerOrder.tokenBuy) {
             //taker sell tokens
             uint256 makerAmount = safeSub(makerOrder.amountBuy, orderFilled[makerOrder.user][makerOrder.orderHash]);
             uint256 takerAmount = safeSub(takerOrder.amountSell, orderFilled[takerOrder.user][takerOrder.orderHash]);
-            require(tradeAmount &gt; 0 &amp;&amp; tradeAmount &lt;= makerAmount &amp;&amp; tradeAmount &lt;= takerAmount);
+            require(tradeAmount > 0 && tradeAmount <= makerAmount && tradeAmount <= takerAmount);
             takerSell = tradeAmount;
             takerBuy = safeMul(makerOrder.amountSell, takerSell) / makerOrder.amountBuy;
             orderFilled[takerOrder.user][takerOrder.orderHash] = safeAdd(orderFilled[takerOrder.user][takerOrder.orderHash], takerSell);
@@ -338,7 +338,7 @@ contract R1Exchange is SafeMath, Ownable {
             // taker buy tokens
             takerAmount = safeSub(takerOrder.amountBuy, orderFilled[takerOrder.user][takerOrder.orderHash]);
             makerAmount = safeSub(makerOrder.amountSell, orderFilled[makerOrder.user][makerOrder.orderHash]);
-            require(tradeAmount &gt; 0 &amp;&amp; tradeAmount &lt;= makerAmount &amp;&amp; tradeAmount &lt;= takerAmount);
+            require(tradeAmount > 0 && tradeAmount <= makerAmount && tradeAmount <= takerAmount);
             takerBuy = tradeAmount;
             takerSell = safeMul(makerOrder.amountBuy, takerBuy) / makerOrder.amountSell;
             orderFilled[takerOrder.user][takerOrder.orderHash] = safeAdd(orderFilled[takerOrder.user][takerOrder.orderHash], takerBuy);
@@ -356,18 +356,18 @@ contract R1Exchange is SafeMath, Ownable {
         tokenList[makerOrder.tokenBuy][makerOrder.user] = safeAdd(tokenList[makerOrder.tokenBuy][makerOrder.user], safeSub(takerSell, makerFee));
     }
     ///charge fees.fee can be payed as other erc20 token or the tokens that user get
-    ///returns:fees to reduce from the user&#39;s tokenBuy
+    ///returns:fees to reduce from the user's tokenBuy
     function chargeFee(Order order, address feeAccount, uint256 amountBuy) internal returns (uint256){
         uint256 classicFee = 0;
         if (order.feeToken != 0) {
             ///use erc-20 token as fee .
             //make sure the user has enough tokens
-            require(order.fee &lt;= tokenList[order.feeToken][order.user]);
+            require(order.fee <= tokenList[order.feeToken][order.user]);
             tokenList[order.feeToken][feeAccount] = safeAdd(tokenList[order.feeToken][feeAccount], order.fee);
             tokenList[order.feeToken][order.user] = safeSub(tokenList[order.feeToken][order.user], order.fee);
         } else {
             classicFee = order.fee;
-            require(safeMul(order.fee, feeRate) &lt;= amountBuy);
+            require(safeMul(order.fee, feeRate) <= amountBuy);
             tokenList[order.tokenBuy][feeAccount] = safeAdd(tokenList[order.tokenBuy][feeAccount], order.fee);
         }
         return classicFee;
@@ -379,16 +379,16 @@ contract R1Exchange is SafeMath, Ownable {
         bytes32[2][] r,
         bytes32[2][] s
     ) public onlyAdmin {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             trade(addresses[i], values[i], v[i], r[i], s[i]);
         }
     }
     ///help to refund token to users.this method is called when contract needs updating
     function refund(address user, address[] tokens) public onlyAdmin {
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             address token = tokens[i];
             uint256 amount = tokenList[token][user];
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 tokenList[token][user] = 0;
                 if (token == 0) {//withdraw ether
                     require(user.send(amount));

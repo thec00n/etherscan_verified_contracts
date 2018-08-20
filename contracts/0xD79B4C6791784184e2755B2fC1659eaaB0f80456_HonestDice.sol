@@ -17,7 +17,7 @@ contract HonestDice {
 	uint256 minimumBet = 1 * 1000000000000000000; // 1 Ether
 	uint256 constant maxPayout = 5; // 5% of bankroll
 	uint constant seedCost = 100000000000000000; // This is the cost of supplyin the server seed, deduct it;
-	mapping (address =&gt; Roll) rolls;
+	mapping (address => Roll) rolls;
 	uint constant timeout = 20; // 5 Minutes
 	
 	function HonestDice() {
@@ -26,7 +26,7 @@ contract HonestDice {
 	}
 	
 	function roll(uint chance, bytes32 secretHash) {
-		if (chance &lt; 1 || chance &gt; 255 || msg.value &lt; minimumBet || calcWinnings(msg.value, chance) &gt; getMaxPayout() || betsLocked != 0) { 
+		if (chance < 1 || chance > 255 || msg.value < minimumBet || calcWinnings(msg.value, chance) > getMaxPayout() || betsLocked != 0) { 
 			msg.sender.send(msg.value); // Refund
 			return;
 		}
@@ -43,7 +43,7 @@ contract HonestDice {
 	
 	function hashTo256(bytes32 hash) constant returns (uint _r) {
 		// Returns a number between 0 - 255 from a hash
-		return uint(hash) &amp; 0xff;
+		return uint(hash) & 0xff;
 	}
 	
 	function hash(bytes32 input) constant returns (uint _r) {
@@ -74,7 +74,7 @@ contract HonestDice {
 		Roll r = rolls[msg.sender];
 		if (r.serverSeed == 0) return;
 		if (sha3(secret) != r.secretHash) return;
-		if (hashTo256(sha3(secret, r.serverSeed)) &lt; r.chance) { // Winner
+		if (hashTo256(sha3(secret, r.serverSeed)) < r.chance) { // Winner
 			return true;
 		}
 		return false;
@@ -93,7 +93,7 @@ contract HonestDice {
 		Roll r = rolls[msg.sender];
 		if (r.serverSeed == 0) return;
 		if (sha3(secret) != r.secretHash) return;
-		if (hashTo256(sha3(secret, r.serverSeed)) &lt; r.chance) { // Winner
+		if (hashTo256(sha3(secret, r.serverSeed)) < r.chance) { // Winner
 			msg.sender.send(calcWinnings(r.value, r.chance) - seedCost);
 			Won(msg.sender, r.value, r.chance);
 		}
@@ -104,13 +104,13 @@ contract HonestDice {
 	function canClaimTimeout() constant returns (bool _r) {
 		Roll r = rolls[msg.sender];
 		if (r.serverSeed != 0) return false;
-		if (r.value &lt;= 0) return false;
-		if (block.number &lt; r.blocknum + timeout) return false;
+		if (r.value <= 0) return false;
+		if (block.number < r.blocknum + timeout) return false;
 		return true;
 	}
 	
 	function claimTimeout() {
-		// Get your monies back if the server isn&#39;t responding with a seed
+		// Get your monies back if the server isn't responding with a seed
 		if (!canClaimTimeout()) return;
 		Roll r = rolls[msg.sender];
 		msg.sender.send(r.value);
@@ -146,7 +146,7 @@ contract HonestDice {
 	
 	function withdraw(uint amount) {
 		if (msg.sender != owner) return;
-		if (betsLocked == 0 || block.number &lt; betsLocked + 5760) return;
+		if (betsLocked == 0 || block.number < betsLocked + 5760) return;
 		owner.send(amount);
 	}
 }

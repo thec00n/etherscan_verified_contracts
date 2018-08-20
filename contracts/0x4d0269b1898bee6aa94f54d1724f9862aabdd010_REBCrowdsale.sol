@@ -5,7 +5,7 @@ pragma solidity 0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -175,7 +175,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -186,8 +186,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -387,8 +387,8 @@ contract PausableToken is StandardToken, Pausable {
  * @title REB Token contract - ERC20 compatible token contract.
  */
 contract REBToken is PausableToken, MintableToken {
-    string public name = &quot;REBGLO Token&quot;;
-    string public symbol = &quot;REB&quot;;
+    string public name = "REBGLO Token";
+    string public symbol = "REB";
     uint8 public decimals = 18;
 
     /**
@@ -399,24 +399,24 @@ contract REBToken is PausableToken, MintableToken {
     }
 
     /**
-     * @dev check user&#39;s REB balance tier
+     * @dev check user's REB balance tier
      * @param holderAddress Token holder address
      * @return string representing the milestone tier
      */
     function checkBalanceTier(address holderAddress) public view returns(string) {
         uint256 holderBalance = balanceOf(holderAddress);
 
-        if (holderBalance &gt;= 1000000e18) {
-            return &quot;Platinum tier&quot;;
-        } else if (holderBalance &gt;= 700000e18) {
-            return &quot;Gold tier&quot;;
-        } else if (holderBalance &gt;= 300000e18) {
-            return &quot;Titanium tier&quot;;
+        if (holderBalance >= 1000000e18) {
+            return "Platinum tier";
+        } else if (holderBalance >= 700000e18) {
+            return "Gold tier";
+        } else if (holderBalance >= 300000e18) {
+            return "Titanium tier";
         } else if (holderBalance == 0) {
-            return &quot;Possess no REB&quot;;
+            return "Possess no REB";
         }
 
-        return &quot;Free tier&quot;;
+        return "Free tier";
     }
 }
 
@@ -433,7 +433,7 @@ contract LockTokenAllocation is Ownable {
     uint256 public allocatedTokens;
     uint256 public totalLockTokenAllocation;
 
-    mapping (address =&gt; uint256) public lockedAllocations;
+    mapping (address => uint256) public lockedAllocations;
 
     REBToken public REB;
 
@@ -459,7 +459,7 @@ contract LockTokenAllocation is Ownable {
     }
 
     /**
-     * @dev Adds founders&#39; token allocation
+     * @dev Adds founders' token allocation
      * @param beneficiary Ethereum address of a person
      * @param allocationValue Number of tokens allocated to person
      * @return true if address is correctly added
@@ -469,10 +469,10 @@ contract LockTokenAllocation is Ownable {
         onlyOwner
         returns(bool)
     {
-        require(lockedAllocations[beneficiary] == 0 &amp;&amp; beneficiary != address(0)); // can only add once.
+        require(lockedAllocations[beneficiary] == 0 && beneficiary != address(0)); // can only add once.
 
         allocatedTokens = allocatedTokens.add(allocationValue);
-        require(allocatedTokens &lt;= totalLockTokenAllocation);
+        require(allocatedTokens <= totalLockTokenAllocation);
 
         lockedAllocations[beneficiary] = allocationValue;
         return true;
@@ -485,7 +485,7 @@ contract LockTokenAllocation is Ownable {
      */
     function unlock() external {
         require(REB != address(0));
-        assert(now &gt;= unlockedAt);
+        assert(now >= unlockedAt);
 
         // During first unlock attempt fetch total number of locked tokens.
         if (tokensCreated == 0) {
@@ -503,10 +503,10 @@ contract LockTokenAllocation is Ownable {
      * @dev allow for selfdestruct possibility and sending funds to owner
      */
     function kill() public onlyOwner {
-        require(now &gt;= canSelfDestruct);
+        require(now >= canSelfDestruct);
         uint256 balance = REB.balanceOf(this);
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             REB.transfer(msg.sender, balance);
         }
 
@@ -525,7 +525,7 @@ contract LockTokenAllocation is Ownable {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -559,7 +559,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -686,7 +686,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range.
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -696,8 +696,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -708,7 +708,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**
@@ -738,7 +738,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -767,7 +767,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
  */
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -790,7 +790,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -896,7 +896,7 @@ contract REBCrowdsale is FinalizableCrowdsale, WhitelistedCrowdsale, Pausable {
         onlyOwner
     {
         require(beneficiaryAddress != address(0));
-        require(token.totalSupply().add(amountOfTokens) &lt;= TOTAL_TOKENS_FOR_CROWDSALE);
+        require(token.totalSupply().add(amountOfTokens) <= TOTAL_TOKENS_FOR_CROWDSALE);
 
         _deliverTokens(beneficiaryAddress, amountOfTokens);
         MintedTokensFor(beneficiaryAddress, amountOfTokens);
@@ -918,9 +918,9 @@ contract REBCrowdsale is FinalizableCrowdsale, WhitelistedCrowdsale, Pausable {
         onlyOwner
     {
         // only able to be set once
-        require(teamReserve == address(0x0) &amp;&amp; advisorReserve == address(0x0) &amp;&amp; airdrop == address(0x0));
+        require(teamReserve == address(0x0) && advisorReserve == address(0x0) && airdrop == address(0x0));
         // ensure that the addresses as params to the func are not empty
-        require(_teamReserve != address(0x0) &amp;&amp; _advisorReserve != address(0x0) &amp;&amp; _airdrop != address(0x0));
+        require(_teamReserve != address(0x0) && _advisorReserve != address(0x0) && _airdrop != address(0x0));
 
         teamReserve = _teamReserve;
         advisorReserve = _advisorReserve;
@@ -930,7 +930,7 @@ contract REBCrowdsale is FinalizableCrowdsale, WhitelistedCrowdsale, Pausable {
     // overriding TimeCrowdsale#hasClosed to add cap logic
     // @return true if crowdsale event has ended
     function hasClosed() public view returns (bool) {
-        if (token.totalSupply() &gt; PUBLIC_CROWDSALE_SOFT_CAP) {
+        if (token.totalSupply() > PUBLIC_CROWDSALE_SOFT_CAP) {
             return true;
         }
 
@@ -959,7 +959,7 @@ contract REBCrowdsale is FinalizableCrowdsale, WhitelistedCrowdsale, Pausable {
     {
         require(_beneficiary != address(0));
         require(_weiAmount != 0);
-        require(token.totalSupply() &lt; TOTAL_TOKENS_FOR_CROWDSALE);
+        require(token.totalSupply() < TOTAL_TOKENS_FOR_CROWDSALE);
     }
 
     /**
@@ -971,16 +971,16 @@ contract REBCrowdsale is FinalizableCrowdsale, WhitelistedCrowdsale, Pausable {
         uint256 tokensAmount = _weiAmount.mul(rate);
 
         // remainder logic
-        if (token.totalSupply().add(tokensAmount) &gt; TOTAL_TOKENS_FOR_CROWDSALE) {
+        if (token.totalSupply().add(tokensAmount) > TOTAL_TOKENS_FOR_CROWDSALE) {
             tokensAmount = TOTAL_TOKENS_FOR_CROWDSALE.sub(token.totalSupply());
             uint256 _weiAmountLocalScope = tokensAmount.div(rate);
 
-            // save info so as to refund purchaser after crowdsale&#39;s end
+            // save info so as to refund purchaser after crowdsale's end
             remainderPurchaser = msg.sender;
             remainderAmount = _weiAmount.sub(_weiAmountLocalScope);
 
             // update state here so when it is updated again in buyTokens the weiAmount reflects the remainder logic
-            if (weiRaised &gt; _weiAmount.add(_weiAmountLocalScope))
+            if (weiRaised > _weiAmount.add(_weiAmountLocalScope))
                 weiRaised = weiRaised.sub(_weiAmount.add(_weiAmountLocalScope));
         }
 
@@ -992,9 +992,9 @@ contract REBCrowdsale is FinalizableCrowdsale, WhitelistedCrowdsale, Pausable {
      */
     function finalization() internal {
         // This must have been set manually prior to finalize().
-        require(teamReserve != address(0x0) &amp;&amp; advisorReserve != address(0x0) &amp;&amp; airdrop != address(0x0));
+        require(teamReserve != address(0x0) && advisorReserve != address(0x0) && airdrop != address(0x0));
 
-        if (TOTAL_TOKENS_FOR_CROWDSALE &gt; token.totalSupply()) {
+        if (TOTAL_TOKENS_FOR_CROWDSALE > token.totalSupply()) {
             uint256 remainingTokens = TOTAL_TOKENS_FOR_CROWDSALE.sub(token.totalSupply());
             _deliverTokens(wallet, remainingTokens);
         }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,7 +88,7 @@ contract PreSale is Pausable {
     uint256 constant public INCREASE_RATE = 350000000000000; // 50c if ethereum is $700
 
     uint256 public eggsSold = 1987;
-    mapping (address =&gt; uint32) public eggs;
+    mapping (address => uint32) public eggs;
 
     function PreSale() payable public {
     }
@@ -98,14 +98,14 @@ contract PreSale is Pausable {
     event EggsRedeemed(address indexed sender, uint256 eggs);
 
     function bulkPurchageEgg() whenNotPaused payable public {
-        require(msg.value &gt;= (eggPrice() * 5 + INCREASE_RATE * 10));
+        require(msg.value >= (eggPrice() * 5 + INCREASE_RATE * 10));
         eggs[msg.sender] = eggs[msg.sender] + 5;
         eggsSold = eggsSold + 5;
         EggsPurchased(msg.sender, msg.value, 5);
     }
     
     function purchaseEgg() whenNotPaused payable public {
-        require(msg.value &gt;= eggPrice());
+        require(msg.value >= eggPrice());
 
         eggs[msg.sender] = eggs[msg.sender] + 1;
         eggsSold = eggsSold + 1;
@@ -114,7 +114,7 @@ contract PreSale is Pausable {
     }
     
     function redeemEgg(address targetUser) onlyOwner public returns(uint256) {
-        require(eggs[targetUser] &gt; 0);
+        require(eggs[targetUser] > 0);
 
         EggsRedeemed(targetUser, eggs[targetUser]);
 

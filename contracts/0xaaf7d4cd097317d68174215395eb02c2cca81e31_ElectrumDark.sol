@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract ElectrumDark {
     using SafeMath for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -37,7 +37,7 @@ contract ElectrumDark {
     function ElectrumDark() 
     {
         totalSupply = 3900000000000000000000000 ;
-        symbol = &#39;ELD&#39;;
+        symbol = 'ELD';
         owner = 0xB625553Ba7C2B047CDa1F7e94d94b1F511fC18e1;
         balances[owner] = 3900000000000000000000000 ;
         decimals = 18;

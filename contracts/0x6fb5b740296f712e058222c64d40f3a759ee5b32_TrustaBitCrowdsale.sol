@@ -13,7 +13,7 @@ contract FallbackToken {
     uint length;
     _addr = _addr;
     assembly {length := extcodesize(_addr)}
-    return (length &gt; 0);
+    return (length > 0);
   }
 }
 
@@ -27,7 +27,7 @@ contract Receiver {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -83,20 +83,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -124,7 +124,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -133,7 +133,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -177,7 +177,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -188,8 +188,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -203,7 +203,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -305,9 +305,9 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract TrustaBitToken is MintableToken, FallbackToken {
 
-  string public constant name = &quot;TrustaBits&quot;;
+  string public constant name = "TrustaBits";
 
-  string public constant symbol = &quot;TAB&quot;;
+  string public constant symbol = "TAB";
 
   uint256 public constant decimals = 18;
 
@@ -474,8 +474,8 @@ contract MilestoneCrowdsale {
   }
 
   function getCurrentMilestone() internal view returns (uint256, uint256) {
-    for (uint i = 0; i &lt; milestones.length; i++) {
-      if (now &gt;= milestones[i].start &amp;&amp; now &lt; milestones[i].end) {
+    for (uint i = 0; i < milestones.length; i++) {
+      if (now >= milestones[i].start && now < milestones[i].end) {
         var milestone = milestones[i];
         return (milestone.bonus, milestone.price);
       }
@@ -495,19 +495,19 @@ contract MilestoneCrowdsale {
   }
 
   function isEarlyInvestors() public view returns (bool) {
-    return now &lt; preSaleStartDate;
+    return now < preSaleStartDate;
   }
 
   function isPreSale() public view returns (bool) {
-    return now &gt;= preSaleStartDate &amp;&amp; now &lt; preSaleEndDate;
+    return now >= preSaleStartDate && now < preSaleEndDate;
   }
 
   function isMainSale() public view returns (bool) {
-    return now &gt;= mainSaleStartDate &amp;&amp; now &lt; mainSaleEndDate;
+    return now >= mainSaleStartDate && now < mainSaleEndDate;
   }
 
   function isEnded() public view returns (bool) {
-    return now &gt;= mainSaleEndDate;
+    return now >= mainSaleEndDate;
   }
 
 }
@@ -525,7 +525,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -610,21 +610,21 @@ contract TrustaBitCrowdsale is MilestoneCrowdsale, Ownable {
   event TokenPurchase(address indexed investor, uint256 value, uint256 amount);
 
   modifier hasMinimumContribution() {
-    require(msg.value &gt;= MINIMUM_CONTRIBUTION);
+    require(msg.value >= MINIMUM_CONTRIBUTION);
     _;
   }
 
   function TrustaBitCrowdsale(address _wallet, address _token, uint _rate, uint _preSaleStartDate, uint _preSaleEndDate, uint _mainSaleStartDate, uint _mainSaleEndDate, address _AdvisoryBountyTeam) public {
     require(_token != address(0));
     require(_AdvisoryBountyTeam != address(0));
-    require(_rate &gt; 0);
-    require(_preSaleStartDate &gt; 0);
-    require(_preSaleEndDate &gt; 0);
-    require(_preSaleEndDate &gt; _preSaleStartDate);
-    require(_mainSaleStartDate &gt; 0);
-    require(_mainSaleStartDate &gt;= _preSaleEndDate);
-    require(_mainSaleEndDate &gt; 0);
-    require(_mainSaleEndDate &gt; _mainSaleStartDate);
+    require(_rate > 0);
+    require(_preSaleStartDate > 0);
+    require(_preSaleEndDate > 0);
+    require(_preSaleEndDate > _preSaleStartDate);
+    require(_mainSaleStartDate > 0);
+    require(_mainSaleStartDate >= _preSaleEndDate);
+    require(_mainSaleEndDate > 0);
+    require(_mainSaleEndDate > _mainSaleStartDate);
 
     wallet = _wallet;
     token = TrustaBitToken(_token);
@@ -654,10 +654,10 @@ contract TrustaBitCrowdsale is MilestoneCrowdsale, Ownable {
 
     uint256 weiAmount = msg.value;
 
-    require(getCurrentPrice() &gt; 0);
+    require(getCurrentPrice() > 0);
 
     uint256 tokensAmount = calculateTokens(weiAmount);
-    require(tokensAmount &gt; 0);
+    require(tokensAmount > 0);
 
     mintTokens(investor, weiAmount, tokensAmount);
     increaseRaised(weiAmount, tokensAmount);
@@ -670,7 +670,7 @@ contract TrustaBitCrowdsale is MilestoneCrowdsale, Ownable {
   }
 
   function calculateTokens(uint256 weiAmount) internal view returns (uint256) {
-    if ((weiRaised.add(weiAmount)) &gt; hardCap) return 0;
+    if ((weiRaised.add(weiAmount)) > hardCap) return 0;
 
     var (bonus, price) = getCurrentMilestone();
 
@@ -686,19 +686,19 @@ contract TrustaBitCrowdsale is MilestoneCrowdsale, Ownable {
   }
 
   function isEarlyInvestorsTokenRaised(uint256 tokensAmount) public view returns (bool) {
-    return isEarlyInvestors() &amp;&amp; (earlyInvestorTokenRaised.add(tokensAmount) &gt; AVAILABLE_FOR_EARLY_INVESTORS.mul(10 ** token.decimals()));
+    return isEarlyInvestors() && (earlyInvestorTokenRaised.add(tokensAmount) > AVAILABLE_FOR_EARLY_INVESTORS.mul(10 ** token.decimals()));
   }
 
   function isPreSaleTokenRaised(uint256 tokensAmount) public view returns (bool) {
-    return isPreSale() &amp;&amp; (preSaleTokenRaised.add(tokensAmount) &gt; AVAILABLE_IN_PRE_SALE.mul(10 ** token.decimals()));
+    return isPreSale() && (preSaleTokenRaised.add(tokensAmount) > AVAILABLE_IN_PRE_SALE.mul(10 ** token.decimals()));
   }
 
   function isMainSaleTokenRaised(uint256 tokensAmount) public view returns (bool) {
-    return isMainSale() &amp;&amp; (mainSaleTokenRaised.add(tokensAmount) &gt; AVAILABLE_IN_MAIN.mul(10 ** token.decimals()));
+    return isMainSale() && (mainSaleTokenRaised.add(tokensAmount) > AVAILABLE_IN_MAIN.mul(10 ** token.decimals()));
   }
 
   function isTokenAvailable(uint256 tokensAmount) public view returns (bool) {
-    return getTokenRaised().add(tokensAmount) &gt; AVAILABLE_TOKENS.mul(10 ** token.decimals());
+    return getTokenRaised().add(tokensAmount) > AVAILABLE_TOKENS.mul(10 ** token.decimals());
   }
 
   function increaseRaised(uint256 weiAmount, uint256 tokensAmount) internal {
@@ -758,7 +758,7 @@ contract TrustaBitCrowdsale is MilestoneCrowdsale, Ownable {
     require(isFinalized);
     require(!softCapReached());
 
-    for (uint i = 0; i &lt; investors.length; i++) {
+    for (uint i = 0; i < investors.length; i++) {
       address investor = investors[i];
       if (vault.deposited(investor) != 0) {
         vault.refund(investor);
@@ -767,11 +767,11 @@ contract TrustaBitCrowdsale is MilestoneCrowdsale, Ownable {
   }
 
   function softCapReached() public view returns (bool) {
-    return weiRaised &gt;= softCap;
+    return weiRaised >= softCap;
   }
 
   function hardCapReached() public view returns (bool) {
-    return weiRaised &gt;= hardCap;
+    return weiRaised >= hardCap;
   }
 
   function destroy() onlyOwner public {

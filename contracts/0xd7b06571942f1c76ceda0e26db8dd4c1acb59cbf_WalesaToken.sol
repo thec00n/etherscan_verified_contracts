@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 /**
-    Wałęsa, dawaj moje sto milion&#243;w!
+    Wałęsa, dawaj moje sto milionów!
     https://www.youtube.com/watch?v=ZBK_nZ1aGlA
     
     100 million of this token can be claimed by first 12197466 users,
@@ -15,23 +15,23 @@ contract WalesaToken {
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     uint256 constant private STO_MILIONOW = 10000000000;
     
-    string constant public symbol = &quot;WLST&quot;;
-    string constant public name = &quot;Wałęsa Token&quot;;
+    string constant public symbol = "WLST";
+    string constant public name = "Wałęsa Token";
     uint8 constant public decimals = 2;
     
     uint256 public totalSupply;
     uint256 private claimedSupply;
     
-    mapping (address =&gt; bool) private claimed;
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping (address => bool) private claimed;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowed;
     
     function WalesaToken() public {
         totalSupply = 0xBA1E5A * STO_MILIONOW;
     }
     
     function balanceOf(address owner) public view returns (uint256) {
-        if (!claimed[owner] &amp;&amp; claimedSupply &lt; totalSupply) {
+        if (!claimed[owner] && claimedSupply < totalSupply) {
             return STO_MILIONOW;
         }
         return balances[owner];
@@ -40,7 +40,7 @@ contract WalesaToken {
     function transfer(address to, uint256 value) public returns (bool) {
         walesaDawajNaszeStoMilionow(msg.sender);
         walesaDawajNaszeStoMilionow(to);
-        require(balances[msg.sender] &gt;= value);
+        require(balances[msg.sender] >= value);
         balances[msg.sender] -= value;
         balances[to] += value;
         Transfer(msg.sender, to, value);
@@ -48,13 +48,13 @@ contract WalesaToken {
     }
     
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        require(allowed[from][msg.sender] &gt;= value);
-        if (allowed[from][msg.sender] &lt; MAX_UINT256) {
+        require(allowed[from][msg.sender] >= value);
+        if (allowed[from][msg.sender] < MAX_UINT256) {
             allowed[from][msg.sender] -= value;
         }
         walesaDawajNaszeStoMilionow(from);
         walesaDawajNaszeStoMilionow(to);
-        require(balances[from] &gt;= value);
+        require(balances[from] >= value);
         balances[from] -= value;
         balances[to] += value;
         Transfer(from, to, value);
@@ -77,7 +77,7 @@ contract WalesaToken {
     }
     
     function walesaDawajNaszeStoMilionow(address owner) private {
-        if (!claimed[owner] &amp;&amp; claimedSupply &lt; totalSupply) {
+        if (!claimed[owner] && claimedSupply < totalSupply) {
             claimed[owner] = true;
             balances[owner] = STO_MILIONOW;
             claimedSupply += STO_MILIONOW;

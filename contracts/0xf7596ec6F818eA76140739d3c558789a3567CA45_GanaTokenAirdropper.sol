@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -75,14 +75,14 @@ contract GanaTokenAirdropper is Ownable {
   function airdrop(address[] _addrs, uint256[] _values) public onlyOwner {
     require(_addrs.length == _values.length);
 
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(gana.saleTransfer(_addrs[i], _values[i]));
     }
   }
 
   function claimGanaTokens() public onlyOwner {
     uint256 ganaBalance = gana.balanceOf(this);
-    require(ganaBalance &gt;= 0);
+    require(ganaBalance >= 0);
 
     gana.saleTransfer(owner, ganaBalance);
     emit ClaimedGanaTokens();
@@ -91,7 +91,7 @@ contract GanaTokenAirdropper is Ownable {
   function claimTokens(address _token) public onlyOwner {
     ERC20Basic token = ERC20Basic(_token);
     uint256 tokenBalance = token.balanceOf(this);
-    require(tokenBalance &gt;= 0);
+    require(tokenBalance >= 0);
 
     token.transfer(owner, tokenBalance);
     emit ClaimedTokens(_token, tokenBalance);

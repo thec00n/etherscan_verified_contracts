@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -145,24 +145,24 @@ contract LuckyYouContract is Pausable {
     bool[5] public timesEnabled = [true, false, false, false, false];
 
     uint[5] public currentCounter = [1, 1, 1, 1, 1];
-    mapping(address =&gt; uint[5]) private participatedCounter;
-    mapping(uint8 =&gt; address[]) private participants;
+    mapping(address => uint[5]) private participatedCounter;
+    mapping(uint8 => address[]) private participants;
     //todo
-    mapping(uint8 =&gt; uint256) public participantsCount;
-    mapping(uint8 =&gt; uint256) public fundShareLastRound;
-    mapping(uint8 =&gt; uint256) public fundCurrentRound;
-    mapping(uint8 =&gt; uint256) public fundShareRemainLastRound;
-    mapping(uint8 =&gt; uint256) public fundShareParticipantsTotalTokensLastRound;
-    mapping(uint8 =&gt; uint256) public fundShareParticipantsTotalTokensCurrentRound;
-    mapping(uint8 =&gt; bytes32) private participantsHashes;
+    mapping(uint8 => uint256) public participantsCount;
+    mapping(uint8 => uint256) public fundShareLastRound;
+    mapping(uint8 => uint256) public fundCurrentRound;
+    mapping(uint8 => uint256) public fundShareRemainLastRound;
+    mapping(uint8 => uint256) public fundShareParticipantsTotalTokensLastRound;
+    mapping(uint8 => uint256) public fundShareParticipantsTotalTokensCurrentRound;
+    mapping(uint8 => bytes32) private participantsHashes;
 
-    mapping(uint8 =&gt; uint8) private lastFiredStep;
-    mapping(uint8 =&gt; address) public lastWinner;
-    mapping(uint8 =&gt; address) public lastFiredWinner;
-    mapping(uint8 =&gt; uint256) public lastWinnerReward;
-    mapping(uint8 =&gt; uint256) public lastFiredWinnerReward;
-    mapping(uint8 =&gt; uint256) public lastFiredFund;
-    mapping(address =&gt; uint256) public whitelist;
+    mapping(uint8 => uint8) private lastFiredStep;
+    mapping(uint8 => address) public lastWinner;
+    mapping(uint8 => address) public lastFiredWinner;
+    mapping(uint8 => uint256) public lastWinnerReward;
+    mapping(uint8 => uint256) public lastFiredWinnerReward;
+    mapping(uint8 => uint256) public lastFiredFund;
+    mapping(address => uint256) public whitelist;
     uint256 public notInWhitelistAllow = 1;
 
     bytes32  private commonHash = 0x1000;
@@ -181,24 +181,24 @@ contract LuckyYouContract is Pausable {
     function setWhitelist(uint _value,address [] _addresses) public onlyOwner
     {
         uint256 count = _addresses.length;
-        for (uint256 i = 0; i &lt; count; i++) {
+        for (uint256 i = 0; i < count; i++) {
             whitelist[_addresses [i]] = _value;
         }
     }
 
     function setTimesEnabled(uint8 _timesIndex, bool _enabled) public onlyOwner
     {
-        require(_timesIndex &lt; timesEnabled.length);
+        require(_timesIndex < timesEnabled.length);
         timesEnabled[_timesIndex] = _enabled;
     }
 
     function() public payable whenNotPaused {
 
-        if(whitelist[msg.sender] | notInWhitelistAllow &gt; 0)
+        if(whitelist[msg.sender] | notInWhitelistAllow > 0)
         {
             uint8 _times_length = uint8(times.length);
             uint8 _times = _times_length + 1;
-            for (uint32 i = 0; i &lt; _times_length; i++)
+            for (uint32 i = 0; i < _times_length; i++)
             {
                 if (timesEnabled[i])
                 {
@@ -208,12 +208,12 @@ contract LuckyYouContract is Pausable {
                     }
                 }
             }
-            if (_times &gt; _times_length) {
+            if (_times > _times_length) {
                 revert();
             }
             else
             {
-                if (participatedCounter[msg.sender][_times] &lt; currentCounter[_times])
+                if (participatedCounter[msg.sender][_times] < currentCounter[_times])
                 {
                     participatedCounter[msg.sender][_times] = currentCounter[_times];
                     if (airDrop)
@@ -223,7 +223,7 @@ contract LuckyYouContract is Pausable {
                         luckyYouToken.airDrop(msg.sender, _value + _plus_value);
                     }
                     uint256 senderBalance = luckyYouToken.balanceOf(msg.sender);
-                    if (lastFiredStep[_times] &gt; 0)
+                    if (lastFiredStep[_times] > 0)
                     {
                         issueLottery(_times);
                         fundShareParticipantsTotalTokensCurrentRound[_times] += senderBalance;
@@ -242,12 +242,12 @@ contract LuckyYouContract is Pausable {
                     fundCurrentRound[_times] += times[_times] * basePrice;
 
                     //share last round fund
-                    if (fundShareRemainLastRound[_times] &gt; 0)
+                    if (fundShareRemainLastRound[_times] > 0)
                     {
                         uint256 _shareFund = fundShareLastRound[_times].mul(senderBalance).div(fundShareParticipantsTotalTokensLastRound[_times]);
-                        if(_shareFund  &gt; 0)
+                        if(_shareFund  > 0)
                         {
-                            if (_shareFund &lt;= fundShareRemainLastRound[_times]) {
+                            if (_shareFund <= fundShareRemainLastRound[_times]) {
                                 fundShareRemainLastRound[_times] -= _shareFund;
                                 msg.sender.transfer(_shareFund);
                             } else {
@@ -258,9 +258,9 @@ contract LuckyYouContract is Pausable {
                         }
                     }
 
-                    if (participantsCount[_times] &gt; minParticipants)
+                    if (participantsCount[_times] > minParticipants)
                     {
-                        if (uint256(keccak256(now, msg.sender, commonHash)) % (minParticipants * minParticipants) &lt; minParticipants)
+                        if (uint256(keccak256(now, msg.sender, commonHash)) % (minParticipants * minParticipants) < minParticipants)
                         {
                             fireLottery(_times);
                         }
@@ -280,7 +280,7 @@ contract LuckyYouContract is Pausable {
         uint256 _totalFundRate = lastFiredFund[_times].div(100);
         if (lastFiredStep[_times] == 1) {
             fundShareLastRound[_times] = _totalFundRate.mul(30) + fundShareRemainLastRound[_times];
-            if (randomNumberIncome &gt; 0)
+            if (randomNumberIncome > 0)
             {
                 if (_times == (times.length - 1) || timesEnabled[_times + 1] == false)
                 {
@@ -302,7 +302,7 @@ contract LuckyYouContract is Pausable {
             lastWinnerReward[_times] = _totalFundRate.mul(65);
             emit Winner1(lastWinner[_times], _times, currentCounter[_times] - 1, _totalFundRate.mul(65));
         } else if (lastFiredStep[_times] == 3) {
-            if (lastFiredFund[_times] &gt; (_totalFundRate.mul(30) + _totalFundRate.mul(4) + _totalFundRate.mul(65)))
+            if (lastFiredFund[_times] > (_totalFundRate.mul(30) + _totalFundRate.mul(4) + _totalFundRate.mul(65)))
             {
                 owner.transfer(lastFiredFund[_times] - _totalFundRate.mul(30) - _totalFundRate.mul(4) - _totalFundRate.mul(65));
             }
@@ -337,10 +337,10 @@ contract LuckyYouContract is Pausable {
 
     function getRandomNumber(uint _round) public payable returns (uint256){
         uint256 tokenBalance = luckyYouToken.balanceOf(msg.sender);
-        if (tokenBalance &gt;= 100000 * 10 ** 18)
+        if (tokenBalance >= 100000 * 10 ** 18)
         {
             return _getRandomNumber(_round);
-        } else if (msg.value &gt;= basePrice) {
+        } else if (msg.value >= basePrice) {
             randomNumberIncome += msg.value;
             return _getRandomNumber(_round);
         } else {

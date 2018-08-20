@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,10 +93,10 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
    uint256 public decimals;
 
    uint256 public _totalSupply;
-   mapping(address =&gt; uint256) tokenBalances;
+   mapping(address => uint256) tokenBalances;
    address ownerWallet;
    // Owner of account approves the transfer of an amount to another account
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
    
    /**
    * @dev Contructor that gives msg.sender all of existing tokens.
@@ -104,8 +104,8 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
     function MaxRoyalCoin(address wallet) public {
         owner = msg.sender;
         ownerWallet = wallet;
-        name  = &quot;MaxRoyal Coin&quot;;
-        symbol = &quot;MRC&quot;;
+        name  = "MaxRoyal Coin";
+        symbol = "MRC";
         decimals = 18;
         _totalSupply = 60000000 * 10 ** uint(decimals);
         tokenBalances[wallet] = _totalSupply;   //Since we divided the token into 10^18 parts
@@ -116,10 +116,10 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
          return tokenBalances[tokenOwner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address to, uint tokens) public returns (bool success) {
          require(to != address(0));
-         require(tokens &lt;= tokenBalances[msg.sender]);
+         require(tokens <= tokenBalances[msg.sender]);
          tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(tokens);
          tokenBalances[to] = tokenBalances[to].add(tokens);
          Transfer(msg.sender, to, tokens);
@@ -134,8 +134,8 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= tokenBalances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= tokenBalances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     tokenBalances[_from] = tokenBalances[_from].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
@@ -167,7 +167,7 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
      
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
          return allowed[tokenOwner][spender];
@@ -193,7 +193,7 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -204,7 +204,7 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
 
      
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();
@@ -222,9 +222,9 @@ contract MaxRoyalCoin is ERC20Interface,Ownable {
      //only to be used by the ICO
      
      function mint(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[wallet] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[wallet] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller's balance
       Transfer(wallet, buyer, tokenAmount); 
       _totalSupply = _totalSupply.sub(tokenAmount);
     }
@@ -285,14 +285,14 @@ contract MaxRoyalCoinCrowdsale {
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
     require(isCrowdsalePaused == false);
-    require(msg.value&gt;0);
-    require(TOKENS_SOLD&lt;maxTokensToSale);
+    require(msg.value>0);
+    require(TOKENS_SOLD<maxTokensToSale);
     uint256 weiAmount = msg.value;
     uint256 tokens;
     uint256 bonus;
 
     // calculate token amount to be transferred
-    if (TOKENS_SOLD &lt; 10000000 * 10 ** 18)
+    if (TOKENS_SOLD < 10000000 * 10 ** 18)
     {
         tokens = weiAmount.mul(ratePerWeiFirstPhase);
     }
@@ -307,7 +307,7 @@ contract MaxRoyalCoinCrowdsale {
     // update state
     weiRaised = weiRaised.add(weiAmount);
     TOKENS_SOLD = TOKENS_SOLD.add(tokens);
-    require (TOKENS_SOLD&lt;=maxTokensToSale);
+    require (TOKENS_SOLD<=maxTokensToSale);
     token.mint(wallet, beneficiary, tokens); 
     TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
     forwardFunds();

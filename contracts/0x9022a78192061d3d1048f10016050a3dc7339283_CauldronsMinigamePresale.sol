@@ -19,20 +19,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -69,7 +69,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,7 +134,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -145,8 +145,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -163,7 +163,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -212,7 +212,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -256,8 +256,8 @@ contract AcceptsTokens {
 contract ETToken is Owned, StandardToken {
     using SafeMath for uint;
 
-    string public name = &quot;ETH.TOWN Token&quot;;
-    string public symbol = &quot;ETIT&quot;;
+    string public name = "ETH.TOWN Token";
+    string public symbol = "ETIT";
     uint8 public decimals = 18;
 
     address public beneficiary;
@@ -268,10 +268,10 @@ contract ETToken is Owned, StandardToken {
         _;
     }
 
-    mapping (uint32 =&gt; address) public floorContracts;
-    mapping (address =&gt; bool) public canAcceptTokens;
+    mapping (uint32 => address) public floorContracts;
+    mapping (address => bool) public canAcceptTokens;
 
-    mapping (address =&gt; bool) public isMinter;
+    mapping (address => bool) public isMinter;
 
     modifier onlyMinters {
         require(msg.sender == owner || isMinter[msg.sender]);
@@ -352,7 +352,7 @@ contract ETToken is Owned, StandardToken {
     }
 
     function burn(uint256 _amount) external {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         totalSupply_ = totalSupply_.sub(_amount);
@@ -388,7 +388,7 @@ contract ETToken is Owned, StandardToken {
     */
     function transferWithParams(address _to, uint256 _value, uint256 _param1, uint256 _param2, uint256 _param3) onlyPayloadSize(5 * 32) external returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -451,24 +451,24 @@ contract Floor is Owned {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function _processDividends(uint256 _value) internal {
-        if (_value &gt; 0) {
+        if (_value > 0) {
             address(baseContract).transfer(_value);
             baseContract.acceptDividends(_value, floorId);
         }
     }
 
     function _processCredit(address _user, uint256 _value) internal {
-        if (_value &gt; 0) {
+        if (_value > 0) {
             _user.transfer(_value);
         }
     }
 
     function _rewardTokens(address _user, uint256 _tokens) internal {
-        if (_tokens &gt; 0) {
+        if (_tokens > 0) {
             baseContract.rewardTokensFloor(_user, _tokens, floorId);
         }
     }
@@ -480,7 +480,7 @@ contract StarAuction {
 }
 
 contract CharacterSale {
-    mapping (address =&gt; uint32[]) public characters;
+    mapping (address => uint32[]) public characters;
 }
 
 contract CauldronsMinigamePresale is Floor, AcceptsTokens {
@@ -501,17 +501,17 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
         uint32 currentRound;
         uint256 expirationTimer;
 
-        mapping(uint32 =&gt; address[]) contributors;
+        mapping(uint32 => address[]) contributors;
         uint32 contributorsCount;
-        mapping(uint32 =&gt; mapping(address =&gt; uint256)) contributions;
+        mapping(uint32 => mapping(address => uint256)) contributions;
         uint256 totalContribution;
         address topContributor;
     }
 
-    mapping(uint8 =&gt; Cauldron) public cauldrons;
+    mapping(uint8 => Cauldron) public cauldrons;
 
     uint constant numStarAuctions = 12;
-    mapping(uint8 =&gt; StarAuction) public starAuctions; // auction 7 = horse
+    mapping(uint8 => StarAuction) public starAuctions; // auction 7 = horse
 
     event Contribution(address indexed from, uint256 value, uint8 cauldronId, uint32 round);
     event Winner(address user, uint256 value, uint8 cauldronId, uint32 round);
@@ -581,7 +581,7 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
     }
 
     function isCauldronExpired(uint8 _cauldronId) public view returns (bool) {
-        return cauldrons[_cauldronId].expirationTimer != 0 &amp;&amp; cauldrons[_cauldronId].expirationTimer &lt; now;
+        return cauldrons[_cauldronId].expirationTimer != 0 && cauldrons[_cauldronId].expirationTimer < now;
     }
 
     function horseMaster() public view returns (address) {
@@ -622,12 +622,12 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
         cauldron.contributions[cauldron.currentRound][_from] = userNewContribution;
         cauldron.totalContribution = cauldron.totalContribution.add(_value);
 
-        if (userNewContribution &gt; cauldron.contributions[cauldron.currentRound][cauldron.topContributor]) {
+        if (userNewContribution > cauldron.contributions[cauldron.currentRound][cauldron.topContributor]) {
             cauldron.topContributor = _from;
         }
 
         uint8 peopleToStart = _cauldronId == 1 ? 10 : 3;
-        if (cauldron.expirationTimer == 0 &amp;&amp; cauldron.contributorsCount &gt;= peopleToStart) {
+        if (cauldron.expirationTimer == 0 && cauldron.contributorsCount >= peopleToStart) {
             cauldron.expirationTimer = now + cauldron.timerDuration;
         }
 
@@ -638,7 +638,7 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
         require(!_isContract(_from));
         require(enabled);
         require(cauldrons[uint8(_cauldronId)].cauldronType == CauldronType.EtitCauldron);
-        require(_value &gt;= 1 finney);
+        require(_value >= 1 finney);
 
         _acceptContribution(_from, _value, uint8(_cauldronId));
     }
@@ -647,7 +647,7 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
         require(!_isContract(msg.sender));
         require(enabled);
         require(cauldrons[_cauldronId].cauldronType == CauldronType.EtherCauldron);
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
 
         _acceptContribution(msg.sender, msg.value, _cauldronId);
     }
@@ -668,13 +668,13 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
     function calculateReward(uint256 totalValue, uint256 basePercent, uint8 level) public pure returns (uint256) {
         // Reward = totalValue * rewardPercent%
         // rewardPercent = basePercent*(91.5..99%)
-        uint256 levelAddition = uint256(level).mul(5); // 0..15 -&gt; 0..75
+        uint256 levelAddition = uint256(level).mul(5); // 0..15 -> 0..75
         uint256 modificationPercent = levelAddition.add(915);
 
         uint256 finalPercent1000 = basePercent.mul(modificationPercent); // 0..100000
 
-        assert(finalPercent1000 / 1000 &lt;= basePercent);
-        assert(finalPercent1000 &lt;= 100000);
+        assert(finalPercent1000 / 1000 <= basePercent);
+        assert(finalPercent1000 <= 100000);
 
         return totalValue.mul(finalPercent1000).div(100000);
     }
@@ -692,13 +692,13 @@ contract CauldronsMinigamePresale is Floor, AcceptsTokens {
 
         Cauldron storage cauldron = cauldrons[_cauldronId];
 
-        require(cauldron.contributions[cauldron.currentRound][winner1] &gt; 0);
-        require(cauldron.contributions[cauldron.currentRound][winner2] &gt; 0);
-        require(cauldron.contributions[cauldron.currentRound][winner3] &gt; 0);
+        require(cauldron.contributions[cauldron.currentRound][winner1] > 0);
+        require(cauldron.contributions[cauldron.currentRound][winner2] > 0);
+        require(cauldron.contributions[cauldron.currentRound][winner3] > 0);
 
-        require(winner1Level &lt;= 15);
-        require(winner2Level &lt;= 15);
-        require(winner3Level &lt;= 15);
+        require(winner1Level <= 15);
+        require(winner2Level <= 15);
+        require(winner3Level <= 15);
 
         uint256 winner1Reward = calculateReward(cauldron.totalContribution, 50, winner1Level);
         uint256 winner2Reward = calculateReward(cauldron.totalContribution, 35, winner2Level);

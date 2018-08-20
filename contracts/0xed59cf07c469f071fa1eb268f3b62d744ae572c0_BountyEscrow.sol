@@ -23,7 +23,7 @@ contract BountyEscrow {
   // Gas used in each `send` will be default stipend, 2300
   function payout(address[] recipients, uint256[] amounts) {
     require(recipients.length == amounts.length);
-    for (uint i = 0; i &lt; recipients.length; i++) {
+    for (uint i = 0; i < recipients.length; i++) {
       Payout(
         msg.sender,
         recipients[i],

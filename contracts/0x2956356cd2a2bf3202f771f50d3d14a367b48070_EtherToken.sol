@@ -2,14 +2,14 @@
 
   Copyright 2017 ZeroEx Intl.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -58,8 +58,8 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint _value) returns (bool) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -68,7 +68,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -91,8 +91,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -110,13 +110,13 @@ contract UnlimitedAllowanceToken is StandardToken {
         returns (bool)
     {
         uint allowance = allowed[_from][msg.sender];
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowance &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt;= balances[_to]
+        if (balances[_from] >= _value
+            && allowance >= _value
+            && balances[_to] + _value >= balances[_to]
         ) {
             balances[_to] += _value;
             balances[_from] -= _value;
-            if (allowance &lt; MAX_UINT) {
+            if (allowance < MAX_UINT) {
                 allowed[_from][msg.sender] -= _value;
             }
             Transfer(_from, _to, _value);
@@ -140,37 +140,37 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal constant returns (uint256) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
 contract EtherToken is UnlimitedAllowanceToken, SafeMath {
 
-    string constant public name = &quot;Ether Token&quot;;
-    string constant public symbol = &quot;WETH&quot;;
+    string constant public name = "Ether Token";
+    string constant public symbol = "WETH";
     uint8 constant public decimals = 18;
 
     /// @dev Fallback to calling deposit when ether is sent directly to contract.

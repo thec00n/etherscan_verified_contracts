@@ -1,7 +1,7 @@
-// &#169; 2016 Ambisafe Inc. No reuse without written permission is allowed.
+// © 2016 Ambisafe Inc. No reuse without written permission is allowed.
 
 contract Delegate {
-    mapping(address =&gt; mapping(address =&gt; bool)) public senderDelegates;
+    mapping(address => mapping(address => bool)) public senderDelegates;
 
     modifier onlyDelegate(address _sender) {
         if (_sender == msg.sender || address(this) == msg.sender || senderDelegates[_sender][msg.sender]) {
@@ -26,15 +26,15 @@ contract MultiAccess is Delegate {
 
     struct PendingState {
         PendingOperation[] pending;
-        mapping(bytes32 =&gt; uint) pendingIndex;
+        mapping(bytes32 => uint) pendingIndex;
     }
 
-    mapping(uint =&gt; PendingState) pendingState;
+    mapping(uint => PendingState) pendingState;
     uint currentPendingState;
 
     uint public multiAccessRequired;
 
-    mapping(address =&gt; uint) ownerIndex;
+    mapping(address => uint) ownerIndex;
     address[] public multiAccessOwners;
 
 
@@ -64,7 +64,7 @@ contract MultiAccess is Delegate {
         }
         uint index = ownerIndex[_owner];
         var pendingOp = _state().pending[pos];
-        if (index &gt;= pendingOp.ownersDone.length) {
+        if (index >= pendingOp.ownersDone.length) {
             return false;
         }
         return pendingOp.ownersDone[index];
@@ -72,7 +72,7 @@ contract MultiAccess is Delegate {
 
     function multiAccessGetOwners() constant returns(address[]) {
         address[] memory owners = new address[](multiAccessOwners.length - 1);
-        for (uint i = 1; i &lt; multiAccessOwners.length; i++) {
+        for (uint i = 1; i < multiAccessOwners.length; i++) {
             owners[i-1] = multiAccessOwners[i];
         }
         return owners;
@@ -105,14 +105,14 @@ contract MultiAccess is Delegate {
         }
 
         var pendingOp = _state().pending[pos];
-        if (pendingOp.yetNeeded &lt;= 1) {
+        if (pendingOp.yetNeeded <= 1) {
             Confirmation(_owner, _operation, true);
             _removeOperation(_operation);
             return true;
         } else {
             Confirmation(_owner, _operation, false);
             pendingOp.yetNeeded--;
-            if (index &gt;= pendingOp.ownersDone.length) {
+            if (index >= pendingOp.ownersDone.length) {
                 pendingOp.ownersDone.length = index+1;
             }
             pendingOp.ownersDone[index] = true;
@@ -128,7 +128,7 @@ contract MultiAccess is Delegate {
 
     function _removeOperation(bytes32 _operation) internal {
         uint pos = _state().pendingIndex[_operation];
-        if (pos &lt; _state().pending.length-1) {
+        if (pos < _state().pending.length-1) {
             PendingOperation last = _state().pending[_state().pending.length-1];
             _state().pending[pos] = last;
             _state().pendingIndex[last.op] = pos;
@@ -138,7 +138,7 @@ contract MultiAccess is Delegate {
     }
 
     function multiAccessIsOwner(address _addr) constant returns(bool) {
-        return ownerIndex[_addr] &gt; 0;
+        return ownerIndex[_addr] > 0;
     }
 
     function multiAccessRevoke(bytes32 _operation) returns(bool) {
@@ -205,10 +205,10 @@ contract MultiAccess is Delegate {
         if (index == 0) {
             return false;
         }
-        if (multiAccessRequired &gt;= multiAccessOwners.length-1) {
+        if (multiAccessRequired >= multiAccessOwners.length-1) {
             return false;
         }
-        if (index &lt; multiAccessOwners.length-1) {
+        if (index < multiAccessOwners.length-1) {
             address last = multiAccessOwners[multiAccessOwners.length-1];
             multiAccessOwners[index] = last;
             ownerIndex[last] = index;
@@ -225,7 +225,7 @@ contract MultiAccess is Delegate {
     }
 
     function multiAccessChangeRequirementD(uint _newRequired, address _sender) external onlyDelegate(_sender) onlymanyowners(_sender, sha3(msg.sig, _newRequired)) returns(bool) {
-        if (_newRequired == 0 || _newRequired &gt; multiAccessOwners.length-1) {
+        if (_newRequired == 0 || _newRequired > multiAccessOwners.length-1) {
             return false;
         }
         multiAccessRequired = _newRequired;

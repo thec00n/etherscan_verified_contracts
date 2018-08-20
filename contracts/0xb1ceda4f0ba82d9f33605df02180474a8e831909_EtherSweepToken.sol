@@ -3,10 +3,10 @@ pragma solidity ^0.4.19;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -22,12 +22,12 @@ library SafeMath {
 contract ERC20Token {
     using SafeMath for uint;
 
-    string public constant symbol = &quot;EST&quot;;
-    string public constant name = &quot;EtherSweep Token&quot;;
+    string public constant symbol = "EST";
+    string public constant name = "EtherSweep Token";
     uint8 public constant decimals = 9;
     uint public totalSupply = 0;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function balanceOf(address tokenOwner) public constant returns (uint) {
         return balances[tokenOwner];
@@ -98,12 +98,12 @@ contract ICO is ERC20Token, Owned {
     }
 
     function icoTokenPrice() public constant returns (uint) {
-        require(now &lt;= icoEnd);
+        require(now <= icoEnd);
         return priceStart.add(priceEnd.sub(priceStart).mul(now.sub(icoBegin)).div(icoEnd.sub(icoBegin)));
     }
 
     function () public payable {
-        require(now &lt;= icoEnd &amp;&amp; msg.value &gt; 0);
+        require(now <= icoEnd && msg.value > 0);
         uint coins = msg.value.mul(uint(10)**decimals).div(icoTokenPrice());
         totalSupply = totalSupply.add(coins.mul(100).div(icoPart));
         balances[msg.sender] = balances[msg.sender].add(coins);
@@ -139,7 +139,7 @@ contract EtherSweepToken is ICO {
     uint8 public constant comission = 5;
     uint public reserved = 0;
     BetEvent[] public betEvents;
-    mapping(uint =&gt; Bet[]) public bets;
+    mapping(uint => Bet[]) public bets;
 
     function EtherSweepToken() public ICO(60*60*24*30) {
     }
@@ -149,7 +149,7 @@ contract EtherSweepToken is ICO {
     }
 
     function withdraw(uint amount) public {
-        require(amount &gt; 0);
+        require(amount > 0);
         var toTransfer = amount.mul(availableBalance()).div(totalSupply);
         balances[msg.sender] = balances[msg.sender].sub(amount);
         totalSupply = totalSupply.sub(amount);
@@ -161,8 +161,8 @@ contract EtherSweepToken is ICO {
     }
 
     function getEventBanks(uint eventId) public constant returns (uint[3] banks) {
-        require(eventId &lt; betEvents.length);
-        for (uint i = 0; i &lt; bets[eventId].length; i++) {
+        require(eventId < betEvents.length);
+        for (uint i = 0; i < bets[eventId].length; i++) {
             Bet storage bet = bets[eventId][i];
             banks[uint(bet.winner)] = banks[uint(bet.winner)].add(bet.amount);
         }
@@ -170,12 +170,12 @@ contract EtherSweepToken is ICO {
 
     function betFinalize(uint eventId, Winner winner) public onlyOwner {
         BetEvent storage betEvent = betEvents[eventId];
-        require(winner &lt; Winner.None &amp;&amp; betEvent.winner == Winner.None &amp;&amp; ((winner != Winner.Draw) || betEvent.drawAllowed) &amp;&amp; eventId &lt; betEvents.length &amp;&amp; now &gt; betEvent.until);
+        require(winner < Winner.None && betEvent.winner == Winner.None && ((winner != Winner.Draw) || betEvent.drawAllowed) && eventId < betEvents.length && now > betEvent.until);
         betEvent.winner = winner;
         uint[3] memory banks = getEventBanks(eventId);
         reserved = reserved.sub(banks[0]).sub(banks[1]).sub(banks[2]);
         if (winner == Winner.Cancelled) {
-            for (uint i = 0; i &lt; bets[eventId].length; i++) {
+            for (uint i = 0; i < bets[eventId].length; i++) {
                 Bet storage bet = bets[eventId][i];
                 bet.user.transfer(bet.amount);
             }
@@ -183,7 +183,7 @@ contract EtherSweepToken is ICO {
             uint loserBank = banks[0].add(banks[1]).add(banks[2]).sub(banks[uint(winner)]).mul(100 - comission).div(100);
             uint winnerBank = banks[uint(winner)];
     
-            for (i = 0; i &lt; bets[eventId].length; i++) {
+            for (i = 0; i < bets[eventId].length; i++) {
                 bet = bets[eventId][i];
                 if (bet.winner == winner) {
                     bet.user.transfer(bet.amount.add(bet.amount.mul(loserBank).div(winnerBank)));
@@ -193,18 +193,18 @@ contract EtherSweepToken is ICO {
     }
 
     function betMake(uint eventId, Winner winner) public payable {
-        require(winner != Winner.Cancelled &amp;&amp; winner &lt; Winner.None &amp;&amp; ((winner != Winner.Draw) || betEvents[eventId].drawAllowed) &amp;&amp; msg.value &gt; 0 &amp;&amp; eventId &lt; betEvents.length &amp;&amp; now &lt;= betEvents[eventId].until);
+        require(winner != Winner.Cancelled && winner < Winner.None && ((winner != Winner.Draw) || betEvents[eventId].drawAllowed) && msg.value > 0 && eventId < betEvents.length && now <= betEvents[eventId].until);
         bets[eventId].push(Bet(msg.sender, winner, msg.value));
         reserved = reserved.add(msg.value);
     }
 
     function getEvents(uint from, string category, uint mode) public constant returns (uint cnt, uint[20] res) {
-        require(mode &lt; 3 &amp;&amp; from &lt;= betEvents.length);
+        require(mode < 3 && from <= betEvents.length);
         bytes32 categoryHash = keccak256(category);
         cnt = 0;
-        for (int i = int(from == 0 ? betEvents.length : from)-1; i &gt;= 0; i--) {
+        for (int i = int(from == 0 ? betEvents.length : from)-1; i >= 0; i--) {
             uint index = uint(i);
-            if ((mode == 0 ? betEvents[index].until &gt;= now : (mode == 1 ? betEvents[index].until &lt; now &amp;&amp; betEvents[index].winner == Winner.None : (mode == 2 ? betEvents[index].winner != Winner.None : false))) &amp;&amp; (keccak256(betEvents[index].category) == categoryHash)) {
+            if ((mode == 0 ? betEvents[index].until >= now : (mode == 1 ? betEvents[index].until < now && betEvents[index].winner == Winner.None : (mode == 2 ? betEvents[index].winner != Winner.None : false))) && (keccak256(betEvents[index].category) == categoryHash)) {
                 res[cnt++] = index;
                 if (cnt == res.length) break;
             }

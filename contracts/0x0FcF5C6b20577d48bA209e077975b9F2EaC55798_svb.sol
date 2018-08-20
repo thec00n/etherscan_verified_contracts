@@ -56,8 +56,8 @@ contract svb {
     // totalSupply is zero by default, owner can issue and destroy coins any amount any time
     uint constant totalSupplyDefault = 0;
 
-    string public constant symbol = &quot;SVB&quot;;
-    string public constant name = &quot;Silver&quot;;
+    string public constant symbol = "SVB";
+    string public constant name = "Silver";
     uint8 public constant decimals = 5;
     // minimum fee is 0.00001
     uint32 public constant minFee = 1;
@@ -88,13 +88,13 @@ contract svb {
     address public transferFeeOwner;
  
     // Balances for each account
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
     // demurring fee deposit payed date for each account
-    mapping(address =&gt; uint64) timestamps;
+    mapping(address => uint64) timestamps;
  
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => mapping (address => uint)) allowed;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed from , address indexed to , uint256 value);
@@ -103,7 +103,7 @@ contract svb {
 
     // if supply provided is 0, then default assigned
     function svb(uint supply) {
-        if (supply &gt; 0) {
+        if (supply > 0) {
             totalSupply = supply;
         } else {
             totalSupply = totalSupplyDefault;
@@ -128,12 +128,12 @@ contract svb {
     // charge demurring fee for previuos period
     // fee is not applied to owners
     function chargeDemurringFee(address addr) internal {
-        if (addr != owner &amp;&amp; addr != transferFeeOwner &amp;&amp; addr != demurringFeeOwner &amp;&amp; balances[addr] &gt; 0 &amp;&amp; now &gt; timestamps[addr] + 60) {
+        if (addr != owner && addr != transferFeeOwner && addr != demurringFeeOwner && balances[addr] > 0 && now > timestamps[addr] + 60) {
             var mins = (now - timestamps[addr]) / 60;
             var fee = balances[addr] * mins * demurringFeeNum / demurringFeeDenum;
-            if (fee &lt; minFee) {
+            if (fee < minFee) {
                 fee = minFee;
-            } else if (fee &gt; balances[addr]) {
+            } else if (fee > balances[addr]) {
                 fee = balances[addr];
             }
 
@@ -148,11 +148,11 @@ contract svb {
 
     // fee is not applied to owners
     function chargeTransferFee(address addr, uint amount) internal returns (uint) {
-        if (addr != owner &amp;&amp; addr != transferFeeOwner &amp;&amp; addr != demurringFeeOwner &amp;&amp; balances[addr] &gt; 0) {
+        if (addr != owner && addr != transferFeeOwner && addr != demurringFeeOwner && balances[addr] > 0) {
             var fee = amount * transferFeeNum / transferFeeDenum;
-            if (fee &lt; minFee) {
+            if (fee < minFee) {
                 fee = minFee;
-            } else if (fee &gt; balances[addr]) {
+            } else if (fee > balances[addr]) {
                 fee = balances[addr];
             }
             amount = amount - fee;
@@ -166,17 +166,17 @@ contract svb {
     }
  
     function transfer(address to, uint amount) returns (bool) {
-        if (amount &gt;= minTransfer
-            &amp;&amp; balances[msg.sender] &gt;= amount
-            &amp;&amp; balances[to] + amount &gt; balances[to]
+        if (amount >= minTransfer
+            && balances[msg.sender] >= amount
+            && balances[to] + amount > balances[to]
             ) {
                 chargeDemurringFee(msg.sender);
 
-                if (balances[msg.sender] &gt;= amount) {
+                if (balances[msg.sender] >= amount) {
                     amount = chargeTransferFee(msg.sender, amount);
 
                     // charge recepient with demurring fee
-                    if (balances[to] &gt; 0) {
+                    if (balances[to] > 0) {
                         chargeDemurringFee(to);
                     } else {
                         timestamps[to] = uint64(now);
@@ -193,20 +193,20 @@ contract svb {
     }
  
     function transferFrom(address from, address to, uint amount) returns (bool) {
-        if ( amount &gt;= minTransfer
-            &amp;&amp; allowed[from][msg.sender] &gt;= amount
-            &amp;&amp; balances[from] &gt;= amount
-            &amp;&amp; balances[to] + amount &gt; balances[to]
+        if ( amount >= minTransfer
+            && allowed[from][msg.sender] >= amount
+            && balances[from] >= amount
+            && balances[to] + amount > balances[to]
             ) {
                 allowed[from][msg.sender] -= amount;
 
                 chargeDemurringFee(msg.sender);
 
-                if (balances[msg.sender] &gt;= amount) {
+                if (balances[msg.sender] >= amount) {
                     amount = chargeTransferFee(msg.sender, amount);
 
                     // charge recepient with demurring fee
-                    if (balances[to] &gt; 0) {
+                    if (balances[to] > 0) {
                         chargeDemurringFee(to);
                     } else {
                         timestamps[to] = uint64(now);
@@ -233,22 +233,22 @@ contract svb {
     }
 
     function setTransferFee(uint32 numinator, uint32 denuminator) onlyOwner {
-        require(denuminator &gt; 0 &amp;&amp; numinator &lt; denuminator);
+        require(denuminator > 0 && numinator < denuminator);
         transferFeeNum = numinator;
         transferFeeDenum = denuminator;
     }
 
     function setDemurringFee(uint32 numinator, uint32 denuminator) onlyOwner {
-        require(denuminator &gt; 0 &amp;&amp; numinator &lt; denuminator);
+        require(denuminator > 0 && numinator < denuminator);
         demurringFeeNum = numinator;
         demurringFeeDenum = denuminator;
     }
 
     function sell(address to, uint amount) onlyOwner {
-        require(amount &gt; minTransfer &amp;&amp; balances[this] &gt;= amount);
+        require(amount > minTransfer && balances[this] >= amount);
 
         // charge recepient with demurring fee
-        if (balances[to] &gt; 0) {
+        if (balances[to] > 0) {
             chargeDemurringFee(to);
         } else {
             timestamps[to] = uint64(now);
@@ -260,7 +260,7 @@ contract svb {
 
     // issue new coins
     function issue(uint amount) onlyOwner {
-         if (totalSupply + amount &gt; totalSupply) {
+         if (totalSupply + amount > totalSupply) {
              totalSupply += amount;
              balances[this] += amount;
          }
@@ -268,7 +268,7 @@ contract svb {
 
     // destroy existing coins
     function destroy(uint amount) onlyOwner {
-          require(amount&gt;0 &amp;&amp; balances[this] &gt;= amount);
+          require(amount>0 && balances[this] >= amount);
           balances[this] -= amount;
           totalSupply -= amount;
     }

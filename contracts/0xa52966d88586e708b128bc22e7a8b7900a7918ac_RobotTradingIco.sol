@@ -19,18 +19,18 @@ contract SafeMath {
     function div(uint256 a, uint256 b) constant internal returns (uint256) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) constant internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) constant internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -40,7 +40,7 @@ contract SafeMath {
 
     // ICO date bonus calculation
     function dateBonus(uint roundIco, uint endIco, uint256 amount) internal returns (uint256) {
-        if(endIco &gt;= now &amp;&amp; roundIco == 0){
+        if(endIco >= now && roundIco == 0){
             return add(amount,mulByFraction(amount, 15, 100));
         }else{
             return amount;
@@ -53,7 +53,7 @@ contract SafeMath {
 /// Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -70,20 +70,20 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; bool) ownerAppended;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => bool) ownerAppended;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     address[] public owners;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             if(!ownerAppended[_to]) {
@@ -103,7 +103,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -151,8 +151,8 @@ contract RobotTradingToken is StandardToken, SafeMath {
      * Token meta data
      */
      
-    string public constant name = &quot;Robot Trading&quot;;
-    string public constant symbol = &quot;RTD&quot;;
+    string public constant name = "Robot Trading";
+    string public constant symbol = "RTD";
     uint public constant decimals = 18;
 
     // tottal supply
@@ -179,22 +179,22 @@ contract RobotTradingToken is StandardToken, SafeMath {
         icoContract = _icoContract;
     }
 
-    /// @dev Burns tokens from address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Burns tokens from address. It's can be applied by account with address this.icoContract
     /// @param _from Address of account, from which will be burned tokens
     /// @param _value Amount of tokens, that will be burned
     function burnTokens(address _from, uint _value) onlyIcoContract {
         assert(_from != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_from] = sub(balances[_from], _value);
     }
 
-    /// @dev Adds tokens to address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Adds tokens to address. It's can be applied by account with address this.icoContract
     /// @param _to Address of account to which the tokens will pass
     /// @param _value Amount of tokens
     function emitTokens(address _to, uint _value) onlyIcoContract {
         assert(_to != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_to] = add(balances[_to], _value);
 
@@ -232,7 +232,7 @@ contract RobotTradingIco is SafeMath {
 
     State public currentState = State.Pause;
 
-    string public constant name = &quot;Robot Trading ICO&quot;;
+    string public constant name = "Robot Trading ICO";
 
     // Addresses of founders and other level
     address public accManager;
@@ -278,7 +278,7 @@ contract RobotTradingIco is SafeMath {
 
     modifier whenInitialized() {
         // only when contract is initialized
-        require(currentState &gt;= State.Init);
+        require(currentState >= State.Init);
         _;
     }
 
@@ -374,15 +374,15 @@ contract RobotTradingIco is SafeMath {
     /// @dev Buy quantity of tokens depending on the amount of sent ethers.
     /// @param _buyer Address of account which will receive tokens
     function buyTokens(address _buyer) private {
-        assert(_buyer != 0x0 &amp;&amp; roundData[roundICO].dateEnd &gt;= now &amp;&amp; roundData[roundICO].dateStart &lt;= now);
-        require(msg.value &gt; 0);
+        assert(_buyer != 0x0 && roundData[roundICO].dateEnd >= now && roundData[roundICO].dateStart <= now);
+        require(msg.value > 0);
 
         uint tokensToEmit =  mul(msg.value, roundData[roundICO].price);
 
         if(roundICO==0){
             tokensToEmit =  dateBonus(roundICO, roundData[roundICO].dateEnd, tokensToEmit);
         }
-        require(add(roundData[roundICO].soldTokens, tokensToEmit) &lt;= roundData[roundICO].supply);
+        require(add(roundData[roundICO].soldTokens, tokensToEmit) <= roundData[roundICO].supply);
         roundData[roundICO].soldTokens = add(roundData[roundICO].soldTokens, tokensToEmit);
  
         //emit tokens to token holder
@@ -395,7 +395,7 @@ contract RobotTradingIco is SafeMath {
         buyTokens(msg.sender);
     }
 
-    /// @dev Burn tokens from accounts only in state &quot;not migrated&quot;. Only manager can do it
+    /// @dev Burn tokens from accounts only in state "not migrated". Only manager can do it
     /// @param _from Address of account
     function burnTokens(address _from, uint _value) onlyManager notMigrated {
         robottradingToken.burnTokens(_from, _value);
@@ -403,15 +403,15 @@ contract RobotTradingIco is SafeMath {
 
     /// @dev Partial withdraw. Only manager can do it
     function withdrawEther(uint _value) onlyManager {
-        require(_value &gt; 0);
-        assert(_value &lt;= this.balance);
+        require(_value > 0);
+        assert(_value <= this.balance);
         // send 123 to get 1.23
         accRecive.transfer(_value * 10000000000000000); // 10^16
     }
 
     /// @dev Ether withdraw. Only manager can do it
     function withdrawAllEther() onlyManager {
-        if(this.balance &gt; 0)
+        if(this.balance > 0)
         {
             accRecive.transfer(this.balance);
         }
@@ -429,19 +429,19 @@ contract RobotTradingIco is SafeMath {
         sentTokensToPartner = true;
     }
 
-    /// @dev Send limit tokens to Partner. Can&#39;t be sent no more limit 11%
+    /// @dev Send limit tokens to Partner. Can't be sent no more limit 11%
     function sendLimitTokensToPartner(uint _value) onlyManager whenInitialized {
         require(!sentTokensToPartner);
         uint partnerLimit = mulByFraction(supplyLimit, 11, 100); // calc token 11%
-        uint partnerReward = sub(partnerLimit, tokensToPartner); // calc token &lt;= 11%
+        uint partnerReward = sub(partnerLimit, tokensToPartner); // calc token <= 11%
         uint partnerValue = mul(_value, BASE); // send 123 to get 123 token no decimel
 
-        require(partnerReward &gt;= partnerValue);
+        require(partnerReward >= partnerValue);
         tokensToPartner = add(tokensToPartner, partnerValue);
         robottradingToken.emitTokens(accPartner, partnerValue);
     }
 
-    /// @dev Send all tokens to founders. Can&#39;t be sent no more limit 30%
+    /// @dev Send all tokens to founders. Can't be sent no more limit 30%
     function sendTokensToCompany() onlyManager whenInitialized {
         require(!sentTokensToCompany);
 
@@ -449,7 +449,7 @@ contract RobotTradingIco is SafeMath {
         uint companyLimit = mulByFraction(supplyLimit, 30, 100); // calc token 30%
         uint companyReward = sub(companyLimit, tokensToCompany); // 30% - tokensToCompany = amount for company
 
-        require(companyReward &gt; 0);
+        require(companyReward > 0);
 
         tokensToCompany = add(tokensToCompany, companyReward);
 
@@ -457,21 +457,21 @@ contract RobotTradingIco is SafeMath {
         sentTokensToCompany = true;
     }
 
-    /// @dev Send limit tokens to company. Can&#39;t be sent no more limit 30%
+    /// @dev Send limit tokens to company. Can't be sent no more limit 30%
     function sendLimitTokensToCompany(uint _value) onlyManager whenInitialized {
         require(!sentTokensToCompany);
         uint companyLimit = mulByFraction(supplyLimit, 30, 100); // calc token 30%
-        uint companyReward = sub(companyLimit, tokensToCompany); // calc token &lt;= 30%
+        uint companyReward = sub(companyLimit, tokensToCompany); // calc token <= 30%
         uint companyValue = mul(_value, BASE); // send 123 to get 123 token no decimel
 
-        require(companyReward &gt;= companyValue);
+        require(companyReward >= companyValue);
         tokensToCompany = add(tokensToCompany, companyValue);
         robottradingToken.emitTokens(accCompany, companyValue);
     }
 
     /// @dev Send all tokens to founders. 
     function sendAllTokensToFounder(uint _round) onlyManager whenInitialized {
-        require(roundData[_round].soldTokens&gt;=1);
+        require(roundData[_round].soldTokens>=1);
 
         uint icoToken = add(roundData[_round].soldTokens,roundData[_round].sendTokens);
         uint icoSupply = roundData[_round].supply;
@@ -485,7 +485,7 @@ contract RobotTradingIco is SafeMath {
 
     /// @dev Send limit tokens to founders. 
     function sendLimitTokensToFounder(uint _round, uint _value) onlyManager whenInitialized {
-        require(roundData[_round].soldTokens&gt;=1);
+        require(roundData[_round].soldTokens>=1);
 
         uint icoToken = add(roundData[_round].soldTokens,roundData[_round].sendTokens);
         uint icoSupply = roundData[_round].supply;
@@ -493,16 +493,16 @@ contract RobotTradingIco is SafeMath {
         uint founderReward = sub(icoSupply, icoToken);
         uint founderValue = mul(_value, BASE); // send 123 to get 123 token no decimel
 
-        require(founderReward &gt;= founderValue);
+        require(founderReward >= founderValue);
 
         roundData[_round].sendTokens = add(roundData[_round].sendTokens, founderValue);
         tokensToFunder = add(tokensToFunder,founderValue);
         robottradingToken.emitTokens(accFounder, founderValue);
     }
 
-    /// @dev inc Supply tokens . Can&#39;t be inc no more 35%
+    /// @dev inc Supply tokens . Can't be inc no more 35%
     function incSupply(uint _percent) onlyManager whenInitialized {
-        require(_percent&lt;=35);
+        require(_percent<=35);
         supplyLimit = add(supplyLimit,mulByFraction(supplyLimit, _percent, 100));
     }
 

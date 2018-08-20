@@ -3,13 +3,13 @@ pragma solidity 0.4.18;
 
 /* 
     Author: Patrick Guay @ Vanbex and Etherparty
-    <span class="__cf_email__" data-cfemail="d4a4b5a0a6bdb7bf94a2b5bab6b1acfab7bbb9">[email&#160;protected]</span>
+    <span class="__cf_email__" data-cfemail="d4a4b5a0a6bdb7bf94a2b5bab6b1acfab7bbb9">[email protected]</span>
 */
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,8 +51,8 @@ contract Ownable {
 contract VancouverCharityDrive is Ownable {
 
 
-    mapping(address =&gt; Pledge[]) public pledges; // keeps all the pledges per address
-    mapping(address =&gt; CompanyInfo) public companies; // keeps all the names of companies per address
+    mapping(address => Pledge[]) public pledges; // keeps all the pledges per address
+    mapping(address => CompanyInfo) public companies; // keeps all the names of companies per address
     address[] public participatingCompanies;
 
     event PledgeCreated(address indexed pledger, uint256 amount, string companyName);
@@ -87,14 +87,14 @@ contract VancouverCharityDrive is Ownable {
     }
 
     function createPledge(uint _amount, string _charityName, string _currency) public isWhiteListed returns(bool) {
-        pledges[msg.sender].push(Pledge(true, _amount, _charityName, _currency, &quot;&quot;, false));
+        pledges[msg.sender].push(Pledge(true, _amount, _charityName, _currency, "", false));
         PledgeCreated(msg.sender, _amount, companies[msg.sender].name);
         return true;
     }
 
     function updatePledge(uint _amount, string _charityName, string _currency, uint _pledgeIndex) public isWhiteListed returns(bool) {
         Pledge storage pledge = pledges[msg.sender][_pledgeIndex];
-        require(pledge.initialized == true &amp;&amp; pledge.confirmed == false);
+        require(pledge.initialized == true && pledge.confirmed == false);
         pledge.currency = _currency;
         pledge.amount = _amount;
         pledge.charityName = _charityName;
@@ -103,7 +103,7 @@ contract VancouverCharityDrive is Ownable {
 
     function confirmPledge(uint _pledgeIndex, string _txHash) public isWhiteListed returns(bool) {
         Pledge storage pledge = pledges[msg.sender][_pledgeIndex];
-        require(pledge.initialized == true &amp;&amp; pledge.confirmed == false);
+        require(pledge.initialized == true && pledge.confirmed == false);
         pledge.txHash = _txHash;
         pledge.confirmed = true;
         PledgeConfirmed(msg.sender, pledge.amount, companies[msg.sender].name, _txHash);

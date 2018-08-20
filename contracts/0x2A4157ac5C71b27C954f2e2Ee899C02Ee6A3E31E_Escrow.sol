@@ -1,7 +1,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -106,7 +106,7 @@ contract Escrow is HasNoTokens {
   // @dev Withdraw function sends all the funds to the wallet if conditions are correct
   function withdraw() public {
     if (msg.sender != beneficiary) throw;
-    if (block.number &gt; finalBlock) return doWithdraw();
+    if (block.number > finalBlock) return doWithdraw();
     if (tokenSale.saleFinalized()) return doWithdraw();
   }
 

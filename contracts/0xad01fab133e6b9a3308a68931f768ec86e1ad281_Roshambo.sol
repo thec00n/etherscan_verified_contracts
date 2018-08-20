@@ -33,14 +33,14 @@ contract Roshambo {
     event GameJoined(address indexed player1, address indexed player2, uint indexed gameId, uint value, uint8 move2, uint gameStart);
     event GameEnded(address indexed player1, address indexed player2, uint indexed gameId, uint value, Result result, ResultType resultType);
     
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; uint) public totalWon;
-    mapping(address =&gt; uint) public totalLost;
+    mapping(address => uint) public balances;
+    mapping(address => uint) public totalWon;
+    mapping(address => uint) public totalLost;
     
     Game [] public games;
-    mapping(address =&gt; string) public playerNames;
-    mapping(uint =&gt; bool) public nameTaken;
-    mapping(bytes32 =&gt; bool) public secretTaken;
+    mapping(address => string) public playerNames;
+    mapping(uint => bool) public nameTaken;
+    mapping(bytes32 => bool) public secretTaken;
     
     modifier onlyOwner { require(msg.sender == owner1); _; }
     modifier notPaused { require(!paused); _; }
@@ -60,7 +60,7 @@ contract Roshambo {
     }
     
     function totalProfit(address player) constant internal returns (int) {
-        if (totalLost[player] &gt; totalWon[player]) {
+        if (totalLost[player] > totalWon[player]) {
             return -int(totalLost[player] - totalWon[player]);
         }
         else {
@@ -71,7 +71,7 @@ contract Roshambo {
     function createGame(bytes32 move, uint val, address player2) public
     payable notPaused notExpired returns (uint gameId) {
         deposit();
-        require(balances[msg.sender] &gt;= val);
+        require(balances[msg.sender] >= val);
         require(!secretTaken[move]);
         secretTaken[move] = true;
         balances[msg.sender] -= val;
@@ -97,7 +97,7 @@ contract Roshambo {
     function joinGame(uint gameId, uint8 move, uint8 tiebreaker) public payable notPaused returns (bool success) {
         Game storage thisGame = games[gameId];
         require(thisGame.state == State.Created);
-        require(move &gt; 0 &amp;&amp; move &lt;= 3);
+        require(move > 0 && move <= 3);
         if (thisGame.player2 == 0x0) {
             thisGame.player2 = msg.sender;
         }
@@ -122,7 +122,7 @@ contract Roshambo {
         require(thisGame.hiddenMove1 == keccak256(uint(move), uint(tiebreaker), secret));
         thisGame.move1 = move;
         thisGame.tiebreaker1 = tiebreaker;
-        if (move &gt; 0 &amp;&amp; move &lt;= 3) {
+        if (move > 0 && move <= 3) {
             result = Result(((3 + move - thisGame.move2) % 3) + 1); 
         }
         else { // Player 1 submitted invalid move
@@ -138,11 +138,11 @@ contract Roshambo {
             thisGame.tiebreaker = rand(1, 100);
 
             int8 player1Tiebreaker =  int8(thisGame.tiebreaker) - int8(thisGame.tiebreaker1);
-            if(player1Tiebreaker &lt; 0) {
+            if(player1Tiebreaker < 0) {
                 player1Tiebreaker = player1Tiebreaker * int8(-1);
             }
             int8 player2Tiebreaker = int8(thisGame.tiebreaker) - int8(thisGame.tiebreaker2);
-            if(player2Tiebreaker &lt; 0) {
+            if(player2Tiebreaker < 0) {
                 player2Tiebreaker = player2Tiebreaker * int8(-1);
             }
 
@@ -152,7 +152,7 @@ contract Roshambo {
                 balances[thisGame.player2] += thisGame.value;
             }else{
                 resultType = ResultType.Tiebroken;
-                if(player1Tiebreaker &lt; player2Tiebreaker) {
+                if(player1Tiebreaker < player2Tiebreaker) {
                     result = Result.Win;
                 }else{
                     result = Result.Loss;
@@ -205,7 +205,7 @@ contract Roshambo {
         Game storage thisGame = games[gameId];
         require(thisGame.state == State.Joined);
         require(thisGame.player2 == msg.sender);
-        require(thisGame.gameStart + revealTime &lt; now); 
+        require(thisGame.gameStart + revealTime < now); 
         
         uint fee = (thisGame.value) / feeDivisor;
         balances[owner1] += fee*2;

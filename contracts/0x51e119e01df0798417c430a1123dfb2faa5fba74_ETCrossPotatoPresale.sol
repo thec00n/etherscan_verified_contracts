@@ -19,20 +19,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -76,17 +76,17 @@ contract ETCrossPotatoPresale is Owned {
     function _isContract(address _user) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(_user) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function auctionExpired() public view returns (bool) {
-        return now &gt; auctionEnd;
+        return now > auctionEnd;
     }
 
     function nextBid() public view returns (uint256) {
-        if (highestBid &lt; 0.1 ether) {
+        if (highestBid < 0.1 ether) {
             return highestBid.add(highestBid / 2);
-        } else if (highestBid &lt; 1 ether) {
+        } else if (highestBid < 1 ether) {
             return highestBid.add(highestBid.mul(15).div(100));
         } else {
             return highestBid.add(highestBid.mul(4).div(100));
@@ -99,7 +99,7 @@ contract ETCrossPotatoPresale is Owned {
 
         uint256 requiredBid = nextBid();
 
-        require(msg.value &gt;= requiredBid);
+        require(msg.value >= requiredBid);
 
         uint256 change = msg.value.sub(requiredBid);
 
@@ -121,7 +121,7 @@ contract ETCrossPotatoPresale is Owned {
             potatoOwner.transfer(reward / 10);
         }
 
-        if (change &gt; 0) {
+        if (change > 0) {
             msg.sender.transfer(change);
         }
 

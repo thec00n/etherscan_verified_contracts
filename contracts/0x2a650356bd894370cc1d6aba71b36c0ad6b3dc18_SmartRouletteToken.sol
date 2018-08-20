@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 contract SmartRouletteToken {
 	//Tokens data
-	string public standard = &#39;ERC20&#39;;
+	string public standard = 'ERC20';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -20,9 +20,9 @@ contract SmartRouletteToken {
 
 	address[] listAddrHolders;
 
-	mapping( address =&gt; holderData ) _balances;
-	mapping( address =&gt; tempHolderData ) _temp_balance;
-	mapping( address =&gt; mapping( address =&gt; uint256 ) ) _approvals;
+	mapping( address => holderData ) _balances;
+	mapping( address => tempHolderData ) _temp_balance;
+	mapping( address => mapping( address => uint256 ) ) _approvals;
 
 	bool stop_operation;
 	
@@ -50,7 +50,7 @@ contract SmartRouletteToken {
 		bool init;
 	}
 
-	mapping( address =&gt; gamesData) listGames;
+	mapping( address => gamesData) listGames;
 	address[] addrGames;
 
 
@@ -72,8 +72,8 @@ contract SmartRouletteToken {
 		listAddrHolders.push(wallet_ICO);
 		listAddrHolders.push(fond_wallet);
         
-        name = &#39;Roulette Token&#39;;                                   
-        symbol = &#39;RLT&#39;;                               
+        name = 'Roulette Token';                                   
+        symbol = 'RLT';                               
         decimals = 10;
         costOfOneToken = 1500000000000000;
 
@@ -93,12 +93,12 @@ contract SmartRouletteToken {
 	}
 
 	modifier isManager(){
-		if (msg.sender!=manager &amp;&amp; msg.sender!=developer) throw;
+		if (msg.sender!=manager && msg.sender!=developer) throw;
 		_;
 	}
 
 	modifier isAccessStopOperation(){
-		if (msg.sender!=manager &amp;&amp; msg.sender!=developer &amp;&amp; (msg.sender!=divident_contract || divident_contract==address(0x0))) throw;
+		if (msg.sender!=manager && msg.sender!=developer && (msg.sender!=divident_contract || divident_contract==address(0x0))) throw;
 		_;
 	}
 
@@ -215,13 +215,13 @@ contract SmartRouletteToken {
 
 	// overflow check
 	function safeToAdd(uint256 a, uint256 b) internal returns (bool) {
-		return (a + b &gt;= a &amp;&amp; a + b &gt;= b);
+		return (a + b >= a && a + b >= b);
 	}
 
 	function transfer( address to, uint256 value) returns (bool ok) {
 		if(stop_operation) throw;
 
-		if( _balances[msg.sender].tokens_count &lt; value ) {
+		if( _balances[msg.sender].tokens_count < value ) {
 		    throw;
 		}
 		if( !safeToAdd(_balances[to].tokens_count, value) ) {
@@ -244,11 +244,11 @@ contract SmartRouletteToken {
 	function transferFrom( address from, address to, uint256 value) returns (bool ok) {
 		if(stop_operation) throw;
 
-		if( _balances[from].tokens_count &lt; value ) {
+		if( _balances[from].tokens_count < value ) {
 		    throw;
 		}
 		
-		if( _approvals[from][msg.sender] &lt; value ) {
+		if( _approvals[from][msg.sender] < value ) {
 		    throw;
 		}
 		if( !safeToAdd(_balances[to].tokens_count, value) ) {
@@ -330,8 +330,8 @@ contract SmartRouletteToken {
 		uint256 decimals_token = 10**uint256(decimals);
 		count = count*decimals_token;
 
-		if(_balances[fond_wallet].tokens_count &lt; count) throw;
-		if(_temp_balance[recipient].tokens_count &gt; 0) throw;
+		if(_balances[fond_wallet].tokens_count < count) throw;
+		if(_temp_balance[recipient].tokens_count > 0) throw;
 
 		_temp_balance[recipient] = tempHolderData(count, now, now + period);
 		listAddrTempHolders.push(recipient);
@@ -341,12 +341,12 @@ contract SmartRouletteToken {
 
 	function tempTokensBalanceOf( address who ) external constant returns (uint256) {
 		//tempHolderData data_holder = __temp_balance[who];
-		if(_temp_balance[who].end_date &lt; now) return 0;
+		if(_temp_balance[who].end_date < now) return 0;
 		else return _temp_balance[who].tokens_count;
 	}
 
 	function tempTokensPeriodOf( address who ) external constant returns (uint256) {
-		if(_temp_balance[who].end_date &lt; now) return 0;
+		if(_temp_balance[who].end_date < now) return 0;
 		else return _temp_balance[who].end_date;
 	}
 
@@ -368,7 +368,7 @@ contract SmartRouletteToken {
 	}
 
 	function getItemTempHolders(uint256 index) external constant returns(address){
-		if(index &gt;= listAddrTempHolders.length) return address(0x0);
+		if(index >= listAddrTempHolders.length) return address(0x0);
 		else return listAddrTempHolders[index];
 	}
 
@@ -391,10 +391,10 @@ contract SmartRouletteToken {
 
 		if(enableICO == false) throw;
 			
-		if(msg.value &lt; min_value_buyToken) throw;
+		if(msg.value < min_value_buyToken) throw;
 		
 		uint256 value_send = msg.value;
-		if(value_send &gt; max_value_buyToken){
+		if(value_send > max_value_buyToken){
 			value_send = max_value_buyToken;
 			if(msg.sender.send(msg.value-max_value_buyToken)==false) throw;
 		}
@@ -403,10 +403,10 @@ contract SmartRouletteToken {
 		
 		uint256 count_tokens = (value_send*decimals_token)/costOfOneToken;
 		
-		if(count_tokens &gt;_balances[wallet_ICO].tokens_count ){
+		if(count_tokens >_balances[wallet_ICO].tokens_count ){
 			count_tokens = _balances[wallet_ICO].tokens_count;
 		}
-		if(value_send &gt; (count_tokens*costOfOneToken)/decimals_token){				
+		if(value_send > (count_tokens*costOfOneToken)/decimals_token){				
 			if(msg.sender.send(value_send-((count_tokens*costOfOneToken)/decimals_token))==false) throw;
 			value_send = (count_tokens*costOfOneToken)/decimals_token;
 		}
@@ -417,7 +417,7 @@ contract SmartRouletteToken {
 			_balances[msg.sender] = holderData(count_tokens, true);
 		}
 		else{
-			if(((_balances[msg.sender].tokens_count*costOfOneToken)/decimals_token)+((count_tokens*costOfOneToken)/decimals_token)&gt;max_value_buyToken) {
+			if(((_balances[msg.sender].tokens_count*costOfOneToken)/decimals_token)+((count_tokens*costOfOneToken)/decimals_token)>max_value_buyToken) {
 				count_tokens = ((max_value_buyToken*decimals_token)/costOfOneToken)-_balances[msg.sender].tokens_count;					
 				if(msg.sender.send(value_send-((count_tokens*costOfOneToken)/decimals_token))==false) throw;
 				value_send = (count_tokens*costOfOneToken)/decimals_token;
@@ -427,11 +427,11 @@ contract SmartRouletteToken {
 			_balances[msg.sender].tokens_count += count_tokens;
 		}
 
-		if(value_send&gt;0){
+		if(value_send>0){
 			if(wallet_ICO.send(value_send)==false) throw;
 		}
 
-		if(count_tokens&gt;0){
+		if(count_tokens>0){
 			TokenBuy(msg.sender, count_tokens);
 		}
 
@@ -449,7 +449,7 @@ contract SmartRouletteToken {
 	}
 
 	function getItemHolders(uint256 index) external constant returns(address){
-		if(index &gt;= listAddrHolders.length) return address(0x0);
+		if(index >= listAddrHolders.length) return address(0x0);
 		else return listAddrHolders[index];
 	}
 }

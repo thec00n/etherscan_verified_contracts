@@ -83,10 +83,10 @@ contract Token is ERC20 {
   }
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   // The total token supply
   uint256 internal _totalSupply;
@@ -110,9 +110,9 @@ contract Token is ERC20 {
   /// @param _value The amount of token to be transferred
   /// @return Whether the transfer was successful or not
   function transfer(address _to, uint256 _value) returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
-    require(_value &gt; 0);
-    require(balances[_to] + _value &gt; balances[_to]);
+    require(balances[msg.sender] >= _value);
+    require(_value > 0);
+    require(balances[_to] + _value > balances[_to]);
 
     balances[msg.sender] -= _value;
     balances[_to]        += _value;
@@ -127,10 +127,10 @@ contract Token is ERC20 {
   /// @param _value The amount of token to be transferred
   /// @return Whether the transfer was successful or not
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-    require(balances[_from] &gt;= _value);
-    require(_value &gt; 0);
-    require(allowed[_from][msg.sender] &gt;= _value);
-    require(balances[_to] + _value &gt; balances[_to]);
+    require(balances[_from] >= _value);
+    require(_value > 0);
+    require(allowed[_from][msg.sender] >= _value);
+    require(balances[_to] + _value > balances[_to]);
 
     balances[_from] -= _value;
     balances[_to]   += _value;
@@ -162,10 +162,10 @@ contract Token is ERC20 {
 }
 
 contract Gambit is Token, Owned {
-  string public constant name     = &#39;Gambit&#39;;
+  string public constant name     = 'Gambit';
   uint8  public constant decimals = 8;
-  string public constant symbol   = &#39;GAM&#39;;
-  string public constant version  = &#39;1.0.0&#39;;
+  string public constant symbol   = 'GAM';
+  string public constant version  = '1.0.0';
   uint256 internal _totalBurnt    = 0;
 
   // Constructor
@@ -184,8 +184,8 @@ contract Gambit is Token, Owned {
   /// @param _value The amount of token to be burned
   /// @return Whether the burning was successful or not
   function burn(uint256 _value) onlyOwner returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
-    require(_value &gt; 0);
+    require(balances[msg.sender] >= _value);
+    require(_value > 0);
 
     balances[msg.sender] -= _value;
     _totalSupply         -= _value;

@@ -7,7 +7,7 @@ contract ProofOfIdleness {
     uint public countRemaining = 0;
     
     // stores the last ping of every participants
-    mapping (address =&gt; uint) public lastPing;
+    mapping (address => uint) public lastPing;
     
     // Events allow light clients to react on changes efficiently.
     event Eliminated(address a);
@@ -32,7 +32,7 @@ contract ProofOfIdleness {
     
     // function called when a new user wants to join
     function join() payable { 
-        if (lastPing[msg.sender] &gt; 0 || msg.value != 1 ether)
+        if (lastPing[msg.sender] > 0 || msg.value != 1 ether)
             throw;
         
         lastPing[msg.sender] = now; 
@@ -45,10 +45,10 @@ contract ProofOfIdleness {
     }
     
     
-    // function used to eliminate address ̀`a&#39;
+    // function used to eliminate address ̀`a'
     // will only succeed if the lastPing[a] is at least 27 hours old
     function eliminate(address a) {
-      if (lastPing[a] == 0 || now &lt;= lastPing[a] + 27 hours)
+      if (lastPing[a] == 0 || now <= lastPing[a] + 27 hours)
         throw;
         
       lastPing[a] = 0;

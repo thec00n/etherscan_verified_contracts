@@ -13,7 +13,7 @@ pragma solidity ^0.4.23;
     /**
     * @title Ownable
     * @dev The Ownable contract has an owner address, and provides basic authorization control
-    * functions, this simplifies the implementation of &quot;user permissions&quot;.
+    * functions, this simplifies the implementation of "user permissions".
     */
     contract Ownable {
      address public owner;
@@ -92,15 +92,15 @@ pragma solidity ^0.4.23;
     /**
     * @title Whitelist
     * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
-    * @dev This simplifies the implementation of &quot;user permissions&quot;.
+    * @dev This simplifies the implementation of "user permissions".
     */
     contract Whitelist is Pausable {
-     mapping(address =&gt; bool) public whitelist;
+     mapping(address => bool) public whitelist;
 
      event WhitelistedAddressAdded(address addr);
      event WhitelistedAddressRemoved(address addr);
      /**
-      * @dev Throws if called by any account that&#39;s not whitelisted.
+      * @dev Throws if called by any account that's not whitelisted.
       */
       modifier onlyWhitelisted() {
        require(whitelist[msg.sender]);
@@ -125,7 +125,7 @@ pragma solidity ^0.4.23;
       * false if all addresses were already in the whitelist
       */
       function addAddressesToWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-       for (uint256 i = 0; i &lt; addrs.length; i++) {
+       for (uint256 i = 0; i < addrs.length; i++) {
          if (addAddressToWhitelist(addrs[i])) {
            success = true;
          }
@@ -135,7 +135,7 @@ pragma solidity ^0.4.23;
       * @dev remove an address from the whitelist
       * @param addr address
       * @return true if the address was removed from the whitelist,
-      * false if the address wasn&#39;t in the whitelist in the first place
+      * false if the address wasn't in the whitelist in the first place
       */
       function removeAddressFromWhitelist(address addr) onlyOwner public returns(bool success) {
        if (whitelist[addr]) {
@@ -148,10 +148,10 @@ pragma solidity ^0.4.23;
       * @dev remove addresses from the whitelist
       * @param addrs addresses
       * @return true if at least one address was removed from the whitelist,
-      * false if all addresses weren&#39;t in the whitelist in the first place
+      * false if all addresses weren't in the whitelist in the first place
       */
       function removeAddressesFromWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-       for (uint256 i = 0; i &lt; addrs.length; i++) {
+       for (uint256 i = 0; i < addrs.length; i++) {
          if (removeAddressFromWhitelist(addrs[i])) {
            success = true;
          }
@@ -188,16 +188,16 @@ pragma solidity ^0.4.23;
      * @dev Integer division of two numbers, truncating the quotient.
      */
      function div(uint256 a, uint256 b) internal pure returns (uint256) {
-       // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+       // assert(b > 0); // Solidity automatically throws when dividing by 0
        uint256 c = a / b;
-       // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+       // assert(a == b * c + a % b); // There is no case in which this doesn't hold
        return c;
      }
      /**
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
      function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-       assert(b &lt;= a);
+       assert(b <= a);
        return a - b;
      }
      /**
@@ -205,7 +205,7 @@ pragma solidity ^0.4.23;
      */
      function add(uint256 a, uint256 b) internal pure returns (uint256) {
        uint256 c = a + b;
-       assert(c &gt;= a);
+       assert(c >= a);
        return c;
      }
    }
@@ -218,7 +218,7 @@ pragma solidity ^0.4.23;
     * The external interface represents the basic interface for purchasing tokens, and conform
     * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
     * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
-    * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+    * the methods to add functionality. Consider using 'super' where appropiate to concatenate
     * behavior.
     */
     contract Crowdsale is Whitelist{
@@ -285,19 +285,19 @@ pragma solidity ^0.4.23;
       */
      function buyTokens(address _beneficiary) public whenNotPaused payable {
       
-       if ((tokensSold &gt; 20884500000000000000000000 ) &amp;&amp; (tokensSold &lt;= 30791250000000000000000000)) {
+       if ((tokensSold > 20884500000000000000000000 ) && (tokensSold <= 30791250000000000000000000)) {
          rate = 5967;
        }
-       else if ((tokensSold &gt; 30791250000000000000000000) &amp;&amp; (tokensSold &lt;= 39270000000000000000000000)) {
+       else if ((tokensSold > 30791250000000000000000000) && (tokensSold <= 39270000000000000000000000)) {
         rate = 5865;
        }
-       else if ((tokensSold &gt; 39270000000000000000000000) &amp;&amp; (tokensSold &lt;= 46856250000000000000000000)) {
+       else if ((tokensSold > 39270000000000000000000000) && (tokensSold <= 46856250000000000000000000)) {
         rate = 5610;
        }
-       else if ((tokensSold &gt; 46856250000000000000000000) &amp;&amp; (tokensSold &lt;= 35700000000000000000000000)) {
+       else if ((tokensSold > 46856250000000000000000000) && (tokensSold <= 35700000000000000000000000)) {
         rate = 5355;
        }
-       else if (tokensSold &gt; 35700000000000000000000000) {
+       else if (tokensSold > 35700000000000000000000000) {
         rate = 5100;
        }
 
@@ -469,12 +469,12 @@ contract TokenController {
        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
        GNU General Public License for more details.
        You should have received a copy of the GNU General Public License
-       along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+       along with this program.  If not, see <http://www.gnu.org/licenses/>.
        */
        /// @title MiniMeToken Contract
        /// @author Jordi Baylina
-       /// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-       ///  token using the token distribution at a given block, this will allow DAO&#39;s
+       /// @dev This token contract's goal is to make it easy for anyone to clone this
+       ///  token using the token distribution at a given block, this will allow DAO's
        ///  and DApps to upgrade their features in a decentralized manner without
        ///  affecting the original token
        /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -483,14 +483,14 @@ contract TokenController {
        }
        /// @dev The actual token contract, the default controller is the msg.sender
        ///  that deploys the contract, so usually this token will be deployed by a
-       ///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+       ///  token controller contract, which Giveth will call a "Campaign"
        contract MiniMeToken is Controlled
        {
          using SafeMath for uint256;
-         string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+         string public name;                //The Token's name: e.g. DigixDAO Tokens
          uint8 public decimals;             //Number of decimals of the smallest unit
          string public symbol;              //An identifier: e.g. REP
-         string public version = &#39;V 1.0&#39;; //An arbitrary versioning scheme
+         string public version = 'V 1.0'; //An arbitrary versioning scheme
          /// @dev `Checkpoint` is the structure that attaches a block number to a
          ///  given value, the block number attached is the one that last changed the
          ///  value
@@ -511,9 +511,9 @@ contract TokenController {
          // `balances` is the map that tracks the balance of each address, in this
          //  contract when the balance changes the block number that the change
          //  occurred is also included in the map
-         mapping (address =&gt; Checkpoint[]) balances;
+         mapping (address => Checkpoint[]) balances;
          // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-         mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+         mapping (address => mapping (address => uint256)) allowed;
          // Tracks the history of the `totalSupply` of the token
          Checkpoint[] totalSupplyHistory;
          // Flag that determines if the token is transferable or not.
@@ -581,7 +581,7 @@ contract TokenController {
            if (msg.sender != controller) {
              require(transfersEnabled);
              // The standard ERC 20 transferFrom functionality
-             require(allowed[_from][msg.sender] &gt;= _amount);
+             require(allowed[_from][msg.sender] >= _amount);
              allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
            }
            doTransfer(_from, _to, _amount);
@@ -602,22 +602,22 @@ contract TokenController {
           }
 
           // Do not allow transfer to 0x0 or the token contract itself
-          require((_to != 0) &amp;&amp; (_to != address(this)));
+          require((_to != 0) && (_to != address(this)));
           // If the amount being transfered is more than the balance of the
           //  account the transfer throws
           uint256 previousBalanceFrom = balanceOfAt(_from, block.number);
-          require(previousBalanceFrom &gt;= _amount);
+          require(previousBalanceFrom >= _amount);
           //  sending the tokens
           updateValueAtNow(balances[_from], previousBalanceFrom - _amount);
           // Then update the balance array with the new value for the address
           //  receiving the tokens
           uint256 previousBalanceTo = balanceOfAt(_to, block.number);
-          require(previousBalanceTo.add(_amount) &gt;= previousBalanceTo); // Check for overflow
+          require(previousBalanceTo.add(_amount) >= previousBalanceTo); // Check for overflow
           updateValueAtNow(balances[_to], previousBalanceTo.add(_amount));
           // An event to make the transfer easy to find on the blockchain
           emit Transfer(_from, _to, _amount);
         }
-        /// @param _owner The address that&#39;s balance is being requested
+        /// @param _owner The address that's balance is being requested
         /// @return The balance of `_owner` at the current block
         function balanceOf(address _owner) public constant returns (uint256 balance) {
          return balanceOfAt(_owner, block.number);
@@ -690,7 +690,7 @@ contract TokenController {
        //  genesis block for that token as this contains initial balance of
        //  this token
        if ((balances[_owner].length == 0)
-         || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+         || (balances[_owner][0].fromBlock > _blockNumber)) {
          if (address(parentToken) != 0) {
            return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
            } else {
@@ -712,7 +712,7 @@ contract TokenController {
            //  genesis block for this token as that contains totalSupply of this
            //  token at this block number.
            if ((totalSupplyHistory.length == 0)
-             || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+             || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
              if (address(parentToken) != 0) {
                return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
                } else {
@@ -734,9 +734,9 @@ contract TokenController {
              function generateTokens(address _owner, uint _amount
                ) public onlyControllerorOwner whenNotPaused  returns (bool) {
                uint curTotalSupply = totalSupply();
-               require(curTotalSupply.add(_amount) &gt;= curTotalSupply); // Check for overflow
+               require(curTotalSupply.add(_amount) >= curTotalSupply); // Check for overflow
                uint previousBalanceTo = balanceOf(_owner);
-               require(previousBalanceTo.add(_amount) &gt;= previousBalanceTo); // Check for overflow
+               require(previousBalanceTo.add(_amount) >= previousBalanceTo); // Check for overflow
                updateValueAtNow(totalSupplyHistory, curTotalSupply.add(_amount));
                updateValueAtNow(balances[_owner], previousBalanceTo.add(_amount));
                emit Transfer(0, _owner, _amount);
@@ -749,9 +749,9 @@ contract TokenController {
              function destroyTokens(address _owner, uint _amount
                ) onlyControllerorOwner public returns (bool) {
                uint curTotalSupply = totalSupply();
-               require(curTotalSupply &gt;= _amount);
+               require(curTotalSupply >= _amount);
                uint previousBalanceFrom = balanceOf(_owner);
-               require(previousBalanceFrom &gt;= _amount);
+               require(previousBalanceFrom >= _amount);
                updateValueAtNow(totalSupplyHistory, curTotalSupply.sub(_amount));
                updateValueAtNow(balances[_owner], previousBalanceFrom.sub(_amount));
                emit Transfer(_owner, 0, _amount);
@@ -776,15 +776,15 @@ contract TokenController {
                ) constant internal returns (uint) {
                if (checkpoints.length == 0) return 0;
                // Shortcut for the actual value
-               if (_block &gt;= checkpoints[checkpoints.length.sub(1)].fromBlock)
+               if (_block >= checkpoints[checkpoints.length.sub(1)].fromBlock)
                return checkpoints[checkpoints.length.sub(1)].value;
-               if (_block &lt; checkpoints[0].fromBlock) return 0;
+               if (_block < checkpoints[0].fromBlock) return 0;
                // Binary search of the value in the array
                uint min = 0;
                uint max = checkpoints.length.sub(1);
-               while (max &gt; min) {
+               while (max > min) {
                  uint mid = (max.add(min).add(1)).div(2);
-                 if (checkpoints[mid].fromBlock&lt;=_block) {
+                 if (checkpoints[mid].fromBlock<=_block) {
                    min = mid;
                    } else {
                      max = mid.sub(1);
@@ -799,7 +799,7 @@ contract TokenController {
                function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
                  ) internal  {
                  if ((checkpoints.length == 0)
-                   || (checkpoints[checkpoints.length.sub(1)].fromBlock &lt; block.number)) {
+                   || (checkpoints[checkpoints.length.sub(1)].fromBlock < block.number)) {
                   Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                   newCheckPoint.fromBlock =  uint128(block.number);
                   newCheckPoint.value = uint128(_value);
@@ -817,13 +817,13 @@ contract TokenController {
                  assembly {
                    size := extcodesize(_addr)
                  }
-                 return size&gt;0;
+                 return size>0;
                }
                /// @dev Helper function to return a min betwen the two uints
                function min(uint a, uint b) pure internal returns (uint) {
-                 return a &lt; b ? a : b;
+                 return a < b ? a : b;
                }
-               /// @notice The fallback function: If the contract&#39;s controller has not been
+               /// @notice The fallback function: If the contract's controller has not been
                ///  set to 0, then the `proxyPayment` method is called which relays the
                ///  ether and creates tokens as described in the token controller contract
                function () public payable {

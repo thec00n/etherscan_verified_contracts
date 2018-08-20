@@ -32,7 +32,7 @@ contract CrowdSale {
     address public creator;
     address public beneficiary; 
     string campaignUrl;
-    byte constant version = &quot;1&quot;;
+    byte constant version = "1";
 
     
     event LogFundingReceived(address addr, uint amount, uint currentTotal);
@@ -52,7 +52,7 @@ contract CrowdSale {
     }
 
      modifier isMinimum() {
-        require(msg.value &gt; priceInWei) ;
+        require(msg.value > priceInWei) ;
         _;
     }
 
@@ -68,7 +68,7 @@ contract CrowdSale {
 
     
     modifier atEndOfLifecycle() {
-        if(!((state == State.Failed || state == State.Successful) &amp;&amp; completedAt + 1 hours &lt; now)) {
+        if(!((state == State.Failed || state == State.Successful) && completedAt + 1 hours < now)) {
             revert();
         }
         _;
@@ -138,14 +138,14 @@ contract CrowdSale {
     function checkIfFundingCompleteOrExpired() public {
         
        
-        if (fundingMaximumTargetInWei != 0 &amp;&amp; totalRaised &gt; fundingMaximumTargetInWei) {
+        if (fundingMaximumTargetInWei != 0 && totalRaised > fundingMaximumTargetInWei) {
             state = State.Successful;
             LogFundingSuccessful(totalRaised);
             payOut();
             completedAt = now;
             
-            } else if ( now &gt; deadline )  {
-                if(totalRaised &gt;= fundingMinimumTargetInWei){
+            } else if ( now > deadline )  {
+                if(totalRaised >= fundingMinimumTargetInWei){
                     state = State.Successful;
                     LogFundingSuccessful(totalRaised);
                     payOut();  
@@ -178,7 +178,7 @@ contract CrowdSale {
         inState(State.Failed) 
         returns (bool)
         {
-            for(uint i=0; i&lt;=contributions.length; i++)
+            for(uint i=0; i<=contributions.length; i++)
             {
                 if(contributions[i].contributor == msg.sender){
                     uint amountToRefund = contributions[i].amount;

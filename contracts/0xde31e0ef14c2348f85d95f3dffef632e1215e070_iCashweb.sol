@@ -25,12 +25,12 @@ library iMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -38,7 +38,7 @@ library iMath {
 contract iCashwebToken {
     
     address public iOwner;
-    mapping(address =&gt; bool) iOperable;
+    mapping(address => bool) iOperable;
     bool _mintingStarted;
     bool _minted;
 
@@ -87,15 +87,15 @@ contract iCashwebToken {
 contract iCashweb is iCashwebToken {
     using iMath for uint256;
     
-    string public constant name = &quot;iCashweb&quot;;
-    string public constant symbol = &quot;ICWs&quot;;
+    string public constant name = "iCashweb";
+    string public constant symbol = "ICWs";
     uint8 public constant decimals = 18;
     uint256 _totalSupply;
     uint256 _rate;
     uint256 _totalMintSupply;
     uint256 _maxMintable;
-    mapping (address =&gt; uint256) _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) _approvals;
+    mapping (address => uint256) _balances;
+    mapping (address => mapping (address => uint256)) _approvals;
     
     constructor (uint256 _price, uint256 _val) public {
         iOwner = msg.sender;
@@ -142,7 +142,7 @@ contract iCashweb is iCashwebToken {
     }
     
     function transfer(address _to, uint _val) public returns (bool) {
-        assert(_balances[msg.sender] &gt;= _val &amp;&amp; msg.sender != _to);
+        assert(_balances[msg.sender] >= _val && msg.sender != _to);
         _balances[msg.sender] = _balances[msg.sender].sub(_val);
         _balances[_to] = _balances[_to].add(_val);
         emit Transfer(msg.sender, _to, _val);
@@ -150,8 +150,8 @@ contract iCashweb is iCashwebToken {
     }
     
     function transferFrom(address _from, address _to, uint _val) public returns (bool) {
-        assert(_balances[_from] &gt;= _val);
-        assert(_approvals[_from][msg.sender] &gt;= _val);
+        assert(_balances[_from] >= _val);
+        assert(_approvals[_from][msg.sender] >= _val);
         _approvals[_from][msg.sender] = _approvals[_from][msg.sender].sub(_val);
         _balances[_from] = _balances[_from].sub(_val);
         _balances[_to] = _balances[_to].add(_val);
@@ -166,10 +166,10 @@ contract iCashweb is iCashwebToken {
     }
     
     function () public mintingStarted payable {
-        assert(msg.value &gt; 0);
+        assert(msg.value > 0);
         uint tokens = msg.value.mul(_rate);
         uint totalToken = _totalMintSupply.add(tokens);
-        assert(_maxMintable &gt;= totalToken);
+        assert(_maxMintable >= totalToken);
         _balances[msg.sender] = _balances[msg.sender].add(tokens);
         _totalMintSupply = _totalMintSupply.add(tokens);
         iOwner.transfer(msg.value);
@@ -178,7 +178,7 @@ contract iCashweb is iCashwebToken {
     
     function moveMintTokens(address _from, address _to, uint256 _value) public iOnlyOwner returns(bool) {
         require(_to != _from);
-        require(_balances[_from] &gt;= _value);
+        require(_balances[_from] >= _value);
         _balances[_from] = _balances[_from].sub(_value);
         _balances[_to] = _balances[_to].add(_value);
         emit Transfer(_from, _to, _value);
@@ -187,7 +187,7 @@ contract iCashweb is iCashwebToken {
     
     function transferMintTokens(address _to, uint256 _value) public iOnlyOwner returns(bool) {
         uint totalToken = _totalMintSupply.add(_value);
-        require(_maxMintable &gt;= totalToken);
+        require(_maxMintable >= totalToken);
         _balances[_to] = _balances[_to].add(_value);
         _totalMintSupply = _totalMintSupply.add(_value);
         emit Transfer(0x0, _to, _value);
@@ -198,7 +198,7 @@ contract iCashweb is iCashwebToken {
         require(msg.sender == iOwner);
         uint256 releaseAmount = _maxMintable.sub(_totalMintSupply);
         uint256 totalReleased = _totalMintSupply.add(releaseAmount);
-        require(_maxMintable &gt;= totalReleased);
+        require(_maxMintable >= totalReleased);
         _totalMintSupply = _totalMintSupply.add(releaseAmount);
         _balances[msg.sender] = _balances[msg.sender].add(releaseAmount);
         _minted = true;
@@ -208,13 +208,13 @@ contract iCashweb is iCashwebToken {
     }
 
     function changeRate(uint256 _value) public returns (bool) {
-        require(msg.sender == iOwner &amp;&amp; _value &gt; 0);
+        require(msg.sender == iOwner && _value > 0);
         _rate = _value;
         return true;
     }
 
     function transferOwnership(address _to) public {
-        require(msg.sender == iOwner &amp;&amp; _to != msg.sender);  
+        require(msg.sender == iOwner && _to != msg.sender);  
         address oldOwner = iOwner;
         uint256 balAmount = _balances[oldOwner];
         _balances[_to] = _balances[_to].add(balAmount);

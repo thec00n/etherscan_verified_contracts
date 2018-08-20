@@ -60,7 +60,7 @@ contract Treasury is owned {
     require( trustee != address(0) );
     require( trustee != treasurer ); // separate Treasurer and Trustees
 
-    for (uint ix = 0; ix &lt; trustees.length; ix++)
+    for (uint ix = 0; ix < trustees.length; ix++)
       if (trustees[ix] == trustee) return;
 
     trustees.push(trustee);
@@ -71,7 +71,7 @@ contract Treasury is owned {
 
   function flag( address trustee, bool isRaised ) public onlyTreasurer
   {
-    for( uint ix = 0; ix &lt; trustees.length; ix++ )
+    for( uint ix = 0; ix < trustees.length; ix++ )
       if (trustees[ix] == trustee)
       {
         flagged[ix] = isRaised;
@@ -82,7 +82,7 @@ contract Treasury is owned {
 
   function replace( address older, address newer ) public onlyTreasurer
   {
-    for( uint ix = 0; ix &lt; trustees.length; ix++ )
+    for( uint ix = 0; ix < trustees.length; ix++ )
       if (trustees[ix] == older)
       {
         Replaced( trustees[ix], newer );
@@ -97,9 +97,9 @@ contract Treasury is owned {
   {
     bytes memory erefb = bytes(_eref);
     require(    _payee != address(0)
-             &amp;&amp; _wei &gt; 0
-             &amp;&amp; erefb.length &gt; 0
-             &amp;&amp; erefb.length &lt;= 32 );
+             && _wei > 0
+             && erefb.length > 0
+             && erefb.length <= 32 );
 
     uint ix = proposals.length++;
     proposals[ix].payee = _payee;
@@ -113,7 +113,7 @@ contract Treasury is owned {
   {
     // ensure caller is a trustee in good standing
     bool senderValid = false;
-    for (uint tix = 0; tix &lt; trustees.length; tix++) {
+    for (uint tix = 0; tix < trustees.length; tix++) {
       if (msg.sender == trustees[tix]) {
         if (flagged[tix])
           revert();
@@ -124,14 +124,14 @@ contract Treasury is owned {
     if (!senderValid) revert();
 
     // find the matching proposal not already actioned (amount would be 0)
-    for (uint pix = 0; pix &lt; proposals.length; pix++)
+    for (uint pix = 0; pix < proposals.length; pix++)
     {
       if (    proposals[pix].payee == _payee
-           &amp;&amp; proposals[pix].amount == _wei
-           &amp;&amp; strcmp(proposals[pix].eref, _eref) )
+           && proposals[pix].amount == _wei
+           && strcmp(proposals[pix].eref, _eref) )
       {
         // prevent voting twice
-        for (uint ap = 0; ap &lt; proposals[pix].approvals.length; ap++)
+        for (uint ap = 0; ap < proposals[pix].approvals.length; ap++)
         {
           if (msg.sender == proposals[pix].approvals[ap])
             revert();
@@ -144,9 +144,9 @@ contract Treasury is owned {
                   proposals[pix].amount,
                   proposals[pix].eref );
 
-        if ( proposals[pix].approvals.length &gt; (trustees.length / 2) )
+        if ( proposals[pix].approvals.length > (trustees.length / 2) )
         {
-          require( this.balance &gt;= proposals[pix].amount );
+          require( this.balance >= proposals[pix].amount );
 
           if ( proposals[pix].payee.send(proposals[pix].amount) )
           {

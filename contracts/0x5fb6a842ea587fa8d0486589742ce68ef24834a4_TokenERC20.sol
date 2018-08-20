@@ -1,4 +1,4 @@
-pragma solidity ^0.4.16;//800000000, &quot;Revizor Coin&quot;, &quot;RR&quot;
+pragma solidity ^0.4.16;//800000000, "Revizor Coin", "RR"
 
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 
@@ -21,8 +21,8 @@ contract TokenERC20 {
 	
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -55,9 +55,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -91,7 +91,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -138,7 +138,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -154,10 +154,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -167,15 +167,15 @@ contract TokenERC20 {
     function proofOfWork(uint nonce) public{
 
         bytes8 n = bytes8(keccak256(nonce, currentChallenge));    // Generate a random hash based on input
-        require(n &gt;= bytes8(difficulty));                   // Check if it&#39;s under the difficulty
+        require(n >= bytes8(difficulty));                   // Check if it's under the difficulty
 
         uint timeSinceLastProof = (now - timeOfLastProof);  // Calculate time since last reward was given
-        require(timeSinceLastProof &gt;=  5 seconds);         // Rewards cannot be given too quickly
+        require(timeSinceLastProof >=  5 seconds);         // Rewards cannot be given too quickly
 		
 		require(!miningGoalReached); 
 		
 		curReward = timeSinceLastProof; // 1 second = 1 coin
-		if((curReward+mined)&gt;amounttomine){
+		if((curReward+mined)>amounttomine){
 			curReward = amounttomine - mined;
 
 		}
@@ -185,7 +185,7 @@ contract TokenERC20 {
         balanceOf[msg.sender] += curReward;  // The reward to the winner grows by the minute
 		mined+=curReward;
 		
-		if(mined&gt;=amounttomine){
+		if(mined>=amounttomine){
 			miningGoalReached = true;
 		}
 		

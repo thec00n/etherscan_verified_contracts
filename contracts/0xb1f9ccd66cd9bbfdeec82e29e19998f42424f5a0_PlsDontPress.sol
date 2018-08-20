@@ -31,12 +31,12 @@ contract PlsDontPress {
     
     function press() public payable noReentrancy {
         //Min starting sum required
-        require(msg.value &gt;= startingCostToPress);
+        require(msg.value >= startingCostToPress);
         uint currAmt = startingCostToPress;
         
         //If button not expired, require currentCostToPress to continue
         if(!isExpired()){
-            require(msg.value &gt;= currentCostToPress);
+            require(msg.value >= currentCostToPress);
             currAmt = msg.value;
         }
             //Finally, update state
@@ -49,13 +49,13 @@ contract PlsDontPress {
     function isExpired() internal returns(bool) {
         
         //If expired, payout and reset
-        if(now &gt; expiryEpoch &amp;&amp; expiryEpoch != 0){
+        if(now > expiryEpoch && expiryEpoch != 0){
             payout();
             currentCostToPress = startingCostToPress;
             currentExpiryInterval = 1 days;
             
             //Accept only startingCostToPress
-            if(msg.value &gt; startingCostToPress){
+            if(msg.value > startingCostToPress){
                 uint refundAmt = msg.value - startingCostToPress;
                 msg.sender.transfer(refundAmt);
             }
@@ -72,7 +72,7 @@ contract PlsDontPress {
         uint fees = currentPot/1000;
         feePayee.transfer(fees);
         
-        if(currentPot &lt;= minPotSum * 2){
+        if(currentPot <= minPotSum * 2){
             // if pool amt is running low, pay 50%
             amtToPay = currentPot / 2;
         } else {
@@ -85,14 +85,14 @@ contract PlsDontPress {
     //Calculate button expiry based on amt paid
     function setNextExpiry(uint _amtSent) internal {
         
-        //If current amt is &gt; last sent, reduce expiry time interval
-        if(_amtSent &gt; lastAmountSent){
+        //If current amt is > last sent, reduce expiry time interval
+        if(_amtSent > lastAmountSent){
             uint epochExpiryReductionPercentage =(lastAmountSent * 100)/ _amtSent;
             uint reducedEpochExpiry = (currentExpiryInterval * epochExpiryReductionPercentage) / 100;
             currentCostToPress = _amtSent;
             
             //If new expiry is below expiryIntervalCap, set as expiryIntervalCap
-            if(reducedEpochExpiry &lt; expiryIntervalCap){
+            if(reducedEpochExpiry < expiryIntervalCap){
                 currentExpiryInterval = expiryIntervalCap;
             }else {
                 currentExpiryInterval = reducedEpochExpiry;

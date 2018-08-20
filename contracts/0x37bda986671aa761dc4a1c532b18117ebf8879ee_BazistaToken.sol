@@ -27,20 +27,20 @@ library SafeMath {
 	}
 
 	/* function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	} */
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -65,8 +65,8 @@ contract owned {
 contract BazistaToken is ERC20, owned {
 	using SafeMath for uint256;
 
-	string public name = &#39;Bazista Token&#39;;
-	string public symbol = &#39;BZS&#39;;
+	string public name = 'Bazista Token';
+	string public symbol = 'BZS';
 
 	uint256 public totalSupply = 44000000000000000;
 
@@ -85,11 +85,11 @@ contract BazistaToken is ERC20, owned {
 	address public bountyWallet;
 	uint256 public bountySupply = 880000000000000;
 
-	mapping(address =&gt; uint) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => uint) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	modifier onlyPayloadSize(uint size) {
-		require(msg.data.length &gt;= (size + 4));
+		require(msg.data.length >= (size + 4));
 		_;
 	}
 
@@ -139,7 +139,7 @@ contract BazistaToken is ERC20, owned {
 		return true;
 	}
 	function _transferFrom(address _from, address _to, uint256 _value) internal {
-		require(_value &gt; 0);
+		require(_value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(_from, _to, _value);

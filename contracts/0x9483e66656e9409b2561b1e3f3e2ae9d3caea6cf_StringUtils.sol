@@ -33,7 +33,7 @@ library StringUtils {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -56,7 +56,7 @@ library StringUtils {
     */
     function lower(string _base) internal pure returns (string) {
         bytes memory _baseBytes = bytes(_base);
-        for (uint i = 0; i &lt; _baseBytes.length; i++) {
+        for (uint i = 0; i < _baseBytes.length; i++) {
             _baseBytes[i] = _lower(_baseBytes[i]);
         }
         return string(_baseBytes);
@@ -73,7 +73,7 @@ library StringUtils {
     *                and in a upper case otherwise returns the original value
     */
     function _lower(bytes1 _b1) internal pure returns (bytes1) {
-        if (_b1 &gt;= 0x41 &amp;&amp; _b1 &lt;= 0x5A) {
+        if (_b1 >= 0x41 && _b1 <= 0x5A) {
             return bytes1(uint8(_b1) + 32);
         }
         return _b1;
@@ -81,7 +81,7 @@ library StringUtils {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }

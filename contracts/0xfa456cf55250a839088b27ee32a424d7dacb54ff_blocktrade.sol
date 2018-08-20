@@ -6,9 +6,9 @@ contract controlled{
   uint256 public tokenFrozenSinceBlock;
   uint256 public blockLock;
 
-  mapping (address =&gt; bool) restrictedAddresses;
+  mapping (address => bool) restrictedAddresses;
 
-  // @dev Constructor function that sets freeze parameters so they don&#39;t unintentionally hinder operations.
+  // @dev Constructor function that sets freeze parameters so they don't unintentionally hinder operations.
   function controlled() public{
     owner = 0x24bF9FeCA8894A78d231f525c054048F5932dc6B;
     tokenFrozenSinceBlock = (2 ** 256) - 1;
@@ -30,10 +30,10 @@ contract controlled{
   * @param _restrict bool Restricts uder from using token. true restricts the address while false enables it.
   */
   function editRestrictedAddress(address _restrictedAddress, bool _restrict) public onlyOwner{
-    if(!restrictedAddresses[_restrictedAddress] &amp;&amp; _restrict){
+    if(!restrictedAddresses[_restrictedAddress] && _restrict){
       restrictedAddresses[_restrictedAddress] = _restrict;
     }
-    else if(restrictedAddresses[_restrictedAddress] &amp;&amp; !_restrict){
+    else if(restrictedAddresses[_restrictedAddress] && !_restrict){
       restrictedAddresses[_restrictedAddress] = _restrict;
     }
     else{
@@ -45,14 +45,14 @@ contract controlled{
 
   /************ Modifiers to restrict access to functions. ************/
 
-  // @dev Modifier to make sure the owner&#39;s functions are only called by the owner.
+  // @dev Modifier to make sure the owner's functions are only called by the owner.
   modifier onlyOwner{
     require(msg.sender == owner);
     _;
   }
 
   /*
-  * @dev Modifier to check whether destination of sender aren&#39;t forbidden from using the token.
+  * @dev Modifier to check whether destination of sender aren't forbidden from using the token.
   * @param _to address Address of the transfer destination.
   */
   modifier instForbiddenAddress(address _to){
@@ -65,16 +65,16 @@ contract controlled{
 
   // @dev Modifier to check if the token is operational at the moment.
   modifier unfrozenToken{
-    require(block.number &gt;= blockLock || msg.sender == owner);
-    require(block.number &gt;= tokenFrozenUntilBlock);
-    require(block.number &lt;= tokenFrozenSinceBlock);
+    require(block.number >= blockLock || msg.sender == owner);
+    require(block.number >= tokenFrozenUntilBlock);
+    require(block.number <= tokenFrozenSinceBlock);
     _;
   }
 }
 
 contract blocktrade is controlled{
-  string public name = &quot;blocktrade.com&quot;;
-  string public symbol = &quot;BTT&quot;;
+  string public name = "blocktrade.com";
+  string public symbol = "BTT";
   uint8 public decimals = 18;
   uint256 public initialSupply = 57746762*(10**18);
   uint256 public supply;
@@ -82,8 +82,8 @@ contract blocktrade is controlled{
   string public tokenFrozenSinceNotice;
   bool public airDropFinished;
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowances;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
   event TokenFrozenUntil(uint256 _frozenUntilBlock, string _reason);
@@ -133,7 +133,7 @@ contract blocktrade is controlled{
   /*
   * @dev Allows us to view the token balance of the account.
   * @param _owner address Address of the user whose token we are allowed to spend from sender address.
-  * @param _spender address Address of the user allowed to spend owner&#39;s tokens.
+  * @param _spender address Address of the user allowed to spend owner's tokens.
   */
   function allowance(address _owner, address _spender) constant public returns(uint256 remaining) {
     return allowances[_owner][_spender];
@@ -165,8 +165,8 @@ contract blocktrade is controlled{
   * @param _value uint256 Amount of tokens we want to sender.
   */
   function transfer(address _to, uint256 _value) unfrozenToken instForbiddenAddress(_to) public returns(bool success){
-    require(balances[msg.sender] &gt;= _value);           // Check if the sender has enough
-    require(balances[_to] + _value &gt;= balances[_to]) ;  // Check for overflows
+    require(balances[msg.sender] >= _value);           // Check if the sender has enough
+    require(balances[_to] + _value >= balances[_to]) ;  // Check for overflows
 
     balances[msg.sender] -= _value;                     // Subtract from the sender
     balances[_to] += _value;                            // Add the same to the recipient
@@ -177,7 +177,7 @@ contract blocktrade is controlled{
   /*
   * @dev Sets allowance to the spender from our address.
   * @param _spender address Address of the spender we are giving permissions to.
-  * @param _value uint256 Amount of tokens the spender is allowed to spend from owner&#39;s accoun. Note the decimal spaces.
+  * @param _value uint256 Amount of tokens the spender is allowed to spend from owner's accoun. Note the decimal spaces.
   */
   function approve(address _spender, uint256 _value) unfrozenToken public returns (bool success){
     allowances[msg.sender][_spender] = _value;          // Set allowance
@@ -186,15 +186,15 @@ contract blocktrade is controlled{
   }
 
   /*
-  * @dev Used by spender to transfer some one else&#39;s tokens.
+  * @dev Used by spender to transfer some one else's tokens.
   * @param _form address Address of the owner of the tokens.
   * @param _to address Address where we want to transfer tokens to.
   * @param _value uint256 Amount of tokens we want to transfer. Note the decimal spaces.
   */
   function transferFrom(address _from, address _to, uint256 _value) unfrozenToken instForbiddenAddress(_to) public returns(bool success){
-    require(balances[_from] &gt;= _value);                // Check if the sender has enough
-    require(balances[_to] + _value &gt;= balances[_to]);  // Check for overflows
-    require(_value &lt;= allowances[_from][msg.sender]);  // Check allowance
+    require(balances[_from] >= _value);                // Check if the sender has enough
+    require(balances[_to] + _value >= balances[_to]);  // Check for overflows
+    require(_value <= allowances[_from][msg.sender]);  // Check allowance
 
     balances[_from] -= _value;                          // Subtract from the sender
     balances[_to] += _value;                            // Add the same to the recipient
@@ -208,7 +208,7 @@ contract blocktrade is controlled{
   * @param _value uint256 Amount of tokens we want to destroy.
   */
   function burn(uint256 _value) onlyOwner public returns(bool success){
-    require(balances[msg.sender] &gt;= _value);                 // Check if the sender has enough
+    require(balances[msg.sender] >= _value);                 // Check if the sender has enough
     balances[msg.sender] -= _value;                          // Subtract from the sender
     supply -= _value;
     emit Burn(msg.sender, _value);

@@ -3,14 +3,14 @@ pragma solidity ^0.4.18;
 /*
     Copyright 2017-2018 Phillip A. Elsasser
 
-    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+    Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+    distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
@@ -39,9 +39,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -49,7 +49,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -58,7 +58,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,7 +81,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -134,9 +134,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -183,7 +183,7 @@ contract Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -194,8 +194,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -258,7 +258,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -274,7 +274,7 @@ contract StandardToken is ERC20, BasicToken {
 /// @title Upgradeable Token
 /// @notice allows for us to update some of the needed functionality in our tokens post deployment. Inspiration taken
 /// from Golems migrate functionality.
-/// @author Phil Elsasser &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef9f878683af828e9d848a9b9f9d809b808c8083c18680">[email&#160;protected]</a>&gt;
+/// @author Phil Elsasser <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef9f878683af828e9d848a9b9f9d809b808c8083c18680">[email protected]</a>>
 contract UpgradeableToken is Ownable, BurnableToken, StandardToken {
 
     address public upgradeableTarget;       // contract address handling upgrade
@@ -312,11 +312,11 @@ contract UpgradeableToken is Ownable, BurnableToken, StandardToken {
 /// @title Market Token
 /// @notice Our membership token.  Users must lock tokens to enable trading for a given Market Contract
 /// as well as have a minimum balance of tokens to create new Market Contracts.
-/// @author Phil Elsasser &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9feff7f6f3dff2feedf4faebefedf0ebf0fcf0f3b1f6f0">[email&#160;protected]</a>&gt;
+/// @author Phil Elsasser <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9feff7f6f3dff2feedf4faebefedf0ebf0fcf0f3b1f6f0">[email protected]</a>>
 contract MarketToken is UpgradeableToken {
 
-    string public constant name = &quot;MARKET Protocol Token&quot;;
-    string public constant symbol = &quot;MKT&quot;;
+    string public constant name = "MARKET Protocol Token";
+    string public constant symbol = "MKT";
     uint8 public constant decimals = 18;
 
     uint public constant INITIAL_SUPPLY = 600000000 * 10**uint(decimals); // 600 million tokens with 18 decimals (6e+26)
@@ -324,14 +324,14 @@ contract MarketToken is UpgradeableToken {
     uint public lockQtyToAllowTrading;
     uint public minBalanceToAllowContractCreation;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) contractAddressToUserAddressToQtyLocked;
+    mapping(address => mapping(address => uint)) contractAddressToUserAddressToQtyLocked;
 
     event UpdatedUserLockedBalance(address indexed contractAddress, address indexed userAddress, uint balance);
 
     function MarketToken(uint qtyToLockForTrading, uint minBalanceForCreation) public {
         lockQtyToAllowTrading = qtyToLockForTrading;
         minBalanceToAllowContractCreation = minBalanceForCreation;
-        totalSupply_ = INITIAL_SUPPLY;  //note totalSupply_ and INITIAL_SUPPLY may vary as token&#39;s are burnt.
+        totalSupply_ = INITIAL_SUPPLY;  //note totalSupply_ and INITIAL_SUPPLY may vary as token's are burnt.
 
         balances[msg.sender] = INITIAL_SUPPLY; // for now allocate all tokens to creator
     }
@@ -345,14 +345,14 @@ contract MarketToken is UpgradeableToken {
     /// @param userAddress address of the user
     /// @return true if user has locked tokens to trade the supplied marketContractAddress
     function isUserEnabledForContract(address marketContractAddress, address userAddress) external view returns (bool) {
-        return contractAddressToUserAddressToQtyLocked[marketContractAddress][userAddress] &gt;= lockQtyToAllowTrading;
+        return contractAddressToUserAddressToQtyLocked[marketContractAddress][userAddress] >= lockQtyToAllowTrading;
     }
 
     /// @notice checks if a user address has enough token balance to be eligible to create a contract
     /// @param userAddress address of the user
     /// @return true if user has sufficient balance of tokens
     function isBalanceSufficientForContractCreation(address userAddress) external view returns (bool) {
-        return balances[userAddress] &gt;= minBalanceToAllowContractCreation;
+        return balances[userAddress] >= minBalanceToAllowContractCreation;
     }
 
     /// @notice allows user to lock tokens to enable trading for a given market contract
@@ -408,8 +408,8 @@ contract MarketToken is UpgradeableToken {
     // PRIVATE METHODS
     */
 
-    /// @dev returns locked balance from this contract to the user&#39;s balance
-    /// @param qtyToUnlock qty to return to user&#39;s balance
+    /// @dev returns locked balance from this contract to the user's balance
+    /// @param qtyToUnlock qty to return to user's balance
     function transferLockedTokensBackToUser(uint qtyToUnlock) private {
         balances[this] = balances[this].sub(qtyToUnlock);
         balances[msg.sender] = balances[msg.sender].add(qtyToUnlock);

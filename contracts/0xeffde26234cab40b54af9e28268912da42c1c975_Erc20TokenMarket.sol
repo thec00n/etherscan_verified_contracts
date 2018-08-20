@@ -1,6 +1,6 @@
-// This is ERC 2.0 Token&#39;s Trading Market, Decentralized Exchange Contract. 这是一个ERC20Token的去中心化交易所合同。
+// This is ERC 2.0 Token's Trading Market, Decentralized Exchange Contract. 这是一个ERC20Token的去中心化交易所合同。
 // 支持使用以太币买卖任意满足ERC20标准的Token。其具体使用流程请参见对应文档。
-// by he.guanjun, email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c141952185218520f141d123c141308111d1510521f1311">[email&#160;protected]</a>
+// by he.guanjun, email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c141952185218520f141d123c141308111d1510521f1311">[email protected]</a>
 // 2017-09-28 update
 // TODO：
 //  1,每一个function，都应该写日志（事件），而且最好不要共用事件。暂不处理。
@@ -47,7 +47,7 @@ contract Base {
         owner = _newOwner;
     }
 
-    mapping (address =&gt; uint256) public userEtherOf;   
+    mapping (address => uint256) public userEtherOf;   
 
     function userRefund() public   {
         //require(msg.sender == tx.origin);     //TODO：
@@ -63,7 +63,7 @@ contract Base {
         require (_to != 0x0);  
         lock();
         uint256 amount = userEtherOf[_from];
-        if(amount &gt; 0){
+        if(amount > 0){
             userEtherOf[_from] -= amount;
             _to.transfer(amount);               //防范外部调用，特别是和支付（买Token）联合调用就有风险， 2017-09-27
         }
@@ -97,7 +97,7 @@ contract  Erc20TokenMarket is Base         //for exchange token
     function Erc20TokenMarket()  Base ()  {
     }
 
-    mapping (address =&gt; uint) public badTokenOf;      //Token 黑名单！
+    mapping (address => uint) public badTokenOf;      //Token 黑名单！
 
     event OnBadTokenChanged(address indexed _tokenAddress, uint indexed _badNum);
 
@@ -112,25 +112,25 @@ contract  Erc20TokenMarket is Base         //for exchange token
     }
 
     function isBadToken(address _tokenAddress) private returns(bool _result) {
-        return badTokenOf[_tokenAddress] &gt; 0;        
+        return badTokenOf[_tokenAddress] > 0;        
     }
 
     uint256 public sellerGuaranteeEther = 0 ether;      //保证金，最大惩罚金额。
 
     function setSellerGuarantee(uint256 _gurateeEther) public onlyOwner {
-        require(now - createTime &gt; 1 years);        //至少一年后才启用保证金
-        require(_gurateeEther &lt;= 0.1 ether);        //不能太高，表示一下，能够拒绝恶意者就好。
+        require(now - createTime > 1 years);        //至少一年后才启用保证金
+        require(_gurateeEther <= 0.1 ether);        //不能太高，表示一下，能够拒绝恶意者就好。
         sellerGuaranteeEther = _gurateeEther;        
     }    
 
     function checkSellerGuarantee(address _seller) private returns (bool _result){
-        return userEtherOf[_seller] &gt;= sellerGuaranteeEther;            //保证金不强制冻结，如果保证金不足，将无法完成交易（买和卖）。
+        return userEtherOf[_seller] >= sellerGuaranteeEther;            //保证金不强制冻结，如果保证金不足，将无法完成交易（买和卖）。
     }
 
     function userRefundWithoutGuaranteeEther() public   {       //退款，但是保留保证金
         lock();
 
-        if (userEtherOf[msg.sender] &gt; 0 &amp;&amp; userEtherOf[msg.sender] &gt;= sellerGuaranteeEther){
+        if (userEtherOf[msg.sender] > 0 && userEtherOf[msg.sender] >= sellerGuaranteeEther){
             uint256 amount = userEtherOf[msg.sender] - sellerGuaranteeEther;
             userEtherOf[msg.sender] -= amount;
             msg.sender.transfer(amount);            //防范外部调用 2017-09-28
@@ -147,7 +147,7 @@ contract  Erc20TokenMarket is Base         //for exchange token
         uint       lineTime;            //出售时间限制
     }    
 
-    mapping (address =&gt; mapping(address =&gt; SellingToken)) public userSellingTokenOf;    //销售者，代币地址，销售信息
+    mapping (address => mapping(address => SellingToken)) public userSellingTokenOf;    //销售者，代币地址，销售信息
 
     //event OnReceiveApproval(address indexed _tokenAddress, address _seller, uint indexed _sellingAmount, uint256 indexed _price, uint _lineTime, bool _cancel);
     event OnSetSellingToken(address indexed _tokenAddress, address _seller, uint indexed _sellingAmount, uint256 indexed _price, uint _lineTime, bool _cancel);
@@ -158,8 +158,8 @@ contract  Erc20TokenMarket is Base         //for exchange token
         _value;
         require(_from != 0x0);
         require(_token != 0x0);
-        //require(_value &gt; 0);              //no
-        require(_token == msg.sender &amp;&amp; msg.sender != tx.origin);   //防范攻击，防止被发送大量的垃圾信息！就算攻击，也要写一个智能合约来攻击！
+        //require(_value > 0);              //no
+        require(_token == msg.sender && msg.sender != tx.origin);   //防范攻击，防止被发送大量的垃圾信息！就算攻击，也要写一个智能合约来攻击！
         require(!isBadToken(msg.sender));                           //黑名单判断，主要防范垃圾信息，
 
         lock();
@@ -168,11 +168,11 @@ contract  Erc20TokenMarket is Base         //for exchange token
         var sellingAmount = token.allowance(_from, this);   //_from == tx.origin != msg.sender = _token , _from == tx.origin 不一定，但一般如此，多重签名钱包就不是。
 
         //var sa = token.balanceOf(_from);        //检查用户实际拥有的Token，但用户拥有的Token随时可能变化，所以还是无法检查，只能在购买的时候检查。
-        //if (sa &lt; sellingAmount){
+        //if (sa < sellingAmount){
         //    sellingAmount = sa;
         //}
 
-        //require(sellingAmount &gt; 0);       //no 
+        //require(sellingAmount > 0);       //no 
 
         var st = userSellingTokenOf[_from][_token];                 //用户(卖家)地址， Token地址，
         st.thisAmount = sellingAmount;
@@ -185,8 +185,8 @@ contract  Erc20TokenMarket is Base         //for exchange token
       
     function setSellingToken(address _tokenAddress,  uint256 _price, uint _lineTime) public returns(uint256  _sellingAmount) {
         require(_tokenAddress != 0x0);
-        require(_price &gt; 0);
-        require(_lineTime &gt; now);
+        require(_price > 0);
+        require(_lineTime > now);
         require(!isBadToken(_tokenAddress));                //黑名单
         require(checkSellerGuarantee(msg.sender));          //保证金，
         lock();
@@ -195,7 +195,7 @@ contract  Erc20TokenMarket is Base         //for exchange token
         _sellingAmount = token.allowance(msg.sender,this);      //防范外部调用， 2017-09-27
 
         //var sa = token.balanceOf(_from);        //检查用户实际拥有的Token
-        //if (sa &lt; _sellingAmount){
+        //if (sa < _sellingAmount){
         //    _sellingAmount = sa;
         //}
 
@@ -232,7 +232,7 @@ contract  Erc20TokenMarket is Base         //for exchange token
     function buyTokenFrom(address _seller, address _tokenAddress, uint256 _buyerTokenPrice) public payable returns(bool _result) {   
         require(_seller != 0x0);
         require(_tokenAddress != 0x0);
-        require(_buyerTokenPrice &gt; 0);
+        require(_buyerTokenPrice > 0);
 
         lock();              //加锁  //拒绝二次进入！   //防范外部调用，某些特殊合约可能无法成功执行此方法，但为了安全就这么简单处理。 2017-09-27
         
@@ -250,20 +250,20 @@ contract  Erc20TokenMarket is Base         //for exchange token
 
         var sa = token.balanceOf(_seller);        //检查用户实际拥有的Token，但用户拥有的Token随时可能变化，只能在购买的时候检查。
         bool bigger = false;
-        if (sa &lt; sellingAmount){                  //一种策略，卖家交定金，如果发现出现这种情况，定金没收，owner 和 买家平分定金。
+        if (sa < sellingAmount){                  //一种策略，卖家交定金，如果发现出现这种情况，定金没收，owner 和 买家平分定金。
             sellingAmount = sa;
             bigger = true;
         }
 
-        if (st.price &gt; 0 &amp;&amp; st.lineTime &gt; now &amp;&amp; sellingAmount &gt; 0 &amp;&amp; !st.cancel){
-            if(_buyerTokenPrice &lt; st.price){                                                //price maybe be changed!
+        if (st.price > 0 && st.lineTime > now && sellingAmount > 0 && !st.cancel){
+            if(_buyerTokenPrice < st.price){                                                //price maybe be changed!
                 OnBuyToken(msg.sender, userEtherOf[msg.sender], _seller, _tokenAddress, 0, st.price, sellingAmount);
                 unLock();
                 return;
             }
 
             uint256 canTokenAmount =  userEtherOf[msg.sender]  / st.price;      
-            if(canTokenAmount &gt; 0 &amp;&amp; canTokenAmount *  st.price &gt;  userEtherOf[msg.sender]){
+            if(canTokenAmount > 0 && canTokenAmount *  st.price >  userEtherOf[msg.sender]){
                  canTokenAmount -= 1;
             }
             if(canTokenAmount == 0){
@@ -271,16 +271,16 @@ contract  Erc20TokenMarket is Base         //for exchange token
                 unLock();
                 return;
             }
-            if (canTokenAmount &gt; sellingAmount){
+            if (canTokenAmount > sellingAmount){
                 canTokenAmount = sellingAmount; 
             }
             
             var etherAmount =  canTokenAmount *  st.price;      //这里不存在溢出，因为 canTokenAmount =  userEtherOf[msg.sender]  / st.price;      2017-09-27
             userEtherOf[msg.sender] -= etherAmount;                     //减少记账金额
-            //require(userEtherOf[msg.sender] &gt;= 0);                      //冗余判断: 必然，uint数据类型。2017-09-27 delete
+            //require(userEtherOf[msg.sender] >= 0);                      //冗余判断: 必然，uint数据类型。2017-09-27 delete
 
             token.transferFrom(_seller, msg.sender, canTokenAmount);    //转代币, ，预防类似 the dao 潜在的风险       
-            if(userEtherOf[_seller]  &gt;= sellerGuaranteeEther){          //大于等于最低保证金，这样鼓励卖家存留一点保证金。            
+            if(userEtherOf[_seller]  >= sellerGuaranteeEther){          //大于等于最低保证金，这样鼓励卖家存留一点保证金。            
                 _seller.transfer(etherAmount);                          //转以太币，预防类似 the dao 潜在的风险      
             }   
             else{                                                       //小于最低保证金
@@ -297,12 +297,12 @@ contract  Erc20TokenMarket is Base         //for exchange token
             OnBuyToken(msg.sender, userEtherOf[msg.sender], _seller, _tokenAddress, 0, st.price, sellingAmount);
         }
 
-        if (bigger &amp;&amp; sellerGuaranteeEther &gt; 0){                                  //虚报可出售Token，要惩罚卖家：只要卖家账上有钱就被扣保证金。
+        if (bigger && sellerGuaranteeEther > 0){                                  //虚报可出售Token，要惩罚卖家：只要卖家账上有钱就被扣保证金。
             var pf = sellerGuaranteeEther;
-            if (pf &gt; userEtherOf[_seller]){
+            if (pf > userEtherOf[_seller]){
                 pf = userEtherOf[_seller];
             }
-            if(pf &gt; 0){
+            if(pf > 0){
                 userEtherOf[owner] +=  pf / 2;           
                 userEtherOf[msg.sender] +=   pf - pf / 2;
                 userEtherOf[_seller] -= pf;
@@ -314,7 +314,7 @@ contract  Erc20TokenMarket is Base         //for exchange token
     }
 
     function () public payable {
-        if(msg.value &gt; 0){          //来者不拒，比抛出异常或许更合适。
+        if(msg.value > 0){          //来者不拒，比抛出异常或许更合适。
             userEtherOf[msg.sender] += msg.value;
         }
     }
@@ -324,13 +324,13 @@ contract  Erc20TokenMarket is Base         //for exchange token
 
         Erc20Token token = Erc20Token(_token);  //目前只处理 ERC20 Token，那些非标准Token就会永久丢失！
         var amount = token.balanceOf(this);     //有一定风险，2017-09-27
-        if (amount &gt; 0){
+        if (amount > 0){
             var a1 = amount / 2;
-            if (a1 &gt; 0){
+            if (a1 > 0){
                 token.transfer(msg.sender, a1); //有一定风险，2017-09-27
             }
             var a2 = amount - a1;
-            if (a2 &gt; 0){
+            if (a2 > 0){
                 token.transfer(owner, a2);      //有一定风险，2017-09-27
             }
         }

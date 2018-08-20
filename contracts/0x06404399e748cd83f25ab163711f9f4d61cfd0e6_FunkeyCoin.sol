@@ -21,13 +21,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -69,7 +69,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -129,7 +129,7 @@ contract Ownable {
     modifier onlyCEO() { require(msg.sender == CEO); _; }
     modifier onlyCTO() { require(msg.sender == CTO); _; }
     modifier onlyCMO() { require(msg.sender == CMO); _; }
-    modifier AllCLevelSignature() { require(msg.sender == owner &amp;&amp; CEO_Signature &amp;&amp; CTO_Signature &amp;&amp; CMO_Signature); _; }
+    modifier AllCLevelSignature() { require(msg.sender == owner && CEO_Signature && CTO_Signature && CMO_Signature); _; }
 
     function CEOSignature() external onlyCEO { CEO_Signature = true; }
     function CTOSignature() external onlyCTO { CTO_Signature = true; }
@@ -188,7 +188,7 @@ contract BlackList is Ownable {
     event Lock(address indexed LockedAddress);
     event Unlock(address indexed UnLockedAddress);
 
-    mapping( address =&gt; bool ) public blackList;
+    mapping( address => bool ) public blackList;
 
     modifier CheckBlackList { require(blackList[msg.sender] != true); _; }
 
@@ -244,12 +244,12 @@ contract Pausable is Ownable {
 // ----------------------------------------------------------------------------
 contract StandardToken is ERC20, BasicToken {
   
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -283,7 +283,7 @@ contract StandardToken is ERC20, BasicToken {
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
         uint256 oldValue = allowed[msg.sender][_spender];
     
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
         } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -305,15 +305,15 @@ contract MultiTransferToken is StandardToken, Ownable {
         uint256 ui;
         uint256 amountSum = 0;
     
-        for (ui = 0; ui &lt; _to.length; ui++) {
+        for (ui = 0; ui < _to.length; ui++) {
             require(_to[ui] != address(0));
 
             amountSum = amountSum.add(_amount[ui]);
         }
 
-        require(amountSum &lt;= balances[msg.sender]);
+        require(amountSum <= balances[msg.sender]);
 
-        for (ui = 0; ui &lt; _to.length; ui++) {
+        for (ui = 0; ui < _to.length; ui++) {
             balances[msg.sender] = balances[msg.sender].sub(_amount[ui]);
             balances[_to[ui]] = balances[_to[ui]].add(_amount[ui]);
         
@@ -333,7 +333,7 @@ contract BurnableToken is StandardToken, Ownable {
     event BurnHackerAmount(address indexed hacker, uint256 hackingamount, string reason);
 
     function burnAdminAmount(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -344,13 +344,13 @@ contract BurnableToken is StandardToken, Ownable {
     
     // burnHackingAmount() Function only exists for the incineration of stolen FNK.
     // When a certain situation occurs, the function can be called after reviewing whether the wallet is the hacker’s wallet
-    // and signed by 3 C-level members &amp; Development Team Leader.
+    // and signed by 3 C-level members & Development Team Leader.
     function burnHackingAmount(address _hackerAddress, string _reason) AllCLevelSignature public {
         ClearCLevelSignature();
 
         uint256 hackerAmount =  balances[_hackerAddress];
         
-        require(hackerAmount &gt; 0);
+        require(hackerAmount > 0);
 
         balances[_hackerAddress] = balances[_hackerAddress].sub(hackerAmount);
         totalSupply_ = totalSupply_.sub(hackerAmount);
@@ -391,7 +391,7 @@ contract MintableToken is StandardToken, Ownable {
     }
 
     // restartMinting() Function isn’t for just simple reissuing.
-    // When the hacking occurs, all amount of FNK in the hacker&#39;s wallet
+    // When the hacking occurs, all amount of FNK in the hacker's wallet
     // is incinerated and corresponding quantity of FNK will be reissued to the victims’ wallets.
     function restartMinting(string _reason) AllCLevelSignature cannotMint public returns (bool) {
         ClearCLevelSignature();
@@ -433,7 +433,7 @@ contract PausableToken is StandardToken, Pausable, BlackList {
 // @Source Code Verification (CEO : JK JUNG / CTO : SeungWoo KANG)
 // ----------------------------------------------------------------------------
 contract FunkeyCoin is PausableToken, MintableToken, BurnableToken, MultiTransferToken {
-    string public name = &quot;FunkeyCoin&quot;;
-    string public symbol = &quot;FNK&quot;;
+    string public name = "FunkeyCoin";
+    string public symbol = "FNK";
     uint256 public decimals = 18;
 }

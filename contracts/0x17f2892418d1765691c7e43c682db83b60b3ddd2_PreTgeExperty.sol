@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
 
-// import &quot;./ERC223BasicToken.sol&quot;;
+// import "./ERC223BasicToken.sol";
 
-// import &quot;./SafeMath.sol&quot;;
+// import "./SafeMath.sol";
 /**
  * Math operations with safety checks
  */
@@ -14,37 +14,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -55,7 +55,7 @@ library SafeMath {
 }
 // end import
 
-// import &quot;./ERC223Basic.sol&quot;;
+// import "./ERC223Basic.sol";
 contract ERC223Basic {
   uint public totalSupply;
   function balanceOf(address who) constant returns (uint);
@@ -65,7 +65,7 @@ contract ERC223Basic {
 }
 // end import
 
-// import &quot;./ERC223ReceivingContract.sol&quot;;
+// import "./ERC223ReceivingContract.sol";
  /*
  * Contract that is working with ERC223 tokens
  */
@@ -78,7 +78,7 @@ contract ERC223ReceivingContract {
 contract ERC223BasicToken is ERC223Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   // Function that is called when a user or another contract wants to transfer funds .
   function transfer(address to, uint value, bytes data) {
@@ -93,7 +93,7 @@ contract ERC223BasicToken is ERC223Basic {
 
     balances[msg.sender] = balances[msg.sender].sub(value);
     balances[to] = balances[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       receiver.tokenFallback(msg.sender, value, data);
     }
@@ -112,7 +112,7 @@ contract ERC223BasicToken is ERC223Basic {
 
     balances[msg.sender] = balances[msg.sender].sub(value);
     balances[to] = balances[to].add(value);
-    if (codeLength &gt; 0) {
+    if (codeLength > 0) {
       ERC223ReceivingContract receiver = ERC223ReceivingContract(to);
       bytes memory empty;
       receiver.tokenFallback(msg.sender, value, empty);
@@ -129,8 +129,8 @@ contract ERC223BasicToken is ERC223Basic {
 contract PreTgeExperty is ERC223BasicToken {
 
   // token constants
-  string public constant name = &quot;Pre-TGE Experty Token&quot;;
-  string public constant symbol = &quot;PEXY&quot;;
+  string public constant name = "Pre-TGE Experty Token";
+  string public constant symbol = "PEXY";
   uint8 public constant decimals = 18;
 
   // pre-tge variables
@@ -141,7 +141,7 @@ contract PreTgeExperty is ERC223BasicToken {
   bool public isClosed = false;
 
   // keep track of burned tokens here
-  mapping(address =&gt; uint) public burnedTokens;
+  mapping(address => uint) public burnedTokens;
   
   // preICO constructor
   function PreTgeExperty() {
@@ -171,7 +171,7 @@ contract PreTgeExperty is ERC223BasicToken {
 
   // allow to burn pre-tge tokens in order to teleport them to new contract
   function burnTokens(uint amount) {
-    if (amount &gt; balances[msg.sender]) throw;
+    if (amount > balances[msg.sender]) throw;
 
     balances[msg.sender] = balances[msg.sender].sub(amount);
     burnedTokens[msg.sender] = burnedTokens[msg.sender].add(amount);
@@ -182,7 +182,7 @@ contract PreTgeExperty is ERC223BasicToken {
     if (msg.sender != preTgeManager) throw;
 
     // we can only decrease bonus
-    if (_preTgeBonus &gt; preTgeBonus) throw;
+    if (_preTgeBonus > preTgeBonus) throw;
 
     preTgeBonus = _preTgeBonus;
   }

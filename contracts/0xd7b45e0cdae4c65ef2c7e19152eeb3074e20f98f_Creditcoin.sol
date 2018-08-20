@@ -60,13 +60,13 @@ contract CreditcoinBase is Owned {
 /// @title Creditcoin ERC20 token
 contract Creditcoin is CreditcoinBase, Erc20Plus {
 //----------- ERC20 members
-	string public constant name = &quot;Creditcoin&quot;;
-	string public constant symbol = &quot;CRE&quot;;
+	string public constant name = "Creditcoin";
+	string public constant symbol = "CRE";
 //=========== ERC20 members
 
-	mapping (address =&gt; uint256) internal _balanceOf;
+	mapping (address => uint256) internal _balanceOf;
 	uint256 internal _totalSupply;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal _allowance;
+	mapping (address => mapping (address => uint256)) internal _allowance;
 
 	event Burnt(address indexed from, uint256 value);
 	event Minted(uint256 value);
@@ -82,8 +82,8 @@ contract Creditcoin is CreditcoinBase, Erc20Plus {
 
 	function _transfer(address from, address to, uint256 value) internal {
 		require(to != 0x0);
-		require(_balanceOf[from] &gt;= value);
-		require(_balanceOf[to] + value &gt; _balanceOf[to]);
+		require(_balanceOf[from] >= value);
+		require(_balanceOf[to] + value > _balanceOf[to]);
 
 		uint256 previousBalances = _balanceOf[from] + _balanceOf[to];
 
@@ -113,7 +113,7 @@ contract Creditcoin is CreditcoinBase, Erc20Plus {
 	}
 
 	function transferFrom(address from, address to, uint256 value) public returns (bool success) {
-		require(value &lt;= _allowance[from][msg.sender]);
+		require(value <= _allowance[from][msg.sender]);
 		_allowance[from][msg.sender] -= value;
 		_transfer(from, to, value);
 		success = true;
@@ -134,7 +134,7 @@ contract Creditcoin is CreditcoinBase, Erc20Plus {
 	}
 
 	function burn(uint256 value) public returns (bool success) {
-		require(_balanceOf[msg.sender] &gt;= value);
+		require(_balanceOf[msg.sender] >= value);
 		_balanceOf[msg.sender] -= value;
 		_totalSupply -= value;
 
@@ -143,8 +143,8 @@ contract Creditcoin is CreditcoinBase, Erc20Plus {
 	}
 
 	function burnFrom(address from, uint256 value) public returns (bool success) {
-		require(_balanceOf[from] &gt;= value);
-		require(value &lt;= _allowance[from][msg.sender]);
+		require(_balanceOf[from] >= value);
+		require(value <= _allowance[from][msg.sender]);
 		_balanceOf[from] -= value;
 		_allowance[from][msg.sender] -= value;
 		_totalSupply -= value;
@@ -157,8 +157,8 @@ contract Creditcoin is CreditcoinBase, Erc20Plus {
 	/// since natural loss of coins is expected the overall amount in use will be less than totalSupply
 	function mint(uint256 amount) public returns (bool success) {
 		require(msg.sender == minter);
-		require(creditcoinLimitInFrac &gt; amount &amp;&amp; creditcoinLimitInFrac - amount &gt;= _totalSupply);
-		require(_balanceOf[msg.sender] + amount &gt; _balanceOf[msg.sender]);
+		require(creditcoinLimitInFrac > amount && creditcoinLimitInFrac - amount >= _totalSupply);
+		require(_balanceOf[msg.sender] + amount > _balanceOf[msg.sender]);
 		_balanceOf[msg.sender] += amount;
 		_totalSupply += amount;
 

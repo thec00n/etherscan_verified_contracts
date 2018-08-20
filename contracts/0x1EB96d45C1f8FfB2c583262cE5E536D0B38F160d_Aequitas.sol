@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
  * The MIT License (MIT)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -12,7 +12,7 @@ pragma solidity ^0.4.11;
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -97,8 +97,8 @@ contract Token is Owned {
 // Implementation of Token contract
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -108,7 +108,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -131,8 +131,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -145,7 +145,7 @@ Imagine coins, currencies, shares, voting weight, etc.
 Machine-based, rapid creation of many tokens would not necessarily need these extra features or will be minted in other manners.
 
 1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol &amp; Name.
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
 3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
 
 .*/
@@ -161,13 +161,13 @@ contract HumanStandardToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) {
         balances[msg.sender] = _initialAmount;
@@ -187,10 +187,10 @@ contract HumanStandardToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if (!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {revert();}
+        if (!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {revert();}
         return true;
     }
 }
@@ -213,9 +213,9 @@ contract CapitalMiningToken is HumanStandardToken {
     uint256 public initialReward; // Assignment of initial reward
 
     // Payout related variables
-    mapping (address =&gt; Account) public pendingPayouts; // Keep track of per-address contributions in this reward block
-    mapping (uint =&gt; uint) public totalBlockContribution; // Keep track of total ether contribution per block
-    mapping (uint =&gt; bool) public minedBlock; // Checks if block is mined
+    mapping (address => Account) public pendingPayouts; // Keep track of per-address contributions in this reward block
+    mapping (uint => uint) public totalBlockContribution; // Keep track of total ether contribution per block
+    mapping (uint => bool) public minedBlock; // Checks if block is mined
 
     // contains all variables required to disburse AQT to a contributor fairly
     struct Account {
@@ -247,7 +247,7 @@ contract CapitalMiningToken is HumanStandardToken {
     // minimum required contribution is 0.05 Ether
     function mine() payable _updateBlockAndRewardRate() _updateAccount() {
         // At this point it is safe to assume that the sender has received all his payouts for previous blocks
-        require(msg.value &gt;= 50 finney);
+        require(msg.value >= 50 finney);
         totalBlockContribution[simulatedBlockNumber] += msg.value;
         // Update total contribution
 
@@ -266,18 +266,18 @@ contract CapitalMiningToken is HumanStandardToken {
 
     modifier _updateBlockAndRewardRate() {
         // Stop update if the time since last block is less than specified interval
-        if ((now - timeOfLastBlock) &gt;= blockInterval &amp;&amp; minedBlock[simulatedBlockNumber] == true) {
+        if ((now - timeOfLastBlock) >= blockInterval && minedBlock[simulatedBlockNumber] == true) {
             timeOfLastBlock = now;
             simulatedBlockNumber += 1;
             // update reward according to block number
-            rewardValue = initialReward / (2 ** (simulatedBlockNumber / rewardReductionRate)); // 後で梨沙ちゃんと中本さんに見てもらったほうがいい( &#180;∀｀ )
+            rewardValue = initialReward / (2 ** (simulatedBlockNumber / rewardReductionRate)); // 後で梨沙ちゃんと中本さんに見てもらったほうがいい( ´∀｀ )
             // 毎回毎回計算するよりsimulatedBlockNumber%rewardReductionRateみたいな条件でやったらトランザクションが安くなりそう
         }
         _;
     }
 
     modifier _updateAccount() {
-        if (pendingPayouts[msg.sender].addr == msg.sender &amp;&amp; pendingPayouts[msg.sender].lastContributionBlockNumber &lt; simulatedBlockNumber) {
+        if (pendingPayouts[msg.sender].addr == msg.sender && pendingPayouts[msg.sender].lastContributionBlockNumber < simulatedBlockNumber) {
             // もうブロックチェーンにのっているからやり直せないがこれ気持ち悪くない？
             uint payout = pendingPayouts[msg.sender].blockContribution * pendingPayouts[msg.sender].blockPayout / totalBlockContribution[pendingPayouts[msg.sender].lastContributionBlockNumber]; //　これ分かりづらいから時間あれば分けてやって
             pendingPayouts[msg.sender] = Account(0, 0, 0, 0);
@@ -303,10 +303,10 @@ contract CapitalMiningToken is HumanStandardToken {
 contract Aequitas is CapitalMiningToken {
     // Constructor
     function Aequitas() CapitalMiningToken(
-            &quot;Aequitas&quot;,             // name
+            "Aequitas",             // name
             8,                      // decimals
-            &quot;AQT&quot;,                  // symbol
-            &quot;0.1&quot;,                  // version
+            "AQT",                  // symbol
+            "0.1",                  // version
             0,                      // initialAmount
             0,                      // simulatedBlockNumber
             2,                      // rewardScarcityFactor

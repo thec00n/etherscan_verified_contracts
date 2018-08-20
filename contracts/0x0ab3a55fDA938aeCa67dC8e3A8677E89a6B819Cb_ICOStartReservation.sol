@@ -1,12 +1,12 @@
 /*
   8888888 .d8888b.   .d88888b.   .d8888b.  888                     888                 888      
-    888  d88P  Y88b d88P&quot; &quot;Y88b d88P  Y88b 888                     888                 888      
+    888  d88P  Y88b d88P" "Y88b d88P  Y88b 888                     888                 888      
     888  888    888 888     888 Y88b.      888                     888                 888      
-    888  888        888     888  &quot;Y888b.   888888  8888b.  888d888 888888      .d8888b 88888b.  
-    888  888        888     888     &quot;Y88b. 888        &quot;88b 888P&quot;   888        d88P&quot;    888 &quot;88b 
-    888  888    888 888     888       &quot;888 888    .d888888 888     888        888      888  888 
+    888  888        888     888  "Y888b.   888888  8888b.  888d888 888888      .d8888b 88888b.  
+    888  888        888     888     "Y88b. 888        "88b 888P"   888        d88P"    888 "88b 
+    888  888    888 888     888       "888 888    .d888888 888     888        888      888  888 
     888  Y88b  d88P Y88b. .d88P Y88b  d88P Y88b.  888  888 888     Y88b.  d8b Y88b.    888  888 
-  8888888 &quot;Y8888P&quot;   &quot;Y88888P&quot;   &quot;Y8888P&quot;   &quot;Y888 &quot;Y888888 888      &quot;Y888 Y8P  &quot;Y8888P 888  888 
+  8888888 "Y8888P"   "Y88888P"   "Y8888P"   "Y888 "Y888888 888      "Y888 Y8P  "Y8888P 888  888 
 
   Rocket startup for your ICO
 
@@ -21,7 +21,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -128,9 +128,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -138,7 +138,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -147,7 +147,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -192,7 +192,7 @@ contract ICOStartReservation is Pausable {
   uint256 public cap;
   uint8 public feePerc;
   address public manager;
-  mapping(address =&gt; uint256) public deposits;
+  mapping(address => uint256) public deposits;
   uint256 public weiCollected;
   uint256 public tokensReceived;
   bool public canceled;
@@ -206,7 +206,7 @@ contract ICOStartReservation is Pausable {
   function ICOStartReservation(ICOStartSaleInterface _sale, uint256 _cap, uint8 _feePerc, address _manager) public {
     require(_sale != (address(0)));
     require(_cap != 0);
-    require(_feePerc &gt;= 0);
+    require(_feePerc >= 0);
     if (_feePerc != 0) {
       require(_manager != 0x0);
     }
@@ -263,11 +263,11 @@ contract ICOStartReservation is Pausable {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiCollected &gt;= cap;
+    return weiCollected >= cap;
   }
 
   /**
-   * @dev A reference to the sale&#39;s token contract. 
+   * @dev A reference to the sale's token contract. 
    * @return The token contract.
    */
   function getToken() public view returns (ERC20) {
@@ -279,7 +279,7 @@ contract ICOStartReservation is Pausable {
    * deposits.
    */
   function isOpen() public view returns (bool) {
-    return !paused &amp;&amp; !capReached() &amp;&amp; !canceled &amp;&amp; !paid;
+    return !paused && !capReached() && !canceled && !paid;
   }
 
   /**
@@ -300,7 +300,7 @@ contract ICOStartReservation is Pausable {
    */
   function deposit(address _depositor) public whenOpen payable {
     require(_depositor != address(0));
-    require(weiCollected.add(msg.value) &lt;= cap);
+    require(weiCollected.add(msg.value) <= cap);
     deposits[_depositor] = deposits[_depositor].add(msg.value);
     weiCollected = weiCollected.add(msg.value);
     emit Deposited(_depositor, msg.value);
@@ -319,7 +319,7 @@ contract ICOStartReservation is Pausable {
    * Contract must first be paused so we are sure we are not accepting deposits.
    */
   function pay() public onlyOwner whenNotCanceled {
-    require(weiCollected &gt; 0);
+    require(weiCollected > 0);
   
     uint256 fee;
     uint256 netAmount;

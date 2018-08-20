@@ -1,6 +1,6 @@
 /*
 This smartcontract used to store documents text on the Ethereum blockchain
-and to get the document by document&#39;s hash (sha256).
+and to get the document by document's hash (sha256).
 
 */
 
@@ -9,14 +9,14 @@ contract ProofOfExistence{
     /* ---- Public variables: */
     string public created;
     address public manager; // account that adds info to this smartcontract
-    uint256 public docIndex;   // record&#39;s numbers and number of records
+    uint256 public docIndex;   // record's numbers and number of records
 
-    mapping (uint256 =&gt; Doc) public indexedDocs; // docIndex =&gt; Doc
+    mapping (uint256 => Doc) public indexedDocs; // docIndex => Doc
     // to get Doc obj call ProofOfExistence.indexedDocs(docIndex);
 
-    mapping (bytes32 =&gt; Doc) public sha256Docs; // docHash =&gt; Doc
+    mapping (bytes32 => Doc) public sha256Docs; // docHash => Doc
     // to get Doc obj call ProofOfExistence.docs(docHash);
-    mapping (bytes32 =&gt; Doc) public sha3Docs; // docHash =&gt; Doc
+    mapping (bytes32 => Doc) public sha3Docs; // docHash => Doc
     // to get Doc obj call ProofOfExistence.docs(docHash);
 
 
@@ -24,7 +24,7 @@ contract ProofOfExistence{
 
     struct Doc {
         uint256 docIndex; // .............................................1
-        string publisher; // publisher&#39;s email............................2
+        string publisher; // publisher's email............................2
         uint256 publishedOnUnixTime; // block timestamp (block.timestamp).3
         uint256 publishedInBlockNumber; // block.number...................4
         string docText; // text of the document...........................5
@@ -36,12 +36,12 @@ contract ProofOfExistence{
 
     function ProofOfExistence(){
         manager = msg.sender;
-        created = &quot;cryptonomica.net&quot;;
+        created = "cryptonomica.net";
     }
 
     /* ---- Event:  */
     // This generates a public event on the blockchain that will notify clients.
-    // In &#39;Mist&#39; SmartContract page enable &#39;Watch contract events&#39;
+    // In 'Mist' SmartContract page enable 'Watch contract events'
     event DocumentAdded(uint256 docIndex,
                         string publisher,
                         uint256 publishedOnUnixTime);
@@ -55,17 +55,17 @@ contract ProofOfExistence{
         // authorization
         if (msg.sender != manager){
             // throw;
-            return sha3(&quot;not authorized&quot;); //
-            // &lt;- is &#39;bytes32&#39; too:
-            // &quot;0x8aed0440c9cacb4460ecdd12f6aff03c27cace39666d71f0946a6f3e9022a4a1&quot;
+            return sha3("not authorized"); //
+            // <- is 'bytes32' too:
+            // "0x8aed0440c9cacb4460ecdd12f6aff03c27cace39666d71f0946a6f3e9022a4a1"
         }
 
         // chech if exists
-        if (sha256Docs[sha256(_docText)].docIndex &gt; 0){
+        if (sha256Docs[sha256(_docText)].docIndex > 0){
             // throw;
-            return sha3(&quot;text already exists&quot;); //
-            // &lt;- is &#39;bytes32&#39; too:
-            // &quot;0xd42b321cfeadc9593d0a28c4d013aaad8e8c68fc8e0450aa419a130a53175137&quot;
+            return sha3("text already exists"); //
+            // <- is 'bytes32' too:
+            // "0xd42b321cfeadc9593d0a28c4d013aaad8e8c68fc8e0450aa419a130a53175137"
         }
         // document number
         docIndex = docIndex + 1;

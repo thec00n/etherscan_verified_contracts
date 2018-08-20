@@ -9,7 +9,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -70,7 +70,7 @@ interface TokenContract {
 contract Affiliate is Ownable {
 
   TokenContract public tkn;
-  mapping (address =&gt; uint256) affiliates;
+  mapping (address => uint256) affiliates;
 
   /**
    * @dev Add affiliates in affiliate mapping
@@ -78,9 +78,9 @@ contract Affiliate is Ownable {
    * @param _amount Amount earned
    */
   function addAffiliates(address[] _affiliates, uint256[] _amount) onlyOwner public {
-    require(_affiliates.length &gt; 0);
+    require(_affiliates.length > 0);
     require(_affiliates.length == _amount.length);
-    for (uint256 i = 0; i &lt; _affiliates.length; i++) {
+    for (uint256 i = 0; i < _affiliates.length; i++) {
       affiliates[_affiliates[i]] = _amount[i];
     }
   }
@@ -89,7 +89,7 @@ contract Affiliate is Ownable {
    * @dev Claim reward collected through your affiliates
    */
   function claimReward() public {
-    if (affiliates[msg.sender] &gt; 0) {
+    if (affiliates[msg.sender] > 0) {
       require(tkn.transfer(msg.sender, affiliates[msg.sender]));
       affiliates[msg.sender] = 0;
     }

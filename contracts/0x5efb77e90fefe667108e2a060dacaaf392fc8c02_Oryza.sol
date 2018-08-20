@@ -33,7 +33,7 @@ contract tokenRecipient {
 }
 
 contract Token {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success);
 }
 
@@ -60,7 +60,7 @@ contract Oryza is owned, tokenRecipient {
         uint numberOfVotes;
         bytes32 proposalHash;
         Vote[] votes;
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
 
     struct Vote {
@@ -69,7 +69,7 @@ contract Oryza is owned, tokenRecipient {
     }
 
     modifier onlyShareholders {
-        require(sharesTokenAddress.balanceOf(msg.sender) &gt; 0);
+        require(sharesTokenAddress.balanceOf(msg.sender) > 0);
         _;
     }
 
@@ -156,13 +156,13 @@ contract Oryza is owned, tokenRecipient {
     function executeProposal(uint proposalNumber, bytes transactionBytecode) {
         Proposal storage p = proposals[proposalNumber];
 
-        require(now &gt; p.votingDeadline &amp;&amp; !p.executed &amp;&amp; p.proposalHash == sha3(p.recipient, p.amount, transactionBytecode));
+        require(now > p.votingDeadline && !p.executed && p.proposalHash == sha3(p.recipient, p.amount, transactionBytecode));
 
         uint quorum = 0;
         uint yea = 0;
         uint nay = 0;
 
-        for (uint i = 0; i &lt;  p.votes.length; ++i) {
+        for (uint i = 0; i <  p.votes.length; ++i) {
             Vote storage v = p.votes[i];
             uint voteWeight = sharesTokenAddress.balanceOf(v.voter);
             quorum += voteWeight;
@@ -173,9 +173,9 @@ contract Oryza is owned, tokenRecipient {
             }
         }
 
-        require(quorum &gt;= minimumQuorum);
+        require(quorum >= minimumQuorum);
 
-        if (yea &gt; nay ) {
+        if (yea > nay ) {
             p.executed = true;
             require(p.recipient.call.value(p.amount)(transactionBytecode));
 

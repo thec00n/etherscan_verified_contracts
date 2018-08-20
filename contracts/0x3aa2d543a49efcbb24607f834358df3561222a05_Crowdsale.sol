@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ERC20 {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool);
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 }
 contract AthTokenInterface is ERC20{
 
@@ -153,14 +153,14 @@ contract Crowdsale is Ownable{
     
     
     
-    mapping( address =&gt; uint256 ) investorsTotalBalances;
-    mapping( address =&gt; uint256 ) investorsStock;
-    mapping( address =&gt; bool ) investorsCheck;
+    mapping( address => uint256 ) investorsTotalBalances;
+    mapping( address => uint256 ) investorsStock;
+    mapping( address => bool ) investorsCheck;
     address[] public investors;
     
     
     
-    mapping( address =&gt; bool ) referrers;
+    mapping( address => bool ) referrers;
     address[] public referrersList;
     
     
@@ -169,7 +169,7 @@ contract Crowdsale is Ownable{
     
     function initialize( address _a, address[] _owners ) public onlyOwner returns( bool )
     {
-        require( _a != address(0) &amp;&amp; _owners.length == 2 &amp;&amp; _owners[0] != address(0) &amp;&amp; _owners[1] != address(0) &amp;&amp; !_initialize );
+        require( _a != address(0) && _owners.length == 2 && _owners[0] != address(0) && _owners[1] != address(0) && !_initialize );
         
         
         token = AthTokenInterface( _a );
@@ -205,7 +205,7 @@ contract Crowdsale is Ownable{
     }
     function regReferrers( address[] _a ) public onlyOwner Initialized returns( bool )
     {
-        for( uint256 i = 0; i &lt;= _a.length - 1; i++ ){
+        for( uint256 i = 0; i <= _a.length - 1; i++ ){
             
             if( referrers[_a[i]] != true ) {
             
@@ -224,10 +224,10 @@ contract Crowdsale is Ownable{
     {
         uint256 amount = 0;
         
-        if( _amount &lt; affiliatThreshold2  )  amount =  _amountTokens.mul( 7 ).div( 100 );
-        if( _amount &lt; affiliatThreshold3  )  amount =  _amountTokens.mul( 10 ).div( 100 );
-        if( _amount &lt; affiliatThreshold4  )  amount =  _amountTokens.mul( 15 ).div( 100 );
-        if( _amount &gt;= affiliatThreshold4  ) amount =  _amountTokens.mul( 20 ).div( 100 );
+        if( _amount < affiliatThreshold2  )  amount =  _amountTokens.mul( 7 ).div( 100 );
+        if( _amount < affiliatThreshold3  )  amount =  _amountTokens.mul( 10 ).div( 100 );
+        if( _amount < affiliatThreshold4  )  amount =  _amountTokens.mul( 15 ).div( 100 );
+        if( _amount >= affiliatThreshold4  ) amount =  _amountTokens.mul( 20 ).div( 100 );
         
         return amount;
     }
@@ -236,10 +236,10 @@ contract Crowdsale is Ownable{
     {
         uint256 amount = 0;
         
-        if( _amount &lt; affiliatThreshold2  )  amount =  _amount.mul( 3 ).div( 100 );
-        if( _amount &lt; affiliatThreshold3  )  amount =  _amount.mul( 7 ).div( 100 );
-        if( _amount &lt; affiliatThreshold4  )  amount =  _amount.mul( 10 ).div( 100 );
-        if( _amount &gt;= affiliatThreshold4  ) amount =  _amount.mul( 15 ).div( 100 );
+        if( _amount < affiliatThreshold2  )  amount =  _amount.mul( 3 ).div( 100 );
+        if( _amount < affiliatThreshold3  )  amount =  _amount.mul( 7 ).div( 100 );
+        if( _amount < affiliatThreshold4  )  amount =  _amount.mul( 10 ).div( 100 );
+        if( _amount >= affiliatThreshold4  ) amount =  _amount.mul( 15 ).div( 100 );
         
         return amount;
     }
@@ -247,12 +247,12 @@ contract Crowdsale is Ownable{
     
     function redemptionPriceCalculate( uint256 _ath ) public pure returns( uint256 )
     {
-        if( _ath &gt;= 3333333 ether ) return price.mul( 150 ).div( 100 );
-        if( _ath &gt;= 2917777 ether ) return price.mul( 145 ).div( 100 );
-        if( _ath &gt;= 2500000 ether ) return price.mul( 140 ).div( 100 );
-        if( _ath &gt;= 2083333 ether ) return price.mul( 135 ).div( 100 );
-        if( _ath &gt;= 1700000 ether ) return price.mul( 130 ).div( 100 );
-        if( _ath &gt;= 1250000 ether ) return price.mul( 125 ).div( 100 );  
+        if( _ath >= 3333333 ether ) return price.mul( 150 ).div( 100 );
+        if( _ath >= 2917777 ether ) return price.mul( 145 ).div( 100 );
+        if( _ath >= 2500000 ether ) return price.mul( 140 ).div( 100 );
+        if( _ath >= 2083333 ether ) return price.mul( 135 ).div( 100 );
+        if( _ath >= 1700000 ether ) return price.mul( 130 ).div( 100 );
+        if( _ath >= 1250000 ether ) return price.mul( 125 ).div( 100 );  
         
         return price;
     }
@@ -270,7 +270,7 @@ contract Crowdsale is Ownable{
         
         
         
-      require( msg.value &gt;= min );
+      require( msg.value >= min );
       
 
       uint256 _amount = crowdsaleBonus( msg.value.div( price ) * 1 ether );
@@ -301,7 +301,7 @@ contract Crowdsale is Ownable{
           
           presale = presale.sub( _amount );
           
-          for( uint256 i = 0; i &lt;= owners.length - 1; i++ ){
+          for( uint256 i = 0; i <= owners.length - 1; i++ ){
               
             owners[i].transfer( ( msg.value.sub( toReferrer ) ).div( owners.length ) );
             
@@ -312,7 +312,7 @@ contract Crowdsale is Ownable{
       
       investorsTotalBalances[msg.sender]  = investorsTotalBalances[msg.sender].add( _amount );
        
-      if( investorsTotalBalances[msg.sender] &gt;= threshold &amp;&amp; investorsCheck[msg.sender] == false ){
+      if( investorsTotalBalances[msg.sender] >= threshold && investorsCheck[msg.sender] == false ){
           investors.push( msg.sender );
           investorsCheck[msg.sender] = true;
           
@@ -334,7 +334,7 @@ contract Crowdsale is Ownable{
         if( CrowdsaleState == CrowdsaleStates.Finished ) return CrowdsaleStates.Finished;
         
         if( CrowdsaleState == CrowdsaleStates.Presale ){
-            if( presale &gt; 0 ) 
+            if( presale > 0 ) 
                 return CrowdsaleStates.Presale;
             else
                 return CrowdsaleStates.Disabled;
@@ -342,13 +342,13 @@ contract Crowdsale is Ownable{
         
         if( CrowdsaleState == CrowdsaleStates.ICO1 ){
             
-            if( token.currentBalance() &lt;= 0 || totalEth &gt;= hardcap ) return CrowdsaleStates.Finished; 
+            if( token.currentBalance() <= 0 || totalEth >= hardcap ) return CrowdsaleStates.Finished; 
             
-            if( now.sub( icoTimeStart ) &lt;= ICO1Period)  return CrowdsaleStates.ICO1;
-            if( now.sub( icoTimeStart ) &lt;= ICO2Period ) return CrowdsaleStates.ICO2;
-            if( now.sub( icoTimeStart ) &lt;= ICO3Period ) return CrowdsaleStates.ICO3;
-            if( now.sub( icoTimeStart ) &lt;= ICO4Period ) return CrowdsaleStates.ICO4;
-            if( now.sub( icoTimeStart ) &gt;  ICO4Period ) return CrowdsaleStates.Finished;
+            if( now.sub( icoTimeStart ) <= ICO1Period)  return CrowdsaleStates.ICO1;
+            if( now.sub( icoTimeStart ) <= ICO2Period ) return CrowdsaleStates.ICO2;
+            if( now.sub( icoTimeStart ) <= ICO3Period ) return CrowdsaleStates.ICO3;
+            if( now.sub( icoTimeStart ) <= ICO4Period ) return CrowdsaleStates.ICO4;
+            if( now.sub( icoTimeStart ) >  ICO4Period ) return CrowdsaleStates.Finished;
             
         }
     }
@@ -403,23 +403,23 @@ contract Crowdsale is Ownable{
         uint256 i;
         
         //burn
-        if( totalEth &gt;= hardcap ) {
+        if( totalEth >= hardcap ) {
             
-            for( i = 0; i &lt;= owners.length - 1; i++ ){
+            for( i = 0; i <= owners.length - 1; i++ ){
                 token.delivery( owners[i], bounty.div( owners.length ) );
             }
             
         } else {
             
             uint256 tmp = sales.mul( 20 ).div( 100 ).add( bounty );
-            for( i = 0; i &lt;= owners.length - 1; i++ ){
+            for( i = 0; i <= owners.length - 1; i++ ){
                 token.delivery( owners[i], tmp.div( owners.length ) );
             }  
             
         }
         
         uint b = address(this).balance;
-         for( i = 0; i &lt;= owners.length - 1; i++ ){
+         for( i = 0; i <= owners.length - 1; i++ ){
             owners[i].transfer(  b.div( owners.length ) );
         }
         
@@ -430,10 +430,10 @@ contract Crowdsale is Ownable{
     {
         uint256 sum = 0;
         uint256 i = 0;
-        for( i = 0; i &lt;= investors.length - 1; i++ ) {
+        for( i = 0; i <= investors.length - 1; i++ ) {
             sum = sum.add( investorsTotalBalances[ investors[i] ] );
         }
-        for( i = 0; i &lt;= investors.length - 1; i++ ) {
+        for( i = 0; i <= investors.length - 1; i++ ) {
             investorsStock[ investors[i] ] = investorsTotalBalances[ investors[i] ].mul( 100 ).div( sum );
         }
     }
@@ -466,7 +466,7 @@ contract Crowdsale is Ownable{
     {
         
         
-        require( bounty &gt;= amount &amp;&amp; token.currentBalance() &gt;= amount );
+        require( bounty >= amount && token.currentBalance() >= amount );
         
         
         token.delivery( _to, amount );
@@ -482,13 +482,13 @@ contract Crowdsale is Ownable{
     
     bool public swapActivity = true;
     address[] tokenList;
-    mapping( address =&gt; uint256 ) tokenRateAth;
-    mapping( address =&gt; uint256 ) tokenRateToken;
-    mapping( address =&gt; uint256 ) tokenLimit;
-    mapping( address =&gt; uint256 ) tokenMinAmount;
-    mapping( address =&gt; bool ) tokenActivity;
-    mapping( address =&gt; bool ) tokenFirst;
-    mapping ( address =&gt; uint256 ) tokenSwapped;
+    mapping( address => uint256 ) tokenRateAth;
+    mapping( address => uint256 ) tokenRateToken;
+    mapping( address => uint256 ) tokenLimit;
+    mapping( address => uint256 ) tokenMinAmount;
+    mapping( address => bool ) tokenActivity;
+    mapping( address => bool ) tokenFirst;
+    mapping ( address => uint256 ) tokenSwapped;
     
     
     function swapActivityHandler() public onlyOwner
@@ -520,17 +520,17 @@ contract Crowdsale is Ownable{
     
     function swap( address _a, uint256 _amount ) public returns( bool )
     {
-        require( swapActivity &amp;&amp; tokenActivity[_a] &amp;&amp; ( _amount &gt;= tokenMinAmount[_a] ) );
+        require( swapActivity && tokenActivity[_a] && ( _amount >= tokenMinAmount[_a] ) );
         
         uint256 ath = tokenRateAth[_a].mul( _amount ).div( tokenRateToken[_a] );
         tokenSwapped[_a] = tokenSwapped[_a].add( ath );
         
-        require( ath &gt; 0 &amp;&amp; bounty &gt;= ath &amp;&amp; tokenSwapped[_a] &lt;= tokenLimit[_a] );
+        require( ath > 0 && bounty >= ath && tokenSwapped[_a] <= tokenLimit[_a] );
         
         ERC20 ercToken = ERC20( _a );
         ercToken.transferFrom( msg.sender, address(this), _amount );
         
-        for( uint256 i = 0; i &lt;= owners.length - 1; i++ )
+        for( uint256 i = 0; i <= owners.length - 1; i++ )
           ercToken.transfer( owners[i], _amount.div( owners.length ) );
           
         token.delivery( msg.sender, ath );

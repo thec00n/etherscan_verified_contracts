@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) pure internal  returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) pure internal  returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal  returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,7 +128,7 @@ contract Disbursement {
             startDate = now;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses
+    /// @dev Setup function sets external contracts' addresses
     /// @param _token Token address
     function setup(Token _token)
         public
@@ -149,7 +149,7 @@ contract Disbursement {
         isSetUp
     {
         uint maxTokens = calcMaxWithdraw();
-        if (_value &gt; maxTokens)
+        if (_value > maxTokens)
             revert();
         withdrawnTokens = SafeMath.add(withdrawnTokens, _value);
         token.transfer(_to, _value);
@@ -164,9 +164,9 @@ contract Disbursement {
     {
         uint maxTokens = SafeMath.mul(SafeMath.add(token.balanceOf(this), withdrawnTokens), SafeMath.sub(now,startDate)) / disbursementPeriod;
         //uint maxTokens = (token.balanceOf(this) + withdrawnTokens) * (now - startDate) / disbursementPeriod;
-        if (withdrawnTokens &gt;= maxTokens || startDate &gt; now)
+        if (withdrawnTokens >= maxTokens || startDate > now)
             return 0;
-        if (SafeMath.sub(maxTokens, withdrawnTokens) &gt; token.totalSupply())
+        if (SafeMath.sub(maxTokens, withdrawnTokens) > token.totalSupply())
             return token.totalSupply();
         return SafeMath.sub(maxTokens, withdrawnTokens);
     }

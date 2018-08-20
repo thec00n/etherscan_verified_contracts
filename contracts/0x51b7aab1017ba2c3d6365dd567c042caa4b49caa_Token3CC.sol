@@ -4,15 +4,15 @@ pragma solidity ^0.4.16;
 contract Token3CC {
     /* This creates an array with all balances */
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     /* Public variables of the token */
-    string public name = &quot;3CC&quot;;
+    string public name = "3CC";
 
-    string public symbol = &quot;3CC&quot;;
+    string public symbol = "3CC";
 
     uint8 public decimals = 8;
 
@@ -41,9 +41,9 @@ contract Token3CC {
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != 0x0);
         // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Check for overflows
         balanceOf[_from] -= _value;
         // Subtract from the sender

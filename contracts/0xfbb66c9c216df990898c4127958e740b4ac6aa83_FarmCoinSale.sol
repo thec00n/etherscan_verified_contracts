@@ -31,8 +31,8 @@ contract FarmCoinSale {
     bool private configSet;
     address public creator;
 
-    mapping (address =&gt; uint256) public heldTokens;
-    mapping (address =&gt; uint) public heldTimeline;
+    mapping (address => uint256) public heldTokens;
+    mapping (address => uint) public heldTimeline;
 
     event Contribution(address from, uint256 amount);
     event ReleaseTokens(address from, uint256 amount);
@@ -56,11 +56,11 @@ contract FarmCoinSale {
 // @return the rate in FARM per 1 ETH according to the time of the tx and the FARM pricing program.
     // @Override
   function getRate() constant returns (uint256 rate) {
-    if      (now &lt; START)            return rate = 840; // presale, 40% bonus
-    else if (now &lt;= START +  6 days) return rate = 810; // day 1 to 6, 35% bonus
-    else if (now &lt;= START + 13 days) return rate = 780; // day 7 to 13, 30% bonus
-    else if (now &lt;= START + 20 days) return rate = 750; // day 14 to 20, 25% bonus
-    else if (now &lt;= START + 28 days) return rate = 720; // day 21 to 28, 20% bonus
+    if      (now < START)            return rate = 840; // presale, 40% bonus
+    else if (now <= START +  6 days) return rate = 810; // day 1 to 6, 35% bonus
+    else if (now <= START + 13 days) return rate = 780; // day 7 to 13, 30% bonus
+    else if (now <= START + 20 days) return rate = 750; // day 14 to 20, 25% bonus
+    else if (now <= START + 28 days) return rate = 720; // day 21 to 28, 20% bonus
     return rate = 600; // no bonus
   }
 
@@ -82,12 +82,12 @@ contract FarmCoinSale {
     // CONTRIBUTE FUNCTION
     // converts ETH to TOKEN and sends new TOKEN to the sender
     function contribute() external payable {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(isFunding);
-        require(block.number &lt;= endBlock);
+        require(block.number <= endBlock);
         uint256 amount = msg.value * exchangeRate;
         uint256 total = totalMinted + amount;
-        require(total&lt;=maxMintable);
+        require(total<=maxMintable);
         totalMinted += total;
         ETHWallet.transfer(msg.value);
         Token.mintToken(msg.sender, amount);
@@ -135,8 +135,8 @@ contract FarmCoinSale {
         uint256 held = heldTokens[msg.sender];
         uint heldBlock = heldTimeline[msg.sender];
         require(!isFunding);
-        require(held &gt;= 0);
-        require(block.number &gt;= heldBlock);
+        require(held >= 0);
+        require(block.number >= heldBlock);
         heldTokens[msg.sender] = 0;
         heldTimeline[msg.sender] = 0;
         Token.mintToken(msg.sender, held);

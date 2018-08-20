@@ -1,18 +1,18 @@
 pragma solidity ^0.4.23;
 
 contract TokenReclaim{
-    mapping (address=&gt;string) internal _ethToSphtx;
-    mapping (string =&gt;string) internal _accountToPubKey;
+    mapping (address=>string) internal _ethToSphtx;
+    mapping (string =>string) internal _accountToPubKey;
     event AccountRegister (address ethAccount, string sphtxAccount, string pubKey);
 
     function register(string name, string pubKey) public{
-        require(bytes(name).length &gt;= 3 &amp;&amp; bytes(name).length &lt;= 16);
+        require(bytes(name).length >= 3 && bytes(name).length <= 16);
         bytes memory b = bytes(name);
-        require( (b[0] &gt;=&#39;a&#39; &amp;&amp; b[0] &lt;=&#39;z&#39;) || (b[0] &gt;=&#39;0&#39; &amp;&amp; b[0] &lt;= &#39;9&#39;));
-        for(uint i=1;i&lt; bytes(name).length; i++){
-            require( (b[i] &gt;=&#39;a&#39; &amp;&amp; b[i] &lt;=&#39;z&#39;) || (b[i] &gt;=&#39;0&#39; &amp;&amp; b[i] &lt;= &#39;9&#39;) || b[i] == &#39;-&#39; || b[i] ==&#39;.&#39;  );
+        require( (b[0] >='a' && b[0] <='z') || (b[0] >='0' && b[0] <= '9'));
+        for(uint i=1;i< bytes(name).length; i++){
+            require( (b[i] >='a' && b[i] <='z') || (b[i] >='0' && b[i] <= '9') || b[i] == '-' || b[i] =='.'  );
         }
-        require(bytes(pubKey).length &lt;= 64 &amp;&amp; bytes(pubKey).length &gt;= 50 );
+        require(bytes(pubKey).length <= 64 && bytes(pubKey).length >= 50 );
 
         require(bytes(_ethToSphtx[msg.sender]).length == 0 || keccak256(bytes((_ethToSphtx[msg.sender]))) ==  keccak256(bytes(name)));//check that the address is not yet registered;
 
@@ -33,13 +33,13 @@ contract TokenReclaim{
     function nameAvailable(string name) constant public returns (bool){
         if( bytes(_accountToPubKey[name]).length != 0 )
            return false;
-        if(bytes(name).length &lt; 3 &amp;&amp; bytes(name).length &gt; 16)
+        if(bytes(name).length < 3 && bytes(name).length > 16)
            return false;
         bytes memory b = bytes(name);
-        if( (b[0] &lt; &#39;a&#39; || b[0] &gt; &#39;z&#39;) &amp;&amp; ( b[0] &lt; &#39;0&#39; || b[0] &gt; &#39;9&#39; ) )
+        if( (b[0] < 'a' || b[0] > 'z') && ( b[0] < '0' || b[0] > '9' ) )
            return false;
-        for(uint i=1;i&lt; bytes(name).length; i++)
-           if( (b[0] &lt; &#39;a&#39; || b[0] &gt; &#39;z&#39;) &amp;&amp; ( b[0] &lt; &#39;0&#39; || b[0] &gt; &#39;9&#39; ) &amp;&amp; b[i] != &#39;-&#39; &amp;&amp; b[i] != &#39;.&#39; )
+        for(uint i=1;i< bytes(name).length; i++)
+           if( (b[0] < 'a' || b[0] > 'z') && ( b[0] < '0' || b[0] > '9' ) && b[i] != '-' && b[i] != '.' )
               return false;
         return true;
     }

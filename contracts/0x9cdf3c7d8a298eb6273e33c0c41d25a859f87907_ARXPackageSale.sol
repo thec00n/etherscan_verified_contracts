@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 // [Assistive Reality ARX ERC20 client presold packages 25,50,100 ETH]
 // [https://aronline.io/icoinfo]
 // [Adapted from Ethereum standard crowdsale contract]
-// [Contact <span class="__cf_email__" data-cfemail="a5d6d1c4c3c3e5c4d7cacbc9cccbc08bccca">[email&#160;protected]</span> for any queries]
+// [Contact <span class="__cf_email__" data-cfemail="a5d6d1c4c3c3e5c4d7cacbc9cccbc08bccca">[email protected]</span> for any queries]
 // [Join us in changing the world]
 // [aronline.io]
 // -------------------------------------------------
@@ -45,20 +45,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -81,7 +81,7 @@ contract ERC20Interface is owned, safeMath {
 }
 
 contract ARXPackageSale is owned, safeMath {
-  // owner/admin &amp; token reward
+  // owner/admin & token reward
   address        public admin                       = owner;      // admin address
   ERC20Interface public tokenReward;                              // address of the token used as reward
 
@@ -99,7 +99,7 @@ contract ARXPackageSale is owned, safeMath {
   uint256 public amountRaisedInWei;                               // amount raised in Wei
 
   // loop control, ICO startup and limiters
-  string  public CurrentStatus                     = &quot;&quot;;          // current packagesale status
+  string  public CurrentStatus                     = "";          // current packagesale status
   uint256 public fundingStartBlock;                               // packagesale start block#
   uint256 public fundingEndBlock;                                 // packagesale end block#
 
@@ -109,13 +109,13 @@ contract ARXPackageSale is owned, safeMath {
   event Buy(address indexed _sender, uint256 _eth, uint256 _ARX);
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   // default function, map admin
   function ARXPackageSale() onlyOwner {
     admin = msg.sender;
-    CurrentStatus = &quot;packagesale deployed to chain&quot;;
+    CurrentStatus = "packagesale deployed to chain";
   }
 
   // total number of tokens initially simplified from wei
@@ -131,8 +131,8 @@ contract ARXPackageSale is owned, safeMath {
   // setup the packagesale parameters
   function Setuppackagesale(uint256 _fundingStartBlock, uint256 _fundingEndBlock) onlyOwner returns (bytes32 response) {
       if ((msg.sender == admin)
-      &amp;&amp; (!(ispackagesaleSetup))
-      &amp;&amp; (!(beneficiaryMultisig &gt; 0))){
+      && (!(ispackagesaleSetup))
+      && (!(beneficiaryMultisig > 0))){
           // init addresses
           tokenReward                             = ERC20Interface(0xb0D926c1BC3d78064F3e1075D5bD9A24F35Ae6C5);   // mainnet is 0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d //testnet = 0x75508c2B1e46ea29B7cCf0308d4Cb6f6af6211e0
           beneficiaryMultisig                     = 0x5Ed4706A93b8a3239f97F7d2025cE1f9eaDcD9A4;                   // mainnet ARX foundation cold storage wallet
@@ -142,7 +142,7 @@ contract ARXPackageSale is owned, safeMath {
           // funding targets
           initialARXSupplyInWei                   = 6500000000000000000000000;                                    //   6,500,000 + 18 decimals = 6500000000000000000000000 //testnet 650k tokens = 65000000000000000000000
           CurrentARXSupplyInWei                   = initialARXSupplyInWei;
-          EthCapInWei                             = 500000000000000000000;                                        //   500000000000000000000 =  500 Eth (max cap) - packages won&#39;t sell beyond this amount //testnet 5Eth 5000000000000000000
+          EthCapInWei                             = 500000000000000000000;                                        //   500000000000000000000 =  500 Eth (max cap) - packages won't sell beyond this amount //testnet 5Eth 5000000000000000000
           amountRaisedInWei                       = 0;
 
           // update values
@@ -152,13 +152,13 @@ contract ARXPackageSale is owned, safeMath {
           // configure packagesale
           ispackagesaleSetup                      = true;
           ispackagesaleClosed                     = false;
-          CurrentStatus                           = &quot;packagesale is activated&quot;;
+          CurrentStatus                           = "packagesale is activated";
 
-          return &quot;packagesale is setup&quot;;
+          return "packagesale is setup";
       } else if (msg.sender != admin) {
-          return &quot;not authorized&quot;;
+          return "not authorized";
       } else  {
-          return &quot;campaign cannot be changed&quot;;
+          return "campaign cannot be changed";
       }
     }
 
@@ -171,10 +171,10 @@ contract ARXPackageSale is owned, safeMath {
     function BuyARXtokens() payable {
       // 0. conditions (length, packagesale setup, zero check, exceed funding contrib check, contract valid check, within funding block range check, balance overflow check etc)
       require(!(msg.value == 0)
-      &amp;&amp; (ispackagesaleSetup)
-      &amp;&amp; (block.number &gt;= fundingStartBlock)
-      &amp;&amp; (block.number &lt;= fundingEndBlock)
-      &amp;&amp; (amountRaisedInWei &lt; EthCapInWei));
+      && (ispackagesaleSetup)
+      && (block.number >= fundingStartBlock)
+      && (block.number <= fundingEndBlock)
+      && (amountRaisedInWei < EthCapInWei));
 
       // 1. vars
       uint256 rewardTransferAmount    = 0;
@@ -207,12 +207,12 @@ contract ARXPackageSale is owned, safeMath {
     }
 
     function updateStatus() onlyOwner {
-      require((block.number &gt;= fundingEndBlock) || (amountRaisedInWei &gt;= EthCapInWei));
-      CurrentStatus = &quot;packagesale is closed&quot;;
+      require((block.number >= fundingEndBlock) || (amountRaisedInWei >= EthCapInWei));
+      CurrentStatus = "packagesale is closed";
     }
 
     function withdrawRemainingTokens(uint256 _amountToPull) onlyOwner {
-      require(block.number &gt;= fundingEndBlock);
+      require(block.number >= fundingEndBlock);
       tokenReward.transfer(msg.sender, _amountToPull);
     }
 }

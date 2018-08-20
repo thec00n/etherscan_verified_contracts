@@ -20,37 +20,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -61,10 +61,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool Yes) {
@@ -113,13 +113,13 @@ contract StandardToken is ERC20, SafeMath {
 
 contract DESToken is StandardToken {
 
-    string public name = &quot;Decentralized Escrow Service&quot;;
-    string public symbol = &quot;DES&quot;;
+    string public name = "Decentralized Escrow Service";
+    string public symbol = "DES";
     uint public decimals = 18;//Разрядность токена
 	uint public HardCapEthereum = 66666000000000000000000 wei;//Максимальное количество собранного Ethereum - 66 666 ETH (задано в wei)
     
     //Массив с замороженными адресами, которым запрещено осуществять переводы токенов
-    mapping (address =&gt; bool) public noTransfer;
+    mapping (address => bool) public noTransfer;
 	
 	// Время начала ICO и время окончания ICO
 	uint constant public TimeStart = 1511956800;//Константа - время начала ICO - 29.11.2017 в 15:00 по Мск
@@ -194,25 +194,25 @@ function DESToken(address _owner, address _wallet) payable {
     //Установка стоимости токена вручную. Если значение больше 0, токены продаются по установленной вручную цене
     function setTokenPrice(uint _tokenPrice) external onlyOwner {
         PriceManual = _tokenPrice;
-        PriceChanged(&quot;New price is &quot;, _tokenPrice);
+        PriceChanged("New price is ", _tokenPrice);
     }
     
     //Установка времени окончания ICO
     function setTimeEnd(uint _timeEnd) external onlyOwner {
         TimeEnd = _timeEnd;
-        TimeEndChanged(&quot;New ICO End Time is &quot;, _timeEnd);
+        TimeEndChanged("New ICO End Time is ", _timeEnd);
     }
     
     //Установка максимальной капитализации, после которой ICO считается завершенным
 //    function setHardCap(uint _HardCapEthereum) external onlyOwner {
 //        HardCapEthereum = _HardCapEthereum;
-//        HardCapChanged(&quot;New ICO Hard Cap is &quot;, _HardCapEthereum);
+//        HardCapChanged("New ICO Hard Cap is ", _HardCapEthereum);
 //    }
      
     //Установка времени, до которого запрещены переводы токенов
     function setTimeTransferAllowance(uint _timeAllowance) external onlyOwner {
         TimeTransferAllowed = _timeAllowance;
-        TimeTransferAllowanceChanged(&quot;Token transfers will be allowed at &quot;, _timeAllowance);
+        TimeTransferAllowanceChanged("Token transfers will be allowed at ", _timeAllowance);
     }
     
     // Запретить определенному покупателю осуществлять переводы его токенов
@@ -236,7 +236,7 @@ function DESToken(address _owner, address _wallet) payable {
             poolTokens = safeAdd(poolTokens,PoolBounty);
             
             //Зачислить на счет основателя токены пула команды, эдвайзеров и баунти
-            require(poolTokens&gt;0);//Количество токенов должно быть больше 0
+            require(poolTokens>0);//Количество токенов должно быть больше 0
             balances[owner] = safeAdd(balances[owner], poolTokens);
             StatsTotalSupply = safeAdd(StatsTotalSupply, poolTokens);//Обновляем общее количество выпущенных токенов
             Transfer(0, this, poolTokens);
@@ -249,11 +249,11 @@ function DESToken(address _owner, address _wallet) payable {
 
     //Функция возвращает текущую стоимость в wei 1 токена
     function price() constant returns (uint) {
-        if(PriceManual &gt; 0){return PriceManual;}
-        if(now &gt;= TimeStart &amp;&amp; now &lt; TimeWeekOne){return PriceWeekOne;}
-        if(now &gt;= TimeWeekOne &amp;&amp; now &lt; TimeWeekTwo){return PriceWeekTwo;}
-        if(now &gt;= TimeWeekTwo &amp;&amp; now &lt; TimeWeekThree){return PriceWeekThree;}
-        if(now &gt;= TimeWeekThree){return PriceWeekFour;}
+        if(PriceManual > 0){return PriceManual;}
+        if(now >= TimeStart && now < TimeWeekOne){return PriceWeekOne;}
+        if(now >= TimeWeekOne && now < TimeWeekTwo){return PriceWeekTwo;}
+        if(now >= TimeWeekTwo && now < TimeWeekThree){return PriceWeekThree;}
+        if(now >= TimeWeekThree){return PriceWeekFour;}
     }
     
     // Создать `amount` токенов и отправить их `target`
@@ -261,7 +261,7 @@ function DESToken(address _owner, address _wallet) payable {
     // @параметр amount Количество создаваемых токенов
     function sendPreICOTokens(address target, uint amount) onlyOwner external {
         
-        require(amount&gt;0);//Количество токенов должно быть больше 0
+        require(amount>0);//Количество токенов должно быть больше 0
         balances[target] = safeAdd(balances[target], amount);
         StatsTotalSupply = safeAdd(StatsTotalSupply, amount);//Обновляем общее количество выпущенных токенов
         Transfer(0, this, amount);
@@ -275,7 +275,7 @@ function DESToken(address _owner, address _wallet) payable {
     // @параметр amount Количество создаваемых токенов
     function sendICOTokens(address target, uint amount) onlyOwner external {
         
-        require(amount&gt;0);//Количество токенов должно быть больше 0
+        require(amount>0);//Количество токенов должно быть больше 0
         balances[target] = safeAdd(balances[target], amount);
         StatsTotalSupply = safeAdd(StatsTotalSupply, amount);//Обновляем общее количество выпущенных токенов
         Transfer(0, this, amount);
@@ -290,9 +290,9 @@ function DESToken(address _owner, address _wallet) payable {
     function sendTeamTokens(address target, uint amount) onlyOwner external {
         
         require(ICOFinished);//Возможно только после завершения ICO
-        require(amount&gt;0);//Количество токенов должно быть больше 0
-        require(amount&gt;=PoolTeam);//Количество токенов должно быть больше или равно размеру пула команды
-        require(balances[owner]&gt;=PoolTeam);//Количество токенов должно быть больше или равно балансу основателя
+        require(amount>0);//Количество токенов должно быть больше 0
+        require(amount>=PoolTeam);//Количество токенов должно быть больше или равно размеру пула команды
+        require(balances[owner]>=PoolTeam);//Количество токенов должно быть больше или равно балансу основателя
         
         balances[owner] = safeSub(balances[owner], amount);//Вычитаем токены у администратора (основателя)
         balances[target] = safeAdd(balances[target], amount);//Добавляем токены на счет получателя
@@ -309,9 +309,9 @@ function DESToken(address _owner, address _wallet) payable {
     function sendAdvisorsTokens(address target, uint amount) onlyOwner external {
         
         require(ICOFinished);//Возможно только после завершения ICO
-        require(amount&gt;0);//Количество токенов должно быть больше 0
-        require(amount&gt;=PoolAdvisors);//Количество токенов должно быть больше или равно размеру пула эдвайзеров
-        require(balances[owner]&gt;=PoolAdvisors);//Количество токенов должно быть больше или равно балансу основателя
+        require(amount>0);//Количество токенов должно быть больше 0
+        require(amount>=PoolAdvisors);//Количество токенов должно быть больше или равно размеру пула эдвайзеров
+        require(balances[owner]>=PoolAdvisors);//Количество токенов должно быть больше или равно балансу основателя
         
         balances[owner] = safeSub(balances[owner], amount);//Вычитаем токены у администратора (основателя)
         balances[target] = safeAdd(balances[target], amount);//Добавляем токены на счет получателя
@@ -328,9 +328,9 @@ function DESToken(address _owner, address _wallet) payable {
     function sendBountyTokens(address target, uint amount) onlyOwner external {
         
         require(ICOFinished);//Возможно только после завершения ICO
-        require(amount&gt;0);//Количество токенов должно быть больше 0
-        require(amount&gt;=PoolBounty);//Количество токенов должно быть больше или равно размеру пула баунти
-        require(balances[owner]&gt;=PoolBounty);//Количество токенов должно быть больше или равно балансу основателя
+        require(amount>0);//Количество токенов должно быть больше 0
+        require(amount>=PoolBounty);//Количество токенов должно быть больше или равно размеру пула баунти
+        require(balances[owner]>=PoolBounty);//Количество токенов должно быть больше или равно балансу основателя
         
         balances[owner] = safeSub(balances[owner], amount);//Вычитаем токены у администратора (основателя)
         balances[target] = safeAdd(balances[target], amount);//Добавляем токены на счет получателя
@@ -348,13 +348,13 @@ function DESToken(address _owner, address _wallet) payable {
         require(msg.sender != wallet);//Основатели не могут покупать токены
         require(!ICOPaused);//Покупка разрешена, если ICO не приостановлено
         require(!ICOFinished);//Покупка разрешена, если ICO не завершено
-        require(msg.value &gt;= price());//Полученная сумма в wei должна быть больше стоимости 1 токена
-        require(now &gt;= TimeStart);//Условие продажи - ICO началось
-        require(now &lt;= TimeEnd);//Условие продажи - ICO не завершено
+        require(msg.value >= price());//Полученная сумма в wei должна быть больше стоимости 1 токена
+        require(now >= TimeStart);//Условие продажи - ICO началось
+        require(now <= TimeEnd);//Условие продажи - ICO не завершено
         uint tokens = msg.value/price();//Количество токенов, которое должен получить покупатель
-        require(safeAdd(StatsEthereumRaised, msg.value) &lt;= HardCapEthereum);//Собранный эфир не больше hard cap
+        require(safeAdd(StatsEthereumRaised, msg.value) <= HardCapEthereum);//Собранный эфир не больше hard cap
         
-        require(tokens&gt;0);//Количество токенов должно быть больше 0
+        require(tokens>0);//Количество токенов должно быть больше 0
         
         wallet.transfer(msg.value);//Отправить полученные ETH на кошелек сбора средств
         
@@ -381,11 +381,11 @@ function DESToken(address _owner, address _wallet) payable {
     //Если переводы токенов для всех участников еще не разрешены (1 месяц после ICO), проверяем, участник ли это Pre-ICO. Если нет, запрещаем перевод
     function transfer(address _to, uint _value) isActive() returns (bool success) {
         
-    if(now &gt;= TimeTransferAllowed){
+    if(now >= TimeTransferAllowed){
         if(noTransfer[msg.sender]){noTransfer[msg.sender] = false;}//Если переводы разрешены по времени, разрешаем их отправителю
     }
         
-    if(now &lt; TimeTransferAllowed){require(!noTransfer[msg.sender]);}//Если переводы еще не разрешены по времени, переводить могут только участники Pre-ICO
+    if(now < TimeTransferAllowed){require(!noTransfer[msg.sender]);}//Если переводы еще не разрешены по времени, переводить могут только участники Pre-ICO
         
     return super.transfer(_to, _value);
     }
@@ -396,11 +396,11 @@ function DESToken(address _owner, address _wallet) payable {
      */
     function transferFrom(address _from, address _to, uint _value) isActive() returns (bool success) {
         
-    if(now &gt;= TimeTransferAllowed){
+    if(now >= TimeTransferAllowed){
         if(noTransfer[msg.sender]){noTransfer[msg.sender] = false;}//Если переводы разрешены по времени, разрешаем их отправителю
     }
         
-    if(now &lt; TimeTransferAllowed){require(!noTransfer[msg.sender]);}//Если переводы еще не разрешены по времени, переводить могут только участники Pre-ICO
+    if(now < TimeTransferAllowed){require(!noTransfer[msg.sender]);}//Если переводы еще не разрешены по времени, переводить могут только участники Pre-ICO
         
         return super.transferFrom(_from, _to, _value);
     }

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 /**
 * A contract that pays off, if a user is able to produce a valid solution
-* for the Fermat&#39;s last theorem
+* for the Fermat's last theorem
 */
 
 contract Fermat {
@@ -44,7 +44,7 @@ contract Fermat {
      */
     function withdraw() public {
         require(msg.sender == owner);
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         msg.sender.transfer(this.balance);
     }
@@ -68,12 +68,12 @@ contract Fermat {
 
 
     /*
-     * The &quot;core&quot; logic of the smart contract.
-     * Calculates the equation with provided values for Fermat&#39;s last theorem.
-     * Returns the value of a^n + b^n - c^n, n &gt; 2
+     * The "core" logic of the smart contract.
+     * Calculates the equation with provided values for Fermat's last theorem.
+     * Returns the value of a^n + b^n - c^n, n > 2
      */
     function solve(int256 a, int256 b, int256 c, int256 n) pure public returns (uint256) {
-        assert(n &gt; 2);
+        assert(n > 2);
         uint256 aExp = power(a, n);
         uint256 bExp = power(b, n);
         uint256 cExp = power(c, n);
@@ -87,12 +87,12 @@ contract Fermat {
      A safe way to handle exponentiation. Throws error on overflow.
     */
     function power(int256 a, int256 pow) internal pure returns (uint256) {
-        assert(a &gt;= 0);
-        assert(pow &gt;= 0);
+        assert(a >= 0);
+        assert(pow >= 0);
         int256 result = 1;
-        for (int256 i = 0; i &lt; pow; i++) {
+        for (int256 i = 0; i < pow; i++) {
             result = result * a;
-            assert(result &gt;= a);
+            assert(result >= a);
         }
         return uint256(result);
     }
@@ -102,7 +102,7 @@ contract Fermat {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -110,7 +110,7 @@ contract Fermat {
      A safe way to handle subtraction. Throws error on underflow.
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 

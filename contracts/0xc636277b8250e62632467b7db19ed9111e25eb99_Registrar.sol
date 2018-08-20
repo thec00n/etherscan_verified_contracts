@@ -8,7 +8,7 @@ pragma solidity ^0.4.11;
 	-------------------
 						_________________________________________
 						V										V
-	Controller --&gt; Registrar &lt;--&gt; Factory Contract1 --&gt; Artwork Contract1
+	Controller --> Registrar <--> Factory Contract1 --> Artwork Contract1
 								  Factory Contract2	    Artwork Contract2
 								  		...					...
 								  Factory ContractN	    Artwork ContractN
@@ -25,8 +25,8 @@ pragma solidity ^0.4.11;
 	
 	Factory Contracts:
 		- Factory Contracts can spawn Artwork Contracts in line with artists specifications
-		- Factory Contracts will only spawn Artwork Contracts who&#39;s sha256 hashes are unique per the Registrar&#39;s sha256 registry
-		- Factory Contracts will register every new Artwork Contract with it&#39;s details with the Registrar contract
+		- Factory Contracts will only spawn Artwork Contracts who's sha256 hashes are unique per the Registrar's sha256 registry
+		- Factory Contracts will register every new Artwork Contract with it's details with the Registrar contract
 	
 	Artwork Contracts:
 		- Artwork Contracts act as minimalist decentralised exchanges for their pieces in line with specified conditions
@@ -45,7 +45,7 @@ contract Interface {
 	function isFactoryApproved (address _factory) returns (bool _approved);						// Check if an address is a registered factory contract
 	function issuePatrons (address _to, uint256 _amount);										// Issues Patron tokens according to conditions specified in factory contracts
 	function approveFactoryContract (address _factoryContractAddress, bool _approved);			// Approves/disapproves factory contracts.
-	function changeOwner (address newOwner);													// Change the registrar&#39;s owner.
+	function changeOwner (address newOwner);													// Change the registrar's owner.
 
 	function offerPieceForSaleByAddress (address _contract, uint256 _price);					// Sell a piece owned by the registrar.
 	function offerPieceForSale (uint256 _price);
@@ -71,7 +71,7 @@ contract Interface {
 
 	// ERC20 interface
 	function totalSupply() constant returns (uint256 totalSupply);									// Returns the total supply of an artwork or token
-	function balanceOf(address _owner) constant returns (uint256 balance);							// Returns an address&#39; balance of an artwork or token
+	function balanceOf(address _owner) constant returns (uint256 balance);							// Returns an address' balance of an artwork or token
  	function transfer(address _to, uint256 _value) returns (bool success);							// Transfers pieces of art or tokens to an address
  	function transferFrom(address _from, address _to, uint256 _value) returns (bool success);		// Transfers pieces of art of tokens owned by another address to an address
 	function approve(address _spender, uint256 _value) returns (bool success);						// Sets an allowance for an address
@@ -79,32 +79,32 @@ contract Interface {
 
 	// Additional token functions
 	function burn(uint256 _amount) returns (bool success);										// Burns (removes from circulation) unindexed pieces of art or tokens.
-																								// In the case of &#39;ouroboros&#39; pieces this function also returns the piece&#39;s
+																								// In the case of 'ouroboros' pieces this function also returns the piece's
 																								// components to the message sender
 	
 	function burnFrom(address _from, uint256 _amount) returns (bool success);					// Burns (removes from circulation) unindexed pieces of art or tokens
-																								// owned by another address. In the case of &#39;ouroboros&#39; pieces this
-																								// function also returns the piece&#39;s components to the message sender
+																								// owned by another address. In the case of 'ouroboros' pieces this
+																								// function also returns the piece's components to the message sender
 	
 	// Extended ERC20 interface for indexed pieces
 	function transferIndexed (address _to, uint256 __index) returns (bool success);				// Transfers an indexed piece of art
 	function transferFromIndexed (address _from, address _to, uint256 _index) returns (bool success);	// Transfers an indexed piece of art from another address
 	function approveIndexed (address _spender, uint256 _index) returns (bool success);			// Sets an allowance for an indexed piece of art for another address
 	function burnIndexed (uint256 _index);														// Burns (removes from circulation) indexed pieces of art or tokens.
-																								// In the case of &#39;ouroboros&#39; pieces this function also returns the
-																								// piece&#39;s components to the message sender
+																								// In the case of 'ouroboros' pieces this function also returns the
+																								// piece's components to the message sender
 	
 	function burnIndexedFrom (address _owner, uint256 _index);									// Burns (removes from circulation) indexed pieces of art or tokens
-																								// owned by another address. In the case of &#39;ouroboros&#39; pieces this
-																								// function also returns the piece&#39;s components to the message sender
+																								// owned by another address. In the case of 'ouroboros' pieces this
+																								// function also returns the piece's components to the message sender
 
 }
 
 contract Registrar {
 
 	// Patron token ERC20 public variables
-	string public constant symbol = &quot;ART&quot;;
-	string public constant name = &quot;Patron - Ethart Network Token&quot;;
+	string public constant symbol = "ART";
+	string public constant name = "Patron - Ethart Network Token";
 	uint8 public constant decimals = 18;
 	uint256 _totalPatronSupply;
 
@@ -113,17 +113,17 @@ contract Registrar {
 	event Burn(address indexed _owner, uint256 _amount);
 
     // Patron token balances for each account
-	mapping(address =&gt; uint256) public balances;						// Patron token balances
+	mapping(address => uint256) public balances;						// Patron token balances
 
 	event NewArtwork(address _contract, bytes32 _SHA256Hash, uint256 _editionSize, string _title, string _fileLink, uint256 _ownerCommission, address _artist, bool _indexed, bool _ouroboros);
 
 	// Owner of account approves the transfer of an amount of Patron tokens to another account
-	mapping(address =&gt; mapping (address =&gt; uint256)) allowed;			// Patron token allowances
+	mapping(address => mapping (address => uint256)) allowed;			// Patron token allowances
 	
 	// Mitigating ERC20 short address attacks (http://vessenes.com/the-erc20-short-address-attack-explained/)
 	modifier onlyPayloadSize(uint size)
 	{
-		require(msg.data.length &gt;= size + 4);
+		require(msg.data.length >= size + 4);
 		_;
 	}
 	
@@ -138,12 +138,12 @@ contract Registrar {
  		return balances[_owner];
 		}
 
-	// Transfer the balance from owner&#39;s account to another account
+	// Transfer the balance from owner's account to another account
 	function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) returns (bool success) {
-		if (balances[msg.sender] &gt;= _amount 
-			&amp;&amp; _amount &gt; 0
- 		   	&amp;&amp; balances[_to] + _amount &gt; balances[_to]
-			&amp;&amp; _to != 0x0)										// use burn() instead
+		if (balances[msg.sender] >= _amount 
+			&& _amount > 0
+ 		   	&& balances[_to] + _amount > balances[_to]
+			&& _to != 0x0)										// use burn() instead
 			{
 			balances[msg.sender] -= _amount;
 			balances[_to] += _amount;
@@ -155,17 +155,17 @@ contract Registrar {
 
 	// Send _value amount of tokens from address _from to address _to
 	// The transferFrom method is used for a withdraw workflow, allowing contracts to send
- 	// tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+ 	// tokens on your behalf, for example to "deposit" to a contract address and/or to charge
  	// fees in sub-currencies; the command should fail unless the _from account has
  	// deliberately authorised the sender of the message via some mechanism; we propose
  	// these standardised APIs for approval:
  	function transferFrom( address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) returns (bool success)
 		{
-			if (balances[_from] &gt;= _amount
-				&amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-				&amp;&amp; _amount &gt; 0
-				&amp;&amp; balances[_to] + _amount &gt; balances[_to]
-				&amp;&amp; _to != 0x0)										// use burn() instead
+			if (balances[_from] >= _amount
+				&& allowed[_from][msg.sender] >= _amount
+				&& _amount > 0
+				&& balances[_to] + _amount > balances[_to]
+				&& _to != 0x0)										// use burn() instead
 					{
 					balances[_from] -= _amount;
 					allowed[_from][msg.sender] -= _amount;
@@ -194,7 +194,7 @@ contract Registrar {
 	// Additional Patron token functions
 	
 	function burn(uint256 _amount) returns (bool success) {
-			if (balances[msg.sender] &gt;= _amount) {
+			if (balances[msg.sender] >= _amount) {
 				balances[msg.sender] -= _amount;
 				_totalPatronSupply -= _amount;
 				Burn(msg.sender, _amount);
@@ -204,7 +204,7 @@ contract Registrar {
 		}
 
 	function burnFrom(address _from, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-		if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+		if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
 			balances[_from] -= _value;
 			allowed[_from][msg.sender] -= _value;
 			_totalPatronSupply -= _value;
@@ -224,20 +224,20 @@ contract Registrar {
 	}
 
 	function div(uint256 a, uint256 b) internal returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -246,21 +246,21 @@ contract Registrar {
 	// Ethart variables
 	
 	// Register of all SHA256 Hashes
-    mapping (bytes32 =&gt; address) public SHA256HashRegister;
+    mapping (bytes32 => address) public SHA256HashRegister;
 	
 	// Register of all approved factory contracts
-	mapping (address =&gt; bool) public approvedFactories;
+	mapping (address => bool) public approvedFactories;
 	
 	// Register of all approved artwork contracts
 	
 	// Register of all approved contracts for amending pending withdrawals and issuing Patron tokens
-	mapping (address =&gt; bool) public approvedContracts;
+	mapping (address => bool) public approvedContracts;
 	
-	// Register of all referrers (referee =&gt; referrer) used for the affiliate program
-	mapping (address =&gt; address) public referred;
+	// Register of all referrers (referee => referrer) used for the affiliate program
+	mapping (address => address) public referred;
 	
 	// Referrer for an artist has to be set _before_ the first piece has been created by an address
-	mapping (address =&gt; bool) public cantSetReferrer;
+	mapping (address => bool) public cantSetReferrer;
 
 	// Register of all artworks and their details by their respective addresses
 	struct artwork {
@@ -274,27 +274,27 @@ contract Registrar {
 		bool isIndexed;
 		bool isOuroboros;}
 	
-	mapping (address =&gt; artwork) public artworkRegister;
+	mapping (address => artwork) public artworkRegister;
 
-	// An indexed register of all of an artist&#39;s artworks
+	// An indexed register of all of an artist's artworks
 
-	// Enter artist address and a running number to get the artist&#39;s artwork addresses
-	mapping(address =&gt; mapping (uint256 =&gt; address)) public artistsArtworks;
+	// Enter artist address and a running number to get the artist's artwork addresses
+	mapping(address => mapping (uint256 => address)) public artistsArtworks;
 
-	// A running number counting an artist&#39;s artworks
-	mapping(address =&gt; uint256) public artistsArtworkCount;						
+	// A running number counting an artist's artworks
+	mapping(address => uint256) public artistsArtworkCount;						
 
 	// Keeps track of the number of artwork contracts in the network
 	uint256 public artworkCount;
 
 	// An index of all the artwork contracts in the network
-	mapping (uint256 =&gt; address) public artworkIndex;
+	mapping (uint256 => address) public artworkIndex;
 
 	// All pending withdrawals
-	mapping (address =&gt; uint256) public pendingWithdrawals;
+	mapping (address => uint256) public pendingWithdrawals;
 	uint256 public totalPendingWithdrawals;
 
-	// The address of the Registrar&#39;s owner
+	// The address of the Registrar's owner
 	address public owner;
 	
 	// Determines how many Patrons are issues per donation
@@ -334,7 +334,7 @@ contract Registrar {
 	// Set the referrer of an artist. This has to be done before an artist creates their first artwork.
 	function setReferrer (address _referrer)
 		{
-			if (referred[msg.sender] == 0x0 &amp;&amp; !cantSetReferrer[msg.sender] &amp;&amp; _referrer != msg.sender)
+			if (referred[msg.sender] == 0x0 && !cantSetReferrer[msg.sender] && _referrer != msg.sender)
 			{
 				referred[msg.sender] = _referrer;
 			}
@@ -348,7 +348,7 @@ contract Registrar {
 	function setReferrerReward (uint256 _referrerReward) onlyBy (owner)
 		{
 			uint a;
-			if (_referrerReward &gt; 10000 - ethartRevenueReward) {throw;}
+			if (_referrerReward > 10000 - ethartRevenueReward) {throw;}
 			a = 10000 / _referrerReward;
 			// 10000 / _referrerReward has to be an even number
 			if (a * _referrerReward != 10000) {throw;}
@@ -370,11 +370,11 @@ contract Registrar {
 		// Patrons receive 2.5 Patrons (25,000 basis points) per 1 wei purchases
 		patronRewardMultiplier = 25000;
 		
-		// Ethart receives 2.5% of revenues and artwork&#39;s edition sizes
+		// Ethart receives 2.5% of revenues and artwork's edition sizes
 		ethartRevenueReward = 250;
 		ethartArtReward = 250;
 		
-		// For balanced figures patronRewardMultiplier / donationMultiplier &lt;= ethartRevenueReward
+		// For balanced figures patronRewardMultiplier / donationMultiplier <= ethartRevenueReward
 		
 		// Referrers receive 10% of ethartRevenueReward
 		referrerReward = 1000;
@@ -384,17 +384,17 @@ contract Registrar {
 		{
 			donationMultiplier = _donationMultiplier;
 			patronRewardMultiplier = ethartRevenueReward * _donationMultiplier;
-			if (patronRewardMultiplier / donationMultiplier &gt; ethartRevenueReward) {throw;}
+			if (patronRewardMultiplier / donationMultiplier > ethartRevenueReward) {throw;}
 		}
 
 	function setEthartRevenueReward (uint256 _ethartRevenueReward) onlyBy (owner)
 		{
 			uint256 a;
 			// Ethart revenue reward can never be greater than 10%
-			if (_ethartRevenueReward &gt;1000) {throw;}
+			if (_ethartRevenueReward >1000) {throw;}
 			a = 10000 / _ethartRevenueReward;
 			// Should 10000 / _ethartRevenueReward not be even throw
-			if (a * _ethartRevenueReward &lt; 10000) {throw;}
+			if (a * _ethartRevenueReward < 10000) {throw;}
 			ethartRevenueReward = _ethartRevenueReward;
 		}
 	
@@ -407,10 +407,10 @@ contract Registrar {
 		{
 			uint256 a;
 			// Ethart art reward can never be greater than 10%
-			if (_ethartArtReward &gt;1000) {throw;}
+			if (_ethartArtReward >1000) {throw;}
 			a = 10000 / _ethartArtReward;
 			// Should 10000 / _ethartArtReward not be even throw
-			if (a * _ethartArtReward &lt; 10000) {throw;}
+			if (a * _ethartArtReward < 10000) {throw;}
 			ethartArtReward = _ethartArtReward;
 		}
 
@@ -497,7 +497,7 @@ contract Registrar {
 				throw;
 			}
 
-			if (this.balance &lt; _payment) {
+			if (this.balance < _payment) {
 				throw;
 			}
 			
@@ -517,7 +517,7 @@ contract Registrar {
 			throw;
 		}
 
-		if (this.balance &lt; payment) {
+		if (this.balance < payment) {
 			throw;
 		}
 

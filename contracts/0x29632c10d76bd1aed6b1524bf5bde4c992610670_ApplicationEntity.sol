@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea8783898193aa84859d86839c8fc49885">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea8783898193aa84859d86839c8fc49885">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Gateway Interface Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e08d89838b99a08e8f978c899685ce928f">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e08d89838b99a08e8f978c899685ce928f">[email protected]</a>>
 
  Used as a resolver to retrieve the latest deployed version of the Application
 
@@ -115,7 +115,7 @@ contract ABIGatewayInterface {
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a6e646c7e476968706b6e7162297568">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a6e646c7e476968706b6e7162297568">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -132,8 +132,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -157,7 +157,7 @@ contract ABIApplicationAsset {
 
  * @name        Proposals Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b06020800122b05041c07021d0e451904">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b06020800122b05041c07021d0e451904">[email protected]</a>>
 
  Contains the Proposals Contract code deployed and linked to the Application Entity
 
@@ -213,18 +213,18 @@ contract ABIProposals is ABIApplicationAsset {
     uint256 public VoteCountPerProcess;
     bool public EmergencyFundingReleaseApproved;
 
-    mapping (bytes32 =&gt; uint8) public ActionTypes;
-    mapping (uint8 =&gt; uint256) public ActiveProposalIds;
-    mapping (uint256 =&gt; bool) public ExpiredProposalIds;
-    mapping (uint256 =&gt; ProposalRecord) public ProposalsById;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
-    mapping (uint256 =&gt; mapping (uint256 =&gt; VoteStruct) ) public VotesByProposalId;
-    mapping (uint256 =&gt; mapping (address =&gt; VoteStruct) ) public VotesByCaster;
-    mapping (uint256 =&gt; uint256) public VotesNumByProposalId;
-    mapping (uint256 =&gt; ResultRecord ) public ResultsByProposalId;
-    mapping (uint256 =&gt; uint256) public lastProcessedVoteIdByProposal;
-    mapping (uint256 =&gt; uint256) public ProcessedVotesByProposal;
-    mapping (uint256 =&gt; uint256) public VoteCountAtProcessingStartByProposal;
+    mapping (bytes32 => uint8) public ActionTypes;
+    mapping (uint8 => uint256) public ActiveProposalIds;
+    mapping (uint256 => bool) public ExpiredProposalIds;
+    mapping (uint256 => ProposalRecord) public ProposalsById;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
+    mapping (uint256 => mapping (uint256 => VoteStruct) ) public VotesByProposalId;
+    mapping (uint256 => mapping (address => VoteStruct) ) public VotesByCaster;
+    mapping (uint256 => uint256) public VotesNumByProposalId;
+    mapping (uint256 => ResultRecord ) public ResultsByProposalId;
+    mapping (uint256 => uint256) public lastProcessedVoteIdByProposal;
+    mapping (uint256 => uint256) public ProcessedVotesByProposal;
+    mapping (uint256 => uint256) public VoteCountAtProcessingStartByProposal;
 
     function getRecordState(bytes32 name) public view returns (uint8);
     function getActionType(bytes32 name) public view returns (uint8);
@@ -265,7 +265,7 @@ contract ABIProposals is ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e43474d45576e4041594247584b005c41">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e43474d45576e4041594247584b005c41">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -304,7 +304,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint8   index;
     }
 
-    mapping (uint8 =&gt; FundingStage) public Collection;
+    mapping (uint8 => FundingStage) public Collection;
     uint8 public FundingStageNum;
     uint8 public currentFundingStage;
     uint256 public AmountRaised;
@@ -325,7 +325,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint256 _time_start,
         uint256 _time_end,
         uint256 _amount_cap_soft,
-        uint256 _amount_cap_hard,   // required &gt; 0
+        uint256 _amount_cap_hard,   // required > 0
         uint8   _methods,
         uint256 _minimum_entry,
         uint256 _fixed_tokens,
@@ -354,7 +354,7 @@ contract ABIFunding is ABIApplicationAsset {
 
  * @name        Meetings Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e8ece6eefcc5ebeaf2e9ecf3e0abf7ea">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e8ece6eefcc5ebeaf2e9ecf3e0abf7ea">[email protected]</a>>
 
  Contains the Meetings Contract code deployed and linked to the Application Entity
 
@@ -373,7 +373,7 @@ contract ABIMeetings is ABIApplicationAsset {
         uint256 duration;
         uint8 index;
     }
-    mapping (uint8 =&gt; Record) public Collection;
+    mapping (uint8 => Record) public Collection;
 }
 
 /*
@@ -382,7 +382,7 @@ contract ABIMeetings is ABIApplicationAsset {
 
  * @name        Milestones Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="04696d676f7d446a6b73686d72612a766b">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="04696d676f7d446a6b73686d72612a766b">[email protected]</a>>
 
  Contains the Milestones Contract code deployed and linked to the Application Entity
 
@@ -401,7 +401,7 @@ contract ABIMilestones is ABIApplicationAsset {
         uint256 duration;
         uint256 time_start;                     // start at unixtimestamp
         uint256 last_state_change_time;         // time of last state change
-        uint256 time_end;                       // estimated end time &gt;&gt; can be increased by proposal
+        uint256 time_end;                       // estimated end time >> can be increased by proposal
         uint256 time_ended;                     // actual end time
         uint256 meeting_time;
         uint8 funding_percentage;
@@ -410,9 +410,9 @@ contract ABIMilestones is ABIApplicationAsset {
 
     uint8 public currentRecord;
     uint256 public MilestoneCashBackTime = 0;
-    mapping (uint8 =&gt; Record) public Collection;
-    mapping (bytes32 =&gt; bool) public MilestonePostponingHash;
-    mapping (bytes32 =&gt; uint256) public ProposalIdByHash;
+    mapping (uint8 => Record) public Collection;
+    mapping (bytes32 => bool) public MilestonePostponingHash;
+    mapping (bytes32 => uint256) public ProposalIdByHash;
 
     function getBylawsProjectDevelopmentStart() public view returns (uint256);
     function getBylawsMinTimeInTheFutureForMeetingCreation() public view returns (uint256);
@@ -440,7 +440,7 @@ contract ABIMilestones is ABIApplicationAsset {
 
  * @name        Bounty Program Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c9cdc7cfdde4cacbd3c8cdd2c18ad6cb">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c9cdc7cfdde4cacbd3c8cdd2c18ad6cb">[email protected]</a>>
 
   Bounty program contract that holds and distributes tokens upon successful funding.
 
@@ -460,7 +460,7 @@ contract ABIBountyManager is ABIApplicationAsset {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e5888c868e9ca58b8a92898c9380cb978a">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e5888c868e9ca58b8a92898c9380cb978a">[email protected]</a>>
 
 */
 
@@ -490,7 +490,7 @@ contract ABITokenManager is ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6bbbfb5bdaf96b8b9a1babfa0b3f8a4b9">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6bbbfb5bdaf96b8b9a1babfa0b3f8a4b9">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -509,9 +509,9 @@ contract ABIFundingManager is ABIApplicationAsset {
     uint256 public vaultNum;
     uint256 public LockedVotingTokens;
     bytes32 public currentTask;
-    mapping (bytes32 =&gt; bool) public taskByHash;
-    mapping  (address =&gt; address) public vaultList;
-    mapping  (uint256 =&gt; address) public vaultById;
+    mapping (bytes32 => bool) public taskByHash;
+    mapping  (address => address) public vaultList;
+    mapping  (uint256 => address) public vaultById;
 
     function receivePayment(address _sender, uint8 _payment_method, uint8 _funding_stage) payable public returns(bool);
     function getMyVaultAddress(address _sender) public view returns (address);
@@ -538,7 +538,7 @@ contract ABIFundingManager is ABIApplicationAsset {
 
  * @name        Listing Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e63676d65774e6061796267786b207c61">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e63676d65774e6061796267786b207c61">[email protected]</a>>
 
 */
 
@@ -557,7 +557,7 @@ contract ABIListingContract is ABIApplicationAsset {
         uint256 index;
     }
 
-    mapping ( uint256 =&gt; item ) public items;
+    mapping ( uint256 => item ) public items;
     uint256 public itemNum;
 
     function setManagerAddress(address _manager) public;
@@ -575,7 +575,7 @@ contract ABIListingContract is ABIApplicationAsset {
 
  * @name        News Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf6f2f8f0e2dbf5f4ecf7f2edfeb5e9f4">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf6f2f8f0e2dbf5f4ecf7f2edfeb5e9f4">[email protected]</a>>
 
 */
 
@@ -592,7 +592,7 @@ contract ABINewsContract is ABIApplicationAsset {
     }
 
     uint256 public itemNum = 0;
-    mapping ( uint256 =&gt; item ) public items;
+    mapping ( uint256 => item ) public items;
 
     function addInternalMessage(uint8 state) public;
     function addItem(string _hash, uint256 _length) public;
@@ -604,7 +604,7 @@ contract ABINewsContract is ABIApplicationAsset {
 
  * @name        Application Entity Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ee3e7ede5f7cee0e1f9e2e7f8eba0fce1">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ee3e7ede5f7cee0e1f9e2e7f8eba0fce1">[email protected]</a>>
 
  Contains the main company Entity Contract code deployed and linked to the Gateway Interface.
 
@@ -638,7 +638,7 @@ contract ApplicationEntity {
     uint8 public CurrentEntityState;
 
     /* Available Entity State */
-    mapping (bytes32 =&gt; uint8) public EntityStates;
+    mapping (bytes32 => uint8) public EntityStates;
 
     /* GatewayInterface address */
     address public GatewayInterfaceAddress;
@@ -658,8 +658,8 @@ contract ApplicationEntity {
     ABINewsContract public NewsContractEntity;
 
     /* Asset Collection */
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
     uint8 public AssetCollectionNum = 0;
 
     event EventAppEntityReady ( address indexed _address );
@@ -674,27 +674,27 @@ contract ApplicationEntity {
     function ApplicationEntity() public {
         deployerAddress = msg.sender;
         setEntityStates();
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
     }
 
     function setEntityStates() internal {
 
         // ApplicationEntity States
-        EntityStates[&quot;__IGNORED__&quot;]                 = 0;
-        EntityStates[&quot;NEW&quot;]                         = 1;
-        EntityStates[&quot;WAITING&quot;]                     = 2;
+        EntityStates["__IGNORED__"]                 = 0;
+        EntityStates["NEW"]                         = 1;
+        EntityStates["WAITING"]                     = 2;
 
-        EntityStates[&quot;IN_FUNDING&quot;]                  = 3;
+        EntityStates["IN_FUNDING"]                  = 3;
 
-        EntityStates[&quot;IN_DEVELOPMENT&quot;]              = 5;
-        EntityStates[&quot;IN_CODE_UPGRADE&quot;]             = 50;
+        EntityStates["IN_DEVELOPMENT"]              = 5;
+        EntityStates["IN_CODE_UPGRADE"]             = 50;
 
-        EntityStates[&quot;UPGRADED&quot;]                    = 100;
+        EntityStates["UPGRADED"]                    = 100;
 
-        EntityStates[&quot;IN_GLOBAL_CASHBACK&quot;]          = 150;
-        EntityStates[&quot;LOCKED&quot;]                      = 200;
+        EntityStates["IN_GLOBAL_CASHBACK"]          = 150;
+        EntityStates["LOCKED"]                      = 200;
 
-        EntityStates[&quot;DEVELOPMENT_COMPLETE&quot;]        = 250;
+        EntityStates["DEVELOPMENT_COMPLETE"]        = 250;
     }
 
     function getEntityState(bytes32 name) public view returns (uint8) {
@@ -702,7 +702,7 @@ contract ApplicationEntity {
     }
 
     /*
-    * Initialize Application and it&#39;s assets
+    * Initialize Application and it's assets
     * If gateway is freshly deployed, just link
     * else, create a voting proposal that needs to be accepted for the linking
     *
@@ -733,52 +733,52 @@ contract ApplicationEntity {
     }
 
     /*
-        For the sake of simplicity, and solidity warnings about &quot;unknown gas usage&quot; do this.. instead of sending
+        For the sake of simplicity, and solidity warnings about "unknown gas usage" do this.. instead of sending
         an array of addresses
     */
     function addAssetProposals(address _assetAddresses) external requireNotInitialised onlyDeployer {
         ProposalsEntity = ABIProposals(_assetAddresses);
-        assetInitialized(&quot;Proposals&quot;, _assetAddresses);
+        assetInitialized("Proposals", _assetAddresses);
     }
 
     function addAssetFunding(address _assetAddresses) external requireNotInitialised onlyDeployer {
         FundingEntity = ABIFunding(_assetAddresses);
-        assetInitialized(&quot;Funding&quot;, _assetAddresses);
+        assetInitialized("Funding", _assetAddresses);
     }
 
     function addAssetMilestones(address _assetAddresses) external requireNotInitialised onlyDeployer {
         MilestonesEntity = ABIMilestones(_assetAddresses);
-        assetInitialized(&quot;Milestones&quot;, _assetAddresses);
+        assetInitialized("Milestones", _assetAddresses);
     }
 
     function addAssetMeetings(address _assetAddresses) external requireNotInitialised onlyDeployer {
         MeetingsEntity = ABIMeetings(_assetAddresses);
-        assetInitialized(&quot;Meetings&quot;, _assetAddresses);
+        assetInitialized("Meetings", _assetAddresses);
     }
 
     function addAssetBountyManager(address _assetAddresses) external requireNotInitialised onlyDeployer {
         BountyManagerEntity = ABIBountyManager(_assetAddresses);
-        assetInitialized(&quot;BountyManager&quot;, _assetAddresses);
+        assetInitialized("BountyManager", _assetAddresses);
     }
 
     function addAssetTokenManager(address _assetAddresses) external requireNotInitialised onlyDeployer {
         TokenManagerEntity = ABITokenManager(_assetAddresses);
-        assetInitialized(&quot;TokenManager&quot;, _assetAddresses);
+        assetInitialized("TokenManager", _assetAddresses);
     }
 
     function addAssetFundingManager(address _assetAddresses) external requireNotInitialised onlyDeployer {
         FundingManagerEntity = ABIFundingManager(_assetAddresses);
-        assetInitialized(&quot;FundingManager&quot;, _assetAddresses);
+        assetInitialized("FundingManager", _assetAddresses);
     }
 
     function addAssetListingContract(address _assetAddresses) external requireNotInitialised onlyDeployer {
         ListingContractEntity = ABIListingContract(_assetAddresses);
-        assetInitialized(&quot;ListingContract&quot;, _assetAddresses);
+        assetInitialized("ListingContract", _assetAddresses);
     }
 
     function addAssetNewsContract(address _assetAddresses) external requireNotInitialised onlyDeployer {
         NewsContractEntity = ABINewsContract(_assetAddresses);
-        assetInitialized(&quot;NewsContract&quot;, _assetAddresses);
+        assetInitialized("NewsContract", _assetAddresses);
     }
 
     function assetInitialized(bytes32 name, address _assetAddresses) internal {
@@ -798,8 +798,8 @@ contract ApplicationEntity {
     }
 
     /* Application Bylaws mapping */
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
 
     function setBylawUint256(bytes32 name, uint256 value) public requireNotInitialised onlyDeployer {
@@ -856,11 +856,11 @@ contract ApplicationEntity {
 
     function initializeAssetsToThisApplication() external onlyGatewayInterface returns (bool) {
 
-        for(uint8 i = 0; i &lt; AssetCollectionNum; i++ ) {
+        for(uint8 i = 0; i < AssetCollectionNum; i++ ) {
             bytes32 _name = AssetCollectionIdToName[i];
             address current = AssetCollection[_name];
             if(current != address(0x0)) {
-                if(!current.call(bytes4(keccak256(&quot;setInitialOwnerAndName(bytes32)&quot;)), _name) ) {
+                if(!current.call(bytes4(keccak256("setInitialOwnerAndName(bytes32)")), _name) ) {
                     revert();
                 }
             } else {
@@ -873,12 +873,12 @@ contract ApplicationEntity {
     }
 
     function transferAssetsToNewApplication(address _newAddress) external onlyGatewayInterface returns (bool){
-        for(uint8 i = 0; i &lt; AssetCollectionNum; i++ ) {
+        for(uint8 i = 0; i < AssetCollectionNum; i++ ) {
             
             bytes32 _name = AssetCollectionIdToName[i];
             address current = AssetCollection[_name];
             if(current != address(0x0)) {
-                if(!current.call(bytes4(keccak256(&quot;transferToNewOwner(address)&quot;)), _newAddress) ) {
+                if(!current.call(bytes4(keccak256("transferToNewOwner(address)")), _newAddress) ) {
                     revert();
                 }
             } else {
@@ -896,7 +896,7 @@ contract ApplicationEntity {
     */
     function lock() external onlyGatewayInterface returns (bool) {
         _locked = true;
-        CurrentEntityState = getEntityState(&quot;UPGRADED&quot;);
+        CurrentEntityState = getEntityState("UPGRADED");
         EventAppEntityLocked(address(this));
         return true;
     }
@@ -908,7 +908,7 @@ contract ApplicationEntity {
     address testAddressAllowUpgradeFrom;
     function canInitiateCodeUpgrade(address _sender) public view returns(bool) {
         // suppress warning
-        if(testAddressAllowUpgradeFrom != 0x0 &amp;&amp; testAddressAllowUpgradeFrom == _sender) {
+        if(testAddressAllowUpgradeFrom != 0x0 && testAddressAllowUpgradeFrom == _sender) {
             return true;
         }
         return false;
@@ -918,7 +918,7 @@ contract ApplicationEntity {
     * Throws if called by any other entity except GatewayInterface
     */
     modifier onlyGatewayInterface() {
-        require(GatewayInterfaceAddress != address(0) &amp;&amp; msg.sender == GatewayInterfaceAddress);
+        require(GatewayInterfaceAddress != address(0) && msg.sender == GatewayInterfaceAddress);
         _;
     }
 
@@ -936,12 +936,12 @@ contract ApplicationEntity {
     }
 
     modifier requireNotInitialised() {
-        require(_initialized == false &amp;&amp; _locked == false);
+        require(_initialized == false && _locked == false);
         _;
     }
 
     modifier requireInitialised() {
-        require(_initialized == true &amp;&amp; _locked == false);
+        require(_initialized == true && _locked == false);
         _;
     }
 
@@ -955,17 +955,17 @@ contract ApplicationEntity {
 
     /*
         We could create a generic method that iterates through all assets, and using assembly language get the return
-        value of the &quot;hasRequiredStateChanges&quot; method on each asset. Based on return, run doStateChanges on them or not.
+        value of the "hasRequiredStateChanges" method on each asset. Based on return, run doStateChanges on them or not.
 
-        Or we could be using a generic ABI contract that only defines the &quot;hasRequiredStateChanges&quot; and &quot;doStateChanges&quot;
+        Or we could be using a generic ABI contract that only defines the "hasRequiredStateChanges" and "doStateChanges"
         methods thus not requiring any assembly variable / memory management
 
         Problem with both cases is the fact that our application needs to change only specific asset states depending
-        on it&#39;s own current state, thus making a generic call wasteful in gas usage.
+        on it's own current state, thus making a generic call wasteful in gas usage.
 
-        Let&#39;s stay away from that and follow the same approach as we do inside an asset.
-        - view method: -&gt; get required state changes
-        - view method: -&gt; has state changes
+        Let's stay away from that and follow the same approach as we do inside an asset.
+        - view method: -> get required state changes
+        - view method: -> has state changes
         - processor that does the actual changes.
         - doStateChanges recursive method that runs the processor if views require it to.
 
@@ -983,7 +983,7 @@ contract ApplicationEntity {
 
             DebugApplicationRequiredChanges( returnedCurrentEntityState, EntityStateRequired );
 
-            if(EntityStateRequired != getEntityState(&quot;__IGNORED__&quot;) ) {
+            if(EntityStateRequired != getEntityState("__IGNORED__") ) {
                 EntityProcessor(EntityStateRequired);
                 callAgain = true;
             }
@@ -998,7 +998,7 @@ contract ApplicationEntity {
             var (returnedCurrentEntityState, EntityStateRequired) = getRequiredStateChanges();
             // suppress unused local variable warning
             returnedCurrentEntityState = 0;
-            if(EntityStateRequired != getEntityState(&quot;__IGNORED__&quot;) ) {
+            if(EntityStateRequired != getEntityState("__IGNORED__") ) {
                 hasChanges = true;
             }
 
@@ -1026,13 +1026,13 @@ contract ApplicationEntity {
         return extendedAnyAssetHasChanges();
     }
 
-    // use this when extending &quot;has changes&quot;
+    // use this when extending "has changes"
     function extendedAnyAssetHasChanges() internal view returns (bool) {
         if(_initialized) {}
         return false;
     }
 
-    // use this when extending &quot;asset state processor&quot;
+    // use this when extending "asset state processor"
     function extendedAssetProcessor() internal  {
         // does not exist, but we check anyway to bypass compier warning about function state mutability
         if ( CurrentEntityState == 255 ) {
@@ -1046,9 +1046,9 @@ contract ApplicationEntity {
     function AssetProcessor() internal {
 
 
-        if ( CurrentEntityState == getEntityState(&quot;NEW&quot;) ) {
+        if ( CurrentEntityState == getEntityState("NEW") ) {
 
-            // move all assets that have states to &quot;WAITING&quot;
+            // move all assets that have states to "WAITING"
             if(FundingEntity.hasRequiredStateChanges()) {
                 FundingEntity.doStateChanges();
             }
@@ -1061,13 +1061,13 @@ contract ApplicationEntity {
                 MilestonesEntity.doStateChanges();
             }
 
-        } else if ( CurrentEntityState == getEntityState(&quot;WAITING&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("WAITING") ) {
 
             if( FundingEntity.hasRequiredStateChanges() ) {
                 FundingEntity.doStateChanges();
             }
         }
-        else if ( CurrentEntityState == getEntityState(&quot;IN_FUNDING&quot;) ) {
+        else if ( CurrentEntityState == getEntityState("IN_FUNDING") ) {
 
             if( FundingEntity.hasRequiredStateChanges() ) {
                 FundingEntity.doStateChanges();
@@ -1077,7 +1077,7 @@ contract ApplicationEntity {
                 FundingManagerEntity.doStateChanges();
             }
         }
-        else if ( CurrentEntityState == getEntityState(&quot;IN_DEVELOPMENT&quot;) ) {
+        else if ( CurrentEntityState == getEntityState("IN_DEVELOPMENT") ) {
 
             if( FundingManagerEntity.hasRequiredStateChanges() ) {
                 FundingManagerEntity.doStateChanges();
@@ -1091,7 +1091,7 @@ contract ApplicationEntity {
                 ProposalsEntity.process();
             }
         }
-        else if ( CurrentEntityState == getEntityState(&quot;DEVELOPMENT_COMPLETE&quot;) ) {
+        else if ( CurrentEntityState == getEntityState("DEVELOPMENT_COMPLETE") ) {
 
             if(ProposalsEntity.hasRequiredStateChanges()) {
                 ProposalsEntity.process();
@@ -1110,49 +1110,49 @@ contract ApplicationEntity {
 
         // Do State Specific Updates
 
-        if ( EntityStateRequired == getEntityState(&quot;IN_FUNDING&quot;) ) {
+        if ( EntityStateRequired == getEntityState("IN_FUNDING") ) {
             // run Funding state changer
             // doStateChanges
         }
 
-        // EntityStateRequired = getEntityState(&quot;IN_FUNDING&quot;);
+        // EntityStateRequired = getEntityState("IN_FUNDING");
 
 
         // Funding Failed
         /*
-        if ( EntityStateRequired == getEntityState(&quot;FUNDING_FAILED_START&quot;) ) {
+        if ( EntityStateRequired == getEntityState("FUNDING_FAILED_START") ) {
             // set ProcessVaultList Task
-            currentTask = getHash(&quot;FUNDING_FAILED_START&quot;, &quot;&quot;);
-            CurrentEntityState = getEntityState(&quot;FUNDING_FAILED_PROGRESS&quot;);
-        } else if ( EntityStateRequired == getEntityState(&quot;FUNDING_FAILED_PROGRESS&quot;) ) {
+            currentTask = getHash("FUNDING_FAILED_START", "");
+            CurrentEntityState = getEntityState("FUNDING_FAILED_PROGRESS");
+        } else if ( EntityStateRequired == getEntityState("FUNDING_FAILED_PROGRESS") ) {
             ProcessVaultList(VaultCountPerProcess);
 
             // Funding Successful
-        } else if ( EntityStateRequired == getEntityState(&quot;FUNDING_SUCCESSFUL_START&quot;) ) {
+        } else if ( EntityStateRequired == getEntityState("FUNDING_SUCCESSFUL_START") ) {
 
             // init SCADA variable cache.
             if(TokenSCADAEntity.initCacheForVariables()) {
                 // start processing vaults
-                currentTask = getHash(&quot;FUNDING_SUCCESSFUL_START&quot;, &quot;&quot;);
-                CurrentEntityState = getEntityState(&quot;FUNDING_SUCCESSFUL_PROGRESS&quot;);
+                currentTask = getHash("FUNDING_SUCCESSFUL_START", "");
+                CurrentEntityState = getEntityState("FUNDING_SUCCESSFUL_PROGRESS");
             } else {
                 // something went really wrong, just bail out for now
-                CurrentEntityState = getEntityState(&quot;FUNDING_FAILED_START&quot;);
+                CurrentEntityState = getEntityState("FUNDING_FAILED_START");
             }
-        } else if ( EntityStateRequired == getEntityState(&quot;FUNDING_SUCCESSFUL_PROGRESS&quot;) ) {
+        } else if ( EntityStateRequired == getEntityState("FUNDING_SUCCESSFUL_PROGRESS") ) {
             ProcessVaultList(VaultCountPerProcess);
             // Milestones
-        } else if ( EntityStateRequired == getEntityState(&quot;MILESTONE_PROCESS_START&quot;) ) {
-            currentTask = getHash(&quot;MILESTONE_PROCESS_START&quot;, getCurrentMilestoneId() );
-            CurrentEntityState = getEntityState(&quot;MILESTONE_PROCESS_PROGRESS&quot;);
-        } else if ( EntityStateRequired == getEntityState(&quot;MILESTONE_PROCESS_PROGRESS&quot;) ) {
+        } else if ( EntityStateRequired == getEntityState("MILESTONE_PROCESS_START") ) {
+            currentTask = getHash("MILESTONE_PROCESS_START", getCurrentMilestoneId() );
+            CurrentEntityState = getEntityState("MILESTONE_PROCESS_PROGRESS");
+        } else if ( EntityStateRequired == getEntityState("MILESTONE_PROCESS_PROGRESS") ) {
             ProcessVaultList(VaultCountPerProcess);
 
             // Completion
-        } else if ( EntityStateRequired == getEntityState(&quot;COMPLETE_PROCESS_START&quot;) ) {
-            currentTask = getHash(&quot;COMPLETE_PROCESS_START&quot;, &quot;&quot;);
-            CurrentEntityState = getEntityState(&quot;COMPLETE_PROCESS_PROGRESS&quot;);
-        } else if ( EntityStateRequired == getEntityState(&quot;COMPLETE_PROCESS_PROGRESS&quot;) ) {
+        } else if ( EntityStateRequired == getEntityState("COMPLETE_PROCESS_START") ) {
+            currentTask = getHash("COMPLETE_PROCESS_START", "");
+            CurrentEntityState = getEntityState("COMPLETE_PROCESS_PROGRESS");
+        } else if ( EntityStateRequired == getEntityState("COMPLETE_PROCESS_PROGRESS") ) {
             ProcessVaultList(VaultCountPerProcess);
         }
         */
@@ -1168,31 +1168,31 @@ contract ApplicationEntity {
      */
     function getRequiredStateChanges() public view returns (uint8, uint8) {
 
-        uint8 EntityStateRequired = getEntityState(&quot;__IGNORED__&quot;);
+        uint8 EntityStateRequired = getEntityState("__IGNORED__");
 
-        if( CurrentEntityState == getEntityState(&quot;NEW&quot;) ) {
+        if( CurrentEntityState == getEntityState("NEW") ) {
             // general so we know we initialized
-            EntityStateRequired = getEntityState(&quot;WAITING&quot;);
+            EntityStateRequired = getEntityState("WAITING");
 
-        } else if ( CurrentEntityState == getEntityState(&quot;WAITING&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("WAITING") ) {
 
             // Funding Started
-            if( FundingEntity.CurrentEntityState() == FundingEntity.getEntityState(&quot;IN_PROGRESS&quot;) ) {
-                EntityStateRequired = getEntityState(&quot;IN_FUNDING&quot;);
+            if( FundingEntity.CurrentEntityState() == FundingEntity.getEntityState("IN_PROGRESS") ) {
+                EntityStateRequired = getEntityState("IN_FUNDING");
             }
 
-        } else if ( CurrentEntityState == getEntityState(&quot;IN_FUNDING&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("IN_FUNDING") ) {
 
-            if(FundingEntity.CurrentEntityState() == FundingEntity.getEntityState(&quot;SUCCESSFUL_FINAL&quot;)) {
+            if(FundingEntity.CurrentEntityState() == FundingEntity.getEntityState("SUCCESSFUL_FINAL")) {
                 // SUCCESSFUL_FINAL means FUNDING was successful, and FundingManager has finished distributing tokens and ether
-                EntityStateRequired = getEntityState(&quot;IN_DEVELOPMENT&quot;);
+                EntityStateRequired = getEntityState("IN_DEVELOPMENT");
 
-            } else if(FundingEntity.CurrentEntityState() == FundingEntity.getEntityState(&quot;FAILED_FINAL&quot;)) {
+            } else if(FundingEntity.CurrentEntityState() == FundingEntity.getEntityState("FAILED_FINAL")) {
                 // Funding failed..
-                EntityStateRequired = getEntityState(&quot;IN_GLOBAL_CASHBACK&quot;);
+                EntityStateRequired = getEntityState("IN_GLOBAL_CASHBACK");
             }
 
-        } else if ( CurrentEntityState == getEntityState(&quot;IN_DEVELOPMENT&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("IN_DEVELOPMENT") ) {
 
             // this is where most things happen
             // milestones get developed
@@ -1200,37 +1200,37 @@ contract ApplicationEntity {
             // proposals get created and voted
 
             /*
-            if(ProposalsEntity.CurrentEntityState() == ProposalsEntity.getEntityState(&quot;CODE_UPGRADE_ACCEPTED&quot;)) {
+            if(ProposalsEntity.CurrentEntityState() == ProposalsEntity.getEntityState("CODE_UPGRADE_ACCEPTED")) {
                 // check if we have an upgrade proposal that is accepted and move into said state
-                EntityStateRequired = getEntityState(&quot;START_CODE_UPGRADE&quot;);
+                EntityStateRequired = getEntityState("START_CODE_UPGRADE");
             }
             else
             */
 
-            if(MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState(&quot;DEVELOPMENT_COMPLETE&quot;)) {
+            if(MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState("DEVELOPMENT_COMPLETE")) {
                 // check if we finished developing all milestones .. and if so move state to complete.
-                EntityStateRequired = getEntityState(&quot;DEVELOPMENT_COMPLETE&quot;);
+                EntityStateRequired = getEntityState("DEVELOPMENT_COMPLETE");
             }
 
-            if(MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState(&quot;DEADLINE_MEETING_TIME_FAILED&quot;)) {
-                EntityStateRequired = getEntityState(&quot;IN_GLOBAL_CASHBACK&quot;);
+            if(MilestonesEntity.CurrentEntityState() == MilestonesEntity.getEntityState("DEADLINE_MEETING_TIME_FAILED")) {
+                EntityStateRequired = getEntityState("IN_GLOBAL_CASHBACK");
             }
 
-        } else if ( CurrentEntityState == getEntityState(&quot;START_CODE_UPGRADE&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("START_CODE_UPGRADE") ) {
 
             // check stuff to move into IN_CODE_UPGRADE
-            // EntityStateRequired = getEntityState(&quot;IN_CODE_UPGRADE&quot;);
+            // EntityStateRequired = getEntityState("IN_CODE_UPGRADE");
 
-        } else if ( CurrentEntityState == getEntityState(&quot;IN_CODE_UPGRADE&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("IN_CODE_UPGRADE") ) {
 
             // check stuff to finish
-            // EntityStateRequired = getEntityState(&quot;FINISHED_CODE_UPGRADE&quot;);
+            // EntityStateRequired = getEntityState("FINISHED_CODE_UPGRADE");
 
-        } else if ( CurrentEntityState == getEntityState(&quot;FINISHED_CODE_UPGRADE&quot;) ) {
+        } else if ( CurrentEntityState == getEntityState("FINISHED_CODE_UPGRADE") ) {
 
             // move to IN_DEVELOPMENT or DEVELOPMENT_COMPLETE based on state before START_CODE_UPGRADE.
-            // EntityStateRequired = getEntityState(&quot;DEVELOPMENT_COMPLETE&quot;);
-            // EntityStateRequired = getEntityState(&quot;FINISHED_CODE_UPGRADE&quot;);
+            // EntityStateRequired = getEntityState("DEVELOPMENT_COMPLETE");
+            // EntityStateRequired = getEntityState("FINISHED_CODE_UPGRADE");
 
         }
 

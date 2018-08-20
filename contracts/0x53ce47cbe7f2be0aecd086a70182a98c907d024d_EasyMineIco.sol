@@ -48,11 +48,11 @@ contract Token {
 contract StandardToken is Token {
 
   function transfer(address _to, uint256 _value) returns (bool success) {
-    //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+    //Default assumes totalSupply can't be over max (2^256 - 1).
+    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
     //Replace the if with this one instead.
-    //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -62,8 +62,8 @@ contract StandardToken is Token {
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     //same as above. Replace this line with the following if you want to protect against wrapping uints.
-    //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
@@ -86,14 +86,14 @@ contract StandardToken is Token {
     return allowed[_owner][_spender];
   }
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract EasyMineToken is StandardToken {
 
-  string public constant name = &quot;easyMINE Token&quot;;
-  string public constant symbol = &quot;EMT&quot;;
+  string public constant name = "easyMINE Token";
+  string public constant symbol = "EMT";
   uint8 public constant decimals = 18;
 
   function EasyMineToken(address _icoAddress,
@@ -134,7 +134,7 @@ contract EasyMineToken is StandardToken {
   }
 
   function burn(uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       totalSupply -= _value;
       Transfer(msg.sender, 0x0, _value);
@@ -184,11 +184,11 @@ contract EasyMineTokenWallet {
   {
     uint256 limit = maxPossibleWithdrawal();
     uint256 withdrawalAmount = requestedAmount;
-    if (requestedAmount &gt; limit) {
+    if (requestedAmount > limit) {
       withdrawalAmount = limit;
     }
 
-    if (withdrawalAmount &gt; 0) {
+    if (withdrawalAmount > 0) {
       if (!easyMineToken.transfer(withdrawalAddress, withdrawalAmount)) {
         revert();
       }
@@ -203,12 +203,12 @@ contract EasyMineTokenWallet {
     constant
     returns (uint256)
   {
-    if (now &lt; startTime + VESTING_PERIOD) {
+    if (now < startTime + VESTING_PERIOD) {
       return 0;
     } else {
       uint256 daysPassed = (now - (startTime + VESTING_PERIOD)) / 86400;
       uint256 res = DAILY_FUNDS_RELEASE * daysPassed - totalWithdrawn;
-      if (res &lt; 0) {
+      if (res < 0) {
         return 0;
       } else {
         return res;
@@ -292,10 +292,10 @@ contract EasyMineIco {
   }
 
   modifier timedTransitions() {
-    if (stage == Stages.StartScheduled &amp;&amp; block.number &gt;= startBlock) {
+    if (stage == Stages.StartScheduled && block.number >= startBlock) {
       stage = Stages.Started;
     }
-    if (stage == Stages.Started &amp;&amp; block.number &gt;= endBlock) {
+    if (stage == Stages.Started && block.number >= endBlock) {
       finalize();
     }
     _;
@@ -330,8 +330,8 @@ contract EasyMineIco {
     require(_easyMineToken != 0x0);
     require(_sys != 0x0);
     require(_reservationAddress != 0x0);
-    require(_minStartDelay &gt; 0);
-    require(_maxDuration &gt; 0);
+    require(_minStartDelay > 0);
+    require(_maxDuration > 0);
 
     priceThresholds[0] = PriceThreshold(2000000  * 10**18, 0.00070 * 10**18, 0);
     priceThresholds[1] = PriceThreshold(2000000  * 10**18, 0.00075 * 10**18, 0);
@@ -354,7 +354,7 @@ contract EasyMineIco {
     constant
     returns (uint256) {
     uint256 total = 0;
-    for (uint8 i = 0; i &lt; priceThresholds.length; i++) {
+    for (uint8 i = 0; i < priceThresholds.length; i++) {
       total += priceThresholds[i].tokenCount;
     }
     return total;
@@ -365,7 +365,7 @@ contract EasyMineIco {
     constant
     returns (uint256) {
     uint256 total = 0;
-    for (uint8 i = 0; i &lt; priceThresholds.length; i++) {
+    for (uint8 i = 0; i < priceThresholds.length; i++) {
       total += priceThresholds[i].tokensSold;
     }
     return total;
@@ -378,7 +378,7 @@ contract EasyMineIco {
     atStage(Stages.SetUp)
   {
     // Start allowed minimum 5000 blocks from now
-    require(_startBlock &gt; block.number + minStartDelay);
+    require(_startBlock > block.number + minStartDelay);
 
     startBlock = _startBlock;
     endBlock = startBlock + maxDuration;
@@ -400,17 +400,17 @@ contract EasyMineIco {
     timedTransitions
     atStage(Stages.Started)
   {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
 
     uint256 amountRemaining = msg.value;
     uint256 tokensToReceive = 0;
 
-    for (uint8 i = 0; i &lt; priceThresholds.length; i++) {
+    for (uint8 i = 0; i < priceThresholds.length; i++) {
       uint256 tokensAvailable = priceThresholds[i].tokenCount - priceThresholds[i].tokensSold;
       uint256 maxTokensByAmount = amountRemaining * 10**18 / priceThresholds[i].price;
 
       uint256 tokens;
-      if (maxTokensByAmount &gt; tokensAvailable) {
+      if (maxTokensByAmount > tokensAvailable) {
         tokens = tokensAvailable;
         amountRemaining -= (priceThresholds[i].price * tokens) / 10**18;
       } else {
@@ -421,7 +421,7 @@ contract EasyMineIco {
       tokensToReceive += tokens;
     }
 
-    assert(tokensToReceive &gt; 0);
+    assert(tokensToReceive > 0);
 
     if (amountRemaining != 0) {
       assert(msg.sender.send(amountRemaining));
@@ -443,15 +443,15 @@ contract EasyMineIco {
     timedTransitions
     atStage(Stages.Started)
   {
-    require(tokenCount &gt; 0);
+    require(tokenCount > 0);
 
     uint256 tokensRemaining = tokenCount;
 
-    for (uint8 i = 0; i &lt; priceThresholds.length; i++) {
+    for (uint8 i = 0; i < priceThresholds.length; i++) {
       uint256 tokensAvailable = priceThresholds[i].tokenCount - priceThresholds[i].tokensSold;
 
       uint256 tokens;
-      if (tokensRemaining &gt; tokensAvailable) {
+      if (tokensRemaining > tokensAvailable) {
         tokens = tokensAvailable;
       } else {
         tokens = tokensRemaining;

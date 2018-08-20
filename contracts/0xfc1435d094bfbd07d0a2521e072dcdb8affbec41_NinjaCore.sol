@@ -150,10 +150,10 @@ contract NinjaBase is NinjaAccessControl {
 
     Ninja[] ninjas;
 
-    mapping (uint256 =&gt; address) public ninjaIndexToOwner;
-    mapping (address =&gt; uint256) ownershipTokenCount;
-    mapping (uint256 =&gt; address) public ninjaIndexToApproved;
-    mapping (uint256 =&gt; address) public sireAllowedToAddress;
+    mapping (uint256 => address) public ninjaIndexToOwner;
+    mapping (address => uint256) ownershipTokenCount;
+    mapping (uint256 => address) public ninjaIndexToApproved;
+    mapping (uint256 => address) public sireAllowedToAddress;
     uint32 public destroyedNinjas;
     SaleClockAuction public saleAuction;
     SiringClockAuction public siringAuction;
@@ -188,7 +188,7 @@ contract NinjaBase is NinjaAccessControl {
         require(_generation == uint256(uint16(_generation)));
 
         uint16 cooldownIndex = uint16(_generation / 2);
-        if (cooldownIndex &gt; 13) {
+        if (cooldownIndex > 13) {
             cooldownIndex = 13;
         }
 
@@ -221,7 +221,7 @@ contract NinjaBase is NinjaAccessControl {
     }
 
     function _destroyNinja(uint256 _ninjaId) internal {
-        require(_ninjaId &gt; 0);
+        require(_ninjaId > 0);
         address from = ninjaIndexToOwner[_ninjaId];
         require(from != address(0));
         destroyedNinjas++;
@@ -229,7 +229,7 @@ contract NinjaBase is NinjaAccessControl {
     }
 
     function setSecondsPerBlock(uint256 secs) external onlyCLevel {
-        require(secs &lt; cooldowns[0]);
+        require(secs < cooldowns[0]);
         secondsPerBlock = secs;
     }
 }
@@ -237,8 +237,8 @@ contract NinjaBase is NinjaAccessControl {
 
 contract NinjaExtension is NinjaBase {
     event Lock(uint256 ninjaId, uint16 mask);
-    mapping (address =&gt; bool) extensions;
-    mapping (uint256 =&gt; uint16) locks;
+    mapping (address => bool) extensions;
+    mapping (uint256 => uint16) locks;
     uint16 constant LOCK_BREEDING = 1;
     uint16 constant LOCK_TRANSFER = 2;
     uint16 constant LOCK_ALL = LOCK_BREEDING | LOCK_TRANSFER;
@@ -289,17 +289,17 @@ contract NinjaExtension is NinjaBase {
     function _lockNinja(uint256 _ninjaId, uint16 _mask)
         internal
     {
-        require(_mask &gt; 0);
+        require(_mask > 0);
 
         uint16 mask = locks[_ninjaId];
-        require(mask &amp; _mask == 0);
+        require(mask & _mask == 0);
 
-        if (_mask &amp; LOCK_BREEDING &gt; 0) {
+        if (_mask & LOCK_BREEDING > 0) {
             Ninja storage ninja = ninjas[_ninjaId];
             require(ninja.siringWithId == 0);
         }
 
-        if (_mask &amp; LOCK_TRANSFER &gt; 0) {
+        if (_mask & LOCK_TRANSFER > 0) {
             address owner = ninjaIndexToOwner[_ninjaId];
             require(owner != address(saleAuction));
             require(owner != address(siringAuction));
@@ -323,10 +323,10 @@ contract NinjaExtension is NinjaBase {
     function _unlockNinja(uint256 _ninjaId, uint16 _mask)
         internal
     {
-        require(_mask &gt; 0);
+        require(_mask > 0);
 
         uint16 mask = locks[_ninjaId];
-        require(mask &amp; _mask == _mask);
+        require(mask & _mask == _mask);
         mask ^= _mask;
 
         locks[_ninjaId] = mask;
@@ -346,8 +346,8 @@ contract NinjaExtension is NinjaBase {
 
 
 contract NinjaOwnership is NinjaExtension, ERC721 {
-    string public constant name = &quot;CryptoNinjas&quot;;
-    string public constant symbol = &quot;CBT&quot;;
+    string public constant name = "CryptoNinjas";
+    string public constant symbol = "CBT";
 
     function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
         return ninjaIndexToOwner[_tokenId] == _claimant;
@@ -377,7 +377,7 @@ contract NinjaOwnership is NinjaExtension, ERC721 {
         require(_to != address(saleAuction));
         require(_to != address(siringAuction));
         require(_owns(msg.sender, _tokenId));
-        require(locks[_tokenId] &amp; LOCK_TRANSFER == 0);
+        require(locks[_tokenId] & LOCK_TRANSFER == 0);
         _transfer(msg.sender, _to, _tokenId);
     }
 
@@ -389,7 +389,7 @@ contract NinjaOwnership is NinjaExtension, ERC721 {
         whenNotPaused
     {
         require(_owns(msg.sender, _tokenId));
-        require(locks[_tokenId] &amp; LOCK_TRANSFER == 0);
+        require(locks[_tokenId] & LOCK_TRANSFER == 0);
         _approve(_tokenId, _to);
         Approval(msg.sender, _to, _tokenId);
     }
@@ -406,7 +406,7 @@ contract NinjaOwnership is NinjaExtension, ERC721 {
         require(_to != address(this));
         require(_approvedFor(msg.sender, _tokenId));
         require(_owns(_from, _tokenId));
-        require(locks[_tokenId] &amp; LOCK_TRANSFER == 0);
+        require(locks[_tokenId] & LOCK_TRANSFER == 0);
         _transfer(_from, _to, _tokenId);
     }
 
@@ -433,7 +433,7 @@ contract NinjaOwnership is NinjaExtension, ERC721 {
             uint256 totalNinjas = ninjas.length - 1;
             uint256 resultIndex = 0;
             uint256 ninjaId;
-            for (ninjaId = 0; ninjaId &lt;= totalNinjas; ninjaId++) {
+            for (ninjaId = 0; ninjaId <= totalNinjas; ninjaId++) {
                 if (ninjaIndexToOwner[ninjaId] == _owner) {
                     result[resultIndex] = ninjaId;
                     resultIndex++;
@@ -460,9 +460,9 @@ contract NinjaBreeding is NinjaOwnership {
 
     function _isReadyToBreed(uint256 _ninjaId, Ninja _ninja) internal view returns (bool) {
         return
-            (_ninja.siringWithId == 0) &amp;&amp;
-            (_ninja.cooldownEndBlock &lt;= uint64(block.number)) &amp;&amp;
-            (locks[_ninjaId] &amp; LOCK_BREEDING == 0);
+            (_ninja.siringWithId == 0) &&
+            (_ninja.cooldownEndBlock <= uint64(block.number)) &&
+            (locks[_ninjaId] & LOCK_BREEDING == 0);
     }
 
     function _isSiringPermitted(uint256 _sireId, uint256 _matronId) internal view returns (bool) {
@@ -473,7 +473,7 @@ contract NinjaBreeding is NinjaOwnership {
 
     function _triggerCooldown(Ninja storage _ninja) internal {
         _ninja.cooldownEndBlock = uint64((cooldowns[_ninja.cooldownIndex]/secondsPerBlock) + block.number);
-        if (_ninja.cooldownIndex &lt; 13) {
+        if (_ninja.cooldownIndex < 13) {
             _ninja.cooldownIndex += 1;
         }
     }
@@ -491,7 +491,7 @@ contract NinjaBreeding is NinjaOwnership {
     }
 
     function _isReadyToGiveBirth(Ninja _matron) private view returns (bool) {
-        return (_matron.siringWithId != 0) &amp;&amp; (_matron.cooldownEndBlock &lt;= uint64(block.number));
+        return (_matron.siringWithId != 0) && (_matron.cooldownEndBlock <= uint64(block.number));
     }
 
     function isReadyToBreed(uint256 _ninjaId)
@@ -500,7 +500,7 @@ contract NinjaBreeding is NinjaOwnership {
         returns (bool)
     {
         Ninja storage ninja = ninjas[_ninjaId];
-        return _ninjaId &gt; 0 &amp;&amp; _isReadyToBreed(_ninjaId, ninja);
+        return _ninjaId > 0 && _isReadyToBreed(_ninjaId, ninja);
     }
 
     function isPregnant(uint256 _ninjaId)
@@ -508,7 +508,7 @@ contract NinjaBreeding is NinjaOwnership {
         view
         returns (bool)
     {
-        return _ninjaId &gt; 0 &amp;&amp; ninjas[_ninjaId].siringWithId != 0;
+        return _ninjaId > 0 && ninjas[_ninjaId].siringWithId != 0;
     }
 
     function _isValidMatingPair(
@@ -557,11 +557,11 @@ contract NinjaBreeding is NinjaOwnership {
         view
         returns(bool)
     {
-        require(_matronId &gt; 0);
-        require(_sireId &gt; 0);
+        require(_matronId > 0);
+        require(_sireId > 0);
         Ninja storage matron = ninjas[_matronId];
         Ninja storage sire = ninjas[_sireId];
-        return _isValidMatingPair(matron, _matronId, sire, _sireId) &amp;&amp;
+        return _isValidMatingPair(matron, _matronId, sire, _sireId) &&
             _isSiringPermitted(_sireId, _matronId);
     }
 
@@ -582,7 +582,7 @@ contract NinjaBreeding is NinjaOwnership {
         payable
         whenNotPaused
     {
-        require(msg.value &gt;= autoBirthFee);
+        require(msg.value >= autoBirthFee);
         require(_owns(msg.sender, _matronId));
         require(_isSiringPermitted(_sireId, _matronId));
         Ninja storage matron = ninjas[_matronId];
@@ -609,7 +609,7 @@ contract NinjaBreeding is NinjaOwnership {
         uint256 sireId = matron.siringWithId;
         Ninja storage sire = ninjas[sireId];
         uint16 parentGen = matron.generation;
-        if (sire.generation &gt; matron.generation) {
+        if (sire.generation > matron.generation) {
             parentGen = sire.generation;
         }
         uint256 childGenes = geneScience.mixGenes(matron.genes, sire.genes, matron.cooldownEndBlock - 1);
@@ -633,7 +633,7 @@ contract ClockAuctionBase {
     }
     ERC721 public nonFungibleContract;
     uint256 public ownerCut;
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
     event AuctionCreated(
       address seller,
       uint256 tokenId,
@@ -658,7 +658,7 @@ contract ClockAuctionBase {
     }
 
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
         tokenIdToAuction[_tokenId] = _auction;
         AuctionCreated(
             _auction.seller,
@@ -683,10 +683,10 @@ contract ClockAuctionBase {
         Auction storage auction = tokenIdToAuction[_tokenId];
         require(_isOnAuction(auction));
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
         address seller = auction.seller;
         _removeAuction(_tokenId);
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
             seller.transfer(sellerProceeds);
@@ -702,7 +702,7 @@ contract ClockAuctionBase {
     }
 
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     function _currentPrice(Auction storage _auction)
@@ -711,7 +711,7 @@ contract ClockAuctionBase {
         returns (uint256)
     {
         uint256 secondsPassed = 0;
-        if (now &gt; _auction.startedAt) {
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
         return _computeCurrentPrice(
@@ -732,7 +732,7 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
@@ -779,7 +779,7 @@ contract Pausable is Ownable {
 
 contract ClockAuction is Pausable, ClockAuctionBase {
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -975,7 +975,7 @@ contract SaleClockAuction is ClockAuction {
 
     function averageGen0SalePrice() external view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             sum += lastGen0SalePrices[i];
         }
         return sum / 5;
@@ -1051,7 +1051,7 @@ contract NinjaAuction is NinjaBreeding {
         require(isReadyToBreed(_matronId));
         require(_canBreedWithViaAuction(_matronId, _sireId));
         uint256 currentPrice = siringAuction.getCurrentPrice(_sireId);
-        require(msg.value &gt;= currentPrice + autoBirthFee);
+        require(msg.value >= currentPrice + autoBirthFee);
         siringAuction.bid.value(msg.value - autoBirthFee)(_sireId);
         _breedWith(uint32(_matronId), uint32(_sireId));
     }
@@ -1076,14 +1076,14 @@ contract NinjaMinting is NinjaAuction {
         if (ninjaOwner == address(0)) {
             ninjaOwner = cooAddress;
         }
-        require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+        require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
         promoCreatedCount++;
         _createNinja(0, 0, 0, _genes, ninjaOwner);
     }
 
     function createGen0Auction(uint256 _genes) external onlyCOO {
-        require(gen0CreatedCount &lt; GEN0_CREATION_LIMIT);
+        require(gen0CreatedCount < GEN0_CREATION_LIMIT);
 
         uint256 ninjaId = _createNinja(0, 0, 0, _genes, address(this));
         _approve(ninjaId, saleAuction);
@@ -1103,7 +1103,7 @@ contract NinjaMinting is NinjaAuction {
         uint256 avePrice = saleAuction.averageGen0SalePrice();
         require(avePrice == uint256(uint128(avePrice)));
         uint256 nextPrice = avePrice + (avePrice / 2);
-        if (nextPrice &lt; GEN0_STARTING_PRICE) {
+        if (nextPrice < GEN0_STARTING_PRICE) {
             nextPrice = GEN0_STARTING_PRICE;
         }
         return nextPrice;
@@ -1152,7 +1152,7 @@ contract NinjaCore is NinjaMinting {
         require(ninjaIndexToOwner[_id] != address(0));
         Ninja storage ninja = ninjas[_id];
         isGestating = (ninja.siringWithId != 0);
-        isReady = (ninja.cooldownEndBlock &lt;= block.number);
+        isReady = (ninja.cooldownEndBlock <= block.number);
         cooldownIndex = uint256(ninja.cooldownIndex);
         nextActionAt = uint256(ninja.cooldownEndBlock);
         siringWithId = uint256(ninja.siringWithId);
@@ -1174,7 +1174,7 @@ contract NinjaCore is NinjaMinting {
     function withdrawBalance() external onlyCFO {
         uint256 balance = this.balance;
         uint256 subtractFees = (pregnantNinjas + 1) * autoBirthFee;
-        if (balance &gt; subtractFees) {
+        if (balance > subtractFees) {
             cfoAddress.send(balance - subtractFees);
         }
     }

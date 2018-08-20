@@ -9,12 +9,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal pure returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal pure returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -35,7 +35,7 @@ contract SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public ethFundDeposit;
@@ -123,7 +123,7 @@ contract controllable is Ownable {
     event DeleteFromBlacklist(address _addr);
 
     // controllable variable
-    mapping (address =&gt; bool) internal blacklist; // black list
+    mapping (address => bool) internal blacklist; // black list
 
     /**
      * @dev called by the owner to AddToBlacklist
@@ -157,19 +157,19 @@ contract controllable is Ownable {
 contract Lockable is Ownable, SafeMath {
 
     // parameters
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) totalbalances;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) totalbalances;
     uint256 public totalreleaseblances;
 
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) userbalances; // address ， order ，balances amount
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) userRelease; // address ， order ，release amount
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) isRelease; // already release period
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) userChargeTime; // address ， order ，charge time
-    mapping (address =&gt; uint256) userChargeCount; // user total charge times
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) lastCliff; // address ， order ，last cliff time
+    mapping (address => mapping (uint256 => uint256)) userbalances; // address ， order ，balances amount
+    mapping (address => mapping (uint256 => uint256)) userRelease; // address ， order ，release amount
+    mapping (address => mapping (uint256 => uint256)) isRelease; // already release period
+    mapping (address => mapping (uint256 => uint256)) userChargeTime; // address ， order ，charge time
+    mapping (address => uint256) userChargeCount; // user total charge times
+    mapping (address => mapping (uint256 => uint256)) lastCliff; // address ， order ，last cliff time
 
     // userbalances each time segmentation
-    mapping (address =&gt; mapping (uint256 =&gt; mapping (uint256 =&gt; uint256))) userbalancesSegmentation; // address ， order ，balances amount
+    mapping (address => mapping (uint256 => mapping (uint256 => uint256))) userbalancesSegmentation; // address ， order ，balances amount
 
     uint256 internal duration = 30*15 days;
     uint256 internal cliff = 90 days;
@@ -206,7 +206,7 @@ contract Lockable is Ownable, SafeMath {
 
 // init segmentation
     function initsegmentation(address _addr,uint256 _times,uint256 _value) internal {
-        for (uint8 i = 1 ; i &lt;= 5 ; i++ ) {
+        for (uint8 i = 1 ; i <= 5 ; i++ ) {
             userbalancesSegmentation[_addr][_times][i] = safeDiv(_value,5);
         }
     }
@@ -214,13 +214,13 @@ contract Lockable is Ownable, SafeMath {
 // calculate period
     function CalcPeriod(address _addr, uint256 _times) public view returns (uint256) {
         uint256 userstart = userChargeTime[_addr][_times];
-        if (ShowTime() &gt;= safeAdd(userstart,duration)) {
+        if (ShowTime() >= safeAdd(userstart,duration)) {
             return 5;
         }
         uint256 timedifference = safeSubtract(ShowTime(),userstart);
         uint256 period = 0;
-        for (uint8 i = 1 ; i &lt;= 5 ; i++ ) {
-            if (timedifference &gt;= cliff) {
+        for (uint8 i = 1 ; i <= 5 ; i++ ) {
+            if (timedifference >= cliff) {
                 timedifference = safeSubtract(timedifference,cliff);
                 period += 1;
             }
@@ -232,9 +232,9 @@ contract Lockable is Ownable, SafeMath {
     function ReleasableAmount(address _addr, uint256 _times) public view returns (uint256) {
         require(_addr != address(0));
         uint256 period = CalcPeriod(_addr,_times);
-        if (safeSubtract(period,isRelease[_addr][_times]) &gt; 0){
+        if (safeSubtract(period,isRelease[_addr][_times]) > 0){
             uint256 amount = 0;
-            for (uint256 i = safeAdd(isRelease[_addr][_times],1) ; i &lt;= period ; i++ ) {
+            for (uint256 i = safeAdd(isRelease[_addr][_times],1) ; i <= period ; i++ ) {
                 amount = safeAdd(amount,userbalancesSegmentation[_addr][_times][i]);
             }
             return amount;
@@ -246,7 +246,7 @@ contract Lockable is Ownable, SafeMath {
 // release() release the current releasable amount
     function release(address _addr, uint256 _times) external onlySelfOrOwner(_addr) {
         uint256 amount = ReleasableAmount(_addr,_times);
-        require(amount &gt; 0);
+        require(amount > 0);
         userRelease[_addr][_times] = safeAdd(userRelease[_addr][_times],amount);
         balances[_addr] = safeAdd(balances[_addr],amount);
         lastCliff[_addr][_times] = ShowTime();
@@ -306,7 +306,7 @@ contract Token {
 contract StandardToken is controllable, Pausable, Token, Lockable {
 
     function transfer(address _to, uint256 _value) public whenNotPaused() returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; !isBlacklist(msg.sender)) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to] && !isBlacklist(msg.sender)) {
             // sender
             balances[msg.sender] = safeSubtract(balances[msg.sender],_value);
             totalbalances[msg.sender] = safeSubtract(totalbalances[msg.sender],_value);
@@ -322,7 +322,7 @@ contract StandardToken is controllable, Pausable, Token, Lockable {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused() returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; !isBlacklist(msg.sender)) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to] && !isBlacklist(msg.sender)) {
             // _to
             balances[_to] = safeAdd(balances[_to],_value);
             totalbalances[_to] = safeAdd(totalbalances[_to],_value);
@@ -353,8 +353,8 @@ contract StandardToken is controllable, Pausable, Token, Lockable {
         return allowed[_owner][_spender];
     }
 
-    // mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    // mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract BugXToken is StandardToken {
@@ -364,10 +364,10 @@ contract BugXToken is StandardToken {
     */
 
     // metadata
-    string  public constant name = &quot;BUGX2.0&quot;;
-    string  public constant symbol = &quot;BUGX&quot;;
+    string  public constant name = "BUGX2.0";
+    string  public constant symbol = "BUGX";
     uint256 public constant decimals = 18;
-    string  public version = &quot;2.0&quot;;
+    string  public version = "2.0";
 
     // contracts
     address public newContractAddr;         // the new contract for BUGX token updates;
@@ -419,7 +419,7 @@ contract BugXToken is StandardToken {
 
         currentSupply = formatDecimals(_currentSupply);
         totalSupply = formatDecimals(1500000000);    //1,500,000,000 total supply
-        require(currentSupply &lt;= totalSupply);
+        require(currentSupply <= totalSupply);
         balances[ethFundDeposit] = currentSupply;
         totalbalances[ethFundDeposit] = currentSupply;
     }
@@ -428,20 +428,20 @@ contract BugXToken is StandardToken {
     *  Modify currentSupply functions
     */
 
-    /// @dev increase the token&#39;s supply
+    /// @dev increase the token's supply
     function increaseSupply (uint256 _tokens) onlyOwner external {
         uint256 _value = formatDecimals(_tokens);
-        require (_value + currentSupply &lt;= totalSupply);
+        require (_value + currentSupply <= totalSupply);
         currentSupply = safeAdd(currentSupply, _value);
         tokenadd(ethFundDeposit,_value);
         emit IncreaseSupply(_value);
     }
 
-    /// @dev decrease the token&#39;s supply
+    /// @dev decrease the token's supply
     function decreaseSupply (uint256 _tokens) onlyOwner external {
         uint256 _value = formatDecimals(_tokens);
         uint256 tokenCirculation = safeAdd(tokenRaised,tokenIssued);
-        require (safeAdd(_value,tokenCirculation) &lt;= currentSupply);
+        require (safeAdd(_value,tokenCirculation) <= currentSupply);
         currentSupply = safeSubtract(currentSupply, _value);
         tokensub(ethFundDeposit,_value);
         emit DecreaseSupply(_value);
@@ -453,16 +453,16 @@ contract BugXToken is StandardToken {
 
     modifier whenFunding() {
         require (isFunding);
-        require (block.number &gt;= fundingStartBlock);
-        require (block.number &lt;= fundingStopBlock);
+        require (block.number >= fundingStartBlock);
+        require (block.number <= fundingStopBlock);
         _;
     }
 
     /// @dev turn on the funding state
     function startFunding (uint256 _fundingStartBlock, uint256 _fundingStopBlock) onlyOwner external {
         require (!isFunding);
-        require (_fundingStartBlock &lt; _fundingStopBlock);
-        require (block.number &lt; _fundingStartBlock);
+        require (_fundingStartBlock < _fundingStopBlock);
+        require (block.number < _fundingStartBlock);
 
         fundingStartBlock = _fundingStartBlock;
         fundingStopBlock = _fundingStopBlock;
@@ -513,7 +513,7 @@ contract BugXToken is StandardToken {
     /// token raised
     function tokenRaise (address _addr,uint256 _value) internal {
         uint256 tokenCirculation = safeAdd(tokenRaised,tokenIssued);
-        require (safeAdd(_value,tokenCirculation) &lt;= currentSupply);
+        require (safeAdd(_value,tokenCirculation) <= currentSupply);
         tokenRaised = safeAdd(tokenRaised, _value);
         emit RaiseToken(_addr, _value);
     }
@@ -521,14 +521,14 @@ contract BugXToken is StandardToken {
     /// issue token 1 : token issued
     function tokenIssue (address _addr,uint256 _value) internal {
         uint256 tokenCirculation = safeAdd(tokenRaised,tokenIssued);
-        require (safeAdd(_value,tokenCirculation) &lt;= currentSupply);
+        require (safeAdd(_value,tokenCirculation) <= currentSupply);
         tokenIssued = safeAdd(tokenIssued, _value);
         emit IssueToken(_addr, _value);
     }
 
     /// issue token 2 : issue token take back
     function tokenTakeback (address _addr,uint256 _value) internal {
-        require (tokenIssued &gt;= _value);
+        require (tokenIssued >= _value);
         tokenIssued = safeSubtract(tokenIssued, _value);
         emit TakebackToken(_addr, _value);
     }
@@ -575,7 +575,7 @@ contract BugXToken is StandardToken {
     /// add the segmentation
     function addSegmentation(address _addr, uint256 _times,uint256 _period,uint256 _tokens) onlyOwner external returns (bool) {
         uint256 amount = userbalancesSegmentation[_addr][_times][_period];
-        if (amount != 0 &amp;&amp; _tokens != 0){
+        if (amount != 0 && _tokens != 0){
             uint256 _value = formatDecimals(_tokens);
             userbalancesSegmentation[_addr][_times][_period] = safeAdd(amount,_value);
             userbalances[_addr][_times] = safeAdd(userbalances[_addr][_times], _value);
@@ -591,7 +591,7 @@ contract BugXToken is StandardToken {
     /// sub the segmentation
     function subSegmentation(address _addr, uint256 _times,uint256 _period,uint256 _tokens) onlyOwner external returns (bool) {
         uint256 amount = userbalancesSegmentation[_addr][_times][_period];
-        if (amount != 0 &amp;&amp; _tokens != 0){
+        if (amount != 0 && _tokens != 0){
             uint256 _value = formatDecimals(_tokens);
             userbalancesSegmentation[_addr][_times][_period] = safeSubtract(amount,_value);
             userbalances[_addr][_times] = safeSubtract(userbalances[_addr][_times], _value);
@@ -608,10 +608,10 @@ contract BugXToken is StandardToken {
     *  tokenExchangeRate functions
     */
 
-    /// @dev set the token&#39;s tokenExchangeRate,
+    /// @dev set the token's tokenExchangeRate,
     function setTokenExchangeRate(uint256 _RateOne,uint256 _RateTwo,uint256 _RateThree) onlyOwner external {
-        require (_RateOne != 0 &amp;&amp; _RateTwo != 0 &amp;&amp; _RateThree != 0);
-        require (_RateOne != tokenExchangeRate &amp;&amp; _RateTwo != tokenExchangeRateTwo &amp;&amp; _RateThree != tokenExchangeRateThree);
+        require (_RateOne != 0 && _RateTwo != 0 && _RateThree != 0);
+        require (_RateOne != tokenExchangeRate && _RateTwo != tokenExchangeRateTwo && _RateThree != tokenExchangeRateThree);
 
         tokenExchangeRate = _RateOne;
         tokenExchangeRateTwo = _RateTwo;
@@ -620,15 +620,15 @@ contract BugXToken is StandardToken {
 
     /// calculate the tokenExchangeRate
     function computeTokenAmount(uint256 _eth) internal view returns (uint256 tokens) {
-        if(_eth &gt; 0 &amp;&amp; _eth &lt; 100 ether){
+        if(_eth > 0 && _eth < 100 ether){
             tokens = safeMult(_eth, tokenExchangeRate);
         }
         
-        if (_eth &gt;= 100 ether &amp;&amp; _eth &lt; 500 ether){
+        if (_eth >= 100 ether && _eth < 500 ether){
             tokens = safeMult(_eth, tokenExchangeRateTwo);
         }
 
-        if (_eth &gt;= 500 ether ){
+        if (_eth >= 500 ether ){
             tokens = safeMult(_eth, tokenExchangeRateThree);
         }
     }

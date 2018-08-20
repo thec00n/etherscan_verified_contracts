@@ -9,16 +9,16 @@ library StringUtils {
     bytes memory a = bytes(_a);
     bytes memory b = bytes(_b);
     uint minLength = a.length;
-    if (b.length &lt; minLength) minLength = b.length;
+    if (b.length < minLength) minLength = b.length;
     //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
-    for (uint i = 0; i &lt; minLength; i ++)
-      if (a[i] &lt; b[i])
+    for (uint i = 0; i < minLength; i ++)
+      if (a[i] < b[i])
         return -1;
-      else if (a[i] &gt; b[i])
+      else if (a[i] > b[i])
         return 1;
-    if (a.length &lt; b.length)
+    if (a.length < b.length)
       return -1;
-    else if (a.length &gt; b.length)
+    else if (a.length > b.length)
       return 1;
     else
       return 0;
@@ -31,16 +31,16 @@ library StringUtils {
   function indexOf(string _haystack, string _needle) public pure returns (int) {
    	bytes memory h = bytes(_haystack);
   	bytes memory n = bytes(_needle);
-   	if(h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) 
+   	if(h.length < 1 || n.length < 1 || (n.length > h.length)) 
       return -1;
-    else if(h.length &gt; (2**128 -1)) // since we have to be able to return -1 (if the char isn&#39;t found or input error), this function must return an &quot;int&quot; type with a max length of (2^128 - 1)
+    else if(h.length > (2**128 -1)) // since we have to be able to return -1 (if the char isn't found or input error), this function must return an "int" type with a max length of (2^128 - 1)
       return -1;									
     else {
       uint subindex = 0;
-      for (uint i = 0; i &lt; h.length; i ++) {
+      for (uint i = 0; i < h.length; i ++) {
         if (h[i] == n[0]) { // found the first char of b
     	  subindex = 1;
-    	  while(subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex]) {// search until the chars don&#39;t match or until we reach the end of a or b
+    	  while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex]) {// search until the chars don't match or until we reach the end of a or b
     		subindex++;
     	  }	
     	  if(subindex == n.length) 

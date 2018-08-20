@@ -1,6 +1,6 @@
 pragma solidity ^0.4.20;
 
-/**&#39;&#39;&#39;&#39;&#39;&#39;
+/**''''''
  *  ====    ;
  * @title SafeMath
  * @dev Math operations with safety checks that throw on error
@@ -18,13 +18,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -32,7 +32,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,7 +64,7 @@ contract Ownable {
 
 contract POH is Ownable {
 
-  string public constant name = &quot;POH Lottery&quot;;
+  string public constant name = "POH Lottery";
   uint public playersRequired = 125000;
   uint256 public priceOfTicket = 1e15 wei;
 
@@ -90,9 +90,9 @@ contract POH is Ownable {
     uint256 endTicket;
   }
 
-  mapping (address =&gt; tickets[])  ticketsMap;
-  mapping(address =&gt; address) public referral;
-  mapping (address =&gt; uint256) public contributions;
+  mapping (address => tickets[])  ticketsMap;
+  mapping(address => address) public referral;
+  mapping (address => uint256) public contributions;
   function updateFileds(uint256 _playersRequired, uint256 _priceOfTicket) onlyOwner{
       playersRequired = _playersRequired;
       priceOfTicket = _priceOfTicket;
@@ -100,16 +100,16 @@ contract POH is Ownable {
 
   function executeLottery() { 
       
-        if (playersSignedUp &gt; playersRequired-1) {
+        if (playersSignedUp > playersRequired-1) {
           randomNumber = uint(blockhash(block.number-1))%lastTicketNumber + 1;
           address  winner;
           bool hasWon;
-          for (uint8 i = 0; i &lt; playersSignedUp; i++) {
+          for (uint8 i = 0; i < playersSignedUp; i++) {
             address player = players[i];
-            for (uint j = 0; j &lt; ticketsMap[player].length; j++) {
+            for (uint j = 0; j < ticketsMap[player].length; j++) {
               uint256 start = ticketsMap[player][j].startTicket;
               uint256 end = ticketsMap[player][j].endTicket;
-              if (randomNumber &gt;= start &amp;&amp; randomNumber &lt; end) {
+              if (randomNumber >= start && randomNumber < end) {
                 winner = player;
                 hasWon = true;
                 break;
@@ -117,9 +117,9 @@ contract POH is Ownable {
             }
             if(hasWon) break;
           }
-          require(winner!=address(0) &amp;&amp; hasWon);
+          require(winner!=address(0) && hasWon);
 
-          for (uint8 k = 0; k &lt; playersSignedUp; k++) {
+          for (uint8 k = 0; k < playersSignedUp; k++) {
             delete ticketsMap[players[k]];
             delete contributions[players[k]];
           }
@@ -151,7 +151,7 @@ contract POH is Ownable {
   function getPlayers() constant returns (address[], uint256[]) {
     address[] memory addrs = new address[](playersSignedUp);
     uint256[] memory _contributions = new uint256[](playersSignedUp);
-    for (uint i = 0; i &lt; playersSignedUp; i++) {
+    for (uint i = 0; i < playersSignedUp; i++) {
       addrs[i] = players[i];
       _contributions[i] = contributions[players[i]];
     }
@@ -163,7 +163,7 @@ contract POH is Ownable {
     uint length = tks.length;
     uint256[] memory startTickets = new uint256[](length);
     uint256[] memory endTickets = new uint256[](length);
-    for (uint i = 0; i &lt; length; i++) {
+    for (uint i = 0; i < length; i++) {
       startTickets[i] = tks[i].startTicket;
       endTickets[i] = tks[i].endTicket;
     }
@@ -172,10 +172,10 @@ contract POH is Ownable {
 
   function join()  payable {
     uint256 weiAmount = msg.value;
-    require(weiAmount &gt;= 1e16);
+    require(weiAmount >= 1e16);
 
     bool isSenderAdded = false;
-    for (uint8 i = 0; i &lt; playersSignedUp; i++) {
+    for (uint8 i = 0; i < playersSignedUp; i++) {
       if (players[i] == msg.sender) {
         isSenderAdded = true;
         break;
@@ -197,17 +197,17 @@ contract POH is Ownable {
 
     newContribution(msg.sender, weiAmount);
 
-    if(playersSignedUp &gt; playersRequired) {
+    if(playersSignedUp > playersRequired) {
       executeLottery();
     }
   }
   
     function joinwithreferral(address refer)  payable {
     uint256 weiAmount = msg.value;
-    require(weiAmount &gt;= 1e16);
+    require(weiAmount >= 1e16);
 
     bool isSenderAdded = false;
-    for (uint8 i = 0; i &lt; playersSignedUp; i++) {
+    for (uint8 i = 0; i < playersSignedUp; i++) {
       if (players[i] == msg.sender) {
         isSenderAdded = true;
         break;
@@ -230,7 +230,7 @@ contract POH is Ownable {
 
     newContribution(msg.sender, weiAmount);
 
-    if(playersSignedUp &gt; playersRequired) {
+    if(playersSignedUp > playersRequired) {
       executeLottery();
     }
   }

@@ -9,13 +9,13 @@ contract Club {
   }
 
   // Manage members.
-  mapping(address =&gt; Member) public members;
+  mapping(address => Member) public members;
 }
 
 // Last person to press the button before time runs out, wins the pot.
 // Button presses cost $.50
 // You must pay .5% of the total pot to press the button the first time. (this amount is donated to the reddithereum community).
-// After the first button press, a 6 hour countdown will begin, and you won&#39;t be able to press the button for 12 hours.
+// After the first button press, a 6 hour countdown will begin, and you won't be able to press the button for 12 hours.
 // Each time you press the button, the countdown will decrease by 10%, and cooldown will increase by 10%.
 // The pot starts at $100.
 contract Button {
@@ -38,7 +38,7 @@ contract Button {
     uint64 cooloffEnd;
   }
 
-  mapping (address =&gt; Presser) public pressers;
+  mapping (address => Presser) public pressers;
 
   function Button(
     uint64 _countdown, 
@@ -60,11 +60,11 @@ contract Button {
   }
 
   function press() public payable {
-    require(block.number &lt;= endBlock);
+    require(block.number <= endBlock);
 
     uint256 change = msg.value-pressFee;
     Presser storage p = pressers[msg.sender];
-    require(p.cooloffEnd &lt; block.number);
+    require(p.cooloffEnd < block.number);
 
     if (p.numPresses == 0) {
       // balance - value will never be negative.
@@ -72,12 +72,12 @@ contract Button {
       change -= npf;
       address(club).transfer(npf);
     }
-    // Breaks when pressFee+presserFee &gt; 2^256
-    require(change &lt;= msg.value);
+    // Breaks when pressFee+presserFee > 2^256
+    require(change <= msg.value);
 
     lastPresser = msg.sender;
     uint64 finalCountdown = countdown - (p.numPresses*countdownDecrement);
-    if (finalCountdown &lt; 10 || finalCountdown &gt; countdown) {
+    if (finalCountdown < 10 || finalCountdown > countdown) {
       finalCountdown = 10;
     }
     endBlock = uint64(block.number + finalCountdown);
@@ -85,7 +85,7 @@ contract Button {
     p.numPresses++;
     p.cooloffEnd = uint64(block.number + (p.numPresses*cooloffIncrement));
 
-    if (change &gt; 0) {
+    if (change > 0) {
       msg.sender.transfer(change);
     }
 
@@ -93,7 +93,7 @@ contract Button {
   }
 
   function close() public {
-    require(block.number &gt; endBlock);
+    require(block.number > endBlock);
     require(lastPresser == msg.sender);
     Winner(msg.sender, address(this).balance);
     selfdestruct(msg.sender);
@@ -108,7 +108,7 @@ contract Button {
     return _isMember();
   }
 
-  // Caller must assure that _balance &lt; max_uint128.
+  // Caller must assure that _balance < max_uint128.
   function _newPresserFee(uint256 _balance) private view returns (uint128) {
     if (_isMember()){
       return 0;

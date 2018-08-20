@@ -39,14 +39,14 @@ contract CharlyLifeLog {
   uint public totalDonated = 0;
   uint public totalWithdrawn = 0;
 
-  // people in the life of ([0] == &#39;self&#39;)
+  // people in the life of ([0] == 'self')
   Person[] public people;
 
   // donations received
-  mapping(address =&gt; uint) public donations;
+  mapping(address => uint) public donations;
 
   // whitelisted modifier accounts
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   // modifier to allow only the whitelisted addresses
   modifier isOnWhitelist {
@@ -55,8 +55,8 @@ contract CharlyLifeLog {
       throw;
     }
 
-    // if any value attached, don&#39;t accept it
-    if (msg.value &gt; 0) {
+    // if any value attached, don't accept it
+    if (msg.value > 0) {
       throw;
     }
 
@@ -70,10 +70,10 @@ contract CharlyLifeLog {
     whitelist[msg.sender] = true;
 
     // add the first person
-    personAdd(name, dateOfBirth, 0, &#39;self&#39;);
+    personAdd(name, dateOfBirth, 0, 'self');
 
     // any donations?
-    if (msg.value &gt; 0) {
+    if (msg.value > 0) {
       donate();
     }
   }
@@ -117,51 +117,51 @@ contract CharlyLifeLog {
     // activate/deactivate
     if (active) {
       // create the event
-      LogPersonUpdate(msg.sender, now, index, &#39;active&#39;);
+      LogPersonUpdate(msg.sender, now, index, 'active');
 
       // make it so
       people[index].activatedAt = now;
       people[index].deactivatedAt = 0;
     } else {
       // create the event
-      LogPersonUpdate(msg.sender, now, index, &#39;inactive&#39;);
+      LogPersonUpdate(msg.sender, now, index, 'inactive');
 
       // make it so
       people[index].deactivatedAt = now;
     }
   }
 
-  // update a person&#39;s name
+  // update a person's name
   function personUpdateName(uint index, string name) public isOnWhitelist {
     // create the event
-    LogPersonUpdate(msg.sender, now, index, &#39;name&#39;);
+    LogPersonUpdate(msg.sender, now, index, 'name');
 
     // update
     people[index].name = name;
   }
 
-  // update a person&#39;s relation
+  // update a person's relation
   function personUpdateRelation(uint index, string relation) public isOnWhitelist {
     // create the event
-    LogPersonUpdate(msg.sender, now, index, &#39;relation&#39;);
+    LogPersonUpdate(msg.sender, now, index, 'relation');
 
     // update
     people[index].relation = relation;
   }
 
-  // update a person&#39;s DOB
+  // update a person's DOB
   function personUpdateDOB(uint index, int dateOfBirth) public isOnWhitelist {
     // create the event
-    LogPersonUpdate(msg.sender, now, index, &#39;dateOfBirth&#39;);
+    LogPersonUpdate(msg.sender, now, index, 'dateOfBirth');
 
     // update
     people[index].dateOfBirth = dateOfBirth;
   }
 
-  // update a person&#39;s DOD
+  // update a person's DOD
   function personUpdateDOD(uint index, int dateOfDeath) public isOnWhitelist {
     // create the event
-    LogPersonUpdate(msg.sender, now, index, &#39;dateOfDeath&#39;);
+    LogPersonUpdate(msg.sender, now, index, 'dateOfDeath');
 
     // update
     people[index].dateOfDeath = dateOfDeath;
@@ -196,14 +196,14 @@ contract CharlyLifeLog {
     uint max = this.balance / MAX_WITHDRAW_DIV;
 
     // see that we are in range and the timing matches
-    if (amount &gt; max || now &lt; nextWithdrawal) {
+    if (amount > max || now < nextWithdrawal) {
       throw;
     }
 
     // update the event log with the action
     LogWithdrawal(msg.sender, now, amount);
 
-    // set the next withdrawal date/time &amp; totals
+    // set the next withdrawal date/time & totals
     nextWithdrawal = now + WITHDRAW_INTERVAL;
     totalWithdrawn += amount;
 

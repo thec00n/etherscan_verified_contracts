@@ -27,7 +27,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -78,7 +78,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -236,20 +236,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -328,8 +328,8 @@ contract PausableToken is StandardToken, Pausable {
  **/
 contract CryptoTradeCoin is PausableToken, MintableToken {
 
-  string public constant name = &quot;CryptoTradeCoin&quot;;
-  string public constant symbol = &quot;CTC&quot;;
+  string public constant name = "CryptoTradeCoin";
+  string public constant symbol = "CTC";
   uint8 public constant decimals = 18;
 }
 /**
@@ -392,15 +392,15 @@ function CryptoTradeCrowdsale () public {
 	}
 
 modifier CrowdsaleIsOn() {
-	require(now &gt;= startRound &amp;&amp; now &lt;= startRound + periodRound * 1 days);
+	require(now >= startRound && now <= startRound + periodRound * 1 days);
 	_;
 	}
 modifier TotalCapitalization() {
-	require(multisigWallet.balance + altCapitalization &lt;= totalCapitalization);
+	require(multisigWallet.balance + altCapitalization <= totalCapitalization);
 	_;
 	}
 modifier RoundCapitalization() {
-	require(multisigWallet.balance + altCapitalization &lt;= capitalization);
+	require(multisigWallet.balance + altCapitalization <= capitalization);
 	_;
 	}
 
@@ -458,43 +458,43 @@ function setDiscountValueOff () public onlyOwner {
 	}
 	
 function setTargetDiscountValue1  (uint newTargetDiscountValue1)  public onlyOwner {
-	require(newTargetDiscountValue1 &gt; 0);
+	require(newTargetDiscountValue1 > 0);
 	targetDiscountValue1 = newTargetDiscountValue1;
 	}
 function setTargetDiscountValue2  (uint newTargetDiscountValue2)  public onlyOwner {
-	require(newTargetDiscountValue2 &gt; 0);
+	require(newTargetDiscountValue2 > 0);
 	targetDiscountValue2 = newTargetDiscountValue2;
 	}
 function setTargetDiscountValue3  (uint newTargetDiscountValue3)  public onlyOwner {
-	require(newTargetDiscountValue3 &gt; 0);
+	require(newTargetDiscountValue3 > 0);
 	targetDiscountValue3 = newTargetDiscountValue3;
 	}
 function setTargetDiscountValue4  (uint newTargetDiscountValue4)  public onlyOwner {
-	require(newTargetDiscountValue4 &gt; 0);
+	require(newTargetDiscountValue4 > 0);
 	targetDiscountValue4 = newTargetDiscountValue4;
 	}
 function setTargetDiscountValue5  (uint newTargetDiscountValue5)  public onlyOwner {
-	require(newTargetDiscountValue5 &gt; 0);
+	require(newTargetDiscountValue5 > 0);
 	targetDiscountValue5 = newTargetDiscountValue5;
 	}
 function setTargetDiscountValue6  (uint newTargetDiscountValue6)  public onlyOwner {
-	require(newTargetDiscountValue6 &gt; 0);
+	require(newTargetDiscountValue6 > 0);
 	targetDiscountValue6 = newTargetDiscountValue6;
 	}
 function setTargetDiscountValue7  (uint newTargetDiscountValue7)  public onlyOwner {
-	require(newTargetDiscountValue7 &gt; 0);
+	require(newTargetDiscountValue7 > 0);
 	targetDiscountValue7 = newTargetDiscountValue7;
 	}
 function setTargetDiscountValue8  (uint newTargetDiscountValue8)  public onlyOwner {
-	require(newTargetDiscountValue8 &gt; 0);
+	require(newTargetDiscountValue8 > 0);
 	targetDiscountValue8 = newTargetDiscountValue8;
 	}
 function setTargetDiscountValue9  (uint newTargetDiscountValue9)  public onlyOwner {
-	require(newTargetDiscountValue9 &gt; 0);
+	require(newTargetDiscountValue9 > 0);
 	targetDiscountValue9 = newTargetDiscountValue9;
 	}
 function setTargetDiscountValue10 (uint newTargetDiscountValue10) public onlyOwner {
-	require(newTargetDiscountValue10 &gt; 0);
+	require(newTargetDiscountValue10 > 0);
 	targetDiscountValue10 = newTargetDiscountValue10;
 	}
 	
@@ -503,9 +503,9 @@ function () external payable {
 	}
 
 function createTokens (address recipient, uint etherDonat) internal CrowdsaleIsOn RoundCapitalization TotalCapitalization {
-	require(etherDonat &gt; 0); // etherDonat in wei
+	require(etherDonat > 0); // etherDonat in wei
 	require(recipient != 0X0);
-	require(price &gt; 0);
+	require(price > 0);
 	multisigWallet.transfer(etherDonat);
 	uint discountValue = discountValueSolution (etherDonat);
 	uint bonusDiscountValue = (etherDonat.mul(price).div(1 ether)).mul(discountValue).div(100);
@@ -515,9 +515,9 @@ function createTokens (address recipient, uint etherDonat) internal CrowdsaleIsO
 	}
 
 function customCreateTokens(address recipient, uint etherDonat) public CrowdsaleIsOn RoundCapitalization TotalCapitalization onlyOwner {
-	require(etherDonat &gt; 0); // etherDonat in wei
+	require(etherDonat > 0); // etherDonat in wei
 	require(recipient != 0X0);
-	require(price &gt; 0);
+	require(price > 0);
 	uint discountValue = discountValueSolution (etherDonat);
 	uint bonusDiscountValue = (etherDonat.mul(price).div(1 ether)).mul(discountValue).div(100);
 	uint bonusDiscountTime  = (etherDonat.mul(price).div(1 ether)).mul(discountTime).div(100);
@@ -548,25 +548,25 @@ function setOwnerToken (address newOwnerToken) public onlyOwner {
 function coefficientSolution (uint _donat) internal constant returns (uint) {  
 	require(isDiscountValue);
  	uint _discountValue;
-	if (_donat &lt; targetDiscountValue1) { 
+	if (_donat < targetDiscountValue1) { 
 		return _discountValue = 0;
-	} else if (_donat &gt;= targetDiscountValue1 &amp;&amp; _donat &lt; targetDiscountValue2) { 
+	} else if (_donat >= targetDiscountValue1 && _donat < targetDiscountValue2) { 
 		return _discountValue = 2;
-	} else if (_donat &gt;= targetDiscountValue2 &amp;&amp; _donat &lt; targetDiscountValue3) { 
+	} else if (_donat >= targetDiscountValue2 && _donat < targetDiscountValue3) { 
 		return _discountValue = 4;
-	} else if (_donat &gt;= targetDiscountValue3 &amp;&amp; _donat &lt; targetDiscountValue4) { 
+	} else if (_donat >= targetDiscountValue3 && _donat < targetDiscountValue4) { 
 		return _discountValue = 6;
-	} else if (_donat &gt;= targetDiscountValue4 &amp;&amp; _donat &lt; targetDiscountValue5) { 
+	} else if (_donat >= targetDiscountValue4 && _donat < targetDiscountValue5) { 
 		return _discountValue = 8;
-	} else if (_donat &gt;= targetDiscountValue5 &amp;&amp; _donat &lt; targetDiscountValue6) { 
+	} else if (_donat >= targetDiscountValue5 && _donat < targetDiscountValue6) { 
 		return _discountValue = 10;
-	} else if (_donat &gt;= targetDiscountValue6 &amp;&amp; _donat &lt; targetDiscountValue7) { 
+	} else if (_donat >= targetDiscountValue6 && _donat < targetDiscountValue7) { 
 		return _discountValue = 12;
-	} else if (_donat &gt;= targetDiscountValue7 &amp;&amp; _donat &lt; targetDiscountValue8) { 
+	} else if (_donat >= targetDiscountValue7 && _donat < targetDiscountValue8) { 
 		return _discountValue = 14;
-	} else if (_donat &gt;= targetDiscountValue8 &amp;&amp; _donat &lt; targetDiscountValue9) { 
+	} else if (_donat >= targetDiscountValue8 && _donat < targetDiscountValue9) { 
 		return _discountValue = 16;
-	} else if (_donat &gt;= targetDiscountValue9 &amp;&amp; _donat &lt; targetDiscountValue10){ 
+	} else if (_donat >= targetDiscountValue9 && _donat < targetDiscountValue10){ 
 		return _discountValue = 18;
 	} else {   
 		return _discountValue = 20;

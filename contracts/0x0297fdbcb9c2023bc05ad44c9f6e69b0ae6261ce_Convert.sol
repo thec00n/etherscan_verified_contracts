@@ -6,7 +6,7 @@ contract Convert {
     address public fromContractAddr;
     address public toContractAddr;
     
-    mapping (uint =&gt; bool) public isConvert;
+    mapping (uint => bool) public isConvert;
     
     modifier onlyOwner {
         require(msg.sender == owner);

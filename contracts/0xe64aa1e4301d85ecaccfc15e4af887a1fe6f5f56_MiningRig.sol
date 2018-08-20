@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 contract MiningRig {
     // 警告
-    string public warning = &quot;請各位要有耐心等候交易完成喔&quot;;
+    string public warning = "請各位要有耐心等候交易完成喔";
     
     // 合約部署者
     address public owner = 0x0;
@@ -17,10 +17,10 @@ contract MiningRig {
     uint public totalWithdrew = 0;
     
     // 使用者各自合資的新台幣
-    mapping(address =&gt; uint) public usersNTD;
+    mapping(address => uint) public usersNTD;
     
     // 使用者提領過的 ether
-    mapping(address =&gt; uint) public usersWithdrew;
+    mapping(address => uint) public usersWithdrew;
     
     // 只能 owner 才行 的修飾子
     modifier onlyOwner () {
@@ -30,13 +30,13 @@ contract MiningRig {
     
     // 在關閉合資前才行 的修飾子
     modifier beforeCloseBlock () {
-        assert(block.number &lt;= closeBlock);
+        assert(block.number <= closeBlock);
         _;
     }
     
     // 在關閉合資後才行 的修飾子
     modifier afterCloseBlock () {
-        assert(block.number &gt; closeBlock);
+        assert(block.number > closeBlock);
         _;
     }
     
@@ -60,7 +60,7 @@ contract MiningRig {
     
     // 反合資
     function Unregister (address theUser, uint NTD) onlyOwner beforeCloseBlock {
-        assert(usersNTD[theUser] &gt;= NTD);
+        assert(usersNTD[theUser] >= NTD);
         
         usersNTD[theUser] -= NTD;
         totalNTD -= NTD;
@@ -81,7 +81,7 @@ contract MiningRig {
         totalWithdrew += userCanWithdrawNow;
         usersWithdrew[msg.sender] += userCanWithdrawNow;
 
-        assert(userCanWithdrawNow &gt; 0);
+        assert(userCanWithdrawNow > 0);
         
         msg.sender.transfer(userCanWithdrawNow);
     }
@@ -90,8 +90,8 @@ contract MiningRig {
     // 轉讓之前必須把能領的 ether 領完
     function Cashing (address targetAddress, uint permilleToCashing) onlyMember afterCloseBlock {
         //permilleToCashing 是千分比
-        assert(permilleToCashing &lt;= 1000);
-        assert(permilleToCashing &gt; 0);
+        assert(permilleToCashing <= 1000);
+        assert(permilleToCashing > 0);
         
         // 這個合約曾經得到過的 ether 等於現有 balance + 曾經被提領過的
         uint everMined = this.balance + totalWithdrew;

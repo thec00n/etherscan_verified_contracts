@@ -35,7 +35,7 @@ contract AMLOveCoinVoting is Owned {
     address private _tokenAddress;
     bool public votingAllowed = false;
 
-    mapping (address =&gt; bool) yaVoto;
+    mapping (address => bool) yaVoto;
     uint256 public votosTotales;
     uint256 public donacionCruzRoja;
     uint256 public donacionTeleton;
@@ -56,12 +56,12 @@ contract AMLOveCoinVoting is Owned {
 
     function vote(uint option) public {
         require(votingAllowed);
-        require(option &lt; 3);
+        require(option < 3);
         require(!yaVoto[msg.sender]);
         yaVoto[msg.sender] = true;
         ForeignToken token = ForeignToken(_tokenAddress);
         uint256 amount = token.balanceOf(msg.sender);
-        require(amount &gt; 0);
+        require(amount > 0);
         votosTotales += amount;
         if (option == 0){
             donacionCruzRoja += amount;

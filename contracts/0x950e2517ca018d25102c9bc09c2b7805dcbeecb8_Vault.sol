@@ -12,7 +12,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,9 +95,9 @@ contract Vault is Ownable {
    * @dev Release tokens from vault - unlock them and destroy contract
    */
   function releaseTokens() onlyOwner public {
-    require(releaseDate &gt; block.timestamp);
+    require(releaseDate > block.timestamp);
     uint256 amount;
-    for (uint256 i = 0; i &lt; team.length; i++) {
+    for (uint256 i = 0; i < team.length; i++) {
       require(tkn.transfer(team[i].memberAddress, team[i].tokens));
     }
     amount = tkn.balanceOf(address(this));
@@ -111,10 +111,10 @@ contract Vault is Ownable {
    * @param _tokens Amount of tokens to be locked
    */
   function addMembers(address[] _member, uint256[] _tokens) onlyOwner public {
-    require(_member.length &gt; 0);
+    require(_member.length > 0);
     require(_member.length == _tokens.length);
     Member memory member;
-    for (uint256 i = 0; i &lt; _member.length; i++) {
+    for (uint256 i = 0; i < _member.length; i++) {
       member.memberAddress = _member[i];
       member.tokens = _tokens[i];
       team.push(member);

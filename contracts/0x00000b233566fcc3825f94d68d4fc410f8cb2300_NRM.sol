@@ -16,10 +16,10 @@ pragma solidity ^0.4.21;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -27,7 +27,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -101,8 +101,8 @@ contract NRM is ERC20Interface, Owned {
     uint8 public decimals;
     uint _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     address public FreezeAddress;
     uint256 public FreezeTokens;
@@ -112,8 +112,8 @@ contract NRM is ERC20Interface, Owned {
     // Contract init. Set symbol, name, decimals and initial fixed supply
     // ------------------------------------------------------------------------
     function NRM() public {
-        symbol = &quot;NRM&quot;;
-        name = &quot;Neuromachine&quot;;
+        symbol = "NRM";
+        name = "Neuromachine";
         decimals = 18;
         _totalSupply = 4958333333 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -136,8 +136,8 @@ contract NRM is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
 
     function unfreezeTeamTokens(address unFreezeAddress) public onlyOwner returns (bool success) {
-        require(balances[FreezeAddress] &gt; 0);
-        require(now &gt;= FreezeTokensReleaseTime);
+        require(balances[FreezeAddress] > 0);
+        require(now >= FreezeTokensReleaseTime);
         balances[FreezeAddress] = balances[FreezeAddress].sub(FreezeTokens);
         balances[unFreezeAddress] = balances[unFreezeAddress].add(FreezeTokens);
         emit Transfer(FreezeAddress, unFreezeAddress, FreezeTokens);
@@ -179,10 +179,10 @@ contract NRM is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public isRunnning returns (bool success) {
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         require(tokens != 0);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -193,7 +193,7 @@ contract NRM is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -210,8 +210,8 @@ contract NRM is ERC20Interface, Owned {
     // Transfer `tokens` from the `from` account to the `to` account
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public isRunnning returns (bool success) {
-        require(tokens &lt;= balances[from]);
-        require(tokens &lt;= allowed[from][msg.sender]);
+        require(tokens <= balances[from]);
+        require(tokens <= allowed[from][msg.sender]);
         require(tokens != 0);
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -223,7 +223,7 @@ contract NRM is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -232,7 +232,7 @@ contract NRM is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public isRunnning returns (bool success) {
@@ -255,7 +255,7 @@ contract NRM is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
 
     function burnTokens(uint256 tokens) public returns (bool success) {
-        require(tokens &lt;= balances[msg.sender]);
+        require(tokens <= balances[msg.sender]);
         require(tokens != 0);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         _totalSupply = _totalSupply.sub(tokens);
@@ -268,7 +268,7 @@ contract NRM is ERC20Interface, Owned {
     // Tokens multisend from owner only by owner
     // ------------------------------------------------------------------------
     function multisend(address[] to, uint256[] values) public onlyOwner returns (uint256) {
-        for (uint256 i = 0; i &lt; to.length; i++) {
+        for (uint256 i = 0; i < to.length; i++) {
             balances[owner] = balances[owner].sub(values[i]);
             balances[to[i]] = balances[to[i]].add(values[i]);
             emit Transfer(owner, to[i], values[i]);

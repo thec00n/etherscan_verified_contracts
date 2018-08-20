@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -112,7 +112,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -126,7 +126,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -163,7 +163,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -177,7 +177,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -248,7 +248,7 @@ contract Withdrawable {
   function withdrawTo(address _beneficiary, uint _amount) public {
     require(msg.sender == withdrawOwner);
     require(_beneficiary != address(0));
-    require(_amount &gt; 0);
+    require(_amount > 0);
     _beneficiary.transfer(_amount);
   }
 
@@ -266,8 +266,8 @@ contract Withdrawable {
 contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
   using SafeMath for uint;
 
-  string public constant name = &quot;Cryptoverse Sector&quot;;
-  string public constant symbol = &quot;CVS&quot;;
+  string public constant name = "Cryptoverse Sector";
+  string public constant symbol = "CVS";
   uint8 public constant decimals = 0;
 
   /**
@@ -322,13 +322,13 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
     // how many sectors is sender going to buy
     // NOTE: purchase via fallback is at flat price
     uint sectorCount = msg.value / 1000 finney;
-    require(sectorCount &gt; 0);
+    require(sectorCount > 0);
 
     // fire transfer event ahead of update event
     Transfer(address(0), msg.sender, sectorCount);
 
     // now find as many free sectors
-    for (uint16 offset = 0; offset &lt; length; offset++) {
+    for (uint16 offset = 0; offset < length; offset++) {
       Sector storage sector = grid[offset];
 
       if (sector.owner == address(0)) {
@@ -350,14 +350,14 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
    * Purchases the sectors at given offsets. The array length must be even and the bounds must be within grid size.
    */
   function buy(uint16[] memory _offsets) public payable {
-    require(_offsets.length &gt; 0);
+    require(_offsets.length > 0);
     uint cost = _offsets.length * currentPrice();
-    require(msg.value &gt;= cost);
+    require(msg.value >= cost);
 
     // fire transfer event ahead of update event
     Transfer(address(0), msg.sender, _offsets.length);
 
-    for (uint i = 0; i &lt; _offsets.length; i++) {
+    for (uint i = 0; i < _offsets.length; i++) {
       setSectorOwnerInternal(_offsets[i], msg.sender, false);
     }
   }
@@ -370,7 +370,7 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
   function transfer(address _to, uint _value) public returns (bool result) {
     result = super.transfer(_to, _value);
 
-    if (result &amp;&amp; _value &gt; 0) {
+    if (result && _value > 0) {
       transferSectorOwnerInternal(_value, msg.sender, _to);
     }
   }
@@ -384,7 +384,7 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
   function transferFrom(address _from, address _to, uint _value) public returns (bool result) {
     result = super.transferFrom(_from, _to, _value);
 
-    if (result &amp;&amp; _value &gt; 0) {
+    if (result && _value > 0) {
       transferSectorOwnerInternal(_value, _from, _to);
     }
   }
@@ -396,7 +396,7 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
     result = super.transfer(_to, _offsets.length);
 
     if (result) {
-      for (uint i = 0; i &lt; _offsets.length; i++) {
+      for (uint i = 0; i < _offsets.length; i++) {
         Sector storage sector = grid[_offsets[i]];
         require(sector.owner == msg.sender);
         setSectorOwnerInternal(_offsets[i], _to, true);
@@ -408,8 +408,8 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
    * Sets the state of the sector by its rightful owner.
    */
   function set(uint16[] memory _offsets, string _link, string _content, string _title, bool _nsfw) public {
-    require(_offsets.length &gt; 0);
-    for (uint i = 0; i &lt; _offsets.length; i++) {
+    require(_offsets.length > 0);
+    for (uint i = 0; i < _offsets.length; i++) {
       Sector storage sector = grid[_offsets[i]];
       require(msg.sender == sector.owner);
 
@@ -459,13 +459,13 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
    * !throws Reverts when the _from does not own as many as _value sectors.
    */
   function transferSectorOwnerInternal(uint _value, address _from, address _to) internal {
-    require(_value &gt; 0);
+    require(_value > 0);
     require(_from != address(0));
     require(_to != address(0));
 
     uint sectorCount = _value;
 
-    for (uint16 offsetPlusOne = length; offsetPlusOne &gt; 0; offsetPlusOne--) {
+    for (uint16 offsetPlusOne = length; offsetPlusOne > 0; offsetPlusOne--) {
       Sector storage sector = grid[offsetPlusOne - 1];
 
       if (sector.owner == _from) {
@@ -484,8 +484,8 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
   }
 
   function setForceNsfw(uint16[] memory _offsets, bool _nsfw) public onlyOwner {
-    require(_offsets.length &gt; 0);
-    for (uint i = 0; i &lt; _offsets.length; i++) {
+    require(_offsets.length > 0);
+    for (uint i = 0; i < _offsets.length; i++) {
       Sector storage sector = grid[_offsets[i]];
       sector.forceNsfw = _nsfw;
 
@@ -499,8 +499,8 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
   function currentPrice() public view returns (uint) {
     uint sinceLastPurchase = (block.timestamp - lastPurchaseTimestamp);
 
-    for (uint i = 0; i &lt; prices.length - 1; i++) {
-      if (sinceLastPurchase &lt; (i + 1) * 1 days) {
+    for (uint i = 0; i < prices.length - 1; i++) {
+      if (sinceLastPurchase < (i + 1) * 1 days) {
         return prices[i];
       }
     }
@@ -553,8 +553,8 @@ contract Cryptoverse is StandardToken, Ownable, Announceable, Withdrawable {
     area = area * _height;
     Transfer(address(0), owner, area);
 
-    for (uint8 x = _left; x &lt; _right; x++) {
-      for (uint8 y = _top; y &lt; _bottom; y++) {
+    for (uint8 x = _left; x < _right; x++) {
+      for (uint8 y = _top; y < _bottom; y++) {
         setSectorOwnerInternal(transform(x, y), owner, false);
       }
     }

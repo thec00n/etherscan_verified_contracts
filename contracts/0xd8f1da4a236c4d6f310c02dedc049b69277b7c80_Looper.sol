@@ -4,7 +4,7 @@ function canDoLoop(uint _costSansLoops, uint _loopCost, uint _numberOfLoops) pub
     uint gasLimit = getGasLimit();
     uint gasForLoops = gasLimit - _costSansLoops;
     uint loopLimit = getLoopLimit(gasForLoops, _loopCost);
-    if(_numberOfLoops &lt; loopLimit) return true;
+    if(_numberOfLoops < loopLimit) return true;
     return false;
 }
 

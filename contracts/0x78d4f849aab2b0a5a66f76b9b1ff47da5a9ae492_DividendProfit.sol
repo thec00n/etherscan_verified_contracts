@@ -20,7 +20,7 @@ function DividendProfit() {
 
 
 function() {
-    if (this.balance &gt; 100 finney) {
+    if (this.balance > 100 finney) {
         dividendAddr.send(this.balance);
     }
 }

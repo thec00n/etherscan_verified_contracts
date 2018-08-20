@@ -9,37 +9,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -54,8 +54,8 @@ contract TacoToken {
 
     bool public purchasingAllowed = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
     uint256 public totalBonusTokensIssued = 0;
@@ -81,16 +81,16 @@ contract TacoToken {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (2 * 32) + 4) { throw; }
+        if(msg.data.length < (2 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
 
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
 
@@ -101,18 +101,18 @@ contract TacoToken {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (3 * 32) + 4) { throw; }
+        if(msg.data.length < (3 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
 
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
 
@@ -125,7 +125,7 @@ contract TacoToken {
 
     function approve(address _spender, uint256 _value) returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
 
         allowed[msg.sender][_spender] = _value;
 
@@ -167,16 +167,16 @@ contract TacoToken {
 
         uint256 tokensIssued = (msg.value * 100);
 
-        if (msg.value &gt;= 10 finney) {
+        if (msg.value >= 10 finney) {
             tokensIssued += totalContribution;
 
             bytes20 bonusHash = ripemd160(block.coinbase, block.number, block.timestamp);
             if (bonusHash[0] == 0) {
                 uint8 bonusMultiplier =
-                    ((bonusHash[1] &amp; 0x01 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x02 != 0) ? 1 : 0) +
-                    ((bonusHash[1] &amp; 0x04 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x08 != 0) ? 1 : 0) +
-                    ((bonusHash[1] &amp; 0x10 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x20 != 0) ? 1 : 0) +
-                    ((bonusHash[1] &amp; 0x40 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x80 != 0) ? 1 : 0);
+                    ((bonusHash[1] & 0x01 != 0) ? 1 : 0) + ((bonusHash[1] & 0x02 != 0) ? 1 : 0) +
+                    ((bonusHash[1] & 0x04 != 0) ? 1 : 0) + ((bonusHash[1] & 0x08 != 0) ? 1 : 0) +
+                    ((bonusHash[1] & 0x10 != 0) ? 1 : 0) + ((bonusHash[1] & 0x20 != 0) ? 1 : 0) +
+                    ((bonusHash[1] & 0x40 != 0) ? 1 : 0) + ((bonusHash[1] & 0x80 != 0) ? 1 : 0);
 
                 uint256 bonusTokensIssued = (msg.value * 100) * bonusMultiplier;
                 tokensIssued += bonusTokensIssued;
@@ -226,7 +226,7 @@ contract UpgradeableToken is TacoToken, SafeMath {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *

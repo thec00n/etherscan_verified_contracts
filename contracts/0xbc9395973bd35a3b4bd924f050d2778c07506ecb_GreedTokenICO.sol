@@ -24,20 +24,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -58,7 +58,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -100,7 +100,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -111,8 +111,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -126,7 +126,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -175,7 +175,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -221,19 +221,19 @@ contract Ownable {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -241,8 +241,8 @@ contract GreedTokenICO is StandardToken, Ownable {
     using SafeMath for uint256;
     using Math for uint256;
 
-    string public name = &quot;GREED TOKEN&quot;;
-    string public symbol = &quot;GREED&quot;;
+    string public name = "GREED TOKEN";
+    string public symbol = "GREED";
     uint256 public decimals = 18;
 
     uint256 public constant EXCHANGE_RATE = 700; 
@@ -282,7 +282,7 @@ contract GreedTokenICO is StandardToken, Ownable {
     }
 
     function() public isIcoOpen payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         uint256 valuePlus = 50000000000000000; // 0.05 ETH
         uint256 ONE_ETH = 1000000000000000000;
@@ -290,9 +290,9 @@ contract GreedTokenICO is StandardToken, Ownable {
         uint256 ethToPay = msg.value;
         uint256 tokensBought;
 
-        if (msg.value &gt;= valuePlus) {
+        if (msg.value >= valuePlus) {
             tokensBought = msg.value.mul(EXCHANGE_RATE).mul(bonusMultiplier).div(ONE_ETH);
-	        if (tokensBought &gt; tokensLeft) {
+	        if (tokensBought > tokensLeft) {
 		        ethToPay = tokensLeft.mul(ONE_ETH).div(bonusMultiplier).div(EXCHANGE_RATE);
 		        tokensBought = tokensLeft;
 		        icoFinished = true;
@@ -300,7 +300,7 @@ contract GreedTokenICO is StandardToken, Ownable {
 	        }
 		} else {
             tokensBought = msg.value.mul(EXCHANGE_RATE);
-	        if (tokensBought &gt; tokensLeft) {
+	        if (tokensBought > tokensLeft) {
 		        ethToPay = tokensLeft.div(EXCHANGE_RATE);
 		        tokensBought = tokensLeft;
 		        icoFinished = true;
@@ -318,13 +318,13 @@ contract GreedTokenICO is StandardToken, Ownable {
         Transfer(icoWallet, msg.sender, tokensBought);
 
         uint256 refund = msg.value.sub(ethToPay);
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
 
         bonusMultiplier = TOP_MULT.sub(totalRaised);
 
-        if (bonusMultiplier &lt; ONE_ETH) {
+        if (bonusMultiplier < ONE_ETH) {
 		        icoFinished = true;
 		        icoOpen = false;
         }
@@ -344,11 +344,11 @@ contract GreedTokenICO is StandardToken, Ownable {
         uint256 blocktime = now;
 
         require(icoFinished == false);        
-        require(blocktime &gt;= startTimestamp);
-        require(blocktime &lt;= (startTimestamp + durationSeconds));
-        require(totalTokensSold &lt; icoSupply);
+        require(blocktime >= startTimestamp);
+        require(blocktime <= (startTimestamp + durationSeconds));
+        require(totalTokensSold < icoSupply);
 
-        if (icoOpen == false &amp;&amp; icoFinished == false) {
+        if (icoOpen == false && icoFinished == false) {
             icoOpen = true;
         }
 
@@ -358,8 +358,8 @@ contract GreedTokenICO is StandardToken, Ownable {
     modifier isIcoFinished() {
         uint256 blocktime = now;
         
-        require(blocktime &gt;= startTimestamp);
-        require(icoFinished == true || totalTokensSold &gt;= icoSupply || (blocktime &gt;= (startTimestamp + durationSeconds)));
+        require(blocktime >= startTimestamp);
+        require(icoFinished == true || totalTokensSold >= icoSupply || (blocktime >= (startTimestamp + durationSeconds)));
         if (icoFinished == false) {
             icoFinished = true;
             icoOpen = false;

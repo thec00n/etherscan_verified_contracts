@@ -14,7 +14,7 @@ contract Products {
 	address public owner;
 
 	//indexed requests storage
-	mapping (bytes32 =&gt; uint8) items;
+	mapping (bytes32 => uint8) items;
 
 	//constructor
 	function Products() {

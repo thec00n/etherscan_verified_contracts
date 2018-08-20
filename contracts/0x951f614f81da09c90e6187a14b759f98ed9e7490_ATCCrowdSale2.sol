@@ -10,31 +10,31 @@ contract SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 /**
@@ -78,7 +78,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,9 +113,9 @@ contract Ownable {
  */
 contract KYC is Ownable {
   // check the address is registered for token sale
-  mapping (address =&gt; bool) public registeredAddress;
+  mapping (address => bool) public registeredAddress;
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
   event NewAdmin(address indexed _addr);
@@ -146,7 +146,7 @@ contract KYC is Ownable {
     public
     onlyOwner
   {
-    require(_addr != address(0) &amp;&amp; admin[_addr] == false);
+    require(_addr != address(0) && admin[_addr] == false);
     admin[_addr] = true;
     NewAdmin(_addr);
   }
@@ -158,7 +158,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    require(_addr != address(0) &amp;&amp; registeredAddress[_addr] == false);
+    require(_addr != address(0) && registeredAddress[_addr] == false);
     registeredAddress[_addr] = true;
     Registered(_addr);
   }
@@ -170,8 +170,8 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
-      require(_addrs[i] != address(0) &amp;&amp; registeredAddress[_addrs[i]] == false);
+    for(uint256 i = 0; i < _addrs.length; i++) {
+      require(_addrs[i] != address(0) && registeredAddress[_addrs[i]] == false);
       registeredAddress[_addrs[i]] = true;
       Registered(_addrs[i]);
     }
@@ -196,7 +196,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(registeredAddress[_addrs[i]]);
       registeredAddress[_addrs[i]] = false;
       Unregistered(_addrs[i]);
@@ -224,12 +224,12 @@ contract KYC is Ownable {
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -272,12 +272,12 @@ contract ApproveAndCallFallBack {
 }
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
     /// @dev `Checkpoint` is the structure that attaches a block number to a
     ///  given value, the block number attached is the one that last changed the
     ///  value
@@ -298,9 +298,9 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
     // Flag that determines if the token is transferable or not.
@@ -367,7 +367,7 @@ contract MiniMeToken is Controlled {
         if (msg.sender != controller) {
             require(transfersEnabled);
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -383,13 +383,13 @@ contract MiniMeToken is Controlled {
            if (_amount == 0) {
                return true;
            }
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
            // Alerts the token controller of the transfer
@@ -402,13 +402,13 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
            // An event to make the transfer easy to find on the blockchain
            Transfer(_from, _to, _amount);
            return true;
     }
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -481,7 +481,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -503,7 +503,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -558,9 +558,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -573,9 +573,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -600,15 +600,15 @@ contract MiniMeToken is Controlled {
     ) constant internal returns (uint) {
         if (checkpoints.length == 0) return 0;
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -623,7 +623,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -641,13 +641,13 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -722,7 +722,7 @@ contract MiniMeTokenFactory {
     }
 }
 contract ATC is MiniMeToken {
-  mapping (address =&gt; bool) public blacklisted;
+  mapping (address => bool) public blacklisted;
   bool public generateFinished;
   // @dev ATC constructor just parametrizes the MiniMeToken constructor
   function ATC(address _tokenFactory)
@@ -730,9 +730,9 @@ contract ATC is MiniMeToken {
               _tokenFactory,
               0x0,                     // no parent token
               0,                       // no snapshot block number from parent
-              &quot;Aston Token&quot;,  // Token name
+              "Aston Token",  // Token name
               18,                      // Decimals
-              &quot;ATC&quot;,                   // Symbol
+              "ATC",                   // Symbol
               false                     // Enable transfers
           ) {}
   function generateTokens(address _owner, uint _amount
@@ -767,8 +767,8 @@ contract ATC is MiniMeToken {
  */
 contract RefundVault is Ownable, SafeMath{
   enum State { Active, Refunding, Closed }
-  mapping (address =&gt; uint256) public deposited;
-  mapping (address =&gt; uint256) public refunded;
+  mapping (address => uint256) public deposited;
+  mapping (address => uint256) public refunded;
   State public state;
   address[] public reserveWallet;
   event Closed();
@@ -803,7 +803,7 @@ contract RefundVault is Ownable, SafeMath{
     state = State.Closed;
     uint256 balance = this.balance;
     uint256 reserveAmountForEach = div(balance, reserveWallet.length);
-    for(uint8 i = 0; i &lt; reserveWallet.length; i++){
+    for(uint8 i = 0; i < reserveWallet.length; i++){
       reserveWallet[i].transfer(reserveAmountForEach);
       Transferred(reserveWallet[i], reserveAmountForEach);
     }
@@ -823,7 +823,7 @@ contract RefundVault is Ownable, SafeMath{
    */
   function refund(address investor) returns (bool) {
     require(state == State.Refunding);
-    if (refunded[investor] &gt; 0) {
+    if (refunded[investor] > 0) {
       return false;
     }
     uint256 depositedValue = deposited[investor];
@@ -877,7 +877,7 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   RefundVault public vault;
   address public presale;
   address public bountyAddress; //5% for bounty
-  address public partnersAddress; //15% for community groups &amp; partners
+  address public partnersAddress; //15% for community groups & partners
   address public ATCReserveLocker; //15% with 2 years lock
   address public teamLocker; // 15% with 2 years vesting
   struct Period {
@@ -892,9 +892,9 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   uint256 public weiRaised;
   uint256 public maxEtherCap;
   uint256 public minEtherCap;
-  mapping (address =&gt; uint256) public beneficiaryFunded;
+  mapping (address => uint256) public beneficiaryFunded;
   address[] investorList;
-  mapping (address =&gt; bool) inInvestorList;
+  mapping (address => bool) inInvestorList;
   address public ATCController;
   bool public isFinalized;
   uint256 public refundCompleted;
@@ -925,15 +925,15 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
     uint256[] _additionalBonusAmounts
     ) onlyOwner {
       require(!initialized);
-      require(_kyc != 0x00 &amp;&amp; _token != 0x00 &amp;&amp; _vault != 0x00 &amp;&amp; _presale != 0x00);
-      require(_bountyAddress != 0x00 &amp;&amp; _partnersAddress != 0x00);
-      require(_ATCReserveLocker != 0x00 &amp;&amp; _teamLocker != 0x00);
+      require(_kyc != 0x00 && _token != 0x00 && _vault != 0x00 && _presale != 0x00);
+      require(_bountyAddress != 0x00 && _partnersAddress != 0x00);
+      require(_ATCReserveLocker != 0x00 && _teamLocker != 0x00);
       require(_tokenController != 0x00);
-      require(0 &lt; _minEtherCap &amp;&amp; _minEtherCap &lt; _maxEtherCap);
-      require(_baseRate &gt; 0);
-      require(_additionalBonusAmounts[0] &gt; 0);
-      for (uint i = 0; i &lt; _additionalBonusAmounts.length - 1; i++) {
-        require(_additionalBonusAmounts[i] &lt; _additionalBonusAmounts[i + 1]);
+      require(0 < _minEtherCap && _minEtherCap < _maxEtherCap);
+      require(_baseRate > 0);
+      require(_additionalBonusAmounts[0] > 0);
+      for (uint i = 0; i < _additionalBonusAmounts.length - 1; i++) {
+        require(_additionalBonusAmounts[i] < _additionalBonusAmounts[i + 1]);
       }
       kyc = KYC(_kyc);
       token = ATC(_token);
@@ -978,13 +978,13 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
       uint256 weiAmount = msg.value;
       uint256 toFund;
       uint256 postWeiRaised = add(weiRaised, weiAmount);
-      if (postWeiRaised &gt; maxEtherCap) {
+      if (postWeiRaised > maxEtherCap) {
         toFund = sub(maxEtherCap, weiRaised);
       } else {
         toFund = weiAmount;
       }
-      require(toFund &gt; 0);
-      require(weiAmount &gt;= toFund);
+      require(toFund > 0);
+      require(weiAmount >= toFund);
       uint256 rate = calculateRate(toFund);
       uint256 tokens = mul(toFund, rate);
       uint256 toReturn = sub(weiAmount, toFund);
@@ -992,7 +992,7 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
       weiRaised = add(weiRaised, toFund);
       beneficiaryFunded[beneficiary] = add(beneficiaryFunded[beneficiary], toFund);
       token.generateTokens(beneficiary, tokens);
-      if (toReturn &gt; 0) {
+      if (toReturn > 0) {
         msg.sender.transfer(toReturn);
       }
       forwardFunds(toFund);
@@ -1007,7 +1007,7 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   }
   function validPurchase() internal view returns (bool) {
     bool nonZeroPurchase = msg.value != 0;
-    return nonZeroPurchase &amp;&amp; !maxReached();
+    return nonZeroPurchase && !maxReached();
   }
   function forwardFunds(uint256 toFund) internal {
     vault.deposit.value(toFund)(msg.sender);
@@ -1017,7 +1017,7 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
    * @return true if min ether cap is reaced
    */
   function minReached() public view returns (bool) {
-    return weiRaised &gt;= minEtherCap;
+    return weiRaised >= minEtherCap;
   }
   /**
    * @dev Checks whether maxEtherCap is reached
@@ -1029,8 +1029,8 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   function getPeriodBonus() public view returns (uint256) {
     bool nowOnSale;
     uint256 currentPeriod;
-    for (uint i = 0; i &lt; periods.length; i++) {
-      if (periods[i].startTime &lt;= now &amp;&amp; now &lt;= periods[i].endTime) {
+    for (uint i = 0; i < periods.length; i++) {
+      if (periods[i].startTime <= now && now <= periods[i].endTime) {
         nowOnSale = true;
         currentPeriod = i;
         break;
@@ -1045,32 +1045,32 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   function calculateRate(uint256 toFund) public view returns (uint256)  {
     uint bonus = getPeriodBonus();
     // bonus for eth amount
-    if (additionalBonusAmounts[0] &lt;= toFund) {
+    if (additionalBonusAmounts[0] <= toFund) {
       bonus = add(bonus, 5); // 5% amount bonus for more than 300 ETH
     }
-    if (additionalBonusAmounts[1] &lt;= toFund) {
+    if (additionalBonusAmounts[1] <= toFund) {
       bonus = add(bonus, 5); // 10% amount bonus for more than 6000 ETH
     }
-    if (additionalBonusAmounts[2] &lt;= toFund) {
+    if (additionalBonusAmounts[2] <= toFund) {
       bonus = 25; // final 25% amount bonus for more than 8000 ETH
     }
-    if (additionalBonusAmounts[3] &lt;= toFund) {
+    if (additionalBonusAmounts[3] <= toFund) {
       bonus = 30; // final 30% amount bonus for more than 10000 ETH
     }
     return div(mul(baseRate, add(bonus, 100)), 100);
   }
   function startPeriod(uint256 _startTime, uint256 _endTime) public onlyOwner returns (bool) {
-    require(periods.length &lt; MAX_PERIOD_COUNT);
-    require(now &lt; _startTime &amp;&amp; _startTime &lt; _endTime);
+    require(periods.length < MAX_PERIOD_COUNT);
+    require(now < _startTime && _startTime < _endTime);
     if (periods.length != 0) {
-      require(sub(_endTime, _startTime) &lt;= 7 days);
-      require(periods[periods.length - 1].endTime &lt; _startTime);
+      require(sub(_endTime, _startTime) <= 7 days);
+      require(periods[periods.length - 1].endTime < _startTime);
     }
-    // 15% -&gt; 10% -&gt; 5% -&gt; 0%
+    // 15% -> 10% -> 5% -> 0%
     Period memory newPeriod;
     newPeriod.startTime = _startTime;
     newPeriod.endTime = _endTime;
-    if(periods.length &lt; 3) {
+    if(periods.length < 3) {
       newPeriod.bonus = sub(15, mul(5, periods.length));
     } else {
       newPeriod.bonus = 0;
@@ -1081,8 +1081,8 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   }
   function onSale() public returns (bool) {
     bool nowOnSale;
-    for (uint i = 0; i &lt; periods.length; i++) {
-      if (periods[i].startTime &lt;= now &amp;&amp; now &lt;= periods[i].endTime) {
+    for (uint i = 0; i < periods.length; i++) {
+      if (periods[i].startTime <= now && now <= periods[i].endTime) {
         nowOnSale = true;
         break;
       }
@@ -1121,8 +1121,8 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
     token.changeController(ATCController);
   }
   function distributeToken(uint256 bountyAmount, uint256 partnersAmount, uint256 reserveAmount, uint256 teamAmount) internal {
-    require(bountyAddress != 0x00 &amp;&amp; partnersAddress != 0x00);
-    require(ATCReserveLocker != 0x00 &amp;&amp; teamLocker != 0x00);
+    require(bountyAddress != 0x00 && partnersAddress != 0x00);
+    require(ATCReserveLocker != 0x00 && teamLocker != 0x00);
     token.generateTokens(bountyAddress, bountyAmount);
     token.generateTokens(partnersAddress, partnersAmount);
     token.generateTokens(ATCReserveLocker, reserveAmount);
@@ -1135,12 +1135,12 @@ contract ATCCrowdSale is Ownable, SafeMath, Pausable {
   function refundAll(uint256 numToRefund) onlyOwner {
     require(isFinalized);
     require(!minReached());
-    require(numToRefund &gt; 0);
+    require(numToRefund > 0);
     uint256 limit = refundCompleted + numToRefund;
-    if (limit &gt; investorList.length) {
+    if (limit > investorList.length) {
       limit = investorList.length;
     }
-    for(uint256 i = refundCompleted; i &lt; limit; i++) {
+    for(uint256 i = refundCompleted; i < limit; i++) {
       vault.refund(investorList[i]);
     }
     refundCompleted = limit;
@@ -1192,9 +1192,9 @@ contract ReserveLocker is SafeMath{
    */
    function release() public {
      uint256 finalizedTime = crowdsale.finalizedTime();
-     require(finalizedTime &gt; 0 &amp;&amp; now &gt; add(finalizedTime, 2 years));
+     require(finalizedTime > 0 && now > add(finalizedTime, 2 years));
      uint256 amount = token.balanceOf(this);
-     require(amount &gt; 0);
+     require(amount > 0);
      token.safeTransfer(beneficiary, amount);
    }
   function setToken(address newToken) public {
@@ -1217,7 +1217,7 @@ contract TeamLocker is SafeMath{
   function TeamLocker(address _token, address _crowdsale, address[] _beneficiaries) {
     require(_token != 0x00);
     require(_crowdsale != 0x00);
-    for (uint i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint i = 0; i < _beneficiaries.length; i++) {
       require(_beneficiaries[i] != 0x00);
     }
     token = ERC20Basic(_token);
@@ -1231,29 +1231,29 @@ contract TeamLocker is SafeMath{
     uint256 balance = token.balanceOf(address(this));
     uint256 total = add(balance, collectedTokens);
     uint256 finalizedTime = crowdsale.finalizedTime();
-    require(finalizedTime &gt; 0);
+    require(finalizedTime > 0);
     uint256 lockTime1 = add(finalizedTime, 183 days); // 6 months
     uint256 lockTime2 = add(finalizedTime, 1 years); // 1 year
     uint256 currentRatio = 20;
-    if (now &gt;= lockTime1) {
+    if (now >= lockTime1) {
       currentRatio = 50;
     }
-    if (now &gt;= lockTime2) {
+    if (now >= lockTime2) {
       currentRatio = 100;
     }
     uint256 releasedAmount = div(mul(total, currentRatio), 100);
     uint256 grantAmount = sub(releasedAmount, collectedTokens);
-    require(grantAmount &gt; 0);
+    require(grantAmount > 0);
     collectedTokens = add(collectedTokens, grantAmount);
     uint256 grantAmountForEach = div(grantAmount, 3);
-    for (uint i = 0; i &lt; beneficiaries.length; i++) {
+    for (uint i = 0; i < beneficiaries.length; i++) {
         token.safeTransfer(beneficiaries[i], grantAmountForEach);
     }
   }
   function setToken(address newToken) public {
     require(newToken != 0x00);
     bool isBeneficiary;
-    for (uint i = 0; i &lt; beneficiaries.length; i++) {
+    for (uint i = 0; i < beneficiaries.length; i++) {
       if (msg.sender == beneficiaries[i]) {
         isBeneficiary = true;
       }
@@ -1267,7 +1267,7 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   ATC public token;
   RefundVault public vault;
   address public bountyAddress; //5% for bounty
-  address public partnersAddress; //15% for community groups &amp; partners
+  address public partnersAddress; //15% for community groups & partners
   address public ATCReserveLocker; //15% with 2 years lock
   address public teamLocker; // 15% with 2 years vesting
   struct Period {
@@ -1282,9 +1282,9 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   uint256 public weiRaised;
   uint256 public maxEtherCap;
   uint256 public minEtherCap;
-  mapping (address =&gt; uint256) public beneficiaryFunded;
+  mapping (address => uint256) public beneficiaryFunded;
   address[] investorList;
-  mapping (address =&gt; bool) inInvestorList;
+  mapping (address => bool) inInvestorList;
   address public ATCController;
   bool public isFinalized;
   uint256 public refundCompleted;
@@ -1312,15 +1312,15 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
     uint256[] _additionalBonusAmounts
     ) onlyOwner {
       require(!initialized);
-      require(_kyc != 0x00 &amp;&amp; _token != 0x00 &amp;&amp; _vault != 0x00);
-      require(_bountyAddress != 0x00 &amp;&amp; _partnersAddress != 0x00);
-      require(_ATCReserveLocker != 0x00 &amp;&amp; _teamLocker != 0x00);
+      require(_kyc != 0x00 && _token != 0x00 && _vault != 0x00);
+      require(_bountyAddress != 0x00 && _partnersAddress != 0x00);
+      require(_ATCReserveLocker != 0x00 && _teamLocker != 0x00);
       require(_tokenController != 0x00);
-      require(0 &lt; _minEtherCap &amp;&amp; _minEtherCap &lt; _maxEtherCap);
-      require(_baseRate &gt; 0);
-      require(_additionalBonusAmounts[0] &gt; 0);
-      for (uint i = 0; i &lt; _additionalBonusAmounts.length - 1; i++) {
-        require(_additionalBonusAmounts[i] &lt; _additionalBonusAmounts[i + 1]);
+      require(0 < _minEtherCap && _minEtherCap < _maxEtherCap);
+      require(_baseRate > 0);
+      require(_additionalBonusAmounts[0] > 0);
+      for (uint i = 0; i < _additionalBonusAmounts.length - 1; i++) {
+        require(_additionalBonusAmounts[i] < _additionalBonusAmounts[i + 1]);
       }
       kyc = KYC(_kyc);
       token = ATC(_token);
@@ -1355,13 +1355,13 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
       uint256 weiAmount = msg.value;
       uint256 toFund;
       uint256 postWeiRaised = add(weiRaised, weiAmount);
-      if (postWeiRaised &gt; maxEtherCap) {
+      if (postWeiRaised > maxEtherCap) {
         toFund = sub(maxEtherCap, weiRaised);
       } else {
         toFund = weiAmount;
       }
-      require(toFund &gt; 0);
-      require(weiAmount &gt;= toFund);
+      require(toFund > 0);
+      require(weiAmount >= toFund);
       uint256 rate = calculateRate(toFund);
       uint256 tokens = mul(toFund, rate);
       uint256 toReturn = sub(weiAmount, toFund);
@@ -1369,7 +1369,7 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
       weiRaised = add(weiRaised, toFund);
       beneficiaryFunded[beneficiary] = add(beneficiaryFunded[beneficiary], toFund);
       token.generateTokens(beneficiary, tokens);
-      if (toReturn &gt; 0) {
+      if (toReturn > 0) {
         msg.sender.transfer(toReturn);
       }
       forwardFunds(toFund);
@@ -1384,7 +1384,7 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   }
   function validPurchase() internal view returns (bool) {
     bool nonZeroPurchase = msg.value != 0;
-    return nonZeroPurchase &amp;&amp; !maxReached();
+    return nonZeroPurchase && !maxReached();
   }
   function forwardFunds(uint256 toFund) internal {
     vault.deposit.value(toFund)(msg.sender);
@@ -1394,7 +1394,7 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
    * @return true if min ether cap is reaced
    */
   function minReached() public view returns (bool) {
-    return weiRaised &gt;= minEtherCap;
+    return weiRaised >= minEtherCap;
   }
   /**
    * @dev Checks whether maxEtherCap is reached
@@ -1406,8 +1406,8 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   function getPeriodBonus() public view returns (uint256) {
     bool nowOnSale;
     uint256 currentPeriod;
-    for (uint i = 0; i &lt; periods.length; i++) {
-      if (periods[i].startTime &lt;= now &amp;&amp; now &lt;= periods[i].endTime) {
+    for (uint i = 0; i < periods.length; i++) {
+      if (periods[i].startTime <= now && now <= periods[i].endTime) {
         nowOnSale = true;
         currentPeriod = i;
         break;
@@ -1422,32 +1422,32 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   function calculateRate(uint256 toFund) public view returns (uint256)  {
     uint bonus = getPeriodBonus();
     // bonus for eth amount
-    if (additionalBonusAmounts[0] &lt;= toFund) {
+    if (additionalBonusAmounts[0] <= toFund) {
       bonus = add(bonus, 5); // 5% amount bonus for more than 300 ETH
     }
-    if (additionalBonusAmounts[1] &lt;= toFund) {
+    if (additionalBonusAmounts[1] <= toFund) {
       bonus = add(bonus, 5); // 10% amount bonus for more than 6000 ETH
     }
-    if (additionalBonusAmounts[2] &lt;= toFund) {
+    if (additionalBonusAmounts[2] <= toFund) {
       bonus = 25; // final 25% amount bonus for more than 8000 ETH
     }
-    if (additionalBonusAmounts[3] &lt;= toFund) {
+    if (additionalBonusAmounts[3] <= toFund) {
       bonus = 30; // final 30% amount bonus for more than 10000 ETH
     }
     return div(mul(baseRate, add(bonus, 100)), 100);
   }
   function startPeriod(uint256 _startTime, uint256 _endTime) public onlyOwner returns (bool) {
-    require(periods.length &lt; MAX_PERIOD_COUNT);
-    require(now &lt; _startTime &amp;&amp; _startTime &lt; _endTime);
+    require(periods.length < MAX_PERIOD_COUNT);
+    require(now < _startTime && _startTime < _endTime);
     if (periods.length != 0) {
-      require(sub(_endTime, _startTime) &lt;= 7 days);
-      require(periods[periods.length - 1].endTime &lt; _startTime);
+      require(sub(_endTime, _startTime) <= 7 days);
+      require(periods[periods.length - 1].endTime < _startTime);
     }
-    // 15% -&gt; 10% -&gt; 5% -&gt; 0%
+    // 15% -> 10% -> 5% -> 0%
     Period memory newPeriod;
     newPeriod.startTime = _startTime;
     newPeriod.endTime = _endTime;
-    if(periods.length &lt; 3) {
+    if(periods.length < 3) {
       newPeriod.bonus = sub(15, mul(5, periods.length));
     } else {
       newPeriod.bonus = 0;
@@ -1458,8 +1458,8 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   }
   function onSale() public returns (bool) {
     bool nowOnSale;
-    for (uint i = 0; i &lt; periods.length; i++) {
-      if (periods[i].startTime &lt;= now &amp;&amp; now &lt;= periods[i].endTime) {
+    for (uint i = 0; i < periods.length; i++) {
+      if (periods[i].startTime <= now && now <= periods[i].endTime) {
         nowOnSale = true;
         break;
       }
@@ -1498,8 +1498,8 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
     token.changeController(ATCController);
   }
   function distributeToken(uint256 bountyAmount, uint256 partnersAmount, uint256 reserveAmount, uint256 teamAmount) internal {
-    require(bountyAddress != 0x00 &amp;&amp; partnersAddress != 0x00);
-    require(ATCReserveLocker != 0x00 &amp;&amp; teamLocker != 0x00);
+    require(bountyAddress != 0x00 && partnersAddress != 0x00);
+    require(ATCReserveLocker != 0x00 && teamLocker != 0x00);
     token.generateTokens(bountyAddress, bountyAmount);
     token.generateTokens(partnersAddress, partnersAmount);
     token.generateTokens(ATCReserveLocker, reserveAmount);
@@ -1512,12 +1512,12 @@ contract ATCCrowdSale2 is Ownable, SafeMath, Pausable {
   function refundAll(uint256 numToRefund) onlyOwner {
     require(isFinalized);
     require(!minReached());
-    require(numToRefund &gt; 0);
+    require(numToRefund > 0);
     uint256 limit = refundCompleted + numToRefund;
-    if (limit &gt; investorList.length) {
+    if (limit > investorList.length) {
       limit = investorList.length;
     }
-    for(uint256 i = refundCompleted; i &lt; limit; i++) {
+    for(uint256 i = refundCompleted; i < limit; i++) {
       vault.refund(investorList[i]);
     }
     refundCompleted = limit;

@@ -4,7 +4,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,8 +98,8 @@ contract BlockchainCutiesPresale is Pausable
 	}
 	Purchase[] public purchases;
 
-	mapping (uint32 =&gt; uint256) public prices;
-	mapping (uint32 =&gt; uint256) public leftCount;
+	mapping (uint32 => uint256) public prices;
+	mapping (uint32 => uint256) public leftCount;
 
 	event Bid(address indexed owner, uint32 indexed cutieKind);
 
@@ -111,7 +111,7 @@ contract BlockchainCutiesPresale is Pausable
 
 	function isAvailable(uint32 cutieKind) public view returns (bool)
 	{
-		return leftCount[cutieKind] &gt; 0;
+		return leftCount[cutieKind] > 0;
 	}
 
 	function getPrice(uint32 cutieKind) public view returns (uint256 price, uint256 left)
@@ -123,7 +123,7 @@ contract BlockchainCutiesPresale is Pausable
 	function bid(uint32 cutieKind) public payable whenNotPaused
 	{
 		require(isAvailable(cutieKind));
-		require(prices[cutieKind] &lt;= msg.value);
+		require(prices[cutieKind] <= msg.value);
 
 		purchases.push(Purchase(msg.sender, cutieKind));
 		leftCount[cutieKind]--;

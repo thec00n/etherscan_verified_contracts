@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract UserName {
 
-  mapping (address =&gt; mapping (uint =&gt; string)) public userDict;
+  mapping (address => mapping (uint => string)) public userDict;
 
   event OnNameChanged(uint indexed _guid, address indexed _who, string _newName);
 

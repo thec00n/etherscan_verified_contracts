@@ -36,20 +36,20 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
  
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
    
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
  
   /**
   * @dev transfer token for a specified address
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
  
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
  
   /**
    * @dev Transfer tokens from one address to another
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
  
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
  
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
    
@@ -195,7 +195,7 @@ contract BurnableToken is StandardToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -208,9 +208,9 @@ contract BurnableToken is StandardToken {
  
 contract AriumToken is BurnableToken {
    
-  string public constant name = &quot;Arium Token&quot;;
+  string public constant name = "Arium Token";
    
-  string public constant symbol = &quot;ARM&quot;;
+  string public constant symbol = "ARM";
    
   uint32 public constant decimals = 10;
  
@@ -263,7 +263,7 @@ contract AriumCrowdsale is Ownable {
   }
  
   modifier saleIsOn() {
-    require((now &gt; start &amp;&amp; now &lt; start + preico * 1 days) || (now &gt; icostart &amp;&amp; now &lt; icostart + ico * 1 days ) );
+    require((now > start && now < start + preico * 1 days) || (now > icostart && now < icostart + ico * 1 days ) );
     _;
   }
  
@@ -273,22 +273,22 @@ contract AriumCrowdsale is Ownable {
     uint tokens = rate.mul(msg.value).div(1 ether);
     uint bonusTokens = 0;
     uint BonusPerAmount = 0;
-    if(msg.value &gt;= 0.5 ether &amp;&amp; msg.value &lt; 1 ether){
+    if(msg.value >= 0.5 ether && msg.value < 1 ether){
         BonusPerAmount = tokens.div(20);                     // 5% 5/100=1/20
-    } else if (msg.value &gt;= 1 ether &amp;&amp; msg.value &lt; 5 ether){
+    } else if (msg.value >= 1 ether && msg.value < 5 ether){
         BonusPerAmount = tokens.div(10);                     // 10%
-    } else if (msg.value &gt;= 5 ether &amp;&amp; msg.value &lt; 10 ether){
+    } else if (msg.value >= 5 ether && msg.value < 10 ether){
         BonusPerAmount = tokens.mul(15).div(100);
-    } else if (msg.value &gt;= 10 ether &amp;&amp; msg.value &lt; 20 ether){
+    } else if (msg.value >= 10 ether && msg.value < 20 ether){
         BonusPerAmount = tokens.div(5);
-    } else if (msg.value &gt;= 20 ether){
+    } else if (msg.value >= 20 ether){
         BonusPerAmount = tokens.div(4);
     }
-    if(now &lt; start + (preico * 1 days).div(3)) {
+    if(now < start + (preico * 1 days).div(3)) {
       bonusTokens = tokens.div(10).mul(3);
-    } else if(now &gt;= start + (preico * 1 days).div(3) &amp;&amp; now &lt; start + (preico * 1 days).div(3).mul(2)) {
+    } else if(now >= start + (preico * 1 days).div(3) && now < start + (preico * 1 days).div(3).mul(2)) {
       bonusTokens = tokens.div(5);
-    } else if(now &gt;= start + (preico * 1 days).div(3).mul(2) &amp;&amp; now &lt; start + (preico * 1 days)) {
+    } else if(now >= start + (preico * 1 days).div(3).mul(2) && now < start + (preico * 1 days)) {
       bonusTokens = tokens.div(10);
     }
     uint tokensWithBonus = tokens.add(BonusPerAmount);

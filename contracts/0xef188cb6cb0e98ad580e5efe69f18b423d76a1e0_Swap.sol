@@ -84,8 +84,8 @@ contract Swap {
 
 	// Mapping to store swaps made and authorized callers
 
-    mapping(bytes32 =&gt; uint) internal payments;
-    mapping(address =&gt; uint8) internal authorized;
+    mapping(bytes32 => uint) internal payments;
+    mapping(address => uint8) internal authorized;
 
     // Event definitions
 
@@ -144,7 +144,7 @@ contract Swap {
 
      // ---------------------------------------- Ether exchange --------------------------------------------
 
-    if ( etherstosend &gt; 0 ) {   
+    if ( etherstosend > 0 ) {   
 
         // Log Ether received
         EtherReceived ( 1, _address , _value);
@@ -175,13 +175,13 @@ contract Swap {
 
      // ----------------------------------- No tokens or already used -------------------------------------
 
-    if ( payments[_hash] &gt; 0 ) { // Check for accidental replay
-        GXVCReplay( 3, _address ); // Log &quot;Done before&quot;;
+    if ( payments[_hash] > 0 ) { // Check for accidental replay
+        GXVCReplay( 3, _address ); // Log "Done before";
         return;
      }
 
      if ( gpxtosend == 0 ) {
-        GXVCNoToken( 4, _address ); // Log &quot;No GXC tokens found&quot;;
+        GXVCNoToken( 4, _address ); // Log "No GXC tokens found";
         return;
      }
       // ---------------------------------------- GPX exchange --------------------------------------------
@@ -193,7 +193,7 @@ contract Swap {
       // Transfer new tokens to caller
      require( newTok.transferFrom( tokenSpender , _address , gpxtosend ) );
 
-     GXVCSentByToken( 6, _address , gpxtosend ); // Log &quot;New token sent&quot;;
+     GXVCSentByToken( 6, _address , gpxtosend ); // Log "New token sent";
 
      lastBlock = block.number + 1;
 

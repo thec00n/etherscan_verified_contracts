@@ -20,7 +20,7 @@ contract Bombs {
     uint8 last_bumps;
     address made_explode;
   }
-  mapping (uint8 =&gt; Bomb) public bombs;
+  mapping (uint8 => Bomb) public bombs;
   uint256 start_price = 1000000000000000;
 
   address public ceoAddress;
@@ -71,7 +71,7 @@ contract Bombs {
   function buy(uint8 _bomb) public payable {
     require(msg.sender != address(0));
     Bomb storage bomb = bombs[_bomb];
-    require(msg.value &gt;= bomb.price);
+    require(msg.value >= bomb.price);
 
     uint256 excess = SafeMath.sub(msg.value, bomb.price);
     uint256 diff = SafeMath.sub(bomb.price, bomb.last_price);
@@ -135,12 +135,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -79,7 +79,7 @@ contract Game
     address constant NullAddress = 0;
     uint256 constant MaxCompetitionScores = 10;
 
-    mapping(uint32 =&gt; RocketTypes.StockRocket) m_InitialRockets;
+    mapping(uint32 => RocketTypes.StockRocket) m_InitialRockets;
 
     modifier OnlyOwner()
     {
@@ -146,8 +146,8 @@ contract Game
     {
         uint256 profit_funds = uint256(m_Database.Load(NullAddress, ProfitFundsCategory, 0));
 
-        require(withdraw_amount &gt; 0);
-        require(withdraw_amount &lt;= profit_funds);
+        require(withdraw_amount > 0);
+        require(withdraw_amount <= profit_funds);
         require(beneficiary != address(0));
         require(beneficiary != address(this));
         require(beneficiary != address(m_Database));
@@ -162,10 +162,10 @@ contract Game
     // 1 write
     function WithdrawWinnings(uint256 withdraw_amount) public NotWhilePaused()
     {
-        require(withdraw_amount &gt; 0);
+        require(withdraw_amount > 0);
 
         uint256 withdrawal_funds = uint256(m_Database.Load(msg.sender, WithdrawalFundsCategory, 0));
-        require(withdraw_amount &lt;= withdrawal_funds);
+        require(withdraw_amount <= withdrawal_funds);
 
         withdrawal_funds -= withdraw_amount;
 
@@ -178,7 +178,7 @@ contract Game
     {
         RocketTypes.Rocket memory rocket = RocketTypes.DeserializeRocket(m_Database.Load(NullAddress, RocketCategory, rocket_id));
 
-        is_valid = rocket.m_Version &gt;= 1;
+        is_valid = rocket.m_Version >= 1;
         is_for_sale = rocket.m_IsForSale == 1;
         top_speed = rocket.m_TopSpeed;
         thrust = rocket.m_Thrust;
@@ -240,10 +240,10 @@ contract Game
         uint256 inventory_count = GetInventoryCount(target);
 
         uint256 end = start_index + 8;
-        if (end &gt; inventory_count)
+        if (end > inventory_count)
             end = inventory_count;
 
-        for (uint256 i = start_index; i &lt; end; i++)
+        for (uint256 i = start_index; i < end; i++)
         {
             rocket_ids[i - start_index] = uint32(uint256(m_Database.Load(target, InventoryCategory, i + 1)));
         }
@@ -286,7 +286,7 @@ contract Game
         //require(referrer != msg.sender);
         uint32 stock = GetRocketStock(stock_id);
 
-        require(stock &gt; 0);
+        require(stock > 0);
 
         GiveRocketInternal(stock_id, msg.sender, true, referrer);
 
@@ -365,7 +365,7 @@ contract Game
     function PlaceRocketForSale(uint32 rocket_id, uint80 price) NotWhilePaused() public
     {
         RocketTypes.Rocket memory rocket = RocketTypes.DeserializeRocket(m_Database.Load(NullAddress, RocketCategory, rocket_id));
-        require(rocket.m_Version &gt; 0);
+        require(rocket.m_Version > 0);
 
         OwnershipTypes.Ownership memory ownership = OwnershipTypes.DeserializeOwnership(m_Database.Load(NullAddress, OwnershipCategory, rocket_id));
         require(ownership.m_Owner == msg.sender);
@@ -387,7 +387,7 @@ contract Game
     function RemoveRocketForSale(uint32 rocket_id) NotWhilePaused() public
     {
         RocketTypes.Rocket memory rocket = RocketTypes.DeserializeRocket(m_Database.Load(NullAddress, RocketCategory, rocket_id));
-        require(rocket.m_Version &gt; 0);
+        require(rocket.m_Version > 0);
         require(rocket.m_IsForSale == 1);
 
         OwnershipTypes.Ownership memory ownership = OwnershipTypes.DeserializeOwnership(m_Database.Load(NullAddress, OwnershipCategory, rocket_id));
@@ -404,7 +404,7 @@ contract Game
     function BuyRocketForSale(uint32 rocket_id) payable NotWhilePaused() public
     {
         RocketTypes.Rocket memory rocket = RocketTypes.DeserializeRocket(m_Database.Load(NullAddress, RocketCategory, rocket_id));
-        require(rocket.m_Version &gt; 0);
+        require(rocket.m_Version > 0);
 
         require(rocket.m_IsForSale == 1);
 
@@ -476,11 +476,11 @@ contract Game
         stack.m_Ownership = OwnershipTypes.DeserializeOwnership(m_Database.Load(NullAddress, OwnershipCategory, rocket_id));
 
         require(stack.m_Mission.m_IsStarted == 1);
-        require(stack.m_Rocket.m_Version &gt; 0);
+        require(stack.m_Rocket.m_Version > 0);
         require(stack.m_Rocket.m_IsForSale == 0);
         require(msg.value == uint256(stack.m_Mission.m_LaunchCost));
         require(stack.m_Ownership.m_Owner == msg.sender);
-        require(launch_thrust &lt;= stack.m_Rocket.m_Thrust);
+        require(launch_thrust <= stack.m_Rocket.m_Thrust);
 
         stack.m_MissionWindSpeed = stack.m_Mission.m_WindSpeed;
         stack.m_MissionLaunchLocation = stack.m_Mission.m_LaunchLocation;
@@ -544,14 +544,14 @@ contract Game
 
         CompetitionScoreTypes.CompetitionScore memory score;
 
-        for (uint32 i = 0; i &lt; stack.m_Mission.m_ValidCompetitionScores; i++)
+        for (uint32 i = 0; i < stack.m_Mission.m_ValidCompetitionScores; i++)
         {
             // Check if the new score is better than the score that this user already has (if they are in the top x)
             score = CompetitionScoreTypes.DeserializeCompetitionScore(m_Database.Load(stack.m_CompetitionId, CompetitionScoresCategory, i));
 
             if (score.m_Owner == stack.m_Launcher)
             {
-                if (stack.m_FinalDistance &lt; score.m_Distance)
+                if (stack.m_FinalDistance < score.m_Distance)
                 {
                     m_Database.Store(stack.m_CompetitionId, CompetitionScoresCategory, i, CompetitionScoreTypes.SerializeCompetitionScore(new_score));
                 }
@@ -559,7 +559,7 @@ contract Game
             }
         }
 
-        if (stack.m_Mission.m_ValidCompetitionScores &lt; MaxCompetitionScores)
+        if (stack.m_Mission.m_ValidCompetitionScores < MaxCompetitionScores)
         {
             // Not enough scores, so this one is automatically one of the best
             m_Database.Store(stack.m_CompetitionId, CompetitionScoresCategory, stack.m_Mission.m_ValidCompetitionScores, CompetitionScoreTypes.SerializeCompetitionScore(new_score));
@@ -570,11 +570,11 @@ contract Game
 
         uint64 highest_distance = 0;
         uint32 highest_index = 0xFFFFFFFF;
-        for (i = 0; i &lt; stack.m_Mission.m_ValidCompetitionScores; i++)
+        for (i = 0; i < stack.m_Mission.m_ValidCompetitionScores; i++)
         {
             score = CompetitionScoreTypes.DeserializeCompetitionScore(m_Database.Load(stack.m_CompetitionId, CompetitionScoresCategory, i));
 
-            if (score.m_Distance &gt; highest_distance)
+            if (score.m_Distance > highest_distance)
             {
                 highest_distance = score.m_Distance;
                 highest_index = i;
@@ -586,7 +586,7 @@ contract Game
             score = CompetitionScoreTypes.DeserializeCompetitionScore(m_Database.Load(stack.m_CompetitionId, CompetitionScoresCategory, highest_index));
 
             // Check if the new score is better than the highest score
-            if (stack.m_FinalDistance &lt; score.m_Distance)
+            if (stack.m_FinalDistance < score.m_Distance)
             {
                 m_Database.Store(stack.m_CompetitionId, CompetitionScoresCategory, highest_index, CompetitionScoreTypes.SerializeCompetitionScore(new_score));
                 return;
@@ -648,7 +648,7 @@ contract Game
         address[] memory winners = new address[](5);
         uint64[] memory distances = new uint64[](5);
 
-        for (uint32 i = 0; i &lt; 5; i++)
+        for (uint32 i = 0; i < 5; i++)
         {
             score = CompetitionScoreTypes.DeserializeCompetitionScore(m_Database.Load(competition_id, CompetitionScoresCategory, offset + i));
             winners[i] = score.m_Owner;
@@ -665,7 +665,7 @@ contract Game
 
         (scores, parameters) = MakeAndSortCompetitionScores(competition_id);
 
-        for (uint256 i = 0; i &lt; parameters.m_ValidCompetitionScores; i++)
+        for (uint256 i = 0; i < parameters.m_ValidCompetitionScores; i++)
         {
             m_Database.Store(competition_id, CompetitionScoresCategory, i, CompetitionScoreTypes.SerializeCompetitionScore(scores[i]));
         }
@@ -676,7 +676,7 @@ contract Game
         parameters = MissionParametersTypes.DeserializeMissionParameters(m_Database.Load(NullAddress, MissionParametersCategory, competition_id));
         scores = new CompetitionScoreTypes.CompetitionScore[](MaxCompetitionScores + 1);
 
-        for (uint256 i = 0; i &lt; parameters.m_ValidCompetitionScores; i++)
+        for (uint256 i = 0; i < parameters.m_ValidCompetitionScores; i++)
         {
             scores[i] = CompetitionScoreTypes.DeserializeCompetitionScore(m_Database.Load(competition_id, CompetitionScoresCategory, i));
         }
@@ -699,7 +699,7 @@ contract Game
         uint256 original_competition_funds = uint256(m_Database.Load(NullAddress, CompetitionFundsCategory, competition_id));
         uint256 competition_funds_remaining = original_competition_funds;
 
-        for (uint256 i = 0; i &lt; parameters.m_ValidCompetitionScores; i++)
+        for (uint256 i = 0; i < parameters.m_ValidCompetitionScores; i++)
         {
             RocketTypes.Rocket memory rocket = RocketTypes.DeserializeRocket(m_Database.Load(NullAddress, RocketCategory, scores[i].m_RocketId));
             RocketTypes.StockRocket storage stock_rocket = m_InitialRockets[rocket.m_StockId];
@@ -718,7 +718,7 @@ contract Game
 
             uint256 funds_won = original_competition_funds / (2 ** (i + 1));
 
-            if (funds_won &gt; competition_funds_remaining)
+            if (funds_won > competition_funds_remaining)
                 funds_won = competition_funds_remaining;
 
             existing_funds += funds_won;
@@ -727,7 +727,7 @@ contract Game
             m_Database.Store(scores[i].m_Owner, WithdrawalFundsCategory, 0, bytes32(existing_funds));
         }
 
-        if (competition_funds_remaining &gt; 0)
+        if (competition_funds_remaining > 0)
         {
             scores[MaxCompetitionScores] = CompetitionScoreTypes.DeserializeCompetitionScore(m_Database.Load(competition_id, CompetitionScoresCategory, 0));
             existing_funds = uint256(m_Database.Load(scores[MaxCompetitionScores].m_Owner, WithdrawalFundsCategory, 0));
@@ -749,7 +749,7 @@ contract Game
     function LerpExtra(uint256 min, uint256 max, uint256 current, bytes1 total_extra_percent) internal pure returns (uint256)
     {
         current += Lerp(min, max, total_extra_percent) - min;
-        if (current &lt; min || current &gt; max)
+        if (current < min || current > max)
             current = max;
         return current;
     }
@@ -757,7 +757,7 @@ contract Game
     function LerpLess(uint256 min, uint256 max, uint256 current, bytes1 total_less_percent) internal pure returns (uint256)
     {
         current -= Lerp(min, max, total_less_percent) - min;
-        if (current &lt; min || current &gt; max)
+        if (current < min || current > max)
             current = min;
         return current;
     }
@@ -768,9 +768,9 @@ contract Game
         while (true)
         {
             bool swapped = false;
-            for (uint32 i = 1; i &lt; n; i++)
+            for (uint32 i = 1; i < n; i++)
             {
-                if (scores[i - 1].m_Distance &gt; scores[i].m_Distance)
+                if (scores[i - 1].m_Distance > scores[i].m_Distance)
                 {
                     scores[MaxCompetitionScores] = scores[i - 1];
                     scores[i - 1] = scores[i];
@@ -1191,67 +1191,67 @@ library Serializer
 
     function ReadUint8(DataComponent memory self, uint32 offset) internal pure returns (uint8)
     {
-        return uint8((self.m_Raw &gt;&gt; (offset * 8)) &amp; 0xFF);
+        return uint8((self.m_Raw >> (offset * 8)) & 0xFF);
     }
 
     function WriteUint8(DataComponent memory self, uint32 offset, uint8 value) internal pure
     {
-        self.m_Raw |= (bytes32(value) &lt;&lt; (offset * 8));
+        self.m_Raw |= (bytes32(value) << (offset * 8));
     }
 
     function ReadUint16(DataComponent memory self, uint32 offset) internal pure returns (uint16)
     {
-        return uint16((self.m_Raw &gt;&gt; (offset * 8)) &amp; 0xFFFF);
+        return uint16((self.m_Raw >> (offset * 8)) & 0xFFFF);
     }
 
     function WriteUint16(DataComponent memory self, uint32 offset, uint16 value) internal pure
     {
-        self.m_Raw |= (bytes32(value) &lt;&lt; (offset * 8));
+        self.m_Raw |= (bytes32(value) << (offset * 8));
     }
 
     function ReadUint32(DataComponent memory self, uint32 offset) internal pure returns (uint32)
     {
-        return uint32((self.m_Raw &gt;&gt; (offset * 8)) &amp; 0xFFFFFFFF);
+        return uint32((self.m_Raw >> (offset * 8)) & 0xFFFFFFFF);
     }
 
     function WriteUint32(DataComponent memory self, uint32 offset, uint32 value) internal pure
     {
-        self.m_Raw |= (bytes32(value) &lt;&lt; (offset * 8));
+        self.m_Raw |= (bytes32(value) << (offset * 8));
     }
 
     function ReadUint64(DataComponent memory self, uint32 offset) internal pure returns (uint64)
     {
-        return uint64((self.m_Raw &gt;&gt; (offset * 8)) &amp; 0xFFFFFFFFFFFFFFFF);
+        return uint64((self.m_Raw >> (offset * 8)) & 0xFFFFFFFFFFFFFFFF);
     }
 
     function WriteUint64(DataComponent memory self, uint32 offset, uint64 value) internal pure
     {
-        self.m_Raw |= (bytes32(value) &lt;&lt; (offset * 8));
+        self.m_Raw |= (bytes32(value) << (offset * 8));
     }
 
     function ReadUint80(DataComponent memory self, uint32 offset) internal pure returns (uint80)
     {
-        return uint80((self.m_Raw &gt;&gt; (offset * 8)) &amp; 0xFFFFFFFFFFFFFFFFFFFF);
+        return uint80((self.m_Raw >> (offset * 8)) & 0xFFFFFFFFFFFFFFFFFFFF);
     }
 
     function WriteUint80(DataComponent memory self, uint32 offset, uint80 value) internal pure
     {
-        self.m_Raw |= (bytes32(value) &lt;&lt; (offset * 8));
+        self.m_Raw |= (bytes32(value) << (offset * 8));
     }
 
     function ReadAddress(DataComponent memory self, uint32 offset) internal pure returns (address)
     {
-        return address((self.m_Raw &gt;&gt; (offset * 8)) &amp; (
-            (0xFFFFFFFF &lt;&lt; 0)  |
-            (0xFFFFFFFF &lt;&lt; 32) |
-            (0xFFFFFFFF &lt;&lt; 64) |
-            (0xFFFFFFFF &lt;&lt; 96) |
-            (0xFFFFFFFF &lt;&lt; 128)
+        return address((self.m_Raw >> (offset * 8)) & (
+            (0xFFFFFFFF << 0)  |
+            (0xFFFFFFFF << 32) |
+            (0xFFFFFFFF << 64) |
+            (0xFFFFFFFF << 96) |
+            (0xFFFFFFFF << 128)
         ));
     }
 
     function WriteAddress(DataComponent memory self, uint32 offset, address value) internal pure
     {
-        self.m_Raw |= (bytes32(value) &lt;&lt; (offset * 8));
+        self.m_Raw |= (bytes32(value) << (offset * 8));
     }
 }

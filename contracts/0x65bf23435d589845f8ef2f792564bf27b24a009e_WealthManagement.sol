@@ -11,26 +11,26 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal pure returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -138,7 +138,7 @@ contract WealthManagement is Owned, SafeMath {
     {
       uint256 currentBalance = AbstractToken(currency).balanceOf(address(this));
 
-      require(currentBalance &gt;= withdrawAmount);
+      require(currentBalance >= withdrawAmount);
 
       require(AbstractToken(currency).transfer(owner, withdrawAmount));
 

@@ -13,13 +13,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -113,10 +113,10 @@ contract Presale is owned {
     function () payable {
         uint256 tokens = msg.value / buyingPrice;
 
-        if (presaleStart &lt; now &amp;&amp; stage1Start &gt; now) {
-            require(msg.value &gt;= 30 ether);
-        } else if (stage1Start &lt; now &amp;&amp; saleEnd &gt; now) {
-            require(tokens &gt;= 20);
+        if (presaleStart < now && stage1Start > now) {
+            require(msg.value >= 30 ether);
+        } else if (stage1Start < now && saleEnd > now) {
+            require(tokens >= 20);
         } else {
             revert();
         }

@@ -1,5 +1,5 @@
 // Bubble token air drop smart contract.
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="b2dbdcd4ddf2c2dad7dcdddf9cc6d7d3df">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="b2dbdcd4ddf2c2dad7dcdddf9cc6d7d3df">[email protected]</span>>
 pragma solidity ^0.4.18;
 
 /**
@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal constant returns(uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal constant returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,8 +46,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -66,8 +66,8 @@ contract ERC20 {
  */
 contract BubbleToneToken is ERC20 {
     using SafeMath for uint;
-    string public name = &quot;Universal Bonus Token | t.me/bubbletonebot&quot;;
-    string public symbol = &quot;UBT&quot;;
+    string public name = "Universal Bonus Token | t.me/bubbletonebot";
+    string public symbol = "UBT";
     uint public decimals = 18;  
 
     // Smart-contract owner address
@@ -85,7 +85,7 @@ contract BubbleToneToken is ERC20 {
     bool public tokensAreFrozen = true;
 
     // mapping of user permissions
-    mapping(address =&gt; bool) public isManager;
+    mapping(address => bool) public isManager;
 
 
     // Allows execution by the owner only
@@ -112,7 +112,7 @@ contract BubbleToneToken is ERC20 {
 
    /**
     *   @dev Get balance of tokens holder
-    *   @param _holder        holder&#39;s address
+    *   @param _holder        holder's address
     *   @return               balance of investor
     */
     function balanceOf(address _holder) constant returns (uint) {
@@ -130,7 +130,7 @@ contract BubbleToneToken is ERC20 {
     */
     function transfer(address _to, uint _amount) public returns (bool) {
         require(!tokensAreFrozen);
-        require(_to != address(0) &amp;&amp; _to != address(this));
+        require(_to != address(0) && _to != address(this));
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -242,7 +242,7 @@ contract BubbleToneToken is ERC20 {
         external
         onlyManagers {
         require(_holders.length == _amount.length);
-        for (uint i = 0; i &lt; _holders.length; i++) {
+        for (uint i = 0; i < _holders.length; i++) {
             require(_mint(_holders[i], _amount[i]));
         }
     }
@@ -253,7 +253,7 @@ contract BubbleToneToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _holder, uint _value) external onlyManagers {
-        require(balances[_holder] &gt; 0);
+        require(balances[_holder] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_holder] = balances[_holder].sub(_value);
         Burn(_holder, _value);
@@ -282,8 +282,8 @@ contract BubbleToneToken is ERC20 {
     *   @param _value        amount of tokens to issue
     */
     function _mint(address _holder, uint _value) private returns (bool) {
-        require(_value &gt; 0);
-        require(_holder != address(0) &amp;&amp; _holder != address(this));
+        require(_value > 0);
+        require(_holder != address(0) && _holder != address(this));
         balances[_holder] = balances[_holder].add(_value);
         totalSupply = totalSupply.add(_value);
         Transfer(address(0), _holder, _value);

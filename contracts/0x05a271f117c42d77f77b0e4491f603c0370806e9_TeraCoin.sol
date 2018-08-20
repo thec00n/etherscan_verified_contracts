@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,7 +95,7 @@ contract Token {
 contract BaseToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -103,7 +103,7 @@ contract BaseToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -125,15 +125,15 @@ contract BaseToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract TeraCoin is BaseToken, Destructible  {
-    string public name = &quot;TeraCoin&quot;;
+    string public name = "TeraCoin";
     uint8 public decimals = 0;
-    string public symbol = &quot;TERA&quot;;
-    string public version = &#39;0.1&#39;;
+    string public symbol = "TERA";
+    string public version = '0.1';
     
     function TeraCoin() {
         totalSupply = 1000000000000;

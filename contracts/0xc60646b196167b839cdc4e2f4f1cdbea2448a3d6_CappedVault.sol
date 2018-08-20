@@ -30,7 +30,7 @@ contract Vault is Ownable {
    }
 
    function withdraw(uint amount) public onlyOwner {
-       require(address(this).balance &gt;= amount);
+       require(address(this).balance >= amount);
        owner.transfer(amount);
    }
 
@@ -49,7 +49,7 @@ contract CappedVault is Vault {
     }
 
     function () public payable {
-        require(total() + msg.value &lt;= limit);
+        require(total() + msg.value <= limit);
     }
 
     function total() public view returns(uint) {
@@ -57,7 +57,7 @@ contract CappedVault is Vault {
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(address(this).balance &gt;= amount);
+        require(address(this).balance >= amount);
         owner.transfer(amount);
         withdrawn += amount;
     }

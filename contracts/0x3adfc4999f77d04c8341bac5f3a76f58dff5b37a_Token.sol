@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -229,7 +229,7 @@ contract MultiOwners {
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
 
     function MultiOwners() {
         owners[msg.sender] = true;
@@ -294,10 +294,10 @@ contract Sale is MultiOwners {
     bool public refundAllowed;
 
     // 
-    mapping(address =&gt; uint256) public etherBalances;
+    mapping(address => uint256) public etherBalances;
 
     // 
-    mapping(address =&gt; uint256) public whitelist;
+    mapping(address => uint256) public whitelist;
 
     // bounty tokens
     uint256 public bountyReward;
@@ -313,27 +313,27 @@ contract Sale is MultiOwners {
     event Whitelist(address indexed beneficiary, uint256 value);
 
     modifier validPurchase(address contributor) {
-        bool withinPeriod = ((now &gt;= startTime || checkWhitelist(contributor, msg.value)) &amp;&amp; now &lt;= endTime);
+        bool withinPeriod = ((now >= startTime || checkWhitelist(contributor, msg.value)) && now <= endTime);
         bool nonZeroPurchase = msg.value != 0;
-        require(withinPeriod &amp;&amp; nonZeroPurchase);
+        require(withinPeriod && nonZeroPurchase);
 
         _;        
     }
 
     modifier isStarted() {
-        require(now &gt;= startTime);
+        require(now >= startTime);
 
         _;        
     }
 
     modifier isExpired() {
-        require(now &gt; endTime);
+        require(now > endTime);
 
         _;        
     }
 
     function Sale(uint256 _startTime, address _wallet) {
-        require(_startTime &gt;=  now);
+        require(_startTime >=  now);
         require(_wallet != 0x0);
 
         token = new Token();
@@ -396,11 +396,11 @@ contract Sale is MultiOwners {
     }
 
     function hardCapReached() constant public returns (bool) {
-        return ((hardCap * 999) / 1000) &lt;= totalEthers;
+        return ((hardCap * 999) / 1000) <= totalEthers;
     }
 
     function softCapReached() constant public returns(bool) {
-        return totalEthers &gt;= softCap;
+        return totalEthers >= softCap;
     }
 
     /*
@@ -419,13 +419,13 @@ contract Sale is MultiOwners {
     function calcAmountAt(uint256 _value, uint256 at) public constant returns (uint256) {
         uint rate;
 
-        if(startTime + 2 days &gt;= at) {
+        if(startTime + 2 days >= at) {
             rate = 140;
-        } else if(startTime + 7 days &gt;= at) {
+        } else if(startTime + 7 days >= at) {
             rate = 130;
-        } else if(startTime + 14 days &gt;= at) {
+        } else if(startTime + 14 days >= at) {
             rate = 120;
-        } else if(startTime + 21 days &gt;= at) {
+        } else if(startTime + 21 days >= at) {
             rate = 110;
         } else {
             rate = 105;
@@ -436,11 +436,11 @@ contract Sale is MultiOwners {
     /*
      * @dev check contributor is whitelisted or not for buy token 
      * @param contributor
-     * @param amount &#226; how much ethers contributor wants to spend
+     * @param amount â how much ethers contributor wants to spend
      * @return true if access allowed
      */
     function checkWhitelist(address contributor, uint256 amount) internal returns (bool) {
-        return etherBalances[contributor] + amount &lt;= whitelist[contributor];
+        return etherBalances[contributor] + amount <= whitelist[contributor];
     }
 
     /*
@@ -464,7 +464,7 @@ contract Sale is MultiOwners {
 
         require(contributors.length == amounts.length);
 
-        for (uint i = 0; i &lt; contributors.length; i++) {
+        for (uint i = 0; i < contributors.length; i++) {
             contributor = contributors[i];
             amount = amounts[i];
             require(addWhitelist(contributor, amount));
@@ -480,36 +480,36 @@ contract Sale is MultiOwners {
         uint256 amount = calcAmountAt(msg.value, block.timestamp);
   
         require(contributor != 0x0) ;
-        require(minimalEther &lt;= msg.value);
-        require(token.totalSupply() + amount &lt;= maximumTokens);
+        require(minimalEther <= msg.value);
+        require(token.totalSupply() + amount <= maximumTokens);
 
         token.mint(contributor, amount);
         TokenPurchase(contributor, msg.value, amount);
 
         if(softCapReached()) {
             totalEthers = totalEthers + msg.value;
-        } else if (this.balance &gt;= softCap) {
+        } else if (this.balance >= softCap) {
             totalEthers = this.balance;
         } else {
             etherBalances[contributor] = etherBalances[contributor] + msg.value;
         }
 
-        require(totalEthers &lt;= hardCap);
+        require(totalEthers <= hardCap);
     }
 
     // @withdraw to wallet
     function withdraw() onlyOwner public {
         require(softCapReached());
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
 
         wallet.transfer(this.balance);
     }
 
     // @withdraw token to wallet
     function withdrawTokenToFounder() onlyOwner public {
-        require(token.balanceOf(this) &gt; 0);
+        require(token.balanceOf(this) > 0);
         require(softCapReached());
-        require(startTime + 1 years &lt; now);
+        require(startTime + 1 years < now);
 
         token.transfer(wallet, token.balanceOf(this));
     }
@@ -518,8 +518,8 @@ contract Sale is MultiOwners {
     function refund() isExpired public {
         require(refundAllowed);
         require(!softCapReached());
-        require(etherBalances[msg.sender] &gt; 0);
-        require(token.balanceOf(msg.sender) &gt; 0);
+        require(etherBalances[msg.sender] > 0);
+        require(token.balanceOf(msg.sender) > 0);
 
         uint256 current_balance = etherBalances[msg.sender];
         etherBalances[msg.sender] = 0;
@@ -529,7 +529,7 @@ contract Sale is MultiOwners {
     }
 
     function finishCrowdsale() onlyOwner public {
-        require(now &gt; endTime || hardCapReached());
+        require(now > endTime || hardCapReached());
         require(!token.mintingFinished());
 
         bountyReward = token.totalSupply() * 3 / 83; 
@@ -550,14 +550,14 @@ contract Sale is MultiOwners {
 
     // @return true if crowdsale event has ended
     function running() public constant returns (bool) {
-        return now &gt;= startTime &amp;&amp; !(now &gt; endTime || hardCapReached());
+        return now >= startTime && !(now > endTime || hardCapReached());
     }
 }
 
 contract Token is MintableToken {
 
-    string public constant name = &#39;Privatix&#39;;
-    string public constant symbol = &#39;PRIX&#39;;
+    string public constant name = 'Privatix';
+    string public constant symbol = 'PRIX';
     uint8 public constant decimals = 8;
     bool public transferAllowed;
 
@@ -565,7 +565,7 @@ contract Token is MintableToken {
     event TransferAllowed(bool);
 
     modifier canTransfer() {
-        require(mintingFinished &amp;&amp; transferAllowed);
+        require(mintingFinished && transferAllowed);
         _;        
     }
     

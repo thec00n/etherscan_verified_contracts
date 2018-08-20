@@ -8,11 +8,11 @@ contract CryptoPicture {
 	bytes32[29]			_cryptoPicture;
 	bool		public	_endEdit;
 
-	mapping ( bytes32 =&gt; string ) 	_namePicture;
-	mapping ( bytes32 =&gt; string ) 	_author;
-	mapping ( bytes32 =&gt; bytes32 ) 	_hashPicture;
-	mapping ( bytes32 =&gt; address ) 	_owner;
-	mapping ( address =&gt; mapping ( address =&gt; mapping ( bytes32 =&gt; bool ) ) ) 	_allowance;
+	mapping ( bytes32 => string ) 	_namePicture;
+	mapping ( bytes32 => string ) 	_author;
+	mapping ( bytes32 => bytes32 ) 	_hashPicture;
+	mapping ( bytes32 => address ) 	_owner;
+	mapping ( address => mapping ( address => mapping ( bytes32 => bool ) ) ) 	_allowance;
 
 	event 	Transfer( address from, address to, bytes32 picture );
 	event 	Approval( address owner, address spender, bytes32 cryptoPicture, bool resolution );
@@ -35,7 +35,7 @@ contract CryptoPicture {
 	}
 
 	function 	assertId( uint id ) view private {
-		if ( id &gt;= _supply )
+		if ( id >= _supply )
 			assert( false );
 	}
 

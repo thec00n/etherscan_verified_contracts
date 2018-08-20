@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -45,7 +45,7 @@ contract ElecWhitelist is Ownable {
     // after kyc registration ends, we change it to the actual value with setUsersCap
     /// Currenty we set the cap to 1 ETH and the owner is able to change it in the future by call function: setUsersCap
     uint public communityusersCap = 1067*(10**15);
-    mapping(address=&gt;uint) public addressCap;
+    mapping(address=>uint) public addressCap;
 
     function ElecWhitelist() public {}
 
@@ -61,7 +61,7 @@ contract ElecWhitelist is Ownable {
     // an optimization in case of network congestion
     function listAddresses( address[] _users, uint[] _cap ) public onlyOwner {
         require(_users.length == _cap.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _cap[i] );
         }
     }

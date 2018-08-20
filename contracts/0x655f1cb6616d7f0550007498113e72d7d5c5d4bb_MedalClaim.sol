@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -53,12 +53,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -280,11 +280,11 @@ contract MedalClaim is AccessControl, SafeMath  {
     
          // Stores which address have claimed which tokens, to avoid one address claiming the same token twice.
          //Note - this does NOT affect medals won on the sponsored leaderboards;
-  mapping (address =&gt; bool[12]) public claimedbyAddress;
+  mapping (address => bool[12]) public claimedbyAddress;
   
   //Stores which cards have been used to claim medals, to avoid transfering a key card to another account and claiming another medal. 
-  mapping (uint64 =&gt; bool) public angelsClaimedCardboard;
-  mapping (uint64 =&gt; bool) public petsClaimedGold;
+  mapping (uint64 => bool) public angelsClaimedCardboard;
+  mapping (uint64 => bool) public petsClaimedGold;
 
 
     // write functions
@@ -299,7 +299,7 @@ contract MedalClaim is AccessControl, SafeMath  {
     function checkExistsOwnedAngel (uint64 angelId) private constant returns (bool) {
         IAngelCardData angelCardData = IAngelCardData(angelCardDataContract);
        
-        if ((angelId &lt;= 0) || (angelId &gt; angelCardData.getTotalAngels())) {return false;}
+        if ((angelId <= 0) || (angelId > angelCardData.getTotalAngels())) {return false;}
         address angelowner;
         (,,,,,,,,,,angelowner) = angelCardData.getAngel(angelId);
         if (angelowner == msg.sender) {return true;}
@@ -310,7 +310,7 @@ contract MedalClaim is AccessControl, SafeMath  {
     function checkExistsOwnedPet (uint64 petId) private constant returns (bool) {
           IPetCardData petCardData = IPetCardData(petCardDataContract);
        
-        if ((petId &lt;= 0) || (petId &gt; petCardData.getTotalPets())) {return false;}
+        if ((petId <= 0) || (petId > petCardData.getTotalPets())) {return false;}
         address petowner;
          (,,,,,,,petowner) = petCardData.getPet(petId);
         if (petowner == msg.sender) {return true;}
@@ -322,7 +322,7 @@ contract MedalClaim is AccessControl, SafeMath  {
     function getPetCardSeries (uint64 petId) public constant returns (uint8) {
           IPetCardData petCardData = IPetCardData(petCardDataContract);
        
-        if ((petId &lt;= 0) || (petId &gt; petCardData.getTotalPets())) {revert();}
+        if ((petId <= 0) || (petId > petCardData.getTotalPets())) {revert();}
         uint8 seriesId;
          (,seriesId,,,,,,,,) = petCardData.getPet(petId);
         return uint8(seriesId);
@@ -334,8 +334,8 @@ contract MedalClaim is AccessControl, SafeMath  {
          if (claimedbyAddress[msg.sender][0] == true) {revert();}
          
          //angelIds must be called in ORDER. This prevents computationally expensive checks to avoid duplicates. 
-         if ((angel1Id &lt; angel2Id) &amp;&amp; (angel2Id &lt; angel3Id) &amp;&amp; (angel3Id &lt; angel4Id) &amp;&amp; (angel4Id &lt;angel5Id)) {
-             if ((checkExistsOwnedAngel(angel1Id) == true) &amp;&amp; (checkExistsOwnedAngel(angel2Id) == true) &amp;&amp; (checkExistsOwnedAngel(angel3Id) == true) &amp;&amp; (checkExistsOwnedAngel(angel4Id) == true)  &amp;&amp; (checkExistsOwnedAngel(angel5Id) == true)) {
+         if ((angel1Id < angel2Id) && (angel2Id < angel3Id) && (angel3Id < angel4Id) && (angel4Id <angel5Id)) {
+             if ((checkExistsOwnedAngel(angel1Id) == true) && (checkExistsOwnedAngel(angel2Id) == true) && (checkExistsOwnedAngel(angel3Id) == true) && (checkExistsOwnedAngel(angel4Id) == true)  && (checkExistsOwnedAngel(angel5Id) == true)) {
              IMedalData medalData = IMedalData(medalDataContract);   
              medalData._createMedal(msg.sender, 0);
              EventMedalSuccessful(msg.sender,0);
@@ -349,8 +349,8 @@ contract MedalClaim is AccessControl, SafeMath  {
         
           //can only claim each medal once per address. 
          if (claimedbyAddress[msg.sender][1] == true) {revert();}
-         if ((getPetCardSeries(geckoId) == 1) &amp;&amp; (getPetCardSeries(parakeetId) == 2) &amp;&amp; (getPetCardSeries(catId) == 3) &amp;&amp; (getPetCardSeries(horseId) == 4)) {
-             if ((checkExistsOwnedPet(geckoId) == true) &amp;&amp; (checkExistsOwnedPet(parakeetId) == true) &amp;&amp; (checkExistsOwnedPet(catId) == true) &amp;&amp; (checkExistsOwnedPet(horseId) == true)) {
+         if ((getPetCardSeries(geckoId) == 1) && (getPetCardSeries(parakeetId) == 2) && (getPetCardSeries(catId) == 3) && (getPetCardSeries(horseId) == 4)) {
+             if ((checkExistsOwnedPet(geckoId) == true) && (checkExistsOwnedPet(parakeetId) == true) && (checkExistsOwnedPet(catId) == true) && (checkExistsOwnedPet(horseId) == true)) {
              IMedalData medalData = IMedalData(medalDataContract);   
              claimedbyAddress[msg.sender][1] = true;
              medalData._createMedal(msg.sender, 1);
@@ -368,7 +368,7 @@ contract MedalClaim is AccessControl, SafeMath  {
                     IAngelCardData angelCardData = IAngelCardData(angelCardDataContract);
                     uint16 experience;
                     (,,,,experience,,,,,,) = angelCardData.getAngel(angelId);
-                    if (experience &gt;= 100) {
+                    if (experience >= 100) {
                          claimedbyAddress[msg.sender][2] = true;
                          IMedalData medalData = IMedalData(medalDataContract);   
                          medalData._createMedal(msg.sender, 2);
@@ -385,7 +385,7 @@ contract MedalClaim is AccessControl, SafeMath  {
             if (claimedbyAddress[msg.sender][4] == true) {revert();}
                 uint8[6] memory Auras;
                 IAngelCardData angelCardData = IAngelCardData(angelCardDataContract);
-            if  ((checkExistsOwnedAngel(blueAngel) == true) &amp;&amp; (checkExistsOwnedAngel(redAngel) == true) &amp;&amp; (checkExistsOwnedAngel(greenAngel) == true) &amp;&amp; (checkExistsOwnedAngel(purpleAngel) == true) &amp;&amp; (checkExistsOwnedAngel(yellowAngel) == true) &amp;&amp; (checkExistsOwnedAngel(orangeAngel) == true)) {
+            if  ((checkExistsOwnedAngel(blueAngel) == true) && (checkExistsOwnedAngel(redAngel) == true) && (checkExistsOwnedAngel(greenAngel) == true) && (checkExistsOwnedAngel(purpleAngel) == true) && (checkExistsOwnedAngel(yellowAngel) == true) && (checkExistsOwnedAngel(orangeAngel) == true)) {
                    //read all Aura colors       
                     (,,,Auras[0],,,,,,,) = angelCardData.getAngel(blueAngel);
                     (,,,Auras[1],,,,,,,) = angelCardData.getAngel(yellowAngel);
@@ -394,7 +394,7 @@ contract MedalClaim is AccessControl, SafeMath  {
                     (,,,Auras[4],,,,,,,) = angelCardData.getAngel(redAngel);
                     (,,,Auras[5],,,,,,,) = angelCardData.getAngel(greenAngel);
                     //make sure each angel is of appropriate aura color
-                    for (uint i=0;i&lt;6;i++) {
+                    for (uint i=0;i<6;i++) {
                         if (Auras[i] != i) {revert();}
                     }
                         claimedbyAddress[msg.sender][4] == true;
@@ -412,8 +412,8 @@ contract MedalClaim is AccessControl, SafeMath  {
          //pets can each only be used once for this medal
          if ((petsClaimedGold[direDragonId] == true) || (petsClaimedGold[phoenixId] == true) || (petsClaimedGold[ligerId] == true) || (petsClaimedGold[alicornId]== true)) {revert();}
          
-         if ((getPetCardSeries(direDragonId) == 13) &amp;&amp; (getPetCardSeries(phoenixId) == 14) &amp;&amp; (getPetCardSeries(ligerId) == 15) &amp;&amp; (getPetCardSeries(alicornId) == 16)) {
-             if ((checkExistsOwnedPet(direDragonId) == true) &amp;&amp; (checkExistsOwnedPet(phoenixId) == true) &amp;&amp; (checkExistsOwnedPet(ligerId) == true) &amp;&amp; (checkExistsOwnedPet(alicornId) == true)) {
+         if ((getPetCardSeries(direDragonId) == 13) && (getPetCardSeries(phoenixId) == 14) && (getPetCardSeries(ligerId) == 15) && (getPetCardSeries(alicornId) == 16)) {
+             if ((checkExistsOwnedPet(direDragonId) == true) && (checkExistsOwnedPet(phoenixId) == true) && (checkExistsOwnedPet(ligerId) == true) && (checkExistsOwnedPet(alicornId) == true)) {
              petsClaimedGold[direDragonId] = true;
              petsClaimedGold[phoenixId] = true;
              petsClaimedGold[ligerId] = true;
@@ -467,7 +467,7 @@ contract MedalClaim is AccessControl, SafeMath  {
               IPetCardData petCardData = IPetCardData(petCardDataContract);
               IAccessoryData accessoryData = IAccessoryData(accessoryDataContract);
               
-              if ((angelCardData.getOwnerAngelCount(msg.sender) &gt;= 15) &amp;&amp; (petCardData.getOwnerPetCount(msg.sender) &gt;= 25) &amp;&amp; (accessoryData.getOwnerAccessoryCount(msg.sender) &gt;= 10) ) {
+              if ((angelCardData.getOwnerAngelCount(msg.sender) >= 15) && (petCardData.getOwnerPetCount(msg.sender) >= 25) && (accessoryData.getOwnerAccessoryCount(msg.sender) >= 10) ) {
              IMedalData medalData = IMedalData(medalDataContract);
              claimedbyAddress[msg.sender][8] = true;
              medalData._createMedal(msg.sender, 8);
@@ -479,14 +479,14 @@ contract MedalClaim is AccessControl, SafeMath  {
       
       function getAngelClaims (uint64 angelId) public constant returns (bool claimedCardboard) {
           //before purchasing an angel card, anyone can verify if that card has already been used to claim medals
-          if (angelId &lt; 0) {revert();}
+          if (angelId < 0) {revert();}
           claimedCardboard = angelsClaimedCardboard[angelId];
 
       }
       
           function getPetClaims (uint64 petId) public constant returns (bool claimedGold) {
           //before purchasing a pet card, anyone can verify if that card has already been used to claim medals
-          if (petId &lt; 0) {revert();}
+          if (petId < 0) {revert();}
 
           claimedGold = petsClaimedGold[petId];
       }

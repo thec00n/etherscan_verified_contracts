@@ -36,9 +36,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -114,7 +114,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -127,7 +127,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -207,7 +207,7 @@ contract Ownable {
 }
 
 contract BigbomPrivateSaleList is Ownable {
-    mapping(address=&gt;uint) public addressCap;
+    mapping(address=>uint) public addressCap;
 
     function BigbomPrivateSaleList() public  {}
 
@@ -225,7 +225,7 @@ contract BigbomPrivateSaleList is Ownable {
     // an optimization in case of network congestion
     function listAddresses( address[] _users, uint[] _amount ) public onlyOwner {
         require(_users.length == _amount.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _amount[i] );
         }
     }
@@ -238,8 +238,8 @@ contract BigbomPrivateSaleList is Ownable {
 
 contract BigbomToken is StandardToken, Ownable {
     
-    string  public  constant name = &quot;Bigbom&quot;;
-    string  public  constant symbol = &quot;BBO&quot;;
+    string  public  constant name = "Bigbom";
+    string  public  constant symbol = "BBO";
     uint    public  constant decimals = 18;
     uint    public   totalSupply = 2000000000 * 1e18; //2,000,000,000
 
@@ -264,9 +264,9 @@ contract BigbomToken is StandardToken, Ownable {
     address public  tokenSaleContract;
     BigbomPrivateSaleList public privateSaleList;
 
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint) public frozenTime;
-    mapping (address =&gt; uint) public maxAllowedAmount;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint) public frozenTime;
+    mapping (address => uint) public maxAllowedAmount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen, uint _seconds);
@@ -294,13 +294,13 @@ contract BigbomToken is StandardToken, Ownable {
 
     function selfFreeze(bool freeze, uint _seconds) public {
         // selfFreeze cannot more than 7 days
-        require(_seconds &lt;= 7 * 24 * 3600);
+        require(_seconds <= 7 * 24 * 3600);
         // if unfreeze
         if(!freeze){
             // get End time of frozenAccount
             var frozenEndTime = frozenTime[msg.sender];
-            // if now &gt; frozenEndTime
-            require (now &gt;= frozenEndTime);
+            // if now > frozenEndTime
+            require (now >= frozenEndTime);
             // unfreeze account
             frozenAccount[msg.sender] = freeze;
             // set time to 0
@@ -321,8 +321,8 @@ contract BigbomToken is StandardToken, Ownable {
         if(!freeze){
             // get End time of frozenAccount
             var frozenEndTime = frozenTime[target];
-            // if now &gt; frozenEndTime
-            require (now &gt;= frozenEndTime);
+            // if now > frozenEndTime
+            require (now >= frozenEndTime);
             // unfreeze account
             frozenAccount[target] = freeze;
             // set time to 0
@@ -348,15 +348,15 @@ contract BigbomToken is StandardToken, Ownable {
         _;
     }
     modifier onlyWhenTransferEnabled() {
-        if( now &lt;= saleEndTime &amp;&amp; now &gt;= saleStartTime ) {
+        if( now <= saleEndTime && now >= saleStartTime ) {
             require( msg.sender == tokenSaleContract );
         }
         _;
     }
     modifier onlyPrivateListEnabled(address _to){
-        require(now &lt;= saleStartTime);
+        require(now <= saleStartTime);
         uint allowcap = privateSaleList.getCap(_to);
-        require (allowcap &gt; 0);
+        require (allowcap > 0);
         _;
     }
     function setPrivateList(BigbomPrivateSaleList _privateSaleList)   onlyOwner public {
@@ -398,9 +398,9 @@ contract BigbomToken is StandardToken, Ownable {
     }
 
     function setTimeSale(uint startTime, uint endTime) onlyOwner public {
-        require (now &lt; saleStartTime || now &gt; saleEndTime);
-        require (now &lt; startTime);
-        require ( startTime &lt; endTime);
+        require (now < saleStartTime || now > saleEndTime);
+        require (now < startTime);
+        require ( startTime < endTime);
         saleStartTime = startTime;
         saleEndTime = endTime;
     }
@@ -408,8 +408,8 @@ contract BigbomToken is StandardToken, Ownable {
     function setTokenSaleContract(address _tokenSaleContract) onlyOwner public {
         // check address ! 0
         require(_tokenSaleContract != address(0x0));
-        // do not allow run when saleStartTime &lt;= now &lt;= saleEndTime
-        require (now &lt; saleStartTime || now &gt; saleEndTime);
+        // do not allow run when saleStartTime <= now <= saleEndTime
+        require (now < saleStartTime || now > saleEndTime);
 
         tokenSaleContract = _tokenSaleContract;
     }
@@ -426,8 +426,8 @@ contract BigbomToken is StandardToken, Ownable {
             var withdrawAmount =  maxAllowedAmount[msg.sender]; 
             var defaultAllowAmount = checkMaxAllowed(msg.sender);
             var maxAmount = defaultAllowAmount - withdrawAmount;
-            // _value transfer must &lt;= maxAmount
-            require(maxAmount &gt;= _value); // 
+            // _value transfer must <= maxAmount
+            require(maxAmount >= _value); // 
 
             // if maxAmount = 0, need to block this msg.sender
             if(maxAmount==_value){
@@ -468,8 +468,8 @@ contract BigbomToken is StandardToken, Ownable {
                 var withdrawAmount =  maxAllowedAmount[_from]; 
                 var defaultAllowAmount = checkMaxAllowed(_from);
                 var maxAmount = defaultAllowAmount - withdrawAmount; 
-                // _value transfer must &lt;= maxAmount
-                require(maxAmount &gt;= _value); 
+                // _value transfer must <= maxAmount
+                require(maxAmount >= _value); 
 
                 // if maxAmount = 0, need to block this _from
                 if(maxAmount==_value){
@@ -533,9 +533,9 @@ contract BigbomTokenExtended is BigbomToken {
     
     event TokenDrop( address receiver, uint amount );
     function airDrop(address[] recipients) public onlyOwner {
-        for(uint i = 0 ; i &lt; recipients.length ; i++){
+        for(uint i = 0 ; i < recipients.length ; i++){
             uint amount = bigbomToken.balanceOf(recipients[i]);
-            if (amount &gt; 0){
+            if (amount > 0){
                 //
                 transfer(recipients[i], amount);
                 TokenDrop( recipients[i], amount );
@@ -545,7 +545,7 @@ contract BigbomTokenExtended is BigbomToken {
 
     modifier validFrozenAccount(address target) {
         if(frozenAccount[target]){
-            require(now &gt;= frozenTime[target]);
+            require(now >= frozenTime[target]);
         }
         _;
     }
@@ -554,13 +554,13 @@ contract BigbomTokenExtended is BigbomToken {
     validFrozenAccount(msg.sender) 
     public {
         // selfFreeze cannot more than 7 days
-        require(_seconds &lt;= 7 * 24 * 3600);
+        require(_seconds <= 7 * 24 * 3600);
         // if unfreeze
         if(!freeze){
             // get End time of frozenAccount
             var frozenEndTime = frozenTime[msg.sender];
-            // if now &gt; frozenEndTime
-            require (now &gt;= frozenEndTime);
+            // if now > frozenEndTime
+            require (now >= frozenEndTime);
             // unfreeze account
             frozenAccount[msg.sender] = freeze;
             // set time to 0
@@ -584,8 +584,8 @@ contract BigbomTokenExtended is BigbomToken {
         if(!freeze){
             // get End time of frozenAccount
             var frozenEndTime = frozenTime[target];
-            // if now &gt; frozenEndTime
-            require (now &gt;= frozenEndTime);
+            // if now > frozenEndTime
+            require (now >= frozenEndTime);
             // unfreeze account
             frozenAccount[target] = freeze;
             // set time to 0
@@ -604,8 +604,8 @@ contract BigbomTokenExtended is BigbomToken {
 }
 
 contract BigbomContributorWhiteList is Ownable {
-    mapping(address=&gt;uint) public addressMinCap;
-    mapping(address=&gt;uint) public addressMaxCap;
+    mapping(address=>uint) public addressMinCap;
+    mapping(address=>uint) public addressMaxCap;
 
     function BigbomContributorWhiteList() public  {}
 
@@ -614,7 +614,7 @@ contract BigbomContributorWhiteList is Ownable {
     // Owner can delist by setting cap = 0.
     // Onwer can also change it at any time
     function listAddress( address _user, uint _mincap, uint _maxcap ) public onlyOwner {
-        require(_mincap &lt;= _maxcap);
+        require(_mincap <= _maxcap);
         require(_user != address(0x0));
 
         addressMinCap[_user] = _mincap;
@@ -626,7 +626,7 @@ contract BigbomContributorWhiteList is Ownable {
     function listAddresses( address[] _users, uint[] _mincap, uint[] _maxcap ) public  onlyOwner {
         require(_users.length == _mincap.length );
         require(_users.length == _maxcap.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _mincap[i], _maxcap[i] );
         }
     }
@@ -654,9 +654,9 @@ contract BigbomCrowdSale{
 
     BigbomContributorWhiteList public list;
 
-    mapping(address=&gt;uint)    public participated;
-    mapping(string=&gt;uint)     depositTxMap;
-    mapping(string=&gt;uint)     erc20Rate;
+    mapping(address=>uint)    public participated;
+    mapping(string=>uint)     depositTxMap;
+    mapping(string=>uint)     erc20Rate;
 
     using SafeMath for uint;
 
@@ -667,7 +667,7 @@ contract BigbomCrowdSale{
                               uint _publicSaleEndTime,
                               BigbomTokenExtended _token) public       
     {
-        require (_publicSaleStartTime &lt; _publicSaleEndTime);
+        require (_publicSaleStartTime < _publicSaleEndTime);
         require (_admin != address(0x0));
         require (_bigbomMultiSigWallet != address(0x0));
         require (_whilteListContract != address(0x0));
@@ -682,7 +682,7 @@ contract BigbomCrowdSale{
     }
     
     function saleEnded() public constant returns(bool) {
-        return now &gt; openSaleEndTime;
+        return now > openSaleEndTime;
     }
 
     function setMinGasPrice(uint price) public {
@@ -695,7 +695,7 @@ contract BigbomCrowdSale{
     }
 
     function saleStarted() public constant returns(bool) {
-        return now &gt;= openSaleStartTime;
+        return now >= openSaleStartTime;
     }
 
     function setHaltSale( bool halt ) public {
@@ -710,12 +710,12 @@ contract BigbomCrowdSale{
         uint cap = list.getMaxCap( contributor );
         if( cap == 0 ) return 0;
         uint remainedCap = cap.sub( participated[ contributor ] );
-        if( remainedCap &gt; amountInWei ) return amountInWei;
+        if( remainedCap > amountInWei ) return amountInWei;
         else return remainedCap;
     }
 
     function checkMaxCap( address contributor, uint amountInWei ) internal returns(uint) {
-        if( now &gt; ( openSaleStartTime + 2 * 24 * 3600))
+        if( now > ( openSaleStartTime + 2 * 24 * 3600))
             return 100e18;
         else{
             uint result = contributorMaxCap( contributor, amountInWei );
@@ -737,8 +737,8 @@ contract BigbomCrowdSale{
 
     event Buy( address _buyer, uint _tokens, uint _payedWei, uint _bonus );
     function buy( address recipient ) payable public returns(uint){
-        require( tx.gasprice &lt;= maxGasPrice );
-        require( tx.gasprice &gt;= minGasPrice );
+        require( tx.gasprice <= maxGasPrice );
+        require( tx.gasprice >= minGasPrice );
 
         require( ! haltSale );
         require( saleStarted() );
@@ -748,16 +748,16 @@ contract BigbomCrowdSale{
 
         uint maxcap = checkMaxCap(recipient, msg.value );
         uint allowValue = msg.value;
-        require( mincap &gt; 0 );
+        require( mincap > 0 );
 
-        require( maxcap &gt; 0 );
-        // fail if msg.value &lt; mincap
-        require (msg.value &gt;= mincap);
-        // send to msg.sender, not to recipient if value &gt; maxcap
-        if(now &lt;= openSaleStartTime + 2 * 24 * 3600) {
-            if( msg.value &gt; maxcap ) {
+        require( maxcap > 0 );
+        // fail if msg.value < mincap
+        require (msg.value >= mincap);
+        // send to msg.sender, not to recipient if value > maxcap
+        if(now <= openSaleStartTime + 2 * 24 * 3600) {
+            if( msg.value > maxcap ) {
                 allowValue = maxcap;
-                //require (allowValue &gt;= mincap);
+                //require (allowValue >= mincap);
                 msg.sender.transfer( msg.value.sub( maxcap ) );
             }
         }
@@ -802,7 +802,7 @@ contract BigbomCrowdSale{
         require( msg.sender == admin );
         require( saleEnded() );
 
-        if( this.balance &gt; 0 ) {
+        if( this.balance > 0 ) {
             sendETHToMultiSig( this.balance );
         }
 
@@ -816,7 +816,7 @@ contract BigbomCrowdSale{
     // just to check that funds goes to the right place
     // tokens are not given in return
     function debugBuy() payable public {
-        require( msg.value &gt; 0 );
+        require( msg.value > 0 );
         sendETHToMultiSig( msg.value );
     }
 
@@ -837,7 +837,7 @@ contract BigbomCrowdSale{
     event Erc20Refund( address _buyer, uint _erc20RefundAmount, string _erc20Name );
     function erc20Buy( address recipient, uint erc20Amount, string erc20Name, string depositTx )  public returns(uint){
         require (msg.sender == admin);
-        //require( tx.gasprice &lt;= 50000000000 wei );
+        //require( tx.gasprice <= 50000000000 wei );
 
         require( ! haltSale );
         require( saleStarted() );
@@ -847,17 +847,17 @@ contract BigbomCrowdSale{
 
         uint maxcap = checkMaxCap(recipient, ethAmount );
         require (getDepositTxMap(depositTx) == 0);
-        require (ethAmount &gt; 0);
+        require (ethAmount > 0);
         uint allowValue = ethAmount;
-        require( mincap &gt; 0 );
-        require( maxcap &gt; 0 );
-        // fail if msg.value &lt; mincap
-        require (ethAmount &gt;= mincap);
-        // send to msg.sender, not to recipient if value &gt; maxcap
-        if(now &lt;= openSaleStartTime + 2 * 24 * 3600) {
-            if( ethAmount &gt; maxcap  ) {
+        require( mincap > 0 );
+        require( maxcap > 0 );
+        // fail if msg.value < mincap
+        require (ethAmount >= mincap);
+        // send to msg.sender, not to recipient if value > maxcap
+        if(now <= openSaleStartTime + 2 * 24 * 3600) {
+            if( ethAmount > maxcap  ) {
                 allowValue = maxcap;
-                //require (allowValue &gt;= mincap);
+                //require (allowValue >= mincap);
                 // send event refund
                 // msg.sender.transfer( ethAmount.sub( maxcap ) );
                 uint erc20RefundAmount = ethAmount.sub( maxcap ).mul(1e18).div(getErc20Rate(erc20Name));

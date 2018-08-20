@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
 contract PoissonData {
-    mapping (int =&gt; uint) public data;
+    mapping (int => uint) public data;
 
     bool public isInitialized;
     uint public stage;

@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -111,9 +111,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -121,7 +121,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -130,7 +130,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -158,7 +158,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -176,7 +176,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -211,9 +211,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -247,7 +247,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -258,8 +258,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -273,7 +273,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -322,7 +322,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -385,11 +385,11 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract RECORDToken is MintableToken, BurnableToken, Pausable {
     using SafeMath for uint256;
-    string public name = &quot;RECORD&quot;;
-    string public symbol = &quot;RCD&quot;;
+    string public name = "RECORD";
+    string public symbol = "RCD";
     uint256 public decimals = 18;
 
-    mapping (address =&gt; bool) public lockedAddresses;
+    mapping (address => bool) public lockedAddresses;
 
     function isAddressLocked(address _adr) internal returns (bool) {
         if (lockedAddresses[_adr] == true) {
@@ -455,7 +455,7 @@ contract RECORDICO {
     uint256 public constant RECORDPart = 18; // 18% of TotalSupply for Record Team
     uint256 public constant EcosystemPart = 15; // 15% of TotalSupply for Ecosystem
     uint256 public constant InvestorPart = 5; // 5% of TotalSupply for Investors
-    uint256 public constant AdvisorPart = 8; // 8% of TotalSupply for Advisors &amp; Ambassadors
+    uint256 public constant AdvisorPart = 8; // 8% of TotalSupply for Advisors & Ambassadors
     uint256 public constant BountyPart = 4; // 4% of TotalSupply for Bounty
     uint256 public constant icoPart = 50; // 50% of TotalSupply for PublicICO and PrivateOffer
     uint256 public constant PreSaleHardCap = 15000000 * 1e18;
@@ -539,7 +539,7 @@ contract RECORDICO {
                 _rcdValue = 0;
             }
         }
-        if (_rcdValue &gt; 0) {
+        if (_rcdValue > 0) {
             exchangeSuccess = true;
         }
         return (_rcdValue, exchangeSuccess);
@@ -553,33 +553,33 @@ contract RECORDICO {
         // 5: RoundC
         // 6: Finish
         // 0. 프리세일 기간 전
-        if (now &lt; PreSaleStartTime) {
+        if (now < PreSaleStartTime) {
             return 0;
         }
         // 1. 프리세일 기간 중
-        if (PreSaleStartTime &lt;= now &amp;&amp; now &lt;= PreSaleCloseTime) {
-            if (PreSaleSold &lt; PreSaleHardCap) {
+        if (PreSaleStartTime <= now && now <= PreSaleCloseTime) {
+            if (PreSaleSold < PreSaleHardCap) {
                 return 1;
             } else {
                 return 2;
             }
         }
         // 2. 프리세일 기간 끝
-        if (PreSaleCloseTime &lt;= now &amp;&amp; now &lt;= IcoStartTime) {
+        if (PreSaleCloseTime <= now && now <= IcoStartTime) {
             return 2;
         }
         // ICO 기간 중
-        if (IcoStartTime &lt;= now &amp;&amp; now &lt;= IcoCloseTime) {
+        if (IcoStartTime <= now && now <= IcoCloseTime) {
             // 3. RoundA
-            if (RoundASold &lt; RoundAHardCap) {
+            if (RoundASold < RoundAHardCap) {
                 return 3;
             }
             // 4. RoundB
-            else if (RoundAHardCap &lt;= RoundASold &amp;&amp; RoundBSold &lt; RoundBHardCap) {
+            else if (RoundAHardCap <= RoundASold && RoundBSold < RoundBHardCap) {
                 return 4;
             }
             // 5. RoundC
-            else if (RoundBHardCap &lt;= RoundBSold &amp;&amp; RoundCSold &lt; RoundCHardCap) {
+            else if (RoundBHardCap <= RoundBSold && RoundCSold < RoundCHardCap) {
                 return 5;
             }
             // 6. Finish
@@ -588,7 +588,7 @@ contract RECORDICO {
             }
         }
         // 6. ICO기간 끝
-        if (IcoCloseTime &lt; now) {
+        if (IcoCloseTime < now) {
             return 6;
         }
         return 10;
@@ -648,9 +648,9 @@ contract RECORDICO {
         (_rcdValue, _rcdExchangeSuccess) = getRcdExchange(_ethValue);
         (_min, _max) = getMinMaxInvest();
         require (
-            _rcdExchangeSuccess == true &amp;&amp;
-            _min &lt;= _rcdValue &amp;&amp;
-            _rcdValue &lt;= _max
+            _rcdExchangeSuccess == true &&
+            _min <= _rcdValue &&
+            _rcdValue <= _max
         );
         mintICOTokens(_investor, _rcdValue, _ethValue);
     }
@@ -663,11 +663,11 @@ contract RECORDICO {
             stage == 5
         );
         if (stage == 1) {
-            require(PreSaleSold.add(_rcdValue) &lt;= PreSaleHardCap);
+            require(PreSaleSold.add(_rcdValue) <= PreSaleHardCap);
             PreSaleSold = PreSaleSold.add(_rcdValue);
         }
         if (stage == 3) {
-            if (RoundASold.add(_rcdValue) &lt;= RoundAHardCap) {
+            if (RoundASold.add(_rcdValue) <= RoundAHardCap) {
                 RoundASold = RoundASold.add(_rcdValue);
             } else {
                 RoundBSold = RoundASold.add(_rcdValue) - RoundAHardCap;
@@ -675,7 +675,7 @@ contract RECORDICO {
             }
         }
         if (stage == 4) {
-            if (RoundBSold.add(_rcdValue) &lt;= RoundBHardCap) {
+            if (RoundBSold.add(_rcdValue) <= RoundBHardCap) {
                 RoundBSold = RoundBSold.add(_rcdValue);
             } else {
                 RoundCSold = RoundBSold.add(_rcdValue) - RoundBHardCap;
@@ -683,7 +683,7 @@ contract RECORDICO {
             }
         }
         if (stage == 5) {
-            require(RoundCSold.add(_rcdValue) &lt;= RoundCHardCap);
+            require(RoundCSold.add(_rcdValue) <= RoundCHardCap);
             RoundCSold = RoundCSold.add(_rcdValue);
         }
         RCD.mint(_investor, _rcdValue);
@@ -703,7 +703,7 @@ contract RECORDICO {
     }
 
     function mintInitialTokens(address _adr, uint256 rate) external managerOnly {
-        require (currentInitPart.add(rate) &lt;= 50);
+        require (currentInitPart.add(rate) <= 50);
         RCD.mint(_adr, rate.mul(totalAmountOnICO).div(100));
         currentInitPart = currentInitPart.add(rate);
     }

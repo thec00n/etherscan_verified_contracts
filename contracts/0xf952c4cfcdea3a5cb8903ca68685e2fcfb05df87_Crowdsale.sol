@@ -13,7 +13,7 @@ contract Crowdsale {
     uint public saleStage = 1;
     bool public crowdsaleClosed = false;
     bool public adminVer = false;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
 
     event GoalReached(address recipient, uint totalAmountRaised);
@@ -51,18 +51,18 @@ contract Crowdsale {
     }
 
     function getPrice() returns (uint) {
-        if (amountRaised &gt; 8000 ether || saleStage == 4) {
+        if (amountRaised > 8000 ether || saleStage == 4) {
             return 0.000066667 ether;
-        } else if (amountRaised &gt; 6000 ether || saleStage == 3) {
+        } else if (amountRaised > 6000 ether || saleStage == 3) {
             return 0.000057143 ether;
-        } else if (amountRaised &gt; 3000 ether || saleStage == 2) {
+        } else if (amountRaised > 3000 ether || saleStage == 2) {
             return 0.000050000 ether;
         }
         return 0.000044444 ether;
     }
 
     function () payable {
-        require(!crowdsaleClosed &amp;&amp; msg.value &gt;= 0.01 ether);
+        require(!crowdsaleClosed && msg.value >= 0.01 ether);
         price = getPrice();
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;

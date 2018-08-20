@@ -69,26 +69,26 @@ contract DSAuth is DSAuthEvents {
 
 contract APMath {
     function safeAdd(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function safeSub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function safeMul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function safeMin(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function safeMax(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function safeMin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function safeMax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -107,10 +107,10 @@ contract APMath {
         z = safeAdd(safeMul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -139,25 +139,25 @@ contract DrivezyPrivateCoinSharedStorage is DSAuth {
     uint _totalSupply = 0;
 
     // オーナー登録されているアドレス
-    mapping(address =&gt; bool) ownerAddresses;
+    mapping(address => bool) ownerAddresses;
 
     // オーナーアドレスの LUT
     address[] public ownerAddressLUT;
 
     // 信頼できるコントラクトに登録されているアドレス
-    mapping(address =&gt; bool) trustedContractAddresses;
+    mapping(address => bool) trustedContractAddresses;
 
     // 信頼できるコントラクトの LUT
     address[] public trustedAddressLUT;
 
     // ホワイトリスト (KYC確認済み) のアドレス
-    mapping(address =&gt; bool) approvedAddresses;
+    mapping(address => bool) approvedAddresses;
 
     // ホワイトリストの LUT
     address[] public approvedAddressLUT;
 
     // 常に許可されている関数
-    mapping(bytes4 =&gt; bool) actionsAlwaysPermitted;
+    mapping(bytes4 => bool) actionsAlwaysPermitted;
 
     /**
      * custom events
@@ -348,16 +348,16 @@ contract DrivezyPrivateCoinStorage is DSAuth {
     uint _totalSupply = 0;
 
     // 残高一覧
-    mapping(address =&gt; uint) coinBalances;
+    mapping(address => uint) coinBalances;
 
     // 送金許可額の一覧
-    mapping(address =&gt; mapping (address =&gt; uint)) coinAllowances;
+    mapping(address => mapping (address => uint)) coinAllowances;
 
     // 共通ストレージ
     DrivezyPrivateCoinSharedStorage public sharedStorage;
 
     // 常に許可されている関数
-    mapping(bytes4 =&gt; bool) actionsAlwaysPermitted;
+    mapping(bytes4 => bool) actionsAlwaysPermitted;
 
     // ユーザ間での送金ができるかどうか
     bool public transferBetweenUsers;
@@ -501,10 +501,10 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
      */
     function transfer(address sender, address to, uint amount) auth public returns (bool) {
         // 残高を超えて送金してないか確認
-        require(coinStorage.coinBalanceOf(sender) &gt;= amount);
+        require(coinStorage.coinBalanceOf(sender) >= amount);
 
         // 1円以上送ろうとしているか確認
-        require(amount &gt; 0);
+        require(amount > 0);
 
         // 受取者がオーナーまたは許可された (KYC 通過済み) アドレスかを確認
         require(canTransfer(sender, to));
@@ -536,7 +536,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
      */
     function transferFrom(address sender, address from, address to, uint amount) auth public returns (bool) {
         // アローアンスを超えて送金してないか確認
-        require(coinStorage.coinAllowanceOf(sender, from) &gt;= amount);
+        require(coinStorage.coinAllowanceOf(sender, from) >= amount);
 
         // transfer 処理に引き継ぐ
         transfer(from, to, amount);
@@ -577,7 +577,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * トークンストレージ (このトークンに限り有効なストレージ) を設定する &lt;Ownerのみ実行可能&gt;
+     * トークンストレージ (このトークンに限り有効なストレージ) を設定する <Ownerのみ実行可能>
      * @param addr {address} - DrivezyPrivateCoinStorage のアドレス
      * @return {bool} Storage の設定に成功したら true を返す
      */
@@ -588,7 +588,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * 共有ストレージ (一連の発行において共通利用するストレージ) を設定する &lt;Ownerのみ実行可能&gt;
+     * 共有ストレージ (一連の発行において共通利用するストレージ) を設定する <Ownerのみ実行可能>
      * @param addr {address} - DrivezyPrivateCoinSharedStorage のアドレス
      * @return {bool} Storage の設定に成功したら true を返す
      */
@@ -599,7 +599,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * Coin (ERC20 準拠の公開するコントラクト) を設定する &lt;Ownerのみ実行可能&gt;
+     * Coin (ERC20 準拠の公開するコントラクト) を設定する <Ownerのみ実行可能>
      * @param addr {address} - DrivezyPrivateCoin のアドレス
      * @return {bool} Coin の設定に成功したら true を返す
      */
@@ -610,14 +610,14 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * 指定したアドレスにコインを発行する &lt;Ownerのみ実行可能&gt;
+     * 指定したアドレスにコインを発行する <Ownerのみ実行可能>
      * @param receiver {address} - 発行したコインの受取アカウント
      * @param amount {uint} - 発行量
      * @return {bool} 発行に成功したら true を返す
      */
     function mint(address receiver, uint amount) auth public returns (bool) {
         // 1円以上発行しようとしているか確認
-        require(amount &gt; 0);
+        require(amount > 0);
 
         // 発行残高を増やす
         coinStorage.setTotalSupply(safeAdd(coinStorage.totalSupply(), amount));
@@ -637,17 +637,17 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * 指定したアドレスからコインを回収する &lt;Ownerのみ実行可能&gt;
+     * 指定したアドレスからコインを回収する <Ownerのみ実行可能>
      * @param receiver {address} - 回収先のアカウント
      * @param amount {uint} - 回収量
      * @return {bool} 回収に成功したら true を返す
      */
     function burn(address receiver, uint amount) auth public returns (bool) {
         // 1円以上回収しようとしているか確認
-        require(amount &gt; 0);
+        require(amount > 0);
 
         // 回収先のアカウントの所持金額以下を回収しようとしているか確認
-        require(coinStorage.coinBalanceOf(receiver) &gt;= amount);
+        require(coinStorage.coinBalanceOf(receiver) >= amount);
 
         // 回収する残量の approve を強制的に設定する
         // 回収に先立ち、自分がトークンを持てるようにする
@@ -668,7 +668,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * 指定したアドレスをホワイトリストに追加 &lt;Ownerのみ実行可能&gt;
+     * 指定したアドレスをホワイトリストに追加 <Ownerのみ実行可能>
      * @param addr {address} - 追加するアカウント
      * @return {bool} 追加に成功したら true を返す
      */
@@ -679,7 +679,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * 指定したアドレスをホワイトリストから削除 &lt;Ownerのみ実行可能&gt;
+     * 指定したアドレスをホワイトリストから削除 <Ownerのみ実行可能>
      * @param addr {address} - 削除するアカウント
      * @return {bool} 削除に成功したら true を返す
      */
@@ -690,7 +690,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * ユーザ間の送金を許可する &lt;Ownerのみ実行可能&gt;
+     * ユーザ間の送金を許可する <Ownerのみ実行可能>
      * @return {bool} 許可に成功したら true を返す
      */
     function allowTransferBetweenUsers() auth public returns (bool) {
@@ -699,7 +699,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
     }
 
     /**
-     * ユーザ間の送金を禁止する &lt;Ownerのみ実行可能&gt;
+     * ユーザ間の送金を禁止する <Ownerのみ実行可能>
      * @return {bool} 禁止に成功したら true を返す
      */
     function disallowTransferBetweenUsers() auth public returns (bool) {
@@ -765,7 +765,7 @@ contract DrivezyPrivateCoinImplementation is DSAuth, APMath {
         }
 
         // 当該アドレスがマシン語を持てばコントラクトと見做せる
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     /**
@@ -788,10 +788,10 @@ contract DrivezyPrivateCoin is ERC20, DSAuth {
      */
     
     /* コインの名前 */
-    string public name = &quot;Uni 0.1.0&quot;;
+    string public name = "Uni 0.1.0";
 
     /* コインのシンボル */
-    string public symbol = &quot;ORI&quot;;
+    string public symbol = "ORI";
 
     /* 通貨の最小単位の桁数。 6 の場合は小数第6位が最小単位となる (0.000001 ORI) */
     uint8 public decimals = 6;
@@ -891,7 +891,7 @@ contract DrivezyPrivateCoin is ERC20, DSAuth {
     }
 
     /**
-     * implementation (実装) が定義されたコントラクトを設定する &lt;Ownerのみ実行可能&gt;
+     * implementation (実装) が定義されたコントラクトを設定する <Ownerのみ実行可能>
      * @param addr {address} - コントラクトのアドレス
      * @return {bool} 設定変更に成功した場合は true を返す
      */
@@ -911,7 +911,7 @@ contract DrivezyPrivateCoin is ERC20, DSAuth {
         return src == address(this) ||  // コントラクト自身による呼び出す
             src == owner ||             // コントラクトのデプロイ者
                                         // implementation が定義済みである場合は、Implementation#canCall に呼び出し可否チェックを委譲
-            (implementation != DrivezyPrivateCoinImplementation(0) &amp;&amp; implementation.canCall(src, address(this), sig));
+            (implementation != DrivezyPrivateCoinImplementation(0) && implementation.canCall(src, address(this), sig));
     }
 }
 
@@ -925,10 +925,10 @@ contract DrivezyPrivateDecemberCoin is DrivezyPrivateCoin {
      */
     
     /* コインの名前 */
-    string public name = &quot;Rental Coins 1.0 1st private offering&quot;;
+    string public name = "Rental Coins 1.0 1st private offering";
 
     /* コインのシンボル */
-    string public symbol = &quot;RC1&quot;;
+    string public symbol = "RC1";
 
     /* 通貨の最小単位の桁数。 6 の場合は小数第6位が最小単位となる (0.000001 RC1) */
     uint8 public decimals = 6;

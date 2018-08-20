@@ -8,7 +8,7 @@ contract Avatars {
         uint id;
         
         /**
-         * Avatar&#39;s owner.
+         * Avatar's owner.
          */ 
         address owner;
         
@@ -38,7 +38,7 @@ contract Avatars {
         bytes32 positions;
     }
     
-    mapping(bytes32 =&gt; Avatar) avatars;
+    mapping(bytes32 => Avatar) avatars;
     
     /**
      * Stores an avatar on the blockchain.
@@ -75,7 +75,7 @@ contract Avatars {
     }
     
     /**
-     * Returns an avatar by it&#39;s hash.
+     * Returns an avatar by it's hash.
      * Throws if avatar is not exists.
      */ 
     function get(bytes32 avatarHash) constant returns (bytes32 shapes, bytes32 colorsPrimary, bytes32 colorsSecondary, bytes32 positions) {
@@ -88,7 +88,7 @@ contract Avatars {
     }
     
     /**
-     * Returns an avatar owner address by avatar&#39;s hash.
+     * Returns an avatar owner address by avatar's hash.
      * Throws if avatar is not exists.
      */ 
     function getOwner(bytes32 avatarHash) constant returns (address) {
@@ -109,7 +109,7 @@ contract Avatars {
     }
     
     /**
-     * Returns an avatar by it&#39;s hash.
+     * Returns an avatar by it's hash.
      * Throws if avatar is not exists.
      */ 
     function getAvatar(bytes32 avatarHash) private constant returns (Avatar) {
@@ -130,7 +130,7 @@ contract Avatars {
      */
     function strToBytes(string str) constant private returns (bytes32 ret) {
         // var g = bytes(str).length;
-        // if (bytes(str).length &gt; 32) throw;
+        // if (bytes(str).length > 32) throw;
         
         assembly {
             ret := mload(add(str, 32))

@@ -19,20 +19,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract EarlyTokenSale is MintableSale {
     address public multiSigWallet;
     uint256 public amountRaised;
     Token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
     address public creator;
@@ -67,7 +67,7 @@ contract EarlyTokenSale is MintableSale {
     bool public isFunding = false;
 
     /* accredited investors */
-    mapping (address =&gt; uint256) public accredited;
+    mapping (address => uint256) public accredited;
 
     event FundTransfer(address backer, uint amount);
 
@@ -91,8 +91,8 @@ contract EarlyTokenSale is MintableSale {
     function createMintableSale(uint256 rate, uint fundingGoalInEthers, uint durationInMinutes) external returns (bool success) {
         require(msg.sender == creator);
         require(isFunding == false);
-        require(rate &lt;= 6400 &amp;&amp; rate &gt;= 1);                   // rate must be between 1 and 6400
-        require(durationInMinutes &gt;= 60 minutes);
+        require(rate <= 6400 && rate >= 1);                   // rate must be between 1 and 6400
+        require(durationInMinutes >= 60 minutes);
         deadline = now + durationInMinutes * 1 minutes;
         fundingGoal = amountRaised + fundingGoalInEthers * 1 ether;
         tokensPerEther = rate;
@@ -100,8 +100,8 @@ contract EarlyTokenSale is MintableSale {
         return true;    
     }
 
-    modifier afterDeadline() { if (now &gt; deadline) _; }
-    modifier beforeDeadline() { if (now &lt;= deadline) _; }
+    modifier afterDeadline() { if (now > deadline) _; }
+    modifier beforeDeadline() { if (now <= deadline) _; }
 
     /// @param _accredited The address of the accredited investor
     /// @param _amountInEthers The amount of remaining ethers allowed to invested
@@ -141,10 +141,10 @@ contract EarlyTokenSale is MintableSale {
     }
 
     function () payable {
-        require(isFunding == true &amp;&amp; amountRaised &lt; fundingGoal);
-        require(msg.value &gt;= 1 ether);
+        require(isFunding == true && amountRaised < fundingGoal);
+        require(msg.value >= 1 ether);
         uint256 amount = msg.value;
-        require(accredited[msg.sender] - amount &gt;= 0);       
+        require(accredited[msg.sender] - amount >= 0);       
         uint256 value = amount.mul(tokensPerEther);
         multiSigWallet.transfer(amount);      
         balanceOf[msg.sender] += amount;

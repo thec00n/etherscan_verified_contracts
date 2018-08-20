@@ -11,37 +11,37 @@ library SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -74,8 +74,8 @@ contract StandardToken is ERC20
 {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     // Interface marker
     bool public constant isToken = true;
@@ -107,7 +107,7 @@ contract StandardToken is ERC20
         uint _allowance = allowed[from][msg.sender];
 
         // Check is not needed because _allowance.safeSub(value) will throw if this condition is not met
-        // if (value &gt; _allowance) throw;
+        // if (value > _allowance) throw;
 
         balances[to] = balances[to].safeAdd(value);
         balances[from] = balances[from].safeSub(value);
@@ -131,7 +131,7 @@ contract StandardToken is ERC20
         //  allowance to zero by calling `approve(spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((value != 0) &amp;&amp; (allowed[msg.sender][spender] != 0)) throw;
+        if ((value != 0) && (allowed[msg.sender][spender] != 0)) throw;
 
         allowed[msg.sender][spender] = value;
 
@@ -188,7 +188,7 @@ contract UpgradeableToken is StandardToken
       * Upgrade states.
       *
       * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-      * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+      * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
       * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
       * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
       *
@@ -220,7 +220,7 @@ contract UpgradeableToken is StandardToken
         require(state == UpgradeState.ReadyToUpgrade || state == UpgradeState.Upgrading);
 
         // Validate input value.
-        require(value &gt; 0);
+        require(value > 0);
 
         balances[msg.sender] = balances[msg.sender].safeSub(value);
 
@@ -308,7 +308,7 @@ contract MintableToken is StandardToken
         returns (bool ok)
     {
         require(msg.sender == mintMaster);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         balances[recipient] = balances[recipient].safeAdd(amount);
         totalSupply = totalSupply.safeAdd(amount);
@@ -322,8 +322,8 @@ contract MintableToken is StandardToken
         returns (bool ok)
     {
         require(msg.sender == mintMaster);
-        require(amount &gt; 0);
-        require(balances[hodler] &gt;= amount);
+        require(amount > 0);
+        require(balances[hodler] >= amount);
 
         balances[hodler] = balances[hodler].safeSub(amount);
         totalSupply = totalSupply.safeSub(amount);
@@ -337,8 +337,8 @@ contract MintableToken is StandardToken
 
 contract SigToken is UpgradeableToken, MintableToken
 {
-    string public name = &quot;Signals&quot;;
-    string public symbol = &quot;SIG&quot;;
+    string public name = "Signals";
+    string public symbol = "SIG";
     uint8 public decimals = 18;
 
     address public crowdsaleContract;
@@ -374,7 +374,7 @@ contract SigToken is UpgradeableToken, MintableToken
     }
 
     // This is called to unlock tokens once the crowdsale (and subsequent audit + legal process) are
-    // completed.  We don&#39;t want people buying tokens during the sale and then immediately starting
+    // completed.  We don't want people buying tokens during the sale and then immediately starting
     // to trade them.  See Crowdsale::finalizeCrowdsale().
     function setCrowdsaleCompleted() {
         require(msg.sender == crowdsaleContract);
@@ -397,10 +397,10 @@ contract SigToken is UpgradeableToken, MintableToken
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed when one does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }

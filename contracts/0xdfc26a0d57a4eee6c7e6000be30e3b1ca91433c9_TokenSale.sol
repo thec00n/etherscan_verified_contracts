@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -72,7 +72,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -95,7 +95,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -143,7 +143,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -154,8 +154,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -169,7 +169,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -218,7 +218,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -236,8 +236,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract ChariotToken is StandardToken, Ownable {
 
-  string public constant name = &quot;Chariot Coin&quot;;
-  string public constant symbol = &quot;TOM&quot;;
+  string public constant name = "Chariot Coin";
+  string public constant symbol = "TOM";
   uint8 public constant decimals = 18;
   event Mint(address indexed to, uint256 amount);
   event MintFinished();
@@ -307,9 +307,9 @@ contract ChariotToken is StandardToken, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -319,10 +319,10 @@ contract ChariotToken is StandardToken, Ownable {
 
   function burnFrom(address _from, uint256 _value) public returns (bool success) {
         require(msg.sender == saleAgent || msg.sender == owner);
-        require(balances[_from] &gt;= _value);// Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);// Check allowance
+        require(balances[_from] >= _value);// Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);// Check allowance
         balances[_from] = balances[_from].sub(_value); // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);
         Burn(_from, _value);
         return true;
@@ -370,9 +370,9 @@ contract TokenSale is Ownable{
   uint256 public weiHardCap = 1600 * 1 ether;
 
   modifier saleIsOn() {
-      require(now &gt; startTime &amp;&amp; now &lt; endTime);
-      require(weiRaised &lt;= weiHardCap);
-      require(initialSupply &gt;= token.totalSupply());
+      require(now > startTime && now < endTime);
+      require(weiRaised <= weiHardCap);
+      require(initialSupply >= token.totalSupply());
       _;
   }
 
@@ -394,7 +394,7 @@ contract TokenSale is Ownable{
   }
 
   function setTime(uint _startTime, uint _endTime) public onlyOwner {
-    require(now &lt; _endTime &amp;&amp; _startTime &lt; _endTime);
+    require(now < _endTime && _startTime < _endTime);
     endTime = _endTime;
     startTime = _startTime;
   }
@@ -417,13 +417,13 @@ contract TokenSale is Ownable{
   }
 
   function getDiscountStage() public view returns (uint256) {
-    if(now &lt; startTime + 5 days) {
+    if(now < startTime + 5 days) {
         return discountStage1;
-      } else if(now &gt;= startTime + 5 days &amp;&amp; now &lt; startTime + 10 days) {
+      } else if(now >= startTime + 5 days && now < startTime + 10 days) {
         return discountStage2;
-      } else if(now &gt;= startTime + 10 days &amp;&amp; now &lt; startTime + 15 days) {
+      } else if(now >= startTime + 10 days && now < startTime + 15 days) {
         return discountStage3;
-      } else if(now &gt;= startTime + 15 days &amp;&amp; now &lt; endTime) {
+      } else if(now >= startTime + 15 days && now < endTime) {
         return discountStage4;
       }
   }
@@ -454,8 +454,8 @@ contract TokenSale is Ownable{
     require(_Investors != address(0));
     require(_EADC != address(0));
     require(_Bounty != address(0));
-    require(_endTime &gt; _startTime);
-    require(now &lt; _startTime);
+    require(_endTime > _startTime);
+    require(now < _startTime);
     token = new ChariotToken();
     startTime = _startTime;
     endTime = _endTime;
@@ -482,7 +482,7 @@ contract TokenSale is Ownable{
   function isUnderLimit(uint256 _value) public returns (bool){
     uint256 _days = now.sub(startTime).div(1 days); // days after startTime
     uint256 coinsLimit = (_days % period).add(1).mul(limit); // limit coins in this period
-    return (msg.sender).balance.add(_value) &lt;= coinsLimit;
+    return (msg.sender).balance.add(_value) <= coinsLimit;
   }
 
   function buyTokens(address beneficiary) saleIsOn public payable {
@@ -497,7 +497,7 @@ contract TokenSale is Ownable{
 
     // update state
     weiRaised = weiRaised.add(weiAmount);
-    if(endTime.sub(now).div(1 days) &gt; 5) {
+    if(endTime.sub(now).div(1 days) > 5) {
       require(isUnderLimit(tokens));
     }
 
@@ -525,6 +525,6 @@ contract TokenSale is Ownable{
 
   // @return true if tokensale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 }

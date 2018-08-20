@@ -13,12 +13,12 @@ library U256 {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 } 
@@ -65,7 +65,7 @@ contract Fund is Role {
     } 
   
     function fundWithdraw(address addr, uint value) payable public _rA {
-        require(value &lt;= funds);
+        require(value <= funds);
         addr.transfer(value); 
         funds -= value;
     }    
@@ -115,7 +115,7 @@ interface INewPrice {
 contract Planet is Cryptoy {
     using U256 for uint256; 
 
-    string public version = &quot;1.0.0&quot;; 
+    string public version = "1.0.0"; 
     uint16 public admin_proportion = 200; // 千分位
 
     INewPrice public priceCounter;
@@ -165,20 +165,20 @@ contract Planet is Cryptoy {
     }
 
     function createItem(uint amount, uint priceWei) _rC gAlive(true) public {    
-        for (uint i = 0; i &lt; amount; i ++) {
+        for (uint i = 0; i < amount; i ++) {
             items.push(Item({
                 owner: msg.sender, 
                 round: 0,
                 priceOrg: 0, 
                 priceSell: priceWei,
-                slogan: &quot;&quot;
+                slogan: ""
             }));
         } 
     }
 
     function buy(uint itemID) payable gAlive(true) gRunning(true) public {
         address addrBuyer = msg.sender;  
-        require(itemID &lt; items.length); 
+        require(itemID < items.length); 
         Item storage item = items[itemID];
         require(item.owner != addrBuyer);
         require(item.priceSell == msg.value);
@@ -187,7 +187,7 @@ contract Planet is Cryptoy {
 
     function setSlogan(uint itemID, bytes slogan) gAlive(true) gRunning(true) public {
         address addrBuyer = msg.sender; 
-        require(itemID &lt; items.length); 
+        require(itemID < items.length); 
         Item storage item = items[itemID];
         require(addrAdmin == addrBuyer || addrExecutor == addrBuyer || item.owner == addrBuyer);
         item.slogan = slogan;

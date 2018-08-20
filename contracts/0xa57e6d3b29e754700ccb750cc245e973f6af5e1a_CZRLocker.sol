@@ -35,7 +35,7 @@ contract CZRLocker is owned {
         uint unlockedAmount;
     }
     
-    mapping(address =&gt; LockedCZR[]) public lockedCZRMap;
+    mapping(address => LockedCZR[]) public lockedCZRMap;
     
     function CZRLocker(address _tokenAddr, address _unlocker) public {
         tokenAddr = _tokenAddr;
@@ -47,7 +47,7 @@ contract CZRLocker is owned {
     /// @param index index to remove
     function removeCZRLock(address addr, uint index) onlyOwner public {
         LockedCZR[] storage lockArr = lockedCZRMap[addr];
-        require(lockArr.length &gt; 0 &amp;&amp; index &lt; lockArr.length);
+        require(lockArr.length > 0 && index < lockArr.length);
     
         delete lockArr[index];      //delete just set all feilds to zero value, not remove item out of array;
         RemoveLock(addr, index);
@@ -59,7 +59,7 @@ contract CZRLocker is owned {
     /// @param amount CZR amount
     /// @param lockMonth months to lock
     function addCZRLock(address addr, uint startLockTime, uint amount, uint lockMonth) onlyOwner public {
-        require(amount &gt; 0);
+        require(amount > 0);
         if (startLockTime == 0)
             startLockTime = now;
         lockedCZRMap[addr].push(LockedCZR(startLockTime, lockMonth, amount, 0));
@@ -74,13 +74,13 @@ contract CZRLocker is owned {
         require(msg.sender == owner || msg.sender == unlocker);
         
         LockedCZR[] storage lockArr = lockedCZRMap[addr];
-        require(lockArr.length &gt; 0);
+        require(lockArr.length > 0);
         token t = token(tokenAddr);
         
         uint num = 0;
-        for (uint i = 0; i &lt; lockArr.length; i++) {
+        for (uint i = 0; i < lockArr.length; i++) {
             var lock = lockArr[i];
-            if (lock.lockedAmount &gt; 0) {
+            if (lock.lockedAmount > 0) {
                 uint time = now - lock.startLockTime;
                 uint month = time / 30 days;
                 
@@ -88,7 +88,7 @@ contract CZRLocker is owned {
                     continue;
 
                 uint unlockAmount;
-                if (month &gt;= lock.lockMonth)
+                if (month >= lock.lockMonth)
                     unlockAmount = lock.lockedAmount;
                 else
                     unlockAmount = (lock.lockedAmount + lock.unlockedAmount) * month / lock.lockMonth - lock.unlockedAmount;
@@ -103,12 +103,12 @@ contract CZRLocker is owned {
                 Unlock(addr, i, unlockAmount);
                 
                 num++;
-                if (limit &gt; 0 &amp;&amp; num == limit)
+                if (limit > 0 && num == limit)
                     break;
             }
         }
         
-        require(num &gt; 0);
+        require(num > 0);
     }
     
     /// @notice withdraw eth

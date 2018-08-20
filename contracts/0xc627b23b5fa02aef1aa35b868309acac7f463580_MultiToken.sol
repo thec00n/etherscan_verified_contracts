@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,9 +74,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -84,7 +84,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -93,7 +93,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -136,7 +136,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -154,7 +154,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -182,7 +182,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -200,8 +200,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -215,7 +215,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -284,7 +284,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -317,27 +317,27 @@ contract BasicMultiToken is StandardToken, DetailedERC20 {
     constructor(ERC20[] _tokens, string _name, string _symbol, uint8 _decimals) public
         DetailedERC20(_name, _symbol, _decimals)
     {
-        require(_tokens.length &gt;= 2, &quot;Contract do not support less than 2 inner tokens&quot;);
+        require(_tokens.length >= 2, "Contract do not support less than 2 inner tokens");
         tokens = _tokens;
     }
 
     function mint(address _to, uint256 _amount) public {
-        require(totalSupply_ != 0, &quot;This method can be used with non zero total supply only&quot;);
+        require(totalSupply_ != 0, "This method can be used with non zero total supply only");
         uint256[] memory tokenAmounts = new uint256[](tokens.length);
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             tokenAmounts[i] = _amount.mul(tokens[i].balanceOf(this)).div(totalSupply_);
         }
         _mint(_to, _amount, tokenAmounts);
     }
 
     function mintFirstTokens(address _to, uint256 _amount, uint256[] _tokenAmounts) public {
-        require(totalSupply_ == 0, &quot;This method can be used with zero total supply only&quot;);
+        require(totalSupply_ == 0, "This method can be used with zero total supply only");
         _mint(_to, _amount, _tokenAmounts);
     }
 
     function _mint(address _to, uint256 _amount, uint256[] _tokenAmounts) internal {
-        require(tokens.length == _tokenAmounts.length, &quot;Lenghts of tokens and _tokenAmounts array should be equal&quot;);
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        require(tokens.length == _tokenAmounts.length, "Lenghts of tokens and _tokenAmounts array should be equal");
+        for (uint i = 0; i < tokens.length; i++) {
             tokens[i].transferFrom(msg.sender, this, _tokenAmounts[i]);
         }
 
@@ -352,9 +352,9 @@ contract BasicMultiToken is StandardToken, DetailedERC20 {
     }
 
     function burnSome(uint256 _value, ERC20[] someTokens) public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
-        for (uint i = 0; i &lt; someTokens.length; i++) {
+        for (uint i = 0; i < someTokens.length; i++) {
             uint256 tokenAmount = _value.mul(someTokens[i].balanceOf(this)).div(totalSupply_);
             someTokens[i].transfer(msg.sender, tokenAmount);
         }
@@ -381,7 +381,7 @@ interface ERC228 {
 
 contract MultiToken is BasicMultiToken, ERC228 {
 
-    mapping(address =&gt; uint256) public weights;
+    mapping(address => uint256) public weights;
     
     constructor(ERC20[] _tokens, uint256[] _weights, string _name, string _symbol, uint8 _decimals) public
         BasicMultiToken(_tokens, _name, _symbol, _decimals)
@@ -390,9 +390,9 @@ contract MultiToken is BasicMultiToken, ERC228 {
     }
 
     function _setWeights(uint256[] _weights) internal {
-        require(_weights.length == tokens.length, &quot;Lenghts of _tokens and _weights array should be equal&quot;);
-        for (uint i = 0; i &lt; tokens.length; i++) {
-            require(_weights[i] != 0, &quot;The _weights array should not contains zeros&quot;);
+        require(_weights.length == tokens.length, "Lenghts of _tokens and _weights array should be equal");
+        for (uint i = 0; i < tokens.length; i++) {
+            require(_weights[i] != 0, "The _weights array should not contains zeros");
             weights[tokens[i]] = _weights[i];
         }
     }
@@ -413,7 +413,7 @@ contract MultiToken is BasicMultiToken, ERC228 {
 
     function change(address _fromToken, address _toToken, uint256 _amount, uint256 _minReturn) public returns(uint256 returnAmount) {
         returnAmount = getReturn(_fromToken, _toToken, _amount);
-        require(returnAmount &gt;= _minReturn, &quot;The return amount is less than _minReturn value&quot;);
+        require(returnAmount >= _minReturn, "The return amount is less than _minReturn value");
         ERC20(_fromToken).transferFrom(msg.sender, this, _amount);
         ERC20(_toToken).transfer(msg.sender, returnAmount);
         emit Change(_fromToken, _toToken, msg.sender, _amount, returnAmount);

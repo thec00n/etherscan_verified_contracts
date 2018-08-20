@@ -12,10 +12,10 @@ contract Vow {
         uint payoff;
         uint deposits;
         uint taar;
-        mapping (address =&gt; Customer) customers;
+        mapping (address => Customer) customers;
 
     }
-    mapping (uint =&gt; Vow) vows;
+    mapping (uint => Vow) vows;
     
     
     uint numVows;
@@ -55,7 +55,7 @@ contract Vow {
         
         if (msg.sender != vows[vowID].oracle)
             return false;
-        if (wc.balance &lt; amount || amount == 0)
+        if (wc.balance < amount || amount == 0)
             return false;
         Customer wc = vows[vowID].customers[beneficiary];
         wc.balance -= amount;

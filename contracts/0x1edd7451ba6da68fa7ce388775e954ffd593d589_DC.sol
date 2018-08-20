@@ -20,8 +20,8 @@ contract ERC20Interface {
 contract DC is ERC20Interface {
     uint256 public constant decimals = 8;
 
-    string public constant symbol = &quot;DC&quot;;
-    string public constant name = &quot;docoin&quot;;
+    string public constant symbol = "DC";
+    string public constant name = "docoin";
 
     uint256 public _totalSupply = 10 ** 19; 
 
@@ -29,16 +29,16 @@ contract DC is ERC20Interface {
     address public owner;
 
     // Balances DC for each account
-    mapping(address =&gt; uint256) private balances;
+    mapping(address => uint256) private balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(address => mapping (address => uint256)) private allowed;
 
     // List of approved investors
-    mapping(address =&gt; bool) private approvedInvestorList;
+    mapping(address => bool) private approvedInvestorList;
 
     // deposit
-    mapping(address =&gt; uint256) private deposit;
+    mapping(address => uint256) private deposit;
 
 
     // totalTokenSold
@@ -49,7 +49,7 @@ contract DC is ERC20Interface {
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-      if(msg.data.length &lt; size + 4) {
+      if(msg.data.length < size + 4) {
         revert();
       }
       _;
@@ -73,7 +73,7 @@ contract DC is ERC20Interface {
     }
 
 
-    /// @dev Gets account&#39;s balance
+    /// @dev Gets account's balance
     /// @param _addr Address of the account
     /// @return Account balance
     function balanceOf(address _addr)
@@ -111,12 +111,12 @@ contract DC is ERC20Interface {
         public
 
         returns (bool) {
-        // if sender&#39;s balance has enough unit and amount &gt;= 0,
+        // if sender's balance has enough unit and amount >= 0,
         //      and the sum is not overflow,
         // then DC transfer
-        if ( (balances[msg.sender] &gt;= _amount) &amp;&amp;
-             (_amount &gt;= 0) &amp;&amp;
-             (balances[_to] + _amount &gt; balances[_to]) ) {
+        if ( (balances[msg.sender] >= _amount) &&
+             (_amount >= 0) &&
+             (balances[_to] + _amount > balances[_to]) ) {
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -129,7 +129,7 @@ contract DC is ERC20Interface {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -141,7 +141,7 @@ contract DC is ERC20Interface {
     public
 
     returns (bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; allowed[_from][msg.sender] &gt;= _amount) {
+        if (balances[_from] >= _amount && _amount > 0 && allowed[_from][msg.sender] >= _amount) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;

@@ -5,7 +5,7 @@ contract TWQCrowdsale {
     uint256 public amount;
     uint256 public hard_limit;
     uint256 public token_price;
-    mapping (address =&gt; uint256) public tokens_backed;
+    mapping (address => uint256) public tokens_backed;
     address public contract_admin;
     
     event FundTransfer(address backer, uint256 amount_paid);
@@ -20,8 +20,8 @@ contract TWQCrowdsale {
     }
     
     function () public payable {
-        if (msg.value &lt; 0.01 ether) revert();
-        if (msg.value + amount &gt; hard_limit) revert();
+        if (msg.value < 0.01 ether) revert();
+        if (msg.value + amount > hard_limit) revert();
         FundTransfer(msg.sender, msg.value);
         amount += msg.value;
         tokens_backed[msg.sender] += msg.value / token_price;

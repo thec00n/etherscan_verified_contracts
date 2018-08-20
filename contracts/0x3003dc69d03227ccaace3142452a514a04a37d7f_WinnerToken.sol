@@ -5,10 +5,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -16,7 +16,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -92,15 +92,15 @@ contract WinnerToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function WinnerToken() public {
-        symbol = &quot;WINR&quot;;
-        name = &quot;Winner Token&quot;;
+        symbol = "WINR";
+        name = "Winner Token";
         decimals = 0;
         _totalSupply = 10000000000000;
         balances[owner] = _totalSupply;
@@ -125,8 +125,8 @@ contract WinnerToken is ERC20Interface, Owned {
     
     
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -139,7 +139,7 @@ contract WinnerToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -172,7 +172,7 @@ contract WinnerToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -181,7 +181,7 @@ contract WinnerToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -202,7 +202,7 @@ contract WinnerToken is ERC20Interface, Owned {
     
     //Destroy own token
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);                    // Check if the sender has enough
+        require(balances[msg.sender] >= _value);                    // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);    // Subtract from the sender
         _totalSupply = _totalSupply.sub(_value);                    // Updates totalSupply
         Burn(msg.sender, _value);
@@ -211,7 +211,7 @@ contract WinnerToken is ERC20Interface, Owned {
     
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

@@ -13,9 +13,9 @@ contract owned {
 
 contract NECPToken is owned {
     /* Public variables of the token */
-    string public constant standard = &#39;Token 0.1&#39;;
-    string public constant name = &quot;Neureal Early Contributor Points&quot;;
-    string public constant symbol = &quot;NECP&quot;;
+    string public constant standard = 'Token 0.1';
+    string public constant name = "Neureal Early Contributor Points";
+    string public constant symbol = "NECP";
     uint256 public constant decimals = 8;
     uint256 public constant MAXIMUM_SUPPLY = 3000000000000;
     
@@ -23,7 +23,7 @@ contract NECPToken is owned {
     bool public frozen = false;
 
     /* This tracks all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -38,8 +38,8 @@ contract NECPToken is owned {
     function transfer(address _to, uint256 _value) {
         if (frozen) throw;                                   // Check if frozen
         if (_to == 0x0) throw;                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place

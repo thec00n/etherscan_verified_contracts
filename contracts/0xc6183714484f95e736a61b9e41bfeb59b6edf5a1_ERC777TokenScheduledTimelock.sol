@@ -78,8 +78,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -94,9 +94,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -104,7 +104,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -113,7 +113,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,7 +121,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -191,21 +191,21 @@ contract ERC777TokenScheduledTimelock is ERC820Implementer, ERC777TokensRecipien
         uint256 amount;
     }
 
-    mapping(address =&gt; Timelock[]) public schedule;
+    mapping(address => Timelock[]) public schedule;
 
     event Released(address to, uint256 amount);
 
     constructor(address _token) public {
-        setInterfaceImplementation(&quot;ERC777TokensRecipient&quot;, this);
-        address tokenAddress = interfaceAddr(_token, &quot;ERC777Token&quot;);
+        setInterfaceImplementation("ERC777TokensRecipient", this);
+        address tokenAddress = interfaceAddr(_token, "ERC777Token");
         require(tokenAddress != address(0));
         token = ERC777Token(tokenAddress);
     }
 
     function scheduleTimelock(address _beneficiary, uint256 _lockTokenAmount, uint256 _lockTill) public onlyOwner {
         require(_beneficiary != address(0));
-        require(_lockTill &gt; getNow());
-        require(token.balanceOf(address(this)) &gt;= totalVested.add(_lockTokenAmount));
+        require(_lockTill > getNow());
+        require(token.balanceOf(address(this)) >= totalVested.add(_lockTokenAmount));
         totalVested = totalVested.add(_lockTokenAmount);
 
         schedule[_beneficiary].push(Timelock({ till: _lockTill, amount: _lockTokenAmount }));
@@ -217,26 +217,26 @@ contract ERC777TokenScheduledTimelock is ERC820Implementer, ERC777TokensRecipien
         uint256 till;
         uint256 n = timelocks.length;
         uint256 timestamp = getNow();
-        for (uint256 i = 0; i &lt; n; i++) {
+        for (uint256 i = 0; i < n; i++) {
             Timelock storage timelock = timelocks[i];
             till = timelock.till;
-            if (till &gt; 0 &amp;&amp; till &lt;= timestamp) {
+            if (till > 0 && till <= timestamp) {
                 tokens = tokens.add(timelock.amount);
                 timelock.amount = 0;
                 timelock.till = 0;
             }
         }
-        if (tokens &gt; 0) {
+        if (tokens > 0) {
             totalVested = totalVested.sub(tokens);
-            token.send(_to, tokens, &#39;&#39;);
+            token.send(_to, tokens, '');
             emit Released(_to, tokens);
         }
     }
 
     function releaseBatch(address[] _to) public {
-        require(_to.length &gt; 0 &amp;&amp; _to.length &lt; 100);
+        require(_to.length > 0 && _to.length < 100);
 
-        for (uint256 i = 0; i &lt; _to.length; i++) {
+        for (uint256 i = 0; i < _to.length; i++) {
             release(_to[i]);
         }
     }

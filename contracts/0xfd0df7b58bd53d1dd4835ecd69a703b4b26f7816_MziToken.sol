@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -276,8 +276,8 @@ contract MintableToken is StandardToken, Ownable {
 // File: contracts/MziToken.sol
 
 contract MziToken is MintableToken {
-    string public constant name = &quot;MziToken&quot;;
-    string public constant symbol = &quot;MZI&quot;;
+    string public constant name = "MziToken";
+    string public constant symbol = "MZI";
     uint8 public constant decimals = 18;
 }
 
@@ -321,9 +321,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -372,14 +372,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -427,26 +427,26 @@ contract Moozicore is Crowdsale {
     // overriding Crowdsale#validPurchase
     function validPurchase() internal constant returns (bool) {
 
-        if (msg.value &lt; 50000000000000000) {
+        if (msg.value < 50000000000000000) {
             return false;
         }
 
-        if (token.totalSupply().add(msg.value.mul(getRate())) &gt;= CAP) {
+        if (token.totalSupply().add(msg.value.mul(getRate())) >= CAP) {
             return false;
         }
         
-        if (now &gt;= 1517266799 &amp;&amp; now &lt; 1533110400) {
+        if (now >= 1517266799 && now < 1533110400) {
             return false;
         }
 
-        if (now &lt;= 1517266799) {
-            if (token.totalSupply().add(msg.value.mul(getRate())) &gt;= CAP_PRE_SALE) {
+        if (now <= 1517266799) {
+            if (token.totalSupply().add(msg.value.mul(getRate())) >= CAP_PRE_SALE) {
                 return false;
             }
         }
 
-        if (now &gt;= 1533110400) {
-            if (totalSupplyIco.add(msg.value.mul(getRate())) &gt;= CAP_ICO_SALE) {
+        if (now >= 1533110400) {
+            if (totalSupplyIco.add(msg.value.mul(getRate())) >= CAP_ICO_SALE) {
                 return false;
             }
         }
@@ -465,7 +465,7 @@ contract Moozicore is Crowdsale {
         token.mint(beneficiary, tokens);
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
-        if (now &gt;= 1533110400) {
+        if (now >= 1533110400) {
             totalSupplyIco = totalSupplyIco.add(tokens);
         }
 
@@ -475,21 +475,21 @@ contract Moozicore is Crowdsale {
     function getRate() public constant returns (uint256) {
         uint256 currentRate = RATE_ICO_SALE_WEEK4;
 
-        if (now &lt;= 1515452399) {
+        if (now <= 1515452399) {
             currentRate = RATE_PRE_SALE_WEEK1;
-        } else if (now &lt;= 1516057199) {
+        } else if (now <= 1516057199) {
             currentRate = RATE_PRE_SALE_WEEK2;
-        } else if (now &lt;= 1516661999) {
+        } else if (now <= 1516661999) {
             currentRate = RATE_PRE_SALE_WEEK3;
-        } else if (now &lt;= 1517266799) {
+        } else if (now <= 1517266799) {
             currentRate = RATE_PRE_SALE_WEEK4;
-        } else if (now &lt;= 1533679199) {
+        } else if (now <= 1533679199) {
             currentRate = RATE_ICO_SALE_WEEK1;
-        } else if (now &lt;= 1534283999) {
+        } else if (now <= 1534283999) {
             currentRate = RATE_ICO_SALE_WEEK2;
-        } else if (now &lt;= 1534888799) {
+        } else if (now <= 1534888799) {
             currentRate = RATE_ICO_SALE_WEEK3;
-        } else if (now &lt;= 1535493599) {
+        } else if (now <= 1535493599) {
             currentRate = RATE_ICO_SALE_WEEK4;
         }
 
@@ -498,14 +498,14 @@ contract Moozicore is Crowdsale {
 
     function mintTokens(address walletToMint, uint256 t) payable public {
         require(msg.sender == wallet);
-        require(token.totalSupply().add(t) &lt; CAP);
+        require(token.totalSupply().add(t) < CAP);
         
-        if (now &lt;= 1517266799) {
-            require(token.totalSupply().add(t) &lt; CAP_PRE_SALE);
+        if (now <= 1517266799) {
+            require(token.totalSupply().add(t) < CAP_PRE_SALE);
         }
 
-        if (now &gt; 1517266799) {
-            require(totalSupplyIco.add(t) &lt; CAP_ICO_SALE);
+        if (now > 1517266799) {
+            require(totalSupplyIco.add(t) < CAP_ICO_SALE);
             totalSupplyIco = totalSupplyIco.add(t);
         }
 

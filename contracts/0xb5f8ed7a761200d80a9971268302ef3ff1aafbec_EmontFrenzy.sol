@@ -4,7 +4,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     function BasicAccessControl() public {
@@ -87,14 +87,14 @@ contract EmontFrenzy is BasicAccessControl {
     uint public cashInRate = 50; // from EMONT to fish weight 
     uint public width = 50;
     uint public minJump = 2 * 2;
-    uint public maxPos = HIGH * width; // valid pos (0 -&gt; maxPos - 1)
+    uint public maxPos = HIGH * width; // valid pos (0 -> maxPos - 1)
     
-    mapping(uint =&gt; Fish) fishMap;
-    mapping(uint =&gt; uint) ocean; // pos =&gt; fish id
-    mapping(uint =&gt; uint) bonus; // pos =&gt; emont amount
-    mapping(address =&gt; uint) players;
+    mapping(uint => Fish) fishMap;
+    mapping(uint => uint) ocean; // pos => fish id
+    mapping(uint => uint) bonus; // pos => emont amount
+    mapping(address => uint) players;
     
-    mapping(uint =&gt; uint) maxJumps; // weight in EMONT =&gt; square length
+    mapping(uint => uint) maxJumps; // weight in EMONT => square length
     
     uint public totalFish = 0;
     
@@ -172,7 +172,7 @@ contract EmontFrenzy is BasicAccessControl {
     
     function withdrawEther(address _sendTo, uint _amount) onlyModerators external {
         // no user money is kept in this contract, only trasaction fee
-        if (_amount &gt; address(this).balance) {
+        if (_amount > address(this).balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -180,7 +180,7 @@ contract EmontFrenzy is BasicAccessControl {
     
     function withdrawToken(address _sendTo, uint _amount) onlyModerators requireTokenContract external {
         ERC20Interface token = ERC20Interface(tokenContract);
-        if (_amount &gt; token.balanceOf(address(this))) {
+        if (_amount > token.balanceOf(address(this))) {
             revert();
         }
         token.transfer(_sendTo, _amount);
@@ -198,7 +198,7 @@ contract EmontFrenzy is BasicAccessControl {
             revert();
         
          // max: one fish per address
-        if (fishMap[players[_player]].weight &gt; 0)
+        if (fishMap[players[_player]].weight > 0)
             revert();
         
         totalFish += 1;
@@ -221,7 +221,7 @@ contract EmontFrenzy is BasicAccessControl {
         if (msg.value != addFee) revert();
         
         // max: one fish per address
-        if (fishMap[players[msg.sender]].weight &gt; 0)
+        if (fishMap[players[msg.sender]].weight > 0)
             revert();
         
         totalFish += 1;
@@ -236,23 +236,23 @@ contract EmontFrenzy is BasicAccessControl {
     }
     
     function DeductABS(uint _a, uint _b) pure public returns(uint) {
-        if (_a &gt; _b) 
+        if (_a > _b) 
             return (_a - _b);
         return (_b - _a);
     }
     
     function MoveFish(uint _fromPos, uint _toPos) isActive external {
         // check valid _x, _y
-        if (_toPos &gt;= maxPos &amp;&amp; _fromPos != _toPos)
+        if (_toPos >= maxPos && _fromPos != _toPos)
             revert();
         
         uint fishId = players[msg.sender];
         Fish storage fish = fishMap[fishId];
         if (fish.weight == 0)
             revert();
-        if (!fish.active &amp;&amp; _fromPos != BASE_POS)
+        if (!fish.active && _fromPos != BASE_POS)
             revert();
-        if (fish.active &amp;&amp; ocean[_fromPos] != fishId)
+        if (fish.active && ocean[_fromPos] != fishId)
             revert();
         
         // check valid move
@@ -261,7 +261,7 @@ contract EmontFrenzy is BasicAccessControl {
         uint squareLength = maxJumps[fish.weight / ONE_EMONT];
         if (squareLength == 0) squareLength = minJump;
         
-        if (tempX * tempX + tempY * tempY &gt; squareLength)
+        if (tempX * tempX + tempY * tempY > squareLength)
             revert();
         
         // move 
@@ -285,7 +285,7 @@ contract EmontFrenzy is BasicAccessControl {
         tempX = ocean[_toPos]; // target fish id
         // no fish at that location
         if (tempX == 0) {
-            if (bonus[_toPos] &gt; 0) {
+            if (bonus[_toPos] > 0) {
                 fish.weight += bonus[_toPos];
                 bonus[_toPos] = 0;
             }
@@ -298,7 +298,7 @@ contract EmontFrenzy is BasicAccessControl {
             if (_fromPos == BASE_POS) revert();
             
             Fish storage targetFish = fishMap[tempX];
-            if (targetFish.weight &lt;= fish.weight) {
+            if (targetFish.weight <= fish.weight) {
                 // eat the target fish
                 fish.weight += targetFish.weight;
                 targetFish.weight = 0;
@@ -331,13 +331,13 @@ contract EmontFrenzy is BasicAccessControl {
         uint fishId = players[msg.sender];
         Fish storage fish = fishMap[fishId];
         
-        if (fish.weight &lt; _amount + addWeight) 
+        if (fish.weight < _amount + addWeight) 
             revert();
         
         fish.weight -= _amount;
         
         ERC20Interface token = ERC20Interface(tokenContract);
-        if (_amount &gt; token.balanceOf(address(this))) {
+        if (_amount > token.balanceOf(address(this))) {
             revert();
         }
         token.transfer(msg.sender, (_amount * cashOutRate) / 100);
@@ -374,13 +374,13 @@ contract EmontFrenzy is BasicAccessControl {
     
     // cell has valid fish or bonus
     function findTargetCell(uint _fromPos, uint _toPos) constant public returns(uint pos, uint fishId, address player, uint weight) {
-        for (uint index = _fromPos; index &lt;= _toPos; index+=1) {
-            if (ocean[index] &gt; 0) {
+        for (uint index = _fromPos; index <= _toPos; index+=1) {
+            if (ocean[index] > 0) {
                 fishId = ocean[index];
                 Fish storage fish = fishMap[fishId];
                 return (index, fishId, fish.player, fish.weight);
             }
-            if (bonus[index] &gt; 0) {
+            if (bonus[index] > 0) {
                 return (index, 0, address(0), bonus[index]);
             }
         }
@@ -389,19 +389,19 @@ contract EmontFrenzy is BasicAccessControl {
     function getStats() constant public returns(uint countFish, uint countBonus) {
         countFish = 0;
         countBonus = 0;
-        for (uint index = 0; index &lt; width * HIGH; index++) {
-            if (ocean[index] &gt; 0) {
+        for (uint index = 0; index < width * HIGH; index++) {
+            if (ocean[index] > 0) {
                 countFish += 1; 
-            } else if (bonus[index] &gt; 0) {
+            } else if (bonus[index] > 0) {
                 countBonus += 1;
             }
         }
     }
     
     function getFishAtBase(uint _fishId) constant public returns(uint fishId, address player, uint weight) {
-        for (uint id = _fishId; id &lt;= totalFish; id++) {
+        for (uint id = _fishId; id <= totalFish; id++) {
             Fish storage fish = fishMap[id];
-            if (fish.weight &gt; 0 &amp;&amp; !fish.active) {
+            if (fish.weight > 0 && !fish.active) {
                 return (id, fish.player, fish.weight);
             }
         }
@@ -414,22 +414,22 @@ contract EmontFrenzy is BasicAccessControl {
     }
     
     // some meta data
-    string public constant name = &quot;EmontFrenzy&quot;;
-    string public constant symbol = &quot;EMONF&quot;;
+    string public constant name = "EmontFrenzy";
+    string public constant symbol = "EMONF";
 
     function totalSupply() public view returns (uint256) {
         return totalFish;
     }
     
     function balanceOf(address _owner) public view returns (uint256 _balance) {
-        if (fishMap[players[_owner]].weight &gt; 0)
+        if (fishMap[players[_owner]].weight > 0)
             return 1;
         return 0;
     }
     
     function ownerOf(uint256 _tokenId) public view returns (address _owner) {
         Fish storage fish = fishMap[_tokenId];
-        if (fish.weight &gt; 0)
+        if (fish.weight > 0)
             return fish.player;
         return address(0);
     }
@@ -442,7 +442,7 @@ contract EmontFrenzy is BasicAccessControl {
         if (fishId == 0 || fish.weight == 0 || fishId != _tokenId)
             revert();
         
-        if (balanceOf(_to) &gt; 0)
+        if (balanceOf(_to) > 0)
             revert();
         
         fish.player = _to;

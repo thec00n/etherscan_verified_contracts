@@ -19,8 +19,8 @@ interface ERC20Token {
 }
 
 contract Token is ERC20Token{
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -29,9 +29,9 @@ contract Token is ERC20Token{
     }
 
     function transfer(address _to, uint256 _value) external returns (bool success) {
-        if(msg.data.length &lt; (2 * 32) + 4) { revert(); }
+        if(msg.data.length < (2 * 32) + 4) { revert(); }
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -40,9 +40,9 @@ contract Token is ERC20Token{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
-        if(msg.data.length &lt; (3 * 32) + 4) { revert(); }
+        if(msg.data.length < (3 * 32) + 4) { revert(); }
 
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -52,7 +52,7 @@ contract Token is ERC20Token{
     }
 
     function approve(address _spender, uint256 _value) external returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -123,9 +123,9 @@ contract PFAToken is Token{
 
         balances[msg.sender] = 1000000000 * 1000000000000000000;
         totalSupply = 1000000000 * 1000000000000000000;
-        name = &quot;Price Fitch Asset&quot;;
+        name = "Price Fitch Asset";
         decimals = 18;
-        symbol = &quot;PFA&quot;;
+        symbol = "PFA";
         unitsOneEthCanBuy = 100;
         minimumContribution = 10 finney;
         fundsWallet = msg.sender;
@@ -148,10 +148,10 @@ contract PFAToken is Token{
 
     // fallback function for ICO use.
     function() payable whenNotPause isICOStage{
-        if (msg.value &gt;= minimumContribution){
+        if (msg.value >= minimumContribution){
             totalEthInWei = totalEthInWei + msg.value;
             uint256 amount = msg.value * unitsOneEthCanBuy;
-            if (balances[fundsWallet] &lt; amount) {
+            if (balances[fundsWallet] < amount) {
                 return;
             }
 
@@ -170,7 +170,7 @@ contract PFAToken is Token{
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {
             revert();
         }
 

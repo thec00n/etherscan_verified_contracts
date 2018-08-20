@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 // Etheremon ERC721
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c7cbcad0c5c7d0e4e1d0ccc1d6c1c9cbca8ac7cbc9">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c7cbcad0c5c7d0e4e1d0ccc1d6c1c9cbca8ac7cbc9">[email protected]</a>
 
 contract SafeMath {
 
@@ -14,12 +14,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -36,7 +36,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -177,10 +177,10 @@ contract ERC721 {
 }
 
 contract EtheremonAsset is BasicAccessControl, ERC721 {
-    string public constant name = &quot;EtheremonAsset&quot;;
-    string public constant symbol = &quot;EMONA&quot;;
+    string public constant name = "EtheremonAsset";
+    string public constant symbol = "EMONA";
     
-    mapping (address =&gt; mapping (uint256 =&gt; address)) public allowed;
+    mapping (address => mapping (uint256 => address)) public allowed;
     
     // data contract
     address public dataContract;
@@ -274,7 +274,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         
         require(allowed[obj.trainer][_tokenId] == msg.sender);
         
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))
@@ -300,7 +300,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         require(msg.sender != _to);
         require(_to != address(0));
         
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))
@@ -327,7 +327,7 @@ contract EtheremonAsset is BasicAccessControl, ERC721 {
         require(_to != _from);
         require(allowed[_from][_tokenId] == msg.sender);
     
-        // check battle &amp; trade contract 
+        // check battle & trade contract 
         EtheremonBattle battle = EtheremonBattle(battleContract);
         EtheremonTradeInterface trade = EtheremonTradeInterface(tradeContract);
         if (battle.isOnBattle(obj.monsterId) || trade.isOnTrading(obj.monsterId))

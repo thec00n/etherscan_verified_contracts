@@ -67,8 +67,8 @@ contract ERC20Interface {
  * original Token contract, an abstract contract for the full ERC 20 Token standard
  */
 contract EngravedToken is ERC20Interface, Owned {
-    string public constant symbol = &quot;EGR&quot;;
-    string public constant name = &quot;Engraved Token&quot;;
+    string public constant symbol = "EGR";
+    string public constant name = "Engraved Token";
     uint8 public constant decimals = 3;
 
     // Core team incentive distribution
@@ -91,10 +91,10 @@ contract EngravedToken is ERC20Interface, Owned {
     bool public locked;
 
     // Balances for each account
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
     // Constructor
     function EngravedToken() public {
@@ -133,9 +133,9 @@ contract EngravedToken is ERC20Interface, Owned {
      */
     function transfer(address _to, uint256 _amount) public returns (bool success) {
         require(!locked);
-        require(balances[msg.sender] &gt;= _amount);
-        require(_amount &gt; 0);
-        assert(balances[_to] + _amount &gt; balances[_to]);
+        require(balances[msg.sender] >= _amount);
+        require(_amount > 0);
+        assert(balances[_to] + _amount > balances[_to]);
 
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
@@ -157,10 +157,10 @@ contract EngravedToken is ERC20Interface, Owned {
         uint256 _amount
     ) public returns (bool success) {
         require(!locked);
-        require(balances[_from] &gt;= _amount);
-        require(allowed[_from][msg.sender] &gt;= _amount);
-        require(_amount &gt; 0);
-        assert(balances[_to] + _amount &gt; balances[_to]);
+        require(balances[_from] >= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
+        require(_amount > 0);
+        assert(balances[_to] + _amount > balances[_to]);
 
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
@@ -226,20 +226,20 @@ contract EngravedToken is ERC20Interface, Owned {
         require(incentiveDistributionStarted);
 
         // Enforce max distribution rounds
-        require(incentiveDistributionRound &lt; incentiveDistributionMaxRounds);
+        require(incentiveDistributionRound < incentiveDistributionMaxRounds);
 
         // Enforce time interval
-        require(now &gt; incentiveDistributionDate);
+        require(now > incentiveDistributionDate);
 
         uint256 totalSupplyToDate = totalSupply;
         uint256 denominator = 1;
 
         // Incentive decreased each round
-        if (incentiveDistributionRound &gt; 1) {
+        if (incentiveDistributionRound > 1) {
             denominator = incentiveDistributionRoundDenominator**(incentiveDistributionRound - 1);
         }
 
-        for (uint256 i = 0; i &lt; incentives.length; i++) {
+        for (uint256 i = 0; i < incentives.length; i++) {
 
             uint256 amount = totalSupplyToDate * incentives[i].percentage / 10**2 / denominator;
             address recipient = incentives[i].recipient;
@@ -269,7 +269,7 @@ contract EngravedToken is ERC20Interface, Owned {
     }
 
     /**
-     * Issues `_amount` new tokens to `_recipient` (_amount &lt; 0 guarantees that tokens are never removed)
+     * Issues `_amount` new tokens to `_recipient` (_amount < 0 guarantees that tokens are never removed)
      *
      * @param _recipient The address to which the tokens will be issued
      * @param _amount The amount of new tokens to issue
@@ -277,7 +277,7 @@ contract EngravedToken is ERC20Interface, Owned {
      */
     function issue(address _recipient, uint256 _amount) public onlyOwner returns (bool success) {
         // Guarantee positive
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
 
         // Create tokens
         balances[_recipient] += _amount;

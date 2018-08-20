@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -49,17 +49,17 @@ contract SurfersBeach is Ownable {
 
     uint256 total;
     
-    mapping (address =&gt; bool) public registered;
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => bool) public registered;
+    mapping (address => uint256) public balances;
 
     event Approval(address indexed account, bool valid);
     event Contribution(address indexed contributor, uint256 amount);
     event Transfer(address indexed recipient, uint256 amount, address owner);
     
     function SurfersBeach(string _name, uint256 _cap, uint256 _contributionMinimum, uint256 _contributionMaximum) public {
-        require(_contributionMinimum &lt;= _contributionMaximum);
-        require(_contributionMaximum &gt; 0);
-        require(_contributionMaximum &lt;= _cap);
+        require(_contributionMinimum <= _contributionMaximum);
+        require(_contributionMaximum > 0);
+        require(_contributionMaximum <= _cap);
         name = _name;
         cap = _cap;
         contributionMinimum = _contributionMinimum;
@@ -75,9 +75,9 @@ contract SurfersBeach is Ownable {
         require(registered[sender]);
         uint256 value = msg.value;
         uint256 balance = balances[sender] + value;
-        require(balance &gt;= contributionMinimum);
-        require(balance &lt;= contributionMaximum);
-        require(total + value &lt;= cap);
+        require(balance >= contributionMinimum);
+        require(balance <= contributionMaximum);
+        require(total + value <= cap);
         balances[sender] = balance;
         total += value;
         Contribution(sender, value);
@@ -91,7 +91,7 @@ contract SurfersBeach is Ownable {
 
     function transfer(address recipient, uint256 amount) public onlyOwner {
         require(recipient != 0);
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         Transfer(recipient, amount, owner);
         recipient.transfer(amount);
     }

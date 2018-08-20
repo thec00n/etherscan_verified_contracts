@@ -28,20 +28,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -72,7 +72,7 @@ contract BSAFE is ERC20  {
     using SafeMath
     for uint256;
     /* Public variables of the token */
-    string public standard = &#39;BSAFE 1.1&#39;;
+    string public standard = 'BSAFE 1.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -80,8 +80,8 @@ contract BSAFE is ERC20  {
     uint256 public initialSupply;
     bool initialize;
 
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping( address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -99,8 +99,8 @@ contract BSAFE is ERC20  {
         balanceOf[msg.sender] = _initialSupply; // Give the creator all initial tokens
         totalSupply = _initialSupply; // Update total supply
         initialSupply = _initialSupply;
-        name = &quot;BlockSafe&quot;; // Set the name for display purposes
-        symbol = &quot;BSAFE&quot;; // Set the symbol for display purposes
+        name = "BlockSafe"; // Set the name for display purposes
+        symbol = "BSAFE"; // Set the symbol for display purposes
         decimals = decimalUnits; // Amount of decimals for display purposes
     }
 
@@ -122,7 +122,7 @@ contract BSAFE is ERC20  {
     function transfer(address _to, uint256 _value) returns(bool ok) {
         
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
         bytes memory empty;
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(  _value ); // Subtract from the sender
@@ -140,7 +140,7 @@ contract BSAFE is ERC20  {
      function transfer(address _to, uint256 _value, bytes _data ) returns(bool ok) {
         
         if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
         bytes memory empty;
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(  _value ); // Subtract from the sender
@@ -167,7 +167,7 @@ contract BSAFE is ERC20  {
             codeLength := extcodesize(_to)
         }
         
-         if(codeLength&gt;0) {
+         if(codeLength>0) {
            
            return true;
            
@@ -204,9 +204,9 @@ contract BSAFE is ERC20  {
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
         
         if (_from == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
         balanceOf[_from] = balanceOf[_from].sub( _value ); // Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add( _value ); // Add the same to the recipient
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub( _value ); 
@@ -216,8 +216,8 @@ contract BSAFE is ERC20  {
   
     function burn(uint256 _value) returns(bool success) {
         
-        if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
-        if ( (totalSupply - _value) &lt;  ( initialSupply / 2 ) ) throw;
+        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        if ( (totalSupply - _value) <  ( initialSupply / 2 ) ) throw;
         balanceOf[msg.sender] = balanceOf[msg.sender].sub( _value ); // Subtract from the sender
         totalSupply = totalSupply.sub( _value ); // Updates totalSupply
         Burn(msg.sender, _value);
@@ -227,8 +227,8 @@ contract BSAFE is ERC20  {
    function burnFrom(address _from, uint256 _value) returns(bool success) {
         
         if (_from == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) throw; 
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balanceOf[_from] < _value) throw; 
+        if (_value > allowance[_from][msg.sender]) throw; 
         balanceOf[_from] = balanceOf[_from].sub( _value ); 
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub( _value ); 
         totalSupply = totalSupply.sub( _value ); // Updates totalSupply

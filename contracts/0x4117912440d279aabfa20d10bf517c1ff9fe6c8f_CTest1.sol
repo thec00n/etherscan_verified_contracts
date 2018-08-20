@@ -9,37 +9,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -73,10 +73,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -85,7 +85,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transfer(address _to, uint _value) returns (bool success) {
       
-      if (_value &lt; 0) {
+      if (_value < 0) {
           revert();
       }
       
@@ -97,7 +97,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
       
-      if (_value &lt; 0) {
+      if (_value < 0) {
           revert();
       }
       
@@ -120,7 +120,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -149,8 +149,8 @@ contract CTest1 is StandardToken {
     address public Founder3 = 0x0d19C131400e73c71bBB2bC1666dBa8Fe22d242D;
 
   
-    function name() constant returns (string) { return &quot;CTest1 Token&quot;; }
-    function symbol() constant returns (string) { return &quot;CTest1&quot;; }
+    function name() constant returns (string) { return "CTest1 Token"; }
+    function symbol() constant returns (string) { return "CTest1"; }
     function decimals() constant returns (uint) { return 18; }
     
     
@@ -159,7 +159,7 @@ contract CTest1 is StandardToken {
         
         
         //If all the tokens are gone, stop!
-        if (totalSupply &lt; 1)
+        if (totalSupply < 1)
         {
             throw;
         }
@@ -171,28 +171,28 @@ contract CTest1 is StandardToken {
         
         //Set the price to 0.0003 ETH/CTest1
         //$0.10 per
-        if (totalSupply &gt; 975000)
+        if (totalSupply > 975000)
         {
             rate = 3340;
         }
         
         //Set the price to 0.0015 ETH/CTest1
         //$0.50 per
-        if (totalSupply &lt; 975001)
+        if (totalSupply < 975001)
         {
             rate = 668;
         }
         
         //Set the price to 0.0030 ETH/CTest1
         //$1.00 per
-        if (totalSupply &lt; 875001)
+        if (totalSupply < 875001)
         {
             rate = 334;
         }
         
         //Set the price to 0.0075 ETH/CTest1
         //$2.50 per
-        if (totalSupply &lt; 475001)
+        if (totalSupply < 475001)
         {
             rate = 134;
         }
@@ -206,41 +206,41 @@ contract CTest1 is StandardToken {
         
         
         //Make sure they send enough to buy atleast 1 token.
-        if (tokens &lt; 1)
+        if (tokens < 1)
         {
             throw;
         }
         
         
-        //Make sure someone isn&#39;t buying more than the remaining supply
+        //Make sure someone isn't buying more than the remaining supply
         uint256 check = safeSub(totalSupply, tokens);
-        if (check &lt; 0)
+        if (check < 0)
         {
             throw;
         }
         
         
-        //Make sure someone isn&#39;t buying more than the current tier
-        if (totalSupply &gt; 975000 &amp;&amp; check &lt; 975000)
+        //Make sure someone isn't buying more than the current tier
+        if (totalSupply > 975000 && check < 975000)
         {
             throw;
         }
         
-        //Make sure someone isn&#39;t buying more than the current tier
-        if (totalSupply &gt; 875000 &amp;&amp; check &lt; 875000)
+        //Make sure someone isn't buying more than the current tier
+        if (totalSupply > 875000 && check < 875000)
         {
             throw;
         }
         
-        //Make sure someone isn&#39;t buying more than the current tier
-        if (totalSupply &gt; 475000 &amp;&amp; check &lt; 475000)
+        //Make sure someone isn't buying more than the current tier
+        if (totalSupply > 475000 && check < 475000)
         {
             throw;
         }
         
         
         //Prevent any ETH address from buying more than 50 CTest1 during the pre-sale
-        if ((balances[receiver] + tokens) &gt; 50 &amp;&amp; totalSupply &gt; 975000)
+        if ((balances[receiver] + tokens) > 50 && totalSupply > 975000)
         {
             throw;
         }
@@ -266,7 +266,7 @@ contract CTest1 is StandardToken {
     //Only contract creator can do this.
     function Burn () {
         
-        if (msg.sender == owner &amp;&amp; totalSupply &gt; 0)
+        if (msg.sender == owner && totalSupply > 0)
         {
             totalSupply = 0;
         } else {throw;}

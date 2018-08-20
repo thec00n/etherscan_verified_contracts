@@ -36,7 +36,7 @@ contract Dextera {
 		uint256 atTicket;
 		uint256 amountPaid;
 	}
-	mapping(uint256 =&gt; Buyer) public buyers;
+	mapping(uint256 => Buyer) public buyers;
 
 	// Total buyers counter
 	uint256 public totalBuyers = 0;
@@ -104,16 +104,16 @@ contract Dextera {
 		// Buy a ticket, only if the sell is running
 		if (saleState == States.Started) {
 			// Is the amount enough?
-			require(msg.value &gt;= ticketPrice);
+			require(msg.value >= ticketPrice);
 
 			// How many tickets we can buy?
 			uint256 _ticketsBought = 1;
-			if (msg.value &gt; ticketPrice) {
+			if (msg.value > ticketPrice) {
 				_ticketsBought = msg.value / ticketPrice;
 			}
 
 			// Do we have enough tickets for this sale?
-			require(minimumTickets - totalTickets &gt;= _ticketsBought);
+			require(minimumTickets - totalTickets >= _ticketsBought);
 
 			// Increment the quantity of tickets sold
 			totalTickets = totalTickets + _ticketsBought;
@@ -125,7 +125,7 @@ contract Dextera {
 			totalBuyers = totalBuyers + 1;
 
 			// We sold all the tickets?
-			if (totalTickets &gt;= minimumTickets) {
+			if (totalTickets >= minimumTickets) {
 				finalSuccess();
 			}
 
@@ -135,7 +135,7 @@ contract Dextera {
 			require(msg.sender == buyers[winnerKey].ethAddress);
 
 			// Check if there is enough balance
-			require(this.balance &gt; 0);
+			require(this.balance > 0);
 
 			// Amount should be zero
 			require(msg.value == 0);
@@ -163,7 +163,7 @@ contract Dextera {
 	// Not enough tickets sold within timeframe, the sale failed
 	function saleFinalize() public inState(States.Started) {
 		// Is it the time?
-		require(now &gt;= saleEndTime);
+		require(now >= saleEndTime);
 
 		// Set new sale state
 		saleState = States.Failed;
@@ -194,7 +194,7 @@ contract Dextera {
 	// Protection, return funds after the timeout if the winner did not unblocked the funds
 	function revertFunds() public inState(States.NoEntry) {
 		// Is it the time?
-		require(now &gt;= successfulTime + 30 * 1 days);
+		require(now >= successfulTime + 30 * 1 days);
 
 		// Setting the state of the sale
 		saleState = States.Failed;
@@ -205,8 +205,8 @@ contract Dextera {
 
 	// Continue to return funds in case the process was interrupted
 	function returnToBuyersContinue() public inState(States.Failed) {
-		// We didn&#39;t finished the refund yet
-		require(returnLastBuyerIndex &lt; totalBuyers);
+		// We didn't finished the refund yet
+		require(returnLastBuyerIndex < totalBuyers);
 
 		// Start the return process
 		returnToBuyers();
@@ -230,7 +230,7 @@ contract Dextera {
 	// Get winner account
 	function getWinnerAccount() public view returns(address) {
 		// There should be a winner ticket selected
-		require(winnerTicket &gt; 0);
+		require(winnerTicket > 0);
 
 		// Return the winners address
 		return buyers[winnerKey].ethAddress;
@@ -239,11 +239,11 @@ contract Dextera {
 	// Return all the funds to the buyers
 	function returnToBuyers() private {
 		// Check if there is enough balance
-		if (this.balance &gt; 0) {
+		if (this.balance > 0) {
 			// Sending funds back (with a gas limiter check)
 			uint256 _i = returnLastBuyerIndex;
 
-			while (_i &lt; totalBuyers &amp;&amp; msg.gas &gt; 200000) {
+			while (_i < totalBuyers && msg.gas > 200000) {
 				buyers[_i].ethAddress.send(buyers[_i].amountPaid);
 				_i++;
 			}
@@ -258,14 +258,14 @@ contract Dextera {
 		uint256 _j = totalBuyers - 1;
 		uint256 _n = 0;
 
-		// Let&#39;s search who bought this ticket
+		// Let's search who bought this ticket
 		do {
 			// Buyer found in a lower limiter
-			if (buyers[_i].atTicket &gt;= winnerTicket) {
+			if (buyers[_i].atTicket >= winnerTicket) {
 				return _i;
 
 			// Buyer found in a higher limiter
-			} else if (buyers[_j].atTicket &lt;= winnerTicket) {
+			} else if (buyers[_j].atTicket <= winnerTicket) {
 				return _j;
 
 			// Only two elements left, get the biggest
@@ -277,7 +277,7 @@ contract Dextera {
 			_n = ((_j - _i) / 2) + _i;
 
 			// The ticket is in the right part
-			if (buyers[_n].atTicket &lt;= winnerTicket) {
+			if (buyers[_n].atTicket <= winnerTicket) {
 				_i = _n;
 
 			// The ticket is in the left part

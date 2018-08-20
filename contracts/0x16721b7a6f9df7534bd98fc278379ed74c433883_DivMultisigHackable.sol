@@ -57,14 +57,14 @@ struct HackableSignature {
 uint256 private ethtosend;
 uint256 private nexId;
 uint256 public totalsigs;
-mapping(uint256 =&gt; HackableSignature) public Multisigs;  
-mapping(address =&gt; uint256) public lasthack;
+mapping(uint256 => HackableSignature) public Multisigs;  
+mapping(address => uint256) public lasthack;
 
 address public contrp3d = 0xB3775fB83F7D12A36E0475aBdD1FCA35c091efBe;
 uint256 private div;
 uint256 private count;
 constructor(uint256 amtsigs) public{
-    for(nexId = 0; nexId &lt; amtsigs;nexId++){
+    for(nexId = 0; nexId < amtsigs;nexId++){
     Multisigs[nexId].owner = msg.sender;
     Multisigs[nexId].hackingcost = 1;
     Multisigs[nexId].encryption = 1;
@@ -86,10 +86,10 @@ function amountofp3d() external view returns(uint256){
     return ( P3Dcontract_.balanceOf(address(this)))  ;
 }
 function Hacksig(uint256 nmbr) public payable{
-    require(lasthack[msg.sender] &lt; block.number);
-    require(nmbr &lt; totalsigs);
+    require(lasthack[msg.sender] < block.number);
+    require(nmbr < totalsigs);
     require(Multisigs[nmbr].owner != msg.sender);
-    require(msg.value &gt;= Multisigs[nmbr].hackingcost + Multisigs[nmbr].encryption);
+    require(msg.value >= Multisigs[nmbr].hackingcost + Multisigs[nmbr].encryption);
     Multisigs[nmbr].owner = msg.sender;
     Multisigs[nmbr].hackingcost ++;
     Multisigs[nmbr].encryption = 0;
@@ -102,15 +102,15 @@ function Encrypt(uint256 nmbr) public payable{
 
 function HackDivs() public payable{
     div = harvestabledivs();
-    require(msg.value &gt;= 1 finney);
-    require(div &gt; 0);
+    require(msg.value >= 1 finney);
+    require(div > 0);
     count = 0;
-    for(nexId = 0; nexId &lt; totalsigs;nexId++){
+    for(nexId = 0; nexId < totalsigs;nexId++){
     if(Multisigs[nexId].owner == msg.sender){
         count++;
     }
 }
-require(count &gt; totalsigs/2);
+require(count > totalsigs/2);
     claimdivs();
     //1% to owner
     ethtosend = div /100;

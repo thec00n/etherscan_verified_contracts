@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,27 +49,27 @@ contract Mainsale {
   }
 
   modifier belowCap() {
-    require(totalRaised &lt; hardCap);
+    require(totalRaised < hardCap);
     _;
   }
 
   modifier withinTimeLimit() {
-    require(block.timestamp &lt;= endTimestamp);
+    require(block.timestamp <= endTimestamp);
     _;
   }
 
   function Mainsale(address _multisig, uint256 _endTimestamp) {
-    require (_multisig != 0 &amp;&amp; _endTimestamp &gt;= (block.timestamp + TWO_DAYS));
+    require (_multisig != 0 && _endTimestamp >= (block.timestamp + TWO_DAYS));
     owner = msg.sender;
     multisig = _multisig;
     endTimestamp = _endTimestamp;
   }
   
   function() payable belowCap withinTimeLimit {
-    require(msg.value &gt;= MIN_CONTRIBUTION &amp;&amp; msg.value &lt;= MAX_CONTRIBUTION);
+    require(msg.value >= MIN_CONTRIBUTION && msg.value <= MAX_CONTRIBUTION);
     totalRaised = totalRaised.add(msg.value);
     uint contribution = msg.value;
-    if (totalRaised &gt; hardCap) {
+    if (totalRaised > hardCap) {
       uint refundAmount = totalRaised.sub(hardCap);
       msg.sender.transfer(refundAmount);
       contribution = contribution.sub(refundAmount);

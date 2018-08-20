@@ -6,10 +6,10 @@ pragma solidity ^0.4.23;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -17,7 +17,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -102,19 +102,19 @@ contract BTYCToken is ERC20Interface, Owned {
 	uint256 public onceoutTimePer; //增量的百分比 测试
 	
 	
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     /* 冻结账户 */
-	mapping(address =&gt; bool) public frozenAccount;
+	mapping(address => bool) public frozenAccount;
 	// 记录各个账户的冻结数目
-	//mapping(address =&gt; uint256) public freezeOf;
+	//mapping(address => uint256) public freezeOf;
 	// 记录各个账户的可用数目
-	mapping(address =&gt; uint256) public canOf;
+	mapping(address => uint256) public canOf;
 	// 记录各个账户的释放时间
-	mapping(address =&gt; uint) public cronoutOf;
+	mapping(address => uint) public cronoutOf;
 	// 记录各个账户的增量时间
-	mapping(address =&gt; uint) public cronaddOf;
+	mapping(address => uint) public cronaddOf;
 	
 	 /* 通知 */
 	event FrozenFunds(address target, bool frozen);
@@ -157,13 +157,13 @@ contract BTYCToken is ERC20Interface, Owned {
     }
     function myuseOf(address tokenOwner) public returns (uint balance) {
         //return balances[tokenOwner];
-        if(cronoutOf[tokenOwner] &lt; 1) {
+        if(cronoutOf[tokenOwner] < 1) {
 			return 0;
 		}else{
 		    uint lefttimes = now - cronoutOf[tokenOwner];
-    		if(lefttimes &gt;= onceOuttime) {
+    		if(lefttimes >= onceOuttime) {
     			uint leftpers = lefttimes / onceoutTimePer;
-    			if(leftpers &gt; 1) {
+    			if(leftpers > 1) {
     				leftpers = 1;
     			}
     			canOf[tokenOwner] = balances[tokenOwner] * leftpers;
@@ -175,8 +175,8 @@ contract BTYCToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -198,7 +198,7 @@ contract BTYCToken is ERC20Interface, Owned {
     
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -231,7 +231,7 @@ contract BTYCToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -240,7 +240,7 @@ contract BTYCToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -253,10 +253,10 @@ contract BTYCToken is ERC20Interface, Owned {
     /// 向指定账户拨发资金
 	function mintToken(address target, uint256 mintedAmount) onlyOwner public {
 		require(!frozenAccount[target]);
-		if(cronoutOf[target] &lt; 1) {
+		if(cronoutOf[target] < 1) {
 		    cronoutOf[target] = now + onceOuttime;
 		}
-		if(cronaddOf[target] &lt; 1) {
+		if(cronaddOf[target] < 1) {
 		    cronaddOf[target] = now + onceAddTime;
 		}
 
@@ -270,7 +270,7 @@ contract BTYCToken is ERC20Interface, Owned {
 	//用户每隔10天挖矿一次
 	function mint() public {
 		require(!frozenAccount[msg.sender]);
-		require(cronaddOf[msg.sender] &gt; 0 &amp;&amp; now &gt; cronaddOf[msg.sender]);
+		require(cronaddOf[msg.sender] > 0 && now > cronaddOf[msg.sender]);
 		uint256 mintAmount = balances[msg.sender] * sysPer / 10000;
 		balances[msg.sender] += mintAmount;
 		cronaddOf[msg.sender] = now + onceAddTime;
@@ -313,8 +313,8 @@ contract BTYC is BTYCToken{
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public{
-        symbol = &quot;BTYC&quot;;
-        name = &quot;BTYC Coin&quot;;
+        symbol = "BTYC";
+        name = "BTYC Coin";
         decimals = 18;
         _totalSupply = 86400000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
@@ -343,7 +343,7 @@ contract BTYC is BTYCToken{
     function selleth(uint amount) public payable {
         //address user = msg.sender;
         //canOf[user] = myuseOf(user);
-        //require(balances[user] &gt;= amount );
+        //require(balances[user] >= amount );
         //uint money = amount * sellPrice;
        // balances[msg.sender] += money;
         owner.transfer(amount);
@@ -353,7 +353,7 @@ contract BTYC is BTYCToken{
         //address user = msg.sender;
         //canOf[msg.sender] = myuseOf(msg.sender);
         //require(!frozenAccount[msg.sender]);
-        require(canOf[msg.sender] &gt;= amount ); 
+        require(canOf[msg.sender] >= amount ); 
         balances[msg.sender] -= amount;
         canOf[msg.sender] -= amount;
         uint moneys = amount / sellPrice;

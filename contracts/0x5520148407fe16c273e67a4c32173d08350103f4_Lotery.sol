@@ -18,20 +18,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -45,8 +45,8 @@ contract StandardToken {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -85,7 +85,7 @@ contract StandardToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -99,7 +99,7 @@ contract StandardToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -136,7 +136,7 @@ contract StandardToken {
     function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -152,7 +152,7 @@ contract StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -256,15 +256,15 @@ contract Lotery is Ownable {
 
 
   //ticket store
-  mapping (uint =&gt; mapping (uint =&gt; ticket)) public tickets;
+  mapping (uint => mapping (uint => ticket)) public tickets;
 
   //periods store
-  mapping (uint =&gt; period) public periods;
+  mapping (uint => period) public periods;
 
 
   function Lotery(uint _maxPeriodDuration, uint _ticketPrice, uint _benefitPercents, uint _maxTicketAmount, address _hashAddr, uint _jackPotPercents) public {
 
-    require(_maxPeriodDuration &gt; 0 &amp;&amp; _ticketPrice &gt; 0 &amp;&amp; _benefitPercents &gt; 0 &amp;&amp; _benefitPercents &lt; 50 &amp;&amp; _maxTicketAmount &gt; 0 &amp;&amp; _jackPotPercents &gt; 0 &amp;&amp; _jackPotPercents &lt; 50);
+    require(_maxPeriodDuration > 0 && _ticketPrice > 0 && _benefitPercents > 0 && _benefitPercents < 50 && _maxTicketAmount > 0 && _jackPotPercents > 0 && _jackPotPercents < 50);
     //set data in constructor
     maxPeriodDuration = _maxPeriodDuration;
     ticketPrice = _ticketPrice;
@@ -305,8 +305,8 @@ contract Lotery is Ownable {
 
     //only with ticket price!
     require(msg.value == ticketPrice);
-    //only if current ticketAmount &lt; maxTicketAmount
-    require(periods[periodNumber].ticketAmount &lt; maxTicketAmount);
+    //only if current ticketAmount < maxTicketAmount
+    require(periods[periodNumber].ticketAmount < maxTicketAmount);
     //roundNumber is currentRound
     require(periodNumber == currentPeriod);
 
@@ -320,8 +320,8 @@ contract Lotery is Ownable {
 
     //only with ticket price!
     require(msg.value == ticketPrice);
-    //only if current ticketAmount &lt; maxTicketAmount
-    require(periods[currentPeriod].ticketAmount &lt; maxTicketAmount);
+    //only if current ticketAmount < maxTicketAmount
+    require(periods[currentPeriod].ticketAmount < maxTicketAmount);
 
 
     processTicketBuying(string(msg.data), msg.value, msg.sender);
@@ -341,7 +341,7 @@ contract Lotery is Ownable {
     baseHash = sha256(hash, baseHash);
 
     //set winner if this is a best hash in round
-    if (periods[currentPeriod].ticketAmount == 0 || (hash &lt; periods[currentPeriod].winnerHash)) {
+    if (periods[currentPeriod].ticketAmount == 0 || (hash < periods[currentPeriod].winnerHash)) {
       periods[currentPeriod].winnerHash = hash;
       periods[currentPeriod].winnerAddress = sender;
     }
@@ -360,7 +360,7 @@ contract Lotery is Ownable {
     TicketSelling(currentPeriod, sender, hash, now);
 
     //automatically finish and start new round if max ticket amount is raised
-    if (periods[currentPeriod].ticketAmount &gt;= maxTicketAmount) {
+    if (periods[currentPeriod].ticketAmount >= maxTicketAmount) {
       finishRound();
     }
 
@@ -372,8 +372,8 @@ contract Lotery is Ownable {
 
     //only if not finished yet
     require(!periods[currentPeriod].finished);
-    //only if ticketAmount &gt;= maxTicketAmount
-    require(periods[currentPeriod].ticketAmount &gt;= maxTicketAmount);
+    //only if ticketAmount >= maxTicketAmount
+    require(periods[currentPeriod].ticketAmount >= maxTicketAmount);
 
 
     //calc reward for current winner with minus %
@@ -393,12 +393,12 @@ contract Lotery is Ownable {
       jackPotBestHash = periods[currentPeriod].winnerHash;
     }
     //all other times
-    if (periods[currentPeriod].winnerHash &lt; jackPotBestHash) {
+    if (periods[currentPeriod].winnerHash < jackPotBestHash) {
 
       jackPotBestHash = periods[currentPeriod].winnerHash;
 
 
-      if (jackPotFunds &gt; 0) {
+      if (jackPotFunds > 0) {
         winnerReward += jackPotFunds;
         JackPot(currentPeriod, periods[currentPeriod].winnerAddress, periods[currentPeriod].winnerHash, jackPotFunds, now);
 
@@ -433,7 +433,7 @@ contract Lotery is Ownable {
 
   //benefit for owner
   function benefit() public onlyOwner {
-    require(benefitFunds &gt; 0);
+    require(benefitFunds > 0);
 
     uint plannedBalance = this.balance - benefitFunds;
     owner.transfer(benefitFunds);
@@ -446,9 +446,9 @@ contract Lotery is Ownable {
   //manually finish and restart round
   function finishRoundAndStartNew() public {
     //only if round has tickets
-    require(periods[currentPeriod].ticketAmount &gt; 0);
+    require(periods[currentPeriod].ticketAmount > 0);
     //only if date is expired
-    require(periods[currentPeriod].startDate + maxPeriodDuration &lt; now);
+    require(periods[currentPeriod].startDate + maxPeriodDuration < now);
     //restart round
     finishRound();
   }

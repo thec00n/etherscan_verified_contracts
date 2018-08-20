@@ -31,9 +31,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -50,7 +50,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,8 +77,8 @@ contract YouRyuCoinBase is ERC20Interface {
     using SafeMath for uint;
 
     uint                                                _totalSupply;
-    mapping(address =&gt; uint256)                         _balances;
-    mapping(address =&gt; mapping(address =&gt; uint256))     _allowed;
+    mapping(address => uint256)                         _balances;
+    mapping(address => mapping(address => uint256))     _allowed;
 
     function totalSupply() public constant returns (uint) {
         return _totalSupply;
@@ -93,7 +93,7 @@ contract YouRyuCoinBase is ERC20Interface {
     }
 
     function transfer(address to, uint tokens) public returns (bool success) {
-        require( _balances[msg.sender] &gt;= tokens);
+        require( _balances[msg.sender] >= tokens);
 
         _balances[msg.sender] = _balances[msg.sender].sub(tokens);
         _balances[to] = _balances[to].add(tokens);
@@ -110,8 +110,8 @@ contract YouRyuCoinBase is ERC20Interface {
     }
 
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require(tokens &lt;= _balances[from]);
-        require(tokens &lt;= _allowed[from][msg.sender]);
+        require(tokens <= _balances[from]);
+        require(tokens <= _allowed[from][msg.sender]);
         
         _balances[from] = _balances[from].sub(tokens);
         _allowed[from][msg.sender] = _allowed[from][msg.sender].sub(tokens);
@@ -154,7 +154,7 @@ contract YouRyuCoin is YouRyuCoinBase {
 
     function burnCoin(uint a_coinAmount) external isOwner
     {
-        require(_balances[msg.sender] &gt;= a_coinAmount);
+        require(_balances[msg.sender] >= a_coinAmount);
 
         _balances[msg.sender] = _balances[msg.sender].sub(a_coinAmount);
         _totalSupply = _totalSupply.sub(a_coinAmount);

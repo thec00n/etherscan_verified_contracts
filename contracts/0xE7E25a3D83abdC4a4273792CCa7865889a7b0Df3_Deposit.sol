@@ -12,7 +12,7 @@ contract Owned {
 
 contract Deposit is Owned {
     address public Owner;
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
 
     event Deposit(uint amount);
     event Withdraw(uint amount);
@@ -27,7 +27,7 @@ contract Deposit is Owned {
     }
 
     function deposit() payable {
-        if (msg.value &gt;= 0.1 ether) {
+        if (msg.value >= 0.1 ether) {
             Deposits[msg.sender] += msg.value;
             Deposit(msg.value);
         }
@@ -39,7 +39,7 @@ contract Deposit is Owned {
     }
     
     function withdraw(uint amount) payable onlyOwner {
-        if (Deposits[msg.sender] &gt; 0 &amp;&amp; amount &lt;= Deposits[msg.sender]) {
+        if (Deposits[msg.sender] > 0 && amount <= Deposits[msg.sender]) {
             msg.sender.send(amount);
             Withdraw(amount);
         }
@@ -47,7 +47,7 @@ contract Deposit is Owned {
     
     function withdrawToken(address token, uint amount) payable onlyOwner {
         uint bal = ForeignToken(token).balanceOf(address(this));
-        if (bal &gt;= amount) {
+        if (bal >= amount) {
             ForeignToken(token).transfer(msg.sender, amount);
         }
     }

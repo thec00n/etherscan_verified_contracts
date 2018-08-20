@@ -18,10 +18,10 @@ contract BoltToken is ERC20{
     
     bool public canPurchase = false;
     
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; uint) roundContributions;
+    mapping (address => uint) balances;
+    mapping (address => uint) roundContributions;
     address[] roundContributionsIndexes;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
     uint public currentSupply = 0;
     uint public totalSupply = 32032000000000000000000000;
@@ -30,13 +30,13 @@ contract BoltToken is ERC20{
     uint public roundFunds = 0;
     uint public roundReward = 200200000000000000000000;
     
-    string public name = &quot;BOLT token&quot;;
-    string public symbol = &quot;BOLT&quot;;
+    string public name = "BOLT token";
+    string public symbol = "BOLT";
     uint8 public decimals = 18;
     
     bool public isToken = true;
     
-    string public tokenSaleAgreement = &quot;https://bolt-project.net/tsa.pdf&quot;;
+    string public tokenSaleAgreement = "https://bolt-project.net/tsa.pdf";
     
     uint contributionsDistribStep = 0;
     
@@ -53,9 +53,9 @@ contract BoltToken is ERC20{
     
     function transfer(address _to, uint _value) public returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (2 * 32) + 4) { return false; }
+        if(msg.data.length < (2 * 32) + 4) { return false; }
 
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -66,9 +66,9 @@ contract BoltToken is ERC20{
     
     function transferFrom(address _from, address _to, uint _value) public  returns (bool success){
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (3 * 32) + 4) { return false; }
+        if(msg.data.length < (3 * 32) + 4) { return false; }
         
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -80,7 +80,7 @@ contract BoltToken is ERC20{
     
     function approve(address _spender, uint _value) public  returns (bool success){
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -90,7 +90,7 @@ contract BoltToken is ERC20{
     }
     
     function enablePurchase() public {
-        if(msg.sender != owner &amp;&amp; currentSupply&gt;=totalSupply){ return; }
+        if(msg.sender != owner && currentSupply>=totalSupply){ return; }
         
         canPurchase = true;
     }
@@ -116,7 +116,7 @@ contract BoltToken is ERC20{
     function nextRound() public {
         if(msg.sender != owner){ return; }
         uint i = contributionsDistribStep;
-        while(i &lt; contributionsDistribStep+10 &amp;&amp; i&lt;roundContributionsIndexes.length){
+        while(i < contributionsDistribStep+10 && i<roundContributionsIndexes.length){
             address contributor = roundContributionsIndexes[i];
             balances[contributor] += roundReward*roundContributions[contributor]/roundFunds;
             roundContributions[contributor] = 0;
@@ -141,7 +141,7 @@ contract BoltToken is ERC20{
         
         if(msg.value == 0){ return; }
         
-        if(!canPurchase || !_acceptConditions || msg.value &lt; 10 finney){
+        if(!canPurchase || !_acceptConditions || msg.value < 10 finney){
             msg.sender.transfer(msg.value);
             return;
         }

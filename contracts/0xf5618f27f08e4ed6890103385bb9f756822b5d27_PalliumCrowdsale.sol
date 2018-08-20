@@ -54,7 +54,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -137,9 +137,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -147,7 +147,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -156,7 +156,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -170,7 +170,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -188,7 +188,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -219,7 +219,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -230,8 +230,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -245,7 +245,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -294,7 +294,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -461,7 +461,7 @@ contract ERC827Token is ERC827, StandardToken {
      Beware that changing an allowance with this method brings the risk that
      someone may use both the old and the new allowance by unfortunate
      transaction ordering. One possible solution to mitigate this race condition
-     is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     is to first reduce the spender's allowance to 0 and set the desired value
      afterwards:
      https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
@@ -569,12 +569,12 @@ contract ERC827Token is ERC827, StandardToken {
 // File: contracts/PalliumToken.sol
 
 contract PalliumToken is MintableToken, PausableToken, ERC827Token, CanReclaimToken {
-    string public constant name = &#39;PalliumToken&#39;;
-    string public constant symbol = &#39;PLMT&#39;;
+    string public constant name = 'PalliumToken';
+    string public constant symbol = 'PLMT';
     uint8  public constant decimals = 18;
 
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require (totalSupply_ + _amount &lt;= 250 * 10**6 * 10**18);
+        require (totalSupply_ + _amount <= 250 * 10**6 * 10**18);
         return super.mint(_to, _amount);
     }
 }
@@ -590,7 +590,7 @@ contract PalliumToken is MintableToken, PausableToken, ERC827Token, CanReclaimTo
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -624,7 +624,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -745,7 +745,7 @@ contract StagedCrowdsale is Crowdsale {
         uint256 endTime;
     }
 
-    mapping (uint =&gt; Stage) public stages;
+    mapping (uint => Stage) public stages;
     uint256 public currentStage;
 
     enum State { Created, Paused, Running, Finished }
@@ -761,9 +761,9 @@ contract StagedCrowdsale is Crowdsale {
 
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         require(currentState == State.Running);
-        require((now &gt;= stages[currentStage].startTime) &amp;&amp; (now &lt;= stages[currentStage].endTime));
+        require((now >= stages[currentStage].startTime) && (now <= stages[currentStage].endTime));
         require(_beneficiary != address(0));
-        require(_weiAmount &gt;= 200 szabo);
+        require(_weiAmount >= 200 szabo);
     } 
 
     function computeTokensWithBonus(uint256 _weiAmount) public view returns(uint256) {
@@ -777,19 +777,19 @@ contract StagedCrowdsale is Crowdsale {
 
         uint256 currentHardCap = stages[currentStage].hardCap;
         uint256 currentMinted = stages[currentStage].currentMinted;
-        if (currentMinted.add(tokenAmount) &gt; currentHardCap) {
+        if (currentMinted.add(tokenAmount) > currentHardCap) {
             return currentHardCap.sub(currentMinted);
         } 
         return tokenAmount;
     } 
 
     function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
-        require(_tokenAmount &gt; 0);
+        require(_tokenAmount > 0);
 
         super._processPurchase(_beneficiary, _tokenAmount);
 
         uint256 surrender = computeTokensWithBonus(msg.value) - _tokenAmount;
-        if (msg.value &gt; 0 &amp;&amp; surrender &gt; 0)
+        if (msg.value > 0 && surrender > 0)
         {   
             uint256 currentRate = computeTokensWithBonus(msg.value) / msg.value;
             uint256 surrenderEth = surrender.div(currentRate);
@@ -819,7 +819,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -929,11 +929,11 @@ contract PalliumCrowdsale is StagedCrowdsale, MintedCrowdsale, Pausable {
     }   
 
     function goalReached() internal view returns (bool) {
-        return stages[currentStage].currentMinted &gt;= stages[currentStage].softCap;
+        return stages[currentStage].currentMinted >= stages[currentStage].softCap;
     }
 
     function hardCapReached() internal view returns (bool) {
-        return stages[currentStage].currentMinted &gt;= stages[currentStage].hardCap;
+        return stages[currentStage].currentMinted >= stages[currentStage].hardCap;
     }
 
     function claimRefund() public {
@@ -946,12 +946,12 @@ contract PalliumCrowdsale is StagedCrowdsale, MintedCrowdsale, Pausable {
     // this is used if previous stage did not reach the softCap, 
     // the refaund is available before the next stage begins
     function toggleVaultStateToAcive() public onlyOwner {
-        require(now &gt;= stages[currentStage].startTime - 1 days);
+        require(now >= stages[currentStage].startTime - 1 days);
         vault.activate();
     }
 
     function finalizeCurrentStage() public onlyOwner {
-        require(now &gt; stages[currentStage].endTime || hardCapReached());
+        require(now > stages[currentStage].endTime || hardCapReached());
         require(currentState == State.Running);
 
         if (goalReached()) {
@@ -960,7 +960,7 @@ contract PalliumCrowdsale is StagedCrowdsale, MintedCrowdsale, Pausable {
             vault.enableRefunds();
         }
 
-        if (stages[currentStage].index &lt; 3) {
+        if (stages[currentStage].index < 3) {
             setStage(currentStage + 1);
         } else
         {
@@ -984,10 +984,10 @@ contract PalliumCrowdsale is StagedCrowdsale, MintedCrowdsale, Pausable {
 
     function setState(State _nextState) public onlyOwner {
         bool canToggleState
-            =  (currentState == State.Created &amp;&amp; _nextState == State.Running)
-            || (currentState == State.Running &amp;&amp; _nextState == State.Paused)
-            || (currentState == State.Paused  &amp;&amp; _nextState == State.Running)
-            || (currentState == State.Running &amp;&amp; _nextState == State.Finished);
+            =  (currentState == State.Created && _nextState == State.Running)
+            || (currentState == State.Running && _nextState == State.Paused)
+            || (currentState == State.Paused  && _nextState == State.Running)
+            || (currentState == State.Running && _nextState == State.Finished);
 
         require(canToggleState);
         currentState = _nextState;

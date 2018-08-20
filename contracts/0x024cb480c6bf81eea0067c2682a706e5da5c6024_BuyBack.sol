@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
  * @title Owned contract with safe ownership pass.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Owned {
     /**
@@ -100,7 +100,7 @@ contract Object is Owned {
     uint constant OWNED_ACCESS_DENIED_ONLY_CONTRACT_OWNER = 8;
 
     function withdrawnTokens(address[] tokens, address _to) onlyContractOwner returns(uint) {
-        for(uint i=0;i&lt;tokens.length;i++) {
+        for(uint i=0;i<tokens.length;i++) {
             address token = tokens[i];
             uint balance = ERC20Interface(token).balanceOf(this);
             if(balance != 0)
@@ -169,9 +169,9 @@ contract DelayedPayments is Object {
     // Should use interface of the emitter, but address of events history.
     address public eventsHistory;
 
-    /// @dev The white list of approved addresses allowed to set up &amp;&amp; receive
+    /// @dev The white list of approved addresses allowed to set up && receive
     ///  payments from this vault
-    mapping (address =&gt; bool) public allowedSpenders;
+    mapping (address => bool) public allowedSpenders;
 
     /// @dev The address assigned the role of `securityGuard` is the only
     ///  addresses that can call a function with this modifier
@@ -234,7 +234,7 @@ contract DelayedPayments is Object {
         if (errorCode != OK) {
             return errorCode;
         }
-        if (eventsHistory != 0x0 &amp;&amp; eventsHistory != _eventsHistory) {
+        if (eventsHistory != 0x0 && eventsHistory != _eventsHistory) {
             return DELAYED_PAYMENTS_INVALID_INVOCATION;
         }
         eventsHistory = _eventsHistory;
@@ -255,7 +255,7 @@ contract DelayedPayments is Object {
 // Receive Ether
 //////
 
-    /// @notice Called anytime ether is sent to the contract &amp;&amp; creates an event
+    /// @notice Called anytime ether is sent to the contract && creates an event
     /// to more easily track the incoming transactions
     function receiveEther() payable {
         EtherReceived(msg.sender, msg.value);
@@ -293,10 +293,10 @@ contract DelayedPayments is Object {
         p.spender = msg.sender;
 
         // Overflow protection
-        if (_paymentDelay &gt; 10**18) throw;
+        if (_paymentDelay > 10**18) throw;
 
         // Determines the earliest the recipient can receive payment (Unix time)
-        p.earliestPayTime = _paymentDelay &gt;= timeLock ?
+        p.earliestPayTime = _paymentDelay >= timeLock ?
                                 now + _paymentDelay :
                                 now + timeLock;
         p.recipient = _recipient;
@@ -312,16 +312,16 @@ contract DelayedPayments is Object {
     function collectAuthorizedPayment(uint _idPayment) {
 
         // Check that the `_idPayment` has been added to the payments struct
-        if (_idPayment &gt;= authorizedPayments.length) return;
+        if (_idPayment >= authorizedPayments.length) return;
 
         Payment p = authorizedPayments[_idPayment];
 
         // Checking for reasons not to execute the payment
         if (msg.sender != p.recipient) return;
-        if (now &lt; p.earliestPayTime) return;
+        if (now < p.earliestPayTime) return;
         if (p.canceled) return;
         if (p.paid) return;
-        if (this.balance &lt; p.amount) return;
+        if (this.balance < p.amount) return;
 
         p.paid = true; // Set the payment to being paid
         if (!p.recipient.send(p.amount)) {  // Make the payment
@@ -338,14 +338,14 @@ contract DelayedPayments is Object {
     /// @param _idPayment ID of the payment to be delayed
     /// @param _delay The number of seconds to delay the payment
     function delayPayment(uint _idPayment, uint _delay) onlySecurityGuard {
-        if (_idPayment &gt;= authorizedPayments.length) throw;
+        if (_idPayment >= authorizedPayments.length) throw;
 
         // Overflow test
-        if (_delay &gt; 10**18) throw;
+        if (_delay > 10**18) throw;
 
         Payment p = authorizedPayments[_idPayment];
 
-        if ((p.securityGuardDelay + _delay &gt; maxSecurityGuardDelay) ||
+        if ((p.securityGuardDelay + _delay > maxSecurityGuardDelay) ||
             (p.paid) ||
             (p.canceled))
             throw;
@@ -361,7 +361,7 @@ contract DelayedPayments is Object {
     /// @notice `onlyOwner` Cancel a payment all together
     /// @param _idPayment ID of the payment to be canceled.
     function cancelPayment(uint _idPayment) onlyContractOwner {
-        if (_idPayment &gt;= authorizedPayments.length) throw;
+        if (_idPayment >= authorizedPayments.length) throw;
 
         Payment p = authorizedPayments[_idPayment];
 
@@ -392,14 +392,14 @@ contract DelayedPayments is Object {
     /// @param _newTimeLock Sets the new minimum default `timeLock` in seconds;
     ///  pending payments maintain their `earliestPayTime`
     function setTimelock(uint _newTimeLock) onlyContractOwner {
-        if (_newTimeLock &lt; absoluteMinTimeLock) throw;
+        if (_newTimeLock < absoluteMinTimeLock) throw;
         timeLock = _newTimeLock;
     }
 
     /// @notice `onlyOwner` Changes the maximum number of seconds
     /// `securityGuard` can delay a payment
     /// @param _maxSecurityGuardDelay The new maximum delay in seconds that
-    ///  `securityGuard` can delay the payment&#39;s execution in total
+    ///  `securityGuard` can delay the payment's execution in total
     function setMaxSecurityGuardDelay(uint _maxSecurityGuardDelay) onlyContractOwner {
         maxSecurityGuardDelay = _maxSecurityGuardDelay;
     }
@@ -552,7 +552,7 @@ contract BuyBack is Object {
      * @return success.
      */
     function setPrices(uint _buyPrice, uint _sellPrice) onlyContractOwner returns (uint) {
-        if (_sellPrice &lt; _buyPrice) {
+        if (_sellPrice < _buyPrice) {
             return _error(ERROR_EXCHANGE_INVALID_PRICE);
         }
 
@@ -590,16 +590,16 @@ contract BuyBack is Object {
             return _error(ERROR_EXCHANGE_MAINTENANCE_MODE);
         }
 
-        if (_price &gt; buyPrice) {
+        if (_price > buyPrice) {
             return _error(ERROR_EXCHANGE_TOO_HIGH_PRICE);
         }
 
-        if (_balanceOf(msg.sender) &lt; _amount) {
+        if (_balanceOf(msg.sender) < _amount) {
             return _error(ERROR_EXCHANGE_INSUFFICIENT_BALANCE);
         }
 
         uint total = _mul(_amount, _price);
-        if (this.balance &lt; total) {
+        if (this.balance < total) {
             return _error(ERROR_EXCHANGE_INSUFFICIENT_ETHER_SUPPLY);
         }
 
@@ -630,7 +630,7 @@ contract BuyBack is Object {
      * @return success.
      */
     function withdrawTokens(address _recipient, uint _amount) onlyContractOwner returns (uint) {
-        if (_balanceOf(this) &lt; _amount) {
+        if (_balanceOf(this) < _amount) {
             return _error(ERROR_EXCHANGE_INSUFFICIENT_BALANCE);
         }
 
@@ -667,7 +667,7 @@ contract BuyBack is Object {
      * @return success.
      */
     function withdrawEth(address _recipient, uint _amount) onlyContractOwner returns (uint) {
-        if (this.balance &lt; _amount) {
+        if (this.balance < _amount) {
             return _error(ERROR_EXCHANGE_INSUFFICIENT_ETHER_SUPPLY);
         }
 
@@ -743,7 +743,7 @@ contract BuyBack is Object {
      */
     function _mul(uint _a, uint _b) internal constant returns (uint) {
         uint result = _a * _b;
-        if (_a != 0 &amp;&amp; result / _a != _b) {
+        if (_a != 0 && result / _a != _b) {
             throw;
         }
         return result;

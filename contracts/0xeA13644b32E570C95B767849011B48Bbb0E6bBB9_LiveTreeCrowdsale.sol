@@ -44,7 +44,7 @@ contract Owned {
     *
     *  Changes ownership of this contract. Only owner can call this method.
     *
-    * @param newOwner - new owner&#39;s address
+    * @param newOwner - new owner's address
     */
     function changeOwner(address newOwner) onlyOwner public {
         require(newOwner != address(0));
@@ -93,7 +93,7 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
 
     uint private reasonableCostsPercentage;
 
-    mapping (address =&gt; uint256) private investmentRecords;
+    mapping (address => uint256) private investmentRecords;
 
     event FundTransfer(address indexed _from, address indexed _to, uint _value);
 
@@ -126,10 +126,10 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     * @return stage - active stage
     */
     function getActiveStage() internal constant returns (Stage) {
-        if (ICOStagePeriod[0] &lt;= now &amp;&amp; now &lt; ICOStagePeriod[1])
+        if (ICOStagePeriod[0] <= now && now < ICOStagePeriod[1])
             return Stage.PreSale;
 
-        if (ICOStagePeriod[2] &lt;= now &amp;&amp; now &lt; ICOStagePeriod[3])
+        if (ICOStagePeriod[2] <= now && now < ICOStagePeriod[3])
             return Stage.GeneralSale;
 
         return Stage.Inactive;
@@ -156,10 +156,10 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
 
         // Before Metropolis update require will not refund gas, but
         // for some reason require statement around msg.value always throws
-        assert(amount &gt; 0 finney);
+        assert(amount > 0 finney);
 
         // Validate that we received less than a billion ETH to prevent overflow
-        require(amount &lt; 1e27);
+        require(amount < 1e27);
 
         // Tell everyone about the transfer
         FundTransfer(bakerAddress, address(this), amount);
@@ -167,45 +167,45 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
         // Calculate tokens per ETH for this tier
         uint tokensPerEth = 1130;
 
-        if (amount &lt; 1.5 ether)
+        if (amount < 1.5 ether)
             tokensPerEth = 1000;
-        else if (amount &lt; 3 ether)
+        else if (amount < 3 ether)
             tokensPerEth = 1005;
-        else if (amount &lt; 5 ether)
+        else if (amount < 5 ether)
             tokensPerEth = 1010;
-        else if (amount &lt; 7 ether)
+        else if (amount < 7 ether)
             tokensPerEth = 1015;
-        else if (amount &lt; 10 ether)
+        else if (amount < 10 ether)
             tokensPerEth = 1020;
-        else if (amount &lt; 15 ether)
+        else if (amount < 15 ether)
             tokensPerEth = 1025;
-        else if (amount &lt; 20 ether)
+        else if (amount < 20 ether)
             tokensPerEth = 1030;
-        else if (amount &lt; 30 ether)
+        else if (amount < 30 ether)
             tokensPerEth = 1035;
-        else if (amount &lt; 50 ether)
+        else if (amount < 50 ether)
             tokensPerEth = 1040;
-        else if (amount &lt; 75 ether)
+        else if (amount < 75 ether)
             tokensPerEth = 1045;
-        else if (amount &lt; 100 ether)
+        else if (amount < 100 ether)
             tokensPerEth = 1050;
-        else if (amount &lt; 150 ether)
+        else if (amount < 150 ether)
             tokensPerEth = 1055;
-        else if (amount &lt; 250 ether)
+        else if (amount < 250 ether)
             tokensPerEth = 1060;
-        else if (amount &lt; 350 ether)
+        else if (amount < 350 ether)
             tokensPerEth = 1070;
-        else if (amount &lt; 500 ether)
+        else if (amount < 500 ether)
             tokensPerEth = 1075;
-        else if (amount &lt; 750 ether)
+        else if (amount < 750 ether)
             tokensPerEth = 1080;
-        else if (amount &lt; 1000 ether)
+        else if (amount < 1000 ether)
             tokensPerEth = 1090;
-        else if (amount &lt; 1500 ether)
+        else if (amount < 1500 ether)
             tokensPerEth = 1100;
-        else if (amount &lt; 2000 ether)
+        else if (amount < 2000 ether)
             tokensPerEth = 1110;
-        else if (amount &lt; 3500 ether)
+        else if (amount < 3500 ether)
             tokensPerEth = 1120;
 
         if (currentStage == Stage.PreSale)
@@ -220,7 +220,7 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
         // return change.
         address tokenSaleWallet = currentStage == Stage.PreSale ? presaleWalletAddress : saleWalletAddress;
         uint remainingTokenBalance = tokenReward.accountBalance(tokenSaleWallet);
-        if (remainingTokenBalance &lt; tokenAmount) {
+        if (remainingTokenBalance < tokenAmount) {
             tokenAmount = remainingTokenBalance;
         }
 
@@ -234,7 +234,7 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
         TokenTransfer(bakerAddress, tokenAmount, tokensPerEth);
 
         uint change = amount - acceptedAmount;
-        if (change &gt; 0) {
+        if (change > 0) {
             if (bakerAddress.send(change)) {
                 FundTransfer(address(this), bakerAddress, change);
             }
@@ -253,8 +253,8 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     * @param endDate - end date of pre-sale in milliseconds from unix epoch
     */
     function changePresaleEndDate(uint256 endDate) external onlyOwner {
-        require(ICOStagePeriod[0] &lt; endDate);
-        require(ICOStagePeriod[2] &gt;= endDate);
+        require(ICOStagePeriod[0] < endDate);
+        require(ICOStagePeriod[2] >= endDate);
 
         ICOStagePeriod[1] = endDate;
     }
@@ -265,8 +265,8 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     * @param startDate - start date of general sale in milliseconds from unix epoch
     */
     function changeGeneralSaleStartDate(uint256 startDate) external onlyOwner {
-        require(now &lt; startDate);
-        require(ICOStagePeriod[1] &lt;= startDate);
+        require(now < startDate);
+        require(ICOStagePeriod[1] <= startDate);
 
         ICOStagePeriod[2] = startDate;
     }
@@ -277,7 +277,7 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     * @param endDate - end date of general sale in milliseconds from unix epoch
     */
     function changeGeneralSaleEndDate(uint256 endDate) external onlyOwner {
-        require(ICOStagePeriod[2] &lt; endDate);
+        require(ICOStagePeriod[2] < endDate);
 
         ICOStagePeriod[3] = endDate;
     }
@@ -330,19 +330,19 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     */
     function setAllowRefunds(bool value, uint _reasonableCostsPercentage) external onlyOwner {
         require(isICOClosed());
-        require(_reasonableCostsPercentage &gt;= 1 &amp;&amp; _reasonableCostsPercentage &lt;= 999);
+        require(_reasonableCostsPercentage >= 1 && _reasonableCostsPercentage <= 999);
 
         allowRefunds = value;
         reasonableCostsPercentage = _reasonableCostsPercentage;
     }
 
     /**
-    *  Transfer ETH amount from contract to owner&#39;s address.
+    *  Transfer ETH amount from contract to owner's address.
     *
     * @param amount - ETH amount to transfer in Wei
     */
     function safeWithdrawal(uint amount) external onlyOwner {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
 
         if (owner.send(amount))
             FundTransfer(address(this), owner, amount);
@@ -352,7 +352,7 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     function
     * Is ICO closed (either closed manually or not started)
     *
-    * @return true if ICO is closed manually or stage is &quot;Inactive&quot;, otherwise false
+    * @return true if ICO is closed manually or stage is "Inactive", otherwise false
     */
     function isICOClosed() public constant returns (bool closed) {
         Stage currentStage = getActiveStage();
@@ -387,11 +387,11 @@ contract LiveTreeCrowdsale is Owned, CrowdsaleParameters {
     *  Fraction of collected amount will not be refunded
     */
     function refund() external {
-        require(isICOClosed() &amp;&amp; allowRefunds &amp;&amp; investmentRecords[msg.sender] &gt; 0);
+        require(isICOClosed() && allowRefunds && investmentRecords[msg.sender] > 0);
 
         var amountToReturn = investmentRecords[msg.sender] * (1000 - reasonableCostsPercentage) / 1000;
 
-        require(this.balance &gt;= amountToReturn);
+        require(this.balance >= amountToReturn);
 
         investmentRecords[msg.sender] = 0;
         msg.sender.transfer(amountToReturn);

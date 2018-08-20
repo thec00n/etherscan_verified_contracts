@@ -71,37 +71,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -141,13 +141,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -174,13 +174,13 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already revert() if this condition is not met
-    // if (_value &gt; _allowance) revert();
+    // if (_value > _allowance) revert();
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -226,9 +226,9 @@ contract Rate {
 */
 contract SponseeTokenModelSolaCoin is StandardToken {
 
-    string public name = &quot;SOLA COIN&quot;;
+    string public name = "SOLA COIN";
     uint8 public decimals = 18;
-    string public symbol = &quot;SLC&quot;;
+    string public symbol = "SLC";
     uint public totalSupply = 500000000 * (10 ** uint256(decimals));
     uint public cap = 1000000000 * (10 ** uint256(decimals)); // maximum cap = 10 000 000 $ = 1 000 000 000 tokens
     RBInformationStore public rbInformationStore;
@@ -291,12 +291,12 @@ contract SponseeTokenModelSolaCoin is StandardToken {
         require(isPayableEnabled);
 
         // check validation
-        if(msg.value &lt;= 0) { revert(); }
+        if(msg.value <= 0) { revert(); }
 
         // calculate support amount in USD
         uint supportedAmount = msg.value.mul(rate.ETH_USD_rate()).div(10**18);
-        // if support is less than minimum =&gt; return money to supporter
-        if(supportedAmount &lt; minimumSupport) { revert(); }
+        // if support is less than minimum => return money to supporter
+        if(supportedAmount < minimumSupport) { revert(); }
 
         // calculate the ratio of Ether for distribution
         uint etherRatioForOwner = rbInformationStore.etherRatioForOwner();
@@ -329,7 +329,7 @@ contract SponseeTokenModelSolaCoin is StandardToken {
         totalSupply = totalSupply.add(tokenAmount);
 
         // check cap
-        if(totalSupply &gt; cap) { revert(); }
+        if(totalSupply > cap) { revert(); }
 
         // send exchange event
         LogExchange(msg.sender, this, tokenAmount);
@@ -391,7 +391,7 @@ contract SponseeTokenModelSolaCoin is StandardToken {
         totalSupply = totalSupply.add(_value);
 
         // check cap
-        if(totalSupply &gt; cap) { revert(); }
+        if(totalSupply > cap) { revert(); }
 
         LogMint(_address, _value);
 
@@ -416,7 +416,7 @@ contract SponseeTokenModelSolaCoin is StandardToken {
     */
     function decreaseCap(uint _value) onlyOwner {
         // check whether cap is lower than totalSupply or not
-        if(totalSupply &gt; cap.sub(_value)) { revert(); }
+        if(totalSupply > cap.sub(_value)) { revert(); }
         // change cap here
         cap = cap.sub(_value);
 

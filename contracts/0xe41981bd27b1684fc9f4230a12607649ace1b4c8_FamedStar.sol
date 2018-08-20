@@ -5,7 +5,7 @@ contract NovaLabInterface {
 }
 
 contract NovaAccessControl {
-  mapping (address =&gt; bool) managers;
+  mapping (address => bool) managers;
   address cfoAddress;
 
   function NovaAccessControl() public {
@@ -45,18 +45,18 @@ contract FamedStar is NovaAccessControl {
   address public novaAddress;
 
   Star[] stars;
-  mapping (bytes32 =&gt; uint) public famedStarNameToIds;
-  mapping (uint =&gt; uint) public famedStarMassToIds;
+  mapping (bytes32 => uint) public famedStarNameToIds;
+  mapping (uint => uint) public famedStarMassToIds;
 
   function FamedStar() public {
       // add placeholder
-      _addFamedStar(&quot;placeholder&quot;, 0, 0);
+      _addFamedStar("placeholder", 0, 0);
   }
 
   function _bytes32ToString(bytes32 x) internal pure returns (string) {
     bytes memory bytesString = new bytes(32);
     uint charCount = 0;
-    for (uint j = 0; j &lt; 32; j++) {
+    for (uint j = 0; j < 32; j++) {
         byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
         if (char != 0) {
             bytesString[charCount] = char;
@@ -64,7 +64,7 @@ contract FamedStar is NovaAccessControl {
         }
     }
     bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (j = 0; j &lt; charCount; j++) {
+    for (j = 0; j < charCount; j++) {
         bytesStringTrimmed[j] = bytesString[j];
     }
     return string(bytesStringTrimmed);
@@ -94,7 +94,7 @@ contract FamedStar is NovaAccessControl {
   }
 
   function _addFamedStar(string name, uint mass, uint lc) internal {
-      require(bytes(name).length &lt;= 32);
+      require(bytes(name).length <= 32);
       var bN = _stringToBytes32(name);
       // no repeat on name
       require(famedStarNameToIds[bN] == 0);
@@ -114,7 +114,7 @@ contract FamedStar is NovaAccessControl {
   }
 
   function getFamedStarByID(uint id) public constant returns(uint starID, string name, uint mass, address owner) {
-      require(id &gt; 0 &amp;&amp; id &lt; stars.length);
+      require(id > 0 && id < stars.length);
       var star = stars[id];
 
       return (id, _bytes32ToString(star.name), star.mass, star.owner);
@@ -123,7 +123,7 @@ contract FamedStar is NovaAccessControl {
   function getFamedStarByName(string n) public constant returns(uint starID, string name, uint mass, address owner) {
       starID = famedStarNameToIds[_stringToBytes32(n)];
 
-      require(starID &gt; 0);
+      require(starID > 0);
 
       var star = stars[starID];
 
@@ -133,7 +133,7 @@ contract FamedStar is NovaAccessControl {
   function getFamedStarByMass(uint m) public constant returns(uint starID, string name, uint mass, address owner) {
       starID = famedStarMassToIds[m];
 
-      require(starID &gt; 0);
+      require(starID > 0);
 
       var star = stars[starID];
 
@@ -142,9 +142,9 @@ contract FamedStar is NovaAccessControl {
 
   function updateFamedStarOwner(uint id, address newOwner) external {
       require(msg.sender == novaAddress);
-      require(id &gt; 0 &amp;&amp; id &lt; stars.length);
+      require(id > 0 && id < stars.length);
       var star = stars[id];
-      require(star.mass &gt; 0);
+      require(star.mass > 0);
 
       stars[id].owner = newOwner;
   }

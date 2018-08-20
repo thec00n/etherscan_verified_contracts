@@ -28,13 +28,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -50,7 +50,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -66,7 +66,7 @@ library ExtendedMath {
     //return the smaller of the two inputs (a or b)
     function limitLessThan(uint a, uint b) internal pure returns (uint c) {
 
-        if(a &gt; b) return b;
+        if(a > b) return b;
 
         return a;
 
@@ -204,7 +204,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
 
 
-    uint public epochCount;//number of &#39;blocks&#39; mined
+    uint public epochCount;//number of 'blocks' mined
 
 
     uint public _BLOCKS_PER_READJUSTMENT = 1024;
@@ -235,14 +235,14 @@ contract _0xTestToken is ERC20Interface, Owned {
 
     bool locked = false;
 
-    mapping(bytes32 =&gt; bytes32) solutionForChallenge;
+    mapping(bytes32 => bytes32) solutionForChallenge;
 
     uint public tokensMinted;
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     event Mint(address indexed from, uint reward_amount, uint epochCount, bytes32 newChallengeNumber);
@@ -257,9 +257,9 @@ contract _0xTestToken is ERC20Interface, Owned {
 
 
 
-        symbol = &quot;0xTEST&quot;;
+        symbol = "0xTEST";
 
-        name = &quot;0xTEST Token&quot;;
+        name = "0xTEST Token";
 
         decimals = 8;
 
@@ -292,14 +292,14 @@ contract _0xTestToken is ERC20Interface, Owned {
         function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
 
 
-            //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender&#39;s address to prevent MITM attacks
+            //the PoW must contain work that includes a recent ethereum block hash (challenge number) and the msg.sender's address to prevent MITM attacks
             bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
 
             //the challenge digest must match the expected
             if (digest != challenge_digest) revert();
 
             //the digest must be smaller than the target
-            if(uint256(digest) &gt; miningTarget) revert();
+            if(uint256(digest) > miningTarget) revert();
 
 
             //only allow one reward for each challenge
@@ -316,7 +316,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
 
             //Cannot mint more tokens than there are
-            assert(tokensMinted &lt;= maxSupplyForEra);
+            assert(tokensMinted <= maxSupplyForEra);
 
             //set readonly diagnostics data
             lastRewardTo = msg.sender;
@@ -333,14 +333,14 @@ contract _0xTestToken is ERC20Interface, Owned {
         }
 
 
-    //a new &#39;block&#39; to be mined
+    //a new 'block' to be mined
     function _startNewMiningEpoch() internal {
 
       //if max supply for the era will be exceeded next reward round then enter the new era before that happens
 
       //40 is the final reward era, almost all tokens minted
       //once the final era is reached, more tokens will not be given out because the assert function
-      if( tokensMinted.add(getMiningReward()) &gt; maxSupplyForEra &amp;&amp; rewardEra &lt; 39)
+      if( tokensMinted.add(getMiningReward()) > maxSupplyForEra && rewardEra < 39)
       {
         rewardEra = rewardEra + 1;
       }
@@ -382,13 +382,13 @@ contract _0xTestToken is ERC20Interface, Owned {
         uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;
         //assume 360 ethereum blocks per hour
 
-        //we want miners to spend 10 minutes to mine each &#39;block&#39;, about 60 ethereum blocks = one 0xTest epoch
+        //we want miners to spend 10 minutes to mine each 'block', about 60 ethereum blocks = one 0xTest epoch
         uint epochsMined = _BLOCKS_PER_READJUSTMENT; //256
 
         uint targetEthBlocksPerDiffPeriod = epochsMined * 60; //should be 60 times slower than ethereum
 
         //if there were less eth blocks passed in time than expected
-        if( ethBlocksSinceLastDifficultyPeriod &lt; targetEthBlocksPerDiffPeriod )
+        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerDiffPeriod )
         {
           uint excess_block_pct = (targetEthBlocksPerDiffPeriod.mul(100)).div( ethBlocksSinceLastDifficultyPeriod );
 
@@ -410,12 +410,12 @@ contract _0xTestToken is ERC20Interface, Owned {
 
         latestDifficultyPeriodStarted = block.number;
 
-        if(miningTarget &lt; _MINIMUM_TARGET) //very difficult
+        if(miningTarget < _MINIMUM_TARGET) //very difficult
         {
           miningTarget = _MINIMUM_TARGET;
         }
 
-        if(miningTarget &gt; _MAXIMUM_TARGET) //very easy
+        if(miningTarget > _MAXIMUM_TARGET) //very easy
         {
           miningTarget = _MAXIMUM_TARGET;
         }
@@ -463,7 +463,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
           bytes32 digest = keccak256(challenge_number,msg.sender,nonce);
 
-          if(uint256(digest) &gt; testTarget) revert();
+          if(uint256(digest) > testTarget) revert();
 
           return (digest == challenge_digest);
 
@@ -501,9 +501,9 @@ contract _0xTestToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
 
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
 
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // - Owner's account must have sufficient balance to transfer
 
     // - 0 value transfers are allowed
 
@@ -527,7 +527,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account
+    // from the token owner's account
 
     //
 
@@ -589,7 +589,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
     // Returns the amount of tokens approved by the owner that can be
 
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
 
     // ------------------------------------------------------------------------
 
@@ -605,7 +605,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
 
     // `receiveApproval(...)` is then executed
 
@@ -627,7 +627,7 @@ contract _0xTestToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
 
-    // Don&#39;t accept ETH
+    // Don't accept ETH
 
     // ------------------------------------------------------------------------
 

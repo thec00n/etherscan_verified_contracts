@@ -4,8 +4,8 @@ library StringUtils {
     // Tests for uppercase characters in a given string
     function allLower(string memory _string) internal pure returns (bool) {
         bytes memory bytesString = bytes(_string);
-        for (uint i = 0; i &lt; bytesString.length; i++) {
-            if ((bytesString[i] &gt;= 65) &amp;&amp; (bytesString[i] &lt;= 90)) {  // Uppercase characters
+        for (uint i = 0; i < bytesString.length; i++) {
+            if ((bytesString[i] >= 65) && (bytesString[i] <= 90)) {  // Uppercase characters
                 return false;
             }
         }
@@ -107,9 +107,9 @@ contract RaindropClient is Withdrawable {
     }
 
     // Internally, users and applications are identified by the hash of their names
-    mapping (bytes32 =&gt; User) internal userDirectory;
-    mapping (bytes32 =&gt; Application) internal officialApplicationDirectory;
-    mapping (bytes32 =&gt; Application) internal unofficialApplicationDirectory;
+    mapping (bytes32 => User) internal userDirectory;
+    mapping (bytes32 => Application) internal officialApplicationDirectory;
+    mapping (bytes32 => Application) internal unofficialApplicationDirectory;
 
     // Allows the Hydro API to sign up official users with their app-generated address
     function officialUserSignUp(string userName, address userAddress) public onlyOwner {
@@ -118,18 +118,18 @@ contract RaindropClient is Withdrawable {
 
     // Allows anyone to sign up as an unofficial user with their own address
     function unofficialUserSignUp(string userName) public payable {
-        require(bytes(userName).length &lt; 100);
-        require(msg.value &gt;= unofficialUserSignUpFee);
+        require(bytes(userName).length < 100);
+        require(msg.value >= unofficialUserSignUpFee);
 
         return _userSignUp(userName, msg.sender, false);
     }
 
-    // Allows the Hydro API to delete official users iff they&#39;ve signed keccak256(&quot;Delete&quot;) with their private key
+    // Allows the Hydro API to delete official users iff they've signed keccak256("Delete") with their private key
     function deleteUserForUser(string userName, uint8 v, bytes32 r, bytes32 s) public onlyOwner {
         bytes32 userNameHash = keccak256(userName);
         require(userNameHashTaken(userNameHash));
         address userAddress = userDirectory[userNameHash].userAddress;
-        require(isSigned(userAddress, keccak256(&quot;Delete&quot;), v, r, s));
+        require(isSigned(userAddress, keccak256("Delete"), v, r, s));
 
         delete userDirectory[userNameHash];
 
@@ -159,13 +159,13 @@ contract RaindropClient is Withdrawable {
 
     // Allows anyone to sign up as an unofficial application
     function unofficialApplicationSignUp(string applicationName) public payable {
-        require(bytes(applicationName).length &lt; 100);
-        require(msg.value &gt;= unofficialApplicationSignUpFee);
+        require(bytes(applicationName).length < 100);
+        require(msg.value >= unofficialApplicationSignUpFee);
         require(applicationName.allLower());
 
         HydroToken hydro = HydroToken(hydroTokenAddress);
         uint256 hydroBalance = hydro.balanceOf(msg.sender);
-        require(hydroBalance &gt;= hydroStakingMinimum);
+        require(hydroBalance >= hydroStakingMinimum);
 
         bytes32 applicationNameHash = keccak256(applicationName);
         require(!applicationNameHashTaken(applicationNameHash, false));

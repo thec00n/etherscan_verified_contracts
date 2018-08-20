@@ -3,14 +3,14 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -62,12 +62,12 @@ contract SexyMore is ERC20, Details, SafeMath {
     uint8 public decimals;
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function SexyMore() public {
-        symbol = &quot;SEXX&quot;;
-        name = &quot;SexyMore&quot;;
+        symbol = "SEXX";
+        name = "SexyMore";
         decimals = 3;
         totalSupply = 11000000;
         balances[0x7BF52Cb1a7875d3523e30C341Caeb72C5f7b4669] = totalSupply;

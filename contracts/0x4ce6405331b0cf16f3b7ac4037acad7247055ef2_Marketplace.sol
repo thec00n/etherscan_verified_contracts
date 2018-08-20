@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,7 +64,7 @@ contract ERC721 {
 contract Marketplace is Ownable {
     ERC721 public nft;
 
-    mapping (uint256 =&gt; Listing) public listings;
+    mapping (uint256 => Listing) public listings;
 
     uint256 public minListingSeconds;
     uint256 public maxListingSeconds;
@@ -93,8 +93,8 @@ contract Marketplace is Ownable {
     }
 
     function list(address _tokenSeller, uint256 _tokenId, uint256 _startingPrice, uint256 _minimumPrice, uint256 _durationSeconds) public nftOnly {
-        require(_durationSeconds &gt;= minListingSeconds &amp;&amp; _durationSeconds &lt;= maxListingSeconds);
-        require(_startingPrice &gt;= _minimumPrice);
+        require(_durationSeconds >= minListingSeconds && _durationSeconds <= maxListingSeconds);
+        require(_startingPrice >= _minimumPrice);
         require(! listingActive(_tokenId));
         listings[_tokenId] = Listing(_tokenSeller, _startingPrice, _minimumPrice, now, _durationSeconds);
         nft.takeOwnership(_tokenId);
@@ -103,7 +103,7 @@ contract Marketplace is Ownable {
 
     function unlist(address _caller, uint256 _tokenId) public nftOnly {
         address _seller = listings[_tokenId].seller;
-        // Allow owner to unlist (via nft) for when it&#39;s time to shut this down
+        // Allow owner to unlist (via nft) for when it's time to shut this down
         require(_seller == _caller || address(owner) == _caller);
         nft.transfer(_seller, _tokenId);
         delete listings[_tokenId];
@@ -114,11 +114,11 @@ contract Marketplace is Ownable {
         Listing memory _listing = listings[_tokenId];
         address _seller = _listing.seller;
 
-        require(_caller != _seller); // Doesn&#39;t make sense for someone to buy/sell their own token.
+        require(_caller != _seller); // Doesn't make sense for someone to buy/sell their own token.
         require(listingActive(_tokenId));
 
         uint256 _price = currentPrice(_tokenId);
-        require(_totalPaid &gt;= _price);
+        require(_totalPaid >= _price);
 
         delete listings[_tokenId];
 
@@ -129,10 +129,10 @@ contract Marketplace is Ownable {
 
     function currentPrice(uint256 _tokenId) public view returns (uint256) {
         Listing memory listing = listings[_tokenId];
-        require(now &gt;= listing.createdAt);
+        require(now >= listing.createdAt);
 
         uint256 _deadline = listing.createdAt + listing.durationSeconds;
-        require(now &lt;= _deadline);
+        require(now <= _deadline);
 
         uint256 _elapsedTime = now - listing.createdAt;
         uint256 _progress = (_elapsedTime * 100) / listing.durationSeconds;
@@ -142,6 +142,6 @@ contract Marketplace is Ownable {
 
     function listingActive(uint256 _tokenId) internal view returns (bool) {
         Listing memory listing = listings[_tokenId];
-        return listing.createdAt + listing.durationSeconds &gt;= now &amp;&amp; now &gt;= listing.createdAt;
+        return listing.createdAt + listing.durationSeconds >= now && now >= listing.createdAt;
     }
 }

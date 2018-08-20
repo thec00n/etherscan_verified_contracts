@@ -11,12 +11,12 @@ contract Crowdsale {
     uint public deadline;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
     // Release progress
     uint public percent;
-    mapping(address =&gt; uint256) public percentOf;
+    mapping(address => uint256) public percentOf;
 
     event GoalReached(address recipient, uint totalAmountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -52,7 +52,7 @@ contract Crowdsale {
         if (crowdsaleClosed) {
             uint amount2 = balanceOf[msg.sender];
             uint rewardPercent = percent - percentOf[msg.sender];
-            require(amount2 &gt; 0 &amp;&amp; rewardPercent &gt; 0);
+            require(amount2 > 0 && rewardPercent > 0);
             percentOf[msg.sender] = percent;
             // Release percent of reward token
             uint rewardAmount2 = amount2 * 10**18 * rewardPercent / price / 100;
@@ -71,7 +71,7 @@ contract Crowdsale {
         }
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -79,7 +79,7 @@ contract Crowdsale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -100,7 +100,7 @@ contract Crowdsale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -109,7 +109,7 @@ contract Crowdsale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {
@@ -127,8 +127,8 @@ contract Crowdsale {
     function releaseTenPercent() afterDeadline {
         require(crowdsaleClosed);
 
-        require(percent &lt;= 90);
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        require(percent <= 90);
+        if (fundingGoalReached && beneficiary == msg.sender) {
             percent += 10;
         }
     }

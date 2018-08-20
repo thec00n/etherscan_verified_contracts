@@ -40,27 +40,27 @@ contract CardMintingFacilitator {
         randomSeed = uint32(sha3(block.blockhash(block.number), randomSeed));
         
         uint8 numMutations = uint8(randomSeed % 12); // 0 = 0 mutations, 1 = 1 mutation, 2-5 = 2 mutations, 6-11 = 3 mutations 
-        if (numMutations &gt; 5) {
+        if (numMutations > 5) {
             numMutations = 3;
-        } else if (numMutations &gt; 2) {
+        } else if (numMutations > 2) {
             numMutations = 2;
         }
         
-        for (uint8 i = 0; i &lt; numMutations; i++) {
+        for (uint8 i = 0; i < numMutations; i++) {
             randomSeed = uint32(sha3(block.blockhash(block.number), randomSeed));
             if (bool(randomSeed % 3 == 0)) { // 0: Race; 1-2: Neutral
                 randomSeed = uint32(sha3(block.blockhash(block.number), randomSeed));
 
                 // Horribly add new mutations (rather than looping for a fresh one) this is cheaper
                 (newMutationCost, newMutation) = schema.getMutationForRace(CardConfig.Race(cardDetails[1]), randomSeed);
-                if (totalCost + newMutationCost &lt; 290000) {
+                if (totalCost + newMutationCost < 290000) {
                     if (cardDetails[6] == 0) {
                         cardDetails[6] = newMutation;
                         totalCost += newMutationCost;
-                    } else if (cardDetails[6] &gt; 0 &amp;&amp; cardDetails[7] == 0 &amp;&amp; cardDetails[6] != newMutation) {
+                    } else if (cardDetails[6] > 0 && cardDetails[7] == 0 && cardDetails[6] != newMutation) {
                         cardDetails[7] = newMutation;
                         totalCost += newMutationCost;
-                    } else if  (cardDetails[6] &gt; 0 &amp;&amp; cardDetails[7] &gt; 0 &amp;&amp; cardDetails[8] == 0 &amp;&amp; cardDetails[6] != newMutation &amp;&amp; cardDetails[7] != newMutation) {
+                    } else if  (cardDetails[6] > 0 && cardDetails[7] > 0 && cardDetails[8] == 0 && cardDetails[6] != newMutation && cardDetails[7] != newMutation) {
                         cardDetails[8] = newMutation;
                         totalCost += newMutationCost;
                     }
@@ -70,14 +70,14 @@ contract CardMintingFacilitator {
 
                 // Horribly add new mutations (rather than looping for a fresh one) this is cheaper
                 (newMutationCost, newMutation) = schema.getNeutralMutation(randomSeed);
-                if (totalCost + newMutationCost &lt; 290000) {
+                if (totalCost + newMutationCost < 290000) {
                     if (cardDetails[9] == 0) {
                         cardDetails[9] = newMutation;
                         totalCost += newMutationCost;
-                    } else if (cardDetails[9] &gt; 0 &amp;&amp; cardDetails[10] == 0 &amp;&amp; cardDetails[9] != newMutation) {
+                    } else if (cardDetails[9] > 0 && cardDetails[10] == 0 && cardDetails[9] != newMutation) {
                         cardDetails[10] = newMutation;
                         totalCost += newMutationCost;
-                    } else if (cardDetails[9] &gt; 0 &amp;&amp; cardDetails[10] &gt; 0 &amp;&amp; cardDetails[11] == 0 &amp;&amp; cardDetails[9] != newMutation &amp;&amp; cardDetails[10] != newMutation) {
+                    } else if (cardDetails[9] > 0 && cardDetails[10] > 0 && cardDetails[11] == 0 && cardDetails[9] != newMutation && cardDetails[10] != newMutation) {
                         cardDetails[11] = newMutation;
                         totalCost += newMutationCost;
                     }
@@ -85,11 +85,11 @@ contract CardMintingFacilitator {
             }
         }
 
-        // For attack &amp; health distribution
+        // For attack & health distribution
         randomSeed = uint32(sha3(block.blockhash(block.number), randomSeed));
         uint24 powerCost = schema.getCostForHealth(1) + uint24(randomSeed % (301000 - (totalCost + schema.getCostForHealth(1)))); // % upto 300999 will allow 30 cost cards
 
-        if (totalCost + powerCost &lt; 100000) { // Cards should cost at least 10 crystals (10*10000 exponant)
+        if (totalCost + powerCost < 100000) { // Cards should cost at least 10 crystals (10*10000 exponant)
             powerCost = 100000 - totalCost;
         }
         
@@ -114,27 +114,27 @@ contract CardMintingFacilitator {
         randomSeed = uint32(sha3(block.blockhash(block.number), randomSeed));
         
         uint8 numAbilities = uint8(randomSeed % 16); // 0 = 1 ability, 1-8 = 2 abilities, 9-15 = 3 abilities 
-        if (numAbilities &gt; 8) {
+        if (numAbilities > 8) {
             numAbilities = 3;
-        } else if (numAbilities &gt; 0) {
+        } else if (numAbilities > 0) {
             numAbilities = 2;
         } else {
             numAbilities = 1;
         }
         
-        for (uint8 i = 0; i &lt; numAbilities; i++) {
+        for (uint8 i = 0; i < numAbilities; i++) {
             randomSeed = uint32(sha3(block.blockhash(block.number), randomSeed));
 
             // Horribly add new spell abilities (rather than looping for a fresh one) this is cheaper
             (newAbilityCost, newAbility) = schema.getSpellAbility(randomSeed);
-            if (totalCost + newAbilityCost &lt;= 300000) {
+            if (totalCost + newAbilityCost <= 300000) {
                 if (cardDetails[9] == 0) {
                     cardDetails[9] = newAbility;
                     totalCost += newAbilityCost;
-                } else if (cardDetails[9] &gt; 0 &amp;&amp; cardDetails[10] == 0 &amp;&amp; cardDetails[9] != newAbility) {
+                } else if (cardDetails[9] > 0 && cardDetails[10] == 0 && cardDetails[9] != newAbility) {
                     cardDetails[10] = newAbility;
                     totalCost += newAbilityCost;
-                } else if (cardDetails[9] &gt; 0 &amp;&amp; cardDetails[10] &gt; 0 &amp;&amp; cardDetails[11] == 0 &amp;&amp; cardDetails[9] != newAbility &amp;&amp; cardDetails[10] != newAbility) {
+                } else if (cardDetails[9] > 0 && cardDetails[10] > 0 && cardDetails[11] == 0 && cardDetails[9] != newAbility && cardDetails[10] != newAbility) {
                     cardDetails[11] = newAbility;
                     totalCost += newAbilityCost;
                 }
@@ -202,7 +202,7 @@ contract LimitedEditionSeedCardsDistributor is CardMintingFacilitator {
     MappedMarketplace marketplaceContract = MappedMarketplace(0xc3d2736b3e4f0f78457d75b3b5f0191a14e8bd57);
     
     function mintNextCard() external {
-        require(cardsMinted &lt; mintingLimit);
+        require(cardsMinted < mintingLimit);
         uint8[14] memory newCard = generateRandomCard(uint32(storageContract.totalSupply() * now));
         cardsMinted++;
         storageContract.mintCard(address(this), newCard);
@@ -214,8 +214,8 @@ contract LimitedEditionSeedCardsDistributor is CardMintingFacilitator {
         // Until all 100,000 Rare Limited Edition have been listed.
         // We estimate just 60-90 days before no more cards, forever (Excluding Workshop/Fusing of Cards)
         require(msg.sender == owner);
-        require(mintedCardIds.length &gt; 3);
-        require(nextDrop &gt; nextMarketListingTimeStamp);
+        require(mintedCardIds.length > 3);
+        require(nextDrop > nextMarketListingTimeStamp);
         
         listSingleCard();
         listSingleCard();
@@ -272,8 +272,8 @@ contract ERC721 {
     event Approval(address owner, address approved, uint256 cardId);
 
     // Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;EtherGen&quot;;
-    string public constant symbol = &quot;ETG&quot;;
+    string public constant name = "EtherGen";
+    string public constant symbol = "ETG";
 
     // Optional methods
     function tokensOfOwner(address player) external view returns (uint64[] cardIds);
@@ -282,8 +282,8 @@ contract ERC721 {
 
 contract PlayersCollectionStorage {
     
-    mapping(address =&gt; PlayersCollection) internal playersCollections;
-    mapping(uint64 =&gt; Card) internal cardIdMapping;
+    mapping(address => PlayersCollection) internal playersCollections;
+    mapping(uint64 => Card) internal cardIdMapping;
 
     struct PlayersCollection {
         uint64[] cardIds;
@@ -292,7 +292,7 @@ contract PlayersCollectionStorage {
 
     struct Card {
         uint64 id;
-        uint64 collectionPointer; // Index in player&#39;s collection
+        uint64 collectionPointer; // Index in player's collection
         address owner;
         
         uint8 cardType;
@@ -323,7 +323,7 @@ contract PlayersCollectionStorage {
         uint8[14][] memory cardDetails = new uint8[14][](playersCollections[player].cardIds.length);
         uint64[] memory cardIds = new uint64[](playersCollections[player].cardIds.length);
 
-        for (uint32 i = 0; i &lt; playersCollections[player].cardIds.length; i++) {
+        for (uint32 i = 0; i < playersCollections[player].cardIds.length; i++) {
             Card memory card = cardIdMapping[playersCollections[player].cardIds[i]];
             cardDetails[i][0] = card.cardType;
             cardDetails[i][1] = card.race;
@@ -338,7 +338,7 @@ contract PlayersCollectionStorage {
             cardDetails[i][10] = card.neutralMutation1;
             cardDetails[i][11] = card.neutralMutation2;
 
-            cardDetails[i][12] = card.isGolden ? 1 : 0; // Not ideal but web3.js didn&#39;t like returning multiple 2d arrays
+            cardDetails[i][12] = card.isGolden ? 1 : 0; // Not ideal but web3.js didn't like returning multiple 2d arrays
             cardDetails[i][13] = isCardTradeable(card) ? 1 : 0;
             
             cardIds[i] = card.id;
@@ -369,10 +369,10 @@ contract PlayersCollectionStorage {
 
 contract EtherGenCore is PlayersCollectionStorage, ERC721 {
     
-    mapping(address =&gt; bool) private privilegedTransferModules; // Marketplace ( + future features)
-    mapping(address =&gt; bool) private privilegedMintingModules; // Referals, Fusing, Workshop etc. ( + future features)
+    mapping(address => bool) private privilegedTransferModules; // Marketplace ( + future features)
+    mapping(address => bool) private privilegedMintingModules; // Referals, Fusing, Workshop etc. ( + future features)
     
-    mapping(uint64 =&gt; address) private cardIdApproveds; // Approval list (ERC721 transfers)
+    mapping(uint64 => address) private cardIdApproveds; // Approval list (ERC721 transfers)
     uint64 private totalCardSupply; // Also used for cardId incrementation
     
     TransferRestrictionVerifier transferRestrictionVerifier = TransferRestrictionVerifier(0xd9861d9a6111bfbb9235a71151f654d0fe7ed954); 
@@ -429,14 +429,14 @@ contract EtherGenCore is PlayersCollectionStorage, ERC721 {
     }
     
     function isApprovedTransferer(address approvee, uint64 cardId) internal constant returns (bool) {
-        // Will only return true if approvee (msg.sender) is a privileged transfer address (Marketplace) or santioned by card&#39;s owner using ERC721&#39;s approve()
+        // Will only return true if approvee (msg.sender) is a privileged transfer address (Marketplace) or santioned by card's owner using ERC721's approve()
         return privilegedTransferModules[approvee] || cardIdApproveds[cardId] == approvee;
     }
     
     function removeCardOwner(uint64 cardId) internal {
         address cardOwner = cardIdMapping[cardId].owner;
 
-        if (playersCollections[cardOwner].cardIds.length &gt; 1) {
+        if (playersCollections[cardOwner].cardIds.length > 1) {
             uint64 rowToDelete = cardIdMapping[cardId].collectionPointer;
             uint64 cardIdToMove = playersCollections[cardOwner].cardIds[playersCollections[cardOwner].cardIds.length - 1];
             playersCollections[cardOwner].cardIds[rowToDelete] = cardIdToMove;
@@ -530,7 +530,7 @@ contract CardConfig {
     uint16 constant numTraits = 10;
 
     function getType(uint32 randomSeed) public constant returns (uint8) {
-        if (randomSeed % 5 &gt; 0) { // 80% chance for monster (spells are less fun so make up for it in rarity)
+        if (randomSeed % 5 > 0) { // 80% chance for monster (spells are less fun so make up for it in rarity)
             return uint8(Type.Monster);
         } else {
             return uint8(Type.Spell);
@@ -561,7 +561,7 @@ contract CardConfig {
     ParasiteMutations parasiteMutations = new ParasiteMutations();
     
 
-    // The powerful schema that will allow the Workshop (crystal) prices to fluctuate based on performance, keeping the game fresh &amp; evolve over time!
+    // The powerful schema that will allow the Workshop (crystal) prices to fluctuate based on performance, keeping the game fresh & evolve over time!
     
     function getCostForRace(uint8 race) public constant returns (uint8 cost) {
         return 0; // born equal (under current config)
@@ -637,7 +637,7 @@ contract CardConfig {
     
     function getHealthForCost(uint32 cost) public constant returns (uint32 health) {
         health = cost / 2000;
-        if (health &gt; 98) { // 1+[0-98] (gotta have [1-99] health)
+        if (health > 98) { // 1+[0-98] (gotta have [1-99] health)
             health = 98;
         }
         return health;
@@ -649,7 +649,7 @@ contract CardConfig {
     
     function getAttackForCost(uint32 cost) public constant returns (uint32 attack) {
        attack = cost / 2000;
-        if (attack &gt; 99) {
+        if (attack > 99) {
             attack = 99;
         }
         return attack;
@@ -810,12 +810,12 @@ contract MappedMarketplace {
     address public owner = 0x08F4aE96b647B30177cc15B21195960625BA4163;
     bool public paused = false;
 
-    mapping(uint64 =&gt; Listing) private listings;
-    mapping(address =&gt; bool) private whitelistedContracts;
+    mapping(uint64 => Listing) private listings;
+    mapping(address => bool) private whitelistedContracts;
     uint64[] private listedCardIds;
 
     struct Listing {
-        uint64 listingPointer; // Index in the Market&#39;s listings
+        uint64 listingPointer; // Index in the Market's listings
         
         uint64 cardId;
         uint64 listTime; // Seconds
@@ -826,7 +826,7 @@ contract MappedMarketplace {
     
     function isListed(uint64 cardId) public constant returns(bool) {
         if (listedCardIds.length == 0) return false;
-        return (listings[cardId].listTime &gt; 0);
+        return (listings[cardId].listTime > 0);
     }
     
     function getMarketSize() external constant returns(uint) {
@@ -839,9 +839,9 @@ contract MappedMarketplace {
         require(transferRestrictionVerifier.isAvailableForTransfer(cardId));
         require(isWhitelisted(msg.sender));
         require(!paused);
-        require(startPrice &gt; 99 szabo &amp;&amp; startPrice &lt;= 10 ether);
-        require(endPrice &gt; 99 szabo &amp;&amp; endPrice &lt;= 10 ether);
-        require(priceChangeDuration &gt; 21599 &amp;&amp; priceChangeDuration &lt; 259201); // 6-72 Hours
+        require(startPrice > 99 szabo && startPrice <= 10 ether);
+        require(endPrice > 99 szabo && endPrice <= 10 ether);
+        require(priceChangeDuration > 21599 && priceChangeDuration < 259201); // 6-72 Hours
        
         listings[cardId] = Listing(0, cardId, uint64(now), startPrice, endPrice, priceChangeDuration);
         listings[cardId].listingPointer = uint64(listedCardIds.push(cardId) - 1);
@@ -853,7 +853,7 @@ contract MappedMarketplace {
         require(!paused);
 
         uint256 price = getCurrentPrice(listings[cardId].startPrice, listings[cardId].endPrice, listings[cardId].priceChangeDuration, (uint64(now) - listings[cardId].listTime));
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         address seller = storageContract.ownerOf(cardId);
         uint256 sellerProceeds = price - (price / marketCut); // 1% cut
@@ -862,7 +862,7 @@ contract MappedMarketplace {
         seller.transfer(sellerProceeds);
         
         uint256 bidExcess = msg.value - price;
-        if (bidExcess &gt; 1 szabo) { // Little point otherwise they&#39;ll just pay more in gas
+        if (bidExcess > 1 szabo) { // Little point otherwise they'll just pay more in gas
             msg.sender.transfer(bidExcess);
         }
         
@@ -870,7 +870,7 @@ contract MappedMarketplace {
     }
     
     function getCurrentPrice(uint128 startPrice, uint128 endPrice, uint24 priceChangeDuration, uint64 secondsSinceListing) public constant returns (uint256) {
-        if (secondsSinceListing &gt;= priceChangeDuration) {
+        if (secondsSinceListing >= priceChangeDuration) {
             return endPrice;
         } else {
             int256 totalPriceChange = int256(endPrice) - int256(startPrice); // Can be negative
@@ -882,12 +882,12 @@ contract MappedMarketplace {
     function removeListing(uint64 cardId) external {
         require(isListed(cardId));
         require(!paused);
-        require(storageContract.ownerOf(cardId) == msg.sender || (now - listings[cardId].listTime) &gt; removalDuration);
+        require(storageContract.ownerOf(cardId) == msg.sender || (now - listings[cardId].listTime) > removalDuration);
         removeListingInternal(cardId);
     }
     
     function removeListingInternal(uint64 cardId) internal {
-        if (listedCardIds.length &gt; 1) {
+        if (listedCardIds.length > 1) {
             uint64 rowToDelete = listings[cardId].listingPointer;
             uint64 keyToMove = listedCardIds[listedCardIds.length - 1];
             
@@ -901,7 +901,7 @@ contract MappedMarketplace {
     
     
     function getListings() external constant returns (uint64[], address[], uint64[], uint128[], uint128[], uint24[], uint8[14][]) {
-        uint64[] memory cardIds = new uint64[](listedCardIds.length); // Not ideal but web3.js didn&#39;t like returning multiple 2d arrays
+        uint64[] memory cardIds = new uint64[](listedCardIds.length); // Not ideal but web3.js didn't like returning multiple 2d arrays
         address[] memory cardOwners = new address[](listedCardIds.length);
         uint64[] memory listTimes = new uint64[](listedCardIds.length);
         uint128[] memory startPrices = new uint128[](listedCardIds.length);
@@ -909,7 +909,7 @@ contract MappedMarketplace {
         uint24[] memory priceChangeDurations = new uint24[](listedCardIds.length);
         uint8[14][] memory cardDetails = new uint8[14][](listedCardIds.length);
         
-        for (uint64 i = 0; i &lt; listedCardIds.length; i++) {
+        for (uint64 i = 0; i < listedCardIds.length; i++) {
             Listing memory listing = listings[listedCardIds[i]];
             cardDetails[i] = storageContract.getCard(listing.cardId);
             cardOwners[i] = storageContract.ownerOf(listing.cardId);
@@ -932,7 +932,7 @@ contract MappedMarketplace {
         return ([listing.cardId, listing.listTime, listing.startPrice, listing.endPrice, listing.priceChangeDuration]);
     }
     
-    // Contracts can&#39;t list cards without contacting us (wallet addresses are unaffected)
+    // Contracts can't list cards without contacting us (wallet addresses are unaffected)
     function isWhitelisted(address seller) internal constant returns (bool) {
         uint size;
         assembly { size := extcodesize(seller) }

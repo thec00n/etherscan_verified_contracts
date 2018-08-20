@@ -4,12 +4,12 @@ pragma solidity ^0.4.21;
 library SafeMath {
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(a &lt;= c);
+		assert(a <= c);
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(a &gt;= b);
+		assert(a >= b);
 		return a - b;
 	}
 }
@@ -31,7 +31,7 @@ contract AuctusBountyDistribution is ContractReceiver {
 	address public auctusTokenAddress = 0xfD89de68b246eB3e21B06e9B65450AC28D222488;
 	address public owner;
 	uint256 public escrowedTokens;
-	mapping(address =&gt; bool) public redeemed;
+	mapping(address => bool) public redeemed;
 
 	event Escrow(address indexed from, uint256 value);
 	event Redeem(address indexed to, uint256 value);
@@ -46,7 +46,7 @@ contract AuctusBountyDistribution is ContractReceiver {
 	}
 
 	modifier isValidMessage(uint256 value, uint256 timelimit, uint8 v, bytes32 r, bytes32 s) {
-		require(owner == ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, keccak256(this, msg.sender, value, timelimit)), v, r, s));
+		require(owner == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", keccak256(this, msg.sender, value, timelimit)), v, r, s));
 		_;
 	}
 
@@ -71,7 +71,7 @@ contract AuctusBountyDistribution is ContractReceiver {
 		isValidMessage(value, timelimit, v, r, s)
 		public 
 	{
-		require(timelimit &gt;= now);
+		require(timelimit >= now);
 		require(!redeemed[msg.sender]);
 		redeemed[msg.sender] = true;
 		internalRedeem(msg.sender, value);

@@ -2,20 +2,20 @@ pragma solidity ^0.4.4;
 
 contract CountryCoin {
 
-    string public constant name = &quot;CountryCoin&quot;;
-    string public constant symbol = &quot;CCN&quot;;
+    string public constant name = "CountryCoin";
+    string public constant symbol = "CCN";
     uint public constant decimals = 8;
     uint public totalSupply;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 
     uint constant oneCent = 4642857142857;
-    mapping (uint16 =&gt; uint) rating;
-    mapping (uint16 =&gt; mapping( address =&gt; uint)) votes;
-    mapping (address =&gt; uint16[]) history;
+    mapping (uint16 => uint) rating;
+    mapping (uint16 => mapping( address => uint)) votes;
+    mapping (address => uint16[]) history;
 
     address owner;
 
@@ -30,8 +30,8 @@ contract CountryCoin {
     }
 
     function transfer(address _to, uint _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value > balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -39,9 +39,9 @@ contract CountryCoin {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(allowed[_from][_to] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(allowed[_from][_to] >= _value);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -64,15 +64,15 @@ contract CountryCoin {
 
     function () payable {
         uint tokenAmount = msg.value*100000000 / oneCent;
-        require(tokenAmount &lt;= balances[this]);
+        require(tokenAmount <= balances[this]);
 
         balances[this] -= tokenAmount;
         balances[msg.sender] += tokenAmount;
     }
 
     function vote(uint16 _country, uint _amount) {
-        require(balances[msg.sender] &gt;= _amount);
-        require(_country &lt; 1000);
+        require(balances[msg.sender] >= _amount);
+        require(_country < 1000);
 
         if (votes[_country][msg.sender] == 0) {
             history[msg.sender].push(_country);
@@ -83,7 +83,7 @@ contract CountryCoin {
     }
 
     function reset() {
-        for(uint16 i=0; i&lt;history[msg.sender].length; i++) {
+        for(uint16 i=0; i<history[msg.sender].length; i++) {
             uint16 country = history[msg.sender][i];
             uint amount = votes[country][msg.sender];
             balances[msg.sender] += amount;
@@ -94,13 +94,13 @@ contract CountryCoin {
     }
 
     function ratingOf(uint16 _country) constant returns (uint) {
-        require(_country &lt; 1000);
+        require(_country < 1000);
         return rating[_country];
     }
 
     function ratingList() constant returns (uint[] memory r) {
         r = new uint[](1000);
-        for(uint16 i=0; i&lt;r.length; i++) {
+        for(uint16 i=0; i<r.length; i++) {
             r[i] = rating[i];
         }
     }

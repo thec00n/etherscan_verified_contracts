@@ -41,9 +41,9 @@ pragma solidity ^0.4.21;
 
 contract Token is Controlled {
 
-    string public name = &quot;ShineCoin&quot;;
+    string public name = "ShineCoin";
     uint8 public decimals = 9;
-    string public symbol = &quot;SHINE&quot;;
+    string public symbol = "SHINE";
 
     struct  Checkpoint {
         uint128 fromBlock;
@@ -52,9 +52,9 @@ contract Token is Controlled {
 
     uint public creationBlock;
 
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     Checkpoint[] totalSupplyHistory;
 
@@ -79,7 +79,7 @@ contract Token is Controlled {
         require(transfersEnabled);
 
         if (address(msg.sender) == frozenReserveTeamWallet) {
-            require(block.number &gt; unfreezeTeamWalletBlock);
+            require(block.number > unfreezeTeamWalletBlock);
         }
 
         doTransfer(msg.sender, _to, _amount);
@@ -90,7 +90,7 @@ contract Token is Controlled {
         if (msg.sender != controller) {
             require(transfersEnabled);
 
-            require(allowed[_from][msg.sender] &gt;= _amount);
+            require(allowed[_from][msg.sender] >= _amount);
             allowed[_from][msg.sender] -= _amount;
         }
         doTransfer(_from, _to, _amount);
@@ -100,21 +100,21 @@ contract Token is Controlled {
 
     function doTransfer(address _from, address _to, uint _amount) internal {
 
-           if (_amount &lt;= 0) {
+           if (_amount <= 0) {
                emit Transfer(_from, _to, _amount);
                return;
            }
 
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            uint256 previousBalanceFrom = balanceOfAt(_from, block.number);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            updateValueAtNow(balances[_from], previousBalanceFrom - _amount);
 
            uint256 previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo);
+           require(previousBalanceTo + _amount >= previousBalanceTo);
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            emit Transfer(_from, _to, _amount);
@@ -164,7 +164,7 @@ contract Token is Controlled {
     function balanceOfAt(address _owner, uint _blockNumber) public constant returns (uint) {
 
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             return 0;
         } else {
             return getValueAt(balances[_owner], _blockNumber);
@@ -174,7 +174,7 @@ contract Token is Controlled {
     function totalSupplyAt(uint _blockNumber) public constant returns(uint) {
 
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             return 0;
 
         } else {
@@ -184,9 +184,9 @@ contract Token is Controlled {
 
     function generateTokens(address _owner, uint _amount) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         emit Transfer(0, _owner, _amount);
@@ -195,9 +195,9 @@ contract Token is Controlled {
 
     function destroyTokens(address _owner, uint _amount) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         emit Transfer(_owner, 0, _amount);
@@ -212,15 +212,15 @@ contract Token is Controlled {
     function getValueAt(Checkpoint[] storage checkpoints, uint _block) constant internal returns (uint) {
         if (checkpoints.length == 0) return 0;
 
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -231,7 +231,7 @@ contract Token is Controlled {
 
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -247,11 +247,11 @@ contract Token is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function () public payable {
@@ -278,20 +278,20 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -338,9 +338,9 @@ contract CrowdFunder is Controlled, SafeMath {
     event FrozenFunds(address target, bool frozen);
     event LogFundingReceived(address addr, uint amount, uint currentTotal);
 
-    mapping (address =&gt; uint256) private balanceOf;
-    mapping (address =&gt; uint) public fiatInvestorShare;
-    mapping (address =&gt; bool) private frozenAccount;
+    mapping (address => uint256) private balanceOf;
+    mapping (address => uint) public fiatInvestorShare;
+    mapping (address => bool) private frozenAccount;
 
     modifier inState(State _state) {
         require(state == _state);
@@ -354,7 +354,7 @@ contract CrowdFunder is Controlled, SafeMath {
 
     modifier minInvestment() {
         // User has to send at least 0.01 Eth
-        require(msg.value &gt;= 10 ** 16);
+        require(msg.value >= 10 ** 16);
         _;
     }
 
@@ -412,7 +412,7 @@ contract CrowdFunder is Controlled, SafeMath {
             fiatInvestorShare[target] = share;
             fiatInvestors.push(target);
         } else { // address already exists
-            if (share &gt; 0) {
+            if (share > 0) {
                 uint prevShare = fiatInvestorShare[target];
                 uint newShare = prevShare + share;
 
@@ -427,19 +427,19 @@ contract CrowdFunder is Controlled, SafeMath {
     }
 
     function updateExchangeRate() public {
-        if (tokensIssued &gt;= 0 &amp;&amp; tokensIssued &lt; (1000000 * 10 ** 9)) {
+        if (tokensIssued >= 0 && tokensIssued < (1000000 * 10 ** 9)) {
             tokenExchangeRate = 1000 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (1000000 * 10 ** 9) &amp;&amp; tokensIssued &lt; (2000000 * 10 ** 9)) {
+        if (tokensIssued >= (1000000 * 10 ** 9) && tokensIssued < (2000000 * 10 ** 9)) {
             tokenExchangeRate = 600 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (2000000 * 10 ** 9) &amp;&amp; tokensIssued &lt; (3500000 * 10 ** 9)) {
+        if (tokensIssued >= (2000000 * 10 ** 9) && tokensIssued < (3500000 * 10 ** 9)) {
             tokenExchangeRate = 500 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (3500000 * 10 ** 9) &amp;&amp; tokensIssued &lt; (6000000 * 10 ** 9)) {
+        if (tokensIssued >= (3500000 * 10 ** 9) && tokensIssued < (6000000 * 10 ** 9)) {
             tokenExchangeRate = 400 * 10 ** 9;
         }
-        if (tokensIssued &gt;= (6000000 * 10 ** 9)) {
+        if (tokensIssued >= (6000000 * 10 ** 9)) {
             tokenExchangeRate = 300 * 10 ** 9;
         }
     }
@@ -469,7 +469,7 @@ contract CrowdFunder is Controlled, SafeMath {
     }
 
     function checkIfFundingCompleteOrExpired() private {
-        if (block.number &gt; endBlockNumber || tokensIssued &gt;= capTokenAmount) {
+        if (block.number > endBlockNumber || tokensIssued >= capTokenAmount) {
             state = State.Successful;
             emit GoalReached(fundRecipient, currentBalance);
         }
@@ -479,7 +479,7 @@ contract CrowdFunder is Controlled, SafeMath {
         uint amount = currentBalance;
         uint balance = currentBalance;
 
-        for (uint i = 0; i &lt; fiatInvestors.length; i++) {
+        for (uint i = 0; i < fiatInvestors.length; i++) {
             address investorAddress = fiatInvestors[i];
             uint investorShare = fiatInvestorShare[investorAddress];
             uint investorAmount = div(mul(balance, investorShare), 1000000);

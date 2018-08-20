@@ -28,9 +28,9 @@ contract Ownership {
 ****************************************************************************/
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        c = a + b; assert(c &gt;= a); return c; }
+        c = a + b; assert(c >= a); return c; }
 
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) { assert(b &lt;= a); return a - b; }
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) { assert(b <= a); return a - b; }
 
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
         if (a == 0){return 0;} c = a * b; assert(c / a == b); return c; }
@@ -62,13 +62,13 @@ contract MAJz is BasicToken, Ownership {
     uint256 public _decimals;
     uint256 public _totalSupply;
 
-    mapping(address =&gt; uint256) public _balances;
+    mapping(address => uint256) public _balances;
     
 
     //Constructor of the Token
     constructor() public{
-        _symbol = &quot;MAZ&quot;;
-        _name = &quot;MAJz&quot;;
+        _symbol = "MAZ";
+        _name = "MAJz";
         _decimals = 18;
         _totalSupply = 560000000000000000000000000;
         _balances[msg.sender] = _totalSupply;
@@ -86,7 +86,7 @@ contract MAJz is BasicToken, Ownership {
     
     //Transfer function. Validates targetAdress not to be 0x0
     function transfer(address targetAddress, uint256 value) validDestination(targetAddress) public returns (bool) {
-        _balances[msg.sender] = SafeMath.sub(_balances[msg.sender], value); //SafeMath will throw if value &gt; balance
+        _balances[msg.sender] = SafeMath.sub(_balances[msg.sender], value); //SafeMath will throw if value > balance
         _balances[targetAddress] = SafeMath.add(_balances[targetAddress], value);
         emit Transfer(msg.sender, targetAddress, value); 
         return true; 
@@ -94,7 +94,7 @@ contract MAJz is BasicToken, Ownership {
 
     //Burn some of the tokens
     function burnTokens(uint256 value) public onlyOwner returns (bool){
-        _balances[_owner] = SafeMath.sub(_balances[_owner], value); //SafeMath will throw if value &gt; balance
+        _balances[_owner] = SafeMath.sub(_balances[_owner], value); //SafeMath will throw if value > balance
         _totalSupply = SafeMath.sub(_totalSupply, value); 
         emit BurnTokens(value);
         return true;

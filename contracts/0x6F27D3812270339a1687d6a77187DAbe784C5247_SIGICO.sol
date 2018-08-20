@@ -11,20 +11,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -68,11 +68,11 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 
 	using SafeMath for uint256;
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-        require(now &gt;= freezeTransferTime);
+        require(now >= freezeTransferTime);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -86,11 +86,11 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(now &gt;= freezeTransferTime);
+		require(now >= freezeTransferTime);
 
 		var _allowance = allowed[_from][msg.sender];
 		balances[_to] = balances[_to].add(_value);
@@ -140,8 +140,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract SIGToken is MintableToken {
 
-	string public constant name = &quot;Saxinvest Group Coin&quot;;
-	string public constant symbol = &quot;SIG&quot;;
+	string public constant name = "Saxinvest Group Coin";
+	string public constant symbol = "SIG";
 	uint32 public constant decimals = 18;
 
 	function SIGToken(uint256 _freezeTransferTime) public {
@@ -182,18 +182,18 @@ contract SIGICO is Ownable {
 	uint256 PercentageForOther = 2;
 	uint256 tokenCost;
 
-	mapping (address =&gt; bool) Buyers;
-	mapping (uint8 =&gt; uint256) BonusTokens;
-	mapping (uint8 =&gt; uint256) Restricted;
+	mapping (address => bool) Buyers;
+	mapping (uint8 => uint256) BonusTokens;
+	mapping (uint8 => uint256) Restricted;
 
 	event TokenPurchase(address indexed sender, address indexed buyer, uint8 round, uint256 rate, uint256 weiAmount, uint256 tokens, uint256 bonus);
 	event ChangeRate(uint256 changeTime, uint256 prevRate, uint256 newRate, uint256 prevSupply);
 	event Finalized();
 
 	function SIGICO(uint256 _startTime, uint256 _endTime, uint256 _rate) public {
-		require(_startTime &gt;= now);
-		require(_endTime &gt;= _startTime);
-		require(_rate &gt; 0);
+		require(_startTime >= now);
+		require(_endTime >= _startTime);
+		require(_rate > 0);
 
 		freezeTransferTime = _endTime.add(90 * 1 days);
         token = new SIGToken(freezeTransferTime);
@@ -218,11 +218,11 @@ contract SIGICO is Ownable {
         uint256 bonus = 0;
         uint8 round = 3;
 
-		if(now &lt; Round1){
+		if(now < Round1){
             round = 1;
 			bonus = tokens.mul(20).div(100);
             BonusTokens[round] += bonus;
-		}else if(now &gt; Round1 &amp;&amp; now &lt; Round2){
+		}else if(now > Round1 && now < Round2){
             round = 2;
 			bonus = tokens.mul(10).div(100);
             BonusTokens[round] += bonus;
@@ -246,14 +246,14 @@ contract SIGICO is Ownable {
 	}
 
 	function validPurchase() internal view returns (bool) {
-		bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+		bool withinPeriod = now >= startTime && now <= endTime;
 		bool nonZeroPurchase = msg.value != 0;
-		bool haveEnoughEther = msg.value &gt;= tokenCost;
-		return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; haveEnoughEther;
+		bool haveEnoughEther = msg.value >= tokenCost;
+		return withinPeriod && nonZeroPurchase && haveEnoughEther;
 	}
 
 	function hasEnded() public view returns (bool) {
-		return now &gt; endTime;
+		return now > endTime;
 	}
 
 	function finalize() onlyOwner public {
@@ -294,7 +294,7 @@ contract SIGICO is Ownable {
 
 	function changeRate(uint256 _rate) onlyOwner public returns (uint256){
 		require(!isFinalized);
-		require(_rate &gt; 0);
+		require(_rate > 0);
 		uint256 totalSupply = token.totalSupply().div(1 ether);
 		tokenCost = uint256(1 ether).div(_rate);
 		ChangeRate(now, rate, _rate, totalSupply);
@@ -304,12 +304,12 @@ contract SIGICO is Ownable {
 
 	function getRestrictedTokens(uint8 _who) onlyOwner public constant returns (uint256){
 		require(isFinalized);
-		require(_who &lt;= 4);
+		require(_who <= 4);
 		return Restricted[_who];
 	}
 
 	function getBonusTokens(uint8 _round) onlyOwner public constant returns (uint256){
-		require(_round &lt; 3);
+		require(_round < 3);
 		return BonusTokens[_round];
 	}
 

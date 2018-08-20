@@ -65,7 +65,7 @@ contract ReturnData {
  * Receives calls from the proxy, and calls back immediately without arguments modification.
  *
  * Note: all the non constant functions return false instead of throwing in case if state change
- * didn&#39;t happen yet.
+ * didn't happen yet.
  */
 contract Asset is AssetInterface, Bytes32, ReturnData {
     // Assigned asset proxy contract, immutable.
@@ -108,7 +108,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
      */
     function _performTransferWithReference(address _to, uint _value, string _reference, address _sender) public onlyProxy() returns(bool) {
         if (isICAP(_to)) {
-            return _transferToICAPWithReference(bytes32(_to) &lt;&lt; 96, _value, _reference, _sender);
+            return _transferToICAPWithReference(bytes32(_to) << 96, _value, _reference, _sender);
         }
         return _transferWithReference(_to, _value, _reference, _sender);
     }
@@ -155,7 +155,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
      */
     function _performTransferFromWithReference(address _from, address _to, uint _value, string _reference, address _sender) public onlyProxy() returns(bool) {
         if (isICAP(_to)) {
-            return _transferFromToICAPWithReference(_from, bytes32(_to) &lt;&lt; 96, _value, _reference, _sender);
+            return _transferFromToICAPWithReference(_from, bytes32(_to) << 96, _value, _reference, _sender);
         }
         return _transferFromWithReference(_from, _to, _value, _reference, _sender);
     }
@@ -250,7 +250,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
 
     // Interface functions to allow specifying ICAP addresses as strings.
     function transferToICAP(string _icap, uint _value) public returns(bool) {
-        return transferToICAPWithReference(_icap, _value, &#39;&#39;);
+        return transferToICAPWithReference(_icap, _value, '');
     }
 
     function transferToICAPWithReference(string _icap, uint _value, string _reference) public returns(bool) {
@@ -258,7 +258,7 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
     }
 
     function transferFromToICAP(address _from, string _icap, uint _value) public returns(bool) {
-        return transferFromToICAPWithReference(_from, _icap, _value, &#39;&#39;);
+        return transferFromToICAPWithReference(_from, _icap, _value, '');
     }
 
     function transferFromToICAPWithReference(address _from, string _icap, uint _value, string _reference) public returns(bool) {
@@ -266,16 +266,16 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
     }
 
     function isICAP(address _address) public pure returns(bool) {
-        bytes32 a = bytes32(_address) &lt;&lt; 96;
-        if (a[0] != &#39;X&#39; || a[1] != &#39;E&#39;) {
+        bytes32 a = bytes32(_address) << 96;
+        if (a[0] != 'X' || a[1] != 'E') {
             return false;
         }
-        if (a[2] &lt; 48 || a[2] &gt; 57 || a[3] &lt; 48 || a[3] &gt; 57) {
+        if (a[2] < 48 || a[2] > 57 || a[3] < 48 || a[3] > 57) {
             return false;
         }
-        for (uint i = 4; i &lt; 20; i++) {
+        for (uint i = 4; i < 20; i++) {
             uint char = uint(a[i]);
-            if (char &lt; 48 || char &gt; 90 || (char &gt; 57 &amp;&amp; char &lt; 65)) {
+            if (char < 48 || char > 90 || (char > 57 && char < 65)) {
                 return false;
             }
         }
@@ -288,12 +288,12 @@ contract Asset is AssetInterface, Bytes32, ReturnData {
  */
 contract AssetWithRevert is Asset {
     modifier validateBalance(address _from, uint _value) {
-        require(proxy.balanceOf(_from) &gt;= _value, &#39;Insufficient balance&#39;);
+        require(proxy.balanceOf(_from) >= _value, 'Insufficient balance');
         _;
     }
 
     modifier validateAllowance(address _from, address _spender, uint _value) {
-        require(proxy.allowance(_from, _spender) &gt;= _value, &#39;Insufficient allowance&#39;);
+        require(proxy.allowance(_from, _spender) >= _value, 'Insufficient allowance');
         _;
     }
 

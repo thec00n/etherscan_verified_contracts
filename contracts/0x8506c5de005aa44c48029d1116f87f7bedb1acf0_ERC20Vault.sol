@@ -7,17 +7,17 @@ contract TimeLapse {
   uint256 public constructionTime;
 
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
   modifier onlyAfterClosed {
-    require(now &gt; closingTime);
+    require(now > closingTime);
     _;
   }
 
   constructor(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     constructionTime = now;
     openingTime = _openingTime;
@@ -25,7 +25,7 @@ contract TimeLapse {
   }
 
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 }
 
@@ -51,9 +51,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -61,7 +61,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -70,7 +70,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20 is ERC20Basic {
 }
 
 contract Erc20Wallet {
-  mapping (address =&gt; uint) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+  mapping (address => uint) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
 
   event DepositReceived(address from, uint256 value);
   address token;
@@ -144,8 +144,8 @@ contract SplitErc20Payment is Erc20Wallet{
   uint256 public totalShares = 0;
   uint256 public totalReleased = 0;
 
-  mapping(address =&gt; uint256) public shares;
-  mapping(address =&gt; uint256) public released;
+  mapping(address => uint256) public shares;
+  mapping(address => uint256) public released;
   address[] public payees;
 
   constructor(address _token)
@@ -165,13 +165,13 @@ contract SplitErc20Payment is Erc20Wallet{
   function claim() public {
     address payee = msg.sender;
 
-    require(shares[payee] &gt; 0);
+    require(shares[payee] > 0);
 
     uint256 totalReceived = totalDeposited + totalReleased;
     uint256 payment = (totalReceived * shares[payee] / totalShares) - released[payee];
 
     require(payment != 0);
-    require(totalDeposited &gt;= payment);
+    require(totalDeposited >= payment);
 
     released[payee] = released[payee] + payment;
     totalReleased = totalReleased + payment;
@@ -186,7 +186,7 @@ contract SplitErc20Payment is Erc20Wallet{
    */
   function addPayee(address _payee, uint256 _shares) internal {
     require(_payee != address(0));
-    require(_shares &gt; 0);
+    require(_shares > 0);
     require(shares[_payee] == 0);
 
     payees.push(_payee);
@@ -200,8 +200,8 @@ contract SplitErc20Payment is Erc20Wallet{
    */
   function addToPayeeBalance(address _payee, uint256 _shares) internal {
   require(_payee != address(0));
-  require(_shares &gt; 0);
-  require(shares[_payee] &gt; 0);
+  require(_shares > 0);
+  require(shares[_payee] > 0);
 
   shares[_payee] += _shares;
   totalShares = totalShares.add(_shares);

@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -31,13 +31,13 @@ contract BaseGame {
     using SafeMath for uint256;
 
     string public officialGameUrl;
-    string public gameName = &quot;GameSicBo&quot;;
+    string public gameName = "GameSicBo";
     uint public gameType = 2003;
 
     function depositToken(uint256 _amount) public;
     function withdrawAllToken() public;
     function withdrawToken(uint256 _amount) public;
-    mapping (address =&gt; uint256) public userTokenOf;
+    mapping (address => uint256) public userTokenOf;
 
 
     address public currentBanker;
@@ -136,7 +136,7 @@ contract Base is  BaseGame{
 
     function _withdrawToken(address _from, uint256 _amount) internal {
         require(_from != 0x0);
-        require(_amount &gt; 0 &amp;&amp; _amount &lt;= userTokenOf[_from]);
+        require(_amount > 0 && _amount <= userTokenOf[_from]);
         userTokenOf[_from] = userTokenOf[_from].sub(_amount);
         DonQuixoteToken.transfer(_from, _amount);
     }
@@ -163,7 +163,7 @@ contract GameSicBo is Base
     bytes32 public gameEncryptedText;
     uint public gameResult;
     string public gameRandon1;
-    string public constant gameRandon2 = &#39;ChinasNewGovernmentBracesforTrump&#39;;
+    string public constant gameRandon2 = 'ChinasNewGovernmentBracesforTrump';
     bool public betInfoIsLocked = false;
 
 
@@ -176,10 +176,10 @@ contract GameSicBo is Base
 
 
     function GameSicBo(string _gameName,uint  _gameTime, uint256 _gameMinBetAmount, uint256 _gameMaxBetAmount,address _DonQuixoteToken) public {
-        require(_gameTime &gt; 0);
-        require(_gameMinBetAmount &gt;= 0);
-        require(_gameMaxBetAmount &gt; 0);
-        require(_gameMaxBetAmount &gt;= _gameMinBetAmount);
+        require(_gameTime > 0);
+        require(_gameMinBetAmount >= 0);
+        require(_gameMaxBetAmount > 0);
+        require(_gameMaxBetAmount >= _gameMinBetAmount);
 
 
         gameMinBetAmount = _gameMinBetAmount;
@@ -208,13 +208,13 @@ contract GameSicBo is Base
 
     modifier onlyBanker {
         require(msg.sender == currentBanker);
-        require(bankerBeginTime &lt;= now);
-        require(now &lt; bankerEndTime);
+        require(bankerBeginTime <= now);
+        require(now < bankerEndTime);
         _;
     }
 
     function canSetBanker() public view returns (bool _result){
-        _result =  bankerEndTime &lt;= now &amp;&amp; gameOver;
+        _result =  bankerEndTime <= now && gameOver;
     }
 
 
@@ -227,7 +227,7 @@ contract GameSicBo is Base
         require(_banker != 0x0);
 
 
-        if(now &lt; bankerEndTime){
+        if(now < bankerEndTime){
 
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 1 ,getEventId(),now);
             return;
@@ -241,14 +241,14 @@ contract GameSicBo is Base
         }
 
 
-        if(_beginTime &gt; now){
+        if(_beginTime > now){
 
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 3 ,getEventId(),now);
             return;
         }
 
 
-        if(_endTime &lt;= now){
+        if(_endTime <= now){
 
             emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 4 ,getEventId(),now);
             return;
@@ -261,7 +261,7 @@ contract GameSicBo is Base
         emit OnSetNewBanker(msg.sender, _banker,  _beginTime,  _endTime, 0, getEventId(),now);
         _result = true;
 
-        if(now &lt; donGameGiftLineTime){
+        if(now < donGameGiftLineTime){
             DonQuixoteToken.logPlaying(_banker);
         }
     }
@@ -283,13 +283,13 @@ contract GameSicBo is Base
     {
         _result = false;
         require(gameOver);
-        require(now &gt; bankerBeginTime);
-        require(now + gameTime &lt;= bankerEndTime);
+        require(now > bankerBeginTime);
+        require(now + gameTime <= bankerEndTime);
 
         gameID++;
 
         gameEncryptedText = _gameEncryptedText;
-        gameRandon1 = &#39;&#39;;
+        gameRandon1 = '';
         gameBeginTime = now;
         gameEndTime = now + gameTime;
         gameBeginPlayNo = playNo;
@@ -316,7 +316,7 @@ contract GameSicBo is Base
         uint BetTime;
     }
 
-    mapping (uint =&gt; betInfo) public playerBetInfoOf;
+    mapping (uint => betInfo) public playerBetInfoOf;
 
     event OnPlay(address indexed _player,uint indexed _gameID, uint indexed _playNo, uint _eventId,uint _time, uint _smallNum,uint _bigNum, uint256 _betAmount, uint _betType);
 
@@ -324,9 +324,9 @@ contract GameSicBo is Base
         _result = false;
 
         uint bankerAmount = _betAmount.mul(_odds);
-        require(userTokenOf[currentBanker] &gt;= bankerAmount);
+        require(userTokenOf[currentBanker] >= bankerAmount);
 
-        if(userTokenOf[msg.sender] &lt; _betAmount){
+        if(userTokenOf[msg.sender] < _betAmount){
             depositToken(_betAmount.sub(userTokenOf[msg.sender]));
         }
 
@@ -352,7 +352,7 @@ contract GameSicBo is Base
         lastBlockNumber = block.number;
         playNo++;
 
-        if(now &lt; donGameGiftLineTime){
+        if(now < donGameGiftLineTime){
             DonQuixoteToken.logPlaying(msg.sender);
         }
         _result = true;
@@ -366,48 +366,48 @@ contract GameSicBo is Base
     modifier playable(uint betAmount) {
         require(!gameOver);
         require(!betInfoIsLocked);
-        require(now &lt; gameEndTime);
+        require(now < gameEndTime);
 
         require(msg.sender != currentBanker);
-        require(betAmount &gt;= gameMinBetAmount);
+        require(betAmount >= gameMinBetAmount);
         _;
     }
 
     function playBatch(uint[] _betNums,uint256[] _betAmounts) public returns(bool _result){
         _result = false;
         require(_betNums.length == _betAmounts.length);
-        require (_betNums.length &lt;= 10);
+        require (_betNums.length <= 10);
         _result = true ;
-        for(uint i = 0; i &lt; _betNums.length &amp;&amp; _result; i++ ){
+        for(uint i = 0; i < _betNums.length && _result; i++ ){
             uint _betNum = _betNums[i];
             uint256 _betAmount = _betAmounts[i];
-            if(_betAmount &lt; gameMinBetAmount){
+            if(_betAmount < gameMinBetAmount){
                 continue ;
             }
-            if (_betAmount &gt; gameMaxBetAmount){
+            if (_betAmount > gameMaxBetAmount){
                 _betAmount = gameMaxBetAmount;
             }
-            if(_betNum &gt; 0 &amp;&amp; _betNum &lt;= 2){
+            if(_betNum > 0 && _betNum <= 2){
                 _result = playBigOrSmall(_betNum, _betAmount);
             }else if(_betNum == 3){
                 _result = playAnyTriples(_betAmount);
-            }else if(_betNum &lt;= 9){
+            }else if(_betNum <= 9){
                 _result = playSpecificTriples(_betNum.sub(3), _betAmount);
-            }else if(_betNum &lt;= 15){
+            }else if(_betNum <= 15){
                 _result = playSpecificDoubles(_betNum.sub(9),_betAmount);
-            }else if(_betNum &lt;= 29){
+            }else if(_betNum <= 29){
                 _result = playThreeDiceTotal(_betNum.sub(12), _betAmount);
-            }else if(_betNum &lt;= 44){
-                if(_betNum &lt;= 34){
+            }else if(_betNum <= 44){
+                if(_betNum <= 34){
                     uint _betMinNum = 1;
                     uint _betMaxNum = _betNum.sub(28);
-                }else if(_betNum &lt;= 38){
+                }else if(_betNum <= 38){
                     _betMinNum = 2;
                     _betMaxNum = _betNum.sub(32);
-                }else if(_betNum &lt;= 41){
+                }else if(_betNum <= 41){
                     _betMinNum = 3;
                     _betMaxNum = _betNum.sub(35);
-                }else if(_betNum &lt;= 43){
+                }else if(_betNum <= 43){
                     _betMinNum = 4;
                     _betMaxNum = _betNum.sub(37);
                 }else{
@@ -415,7 +415,7 @@ contract GameSicBo is Base
                     _betMaxNum = 6;
                 }
                 _result = playDiceCombinations(_betMinNum,_betMaxNum, _betAmount);
-            }else if(_betNum &lt;= 50){
+            }else if(_betNum <= 50){
                 _result = playSingleDiceBet(_betNum.sub(44), _betAmount);
             }
         }
@@ -424,38 +424,38 @@ contract GameSicBo is Base
 
     function playBigOrSmall(uint _betNum, uint256 _betAmount) public playable(_betAmount)  returns(bool _result){
         require(_betNum ==1 || _betNum == 2);
-        if (_betAmount &gt; gameMaxBetAmount){
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         _result = _play(_betNum,0, _betAmount,1,1);
     }
 
     function playAnyTriples(uint256 _betAmount) public playable(_betAmount)  returns(bool _result){
-        if (_betAmount &gt; gameMaxBetAmount){
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         _result = _play(0,0, _betAmount,24,2);
     }
 
     function playSpecificTriples(uint _betNum, uint256 _betAmount) public playable(_betAmount)  returns(bool _result){
-        require(_betNum &gt;= 1 &amp;&amp; _betNum &lt;=6);
-        if (_betAmount &gt; gameMaxBetAmount){
+        require(_betNum >= 1 && _betNum <=6);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         _result = _play(_betNum,0, _betAmount,150,3);
     }
 
     function playSpecificDoubles(uint _betNum, uint256 _betAmount) public playable(_betAmount) returns(bool _result){
-        require(_betNum &gt;= 1 &amp;&amp; _betNum &lt;=6);
-        if (_betAmount &gt; gameMaxBetAmount){
+        require(_betNum >= 1 && _betNum <=6);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         _result = _play(_betNum,0, _betAmount,8,4);
     }
 
     function playThreeDiceTotal(uint _betNum,uint256 _betAmount) public playable(_betAmount) returns(bool _result){
-        require(_betNum &gt;= 4 &amp;&amp; _betNum &lt;=17);
-        if (_betAmount &gt; gameMaxBetAmount){
+        require(_betNum >= 4 && _betNum <=17);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         uint _odds = 0;
@@ -476,18 +476,18 @@ contract GameSicBo is Base
     }
 
     function playDiceCombinations(uint _smallNum,uint _bigNum,uint256 _betAmount) public playable(_betAmount) returns(bool _result){
-        require(_smallNum &lt; _bigNum);
-        require(_smallNum &gt;= 1 &amp;&amp; _smallNum &lt;=5);
-        require(_bigNum &gt;= 2 &amp;&amp; _bigNum &lt;=6);
-        if (_betAmount &gt; gameMaxBetAmount){
+        require(_smallNum < _bigNum);
+        require(_smallNum >= 1 && _smallNum <=5);
+        require(_bigNum >= 2 && _bigNum <=6);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         _result = _play(_smallNum,_bigNum, _betAmount,5,6);
     }
 
     function playSingleDiceBet(uint _betNum,uint256 _betAmount) public playable(_betAmount) returns(bool _result){
-        require(_betNum &gt;= 1 &amp;&amp; _betNum &lt;=6);
-        if (_betAmount &gt; gameMaxBetAmount){
+        require(_betNum >= 1 && _betNum <=6);
+        if (_betAmount > gameMaxBetAmount){
             _betAmount = gameMaxBetAmount;
         }
         _result = _play(_betNum,0, _betAmount,3,7);
@@ -495,7 +495,7 @@ contract GameSicBo is Base
 
     function lockBetInfo() public onlyBanker returns (bool _result) {
         require(!gameOver);
-        require(now &lt; gameEndTime);
+        require(now < gameEndTime);
         require(!betInfoIsLocked);
         betInfoIsLocked = true;
         _result = true;
@@ -511,7 +511,7 @@ contract GameSicBo is Base
             reversed[i++] = byte(48 + remainder);
         }
         bytes memory s = new bytes(i);
-        for (uint j = 0; j &lt; i; j++) {
+        for (uint j = 0; j < i; j++) {
             s[j] = reversed[i - j - 1];
         }
         string memory str = string(s);
@@ -530,23 +530,23 @@ contract GameSicBo is Base
 
         _realOdds = 0;
         if(_betType == 1){
-            bool _isAnyTriple = (_minGameResult == _midGameResult &amp;&amp; _midGameResult == _maxGameResult);
+            bool _isAnyTriple = (_minGameResult == _midGameResult && _midGameResult == _maxGameResult);
 
             if(_isAnyTriple){
                 return 0;
             }
             uint _threeDiceTotal = _minGameResult.add(_midGameResult).add(_maxGameResult);
-            uint _bigOrSmall = _threeDiceTotal &gt;= 11 ? 2 : 1 ;
+            uint _bigOrSmall = _threeDiceTotal >= 11 ? 2 : 1 ;
             if(_bigOrSmall == _smallNuml){
                 _realOdds = _odds;
             }
         }else if(_betType == 2){
-            _isAnyTriple = (_minGameResult == _midGameResult &amp;&amp; _midGameResult == _maxGameResult);
+            _isAnyTriple = (_minGameResult == _midGameResult && _midGameResult == _maxGameResult);
             if(_isAnyTriple){
                 _realOdds = _odds;
             }
         }else if(_betType == 3){
-            _isAnyTriple = (_minGameResult == _midGameResult &amp;&amp; _midGameResult == _maxGameResult);
+            _isAnyTriple = (_minGameResult == _midGameResult && _midGameResult == _maxGameResult);
             uint _specificTriple  = (_isAnyTriple) ? _minGameResult : 0 ;
             if( _specificTriple == _smallNuml){
                 _realOdds = _odds;
@@ -588,23 +588,23 @@ contract GameSicBo is Base
         _result = false;
         require(betInfoIsLocked);
         require(!gameOver);
-        require(now &lt;= gameEndTime);
-        require(_minGameResult &lt;= _midGameResult);
-        require(_midGameResult &lt;= _maxGameResult);
-        require (_minGameResult &gt;= 1 &amp;&amp; _maxGameResult &lt;= 6);
+        require(now <= gameEndTime);
+        require(_minGameResult <= _midGameResult);
+        require(_midGameResult <= _maxGameResult);
+        require (_minGameResult >= 1 && _maxGameResult <= 6);
 
         uint _gameResult = _minGameResult*100 + _midGameResult*10 + _maxGameResult;
         if(lastBlockNumber == block.number){
-            emit OnOpenGameResult(gameID,  false, &#39;block.number is equal&#39;, msg.sender, _gameResult, _r1,getEventId(),now);
+            emit OnOpenGameResult(gameID,  false, 'block.number is equal', msg.sender, _gameResult, _r1,getEventId(),now);
             return;
         }
         if(keccak256(uintToString(_gameResult) , gameRandon2 , _r1) ==  gameEncryptedText){
-            if(_minGameResult &gt;= 1 &amp;&amp; _minGameResult &lt;= 6 &amp;&amp; _midGameResult&gt;=1 &amp;&amp; _midGameResult&lt;=6 &amp;&amp; _maxGameResult&gt;=0 &amp;&amp; _maxGameResult&lt;=6){
+            if(_minGameResult >= 1 && _minGameResult <= 6 && _midGameResult>=1 && _midGameResult<=6 && _maxGameResult>=0 && _maxGameResult<=6){
                 gameResult = _gameResult ;
                 gameRandon1 = _r1;
                 gameEndPlayNo = playNo - 1;
 
-                for(uint i = 0; nextRewardPlayNo &lt; playNo &amp;&amp; i &lt; currentRewardNum; i++ ){
+                for(uint i = 0; nextRewardPlayNo < playNo && i < currentRewardNum; i++ ){
                     betInfo  storage p = playerBetInfoOf[nextRewardPlayNo];
                     if(!p.IsReturnAward){
                         p.IsReturnAward = true;
@@ -623,15 +623,15 @@ contract GameSicBo is Base
                     betInfoIsLocked = false;
                 }
 
-                emit OnOpenGameResult(gameID, true, &#39;Success&#39;, msg.sender,  _gameResult,  _r1,getEventId(),now);
+                emit OnOpenGameResult(gameID, true, 'Success', msg.sender,  _gameResult,  _r1,getEventId(),now);
                 _result = true;
                 return;
             }else{
-                emit OnOpenGameResult(gameID,  false, &#39;The result is illegal&#39;, msg.sender, _gameResult, _r1,getEventId(),now);
+                emit OnOpenGameResult(gameID,  false, 'The result is illegal', msg.sender, _gameResult, _r1,getEventId(),now);
                 return;
             }
         }else{
-            emit OnOpenGameResult(gameID,  false, &#39;Hash Value Not Match&#39;, msg.sender,  _gameResult,  _r1,getEventId(),now);
+            emit OnOpenGameResult(gameID,  false, 'Hash Value Not Match', msg.sender,  _gameResult,  _r1,getEventId(),now);
             return;
         }
 
@@ -640,7 +640,7 @@ contract GameSicBo is Base
     function _calResultReturnIsWin(uint  _playerBetInfoOfIndex,uint _realOdd) private returns(bool _isWin){
         betInfo memory  p = playerBetInfoOf[_playerBetInfoOfIndex];
         uint256 AllAmount = p.BetAmount.mul(1 + p.Odds);
-        if(_realOdd &gt; 0){
+        if(_realOdd > 0){
             if(_realOdd == p.Odds){
                 userTokenOf[p.Player] = userTokenOf[p.Player].add(AllAmount);
                 userTokenOf[this] = userTokenOf[this].sub(AllAmount);
@@ -655,7 +655,7 @@ contract GameSicBo is Base
         }else{
             userTokenOf[currentBanker] = userTokenOf[currentBanker].add(AllAmount) ;
             userTokenOf[this] = userTokenOf[this].sub(AllAmount);
-            if(now &lt; donGameGiftLineTime){
+            if(now < donGameGiftLineTime){
                 DonQuixoteToken.sendGameGift(p.Player);
             }
             return false ;
@@ -675,14 +675,14 @@ contract GameSicBo is Base
     function noOpenGameResult() public  returns(bool _result){
         _result = false;
         require(!gameOver);
-        require(gameEndTime &lt; now);
+        require(gameEndTime < now);
         if(lastBlockNumber == block.number){
-            emit OnOpenGameResult(gameID,false, &#39;block.number&#39;, msg.sender,0,&#39;&#39;,getEventId(),now);
+            emit OnOpenGameResult(gameID,false, 'block.number', msg.sender,0,'',getEventId(),now);
             return;
         }
 
         gameEndPlayNo = playNo - 1;
-        for(uint i = 0; nextRewardPlayNo &lt; playNo &amp;&amp; i &lt; currentRewardNum; i++){
+        for(uint i = 0; nextRewardPlayNo < playNo && i < currentRewardNum; i++){
             betInfo  storage p = playerBetInfoOf[nextRewardPlayNo];
             if(!p.IsReturnAward){
                 p.IsReturnAward = true;
@@ -700,7 +700,7 @@ contract GameSicBo is Base
             }
         }
 
-        emit OnOpenGameResult(gameID,  true, &#39;Banker Not Call&#39;, msg.sender,   0, &#39;&#39;,getEventId(),now);
+        emit OnOpenGameResult(gameID,  true, 'Banker Not Call', msg.sender,   0, '',getEventId(),now);
         _result = true;
     }
 
@@ -710,13 +710,13 @@ contract GameSicBo is Base
 
         _result = false;
         require(!gameOver);
-        require(gameEndTime + 30 days &lt; now);
+        require(gameEndTime + 30 days < now);
 
         betInfo storage p = playerBetInfoOf[_playNo];
         require(p.Player == msg.sender);
 
 
-        if(!p.IsReturnAward &amp;&amp; p.SmallNum &gt; 0){
+        if(!p.IsReturnAward && p.SmallNum > 0){
             p.IsReturnAward = true;
             uint256 ToUser = p.BetAmount;
             uint256 ToBanker = p.BetAmount.mul(p.Odds);

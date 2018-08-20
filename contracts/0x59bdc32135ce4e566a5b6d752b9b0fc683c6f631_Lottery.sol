@@ -4,7 +4,7 @@ contract Lottery {
 
   address owner;
   address public beneficiary;
-  mapping(address =&gt; bool) public playersMap;
+  mapping(address => bool) public playersMap;
   address[] public players;
   uint public playerEther = 0.01 ether;
   uint playerCountGoal;
@@ -26,8 +26,8 @@ contract Lottery {
     * The function without name is the default function that is called whenever anyone sends funds to a contract
     */
   function () public payable {
-    require(!isLotteryClosed &amp;&amp; msg.value == playerEther, &quot;Lottery should not be closed and player should send exact ethers&quot;);
-    require(!playersMap[msg.sender], &quot;player should not attend twice&quot;);
+    require(!isLotteryClosed && msg.value == playerEther, "Lottery should not be closed and player should send exact ethers");
+    require(!playersMap[msg.sender], "player should not attend twice");
     players.push(msg.sender);
     playersMap[msg.sender] = true;
     
@@ -37,11 +37,11 @@ contract Lottery {
   }
 
   modifier afterGoalReached() { 
-    if (players.length &gt;= playerCountGoal) _; 
+    if (players.length >= playerCountGoal) _; 
   }
 
   function checkGoalReached() internal afterGoalReached {
-    require(!isLotteryClosed, &quot;lottery must be opened&quot;);
+    require(!isLotteryClosed, "lottery must be opened");
     isLotteryClosed = true;
     uint playerCount = players.length;
 
@@ -59,7 +59,7 @@ contract Lottery {
   }
 
   function safeWithdrawal() public afterGoalReached {
-    require(isLotteryClosed, &quot;lottery must be closed&quot;);
+    require(isLotteryClosed, "lottery must be closed");
     
     if (beneficiary == msg.sender) {
       beneficiary.transfer(rewards);

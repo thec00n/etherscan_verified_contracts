@@ -9,8 +9,8 @@ contract Items{
     // Change the below numbers to edit the development fee. 
     // This can also be done by calling SetDevFee and SetHFee 
     // Numbers are divided by 10000 to calcualte the cut 
-    uint16 public DevFee = 500; // 500 / 10000 -&gt; 5% 
-    uint16 public HelperPortion = 5000; // 5000 / 10000 -&gt; 50% (This is the cut taken from the total dev fee)
+    uint16 public DevFee = 500; // 500 / 10000 -> 5% 
+    uint16 public HelperPortion = 5000; // 5000 / 10000 -> 50% (This is the cut taken from the total dev fee)
     
     // Increase in price 
     // 0 means that the price stays the same 
@@ -26,7 +26,7 @@ contract Items{
         uint256 Price;
     }
     
-    mapping(uint256 =&gt; Item) Market; 
+    mapping(uint256 => Item) Market; 
     
     uint256 public NextItemID = 0;
     event ItemBought(address owner, uint256 id, uint256 newprice);
@@ -91,7 +91,7 @@ contract Items{
     function AddItem(uint256 price) public {
         require(price != 0); // Price 0 means item is not available. 
         require(msg.sender == owner);
-        Item memory ItemToAdd = Item(0x0, price); // Set owner to 0x0 -&gt; Recognized as owner
+        Item memory ItemToAdd = Item(0x0, price); // Set owner to 0x0 -> Recognized as owner
         Market[NextItemID] = ItemToAdd;
         NextItemID = add(NextItemID, 1); // This absolutely prevents overwriting items
     }
@@ -104,7 +104,7 @@ contract Items{
         require(price != 0);
         require(howmuch != 255); // this is to prevent an infinite for loop
         uint8 i=0;
-        for (i; i&lt;howmuch; i++){
+        for (i; i<howmuch; i++){
             AddItem(price);
         }
     }
@@ -113,10 +113,10 @@ contract Items{
     function BuyItem(uint256 id) payable public{
         Item storage MyItem = Market[id];
         require(MyItem.Price != 0); // It is not possible to edit existing items.
-        require(msg.value &gt;= MyItem.Price); // Pay enough thanks .
+        require(msg.value >= MyItem.Price); // Pay enough thanks .
         uint256 ValueLeft = DoDev(MyItem.Price);
         uint256 Excess = sub(msg.value, MyItem.Price);
-        if (Excess &gt; 0){
+        if (Excess > 0){
             msg.sender.transfer(Excess); // Pay back too much sent 
         }
         
@@ -155,14 +155,14 @@ contract Items{
     // allows to change dev fee. max is 6.5%
     function SetDevFee(uint16 tfee) public {
         require(msg.sender == owner);
-        require(tfee &lt;= 650);
+        require(tfee <= 650);
         DevFee = tfee;
     }
     
     // allows to change helper fee. minimum is 10%, max 100%. 
     function SetHFee(uint16 hfee) public  {
         require(msg.sender == owner);
-        require(hfee &lt;= 10000);
+        require(hfee <= 10000);
 
         HelperPortion = hfee;
     
@@ -185,20 +185,20 @@ contract Items{
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }

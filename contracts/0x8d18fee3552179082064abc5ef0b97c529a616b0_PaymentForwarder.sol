@@ -82,10 +82,10 @@ contract PaymentForwarder is Haltable {
   uint public customerCount;
 
   /** Total incoming money per centrally tracked customer id */
-  mapping(uint128 =&gt; uint) public paymentsByCustomer;
+  mapping(uint128 => uint) public paymentsByCustomer;
 
   /** Total incoming money per benefactor address */
-  mapping(address =&gt; uint) public paymentsByBenefactor;
+  mapping(address => uint) public paymentsByBenefactor;
 
   /** A customer has made a payment. Benefactor is the address where the tokens will be ultimately issued.*/
   event PaymentForwarded(address source, uint amount, uint128 customerId, address benefactor);

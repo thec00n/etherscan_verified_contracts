@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 contract YellowBetterToken
 {
-    string public constant name = &quot;Yellow Better&quot;;
-    string public constant symbol = &quot;YBT&quot;;
+    string public constant name = "Yellow Better";
+    string public constant symbol = "YBT";
     uint8 public constant decimals = 18;
     uint public constant _totalSupply = 2000000000000000000000000000;
     uint public totalSupply = _totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     event Transfer(address indexed, address indexed, uint);
     event Approval(address indexed, address indexed, uint);
     event Burn(address indexed, uint);
@@ -17,7 +17,7 @@ contract YellowBetterToken
     }
     function sub(uint a, uint b) private pure returns (uint)
     {
-        require(a &gt;= b);
+        require(a >= b);
         return a - b;
     }
     function balanceOf(address tokenOwner) view returns (uint)
@@ -79,9 +79,9 @@ contract TokenSale
     function buyTokens(address beneficiary) payable
     {
         require(
-            block.timestamp &lt; deadline
-            &amp;&amp; tokenPrice &gt; 0
-            &amp;&amp; YellowBetterToken(tokenContract).transfer(beneficiary, 1000000000000000000 * msg.value / tokenPrice));
+            block.timestamp < deadline
+            && tokenPrice > 0
+            && YellowBetterToken(tokenContract).transfer(beneficiary, 1000000000000000000 * msg.value / tokenPrice));
     }
     function payout()
     {

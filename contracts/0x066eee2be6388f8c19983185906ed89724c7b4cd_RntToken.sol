@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,9 +35,9 @@ contract IRntToken {
 
     uint256 public totalSupply = 1000000000 * (10 ** 18);
 
-    string public name = &quot;RNT Token&quot;;
+    string public name = "RNT Token";
 
-    string public code = &quot;RNT&quot;;
+    string public code = "RNT";
 
 
     function balanceOf() public constant returns (uint256 balance);
@@ -60,11 +60,11 @@ contract RntToken is IRntToken {
 
     /** Map of agents that are allowed to transfer tokens regardless of the lock down period.
     These are crowdsale contracts and possible the team multisig itself. */
-    mapping (address =&gt; bool) public transferAgents;
+    mapping (address => bool) public transferAgents;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     bool public paused = false;
 
@@ -131,7 +131,7 @@ contract RntToken is IRntToken {
      */
     function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-        // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+        // We don't do interface check here as we might want to a normal wallet address to act as a release agent
         releaseAgent = addr;
     }
 
@@ -167,7 +167,7 @@ contract RntToken is IRntToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract RntToken is IRntToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.

@@ -14,12 +14,12 @@ library BobbySafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -105,8 +105,8 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
   uint private _Billion = _Thousand * _Thousand * _Thousand;
 
   //代币基本信息
-  string private _name = &quot;BOBBY&quot;;     //代币名称
-  string private _symbol = &quot;BOBBY&quot;;   //代币标识
+  string private _name = "BOBBY";     //代币名称
+  string private _symbol = "BOBBY";   //代币标识
   uint8 private _decimals = 9;        //小数点后位数
   uint256 private _totalSupply = 10 * _Billion * (10 ** uint256(_decimals));
 
@@ -116,7 +116,7 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
     address _addr;          //用户账号
     uint256 _tokens;        //通证数量
   }
-  mapping(address=&gt;userToken) private _balancesMap;           //用户可用代币映射
+  mapping(address=>userToken) private _balancesMap;           //用户可用代币映射
   address[] _balancesArray;                                   //用户禁封代币数组,from 1
 
   struct logEntry {
@@ -165,14 +165,14 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
   }
 
   function getBalanceAddr(uint256 _index) public view returns(address addr){
-    require(_index &lt; _balancesArray.length);
-    require(_index &gt;= 0);
+    require(_index < _balancesArray.length);
+    require(_index >= 0);
     addr = _balancesArray[_index];
   }
 
   function getBalance(uint256 _index) public view returns(uint256 tokens){
-    require(_index &lt; _balancesArray.length);
-    require(_index &gt;= 0);
+    require(_index < _balancesArray.length);
+    require(_index >= 0);
     tokens = _balancesMap[_balancesArray[_index]]._tokens;
   }
 
@@ -194,8 +194,8 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
   }
 
   function getLog(uint256 _index) public view returns(uint time, address from, address to, uint256 value){
-    require(_index &lt; _logs.length);
-    require(_index &gt;= 0);
+    require(_index < _logs.length);
+    require(_index >= 0);
     logEntry entry = _logs[_index];
     time = entry.time;
     from = entry.from;
@@ -218,7 +218,7 @@ contract ERC20 is ERC20Interface, BobbyERC20Base {
 
   //从代币合约的调用者地址上转移_value的数量token到的地址_to，并且必须触发Transfer事件
   function transfer(address _to, uint256 _value) public whenNotPaused returns (bool success){
-    require(_balancesMap[msg.sender]._tokens &gt;= _value);
+    require(_balancesMap[msg.sender]._tokens >= _value);
     subBalance(msg.sender, _value);
 
     uint index = _balancesMap[_to]._index;

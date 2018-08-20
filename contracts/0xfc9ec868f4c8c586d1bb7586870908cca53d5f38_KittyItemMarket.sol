@@ -18,12 +18,12 @@ contract KittyItemMarket {
     address itemContract;
     uint256 cost;  // in wei
     address artist;
-    uint128 split;  // the percentage split the artist gets vs. KittyItemMarket.owner. A split of &quot;6666&quot; would mean the artist gets 66.66% of the funds
+    uint128 split;  // the percentage split the artist gets vs. KittyItemMarket.owner. A split of "6666" would mean the artist gets 66.66% of the funds
     uint256 totalFunds;
   }
 
   address public owner;
-  mapping (string =&gt; Item) items;
+  mapping (string => Item) items;
   bool public paused = false;
 
   // events
@@ -67,14 +67,14 @@ contract KittyItemMarket {
   /**
    * @dev Add a KittyItemToken contract to be sold in the market
    * @param _itemName Name for items mapping
-   * @param _itemContract contract address of KittyItemToken we&#39;re adding
+   * @param _itemContract contract address of KittyItemToken we're adding
    * @param _cost  cost of item in wei
    * @param _artist  artist addess to send funds to
-   * @param _split  artist split. &quot;6666&quot; would be a 66.66% split.
+   * @param _split  artist split. "6666" would be a 66.66% split.
    */
   function addItem(string _itemName, address _itemContract, uint256 _cost, address _artist, uint128 _split) public {
     require(msg.sender == owner);
-    require(items[_itemName].itemContract == 0x0);  // item can&#39;t already exist
+    require(items[_itemName].itemContract == 0x0);  // item can't already exist
     items[_itemName] = Item(_itemContract, _cost, _artist, _split, 0);
   }
 
@@ -104,8 +104,8 @@ contract KittyItemMarket {
   function buyItem(string _itemName, uint256 _amount) public payable {
     require(paused == false);
     require(items[_itemName].itemContract != 0x0);  // item should already exist
-    Item storage item = items[_itemName];  // we&#39;re going to modify the item in storage
-    require(msg.value &gt;= item.cost * _amount);  // make sure user sent enough eth for the number of items they want
+    Item storage item = items[_itemName];  // we're going to modify the item in storage
+    require(msg.value >= item.cost * _amount);  // make sure user sent enough eth for the number of items they want
     item.totalFunds += msg.value;
     KittyItemToken kit = KittyItemToken(item.itemContract);
     kit.transfer(msg.sender, _amount);
@@ -122,8 +122,8 @@ contract KittyItemMarket {
     require(paused == false);
     // NOTE - can only be used to buy and apply 1 item
     require(items[_itemName].itemContract != 0x0);  // item should already exist
-    Item storage item = items[_itemName];  // we&#39;re going to modify the item in storage
-    require(msg.value &gt;= item.cost);  // make sure user sent enough eth for 1 item
+    Item storage item = items[_itemName];  // we're going to modify the item in storage
+    require(msg.value >= item.cost);  // make sure user sent enough eth for 1 item
     item.totalFunds += msg.value;
     KittyItemToken kit = KittyItemToken(item.itemContract);
     kit.transferAndApply(msg.sender, _kittyId);
@@ -137,7 +137,7 @@ contract KittyItemMarket {
    */
   function splitFunds(string _itemName) public {
     require(msg.sender == owner);
-    Item storage item = items[_itemName];  // we&#39;re going to modify the item in storage
+    Item storage item = items[_itemName];  // we're going to modify the item in storage
     uint256 amountToArtist = item.totalFunds * item.split / 10000;
     uint256 amountToOwner = item.totalFunds - amountToArtist;
     item.artist.transfer(amountToArtist);
@@ -152,7 +152,7 @@ contract KittyItemMarket {
    */
   function returnTokensToOwner(string _itemName) public returns (bool) {
     require(msg.sender == owner);
-    Item storage item = items[_itemName];  // we&#39;re going to modify the item in storage
+    Item storage item = items[_itemName];  // we're going to modify the item in storage
     KittyItemToken kit = KittyItemToken(item.itemContract);
     uint256 contractBalance = kit.balanceOf(this);
     kit.transfer(msg.sender, contractBalance);

@@ -29,20 +29,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,12 +53,12 @@ contract TriipBooking is ERC20Interface {
     
     uint public constant _totalSupply = 50 * 10 ** 24;
     
-    string public constant name = &quot;TriipBooking&quot;;
-    string public constant symbol = &quot;TRP&quot;;
+    string public constant name = "TriipBooking";
+    string public constant symbol = "TRP";
     uint8 public constant decimals = 18;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address=&gt;uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address=>uint256)) allowed;
 
 		uint256 public constant developmentTokens = 15 * 10 ** 24;
     uint256 public constant bountyTokens = 2.5 * 10 ** 24;
@@ -89,9 +89,9 @@ contract TriipBooking is ERC20Interface {
     }
 	function createTokens() public payable {
 			uint ts = atNow();
-	    require(msg.value &gt; 0 );
-			require(ts &lt; endTime );
-      require(ts &gt;= startTime );
+	    require(msg.value > 0 );
+			require(ts < endTime );
+      require(ts >= startTime );
 			uint256 tokens = msg.value.mul(getConversionRate());
 			require(validPurchase(msg.value,tokens));
 
@@ -113,8 +113,8 @@ contract TriipBooking is ERC20Interface {
 	function transfer(address _to, uint256 _value) returns (bool success){
 		// ToDo
 		require(
-		    balances[msg.sender] &gt;= _value
-		    &amp;&amp; _value &gt; 0
+		    balances[msg.sender] >= _value
+		    && _value > 0
 		);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
@@ -123,9 +123,9 @@ contract TriipBooking is ERC20Interface {
 	}
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
 		require(
-		    allowed[_from][msg.sender] &gt;= _value
-		    &amp;&amp; balances[_from] &gt;= _value
-		    &amp;&amp; _value &gt; 0
+		    allowed[_from][msg.sender] >= _value
+		    && balances[_from] >= _value
+		    && _value > 0
 		);
 		balances[_from] -= _value;
 		balances[_to] += _value;
@@ -147,25 +147,25 @@ contract TriipBooking is ERC20Interface {
 
 	function getConversionRate() public constant returns (uint256) {
 			uint ts = atNow();
-			if (ts &gt;= 1520294340) {
+			if (ts >= 1520294340) {
 					return 3200;
-			} else if (ts &gt;= 1519689540) {
+			} else if (ts >= 1519689540) {
 					return 3520;
-			} else if (ts &gt;= 1518998340) {
+			} else if (ts >= 1518998340) {
 					return 3840;
-			} else if (ts &gt;= 1518307140 ) {
+			} else if (ts >= 1518307140 ) {
 					return 4160;
-			} else if (ts &gt;= startTime) {
+			} else if (ts >= startTime) {
 					return 4480;
 			}
 			return 0;
 	}
 	function validPurchase(uint256 _value, uint256 _tokens) internal constant returns (bool) {
 			bool nonZeroPurchase = _value != 0;
-			bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-			bool withinICOTokens = totalCrowdsale.add(_tokens) &lt;= icoTokens;
+			bool withinPeriod = now >= startTime && now <= endTime;
+			bool withinICOTokens = totalCrowdsale.add(_tokens) <= icoTokens;
 
-			return nonZeroPurchase &amp;&amp; withinPeriod &amp;&amp; withinICOTokens;
+			return nonZeroPurchase && withinPeriod && withinICOTokens;
 
 	}
 	function atNow() constant public returns (uint) {

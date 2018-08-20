@@ -5,23 +5,23 @@
  * @author DiceyBit Team
  * @description ERC20 Standard Token
  * 
- * Copyright &#169; 2017 DiceyBit.com
+ * Copyright © 2017 DiceyBit.com
  */
 
 pragma solidity ^0.4.11;
 
 contract Token {
-    string public standard = &#39;Token 0.1.8 diceybit.com&#39;;
-    string public name = &#39;DICEYBIT.COM&#39;;
-    string public symbol = &#39;dСBT&#39;;
+    string public standard = 'Token 0.1.8 diceybit.com';
+    string public name = 'DICEYBIT.COM';
+    string public symbol = 'dСBT';
     uint8 public decimals = 0;
     uint256 public totalSupply = 100000000;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     function Token() {
         balanceOf[msg.sender] = totalSupply;
@@ -31,7 +31,7 @@ contract Token {
     // @param _to recipient of coins
     // @param _value amount of coins for send
     function transfer(address _to, uint256 _value) {
-        require(_value &gt; 0 &amp;&amp; balanceOf[msg.sender] &gt;= _value);
+        require(_value > 0 && balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -44,7 +44,7 @@ contract Token {
     // @param _to recipient of coins
     // @param _value amount of coins for send
     function transferFrom(address _from, address _to, uint256 _value) {
-        require(_value &gt; 0 &amp;&amp; balanceOf[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(_value > 0 && balanceOf[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;

@@ -2,13 +2,13 @@ pragma solidity ^0.4.10;
 /**
  * Smart Meter Gatway Aministration for StromDAO Stromkonto
  * ====================================================================
- * Slot-Link f&#252;r intelligente Messsysteme zur Freigabe einer Orakel-gesteuerten
- * Z&#228;hlrestandsgang-Messung. Wird verwendet zur Emulierung eines autarken 
+ * Slot-Link für intelligente Messsysteme zur Freigabe einer Orakel-gesteuerten
+ * Zählrestandsgang-Messung. Wird verwendet zur Emulierung eines autarken 
  * Lieferanten/Abnehmer Managements in einem HSM oder P2P Markt ohne zentrale
  * Kontrollstelle.
  * 
  * Kontakt V0.1: 
- * Thorsten Zoerner &lt;thorsten.zoerner(at)stromdao.de)
+ * Thorsten Zoerner <thorsten.zoerner(at)stromdao.de)
  * https://stromdao.de/
  */
 
@@ -33,7 +33,7 @@ contract owned {
 contract GWALink is owned {
     uint80 constant None = uint80(0); 
     
-    // Freigaben f&#252;r einzelne Nodes
+    // Freigaben für einzelne Nodes
     struct ClearanceLimits {
         uint256 min_time;
         uint256 min_power;
@@ -43,7 +43,7 @@ contract GWALink is owned {
         bool valid;
     }
     
-    // Representation eines Z&#228;hlerstandes
+    // Representation eines Zählerstandes
     struct ZS {
         uint256 time;
         uint256 power;
@@ -53,8 +53,8 @@ contract GWALink is owned {
     event recleared(address link);
     
     ClearanceLimits public defaultLimits = ClearanceLimits(1,1,86400,1000,owner,true);
-    mapping(address=&gt;ClearanceLimits) public clearances;
-    mapping(address=&gt;ZS) public  zss;
+    mapping(address=>ClearanceLimits) public clearances;
+    mapping(address=>ZS) public  zss;
     
     function changeDefaults(uint256 _min_time,uint256 _min_power,uint256 _max_time, uint256 _max_power,bool _clearance) onlyOwner {
         defaultLimits = ClearanceLimits(_min_time,_min_power,_max_time,_max_power,msg.sender,_clearance);
@@ -95,10 +95,10 @@ contract GWALink is owned {
     function ping(address link,uint256 delta_time,uint256 delta_power) {
         ClearanceLimits memory limits = _retrieveClearance(link);
         if(!limits.valid) {  throw; }
-        if(limits.min_power&gt;delta_power) throw;
-        if(limits.max_power&lt;delta_power) throw;
-        if(limits.min_time&gt;delta_time) throw;
-        if(limits.max_time&lt;delta_time) throw;
+        if(limits.min_power>delta_power) throw;
+        if(limits.max_power<delta_power) throw;
+        if(limits.min_time>delta_time) throw;
+        if(limits.max_time<delta_time) throw;
         
         ZS zs = zss[link];
         

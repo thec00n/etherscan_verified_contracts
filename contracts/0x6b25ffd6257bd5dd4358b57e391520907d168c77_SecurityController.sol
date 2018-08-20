@@ -32,10 +32,10 @@ contract ERC20Basic {
 }
 
 contract IInvestorList {
-    string public constant ROLE_REGD = &quot;regd&quot;;
-    string public constant ROLE_REGCF = &quot;regcf&quot;;
-    string public constant ROLE_REGS = &quot;regs&quot;;
-    string public constant ROLE_UNKNOWN = &quot;unknown&quot;;
+    string public constant ROLE_REGD = "regd";
+    string public constant ROLE_REGCF = "regcf";
+    string public constant ROLE_REGS = "regs";
+    string public constant ROLE_UNKNOWN = "unknown";
 
     function inList(address addr) public view returns (bool);
     function addAddress(address addr, string role) public;
@@ -87,8 +87,8 @@ contract AffiliateList is Ownable, IAffiliateList {
     event AffiliateAdded(address addr, uint startTimestamp, uint endTimestamp);
     event AffiliateUpdated(address addr, uint startTimestamp, uint endTimestamp);
 
-    mapping (address =&gt; uint) public affiliateStart;
-    mapping (address =&gt; uint) public affiliateEnd;
+    mapping (address => uint) public affiliateStart;
+    mapping (address => uint) public affiliateEnd;
 
     function set(address addr, uint startTimestamp, uint endTimestamp) public onlyOwner {
         require(addr != address(0));
@@ -102,7 +102,7 @@ contract AffiliateList is Ownable, IAffiliateList {
             affiliateStart[addr] = startTimestamp;
 
             if(endTimestamp != 0) {
-                require(endTimestamp &gt; startTimestamp);
+                require(endTimestamp > startTimestamp);
                 affiliateEnd[addr] = endTimestamp;
             }
 
@@ -112,14 +112,14 @@ contract AffiliateList is Ownable, IAffiliateList {
             // this address was previously registered
 
             if(startTimestamp == 0) {
-                // don&#39;t update the start timestamp
+                // don't update the start timestamp
 
                 if(endTimestamp == 0) {
                     affiliateStart[addr] = 0;
                     affiliateEnd[addr] = 0;
                 }
                 else {
-                    require(endTimestamp &gt; existingStart);
+                    require(endTimestamp > existingStart);
                 }
             }
             else {
@@ -127,7 +127,7 @@ contract AffiliateList is Ownable, IAffiliateList {
                 affiliateStart[addr] = startTimestamp;
 
                 if(endTimestamp != 0) {
-                    require(endTimestamp &gt; startTimestamp);
+                    require(endTimestamp > startTimestamp);
                 }
             }
             affiliateEnd[addr] = endTimestamp;
@@ -147,10 +147,10 @@ contract AffiliateList is Ownable, IAffiliateList {
         if(start == 0) {
             return false;
         }
-        if(time &lt; start) {
+        if(time < start) {
             return false;
         }
-        if(end != 0 &amp;&amp; time &gt;= end) {
+        if(end != 0 && time >= end) {
             return false;
         }
         return true;
@@ -161,10 +161,10 @@ contract InvestorList is Ownable, IInvestorList {
     event AddressAdded(address addr, string role);
     event AddressRemoved(address addr, string role);
 
-    mapping (address =&gt; string) internal investorList;
+    mapping (address => string) internal investorList;
 
     /**
-     * @dev Throws if called by any account that&#39;s not investorListed.
+     * @dev Throws if called by any account that's not investorListed.
      * @param role string
      */
     modifier validRole(string role) {
@@ -247,7 +247,7 @@ contract InvestorList is Ownable, IInvestorList {
         validRole(role)
         public
     {
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             addAddress(addrs[i], role);
         }
     }
@@ -263,7 +263,7 @@ contract InvestorList is Ownable, IInvestorList {
         // removeRole(addr, ROLE_WHITELISTED);
         require(inList(addr));
         string memory role = investorList[addr];
-        investorList[addr] = &quot;&quot;;
+        investorList[addr] = "";
         emit AddressRemoved(addr, role);
     }
 
@@ -275,7 +275,7 @@ contract InvestorList is Ownable, IInvestorList {
         onlyOwner
         public
     {
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             if (inList(addrs[i])) {
                 removeAddress(addrs[i]);
             }
@@ -302,9 +302,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -312,7 +312,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -321,7 +321,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -359,7 +359,7 @@ contract SecurityController is ISecurityController, Ownable {
     uint public lockoutPeriod = 10 * 60 * 60; // length in seconds of the lockout period
 
     // restrict who can grant transfer authorizations
-    mapping(address =&gt; bool) public transferAuthPermission;
+    mapping(address => bool) public transferAuthPermission;
 
     constructor() public {
     }
@@ -368,13 +368,13 @@ contract SecurityController is ISecurityController, Ownable {
         // Must be called from address in the transferAuthPermission mapping
         require(transferAuthPermission[msg.sender]);
 
-        // don&#39;t allow &#39;from&#39; to be zero
+        // don't allow 'from' to be zero
         require(from != 0);
 
         // verify expiry is in future, but not more than 30 days
-        if(expiry &gt; 0) {
-            require(expiry &gt; block.timestamp);
-            require(expiry &lt;= (block.timestamp + 30 days));
+        if(expiry > 0) {
+            require(expiry > block.timestamp);
+            require(expiry <= (block.timestamp + 30 days));
         }
 
         transferAuthorizations.set(from, to, expiry);
@@ -458,11 +458,11 @@ contract SecurityController is ISecurityController, Ownable {
 
         uint expiry = transferAuthorizations.get(_from, _to);
         uint globalExpiry = transferAuthorizations.get(_from, 0);
-        if(globalExpiry &gt; expiry) {
+        if(globalExpiry > expiry) {
             expiry = globalExpiry;
         }
 
-        return expiry &gt; block.timestamp;
+        return expiry > block.timestamp;
     }
 
     /**
@@ -477,7 +477,7 @@ contract SecurityController is ISecurityController, Ownable {
      * @return canTransfer Whether the transfer can occur at all.
      * @return useLockoutTime Whether the lockoutTime should be used to determine which tokens to transfer.
      * @return newTokensAreRestricted Whether the transferred tokens should be marked as restricted.
-     * @return preservePurchaseDate Whether the purchase date on the tokens should be preserved, or reset to &#39;now&#39;.
+     * @return preservePurchaseDate Whether the purchase date on the tokens should be preserved, or reset to 'now'.
      */
     function checkTransfer(address _from, address _to, uint _value, uint lockoutTime)
         public
@@ -494,7 +494,7 @@ contract SecurityController is ISecurityController, Ownable {
         //
         // otherwise must meet holding period
 
-        // presently this isn&#39;t used, so always setting to false to avoid warning
+        // presently this isn't used, so always setting to false to avoid warning
         preservePurchaseDate = false;
 
         bool transferIsAuthorized = isTransferAuthorized(_from, _to);
@@ -513,7 +513,7 @@ contract SecurityController is ISecurityController, Ownable {
         else if(!fromIsAffiliate) {
             // see if both are Reg S
             if(investorList.hasRole(_from, investorList.ROLE_REGS())
-                &amp;&amp; investorList.hasRole(_to, investorList.ROLE_REGS())) {
+                && investorList.hasRole(_to, investorList.ROLE_REGS())) {
                 canTransfer = true;
                 // newTokensAreRestricted will remain false
                 // useLockoutTime will remain false
@@ -624,11 +624,11 @@ contract SecurityLedger is Ownable {
         uint purchaseDate;
         bool restricted;
     }
-    mapping(address =&gt; TokenLot[]) public tokenLotsOf;
+    mapping(address => TokenLot[]) public tokenLotsOf;
 
     SecurityController public controller;
-    mapping(address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping(address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
     uint public totalSupply;
     uint public mintingNonce;
     bool public mintingStopped;
@@ -666,7 +666,7 @@ contract SecurityLedger is Ownable {
         require(!mintingStopped);
         if (nonce != mintingNonce) return;
         mintingNonce = mintingNonce.add(1);
-        uint256 lomask = (1 &lt;&lt; 96) - 1;
+        uint256 lomask = (1 << 96) - 1;
         uint created = 0;
 
         uint time = timestamp;
@@ -674,9 +674,9 @@ contract SecurityLedger is Ownable {
             time = block.timestamp;
         }
 
-        for (uint i = 0; i &lt; bits.length; i++) {
-            address addr = address(bits[i]&gt;&gt;96);
-            uint value = bits[i] &amp; lomask;
+        for (uint i = 0; i < bits.length; i++) {
+            address addr = address(bits[i]>>96);
+            uint value = bits[i] & lomask;
             balanceOf[addr] = balanceOf[addr].add(value);
             tokenLotsOf[addr].push(TokenLot(value, time, true));
             controller.ledgerTransfer(0, addr, value);
@@ -711,7 +711,7 @@ contract SecurityLedger is Ownable {
         internal returns (uint numTransferrableTokens)
     {
         TokenLot[] storage fromTokenLots = tokenLotsOf[from];
-        for(uint i=0; i&lt;fromTokenLots.length; i++) {
+        for(uint i=0; i<fromTokenLots.length; i++) {
             TokenLot storage lot = fromTokenLots[i];
             uint lotAmount = lot.amount;
 
@@ -720,16 +720,16 @@ contract SecurityLedger is Ownable {
                 continue;
             }
 
-            if(lockoutTime &gt; 0) {
-                // skip if it is more recent than the lockout period AND it&#39;s restricted
-                if(lot.restricted &amp;&amp; lot.purchaseDate &gt; lockoutTime) {
+            if(lockoutTime > 0) {
+                // skip if it is more recent than the lockout period AND it's restricted
+                if(lot.restricted && lot.purchaseDate > lockoutTime) {
                     continue;
                 }
             }
 
             uint remaining = amount.sub(numTransferrableTokens);
 
-            if(lotAmount &gt;= remaining) {
+            if(lotAmount >= remaining) {
                 numTransferrableTokens = numTransferrableTokens.add(remaining);
                 if(removeTokens) {
                     lot.amount = lotAmount.sub(remaining);
@@ -745,7 +745,7 @@ contract SecurityLedger is Ownable {
                 break;
             }
 
-            // If we&#39;re here, then amount in this lot is not yet enough.
+            // If we're here, then amount in this lot is not yet enough.
             // Take all of it.
             numTransferrableTokens = numTransferrableTokens.add(lotAmount);
             if(removeTokens) {
@@ -767,7 +767,7 @@ contract SecurityLedger is Ownable {
     }
 
     function transfer(address _from, address _to, uint _value, uint lockoutTime, bool newTokensAreRestricted, bool preservePurchaseDate) public onlyController returns (bool success) {
-        if (balanceOf[_from] &lt; _value) return false;
+        if (balanceOf[_from] < _value) return false;
 
         // ensure number of tokens removed from TokenLots is as expected
         uint tokensTransferred = walkTokenLots(_from, _to, _value, lockoutTime, true, newTokensAreRestricted, preservePurchaseDate);
@@ -781,11 +781,11 @@ contract SecurityLedger is Ownable {
     }
 
     function transferFrom(address _spender, address _from, address _to, uint _value, uint lockoutTime, bool newTokensAreRestricted, bool preservePurchaseDate) public onlyController returns (bool success) {
-        if (balanceOf[_from] &lt; _value) return false;
+        if (balanceOf[_from] < _value) return false;
 
         // ensure there is enough allowance
         uint allowed = allowance[_from][_spender];
-        if (allowed &lt; _value) return false;
+        if (allowed < _value) return false;
 
         // ensure number of tokens removed from TokenLots is as expected
         uint tokensTransferred = walkTokenLots(_from, _to, _value, lockoutTime, true, newTokensAreRestricted, preservePurchaseDate);
@@ -801,7 +801,7 @@ contract SecurityLedger is Ownable {
 
     function approve(address _owner, address _spender, uint _value) public onlyController returns (bool success) {
         // require user to set to zero before resetting to nonzero
-        if ((_value != 0) &amp;&amp; (allowance[_owner][_spender] != 0)) {
+        if ((_value != 0) && (allowance[_owner][_spender] != 0)) {
             return false;
         }
 
@@ -817,7 +817,7 @@ contract SecurityLedger is Ownable {
 
     function decreaseApproval (address _owner, address _spender, uint _subtractedValue) public onlyController returns (bool success) {
         uint oldValue = allowance[_owner][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowance[_owner][_spender] = 0;
         } else {
             allowance[_owner][_spender] = oldValue.sub(_subtractedValue);
@@ -826,7 +826,7 @@ contract SecurityLedger is Ownable {
     }
 
     function burn(address _owner, uint _amount) public onlyController {
-        require(balanceOf[_owner] &gt;= _amount);
+        require(balanceOf[_owner] >= _amount);
 
         balanceOf[_owner] = balanceOf[_owner].sub(_amount);
 
@@ -869,11 +869,11 @@ contract SecuritySale is Ownable {
 
     // set liveness
     function setLive(bool newLiveness) public onlyOwner {
-        if(live &amp;&amp; !newLiveness) {
+        if(live && !newLiveness) {
             live = false;
             emit EndSale();
         }
-        else if(!live &amp;&amp; newLiveness) {
+        else if(!live && newLiveness) {
             live = true;
             emit StartSale();
         }
@@ -886,7 +886,7 @@ contract SecuritySale is Ownable {
 
     // withdraw some of the Ether to owner
     function withdrawSome(uint value) public onlyOwner {
-        require(value &lt;= address(this).balance);
+        require(value <= address(this).balance);
         msg.sender.transfer(value);
     }
 
@@ -970,7 +970,7 @@ contract SecurityToken is Ownable{
 
     // TODO: investigate this security optimization more
     modifier onlyPayloadSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords.mul(32).add(4));
+        assert(msg.data.length >= numwords.mul(32).add(4));
         _;
     }
 
@@ -1049,7 +1049,7 @@ contract TransferAuthorizations is Ownable, ITransferAuthorizations {
      *      The uint value of the mapping is the epoch time (seconds since 1/1/1970)
      *      of the expiration of the approved transfer.
      */
-    mapping(address =&gt; mapping(address =&gt; uint)) public authorizations;
+    mapping(address => mapping(address => uint)) public authorizations;
 
     /**
      * @dev This controller is the only contract allowed to call the `set` function.
@@ -1068,8 +1068,8 @@ contract TransferAuthorizations is Ownable, ITransferAuthorizations {
     }
 
     /**
-     * @dev Sets the authorization for a transfer to occur between the &#39;from&#39; and
-     *      &#39;to&#39; addresses, to expire at the &#39;expiry&#39; time.
+     * @dev Sets the authorization for a transfer to occur between the 'from' and
+     *      'to' addresses, to expire at the 'expiry' time.
      * @param from The address from which funds would be transferred.
      * @param to The address to which funds would be transferred. This can be
      *           the zero address to allow transfers to any address.

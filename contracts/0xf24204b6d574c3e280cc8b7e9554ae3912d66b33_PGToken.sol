@@ -16,7 +16,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -25,7 +25,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -48,8 +48,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -57,12 +57,12 @@ contract PGToken is StandardToken {
 
     uint8 constant public decimals = 0;
     uint public totalSupply = 0;
-    string constant public name = &quot;P&amp;G Token 20171231&quot;;
-    string constant public symbol = &quot;PGT20171231&quot;;
+    string constant public name = "P&G Token 20171231";
+    string constant public symbol = "PGT20171231";
     StandardToken public usdt = StandardToken(0x3aeAe69C196D8db9A35B39C51d7cac00643eC7f1);
     address public owner;// = msg.sender;
     address[] internal members;
-    mapping (address =&gt; bool) isMember;
+    mapping (address => bool) isMember;
 
     function PGToken() public {
         owner = msg.sender;
@@ -80,12 +80,12 @@ contract PGToken is StandardToken {
 
     function pay() public {
         require (owner == msg.sender);
-        require (usdt.balanceOf(this) &gt;= totalSupply);
-        for (uint i = 0; i &lt; members.length; i++) {
+        require (usdt.balanceOf(this) >= totalSupply);
+        for (uint i = 0; i < members.length; i++) {
             address addr = members[i];
             if (addr != owner) {
                 uint256 balance = balances[addr];
-                if (balance &gt; 0) {
+                if (balance > 0) {
                     usdt.transfer(addr, balance);
                     balances[addr] = 0;
                 }

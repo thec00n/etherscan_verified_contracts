@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,23 +43,23 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 } 
  contract ContractReceiver {
@@ -74,12 +74,12 @@ library SafeMath {
     address [] public senders;
     function tokenFallback(address _from, uint _value, bytes _data) public  {
         require(_from != address(0));
-        require(_value&gt;0);
+        require(_value>0);
         TKN memory tkn;
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
         senders.push(_from);
     }
@@ -100,7 +100,7 @@ contract ERC223Interface {
 
 contract ERC223Token  is ERC223Interface  {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   string internal _name;
   string internal _symbol;
@@ -131,7 +131,7 @@ contract ERC223Token  is ERC223Interface  {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
      require(_to != address(0));
     if(isContract(_to)) {
-        if (balanceOf(msg.sender) &lt; _value) revert();
+        if (balanceOf(msg.sender) < _value) revert();
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add( _value);
         assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -177,13 +177,13 @@ contract ERC223Token  is ERC223Interface  {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    require(_value&gt;0);
-    require(balanceOf(msg.sender)&gt;=_value);
+    require(_value>0);
+    require(balanceOf(msg.sender)>=_value);
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add( _value);
     emit Transfer(msg.sender, _to, _value);
@@ -192,8 +192,8 @@ contract ERC223Token  is ERC223Interface  {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    require(_value&gt;0);
-    require(balanceOf(msg.sender)&gt;=_value);
+    require(_value>0);
+    require(balanceOf(msg.sender)>=_value);
     balances[msg.sender] = balanceOf(msg.sender).sub( _value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -242,7 +242,7 @@ contract Ownable {
 
 contract Balances is Ownable,
 ERC223Token {
-    mapping(address =&gt; bool)public modules;
+    mapping(address => bool)public modules;
     using SafeMath for uint256; 
     address public tokenTransferAddress;  
      function Balances()public {
@@ -270,7 +270,7 @@ ERC223Token {
         bool
     ) {
         require(recieverAddr != address(0));
-        require(balances[tokenTransferAddress] &gt;= _tokens);
+        require(balances[tokenTransferAddress] >= _tokens);
         balances[tokenTransferAddress] = balances[tokenTransferAddress].sub(_tokens);
         balances[recieverAddr] = balances[recieverAddr].add(_tokens);
         emit Transfer(tokenTransferAddress,recieverAddr,_tokens);
@@ -280,7 +280,7 @@ ERC223Token {
         bool
     ) {
         require(recieverAddr != address(0));
-        require(balances[recieverAddr] &gt;= _tokens);
+        require(balances[recieverAddr] >= _tokens);
         balances[recieverAddr] = balances[recieverAddr].sub(_tokens);
         balances[tokenTransferAddress] = balances[tokenTransferAddress].add(_tokens);
         emit Transfer(tokenTransferAddress,recieverAddr,_tokens);
@@ -354,8 +354,8 @@ Pausable,
 Destructible {
     
     function Gig9()public {
-        _name = &quot;GIG9&quot;;
-        _symbol = &quot;GIG&quot;;
+        _name = "GIG9";
+        _symbol = "GIG";
         _decimals = 8;
         _totalSupply = 268000000 * (10 ** _decimals);
         owner = msg.sender;

@@ -3,14 +3,14 @@ pragma solidity ^0.4.11;
 /// @title Artcoin (ART) - democratizing culture.
 contract Artcoin {
 
-    string public constant name = &quot;Artcoin&quot;;
-    string public constant symbol = &quot;ART&quot;;
+    string public constant name = "Artcoin";
+    string public constant symbol = "ART";
     uint8 public constant decimals = 18;
 
     uint256 public authorizedSupply;
     uint256 public treasurySupply;
 
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -20,7 +20,7 @@ contract Artcoin {
     function Artcoin(address consortium, uint256 _authorizedSupply, uint256 _treasurySupply) {
         authorizedSupply = _authorizedSupply;
         treasurySupply = _treasurySupply;
-        if (authorizedSupply &lt; treasurySupply) throw;
+        if (authorizedSupply < treasurySupply) throw;
 
         // one-time issuance of ART to the consortium endowment
         balances[consortium] = authorizedSupply;
@@ -51,8 +51,8 @@ contract Artcoin {
     /// @return Whether the transfer was successful or not
     function transfer(address _to, uint256 _value) returns (bool) {
         var senderBalance = balances[msg.sender];
-        var overflow = balanceOf(_to) + _value &lt; balanceOf(_to);
-        if (_value &gt; 0 &amp;&amp; senderBalance &gt;= _value &amp;&amp; !overflow) {
+        var overflow = balanceOf(_to) + _value < balanceOf(_to);
+        if (_value > 0 && senderBalance >= _value && !overflow) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;

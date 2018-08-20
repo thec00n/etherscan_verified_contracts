@@ -27,7 +27,7 @@ contract P2PFuturesTrading {
 
 
 	// Store the open trades
-	mapping (address =&gt; mapping(address =&gt; Trade)) public trades;
+	mapping (address => mapping(address => Trade)) public trades;
 
 	// The developer address.
 	address developerAddress = 0x335854eF79Fff47F9050ca853c7f3bA53eeEEE93;
@@ -35,15 +35,15 @@ contract P2PFuturesTrading {
 
 
 	function startTrade(address tokenSellerAddress, address tokenAddress, uint tokenAmount, uint etherCollateralAmount, uint endTradeBlock) payable{
-		//Variable validation. The endTradeBlock can&#39;t be smaller than the current one plus 220 (around 1 hour)
-		if(msg.value == 0 || tokenAmount == 0 || endTradeBlock &lt;= block.number + 220){
+		//Variable validation. The endTradeBlock can't be smaller than the current one plus 220 (around 1 hour)
+		if(msg.value == 0 || tokenAmount == 0 || endTradeBlock <= block.number + 220){
 			throw;
 		}
 		
 		Trade t1 = trades[msg.sender][tokenSellerAddress];
 		Trade t2 = trades[tokenSellerAddress][msg.sender];
 		
-		//You can&#39;t have more than one trade at a time between the same two people. To close a non finalized trade and have you ether back, you need to call the function cancelTrade
+		//You can't have more than one trade at a time between the same two people. To close a non finalized trade and have you ether back, you need to call the function cancelTrade
 		if(t1.initialized || t2.initialized){
 			throw;
 		}
@@ -56,13 +56,13 @@ contract P2PFuturesTrading {
 	function finalizeTrade(address tokenBuyerAddress, uint etherAmount, address tokenAddress, uint tokenAmount, uint endTradeBlock) payable{
 		Trade t = trades[tokenBuyerAddress][msg.sender];
 		
-		//It needs to exist already a trade between the two people and it hasn&#39;t have to be already finalized
+		//It needs to exist already a trade between the two people and it hasn't have to be already finalized
 		if(!t.initialized || t.finalized){
 			throw;
 		}
 		
 		//The trade condition specified by the two people must concide
-		if(!(t.tokenAddress == tokenAddress &amp;&amp; t.tokenAmount == tokenAmount &amp;&amp; t.etherAmount == etherAmount &amp;&amp; t.etherCollateralAmount == msg.value &amp;&amp; t.endTradeBlock == endTradeBlock)){
+		if(!(t.tokenAddress == tokenAddress && t.tokenAmount == tokenAmount && t.etherAmount == etherAmount && t.etherCollateralAmount == msg.value && t.endTradeBlock == endTradeBlock)){
 			throw;
 		}
 		
@@ -79,12 +79,12 @@ contract P2PFuturesTrading {
 		Trade tokenSellerTrade = trades[otherPersonAddress][msg.sender];
 		
 		//It needs to exist already a trade between the two people and it has to be already finalized.
-		if(tokenBuyerTrade.initialized &amp;&amp; tokenBuyerTrade.finalized){
+		if(tokenBuyerTrade.initialized && tokenBuyerTrade.finalized){
 			t = tokenBuyerTrade;
 			tokenBuyerAddress = msg.sender;
 			tokenSellerAddress = otherPersonAddress;
 		}
-		else if(tokenSellerTrade.initialized &amp;&amp; tokenSellerTrade.finalized){
+		else if(tokenSellerTrade.initialized && tokenSellerTrade.finalized){
 			t = tokenSellerTrade;
 			tokenBuyerAddress = otherPersonAddress;
 			tokenSellerAddress = msg.sender;
@@ -96,7 +96,7 @@ contract P2PFuturesTrading {
 		
 		ERC20 token = ERC20(t.tokenAddress);
 		
-		//1% developer fee, 0.5% from the tokenSeller (in tokens) and 0.5% from the tokenBuyer (in ethers). In case the trade doesn&#39;t complete the fee is of 1% of the collateral.
+		//1% developer fee, 0.5% from the tokenSeller (in tokens) and 0.5% from the tokenBuyer (in ethers). In case the trade doesn't complete the fee is of 1% of the collateral.
 		uint tokenSellerFee = t.tokenAmount * 5 / 1000;
 		uint tokenBuyerFee = t.etherAmount * 5 / 1000;
 		uint collateralFee = t.etherCollateralAmount / 100;
@@ -104,10 +104,10 @@ contract P2PFuturesTrading {
 		t.initialized = false;
 		t.finalized = false;
 		
-		//If the tokenSeller didn&#39;t allow this contract of the needed amount, one of the two following functions will return false
+		//If the tokenSeller didn't allow this contract of the needed amount, one of the two following functions will return false
 		if(!token.transferFrom(tokenSellerAddress, tokenBuyerAddress, t.tokenAmount - tokenSellerFee) || !token.transferFrom(tokenSellerAddress, developerAddress, tokenSellerFee)){
-			//If the maximum time has passed, and the trade coudldn&#39;t be completed, the tokenBuyer will receive his ether plus the collateral. Otherwise no action is taken.
-			if(t.endTradeBlock &lt; block.number){
+			//If the maximum time has passed, and the trade coudldn't be completed, the tokenBuyer will receive his ether plus the collateral. Otherwise no action is taken.
+			if(t.endTradeBlock < block.number){
 				tokenBuyerAddress.transfer(t.etherAmount + t.etherCollateralAmount - collateralFee);
 				developerAddress.transfer(collateralFee);
 				
@@ -127,7 +127,7 @@ contract P2PFuturesTrading {
 	function cancelTrade(address tokenSellerAddress){
 		Trade t = trades[msg.sender][tokenSellerAddress];
 		
-		//It needs to exist already a trade between the two people and it hasn&#39;t have to be already finalized
+		//It needs to exist already a trade between the two people and it hasn't have to be already finalized
 		if(!t.initialized || t.finalized){
 			throw;
 		}

@@ -29,13 +29,13 @@ contract owned {
 
 library SafeMath {
     function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) pure internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -56,13 +56,13 @@ contract ERC20 {
 
 contract Dashgold is ERC20, owned {
     using SafeMath for uint256;
-    string public name = &quot;Dashgold&quot;;
-    string public symbol = &quot;DASHG&quot;;
+    string public name = "Dashgold";
+    string public symbol = "DASHG";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping (address => uint256) private balances;
+    mapping (address => mapping (address => uint256)) private allowed;
 
     function balanceOf(address _who) public constant returns (uint256) {
         return balances[_who];
@@ -80,7 +80,7 @@ contract Dashgold is ERC20, owned {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -89,7 +89,7 @@ contract Dashgold is ERC20, owned {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -99,14 +99,14 @@ contract Dashgold is ERC20, owned {
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require(_spender != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
     }
 
     function withdrawTokens(uint256 _value) public onlyOwner {
-        require(balances[this] &gt;= _value);
+        require(balances[this] >= _value);
         balances[this] = balances[this].sub(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
         Transfer(this, msg.sender, _value);

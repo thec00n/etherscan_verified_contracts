@@ -21,9 +21,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -31,7 +31,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
     */
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -85,8 +85,8 @@ contract Ownable {
 /**
  * @title Heritable
  * @dev The Heritable contract provides ownership transfer capabilities, in the
- * case that the current owner stops &quot;heartbeating&quot;. Only the heir can pronounce the
- * owner&#39;s death.
+ * case that the current owner stops "heartbeating". Only the heir can pronounce the
+ * owner's death.
  */
 contract Heritable is Ownable {
     address public heir;
@@ -94,7 +94,7 @@ contract Heritable is Ownable {
     // Time window the owner has to notify they are alive.
     uint public heartbeatTimeout;
 
-    // Timestamp of the owner&#39;s death, as pronounced by the heir.
+    // Timestamp of the owner's death, as pronounced by the heir.
     uint public timeOfDeath;
 
     event HeirChanged(address indexed owner, address indexed newHeir);
@@ -104,7 +104,7 @@ contract Heritable is Ownable {
 
 
     /**
-    * @dev Throw an exception if called by any account other than the heir&#39;s.
+    * @dev Throw an exception if called by any account other than the heir's.
     */
     modifier onlyHeir() {
         require(msg.sender == heir);
@@ -160,7 +160,7 @@ contract Heritable is Ownable {
     */
     function claimHeirOwnership() public onlyHeir {
         require(!ownerLives());
-        require(now &gt;= timeOfDeath + heartbeatTimeout);
+        require(now >= timeOfDeath + heartbeatTimeout);
         OwnershipTransferred(owner, heir);
         HeirOwnershipClaimed(owner, heir);
         owner = heir;
@@ -178,7 +178,7 @@ contract Heritable is Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6e0a0b1a0b2e0f16070103140b00400d01">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6e0a0b1a0b2e0f16070103140b00400d01">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function approve(address _to, uint _tokenId) public;
@@ -201,8 +201,8 @@ contract ERC721 {
 }
 
 contract BitArtToken is Heritable, ERC721 {
-    string public constant NAME = &quot;BitGallery&quot;;
-    string public constant SYMBOL = &quot;BitArt&quot;;
+    string public constant NAME = "BitGallery";
+    string public constant SYMBOL = "BitArt";
 
     struct Art {
         bytes32 data;
@@ -210,9 +210,9 @@ contract BitArtToken is Heritable, ERC721 {
 
     Art[] internal arts;
 
-    mapping (uint =&gt; address) public tokenOwner;
-    mapping (address =&gt; uint) public ownedTokenCount;
-    mapping (uint =&gt; address) public tokenApprovals;
+    mapping (uint => address) public tokenOwner;
+    mapping (address => uint) public ownedTokenCount;
+    mapping (uint => address) public tokenApprovals;
 
     event Transfer(address from, address to, uint tokenId);
     event Approval(address owner, address approved, uint tokenId);
@@ -230,7 +230,7 @@ contract BitArtToken is Heritable, ERC721 {
             uint totaltokens = totalSupply();
             uint index = 0;
             
-            for (uint tokenId = 0; tokenId &lt; totaltokens; tokenId++) {
+            for (uint tokenId = 0; tokenId < totaltokens; tokenId++) {
                 if (tokenOwner[tokenId] == _owner) {
                     result[index] = tokenId;
                     index++;
@@ -255,7 +255,7 @@ contract BitArtToken is Heritable, ERC721 {
         uint count = totalSupply();
         bytes32[] memory result = new bytes32[](count);
 
-        for (uint i = 0; i &lt; count; i++) {
+        for (uint i = 0; i < count; i++) {
             result[i] = arts[i].data;
         }
 
@@ -356,7 +356,7 @@ contract BitAuction is BitArtToken {
     uint internal _auctionDuration;
     uint internal _auctionFee;
 
-    mapping (uint =&gt; Auction) public tokenAuction;
+    mapping (uint => Auction) public tokenAuction;
 
     event AuctionRulesChanged(uint startsAfter, uint duration, uint fee);
     event NewAuction(uint tokenId, uint discount);
@@ -366,12 +366,12 @@ contract BitAuction is BitArtToken {
 
     function setSaleDiscount(uint _tokenId, uint _discount) external {      
         require(ownerOf(_tokenId) == msg.sender);
-        require(_discount &lt;= 90);
-        require(_discount &gt;= 10);
+        require(_discount <= 90);
+        require(_discount >= 10);
 
         Auction storage auction = tokenAuction[_tokenId];
-        require(auction.basePrice &gt; 0);        
-        require(auction.time2 &lt;= now);
+        require(auction.basePrice > 0);        
+        require(auction.time2 <= now);
         auction.discount = uint8(_discount);
 
         NewSaleDiscount(_tokenId, _discount);
@@ -379,8 +379,8 @@ contract BitAuction is BitArtToken {
 
     function canPurchase(uint _tokenId) public view returns (bool) {
         Auction storage auction = tokenAuction[_tokenId];
-        require(auction.time1 &gt; 0);
-        return (now &gt;= auction.time1 &amp;&amp; priceOf(_tokenId) &gt; 0);
+        require(auction.time1 > 0);
+        return (now >= auction.time1 && priceOf(_tokenId) > 0);
     }
 
     function getPrices(uint[] _ids) public view returns (uint[]) {
@@ -393,7 +393,7 @@ contract BitAuction is BitArtToken {
 
         uint[] memory result = new uint[](count);
         
-        for (uint i = 0; i &lt; count; i++) {
+        for (uint i = 0; i < count; i++) {
             uint tokenId = isEmpty ? i : _ids[i];
             result[i] = priceOf(tokenId);
         }        
@@ -407,12 +407,12 @@ contract BitAuction is BitArtToken {
     }
 
     function setAuctionDurationRules(uint _timeAfter, uint _duration, uint _fee) public onlyOwner {  
-        require(_timeAfter &gt;= 0 seconds);
-        require(_timeAfter &lt;= 7 days);
-        require(_duration &gt;= 24 hours);
-        require(_duration &lt;= 30 days);
-        require(_fee &gt;= 1);
-        require(_fee &lt;= 5);
+        require(_timeAfter >= 0 seconds);
+        require(_timeAfter <= 7 days);
+        require(_duration >= 24 hours);
+        require(_duration <= 30 days);
+        require(_fee >= 1);
+        require(_fee <= 5);
         
         _auctionStartsAfter = _timeAfter;
         _auctionDuration = _duration;
@@ -422,10 +422,10 @@ contract BitAuction is BitArtToken {
     }
 
     function _createCustomAuction(uint _tokenId, uint _basePrice, uint _time1, uint _time2, uint _pct1, uint _pct2) private {
-        require(_time1 &gt;= now);
-        require(_time2 &gt;= _time1);
-        require(_pct1 &gt; 0);
-        require(_pct2 &gt; 0);
+        require(_time1 >= now);
+        require(_time2 >= _time1);
+        require(_pct1 > 0);
+        require(_pct2 > 0);
         
         Auction memory auction = Auction({
             basePrice: _basePrice, 
@@ -449,13 +449,13 @@ contract BitAuction is BitArtToken {
     }
 
     function _currentPrice(Auction _auction) internal view returns (uint) {
-        if (_auction.discount &gt; 0) {
+        if (_auction.discount > 0) {
             return uint((_auction.basePrice * (100 - _auction.discount)) / 100);
         }
 
         uint _startingPrice = uint((_auction.basePrice * _auction.pct1) / 100);
 
-        if (_auction.time1 &gt; now) {
+        if (_auction.time1 > now) {
             return _startingPrice;
         }
 
@@ -463,7 +463,7 @@ contract BitAuction is BitArtToken {
         uint _duration = uint(_auction.time2 - _auction.time1);
         uint _endingPrice = uint((_auction.basePrice * _auction.pct2) / 100);
 
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int totalPriceChange = int(_endingPrice) - int(_startingPrice);
@@ -475,7 +475,7 @@ contract BitAuction is BitArtToken {
     }
 
     function _computePrice(uint _secondsPassed, uint _duration, uint _startingPrice, uint _endingPrice) private pure returns (uint) {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int totalPriceChange = int(_endingPrice) - int(_startingPrice);
@@ -498,7 +498,7 @@ contract BitGallery is BitAuction {
     function BitGallery() public {
         setAuctionDurationRules(24 hours, 6 days, 3);
 
-        setMessage(&quot;Our web site is www.bitgallery.co&quot;);                          
+        setMessage("Our web site is www.bitgallery.co");                          
     }
 
     function() public payable {}
@@ -508,7 +508,7 @@ contract BitGallery is BitAuction {
     }
 
     function addArtTo(address _owner, string _keyData, uint _basePrice) public onlyOwner {
-        require(_basePrice &gt;= 1 finney);
+        require(_basePrice >= 1 finney);
         
         Art memory _art = Art({
             data: keccak256(_keyData)
@@ -521,7 +521,7 @@ contract BitGallery is BitAuction {
     }
 
     function artExists(string _keydata) public view returns (bool) {
-        for (uint i = 0; i &lt; totalSupply(); i++) {
+        for (uint i = 0; i < totalSupply(); i++) {
             if (arts[i].data == keccak256(_keydata)) {
                 return true;
             }
@@ -565,9 +565,9 @@ contract BitGallery is BitAuction {
 
     function purchase(uint _tokenId) public payable {
         Auction storage auction = tokenAuction[_tokenId];
-        require(now &gt;= auction.time1);
+        require(now >= auction.time1);
         uint price = _currentPrice(auction);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         uint payment = uint((price * (100 - _auctionFee)) / 100);
         uint purchaseExcess = msg.value - price;

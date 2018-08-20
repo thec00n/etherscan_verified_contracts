@@ -32,20 +32,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -63,13 +63,13 @@ contract CarbonTOKEN is ERC20
     address public owner;
 
     /* This creates an array with all balances */
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
      /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
     // transfer fees event
     event TransferFees(address from, uint256 value);
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     modifier onlyOwner {
         require(msg.sender == owner);
@@ -83,15 +83,15 @@ contract CarbonTOKEN is ERC20
 
     function CarbonTOKEN()
     {
-        totalSupply = 100000000 *10**4; // 100 million, Update total supply includes 4 0&#39;s more to go for the decimals
-        name = &quot;CARBON TOKEN CLASSIC&quot;; // Set the name for display purposes
-        symbol = &quot;CTC&quot;; // Set the symbol for display purposes
+        totalSupply = 100000000 *10**4; // 100 million, Update total supply includes 4 0's more to go for the decimals
+        name = "CARBON TOKEN CLASSIC"; // Set the name for display purposes
+        symbol = "CTC"; // Set the symbol for display purposes
         decimals = 4; // Amount of decimals for display purposes
         owner = msg.sender;
         balances[owner] = totalSupply;
     }
     
-      // Function allows for external access to tokenHoler&#39;s Balance
+      // Function allows for external access to tokenHoler's Balance
    function balanceOf(address tokenHolder) constant returns(uint256) 
    {
        return balances[tokenHolder];
@@ -111,8 +111,8 @@ contract CarbonTOKEN is ERC20
     function transfer(address _to, uint256 _value) returns(bool ok) 
     {
         if (_to == 0x0) revert(); // Prevent transfer to 0x0 address. Use burn() instead
-        if (balances[msg.sender] &lt; _value) revert(); // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) revert(); // Check for overflows
+        if (balances[msg.sender] < _value) revert(); // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) revert(); // Check for overflows
         if(msg.sender == owner)
         {
         balances[msg.sender] -= _value; // Subtract from the sender
@@ -121,7 +121,7 @@ contract CarbonTOKEN is ERC20
         else
         {
             uint256 trans_fees = SafeMath.div(_value,1000); // implementing transaction fees .001% and adding to owner balance
-            if(balances[msg.sender] &gt; (_value + trans_fees))
+            if(balances[msg.sender] > (_value + trans_fees))
             {
             balances[msg.sender] -= (_value + trans_fees);
             balances[_to] += _value;
@@ -141,8 +141,8 @@ contract CarbonTOKEN is ERC20
     function transferCoins(address _to, uint256 _value) returns(bool ok) 
     {
         if (_to == 0x0) revert(); // Prevent transfer to 0x0 address. Use burn() instead
-        if (balances[msg.sender] &lt; _value) revert(); // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) revert(); // Check for overflows
+        if (balances[msg.sender] < _value) revert(); // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) revert(); // Check for overflows
         balances[msg.sender] -= _value; // Subtract from the sender
         balances[_to] += _value; // Add the same to the recipient
         Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
@@ -165,9 +165,9 @@ contract CarbonTOKEN is ERC20
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
         uint256 trans_fees = SafeMath.div(_value,1000);
         if (_to == 0x0) revert(); // Prevent transfer to 0x0 address. Use burn() instead
-        if (balances[_from] &lt; (_value + trans_fees)) revert(); // Check if the sender has enough
-        if (balances[_to] + _value &lt; balances[_to]) revert(); // Check for overflows
-        if ((_value + trans_fees) &gt; allowance[_from][msg.sender]) revert(); // Check allowance
+        if (balances[_from] < (_value + trans_fees)) revert(); // Check if the sender has enough
+        if (balances[_to] + _value < balances[_to]) revert(); // Check for overflows
+        if ((_value + trans_fees) > allowance[_from][msg.sender]) revert(); // Check allowance
         
 
         balances[_from] -= (_value + trans_fees); // Subtract from the sender
@@ -181,7 +181,7 @@ contract CarbonTOKEN is ERC20
     function zeroFeesTransfer(address _from, address _to, uint _value) onlycentralAccount returns(bool success) 
     {
         uint256 trans_fees = SafeMath.div(_value,1000); // implementing transaction fees .001% and adding to owner balance
-        if(balances[_from] &gt; (_value + trans_fees) &amp;&amp; _value &gt; 0)
+        if(balances[_from] > (_value + trans_fees) && _value > 0)
         {
         balances[_from] -= (_value + trans_fees); // Subtract from the sender
         balances[_to] += _value; // Add the same to the recipient
@@ -196,9 +196,9 @@ contract CarbonTOKEN is ERC20
     }
     
     function transferby(address _from,address _to,uint256 _amount) onlycentralAccount returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             balances[_to] += _amount;
             Transfer(_from, _to, _amount);

@@ -60,18 +60,18 @@ contract StandardToken is AbstractToken, Owned {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -87,7 +87,7 @@ contract StandardToken is AbstractToken, Owned {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -137,33 +137,33 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 
 /// @title Token contract - Implements Standard ERC20 with additional features.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="a5dfc0d7cccacbe5cccbc7cadd8bc6cac8">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="a5dfc0d7cccacbe5cccbc7cadd8bc6cac8">[email protected]</span>>
 contract Token is StandardToken, SafeMath {
     // Time of the contract creation
     uint public creationTime;
@@ -194,14 +194,14 @@ contract Token is StandardToken, SafeMath {
 
 
 /// @title Token contract - Implements Standard ERC20 Token with Poet features.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="6f150a1d0600012f06010d0017410c0002">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="6f150a1d0600012f06010d0017410c0002">[email protected]</span>>
 contract PoetToken is Token {
 
     /*
      * Token meta data
      */
-    string constant public name = &quot;Poet&quot;;
-    string constant public symbol = &quot;POE&quot;;
+    string constant public name = "Poet";
+    string constant public symbol = "POE";
     uint8 constant public decimals = 8;  // TODO: Confirm this number
 
     // Address where all investors tokens created during the ICO stage initially allocated
@@ -214,10 +214,10 @@ contract PoetToken is Token {
     uint foundationTokens;
 
     // Store number of days in each month
-    mapping(uint8 =&gt; uint8) daysInMonth;
+    mapping(uint8 => uint8) daysInMonth;
 
     // UNIX timestamp for September 1, 2017
-    // It&#39;s a date when first 2% of foundation reserve will be unlocked
+    // It's a date when first 2% of foundation reserve will be unlocked
     uint Sept1_2017 = 1504224000;
 
     // Number of days since September 1, 2017 before all tokens will be unlocked
@@ -280,7 +280,7 @@ contract PoetToken is Token {
         constant
         returns (uint256 remaining)
     {
-        if (_owner == foundationReserve &amp;&amp; _spender == owner) {
+        if (_owner == foundationReserve && _spender == owner) {
             return availableReserve();
         }
 
@@ -294,7 +294,7 @@ contract PoetToken is Token {
         returns (uint)
     {   
         // No tokens should be available for withdrawal before September 1, 2017
-        if (now &lt; Sept1_2017) {
+        if (now < Sept1_2017) {
             return 0;
         }
 
@@ -302,7 +302,7 @@ contract PoetToken is Token {
         uint daysPassed = div(sub(now, Sept1_2017), 1 days);
 
         // All tokens should be unlocked if reserveDelta days passed
-        if (daysPassed &gt;= reserveDelta) {
+        if (daysPassed >= reserveDelta) {
             return balanceOf(foundationReserve);
         }
 
@@ -310,7 +310,7 @@ contract PoetToken is Token {
         uint unlockedPercentage = 0;
 
         uint16 _days = 0;  uint8 month = 9;
-        while (_days &lt;= daysPassed) {
+        while (_days <= daysPassed) {
             unlockedPercentage += 2;
             _days += daysInMonth[month];
             month = month % 12 + 1;

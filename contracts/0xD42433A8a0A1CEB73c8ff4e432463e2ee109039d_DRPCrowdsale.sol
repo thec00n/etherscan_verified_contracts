@@ -56,14 +56,14 @@ contract DRPCrowdsale {
     Token public drpToken;
 
     // Invested balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     struct Proposal {
         address dcorpAddress;
         uint256 deadline;
         uint256 approvedWeight;
         uint256 disapprovedWeight;
-        mapping (address =&gt; uint256) voted;
+        mapping (address => uint256) voted;
     }
 
     // Ownership transfer proposal
@@ -96,7 +96,7 @@ contract DRPCrowdsale {
      * @param _stage2 expected stage to test for
      */
     modifier atStages(Stages _stage1, Stages _stage2) {
-        if (stage != _stage1 &amp;&amp; stage != _stage2) {
+        if (stage != _stage1 && stage != _stage2) {
             throw;
         }
         _;
@@ -126,11 +126,11 @@ contract DRPCrowdsale {
 
 
     /**
-     * Throw if the current transfer proposal&#39;s deadline
+     * Throw if the current transfer proposal's deadline
      * is in the past
      */
     modifier beforeDeadline() {
-        if (now &gt; transferProposal.deadline) {
+        if (now > transferProposal.deadline) {
             throw;
         }
         _;
@@ -138,11 +138,11 @@ contract DRPCrowdsale {
 
 
     /**
-     * Throw if the current transfer proposal&#39;s deadline 
+     * Throw if the current transfer proposal's deadline 
      * is in the future
      */
     modifier afterDeadline() {
-        if (now &lt; transferProposal.deadline) {
+        if (now < transferProposal.deadline) {
             throw;
         }
         _;
@@ -192,30 +192,30 @@ contract DRPCrowdsale {
      */
     function toDRP(uint256 _wei) returns (uint256 amount) {
         uint256 rate = 0;
-        if (stage != Stages.Ended &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end) {
+        if (stage != Stages.Ended && now >= start && now <= end) {
 
             // Check for angelday
-            if (now &lt;= start + rateAngelDayEnd) {
+            if (now <= start + rateAngelDayEnd) {
                 rate = rateAngelDay;
             }
 
             // Check first week
-            else if (now &lt;= start + rateFirstWeekEnd) {
+            else if (now <= start + rateFirstWeekEnd) {
                 rate = rateFirstWeek;
             }
 
             // Check second week
-            else if (now &lt;= start + rateSecondWeekEnd) {
+            else if (now <= start + rateSecondWeekEnd) {
                 rate = rateSecondWeek;
             }
 
             // Check third week
-            else if (now &lt;= start + rateThirdWeekEnd) {
+            else if (now <= start + rateThirdWeekEnd) {
                 rate = rateThirdWeek;
             }
 
             // Check last week
-            else if (now &lt;= start + rateLastWeekEnd) {
+            else if (now <= start + rateLastWeekEnd) {
                 rate = rateLastWeek;
             }
         }
@@ -231,7 +231,7 @@ contract DRPCrowdsale {
     function endCrowdsale() atStage(Stages.InProgress) {
 
         // Crowdsale not ended yet
-        if (now &lt; end) {
+        if (now < end) {
             throw;
         }
 
@@ -246,7 +246,7 @@ contract DRPCrowdsale {
     function withdraw() onlyBeneficiary atStage(Stages.Ended) {
 
         // Confirm that minAmount is raised
-        if (raised &lt; minAmount) {
+        if (raised < minAmount) {
             throw;
         }
 
@@ -267,14 +267,14 @@ contract DRPCrowdsale {
     function refund() atStage(Stages.Ended) {
 
         // Only allow refunds if minAmount is not raised
-        if (raised &gt;= minAmount) {
+        if (raised >= minAmount) {
             throw;
         }
 
         uint256 receivedAmount = balances[msg.sender];
         balances[msg.sender] = 0;
 
-        if (receivedAmount &gt; 0 &amp;&amp; !msg.sender.send(receivedAmount)) {
+        if (receivedAmount > 0 && !msg.sender.send(receivedAmount)) {
             balances[msg.sender] = receivedAmount;
         }
     }
@@ -289,7 +289,7 @@ contract DRPCrowdsale {
     function proposeTransfer(address _dcorpAddress) onlyBeneficiary atStages(Stages.Withdrawn, Stages.Proposed) {
         
         // Check for a pending proposal
-        if (stage == Stages.Proposed &amp;&amp; now &lt; transferProposal.deadline + transferProposalCooldown) {
+        if (stage == Stages.Proposed && now < transferProposal.deadline + transferProposalCooldown) {
             throw;
         }
 
@@ -314,7 +314,7 @@ contract DRPCrowdsale {
     function vote(bool _approve) onlyShareholders beforeDeadline atStage(Stages.Proposed) {
 
         // One vote per proposal
-        if (transferProposal.voted[msg.sender] &gt;= transferProposal.deadline - transferProposalEnd) {
+        if (transferProposal.voted[msg.sender] >= transferProposal.deadline - transferProposalEnd) {
             throw;
         }
 
@@ -340,7 +340,7 @@ contract DRPCrowdsale {
     function executeTransfer() afterDeadline atStage(Stages.Proposed) {
 
         // Check approved
-        if (transferProposal.approvedWeight &lt;= transferProposal.disapprovedWeight) {
+        if (transferProposal.approvedWeight <= transferProposal.disapprovedWeight) {
             throw;
         }
 
@@ -371,17 +371,17 @@ contract DRPCrowdsale {
     function () payable atStage(Stages.InProgress) {
 
         // Crowdsale not started yet
-        if (now &lt; start) {
+        if (now < start) {
             throw;
         }
 
         // Crowdsale expired
-        if (now &gt; end) {
+        if (now > end) {
             throw;
         }
 
         // Enforce min amount
-        if (msg.value &lt; minAcceptedAmount) {
+        if (msg.value < minAcceptedAmount) {
             throw;
         }
  
@@ -395,7 +395,7 @@ contract DRPCrowdsale {
         raised += received;
 
         // Check maxAmount raised
-        if (raised &gt;= maxAmount) {
+        if (raised >= maxAmount) {
             stage = Stages.Ended;
         }
     }

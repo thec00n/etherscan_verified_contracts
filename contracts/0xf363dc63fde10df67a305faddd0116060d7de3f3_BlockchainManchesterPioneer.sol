@@ -1,7 +1,7 @@
 // https://github.com/ethereum/EIPs/issues/20
 pragma solidity ^0.4.11;
 
-// Meetup 0: Genesis &gt; 24th October 2017 &gt; Madlab, Manchester, UK
+// Meetup 0: Genesis > 24th October 2017 > Madlab, Manchester, UK
 contract BlockchainManchesterPioneer {
     
     uint256 public totalSupply = 60;
@@ -12,12 +12,12 @@ contract BlockchainManchesterPioneer {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
-    string public name  = &quot;Blockchain Manchester Pioneer&quot;;
+    string public name  = "Blockchain Manchester Pioneer";
     uint8 public decimals = 0;
-    string public symbol = &quot;BMP&quot;;
+    string public symbol = "BMP";
 
     function BlockchainManchesterPioneer() {
         // Give the creator all initial tokens
@@ -25,7 +25,7 @@ contract BlockchainManchesterPioneer {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -34,7 +34,7 @@ contract BlockchainManchesterPioneer {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -56,7 +56,7 @@ contract BlockchainManchesterPioneer {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 }

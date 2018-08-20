@@ -34,15 +34,15 @@ contract ERC20 is ERC20Basic {
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
 contract ERC721Basic {
-  // bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-  // bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-  // bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-  // bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-  // bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-  // bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-  // bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-  // bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-  // bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;));
+  // bytes4(keccak256('balanceOf(address)')) ^
+  // bytes4(keccak256('ownerOf(uint256)')) ^
+  // bytes4(keccak256('approve(address,uint256)')) ^
+  // bytes4(keccak256('getApproved(uint256)')) ^
+  // bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+  // bytes4(keccak256('isApprovedForAll(address,address)')) ^
+  // bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+  // bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+  // bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
   bytes4 constant INTERFACE_ERC721 = 0x80ac58cd;
 
   event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
@@ -52,7 +52,7 @@ contract ERC721Basic {
   function balanceOf(address _owner) public view returns (uint256 _balance);
   function ownerOf(uint256 _tokenId) public view returns (address _owner);
 
-  // Note: This is not in the official ERC-721 standard so it&#39;s not included in the interface hash
+  // Note: This is not in the official ERC-721 standard so it's not included in the interface hash
   function exists(uint256 _tokenId) public view returns (bool _exists);
 
   function approve(address _to, uint256 _tokenId) public;
@@ -85,9 +85,9 @@ contract ERC721Basic {
  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
 contract ERC721Enumerable is ERC721Basic {
-  // bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-  // bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-  // bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;));
+  // bytes4(keccak256('totalSupply()')) ^
+  // bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+  // bytes4(keccak256('tokenByIndex(uint256)'));
   bytes4 constant INTERFACE_ERC721_ENUMERABLE = 0x780e9d63;
 
   function totalSupply() public view returns (uint256);
@@ -101,9 +101,9 @@ contract ERC721Enumerable is ERC721Basic {
  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
 contract ERC721Metadata is ERC721Basic {
-  // bytes4(keccak256(&#39;name()&#39;)) ^
-  // bytes4(keccak256(&#39;symbol()&#39;)) ^
-  // bytes4(keccak256(&#39;tokenURI(uint256)&#39;));
+  // bytes4(keccak256('name()')) ^
+  // bytes4(keccak256('symbol()')) ^
+  // bytes4(keccak256('tokenURI(uint256)'));
   bytes4 constant INTERFACE_ERC721_METADATA = 0x5b5e139f;
 
   function name() public view returns (string _name);
@@ -128,7 +128,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
  */
 contract ERC165 {
 
-  // bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+  // bytes4(keccak256('supportsInterface(bytes4)'));
   bytes4 constant INTERFACE_ERC165 = 0x01ffc9a7;
 
   /**
@@ -160,7 +160,7 @@ library AddressUtils {
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
 
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -176,8 +176,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -192,9 +192,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -202,7 +202,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -211,7 +211,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -226,7 +226,7 @@ library SafeMath {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0x150b7a02;
@@ -241,7 +241,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _operator,
@@ -262,21 +262,21 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0x150b7a02;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -401,7 +401,7 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -419,14 +419,14 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
       _from,
       _to,
       _tokenId,
-      &quot;&quot;);
+      "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -464,10 +464,10 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
 
     require(
       sender == owner || isApprovedForAll(owner, sender) || getApproved(_tokenId) == sender,
-      &quot;Not authorized to transfer&quot;
+      "Not authorized to transfer"
     );
 
-    // Resetting the approved address if it&#39;s set
+    // Resetting the approved address if it's set
     if (tokenApprovals[_tokenId] != address(0)) {
       tokenApprovals[_tokenId] = address(0);
     }
@@ -548,16 +548,16 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
   * @dev Constructor function
@@ -608,7 +608,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list owned by the requested address
    */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -627,7 +627,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -687,7 +687,7 @@ contract CodexRecordMetadata is ERC721Token {
   );
 
   // Mapping from token ID to token data
-  mapping(uint256 =&gt; CodexRecordData) internal tokenData;
+  mapping(uint256 => CodexRecordData) internal tokenData;
 
   // Global tokenURIPrefix prefix. The token ID will be appended to the uri when accessed
   //  via the tokenURI method
@@ -711,26 +711,26 @@ contract CodexRecordMetadata is ERC721Token {
     public
     onlyOwnerOf(_tokenId)
   {
-    // nameHash is only overridden if it&#39;s not a blank string, since name is a
+    // nameHash is only overridden if it's not a blank string, since name is a
     //  required value. Emptiness is determined if the first element is the null-byte
     if (!bytes32IsEmpty(_newNameHash)) {
       tokenData[_tokenId].nameHash = _newNameHash;
     }
 
-    // descriptionHash can always be overridden since it&#39;s an optional value
-    //  (e.g. you can &quot;remove&quot; a description by setting it to a blank string)
+    // descriptionHash can always be overridden since it's an optional value
+    //  (e.g. you can "remove" a description by setting it to a blank string)
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
 
     // fileHashes is only overridden if it has one or more value, since at
     //  least one file (i.e. mainImage) is required
     bool containsNullHash = false;
-    for (uint i = 0; i &lt; _newFileHashes.length; i++) {
+    for (uint i = 0; i < _newFileHashes.length; i++) {
       if (bytes32IsEmpty(_newFileHashes[i])) {
         containsNullHash = true;
         break;
       }
     }
-    if (_newFileHashes.length &gt; 0 &amp;&amp; !containsNullHash) {
+    if (_newFileHashes.length > 0 && !containsNullHash) {
       tokenData[_tokenId].fileHashes = _newFileHashes;
     }
 
@@ -788,11 +788,11 @@ contract CodexRecordMetadata is ERC721Token {
   {
     bytes memory prefix = bytes(tokenURIPrefix);
     if (prefix.length == 0) {
-      return &quot;&quot;;
+      return "";
     }
 
     // Rather than store a string representation of _tokenId, we just convert it on the fly
-    // since this is just a &#39;view&#39; function (i.e., there&#39;s no gas cost if called off chain)
+    // since this is just a 'view' function (i.e., there's no gas cost if called off chain)
     bytes memory tokenId = uint2bytes(_tokenId);
     bytes memory output = new bytes(prefix.length + tokenId.length);
 
@@ -801,12 +801,12 @@ contract CodexRecordMetadata is ERC721Token {
     uint256 outputIndex = 0;
 
     // Copy over the prefix into the new bytes array
-    for (i = 0; i &lt; prefix.length; i++) {
+    for (i = 0; i < prefix.length; i++) {
       output[outputIndex++] = prefix[i];
     }
 
     // Copy over the tokenId into the new bytes array
-    for (i = 0; i &lt; tokenId.length; i++) {
+    for (i = 0; i < tokenId.length; i++) {
       output[outputIndex++] = tokenId[i];
     }
 
@@ -819,7 +819,7 @@ contract CodexRecordMetadata is ERC721Token {
    */
   function uint2bytes(uint256 i) internal pure returns (bytes) {
     if (i == 0) {
-      return &quot;0&quot;;
+      return "0";
     }
 
     uint256 j = i;
@@ -846,7 +846,7 @@ contract CodexRecordMetadata is ERC721Token {
    * @return bool Whether or not the array is empty
    */
   function bytes32IsEmpty(bytes32 _data) internal pure returns (bool) {
-    for (uint256 i = 0; i &lt; 32; i++) {
+    for (uint256 i = 0; i < 32; i++) {
       if (_data[i] != 0x0) {
         return false;
       }
@@ -908,7 +908,7 @@ contract CodexStakeContractInterface is ERC900 {
 /**
  * @title DelayedOwnable
  * @dev The DelayedOwnable contract has an owner address, and provides basic authorization control
- *  functions, this simplifies the implementation of &quot;user permissions&quot;.
+ *  functions, this simplifies the implementation of "user permissions".
  * @dev This is different than the original Ownable contract because intializeOwnable
  *  must be specifically called after creation to create an owner.
  */
@@ -929,7 +929,7 @@ contract DelayedOwnable {
   function initializeOwnable(address _owner) external {
     require(
       !isInitialized,
-      &quot;The owner has already been set&quot;);
+      "The owner has already been set");
 
     isInitialized = true;
     owner = _owner;
@@ -1023,14 +1023,14 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
   uint256 public modificationFee = 0;
 
   modifier canPayFees(uint256 _baseFee) {
-    if (feeRecipient != address(0) &amp;&amp; _baseFee &gt; 0) {
+    if (feeRecipient != address(0) && _baseFee > 0) {
       bool feePaid = false;
 
       if (codexStakeContract != address(0)) {
         uint256 discountCredits = codexStakeContract.creditBalanceOf(msg.sender);
 
         // Regardless of what the baseFee is, all transactions can be paid by using exactly one credit
-        if (discountCredits &gt; 0) {
+        if (discountCredits > 0) {
           codexStakeContract.spendCredits(msg.sender, 1);
           feePaid = true;
         }
@@ -1039,7 +1039,7 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
       if (!feePaid) {
         require(
           codexCoin.transferFrom(msg.sender, feeRecipient, _baseFee),
-          &quot;Insufficient funds&quot;);
+          "Insufficient funds");
       }
     }
 
@@ -1260,7 +1260,7 @@ contract CodexRecordAccess is CodexRecordCore {
 // File: contracts/CodexRecord.sol
 
 /**
- * @title CodexRecord, an ERC721 token for arts &amp; collectables
+ * @title CodexRecord, an ERC721 token for arts & collectables
  * @dev Developers should never interact with this smart contract directly!
  *  All transactions/calls should be made through CodexRecordProxy. Storage will be maintained
  *  in that smart contract so that the governing body has the ability
@@ -1270,7 +1270,7 @@ contract CodexRecord is CodexRecordAccess {
   /**
    * @dev Constructor function
    */
-  constructor() public ERC721Token(&quot;Codex Record&quot;, &quot;CR&quot;) { }
+  constructor() public ERC721Token("Codex Record", "CR") { }
 
   /**
    * @dev Reclaim all ERC20Basic compatible tokens

@@ -30,9 +30,9 @@ contract KyberReserve {
         uint expirationBlock;
     }
 
-    mapping(bytes32=&gt;ConversionRate) pairConversionRate;
+    mapping(bytes32=>ConversionRate) pairConversionRate;
 
-    /// @dev c&#39;tor.
+    /// @dev c'tor.
     /// @param _kyberNetwork The address of kyber network
     /// @param _reserveOwner Address of the reserve owner
     function KyberReserve( address _kyberNetwork, address _reserveOwner ) {
@@ -50,7 +50,7 @@ contract KyberReserve {
     function isPairListed( ERC20 source, ERC20 dest, uint blockNumber ) internal constant returns(bool) {
         ConversionRate memory rateInfo = pairConversionRate[sha3(source,dest)];
         if( rateInfo.rate == 0 ) return false;
-        return rateInfo.expirationBlock &gt;= blockNumber;
+        return rateInfo.expirationBlock >= blockNumber;
     }
 
     /// @dev get current conversion rate
@@ -62,7 +62,7 @@ contract KyberReserve {
     function getConversionRate( ERC20 source, ERC20 dest, uint blockNumber ) internal constant returns(uint) {
         ConversionRate memory rateInfo = pairConversionRate[sha3(source,dest)];
         if( rateInfo.rate == 0 ) return 0;
-        if( rateInfo.expirationBlock &lt; blockNumber ) return 0;
+        if( rateInfo.expirationBlock < blockNumber ) return 0;
         return rateInfo.rate * (10 ** getDecimals(dest)) / (10**getDecimals(source));
     }
 
@@ -102,12 +102,12 @@ contract KyberReserve {
                     return false;
                 }
             }
-            else if( msg.value &gt; 0 ) {
+            else if( msg.value > 0 ) {
                 // msg.value must be 0
                 ErrorReport( tx.origin, 0x800000003, msg.value );
                 return false;
             }
-            else if( sourceToken.allowance(msg.sender, this ) &lt; sourceAmount ) {
+            else if( sourceToken.allowance(msg.sender, this ) < sourceAmount ) {
                 // allowance is not enough
                 ErrorReport( tx.origin, 0x800000004, sourceToken.allowance(msg.sender, this ) );
                 return false;
@@ -127,14 +127,14 @@ contract KyberReserve {
 
         // check for sufficient balance
         if( destToken == ETH_TOKEN_ADDRESS ) {
-            if( this.balance &lt; destAmount ) {
+            if( this.balance < destAmount ) {
                 // insufficient ether balance
                 ErrorReport( tx.origin, 0x800000006, destAmount );
                 return false;
             }
         }
         else {
-            if( destToken.balanceOf(this) &lt; destAmount ) {
+            if( destToken.balanceOf(this) < destAmount ) {
                 // insufficient token balance
                 ErrorReport( tx.origin, 0x800000007, uint(destToken) );
                 return false;
@@ -187,7 +187,7 @@ contract KyberReserve {
         if( ! tradeEnabled ) {
             // trade is not enabled
             ErrorReport( tx.origin, 0x810000000, 0 );
-            if( msg.value &gt; 0 ) {
+            if( msg.value > 0 ) {
                 if( ! msg.sender.send(msg.value) ) throw;
             }
             return false;
@@ -196,7 +196,7 @@ contract KyberReserve {
         if( msg.sender != kyberNetwork ) {
             // sender must be kyber network
             ErrorReport( tx.origin, 0x810000001, uint(msg.sender) );
-            if( msg.value &gt; 0 ) {
+            if( msg.value > 0 ) {
                 if( ! msg.sender.send(msg.value) ) throw;
             }
 
@@ -206,7 +206,7 @@ contract KyberReserve {
         if( ! doTrade( sourceToken, sourceAmount, destToken, destAddress, validate ) ) {
             // do trade failed
             ErrorReport( tx.origin, 0x810000002, 0 );
-            if( msg.value &gt; 0 ) {
+            if( msg.value > 0 ) {
                 if( ! msg.sender.send(msg.value) ) throw;
             }
             return false;
@@ -243,7 +243,7 @@ contract KyberReserve {
             }
         }
 
-        for( uint i = 0 ; i &lt; sources.length ; i++ ) {
+        for( uint i = 0 ; i < sources.length ; i++ ) {
             SetRate( sources[i], dests[i], conversionRates[i], expiryBlocks[i] );
             pairConversionRate[sha3(sources[i],dests[i])] = ConversionRate( conversionRates[i], expiryBlocks[i] );
         }
@@ -293,7 +293,7 @@ contract KyberReserve {
     /// @param amount Amount of tokens to deposit
     /// @return true iff deposit is succesful
     function depositToken( ERC20 token, uint amount ) returns(bool) {
-        if( token.allowance( msg.sender, this ) &lt; amount ) {
+        if( token.allowance( msg.sender, this ) < amount ) {
             // allowence is smaller then amount
             ErrorReport( tx.origin, 0x850000001, token.allowance( msg.sender, this ) );
             return false;
@@ -385,11 +385,11 @@ contract KyberNetwork {
     uint  constant EPSILON = (10);
     KyberReserve[] public reserves;
 
-    mapping(address=&gt;mapping(bytes32=&gt;bool)) perReserveListedPairs;
+    mapping(address=>mapping(bytes32=>bool)) perReserveListedPairs;
 
     event ErrorReport( address indexed origin, uint error, uint errorInfo );
 
-    /// @dev c&#39;tor.
+    /// @dev c'tor.
     /// @param _admin The address of the administrator
     function KyberNetwork( address _admin ) {
         admin = _admin;
@@ -427,7 +427,7 @@ contract KyberNetwork {
     function getPrice( ERC20 source, ERC20 dest ) constant returns(uint) {
       uint rate; uint expBlock; uint balance;
       (rate, expBlock, balance) = getRate( source, dest, 0 );
-      if( expBlock &lt;= block.number ) return 0; // TODO - consider add 1
+      if( expBlock <= block.number ) return 0; // TODO - consider add 1
       if( balance == 0 ) return 0; // TODO - decide on minimal qty
       return rate;
     }
@@ -450,10 +450,10 @@ contract KyberNetwork {
         KyberReservePairInfo memory output;
         KyberReserve bestReserve = KyberReserve(0);
 
-        for( uint i = 0 ; i &lt; numReserves ; i++ ) {
+        for( uint i = 0 ; i < numReserves ; i++ ) {
             var (rate,expBlock,balance) = reserves[i].getPairInfo(source,dest);
 
-            if( (expBlock &gt;= block.number) &amp;&amp; (balance &gt; 0) &amp;&amp; (rate &gt; bestRate ) ) {
+            if( (expBlock >= block.number) && (balance > 0) && (rate > bestRate ) ) {
                 bestRate = rate;
                 bestReserveBalance = balance;
                 bestReserve = reserves[i];
@@ -517,18 +517,18 @@ contract KyberNetwork {
     /// @param srcAmount amount of source tokens
     /// @return true if input is valid
     function validateTradeInput( ERC20 source, uint srcAmount ) constant internal returns(bool) {
-        if( source != ETH_TOKEN_ADDRESS &amp;&amp; msg.value &gt; 0 ) {
-            // shouldn&#39;t send ether for token exchange
+        if( source != ETH_TOKEN_ADDRESS && msg.value > 0 ) {
+            // shouldn't send ether for token exchange
             ErrorReport( tx.origin, 0x85000000, 0 );
             return false;
         }
-        else if( source == ETH_TOKEN_ADDRESS &amp;&amp; msg.value != srcAmount ) {
+        else if( source == ETH_TOKEN_ADDRESS && msg.value != srcAmount ) {
             // amount of sent ether is wrong
             ErrorReport( tx.origin, 0x85000001, msg.value );
             return false;
         }
         else if( source != ETH_TOKEN_ADDRESS ) {
-            if( source.allowance(msg.sender,this) &lt; srcAmount ) {
+            if( source.allowance(msg.sender,this) < srcAmount ) {
                 // insufficient allowane
                 ErrorReport( tx.origin, 0x85000002, msg.value );
                 return false;
@@ -577,7 +577,7 @@ contract KyberNetwork {
 
 
     function isNegligable( uint currentValue, uint originalValue ) constant returns(bool){
-      return (currentValue &lt; (originalValue / 1000)) || (currentValue == 0);
+      return (currentValue < (originalValue / 1000)) || (currentValue == 0);
     }
     /// @notice use token address ETH_TOKEN_ADDRESS for ether
     /// @dev makes a trade between source and dest token and send dest token to destAddress
@@ -597,7 +597,7 @@ contract KyberNetwork {
         if( ! validateTradeInput( source, srcAmount ) ) {
             // invalid input
             ErrorReport( tx.origin, 0x86000000, 0 );
-            if( msg.value &gt; 0 ) {
+            if( msg.value > 0 ) {
                 if( ! msg.sender.send(msg.value) ) throw;
             }
             if( throwOnFailure ) throw;
@@ -607,10 +607,10 @@ contract KyberNetwork {
         TradeInfo memory tradeInfo = TradeInfo(0,srcAmount,false);
 
         while( !isNegligable(maxDestAmount-tradeInfo.convertedDestAmount, maxDestAmount)
-               &amp;&amp; !isNegligable(tradeInfo.remainedSourceAmount, srcAmount)) {
+               && !isNegligable(tradeInfo.remainedSourceAmount, srcAmount)) {
             KyberReservePairInfo memory reserveInfo = findBestRate(source,dest);
 
-            if( reserveInfo.rate == 0 || reserveInfo.rate &lt; minConversionRate ) {
+            if( reserveInfo.rate == 0 || reserveInfo.rate < minConversionRate ) {
                 tradeInfo.tradeFailed = true;
                 // no more available funds
                 ErrorReport( tx.origin, 0x86000001, tradeInfo.remainedSourceAmount );
@@ -623,10 +623,10 @@ contract KyberNetwork {
             uint actualSrcAmount = tradeInfo.remainedSourceAmount;
             // TODO - overflow check
             uint actualDestAmount = (actualSrcAmount * reserveInfo.rate) / PRECISION;
-            if( actualDestAmount &gt; reserveInfo.reserveBalance ) {
+            if( actualDestAmount > reserveInfo.reserveBalance ) {
                 actualDestAmount = reserveInfo.reserveBalance;
             }
-            if( actualDestAmount + tradeInfo.convertedDestAmount &gt; maxDestAmount ) {
+            if( actualDestAmount + tradeInfo.convertedDestAmount > maxDestAmount ) {
                 actualDestAmount = maxDestAmount - tradeInfo.convertedDestAmount;
             }
 
@@ -648,7 +648,7 @@ contract KyberNetwork {
 
         if( tradeInfo.tradeFailed ) {
             if( throwOnFailure ) throw;
-            if( msg.value &gt; 0 ) {
+            if( msg.value > 0 ) {
                 if( ! msg.sender.send(msg.value) ) throw;
             }
 
@@ -656,7 +656,7 @@ contract KyberNetwork {
         }
         else {
             ErrorReport( tx.origin, 0, 0 );
-            if( tradeInfo.remainedSourceAmount &gt; 0 &amp;&amp; source == ETH_TOKEN_ADDRESS ) {
+            if( tradeInfo.remainedSourceAmount > 0 && source == ETH_TOKEN_ADDRESS ) {
                 if( ! msg.sender.send(tradeInfo.remainedSourceAmount) ) throw;
             }
 
@@ -687,7 +687,7 @@ contract KyberNetwork {
         }
         else {
             // will have truble if more than 50k reserves...
-            for( uint i = 0 ; i &lt; reserves.length ; i++ ) {
+            for( uint i = 0 ; i < reserves.length ; i++ ) {
                 if( reserves[i] == reserve ) {
                     if( reserves.length == 0 ) return;
                     reserves[i] = reserves[--reserves.length];

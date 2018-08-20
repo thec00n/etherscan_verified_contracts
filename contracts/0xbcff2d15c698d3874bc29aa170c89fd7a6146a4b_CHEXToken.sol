@@ -21,30 +21,30 @@ contract SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -54,7 +54,7 @@ contract SafeMath {
  */
 contract Token is SafeMath {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = sub(balances[msg.sender], _value);
             balances[_to] = add(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -63,7 +63,7 @@ contract Token is SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = add(balances[_to], _value);
             balances[_from] = sub(balances[_from], _value);
             allowed[_from][msg.sender] = sub(allowed[_from][msg.sender], _value);
@@ -89,20 +89,20 @@ contract Token is SafeMath {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
     // A vulernability of the approve method in the ERC20 standard was identified by
     // Mikhail Vladimirov and Dmitry Khovratovich here:
     // https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM
-    // It&#39;s better to use this method which is not susceptible to over-withdrawing by the approvee.
+    // It's better to use this method which is not susceptible to over-withdrawing by the approvee.
     /// @param _spender The address to approve
     /// @param _currentValue The previous value approved, which can be retrieved with allowance(msg.sender, _spender)
     /// @param _newValue The new value to approve, this will replace the _currentValue
-    /// @return bool Whether the approval was a success (see ERC20&#39;s `approve`)
+    /// @return bool Whether the approval was a success (see ERC20's `approve`)
     function compareAndApprove(address _spender, uint256 _currentValue, uint256 _newValue) public returns(bool) {
         if (allowed[msg.sender][_spender] != _currentValue) {
             return false;
@@ -113,8 +113,8 @@ contract Token is SafeMath {
 
 contract CHEXToken is Token {
 
-    string public constant name = &quot;CHEX Token&quot;;
-    string public constant symbol = &quot;CHX&quot;;
+    string public constant name = "CHEX Token";
+    string public constant symbol = "CHX";
     uint public constant decimals = 18;
     uint public startBlock; //crowdsale start block
     uint public endBlock; //crowdsale end block
@@ -178,7 +178,7 @@ contract CHEXToken is Token {
 
     function buy(address recipient) payable {
         if (recipient == 0x0) throw;
-        if (msg.value &lt; MIN_ETHER) throw;
+        if (msg.value < MIN_ETHER) throw;
         if (_saleState == TokenSaleState.Frozen) throw;
         
         updateTokenSaleState();
@@ -187,8 +187,8 @@ contract CHEXToken is Token {
         uint nextTotal = add(totalTokens, tokens);
         uint nextPresaleTotal = add(presaleSupply, tokens);
 
-        if (nextTotal &gt;= totalSupply) throw;
-        if (nextPresaleTotal &gt;= presaleAllocation) throw;
+        if (nextTotal >= totalSupply) throw;
+        if (nextPresaleTotal >= presaleAllocation) throw;
         
         balances[recipient] = add(balances[recipient], tokens);
         presaleSupply = nextPresaleTotal;
@@ -207,24 +207,24 @@ contract CHEXToken is Token {
     function updateTokenSaleState () {
         if (_saleState == TokenSaleState.Frozen) return;
 
-        if (_saleState == TokenSaleState.Live &amp;&amp; block.number &gt; endBlock) return;
+        if (_saleState == TokenSaleState.Live && block.number > endBlock) return;
         
-        if (_saleState == TokenSaleState.Initial &amp;&amp; block.number &gt;= startBlock) {
+        if (_saleState == TokenSaleState.Initial && block.number >= startBlock) {
             _saleState = TokenSaleState.Presale;
         }
         
-        if (_saleState == TokenSaleState.Presale &amp;&amp; block.number &gt; endBlock) {
+        if (_saleState == TokenSaleState.Presale && block.number > endBlock) {
             _saleState = TokenSaleState.Live;
         }
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= startBlock + transferLockup &amp;&amp; msg.sender != founder &amp;&amp; msg.sender != owner) throw;
+        if (block.number <= startBlock + transferLockup && msg.sender != founder && msg.sender != owner) throw;
         return super.transfer(_to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= startBlock + transferLockup &amp;&amp; msg.sender != founder &amp;&amp; msg.sender != owner) throw;
+        if (block.number <= startBlock + transferLockup && msg.sender != founder && msg.sender != owner) throw;
         return super.transferFrom(_from, _to, _value);
     }
 
@@ -245,14 +245,14 @@ contract CHEXToken is Token {
     }
 
     function allocateReserveTokens() onlyInternal {
-        if (block.number &lt;= endBlock + reserveLockup + (reserveWaveLockup * reserveWave)) throw;
+        if (block.number <= endBlock + reserveLockup + (reserveWaveLockup * reserveWave)) throw;
         if (reserveAllocated) throw;
 
         balances[founder] = add(balances[founder], reserveWaveTokens);
         totalTokens = add(totalTokens, reserveWaveTokens);
 
         reserveWave++;
-        if (reserveWave &gt;= 10) {
+        if (reserveWave >= 10) {
             reserveAllocated = true;
         }
 

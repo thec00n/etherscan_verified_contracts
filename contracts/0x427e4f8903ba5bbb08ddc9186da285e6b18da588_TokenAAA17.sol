@@ -5,17 +5,17 @@
 
 
 //The code seems to be mainly from ConsenSys (which is alright),
-//but I didn&#39;t know they had this kind of quality challenges: the comments are misleading and incomplete,-
+//but I didn't know they had this kind of quality challenges: the comments are misleading and incomplete,-
 
 //1. and places where they should have been used the safeMath, they have provided a commented-out alternative lines.
-//do we need safemath? as far as I understand safe math has a bigger impact on the blockchain execution -&gt; more expensive contract execution
+//do we need safemath? as far as I understand safe math has a bigger impact on the blockchain execution -> more expensive contract execution
 //so that is why it is not encapsulated
 
-//2. They haven&#39;t also followed the solidity style guides, especially on indentations.
+//2. They haven't also followed the solidity style guides, especially on indentations.
 
 //3. Also NatSpec is only partly followed.
 
-//4. Also I think they use &quot;version&quot; wrong, but will check that. I will let them know :)
+//4. Also I think they use "version" wrong, but will check that. I will let them know :)
 
 //Do you plan to transfer tokens immediately upon received transaction?
 
@@ -64,11 +64,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -78,8 +78,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -102,8 +102,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -117,9 +117,9 @@ contract HumanStandardToken is StandardToken {
     /* Public variables of the token */
 
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function HumanStandardToken(
     uint256 _initialAmount,
@@ -139,13 +139,13 @@ contract HumanStandardToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }
 
 // Creates 160,000,000.000000000000000000 TokenAAA17 Tokens
-contract TokenAAA17 is HumanStandardToken(160000000000000000000000000, &quot;TokenAAA17&quot;, 18, &quot;AAA17&quot;) {}
+contract TokenAAA17 is HumanStandardToken(160000000000000000000000000, "TokenAAA17", 18, "AAA17") {}

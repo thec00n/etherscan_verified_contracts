@@ -15,10 +15,10 @@ contract SnooKarma {
     
     //ERC20 code
     //See https://github.com/ethereum/EIPs/blob/e451b058521ba6ccd5d3205456f755b1d2d52bb8/EIPS/eip-20.md
-    mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; mapping (address =&gt; uint)) public allowance;
-    string public constant symbol = &quot;SNK&quot;;
-    string public constant name = &quot;SnooKarma&quot;;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping (address => uint)) public allowance;
+    string public constant symbol = "SNK";
+    string public constant name = "SnooKarma";
     uint8 public constant decimals = 2;
     uint public totalSupply = 0;
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -29,7 +29,7 @@ contract SnooKarma {
     //END OF ERC20 code
  
     //Keep track of Reddit users and their redeemed karma amount
-    mapping(string =&gt; uint) redeemedKarma;
+    mapping(string => uint) redeemedKarma;
     
     //Construct the contract
     constructor() public {
@@ -41,8 +41,8 @@ contract SnooKarma {
     //ERC20 code
     //See https://github.com/ethereum/EIPs/blob/e451b058521ba6ccd5d3205456f755b1d2d52bb8/EIPS/eip-20.md
     function transfer(address destination, uint amount) public returns (bool success) {
-        if (balanceOf[msg.sender] &gt;= amount &amp;&amp; 
-            balanceOf[destination] + amount &gt; balanceOf[destination]) {
+        if (balanceOf[msg.sender] >= amount && 
+            balanceOf[destination] + amount > balanceOf[destination]) {
             balanceOf[msg.sender] -= amount;
             balanceOf[destination] += amount;
             emit Transfer(msg.sender, destination, amount);
@@ -57,9 +57,9 @@ contract SnooKarma {
         address to,
         uint amount
     ) public returns (bool success) {
-        if (balanceOf[from] &gt;= amount &amp;&amp;
-            allowance[from][msg.sender] &gt;= amount &amp;&amp;
-            balanceOf[to] + amount &gt; balanceOf[to]) 
+        if (balanceOf[from] >= amount &&
+            allowance[from][msg.sender] >= amount &&
+            balanceOf[to] + amount > balanceOf[to]) 
         {
             balanceOf[from] -= amount;
             allowance[from][msg.sender] -= amount;
@@ -82,7 +82,7 @@ contract SnooKarma {
     //https://github.com/OpenZeppelin/zeppelin-solidity/blob/6ad275befb9b24177b2a6a72472673a28108937d/contracts/math/SafeMath.sol
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
     
@@ -101,7 +101,7 @@ contract SnooKarma {
     //The owner can change the oracle
     //This works only if removeOracle() was never called
     function changeOracle(address newOracle) public onlyBy(owner) {
-        require(oracle != address(0) &amp;&amp; newOracle != address(0));
+        require(oracle != address(0) && newOracle != address(0));
         oracle = newOracle;
     }
 
@@ -128,14 +128,14 @@ contract SnooKarma {
             ) == oracle
         );
         //The signature must not be expired
-        require(block.timestamp &lt; sigExp);
+        require(block.timestamp < sigExp);
         //The amount of karma needs to be more than the previous redeemed amount
-        require(karma &gt; redeemedKarma[username]);
+        require(karma > redeemedKarma[username]);
         //The new karma that is available to be redeemed
         uint newUserKarma = karma - redeemedKarma[username];
-        //The user&#39;s karma balance is updated with the new karma
+        //The user's karma balance is updated with the new karma
         balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], newUserKarma);
-        //The maintainer&#39;s extra karma is computed (1 extra karma for each 100 redeemed by a user)
+        //The maintainer's extra karma is computed (1 extra karma for each 100 redeemed by a user)
         uint newMaintainerKarma = newUserKarma / 100;
         //The balance of the maintainer is updated
         balanceOf[maintainer] = safeAdd(balanceOf[maintainer], newMaintainerKarma);

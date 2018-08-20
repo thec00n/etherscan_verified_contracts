@@ -14,12 +14,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,9 +55,9 @@ contract MainSale is Ownable {
     
     address reserve = 0x34bef601666D7b2E719Ff919A04266dD07706a79; // 15% all
     
-    mapping(address=&gt;bool) public whitelist;
+    mapping(address=>bool) public whitelist;
     
-    mapping(address =&gt; uint256) public investedEther;
+    mapping(address => uint256) public investedEther;
     
     uint256 public startSale = 1537228801; // Tuesday, 18-Sep-18 00:00:01 UTC
     
@@ -96,7 +96,7 @@ contract MainSale is Ownable {
     
     
     modifier isUnderHardCap() {
-        require(weisRaised &lt;= hardCap);
+        require(weisRaised <= hardCap);
         _;
     }
     
@@ -141,7 +141,7 @@ contract MainSale is Ownable {
     }
     
     /*******************************************************************************
-     * Whitelist&#39;s section */
+     * Whitelist's section */
     
     function authorize(address wlCandidate) public backEnd {
         require(wlCandidate != address(0x0));
@@ -162,16 +162,16 @@ contract MainSale is Ownable {
     }
     
     /*******************************************************************************
-     * Payable&#39;s section */
+     * Payable's section */
     
     function isMainSale() public constant returns(bool) {
-        return now &gt;= startSale &amp;&amp; now &lt;= endSale;
+        return now >= startSale && now <= endSale;
     }
     
     function () public payable isUnderHardCap {
         require(isMainSale());
         require(isWhitelisted(msg.sender));
-        require(msg.value &gt;= 10000000000000000);
+        require(msg.value >= 10000000000000000);
         mainSale(msg.sender, msg.value);
         investedEther[msg.sender] = investedEther[msg.sender].add(msg.value);
     }
@@ -194,13 +194,13 @@ contract MainSale is Ownable {
     
     
     function discountSum(uint256 _tokens) pure private returns(uint256) {
-        if(_tokens &gt;= 10000000*1e18) { // &gt; 100k$ = 10,000,000 TAL
+        if(_tokens >= 10000000*1e18) { // > 100k$ = 10,000,000 TAL
             return 7;
         }
-        if(_tokens &gt;= 5000000*1e18) { // 50-100k$ = 5,000,000 TAL
+        if(_tokens >= 5000000*1e18) { // 50-100k$ = 5,000,000 TAL
             return 5;
         }
-        if(_tokens &gt;= 1000000*1e18) { // 10-50k$ = 1,000,000 TAL
+        if(_tokens >= 1000000*1e18) { // 10-50k$ = 1,000,000 TAL
             return 3;
         } else
             return 0;
@@ -208,17 +208,17 @@ contract MainSale is Ownable {
     
     
     function discountCollect() view private returns(uint256) {
-        // 20% bonus, if collected sum &lt; 3 mln $
-        if(dollarRaised &lt;= step1Sum) {
+        // 20% bonus, if collected sum < 3 mln $
+        if(dollarRaised <= step1Sum) {
             return 20;
-        } // 15% bonus, if collected sum &lt; 10 mln $
-        if(dollarRaised &lt;= step2Sum) {
+        } // 15% bonus, if collected sum < 10 mln $
+        if(dollarRaised <= step2Sum) {
             return 15;
-        } // 10% bonus, if collected sum &lt; 20 mln $
-        if(dollarRaised &lt;= step3Sum) {
+        } // 10% bonus, if collected sum < 20 mln $
+        if(dollarRaised <= step3Sum) {
             return 10;
-        } // 5% bonus, if collected sum &lt; 30 mln $
-        if(dollarRaised &lt;= step4Sum) {
+        } // 5% bonus, if collected sum < 30 mln $
+        if(dollarRaised <= step4Sum) {
             return 5;
         }
         return 0;
@@ -242,9 +242,9 @@ contract MainSale is Ownable {
     
     
     function refundSale() public {
-        require(soldTokens &lt; softCap &amp;&amp; now &gt; endSale);
+        require(soldTokens < softCap && now > endSale);
         uint256 rate = investedEther[msg.sender];
-        require(investedEther[msg.sender] &gt;= 0);
+        require(investedEther[msg.sender] >= 0);
         investedEther[msg.sender] = 0;
         msg.sender.transfer(rate);
         weisRaised = weisRaised.sub(rate);

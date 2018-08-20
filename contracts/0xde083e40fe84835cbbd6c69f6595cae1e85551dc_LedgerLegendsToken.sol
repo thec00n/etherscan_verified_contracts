@@ -2,18 +2,18 @@ pragma solidity ^0.4.11;
 
 contract LedgerLegendsToken {
   address public owner;
-  mapping(address =&gt; bool) public minters;
+  mapping(address => bool) public minters;
 
   event Approval(address indexed owner, address indexed approved, uint256 tokenId);
   event Transfer(address indexed from, address indexed to, uint256 tokenId);
   event Mint(address indexed owner, uint256 tokenId);
 
   uint256 public tokenIdCounter = 1;
-  mapping (uint256 =&gt; address) public tokenIdToOwner;
-  mapping (uint256 =&gt; bytes32) public tokenIdToData;
-  mapping (uint256 =&gt; address) public tokenIdToApproved;
-  mapping (address =&gt; uint256[]) public ownerToTokenIds;
-  mapping (uint256 =&gt; uint256) public tokenIdToOwnerArrayIndex;
+  mapping (uint256 => address) public tokenIdToOwner;
+  mapping (uint256 => bytes32) public tokenIdToData;
+  mapping (uint256 => address) public tokenIdToApproved;
+  mapping (address => uint256[]) public ownerToTokenIds;
+  mapping (uint256 => uint256) public tokenIdToOwnerArrayIndex;
 
   function LedgerLegendsToken() public {
     owner = msg.sender;
@@ -87,11 +87,11 @@ contract LedgerLegendsToken {
 
   /* ERC721 */
   function name() public pure returns (string) {
-    return &quot;Ledger Legends Cards&quot;;
+    return "Ledger Legends Cards";
   }
 
   function symbol() public pure returns (string) {
-    return &quot;LLC&quot;;
+    return "LLC";
   }
 
   function totalSupply() public view returns (uint256) {
@@ -111,7 +111,7 @@ contract LedgerLegendsToken {
   }
 
   function tokenExists(uint256 _tokenId) public view returns (bool) {
-    return _tokenId &lt; tokenIdCounter;
+    return _tokenId < tokenIdCounter;
   }
 
   function tokenData(uint256 _tokenId) public view returns (bytes32) {

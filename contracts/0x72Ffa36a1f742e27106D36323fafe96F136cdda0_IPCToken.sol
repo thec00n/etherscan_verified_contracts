@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &gt; 0);
+        require(b > 0);
         uint256 c = a / b;
         require(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 }
@@ -55,8 +55,8 @@ contract ERC20 {
  */
 contract StandardToken is ERC20, SafeMath {
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance; 
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance; 
     
     function balanceOf(address _owner) public constant returns (uint256){
         return balanceOf[_owner];
@@ -72,7 +72,7 @@ contract StandardToken is ERC20, SafeMath {
     * http://vessenes.com/the-erc20-short-address-attack-explained/
     */
     modifier onlyPayloadSize(uint size) {
-        require(!(msg.data.length &lt; size + 4));
+        require(!(msg.data.length < size + 4));
         _;
     }
     
@@ -111,7 +111,7 @@ contract StandardToken is ERC20, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) public returns (bool) {
         uint256 _allowance = allowance[_from][msg.sender];
         
-        // Check (_value &gt; _allowance) is already done in safeSub(_allowance, _value)
+        // Check (_value > _allowance) is already done in safeSub(_allowance, _value)
         allowance[_from][msg.sender] = safeSub(_allowance, _value);
         safeTransfer(_from, _to, _value);
         return true;
@@ -178,7 +178,7 @@ contract UpgradeableToken is StandardToken {
      * Upgrade states.
      *
      * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-     * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+     * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
      * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet
      * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
      *
@@ -305,8 +305,8 @@ contract Ownable {
     /**
      * @dev Allows the current owners to transfer control of the contract to a new owner.
      * @param newOwner The address to transfer ownership to.
-     * @param replaceOwnerOne Replace &#39;ownerOne&#39;?
-     * @param replaceOwnerTwo Replace &#39;ownerTwo&#39;?
+     * @param replaceOwnerOne Replace 'ownerOne'?
+     * @param replaceOwnerTwo Replace 'ownerTwo'?
      */
     function transferOwnership(address newOwner, bool replaceOwnerOne, bool replaceOwnerTwo) onlyOwner public {
         require(newOwner != 0x0);
@@ -394,11 +394,11 @@ contract PurchasableToken is PausableToken {
     // minimum amount of ether you have to spend to buy some tokens
     uint256 public minimumEtherAmount;
     address public vendorWallet;
-    uint256 public exchangeRate; // &#39;exchangeRate&#39; tokens = 1 ether
+    uint256 public exchangeRate; // 'exchangeRate' tokens = 1 ether
     
-    /** @dev modifier to allow token purchase only when purchase is unlocked and rate &gt; 0 */
+    /** @dev modifier to allow token purchase only when purchase is unlocked and rate > 0 */
     modifier isPurchasable {
-        require(purchasable &amp;&amp; exchangeRate &gt; 0 &amp;&amp; minimumEtherAmount &gt; 0);
+        require(purchasable && exchangeRate > 0 && minimumEtherAmount > 0);
         _;
     }
     
@@ -420,7 +420,7 @@ contract PurchasableToken is PausableToken {
 
     /** @dev called by the owner to set a new rate */
     function setExchangeRate(uint256 newExchangeRate) onlyOwner public returns (bool) {
-        require(newExchangeRate &gt; 0);
+        require(newExchangeRate > 0);
         exchangeRate = newExchangeRate;
         UpdatedExchangeRate(newExchangeRate);
         return true;
@@ -428,7 +428,7 @@ contract PurchasableToken is PausableToken {
     
     /** @dev called by the owner to set the minimum ether amount to buy some token */
     function setMinimumEtherAmount(uint256 newMinimumEtherAmount) onlyOwner public returns (bool) {
-        require(newMinimumEtherAmount &gt; 0);
+        require(newMinimumEtherAmount > 0);
         minimumEtherAmount = newMinimumEtherAmount;
         return true;
     }
@@ -440,12 +440,12 @@ contract PurchasableToken is PausableToken {
         return true;
     }
     
-    /** @dev buy ipc token by sending at least &#39;minimumEtherAmount&#39; */
+    /** @dev buy ipc token by sending at least 'minimumEtherAmount' */
     function buyIPC() payable isPurchasable whenNotPaused public returns (uint256) {
-        require(msg.value &gt;= minimumEtherAmount);
+        require(msg.value >= minimumEtherAmount);
         uint256 tokenAmount = safeMul(msg.value, exchangeRate);
         tokenAmount = safeDiv(tokenAmount, 1 ether);
-        require(allowance[vendorWallet][this] &gt;= tokenAmount);
+        require(allowance[vendorWallet][this] >= tokenAmount);
         balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], tokenAmount);
         balanceOf[vendorWallet] = safeSub(balanceOf[vendorWallet], tokenAmount);
         Purchase(msg.sender, msg.value, tokenAmount);
@@ -467,11 +467,11 @@ contract Withdrawable is Ownable {
     function withdrawToken(address beneficiary, address _token) onlyOwner public {
         ERC20 token = ERC20(_token);
         uint256 amount = token.balanceOf(this);
-        require(amount&gt;0);
+        require(amount>0);
         token.transfer(beneficiary, amount);
     }
     
-    /** @dev called by the owner to transfer &#39;etherAmount&#39; to &#39;beneficiary&#39; */
+    /** @dev called by the owner to transfer 'etherAmount' to 'beneficiary' */
     function withdrawEther(address beneficiary, uint256 etherAmount) onlyOwner public {
         beneficiary.transfer(etherAmount);
     }
@@ -481,13 +481,13 @@ contract Withdrawable is Ownable {
 /**
  * @title IPCToken
  * @dev IPC Token contract
- * @author Paysura - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46252928322725320636273f353334276825292b">[email&#160;protected]</a>&gt;
+ * @author Paysura - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46252928322725320636273f353334276825292b">[email protected]</a>>
  */
 contract IPCToken is UpgradeableToken, PurchasableToken, Withdrawable {
 
     // Public variables of the token
-    string public name = &quot;International PayReward Coin&quot;;
-    string public symbol = &quot;IPC&quot;;
+    string public name = "International PayReward Coin";
+    string public symbol = "IPC";
     uint8 public decimals = 12;
     // Distributions of the total supply
     // 264 mio for crowdsale

@@ -54,13 +54,13 @@ contract SubPrimeCrypto {
     House[] public houses;
     Trait[] public traits;
 
-    mapping (uint =&gt; uint[4]) public houseTraits;
-    mapping (uint =&gt; Listing) public listings;
+    mapping (uint => uint[4]) public houseTraits;
+    mapping (uint => Listing) public listings;
 
-    mapping (address =&gt; uint) public houseCredits;
-    mapping (address =&gt; uint) public ownedHouses;
-    mapping (uint =&gt; uint) public classVariants;
-    mapping (uint =&gt; address) approvedTransfers;
+    mapping (address => uint) public houseCredits;
+    mapping (address => uint) public ownedHouses;
+    mapping (uint => uint) public classVariants;
+    mapping (uint => address) approvedTransfers;
 
     string[] colors;
     string[] streetNames;
@@ -93,11 +93,11 @@ contract SubPrimeCrypto {
 
     /* ERC-20 Compatibility */
     function name() pure public returns (string) {
-        return &quot;SubPrimeCrypto&quot;;
+        return "SubPrimeCrypto";
     }
 
     function symbol() pure public returns (string) {
-        return &quot;HOUSE&quot;;
+        return "HOUSE";
     }
 
     function totalSupply() view public returns (uint) {
@@ -178,10 +178,10 @@ contract SubPrimeCrypto {
 
     /* Public Functionality */
     function buildHouse() payable public {
-        if (houseCredits[msg.sender] &gt; 0) {
+        if (houseCredits[msg.sender] > 0) {
             houseCredits[msg.sender]--;
         } else {
-            require(msg.value &gt;= buildPrice);
+            require(msg.value >= buildPrice);
             if (presaleOngoing) presaleSales++;
         }
 
@@ -189,7 +189,7 @@ contract SubPrimeCrypto {
     }
 
     function buildAddition(uint _tokenId) onlyByAssetOwner(_tokenId) payable public {
-        require(msg.value &gt;= additionPrice);
+        require(msg.value >= additionPrice);
         House storage house = houses[_tokenId];
 
         upgradeAsset(_tokenId, false);
@@ -205,12 +205,12 @@ contract SubPrimeCrypto {
         House storage house = houses[_tokenId];
         uint rand = notRandomWithSeed(1000, _tokenId);
 
-        // 80% chance &quot;claim&quot; is investigated
-        if (rand &gt; 799) {
+        // 80% chance "claim" is investigated
+        if (rand > 799) {
             upgradeAsset(_tokenId, true);
         } else {
             // investigations yield equal chance of upgrade or permanent loss
-            if (rand &gt; 499) {
+            if (rand > 499) {
                 upgradeAsset(_tokenId, true);
             } else {
                 house.class = HouseClasses.Ashes;
@@ -227,15 +227,15 @@ contract SubPrimeCrypto {
         Listing storage listing = listings[_tokenId];
 
         uint currentPrice = calculateCurrentPrice(listing);
-        require(currentPrice &gt; 0 &amp;&amp; msg.value &gt;= currentPrice);
-        require(listing.isAvailable &amp;&amp; listing.endsAt &gt; now);
+        require(currentPrice > 0 && msg.value >= currentPrice);
+        require(listing.isAvailable && listing.endsAt > now);
         listing.isAvailable = false;
 
         if (houses[_tokenId].owner != address(this)) {
             uint fee = currentPrice / (100 / saleFee);
             houses[_tokenId].owner.transfer(currentPrice - fee);
         } else {
-            if (++presaleSales &gt;= presaleLimit) {
+            if (++presaleSales >= presaleLimit) {
                 presaleOngoing = false;
             }
         }
@@ -302,7 +302,7 @@ contract SubPrimeCrypto {
         uint initialGas = msg.gas;
         generateAndListPresaleHouse();
 
-        while (msg.gas &gt; (initialGas - msg.gas)) {
+        while (msg.gas > (initialGas - msg.gas)) {
             generateAndListPresaleHouse();
         }
     }
@@ -375,8 +375,8 @@ contract SubPrimeCrypto {
         uint houseId = generateHouse(this);
         uint sellPrice = (houses[houseId].propertyValue / 5000) * 1 finney;
 
-        if (sellPrice &gt; 250 finney) sellPrice = 250 finney;
-        if (sellPrice &lt; 50 finney) sellPrice = 50 finney;
+        if (sellPrice > 250 finney) sellPrice = 250 finney;
+        if (sellPrice < 50 finney) sellPrice = 50 finney;
 
         createListing(houseId, sellPrice, sellPrice, 365 * 24);
     }
@@ -410,19 +410,19 @@ contract SubPrimeCrypto {
         propertyValue += squareFootage * 25;
         propertyValue *= 5;
 
-        return uint(houseClass) &gt; 4 ? propertyValue * 5 : propertyValue;
+        return uint(houseClass) > 4 ? propertyValue * 5 : propertyValue;
     }
 
     function randomHouseClass() internal view returns (HouseClasses) {
         uint rand = notRandom(1000);
 
-        if (rand &lt; 200) {
+        if (rand < 200) {
             return HouseClasses.Shack;
-        } else if (rand &gt; 200 &amp;&amp; rand &lt; 400) {
+        } else if (rand > 200 && rand < 400) {
             return HouseClasses.Apartment;
-        } else if (rand &gt; 400 &amp;&amp; rand &lt; 600) {
+        } else if (rand > 400 && rand < 600) {
             return HouseClasses.Bungalow;
-        } else if (rand &gt; 600 &amp;&amp; rand &lt; 800) {
+        } else if (rand > 600 && rand < 800) {
             return HouseClasses.House;
         } else {
             return HouseClasses.Mansion;
@@ -437,15 +437,15 @@ contract SubPrimeCrypto {
 
     function randomBedrooms(HouseClasses houseClass) internal view returns (uint) {
         uint class = uint(houseClass);
-        return class &gt;= 1 ? class + notRandom(4) : 0;
+        return class >= 1 ? class + notRandom(4) : 0;
     }
 
     function randomBathrooms(uint numBedrooms) internal view returns (uint) {
-        return numBedrooms &lt; 2 ? numBedrooms : numBedrooms - notRandom(3);
+        return numBedrooms < 2 ? numBedrooms : numBedrooms - notRandom(3);
     }
 
     function calculateSquareFootage(HouseClasses houseClass, uint numBedrooms, uint numBathrooms) internal pure returns (uint) {
-        uint baseSqft = uint(houseClass) &gt;= 4 ? 50 : 25;
+        uint baseSqft = uint(houseClass) >= 4 ? 50 : 25;
         uint multiplier = uint(houseClass) + 1;
 
         uint bedroomSqft = (numBedrooms + 1) * 10 * baseSqft;
@@ -462,13 +462,13 @@ contract SubPrimeCrypto {
 
         if (allowClassUpgrade) {
             uint class = uint(house.class);
-            if (class &lt;= house.numBedrooms) {
+            if (class <= house.numBedrooms) {
                 house.class = HouseClasses.Bungalow;
-            } else if (class &lt; 2 &amp;&amp; house.numBedrooms &gt; 5) {
+            } else if (class < 2 && house.numBedrooms > 5) {
                 house.class = HouseClasses.Penthouse;
-            } else if (class &lt; 4 &amp;&amp; house.numBedrooms &gt; 10) {
+            } else if (class < 4 && house.numBedrooms > 10) {
                 house.class = HouseClasses.Mansion;
-            } else if (class &lt; 6 &amp;&amp; house.numBedrooms &gt; 15) {
+            } else if (class < 6 && house.numBedrooms > 15) {
                 house.class = HouseClasses.Estate;
             }
         }

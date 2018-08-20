@@ -5,7 +5,7 @@ contract Token {
     /// @return cantidad total de tokens
     function totalSupply() constant returns (uint256 supply) {}
 
-    /// @param _owner La direcci&#243;n desde la cual se recuperara el saldo
+    /// @param _owner La dirección desde la cual se recuperara el saldo
     /// @return El balance
     function balanceOf(address _owner) constant returns (uint256 balance) {}
 
@@ -24,7 +24,7 @@ contract Token {
 
     /// @notice `msg.sender` approves `_addr` to spend `_value` tokens
     /// @param _spender La direccion de la cuenta capaz de transferir los tokens
-    /// @param _value La cantidad de wei que se aprobar&#225; para la transferencia
+    /// @param _value La cantidad de wei que se aprobará para la transferencia
     /// @return Si la transferencia fue exitosa o no
     function approve(address _spender, uint256 _value) returns (bool success) {}
 
@@ -43,11 +43,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //El valor predeterminado asume que TotalSupply no puede exceder el m&#225;ximo (2 ^ 256 - 1).
-        //Si tu token omite la oferta total y puede emitir m&#225;s tokens a medida que pasa el tiempo, debes comprobar si no se ajusta.
+        //El valor predeterminado asume que TotalSupply no puede exceder el máximo (2 ^ 256 - 1).
+        //Si tu token omite la oferta total y puede emitir más tokens a medida que pasa el tiempo, debes comprobar si no se ajusta.
         //Reemplace el si con este en su lugar.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -56,9 +56,9 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        //lo mismo que arriba. Reemplace esta l&#237;nea con lo siguiente si desea protegerse contra envoltorios uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //lo mismo que arriba. Reemplace esta línea con lo siguiente si desea protegerse contra envoltorios uints.
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -81,8 +81,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -101,12 +101,12 @@ contract TecnonucleousCoin is StandardToken {
     NOTA:
      Las siguientes variables son vanidades OPCIONALES. Uno no tiene que incluirlos.
      Permiten personalizar el contrato de token y de ninguna manera influye en la funcionalidad principal.
-     Algunas billeteras / interfaces pueden no molestarse en mirar esta informaci&#243;n.
+     Algunas billeteras / interfaces pueden no molestarse en mirar esta información.
     */
     string public name;                   //nombre elegante: por ejemplo, TecnonucleousCoin
-    uint8 public decimals;                //Cuantos decimales mostrar es decir. Podr&#237;a haber 1000 unidades base con 3 decimales. Significado 0.980 TEC = 980 unidades base Es como comparar 1 wei con 1 &#233;ter.
+    uint8 public decimals;                //Cuantos decimales mostrar es decir. Podría haber 1000 unidades base con 3 decimales. Significado 0.980 TEC = 980 unidades base Es como comparar 1 wei con 1 éter.
     string public symbol;                 //Un identificador: por ejemplo, TEC
-    string public version = &#39;H1.0&#39;;       //humano 0.1 est&#225;ndar. Solo un esquema de control de versiones arbitrario.
+    string public version = 'H1.0';       //humano 0.1 estándar. Solo un esquema de control de versiones arbitrario.
 
 //
 // CAMBIE ESTOS VALORES PARA SU TOKEN
@@ -118,9 +118,9 @@ contract TecnonucleousCoin is StandardToken {
         ) {
         balances[msg.sender] = 100000000000000000000000000;               // Dale al creador todos los tokens iniciales (100000, por ejemplo)
         totalSupply = 100000000000000000000000000;                        // Actualizar el suministro total (100000, por ejemplo)
-        name = &quot;Tecnonucleous Coin&quot;;                                   // Establecer el nombre para fines de visualizaci&#243;n
-        decimals = 18;                            // Cantidad de decimales para fines de visualizaci&#243;n
-        symbol = &quot;TEC&quot;;                               // Establecer el simbolo para fines de visualizacion
+        name = "Tecnonucleous Coin";                                   // Establecer el nombre para fines de visualización
+        decimals = 18;                            // Cantidad de decimales para fines de visualización
+        symbol = "TEC";                               // Establecer el simbolo para fines de visualizacion
     }
 
     /* Aprueba y luego llama al contrato de recepcion */
@@ -131,7 +131,7 @@ contract TecnonucleousCoin is StandardToken {
         //llame a la funcion receiveApproval en el contrato que desea que se le notifique. Esto crea la firma de la funcion manualmente, por lo que no es necesario incluir un contrato aqui solo para esto.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //se supone que cuando hace esto la llamada * deberia * tener exito, de lo contrario uno usaria vainilla aprobar en su lugar.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

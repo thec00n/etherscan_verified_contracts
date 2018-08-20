@@ -13,7 +13,7 @@ contract EliteToken {
     address owner;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -22,8 +22,8 @@ contract EliteToken {
     function EliteToken() {
         /* Unless you add other functions these variables will never change */
         balanceOf[this] = 100;
-        name = &quot;EliteToken&quot;;     
-        symbol = &quot;ELT&quot;;
+        name = "EliteToken";     
+        symbol = "ELT";
         owner = msg.sender;
         
         /* If you want a divisible token then add the amount of decimals the base unit has  */
@@ -33,8 +33,8 @@ contract EliteToken {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         /* if the sender doenst have enough balance then stop */
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;
@@ -49,9 +49,9 @@ contract EliteToken {
         if (msg.value == 0) { return; }
         owner.transfer(msg.value);
         uint256 amount = msg.value / 1000000000000000000;  // calculates the amount
-        if (balanceOf[this] &lt; amount) throw;               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                         // subtracts amount from seller&#39;s balance
+        if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                         // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);                // execute an event reflecting the change
     }
     

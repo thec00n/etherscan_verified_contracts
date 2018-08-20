@@ -52,7 +52,7 @@ contract ERC20Interface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,35 +113,35 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 /**
  * @title WiredToken
- * @author Tsuchinoko &amp; NanJ people
+ * @author Tsuchinoko & NanJ people
  * @dev WiredToken is an ERC223 Token with ERC20 functions and events
  *      Fully backward compatible with ERC20
  */
 contract WiredToken is ERC20Interface, Ownable {
     using SafeMath for uint256;
 
-    string constant public name = &quot;WiredToken&quot;;
-    string constant public symbol = &quot;WRD&quot;;
+    string constant public name = "WiredToken";
+    string constant public symbol = "WRD";
     uint8 constant public decimals = 5;
     uint256 public totalSupply = 41e11 * 1e5;
     uint256 public distributeAmount = 0;
@@ -152,9 +152,9 @@ contract WiredToken is ERC20Interface, Ownable {
     address public activityFunds = 0x01B7ECa9Af127aCbA03aB84E88B0e56132CFb62D;
     address public lockedFundsForthefuture = 0x01B7ECa9Af127aCbA03aB84E88B0e56132CFb62D;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; uint256) public unlockUnixTime;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => uint256) public unlockUnixTime;
 
     event FrozenFunds(address indexed target, bool frozen);
     event LockedFunds(address indexed target, uint256 locked);
@@ -188,11 +188,11 @@ contract WiredToken is ERC20Interface, Ownable {
      * @param unixTimes Unix times when locking up will be finished
      */
     function lockupAccounts(address[] targets, uint[] unixTimes) onlyOwner public {
-        require(targets.length &gt; 0
-                &amp;&amp; targets.length == unixTimes.length);
+        require(targets.length > 0
+                && targets.length == unixTimes.length);
 
-        for(uint j = 0; j &lt; targets.length; j++){
-            require(unlockUnixTime[targets[j]] &lt; unixTimes[j]);
+        for(uint j = 0; j < targets.length; j++){
+            require(unlockUnixTime[targets[j]] < unixTimes[j]);
             unlockUnixTime[targets[j]] = unixTimes[j];
             emit LockedFunds(targets[j], unixTimes[j]);
         }
@@ -203,10 +203,10 @@ contract WiredToken is ERC20Interface, Ownable {
      *      Added due to backwards compatibility reasons
      */
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(_value &gt; 0
-                &amp;&amp; now &gt; unlockUnixTime[msg.sender]
-                &amp;&amp; now &gt; unlockUnixTime[_to]);
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(_value > 0
+                && now > unlockUnixTime[msg.sender]
+                && now > unlockUnixTime[_to]);
+        require(balanceOf[msg.sender] >= _value);
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -224,11 +224,11 @@ contract WiredToken is ERC20Interface, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)
-                &amp;&amp; _value &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _value
-                &amp;&amp; allowance[_from][msg.sender] &gt;= _value
-                &amp;&amp; now &gt; unlockUnixTime[_from]
-                &amp;&amp; now &gt; unlockUnixTime[_to]);
+                && _value > 0
+                && balanceOf[_from] >= _value
+                && allowance[_from][msg.sender] >= _value
+                && now > unlockUnixTime[_from]
+                && now > unlockUnixTime[_to]);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -265,8 +265,8 @@ contract WiredToken is ERC20Interface, Ownable {
      * @param _unitAmount The amount of token to be burned.
      */
     function burn(address _from, uint256 _unitAmount) onlyOwner public {
-        require(_unitAmount &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _unitAmount);
+        require(_unitAmount > 0
+                && balanceOf[_from] >= _unitAmount);
 
         balanceOf[_from] = balanceOf[_from].sub(_unitAmount);
         totalSupply = totalSupply.sub(_unitAmount);
@@ -285,7 +285,7 @@ contract WiredToken is ERC20Interface, Ownable {
      * @param _unitAmount The amount of tokens to mint.
      */
     function mint(address _to, uint256 _unitAmount) onlyOwner canMint public returns (bool) {
-        require(_unitAmount &gt; 0);
+        require(_unitAmount > 0);
 
         totalSupply = totalSupply.add(_unitAmount);
         balanceOf[_to] = balanceOf[_to].add(_unitAmount);
@@ -307,17 +307,17 @@ contract WiredToken is ERC20Interface, Ownable {
      * @dev Function to distribute tokens to the list of addresses by the provided amount
      */
     function distributeAirdrop(address[] addresses, uint256 amount) public returns (bool) {
-        require(amount &gt; 0
-                &amp;&amp; addresses.length &gt; 0
-                &amp;&amp; now &gt; unlockUnixTime[msg.sender]);
+        require(amount > 0
+                && addresses.length > 0
+                && now > unlockUnixTime[msg.sender]);
 
         amount = amount.mul(1e8);
         uint256 totalAmount = amount.mul(addresses.length);
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
-        for (uint j = 0; j &lt; addresses.length; j++) {
+        for (uint j = 0; j < addresses.length; j++) {
             require(addresses[j] != 0x0
-                    &amp;&amp; now &gt; unlockUnixTime[addresses[j]]);
+                    && now > unlockUnixTime[addresses[j]]);
 
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amount);
             emit Transfer(msg.sender, addresses[j], amount);
@@ -327,23 +327,23 @@ contract WiredToken is ERC20Interface, Ownable {
     }
 
     function distributeAirdrop(address[] addresses, uint[] amounts) public returns (bool) {
-        require(addresses.length &gt; 0
-                &amp;&amp; addresses.length == amounts.length
-                &amp;&amp; now &gt; unlockUnixTime[msg.sender]);
+        require(addresses.length > 0
+                && addresses.length == amounts.length
+                && now > unlockUnixTime[msg.sender]);
 
         uint256 totalAmount = 0;
 
-        for(uint j = 0; j &lt; addresses.length; j++){
-            require(amounts[j] &gt; 0
-                    &amp;&amp; addresses[j] != 0x0
-                    &amp;&amp; now &gt; unlockUnixTime[addresses[j]]);
+        for(uint j = 0; j < addresses.length; j++){
+            require(amounts[j] > 0
+                    && addresses[j] != 0x0
+                    && now > unlockUnixTime[addresses[j]]);
 
             amounts[j] = amounts[j].mul(1e8);
             totalAmount = totalAmount.add(amounts[j]);
         }
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
-        for (j = 0; j &lt; addresses.length; j++) {
+        for (j = 0; j < addresses.length; j++) {
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amounts[j]);
             emit Transfer(msg.sender, addresses[j], amounts[j]);
         }

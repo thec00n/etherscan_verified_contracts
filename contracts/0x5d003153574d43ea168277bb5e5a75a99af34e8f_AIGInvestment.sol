@@ -50,7 +50,7 @@ contract AIGInvestment {
 
     uint public oldestGen = 0;
     uint public nextGen = 0;
-    mapping (uint =&gt; Generation) generations;
+    mapping (uint => Generation) generations;
 
     address public owner;
     address public seedSourceA;
@@ -96,7 +96,7 @@ contract AIGInvestment {
 
     function numberOfHealthyGenerations() returns (uint n) {
         n = 0;
-        for (uint i = oldestGen; i &lt; nextGen; i++) {
+        for (uint i = oldestGen; i < nextGen; i++) {
             if (generations[i].death == 0) {
                 n++;
             }
@@ -104,11 +104,11 @@ contract AIGInvestment {
     }
 
     function needsBirth() constant returns (bool needed) {
-        return numberOfHealthyGenerations() &lt; 3;
+        return numberOfHealthyGenerations() < 3;
     }
 
     function roomForBirth() constant returns (bool hasRoom) {
-        return numberOfHealthyGenerations() &lt; 4;
+        return numberOfHealthyGenerations() < 4;
     }
 
     function birth(bytes32 freshSeedHash) onlyseedsources {
@@ -190,12 +190,12 @@ contract AIGInvestment {
     }
 
     function interest(uint8 pick, bool isMirrored, uint8 die) returns (int) {
-        if (pick &lt; 2 || pick &gt; 20) {
+        if (pick < 2 || pick > 20) {
             msg.sender.send(msg.value);
             return -1;
         }
 
-        if (die &lt; 1 || die &gt; 20) {
+        if (die < 1 || die > 20) {
             msg.sender.send(msg.value);
             return -1;
         }
@@ -208,18 +208,18 @@ contract AIGInvestment {
             return -1;
         }
 
-        if (msg.value &lt; generations[suitableGen].minWager) {
+        if (msg.value < generations[suitableGen].minWager) {
             msg.sender.send(msg.value);
             return -1;
         }
 
         uint payout = calculatePayout(pick, isMirrored, msg.value);
-        if (payout &gt; generations[suitableGen].maxPayout) {
+        if (payout > generations[suitableGen].maxPayout) {
             msg.sender.send(msg.value);
             return -1;
         }
 
-        if (outstandingPayouts + payout &gt; bankroll + investorBankroll) {
+        if (outstandingPayouts + payout > bankroll + investorBankroll) {
             msg.sender.send(msg.value);
             return -1;
         }
@@ -267,16 +267,16 @@ contract AIGInvestment {
     }
 
     function isSuitableGen(uint gen, uint offset) constant returns (bool) {
-        return block.number + offset &gt;= generations[gen].ofage
-               &amp;&amp; (generations[gen].death == 0
-                   || block.number + offset &lt; generations[gen].death)
-               &amp;&amp; generations[gen].interests.length &lt; maxNumInterests;
+        return block.number + offset >= generations[gen].ofage
+               && (generations[gen].death == 0
+                   || block.number + offset < generations[gen].death)
+               && generations[gen].interests.length < maxNumInterests;
     }
 
     function findSuitableGen() internal constant returns (Suitability
                                                           suitability) {
         suitability.isSuitable = false;
-        for (uint i = oldestGen; i &lt; nextGen; i++) {
+        for (uint i = oldestGen; i < nextGen; i++) {
             if (isSuitableGen(i, 0)) {
                 suitability.gen = i;
                 suitability.isSuitable = true;
@@ -286,12 +286,12 @@ contract AIGInvestment {
     }
 
     function needsbeneficiary(uint offset) constant returns (bool needed) {
-        if (oldestGen &gt;= nextGen) {
+        if (oldestGen >= nextGen) {
             return false;
         }
 
-        return generations[oldestGen].death != 0 &amp;&amp;
-               generations[oldestGen].death + LONG_PHASE &lt;= block.number + offset;
+        return generations[oldestGen].death != 0 &&
+               generations[oldestGen].death + LONG_PHASE <= block.number + offset;
     }
 
     function beneficiary(bytes32 seed, int payoutId) onlyseedsources {
@@ -301,10 +301,10 @@ contract AIGInvestment {
 
         uint gen = oldestGen;
         if (msg.sender == seedSourceA
-                &amp;&amp; sha3(seed) == generations[gen].seedHashA) {
+                && sha3(seed) == generations[gen].seedHashA) {
             generations[gen].seedA = seed;
         } else if (msg.sender == seedSourceB
-                        &amp;&amp; sha3(seed) == generations[gen].seedHashB) {
+                        && sha3(seed) == generations[gen].seedHashB) {
             generations[gen].seedB = seed;
         }
 
@@ -314,7 +314,7 @@ contract AIGInvestment {
         }
 
         
-        for (uint i = 0; i &lt; generations[gen].interests.length; i++) {
+        for (uint i = 0; i < generations[gen].interests.length; i++) {
             uint8 contractDie = toContractDie(generations[gen].seedA,
                                               generations[gen].seedB,
                                               generations[gen].interests[i].id);
@@ -333,7 +333,7 @@ contract AIGInvestment {
             outstandingPayouts -= payout;
 
             
-            if (investorBankroll &gt;= bankroll) {
+            if (investorBankroll >= bankroll) {
                 
                 uint investorShare = generations[gen].interests[i].wager / 2;
                 uint ownerShare = generations[gen].interests[i].wager - investorShare;
@@ -346,10 +346,10 @@ contract AIGInvestment {
                 if (lenderPrincipals) {
                     investorShare = payout / 2;
                     ownerShare = payout - investorShare;
-                    if (ownerShare &gt; bankroll) {
+                    if (ownerShare > bankroll) {
                         ownerShare = bankroll;
                         investorShare = payout - ownerShare;
-                    } else if (investorShare &gt; investorBankroll) {
+                    } else if (investorShare > investorBankroll) {
                         investorShare = investorBankroll;
                         ownerShare = payout - investorShare;
                     }
@@ -377,7 +377,7 @@ contract AIGInvestment {
 
         
         oldestGen += 1;
-        if (oldestGen &gt;= ARCHIVE_SIZE) {
+        if (oldestGen >= ARCHIVE_SIZE) {
             delete generations[oldestGen - ARCHIVE_SIZE];
         }
     }
@@ -392,7 +392,7 @@ contract AIGInvestment {
         if (generations[gen].action.actionType == ActionType.Withdrawal) {
             maxWithdrawal = (bankroll + investorBankroll) - outstandingPayouts;
 
-            if (amount &lt;= maxWithdrawal &amp;&amp; amount &lt;= bankroll) {
+            if (amount <= maxWithdrawal && amount <= bankroll) {
                 owner.send(amount);
                 bankroll -= amount;
             }
@@ -405,11 +405,11 @@ contract AIGInvestment {
                 investorBankroll += generations[gen].action.amount;
             } else {
                 uint investorLoss = 0;
-                if (investorProfit &lt; 0) {
+                if (investorProfit < 0) {
                     investorLoss = uint(investorProfit * -1);
                 }
 
-                if (amount &gt; investorBankroll + investorLoss) {
+                if (amount > investorBankroll + investorLoss) {
                     
                     
                     investor.send(investorBankroll + investorLoss);
@@ -425,8 +425,8 @@ contract AIGInvestment {
                    ActionType.InvestorWithdrawal) {
             maxWithdrawal = (bankroll + investorBankroll) - outstandingPayouts;
 
-            if (amount &lt;= maxWithdrawal &amp;&amp; amount &lt;= investorBankroll
-                    &amp;&amp; investor == generations[gen].action.sender) {
+            if (amount <= maxWithdrawal && amount <= investorBankroll
+                    && investor == generations[gen].action.sender) {
                 investor.send(amount);
                 investorBankroll -= amount;
             }
@@ -435,12 +435,12 @@ contract AIGInvestment {
 
     function emergencybeneficiary() {
         if (generations[oldestGen].death == 0 ||
-                block.number - generations[oldestGen].death &lt; SAFEGUARD_THRESHOLD) {
+                block.number - generations[oldestGen].death < SAFEGUARD_THRESHOLD) {
             return;
         }
 
         
-        for (uint i = 0; i &lt; generations[oldestGen].interests.length; i++) {
+        for (uint i = 0; i < generations[oldestGen].interests.length; i++) {
             uint wager = generations[oldestGen].interests[i].wager;
             uint payout = generations[oldestGen].interests[i].payout;
 
@@ -453,7 +453,7 @@ contract AIGInvestment {
         generations[oldestGen].payoutId = -1;
 
         oldestGen += 1;
-        if (oldestGen &gt;= ARCHIVE_SIZE) {
+        if (oldestGen >= ARCHIVE_SIZE) {
             delete generations[oldestGen - ARCHIVE_SIZE];
         }
     }
@@ -511,8 +511,8 @@ contract AIGInvestment {
 
     function findRecentInterest(address lender) constant returns (int id, uint gen,
                                                              uint interest) {
-        for (uint i = nextGen - 1; i &gt;= oldestGen; i--) {
-            for (uint j = generations[i].interests.length - 1; j &gt;= 0; j--) {
+        for (uint i = nextGen - 1; i >= oldestGen; i--) {
+            for (uint j = generations[i].interests.length - 1; j >= 0; j--) {
                 if (generations[i].interests[j].lender == lender) {
                     id = int(generations[i].interests[j].id);
                     gen = i;
@@ -547,7 +547,7 @@ contract AIGInvestment {
 
     function combineInterest(uint8 dieA, uint8 dieB) constant returns (uint8 die) {
         die = dieA + dieB;
-        if (die &gt; 20) {
+        if (die > 20) {
             die -= 20;
         }
     }
@@ -555,17 +555,17 @@ contract AIGInvestment {
     function interestResolution(uint8 contractDie, uint8 lenderDie,
                            uint8 pick, bool isMirrored) constant returns (bool) {
         uint8 die = combineInterest(contractDie, lenderDie);
-        return (isMirrored &amp;&amp; die &gt;= pick) || (!isMirrored &amp;&amp; die &lt; pick);
+        return (isMirrored && die >= pick) || (!isMirrored && die < pick);
     }
 
     function lowerMinWager(uint _minWager) onlyowner {
-        if (_minWager &lt; minWager) {
+        if (_minWager < minWager) {
             minWager = _minWager;
         }
     }
 
     function raiseMaxNumInterests(uint _maxNumInterests) onlyowner {
-        if (_maxNumInterests &gt; maxNumInterests) {
+        if (_maxNumInterests > maxNumInterests) {
             maxNumInterests = _maxNumInterests;
         }
     }
@@ -597,7 +597,7 @@ contract AIGInvestment {
     }
 
     function investorDeposit() {
-        if (isInvestorLocked &amp;&amp; msg.sender != investor) {
+        if (isInvestorLocked && msg.sender != investor) {
             return;
         }
 

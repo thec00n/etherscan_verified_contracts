@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ contract Lockable is Owned{
   event ContractLocked(uint256 _untilBlock, string _reason);
 
   modifier lockAffected {
-      require(block.number &gt; lockedUntilBlock);
+      require(block.number > lockedUntilBlock);
       _;
   }
 
@@ -120,9 +120,9 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
     uint tokensIssued;
   }
 
-  mapping(address =&gt; ContributorData) public contributorList;
+  mapping(address => ContributorData) public contributorList;
   uint nextContributorIndex;
-  mapping(uint =&gt; address) contributorIndexes;
+  mapping(uint => address) contributorIndexes;
 
   state public crowdsaleState = state.pendingStart;
   enum state { pendingStart, crowdsale, crowdsaleEnded }
@@ -150,7 +150,7 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   uint blocksInADay;
 
   uint nextContributorToClaim;
-  mapping(address =&gt; bool) hasClaimedEthWhenFail;
+  mapping(address => bool) hasClaimedEthWhenFail;
 
   uint crowdsaleTokenCap =          120000000 * 10**decimals;
   uint foundersAndTeamTokens =       32000000 * 10**decimals;
@@ -185,20 +185,20 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   // Check crowdsale state and calibrate it
   //
   function checkCrowdsaleState() internal returns (bool){
-    if (ethRaised == maxCap &amp;&amp; crowdsaleState != state.crowdsaleEnded){                         // Check if max cap is reached
+    if (ethRaised == maxCap && crowdsaleState != state.crowdsaleEnded){                         // Check if max cap is reached
       crowdsaleState = state.crowdsaleEnded;
       CrowdsaleEnded(block.number);                                                             // Raise event
       return true;
     }
 
-    if(block.number &gt; crowdsaleStartBlock &amp;&amp; block.number &lt;= crowdsaleEndedBlock){        // Check if we are in crowdsale state
+    if(block.number > crowdsaleStartBlock && block.number <= crowdsaleEndedBlock){        // Check if we are in crowdsale state
       if (crowdsaleState != state.crowdsale){                                                   // Check if state needs to be changed
         crowdsaleState = state.crowdsale;                                                       // Set new state
         CrowdsaleStarted(block.number);                                                         // Raise event
         return true;
       }
     }else{
-      if (crowdsaleState != state.crowdsaleEnded &amp;&amp; block.number &gt; crowdsaleEndedBlock){        // Check if crowdsale is over
+      if (crowdsaleState != state.crowdsaleEnded && block.number > crowdsaleEndedBlock){        // Check if crowdsale is over
         crowdsaleState = state.crowdsaleEnded;                                                  // Set new state
         CrowdsaleEnded(block.number);                                                           // Raise event
         return true;
@@ -222,12 +222,12 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   //
   //
   function calculateEthToVibe(uint _eth, uint _blockNumber) constant returns(uint) {
-    if (_blockNumber &lt; crowdsaleStartBlock) return _eth * 3158;
-    if (_blockNumber &gt;= crowdsaleStartBlock &amp;&amp; _blockNumber &lt; crowdsaleStartBlock + blocksInADay * 2) return _eth * 3158;
-    if (_blockNumber &gt;= crowdsaleStartBlock + blocksInADay * 2 &amp;&amp; _blockNumber &lt; crowdsaleStartBlock + blocksInADay * 7) return _eth * 3074;
-    if (_blockNumber &gt;= crowdsaleStartBlock + blocksInADay * 7 &amp;&amp; _blockNumber &lt; crowdsaleStartBlock + blocksInADay * 14) return _eth * 2989;
-    if (_blockNumber &gt;= crowdsaleStartBlock + blocksInADay * 14 &amp;&amp; _blockNumber &lt; crowdsaleStartBlock + blocksInADay * 21) return _eth * 2905;
-    if (_blockNumber &gt;= crowdsaleStartBlock + blocksInADay * 21 ) return _eth * 2820;
+    if (_blockNumber < crowdsaleStartBlock) return _eth * 3158;
+    if (_blockNumber >= crowdsaleStartBlock && _blockNumber < crowdsaleStartBlock + blocksInADay * 2) return _eth * 3158;
+    if (_blockNumber >= crowdsaleStartBlock + blocksInADay * 2 && _blockNumber < crowdsaleStartBlock + blocksInADay * 7) return _eth * 3074;
+    if (_blockNumber >= crowdsaleStartBlock + blocksInADay * 7 && _blockNumber < crowdsaleStartBlock + blocksInADay * 14) return _eth * 2989;
+    if (_blockNumber >= crowdsaleStartBlock + blocksInADay * 14 && _blockNumber < crowdsaleStartBlock + blocksInADay * 21) return _eth * 2905;
+    if (_blockNumber >= crowdsaleStartBlock + blocksInADay * 21 ) return _eth * 2820;
   }
 
   //
@@ -237,16 +237,16 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
     uint contributionAmount = _amount;
     uint returnAmount = 0;
 
-    if (_amount &gt; (maxCap - ethRaised)){                                           // Check if max contribution is lower than _amount sent
+    if (_amount > (maxCap - ethRaised)){                                           // Check if max contribution is lower than _amount sent
       contributionAmount = maxCap - ethRaised;                                     // Set that user contibutes his maximum alowed contribution
       returnAmount = _amount - contributionAmount;                                 // Calculate howmuch he must get back
     }
 
-    if (ethRaised + contributionAmount &gt; minCap &amp;&amp; minCap &gt; ethRaised){
+    if (ethRaised + contributionAmount > minCap && minCap > ethRaised){
       MinCapReached(block.number);
     }
 
-    if (ethRaised + contributionAmount == maxCap &amp;&amp; ethRaised &lt; maxCap){
+    if (ethRaised + contributionAmount == maxCap && ethRaised < maxCap){
       MaxCapReached(block.number);
     }
 
@@ -260,7 +260,7 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
     ethRaised += contributionAmount;                                              // Add to eth raised
 
     uint tokenAmount = calculateEthToVibe(contributionAmount, block.number);      // Calculate how much tokens must contributor get
-    if (tokenAmount &gt; 0){
+    if (tokenAmount > 0){
       IToken(tokenAddress).mintTokens(_contributor, tokenAmount);                 // Issue new tokens
       contributorList[_contributor].tokensIssued += tokenAmount;                  // log token issuance
     }
@@ -268,7 +268,7 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   }
 
   function pushAngelInvestmentData(address _address, uint _ethContributed) onlyOwner{
-      assert(ethRaised + _ethContributed &lt;= maxCap);
+      assert(ethRaised + _ethContributed <= maxCap);
       processTransaction(_address, _ethContributed);
   }
   function depositAngelInvestmentEth() payable onlyOwner {}
@@ -286,7 +286,7 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   //
   function withdrawEth() onlyOwner{
     require(this.balance != 0);
-    require(ethRaised &gt;= minCap);
+    require(ethRaised >= minCap);
 
     multisigAddress.transfer(this.balance);
   }
@@ -295,8 +295,8 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   // Users can claim their contribution if min cap is not raised
   //
   function claimEthIfFailed(){
-    require(block.number &gt; crowdsaleEndedBlock &amp;&amp; ethRaised &lt; minCap);    // Check if crowdsale has failed
-    require(contributorList[msg.sender].contributionAmount &gt; 0);          // Check if contributor has contributed to crowdsaleEndedBlock
+    require(block.number > crowdsaleEndedBlock && ethRaised < minCap);    // Check if crowdsale has failed
+    require(contributorList[msg.sender].contributionAmount > 0);          // Check if contributor has contributed to crowdsaleEndedBlock
     require(!hasClaimedEthWhenFail[msg.sender]);                          // Check if contributor has already claimed his eth
 
     uint ethContributed = contributorList[msg.sender].contributionAmount; // Get contributors contribution
@@ -310,10 +310,10 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   // Owner can batch return contributors contributions(eth)
   //
   function batchReturnEthIfFailed(uint _numberOfReturns) onlyOwner{
-    require(block.number &gt; crowdsaleEndedBlock &amp;&amp; ethRaised &lt; minCap);                // Check if crowdsale has failed
+    require(block.number > crowdsaleEndedBlock && ethRaised < minCap);                // Check if crowdsale has failed
     address currentParticipantAddress;
     uint contribution;
-    for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++){
+    for (uint cnt = 0; cnt < _numberOfReturns; cnt++){
       currentParticipantAddress = contributorIndexes[nextContributorToClaim];         // Get next unclaimed participant
       if (currentParticipantAddress == 0x0) return;                                   // Check if all the participants were compensated
       if (!hasClaimedEthWhenFail[currentParticipantAddress]) {                        // Check if participant has already claimed
@@ -332,14 +332,14 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
   //
   function withdrawRemainingBalanceForManualRecovery() onlyOwner{
     require(this.balance != 0);                                  // Check if there are any eth to claim
-    require(block.number &gt; crowdsaleEndedBlock);                 // Check if crowdsale is over
+    require(block.number > crowdsaleEndedBlock);                 // Check if crowdsale is over
     require(contributorIndexes[nextContributorToClaim] == 0x0);  // Check if all the users were refunded
     multisigAddress.transfer(this.balance);                      // Withdraw to multisig
   }
 
   function claimTeamTokens(address _to, uint _choice) onlyOwner{
     require(crowdsaleState == state.crowdsaleEnded);
-    require(ethRaised &gt;= minCap);
+    require(ethRaised >= minCap);
 
     uint mintAmount;
     if(_choice == 1){
@@ -364,7 +364,7 @@ contract Crowdsale is ReentrancyHandlingContract, Owned{
       assert(investorTokensClaimed);
       assert(viberateContributorTokensClaimed);
       assert(futurePartnerTokensClaimed);
-      assert(tokenTotalSupply &gt; IERC20Token(tokenAddress).totalSupply());
+      assert(tokenTotalSupply > IERC20Token(tokenAddress).totalSupply());
       mintAmount = tokenTotalSupply - IERC20Token(tokenAddress).totalSupply();
       foundersAndTeamTokensClaimed = true;
     }

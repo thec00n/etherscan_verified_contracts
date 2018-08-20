@@ -18,12 +18,12 @@ contract InsuranceAgent {
         uint veto; // clientId
     }
 
-    mapping (uint =&gt; Payout) public payouts; // clientId -&gt; requested payout
-    mapping (uint =&gt; Payment[]) public payments; // clientId -&gt; list of his Payments
-    mapping (uint =&gt; Client) public clients; // clientId -&gt; info about Client
+    mapping (uint => Payout) public payouts; // clientId -> requested payout
+    mapping (uint => Payment[]) public payments; // clientId -> list of his Payments
+    mapping (uint => Client) public clients; // clientId -> info about Client
 
     modifier costs(uint _amount) {
-        if (msg.value &lt; _amount)
+        if (msg.value < _amount)
             throw;
         _
     }
@@ -68,7 +68,7 @@ contract InsuranceAgent {
 
     function payRequstedSum(uint clientId, uint date) onlyBy(owner) {
         if (payouts[clientId].veto != 0) { throw; }
-        if (date - payouts[clientId].date &lt; 60 * 60 * 24 * 3) { throw; }
+        if (date - payouts[clientId].date < 60 * 60 * 24 * 3) { throw; }
         clients[clientId].addr.send(payouts[clientId].amount);
         delete payouts[clientId];
     }

@@ -5,7 +5,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -354,12 +354,12 @@ contract PausableToken is StandardToken, Pausable {
 
 /**
  * @title ODEM Token contract - ERC20 compatible token contract.
- * @author Gustavo Guimaraes - &lt;<span class="__cf_email__" data-cfemail="deb9abadaabfa8b19eb1babbb3f0b7b1">[email&#160;protected]</span>&gt;
+ * @author Gustavo Guimaraes - <<span class="__cf_email__" data-cfemail="deb9abadaabfa8b19eb1babbb3f0b7b1">[email protected]</span>>
  */
 
 contract ODEMToken is PausableToken, MintableToken {
-    string public constant name = &quot;ODEM Token&quot;;
-    string public constant symbol = &quot;ODEM&quot;;
+    string public constant name = "ODEM Token";
+    string public constant symbol = "ODEM";
     uint8 public constant decimals = 18;
 }
 
@@ -367,7 +367,7 @@ contract ODEMToken is PausableToken, MintableToken {
 
 /**
  * @title Team and Advisors Token Allocation contract
- * @author Gustavo Guimaraes - &lt;<span class="__cf_email__" data-cfemail="533426202732253c133c37363e7d3a3c">[email&#160;protected]</span>&gt;
+ * @author Gustavo Guimaraes - <<span class="__cf_email__" data-cfemail="533426202732253c133c37363e7d3a3c">[email protected]</span>>
  */
 
 contract TeamAndAdvisorsAllocation is Ownable {
@@ -379,7 +379,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
     uint256 public allocatedTokens;
     uint256 private totalTeamAndAdvisorsAllocation = 38763636e18; // 38 mm
 
-    mapping (address =&gt; uint256) public teamAndAdvisorsAllocations;
+    mapping (address => uint256) public teamAndAdvisorsAllocations;
 
     ODEMToken public odem;
 
@@ -394,7 +394,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
     }
 
     /**
-     * @dev Adds founders&#39; token allocation
+     * @dev Adds founders' token allocation
      * @param teamOrAdvisorsAddress Address of a founder
      * @param allocationValue Number of tokens allocated to a founder
      * @return true if address is correctly added
@@ -407,7 +407,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
         assert(teamAndAdvisorsAllocations[teamOrAdvisorsAddress] == 0); // can only add once.
 
         allocatedTokens = allocatedTokens.add(allocationValue);
-        require(allocatedTokens &lt;= totalTeamAndAdvisorsAllocation);
+        require(allocatedTokens <= totalTeamAndAdvisorsAllocation);
 
         teamAndAdvisorsAllocations[teamOrAdvisorsAddress] = allocationValue;
         return true;
@@ -418,7 +418,7 @@ contract TeamAndAdvisorsAllocation is Ownable {
      * Need to be called by each address
      */
     function unlock() external {
-        assert(now &gt;= unlockedAt);
+        assert(now >= unlockedAt);
 
         // During first unlock attempt fetch total number of locked tokens.
         if (tokensCreated == 0) {
@@ -436,10 +436,10 @@ contract TeamAndAdvisorsAllocation is Ownable {
      * @dev allow for selfdestruct possibility and sending funds to owner
      */
     function kill() public onlyOwner {
-        assert(now &gt;= canSelfDestruct);
+        assert(now >= canSelfDestruct);
         uint256 balance = odem.balanceOf(this);
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             odem.transfer(owner, balance);
         }
 

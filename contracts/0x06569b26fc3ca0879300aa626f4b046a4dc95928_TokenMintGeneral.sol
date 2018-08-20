@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -64,13 +64,13 @@ contract Owned {
 }
 
 contract TokenMintGeneral is ERC20Interface, Owned, SafeMath {
-    string public symbol = &quot;AILE&quot;;
-    string public name = &quot;爱乐&quot;;
+    string public symbol = "AILE";
+    string public name = "爱乐";
     uint8 public decimals = 6;
     uint public _totalSupply = 1001 * 10 ** uint(decimals);
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     constructor() public {
         balances[msg.sender] = _totalSupply;

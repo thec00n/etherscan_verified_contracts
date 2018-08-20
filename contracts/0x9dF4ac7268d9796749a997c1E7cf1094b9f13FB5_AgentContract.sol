@@ -4,7 +4,7 @@ contract AgentContract {
 
     address __owner;
     address target;
-    mapping(address =&gt; uint256) agent_to_piece_of_10000;
+    mapping(address => uint256) agent_to_piece_of_10000;
     address [] agents;
     event SendEther(address addr, uint256 amount);
 
@@ -32,9 +32,9 @@ contract AgentContract {
     }
     function() payable public {
         uint256 summa = msg.value;
-        assert(summa &gt;= 10000);
+        assert(summa >= 10000);
         uint256 summa_rest = msg.value;
-        for (uint i=0; i&lt;agents.length; i++){
+        for (uint i=0; i<agents.length; i++){
             uint256 piece_to_send = agent_to_piece_of_10000[agents[i]];
             uint256 value_to_send = (summa * piece_to_send) / 10000;
             summa_rest = summa_rest - value_to_send;

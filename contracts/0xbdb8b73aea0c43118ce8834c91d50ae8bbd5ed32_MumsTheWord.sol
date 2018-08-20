@@ -24,7 +24,7 @@ contract MumsTheWord {
     function enter() payable returns (bool) {
         uint amount = msg.value;
         // check if 8h have passed
-        if (lastTimeOfNewCredit + EIGHT_HOURS &gt; now) {
+        if (lastTimeOfNewCredit + EIGHT_HOURS > now) {
             // Return money to sender
             msg.sender.transfer(amount);
             // Sends jackpot to the last player
@@ -40,7 +40,7 @@ contract MumsTheWord {
             return false;
         } else {
             // the system needs to collect at least 1% of the profit from a crash to stay alive
-            if (amount &gt;= MIN_AMOUNT) {
+            if (amount >= MIN_AMOUNT) {
                 // the System has received fresh money, it will survive at least 8h more
                 lastTimeOfNewCredit = now;
                 // register the new creditor and his amount with 10% interest rate
@@ -51,12 +51,12 @@ contract MumsTheWord {
                 owner.transfer(amount * 5/100);
 				
                 // 5% are going to the jackpot (will increase the value for the last person standing)
-                if (jackpot &lt; 100 ether) {
+                if (jackpot < 100 ether) {
                     jackpot += amount * 5/100;
                 }
 				
                 // 90% of the money will be used to pay out old creditors
-                if (creditorAmounts[lastCreditorPayedOut] &lt;= address(this).balance - jackpot) {
+                if (creditorAmounts[lastCreditorPayedOut] <= address(this).balance - jackpot) {
                     creditorAddresses[lastCreditorPayedOut].transfer(creditorAmounts[lastCreditorPayedOut]);
                     lastCreditorPayedOut += 1;
                 }
@@ -74,18 +74,18 @@ contract MumsTheWord {
     }
 
     function totalDebt() returns (uint debt) {
-        for(uint i=lastCreditorPayedOut; i&lt;creditorAmounts.length; i++){
+        for(uint i=lastCreditorPayedOut; i<creditorAmounts.length; i++){
             debt += creditorAmounts[i];
         }
     }
 
     function totalPayedOut() returns (uint payout) {
-        for(uint i=0; i&lt;lastCreditorPayedOut; i++){
+        for(uint i=0; i<lastCreditorPayedOut; i++){
             payout += creditorAmounts[i];
         }
     }
 
-    // better don&#39;t do it (unless you want to increase the jackpot)
+    // better don't do it (unless you want to increase the jackpot)
     function raiseJackpot() payable {
         jackpot += msg.value;
     }

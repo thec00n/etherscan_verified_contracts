@@ -3,12 +3,12 @@ pragma solidity ^0.4.17;
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -48,7 +48,7 @@ contract Enums {
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -200,9 +200,9 @@ contract TrainingField is AccessControl{
         
         //check if training function has improper parameters 
         if (pet1ID == pet2ID) {return 0;}
-        if ((pet1ID &lt;= 0) || (pet1ID &gt; petCardData.getTotalPets())) {return 0;}
-        if ((pet2ID &lt;= 0) || (pet2ID &gt; petCardData.getTotalPets())) {return 0;}
-        if ((angelID &lt;= 0) || (angelID &gt; angelCardData.getTotalAngels())) {return 0;}
+        if ((pet1ID <= 0) || (pet1ID > petCardData.getTotalPets())) {return 0;}
+        if ((pet2ID <= 0) || (pet2ID > petCardData.getTotalPets())) {return 0;}
+        if ((angelID <= 0) || (angelID > angelCardData.getTotalAngels())) {return 0;}
         return 1;
 }
 
@@ -219,10 +219,10 @@ contract TrainingField is AccessControl{
         (,,,,pet1.auraRed,pet1.auraBlue,pet1.auraYellow,pet1.lastTrainingTime,,pet1.owner) = petCardData.getPet(pet1ID);
         (,,,,pet2.auraRed,pet2.auraBlue,pet2.auraYellow,pet2.lastTrainingTime,,pet2.owner) = petCardData.getPet(pet2ID);
      
-     //can&#39;t train with someone else&#39;s pets. 
+     //can't train with someone else's pets. 
      if ((angel.owner != msg.sender) || (pet1.owner != msg.sender) || (pet2.owner!= msg.sender)) {revert();}
-     //check that you haven&#39;t trained for 24 hours 24 *60 * 60 
-     if ((now &lt; (pet1.lastTrainingTime+86400)) || (now &lt; (pet1.lastTrainingTime+60))) {revert();}
+     //check that you haven't trained for 24 hours 24 *60 * 60 
+     if ((now < (pet1.lastTrainingTime+86400)) || (now < (pet1.lastTrainingTime+60))) {revert();}
     
     //AngelRed is a 0 when the angel�s aura isnt� compatible with Red and 1 when it is. 
  
@@ -250,9 +250,9 @@ contract TrainingField is AccessControl{
         
          function findAuras (uint16 petBaseAura, uint32 pet1Aura, uint32 pet2Aura, uint32 angelAura) private returns (uint32) {
         //Increase by 1 if there is one compatible pet and 2 if there are two. 
-         if ((petBaseAura &gt;=250) || (petBaseAura == 0)) {return petBaseAura;}
+         if ((petBaseAura >=250) || (petBaseAura == 0)) {return petBaseAura;}
          //max value allowed. 
-         if ((pet1Aura != 0) &amp;&amp; (angelAura == 1)) {
+         if ((pet1Aura != 0) && (angelAura == 1)) {
          if (pet2Aura != 0) {return petBaseAura + 2;}
         else {return petBaseAura + 1;}
         }

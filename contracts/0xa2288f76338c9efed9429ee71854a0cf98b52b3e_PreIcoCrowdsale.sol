@@ -18,20 +18,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -141,7 +141,7 @@ contract Schedulable is Ownable {
         onlyNotZero(_startBlock)
         onlyNotZero(_endBlock)
     {
-        require(_startBlock &lt; _endBlock);
+        require(_startBlock < _endBlock);
 
         startBlock = _startBlock;
         endBlock = _endBlock;
@@ -153,14 +153,14 @@ contract Schedulable is Ownable {
      * @dev Check whether activation is scheduled
      */
     function isScheduled() public view returns (bool) {
-        return startBlock &gt; 0 &amp;&amp; endBlock &gt; 0;
+        return startBlock > 0 && endBlock > 0;
     }
 
     /**
      * @dev Check whether contract is currently active
      */
     function isActive() public view returns (bool) {
-        return block.number &gt;= startBlock &amp;&amp; block.number &lt;= endBlock;
+        return block.number >= startBlock && block.number <= endBlock;
     }
 }
 
@@ -222,7 +222,7 @@ contract PreIcoCrowdsale is Schedulable {
     /**
      * @dev Indicates whether contribution identified by bytes32 id is already registered
      */
-    mapping (bytes32 =&gt; bool) public isContributionRegistered;
+    mapping (bytes32 => bool) public isContributionRegistered;
 
     function PreIcoCrowdsale(
         address _wallet,
@@ -266,12 +266,12 @@ contract PreIcoCrowdsale is Schedulable {
     }
 
     modifier onlySufficientValue(uint256 value) {
-        require(value &gt;= minValue);
+        require(value >= minValue);
         _;
     }
 
     modifier onlySufficientAvailableTokens(uint256 amount) {
-        require(availableAmount &gt;= amount);
+        require(availableAmount >= amount);
         _;
     }
 

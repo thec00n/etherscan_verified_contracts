@@ -17,21 +17,21 @@ contract ERC20Interface {
 
 /// ETH (EEE)
 contract ETHToken is ERC20Interface {
-    string public constant name = &quot;ETHToken&quot;;
-    string public constant symbol = &quot;EEE&quot;;
+    string public constant name = "ETHToken";
+    string public constant symbol = "EEE";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
     uint256 public constant tokenCreationCap = 3000000* 10**18;
     uint256 public constant tokenCreationMin = 1* 10**18;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
     uint public fundingStart;
     uint public fundingEnd;
     bool public funding = true;
     address public master;
     uint256 totalTokens;
     uint256 soldAfterPowerHour;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint) lastTransferred;
-    mapping (address =&gt; uint256) balancesEther;
+    mapping (address => uint256) balances;
+    mapping (address => uint) lastTransferred;
+    mapping (address => uint256) balancesEther;
     address public migrationAgent;
     uint256 public totalMigrated;
     event Migrate(address indexed _from, address indexed _to, uint256 _value);
@@ -56,7 +56,7 @@ contract ETHToken is ERC20Interface {
         if(funding) throw;
 
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             
@@ -78,13 +78,13 @@ contract ETHToken is ERC20Interface {
         return balancesEther[_owner];
     }
     function TimeLeft() external constant returns (uint256) {
-        if(fundingEnd&gt;block.timestamp)
+        if(fundingEnd>block.timestamp)
             return fundingEnd-block.timestamp;
         else
             return 0;
     }
     function TimeLeftBeforeCrowdsale() external constant returns (uint256) {
-        if(fundingStart&gt;block.timestamp)
+        if(fundingStart>block.timestamp)
             return fundingStart-block.timestamp;
         else
             return 0;
@@ -93,7 +93,7 @@ function migrate(uint256 _value) external {
         if(funding) throw;
         if(migrationAgent == 0) throw;
         if(_value == 0) throw;
-        if(_value &gt; balances[msg.sender]) throw;
+        if(_value > balances[msg.sender]) throw;
         balances[msg.sender] -= _value;
         totalTokens -= _value;
         totalMigrated += _value;
@@ -117,18 +117,18 @@ function migrate(uint256 _value) external {
     
     function ICOopen() constant returns(bool){
         if(!funding) return false;
-        else if(block.timestamp &lt; fundingStart) return false;
-        else if(block.timestamp &gt; fundingEnd) return false;
-        else if(tokenCreationCap &lt;= totalTokens) return false;
+        else if(block.timestamp < fundingStart) return false;
+        else if(block.timestamp > fundingEnd) return false;
+        else if(tokenCreationCap <= totalTokens) return false;
         else return true;
     }
 
     function() payable external {
         if(!funding) throw;
-        if(block.timestamp &lt; fundingStart) throw;
-        if(block.timestamp &gt; fundingEnd) throw;
+        if(block.timestamp < fundingStart) throw;
+        if(block.timestamp > fundingEnd) throw;
         if(msg.value == 0) throw;
-        if((msg.value  * getExchangeRate()) &gt; (tokenCreationCap - totalTokens)) throw;
+        if((msg.value  * getExchangeRate()) > (tokenCreationCap - totalTokens)) throw;
         var numTokens = msg.value * getExchangeRate();
         totalTokens += numTokens;
         
@@ -154,8 +154,8 @@ function migrate(uint256 _value) external {
 
     function refund() external {
         if(!funding) throw;
-        if(block.timestamp &lt;= fundingEnd) throw;
-        if(totalTokens &gt;= tokenCreationMin) throw;
+        if(block.timestamp <= fundingEnd) throw;
+        if(totalTokens >= tokenCreationMin) throw;
 
         var ethuValue = balances[msg.sender];
         var ethValue = balancesEther[msg.sender];
@@ -170,10 +170,10 @@ function migrate(uint256 _value) external {
   
      function transferFrom(address _from,address _to,uint256 _amount) returns (bool success) {
          if(funding) throw;
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;

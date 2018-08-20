@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,8 +51,8 @@ contract BountyHunter {
 
   function() public payable { }
 
-  string public constant NAME = &quot;BountyHunter&quot;;
-  string public constant SYMBOL = &quot;BountyHunter&quot;;
+  string public constant NAME = "BountyHunter";
+  string public constant SYMBOL = "BountyHunter";
   address ceoAddress = 0xc10A6AedE9564efcDC5E842772313f0669D79497;
   address hunter;
   address hunted;
@@ -69,7 +69,7 @@ contract BountyHunter {
 
   
   function BountyHunter() public {
-    for (uint i = 0; i &lt; 8; i++) {
+    for (uint i = 0; i < 8; i++) {
      
       data[i].hunterPrice = 5000000000000000;
       data[i].user = msg.sender;
@@ -91,7 +91,7 @@ contract BountyHunter {
 
   
   function hireBountyHunter(uint bountyHunterID) public payable returns (uint, uint) {
-    require(bountyHunterID &gt;= 0 &amp;&amp; bountyHunterID &lt;= 8);
+    require(bountyHunterID >= 0 && bountyHunterID <= 8);
     
     if ( data[bountyHunterID].hunterPrice == 5000000000000000 ) {
       data[bountyHunterID].hunterPrice = 10000000000000000;
@@ -100,7 +100,7 @@ contract BountyHunter {
       data[bountyHunterID].hunterPrice = data[bountyHunterID].hunterPrice * 2;
     }
     
-    require(msg.value &gt;= data[bountyHunterID].hunterPrice * uint256(1));
+    require(msg.value >= data[bountyHunterID].hunterPrice * uint256(1));
 
     createBounty((data[bountyHunterID].hunterPrice / 10) * (3));
     
@@ -121,7 +121,7 @@ contract BountyHunter {
   function getUsers() public view returns (address[], uint256[]) {
     address[] memory users = new address[](8);
     uint256[] memory hunterPrices =  new uint256[](8);
-    for (uint i=0; i&lt;8; i++) {
+    for (uint i=0; i<8; i++) {
       if (data[i].user != ceoAddress){
         users[i] = (data[i].user);
       }
@@ -147,7 +147,7 @@ contract BountyHunter {
   function playerKiller() private {
     uint256 killshot = rand(31);
 
-    if( (killshot &lt; 8) &amp;&amp;  (msg.sender != data[killshot].user) ){
+    if( (killshot < 8) &&  (msg.sender != data[killshot].user) ){
       hunter = msg.sender;
       if( ceoAddress != data[killshot].user){
         hunted = data[killshot].user;

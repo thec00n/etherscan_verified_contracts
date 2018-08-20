@@ -52,7 +52,7 @@ contract GuardedBeercoinICO {
     /**
      * Declare a new owner
      *
-     * @param newOwner the new owner&#39;s address
+     * @param newOwner the new owner's address
      */
     function setOwner(address newOwner) onlyGuardian public {
         if (msg.sender == guardian1) {
@@ -100,7 +100,7 @@ contract BeercoinICO is GuardedBeercoinICO {
     
     event FundTransfer(address backer, uint amount, bool isContribution);
    
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     uint public soldBeercoins = 0;
     uint public raisedEther = 0 ether;
 
@@ -110,7 +110,7 @@ contract BeercoinICO is GuardedBeercoinICO {
      * Restrict to the time when the ICO is open
      */
     modifier isOpen {
-        require(now &gt;= begin &amp;&amp; now &lt;= end &amp;&amp; !paused);
+        require(now >= begin && now <= end && !paused);
         _;
     }
 
@@ -118,7 +118,7 @@ contract BeercoinICO is GuardedBeercoinICO {
      * Restrict to the state of enough Ether being gathered
      */
     modifier goalReached {
-        require(raisedEther &gt;= softCap);
+        require(raisedEther >= softCap);
         _;
     }
 
@@ -127,7 +127,7 @@ contract BeercoinICO is GuardedBeercoinICO {
      * being gathered after the time is up
      */
     modifier goalNotReached {
-        require(raisedEther &lt; softCap &amp;&amp; now &gt; end);
+        require(raisedEther < softCap && now > end);
         _;
     }
 
@@ -162,11 +162,11 @@ contract BeercoinICO is GuardedBeercoinICO {
     }
 
     /**
-     * Withdraw the sender&#39;s contributed Ether in case the goal has not been reached
+     * Withdraw the sender's contributed Ether in case the goal has not been reached
      */
     function withdraw() goalNotReached public {
         uint amount = balanceOf[msg.sender];
-        require(amount &gt; 0);
+        require(amount > 0);
 
         balanceOf[msg.sender] = 0;
         msg.sender.transfer(amount);

@@ -10,7 +10,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -28,7 +28,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -110,8 +110,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -174,7 +174,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -335,10 +335,10 @@ contract THTokenSale is Pausable {
     uint256 public endTime;
 
     // Whitelisted addresses and their allocations of wei available to invest
-    mapping(address =&gt; uint256) public whitelist;
+    mapping(address => uint256) public whitelist;
 
     // Wei received from token buyers
-    mapping(address =&gt; uint256) public weiBalances;
+    mapping(address => uint256) public weiBalances;
 
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
     event Whitelisted(address indexed beneficiary, uint256 value);
@@ -353,7 +353,7 @@ contract THTokenSale is Pausable {
     */
     modifier beforeSaleEnds() {
         // Not calling hasEnded due to lower gas usage
-        require(now &lt; endTime &amp;&amp; fundsRaised &lt; HARD_CAP);
+        require(now < endTime && fundsRaised < HARD_CAP);
         _;
     }
 
@@ -364,7 +364,7 @@ contract THTokenSale is Pausable {
         address _walletPlatform,
         address _walletBountyAndAdvisors
     ) public {
-        require(_startTime &gt;= now);
+        require(_startTime >= now);
         require(_wallet != 0x0);
         require(_walletCoreTeam != 0x0);
         require(_walletPlatform != 0x0);
@@ -395,8 +395,8 @@ contract THTokenSale is Pausable {
      */
     function activateNextStage() onlyOwner public {
         uint256 stageIndex = activeStage;
-        require(fundsRaised &gt;= stageCaps[stageIndex]);
-        require(stageIndex + 1 &lt; stageCaps.length);
+        require(fundsRaised >= stageCaps[stageIndex]);
+        require(stageIndex + 1 < stageCaps.length);
 
         activeStage = stageIndex + 1;
         StageOpened(activeStage + 1);
@@ -412,13 +412,13 @@ contract THTokenSale is Pausable {
         uint256 weiAmount = msg.value;
         uint256 _activeStageCap = stageCaps[_stageIndex];
 
-        require(fundsRaised &lt; _activeStageCap);
+        require(fundsRaised < _activeStageCap);
         require(validPurchase());
         require(canContribute(contributor, weiAmount));
 
         uint256 capDelta = _activeStageCap.sub(fundsRaised);
 
-        if (capDelta &lt; weiAmount) {
+        if (capDelta < weiAmount) {
             // Not enough tokens available for full contribution, we will do a partial.
             weiAmount = capDelta;
             // Calculate refund for contributor.
@@ -434,25 +434,25 @@ contract THTokenSale is Pausable {
         token.mint(contributor, tokensToMint);
 
         // Refund after state changes for re-entrancy safety
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
         TokenPurchase(0x0, contributor, weiAmount, tokensToMint);
 
-        if (fundsRaised &gt;= _activeStageCap) {
+        if (fundsRaised >= _activeStageCap) {
             finalizeCurrentStage();
         }
     }
 
     function canContribute(address contributor, uint256 weiAmount) public view returns (bool) {
         require(contributor != 0x0);
-        require(weiAmount &gt; 0);
-        return (whitelist[contributor] &gt;= weiAmount);
+        require(weiAmount > 0);
+        return (whitelist[contributor] >= weiAmount);
     }
 
     function addWhitelist(address contributor, uint256 weiAmount) onlyOwner public returns (bool) {
         require(contributor != 0x0);
-        require(weiAmount &gt; 0);
+        require(weiAmount > 0);
         // Only ever set the new amount, even if user is already whitelisted with a previous value set
         whitelist[contributor] = weiAmount;
         Whitelisted(contributor, weiAmount);
@@ -467,7 +467,7 @@ contract THTokenSale is Pausable {
         uint256 amount;
         require(contributors.length == amounts.length);
 
-        for (uint i = 0; i &lt; contributors.length; i++) {
+        for (uint i = 0; i < contributors.length; i++) {
             contributor = contributors[i];
             amount = amounts[i];
             require(addWhitelist(contributor, amount));
@@ -477,7 +477,7 @@ contract THTokenSale is Pausable {
 
     function withdraw() onlyOwner public {
         require(softCapReached);
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
 
         wallet.transfer(this.balance);
     }
@@ -485,19 +485,19 @@ contract THTokenSale is Pausable {
     function withdrawCoreTeamTokens() onlyOwner public {
         require(saleSuccessfullyFinished);
 
-        if (now &gt; startTime + 720 days &amp;&amp; vestedTeam[3] &gt; 0) {
+        if (now > startTime + 720 days && vestedTeam[3] > 0) {
             token.transfer(walletCoreTeam, vestedTeam[3]);
             vestedTeam[3] = 0;
         }
-        if (now &gt; startTime + 600 days &amp;&amp; vestedTeam[2] &gt; 0) {
+        if (now > startTime + 600 days && vestedTeam[2] > 0) {
             token.transfer(walletCoreTeam, vestedTeam[2]);
             vestedTeam[2] = 0;
         }
-        if (now &gt; startTime + 480 days &amp;&amp; vestedTeam[1] &gt; 0) {
+        if (now > startTime + 480 days && vestedTeam[1] > 0) {
             token.transfer(walletCoreTeam, vestedTeam[1]);
             vestedTeam[1] = 0;
         }
-        if (now &gt; startTime + 360 days &amp;&amp; vestedTeam[0] &gt; 0) {
+        if (now > startTime + 360 days && vestedTeam[0] > 0) {
             token.transfer(walletCoreTeam, vestedTeam[0]);
             vestedTeam[0] = 0;
         }
@@ -506,7 +506,7 @@ contract THTokenSale is Pausable {
     function withdrawAdvisorTokens() onlyOwner public {
         require(saleSuccessfullyFinished);
 
-        if (now &gt; startTime + 180 days &amp;&amp; vestedAdvisors &gt; 0) {
+        if (now > startTime + 180 days && vestedAdvisors > 0) {
             token.transfer(walletBountyAndAdvisors, vestedAdvisors);
             vestedAdvisors = 0;
         }
@@ -519,7 +519,7 @@ contract THTokenSale is Pausable {
     function refund() public {
         require(refundAllowed);
         require(!softCapReached);
-        require(weiBalances[msg.sender] &gt; 0);
+        require(weiBalances[msg.sender] > 0);
 
         uint256 currentBalance = weiBalances[msg.sender];
         weiBalances[msg.sender] = 0;
@@ -530,8 +530,8 @@ contract THTokenSale is Pausable {
      * @dev When finishing the crowdsale we mint non-crowdsale tokens based on total tokens minted during crowdsale
      */
     function finishCrowdsale() onlyOwner public returns (bool) {
-        require(now &gt;= endTime || fundsRaised &gt;= HARD_CAP);
-        require(!saleSuccessfullyFinished &amp;&amp; !refundAllowed);
+        require(now >= endTime || fundsRaised >= HARD_CAP);
+        require(!saleSuccessfullyFinished && !refundAllowed);
 
         // Crowdsale successful
         if (softCapReached) {
@@ -548,7 +548,7 @@ contract THTokenSale is Pausable {
             uint256 tokensTeam = 0;
             uint len = teamTokenAllocation.length;
             uint amount = 0;
-            for (uint i = 0; i &lt; len; i++) {
+            for (uint i = 0; i < len; i++) {
                 amount = crowdsaleTokens.mul(teamTokenAllocation[i]).div(_crowdsaleAllocation);
                 vestedTeam[i] = amount;
                 tokensTeam = tokensTeam.add(amount);
@@ -579,21 +579,21 @@ contract THTokenSale is Pausable {
     }
 
     function hasStarted() public view returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     function hasEnded() public view returns (bool) {
-        return now &gt;= endTime || fundsRaised &gt;= HARD_CAP;
+        return now >= endTime || fundsRaised >= HARD_CAP;
     }
 
     function validPurchase() internal view returns (bool) {
-        // Extended from 2 * 86400 to 200.000 seconds, since there&#39;s a 48 hour pause scheduled after phase 1
-        if(now &lt;= (startTime + 200000) &amp;&amp; msg.value &lt; MIN_INVESTMENT_PHASE1) {
+        // Extended from 2 * 86400 to 200.000 seconds, since there's a 48 hour pause scheduled after phase 1
+        if(now <= (startTime + 200000) && msg.value < MIN_INVESTMENT_PHASE1) {
             return false;
         }
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool withinPurchaseLimits = msg.value &gt;= MIN_INVESTMENT;
-        return withinPeriod &amp;&amp; withinPurchaseLimits;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool withinPurchaseLimits = msg.value >= MIN_INVESTMENT;
+        return withinPeriod && withinPurchaseLimits;
     }
 
     function finalizeCurrentStage() internal {
@@ -650,8 +650,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract THToken is MintableToken {
 
-    string public constant name = &quot;Tradershub Token&quot;;
-    string public constant symbol = &quot;THT&quot;;
+    string public constant name = "Tradershub Token";
+    string public constant symbol = "THT";
     uint8 public constant decimals = 18;
 
     bool public transferAllowed = false;
@@ -659,7 +659,7 @@ contract THToken is MintableToken {
     event TransferAllowed(bool transferIsAllowed);
 
     modifier canTransfer() {
-        require(mintingFinished &amp;&amp; transferAllowed);
+        require(mintingFinished && transferAllowed);
         _;
     }
 

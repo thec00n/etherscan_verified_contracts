@@ -40,37 +40,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -83,7 +83,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -188,7 +188,7 @@ contract Escrow is HasNoTokens {
   // @dev Withdraw function sends all the funds to the wallet if conditions are correct
   function withdraw() public {
     if (msg.sender != beneficiary) throw;
-    if (block.number &gt; finalBlock) return doWithdraw();
+    if (block.number > finalBlock) return doWithdraw();
     if (tokenSale.saleFinalized()) return doWithdraw();
   }
 
@@ -204,13 +204,13 @@ contract Escrow is HasNoTokens {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping (address =&gt; uint) balances;
+  mapping (address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -257,7 +257,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -283,7 +283,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
   }
@@ -381,7 +381,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint _value) {
-   if (_value &gt; transferableTokens(_sender, uint64(now))) throw;
+   if (_value > transferableTokens(_sender, uint64(now))) throw;
    _;
   }
 
@@ -432,7 +432,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -457,11 +457,11 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   ) public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    if (_cliff &lt; _start || _vesting &lt; _cliff) {
+    if (_cliff < _start || _vesting < _cliff) {
       throw;
     }
 
-    if (tokenGrantsCount(_to) &gt; MAX_GRANTS_PER_ADDRESS) throw;  // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    if (tokenGrantsCount(_to) > MAX_GRANTS_PER_ADDRESS) throw;  // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint count = grants[_to].push(
                 TokenGrant(
@@ -512,7 +512,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -520,7 +520,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = nonVested.add(nonVestedTokens(grants[holder][i], time));
     }
 
@@ -562,7 +562,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    *   |        .      |
    *   |      .        |(grants[_holder] == address(0)) return 0;
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(
@@ -573,12 +573,12 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     uint256 vesting) constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = tokens * (time - start) / (vesting - start)
       uint256 vestedTokens = tokens.mul(time.sub(start)).div(vesting.sub(start));
@@ -641,7 +641,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = SafeMath.max64(grants[holder][i].vesting, date);
     }
   }
@@ -650,8 +650,8 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 /// @title Artcoin (ART) - democratizing culture.
 contract Artcoin is MintableToken, VestedToken {
 
-  string public constant name = &#39;Artcoin&#39;;
-  string public constant symbol = &#39;ART&#39;;
+  string public constant name = 'Artcoin';
+  string public constant symbol = 'ART';
   uint public constant decimals = 18;
 
   function() public payable {
@@ -668,7 +668,7 @@ contract Artcoin is MintableToken, VestedToken {
     assembly {
       size := extcodesize(_addr)
     }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -723,8 +723,8 @@ contract ArtSale is Controller {
   uint public maximumSubscription;  // maximum subscriptions, in wei
   uint public totalSubscription = 0;  // total subscriptions, in wei
 
-  mapping (address =&gt; bool) public activations;  // confirmations to activate the sale
-  mapping (address =&gt; uint) public subscriptions;  // subscriptions
+  mapping (address => bool) public activations;  // confirmations to activate the sale
+  mapping (address => uint) public subscriptions;  // subscriptions
 
   uint constant public dust = 1 finney;  // minimum investment
 
@@ -743,11 +743,11 @@ contract ArtSale is Controller {
                    uint8 _priceStages,
                    uint _maximumSubscription)
                    nonZeroAddress(_operations) {
-    if (_initialBlock &lt; getBlockNumber()) throw;
-    if (_initialBlock &gt;= _finalBlock) throw;
-    if (_initialPrice &lt;= _finalPrice) throw;
-    if (_priceStages &lt; 2) throw;
-    if (_priceStages &gt; _initialPrice - _finalPrice) throw;
+    if (_initialBlock < getBlockNumber()) throw;
+    if (_initialBlock >= _finalBlock) throw;
+    if (_initialPrice <= _finalPrice) throw;
+    if (_priceStages < 2) throw;
+    if (_priceStages > _initialPrice - _finalPrice) throw;
 
     manager = _manager;
     operations = _operations;
@@ -777,7 +777,7 @@ contract ArtSale is Controller {
     escrow = Escrow(_escrow);
 
     if (token.controller() != address(this)) throw;  // sale is token controller
-    if (token.totalSupply() &gt; 0) throw;  // token is empty
+    if (token.totalSupply() > 0) throw;  // token is empty
     if (consortiumPlaceholder.tokenSale() != address(this)) throw;  // placeholder has reference to sale
     if (consortiumPlaceholder.token() != address(token)) throw; // placeholder has reference to ART
     if (escrow.finalBlock() != finalBlock) throw;  // final blocks must match
@@ -801,15 +801,15 @@ contract ArtSale is Controller {
   // @notice Whether the needed accounts have activated the sale.
   // @return Is sale activated
   function isActivated() constant public returns (bool) {
-    return activations[this] &amp;&amp; activations[operations];
+    return activations[this] && activations[operations];
   }
 
   // @notice Get the price for a Artcoin token at any given block number
   // @param _blockNumber the block for which the price is requested
   // @return Number of wei-Artcoin for 1 wei
-  // If sale isn&#39;t ongoing for that block, returns 0.
+  // If sale isn't ongoing for that block, returns 0.
   function getPrice(uint _blockNumber) constant public returns (uint) {
-    if (_blockNumber &lt; initialBlock || _blockNumber &gt;= finalBlock) return 0;
+    if (_blockNumber < initialBlock || _blockNumber >= finalBlock) return 0;
     return priceForStage(stageForBlock(_blockNumber));
   }
 
@@ -825,9 +825,9 @@ contract ArtSale is Controller {
   // @notice Get what the price is for a given stage
   // @param _stage: Stage number
   // @return Price in wei for that stage.
-  // If sale stage doesn&#39;t exist, returns 0.
+  // If sale stage doesn't exist, returns 0.
   function priceForStage(uint _stage) constant internal returns (uint) {
-    if (_stage &gt;= priceStages) return 0;
+    if (_stage >= priceStages) return 0;
     uint priceDifference = initialPrice.sub(finalPrice);
     uint stageDelta = priceDifference.div(uint(priceStages - 1));
     return initialPrice.sub(uint(_stage).mul(stageDelta));
@@ -869,7 +869,7 @@ contract ArtSale is Controller {
            onlySaleActivated
            nonZeroAddress(_subscriber)
            minimumValue(dust) internal {
-    if (totalSubscription + msg.value &gt; maximumSubscription) throw;  // throw if maximum subscription exceeded
+    if (totalSubscription + msg.value > maximumSubscription) throw;  // throw if maximum subscription exceeded
     uint purchasedTokens = msg.value.mul(getPrice(getBlockNumber()));  // number of purchased tokens
 
     if (!escrow.send(msg.value)) throw;  // escrow funds
@@ -962,18 +962,18 @@ contract ArtSale is Controller {
   }
 
   modifier onlyBeforeSale {
-    if (getBlockNumber() &gt;= initialBlock) throw;
+    if (getBlockNumber() >= initialBlock) throw;
     _;
   }
 
   modifier onlyDuringSalePeriod {
-    if (getBlockNumber() &lt; initialBlock) throw;
-    if (getBlockNumber() &gt;= finalBlock) throw;
+    if (getBlockNumber() < initialBlock) throw;
+    if (getBlockNumber() >= finalBlock) throw;
     _;
   }
 
   modifier onlyAfterSale {
-    if (getBlockNumber() &lt; finalBlock) throw;
+    if (getBlockNumber() < finalBlock) throw;
     _;
   }
 
@@ -998,7 +998,7 @@ contract ArtSale is Controller {
   }
 
   modifier onlyFinalizedSale {
-    if (getBlockNumber() &lt; finalBlock) throw;
+    if (getBlockNumber() < finalBlock) throw;
     if (!saleFinalized) throw;
     _;
   }
@@ -1009,7 +1009,7 @@ contract ArtSale is Controller {
   }
 
   modifier minimumValue(uint256 x) {
-    if (msg.value &lt; x) throw;
+    if (msg.value < x) throw;
     _;
   }
 }

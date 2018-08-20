@@ -26,13 +26,13 @@ contract fivetimes {
   }
   
   function enter() {
-    if (msg.value &lt; 1/100 ether) {
+    if (msg.value < 1/100 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 999 ether) {
+		if (msg.value > 999 ether) {
 			msg.sender.send(msg.value - 999 ether);	
 			amount = 999 ether;
     }
@@ -58,7 +58,7 @@ contract fivetimes {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 500) {
+    while (balance > persons[payoutIdx].amount / 100 * 500) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 500;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

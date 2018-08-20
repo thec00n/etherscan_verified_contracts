@@ -29,7 +29,7 @@ contract ItemSelling {
         uint256 transactions;
         uint256 [] ownedItems;
         uint256 lastPayedDividends;
-        mapping (uint =&gt; TxInfo) txHistory;
+        mapping (uint => TxInfo) txHistory;
         uint historyIdx;
     }
 
@@ -41,23 +41,23 @@ contract ItemSelling {
         uint timestamp;
     }
 
-    mapping(uint =&gt; TxInfo) public txBuffer;
+    mapping(uint => TxInfo) public txBuffer;
     uint private txBufferMaxSize;
     uint private txIdx = 0;
     uint private playerHistoryMaxSize;
 
-    mapping (uint256 =&gt; Item) private items;
+    mapping (uint256 => Item) private items;
     uint256 [] private itemList;
 
-    mapping(address =&gt; Player) private players;
+    mapping(address => Player) private players;
     address[] private playerList;
 
 
     /* Administration utility */
     address private owner;
-    mapping (address =&gt; bool) private admins;
+    mapping (address => bool) private admins;
     bool private erc721Enabled = false;
-    mapping (uint256 =&gt; address) private approvedOfItem;
+    mapping (uint256 => address) private approvedOfItem;
 
     uint256 private DIVIDEND_TRANSACTION_NUMBER = 300;
     uint256 private dividendTransactionCount = 0;
@@ -127,7 +127,7 @@ contract ItemSelling {
 
     /* Items */
     function addItem(uint256 _itemId, uint256 _price, address _owner) onlyAdmins public {
-        require(_price &gt; 0);
+        require(_price > 0);
         require(items[_itemId].id == 0);
 
         Item storage item = items[_itemId];
@@ -143,7 +143,7 @@ contract ItemSelling {
 
     function addItems (uint256[] _itemIds, uint256[] _prices, address _owner) onlyAdmins() public {
         require(_itemIds.length == _prices.length);
-        for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+        for (uint256 i = 0; i < _itemIds.length; i++) {
             addItem(_itemIds[i], _prices[i], _owner);
         }
     }
@@ -155,14 +155,14 @@ contract ItemSelling {
     function getItemIdsPagable (uint256 _from, uint256 _pageSize) public view returns (uint256[] _items) {
         uint256[] memory page = new uint256[](_pageSize);
 
-        for (uint256 i = 0; i &lt; _pageSize; i++) {
+        for (uint256 i = 0; i < _pageSize; i++) {
             page[i] = itemList[_from + i];
         }
         return page;
     }
 
     function itemExists(uint256 _itemId) view public returns (bool _exists) {
-        return items[_itemId].price &gt; 0;
+        return items[_itemId].price > 0;
     }
 
     function getItem(uint256 _itemId) view public returns (uint256, address, uint256, uint256, uint256, uint256, uint256, uint256) {
@@ -179,13 +179,13 @@ contract ItemSelling {
     }
 
     function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-        if (_price &lt; increaseLimit1) {
+        if (_price < increaseLimit1) {
             return _price.mul(200).div(100).mul(fee100).div(100);
-        } else if (_price &lt; increaseLimit2) {
+        } else if (_price < increaseLimit2) {
             return _price.mul(140).div(100).mul(fee100).div(100);
-        } else if (_price &lt; increaseLimit3) {
+        } else if (_price < increaseLimit3) {
             return _price.mul(125).div(100).mul(fee100).div(100);
-        } else if (_price &lt; increaseLimit4) {
+        } else if (_price < increaseLimit4) {
             return _price.mul(120).div(100).mul(fee100).div(100);
         } else {
             return _price.mul(119).div(100).mul(fee100).div(100);
@@ -193,13 +193,13 @@ contract ItemSelling {
     }
 
     function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-        if (_price &lt; increaseLimit1) {
+        if (_price < increaseLimit1) {
             return _price.mul(fee).div(fee100); // 6%
-        } else if (_price &lt; increaseLimit2) {
+        } else if (_price < increaseLimit2) {
             return _price.mul(fee).div(fee100); // 6%
-        } else if (_price &lt; increaseLimit3) {
+        } else if (_price < increaseLimit3) {
             return _price.mul(fee).div(fee100); // 6%
-        } else if (_price &lt; increaseLimit4) {
+        } else if (_price < increaseLimit4) {
             return _price.mul(fee).div(fee100); // 6%
         } else {
             return _price.mul(fee).div(fee100); // 6%
@@ -212,7 +212,7 @@ contract ItemSelling {
 
         uint256 bp = price.div(10); // 10% = price * 10 / 100 or price / 10
         uint256 sp = startPrice.mul(100).div(fee100);
-        return bp &lt; sp ? sp : bp;
+        return bp < sp ? sp : bp;
     }
 
     /* Players */
@@ -240,7 +240,7 @@ contract ItemSelling {
 
     function calculatePlayerValue(address _playerId) view public returns(uint256 _value) {
         uint256 value = 0;
-        for(uint256 i = 0; i &lt; players[_playerId].ownedItems.length; i++){
+        for(uint256 i = 0; i < players[_playerId].ownedItems.length; i++){
             value += items[players[_playerId].ownedItems[i]].price;
         }
         return value;
@@ -255,7 +255,7 @@ contract ItemSelling {
             player.txHistory[player.historyIdx].price = _price;
             player.txHistory[player.historyIdx].txType = _txType;
             player.txHistory[player.historyIdx].timestamp = _timestamp;
-            player.historyIdx = player.historyIdx &lt; playerHistoryMaxSize - 1 ? player.historyIdx + 1 : 0;
+            player.historyIdx = player.historyIdx < playerHistoryMaxSize - 1 ? player.historyIdx + 1 : 0;
         }
     }
 
@@ -272,15 +272,15 @@ contract ItemSelling {
         _ts      = new uint[](playerHistoryMaxSize);
 
         uint offset = playerHistoryMaxSize - 1;
-        if (players[_playerId].historyIdx &gt; 0) {offset = players[_playerId].historyIdx - 1;}
-        for (uint i = 0; i &lt; playerHistoryMaxSize; i++){
+        if (players[_playerId].historyIdx > 0) {offset = players[_playerId].historyIdx - 1;}
+        for (uint i = 0; i < playerHistoryMaxSize; i++){
         //    _owners[i]  = txBuffer[offset].owner;
             _itemIds[i] = players[_playerId].txHistory[offset].itemId;
             _prices[i]  = players[_playerId].txHistory[offset].price;
             _types[i]   = players[_playerId].txHistory[offset].txType;
             _ts[i]      = players[_playerId].txHistory[offset].timestamp;
 
-            offset = offset &gt; 0 ?  offset - 1 : playerHistoryMaxSize - 1;
+            offset = offset > 0 ?  offset - 1 : playerHistoryMaxSize - 1;
         }
     }
 
@@ -288,9 +288,9 @@ contract ItemSelling {
     function buy (uint256 _itemId) payable public {
         Item storage item = items[_itemId];
 
-        require(item.price &gt; 0);
+        require(item.price > 0);
         require(item.owner != address(0));
-        require(msg.value &gt;= item.price);
+        require(msg.value >= item.price);
         require(item.owner != msg.sender);
         require(!isContract(msg.sender));
         require(msg.sender != address(0));
@@ -315,16 +315,16 @@ contract ItemSelling {
         emit Bought(_itemId, newOwner, price);
         emit Sold(_itemId, oldOwner, price);
 
-        // Devevloper&#39;s cut which is left in contract and accesed by
+        // Devevloper's cut which is left in contract and accesed by
         // `withdrawAll` and `withdrawAmountTo` methods.
         uint256 devCut = calculateDevCut(price);
 
-        // Transfer payment to old owner minus the developer&#39;s cut.
+        // Transfer payment to old owner minus the developer's cut.
         if (!isAdmin(oldOwner)){
             oldOwner.transfer(price.sub(devCut));
         }
 
-        if (excess &gt; 0) {
+        if (excess > 0) {
             newOwner.transfer(excess);
         }
 
@@ -335,7 +335,7 @@ contract ItemSelling {
     function buyback(uint256 _itemId) public {
         Item storage item = items[_itemId];
 
-        require(item.price &gt; 0);
+        require(item.price > 0);
         require(item.owner != address(0));
         require(item.owner == msg.sender);
         require(!isContract(msg.sender));
@@ -343,7 +343,7 @@ contract ItemSelling {
 
         uint256 bprice = buybackPriceOf(_itemId);
 
-        require(address(this).balance &gt;= bprice);
+        require(address(this).balance >= bprice);
 
         address oldOwner = msg.sender;
         address newOwner = owner;
@@ -395,7 +395,7 @@ contract ItemSelling {
 
     function getTotalVolume() view public returns (uint256 _volume) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; itemList.length; i++){
+        for (uint256 i = 0; i < itemList.length; i++){
             if (!isAdmin(items[itemList[i]].owner)) {
                 sum += items[itemList[i]].price;
             }
@@ -409,7 +409,7 @@ contract ItemSelling {
     }
 
     function handleDividends() internal {
-        if (dividendTransactionCount &lt; DIVIDEND_TRANSACTION_NUMBER ) return;
+        if (dividendTransactionCount < DIVIDEND_TRANSACTION_NUMBER ) return;
 
         lastDividendsAmount = dividendsAmount;
         dividendTransactionCount = 0;
@@ -419,10 +419,10 @@ contract ItemSelling {
         uint256 userVolume = 0;
         uint256 userDividens = 0;
 
-        for (uint256 i = 0; i &lt; playerList.length; i++) {
+        for (uint256 i = 0; i < playerList.length; i++) {
             userVolume = calculatePlayerValue(playerList[i]);
             players[playerList[i]].lastPayedDividends = 0;
-            if (userVolume &gt; 0) {
+            if (userVolume > 0) {
                 userDividens = userVolume.mul(lastDividendsAmount).div(totalCurrentVolume);
                 players[playerList[i]].lastPayedDividends = userDividens;
 
@@ -442,13 +442,13 @@ contract ItemSelling {
     }
 
     function withdrawAmount(uint256 _amount) onlyOwner public {
-        require(_amount &lt;= address(this).balance);
+        require(_amount <= address(this).balance);
         owner.transfer(_amount);
     }
 
     function calculateAllBuyBackSum() view public returns (uint256 _buyBackSum) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; itemList.length; i++) {
+        for (uint256 i = 0; i < itemList.length; i++) {
             if (!isAdmin(items[itemList[i]].owner)) {
                 sum += buybackPriceOf(itemList[i]);
             }
@@ -461,7 +461,7 @@ contract ItemSelling {
         uint256 requiredFunds = dividendsAmount + buyBackSum;
 
         uint256 withdrawal = address(this).balance - requiredFunds;
-        require(withdrawal &gt; 0);
+        require(withdrawal > 0);
 
         owner.transfer(withdrawal);
     }
@@ -508,7 +508,7 @@ contract ItemSelling {
         txBuffer[txIdx].price = _price;
         txBuffer[txIdx].txType = _txType;
         txBuffer[txIdx].timestamp = _timestamp;
-        txIdx = txIdx  &lt; txBufferMaxSize - 1 ? txIdx + 1 : 0;
+        txIdx = txIdx  < txBufferMaxSize - 1 ? txIdx + 1 : 0;
     }
 
     function transactionList()
@@ -523,15 +523,15 @@ contract ItemSelling {
         _ts      = new uint[](txBufferMaxSize);
 
         uint offset = txBufferMaxSize - 1;
-        if (txIdx &gt; 0) { offset = txIdx - 1;}
-        for (uint i = 0; i &lt; txBufferMaxSize; i++){
+        if (txIdx > 0) { offset = txIdx - 1;}
+        for (uint i = 0; i < txBufferMaxSize; i++){
             _owners[i]  = txBuffer[offset].owner;
             _itemIds[i] = txBuffer[offset].itemId;
             _prices[i]  = txBuffer[offset].price;
             _types[i]   = txBuffer[offset].txType;
             _ts[i]      = txBuffer[offset].timestamp;
 
-            offset = offset &gt; 0 ?  offset - 1 : txBufferMaxSize - 1;
+            offset = offset > 0 ?  offset - 1 : txBufferMaxSize - 1;
         }
     }
 
@@ -540,7 +540,7 @@ contract ItemSelling {
     function isContract(address addr) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(addr) } // solium-disable-line
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
@@ -562,13 +562,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -576,16 +576,16 @@ library SafeMath {
 library ArrayUtils {
 
     function remove(uint256[] storage self, uint256 _removeIdx) internal {
-        if (_removeIdx &lt; 0 || _removeIdx &gt;= self.length) return;
+        if (_removeIdx < 0 || _removeIdx >= self.length) return;
 
-        for (uint i = _removeIdx; i &lt; self.length - 1; i++){
+        for (uint i = _removeIdx; i < self.length - 1; i++){
             self[i] = self[i + 1];
         }
         self.length--;
     }
 
     function indexOf(uint[] storage self, uint value) internal view returns (uint) {
-        for (uint i = 0; i &lt; self.length; i++){
+        for (uint i = 0; i < self.length; i++){
             if (self[i] == value) return i;
         }
         return uint(-1);

@@ -7,7 +7,7 @@ contract Resolver {
 
 contract DNSResolver is Resolver {
     address public owner;
-    mapping(bytes32=&gt;bytes) zones;
+    mapping(bytes32=>bytes) zones;
     
     function OwnedResolver() {
         owner = msg.sender;

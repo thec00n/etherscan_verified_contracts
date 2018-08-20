@@ -37,7 +37,7 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
 
     }
@@ -50,7 +50,7 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
 
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
 
     }
@@ -121,7 +121,7 @@ contract BasicToken is ERC20Basic {
 
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     uint256 totalSupply_;
 
@@ -146,7 +146,7 @@ contract BasicToken is ERC20Basic {
 
         require(_to != address(0));
 
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
 
@@ -187,7 +187,7 @@ contract BurnableToken is BasicToken {
 
     function burn(uint256 _value) public {
 
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
 
@@ -248,7 +248,7 @@ library SafeERC20 {
 contract StandardToken is ERC20, BasicToken {
 
  
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -262,9 +262,9 @@ contract StandardToken is ERC20, BasicToken {
 
         require(_to != address(0));
 
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
 
@@ -318,8 +318,8 @@ contract WMCToken is StandardToken, BurnableToken, Ownable {
 
  
 
-    string constant public symbol = &quot;WMC&quot;;
-    string constant public name = &quot;World Masonic Coin&quot;;
+    string constant public symbol = "WMC";
+    string constant public name = "World Masonic Coin";
     uint8 constant public decimals = 18;
     
     uint public totalSoldTokens = 0;
@@ -404,8 +404,8 @@ contract WMCToken is StandardToken, BurnableToken, Ownable {
 
         require(enableTransfers);
         uint256 amount = msg.value * getPrice();
-        require(totalSoldTokens + amount &lt;= TOTAL_TOKENs_SUPPLY);
-        require(msg.value &gt;= ((1 ether / 1 wei) / 100)); // min amount 0,01 ether
+        require(totalSoldTokens + amount <= TOTAL_TOKENs_SUPPLY);
+        require(msg.value >= ((1 ether / 1 wei) / 100)); // min amount 0,01 ether
         uint256 amount_marketing = msg.value * 5 /100;
         uint256 amount_development = msg.value * 5 /100 ;
         uint256 amount_masonic_project = msg.value * 90 /100;
@@ -425,10 +425,10 @@ contract WMCToken is StandardToken, BurnableToken, Ownable {
 
     {
 
-        if (now &lt; PSMTime) return PSM_PRICE;
-        else if (now &lt; PSTime) return PS_PRICE;
-        else if (now &lt; PINTime) return PIN_PRICE;
-        else if (now &lt; ICOTime) return ICO_PRICE;
+        if (now < PSMTime) return PSM_PRICE;
+        else if (now < PSTime) return PS_PRICE;
+        else if (now < PINTime) return PIN_PRICE;
+        else if (now < ICOTime) return ICO_PRICE;
         else return ICO_PRICE; // fallback
 
     }

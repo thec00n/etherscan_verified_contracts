@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -57,16 +57,16 @@ contract GenesisToken is ERC20Interface {
      
      using SafeMath for uint256;
      
-     string public constant symbol = &quot;GEN&quot;;
-     string public constant name = &quot;Genesis&quot;;
+     string public constant symbol = "GEN";
+     string public constant name = "Genesis";
      uint8 public constant decimals = 18;
      uint256 public _totalSupply = 16000000000000000000000000;
      
      address public owner;
  
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
     
     modifier onlyOwner() {
          if (msg.sender != owner) {
@@ -89,9 +89,9 @@ contract GenesisToken is ERC20Interface {
     }
     
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount 
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount 
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] = balances[msg.sender].sub(_amount);
              balances[_to] = balances[_to].add(_amount);
              Transfer(msg.sender, _to, _amount);
@@ -106,10 +106,10 @@ contract GenesisToken is ERC20Interface {
             address _to,
             uint256 _amount
         )   returns (bool success) {
-            if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+            if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] = balances[_from].sub(_amount);
              allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
              balances[_to] = balances[_to].add(_amount);

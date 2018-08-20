@@ -23,15 +23,15 @@ contract owned {	//Defines contract Owner
 	}
 
 	modifier onlyPayloadSize(uint size) {		//Mitigates ERC20 Short Address Attack
-		assert(msg.data.length &gt;= size + 4);
+		assert(msg.data.length >= size + 4);
 		_;
 	}
 }
 
 
 contract YourMomToken is owned {
-	mapping (address =&gt; uint256) public balanceOf;		//This creates an array with all balances
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;	//This creates an array of arrays with adress-&gt;adress=value
+	mapping (address => uint256) public balanceOf;		//This creates an array with all balances
+	mapping (address => mapping (address => uint256)) public allowance;	//This creates an array of arrays with adress->adress=value
 	uint256 public totalSupply;
 	string public name;
 	string public symbol;
@@ -59,23 +59,23 @@ contract YourMomToken is owned {
 	function balanceOf(address _owner) public constant returns (uint256 balance) { return balanceOf[_owner]; }
 	function allowance(address _owner, address _spender) public constant returns (uint256 remaining) { return allowance[_owner][_spender]; }
 
-	function transfer(address _to, uint256 _value) onlyPayloadSize (2 * 32) public returns (bool success) {	//Transfer _value tokens from msg.sender to &#39;_to&#39;
-		_transfer(msg.sender, _to, _value);		//Call the _transfer function (internal). Calling it it&#39;s cleaner than write two identical functions for &#39;transfer&#39; and &#39;transferFrom&#39;
+	function transfer(address _to, uint256 _value) onlyPayloadSize (2 * 32) public returns (bool success) {	//Transfer _value tokens from msg.sender to '_to'
+		_transfer(msg.sender, _to, _value);		//Call the _transfer function (internal). Calling it it's cleaner than write two identical functions for 'transfer' and 'transferFrom'
 		return true;
 	}
 
 	function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize (3 * 32) public returns (bool success) {	//Transfer tokens from other address
-		require(_value &lt;= allowance[_from][msg.sender]);	//Check allowance array, if &#39;_from&#39; has authorized &#39;msg.sender&#39; spend &lt;= _value
-		_transfer(_from, _to, _value);						//Send &#39;_value&#39; tokens to &#39;_to&#39; in behalf of &#39;_from&#39;
-		allowance[_from][msg.sender] -= _value;				//Reduce msg.sender&#39;s allowance to spend &#39;_from&#39;s tokens in &#39;_value&#39;
+		require(_value <= allowance[_from][msg.sender]);	//Check allowance array, if '_from' has authorized 'msg.sender' spend <= _value
+		_transfer(_from, _to, _value);						//Send '_value' tokens to '_to' in behalf of '_from'
+		allowance[_from][msg.sender] -= _value;				//Reduce msg.sender's allowance to spend '_from's tokens in '_value'
 		return true;
 	}
 	
 	function _transfer(address _from, address _to, uint _value) internal returns (bool success) {
 		require(_to != 0x0);									//Prevent transfer to 0x0 address. Use burn() instead
-		require(balanceOf[_from] &gt;= _value);					//Check if the sender has enough
-		require(balanceOf[_to] + _value &gt;= balanceOf[_to]);		//Check for overflows
-		require(_value != 0);									//Prevents a transaction of &#39;0&#39; to be executed
+		require(balanceOf[_from] >= _value);					//Check if the sender has enough
+		require(balanceOf[_to] + _value >= balanceOf[_to]);		//Check for overflows
+		require(_value != 0);									//Prevents a transaction of '0' to be executed
 		require(_from != _to);									//Prevents sending a transaction to yourself
 		balanceOf[_from] -= _value;								//Subtract from the sender
 		balanceOf[_to] += _value;								//Add the same to the recipient
@@ -92,8 +92,8 @@ contract YourMomToken is owned {
 	}
 
 	function burn(uint256 _value) public returns (bool success) {	//Function to destroy tokens
-		require(balanceOf[msg.sender] &gt;= _value);			//Check if the targeted balance has enough
-		require(_value != 0);								//Prevents a transaction of &#39;0&#39; to be executed
+		require(balanceOf[msg.sender] >= _value);			//Check if the targeted balance has enough
+		require(_value != 0);								//Prevents a transaction of '0' to be executed
 		balanceOf[msg.sender] -= _value;					//Subtract from the targeted balance
 		totalSupply -= _value;								//Update totalSupply
 		Burn(msg.sender, _value);							//Call the Event to notice about the burn

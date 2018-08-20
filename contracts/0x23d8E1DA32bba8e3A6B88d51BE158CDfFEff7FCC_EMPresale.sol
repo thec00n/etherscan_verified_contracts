@@ -7,8 +7,8 @@ contract EMPresale {
     // Data -----------------------------
     
     struct Player {
-        uint32 id;  // if 0, then player don&#39;t exist
-        mapping(uint8 =&gt; uint8) bought;
+        uint32 id;  // if 0, then player don't exist
+        mapping(uint8 => uint8) bought;
         uint256 weiSpent;
         bool hasSpent;
     }
@@ -23,13 +23,13 @@ contract EMPresale {
     
     address admin;
     address[] approverArr; // for display purpose only
-    mapping(address =&gt; bool) approvers;
+    mapping(address => bool) approvers;
     
     address[] playerAddrs;      // 0 index not used
     uint32[] playerRefCounts;   // 0 index not used
     
-    mapping(address =&gt; Player) players;
-    mapping(uint8 =&gt; Sale) sales;   // use from 1 onwards
+    mapping(address => Player) players;
+    mapping(uint8 => Sale) sales;   // use from 1 onwards
     uint256 refPrize;
     
     
@@ -76,7 +76,7 @@ contract EMPresale {
     }
     
     function refundAll() external onlyAdmin {
-        for(uint256 i=0; i&lt;playerAddrs.length; i++)
+        for(uint256 i=0; i<playerAddrs.length; i++)
             refund(playerAddrs[i]);
     }
     
@@ -97,13 +97,13 @@ contract EMPresale {
         
         // check that sale is still on
         Sale storage sale = sales[saleID];
-        require(sale.saleEndTime &gt; now);
+        require(sale.saleEndTime > now);
         
         // check ether is paid
-        require(msg.value &gt;= sale.price);
+        require(msg.value >= sale.price);
 
         // check not all is bought
-        require(sale.bought &lt; sale.maxBought);
+        require(sale.bought < sale.maxBought);
         sale.bought++;
         
         bool toRegisterPlayer = false;
@@ -118,10 +118,10 @@ contract EMPresale {
         player.bought[saleID]++;
         player.weiSpent += msg.value;
         
-        // if hasn&#39;t referred, add referral
+        // if hasn't referred, add referral
         if(!player.hasSpent) {
             player.hasSpent = true;
-            if(referral != address(0) &amp;&amp; referral != msg.sender) {
+            if(referral != address(0) && referral != msg.sender) {
                 Player storage referredPlayer = players[referral];
                 if(referredPlayer.id == 0) {    // add referred player if unregistered
                     toRegisterReferral = true;
@@ -132,7 +132,7 @@ contract EMPresale {
         }
         
         // register player(s)
-        if(toRegisterPlayer &amp;&amp; toRegisterReferral) {
+        if(toRegisterPlayer && toRegisterReferral) {
             uint256 length = (uint32)(playerAddrs.length);
             player.id = (uint32)(length);
             referredPlayer.id = (uint32)(length+1);
@@ -259,7 +259,7 @@ contract EMPresale {
         // swap last address with deleted address (for array)
         uint256 length = approverArr.length;
         address swapAddr = approverArr[length - 1];
-        for(uint8 i=0; i&lt;length; i++) {
+        for(uint8 i=0; i<length; i++) {
             if(approverArr[i] == oldApprover) {
                 approverArr[i] = swapAddr;
                 break;

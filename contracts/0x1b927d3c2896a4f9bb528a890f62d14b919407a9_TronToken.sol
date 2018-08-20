@@ -2,11 +2,11 @@ pragma solidity ^0.4.11;
 
 contract TronToken {
 
-    // string public name = &quot;Tronix&quot;;      //  token name
-   //  string public symbol = &quot;TRX&quot;;           //  token symbol
+    // string public name = "Tronix";      //  token name
+   //  string public symbol = "TRX";           //  token symbol
   //  uint256 public decimals = 6;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
    
 
     uint256 public totalSupply = 0;
@@ -37,8 +37,8 @@ contract TronToken {
     
 
     function transfer(address _to, uint256 _value) isRunning validAddress  payable returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);

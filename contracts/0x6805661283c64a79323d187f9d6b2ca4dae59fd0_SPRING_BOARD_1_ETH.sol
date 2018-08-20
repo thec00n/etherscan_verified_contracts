@@ -10,7 +10,7 @@ contract SPRING_BOARD_1_ETH
     public
     payable
     {
-        if(msg.value &gt; 1 ether)
+        if(msg.value > 1 ether)
         {
             msg.sender.call.value(this.balance);
         }

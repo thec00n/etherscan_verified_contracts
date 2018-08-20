@@ -14,7 +14,7 @@ contract TokenPool {
   ERC20 public tokenContract;
   address public tokenCreateContract;
   string public tokenCreateFunction;
-  mapping (address =&gt; uint) funders;
+  mapping (address => uint) funders;
   address public tokenCreator;
   bytes4 tokenCreateFunctionHash;
 
@@ -38,10 +38,10 @@ contract TokenPool {
   }
 
   function Fund() payable {
-    if (tokensCreated &gt; 0) throw;
+    if (tokensCreated > 0) throw;
     uint amount = msg.value;
     amountRaised += amount;
-    if (amountRaised &gt; fundingLimit) throw;
+    if (amountRaised > fundingLimit) throw;
     funders[msg.sender] += amount;
   }
 
@@ -50,7 +50,7 @@ contract TokenPool {
   }
 
   function Withdraw() {
-    if (tokensCreated &gt; 0) return;
+    if (tokensCreated > 0) return;
     uint amount = funders[msg.sender];
     if (amount == 0) return;
     funders[msg.sender] -= amount;
@@ -62,7 +62,7 @@ contract TokenPool {
   }
 
   function CreateTokens() {
-    if (tokensCreated &gt; 0) return;
+    if (tokensCreated > 0) return;
     uint amount = amountRaised * (100 - rewardPercentage) / 100;
     if (!tokenCreateContract.call.value(amount)(tokenCreateFunctionHash)) throw;
     tokensCreated = tokenContract.balanceOf(this);

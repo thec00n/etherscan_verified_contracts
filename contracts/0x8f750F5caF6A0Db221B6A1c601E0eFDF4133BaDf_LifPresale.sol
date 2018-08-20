@@ -4,7 +4,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -99,20 +99,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -134,7 +134,7 @@ library SafeMath {
  *
 
 Simple Agreement for Future Tokens
-This Simple Agreement for Future Tokens (this “Agreement”) is entered into on between WT Limited (the “Company”) and (the “Buyer”) in connection with Company’s creation and distribution of the L&#237;f blockchain token (“Project Token”) in furtherance of the establishment and operation of a B2B marketplace for travel inventory called Winding Tree, as described in the White Paper.
+This Simple Agreement for Future Tokens (this “Agreement”) is entered into on between WT Limited (the “Company”) and (the “Buyer”) in connection with Company’s creation and distribution of the Líf blockchain token (“Project Token”) in furtherance of the establishment and operation of a B2B marketplace for travel inventory called Winding Tree, as described in the White Paper.
 Please note that the agreement below only concerns the pre-sale token allocation and not the the Token Distribution Event, which will have its own rules, described in Exhibit A.
 NOW, THEREFORE, in consideration of the above, Company and Buyer hereby agree as follows:
 Definitions
@@ -152,7 +152,7 @@ Person: an individual or legal entity or person, including a government or polit
 Project: the blockchain-enabled network and/or decentralized consensus project being developed by Company that will utilize the Project Token as native to its operations and/or functioning.
 Project Founders: Maksim Izmaylov, Jakub Vysoky, Augusto Lemble, Pedro Anderson.
 Project Plan: the plan containing a detailed overview of major milestones to be achieved and approximate dates of execution and launch of the blockchain-enabled network of the Project.
-Project Token: L&#237;f blockchain token, i.e. an ERC20 blockchain token created in connection with and native to the Project with the characteristics described in the Token Characteristics Document and distributed via (i) a Token Distribution Event and/or (ii) a methodology described in the Token Distribution Plan.
+Project Token: Líf blockchain token, i.e. an ERC20 blockchain token created in connection with and native to the Project with the characteristics described in the Token Characteristics Document and distributed via (i) a Token Distribution Event and/or (ii) a methodology described in the Token Distribution Plan.
 Project Token Protocol: a blockchain based protocol aiming at providing a decentralized B2B marketplace for travel inventory called Winding Tree.
 Purchase Price: as defined in Section 2.
 TGE: Token Generating Event taking place on November 1st, 2017.
@@ -177,7 +177,7 @@ Regulatory risk: The Buyer understands and accepts that the blockchain technolog
 Risk of abandonment / lack of success: The Buyer understands and accepts that the creation of the Project Tokens and the development of the Project Token Protocol may be abandoned for a number of reasons, including lack of interest from the public, lack of funding, lack of commercial success or prospects (e.g. caused by competing projects). The Buyer therefore understands that there is no assurance that, even if the Project Token Protocol is partially or fully developed and launched, the Buyer will receive any benefits through the Project Tokens held by him.
 Risk of withdrawing partners: The Buyer understands and accepts that the TGE and the feasibility of the Project as a whole depends strongly on the collaboration of banks and other crucial partners of Company. The Buyer therefore understands that there is no assurance that TGE will take place as foreseen or the Project as a whole will be successfully executed.
 Risk associated with other applications: The Buyer understands and accepts that the Project Token Protocol may give rise to other, alternative projects, promoted by unaffiliated third parties, under which Project Tokens will have no intrinsic value.
-Risk of loss of private key: Project Tokens can only be accessed by using an Ethereum Wallet with a combination of Buyer’s account information (address), private key and password. The private key is encrypted with a password. The Buyer understands and accepts that if his private key file or password respectively got lost or stolen, the obtained Project Tokens associated with the Buyer&#39;s account (address) or password will be unrecoverable and will be permanently lost.
+Risk of loss of private key: Project Tokens can only be accessed by using an Ethereum Wallet with a combination of Buyer’s account information (address), private key and password. The private key is encrypted with a password. The Buyer understands and accepts that if his private key file or password respectively got lost or stolen, the obtained Project Tokens associated with the Buyer's account (address) or password will be unrecoverable and will be permanently lost.
 Risk of theft: The Buyer understands and accepts that the Smart Contract System concept, the underlying software application and software platform (i.e. the Ethereum blockchain) may be exposed to attacks by hackers or other individuals that could result in theft or loss of Project Tokens or ETH.
 Risk of Ethereum mining attacks: The Buyer understands and accepts that, as with other cryptocurrencies, the blockchain used for the Smart Contract System is susceptible to mining attacks, including but not limited to double-spend attacks, majority mining power attacks, “selfish-mining” attacks, and race condition attacks. Any successful attacks present a risk to the Smart Contract System, expected proper execution and sequencing of Project Token transactions, and expected proper execution and sequencing of contract computations.
 Token Liquidity. Buyer understands that with regard to Project Tokens no market liquidity may be guaranteed and that the value (if any) of Project Tokens over time may experience extreme volatility or depreciate resulting in full and total loss that will be borne exclusively by Buyer with respect to the Project Tokens Buyer purchases under this Agreement.
@@ -250,7 +250,7 @@ contract LifPresale is Ownable, Pausable {
      @param _wallet see `wallet`
    */
   function LifPresale(uint256 _weiRaised, uint256 _maxCap, address _wallet) {
-    require(_weiRaised &lt; _maxCap);
+    require(_weiRaised < _maxCap);
 
     weiRaised = _weiRaised;
     maxCap = _maxCap;
@@ -264,7 +264,7 @@ contract LifPresale is Ownable, Pausable {
      when the amount sent plus the wei raised is not higher than the max cap.
    */
   function () whenNotPaused payable {
-    require(weiRaised.add(msg.value) &lt;= maxCap);
+    require(weiRaised.add(msg.value) <= maxCap);
 
     weiRaised = weiRaised.add(msg.value);
     wallet.transfer(msg.value);

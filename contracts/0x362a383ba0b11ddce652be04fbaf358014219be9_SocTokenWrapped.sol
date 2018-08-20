@@ -4,8 +4,8 @@ pragma solidity ^0.4.4;
 
 
 contract TokenInterface {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -21,7 +21,7 @@ contract TokenInterface {
 
 contract SocInterface {
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     function transfer(address _to, uint256 _value) public {}
 
@@ -33,7 +33,7 @@ contract Token is TokenInterface {
     }
 
     function _transfer(address _to, uint256 _amount) internal returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+        if (balances[msg.sender] >= _amount && _amount > 0) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -46,9 +46,9 @@ contract Token is TokenInterface {
     function _transferFrom(address _from,
                            address _to,
                            uint256 _amount) internal returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0) {
 
             balances[_to] += _amount;
             balances[_from] -= _amount;
@@ -61,7 +61,7 @@ contract Token is TokenInterface {
     }
 
     function approve(address _spender, uint256 _amount) returns (bool success) {
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
         allowed[msg.sender][_spender] = _amount;
         Approval(msg.sender, _spender, _amount);
         return true;
@@ -89,20 +89,20 @@ contract DepositSlot {
     function collect() onlyWrapper {
         uint amount = TokenInterface(SOC).balanceOf(this);
         //if (amount == 0) throw;
-        require(amount &gt; 0);
+        require(amount > 0);
         SocInterface(SOC).transfer(wrapper, amount);
     }
 }
 
 contract SocTokenWrapped is Token {
-    string public constant standard = &quot;Token 0.1&quot;;
-    string public constant name = &quot;Soc Token Wrapped&quot;;
-    string public constant symbol = &quot;WSOC&quot;;
+    string public constant standard = "Token 0.1";
+    string public constant name = "Soc Token Wrapped";
+    string public constant symbol = "WSOC";
     uint8 public constant decimals = 18;     // same as SOC
 
     address public constant SOC = 0x2d0e95bd4795d7ace0da3c0ff7b706a5970eb9d3;
 
-    mapping (address =&gt; address) depositSlots;
+    mapping (address => address) depositSlots;
 
     function createPersonalDepositAddress() returns (address depositAddress) {
         if (depositSlots[msg.sender] == 0) {
@@ -117,14 +117,14 @@ contract SocTokenWrapped is Token {
     }
 
     function processDeposit() {
-        require(totalSupply &gt;= 0);
+        require(totalSupply >= 0);
 
         address depositSlot = depositSlots[msg.sender];
         require(depositSlot != 0);
 
         DepositSlot(depositSlot).collect();
         uint balance = SocInterface(SOC).balanceOf(this);
-        require(balance &gt; totalSupply);
+        require(balance > totalSupply);
 
         uint freshWSOC = balance - totalSupply;
         totalSupply += freshWSOC;
@@ -151,9 +151,9 @@ contract SocTokenWrapped is Token {
 
 
     function withdrawSOC(uint amount) internal {
-        require(amount &gt; 0);
-        require(balances[msg.sender] &gt;= amount);
-        require(totalSupply &gt;= amount);
+        require(amount > 0);
+        require(balances[msg.sender] >= amount);
+        require(totalSupply >= amount);
 
         balances[msg.sender] -= amount;
         totalSupply -= amount;

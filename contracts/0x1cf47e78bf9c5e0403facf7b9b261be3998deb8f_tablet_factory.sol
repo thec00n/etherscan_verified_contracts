@@ -9,7 +9,7 @@ contract tablet_factory {
         address tablet_address;
     }
     
-    mapping(address =&gt; tablet_struct[]) public tablets;
+    mapping(address => tablet_struct[]) public tablets;
     
     
     function tablet_factory() public {
@@ -30,7 +30,7 @@ contract tablet_factory {
     
     
     function is_creator(address creator_address) public constant returns(bool) {
-        return tablets[creator_address].length &gt; 0;
+        return tablets[creator_address].length > 0;
     }
     
     function creator_tablets_count(address creator_address) public constant returns(uint) {
@@ -50,7 +50,7 @@ contract tablet {
     
     string[] public records;
     
-    mapping(address =&gt; bool) public scribes;
+    mapping(address => bool) public scribes;
     address[] public scribes_hisory;
     
     event new_tablet_created(address indexed tablet_creator, bytes32 tablet_name, address tablet_address);
@@ -84,7 +84,7 @@ contract tablet {
         
     function add_record(string record) public {
         require(scribes[msg.sender]);
-        // require(bytes(record).length &lt;= 2048); Lets decide this on the client side, limit could be higher later
+        // require(bytes(record).length <= 2048); Lets decide this on the client side, limit could be higher later
         new_record(this, msg.sender, records.push(record));
     }
     

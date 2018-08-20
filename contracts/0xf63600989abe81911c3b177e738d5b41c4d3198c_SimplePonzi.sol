@@ -3,7 +3,7 @@ contract SimplePonzi {
     uint public currentInvestment = 0;
     
     function () payable public {
-        require(msg.value &gt; currentInvestment);
+        require(msg.value > currentInvestment);
         
         // payout previous investor
         currentInvestor.send(msg.value);

@@ -9,13 +9,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) pure internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -106,13 +106,13 @@ contract Crowdsale is Pausable {
     uint public totalRefunded; // total amount of refunds    
     uint public tokenPriceWei;  // price of token in wei
 
-    mapping(address =&gt; Backer) public backers; //backer list
+    mapping(address => Backer) public backers; //backer list
     address[] public backersIndex; // to be able to itarate through backers for verification.  
 
     
     // @notice to verify if action is not performed out of the campaing range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock)) 
+        if ((block.number < startBlock) || (block.number > endBlock)) 
             revert();
         _;
     }
@@ -193,7 +193,7 @@ contract Crowdsale is Pausable {
     // @notice It will be called by owner to start the sale    
     function start(uint _block) external onlyOwner() {   
 
-        require(_block &lt; 246528);  // 4.28*60*24*40 days = 246528     
+        require(_block < 246528);  // 4.28*60*24*40 days = 246528     
         startBlock = block.number;
         endBlock = startBlock.add(_block); 
     }
@@ -202,8 +202,8 @@ contract Crowdsale is Pausable {
     // this function will allow on adjusting duration of campaign closer to the end 
     function adjustDuration(uint _block) external onlyOwner() {
 
-        require(_block &lt; 308160);  // 4.28*60*24*50 days = 308160     
-        require(_block &gt; block.number.sub(startBlock)); // ensure that endBlock is not set in the past
+        require(_block < 308160);  // 4.28*60*24*50 days = 308160     
+        require(_block > block.number.sub(startBlock)); // ensure that endBlock is not set in the past
         endBlock = startBlock.add(_block); 
     }
 
@@ -213,10 +213,10 @@ contract Crowdsale is Pausable {
     function contribute(address _backer) internal stopInEmergency respectTimeFrame returns(bool res) {
     
         require(currentStep == Step.FundingPreSale || currentStep == Step.FundingPublicSale); // ensure that this is correct step
-        require(msg.value &gt;= minInvestETH);   // ensure that min contributions amount is met
+        require(msg.value >= minInvestETH);   // ensure that min contributions amount is met
           
         uint tokensToSend = msg.value.mul(1e18) / tokenPriceWei; // calculate amount of tokens to send  (add 18 0s first)     
-        require(totalTokensSent.add(tokensToSend) &lt; maxCap); // Ensure that max cap hasn&#39;t been reached  
+        require(totalTokensSent.add(tokensToSend) < maxCap); // Ensure that max cap hasn't been reached  
             
         Backer storage backer = backers[_backer];
     
@@ -249,8 +249,8 @@ contract Crowdsale is Pausable {
         require(!crowdsaleClosed);        
         // purchasing precise number of tokens might be impractical, thus subtract 1000 tokens so finalizition is possible
         // near the end 
-        require(block.number &gt;= endBlock || totalTokensSent &gt;= maxCap.sub(1000));                 
-        require(totalTokensSent &gt;= minCap);  // ensure that minimum was reached
+        require(block.number >= endBlock || totalTokensSent >= maxCap.sub(1000));                 
+        require(totalTokensSent >= minCap);  // ensure that minimum was reached
 
         crowdsaleClosed = true;  
         
@@ -266,7 +266,7 @@ contract Crowdsale is Pausable {
 
     // @notice Failsafe token transfer
     function tokenDrian() external onlyOwner() {
-        if (block.number &gt; endBlock) {
+        if (block.number > endBlock) {
             if (!token.transfer(team, token.balanceOf(this))) 
                 revert();
         }
@@ -277,13 +277,13 @@ contract Crowdsale is Pausable {
 
         require(currentStep == Step.Refunding);         
        
-        require(this.balance &gt; 0);  // contract will hold 0 ether at the end of campaign.                                  
+        require(this.balance > 0);  // contract will hold 0 ether at the end of campaign.                                  
                                     // contract needs to be funded through fundContract() 
 
         Backer storage backer = backers[msg.sender];
 
-        require(backer.weiReceived &gt; 0);  // esnure that user has sent contribution
-        require(!backer.refunded);         // ensure that user hasn&#39;t been refunded yet
+        require(backer.weiReceived > 0);  // esnure that user has sent contribution
+        require(!backer.refunded);         // ensure that user hasn't been refunded yet
 
         if (!token.returnTokens(msg.sender, backer.tokensSent)) // transfer tokens
             revert();

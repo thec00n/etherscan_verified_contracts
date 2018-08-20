@@ -2,11 +2,11 @@ pragma solidity ^0.4.15;
 
 contract Token {
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (uint256 =&gt; address) public addresses;
-    mapping (address =&gt; bool) public addressExists;
-    mapping (address =&gt; uint256) public addressIndex;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balanceOf;
+    mapping (uint256 => address) public addresses;
+    mapping (address => bool) public addressExists;
+    mapping (address => uint256) public addressIndex;
+    mapping(address => mapping (address => uint256)) allowed;
     uint256 public numberOfAddress = 0;
     
     string public physicalString;
@@ -57,14 +57,14 @@ contract Token {
     
     function transfer(address _to, uint256 _value) payable returns (bool success) {
         chargeHoldingTax();
-        if (balanceOf[msg.sender] &lt; _value) return false;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return false;
-        if (msg.sender != owner &amp;&amp; _to != owner &amp;&amp; txnTax != 0) {
+        if (balanceOf[msg.sender] < _value) return false;
+        if (balanceOf[_to] + _value < balanceOf[_to]) return false;
+        if (msg.sender != owner && _to != owner && txnTax != 0) {
             if(!owner.send(txnTax)) {
                 return false;
             }
         }
-        if(isPrivate &amp;&amp; msg.sender != owner &amp;&amp; !addressExists[_to]) {
+        if(isPrivate && msg.sender != owner && !addressExists[_to]) {
             return false;
         }
         balanceOf[msg.sender] -= _value;
@@ -79,18 +79,18 @@ contract Token {
          address _to,
          uint256 _amount
      ) payable returns (bool success) {
-        if (_from != owner &amp;&amp; _to != owner &amp;&amp; txnTax != 0) {
+        if (_from != owner && _to != owner && txnTax != 0) {
             if(!owner.send(txnTax)) {
                 return false;
             }
         }
-        if(isPrivate &amp;&amp; _from != owner &amp;&amp; !addressExists[_to]) {
+        if(isPrivate && _from != owner && !addressExists[_to]) {
             return false;
         }
-        if (balanceOf[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balanceOf[_to] + _amount &gt; balanceOf[_to]) {
+        if (balanceOf[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balanceOf[_to] + _amount > balanceOf[_to]) {
             balanceOf[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balanceOf[_to] += _amount;
@@ -117,8 +117,8 @@ contract Token {
     }
     
     function mint(uint256 _value) {
-        if(canMintBurn &amp;&amp; msg.sender == owner) {
-            if (balanceOf[msg.sender] + _value &lt; balanceOf[msg.sender]) throw;
+        if(canMintBurn && msg.sender == owner) {
+            if (balanceOf[msg.sender] + _value < balanceOf[msg.sender]) throw;
             balanceOf[msg.sender] += _value;
             totalSupply += _value;
             Transfer(0, msg.sender, _value);
@@ -126,8 +126,8 @@ contract Token {
     }
     
     function burn(uint256 _value) {
-        if(canMintBurn &amp;&amp; msg.sender == owner) {
-            if (balanceOf[msg.sender] &lt; _value) throw;
+        if(canMintBurn && msg.sender == owner) {
+            if (balanceOf[msg.sender] < _value) throw;
             balanceOf[msg.sender] -= _value;
             totalSupply -= _value;
             Transfer(msg.sender, 0, _value);
@@ -138,10 +138,10 @@ contract Token {
         if(holdingTaxInterval!=0) {
             uint256 dateDif = now - lastHoldingTax;
             bool changed = false;
-            while(dateDif &gt;= holdingTaxInterval * (1 weeks)) {
+            while(dateDif >= holdingTaxInterval * (1 weeks)) {
                 changed=true;
                 dateDif -= holdingTaxInterval * (1 weeks);
-                for(uint256 i = 0;i&lt;numberOfAddress;i++) {
+                for(uint256 i = 0;i<numberOfAddress;i++) {
                     if(addresses[i]!=owner) {
                         uint256 amtOfTaxToPay = ((balanceOf[addresses[i]]) * holdingTax)  / (10**holdingTaxDecimals)/ (10**holdingTaxDecimals);
                         balanceOf[addresses[i]] -= amtOfTaxToPay;
@@ -181,7 +181,7 @@ contract Token {
     }
     
     function addAddressManual (address addr) {
-        if(msg.sender == owner &amp;&amp; isPrivate) {
+        if(msg.sender == owner && isPrivate) {
             addAddress(addr);
         } else {
             throw;
@@ -197,7 +197,7 @@ contract Token {
     }
     
     function removeAddressManual (address addr) {
-        if(msg.sender == owner &amp;&amp; isPrivate) {
+        if(msg.sender == owner && isPrivate) {
             removeAddress(addr);
         } else {
             throw;

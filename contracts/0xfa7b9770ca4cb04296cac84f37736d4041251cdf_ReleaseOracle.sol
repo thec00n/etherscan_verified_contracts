@@ -12,7 +12,7 @@
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // ReleaseOracle is an Ethereum contract to store the current and previous
 // versions of the go-ethereum implementation. Its goal is to allow Geth to
@@ -45,11 +45,11 @@ contract ReleaseOracle {
   }
 
   // Oracle authorization details
-  mapping(address =&gt; bool) authorised; // Set of accounts allowed to vote on updating the contract
+  mapping(address => bool) authorised; // Set of accounts allowed to vote on updating the contract
   address[]                voters;     // List of addresses currently accepted as signers
 
   // Various proposals being voted on
-  mapping(address =&gt; Votes) authProps; // Currently running user authorization proposals
+  mapping(address => Votes) authProps; // Currently running user authorization proposals
   address[]                 authPend;  // List of addresses being voted on (map indexes)
 
   Version   verProp;  // Currently proposed release being voted on
@@ -71,7 +71,7 @@ contract ReleaseOracle {
       return;
     }
     // Otherwise assign the individual signers one by one
-    for (uint i = 0; i &lt; signers.length; i++) {
+    for (uint i = 0; i < signers.length; i++) {
       authorised[signers[i]] = true;
       voters.push(signers[i]);
     }
@@ -130,7 +130,7 @@ contract ReleaseOracle {
   }
 
   // nuke votes for the currently proposed version to not be included as the next
-  // release. Nuking doesn&#39;t require a specific version number for simplicity.
+  // release. Nuking doesn't require a specific version number for simplicity.
   function nuke() {
     updateRelease(0, 0, 0, 0, false);
   }
@@ -138,42 +138,42 @@ contract ReleaseOracle {
   // updateSigner marks a vote for changing the status of an Ethereum user, either
   // for or against the user being an authorised signer.
   function updateSigner(address user, bool authorize) internal isSigner {
-    // Gather the current votes and ensure we don&#39;t double vote
+    // Gather the current votes and ensure we don't double vote
     Votes votes = authProps[user];
-    for (uint i = 0; i &lt; votes.pass.length; i++) {
+    for (uint i = 0; i < votes.pass.length; i++) {
       if (votes.pass[i] == msg.sender) {
         return;
       }
     }
-    for (i = 0; i &lt; votes.fail.length; i++) {
+    for (i = 0; i < votes.fail.length; i++) {
       if (votes.fail[i] == msg.sender) {
         return;
       }
     }
     // If no authorization proposal is open, add the user to the index for later lookups
-    if (votes.pass.length == 0 &amp;&amp; votes.fail.length == 0) {
+    if (votes.pass.length == 0 && votes.fail.length == 0) {
       authPend.push(user);
     }
     // Cast the vote and return if the proposal cannot be resolved yet
     if (authorize) {
       votes.pass.push(msg.sender);
-      if (votes.pass.length &lt;= voters.length / 2) {
+      if (votes.pass.length <= voters.length / 2) {
         return;
       }
     } else {
       votes.fail.push(msg.sender);
-      if (votes.fail.length &lt;= voters.length / 2) {
+      if (votes.fail.length <= voters.length / 2) {
         return;
       }
     }
     // Proposal resolved in our favor, execute whatever we voted on
-    if (authorize &amp;&amp; !authorised[user]) {
+    if (authorize && !authorised[user]) {
       authorised[user] = true;
       voters.push(user);
-    } else if (!authorize &amp;&amp; authorised[user]) {
+    } else if (!authorize && authorised[user]) {
       authorised[user] = false;
 
-      for (i = 0; i &lt; voters.length; i++) {
+      for (i = 0; i < voters.length; i++) {
         if (voters[i] == user) {
           voters[i] = voters[voters.length - 1];
           voters.length--;
@@ -186,7 +186,7 @@ contract ReleaseOracle {
     // Finally delete the resolved proposal, index and garbage collect
     delete authProps[user];
 
-    for (i = 0; i &lt; authPend.length; i++) {
+    for (i = 0; i < authPend.length; i++) {
       if (authPend[i] == user) {
         authPend[i] = authPend[authPend.length - 1];
         authPend.length--;
@@ -199,7 +199,7 @@ contract ReleaseOracle {
   // or for the currently proposed release to be nuked out.
   function updateRelease(uint32 major, uint32 minor, uint32 patch, bytes20 commit, bool release) internal isSigner {
     // Skip nuke votes if no proposal is pending
-    if (!release &amp;&amp; verProp.votes.pass.length == 0) {
+    if (!release && verProp.votes.pass.length == 0) {
       return;
     }
     // Mark a new release if no proposal is pending
@@ -210,17 +210,17 @@ contract ReleaseOracle {
       verProp.commit = commit;
     }
     // Make sure positive votes match the current proposal
-    if (release &amp;&amp; (verProp.major != major || verProp.minor != minor || verProp.patch != patch || verProp.commit != commit)) {
+    if (release && (verProp.major != major || verProp.minor != minor || verProp.patch != patch || verProp.commit != commit)) {
       return;
     }
-    // Gather the current votes and ensure we don&#39;t double vote
+    // Gather the current votes and ensure we don't double vote
     Votes votes = verProp.votes;
-    for (uint i = 0; i &lt; votes.pass.length; i++) {
+    for (uint i = 0; i < votes.pass.length; i++) {
       if (votes.pass[i] == msg.sender) {
         return;
       }
     }
-    for (i = 0; i &lt; votes.fail.length; i++) {
+    for (i = 0; i < votes.fail.length; i++) {
       if (votes.fail[i] == msg.sender) {
         return;
       }
@@ -228,12 +228,12 @@ contract ReleaseOracle {
     // Cast the vote and return if the proposal cannot be resolved yet
     if (release) {
       votes.pass.push(msg.sender);
-      if (votes.pass.length &lt;= voters.length / 2) {
+      if (votes.pass.length <= voters.length / 2) {
         return;
       }
     } else {
       votes.fail.push(msg.sender);
-      if (votes.fail.length &lt;= voters.length / 2) {
+      if (votes.fail.length <= voters.length / 2) {
         return;
       }
     }

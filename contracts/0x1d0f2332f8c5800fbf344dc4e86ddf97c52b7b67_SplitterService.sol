@@ -9,7 +9,7 @@ contract Splitter
 	
 	function Splitter(address[] _recipients) public
 	{
-	    require(_recipients.length &gt;= 1);
+	    require(_recipients.length >= 1);
 		recipients = _recipients;
 	}
 	
@@ -20,7 +20,7 @@ contract Splitter
 		
 		if (etherPerRecipient == 0) return;
 		
-		for (uint256 i=0; i&lt;amountOfRecipients; i++)
+		for (uint256 i=0; i<amountOfRecipients; i++)
 		{
 			recipients[i].transfer(etherPerRecipient);
 		}
@@ -32,9 +32,9 @@ contract SplitterService
     address private owner;
     uint256 public feeForSplitterCreation;
     
-    mapping(address =&gt; address[]) public addressToSplittersCreated;
-    mapping(address =&gt; bool) public addressIsSplitter;
-    mapping(address =&gt; string) public splitterNames;
+    mapping(address => address[]) public addressToSplittersCreated;
+    mapping(address => bool) public addressIsSplitter;
+    mapping(address => string) public splitterNames;
     
     function SplitterService() public
     {
@@ -44,7 +44,7 @@ contract SplitterService
     
     function createSplitter(address[] recipients, string name) external payable
     {
-        require(msg.value &gt;= feeForSplitterCreation);
+        require(msg.value >= feeForSplitterCreation);
         address newSplitterAddress = new Splitter(recipients);
         addressToSplittersCreated[msg.sender].push(newSplitterAddress);
         addressIsSplitter[newSplitterAddress] = true;
@@ -57,7 +57,7 @@ contract SplitterService
     function setFee(uint256 newFee) external
     {
         require(msg.sender == owner);
-        require(newFee &lt;= 0.01 ether);
+        require(newFee <= 0.01 ether);
         feeForSplitterCreation = newFee;
     }
     

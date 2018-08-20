@@ -5,8 +5,8 @@ contract AmIOnTheFork {
     // This function should be called between block 1920000 and 1930000.
     // After that the status will be locked in.
     function update() {
-        if (block.number &gt;= 1920000 &amp;&amp; block.number &lt;= 1930000) {
-            forked = darkDAO.balance &lt; 3600000 ether;
+        if (block.number >= 1920000 && block.number <= 1930000) {
+            forked = darkDAO.balance < 3600000 ether;
         }
     }
     function() {

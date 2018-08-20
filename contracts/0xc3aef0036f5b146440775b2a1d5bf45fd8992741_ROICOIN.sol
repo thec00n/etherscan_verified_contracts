@@ -23,8 +23,8 @@ contract Token {
 contract ROICOIN is Token {
 
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
    
     string public name;                   
     uint8 public decimals;               
@@ -45,7 +45,7 @@ contract ROICOIN is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0)
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0)
         {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -59,7 +59,7 @@ contract ROICOIN is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-       if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value  &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0) {
+       if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value  && balances[_to] + _value > balances[_to] && _value > 0) {
             balances[_to] += _value;
             Transfer(_from, _to, _value);
             balances[_from] -= _value;
@@ -74,7 +74,7 @@ contract ROICOIN is Token {
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
         
-       if (balances[msg.sender] &gt;= _value &amp;&amp; balances[msg.sender] &gt;= allowed[msg.sender][_spender] + _value &amp;&amp; _value &gt; 0)
+       if (balances[msg.sender] >= _value && balances[msg.sender] >= allowed[msg.sender][_spender] + _value && _value > 0)
         {
              allowed[msg.sender][_spender] += _value;
              Approval(msg.sender, _spender, _value);

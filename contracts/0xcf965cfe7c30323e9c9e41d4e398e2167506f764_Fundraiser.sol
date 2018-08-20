@@ -5,7 +5,7 @@
 
 pragma solidity ^0.4.8;
 
-/// Will accept Ether &quot;contributions&quot; and record each both as a log and in a
+/// Will accept Ether "contributions" and record each both as a log and in a
 /// queryable record.
 contract Fundraiser {
 
@@ -31,7 +31,7 @@ contract Fundraiser {
     bool public isHalted = false;
 
     // The `record` mapping maps cosmos addresses to the amount of atoms.
-    mapping (address =&gt; uint) public record;
+    mapping (address => uint) public record;
 
     // The total amount of ether raised
     uint public totalWei = 0;
@@ -55,15 +55,15 @@ contract Fundraiser {
     // Can only be called by _admin.
     modifier only_admin { if (msg.sender != admin) throw; _; }
     // Can only be called by prior to the period.
-    modifier only_before_period { if (block.number &gt;= beginBlock) throw; _; }
+    modifier only_before_period { if (block.number >= beginBlock) throw; _; }
     // Can only be called during the period when not halted.
-    modifier only_during_period { if (block.number &lt; beginBlock || block.number &gt;= endBlock || isHalted) throw; _; }
+    modifier only_during_period { if (block.number < beginBlock || block.number >= endBlock || isHalted) throw; _; }
     // Can only be called during the period when halted.
-    modifier only_during_halted_period { if (block.number &lt; beginBlock || block.number &gt;= endBlock || !isHalted) throw; _; }
+    modifier only_during_halted_period { if (block.number < beginBlock || block.number >= endBlock || !isHalted) throw; _; }
     // Can only be called after the period.
-    modifier only_after_period { if (block.number &lt; endBlock) throw; _; }
+    modifier only_after_period { if (block.number < endBlock) throw; _; }
     // The value of the message must be sufficiently large to not be considered dust.
-    modifier is_not_dust { if (msg.value &lt; dust) throw; _; }
+    modifier is_not_dust { if (msg.value < dust) throw; _; }
 
     /// Some contribution `amount` received from `recipient` at rate of `currentRate` with emergency return of `returnAddr`.
     event Received(address indexed recipient, address returnAddr, uint amount, uint currentRate);
@@ -74,7 +74,7 @@ contract Fundraiser {
 
     // Is the fundraiser active?
     function isActive() constant returns (bool active) {
-	return (block.number &gt;= beginBlock &amp;&amp; block.number &lt; endBlock &amp;&amp; !isHalted);
+	return (block.number >= beginBlock && block.number < endBlock && !isHalted);
     }
 
     /// Receive a contribution for a donor cosmos address.

@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,9 +57,9 @@ contract Etharea {
 
     address manager;
     Area[] public soldAreas;
-    mapping(string =&gt; address) areaIdToOwner;
-    mapping(string =&gt; uint) areaIdToIndex;
-    mapping(string =&gt; bool) enabledAreas;
+    mapping(string => address) areaIdToOwner;
+    mapping(string => uint) areaIdToIndex;
+    mapping(string => bool) enabledAreas;
     uint public defaultPrice = 0.01 ether;
 
     modifier onlyOwner() {
@@ -68,7 +68,7 @@ contract Etharea {
     }
 
     modifier percentage(uint percents) {
-        require(percents &gt;= 0 &amp;&amp; percents &lt;= 100);
+        require(percents >= 0 && percents <= 100);
         _;
     }
 
@@ -147,30 +147,30 @@ contract Etharea {
     }
 
     function withdraw() public onlyOwner {
-        require(address(this).balance &gt; 0);
+        require(address(this).balance > 0);
         manager.transfer(address(this).balance);
     }
 
     function getPriceRiseAndFeePercent(uint currentPrice)
     public pure returns (uint, uint)
     {
-        if (currentPrice &gt;= 0.01 ether &amp;&amp; currentPrice &lt; 0.15 ether) {
+        if (currentPrice >= 0.01 ether && currentPrice < 0.15 ether) {
             return (100, 10);
         }
 
-        if (currentPrice &gt;= 0.15 ether &amp;&amp; currentPrice &lt; 1 ether) {
+        if (currentPrice >= 0.15 ether && currentPrice < 1 ether) {
             return (60, 6);
         }
 
-        if (currentPrice &gt;= 1 ether &amp;&amp; currentPrice &lt; 4 ether) {
+        if (currentPrice >= 1 ether && currentPrice < 4 ether) {
             return (40, 5);
         }
 
-        if (currentPrice &gt;= 4 ether &amp;&amp; currentPrice &lt; 10 ether) {
+        if (currentPrice >= 4 ether && currentPrice < 10 ether) {
             return (30, 4);
         }
 
-        if (currentPrice &gt;= 10 ether) {
+        if (currentPrice >= 10 ether) {
             return (25, 3);
         }
     }
@@ -187,6 +187,6 @@ contract Etharea {
     function isContract(address userAddress) internal view returns (bool) {
         uint size;
         assembly { size := extcodesize(userAddress) }
-        return size &gt; 0;
+        return size > 0;
     }
 }

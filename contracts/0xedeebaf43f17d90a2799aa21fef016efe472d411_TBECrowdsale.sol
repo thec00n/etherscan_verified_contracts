@@ -15,12 +15,12 @@ contract TBECrowdsale {
     uint256 public bonusDate;
     uint256 public tokenCap;
 
-    mapping (address =&gt; bool) public whitelist;
-    mapping (address =&gt; bool) public categorie1;
-    mapping (address =&gt; bool) public categorie2;
-    mapping (address =&gt; bool) public tokenAddress;
-    mapping (address =&gt; uint256) public balanceOfEther;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => bool) public whitelist;
+    mapping (address => bool) public categorie1;
+    mapping (address => bool) public categorie2;
+    mapping (address => bool) public tokenAddress;
+    mapping (address => uint256) public balanceOfEther;
+    mapping (address => uint256) public balanceOf;
 
     modifier isCreator() {
         require(msg.sender == creator);
@@ -93,18 +93,18 @@ contract TBECrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
         require(whitelist[msg.sender]);
         
         if (categorie1[msg.sender] == false) {
-            // require(tokenAddress.balanceOf[msg.sender] &lt;= tokenCap);
+            // require(tokenAddress.balanceOf[msg.sender] <= tokenCap);
         }
 
         uint256 amount = msg.value * price;
 
-        if (now &gt; startDate &amp;&amp; now &lt;= bonusDate) {
+        if (now > startDate && now <= bonusDate) {
             uint256 _amount = amount / 10;
             amount += _amount * 3;
         }

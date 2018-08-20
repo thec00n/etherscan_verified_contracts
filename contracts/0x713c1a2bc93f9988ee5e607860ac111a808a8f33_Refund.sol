@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -86,7 +86,7 @@ contract Refund is Ownable {
     }
     
     function startRefund() public onlyOwner {
-        for(uint i; i &lt; addrs.length; i++) {
+        for(uint i; i < addrs.length; i++) {
             addrs[i].transfer(funds[i]);
             RefundEvent(addrs[i], funds[i]);
         }

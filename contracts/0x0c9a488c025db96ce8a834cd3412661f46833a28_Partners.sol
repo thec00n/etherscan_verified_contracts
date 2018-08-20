@@ -75,7 +75,7 @@ contract OwnerBase {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCOO whenNotPaused {
         paused = true;
@@ -87,7 +87,7 @@ contract OwnerBase {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCOO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 	
@@ -117,37 +117,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
  
 }
@@ -185,10 +185,10 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
     }
 	
 	// address to balance.
-	mapping(address =&gt; uint) public balances;
+	mapping(address => uint) public balances;
 	
 	
-	mapping(uint =&gt; Casino) public allCasinos; // key is id
+	mapping(uint => Casino) public allCasinos; // key is id
 	
 	// all ids of casinos
 	uint[] public ids;
@@ -208,35 +208,35 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	}
 	
 	function initCasino() public onlyCOO {
-		addCasino(5, 100000000000000000, &#39;Las Vegas Bellagio Casino&#39;, &#39;Five star Casino&#39;);
-		addCasino(4, 70000000000000000, &#39;London Ritz Club Casino&#39;, &#39;Four star Casino&#39;);
-		addCasino(4, 70000000000000000, &#39;Las Vegas Metropolitan Casino&#39;, &#39;Four star Casino&#39;);
-		addCasino(4, 70000000000000000, &#39;Argentina Park Hyatt Mendoza Casino&#39;, &#39;Four star Casino&#39;);
-		addCasino(3, 30000000000000000, &#39;Canada Golf Thalasso &amp; Casino Resort&#39;, &#39;Three star Casino&#39;);
-		addCasino(3, 30000000000000000, &#39;Monaco Monte-Carlo Casino&#39;, &#39;Three star Casino&#39;);
-		addCasino(3, 30000000000000000, &#39;Las Vegas Flamingo Casino&#39;, &#39;Three star Casino&#39;);
-		addCasino(3, 30000000000000000, &#39;New Jersey Bogota Casino&#39;, &#39;Three star Casino&#39;);
-		addCasino(3, 30000000000000000, &#39;Atlantic City Taj Mahal Casino&#39;, &#39;Three star Casino&#39;);
-		addCasino(2, 20000000000000000, &#39;Dubai Atlantis Casino&#39;, &#39;Two star Casino&#39;);
-		addCasino(2, 20000000000000000, &#39;Germany Baden-Baden Casino&#39;, &#39;Two star Casino&#39;);
-		addCasino(2, 20000000000000000, &#39;South Korea Paradise Walker Hill Casino&#39;, &#39;Two star Casino&#39;);
-		addCasino(2, 20000000000000000, &#39;Las Vegas Paris Casino&#39;, &#39;Two star Casino&#39;);
-		addCasino(2, 20000000000000000, &#39;Las Vegas Caesars Palace Casino&#39;, &#39;Two star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Las Vegas Riviera Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Las Vegas Mandalay Bay Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Las Vegas MGM Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Las Vegas New York Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Las Vegas  Renaissance Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Las Vegas Venetian Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Melbourne Crown Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Macao Grand Lisb Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Singapore Marina Bay Sands Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Malaysia Cloud Top Mountain Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;South Africa Sun City Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Vietnam Smear Peninsula Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Macao Sands Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Bahamas Paradise Island Casino&#39;, &#39;One star Casino&#39;);
-		addCasino(1, 10000000000000000, &#39;Philippines Manila Casinos&#39;, &#39;One star Casino&#39;);
+		addCasino(5, 100000000000000000, 'Las Vegas Bellagio Casino', 'Five star Casino');
+		addCasino(4, 70000000000000000, 'London Ritz Club Casino', 'Four star Casino');
+		addCasino(4, 70000000000000000, 'Las Vegas Metropolitan Casino', 'Four star Casino');
+		addCasino(4, 70000000000000000, 'Argentina Park Hyatt Mendoza Casino', 'Four star Casino');
+		addCasino(3, 30000000000000000, 'Canada Golf Thalasso & Casino Resort', 'Three star Casino');
+		addCasino(3, 30000000000000000, 'Monaco Monte-Carlo Casino', 'Three star Casino');
+		addCasino(3, 30000000000000000, 'Las Vegas Flamingo Casino', 'Three star Casino');
+		addCasino(3, 30000000000000000, 'New Jersey Bogota Casino', 'Three star Casino');
+		addCasino(3, 30000000000000000, 'Atlantic City Taj Mahal Casino', 'Three star Casino');
+		addCasino(2, 20000000000000000, 'Dubai Atlantis Casino', 'Two star Casino');
+		addCasino(2, 20000000000000000, 'Germany Baden-Baden Casino', 'Two star Casino');
+		addCasino(2, 20000000000000000, 'South Korea Paradise Walker Hill Casino', 'Two star Casino');
+		addCasino(2, 20000000000000000, 'Las Vegas Paris Casino', 'Two star Casino');
+		addCasino(2, 20000000000000000, 'Las Vegas Caesars Palace Casino', 'Two star Casino');
+		addCasino(1, 10000000000000000, 'Las Vegas Riviera Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Las Vegas Mandalay Bay Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Las Vegas MGM Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Las Vegas New York Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Las Vegas  Renaissance Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Las Vegas Venetian Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Melbourne Crown Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Macao Grand Lisb Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Singapore Marina Bay Sands Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Malaysia Cloud Top Mountain Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'South Africa Sun City Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Vietnam Smear Peninsula Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Macao Sands Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Bahamas Paradise Island Casino', 'One star Casino');
+		addCasino(1, 10000000000000000, 'Philippines Manila Casinos', 'One star Casino');
 	}
 	///
 	function () payable public {
@@ -264,7 +264,7 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	function setCasinoName(uint16 id, string _name, string _desc) public onlyCOO 
 	{
 		Casino storage item = allCasinos[id];
-		require(item.id &gt; 0);
+		require(item.id > 0);
 		item.name = _name;
 		item.desc = _desc;
 	}
@@ -272,7 +272,7 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	/// @dev check wether the address is a casino owner.
 	function isOwner( address addr) public view returns (uint16) 
 	{
-		for(uint16 id = 1; id &lt;= 29; id++) {
+		for(uint16 id = 1; id <= 29; id++) {
 			Casino storage item = allCasinos[id];
 			if ( item.owner == addr) {
 				return id;
@@ -291,8 +291,8 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	function bonusAll() payable public {
 		uint total = msg.value;
 		uint remain = total;
-		if (total &gt; 0) {
-			for (uint i = 0; i &lt; ids.length; i++) {
+		if (total > 0) {
+			for (uint i = 0; i < ids.length; i++) {
 				uint id = ids[i];
 				Casino storage item = allCasinos[id];
 				uint fund = 0;
@@ -308,7 +308,7 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 					fund = safeDiv(safeMul(total, 100), 10000);
 				}
 				
-				if (remain &gt;= fund) {
+				if (remain >= fund) {
 					remain -= fund;
 					address owner = item.owner;
 					if (owner != address(0)) {
@@ -338,7 +338,7 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	/// @dev user withdraw, 
 	function userWithdraw() public {
 		uint fund = balances[msg.sender];
-		require (fund &gt; 0);
+		require (fund > 0);
 		delete balances[msg.sender];
 		msg.sender.transfer(fund);
 	}
@@ -349,8 +349,8 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
     function buy(uint16 _id) payable public returns (bool) {
 		Casino storage item = allCasinos[_id];
 		uint oldPrice = item.price;
-		require(oldPrice &gt; 0);
-		require(msg.value &gt;= oldPrice);
+		require(oldPrice > 0);
+		require(msg.value >= oldPrice);
 		
 		address oldOwner = item.owner;
 		address newOwner = msg.sender;
@@ -362,13 +362,13 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 		item.owner = newOwner;
 		emit Bought(_id, newOwner, oldPrice, oldOwner);
 		
-		// Transfer payment to old owner minus the developer&#39;s cut.
+		// Transfer payment to old owner minus the developer's cut.
 		uint256 devCut = safeDiv(safeMul(oldPrice, masterCut), 10000);
 		oldOwner.transfer(safeSub(oldPrice, devCut));
 		masterHas = safeAdd(masterHas, devCut);
 		
 		uint256 excess = msg.value - oldPrice;
-		if (excess &gt; 0) {
+		if (excess > 0) {
 			newOwner.transfer(excess);
 		}
     }
@@ -377,13 +377,13 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	
 	/// @dev calculate next price 
 	function calcNextPrice (uint _price) public pure returns (uint nextPrice) {
-		if (_price &gt;= 5 ether ) {
+		if (_price >= 5 ether ) {
 			return safeDiv(safeMul(_price, 110), 100);
-		} else if (_price &gt;= 2 ether ) {
+		} else if (_price >= 2 ether ) {
 			return safeDiv(safeMul(_price, 120), 100);
-		} else if (_price &gt;= 500 finney ) {
+		} else if (_price >= 500 finney ) {
 			return safeDiv(safeMul(_price, 130), 100);
-		} else if (_price &gt;= 20 finney ) {
+		} else if (_price >= 20 finney ) {
 			return safeDiv(safeMul(_price, 140), 100);
 		} else {
 			return safeDiv(safeMul(_price, 200), 100);
@@ -402,7 +402,7 @@ contract Partners is OwnerBase, SafeMath, PartnerHolder {
 	/// @dev cfo withdraw dead ether. 
     function withdrawDeadFund( address addr) external onlyCFO {
         uint fund = balances[addr];
-        require (fund &gt; 0);
+        require (fund > 0);
         delete balances[addr];
         cfoAddress.transfer(fund);
     }

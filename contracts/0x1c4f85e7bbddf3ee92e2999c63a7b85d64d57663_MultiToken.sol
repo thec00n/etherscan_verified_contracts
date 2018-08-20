@@ -10,13 +10,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal pure  returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal  pure returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -43,7 +43,7 @@ contract ERC20 {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
 
@@ -145,8 +145,8 @@ contract MultiToken is ERC20, Ownable {
     address public parentContract;
     bool public codeExportEnabled;
 
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowed;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) public allowed;
 
     modifier onlyAuthorized() {
         if (msg.sender != parentContract) 
@@ -159,10 +159,10 @@ contract MultiToken is ERC20, Ownable {
     {
 
         totalSupply = 10000 * (10**8);                                             
-        name = &quot;ICO&quot;;          // Set the name for display purposes
-        symbol = &quot;ICO&quot;;      // Set the symbol for display purposes
+        name = "ICO";          // Set the name for display purposes
+        symbol = "ICO";      // Set the symbol for display purposes
         decimals = 8;   // Amount of decimals for display purposes
-        version = &quot;1.0&quot;;         // Version of token
+        version = "1.0";         // Version of token
         tokenPrice = 1 ether / 100;   // Token price in ETH
         codeExportEnabled = true; // If true allow code export
         exchangeEnabled = true;
@@ -193,7 +193,7 @@ contract MultiToken is ERC20, Ownable {
         require(exchangeEnabled);   
         uint tokensToSend;
         tokensToSend = (msg.value * (10**decimals)) / tokenPrice; 
-        require(balances[owner] &gt;= tokensToSend);
+        require(balances[owner] >= tokensToSend);
         balances[msg.sender] += tokensToSend;
         balances[owner] -= tokensToSend;
         Transfer(owner, msg.sender, tokensToSend);
@@ -217,7 +217,7 @@ contract MultiToken is ERC20, Ownable {
     function transfer(address _to, uint _value) public returns(bool) {
 
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -232,8 +232,8 @@ contract MultiToken is ERC20, Ownable {
     function transferFrom(address _from, address _to, uint256 _value) public  returns(bool success) {
 
         require(_to != address(0));
-        require(balances[_from] &gt;= _value); // Check if the sender has enough
-        require(_value &lt;= allowed[_from][msg.sender]); // Check if allowed is greater or equal
+        require(balances[_from] >= _value); // Check if the sender has enough
+        require(_value <= allowed[_from][msg.sender]); // Check if allowed is greater or equal
         balances[_from] -= _value; // Subtract from the sender
         balances[_to] += _value; // Add the same to the recipient
         allowed[_from][msg.sender] -= _value;  // adjust allowed
@@ -252,7 +252,7 @@ contract MultiToken is ERC20, Ownable {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -285,7 +285,7 @@ contract MultiToken is ERC20, Ownable {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

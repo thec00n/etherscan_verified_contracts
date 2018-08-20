@@ -22,9 +22,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
@@ -32,7 +32,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -41,7 +41,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -115,7 +115,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 totalSupply_;
 
@@ -133,7 +133,7 @@ contract BasicToken is ERC20Basic {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -163,7 +163,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 
 	/**
@@ -174,8 +174,8 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
 	 *
 	 * Beware that changing an allowance with this method brings the risk that someone may use both the old
 	 * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	 * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	 * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	 * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	 * @param _spender The address which will spend the funds.
 	 * @param _value The amount of tokens to be spent.
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
 	 */
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -258,8 +258,8 @@ contract StandardToken is ERC20, BasicToken {
 contract KOIOSToken is StandardToken, Ownable {
 	using SafeMath for uint256;
 
-	string public name = &quot;KOIOS&quot;;
-	string public symbol = &quot;KOI&quot;;
+	string public name = "KOIOS";
+	string public symbol = "KOI";
 	uint256 public decimals = 5;
 
 	uint256 public totalSupply = 1000000000 * (10 ** uint256(decimals));
@@ -315,7 +315,7 @@ contract KOIOSTokenSale is Ownable {
 	uint256 public totalEtherRaised;
 
 	// ether raised per wallet
-	mapping(address =&gt; uint256) public etherRaisedPerWallet;
+	mapping(address => uint256) public etherRaisedPerWallet;
 
 	// wallet which will receive the ether funding
 	address public wallet;
@@ -366,19 +366,19 @@ contract KOIOSTokenSale is Ownable {
 	 */
 	function isValidPurchase(uint256 value, uint256 amount) internal constant returns (bool) {
 		// check if timestamp is falling in the range
-		bool validTimestamp = startingTimestamp &lt;= block.timestamp &amp;&amp; endingTimestamp &gt;= block.timestamp;
+		bool validTimestamp = startingTimestamp <= block.timestamp && endingTimestamp >= block.timestamp;
 
 		// check if value of the ether is valid
 		bool validValue = value != 0;
 
 		// check if rate of the token is clearly defined
-		bool validRate = tokenPriceInEth &gt; 0;
+		bool validRate = tokenPriceInEth > 0;
 
 		// check if the tokens available in contract for sale
-		bool validAmount = tokensForSale.sub(totalTokenSold) &gt;= amount &amp;&amp; amount &gt; 0;
+		bool validAmount = tokensForSale.sub(totalTokenSold) >= amount && amount > 0;
 
 		// validate if all conditions are met
-		return validTimestamp &amp;&amp; validValue &amp;&amp; validRate &amp;&amp; validAmount &amp;&amp; !isClose;
+		return validTimestamp && validValue && validRate && validAmount && !isClose;
 	}
 
 	
@@ -517,7 +517,7 @@ contract KOIOSTokenPreSale is Ownable {
 	uint256 public totalEtherRaised;
 
 	// ether raised per wallet
-	mapping(address =&gt; uint256) public etherRaisedPerWallet;
+	mapping(address => uint256) public etherRaisedPerWallet;
 
 	// wallet which will receive the ether funding
 	address public wallet;
@@ -535,19 +535,19 @@ contract KOIOSTokenPreSale is Ownable {
 	event TransferManual(address indexed _from, address indexed _to, uint256 _value, string _message);
 
 	// Bonus Tokens lockeup for Phase 1
-	mapping(address =&gt; uint256) public lockupPhase1;
+	mapping(address => uint256) public lockupPhase1;
 	uint256 public phase1Duration = 90 * 86400;
 
 	// Bonus Tokens lockeup for Phase 2
-	mapping(address =&gt; uint256) public lockupPhase2;
+	mapping(address => uint256) public lockupPhase2;
 	uint256 public phase2Duration = 120 * 86400;
 	
 	// Bonus Tokens lockeup for Phase 3
-	mapping(address =&gt; uint256) public lockupPhase3;
+	mapping(address => uint256) public lockupPhase3;
 	uint256 public phase3Duration = 150 * 86400;
 	
 	// Bonus Tokens lockeup for Phase 4
-	mapping(address =&gt; uint256) public lockupPhase4;
+	mapping(address => uint256) public lockupPhase4;
 	uint256 public phase4Duration = 180 * 86400;
 
 	uint256 public totalLockedBonus; 
@@ -586,32 +586,32 @@ contract KOIOSTokenPreSale is Ownable {
 	 */
 	function isValidPurchase(uint256 value, uint256 amount) internal constant returns (bool) {
 		// check if timestamp is falling in the range
-		bool validTimestamp = startingTimestamp &lt;= block.timestamp &amp;&amp; endingTimestamp &gt;= block.timestamp;
+		bool validTimestamp = startingTimestamp <= block.timestamp && endingTimestamp >= block.timestamp;
 
 		// check if value of the ether is valid
 		bool validValue = value != 0;
 
 		// check if rate of the token is clearly defined
-		bool validRate = tokenPriceInEth &gt; 0;
+		bool validRate = tokenPriceInEth > 0;
 
 		// check if the tokens available in contract for sale
-		bool validAmount = tokensForSale.sub(totalTokenSold) &gt;= amount &amp;&amp; amount &gt; 0;
+		bool validAmount = tokensForSale.sub(totalTokenSold) >= amount && amount > 0;
 
 		// validate if all conditions are met
-		return validTimestamp &amp;&amp; validValue &amp;&amp; validRate &amp;&amp; validAmount &amp;&amp; !isClose;
+		return validTimestamp && validValue && validRate && validAmount && !isClose;
 	}
 
 	function getBonus(uint256 _value) internal pure returns (uint256) {
 		uint256 bonus = 0; 
-		if(_value &gt;= 1E18) {
+		if(_value >= 1E18) {
 			bonus = _value.mul(50).div(1000);
-		}if(_value &gt;= 5E18) {
+		}if(_value >= 5E18) {
 			bonus = _value.mul(75).div(1000);
-		}if(_value &gt;= 10E18) {
+		}if(_value >= 10E18) {
 			bonus = _value.mul(100).div(1000);
-		}if(_value &gt;= 20E18) {
+		}if(_value >= 20E18) {
 			bonus = _value.mul(150).div(1000);
-		}if(_value &gt;= 30E18) {
+		}if(_value >= 30E18) {
 			bonus = _value.mul(200).div(1000);
 		}
 		return bonus;
@@ -691,7 +691,7 @@ contract KOIOSTokenPreSale is Ownable {
 
 	function isValidRelease(uint256 amount) internal constant returns (bool) {
 		// check if the tokens available in contract for sale
-		bool validAmount = amount &gt; 0;
+		bool validAmount = amount > 0;
 
 		// validate if all conditions are met
 		return validAmount;
@@ -699,22 +699,22 @@ contract KOIOSTokenPreSale is Ownable {
 
 	function releaseBonus() public {
 		uint256 releaseTokens = 0;
-		if(block.timestamp &gt; (startingTimestamp.add(phase1Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase1Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase1[msg.sender]);
 			lockupPhase1[msg.sender] = 0;
 		}
-		if(block.timestamp &gt; (startingTimestamp.add(phase2Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase2Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase2[msg.sender]);
 			lockupPhase2[msg.sender] = 0;
 		}
-		if(block.timestamp &gt; (startingTimestamp.add(phase3Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase3Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase3[msg.sender]);
 			lockupPhase3[msg.sender] = 0;
 		}
-		if(block.timestamp &gt; (startingTimestamp.add(phase4Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase4Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase4[msg.sender]);
 			lockupPhase4[msg.sender] = 0;
@@ -727,19 +727,19 @@ contract KOIOSTokenPreSale is Ownable {
 
 	function releasableBonus(address _owner) public constant returns (uint256) {
 		uint256 releaseTokens = 0;
-		if(block.timestamp &gt; (startingTimestamp.add(phase1Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase1Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase1[_owner]);
 		}
-		if(block.timestamp &gt; (startingTimestamp.add(phase2Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase2Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase2[_owner]);
 		}
-		if(block.timestamp &gt; (startingTimestamp.add(phase3Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase3Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase3[_owner]);
 		}
-		if(block.timestamp &gt; (startingTimestamp.add(phase4Duration)))
+		if(block.timestamp > (startingTimestamp.add(phase4Duration)))
 		{
 			releaseTokens = releaseTokens.add(lockupPhase4[_owner]);
 		}

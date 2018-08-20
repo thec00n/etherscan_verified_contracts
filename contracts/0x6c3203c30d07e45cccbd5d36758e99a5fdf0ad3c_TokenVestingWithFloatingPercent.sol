@@ -1,5 +1,5 @@
 pragma solidity ^0.4.24;
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="8fe6e1e9e0cfffe7eae1e0e2a1fbeaeee2">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="8fe6e1e9e0cfffe7eae1e0e2a1fbeaeee2">[email protected]</span>>
 
 /**
  * @title SafeMath
@@ -11,8 +11,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -27,9 +27,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -46,7 +46,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,8 +54,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) view returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -76,7 +76,7 @@ contract Ownable {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, &#39;ownership is required&#39;);
+        require(msg.sender == owner, 'ownership is required');
         _;
     }
 }
@@ -103,7 +103,7 @@ contract BaseTokenVesting is Ownable() {
 		address _token
 	) internal 
 	{
-        require(_benificiary != address(0), &#39;can not send to zero-address&#39;);
+        require(_benificiary != address(0), 'can not send to zero-address');
 
         beneficiary = _benificiary;
         cliff = _cliff;
@@ -118,8 +118,8 @@ contract BaseTokenVesting is Ownable() {
     }
 
     function sendTokens(address _to, uint _amount) public onlyOwner {
-        require(vestingHasStarted == false, &#39;send tokens only if vesting has not been started&#39;);
-        require(token.transfer(_to, _amount), &#39;token.transfer has failed&#39;);
+        require(vestingHasStarted == false, 'send tokens only if vesting has not been started');
+        require(token.transfer(_to, _amount), 'token.transfer has failed');
     }
 
     function release() public;
@@ -143,20 +143,20 @@ contract TokenVestingWithFloatingPercent is BaseTokenVesting {
         public 
     {
         uint sum = 0;
-        for (uint i = 0; i &lt; _periodPercents.length; i++) {
+        for (uint i = 0; i < _periodPercents.length; i++) {
             sum = sum.add(_periodPercents[i]);
         }
-        require(sum == 100, &#39;percentage sum must be equal to 100&#39;);
+        require(sum == 100, 'percentage sum must be equal to 100');
 
         periodPercents = _periodPercents;
     }
 
     function release() public {
-        require(vestingHasStarted, &#39;vesting has not started&#39;);
+        require(vestingHasStarted, 'vesting has not started');
         uint unreleased = releasableAmount();
 
-        require(unreleased &gt; 0, &#39;released amount has to be greter than zero&#39;);
-        require(token.transfer(beneficiary, unreleased), &#39;revert on transfer failure&#39;);
+        require(unreleased > 0, 'released amount has to be greter than zero');
+        require(token.transfer(beneficiary, unreleased), 'revert on transfer failure');
         released = released.add(unreleased);
         emit Released(unreleased);	
     }
@@ -169,18 +169,18 @@ contract TokenVestingWithFloatingPercent is BaseTokenVesting {
         uint currentBalance = token.balanceOf(this);
         uint totalBalance = currentBalance.add(released);
 
-        if (now &lt; cliff || !vestingHasStarted) {
+        if (now < cliff || !vestingHasStarted) {
             _amount = 0;
         }
         else {
             uint _periodPercentsIndex = now.sub(cliff).div(vestingPeriod);
-            if (_periodPercentsIndex &gt; periodPercents.length.sub(1)) {
+            if (_periodPercentsIndex > periodPercents.length.sub(1)) {
                 _amount = totalBalance;
             }
             else {
-                if (_periodPercentsIndex &gt;= 1) {
+                if (_periodPercentsIndex >= 1) {
                     uint totalPercent = 0;
-                    for (uint i = 0; i &lt; _periodPercentsIndex - 1; i++) {
+                    for (uint i = 0; i < _periodPercentsIndex - 1; i++) {
                         totalPercent = totalPercent + periodPercents[i];
                     }
                     _amount = totalBalance.mul(totalPercent).div(100);

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -48,15 +48,15 @@ library SafeMath {
 contract HelloToken {
     using SafeMath for uint256;
     // Public variables of the token
-    string public constant name    = &quot;Hello Token&quot;;  //The Token&#39;s name
+    string public constant name    = "Hello Token";  //The Token's name
     uint8 public constant decimals = 18;               //Number of decimals of the smallest unit
-    string public constant symbol  = &quot;HelloT&quot;;            //An identifier    
+    string public constant symbol  = "HelloT";            //An identifier    
     // 18 decimals is the strongly suggested default, avoid changing it
     
     // packed to 256bit to save gas usage.
     struct Supplies {
-        // uint128&#39;s max value is about 3e38.
-        // it&#39;s enough to present amount of tokens
+        // uint128's max value is about 3e38.
+        // it's enough to present amount of tokens
         uint128 totalSupply;
     }
     
@@ -64,14 +64,14 @@ contract HelloToken {
     
     // Packed to 256bit to save gas usage.    
     struct Account {
-        // uint112&#39;s max value is about 5e33.
-        // it&#39;s enough to present amount of tokens
+        // uint112's max value is about 5e33.
+        // it's enough to present amount of tokens
         uint112 balance;
     }
     
 
     // This creates an array with all balances
-    mapping (address =&gt; Account) public balanceOf;
+    mapping (address => Account) public balanceOf;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -101,9 +101,9 @@ contract HelloToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from].balance &gt;= _value);
+        require(balanceOf[_from].balance >= _value);
         // Check for overflows
-        require(balanceOf[_to].balance + _value &gt;= balanceOf[_to].balance);
+        require(balanceOf[_to].balance + _value >= balanceOf[_to].balance);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from].balance + balanceOf[_to].balance;
         // Subtract from the sender
@@ -136,7 +136,7 @@ contract HelloToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender].balance &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender].balance >= _value);   // Check if the sender has enough
         balanceOf[msg.sender].balance -= uint112(_value);            // Subtract from the sender
         supplies.totalSupply -= uint128(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);

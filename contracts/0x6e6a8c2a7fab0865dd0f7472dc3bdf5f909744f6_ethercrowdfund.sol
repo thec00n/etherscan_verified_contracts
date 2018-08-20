@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -84,8 +84,8 @@ struct Idea {
 	uint256 amountRaisedSoFar;
 	address host;
 	address creator;
-	mapping(address =&gt; uint256) amountPledged;
-	mapping(address =&gt; bool) reclaimed;
+	mapping(address => uint256) amountPledged;
+	mapping(address => bool) reclaimed;
 }
 
 function ethercrowdfund() {
@@ -103,10 +103,10 @@ function ethercrowdfund() {
 
 function makeProposal(string title,uint256 minGoal,uint256 maxGoal,uint256 hostCut,uint256 duration,address host) public returns(uint256)	{
 
-	if (maxGoal==0 || minGoal==0 || maxGoal&gt;MAX_FUNDING_AMOUNT) revert(); 
-	if (minGoal&gt;maxGoal) revert();
-	if (hostCut&gt;MAX_HOST_PERCENT) revert();
-	if (duration&lt;5 || duration&gt;225257142) revert(); 
+	if (maxGoal==0 || minGoal==0 || maxGoal>MAX_FUNDING_AMOUNT) revert(); 
+	if (minGoal>maxGoal) revert();
+	if (hostCut>MAX_HOST_PERCENT) revert();
+	if (duration<5 || duration>225257142) revert(); 
 	
 	uint256 status=PROPOSED_STATUS;
 	address creator=msg.sender;
@@ -119,7 +119,7 @@ function makeProposal(string title,uint256 minGoal,uint256 maxGoal,uint256 hostC
 }
 
 function setNewCreator(address newCreator,uint256 index) public returns(bool)	{
-	if (ideas[index].creator==msg.sender &amp;&amp; ideas[index].status==PROPOSED_STATUS)	{
+	if (ideas[index].creator==msg.sender && ideas[index].status==PROPOSED_STATUS)	{
 		ideas[index].creator=newCreator;
 		emit SetNewCreator(newCreator,index);
 		return true;
@@ -128,21 +128,21 @@ function setNewCreator(address newCreator,uint256 index) public returns(bool)	{
 }
 
 function cancelProposalByCreator(uint256 index) public	{
- 	if (msg.sender==ideas[index].creator &amp;&amp; ideas[index].status==PROPOSED_STATUS)	{
+ 	if (msg.sender==ideas[index].creator && ideas[index].status==PROPOSED_STATUS)	{
  		ideas[index].status=REQUEST_CANCELED_BY_CREATOR;
  		emit ProposalCanceledByCreatorAtIndex(index);
  	}
 }
 
 function rejectProposalAsHost(uint256 index) public	{
-	if (msg.sender==ideas[index].host &amp;&amp; ideas[index].status==PROPOSED_STATUS)	{
+	if (msg.sender==ideas[index].host && ideas[index].status==PROPOSED_STATUS)	{
 		ideas[index].status=REQUEST_REJECTED_BY_HOST;
 		emit ProposalCanceledByHostAtIndex(index);
 	}
 }
 
 function acceptProposal(uint256 index,address currCreator) public returns(bool)	{
-	if (ideas[index].status==PROPOSED_STATUS &amp;&amp; msg.sender==ideas[index].host &amp;&amp; currCreator==ideas[index].creator)	{
+	if (ideas[index].status==PROPOSED_STATUS && msg.sender==ideas[index].host && currCreator==ideas[index].creator)	{
 		ideas[index].status=UNDERWAY_STATUS;
 		ideas[index].startTime=block.number;
 		emit ProposalAcceptedAtIndex(index);
@@ -163,7 +163,7 @@ function maxGoalReached(uint256 index) private {
 
 function distributeSuccessfulCampaignEth(uint256 index) public	{
 	if ((msg.sender==ideas[index].creator) || (msg.sender==ideas[index].host))	{
-		if (ideas[index].status==SUFFICIENT_STATUS &amp;&amp; block.number&gt; SafeMath.add(ideas[index].startTime,ideas[index].duration) )	{
+		if (ideas[index].status==SUFFICIENT_STATUS && block.number> SafeMath.add(ideas[index].startTime,ideas[index].duration) )	{
 			uint256 hostCut;
 			uint256 creatorCut;
 			(hostCut, creatorCut) = returnHostAndCreatorCut(index);
@@ -182,7 +182,7 @@ function returnHostAndCreatorCut(uint256 index) private returns(uint256, uint256
 }
 
 function stateFail(uint256 index) public	{
-	if (block.number&gt; SafeMath.add(ideas[index].startTime,ideas[index].duration) &amp;&amp; ideas[index].amountRaisedSoFar&lt;ideas[index].minGoal &amp;&amp; ideas[index].status==UNDERWAY_STATUS) {
+	if (block.number> SafeMath.add(ideas[index].startTime,ideas[index].duration) && ideas[index].amountRaisedSoFar<ideas[index].minGoal && ideas[index].status==UNDERWAY_STATUS) {
 		ideas[index].status=FAILED_STATUS;
 		emit ProposalAtIndexFailed(index);
 	}
@@ -192,7 +192,7 @@ function reclaimEth(uint256 index) public	{
 	if (ideas[index].status==FAILED_STATUS)	{
 	    if (!ideas[index].reclaimed[msg.sender])    { 
 	        uint256 reclaimAmount=ideas[index].amountPledged[msg.sender];
-		    if (reclaimAmount&gt;0)    { 
+		    if (reclaimAmount>0)    { 
 		    	ideas[index].reclaimed[msg.sender]=true; 
 		        emit UserRegainedAmountAtIndex(msg.sender,reclaimAmount,index);
 		        msg.sender.transfer(reclaimAmount);
@@ -204,11 +204,11 @@ function reclaimEth(uint256 index) public	{
 function redistributeEthForAddresses(uint256 index,address[] addresses) public	{
 	if ((msg.sender==ideas[index].creator) || (msg.sender==ideas[index].host))	{
 		if (ideas[index].status==FAILED_STATUS)	{
-			for(uint256 i = 0; i &lt; addresses.length; i++) {
+			for(uint256 i = 0; i < addresses.length; i++) {
 				address addr=addresses[i];
 	    		if (!ideas[index].reclaimed[addr])    { 
 	        		uint256 reclaimAmount=ideas[index].amountPledged[addr];
-		    		if (reclaimAmount&gt;0)    { 
+		    		if (reclaimAmount>0)    { 
 		    			ideas[index].reclaimed[addr]=true; 
 		        		emit UserRegainedAmountAtIndex(addr,reclaimAmount,index);
 		        		addr.transfer(reclaimAmount);
@@ -222,17 +222,17 @@ function redistributeEthForAddresses(uint256 index,address[] addresses) public	{
 function pledgeEth(uint256 index) payable returns(bool)	{
 	uint256 amount=msg.value;
     if (msg.sender==ideas[index].creator || msg.sender==ideas[index].host) revert(); 
-    if (amount==0 || amount&gt;MAX_FUNDING_AMOUNT) revert(); 
+    if (amount==0 || amount>MAX_FUNDING_AMOUNT) revert(); 
 	if ((ideas[index].status==UNDERWAY_STATUS) || (ideas[index].status==SUFFICIENT_STATUS))	{ 
-	    if (block.number&lt;= SafeMath.add(ideas[index].startTime, ideas[index].duration))   { 
+	    if (block.number<= SafeMath.add(ideas[index].startTime, ideas[index].duration))   { 
 	        uint256 amountAvailable= SafeMath.sub(ideas[index].maxGoal, ideas[index].amountRaisedSoFar); 
-			if (amount&gt;amountAvailable)	revert(); 
+			if (amount>amountAvailable)	revert(); 
 			ideas[index].amountRaisedSoFar = SafeMath.add(ideas[index].amountRaisedSoFar, amount); 
 			ideas[index].amountPledged[msg.sender] = SafeMath.add(ideas[index].amountPledged[msg.sender], amount); 
 			if (ideas[index].amountRaisedSoFar==ideas[index].maxGoal)  { 
 			    maxGoalReached(index); 
 			}
-			else if ((ideas[index].amountRaisedSoFar&gt;=ideas[index].minGoal) &amp;&amp; (ideas[index].status==UNDERWAY_STATUS))   { 
+			else if ((ideas[index].amountRaisedSoFar>=ideas[index].minGoal) && (ideas[index].status==UNDERWAY_STATUS))   { 
 			   ideas[index].status=SUFFICIENT_STATUS;
 			   emit SufficientFundingReached(index);
 			}

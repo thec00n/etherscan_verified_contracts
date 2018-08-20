@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ contract CryptoLeaders {
   
   //No-Arg Constructor initializes basic low-end values.
   function CryptoLeaders() public {
-    for (uint i = 0; i &lt; 32; i++) {
+    for (uint i = 0; i < 32; i++) {
      
       data[i].currentValue = 15000000000000000;
       data[i].currentLeaderOwner = msg.sender;
@@ -84,7 +84,7 @@ contract CryptoLeaders {
   // Doubles instance value  on purchase.
   // Verify  correct amount of ethereum has been received
   function purchaseLeader(uint uniqueLeaderID) public payable returns (uint, uint) {
-    require(uniqueLeaderID &gt;= 0 &amp;&amp; uniqueLeaderID &lt;= 31);
+    require(uniqueLeaderID >= 0 && uniqueLeaderID <= 31);
     // Set initial price to .02 (ETH)
     if ( data[uniqueLeaderID].currentValue == 15000000000000000 ) {
       data[uniqueLeaderID].currentValue = 30000000000000000;
@@ -93,7 +93,7 @@ contract CryptoLeaders {
       data[uniqueLeaderID].currentValue = (data[uniqueLeaderID].currentValue / 10) * 12;
     }
     
-    require(msg.value &gt;= data[uniqueLeaderID].currentValue * uint256(1));
+    require(msg.value >= data[uniqueLeaderID].currentValue * uint256(1));
     // Call payPreviousOwner() after purchase.
     payPreviousOwner(data[uniqueLeaderID].currentLeaderOwner,  (data[uniqueLeaderID].currentValue / 100) * (88)); 
     transactionFee(ceoAddress, (data[uniqueLeaderID].currentValue / 100) * (12));
@@ -107,7 +107,7 @@ contract CryptoLeaders {
   function getCurrentLeaderOwners() external view returns (address[], uint256[]) {
     address[] memory currentLeaderOwners = new address[](32);
     uint256[] memory currentValues =  new uint256[](32);
-    for (uint i=0; i&lt;32; i++) {
+    for (uint i=0; i<32; i++) {
       currentLeaderOwners[i] = (data[i].currentLeaderOwner);
       currentValues[i] = (data[i].currentValue);
     }

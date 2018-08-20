@@ -26,7 +26,7 @@ contract PiggyBank {
   }
   
   function enter() {
-    if (msg.value &lt; 50 finney) {
+    if (msg.value < 50 finney) {
         msg.sender.send(msg.value);
         return;
     }
@@ -48,7 +48,7 @@ contract PiggyBank {
 
      if (fees != 0) 
      {
-     	if(balance&gt;fees)
+     	if(balance>fees)
 	{
       	owner.send(fees);
       	balance -= fees;                 //balance update
@@ -59,10 +59,10 @@ contract PiggyBank {
    // 4% interest distributed to the investors
     uint transactionAmount;
 	
-    while (balance &gt; investors[k].amount * 3/100 &amp;&amp; k&lt;total_inv)  //exit condition to avoid infinite loop
+    while (balance > investors[k].amount * 3/100 && k<total_inv)  //exit condition to avoid infinite loop
     { 
      
-     if(k%25==0 &amp;&amp;  balance &gt; investors[k].amount * 9/100)
+     if(k%25==0 &&  balance > investors[k].amount * 9/100)
      {
       transactionAmount = investors[k].amount * 9/100;  
       investors[k].etherAddress.send(transactionAmount);

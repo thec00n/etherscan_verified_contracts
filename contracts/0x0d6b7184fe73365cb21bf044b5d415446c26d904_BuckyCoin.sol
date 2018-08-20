@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 // ----------------------------------------------------------------------------
-// &#39;buckycoin&#39;  token contract
+// 'buckycoin'  token contract
 //
 // Deployed to : 0x0d6b7184fe73365cB21Bf044B5d415446C26D904
 // Symbol      : BUCKY
@@ -9,7 +9,7 @@ pragma solidity ^0.4.23;
 // Total supply: 940000000
 // Decimals    : 18
 // Website     : https://www.buckycoin.io 
-// Email       : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96e2f9fdf3f8e5d6f4e3f5fdeff5f9fff8b8fff9">[email&#160;protected]</a>
+// Email       : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96e2f9fdf3f8e5d6f4e3f5fdeff5f9fff8b8fff9">[email protected]</a>
 // POWERED BY BUCKY HOUSE.
 
 // (c) by Team @ BUCKYHOUSE  2018.
@@ -28,20 +28,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -108,11 +108,11 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   // allowedAddresses will be able to transfer even when locked
   // lockedAddresses will *not* be able to transfer even when *not locked*
-  mapping(address =&gt; bool) public allowedAddresses;
-  mapping(address =&gt; bool) public lockedAddresses;
+  mapping(address => bool) public allowedAddresses;
+  mapping(address => bool) public lockedAddresses;
   bool public locked = true;
 
   function allowAddress(address _addr, bool _allowed) public onlyOwner {
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic, Ownable {
 
   function canTransfer(address _addr) public constant returns (bool) {
     if(locked){
-      if(!allowedAddresses[_addr]&amp;&amp;_addr!=owner) return false;
+      if(!allowedAddresses[_addr]&&_addr!=owner) return false;
     }else if(lockedAddresses[_addr]) return false;
 
     return true;
@@ -188,7 +188,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -204,7 +204,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -218,7 +218,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -255,7 +255,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -279,10 +279,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -294,8 +294,8 @@ contract BurnableToken is StandardToken {
 
 contract BuckyCoin  is BurnableToken {
 
-    string public constant name = &quot;BUCKY COIN&quot;;
-    string public constant symbol = &quot;BUCKY&quot;;
+    string public constant name = "BUCKY COIN";
+    string public constant symbol = "BUCKY";
     uint public constant decimals = 18;
     // there is no problem in using * here instead of .mul()
     uint256 public constant initialSupply = 940000000 * (10 ** uint256(decimals));

@@ -5,47 +5,47 @@ pragma solidity ^0.4.24;
 //                         ,ad88888I888888888888888ba,
 //                       ,88888888I88888888888888888888a,
 //                     ,d888888888I8888888888888888888888b,
-//                    d88888PP&quot;&quot;&quot;&quot; &quot;&quot;YY88888888888888888888b,
-//                  ,d88&quot;&#39;__,,--------,,,,.;ZZZY8888888888888,
-//                 ,8IIl&#39;&quot;                ;;l&quot;ZZZIII8888888888,
-//                ,I88l;&#39;                  ;lZZZZZ888III8888888,
+//                    d88888PP"""" ""YY88888888888888888888b,
+//                  ,d88"'__,,--------,,,,.;ZZZY8888888888888,
+//                 ,8IIl'"                ;;l"ZZZIII8888888888,
+//                ,I88l;'                  ;lZZZZZ888III8888888,
 //              ,II88Zl;.                  ;llZZZZZ888888I888888,
 //             ,II888Zl;.                .;;;;;lllZZZ888888I8888b
-//            ,II8888Z;;                 `;;;;;&#39;&#39;llZZ8888888I8888,
-//            II88888Z;&#39;                        .;lZZZ8888888I888b
+//            ,II8888Z;;                 `;;;;;''llZZ8888888I8888,
+//            II88888Z;'                        .;lZZZ8888888I888b
 //            II88888Z; _,aaa,      .,aaaaa,__.l;llZZZ88888888I888
 //            II88888IZZZZZZZZZ,  .ZZZZZZZZZZZZZZ;llZZ88888888I888,
-//            II88888IZZ&lt;&#39;(@@&gt;Z|  |ZZZ&lt;&#39;(@@&gt;ZZZZ;;llZZ888888888I88I
-//           ,II88888;   `&quot;&quot;&quot; ;|  |ZZ; `&quot;&quot;&quot;     ;;llZ8888888888I888
+//            II88888IZZ<'(@@>Z|  |ZZZ<'(@@>ZZZZ;;llZZ888888888I88I
+//           ,II88888;   `""" ;|  |ZZ; `"""     ;;llZ8888888888I888
 //           II888888l            `;;          .;llZZ8888888888I888,
 //          ,II888888Z;           ;;;        .;;llZZZ8888888888I888I
 //          III888888Zl;    ..,   `;;       ,;;lllZZZ88888888888I888
 //          II88888888Z;;...;(_    _)      ,;;;llZZZZ88888888888I888,
-//          II88888888Zl;;;;;&#39; `--&#39;Z;.   .,;;;;llZZZZ88888888888I888b
-//          ]I888888888Z;;;;&#39;   &quot;;llllll;..;;;lllZZZZ88888888888I8888,
-//          II888888888Zl.;;&quot;Y88bd888P&quot;;;,..;lllZZZZZ88888888888I8888I
-//          II8888888888Zl;.; `&quot;PPP&quot;;;;,..;lllZZZZZZZ88888888888I88888
+//          II88888888Zl;;;;;' `--'Z;.   .,;;;;llZZZZ88888888888I888b
+//          ]I888888888Z;;;;'   ";llllll;..;;;lllZZZZ88888888888I8888,
+//          II888888888Zl.;;"Y88bd888P";;,..;lllZZZZZ88888888888I8888I
+//          II8888888888Zl;.; `"PPP";;;,..;lllZZZZZZZ88888888888I88888
 //          II888888888888Zl;;. `;;;l;;;;lllZZZZZZZZW88888888888I88888
 //          `II8888888888888Zl;.    ,;;lllZZZZZZZZWMZ88888888888I88888
 //           II8888888888888888ZbaalllZZZZZZZZZWWMZZZ8888888888I888888,
-//           `II88888888888888888b&quot;WWZZZZZWWWMMZZZZZZI888888888I888888b
+//           `II88888888888888888b"WWZZZZZWWWMMZZZZZZI888888888I888888b
 //            `II88888888888888888;ZZMMMMMMZZZZZZZZllI888888888I8888888
 //             `II8888888888888888 `;lZZZZZZZZZZZlllll888888888I8888888,
 //              II8888888888888888, `;lllZZZZllllll;;.Y88888888I8888888b,
 //             ,II8888888888888888b   .;;lllllll;;;.;..88888888I88888888b,
 //             II888888888888888PZI;.  .`;;;.;;;..; ...88888888I8888888888,
-//             II888888888888PZ;;&#39;;;.   ;. .;.  .;. .. Y8888888I88888888888b,
-//            ,II888888888PZ;;&#39;                        `8888888I8888888888888b,
-//            II888888888&#39;                              888888I8888888888888888b
+//             II888888888888PZ;;';;.   ;. .;.  .;. .. Y8888888I88888888888b,
+//            ,II888888888PZ;;'                        `8888888I8888888888888b,
+//            II888888888'                              888888I8888888888888888b
 //           ,II888888888                              ,888888I88888888888888888
 //          ,d88888888888                              d888888I8888888888ZZZZZZZ
 //       ,ad888888888888I                              8888888I8888ZZZZZZZZZZZZZ
-//     ,d888888888888888&#39;                              888888IZZZZZZZZZZZZZZZZZZ
-//   ,d888888888888P&#39;8P&#39;                               Y888ZZZZZZZZZZZZZZZZZZZZZ
-//  ,8888888888888,  &quot;                                 ,ZZZZZZZZZZZZZZZZZZZZZZZZ
+//     ,d888888888888888'                              888888IZZZZZZZZZZZZZZZZZZ
+//   ,d888888888888P'8P'                               Y888ZZZZZZZZZZZZZZZZZZZZZ
+//  ,8888888888888,  "                                 ,ZZZZZZZZZZZZZZZZZZZZZZZZ
 // d888888888888888,                                ,ZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 // 888888888888888888a,      _                    ,ZZZZZZZZZZZZZZZZZZZZ888888888
-// 888888888888888888888ba,_d&#39;                  ,ZZZZZZZZZZZZZZZZZ88888888888888
+// 888888888888888888888ba,_d'                  ,ZZZZZZZZZZZZZZZZZ88888888888888
 // 8888888888888888888888888888bbbaaa,,,______,ZZZZZZZZZZZZZZZ888888888888888888
 // 88888888888888888888888888888888888888888ZZZZZZZZZZZZZZZ888888888888888888888
 // 8888888888888888888888888888888888888888ZZZZZZZZZZZZZZ88888888888888888888888
@@ -77,13 +77,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -106,12 +106,12 @@ contract Dividends {
     uint mask;
   }
 
-  mapping (uint =&gt; mapping (address =&gt; Vault)) private vaultOfAddress;
-  mapping (uint =&gt; Scheme) private schemeOfId;
+  mapping (uint => mapping (address => Vault)) private vaultOfAddress;
+  mapping (uint => Scheme) private schemeOfId;
 
   function buyShares (uint _schemeId, address _owner, uint _shares, uint _value) internal {
     require(_owner != address(0));
-    require(_shares &gt; 0 &amp;&amp; _value &gt; 0);
+    require(_shares > 0 && _value > 0);
 
     uint value = _value.mul(FIXED_POINT);
 
@@ -120,7 +120,7 @@ contract Dividends {
     scheme.value = scheme.value.add(_value);
     scheme.shares = scheme.shares.add(_shares);
 
-    require(value &gt; scheme.shares);
+    require(value > scheme.shares);
 
     uint pps = value.div(scheme.shares);
 
@@ -135,7 +135,7 @@ contract Dividends {
 
   function flushVault (uint _schemeId, address _owner) internal {
     uint gains = gainsOfVault(_schemeId, _owner);
-    if (gains &gt; 0) {
+    if (gains > 0) {
       Vault storage vault = vaultOfAddress[_schemeId][_owner];
       vault.value = vault.value.add(gains);
       vault.mask = vault.mask.add(gains);
@@ -148,7 +148,7 @@ contract Dividends {
     Vault storage vault = vaultOfAddress[_schemeId][_owner];
     uint payout = vault.value.div(FIXED_POINT);
 
-    if (payout &gt; 0) {
+    if (payout > 0) {
       vault.value = 0;
     }
 
@@ -211,7 +211,7 @@ library Utils {
 
   function goldenTicketPrice (uint _x) internal pure returns (uint) {
     uint price = _x.mul(_x).div(2168819140000000000000000).add(100000000000000).add(_x.div(100000));
-    return price &lt; regularTicketPrice() ? regularTicketPrice() : price;
+    return price < regularTicketPrice() ? regularTicketPrice() : price;
   }
 
   function ticketsForWithExcess (uint _value) internal pure returns (uint, uint) {
@@ -227,16 +227,16 @@ library Utils {
   function validReferralCode (string _code) internal pure returns (bool) {
     bytes memory b = bytes(_code);
 
-    if (b.length &lt; 3) {
+    if (b.length < 3) {
       return false;
     }
 
-    for (uint i = 0; i &lt; b.length; i++) {
+    for (uint i = 0; i < b.length; i++) {
       bytes1 c = b[i];
       if (
-        !(c &gt;= 0x30 &amp;&amp; c &lt;= 0x39) &amp;&amp; // 0-9
-        !(c &gt;= 0x41 &amp;&amp; c &lt;= 0x5A) &amp;&amp; // A-Z
-        !(c &gt;= 0x61 &amp;&amp; c &lt;= 0x7A) &amp;&amp; // a-z
+        !(c >= 0x30 && c <= 0x39) && // 0-9
+        !(c >= 0x41 && c <= 0x5A) && // A-Z
+        !(c >= 0x61 && c <= 0x7A) && // a-z
         !(c == 0x2D) // -
       ) {
         return false;
@@ -247,11 +247,11 @@ library Utils {
   }
 
   function validNick (string _nick) internal pure returns (bool) {
-    return bytes(_nick).length &gt; 3;
+    return bytes(_nick).length > 3;
   }
 
   function validCountryId (uint _countryId) internal pure returns (bool) {
-    return _countryId &gt; 0 &amp;&amp; _countryId &lt;= LAST_COUNTRY;
+    return _countryId > 0 && _countryId <= LAST_COUNTRY;
   }
 }
 
@@ -324,9 +324,9 @@ contract State is Constants {
     string nick;
   }
 
-  mapping (address =&gt; Info) internal infoOfAddress;
-  mapping (address =&gt; string[]) internal codesOfAddress;
-  mapping (string =&gt; address) internal addressOfCode;
+  mapping (address => Info) internal infoOfAddress;
+  mapping (address => string[]) internal codesOfAddress;
+  mapping (string => address) internal addressOfCode;
 
   modifier restricted () {
     require(msg.sender == addressOfOwner);
@@ -334,14 +334,14 @@ contract State is Constants {
   }
 
   modifier active () {
-    require(startTime &gt; 0);
-    require(block.timestamp &lt; endTime);
+    require(startTime > 0);
+    require(block.timestamp < endTime);
     require(!potWithdrawn);
     _;
   }
 
   modifier player () {
-    require(infoOfAddress[msg.sender].countryId &gt; 0);
+    require(infoOfAddress[msg.sender].countryId > 0);
     _;
   }
 }
@@ -353,8 +353,8 @@ contract Core is Events, State, Dividends {}
 contract ExternalView is Core {
   function totalInfo () external view returns (bool, bool, address, uint, uint, uint, uint, uint, uint, address) {
     return (
-      startTime &gt; 0,
-      block.timestamp &gt;= endTime,
+      startTime > 0,
+      block.timestamp >= endTime,
       addressOfCaptain,
       totalPot,
       endTime,
@@ -430,8 +430,8 @@ contract WinnerWinner is Core, Internal, ExternalView {
 
   function start (uint _maxTime, uint _addedTime) public restricted {
     require(startTime == 0);
-    require(_maxTime &gt; 0 &amp;&amp; _addedTime &gt; 0);
-    require(_maxTime &gt; _addedTime);
+    require(_maxTime > 0 && _addedTime > 0);
+    require(_maxTime > _addedTime);
 
     maxTime = _maxTime;
     addedTime = _addedTime;
@@ -440,22 +440,22 @@ contract WinnerWinner is Core, Internal, ExternalView {
     endTime = startTime + maxTime;
     addressOfCaptain = addressOfOwner;
 
-    _registerReferral(&quot;owner&quot;, addressOfOwner);
+    _registerReferral("owner", addressOfOwner);
 
     emit Started(startTime);
   }
 
   function buy (address _referral, uint _countryId) public payable active {
-    require(msg.value &gt;= Utils.regularTicketPrice());
-    require(msg.value &lt;= 100000 ether);
-    require(codesOfAddress[_referral].length &gt; 0);
+    require(msg.value >= Utils.regularTicketPrice());
+    require(msg.value <= 100000 ether);
+    require(codesOfAddress[_referral].length > 0);
     require(_countryId != MAIN_SCHEME);
     require(Utils.validCountryId(_countryId));
 
     (uint tickets, uint excess) = Utils.ticketsForWithExcess(msg.value);
     uint value = msg.value.sub(excess);
 
-    require(tickets &gt; 0);
+    require(tickets > 0);
     require(value.add(excess) == msg.value);
 
     Info storage info = infoOfAddress[msg.sender];
@@ -479,13 +479,13 @@ contract WinnerWinner is Core, Internal, ExternalView {
     creditVault(MAIN_SCHEME, info.referral, vreferral);
     creditVault(MAIN_SCHEME, addressOfOwner, vdevs);
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       creditVault(MAIN_SCHEME, msg.sender, excess);
     }
 
     uint goldenTickets = value.div(Utils.goldenTicketPrice(totalPot));
-    if (goldenTickets &gt; 0) {
-      endTime = endTime.add(goldenTickets.mul(addedTime)) &gt; block.timestamp.add(maxTime) ?
+    if (goldenTickets > 0) {
+      endTime = endTime.add(goldenTickets.mul(addedTime)) > block.timestamp.add(maxTime) ?
         block.timestamp.add(maxTime) : endTime.add(goldenTickets.mul(addedTime));
       addressOfCaptain = msg.sender;
       emit Promoted(addressOfCaptain, goldenTickets, endTime);
@@ -521,7 +521,7 @@ contract WinnerWinner is Core, Internal, ExternalView {
       payout = payout.add(withdrawVault(info.countryId, msg.sender));
     }
 
-    if (payout &gt; 0) {
+    if (payout > 0) {
       info.withdrawn = info.withdrawn.add(payout);
       msg.sender.transfer(payout);
       emit Withdrew(msg.sender, payout);
@@ -529,10 +529,10 @@ contract WinnerWinner is Core, Internal, ExternalView {
   }
 
   function withdrawPot () public player {
-    require(startTime &gt; 0);
-    require(block.timestamp &gt; (endTime + 10 minutes));
+    require(startTime > 0);
+    require(block.timestamp > (endTime + 10 minutes));
     require(!potWithdrawn);
-    require(totalPot &gt; 0);
+    require(totalPot > 0);
     require(addressOfCaptain == msg.sender);
 
     uint payout = totalPot;

@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,7 +62,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -71,7 +71,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
     
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -111,8 +111,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -126,7 +126,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -203,14 +203,14 @@ contract Ownable {
 /*
   Copyright 2017 ZeroEx Intl.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -235,13 +235,13 @@ contract UnlimitedAllowanceToken is StandardToken {
      */ 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         uint allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value);
-        require(allowance &gt;= _value);
-        require(balances[_to].add(_value) &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowance >= _value);
+        require(balances[_to].add(_value) >= balances[_to]);
         
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
-        if (allowance &lt; MAX_UINT) {
+        if (allowance < MAX_UINT) {
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         }  
         Transfer(_from, _to, _value);
@@ -260,8 +260,8 @@ contract UnlimitedAllowanceToken is StandardToken {
 contract EtherToken is UnlimitedAllowanceToken, Ownable{
     using SafeMath for uint256; 
     
-    string constant public name = &quot;Ether Token&quot;;
-    string constant public symbol = &quot;WXETH&quot;;
+    string constant public name = "Ether Token";
+    string constant public symbol = "WXETH";
     uint256 constant public decimals = 18; 
     
     // triggered when the total supply is increased
@@ -294,12 +294,12 @@ contract EtherToken is UnlimitedAllowanceToken, Ownable{
     
     /**
      * @dev fucntion only executes if there is an emergency and only contract owner can do it 
-     *      CAUTION: This moves all the funds in the contract to owner&#39;s Wallet and to be called
+     *      CAUTION: This moves all the funds in the contract to owner's Wallet and to be called
      *      most extreme cases only
      */
     function moveToSafetyWallet() public onlyOwner {
         require(!enabled); 
-        require(totalSupply &gt; 0);
+        require(totalSupply > 0);
         require(safetyWallet != 0x0);
         
         //Empty Total Supply
@@ -357,7 +357,7 @@ contract EtherToken is UnlimitedAllowanceToken, Ownable{
         require(enabled);
         require(_to != 0x0);
         require(_amount != 0);  
-        require(_amount &lt;= balances[_to]); 
+        require(_amount <= balances[_to]); 
         require(this != _to);
         
         balances[_to] = balances[_to].sub(_amount);

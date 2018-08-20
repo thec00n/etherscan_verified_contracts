@@ -24,9 +24,9 @@ contract Crowdsale {
 	uint public withdrawlDeadline;
     // bool public hasStarted = false; // not needed, automatically start wave 1 when deployed
 	// public array of buyers
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; uint256) public fundedAmount;
-    mapping(uint =&gt; address) public buyers;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public fundedAmount;
+    mapping(uint => address) public buyers;
 	// private variables
     bool crowdsaleClosed = false;
 	// crowdsale settings
@@ -64,23 +64,23 @@ contract Crowdsale {
      */
     function () public payable {
         require(!crowdsaleClosed);
-        require(!(now &lt;= startTime));
-		require(!(amountRaised &gt;= fundingGoal)); // stop accepting payments when the goal is reached.
+        require(!(now <= startTime));
+		require(!(amountRaised >= fundingGoal)); // stop accepting payments when the goal is reached.
 
 		// get the total for this contributor so far
         uint totalContribution = balanceOf[msg.sender];
-		// if total &gt; 0, this user already contributed
-		bool exstingContributor = totalContribution &gt; 0;
+		// if total > 0, this user already contributed
+		bool exstingContributor = totalContribution > 0;
 
         uint amount = msg.value;
-        bool moreThanMinAmount = amount &gt;= minContribution; //&gt; 0.02 Ether
-        bool lessThanMaxTotalContribution = amount + totalContribution &lt;= maxContribution; // &lt; 100 Ether total, including this amount
+        bool moreThanMinAmount = amount >= minContribution; //> 0.02 Ether
+        bool lessThanMaxTotalContribution = amount + totalContribution <= maxContribution; // < 100 Ether total, including this amount
 
         require(moreThanMinAmount);
         require(lessThanMaxTotalContribution);
 
-        if (lessThanMaxTotalContribution &amp;&amp; moreThanMinAmount) {
-            // Add to buyer&#39;s balance
+        if (lessThanMaxTotalContribution && moreThanMinAmount) {
+            // Add to buyer's balance
             balanceOf[msg.sender] += amount;
             // Add to tracking array
             fundedAmount[msg.sender] += amount;
@@ -94,8 +94,8 @@ contract Crowdsale {
 		}
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
-    modifier afterWithdrawalDeadline() { if (now &gt;= withdrawlDeadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
+    modifier afterWithdrawalDeadline() { if (now >= withdrawlDeadline) _; }
 
     /**
      * Check if goal was reached
@@ -104,7 +104,7 @@ contract Crowdsale {
      */
     function checkGoalReached() public afterDeadline {
 		if (beneficiary == msg.sender) {
-			if (amountRaised &gt;= fundingGoal){
+			if (amountRaised >= fundingGoal){
 				fundingGoalReached = true;
 				emit GoalReached(beneficiary, amountRaised);
 			}
@@ -113,7 +113,7 @@ contract Crowdsale {
     }
 
     /**
-     * returns contract&#39;s LIGO balance
+     * returns contract's LIGO balance
      */
     function getContractTokenBalance() public constant returns (uint) {
         return tokenReward.balanceOf(address(this));
@@ -140,21 +140,21 @@ contract Crowdsale {
 			uint remainingTokens = totalTokens;
 
 			// send the LIGO to each buyer
-			for (uint i=0; i&lt;buyerCount; i++) {
+			for (uint i=0; i<buyerCount; i++) {
 				address buyerId = buyers[i];
-				uint amount = ((balanceOf[buyerId] * 500) * 125) / 100; //Modifier is 100-&gt;125% so divide by 100.
+				uint amount = ((balanceOf[buyerId] * 500) * 125) / 100; //Modifier is 100->125% so divide by 100.
 				// Make sure there are enough remaining tokens in the contract before trying to send
-				if (remainingTokens &gt;= amount) {
+				if (remainingTokens >= amount) {
 					tokenReward.transfer(buyerId, amount); 
 					// subtract from the total
 					remainingTokens -= amount;
-					// clear out buyer&#39;s balance
+					// clear out buyer's balance
 					balanceOf[buyerId] = 0;
 				}
 			}
 
 			// send unsold tokens back to contract init wallet
-			if (remainingTokens &gt; 0) {
+			if (remainingTokens > 0) {
 				tokenReward.transfer(beneficiary, remainingTokens);
 			}
         }

@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -104,7 +104,7 @@ contract ERC20Basic {
 
 /**
  * @title HolderBase
- * @notice HolderBase handles data &amp; funcitons for token or ether holders.
+ * @notice HolderBase handles data & funcitons for token or ether holders.
  * HolderBase contract can distribute only one of ether or token.
  */
 contract HolderBase is Ownable {
@@ -137,21 +137,21 @@ contract HolderBase is Ownable {
     require(!initialized);
     require(holders.length == 0);
     require(_addrs.length != 0);
-    require(_addrs.length &lt;= MAX_HOLDERS);
+    require(_addrs.length <= MAX_HOLDERS);
     require(_addrs.length == _ratios.length);
 
     uint256 accRatio;
 
-    for(uint8 i = 0; i &lt; _addrs.length; i++) {
+    for(uint8 i = 0; i < _addrs.length; i++) {
       if (_addrs[i] != address(0)) {
-        // address will be 0x00 in case of &quot;crowdsale&quot;.
+        // address will be 0x00 in case of "crowdsale".
         holders.push(Holder(_addrs[i], _ratios[i]));
       }
 
       accRatio = accRatio.add(uint256(_ratios[i]));
     }
 
-    require(accRatio &lt;= coeff);
+    require(accRatio <= coeff);
 
     initialized = true;
   }
@@ -162,13 +162,13 @@ contract HolderBase is Ownable {
    * function of RefundVault contract.
    */
   function distribute() internal {
-    require(!distributed, &quot;Already distributed&quot;);
+    require(!distributed, "Already distributed");
     uint256 balance = this.balance;
 
-    require(balance &gt; 0, &quot;No ether to distribute&quot;);
+    require(balance > 0, "No ether to distribute");
     distributed = true;
 
-    for (uint8 i = 0; i &lt; holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = balance.mul(uint256(holders[i].ratio)).div(coeff);
 
       holders[i].addr.transfer(holderAmount);
@@ -181,10 +181,10 @@ contract HolderBase is Ownable {
    * @dev Distribute ERC20 token to `holder`s according to ratio.
    */
   function distributeToken(ERC20Basic _token, uint256 _targetTotalSupply) internal {
-    require(!distributed, &quot;Already distributed&quot;);
+    require(!distributed, "Already distributed");
     distributed = true;
 
-    for (uint8 i = 0; i &lt; holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = _targetTotalSupply.mul(uint256(holders[i].ratio)).div(coeff);
       deliverTokens(_token, holders[i].addr, holderAmount);
     }
@@ -253,7 +253,7 @@ contract Locker is Ownable {
   enum State { Init, Ready, Active, Drawn }
 
   struct Beneficiary {
-    uint ratio;             // ratio based on Locker&#39;s initial balance.
+    uint ratio;             // ratio based on Locker's initial balance.
     uint withdrawAmount;    // accumulated tokens beneficiary released
     bool releaseAllTokens;
   }
@@ -269,7 +269,7 @@ contract Locker is Ownable {
    *     |         . |
    *     |       .   |
    *     |     .     |
-   *     +===+=======+----*----------&gt; time
+   *     +===+=======+----*----------> time
    *     Locker  First    Last
    *  Activated  Release  Release
    *
@@ -283,7 +283,7 @@ contract Locker is Ownable {
    *     |                     |
    *  30 |            _________|
    *     |           |
-   *     +===+=======+---------+----------*------&gt; time
+   *     +===+=======+---------+----------*------> time
    *     Locker   First        Second     Last
    *  Activated   Release      Release    Release
    *
@@ -329,9 +329,9 @@ contract Locker is Ownable {
   uint public initialBalance;
   uint public withdrawAmount; // total amount of tokens released
 
-  mapping (address =&gt; Beneficiary) public beneficiaries;
-  mapping (address =&gt; Release) public releases;  // beneficiary&#39;s lock
-  mapping (address =&gt; bool) public locked; // whether beneficiary&#39;s lock is instantiated
+  mapping (address => Beneficiary) public beneficiaries;
+  mapping (address => Release) public releases;  // beneficiary's lock
+  mapping (address => bool) public locked; // whether beneficiary's lock is instantiated
 
   uint public numBeneficiaries;
   uint public numLocks;
@@ -344,7 +344,7 @@ contract Locker is Ownable {
   }
 
   modifier onlyBeneficiary(address _addr) {
-    require(beneficiaries[_addr].ratio &gt; 0);
+    require(beneficiaries[_addr].ratio > 0);
     _;
   }
 
@@ -362,8 +362,8 @@ contract Locker is Ownable {
 
     uint accRatio;
 
-    for(uint i = 0; i &lt; numBeneficiaries; i++) {
-      require(_ratios[i] &gt; 0);
+    for(uint i = 0; i < numBeneficiaries; i++) {
+      require(_ratios[i] > 0);
       beneficiaries[_beneficiaries[i]].ratio = _ratios[i];
 
       accRatio = accRatio.add(_ratios[i]);
@@ -379,7 +379,7 @@ contract Locker is Ownable {
     require(numLocks == numBeneficiaries); // double check : assert all releases are recorded
 
     initialBalance = token.balanceOf(this);
-    require(initialBalance &gt; 0);
+    require(initialBalance > 0);
 
     activeTime = now; // solium-disable-line security/no-block-members
 
@@ -444,9 +444,9 @@ contract Locker is Ownable {
     require(_releaseRatios[len - 1] == coeff);
 
     // check two array are ascending sorted
-    for(i = 0; i &lt; len - 1; i++) {
-      require(_releaseTimes[i] &lt; _releaseTimes[i + 1]);
-      require(_releaseRatios[i] &lt; _releaseRatios[i + 1]);
+    for(i = 0; i < len - 1; i++) {
+      require(_releaseTimes[i] < _releaseTimes[i + 1]);
+      require(_releaseRatios[i] < _releaseRatios[i + 1]);
     }
 
     // 2 release times for straight locking type
@@ -521,10 +521,10 @@ contract Locker is Ownable {
     uint lastTime = _r.releaseTimes[1];
 
     // solium-disable security/no-block-members
-    require(now &gt;= firstTime); // pass if can release
+    require(now >= firstTime); // pass if can release
     // solium-enable security/no-block-members
 
-    if(now &gt;= lastTime) { // inclusive to reduce calculation
+    if(now >= lastTime) { // inclusive to reduce calculation
       releasableAmount = totalReleasableAmount;
     } else {
       // releasable amount at first time
@@ -558,14 +558,14 @@ contract Locker is Ownable {
     uint releaseRatio;
 
     // reverse order for short curcit
-    for(uint i = _r.releaseTimes.length - 1; i &gt;= 0; i--) {
-      if (now &gt;= _r.releaseTimes[i]) {
+    for(uint i = _r.releaseTimes.length - 1; i >= 0; i--) {
+      if (now >= _r.releaseTimes[i]) {
         releaseRatio = _r.releaseRatios[i];
         break;
       }
     }
 
-    require(releaseRatio &gt; 0);
+    require(releaseRatio > 0);
 
     releasableAmount = getPartialAmount(
       releaseRatio,
@@ -597,7 +597,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -773,7 +773,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
     uint256 weiAmount = msg.value;
 
     uint256 toFund = calculateToFund(beneficiary, weiAmount);
-    require(toFund &gt; 0);
+    require(toFund > 0);
 
     uint256 toReturn = weiAmount.sub(toFund);
 
@@ -785,7 +785,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
     // update state
     weiRaised = weiRaised.add(toFund);
 
-    if (toReturn &gt; 0) {
+    if (toReturn > 0) {
       msg.sender.transfer(toReturn);
     }
 
@@ -798,7 +798,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -829,13 +829,13 @@ contract BaseCrowdsale is HolderBase, Pausable {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   /// @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    return capReached || now &gt; endTime; // solium-disable-line security/no-block-members
+    bool capReached = weiRaised >= cap;
+    return capReached || now > endTime; // solium-disable-line security/no-block-members
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
@@ -852,9 +852,9 @@ contract BaseCrowdsale is HolderBase, Pausable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime; // solium-disable-line security/no-block-members
+    bool withinPeriod = now >= startTime && now <= endTime; // solium-disable-line security/no-block-members
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   /**
@@ -866,7 +866,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
     uint256 toFund;
     uint256 postWeiRaised = weiRaised.add(_weiAmount);
 
-    if (postWeiRaised &gt; cap) {
+    if (postWeiRaised > cap) {
       toFund = cap.sub(weiRaised);
     } else {
       toFund = _weiAmount;
@@ -961,7 +961,7 @@ contract BaseCrowdsale is HolderBase, Pausable {
  */
 contract BlockIntervalCrowdsale is BaseCrowdsale {
   uint256 public blockInterval;
-  mapping (address =&gt; uint256) public recentBlock;
+  mapping (address => uint256) public recentBlock;
 
   function BlockIntervalCrowdsale(uint256 _blockInterval) public {
     require(_blockInterval != 0);
@@ -972,8 +972,8 @@ contract BlockIntervalCrowdsale is BaseCrowdsale {
    * @return true if the block number is over the block internal.
    */
   function validPurchase() internal view returns (bool) {
-    bool withinBlock = recentBlock[msg.sender].add(blockInterval) &lt; block.number;
-    return withinBlock &amp;&amp; super.validPurchase();
+    bool withinBlock = recentBlock[msg.sender].add(blockInterval) < block.number;
+    return withinBlock && super.validPurchase();
   }
 
   /**
@@ -1021,8 +1021,8 @@ contract BonusCrowdsale is BaseCrowdsale {
   */
   function setBonusesForTimes(uint32[] times, uint32[] values) public onlyOwner {
     require(times.length == values.length);
-    for (uint i = 0; i + 1 &lt; times.length; i++) {
-      require(times[i] &lt; times[i+1]);
+    for (uint i = 0; i + 1 < times.length; i++) {
+      require(times[i] < times[i+1]);
     }
 
     BONUS_TIMES = times;
@@ -1042,8 +1042,8 @@ contract BonusCrowdsale is BaseCrowdsale {
   */
   function setBonusesForAmounts(uint128[] amounts, uint32[] values) public onlyOwner {
     require(amounts.length == values.length);
-    for (uint i = 0; i + 1 &lt; amounts.length; i++) {
-      require(amounts[i] &gt; amounts[i+1]);
+    for (uint i = 0; i + 1 < amounts.length; i++) {
+      require(amounts[i] > amounts[i+1]);
     }
 
     BONUS_AMOUNTS = amounts;
@@ -1076,10 +1076,10 @@ contract BonusCrowdsale is BaseCrowdsale {
   * @return bonus percentage scaled by 10
   */
   function computeTimeBonus() public view returns(uint256) {
-    require(now &gt;= startTime); // solium-disable-line security/no-block-members
+    require(now >= startTime); // solium-disable-line security/no-block-members
 
-    for (uint i = 0; i &lt; BONUS_TIMES.length; i++) {
-      if (now &lt;= BONUS_TIMES[i]) { // solium-disable-line security/no-block-members
+    for (uint i = 0; i < BONUS_TIMES.length; i++) {
+      if (now <= BONUS_TIMES[i]) { // solium-disable-line security/no-block-members
         return BONUS_TIMES_VALUES[i];
       }
     }
@@ -1092,8 +1092,8 @@ contract BonusCrowdsale is BaseCrowdsale {
   * @return bonus percentage scaled by 10
   */
   function computeAmountBonus(uint256 weiAmount) public view returns(uint256) {
-    for (uint i = 0; i &lt; BONUS_AMOUNTS.length; i++) {
-      if (weiAmount &gt;= BONUS_AMOUNTS[i]) {
+    for (uint i = 0; i < BONUS_AMOUNTS.length; i++) {
+      if (weiAmount >= BONUS_AMOUNTS[i]) {
         return BONUS_AMOUNTS_VALUES[i];
       }
     }
@@ -1112,10 +1112,10 @@ contract BonusCrowdsale is BaseCrowdsale {
  */
 contract KYC is Ownable {
   // check the address is registered for token sale
-  mapping (address =&gt; bool) public registeredAddress;
+  mapping (address => bool) public registeredAddress;
 
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
 
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
@@ -1170,7 +1170,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(_addrs[i] != address(0));
 
       registeredAddress[_addrs[i]] = true;
@@ -1200,7 +1200,7 @@ contract KYC is Ownable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       registeredAddress[_addrs[i]] = false;
 
       emit Unregistered(_addrs[i]);
@@ -1285,13 +1285,13 @@ contract TokenController {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -1304,13 +1304,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -1339,10 +1339,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -1420,7 +1420,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -1439,15 +1439,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -1463,7 +1463,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -1472,7 +1472,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -1558,7 +1558,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -1583,7 +1583,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -1645,9 +1645,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -1662,9 +1662,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -1695,16 +1695,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -1720,7 +1720,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -1739,15 +1739,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -1897,7 +1897,7 @@ contract MiniMeBaseCrowdsale is BaseCrowdsale {
 
 /**
  * @title StagedCrowdsale
- * @notice StagedCrowdsale seperates sale period with start time &amp; end time.
+ * @notice StagedCrowdsale seperates sale period with start time & end time.
  * For each period, seperate max cap and kyc could be setup.
  * Both startTime and endTime are inclusive.
  */
@@ -1911,7 +1911,7 @@ contract StagedCrowdsale is KYCCrowdsale {
     uint128 cap;
     uint128 maxPurchaseLimit;
     uint128 minPurchaseLimit;
-    uint128 weiRaised; // stage&#39;s weiAmount raised
+    uint128 weiRaised; // stage's weiAmount raised
     uint32 startTime;
     uint32 endTime;
     bool kyc;
@@ -1919,7 +1919,7 @@ contract StagedCrowdsale is KYCCrowdsale {
 
   function StagedCrowdsale(uint _numPeriods) public {
     numPeriods = uint8(_numPeriods);
-    require(numPeriods &gt; 0);
+    require(numPeriods > 0);
   }
 
   function initStages(
@@ -1935,16 +1935,16 @@ contract StagedCrowdsale is KYCCrowdsale {
 
     require(stages.length == 0);
     // solium-disable
-    require(len == _startTimes.length &amp;&amp;
-      len == _endTimes.length &amp;&amp;
-      len == _capRatios.length &amp;&amp;
-      len == _maxPurchaseLimits.length &amp;&amp;
-      len == _minPurchaseLimits.length &amp;&amp;
+    require(len == _startTimes.length &&
+      len == _endTimes.length &&
+      len == _capRatios.length &&
+      len == _maxPurchaseLimits.length &&
+      len == _minPurchaseLimits.length &&
       len == _kycs.length);
     // solium-enable
 
-    for (uint i = 0; i &lt; len; i++) {
-      require(_endTimes[i] &gt;= _startTimes[i]);
+    for (uint i = 0; i < len; i++) {
+      require(_endTimes[i] >= _startTimes[i]);
 
       uint stageCap;
 
@@ -1975,9 +1975,9 @@ contract StagedCrowdsale is KYCCrowdsale {
     onSale = true;
     Stage memory p;
 
-    for (currentStage = 0; currentStage &lt; stages.length; currentStage++) {
+    for (currentStage = 0; currentStage < stages.length; currentStage++) {
       p = stages[currentStage];
-      if (p.startTime &lt;= now &amp;&amp; now &lt;= p.endTime) {
+      if (p.startTime <= now && now <= p.endTime) {
         return;
       }
     }
@@ -1990,7 +1990,7 @@ contract StagedCrowdsale is KYCCrowdsale {
    */
   function saleFinished() public view returns (bool) {
     require(stages.length == numPeriods);
-    return stages[stages.length - 1].endTime &lt; now;
+    return stages[stages.length - 1].endTime < now;
   }
 
 
@@ -2000,8 +2000,8 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // check stages are overlapped.
-    for (uint8 i = 0; i &lt; stages.length - 1; i++) {
-      if (stages[i].endTime &gt;= stages[i + 1].startTime) {
+    for (uint8 i = 0; i < stages.length - 1; i++) {
+      if (stages[i].endTime >= stages[i + 1].startTime) {
         return false;
       }
     }
@@ -2030,18 +2030,18 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // check min purchase limit of the period
-    require(weiAmount &gt;= uint(p.minPurchaseLimit));
+    require(weiAmount >= uint(p.minPurchaseLimit));
 
     // reduce up to max purchase limit of the period
-    if (p.maxPurchaseLimit != 0 &amp;&amp; weiAmount &gt; uint(p.maxPurchaseLimit)) {
+    if (p.maxPurchaseLimit != 0 && weiAmount > uint(p.maxPurchaseLimit)) {
       weiAmount = uint(p.maxPurchaseLimit);
     }
 
-    // pre-calculate `toFund` with the period&#39;s cap
-    if (p.cap &gt; 0) {
+    // pre-calculate `toFund` with the period's cap
+    if (p.cap > 0) {
       uint256 postWeiRaised = uint256(p.weiRaised).add(weiAmount);
 
-      if (postWeiRaised &gt; p.cap) {
+      if (postWeiRaised > p.cap) {
         weiAmount = uint256(p.cap).sub(p.weiRaised);
       }
     }
@@ -2103,7 +2103,7 @@ contract RankingBallGoldCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCr
   }
 
   function parseAddress(bytes32 b) internal pure returns (address) {
-    return address(b &amp; 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
+    return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
   }
 
   function init(bytes32[] args) public {
@@ -2117,12 +2117,12 @@ contract RankingBallGoldCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCr
     address _locker = address(args[7]);
     address _nextTokenOwner = address(args[8]);
 
-    require(_endTime &gt; _startTime);
-    require(_rate &gt; 0);
-    require(_cap &gt; 0);
-    require(_goal &gt; 0);
-    require(_cap &gt; _goal);
-    require(_crowdsaleRatio &gt; 0);
+    require(_endTime > _startTime);
+    require(_rate > 0);
+    require(_cap > 0);
+    require(_goal > 0);
+    require(_cap > _goal);
+    require(_crowdsaleRatio > 0);
     require(_vault != address(0));
     require(_locker != address(0));
     require(_nextTokenOwner != address(0));

@@ -81,20 +81,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -138,7 +138,7 @@ contract Rollback is Owned, ApprovalReceiver {
         uint128 used;
     }
 
-    mapping(address =&gt; Credit)  credits;           //public
+    mapping(address => Credit)  credits;           //public
 
     function Rollback() {
     }
@@ -162,7 +162,7 @@ contract Rollback is Owned, ApprovalReceiver {
         totalSetCredit -= credits[_account].total;        
 
         credits[_account].total = _amount.toUINT128();
-        require(credits[_account].total &gt;= credits[_account].used);
+        require(credits[_account].total >= credits[_account].used);
         onSetCredit(_account, _amount);
     }
 
@@ -173,22 +173,22 @@ contract Rollback is Owned, ApprovalReceiver {
     function receiveApproval(address _from, uint256 _value, address /*_tokenContract*/, bytes /*_extraData*/) {
         require(msg.sender == address(token));
 
-        require(credits[_from].total &gt;= credits[_from].used);
+        require(credits[_from].total >= credits[_from].used);
         uint256 remainedCredit = credits[_from].total - credits[_from].used;
 
-        if(_value &gt; remainedCredit)
+        if(_value > remainedCredit)
             _value = remainedCredit;  
 
         uint256 balance = token.balanceOf(_from);
-        if(_value &gt; balance)
+        if(_value > balance)
             _value = balance;
 
-        require(_value &gt; 0);
+        require(_value > 0);
 
         require(token.transferFrom(_from, this, _value));
 
         uint256 ethAmount = _value / 4025;
-        require(ethAmount &gt; 0);
+        require(ethAmount > 0);
 
         credits[_from].used += _value.toUINT128();
         totalReturnedCredit +=_value;

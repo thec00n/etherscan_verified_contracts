@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,10 +48,10 @@ contract ERC20 {
 contract GetRidOfThatBitch is ERC20
 { using SafeMath for uint256;
     // Name of the token
-    string public constant name = &quot;GetRidOfThatBitch&quot;;
+    string public constant name = "GetRidOfThatBitch";
 
     // Symbol of token
-    string public constant symbol = &quot;FOt&quot;;
+    string public constant symbol = "FOt";
     uint8 public constant decimals = 18;
     uint public Maxsupply = 292038000000 * 10 ** 18; // Max supply muliplies dues to decimal precision
     uint public Totalsupply;
@@ -59,8 +59,8 @@ contract GetRidOfThatBitch is ERC20
     uint256 public _price_tokn = 1000000; // 1 Ether = 1 million token
     uint256 no_of_tokens;
     bool stopped = false;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     
      enum Stages {
@@ -94,7 +94,7 @@ contract GetRidOfThatBitch is ERC20
     function () public payable atStage(Stages.ICO)
     {
       
-        require(!stopped &amp;&amp; msg.sender != owner);
+        require(!stopped && msg.sender != owner);
         no_of_tokens =((msg.value).mul(_price_tokn));
         transferTokens(msg.sender,no_of_tokens);
     }
@@ -102,7 +102,7 @@ contract GetRidOfThatBitch is ERC20
       
        function mintTokens(uint256 _amount) external onlyOwner atStage(Stages.ICO)
     {
-        require(Maxsupply &gt;= (Totalsupply + _amount) &amp;&amp; _amount &gt; 0);
+        require(Maxsupply >= (Totalsupply + _amount) && _amount > 0);
         balances[owner] = (balances[owner]).add(_amount);
         Totalsupply = (Totalsupply).add(_amount);
         Transfer(address(this), owner, _amount);
@@ -135,13 +135,13 @@ contract GetRidOfThatBitch is ERC20
     
     // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
      require( _to != 0x0);
-     require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+     require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
      balances[_from] = (balances[_from]).sub(_amount);
      allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
      balances[_to] = (balances[_to]).add(_amount);
@@ -159,24 +159,24 @@ contract GetRidOfThatBitch is ERC20
      }
   
      function allowance(address _owner, address _spender)public view returns (uint256 remaining) {
-         require( _owner != 0x0 &amp;&amp; _spender !=0x0);
+         require( _owner != 0x0 && _spender !=0x0);
          return allowed[_owner][_spender];
    }
 
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
         require( _to != 0x0);
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+        require(balances[msg.sender] >= _amount && _amount >= 0);
         balances[msg.sender] = (balances[msg.sender]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
         Transfer(msg.sender, _to, _amount);
              return true;
          }
     
-          // Transfer the balance from owner&#39;s account to another account
+          // Transfer the balance from owner's account to another account
     function transferTokens(address _to, uint256 _amount) private returns(bool success) {
         require( _to != 0x0);       
-        require(Maxsupply &gt;= (Totalsupply + _amount) &amp;&amp; _amount &gt; 0);
+        require(Maxsupply >= (Totalsupply + _amount) && _amount > 0);
         balances[_to] = (balances[_to]).add(_amount);
         Totalsupply = (Totalsupply).add(_amount);
         Transfer(address(this), _to, _amount);

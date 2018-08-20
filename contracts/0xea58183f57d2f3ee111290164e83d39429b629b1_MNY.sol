@@ -10,16 +10,16 @@ contract Target {
 
 contract MNY {
 
-    string public name = &quot;MNY by Monkey Capital&quot;;
+    string public name = "MNY by Monkey Capital";
     uint8 public decimals = 18;
-    string public symbol = &quot;MNY&quot;;
+    string public symbol = "MNY";
 
     address public owner;
     address public exchangeAdmin;
 
     // used to store list of contracts MNY holds tokens in
-    mapping(uint256 =&gt; address) public exchangePartners;
-    mapping(address =&gt; uint256) public exchangeRates;
+    mapping(uint256 => address) public exchangePartners;
+    mapping(address => uint256) public exchangeRates;
 
     uint tierLevel = 1;
     uint maxTier = 30;
@@ -37,16 +37,16 @@ contract MNY {
     bool addTiers = true;
 
     // Storage
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; uint256) public tokenBalances;
-    mapping (address =&gt; uint256) public tokenShare;
+    mapping (address => uint256) public balances;
+    mapping (address => uint256) public tokenBalances;
+    mapping (address => uint256) public tokenShare;
 
     // erc20 compliance
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // mining schedule
-    mapping(uint =&gt; uint256) public scheduleTokens;
-    mapping(uint =&gt; uint256) public scheduleRates;
+    mapping(uint => uint256) public scheduleTokens;
+    mapping(uint => uint256) public scheduleRates;
 
     uint256 swapEndTime;
 
@@ -63,7 +63,7 @@ contract MNY {
 
     // tier pop
     function populateTierTokens() public {
-        require((msg.sender == owner) &amp;&amp; (initialTiers == false));
+        require((msg.sender == owner) && (initialTiers == false));
         scheduleTokens[1] = 5.33696E18;
         scheduleTokens[2] = 7.69493333E18;
         scheduleTokens[3] = 4.75684324E18;
@@ -97,7 +97,7 @@ contract MNY {
     }
 
     function populateTierRates() public {
-        require((msg.sender == owner) &amp;&amp; (initialTiers == false));
+        require((msg.sender == owner) && (initialTiers == false));
         scheduleRates[1] = 9E18;
         scheduleRates[2] = 9E18;
         scheduleRates[3] = 8E18;
@@ -134,7 +134,7 @@ contract MNY {
 
     function transfer(address _to, uint256 _value, bytes _data) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         if(_to == address(this)) {
             if(swap == false) {
@@ -171,11 +171,11 @@ contract MNY {
     function allocateTokens(uint256 _submitted, uint256 _tokenCount, address _recipient) internal {
         uint256 _tokensAfforded = 0;
 
-        if(tierLevel &lt;= maxTier) {
+        if(tierLevel <= maxTier) {
             _tokensAfforded = div(_submitted, scheduleRates[tierLevel]);
         }
 
-        if(_tokensAfforded &gt;= scheduleTokens[tierLevel]) {
+        if(_tokensAfforded >= scheduleTokens[tierLevel]) {
             _submitted = sub(_submitted, mul(scheduleTokens[tierLevel], scheduleRates[tierLevel]));
             _tokenCount = add(_tokenCount, scheduleTokens[tierLevel]);
             circulatingSupply = add(circulatingSupply, _tokensAfforded);
@@ -184,7 +184,7 @@ contract MNY {
             tierLevel++;
             allocateTokens(_submitted, _tokenCount, _recipient);
         }
-        else if((scheduleTokens[tierLevel] &gt;= _tokensAfforded) &amp;&amp; (_tokensAfforded &gt; 0)) {
+        else if((scheduleTokens[tierLevel] >= _tokensAfforded) && (_tokensAfforded > 0)) {
             scheduleTokens[tierLevel] = sub(scheduleTokens[tierLevel], _tokensAfforded);
             _tokenCount = add(_tokenCount, _tokensAfforded);
             circulatingSupply = add(circulatingSupply, _tokensAfforded);
@@ -200,7 +200,7 @@ contract MNY {
     }
 
     function exchangeTokensFromOtherContract(address _source, address _recipient, uint256 _sentTokens) {
-        require(exchangeRates[msg.sender] &gt; 0); // only approved contracts will satisfy this constraint
+        require(exchangeRates[msg.sender] > 0); // only approved contracts will satisfy this constraint
         allocateTokens(mul(_sentTokens, exchangeRates[_source]), 0, _recipient);
         TokensExchanged(_recipient, _source, _sentTokens);
         maintainExternalContractTokenBalance(_source, _sentTokens);
@@ -213,7 +213,7 @@ contract MNY {
         assembly {
             codeLength := extcodesize(_partner)
         }
-        require(codeLength &gt; 0);
+        require(codeLength > 0);
         exchangeRates[_partner] = _rate;
 
         bool isContract = existingContract(_partner);
@@ -224,11 +224,11 @@ contract MNY {
     }
 
     function addTierRateAndTokens(uint256 _level, uint256 _tokens, uint256 _rate) public {
-        require(((msg.sender == owner) || (msg.sender == exchangeAdmin)) &amp;&amp; (addTiers == true));
+        require(((msg.sender == owner) || (msg.sender == exchangeAdmin)) && (addTiers == true));
         scheduleTokens[_level] = _tokens;
         scheduleRates[_level] = _rate;
         maxTier++;
-        if(maxTier &gt; 2856) {
+        if(maxTier > 2856) {
             totalSupply = add(totalSupply, _tokens);
         }
     }
@@ -275,9 +275,9 @@ contract MNY {
     function convertTransferredTokensToMny(uint256 _value, address _recipient, address _source, uint256 _originalTokenAmount) public {
         // This allows tokens transferred in for exchange to be converted to MNY and distributed
         // NOTE: COE is able to interact directly with the MNY contract - other exchange partners cannot unless designed ot do so
-        // Please contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ebdceeafbe0effae1e0a0ede1e3">[email&#160;protected]</a> for details on designing a contract that *can* deal directly with MNY
+        // Please contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ebdceeafbe0effae1e0a0ede1e3">[email protected]</a> for details on designing a contract that *can* deal directly with MNY
         require((msg.sender == owner) || (msg.sender == exchangeAdmin));
-        require(exchangeRates[_source] &gt; 0);
+        require(exchangeRates[_source] > 0);
         allocateTokens(_value, 0, _recipient);
         maintainExternalContractTokenBalance(_source, _originalTokenAmount);
         TokensExchanged(_recipient, _source, _originalTokenAmount);
@@ -303,7 +303,7 @@ contract MNY {
 
     function calculateHeldTokenDistribution() public {
         require(swap == true);
-        for(uint256 i=0; i&lt;contractCount; i++) {
+        for(uint256 i=0; i<contractCount; i++) {
             tokenShare[exchangePartners[i]] = div(tokenBalances[exchangePartners[i]], totalSupply);
         }
         distributionCalculated = true;
@@ -316,7 +316,7 @@ contract MNY {
     function shareStoredTokens(address _recipient, uint256 mny) internal {
         Target t;
         uint256 share = 0;
-        for(uint i=0; i&lt;contractCount; i++) {
+        for(uint i=0; i<contractCount; i++) {
             share = mul(mny, tokenShare[exchangePartners[i]]);
 
             t = Target(exchangePartners[i]);
@@ -328,7 +328,7 @@ contract MNY {
     // NOTE: this function is used to redistribute the swapped MNY after swap has ended
     function distributeMnyAfterSwap(address _recipient, uint256 _tokens) public {
         require(msg.sender == owner);
-        require(swappedTokens &lt;= _tokens);
+        require(swappedTokens <= _tokens);
         balances[_recipient] = add(balances[_recipient], _tokens);
         Transfer(this, _recipient, _tokens);
         swappedTokens = sub(totalSupply, _tokens);
@@ -340,17 +340,17 @@ contract MNY {
     // This function WILL ONLY be called fter fair notice and CANNOT be called until 90 days have
     // passed since the swap started
     function distributeOwnedTokensFromOtherContracts(address _contract, address _recipient, uint256 _tokens) {
-        require(now &gt;= swapEndTime);
+        require(now >= swapEndTime);
         require(msg.sender == owner);
 
-        require(tokenBalances[_contract] &gt;= _tokens);
+        require(tokenBalances[_contract] >= _tokens);
         Target t = Target(_contract);
         t.transfer(_recipient, _tokens);
         tokenBalances[_contract] = sub(tokenBalances[_contract], _tokens);
     }
 
     function existingContract(address _contract) internal returns (bool) {
-        for(uint i=0; i&lt;=contractCount; i++) {
+        for(uint i=0; i<=contractCount; i++) {
             if(exchangePartners[i] == _contract) return true;
         }
         return false;
@@ -367,26 +367,26 @@ contract MNY {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     // ERC20 compliance addition
     function transferFrom(address _from, address _to, uint256 _tokens) public returns (bool success) {
-        require(balances[_from] &gt;= _tokens);
+        require(balances[_from] >= _tokens);
         balances[_from] = sub(balances[_from],_tokens);
         allowed[_from][msg.sender] = sub(allowed[_from][msg.sender],_tokens);
         balances[_to] = add(balances[_to],_tokens);

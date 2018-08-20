@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,8 +37,8 @@ library SafeMath {
 contract AMBToken {
     using SafeMath for uint256;
 
-    string  public constant name     = &quot;Ambit token&quot;;
-    string  public constant symbol   = &quot;AMBT&quot;;
+    string  public constant name     = "Ambit token";
+    string  public constant symbol   = "AMBT";
     uint8   public constant decimals = 18;
     uint256 public totalSupply;
 
@@ -49,11 +49,11 @@ contract AMBToken {
         uint256 icoInvest;
         bool    activated;
     }
-    mapping(address =&gt; Investor) internal investors;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => Investor) internal investors;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
     /*
-            Dividend&#39;s Structures
+            Dividend's Structures
     */
     uint256   internal dividendCandidate = 0;
     uint256[] internal dividends;
@@ -65,7 +65,7 @@ contract AMBToken {
         ProfitStatus status;
     }
 
-    mapping(address =&gt; mapping(uint32 =&gt; InvestorProfitData)) internal profits;
+    mapping(address => mapping(uint32 => InvestorProfitData)) internal profits;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -85,13 +85,13 @@ contract AMBToken {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool) {
-        require(investors[msg.sender].activated &amp;&amp; contractIsWorking);
+        require(investors[msg.sender].activated && contractIsWorking);
         return _approve(_spender, _value);
     }
 
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= investors[_from].tokenBalance);
+        require(_value <= investors[_from].tokenBalance);
 
         fixDividendBalances(_to, false);
 
@@ -102,16 +102,16 @@ contract AMBToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(investors[msg.sender].activated &amp;&amp; contractIsWorking);
+        require(investors[msg.sender].activated && contractIsWorking);
         fixDividendBalances(msg.sender, false);
         return _transfer( msg.sender, _to,  _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(investors[msg.sender].activated &amp;&amp; investors[_from].activated &amp;&amp; contractIsWorking);
+        require(investors[msg.sender].activated && investors[_from].activated && contractIsWorking);
         require(_to != address(0));
-        require(_value &lt;= investors[_from].tokenBalance);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= investors[_from].tokenBalance);
+        require(_value <= allowed[_from][msg.sender]);
 
         fixDividendBalances(_from, false);
         fixDividendBalances(_to, false);
@@ -235,9 +235,9 @@ contract AMBTICO is AMBToken {
     }
 
     function setTokenPrice(uint256 new_wei_price) public grantDApp {
-        require(new_wei_price &gt; 0);
+        require(new_wei_price > 0);
         uint8 len = uint8(saleSectionPrice.length)-1;
-        for (uint8 i=0; i&lt;=len; i++) {
+        for (uint8 i=0; i<=len; i++) {
             uint256 prdsc = 100 - saleSectionDiscounts[i];
             saleSectionPrice[i]  = prdsc.mul(new_wei_price ).div(100);
             saleSectionInvest[i] = saleSectionPrice[i] * saleSectionCount[i];
@@ -263,7 +263,7 @@ contract AMBTICO is AMBToken {
     }
 
     function getCurrentTokenPrice() public view returns(uint256) {
-        require(currentSection &lt; saleSectionCount.length);
+        require(currentSection < saleSectionCount.length);
         return saleSectionPrice[currentSection];
     }
 
@@ -281,15 +281,15 @@ contract AMBTICO is AMBToken {
 
     function _invest(address msg_sender, uint256 msg_value) internal {
         require(contractIsWorking);
-        require(currentSection &lt; saleSectionCount.length);
+        require(currentSection < saleSectionCount.length);
         require(mode == ContractMode.TokenSale);
         require(msg_sender != bountyManager);
 
         uint wei_value = msg_value;
         uint _tokens = 0;
 
-        while (wei_value &gt; 0 &amp;&amp; (currentSection &lt; saleSectionCount.length)) {
-            if (saleSectionInvest[currentSection] &gt;= wei_value) {
+        while (wei_value > 0 && (currentSection < saleSectionCount.length)) {
+            if (saleSectionInvest[currentSection] >= wei_value) {
                 _tokens += ONE_TOKEN.mul(wei_value).div(saleSectionPrice[currentSection]);
                 saleSectionInvest[currentSection] -= wei_value;
                 wei_value =0;
@@ -298,10 +298,10 @@ contract AMBTICO is AMBToken {
                 wei_value -= saleSectionInvest[currentSection];
                 saleSectionInvest[currentSection] = 0;
             }
-            if (saleSectionInvest[currentSection] &lt;= 0) currentSection++;
+            if (saleSectionInvest[currentSection] <= 0) currentSection++;
         }
 
-        require(_tokens &gt;= MIN_SOLD_TOKENS);
+        require(_tokens >= MIN_SOLD_TOKENS);
 
         require(_transfer(this, msg_sender, _tokens));
 
@@ -320,7 +320,7 @@ contract AMBTICO is AMBToken {
             _finishICO();
         }
 
-        if (wei_value &gt; 0) {
+        if (wei_value > 0) {
             msg_sender.transfer(wei_value);
         }
     }
@@ -329,7 +329,7 @@ contract AMBTICO is AMBToken {
         require(contractIsWorking);
         require(mode == ContractMode.TokenSale);
 
-        if (tokenSold &gt;= SOFTCAP) {
+        if (tokenSold >= SOFTCAP) {
             mode = ContractMode.DividendDistribution;
         } else {
             mode = ContractMode.UnderSoftCap;
@@ -353,7 +353,7 @@ contract AMBTICO is AMBToken {
     function activateAddress(address investor, bool status) public grantDApp {
         require(contractIsWorking);
         require(mode == ContractMode.DividendDistribution);
-        require((now - icoFinishTime) &lt; KYC_REVIEW_PERIOD);
+        require((now - icoFinishTime) < KYC_REVIEW_PERIOD);
         investors[investor].activated = status;
     }
 
@@ -388,7 +388,7 @@ contract AMBTICO is AMBToken {
         (current_profit, price_per_token) = fixDividendBalances(msg.sender, true);
 
         uint256 investorProfitWei =
-                    (current_profit.start_balance &lt; current_profit.end_balance ?
+                    (current_profit.start_balance < current_profit.end_balance ?
                      current_profit.start_balance : current_profit.end_balance ).div(ONE_TOKEN).mul(price_per_token);
 
         current_profit.status = ProfitStatus.Claimed;
@@ -412,12 +412,12 @@ contract AMBTICO is AMBToken {
     function buyback() public {
         require(contractIsWorking);
         require(mode == ContractMode.DividendDistribution);
-        require(buyBackPriceWei &gt; 0);
+        require(buyBackPriceWei > 0);
 
         uint256 token_amount = investors[msg.sender].tokenBalance;
         uint256 ether_amount = calcTokenToWei(token_amount);
 
-        require(address(this).balance &gt; ether_amount);
+        require(address(this).balance > ether_amount);
 
         if (transfer(this, token_amount)){
             emit BuyBack(msg.sender);
@@ -431,10 +431,10 @@ contract AMBTICO is AMBToken {
     function refund() public {
         require(contractIsWorking);
         require(mode == ContractMode.UnderSoftCap);
-        require(investors[msg.sender].tokenBalance &gt;0);
-        require(investors[msg.sender].icoInvest&gt;0);
+        require(investors[msg.sender].tokenBalance >0);
+        require(investors[msg.sender].icoInvest>0);
 
-        require (address(this).balance &gt; investors[msg.sender].icoInvest);
+        require (address(this).balance > investors[msg.sender].icoInvest);
 
         if (_transfer(msg.sender, this, investors[msg.sender].tokenBalance)){
             emit Refund(msg.sender, investors[msg.sender].icoInvest);
@@ -444,7 +444,7 @@ contract AMBTICO is AMBToken {
 
     function destroyContract() public grantOwner {
         require(mode == ContractMode.UnderSoftCap);
-        require((now - icoFinishTime) &gt; REFUND_PERIOD);
+        require((now - icoFinishTime) > REFUND_PERIOD);
         selfdestruct(owner);
     }
     /********
@@ -500,7 +500,7 @@ contract AMBTICO is AMBToken {
     function burnTokens(uint256 tokenAmount) public grantOwner {
         require(contractIsWorking);
         require(mode == ContractMode.DividendDistribution);
-        require(investors[msg.sender].tokenBalance &gt; tokenAmount);
+        require(investors[msg.sender].tokenBalance > tokenAmount);
 
         investors[msg.sender].tokenBalance -= tokenAmount;
         totalSupply = totalSupply.sub(tokenAmount);
@@ -509,7 +509,7 @@ contract AMBTICO is AMBToken {
 
     function withdrawFunds(uint wei_value) grantOwner external {
         require(mode != ContractMode.UnderSoftCap);
-        require(address(this).balance &gt;= wei_value);
+        require(address(this).balance >= wei_value);
 
         emit FundsWithdrawal(msg.sender, wei_value);
         msg.sender.transfer(wei_value);

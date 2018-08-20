@@ -2,10 +2,10 @@ pragma solidity ^0.4.13;
 
 contract  EtherCO2 {
     /* Public variables of the token */
-    string public name = &quot;EtherCO2&quot;; 
+    string public name = "EtherCO2"; 
     uint256 public decimals = 2;
     uint256 public totalSupply;
-    string public symbol = &quot;ECO2&quot;;
+    string public symbol = "ECO2";
     event Mint(address indexed owner,uint amount);
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -19,7 +19,7 @@ function EtherCO2() public {
 
  function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != 0x00);
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -28,7 +28,7 @@ function EtherCO2() public {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -51,13 +51,13 @@ function EtherCO2() public {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     address owner;
 
 
     function mint(uint amount) onlyOwner public returns(bool minted ){
-        if (amount &gt; 0){
+        if (amount > 0){
             totalSupply += amount;
             balances[owner] += amount;
             Mint(msg.sender,amount);

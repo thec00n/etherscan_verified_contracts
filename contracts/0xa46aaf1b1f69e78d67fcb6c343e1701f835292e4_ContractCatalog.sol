@@ -20,7 +20,7 @@ contract Versionable {
 
 contract ContractCatalog {
     uint256 public constant VERSION = 2;
-    string public constant SEPARATOR = &quot;-&quot;;
+    string public constant SEPARATOR = "-";
 
     Token public token;
     address public owner;
@@ -41,23 +41,23 @@ contract ContractCatalog {
         owner = address(0xA1091481AEde4adDe00C1a26992AE49a7e0E1FB0);
 
         // Set up all forgived chars
-        addForgivedChar(&quot; &quot;);
-        addForgivedChar(&quot;‐&quot;);
-        addForgivedChar(&quot;‑&quot;);
-        addForgivedChar(&quot;‒&quot;);
-        addForgivedChar(&quot;–&quot;);
-        addForgivedChar(&quot;﹘&quot;);
-        addForgivedChar(&quot;۔&quot;);
-        addForgivedChar(&quot;⁃&quot;);
-        addForgivedChar(&quot;˗&quot;);
-        addForgivedChar(&quot;−&quot;);
-        addForgivedChar(&quot;➖&quot;);
-        addForgivedChar(&quot;Ⲻ&quot;);
+        addForgivedChar(" ");
+        addForgivedChar("‐");
+        addForgivedChar("‑");
+        addForgivedChar("‒");
+        addForgivedChar("–");
+        addForgivedChar("﹘");
+        addForgivedChar("۔");
+        addForgivedChar("⁃");
+        addForgivedChar("˗");
+        addForgivedChar("−");
+        addForgivedChar("➖");
+        addForgivedChar("Ⲻ");
     }
 
-    mapping(string =&gt; ContractType) types;
-    mapping(string =&gt; address) prefixes;
-    mapping(uint256 =&gt; uint256) prefixesPrices;
+    mapping(string => ContractType) types;
+    mapping(string => address) prefixes;
+    mapping(uint256 => uint256) prefixesPrices;
 
     string[] public forgivedChars;
 
@@ -83,14 +83,14 @@ contract ContractCatalog {
     function loadVersion(Versionable from) private returns (string) {
         uint size = from.getVersionLength();
         bytes memory out = new bytes(size);
-        for (uint i = 0; i &lt; size; i++) {
+        for (uint i = 0; i < size; i++) {
             out[i] = from.getVersionByte(i);
         }
         return string(out);
     }
 
     function getContractOwner(string code) constant returns (address) {
-        string memory prefix = splitFirst(code, &quot;-&quot;);
+        string memory prefix = splitFirst(code, "-");
         return prefixes[prefix];
     }
 
@@ -103,7 +103,7 @@ contract ContractCatalog {
     }
 
     function hasForgivedChar(string s) constant returns (bool) {
-        for (uint i = 0; i &lt; forgivedChars.length; i++) {
+        for (uint i = 0; i < forgivedChars.length; i++) {
             if (stringContains(s, forgivedChars[i]))
                 return true;
         }
@@ -173,7 +173,7 @@ contract ContractCatalog {
         bytes memory bytecode = getContractCode(target);
         require(expected.length != 0);
         if (bytecode.length != expected.length) return false;
-        for (uint i = 0; i &lt; expected.length; i++) {
+        for (uint i = 0; i < expected.length; i++) {
             if (bytecode[i] != expected[i]) return false;
         }
         return true;
@@ -193,14 +193,14 @@ contract ContractCatalog {
     function splitFirst(string source, string point) private returns (string) {
         bytes memory s = bytes(source);
         if (s.length == 0) {
-            return &quot;&quot;;
+            return "";
         } else {
             int index = stringIndexOf(source, point);
             if (index == - 1) {
-                return &quot;&quot;;
+                return "";
             } else {
                 bytes memory output = new bytes(uint(index));
-                for (int i = 0; i &lt; index; i++) {
+                for (int i = 0; i < index; i++) {
                     output[uint(i)] = s[uint(i)];
                 }
                 return string(output);
@@ -224,23 +224,23 @@ contract ContractCatalog {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -250,16 +250,16 @@ contract ContractCatalog {
     function stringIndexOf(string _haystack, string _needle) private returns (int) {
     	bytes memory h = bytes(_haystack);
     	bytes memory n = bytes(_needle);
-    	if (h.length &lt; 1 || n.length &lt; 1 || (n.length &gt; h.length)) {
+    	if (h.length < 1 || n.length < 1 || (n.length > h.length)) {
     		return -1;
-    	} else if (h.length &gt; (2**128 - 1)) { // since we have to be able to return -1 (if the char isn&#39;t found or input error), this function must return an &quot;int&quot; type with a max length of (2^128 - 1)
+    	} else if (h.length > (2**128 - 1)) { // since we have to be able to return -1 (if the char isn't found or input error), this function must return an "int" type with a max length of (2^128 - 1)
     		return -1;									
     	} else {
     		uint subindex = 0;
-    		for (uint i = 0; i &lt; h.length; i ++) {
+    		for (uint i = 0; i < h.length; i ++) {
     			if (h[i] == n[0]) { // found the first char of b
     				subindex = 1;
-    				while (subindex &lt; n.length &amp;&amp; (i + subindex) &lt; h.length &amp;&amp; h[i + subindex] == n[subindex]) { // search until the chars don&#39;t match or until we reach the end of a or b
+    				while (subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex]) { // search until the chars don't match or until we reach the end of a or b
     					subindex++;
     				}	
     				if (subindex == n.length)
@@ -274,7 +274,7 @@ contract ContractCatalog {
     	bytes memory a = bytes(_a);
     	bytes memory b = bytes(_b);
         if (a.length != b.length) return false;
-        for (uint i = 0; i &lt; a.length; i++) {
+        for (uint i = 0; i < a.length; i++) {
             if (a[i] != b[i]) return false;
         }
         return true;

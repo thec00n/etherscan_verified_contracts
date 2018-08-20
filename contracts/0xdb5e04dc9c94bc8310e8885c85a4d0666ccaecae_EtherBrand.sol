@@ -1,9 +1,9 @@
 pragma solidity ^0.4.18;
 
-///&gt;[ Crypto Brands ]&gt;&gt;&gt;&gt;
+///>[ Crypto Brands ]>>>>
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e682839283a6879e8f898b9c8388c88589">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e682839283a6879e8f898b9c8388c88589">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     function approve(address _to, uint256 _tokenId) public;
     function balanceOf(address _owner) public view returns (uint256 balance);
@@ -40,25 +40,25 @@ contract EtherBrand is ERC721 {
   }
 
   /*** CONSTANTS ***/
-  string public constant NAME = &quot;EtherBrands&quot;;
-  string public constant SYMBOL = &quot;EtherBrand&quot;;
+  string public constant NAME = "EtherBrands";
+  string public constant SYMBOL = "EtherBrand";
   
   bool public gameOpen = false;
 
   /*** STORAGE ***/
-  mapping (address =&gt; uint256) private ownerCount;
-  mapping (uint256 =&gt; TopOwner) private topOwner;
-  mapping (uint256 =&gt; address) private lastBuyer;
+  mapping (address => uint256) private ownerCount;
+  mapping (uint256 => TopOwner) private topOwner;
+  mapping (uint256 => address) private lastBuyer;
 
   address public ceoAddress;
   address public cooAddress;
   address public cfoAddress;
-  mapping (uint256 =&gt; address) public extra;
+  mapping (uint256 => address) public extra;
   
   uint256 brand_count;
   uint256 lowest_top_brand;
  
-  mapping (uint256 =&gt; Brand) private brands;
+  mapping (uint256 => Brand) private brands;
 
   /*** ACCESS MODIFIERS ***/
   modifier onlyCEO() { require(msg.sender == ceoAddress); _; }
@@ -80,7 +80,7 @@ contract EtherBrand is ERC721 {
   }
   function setExtra(uint256 _id, address _newExtra) public onlyCXX {
     require(_newExtra != address(0));
-    // failsave :3 require(_id &lt;= 2); // 3 = 1 ETH, 4 = 2.5 ETH, 5 = 5 ETH
+    // failsave :3 require(_id <= 2); // 3 = 1 ETH, 4 = 2.5 ETH, 5 = 5 ETH
     extra[_id] = _newExtra;
   }
 
@@ -157,7 +157,7 @@ contract EtherBrand is ERC721 {
     bytes32[] memory names = new bytes32[](brand_count);
     address[] memory owners = new address[](brand_count);
     uint256[] memory prices = new uint256[](brand_count);
-    for(uint256 _id = 0; _id &lt; brand_count; _id++){
+    for(uint256 _id = 0; _id < brand_count; _id++){
       ids[_id] = _id;
       names[_id] = brands[_id].name;
       owners[_id] = brands[_id].owner;
@@ -172,7 +172,7 @@ contract EtherBrand is ERC721 {
 
     require(brand.owner != msg.sender);
     require(msg.sender != address(0));
-    require(msg.value &gt;= brand.price);
+    require(msg.value >= brand.price);
 
     uint256 excess = SafeMath.sub(msg.value, brand.price);
     uint256 half_diff = SafeMath.div(SafeMath.sub(brand.price, brand.last_price), 2);
@@ -203,27 +203,27 @@ contract EtherBrand is ERC721 {
       brand.owner.transfer(reward);
     }
     
-    if(brand.price &gt; topOwner[5].price){
-        for(uint8 i = 1; i &lt;= 5; i++){
-            if(brand.price &gt; topOwner[(i+1)].price){
-                if(i &gt;= 4){ topOwner[5] = topOwner[4]; }
-                if(i &gt;= 3){ topOwner[4] = topOwner[3]; }
-                if(i &gt;= 2){ topOwner[3] = topOwner[2]; }
-                if(i &gt;= 1){ topOwner[2] = topOwner[1]; }
+    if(brand.price > topOwner[5].price){
+        for(uint8 i = 1; i <= 5; i++){
+            if(brand.price > topOwner[(i+1)].price){
+                if(i >= 4){ topOwner[5] = topOwner[4]; }
+                if(i >= 3){ topOwner[4] = topOwner[3]; }
+                if(i >= 2){ topOwner[3] = topOwner[2]; }
+                if(i >= 1){ topOwner[2] = topOwner[1]; }
                 topOwner[i] = TopOwner(msg.sender, brand.price);
                 break;
             }
         }
     }
     
-    if(extra[3] == ceoAddress &amp;&amp; brand.price &gt;= 1000000000000000000){ extra[3] == msg.sender; } // 1 ETH
-    if(extra[4] == ceoAddress &amp;&amp; brand.price &gt;= 2500000000000000000){ extra[4] == msg.sender; } // 2.5 ETH
-    if(extra[5] == ceoAddress &amp;&amp; brand.price &gt;= 5000000000000000000){ extra[5] == msg.sender; } // 5 ETH
+    if(extra[3] == ceoAddress && brand.price >= 1000000000000000000){ extra[3] == msg.sender; } // 1 ETH
+    if(extra[4] == ceoAddress && brand.price >= 2500000000000000000){ extra[4] == msg.sender; } // 2.5 ETH
+    if(extra[5] == ceoAddress && brand.price >= 5000000000000000000){ extra[5] == msg.sender; } // 5 ETH
     
     brand.last_price = brand.price;
     address _old_owner = brand.owner;
     
-    if(brand.price &lt; 50000000000000000){ // 0.05
+    if(brand.price < 50000000000000000){ // 0.05
         brand.price = SafeMath.mul(SafeMath.div(brand.price, 100), 150);
     } else {
         brand.price = SafeMath.mul(SafeMath.div(brand.price, 100), 125);
@@ -251,7 +251,7 @@ contract EtherBrand is ERC721 {
     } else {
       uint256[] memory result = new uint256[](tokenCount);
       uint256 resultIndex = 0;
-      for (uint256 brandId = 0; brandId &lt;= totalSupply(); brandId++) {
+      for (uint256 brandId = 0; brandId <= totalSupply(); brandId++) {
         if (brands[brandId].owner == _owner) {
           result[resultIndex] = brandId;
           resultIndex++;
@@ -304,13 +304,13 @@ contract EtherBrand is ERC721 {
     
     Brand storage brand = brands[brand_count];
     
-    if(brand.price &gt; topOwner[5].price){
-        for(uint8 i = 1; i &lt;= 5; i++){
-            if(brand.price &gt; topOwner[(i+1)].price){
-                if(i &gt;= 4){ topOwner[5] = topOwner[4]; }
-                if(i &gt;= 3){ topOwner[4] = topOwner[3]; }
-                if(i &gt;= 2){ topOwner[3] = topOwner[2]; }
-                if(i &gt;= 1){ topOwner[2] = topOwner[1]; }
+    if(brand.price > topOwner[5].price){
+        for(uint8 i = 1; i <= 5; i++){
+            if(brand.price > topOwner[(i+1)].price){
+                if(i >= 4){ topOwner[5] = topOwner[4]; }
+                if(i >= 3){ topOwner[4] = topOwner[3]; }
+                if(i >= 2){ topOwner[3] = topOwner[2]; }
+                if(i >= 1){ topOwner[2] = topOwner[1]; }
                 topOwner[i] = TopOwner(msg.sender, brand.price);
                 break;
             }
@@ -345,12 +345,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

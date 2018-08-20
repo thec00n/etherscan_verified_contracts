@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * Based on OpenZeppelin
  */
 contract Ownable {
@@ -152,12 +152,12 @@ contract AlgoryPricingStrategy is PricingStrategy, Ownable {
     }
 
     function getTranche(uint n) public constant returns (uint amount, uint rate) {
-        require(n &lt; trancheCount);
+        require(n < trancheCount);
         return (tranches[n].amount, tranches[n].rate);
     }
 
     function isPresaleFull(uint presaleWeiRaised) public constant returns (bool) {
-        return presaleWeiRaised &gt; tranches[1].amount;
+        return presaleWeiRaised > tranches[1].amount;
     }
 
     function getCurrentRate(uint weiRaised) public constant returns (uint) {
@@ -165,14 +165,14 @@ contract AlgoryPricingStrategy is PricingStrategy, Ownable {
     }
 
     function getAmountOfTokens(uint value, uint weiRaised) public constant returns (uint tokensAmount) {
-        require(value &gt; 0);
+        require(value > 0);
         uint rate = getCurrentRate(weiRaised);
         return value.mul(rate);
     }
 
     function getCurrentTranche(uint weiRaised) private constant returns (Tranche) {
-        for(uint i=1; i &lt; tranches.length; i++) {
-            if(weiRaised &lt;= tranches[i].amount) {
+        for(uint i=1; i < tranches.length; i++) {
+            if(weiRaised <= tranches[i].amount) {
                 return tranches[i-1];
             }
         }

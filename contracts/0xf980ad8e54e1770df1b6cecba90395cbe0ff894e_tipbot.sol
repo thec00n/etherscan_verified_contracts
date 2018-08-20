@@ -41,7 +41,7 @@ library SafeMath {
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        // assert(b &gt; 0); 
+        // assert(b > 0); 
 
         uint256 c = a / b;
 
@@ -55,7 +55,7 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -67,7 +67,7 @@ library SafeMath {
 
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -185,9 +185,9 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
 
 
-        string public name = &quot;tipbot&quot;;
+        string public name = "tipbot";
 
-        string public symbol = &quot;TIP&quot;;
+        string public symbol = "TIP";
 
         
 
@@ -247,15 +247,15 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
 
 
-        mapping(address =&gt; uint256) balances;
+        mapping(address => uint256) balances;
 
         
 
-        mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+        mapping(address => mapping (address => uint256)) allowed;
 
         
 
-        mapping(address =&gt; transferInStruct[]) transferIns;
+        mapping(address => transferInStruct[]) transferIns;
 
 
 
@@ -269,7 +269,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
    modifier onlyPayloadSize(uint size) {
 
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
 
         _;
 
@@ -279,7 +279,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
     modifier canTIPMint() {
 
-        require(totalSupply &lt; maxTIPSupply);
+        require(totalSupply < maxTIPSupply);
 
         _;
 
@@ -331,7 +331,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
         emit Transfer(msg.sender, _to, _value);
 
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
 
         uint64 _now = uint64(block.timestamp);
 
@@ -383,7 +383,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
         emit Transfer(_from, _to, _value);
 
-        if(transferIns[_from].length &gt; 0) delete transferIns[_from];
+        if(transferIns[_from].length > 0) delete transferIns[_from];
 
         uint64 _now = uint64(block.timestamp);
 
@@ -403,7 +403,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
     function ownerSetStakeCommence(uint timestamp) public onlyOwner {
 
-        require((stakeCommence &lt;= 0) &amp;&amp; (timestamp &gt;= chainStartTime));
+        require((stakeCommence <= 0) && (timestamp >= chainStartTime));
 
         stakeCommence = timestamp;
 
@@ -455,15 +455,15 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
     function mint() public canTIPMint returns (bool) {
 
-        if(balances[msg.sender] &lt;= 0) return false;
+        if(balances[msg.sender] <= 0) return false;
 
-        if(transferIns[msg.sender].length &lt;= 0) return false;
+        if(transferIns[msg.sender].length <= 0) return false;
 
 
 
         uint reward = getPoSReward(msg.sender);
 
-        if(reward &lt;= 0) return false;
+        if(reward <= 0) return false;
 
 
 
@@ -535,7 +535,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
     function getPoSReward(address _address) internal view returns (uint) {
 
-        require( (block.timestamp &gt;= stakeCommence) &amp;&amp; (stakeCommence &gt; 0) );
+        require( (block.timestamp >= stakeCommence) && (stakeCommence > 0) );
 
 
 
@@ -543,7 +543,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
         uint _coinAge = getCoinAge(_address, _now);
 
-        if(_coinAge &lt;= 0) return 0;
+        if(_coinAge <= 0) return 0;
 
 
 
@@ -573,19 +573,19 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
     function getCoinAge(address _address, uint _now) internal view returns (uint _coinAge) {
 
-        if(transferIns[_address].length &lt;= 0) return 0;
+        if(transferIns[_address].length <= 0) return 0;
 
 
 
-        for (uint i = 0; i &lt; transferIns[_address].length; i++){
+        for (uint i = 0; i < transferIns[_address].length; i++){
 
-            if( _now &lt; uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
+            if( _now < uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
 
 
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
 
-            if( nCoinSeconds &gt; stakeMaxAge ) nCoinSeconds = stakeMaxAge;
+            if( nCoinSeconds > stakeMaxAge ) nCoinSeconds = stakeMaxAge;
 
 
 
@@ -603,25 +603,25 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
     function batchTransfer(address[] _recipients, uint[] _values) public onlyOwner returns (bool) {
 
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _values.length);
+        require( _recipients.length > 0 && _recipients.length == _values.length);
 
 
 
         uint total = 0;
 
-        for(uint i = 0; i &lt; _values.length; i++){
+        for(uint i = 0; i < _values.length; i++){
 
             total = total.add(_values[i]);
 
         }
 
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
 
 
         uint64 _now = uint64(block.timestamp);
 
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
 
             balances[_recipients[j]] = balances[_recipients[j]].add(_values[j]);
 
@@ -635,9 +635,9 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
         balances[msg.sender] = balances[msg.sender].sub(total);
 
-        if(transferIns[msg.sender].length &gt; 0) delete transferIns[msg.sender];
+        if(transferIns[msg.sender].length > 0) delete transferIns[msg.sender];
 
-        if(balances[msg.sender] &gt; 0) transferIns[msg.sender].push(transferInStruct(uint256(balances[msg.sender]),_now));
+        if(balances[msg.sender] > 0) transferIns[msg.sender].push(transferInStruct(uint256(balances[msg.sender]),_now));
 
 
 
@@ -653,7 +653,7 @@ contract tipbot is ERC20,tipbotreg,Ownable {
 
         function TokenBurn(uint _value) public onlyOwner {
 
-        require(_value &gt; 0);
+        require(_value > 0);
 
 
 

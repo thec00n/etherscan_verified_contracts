@@ -2,14 +2,14 @@ pragma solidity ^0.4.24;
 
 contract GaiBanngToken {
 
-    string public name = &#39;丐帮令牌&#39;;      //  token name
-    string constant public symbol = &quot;GAI&quot;;           //  token symbol
+    string public name = '丐帮令牌';      //  token name
+    string constant public symbol = "GAI";           //  token symbol
     uint256 constant public decimals = 8;            //  token digit
 
     uint256 public constant INITIAL_SUPPLY = 20170808 * (10 ** uint256(decimals));
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     address public owner = 0x0;
@@ -32,8 +32,8 @@ contract GaiBanngToken {
     }
 
     function transfer(address _to, uint256 _value)  public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -41,9 +41,9 @@ contract GaiBanngToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value)  public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

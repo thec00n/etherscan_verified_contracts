@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10737f7e64717364505564787562757d7f7e3e737f7d">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10737f7e64717364505564787562757d7f7e3e737f7d">[email protected]</a>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -116,10 +116,10 @@ contract EtheremonTransformData is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     uint64 public totalEgg = 0;
-    mapping(uint64 =&gt; MonsterEgg) public eggs; // eggId
-    mapping(address =&gt; uint64) public hatchingEggs;
-    mapping(uint64 =&gt; uint64[]) public eggList; // objId -&gt; [eggId]
-    mapping(uint64 =&gt; uint64) public transformed; //objId -&gt; newObjId
+    mapping(uint64 => MonsterEgg) public eggs; // eggId
+    mapping(address => uint64) public hatchingEggs;
+    mapping(uint64 => uint64[]) public eggList; // objId -> [eggId]
+    mapping(uint64 => uint64) public transformed; //objId -> newObjId
     
     // only moderators
     /*
@@ -140,7 +140,7 @@ contract EtheremonTransformData is EtheremonEnum, BasicAccessControl, SafeMath {
         hatchingEggs[_trainer] = totalEgg;
         
         // increase count
-        if (_objId &gt; 0) {
+        if (_objId > 0) {
             eggList[_objId].push(totalEgg);
         }
         return totalEgg;

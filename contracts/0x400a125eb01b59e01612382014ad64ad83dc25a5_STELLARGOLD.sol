@@ -18,20 +18,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,10 +51,10 @@ contract ERC20 {
 contract STELLARGOLD is ERC20
 { using SafeMath for uint256;
     // Name of the token
-    string public constant name = &quot;STELLARGOLD&quot;;
+    string public constant name = "STELLARGOLD";
 
     // Symbol of token
-    string public constant symbol = &quot;XLMGOLD&quot;;
+    string public constant symbol = "XLMGOLD";
     uint8 public constant decimals = 18;
     uint public _totalsupply = 100000000 * 10 ** 18; // 100 Millon inculding decimal precesion
     address public owner;                    // Owner of this contract
@@ -66,8 +66,8 @@ contract STELLARGOLD is ERC20
     uint256 public ico_enddate;
     bool stopped = false;
    
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
      address ethFundMain = 0xA2CB0448692571B6b933e41Fc3C5F89c1fF97055; 
 
     
@@ -113,7 +113,7 @@ contract STELLARGOLD is ERC20
     
     function start_ICO() public onlyOwner atStage(Stages.PRESALE)
       {
-        //  require(now &gt; pre_enddate);
+        //  require(now > pre_enddate);
           stage = Stages.ICO;
           stopped = false;
          _price_tokn = 3000;    // 1 Ether = 3000 coins
@@ -125,17 +125,17 @@ contract STELLARGOLD is ERC20
   
     function () public payable 
     {
-      require(msg.value &gt;= .25 ether);
-        require(!stopped &amp;&amp; msg.sender != owner);
+      require(msg.value >= .25 ether);
+        require(!stopped && msg.sender != owner);
         
-          if( stage == Stages.PRESALE &amp;&amp; now &lt;= pre_enddate )
+          if( stage == Stages.PRESALE && now <= pre_enddate )
             { 
                 no_of_tokens =((msg.value).mul(_price_tokn));
                 drain(msg.value);
                 transferTokens(msg.sender,no_of_tokens);
                }
                
-                else if(stage == Stages.ICO &amp;&amp; now &lt;= ico_enddate )
+                else if(stage == Stages.ICO && now <= ico_enddate )
             {
              
                no_of_tokens =((msg.value).mul(_price_tokn));
@@ -190,13 +190,13 @@ contract STELLARGOLD is ERC20
     
     // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
      require( _to != 0x0);
-     require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+     require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
      balances[_from] = (balances[_from]).sub(_amount);
      allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
      balances[_to] = (balances[_to]).add(_amount);
@@ -214,24 +214,24 @@ contract STELLARGOLD is ERC20
      }
   
      function allowance(address _owner, address _spender)public view returns (uint256 remaining) {
-         require( _owner != 0x0 &amp;&amp; _spender !=0x0);
+         require( _owner != 0x0 && _spender !=0x0);
          return allowed[_owner][_spender];
    }
 
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
         require( _to != 0x0);
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+        require(balances[msg.sender] >= _amount && _amount >= 0);
         balances[msg.sender] = (balances[msg.sender]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
        emit Transfer(msg.sender, _to, _amount);
              return true;
          }
     
-          // Transfer the balance from owner&#39;s account to another account
+          // Transfer the balance from owner's account to another account
     function transferTokens(address _to, uint256 _amount) private returns(bool success) {
         require( _to != 0x0);       
-        require(balances[address(this)] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[address(this)] >= _amount && _amount > 0);
         balances[address(this)] = (balances[address(this)]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
        emit Transfer(address(this), _to, _amount);

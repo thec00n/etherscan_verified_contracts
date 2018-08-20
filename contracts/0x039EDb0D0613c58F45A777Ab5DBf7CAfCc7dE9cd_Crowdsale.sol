@@ -22,18 +22,18 @@ library SafeMath {
    return c;
  }
  function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-   assert(b &lt;= a);
+   assert(b <= a);
    return a - b;
  }
  function add(uint256 a, uint256 b) internal constant returns (uint256) {
    uint256 c = a + b;
-   assert(c &gt;= a);
+   assert(c >= a);
    return c;
  }
 }
 contract BasicToken is ERC20Basic {
  using SafeMath for uint256;
- mapping(address =&gt; uint256) balances;
+ mapping(address => uint256) balances;
  function transfer(address _to, uint256 _value) returns (bool) {
    balances[msg.sender] = balances[msg.sender].sub(_value);
    balances[_to] = balances[_to].add(_value);
@@ -45,7 +45,7 @@ contract BasicToken is ERC20Basic {
  }
 }
 contract StandardToken is ERC20, BasicToken {
- mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+ mapping (address => mapping (address => uint256)) allowed;
  function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
    var _allowance = allowed[_from][msg.sender];
    balances[_to] = balances[_to].add(_value);
@@ -99,8 +99,8 @@ contract MintableToken is StandardToken, Ownable {
  }
 }
 contract GlobalCryptoBank is MintableToken {
-   string public constant name = &quot;Global Crypto Bank&quot;;
-   string public constant symbol = &quot;BANK&quot;;
+   string public constant name = "Global Crypto Bank";
+   string public constant symbol = "BANK";
    uint32 public constant decimals = 18;
    uint public INITIAL_SUPPLY = 50000000 * 1 ether;
    function GlobalCryptoBank() {
@@ -138,34 +138,34 @@ contract Crowdsale is Ownable {
        isoTokenLimit = 47225000 * 1 ether;
    }
    modifier isUnderPreIsoLimit(uint value) {
-       require((soldTokens+rate.mul(value).div(1 ether)+rate.mul(value).div(1 ether).mul(getPreIsoBonusPercent(value).div(100))) &lt;= preIsoTokenLimit);
+       require((soldTokens+rate.mul(value).div(1 ether)+rate.mul(value).div(1 ether).mul(getPreIsoBonusPercent(value).div(100))) <= preIsoTokenLimit);
        _;
    }
    modifier isUnderIsoLimit(uint value) {
-       require((soldTokens+rate.mul(value).div(1 ether)+rate.mul(value).div(1 ether).mul(getIsoBonusPercent(value).div(100))) &lt;= isoTokenLimit);
+       require((soldTokens+rate.mul(value).div(1 ether)+rate.mul(value).div(1 ether).mul(getIsoBonusPercent(value).div(100))) <= isoTokenLimit);
        _;
    }
    function getPreIsoBonusPercent(uint value) private returns (uint) {
        uint eth = value.div(1 ether);
        uint bonusPercent = 0;
-       if (now &gt;= preIsoStartDate &amp;&amp; now &lt;= preIsoStartDate + 2 days) {
+       if (now >= preIsoStartDate && now <= preIsoStartDate + 2 days) {
            bonusPercent += 35;
-       } else if (now &gt;= preIsoStartDate + 2 days &amp;&amp; now &lt;= preIsoStartDate + 7 days) {
+       } else if (now >= preIsoStartDate + 2 days && now <= preIsoStartDate + 7 days) {
            bonusPercent += 33;
-       } else if (now &gt;= preIsoStartDate + 7 days &amp;&amp; now &lt;= preIsoStartDate + 14 days) {
+       } else if (now >= preIsoStartDate + 7 days && now <= preIsoStartDate + 14 days) {
            bonusPercent += 31;
-       } else if (now &gt;= preIsoStartDate + 14 days &amp;&amp; now &lt;= preIsoStartDate + 21 days) {
+       } else if (now >= preIsoStartDate + 14 days && now <= preIsoStartDate + 21 days) {
            bonusPercent += 30;
        }
        
        
-       if (eth &gt;= 1 &amp;&amp; eth &lt; 10) {
+       if (eth >= 1 && eth < 10) {
            bonusPercent += 2;
-       } else if (eth &gt;= 10 &amp;&amp; eth &lt; 50) {
+       } else if (eth >= 10 && eth < 50) {
            bonusPercent += 4;
-       } else if (eth &gt;= 50 &amp;&amp; eth &lt; 100) {
+       } else if (eth >= 50 && eth < 100) {
            bonusPercent += 8;
-       } else if (eth &gt;= 100) {
+       } else if (eth >= 100) {
            bonusPercent += 10;
        }
        return bonusPercent;
@@ -173,22 +173,22 @@ contract Crowdsale is Ownable {
    function getIsoBonusPercent(uint value) private returns (uint) {
        uint eth = value.div(1 ether);
        uint bonusPercent = 0;
-       if (now &gt;= isoStartDate &amp;&amp; now &lt;= isoStartDate + 2 days) {
+       if (now >= isoStartDate && now <= isoStartDate + 2 days) {
            bonusPercent += 20;
-       } else if (now &gt;= isoStartDate + 2 days &amp;&amp; now &lt;= isoStartDate + 7 days) {
+       } else if (now >= isoStartDate + 2 days && now <= isoStartDate + 7 days) {
            bonusPercent += 18;
-       } else if (now &gt;= isoStartDate + 7 days &amp;&amp; now &lt;= isoStartDate + 14 days) {
+       } else if (now >= isoStartDate + 7 days && now <= isoStartDate + 14 days) {
            bonusPercent += 15;
-       } else if (now &gt;= isoStartDate + 14 days &amp;&amp; now &lt;= isoStartDate + 21 days) {
+       } else if (now >= isoStartDate + 14 days && now <= isoStartDate + 21 days) {
            bonusPercent += 10;
        }
-       if (eth &gt;= 1 &amp;&amp; eth &lt; 10) {
+       if (eth >= 1 && eth < 10) {
            bonusPercent += 2;
-       } else if (eth &gt;= 10 &amp;&amp; eth &lt; 50) {
+       } else if (eth >= 10 && eth < 50) {
            bonusPercent += 4;
-       } else if (eth &gt;= 50 &amp;&amp; eth &lt; 100) {
+       } else if (eth >= 50 && eth < 100) {
            bonusPercent += 8;
-       } else if (eth &gt;= 100) {
+       } else if (eth >= 100) {
            bonusPercent += 10;
        }
        return bonusPercent;
@@ -216,9 +216,9 @@ contract Crowdsale is Ownable {
        token.transfer(sender, tokens);
    }
    function() external payable {
-       if (now &gt;= preIsoStartDate &amp;&amp; now &lt; preIsoEndDate) {
+       if (now >= preIsoStartDate && now < preIsoEndDate) {
            buyPreICOTokens(msg.value, msg.sender);
-       } else if (now &gt;= isoStartDate &amp;&amp; now &lt; isoEndDate) {
+       } else if (now >= isoStartDate && now < isoEndDate) {
            buyICOTokens(msg.value, msg.sender);
        }
    }

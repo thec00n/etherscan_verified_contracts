@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -124,9 +124,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startBlock, uint256 _endBlock, uint256 _rate, address _wallet) {
-    require(_startBlock &gt;= block.number);
-    require(_endBlock &gt;= _startBlock);
-    require(_rate &gt; 0);
+    require(_startBlock >= block.number);
+    require(_endBlock >= _startBlock);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     startBlock = _startBlock;
@@ -168,14 +168,14 @@ contract Crowdsale {
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
     uint256 current = block.number;
-    bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
+    bool withinPeriod = current >= startBlock && current <= endBlock;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return block.number &gt; endBlock;
+    return block.number > endBlock;
   }
 
 
@@ -196,7 +196,7 @@ contract TokenCappedCrowdsale is Crowdsale {
   // overriding Crowdsale#hasEnded to add tokenCap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = soldTokens &gt;= tokenCap;
+    bool capReached = soldTokens >= tokenCap;
     return super.hasEnded() || capReached;
   }
 
@@ -205,7 +205,7 @@ contract TokenCappedCrowdsale is Crowdsale {
     // calculate token amount to be created
     uint256 tokens = msg.value.mul(rate);
     uint256 newTotalSold = soldTokens.add(tokens);
-    require(newTotalSold &lt;= tokenCap);
+    require(newTotalSold <= tokenCap);
     soldTokens = newTotalSold;
     super.buyTokens(beneficiary);
   }
@@ -251,7 +251,7 @@ contract TokenTimelock {
   uint public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint _releaseTime) {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -261,10 +261,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.transfer(beneficiary, amount);
   }
@@ -277,7 +277,7 @@ contract TokenTimelock {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -322,7 +322,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -335,7 +335,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -377,27 +377,27 @@ contract StandardToken is ERC20, BasicToken {
 contract EidooToken is MintableInterface, Ownable, StandardToken {
   using SafeMath for uint256;
 
-  string public name = &quot;Eidoo Token&quot;;
-  string public symbol = &quot;EDO&quot;;
+  string public name = "Eidoo Token";
+  string public symbol = "EDO";
   uint256 public decimals = 18;
 
   uint256 public transferableFromBlock;
   uint256 public lockEndBlock;
-  mapping (address =&gt; uint256) public initiallyLockedAmount;
+  mapping (address => uint256) public initiallyLockedAmount;
 
   function EidooToken(uint256 _transferableFromBlock, uint256 _lockEndBlock) {
-    require(_lockEndBlock &gt; _transferableFromBlock);
+    require(_lockEndBlock > _transferableFromBlock);
     transferableFromBlock = _transferableFromBlock;
     lockEndBlock = _lockEndBlock;
   }
 
   modifier canTransfer(address _from, uint _value) {
-    if (block.number &lt; lockEndBlock) {
-      require(block.number &gt;= transferableFromBlock);
+    if (block.number < lockEndBlock) {
+      require(block.number >= transferableFromBlock);
       uint256 locked = lockedBalanceOf(_from);
-      if (locked &gt; 0) {
+      if (locked > 0) {
         uint256 newBalance = balanceOf(_from).sub(_value);
-        require(newBalance &gt;= locked);
+        require(newBalance >= locked);
       }
     }
    _;
@@ -405,8 +405,8 @@ contract EidooToken is MintableInterface, Ownable, StandardToken {
 
   function lockedBalanceOf(address _to) constant returns(uint256) {
     uint256 locked = initiallyLockedAmount[_to];
-    if (block.number &gt;= lockEndBlock ) return 0;
-    else if (block.number &lt;= transferableFromBlock) return locked;
+    if (block.number >= lockEndBlock ) return 0;
+    else if (block.number <= transferableFromBlock) return locked;
 
     uint256 releaseForBlock = locked.div(lockEndBlock.sub(transferableFromBlock));
     uint256 released = block.number.sub(transferableFromBlock).mul(releaseForBlock);
@@ -429,7 +429,7 @@ contract EidooToken is MintableInterface, Ownable, StandardToken {
   }
 
   function mintingFinished() constant returns(bool) {
-    return block.number &gt;= transferableFromBlock;
+    return block.number >= transferableFromBlock;
   }
 
   /**
@@ -473,13 +473,13 @@ contract EidooTokenSale is Ownable, TokenCappedCrowdsale {
     1515067200  // 4 January 2018 12:00:00 GMT
   ];
 
-  mapping (address =&gt; bool) public claimed;
+  mapping (address => bool) public claimed;
   TokenTimelock [4] public timeLocks;
 
   event ClaimTokens(address indexed to, uint amount);
 
   modifier beforeStart() {
-    require(block.number &lt; startBlock);
+    require(block.number < startBlock);
     _;
   }
 
@@ -514,10 +514,10 @@ contract EidooTokenSale is Ownable, TokenCappedCrowdsale {
   function claimTokens(address [] buyers, uint [] amounts) onlyOwner beforeStart public {
     require(buyers.length == amounts.length);
     uint len = buyers.length;
-    for (uint i = 0; i &lt; len; i++) {
+    for (uint i = 0; i < len; i++) {
       address to = buyers[i];
       uint256 amount = amounts[i];
-      if (amount &gt; 0 &amp;&amp; !claimed[to]) {
+      if (amount > 0 && !claimed[to]) {
         claimed[to] = true;
         if (to == 0x32Be343B94f860124dC4fEe278FDCBD38C102D88) {
           // replace Poloniex Wallet address

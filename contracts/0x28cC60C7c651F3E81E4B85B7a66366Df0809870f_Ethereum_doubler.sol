@@ -39,8 +39,8 @@ uint8 HashtoLowOrHigh;//hash modified to low or high 0=low, 2=high, 7= 0 or F
  
 
     function comparisonchr(string A) private					//changes string input to uint
-    {    hexComparison= [&quot;L&quot;, &quot;l&quot;, &quot;H&quot;, &quot;h&quot;, &quot;K&quot;,&quot;N.A.&quot;,&quot;dummy&quot;,&quot;0 or F&quot;];
-	for (i = 0; i &lt; 6; i ++) 
+    {    hexComparison= ["L", "l", "H", "h", "K","N.A.","dummy","0 or F"];
+	for (i = 0; i < 6; i ++) 
 {
 
 	hexcomparisonchr=hexComparison[i];
@@ -78,20 +78,20 @@ return;}
     	lastblockhashused = block.blockhash(lastblocknumberused);		//Cheks the last available blockhash
 
     	
-    	hashLastNumber=uint8(lastblockhashused &amp; 0xf);				//Changes blockhash&#39;s last number to base ten
+    	hashLastNumber=uint8(lastblockhashused & 0xf);				//Changes blockhash's last number to base ten
 }
 
 	function changeHashtoLowOrHigh(uint  hashLastNumber) private
 {
-	if (hashLastNumber&gt;0 &amp;&amp; hashLastNumber&lt;8)
+	if (hashLastNumber>0 && hashLastNumber<8)
 	{HashtoLowOrHigh=0;
 	return;}
-	else if (hashLastNumber&gt;7 &amp;&amp; hashLastNumber&lt;15)
+	else if (hashLastNumber>7 && hashLastNumber<15)
 	{HashtoLowOrHigh=2;
 	return;}
 	else
 	{HashtoLowOrHigh=7;
-	lastresult = &quot;0 or F, house wins&quot;;
+	lastresult = "0 or F, house wins";
 	return;}//result= 0 or F, house wins
 	
  
@@ -109,16 +109,16 @@ return;}
                 
     
   		  
-    	if(msg.value &gt; (this.balance/4))					// maximum bet is game balance/4
+    	if(msg.value > (this.balance/4))					// maximum bet is game balance/4
     	{
-    		lastresult = &quot;Bet is too large. Maximum bet is the game balance/4.&quot;;
+    		lastresult = "Bet is too large. Maximum bet is the game balance/4.";
     		lastgainloss = 0;
     		msg.sender.send(msg.value); // return bet
     		return;
     	}
-	else if(msg.value &lt;100000000000000000)					// minimum bet is 0.1 eth
+	else if(msg.value <100000000000000000)					// minimum bet is 0.1 eth
     	{
-    		lastresult = &quot;Minimum bet is 0.1 eth&quot;;
+    		lastresult = "Minimum bet is 0.1 eth";
     		lastgainloss = 0;
     		msg.sender.send(msg.value); // return bet
     		return;
@@ -126,7 +126,7 @@ return;}
 	}
     	else if (msg.value == 0)
     	{
-    		lastresult = &quot;Bet was zero&quot;;
+    		lastresult = "Bet was zero";
     		lastgainloss = 0;
     		// nothing wagered, nothing returned
     		return;
@@ -138,21 +138,21 @@ return;}
 
    	 if(lotteryticket==6)							//Checks that input is L or H 
 	{
-	lastresult = &quot;give a character L or H &quot;;
+	lastresult = "give a character L or H ";
 	msg.sender.send(msg.value);
 	lastgainloss=0;
 	
 	return;
 	}
 
-	else if (lotteryticket==4 &amp;&amp; msg.sender == creator)			//Creator can kill contract. Contract does not hold players money.
+	else if (lotteryticket==4 && msg.sender == creator)			//Creator can kill contract. Contract does not hold players money.
 	{
 		suicide(creator);} 
 
 	else if(lotteryticket != HashtoLowOrHigh)
 	{
 	    	lastgainloss = int(wager) * -1;
-	    	lastresult = &quot;Loss&quot;;
+	    	lastresult = "Loss";
 	    	result=1;
 	    									// Player lost. Return nothing.
 	    	return;
@@ -160,7 +160,7 @@ return;}
 	    else if(lotteryticket==HashtoLowOrHigh)
 	{
 	    	lastgainloss =(2*wager);
-	    	lastresult = &quot;Win!&quot;;
+	    	lastresult = "Win!";
 	    	msg.sender.send(wager * 2); 
 		return;			 					// Player won. Return bet and winnings.
 	} 	
@@ -168,14 +168,14 @@ return;}
 
 	function returnmoneycreator(uint8 result,uint128 wager) private		//If game has over 50 eth, contract will send all additional eth to owner
 	{
-	if (result==1&amp;&amp;this.balance&gt;50000000000000000000)
+	if (result==1&&this.balance>50000000000000000000)
 	{creator.send(wager);
 	return; 
 	}
  
 	else if
 	(
-	result==1&amp;&amp;this.balance&gt;20000000000000000000)				//If game has over 20 eth, contract will send œ of any additional eth to owner
+	result==1&&this.balance>20000000000000000000)				//If game has over 20 eth, contract will send œ of any additional eth to owner
 	{creator.send(wager/2);
 	return; }
 	}
@@ -191,7 +191,7 @@ functions below give information about the game in Ethereum Wallet
 	The_right_lottery_number=hexComparison[HashtoLowOrHigh];
 	last_result=lastresult;
 	Player_s_gain_or_Loss_in_Wei=lastgainloss;
-	info = &quot;The right lottery number is decided by the last character of the most recent blockhash available during the game. 1-7 =Low, 8-e =High. One Eth is 10**18 Wei.&quot;;
+	info = "The right lottery number is decided by the last character of the most recent blockhash available during the game. 1-7 =Low, 8-e =High. One Eth is 10**18 Wei.";
 	
  
     }
@@ -207,7 +207,7 @@ functions below give information about the game in Ethereum Wallet
    
 	function Game_balance_in_Ethers() constant returns (uint balance, string info)
     { 
-        info = &quot;Game balance is shown in full Ethers&quot;;
+        info = "Game balance is shown in full Ethers";
     	balance=(this.balance/10**18);
 
     }

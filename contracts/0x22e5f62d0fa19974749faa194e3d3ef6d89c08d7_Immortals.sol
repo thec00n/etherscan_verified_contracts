@@ -18,13 +18,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,36 +48,36 @@ contract TokenNotifier {
 
 contract ImmortalToken is Owned, SafeMath, TokenERC20 {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     uint8 public constant decimals = 0;
     uint8 public constant totalSupply = 100;
-    string public constant name = &quot;Immortal&quot;;
-    string public constant symbol = &quot;IMT&quot;;
-    string public constant version = &quot;1.0.1&quot;;
+    string public constant name = "Immortal";
+    string public constant symbol = "IMT";
+    string public constant version = "1.0.1";
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             return false;
         }
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
-        assert(balances[msg.sender] &gt;= 0);
+        assert(balances[msg.sender] >= 0);
         balances[_to] = safeAdd(balances[_to], _value);
-        assert(balances[_to] &lt;= totalSupply);
+        assert(balances[_to] <= totalSupply);
         Transfer(msg.sender, _to, _value);
         return true;
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             return false;
         }
         balances[_from] = safeSub(balances[_from], _value);
-        assert(balances[_from] &gt;= 0);
+        assert(balances[_from] >= 0);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
-        assert(balances[_to] &lt;= totalSupply);
+        assert(balances[_to] <= totalSupply);
         Transfer(_from, _to, _value);
         return true;
     }
@@ -113,20 +113,20 @@ contract Immortals is ImmortalToken {
 
     function () payable {
 		//Assign immortals based on ethers sent
-        require(tokenAssigned &lt; totalSupply &amp;&amp; msg.value &gt;= 0.5 ether);
+        require(tokenAssigned < totalSupply && msg.value >= 0.5 ether);
 		uint256 immortals = msg.value / 0.5 ether;
 		uint256 remainder = 0;
 		//Find the remainder
-		if (safeAdd(tokenAssigned, immortals) &gt; totalSupply) {
+		if (safeAdd(tokenAssigned, immortals) > totalSupply) {
 			immortals = totalSupply - tokenAssigned;
 			remainder = msg.value - (immortals * 0.5 ether);
 		} else {
 			remainder = (msg.value % 0.5 ether);
 		}	
-		require(safeAdd(tokenAssigned, immortals) &lt;= totalSupply);
+		require(safeAdd(tokenAssigned, immortals) <= totalSupply);
 		balances[msg.sender] = safeAdd(balances[msg.sender], immortals);
 		tokenAssigned = safeAdd(tokenAssigned, immortals);
-		assert(balances[msg.sender] &lt;= totalSupply);
+		assert(balances[msg.sender] <= totalSupply);
 		//Send remainder to sender
 		msg.sender.transfer(remainder);
 		Assigned(msg.sender, immortals);

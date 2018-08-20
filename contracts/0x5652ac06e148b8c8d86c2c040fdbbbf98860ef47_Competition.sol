@@ -66,8 +66,8 @@ contract Competition is DBC {
     Certifier public CERTIFIER; // Parity KYC verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
-    mapping (address =&gt; address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
-    mapping(address =&gt; HopefulId) public registrantToHopefulIds; // For registrant address indexed accessing of hopeful ids
+    mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
+    mapping(address => HopefulId) public registrantToHopefulIds; // For registrant address indexed accessing of hopeful ids
 
     //EVENTS
 
@@ -86,11 +86,11 @@ contract Competition is DBC {
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
             //  it will return rsv (same as geth; where v is [27, 28]).
-            // Note that if you are using ecrecover, v will be either &quot;00&quot; or &quot;01&quot;.
+            // Note that if you are using ecrecover, v will be either "00" or "01".
             //  As a result, in order to use this value, you will have to parse it to an
             //  integer and then add 27. This will result in either a 27 or a 28.
             //  https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, TERMS_AND_CONDITIONS),
+            keccak256("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
             v,
             r,
             s
@@ -114,10 +114,10 @@ contract Competition is DBC {
     /**
     @notice Returns an array of fund addresses and an associated array of whether competing and whether disqualified
     @return {
-      &quot;fundAddrs&quot;: &quot;Array of addresses of Melon Funds&quot;,
-      &quot;fundManagers&quot;: &quot;Array of addresses of Melon fund managers, as used in the ipfs-frontend&quot;,
-      &quot;areCompeting&quot;: &quot;Array of boolean of whether or not fund is competing&quot;
-      &quot;areDisqualified&quot;: &quot;Array of boolean of whether or not fund is disqualified&quot;
+      "fundAddrs": "Array of addresses of Melon Funds",
+      "fundManagers": "Array of addresses of Melon fund managers, as used in the ipfs-frontend",
+      "areCompeting": "Array of boolean of whether or not fund is competing"
+      "areDisqualified": "Array of boolean of whether or not fund is disqualified"
     }
     */
     function getCompetitionStatusOfHopefuls()
@@ -129,7 +129,7 @@ contract Competition is DBC {
             bool[] areDisqualified
         )
     {
-        for (uint i = 0; i &lt;= hopefuls.length - 1; i++) {
+        for (uint i = 0; i <= hopefuls.length - 1; i++) {
             fundAddrs[i] = hopefuls[i].fund;
             fundManagers[i] = hopefuls[i].manager;
             areCompeting[i] = hopefuls[i].isCompeting;
@@ -177,11 +177,11 @@ contract Competition is DBC {
         bytes32 r,
         bytes32 s
     )
-        pre_cond(termsAndConditionsAreSigned(manager, v, r, s) &amp;&amp; isKYCVerified(msg.sender))
-        pre_cond(registeredFundToRegistrants[fund] == address(0) &amp;&amp; registrantToHopefulIds[msg.sender].exists == false)
+        pre_cond(termsAndConditionsAreSigned(manager, v, r, s) && isKYCVerified(msg.sender))
+        pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender].exists == false)
     {
-        require(buyinAsset == MELON_ASSET &amp;&amp; payoutAsset == MELON_ASSET);
-        require(buyinQuantity &lt;= maxbuyinQuantity &amp;&amp; hopefuls.length &lt;= maxHopefulsNumber);
+        require(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET);
+        require(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber);
         registeredFundToRegistrants[fund] = msg.sender;
         registrantToHopefulIds[msg.sender] = HopefulId({id: hopefuls.length, exists: true});
         Register(hopefuls.length, fund, msg.sender);
@@ -227,7 +227,7 @@ contract Competition is DBC {
     )
         pre_cond(isOracle())
         pre_cond(hopefuls[withId].isDisqualified == false)
-        pre_cond(block.timestamp &gt;= endTime)
+        pre_cond(block.timestamp >= endTime)
     {
         hopefuls[withId].finalSharePrice = finalSharePrice;
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
@@ -293,7 +293,7 @@ contract SimpleCertifier is Owned, Certifier {
 
 	struct Certification {
 		bool active;
-		mapping (string =&gt; bytes32) meta;
+		mapping (string => bytes32) meta;
 	}
 
 	function certify(address _who) only_delegate {
@@ -310,7 +310,7 @@ contract SimpleCertifier is Owned, Certifier {
 	function getUint(address _who, string _field) constant returns (uint) { return uint(certs[_who].meta[_field]); }
 	function setDelegate(address _new) only_owner { delegate = _new; }
 
-	mapping (address =&gt; Certification) certs;
-	// So that the server posting puzzles doesn&#39;t have access to the ETH.
+	mapping (address => Certification) certs;
+	// So that the server posting puzzles doesn't have access to the ETH.
 	address public delegate = msg.sender;
 }

@@ -19,8 +19,8 @@ contract Shareable {
   }
   uint public required;
   address[256] owners;
-  mapping(address =&gt; uint) ownerIndex;
-  mapping(bytes32 =&gt; PendingState) pendings;
+  mapping(address => uint) ownerIndex;
+  mapping(bytes32 => PendingState) pendings;
   bytes32[] pendingsIndex;
   event Confirmation(address owner, bytes32 operation);
   event Revoke(address owner, bytes32 operation);
@@ -38,12 +38,12 @@ contract Shareable {
   function Shareable(address[] _owners, uint _required) {
     owners[1] = msg.sender;
     ownerIndex[msg.sender] = 1;
-    for (uint i = 0; i &lt; _owners.length; ++i) {
+    for (uint i = 0; i < _owners.length; ++i) {
       owners[2 + i] = _owners[i];
       ownerIndex[_owners[i]] = 2 + i;
     }
     required = _required;
-    if (required &gt; owners.length) {
+    if (required > owners.length) {
       throw;
     }
   }
@@ -54,7 +54,7 @@ contract Shareable {
     }
     uint ownerIndexBit = 2**index;
     var pending = pendings[_operation];
-    if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+    if (pending.ownersDone & ownerIndexBit > 0) {
       pending.yetNeeded++;
       pending.ownersDone -= ownerIndexBit;
       Revoke(msg.sender, _operation);
@@ -64,7 +64,7 @@ contract Shareable {
     return address(owners[ownerIndex + 1]);
   }
   function isOwner(address _addr) constant returns (bool) {
-    return ownerIndex[_addr] &gt; 0;
+    return ownerIndex[_addr] > 0;
   }
   function hasConfirmed(bytes32 _operation, address _owner) constant returns (bool) {
     var pending = pendings[_operation];
@@ -73,7 +73,7 @@ contract Shareable {
       return false;
     }
     uint ownerIndexBit = 2**index;
-    return !(pending.ownersDone &amp; ownerIndexBit == 0);
+    return !(pending.ownersDone & ownerIndexBit == 0);
   }
   function confirmAndCheck(bytes32 _operation) internal returns (bool) {
     uint index = ownerIndex[msg.sender];
@@ -89,9 +89,9 @@ contract Shareable {
       pendingsIndex[pending.index] = _operation;
     }
     uint ownerIndexBit = 2**index;
-    if (pending.ownersDone &amp; ownerIndexBit == 0) {
+    if (pending.ownersDone & ownerIndexBit == 0) {
       Confirmation(msg.sender, _operation);
-      if (pending.yetNeeded &lt;= 1) {
+      if (pending.yetNeeded <= 1) {
         delete pendingsIndex[pendings[_operation].index];
         delete pendings[_operation];
         return true;
@@ -104,7 +104,7 @@ contract Shareable {
   }
   function clearPending() internal {
     uint length = pendingsIndex.length;
-    for (uint i = 0; i &lt; length; ++i) {
+    for (uint i = 0; i < length; ++i) {
       if (pendingsIndex[i] != 0) {
         delete pendings[pendingsIndex[i]];
       }
@@ -131,11 +131,11 @@ contract DayLimit {
     spentToday = 0;
   }
   function underLimit(uint _value) internal returns (bool) {
-    if (today() &gt; lastDay) {
+    if (today() > lastDay) {
       spentToday = 0;
       lastDay = today();
     }
-    if (spentToday + _value &gt;= spentToday &amp;&amp; spentToday + _value &lt;= dailyLimit) {
+    if (spentToday + _value >= spentToday && spentToday + _value <= dailyLimit) {
       spentToday += _value;
       return true;
     }
@@ -169,7 +169,7 @@ contract MultisigWalletZeppelin is Multisig, Shareable, DayLimit {
     selfdestruct(_to);
   }
   function() payable {
-    if (msg.value &gt; 0)
+    if (msg.value > 0)
       Deposit(msg.sender, msg.value);
   }
   function execute(address _to, uint _value, bytes _data) external onlyOwner returns (bytes32 _r) {
@@ -181,7 +181,7 @@ contract MultisigWalletZeppelin is Multisig, Shareable, DayLimit {
       return 0;
     }
     _r = keccak256(msg.data, block.number);
-    if (!confirm(_r) &amp;&amp; txs[_r].to == 0) {
+    if (!confirm(_r) && txs[_r].to == 0) {
       txs[_r].to = _to;
       txs[_r].value = _value;
       txs[_r].data = _data;
@@ -206,12 +206,12 @@ contract MultisigWalletZeppelin is Multisig, Shareable, DayLimit {
   }
   function clearPending() internal {
     uint length = pendingsIndex.length;
-    for (uint i = 0; i &lt; length; ++i) {
+    for (uint i = 0; i < length; ++i) {
       delete txs[pendingsIndex[i]];
     }
     super.clearPending();
   }
-  mapping (bytes32 =&gt; Transaction) txs;
+  mapping (bytes32 => Transaction) txs;
 }
 
 

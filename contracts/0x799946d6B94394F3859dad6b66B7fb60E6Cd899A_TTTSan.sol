@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,7 +85,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -100,8 +100,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -116,9 +116,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -126,7 +126,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -135,7 +135,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -169,13 +169,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
-   *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+   *   bytes4(keccak256('supportsInterface(bytes4)'))
    */
 
   /**
-   * @dev a mapping of interface id to whether or not it&#39;s supported
+   * @dev a mapping of interface id to whether or not it's supported
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev A contract implementing SupportsInterfaceWithLookup
@@ -219,37 +219,37 @@ contract ERC721Basic is ERC165 {
   bytes4 internal constant InterfaceId_ERC721 = 0x80ac58cd;
   /*
    * 0x80ac58cd ===
-   *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-   *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-   *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-   *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+   *   bytes4(keccak256('balanceOf(address)')) ^
+   *   bytes4(keccak256('ownerOf(uint256)')) ^
+   *   bytes4(keccak256('approve(address,uint256)')) ^
+   *   bytes4(keccak256('getApproved(uint256)')) ^
+   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
    */
 
   bytes4 internal constant InterfaceId_ERC721Exists = 0x4f558e79;
   /*
    * 0x4f558e79 ===
-   *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+   *   bytes4(keccak256('exists(uint256)'))
    */
 
   bytes4 internal constant InterfaceId_ERC721Enumerable = 0x780e9d63;
   /**
    * 0x780e9d63 ===
-   *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+   *   bytes4(keccak256('totalSupply()')) ^
+   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+   *   bytes4(keccak256('tokenByIndex(uint256)'))
    */
 
   bytes4 internal constant InterfaceId_ERC721Metadata = 0x5b5e139f;
   /**
    * 0x5b5e139f ===
-   *   bytes4(keccak256(&#39;name()&#39;)) ^
-   *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+   *   bytes4(keccak256('name()')) ^
+   *   bytes4(keccak256('symbol()')) ^
+   *   bytes4(keccak256('tokenURI(uint256)'))
    */
 
   event Transfer(
@@ -339,21 +339,21 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   constructor()
     public
@@ -479,7 +479,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    *
    * Requires the msg sender to be the owner, approved, or operator
@@ -495,14 +495,14 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     public
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    * Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -642,7 +642,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
@@ -658,7 +658,7 @@ contract ERC721Receiver {
    * @param _from The address which previously owned the token
    * @param _tokenId The NFT identifier which is being transferred
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _operator,
@@ -686,19 +686,19 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -752,7 +752,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -771,7 +771,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -875,7 +875,7 @@ contract TTTToken {
 
 
 // @title The Tip Tokn SAN (Short Address Name)
-// @author Jonathan Teel (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="375d585956435f5659194352525b77435f52435e4743585c5259195e58">[email&#160;protected]</a>)
+// @author Jonathan Teel (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="375d585956435f5659194352525b77435f52435e4743585c5259195e58">[email protected]</a>)
 // @dev First 500 SANs do no require a slot
 contract TTTSan is ERC721Token, Ownable {
 
@@ -890,13 +890,13 @@ contract TTTSan is ERC721Token, Ownable {
   uint256 public sanMaxFree;
   uint256 public sanCurrentTotal;
 
-  string public baseUrl = &quot;https://thetiptoken.io/arv/img/&quot;;
+  string public baseUrl = "https://thetiptoken.io/arv/img/";
 
-  mapping(string=&gt;bool) sanOwnership;
-  mapping(address=&gt;uint256) sanSlots;
-  mapping(address=&gt;uint256) sanOwnerAmount;
-  mapping(string=&gt;uint256) sanNameToId;
-  mapping(string=&gt;address) sanNameToAddress;
+  mapping(string=>bool) sanOwnership;
+  mapping(address=>uint256) sanSlots;
+  mapping(address=>uint256) sanOwnerAmount;
+  mapping(string=>uint256) sanNameToId;
+  mapping(string=>address) sanNameToAddress;
 
   struct SAN {
     string sanName;
@@ -921,7 +921,7 @@ contract TTTSan is ERC721Token, Ownable {
   event SanLengthReqChange(uint256 sanMinLength, uint256 sanMaxLength);
   event SanMaxAmountChange(uint256 sanMaxAmount);
 
-  constructor() public ERC721Token(&quot;TTTSAN&quot;, &quot;TTTS&quot;) {
+  constructor() public ERC721Token("TTTSAN", "TTTS") {
     sanTTTCost = 10 ether;
     sanMaxLength = 16;
     sanMinLength = 2;
@@ -929,24 +929,24 @@ contract TTTSan is ERC721Token, Ownable {
     sanMaxFree = 500;
     ttt = TTTToken(tttTokenAddress);
     // gen0 san
-  /* &quot;NeverGonnaGiveYouUp.NeverGonnaLetYouDown&quot; */
-    string memory gen0 = &quot;NeverGonnaGiveYouUp.NeverGonnaLetYouDown&quot;;
+  /* "NeverGonnaGiveYouUp.NeverGonnaLetYouDown" */
+    string memory gen0 = "NeverGonnaGiveYouUp.NeverGonnaLetYouDown";
     SAN memory s = SAN({
         sanName: gen0,
         timeAlive: block.timestamp,
         timeLastMove: block.timestamp,
         prevOwner: msg.sender,
-        sanageLink: &quot;0x&quot;
+        sanageLink: "0x"
     });
     uint256 sanId = sans.push(s).sub(1);
     sanOwnership[gen0] = true;
-    _sanMint(sanId, msg.sender, &quot;gen0.jpeg&quot;, gen0);
+    _sanMint(sanId, msg.sender, "gen0.jpeg", gen0);
   }
 
   function sanMint(string _sanName, string _sanageUri) external returns (string) {
     // first 500 SANs do not require a slot
-    if(sanCurrentTotal &gt; sanMaxFree)
-      require(sanSlots[msg.sender] &gt;= 1, &quot;no san slots available&quot;);
+    if(sanCurrentTotal > sanMaxFree)
+      require(sanSlots[msg.sender] >= 1, "no san slots available");
     string memory sn = sanitize(_sanName);
     SAN memory s = SAN({
         sanName: sn,
@@ -957,7 +957,7 @@ contract TTTSan is ERC721Token, Ownable {
     });
     uint256 sanId = sans.push(s).sub(1);
     sanOwnership[sn] = true;
-    if(sanCurrentTotal &gt; sanMaxFree)
+    if(sanCurrentTotal > sanMaxFree)
       sanSlots[msg.sender] = sanSlots[msg.sender].sub(1);
     _sanMint(sanId, msg.sender, _sanageUri, sn);
     return sn;
@@ -1005,8 +1005,8 @@ contract TTTSan is ERC721Token, Ownable {
   }
 
   function buySanSlot(address _sanOwner,  uint256 _tip) external returns(bool) {
-    require(_tip &gt;= sanTTTCost, &quot;tip less than san cost&quot;);
-    require(sanSlots[_sanOwner] &lt; sanMaxAmount, &quot;max san slots owned&quot;);
+    require(_tip >= sanTTTCost, "tip less than san cost");
+    require(sanSlots[_sanOwner] < sanMaxAmount, "max san slots owned");
     sanSlots[_sanOwner] = sanSlots[_sanOwner].add(1);
     ttt.transferFrom(msg.sender, wallet, _tip);
     emit SanSlotPurchase(_sanOwner, 1);
@@ -1019,7 +1019,7 @@ contract TTTSan is ERC721Token, Ownable {
     s.timeLastMove = block.timestamp;
     sanNameToAddress[_sanName] = _newOwner;
     // no slot movements for first 500 SANs
-    if(sanCurrentTotal &gt; sanMaxFree) {
+    if(sanCurrentTotal > sanMaxFree) {
       sanSlots[_prevOwner] = sanSlots[_prevOwner].sub(1);
       sanSlots[_newOwner] = sanSlots[_newOwner].add(1);
     }
@@ -1037,7 +1037,7 @@ contract TTTSan is ERC721Token, Ownable {
   }
 
   function setSanLength(uint256 _length, uint256 _pos) external onlyOwner {
-    require(_length &gt; 0);
+    require(_length > 0);
     if(_pos == 0) sanMinLength = _length;
     else sanMaxLength = _length;
     emit SanLengthReqChange(sanMinLength, sanMaxLength);
@@ -1053,19 +1053,19 @@ contract TTTSan is ERC721Token, Ownable {
   }
 
   function ownerAddSanSlot(address _sanOwner, uint256 _slotCount) external onlyOwner {
-    require(_slotCount &gt; 0 &amp;&amp; _slotCount &lt;= sanMaxAmount);
-    require(sanSlots[_sanOwner] &lt; sanMaxAmount);
+    require(_slotCount > 0 && _slotCount <= sanMaxAmount);
+    require(sanSlots[_sanOwner] < sanMaxAmount);
     sanSlots[_sanOwner] = sanSlots[_sanOwner].add(_slotCount);
   }
 
   // owner can add slots in batches, 100 max
   function ownerAddSanSlotBatch(address[] _sanOwner, uint256[] _slotCount) external onlyOwner {
     require(_sanOwner.length == _slotCount.length);
-    require(_sanOwner.length &lt;= 100);
-    for(uint8 i = 0; i &lt; _sanOwner.length; i++) {
-      require(_slotCount[i] &gt; 0 &amp;&amp; _slotCount[i] &lt;= sanMaxAmount, &quot;incorrect slot count&quot;);
+    require(_sanOwner.length <= 100);
+    for(uint8 i = 0; i < _sanOwner.length; i++) {
+      require(_slotCount[i] > 0 && _slotCount[i] <= sanMaxAmount, "incorrect slot count");
       sanSlots[_sanOwner[i]] = sanSlots[_sanOwner[i]].add(_slotCount[i]);
-      require(sanSlots[_sanOwner[i]] &lt;= sanMaxAmount, &quot;max san slots owned&quot;);
+      require(sanSlots[_sanOwner[i]] <= sanMaxAmount, "max san slots owned");
     }
   }
 
@@ -1113,13 +1113,13 @@ contract TTTSan is ERC721Token, Ownable {
 
   function sanitize(string _sanName) internal view returns(string) {
     string memory sn = sanToLower(_sanName);
-    require(isValidSan(sn), &quot;san is not valid&quot;);
-    require(!sanOwnership[sn], &quot;san is not unique&quot;);
+    require(isValidSan(sn), "san is not valid");
+    require(!sanOwnership[sn], "san is not unique");
     return sn;
   }
 
   function _sanMint(uint256 _sanId, address _owner, string _sanageUri, string _sanName) internal {
-    require(sanOwnerAmount[_owner] &lt; sanMaxAmount, &quot;max san owned&quot;);
+    require(sanOwnerAmount[_owner] < sanMaxAmount, "max san owned");
     sanNameToId[_sanName] = _sanId;
     sanNameToAddress[_sanName] = _owner;
     sanOwnerAmount[_owner] = sanOwnerAmount[_owner].add(1);
@@ -1132,7 +1132,7 @@ contract TTTSan is ERC721Token, Ownable {
   function isValidSan(string _sanName) internal view returns(bool) {
     bytes memory wb = bytes(_sanName);
     uint slen = wb.length;
-    if (slen &gt; sanMaxLength || slen &lt;= sanMinLength) return false;
+    if (slen > sanMaxLength || slen <= sanMinLength) return false;
     bytes1 space = bytes1(0x20);
     bytes1 period = bytes1(0x2E);
     // san can not end in .eth - added to avoid conflicts with ens
@@ -1142,14 +1142,14 @@ contract TTTSan is ERC721Token, Ownable {
     uint256 dCount = 0;
     uint256 eCount = 0;
     uint256 eth = 0;
-    for(uint256 i = 0; i &lt; slen; i++) {
+    for(uint256 i = 0; i < slen; i++) {
         if(wb[i] == space) return false;
         else if(wb[i] == period) {
           dCount = dCount.add(1);
-          // only 1 &#39;.&#39;
-          if(dCount &gt; 1) return false;
+          // only 1 '.'
+          if(dCount > 1) return false;
           eCount = 1;
-        } else if(eCount &gt; 0 &amp;&amp; eCount &lt; 5) {
+        } else if(eCount > 0 && eCount < 5) {
           if(eCount == 1) if(wb[i] == e) eth = eth.add(1);
           if(eCount == 2) if(wb[i] == t) eth = eth.add(1);
           if(eCount == 3) if(wb[i] == h) eth = eth.add(1);
@@ -1157,20 +1157,20 @@ contract TTTSan is ERC721Token, Ownable {
         }
     }
     if(dCount == 0) return false;
-    if((eth == 3 &amp;&amp; eCount == 4) || eCount == 1) return false;
+    if((eth == 3 && eCount == 4) || eCount == 1) return false;
     return true;
   }
 
   function sanToLower(string _sanName) internal pure returns(string) {
     bytes memory b = bytes(_sanName);
-    for(uint256 i = 0; i &lt; b.length; i++) {
+    for(uint256 i = 0; i < b.length; i++) {
       b[i] = byteToLower(b[i]);
     }
     return string(b);
   }
 
   function byteToLower(bytes1 _b) internal pure returns (bytes1) {
-    if(_b &gt;= bytes1(0x41) &amp;&amp; _b &lt;= bytes1(0x5A))
+    if(_b >= bytes1(0x41) && _b <= bytes1(0x5A))
       return bytes1(uint8(_b) + 32);
     return _b;
   }
@@ -1181,8 +1181,8 @@ contract TTTSan is ERC721Token, Ownable {
     string memory ab = new string(_ba.length.add(_bb.length));
     bytes memory bab = bytes(ab);
     uint256 k = 0;
-    for (uint256 i = 0; i &lt; _ba.length; i++) bab[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) bab[k++] = _bb[i];
+    for (uint256 i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
     return string(bab);
   }
 

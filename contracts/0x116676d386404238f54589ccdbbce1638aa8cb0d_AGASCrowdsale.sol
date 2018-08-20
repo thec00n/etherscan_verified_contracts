@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -148,10 +148,10 @@ contract AGASCrowdsale is Ownable {
 
     function doPurchase() payable {
        
-        require(now &gt;= startPreICO);
+        require(now >= startPreICO);
         
        
-        require(msg.value &gt;= 100000000000000); 
+        require(msg.value >= 100000000000000); 
     
         uint sum = msg.value;
         uint rest = 0;
@@ -159,15 +159,15 @@ contract AGASCrowdsale is Ownable {
         
         
       
-        if(now &gt;= startPreICO &amp;&amp; now &lt; startICO){
+        if(now >= startPreICO && now < startICO){
            
-            require(PreICOHardcap &gt; tokensSold);
+            require(PreICOHardcap > tokensSold);
             
            
             tokensAmount = sum.mul(tokenDec).div(PreICOPrice);
             
             
-            if(tokensAmount.add(tokensSold) &gt; PreICOHardcap) {
+            if(tokensAmount.add(tokensSold) > PreICOHardcap) {
               
                 tokensAmount = PreICOHardcap.sub(tokensSold);
                
@@ -175,15 +175,15 @@ contract AGASCrowdsale is Ownable {
             }
                 
           
-        } else if(now &gt;= startICO &amp;&amp; now &lt; startProICO){
+        } else if(now >= startICO && now < startProICO){
             
-            require(ICOHardcap &gt; tokensSold);
+            require(ICOHardcap > tokensSold);
             
             
             tokensAmount = sum.mul(tokenDec).div(ICOPrice);
             
              
-            if(tokensAmount.add(tokensSold) &gt; ICOHardcap) {
+            if(tokensAmount.add(tokensSold) > ICOHardcap) {
                 
                 tokensAmount = ICOHardcap.sub(tokensSold);
               
@@ -193,12 +193,12 @@ contract AGASCrowdsale is Ownable {
         
         } else {
             
-            require(ProICOHardcap &gt; tokensSold);
+            require(ProICOHardcap > tokensSold);
             
             tokensAmount = sum.mul(tokenDec).div(ProICOPrice);
             
              
-            if(tokensAmount.add(tokensSold) &gt; ProICOHardcap) {
+            if(tokensAmount.add(tokensSold) > ProICOHardcap) {
               
                 tokensAmount = ProICOHardcap.sub(tokensSold);
               
@@ -212,30 +212,30 @@ contract AGASCrowdsale is Ownable {
         
 
 
-        if(givenBonus &lt; bonusAmount &amp;&amp; tokensAmount &gt;= 500*tokenDec){
+        if(givenBonus < bonusAmount && tokensAmount >= 500*tokenDec){
             
             uint bonus = 0;
             
             
-            if(tokensAmount &gt;= 500*tokenDec &amp;&amp; tokensAmount &lt;1000*tokenDec)
+            if(tokensAmount >= 500*tokenDec && tokensAmount <1000*tokenDec)
             { 
                
                 bonus = 20*tokenDec;
             
-            } else if ( tokensAmount &gt;= 1000*tokenDec &amp;&amp; tokensAmount &lt;5000*tokenDec ) {
+            } else if ( tokensAmount >= 1000*tokenDec && tokensAmount <5000*tokenDec ) {
               
                 bonus = 100*tokenDec;
             
-            } else if ( tokensAmount &gt;= 5000*tokenDec &amp;&amp; tokensAmount &lt;10000*tokenDec ) {
+            } else if ( tokensAmount >= 5000*tokenDec && tokensAmount <10000*tokenDec ) {
                
                 bonus = 600*tokenDec;
             
-            } else if ( tokensAmount &gt;= 10000*tokenDec ) {
+            } else if ( tokensAmount >= 10000*tokenDec ) {
             
                 bonus = 1500*tokenDec;
             }
 
-            bonus = (bonus &lt; (bonusAmount - givenBonus) ) ? bonus : (bonusAmount - givenBonus);
+            bonus = (bonus < (bonusAmount - givenBonus) ) ? bonus : (bonusAmount - givenBonus);
             
      
             givenBonus = givenBonus.add(bonus);
@@ -244,7 +244,7 @@ contract AGASCrowdsale is Ownable {
             
         } 
 
-        require(tokenBalance() &gt; tokensAmount);
+        require(tokenBalance() > tokensAmount);
         
         require(token.transfer(msg.sender, tokensAmount));
        

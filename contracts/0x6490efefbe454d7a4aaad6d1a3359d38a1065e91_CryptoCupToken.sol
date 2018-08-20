@@ -17,9 +17,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -27,7 +27,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -36,7 +36,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,10 +75,10 @@ contract CryptoCupToken is ERC721 {
 	bool private tournamentComplete = false;
     
     /*****------- STORAGE -------******/
-    mapping (uint256 =&gt; address) public teamOwners;
-    mapping (address =&gt; uint256) private ownerTeamCount;
-    mapping (uint256 =&gt; address) public teamToApproved;
-    mapping (uint256 =&gt; uint256) private teamPrices;
+    mapping (uint256 => address) public teamOwners;
+    mapping (address => uint256) private ownerTeamCount;
+    mapping (uint256 => address) public teamToApproved;
+    mapping (uint256 => uint256) private teamPrices;
     address public contractModifierAddress;
     address public developerAddress;
     
@@ -90,7 +90,7 @@ contract CryptoCupToken is ERC721 {
         uint256 price;
         address owner;
         uint256 numPayouts;
-        mapping (uint256 =&gt; Payout) payouts;
+        mapping (uint256 => Payout) payouts;
     }
 
     struct Payout {
@@ -133,11 +133,11 @@ contract CryptoCupToken is ERC721 {
     
     /*****------- PUBLIC FUNCTIONS -------******/
     function name() public pure returns (string) {
-        return &quot;CryptoCup&quot;;
+        return "CryptoCup";
     }
   
     function symbol() public pure returns (string) {
-        return &quot;CryptoCupToken&quot;;
+        return "CryptoCupToken";
     }
     
     function implementsERC721() public pure returns (bool) {
@@ -206,17 +206,17 @@ contract CryptoCupToken is ERC721 {
     
     function payLastSixteenWinner(uint256 _tokenId) public onlyContractModifier {
         require(prizes.LastSixteenTotalFixed != false);
-        require(lastSixteenWinnerPayments &lt; 8);
+        require(lastSixteenWinnerPayments < 8);
         require(tournamentComplete != true);
         
         Team storage team = teams[_tokenId];
         require(team.numPayouts == 0);
         
         team.owner.transfer(prizes.LastSixteenWinner);
-        emit PrizePaid(&quot;Last Sixteen&quot;, _tokenId, team.owner, prizes.LastSixteenWinner, uint256(now));
+        emit PrizePaid("Last Sixteen", _tokenId, team.owner, prizes.LastSixteenWinner, uint256(now));
 
         team.payouts[team.numPayouts++] = Payout({
-            stage: &quot;Last Sixteen&quot;,
+            stage: "Last Sixteen",
             amount: prizes.LastSixteenWinner,
             to: team.owner,
             when: uint256(now)
@@ -232,17 +232,17 @@ contract CryptoCupToken is ERC721 {
     
     function payQuarterFinalWinner(uint256 _tokenId) public onlyContractModifier {
         require(prizes.QuarterFinalTotalFixed != false);
-        require(quarterFinalWinnerPayments &lt; 4);
+        require(quarterFinalWinnerPayments < 4);
         require(tournamentComplete != true);
         Team storage team = teams[_tokenId];
         require(team.numPayouts == 1);
         Payout storage payout = team.payouts[0];
-        require(_compareStrings(payout.stage, &quot;Last Sixteen&quot;));
+        require(_compareStrings(payout.stage, "Last Sixteen"));
 
         team.owner.transfer(prizes.QuarterFinalWinner);
-        emit PrizePaid(&quot;Quarter Final&quot;, _tokenId, team.owner, prizes.QuarterFinalWinner, uint256(now));
+        emit PrizePaid("Quarter Final", _tokenId, team.owner, prizes.QuarterFinalWinner, uint256(now));
         team.payouts[team.numPayouts++] = Payout({
-            stage: &quot;Quarter Final&quot;,
+            stage: "Quarter Final",
             amount: prizes.QuarterFinalWinner,
             to: team.owner,
             when: uint256(now)
@@ -258,17 +258,17 @@ contract CryptoCupToken is ERC721 {
         
     function paySemiFinalWinner(uint256 _tokenId) public onlyContractModifier {
         require(prizes.SemiFinalTotalFixed != false);
-        require(semiFinalWinnerPayments &lt; 2);
+        require(semiFinalWinnerPayments < 2);
         require(tournamentComplete != true);
         Team storage team = teams[_tokenId];
         require(team.numPayouts == 2);
         Payout storage payout = team.payouts[1];
-        require(_compareStrings(payout.stage, &quot;Quarter Final&quot;));
+        require(_compareStrings(payout.stage, "Quarter Final"));
         
         team.owner.transfer(prizes.SemiFinalWinner);
-        emit PrizePaid(&quot;Semi Final&quot;, _tokenId, team.owner, prizes.SemiFinalWinner, uint256(now));
+        emit PrizePaid("Semi Final", _tokenId, team.owner, prizes.SemiFinalWinner, uint256(now));
         team.payouts[team.numPayouts++] = Payout({
-            stage: &quot;Semi Final&quot;,
+            stage: "Semi Final",
             amount: prizes.SemiFinalWinner,
             to: team.owner,
             when: uint256(now)
@@ -282,12 +282,12 @@ contract CryptoCupToken is ERC721 {
         Team storage team = teams[_tokenId];
         require(team.numPayouts == 3);
         Payout storage payout = team.payouts[2];
-        require(_compareStrings(payout.stage, &quot;Semi Final&quot;));
+        require(_compareStrings(payout.stage, "Semi Final"));
 
         team.owner.transfer(prizes.TournamentWinner);
-        emit PrizePaid(&quot;Final&quot;, _tokenId, team.owner, prizes.TournamentWinner, uint256(now));
+        emit PrizePaid("Final", _tokenId, team.owner, prizes.TournamentWinner, uint256(now));
         team.payouts[team.numPayouts++] = Payout({
-            stage: &quot;Final&quot;,
+            stage: "Final",
             amount: prizes.TournamentWinner,
             to: team.owner,
             when: uint256(now)
@@ -297,7 +297,7 @@ contract CryptoCupToken is ERC721 {
     }
 
     function payExcess() public onlyContractModifier {
-        /* ONLY IF TOURNAMENT FINISHED AND THERE&#39;S EXCESS - THERE SHOULDN&#39;T BE */
+        /* ONLY IF TOURNAMENT FINISHED AND THERE'S EXCESS - THERE SHOULDN'T BE */
         /* ONLY IF TRADES OCCUR AFTER TOURNAMENT FINISHED */
         require (tournamentComplete != false);
         developerAddress.transfer(address(this).balance);
@@ -332,7 +332,7 @@ contract CryptoCupToken is ERC721 {
         
 	    require(_addressNotNull(to));
         require(from != to);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         Team storage team = teams[_tokenId];
 	    
@@ -380,7 +380,7 @@ contract CryptoCupToken is ERC721 {
 	    
 		// Set new price for team
 	    uint256 newPrice = 0;
-        if (price &lt; doublePriceUntil) {
+        if (price < doublePriceUntil) {
             newPrice = SafeMath.div(SafeMath.mul(price, 200), 100);
         } else {
             newPrice = SafeMath.div(SafeMath.mul(price, 115), 100);

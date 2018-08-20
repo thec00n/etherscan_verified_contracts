@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 // ----------------------------------------------------------------------------
-// &#39;AGRI&#39; - AgriChain Utility Token Contract
+// 'AGRI' - AgriChain Utility Token Contract
 //
 // Symbol           : AGRI
 // Name             : AgriChain Utility Token
@@ -11,7 +11,7 @@ pragma solidity ^0.4.24;
 // Company          : AgriChain Pty Ltd 
 //                  : https://agrichain.com
 // Version          : 2.0
-// Author           : Martin Halford &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0566716a456462776c666d646c6b2b666a68">[email&#160;protected]</a>&gt;
+// Author           : Martin Halford <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0566716a456462776c666d646c6b2b666a68">[email protected]</a>>
 // Published        : 13 Aug 2018
 //
 // ----------------------------------------------------------------------------
@@ -25,18 +25,18 @@ library SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 }
@@ -109,14 +109,14 @@ contract AgriToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint256 _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     // Flag to allow or disallow transfers
     bool public isAllowingTransfers;
 
     // List of admins who can mint, burn and allow transfers of tokens
-    mapping (address =&gt; bool) public administrators;
+    mapping (address => bool) public administrators;
 
     // modifier to check if transfers being allowed
     modifier allowingTransfers() {
@@ -141,8 +141,8 @@ contract AgriToken is ERC20Interface, Owned {
     // Constructor
     // ------------------------------------------------------------------------
     constructor(uint initialTokenSupply) public {
-        symbol = &quot;AGRI&quot;;
-        name = &quot;AgriChain&quot;;
+        symbol = "AGRI";
+        name = "AgriChain";
         decimals = 18;
         _totalSupply = initialTokenSupply * 10**uint(decimals);
 
@@ -165,8 +165,8 @@ contract AgriToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public allowingTransfers returns (bool success) {
@@ -178,7 +178,7 @@ contract AgriToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -209,7 +209,7 @@ contract AgriToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -217,7 +217,7 @@ contract AgriToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -229,7 +229,7 @@ contract AgriToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -248,7 +248,7 @@ contract AgriToken is ERC20Interface, Owned {
     // Do ** NOT ** let totalSupply exceed MAX_SUPPLY
     // ------------------------------------------------------------------------
     function mintTokens(uint256 _value) public onlyAdmin {
-        require(_totalSupply.add(_value) &lt;= MAX_SUPPLY);
+        require(_totalSupply.add(_value) <= MAX_SUPPLY);
         balances[msg.sender] = balances[msg.sender].add(_value);
         _totalSupply = _totalSupply.add(_value);
         emit Transfer(0, msg.sender, _value);      
@@ -258,7 +258,7 @@ contract AgriToken is ERC20Interface, Owned {
     // Administrator can burn tokens
     // ------------------------------------------------------------------------
     function burn(uint256 _value) public onlyAdmin {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         _totalSupply = _totalSupply.sub(_value);

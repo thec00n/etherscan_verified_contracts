@@ -28,7 +28,7 @@ library Maths {
     uint256 minuend,
     uint256 subtrahend
   ) public pure returns (uint256 difference) {
-    assert(minuend &gt;= subtrahend);
+    assert(minuend >= subtrahend);
     difference = minuend - subtrahend;
   }
 
@@ -112,7 +112,7 @@ library Maths {
     uint256 a,
     uint256 b
   ) public pure returns (uint256 result) {
-    result = a &lt;= b ? a : b;
+    result = a <= b ? a : b;
   }
 
   /**
@@ -125,7 +125,7 @@ library Maths {
     uint256 a,
     uint256 b
   ) public pure returns (uint256 result) {
-    result = a &gt;= b ? a : b;
+    result = a >= b ? a : b;
   }
 
   /**
@@ -135,7 +135,7 @@ library Maths {
    * @return isTrue whether a is less than b
    */
   function isLessThan(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &lt; b;
+    isTrue = a < b;
   }
 
   /**
@@ -145,7 +145,7 @@ library Maths {
    * @return isTrue whether a is less than or equal to b
    */
   function isAtMost(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &lt;= b;
+    isTrue = a <= b;
   }
 
   /**
@@ -155,7 +155,7 @@ library Maths {
    * @return isTrue whether a is greater than b
    */
   function isGreaterThan(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &gt; b;
+    isTrue = a > b;
   }
 
   /**
@@ -165,7 +165,7 @@ library Maths {
    * @return isTrue whether a is less than b
    */
   function isAtLeast(uint256 a, uint256 b) public pure returns (bool isTrue) {
-    isTrue = a &gt;= b;
+    isTrue = a >= b;
   }
 }
 
@@ -286,14 +286,14 @@ contract Mythereum is Manageable {
     uint256 packPriceIncrease;
   }
 
-  mapping (uint8 =&gt; Edition) public editions;
-  mapping (address =&gt; bool) public isVIP;
-  mapping (address =&gt; bool) public isTokenAccepted;
-  mapping (address =&gt; uint256) public tokenCostPerPack;
+  mapping (uint8 => Edition) public editions;
+  mapping (address => bool) public isVIP;
+  mapping (address => bool) public isTokenAccepted;
+  mapping (address => uint256) public tokenCostPerPack;
 
-  mapping (uint256 =&gt; uint256) public mythexCostPerUpgradeLevel;
-  mapping (uint256 =&gt; uint256) public cardDamageUpgradeLevel;
-  mapping (uint256 =&gt; uint256) public cardShieldUpgradeLevel;
+  mapping (uint256 => uint256) public mythexCostPerUpgradeLevel;
+  mapping (uint256 => uint256) public cardDamageUpgradeLevel;
+  mapping (uint256 => uint256) public cardShieldUpgradeLevel;
   uint256 public maxCardUpgradeLevel = 30;
 
   address public cardTokenAddress;
@@ -304,8 +304,8 @@ contract Mythereum is Manageable {
   /* data related to shared ownership */
   uint256 public totalShares = 0;
   uint256 public totalReleased = 0;
-  mapping(address =&gt; uint256) public shares;
-  mapping(address =&gt; uint256) public released;
+  mapping(address => uint256) public shares;
+  mapping(address => uint256) public released;
 
   event CardsPurchased(uint256 editionNumber, uint256 packSize, address buyer);
   event CardUpgraded(uint256 cardId, uint256 addedDamage, uint256 addedShield);
@@ -321,7 +321,7 @@ contract Mythereum is Manageable {
 
   function Mythereum() public {
     editions[0] = Edition({
-      name: &quot;Genesis&quot;,
+      name: "Genesis",
       sales: 3999,
       maxSales: 5000,
       packSize: 7,
@@ -330,7 +330,7 @@ contract Mythereum is Manageable {
     });
 
     editions[1] = Edition({
-      name: &quot;Survivor&quot;,
+      name: "Survivor",
       sales: 20,
       maxSales: 1000000,
       packSize: 10,
@@ -342,8 +342,8 @@ contract Mythereum is Manageable {
   }
 
   /**
-   * @dev Disallow funds being sent directly to the contract since we can&#39;t know
-   *  which edition they&#39;d intended to purchase.
+   * @dev Disallow funds being sent directly to the contract since we can't know
+   *  which edition they'd intended to purchase.
    */
   function () public payable {
     revert();
@@ -476,7 +476,7 @@ contract Mythereum is Manageable {
     address _token,
     uint256 _costPerPack
   ) public onlyManagement {
-    if (_costPerPack &gt; 0) {
+    if (_costPerPack > 0) {
       isTokenAccepted[_token] = true;
       tokenCostPerPack[_token] = _costPerPack;
     } else {

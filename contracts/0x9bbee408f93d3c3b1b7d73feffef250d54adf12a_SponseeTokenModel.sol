@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -83,13 +83,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /*
      * Fix for the ERC20 short address attack
      */
     modifier onlyPayloadSize(uint size) {
-        if (msg.data.length &lt; size + 4) {
+        if (msg.data.length < size + 4) {
             revert();
         }
         _;
@@ -102,7 +102,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32)  returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -147,7 +147,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -157,8 +157,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -340,16 +340,16 @@ contract SponseeTokenModel is StandardToken {
     function() payable {
 
         // check condition
-        require(isPayableEnabled &amp;&amp; rbInformationStore.isPayableEnabledForAll());
+        require(isPayableEnabled && rbInformationStore.isPayableEnabledForAll());
 
         // check validation
-        if (msg.value &lt;= 0) { revert(); }
+        if (msg.value <= 0) { revert(); }
 
         // calculate support amount in US
         uint supportedAmount = msg.value.mul(rate.ETH_USD_rate()).div(10**18);
 
-        // if support is less than minimum =&gt; return money to supporter
-        if (supportedAmount &lt; minimumSupport) { revert(); }
+        // if support is less than minimum => return money to supporter
+        if (supportedAmount < minimumSupport) { revert(); }
 
         // calculate the ratio of Ether for distribution
         uint etherRatioForOwner = rbInformationStore.etherRatioForOwner();
@@ -381,7 +381,7 @@ contract SponseeTokenModel is StandardToken {
         totalSupply = totalSupply.add(tokenAmount);
 
         // check cap
-        if (totalSupply &gt; cap) { revert(); }
+        if (totalSupply > cap) { revert(); }
 
         // send Event
         LogExchange(msg.sender, this, tokenAmount);
@@ -439,7 +439,7 @@ contract SponseeTokenModel is StandardToken {
         totalSupply = totalSupply.add(_value);
 
         // check cap
-        if (totalSupply &gt; cap) { revert(); }
+        if (totalSupply > cap) { revert(); }
 
         // send Event
         LogMint(_address, _value);
@@ -466,7 +466,7 @@ contract SponseeTokenModel is StandardToken {
     function decreaseCap(uint _value) onlyAccountAddressForSponsee {
 
         // check whether cap is lower than totalSupply or not
-        if (totalSupply &gt; cap.sub(_value)) { revert(); }
+        if (totalSupply > cap.sub(_value)) { revert(); }
 
         // change cap here
         cap = cap.sub(_value);

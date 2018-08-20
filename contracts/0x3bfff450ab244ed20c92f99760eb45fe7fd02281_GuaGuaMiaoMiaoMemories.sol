@@ -10,7 +10,7 @@ contract GuaGuaMiaoMiaoMemories {
     struct Memory {
         string story;
         uint256 imageSliceCount;
-        mapping(uint256 =&gt; bytes) imageSlices;
+        mapping(uint256 => bytes) imageSlices;
     }
 
     Memory[] internal memories;
@@ -49,23 +49,23 @@ contract GuaGuaMiaoMiaoMemories {
     }
 
     function addMemoryImageSlice(uint256 _index, bytes _imageSlice) external onlyGuaGuaMiaoMiao {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; memories.length);
+        require(_index >= 0 && _index < memories.length);
         memories[_index].imageSlices[memories[_index].imageSliceCount] = _imageSlice;
         memories[_index].imageSliceCount += 1;
     }
 
     function viewMemory(uint256 _index) public view returns (string story, bytes image) {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; memories.length);
+        require(_index >= 0 && _index < memories.length);
         uint256 imageLen = 0;
         uint256 i = 0;
-        for (i = 0; i &lt; memories[_index].imageSliceCount; i++){
+        for (i = 0; i < memories[_index].imageSliceCount; i++){
             imageLen += memories[_index].imageSlices[i].length;
         }
         image = new bytes(imageLen);
         uint256 j = 0;
         uint256 k = 0;
-        for (i = 0; i &lt; memories[_index].imageSliceCount; i++){
-            for (j = 0; j &lt; memories[_index].imageSlices[i].length; j++) {
+        for (i = 0; i < memories[_index].imageSliceCount; i++){
+            for (j = 0; j < memories[_index].imageSlices[i].length; j++) {
                 image[k] = memories[_index].imageSlices[i][j];
                 k += 1;
             }

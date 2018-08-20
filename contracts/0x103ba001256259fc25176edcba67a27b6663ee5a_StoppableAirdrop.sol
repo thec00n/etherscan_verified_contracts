@@ -23,7 +23,7 @@ bool public stopped;
 
 
 
-mapping (address =&gt; bool) dropped;
+mapping (address => bool) dropped;
 
 
 

@@ -16,27 +16,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -112,14 +112,14 @@ contract BasicToken is ERC20Basic {
   uint lockedAmount;
   uint allowedAmount;
   //balance in each address account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   struct Lockup
   {
       uint256 lockupTime;
       uint256 lockupAmount;
   }
   Lockup lockup;
-  mapping(address=&gt;Lockup) lockupParticipants;  
+  mapping(address=>Lockup) lockupParticipants;  
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -127,41 +127,41 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
+    require(balances[msg.sender] >= _amount && _amount > 0
+        && balances[_to].add(_amount) > balances[_to]);
 
-     if (lockupParticipants[msg.sender].lockupAmount&gt;0)
+     if (lockupParticipants[msg.sender].lockupAmount>0)
     {
         uint timePassed = now - lockupParticipants[msg.sender].lockupTime;
         //12 months have passed
-        if (timePassed &lt;92 days)
+        if (timePassed <92 days)
         {
             //only 5% amount is unlocked
             balanceOfParticipant = balances[msg.sender];
             lockedAmount = lockupParticipants[msg.sender].lockupAmount;
             allowedAmount = lockedAmount.mul(5).div(100);
-            require(balanceOfParticipant.sub(_amount)&gt;=lockedAmount.sub(allowedAmount));
+            require(balanceOfParticipant.sub(_amount)>=lockedAmount.sub(allowedAmount));
         }
         //3 months have passed
-        else if (timePassed &gt;= 92 days &amp;&amp; timePassed &lt; 183 days)
+        else if (timePassed >= 92 days && timePassed < 183 days)
         {
             //upto 30% amount is unlocked
             balanceOfParticipant = balances[msg.sender];
             lockedAmount = lockupParticipants[msg.sender].lockupAmount;
             allowedAmount = lockedAmount.mul(30).div(100);
-            require(balanceOfParticipant.sub(_amount)&gt;=lockedAmount.sub(allowedAmount));
+            require(balanceOfParticipant.sub(_amount)>=lockedAmount.sub(allowedAmount));
         
         }
          //6 months have passed
-        else if (timePassed &gt;= 183 days &amp;&amp; timePassed &lt; 365 days)
+        else if (timePassed >= 183 days && timePassed < 365 days)
         {
             //upto 55% amount is unlocked
             balanceOfParticipant = balances[msg.sender];
             lockedAmount = lockupParticipants[msg.sender].lockupAmount;
             allowedAmount = lockedAmount.mul(55).div(100);
-            require(balanceOfParticipant.sub(_amount)&gt;=lockedAmount.sub(allowedAmount));
+            require(balanceOfParticipant.sub(_amount)>=lockedAmount.sub(allowedAmount));
         }
-        else if (timePassed &gt; 365 days)
+        else if (timePassed > 365 days)
         {
             //do nothing, any amount is allowed -- all amount has been unlocked
         }
@@ -193,7 +193,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -204,41 +204,41 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(balances[_from] &gt;= _amount);
-    require(allowed[_from][msg.sender] &gt;= _amount);
-    require(_amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]);
-    if (lockupParticipants[_from].lockupAmount&gt;0)
+    require(balances[_from] >= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
+    require(_amount > 0 && balances[_to].add(_amount) > balances[_to]);
+    if (lockupParticipants[_from].lockupAmount>0)
     {
         uint timePassed = now - lockupParticipants[_from].lockupTime;
         //12 months have passed
-        if (timePassed &lt;92 days)
+        if (timePassed <92 days)
         {
             //only 5% amount is unlocked
             balanceOfParticipant = balances[_from];
             lockedAmount = lockupParticipants[_from].lockupAmount;
             allowedAmount = lockedAmount.mul(5).div(100);
-            require(balanceOfParticipant.sub(_amount)&gt;=lockedAmount.sub(allowedAmount));
+            require(balanceOfParticipant.sub(_amount)>=lockedAmount.sub(allowedAmount));
         }
         //3 months have passed
-        else if (timePassed &gt;= 92 days &amp;&amp; timePassed &lt; 183 days)
+        else if (timePassed >= 92 days && timePassed < 183 days)
         {
             //upto 30% amount is unlocked
             balanceOfParticipant = balances[_from];
             lockedAmount = lockupParticipants[_from].lockupAmount;
             allowedAmount = lockedAmount.mul(30).div(100);
-            require(balanceOfParticipant.sub(_amount)&gt;=lockedAmount.sub(allowedAmount));
+            require(balanceOfParticipant.sub(_amount)>=lockedAmount.sub(allowedAmount));
         
         }
          //6 months have passed
-        else if (timePassed &gt;= 183 days &amp;&amp; timePassed &lt; 365 days)
+        else if (timePassed >= 183 days && timePassed < 365 days)
         {
             //upto 55% amount is unlocked
             balanceOfParticipant = balances[_from];
             lockedAmount = lockupParticipants[_from].lockupAmount;
             allowedAmount = lockedAmount.mul(55).div(100);
-            require(balanceOfParticipant.sub(_amount)&gt;=lockedAmount.sub(allowedAmount));
+            require(balanceOfParticipant.sub(_amount)>=lockedAmount.sub(allowedAmount));
         }
-        else if (timePassed &gt; 365 days)
+        else if (timePassed > 365 days)
         {
             //do nothing, any amount is allowed -- all amount has been unlocked
         }
@@ -255,7 +255,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _amount The amount of tokens to be spent.
@@ -291,9 +291,9 @@ contract BurnableToken is StandardToken, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public onlyOwner{
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -322,8 +322,8 @@ contract BurnableToken is StandardToken, Ownable {
      function PVCToken(address wallet) public {
          owner = wallet;
          totalSupply = uint(50000000).mul( 10 ** uint256(decimals)); //Update total supply with the decimal amount
-         name = &quot;Pryvate&quot;;
-         symbol = &quot;PVC&quot;;
+         name = "Pryvate";
+         symbol = "PVC";
          balances[wallet] = totalSupply;
          
          //Emitting transfer event since assigning all tokens to the creator also corresponds to the transfer of tokens to the creator
@@ -340,12 +340,12 @@ contract BurnableToken is StandardToken, Ownable {
     function teamVesting(address[] teamMembers, uint[] tokens) public onlyOwner
      {
          require(teamMembers.length == tokens.length);
-         for (uint i=0;i&lt;teamMembers.length;i++)
+         for (uint i=0;i<teamMembers.length;i++)
          {
              tokens[i] = tokens[i].mul(10**18);
               require(teamMembers[i] != address(0));
-              require(balances[owner] &gt;= tokens[i] &amp;&amp; tokens[i] &gt; 0
-            &amp;&amp; balances[teamMembers[i]].add(tokens[i]) &gt; balances[teamMembers[i]]);
+              require(balances[owner] >= tokens[i] && tokens[i] > 0
+            && balances[teamMembers[i]].add(tokens[i]) > balances[teamMembers[i]]);
 
             // SafeMath.sub will throw if there is not enough balance.
             balances[owner] = balances[owner].sub(tokens[i]);
@@ -359,12 +359,12 @@ contract BurnableToken is StandardToken, Ownable {
      function advisorVesting(address[] advisors, uint[] tokens) public onlyOwner
      {
          require(advisors.length == tokens.length);
-         for (uint i=0;i&lt;advisors.length;i++)
+         for (uint i=0;i<advisors.length;i++)
          {
              tokens[i] = tokens[i].mul(10**18);
               require(advisors[i] != address(0));
-              require(balances[owner] &gt;= tokens[i] &amp;&amp; tokens[i] &gt; 0
-            &amp;&amp; balances[advisors[i]].add(tokens[i]) &gt; balances[advisors[i]]);
+              require(balances[owner] >= tokens[i] && tokens[i] > 0
+            && balances[advisors[i]].add(tokens[i]) > balances[advisors[i]]);
 
             // SafeMath.sub will throw if there is not enough balance.
             balances[owner] = balances[owner].sub(tokens[i]);

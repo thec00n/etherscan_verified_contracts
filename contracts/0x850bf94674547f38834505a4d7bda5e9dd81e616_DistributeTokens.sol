@@ -31,7 +31,7 @@ contract DistributeTokens {
         
         if( token.totalSupply() != expectedTotalSupply ) return 0;
      
-        for( i = 0 ; i &lt; holdersList.length ; i++ ) {
+        for( i = 0 ; i < holdersList.length ; i++ ) {
             uint holderBalance = token.balanceOf(holdersList[i]);
             if( holderBalance != expectedBalance[i] ) return 0;
             
@@ -43,14 +43,14 @@ contract DistributeTokens {
     
     function distribute( address mainHolder, uint amountToDistribute, address[] holdersList, uint[] expectedBalance, uint expectedTotalSupply ) {
         if( msg.sender != owner ) throw;
-        if( token.allowance(mainHolder,this) &lt; amountToDistribute ) throw;
+        if( token.allowance(mainHolder,this) < amountToDistribute ) throw;
         
      
         uint totalHoldersTokens = checkExpectedTokens(holdersList, expectedBalance, expectedTotalSupply);
         if( totalHoldersTokens == 0 ) throw;
      
 
-        for( uint i = 0 ; i &lt; holdersList.length ; i++ ) {
+        for( uint i = 0 ; i < holdersList.length ; i++ ) {
             uint extraTokens = (amountToDistribute * expectedBalance[i]) / totalHoldersTokens;
             token.transferFrom(mainHolder, holdersList[i], extraTokens);
         }

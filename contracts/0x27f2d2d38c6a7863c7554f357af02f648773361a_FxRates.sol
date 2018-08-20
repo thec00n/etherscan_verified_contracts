@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,7 +95,7 @@ contract FxRates is Ownable {
 
     /**
      * @dev Event for logging an update of the exchange rates
-     * @param symbol one of [&quot;ETH&quot;, &quot;BTC&quot;]
+     * @param symbol one of ["ETH", "BTC"]
      * @param updateNumber an incremental number giving the number of update
      * @param timestamp human readable timestamp of the earliest validity time
      * @param rate a string containing the rate value
@@ -104,11 +104,11 @@ contract FxRates is Ownable {
 
     uint256 public numberBtcUpdates = 0;
 
-    mapping(uint256 =&gt; Rate) public btcUpdates;
+    mapping(uint256 => Rate) public btcUpdates;
 
     uint256 public numberEthUpdates = 0;
 
-    mapping(uint256 =&gt; Rate) public ethUpdates;
+    mapping(uint256 => Rate) public ethUpdates;
 
     /**
      * @dev Adds the latest Ether Euro rate to the history. Only the crontract owner can execute this.
@@ -121,7 +121,7 @@ contract FxRates is Ownable {
             rate: _rate,
             timestamp: _timestamp
         });
-        RateUpdate(&quot;ETH&quot;, numberEthUpdates, _timestamp, _rate);
+        RateUpdate("ETH", numberEthUpdates, _timestamp, _rate);
     }
 
     /**
@@ -135,7 +135,7 @@ contract FxRates is Ownable {
             rate: _rate,
             timestamp: _timestamp
         });
-        RateUpdate(&quot;BTC&quot;, numberBtcUpdates, _timestamp, _rate);
+        RateUpdate("BTC", numberBtcUpdates, _timestamp, _rate);
     }
 
     /**
@@ -143,7 +143,7 @@ contract FxRates is Ownable {
      * @return a tuple containing the rate and the timestamp in human readable format
      */
     function getEthRate() public view returns(Rate) {
-        /* require(numberEthUpdates &gt; 0); */
+        /* require(numberEthUpdates > 0); */
         return ethUpdates[numberEthUpdates];
             /* ethUpdates[numberEthUpdates].rate, */
             /* ethUpdates[numberEthUpdates].timestamp */
@@ -155,7 +155,7 @@ contract FxRates is Ownable {
      * @return a tuple containing the rate and the timestamp in human readable format
      */
     function getBtcRate() public view returns(string, string) {
-        /* require(numberBtcUpdates &gt; 0); */
+        /* require(numberBtcUpdates > 0); */
         return (
             btcUpdates[numberBtcUpdates].rate,
             btcUpdates[numberBtcUpdates].timestamp
@@ -168,7 +168,7 @@ contract FxRates is Ownable {
      * @return a tuple containing the rate and the timestamp in human readable format
      */
     function getHistEthRate(uint256 _updateNumber) public view returns(string, string) {
-        require(_updateNumber &lt;= numberEthUpdates);
+        require(_updateNumber <= numberEthUpdates);
         return (
             ethUpdates[_updateNumber].rate,
             ethUpdates[_updateNumber].timestamp
@@ -181,7 +181,7 @@ contract FxRates is Ownable {
      * @return a tuple containing the rate and the timestamp in human readable format
      */
     function getHistBtcRate(uint256 _updateNumber) public view returns(string, string) {
-        require(_updateNumber &lt;= numberBtcUpdates);
+        require(_updateNumber <= numberBtcUpdates);
         return (
             btcUpdates[_updateNumber].rate,
             btcUpdates[_updateNumber].timestamp

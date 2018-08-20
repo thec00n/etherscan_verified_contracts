@@ -55,10 +55,10 @@ contract DragonCrowdsale {
     // fallback function to receive all incoming ether funds and then forwarded to the DragonCrowdsaleCore contract 
     function () payable {
         
-        require ( crowdSaleClosed == false &amp;&amp; crowdSalePause == false  );
+        require ( crowdSaleClosed == false && crowdSalePause == false  );
         
         if ( crowdSaleStarted ) { 
-            require ( now &lt; deadline );
+            require ( now < deadline );
             core.crowdsale.value( msg.value )( msg.sender); // forward all ether to core contract
             
         } 

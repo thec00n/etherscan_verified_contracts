@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -133,11 +133,11 @@ contract InvestorsList is Ownable {
         bool isVerified;
     }
 
-    /*Investor&#39;s end*/
+    /*Investor's end*/
 
-    mapping (address =&gt; bool) manipulators;
-    mapping (address =&gt; bytes32) public nativeInvestorsIds;
-    mapping (bytes32 =&gt; Investor) public investorsList;
+    mapping (address => bool) manipulators;
+    mapping (address => bytes32) public nativeInvestorsIds;
+    mapping (bytes32 => Investor) public investorsList;
 
     /*Manipulators*/
 
@@ -151,10 +151,10 @@ contract InvestorsList is Ownable {
         manipulators[saleAddress] = isAllowedToManipulate;
     }
 
-    /*Manipulators&#39; end*/
+    /*Manipulators' end*/
 
     function setInvestorId(address investorAddress, bytes32 id) external onlyOwner{
-        require(investorAddress != 0x0 &amp;&amp; id != 0);
+        require(investorAddress != 0x0 && id != 0);
         nativeInvestorsIds[investorAddress] = id;
     }
 
@@ -173,61 +173,61 @@ contract InvestorsList is Ownable {
     }
 
     function removeInvestor(bytes32 id) external onlyOwner {
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         investorsList[id].id = 0;
     }
 
     function isAllowedToBuyByAddress(address investor) external view returns(bool){
         require(investor != 0x0);
         bytes32 id = nativeInvestorsIds[investor];
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         return investorsList[id].isVerified;
     }
 
     function isAllowedToBuyByAddressWithoutVerification(address investor) external view returns(bool){
         require(investor != 0x0);
         bytes32 id = nativeInvestorsIds[investor];
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         return true;
     }
 
     function isAllowedToBuy(bytes32 id) external view returns(bool){
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         return investorsList[id].isVerified;
     }
 
     function isPreWhiteListed(bytes32 id) external constant returns(bool){
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         return investorsList[id].whiteListStatus == WhiteListStatus.PreWhiteList;
     }
 
     function isWhiteListed(bytes32 id) external view returns(bool){
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         return investorsList[id].whiteListStatus == WhiteListStatus.WhiteList;
     }
 
     function setVerificationStatus(bytes32 id, bool status) external onlyOwner{
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         investorsList[id].isVerified = status;
     }
 
     function setWhiteListStatus(bytes32 id, WhiteListStatus status) external onlyOwner{
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         investorsList[id].whiteListStatus = status;
     }
 
     function addTokens(bytes32 id, uint tokens) external allowedToManipulate{
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         investorsList[id].tokensCount = investorsList[id].tokensCount.add(tokens);
     }
 
     function subTokens(bytes32 id, uint tokens) external allowedToManipulate{
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         investorsList[id].tokensCount = investorsList[id].tokensCount.sub(tokens);
     }
 
     function setWalletForTokens(bytes32 id, address wallet) external onlyOwner{
-        require(id != 0 &amp;&amp; investorsList[id].id != 0);
+        require(id != 0 && investorsList[id].id != 0);
         investorsList[id].walletForTokens = wallet;
     }
 }
@@ -235,14 +235,14 @@ contract InvestorsList is Ownable {
 contract BonumFinancialTokenPreSale is Pausable{
     using SafeMath for uint;
 
-    string public constant name = &quot;Bonum Financial Token PreSale&quot;;
+    string public constant name = "Bonum Financial Token PreSale";
 
     uint public startDate;
     uint public endDate;
     uint public whiteListPreSaleDuration = 1 days;
 
     function setWhiteListDuration(uint duration) external onlyOwner{
-        require(duration &gt; 0);
+        require(duration > 0);
         whiteListPreSaleDuration = duration * 1 days;
     }
 
@@ -300,17 +300,17 @@ contract BonumFinancialTokenPreSale is Pausable{
     }
 
     function setEthUsdRate(uint rate) external onlyOwner {
-        require(rate &gt; 0);
+        require(rate > 0);
         ethUsdRate = rate;
     }
 
     function setNewStartDate(uint newStartDate) external onlyOwner{
-        require(newStartDate &gt; 0);
+        require(newStartDate > 0);
         startDate = newStartDate;
     }
 
     function setNewEndDate(uint newEndDate) external onlyOwner{
-        require(newEndDate &gt; 0);
+        require(newEndDate > 0);
         endDate = newEndDate;
     }
 
@@ -320,12 +320,12 @@ contract BonumFinancialTokenPreSale is Pausable{
     }
 
     modifier activePreSale(){
-        require(now &gt;= startDate &amp;&amp; now &lt; endDate);
+        require(now >= startDate && now < endDate);
         _;
     }
 
     modifier underCap(){
-        require(tokensSold &lt; uint(750000).mul(tokenDecimals));
+        require(tokensSold < uint(750000).mul(tokenDecimals));
         _;
     }
 
@@ -335,7 +335,7 @@ contract BonumFinancialTokenPreSale is Pausable{
     }
 
     modifier minimumAmount(){
-        require(msg.value.mul(ethUsdRate).div(fiatValueMultiplier.mul(1 ether)) &gt;= 100);
+        require(msg.value.mul(ethUsdRate).div(fiatValueMultiplier.mul(1 ether)) >= 100);
         _;
     }
 
@@ -360,7 +360,7 @@ contract BonumFinancialTokenPreSale is Pausable{
 
     //usd * 10^6
     function otherCoinsPurchase(bytes32 id, uint amountInUsd) external whenNotPaused underCap activePreSale onlyOwner {
-        require(id.length &gt; 0 &amp;&amp; amountInUsd &gt;= (uint(100).mul(fiatValueMultiplier)) &amp;&amp; investors.isAllowedToBuy(id));
+        require(id.length > 0 && amountInUsd >= (uint(100).mul(fiatValueMultiplier)) && investors.isAllowedToBuy(id));
 
         uint tokens = amountInUsd.mul(tokenDecimals).div(fiatValueMultiplier);
 
@@ -373,8 +373,8 @@ contract BonumFinancialTokenPreSale is Pausable{
 
 
     function calculateBonus(bytes32 id, uint tokensCount) public constant returns (uint){
-        if (now &lt; (startDate.add(whiteListPreSaleDuration))) {
-            require(tokensCount &gt;= 3000 * tokenDecimals);
+        if (now < (startDate.add(whiteListPreSaleDuration))) {
+            require(tokensCount >= 3000 * tokenDecimals);
 
             if (investors.isPreWhiteListed(id)) {
                 return tokensCount.mul(35).div(100);
@@ -387,22 +387,22 @@ contract BonumFinancialTokenPreSale is Pausable{
         uint B1;
         uint B2;
 
-        if (tokensCount &lt; uint(1000).mul(tokenDecimals)) {
+        if (tokensCount < uint(1000).mul(tokenDecimals)) {
             B1 = (((tokensCount - 100 * tokenDecimals) * (firstColumn[1] - firstColumn[0])) /  ((1000-100) * tokenDecimals)) + firstColumn[0];
             B2 = (((tokensCount - 100 * tokenDecimals) * (secondColumn[1] - secondColumn[0])) /  ((1000-100) * tokenDecimals)) + secondColumn[0];
         }
 
-        if (tokensCount &gt;= uint(1000).mul(tokenDecimals) &amp;&amp; tokensCount &lt; uint(10000).mul(tokenDecimals)) {
+        if (tokensCount >= uint(1000).mul(tokenDecimals) && tokensCount < uint(10000).mul(tokenDecimals)) {
             B1 = (((tokensCount - 1000 * tokenDecimals) * (firstColumn[2] - firstColumn[1])) / ((10000-1000) * tokenDecimals)) + firstColumn[1];
             B2 = (((tokensCount - 1000 * tokenDecimals) * (secondColumn[2] - secondColumn[1])) / ((10000-1000) * tokenDecimals)) + secondColumn[1];
         }
 
-        if (tokensCount &gt;= uint(10000).mul(tokenDecimals) &amp;&amp; tokensCount &lt; uint(50000).mul(tokenDecimals)) {
+        if (tokensCount >= uint(10000).mul(tokenDecimals) && tokensCount < uint(50000).mul(tokenDecimals)) {
             B1 = (((tokensCount - 10000 * tokenDecimals) * (firstColumn[3] - firstColumn[2])) / ((50000-10000) * tokenDecimals)) + firstColumn[2];
             B2 = (((tokensCount - 10000 * tokenDecimals) * (secondColumn[3] - secondColumn[2])) / ((50000-10000) * tokenDecimals)) + secondColumn[2];
         }
 
-        if (tokensCount &gt;=  uint(50000).mul(tokenDecimals)) {
+        if (tokensCount >=  uint(50000).mul(tokenDecimals)) {
             B1 = firstColumn[3];
             B2 = secondColumn[3];
         }

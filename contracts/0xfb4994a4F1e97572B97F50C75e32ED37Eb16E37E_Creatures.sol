@@ -58,8 +58,8 @@ contract Creatures is Permissions {
 	}
 	Creature[] creatures;
 
-	mapping (uint256 =&gt;	address) public creatureIndexToOwner;
-	mapping (address =&gt; uint256) ownershipTokenCount;
+	mapping (uint256 =>	address) public creatureIndexToOwner;
+	mapping (address => uint256) ownershipTokenCount;
 
 	event CreateCreature(uint256 id, address indexed owner);
 	event Transfer(address _from, address _to, uint256 creatureID);

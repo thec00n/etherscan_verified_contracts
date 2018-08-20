@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18; // solhint-disable-line
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="d6b2b3a2b396b7aebfb9bbacb3b8f8b5b9">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="d6b2b3a2b396b7aebfb9bbacb3b8f8b5b9">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -41,8 +41,8 @@ contract CityToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoCities&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CityToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoCities"; // solhint-disable-line
+  string public constant SYMBOL = "CityToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.05 ether;
 
@@ -50,19 +50,19 @@ contract CityToken is ERC721 {
 
   /// @dev A mapping from token IDs to the address that owns them. All tokens have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
+  mapping (uint256 => address) public tokenIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from TokenIDs to an address that has been approved to call
   ///  transferFrom(). Each Token can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public tokenIndexToApproved;
+  mapping (uint256 => address) public tokenIndexToApproved;
 
   // @dev A mapping from TokenIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private tokenIndexToPrice;
+  mapping (uint256 => uint256) private tokenIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -79,7 +79,7 @@ contract CityToken is ERC721 {
 
   Token[] private tokens;
 
-  mapping(uint256 =&gt; Token) private tokenIndexToToken;
+  mapping(uint256 => Token) private tokenIndexToToken;
 
   /*** ACCESS MODIFIERS ***/
   /// @dev Access modifier for CEO-only functionality
@@ -142,7 +142,7 @@ contract CityToken is ERC721 {
       tokenOwner = cooAddress;
     }
     
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -201,7 +201,7 @@ contract CityToken is ERC721 {
   function purchase(uint256 _tokenId) public payable {
     
     // Token IDs above 999 are for countries
-    if (_tokenId &gt; 999) {
+    if (_tokenId > 999) {
       _purchaseCountry(_tokenId);
     }else {
       _purchaseCity(_tokenId);
@@ -251,7 +251,7 @@ contract CityToken is ERC721 {
   }
 
   /// @param _owner The owner whose city tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Cities array looking for cities belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -266,7 +266,7 @@ contract CityToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 tokenId;
-      for (tokenId = 0; tokenId &lt;= totalTokens; tokenId++) {
+      for (tokenId = 0; tokenId <= totalTokens; tokenId++) {
         if (tokenIndexToOwner[tokenId] == _owner) {
           result[resultIndex] = tokenId;
           resultIndex++;
@@ -280,7 +280,7 @@ contract CityToken is ERC721 {
   /// @dev Required for ERC-721 compliance.
   function totalSupply() public view returns (uint256 total) {
     //return tokens.length;
-    // NOTE: Looks like we can&#39;t get the length of mapping data structure
+    // NOTE: Looks like we can't get the length of mapping data structure
     //return tokenIndexToToken.length;
     return tokenCreatedCount;
   }
@@ -334,7 +334,7 @@ contract CityToken is ERC721 {
     require(_addressNotNull(msg.sender));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     // Payment to previous owner should be 92% of sellingPrice
     // The other 8% is the 6% dev fee (stays in contract) and 2% Country dividend (goes to Country owner)
@@ -353,10 +353,10 @@ contract CityToken is ERC721 {
     uint256 paymentToOwnerOfParent = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 2), 100));
 
     // If we have an address for parentId
-    // If not that means parent hasn&#39;t been created yet
-    // For example the city may exist but we haven&#39;t created its country yet
+    // If not that means parent hasn't been created yet
+    // For example the city may exist but we haven't created its country yet
     // Parent ID must also be bigger than the 0-999 range of city ids ...
-    // ... since a city can&#39;t be a parent of another city
+    // ... since a city can't be a parent of another city
     if (_addressNotNull(ownerOfParent)) {
 
       // Send 2% dividends to owner of parent
@@ -401,7 +401,7 @@ contract CityToken is ERC721 {
     require(_addressNotNull(msg.sender));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     // Payment to previous owner should be 96% of sellingPrice
     // The other 4% is the dev fee (stays in contract) 
@@ -455,11 +455,11 @@ contract CityToken is ERC721 {
     uint256 newTokenId = _tokenId;
     tokenIndexToToken[newTokenId] = _token;
 
-    // NOTE: Now that we don&#39;t autoincrement tokenId should we ...
-    // ... check to make sure passed _tokenId arg doesn&#39;t already exist?
+    // NOTE: Now that we don't autoincrement tokenId should we ...
+    // ... check to make sure passed _tokenId arg doesn't already exist?
     
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newTokenId == uint256(uint32(newTokenId)));
 
     TokenCreated(newTokenId, _name, _parentId, _owner);
@@ -487,7 +487,7 @@ contract CityToken is ERC721 {
 
   // Alternate function to withdraw less than total balance
   function _withdrawFunds(address _to, uint256 amount) private {
-    require(this.balance &gt;= amount);
+    require(this.balance >= amount);
     if (_to == address(0)) {
       ceoAddress.transfer(amount);
     } else {
@@ -497,12 +497,12 @@ contract CityToken is ERC721 {
 
   /// @dev Assigns ownership of a specific City to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of cities is capped to 2^32 we can&#39;t overflow this
+    // Since the number of cities is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     tokenIndexToOwner[_tokenId] = _to;
 
-    // When creating new cities _from is 0x0, but we can&#39;t account that address.
+    // When creating new cities _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -531,9 +531,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -541,7 +541,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -550,7 +550,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

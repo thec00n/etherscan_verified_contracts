@@ -55,8 +55,8 @@ pragma solidity ^0.4.0;
  contract Consulteth is ERC20, Lockable { 
  
 
-   mapping( address =&gt; uint ) _balances; 
-   mapping( address =&gt; mapping( address =&gt; uint ) ) _approvals; 
+   mapping( address => uint ) _balances; 
+   mapping( address => mapping( address => uint ) ) _approvals; 
    
    uint public foundationAsset;
    uint public CTX_Cap;
@@ -110,14 +110,14 @@ pragma solidity ^0.4.0;
  
    // A helper to notify if overflow occurs 
    function safeToAdd(uint a, uint b) internal returns (bool) { 
-     return (a + b &gt;= a &amp;&amp; a + b &gt;= b); 
+     return (a + b >= a && a + b >= b); 
    } 
  
  
    function transfer(address to, uint value) isTokenSwapOn returns (bool ok) { 
  
  
-     if( _balances[msg.sender] &lt; value ) { 
+     if( _balances[msg.sender] < value ) { 
          throw; 
      } 
      if( !safeToAdd(_balances[to], value) ) { 
@@ -133,12 +133,12 @@ pragma solidity ^0.4.0;
  
  
    function transferFrom(address from, address to, uint value) isTokenSwapOn returns (bool ok) { 
-     // if you don&#39;t have enough balance, throw 
-     if( _balances[from] &lt; value ) { 
+     // if you don't have enough balance, throw 
+     if( _balances[from] < value ) { 
          throw; 
      } 
-     // if you don&#39;t have approval, throw 
-     if( _approvals[from][msg.sender] &lt; value ) { 
+     // if you don't have approval, throw 
+     if( _approvals[from][msg.sender] < value ) { 
          throw; 
      } 
      if( !safeToAdd(_balances[to], value) ) { 
@@ -175,10 +175,10 @@ pragma solidity ^0.4.0;
    // between consulteum tokens and Ether during the pre-ICO token swap period 
    
    function preICOSwapRate() constant returns(uint) { 
-       if (creationTime + 1 weeks &gt; now) { 
+       if (creationTime + 1 weeks > now) { 
            return 1000; 
        } 
-       else if (creationTime + 3 weeks &gt; now) { 
+       else if (creationTime + 3 weeks > now) { 
            return 850; 
        } 
         
@@ -236,13 +236,13 @@ function kickStartICO(address ico_Wallet, uint mint_Factorial) onlyDev  {
  
   
    function ICOSwapRate() constant returns(uint) { 
-       if (creationTime + 1 weeks &gt; now) { 
+       if (creationTime + 1 weeks > now) { 
            return factorial_ICO; 
        } 
-       else if (creationTime + 2 weeks &gt; now) { 
+       else if (creationTime + 2 weeks > now) { 
            return (factorial_ICO - 30); 
        } 
-       else if (creationTime + 4 weeks &gt; now) { 
+       else if (creationTime + 4 weeks > now) { 
            return (factorial_ICO - 70); 
        } 
        else { 
@@ -262,7 +262,7 @@ function kickStartICO(address ico_Wallet, uint mint_Factorial) onlyDev  {
  
          uint tokensAmount = ICOSwapRate() * etherAmount; 
 
-         if((_supply + tokensAmount) &gt; CTX_Cap) throw;
+         if((_supply + tokensAmount) > CTX_Cap) throw;
          
          if(!safeToAdd(_balances[newTokenHolder],tokensAmount )) throw; 
          if(!safeToAdd(_supply,tokensAmount)) throw; 

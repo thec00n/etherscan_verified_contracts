@@ -35,25 +35,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function min(uint a, uint b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -92,9 +92,9 @@ contract Factory {
 
   //Array of deployed contracts
   address[] public contracts;
-  mapping(address =&gt; uint) public created_contracts;
-  mapping(uint =&gt; address) public long_tokens;
-  mapping(uint =&gt; address) public short_tokens;
+  mapping(address => uint) public created_contracts;
+  mapping(uint => address) public long_tokens;
+  mapping(uint => address) public short_tokens;
 
   //Emitted when a Swap is created
   event ContractCreation(address _sender, address _created);
@@ -117,7 +117,7 @@ contract Factory {
 
   /*
   * Updates the fee amount
-  * @param &quot;_fee&quot;: The new fee amount
+  * @param "_fee": The new fee amount
   */
   function setFee(uint _fee) public onlyOwner() {
     fee = _fee;
@@ -125,7 +125,7 @@ contract Factory {
 
   /*
   * Sets the deployer address
-  * @param &quot;_deployer&quot;: The new deployer address
+  * @param "_deployer": The new deployer address
   */
   function setDeployer(address _deployer) public onlyOwner() {
     deployer_address = _deployer;
@@ -134,7 +134,7 @@ contract Factory {
 
   /*
   * Sets the token_deployer address
-  * @param &quot;_tdeployer&quot;: The new token deployer address
+  * @param "_tdeployer": The new token deployer address
   */  
   function settokenDeployer(address _tdeployer) public onlyOwner() {
     token_deployer_address = _tdeployer;
@@ -142,7 +142,7 @@ contract Factory {
   }
   /*
   * Sets the user_contract address
-  * @param &quot;_userContract&quot;: The new userContract address
+  * @param "_userContract": The new userContract address
   */
   function setUserContract(address _userContract) public onlyOwner() {
     user_contract = _userContract;
@@ -158,10 +158,10 @@ contract Factory {
 
   /*
   * Sets token ratio, swap duration, and multiplier variables for a swap
-  * @param &quot;_token_ratio1&quot;: The ratio of the first token
-  * @param &quot;_token_ratio2&quot;: The ratio of the second token
-  * @param &quot;_duration&quot;: The duration of the swap, in seconds
-  * @param &quot;_multiplier&quot;: The multiplier used for the swap
+  * @param "_token_ratio1": The ratio of the first token
+  * @param "_token_ratio2": The ratio of the second token
+  * @param "_duration": The duration of the swap, in seconds
+  * @param "_multiplier": The multiplier used for the swap
   */
   function setVariables(uint _token_ratio1, uint _token_ratio2, uint _duration, uint _multiplier) public onlyOwner() {
     token_ratio1 = _token_ratio1;
@@ -172,8 +172,8 @@ contract Factory {
 
   /*
   * Sets the addresses of the tokens used for the swap
-  * @param &quot;_token_a&quot;: The address of a token to be used
-  * @param &quot;_token_b&quot;: The address of another token to be used
+  * @param "_token_a": The address of a token to be used
+  * @param "_token_b": The address of another token to be used
   */
   function setBaseTokens(address _token_a, address _token_b) public onlyOwner() {
     token_a = _token_a;
@@ -181,9 +181,9 @@ contract Factory {
   }
 
   //Allows a user to deploy a new swap contract, if they pay the fee
-  //returns the newly created swap address and calls event &#39;ContractCreation&#39;
+  //returns the newly created swap address and calls event 'ContractCreation'
   function deployContract(uint _start_date) public payable returns (address created) {
-    require(msg.value &gt;= fee);
+    require(msg.value >= fee);
     address new_contract = deployer.newContract(msg.sender, user_contract, _start_date);
     contracts.push(new_contract);
     created_contracts[new_contract] = _start_date;
@@ -211,17 +211,17 @@ contract Factory {
 
   /*
   * Deploys new tokens on a DRCT_Token contract -- called from within a swap
-  * @param &quot;_supply&quot;: The number of tokens to create
-  * @param &quot;_party&quot;: The address to send the tokens to
-  * @param &quot;_long&quot;: Whether the party is long or short
-  * @returns &quot;created&quot;: The address of the created DRCT token
-  * @returns &quot;token_ratio&quot;: The ratio of the created DRCT token
+  * @param "_supply": The number of tokens to create
+  * @param "_party": The address to send the tokens to
+  * @param "_long": Whether the party is long or short
+  * @returns "created": The address of the created DRCT token
+  * @returns "token_ratio": The ratio of the created DRCT token
   */
   function createToken(uint _supply, address _party, bool _long, uint _start_date) public returns (address created, uint token_ratio) {
-    require(created_contracts[msg.sender] &gt; 0);
+    require(created_contracts[msg.sender] > 0);
     address ltoken = long_tokens[_start_date];
     address stoken = short_tokens[_start_date];
-    require(ltoken != address(0) &amp;&amp; stoken != address(0));
+    require(ltoken != address(0) && stoken != address(0));
     if (_long) {
       drct_interface = DRCT_Token_Interface(ltoken);
       drct_interface.createToken(_supply.div(token_ratio1), _party,msg.sender);
@@ -244,12 +244,12 @@ contract Factory {
   function withdrawFees() public onlyOwner() returns(uint atok, uint btok, uint _eth){
    token_interface = Wrapped_Ether_Interface(token_a);
    uint aval = token_interface.balanceOf(address(this));
-   if(aval &gt; 0){
+   if(aval > 0){
       token_interface.withdraw(aval);
     }
    token_interface = Wrapped_Ether_Interface(token_b);
    uint bval = token_interface.balanceOf(address(this));
-   if (bval &gt; 0){
+   if (bval > 0){
     token_interface.withdraw(bval);
   }
    owner.transfer(this.balance);
@@ -262,13 +262,13 @@ contract Factory {
 
   /*
   * Returns a tuple of many private variables
-  * @returns &quot;_oracle_adress&quot;: The address of the oracle
-  * @returns &quot;_operator&quot;: The address of the owner and operator of the factory
-  * @returns &quot;_duration&quot;: The duration of the swap
-  * @returns &quot;_multiplier&quot;: The multiplier for the swap
-  * @returns &quot;token_a_address&quot;: The address of token a
-  * @returns &quot;token_b_address&quot;: The address of token b
-  * @returns &quot;start_date&quot;: The start date of the swap
+  * @returns "_oracle_adress": The address of the oracle
+  * @returns "_operator": The address of the owner and operator of the factory
+  * @returns "_duration": The duration of the swap
+  * @returns "_multiplier": The multiplier for the swap
+  * @returns "token_a_address": The address of token a
+  * @returns "token_b_address": The address of token b
+  * @returns "start_date": The start date of the swap
   */
   function getVariables() public view returns (address oracle_addr, uint swap_duration, uint swap_multiplier, address token_a_addr, address token_b_addr){
     return (oracle_address,duration, multiplier, token_a, token_b);
@@ -276,11 +276,11 @@ contract Factory {
 
   /*
   * Pays out to a DRCT token
-  * @param &quot;_party&quot;: The address being paid
-  * @param &quot;_long&quot;: Whether the _party is long or not
+  * @param "_party": The address being paid
+  * @param "_long": Whether the _party is long or not
   */
   function payToken(address _party, address _token_add) public {
-    require(created_contracts[msg.sender] &gt; 0);
+    require(created_contracts[msg.sender] > 0);
     drct_interface = DRCT_Token_Interface(_token_add);
     drct_interface.pay(_party, msg.sender);
   }

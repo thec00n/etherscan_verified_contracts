@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -64,7 +64,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -82,7 +82,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -125,7 +125,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -136,8 +136,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -151,7 +151,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -225,8 +225,8 @@ contract DragonCoin is StandardToken, Usable {
     event Mint(address indexed to, uint256 value);
     event Burn(address indexed burner, uint256 value);
     
-    string public name = &quot;DragonSeriesToken&quot;; 
-    string public symbol = &quot;DST&quot;;
+    string public name = "DragonSeriesToken"; 
+    string public symbol = "DST";
     uint public decimals = 18;
     uint public INITIAL_SUPPLY = 1100000 * (10 ** decimals);     
     uint public MAX_SUPPLY = 10 * 100000000 * (10 ** decimals); 
@@ -237,7 +237,7 @@ contract DragonCoin is StandardToken, Usable {
     UseInterface public useAddr;
 
     // key = useType, value = UseFee
-    mapping (uint256 =&gt; UseFee) public useFees;
+    mapping (uint256 => UseFee) public useFees;
     uint private _maxPercentFee = 1000000;
 
     struct UseFee {
@@ -271,7 +271,7 @@ contract DragonCoin is StandardToken, Usable {
     }
 
     function mint(uint256 value) public onlyCFO returns (bool) {
-        require(totalSupply_.add(value) &lt;= MAX_SUPPLY);
+        require(totalSupply_.add(value) <= MAX_SUPPLY);
         
         balances[cfo] = balances[cfo].add(value);
         totalSupply_ = totalSupply_.add(value);
@@ -283,7 +283,7 @@ contract DragonCoin is StandardToken, Usable {
     }
     
     function burn(uint256 value) public onlyCOO returns (bool) {
-        require(balances[coo] &gt;= value); 
+        require(balances[coo] >= value); 
         
         balances[coo] = balances[coo].sub(value);
         totalSupply_ = totalSupply_.sub(value);
@@ -304,7 +304,7 @@ contract DragonCoin is StandardToken, Usable {
         require(feeType == 1 || feeType == 2);
 
         if(feeType == 2){
-            require(fee &lt;= _maxPercentFee);
+            require(fee <= _maxPercentFee);
         }
 
         UseFee memory ufee = UseFee({
@@ -316,8 +316,8 @@ contract DragonCoin is StandardToken, Usable {
 
     function use(address to, uint256 value, uint256 useType, uint256 param1, uint256 param2, uint256 param3, string param4) external {
         require(useAddr != address(0));
-        require(balances[msg.sender] &gt;= value);
-        require(to != address(0) &amp;&amp; cfo != address(0));
+        require(balances[msg.sender] >= value);
+        require(to != address(0) && cfo != address(0));
         
         UseFee memory ufee = useFees[useType];
 
@@ -339,7 +339,7 @@ contract DragonCoin is StandardToken, Usable {
             balances[to] = balances[to].add(actualVal);
             emit Transfer(msg.sender, to, actualVal);
 
-            if(actualFee &gt; 0){
+            if(actualFee > 0){
                 balances[cfo] = balances[cfo].add(actualFee);
                 emit Transfer(msg.sender, cfo, actualFee);
             }

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 /**
- * BRX.SPACE (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e5d51504a5f5d4a7e5c4c46104d4e5f5d5b">[email&#160;protected]</a>)
+ * BRX.SPACE (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e5d51504a5f5d4a7e5c4c46104d4e5f5d5b">[email protected]</a>)
  * 
  * BRX token is a virtual token, governed by ERC20-compatible
  * Ethereum Smart Contract and secured by Ethereum Blockchain
@@ -29,25 +29,25 @@ library SafeMath {
     return c;
   }
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint a, uint b) internal pure returns (uint) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint a, uint b) internal pure returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -81,13 +81,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-   require(msg.data.length &gt;= size + 4);
+   require(msg.data.length >= size + 4);
    _;
   }
 
@@ -97,8 +97,8 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint _value) public onlyPayloadSize(2 * 32) returns (bool) {
-    require(_to != address(0) &amp;&amp;
-        _value &lt;= balances[msg.sender]);
+    require(_to != address(0) &&
+        _value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -127,7 +127,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -136,9 +136,9 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value uint the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-    require(_to != address(0) &amp;&amp;
-        _value &lt;= balances[_from] &amp;&amp;
-        _value &lt;= allowed[_from][msg.sender]);
+    require(_to != address(0) &&
+        _value <= balances[_from] &&
+        _value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
   }
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -194,7 +194,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -236,8 +236,8 @@ contract BRXToken is StandardToken, Ownable {
   using SafeMath for uint;
 
   //---------------  Info for ERC20 explorers  -----------------//
-  string public constant name = &quot;BRX Coin&quot;;
-  string public constant symbol = &quot;BRX&quot;;
+  string public constant name = "BRX Coin";
+  string public constant symbol = "BRX";
   uint8 public constant decimals = 18;
 
   //----------------------  Constants  -------------------------//
@@ -266,14 +266,14 @@ contract BRXToken is StandardToken, Ownable {
 
   //-------------------  Founder Members  ----------------------//
   uint public founderMembers = 0;
-  mapping(uint =&gt; address) private founderOwner;
-  mapping(address =&gt; uint) founderMembersInvest;
+  mapping(uint => address) private founderOwner;
+  mapping(address => uint) founderMembersInvest;
   
   //----------------------  Premiums  --------------------------//
   uint[] private premiumPacks;
-  mapping(address =&gt; bool) private premiumICOMember;
-  mapping(address =&gt; uint) private premiumPacksPaid;
-  mapping(address =&gt; bool) public frozenAccounts;
+  mapping(address => bool) private premiumICOMember;
+  mapping(address => uint) private premiumPacksPaid;
+  mapping(address => bool) public frozenAccounts;
 
   //-----------------------  Events  ---------------------------//
   event ICOOpened();
@@ -292,7 +292,7 @@ contract BRXToken is StandardToken, Ownable {
 
   function BRXToken() public {
     // Some percentage of the tokens is already reserved by early employees and investors
-    // Here we&#39;re initializing their balances
+    // Here we're initializing their balances
     distributePreSoldShares();
 
     // Starting price
@@ -324,15 +324,15 @@ contract BRXToken is StandardToken, Ownable {
   // Price is being determined by the algorithm in recalculatePrice()
   // You can also send the ether directly to the contract address
   function buy() public payable {
-    require(msg.value != 0 &amp;&amp; isICOOpened == true &amp;&amp; isICOClosed == false);
+    require(msg.value != 0 && isICOOpened == true && isICOClosed == false);
 
     // Deciding how many tokens can be bought with the ether received
     uint tokens = getAttoTokensAmountPerWeiInternal(msg.value);
 
-    // Don&#39;t allow to buy more than 1% per transaction (secures from huge investors swalling the whole thing in 1 second)
+    // Don't allow to buy more than 1% per transaction (secures from huge investors swalling the whole thing in 1 second)
     uint allowedInOneTransaction = current_supply / 100;
-    require(tokens &lt; allowedInOneTransaction &amp;&amp;
-        tokens &lt;= balances[ico_address]);
+    require(tokens < allowedInOneTransaction &&
+        tokens <= balances[ico_address]);
 
     // Transfer from the ICO pool
     balances[ico_address] = balances[ico_address].sub(tokens); // if not enough, will throw
@@ -340,7 +340,7 @@ contract BRXToken is StandardToken, Ownable {
     premiumICOMember[msg.sender] = true;
     
     // Check if sender has become a founder member
-    if (balances[msg.sender] &gt;= 2000000000000000000000) {
+    if (balances[msg.sender] >= 2000000000000000000000) {
         if (founderMembersInvest[msg.sender] == 0) {
             founderOwner[founderMembers] = msg.sender;
             founderMembers++; BRXNewFounder(msg.sender, balances[msg.sender]);
@@ -352,7 +352,7 @@ contract BRXToken is StandardToken, Ownable {
     uint old_price = current_price_atto_tokens_per_wei;
     current_price_atto_tokens_per_wei = calculateCurrentPrice(getAttoTokensBoughtInICO());
     if (current_price_atto_tokens_per_wei == 0) current_price_atto_tokens_per_wei = 1; // in case it is too small that it gets rounded to zero
-    if (current_price_atto_tokens_per_wei &gt; old_price) current_price_atto_tokens_per_wei = old_price; // in case some weird overflow happens
+    if (current_price_atto_tokens_per_wei > old_price) current_price_atto_tokens_per_wei = old_price; // in case some weird overflow happens
 
     // Broadcasting price change event
     if (old_price != current_price_atto_tokens_per_wei) PriceChanged(old_price, current_price_atto_tokens_per_wei);
@@ -375,13 +375,13 @@ contract BRXToken is StandardToken, Ownable {
   // Functions for the contract owner
 
   function openICO() public onlyOwner {
-    require(isICOOpened == false &amp;&amp; isICOClosed == false);
+    require(isICOOpened == false && isICOClosed == false);
     isICOOpened = true;
 
     ICOOpened();
   }
   function closeICO() public onlyOwner {
-    require(isICOClosed == false &amp;&amp; isICOOpened == true);
+    require(isICOClosed == false && isICOOpened == true);
 
     isICOOpened = false;
     isICOClosed = true;
@@ -417,9 +417,9 @@ contract BRXToken is StandardToken, Ownable {
     address _from, address _to, uint _value
   ) public allowedPayments
     returns (bool) {
-    require(msg.sender == addrBRXPay &amp;&amp; balances[_to].add(_value) &gt; balances[_to] &amp;&amp;
-    _value &lt;= balances[_from] &amp;&amp; !frozenAccounts[_from] &amp;&amp;
-    !frozenAccounts[_to] &amp;&amp; _to != address(0));
+    require(msg.sender == addrBRXPay && balances[_to].add(_value) > balances[_to] &&
+    _value <= balances[_from] && !frozenAccounts[_from] &&
+    !frozenAccounts[_to] && _to != address(0));
     
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -430,7 +430,7 @@ contract BRXToken is StandardToken, Ownable {
     uint _new_price  
   ) public onlyOwner
   returns (bool) {
-    require(isICOClosed == true &amp;&amp; _new_price &gt; 0); // Only when ICO is closed
+    require(isICOClosed == true && _new_price > 0); // Only when ICO is closed
     uint old_price = current_price_atto_tokens_per_wei;
     current_price_atto_tokens_per_wei = _new_price;
     PriceChanged(old_price, current_price_atto_tokens_per_wei);
@@ -438,7 +438,7 @@ contract BRXToken is StandardToken, Ownable {
 
   // ***************************************************************************
   // Some percentage of the tokens is already reserved by early employees and investors
-  // Here we&#39;re initializing their balances
+  // Here we're initializing their balances
 
   function distributePreSoldShares() private onlyOwner {
     // Making it impossible to call this function twice
@@ -470,7 +470,7 @@ contract BRXToken is StandardToken, Ownable {
 
   function getIcoStatus() public view
     returns (string result) {
-    return (isICOClosed) ? &#39;closed&#39; : (isICOOpened) ? &#39;opened&#39; : &#39;not opened&#39; ;
+    return (isICOClosed) ? 'closed' : (isICOOpened) ? 'opened' : 'not opened' ;
   }
   function getCurrentPricePerWei() public view
     returns (uint result) {
@@ -524,7 +524,7 @@ contract BRXToken is StandardToken, Ownable {
     uint index
   ) public onlyOwner view
     returns (address account) {
-    require(founderMembers &gt;= index &amp;&amp; founderOwner[index] != address(0));
+    require(founderMembers >= index && founderOwner[index] != address(0));
     return founderOwner[index];
   }
 
@@ -536,16 +536,16 @@ contract BRXToken is StandardToken, Ownable {
   ) public onlyOwner allowedPayments {
     premiumPacks.length += 1;
     premiumPacks[premiumPacks.length-1] = amount;
-    balances[msg.sender] = balances[msg.sender].sub(amount); // will throw and revert the whole thing if doesn&#39;t have this amount
+    balances[msg.sender] = balances[msg.sender].sub(amount); // will throw and revert the whole thing if doesn't have this amount
   }
   function getPremiums() public allowedPayments
     returns (uint amount) {
     require(premiumICOMember[msg.sender]);
-    if (premiumPacks.length &gt; premiumPacksPaid[msg.sender]) {
+    if (premiumPacks.length > premiumPacksPaid[msg.sender]) {
       uint startPackIndex = premiumPacksPaid[msg.sender];
       uint finishPackIndex = premiumPacks.length - 1;
       uint owingTotal = 0;
-      for(uint i = startPackIndex; i &lt;= finishPackIndex; i++) {
+      for(uint i = startPackIndex; i <= finishPackIndex; i++) {
         if (current_supply != 0) { // just in case
           uint owing = balances[msg.sender] * premiumPacks[i] / current_supply;
           balances[msg.sender] = balances[msg.sender].add(owing);
@@ -563,8 +563,8 @@ contract BRXToken is StandardToken, Ownable {
   // Overriding payment functions to take control over the logic
 
   modifier allowedPayments() {
-    // Don&#39;t allow to transfer coins until the ICO ends
-    require(isICOOpened == false &amp;&amp; isICOClosed == true &amp;&amp; !frozenAccounts[msg.sender]);
+    // Don't allow to transfer coins until the ICO ends
+    require(isICOOpened == false && isICOClosed == true && !frozenAccounts[msg.sender]);
     _;
   }
   

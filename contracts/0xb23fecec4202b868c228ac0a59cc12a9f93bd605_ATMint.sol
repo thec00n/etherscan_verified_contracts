@@ -49,52 +49,52 @@ contract SafeMath {
     standard uint256 functions
      */
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
         z = x / y;
     }
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     /*
     uint128 functions (h is for half)
      */
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
         z = x / y;
     }
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     /*
     int256 functions
      */
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     /*
     WAD math
@@ -135,10 +135,10 @@ contract SafeMath {
         z = cast((uint256(x) * RAY + y / 2) / y);
     }
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -194,7 +194,7 @@ contract Owned {
 }
 contract StandardToken is ERC20Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -205,7 +205,7 @@ contract StandardToken is ERC20Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -225,7 +225,7 @@ contract StandardToken is ERC20Token {
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value!=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)) throw;
+        if ((_value!=0) && (allowed[msg.sender][_spender] !=0)) throw;
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -236,17 +236,17 @@ contract StandardToken is ERC20Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 contract ATMToken is StandardToken, Owned {
     // metadata
-    string public constant name = &quot;Attention Token of Media&quot;;
-    string public constant symbol = &quot;ATM&quot;;
-    string public version = &quot;1.0&quot;;
+    string public constant name = "Attention Token of Media";
+    string public constant symbol = "ATM";
+    string public version = "1.0";
     uint256 public constant decimals = 8;
     bool public disabled;
-    mapping(address =&gt; bool) public isATMHolder;
+    mapping(address => bool) public isATMHolder;
     address[] public ATMHolders;
     // constructor
     function ATMToken(uint256 _amount) {
@@ -293,8 +293,8 @@ contract Contribution is SafeMath, Owned {
     address public investorDeposit = 0;
     bool public isFinalize = false;
     bool public isPause = false;
-    mapping (uint =&gt; uint) public dailyTotals; //total eth per day
-    mapping (uint =&gt; mapping (address =&gt; uint)) public userBuys; // otal eth per day per user
+    mapping (uint => uint) public dailyTotals; //total eth per day
+    mapping (uint => mapping (address => uint)) public userBuys; // otal eth per day per user
     uint256 public totalContributedETH = 0; //total eth of 7 days
     // events
     event LogBuy (uint window, address user, uint amount);
@@ -302,7 +302,7 @@ contract Contribution is SafeMath, Owned {
     event LogFinalize (uint finalizeTime);
     event LogPause (uint finalizeTime, bool pause);
     function Contribution (address _ethFundDeposit, address _investorDeposit, uint256 _fundingStartTime, uint256 _dayCycle)  {
-        require( now &lt; _fundingStartTime );
+        require( now < _fundingStartTime );
         require( _ethFundDeposit != address(0) );
         fundingStartTime = _fundingStartTime;
         dayCycle = _dayCycle;
@@ -314,7 +314,7 @@ contract Contribution is SafeMath, Owned {
     function () payable {  
         require(!isPause);
         require(!isFinalize);
-        require( msg.value &gt;= MIN_FUND ); //eth &gt;= 0.01 at least
+        require( msg.value >= MIN_FUND ); //eth >= 0.01 at least
         ethFundDeposit.transfer(msg.value);
         buy(today(), msg.sender, msg.value);
     }
@@ -322,8 +322,8 @@ contract Contribution is SafeMath, Owned {
         buy(day, _exchangeAddr, _amount);
     }
     function buy(uint256 day, address _addr, uint256 _amount) internal {
-        require( day &gt;= CRAWDSALE_START_DAY &amp;&amp; day &lt;= CRAWDSALE_END_DAY ); 
-        //record user&#39;s buy amount
+        require( day >= CRAWDSALE_START_DAY && day <= CRAWDSALE_END_DAY ); 
+        //record user's buy amount
         userBuys[day][_addr] += _amount;
         dailyTotals[day] += _amount;
         totalContributedETH += _amount;
@@ -366,9 +366,9 @@ contract ATMint is SafeMath, Owned {
     uint256[] public tokenToReward = [0, (120 * MILLION), (50 * MILLION), (30 * MILLION), 0, 0, 0, 0]; // 1.2 billion, 0.5 billion, 0.3 billion
     bool doOnce = false;
     
-    mapping (address =&gt; bool) public collected;
-    mapping (address =&gt; uint) public contributedToken;
-    mapping (address =&gt; uint) public unClaimedToken;
+    mapping (address => bool) public collected;
+    mapping (address => uint) public contributedToken;
+    mapping (address => uint) public unClaimedToken;
     // events
     event LogRegister (address contributionAddr, address ATMTokenAddr);
     event LogCollect (address user, uint spendETHAmount, uint getATMAmount);
@@ -389,7 +389,7 @@ contract ATMint is SafeMath, Owned {
         // alloc reserve token to fund account (50 billion)
         lockToken(contribution.ethFundDeposit(), tokenToReserve);
         lockToken(contribution.investorDeposit(), tokenToFounder);
-        //help founder&amp;fund to claim first 1/6 ATMs
+        //help founder&fund to claim first 1/6 ATMs
         claimUserToken(contribution.investorDeposit());
         claimFoundationToken();
         
@@ -411,10 +411,10 @@ contract ATMint is SafeMath, Owned {
         uint128 totalATMToken = 0;
         uint128 rewardRate = 0;
         collected[_user] = true;
-        for (uint day = CRAWDSALE_START_DAY; day &lt;= CRAWDSALE_END_DAY; day++) {
+        for (uint day = CRAWDSALE_START_DAY; day <= CRAWDSALE_END_DAY; day++) {
             dailyContributedETH = cast( contribution.dailyTotals(day) );
             userContributedETH = cast( contribution.userBuys(day,_user) );
-            if (dailyContributedETH &gt; 0 &amp;&amp; userContributedETH &gt; 0) {
+            if (dailyContributedETH > 0 && userContributedETH > 0) {
                 //Calculate user rewards
                 rewardRate = wdiv(cast(tokenToReward[day]), dailyContributedETH);
                 reward += wmul(userContributedETH, rewardRate);
@@ -455,7 +455,7 @@ contract ATMint is SafeMath, Owned {
         require(lockStartTime != 0);
         require(doOnce == false);
         uint256 rewards = 0;
-        for (uint day = CRAWDSALE_START_DAY; day &lt;= CRAWDSALE_EARLYBIRD_END_DAY; day++) {
+        for (uint day = CRAWDSALE_START_DAY; day <= CRAWDSALE_EARLYBIRD_END_DAY; day++) {
             if(contribution.dailyTotals(day) == 0){
                 rewards += tokenToReward[day];
             }
@@ -479,12 +479,12 @@ contract ATMint is SafeMath, Owned {
         uint256 currentStage = sub(now, lockStartTime) / (60*60 /*contribution.dayCycle() * THAW_CYCLE_LENGTH*/) +1;
         if (currentStage == 0) {
             return;
-        } else if (currentStage &gt; _stages) {
+        } else if (currentStage > _stages) {
             currentStage = _stages;
         }
         uint256 lockStages = _stages - currentStage;
         uint256 unClaimed = (contributedToken[_user] * lockStages) / _stages;
-        if (unClaimedToken[_user] &lt;= unClaimed) {
+        if (unClaimedToken[_user] <= unClaimed) {
             return;
         }
         uint256 tmp = unClaimedToken[_user] - unClaimed;
@@ -504,7 +504,7 @@ contract ATMint is SafeMath, Owned {
         atmToken.setDisabled(false);
     }
     function migrateUserData() onlyOwner {
-        for (var i=0; i&lt; atmToken.getATMHoldersNumber(); i++){
+        for (var i=0; i< atmToken.getATMHoldersNumber(); i++){
             LogMigrate(atmToken.ATMHolders(i), atmToken.balances(atmToken.ATMHolders(i)));
         }
     }

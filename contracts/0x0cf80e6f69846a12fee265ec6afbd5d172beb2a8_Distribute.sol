@@ -60,7 +60,7 @@ contract Ownable {
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address indexed operator, string role);
   event RoleRemoved(address indexed operator, string role);
@@ -137,7 +137,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] _roles) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; _roles.length; i++) {
+  //     for (uint8 i = 0; i < _roles.length; i++) {
   //         if (hasRole(msg.sender, _roles[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -151,7 +151,7 @@ contract RBAC {
 }
 
 contract Whitelist is Ownable, RBAC {
-  string public constant ROLE_WHITELISTED = &quot;whitelist&quot;;
+  string public constant ROLE_WHITELISTED = "whitelist";
 
   /**
    * @dev Throws if operator is not whitelisted.
@@ -195,7 +195,7 @@ contract Whitelist is Ownable, RBAC {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       addAddressToWhitelist(_operators[i]);
     }
   }
@@ -204,7 +204,7 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove an address from the whitelist
    * @param _operator address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address _operator)
     onlyOwner
@@ -217,13 +217,13 @@ contract Whitelist is Ownable, RBAC {
    * @dev remove addresses from the whitelist
    * @param _operators addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _operators)
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _operators.length; i++) {
+    for (uint256 i = 0; i < _operators.length; i++) {
       removeAddressFromWhitelist(_operators[i]);
     }
   }
@@ -255,7 +255,7 @@ contract Distribute is Whitelist {
         onlyIfWhitelisted(msg.sender)
     {
         require(beneficiaries.length == amounts.length);
-        for (uint256 i = 0; i &lt; beneficiaries.length; i++) {
+        for (uint256 i = 0; i < beneficiaries.length; i++) {
             release(beneficiaries[i], amounts[i]);
         }
     }
@@ -278,7 +278,7 @@ contract Distribute is Whitelist {
 
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -291,7 +291,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal

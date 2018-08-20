@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -91,7 +91,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -139,7 +139,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -202,7 +202,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -239,9 +239,9 @@ contract DadiMaxCapSale is Ownable {
     uint256 public saleTokenPrice = 500;                // USD$0.50
     uint256 public ethRate = 1172560;                   // Original ETH rate. 1 ETH = 1172.56 USD
  
-    mapping(address =&gt; WhitelistUser) private whitelisted;
+    mapping(address => WhitelistUser) private whitelisted;
     address[] private whitelistedIndex;
-    mapping(address =&gt; Investor) private investors;
+    mapping(address => Investor) private investors;
     address[] private investorIndex;
 
     /*****
@@ -309,7 +309,7 @@ contract DadiMaxCapSale is Ownable {
     * @param userAddresses   address[]     The array of whitelist wallet addresses
     */
     function addWhitelistUsers(address[] userAddresses) public onlyOwner {
-        for (uint i = 0; i &lt; userAddresses.length; i++) {
+        for (uint i = 0; i < userAddresses.length; i++) {
             addWhitelistUser(userAddresses[i]);
         }
     }
@@ -361,7 +361,7 @@ contract DadiMaxCapSale is Ownable {
         LogStateChange(state);
 
         // Transfer any ETH to one of the Presale wallets
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             forwardFunds(this.balance);
         }
     }
@@ -378,7 +378,7 @@ contract DadiMaxCapSale is Ownable {
         uint256 remaining = getTokensAvailable();
         updateSaleParameters(remaining);
 
-        if (remaining &gt; 0) {
+        if (remaining > 0) {
             token.transfer(recipient, remaining);
             LogRedistributeTokens(recipient, state, remaining);
         }
@@ -402,7 +402,7 @@ contract DadiMaxCapSale is Ownable {
         
         // get the tokens available for the investor
         uint256 tokens = investors[_address].tokens;
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         require(investors[_address].distributed == false);
 
@@ -425,7 +425,7 @@ contract DadiMaxCapSale is Ownable {
         
         // get the tokens available for the investor
         uint256 tokens = investors[_purchaseAddress].tokens;
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         require(investors[_purchaseAddress].distributed == false);
         investors[_purchaseAddress].distributed = true;
@@ -443,9 +443,9 @@ contract DadiMaxCapSale is Ownable {
     */
     function redistributeTokens (address investorAddress, address recipient) public onlyOwner {
         uint256 tokens = investors[investorAddress].tokens;
-        require(tokens &gt; 0);
+        require(tokens > 0);
         
-        // remove tokens, so they can&#39;t be redistributed
+        // remove tokens, so they can't be redistributed
         require(investors[investorAddress].distributed == false);
 
         investors[investorAddress].distributed = true;
@@ -521,7 +521,7 @@ contract DadiMaxCapSale is Ownable {
     }
 
     /*****
-    * @dev Get a user&#39;s whitelisted state
+    * @dev Get a user's whitelisted state
     * @param userAddress      address       the wallet address of the user
     * @return bool  true if the user is in the whitelist
     */
@@ -531,7 +531,7 @@ contract DadiMaxCapSale is Ownable {
     }
 
     /*****
-    * @dev Get a user&#39;s invested state
+    * @dev Get a user's invested state
     * @param _address      address       the wallet address of the user
     * @return bool  true if the user has already contributed
     */
@@ -541,7 +541,7 @@ contract DadiMaxCapSale is Ownable {
     }
 
     /*****
-    * @dev Update a user&#39;s invested state
+    * @dev Update a user's invested state
     * @param _address      address       the wallet address of the user
     * @param _value        uint256       the amount contributed in this transaction
     * @param _tokens       uint256       the number of tokens assigned in this transaction
@@ -564,7 +564,7 @@ contract DadiMaxCapSale is Ownable {
         address account;
 
         // move funds to a random preSaleWallet
-        if (saleWallets.length &gt; 0) {
+        if (saleWallets.length > 0) {
             accountNumber = getRandom(saleWallets.length) - 1;
             account = saleWallets[accountNumber];
             account.transfer(_value);
@@ -586,7 +586,7 @@ contract DadiMaxCapSale is Ownable {
 
         // if the number of tokens calculated for the given value is 
         // greater than the tokens available, reject the payment
-        if (boughtTokens &gt;= getTokensAvailable()) {
+        if (boughtTokens >= getTokensAvailable()) {
             revert();
         }
 
@@ -621,7 +621,7 @@ contract DadiMaxCapSale is Ownable {
     * @return        bool        Returns true if the amount is equal to or below the individual cap
     */
     function isEqualOrBelowCap (uint256 _amount) internal constant returns (bool) {
-        return ethToUsd(_amount) &lt;= individualCap;
+        return ethToUsd(_amount) <= individualCap;
     }
 
     /*****

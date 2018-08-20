@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -82,9 +82,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -92,7 +92,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -101,7 +101,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -137,13 +137,13 @@ contract BallerToken is Ownable, Destructible {
     /*** STORAGE ***/
 
     // @dev maps team id to address of who owns it
-    mapping (uint =&gt; address) public teamIndexToOwner;
+    mapping (uint => address) public teamIndexToOwner;
 
     // @dev maps team id to a price
-    mapping (uint =&gt; uint) private teamIndexToPrice;
+    mapping (uint => uint) private teamIndexToPrice;
 
     // @dev maps address to how many tokens they own
-    mapping (address =&gt; uint) private ownershipTokenCount;
+    mapping (address => uint) private ownershipTokenCount;
 
 
     /*** DATATYPES ***/
@@ -186,7 +186,7 @@ contract BallerToken is Ownable, Destructible {
     * @param _newName The name you want to set the team to be.
     */
     function changeTeamName(uint _tokenId, string _newName) public onlyOwner {
-      require(_tokenId &lt; ballerTeams.length);
+      require(_tokenId < ballerTeams.length);
       ballerTeams[_tokenId].name = _newName;
     }
 
@@ -220,7 +220,7 @@ contract BallerToken is Ownable, Destructible {
 
     /**
     * @dev Gets list of teams owned by a person.
-    * @dev note: don&#39;t want to call this in the smart contract, expensive op.
+    * @dev note: don't want to call this in the smart contract, expensive op.
     * @param _owner address of the owner
     * @return ownedTeams list of the teams owned by the owner
     */
@@ -230,7 +230,7 @@ contract BallerToken is Ownable, Destructible {
       uint totalTeams = totalSupply();
       uint resultIndex = 0;
       if (tokenCount != 0) {
-        for (uint pos = 0; pos &lt; totalTeams; pos++) {
+        for (uint pos = 0; pos < totalTeams; pos++) {
           address currOwner = ownerOf(pos);
           if (currOwner == _owner) {
             ownedTeams[resultIndex] = pos;
@@ -243,7 +243,7 @@ contract BallerToken is Ownable, Destructible {
     /*
      * @dev gets the address of owner of the team
      * @param _tokenId is id of the team
-     * @return owner the owner of the team&#39;s address
+     * @return owner the owner of the team's address
     */
     function ownerOf(uint _tokenId) public view returns (address owner) {
       owner = teamIndexToOwner[_tokenId];
@@ -270,7 +270,7 @@ contract BallerToken is Ownable, Destructible {
     /**
     * @dev Allows user to buy a team from the old owner.
     * @dev Pays old owner minus commission, updates price.
-    * @param _teamId id of the team they&#39;re trying to buy
+    * @param _teamId id of the team they're trying to buy
     */
     function purchase(uint _teamId) public payable {
       address oldOwner = ownerOf(_teamId);
@@ -285,7 +285,7 @@ contract BallerToken is Ownable, Destructible {
       require(_addressNotNull(newOwner));
 
       // Making sure sent amount is greater than or equal to the sellingPrice
-      require(msg.value &gt;= sellingPrice);
+      require(msg.value >= sellingPrice);
 
       uint payment =  _calculatePaymentToOwner(sellingPrice);
       uint excessPayment = msg.value.sub(sellingPrice);
@@ -293,7 +293,7 @@ contract BallerToken is Ownable, Destructible {
       teamIndexToPrice[_teamId] = newPrice;
 
       _transfer(oldOwner, newOwner, _teamId);
-      // Pay old tokenOwner, unless it&#39;s the smart contract
+      // Pay old tokenOwner, unless it's the smart contract
       if (oldOwner != address(this)) {
         oldOwner.transfer(payment);
       }
@@ -315,7 +315,7 @@ contract BallerToken is Ownable, Destructible {
     * @param _amount amount you want to withdraw
     */
     function _withdrawAmount(address _to, uint _amount) private {
-      require(this.balance &gt;= _amount);
+      require(this.balance >= _amount);
       if (_to == address(0)) {
         owner.transfer(_amount);
       } else {
@@ -334,7 +334,7 @@ contract BallerToken is Ownable, Destructible {
       uint newTeamId = ballerTeams.push(currTeam) - 1;
 
       // make sure we never overflow amount of tokens possible to be created
-      // 4 billion tokens...shouldn&#39;t happen.
+      // 4 billion tokens...shouldn't happen.
       require(newTeamId == uint256(uint32(newTeamId)));
 
       BallerCreated(newTeamId, _name, _owner);
@@ -366,13 +366,13 @@ contract BallerToken is Ownable, Destructible {
     * @return payment amount the owner gets after commission.
     */
     function _calculatePaymentToOwner(uint _sellingPrice) private pure returns (uint payment) {
-      if (_sellingPrice &lt; FIRST_PRICE_LIMIT) {
+      if (_sellingPrice < FIRST_PRICE_LIMIT) {
         payment = uint256(_sellingPrice.mul(100-FIRST_COMMISSION_LEVEL).div(100));
       }
-      else if (_sellingPrice &lt; SECOND_PRICE_LIMIT) {
+      else if (_sellingPrice < SECOND_PRICE_LIMIT) {
         payment = uint256(_sellingPrice.mul(100-SECOND_COMMISSION_LEVEL).div(100));
       }
-      else if (_sellingPrice &lt; THIRD_PRICE_LIMIT) {
+      else if (_sellingPrice < THIRD_PRICE_LIMIT) {
         payment = uint256(_sellingPrice.mul(100-THIRD_COMMISSION_LEVEL).div(100));
       }
       else {
@@ -386,13 +386,13 @@ contract BallerToken is Ownable, Destructible {
     * @return newPrice price the team will be worth after being bought.
     */
     function _calculateNewPrice(uint _sellingPrice) private pure returns (uint newPrice) {
-      if (_sellingPrice &lt; FIRST_PRICE_LIMIT) {
+      if (_sellingPrice < FIRST_PRICE_LIMIT) {
         newPrice = uint256(_sellingPrice.mul(FIRST_LEVEL_INCREASE).div(100));
       }
-      else if (_sellingPrice &lt; SECOND_PRICE_LIMIT) {
+      else if (_sellingPrice < SECOND_PRICE_LIMIT) {
         newPrice = uint256(_sellingPrice.mul(SECOND_LEVEL_INCREASE).div(100));
       }
-      else if (_sellingPrice &lt; THIRD_PRICE_LIMIT) {
+      else if (_sellingPrice < THIRD_PRICE_LIMIT) {
         newPrice = uint256(_sellingPrice.mul(THIRD_LEVEL_INCREASE).div(100));
       }
       else {

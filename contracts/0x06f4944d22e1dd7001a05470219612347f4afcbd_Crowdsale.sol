@@ -96,8 +96,8 @@ contract Crowdsale is Ownable {
    */
   constructor(ERC20 _token, uint256 _price, uint256 _minimum) public {
     require(_token != address(0));
-    require(_price &gt; 0);
-    require(_minimum &gt;= 0);
+    require(_price > 0);
+    require(_minimum >= 0);
     token = _token;
     price = _price;
     weiMinimum = _minimum * (10 ** 18);
@@ -114,12 +114,12 @@ contract Crowdsale is Ownable {
 
     require(beneficiary != address(0));
     require(weiAmount != 0);
-    require(weiAmount &gt;= weiMinimum);
+    require(weiAmount >= weiMinimum);
 
     uint256 tokens = weiAmount.div(price);
     uint256 selfBalance = balance();
-    require(tokens &gt; 0);
-    require(tokens &lt;= selfBalance);
+    require(tokens > 0);
+    require(tokens <= selfBalance);
 
     // Get tokens to beneficiary
     token.transfer(beneficiary, tokens);
@@ -152,7 +152,7 @@ contract Crowdsale is Ownable {
    * @param _price How many wei units a buyer gets per token
    */
   function setPrice(uint256 _price) onlyOwner public {
-    require(_price &gt; 0);
+    require(_price > 0);
     price = _price;
   }
 
@@ -161,7 +161,7 @@ contract Crowdsale is Ownable {
    * @param _minimum Minimal wei per transaction
    */
   function setMinimum(uint256 _minimum) onlyOwner public {
-    require(_minimum &gt;= 0);
+    require(_minimum >= 0);
     weiMinimum = _minimum * (10 ** 18);
   }
 
@@ -204,9 +204,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -214,7 +214,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -223,7 +223,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

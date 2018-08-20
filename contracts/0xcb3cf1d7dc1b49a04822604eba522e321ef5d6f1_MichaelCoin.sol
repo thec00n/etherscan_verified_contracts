@@ -3,12 +3,12 @@ pragma solidity ^0.4.11;
 contract MichaelCoin {
 
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
-  string public name = &quot;Michael Coin&quot;;
-  string public symbol = &quot;MC&quot;;
+  string public name = "Michael Coin";
+  string public symbol = "MC";
   uint8 public decimals = 18;
   uint256 public totalAmount = 1000000 ether;
 
@@ -23,8 +23,8 @@ contract MichaelCoin {
         return totalAmount;
     }
   function transfer (address _to, uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value
+        && balances[_to] + _value > balances[_to]) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -33,10 +33,10 @@ contract MichaelCoin {
   }
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-    if(balances[_from] &gt;= _value
-        &amp;&amp; _value &gt; 0
-        &amp;&amp; balances[_to] + _value &gt; balances[_to]
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+    if(balances[_from] >= _value
+        && _value > 0
+        && balances[_to] + _value > balances[_to]
+        && allowed[_from][msg.sender] >= _value) {
 
         balances[_from] -= _value;
         balances[_to] += _value;

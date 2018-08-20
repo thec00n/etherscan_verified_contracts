@@ -2,17 +2,17 @@ pragma solidity ^0.4.18;
 
 contract Hexagon {
   /* Main information */
-  string public constant name = &quot;Hexagon&quot;;
-  string public constant symbol = &quot;HXG&quot;;
+  string public constant name = "Hexagon";
+  string public constant symbol = "HXG";
   uint8 public constant decimals = 4;
   uint8 public constant burnPerTransaction = 2;
   uint256 public constant initialSupply = 420000000000000;
   uint256 public currentSupply = initialSupply;
 
   /* Create array with balances */
-  mapping (address =&gt; uint256) public balanceOf;
+  mapping (address => uint256) public balanceOf;
   /* Create array with allowance */
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   /* Constructor */
   function Hexagon() public {
@@ -36,7 +36,7 @@ contract Hexagon {
   /* Burn tokens */
   function burn(uint256 _value) public returns (bool success) {
     /* Check if the sender has enough */
-    require(balanceOf[msg.sender] &gt;= _value);
+    require(balanceOf[msg.sender] >= _value);
     /* Subtract from the sender */
     balanceOf[msg.sender] -= _value;
     /* Send to the black hole */
@@ -64,7 +64,7 @@ contract Hexagon {
   /* Transfer tokens from allowance */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
     /* Prevent transfer of not allowed tokens */
-    require(allowance[_from][msg.sender] &gt;= _value);
+    require(allowance[_from][msg.sender] >= _value);
     /* Remove tokens from allowance */
     allowance[_from][msg.sender] -= _value;
 
@@ -78,9 +78,9 @@ contract Hexagon {
     /* Prevent transfer to 0x0 address. Use burn() instead  */
     require (_to != 0x0);
     /* Check if the sender has enough */
-    require (balanceOf[_from] &gt;= _value + burnPerTransaction);
+    require (balanceOf[_from] >= _value + burnPerTransaction);
     /* Check for overflows */
-    require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require (balanceOf[_to] + _value > balanceOf[_to]);
     /* Subtract from the sender */
     balanceOf[_from] -= _value + burnPerTransaction;
     /* Add the same to the recipient */

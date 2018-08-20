@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,13 +48,13 @@ library SafeMath {
 contract GOLDBITSCOIN is ERC20
 {
     using SafeMath for uint256;
-    string public constant symbol = &quot;GBC&quot;;
-    string public constant name = &quot;Gold Bits Coin&quot;;
+    string public constant symbol = "GBC";
+    string public constant name = "Gold Bits Coin";
     uint8 public constant decimals = 10;
     // 100 million total supply // muliplies dues to decimal precision
     uint256 public _totalSupply = 1000000000 * 10 **10;     // 1 billion supply           
     // Balances for each account
-    mapping(address =&gt; uint256) balances;   
+    mapping(address => uint256) balances;   
     // Owner of this contract
     address public owner;
     
@@ -65,7 +65,7 @@ contract GOLDBITSCOIN is ERC20
     uint256 public stage = 0;
     uint256 public one_ether_usd_price = 0;
     
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
     
     // ico startdate
     uint256 startdate;
@@ -161,8 +161,8 @@ contract GOLDBITSCOIN is ERC20
     function () public payable 
     {
         require(ICO_PRE_ICO_STAGE);
-        require(stage &gt; 0);
-        require(now &lt;= enddate);
+        require(stage > 0);
+        require(now <= enddate);
         distributeToken(msg.value,msg.sender);   
     }
     
@@ -171,7 +171,7 @@ contract GOLDBITSCOIN is ERC20
         
         uint tokens = ((one_ether_usd_price * val) )  / (perTokenPrice * 10**14); 
 
-        require(balances[address(this)] &gt;= tokens);
+        require(balances[address(this)] >= tokens);
         
         balances[address(this)] = balances[address(this)].sub(tokens);
         balances[user_address] = balances[user_address].add(tokens);
@@ -206,9 +206,9 @@ contract GOLDBITSCOIN is ERC20
     
     //used by wallet during token buying procedure 
     function transferby(address _from,address _to,uint256 _amount) public onlycentralAccount returns(bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
                  
             balances[_from] -= _amount;
             balances[_to] += _amount;
@@ -222,7 +222,7 @@ contract GOLDBITSCOIN is ERC20
     // to be called by owner after an year review
     function mineToken(uint256 supply_to_increase) public onlyOwner
     {
-        require((supply_increased + supply_to_increase) &lt;= _totalSupply);
+        require((supply_increased + supply_to_increase) <= _totalSupply);
         supply_increased += supply_to_increase;
         
         balances[owner] += supply_to_increase;
@@ -240,12 +240,12 @@ contract GOLDBITSCOIN is ERC20
          return balances[_owner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
          require( _to != 0x0);
-         require(balances[msg.sender] &gt;= _amount 
-             &amp;&amp; _amount &gt;= 0
-             &amp;&amp; balances[_to] + _amount &gt;= balances[_to]);
+         require(balances[msg.sender] >= _amount 
+             && _amount >= 0
+             && balances[_to] + _amount >= balances[_to]);
              balances[msg.sender] = balances[msg.sender].sub(_amount);
              balances[_to] = balances[_to].add(_amount);
              Transfer(msg.sender, _to, _amount);
@@ -254,7 +254,7 @@ contract GOLDBITSCOIN is ERC20
   
      // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
@@ -264,10 +264,10 @@ contract GOLDBITSCOIN is ERC20
          uint256 _amount
      )public returns (bool success) {
         require(_to != 0x0); 
-         require(balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt;= 0
-             &amp;&amp; balances[_to] + _amount &gt;= balances[_to]);
+         require(balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount >= 0
+             && balances[_to] + _amount >= balances[_to]);
              balances[_from] = balances[_from].sub(_amount);
              allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
              balances[_to] = balances[_to].add(_amount);
@@ -307,13 +307,13 @@ contract GOLDBITSCOIN is ERC20
         bytes memory b = bytes(s);
         uint i;
         uint result1 = 0;
-        for (i = 0; i &lt; b.length; i++) {
+        for (i = 0; i < b.length; i++) {
             uint c = uint(b[i]);
             if(c == 46)
             {
                 // Do nothing --this will skip the decimal
             }
-          else if (c &gt;= 48 &amp;&amp; c &lt;= 57) {
+          else if (c >= 48 && c <= 57) {
                 result1 = result1 * 10 + (c - 48);
               // usd_price=result;
                 

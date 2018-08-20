@@ -78,7 +78,7 @@ contract UsingAdmin is
         constant
         returns (address _addr)
     {
-        return addressOf(&quot;ADMIN&quot;);
+        return addressOf("ADMIN");
     }
 }
 
@@ -113,7 +113,7 @@ contract UsingMonarchyFactory is
         view
         returns (IMonarchyFactory)
     {
-        return IMonarchyFactory(addressOf(&quot;MONARCHY_FACTORY&quot;));
+        return IMonarchyFactory(addressOf("MONARCHY_FACTORY"));
     }
 }
 
@@ -149,7 +149,7 @@ contract UsingTreasury is
         view
         returns (ITreasury)
     {
-        return ITreasury(addressOf(&quot;TREASURY&quot;));
+        return ITreasury(addressOf("TREASURY"));
     }
 }
 
@@ -178,7 +178,7 @@ contract HasDailyLimit {
 
     // Sets the daily limit.
     function _setDailyLimit(uint _limit) internal {
-        require(_limit &lt;= MAX_ALLOWED);
+        require(_limit <= MAX_ALLOWED);
         vars.dailyLimit = uint112(_limit);
     }
 
@@ -186,21 +186,21 @@ contract HasDailyLimit {
     // You should use getDailyLimitRemaining() before calling this.
     function _useFromDailyLimit(uint _amount) internal {
         uint _remaining = updateAndGetRemaining();
-        require(_amount &lt;= _remaining);
+        require(_amount <= _remaining);
         vars.usedToday += uint112(_amount);
     }
 
-    // If necessary, resets the day&#39;s usage.
+    // If necessary, resets the day's usage.
     // Then returns the amount remaining for today.
     function updateAndGetRemaining() private returns (uint _amtRemaining) {
-        if (today() &gt; vars.lastDay) {
+        if (today() > vars.lastDay) {
             vars.usedToday = 0;
             vars.lastDay = today();
         }
         uint112 _usedToday = vars.usedToday;
         uint112 _dailyLimit = vars.dailyLimit;
         // This could be negative if _dailyLimit was reduced.
-        return uint(_usedToday &gt;= _dailyLimit ? 0 : _dailyLimit - _usedToday);
+        return uint(_usedToday >= _dailyLimit ? 0 : _dailyLimit - _usedToday);
     }
 
     // Returns the current day.
@@ -217,22 +217,22 @@ contract HasDailyLimit {
         return uint(vars.dailyLimit);
     }
     function getDailyLimitUsed() public view returns (uint) {
-        return uint(today() &gt; vars.lastDay ? 0 : vars.usedToday);
+        return uint(today() > vars.lastDay ? 0 : vars.usedToday);
     }
     function getDailyLimitRemaining() public view returns (uint) {
         uint _used = getDailyLimitUsed();
-        return uint(_used &gt;= vars.dailyLimit ? 0 : vars.dailyLimit - _used);
+        return uint(_used >= vars.dailyLimit ? 0 : vars.dailyLimit - _used);
     }
 }
 
 /**
     This is a simple class that maintains a doubly linked list of
-    address =&gt; uint amounts. Address balances can be added to 
+    address => uint amounts. Address balances can be added to 
     or removed from via add() and subtract(). All balances can
     be obtain by calling balances(). If an address has a 0 amount,
     it is removed from the Ledger.
 
-    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it&#39;s safe to
+    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it's safe to
           use to track Ether balances.
 
     Public methods:
@@ -253,7 +253,7 @@ contract Ledger {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -299,7 +299,7 @@ contract Ledger {
         uint _maxAmt = entry.balance;
         if (_maxAmt == 0) return;
         
-        if (_amt &gt;= _maxAmt) {
+        if (_amt >= _maxAmt) {
             // Subtract the max amount, and delete entry.
             total -= _maxAmt;
             entries[entry.prev].next = entry.next;
@@ -326,7 +326,7 @@ contract Ledger {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -352,7 +352,7 @@ contract Ledger {
         _balances = new uint[](_size);
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _balances[_i] = entries[_curEntry.next].balance;
             _curEntry = entries[_curEntry.next];
@@ -382,7 +382,7 @@ contract AddressSet {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -412,8 +412,8 @@ contract AddressSet {
         else entry.exists = true;
 
         // Replace first entry with this one.
-        // Before: HEAD &lt;-&gt; X &lt;-&gt; Y
-        // After: HEAD &lt;-&gt; THIS &lt;-&gt; X &lt;-&gt; Y
+        // Before: HEAD <-> X <-> Y
+        // After: HEAD <-> THIS <-> X <-> Y
         // do: THIS.NEXT = [0].next; [0].next.prev = THIS; [0].next = THIS; THIS.prev = 0;
         Entry storage HEAD = entries[0x0];
         entry.next = HEAD.next;
@@ -430,12 +430,12 @@ contract AddressSet {
         // Do not allow the removal of HEAD.
         if (_address == address(0)) return;
         Entry storage entry = entries[_address];
-        // If it doesn&#39;t exist already, there is nothing to do.
+        // If it doesn't exist already, there is nothing to do.
         if (!entry.exists) return;
 
         // Stitch together next and prev, delete entry.
-        // Before: X &lt;-&gt; THIS &lt;-&gt; Y
-        // After: X &lt;-&gt; Y
+        // Before: X <-> THIS <-> Y
+        // After: X <-> Y
         // do: THIS.next.prev = this.prev; THIS.prev.next = THIS.next;
         entries[entry.prev].next = entry.next;
         entries[entry.next].prev = entry.prev;
@@ -455,7 +455,7 @@ contract AddressSet {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -481,7 +481,7 @@ contract AddressSet {
         // Iterate forward through all entries until the end.
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _curEntry = entries[_curEntry.next];
             _i++;
@@ -497,7 +497,7 @@ contract AddressSet {
 
   - Anybody can add funding (according to whitelist)
   - Anybody can tell profits (balance - (funding + collateral)) to go to Treasury.
-  - Anyone can remove their funding, so long as balance &gt;= collateral.
+  - Anyone can remove their funding, so long as balance >= collateral.
   - Whitelist is managed by getWhitelistOwner() -- typically Admin.
 
   Exposes the following:
@@ -595,8 +595,8 @@ contract Bankrollable is
         address _bankroller = msg.sender;
         uint _collateral = getCollateral();
         uint _balance = address(this).balance;
-        uint _available = _balance &gt; _collateral ? _balance - _collateral : 0;
-        if (_amount &gt; _available) _amount = _available;
+        uint _available = _balance > _collateral ? _balance - _collateral : 0;
+        if (_amount > _available) _amount = _available;
 
         // Try to remove _amount from ledger, get actual _amount removed.
         _amount = ledger.subtract(_bankroller, _amount);
@@ -615,7 +615,7 @@ contract Bankrollable is
         returns (uint _profits)
     {
         int _p = profits();
-        if (_p &lt;= 0) return;
+        if (_p <= 0) return;
         _profits = uint(_p);
         profitsSent += _profits;
         // Send profits to Treasury
@@ -662,7 +662,7 @@ contract Bankrollable is
     }
 
     // Returns the amount that can currently be bankrolled.
-    //   - 0 if balance &lt; collateral
+    //   - 0 if balance < collateral
     //   - If profits: full bankroll
     //   - If no profits: remaning bankroll: balance - collateral
     function bankrollAvailable()
@@ -674,9 +674,9 @@ contract Bankrollable is
         uint _bankroll = bankroll;
         uint _collat = getCollateral();
         // Balance is below collateral!
-        if (_balance &lt;= _collat) return 0;
+        if (_balance <= _collat) return 0;
         // No profits, but we have a balance over collateral.
-        else if (_balance &lt; _collat + _bankroll) return _balance - _collat;
+        else if (_balance < _collat + _bankroll) return _balance - _collat;
         // Profits. Return only _bankroll
         else return _bankroll;
     }
@@ -713,7 +713,7 @@ interface IMonarchyGame {
 /*
 
   MonarchyController manages a list of PredefinedGames.
-  PredefinedGames&#39; parameters are definable by the Admin.
+  PredefinedGames' parameters are definable by the Admin.
   These gamess can be started, ended, or refreshed by anyone.
 
   Starting games uses the funds in this contract, unless called via
@@ -743,7 +743,7 @@ contract MonarchyController is
     // An admin-controlled index of available games.
     // Note: Index starts at 1, and is limited to 20.
     uint public numDefinedGames;
-    mapping (uint =&gt; DefinedGame) public definedGames;
+    mapping (uint => DefinedGame) public definedGames;
     struct DefinedGame {
         IMonarchyGame game;     // address of ongoing game (or 0)
         bool isEnabled;         // if true, can be started
@@ -807,8 +807,8 @@ contract MonarchyController is
         fromAdmin
         returns (bool _success)
     {
-        if (_index-1 &gt; numDefinedGames || _index &gt; 20) {
-            emit Error(now, &quot;Index out of bounds.&quot;);
+        if (_index-1 > numDefinedGames || _index > 20) {
+            emit Error(now, "Index out of bounds.");
             return;
         }
 
@@ -828,8 +828,8 @@ contract MonarchyController is
         fromAdmin
         returns (bool _success)
     {
-        if (_index-1 &gt;= numDefinedGames) {
-            emit Error(now, &quot;Index out of bounds.&quot;);
+        if (_index-1 >= numDefinedGames) {
+            emit Error(now, "Index out of bounds.");
             return;
         }
         definedGames[_index].isEnabled = _bool;
@@ -860,37 +860,37 @@ contract MonarchyController is
         returns (address _game)
     {
         DefinedGame memory dGame = definedGames[_index];
-        if (_index-1 &gt;= numDefinedGames) {
-            _error(&quot;Index out of bounds.&quot;);
+        if (_index-1 >= numDefinedGames) {
+            _error("Index out of bounds.");
             return;
         }
         if (dGame.isEnabled == false) {
-            _error(&quot;DefinedGame is not enabled.&quot;);
+            _error("DefinedGame is not enabled.");
             return;
         }
         if (dGame.game != IMonarchyGame(0)) {
-            _error(&quot;Game is already started.&quot;);
+            _error("Game is already started.");
             return;
         }
-        if (address(this).balance &lt; dGame.initialPrize) {
-            _error(&quot;Not enough funds to start this game.&quot;);
+        if (address(this).balance < dGame.initialPrize) {
+            _error("Not enough funds to start this game.");
             return;
         }
-        if (getDailyLimitRemaining() &lt; dGame.initialPrize) {
-            _error(&quot;Starting game would exceed daily limit.&quot;);
+        if (getDailyLimitRemaining() < dGame.initialPrize) {
+            _error("Starting game would exceed daily limit.");
             return;
         }
 
         // Ensure that if this game is started, revenue comes back to this contract.
         IMonarchyFactory _mf = getMonarchyFactory();
         if (_mf.getCollector() != address(this)){
-            _error(&quot;MonarchyFactory.getCollector() points to a different contract.&quot;);
+            _error("MonarchyFactory.getCollector() points to a different contract.");
             return;
         }
 
         // Try to create game via factory.
         bool _success = address(_mf).call.value(dGame.initialPrize)(
-            bytes4(keccak256(&quot;createGame(uint256,uint256,int256,uint256,uint256)&quot;)),
+            bytes4(keccak256("createGame(uint256,uint256,int256,uint256,uint256)")),
             dGame.initialPrize,
             dGame.fee,
             dGame.prizeIncr,
@@ -899,7 +899,7 @@ contract MonarchyController is
         );
         if (!_success) {
             emit DefinedGameFailedCreation(now, _index);
-            _error(&quot;MonarchyFactory could not create game (invalid params?)&quot;);
+            _error("MonarchyFactory could not create game (invalid params?)");
             return;
         }
 
@@ -925,7 +925,7 @@ contract MonarchyController is
         // refund if invalid value sent.
         DefinedGame memory dGame = definedGames[_index];
         if (msg.value != dGame.initialPrize) {
-            _error(&quot;Value sent does not match initialPrize.&quot;);
+            _error("Value sent does not match initialPrize.");
             require(msg.sender.call.value(msg.value)());
             return;
         }
@@ -944,7 +944,7 @@ contract MonarchyController is
         public
         returns (uint _numGamesEnded, uint _feesCollected)
     {
-        for (uint _i = 1; _i &lt;= numDefinedGames; _i++) {
+        for (uint _i = 1; _i <= numDefinedGames; _i++) {
             IMonarchyGame _game = definedGames[_i].game;
             if (_game == IMonarchyGame(0)) continue;
 
@@ -970,7 +970,7 @@ contract MonarchyController is
                 emit GameEnded(now, _i, address(_game), _game.monarch());
             }
         }
-        if (_feesCollected &gt; 0) emit FeesCollected(now, _feesCollected);
+        if (_feesCollected > 0) emit FeesCollected(now, _feesCollected);
         return (_numGamesEnded, _feesCollected);
     }
 
@@ -995,7 +995,7 @@ contract MonarchyController is
         view
         returns (uint _count)
     {
-        for (uint _i = 1; _i &lt;= numDefinedGames; _i++) {
+        for (uint _i = 1; _i <= numDefinedGames; _i++) {
             if (definedGames[_i].game != IMonarchyGame(0)) _count++;
         }
     }
@@ -1005,7 +1005,7 @@ contract MonarchyController is
         view
         returns (uint _count)
     {
-        for (uint _i = 1; _i &lt;= numDefinedGames; _i++) {
+        for (uint _i = 1; _i <= numDefinedGames; _i++) {
             IMonarchyGame _game = definedGames[_i].game;
             if (_game == IMonarchyGame(0)) continue;
             if (_game.isEnded()) _count++;
@@ -1018,7 +1018,7 @@ contract MonarchyController is
         view
         returns (uint _index)
     {
-        for (uint _i = 1; _i &lt;= numDefinedGames; _i++) {
+        for (uint _i = 1; _i <= numDefinedGames; _i++) {
             if (getIsStartable(_i)) return _i;
         }
     }
@@ -1029,7 +1029,7 @@ contract MonarchyController is
         view
         returns (uint _feesAvailable)
     {
-        for (uint _i = 1; _i &lt;= numDefinedGames; _i++) {
+        for (uint _i = 1; _i <= numDefinedGames; _i++) {
             if (definedGames[_i].game == IMonarchyGame(0)) continue;
             _feesAvailable += definedGames[_i].game.fees();
         }
@@ -1043,12 +1043,12 @@ contract MonarchyController is
     {
         // set _num to Min(_num, _len), initialize the array
         uint _len = endedGames.length;
-        if (_num &gt; _len) _num = _len;
+        if (_num > _len) _num = _len;
         _addresses = new address[](_num);
 
         // Loop _num times, adding from end of endedGames.
         uint _i = 1;
-        while (_i &lt;= _num) {
+        while (_i <= _num) {
             _addresses[_i - 1] = endedGames[_len - _i];
             _i++;
         }
@@ -1085,11 +1085,11 @@ contract MonarchyController is
         returns (bool _isStartable)
     {
         DefinedGame memory dGame = definedGames[_index];
-        if (_index &gt;= numDefinedGames) return;
+        if (_index >= numDefinedGames) return;
         if (dGame.isEnabled == false) return;
         if (dGame.game != IMonarchyGame(0)) return;
-        if (dGame.initialPrize &gt; address(this).balance) return;
-        if (dGame.initialPrize &gt; getDailyLimitRemaining()) return;
+        if (dGame.initialPrize > address(this).balance) return;
+        if (dGame.initialPrize > getDailyLimitRemaining()) return;
         return true;
     }
     /******** Shorthand access to definedGames **************************/

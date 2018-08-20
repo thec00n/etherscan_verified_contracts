@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -86,8 +86,8 @@ contract ManagedToken {
 
     uint256 public totalSupply = 0;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -135,7 +135,7 @@ contract ManagedToken {
     function decreaseApproval (address _spender, uint256 _subtractedValue) unlocked public
         returns (bool success) {
             uint oldValue = allowed[msg.sender][_spender];
-            if (_subtractedValue &gt; oldValue) {
+            if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
             } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -145,16 +145,16 @@ contract ManagedToken {
     }
 
     function ManagedToken (string _name, string _symbol, uint8 _decimals) public {
-        require(bytes(_name).length &gt; 1);
-        require(bytes(_symbol).length &gt; 1);
+        require(bytes(_name).length > 1);
+        require(bytes(_symbol).length > 1);
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
     }
 
     function setNameAndTicker(string _name, string _symbol) onlyOwner public returns (bool success) {
-        require(bytes(_name).length &gt; 1);
-        require(bytes(_symbol).length &gt; 1);
+        require(bytes(_name).length > 1);
+        require(bytes(_symbol).length > 1);
         name = _name;
         symbol = _symbol;
         return true;
@@ -211,7 +211,7 @@ contract ManagedToken {
         require(upgraderSet);
         require(upgrader != TokenUpgraderInterface(0));
         uint256 value = balances[msg.sender];
-        assert(value &gt; 0);
+        assert(value > 0);
         delete balances[msg.sender];
         totalSupply = totalSupply.sub(value);
         assert(upgrader.upgradeFor(msg.sender, value));
@@ -223,8 +223,8 @@ contract ManagedToken {
         require(upgraderSet);
         require(upgrader != TokenUpgraderInterface(0));
         uint256 _allowance = allowed[_for][msg.sender];
-        require(_allowance &gt; 0);
-        require(_allowance &gt;= _value);
+        require(_allowance > 0);
+        require(_allowance >= _value);
         balances[_for] = balances[_for].sub(_value);
         allowed[_for][msg.sender] = _allowance.sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -234,7 +234,7 @@ contract ManagedToken {
 
     function () payable external {
         if (upgradable) {
-            require(msg.value &lt;= 1 ether / 1000);
+            require(msg.value <= 1 ether / 1000);
             assert(upgrade());
             return;
         }

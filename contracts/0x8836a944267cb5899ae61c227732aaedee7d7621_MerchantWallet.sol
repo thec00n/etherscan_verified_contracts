@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,7 +57,7 @@ contract Restricted is Ownable {
         bool _isMonethaAddress
     );
 
-    mapping (address =&gt; bool) public isMonethaAddress;
+    mapping (address => bool) public isMonethaAddress;
 
     /**
      *  Restrict methods in such way, that they can be invoked only by monethaAddress account.
@@ -168,22 +168,22 @@ contract Contactable is Ownable{
 
 contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
 
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
-    /// Address of merchant&#39;s account, that can withdraw from wallet
+    /// Address of merchant's account, that can withdraw from wallet
     address public merchantAccount;
 
     /// Unique Merchant identifier hash
     bytes32 public merchantIdHash;
 
     /// profileMap stores general information about the merchant
-    mapping (string=&gt;string) profileMap;
+    mapping (string=>string) profileMap;
 
     /// paymentSettingsMap stores payment and order settings for the merchant
-    mapping (string=&gt;string) paymentSettingsMap;
+    mapping (string=>string) paymentSettingsMap;
 
     /// compositeReputationMap stores composite reputation, that compraises from several metrics
-    mapping (string=&gt;uint32) compositeReputationMap;
+    mapping (string=>uint32) compositeReputationMap;
 
     /// number of last digits in compositeReputation for fractional part
     uint8 public constant REPUTATION_DECIMALS = 4;
@@ -194,12 +194,12 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  @param _merchantAccount Address of merchant&#39;s account, that can withdraw from wallet
+     *  @param _merchantAccount Address of merchant's account, that can withdraw from wallet
      *  @param _merchantId Merchant identifier
      */
     function MerchantWallet(address _merchantAccount, string _merchantId) public {
         require(_merchantAccount != 0x0);
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
 
         merchantAccount = _merchantAccount;
         merchantIdHash = keccak256(_merchantId);
@@ -279,7 +279,7 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  Allows merchant to withdraw funds to it&#39;s own account
+     *  Allows merchant to withdraw funds to it's own account
      */
     function withdraw(uint amount) external {
         withdrawTo(msg.sender, amount);
@@ -293,7 +293,7 @@ contract MerchantWallet is Pausable, SafeDestructible, Contactable, Restricted {
     }
 
     /**
-     *  Allows merchant to change it&#39;s account address
+     *  Allows merchant to change it's account address
      */
     function changeMerchantAccount(address newAccount) external onlyMerchant whenNotPaused {
         merchantAccount = newAccount;

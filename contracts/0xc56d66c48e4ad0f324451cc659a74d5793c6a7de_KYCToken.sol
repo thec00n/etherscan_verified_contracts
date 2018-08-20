@@ -6,7 +6,7 @@ pragma solidity ^0.4.18;
  * @dev see https://github.com/ethereum/EIPs/issues/179
  */
 contract ERC20Basic {
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     function totalSupply() public view returns (uint256);
     function balanceOf(address who) public view returns (uint256);
@@ -28,7 +28,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -79,7 +79,7 @@ contract Freezing is Ownable, ERC20Basic {
     event Unfreeze(address _holder, uint256 _amount);
 
     // all freezing sum for every holder
-    mapping(address =&gt; uint256) public freezeBalances;
+    mapping(address => uint256) public freezeBalances;
 
     modifier onlyTokenManager() {
         assert(msg.sender == tokenManager);
@@ -91,7 +91,7 @@ contract Freezing is Ownable, ERC20Basic {
      */
     modifier checkFreezing(address _holder, uint _value) {
         if (freezingActive) {
-            require(balances[_holder].sub(_value) &gt;= freezeBalances[_holder]);
+            require(balances[_holder].sub(_value) >= freezeBalances[_holder]);
         }
         _;
     }
@@ -130,7 +130,7 @@ contract Freezing is Ownable, ERC20Basic {
      * @dev Freeze amount for user
      */
     function freeze(address _holder, uint _amount) public onlyTokenManager {
-        assert(balances[_holder].sub(_amount.add(freezeBalances[_holder])) &gt;= 0);
+        assert(balances[_holder].sub(_amount.add(freezeBalances[_holder])) >= 0);
 
         freezeBalances[_holder] = freezeBalances[_holder].add(_amount);
         emit Freeze(_holder, _amount);
@@ -140,7 +140,7 @@ contract Freezing is Ownable, ERC20Basic {
      * @dev Unfreeze amount for user
      */
     function unfreeze(address _holder, uint _amount) public onlyTokenManager {
-        assert(freezeBalances[_holder].sub(_amount) &gt;= 0);
+        assert(freezeBalances[_holder].sub(_amount) >= 0);
 
         freezeBalances[_holder] = freezeBalances[_holder].sub(_amount);
         emit Unfreeze(_holder, _amount);
@@ -171,9 +171,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -181,7 +181,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -190,7 +190,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -217,7 +217,7 @@ contract Roles is Ownable {
     enum RoleItems {Person, Agent, Administrator}
     RoleItems constant defaultRole = RoleItems.Person;
 
-    mapping (address =&gt; RoleItems) private roleList;
+    mapping (address => RoleItems) private roleList;
 
     /**
      * @dev Event for every change of role
@@ -287,10 +287,10 @@ contract PropertyStorage is Roles, VerificationStatus {
     uint16 code;
     }
 
-    mapping(address =&gt; mapping(bytes32 =&gt; Property)) private propertyStorage;
+    mapping(address => mapping(bytes32 => Property)) private propertyStorage;
 
-    // agent =&gt; property =&gt; status
-    mapping(address =&gt; mapping(bytes32 =&gt; bool)) agentSign;
+    // agent => property => status
+    mapping(address => mapping(bytes32 => bool)) agentSign;
 
     event NewProperty(bytes32 _property, address _user, address _caller);
 
@@ -422,7 +422,7 @@ contract ERC20BasicToken is ERC20Basic, Freezing {
     */
     function transfer(address _to, uint256 _value) checkFreezing(msg.sender, _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -451,12 +451,12 @@ contract ERC20BasicToken is ERC20Basic, Freezing {
  */
 contract KYCToken is ERC20BasicToken, ERC20, PropertyStorage {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     uint256 public totalSupply = 42000000000000000000000000;
-    string public name = &quot;KYC.Legal token&quot;;
+    string public name = "KYC.Legal token";
     uint8 public decimals = 18;
-    string public symbol = &quot;KYC&quot;;
+    string public symbol = "KYC";
 
     function balanceOf(address _owner) view public returns (uint256 balance) {
         return balances[_owner];
@@ -474,8 +474,8 @@ contract KYCToken is ERC20BasicToken, ERC20, PropertyStorage {
      */
     function transferFrom(address _from, address _to, uint256 _value) checkFreezing(_from, _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -489,7 +489,7 @@ contract KYCToken is ERC20BasicToken, ERC20, PropertyStorage {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.

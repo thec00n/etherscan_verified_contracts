@@ -2,7 +2,7 @@
 
  Copyright 2018 LuckChain Foundation LTD
 
- Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
 
@@ -52,8 +52,8 @@ contract ERC20 {
 contract TokenBase is ERC20 {
 
     function transfer(address _to, uint _value) returns (bool) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -62,7 +62,7 @@ contract TokenBase is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -85,8 +85,8 @@ contract TokenBase is ERC20 {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
 
@@ -104,13 +104,13 @@ contract RegularToken is TokenBase {
     returns (bool)
     {
         uint allowance = allowed[_from][msg.sender];
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowance &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt;= balances[_to]
+        if (balances[_from] >= _value
+            && allowance >= _value
+            && balances[_to] + _value >= balances[_to]
         ) {
             balances[_to] += _value;
             balances[_from] -= _value;
-            if (allowance &lt; MAX_UINT) {
+            if (allowance < MAX_UINT) {
                 allowed[_from][msg.sender] -= _value;
             }
             Transfer(_from, _to, _value);
@@ -125,8 +125,8 @@ contract LuckChain is RegularToken {
 
     uint public totalSupply = 21*10**26;
     uint8 constant public decimals = 18;
-    string constant public name = &quot;LuckChain&quot;;
-    string constant public symbol = &quot;LUCK&quot;;
+    string constant public name = "LuckChain";
+    string constant public symbol = "LUCK";
 
     function LuckChain() {
         balances[msg.sender] = totalSupply;

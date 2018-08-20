@@ -9,8 +9,8 @@ contract NHGame{
 	uint numberOfGames=0;
 	    
 	function setNewValue() public payable{
-		require (msg.value &gt; curMax);
-		require (block.number&lt;solveTime);
+		require (msg.value > curMax);
+		require (block.number<solveTime);
 		curMax=msg.value;
 		stake+=msg.value;
 		argCurMax=msg.sender;
@@ -18,7 +18,7 @@ contract NHGame{
 	}
     
 	function withdraw() public{
-		if ((msg.sender == owner)&amp;&amp;(curMax&gt;0)&amp;&amp;(block.number&gt;solveTime)){
+		if ((msg.sender == owner)&&(curMax>0)&&(block.number>solveTime)){
 			uint tosend=stake*95/100;
 			uint tokeep=this.balance-tosend;
 			address sendToAdd=argCurMax;

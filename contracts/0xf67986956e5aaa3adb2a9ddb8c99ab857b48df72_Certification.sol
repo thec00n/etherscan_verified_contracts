@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -53,7 +53,7 @@ contract Certification is Ownable {
     string id;
   }
 
-  mapping (address =&gt; Certifier) public certifiers;
+  mapping (address => Certifier) public certifiers;
 
   event Certificate(bytes32 indexed certHash, bytes32 innerHash, address indexed certifier);
   event Revocation(bytes32 indexed certHash, bool invalid);
@@ -80,7 +80,7 @@ contract Certification is Ownable {
 
   function revoke(bytes32 innerHash, address certifier, bool invalid) public {
     require(msg.sender == owner
-      || (certifiers[msg.sender].valid &amp;&amp; msg.sender == certifier)
+      || (certifiers[msg.sender].valid && msg.sender == certifier)
     );
     Revocation(computeCertHash(certifier, innerHash), invalid);
   }

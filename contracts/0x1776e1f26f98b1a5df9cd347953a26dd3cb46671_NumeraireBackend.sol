@@ -4,14 +4,14 @@ contract Safe {
     // Check if it is safe to add two numbers
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
     // Check if it is safe to subtract two numbers
     function safeSubtract(uint a, uint b) internal returns (uint) {
         uint c = a - b;
-        assert(b &lt;= a &amp;&amp; c &lt;= a);
+        assert(b <= a && c <= a);
         return c;
     }
 
@@ -22,7 +22,7 @@ contract Safe {
     }
 
     function shrink128(uint a) internal returns (uint128) {
-        assert(a &lt; 0x100000000000000000000000000000000);
+        assert(a < 0x100000000000000000000000000000000);
         return uint128(a);
     }
 
@@ -53,28 +53,28 @@ contract NumeraireShared is Safe {
 
     // ERC20 requires totalSupply, balanceOf, and allowance
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
-    mapping (uint =&gt; Tournament) public tournaments;  // tournamentID
+    mapping (uint => Tournament) public tournaments;  // tournamentID
 
     struct Tournament {
         uint256 creationTime;
         uint256[] roundIDs;
-        mapping (uint256 =&gt; Round) rounds;  // roundID
+        mapping (uint256 => Round) rounds;  // roundID
     } 
 
     struct Round {
         uint256 creationTime;
         uint256 endTime;
         uint256 resolutionTime;
-        mapping (address =&gt; mapping (bytes32 =&gt; Stake)) stakes;  // address of staker
+        mapping (address => mapping (bytes32 => Stake)) stakes;  // address of staker
     }
 
     // The order is important here because of its packing characteristics.
     // Particularly, `amount` and `confidence` are in the *same* word, so
     // Solidity can update both at the same time (if the optimizer can figure
-    // out that you&#39;re updating both).  This makes `stake()` cheap.
+    // out that you're updating both).  This makes `stake()` cheap.
     struct Stake {
         uint128 amount; // Once the stake is resolved, this becomes 0
         uint128 confidence;
@@ -112,7 +112,7 @@ contract NumeraireShared is Safe {
  *
  * Based on https://github.com/ethereum/dapp-bin/blob/master/wallet/wallet.sol
  *
- * inheritable &quot;property&quot; contract that enables methods to be protected by requiring the acquiescence of either a single, or, crucially, each of a number of, designated owners.
+ * inheritable "property" contract that enables methods to be protected by requiring the acquiescence of either a single, or, crucially, each of a number of, designated owners.
  *
  * usage:
  * use modifiers onlyowner (just own owned) or onlymanyowners(hash), whereby the same hash must be provided by some number (specified in constructor) of the set of owners (specified in the constructor) before the interior is executed.
@@ -137,9 +137,9 @@ contract Shareable {
   address[256] owners;
   uint constant c_maxOwners = 250;
   // index on the list of owners to allow reverse lookup
-  mapping(address =&gt; uint) ownerIndex;
+  mapping(address => uint) ownerIndex;
   // the ongoing operations.
-  mapping(bytes32 =&gt; PendingState) pendings;
+  mapping(bytes32 => PendingState) pendings;
   bytes32[] pendingsIndex;
 
 
@@ -172,29 +172,29 @@ contract Shareable {
 
   // CONSTRUCTOR
 
-  // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+  // constructor is given number of sigs required to do protected "onlymanyowners" transactions
   // as well as the selection of addresses capable of confirming them.
   function Shareable(address[] _owners, uint _required) {
     owners[1] = msg.sender;
     ownerIndex[msg.sender] = 1;
-    for (uint i = 0; i &lt; _owners.length; ++i) {
+    for (uint i = 0; i < _owners.length; ++i) {
       owners[2 + i] = _owners[i];
       ownerIndex[_owners[i]] = 2 + i;
     }
-    if (required &gt; owners.length) throw;
+    if (required > owners.length) throw;
     required = _required;
   }
 
 
-  // new multisig is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+  // new multisig is given number of sigs required to do protected "onlymanyowners" transactions
   // as well as the selection of addresses capable of confirming them.
   // take all new owners as an array
   function changeShareable(address[] _owners, uint _required) onlyManyOwners(sha3(msg.data)) {
-    for (uint i = 0; i &lt; _owners.length; ++i) {
+    for (uint i = 0; i < _owners.length; ++i) {
       owners[1 + i] = _owners[i];
       ownerIndex[_owners[i]] = 1 + i;
     }
-    if (required &gt; owners.length) throw;
+    if (required > owners.length) throw;
     required = _required;
   }
 
@@ -203,11 +203,11 @@ contract Shareable {
   // Revokes a prior confirmation of the given operation
   function revoke(bytes32 _operation) external {
     uint index = ownerIndex[msg.sender];
-    // make sure they&#39;re an owner
+    // make sure they're an owner
     if (index == 0) return;
     uint ownerIndexBit = 2**index;
     var pending = pendings[_operation];
-    if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+    if (pending.ownersDone & ownerIndexBit > 0) {
       pending.yetNeeded++;
       pending.ownersDone -= ownerIndexBit;
       Revoke(msg.sender, _operation);
@@ -220,19 +220,19 @@ contract Shareable {
   }
 
   function isOwner(address _addr) constant returns (bool) {
-    return ownerIndex[_addr] &gt; 0;
+    return ownerIndex[_addr] > 0;
   }
 
   function hasConfirmed(bytes32 _operation, address _owner) constant returns (bool) {
     var pending = pendings[_operation];
     uint index = ownerIndex[_owner];
 
-    // make sure they&#39;re an owner
+    // make sure they're an owner
     if (index == 0) return false;
 
     // determine the bit to set for this owner.
     uint ownerIndexBit = 2**index;
-    return !(pending.ownersDone &amp; ownerIndexBit == 0);
+    return !(pending.ownersDone & ownerIndexBit == 0);
   }
 
   // INTERNAL METHODS
@@ -240,11 +240,11 @@ contract Shareable {
   function confirmAndCheck(bytes32 _operation) internal returns (bool) {
     // determine what index the present sender is:
     uint index = ownerIndex[msg.sender];
-    // make sure they&#39;re an owner
+    // make sure they're an owner
     if (index == 0) return;
 
     var pending = pendings[_operation];
-    // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+    // if we're not yet working on this operation, switch over and reset the confirmation status.
     if (pending.yetNeeded == 0) {
       // reset count of confirmations needed.
       pending.yetNeeded = required;
@@ -255,11 +255,11 @@ contract Shareable {
     }
     // determine the bit to set for this owner.
     uint ownerIndexBit = 2**index;
-    // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-    if (pending.ownersDone &amp; ownerIndexBit == 0) {
+    // make sure we (the message sender) haven't confirmed this operation previously.
+    if (pending.ownersDone & ownerIndexBit == 0) {
       Confirmation(msg.sender, _operation);
       // ok - check if count is enough to go ahead.
-      if (pending.yetNeeded &lt;= 1) {
+      if (pending.yetNeeded <= 1) {
         // enough confirmations: reset and run interior.
         delete pendingsIndex[pendings[_operation].index];
         delete pendings[_operation];
@@ -276,7 +276,7 @@ contract Shareable {
 
   function clearPending() internal {
     uint length = pendingsIndex.length;
-    for (uint i = 0; i &lt; length; ++i)
+    for (uint i = 0; i < length; ++i)
     if (pendingsIndex[i] != 0)
       delete pendings[pendingsIndex[i]];
     delete pendingsIndex;
@@ -325,11 +325,11 @@ contract NumeraireBackend is StoppableShareable, NumeraireShared {
     bool public contractUpgradable = true;
     address[] public previousDelegates;
 
-    string public standard = &quot;ERC20&quot;;
+    string public standard = "ERC20";
 
     // ERC20 requires name, symbol, and decimals
-    string public name = &quot;Numeraire&quot;;
-    string public symbol = &quot;NMR&quot;;
+    string public name = "Numeraire";
+    string public symbol = "NMR";
     uint256 public decimals = 18;
 
     event DelegateChanged(address oldAddress, address newAddress);
@@ -374,39 +374,39 @@ contract NumeraireBackend is StoppableShareable, NumeraireShared {
     }
 
     function mint(uint256 _value) stopInEmergency returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;mint(uint256)&quot;)), _value);
+        return delegateContract.delegatecall(bytes4(sha3("mint(uint256)")), _value);
     }
 
     function stake(uint256 _value, bytes32 _tag, uint256 _tournamentID, uint256 _roundID, uint256 _confidence) stopInEmergency returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;stake(uint256,bytes32,uint256,uint256,uint256)&quot;)), _value, _tag, _tournamentID, _roundID, _confidence);
+        return delegateContract.delegatecall(bytes4(sha3("stake(uint256,bytes32,uint256,uint256,uint256)")), _value, _tag, _tournamentID, _roundID, _confidence);
     }
 
     function stakeOnBehalf(address _staker, uint256 _value, bytes32 _tag, uint256 _tournamentID, uint256 _roundID, uint256 _confidence) stopInEmergency onlyPayloadSize(6) returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;stakeOnBehalf(address,uint256,bytes32,uint256,uint256,uint256)&quot;)), _staker, _value, _tag, _tournamentID, _roundID, _confidence);
+        return delegateContract.delegatecall(bytes4(sha3("stakeOnBehalf(address,uint256,bytes32,uint256,uint256,uint256)")), _staker, _value, _tag, _tournamentID, _roundID, _confidence);
     }
 
     function releaseStake(address _staker, bytes32 _tag, uint256 _etherValue, uint256 _tournamentID, uint256 _roundID, bool _successful) stopInEmergency onlyPayloadSize(6) returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;releaseStake(address,bytes32,uint256,uint256,uint256,bool)&quot;)), _staker, _tag, _etherValue, _tournamentID, _roundID, _successful);
+        return delegateContract.delegatecall(bytes4(sha3("releaseStake(address,bytes32,uint256,uint256,uint256,bool)")), _staker, _tag, _etherValue, _tournamentID, _roundID, _successful);
     }
 
     function destroyStake(address _staker, bytes32 _tag, uint256 _tournamentID, uint256 _roundID) stopInEmergency onlyPayloadSize(4) returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;destroyStake(address,bytes32,uint256,uint256)&quot;)), _staker, _tag, _tournamentID, _roundID);
+        return delegateContract.delegatecall(bytes4(sha3("destroyStake(address,bytes32,uint256,uint256)")), _staker, _tag, _tournamentID, _roundID);
     }
 
     function numeraiTransfer(address _to, uint256 _value) onlyPayloadSize(2) returns(bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;numeraiTransfer(address,uint256)&quot;)), _to, _value);
+        return delegateContract.delegatecall(bytes4(sha3("numeraiTransfer(address,uint256)")), _to, _value);
     }
 
     function withdraw(address _from, address _to, uint256 _value) onlyPayloadSize(3) returns(bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;withdraw(address,address,uint256)&quot;)), _from, _to, _value);
+        return delegateContract.delegatecall(bytes4(sha3("withdraw(address,address,uint256)")), _from, _to, _value);
     }
 
     function createTournament(uint256 _tournamentID) returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;createTournament(uint256)&quot;)), _tournamentID);
+        return delegateContract.delegatecall(bytes4(sha3("createTournament(uint256)")), _tournamentID);
     }
 
     function createRound(uint256 _tournamentID, uint256 _roundID, uint256 _endTime, uint256 _resolutionTime) returns (bool ok) {
-        return delegateContract.delegatecall(bytes4(sha3(&quot;createRound(uint256,uint256,uint256,uint256)&quot;)), _tournamentID, _roundID, _endTime, _resolutionTime);
+        return delegateContract.delegatecall(bytes4(sha3("createRound(uint256,uint256,uint256,uint256)")), _tournamentID, _roundID, _endTime, _resolutionTime);
     }
 
     function getTournament(uint256 _tournamentID) constant returns (uint256, uint256[]) {
@@ -426,12 +426,12 @@ contract NumeraireBackend is StoppableShareable, NumeraireShared {
 
     // ERC20: Send from a contract
     function transferFrom(address _from, address _to, uint256 _value) stopInEmergency onlyPayloadSize(3) returns (bool ok) {
-        require(!isOwner(_from) &amp;&amp; _from != numerai); // Transfering from Numerai can only be done with the numeraiTransfer function
+        require(!isOwner(_from) && _from != numerai); // Transfering from Numerai can only be done with the numeraiTransfer function
 
         // Check for sufficient funds.
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for authorization to spend.
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(allowance[_from][msg.sender] >= _value);
 
         balanceOf[_from] = safeSubtract(balanceOf[_from], _value);
         allowance[_from][msg.sender] = safeSubtract(allowance[_from][msg.sender], _value);
@@ -446,7 +446,7 @@ contract NumeraireBackend is StoppableShareable, NumeraireShared {
     // ERC20: Anyone with NMR can transfer NMR
     function transfer(address _to, uint256 _value) stopInEmergency onlyPayloadSize(2) returns (bool ok) {
         // Check for sufficient funds.
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         balanceOf[msg.sender] = safeSubtract(balanceOf[msg.sender], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -457,7 +457,7 @@ contract NumeraireBackend is StoppableShareable, NumeraireShared {
         return true;
     }
 
-    // ERC20: Allow other contracts to spend on sender&#39;s behalf
+    // ERC20: Allow other contracts to spend on sender's behalf
     function approve(address _spender, uint256 _value) stopInEmergency onlyPayloadSize(2) returns (bool ok) {
         require((_value == 0) || (allowance[msg.sender][_spender] == 0));
         allowance[msg.sender][_spender] = _value;

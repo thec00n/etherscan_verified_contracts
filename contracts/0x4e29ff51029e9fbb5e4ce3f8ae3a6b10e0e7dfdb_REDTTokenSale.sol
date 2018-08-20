@@ -1,10 +1,10 @@
 pragma solidity ^0.4.23;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e682879083a6878d898b8487c885898b">[email&#160;protected]</a>
+// contact : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e682879083a6878d898b8487c885898b">[email protected]</a>
 // released under Apache 2.0 licence
 contract REDTTokenConfig {
-    string public constant NAME = &quot;Real Estate Doc Token&quot;;
-    string public constant SYMBOL = &quot;REDT&quot;;
+    string public constant NAME = "Real Estate Doc Token";
+    string public constant SYMBOL = "REDT";
     uint8 public constant DECIMALS = 18;
     uint public constant DECIMALSFACTOR = 10 ** uint(DECIMALS);
     uint public constant TOTALSUPPLY = 1000000000 * DECIMALSFACTOR;
@@ -74,8 +74,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -90,9 +90,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -100,7 +100,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -109,7 +109,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -238,7 +238,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -256,7 +256,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -277,7 +277,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -295,8 +295,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -309,7 +309,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -376,7 +376,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -505,13 +505,13 @@ contract WhiteListed is Operatable {
 
 
     uint public count;
-    mapping (address =&gt; bool) public whiteList;
+    mapping (address => bool) public whiteList;
 
     event Whitelisted(address indexed addr, uint whitelistedCount, bool isWhitelisted);
 
     function addWhiteListed(address[] addrs) external canOperate {
         uint c = count;
-        for (uint i = 0; i &lt; addrs.length; i++) {
+        for (uint i = 0; i < addrs.length; i++) {
             if (!whiteList[addrs[i]]) {
                 whiteList[addrs[i]] = true;
                 c++;
@@ -553,7 +553,7 @@ contract REDTToken is PausableToken, REDTTokenConfig, Salvageable {
     }
 
     function mint(address _to, uint _amount) canMint onlyMinter public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= TOTALSUPPLY);
+        require(totalSupply_.add(_amount) <= TOTALSUPPLY);
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Transfer(address(0), _to, _amount);
@@ -571,7 +571,7 @@ contract REDTToken is PausableToken, REDTTokenConfig, Salvageable {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
+        require(_value <= balances[_who]);
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         emit Burn(_who, _value);
@@ -581,10 +581,10 @@ contract REDTToken is PausableToken, REDTTokenConfig, Salvageable {
     function sendBatchCS(address[] _recipients, uint[] _values) external canOperate returns (bool) {
         require(_recipients.length == _values.length);
         uint senderBalance = balances[msg.sender];
-        for (uint i = 0; i &lt; _values.length; i++) {
+        for (uint i = 0; i < _values.length; i++) {
             uint value = _values[i];
             address to = _recipients[i];
-            require(senderBalance &gt;= value);        
+            require(senderBalance >= value);        
             senderBalance = senderBalance - value;
             balances[to] += value;
             emit Transfer(msg.sender, to, value);
@@ -604,7 +604,7 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
     WhiteListed public whiteListed;
     uint public numContributors;        // Discrete number of contributors
 
-    mapping (address =&gt; uint) public contributions; // to allow them to have multiple spends
+    mapping (address => uint) public contributions; // to allow them to have multiple spends
 
     event Finalized();
     event TokenPurchase(address indexed beneficiary, uint value, uint amount);
@@ -620,7 +620,7 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
 
     constructor( WhiteListed _whiteListed ) public {
         
-        require(now &lt; SALE_START);
+        require(now < SALE_START);
         
         require(_whiteListed != address(0));
         
@@ -635,7 +635,7 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
     function initCaps() public {
         uint[4] memory caps = [uint(10),20,30,40];
         uint[4] memory times = [uint(1),4,12,24];
-        for (uint i = 0; i &lt; caps.length; i++) {
+        for (uint i = 0; i < caps.length; i++) {
             capRec memory cr;
             cr.time = times[i];
             cr.amount = caps[i];
@@ -648,7 +648,7 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
         //capRec[] memory cz = new capRec[](caps.length);
         require(capsInEther.length == timesInHours.length);
         capz.length = 0;
-        for (uint i = 0; i &lt; capsInEther.length; i++) {
+        for (uint i = 0; i < capsInEther.length; i++) {
             capRec memory cr;
             cr.time = timesInHours[i];
             cr.amount = capsInEther[i];
@@ -659,8 +659,8 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
     }
     
     function currentCap() public view returns (uint) {
-        for (uint i = 0; i &lt; capz.length; i++) {
-            if (now &lt; SALE_START + capz[i].time * 1 hours)
+        for (uint i = 0; i < capz.length; i++) {
+            if (now < SALE_START + capz[i].time * 1 hours)
                 return (capz[i].amount * 1 ether);
         }
         return capDefault;
@@ -669,15 +669,15 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
 
     function getRateAndCheckCap() public view returns (uint) {
         
-        require(now&gt;SALE_START);
+        require(now>SALE_START);
         
-        if ((now&lt;SALE0_END) &amp;&amp; (tokensRaised &lt; SALE0_CAP))
+        if ((now<SALE0_END) && (tokensRaised < SALE0_CAP))
             return SALE0_RATE;
         
-        if ((now&lt;SALE1_END) &amp;&amp; (tokensRaised &lt; SALE1_CAP))
+        if ((now<SALE1_END) && (tokensRaised < SALE1_CAP))
             return SALE1_RATE;
         
-        if ((now&lt;SALE2_END) &amp;&amp; (tokensRaised &lt; SALE2_CAP))
+        if ((now<SALE2_END) && (tokensRaised < SALE2_CAP))
             return SALE2_RATE;
         
         revert();
@@ -689,9 +689,9 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
     }
 
     function buyTokens(address beneficiary, uint weiAmount) internal whenNotPaused {
-        require(contributions[beneficiary].add(weiAmount) &lt; currentCap());
+        require(contributions[beneficiary].add(weiAmount) < currentCap());
         require(whiteListed.whiteList(beneficiary));
-        require((weiAmount &gt; MIN_CONTRIBUTION) || (weiAmount == SALE_CAP.sub(MIN_CONTRIBUTION)));
+        require((weiAmount > MIN_CONTRIBUTION) || (weiAmount == SALE_CAP.sub(MIN_CONTRIBUTION)));
 
         weiRaised = weiRaised.add(weiAmount);
         uint tokens = weiAmount.mul(getRateAndCheckCap());
@@ -712,7 +712,7 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
     public
 	  ownerOrMinter
     {
-        require(now &lt; SALE_START);  
+        require(now < SALE_START);  
         tokensRaised = tokensRaised.add(numtokens);
         token.mint(beneficiary,numtokens);
     }
@@ -724,7 +724,7 @@ contract REDTTokenSale is REDTTokenSaleConfig, Claimable, Pausable, Salvageable 
 
     // Return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return ((now &gt; SALE_END) || (tokensRaised &gt;= SALE_CAP));
+        return ((now > SALE_END) || (tokensRaised >= SALE_CAP));
     }
 
     // Send ether to the fund collection wallet

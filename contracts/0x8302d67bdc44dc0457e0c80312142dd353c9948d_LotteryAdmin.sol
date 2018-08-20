@@ -50,7 +50,7 @@ contract LotteryAdmin {
     }
 
     function allowsAllowance() constant returns (bool) {
-        return now - lastAllowancePaymentTimestamp &gt;= 24 hours;
+        return now - lastAllowancePaymentTimestamp >= 24 hours;
     }
 
     function requestAllowance() onlyAdminOrOwner {
@@ -84,8 +84,8 @@ contract LotteryAdmin {
                          uint _jackpot, uint _numTickets,
                          uint _ticketPrice, int _durationInBlocks)
              onlyAdminOrOwner {
-        require(_jackpot &lt;= maximumJackpot);
-        require(_durationInBlocks &gt;= minimumDurationInBlocks);
+        require(_jackpot <= maximumJackpot);
+        require(_durationInBlocks >= minimumDurationInBlocks);
 
         nextProfile = _nextProfile;
         EthereumLottery(ethereumLottery).initLottery.value(_jackpot)(

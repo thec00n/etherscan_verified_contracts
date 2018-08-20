@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 library SafeMath {
 	function add(uint a, uint b) internal pure returns(uint c) {
 		c = a + b;
-		require(c &gt;= a);
+		require(c >= a);
 	}
 
 	function sub(uint a, uint b) internal pure returns(uint c) {
-		require(b &lt;= a);
+		require(b <= a);
 		c = a - b;
 	}
 
@@ -17,7 +17,7 @@ library SafeMath {
 	}
 
 	function div(uint a, uint b) internal pure returns(uint c) {
-		require(b &gt; 0);
+		require(b > 0);
 		c = a / b;
 	}
 }
@@ -86,12 +86,12 @@ contract XIOToken is ERC20Interface, DetailedToken, Owned {
 	string public name;
 	uint8 public decimals;
 	uint public _totalSupply;
-	mapping(address =&gt; uint) balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping(address => uint) balances;
+	mapping(address => mapping(address => uint)) allowed;
 
 	function XIOToken() public {
-		symbol = &quot;XIO&quot;;
-		name = &quot;XIO Token&quot;;
+		symbol = "XIO";
+		name = "XIO Token";
 		decimals = 18;
 		_totalSupply = 1000000000 * 10 ** uint(decimals);
 		balances[owner] = _totalSupply;
@@ -128,7 +128,7 @@ contract XIOToken is ERC20Interface, DetailedToken, Owned {
 	}
 
 	function burn(uint256 value) public returns(bool success) {
-		require(balances[msg.sender] &gt;= value);
+		require(balances[msg.sender] >= value);
 		balances[msg.sender] -= value;
 		_totalSupply -= value;
 		Burn(msg.sender, value);

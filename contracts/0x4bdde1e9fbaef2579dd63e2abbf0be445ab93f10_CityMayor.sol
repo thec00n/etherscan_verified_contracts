@@ -17,11 +17,11 @@ library SafeMath {
   /**
   * @dev Integer division of two numbers, truncating the quotient.
   */
- // we don&#39;t need &quot;div&quot;
+ // we don't need "div"
 /*  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-  	// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+  	// assert(b > 0); // Solidity automatically throws when dividing by 0
   	uint256 c = a / b;
-  	// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+  	// assert(a == b * c + a % b); // There is no case in which this doesn't hold
   	return c;
   }
 */
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-  	assert(b &lt;= a);
+  	assert(b <= a);
   	return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
   	uint256 c = a + b;
-  	assert(c &gt;= a);
+  	assert(c >= a);
   	return c;
   }
 }
@@ -52,11 +52,11 @@ contract CityMayor {
 	// ERC-20
 	//
 
-   	string public name = &quot;CityCoin&quot;;
-   	string public symbol = &quot;CITY&quot;;
+   	string public name = "CityCoin";
+   	string public symbol = "CITY";
    	uint8 public decimals = 0;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	event Approval(address indexed owner, address indexed spender, uint256 value);
 	event Transfer(address indexed from, address indexed to, uint256 value);
@@ -76,7 +76,7 @@ contract CityMayor {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -94,7 +94,7 @@ contract CityMayor {
 		return balances[_owner];
 	}
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 
 	/**
@@ -105,8 +105,8 @@ contract CityMayor {
 	*/
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -120,7 +120,7 @@ contract CityMayor {
 	*
 	* Beware that changing an allowance with this method brings the risk that someone may use both the old
 	* and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-	* race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+	* race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
 	* https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 	* @param _spender The address which will spend the funds.
 	* @param _value The amount of tokens to be spent.
@@ -169,7 +169,7 @@ contract CityMayor {
 	*/
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 			} else {
 				allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -192,7 +192,7 @@ contract CityMayor {
    	uint256 public ECONOMY_BOOST_TRADE = 100; // _immutable_ gift (in CITY) from the UN when a city is traded (shared among the cities of the relevant country)
 
    	uint256 public MONUMENT_UN_FEE = 3; // UN fee (CITY) to buy a monument
-   	uint256 public MONUMENT_CITY_FEE = 3; // additional fee (CITY) to buy a monument (shared to the monument&#39;s city)
+   	uint256 public MONUMENT_CITY_FEE = 3; // additional fee (CITY) to buy a monument (shared to the monument's city)
 
    	//
    	// Game structures
@@ -224,9 +224,9 @@ contract CityMayor {
    		uint16 cityId;
    	}
 
-   	city[] public cities; // cityId -&gt; city
-   	country[] public countries; // countryId -&gt; country
-   	monument[] public monuments; // monumentId -&gt; monument
+   	city[] public cities; // cityId -> city
+   	country[] public countries; // countryId -> country
+   	monument[] public monuments; // monumentId -> monument
 
    	// total amount of offers (escrowed money)
 	uint256 public totalOffer;
@@ -277,7 +277,7 @@ contract CityMayor {
 	   	// increase economy of region according to ECONOMY_BOOST
 	   	uint16[] memory fetchedCities = countries[fetchedCity.countryId].cities;
 	   	uint256 perCityBoost = ECONOMY_BOOST / fetchedCities.length;
-	   	for(uint16 ii = 0; ii &lt; fetchedCities.length; ii++){
+	   	for(uint16 ii = 0; ii < fetchedCities.length; ii++){
 	   		address _to = cities[fetchedCities[ii]].owner;
 	   		if(_to != 0x0) { // MINT only if address exists
 	   			balances[_to] = balances[_to].add(perCityBoost);
@@ -294,8 +294,8 @@ contract CityMayor {
 		require(msg.sender == unitedNations);
 		// requires
 		require(cities[_cityId].owner != 0x0);
-		require(_price &gt; 0);
-		require(msg.value &gt;= _price);
+		require(_price > 0);
+		require(msg.value >= _price);
 		require(cities[_cityId].owner != from);
 		// add the offer
 		uint256 lastId = offers.push(offer(_cityId, _price, from)) - 1;
@@ -310,7 +310,7 @@ contract CityMayor {
 		require(msg.sender == 0xD5d6301dE62D82F461dC29824FC597D38d80c424 || msg.sender == 0x1E4F1275bB041586D7Bec44D2E3e4F30e0dA7Ba4 || msg.sender == 0xe1811eC49f493afb1F4B42E3Ef4a3B9d62d9A01b || msg.sender == unitedNations);
 		// do not touch the escrowed money
 		uint256 totalAvailable = this.balance.sub(totalOffer);
-		if(_amount &gt; totalAvailable) {
+		if(_amount > totalAvailable) {
 			_amount = totalAvailable;
 		}
 		// divide the amount for founders
@@ -337,7 +337,7 @@ contract CityMayor {
 	function adminAddCity(string _name, uint256 _price, uint16 _countryId) public returns (uint256) {
 		// requires
 		require(msg.sender == unitedNations);
-		require(cities.length &lt; MAX_CITIES);
+		require(cities.length < MAX_CITIES);
 		// add city
 		uint256 lastId = cities.push(city(_name, _price, 0, _countryId, new uint256[](0), true, 0)) - 1;
 		countries[_countryId].cities.push(uint16(lastId));
@@ -351,7 +351,7 @@ contract CityMayor {
 	function adminAddMonument(string _name, uint256 _price, uint16 _cityId) public returns (uint256) {
 		// requires
 		require(msg.sender == unitedNations);
-		require(_price &gt; 0);
+		require(_price > 0);
 		// add monument
 		uint256 lastId = monuments.push(monument(_name, _price, 0, _cityId)) - 1;
 		cities[_cityId].monuments.push(lastId);
@@ -361,7 +361,7 @@ contract CityMayor {
 		return lastId;
 	}
 
-	// Edit a city if it hasn&#39;t been bought yet
+	// Edit a city if it hasn't been bought yet
 	function adminEditCity(uint16 _cityId, string _name, uint256 _price, address _owner) public {
 		// requires
 		require(msg.sender == unitedNations);
@@ -382,7 +382,7 @@ contract CityMayor {
 		// requires
 		require(fetchedCity.buyable == true);
 		require(fetchedCity.owner == 0x0); 
-		require(msg.value &gt;= fetchedCity.price);
+		require(msg.value >= fetchedCity.price);
 		// transfer ownership
 		cities[_cityId].owner = msg.sender;
 		// update city metadata
@@ -391,7 +391,7 @@ contract CityMayor {
 		// increase economy of region according to ECONOMY_BOOST
 		uint16[] memory fetchedCities = countries[fetchedCity.countryId].cities;
 		uint256 perCityBoost = ECONOMY_BOOST / fetchedCities.length;
-		for(uint16 ii = 0; ii &lt; fetchedCities.length; ii++){
+		for(uint16 ii = 0; ii < fetchedCities.length; ii++){
 			address _to = cities[fetchedCities[ii]].owner;
 			if(_to != 0x0) { // MINT only if address exists
 				balances[_to] = balances[_to].add(perCityBoost);
@@ -404,12 +404,12 @@ contract CityMayor {
 
 	//
 	// Economy boost:
-	// this is called by functions below that will &quot;buy a city from someone else&quot;
+	// this is called by functions below that will "buy a city from someone else"
 	// it will draw ECONOMY_BOOST_TRADE CITYs from the UN funds and split them in the relevant country
 	//
 
 	function economyBoost(uint16 _countryId, uint16 _excludeCityId) private {
-		if(balances[unitedNations] &lt; ECONOMY_BOOST_TRADE) {
+		if(balances[unitedNations] < ECONOMY_BOOST_TRADE) {
 			return; // unless the UN has no more funds
 		}
 		uint16[] memory fetchedCities = countries[_countryId].cities;
@@ -417,9 +417,9 @@ contract CityMayor {
 			return;
 		}
 		uint256 perCityBoost = ECONOMY_BOOST_TRADE / (fetchedCities.length - 1); // excluding the bought city
-		for(uint16 ii = 0; ii &lt; fetchedCities.length; ii++){
+		for(uint16 ii = 0; ii < fetchedCities.length; ii++){
 			address _to = cities[fetchedCities[ii]].owner;
-			if(_to != 0x0 &amp;&amp; fetchedCities[ii] != _excludeCityId) { // only if address exists AND not the current city
+			if(_to != 0x0 && fetchedCities[ii] != _excludeCityId) { // only if address exists AND not the current city
 				balances[_to] = balances[_to].add(perCityBoost);
 				balances[unitedNations] -= perCityBoost;
 			}
@@ -459,7 +459,7 @@ contract CityMayor {
 		city memory fetchedCity = cities[_cityId];
 		// requires
 		require(fetchedCity.buyable == true);
-		require(msg.value &gt;= fetchedCity.price);
+		require(msg.value >= fetchedCity.price);
 		require(fetchedCity.owner != msg.sender);
 		// calculate the fee
 		uint256 fee = BUY_CITY_FEE.mul(fetchedCity.price) / 100;
@@ -492,12 +492,12 @@ contract CityMayor {
 	event OfferForCity(uint256 offerId, uint16 cityId, uint256 price, address offererAddress, address owner);
 	event CancelOfferForCity(uint256 offerId);
 
-	// 1. we make an offer for some cityId that we don&#39;t own yet (we deposit money in escrow)
+	// 1. we make an offer for some cityId that we don't own yet (we deposit money in escrow)
 	function makeOfferForCity(uint16 _cityId, uint256 _price) public payable {
 		// requires
 		require(cities[_cityId].owner != 0x0);
-		require(_price &gt; 0);
-		require(msg.value &gt;= _price);
+		require(_price > 0);
+		require(msg.value >= _price);
 		require(cities[_cityId].owner != msg.sender);
 		// add the offer
 		uint256 lastId = offers.push(offer(_cityId, _price, msg.sender)) - 1;
@@ -564,7 +564,7 @@ contract CityMayor {
 
 	/* 
    	uint256 public MONUMENT_UN_FEE = 3; // UN fee (CITY) to buy a monument
-   	uint256 public MONUMENT_CITY_FEE = 3; // additional fee (CITY) to buy a monument (shared to the monument&#39;s city)
+   	uint256 public MONUMENT_CITY_FEE = 3; // additional fee (CITY) to buy a monument (shared to the monument's city)
    	*/
 
 	// anyone can buy a monument from someone else (with CITYs)
@@ -572,9 +572,9 @@ contract CityMayor {
 		// fetch
 		monument memory fetchedMonument = monuments[_monumentId];
 		// requires
-		require(fetchedMonument.price &gt; 0);
+		require(fetchedMonument.price > 0);
 		require(fetchedMonument.price == _price);
-		require(balances[msg.sender] &gt;= _price);
+		require(balances[msg.sender] >= _price);
 		require(fetchedMonument.owner != msg.sender);
 		// pay first!
 		balances[msg.sender] = balances[msg.sender].sub(_price);

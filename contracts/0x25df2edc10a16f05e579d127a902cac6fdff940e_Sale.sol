@@ -24,7 +24,7 @@ All events are logged for the purpose of transparency.
 
 All math uses SafeMath.
 
-ETH and tokens (often referred to as &quot;value&quot; and &quot;tokens&quot; in variable names) are really 1/10^18 of their respective parent units.  Basically, the values represent wei and the token equivalent thereof.
+ETH and tokens (often referred to as "value" and "tokens" in variable names) are really 1/10^18 of their respective parent units.  Basically, the values represent wei and the token equivalent thereof.
 
 */
 
@@ -38,20 +38,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -63,16 +63,16 @@ contract SaleCallbackInterface {
 
 contract Sale is SafeMath {
     
-    address public creator;		    // address of the contract&#39;s creator
+    address public creator;		    // address of the contract's creator
     address public delegate;		// address of an entity allowed to perform administrative functions on behalf of the creator
     
     address public marketplace;	    // address of another smart contract that manages the token and Smart Exchange
     
     uint256 public start;			// timestamp that the sale begins
     uint256 public finish;			// timestamp that the sale ends
-    uint256 public release;			// timestamp that sale participants may &quot;claim&quot; their tokens (will be after the finish)
+    uint256 public release;			// timestamp that sale participants may "claim" their tokens (will be after the finish)
     
-    uint256 public pricer;			// a multiplier (&gt;= 1) used to determine how many tokens (or, really, 10^18 sub-units of that token) to give purchasers
+    uint256 public pricer;			// a multiplier (>= 1) used to determine how many tokens (or, really, 10^18 sub-units of that token) to give purchasers
     uint256 public size;			// maximum number of 10^18 sub-units of tokens that can be purchased/granted during the sale
     
     bool public restricted;		    // whether purchasers and recipients of tokens must be whitelisted manually prior to participating in the sale
@@ -90,16 +90,16 @@ contract Sale is SafeMath {
     uint256 public withdrawls;		// the number of sub-ether (wei) that have been withdrawn by the contract owner
     uint256 public reserves;		// the number of sub-ether (wei) that have been sent to serve as reserve in the marketplace
     
-    mapping(address =&gt; bool) public participants;			// mapping to record who has participated in the sale (purchased/granted)
+    mapping(address => bool) public participants;			// mapping to record who has participated in the sale (purchased/granted)
     address[] public participantIndex;						// index of participants
     
-    mapping(address =&gt; uint256) public participantTokens;	// sub-tokens purchased/granted to each participant
-    mapping(address =&gt; uint256) public participantValues;	// sub-ether contributed by each participant
+    mapping(address => uint256) public participantTokens;	// sub-tokens purchased/granted to each participant
+    mapping(address => uint256) public participantValues;	// sub-ether contributed by each participant
     
-    mapping(address =&gt; bool) public participantRefunds;	    // mapping to record who has been awarded a refund after a cancelled sale
-    mapping(address =&gt; bool) public participantClaims;		// mapping to record who has claimed their tokens after a completed sale
+    mapping(address => bool) public participantRefunds;	    // mapping to record who has been awarded a refund after a cancelled sale
+    mapping(address => bool) public participantClaims;		// mapping to record who has claimed their tokens after a completed sale
     
-    mapping(address =&gt; bool) public whitelist;				// mapping to record who has been approved to participate in a &quot;restricted&quot; sale
+    mapping(address => bool) public whitelist;				// mapping to record who has been approved to participate in a "restricted" sale
     
     uint256[] public bonuses;								// stores bonus percentages, where even numbered elements store timestamps and odd numbered elements store bonus percentages
     
@@ -160,13 +160,13 @@ contract Sale is SafeMath {
     
     function buy(address _recipient) public payable {
         
-        // _recipient address must not be all 0&#39;s
+        // _recipient address must not be all 0's
         
         require(_recipient != address(0x0));
 
 		// contributor must send more than 1/10 ETH
 		
-        require(msg.value &gt;= 10 ** 17);
+        require(msg.value >= 10 ** 17);
 
 		// sale must be considered active
 		
@@ -178,21 +178,21 @@ contract Sale is SafeMath {
 
 		// current timestamp must be greater than or equal to the start of the token sale
 		
-        require(block.timestamp &gt;= start);
+        require(block.timestamp >= start);
 
 		// current timestamp must be less than the end of the token sale
 		
-        require(block.timestamp &lt; finish);
+        require(block.timestamp < finish);
 		
-		// either the token sale isn&#39;t restricted, or the sender is on the whitelist
+		// either the token sale isn't restricted, or the sender is on the whitelist
 
         require((! restricted) || whitelist[msg.sender]);
         
-        // either the token sale isn&#39;t restricted, or the recipient is on the whitelist
+        // either the token sale isn't restricted, or the recipient is on the whitelist
 
         require((! restricted) || whitelist[_recipient]);
         
-        // multiply sub-ether by the pricer (which will be a whole number &gt;= 1) to get sub-tokens
+        // multiply sub-ether by the pricer (which will be a whole number >= 1) to get sub-tokens
 
         uint256 baseTokens = safeMul(msg.value, pricer);
         
@@ -202,7 +202,7 @@ contract Sale is SafeMath {
 
 		// ensure the purchase does not cause the sale to exceed its maximum size
 		
-        require(safeAdd(tokens, totalTokens) &lt;= size);
+        require(safeAdd(tokens, totalTokens) <= size);
         
         // if the recipient is new, add them as a participant
 
@@ -211,7 +211,7 @@ contract Sale is SafeMath {
             participantIndex.push(_recipient);
         }
         
-        // increment the participant&#39;s sub-tokens and sub-ether
+        // increment the participant's sub-tokens and sub-ether
 
         participantTokens[_recipient] = safeAdd(participantTokens[_recipient], totalTokens);
         participantValues[_recipient] = safeAdd(participantValues[_recipient], msg.value);
@@ -236,11 +236,11 @@ contract Sale is SafeMath {
         
         // tokens must be scheduled for release
         
-        require(block.timestamp &gt;= release);
+        require(block.timestamp >= release);
         
         // participant must have tokens to claim
         
-        require(participantTokens[msg.sender] &gt; 0);
+        require(participantTokens[msg.sender] > 0);
         
         // participant must not have already claimed tokens
         
@@ -269,7 +269,7 @@ contract Sale is SafeMath {
         
         // the participant must have contributed ETH
         
-        require(participantValues[msg.sender] &gt; 0);
+        require(participantValues[msg.sender] > 0);
         
         // the participant must not have already requested a refund
         
@@ -306,9 +306,9 @@ contract Sale is SafeMath {
         
         // the amount of ETH in the contract must be greater than the amount the creator is attempting to withdraw
         
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
         
-        // increment the amount that&#39;s been withdrawn
+        // increment the amount that's been withdrawn
         
         withdrawls = safeAdd(withdrawls, _value);
         
@@ -335,11 +335,11 @@ contract Sale is SafeMath {
         
         // the sale can only be completed after the finish time
         
-        require(block.timestamp &gt;= finish);
+        require(block.timestamp >= finish);
         
         // ETH is withdrawn in the process and sent to the marketplace contract.  ensure the amount that is being withdrawn is greater than the balance in the smart contract.
         
-        require(this.balance &gt;= _value);
+        require(this.balance >= _value);
         
         // mark the sale as completed
         
@@ -372,7 +372,7 @@ contract Sale is SafeMath {
         
         // the sale must have started
         
-        require(block.timestamp &gt;= start);
+        require(block.timestamp >= start);
         
         // record that the sale is certified
         
@@ -408,7 +408,7 @@ contract Sale is SafeMath {
     
     function reverse(address _recipient) ifDelegate external {
         
-        // the recipient address must not be all 0&#39;s
+        // the recipient address must not be all 0's
         
         require(_recipient != address(0x0));
         
@@ -418,7 +418,7 @@ contract Sale is SafeMath {
         
         // the recipient must have contributed ETH and/or received tokens
         
-        require(participantTokens[_recipient] &gt; 0 || participantValues[_recipient] &gt; 0);
+        require(participantTokens[_recipient] > 0 || participantValues[_recipient] > 0);
         
         uint256 initialParticipantTokens = participantTokens[_recipient];
         uint256 initialParticipantValue = participantValues[_recipient];
@@ -439,7 +439,7 @@ contract Sale is SafeMath {
         
         // if the participant previously sent ETH, return it
         
-        if (initialParticipantValue &gt; 0) {
+        if (initialParticipantValue > 0) {
             address(_recipient).transfer(initialParticipantValue);
         }
     }
@@ -448,7 +448,7 @@ contract Sale is SafeMath {
     
     function grant(address _recipient, uint256 _tokens) ifDelegate external {
         
-       	// the recipient&#39;s address cannot be 0-value
+       	// the recipient's address cannot be 0-value
        
         require(_recipient != address(0x0));
 		
@@ -463,11 +463,11 @@ contract Sale is SafeMath {
             participantIndex.push(_recipient);
         }
         
-        // add sub-tokens to the recipient&#39;s balance
+        // add sub-tokens to the recipient's balance
         
         participantTokens[_recipient] = safeAdd(participantTokens[_recipient], _tokens);
         
-        // add sub-tokens to the sale&#39;s total
+        // add sub-tokens to the sale's total
         
         tokens = safeAdd(tokens, _tokens);
         
@@ -479,7 +479,7 @@ contract Sale is SafeMath {
     // adds a set of addresses to the whitelist
     
     function list(address[] _addresses) ifDelegate external {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             whitelist[_addresses[i]] = true;
             Listed(_addresses[i]);
         }
@@ -488,7 +488,7 @@ contract Sale is SafeMath {
     // removes a set of addresses from the whitelist
     
     function delist(address[] _addresses) ifDelegate external {
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             whitelist[_addresses[i]] = false;
             Delisted(_addresses[i]);
         }
@@ -546,12 +546,12 @@ contract Sale is SafeMath {
         // iterates over the elements and if the timestamp has been surpassed, the bonus percentage is denoted
         // the last bonus percentage that was denoted, if one was denoted at all, is the correct bonus percentage at this time
         
-        for (uint256 i = 0; i &lt; bonuses.length; i++) {
+        for (uint256 i = 0; i < bonuses.length; i++) {
             if (i % 2 == 0) {
                 iterativeTimestamp = bonuses[i];
             } else {
                 iterativeBonus = bonuses[i];
-                if (block.timestamp &gt;= iterativeTimestamp) {
+                if (block.timestamp >= iterativeTimestamp) {
                     finalBonus = iterativeBonus;
                 }
             }

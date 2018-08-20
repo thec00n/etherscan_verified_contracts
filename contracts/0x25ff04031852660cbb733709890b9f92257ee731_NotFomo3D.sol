@@ -37,7 +37,7 @@ contract NotFomo3D {
         }
         
         //place a bid
-        if(endTime != 0 &amp;&amp; endTime &gt; now){
+        if(endTime != 0 && endTime > now){
             addTime -= (10 seconds);
             endTime = (now + addTime);
             latestBidder = msg.sender;
@@ -45,7 +45,7 @@ contract NotFomo3D {
         }
         
         //winner found, restart auction
-        if(addTime == 0 || endTime &lt;= now){
+        if(addTime == 0 || endTime <= now){
             latestWinner = latestBidder;
             
             //restart auction

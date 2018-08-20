@@ -9,8 +9,8 @@ pragma solidity ^0.4.4;
 contract PresaleToken
 {
 /// Fields:
-    string public constant name = &quot;WealthMan Private Presale Token&quot;;
-    string public constant symbol = &quot;AWM&quot;;
+    string public constant name = "WealthMan Private Presale Token";
+    string public constant symbol = "AWM";
     uint public constant decimals = 18;
     uint public constant PRICE = 2250;  // per 1 Ether
 
@@ -31,7 +31,7 @@ contract PresaleToken
     State public currentState = State.Init;
     uint public totalSupply = 0; // amount of tokens already sold
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow = 0;
 
     // Token manager has exclusive priveleges to call administrative
@@ -41,7 +41,7 @@ contract PresaleToken
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager = 0;
 
-    mapping (address =&gt; uint256) private balance;
+    mapping (address => uint256) private balance;
 
     struct Purchase {
         address buyer;
@@ -76,8 +76,8 @@ contract PresaleToken
         if(msg.value == 0) throw;
         uint newTokens = msg.value * PRICE;
 
-        if (totalSupply + newTokens &lt; totalSupply) throw;
-        if (totalSupply + newTokens &gt; TOKEN_SUPPLY_LIMIT) throw;
+        if (totalSupply + newTokens < totalSupply) throw;
+        if (totalSupply + newTokens > TOKEN_SUPPLY_LIMIT) throw;
 
         balance[_buyer] += newTokens;
         totalSupply += newTokens;
@@ -116,23 +116,23 @@ contract PresaleToken
 
     function setPresaleState(State _nextState) public onlyTokenManager
     {
-        // Init -&gt; Running
-        // Running -&gt; Paused
-        // Running -&gt; Migrating
-        // Paused -&gt; Running
-        // Paused -&gt; Migrating
-        // Migrating -&gt; Migrated
+        // Init -> Running
+        // Running -> Paused
+        // Running -> Migrating
+        // Paused -> Running
+        // Paused -> Migrating
+        // Migrating -> Migrated
         bool canSwitchState
-             =  (currentState == State.Init &amp;&amp; _nextState == State.Running)
-             || (currentState == State.Running &amp;&amp; _nextState == State.Paused)
+             =  (currentState == State.Init && _nextState == State.Running)
+             || (currentState == State.Running && _nextState == State.Paused)
              // switch to migration phase only if crowdsale manager is set
              || ((currentState == State.Running || currentState == State.Paused)
-                 &amp;&amp; _nextState == State.Migrating
-                 &amp;&amp; crowdsaleManager != 0x0)
-             || (currentState == State.Paused &amp;&amp; _nextState == State.Running)
+                 && _nextState == State.Migrating
+                 && crowdsaleManager != 0x0)
+             || (currentState == State.Paused && _nextState == State.Running)
              // switch to migrated only if everyting is migrated
-             || (currentState == State.Migrating &amp;&amp; _nextState == State.Migrated
-                 &amp;&amp; totalSupply == 0);
+             || (currentState == State.Migrating && _nextState == State.Migrated
+                 && totalSupply == 0);
 
         if(!canSwitchState) throw;
 
@@ -142,7 +142,7 @@ contract PresaleToken
 
     function withdrawEther() public onlyTokenManager
     {
-        if(this.balance &gt; 0) 
+        if(this.balance > 0) 
         {
             if(!escrow.send(this.balance)) throw;
         }
@@ -156,7 +156,7 @@ contract PresaleToken
 
     function setCrowdsaleManager(address _mgr) public onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         if(currentState == State.Migrating) throw;
 
         crowdsaleManager = _mgr;

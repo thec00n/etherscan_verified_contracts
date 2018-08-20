@@ -6,7 +6,7 @@ pragma solidity 0.4.17;
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="660b0f050d1f260809110a0f1003481409">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="660b0f050d1f260809110a0f1003481409">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -23,8 +23,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -48,7 +48,7 @@ contract ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92fffbf1f9ebd2fcfde5fefbe4f7bce0fd">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92fffbf1f9ebd2fcfde5fefbe4f7bce0fd">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -87,7 +87,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint8   index;
     }
 
-    mapping (uint8 =&gt; FundingStage) public Collection;
+    mapping (uint8 => FundingStage) public Collection;
     uint8 public FundingStageNum;
     uint8 public currentFundingStage;
     uint256 public AmountRaised;
@@ -108,7 +108,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint256 _time_start,
         uint256 _time_end,
         uint256 _amount_cap_soft,
-        uint256 _amount_cap_hard,   // required &gt; 0
+        uint256 _amount_cap_hard,   // required > 0
         uint8   _methods,
         uint256 _minimum_entry,
         uint256 _fixed_tokens,
@@ -137,7 +137,7 @@ contract ABIFunding is ABIApplicationAsset {
 
  * @name        Funding Vault ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="64090d070f1d240a0b13080d12014a160b">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="64090d070f1d240a0b13080d12014a160b">[email protected]</a>>
 
  each purchase creates a separate funding vault contract
 
@@ -167,11 +167,11 @@ contract ABIFundingVault {
     bool public BalancesInitialised;
     uint8 public BalanceNum;
     uint16 public purchaseRecordsNum;
-    mapping(uint16 =&gt; PurchaseStruct) public purchaseRecords;
-    mapping (uint8 =&gt; uint256) public stageAmounts;
-    mapping (uint8 =&gt; uint256) public stageAmountsDirect;
-    mapping (uint8 =&gt; uint256) public etherBalances;
-    mapping (uint8 =&gt; uint256) public tokenBalances;
+    mapping(uint16 => PurchaseStruct) public purchaseRecords;
+    mapping (uint8 => uint256) public stageAmounts;
+    mapping (uint8 => uint256) public stageAmountsDirect;
+    mapping (uint8 => uint256) public etherBalances;
+    mapping (uint8 => uint256) public tokenBalances;
 
     function initialize( address _owner, address _output, address _fundingAddress, address _milestoneAddress, address _proposalsAddress ) public returns(bool);
     function addPayment(uint8 _payment_method, uint8 _funding_stage ) public payable returns (bool);
@@ -191,7 +191,7 @@ contract ABIFundingVault {
  * source       https://github.com/blockbitsio/
  * @name        Token Stake Calculation And Distribution Algorithm - Type 3 - Sell a variable amount of tokens for a fixed price
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8be6e2e8e0f2cbe5e4fce7e2fdeea5f9e4">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8be6e2e8e0f2cbe5e4fce7e2fdeea5f9e4">[email protected]</a>>
 
 
     Inputs:

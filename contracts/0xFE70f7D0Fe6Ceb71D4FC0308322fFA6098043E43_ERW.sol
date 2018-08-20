@@ -6,11 +6,11 @@ contract ERW {
     string public Location;
     
     function ERW() {
-        EdgarRichardWunsche = &quot;Edgar Richard Wunsche (12.11.1930-22.04.2016). Rest in Peace Dad. Love Alan.&quot;;
-        DateOfBirth = &quot;12.11.1930&quot;;
-        DateOfDeath = &quot;22.04.2016&quot;;
-        Parents = &quot;Beloved son of Anna Wunsche (Moser) and Antonin Wunsche.&quot;;
-        Location = &quot;Toronto, Ontario, Canada&quot;;
+        EdgarRichardWunsche = "Edgar Richard Wunsche (12.11.1930-22.04.2016). Rest in Peace Dad. Love Alan.";
+        DateOfBirth = "12.11.1930";
+        DateOfDeath = "22.04.2016";
+        Parents = "Beloved son of Anna Wunsche (Moser) and Antonin Wunsche.";
+        Location = "Toronto, Ontario, Canada";
     }
 
     function () {

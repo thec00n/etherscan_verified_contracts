@@ -16,13 +16,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -83,14 +83,14 @@ contract TrumpBingo {
 
     /* PROFITS */
 
-    mapping (address =&gt; uint256) private profits;
+    mapping (address => uint256) private profits;
 
     function getProfits(address who) public view returns (uint256) {
         return profits[who];
     }
 
     function withdraw(address who) public {
-        require(profits[who] &gt; 0);
+        require(profits[who] > 0);
         uint256 amount = profits[who];
         profits[who] = 0;
         who.transfer(amount);
@@ -102,7 +102,7 @@ contract TrumpBingo {
     uint256 public coownerPrice;
 
     function becomeCoowner() public payable {
-        if (msg.value &lt; coownerPrice) {
+        if (msg.value < coownerPrice) {
             revert();
         }
 
@@ -127,7 +127,7 @@ contract TrumpBingo {
     event WordSetChanged();
 
     Word[] private words;
-    mapping (string =&gt; uint256) private idByWord;
+    mapping (string => uint256) private idByWord;
 
     function getWordCount() public view returns (uint) {
         return words.length;
@@ -135,7 +135,7 @@ contract TrumpBingo {
 
     function getWord(uint index) public view returns (string word,
                                                       bool disabled) {
-        require(index &lt; words.length);
+        require(index < words.length);
         return (words[index].word, words[index].disabled);
     }
 
@@ -155,7 +155,7 @@ contract TrumpBingo {
 
     function delWord(string word) public onlyCEO {
         uint index = idByWord[word];
-        require(index &gt; 0);
+        require(index > 0);
         require(bids[index].bestBidder == address(0));
         idByWord[word] = 0;
         words[index].disabled = true;
@@ -186,7 +186,7 @@ contract TrumpBingo {
 
     function addWinner(address who, uint howMuch, uint wordId) private {
         ++prevRoundWinnerCount;
-        if (prevRoundWinners.length &lt; prevRoundWinnerCount) {
+        if (prevRoundWinners.length < prevRoundWinnerCount) {
             prevRoundWinners.length = prevRoundWinnerCount;
         }
         prevRoundWinners[prevRoundWinnerCount - 1].who = who;
@@ -201,7 +201,7 @@ contract TrumpBingo {
     }
 
     struct WordBids {
-        mapping (address =&gt; Bid) totalBids;
+        mapping (address => Bid) totalBids;
         address bestBidder;
     }
 
@@ -241,7 +241,7 @@ contract TrumpBingo {
     function startNewRound() private {
         totalBank = 0;
         ++curRound;
-        for (uint i = 0; i &lt; bids.length; ++i) {
+        for (uint i = 0; i < bids.length; ++i) {
             bids[i].bestBidder = 0;
         }
     }
@@ -256,7 +256,7 @@ contract TrumpBingo {
 
         uint256 newBid = value + bids[wordIndex].totalBids[who].cumValue;
         uint256 minAllowedBid = getMinAllowedBid(wordIndex);
-        if (minAllowedBid &gt; newBid) {
+        if (minAllowedBid > newBid) {
             revert();
         }
 
@@ -269,7 +269,7 @@ contract TrumpBingo {
     function calcPayouts(bool[] hasWon) private {
         uint256 totalWon;
         uint i;
-        for (i = 0; i &lt; words.length; ++i) {
+        for (i = 0; i < words.length; ++i) {
             if (hasWon[i]) {
                 totalWon += getBestBid(i);
             }
@@ -294,8 +294,8 @@ contract TrumpBingo {
         bank -= jackpotFill;
         totalJackpot += jackpotFill;
 
-        for (i = 0; i &lt; words.length; ++i) {
-            if (hasWon[i] &amp;&amp; bids[i].bestBidder != address(0)) {
+        for (i = 0; i < words.length; ++i) {
+            if (hasWon[i] && bids[i].bestBidder != address(0)) {
                 uint256 payout = uint256(SafeMath.div(SafeMath.mul(bank, getBestBid(i)), totalWon));
                 profits[bids[i].bestBidder] += payout;
                 addWinner(bids[i].bestBidder, payout, i);
@@ -308,7 +308,7 @@ contract TrumpBingo {
          uint256 expectedProfit) {
 
         uint index = idByWord[word];
-        require(index &gt; 0);
+        require(index > 0);
 
         uint currentBid = getTotalBid(who, index);
         address bestBidder;
@@ -331,7 +331,7 @@ contract TrumpBingo {
 
     function bid(string word) public payable notPaused {
         uint index = idByWord[word];
-        require(index &gt; 0);
+        require(index > 0);
         addBid(msg.sender, index, msg.value);
     }
 
@@ -340,7 +340,7 @@ contract TrumpBingo {
     function hasSubstring(string haystack, string needle) private pure returns (bool) {
         uint needleSize = bytes(needle).length;
         bytes32 hash = keccak256(needle);
-        for(uint i = 0; i &lt; bytes(haystack).length - needleSize; i++) {
+        for(uint i = 0; i < bytes(haystack).length - needleSize; i++) {
             bytes32 testHash;
             assembly {
                 testHash := sha3(add(add(haystack, i), 32), needleSize)
@@ -364,8 +364,8 @@ contract TrumpBingo {
 
         bool[] memory hasWon = new bool[](words.length);
         bool anyWordPresent = false;
-        for (uint i = 0; i &lt; words.length; ++i) {
-            hasWon[i] = (!words[i].disabled) &amp;&amp; hasSubstring(tweet, words[i].word);
+        for (uint i = 0; i < words.length; ++i) {
+            hasWon[i] = (!words[i].disabled) && hasSubstring(tweet, words[i].word);
             if (hasWon[i]) {
                 anyWordPresent = true;
             }
@@ -393,7 +393,7 @@ contract TrumpBingo {
         coownerPrice = startingCoownerPrice;
 
         paused = false;
-        words.push(Word({word: &quot;&quot;, disabled: true})); // fake &#39;0&#39; word
+        words.push(Word({word: "", disabled: true})); // fake '0' word
         startNewRound();
     }
 

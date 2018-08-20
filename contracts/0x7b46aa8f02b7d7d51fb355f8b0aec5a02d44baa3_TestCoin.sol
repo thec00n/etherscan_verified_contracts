@@ -4,7 +4,7 @@ pragma solidity ^0.4.2;
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -23,18 +23,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (_to != address(0) &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (_to != address(0) && balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (_to != address(0) &amp;&amp; balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (_to != address(0) && balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -100,34 +100,34 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 
 /// @title Token contract - Implements Standard Token Interface
-/// @author Rishab Hegde - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13707c7d6772706753617a607b72717b767477763d707c7e">[email&#160;protected]</a>&gt;
+/// @author Rishab Hegde - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13707c7d6772706753617a607b72717b767477763d707c7e">[email protected]</a>>
 contract TestCoin is StandardToken, SafeMath {
 
     /*
      * Token meta data
      */
-    string constant public name = &quot;TestCoin&quot;;
-    string constant public symbol = &quot;TEST234124&quot;;
+    string constant public name = "TestCoin";
+    string constant public symbol = "TEST234124";
     uint8 constant public decimals = 3;
 
     uint public price = 50 szabo;
@@ -154,7 +154,7 @@ contract TestCoin is StandardToken, SafeMath {
       Issuance(msg.sender, tokenCount);
       totalSupply += tokenCount;
 
-      if (msg.value &gt; investment) {
+      if (msg.value > investment) {
         msg.sender.transfer(msg.value - investment);
       }
       return true;
@@ -165,7 +165,7 @@ contract TestCoin is StandardToken, SafeMath {
       returns (bool)
     {
       checkPrice();
-      if (balances[msg.sender] &gt;= tokenCount) {
+      if (balances[msg.sender] >= tokenCount) {
         uint tokensValue = tokenCount * price;
         balances[msg.sender] -= tokenCount;
         totalSupply -= tokenCount;
@@ -182,7 +182,7 @@ contract TestCoin is StandardToken, SafeMath {
     function checkPrice() public returns (uint256)
     {
       uint timeSinceLastUpdate = now - priceUpdatedTime;
-        if((now - timeSinceLastUpdate) &gt; 1 minutes){
+        if((now - timeSinceLastUpdate) > 1 minutes){
           priceUpdatedTime = now;
           price += price/50;
         }

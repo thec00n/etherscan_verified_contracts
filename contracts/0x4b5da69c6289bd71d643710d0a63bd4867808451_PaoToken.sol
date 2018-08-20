@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -49,7 +49,7 @@ library SafeMath {
     /**
     * @title Ownable
     * @dev The Ownable contract has an owner address, and provides basic authorization control
-    * functions, this simplifies the implementation of &quot;user permissions&quot;.
+    * functions, this simplifies the implementation of "user permissions".
     */
 contract Ownable {
     address public owner;
@@ -89,7 +89,7 @@ contract Ownable {
 contract Lockable is Ownable {
     uint256 public creationTime;
     bool public tokenTransferLocker;
-    mapping(address =&gt; bool) lockaddress;
+    mapping(address => bool) lockaddress;
 
     event Locked(address lockaddress);
     event Unlocked(address lockaddress);
@@ -151,8 +151,8 @@ contract Lockable is Ownable {
 
 
 contract ERC20 {
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     uint256 public totalSupply;
     function balanceOf(address who) view external returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
@@ -184,7 +184,7 @@ contract CoolPandaToken is ERC20, Lockable  {
     public
     returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -197,8 +197,8 @@ contract CoolPandaToken is ERC20, Lockable  {
     external
     returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -246,8 +246,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 contract PaoToken is CoolPandaToken {
     using SafeMath for uint256;
 
-    string public name = &quot;PAO Token&quot;;
-    string public symbol = &quot;PAO&quot;;
+    string public name = "PAO Token";
+    string public symbol = "PAO";
     uint fundRatio = 6;
     uint256 public minBuyETH = 50;
 
@@ -267,7 +267,7 @@ contract PaoToken is CoolPandaToken {
     // @notice Buy tokens from contract by sending ether
     function () payable public {
         if(fundWallet != msg.sender){
-            require (msg.value &gt;= (minBuyETH * 10 ** uint256(decimals)));   // Check if minimum amount 
+            require (msg.value >= (minBuyETH * 10 ** uint256(decimals)));   // Check if minimum amount 
             uint256 amount = msg.value.mul(tokenPrice);                     // calculates the amount
             _buyToken(msg.sender, amount);                                  // makes the transfers
             fundWallet.transfer(msg.value);                              // send ether to the fundWallet
@@ -277,8 +277,8 @@ contract PaoToken is CoolPandaToken {
     function _buyToken(address _to, uint256 _value) isTokenTransfer internal {
         address _from = address(this);
         require (_to != 0x0);                                                   // Prevent transfer to 0x0 address.
-        require (balances[_from] &gt;= _value);                                    // Check if the sender has enough
-        require (balances[_to].add(_value) &gt;= balances[_to]);                   // Check for overflows
+        require (balances[_from] >= _value);                                    // Check if the sender has enough
+        require (balances[_to].add(_value) >= balances[_to]);                   // Check for overflows
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(_from, _to, _value);
@@ -317,9 +317,9 @@ contract PaoToken is CoolPandaToken {
 contract JPYC is CoolPandaToken {
     using SafeMath for uint256;
 
-    string public name = &quot;Japan Yen Coin&quot;;
+    string public name = "Japan Yen Coin";
     uint256 _initialSupply = 10000000000 * 10 ** uint256(decimals);
-    string public symbol = &quot;JPYC&quot;;
+    string public symbol = "JPYC";
     address public paoContactAddress;
 
     event Issue(uint256 amount);
@@ -339,8 +339,8 @@ contract JPYC is CoolPandaToken {
 
     function _giveToken(address _to, uint256 _value) isTokenTransfer internal {
         require (_to != 0x0);                                       // Prevent transfer to 0x0 address.
-        require(totalSupply.add(_value) &gt;= totalSupply);
-        require (balances[_to].add(_value) &gt;= balances[_to]);       // Check for overflows
+        require(totalSupply.add(_value) >= totalSupply);
+        require (balances[_to].add(_value) >= balances[_to]);       // Check for overflows
 
         totalSupply = totalSupply.add(_value);
         balances[_to] = balances[_to].add(_value);                  // Add the same to the recipient

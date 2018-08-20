@@ -44,12 +44,12 @@ contract ERC20Token is Owned {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // ------------------------------------------------------------------------
     // Events
@@ -76,12 +76,12 @@ contract ERC20Token is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount             // User has balance
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[msg.sender] >= _amount             // User has balance
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -104,7 +104,7 @@ contract ERC20Token is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
@@ -113,10 +113,10 @@ contract ERC20Token is Owned {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -130,14 +130,14 @@ contract ERC20Token is Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers
+    // Don't accept ethers
     // ------------------------------------------------------------------------
     function () {
         throw;
@@ -149,11 +149,11 @@ contract RareToken is ERC20Token {
     // ------------------------------------------------------------------------
     // 100,000,000 tokens that will be populated by the fill, 8 decimal places
     // ------------------------------------------------------------------------
-    function RareToken() ERC20Token (&quot;RARE&quot;, &quot;RARE&quot;, 8, 0) {
+    function RareToken() ERC20Token ("RARE", "RARE", 8, 0) {
     }
 
     function burnTokens(uint256 value) onlyOwner {
-        if (balances[owner] &lt; value) throw;
+        if (balances[owner] < value) throw;
         balances[owner] -= value;
         totalSupply -= value;
         Transfer(owner, 0, value);
@@ -170,8 +170,8 @@ contract RareToken is ERC20Token {
     // The 96 MSB is the balance of that address.
     function fill(uint256[] data) onlyOwner {
         if (sealed) throw;
-        for (uint256 i = 0; i &lt; data.length; i++) {
-            address account = address(data[i] &amp; (D160-1));
+        for (uint256 i = 0; i < data.length; i++) {
+            address account = address(data[i] & (D160-1));
             uint256 amount = data[i] / D160;
             // Prevent duplicates
             if (balances[account] == 0) {

@@ -81,7 +81,7 @@ contract SafeMath {
 	* @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -90,7 +90,7 @@ contract SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -99,7 +99,7 @@ contract SafeMath {
 	*/
 	function pow(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a ** b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -110,14 +110,14 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 	/*
 	 *  Data structures
 	 */
-	mapping (address =&gt; uint256) internal balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => uint256) internal balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 	uint256 public totalSupply;
 
 	/*
 	 *  Read and write storage functions
 	 */
-	/// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+	/// @dev Transfers sender's tokens to a given address. Returns success.
 	/// @param _to Address of token receiver.
 	/// @param _value Number of tokens to transfer.
 	function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -129,7 +129,7 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 	/// @param _to Address to where tokens are sent.
 	/// @param _value Number of tokens to transfer.
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-		require(allowed[_from][msg.sender] &gt;= _value);
+		require(allowed[_from][msg.sender] >= _value);
 		allowed[_from][msg.sender] -= _value;
 
 		return _transfer(_from, _to, _value);
@@ -169,7 +169,7 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 	*/
 	function _transfer(address _from, address _to, uint256 _value) private returns (bool success) {
 		require(_to != address(0));
-		require(balances[_from] &gt;= _value);
+		require(balances[_from] >= _value);
 		balances[_from] -= _value;
 		balances[_to] = add(balances[_to], _value);
 		emit Transfer(_from, _to, _value);
@@ -178,7 +178,7 @@ contract StandardToken is AbstractToken, Owned, SafeMath {
 }
 
 /// @title Token contract - Implements Standard ERC20 with additional features.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="442d2a262b3c043e21362d2b2a6a2d2b">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="442d2a262b3c043e21362d2b2a6a2d2b">[email protected]</span>>
 contract Token is StandardToken {
 
 	// Time of the contract creation
@@ -195,7 +195,7 @@ contract Token is StandardToken {
 		onlyOwner
 		returns (bool success)
 	{
-		require(_token.balanceOf(address(this)) &gt;= _value);
+		require(_token.balanceOf(address(this)) >= _value);
 		uint256 receiverBalance = _token.balanceOf(_to);
 		require(_token.transfer(_to, _value));
 
@@ -215,7 +215,7 @@ contract Token is StandardToken {
 	/// @dev Decreases approved amount of tokens for spender. Returns success.
 	function decreaseApproval(address _spender, uint256 _value) public returns (bool success) {
 		uint256 oldValue = allowed[msg.sender][_spender];
-		if (_value &gt; oldValue) {
+		if (_value > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = sub(oldValue, _value);
@@ -226,12 +226,12 @@ contract Token is StandardToken {
 }
 
 // @title Token contract - Implements Standard ERC20 Token for NEXO project.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="4920272b263109332c3b202627672026">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="4920272b263109332c3b202627672026">[email protected]</span>>
 contract NexoToken is Token {
 
 	/// TOKEN META DATA
-	string constant public name = &#39;Nexo&#39;;
-	string constant public symbol = &#39;NEXO&#39;;
+	string constant public name = 'Nexo';
+	string constant public symbol = 'NEXO';
 	uint8  constant public decimals = 18;
 
 
@@ -239,7 +239,7 @@ contract NexoToken is Token {
 	// To calculate vesting periods we assume that 1 month is always equal to 30 days 
 
 
-	/*** Initial Investors&#39; tokens ***/
+	/*** Initial Investors' tokens ***/
 
 	// 525,000,000 (52.50%) tokens are distributed among initial investors
 	// These tokens will be distributed without vesting
@@ -302,7 +302,7 @@ contract NexoToken is Token {
 
 	// 52,500,000 (5.25%) tokens will be eventually available for advisers
 	// 25,000,008 tokens will be available instantly without vesting
-	// 27&#160;499&#160;992 tokens will be distributed monthly without a cliff within 12 months
+	// 27 499 992 tokens will be distributed monthly without a cliff within 12 months
 	// 2,291,666 tokens will be unlocked every month
 
 	address public advisersAllocation  = address(0x4444444444444444444444444444444444444444);
@@ -437,10 +437,10 @@ contract NexoToken is Token {
 		public
 		onlyPotentialOwner
 	{   
-		// Forbid the old owner to distribute investors&#39; tokens
+		// Forbid the old owner to distribute investors' tokens
 		allowed[investorsAllocation][owner] = 0;
 
-		// Allow the new owner to distribute investors&#39; tokens
+		// Allow the new owner to distribute investors' tokens
 		allowed[investorsAllocation][msg.sender] = balanceOf(investorsAllocation);
 
 		// Forbid the old owner to withdraw any tokens from the reserves
@@ -464,12 +464,12 @@ contract NexoToken is Token {
 		returns (uint256) 
 	{
 		/* solium-disable-next-line security/no-block-members */
-		if (now &lt; add(creationTime, _cliff)) {
+		if (now < add(creationTime, _cliff)) {
 			return _unvestedAmount;
 		}
 		/* solium-disable-next-line security/no-block-members */
 		uint256 periods = div(sub(now, add(creationTime, _cliff)), _periodLength);
-		periods = periods &gt; _periodsNumber ? _periodsNumber : periods;
+		periods = periods > _periodsNumber ? _periodsNumber : periods;
 		return add(_unvestedAmount, mul(periods, _periodAmount));
 	}
 }

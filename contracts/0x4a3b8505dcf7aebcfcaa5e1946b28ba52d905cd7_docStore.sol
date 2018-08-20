@@ -27,10 +27,10 @@ contract docStore is Owned {
     
     uint public indice;
     
-    mapping(string =&gt; Documento) private storeByString;
-    mapping(bytes32 =&gt; Documento) private storeByTitle;
-    mapping(uint =&gt; Documento) private storeById;
-    mapping(bytes32 =&gt; Documento) private storeByHash;
+    mapping(string => Documento) private storeByString;
+    mapping(bytes32 => Documento) private storeByTitle;
+    mapping(uint => Documento) private storeById;
+    mapping(bytes32 => Documento) private storeByHash;
     
     struct Documento {
         string ipfsLink;

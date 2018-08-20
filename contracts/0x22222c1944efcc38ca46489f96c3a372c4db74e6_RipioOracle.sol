@@ -26,7 +26,7 @@ contract Ownable {
 
 
 contract Delegable is Ownable {
-    mapping(address =&gt; DelegateLog) public delegates;
+    mapping(address => DelegateLog) public delegates;
 
     struct DelegateLog {
         uint256 started;
@@ -38,7 +38,7 @@ contract Delegable is Ownable {
     */
     modifier onlyDelegate() {
         DelegateLog memory delegateLog = delegates[msg.sender];
-        require(delegateLog.started != 0 &amp;&amp; delegateLog.ended == 0);
+        require(delegateLog.started != 0 && delegateLog.ended == 0);
         _;
     }
     
@@ -52,7 +52,7 @@ contract Delegable is Ownable {
     */
     function wasDelegate(address _address, uint256 timestamp) public view returns (bool) {
         DelegateLog memory delegateLog = delegates[_address];
-        return timestamp &gt;= delegateLog.started &amp;&amp; delegateLog.started != 0 &amp;&amp; (delegateLog.ended == 0 || timestamp &lt; delegateLog.ended);
+        return timestamp >= delegateLog.started && delegateLog.started != 0 && (delegateLog.ended == 0 || timestamp < delegateLog.ended);
     }
 
     /**
@@ -64,7 +64,7 @@ contract Delegable is Ownable {
     */
     function isDelegate(address _address) public view returns (bool) {
         DelegateLog memory delegateLog = delegates[_address];
-        return delegateLog.started != 0 &amp;&amp; delegateLog.ended == 0;
+        return delegateLog.started != 0 && delegateLog.ended == 0;
     }
 
     /**
@@ -80,13 +80,13 @@ contract Delegable is Ownable {
     }
 
     /**
-        @dev Removes an existing worker, removed workers can&#39;t be added back.
+        @dev Removes an existing worker, removed workers can't be added back.
 
         @param _address Address of the worker to remove
     */
     function removeDelegate(address _address) public onlyOwner returns (bool) {
         DelegateLog storage delegateLog = delegates[_address];
-        require(delegateLog.started != 0 &amp;&amp; delegateLog.ended == 0);
+        require(delegateLog.started != 0 && delegateLog.ended == 0);
         delegateLog.ended = block.timestamp;
         return true;
     }
@@ -96,18 +96,18 @@ contract Delegable is Ownable {
     @dev Defines the interface of a standard RCN oracle.
 
     The oracle is an agent in the RCN network that supplies a convertion rate between RCN and any other currency,
-    it&#39;s primarily used by the exchange but could be used by any other agent.
+    it's primarily used by the exchange but could be used by any other agent.
 */
 contract Oracle is Ownable {
     uint256 public constant VERSION = 4;
 
     event NewSymbol(bytes32 _currency);
 
-    mapping(bytes32 =&gt; bool) public supported;
+    mapping(bytes32 => bool) public supported;
     bytes32[] public currencies;
 
     /**
-        @dev Returns the url where the oracle exposes a valid &quot;oracleData&quot; if needed
+        @dev Returns the url where the oracle exposes a valid "oracleData" if needed
     */
     function url() public view returns (string);
 
@@ -138,7 +138,7 @@ contract Oracle is Ownable {
         @return the currency encoded as a bytes32
     */
     function encodeCurrency(string currency) public pure returns (bytes32 o) {
-        require(bytes(currency).length &lt;= 32);
+        require(bytes(currency).length <= 32);
         assembly {
             o := mload(add(currency, 32))
         }
@@ -149,7 +149,7 @@ contract Oracle is Ownable {
     */
     function decodeCurrency(bytes32 b) public pure returns (string o) {
         uint256 ns = 256;
-        while (true) { if (ns == 0 || (b&lt;&lt;ns-8) != 0) break; ns -= 8; }
+        while (true) { if (ns == 0 || (b<<ns-8) != 0) break; ns -= 8; }
         assembly {
             ns := div(ns, 8)
             o := mload(0x40)
@@ -173,7 +173,7 @@ contract RipioOracle is Oracle, Delegable {
 
     string private infoUrl;
 
-    mapping(bytes32 =&gt; RateCache) private cache;
+    mapping(bytes32 => RateCache) private cache;
 
     address public fallback;
 
@@ -235,7 +235,7 @@ contract RipioOracle is Oracle, Delegable {
         @return o The bytes32 word readed, or 0x0 if index out of bounds
     */
     function readBytes32(bytes data, uint256 index) internal pure returns (bytes32 o) {
-        if(data.length / 32 &gt; index) {
+        if(data.length / 32 > index) {
             assembly {
                 o := mload(add(data, add(32, mul(32, index))))
             }
@@ -251,7 +251,7 @@ contract RipioOracle is Oracle, Delegable {
         @param value Ethers to send
         @param data Data for the call
 
-        @return true If the call didn&#39;t throw an exception
+        @return true If the call didn't throw an exception
     */
     function sendTransaction(address to, uint256 value, bytes data) public onlyOwner returns (bool) {
         return to.call.value(value)(data);
@@ -275,14 +275,14 @@ contract RipioOracle is Oracle, Delegable {
         }
 
         uint256 timestamp = uint256(readBytes32(data, INDEX_TIMESTAMP));
-        require(timestamp &lt;= block.timestamp);
+        require(timestamp <= block.timestamp);
 
         uint256 expirationTime = block.timestamp - expiration;
 
-        if (cache[currency].timestamp &gt;= timestamp &amp;&amp; cache[currency].timestamp &gt;= expirationTime) {
+        if (cache[currency].timestamp >= timestamp && cache[currency].timestamp >= expirationTime) {
             return (cache[currency].rate, cache[currency].decimals);
         } else {
-            require(timestamp &gt;= expirationTime);
+            require(timestamp >= expirationTime);
             uint256 rate = uint256(readBytes32(data, INDEX_RATE));
             uint256 decimals = uint256(readBytes32(data, INDEX_DECIMALS));
             uint8 v = uint8(readBytes32(data, INDEX_V));
@@ -290,7 +290,7 @@ contract RipioOracle is Oracle, Delegable {
             bytes32 s = readBytes32(data, INDEX_S);
             
             bytes32 _hash = keccak256(this, currency, rate, decimals, timestamp);
-            address signer = ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, _hash),v,r,s);
+            address signer = ecrecover(keccak256("\x19Ethereum Signed Message:\n32", _hash),v,r,s);
 
             require(isDelegate(signer));
 

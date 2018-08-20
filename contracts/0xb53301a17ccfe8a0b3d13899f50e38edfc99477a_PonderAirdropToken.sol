@@ -1,13 +1,13 @@
 pragma solidity ^0.4.21;
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af7f3f1f2fbf3f6b4ecf6fbfef3f7f3e8f5ecdafdf7fbf3f6b4f9f5f7">[email&#160;protected]</a>&gt;
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af7f3f1f2fbf3f6b4ecf6fbfef3f7f3e8f5ecdafdf7fbf3f6b4f9f5f7">[email protected]</a>>
  */
 
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -93,8 +93,8 @@ contract Token {
     address indexed _owner, address indexed _spender, uint256 _value);
 }
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8d5d1d3d0d9d1d496ced4d9dcd1d5d1cad7cef8dfd5d9d1d496dbd7d5">[email&#160;protected]</a>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8d5d1d3d0d9d1d496ced4d9dcd1d5d1cad7cef8dfd5d9d1d496dbd7d5">[email protected]</a>>
  */
 
 
@@ -115,7 +115,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -129,7 +129,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -144,7 +144,7 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -181,8 +181,8 @@ contract AbstractToken is Token, SafeMath {
    * @return true if tokens were transferred successfully, false otherwise
    */
   function transfer (address _to, uint256 _value) public returns (bool success) {
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -201,13 +201,13 @@ contract AbstractToken is Token, SafeMath {
    */
   function transferFrom (address _from, address _to, uint256 _value)
   public returns (bool success) {
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false;
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -250,13 +250,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 /**
  * Ponder token smart contract.
@@ -299,7 +299,7 @@ contract PonderAirdropToken is AbstractToken {
    * @return name of this token
    */
   function name () public pure returns (string result) {
-    return &quot;Ponder Airdrop Token&quot;;
+    return "Ponder Airdrop Token";
   }
 
   /**
@@ -308,7 +308,7 @@ contract PonderAirdropToken is AbstractToken {
    * @return symbol of this token
    */
   function symbol () public pure returns (string result) {
-    return &quot;PONA&quot;;
+    return "PONA";
   }
 
   /**
@@ -418,7 +418,7 @@ contract PonderAirdropToken is AbstractToken {
   function airdrop(address [] _addresses, uint256 [] values) public {
     require (msg.sender == owner);
     require (_addresses.length == values.length);
-    for (uint24 i = 0; i &lt; _addresses.length; i++){
+    for (uint24 i = 0; i < _addresses.length; i++){
       accounts[_addresses[i]] = values[i];
     }
   }

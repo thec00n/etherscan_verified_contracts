@@ -20,13 +20,13 @@ library SafeMath {
     }
     
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,7 +34,7 @@ contract Ownable {
      /*
       @title Ownable
       @dev The Ownable contract has an owner address, and provides basic authorization control
-      functions, this simplifies the implementation of &quot;user permissions&quot;.
+      functions, this simplifies the implementation of "user permissions".
     */
 
   address public owner;
@@ -162,10 +162,10 @@ contract Crowdfunding is Pausable, ReentrancyGuard {
      
     
       /** How much ETH each address has invested to this crowdsale */
-      mapping (address =&gt; uint256) private investedAmountOf;
+      mapping (address => uint256) private investedAmountOf;
     
       /** Whitelisted addresses */
-      mapping (address =&gt; bool) private whiteListed;
+      mapping (address => bool) private whiteListed;
       
       /** State machine
        *
@@ -360,9 +360,9 @@ contract Crowdfunding is Pausable, ReentrancyGuard {
        * We make it a function and do not assign the result to a variable, so there is no chance of the variable being stale.
        */
       function getState() public constant returns (State) {
-        if (now &lt; startsAt) return State.PreFunding;
-        else if (now &lt;= endsAt) return State.Funding;
-        else if (now &gt; endsAt) return State.Closed;
+        if (now < startsAt) return State.PreFunding;
+        else if (now <= endsAt) return State.Funding;
+        else if (now > endsAt) return State.Closed;
       }
       
       // Setters, onlyOwner functions
@@ -412,8 +412,8 @@ contract Crowdfunding is Pausable, ReentrancyGuard {
        */
       function updateEndsAt(uint256 _endsAt) external  onlyOwner {
         
-        // Don&#39;t change past
-        require(_endsAt &gt; now);
+        // Don't change past
+        require(_endsAt > now);
     
         endsAt = _endsAt;
         EndsAtChanged(_endsAt);
@@ -424,8 +424,8 @@ contract Crowdfunding is Pausable, ReentrancyGuard {
        */
       function updateExchangeRate(uint256 _newRate) external onlyOwner {
         
-        // Don&#39;t change past
-        require(_newRate &gt; 0);
+        // Don't change past
+        require(_newRate > 0);
     
         rate = _newRate;
         NewExchangeRate(_newRate);
@@ -455,14 +455,14 @@ contract Crowdfunding is Pausable, ReentrancyGuard {
     
       /** Modifier allowing execution only if received value is greater than zero */
       modifier nonZero(){
-        require(msg.value &gt;= 75000000000000000);
+        require(msg.value >= 75000000000000000);
         _;
       }
 
 
       //////////////////////////////////// Bonuses ////////////////////////////////
 
-      mapping (address =&gt; bool) private bonuses;
+      mapping (address => bool) private bonuses;
 
       function earlyBirds() private returns(bool){
         bonuses[0x017ABCC1012A7FfA811bBe4a26804f9DDac1Af4D] = true;
@@ -556,11 +556,11 @@ contract Crowdfunding is Pausable, ReentrancyGuard {
       function getBonus(address _address,uint256 _value) private returns(uint256){
         if(bonuses[_address]){
            // 10% bonus
-           if(_value &gt; 166 ether){
+           if(_value > 166 ether){
             return (_value*11)/10;
            }
            // 7.5% bonus
-           if(_value &gt; 33 ether){
+           if(_value > 33 ether){
             return (_value*43)/40;
            }
            return (_value*21)/20;

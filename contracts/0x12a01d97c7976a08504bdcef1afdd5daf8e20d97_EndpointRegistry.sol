@@ -8,27 +8,27 @@
 pragma solidity ^0.4.11;
 
 contract EndpointRegistry{
-    string constant public contract_version = &quot;0.2._&quot;;
+    string constant public contract_version = "0.2._";
 
     event AddressRegistered(address indexed eth_address, string socket);
 
-    // Mapping of Ethereum Addresses =&gt; SocketEndpoints
-    mapping (address =&gt; string) address_to_socket;
-    // Mapping of SocketEndpoints =&gt; Ethereum Addresses
-    mapping (string =&gt; address) socket_to_address;
+    // Mapping of Ethereum Addresses => SocketEndpoints
+    mapping (address => string) address_to_socket;
+    // Mapping of SocketEndpoints => Ethereum Addresses
+    mapping (string => address) socket_to_address;
     // list of all the Registered Addresses , still not used.
     address[] eth_addresses;
 
     modifier noEmptyString(string str)
     {
-        require(equals(str, &quot;&quot;) != true);
+        require(equals(str, "") != true);
         _;
     }
 
     /*
      * @notice Registers the Ethereum Address to the Endpoint socket.
      * @dev Registers the Ethereum Address to the Endpoint socket.
-     * @param string of socket in this format &quot;127.0.0.1:40001&quot;
+     * @param string of socket in this format "127.0.0.1:40001"
      */
     function registerEndpoint(string socket)
         public
@@ -62,7 +62,7 @@ contract EndpointRegistry{
     /*
      * @notice Finds Ethreum Address if given an existing socket address
      * @dev Finds Ethreum Address if given an existing socket address
-     * @param string of socket in this format &quot;127.0.0.1:40001&quot;
+     * @param string of socket in this format "127.0.0.1:40001"
      * @return An ethereum address
      */
     function findAddressByEndpoint(string socket) public constant returns (address eth_address)

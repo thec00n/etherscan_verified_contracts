@@ -34,14 +34,14 @@ contract ResetPonzi {
     }
 
 
-    if (investor &lt; 9) {
+    if (investor < 9) {
         uint idx = persons.length;
         persons.length += 1;
         persons[idx].addr = msg.sender;
         investor += 1;
     }
 
-    if (investor &gt;= 9) {
+    if (investor >= 9) {
         uint ngidx = niceGuys.length;
         niceGuys.length += 1;
         niceGuys[ngidx].addr = msg.sender;
@@ -59,7 +59,7 @@ contract ResetPonzi {
     }
 
 
-    while (this.balance &gt; 10 ether) {
+    while (this.balance > 10 ether) {
       persons[payoutIdx].addr.send(10 ether);
       payoutIdx += 1;
     }

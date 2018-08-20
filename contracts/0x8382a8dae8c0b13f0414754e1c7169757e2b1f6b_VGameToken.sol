@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ contract ReceivingContract {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -130,8 +130,8 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC223, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping (address =&gt; uint256) public frozenTimestamp; // 有限期时间内冻结的账户
+    mapping (address => mapping (address => uint256)) internal allowed;
+    mapping (address => uint256) public frozenTimestamp; // 有限期时间内冻结的账户
     address public admin; // admin owner
 
    /**
@@ -151,7 +151,7 @@ contract StandardToken is ERC223, BasicToken {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
   
     /**
@@ -197,9 +197,9 @@ contract StandardToken is ERC223, BasicToken {
     * @param _data bytes The bytes to be transferred 
     */
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool){
-        require(block.timestamp &gt; frozenTimestamp[msg.sender]);
+        require(block.timestamp > frozenTimestamp[msg.sender]);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -215,9 +215,9 @@ contract StandardToken is ERC223, BasicToken {
     * @param _data bytes The bytes to be transferred 
     */
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool) {
-        require(block.timestamp &gt; frozenTimestamp[msg.sender]);
+        require(block.timestamp > frozenTimestamp[msg.sender]);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         ReceivingContract receiver = ReceivingContract(_to);
@@ -231,7 +231,7 @@ contract StandardToken is ERC223, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -280,7 +280,7 @@ contract StandardToken is ERC223, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -306,8 +306,8 @@ contract StandardToken is ERC223, BasicToken {
         require(msg.sender == admin);
         require(_targets.length == _timestamps.length);
         uint256 len = _targets.length;
-        require(len &gt; 0);
-        for (uint256 i = 0; i &lt; len; i = i.add(1)) {
+        require(len > 0);
+        for (uint256 i = 0; i < len; i = i.add(1)) {
             address _target = _targets[i];
             require(_target != address(0));
             uint256 _timestamp = _timestamps[i];
@@ -320,16 +320,16 @@ contract StandardToken is ERC223, BasicToken {
     * 批量转账
     */
     function multiTransfer(address[] _tos, uint256[] _values) public returns (bool) {
-        require(block.timestamp &gt; frozenTimestamp[msg.sender]);
+        require(block.timestamp > frozenTimestamp[msg.sender]);
         require(_tos.length == _values.length);
         uint256 len = _tos.length;
-        require(len &gt; 0);
+        require(len > 0);
         uint256 amount = 0;
-        for (uint256 i = 0; i &lt; len; i = i.add(1)) {
+        for (uint256 i = 0; i < len; i = i.add(1)) {
             amount = amount.add(_values[i]);
         }
-        require(amount &lt;= balances[msg.sender]);
-        for (uint256 j = 0; j &lt; len; j = j.add(1)) {
+        require(amount <= balances[msg.sender]);
+        for (uint256 j = 0; j < len; j = j.add(1)) {
             address _to = _tos[j];
             require(_to != address(0));
             balances[_to] = balances[_to].add(_values[j]);
@@ -349,7 +349,7 @@ contract StandardToken is ERC223, BasicToken {
  
    /**
     * 从调用者作为from代理将from账户中的token转账至to
-    * 调用者在from的许可额度中必须&gt;=value
+    * 调用者在from的许可额度中必须>=value
     * @dev Transfer tokens from one address to another
     * @param _from address The address which you want to send tokens from
     * @param _to address The address which you want to transfer to
@@ -357,10 +357,10 @@ contract StandardToken is ERC223, BasicToken {
     */    
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool)
     {
-        require(block.timestamp &gt; frozenTimestamp[msg.sender]);
+        require(block.timestamp > frozenTimestamp[msg.sender]);
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -377,7 +377,7 @@ contract StandardToken is ERC223, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -470,8 +470,8 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract VGameToken is MintableToken {
 
-    string public constant name = &quot;VGame.io Token&quot;;
-    string public constant symbol = &quot;VT&quot;;
+    string public constant name = "VGame.io Token";
+    string public constant symbol = "VT";
     uint256 public constant decimals = 8;
 
     uint256 public constant INITIAL_SUPPLY = 500000000 * (10 ** uint256(decimals));  //5亿是初始化来的,另5亿是用户自己挖出的(先分配到用户池再逐步挖出)

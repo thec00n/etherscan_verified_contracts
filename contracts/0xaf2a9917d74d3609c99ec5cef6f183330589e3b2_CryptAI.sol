@@ -5,15 +5,15 @@ contract CryptAI
 {
 
 
-    string 		public standard = &#39;Token 0.1&#39;;
-	string 		public name = &quot;CryptAI&quot;; 
-	string 		public symbol = &quot;TAI&quot;;
+    string 		public standard = 'Token 0.1';
+	string 		public name = "CryptAI"; 
+	string 		public symbol = "TAI";
 	uint8 		public decimals = 2; 
 	uint256 	public totalSupply = 7000000 * 1e2;
 	
 
-	mapping (address =&gt; uint256) balances;	
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;	
+	mapping (address => mapping (address => uint256)) allowed;
 
 
     // Use it to get your real TAI balance
@@ -41,7 +41,7 @@ contract CryptAI
 	function transfer(address _to, uint256 _value) public returns(bool success)
 	{ 
 
-		require(_to != 0x0 &amp;&amp; _value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value);
+		require(_to != 0x0 && _value > 0 && balances[msg.sender] >= _value);
 
 
 		balances[msg.sender] -= _value;
@@ -57,7 +57,7 @@ contract CryptAI
 	function canTransferFrom(address _owner, address _spender) public constant returns(uint256 tokens) 
 	{
 
-		require(_owner != 0x0 &amp;&amp; _spender != 0x0);
+		require(_owner != 0x0 && _spender != 0x0);
 		
 
 		if (_owner == _spender)
@@ -76,9 +76,9 @@ contract CryptAI
 	function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) 
 	{
 
-        require(_value &gt; 0 &amp;&amp; _from != 0x0 &amp;&amp; _to != 0x0 &amp;&amp;
-        		allowed[_from][msg.sender] &gt;= _value &amp;&amp; 
-        		balances[_from] &gt;= _value);
+        require(_value > 0 && _from != 0x0 && _to != 0x0 &&
+        		allowed[_from][msg.sender] >= _value && 
+        		balances[_from] >= _value);
                 
 
         balances[_from] -= _value;
@@ -95,7 +95,7 @@ contract CryptAI
     function approve(address _spender, uint256 _value) public returns(bool success)  
     {
 
-        require(_spender != 0x0 &amp;&amp; _spender != msg.sender);
+        require(_spender != 0x0 && _spender != msg.sender);
 
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);

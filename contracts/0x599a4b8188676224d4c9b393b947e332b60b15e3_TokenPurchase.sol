@@ -48,37 +48,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -90,7 +90,7 @@ contract SafeMath {
 
 
 /// @title Veritaseum Purchase
-/// @author Riaan F Venter~ RFVenter~ &lt;<span class="__cf_email__" data-cfemail="c2afb1a582b0a4b4ecabad">[email&#160;protected]</span>&gt;
+/// @author Riaan F Venter~ RFVenter~ <<span class="__cf_email__" data-cfemail="c2afb1a582b0a4b4ecabad">[email protected]</span>>
 contract TokenPurchase is Ownable, Killable, SafeMath {
 
     uint public constant startTime = 1493130600;            // 2017 April 25th 9:30 EST (14:30 UTC)
@@ -113,17 +113,17 @@ contract TokenPurchase is Ownable, Killable, SafeMath {
     /// @return The amount of actual tokens purchased
     function purchaseTokens() payable returns (uint) {
         // check if now is within ICO period, or if the amount sent is nothing
-        if ((now &lt; startTime) || (now &gt; closeTime) || (msg.value == 0)) throw;
+        if ((now < startTime) || (now > closeTime) || (msg.value == 0)) throw;
         
         uint currentPrice;
         // only using safeMath for calculations involving external incoming data (to safe gas)
-        if (now &lt; (startTime + 1 days)) {       // day one discount
+        if (now < (startTime + 1 days)) {       // day one discount
             currentPrice = priceDayOne;
         } 
-        else if (now &lt; (startTime + 2 days)) {  // day two discount
+        else if (now < (startTime + 2 days)) {  // day two discount
             currentPrice = priceDayTwo;
         }
-        else if (now &lt; (startTime + 12 days)) {
+        else if (now < (startTime + 12 days)) {
             // 1 % reduction in the discounted rate from day 2 until day 12 (sliding scale per second)
             currentPrice = price - ((startTime + 12 days - now) * price / 100 days);
         }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -176,9 +176,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -186,7 +186,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -195,7 +195,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -210,7 +210,7 @@ contract PullPayment {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -221,7 +221,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -246,10 +246,10 @@ contract DungeonStructs {
     /**
      * @dev The main Dungeon struct. Every dungeon in the game is represented by this structure.
      * A dungeon is consists of an unlimited number of floors for your heroes to challenge,
-     * the power level of a dungeon is encoded in the floorGenes. Some dungeons are in fact more &quot;challenging&quot; than others,
+     * the power level of a dungeon is encoded in the floorGenes. Some dungeons are in fact more "challenging" than others,
      * the secret formula for that is left for user to find out.
      *
-     * Each dungeon also has a &quot;training area&quot;, heroes can perform trainings and upgrade their stat,
+     * Each dungeon also has a "training area", heroes can perform trainings and upgrade their stat,
      * and some dungeons are more effective in the training, which is also a secret formula!
      *
      * When player challenge or do training in a dungeon, the fee will be collected as the dungeon rewards,
@@ -266,11 +266,11 @@ contract DungeonStructs {
         // 0: Active | 1: Challenge Only | 2: Train Only | 3: InActive
         uint16 status;
 
-        // The dungeon&#39;s difficulty, the higher the difficulty,
-        // normally, the &quot;rarer&quot; the seedGenes, the higher the diffculty,
+        // The dungeon's difficulty, the higher the difficulty,
+        // normally, the "rarer" the seedGenes, the higher the diffculty,
         // and the higher the contribution fee it is to challenge and train with the dungeon,
         // the formula for the contribution fee is in DungeonChallenge and DungeonTraining contracts.
-        // A dungeon&#39;s difficulty never change.
+        // A dungeon's difficulty never change.
         uint16 difficulty;
 
         // The current floor number, a dungeon is consists of an umlimited number of floors,
@@ -287,12 +287,12 @@ contract DungeonStructs {
         // The seed genes of the dungeon, it is used as the base gene for first floor,
         // some dungeons are rarer and some are more common, the exact details are,
         // of course, top secret of the game!
-        // A dungeon&#39;s seedGenes never change.
+        // A dungeon's seedGenes never change.
         uint seedGenes;
 
         // The genes for current floor, it encodes the difficulty level of the current floor.
         // We considered whether to store the entire array of genes for all floors, but
-        // in order to save some precious gas we&#39;re willing to sacrifice some functionalities with that.
+        // in order to save some precious gas we're willing to sacrifice some functionalities with that.
         uint floorGenes;
 
     }
@@ -306,7 +306,7 @@ contract DungeonStructs {
         uint64 creationTime;
 
         // The seed of the hero, the gene encodes the power level of the hero.
-        // This is another top secret of the game! Hero&#39;s gene can be upgraded via
+        // This is another top secret of the game! Hero's gene can be upgraded via
         // training in a dungeon.
         uint genes;
 
@@ -364,12 +364,12 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
     /**
      * @dev Name of token.
      */
-    string public constant name = &quot;Dungeon&quot;;
+    string public constant name = "Dungeon";
 
     /**
      * @dev Symbol of token.
      */
-    string public constant symbol = &quot;DUNG&quot;;
+    string public constant symbol = "DUNG";
 
     /**
      * @dev An array containing the Dungeon struct, which contains all the dungeons in existance.
@@ -380,12 +380,12 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
     /**
      * @dev A mapping from token IDs to the address that owns them.
      */
-    mapping(uint =&gt; address) tokenIndexToOwner;
+    mapping(uint => address) tokenIndexToOwner;
 
     /**
      * @dev A mapping from owner address to count of tokens that address owns.
      */
-    mapping(address =&gt; uint) ownershipTokenCount;
+    mapping(address => uint) ownershipTokenCount;
 
     /**
      * Each non-fungible token owner can own more than one token at one time.
@@ -393,7 +393,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      * it can get difficult to keep track of the individual tokens that a user may own.
      * To do this, the contract keeps a record of the IDs of each token that each user owns.
      */
-    mapping(address =&gt; uint[]) public ownerTokens;
+    mapping(address => uint[]) public ownerTokens;
 
     /**
      * @notice Returns the total number of tokens currently in existence.
@@ -441,7 +441,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
         // Add the _tokenId to ownerTokens[_to]
         ownerTokens[_to].push(_tokenId);
 
-        // When creating new token, _from is 0x0, but we can&#39;t account that address.
+        // When creating new token, _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
 
@@ -449,7 +449,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
             uint[] storage fromTokens = ownerTokens[_from];
             bool iFound = false;
 
-            for (uint i = 0; i &lt; fromTokens.length - 1; i++) {
+            for (uint i = 0; i < fromTokens.length - 1; i++) {
                 if (iFound) {
                     fromTokens[i] = fromTokens[i + 1];
                 } else if (fromTokens[i] == _tokenId) {
@@ -491,7 +491,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      */
     function createDungeon(uint _difficulty, uint _seedGenes, address _owner) eitherOwner external returns (uint) {
         // Ensure the total supply is within the fixed limit.
-        require(totalSupply() &lt; DUNGEON_CREATION_LIMIT);
+        require(totalSupply() < DUNGEON_CREATION_LIMIT);
 
         // UPDATE STORAGE
         // Create a new dungeon.
@@ -518,7 +518,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      *  Only contract owners can alter dungeon state.
      */
     function setDungeonStatus(uint _id, uint _newStatus) eitherOwner external {
-        require(_id &lt; totalSupply());
+        require(_id < totalSupply());
 
         dungeons[_id].status = uint16(_newStatus);
     }
@@ -528,7 +528,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      *  only contract owners can alter dungeon state.
      */
     function addDungeonRewards(uint _id, uint _additinalRewards) eitherOwner external {
-        require(_id &lt; totalSupply());
+        require(_id < totalSupply());
 
         dungeons[_id].rewards += uint64(_additinalRewards);
     }
@@ -539,7 +539,7 @@ contract DungeonToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      *  Will generate both a NewDungeonFloor event.
      */
     function addDungeonNewFloor(uint _id, uint _newRewards, uint _newFloorGenes) eitherOwner public {
-        require(_id &lt; totalSupply());
+        require(_id < totalSupply());
 
         Dungeon storage dungeon = dungeons[_id];
 
@@ -574,12 +574,12 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
     /**
      * @dev Name of token.
      */
-    string public constant name = &quot;Hero&quot;;
+    string public constant name = "Hero";
 
     /**
      * @dev Symbol of token.
      */
-    string public constant symbol = &quot;HERO&quot;;
+    string public constant symbol = "HERO";
 
     /**
      * @dev An array containing the Hero struct, which contains all the heroes in existance.
@@ -590,12 +590,12 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
     /**
      * @dev A mapping from token IDs to the address that owns them.
      */
-    mapping(uint =&gt; address) tokenIndexToOwner;
+    mapping(uint => address) tokenIndexToOwner;
 
     /**
      * @dev A mapping from owner address to count of tokens that address owns.
      */
-    mapping(address =&gt; uint) ownershipTokenCount;
+    mapping(address => uint) ownershipTokenCount;
 
     /**
      * Each non-fungible token owner can own more than one token at one time.
@@ -603,7 +603,7 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      * it can get difficult to keep track of the individual tokens that a user may own.
      * To do this, the contract keeps a record of the IDs of each token that each user owns.
      */
-    mapping(address =&gt; uint[]) public ownerTokens;
+    mapping(address => uint[]) public ownerTokens;
 
     /**
      * @notice Returns the total number of tokens currently in existence.
@@ -651,7 +651,7 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
         // Add the _tokenId to ownerTokens[_to]
         ownerTokens[_to].push(_tokenId);
 
-        // When creating new token, _from is 0x0, but we can&#39;t account that address.
+        // When creating new token, _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
 
@@ -659,7 +659,7 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
             uint[] storage fromTokens = ownerTokens[_from];
             bool iFound = false;
 
-            for (uint i = 0; i &lt; fromTokens.length - 1; i++) {
+            for (uint i = 0; i < fromTokens.length - 1; i++) {
                 if (iFound) {
                     fromTokens[i] = fromTokens[i + 1];
                 } else if (fromTokens[i] == _tokenId) {
@@ -694,7 +694,7 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
     /**
      * @dev An external function that creates a new hero and stores it,
      *  only contract owners can create new token.
-     *  method doesn&#39;t do any checking and should only be called when the
+     *  method doesn't do any checking and should only be called when the
      *  input data is known to be valid.
      * @param _genes The gene of the new hero.
      * @param _owner The inital owner of this hero.
@@ -722,7 +722,7 @@ contract HeroToken is ERC721, DungeonStructs, Pausable, JointOwnable {
      *  only contract owners can alter hero state.
      */
     function setHeroGenes(uint _id, uint _newGenes) eitherOwner external {
-        require(_id &lt; totalSupply());
+        require(_id < totalSupply());
 
         Hero storage hero = heroes[_id];
 
@@ -834,7 +834,7 @@ contract DungeonBase is EjectableOwnable, Pausable, PullPayment, DungeonStructs 
      * @dev Throws if _dungeonId is not created yet.
      */
     modifier dungeonExists(uint _dungeonId) {
-        require(_dungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_dungeonId < dungeonTokenContract.totalSupply());
         _;
     }
 
@@ -842,7 +842,7 @@ contract DungeonBase is EjectableOwnable, Pausable, PullPayment, DungeonStructs 
      * @dev Throws if dungeon status do not allow challenge, also check for dungeon existence.
      */
     modifier canChallenge(uint _dungeonId) {
-        require(_dungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_dungeonId < dungeonTokenContract.totalSupply());
         uint status;
         (,status,,,,,,) = dungeonTokenContract.dungeons(_dungeonId);
         require(status == 0 || status == 1);
@@ -853,7 +853,7 @@ contract DungeonBase is EjectableOwnable, Pausable, PullPayment, DungeonStructs 
      * @dev Throws if dungeon status do not allow training, also check for dungeon existence.
      */
     modifier canTrain(uint _dungeonId) {
-        require(_dungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_dungeonId < dungeonTokenContract.totalSupply());
         uint status;
         (,status,,,,,,) = dungeonTokenContract.dungeons(_dungeonId);
         require(status == 0 || status == 2);
@@ -871,7 +871,7 @@ contract DungeonBase is EjectableOwnable, Pausable, PullPayment, DungeonStructs 
         // Calculate total stats power.
         uint statsPower;
 
-        for (uint i = 0; i &lt; 4; i++) {
+        for (uint i = 0; i < 4; i++) {
             statsPower += _genes % 32;
             _genes /= 32 ** 4;
         }
@@ -880,7 +880,7 @@ contract DungeonBase is EjectableOwnable, Pausable, PullPayment, DungeonStructs 
         uint equipmentPower;
         bool isSuper = true;
 
-        for (uint j = 4; j &lt; 12; j++) {
+        for (uint j = 4; j < 12; j++) {
             uint curGene = _genes % 32;
             equipmentPower += curGene;
             _genes /= 32 ** 4;
@@ -916,7 +916,7 @@ contract DungeonChallenge is DungeonBase {
     uint256 public challengeFeeMultiplier = 1 finney;
 
     /**
-     * @dev The percentage for which successful challenger be rewarded of the dungeons&#39; accumulated rewards.
+     * @dev The percentage for which successful challenger be rewarded of the dungeons' accumulated rewards.
      *  The remaining rewards subtracted by developer fee will be used as the base rewards for new floor.
      */
     uint public challengeRewardsPercent = 64;
@@ -941,7 +941,7 @@ contract DungeonChallenge is DungeonBase {
 
         // Checks for payment, any exceeding funds will be transferred back to the player.
         uint requiredFee = difficulty * challengeFeeMultiplier;
-        require(msg.value &gt;= requiredFee);
+        require(msg.value >= requiredFee);
 
         // ** STORAGE UPDATE **
         // Increment the accumulated rewards for the dungeon.
@@ -963,7 +963,7 @@ contract DungeonChallenge is DungeonBase {
         uint floorGenes;
         (,,,floorNumber,,rewards,,floorGenes) = dungeonTokenContract.dungeons(_dungeonId);
 
-        // Get the first hero gene, or initialize first hero with current dungeon&#39;s seed genes.
+        // Get the first hero gene, or initialize first hero with current dungeon's seed genes.
         // TODO: implement multiple heroes in next phase
         uint heroGenes = _getFirstHeroGenesAndInitialize(_dungeonId);
 
@@ -1026,7 +1026,7 @@ contract DungeonChallenge is DungeonBase {
         uint heroPower = _getGenesPower(heroGenes);
         uint floorPower = _getGenesPower(floorGenes);
 
-        return heroPower &gt; floorPower;
+        return heroPower > floorPower;
     }
 
     /**
@@ -1043,7 +1043,7 @@ contract DungeonChallenge is DungeonBase {
         uint newFloorPower = _getGenesPower(newFloorGenes);
 
         // If the power decreased, rollback to the current floor genes.
-        if (newFloorPower &lt; floorPower) {
+        if (newFloorPower < floorPower) {
             newFloorGenes = floorGenes;
         }
 
@@ -1119,12 +1119,12 @@ contract DungeonTraining is DungeonChallenge {
         uint floorGenes;
         (,,difficulty,floorNumber,,rewards,seedGenes,floorGenes) = dungeonTokenContract.dungeons(_dungeonId);
 
-        // Check for _trainingTimes abnormality, we probably won&#39;t have any feature that train a hero 10 times with a single call.
-        require(_trainingTimes &lt; 10);
+        // Check for _trainingTimes abnormality, we probably won't have any feature that train a hero 10 times with a single call.
+        require(_trainingTimes < 10);
 
         // Checks for payment, any exceeding funds will be transferred back to the player.
         uint requiredFee = difficulty * trainingFeeMultiplier * _trainingTimes;
-        require(msg.value &gt;= requiredFee);
+        require(msg.value >= requiredFee);
 
         // Get the first hero of the player.
         // TODO: implement multiple heroes in next phase
@@ -1168,18 +1168,18 @@ contract DungeonTraining is DungeonChallenge {
 
         // Train the hero multiple times according to _trainingTimes,
         // each time if the resulting power is larger, update new hero power.
-        for (uint i = 0; i &lt; _trainingTimes; i++) {
+        for (uint i = 0; i < _trainingTimes; i++) {
             uint tmpHeroGenes = trainingScienceContract.mixGenes(newHeroGenes, floorGenes);
             uint tmpHeroPower = _getGenesPower(tmpHeroGenes);
 
-            if (tmpHeroPower &gt; newHeroPower) {
+            if (tmpHeroPower > newHeroPower) {
                 newHeroGenes = tmpHeroGenes;
                 newHeroPower = tmpHeroPower;
             }
         }
 
         // Prevent reduced power.
-        bool success = newHeroPower &gt; heroPower;
+        bool success = newHeroPower > heroPower;
 
         if (success) {
             // ** STORAGE UPDATE **
@@ -1222,7 +1222,7 @@ contract DungeonCoreAlpha2 is Destructible, DungeonTraining {
      * @param _id The ID of the dungeon.
      */
     function getDungeonDetails(uint _id) external view returns (uint creationTime, uint status, uint difficulty, uint floorNumber, uint floorCreationTime, uint rewards, uint seedGenes, uint floorGenes) {
-        require(_id &lt; dungeonTokenContract.totalSupply());
+        require(_id < dungeonTokenContract.totalSupply());
 
         (creationTime, status, difficulty, floorNumber, floorCreationTime, rewards, seedGenes, floorGenes) = dungeonTokenContract.dungeons(_id);
     }
@@ -1232,7 +1232,7 @@ contract DungeonCoreAlpha2 is Destructible, DungeonTraining {
      * @param _id The ID of the hero.
      */
     function getHeroDetails(uint _id) external view returns (uint creationTime, uint genes) {
-        require(_id &lt; heroTokenContract.totalSupply());
+        require(_id < heroTokenContract.totalSupply());
 
         (creationTime, genes) = heroTokenContract.heroes(_id);
     }

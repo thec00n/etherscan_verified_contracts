@@ -71,9 +71,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -81,8 +81,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -114,7 +114,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -166,7 +166,7 @@ contract DateTime {
             uint16 i;
 
             // Year
-            for (i = ORIGIN_YEAR; i &lt; year; i++) {
+            for (i = ORIGIN_YEAR; i < year; i++) {
                     if (isLeapYear(i)) {
                             timestamp += LEAP_YEAR_IN_SECONDS;
                     }
@@ -195,7 +195,7 @@ contract DateTime {
             monthDayCounts[10] = 30;
             monthDayCounts[11] = 31;
 
-            for (i = 1; i &lt; month; i++) {
+            for (i = 1; i < month; i++) {
                     timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
             }
 
@@ -230,7 +230,7 @@ contract ProofOfExistence {
             reversed[i++] = byte(48 + remainder);
         }
         bytes memory s = new bytes(i + 1);
-        for (uint j = 0; j &lt;= i; j++) {
+        for (uint j = 0; j <= i; j++) {
             s[j] = reversed[i - j];
         }
         str = string(s);
@@ -246,35 +246,35 @@ function strConcat(string _a, string _b, string _c, string _d, string _e) intern
     string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
     bytes memory babcde = bytes(abcde);
     uint k = 0;
-    for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-    for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-    for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-    for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-    for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+    for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+    for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+    for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+    for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
     return string(babcde);
 }
 
 function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-    return strConcat(_a, _b, _c, _d, &quot;&quot;);
+    return strConcat(_a, _b, _c, _d, "");
 }
 
 function strConcat(string _a, string _b, string _c) internal returns (string) {
-    return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+    return strConcat(_a, _b, _c, "", "");
 }
 
 function strConcat(string _a, string _b) internal returns (string) {
-    return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+    return strConcat(_a, _b, "", "", "");
 }
    
   // string: sha256 of document
   // unit : timestamp 
-  mapping (string =&gt; uint) private proofs;
+  mapping (string => uint) private proofs;
 
   function notarize(string sha256) {
     // validate it has 64 characters
     
     if ( bytes(sha256).length == 64 ){
-      // check if it is existing, don&#39;t save it
+      // check if it is existing, don't save it
       if ( proofs[sha256] == 0 ){
         proofs[sha256] = block.timestamp;
       }
@@ -285,7 +285,7 @@ function strConcat(string _a, string _b) internal returns (string) {
   function verify(string sha256) constant returns (string) {
     var timestamp =  proofs[sha256];
     if ( timestamp == 0 ){
-        return &quot;No data found&quot;;
+        return "No data found";
     }else{
         DateTime dt = DateTime(msg.sender);
         
@@ -296,10 +296,10 @@ function strConcat(string _a, string _b) internal returns (string) {
         uint minute = dt.getMinute(timestamp);
         uint second = dt.getSecond(timestamp);
         
-        result = strConcat(uintToString(year) , &quot;-&quot; , uintToString(month),&quot;-&quot;,uintToString(day));
-        result = strConcat(result,&quot; &quot;);
-        result = strConcat( uintToString(hour) , &quot;:&quot; , uintToString(minute),&quot;:&quot;,uintToString(second));
-        result = strConcat(result,&quot; UTC&quot;);
+        result = strConcat(uintToString(year) , "-" , uintToString(month),"-",uintToString(day));
+        result = strConcat(result," ");
+        result = strConcat( uintToString(hour) , ":" , uintToString(minute),":",uintToString(second));
+        result = strConcat(result," UTC");
         
 
 

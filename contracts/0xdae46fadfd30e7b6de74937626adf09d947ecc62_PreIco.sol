@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() public constant returns (uint256) {}
     function balanceOf(address owner) public constant returns (uint256 balance);
     function transfer(address to, uint256 value) public returns (bool success);
@@ -27,18 +27,18 @@ contract SafeMath {
   function div(uint256 a, uint256 b) constant internal returns (uint256) {
     assert(b != 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) constant internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) constant internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -51,8 +51,8 @@ contract PreIco is SafeMath {
     /*
      * PreIco meta data
      */
-    string public constant name = &quot;Remechain Presale Token&quot;;
-    string public constant symbol = &quot;RMC&quot;;
+    string public constant name = "Remechain Presale Token";
+    string public constant symbol = "RMC";
     uint public constant decimals = 18;
     
     // addresses of managers
@@ -97,11 +97,11 @@ contract PreIco is SafeMath {
     uint[] public tokenAmounts;
     
     // ETH balances of accounts
-    mapping(address =&gt; uint) public ethBalances;
+    mapping(address => uint) public ethBalances;
     uint[] public prices;
     uint[] public amounts;
     
-    mapping(address =&gt; uint) private balances;
+    mapping(address => uint) private balances;
     
     // 2018.01.11 17:00 MSK
     uint public constant defaultDeadline = 1515679200;
@@ -113,20 +113,20 @@ contract PreIco is SafeMath {
     // Addresses of allowed tokens for buying 
     address[] public allowedTokens;
     // Amount of token
-    mapping(address =&gt; uint) public tokenAmount;
+    mapping(address => uint) public tokenAmount;
     // Price of current token amount
-    mapping(address =&gt; uint) public tokenPrice;
+    mapping(address => uint) public tokenPrice;
     
     // Full users list
     address[] public usersList;
-    mapping(address =&gt; bool) isUserInList;
+    mapping(address => bool) isUserInList;
     // Number of users that have returned their money
     uint numberOfUsersReturned = 0;
     
-    // user =&gt; token[]
-    mapping(address =&gt; address[]) public userTokens;
-    //  user =&gt; token =&gt; amount
-    mapping(address =&gt; mapping(address =&gt; uint)) public userTokensValues;
+    // user => token[]
+    mapping(address => address[]) public userTokens;
+    //  user => token => amount
+    mapping(address => mapping(address => uint)) public userTokensValues;
     
     /*
      * Events
@@ -210,12 +210,12 @@ contract PreIco is SafeMath {
     
     /// @dev Returns, is ICO enabled
     function isIcoActive() public returns(bool isActive) {
-        return !isIcoStopped &amp;&amp; now &lt; deadline;
+        return !isIcoStopped && now < deadline;
     }
     
     /// @dev Returns, is SoftCap reached
     function isIcoSuccessful() public returns(bool isSuccessful) {
-        return tokensSupplied &gt;= SOFT_CAPACITY;
+        return tokensSupplied >= SOFT_CAPACITY;
     }
     
     /// @dev Calculates number of tokens RMC for buying with custom price of token
@@ -225,19 +225,19 @@ contract PreIco is SafeMath {
     function getTokensAmount(uint _amountOfToken, uint _priceAmountOfToken,  uint _value) private returns(uint tokensToBuy) {
         uint currentStep;
         uint tokensRemoved = tokensSupplied;
-        for (currentStep = 0; currentStep &lt; tokenAmounts.length; currentStep++) {
-            if (tokensRemoved &gt;= tokenAmounts[currentStep]) {
+        for (currentStep = 0; currentStep < tokenAmounts.length; currentStep++) {
+            if (tokensRemoved >= tokenAmounts[currentStep]) {
                 tokensRemoved -= tokenAmounts[currentStep];
             } else {
                 break;
             }
         }
-        assert(currentStep &lt; tokenAmounts.length);
+        assert(currentStep < tokenAmounts.length);
         
         uint result = 0;
         
-        for (; currentStep &lt;= tokenAmounts.length; currentStep++) {
-            assert(currentStep &lt; tokenAmounts.length);
+        for (; currentStep <= tokenAmounts.length; currentStep++) {
+            assert(currentStep < tokenAmounts.length);
             
             uint tokenOnStepLeft = tokenAmounts[currentStep] - tokensRemoved;
             tokensRemoved = 0;
@@ -245,12 +245,12 @@ contract PreIco is SafeMath {
                     * _amountOfToken / _priceAmountOfToken 
                     * tokenPriceDivides[currentStep] / tokenPriceMultiplies[currentStep];
             
-            if (howManyTokensCanBuy &gt; tokenOnStepLeft) {
+            if (howManyTokensCanBuy > tokenOnStepLeft) {
                 result = add(result, tokenOnStepLeft);
                 uint spent = tokenOnStepLeft 
                     * _priceAmountOfToken / _amountOfToken 
                     * tokenPriceMultiplies[currentStep] / tokenPriceDivides[currentStep];
-                if (_value &lt;= spent) {
+                if (_value <= spent) {
                     break;
                 }
                 _value -= spent;
@@ -274,7 +274,7 @@ contract PreIco is SafeMath {
     /// @param _token Address of ERC-20 token
     /// @param _tokenValue Amount of ETH token
     function getTokensAmountByTokens(address _token, uint _tokenValue) private returns(uint tokensToBuy) {
-        assert(tokenPrice[_token] &gt; 0);
+        assert(tokenPrice[_token] > 0);
         return getTokensAmount(tokenPrice[_token], tokenAmount[_token], _tokenValue);
     }
     
@@ -296,11 +296,11 @@ contract PreIco is SafeMath {
     /// @param _price Price of _amount of token
     function addToken(address _token, uint _amount, uint _price) onlyManager public {
         assert(_token != 0x0);
-        assert(_amount &gt; 0);
-        assert(_price &gt; 0);
+        assert(_amount > 0);
+        assert(_price > 0);
         
         bool isNewToken = true;
-        for (uint i = 0; i &lt; allowedTokens.length; i++) {
+        for (uint i = 0; i < allowedTokens.length; i++) {
             if (allowedTokens[i] == _token) {
                 isNewToken = false;
                 break;
@@ -317,9 +317,9 @@ contract PreIco is SafeMath {
     /// @dev Makes ERC-20 token not sellable
     /// @param _token Address of ERC-20 token
     function removeToken(address _token) onlyManager public {
-        for (uint i = 0; i &lt; allowedTokens.length; i++) {
+        for (uint i = 0; i < allowedTokens.length; i++) {
             if (_token == allowedTokens[i]) {
-                if (i &lt; allowedTokens.length - 1) {
+                if (i < allowedTokens.length - 1) {
                     allowedTokens[i] = allowedTokens[allowedTokens.length - 1];
                 }
                 allowedTokens[allowedTokens.length - 1] = 0x0;
@@ -344,7 +344,7 @@ contract PreIco is SafeMath {
     /// @dev Makes amount of tokens not purchasable
     /// @param _amount Amount of RMC tokens
     function burnTokens(uint _amount) private {
-        assert(add(tokensSupplied, _amount) &lt;= TOKENS_SUPPLY);
+        assert(add(tokensSupplied, _amount) <= TOKENS_SUPPLY);
         tokensSupplied = add(tokensSupplied, _amount);
     }
     
@@ -359,11 +359,11 @@ contract PreIco is SafeMath {
     /// @param _token Address of ERC-20 token
     function buyWithTokensBy(address _user, address _token) public IcoIsActive {
         // Checks whether the token is allowed
-        assert(tokenPrice[_token] &gt; 0);
+        assert(tokenPrice[_token] > 0);
         
         AbstractToken token = AbstractToken(_token);
         uint tokensToSend = token.allowance(_user, address(this));
-        assert(tokensToSend &gt; 0);
+        assert(tokensToSend > 0);
         
         uint boughtTokens = getTokensAmountByTokens(_token, tokensToSend);
         burnTokens(boughtTokens);
@@ -387,7 +387,7 @@ contract PreIco is SafeMath {
     /// @param _buyTokens If true, buys tokens for this sum
     function addTokensToReturn(address _user, address _token, uint _tokenValue, bool _buyTokens) public onlyManager {
         // Checks whether the token is allowed
-        assert(tokenPrice[_token] &gt; 0);
+        assert(tokenPrice[_token] > 0);
         
         if (_buyTokens) {
             uint boughtTokens = getTokensAmountByTokens(_token, _tokenValue);
@@ -402,11 +402,11 @@ contract PreIco is SafeMath {
     }
     
     
-    /// @dev Adds ERC-20 tokens to user&#39;s token list
+    /// @dev Adds ERC-20 tokens to user's token list
     /// @param _user Address of user
     /// @param _token Address of ERC-20 token
     function addTokenToUser(address _user, address _token) private {
-        for (uint i = 0; i &lt; userTokens[_user].length; i++) {
+        for (uint i = 0; i < userTokens[_user].length; i++) {
             if (userTokens[_user][i] == _token) {
                 return;
             }
@@ -416,7 +416,7 @@ contract PreIco is SafeMath {
     
     /// @dev Returns ether and tokens to user. Can be called only if ICO is ended and SoftCap is not reached
     function returnFunds() public {
-        assert(!isIcoSuccessful() &amp;&amp; !isIcoActive());
+        assert(!isIcoSuccessful() && !isIcoActive());
         
         returnFundsFor(msg.sender);
     }
@@ -432,17 +432,17 @@ contract PreIco is SafeMath {
     /// @dev Returns ether and tokens to user. Can be called only by manager or contract
     /// @param _user Address of user
     function returnFundsFor(address _user) public onlyManagerOrContract returns(bool) {
-        if (ethBalances[_user] &gt; 0) {
+        if (ethBalances[_user] > 0) {
             if (_user.send(ethBalances[_user])) {
                 ReturnEthersFor(_user, ethBalances[_user]);
                 ethBalances[_user] = 0;
             }
         }
         
-        for (uint i = 0; i &lt; userTokens[_user].length; i++) {
+        for (uint i = 0; i < userTokens[_user].length; i++) {
             address tokenAddress = userTokens[_user][i];
             uint userTokenValue = userTokensValues[_user][tokenAddress];
-            if (userTokenValue &gt; 0) {
+            if (userTokenValue > 0) {
                 AbstractToken token = AbstractToken(tokenAddress);
                 if (token.transfer(_user, userTokenValue)) {
                     ReturnTokensFor(_user, tokenAddress, userTokenValue);
@@ -457,19 +457,19 @@ contract PreIco is SafeMath {
     /// @dev Returns ether and tokens to list of users. Can be called only by manager
     /// @param _users Array of addresses of users
     function returnFundsForMultiple(address[] _users) public onlyManager {
-        for (uint i = 0; i &lt; _users.length; i++) {
+        for (uint i = 0; i < _users.length; i++) {
             returnFundsFor(_users[i]);
         }
     }
     
     /// @dev Returns ether and tokens to 50 users. Can be called only by manager
     function returnFundsForAll() public onlyManager {
-        assert(!isIcoActive() &amp;&amp; !isIcoSuccessful());
+        assert(!isIcoActive() && !isIcoSuccessful());
         
         uint first = numberOfUsersReturned;
-        uint last  = (first + 50 &lt; usersList.length) ? first + 50 : usersList.length;
+        uint last  = (first + 50 < usersList.length) ? first + 50 : usersList.length;
         
-        for (uint i = first; i &lt; last; i++) {
+        for (uint i = first; i < last; i++) {
             returnFundsFor(usersList[i]);
         }
         
@@ -481,16 +481,16 @@ contract PreIco is SafeMath {
     function withdrawEtherTo(address _escrow) private {
         assert(isIcoSuccessful());
         
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             if (_escrow.send(this.balance)) {
                 WithdrawEther(_escrow, this.balance);
             }
         }
         
-        for (uint i = 0; i &lt; allowedTokens.length; i++) {
+        for (uint i = 0; i < allowedTokens.length; i++) {
             AbstractToken token = AbstractToken(allowedTokens[i]);
             uint tokenBalance = token.balanceOf(address(this));
-            if (tokenBalance &gt; 0) {
+            if (tokenBalance > 0) {
                 if (token.transfer(_escrow, tokenBalance)) {
                     WithdrawToken(_escrow, address(token), tokenBalance);
                 }
@@ -531,8 +531,8 @@ contract PreIco is SafeMath {
     /// @param _amount Amount of bounty
     function giveReward(address _to, uint _amount) public onlyManager {
         assert(_to != 0x0);
-        assert(_amount &gt; 0);
-        assert(add(bountySupplied, _amount) &lt;= BOUNTY_SUPPLY);
+        assert(_amount > 0);
+        assert(add(bountySupplied, _amount) <= BOUNTY_SUPPLY);
         
         bountySupplied = add(bountySupplied, _amount);
         balances[_to] = add(balances[_to], _amount);

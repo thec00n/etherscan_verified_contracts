@@ -22,13 +22,13 @@ contract untrustedChildWithdraw {
   uint[] public untrustedProposals = [35, 36, 53, 62, 67, 68, 70, 71, 73, 76, 87];
   uint public ratioDenominator = 1000000000;
   uint[] public untrustedTokenNumerator = [1458321331, 1458321331, 1399760834, 1457994374, 1457994374, 1146978827, 1457994374, 1458321336, 1458307000, 1458328768, 1458376290];
-  mapping (uint =&gt; childDAO) public whiteList;
+  mapping (uint => childDAO) public whiteList;
 
   /**
   * Populates the whiteList based on the list of trusted proposal Ids.
   */
   function untrustedChildWithdraw() {
-      for(uint i=0; i&lt;untrustedProposals.length; i++) {
+      for(uint i=0; i<untrustedProposals.length; i++) {
           uint proposalId = untrustedProposals[i];
           whiteList[proposalId] = childDAO(DAO(mainDAO.getNewDAOAddress(proposalId)), untrustedTokenNumerator[i]);
       }
@@ -40,7 +40,7 @@ contract untrustedChildWithdraw {
   */
   function requiredEndowment() constant returns (uint endowment) {
       uint sum = 0;
-      for(uint i=0; i&lt;untrustedProposals.length; i++) {
+      for(uint i=0; i<untrustedProposals.length; i++) {
           uint proposalId = untrustedProposals[i];
           DAO child = whiteList[proposalId].dao;
           sum += (child.totalSupply() * (untrustedTokenNumerator[i] / ratioDenominator) );
@@ -51,7 +51,7 @@ contract untrustedChildWithdraw {
   /**
    * Function call to withdraw ETH by burning childDao tokens.
    * @param proposalId The split proposal ID which created the childDao
-   * @dev This requires that the token-holder authorizes this contract&#39;s address using the approve() function.
+   * @dev This requires that the token-holder authorizes this contract's address using the approve() function.
    */
   function withdraw(uint proposalId) {
     //Check the token balance

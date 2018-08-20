@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -141,14 +141,14 @@ contract BGCGToken is Pausable {
 
   using SafeMath for SafeMath;
 
-  string public name = &quot;Blockchain Game Coalition Gold&quot;;
-  string public symbol = &quot;BGCG&quot;;
+  string public name = "Blockchain Game Coalition Gold";
+  string public symbol = "BGCG";
   uint8 public decimals = 18;
   uint256 public totalSupply = 10000000000 * 10 ** uint256(decimals); // 10 billion tokens
 
  
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
   
 
@@ -156,7 +156,7 @@ contract BGCGToken is Pausable {
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Burn(address indexed from, uint256 value);
 
- mapping (address =&gt; bool) public frozenAccount;
+ mapping (address => bool) public frozenAccount;
  event FrozenFunds(address target, bool frozen);
 
 
@@ -172,12 +172,12 @@ contract BGCGToken is Pausable {
     }
 
   
-//only owner can withdraw all contract&#39;s ETH  
+//only owner can withdraw all contract's ETH  
   function withdraw() public onlyOwner {
       owner.transfer(address(this).balance); 
     }
 
-//msg.sender approve he&#39;s allowance to _spender
+//msg.sender approve he's allowance to _spender
   function approve(address _spender, uint256 _value) public whenNotPaused returns (bool success) {
     require((_value == 0 ) || ( allowance[msg.sender][_spender] == 0  ));
     require(!frozenAccount[msg.sender]);
@@ -201,9 +201,9 @@ contract BGCGToken is Pausable {
 
   
   function burn(uint256 _value) public whenNotPaused returns (bool success) {
-    require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
-    require(totalSupply &gt;= _value );
-    require( _value &gt; 0 );
+    require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
+    require(totalSupply >= _value );
+    require( _value > 0 );
 
     balanceOf[msg.sender] = SafeMath.sub( balanceOf[msg.sender],_value);            // Subtract from the sender
     totalSupply = SafeMath.sub(totalSupply, _value);                      // Updates totalSupply
@@ -213,13 +213,13 @@ contract BGCGToken is Pausable {
 
   
   function burnFrom(address _from, uint256 _value) public whenNotPaused returns (bool success) {
-    require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-    require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
-    require(totalSupply &gt;= _value );
-    require( _value &gt; 0 );
+    require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+    require(_value <= allowance[_from][msg.sender]);    // Check allowance
+    require(totalSupply >= _value );
+    require( _value > 0 );
 
     balanceOf[_from] = SafeMath.sub(balanceOf[_from], _value);                         // Subtract from the targeted balance
-    allowance[_from][msg.sender] = SafeMath.sub(allowance[_from][msg.sender], _value);             // Subtract from the sender&#39;s allowance
+    allowance[_from][msg.sender] = SafeMath.sub(allowance[_from][msg.sender], _value);             // Subtract from the sender's allowance
     totalSupply = SafeMath.sub(totalSupply, _value);                              // Update totalSupply
     emit Burn(_from, _value);
     return true;
@@ -229,11 +229,11 @@ contract BGCGToken is Pausable {
 
 // Send `_value` tokens to `_to` from msg.sender
  function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
-    require( _value &gt; 0 );
+    require( _value > 0 );
     require(_to != address(0)); 
     require(msg.sender != _to );// forbit to transfer to himself
-    require(balanceOf[msg.sender] &gt;= _value);
-    require(SafeMath.add(balanceOf[_to],_value) &gt; balanceOf[_to]);  //SafeMath pretect not overflow
+    require(balanceOf[msg.sender] >= _value);
+    require(SafeMath.add(balanceOf[_to],_value) > balanceOf[_to]);  //SafeMath pretect not overflow
 
 
     require(!frozenAccount[msg.sender]);
@@ -251,15 +251,15 @@ contract BGCGToken is Pausable {
     return true;
   }
 
-//Send `_value` tokens to `_to` from &#39;_from&#39; address,the &#39;_value&#39; can&#39;t larger then allowance by &#39;_from&#39; who set to &#39;msg.sender&#39; 
+//Send `_value` tokens to `_to` from '_from' address,the '_value' can't larger then allowance by '_from' who set to 'msg.sender' 
 function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
-    require( _value &gt; 0 );
+    require( _value > 0 );
     require(_to != address(0));
     require(_from != address(0));
   
-    require(_value &lt;= balanceOf[_from]);
-    require(_value &lt;= allowance[_from][msg.sender]);
-    require(SafeMath.add(balanceOf[_to],_value) &gt; balanceOf[_to]); //SafeMath pretect not overflow
+    require(_value <= balanceOf[_from]);
+    require(_value <= allowance[_from][msg.sender]);
+    require(SafeMath.add(balanceOf[_to],_value) > balanceOf[_to]); //SafeMath pretect not overflow
 
     require(!frozenAccount[_from]);
     require(!frozenAccount[_to]);

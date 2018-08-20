@@ -6,20 +6,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract ContractReceiver {
 contract ERC223Token is ERC223 {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   string public name;
   string public symbol;
@@ -104,7 +104,7 @@ contract ERC223Token is ERC223 {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -114,7 +114,7 @@ contract ERC223Token is ERC223 {
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     Transfer(msg.sender, _to, _value);
@@ -124,7 +124,7 @@ contract ERC223Token is ERC223 {
 
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver reciever = ContractReceiver(_to);
@@ -142,8 +142,8 @@ contract ERC223Token is ERC223 {
 
 
 contract ILoveYou is ERC223Token {
-  string public name = &quot;I Love You&quot;;
-  string public symbol = &quot;LOVE&quot;;
+  string public name = "I Love You";
+  string public symbol = "LOVE";
   uint public decimals = 18;
   uint public INITIAL_SUPPLY = 10000000000 * (10**uint256(decimals));
 

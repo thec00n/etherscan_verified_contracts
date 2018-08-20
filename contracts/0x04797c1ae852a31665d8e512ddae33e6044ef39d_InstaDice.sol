@@ -57,12 +57,12 @@ contract UsingRegistry {
 
 /**
     This is a simple class that maintains a doubly linked list of
-    address =&gt; uint amounts. Address balances can be added to 
+    address => uint amounts. Address balances can be added to 
     or removed from via add() and subtract(). All balances can
     be obtain by calling balances(). If an address has a 0 amount,
     it is removed from the Ledger.
 
-    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it&#39;s safe to
+    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it's safe to
           use to track Ether balances.
 
     Public methods:
@@ -83,7 +83,7 @@ contract Ledger {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -129,7 +129,7 @@ contract Ledger {
         uint _maxAmt = entry.balance;
         if (_maxAmt == 0) return;
         
-        if (_amt &gt;= _maxAmt) {
+        if (_amt >= _maxAmt) {
             // Subtract the max amount, and delete entry.
             total -= _maxAmt;
             entries[entry.prev].next = entry.next;
@@ -156,7 +156,7 @@ contract Ledger {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -182,7 +182,7 @@ contract Ledger {
         _balances = new uint[](_size);
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _balances[_i] = entries[_curEntry.next].balance;
             _curEntry = entries[_curEntry.next];
@@ -212,7 +212,7 @@ contract AddressSet {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -242,8 +242,8 @@ contract AddressSet {
         else entry.exists = true;
 
         // Replace first entry with this one.
-        // Before: HEAD &lt;-&gt; X &lt;-&gt; Y
-        // After: HEAD &lt;-&gt; THIS &lt;-&gt; X &lt;-&gt; Y
+        // Before: HEAD <-> X <-> Y
+        // After: HEAD <-> THIS <-> X <-> Y
         // do: THIS.NEXT = [0].next; [0].next.prev = THIS; [0].next = THIS; THIS.prev = 0;
         Entry storage HEAD = entries[0x0];
         entry.next = HEAD.next;
@@ -260,12 +260,12 @@ contract AddressSet {
         // Do not allow the removal of HEAD.
         if (_address == address(0)) return;
         Entry storage entry = entries[_address];
-        // If it doesn&#39;t exist already, there is nothing to do.
+        // If it doesn't exist already, there is nothing to do.
         if (!entry.exists) return;
 
         // Stitch together next and prev, delete entry.
-        // Before: X &lt;-&gt; THIS &lt;-&gt; Y
-        // After: X &lt;-&gt; Y
+        // Before: X <-> THIS <-> Y
+        // After: X <-> Y
         // do: THIS.next.prev = this.prev; THIS.prev.next = THIS.next;
         entries[entry.prev].next = entry.next;
         entries[entry.next].prev = entry.prev;
@@ -285,7 +285,7 @@ contract AddressSet {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -311,7 +311,7 @@ contract AddressSet {
         // Iterate forward through all entries until the end.
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _curEntry = entries[_curEntry.next];
             _i++;
@@ -351,7 +351,7 @@ contract UsingTreasury is
         view
         returns (ITreasury)
     {
-        return ITreasury(addressOf(&quot;TREASURY&quot;));
+        return ITreasury(addressOf("TREASURY"));
     }
 }
 
@@ -362,7 +362,7 @@ contract UsingTreasury is
 
   - Anybody can add funding (according to whitelist)
   - Anybody can tell profits (balance - (funding + collateral)) to go to Treasury.
-  - Anyone can remove their funding, so long as balance &gt;= collateral.
+  - Anyone can remove their funding, so long as balance >= collateral.
   - Whitelist is managed by getWhitelistOwner() -- typically Admin.
 
   Exposes the following:
@@ -460,8 +460,8 @@ contract Bankrollable is
         address _bankroller = msg.sender;
         uint _collateral = getCollateral();
         uint _balance = address(this).balance;
-        uint _available = _balance &gt; _collateral ? _balance - _collateral : 0;
-        if (_amount &gt; _available) _amount = _available;
+        uint _available = _balance > _collateral ? _balance - _collateral : 0;
+        if (_amount > _available) _amount = _available;
 
         // Try to remove _amount from ledger, get actual _amount removed.
         _amount = ledger.subtract(_bankroller, _amount);
@@ -480,7 +480,7 @@ contract Bankrollable is
         returns (uint _profits)
     {
         int _p = profits();
-        if (_p &lt;= 0) return;
+        if (_p <= 0) return;
         _profits = uint(_p);
         profitsSent += _profits;
         // Send profits to Treasury
@@ -527,7 +527,7 @@ contract Bankrollable is
     }
 
     // Returns the amount that can currently be bankrolled.
-    //   - 0 if balance &lt; collateral
+    //   - 0 if balance < collateral
     //   - If profits: full bankroll
     //   - If no profits: remaning bankroll: balance - collateral
     function bankrollAvailable()
@@ -539,9 +539,9 @@ contract Bankrollable is
         uint _bankroll = bankroll;
         uint _collat = getCollateral();
         // Balance is below collateral!
-        if (_balance &lt;= _collat) return 0;
+        if (_balance <= _collat) return 0;
         // No profits, but we have a balance over collateral.
-        else if (_balance &lt; _collat + _bankroll) return _balance - _collat;
+        else if (_balance < _collat + _bankroll) return _balance - _collat;
         // Profits. Return only _bankroll
         else return _bankroll;
     }
@@ -591,7 +591,7 @@ contract UsingAdmin is
         constant
         returns (address _addr)
     {
-        return addressOf(&quot;ADMIN&quot;);
+        return addressOf("ADMIN");
     }
 }
 
@@ -607,7 +607,7 @@ a number, and if the roll is less than or equal to that number,
 they will win a payout that is inversely proportional to the
 number they chose (lower numbers pay out more).
 
-When a roll is &quot;finalized&quot;, it means the result was determined
+When a roll is "finalized", it means the result was determined
 and the payout paid to the user if they won. Each time somebody 
 rolls, their previous roll is finalized. Roll results are based
 on blockhash, and since only the last 256 blockhashes are 
@@ -654,7 +654,7 @@ contract InstaDice is
         uint16 feeBips;   // each bip is .01%, eg: 100 = 1% fee.
     }
 
-    mapping (address =&gt; User) public users;
+    mapping (address => User) public users;
     Stats stats;
     Settings settings;
     uint8 constant public version = 2;
@@ -674,7 +674,7 @@ contract InstaDice is
         UsingAdmin(_registry)
         public
     {
-        // populate with prev contracts&#39; stats
+        // populate with prev contracts' stats
         stats.totalWagered = 3650000000000000000;
         stats.totalWon = 3537855001272912000;
         stats.numRolls = 123;
@@ -705,11 +705,11 @@ contract InstaDice is
         public
         fromAdmin
     {
-        require(_minBet &lt;= _maxBet);    // makes sense
-        require(_maxBet &lt;= .625 ether); // capped at (block reward - uncle reward)
-        require(_minNumber &gt;= 1);       // not advisible, but why not
-        require(_maxNumber &lt;= 99);      // over 100 makes no sense
-        require(_feeBips &lt;= 500);       // max of 5%
+        require(_minBet <= _maxBet);    // makes sense
+        require(_maxBet <= .625 ether); // capped at (block reward - uncle reward)
+        require(_minNumber >= 1);       // not advisible, but why not
+        require(_maxNumber <= 99);      // over 100 makes no sense
+        require(_feeBips <= 500);       // max of 5%
         settings.minBet = _minBet;
         settings.maxBet = _maxBet;
         settings.minNumber = _minNumber;
@@ -751,7 +751,7 @@ contract InstaDice is
         // Ensure one bet per block.
         User memory _prevUser = users[msg.sender];
         if (_prevUser.r_block == uint32(block.number)){
-            _errorAndRefund(&quot;Only one bet per block allowed.&quot;, msg.value, _number);
+            _errorAndRefund("Only one bet per block allowed.", msg.value, _number);
             return false;
         }
 
@@ -767,7 +767,7 @@ contract InstaDice is
         users[msg.sender] = _newUser;
 
         // Finalize last roll, if there was one.
-        // This will throw if user won, but we couldn&#39;t pay.
+        // This will throw if user won, but we couldn't pay.
         if (_prevUser.r_block != 0) _finalizePreviousRoll(_prevUser, _stats);
 
         // Increment additional stats data
@@ -798,12 +798,12 @@ contract InstaDice is
         User memory _prevUser = users[msg.sender];
         // Error if on same block.
         if (_prevUser.r_block == uint32(block.number)){
-            emit PayoutError(now, &quot;Cannot payout roll on the same block&quot;);
+            emit PayoutError(now, "Cannot payout roll on the same block");
             return false;
         }
         // Error if nothing to payout.
         if (_prevUser.r_block == 0){
-            emit PayoutError(now, &quot;No roll to pay out.&quot;);
+            emit PayoutError(now, "No roll to pay out.");
             return false;
         }
 
@@ -832,24 +832,24 @@ contract InstaDice is
         returns (bool _isValid)
     {
         Settings memory _settings = settings;
-        if (_number &lt; _settings.minNumber) {
-            _errorAndRefund(&quot;Roll number too small.&quot;, msg.value, _number);
+        if (_number < _settings.minNumber) {
+            _errorAndRefund("Roll number too small.", msg.value, _number);
             return false;
         }
-        if (_number &gt; _settings.maxNumber){
-            _errorAndRefund(&quot;Roll number too large.&quot;, msg.value, _number);
+        if (_number > _settings.maxNumber){
+            _errorAndRefund("Roll number too large.", msg.value, _number);
             return false;
         }
-        if (msg.value &lt; _settings.minBet){
-            _errorAndRefund(&quot;Bet too small.&quot;, msg.value, _number);
+        if (msg.value < _settings.minBet){
+            _errorAndRefund("Bet too small.", msg.value, _number);
             return false;
         }
-        if (msg.value &gt; _settings.maxBet){
-            _errorAndRefund(&quot;Bet too large.&quot;, msg.value, _number);
+        if (msg.value > _settings.maxBet){
+            _errorAndRefund("Bet too large.", msg.value, _number);
             return false;
         }
-        if (msg.value &gt; curMaxBet()){
-            _errorAndRefund(&quot;May be unable to payout on a win.&quot;, msg.value, _number);
+        if (msg.value > curMaxBet()){
+            _errorAndRefund("May be unable to payout on a win.", msg.value, _number);
             return false;
         }
         return true;
@@ -866,7 +866,7 @@ contract InstaDice is
         
         // compute result and isWinner
         uint8 _result = computeResult(_user.r_block, _user.r_id);
-        bool _isWinner = _result &lt;= _user.r_number;
+        bool _isWinner = _result <= _user.r_number;
         if (_isWinner) {
             require(msg.sender.call.value(_user.r_payout)());
             _stats.totalWon += _user.r_payout;
@@ -914,7 +914,7 @@ contract InstaDice is
     // Return the less of settings.maxBet and curMaxBet()
     function effectiveMaxBet() public view returns (uint _amount) {
         uint _curMax = curMaxBet();
-        return _curMax &gt; settings.maxBet ? settings.maxBet : _curMax;
+        return _curMax > settings.maxBet ? settings.maxBet : _curMax;
     }
 
     // Computes the payout amount for the current _feeBips
@@ -924,7 +924,7 @@ contract InstaDice is
         returns (uint72 _wei)
     {
         uint _feeBips = settings.feeBips;   // Cast to uint, makes below math cheaper.
-        uint _bigBet = _bet * 1e32;         // Will not overflow unless _bet &gt;&gt; ~1e40
+        uint _bigBet = _bet * 1e32;         // Will not overflow unless _bet >> ~1e40
         uint _bigPayout = (_bigBet * 100) / _number;
         uint _bigFee = (_bigPayout * _feeBips) / 10000;
         return uint72( (_bigPayout - _bigFee) / 1e32 );

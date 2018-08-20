@@ -1,13 +1,13 @@
 //***********************************TREASURE CHEST GAME
 //
 //
-//  Hello player, this is a Treasure Chest game, every player that deposit&#39;s here will get a guaranteed 6% payout of their balance after somebody after him deposits!
+//  Hello player, this is a Treasure Chest game, every player that deposit's here will get a guaranteed 6% payout of their balance after somebody after him deposits!
 //  Every 30th investor receives 18% instead of 6%, that is the jackpot spot that pays 3x more, invest quickly ,and you can earn a passive income right now!
 //
-//  This contract is bug-tested, and it has none, feel comfortable to analyse the code yourself, it&#39;s open source and transparent!
+//  This contract is bug-tested, and it has none, feel comfortable to analyse the code yourself, it's open source and transparent!
 //  Enjoy this game, and earn Ethereum now!
 //
-//  Copyright  &#194;&#169;  2016  David Weissman from NZ
+//  Copyright  Â©  2016  David Weissman from NZ
 //
 //***********************************START
 contract TreasureChest {
@@ -48,7 +48,7 @@ contract TreasureChest {
 //********************************************ENTER
 
   function enter() {
-    if (msg.value &lt; 50 finney) {
+    if (msg.value < 50 finney) {
         msg.sender.send(msg.value);
         return;
     }
@@ -74,7 +74,7 @@ contract TreasureChest {
     // pay out fees to the owner
      if (fees != 0) 
      {
-     	if(balance&gt;fees)
+     	if(balance>fees)
 	{
       	owner.send(fees);
       	balance -= fees;                 //balance update
@@ -87,10 +87,10 @@ contract TreasureChest {
     uint payout;
     uint nr=0;
 	
-    while (balance &gt; investors[nr].amount * 6/100 &amp;&amp; nr&lt;tot_pl)  //exit condition to avoid infinite loop
+    while (balance > investors[nr].amount * 6/100 && nr<tot_pl)  //exit condition to avoid infinite loop
     { 
      
-     if(nr%30==0 &amp;&amp;  balance &gt; investors[nr].amount * 18/100)
+     if(nr%30==0 &&  balance > investors[nr].amount * 18/100)
      {
       payout = investors[nr].amount * 18/100;                        //calculate pay out
       investors[nr].etherAddress.send(payout);                      //send pay out to participant

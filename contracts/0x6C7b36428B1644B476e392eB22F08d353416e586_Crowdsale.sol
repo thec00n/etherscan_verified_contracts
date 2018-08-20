@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -230,8 +230,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract GUT is Ownable, MintableToken {
   using SafeMath for uint256;    
-  string public constant name = &quot;Geekz Utility Token&quot;;
-  string public constant symbol = &quot;GUT&quot;;
+  string public constant name = "Geekz Utility Token";
+  string public constant symbol = "GUT";
   uint32 public constant decimals = 18;
 
   address public addressTeam;
@@ -272,7 +272,7 @@ contract Crowdsale is Ownable {
   // soft cap
   uint softcap;
   // balances for softcap
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
   // The token being offered
   GUT public token;
   // start and end timestamps where investments are allowed (both inclusive)
@@ -411,11 +411,11 @@ contract Crowdsale is Ownable {
     uint256 backAmount;
     require(beneficiary != address(0));
     //minimum amount in ETH
-    require(weiAmount &gt;= minQuanValues);
+    require(weiAmount >= minQuanValues);
     //EarlyStage1
-    if (now &gt;= startEarlyStage1 &amp;&amp; now &lt; endEarlyStage1 &amp;&amp; totalEarlyStage &lt; maxEarlyStage){
+    if (now >= startEarlyStage1 && now < endEarlyStage1 && totalEarlyStage < maxEarlyStage){
       tokens = weiAmount.mul(rateEarlyStage1);
-      if (maxEarlyStage.sub(totalEarlyStage) &lt; tokens){
+      if (maxEarlyStage.sub(totalEarlyStage) < tokens){
         tokens = maxEarlyStage.sub(totalEarlyStage); 
         weiAmount = tokens.div(rateEarlyStage1);
         backAmount = msg.value.sub(weiAmount);
@@ -423,9 +423,9 @@ contract Crowdsale is Ownable {
       totalEarlyStage = totalEarlyStage.add(tokens);
     }
     //EarlyStage2
-    if (now &gt;= startEarlyStage2 &amp;&amp; now &lt; endEarlyStage2 &amp;&amp; totalEarlyStage &lt; maxEarlyStage){
+    if (now >= startEarlyStage2 && now < endEarlyStage2 && totalEarlyStage < maxEarlyStage){
       tokens = weiAmount.mul(rateEarlyStage2);
-      if (maxEarlyStage.sub(totalEarlyStage) &lt; tokens){
+      if (maxEarlyStage.sub(totalEarlyStage) < tokens){
         tokens = maxEarlyStage.sub(totalEarlyStage); 
         weiAmount = tokens.div(rateEarlyStage2);
         backAmount = msg.value.sub(weiAmount);
@@ -433,9 +433,9 @@ contract Crowdsale is Ownable {
       totalEarlyStage = totalEarlyStage.add(tokens);
     }    
     //EarlyStage3
-    if (now &gt;= startEarlyStage3 &amp;&amp; now &lt; endEarlyStage3 &amp;&amp; totalEarlyStage &lt; maxEarlyStage){
+    if (now >= startEarlyStage3 && now < endEarlyStage3 && totalEarlyStage < maxEarlyStage){
       tokens = weiAmount.mul(rateEarlyStage3);
-      if (maxEarlyStage.sub(totalEarlyStage) &lt; tokens){
+      if (maxEarlyStage.sub(totalEarlyStage) < tokens){
         tokens = maxEarlyStage.sub(totalEarlyStage); 
         weiAmount = tokens.div(rateEarlyStage3);
         backAmount = msg.value.sub(weiAmount);
@@ -443,9 +443,9 @@ contract Crowdsale is Ownable {
       totalEarlyStage = totalEarlyStage.add(tokens);
     }    
     //EarlyStage4
-    if (now &gt;= startEarlyStage4 &amp;&amp; now &lt; endEarlyStage4 &amp;&amp; totalEarlyStage &lt; maxEarlyStage){
+    if (now >= startEarlyStage4 && now < endEarlyStage4 && totalEarlyStage < maxEarlyStage){
       tokens = weiAmount.mul(rateEarlyStage4);
-      if (maxEarlyStage.sub(totalEarlyStage) &lt; tokens){
+      if (maxEarlyStage.sub(totalEarlyStage) < tokens){
         tokens = maxEarlyStage.sub(totalEarlyStage); 
         weiAmount = tokens.div(rateEarlyStage4);
         backAmount = msg.value.sub(weiAmount);
@@ -453,9 +453,9 @@ contract Crowdsale is Ownable {
       totalEarlyStage = totalEarlyStage.add(tokens);
     }   
     //FinalStage1
-    if (now &gt;= startFinalStage1 &amp;&amp; now &lt; endFinalStage1 &amp;&amp; totalFinalStage &lt; maxFinalStage){
+    if (now >= startFinalStage1 && now < endFinalStage1 && totalFinalStage < maxFinalStage){
       tokens = weiAmount.mul(rateFinalStage1);
-      if (maxFinalStage.sub(totalFinalStage) &lt; tokens){
+      if (maxFinalStage.sub(totalFinalStage) < tokens){
         tokens = maxFinalStage.sub(totalFinalStage); 
         weiAmount = tokens.div(rateFinalStage1);
         backAmount = msg.value.sub(weiAmount);
@@ -463,9 +463,9 @@ contract Crowdsale is Ownable {
       totalFinalStage = totalFinalStage.add(tokens);
     }       
     //FinalStage2    
-    if (now &gt;= startFinalStage2 &amp;&amp; now &lt; endFinalStage2 &amp;&amp; totalFinalStage &lt; maxFinalStage){
+    if (now >= startFinalStage2 && now < endFinalStage2 && totalFinalStage < maxFinalStage){
       tokens = weiAmount.mul(rateFinalStage2);
-      if (maxFinalStage.sub(totalFinalStage) &lt; tokens){
+      if (maxFinalStage.sub(totalFinalStage) < tokens){
         tokens = maxFinalStage.sub(totalFinalStage); 
         weiAmount = tokens.div(rateFinalStage2);
         backAmount = msg.value.sub(weiAmount);
@@ -473,37 +473,37 @@ contract Crowdsale is Ownable {
       totalFinalStage = totalFinalStage.add(tokens);
     }        
     
-    require(tokens &gt; 0);
+    require(tokens > 0);
     token.mint(beneficiary, tokens);
     balances[msg.sender] = balances[msg.sender].add(msg.value);
     //wallet.transfer(weiAmount);
     
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);    
     }
     TokenProcurement(msg.sender, beneficiary, weiAmount, tokens);
   }
 
-  //Mint is allowed while TotalSupply &lt;= totalTokens
+  //Mint is allowed while TotalSupply <= totalTokens
   function mintTokens(address _to, uint256 _amount) onlyOwner public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     require(_to != address(0));
-    require(now &gt;= mintStart);
-    require(_amount &lt;= totalTokens.sub(token.getTotalSupply()));
+    require(now >= mintStart);
+    require(_amount <= totalTokens.sub(token.getTotalSupply()));
     token.mint(_to, _amount);
     return true;
   }
   
   function refund() public{
-    require(this.balance &lt; softcap &amp;&amp; now &gt; endFinalStage2);
-    require(balances[msg.sender] &gt; 0);
+    require(this.balance < softcap && now > endFinalStage2);
+    require(balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
   }
   
   function transferToMultisig() public onlyOwner {
-    require(this.balance &gt;= softcap &amp;&amp; now &gt; endFinalStage2);  
+    require(this.balance >= softcap && now > endFinalStage2);  
       wallet.transfer(this.balance);
   }  
 }

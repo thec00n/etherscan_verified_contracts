@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,11 +81,11 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
   modifier onlyPayloadSize(uint256 numwords) {
-    assert(msg.data.length &gt;= numwords * 32 + 4);
+    assert(msg.data.length >= numwords * 32 + 4);
     _;
   }
 
@@ -103,7 +103,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) onlyPayloadSize(2) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -139,8 +139,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -154,7 +154,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
    */
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) onlyPayloadSize(2) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -414,8 +414,8 @@ contract MintableToken is PausableToken {
 
 
 contract LEAD is MintableToken, Claimable {
-    string public constant name = &quot;LEADEX&quot;; 
-    string public constant symbol = &quot;LEAD&quot;;
+    string public constant name = "LEADEX"; 
+    string public constant symbol = "LEAD";
     uint public constant decimals = 8;
 }
 
@@ -454,7 +454,7 @@ contract PreSale is Ownable {
         uint256 _endTime,
         address _wallet) public {
         require(_token != address(0));
-        require(_endTime &gt; _startTime);
+        require(_endTime > _startTime);
         require(_wallet != address(0));
         token = LEAD(_token);
         startTime = _startTime;
@@ -464,8 +464,8 @@ contract PreSale is Ownable {
 
     modifier saleIsOn() {
         uint tokenSupply = token.totalSupply();
-        require(now &gt; startTime &amp;&amp; now &lt; endTime);
-        require(tokenSupply &lt;= tokensToSale);
+        require(now > startTime && now < endTime);
+        require(tokenSupply <= tokensToSale);
         _;
     }
 
@@ -498,19 +498,19 @@ contract PreSale is Ownable {
 
 
     function getBonus(uint256 _value) internal view returns (uint256) {
-        if(_value &gt; amount1 &amp;&amp; _value &lt;= amount2) { 
+        if(_value > amount1 && _value <= amount2) { 
             return bonus1;
-        } else if(_value &gt; amount2 &amp;&amp; _value &lt;= amount3) {
+        } else if(_value > amount2 && _value <= amount3) {
             return bonus2;
-        } else if(_value &gt; amount3 &amp;&amp; _value &lt;= amount4) {
+        } else if(_value > amount3 && _value <= amount4) {
             return bonus3;
-        } else if(_value &gt; amount4) {
+        } else if(_value > amount4) {
             return bonus4;
         }
     }
 
     function setEndTime(uint256 _newEndTime) onlyOwner public {
-        require(now &lt; _newEndTime);
+        require(now < _newEndTime);
         endTime = _newEndTime;
     }
 
@@ -539,10 +539,10 @@ contract PreSale is Ownable {
         uint256 all = 100;
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate);
-        require(tokens &gt;= minTokensToSale);
+        require(tokens >= minTokensToSale);
         uint256 bonusNow = getBonus(tokens);
         tokens = tokens.mul(bonusNow).div(all);
-        require(tokensToSale &gt; tokens.add(token.totalSupply()));
+        require(tokensToSale > tokens.add(token.totalSupply()));
         weiRaised = weiRaised.add(msg.value);
         token.mint(beneficiary, tokens);
         emit TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
@@ -557,7 +557,7 @@ contract PreSale is Ownable {
 
     // @return true if tokensale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     function kill() onlyOwner public { selfdestruct(owner); }

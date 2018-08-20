@@ -1,8 +1,8 @@
 pragma solidity ^0.4.0;
 
 contract PublicProfile {
-    mapping (address =&gt; string) nicknames;
-    mapping (address =&gt; string) pictures;
+    mapping (address => string) nicknames;
+    mapping (address => string) pictures;
     
     function setNickname (string _nickname) public {
         nicknames[msg.sender] = _nickname;

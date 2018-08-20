@@ -8,7 +8,7 @@ contract TheDAOHardForkOracle {
     bool public notforked;
     
     modifier after_dao_hf_block {
-        if (block.number &lt; 1920000) throw;
+        if (block.number < 1920000) throw;
         _
     }
     
@@ -18,7 +18,7 @@ contract TheDAOHardForkOracle {
     }
 
     modifier has_millions(address _addr, uint _millions) {
-        if (_addr.balance &gt;= (_millions * 1000000 ether)) _
+        if (_addr.balance >= (_millions * 1000000 ether)) _
     }
 
     // 10M ether is ~ 2M less than would be available for a short
@@ -30,7 +30,7 @@ contract TheDAOHardForkOracle {
     }
 
     // failsafe: if the above assumption is incorrect, HF tine
-    // won&#39;t have balance in DarkDAO anyway, and Classic has a
+    // won't have balance in DarkDAO anyway, and Classic has a
     // sliver of time before DarkDAO split happens
     function check_darkdao() internal
         has_millions(DarkDAO, 3) {

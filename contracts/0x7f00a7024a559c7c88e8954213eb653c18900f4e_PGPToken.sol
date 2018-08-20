@@ -36,13 +36,13 @@ contract SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function safeSub(uint a, uint b) public pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -58,7 +58,7 @@ contract SafeMath {
 
     function safeDiv(uint a, uint b) public pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -204,9 +204,9 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
 
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
 
 
@@ -220,9 +220,9 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
     function PGPToken() public {
 
-        symbol = &quot;PGP&quot;;
+        symbol = "PGP";
 
-        name = &quot;Pretty Good Privacy&quot;;
+        name = "Pretty Good Privacy";
 
         decimals = 18;
 
@@ -272,9 +272,9 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
 
-    // Transfer the balance from token owner&#39;s account to to account
+    // Transfer the balance from token owner's account to to account
 
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // - Owner's account must have sufficient balance to transfer
 
     // - 0 value transfers are allowed
 
@@ -300,7 +300,7 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
     // Token owner can approve for spender to transferFrom(...) tokens
 
-    // from the token owner&#39;s account
+    // from the token owner's account
 
     //
 
@@ -366,7 +366,7 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
     // Returns the amount of tokens approved by the owner that can be
 
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
 
     // ------------------------------------------------------------------------
 
@@ -384,7 +384,7 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
     // Token owner can approve for spender to transferFrom(...) tokens
 
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
 
     // receiveApproval(...) is then executed
 
@@ -408,7 +408,7 @@ contract PGPToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
 
-    // Don&#39;t accept ETH
+    // Don't accept ETH
 
     // ------------------------------------------------------------------------
 

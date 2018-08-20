@@ -6,7 +6,7 @@ contract EscrowMyEther  {
 
        
         //Each buyer address consist of an array of EscrowStruct
-        //Used to store buyer&#39;s transactions and for buyers to interact with his transactions. (Such as releasing funds to seller)
+        //Used to store buyer's transactions and for buyers to interact with his transactions. (Such as releasing funds to seller)
         struct EscrowStruct
         {    
             address buyer;          //Person who is making payment
@@ -34,16 +34,16 @@ contract EscrowMyEther  {
 
         
         //Database of Buyers. Each buyer then contain an array of his transactions
-        mapping(address =&gt; EscrowStruct[]) public buyerDatabase;
+        mapping(address => EscrowStruct[]) public buyerDatabase;
 
         //Database of Seller and Escrow Agent
-        mapping(address =&gt; TransactionStruct[]) public sellerDatabase;        
-        mapping(address =&gt; TransactionStruct[]) public escrowDatabase;
+        mapping(address => TransactionStruct[]) public sellerDatabase;        
+        mapping(address => TransactionStruct[]) public escrowDatabase;
                
         //Every address have a Funds bank. All refunds, sales and escrow comissions are sent to this bank. Address owner can withdraw them at any time.
-        mapping(address =&gt; uint) public Funds;
+        mapping(address => uint) public Funds;
 
-        mapping(address =&gt; uint) public escrowFee;
+        mapping(address => uint) public escrowFee;
 
 
 
@@ -60,7 +60,7 @@ contract EscrowMyEther  {
         function setEscrowFee(uint fee) public {
 
             //Allowed fee range: 0.1% to 10%, in increments of 0.1%
-            require (fee &gt;= 1 &amp;&amp; fee &lt;= 100);
+            require (fee >= 1 && fee <= 100);
             escrowFee[msg.sender] = fee;
         }
 
@@ -71,7 +71,7 @@ contract EscrowMyEther  {
         
         function newEscrow(address sellerAddress, address escrowAddress, bytes32 notes) public payable returns (bool) {
 
-            require(msg.value &gt; 0 &amp;&amp; msg.sender != escrowAddress);
+            require(msg.value > 0 && msg.sender != escrowAddress);
         
             //Store escrow details in memory
             EscrowStruct memory currentEscrow;
@@ -98,7 +98,7 @@ contract EscrowMyEther  {
             
             currentEscrow.notes = notes;
  
-            //Links this transaction to Seller and Escrow&#39;s list of transactions.
+            //Links this transaction to Seller and Escrow's list of transactions.
             currentTransaction.buyer = msg.sender;
             currentTransaction.buyer_nounce = buyerDatabase[msg.sender].length;
 
@@ -156,7 +156,7 @@ contract EscrowMyEther  {
 
 
             uint length;
-            if (buyerDatabase[buyerAddress].length &lt; numToLoad)
+            if (buyerDatabase[buyerAddress].length < numToLoad)
                 length = buyerDatabase[buyerAddress].length;
             
             else 
@@ -167,7 +167,7 @@ contract EscrowMyEther  {
             uint[] memory amounts = new uint[](length);
             bytes32[] memory statuses = new bytes32[](length);
            
-            for (uint i = 0; i &lt; length; i++)
+            for (uint i = 0; i < length; i++)
             {
   
                 sellers[i] = (buyerDatabase[buyerAddress][startID + i].seller);
@@ -188,9 +188,9 @@ contract EscrowMyEther  {
             uint[] memory amounts = new uint[](numToLoad);
             bytes32[] memory statuses = new bytes32[](numToLoad);
 
-            for (uint i = 0; i &lt; numToLoad; i++)
+            for (uint i = 0; i < numToLoad; i++)
             {
-                if (i &gt;= sellerDatabase[inputAddress].length)
+                if (i >= sellerDatabase[inputAddress].length)
                     break;
                 buyers[i] = sellerDatabase[inputAddress][startID + i].buyer;
                 escrows[i] = buyerDatabase[buyers[i]][sellerDatabase[inputAddress][startID +i].buyer_nounce].escrow_agent;
@@ -207,9 +207,9 @@ contract EscrowMyEther  {
             uint[] memory amounts = new uint[](numToLoad);
             bytes32[] memory statuses = new bytes32[](numToLoad);
 
-            for (uint i = 0; i &lt; numToLoad; i++)
+            for (uint i = 0; i < numToLoad; i++)
             {
-                if (i &gt;= escrowDatabase[inputAddress].length)
+                if (i >= escrowDatabase[inputAddress].length)
                     break;
                 buyers[i] = escrowDatabase[inputAddress][startID + i].buyer;
                 sellers[i] = buyerDatabase[buyers[i]][escrowDatabase[inputAddress][startID +i].buyer_nounce].seller;
@@ -221,17 +221,17 @@ contract EscrowMyEther  {
 
         function checkStatus(address buyerAddress, uint nounce) public constant returns (bytes32){
 
-            bytes32 status = &quot;&quot;;
+            bytes32 status = "";
 
             if (buyerDatabase[buyerAddress][nounce].release_approval){
-                status = &quot;Complete&quot;;
+                status = "Complete";
             } else if (buyerDatabase[buyerAddress][nounce].refund_approval){
-                status = &quot;Refunded&quot;;
+                status = "Refunded";
             } else if (buyerDatabase[buyerAddress][nounce].escrow_intervention){
-                status = &quot;Pending Escrow Decision&quot;;
+                status = "Pending Escrow Decision";
             } else
             {
-                status = &quot;In Progress&quot;;
+                status = "In Progress";
             }
        
             return (status);
@@ -242,8 +242,8 @@ contract EscrowMyEther  {
         //Even if EscrowEscalation is raised, buyer can still approve fund release at any time
         function buyerFundRelease(uint ID) public
         {
-            require(ID &lt; buyerDatabase[msg.sender].length &amp;&amp; 
-            buyerDatabase[msg.sender][ID].release_approval == false &amp;&amp;
+            require(ID < buyerDatabase[msg.sender].length && 
+            buyerDatabase[msg.sender][ID].release_approval == false &&
             buyerDatabase[msg.sender][ID].refund_approval == false);
             
             //Set release approval to true. Ensure approval for each transaction can only be called once.
@@ -255,7 +255,7 @@ contract EscrowMyEther  {
             uint amount = buyerDatabase[msg.sender][ID].amount;
             uint escrow_fee = buyerDatabase[msg.sender][ID].escrow_fee;
 
-            //Move funds under seller&#39;s owership
+            //Move funds under seller's owership
             Funds[seller] += amount;
             Funds[escrow_agent] += escrow_fee;
 
@@ -269,7 +269,7 @@ contract EscrowMyEther  {
             uint buyerID = sellerDatabase[msg.sender][ID].buyer_nounce;
 
             require(
-            buyerDatabase[buyerAddress][buyerID].release_approval == false &amp;&amp;
+            buyerDatabase[buyerAddress][buyerID].release_approval == false &&
             buyerDatabase[buyerAddress][buyerID].refund_approval == false); 
 
             address escrow_agent = buyerDatabase[buyerAddress][buyerID].escrow_agent;
@@ -299,7 +299,7 @@ contract EscrowMyEther  {
 
             //There is no difference whether the buyer or seller activates EscrowEscalation.
             address buyerAddress;
-            uint buyerID; //transaction ID of in buyer&#39;s history
+            uint buyerID; //transaction ID of in buyer's history
             if (switcher == 0) // Buyer
             {
                 buyerAddress = msg.sender;
@@ -310,8 +310,8 @@ contract EscrowMyEther  {
                 buyerID = sellerDatabase[msg.sender][ID].buyer_nounce;
             }
 
-            require(buyerDatabase[buyerAddress][buyerID].escrow_intervention == false  &amp;&amp;
-            buyerDatabase[buyerAddress][buyerID].release_approval == false &amp;&amp;
+            require(buyerDatabase[buyerAddress][buyerID].escrow_intervention == false  &&
+            buyerDatabase[buyerAddress][buyerID].release_approval == false &&
             buyerDatabase[buyerAddress][buyerID].refund_approval == false);
 
             //Activate the ability for Escrow Agent to intervent in this transaction
@@ -320,7 +320,7 @@ contract EscrowMyEther  {
             
         }
         
-        //ID is the transaction ID from Escrow&#39;s history. 
+        //ID is the transaction ID from Escrow's history. 
         //Decision = 0 is for refunding Buyer. Decision = 1 is for releasing funds to Seller
         function escrowDecision(uint ID, uint Decision) public
         {
@@ -335,8 +335,8 @@ contract EscrowMyEther  {
             
 
             require(
-            buyerDatabase[buyerAddress][buyerID].release_approval == false &amp;&amp;
-            buyerDatabase[buyerAddress][buyerID].escrow_intervention == true &amp;&amp;
+            buyerDatabase[buyerAddress][buyerID].release_approval == false &&
+            buyerDatabase[buyerAddress][buyerID].escrow_intervention == true &&
             buyerDatabase[buyerAddress][buyerID].refund_approval == false);
             
             uint escrow_fee = buyerDatabase[buyerAddress][buyerID].escrow_fee;

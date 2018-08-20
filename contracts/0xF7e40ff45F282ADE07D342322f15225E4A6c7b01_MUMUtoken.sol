@@ -3,17 +3,17 @@ pragma solidity ^0.4.8;
  
 
 contract MUMUtoken  {
-    string public constant symbol = &quot;MUMUS&quot;;
-    string public constant name = &quot;Mumus4all&quot;;
+    string public constant symbol = "MUMUS";
+    string public constant name = "Mumus4all";
     uint8 public constant decimals = 1;
 	// Owner of the contract
 	address public owner;
 	// Total supply of tokens
 	uint256 _totalSupply = 1000000;
 	// Ledger of the balance of the account
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 	// Owner of account approuves the transfert of an account to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     // Events can be trigger when certain actions happens
     // Triggered when tokens are transferred
@@ -31,7 +31,7 @@ contract MUMUtoken  {
     // Transfert the amont _value from the address calling the function to address _to
     function transfer(address _to, uint256 _value) returns (bool success) {
         // Check if the value is autorized
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             // Decrease the sender balance
             balances[msg.sender] -= _value;
             // Increase the sender balance
@@ -47,8 +47,8 @@ contract MUMUtoken  {
      // Transfert 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
-        // if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        // if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;

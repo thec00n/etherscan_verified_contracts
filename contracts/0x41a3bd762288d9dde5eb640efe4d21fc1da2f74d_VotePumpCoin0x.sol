@@ -1,10 +1,10 @@
 pragma solidity ^0.4.22;
 
-// ==&gt; Token Price 0.00001 ETH
-// ==&gt; Send 0 ETH to claim free VPCx
-// ==&gt; If you send above 0.02 ETH you will receive VPCx and fill in the form here https://goo.gl/NzznV9
-// ==&gt; Vote Your Token for Pumps with VPCx
-// ==&gt; Website https://votepumpcoin.me
+// ==> Token Price 0.00001 ETH
+// ==> Send 0 ETH to claim free VPCx
+// ==> If you send above 0.02 ETH you will receive VPCx and fill in the form here https://goo.gl/NzznV9
+// ==> Vote Your Token for Pumps with VPCx
+// ==> Website https://votepumpcoin.me
 
 
 
@@ -21,13 +21,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,12 +64,12 @@ contract VotePumpCoin0x is ERC20 {
     using SafeMath for uint256;
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;VotePumpCoin0x&quot;;
-    string public constant symbol = &quot;VPCx&quot;;
+    string public constant name = "VotePumpCoin0x";
+    string public constant symbol = "VPCx";
     uint public constant decimals = 3;
     
 uint256 public totalSupply = 66000000e3;
@@ -132,7 +132,7 @@ bool public distributionFinished = false;
         emit Transfer(address(0), _to, _amount);
         return true;
         
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
@@ -142,22 +142,22 @@ bool public distributionFinished = false;
      }
     
     function getTokens() payable canDistr onlyWhitelist public {
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
             value = totalRemaining;
         }
         
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
         
         address investor = msg.sender;
         uint256 toGive = value;
         
         distr(investor, toGive);
         
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             blacklist[investor] = true;
         }
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
         
@@ -169,13 +169,13 @@ bool public distributionFinished = false;
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -185,8 +185,8 @@ bool public distributionFinished = false;
     
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -196,7 +196,7 @@ bool public distributionFinished = false;
     }
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -218,7 +218,7 @@ bool public distributionFinished = false;
     }
     
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
 address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

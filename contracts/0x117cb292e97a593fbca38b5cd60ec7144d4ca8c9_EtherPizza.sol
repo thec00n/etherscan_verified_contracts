@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /// Pizzas :3
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="b7d3d2c3d2f7d6cfded8dacdd2d999d4d8">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="b7d3d2c3d2f7d6cfded8dacdd2d999d4d8">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -39,33 +39,33 @@ contract EtherPizza is ERC721 {
   uint256 private startingPrice = 0.001 ether;
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CrypoPizzas&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CryptoPizza&quot;; // solhint-disable-line
+  string public constant NAME = "CrypoPizzas"; // solhint-disable-line
+  string public constant SYMBOL = "CryptoPizza"; // solhint-disable-line
 
   /*** STORAGE ***/
 
   /// @dev A mapping from pizza IDs to the address that owns them. All pizzas have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public pizzaIndexToOwner;
+  mapping (uint256 => address) public pizzaIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from PizzaIDs to an address that has been approved to call
   ///  transferFrom(). Each Pizza can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public pizzaIndexToApproved;
+  mapping (uint256 => address) public pizzaIndexToApproved;
 
   // @dev A mapping from PizzaIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private pizzaIndexToPrice;
+  mapping (uint256 => uint256) private pizzaIndexToPrice;
 
   /// @dev A mapping from PizzaIDs to the previpus price of the token. Used
   /// to calculate price delta for payouts
-  mapping (uint256 =&gt; uint256) private pizzaIndexToPreviousPrice;
+  mapping (uint256 => uint256) private pizzaIndexToPreviousPrice;
 
   // @dev A mapping from pizzaId to the 7 last owners.
-  mapping (uint256 =&gt; address[5]) private pizzaIndexToPreviousOwners;
+  mapping (uint256 => address[5]) private pizzaIndexToPreviousOwners;
 
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
@@ -195,7 +195,7 @@ contract EtherPizza is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 priceDelta = SafeMath.sub(sellingPrice, previousPrice);
     uint256 ownerPayout = SafeMath.add(previousPrice, SafeMath.mul(SafeMath.div(priceDelta, 100), 40));
@@ -219,7 +219,7 @@ contract EtherPizza is ERC721 {
     }
 
     // Next distribute payout Total among previous Owners
-    for (uint i = 0; i &lt; 5; i++) {
+    for (uint i = 0; i < 5; i++) {
         if (previousOwners[i] != address(this)) {
             previousOwners[i].transfer(uint256(SafeMath.mul(SafeMath.div(priceDelta, 100), 10)));
         } else {
@@ -281,7 +281,7 @@ contract EtherPizza is ERC721 {
   }
 
   /// @param _owner The owner whose pizza tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Pizzas array looking for pizzas belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -295,7 +295,7 @@ contract EtherPizza is ERC721 {
       uint256 totalPizzas = totalSupply();
       uint256 resultIndex = 0;
       uint256 pizzaId;
-      for (pizzaId = 0; pizzaId &lt;= totalPizzas; pizzaId++) {
+      for (pizzaId = 0; pizzaId <= totalPizzas; pizzaId++) {
         if (pizzaIndexToOwner[pizzaId] == _owner) {
           result[resultIndex] = pizzaId;
           resultIndex++;
@@ -358,8 +358,8 @@ contract EtherPizza is ERC721 {
     });
     uint256 newPizzaId = pizzas.push(_pizza) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newPizzaId == uint256(uint32(newPizzaId)));
 
     Birth(newPizzaId, _name, _owner);
@@ -390,11 +390,11 @@ contract EtherPizza is ERC721 {
 
   /// @dev Assigns ownership of a specific Pizza to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of pizzas is capped to 2^32 we can&#39;t overflow this
+    // Since the number of pizzas is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     pizzaIndexToOwner[_tokenId] = _to;
-    // When creating new pizzas _from is 0x0, but we can&#39;t account that address.
+    // When creating new pizzas _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -435,9 +435,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -445,7 +445,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -454,7 +454,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

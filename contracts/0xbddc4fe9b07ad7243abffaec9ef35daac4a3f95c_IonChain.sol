@@ -22,13 +22,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -130,9 +130,9 @@ contract BaseFixedERC20Token is Lockable {
     /// @dev ERC20 Total supply
     uint public totalSupply;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) private allowed;
+    mapping(address => mapping(address => uint)) private allowed;
 
     /// @dev Fired if token is transferred according to ERC20 spec
     event Transfer(address indexed from, address indexed to, uint value);
@@ -155,7 +155,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ The amount to be transferred.
      */
     function transfer(address to_, uint value_) public whenNotLocked returns (bool) {
-        require(to_ != address(0) &amp;&amp; value_ &lt;= balances[msg.sender]);
+        require(to_ != address(0) && value_ <= balances[msg.sender]);
         // SafeMath.sub will throw an exception if there is not enough balance
         balances[msg.sender] = balances[msg.sender].sub(value_);
         balances[to_] = balances[to_].add(value_);
@@ -170,7 +170,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ uint the amount of tokens to be transferred
      */
     function transferFrom(address from_, address to_, uint value_) public whenNotLocked returns (bool) {
-        require(to_ != address(0) &amp;&amp; value_ &lt;= balances[from_] &amp;&amp; value_ &lt;= allowed[from_][msg.sender]);
+        require(to_ != address(0) && value_ <= balances[from_] && value_ <= allowed[from_][msg.sender]);
         balances[from_] = balances[from_].sub(value_);
         balances[to_] = balances[to_].add(value_);
         allowed[from_][msg.sender] = allowed[from_][msg.sender].sub(value_);
@@ -193,7 +193,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ The amount of tokens to be spent.
      */
     function approve(address spender_, uint value_) public whenNotLocked returns (bool) {
-        if (value_ != 0 &amp;&amp; allowed[msg.sender][spender_] != 0) {
+        if (value_ != 0 && allowed[msg.sender][spender_] != 0) {
             revert();
         }
         allowed[msg.sender][spender_] = value_;
@@ -220,9 +220,9 @@ contract BaseFixedERC20Token is Lockable {
 contract IonChain is BaseFixedERC20Token {
     using SafeMath for uint;
 
-    string public constant name = &quot;IonChain&quot;;
+    string public constant name = "IonChain";
 
-    string public constant symbol = &quot;IONC&quot;;
+    string public constant symbol = "IONC";
 
     uint8 public constant decimals = 6;
 

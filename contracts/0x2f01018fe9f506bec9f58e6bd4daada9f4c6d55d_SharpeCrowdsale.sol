@@ -41,37 +41,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -114,7 +114,7 @@ contract DynamicCeiling is Owned {
         require(ceilings.length == 0);
 
         ceilings.length = _ceilingHashes.length;
-        for (uint256 i = 0; i &lt; _ceilingHashes.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _ceilingHashes.length; i = i.add(1)) {
             ceilings[i].hash = _ceilingHashes[i];
         }
     }
@@ -122,7 +122,7 @@ contract DynamicCeiling is Owned {
     /// @notice Anybody can reveal the next ceiling if he knows it.
     /// @param _limit Ceiling cap.
     ///  (must be greater or equal to the previous one).
-    /// @param _last `true` if it&#39;s the last ceiling.
+    /// @param _last `true` if it's the last ceiling.
     /// @param _salt Random number used to commit the ceiling
     function revealCeiling(
         uint256 _limit, 
@@ -144,9 +144,9 @@ contract DynamicCeiling is Owned {
             )
         );
 
-        require(_limit != 0 &amp;&amp; _slopeFactor != 0 &amp;&amp; _collectMinimum != 0);
-        if (revealedCeilings &gt; 0) {
-            require(_limit &gt;= ceilings[revealedCeilings.sub(1)].limit);
+        require(_limit != 0 && _slopeFactor != 0 && _collectMinimum != 0);
+        if (revealedCeilings > 0) {
+            require(_limit >= ceilings[revealedCeilings.sub(1)].limit);
         }
 
         ceilings[revealedCeilings].limit = _limit;
@@ -170,14 +170,14 @@ contract DynamicCeiling is Owned {
         {
         // Do not allow none and needs to be same length for all parameters
         require(
-            _limits.length != 0 &amp;&amp;
-            _limits.length == _slopeFactors.length &amp;&amp;
-            _limits.length == _collectMinimums.length &amp;&amp;
-            _limits.length == _lasts.length &amp;&amp;
+            _limits.length != 0 &&
+            _limits.length == _slopeFactors.length &&
+            _limits.length == _collectMinimums.length &&
+            _limits.length == _lasts.length &&
             _limits.length == _salts.length
         );
 
-        for (uint256 i = 0; i &lt; _limits.length; i = i.add(1)) {
+        for (uint256 i = 0; i < _limits.length; i = i.add(1)) {
             
             revealCeiling(
                 _limits[i],
@@ -203,25 +203,25 @@ contract DynamicCeiling is Owned {
             return 0;
         }
 
-        if (totallCollected &gt;= ceilings[currentIndex].limit) {  
+        if (totallCollected >= ceilings[currentIndex].limit) {  
             uint256 nextIndex = currentIndex.add(1);
 
-            if (nextIndex &gt;= revealedCeilings) {
+            if (nextIndex >= revealedCeilings) {
                 return 0; 
             }
             currentIndex = nextIndex;
-            if (totallCollected &gt;= ceilings[currentIndex].limit) {
+            if (totallCollected >= ceilings[currentIndex].limit) {
                 return 0;  
             }
         }        
         uint256 remainedFromCurrentCeiling = ceilings[currentIndex].limit.sub(totallCollected);
         uint256 reminderWithSlopeFactor = remainedFromCurrentCeiling.div(ceilings[currentIndex].slopeFactor);
 
-        if (reminderWithSlopeFactor &gt; ceilings[currentIndex].collectMinimum) {
+        if (reminderWithSlopeFactor > ceilings[currentIndex].collectMinimum) {
             return reminderWithSlopeFactor;
         }
         
-        if (remainedFromCurrentCeiling &gt; ceilings[currentIndex].collectMinimum) {
+        if (remainedFromCurrentCeiling > ceilings[currentIndex].collectMinimum) {
             return ceilings[currentIndex].collectMinimum;
         } else {
             return remainedFromCurrentCeiling;
@@ -230,7 +230,7 @@ contract DynamicCeiling is Owned {
 
     /// @notice Calculates the hash of a ceiling.
     /// @param _limit Ceiling cap.
-    /// @param _last `true` if it&#39;s the last ceiling.
+    /// @param _last `true` if it's the last ceiling.
     /// @param _collectMinimum the minimum amount to collect
     /// @param _salt Random number that will be needed to reveal this ceiling.
     /// @return The calculated hash of this ceiling to be used in the `setHiddenCurves` method
@@ -279,7 +279,7 @@ contract Trustee is Owned {
     }
 
     // Grants holder.
-    mapping (address =&gt; Grant) public grants;
+    mapping (address => Grant) public grants;
 
     // Total tokens available for vesting.
     uint256 public totalVesting;
@@ -305,16 +305,16 @@ contract Trustee is Owned {
     function grant(address _to, uint256 _value, uint256 _start, uint256 _cliff, uint256 _end, bool _revokable)
         public onlyOwner {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Make sure that a single address can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Check for date inconsistencies that may cause unexpected behavior.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
-        // Check that this grant doesn&#39;t exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(_value) &lt;= shp.balanceOf(address(this)));
+        // Check that this grant doesn't exceed the total amount of tokens currently available for vesting.
+        require(totalVesting.add(_value) <= shp.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -354,7 +354,7 @@ contract Trustee is Owned {
     /// @dev Calculate the total amount of vested tokens of a holder at a given time.
     /// @param _holder address The address of the holder.
     /// @param _time uint256 The specific time.
-    /// @return a uint256 representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 representing a holder's total amount of vested tokens.
     function vestedTokens(address _holder, uint256 _time) public constant returns (uint256) {
         Grant grant = grants[_holder];
         if (grant.value == 0) {
@@ -380,16 +380,16 @@ contract Trustee is Owned {
     ///   |        .      |
     ///   |      .        |
     ///   |    .          |
-    ///   +===+===========+---------+----------&gt; time
+    ///   +===+===========+---------+----------> time
     ///     Start       Cliff      End
     function calculateVestedTokens(Grant _grant, uint256 _time) private constant returns (uint256) {
-        // If we&#39;re before the cliff, then nothing is vested.
-        if (_time &lt; _grant.cliff) {
+        // If we're before the cliff, then nothing is vested.
+        if (_time < _grant.cliff) {
             return 0;
         }
 
-        // If we&#39;re after the end of the vesting period - everything is vested;
-        if (_time &gt;= _grant.end) {
+        // If we're after the end of the vesting period - everything is vested;
+        if (_time >= _grant.end) {
             return _grant.value;
         }
 
@@ -409,7 +409,7 @@ contract Trustee is Owned {
             return;
         }
 
-        // Make sure the holder doesn&#39;t transfer more than what he already has.
+        // Make sure the holder doesn't transfer more than what he already has.
         uint256 transferable = vested.sub(grant.transferred);
         if (transferable == 0) {
             return;
@@ -470,13 +470,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -505,10 +505,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -586,7 +586,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -605,15 +605,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -629,7 +629,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -638,7 +638,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -724,7 +724,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -749,7 +749,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -811,9 +811,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -828,9 +828,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -861,16 +861,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -886,7 +886,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -905,15 +905,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -1006,9 +1006,9 @@ contract SHP is MiniMeToken {
                 _tokenFactory,
                 0x0,                             // no parent token
                 0,                               // no snapshot block number from parent
-                &quot;Sharpe Platform Token&quot;,         // Token name
+                "Sharpe Platform Token",         // Token name
                 18,                              // Decimals
-                &quot;SHP&quot;,                           // Symbol
+                "SHP",                           // Symbol
                 true                             // Enable transfers
             ) {}
 }
@@ -1023,7 +1023,7 @@ contract AffiliateUtility is Owned {
     uint256 public constant TIER2_PERCENT = 4;
     uint256 public constant TIER3_PERCENT = 5;
     
-    mapping (address =&gt; Affiliate) private affiliates;
+    mapping (address => Affiliate) private affiliates;
 
     event AffiliateReceived(address affiliateAddress, address investorAddress, bool valid);
 
@@ -1045,7 +1045,7 @@ contract AffiliateUtility is Owned {
     }
 
     /// @notice This adds an affiliate Ethereum address to our whitelist
-    /// @param _investor The investor&#39;s address
+    /// @param _investor The investor's address
     /// @param _affiliate The Ethereum address of the affiliate
     function addAffiliate(address _investor, address _affiliate) onlyOwner {
         affiliates[_investor] = Affiliate(_affiliate, true);
@@ -1071,9 +1071,9 @@ contract AffiliateUtility is Owned {
         uint256 contributorBonus = _contributorTokens.div(100);
         uint256 affiliateBonus = 0;
 
-        if (_contributionValue &lt; tierTwoMin) {
+        if (_contributionValue < tierTwoMin) {
             affiliateBonus = _contributorTokens.mul(TIER1_PERCENT).div(100);
-        } else if (_contributionValue &gt;= tierTwoMin &amp;&amp; _contributionValue &lt; tierThreeMin) {
+        } else if (_contributionValue >= tierTwoMin && _contributionValue < tierThreeMin) {
             affiliateBonus = _contributorTokens.mul(TIER2_PERCENT).div(100);
         } else {
             affiliateBonus = _contributorTokens.mul(TIER3_PERCENT).div(100);
@@ -1106,9 +1106,9 @@ contract SCD is MiniMeToken {
                 _tokenFactory,
                 0x0,                             // no parent token
                 0,                               // no snapshot block number from parent
-                &quot;Sharpe Crypto-Derivative&quot;,      // Token name
+                "Sharpe Crypto-Derivative",      // Token name
                 18,                              // Decimals
-                &quot;SCD&quot;,                           // Symbol
+                "SCD",                           // Symbol
                 true                             // Enable transfers
             ) {}
 }
@@ -1138,7 +1138,7 @@ contract TokenSale is Owned, TokenController {
     bool public paused;
     bool public closed;
 
-    mapping(address =&gt; bool) public approvedAddresses;
+    mapping(address => bool) public approvedAddresses;
 
     event Contribution(uint256 etherAmount, address _caller);
     event NewSale(address indexed caller, uint256 etherAmount, uint256 tokensGenerated);
@@ -1161,9 +1161,9 @@ contract TokenSale is Owned, TokenController {
 
     modifier isValidated() {
         require(msg.sender != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(!isContract(msg.sender)); 
-        require(tx.gasprice &lt;= MAX_GAS_PRICE);
+        require(tx.gasprice <= MAX_GAS_PRICE);
         _;
     }
 
@@ -1179,8 +1179,8 @@ contract TokenSale is Owned, TokenController {
     }
 
     /// @notice This method sends the Ether received to the Ether escrow address
-    /// and generates the calculated number of SHP tokens, sending them to the caller&#39;s address.
-    /// It also generates the founder&#39;s tokens and the reserve tokens at the same time.
+    /// and generates the calculated number of SHP tokens, sending them to the caller's address.
+    /// It also generates the founder's tokens and the reserve tokens at the same time.
     function doBuy(
         address _caller,
         uint256 etherAmount
@@ -1282,7 +1282,7 @@ contract TokenSale is Owned, TokenController {
     function isContract(address _caller) internal constant returns (bool) {
         uint size;
         assembly { size := extcodesize(_caller) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     /// @notice Pauses the contribution if there is any issue
@@ -1323,7 +1323,7 @@ contract SharpeCrowdsale is TokenSale {
     DynamicCeiling public dynamicCeiling;
 
     modifier amountValidated() {
-        require(msg.value &gt;= minContributionInWei);
+        require(msg.value >= minContributionInWei);
         _;
     }
 
@@ -1372,12 +1372,12 @@ contract SharpeCrowdsale is TokenSale {
             revert();
         }
 
-        if (contribution &gt; remaining) {
+        if (contribution > remaining) {
             contribution = remaining;
             refund = msg.value.sub(contribution);
         }
         doBuy(msg.sender, contribution);
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
     }

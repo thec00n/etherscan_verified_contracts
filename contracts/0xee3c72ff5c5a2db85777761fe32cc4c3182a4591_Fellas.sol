@@ -30,13 +30,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -103,7 +103,7 @@ contract ERC223 {
         tkn.sender = _from;
         tkn.value = _value;
         tkn.data = _data;
-        uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+        uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
         tkn.sig = bytes4(u);
 
         /*
@@ -121,14 +121,14 @@ contract ERC223 {
 contract Fellas is ERC223, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;Fellas&quot;;
-    string public symbol = &quot;FELLAS&quot;;
+    string public name = "Fellas";
+    string public symbol = "FELLAS";
     uint8 public decimals = 8; 
     uint256 public totalSupply = 50e9 * 1e8;
     bool public mintingStopped = false;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping (address => uint256)) public allowance;
 
     event Burn(address indexed from, uint256 amount);
     event Mint(address indexed to, uint256 amount);
@@ -161,7 +161,7 @@ contract Fellas is ERC223, Ownable {
 
     // transfer
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         bytes memory empty;
         if (isContract(_to)) {
@@ -172,7 +172,7 @@ contract Fellas is ERC223, Ownable {
     }
 
     function transfer(address _to, uint _value, bytes _data) public  returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         if (isContract(_to)) {
             return transferToContract(_to, _value, _data);
@@ -182,10 +182,10 @@ contract Fellas is ERC223, Ownable {
     }
 
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         if (isContract(_to)) {
-            require(balanceOf[msg.sender] &gt;= _value);
+            require(balanceOf[msg.sender] >= _value);
             balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             balanceOf[_to] = balanceOf[_to].add(_value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -204,12 +204,12 @@ contract Fellas is ERC223, Ownable {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        return (length &gt; 0);
+        return (length > 0);
     }
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -219,7 +219,7 @@ contract Fellas is ERC223, Ownable {
 
     // function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -232,9 +232,9 @@ contract Fellas is ERC223, Ownable {
     // transferFrom
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)
-                &amp;&amp; _value &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _value
-                &amp;&amp; allowance[_from][msg.sender] &gt;= _value);
+                && _value > 0
+                && balanceOf[_from] >= _value
+                && allowance[_from][msg.sender] >= _value);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -257,8 +257,8 @@ contract Fellas is ERC223, Ownable {
 
     // burn
     function burn(address _from, uint256 _unitAmount) onlyOwner public {
-        require(_unitAmount &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _unitAmount);
+        require(_unitAmount > 0
+                && balanceOf[_from] >= _unitAmount);
 
         balanceOf[_from] = balanceOf[_from].sub(_unitAmount);
         totalSupply = totalSupply.sub(_unitAmount);
@@ -272,7 +272,7 @@ contract Fellas is ERC223, Ownable {
 
     // mint
     function mint(address _to, uint256 _unitAmount) onlyOwner canMinting public returns (bool) {
-        require(_unitAmount &gt; 0);
+        require(_unitAmount > 0);
 
         totalSupply = totalSupply.add(_unitAmount);
         balanceOf[_to] = balanceOf[_to].add(_unitAmount);
@@ -290,14 +290,14 @@ contract Fellas is ERC223, Ownable {
 
     // airdrop
     function airdrop(address[] addresses, uint256 amount) public returns (bool) {
-        require(amount &gt; 0
-                &amp;&amp; addresses.length &gt; 0);
+        require(amount > 0
+                && addresses.length > 0);
 
         amount = amount.mul(1e8);
         uint256 totalAmount = amount.mul(addresses.length);
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
-        for (uint j = 0; j &lt; addresses.length; j++) {
+        for (uint j = 0; j < addresses.length; j++) {
             require(addresses[j] != 0x0);
 
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amount);
@@ -309,21 +309,21 @@ contract Fellas is ERC223, Ownable {
 
     // airdropAmounts
     function airdropAmounts(address[] addresses, uint[] amounts) public returns (bool) {
-        require(addresses.length &gt; 0
-                &amp;&amp; addresses.length == amounts.length);
+        require(addresses.length > 0
+                && addresses.length == amounts.length);
 
         uint256 totalAmount = 0;
 
-        for(uint j = 0; j &lt; addresses.length; j++){
-            require(amounts[j] &gt; 0
-                    &amp;&amp; addresses[j] != 0x0);
+        for(uint j = 0; j < addresses.length; j++){
+            require(amounts[j] > 0
+                    && addresses[j] != 0x0);
 
             amounts[j] = amounts[j].mul(1e8);
             totalAmount = totalAmount.add(amounts[j]);
         }
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
-        for (j = 0; j &lt; addresses.length; j++) {
+        for (j = 0; j < addresses.length; j++) {
             balanceOf[addresses[j]] = balanceOf[addresses[j]].add(amounts[j]);
             emit Transfer(msg.sender, addresses[j], amounts[j]);
         }
@@ -333,17 +333,17 @@ contract Fellas is ERC223, Ownable {
 
     // collect
     function collect(address[] addresses, uint[] amounts) onlyOwner public returns (bool) {
-        require(addresses.length &gt; 0
-                &amp;&amp; addresses.length == amounts.length);
+        require(addresses.length > 0
+                && addresses.length == amounts.length);
 
         uint256 totalAmount = 0;
 
-        for (uint j = 0; j &lt; addresses.length; j++) {
-            require(amounts[j] &gt; 0
-                    &amp;&amp; addresses[j] != 0x0);
+        for (uint j = 0; j < addresses.length; j++) {
+            require(amounts[j] > 0
+                    && addresses[j] != 0x0);
 
             amounts[j] = amounts[j].mul(1e8);
-            require(balanceOf[addresses[j]] &gt;= amounts[j]);
+            require(balanceOf[addresses[j]] >= amounts[j]);
             balanceOf[addresses[j]] = balanceOf[addresses[j]].sub(amounts[j]);
             totalAmount = totalAmount.add(amounts[j]);
             emit Transfer(addresses[j], msg.sender, amounts[j]);

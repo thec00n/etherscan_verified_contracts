@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 // File: contracts/ERC721.sol
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc8c9d8c9eccdd4c5c3c1d6c9c282cfc3">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc8c9d8c9eccdd4c5c3c1d6c9c282cfc3">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public view returns (uint256 total);
@@ -42,7 +42,7 @@ interface TulipsSaleInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -197,7 +197,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
     uint256 public initialSaleDuration = 1 days;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) public tokenIdToAuction;
+    mapping (uint256 => Auction) public tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
@@ -209,7 +209,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
     * @param _cut - core contract adress should be fixed
     */
     function TulipsSaleAuction(address _tulipsCoreContract, uint256 _cut) TulipsRoles() public {
-        require(_cut &lt;= 10000); // cut as percentage between 0.00-100.00%
+        require(_cut <= 10000); // cut as percentage between 0.00-100.00%
         ownerCut = _cut;
 
         coreContract = ERC721(_tulipsCoreContract);
@@ -251,12 +251,12 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
         require(_duration == uint256(uint64(_duration)));
 
         // Make sure we have at least a minute for this auction
-        require(_duration &gt;= 1 minutes);
+        require(_duration >= 1 minutes);
 
         require(coreContract.ownerOf(_tulipId) == _transferFrom);
 
         // Transfer from checks whether the owner approved this transfer so
-        // we can&#39;t transfer tulips without permission
+        // we can't transfer tulips without permission
         coreContract.transferFrom(_transferFrom, this, _tulipId);
 
         _createAuction(_tulipId, _startingPrice, _endingPrice, _duration, _transferFrom);
@@ -306,7 +306,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
         external
     {
         Auction storage auction = tokenIdToAuction[_tulipId];
-        require(auction.startedAt &gt; 0);
+        require(auction.startedAt > 0);
 
         // Only seller can call this function
         address seller = auction.seller;
@@ -328,18 +328,18 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
     {
         Auction storage auction = tokenIdToAuction[_tulipId];
 
-        require(auction.startedAt &gt; 0);
+        require(auction.startedAt > 0);
 
         uint256 price = _currentPrice(auction);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         address seller = auction.seller;
 
         delete tokenIdToAuction[_tulipId];
 
-        // We don&#39;t calculate auctioneers if the seller is us.
-        if (price &gt; 0 &amp;&amp; seller != address(this)) {
-            // Calculate the auctioneer&#39;s cut.
+        // We don't calculate auctioneers if the seller is us.
+        if (price > 0 && seller != address(this)) {
+            // Calculate the auctioneer's cut.
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerGains = price - auctioneerCut;
 
@@ -362,7 +362,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
 
         uint256 secondsPassed = 0;
 
-        if (now &gt; auction.startedAt) {
+        if (now > auction.startedAt) {
             secondsPassed = now - auction.startedAt;
         }
 
@@ -374,7 +374,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
     {
         Auction storage auction = tokenIdToAuction[_tulipId];
 
-        require(auction.startedAt &gt; 0);
+        require(auction.startedAt > 0);
 
         return _currentPrice(auction);
     }
@@ -386,7 +386,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
     {
         uint256 secondsPassed = 0;
 
-        if (now &gt; _auction.startedAt) {
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -408,7 +408,7 @@ contract TulipsSaleAuction is TulipsRoles, TulipsSaleInterface {
         pure
         returns (uint256)
     {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);

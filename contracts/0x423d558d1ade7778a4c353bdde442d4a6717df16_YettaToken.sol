@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -61,10 +61,10 @@ contract YettaToken is ERC20
    
 
     // Name of the token
-    string public constant name = &quot;Yetta Token&quot;;
+    string public constant name = "Yetta Token";
 
     // Symbol of token
-    string public constant symbol = &quot;YET&quot;;
+    string public constant symbol = "YET";
 
     uint8 public constant decimals = 8;
 
@@ -83,13 +83,13 @@ contract YettaToken is ERC20
      uint public Currenttask;
      string public Currentproposal;
  
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(uint =&gt;mapping(address =&gt; bool)) Task;
-    mapping(uint =&gt;bool) public acceptProp;
-    mapping(uint =&gt;uint256) public agreed;
-    mapping(uint =&gt;uint256) public disagreed;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(uint =>mapping(address => bool)) Task;
+    mapping(uint =>bool) public acceptProp;
+    mapping(uint =>uint256) public agreed;
+    mapping(uint =>uint256) public disagreed;
   
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
  
     enum VotingStages {
         VOTING_NOTSTARTED,
@@ -124,7 +124,7 @@ contract YettaToken is ERC20
     function Bonus_PoolTransfer(address receiver, uint256 tokenQuantity) external onlyOwner {
       
              require( receiver != 0x0);
-             require(balances[bonusPool] &gt;= tokenQuantity &amp;&amp; tokenQuantity &gt;= 0);
+             require(balances[bonusPool] >= tokenQuantity && tokenQuantity >= 0);
              balances[bonusPool] = (balances[bonusPool]).sub(tokenQuantity);
              balances[receiver] = balances[receiver].add(tokenQuantity);
             
@@ -156,7 +156,7 @@ contract YettaToken is ERC20
 
      function submitVote(uint _task, bool proposal) public atStage(VotingStages.VOTING_OPEN){
         require(Currenttask == _task);
-        require(balanceOf(msg.sender)&gt;0); 
+        require(balanceOf(msg.sender)>0); 
         require(Task[_task][msg.sender] ==false); // Checks if already voted for a particular task
          if(proposal == true){
             agreed[_task] = agreed[_task].add(balanceOf(msg.sender));
@@ -171,7 +171,7 @@ contract YettaToken is ERC20
             
     function finaliseVoting(uint _currenttask) external onlyOwner atStage(VotingStages.VOTING_OPEN){
             require(Currenttask == _currenttask);
-                if(agreed[_currenttask] &lt;  disagreed[_currenttask]){
+                if(agreed[_currenttask] <  disagreed[_currenttask]){
                     
                     acceptProp[_currenttask]=false;
                     
@@ -205,14 +205,14 @@ governance of the Yetta Blockchain project. */
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address from_address, address to_address, uint256 tokens)public returns(bool success)
     {
         require(to_address != 0x0);
-        require(balances[from_address] &gt;= tokens &amp;&amp; allowed[from_address][msg.sender] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+        require(balances[from_address] >= tokens && allowed[from_address][msg.sender] >= tokens && tokens >= 0);
         balances[from_address] = (balances[from_address]).sub(tokens);
         allowed[from_address][msg.sender] = (allowed[from_address][msg.sender]).sub(tokens);
         balances[to_address] = (balances[to_address]).add(tokens);
@@ -232,25 +232,25 @@ governance of the Yetta Blockchain project. */
 
     function allowance(address token_Owner, address spender) public constant returns(uint256 remaining)
     {
-        require(token_Owner != 0x0 &amp;&amp; spender != 0x0);
+        require(token_Owner != 0x0 && spender != 0x0);
         return allowed[token_Owner][spender];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address to_address, uint256 tokens)public returns(bool success)
     {
         if ( msg.sender == owner) {
             require( to_address != 0x0);
-            require(balances[owner] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+            require(balances[owner] >= tokens && tokens >= 0);
             balances[owner] = balances[owner].sub(tokens);
             balances[to_address] = (balances[to_address]).add(tokens);
             emit Transfer(msg.sender, to_address, tokens);
             return true;
         }
         else
-        if (!lockstatus &amp;&amp; msg.sender != owner) {
+        if (!lockstatus && msg.sender != owner) {
         require( to_address != 0x0);
-        require(balances[msg.sender] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+        require(balances[msg.sender] >= tokens && tokens >= 0);
         balances[msg.sender] = (balances[msg.sender]).sub(tokens);
         balances[to_address] = (balances[to_address]).add(tokens);
         emit Transfer(msg.sender, to_address, tokens);
@@ -263,7 +263,7 @@ governance of the Yetta Blockchain project. */
     
      function transferby(address _to,uint256 _amount) external onlyOwner returns(bool success) {
         require( _to != 0x0); 
-        require( balances[YettaCrowdSale] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require( balances[YettaCrowdSale] >= _amount && _amount > 0);
         balances[YettaCrowdSale] = ( balances[YettaCrowdSale]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
         emit Transfer(address(this), _to, _amount);

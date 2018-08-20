@@ -12,9 +12,9 @@ contract SmartCityToken {
     address public owner;  // address of Token Owner
     address public crowdsale; // address of Crowdsale contract
 
-    string constant public standard = &quot;ERC20&quot;; // token standard
-    string constant public name = &quot;Smart City&quot;; // token name
-    string constant public symbol = &quot;CITY&quot;; // token symbol
+    string constant public standard = "ERC20"; // token standard
+    string constant public name = "Smart City"; // token name
+    string constant public symbol = "CITY"; // token symbol
 
     uint256 constant public decimals = 5; // 1 CITY = 100000 tokens
     uint256 public totalSupply = 252862966307692; // total token provision
@@ -26,8 +26,8 @@ contract SmartCityToken {
     uint256 public startTime; // from this time on transfer and transferFrom functions are available to anyone except of token Owner
     uint256 public unlockOwnerDate; // from this time on transfer and transferFrom functions are available to token Owner
 
-    mapping(address =&gt; uint256) public balances; // balances array
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowances; // allowances array
+    mapping(address => uint256) public balances; // balances array
+    mapping(address => mapping(address => uint256)) public allowances; // allowances array
 
     bool public burned; // indicates whether excess tokens have already been burned
 
@@ -36,7 +36,7 @@ contract SmartCityToken {
     event Burned(uint256 amount); // Burned event
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -59,12 +59,12 @@ contract SmartCityToken {
      * @param _value uint256 The amount to be transferred
      */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public returns(bool success) {
-        require(now &gt;= startTime);
+        require(now >= startTime);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
-        if (msg.sender == owner &amp;&amp; now &lt; unlockOwnerDate)
-            require(balances[msg.sender].sub(_value) &gt;= amountLocked);
+        if (msg.sender == owner && now < unlockOwnerDate)
+            require(balances[msg.sender].sub(_value) >= amountLocked);
 
         balances[msg.sender] = balances[msg.sender].sub(_value); // subtract requested amount from the sender address
         balances[_to] = balances[_to].add(_value); // send requested amount to the target address
@@ -81,14 +81,14 @@ contract SmartCityToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) public returns(bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowances[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowances[_from][msg.sender]);
 
-        if (now &lt; startTime)
+        if (now < startTime)
             require(_from == owner);
 
-        if (_from == owner &amp;&amp; now &lt; unlockOwnerDate)
-            require(balances[_from].sub(_value) &gt;= amountLocked);
+        if (_from == owner && now < unlockOwnerDate)
+            require(balances[_from].sub(_value) >= amountLocked);
 
         uint256 _allowance = allowances[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value); // subtract requested amount from the sender address
@@ -133,7 +133,7 @@ contract SmartCityToken {
      *  @dev Burns all the tokens which has not been sold during ICO
      */
     function burn() public {
-        if (!burned &amp;&amp; now &gt; startTime) {
+        if (!burned && now > startTime) {
             uint256 diff = balances[owner].sub(amountReserved); // Get the amount of unsold tokens
 
             balances[owner] = amountReserved;
@@ -145,7 +145,7 @@ contract SmartCityToken {
     }
 
     /**
-     *  @dev Sets Corwdsale contract address &amp; allowance
+     *  @dev Sets Corwdsale contract address & allowance
      *  @param _crowdsaleAddress address The address of the Crowdsale contract
      */
     function setCrowdsale(address _crowdsaleAddress) public {
@@ -187,7 +187,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -196,7 +196,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

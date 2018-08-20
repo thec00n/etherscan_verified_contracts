@@ -12,11 +12,11 @@ contract DSMath {
     }
 
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 	
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 	
     function mul(uint x, uint y) internal pure returns (uint z) {
@@ -32,8 +32,8 @@ contract Token is DSMath {
     address public owner;
 
     uint256 internal _supply;
-    mapping (address =&gt; uint256) internal _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) private _approvals;
+    mapping (address => uint256) internal _balances;
+    mapping (address => mapping (address => uint256)) private _approvals;
 
     event LogSetOwner(address indexed owner_);
     event Transfer( address indexed from, address indexed to, uint value);
@@ -61,7 +61,7 @@ contract Token is DSMath {
     }
 
     function transfer(address dst, uint wad) public returns (bool) {
-        require(_balances[msg.sender] &gt;= wad);
+        require(_balances[msg.sender] >= wad);
 
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -72,8 +72,8 @@ contract Token is DSMath {
     }
 
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        require(_balances[src] &gt;= wad);
-        require(_approvals[src][msg.sender] &gt;= wad);
+        require(_balances[src] >= wad);
+        require(_approvals[src][msg.sender] >= wad);
 
         _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         _balances[src] = sub(_balances[src], wad);
@@ -127,11 +127,11 @@ contract UniversalToken is Token {
         uint initialSupply,
         uint feeMult,
         uint feeShare ) public
-        condition(initialSupply &gt; 1000)
-        condition(feeMult &gt; 0)
+        condition(initialSupply > 1000)
+        condition(feeMult > 0)
     {
-        symbol = &quot;PMT&quot;;
-        name = &quot;Universal Evangelist Token - by Pure Money Tech&quot;;
+        symbol = "PMT";
+        name = "Universal Evangelist Token - by Pure Money Tech";
         decimals = DECIMALS;
 		_supply = mul(initialSupply, WAD);
 		owner = msg.sender;
@@ -142,16 +142,16 @@ contract UniversalToken is Token {
 
     function modifyTransFee(uint _xactionFeeMult) public
         auth
-        condition(_xactionFeeMult &gt;= 0)
-        condition(DENOMINATOR &gt; 4 * _xactionFeeMult)
+        condition(_xactionFeeMult >= 0)
+        condition(DENOMINATOR > 4 * _xactionFeeMult)
     {
         xactionFeeNumerator = _xactionFeeMult;
     }
 
     function modifyFeeShare(uint _share) public
         auth
-        condition(_share &gt;= 0)
-        condition(DENOMINATOR &gt; 3 * _share)
+        condition(_share >= 0)
+        condition(DENOMINATOR > 3 * _share)
     {
         xactionFeeShare = _share;
     }

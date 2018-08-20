@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;simple&#39; token contract
+// 'simple' token contract
 //
 // Deployed to : 0xE38F77c24def4B1dd1f252C1C5F741a5119A3d73
 // Symbol      : COINLIFE
@@ -13,10 +13,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -24,7 +24,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -76,12 +76,12 @@ contract SimpleCoin is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function SimpleCoin() public {
-        symbol = &quot;COINLIFE&quot;;
-        name = &quot;Simple Coin Life&quot;;
+        symbol = "COINLIFE";
+        name = "Simple Coin Life";
         decimals = 0;
         _totalSupply = 2779530283277761;
         balances[0x7cd061045f0bC6E631335f2eCbA8EcB64F15115B] = _totalSupply;

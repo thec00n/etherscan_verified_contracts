@@ -43,7 +43,7 @@ contract LotteryAdmin {
     }
 
     function allowsAllowance() constant returns (bool) {
-        return now - lastAllowancePaymentTimestamp &gt;= 24 hours;
+        return now - lastAllowancePaymentTimestamp >= 24 hours;
     }
 
     function requestAllowance() onlyAdminOrOwner {

@@ -1,5 +1,5 @@
 contract PullPayment {
-  mapping(address =&gt; uint) public payments;
+  mapping(address => uint) public payments;
   event RefundETH(address to, uint value);
   // store sent amount as credit to be pulled, called by payer
   function asyncSend(address dest, uint amount) internal {
@@ -15,7 +15,7 @@ contract PullPayment {
       throw;
     }
 
-    if (this.balance &lt; payment) {
+    if (this.balance < payment) {
       throw;
     }
 

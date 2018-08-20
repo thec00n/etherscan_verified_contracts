@@ -26,13 +26,13 @@ contract copypaste {
   }
   
   function enter() {
-    if (msg.value &lt; 1/100 ether) {
+    if (msg.value < 1/100 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 10 ether) {
+		if (msg.value > 10 ether) {
 			msg.sender.send(msg.value - 10 ether);	
 			amount = 10 ether;
     }
@@ -58,7 +58,7 @@ contract copypaste {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 125) {
+    while (balance > persons[payoutIdx].amount / 100 * 125) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 125;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

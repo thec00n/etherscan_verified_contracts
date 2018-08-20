@@ -3,18 +3,18 @@ pragma solidity ^0.4.8;
 //Kings Distributed Systems
 //ERC20 Compliant DCC Token
 contract DCCToken {
-    string public constant name     = &quot;Distributed Compute Credits&quot;;
-    string public constant symbol   = &quot;DCC&quot;;
+    string public constant name     = "Distributed Compute Credits";
+    string public constant symbol   = "DCC";
     uint8  public constant decimals = 18;
 
     uint256 public totalSupply      = 0;
     
     bool    public frozen           = false;
     
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => uint256) balances;
     
-    mapping(address =&gt; bool) admins;
+    mapping(address => bool) admins;
     address public owner;
     modifier onlyOwner() {
         if (msg.sender != owner) {
@@ -58,8 +58,8 @@ contract DCCToken {
     // Open support ticket to prove transfer mistake to unusable address.
     // Not to be used to dispute transfers. Only for trapped tokens.
     function recovery(address from, address to, uint256 amount) onlyAdmin external {
-        assert(balances[from] &gt;= amount);
-        assert(amount &gt; 0);
+        assert(balances[from] >= amount);
+        assert(amount > 0);
     
         balances[from] -= amount;
         balances[to] += amount;
@@ -77,9 +77,9 @@ contract DCCToken {
     function transferFrom(address from, address to, uint256 amount) external returns (bool) {
         if(frozen
         || amount == 0
-        || amount &gt; allowed[from][msg.sender]
-        || amount &gt; balances[from]
-        || amount + balances[to] &lt; balances[to]){
+        || amount > allowed[from][msg.sender]
+        || amount > balances[from]
+        || amount + balances[to] < balances[to]){
             return false;
         }
         
@@ -97,7 +97,7 @@ contract DCCToken {
  
     function create(address to, uint256 amount) onlyAdmin external returns (bool) {
         if (amount == 0
-        || balances[to] + amount &lt; balances[to]){
+        || balances[to] + amount < balances[to]){
             return false;
         }
         
@@ -110,7 +110,7 @@ contract DCCToken {
     
     function destroy(address from, uint256 amount) onlyAdmin external returns (bool) {
         if(amount == 0
-        || balances[from] &lt; amount){
+        || balances[from] < amount){
             return false;
         }
         
@@ -124,8 +124,8 @@ contract DCCToken {
     function transfer(address to, uint256 amount) external returns (bool) {
         if (frozen
         || amount == 0
-        || balances[msg.sender] &lt; amount
-        || balances[to] + amount &lt; balances[to]){
+        || balances[msg.sender] < amount
+        || balances[to] + amount < balances[to]){
             return false;
         }
     

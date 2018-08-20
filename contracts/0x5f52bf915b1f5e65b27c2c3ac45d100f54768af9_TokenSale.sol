@@ -24,18 +24,18 @@ contract SafeMath {
   0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
   function safeAdd (uint256 x, uint256 y) constant internal returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
   function safeSub (uint256 x, uint256 y) constant internal returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
   function safeMul (uint256 x, uint256 y)  constant internal  returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
   
@@ -59,8 +59,8 @@ contract AbstractToken is Token, SafeMath {
   }
 
   function transfer (address _to, uint256 _value) returns (bool success) {
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -69,13 +69,13 @@ contract AbstractToken is Token, SafeMath {
   }
 
   function transferFrom (address _from, address _to, uint256 _value)  returns (bool success) {
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false;
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -100,13 +100,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 
 
@@ -137,11 +137,11 @@ contract TerraEcoToken is AbstractToken {
      }
      
     function name () constant returns (string result) {
-            return &quot;TerraEcoToken&quot;;
+            return "TerraEcoToken";
     }
 	
     function symbol () constant returns (string result) {
-            return &quot;TET&quot;;
+            return "TET";
     }
 	
     function decimals () constant returns (uint result) {
@@ -169,8 +169,8 @@ contract TerraEcoToken is AbstractToken {
   }
 
   function burnTokens (uint256 _value) returns (bool success) {
-    if (_value &gt; accounts [msg.sender]) return false;
-    else if (_value &gt; 0) {
+    if (_value > accounts [msg.sender]) return false;
+    else if (_value > 0) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       tokenCount = safeSub (tokenCount, _value);
       return true;
@@ -181,8 +181,8 @@ contract TerraEcoToken is AbstractToken {
   function createTokens (uint256 _value) returns (bool success) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &gt; safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
+    if (_value > 0) {
+      if (_value > safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
       accounts [msg.sender] = safeAdd (accounts [msg.sender], _value);
       tokenCount = safeAdd (tokenCount, _value);
     }
@@ -244,12 +244,12 @@ contract TokenSale is TerraEcoToken  {
     bool private _allowedTransfers = true;
 	
     modifier minAmount() {
-        require(msg.value &gt;= _minAmount);
+        require(msg.value >= _minAmount);
         _;
     }
     
     modifier saleIsOn() {
-        require(currentState != State.STOPPED &amp;&amp; currentState != State.CLOSED);
+        require(currentState != State.STOPPED && currentState != State.CLOSED);
         _;
     }
     

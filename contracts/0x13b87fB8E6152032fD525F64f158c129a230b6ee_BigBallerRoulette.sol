@@ -29,7 +29,7 @@ contract BigBallerRoulette {
     }
 
     function play(uint256 number) payable public {
-        require(msg.value &gt;= betPrice &amp;&amp; number &lt;= 3);
+        require(msg.value >= betPrice && number <= 3);
 
         Game game;
         game.player = msg.sender;
@@ -46,7 +46,7 @@ contract BigBallerRoulette {
     }
 
     function kill() public {
-        if (msg.sender == ownerAddr &amp;&amp; now &gt; lastPlayed + 1 days) {
+        if (msg.sender == ownerAddr && now > lastPlayed + 1 days) {
             suicide(msg.sender);
         }
     }

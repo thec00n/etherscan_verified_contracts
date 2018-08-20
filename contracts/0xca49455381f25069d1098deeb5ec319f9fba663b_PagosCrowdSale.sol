@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,8 +290,8 @@ contract MintableToken is StandardToken, Ownable {
 // File: contracts/PagosToken.sol
 
 contract PagosToken is MintableToken {
-    string public constant name = &quot;Pagos Token&quot;;
-    string public constant symbol = &quot;PGO&quot;;
+    string public constant name = "Pagos Token";
+    string public constant symbol = "PGO";
     uint8 public decimals = 18;
     bool public tradingStarted = false;
 
@@ -394,9 +394,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -446,14 +446,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -475,7 +475,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -508,7 +508,7 @@ contract PagosCrowdSale is FinalizableCrowdsale {
     uint256 public maxTokenSupply = 0;
 
     // version cache buster
-    string public constant version = &quot;v1.4&quot;;
+    string public constant version = "v1.4";
 
     // pending contract owner
     address public pendingOwner;
@@ -541,9 +541,9 @@ contract PagosCrowdSale is FinalizableCrowdsale {
     Crowdsale(_startTime, _endTime, _rate, _wallet) public
     {
         require(_pendingOwner != address(0));
-        require(_minimumAmount &gt;= 0);
-        require(_maxTokenSupply &gt; 0);
-        require(_reservedAmount &gt; 0 &amp;&amp; _reservedAmount &lt; _maxTokenSupply);
+        require(_minimumAmount >= 0);
+        require(_maxTokenSupply > 0);
+        require(_reservedAmount > 0 && _reservedAmount < _maxTokenSupply);
 
         pendingOwner = _pendingOwner;
         minimumAmount = _minimumAmount;
@@ -579,7 +579,7 @@ contract PagosCrowdSale is FinalizableCrowdsale {
         uint256 weiAmount = msg.value;
 
         // make sure we accept only the minimum contribution
-        // require(weiAmount&gt;minimumAmount);
+        // require(weiAmount>minimumAmount);
 
         // Compute the number of tokens per wei
         // bonus structure should be used here, if any
@@ -600,20 +600,20 @@ contract PagosCrowdSale is FinalizableCrowdsale {
     function validPurchase() internal view returns (bool) {
 
         // make sure we accept only the minimum contribution
-        bool minAmount = (msg.value &gt;= minimumAmount);
+        bool minAmount = (msg.value >= minimumAmount);
 
         // cap crowdsaled to a maxTokenSupply
         // make sure we can not mint more token than expected
-        bool lessThanMaxSupply = (token.totalSupply() + msg.value.mul(rate)) &lt;= maxTokenSupply;
+        bool lessThanMaxSupply = (token.totalSupply() + msg.value.mul(rate)) <= maxTokenSupply;
 
-        //bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-        return super.validPurchase() &amp;&amp; minAmount &amp;&amp; lessThanMaxSupply;
+        //bool withinCap = weiRaised.add(msg.value) <= cap;
+        return super.validPurchase() && minAmount && lessThanMaxSupply;
     }
 
     // overriding Crowdsale#hasEnded to add cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        bool capReached = token.totalSupply() &gt;= maxTokenSupply;
+        bool capReached = token.totalSupply() >= maxTokenSupply;
         return super.hasEnded() || capReached;
     }
 
@@ -660,7 +660,7 @@ contract PagosCrowdSale is FinalizableCrowdsale {
       *
       */
     function changeMinimumAmount(uint256 _minimumAmount) onlyOwner public {
-        require(_minimumAmount &gt; 0);
+        require(_minimumAmount > 0);
         minimumAmount = _minimumAmount;
     }
 
@@ -671,8 +671,8 @@ contract PagosCrowdSale is FinalizableCrowdsale {
       *
       */
     function changeDates(uint256 _startTime, uint256 _endTime) onlyOwner public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         startTime = _startTime;
         endTime = _endTime;
     }

@@ -50,10 +50,10 @@ contract DetailedERC20 is ERC20 {
  *  quantum (optional) - enables value accumulation effect to reduce value transfer costs, usually is not used (set to zero)
  *    if non-zero value passed specifies minimum amount of wei to transfer to beneficiary
  *
- * This crowdsale doesn&#39;t own tokens and doesn&#39;t perform any token emission.
+ * This crowdsale doesn't own tokens and doesn't perform any token emission.
  * It expects enough tokens to be available on its address:
  * these tokens are used for issuing them to investors.
- * Token redemption is done in opposite way: tokens accumulate back on contract&#39;s address
+ * Token redemption is done in opposite way: tokens accumulate back on contract's address
  * Beneficiary is specified by its address.
  * This implementation can be used to make several crowdsales with the same token being sold.
  */
@@ -115,9 +115,9 @@ contract Crowdsale {
 	// address where funds are collected
 	address public beneficiary;
 
-	// investor&#39;s mapping, required for token redemption in a failed crowdsale
+	// investor's mapping, required for token redemption in a failed crowdsale
 	// making this field public allows to extend investor-related functionality in the future
-	mapping(address =&gt; uint) public balances;
+	mapping(address => uint) public balances;
 
 	// events to log
 	event InvestmentAccepted(address indexed holder, uint tokens, uint value);
@@ -141,14 +141,14 @@ contract Crowdsale {
 	) public {
 
 		// validate crowdsale settings (inputs)
-		// require(_offset &gt; 0); // we don&#39;t really care
-		require(_length &gt; 0);
-		require(now &lt; _offset + _length); // crowdsale must not be already finished
-		// softCap can be anything, zero means crowdsale doesn&#39;t fail
-		require(_hardCap &gt; _softCap || _hardCap == 0);
+		// require(_offset > 0); // we don't really care
+		require(_length > 0);
+		require(now < _offset + _length); // crowdsale must not be already finished
+		// softCap can be anything, zero means crowdsale doesn't fail
+		require(_hardCap > _softCap || _hardCap == 0);
 		// hardCap must be greater then softCap
 		// quantum can be anything, zero means no accumulation
-		require(_price &gt; 0);
+		require(_price > 0);
 		require(_beneficiary != address(0));
 		require(_token != address(0));
 
@@ -174,11 +174,11 @@ contract Crowdsale {
 	// crowdsale to be running and not reached its goal
 	function invest() public payable {
 		// perform validations
-		assert(now &gt;= offset &amp;&amp; now &lt; offset + length); // crowdsale is active
-		assert(collected + price &lt;= hardCap || hardCap == 0); // its still possible to buy at least 1 token
-		require(msg.value &gt;= price); // value sent is enough to buy at least one token
+		assert(now >= offset && now < offset + length); // crowdsale is active
+		assert(collected + price <= hardCap || hardCap == 0); // its still possible to buy at least 1 token
+		require(msg.value >= price); // value sent is enough to buy at least one token
 
-		// call &#39;sender&#39; nicely - investor
+		// call 'sender' nicely - investor
 		address investor = msg.sender;
 
 		// how much tokens we must send to investor
@@ -188,7 +188,7 @@ contract Crowdsale {
 		uint value = tokens * price;
 
 		// ensure we are not crossing the hardCap
-		if (value + collected &gt; hardCap || hardCap == 0) {
+		if (value + collected > hardCap || hardCap == 0) {
 			value = hardCap - collected;
 			tokens = value / price;
 			value = tokens * price;
@@ -205,7 +205,7 @@ contract Crowdsale {
 		investor.transfer(msg.value - value);
 
 		// accumulate the value or transfer it to beneficiary
-		if (collected &gt;= softCap &amp;&amp; this.balance &gt;= quantum) {
+		if (collected >= softCap && this.balance >= quantum) {
 			// transfer all the value to beneficiary
 			__beneficiaryTransfer(this.balance);
 		}
@@ -218,10 +218,10 @@ contract Crowdsale {
 	// requires investor to allow token transfer back
 	function refund() public payable {
 		// perform validations
-		assert(now &gt;= offset + length); // crowdsale ended
-		assert(collected &lt; softCap); // crowdsale failed
+		assert(now >= offset + length); // crowdsale ended
+		assert(collected < softCap); // crowdsale failed
 
-		// call &#39;sender&#39; nicely - investor
+		// call 'sender' nicely - investor
 		address investor = msg.sender;
 
 		// find out how much tokens should be refunded
@@ -231,7 +231,7 @@ contract Crowdsale {
 		uint refundValue = tokens * price;
 
 		// additional validations
-		require(tokens &gt; 0);
+		require(tokens > 0);
 
 		// update crowdsale status
 		refunded += refundValue;
@@ -252,8 +252,8 @@ contract Crowdsale {
 	function withdraw() public {
 		// perform validations
 		assert(creator == msg.sender || beneficiary == msg.sender); // only creator or beneficiary can initiate this call
-		assert(collected &gt;= softCap); // crowdsale must be successful
-		assert(this.balance &gt; 0); // there should be something to transfer
+		assert(collected >= softCap); // crowdsale must be successful
+		assert(this.balance > 0); // there should be something to transfer
 
 		// how much to withdraw (entire balance obviously)
 		uint value = this.balance;
@@ -266,13 +266,13 @@ contract Crowdsale {
 	// depending on the crowdsale status
 	function() public payable {
 		// started or finished
-		require(now &gt;= offset);
+		require(now >= offset);
 
-		if(now &lt; offset + length) {
+		if(now < offset + length) {
 			// crowdsale is running, invest
 			invest();
 		}
-		else if(collected &lt; softCap) {
+		else if(collected < softCap) {
 			// crowdsale failed, try to refund
 			refund();
 		}
@@ -318,7 +318,7 @@ contract Crowdsale {
 		uint balance = balances[investor];
 
 		// return allowance safely by checking also the balance
-		return balance &lt; allowance ? balance : allowance;
+		return balance < allowance ? balance : allowance;
 	}
 
 	// transfers tokens from investor, validations are not required

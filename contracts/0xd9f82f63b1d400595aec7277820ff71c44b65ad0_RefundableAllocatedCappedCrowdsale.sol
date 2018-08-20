@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -101,20 +101,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -138,7 +138,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -186,7 +186,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -201,7 +201,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -254,7 +254,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -474,7 +474,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
     /* Кол-во уникальных адресов, которые у наc получили токены */
     uint public investorCount;
 
-    /*  Сколько wei отдали инвесторам на refund&#39;е в wei */
+    /*  Сколько wei отдали инвесторам на refund'е в wei */
     uint public weiRefunded;
 
     /*  Сколько токенов продали всего */
@@ -523,10 +523,10 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
     uint public secondStageTokensForSale;
 
     /* Мапа адрес инвестора - кол-во выданных токенов */
-    mapping (address =&gt; uint) public tokenAmountOf;
+    mapping (address => uint) public tokenAmountOf;
 
     /* Мапа, адрес инвестора - кол-во эфира */
-    mapping (address =&gt; uint) public investedAmountOf;
+    mapping (address => uint) public investedAmountOf;
 
     /* Адреса, куда будут распределены токены */
     address public advisorsAccount;
@@ -561,10 +561,10 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
     event SecondStageStartsAtChanged(uint newSecondStageStartsAt);
     event SecondStageEndsAtChanged(uint newSecondStageEndsAt);
 
-    // Событие изменения Soft Cap&#39;а
+    // Событие изменения Soft Cap'а
     event SoftCapChanged(uint newGoal);
 
-    // Событие изменения Hard Cap&#39;а
+    // Событие изменения Hard Cap'а
     event HardCapChanged(uint newGoal);
 
     // Конструктор
@@ -574,12 +574,12 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
         require(_firstStageStartsAt != 0);
         require(_firstStageEndsAt != 0);
 
-        require(_firstStageStartsAt &lt; _firstStageEndsAt);
+        require(_firstStageStartsAt < _firstStageEndsAt);
 
         require(_secondStageStartsAt != 0);
         require(_secondStageEndsAt != 0);
 
-        require(_secondStageStartsAt &lt; _secondStageEndsAt);
+        require(_secondStageStartsAt < _secondStageEndsAt);
         require(_teamTokensIssueDate != 0);
 
         // Токен, который поддерживает сжигание
@@ -697,16 +697,16 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
         // если запущена первая стадия, в конструкторе уже выпустили нужное кол-во токенов для первой стадии
         if (currentState == State.FirstStageFunding){
             // меньше 25000$ не принимаем
-            require(amountInCents &gt;= 2500000);
+            require(amountInCents >= 2500000);
 
             // [25000$ - 50000$) - 50% бонуса
-            if (amountInCents &gt;= 2500000 &amp;&amp; amountInCents &lt; 5000000){
+            if (amountInCents >= 2500000 && amountInCents < 5000000){
                 bonusPercentage = 50;
             // [50000$ - 100000$) - 75% бонуса
-            }else if(amountInCents &gt;= 5000000 &amp;&amp; amountInCents &lt; 10000000){
+            }else if(amountInCents >= 5000000 && amountInCents < 10000000){
                 bonusPercentage = 75;
-            // &gt;= 100000$ - 100% бонуса
-            }else if(amountInCents &gt;= 10000000){
+            // >= 100000$ - 100% бонуса
+            }else if(amountInCents >= 10000000){
                 bonusPercentage = 100;
             }else{
                 revert();
@@ -721,37 +721,37 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
             uint tokensSoldPercentage = secondStageTokensSold.mul(100).div(secondStageTokensForSale.mul(tokenMultiplier));
 
             // меньше 7$ не принимаем
-            require(amountInCents &gt;= 700);
+            require(amountInCents >= 700);
 
             // (0% - 10%) - 20% бонуса
-            if (tokensSoldPercentage &gt;= 0 &amp;&amp; tokensSoldPercentage &lt; 10){
+            if (tokensSoldPercentage >= 0 && tokensSoldPercentage < 10){
                 bonusPercentage = 200;
             // [10% - 20%) - 17.5% бонуса
-            }else if (tokensSoldPercentage &gt;= 10 &amp;&amp; tokensSoldPercentage &lt; 20){
+            }else if (tokensSoldPercentage >= 10 && tokensSoldPercentage < 20){
                 bonusPercentage = 175;
             // [20% - 30%) - 15% бонуса
-            }else if (tokensSoldPercentage &gt;= 20 &amp;&amp; tokensSoldPercentage &lt; 30){
+            }else if (tokensSoldPercentage >= 20 && tokensSoldPercentage < 30){
                 bonusPercentage = 150;
             // [30% - 40%) - 12.5% бонуса
-            }else if (tokensSoldPercentage &gt;= 30 &amp;&amp; tokensSoldPercentage &lt; 40){
+            }else if (tokensSoldPercentage >= 30 && tokensSoldPercentage < 40){
                 bonusPercentage = 125;
             // [40% - 50%) - 10% бонуса
-            }else if (tokensSoldPercentage &gt;= 40 &amp;&amp; tokensSoldPercentage &lt; 50){
+            }else if (tokensSoldPercentage >= 40 && tokensSoldPercentage < 50){
                 bonusPercentage = 100;
             // [50% - 60%) - 8% бонуса
-            }else if (tokensSoldPercentage &gt;= 50 &amp;&amp; tokensSoldPercentage &lt; 60){
+            }else if (tokensSoldPercentage >= 50 && tokensSoldPercentage < 60){
                 bonusPercentage = 80;
             // [60% - 70%) - 6% бонуса
-            }else if (tokensSoldPercentage &gt;= 60 &amp;&amp; tokensSoldPercentage &lt; 70){
+            }else if (tokensSoldPercentage >= 60 && tokensSoldPercentage < 70){
                 bonusPercentage = 60;
             // [70% - 80%) - 4% бонуса
-            }else if (tokensSoldPercentage &gt;= 70 &amp;&amp; tokensSoldPercentage &lt; 80){
+            }else if (tokensSoldPercentage >= 70 && tokensSoldPercentage < 80){
                 bonusPercentage = 40;
             // [80% - 90%) - 2% бонуса
-            }else if (tokensSoldPercentage &gt;= 80 &amp;&amp; tokensSoldPercentage &lt; 90){
+            }else if (tokensSoldPercentage >= 80 && tokensSoldPercentage < 90){
                 bonusPercentage = 20;
-            // &gt;= 90% - 0% бонуса
-            }else if (tokensSoldPercentage &gt;= 90){
+            // >= 90% - 0% бонуса
+            }else if (tokensSoldPercentage >= 90){
                 bonusPercentage = 0;
             }else{
                 revert();
@@ -766,7 +766,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
 
         // краевой случай, когда запросили больше, чем можем выдать
         uint tokensLeft = getTokensLeftForSale(currentState);
-        if (tokenAmount &gt; tokensLeft){
+        if (tokenAmount > tokensLeft){
             tokenAmount = tokensLeft;
         }
 
@@ -824,7 +824,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
      */
     function internalPreallocate(State currentState, address receiver, uint tokenAmount, uint weiAmount) internal {
         // Cколько токенов осталось для продажи? Больше этого значения выдать не можем!
-        require(getTokensLeftForSale(currentState) &gt;= tokenAmount);
+        require(getTokensLeftForSale(currentState) >= tokenAmount);
 
         // Может быть 0, выдаем токены бесплатно
         internalAssignTokens(receiver, tokenAmount, weiAmount, getWeiInCents(weiAmount), 0);
@@ -888,7 +888,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
      */
     function changeCurrentEtherRateInCents(uint value) public onlyOwner {
         // Если случайно задали 0, не откатываем транзакцию
-        require(value &gt; 0);
+        require(value > 0);
 
         currentEtherRateInCents = value;
 
@@ -897,7 +897,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
 
     /**
     * Разделил на 2 метода, чтобы не запутаться при вызове
-    * Эти функции нужны в 2-х случаях: немного не собрали до Cap&#39;а, сами докидываем необходимую сумму, есть приватные инвесторы, для которых существуют особые условия
+    * Эти функции нужны в 2-х случаях: немного не собрали до Cap'а, сами докидываем необходимую сумму, есть приватные инвесторы, для которых существуют особые условия
     */
 
     /* Для первой стадии */
@@ -912,7 +912,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
 
     /* В случае успеха, заблокированные токены для команды могут быть востребованы только если наступила определенная дата */
     function issueTeamTokens() public onlyOwner inState(State.Success) {
-        require(block.timestamp &gt;= teamTokensIssueDate);
+        require(block.timestamp >= teamTokensIssueDate);
 
         uint teamTokenTransferAmount = teamTokenAmount.mul(10 ** token.decimals());
 
@@ -963,7 +963,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
         uint saleContractTokenCount = tokenAmountOf[msg.sender];
         uint tokenContractTokenCount = token.balanceOf(msg.sender);
 
-        require(saleContractTokenCount &lt;= tokenContractTokenCount);
+        require(saleContractTokenCount <= tokenContractTokenCount);
 
         investedAmountOf[msg.sender] = 0;
         weiRefunded = weiRefunded.add(weiValue);
@@ -1000,7 +1000,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
      * Вызвать можно только 1 раз
      */
     function finalizeSecondStage() public onlyOwner isNotSuccessOver {
-        require(isFirstStageFinalized &amp;&amp; !isSecondStageFinalized);
+        require(isFirstStageFinalized && !isSecondStageFinalized);
 
         // Сжигаем остатки
         // Всего можем продать secondStageTokensForSale
@@ -1013,8 +1013,8 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
 
             uint remainingTokens = secondStageTokensForSale.mul(tokenMultiplier).sub(secondStageTokensSold);
 
-            // Если кол-во оставшихся токенов &gt; 0, то сжигаем их
-            if (remainingTokens &gt; 0){
+            // Если кол-во оставшихся токенов > 0, то сжигаем их
+            if (remainingTokens > 0){
                 token.burnOwnerTokens(remainingTokens);
             }
 
@@ -1075,10 +1075,10 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
     }
 
     /**
-     * Позволяет менять владельцу Cap&#39;ы
+     * Позволяет менять владельцу Cap'ы
      */
     function setSoftCapInCents(uint value) public onlyOwner {
-        require(value &gt; 0);
+        require(value > 0);
 
         softCapFundingGoalInCents = value;
 
@@ -1087,7 +1087,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
     }
 
     function setHardCapInCents(uint value) public onlyOwner {
-        require(value &gt; 0);
+        require(value > 0);
 
         hardCapFundingGoalInCents = value;
 
@@ -1096,31 +1096,31 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
     }
 
     /**
-     * Проверка сбора Soft Cap&#39;а
+     * Проверка сбора Soft Cap'а
      */
     function isSoftCapGoalReached() public constant returns (bool) {
         // Проверка по текущему курсу в центах, считает от общих продаж
-        return getWeiInCents(weiRaised) &gt;= softCapFundingGoalInCents;
+        return getWeiInCents(weiRaised) >= softCapFundingGoalInCents;
     }
 
     /**
-     * Проверка сбора Hard Cap&#39;а
+     * Проверка сбора Hard Cap'а
      */
     function isHardCapGoalReached() public constant returns (bool) {
         // Проверка по текущему курсу в центах, считает от общих продаж
-        return getWeiInCents(weiRaised) &gt;= hardCapFundingGoalInCents;
+        return getWeiInCents(weiRaised) >= hardCapFundingGoalInCents;
     }
 
     /**
      * Возвращает кол-во нераспроданных токенов, которые можно продать, в зависимости от стадии
      */
     function getTokensLeftForSale(State forState) public constant returns (uint) {
-        // Кол-во токенов, которое адрес контракта можеть снять у owner&#39;а и есть кол-во оставшихся токенов, из этой суммы нужно вычесть кол-во которое не участвует в продаже
+        // Кол-во токенов, которое адрес контракта можеть снять у owner'а и есть кол-во оставшихся токенов, из этой суммы нужно вычесть кол-во которое не участвует в продаже
         uint tokenBalance = token.balanceOf(address(this));
         uint tokensReserve = 0;
         if (forState == State.SecondStageFunding) tokensReserve = secondStageReserve.mul(10 ** token.decimals());
 
-        if (tokenBalance &lt;= tokensReserve){
+        if (tokenBalance <= tokensReserve){
             return 0;
         }
 
@@ -1141,12 +1141,12 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
         if (isRefundingEnabled) return State.Refunding;
 
         // Контракт еще не начал действовать
-        if (block.timestamp &lt; firstStageStartsAt) return State.PreFunding;
+        if (block.timestamp < firstStageStartsAt) return State.PreFunding;
 
         //Если первая стадия - не финализирована
         if (!isFirstStageFinalized){
             // Флаг того, что текущая дата находится в интервале первой стадии
-            bool isFirstStageTime = block.timestamp &gt;= firstStageStartsAt &amp;&amp; block.timestamp &lt;= firstStageEndsAt;
+            bool isFirstStageTime = block.timestamp >= firstStageStartsAt && block.timestamp <= firstStageEndsAt;
 
             // Если идет первая стадия
             if (isFirstStageTime) return State.FirstStageFunding;
@@ -1156,10 +1156,10 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
         } else {
 
             // Если первая стадия финализирована и текущее время блок чейна меньше начала второй стадии, то это означает, что первая стадия - окончена
-            if(block.timestamp &lt; secondStageStartsAt)return State.FirstStageEnd;
+            if(block.timestamp < secondStageStartsAt)return State.FirstStageEnd;
 
             // Флаг того, что текущая дата находится в интервале второй стадии
-            bool isSecondStageTime = block.timestamp &gt;= secondStageStartsAt &amp;&amp; block.timestamp &lt;= secondStageEndsAt;
+            bool isSecondStageTime = block.timestamp >= secondStageStartsAt && block.timestamp <= secondStageEndsAt;
 
             // Первая стадия финализирована, вторая - финализирована
             if (isSecondStageFinalized){
@@ -1231,7 +1231,7 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
 
     /** Только, если еще не включен режим возврата и продажи не завершены успехом */
     modifier canEnableRefunds(){
-        require(!isRefundingEnabled &amp;&amp; getState() != State.Success);
+        require(!isRefundingEnabled && getState() != State.Success);
 
         _;
     }
@@ -1251,19 +1251,19 @@ contract AllocatedCappedCrowdsale is Haltable, ValidationUtil {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -1277,7 +1277,7 @@ contract FundsVault is Ownable, ValidationUtil {
 
     enum State {Active, Refunding, Closed}
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     address public wallet;
 
@@ -1369,7 +1369,7 @@ contract RefundableAllocatedCappedCrowdsale is AllocatedCappedCrowdsale {
     FundsVault public fundsVault;
 
     /** Мапа адрес инвестора - был ли совершен возврат среств */
-    mapping (address =&gt; bool) public refundedInvestors;
+    mapping (address => bool) public refundedInvestors;
 
     function RefundableAllocatedCappedCrowdsale(uint _currentEtherRateInCents, address _token, address _destinationMultisigWallet, uint _firstStageStartsAt, uint _firstStageEndsAt, uint _secondStageStartsAt, uint _secondStageEndsAt, address _advisorsAccount, address _marketingAccount, address _supportAccount, address _teamAccount, uint _teamTokensIssueDate) AllocatedCappedCrowdsale(_currentEtherRateInCents, _token, _destinationMultisigWallet, _firstStageStartsAt, _firstStageEndsAt, _secondStageStartsAt, _secondStageEndsAt, _advisorsAccount, _marketingAccount, _supportAccount, _teamAccount, _teamTokensIssueDate) {
         // Создаем от контракта продаж новое хранилище, доступ к нему имеет только контракт продаж

@@ -10,7 +10,7 @@ contract RealEstateCryptoFund {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract Airdrop is Ownable {
 
   RealEstateCryptoFund public token;
 
-  mapping(address=&gt;bool) public participated;
+  mapping(address=>bool) public participated;
 
   event TokenAirdrop(address indexed beneficiary, uint256 amount);
 
@@ -65,7 +65,7 @@ contract Airdrop is Ownable {
   }
 
   function setAirdropAmount(uint256 _airdropAmount) public onlyOwner {
-    require(_airdropAmount &gt; 0);
+    require(_airdropAmount > 0);
     airdropAmount = _airdropAmount;
     emit AirdropAmountUpdate(airdropAmount);
   }

@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -73,13 +73,13 @@ contract ERC20 {
 contract ROKToken is ERC20, Ownable {
     using SafeMath for uint256;
 
-    string public constant name = &quot;ROK Token&quot;;
-    string public constant symbol = &quot;ROK&quot;;
+    string public constant name = "ROK Token";
+    string public constant symbol = "ROK";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 100000000000000000000000000;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
   * @dev Contructor that gives msg.sender all of existing tokens.
@@ -97,7 +97,7 @@ contract ROKToken is ERC20, Ownable {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -122,8 +122,8 @@ contract ROKToken is ERC20, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -137,7 +137,7 @@ contract ROKToken is ERC20, Ownable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract ROKToken is ERC20, Ownable {
 
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -186,10 +186,10 @@ contract ROKToken is ERC20, Ownable {
     }
 
     function burn(uint256 _value) public returns (bool success){
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -241,7 +241,7 @@ contract Pausable is Ownable {
 contract PullPayment {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public payments;
+    mapping (address => uint256) public payments;
 
     uint256 public totalPayments;
 
@@ -263,7 +263,7 @@ contract PullPayment {
         uint256 payment = payments[payee];
 
         require(payment != 0);
-        require(this.balance &gt;= payment);
+        require(this.balance >= payment);
 
         totalPayments = totalPayments.sub(payment);
         payments[payee] = 0;
@@ -274,8 +274,8 @@ contract PullPayment {
 
 /*
 *  Crowdsale Smart Contract for the Rockchain project
-*  Author: Yosra Helal <span class="__cf_email__" data-cfemail="86ffe9f5f4e7a8eee3eae7eac6f4e9e5ede5eee7efe8a8e9f4e1">[email&#160;protected]</span>
-*  Contributor: Christophe Ozcan <span class="__cf_email__" data-cfemail="1f7c776d766c6b706f777a3170657c7e715f7c6d666f6b702b7e7373317c7072">[email&#160;protected]</span>
+*  Author: Yosra Helal <span class="__cf_email__" data-cfemail="86ffe9f5f4e7a8eee3eae7eac6f4e9e5ede5eee7efe8a8e9f4e1">[email protected]</span>
+*  Contributor: Christophe Ozcan <span class="__cf_email__" data-cfemail="1f7c776d766c6b706f777a3170657c7e715f7c6d666f6b702b7e7373317c7072">[email protected]</span>
 *
 *
 *  MultiSig advisors Keys (3/5)
@@ -283,8 +283,8 @@ contract PullPayment {
 *  Christophe OZCAN        0x75dcB0Ba77e5f99f8ce6F01338Cb235DFE94260c
 *  Jeff GUILBAULT          0x94ddC32c61BC9a799CdDea87e6a1D1316198b0Fa
 *  Mark HAHNEL             0xFaE39043B8698CaA4F1417659B00737fa19b8ECC
-*  S&#233;bastien COLLIGNON     0xd70280108EaF321E100276F6D1b105Ee088CB016
-*  S&#233;bastien JEHAN         0xE4b0A48D3b1adA17000Fd080cd42DB3e8231752c
+*  Sébastien COLLIGNON     0xd70280108EaF321E100276F6D1b105Ee088CB016
+*  Sébastien JEHAN         0xE4b0A48D3b1adA17000Fd080cd42DB3e8231752c
 *
 *
 */
@@ -307,9 +307,9 @@ contract Crowdsale is Pausable, PullPayment {
     uint256 public savedBalance = 0;                                                   // Total amount raised in ETH
     uint256 public savedBalanceToken = 0;                                              // Total ROK Token allocated
     bool public crowdsaleclosed = false;                                               // To finalize crowdsale
-    mapping (address =&gt; uint256) balances;                                             // Balances in incoming Ether
-    mapping (address =&gt; uint256) balancesRokToken;                                     // Balances in ROK
-    mapping (address =&gt; bool) KYClist;
+    mapping (address => uint256) balances;                                             // Balances in incoming Ether
+    mapping (address => uint256) balancesRokToken;                                     // Balances in ROK
+    mapping (address => bool) KYClist;
 
     // Events to record new contributions
     event Contribution(address indexed _contributor, uint256 indexed _value, uint256 indexed _tokens);
@@ -355,8 +355,8 @@ contract Crowdsale is Pausable, PullPayment {
     function contribute(address contributor) internal{
         require(isStarted());
         require(!isComplete());
-        assert((savedBalance.add(msg.value)) &lt;= maxFundingGoal);
-        assert(msg.value &gt;= minimumPurchase);
+        assert((savedBalance.add(msg.value)) <= maxFundingGoal);
+        assert(msg.value >= minimumPurchase);
         balances[contributor] = balances[contributor].add(msg.value);
         savedBalance = savedBalance.add(msg.value);
         uint256 Roktoken = rateETH_ROK.mul(msg.value) + getBonus(rateETH_ROK.mul(msg.value));
@@ -370,12 +370,12 @@ contract Crowdsale is Pausable, PullPayment {
 
     // Function to check if crowdsale has started yet
     function isStarted() constant returns (bool) {
-        return now &gt;= startDate;
+        return now >= startDate;
     }
 
     // Function to check if crowdsale is complete (
     function isComplete() constant returns (bool) {
-        return (savedBalance &gt;= maxFundingGoal) || (now &gt; deadline) || (savedBalanceToken &gt;= rok.totalSupply()) || (crowdsaleclosed == true);
+        return (savedBalance >= maxFundingGoal) || (now > deadline) || (savedBalanceToken >= rok.totalSupply()) || (crowdsaleclosed == true);
     }
 
     // Function to view current token balance of the crowdsale contract
@@ -385,7 +385,7 @@ contract Crowdsale is Pausable, PullPayment {
 
     // Function to check if crowdsale has been successful (has incoming contribution balance met, or exceeded the minimum goal?)
     function isSuccessful() constant returns (bool) {
-        return (savedBalance &gt;= minFundingGoal);
+        return (savedBalance >= minFundingGoal);
     }
 
     // Function to check the Ether balance of a contributor
@@ -412,12 +412,12 @@ contract Crowdsale is Pausable, PullPayment {
 
     // Function to check the refund period is over
     function refundPeriodOver() constant returns (bool){
-        return (now &gt; refundeadline);
+        return (now > refundeadline);
     }
 
     // Function to check the refund period is over
     function refundPeriodStart() constant returns (bool){
-        return (now &gt; deadline);
+        return (now > deadline);
     }
 
     // function to check percentage of goal achieved
@@ -434,9 +434,9 @@ contract Crowdsale is Pausable, PullPayment {
         uint secondbonusdate = 1510311600;
 
         //  if investment date is on the 10% bonus period then return bonus
-        if (now &lt;= firstbonusdate) {bonus = amount.div(10);}
+        if (now <= firstbonusdate) {bonus = amount.div(10);}
         //  else if investment date is on the 5% bonus period then return bonus
-        else if (now &lt;= secondbonusdate &amp;&amp; now &gt;= firstbonusdate) {bonus = amount.div(20);}
+        else if (now <= secondbonusdate && now >= firstbonusdate) {bonus = amount.div(20);}
         //  return amount without bonus
         return bonus;
     }
@@ -455,7 +455,7 @@ contract Crowdsale is Pausable, PullPayment {
 
     // Function to pay out
     function payout() onlyOwner {
-        if (isSuccessful() &amp;&amp; isComplete()) {
+        if (isSuccessful() && isComplete()) {
             rok.transfer(bounty, checkRokBounty());
             payTeam();
         }
@@ -471,9 +471,9 @@ contract Crowdsale is Pausable, PullPayment {
 
     //Function to pay Team
     function payTeam() internal {
-        assert(checkRokTeam() &gt; 0);
+        assert(checkRokTeam() > 0);
         rok.transfer(team, checkRokTeam());
-        if (checkRokSold() &lt; rok.totalSupply()) {
+        if (checkRokSold() < rok.totalSupply()) {
             // burn the rest of ROK
             rok.burn(rok.totalSupply().sub(checkRokSold()));
             //Log burn of tokens
@@ -483,7 +483,7 @@ contract Crowdsale is Pausable, PullPayment {
 
     //Function to update KYC list
     function updateKYClist(address[] allowed) onlyOwner{
-        for (uint i = 0; i &lt; allowed.length; i++) {
+        for (uint i = 0; i < allowed.length; i++) {
             if (KYClist[allowed[i]] == false) {
                 KYClist[allowed[i]] = true;
             }
@@ -493,8 +493,8 @@ contract Crowdsale is Pausable, PullPayment {
     //Function to claim ROK tokens
     function claim() public{
         require(isComplete());
-        require(checkEthBalance(msg.sender) &gt; 0);
-        if(checkEthBalance(msg.sender) &lt;= (3 ether)){
+        require(checkEthBalance(msg.sender) > 0);
+        if(checkEthBalance(msg.sender) <= (3 ether)){
             rok.transfer(msg.sender,balancesRokToken[msg.sender]);
             balancesRokToken[msg.sender] = 0;
         }
@@ -506,28 +506,28 @@ contract Crowdsale is Pausable, PullPayment {
     }
 
     /* When MIN_CAP is not reach the smart contract will be credited to make refund possible by backers
-     * 1) backer call the &quot;refund&quot; function of the Crowdsale contract
-     * 2) backer call the &quot;withdrawPayments&quot; function of the Crowdsale contract to get a refund in ETH
+     * 1) backer call the "refund" function of the Crowdsale contract
+     * 2) backer call the "withdrawPayments" function of the Crowdsale contract to get a refund in ETH
      */
     function refund() public {
         require(!isSuccessful());
         require(refundPeriodStart());
         require(!refundPeriodOver());
-        require(checkEthBalance(msg.sender) &gt; 0);
+        require(checkEthBalance(msg.sender) > 0);
         uint ETHToSend = checkEthBalance(msg.sender);
         setBalance(msg.sender,0);
         asyncSend(msg.sender, ETHToSend);
     }
 
     /* When MIN_CAP is not reach the smart contract will be credited to make refund possible by backers
-     * 1) backer call the &quot;partialRefund&quot; function of the Crowdsale contract with the partial amount of ETH to be refunded (value will be renseigned in WEI)
-     * 2) backer call the &quot;withdrawPayments&quot; function of the Crowdsale contract to get a refund in ETH
+     * 1) backer call the "partialRefund" function of the Crowdsale contract with the partial amount of ETH to be refunded (value will be renseigned in WEI)
+     * 2) backer call the "withdrawPayments" function of the Crowdsale contract to get a refund in ETH
      */
     function partialRefund(uint256 value) public {
         require(!isSuccessful());
         require(refundPeriodStart());
         require(!refundPeriodOver());
-        require(checkEthBalance(msg.sender) &gt;= value);
+        require(checkEthBalance(msg.sender) >= value);
         setBalance(msg.sender,checkEthBalance(msg.sender).sub(value));
         asyncSend(msg.sender, value);
     }

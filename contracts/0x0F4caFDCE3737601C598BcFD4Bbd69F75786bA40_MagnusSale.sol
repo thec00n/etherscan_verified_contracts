@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -48,7 +48,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -127,7 +127,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -138,8 +138,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -153,7 +153,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -202,7 +202,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,11 +214,11 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract MagnusCoin is StandardToken, Ownable, Contactable {
-    string public name = &quot;Magnus Coin&quot;;
-    string public symbol = &quot;MGS&quot;;
+    string public name = "Magnus Coin";
+    string public symbol = "MGS";
     uint256 public constant decimals = 18;
 
-    mapping (address =&gt; bool) internal allowedOverrideAddresses;
+    mapping (address => bool) internal allowedOverrideAddresses;
 
     bool public tokenActive = false;
     
@@ -237,9 +237,9 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
     }
 
     modifier onlyIfValidAddress(address _to) {
-        // prevent &#39;invalid&#39; addresses for transfer destinations
+        // prevent 'invalid' addresses for transfer destinations
         require(_to != 0x0);
-        // don&#39;t allow transferring to this contract&#39;s address
+        // don't allow transferring to this contract's address
         require(_to != address(this));
         _;
     }
@@ -251,7 +251,7 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
     function MagnusCoin() public {
 
         totalSupply = 118200000000000000000000000;
-        contactInformation = &quot;Magnus Collective&quot;;
+        contactInformation = "Magnus Collective";
         
 
         // msg.sender == owner of the contract
@@ -279,9 +279,9 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
 
     function ownerRecoverTokens(address _address, uint256 _value) external onlyOwner {
             require(_address != address(0));
-            require(now &lt; endtime );
-            require(_value &lt;= balances[_address]);
-            require(balances[_address].sub(_value) &gt;=0);
+            require(now < endtime );
+            require(_value <= balances[_address]);
+            require(balances[_address].sub(_value) >=0);
             balances[_address] = balances[_address].sub(_value);
             balances[owner] = balances[owner].add(_value);
             Transfer(_address, owner, _value);
@@ -298,14 +298,14 @@ contract MagnusCoin is StandardToken, Ownable, Contactable {
     }
 
     function ownerActivateToken() external onlyOwner onlyIfTokenInactive {
-        require(bytes(symbol).length &gt; 0);
+        require(bytes(symbol).length > 0);
 
         tokenActive = true;
         TokenActivated();
     }
 
     function ownerDeactivateToken() external onlyOwner onlyIfTokenActiveOrOverride {
-        require(bytes(symbol).length &gt; 0);
+        require(bytes(symbol).length > 0);
 
         tokenActive = false;
         TokenDeactivated();
@@ -366,7 +366,7 @@ contract MagnusSale is Ownable, Pausable {
 
     uint256 public minFundingGoalWei;   /* we can set this to zero, but we might want to raise at least 20000 Ether */
     uint256 public minContributionWei;  /* individual contribution min. we require at least a 0.1 Ether investment, for example. */
-    uint256 public maxContributionWei;  /* individual contribution max. probably don&#39;t want someone to buy more than 60000 Ether */
+    uint256 public maxContributionWei;  /* individual contribution max. probably don't want someone to buy more than 60000 Ether */
 
     uint256 internal weiRaised;       /* total of all weiContributions */
 
@@ -375,7 +375,7 @@ contract MagnusSale is Ownable, Pausable {
     uint256 internal reservedTokens;  /* In wei. Example: 54 million tokens, use 54000000 with 18 more zeros. then it would be 54000000 * Math.pow(10,18) */
     uint256 public baseRateInCents; /* $2.50 means use 250 */
 
-    mapping (address =&gt; uint256) public contributions;
+    mapping (address => uint256) public contributions;
 
     uint256 internal fiatCurrencyRaisedInEquivalentWeiValue = 0; // value of wei raised outside this contract
     uint256 public weiRaisedIncludingFiatCurrencyRaised;       /* total of all weiContributions inclduing external*/
@@ -420,35 +420,35 @@ contract MagnusSale is Ownable, Pausable {
     function() public payable whenNotPaused {
         require(!isRefunding);
         require(msg.sender != 0x0);
-        require(msg.value &gt;= minContributionWei);
-        require(start &lt;= now &amp;&amp; end &gt;= now);
+        require(msg.value >= minContributionWei);
+        require(start <= now && end >= now);
 
         // prevent anything more than maxContributionWei per contributor address
-        uint256 _weiContributionAllowed = maxContributionWei &gt; 0 ? maxContributionWei.sub(contributions[msg.sender]) : msg.value;
-        if (maxContributionWei &gt; 0) {
-            require(_weiContributionAllowed &gt; 0);
+        uint256 _weiContributionAllowed = maxContributionWei > 0 ? maxContributionWei.sub(contributions[msg.sender]) : msg.value;
+        if (maxContributionWei > 0) {
+            require(_weiContributionAllowed > 0);
         }
 
         // are limited by the number of tokens remaining
         uint256 _tokensRemaining = token.balanceOf(address(this)).sub( reservedTokens );
-        require(_tokensRemaining &gt; 0);
+        require(_tokensRemaining > 0);
 
-        // limit contribution&#39;s value based on max/previous contributions
+        // limit contribution's value based on max/previous contributions
         uint256 _weiContribution = msg.value;
-        if (_weiContribution &gt; _weiContributionAllowed) {
+        if (_weiContribution > _weiContributionAllowed) {
             _weiContribution = _weiContributionAllowed;
         }
 
-        // limit contribution&#39;s value based on hard cap of hardCap
-        if (hardCap &gt; 0 &amp;&amp; weiRaised.add(_weiContribution) &gt; hardCap) {
+        // limit contribution's value based on hard cap of hardCap
+        if (hardCap > 0 && weiRaised.add(_weiContribution) > hardCap) {
             _weiContribution = hardCap.sub( weiRaised );
         }
 
         // calculate token amount to be created
         uint256 _tokens = _weiContribution.mul(peggedETHUSD).mul(100).div(baseRateInCents);
 
-        if (_tokens &gt; _tokensRemaining) {
-            // there aren&#39;t enough tokens to fill the contribution amount, so recalculate the contribution amount
+        if (_tokens > _tokensRemaining) {
+            // there aren't enough tokens to fill the contribution amount, so recalculate the contribution amount
             _tokens = _tokensRemaining;
             _weiContribution = _tokens.mul(baseRateInCents).div(100).div(peggedETHUSD);
             
@@ -509,7 +509,7 @@ contract MagnusSale is Ownable, Pausable {
         require(multiFirstWallet != address(token));
 
         // if zero requested, send the entire amount, otherwise the amount requested
-        uint256 _amount = _value &gt; 0 ? _value : this.balance;
+        uint256 _amount = _value > 0 ? _value : this.balance;
 
         multiFirstWallet.transfer(_amount);
     }
@@ -519,7 +519,7 @@ contract MagnusSale is Ownable, Pausable {
         require(multiSecondWallet != address(token));
 
         // if zero requested, send the entire amount, otherwise the amount requested
-        uint256 _amount = _value &gt; 0 ? _value : this.balance;
+        uint256 _amount = _value > 0 ? _value : this.balance;
 
         multiSecondWallet.transfer(_amount);
     }
@@ -529,7 +529,7 @@ contract MagnusSale is Ownable, Pausable {
         require(multiThirdWallet != address(token));
 
         // if zero requested, send the entire amount, otherwise the amount requested
-        uint256 _amount = _value &gt; 0 ? _value : this.balance;
+        uint256 _amount = _value > 0 ? _value : this.balance;
 
         multiThirdWallet.transfer(_amount);
     }
@@ -537,10 +537,10 @@ contract MagnusSale is Ownable, Pausable {
     function ownerRecoverTokens(address _beneficiary) external onlyOwner {
         require(_beneficiary != 0x0);
         require(_beneficiary != address(token));
-        require(paused || now &gt; end);
+        require(paused || now > end);
 
         uint256 _tokensRemaining = token.balanceOf(address(this));
-        if (_tokensRemaining &gt; 0) {
+        if (_tokensRemaining > 0) {
             token.transfer(_beneficiary, _tokensRemaining);
         }
     }

@@ -39,7 +39,7 @@ contract Ethraffle_v2b {
     bool public paused = false;
     uint public raffleId = 1;
     uint nextTicket = 0;
-    mapping (uint =&gt; Contestant) contestants;
+    mapping (uint => Contestant) contestants;
     uint[] gaps;
 
     // Initialization
@@ -60,9 +60,9 @@ contract Ethraffle_v2b {
 
         uint moneySent = msg.value;
 
-        while (moneySent &gt;= pricePerTicket &amp;&amp; nextTicket &lt; totalTickets) {
+        while (moneySent >= pricePerTicket && nextTicket < totalTickets) {
             uint currTicket = 0;
-            if (gaps.length &gt; 0) {
+            if (gaps.length > 0) {
                 currTicket = gaps[gaps.length-1];
                 gaps.length--;
             } else {
@@ -80,7 +80,7 @@ contract Ethraffle_v2b {
         }
 
         // Send back leftover money
-        if (moneySent &gt; 0) {
+        if (moneySent > 0) {
             msg.sender.transfer(moneySent);
         }
     }
@@ -99,7 +99,7 @@ contract Ethraffle_v2b {
         raffleId++;
         nextTicket = 0;
 
-        // gaps.length = 0 isn&#39;t necessary here,
+        // gaps.length = 0 isn't necessary here,
         // because buyTickets() eventually clears
         // the gaps array in the loop itself.
 
@@ -111,8 +111,8 @@ contract Ethraffle_v2b {
     // Get your money back before the raffle occurs
     function getRefund() public {
         uint refund = 0;
-        for (uint i = 0; i &lt; totalTickets; i++) {
-            if (msg.sender == contestants[i].addr &amp;&amp; raffleId == contestants[i].raffleId) {
+        for (uint i = 0; i < totalTickets; i++) {
+            if (msg.sender == contestants[i].addr && raffleId == contestants[i].raffleId) {
                 refund += pricePerTicket;
                 contestants[i] = Contestant(address(0), 0);
                 gaps.push(i);
@@ -120,17 +120,17 @@ contract Ethraffle_v2b {
             }
         }
 
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
     }
 
-    // Refund everyone&#39;s money, start a new raffle, then pause it
+    // Refund everyone's money, start a new raffle, then pause it
     function endRaffle() public {
         if (msg.sender == feeAddress) {
             paused = true;
 
-            for (uint i = 0; i &lt; totalTickets; i++) {
+            for (uint i = 0; i < totalTickets; i++) {
                 if (raffleId == contestants[i].raffleId) {
                     TicketRefund(raffleId, contestants[i].addr, i);
                     contestants[i].addr.transfer(pricePerTicket);

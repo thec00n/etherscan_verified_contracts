@@ -12,30 +12,30 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /* The authentication manager details user accounts that have access to certain priviledges and keeps a permanent ledger of who has and has had these rights. */
 contract AuthenticationManager {
     /* Map addresses to admins */
-    mapping (address =&gt; bool) adminAddresses;
+    mapping (address => bool) adminAddresses;
 
     /* Map addresses to account readers */
-    mapping (address =&gt; bool) accountReaderAddresses;
+    mapping (address => bool) accountReaderAddresses;
 
     /* Details of all admins that have ever existed */
     address[] adminAudit;
@@ -77,7 +77,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAdmin(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; adminAudit.length; i++)
+        for (uint256 i = 0; i < adminAudit.length; i++)
             if (adminAudit[i] == _address)
                 return true;
         return false;
@@ -90,7 +90,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAccountReader(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; accountReaderAudit.length; i++)
+        for (uint256 i = 0; i < accountReaderAudit.length; i++)
             if (accountReaderAudit[i] == _address)
                 return true;
         return false;
@@ -98,7 +98,7 @@ contract AuthenticationManager {
 
     /* Adds a user to our list of admins */
     function addAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -115,11 +115,11 @@ contract AuthenticationManager {
 
     /* Removes a user from our list of admins but keeps them in the history audit */
     function removeAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
-        /* Don&#39;t allow removal of self */
+        /* Don't allow removal of self */
         if (_address == msg.sender)
             throw;
 
@@ -134,7 +134,7 @@ contract AuthenticationManager {
 
     /* Adds a user/contract to our list of account readers */
     function addAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -151,7 +151,7 @@ contract AuthenticationManager {
 
     /* Removes a user/contracts from our list of account readers but keeps them in the history audit */
     function removeAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -181,7 +181,7 @@ contract IcoPhaseManagement {
     uint256 constant icoUnitPrice = 10 finney;
 
     /* If an ICO is abandoned and some withdrawals fail then this map allows people to request withdrawal of locked-in ether. */
-    mapping(address =&gt; uint256) public abandonedIcoBalances;
+    mapping(address => uint256) public abandonedIcoBalances;
 
     /* Defines our interface to the SIFT contract. */
     SmartInvestmentFundToken smartInvestmentFundToken;
@@ -203,8 +203,8 @@ contract IcoPhaseManagement {
     
     /* Ensures that once the ICO is over this contract cannot be used until the point it is destructed. */
     modifier onlyDuringIco {
-        bool contractValid = siftContractDefined &amp;&amp; !smartInvestmentFundToken.isClosed();
-        if (!contractValid || (!icoPhase &amp;&amp; !icoAbandoned)) throw;
+        bool contractValid = siftContractDefined && !smartInvestmentFundToken.isClosed();
+        if (!contractValid || (!icoPhase && !icoAbandoned)) throw;
         _;
     }
 
@@ -217,7 +217,7 @@ contract IcoPhaseManagement {
     /* Create the ICO phase managerment and define the address of the main SIFT contract. */
     function IcoPhaseManagement(address _authenticationManagerAddress) {
         /* A basic sanity check */
-        if (icoStartTime &gt;= icoEndTime)
+        if (icoStartTime >= icoEndTime)
             throw;
 
         /* Setup access to our other contracts and validate their versions */
@@ -249,7 +249,7 @@ contract IcoPhaseManagement {
     /* Close the ICO phase and transition to execution phase */
     function close() adminOnly onlyDuringIco {
         // Forbid closing contract before the end of ICO
-        if (now &lt;= icoEndTime)
+        if (now <= icoEndTime)
             throw;
 
         // Close the ICO
@@ -264,27 +264,27 @@ contract IcoPhaseManagement {
     /* Handle receiving ether in ICO phase - we work out how much the user has bought, allocate a suitable balance and send their change */
     function () onlyDuringIco payable {
         // Forbid funding outside of ICO
-        if (now &lt; icoStartTime || now &gt; icoEndTime)
+        if (now < icoStartTime || now > icoEndTime)
             throw;
 
-        /* Determine how much they&#39;ve actually purhcased and any ether change */
+        /* Determine how much they've actually purhcased and any ether change */
         uint256 tokensPurchased = msg.value / icoUnitPrice;
         uint256 purchaseTotalPrice = tokensPurchased * icoUnitPrice;
         uint256 change = msg.value.sub(purchaseTotalPrice);
 
         /* Increase their new balance if they actually purchased any */
-        if (tokensPurchased &gt; 0)
+        if (tokensPurchased > 0)
             smartInvestmentFundToken.mintTokens(msg.sender, tokensPurchased);
 
         /* Send change back to recipient */
-        if (change &gt; 0 &amp;&amp; !msg.sender.send(change))
+        if (change > 0 && !msg.sender.send(change))
             throw;
     }
 
     /* Abandons the ICO and returns funds to shareholders.  Any failed funds can be separately withdrawn once the ICO is abandoned. */
     function abandon(string details) adminOnly onlyDuringIco {
         // Forbid closing contract before the end of ICO
-        if (now &lt;= icoEndTime)
+        if (now <= icoEndTime)
             throw;
 
         /* If already abandoned throw an error */
@@ -297,11 +297,11 @@ contract IcoPhaseManagement {
         /* Enum all accounts and send them refund */
         uint numberTokenHolders = smartInvestmentFundToken.tokenHolderCount();
         uint256 totalAbandoned = 0;
-        for (uint256 i = 0; i &lt; numberTokenHolders; i++) {
+        for (uint256 i = 0; i < numberTokenHolders; i++) {
             /* Calculate how much goes to this shareholder */
             address addr = smartInvestmentFundToken.tokenHolder(i);
             uint256 etherToSend = paymentPerShare * smartInvestmentFundToken.balanceOf(addr);
-            if (etherToSend &lt; 1)
+            if (etherToSend < 1)
                 continue;
 
             /* Allocate appropriate amount of fund to them */
@@ -315,7 +315,7 @@ contract IcoPhaseManagement {
 
         // There should be no money left, but withdraw just incase for manual resolution
         uint256 remainder = this.balance.sub(totalAbandoned);
-        if (remainder &gt; 0)
+        if (remainder > 0)
             if (!msg.sender.send(remainder))
                 // Add this to the callers balance for emergency refunds
                 abandonedIcoBalances[msg.sender] = abandonedIcoBalances[msg.sender].add(remainder);
@@ -340,10 +340,10 @@ contract SmartInvestmentFundToken {
     using SafeMath for uint256;
 
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /* Map between users and their approval addresses and amounts */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /* List of all token holders */
     address[] allTokenHolders;
@@ -384,8 +384,8 @@ contract SmartInvestmentFundToken {
     /* Create a new instance of this fund with links to other contracts that are required. */
     function SmartInvestmentFundToken(address _icoContractAddress, address _authenticationManagerAddress) {
         // Setup defaults
-        name = &quot;Smart Investment Fund Token&quot;;
-        symbol = &quot;SIFT&quot;;
+        name = "Smart Investment Fund Token";
+        symbol = "SIFT";
         decimals = 0;
 
         /* Setup access to our other contracts and validate their versions */
@@ -412,15 +412,15 @@ contract SmartInvestmentFundToken {
     }
 
     modifier fundSendablePhase {
-        // If it&#39;s in ICO phase, forbid it
+        // If it's in ICO phase, forbid it
         if (icoPhaseManagement.icoPhase())
             throw;
 
-        // If it&#39;s abandoned, forbid it
+        // If it's abandoned, forbid it
         if (icoPhaseManagement.icoAbandoned())
             throw;
 
-        // We&#39;re good, funds can now be transferred
+        // We're good, funds can now be transferred
         _;
     }
 
@@ -432,7 +432,7 @@ contract SmartInvestmentFundToken {
     
     /* Transfer funds between two addresses that are not the current msg.sender - this requires approval to have been set separately and follows standard ERC20 guidelines */
     function transferFrom(address _from, address _to, uint256 _amount) fundSendablePhase onlyPayloadSize(3) returns (bool) {
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]) {
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to].add(_amount) > balances[_to]) {
             bool isNew = balances[_to] == 0;
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -479,14 +479,14 @@ contract SmartInvestmentFundToken {
         return balances[_owner];
     }
 
-    /* Transfer the balance from owner&#39;s account to another account */
+    /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint256 _amount) fundSendablePhase onlyPayloadSize(2) returns (bool) {
         /* Check if sender has balance and for overflows */
-        if (balances[msg.sender] &lt; _amount || balances[_to].add(_amount) &lt; balances[_to])
+        if (balances[msg.sender] < _amount || balances[_to].add(_amount) < balances[_to])
             return false;
 
-        /* Do a check to see if they are new, if so we&#39;ll want to add it to our array */
-        bool isRecipientNew = balances[_to] &lt; 1;
+        /* Do a check to see if they are new, if so we'll want to add it to our array */
+        bool isRecipientNew = balances[_to] < 1;
 
         /* Add and subtract new balances */
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -495,7 +495,7 @@ contract SmartInvestmentFundToken {
         /* Consolidate arrays if they are new or if sender now has empty balance */
         if (isRecipientNew)
             tokenOwnerAdd(_to);
-        if (balances[msg.sender] &lt; 1)
+        if (balances[msg.sender] < 1)
             tokenOwnerRemove(msg.sender);
 
         /* Fire notification event */
@@ -507,12 +507,12 @@ contract SmartInvestmentFundToken {
     function tokenOwnerAdd(address _addr) internal {
         /* First check if they already exist */
         uint256 tokenHolderCount = allTokenHolders.length;
-        for (uint256 i = 0; i &lt; tokenHolderCount; i++)
+        for (uint256 i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr)
                 /* Already found so we can abort now */
                 return;
         
-        /* They don&#39;t seem to exist, so let&#39;s add them */
+        /* They don't seem to exist, so let's add them */
         allTokenHolders.length++;
         allTokenHolders[allTokenHolders.length - 1] = _addr;
     }
@@ -524,19 +524,19 @@ contract SmartInvestmentFundToken {
         uint256 foundIndex = 0;
         bool found = false;
         uint256 i;
-        for (i = 0; i &lt; tokenHolderCount; i++)
+        for (i = 0; i < tokenHolderCount; i++)
             if (allTokenHolders[i] == _addr) {
                 foundIndex = i;
                 found = true;
                 break;
             }
         
-        /* If we didn&#39;t find them just return */
+        /* If we didn't find them just return */
         if (!found)
             return;
         
         /* We now need to shuffle down the array */
-        for (i = foundIndex; i &lt; tokenHolderCount - 1; i++)
+        for (i = foundIndex; i < tokenHolderCount - 1; i++)
             allTokenHolders[i] = allTokenHolders[i + 1];
         allTokenHolders.length--;
     }
@@ -561,7 +561,7 @@ contract TokenHolderSnapshotter {
     using SafeMath for uint256;
 
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /* Our handle to the SIFT contract. */
     SmartInvestmentFundToken siftContract;
@@ -610,12 +610,12 @@ contract TokenHolderSnapshotter {
     function snapshot() adminOnly {
         // First delete existing holder balances
         uint256 i;
-        for (i = 0; i &lt; allTokenHolders.length; i++)
+        for (i = 0; i < allTokenHolders.length; i++)
             balances[allTokenHolders[i]] = 0;
 
         // Now clone our contract to match
         allTokenHolders.length = siftContract.tokenHolderCount();
-        for (i = 0; i &lt; allTokenHolders.length; i++) {
+        for (i = 0; i < allTokenHolders.length; i++) {
             address addr = siftContract.tokenHolder(i);
             allTokenHolders[i] = addr;
             balances[addr] = siftContract.balanceOf(addr);
@@ -626,7 +626,7 @@ contract TokenHolderSnapshotter {
     }
 
     function snapshotUpdate(address _addr, uint256 _newBalance, string _details) adminOnly {
-        // Are they already a holder?  If not and no new balance then we&#39;re making no change so leave now, or if they are and balance is the same
+        // Are they already a holder?  If not and no new balance then we're making no change so leave now, or if they are and balance is the same
         uint256 existingBalance = balances[_addr];
         if (existingBalance == _newBalance)
             return;
@@ -638,11 +638,11 @@ contract TokenHolderSnapshotter {
             allTokenHolders[allTokenHolders.length - 1] = _addr;
             balances[_addr] = _newBalance;
         }
-        else if (_newBalance &gt; 0) {
-            // Existing holder we&#39;re updating
+        else if (_newBalance > 0) {
+            // Existing holder we're updating
             balances[_addr] = _newBalance;
         } else {
-            // Existing holder, we&#39;re deleting
+            // Existing holder, we're deleting
             balances[_addr] = 0;
 
             /* Find out where in our array they are */
@@ -650,7 +650,7 @@ contract TokenHolderSnapshotter {
             uint256 foundIndex = 0;
             bool found = false;
             uint256 i;
-            for (i = 0; i &lt; tokenHolderCount; i++)
+            for (i = 0; i < tokenHolderCount; i++)
                 if (allTokenHolders[i] == _addr) {
                     foundIndex = i;
                     found = true;
@@ -659,7 +659,7 @@ contract TokenHolderSnapshotter {
             
             /* We now need to shuffle down the array */
             if (found) {
-                for (i = foundIndex; i &lt; tokenHolderCount - 1; i++)
+                for (i = foundIndex; i < tokenHolderCount - 1; i++)
                     allTokenHolders[i] = allTokenHolders[i + 1];
                 allTokenHolders.length--;
             }

@@ -10,7 +10,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -33,7 +33,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -60,24 +60,24 @@ contract DeviceDataStorage is Ambi2EnabledFull {
         string additionalInfo;
     }
 
-    mapping (address =&gt; uint) public recordId;
-    mapping (address =&gt; mapping (uint =&gt; Storage)) public recording;
+    mapping (address => uint) public recordId;
+    mapping (address => mapping (uint => Storage)) public recording;
 
     event DataWasRecorded(address device, uint id, bytes32 description, uint number, string additionalInfo);
 
-    function setAssetProxy(AssetProxyInterface _assetProxy) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setAssetProxy(AssetProxyInterface _assetProxy) onlyRole('admin') returns(bool) {
         assetProxy = AssetProxyInterface(_assetProxy);
         return true;
     }
 
-    function setFeeRecieverValue(uint _fee, address _feeReceiver) onlyRole(&#39;admin&#39;) returns(bool) {
+    function setFeeRecieverValue(uint _fee, address _feeReceiver) onlyRole('admin') returns(bool) {
         fee = _fee;
         feeReceiver = _feeReceiver;
         return true;
     }
 
     function recordInfo(bytes32 _description, uint _number, string _additionalInfo) returns(bool) {
-        require(assetProxy.transferFromWithReference(msg.sender, feeReceiver, fee, &#39;storage&#39;));
+        require(assetProxy.transferFromWithReference(msg.sender, feeReceiver, fee, 'storage'));
 
         recording[msg.sender][recordId[msg.sender]].device = msg.sender;
         recording[msg.sender][recordId[msg.sender]].description = _description;

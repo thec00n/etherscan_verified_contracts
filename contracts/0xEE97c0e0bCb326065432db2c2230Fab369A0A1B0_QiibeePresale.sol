@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -107,14 +107,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -126,21 +126,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -192,7 +192,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -263,7 +263,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -300,7 +300,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -315,7 +315,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -329,7 +329,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -366,7 +366,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -452,11 +452,11 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
 
     uint64 public vestFromTime = 1530316800; // start time for vested tokens (equiv. to 30/06/2018 12:00:00 AM GMT)
 
-    mapping (address =&gt; uint256) public balances; // balance of wei invested per investor
-    mapping (address =&gt; AccreditedInvestor) public accredited; // whitelist of investors
+    mapping (address => uint256) public balances; // balance of wei invested per investor
+    mapping (address => AccreditedInvestor) public accredited; // whitelist of investors
 
     // spam prevention
-    mapping (address =&gt; uint256) public lastCallTime; // last call times by address
+    mapping (address => uint256) public lastCallTime; // last call times by address
     uint256 public maxGasPrice; // max gas price per transaction
     uint256 public minBuyingRequestInterval; // min request interval for purchases from a single source (in seconds)
 
@@ -490,9 +490,9 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
       Crowdsale(_startTime, _endTime, _rate, _wallet)
       CappedCrowdsale(_cap)
     {
-      require(_distributionCap &gt; 0);
-      require(_maxGasPrice &gt; 0);
-      require(_minBuyingRequestInterval &gt; 0);
+      require(_distributionCap > 0);
+      require(_maxGasPrice > 0);
+      require(_minBuyingRequestInterval > 0);
       require(_token != address(0));
 
       distributionCap = _distributionCap;
@@ -510,7 +510,7 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
 
       AccreditedInvestor storage data = accredited[msg.sender];
 
-      // investor&#39;s data
+      // investor's data
       uint256 minInvest = data.minInvest;
       uint256 maxCumulativeInvest = data.maxCumulativeInvest;
       uint64 from = vestFromTime;
@@ -521,11 +521,11 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
 
       uint256 tokens = msg.value.mul(rate);
 
-      // check investor&#39;s limits
+      // check investor's limits
       uint256 newBalance = balances[msg.sender].add(msg.value);
-      require(newBalance &lt;= maxCumulativeInvest &amp;&amp; msg.value &gt;= minInvest);
+      require(newBalance <= maxCumulativeInvest && msg.value >= minInvest);
 
-      if (data.cliff &gt; 0 &amp;&amp; data.vesting &gt; 0) {
+      if (data.cliff > 0 && data.vesting > 0) {
         require(QiibeeTokenInterface(token).mintVestedTokens(beneficiary, tokens, from, cliff, vesting, revokable, burnsOnRevoke, wallet));
       } else {
         require(QiibeeTokenInterface(token).mint(beneficiary, tokens));
@@ -553,16 +553,16 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
      */
     function distributeTokens(address _beneficiary, uint256 _tokens, uint64 _cliff, uint64 _vesting, bool _revokable, bool _burnsOnRevoke) public onlyOwner whenNotPaused {
       require(_beneficiary != address(0));
-      require(_tokens &gt; 0);
-      require(_vesting &gt;= _cliff);
+      require(_tokens > 0);
+      require(_vesting >= _cliff);
       require(!isFinalized);
       require(hasEnded());
 
       // check distribution cap limit
       uint256 totalDistributed = tokensDistributed.add(_tokens);
-      assert(totalDistributed &lt;= distributionCap);
+      assert(totalDistributed <= distributionCap);
 
-      if (_cliff &gt; 0 &amp;&amp; _vesting &gt; 0) {
+      if (_cliff > 0 && _vesting > 0) {
         uint64 from = vestFromTime;
         uint64 cliff = from + _cliff;
         uint64 vesting = cliff + _vesting;
@@ -582,10 +582,10 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
      */
     function addAccreditedInvestor(address investor, uint64 cliff, uint64 vesting, bool revokable, bool burnsOnRevoke, uint256 minInvest, uint256 maxCumulativeInvest) public onlyOwner {
         require(investor != address(0));
-        require(vesting &gt;= cliff);
-        require(minInvest &gt; 0);
-        require(maxCumulativeInvest &gt; 0);
-        require(minInvest &lt;= maxCumulativeInvest);
+        require(vesting >= cliff);
+        require(minInvest > 0);
+        require(maxCumulativeInvest > 0);
+        require(minInvest <= maxCumulativeInvest);
 
         accredited[investor] = AccreditedInvestor(cliff, vesting, revokable, burnsOnRevoke, minInvest, maxCumulativeInvest);
 
@@ -598,7 +598,7 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
      */
     function isAccredited(address investor) public constant returns (bool) {
         AccreditedInvestor storage data = accredited[investor];
-        return data.minInvest &gt; 0;
+        return data.minInvest > 0;
     }
 
     /*
@@ -615,14 +615,14 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
      */
     function validPurchase() internal constant returns (bool) {
       require(isAccredited(msg.sender));
-      bool withinFrequency = now.sub(lastCallTime[msg.sender]) &gt;= minBuyingRequestInterval;
-      bool withinGasPrice = tx.gasprice &lt;= maxGasPrice;
-      return super.validPurchase() &amp;&amp; withinFrequency &amp;&amp; withinGasPrice;
+      bool withinFrequency = now.sub(lastCallTime[msg.sender]) >= minBuyingRequestInterval;
+      bool withinGasPrice = tx.gasprice <= maxGasPrice;
+      return super.validPurchase() && withinFrequency && withinGasPrice;
     }
 
     /*
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function. Only owner can call it.
+     * work. Calls the contract's finalization function. Only owner can call it.
      */
     function finalize() public onlyOwner {
       require(!isFinalized);
@@ -642,7 +642,7 @@ contract QiibeePresale is CappedCrowdsale, FinalizableCrowdsale, Pausable {
      * before the presale starts.
      */
     function setToken(address tokenAddress) onlyOwner {
-      require(now &lt; startTime);
+      require(now < startTime);
       token = QiibeeTokenInterface(tokenAddress);
     }
 

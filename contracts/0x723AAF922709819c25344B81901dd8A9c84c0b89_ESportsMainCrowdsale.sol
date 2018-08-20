@@ -18,20 +18,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -82,18 +82,18 @@ contract ESportsFreezingStorage is Ownable {
     ESportsToken token;
     
     function ESportsFreezingStorage(ESportsToken _token, uint64 _releaseTime) { //ERC20Basic
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         
         releaseTime = _releaseTime;
         token = _token;
     }
 
     function release(address _beneficiary) onlyOwner returns(uint) {
-        //require(now &gt;= releaseTime);
-        if (now &lt; releaseTime) return 0;
+        //require(now >= releaseTime);
+        if (now < releaseTime) return 0;
 
         uint amount = token.balanceOf(this);
-        //require(amount &gt; 0);
+        //require(amount > 0);
         if (amount == 0)  return 0;
 
         // token.safeTransfer(beneficiary, amount);
@@ -116,7 +116,7 @@ contract RefundVault is Ownable {
 
     enum State {Active, Refunding, Closed}
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     address public wallet;
 
@@ -211,11 +211,11 @@ contract Crowdsale {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint value, uint amount);
 
     function Crowdsale(uint32 _startTime, uint32 _endTime, uint _rate, uint _hardCap, address _wallet, address _token) {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != 0x0);
-        require(_hardCap &gt; _rate);
+        require(_hardCap > _rate);
 
         // token = createTokenContract();
         token = MintableToken(_token);
@@ -263,14 +263,14 @@ contract Crowdsale {
         uint tokens = amountWei.mul(actualRate);
 
         if (msg.value == 0) { // if it is a btc purchase then check existence all tokens (no change)
-            require(tokens.add(totalSupply) &lt;= hardCap);
+            require(tokens.add(totalSupply) <= hardCap);
         }
 
         // Change, if minted token would be less
         uint change = 0;
 
         // If hard cap reached
-        if (tokens.add(totalSupply) &gt; hardCap) {
+        if (tokens.add(totalSupply) > hardCap) {
             // Rest tokens
             uint maxTokens = hardCap.sub(totalSupply);
             uint realAmount = maxTokens.div(actualRate);
@@ -314,11 +314,11 @@ contract Crowdsale {
      * @return true if the transaction can buy tokens
      */
     function validPurchase(uint _amountWei, uint _actualRate, uint _totalSupply) internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = _amountWei != 0;
-        bool hardCapNotReached = _totalSupply &lt;= hardCap.sub(_actualRate);
+        bool hardCapNotReached = _totalSupply <= hardCap.sub(_actualRate);
 
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; hardCapNotReached;
+        return withinPeriod && nonZeroPurchase && hardCapNotReached;
     }
 
     /**
@@ -326,14 +326,14 @@ contract Crowdsale {
      * @return true if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || token.totalSupply() &gt; hardCap.sub(getRate());
+        return now > endTime || token.totalSupply() > hardCap.sub(getRate());
     }
 
     /**
      * @return true if crowdsale event has started
      */
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 }
 
@@ -355,7 +355,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner {
         require(!isFinalized);
@@ -380,7 +380,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
     using SafeMath for uint256;
@@ -393,12 +393,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
 
     function RefundableCrowdsale(uint32 _startTime, uint32 _endTime, uint _rate, uint _hardCap, address _wallet, address _token, uint _goal)
             FinalizableCrowdsale(_startTime, _endTime, _rate, _hardCap, _wallet, _token) {
-        require(_goal &gt; 0);
+        require(_goal > 0);
         vault = new RefundVault(wallet);
         goal = _goal;
     }
 
-    // We&#39;re overriding the fund forwarding from Crowdsale.
+    // We're overriding the fund forwarding from Crowdsale.
     // In addition to sending the funds, we want to call
     // the RefundVault deposit function
     function forwardFunds(uint amountWei) internal {
@@ -431,7 +431,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
     }
 
     function goalReached() public constant returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 }
 
@@ -496,14 +496,14 @@ contract ESportsMainCrowdsale is ESportsConstants, RefundableCrowdsale {
         uint bonuses = bonusProvider.getBonusAmount(_beneficiary, soldTokens, _tokens, startTime);
         bonusProvider.addDelayedBonus(_beneficiary, soldTokens, _tokens);
 
-        if (bonuses &gt; 0) {
+        if (bonuses > 0) {
             bonusProvider.sendBonus(_beneficiary, bonuses);
         }
     }
 
     /**
      * @dev Initialization of crowdsale. Starts once after deployment token contract
-     * , deployment crowdsale contract and changу token contract&#39;s owner 
+     * , deployment crowdsale contract and changу token contract's owner 
      */
     function init() onlyOwner public returns(bool) {
         require(!isInit);
@@ -596,10 +596,10 @@ contract ESportsBonusProvider is ESportsConstants, Ownable {
 
     ESportsToken public token;
     address public returnAddressBonuses;
-    mapping (address =&gt; uint256) investorBonuses;
+    mapping (address => uint256) investorBonuses;
 
     uint constant FIRST_WEEK = 7 days;
-    uint constant BONUS_THRESHOLD_ETR = 20000 * RATE * TOKEN_DECIMAL_MULTIPLIER; // 5 000 000 EUR -&gt; 20 000 ETH -&gt; ETR
+    uint constant BONUS_THRESHOLD_ETR = 20000 * RATE * TOKEN_DECIMAL_MULTIPLIER; // 5 000 000 EUR -> 20 000 ETH -> ETR
 
     function ESportsBonusProvider(ESportsToken _token, address _returnAddressBonuses) {
         token = _token;
@@ -615,7 +615,7 @@ contract ESportsBonusProvider is ESportsConstants, Ownable {
         uint bonus = 0;
         
         // Apply bonus for amount
-        if (now &lt; _startTime + FIRST_WEEK &amp;&amp; now &gt;= _startTime) {
+        if (now < _startTime + FIRST_WEEK && now >= _startTime) {
             bonus = bonus.add(_amountTokens.div(10)); // 1
         }
 
@@ -629,7 +629,7 @@ contract ESportsBonusProvider is ESportsConstants, Ownable {
     ) onlyOwner public returns (uint) {
         uint bonus = 0;
 
-        if (_totalSold &lt; BONUS_THRESHOLD_ETR) {
+        if (_totalSold < BONUS_THRESHOLD_ETR) {
             uint amountThresholdBonus = _amountTokens.div(10); // 2
             investorBonuses[_buyer] = investorBonuses[_buyer].add(amountThresholdBonus); 
             bonus = bonus.add(amountThresholdBonus);
@@ -639,8 +639,8 @@ contract ESportsBonusProvider is ESportsConstants, Ownable {
     }
 
     function releaseBonus(address _buyer, uint _totalSold) onlyOwner public returns (uint) {
-        require(_totalSold &gt;= BONUS_THRESHOLD_ETR);
-        require(investorBonuses[_buyer] &gt; 0);
+        require(_totalSold >= BONUS_THRESHOLD_ETR);
+        require(investorBonuses[_buyer] > 0);
 
         uint amountBonusTokens = investorBonuses[_buyer];
         investorBonuses[_buyer] = 0;
@@ -693,7 +693,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -729,7 +729,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -743,7 +743,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -794,7 +794,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -861,16 +861,16 @@ contract ESportsToken is ESportsConstants, MintableToken {
     /**
      * @dev Accounts who can transfer token even if paused. Works only during crowdsale
      */
-    mapping(address =&gt; bool) excluded;
+    mapping(address => bool) excluded;
 
-    mapping (address =&gt; ESportsFreezingStorage[]) public frozenFunds;
+    mapping (address => ESportsFreezingStorage[]) public frozenFunds;
 
     function name() constant public returns (string _name) {
-        return &quot;ESports Token&quot;;
+        return "ESports Token";
     }
 
     function symbol() constant public returns (string _symbol) {
-        return &quot;ERT&quot;;
+        return "ERT";
     }
 
     function decimals() constant public returns (uint8 _decimals) {
@@ -930,12 +930,12 @@ contract ESportsToken is ESportsConstants, MintableToken {
     function returnFrozenFreeFunds() public returns (uint) {
         uint total = 0;
         ESportsFreezingStorage[] storage frozenStorages = frozenFunds[msg.sender];
-        // for (uint x = 0; x &lt; frozenStorages.length; x++) {
+        // for (uint x = 0; x < frozenStorages.length; x++) {
         //     uint amount = balanceOf(frozenStorages[x]);
-        //     if (frozenStorages[x].call(bytes4(sha3(&quot;release(address)&quot;)), msg.sender))
+        //     if (frozenStorages[x].call(bytes4(sha3("release(address)")), msg.sender))
         //         total = total.add(amount);
         // }
-        for (uint x = 0; x &lt; frozenStorages.length; x++) {
+        for (uint x = 0; x < frozenStorages.length; x++) {
             uint amount = frozenStorages[x].release(msg.sender);
             total = total.add(amount);
         }
@@ -949,7 +949,7 @@ contract ESportsToken is ESportsConstants, MintableToken {
      */
     function burn(uint _value) public {
         require(!paused || excluded[msg.sender]);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);

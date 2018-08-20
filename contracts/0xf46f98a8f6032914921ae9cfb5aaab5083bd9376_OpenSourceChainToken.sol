@@ -3,12 +3,12 @@ pragma solidity ^0.4.16;
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
     
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -59,7 +59,7 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token ,SafeMath{
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSubtract(balances[msg.sender],_value);
             balances[_to] = safeAdd(balances[_to],_value) ;
             Transfer(msg.sender, _to, _value);
@@ -70,7 +70,7 @@ contract StandardToken is Token ,SafeMath{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to],_value) ;
             balances[_from] = safeSubtract(balances[_from],_value) ;
             allowed[_from][msg.sender] = safeSubtract(allowed[_from][msg.sender],_value);
@@ -95,16 +95,16 @@ contract StandardToken is Token ,SafeMath{
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract OpenSourceChainToken is StandardToken  {
     // metadata
-    string  public constant name = &quot;OpenSourceChain Token&quot;;
-    string  public constant symbol = &quot;OSCH&quot;;                                
+    string  public constant name = "OpenSourceChain Token";
+    string  public constant symbol = "OSCH";                                
     uint256 public constant decimals = 18;
-    string  public version = &quot;1.0&quot;;
+    string  public version = "1.0";
     uint256 public tokenExchangeRate = 800000;                              // 800000 OSCH tokens per 1 ETH
     
     address public owner; //owner
@@ -125,7 +125,7 @@ contract OpenSourceChainToken is StandardToken  {
         _;
     }
     
-    /// @dev increase the token&#39;s supply
+    /// @dev increase the token's supply
     function increaseSupply(uint256 _value) onlyOwner {
         uint256 value = safeMult(_value , 10 ** decimals);
         balances[owner] = safeAdd(balances[owner],value);
@@ -133,9 +133,9 @@ contract OpenSourceChainToken is StandardToken  {
         IncreaseSupply(value);
     }
     
-     /// @dev decrease the token&#39;s supply
+     /// @dev decrease the token's supply
     function decreaseSupply (uint256 _value) onlyOwner {
-        if (balances[owner] &lt; _value) throw;
+        if (balances[owner] < _value) throw;
         uint256 value = safeMult(_value , 10 ** decimals);
         balances[owner] = safeSubtract(balances[owner],value);
         totalSupply = safeSubtract(totalSupply, value);

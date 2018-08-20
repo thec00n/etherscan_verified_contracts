@@ -3,13 +3,13 @@ pragma solidity ^0.4.18;
 // https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol
 library SafeMath {
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,8 +66,8 @@ contract DetailedERC20 is ERC20 {
 }
 
 // RoyalForkToken has the following properties:
-// - users create an &quot;account&quot;, which consists of a unique username, and token count.
-// - tokens are minted at the discretion of &quot;owner&quot; and &quot;minter&quot;.
+// - users create an "account", which consists of a unique username, and token count.
+// - tokens are minted at the discretion of "owner" and "minter".
 // - tokens can only be transferred to existing token holders.
 // - each token holder is entitled to a share of all donations sent to contract 
 //   on a per-month basis and regardless of total token holdings; a dividend. 
@@ -75,7 +75,7 @@ contract DetailedERC20 is ERC20 {
 //   holders on Jan 31.  At any time in February, each token holder can 
 //   withdraw .1 eth for their January share).
 // - dividends not collected for a given month become donations for the next month.
-contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &quot;RFT&quot;, 0) {
+contract RoyalForkToken is Ownable, DetailedERC20("RoyalForkToken", "RFT", 0) {
   using SafeMath for uint256;
 
   struct Hodler {
@@ -84,8 +84,8 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
     uint16 canWithdrawPeriod;
   }
 
-  mapping(address =&gt; Hodler) public hodlers;
-  mapping(bytes16 =&gt; address) public usernames;
+  mapping(address => Hodler) public hodlers;
+  mapping(bytes16 => address) public usernames;
 
   uint256 public epoch = now;
   uint16 public currentPeriod = 1;
@@ -95,7 +95,7 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
 
   address minter;
 
-  mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => mapping (address => uint256)) internal allowed;
 
   event Mint(address indexed to, uint256 amount);
   event PeriodEnd(uint16 indexed period, uint256 amount, uint64 hodlers);
@@ -127,20 +127,20 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
     }
   }
 
-  // Ensures that username isn&#39;t taken, and account doesn&#39;t already exist for 
-  // user&#39;s address.
+  // Ensures that username isn't taken, and account doesn't already exist for 
+  // user's address.
   function newHodler(address user, bytes16 username, uint64 endowment) private {
     require(usernames[username] == address(0));
     require(hodlers[user].canWithdrawPeriod == 0);
@@ -162,7 +162,7 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
 
   // Owner should call this on 1st of every month.
   function newPeriod() public onlyOwner {
-    require(now &gt;= epoch + 28 days);
+    require(now >= epoch + 28 days);
     currentPeriod++;
     prevHodlers = numHodlers;
     prevBalance = this.balance;
@@ -177,7 +177,7 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
   // Send tokens to existing account.
   function mint(address user, uint64 amount) public onlyMinter {
     require(hodlers[user].canWithdrawPeriod != 0);
-    require(hodlers[user].balance + amount &gt; hodlers[user].balance);
+    require(hodlers[user].balance + amount > hodlers[user].balance);
 
     hodlers[user].balance += amount;
     totalSupply += amount;
@@ -195,7 +195,7 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
   // User can withdraw their share of donations from the previous month.
   function withdraw() public {
     require(hodlers[msg.sender].canWithdrawPeriod != 0);
-    require(hodlers[msg.sender].canWithdrawPeriod &lt; currentPeriod);
+    require(hodlers[msg.sender].canWithdrawPeriod < currentPeriod);
 
     hodlers[msg.sender].canWithdrawPeriod = currentPeriod;
     uint256 payment = prevBalance / prevHodlers;
@@ -212,8 +212,8 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(hodlers[_to].canWithdrawPeriod != 0);
-    require(_value &lt;= hodlers[msg.sender].balance);
-    require(hodlers[_to].balance + uint64(_value) &gt; hodlers[_to].balance);
+    require(_value <= hodlers[msg.sender].balance);
+    require(hodlers[_to].balance + uint64(_value) > hodlers[_to].balance);
 
     hodlers[msg.sender].balance -= uint64(_value);
     hodlers[_to].balance += uint64(_value);
@@ -239,7 +239,7 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -250,9 +250,9 @@ contract RoyalForkToken is Ownable, DetailedERC20(&quot;RoyalForkToken&quot;, &q
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(hodlers[_to].canWithdrawPeriod != 0);
-    require(_value &lt;= hodlers[_from].balance);
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(hodlers[_to].balance + uint64(_value) &gt; hodlers[_to].balance);
+    require(_value <= hodlers[_from].balance);
+    require(_value <= allowed[_from][msg.sender]);
+    require(hodlers[_to].balance + uint64(_value) > hodlers[_to].balance);
 
     hodlers[_from].balance -= uint64(_value);
     hodlers[_to].balance += uint64(_value);

@@ -12,7 +12,7 @@ contract SimpleMultisig {
     bool active;
   }
   
-  mapping (address =&gt; bool) public founders;
+  mapping (address => bool) public founders;
   Tx[] public txs;
 
   function SimpleMultisig() public {

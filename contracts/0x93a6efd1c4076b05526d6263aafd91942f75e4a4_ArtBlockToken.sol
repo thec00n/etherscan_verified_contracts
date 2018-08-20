@@ -19,9 +19,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,17 +82,17 @@ contract ArtBlockToken is ERC20, Owned {
  
     using SafeMath for uint256;
     //metadata
-    string  public name=&quot;ArtBlock Ecological&quot;;
-    string  public symbol=&quot;AET&quot;;
+    string  public name="ArtBlock Ecological";
+    string  public symbol="AET";
     uint256 public decimals = 18;
-    string  public version = &quot;1.0&quot;; 
+    string  public version = "1.0"; 
     uint public totalSupply = 4500000000  * 10 ** uint(decimals);
     
 
  
-	mapping(address =&gt; uint) public balanceOf;
-    mapping(address =&gt; uint256) public lockValues;
-	mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+	mapping(address => uint) public balanceOf;
+    mapping(address => uint256) public lockValues;
+	mapping(address => mapping(address => uint)) public allowance;
 	
 	//event     
 	event FreezeIn(address[] indexed from, bool value);
@@ -107,7 +107,7 @@ contract ArtBlockToken is ERC20, Owned {
     
     function internalTransfer(address from, address toaddr, uint value) internal {
 		require(toaddr!=0);
-		require(balanceOf[from]&gt;=value); 
+		require(balanceOf[from]>=value); 
 		
 		
 
@@ -123,9 +123,9 @@ function transfer(address _to, uint256 _value) public  returns (bool) {
       
   
     require(_to != address(0));
-    require(_value &lt;= balanceOf[msg.sender]);
+    require(_value <= balanceOf[msg.sender]);
     uint256 transBlalance = balanceOf[msg.sender].sub(lockValues[msg.sender]);
-    require(_value &lt;= transBlalance);
+    require(_value <= transBlalance);
     
     // SafeMath.sub will throw if there is not enough balance.
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
@@ -136,7 +136,7 @@ function transfer(address _to, uint256 _value) public  returns (bool) {
 	
 	//transfer from
 	function transferFrom(address from, address toaddr, uint value) public returns (bool) {
-		require(allowance[from][msg.sender]&gt;=value);
+		require(allowance[from][msg.sender]>=value);
 
 		allowance[from][msg.sender]=allowance[from][msg.sender].sub(value);//  safeSubtract(allowance[from][msg.sender], value);
 
@@ -164,7 +164,7 @@ function transfer(address _to, uint256 _value) public  returns (bool) {
     function subLockValue(address addr,uint256 _value) public onlyOwner{
        
        require(addr != address(0));
-       require(_value &lt;= lockValues[addr]);
+       require(_value <= lockValues[addr]);
        lockValues[addr] = lockValues[addr].sub(_value);
         
     }

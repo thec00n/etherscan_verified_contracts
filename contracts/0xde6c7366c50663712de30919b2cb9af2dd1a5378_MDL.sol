@@ -22,18 +22,18 @@ contract ERC20 is ERC20Token {
 contract MDL is ERC20 {
     
     function name() public constant returns (string) { 
-        return &quot;MDL Talent Hub&quot;; 
+        return "MDL Talent Hub"; 
     }
     function symbol() public constant returns (string) { 
-        return &quot;MDL&quot;; 
+        return "MDL"; 
     }
     function decimals() public constant returns (uint8) { 
         return 8; 
     }
     
     address owner = msg.sender;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
@@ -50,7 +50,7 @@ contract MDL is ERC20 {
     }
 
     function airdropMDL(address[] addresses, uint256 _value) onlyOwner public {
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         for (uint i = 0; i < addresses.length; i++) {
              balances[owner] -= _value;
              balances[addresses[i]] += _value;
              emit Transfer(owner, addresses[i], _value);
@@ -65,16 +65,16 @@ contract MDL is ERC20 {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
     
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
 
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -87,7 +87,7 @@ contract MDL is ERC20 {
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         

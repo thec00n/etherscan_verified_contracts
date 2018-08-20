@@ -26,8 +26,8 @@ contract HmcDistributor {
         bool withdraw;
     }
 
-    mapping(address =&gt; member)   public whitelist;
-    mapping(address =&gt; bool)     public distributors;
+    mapping(address => member)   public whitelist;
+    mapping(address => bool)     public distributors;
 
     modifier onlyDistributor {
         require(distributors[msg.sender] == true);
@@ -60,7 +60,7 @@ contract HmcDistributor {
         onlyOwner
     {
         uint256 index;
-        for(index = 0;index&lt; _addr.length;index ++) {
+        for(index = 0;index< _addr.length;index ++) {
             distributors[_addr[index]] = true;
         }
         distributorCount += _addr.length;
@@ -89,7 +89,7 @@ contract HmcDistributor {
            whitelist[_owner].withdraw   == true) {
             return false;
         }
-        if(now &gt;= whitelist[_owner].unlockTime &amp;&amp; block.number &gt; minBlockNumber) {
+        if(now >= whitelist[_owner].unlockTime && block.number > minBlockNumber) {
             return true;
         }else{
             return false;
@@ -97,10 +97,10 @@ contract HmcDistributor {
     }
 
     function withdraw() external {
-        require(withdrawCount&lt;joinCount);
+        require(withdrawCount<joinCount);
         require(whitelist[msg.sender].withdraw == false);
-        require(whitelist[msg.sender].unlockTime &gt; 1500000000);
-        require(now &gt;= whitelist[msg.sender].unlockTime &amp;&amp; block.number &gt; minBlockNumber);
+        require(whitelist[msg.sender].unlockTime > 1500000000);
+        require(now >= whitelist[msg.sender].unlockTime && block.number > minBlockNumber);
         whitelist[msg.sender].withdraw = true;
         withdrawCount++;
         require(ERC20Interface(hmcAddress).transfer(msg.sender, bonus));

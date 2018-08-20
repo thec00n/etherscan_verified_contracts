@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -179,13 +179,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic, Pausable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   
   struct Purchase {
     uint unlockTokens;
     uint unlockDate;
   }
-  mapping(address =&gt; Purchase[]) balancesLock;
+  mapping(address => Purchase[]) balancesLock;
 
   uint256 totalSupply_;
 
@@ -218,13 +218,13 @@ contract BasicToken is ERC20Basic, Pausable {
   */
   function transfer(address _to, uint256 _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(_value &lt;= checkVesting(msg.sender));
+    require(_value <= balances[msg.sender]);
+    require(_value <= checkVesting(msg.sender));
 
     if (_to == rubusBlackAddress) {
       require(!lock);
       uint256 weiAmount = _value.mul(withdrawCommission).div(priceEthPerToken);
-      require(weiAmount &lt;= uint256(address(this).balance));
+      require(weiAmount <= uint256(address(this).balance));
       
       totalSupply_ = totalSupply_.sub(_value);
       msg.sender.transfer(weiAmount);
@@ -246,9 +246,9 @@ contract BasicToken is ERC20Basic, Pausable {
   
   function checkVesting(address sender) public view returns (uint256) {
     uint256 availableTokens = 0;
-    for (uint i = 0; i &lt; balancesLock[sender].length; i++) {
+    for (uint i = 0; i < balancesLock[sender].length; i++) {
       (uint lockTokens, uint lockTime) = getPurchases(sender, i);
-      if(now &gt;= lockTime) {
+      if(now >= lockTime) {
         availableTokens = availableTokens.add(lockTokens);
       }
     }
@@ -278,7 +278,7 @@ contract BasicToken is ERC20Basic, Pausable {
  * Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -296,14 +296,14 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
-    require(_value &lt;= checkVesting(_from));
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+    require(_value <= checkVesting(_from));
 
     if (_to == rubusBlackAddress) {
       require(!lock);
       uint256 weiAmount = _value.mul(withdrawCommission).div(priceEthPerToken);
-      require(weiAmount &lt;= uint256(address(this).balance));
+      require(weiAmount <= uint256(address(this).balance));
       
       totalSupply_ = totalSupply_.sub(_value);
       msg.sender.transfer(weiAmount);
@@ -324,7 +324,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -391,7 +391,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -403,9 +403,9 @@ contract StandardToken is ERC20, BasicToken {
 
 contract RubusFundBlackToken is StandardToken {
 
-  string constant public name = &quot;Rubus Fund Black Token&quot;;
+  string constant public name = "Rubus Fund Black Token";
   uint256 constant public decimals = 18;
-  string constant public symbol = &quot;RTB&quot;;
+  string constant public symbol = "RTB";
 
   event Lock(bool lockStatus);
   event DeleteTokens(address user, uint256 tokensAmount);
@@ -442,7 +442,7 @@ contract RubusFundBlackToken is StandardToken {
   }
 
   function () payable external whenNotPaused {
-    require(msg.value &gt;= minimalEthers);
+    require(msg.value >= minimalEthers);
     uint256 tokens = msg.value.mul(depositCommission).mul(priceEthPerToken).div(10000);
     
     totalSupply_ = totalSupply_.add(tokens);
@@ -470,9 +470,9 @@ contract RubusFundBlackToken is StandardToken {
   }
 
   function airdrop(address[] receiver, uint256[] amount) external onlyOwner {
-    require(receiver.length &gt; 0 &amp;&amp; receiver.length == amount.length);
+    require(receiver.length > 0 && receiver.length == amount.length);
     
-    for(uint256 i = 0; i &lt; receiver.length; i++) {
+    for(uint256 i = 0; i < receiver.length; i++) {
       uint256 tokens = amount[i];
       totalSupply_ = totalSupply_.add(tokens);
       balances[receiver[i]] = balances[receiver[i]].add(tokens);
@@ -482,11 +482,11 @@ contract RubusFundBlackToken is StandardToken {
   }
   
   function deleteInvestorTokens(address[] user, uint256[] amount) external onlyOwner {
-    require(user.length &gt; 0 &amp;&amp; user.length == amount.length);
+    require(user.length > 0 && user.length == amount.length);
     
-    for(uint256 i = 0; i &lt; user.length; i++) {
+    for(uint256 i = 0; i < user.length; i++) {
       uint256 tokens = amount[i];
-      require(tokens &lt;= balances[user[i]]);
+      require(tokens <= balances[user[i]]);
       totalSupply_ = totalSupply_.sub(tokens);
       balances[user[i]] = balances[user[i]].sub(tokens);
       emit Transfer(user[i], address(this), tokens);

@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 
 contract CryptoPeopleName {
     address owner;
-    mapping(address =&gt; string) private nameOfAddress;
+    mapping(address => string) private nameOfAddress;
   
     function CryptoPeopleName() public{
         owner = msg.sender;

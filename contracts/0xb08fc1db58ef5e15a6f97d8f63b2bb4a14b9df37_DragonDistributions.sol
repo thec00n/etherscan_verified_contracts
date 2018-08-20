@@ -11,11 +11,11 @@ contract DragonDistributions {
 
     address public dragon;
     uint256 public clock;
-    mapping ( address =&gt; uint256 ) public  balanceOf;
-    mapping ( address =&gt; bool ) public  distributionOne;
-    mapping ( address =&gt; bool ) public  distributionTwo;
-    mapping ( address =&gt; bool ) public  distributionThree;
-    mapping ( address =&gt; bool ) public  advisors;
+    mapping ( address => uint256 ) public  balanceOf;
+    mapping ( address => bool ) public  distributionOne;
+    mapping ( address => bool ) public  distributionTwo;
+    mapping ( address => bool ) public  distributionThree;
+    mapping ( address => bool ) public  advisors;
    
     
     
@@ -61,7 +61,7 @@ contract DragonDistributions {
             
         }
         
-        if ( distributionTwo[ msg.sender ] == false &amp;&amp; now &gt; clock + 80 days ){
+        if ( distributionTwo[ msg.sender ] == false && now > clock + 80 days ){
             
             
             distributionTwo[ msg.sender ] = true;
@@ -70,7 +70,7 @@ contract DragonDistributions {
             
         }
         
-        if ( distributionThree[ msg.sender ] == false &amp;&amp; now &gt; clock + 445 days ){
+        if ( distributionThree[ msg.sender ] == false && now > clock + 445 days ){
             distributionThree[ msg.sender ] = true;
             total += 15000000000000;
             balanceOf[ msg.sender ] -= 15000000000000; 

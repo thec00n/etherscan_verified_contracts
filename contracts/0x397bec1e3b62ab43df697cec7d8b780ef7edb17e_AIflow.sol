@@ -2,12 +2,12 @@ pragma solidity ^0.4.11;
 
 contract  AIflow {
 
-    string public name = &quot;AI data free to flow&quot;;      //  the AI flow token name
-    string public symbol = &quot;flow&quot;;           //  the AI flow token symbol
+    string public name = "AI data free to flow";      //  the AI flow token name
+    string public symbol = "flow";           //  the AI flow token symbol
     uint256 public decimals = 18;            //  the AI flow Chain token digits
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool public stopped = false;
@@ -38,8 +38,8 @@ contract  AIflow {
     }
 
     function transfer(address _to, uint256 _value) isRunning validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -47,9 +47,9 @@ contract  AIflow {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -77,7 +77,7 @@ contract  AIflow {
     }
 
     function burn(uint256 _value) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         Transfer(msg.sender, 0x0, _value);

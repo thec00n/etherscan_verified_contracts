@@ -28,13 +28,13 @@ address[] public luckyVoters;
 /** The sum of the prizes paid out */
 uint public totalPrize;
 /** to efficiently check if somebody already participated **/
-mapping(address=&gt;bool) public participated;
+mapping(address=>bool) public participated;
 /** to efficiently check if somebody already voted **/
-mapping(address=&gt;bool) public voted;
+mapping(address=>bool) public voted;
 /** number of votes per candidate (think about it, maybe it’s better to count afterwards) **/
-mapping(address=&gt;uint) public numVotes;
+mapping(address=>uint) public numVotes;
 /** disqualified participants**/
-mapping(address =&gt; bool) public disqualified;
+mapping(address => bool) public disqualified;
 /** timestamp of the participation deadline**/
 uint public deadlineParticipation;
 /** timestamp of the voting deadline**/
@@ -72,12 +72,12 @@ nLuckyVoters=4;
 
 
 uint16 sumPrizes = prizeOwner;
-for(uint i = 0; i &lt; prizeWinners.length; i++) {
+for(uint i = 0; i < prizeWinners.length; i++) {
 sumPrizes += prizeWinners[i];
 }
-if(sumPrizes&gt;10000) 
+if(sumPrizes>10000) 
 throw;
-else if(sumPrizes &lt; 10000 &amp;&amp; nLuckyVoters == 0)//make sure everything is paid out
+else if(sumPrizes < 10000 && nLuckyVoters == 0)//make sure everything is paid out
 throw;
 }
 
@@ -85,9 +85,9 @@ throw;
 * adds msg.sender to the list of participants if the deadline was not yet met and the participation fee is paid
 * */
 function participate() payable {
-if(msg.value &lt; participationFee)
+if(msg.value < participationFee)
 throw;
-else if (now &gt;= deadlineParticipation) 
+else if (now >= deadlineParticipation) 
 throw;
 else if (participated[msg.sender])
 throw;
@@ -97,17 +97,17 @@ else {
 participants.push(msg.sender);
 participated[msg.sender]=true;
 //if the winners list is smaller than the prize list, push the candidate
-if(winners.length &lt; prizeWinners.length) winners.push(msg.sender);
+if(winners.length < prizeWinners.length) winners.push(msg.sender);
 } 
 }
 
 /**
-* adds msg.sender to the voter list and updates vote related mappings if msg.value is enough, the vote is done between the deadlines and the voter didn&#39;t vote already
+* adds msg.sender to the voter list and updates vote related mappings if msg.value is enough, the vote is done between the deadlines and the voter didn't vote already
 */
 function vote(address candidate) payable{
-if(msg.value &lt; votingFee) 
+if(msg.value < votingFee) 
 throw;
-else if(now &lt; deadlineParticipation || now &gt;=deadlineVoting)
+else if(now < deadlineParticipation || now >=deadlineVoting)
 throw;
 else if(voted[msg.sender])//voter did already vote
 throw;
@@ -120,12 +120,12 @@ voters.push(msg.sender);
 voted[msg.sender] = true;
 numVotes[candidate]++;
 
-for(var i = 0; i &lt; winners.length; i++){//from the first to the last
+for(var i = 0; i < winners.length; i++){//from the first to the last
 if(winners[i]==candidate) break;//the candidate remains on the same position
-if(numVotes[candidate]&gt;numVotes[winners[i]]){//candidate is better
+if(numVotes[candidate]>numVotes[winners[i]]){//candidate is better
 //else, usually winners[i+1]==candidate, because usually a candidate just improves by one ranking
 //however, if there are multiple candidates with the same amount of votes, it might be otherwise
-for(var j = getCandidatePosition(candidate, i+1); j&gt;i; j--){
+for(var j = getCandidatePosition(candidate, i+1); j>i; j--){
 winners[j]=winners[j-1]; 
 }
 winners[i]=candidate;
@@ -136,7 +136,7 @@ break;
 }
 
 function getCandidatePosition(address candidate, uint startindex) internal returns (uint){
-for(uint i = startindex; i &lt; winners.length; i++){
+for(uint i = startindex; i < winners.length; i++){
 if(winners[i]==candidate) return i;
 }
 return winners.length-1;
@@ -163,9 +163,9 @@ disqualified[candidate]=false;
 * */
 function close(){
 // if voting already ended and the contract has not been closed yet
-if(now&gt;=deadlineVoting&amp;&amp;totalPrize==0){
+if(now>=deadlineVoting&&totalPrize==0){
 determineLuckyVoters();
-if(this.balance&gt;10000) distributePrizes(); //more than 10000 wei so every party gets at least 1 wei (if s.b. gets 0.01%)
+if(this.balance>10000) distributePrizes(); //more than 10000 wei so every party gets at least 1 wei (if s.b. gets 0.01%)
 ContestClosed(totalPrize, winners, luckyVoters);
 }
 }
@@ -174,14 +174,14 @@ ContestClosed(totalPrize, winners, luckyVoters);
 * Determines the winning voters
 * */
 function determineLuckyVoters() constant {
-if(nLuckyVoters&gt;=voters.length)
+if(nLuckyVoters>=voters.length)
 luckyVoters = voters;
 else{
-mapping (uint =&gt; bool) chosen;
+mapping (uint => bool) chosen;
 uint nonce=1;
 
 uint rand;
-for(uint i = 0; i &lt; nLuckyVoters; i++){
+for(uint i = 0; i < nLuckyVoters; i++){
 do{
 rand = randomNumberGen(nonce, voters.length);
 nonce++;
@@ -207,14 +207,14 @@ function distributePrizes() internal{
 
 if(!c4c.send(this.balance/10000*c4cfee)) throw;
 totalPrize = this.balance;
-if(prizeOwner!=0 &amp;&amp; !owner.send(totalPrize/10000*prizeOwner)) throw;
-if(prizeReferee!=0 &amp;&amp; !referee.send(totalPrize/10000*prizeReferee)) throw;
-for (uint8 i = 0; i &lt; winners.length; i++)
-if(prizeWinners[i]!=0 &amp;&amp; !winners[i].send(totalPrize/10000*prizeWinners[i])) throw;
-if (luckyVoters.length&gt;0){//if anybody voted
-if(this.balance&gt;luckyVoters.length){//if there is ether left to be distributed amongst the lucky voters
+if(prizeOwner!=0 && !owner.send(totalPrize/10000*prizeOwner)) throw;
+if(prizeReferee!=0 && !referee.send(totalPrize/10000*prizeReferee)) throw;
+for (uint8 i = 0; i < winners.length; i++)
+if(prizeWinners[i]!=0 && !winners[i].send(totalPrize/10000*prizeWinners[i])) throw;
+if (luckyVoters.length>0){//if anybody voted
+if(this.balance>luckyVoters.length){//if there is ether left to be distributed amongst the lucky voters
 uint amount = this.balance/luckyVoters.length;
-for(uint8 j = 0; j &lt; luckyVoters.length; j++)
+for(uint8 j = 0; j < luckyVoters.length; j++)
 if(!luckyVoters[j].send(amount)) throw;
 }
 }

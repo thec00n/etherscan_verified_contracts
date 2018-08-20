@@ -30,7 +30,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -39,7 +39,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -48,7 +48,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -164,7 +164,7 @@ contract Pausable is Miner {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -174,7 +174,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -191,13 +191,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -224,7 +224,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -272,9 +272,9 @@ contract FBIT is PausableToken  {
     uint8 public  decimals;
 
     function mining() public onlyMiner returns (uint){
-        require(now - lastMiningTime &gt; 6 days);
+        require(now - lastMiningTime > 6 days);
 
-        if (now - lastMineralUpdateTime &gt; 4 years) {
+        if (now - lastMineralUpdateTime > 4 years) {
             mineral = mineral.div(2);
             lastMineralUpdateTime = now;
         }
@@ -288,8 +288,8 @@ contract FBIT is PausableToken  {
     constructor() public {
         lastMineralUpdateTime = now;
         mineral = 520000000 * (10 ** 18);
-        name = &quot;FutureBit Token&quot;;
-        symbol = &quot;FBIT&quot;;
+        name = "FutureBit Token";
+        symbol = "FBIT";
         decimals = 18;
         totalSupply_ = 2100 * (10 ** 8) * (10 ** 18);
     }

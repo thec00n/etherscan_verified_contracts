@@ -7,9 +7,9 @@ library AddressList {
         address head;
         address tail;
         uint    length;
-        mapping(address =&gt; bool)    isContain;
-        mapping(address =&gt; address) nextOf;
-        mapping(address =&gt; address) prevOf;
+        mapping(address => bool)    isContain;
+        mapping(address => address) nextOf;
+        mapping(address => address) prevOf;
     }
 
     function first(Data storage _data) constant returns (address)
@@ -58,7 +58,7 @@ library AddressList {
      * @param _data is list storage ref
      * @param _item is a new list element  
      * @param _to is a item element before new 
-     * @notice gas usage &lt; 100000
+     * @notice gas usage < 100000
      */
     function append(Data storage _data, address _item, address _to) {
         // Unable to contain double element

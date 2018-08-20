@@ -32,14 +32,14 @@ contract owned {
 }
 
 contract TokenERC20 is owned {
-    string public name = &#39;Telex&#39;;
-    string public symbol = &#39;TLX&#39;;
+    string public name = 'Telex';
+    string public symbol = 'TLX';
     uint8 public decimals = 8;
     uint256 public totalSupply = 2000000000000000;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event FrozenFunds(address target, bool frozen);
@@ -49,7 +49,7 @@ contract TokenERC20 is owned {
     }
 
     function _initialTransfers(address _from, address[] addresses, uint[] amounts) internal {
-        for (uint i=0; i&lt;addresses.length; i++) {
+        for (uint i=0; i<addresses.length; i++) {
             address _to = addresses[i];
             uint _value = amounts[i];
             require(_from == owner);
@@ -72,8 +72,8 @@ contract TokenERC20 is owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         require(!frozenAccount[msg.sender]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
@@ -87,7 +87,7 @@ contract TokenERC20 is owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

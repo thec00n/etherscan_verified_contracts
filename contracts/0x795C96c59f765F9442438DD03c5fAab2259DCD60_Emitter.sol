@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.13;
+pragma solidity >=0.4.13;
 
 contract Emitter {
     event Emit(uint x);

@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract Ownable {
 }
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7c3c2d3c2e7c6dfcec8caddc2c989c4c8">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7c3c2d3c2e7c6dfcec8caddc2c989c4c8">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -99,20 +99,20 @@ contract EthPizzeria is ERC721, Ownable {
   event TokenSold(uint256 tokenId, uint256 oldPrice, uint256 newPrice, address prevOwner, address winner, string name);
   event Transfer(address from, address to, uint256 tokenId);
 
-  string public constant NAME = &quot;EthPizzeria&quot;;
-  string public constant SYMBOL = &quot;PizzeriaToken&quot;;
+  string public constant NAME = "EthPizzeria";
+  string public constant SYMBOL = "PizzeriaToken";
 
   uint256 private startingPrice = 0.01 ether;
 
-  mapping (uint256 =&gt; address) public pizzaIdToOwner;
+  mapping (uint256 => address) public pizzaIdToOwner;
 
-  mapping (uint256 =&gt; address) public pizzaIdToDivs;
+  mapping (uint256 => address) public pizzaIdToDivs;
 
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
-  mapping (uint256 =&gt; address) public pizzaIdToApproved;
+  mapping (uint256 => address) public pizzaIdToApproved;
 
-  mapping (uint256 =&gt; uint256) private pizzaIdToPrice;
+  mapping (uint256 => uint256) private pizzaIdToPrice;
 
   /*** DATATYPES ***/
   struct Pizza {
@@ -139,10 +139,10 @@ contract EthPizzeria is ERC721, Ownable {
   function create21PizzasTokens() public onlyContractOwner {
      uint256 totalPizzas = totalSupply();
 	 
-	 require (totalPizzas&lt;1); // only 21 tokens for start
+	 require (totalPizzas<1); // only 21 tokens for start
 	 
-	 for (uint8 i=1; i&lt;=21; i++)
-		_createPizza(&quot;EthPizza&quot;, address(this), startingPrice);
+	 for (uint8 i=1; i<=21; i++)
+		_createPizza("EthPizza", address(this), startingPrice);
 	
   }
   
@@ -175,7 +175,7 @@ contract EthPizzeria is ERC721, Ownable {
 
     require(oldOwner != newOwner);
     require(_addressNotNull(newOwner));
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 97), 100)); //97% to previous owner
     uint256 divs_payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 25), 1000)); //2,5% divs
@@ -199,7 +199,7 @@ contract EthPizzeria is ERC721, Ownable {
 
     TokenSold(_tokenId, sellingPrice, pizzaIdToPrice[_tokenId], oldOwner, newOwner, pizzas[_tokenId].name);
 	
-    if (msg.value &gt; sellingPrice) { //if excess pay
+    if (msg.value > sellingPrice) { //if excess pay
 	    uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 		msg.sender.transfer(purchaseExcess);
 	}
@@ -207,13 +207,13 @@ contract EthPizzeria is ERC721, Ownable {
   
   function changePizza(uint256 _tokenId) public payable { //
 
-    require(pizzaIdToOwner[_tokenId] == msg.sender &amp;&amp; msg.value == 10 finney); //tax 0.01eth for change
+    require(pizzaIdToOwner[_tokenId] == msg.sender && msg.value == 10 finney); //tax 0.01eth for change
 	
 	uint256 newPrice =  SafeMath.div(pizzaIdToPrice[_tokenId], 2);
     
     //get two pizzas within one
-	createPizzaToken(&quot;EthPizza&quot;, newPrice);
-	createPizzaToken(&quot;EthPizza&quot;, newPrice);
+	createPizzaToken("EthPizza", newPrice);
+	createPizzaToken("EthPizza", newPrice);
 	
 	pizzaIdToOwner[_tokenId] = address(this); //return changed pizza to pizzeria
 	pizzaIdToPrice[_tokenId] = 10 finney;
@@ -244,13 +244,13 @@ contract EthPizzeria is ERC721, Ownable {
 	
 	uint256 totalPizzas = totalSupply();
 	
-    if (totalPizzas == 0 || _startPizzaId &gt;= totalPizzas) {
+    if (totalPizzas == 0 || _startPizzaId >= totalPizzas) {
         // Return an empty array
       return (new address[](0),new address[](0),new uint256[](0));
     }
 	
 	uint256 indexTo;
-	if (totalPizzas &gt; _startPizzaId+1000)
+	if (totalPizzas > _startPizzaId+1000)
 		indexTo = _startPizzaId + 1000;
 	else 	
 		indexTo = totalPizzas;
@@ -261,7 +261,7 @@ contract EthPizzeria is ERC721, Ownable {
 	address[] memory divs_res = new address[](totalResultPizzas);
 	uint256[] memory prices_res = new uint256[](totalResultPizzas);
 	
-	for (uint256 pizzaId = _startPizzaId; pizzaId &lt; indexTo; pizzaId++) {
+	for (uint256 pizzaId = _startPizzaId; pizzaId < indexTo; pizzaId++) {
 	  owners_res[pizzaId - _startPizzaId] = pizzaIdToOwner[pizzaId];
 	  divs_res[pizzaId - _startPizzaId] = pizzaIdToDivs[pizzaId];
 	  prices_res[pizzaId - _startPizzaId] = pizzaIdToPrice[pizzaId];
@@ -282,7 +282,7 @@ contract EthPizzeria is ERC721, Ownable {
       uint256 resultIndex = 0;
 
       uint256 pizzaId;
-      for (pizzaId = 0; pizzaId &lt;= totalPizzas; pizzaId++) {
+      for (pizzaId = 0; pizzaId <= totalPizzas; pizzaId++) {
         if (pizzaIdToOwner[pizzaId] == _owner) {
           result[resultIndex] = pizzaId;
           resultIndex++;
@@ -345,7 +345,7 @@ function _transfer(address _from, address _to, uint256 _tokenId) private {
     ownershipTokenCount[_to]++;
     pizzaIdToOwner[_tokenId] = _to;
 
-    // When creating new pizzas _from is 0x0, but we can&#39;t account that address.
+    // When creating new pizzas _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange

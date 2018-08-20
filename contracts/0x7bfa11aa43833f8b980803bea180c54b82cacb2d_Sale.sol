@@ -42,8 +42,8 @@ contract Sale {
     bool private configSet;
     address public creator;
 
-    mapping (address =&gt; uint256) public heldTokens;
-    mapping (address =&gt; uint) public heldTimeline;
+    mapping (address => uint256) public heldTokens;
+    mapping (address => uint) public heldTimeline;
 
     event Contribution(address from, uint256 amount);
     event ReleaseTokens(address from, uint256 amount);
@@ -73,12 +73,12 @@ contract Sale {
     }
 
     function () payable public {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(isFunding);
-        require(block.number &lt;= endBlock);
+        require(block.number <= endBlock);
         uint256 amount = msg.value * exchangeRate;
         uint256 total = totalMinted + amount;
-        require(total&lt;=maxMintable);
+        require(total<=maxMintable);
         totalMinted += total;
         ETHWallet.transfer(msg.value);
         Token.mintToken(msg.sender, amount);
@@ -88,12 +88,12 @@ contract Sale {
     // CONTRIBUTE FUNCTION
     // converts ETH to TOKEN and sends new TOKEN to the sender
     function contribute() external payable {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         require(isFunding);
-        require(block.number &lt;= endBlock);
+        require(block.number <= endBlock);
         uint256 amount = msg.value * exchangeRate;
         uint256 total = totalMinted + amount;
-        require(total&lt;=maxMintable);
+        require(total<=maxMintable);
         totalMinted += total;
         ETHWallet.transfer(msg.value);
         Token.mintToken(msg.sender, amount);
@@ -138,8 +138,8 @@ contract Sale {
         uint256 held = heldTokens[msg.sender];
         uint heldBlock = heldTimeline[msg.sender];
         require(!isFunding);
-        require(held &gt;= 0);
-        require(block.number &gt;= heldBlock);
+        require(held >= 0);
+        require(block.number >= heldBlock);
         heldTokens[msg.sender] = 0;
         heldTimeline[msg.sender] = 0;
         Token.mintToken(msg.sender, held);

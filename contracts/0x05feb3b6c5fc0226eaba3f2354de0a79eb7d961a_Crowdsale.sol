@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ contract Crowdsale {
 
   token tokenReward;
 
-  // mapping (address =&gt; uint) public contributions;
+  // mapping (address => uint) public contributions;
   
 
 
@@ -148,28 +148,28 @@ contract Crowdsale {
 
     uint256 weiAmount = msg.value;
 
-    if(weiAmount &lt; 10**17) throw;
+    if(weiAmount < 10**17) throw;
 
     // calculate token amount to be sent
     uint256 tokens;
 
-    if (tokensSoldGoal&gt;0&amp;&amp;tokensSold&lt;tokensSoldGoal*10**18)
+    if (tokensSoldGoal>0&&tokensSold<tokensSoldGoal*10**18)
       tokens = (weiAmount) * priceBeforeGoalReached; 
     else tokens = (weiAmount) * price;
     
     if(minBuy!=0){
-      if(tokens &lt; minBuy*10**18) throw;
+      if(tokens < minBuy*10**18) throw;
     }
 
     if(maxBuy!=0){
-      if(tokens &gt; maxBuy*10**18) throw;
+      if(tokens > maxBuy*10**18) throw;
     }
 
     // update state
     weiRaised = weiRaised.add(weiAmount);
     tokensSold = tokensSold.add(tokens);
     
-    // if(contributions[msg.sender].add(weiAmount)&gt;10*10**18) throw;
+    // if(contributions[msg.sender].add(weiAmount)>10*10**18) throw;
     // contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
 
     tokenReward.transfer(beneficiary, tokens);
@@ -188,9 +188,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = started&amp;&amp;(now&gt;=startTime);
+    bool withinPeriod = started&&(now>=startTime);
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function withdrawTokens(uint256 _amount) {

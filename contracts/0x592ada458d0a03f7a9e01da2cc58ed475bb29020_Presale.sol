@@ -13,7 +13,7 @@ contract Presale {
     uint public startTime;                          // StartTime for the presale
     token public tokenReward;                       // The token contract it refers too
     
-    mapping(address =&gt; uint256) public balanceOf;   // Mapping of all balances in this contract
+    mapping(address => uint256) public balanceOf;   // Mapping of all balances in this contract
     event FundTransfer(address backer, uint amount, bool isContribution);   // Event of fund transfer to show each transaction
     /**
      * Constrctor function
@@ -43,9 +43,9 @@ contract Presale {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () payable public {
-        require(startTime &lt;= now);
-        require(amountRaised &lt; fundingLimit);
-        require(msg.value &gt;= minFinnRequired);
+        require(startTime <= now);
+        require(amountRaised < fundingLimit);
+        require(msg.value >= minFinnRequired);
         
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
@@ -61,10 +61,10 @@ contract Presale {
      * the amount they contributed.
      */
     function withdrawFundBeneficiary() public {
-        require(now &gt;= deadline);
+        require(now >= deadline);
         require(beneficiary == msg.sender);
         uint remaining = tokenReward.getBalanceOf(this);
-        if(remaining &gt; 0) {
+        if(remaining > 0) {
             tokenReward.transfer(beneficiary, remaining);
         }
         if (beneficiary.send(amountRaised)) {

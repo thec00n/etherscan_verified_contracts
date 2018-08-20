@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -65,16 +65,16 @@ contract Distributor is Owned {
 
     ERC20 public token;
     uint256 public eligibleTokens;
-    mapping(address =&gt; uint256) public distributed;
+    mapping(address => uint256) public distributed;
     uint256 public totalDistributionAmountInWei;
 
     event Dividend(address holder, uint256 amountDistributed);
 
     function Distributor(address _targetToken, uint256 _eligibleTokens) public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         token = ERC20(_targetToken);
-        assert(_eligibleTokens &lt;= token.totalSupply());
+        assert(_eligibleTokens <= token.totalSupply());
         eligibleTokens = _eligibleTokens;
         totalDistributionAmountInWei = msg.value;
     }

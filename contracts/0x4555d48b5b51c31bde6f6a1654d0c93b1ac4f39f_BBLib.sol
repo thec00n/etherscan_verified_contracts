@@ -114,17 +114,17 @@ library BBLib {
     struct DB {
         // Maps to store ballots, along with corresponding log of voters.
         // Should only be modified through internal functions
-        mapping (uint256 =&gt; Vote) votes;
+        mapping (uint256 => Vote) votes;
         uint256 nVotesCast;
 
         // we need replay protection for proxy ballots - this will let us check against a sequence number
         // note: votes directly from a user ALWAYS take priority b/c they do not have sequence numbers
         // (sequencing is done by Ethereum itself via the tx nonce).
-        mapping (address =&gt; uint32) sequenceNumber;
+        mapping (address => uint32) sequenceNumber;
 
-        // NOTE - We don&#39;t actually want to include the encryption PublicKey because _it&#39;s included in the ballotSpec_.
-        // It&#39;s better to ensure ppl actually have the ballot spec by not including it in the contract.
-        // Plus we&#39;re already storing the hash of the ballotSpec anyway...
+        // NOTE - We don't actually want to include the encryption PublicKey because _it's included in the ballotSpec_.
+        // It's better to ensure ppl actually have the ballot spec by not including it in the contract.
+        // Plus we're already storing the hash of the ballotSpec anyway...
 
         // Private key to be set after ballot conclusion - curve25519
         bytes32 ballotEncryptionSeckey;
@@ -139,11 +139,11 @@ library BBLib {
         // extradata if we need it - allows us to upgrade spechash format, etc
         bytes16 extraData;
 
-        // allow tracking of sponsorship for this ballot &amp; connection to index
+        // allow tracking of sponsorship for this ballot & connection to index
         Sponsor[] sponsors;
         IxIface index;
 
-        // deprecation flag - doesn&#39;t actually do anything besides signal that this contract is deprecated;
+        // deprecation flag - doesn't actually do anything besides signal that this contract is deprecated;
         bool deprecated;
 
         address ballotOwner;
@@ -153,7 +153,7 @@ library BBLib {
 
     // ** Modifiers -- note, these are functions here to allow use as a lib
     function requireBallotClosed(DB storage db) internal view {
-        require(now &gt; BPackedUtils.packedToEndTime(db.packed), &quot;!b-closed&quot;);
+        require(now > BPackedUtils.packedToEndTime(db.packed), "!b-closed");
     }
 
     function requireBallotOpen(DB storage db) internal view {
@@ -161,30 +161,30 @@ library BBLib {
         uint64 startTs;
         uint64 endTs;
         (, startTs, endTs) = BPackedUtils.unpackAll(db.packed);
-        require(_n &gt;= startTs &amp;&amp; _n &lt; endTs, &quot;!b-open&quot;);
-        require(db.deprecated == false, &quot;b-deprecated&quot;);
+        require(_n >= startTs && _n < endTs, "!b-open");
+        require(db.deprecated == false, "b-deprecated");
     }
 
     function requireBallotOwner(DB storage db) internal view {
-        require(msg.sender == db.ballotOwner, &quot;!b-owner&quot;);
+        require(msg.sender == db.ballotOwner, "!b-owner");
     }
 
     function requireTesting(DB storage db) internal view {
-        require(isTesting(BPackedUtils.packedToSubmissionBits(db.packed)), &quot;!testing&quot;);
+        require(isTesting(BPackedUtils.packedToSubmissionBits(db.packed)), "!testing");
     }
 
     /* Library meta */
 
     function getVersion() external view returns (uint) {
-        // even though this is constant we want to make sure that it&#39;s actually
-        // callable on Ethereum so we don&#39;t accidentally package the constant code
+        // even though this is constant we want to make sure that it's actually
+        // callable on Ethereum so we don't accidentally package the constant code
         // in with an SC using BBLib. This function _must_ be external.
         return BB_VERSION;
     }
 
     /* Functions */
 
-    // &quot;Constructor&quot; function - init core params on deploy
+    // "Constructor" function - init core params on deploy
     // timestampts are uint64s to give us plenty of room for millennia
     function init(DB storage db, bytes32 _specHash, uint256 _packed, IxIface ix, address ballotOwner, bytes16 extraData) external {
         db.index = ix;
@@ -199,24 +199,24 @@ library BBLib {
         if (_testing) {
             emit TestingEnabled();
         } else {
-            require(endTs &gt; now, &quot;bad-end-time&quot;);
+            require(endTs > now, "bad-end-time");
 
             // 0x1ff2 is 0001111111110010 in binary
             // by ANDing with subBits we make sure that only bits in positions 0,2,3,13,14,15
             // can be used. these correspond to the option flags at the top, and ETH ballots
-            // that are enc&#39;d or plaintext.
-            require(sb &amp; 0x1ff2 == 0, &quot;bad-sb&quot;);
+            // that are enc'd or plaintext.
+            require(sb & 0x1ff2 == 0, "bad-sb");
 
             // if we give bad submission bits (e.g. all 0s) then refuse to deploy ballot
             bool okaySubmissionBits = 1 == (isEthNoEnc(sb) ? 1 : 0) + (isEthWithEnc(sb) ? 1 : 0);
-            require(okaySubmissionBits, &quot;!valid-sb&quot;);
+            require(okaySubmissionBits, "!valid-sb");
 
             // take the max of the start time provided and the blocks timestamp to avoid a DoS against recent token holders
             // (which someone might be able to do if they could set the timestamp in the past)
-            startTs = startTs &gt; now ? startTs : uint64(now);
+            startTs = startTs > now ? startTs : uint64(now);
         }
-        require(db.specHash == bytes32(0), &quot;b-exists&quot;);
-        require(_specHash != bytes32(0), &quot;null-specHash&quot;);
+        require(db.specHash == bytes32(0), "b-exists");
+        require(_specHash != bytes32(0), "null-specHash");
         db.specHash = _specHash;
 
         db.packed = BPackedUtils.pack(sb, startTs, endTs);
@@ -238,7 +238,7 @@ library BBLib {
     /* getters */
 
     function getVote(DB storage db, uint id) internal view returns (bytes32 voteData, address sender, bytes extra, uint castTs) {
-        return (db.votes[id].voteData, address(db.votes[id].castTsAndSender), db.votes[id].extra, uint(db.votes[id].castTsAndSender) &gt;&gt; 160);
+        return (db.votes[id].voteData, address(db.votes[id].castTsAndSender), db.votes[id].extra, uint(db.votes[id].castTsAndSender) >> 160);
     }
 
     function getSequenceNumber(DB storage db, address voter) internal view returns (uint32) {
@@ -246,7 +246,7 @@ library BBLib {
     }
 
     function getTotalSponsorship(DB storage db) internal view returns (uint total) {
-        for (uint i = 0; i &lt; db.sponsors.length; i++) {
+        for (uint i = 0; i < db.sponsors.length; i++) {
             total += db.sponsors[i].amount;
         }
     }
@@ -268,12 +268,12 @@ library BBLib {
         // after a voter submits a transaction personally - effectivley disables proxy
         // ballots. You can _always_ submit a new vote _personally_ with this scheme.
         if (db.sequenceNumber[msg.sender] != MAX_UINT32) {
-            // using an IF statement here let&#39;s us save 4800 gas on repeat votes at the cost of 20k extra gas initially
+            // using an IF statement here let's us save 4800 gas on repeat votes at the cost of 20k extra gas initially
             db.sequenceNumber[msg.sender] = MAX_UINT32;
         }
     }
 
-    // Boundaries for constructing the msg we&#39;ll validate the signature of
+    // Boundaries for constructing the msg we'll validate the signature of
     function submitProxyVote(DB storage db, bytes32[5] proxyReq, bytes extra) external {
         // a proxy vote (where the vote is submitted (i.e. tx fee paid by someone else)
         // docs for datastructs: https://github.com/secure-vote/tokenvote/blob/master/Docs/DataStructs.md
@@ -294,8 +294,8 @@ library BBLib {
         address voter = ecrecover(msgHash, v, r, s);
 
         // we need to make sure that this is the most recent vote the voter made, and that it has
-        // not been seen before. NOTE: we&#39;ve already validated the BBFarm namespace before this, so
-        // we know it&#39;s meant for _this_ ballot.
+        // not been seen before. NOTE: we've already validated the BBFarm namespace before this, so
+        // we know it's meant for _this_ ballot.
         uint32 sequence = uint32(proxyReq2);  // last 4 bytes of proxyReq2 - the sequence number
         _proxyReplayProtection(db, voter, sequence);
 
@@ -308,8 +308,8 @@ library BBLib {
         id = db.nVotesCast;
         db.votes[id].voteData = voteData;
         // pack the casting ts right next to the sender
-        db.votes[id].castTsAndSender = bytes32(sender) ^ bytes32(now &lt;&lt; 160);
-        if (extra.length &gt; 0) {
+        db.votes[id].castTsAndSender = bytes32(sender) ^ bytes32(now << 160);
+        if (extra.length > 0) {
             db.votes[id].extra = extra;
         }
         db.nVotesCast += 1;
@@ -320,7 +320,7 @@ library BBLib {
         // we want the replay protection sequence number to be STRICTLY MORE than what
         // is stored in the mapping. This means we can set sequence to MAX_UINT32 to disable
         // any future votes.
-        require(db.sequenceNumber[voter] &lt; sequence, &quot;bad-sequence-n&quot;);
+        require(db.sequenceNumber[voter] < sequence, "bad-sequence-n");
         db.sequenceNumber[voter] = sequence;
     }
 
@@ -340,7 +340,7 @@ library BBLib {
 
     /* Submission Bits (Ballot Classifications) */
 
-    // do (bits &amp; SETTINGS_MASK) to get just operational bits (as opposed to testing or official flag)
+    // do (bits & SETTINGS_MASK) to get just operational bits (as opposed to testing or official flag)
     uint16 constant SETTINGS_MASK = 0xFFFF ^ USE_TESTING ^ IS_OFFICIAL ^ IS_BINDING;
 
     function isEthNoEnc(uint16 submissionBits) pure internal returns (bool) {
@@ -352,27 +352,27 @@ library BBLib {
     }
 
     function isOfficial(uint16 submissionBits) pure internal returns (bool) {
-        return (submissionBits &amp; IS_OFFICIAL) == IS_OFFICIAL;
+        return (submissionBits & IS_OFFICIAL) == IS_OFFICIAL;
     }
 
     function isBinding(uint16 submissionBits) pure internal returns (bool) {
-        return (submissionBits &amp; IS_BINDING) == IS_BINDING;
+        return (submissionBits & IS_BINDING) == IS_BINDING;
     }
 
     function isTesting(uint16 submissionBits) pure internal returns (bool) {
-        return (submissionBits &amp; USE_TESTING) == USE_TESTING;
+        return (submissionBits & USE_TESTING) == USE_TESTING;
     }
 
     function qualifiesAsCommunityBallot(uint16 submissionBits) pure internal returns (bool) {
         // if submissionBits AND any of the bits that make this _not_ a community
         // ballot is equal to zero that means none of those bits were active, so
         // it could be a community ballot
-        return (submissionBits &amp; (IS_BINDING | IS_OFFICIAL | USE_ENC)) == 0;
+        return (submissionBits & (IS_BINDING | IS_OFFICIAL | USE_ENC)) == 0;
     }
 
     function checkFlags(uint16 submissionBits, uint16 expected) pure internal returns (bool) {
         // this should ignore ONLY the testing/flag bits - all other bits are significant
-        uint16 sBitsNoSettings = submissionBits &amp; SETTINGS_MASK;
+        uint16 sBitsNoSettings = submissionBits & SETTINGS_MASK;
         // then we want ONLY expected
         return sBitsNoSettings == expected;
     }
@@ -386,11 +386,11 @@ library BPackedUtils {
     uint256 constant endTimeMask   = 0xffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000;
 
     function packedToSubmissionBits(uint256 packed) internal pure returns (uint16) {
-        return uint16(packed &gt;&gt; 128);
+        return uint16(packed >> 128);
     }
 
     function packedToStartTime(uint256 packed) internal pure returns (uint64) {
-        return uint64(packed &gt;&gt; 64);
+        return uint64(packed >> 64);
     }
 
     function packedToEndTime(uint256 packed) internal pure returns (uint64) {
@@ -398,25 +398,25 @@ library BPackedUtils {
     }
 
     function unpackAll(uint256 packed) internal pure returns (uint16 submissionBits, uint64 startTime, uint64 endTime) {
-        submissionBits = uint16(packed &gt;&gt; 128);
-        startTime = uint64(packed &gt;&gt; 64);
+        submissionBits = uint16(packed >> 128);
+        startTime = uint64(packed >> 64);
         endTime = uint64(packed);
     }
 
     function pack(uint16 sb, uint64 st, uint64 et) internal pure returns (uint256 packed) {
-        return uint256(sb) &lt;&lt; 128 | uint256(st) &lt;&lt; 64 | uint256(et);
+        return uint256(sb) << 128 | uint256(st) << 64 | uint256(et);
     }
 
     function setSB(uint256 packed, uint16 newSB) internal pure returns (uint256) {
-        return (packed &amp; sbMask) | uint256(newSB) &lt;&lt; 128;
+        return (packed & sbMask) | uint256(newSB) << 128;
     }
 
     // function setStartTime(uint256 packed, uint64 startTime) internal pure returns (uint256) {
-    //     return (packed &amp; startTimeMask) | uint256(startTime) &lt;&lt; 64;
+    //     return (packed & startTimeMask) | uint256(startTime) << 64;
     // }
 
     // function setEndTime(uint256 packed, uint64 endTime) internal pure returns (uint256) {
-    //     return (packed &amp; endTimeMask) | uint256(endTime);
+    //     return (packed & endTimeMask) | uint256(endTime);
     // }
 }
 
@@ -634,18 +634,18 @@ contract safeSend {
     bool private txMutex3847834;
 
     // we want to be able to call outside contracts (e.g. the admin proxy contract)
-    // but reentrency is bad, so here&#39;s a mutex.
+    // but reentrency is bad, so here's a mutex.
     function doSafeSend(address toAddr, uint amount) internal {
-        doSafeSendWData(toAddr, &quot;&quot;, amount);
+        doSafeSendWData(toAddr, "", amount);
     }
 
     function doSafeSendWData(address toAddr, bytes data, uint amount) internal {
-        require(txMutex3847834 == false, &quot;ss-guard&quot;);
+        require(txMutex3847834 == false, "ss-guard");
         txMutex3847834 = true;
         // we need to use address.call.value(v)() because we want
         // to be able to send to other contracts, even with no data,
         // which might use more than 2300 gas in their fallback function.
-        require(toAddr.call.value(amount)(data), &quot;ss-failed&quot;);
+        require(toAddr.call.value(amount)(data), "ss-failed");
         txMutex3847834 = false;
     }
 }
@@ -668,7 +668,7 @@ contract owned {
     event OwnerChanged(address newOwner);
 
     modifier only_owner() {
-        require(msg.sender == owner, &quot;only_owner: forbidden&quot;);
+        require(msg.sender == owner, "only_owner: forbidden");
         _;
     }
 
@@ -683,7 +683,7 @@ contract owned {
 }
 
 contract hasAdmins is owned {
-    mapping (uint =&gt; mapping (address =&gt; bool)) admins;
+    mapping (uint => mapping (address => bool)) admins;
     uint public currAdminEpoch = 0;
     bool public adminsDisabledForever = false;
     address[] adminLog;
@@ -694,8 +694,8 @@ contract hasAdmins is owned {
     event AdminDisabledForever();
 
     modifier only_admin() {
-        require(adminsDisabledForever == false, &quot;admins must not be disabled&quot;);
-        require(isAdmin(msg.sender), &quot;only_admin: forbidden&quot;);
+        require(adminsDisabledForever == false, "admins must not be disabled");
+        require(isAdmin(msg.sender), "only_admin: forbidden");
         _;
     }
 
@@ -717,13 +717,13 @@ contract hasAdmins is owned {
 
     function upgradeMeAdmin(address newAdmin) only_admin() external {
         // note: already checked msg.sender has admin with `only_admin` modifier
-        require(msg.sender != owner, &quot;owner cannot upgrade self&quot;);
+        require(msg.sender != owner, "owner cannot upgrade self");
         _setAdmin(msg.sender, false);
         _setAdmin(newAdmin, true);
     }
 
     function setAdmin(address a, bool _givePerms) only_admin() external {
-        require(a != msg.sender &amp;&amp; a != owner, &quot;cannot change your own (or owner&#39;s) permissions&quot;);
+        require(a != msg.sender && a != owner, "cannot change your own (or owner's) permissions");
         _setAdmin(a, _givePerms);
     }
 
@@ -754,7 +754,7 @@ contract hasAdmins is owned {
 }
 
 contract permissioned is owned, hasAdmins {
-    mapping (address =&gt; bool) editAllowed;
+    mapping (address => bool) editAllowed;
     bool public adminLockdown = false;
 
     event PermissionError(address editAddr);
@@ -765,12 +765,12 @@ contract permissioned is owned, hasAdmins {
     event AdminLockdown();
 
     modifier only_editors() {
-        require(editAllowed[msg.sender], &quot;only_editors: forbidden&quot;);
+        require(editAllowed[msg.sender], "only_editors: forbidden");
         _;
     }
 
     modifier no_lockdown() {
-        require(adminLockdown == false, &quot;no_lockdown: check failed&quot;);
+        require(adminLockdown == false, "no_lockdown: check failed");
         _;
     }
 
@@ -815,7 +815,7 @@ contract upgradePtr {
     address ptr = address(0);
 
     modifier not_upgraded() {
-        require(ptr == address(0), &quot;upgrade pointer is non-zero&quot;);
+        require(ptr == address(0), "upgrade pointer is non-zero");
         _;
     }
 
@@ -931,7 +931,7 @@ library BytesLib {
     function concatStorage(bytes storage _preBytes, bytes memory _postBytes) internal {
         assembly {
             // Read the first 32 bytes of _preBytes storage, which is the length
-            // of the array. (We don&#39;t need to use the offset into the slot
+            // of the array. (We don't need to use the offset into the slot
             // because arrays use the entire slot.)
             let fslot := sload(_preBytes_slot)
             // Arrays of 31 bytes or less have an even value in their slot,
@@ -945,7 +945,7 @@ library BytesLib {
             let mlength := mload(_postBytes)
             let newlength := add(slength, mlength)
             // slength can contain both the length and contents of the array
-            // if length &lt; 32 bytes so let&#39;s prepare for that
+            // if length < 32 bytes so let's prepare for that
             // v. http://solidity.readthedocs.io/en/latest/miscellaneous.html#layout-of-state-variables-in-storage
             switch add(lt(slength, 32), lt(newlength, 32))
             case 2 {
@@ -1066,7 +1066,7 @@ library BytesLib {
     }
 
     function slice(bytes _bytes, uint _start, uint _length) internal  pure returns (bytes) {
-        require(_bytes.length &gt;= (_start + _length));
+        require(_bytes.length >= (_start + _length));
 
         bytes memory tempBytes;
 
@@ -1081,15 +1081,15 @@ library BytesLib {
                 // word read from the original array. To read it, we calculate
                 // the length of that partial word and start copying that many
                 // bytes into the array. The first word we copy will start with
-                // data we don&#39;t care about, but the last `lengthmod` bytes will
+                // data we don't care about, but the last `lengthmod` bytes will
                 // land at the beginning of the contents of the new array. When
-                // we&#39;re done copying, we overwrite the full first word with
+                // we're done copying, we overwrite the full first word with
                 // the actual length of the slice.
                 let lengthmod := and(_length, 31)
 
                 // The multiplication in the next line is necessary
                 // because when slicing multiples of 32 bytes (lengthmod == 0)
-                // the following copy loop was copying the origin&#39;s length
+                // the following copy loop was copying the origin's length
                 // and then ending prematurely not copying everything it should.
                 let mc := add(add(tempBytes, lengthmod), mul(0x20, iszero(lengthmod)))
                 let end := add(mc, _length)
@@ -1111,7 +1111,7 @@ library BytesLib {
                 //allocating the array padded to 32 bytes like the compiler does now
                 mstore(0x40, and(add(mc, 31), not(31)))
             }
-            //if we want a zero-length slice let&#39;s just return a zero-length array
+            //if we want a zero-length slice let's just return a zero-length array
             default {
                 tempBytes := mload(0x40)
 
@@ -1123,7 +1123,7 @@ library BytesLib {
     }
 
     function toAddress(bytes _bytes, uint _start) internal  pure returns (address) {
-        require(_bytes.length &gt;= (_start + 20));
+        require(_bytes.length >= (_start + 20));
         address tempAddress;
 
         assembly {
@@ -1134,7 +1134,7 @@ library BytesLib {
     }
 
     function toUint(bytes _bytes, uint _start) internal  pure returns (uint256) {
-        require(_bytes.length &gt;= (_start + 32));
+        require(_bytes.length >= (_start + 32));
         uint256 tempUint;
 
         assembly {
@@ -1150,12 +1150,12 @@ library BytesLib {
         assembly {
             let length := mload(_preBytes)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(length, mload(_postBytes))
             case 1 {
-                // cb is a circuit breaker in the for loop since there&#39;s
+                // cb is a circuit breaker in the for loop since there's
                 //  no said feature for inline assembly loops
-                // cb = 1 - don&#39;t breaker
+                // cb = 1 - don't breaker
                 // cb = 0 - break
                 let cb := 1
 
@@ -1165,7 +1165,7 @@ library BytesLib {
                 for {
                     let cc := add(_postBytes, 0x20)
                 // the next line is the loop condition:
-                // while(uint(mc &lt; end) + cb == 2)
+                // while(uint(mc < end) + cb == 2)
                 } eq(add(lt(mc, end), cb), 2) {
                     mc := add(mc, 0x20)
                     cc := add(cc, 0x20)
@@ -1197,11 +1197,11 @@ library BytesLib {
             let slength := div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
             let mlength := mload(_postBytes)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(slength, mlength)
             case 1 {
                 // slength can contain both the length and contents of the array
-                // if length &lt; 32 bytes so let&#39;s prepare for that
+                // if length < 32 bytes so let's prepare for that
                 // v. http://solidity.readthedocs.io/en/latest/miscellaneous.html#layout-of-state-variables-in-storage
                 if iszero(iszero(slength)) {
                     switch lt(slength, 32)
@@ -1215,9 +1215,9 @@ library BytesLib {
                         }
                     }
                     default {
-                        // cb is a circuit breaker in the for loop since there&#39;s
+                        // cb is a circuit breaker in the for loop since there's
                         //  no said feature for inline assembly loops
-                        // cb = 1 - don&#39;t breaker
+                        // cb = 1 - don't breaker
                         // cb = 0 - break
                         let cb := 1
 
@@ -1229,7 +1229,7 @@ library BytesLib {
                         let end := add(mc, mlength)
 
                         // the next line is the loop condition:
-                        // while(uint(mc &lt; end) + cb == 2)
+                        // while(uint(mc < end) + cb == 2)
                         for {} eq(add(lt(mc, end), cb), 2) {
                             sc := add(sc, 1)
                             mc := add(mc, 0x20)
@@ -1260,7 +1260,7 @@ library MemArrApp {
     function appendUint256(uint256[] memory arr, uint256 val) internal pure returns (uint256[] memory toRet) {
         toRet = new uint256[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1270,7 +1270,7 @@ library MemArrApp {
     function appendUint128(uint128[] memory arr, uint128 val) internal pure returns (uint128[] memory toRet) {
         toRet = new uint128[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1280,7 +1280,7 @@ library MemArrApp {
     function appendUint64(uint64[] memory arr, uint64 val) internal pure returns (uint64[] memory toRet) {
         toRet = new uint64[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1290,7 +1290,7 @@ library MemArrApp {
     function appendUint32(uint32[] memory arr, uint32 val) internal pure returns (uint32[] memory toRet) {
         toRet = new uint32[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1300,7 +1300,7 @@ library MemArrApp {
     function appendUint16(uint16[] memory arr, uint16 val) internal pure returns (uint16[] memory toRet) {
         toRet = new uint16[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1310,7 +1310,7 @@ library MemArrApp {
     function appendBool(bool[] memory arr, bool val) internal pure returns (bool[] memory toRet) {
         toRet = new bool[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1320,7 +1320,7 @@ library MemArrApp {
     function appendBytes32(bytes32[] memory arr, bytes32 val) internal pure returns (bytes32[] memory toRet) {
         toRet = new bytes32[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1330,7 +1330,7 @@ library MemArrApp {
     function appendBytes32Pair(bytes32[2][] memory arr, bytes32[2] val) internal pure returns (bytes32[2][] memory toRet) {
         toRet = new bytes32[2][](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1340,7 +1340,7 @@ library MemArrApp {
     function appendBytes(bytes[] memory arr, bytes val) internal pure returns (bytes[] memory toRet) {
         toRet = new bytes[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 
@@ -1350,7 +1350,7 @@ library MemArrApp {
     function appendAddress(address[] memory arr, address val) internal pure returns (address[] memory toRet) {
         toRet = new address[](arr.length + 1);
 
-        for (uint256 i = 0; i &lt; arr.length; i++) {
+        for (uint256 i = 0; i < arr.length; i++) {
             toRet[i] = arr[i];
         }
 

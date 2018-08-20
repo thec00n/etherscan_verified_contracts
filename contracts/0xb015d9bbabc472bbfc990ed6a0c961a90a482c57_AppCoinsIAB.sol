@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 contract AppCoins {
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     function balanceOf (address _owner) public constant returns (uint256);
     function transferFrom(address _from, address _to, uint256 _value) public returns (uint);
 }
@@ -31,7 +31,7 @@ contract AppCoinsIAB is AppCoinsIABInterface {
 
         AppCoins appc = AppCoins(_addr_appc);
         uint256 aux = appc.allowance(msg.sender, address(this));
-        require(aux &gt;= _amount);
+        require(aux >= _amount);
 
         uint[] memory amounts = new uint[](3);
         amounts[0] = division(_amount * dev_share, 100);

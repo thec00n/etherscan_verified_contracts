@@ -18,21 +18,21 @@ contract owned {
 }
 
 contract token {
-    string public standard = &#39;https://www.tntoo.com&#39;;
-    string public name = &#39;Transaction Network&#39;;
-    string public symbol = &#39;TNTOO&#39;;
+    string public standard = 'https://www.tntoo.com';
+    string public name = 'Transaction Network';
+    string public symbol = 'TNTOO';
     uint8 public decimals = 18;
     uint public totalSupply = 0;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint value);
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -45,7 +45,7 @@ contract token {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);  
+        require(_value <= allowance[_from][msg.sender]);  
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -74,11 +74,11 @@ contract TNTOO is owned, token {
         address seller;
     }
 
-    mapping (bytes32 =&gt; Good) public goods;
+    mapping (bytes32 => Good) public goods;
     // withdraw quota
-    mapping (address =&gt; uint) public quotaOf; 
+    mapping (address => uint) public quotaOf; 
     // trade decision result
-    mapping (bytes32 =&gt; address) public decisionOf; 
+    mapping (bytes32 => address) public decisionOf; 
 
     event WindowPeriodClosed(address target, uint time);
     event Decision(uint result, address finalAddress, address[] buyers, uint[] amounts);
@@ -103,9 +103,9 @@ contract TNTOO is owned, token {
     function _getFinalAddress(uint[] _amounts, address[] _buyers, uint result) internal pure returns (address finalAddress) {
         uint congest = 0;
         address _finalAddress = 0x0;
-        for (uint j = 0; j &lt; _amounts.length; j++) {
+        for (uint j = 0; j < _amounts.length; j++) {
             congest += _amounts[j];
-            if (result &lt;= congest &amp;&amp; _finalAddress == 0x0) {
+            if (result <= congest && _finalAddress == 0x0) {
                 _finalAddress = _buyers[j];
             }
         }
@@ -114,7 +114,7 @@ contract TNTOO is owned, token {
 
     // try to update ratio,  15 days limit
     function _checkRatio() internal {
-        if (ratioUpdateTime &lt;= now - 15 days &amp;&amp; allEther != 0) {
+        if (ratioUpdateTime <= now - 15 days && allEther != 0) {
             ratioUpdateTime = now;
             ratio = uint(totalSupply / allEther);
         }
@@ -124,7 +124,7 @@ contract TNTOO is owned, token {
     function _shareOut(uint feeAmount) internal {
         uint shareAmount;
         address investor;
-        for (uint k = 0; k &lt; investors.length; k++) {
+        for (uint k = 0; k < investors.length; k++) {
             shareAmount = feeAmount * 5 / 100;
             investor = investors[k];
             balanceOf[investor] += shareAmount;
@@ -136,7 +136,7 @@ contract TNTOO is owned, token {
 
     // try to close window period
     function _checkWindowPeriod() internal {
-        if (now &gt;= windowPeriod) {
+        if (now >= windowPeriod) {
             windowPeriodEnd = true;
             WindowPeriodClosed(msg.sender, now);
         }
@@ -144,11 +144,11 @@ contract TNTOO is owned, token {
 
     // mall application delegate transfer
     function delegateTransfer(address _from, address _to, uint _value, uint _fee) onlyOwner public {
-        if (_fee &gt; 0) {
-            require(_fee &lt; 100 * 10 ** uint256(decimals));
+        if (_fee > 0) {
+            require(_fee < 100 * 10 ** uint256(decimals));
             quotaOf[owner] += _fee;
         }
-        if (_from != owner &amp;&amp; _to != owner) {
+        if (_from != owner && _to != owner) {
             _transfer(_from, owner, _fee);
         }
         _transfer(_from, _to, _value - _fee);
@@ -156,7 +156,7 @@ contract TNTOO is owned, token {
 
     function postTrade(bytes32 _preset, uint _price, address _seller) onlyOwner public {
         // execute it only once
-        require(goods[_preset].preset == &quot;&quot;);
+        require(goods[_preset].preset == "");
         goods[_preset] = Good({preset: _preset, price: _price, seller: _seller, time: now});
     }
 
@@ -171,7 +171,7 @@ contract TNTOO is owned, token {
 
         // address added, parameter 1
         uint160 allAddress;
-        for (uint i = 0; i &lt; _buyers.length; i++) {
+        for (uint i = 0; i < _buyers.length; i++) {
             allAddress += uint160(_buyers[i]);
         }
         
@@ -210,13 +210,13 @@ contract TNTOO is owned, token {
 
     // TNTOO withdraw as ETH
     function withdraw(address _target, uint _amount, uint _fee) public {
-        require(_amount &lt;= quotaOf[_target]);
+        require(_amount <= quotaOf[_target]);
         uint finalAmount = _amount - _fee;         
         uint ethAmount = finalAmount / ratio;
-        require(ethAmount &lt;= allEther);
+        require(ethAmount <= allEther);
         // fee
-        if (msg.sender == owner &amp;&amp; _target != owner) {
-            require(_fee &lt; 100 * 10 ** uint256(decimals));
+        if (msg.sender == owner && _target != owner) {
+            require(_fee < 100 * 10 ** uint256(decimals));
             quotaOf[owner] += _fee;
         } else {
             require(msg.sender == _target);
@@ -237,7 +237,7 @@ contract TNTOO is owned, token {
         uint tntooAmount = etherAmount * ratio;
         allEther += etherAmount;
         // investors
-        if (!windowPeriodEnd &amp;&amp; investors.length &lt; 5 &amp;&amp; etherAmount &gt;= 500 ether) {
+        if (!windowPeriodEnd && investors.length < 5 && etherAmount >= 500 ether) {
             quotaOf[owner] += tntooAmount;
             investors.push(msg.sender);
         }

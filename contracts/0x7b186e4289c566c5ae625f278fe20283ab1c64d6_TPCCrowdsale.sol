@@ -50,54 +50,54 @@ contract TPCCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
+        require(msg.value > 0);
+        require(now > startDate);
         uint256 amount;
         uint256 _amount;
         
         // Pre-sale period
-        if (now &gt; startDate &amp;&amp; now &lt; 1519862400) {
+        if (now > startDate && now < 1519862400) {
             amount = msg.value * 12477;
             _amount = amount / 5;
             amount += _amount * 3;
         }
 
         // Spring period
-        if (now &gt; 1519862399 &amp;&amp; now &lt; 1527807600) {
+        if (now > 1519862399 && now < 1527807600) {
             amount = msg.value * 12477;
             _amount = amount / 5;
             amount += _amount * 2;
         }
 
         // Summer period
-        if (now &gt; 1527807599 &amp;&amp; now &lt; 1535756400) {
+        if (now > 1527807599 && now < 1535756400) {
             amount = msg.value * 6238;
             _amount = amount / 10;
             amount += _amount * 3;
         }
 
         // Autumn period
-        if (now &gt; 1535756399 &amp;&amp; now &lt; 1543622400) {
+        if (now > 1535756399 && now < 1543622400) {
             amount = msg.value * 3119;
             _amount = amount / 5;
             amount += _amount;
         }
 
         // Winter period
-        if (now &gt; 1543622399 &amp;&amp; now &lt; 1551398400) {
+        if (now > 1543622399 && now < 1551398400) {
             amount = msg.value * 1559;
             _amount = amount / 10;
             amount += _amount;
         }
         
         // 1-10 ETH
-        if (msg.value &gt;= 1 ether &amp;&amp; msg.value &lt; 10 ether) {
+        if (msg.value >= 1 ether && msg.value < 10 ether) {
             _amount = amount / 10;
             amount += _amount * 3;
         }
 
         // 10 ETH
-        if (msg.value &gt;= 10 ether) {
+        if (msg.value >= 10 ether) {
             amount += amount / 2;
         }
 

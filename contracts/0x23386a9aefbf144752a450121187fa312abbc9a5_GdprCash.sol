@@ -7,8 +7,8 @@ pragma solidity ^ 0.4.19;
 contract GdprConfig {
 
     // Token settings
-    string public constant TOKEN_NAME = &quot;GDPR Cash&quot;;
-    string public constant TOKEN_SYMBOL = &quot;GDPR&quot;;
+    string public constant TOKEN_NAME = "GDPR Cash";
+    string public constant TOKEN_SYMBOL = "GDPR";
     uint8 public constant TOKEN_DECIMALS = 18;
 
     // Smallest value of the GDPR
@@ -31,7 +31,7 @@ contract GdprConfig {
     uint256 public constant EXPERTS_POOL_TOKENS = 20000000 * MIN_TOKEN_UNIT;
     // 10% tokens for marketing expenses
     uint256 public constant MARKETING_POOL_TOKENS = 20000000 * MIN_TOKEN_UNIT;
-    // 9% founders&#39; distribution
+    // 9% founders' distribution
     uint256 public constant TEAM_POOL_TOKENS = 18000000 * MIN_TOKEN_UNIT;
     // 1% for legal advisors
     uint256 public constant LEGAL_EXPENSES_TOKENS = 2000000 * MIN_TOKEN_UNIT;
@@ -51,7 +51,7 @@ contract GdprConfig {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -113,9 +113,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -123,7 +123,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -132,7 +132,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -231,7 +231,7 @@ contract DetailedERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-        mapping(address =&gt; uint256) balances;
+        mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -249,7 +249,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -280,7 +280,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     /**
@@ -291,8 +291,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -306,7 +306,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -355,7 +355,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -422,7 +422,7 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     function CappedToken(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
@@ -433,7 +433,7 @@ contract CappedToken is MintableToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns(bool) {
-        require(totalSupply_.add(_amount) &lt;= cap);
+        require(totalSupply_.add(_amount) <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -454,9 +454,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -570,7 +570,7 @@ contract GdprCash is DetailedERC20, CappedToken, GdprConfig {
     * @param _value uint256 The number of tokens to be burned.
     */
     function burn(uint256 _value) public onlyCrowdsale {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -610,7 +610,7 @@ contract GdprCrowdsale is Pausable {
     uint256 public totalPurchased = 0;
 
     // Purchases
-    mapping(address =&gt; uint256) public tokensPurchased;
+    mapping(address => uint256) public tokensPurchased;
 
     // Whether the crowdsale is finalized
     bool public isFinalized = false;
@@ -667,7 +667,7 @@ contract GdprCrowdsale is Pausable {
         address _tokenAddress
     ) public
     {
-        require(_endTime &gt; _startTime);
+        require(_endTime > _startTime);
         require(_tokenAddress != address(0));
 
         startTime = _startTime;
@@ -679,7 +679,7 @@ contract GdprCrowdsale is Pausable {
 
     /**
      * @dev Fallback function is used to buy tokens.
-     * It&#39;s the only entry point since `buyTokens` is internal.
+     * It's the only entry point since `buyTokens` is internal.
      * When paused funds are not accepted.
      */
     function () public whenNotPaused payable {
@@ -687,25 +687,25 @@ contract GdprCrowdsale is Pausable {
     }
 
     /**
-     * @dev Sets a new start date as long as token sale hasn&#39;t started yet
+     * @dev Sets a new start date as long as token sale hasn't started yet
      * @param _startTime uint256 Unix timestamp of the new start time
      */
     function setStartTime(uint256 _startTime) public onlyOwner {
-        require(now &lt; startTime);
-        require(_startTime &gt; now);
-        require(_startTime &lt; endTime);
+        require(now < startTime);
+        require(_startTime > now);
+        require(_startTime < endTime);
 
         startTime = _startTime;
     }
 
     /**
-     * @dev Sets a new end date as long as end date hasn&#39;t been reached
+     * @dev Sets a new end date as long as end date hasn't been reached
      * @param _endTime uint2t56 Unix timestamp of the new end time
      */
     function setEndTime(uint256 _endTime) public onlyOwner {
-        require(now &lt; endTime);
-        require(_endTime &gt; now);
-        require(_endTime &gt; startTime);
+        require(now < endTime);
+        require(_endTime > now);
+        require(_endTime > startTime);
 
         endTime = _endTime;
     }
@@ -715,17 +715,17 @@ contract GdprCrowdsale is Pausable {
      * @param _rate uint256 Updated conversion rate
      */
     function setRate(uint256 _rate) public onlyOwner {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
         RateChange(rate);
     }
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() public onlyOwner {
-        require(now &gt; endTime);
+        require(now > endTime);
         require(!isFinalized);
 
         finalization();
@@ -739,7 +739,7 @@ contract GdprCrowdsale is Pausable {
      * @return true if crowdsale has endeds
      */
     function hasEnded() public view returns(bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     /**
@@ -748,8 +748,8 @@ contract GdprCrowdsale is Pausable {
      * If 0 supplied transfers the entire balance.
      */
     function withdraw(uint256 _amount) public onlyOwner {
-        require(this.balance &gt; 0);
-        require(_amount &lt;= this.balance);
+        require(this.balance > 0);
+        require(_amount <= this.balance);
         uint256 balanceToSend = _amount;
         if (balanceToSend == 0) {
             balanceToSend = this.balance;
@@ -764,7 +764,7 @@ contract GdprCrowdsale is Pausable {
      *  @param _tokenAmount uin256 The amount of GDPR Cash (in wei) purchased
      */
     function addPresaleOrder(address _participant, uint256 _tokenAmount) external onlyOwner {
-        require(now &lt; startTime);
+        require(now < startTime);
 
         // Update state
         tokensPurchased[_participant] = tokensPurchased[_participant].add(_tokenAmount);
@@ -785,8 +785,8 @@ contract GdprCrowdsale is Pausable {
      */
     function buyTokens(address _participant, uint256 _weiAmount) internal {
         require(_participant != address(0));
-        require(now &gt;= startTime);
-        require(now &lt; endTime);
+        require(now >= startTime);
+        require(now < endTime);
         require(!isFinalized);
         require(_weiAmount != 0);
 
@@ -799,14 +799,14 @@ contract GdprCrowdsale is Pausable {
         // update state
         weiRaised = weiRaised.add(_weiAmount);
 
-        require(totalPurchased &lt;= token.SALE_CAP());
-        require(tokensPurchased[_participant] &gt;= token.PURCHASER_MIN_TOKEN_CAP());
+        require(totalPurchased <= token.SALE_CAP());
+        require(tokensPurchased[_participant] >= token.PURCHASER_MIN_TOKEN_CAP());
 
-        if (now &lt; startTime + 86400) {
+        if (now < startTime + 86400) {
             // if still during the first day of token sale, apply different max cap
-            require(tokensPurchased[_participant] &lt;= token.PURCHASER_MAX_TOKEN_CAP_DAY1());
+            require(tokensPurchased[_participant] <= token.PURCHASER_MAX_TOKEN_CAP_DAY1());
         } else {
-            require(tokensPurchased[_participant] &lt;= token.PURCHASER_MAX_TOKEN_CAP());
+            require(tokensPurchased[_participant] <= token.PURCHASER_MAX_TOKEN_CAP());
         }
 
         token.transfer(_participant, tokens);

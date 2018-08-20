@@ -60,20 +60,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -81,9 +81,9 @@ contract CCMToken is ERC20,Ownable{
 	using SafeMath for uint256;
 
 	//the base info of the token
-	string public constant name=&quot;Chain cell matrix&quot;;
+	string public constant name="Chain cell matrix";
 	string public symbol;
-	string public constant version = &quot;1.0&quot;;
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 	//总发行30亿
@@ -123,15 +123,15 @@ contract CCMToken is ERC20,Ownable{
 	
 
 	//各个用户的锁仓金额
-	mapping(address=&gt;uint256) public lockBalance;
+	mapping(address=>uint256) public lockBalance;
 	//锁仓百分比
 	uint256 public lockRate;
 
 
 	 
 	//ERC20的余额
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	
 
 	function CCMToken(){
@@ -148,33 +148,33 @@ contract CCMToken is ERC20,Ownable{
 		endBlock = 5000000;
 		lockRate=100;
 		rate=75000;
-		symbol=&quot;CCM&quot;;
+		symbol="CCM";
 	}
 
 	event CreateCCM(address indexed _to, uint256 _value);
 
 	modifier beforeBlock(uint256 _blockNum){
-		assert(getCurrentBlockNum()&lt;_blockNum);
+		assert(getCurrentBlockNum()<_blockNum);
 		_;
 	}
 
 	modifier afterBlock(uint256 _blockNum){
-		assert(getCurrentBlockNum()&gt;=_blockNum);
+		assert(getCurrentBlockNum()>=_blockNum);
 		_;
 	}
 
 	modifier notReachTotalSupply(uint256 _value,uint256 _rate){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value.mul(_rate)));
+		assert(MAX_SUPPLY>=totalSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachFundingSupply(uint256 _value,uint256 _rate){
-		assert(MAX_FUNDING_SUPPLY&gt;=totalFundingSupply.add(_value.mul(_rate)));
+		assert(MAX_FUNDING_SUPPLY>=totalFundingSupply.add(_value.mul(_rate)));
 		_;
 	}
 
 	modifier notReachPartnerWithdrawSupply(uint256 _value,uint256 _rate){
-		assert(PARTNER_SUPPLY&gt;=totalPartnerSupply.add(_value.mul(_rate)));
+		assert(PARTNER_SUPPLY>=totalPartnerSupply.add(_value.mul(_rate)));
 		_;
 	}
 
@@ -184,7 +184,7 @@ contract CCMToken is ERC20,Ownable{
 	}
 
 	modifier notBeforeTime(uint256 targetTime){
-		assert(now&gt;targetTime);
+		assert(now>targetTime);
 		_;
 	}
 
@@ -290,7 +290,7 @@ contract CCMToken is ERC20,Ownable{
   	function transfer(address _to, uint256 _value) public  returns (bool)
  	{
 		require(_to != address(0));
-		require(balances[msg.sender].sub(_value)&gt;=lockBalance[msg.sender].mul(lockRate).div(100));
+		require(balances[msg.sender].sub(_value)>=lockBalance[msg.sender].mul(lockRate).div(100));
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -308,7 +308,7 @@ contract CCMToken is ERC20,Ownable{
   	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) 
   	{
 		require(_to != address(0));
-		require(balances[_from].sub(_value)&gt;=lockBalance[_from].mul(lockRate).div(100));
+		require(balances[_from].sub(_value)>=lockBalance[_from].mul(lockRate).div(100));
 		uint256 _allowance = allowed[_from][msg.sender];
 
 		balances[_from] = balances[_from].sub(_value);

@@ -24,13 +24,13 @@ contract owned {
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract token {
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalTokens;
-    mapping (address =&gt; uint256) public balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balance;
+    mapping (address => mapping (address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function token(
@@ -47,8 +47,8 @@ contract token {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success){
-        if (balance[msg.sender] &lt; _value) throw;     
-        if (balance[_to] + _value &lt; balance[_to]) throw; 
+        if (balance[msg.sender] < _value) throw;     
+        if (balance[_to] + _value < balance[_to]) throw; 
         balance[msg.sender] -= _value;                     
         balance[_to] += _value;                      
         Transfer(msg.sender, _to, _value);
@@ -72,9 +72,9 @@ contract token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balance[_from] &lt; _value) throw;         
-        if (balance[_to] + _value &lt; balance[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balance[_from] < _value) throw;         
+        if (balance[_to] + _value < balance[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw; 
         balance[_from] -= _value;                  
         balance[_to] += _value;                       
         allowance[_from][msg.sender] -= _value;
@@ -88,8 +88,8 @@ contract TheCoin is owned, token {
     uint256 public totalTokens;
     uint256 public komission; 
     bool public crowdsale;
-    mapping (address =&gt; bool) public frozenAccountProfit; 
-    mapping (address =&gt; uint) public frozenProfitDate; 
+    mapping (address => bool) public frozenAccountProfit; 
+    mapping (address => uint) public frozenProfitDate; 
     event FrozenProfit(address target, bool frozen);
 
     function TheCoin(
@@ -114,9 +114,9 @@ contract TheCoin is owned, token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balance[_from] &lt; _value) throw;         
-        if (balance[_to] + _value &lt; balance[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balance[_from] < _value) throw;         
+        if (balance[_to] + _value < balance[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw; 
         balance[_from] -= _value;                  
         balance[_to] += _value;                       
         allowance[_from][msg.sender] -= _value;
@@ -127,8 +127,8 @@ contract TheCoin is owned, token {
     function transfer(address _to, uint256 _value) returns (bool success) {
     uint256 kom;
 	kom = (_value * komission) / 1000;			
-	if (kom &lt; 1) kom = 1;				
-        if (balance[msg.sender] &gt;= _value &amp;&amp; (_value + kom) &gt; 0) {         
+	if (kom < 1) kom = 1;				
+        if (balance[msg.sender] >= _value && (_value + kom) > 0) {         
         balance[msg.sender] -= _value;                  
         balance[_to] += (_value - kom);                                               
         balance[this] += kom;                           
@@ -146,11 +146,11 @@ contract TheCoin is owned, token {
     function getreward() returns (bool success) {
         uint256 reward;
         reward = (balance[this] * balance[msg.sender]) / totalTokens; 
-    if (frozenAccountProfit[msg.sender] == true &amp;&amp; frozenProfitDate[msg.sender] + 3 days &gt; now) {
+    if (frozenAccountProfit[msg.sender] == true && frozenProfitDate[msg.sender] + 3 days > now) {
 	return false;
         } else {
-    if (reward &lt; 1) reward = 1; 
-    if (balance[this] &lt; reward) throw;  
+    if (reward < 1) reward = 1; 
+    if (balance[this] < reward) throw;  
     balance[msg.sender] += reward; 
     balance[this] -= reward; 
     frozenAccountProfit[msg.sender] = true;  

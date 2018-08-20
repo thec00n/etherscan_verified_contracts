@@ -27,37 +27,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -81,10 +81,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -118,7 +118,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -193,10 +193,10 @@ contract TokenVault is Ownable {
   uint public tokensAllocatedTotal;
 
   /** How much we have allocated to the investors invested */
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   /** How many tokens investors have claimed */
-  mapping(address =&gt; uint) public claimed;
+  mapping(address => uint) public claimed;
 
   /** When our claim freeze is over (UNIX timestamp) */
   uint public freezeEndsAt;
@@ -264,15 +264,15 @@ contract TokenVault is Ownable {
   /// @dev Add a presale participating allocation
   function setInvestor(address investor, uint amount) public onlyOwner {
 
-    if(lockedAt &gt; 0) {
+    if(lockedAt > 0) {
       // Cannot add new investors after the vault is locked
       throw;
     }
 
     if(amount == 0) throw; // No empty buys
 
-    // Don&#39;t allow reset
-    if(balances[investor] &gt; 0) {
+    // Don't allow reset
+    if(balances[investor] > 0) {
       throw;
     }
 
@@ -291,7 +291,7 @@ contract TokenVault is Ownable {
   ///      - Checks are in place to prevent creating a vault that is locked with incorrect token balances.
   function lock() onlyOwner {
 
-    if(lockedAt &gt; 0) {
+    if(lockedAt > 0) {
       throw; // Already locked
     }
 
@@ -312,7 +312,7 @@ contract TokenVault is Ownable {
 
   /// @dev In the case locking failed, then allow the owner to reclaim the tokens on the contract.
   function recoverFailedLock() onlyOwner {
-    if(lockedAt &gt; 0) {
+    if(lockedAt > 0) {
       throw;
     }
 
@@ -335,7 +335,7 @@ contract TokenVault is Ownable {
       throw; // We were never locked
     }
 
-    if(now &lt; freezeEndsAt) {
+    if(now < freezeEndsAt) {
       throw; // Trying to claim early
     }
 
@@ -344,7 +344,7 @@ contract TokenVault is Ownable {
       throw;
     }
 
-    if(claimed[investor] &gt; 0) {
+    if(claimed[investor] > 0) {
       throw; // Already claimed
     }
 
@@ -363,7 +363,7 @@ contract TokenVault is Ownable {
   function getState() public constant returns(State) {
     if(lockedAt == 0) {
       return State.Loading;
-    } else if(now &gt; freezeEndsAt) {
+    } else if(now > freezeEndsAt) {
       return State.Distributing;
     } else {
       return State.Holding;

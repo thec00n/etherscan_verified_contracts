@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,22 +128,22 @@ contract KahnAirDrop{
 	uint256 public fixPayAmt = 0;
 	
     /* @dev To record the different reward amount for each bounty  */
-    mapping(address =&gt; User) public bounties;
+    mapping(address => User) public bounties;
 	
     /* @dev to include the bounty in the list */
-	mapping(address =&gt; bool) public signups;
+	mapping(address => bool) public signups;
 	
     /* @dev Store bounty address to blacklist */
-	mapping(address =&gt; bool) public blacklist;
+	mapping(address => bool) public blacklist;
 	
     /* @dev to check is the claim in the process */
-	mapping(address =&gt; bool) public isProcess;
+	mapping(address => bool) public isProcess;
 	
     /* @dev Admin with permission to manage the signed up bounty */
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
 	
     /* @dev Staff with permission to manage the signed up bounty */
-    mapping (address =&gt; bool) public staffs;
+    mapping (address => bool) public staffs;
 	
     /**
     * @dev Event for token distribution logging
@@ -209,7 +209,7 @@ contract KahnAirDrop{
     }
 
     modifier ifNotStartExp {
-       require(now &gt;= startTimes &amp;&amp; now &lt;= endTimes);
+       require(now >= startTimes && now <= endTimes);
        _;
     }
 
@@ -252,8 +252,8 @@ contract KahnAirDrop{
 	/*******************/
     /* @dev Add admin to whitelist */
 	function addAdminWhitelist(address[] _userlist) public onlyOwner onlyAdmin{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			if(baddr != address(0)){
 				if(!admins[baddr]){
@@ -266,8 +266,8 @@ contract KahnAirDrop{
 	
     /* @dev Remove admin from whitelist */
 	function removeAdminWhitelist(address[] _userlist) public onlyAdmin{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			if(baddr != address(0)){
 				if(admins[baddr]){
@@ -279,8 +279,8 @@ contract KahnAirDrop{
 	
     /* @dev Add staff to whitelist */
 	function addStaffWhitelist(address[] _userlist) public onlyAdmin{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			if(baddr != address(0)){
 				if(!staffs[baddr]){
@@ -293,8 +293,8 @@ contract KahnAirDrop{
 	
     /* @dev Remove staff from whitelist */
 	function removeStaffWhitelist(address[] _userlist) public onlyAdmin{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			if(baddr != address(0)){
 				if(staffs[baddr]){
@@ -318,8 +318,8 @@ contract KahnAirDrop{
 	}
 
 	function adminUpdateStartEndTime(uint _startTimes, uint _endTimes) public onlyAdmin{
-		require(_startTimes &gt; 0);
-		require(_endTimes &gt; 0);
+		require(_startTimes > 0);
+		require(_endTimes > 0);
 		startTimes = _startTimes;
 		endTimes = _endTimes;
 		emit eUpdateStartEndTime(startTimes, endTimes, msg.sender);
@@ -342,19 +342,19 @@ contract KahnAirDrop{
 	}
 
 	/***************************/
-	/* Admin &amp; Staff Function **/
+	/* Admin & Staff Function **/
 	/***************************/
 	/* @dev Admin/Staffs Update Contract Configuration */
 
     /* @dev Add user to whitelist */
     function signupUserWhitelist(address[] _userlist, uint256[] _amount) public onlyStaffs{
-    	require(_userlist.length &gt; 0);
-		require(_amount.length &gt; 0);
-    	for (uint256 i = 0; i &lt; _userlist.length; i++) {
+    	require(_userlist.length > 0);
+		require(_amount.length > 0);
+    	for (uint256 i = 0; i < _userlist.length; i++) {
     		address baddr = _userlist[i];
     		uint256 bval = _amount[i];
-    		if(baddr != address(0) &amp;&amp; userSignupCount &lt;= maxSignup){
-    			if(!bounties[baddr].blacklisted &amp;&amp; bounties[baddr].user_address != baddr){
+    		if(baddr != address(0) && userSignupCount <= maxSignup){
+    			if(!bounties[baddr].blacklisted && bounties[baddr].user_address != baddr){
 					signups[baddr] = true;
 					bountyaddress.push(baddr) -1;
 					userSignupCount++;
@@ -372,10 +372,10 @@ contract KahnAirDrop{
 	
     /* @dev Remove user from whitelist */
     function removeUserWhitelist(address[] _userlist) public onlyStaffs{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
-			if(baddr != address(0) &amp;&amp; bounties[baddr].user_address == baddr){
+			if(baddr != address(0) && bounties[baddr].user_address == baddr){
 				bounties[baddr].status = false;
             	signups[baddr] = false;
             	userSignupCount--;
@@ -384,24 +384,24 @@ contract KahnAirDrop{
     }
 	
 	function updUserBlackList(address[] _addlist, address[] _removelist) public onlyStaffs{
-		if(_addlist.length &gt; 0){
-			for (uint256 i = 0; i &lt; _addlist.length; i++) {
+		if(_addlist.length > 0){
+			for (uint256 i = 0; i < _addlist.length; i++) {
 				address baddr = _addlist[i];
-				if(baddr != address(0) &amp;&amp; !bounties[baddr].blacklisted){
+				if(baddr != address(0) && !bounties[baddr].blacklisted){
 					bounties[baddr].blacklisted = true;
 					blacklist[baddr] = true;
 				}
 			}
 		}
 		
-		if(_removelist.length &gt; 0){ removeUserFromBlackList(_removelist); }
+		if(_removelist.length > 0){ removeUserFromBlackList(_removelist); }
 	}
 	
 	function removeUserFromBlackList(address[] _userlist) internal{
-		require(_userlist.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
-			if(baddr != address(0) &amp;&amp; bounties[baddr].blacklisted){
+			if(baddr != address(0) && bounties[baddr].blacklisted){
 				bounties[baddr].blacklisted = false;
 				blacklist[baddr] = false;
 			}
@@ -410,16 +410,16 @@ contract KahnAirDrop{
 	
     /* @dev Update Multiple Users Reward Amount */
     function updateMultipleUsersReward(address[] _userlist, uint256[] _amount) public onlyStaffs{
-		require(_userlist.length &gt; 0);
-		require(_amount.length &gt; 0);
-		for (uint256 i = 0; i &lt; _userlist.length; i++) {
+		require(_userlist.length > 0);
+		require(_amount.length > 0);
+		for (uint256 i = 0; i < _userlist.length; i++) {
 			address baddr = _userlist[i];
 			uint256 bval = _amount[i];
 			if(baddr != address(0)){
 				if(bounties[baddr].user_address == baddr){
 					bounties[baddr].reward_amount = bval;
 				}else{
-					if(userSignupCount &lt;= maxSignup){
+					if(userSignupCount <= maxSignup){
 					    bounties[baddr] = User(baddr,now,bval,false,0,0,true);
 					    signups[baddr] = true;
 						bountyaddress.push(baddr) -1;
@@ -500,8 +500,8 @@ contract KahnAirDrop{
 	}
 	
 	function singleUserSignUp(address _address) internal ifNotStartExp ifNotPaused ifNotBlacklisted {
-		if(userSignupCount &lt;= maxSignup){
-			if(!signups[_address] &amp;&amp; bounties[_address].user_address != _address &amp;&amp; msg.value &gt;= minsignupeth){
+		if(userSignupCount <= maxSignup){
+			if(!signups[_address] && bounties[_address].user_address != _address && msg.value >= minsignupeth){
 				if(payoutNow != 1 || payoutNow != 2){
 					signups[_address] = true;
 					uint256 temrew = 0;
@@ -518,7 +518,7 @@ contract KahnAirDrop{
 	
     /* @dev Bounty claim their reward tokens by sending zero ETH to this smart contract */
     function claimTokens(address _beneficiary) public payable ifNotStartExp ifNotPaused ifNotBlacklisted {
-	   require(msg.value &gt;= mineth);
+	   require(msg.value >= mineth);
 	   require(_beneficiary != address(0));
 	   require(!blacklist[msg.sender]);
 	   
@@ -532,13 +532,13 @@ contract KahnAirDrop{
 	   uint256 rewardAmount = getReward(_beneficiary);
 	   
 	   /* @dev if the baounty reward amount is less than zero, quit the prorcess */
-	   require(rewardAmount &gt; 0);
+	   require(rewardAmount > 0);
 	   
 	   /* @dev get the available balance for airdrop */
 	   uint256 taBal = token.balanceOf(this);
 	   
 	   /* @dev Check is the balance enough to pay for the claim */
-	   require(rewardAmount &lt;= taBal);
+	   require(rewardAmount <= taBal);
 	   
 	   /* @dev Set the address to processing */
 	   isProcess[_beneficiary] = true;
@@ -566,14 +566,14 @@ contract KahnAirDrop{
 	
     /* @dev Bounty claim their reward tokens by sending zero ETH to this smart contract */
     function claimImmediateTokens(address _beneficiary) public payable ifNotStartExp ifNotPaused ifNotBlacklisted {
-	   require(msg.value &gt;= mineth);
+	   require(msg.value >= mineth);
 	   require(_beneficiary != address(0));
 	   require(!blacklist[msg.sender]);
-	   require(userSignupCount &lt;= maxSignup);
-	   require(fixPayAmt &gt; 0);
+	   require(userSignupCount <= maxSignup);
+	   require(fixPayAmt > 0);
 	   uint256 taBal = token.balanceOf(this);
-	   require(taBal &gt; 0);
-	   require(fixPayAmt &lt;= taBal);
+	   require(taBal > 0);
+	   require(fixPayAmt <= taBal);
        require(!isProcess[_beneficiary]);
 	   isProcess[_beneficiary] = true;
 	   signups[_beneficiary] = true;
@@ -608,11 +608,11 @@ contract KahnAirDrop{
 		if(!paidversion){
 			/* if paidversion is false, this is a free version, client agreed to contract creator to received the either */
 			/* in exchnage to use the service for free */
-			if(msg.value &gt; 0)
+			if(msg.value > 0)
 				owner.transfer(msg.value);
 		}else{
 			/* if paidversion is true, this is a paid version, received ether pay directly to client wallet */
-			if(msg.value &gt; 0)
+			if(msg.value > 0)
 				wallet.transfer(msg.value);
 		}
 	}

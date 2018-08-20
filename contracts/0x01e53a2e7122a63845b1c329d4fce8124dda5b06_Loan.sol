@@ -12,7 +12,7 @@ contract Base
     returns (uint256) 
     {
         uint256 z = x + y;
-        if((z &gt;= x) &amp;&amp; (z &gt;= y))
+        if((z >= x) && (z >= y))
         {
           return z;
         }
@@ -26,7 +26,7 @@ contract Base
     internal 
     returns (uint256) 
     {
-        if(x &gt;= y)
+        if(x >= y)
         {
            uint256 z = x - y;
            return z;
@@ -81,8 +81,8 @@ contract Loan is Base
     address Owner_02;
     address Owner_03;
     
-    mapping (address =&gt; uint) public Investors;
-    mapping (address =&gt; Creditor) public Creditors;
+    mapping (address => uint) public Investors;
+    mapping (address => Creditor) public Creditors;
     
     function initLoan()
     {
@@ -106,7 +106,7 @@ contract Loan is Base
     function SetPrcntRate(uint val)
     public
     {
-        if(val&gt;=1&amp;&amp;msg.sender==Creator)
+        if(val>=1&&msg.sender==Creator)
         {
             prcntRate = val;  
         }
@@ -130,7 +130,7 @@ contract Loan is Base
     public
     payable
     {
-        if(msg.value&gt;= 1 ether)
+        if(msg.value>= 1 ether)
         {
             if(Investors[msg.sender]==0)InvestorsQty++;
             Investors[msg.sender]+=msg.value;
@@ -162,7 +162,7 @@ contract Loan is Base
     payable
     {
         uint profit = CheckProfit(msg.sender);
-        if(profit&gt;0&amp;&amp;CanRefound)
+        if(profit>0&&CanRefound)
         {
             uint summ = Creditors[msg.sender].Invested+profit;
             Creditors[msg.sender].Invested = 0;
@@ -175,7 +175,7 @@ contract Loan is Base
     public 
     payable
     {
-        if(Investors[_addr]&gt;0)
+        if(Investors[_addr]>0)
         {
             if(isOwner())
             {

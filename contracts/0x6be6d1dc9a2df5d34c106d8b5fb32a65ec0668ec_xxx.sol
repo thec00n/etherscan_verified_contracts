@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,16 +55,16 @@ contract Ownable {
 
 contract StandardToken {
   using SafeMath for uint256;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; bool) preICO_address;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => bool) preICO_address;
   uint256 public totalSupply;
   uint256 public endDate;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
 
-    if( preICO_address[msg.sender] ) require( now &gt; endDate + 120 days ); //Lock coin
-    else require( now &gt; endDate ); //Lock coin
+    if( preICO_address[msg.sender] ) require( now > endDate + 120 days ); //Lock coin
+    else require( now > endDate ); //Lock coin
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -83,10 +83,10 @@ contract StandardToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
-    if( preICO_address[_from] ) require( now &gt; endDate + 120 days ); //Lock coin
-    else require( now &gt; endDate ); //Lock coin
+    if( preICO_address[_from] ) require( now > endDate + 120 days ); //Lock coin
+    else require( now > endDate ); //Lock coin
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -103,8 +103,8 @@ contract StandardToken {
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     require((_value == 0) || (allowed[msg.sender][_spender] == 0));
 
-    if( preICO_address[msg.sender] ) require( now &gt; endDate + 120 days ); //Lock coin
-    else require( now &gt; endDate ); //Lock coin
+    if( preICO_address[msg.sender] ) require( now > endDate + 120 days ); //Lock coin
+    else require( now > endDate ); //Lock coin
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -123,8 +123,8 @@ contract xxx is StandardToken, Ownable {
     using SafeMath for uint256;
 
     // Token Info.
-    string  public constant name = &quot;xxx&quot;;
-    string  public constant symbol = &quot;xxx&quot;;
+    string  public constant name = "xxx";
+    string  public constant symbol = "xxx";
     uint8   public constant decimals = 18;
 
     // Sale period.
@@ -157,10 +157,10 @@ contract xxx is StandardToken, Ownable {
     function initialize(address _wallet, uint256 _start, uint256 _end,
                         uint256 _saleCap, uint256 _totalSupply)
                         public onlyOwner uninitialized {
-        require(_start &gt;= getCurrentTimestamp());
-        require(_start &lt; _end);
+        require(_start >= getCurrentTimestamp());
+        require(_start < _end);
         require(_wallet != 0x0);
-        require(_totalSupply &gt; _saleCap);
+        require(_totalSupply > _saleCap);
 
         startDate = _start;
         endDate = _end;
@@ -181,19 +181,19 @@ contract xxx is StandardToken, Ownable {
     }
 
     function getRateAt(uint256 at) public constant returns (uint256) {
-        if (at &lt; startDate) {
+        if (at < startDate) {
             return 0;
-        } else if (at &lt; (startDate + 3 days)) {
+        } else if (at < (startDate + 3 days)) {
             return 1500;
-        } else if (at &lt; (startDate + 9 days)) {
+        } else if (at < (startDate + 9 days)) {
             return 1440;
-        } else if (at &lt; (startDate + 15 days)) {
+        } else if (at < (startDate + 15 days)) {
             return 1380;
-        } else if (at &lt; (startDate + 21 days)) {
+        } else if (at < (startDate + 21 days)) {
             return 1320;
-        } else if (at &lt; (startDate + 27 days)) {
+        } else if (at < (startDate + 27 days)) {
             return 1260;
-        } else if (at &lt;= endDate) {
+        } else if (at <= endDate) {
             return 1200;
         } else {
             return 0;
@@ -207,8 +207,8 @@ contract xxx is StandardToken, Ownable {
 
     // For pushing pre-ICO records
     function push(address buyer, uint256 amount) public onlyOwner { //b753a98c
-        require(balances[wallet] &gt;= amount);
-        require(now &lt; startDate);
+        require(balances[wallet] >= amount);
+        require(now < startDate);
         require(buyer != wallet);
 
         preICO_address[ buyer ] = true;
@@ -230,7 +230,7 @@ contract xxx is StandardToken, Ownable {
         uint256 amount = weiAmount.mul(actualRate);
 
         // We have enough token to sale
-        require(supply() &gt;= amount);
+        require(supply() >= amount);
 
         // Transfer
         balances[0xb1] = balances[0xb1].sub(amount);
@@ -253,8 +253,8 @@ contract xxx is StandardToken, Ownable {
     }
 
     function saleActive() public constant returns (bool) {
-        return (getCurrentTimestamp() &gt;= startDate &amp;&amp;
-                getCurrentTimestamp() &lt; endDate &amp;&amp; supply() &gt; 0);
+        return (getCurrentTimestamp() >= startDate &&
+                getCurrentTimestamp() < endDate && supply() > 0);
     }
     
 }

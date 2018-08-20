@@ -72,13 +72,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -88,7 +88,7 @@ contract SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -136,9 +136,9 @@ contract Ownable {
 contract ReservationFund is ICrowdsaleReservationFund, Ownable, SafeMath {
     bool public crowdsaleFinished = false;
 
-    mapping(address =&gt; uint256) contributions;
-    mapping(address =&gt; uint256) tokensToIssue;
-    mapping(address =&gt; uint256) bonusTokensToIssue;
+    mapping(address => uint256) contributions;
+    mapping(address => uint256) tokensToIssue;
+    mapping(address => uint256) bonusTokensToIssue;
 
     ISimpleCrowdsale public crowdsale;
 
@@ -192,7 +192,7 @@ contract ReservationFund is ICrowdsaleReservationFund, Ownable, SafeMath {
     function completeContribution(address contributor) external {
         require(!crowdsaleFinished);
         require(crowdsale.isContributorInLists(contributor));
-        require(contributions[contributor] &gt; 0);
+        require(contributions[contributor] > 0);
 
         uint256 etherAmount = contributions[contributor];
         uint256 tokenAmount = tokensToIssue[contributor];
@@ -213,7 +213,7 @@ contract ReservationFund is ICrowdsaleReservationFund, Ownable, SafeMath {
 
     function refundPayment(address contributor) public {
         require(crowdsaleFinished);
-        require(contributions[contributor] &gt; 0 || tokensToIssue[contributor] &gt; 0);
+        require(contributions[contributor] > 0 || tokensToIssue[contributor] > 0);
         uint256 amountToRefund = contributions[contributor];
 
         contributions[contributor] = 0;

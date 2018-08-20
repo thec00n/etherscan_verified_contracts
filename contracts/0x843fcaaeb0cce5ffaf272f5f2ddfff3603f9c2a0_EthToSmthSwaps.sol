@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns(uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns(uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,9 +44,9 @@ contract EthToSmthSwaps {
     uint256 balance;
   }
 
-  // ETH Owner =&gt; BTC Owner =&gt; Swap
-  mapping(address =&gt; mapping(address =&gt; Swap)) public swaps;
-  mapping(address =&gt; mapping(address =&gt; uint)) public participantSigns;
+  // ETH Owner => BTC Owner => Swap
+  mapping(address => mapping(address => Swap)) public swaps;
+  mapping(address => mapping(address => uint)) public participantSigns;
 
   constructor () public {
     owner = msg.sender;
@@ -60,7 +60,7 @@ contract EthToSmthSwaps {
   // ETH Owner creates Swap with secretHash
   // ETH Owner make token deposit
   function createSwap(bytes20 _secretHash, address _participantAddress) public payable {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(swaps[msg.sender][_participantAddress].balance == uint256(0));
 
     swaps[msg.sender][_participantAddress] = Swap(
@@ -85,8 +85,8 @@ contract EthToSmthSwaps {
     Swap memory swap = swaps[_ownerAddress][msg.sender];
 
     require(swap.secretHash == ripemd160(_secret));
-    require(swap.balance &gt; uint256(0));
-    require(swap.createdAt.add(SafeTime) &gt; now);
+    require(swap.balance > uint256(0));
+    require(swap.createdAt.add(SafeTime) > now);
 
     msg.sender.transfer(swap.balance);
 
@@ -112,8 +112,8 @@ contract EthToSmthSwaps {
   function refund(address _participantAddress) public {
     Swap memory swap = swaps[msg.sender][_participantAddress];
 
-    require(swap.balance &gt; uint256(0));
-    require(swap.createdAt.add(SafeTime) &lt; now);
+    require(swap.balance > uint256(0));
+    require(swap.createdAt.add(SafeTime) < now);
 
     msg.sender.transfer(swap.balance);
 

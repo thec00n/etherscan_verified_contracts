@@ -37,7 +37,7 @@ contract Owned {
 library SafeMath {
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function div(uint256 a, uint256 b) internal returns (uint256) {
@@ -45,16 +45,16 @@ library SafeMath {
         return c;
     }
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
     function mul(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a * b;
@@ -62,7 +62,7 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -70,8 +70,8 @@ contract Scrinium is ERC20, Owned {
 
     using SafeMath for uint256;
 
-    string public name = &quot;Scrinium&quot;;
-    string public symbol = &quot;SCR&quot;;
+    string public name = "Scrinium";
+    string public symbol = "SCR";
     uint256 public decimals = 8;
     uint256 multiplier = 100000000;
 
@@ -81,8 +81,8 @@ contract Scrinium is ERC20, Owned {
     uint256 public constant startTime = 1521590400; //5.12.2017
     uint256 public constant stopTime = 1514678400; //21.03.2018
 
-    mapping (address =&gt; uint256) balance;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balance;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function Scrinium() {
         hardcap = 180000000;
@@ -90,7 +90,7 @@ contract Scrinium is ERC20, Owned {
     }
 
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) revert();
+        if(msg.data.length < size + 4) revert();
         _;
     }
 
@@ -109,9 +109,9 @@ contract Scrinium is ERC20, Owned {
     }
 
     function mintToken(address target, uint256 mintedAmount) onlyOwner returns (bool success) {
-        require(mintedAmount &gt; 0
-            &amp;&amp; (now &lt; stopTime)
-            &amp;&amp; (totalSupply.add(mintedAmount) &lt;= hardcap));
+        require(mintedAmount > 0
+            && (now < stopTime)
+            && (totalSupply.add(mintedAmount) <= hardcap));
 
         uint256 addTokens = mintedAmount;
         balance[target] += addTokens;
@@ -121,7 +121,7 @@ contract Scrinium is ERC20, Owned {
     }
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        if ((balance[msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[msg.sender] -= _value;
             balance[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -132,7 +132,7 @@ contract Scrinium is ERC20, Owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {
-        if ((balance[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balance[_to] + _value &gt; balance[_to])) {
+        if ((balance[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balance[_to] + _value > balance[_to])) {
             balance[_to] += _value;
             balance[_from] -= _value;
             allowed[_from][msg.sender] -= _value;

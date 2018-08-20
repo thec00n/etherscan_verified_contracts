@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -164,7 +164,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -182,7 +182,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -211,7 +211,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -222,8 +222,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -237,7 +237,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -286,7 +286,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -417,8 +417,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -431,7 +431,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -447,7 +447,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -478,7 +478,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -493,9 +493,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -512,7 +512,7 @@ contract SimplePreTGE is Ownable {
     bool hasVested;
     uint256 weiContributed;
   }
-  mapping (address =&gt; Contribution)  public contributions;
+  mapping (address => Contribution)  public contributions;
 
   function disableAllocationModificationsForEver() external onlyOwner returns(bool) {
     allocationsLocked = true;
@@ -520,8 +520,8 @@ contract SimplePreTGE is Ownable {
 
   function bulkReserveTokensForAddresses(address[] addrs, uint256[] weiContributions, bool[] _vestingDecisions) onlyOwner external returns(bool) {
     require(!allocationsLocked);
-    require((addrs.length == weiContributions.length) &amp;&amp; (addrs.length == _vestingDecisions.length));
-    for (uint i=0; i&lt;addrs.length; i++) {
+    require((addrs.length == weiContributions.length) && (addrs.length == _vestingDecisions.length));
+    for (uint i=0; i<addrs.length; i++) {
       contributions[addrs[i]].weiContributed = weiContributions[i];
       contributions[addrs[i]].hasVested = _vestingDecisions[i];
     }
@@ -554,7 +554,7 @@ contract SimpleTGE is Ownable {
   // how long the TRS subscription is open after the TGE.
   uint256 public TRSOffset = 5 days;
 
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
   address[] public contributors;
   struct Contribution {
@@ -562,10 +562,10 @@ contract SimpleTGE is Ownable {
     uint256 weiContributed;
   }
 
-  mapping (address =&gt; Contribution)  public contributions;
+  mapping (address => Contribution)  public contributions;
 
   modifier whilePublicTGEIsActive() {
-    require(block.timestamp &gt;= publicTGEStartBlockTimeStamp &amp;&amp; block.timestamp &lt;= publicTGEEndBlockTimeStamp);
+    require(block.timestamp >= publicTGEStartBlockTimeStamp && block.timestamp <= publicTGEEndBlockTimeStamp);
     _;
   }
 
@@ -575,8 +575,8 @@ contract SimpleTGE is Ownable {
   }
 
   function blacklistAddresses(address[] addrs) external onlyOwner returns(bool) {
-    require(addrs.length &lt;= 100);
-    for (uint i = 0; i &lt; addrs.length; i++) {
+    require(addrs.length <= 100);
+    for (uint i = 0; i < addrs.length; i++) {
       require(addrs[i] != address(0));
       whitelist[addrs[i]] = false;
     }
@@ -584,8 +584,8 @@ contract SimpleTGE is Ownable {
   }
 
   function whitelistAddresses(address[] addrs) external onlyOwner returns(bool) {
-    require(addrs.length &lt;= 100);
-    for (uint i = 0; i &lt; addrs.length; i++) {
+    require(addrs.length <= 100);
+    for (uint i = 0; i < addrs.length; i++) {
       require(addrs[i] != address(0));
       whitelist[addrs[i]] = true;
     }
@@ -607,12 +607,12 @@ contract SimpleTGE is Ownable {
     uint256 _totalCapInWei
   ) public
   {
-    require(_publicTGEStartBlockTimeStamp &gt;= block.timestamp);
-    require(_publicTGEEndBlockTimeStamp &gt; _publicTGEStartBlockTimeStamp);
+    require(_publicTGEStartBlockTimeStamp >= block.timestamp);
+    require(_publicTGEEndBlockTimeStamp > _publicTGEStartBlockTimeStamp);
     require(_fundsWallet != address(0));
-    require(_individualCapInWei &gt; 0);
-    require(_individualCapInWei &lt;= _totalCapInWei);
-    require(_totalCapInWei &gt; 0);
+    require(_individualCapInWei > 0);
+    require(_individualCapInWei <= _totalCapInWei);
+    require(_totalCapInWei > 0);
 
     fundsWallet = _fundsWallet;
     publicTGEStartBlockTimeStamp = _publicTGEStartBlockTimeStamp;
@@ -623,8 +623,8 @@ contract SimpleTGE is Ownable {
 
   // allows changing the individual cap.
   function changeIndividualCapInWei(uint256 _individualCapInWei) onlyOwner external returns(bool) {
-      require(_individualCapInWei &gt; 0);
-      require(_individualCapInWei &lt; totalCapInWei);
+      require(_individualCapInWei > 0);
+      require(_individualCapInWei < totalCapInWei);
       individualCapInWei = _individualCapInWei;
       return true;
   }
@@ -634,8 +634,8 @@ contract SimpleTGE is Ownable {
     // validations
     require(msg.sender != address(0));
     require(msg.value != 0);
-    require(weiRaised.add(msg.value) &lt;= totalCapInWei);
-    require(contributions[msg.sender].weiContributed.add(msg.value) &lt;= individualCapInWei);
+    require(weiRaised.add(msg.value) <= totalCapInWei);
+    require(contributions[msg.sender].weiContributed.add(msg.value) <= individualCapInWei);
     // if we have not received any WEI from this address until now, then we add this address to contributors list.
     if (contributions[msg.sender].weiContributed == 0) {
       contributors.push(msg.sender);
@@ -660,15 +660,15 @@ contract SimpleTGE is Ownable {
   }
 
   // Vesting logic
-  // The following cases are checked for _beneficiary&#39;s actions:
+  // The following cases are checked for _beneficiary's actions:
   function vest(bool _vestingDecision) external isWhitelisted returns(bool) {
     bool existingDecision = contributions[msg.sender].hasVested;
     require(existingDecision != _vestingDecision);
-    require(block.timestamp &gt;= publicTGEStartBlockTimeStamp);
-    require(contributions[msg.sender].weiContributed &gt; 0);
+    require(block.timestamp >= publicTGEStartBlockTimeStamp);
+    require(contributions[msg.sender].weiContributed > 0);
     // Ensure vesting cannot be done once TRS starts
-    if (block.timestamp &gt; publicTGEEndBlockTimeStamp) {
-      require(block.timestamp.sub(publicTGEEndBlockTimeStamp) &lt;= TRSOffset);
+    if (block.timestamp > publicTGEEndBlockTimeStamp) {
+      require(block.timestamp.sub(publicTGEEndBlockTimeStamp) <= TRSOffset);
     }
     contributions[msg.sender].hasVested = _vestingDecision;
     return true;
@@ -677,8 +677,8 @@ contract SimpleTGE is Ownable {
 
 contract LendroidSupportToken is MintableToken, PausableToken {
 
-  string public constant name = &quot;Lendroid Support Token&quot;;
-  string public constant symbol = &quot;LST&quot;;
+  string public constant name = "Lendroid Support Token";
+  string public constant symbol = "LST";
   uint256 public constant decimals = 18;
   uint256 public constant MAX_SUPPLY = 12000000000 * (10 ** uint256(decimals));// 12 billion tokens, 18 decimal places
 
@@ -695,7 +695,7 @@ contract LendroidSupportToken is MintableToken, PausableToken {
    */
 
   function mint(address to, uint256 amount) onlyOwner public returns (bool) {
-    require(totalSupply_ + amount &lt;= MAX_SUPPLY);
+    require(totalSupply_ + amount <= MAX_SUPPLY);
     return super.mint(to, amount);
   }
 
@@ -713,7 +713,7 @@ contract SimpleLSTDistribution is Ownable {
   LendroidSupportToken public token;
   uint256 public LSTRatePerWEI = 48000;
   //vesting related params
-  // bonus multiplied to every vesting contributor&#39;s allocation
+  // bonus multiplied to every vesting contributor's allocation
   uint256 public vestingBonusMultiplier;
   uint256 public vestingBonusMultiplierPrecision = 1000000;
   uint256 public vestingDuration;
@@ -726,10 +726,10 @@ contract SimpleLSTDistribution is Ownable {
     bool hasWithdrawn;
   }
   // maps all allocations claimed by contributors
-  mapping (address =&gt; allocation)  public allocations;
+  mapping (address => allocation)  public allocations;
 
   // map of address to token vesting contract
-  mapping (address =&gt; TokenVesting) public vesting;
+  mapping (address => TokenVesting) public vesting;
 
   /**
    * event for token transfer logging
@@ -759,10 +759,10 @@ contract SimpleLSTDistribution is Ownable {
 
     require(_SimplePreTGEAddress != address(0));
     require(_SimpleTGEAddress != address(0));
-    require(_vestingBonusMultiplier &gt;= 1000000);
-    require(_vestingBonusMultiplier &lt;= 10000000);
-    require(_vestingDuration &gt; 0);
-    require(_vestingStartTime &gt; block.timestamp);
+    require(_vestingBonusMultiplier >= 1000000);
+    require(_vestingBonusMultiplier <= 10000000);
+    require(_vestingDuration > 0);
+    require(_vestingStartTime > block.timestamp);
 
     token = LendroidSupportToken(_LSTAddress);
     // token = new LendroidSupportToken();
@@ -777,7 +777,7 @@ contract SimpleLSTDistribution is Ownable {
   // member function to mint tokens to a beneficiary
   function mintTokens(address beneficiary, uint256 tokens) public onlyOwner {
     require(beneficiary != 0x0);
-    require(tokens &gt; 0);
+    require(tokens > 0);
     require(token.mint(beneficiary, tokens));
     LogLSTsWithdrawn(beneficiary, tokens);
   }
@@ -785,7 +785,7 @@ contract SimpleLSTDistribution is Ownable {
   function withdraw() external {
     require(!allocations[msg.sender].hasWithdrawn);
     // make sure simpleTGE is over and the TRS subscription has ended
-    require(block.timestamp &gt; SimpleTGEContract.publicTGEEndBlockTimeStamp().add(SimpleTGEContract.TRSOffset()));
+    require(block.timestamp > SimpleTGEContract.publicTGEEndBlockTimeStamp().add(SimpleTGEContract.TRSOffset()));
     // allocations should be locked in the pre-TGE
     require(SimplePreTGEContract.allocationsLocked());
     // should have participated in the TGE or the pre-TGE
@@ -796,7 +796,7 @@ contract SimpleLSTDistribution is Ownable {
     (_publicTGEHasVested, _publicTGEWeiContributed) = SimpleTGEContract.contributions(msg.sender);
     (_preTGEHasVested, _preTGEWeiContributed) = SimplePreTGEContract.contributions(msg.sender);
     uint256 _totalWeiContribution = _preTGEWeiContributed.add(_publicTGEWeiContributed);
-    require(_totalWeiContribution &gt; 0);
+    require(_totalWeiContribution > 0);
     // the same contributor could have contributed in the pre-tge and the tge, so we add the contributions.
     bool _shouldVest = _preTGEHasVested || _publicTGEHasVested;
     allocations[msg.sender].hasWithdrawn = true;

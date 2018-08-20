@@ -19,27 +19,27 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 contract MultiOwnable {
 
-    mapping (address =&gt; bool) public isOwner;
+    mapping (address => bool) public isOwner;
     address[] public ownerHistory;
 
     event OwnerAddedEvent(address indexed _newOwner);
@@ -126,9 +126,9 @@ contract StandardToken is ERC20 {
     
     using SafeMath for uint;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
@@ -176,8 +176,8 @@ contract StandardToken is ERC20 {
 
 contract CommonToken is StandardToken, MultiOwnable {
     
-    string public constant name   = &#39;FTEC&#39;;
-    string public constant symbol = &#39;FTEC&#39;;
+    string public constant name   = 'FTEC';
+    string public constant symbol = 'FTEC';
     uint8 public constant decimals = 18;
     
     uint256 public saleLimit;   // 85% of tokens for sale.
@@ -228,7 +228,7 @@ contract CommonToken is StandardToken, MultiOwnable {
         
         // If requested a transfer from the team wallet:
         if (_from == teamWallet) {
-            require(now &gt;= unlockTeamTokensTime);
+            require(now >= unlockTeamTokensTime);
         }
         
         _;
@@ -274,11 +274,11 @@ contract CommonToken is StandardToken, MultiOwnable {
     function sell(address _to, uint256 _value) onlyOwner public returns (bool) {
 
         // Check that we are not out of limit and still can sell tokens:
-        require(tokensSold.add(_value) &lt;= saleLimit);
+        require(tokensSold.add(_value) <= saleLimit);
 
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[seller]);
+        require(_value > 0);
+        require(_value <= balances[seller]);
 
         balances[seller] = balances[seller].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -291,21 +291,21 @@ contract CommonToken is StandardToken, MultiOwnable {
     }
     
     /**
-     * Until all tokens are sold, tokens can be transfered to/from owner&#39;s accounts.
+     * Until all tokens are sold, tokens can be transfered to/from owner's accounts.
      */
     function transfer(address _to, uint256 _value) ifUnlocked(msg.sender) public returns (bool) {
         return super.transfer(_to, _value);
     }
 
     /**
-     * Until all tokens are sold, tokens can be transfered to/from owner&#39;s accounts.
+     * Until all tokens are sold, tokens can be transfered to/from owner's accounts.
      */
     function transferFrom(address _from, address _to, uint256 _value) ifUnlocked(_from) public returns (bool) {
         return super.transferFrom(_from, _to, _value);
     }
 
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -345,7 +345,7 @@ contract CommonTokensale is MultiOwnable, Pausable {
     uint public totalWeiReceived; // Total amount of wei received during this tokensale.
     
     // This mapping stores info on how many ETH (wei) have been sent to this tokensale from specific address.
-    mapping (address =&gt; uint256) public buyerToSentWei;
+    mapping (address => uint256) public buyerToSentWei;
     
     event ReceiveEthEvent(address indexed _buyer, uint256 _amountWei);
     
@@ -379,9 +379,9 @@ contract CommonTokensale is MultiOwnable, Pausable {
         uint256 _amountWei
     ) ifNotPaused internal {
         
-        require(startTime &lt;= now &amp;&amp; now &lt;= endTime);
-        require(_amountWei &gt;= minPaymentWei);
-        require(totalWeiReceived.add(_amountWei) &lt;= maxCapWei);
+        require(startTime <= now && now <= endTime);
+        require(_amountWei >= minPaymentWei);
+        require(totalWeiReceived.add(_amountWei) <= maxCapWei);
 
         uint tokensE18 = weiToTokens(_amountWei);
         // Transfer tokens to buyer.
@@ -409,17 +409,17 @@ contract CommonTokensale is MultiOwnable, Pausable {
         uint expectedTotal = totalWeiReceived.add(_amountWei);
         
         // Presale pricing rules:
-        if (expectedTotal &lt;  1000 ether) return 39960;
-        if (expectedTotal &lt;  2000 ether) return 37480;
-        if (expectedTotal &lt;  4000 ether) return 35270;
+        if (expectedTotal <  1000 ether) return 39960;
+        if (expectedTotal <  2000 ether) return 37480;
+        if (expectedTotal <  4000 ether) return 35270;
         
         // Public sale pricing rules:
-        if (expectedTotal &lt;  6000 ether) return 33300; 
-        if (expectedTotal &lt;  8000 ether) return 32580;
-        if (expectedTotal &lt; 11000 ether) return 31880;
-        if (expectedTotal &lt; 15500 ether) return 31220;
-        if (expectedTotal &lt; 20500 ether) return 30590;
-        if (expectedTotal &lt; 26500 ether) return 29970;
+        if (expectedTotal <  6000 ether) return 33300; 
+        if (expectedTotal <  8000 ether) return 32580;
+        if (expectedTotal < 11000 ether) return 31880;
+        if (expectedTotal < 15500 ether) return 31220;
+        if (expectedTotal < 20500 ether) return 30590;
+        if (expectedTotal < 26500 ether) return 29970;
         
         return 29970; // Default token price with no bonuses.
     }
@@ -429,7 +429,7 @@ contract CommonTokensale is MultiOwnable, Pausable {
     function withdraw1(address _to) public {
         require(canWithdraw());
         require(msg.sender == beneficiary1);
-        require(balance1 &gt; 0);
+        require(balance1 > 0);
         
         uint bal = balance1;
         balance1 = 0;
@@ -439,7 +439,7 @@ contract CommonTokensale is MultiOwnable, Pausable {
     function withdraw2(address _to) public {
         require(canWithdraw());
         require(msg.sender == beneficiary2);
-        require(balance2 &gt; 0);
+        require(balance2 > 0);
         
         uint bal = balance2;
         balance2 = 0;
@@ -449,7 +449,7 @@ contract CommonTokensale is MultiOwnable, Pausable {
     function withdraw3(address _to) public {
         require(canWithdraw());
         require(msg.sender == beneficiary3);
-        require(balance3 &gt; 0);
+        require(balance3 > 0);
         
         uint bal = balance3;
         balance3 = 0;
@@ -493,7 +493,7 @@ contract Presale is CommonTokensale {
      * min cap reached OR refund period expired.
      */
     function canWithdraw() public view returns (bool) {
-        return totalWeiReceived &gt;= minCapWei || now &gt; refundDeadlineTime;
+        return totalWeiReceived >= minCapWei || now > refundDeadlineTime;
     }
     
     /** 
@@ -501,7 +501,7 @@ contract Presale is CommonTokensale {
      * refund requested during 3 months after presale finished.
      */
     function canRefund() public view returns (bool) {
-        return totalWeiReceived &lt; minCapWei &amp;&amp; endTime &lt; now &amp;&amp; now &lt;= refundDeadlineTime;
+        return totalWeiReceived < minCapWei && endTime < now && now <= refundDeadlineTime;
     }
 
     function refund() public {
@@ -509,7 +509,7 @@ contract Presale is CommonTokensale {
         
         address buyer = msg.sender;
         uint amount = buyerToSentWei[buyer];
-        require(amount &gt; 0);
+        require(amount > 0);
         
         // Redistribute left balance between three beneficiaries.
         uint newBal = this.balance.sub(amount);

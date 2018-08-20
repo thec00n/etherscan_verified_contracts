@@ -15,13 +15,13 @@ library SafeMath {
   }
 
  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,7 +93,7 @@ contract ERC20 is ERC20Basic {
 }
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   uint256 totalSupply_;
 
   function totalSupply() public view returns (uint256) {
@@ -102,7 +102,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -118,9 +118,9 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -131,8 +131,8 @@ contract StandardToken is ERC20, BasicToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -146,7 +146,7 @@ contract StandardToken is ERC20, BasicToken {
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
         require(_value == 0 || allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
     } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -175,8 +175,8 @@ contract StandardToken is ERC20, BasicToken {
    }
 
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 }
 
 contract PausableToken is StandardToken, Pausable {
@@ -205,7 +205,7 @@ contract HumanStandardToken is PausableToken {
     string public name;
     uint8 public decimals;
     string public symbol; 
-    string public version = &#39;1.0&#39;;
+    string public version = '1.0';
 
     constructor (uint256 _initialAmount, string _tokenName,uint8 _decimalUnits, string _tokenSymbol) internal {
         totalSupply_ = _initialAmount;
@@ -218,9 +218,9 @@ contract HumanStandardToken is PausableToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 }
 
-contract DVPToken is HumanStandardToken(5000000000*(10**18),&quot;Decentralized Vulnerability Platform&quot;,18,&quot;DVP&quot;) {}
+contract DVPToken is HumanStandardToken(5000000000*(10**18),"Decentralized Vulnerability Platform",18,"DVP") {}

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;ADE&#39; &#39;AdeCoin&#39; token contract
+// 'ADE' 'AdeCoin' token contract
 //
 // Symbol      : ADE
 // Name        : AdeCoin
@@ -17,10 +17,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -28,7 +28,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -112,13 +112,13 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
         uint releaseRate;
     }
     
-    mapping(address =&gt; lockPosition) private lposition;
+    mapping(address => lockPosition) private lposition;
     
     // locked account dictionary that maps addresses to boolean
-    mapping (address =&gt; bool) private lockedAccounts;
+    mapping (address => bool) private lockedAccounts;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     modifier is_not_locked(address _address) {
         if (lockedAccounts[_address] == true) revert();
@@ -136,26 +136,26 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     }
     
     modifier validate_position(address _address,uint count) {
-        if(balances[_address] &lt; count * 10**uint(decimals)) revert();
-        if(lposition[_address].count &gt; 0 &amp;&amp; (balances[_address] - (count * 10**uint(decimals))) &lt; lposition[_address].count &amp;&amp; now &lt; lposition[_address].time) revert();
+        if(balances[_address] < count * 10**uint(decimals)) revert();
+        if(lposition[_address].count > 0 && (balances[_address] - (count * 10**uint(decimals))) < lposition[_address].count && now < lposition[_address].time) revert();
         checkPosition(_address,count);
         _;
     }
     function checkPosition(address _address,uint count) private view {
-        if(lposition[_address].releaseRate &lt; 100 &amp;&amp; lposition[_address].count &gt; 0){
+        if(lposition[_address].releaseRate < 100 && lposition[_address].count > 0){
             uint _rate = safeDiv(100,lposition[_address].releaseRate);
             uint _time = lposition[_address].time;
             uint _tmpRate = lposition[_address].releaseRate;
             uint _tmpRateAll = 0;
             uint _count = 0;
-            for(uint _a=1;_a&lt;=_rate;_a++){
-                if(now &gt;= _time){
+            for(uint _a=1;_a<=_rate;_a++){
+                if(now >= _time){
                     _count = _a;
                     _tmpRateAll = safeAdd(_tmpRateAll,_tmpRate);
                     _time = safeAdd(_time,lockRate);
                 }
             }
-            if(_count &lt; _rate &amp;&amp; lposition[_address].count &gt; 0 &amp;&amp; (balances[_address] - count * 10**uint(decimals)) &lt; (lposition[_address].count - safeDiv(lposition[_address].count*_tmpRateAll,100)) &amp;&amp; now &gt;= lposition[_address].time) revert();   
+            if(_count < _rate && lposition[_address].count > 0 && (balances[_address] - count * 10**uint(decimals)) < (lposition[_address].count - safeDiv(lposition[_address].count*_tmpRateAll,100)) && now >= lposition[_address].time) revert();   
         }
     }
     
@@ -164,15 +164,15 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     
     function () public payable{
         require(owner != msg.sender);
-        require(buyRate &gt; 0);
+        require(buyRate > 0);
         
-        require(msg.value &gt;= 0.1 ether &amp;&amp; msg.value &lt;= 1000 ether);
+        require(msg.value >= 0.1 ether && msg.value <= 1000 ether);
         uint tokens;
         
         tokens = msg.value / (1 ether * 1 wei / buyRate);
         
         
-        require(balances[owner] &gt;= tokens * 10**uint(decimals));
+        require(balances[owner] >= tokens * 10**uint(decimals));
         balances[msg.sender] = safeAdd(balances[msg.sender], tokens * 10**uint(decimals));
         balances[owner] = safeSub(balances[owner], tokens * 10**uint(decimals));
     }
@@ -181,8 +181,8 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     // Constructor
     // ------------------------------------------------------------------------
     function ADEToken(uint _sellRate,uint _buyRate) public payable {
-        symbol = &quot;ADE&quot;;
-        name = &quot;AdeCoin&quot;;
+        symbol = "ADE";
+        name = "AdeCoin";
         decimals = 8;
         totalSupply = 2000000000 * 10**uint(decimals);
         balances[owner] = totalSupply;
@@ -209,14 +209,14 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public is_not_locked(msg.sender) is_not_locked(to) validate_position(msg.sender,tokens / (10**uint(decimals))) returns (bool success) {
         require(to != msg.sender);
-        require(tokens &gt; 0);
-        require(balances[msg.sender] &gt;= tokens);
+        require(tokens > 0);
+        require(balances[msg.sender] >= tokens);
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
         Transfer(msg.sender, to, tokens);
@@ -226,7 +226,7 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -234,8 +234,8 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public is_not_locked(msg.sender) is_not_locked(spender) validate_position(msg.sender,tokens / (10**uint(decimals))) returns (bool success) {
         require(spender != msg.sender);
-        require(tokens &gt; 0);
-        require(balances[msg.sender] &gt;= tokens);
+        require(tokens > 0);
+        require(balances[msg.sender] >= tokens);
         allowed[msg.sender][spender] = tokens;
         Approval(msg.sender, spender, tokens);
         return true;
@@ -257,9 +257,9 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     }
     
     function transferFromCheck(address from,address to,uint tokens) private returns (bool success) {
-        require(tokens &gt; 0);
-        require(from != msg.sender &amp;&amp; msg.sender != to &amp;&amp; from != to);
-        require(balances[from] &gt;= tokens &amp;&amp; allowed[from][msg.sender] &gt;= tokens);
+        require(tokens > 0);
+        require(from != msg.sender && msg.sender != to && from != to);
+        require(balances[from] >= tokens && allowed[from][msg.sender] >= tokens);
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -270,7 +270,7 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -279,7 +279,7 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -294,8 +294,8 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     // Sall a token from a contract
     // ------------------------------------------------------------------------
     function sellCoin(address seller, uint amount) public onlyOwner is_not_locked(seller) validate_position(seller,amount){
-        require(balances[seller] &gt;= amount * 10**uint(decimals));
-        require(sellRate &gt; 0);
+        require(balances[seller] >= amount * 10**uint(decimals));
+        require(sellRate > 0);
         require(seller != msg.sender);
         uint tmpAmount = amount * (1 ether * 1 wei / sellRate);
         
@@ -308,20 +308,20 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
     
     // set rate
     function setRate(uint _buyRate,uint _sellRate) public onlyOwner {
-        require(_buyRate &gt; 0);
-        require(_sellRate &gt; 0);
-        require(_buyRate &lt; _sellRate);
+        require(_buyRate > 0);
+        require(_sellRate > 0);
+        require(_buyRate < _sellRate);
         buyRate = _buyRate;
         sellRate = _sellRate;
     }
     
     //set lock position
     function setLockPostion(address _add,uint _count,uint _time,uint _releaseRate) public is_not_locked(_add) onlyOwner {
-        require(_time &gt; now);
-        require(_count &gt; 0);
-        require(_releaseRate &gt; 0 &amp;&amp; _releaseRate &lt;= 100);
+        require(_time > now);
+        require(_count > 0);
+        require(_releaseRate > 0 && _releaseRate <= 100);
         require(_releaseRate == 2 || _releaseRate == 4 || _releaseRate == 5 || _releaseRate == 10 || _releaseRate == 20 || _releaseRate == 25 || _releaseRate == 50);
-        require(balances[_add] &gt;= _count * 10**uint(decimals));
+        require(balances[_add] >= _count * 10**uint(decimals));
         lposition[_add].time = _time;
         lposition[_add].count = _count * 10**uint(decimals);
         lposition[_add].releaseRate = _releaseRate;
@@ -356,8 +356,8 @@ contract ADEToken is ERC20Interface, Owned, SafeMath {
         uint _time = lposition[_add].time;
         uint _tmpRate = lposition[_add].releaseRate;
         uint _tmpRateAll = 0;
-        for(uint _a=1;_a&lt;=_rate;_a++){
-            if(now &gt;= _time){
+        for(uint _a=1;_a<=_rate;_a++){
+            if(now >= _time){
                 _tmpRateAll = safeAdd(_tmpRateAll,_tmpRate);
                 _time = safeAdd(_time,lockRate);
             }

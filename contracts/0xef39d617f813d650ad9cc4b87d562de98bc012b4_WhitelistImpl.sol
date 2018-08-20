@@ -11,7 +11,7 @@ contract Whitelist {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -71,7 +71,7 @@ contract Ownable {
 }
 
 contract WhitelistImpl is Ownable, Whitelist {
-  mapping(address =&gt; bool) whitelist;
+  mapping(address => bool) whitelist;
   event WhitelistChange(address indexed addr, bool allow);
 
   function isInWhitelist(address addr) constant public returns (bool) {
@@ -79,13 +79,13 @@ contract WhitelistImpl is Ownable, Whitelist {
   }
 
   function addToWhitelist(address[] _addresses) onlyOwner public {
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    for (uint i = 0; i < _addresses.length; i++) {
       setWhitelistInternal(_addresses[i], true);
     }
   }
 
   function removeFromWhitelist(address[] _addresses) onlyOwner public {
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    for (uint i = 0; i < _addresses.length; i++) {
       setWhitelistInternal(_addresses[i], false);
     }
   }

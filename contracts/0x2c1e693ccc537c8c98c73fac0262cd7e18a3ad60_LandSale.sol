@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -60,9 +60,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -70,7 +70,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -79,7 +79,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,7 +95,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -196,15 +196,15 @@ contract LandSale is Ownable {
     // 2 - Town
     // 3 - City
 
-    // user wallet address -&gt; # of land
-    mapping (address =&gt; uint256) public addressToNumVillages;
-    mapping (address =&gt; uint256) public addressToNumTowns;
-    mapping (address =&gt; uint256) public addressToNumCities;
+    // user wallet address -> # of land
+    mapping (address => uint256) public addressToNumVillages;
+    mapping (address => uint256) public addressToNumTowns;
+    mapping (address => uint256) public addressToNumCities;
 
-    // user id hash -&gt; # of land
-    mapping (bytes32 =&gt; uint256) public userToNumVillages;
-    mapping (bytes32 =&gt; uint256) public userToNumTowns;
-    mapping (bytes32 =&gt; uint256) public userToNumCities;
+    // user id hash -> # of land
+    mapping (bytes32 => uint256) public userToNumVillages;
+    mapping (bytes32 => uint256) public userToNumTowns;
+    mapping (bytes32 => uint256) public userToNumCities;
 
     bool private paused = false;
     bool public isFinalized = false;
@@ -220,7 +220,7 @@ contract LandSale is Ownable {
      * @dev Reverts if not in crowdsale time range.
      */
     modifier onlyWhileOpen {
-        require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime &amp;&amp; !paused);
+        require(block.timestamp >= openingTime && block.timestamp <= closingTime && !paused);
         _;
     }
 
@@ -230,9 +230,9 @@ contract LandSale is Ownable {
     function LandSale(address _wallet, uint256 _goal,
                         uint256 _openingTime, uint256 _closingTime) public {
         require(_wallet != address(0));
-        require(_goal &gt; 0);
-        require(_openingTime &gt;= block.timestamp);
-        require(_closingTime &gt;= _openingTime);
+        require(_goal > 0);
+        require(_openingTime >= block.timestamp);
+        require(_closingTime >= _openingTime);
 
         wallet = _wallet;
         vault = new RefundVault(wallet);
@@ -245,8 +245,8 @@ contract LandSale is Ownable {
      * @dev Add new ethereum wallet users to array
      */
     function addWalletAddress(address walletAddress) private {
-        if ((addressToNumVillages[walletAddress] == 0) &amp;&amp;
-            (addressToNumTowns[walletAddress] == 0) &amp;&amp;
+        if ((addressToNumVillages[walletAddress] == 0) &&
+            (addressToNumTowns[walletAddress] == 0) &&
             (addressToNumCities[walletAddress] == 0)) {
             // only add address to array during first land purchase
             walletUsers.push(msg.sender);
@@ -258,8 +258,8 @@ contract LandSale is Ownable {
      * @dev Add new CC users to array
      */
     function addCCUser(bytes32 user) private {
-        if ((userToNumVillages[user] == 0) &amp;&amp;
-            (userToNumTowns[user] == 0) &amp;&amp;
+        if ((userToNumVillages[user] == 0) &&
+            (userToNumTowns[user] == 0) &&
             (userToNumCities[user] == 0)) {
             // only add user to array during first land purchase
             ccUsers.push(user);
@@ -272,8 +272,8 @@ contract LandSale is Ownable {
      * villages purchased.
      */
     function purchaseVillage(uint256 numVillages) payable public onlyWhileOpen {
-        require(msg.value &gt;= (villagePrice()*numVillages));
-        require(numVillages &gt; 0);
+        require(msg.value >= (villagePrice()*numVillages));
+        require(numVillages > 0);
 
         weiRaised = weiRaised.add(msg.value);
 
@@ -290,8 +290,8 @@ contract LandSale is Ownable {
      * towns purchased.
      */
     function purchaseTown(uint256 numTowns) payable public onlyWhileOpen {
-        require(msg.value &gt;= (townPrice()*numTowns));
-        require(numTowns &gt; 0);
+        require(msg.value >= (townPrice()*numTowns));
+        require(numTowns > 0);
 
         weiRaised = weiRaised.add(msg.value);
 
@@ -308,8 +308,8 @@ contract LandSale is Ownable {
      * cities purchased.
      */
     function purchaseCity(uint256 numCities) payable public onlyWhileOpen {
-        require(msg.value &gt;= (cityPrice()*numCities));
-        require(numCities &gt; 0);
+        require(msg.value >= (cityPrice()*numCities));
+        require(numCities > 0);
 
         weiRaised = weiRaised.add(msg.value);
 
@@ -325,8 +325,8 @@ contract LandSale is Ownable {
      * @dev Accounting for the CC purchases for audit purposes (no actual ETH transfer here)
      */
     function purchaseLandWithCC(uint8 landType, bytes32 userId, uint256 num) public onlyOwner onlyWhileOpen {
-        require(landType &lt;= 3);
-        require(num &gt; 0);
+        require(landType <= 3);
+        require(num > 0);
 
         addCCUser(userId);
 
@@ -395,7 +395,7 @@ contract LandSale is Ownable {
      * @return Whether crowdsale period has elapsed
      */
     function hasClosed() public view returns (bool) {
-        return block.timestamp &gt; closingTime;
+        return block.timestamp > closingTime;
     }
 
     /**
@@ -413,7 +413,7 @@ contract LandSale is Ownable {
      * @return Whether funding goal was reached
      */
     function goalReached() public view returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
     /**

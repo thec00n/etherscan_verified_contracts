@@ -2,8 +2,8 @@ pragma solidity 0.4.18;
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions,
-/// this simplifies the implementation of &quot;user permissions&quot;.
-/// @dev Based on OpenZeppelin&#39;s Ownable.
+/// this simplifies the implementation of "user permissions".
+/// @dev Based on OpenZeppelin's Ownable.
 
 contract Ownable {
     address public owner;
@@ -58,37 +58,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // require(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // require(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // require(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function toPower2(uint256 a) internal pure returns (uint256) {
@@ -98,7 +98,7 @@ library SafeMath {
     function sqrt(uint256 a) internal pure returns (uint256) {
         uint256 c = (a + 1) / 2;
         uint256 b = a;
-        while (c &lt; b) {
+        while (c < b) {
             b = c;
             c = (a / c + c) / 2;
         }
@@ -137,13 +137,13 @@ contract ERC223Receiver {
 
 
 /// @title Basic ERC20 token contract implementation.
-/// @dev Based on OpenZeppelin&#39;s StandardToken.
+/// @dev Based on OpenZeppelin's StandardToken.
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) balances;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -153,7 +153,7 @@ contract BasicToken is ERC20 {
     /// @param _value uint256 The amount of tokens to be spent.
     function approve(address _spender, uint256 _value) public returns (bool) {
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md#approve (see NOTE)
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) {
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) {
             revert();
         }
 
@@ -250,7 +250,7 @@ contract Standard677Token is ERC677, BasicToken {
     // retrieve the size of the code on target address, this needs assembly
     uint length;
     assembly { length := extcodesize(_addr) }
-    return length &gt; 0;
+    return length > 0;
   }
 }
 
@@ -278,8 +278,8 @@ contract TokenHolder is Ownable {
 contract ColuLocalNetwork is Ownable, Standard677Token, TokenHolder {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Colu Local Network&quot;;
-    string public constant symbol = &quot;CLN&quot;;
+    string public constant name = "Colu Local Network";
+    string public constant symbol = "CLN";
 
     // Using same decimals value as ETH (makes ETH-CLN conversion much easier).
     uint8 public constant decimals = 18;
@@ -411,7 +411,7 @@ contract TokenOwnable is Standard223Receiver, Ownable {
 
 
 /// @title Vesting trustee contract for Colu Local Network.
-/// @dev This Contract can&#39;t be TokenHolder, since it will allow its owner to drain its vested tokens.
+/// @dev This Contract can't be TokenHolder, since it will allow its owner to drain its vested tokens.
 /// @dev This means that any token sent to it different than ColuLocalNetwork is basicly stucked here forever.
 /// @dev ColuLocalNetwork that sent here (by mistake) can withdrawn using the grant method.
 contract VestingTrustee is TokenOwnable {
@@ -432,7 +432,7 @@ contract VestingTrustee is TokenOwnable {
     }
 
     // Holder to grant information mapping.
-    mapping (address =&gt; Grant) public grants;
+    mapping (address => Grant) public grants;
 
     // Total tokens vested.
     uint256 public totalVesting;
@@ -478,19 +478,19 @@ contract VestingTrustee is TokenOwnable {
 
         uint256 value = tkn.value;
 
-        require(value &gt; 0);
+        require(value > 0);
 
         // Require that every holder can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Require for time ranges to be consistent and valid.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
         // Require installment length to be valid and no longer than (end - start).
-        require(_installmentLength &gt; 0 &amp;&amp; _installmentLength &lt;= _end.sub(_start));
+        require(_installmentLength > 0 && _installmentLength <= _end.sub(_start));
 
         // Grant must not exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(value) &lt;= cln.balanceOf(address(this)));
+        require(totalVesting.add(value) <= cln.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -523,19 +523,19 @@ contract VestingTrustee is TokenOwnable {
 
         require(_to != address(0));
         require(_to != address(this)); // Protect this contract from receiving a grant.
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Require that every holder can be granted tokens only once.
         require(grants[_to].value == 0);
 
         // Require for time ranges to be consistent and valid.
-        require(_start &lt;= _cliff &amp;&amp; _cliff &lt;= _end);
+        require(_start <= _cliff && _cliff <= _end);
 
         // Require installment length to be valid and no longer than (end - start).
-        require(_installmentLength &gt; 0 &amp;&amp; _installmentLength &lt;= _end.sub(_start));
+        require(_installmentLength > 0 && _installmentLength <= _end.sub(_start));
 
         // Grant must not exceed the total amount of tokens currently available for vesting.
-        require(totalVesting.add(_value) &lt;= cln.balanceOf(address(this)));
+        require(totalVesting.add(_value) <= cln.balanceOf(address(this)));
 
         // Assign a new grant.
         grants[_to] = Grant({
@@ -555,7 +555,7 @@ contract VestingTrustee is TokenOwnable {
     }
 
     /// @dev Revoke the grant of tokens of a specifed address.
-    /// @dev Unlocked tokens will be sent to the grantee, the rest is transferred to the trustee&#39;s owner.
+    /// @dev Unlocked tokens will be sent to the grantee, the rest is transferred to the trustee's owner.
     /// @param _holder The address which will have its tokens revoked.
     function revoke(address _holder) public onlyOwner {
         Grant memory grant = grants[_holder];
@@ -569,7 +569,7 @@ contract VestingTrustee is TokenOwnable {
         // Calculate the untransferred vested tokens.
         uint256 transferable = vested.sub(grant.transferred);
 
-        if (transferable &gt; 0) {
+        if (transferable > 0) {
             // Update transferred and total vesting amount, then transfer remaining vested funds to holder.
             grant.transferred = grant.transferred.add(transferable);
             totalVesting = totalVesting.sub(transferable);
@@ -593,7 +593,7 @@ contract VestingTrustee is TokenOwnable {
 
     /// @dev Calculate the amount of ready tokens of a holder.
     /// @param _holder address The address of the holder.
-    /// @return a uint256 Representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 Representing a holder's total amount of vested tokens.
     function readyTokens(address _holder) public constant returns (uint256) {
         Grant memory grant = grants[_holder];
 
@@ -613,7 +613,7 @@ contract VestingTrustee is TokenOwnable {
     /// @dev Calculate the total amount of vested tokens of a holder at a given time.
     /// @param _holder address The address of the holder.
     /// @param _time uint256 The specific time to calculate against.
-    /// @return a uint256 Representing a holder&#39;s total amount of vested tokens.
+    /// @return a uint256 Representing a holder's total amount of vested tokens.
     function vestedTokens(address _holder, uint256 _time) public constant returns (uint256) {
         Grant memory grant = grants[_holder];
         if (grant.value == 0) {
@@ -628,13 +628,13 @@ contract VestingTrustee is TokenOwnable {
     /// @param _time uint256 The time to be checked
     /// @return An uint256 Representing the amount of vested tokens of a specific grant.
     function calculateVestedTokens(Grant _grant, uint256 _time) private pure returns (uint256) {
-        // If we&#39;re before the cliff, then nothing is vested.
-        if (_time &lt; _grant.cliff) {
+        // If we're before the cliff, then nothing is vested.
+        if (_time < _grant.cliff) {
             return 0;
         }
 
-        // If we&#39;re after the end of the vesting period - everything is vested.
-        if (_time &gt;= _grant.end) {
+        // If we're after the end of the vesting period - everything is vested.
+        if (_time >= _grant.end) {
             return _grant.value;
         }
 
@@ -675,7 +675,7 @@ contract VestingTrustee is TokenOwnable {
             return ERR_INVALID_VESTED;
         }
 
-        // Make sure the holder doesn&#39;t transfer more than what he already has.
+        // Make sure the holder doesn't transfer more than what he already has.
         uint256 transferable = vested.sub(grant.transferred);
         if (transferable == 0) {
             Error(_grantee, ERR_INVALID_TRANSFERABLE);
@@ -695,7 +695,7 @@ contract VestingTrustee is TokenOwnable {
     /// @param _grantees address[] The addresses of the grantees.
     /// @return a boo if success.
     function batchUnlockVestedTokens(address[] _grantees) external onlyOwner returns (bool success) {
-        for (uint i = 0; i&lt;_grantees.length; i++) {
+        for (uint i = 0; i<_grantees.length; i++) {
             unlockVestedTokens(_grantees[i]);
         }
         return true;
@@ -708,7 +708,7 @@ contract VestingTrustee is TokenOwnable {
         if (_tokenAddress == address(cln)) {
             // If the token is cln, allow to withdraw only non vested tokens.
             uint256 availableCLN = cln.balanceOf(this).sub(totalVesting);
-            require(_amount &lt;= availableCLN);
+            require(_amount <= availableCLN);
         }
         return ERC20(_tokenAddress).transfer(owner, _amount);
     }
@@ -783,14 +783,14 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
     uint256 public presaleTokensSold = 0;
 
     // Accumulated amount each participant has contributed so far in the sale (in WEI).
-    mapping (address =&gt; uint256) public participationHistory;
+    mapping (address => uint256) public participationHistory;
 
     // Accumulated amount each participant have contributed so far in the presale.
-    mapping (address =&gt; uint256) public participationPresaleHistory;
+    mapping (address => uint256) public participationPresaleHistory;
 
     // Maximum amount that each particular is allowed to contribute (in ETH-WEI).
     // Defaults to zero. Serving as a functional whitelist. 
-    mapping (address =&gt; uint256) public participationCaps;
+    mapping (address => uint256) public participationCaps;
 
     // Maximum amount ANYONE is currently allowed to contribute. Set to max uint256 so no limitation other than personal participationCaps.
     uint256 public hardParticipationCap = uint256(-1);
@@ -815,7 +815,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
 
     /// @dev Reverts if called not before the sale.
     modifier onlyBeforeSale() {
-        if (now &gt;= startTime) {
+        if (now >= startTime) {
             revert();
         }
 
@@ -824,7 +824,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
 
     /// @dev Reverts if called not during the sale.
     modifier onlyDuringSale() {
-        if (tokensSold &gt;= MAX_TOKENS_SOLD || now &lt; startTime || now &gt;= endTime) {
+        if (tokensSold >= MAX_TOKENS_SOLD || now < startTime || now >= endTime) {
             revert();
         }
 
@@ -833,7 +833,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
 
     /// @dev Reverts if called before the sale ends.
     modifier onlyAfterSale() {
-        if (!(tokensSold &gt;= MAX_TOKENS_SOLD || now &gt;= endTime)) {
+        if (!(tokensSold >= MAX_TOKENS_SOLD || now >= endTime)) {
             revert();
         }
 
@@ -877,7 +877,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
         require(_communityPoolAddress != address(0));
         require(_futureDevelopmentPoolAddress != address(0));
         require(_stakeholdersPoolAddress != address(0));
-        require(_startTime &gt; now);
+        require(_startTime > now);
 
         owner = _owner;
         fundingRecipient = _fundingRecipient;
@@ -920,7 +920,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
     /// @param _vestingPlanIndex uint8 The vesting plan index.
     function presaleAllocation(address _recipient, uint256 _etherValue, uint8 _vestingPlanIndex) external onlyOwner onlyBeforeSale isInitialized {
         require(_recipient != address(0));
-        require(_vestingPlanIndex &lt; vestingPlans.length);
+        require(_vestingPlanIndex < vestingPlans.length);
 
         // Calculate plan and token amount.
         VestingPlan memory plan = vestingPlans[_vestingPlanIndex];
@@ -929,7 +929,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
         uint256 tokensLeftInPreSale = MAX_PRESALE_TOKENS_SOLD.sub(presaleTokensSold);
         uint256 weiLeftInSale = tokensLeftInPreSale.div(tokensAndALAPPerEth);
         uint256 weiToParticipate = SafeMath.min256(_etherValue, weiLeftInSale);
-        require(weiToParticipate &gt; 0);
+        require(weiToParticipate > 0);
         participationPresaleHistory[msg.sender] = participationPresaleHistory[msg.sender].add(weiToParticipate);
         uint256 tokensToTransfer = weiToParticipate.mul(tokensAndALAPPerEth);
         presaleTokensSold = presaleTokensSold.add(tokensToTransfer);
@@ -944,7 +944,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
     /// @param _participants address[] The list of participant addresses.
     /// @param _cap uint256 The cap amount (in ETH-WEI).
     function setParticipationCap(address[] _participants, uint256 _cap) external onlyOwner isInitialized {
-        for (uint i = 0; i &lt; _participants.length; i++) {
+        for (uint i = 0; i < _participants.length; i++) {
             participationCaps[_participants[i]] = _cap;
         }
     }
@@ -952,7 +952,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
     /// @dev Set hard participation cap for all participants.
     /// @param _cap uint256 The hard cap amount.
     function setHardParticipationCap(uint256 _cap) external onlyOwner isInitialized {
-        require(_cap &gt; 0);
+        require(_cap > 0);
 
         hardParticipationCap = _cap;
     }
@@ -971,7 +971,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
         uint256 weiAlreadyParticipated = participationHistory[_recipient];
         uint256 participationCap = SafeMath.min256(participationCaps[_recipient], hardParticipationCap);
         uint256 cappedWeiReceived = SafeMath.min256(msg.value, participationCap.sub(weiAlreadyParticipated));
-        require(cappedWeiReceived &gt; 0);
+        require(cappedWeiReceived > 0);
 
         // Accept funds and transfer to funding recipient.
         uint256 tokensLeftInSale = MAX_TOKENS_SOLD.sub(tokensSold);
@@ -982,7 +982,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
 
         // Transfer tokens to recipient.
         uint256 tokensToTransfer = weiToParticipate.mul(CLN_PER_ETH);
-        if (tokensLeftInSale.sub(tokensToTransfer) &lt; CLN_PER_ETH) {
+        if (tokensLeftInSale.sub(tokensToTransfer) < CLN_PER_ETH) {
             // If purchase would cause less than CLN_PER_ETH tokens to be left then nobody could ever buy them.
             // So, gift them to the last buyer.
             tokensToTransfer = tokensLeftInSale;
@@ -993,7 +993,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
         // Partial refund if full participation not possible
         // e.g. due to cap being reached.
         uint256 refund = msg.value.sub(weiToParticipate);
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
     }
@@ -1017,7 +1017,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
 
     function grant(address _grantee, uint256 _amount, uint256 _start, uint256 _cliff, uint256 _end,
         uint256 _installmentLength, bool _revokable) private {
-        // bytes4 grantSig = bytes4(keccak256(&quot;grant(address,uint256,uint256,uint256,uint256,bool)&quot;));
+        // bytes4 grantSig = bytes4(keccak256("grant(address,uint256,uint256,uint256,uint256,bool)"));
         bytes4 grantSig = 0x5ee7e96d;
         // 6 arguments of size 32
         uint256 argsSize = 6 * 32;
@@ -1067,7 +1067,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
     /// @param _newOwnerCandidate address The address to transfer ownership to.
     ///
     /// NOTE:
-    ///   1. The new owner will need to call Colu Local Network contract&#39;s acceptOwnership directly in order to accept the ownership.
+    ///   1. The new owner will need to call Colu Local Network contract's acceptOwnership directly in order to accept the ownership.
     ///   2. Calling this method during the token sale will prevent the token sale to continue, since only the owner of
     ///      the Colu Local Network contract can transfer tokens during the sale.
     function requestColuLocalNetworkOwnershipTransfer(address _newOwnerCandidate) external onlyOwner {
@@ -1084,7 +1084,7 @@ contract ColuLocalNetworkSale is Ownable, TokenHolder {
     /// @param _newOwnerCandidate address The address to transfer ownership to.
     ///
     /// NOTE:
-    ///   1. The new owner will need to call trustee contract&#39;s acceptOwnership directly in order to accept the ownership.
+    ///   1. The new owner will need to call trustee contract's acceptOwnership directly in order to accept the ownership.
     ///   2. Calling this method during the token sale will prevent the token sale from alocation presale grunts add finalize, since only the owner of
     ///      the trustee contract can create grunts needed in the presaleAlocation add finalize methods.
     function requestVestingTrusteeOwnershipTransfer(address _newOwnerCandidate) external onlyOwner {

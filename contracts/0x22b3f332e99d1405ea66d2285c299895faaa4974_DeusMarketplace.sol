@@ -58,7 +58,7 @@ contract ERC721Basic {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba; 
@@ -73,7 +73,7 @@ contract ERC721Receiver {
    * @param _from The sending address 
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -84,8 +84,8 @@ contract DeusMarketplace is Ownable, ERC721Receiver {
   uint256 public fee_percentage;
   ERC721Basic public token;
   
-  mapping(uint256 =&gt; uint256) public priceList;
-  mapping(uint256 =&gt; address) public holderList;
+  mapping(uint256 => uint256) public priceList;
+  mapping(uint256 => address) public holderList;
   
   event Stored(uint256 indexed id, uint256 price, address seller);
   event Cancelled(uint256 indexed id, address seller);
@@ -125,7 +125,7 @@ contract DeusMarketplace is Ownable, ERC721Receiver {
     
     uint256 _price = uint256(convertBytesToBytes32(_data));
     
-    require(_price &gt; 0);
+    require(_price > 0);
     
     priceList[_tokenId] = _price;
     holderList[_tokenId] = _from;

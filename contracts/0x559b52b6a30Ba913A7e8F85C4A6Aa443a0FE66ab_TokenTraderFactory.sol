@@ -104,7 +104,7 @@ contract TokenTrader is owned {
     // allow owner to remove ETH
     function withdraw(uint256 _value) onlyOwner returns (bool ok)
     {
-        if(this.balance &gt;= _value) {
+        if(this.balance >= _value) {
             return owner.send(_value);
         }
     }
@@ -116,14 +116,14 @@ contract TokenTrader is owned {
             uint order   = msg.value / sellPrice; 
             uint can_sell = ERC20(asset).balanceOf(address(this)) / units;
 
-            if(order &gt; can_sell)
+            if(order > can_sell)
             {
                 uint256 change = msg.value - (can_sell * sellPrice);
                 order = can_sell;
                 if(!msg.sender.send(change)) throw;
             }
 
-            if(order &gt; 0) {
+            if(order > 0) {
                 if(!ERC20(asset).transfer(msg.sender,order * units)) throw;
             }
             UpdateEvent();
@@ -138,9 +138,9 @@ contract TokenTrader is owned {
             uint256 can_buy = this.balance / buyPrice;  // token lots contract can buy
             uint256 order = amount / units;             // token lots available
 
-            if(order &gt; can_buy) order = can_buy;        // adjust order for funds
+            if(order > can_buy) order = can_buy;        // adjust order for funds
 
-            if (order &gt; 0)
+            if (order > 0)
             { 
                 // extract user tokens
                 if(!ERC20(asset).transferFrom(msg.sender, address(this), amount)) throw;
@@ -166,8 +166,8 @@ contract TokenTraderFactory {
     event TradeListing(bytes32 bookid, address owner, address addr);
     event NewBook(bytes32 bookid, address asset, uint256 units);
 
-    mapping( address =&gt; bool ) public verify;
-    mapping( bytes32 =&gt; bool ) pairExits;
+    mapping( address => bool ) public verify;
+    mapping( bytes32 => bool ) pairExits;
 
     function createTradeContract(       
         address _asset, 
@@ -178,8 +178,8 @@ contract TokenTraderFactory {
         bool    _buysTokens
         ) returns (address) 
     {
-        if(_buyPrice &gt; _sellPrice) throw; // must make profit on spread
-        if(_units == 0) throw;              // can&#39;t sell zero units
+        if(_buyPrice > _sellPrice) throw; // must make profit on spread
+        if(_units == 0) throw;              // can't sell zero units
 
         address trader = new TokenTrader (
                      _asset, 

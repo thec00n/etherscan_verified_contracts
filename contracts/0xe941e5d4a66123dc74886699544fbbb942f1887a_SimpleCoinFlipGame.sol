@@ -18,14 +18,14 @@ contract SimpleCoinFlipGame {
         
         FlippedCoin(msg.sender, msg.value, coinsFlipped++);
         
-        // wager of &gt; 42 Finey is not accepted
-        if(msg.value &gt; 42000000000000000){
+        // wager of > 42 Finey is not accepted
+        if(msg.value > 42000000000000000){
             msg.sender.send(msg.value - 100000);
             won++;
             return;   
         }
         
-        if(randomNumber &lt; 4) {
+        if(randomNumber < 4) {
             msg.sender.send(2 * (msg.value - 100000));
             won++;
             return;

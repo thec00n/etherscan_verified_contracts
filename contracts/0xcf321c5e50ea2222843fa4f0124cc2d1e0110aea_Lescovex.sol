@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-//vicent nos &amp; enrique santos
+//vicent nos & enrique santos
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
     if (a == 0) {
@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract Ownable {
 
 //////////////////////////////////////////////////////////////
 //                                                          //
-//  Lescovex, Shareholder&#39;s ERC20  //
+//  Lescovex, Shareholder's ERC20  //
 //                                                          //
 //////////////////////////////////////////////////////////////
 
@@ -73,9 +73,9 @@ contract Lescovex is Ownable {
   uint256 public totalSupply;
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping(address =&gt; uint256) holded;
+  mapping(address => uint256) holded;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -84,8 +84,8 @@ contract Lescovex is Ownable {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(block.timestamp&gt;blockEndICO || msg.sender==owner);
+    require(_value <= balances[msg.sender]);
+    require(block.timestamp>blockEndICO || msg.sender==owner);
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     holded[_to]=block.number;
@@ -105,13 +105,13 @@ contract Lescovex is Ownable {
     return holded[_owner];
   }
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     holded[_to]=block.number;
@@ -148,7 +148,7 @@ contract Lescovex is Ownable {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public onlyOwner returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -157,7 +157,7 @@ contract Lescovex is Ownable {
     return true;
   }
 
-    string public constant standard = &quot;ERC20 Lescovex&quot;;
+    string public constant standard = "ERC20 Lescovex";
 
     /* Public variables for the ERC20 token, defined when calling the constructor */
     string public name;
@@ -170,15 +170,15 @@ contract Lescovex is Ownable {
     uint256 public buyPrice = minPrice;
 
     uint256 constant initialSupply=0;
-    string constant tokenName=&quot;Lescovex Shareholder&#39;s&quot;;
-    string constant tokenSymbol=&quot;LCX&quot;;
+    string constant tokenName="Lescovex Shareholder's";
+    string constant tokenSymbol="LCX";
 
     uint256 public tokenReward = 0;
     // constant to simplify conversion of token amounts into integer form
     uint256 public tokenUnit = uint256(10)**decimals;
     
     // Spread in parts per 100 millions, such that expressing percentages is 
-    // just to append the postfix &#39;e6&#39;. For example, 4.53% is: spread = 4.53e6
+    // just to append the postfix 'e6'. For example, 4.53% is: spread = 4.53e6
     address public LescovexAddr = 0xD26286eb9E6E623dba88Ed504b628F648ADF7a0E;
 
     //Declare logging events
@@ -200,24 +200,24 @@ contract Lescovex is Ownable {
     modifier status() {
         _;  // modified function code should go before prices update
 
-    if(block.timestamp&lt;1519862460){ //until 1 march 2018
-      if(totalSupply&lt;50000000000000){
+    if(block.timestamp<1519862460){ //until 1 march 2018
+      if(totalSupply<50000000000000){
         buyPrice=7500000000000000;
       }else{
         buyPrice=8000000000000000;
       }
   
-    }else if(block.timestamp&lt;1520640060){ // until 10 march 2018
+    }else if(block.timestamp<1520640060){ // until 10 march 2018
 
       buyPrice=8000000000000000;
-    }else if(block.timestamp&lt;1521504060){ //until 20 march 2018
+    }else if(block.timestamp<1521504060){ //until 20 march 2018
 
       buyPrice=8500000000000000;
-    }else if(block.timestamp&lt;1522368060){ //until 30 march 2018
+    }else if(block.timestamp<1522368060){ //until 30 march 2018
 
       buyPrice=9000000000000000;
 
-    }else if(block.timestamp&lt;1523232060){ //until 9 april 2018
+    }else if(block.timestamp<1523232060){ //until 9 april 2018
       buyPrice=9500000000000000;
 
     }else{
@@ -230,7 +230,7 @@ contract Lescovex is Ownable {
 
     function deposit() public payable status returns(bool success) {
         // Check for overflows;
-        assert (this.balance + msg.value &gt;= this.balance); // Check for overflows
+        assert (this.balance + msg.value >= this.balance); // Check for overflows
       tokenReward=this.balance/totalSupply;
         //executes event to reflect the changes
         LogDeposit(msg.sender, msg.value);
@@ -239,7 +239,7 @@ contract Lescovex is Ownable {
     }
 
   function withdrawReward() public status {
-    require (block.number - holded[msg.sender] &gt; 172800); //1 month
+    require (block.number - holded[msg.sender] > 172800); //1 month
     
     holded[msg.sender] = block.number;
     uint256 ethAmount = tokenReward * balances[msg.sender];
@@ -282,8 +282,8 @@ contract Lescovex is Ownable {
            
     function buy() public payable status{
      
-      require (totalSupply&lt;=1000000000000000);
-      require(block.timestamp&lt;blockEndICO);
+      require (totalSupply<=1000000000000000);
+      require(block.timestamp<blockEndICO);
 
       uint256 tokenAmount = (msg.value / buyPrice)*tokenUnit ;  // calculates the amount
 

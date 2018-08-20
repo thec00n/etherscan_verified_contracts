@@ -24,13 +24,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,14 +58,14 @@ contract HashBux is owned,IERC20{
     
     uint256 public _totalSupply = 80000000;
  
-    string public symbol = &#39;HASH&#39;;
+    string public symbol = 'HASH';
 
-    string public name = &#39;HashBux&#39;;
+    string public name = 'HashBux';
     
     uint8 public decimals = 0;
     
-    mapping(address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function HashBux() {
         balances[msg.sender] = _totalSupply;
@@ -73,7 +73,7 @@ contract HashBux is owned,IERC20{
     
     // HashBux-specific
    function mine( uint256 newTokens ) public onlyOwner {
-        require(newTokens + _totalSupply &lt;= 4000000000);
+        require(newTokens + _totalSupply <= 4000000000);
     
         _totalSupply = _totalSupply.add(newTokens);
         balances[owner] = balances[owner].add(newTokens);
@@ -90,8 +90,8 @@ contract HashBux is owned,IERC20{
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
         );
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -102,9 +102,9 @@ contract HashBux is owned,IERC20{
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(
-            allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0  
+            allowed[_from][msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value > 0  
         );
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

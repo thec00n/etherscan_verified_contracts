@@ -16,7 +16,7 @@ contract EthereumRouletteInterface {
   // Contains all spins that happened so far. All spins, except that last two, are
   // settled. A spin is settled if and only if the spin_result and nonce are revealed by
   // the owner or owner_took_too_long flag is true. If a spin is settled, then players can
-  // collect their winnings from that spin. It&#39;s possible that the last two spins are also
+  // collect their winnings from that spin. It's possible that the last two spins are also
   // settled if the owner took too long.
   Spin[] public spins;
 
@@ -35,9 +35,9 @@ contract EthereumRouletteInterface {
     bytes32 nonce;
     // Total amount that was bet on a particular number. Used to verify that the amount
     // bet on a number does not exceed max_bet_this_spin.
-    mapping(uint8 =&gt; uint) total_bet_on_number;
+    mapping(uint8 => uint) total_bet_on_number;
     // Maps player address to a bet on a particular spin_result.
-    mapping(address =&gt; mapping(uint8 =&gt; Bet)) bets;
+    mapping(address => mapping(uint8 => Bet)) bets;
     // This can be set to true if player_declare_taking_too_long is called if the owner is
     // taking too long. In that case all bets in this round will be winners.
     bool owner_took_too_long;
@@ -105,7 +105,7 @@ contract EthereumRoulette is EthereumRouletteInterface {
 
   modifier onlyOwner {if (msg.sender != owner) throw; _}
 
-  modifier noEther {if (msg.value &gt; 0) throw; _}
+  modifier noEther {if (msg.value > 0) throw; _}
 
   modifier etherRequired {if (msg.value == 0) throw; _}
 
@@ -114,7 +114,7 @@ contract EthereumRoulette is EthereumRouletteInterface {
     fraction = 800;
     owner_time_limit = 7 days;
     // The contract must always have 2 unrevealed spins. This is why we commit the first
-    // two spins in the constructor. This means that it&#39;s not possible to bet on spin #1.
+    // two spins in the constructor. This means that it's not possible to bet on spin #1.
     bytes32 first_num_hash = 0x3c81cf7279de81901303687979a6b62fdf04ec93480108d2ef38090d6135ad9f;
     bytes32 second_num_hash = 0xb1540f17822cbe4daef5f1d96662b2dc92c5f9a2411429faaf73555d3149b68e;
     spins.length++;
@@ -127,10 +127,10 @@ contract EthereumRoulette is EthereumRouletteInterface {
   function player_make_bet(uint8 spin_result) etherRequired {
     Spin second_unrevealed_spin = spins[spins.length - 1];
     if (second_unrevealed_spin.owner_took_too_long
-        || spin_result &gt; 37
-        || msg.value + second_unrevealed_spin.total_bet_on_number[spin_result] &gt; max_bet_this_spin
+        || spin_result > 37
+        || msg.value + second_unrevealed_spin.total_bet_on_number[spin_result] > max_bet_this_spin
         // verify it will be possible to pay the player in the worst case
-        || msg.value * 36 + reserved_funds() &gt; address(this).balance) {
+        || msg.value * 36 + reserved_funds() > address(this).balance) {
       throw;
     }
     Bet b = second_unrevealed_spin.bets[msg.sender][spin_result];
@@ -145,17 +145,17 @@ contract EthereumRoulette is EthereumRouletteInterface {
 
   function player_collect_winnings(uint spin_num) noEther {
     Spin s = spins[spin_num];
-    if (spin_num &gt;= spins.length - 2) {
+    if (spin_num >= spins.length - 2) {
       throw;
     }
     if (s.owner_took_too_long) {
       bool at_least_one_number_paid = false;
-      for (uint8 roulette_num = 0; roulette_num &lt; 38; roulette_num++) {
+      for (uint8 roulette_num = 0; roulette_num < 38; roulette_num++) {
         Bet messed_up_bet = s.bets[msg.sender][roulette_num];
         if (messed_up_bet.already_paid) {
           throw;
         }
-        if (messed_up_bet.amount &gt; 0) {
+        if (messed_up_bet.amount > 0) {
           msg.sender.send(messed_up_bet.amount * 36);
           locked_funds_for_revealed_spins -= messed_up_bet.amount * 36;
           messed_up_bet.already_paid = true;
@@ -180,10 +180,10 @@ contract EthereumRoulette is EthereumRouletteInterface {
   function player_declare_taking_too_long() noEther {
     Spin first_unrevealed_spin = spins[spins.length - 2];
     bool first_spin_too_long = first_unrevealed_spin.time_of_latest_reveal != 0
-        &amp;&amp; now &gt; first_unrevealed_spin.time_of_latest_reveal;
+        && now > first_unrevealed_spin.time_of_latest_reveal;
     Spin second_unrevealed_spin = spins[spins.length - 1];
     bool second_spin_too_long = second_unrevealed_spin.time_of_latest_reveal != 0
-        &amp;&amp; now &gt; second_unrevealed_spin.time_of_latest_reveal;
+        && now > second_unrevealed_spin.time_of_latest_reveal;
     if (!(first_spin_too_long || second_spin_too_long)) {
       throw;
     }
@@ -207,7 +207,7 @@ contract EthereumRoulette is EthereumRouletteInterface {
   function owner_reveal_and_commit(uint8 spin_result, bytes32 nonce, bytes32 commit_hash) onlyOwner noEther {
     Spin first_unrevealed_spin = spins[spins.length - 2];
     if (!first_unrevealed_spin.owner_took_too_long) {
-      if (sha3(spin_result, nonce) != first_unrevealed_spin.commit_hash || spin_result &gt; 37) {
+      if (sha3(spin_result, nonce) != first_unrevealed_spin.commit_hash || spin_result > 37) {
         throw;
       }
       first_unrevealed_spin.spin_result = spin_result;
@@ -221,8 +221,8 @@ contract EthereumRoulette is EthereumRouletteInterface {
   }
 
   function owner_set_time_limit(uint new_time_limit) onlyOwner noEther {
-    if (new_time_limit &gt; 2 weeks) {
-      // We don&#39;t want the owner to be able to set a time limit of something like 1000
+    if (new_time_limit > 2 weeks) {
+      // We don't want the owner to be able to set a time limit of something like 1000
       // years.
       throw;
     }
@@ -232,7 +232,7 @@ contract EthereumRoulette is EthereumRouletteInterface {
   function owner_deposit() onlyOwner etherRequired {}
 
   function owner_withdraw(uint amount) onlyOwner noEther {
-    if (amount &gt; address(this).balance - reserved_funds()) {
+    if (amount > address(this).balance - reserved_funds()) {
       throw;
     }
     owner.send(amount);
@@ -255,7 +255,7 @@ contract EthereumRoulette is EthereumRouletteInterface {
     if (s.time_of_latest_reveal == 0) {
       return -1;
     }
-    if (now &gt; s.time_of_latest_reveal) {
+    if (now > s.time_of_latest_reveal) {
       return 0;
     }
     return int(s.time_of_latest_reveal - now);

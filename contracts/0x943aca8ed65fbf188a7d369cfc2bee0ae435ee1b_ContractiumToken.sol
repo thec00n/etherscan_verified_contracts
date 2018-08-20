@@ -31,14 +31,14 @@ library SafeMath {
 
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -59,7 +59,7 @@ contract BasicToken is ERC20Basic {
   
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -85,14 +85,14 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -123,7 +123,7 @@ contract StandardToken is ERC20, BasicToken {
   
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -173,7 +173,7 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
    
    
 
@@ -222,11 +222,11 @@ contract TokenOffering is StandardToken, Ownable, BurnableToken {
 
     
     function preValidatePurchase(uint256 _amount) internal {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(isOfferingStarted);
         require(offeringEnabled);
-        require(currentTokenOfferingRaised.add(_amount) &lt;= currentTotalTokenOffering);
-        require(block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt;= endTime);
+        require(currentTokenOfferingRaised.add(_amount) <= currentTotalTokenOffering);
+        require(block.timestamp >= startTime && block.timestamp <= endTime);
     }
     
     
@@ -247,9 +247,9 @@ contract TokenOffering is StandardToken, Ownable, BurnableToken {
         uint256 _endTime,
         bool _isBurnInClose
     ) public onlyOwner returns (bool) {
-        require(_tokenOffering &lt;= balances[owner]);
-        require(_startTime &lt;= _endTime);
-        require(_startTime &gt;= block.timestamp);
+        require(_tokenOffering <= balances[owner]);
+        require(_startTime <= _endTime);
+        require(_startTime >= block.timestamp);
 
        
         require(!isOfferingStarted);
@@ -276,15 +276,15 @@ contract TokenOffering is StandardToken, Ownable, BurnableToken {
     
     function updateStartTime(uint256 _startTime) public onlyOwner {
         require(isOfferingStarted);
-        require(_startTime &lt;= endTime);
-        require(_startTime &gt;= block.timestamp);
+        require(_startTime <= endTime);
+        require(_startTime >= block.timestamp);
         startTime = _startTime;
     }
 
     
     function updateEndTime(uint256 _endTime) public onlyOwner {
         require(isOfferingStarted);
-        require(_endTime &gt;= startTime);
+        require(_endTime >= startTime);
         endTime = _endTime;
     }
 
@@ -305,7 +305,7 @@ contract TokenOffering is StandardToken, Ownable, BurnableToken {
 
     
     function burnRemainTokenOffering() internal {
-        if (currentTokenOfferingRaised &lt; currentTotalTokenOffering) {
+        if (currentTokenOfferingRaised < currentTotalTokenOffering) {
             uint256 remainTokenOffering = currentTotalTokenOffering.sub(currentTokenOfferingRaised);
             _burn(owner, remainTokenOffering);
         }
@@ -336,7 +336,7 @@ contract WithdrawTrack is StandardToken, Ownable {
 		string withdrawId;
 	}
 
-	mapping(string =&gt; TrackInfo) withdrawTracks;
+	mapping(string => TrackInfo) withdrawTracks;
 
 	function withdrawToken(address _to, uint256 _amountToken, string _withdrawId) public onlyOwner returns (bool) {
 		bool result = transfer(_to, _amountToken);
@@ -355,7 +355,7 @@ contract WithdrawTrack is StandardToken, Ownable {
 
 
 contract ContractSpendToken is StandardToken, Ownable {
-  mapping (address =&gt; address) private contractToReceiver;
+  mapping (address => address) private contractToReceiver;
 
   function addContract(address _contractAdd, address _to) external onlyOwner returns (bool) {
     require(_contractAdd != address(0x0));
@@ -373,7 +373,7 @@ contract ContractSpendToken is StandardToken, Ownable {
   function contractSpend(address _from, uint256 _value) public returns (bool) {
     address _to = contractToReceiver[msg.sender];
     require(_to != address(0x0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -388,8 +388,8 @@ contract ContractSpendToken is StandardToken, Ownable {
 
 contract ContractiumToken is TokenOffering, WithdrawTrack, ContractSpendToken {
 
-    string public constant name = &quot;Contractium&quot;;
-    string public constant symbol = &quot;CTU&quot;;
+    string public constant name = "Contractium";
+    string public constant symbol = "CTU";
     uint8 public constant decimals = 18;
   
     uint256 public constant INITIAL_SUPPLY = 3000000000 * (10 ** uint256(decimals));
@@ -423,7 +423,7 @@ contract ContractiumToken is TokenOffering, WithdrawTrack, ContractSpendToken {
 
        
         preValidatePurchase(amount);
-        require(balances[owner] &gt;= amount);
+        require(balances[owner] >= amount);
         
         totalWeiRaised = totalWeiRaised.add(msg.value);
     
@@ -442,20 +442,20 @@ contract ContractiumToken is TokenOffering, WithdrawTrack, ContractSpendToken {
 
     function batchTransfer(address[] _receivers, uint256[] _amounts) public returns(bool) {
         uint256 cnt = _receivers.length;
-        require(cnt &gt; 0 &amp;&amp; cnt &lt;= 20);
+        require(cnt > 0 && cnt <= 20);
         require(cnt == _amounts.length);
 
         cnt = (uint8)(cnt);
 
         uint256 totalAmount = 0;
-        for (uint8 i = 0; i &lt; cnt; i++) {
+        for (uint8 i = 0; i < cnt; i++) {
             totalAmount = totalAmount.add(_amounts[i]);
         }
 
-        require(totalAmount &lt;= balances[msg.sender]);
+        require(totalAmount <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(totalAmount);
-        for (i = 0; i &lt; cnt; i++) {
+        for (i = 0; i < cnt; i++) {
             balances[_receivers[i]] = balances[_receivers[i]].add(_amounts[i]);            
             emit Transfer(msg.sender, _receivers[i], _amounts[i]);
         }

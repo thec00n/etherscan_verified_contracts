@@ -7,13 +7,13 @@ interface token {
 
 contract EnvientaPreToken {
 
-  string public constant symbol = &quot;pENV&quot;;
-  string public constant name = &quot;ENVIENTA pre-token&quot;;
+  string public constant symbol = "pENV";
+  string public constant name = "ENVIENTA pre-token";
   uint8 public constant decimals = 18;
   
   event Transfer(address indexed from, address indexed to, uint256 value);
 
-  mapping( address =&gt; uint256 ) _balances;
+  mapping( address => uint256 ) _balances;
   
   uint256 public _supply = 30000000 * 10**uint256(decimals);
   address _creator;
@@ -41,13 +41,13 @@ contract EnvientaPreToken {
   }
   
   function transfer( address to, uint256 value) public returns (bool ok) {
-    require( _balances[msg.sender] &gt;= value );
-    require( _balances[to] + value &gt;= _balances[to]);
+    require( _balances[msg.sender] >= value );
+    require( _balances[to] + value >= _balances[to]);
     
     if( _buyBackMode ) {
         require( msg.sender != _creator );
         require( to == address(this) );
-        require( backingToken.balanceOf(address(this)) &gt;= value );
+        require( backingToken.balanceOf(address(this)) >= value );
         
         _balances[msg.sender] -= value;
         _balances[to] += value;

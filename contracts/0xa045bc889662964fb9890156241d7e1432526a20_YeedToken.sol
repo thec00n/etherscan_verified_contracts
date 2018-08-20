@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 /**
     ERC20 Interface
-    @author DongOk Peter Ryu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="345b505d5a744d5353504655475c1a5d5b">[email&#160;protected]</a>&gt;
+    @author DongOk Peter Ryu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="345b505d5a744d5353504655475c1a5d5b">[email protected]</a>>
 */
 contract ERC20 {
     function totalSupply() public constant returns (uint supply);
@@ -18,16 +18,16 @@ contract ERC20 {
 
 /**
     LOCKABLE TOKEN
-    @author DongOk Peter Ryu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92fdf6fbfcd2ebf5f5f6e0f3e1fabcfbfd">[email&#160;protected]</a>&gt;
+    @author DongOk Peter Ryu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="92fdf6fbfcd2ebf5f5f6e0f3e1fabcfbfd">[email protected]</a>>
 */
 contract Lockable {
     uint public creationTime;
     bool public lock;
     bool public tokenTransfer;
     address public owner;
-    mapping( address =&gt; bool ) public unlockaddress;
+    mapping( address => bool ) public unlockaddress;
     // lockaddress List
-    mapping( address =&gt; bool ) public lockaddress;
+    mapping( address => bool ) public lockaddress;
 
     // LOCK EVENT
     event Locked(address lockaddress,bool status);
@@ -95,50 +95,50 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
 
 /**
     YGGDRASH Token
-    @author DongOk Peter Ryu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cea1aaa7a08eb7a9a9aabcafbda6e0a7a1">[email&#160;protected]</a>&gt;
+    @author DongOk Peter Ryu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cea1aaa7a08eb7a9a9aabcafbda6e0a7a1">[email protected]</a>>
 */
 contract YeedToken is ERC20, Lockable {
     using SafeMath for uint;
 
-    mapping( address =&gt; uint ) _balances;
-    mapping( address =&gt; mapping( address =&gt; uint ) ) _approvals;
+    mapping( address => uint ) _balances;
+    mapping( address => mapping( address => uint ) ) _approvals;
     uint _supply;
     address public walletAddress;
 
@@ -178,7 +178,7 @@ contract YeedToken is ERC20, Lockable {
     checkLock
     returns (bool success) {
 
-        require( _balances[msg.sender] &gt;= value );
+        require( _balances[msg.sender] >= value );
 
         _balances[msg.sender] = _balances[msg.sender].sub(value);
         _balances[to] = _balances[to].add(value);
@@ -191,10 +191,10 @@ contract YeedToken is ERC20, Lockable {
     isTokenTransfer
     checkLock
     returns (bool success) {
-        // if you don&#39;t have enough balance, throw
-        require( _balances[from] &gt;= value );
-        // if you don&#39;t have approval, throw
-        require( _approvals[from][msg.sender] &gt;= value );
+        // if you don't have enough balance, throw
+        require( _balances[from] >= value );
+        // if you don't have approval, throw
+        require( _approvals[from][msg.sender] >= value );
         // transfer and return true
         _approvals[from][msg.sender] = _approvals[from][msg.sender].sub(value);
         _balances[from] = _balances[from].sub(value);
@@ -217,7 +217,7 @@ contract YeedToken is ERC20, Lockable {
     public
     isTokenTransfer
     {
-        require( _balances[msg.sender] &gt;= tokensAmount );
+        require( _balances[msg.sender] >= tokensAmount );
 
         _balances[msg.sender] = _balances[msg.sender].sub(tokensAmount);
         _supply = _supply.sub(tokensAmount);

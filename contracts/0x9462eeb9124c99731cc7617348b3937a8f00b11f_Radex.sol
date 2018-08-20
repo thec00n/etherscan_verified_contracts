@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,11 +78,11 @@ contract Radex is ContractReceiver {
   address private admin;
   address private etherAddress = 0x0;
 
-  // person =&gt; token =&gt; balance
-  mapping(address =&gt; mapping(address =&gt; uint256)) public balances;
-  mapping(address =&gt; mapping(address =&gt; uint256)) public commitments;
+  // person => token => balance
+  mapping(address => mapping(address => uint256)) public balances;
+  mapping(address => mapping(address => uint256)) public commitments;
 
-  mapping(uint256 =&gt; Order) orderBook;
+  mapping(uint256 => Order) orderBook;
   uint256 public latestOrderId = 0;
 
   event Deposit(address indexed _token, address indexed _owner, uint256 _amount, uint256 _time);
@@ -105,7 +105,7 @@ contract Radex is ContractReceiver {
     if (priceMul == 0) { revert(); }
     if (priceDiv == 0) { revert(); }
     if (sellToken == buyToken) { revert(); }
-    if (balances[msg.sender][sellToken] &lt; amount) { revert(); }
+    if (balances[msg.sender][sellToken] < amount) { revert(); }
     if (amount.mul(priceMul).div(priceDiv) == 0) { revert(); }
 
     orderId = latestOrderId++;
@@ -129,13 +129,13 @@ contract Radex is ContractReceiver {
   }
 
   function executeOrder(uint256 orderId, uint256 amount) {
-    if (orderId &gt; latestOrderId) { revert(); }
+    if (orderId > latestOrderId) { revert(); }
     Order storage order    = orderBook[orderId];
     uint256 buyTokenAmount = amount.mul(order.priceMul).div(order.priceDiv);
     if (amount == 0) { revert(); }
-    if (order.amount &lt; amount) { revert(); }
+    if (order.amount < amount) { revert(); }
     if (msg.sender == order.owner) { revert(); }
-    if (balances[msg.sender][order.buyToken] &lt; buyTokenAmount) { revert(); }
+    if (balances[msg.sender][order.buyToken] < buyTokenAmount) { revert(); }
 
     uint256 fee = amount.div(feeMultiplier);
 
@@ -156,7 +156,7 @@ contract Radex is ContractReceiver {
   function redeem(address token, uint256 value) {
     if (value == 0) { revert(); }
     address caller = msg.sender;
-    if (value &gt; balances[caller][token]) { revert(); }
+    if (value > balances[caller][token]) { revert(); }
 
     balances[caller][token] = balances[caller][token].sub(value);
     // ETH transfers and token transfers need to be handled differently
@@ -177,7 +177,7 @@ contract Radex is ContractReceiver {
   }
 
   // deposits
-  // we&#39;re not using the third argument so we comment it out
+  // we're not using the third argument so we comment it out
   // to silence solidity linter warnings
   function tokenFallback(address _from, uint _value, bytes /* _data */) {
     // ERC223 token deposit handler
@@ -191,7 +191,7 @@ contract Radex is ContractReceiver {
     Deposit(etherAddress, msg.sender, msg.value, now);
   }
 
-  // register the ERC20&lt;&gt;ERC223 pair with the smart contract
+  // register the ERC20<>ERC223 pair with the smart contract
   function register(address erc20token, address erc223token) {
     if (msg.sender != admin) { revert(); } // only owner
     ERC20 erc20 = ERC20(erc20token);

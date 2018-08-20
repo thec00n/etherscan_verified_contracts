@@ -9,12 +9,12 @@ library SafeMath { //standard library for uint
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function pow(uint256 a, uint256 b) internal pure returns (uint256){ //power function
@@ -22,7 +22,7 @@ library SafeMath { //standard library for uint
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -61,8 +61,8 @@ contract HeliosToken is Ownable { //ERC - 20 token contract
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 
-  string public constant symbol = &quot;HLC&quot;;
-  string public constant name = &quot;Helios&quot;;
+  string public constant symbol = "HLC";
+  string public constant name = "Helios";
 
   uint8 public constant decimals = 2;
   uint256 _totalSupply = uint(5000000).mul(uint(10).pow(decimals));
@@ -76,10 +76,10 @@ contract HeliosToken is Ownable { //ERC - 20 token contract
     balances[address(this)] = _totalSupply;
   }
   
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   function totalSupply() public view returns (uint256) { //standart ERC-20 function
     return _totalSupply;
@@ -91,7 +91,7 @@ contract HeliosToken is Ownable { //ERC - 20 token contract
 
   //standart ERC-20 function
   function transfer(address _to, uint256 _amount) public returns (bool success) {
-    require(address(this) != _to &amp;&amp; _to != address(0));
+    require(address(this) != _to && _to != address(0));
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     balances[_to] = balances[_to].add(_amount);
     emit Transfer(msg.sender,_to,_amount);
@@ -117,7 +117,7 @@ contract HeliosToken is Ownable { //ERC - 20 token contract
   }
 
   function transferFrom(address _from, address _to, uint256 _amount) public returns(bool success){
-    require(address(this) != _to &amp;&amp; _to != address(0));
+    require(address(this) != _to && _to != address(0));
     balances[_from] = balances[_from].sub(_amount);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
     balances[_to] = balances[_to].add(_amount);

@@ -56,15 +56,15 @@ contract Token
 contract StdToken is Token 
 {
 
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
 
      uint256 public allSupply = 0;
 
 
      function transfer(address _to, uint256 _value) returns (bool success) 
      {
-          if((balances[msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])) 
+          if((balances[msg.sender] >= _value) && (balances[_to] + _value > balances[_to])) 
           {
                balances[msg.sender] -= _value;
                balances[_to] += _value;
@@ -80,7 +80,7 @@ contract StdToken is Token
 
      function transferFrom(address _from, address _to, uint256 _value) returns (bool success) 
      {
-          if((balances[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])) 
+          if((balances[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balances[_to] + _value > balances[_to])) 
           {
                balances[_to] += _value;
                balances[_from] -= _value;
@@ -121,9 +121,9 @@ contract StdToken is Token
 }
 
 contract ReputationToken is StdToken {
-     string public name = &quot;EthlendReputationToken&quot;;
+     string public name = "EthlendReputationToken";
      uint public decimals = 18;
-     string public symbol = &quot;CRE&quot;;
+     string public symbol = "CRE";
 
      address public creator = 0x0;
 

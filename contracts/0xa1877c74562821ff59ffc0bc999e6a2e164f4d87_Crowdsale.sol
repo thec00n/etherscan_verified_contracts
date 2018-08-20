@@ -5,7 +5,7 @@ contract token {function transfer(address receiver, uint amount){ }}
 
 contract Crowdsale {
     uint public amountRaised; uint public resAmount; uint public soldTokens;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event GoalReached(address beneficiary, uint amountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
     bool public crowdsaleClosed = true;
@@ -22,7 +22,7 @@ contract Crowdsale {
 
     // the function without name is the default function that is called whenever anyone sends funds to a contract
     function () payable {
-        if (crowdsaleClosed || (maximumTarget - amountRaised) &lt; msg.value) throw;
+        if (crowdsaleClosed || (maximumTarget - amountRaised) < msg.value) throw;
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
@@ -31,7 +31,7 @@ contract Crowdsale {
         tokenReward.transfer(msg.sender, amount / price);
         FundTransfer(msg.sender, amount, true);
 
-        if (amountRaised &gt;= minimumTarget &amp;&amp; !minimumTargetReached) {
+        if (amountRaised >= minimumTarget && !minimumTargetReached) {
             minimumTargetReached = true;
             GoalReached(beneficiary, minimumTarget);
         }
@@ -72,11 +72,11 @@ contract Crowdsale {
     }
 
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     // checks if the minimumTarget has been reached
     function checkTargetReached() afterDeadline {
-        if (amountRaised &gt;= minimumTarget) {
+        if (amountRaised >= minimumTarget) {
             minimumTargetReached = true;
         }
     }
@@ -92,10 +92,10 @@ contract Crowdsale {
     // return your funds after deadline if minimumTarget is not reached (active if crowdsale close)
     function safeWithdrawal() afterDeadline {
         if (!crowdsaleClosed) throw;
-        if (!minimumTargetReached &amp;&amp; crowdsaleClosed) {
+        if (!minimumTargetReached && crowdsaleClosed) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                     resAmount -= amount;

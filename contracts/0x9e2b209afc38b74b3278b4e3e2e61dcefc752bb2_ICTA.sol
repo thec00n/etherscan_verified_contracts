@@ -58,22 +58,22 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract ICTA is ERC20,Ownable{
 	using SafeMath for uint256;
-	string public constant name=&quot;ICTA&quot;;
-	string public constant symbol=&quot;ICTA&quot;;
-	string public constant version = &quot;0&quot;;
+	string public constant name="ICTA";
+	string public constant symbol="ICTA";
+	string public constant version = "0";
 	uint256 public constant decimals = 9;
 	uint256 public constant MAX_SUPPLY=500000000*10**decimals;
 	uint256 public airdropSupply;
@@ -82,9 +82,9 @@ contract ICTA is ERC20,Ownable{
         uint256 lockAmount;
     }
 
-    mapping(address=&gt;epoch[]) public lockEpochsMap;
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address=>epoch[]) public lockEpochsMap;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	
 
 	function ICTA()public{
@@ -97,7 +97,7 @@ contract ICTA is ERC20,Ownable{
 
 
 	modifier notReachTotalSupply(uint256 _value,uint256 _rate){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value.mul(_rate)));
+		assert(MAX_SUPPLY>=totalSupply.add(_value.mul(_rate)));
 		_;
 	}
 
@@ -107,15 +107,15 @@ contract ICTA is ERC20,Ownable{
 
 		epoch[] storage epochs = lockEpochsMap[msg.sender];
 		uint256 needLockBalance = 0;
-		for(uint256 i = 0;i&lt;epochs.length;i++)
+		for(uint256 i = 0;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance=needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -133,16 +133,16 @@ contract ICTA is ERC20,Ownable{
 
 		epoch[] storage epochs = lockEpochsMap[_from];
 		uint256 needLockBalance = 0;
-		for(uint256 i = 0;i&lt;epochs.length;i++)
+		for(uint256 i = 0;i<epochs.length;i++)
 		{
 
-			if( now &lt; epochs[i].lockEndTime )
+			if( now < epochs[i].lockEndTime )
 			{
 				needLockBalance = needLockBalance.add(epochs[i].lockAmount);
 			}
 		}
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 
 		uint256 _allowance = allowed[_from][msg.sender];
 
@@ -176,8 +176,8 @@ contract ICTA is ERC20,Ownable{
 	{
 		uint256 unfreezeAmount=paySize.div(5);
         uint256 count = _holders.length;
-        assert(paySize.mul(count) &lt;= balanceOf(msg.sender));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize.mul(count) <= balanceOf(msg.sender));
+        for (uint256 i = 0; i < count; i++) {
             transfer(_holders [i], paySize);
 
             lockBalance(_holders [i],unfreezeAmount,now+10368000);
@@ -199,8 +199,8 @@ contract ICTA is ERC20,Ownable{
 	{
 		uint256 unfreezeAmount=paySize.div(10);
         uint256 count = _holders.length;
-        assert(paySize.mul(count) &lt;= balanceOf(msg.sender));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize.mul(count) <= balanceOf(msg.sender));
+        for (uint256 i = 0; i < count; i++) {
             transfer(_holders [i], paySize);
 
             lockBalance(_holders [i],unfreezeAmount,now+5184000);
@@ -228,7 +228,7 @@ contract ICTA is ERC20,Ownable{
     }    
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

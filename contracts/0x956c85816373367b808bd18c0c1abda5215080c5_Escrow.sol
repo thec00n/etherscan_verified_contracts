@@ -1,5 +1,5 @@
 pragma solidity 0.4.24;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 
 /**
 * @title SafeMath
@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,36 +75,36 @@ contract Escrow {
     uint256 fee = msg.value.div(100);
     uint256 srnt_balance = SRNT_token.balanceOf(address(this));
     uint256 fee_paid_by_srnt = srnt_balance.div(SRNT_price_oracle.SRNT_per_ETH());
-    if (fee_paid_by_srnt &lt; fee) {  // Burn all SRNT, deduct from fee
-      if (fee_paid_by_srnt &gt; 0) {
+    if (fee_paid_by_srnt < fee) {  // Burn all SRNT, deduct from fee
+      if (fee_paid_by_srnt > 0) {
         fee = fee.sub(fee_paid_by_srnt);
         SRNT_token.transfer(burn_address, srnt_balance);
       }
       serenity_wallet.transfer(fee);
       emit Deposit(msg.value.sub(fee));
-    } else {  // There&#39;s more SRNT available than needed. Burn a part of it.
+    } else {  // There's more SRNT available than needed. Burn a part of it.
       SRNT_token.transfer(burn_address, fee.mul(SRNT_price_oracle.SRNT_per_ETH()));
       emit Deposit(msg.value);
     }
   }
 
   function request_withdrawal(uint256 party_a_gets, uint256 party_b_gets) external {
-    require(msg.sender != withdrawal_last_voter);  // You can&#39;t vote twice
+    require(msg.sender != withdrawal_last_voter);  // You can't vote twice
     require((msg.sender == party_a) || (msg.sender == party_b) || (msg.sender == serenity_wallet));
-    require(party_a_gets.add(party_b_gets) &lt;= address(this).balance);
+    require(party_a_gets.add(party_b_gets) <= address(this).balance);
 
     withdrawal_last_voter = msg.sender;
 
     emit WithdrawalRequest(msg.sender, party_a_gets, party_b_gets);
 
-    if ((withdrawal_party_a_gets == party_a_gets) &amp;&amp; (withdrawal_party_b_gets == party_b_gets)) {  // We have consensus
+    if ((withdrawal_party_a_gets == party_a_gets) && (withdrawal_party_b_gets == party_b_gets)) {  // We have consensus
       delete withdrawal_party_a_gets;
       delete withdrawal_party_b_gets;
       delete withdrawal_last_voter;
-      if (party_a_gets &gt; 0) {
+      if (party_a_gets > 0) {
         party_a.transfer(party_a_gets);
       }
-      if (party_b_gets &gt; 0) {
+      if (party_b_gets > 0) {
         party_b.transfer(party_b_gets);
       }
       emit Withdrawal(party_a_gets, party_b_gets);

@@ -70,7 +70,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
     event BonusTokensDelegated(uint96 amount);
 
     modifier tokenOrAdmin() {
-        require(tx.origin == administrator || (address(token) != address(0) &amp;&amp; msg.sender == address(token)));
+        require(tx.origin == administrator || (address(token) != address(0) && msg.sender == address(token)));
         _;
     }
 
@@ -80,7 +80,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
     }
 
     modifier canDelegate() {
-        require(msg.sender == address(token) || (_isDebug &amp;&amp; tx.origin == administrator));
+        require(msg.sender == address(token) || (_isDebug && tx.origin == administrator));
         _;
     }
 
@@ -156,14 +156,14 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         uint8 _stage = stage;
         uint8 _offer = 0;
 
-        while( stages.length &gt; _stage ) {
-            if (stages[_stage].endsAt &lt;= uint32(now)) {
+        while( stages.length > _stage ) {
+            if (stages[_stage].endsAt <= uint32(now)) {
                 _stage += 1;
                 _offer = 0;
                 continue;
             }
 
-            while ( stages[_stage].offers.length &gt; _offer ) {
+            while ( stages[_stage].offers.length > _offer ) {
                 if (stages[_stage].offers[_offer].pool == 0) {
                     _offer += 1;
                 } else {
@@ -171,7 +171,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
                 }
             }
 
-            if (stages[_stage].offers.length &lt;= _offer) {
+            if (stages[_stage].offers.length <= _offer) {
                 _stage += 1;
                 _offer = 0;
                 continue;
@@ -180,7 +180,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
             break;
         }
 
-        if (stage &lt; _stage) {
+        if (stage < _stage) {
             migratePool();
         }
 
@@ -193,8 +193,8 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
     function migratePool()
         internal
     {
-        if ( stage &lt; (stages.length - 1) ) {
-            for (uint8 i = 0; i &lt; stages[stage].offers.length; i++) {
+        if ( stage < (stages.length - 1) ) {
+            for (uint8 i = 0; i < stages[stage].offers.length; i++) {
                 stages[stages.length - 1].offers[0].pool += stages[stage].offers[i].pool;
                 stages[stage].offers[offer].pool = 0;
             }
@@ -229,7 +229,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         onlyAdministrator
         onlyDebug
     {
-        if ( stage &lt; stages.length ) {
+        if ( stage < stages.length ) {
             dTimeoutCurrentStage();
 
             uint8 newStage = stage + 1;
@@ -272,7 +272,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
     function withdrawTokensFromPool(uint96 numTokens)
         internal
     {
-        require(numTokens &lt;= stages[stage].offers[offer].pool);
+        require(numTokens <= stages[stage].offers[offer].pool);
 
         stages[stage].offers[offer].pool -= numTokens;
     }
@@ -285,7 +285,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         uint8 _stage = stage;
         uint8 _offer = offer;
 
-        if ( _stage &gt;= stages.length ) {
+        if ( _stage >= stages.length ) {
             _stage = uint8(stages.length - 1);
             _offer = 0;
         }
@@ -345,7 +345,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
             _stage = uint8(stages.length - 1);
         }
 
-        return now &gt;= stages[_stage].endsAt;
+        return now >= stages[_stage].endsAt;
     }
 
     function isFreezeTimeout()
@@ -353,7 +353,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         constant
         returns (bool)
     {
-        return now &gt;= (stages[stages.length - 1].endsAt + 180 days);
+        return now >= (stages[stages.length - 1].endsAt + 180 days);
     }
 
     function isICO()
@@ -361,7 +361,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         constant
         returns(bool)
     {
-        return stage &lt; stages.length;
+        return stage < stages.length;
     }
 
     function isCanList()
@@ -395,7 +395,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
     {
         bonus = uint88( ( amount * getBonus() ) / 100);
 
-        if (bonus &gt; bonusPool) {
+        if (bonus > bonusPool) {
             bonus = bonusPool;
         }
     }
@@ -404,7 +404,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         public
         canDelegate()
     {
-        require(amount &lt;= getPool());
+        require(amount <= getPool());
         uint88 bonus = calculateBonus(amount);
 
         stages[stage].offers[offer].pool -= amount;
@@ -417,7 +417,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         public
         canDelegate()
     {
-        require(amount &lt;= getBonusPool());
+        require(amount <= getBonusPool());
 
         bonusPool -= amount;
         BonusTokensDelegated(amount);
@@ -427,7 +427,7 @@ contract UNITStagesManager is TokenStagesManager, Administrated {
         public
         canDelegate()
     {
-        require(amount &lt;= getReferralPool());
+        require(amount <= getReferralPool());
 
         referralPool -= amount;
         ReferralTokensDelegated(amount);
@@ -458,19 +458,19 @@ interface ERC20 {
 
 contract ERC20Contract is ERC20 {
     //Token symbol
-    string public constant symbol = &quot;UNIT&quot;;
+    string public constant symbol = "UNIT";
 
     //Token name
-    string public constant name = &quot;Unilot token&quot;;
+    string public constant name = "Unilot token";
 
     //It can be reeeealy small
     uint8 public constant decimals = 18;
 
     // Balances for each account
-    mapping(address =&gt; uint96) public balances;
+    mapping(address => uint96) public balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint96)) allowed;
+    mapping(address => mapping (address => uint96)) allowed;
 
     function totalSupply()
         public
@@ -488,14 +488,14 @@ contract ERC20Contract is ERC20 {
     }
 
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint _amount)
         public
         returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= uint96(_amount);
             balances[_to] += uint96(_amount);
             Transfer(msg.sender, _to, _amount);
@@ -509,7 +509,7 @@ contract ERC20Contract is ERC20 {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -521,10 +521,10 @@ contract ERC20Contract is ERC20 {
         public
         returns (bool success)
     {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= uint96(_amount);
             allowed[_from][msg.sender] -= uint96(_amount);
             balances[_to] += uint96(_amount);
@@ -569,9 +569,9 @@ contract UnilotToken is ERC20 {
     }
 
     //Token symbol
-    string public constant symbol = &quot;UNIT&quot;;
+    string public constant symbol = "UNIT";
     //Token name
-    string public constant name = &quot;Unilot token&quot;;
+    string public constant name = "Unilot token";
     //It can be reeeealy small
     uint8 public constant decimals = 18;
 
@@ -638,10 +638,10 @@ contract UnilotToken is ERC20 {
     address public administrator;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     //Mostly needed for internal use
     uint256 internal totalCoinsAvailable;
@@ -669,22 +669,22 @@ contract UnilotToken is ERC20 {
     }
 
     modifier onlyDuringICO() {
-        require(currentStage &lt; stages.length);
+        require(currentStage < stages.length);
         _;
     }
 
     modifier onlyAfterICO(){
-        require(currentStage &gt;= stages.length);
+        require(currentStage >= stages.length);
         _;
     }
 
     modifier meetTheCap() {
-        require(msg.value &gt;= price); // At least one token
+        require(msg.value >= price); // At least one token
         _;
     }
 
     modifier isFreezedReserve(address _address) {
-        require( ( _address == RESERVE_WALLET ) &amp;&amp; now &gt; (stages[ (stages.length - 1) ].endsAt + 182 days));
+        require( ( _address == RESERVE_WALLET ) && now > (stages[ (stages.length - 1) ].endsAt + 182 days));
         _;
     }
 
@@ -712,7 +712,7 @@ contract UnilotToken is ERC20 {
         uint teamSupply = ( ( _totalSupply * DST_TEAM ) / 100 );
         uint memberAmount = teamSupply / teamWallets.length;
 
-        for(uint i = 0; i &lt; teamWallets.length; i++) {
+        for(uint i = 0; i < teamWallets.length; i++) {
             if ( i == ( teamWallets.length - 1 ) ) {
                 memberAmount = teamSupply;
             }
@@ -741,7 +741,7 @@ contract UnilotToken is ERC20 {
         internal
     {
         //Presale stage
-        stages[0].name = &#39;Presale stage&#39;;
+        stages[0].name = 'Presale stage';
         stages[0].numCoinsStart = totalCoinsAvailable;
         stages[0].coinsAvailable = TOKEN_AMOUNT_PRE_ICO;
         stages[0].bonus = BONUS_PRE_ICO;
@@ -755,7 +755,7 @@ contract UnilotToken is ERC20 {
         }
 
         //ICO Stage 1 pre-sale 1
-        stages[1].name = &#39;ICO Stage 1 pre-sale 1&#39;;
+        stages[1].name = 'ICO Stage 1 pre-sale 1';
         stages[1].coinsAvailable = TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE1;
         stages[1].bonus = BONUS_ICO_STAGE1_PRE_SALE1;
 
@@ -768,7 +768,7 @@ contract UnilotToken is ERC20 {
         }
 
         //ICO Stage 1 pre-sale 2
-        stages[2].name = &#39;ICO Stage 1 pre-sale 2&#39;;
+        stages[2].name = 'ICO Stage 1 pre-sale 2';
         stages[2].coinsAvailable = TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE2;
         stages[2].bonus = BONUS_ICO_STAGE1_PRE_SALE2;
 
@@ -776,7 +776,7 @@ contract UnilotToken is ERC20 {
         stages[2].endsAt = stages[1].endsAt;
 
         //ICO Stage 1 pre-sale 3
-        stages[3].name = &#39;ICO Stage 1 pre-sale 3&#39;;
+        stages[3].name = 'ICO Stage 1 pre-sale 3';
         stages[3].coinsAvailable = TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE3;
         stages[3].bonus = BONUS_ICO_STAGE1_PRE_SALE3;
 
@@ -784,7 +784,7 @@ contract UnilotToken is ERC20 {
         stages[3].endsAt = stages[1].endsAt;
 
         //ICO Stage 1 pre-sale 4
-        stages[4].name = &#39;ICO Stage 1 pre-sale 4&#39;;
+        stages[4].name = 'ICO Stage 1 pre-sale 4';
         stages[4].coinsAvailable = TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE4;
         stages[4].bonus = BONUS_ICO_STAGE1_PRE_SALE4;
 
@@ -792,7 +792,7 @@ contract UnilotToken is ERC20 {
         stages[4].endsAt = stages[1].endsAt;
 
         //ICO Stage 1 pre-sale 5
-        stages[5].name = &#39;ICO Stage 1 pre-sale 5&#39;;
+        stages[5].name = 'ICO Stage 1 pre-sale 5';
         stages[5].coinsAvailable = TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE5;
         stages[5].bonus = BONUS_ICO_STAGE1_PRE_SALE5;
 
@@ -800,7 +800,7 @@ contract UnilotToken is ERC20 {
         stages[5].endsAt = stages[1].endsAt;
 
         //ICO Stage 2
-        stages[6].name = &#39;ICO Stage 2&#39;;
+        stages[6].name = 'ICO Stage 2';
         stages[6].coinsAvailable = TOKEN_AMOUNT_ICO_STAGE2;
         stages[6].bonus = BONUS_ICO_STAGE2;
 
@@ -817,8 +817,8 @@ contract UnilotToken is ERC20 {
         internal
     {
         while (true) {
-            if ( currentStage &lt; stages.length
-            &amp;&amp; (now &gt;= stages[currentStage].endsAt || getAvailableCoinsForCurrentStage() == 0) ) {
+            if ( currentStage < stages.length
+            && (now >= stages[currentStage].endsAt || getAvailableCoinsForCurrentStage() == 0) ) {
                 currentStage++;
                 uint totalTokensForSale = TOKEN_AMOUNT_PRE_ICO
                                     + TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE1
@@ -827,7 +827,7 @@ contract UnilotToken is ERC20 {
                                     + TOKEN_AMOUNT_ICO_STAGE1_PRE_SALE4
                                     + TOKEN_AMOUNT_ICO_STAGE2;
 
-                if (currentStage &gt;= stages.length) {
+                if (currentStage >= stages.length) {
                     //Burning all unsold tokens and proportionally other for deligation
                     _totalSupply -= ( ( ( stages[(stages.length - 1)].coinsAvailable * DST_BOUNTY ) / 100 )
                                     + ( ( stages[(stages.length - 1)].coinsAvailable * DST_R_N_B_PROGRAM ) / 100 ) );
@@ -841,7 +841,7 @@ contract UnilotToken is ERC20 {
 
                 stages[currentStage].numCoinsStart = totalCoinsAvailable;
 
-                if ( currentStage &gt; 0 ) {
+                if ( currentStage > 0 ) {
                     //Move all left tokens to last stage
                     stages[(stages.length - 1)].coinsAvailable += stages[ (currentStage - 1 ) ].coinsAvailable;
                     StageUpdated(stages[currentStage - 1].name, stages[currentStage].name);
@@ -890,16 +890,16 @@ contract UnilotToken is ERC20 {
     }
 
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)
         public
         onlyAfterICO
         isFreezedReserve(_to)
         returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -913,7 +913,7 @@ contract UnilotToken is ERC20 {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -928,10 +928,10 @@ contract UnilotToken is ERC20 {
         isFreezedReserve(_to)
         returns (bool success)
     {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -1005,15 +1005,15 @@ contract UnilotToken is ERC20 {
         meetTheCap
     {
         _proceedStage();
-        require(currentStage &lt; stages.length);
-        require(stages[currentStage].startsAt &lt;= now &amp;&amp; now &lt; stages[currentStage].endsAt);
-        require(getAvailableCoinsForCurrentStage() &gt; 0);
+        require(currentStage < stages.length);
+        require(stages[currentStage].startsAt <= now && now < stages[currentStage].endsAt);
+        require(getAvailableCoinsForCurrentStage() > 0);
 
         uint requestedAmountOfTokens = ( ( msg.value * accuracy ) / price );
         uint amountToBuy = requestedAmountOfTokens;
         uint refund = 0;
 
-        if ( amountToBuy &gt; getAvailableCoinsForCurrentStage() ) {
+        if ( amountToBuy > getAvailableCoinsForCurrentStage() ) {
             amountToBuy = getAvailableCoinsForCurrentStage();
             refund = ( ( (requestedAmountOfTokens - amountToBuy) / accuracy ) * price );
 
@@ -1037,7 +1037,7 @@ contract UnilotToken is ERC20 {
         STORAGE_WALLET.transfer(this.balance);
     }
 
-    //It doesn&#39;t really close the stage
+    //It doesn't really close the stage
     //It just needed to push transaction to update stage and update block.now
     function closeStage()
         public
@@ -1049,9 +1049,9 @@ contract UnilotToken is ERC20 {
 
 contract UNITv2 is ERC20Contract,Administrated {
     //Token symbol
-    string public constant symbol = &quot;UNIT&quot;;
+    string public constant symbol = "UNIT";
     //Token name
-    string public constant name = &quot;Unilot token&quot;;
+    string public constant name = "Unilot token";
     //It can be reeeealy small
     uint8 public constant decimals = 18;
 
@@ -1071,7 +1071,7 @@ contract UNITv2 is ERC20Contract,Administrated {
     bool public burned = false;
 
     //tokenImport[tokenHolder][sourceToken] = true/false;
-    mapping ( address =&gt; mapping ( address =&gt; bool ) ) public tokenImport;
+    mapping ( address => mapping ( address => bool ) ) public tokenImport;
 
     event TokensImported(address indexed tokenHolder, uint96 amount, address indexed source);
     event TokensDelegated(address indexed tokenHolder, uint96 amount, address indexed source);
@@ -1093,8 +1093,8 @@ contract UNITv2 is ERC20Contract,Administrated {
             require( stagesManager.isFreezeTimeout() );
         }
         require(unlocked
-                || ( stagesManager != address(0) &amp;&amp; stagesManager.isCanList() )
-                || ( transferWhiteList != address(0) &amp;&amp; ( transferWhiteList.isInList(_from) || transferWhiteList.isInList(_to) ) )
+                || ( stagesManager != address(0) && stagesManager.isCanList() )
+                || ( transferWhiteList != address(0) && ( transferWhiteList.isInList(_from) || transferWhiteList.isInList(_to) ) )
         );
         _;
     }
@@ -1122,7 +1122,7 @@ contract UNITv2 is ERC20Contract,Administrated {
             ( uint(_totalSupply) * uint8( sourceToken.DST_BOUNTY() ) ) / 100
         );
 
-        //Don&#39;t import bounty and R&amp;B tokens
+        //Don't import bounty and R&B tokens
         markAsImported(0xdBF98dF5DAd9077f457e1dcf85Aa9420BcA8B761, 0x794EF9c680bDD0bEf48Bef46bA68471e449D67Fb);
         markAsImported(sourceToken, 0x794EF9c680bDD0bEf48Bef46bA68471e449D67Fb);
 
@@ -1209,9 +1209,9 @@ contract UNITv2 is ERC20Contract,Administrated {
         onlyAdministrator
         isNotBurned
     {
-        require(_tokenHolders.length &lt;= 256);
+        require(_tokenHolders.length <= 256);
 
-        for (uint8 i = 0; i &lt; _tokenHolders.length; i++) {
+        for (uint8 i = 0; i < _tokenHolders.length; i++) {
             importFromSource(_sourceToken, _tokenHolders[i]);
         }
     }
@@ -1273,7 +1273,7 @@ contract UNITv2 is ERC20Contract,Administrated {
     {
         require(paymentGateways.isInList(msg.sender));
         require(stagesManager.isICO());
-        require(stagesManager.getPool() &gt;= amount);
+        require(stagesManager.getPool() >= amount);
 
         uint88 bonus = stagesManager.calculateBonus(amount);
         stagesManager.delegateFromPool(amount);
@@ -1288,7 +1288,7 @@ contract UNITv2 is ERC20Contract,Administrated {
         isNotBurned
     {
         require(paymentGateways.isInList(msg.sender) || tx.origin == administrator);
-        require(stagesManager.getBonusPool() &gt;= amount);
+        require(stagesManager.getBonusPool() >= amount);
 
         stagesManager.delegateFromBonus(amount);
 
@@ -1302,7 +1302,7 @@ contract UNITv2 is ERC20Contract,Administrated {
         isNotBurned
     {
         require(paymentGateways.isInList(msg.sender) || tx.origin == administrator);
-        require(stagesManager.getReferralPool() &gt;= amount);
+        require(stagesManager.getReferralPool() >= amount);
 
         stagesManager.delegateFromReferral(amount);
 
@@ -1316,10 +1316,10 @@ contract UNITv2 is ERC20Contract,Administrated {
         isNotBurned
     {
         require(paymentGateways.isInList(msg.sender) || tx.origin == administrator);
-        require(tokenHolders.length &lt;= 256);
+        require(tokenHolders.length <= 256);
         require(tokenHolders.length == amounts.length);
 
-        for ( uint8 i = 0; i &lt; tokenHolders.length; i++ ) {
+        for ( uint8 i = 0; i < tokenHolders.length; i++ ) {
             delegateReferalTokens(tokenHolders[i], amounts[i]);
         }
     }

@@ -15,7 +15,7 @@ contract Token {
 // ERC20 Token Implementation
 contract StandardToken is Token {
     function transfer(address _to, uint256 _value) public returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -26,7 +26,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -51,19 +51,19 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /*
-    PXLProperty is the ERC20 Cryptocurrency &amp; Cryptocollectable
+    PXLProperty is the ERC20 Cryptocurrency & Cryptocollectable
     * It is a StandardToken ERC20 token and inherits all of that
     * It has the Property structure and holds the Properties
     * It governs the regulators (moderators, admins, root, Property DApps and PixelProperty)
     * It has getters and setts for all data storage
     * It selectively allows access to PXL and Properties based on caller access
     
-    Moderation is handled inside PXLProperty, not by external DApps. It&#39;s up to other apps to respect the flags, however
+    Moderation is handled inside PXLProperty, not by external DApps. It's up to other apps to respect the flags, however
 */
 contract PXLProperty is StandardToken {
     /* Access Level Constants */
@@ -75,27 +75,27 @@ contract PXLProperty is StandardToken {
     uint8 constant LEVEL_2_ROOT = 6;         // 6: Level 2 Root - Can set pixelPropertyContract level [1-5]
     uint8 constant LEVEL_3_ROOT = 7;         // 7: Level 3 Root - Can demote/remove root, transfer root, [1-6]
     uint8 constant LEVEL_PROPERTY_DAPPS = 8; // 8: Property DApps - Power over manipulating Property data
-    uint8 constant LEVEL_PIXEL_PROPERTY = 9; // 9: PixelProperty - Power over PXL generation &amp; Property ownership
+    uint8 constant LEVEL_PIXEL_PROPERTY = 9; // 9: PixelProperty - Power over PXL generation & Property ownership
     /* Flags Constants */
     uint8 constant FLAG_NSFW = 1;
     uint8 constant FLAG_BAN = 2;
     
-    /* Accesser Addresses &amp; Levels */
+    /* Accesser Addresses & Levels */
     address pixelPropertyContract; // Only contract that has control over PXL creation and Property ownership
-    mapping (address =&gt; uint8) public regulators; // Mapping of users/contracts to their control levels
+    mapping (address => uint8) public regulators; // Mapping of users/contracts to their control levels
     
     // Mapping of PropertyID to Property
-    mapping (uint16 =&gt; Property) public properties;
-    // Property Owner&#39;s website
-    mapping (address =&gt; uint256[2]) public ownerWebsite;
-    // Property Owner&#39;s hover text
-    mapping (address =&gt; uint256[2]) public ownerHoverText;
+    mapping (uint16 => Property) public properties;
+    // Property Owner's website
+    mapping (address => uint256[2]) public ownerWebsite;
+    // Property Owner's hover text
+    mapping (address => uint256[2]) public ownerHoverText;
     
     /* ### Ownable Property Structure ### */
     struct Property {
         uint8 flag;
         bool isInPrivateMode; //Whether in private mode for owner-only use or free-use mode to be shared
-        address owner; //Who owns the Property. If its zero (0), then no owner and known as a &quot;system-Property&quot;
+        address owner; //Who owns the Property. If its zero (0), then no owner and known as a "system-Property"
         address lastUpdater; //Who last changed the color of the Property
         uint256[5] colors; //10x10 rgb pixel colors per property. colors[0] is the top row, colors[9] is the bottom row
         uint256 salePrice; //PXL price the owner has the Property on sale for. If zero, then its not for sale.
@@ -106,10 +106,10 @@ contract PXLProperty is StandardToken {
     
     /* ### Regulation Access Modifiers ### */
     modifier regulatorAccess(uint8 accessLevel) {
-        require(accessLevel &lt;= LEVEL_3_ROOT); // Only request moderator, admin or root levels forr regulatorAccess
-        require(regulators[msg.sender] &gt;= accessLevel); // Users must meet requirement
-        if (accessLevel &gt;= LEVEL_1_ADMIN) { //
-            require(regulators[msg.sender] &lt;= LEVEL_3_ROOT); //DApps can&#39;t do Admin/Root stuff, but can set nsfw/ban flags
+        require(accessLevel <= LEVEL_3_ROOT); // Only request moderator, admin or root levels forr regulatorAccess
+        require(regulators[msg.sender] >= accessLevel); // Users must meet requirement
+        if (accessLevel >= LEVEL_1_ADMIN) { //
+            require(regulators[msg.sender] <= LEVEL_3_ROOT); //DApps can't do Admin/Root stuff, but can set nsfw/ban flags
         }
         _;
     }
@@ -129,12 +129,12 @@ contract PXLProperty is StandardToken {
         regulators[msg.sender] = LEVEL_3_ROOT; // Creator set to Level 3 Root
     }
     
-    /* ### Moderator, Admin &amp; Root Functions ### */
+    /* ### Moderator, Admin & Root Functions ### */
     // Moderator Flags
     function setPropertyFlag(uint16 propertyID, uint8 flag) public regulatorAccess(flag == FLAG_NSFW ? LEVEL_1_MODERATOR : LEVEL_2_MODERATOR) {
         properties[propertyID].flag = flag;
         if (flag == FLAG_BAN) {
-            require(properties[propertyID].isInPrivateMode); //Can&#39;t ban an owner&#39;s property if a public user caused the NSFW content
+            require(properties[propertyID].isInPrivateMode); //Can't ban an owner's property if a public user caused the NSFW content
             properties[propertyID].colors = [0, 0, 0, 0, 0];
         }
     }
@@ -142,9 +142,9 @@ contract PXLProperty is StandardToken {
     // Setting moderator/admin/root access
     function setRegulatorAccessLevel(address user, uint8 accessLevel) public regulatorAccess(LEVEL_1_ADMIN) {
         if (msg.sender != user) {
-            require(regulators[msg.sender] &gt; regulators[user]); // You have to be a higher rank than the user you are changing
+            require(regulators[msg.sender] > regulators[user]); // You have to be a higher rank than the user you are changing
         }
-        require(regulators[msg.sender] &gt; accessLevel); // You have to be a higher rank than the role you are setting
+        require(regulators[msg.sender] > accessLevel); // You have to be a higher rank than the role you are setting
         regulators[user] = accessLevel;
     }
     
@@ -165,7 +165,7 @@ contract PXLProperty is StandardToken {
     
     /* ### PropertyDapp Functions ### */
     function setPropertyColors(uint16 propertyID, uint256[5] colors) public propertyDAppAccess() {
-        for(uint256 i = 0; i &lt; 5; i++) {
+        for(uint256 i = 0; i < 5; i++) {
             if (properties[propertyID].colors[i] != colors[i]) {
                 properties[propertyID].colors[i] = colors[i];
             }
@@ -279,14 +279,14 @@ contract PXLProperty is StandardToken {
     
     function burnPXL(address burningUser, uint256 amount) public pixelPropertyAccess() {
         require(burningUser != 0);
-        require(balances[burningUser] &gt;= amount);
+        require(balances[burningUser] >= amount);
         balances[burningUser] -= amount;
         totalSupply -= amount;
     }
     
     function burnPXLRewardPXL(address burner, uint256 toBurn, address rewarder, uint256 toReward) public pixelPropertyAccess() {
-        require(balances[burner] &gt;= toBurn);
-        if (toBurn &gt; 0) {
+        require(balances[burner] >= toBurn);
+        if (toBurn > 0) {
             balances[burner] -= toBurn;
             totalSupply -= toBurn;
         }
@@ -297,8 +297,8 @@ contract PXLProperty is StandardToken {
     } 
     
     function burnPXLRewardPXLx2(address burner, uint256 toBurn, address rewarder1, uint256 toReward1, address rewarder2, uint256 toReward2) public pixelPropertyAccess() {
-        require(balances[burner] &gt;= toBurn);
-        if (toBurn &gt; 0) {
+        require(balances[burner] >= toBurn);
+        if (toBurn > 0) {
             balances[burner] -= toBurn;
             totalSupply -= toBurn;
         }
@@ -342,7 +342,7 @@ contract PXLProperty is StandardToken {
     }
 
     function getPropertyColorsOfRow(uint16 propertyID, uint8 rowIndex) public view returns(uint256) {
-        require(rowIndex &lt;= 9);
+        require(rowIndex <= 9);
         return properties[propertyID].colors[rowIndex];
     }
     
@@ -370,8 +370,8 @@ contract PXLProperty is StandardToken {
     function getPropertyData(uint16 propertyID, uint256 systemSalePriceETH, uint256 systemSalePricePXL) public view returns(address, uint256, uint256, uint256, bool, uint256, uint8) {
         Property memory property = properties[propertyID];
         bool isInPrivateMode = property.isInPrivateMode;
-        //If it&#39;s in private, but it has expired and should be public, set our bool to be public
-        if (isInPrivateMode &amp;&amp; property.becomePublic &lt;= now) { 
+        //If it's in private, but it has expired and should be public, set our bool to be public
+        if (isInPrivateMode && property.becomePublic <= now) { 
             isInPrivateMode = false;
         }
         if (properties[propertyID].owner == 0) {

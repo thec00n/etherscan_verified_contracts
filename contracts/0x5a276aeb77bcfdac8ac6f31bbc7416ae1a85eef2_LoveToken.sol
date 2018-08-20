@@ -51,11 +51,11 @@ contract LoveToken is EIP20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
     
-    string public name = &quot;Love&quot;;
+    string public name = "Love";
     uint8 public decimals = 0;
-    string public symbol = &quot;LOVE&quot;;
+    string public symbol = "LOVE";
 
     constructor() public {
         totalSupply = MAX_UINT256;
@@ -69,7 +69,7 @@ contract LoveToken is EIP20Interface {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
         
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         

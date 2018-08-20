@@ -1,5 +1,5 @@
 pragma solidity ^0.4.9; 
-//v.1609rev17 Ezlab 2016 all-rights reseved <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35464045455a474175504f5954571b5c41">[email&#160;protected]</a>
+//v.1609rev17 Ezlab 2016 all-rights reseved <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35464045455a474175504f5954571b5c41">[email protected]</a>
 //special purpose contract for CantinaVolpone further info https://agrichain.it/d/0x160564d346f6e9fb3d93c034f207ecf9791b7739
 
 //common base contract
@@ -59,33 +59,33 @@ contract AgriChainContract   is BaseAgriChainContract
     function setOrganization(string _Organization)  onlyBy(creator)  onlyIfNotSealed()
     {
           Organization = _Organization;
-          EventChangedString(this,&#39;Organization&#39;,_Organization);
+          EventChangedString(this,'Organization',_Organization);
 
     }
     
     function setProduct(string _Product)  onlyBy(creator) onlyIfNotSealed()
     {
           Product = _Product;
-          EventChangedString(this,&#39;Product&#39;,_Product);
+          EventChangedString(this,'Product',_Product);
         
     }
     
     function setDescription(string _Description)  onlyBy(creator) onlyIfNotSealed()
     {
           Description = _Description;
-          EventChangedString(this,&#39;Description&#39;,_Description);
+          EventChangedString(this,'Description',_Description);
     }
     function setAgriChainData(address _AgriChainData)  onlyBy(creator) onlyIfNotSealed()
     {
          AgriChainData = _AgriChainData;
-         EventChangedAddress(this,&#39;AgriChainData&#39;,_AgriChainData);
+         EventChangedAddress(this,'AgriChainData',_AgriChainData);
     }
     
     
     function setAgriChainSeal(string _AgriChainSeal)  onlyBy(creator) onlyIfNotSealed()
     {
          AgriChainSeal = _AgriChainSeal;
-         EventChangedString(this,&#39;AgriChainSeal&#39;,_AgriChainSeal);
+         EventChangedString(this,'AgriChainSeal',_AgriChainSeal);
     }
     
     
@@ -93,7 +93,7 @@ contract AgriChainContract   is BaseAgriChainContract
     function setNotes(string _Notes)  onlyBy(creator)
     {
          Notes =  _Notes;
-         EventChanged(this,&#39;Notes&#39;);
+         EventChanged(this,'Notes');
     }
 }
 
@@ -123,7 +123,7 @@ contract AgriChainDataContract   is BaseAgriChainContract
          AgriChainNextData=_Next;
          AgriChainPrevData=_Prev;
          AgriChainRootData=_Root;
-         EventChanged(this,&#39;Chain&#39;);
+         EventChanged(this,'Chain');
     }
     
     //main language data  
@@ -132,7 +132,7 @@ contract AgriChainDataContract   is BaseAgriChainContract
           AgriChainType=_Type;
           AgriChainLabel=_Label;
           AgriChainDescription=_Description;
-          EventChanged(this,&#39;Data&#39;);
+          EventChanged(this,'Data');
     }
    
     //International language data
@@ -141,7 +141,7 @@ contract AgriChainDataContract   is BaseAgriChainContract
           
           AgriChainLabelInt=_LabelInt;
           AgriChainDescriptionInt=_DescriptionInt;
-          EventChanged(this,&#39;DataInt&#39;);
+          EventChanged(this,'DataInt');
     }
    
       
@@ -181,7 +181,7 @@ contract AgriChainDocumentContract   is AgriChainDataContract
           FileName=_FileName;
           FileHash=_FileHash;
           FileData=_FileData;          
-          EventChanged(this,&#39;Data&#39;);
+          EventChanged(this,'Data');
        
     } 
     
@@ -215,14 +215,14 @@ contract AgriChainProductionLotContract   is AgriChainDataContract
           QuantityInitial = _Initial;
           QuantityAvailable = _Initial;
           QuantityUnit = _Unit;
-          EventChangedInt32(this,&#39;QuantityInitial&#39;,_Initial);
+          EventChangedInt32(this,'QuantityInitial',_Initial);
 
     }
   
     function UseQuantity(int32 _Use)  onlyBy(creator)  
     {
           QuantityAvailable = QuantityAvailable-_Use;
-          EventChangedInt32(this,&#39;QuantityAvailable&#39;,QuantityAvailable);
+          EventChangedInt32(this,'QuantityAvailable',QuantityAvailable);
 
     }
   

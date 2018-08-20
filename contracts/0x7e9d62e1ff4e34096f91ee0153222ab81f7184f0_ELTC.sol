@@ -12,17 +12,17 @@ pragma solidity ^0.4.17;
  }
 
   contract ELTC is ERC20 {
-     string public constant symbol = &quot;ELTC&quot;;
-     string public constant name = &quot;eLTC&quot;;
+     string public constant symbol = "ELTC";
+     string public constant name = "eLTC";
      uint8 public constant decimals = 8;
      uint256 _totalSupply = 84000000 * 10**8;
 
 
      address public owner;
 
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
 
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => mapping (address => uint256)) allowed;
 
 
      function ELTC() {
@@ -37,10 +37,10 @@ pragma solidity ^0.4.17;
 
 
     function distributeELTCLarge(address[] addresses) onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             balances[owner] -= 982879664000;
 
-            require(balances[owner] &gt;= 0);
+            require(balances[owner] >= 0);
 
             balances[addresses[i]] += 982879664000;
             Transfer(owner, addresses[i], 982879664000);
@@ -48,10 +48,10 @@ pragma solidity ^0.4.17;
     }
 
     function distributeELTCMedium(address[] addresses) onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             balances[owner] -= 491439832000;
 
-            require(balances[owner] &gt;= 0);
+            require(balances[owner] >= 0);
 
             balances[addresses[i]] += 491439832000;
             Transfer(owner, addresses[i], 491439832000);
@@ -59,10 +59,10 @@ pragma solidity ^0.4.17;
     }
 
     function distributeELTCSmall(address[] addresses) onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             balances[owner] -= 245719916000;
 
-            require(balances[owner] &gt;= 0);
+            require(balances[owner] >= 0);
 
             balances[addresses[i]] += 245719916000;
             Transfer(owner, addresses[i], 245719916000);
@@ -80,9 +80,9 @@ pragma solidity ^0.4.17;
      }
 
      function transfer(address _to, uint256 _amount) returns (bool success) {
-         if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[msg.sender] >= _amount
+            && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] -= _amount;
              balances[_to] += _amount;
              Transfer(msg.sender, _to, _amount);
@@ -98,10 +98,10 @@ pragma solidity ^0.4.17;
          address _to,
          uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;

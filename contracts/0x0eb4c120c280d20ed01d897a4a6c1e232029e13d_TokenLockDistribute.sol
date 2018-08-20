@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -91,7 +91,7 @@ contract ERC20 is ERC20Basic {
 }
 
 contract MultiOwnable {
-    mapping (address =&gt; bool) owners;
+    mapping (address => bool) owners;
     address unremovableOwner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -136,8 +136,8 @@ contract MultiOwnable {
 
 contract TokenLock is MultiOwnable {
     ERC20 public token;
-    mapping (address =&gt; uint256) public lockAmounts;
-    mapping (address =&gt; uint256) public releaseBlocks;
+    mapping (address => uint256) public lockAmounts;
+    mapping (address => uint256) public releaseBlocks;
 
     constructor (address _token) public {
         token = ERC20(_token);
@@ -160,7 +160,7 @@ contract TokenLock is MultiOwnable {
 
     function release(address _addr) external {
         require(owners[msg.sender] || msg.sender == _addr);
-        require(block.number &gt;= releaseBlocks[_addr]);
+        require(block.number >= releaseBlocks[_addr]);
         uint256 amount = lockAmounts[_addr];
         lockAmounts[_addr] = 0;
         releaseBlocks[_addr] = 0;

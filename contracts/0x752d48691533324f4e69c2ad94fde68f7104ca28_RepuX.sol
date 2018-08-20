@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,7 +46,7 @@ contract Ownable {
     }
 
     function proposeNewOwner(address newOwner) public onlyOwner {
-        require(newOwner != address(0) &amp;&amp; newOwner != owner);
+        require(newOwner != address(0) && newOwner != owner);
         ownerCandidate = newOwner;
     }
 
@@ -74,7 +74,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -105,7 +105,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -116,8 +116,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -180,10 +180,10 @@ contract StandardToken is ERC20, BasicToken {
 
 // Based in part on code by Open-Zeppelin: https://github.com/OpenZeppelin/zeppelin-solidity.git
 // Based in part on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
-// Smart contract for the RepuX token &amp; the first crowdsale
+// Smart contract for the RepuX token & the first crowdsale
 contract RepuX is StandardToken, Ownable {
-    string public constant name = &quot;RepuX&quot;;
-    string public constant symbol = &quot;REPUX&quot;;
+    string public constant name = "RepuX";
+    string public constant symbol = "REPUX";
     uint8 public constant decimals = 18;
     address public multisig; //multisig wallet, to which all contributions will be sent
 
@@ -200,8 +200,8 @@ contract RepuX is StandardToken, Ownable {
     uint256 public totalSupply = 500000000 * (10**uint256(decimals)); //Token total supply: 500000000 RPX
     uint256 public presaleTokenSupply = totalSupply.mul(20).div(100); //Amount of tokens available during presale (10%)
     uint256 public crowdsaleTokenSupply = totalSupply.mul(30).div(100); //Amount of tokens available during crowdsale (50%)
-    uint256 public rewardsTokenSupply = totalSupply.mul(15).div(100); //Rewards pool (VIP etc, 10%), ambassador share(3%) &amp; ICO bounties(2%)
-    uint256 public teamTokenSupply = totalSupply.mul(12).div(100); //Tokens distributed to team (12% in total, 4% vested for 12, 24 &amp; 36 months)
+    uint256 public rewardsTokenSupply = totalSupply.mul(15).div(100); //Rewards pool (VIP etc, 10%), ambassador share(3%) & ICO bounties(2%)
+    uint256 public teamTokenSupply = totalSupply.mul(12).div(100); //Tokens distributed to team (12% in total, 4% vested for 12, 24 & 36 months)
     uint256 public platformTokenSupply = totalSupply.mul(23).div(100); //Token reserve for sale on platform
     uint256 public presaleTokenSold = 0; //Records the amount of tokens sold during presale
     uint256 public crowdsaleTokenSold = 0; //Records the amount of tokens sold during the crowdsale
@@ -225,7 +225,7 @@ contract RepuX is StandardToken, Ownable {
 
     uint256 contributionCount = 0;
     bytes32[] public contributionHashes;
-    mapping (bytes32 =&gt; Contribution) private contributions;
+    mapping (bytes32 => Contribution) private contributions;
 
     address public teamWithdrawalRecipient = address(0);
     bool public teamWithdrawalProposed = false;
@@ -259,7 +259,7 @@ contract RepuX is StandardToken, Ownable {
 
     // lockup during and after 48h of end of crowdsale
     modifier crowdsaleTransferLock() {
-        require(crowdsaleConcluded &amp;&amp; block.number &gt;= endBlock.add(transferLockup));
+        require(crowdsaleConcluded && block.number >= endBlock.add(transferLockup));
         _;
     }
 
@@ -268,7 +268,7 @@ contract RepuX is StandardToken, Ownable {
         _;
     }
 
-    //Constructor: set owner (team) address &amp; crowdsale recipient multisig wallet address
+    //Constructor: set owner (team) address & crowdsale recipient multisig wallet address
     //Allocate reward tokens to the team wallet
   	function RepuX(address _multisig) {
         owner = msg.sender;
@@ -299,7 +299,7 @@ contract RepuX is StandardToken, Ownable {
     }
 
     function concludePresale() public onlyOwner {
-        require(presaleStarted &amp;&amp; !presaleConcluded);
+        require(presaleStarted && !presaleConcluded);
         presaleConcluded = true;
         //Unsold tokens in the presale are made available in the crowdsale.
         crowdsaleTokenSupply = crowdsaleTokenSupply.add(presaleTokenSupply.sub(presaleTokenSold)); 
@@ -308,7 +308,7 @@ contract RepuX is StandardToken, Ownable {
 
     //Can only be called after presale is concluded.
     function startCrowdsale() public onlyOwner {
-        require(presaleConcluded &amp;&amp; !crowdsaleStarted);
+        require(presaleConcluded && !crowdsaleStarted);
         crowdsaleStarted = true;
         phase1StartBlock = block.number;
         phase1EndBlock = phase1StartBlock.add(dayToBlockNumber(7));
@@ -322,11 +322,11 @@ contract RepuX is StandardToken, Ownable {
 
     //Can only be called either after crowdsale time period ends, or after tokens have sold out
     function concludeCrowdsale() public onlyOwner {
-        require(crowdsaleStarted &amp;&amp; !crowdsaleOn() &amp;&amp; !crowdsaleConcluded);
+        require(crowdsaleStarted && !crowdsaleOn() && !crowdsaleConcluded);
         crowdsaleConcluded = true;
         endBlock = block.number;
         uint256 unsold = crowdsaleTokenSupply.sub(crowdsaleTokenSold);
-        if (unsold &gt; 0) {
+        if (unsold > 0) {
             //Burn unsold tokens
             totalSupply = totalSupply.sub(unsold);
             Burn(this, unsold);
@@ -367,16 +367,16 @@ contract RepuX is StandardToken, Ownable {
 
     //Allow addresses to buy token for another account
     function buyRecipient(address recipient) public payable whenNotHalted {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(presaleOn()||crowdsaleOn()); //Contribution only allowed during presale/crowdsale
         uint256 tokens = msg.value.mul(10**uint256(decimals)).div(tokenPrice()); 
         uint8 stage = 0;
 
         if(presaleOn()) {
-            require(presaleTokenSold.add(tokens) &lt;= presaleTokenSupply);
+            require(presaleTokenSold.add(tokens) <= presaleTokenSupply);
             presaleTokenSold = presaleTokenSold.add(tokens);
         } else {
-            require(crowdsaleTokenSold.add(tokens) &lt;= crowdsaleTokenSupply);
+            require(crowdsaleTokenSold.add(tokens) <= crowdsaleTokenSupply);
             crowdsaleTokenSold = crowdsaleTokenSold.add(tokens);
             stage = 1;
         }
@@ -420,13 +420,13 @@ contract RepuX is StandardToken, Ownable {
 
     // Team manually mints tokens in case of BTC/wire-transfer contributions
     function mint(address recipient, uint256 value) public onlyOwner {
-    	require(value &gt; 0);
+    	require(value > 0);
     	require(presaleOn()||crowdsaleOn()); //Minting only allowed during presale/crowdsale
     	if(presaleOn()) {
-            require(presaleTokenSold.add(value) &lt;= presaleTokenSupply);
+            require(presaleTokenSold.add(value) <= presaleTokenSupply);
             presaleTokenSold = presaleTokenSold.add(value);
         } else {
-            require(crowdsaleTokenSold.add(value) &lt;= crowdsaleTokenSupply);
+            require(crowdsaleTokenSold.add(value) <= crowdsaleTokenSupply);
             crowdsaleTokenSold = crowdsaleTokenSold.add(value);
         }
         balances[recipient] = balances[recipient].add(value);
@@ -451,15 +451,15 @@ contract RepuX is StandardToken, Ownable {
     }
 
     //Allows Team to adjust average blocktime according to network status, 
-    //in order to provide more precise timing for ICO phases &amp; lock-up periods
+    //in order to provide more precise timing for ICO phases & lock-up periods
     function setAverageBlockTime(uint256 newBlockTime) public onlyOwner {
-        require(newBlockTime &gt; 0);
+        require(newBlockTime > 0);
         averageBlockTime = newBlockTime;
     }
 
     //Allows Team to adjust basePrice so price of the token has correct correlation to dollar
     function setBasePrice(uint256 newBasePrice) public onlyOwner {
-        require(newBasePrice &gt; 0);
+        require(newBasePrice > 0);
         basePrice = newBasePrice;
     }
 
@@ -487,20 +487,20 @@ contract RepuX is StandardToken, Ownable {
 
     function phase() public constant returns (uint8) {
         if (presaleOn()) return 0;
-        if (crowdsaleTokenSold &lt;= phase1Cap &amp;&amp; block.number &lt;= phase1EndBlock) return 1;
-        if (crowdsaleTokenSold &lt;= phase2Cap &amp;&amp; block.number &lt;= phase2EndBlock) return 2;
-        if (crowdsaleTokenSold &lt;= phase3Cap &amp;&amp; block.number &lt;= phase3EndBlock) return 3;
-        if (crowdsaleTokenSold &lt;= phase4Cap &amp;&amp; block.number &lt;= phase4EndBlock) return 4;
-        if (crowdsaleTokenSold &lt;= crowdsaleTokenSupply &amp;&amp; block.number &lt;= phase5EndBlock) return 5;
+        if (crowdsaleTokenSold <= phase1Cap && block.number <= phase1EndBlock) return 1;
+        if (crowdsaleTokenSold <= phase2Cap && block.number <= phase2EndBlock) return 2;
+        if (crowdsaleTokenSold <= phase3Cap && block.number <= phase3EndBlock) return 3;
+        if (crowdsaleTokenSold <= phase4Cap && block.number <= phase4EndBlock) return 4;
+        if (crowdsaleTokenSold <= crowdsaleTokenSupply && block.number <= phase5EndBlock) return 5;
         return 6;
     }
 
     function presaleOn() public constant returns (bool) {
-        return (presaleStarted &amp;&amp; !presaleConcluded &amp;&amp; presaleTokenSold &lt; presaleTokenSupply);
+        return (presaleStarted && !presaleConcluded && presaleTokenSold < presaleTokenSupply);
     }
 
     function crowdsaleOn() public constant returns (bool) {
-        return (crowdsaleStarted &amp;&amp; block.number &lt;= endBlock &amp;&amp; crowdsaleTokenSold &lt; crowdsaleTokenSupply);
+        return (crowdsaleStarted && block.number <= endBlock && crowdsaleTokenSold < crowdsaleTokenSupply);
     }
 
     function dayToBlockNumber(uint256 dayNum) public constant returns(uint256) {

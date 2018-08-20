@@ -13,19 +13,19 @@ library SafeMath {
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
     * @dev The Ownable contract has an owner address, and provides basic authorization control 
-       * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+       * functions, this simplifies the implementation of "user permissions". 
           */
 contract Ownable {
   address public owner;
@@ -113,15 +113,15 @@ contract DroneShowCoinICOContract is Ownable {
     
     function isActive() public constant returns (bool) {
         return (
-            initialized == true &amp;&amp;  //check if initialized
-            now &gt;= START &amp;&amp; //check if after start date
-            now &lt;= START.add(DAYS * 1 days) &amp;&amp; //check if before end date
+            initialized == true &&  //check if initialized
+            now >= START && //check if after start date
+            now <= START.add(DAYS * 1 days) && //check if before end date
             goalReached() == false //check if goal was not reached
         ); // if all of the above are true we are active, else we are not
     }
     
     function goalReached() public constant returns (bool) {
-        return (raisedAmount &gt;= CAP * 1 ether);
+        return (raisedAmount >= CAP * 1 ether);
     }
     
     function () public payable {
@@ -135,10 +135,10 @@ contract DroneShowCoinICOContract is Ownable {
         uint256 secondspassed = now - START;
         uint256 dayspassed = secondspassed/(60*60*24);
         uint256 bonusPrcnt = 0;
-        if (dayspassed &lt; 7) {
+        if (dayspassed < 7) {
             //first 7 days 20% bonus
             bonusPrcnt = 20;
-        } else if (dayspassed &lt; 14) {
+        } else if (dayspassed < 14) {
             //second week 10% bonus
             bonusPrcnt = 10;
         } else {
@@ -164,7 +164,7 @@ contract DroneShowCoinICOContract is Ownable {
     
     function destroy() public onlyOwner {
         uint256 balance = token.balanceOf(this);
-        assert (balance &gt; 0);
+        assert (balance > 0);
         token.transfer(owner,balance);
         selfdestruct(owner);
         

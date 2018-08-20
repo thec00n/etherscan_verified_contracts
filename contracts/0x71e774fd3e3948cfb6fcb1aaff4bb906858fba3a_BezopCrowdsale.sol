@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,7 +48,7 @@ contract BezopCrowdsale {
 
   token tokenReward;
 
-  mapping (address =&gt; uint) public contributions;
+  mapping (address => uint) public contributions;
   
 
 
@@ -124,9 +124,9 @@ contract BezopCrowdsale {
     // update state
     weiRaised = weiRaised.add(weiAmount);
 
-    if(weiAmount&lt;10**17&amp;&amp;contributions[msg.sender]&lt;10**17) throw;
+    if(weiAmount<10**17&&contributions[msg.sender]<10**17) throw;
     
-    if(contributions[msg.sender].add(weiAmount)&gt;550*10**18) throw;
+    if(contributions[msg.sender].add(weiAmount)>550*10**18) throw;
     contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
 
     tokenReward.transfer(beneficiary, tokens);
@@ -147,7 +147,7 @@ contract BezopCrowdsale {
   function validPurchase() internal constant returns (bool) {
     bool withinPeriod = started;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function withdrawTokens(uint256 _amount) {

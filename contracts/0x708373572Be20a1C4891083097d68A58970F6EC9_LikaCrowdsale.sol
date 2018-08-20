@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-//Contract By Yoav Taieb. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff86909e89d196908c9b9a89bf98929e9693d19c9092">[email&#160;protected]</a>
+//Contract By Yoav Taieb. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff86909e89d196908c9b9a89bf98929e9693d19c9092">[email protected]</a>
 
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,8 +44,8 @@ contract LikaCrowdsale {
 
     LikaToken public managedTokenLedger;
 
-    string public name = &quot;Lika&quot;;
-    string public symbol = &quot;LIK&quot;;
+    string public name = "Lika";
+    string public symbol = "LIK";
 
     bool public halted = false;
 
@@ -73,11 +73,11 @@ contract LikaCrowdsale {
     uint256[4] public ICOamountBonusMultipierInPercent = [103, 105, 107, 110]; // count bonus
     uint256[5] public ICOweekBonus = [152, 117, 110, 105, 102]; // time bonus
 
-    mapping(address =&gt; uint256) public weiForRefundICO;
+    mapping(address => uint256) public weiForRefundICO;
 
-    mapping(address =&gt; uint256) public weiToRecoverICO;
+    mapping(address => uint256) public weiToRecoverICO;
 
-    mapping(address =&gt; uint256) public balancesForICO;
+    mapping(address => uint256) public balancesForICO;
 
     event Purchased(address indexed _from, uint256 _value);
 
@@ -88,16 +88,16 @@ contract LikaCrowdsale {
 
     function transitionState() internal {
 
-      if (now &gt;= ICOstart) {
+      if (now >= ICOstart) {
             if (ICOstate == ICOStateEnum.NotStarted) {
                 ICOstate = ICOStateEnum.Started;
             }
-            if (Hardcap &gt; 0 &amp;&amp; ICOcollected &gt;= Hardcap) {
+            if (Hardcap > 0 && ICOcollected >= Hardcap) {
                 ICOstate = ICOStateEnum.Successful;
             }
-        } if (now &gt;= ICOend) {
+        } if (now >= ICOend) {
             if (ICOstate == ICOStateEnum.Started) {
-                if (ICOcollected &gt;= Softcap) {
+                if (ICOcollected >= Softcap) {
                     ICOstate = ICOStateEnum.Successful;
                 } else {
                     ICOstate = ICOStateEnum.Refunded;
@@ -147,8 +147,8 @@ contract LikaCrowdsale {
     }
 
     function setNameAndTicker(string _name, string _symbol) onlyOwner public returns (bool success) {
-        require(bytes(_name).length &gt; 1);
-        require(bytes(_symbol).length &gt; 1);
+        require(bytes(_name).length > 1);
+        require(bytes(_symbol).length > 1);
         name = _name;
         symbol = _symbol;
         return true;
@@ -168,7 +168,7 @@ contract LikaCrowdsale {
 
 
     function () public payable stateTransition notHalted {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(ICOstate == ICOStateEnum.Started);
         assert(ICOBuy());
     }
@@ -200,8 +200,8 @@ contract LikaCrowdsale {
 
     function getBonusMultipierInPercents(uint256 _sentAmount) public view returns (uint256 _multi) {
         uint256 bonusMultiplier = 100;
-        for (uint8 i = 0; i &lt; ICOamountBonusLimits.length; i++) {
-            if (_sentAmount &lt; ICOamountBonusLimits[i]) {
+        for (uint8 i = 0; i < ICOamountBonusLimits.length; i++) {
+            if (_sentAmount < ICOamountBonusLimits[i]) {
                 break;
             } else {
                 bonusMultiplier = ICOamountBonusMultipierInPercent[i];
@@ -238,7 +238,7 @@ contract LikaCrowdsale {
         uint256 tokensBought;
         uint256 fundsLeftScaled;
         (tokensBought, fundsLeftScaled) = calculateAmountBoughtICO(weisSentScaled, amountBonus);
-        if (tokensBought &lt; minTokensToBuy.mul(DECIMAL_MULTIPLIER)) {
+        if (tokensBought < minTokensToBuy.mul(DECIMAL_MULTIPLIER)) {
             revert();
         }
         uint256 fundsLeft = fundsLeftScaled.div(DECIMAL_MULTIPLIER);
@@ -276,7 +276,7 @@ contract LikaCrowdsale {
     }
 
     function withdrawFunds() onlyOwner public returns (bool success) {
-        require(Softcap &lt;= ICOcollected);
+        require(Softcap <= ICOcollected);
         owner.transfer(ICOcollected - TakedFunds);
         TakedFunds = ICOcollected;
         return true;

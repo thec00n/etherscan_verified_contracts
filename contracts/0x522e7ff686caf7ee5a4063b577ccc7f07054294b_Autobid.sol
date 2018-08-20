@@ -13,7 +13,7 @@ contract Token {
  *  predefined rate until an expiration timestamp is reached or the
  *  contract token supply is fully depleted
  *
- *  Note: users must go through the approve() -&gt; redeemTokens() process
+ *  Note: users must go through the approve() -> redeemTokens() process
  *  in order to successfully convert their token balances back to ETH
  *  (i.e. autobid contract will not recognize direct token transfers)
  *
@@ -42,7 +42,7 @@ contract Autobid {
     require(active);
 
     // Also check current timestamp (edge condition sanity check)
-    require(now &lt; expirationTime);
+    require(now < expirationTime);
     _;
   }
 
@@ -116,13 +116,13 @@ contract Autobid {
   \**************************************************************/
   function expirationCheck() public {
     // If expirationTime has been passed, contract expires
-    if (now &gt; expirationTime) {
+    if (now > expirationTime) {
       active = false;
     }
 
-    // If the contract&#39;s token supply is depleted, it expires
+    // If the contract's token supply is depleted, it expires
     uint remainingTokenSupply = Token(token).balanceOf(this);
-    if (remainingTokenSupply &lt; exchangeRate) {
+    if (remainingTokenSupply < exchangeRate) {
       active = false;
     }
   }

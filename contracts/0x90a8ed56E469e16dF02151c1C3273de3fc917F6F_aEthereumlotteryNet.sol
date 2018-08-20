@@ -43,9 +43,9 @@ contract aEthereumlotteryNet {
 	}
 	game_s private game;
 	
-	mapping (address =&gt; uint) public balances;
+	mapping (address => uint) public balances;
 	
-	string constant public Information = &quot;http://a.ethereumlottery.net&quot;;
+	string constant public Information = "http://a.ethereumlottery.net";
 	
 	function Details() constant returns(uint start, uint end, uint tickets, uint players) {
 		start = game.startDate;
@@ -56,7 +56,7 @@ contract aEthereumlotteryNet {
 	function Prizes() constant returns(bool estimated, uint place1, uint place2, uint place3, 
 	uint place4, uint place5, uint place6, uint place7, uint place8, uint place9, uint place10) {
 		uint pot;
-		if (game.totalTickets &lt; drawAtLeastTicketCount) {
+		if (game.totalTickets < drawAtLeastTicketCount) {
 			estimated = true;
 			pot = drawAtLeastTicketCount*ticketPrice*(100-feeP)/100;
 		} else {
@@ -82,14 +82,14 @@ contract aEthereumlotteryNet {
 		BuyTickets();
 	}
 	function BuyTickets() OnlyInTime OnlyWhileWait onValidContract {
-		if (msg.value &lt; ticketPrice) { throw; }
+		if (msg.value < ticketPrice) { throw; }
 		uint ticketsCount = msg.value / ticketPrice;
-		if (game.totalTickets+ticketsCount &gt;= 255**4) { throw; }
-		if (msg.value &gt; (ticketsCount * ticketPrice)) { if (msg.sender.send(msg.value - (ticketsCount * ticketPrice)) == false) { throw; } }
+		if (game.totalTickets+ticketsCount >= 255**4) { throw; }
+		if (msg.value > (ticketsCount * ticketPrice)) { if (msg.sender.send(msg.value - (ticketsCount * ticketPrice)) == false) { throw; } }
 		game.totalTickets += ticketsCount;
 		uint a;
 		uint playersid = game.players.length;
-		for ( a = 0 ; a &lt; playersid ; a++ ) {
+		for ( a = 0 ; a < playersid ; a++ ) {
 			if (game.players[a].addr == msg.sender) {
 				game.players[a].ticketCount += ticketsCount;
 				return;
@@ -101,7 +101,7 @@ contract aEthereumlotteryNet {
 	}
 	function PrepareDraw() external ReadyForPrepare onValidContract {
 	    reFund();
-		if (game.players.length &lt; drawAtLeastPlayerCount &amp;&amp; game.totalTickets &lt; drawAtLeastTicketCount) {
+		if (game.players.length < drawAtLeastPlayerCount && game.totalTickets < drawAtLeastTicketCount) {
 			game.endDate = calcNextDrawTime();
 		} else {
 			game.prepareDrawBlock = block.number + prepareBlockDelay;
@@ -120,7 +120,7 @@ contract aEthereumlotteryNet {
 		uint num;
 		address[10] memory winners;
 		bool next;
-		for ( a = 0 ; a &lt; 10 ; a++ ) {
+		for ( a = 0 ; a < 10 ; a++ ) {
 			while (true) {
 				next = true;
 				if (b == 8) {
@@ -129,10 +129,10 @@ contract aEthereumlotteryNet {
 				}
 				num = getNum(WinHash,b) % game.totalTickets;
 				d = 0;
-				for ( c = 0 ; c &lt; game.players.length ; c++ ) {
+				for ( c = 0 ; c < game.players.length ; c++ ) {
 					d += game.players[c].ticketCount;
-					if (d &gt;= num) {
-						for ( e = 0 ; e &lt; 10 ; e++ ){
+					if (d >= num) {
+						for ( e = 0 ; e < 10 ; e++ ){
 							if (game.players[c].addr == winners[e]) {
 								next = false;
 								break;
@@ -184,9 +184,9 @@ contract aEthereumlotteryNet {
         	if (msg.sender.send(balances[msg.sender]) == false) { throw; }
         	balances[msg.sender] = 0;
 	    } else {
-            for ( uint a = 0 ; a &lt; game.players.length ; a++ ) {
+            for ( uint a = 0 ; a < game.players.length ; a++ ) {
     			if (game.players[a].addr == msg.sender) {
-    			    if (game.players[a].ticketCount &gt; 0) {
+    			    if (game.players[a].ticketCount > 0) {
     			        if ( ! msg.sender.send(game.players[a].ticketCount * ticketPrice)) { throw; }
     			        game.totalTickets -= game.players[a].ticketCount;
     			        delete game.players[a];
@@ -217,23 +217,23 @@ contract aEthereumlotteryNet {
 	}
 	function calcNextDrawTime() private returns (uint ret) {
 		ret = 1461499200; // 2016.04.24 12:00:00
-		while (ret &lt; now) {
+		while (ret < now) {
 			ret += drawDelay;
 		}
 	}
 	function makeHash() private returns (bytes32 hash) {
-		for ( uint a = 0 ; a &lt;= prepareBlockDelay ; a++ ) {
+		for ( uint a = 0 ; a <= prepareBlockDelay ; a++ ) {
 			hash = sha3(hash, block.blockhash(game.prepareDrawBlock - prepareBlockDelay + a));
 		}
 		hash = sha3(hash, game.players.length, game.totalTickets);
 	}
-	function reFund() private { if (msg.value &gt; 0) { if (msg.sender.send(msg.value) == false) { throw; } } }
+	function reFund() private { if (msg.value > 0) { if (msg.sender.send(msg.value) == false) { throw; } } }
 	function getNum(bytes32 a, uint i) private returns (uint) { return uint32(bytes4(bytes32(uint(a) * 2 ** (8 * (i*4))))); }
 	modifier onValidContract() { if (!contractEnabled) { throw; } _ }
-	modifier OnlyInTime() { if (game.endDate &lt; now) { throw; } _ }
+	modifier OnlyInTime() { if (game.endDate < now) { throw; } _ }
 	modifier OnlyWhileWait() { if (game.drawStatus != drawStatus_.Wait) { throw; } _ }
 	modifier OnlyWhilePrepared() { if (game.drawStatus != drawStatus_.Prepared) { throw; } _ }
-	modifier ReadyForPrepare() { if (game.endDate &gt; now || game.drawStatus != drawStatus_.Wait) { throw; } _ }
-	modifier ReadyForDraw() { if (game.prepareDrawBlock &gt; block.number) { throw; } _ }
+	modifier ReadyForPrepare() { if (game.endDate > now || game.drawStatus != drawStatus_.Wait) { throw; } _ }
+	modifier ReadyForDraw() { if (game.prepareDrawBlock > block.number) { throw; } _ }
 	modifier OnlyOwner() { if (owner != msg.sender) { throw; } _ }
 }

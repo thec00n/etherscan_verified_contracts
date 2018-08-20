@@ -3,7 +3,7 @@
 /* Deployment:
 Owner: 0xeb5fa6cbf2aca03a0df228f2df67229e2d3bd01e
 Last address: 0xc75175d7de7e8036f7c00a8e89f30dcf6e733f2e
-ABI: [{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_ax&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_ay&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_az&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_bx&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_by&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_bz&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;jadd&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_pub1&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_pub2&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;hash_pubkey_to_pubkey&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_x&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_y_bit&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;jrecover_y&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_q0&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_q1&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_q2&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;jdecompose&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_ax&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_ay&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_az&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;jdouble&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_data&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_bit&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;isbit&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_b&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_e&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_m&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;jexp&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_bx&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_by&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_bz&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_n&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;jmul&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[],&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:false,&quot;type&quot;:&quot;fallback&quot;}]
+ABI: [{"constant":true,"inputs":[{"name":"_ax","type":"uint256"},{"name":"_ay","type":"uint256"},{"name":"_az","type":"uint256"},{"name":"_bx","type":"uint256"},{"name":"_by","type":"uint256"},{"name":"_bz","type":"uint256"}],"name":"jadd","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_pub1","type":"uint256"},{"name":"_pub2","type":"uint256"}],"name":"hash_pubkey_to_pubkey","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_x","type":"uint256"},{"name":"_y_bit","type":"uint256"}],"name":"jrecover_y","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_q0","type":"uint256"},{"name":"_q1","type":"uint256"},{"name":"_q2","type":"uint256"}],"name":"jdecompose","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_ax","type":"uint256"},{"name":"_ay","type":"uint256"},{"name":"_az","type":"uint256"}],"name":"jdouble","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_data","type":"uint256"},{"name":"_bit","type":"uint256"}],"name":"isbit","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_b","type":"uint256"},{"name":"_e","type":"uint256"},{"name":"_m","type":"uint256"}],"name":"jexp","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_bx","type":"uint256"},{"name":"_by","type":"uint256"},{"name":"_bz","type":"uint256"},{"name":"_n","type":"uint256"}],"name":"jmul","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[],"type":"constructor"},{"payable":false,"type":"fallback"}]
 Optimized: yes
 Solidity version: v0.4.4
 */
@@ -77,10 +77,10 @@ contract ArithLib {
         uint az = 1;
         uint b = M;
         
-        while(b &gt; 0) {
+        while(b > 0) {
 
            (ax, ay, az) = jdouble(ax, ay, az);
-           if((_n &amp; b) != 0) {
+           if((_n & b) != 0) {
               
               if(ay == 0) {
                  (ax, ay, az) = (_bx, _by, _bz);
@@ -99,18 +99,18 @@ contract ArithLib {
         uint o = 1;
         uint bit = M;
         
-        while (bit &gt; 0) {
+        while (bit > 0) {
             uint bitval = 0;
-            if(_e &amp; bit &gt; 0) bitval = 1;
+            if(_e & bit > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bitval = 0;
-            if(_e &amp; (bit / 2) &gt; 0) bitval = 1;
+            if(_e & (bit / 2) > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bitval = 0;
-            if(_e &amp; (bit / 4) &gt; 0) bitval = 1;
+            if(_e & (bit / 4) > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bitval = 0;
-            if(_e &amp; (bit / 8) &gt; 0) bitval = 1;
+            if(_e & (bit / 8) > 0) bitval = 1;
             o = mulmod(mulmod(o, o, _m), _b ** bitval, _m);
             bit = (bit / 16);
         }

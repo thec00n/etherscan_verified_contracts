@@ -58,9 +58,9 @@ contract TokenERC20 {
 
     // This creates an array with all balances
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
  
 
@@ -122,11 +122,11 @@ contract TokenERC20 {
 
         // Check if the sender has enough
 
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // Save this for an assertion in the future
 
@@ -194,7 +194,7 @@ contract TokenERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
 
         allowance[_from][msg.sender] -= _value;
 
@@ -288,7 +288,7 @@ contract TokenERC20 {
 
     function burn(uint256 _value) public returns (bool success) {
 
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
 
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
 
@@ -320,13 +320,13 @@ contract TokenERC20 {
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
 
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
 
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
 
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
 
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
 
         totalSupply -= _value;                              // Update totalSupply
 
@@ -358,7 +358,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
 
  
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
  
 
@@ -388,9 +388,9 @@ contract MyAdvancedToken is owned, TokenERC20 {
 
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
 
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
 
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
 
         require(!frozenAccount[_from]);                     // Check if sender is frozen
 
@@ -426,7 +426,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
 
  
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
 
     /// @param target Address to be frozen
 
@@ -476,11 +476,11 @@ contract MyAdvancedToken is owned, TokenERC20 {
 
     function sell(uint256 amount) public {
 
-        require(this.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
 
         _transfer(msg.sender, this, amount);              // makes the transfers
 
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
 
     }
 

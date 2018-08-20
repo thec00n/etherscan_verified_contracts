@@ -25,7 +25,7 @@ contract Dealer {
     }
 
     function overflow() public pitbossOnly {
-      require (this.balance &gt; ceiling);
+      require (this.balance > ceiling);
       pitboss.transfer(this.balance - ceiling);
     }
 

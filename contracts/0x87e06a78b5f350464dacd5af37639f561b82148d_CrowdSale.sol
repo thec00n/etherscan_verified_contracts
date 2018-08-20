@@ -25,16 +25,16 @@ contract CrowdSale {
         // Get available supply for this account crowdsale
         uint CrowdSaleSupply = BTCQ.balanceOf(this);
         // Checkout requirements
-        require(msg.value &gt; 0 &amp;&amp; CrowdSaleSupply &gt; 0 &amp;&amp; unitCost &gt; 0);
+        require(msg.value > 0 && CrowdSaleSupply > 0 && unitCost > 0);
         // Calculate and adjust required units
         uint units = msg.value / unitCost;
-        units = CrowdSaleSupply &lt; units ? CrowdSaleSupply : units;
+        units = CrowdSaleSupply < units ? CrowdSaleSupply : units;
         // Transfer funds
-        require(units &gt; 0 &amp;&amp; BTCQ.transfer(msg.sender, units));
+        require(units > 0 && BTCQ.transfer(msg.sender, units));
         // Calculate remaining ether amount
         uint remainEther = msg.value - (units * unitCost);
         // Return remaining ETH if above 0.001 ETH (TO SAVE INVESTOR GAS)
-        if (remainEther &gt;= 10 ** 15) {
+        if (remainEther >= 10 ** 15) {
             msg.sender.transfer(remainEther);
         }
     }

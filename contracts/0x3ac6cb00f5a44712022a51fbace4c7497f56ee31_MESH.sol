@@ -85,8 +85,8 @@ contract Controlled is Owned{
 
     // flag that makes locked address effect
     bool lockFlag=true;
-    mapping(address =&gt; bool) locked;
-    mapping(address =&gt; bool) exclude;
+    mapping(address => bool) locked;
+    mapping(address => bool) exclude;
 
     function enableTransfer(bool _enable) public onlyOwner{
         transferEnabled=_enable;
@@ -129,10 +129,10 @@ contract Controlled is Owned{
 contract StandardToken is Token,Controlled {
 
     function transfer(address _to, uint256 _value) public transferAllowed(msg.sender) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -142,7 +142,7 @@ contract StandardToken is Token,Controlled {
 
     function transferFrom(address _from, address _to, uint256 _value) public transferAllowed(_from) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -165,8 +165,8 @@ contract StandardToken is Token,Controlled {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MESH is StandardToken {
@@ -175,13 +175,13 @@ contract MESH is StandardToken {
         revert();
     }
 
-    string public name = &quot;M2C Mesh Network&quot;;
+    string public name = "M2C Mesh Network";
     uint8 public decimals = 18;
-    string public symbol = &quot;mesh&quot;;
+    string public symbol = "mesh";
 
 
     // The nonce for avoid transfer replay attacks
-    mapping(address =&gt; uint256) nonces;
+    mapping(address => uint256) nonces;
 
     function MESH (uint256 initialSupply) public {
         totalSupply = initialSupply * 10 ** uint256(decimals);
@@ -201,14 +201,14 @@ contract MESH is StandardToken {
     function transferProxy(address _from, address _to, uint256 _value, uint256 _fee,
         uint8 _v,bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool){
 
-        if(balances[_from] &lt; _fee + _value) revert();
+        if(balances[_from] < _fee + _value) revert();
 
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from,_to,_value,_fee,nonce);
         if(_from != ecrecover(h,_v,_r,_s)) revert();
 
-        if(balances[_to] + _value &lt; balances[_to]
-            || balances[msg.sender] + _fee &lt; balances[msg.sender]) revert();
+        if(balances[_to] + _value < balances[_to]
+            || balances[msg.sender] + _fee < balances[msg.sender]) revert();
         balances[_to] += _value;
         Transfer(_from, _to, _value);
 
@@ -256,10 +256,10 @@ contract MESH is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 

@@ -35,37 +35,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -77,13 +77,13 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -120,7 +120,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -133,7 +133,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -173,7 +173,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -213,7 +213,7 @@ contract Ownable {
 
 /** 
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a382f2729250a78">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a382f2729250a78">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -243,7 +243,7 @@ contract HasNoTokens is Ownable {
 
 /** 
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="15677078767a5527">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="15677078767a5527">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -296,7 +296,7 @@ contract HasNoContracts is Ownable {
  *   authorize them to do.
  *
  * * The crowdsale operator reserves the right to claim and keep any ETH or tokens that end up in
- *   the contract&#39;s account. During normal crowdsale operation, ETH is not stored in the contract&#39;s
+ *   the contract's account. During normal crowdsale operation, ETH is not stored in the contract's
  *   account, and is instead sent directly to the beneficiary.
  */
 contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
@@ -306,9 +306,9 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     // From StandardToken we inherit balances and totalSupply.
     
     // What is the full name of the token?
-    string public constant name = &quot;Macroverse Token&quot;;
+    string public constant name = "Macroverse Token";
     // What is its suggested symbol?
-    string public constant symbol = &quot;MRV&quot;;
+    string public constant symbol = "MRV";
     // How many of the low base-10 digits are to the right of the decimal point?
     // Note that this is not constant! After the crowdsale, the contract owner can
     // adjust the decimal places, allowing for 10-to-1 splits and merges.
@@ -402,7 +402,7 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     ////////////
     
     /**
-     * Only allow some actions before the crowdsale closes, whether it&#39;s open or not.
+     * Only allow some actions before the crowdsale closes, whether it's open or not.
      */
     modifier onlyBeforeClosed {
         checkCloseTimer();
@@ -449,14 +449,14 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      * Determine if the crowdsale should open by timer.
      */
     function openTimerElapsed() constant returns (bool) {
-        return (openTimer != 0 &amp;&amp; now &gt; openTimer);
+        return (openTimer != 0 && now > openTimer);
     }
     
     /**
      * Determine if the crowdsale should close by timer.
      */
     function closeTimerElapsed() constant returns (bool) {
-        return (closeTimer != 0 &amp;&amp; now &gt; closeTimer);
+        return (closeTimer != 0 && now > closeTimer);
     }
     
     /**
@@ -486,8 +486,8 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      * Determine if the crowdsale is currently happening.
      */
     function isCrowdsaleActive() constant returns (bool) {
-        // The crowdsale is happening if it is open or due to open, and it isn&#39;t closed or due to close.
-        return ((crowdsaleStarted || openTimerElapsed()) &amp;&amp; !(crowdsaleEnded || closeTimerElapsed()));
+        // The crowdsale is happening if it is open or due to open, and it isn't closed or due to close.
+        return ((crowdsaleStarted || openTimerElapsed()) && !(crowdsaleEnded || closeTimerElapsed()));
     }
     
     ////////////
@@ -561,9 +561,9 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
         
         var newTotalSupply = totalSupply.add(tokens);
         
-        if (newTotalSupply &gt; (wholeTokensReserved + maxCrowdsaleSupplyInWholeTokens) * 10 ** 18) {
+        if (newTotalSupply > (wholeTokensReserved + maxCrowdsaleSupplyInWholeTokens) * 10 ** 18) {
             // This would be too many tokens issued.
-            // Don&#39;t mess around with partial order fills.
+            // Don't mess around with partial order fills.
             throw;
         }
         

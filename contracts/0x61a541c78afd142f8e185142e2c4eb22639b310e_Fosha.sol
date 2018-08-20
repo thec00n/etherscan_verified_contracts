@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
     }
 }
@@ -60,8 +60,8 @@ contract Fosha is ERC20, Ownable {
    
     using SafeMath for uint256;
 	
-    string constant public symbol = &quot;FOSHA&quot;;
-    string constant public name = &quot;Fosha&quot;;
+    string constant public symbol = "FOSHA";
+    string constant public name = "Fosha";
     uint8 constant public decimals = 18;
 
 	uint public totalSupply;
@@ -77,8 +77,8 @@ contract Fosha is ERC20, Ownable {
     address public fundWallet;
     address ethFundWallet;
 	
-	mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 	
 	event FundTransfer(address backer, uint amount, bool isContribution, uint _amountRaised);
 
@@ -97,7 +97,7 @@ contract Fosha is ERC20, Ownable {
     function() payable {
 		uint256 amount = msg.value;
 		uint256 numTokens = amount.mul(tokenExchangeRate); 
-		require(!crowdsaleClosed &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end &amp;&amp; tokensSold.add(numTokens) &lt;= tokensForIco &amp;&amp; amount &lt;= 5 ether);
+		require(!crowdsaleClosed && now >= start && now <= end && tokensSold.add(numTokens) <= tokensForIco && amount <= 5 ether);
 		ethFundWallet.transfer(amount);
 		balances[fundWallet] = balances[fundWallet].sub(numTokens); 
 		balances[msg.sender] = balances[msg.sender].add(numTokens);
@@ -108,7 +108,7 @@ contract Fosha is ERC20, Ownable {
     }
 
     function transfer(address _to, uint256 _value) returns(bool success) {
-		require(now &gt;= startTransferTime); 
+		require(now >= startTransferTime); 
 		balances[msg.sender] = balances[msg.sender].sub(_value); 
 		balances[_to] = balances[_to].add(_value); 
 		Transfer(msg.sender, _to, _value); 
@@ -131,11 +131,11 @@ contract Fosha is ERC20, Ownable {
     }
 	
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-		if (now &lt; startTransferTime) {
+		if (now < startTransferTime) {
 		    require(_from == fundWallet);
 		}
 		var _allowance = allowed[_from][msg.sender];
-		require(_value &lt;= _allowance);
+		require(_value <= _allowance);
 		balances[_from] = balances[_from].sub(_value); 
 		balances[_to] = balances[_to].add(_value); 
 		allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -144,7 +144,7 @@ contract Fosha is ERC20, Ownable {
     }
 
     function markCrowdsaleEnding() {
-		require(now &gt; end);
+		require(now > end);
 		crowdsaleClosed = true;
     }
 }

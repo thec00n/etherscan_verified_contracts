@@ -28,7 +28,7 @@ contract EthernalMessageBook {
         price = argStartPrice;
         startingPrice = argStartPrice;
 
-        require(argNumerator &gt; multDenominator);
+        require(argNumerator > multDenominator);
         multNumerator = argNumerator;
         multDenominator = argDenominator;
     }
@@ -47,7 +47,7 @@ contract EthernalMessageBook {
     }
 
     function writeMessage(string argMsg, string argAuthorName, string argLink, string argMeta) public payable {
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         Message memory newMessage = Message({
             msg : argMsg,
             value : msg.value,

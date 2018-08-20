@@ -22,10 +22,10 @@ contract Owned {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -33,7 +33,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -60,9 +60,9 @@ contract VenaCoin is ERC20Interface, Owned{
     string public name;
     uint8 public decimals;
     uint _totalSupply;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; uint256) investments;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => uint256) investments;
     address[] contributors;
     address[] contestContributors = new address[](50);
     uint256 public rate; // How many token units a buyer gets per wei
@@ -78,12 +78,12 @@ contract VenaCoin is ERC20Interface, Owned{
     * Reverts if not in crowdsale time range. 
     */
     modifier onlyWhileOpen {
-       require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime, &quot;Sale open&quot;);
+       require(now >= openingTime && now <= closingTime, "Sale open");
         _;
     }
     
     modifier icoClose{
-       require(now &gt; closingTime);
+       require(now > closingTime);
         _;
     }
     // ------------------------------------------------------------------------
@@ -92,8 +92,8 @@ contract VenaCoin is ERC20Interface, Owned{
     constructor(address _owner) public{
         openingTime = 1528644600; // 10 june, 2018 3:30pm GMT
         closingTime = 1539185400; // 10 Oct, 2018 3:30 pm GMT
-        symbol = &quot;VENA&quot;;
-        name = &quot;VenaCoin&quot;;
+        symbol = "VENA";
+        name = "VenaCoin";
         decimals = 18;
         rate = 1961; //tokens per wei ... 0.3$/vena on rate of 1eth = $589
         owner = _owner;
@@ -126,15 +126,15 @@ contract VenaCoin is ERC20Interface, Owned{
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
         // prevent transfer to 0x0, use burn instead
         require(to != 0x0);
-        require(balances[msg.sender] &gt;= tokens );
-        require(balances[to] + tokens &gt;= balances[to]);
+        require(balances[msg.sender] >= tokens );
+        require(balances[to] + tokens >= balances[to]);
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         emit Transfer(msg.sender,to,tokens);
@@ -144,8 +144,8 @@ contract VenaCoin is ERC20Interface, Owned{
     function _transfer(address _to, uint _tokens) internal returns (bool success){
         // prevent transfer to 0x0, use burn instead
         require(_to != 0x0);
-        require(balances[this] &gt;= _tokens );
-        require(balances[_to] + _tokens &gt;= balances[_to]);
+        require(balances[this] >= _tokens );
+        require(balances[_to] + _tokens >= balances[_to]);
         balances[this] = balances[this].sub(_tokens);
         balances[_to] = balances[_to].add(_tokens);
         emit Transfer(this,_to,_tokens);
@@ -154,7 +154,7 @@ contract VenaCoin is ERC20Interface, Owned{
     
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success){
         allowed[msg.sender][spender] = tokens;
@@ -172,8 +172,8 @@ contract VenaCoin is ERC20Interface, Owned{
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success){
-        require(tokens &lt;= allowed[from][msg.sender]); //check allowance
-        require(balances[from] &gt;= tokens);
+        require(tokens <= allowed[from][msg.sender]); //check allowance
+        require(balances[from] >= tokens);
         balances[from] = balances[from].sub(tokens);
         balances[to] = balances[to].add(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
@@ -182,7 +182,7 @@ contract VenaCoin is ERC20Interface, Owned{
     }
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -210,13 +210,13 @@ contract VenaCoin is ERC20Interface, Owned{
             investments[msg.sender] = weiAmount;
         }
         _registerContributors(investmentAmount,msg.sender);
-        if(contributors.length &lt;=5000){
+        if(contributors.length <=5000){
             bonusPercentage = 100;
         }
-        else if(contributors.length &gt;5000 &amp;&amp; contributors.length &lt;=10000){
+        else if(contributors.length >5000 && contributors.length <=10000){
             bonusPercentage = 50;
         }
-        else if(contributors.length &gt;10000 &amp;&amp; contributors.length &lt;=15000){
+        else if(contributors.length >10000 && contributors.length <=15000){
             bonusPercentage = 30;
         }
         else {
@@ -259,8 +259,8 @@ contract VenaCoin is ERC20Interface, Owned{
     
     function _registerContributors(uint256 _weiamount, address _sender) internal {
         
-        for (uint index = 0; index&lt;50; index++){
-            if(_weiamount &gt; investments[contestContributors[index]]){
+        for (uint index = 0; index<50; index++){
+            if(_weiamount > investments[contestContributors[index]]){
                 _lowerDown(index + 1,_sender);
                 contestContributors[index] = _sender;
                 index = 50;
@@ -289,7 +289,7 @@ contract VenaCoin is ERC20Interface, Owned{
                 else if(index == 4){ //5th contributor
                     _transfer(_beneficiary, 30000);
                 }
-                else if(index &gt;= 5 &amp;&amp; index &lt;=49){ //6th to 50th contributor
+                else if(index >= 5 && index <=49){ //6th to 50th contributor
                     _transfer(_beneficiary, 7000);
                 }
             }
@@ -301,7 +301,7 @@ contract VenaCoin is ERC20Interface, Owned{
     function _lowerDown(uint index,address sender) internal{
         address newContributor = contestContributors[index-1];
         address previousContributor;
-        for(uint i=index; i&lt;=49; i++){
+        for(uint i=index; i<=49; i++){
             if(newContributor != sender){
                 previousContributor = newContributor;
                 newContributor = contestContributors[i];
@@ -314,11 +314,11 @@ contract VenaCoin is ERC20Interface, Owned{
     }
     
     function isItOpen() public view returns(string status){
-        if(now &gt; openingTime &amp;&amp; now &lt; closingTime){
-            return &quot;SALE OPEN&quot;;
+        if(now > openingTime && now < closingTime){
+            return "SALE OPEN";
         }
         else{
-            return &quot;SALE CLOSE&quot;;
+            return "SALE CLOSE";
         }
     }
 }

@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -134,9 +134,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -144,7 +144,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -153,7 +153,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -168,7 +168,7 @@ library SafeMath {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -179,7 +179,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -269,14 +269,14 @@ contract GoGlobals is Ownable, PullPayment, Destructible, Pausable {
         // Keep track of double pass to finish the game
         bool isHonorableLoss;
 
-        // Who&#39;s next
+        // Who's next
         PlayerColor nextTurnColor;
 
         // Use a mapping to figure out which stone is set in which position. (Positions can be 0-BOARD_SIZE)
         // @dev We decided not use an array to minimize the storage cost
-        mapping(uint8=&gt;uint8) positionToColor;
+        mapping(uint8=>uint8) positionToColor;
 
-        // The board&#39;s current status        
+        // The board's current status        
         BoardStatus status;
     }
 
@@ -288,7 +288,7 @@ contract GoGlobals is Ownable, PullPayment, Destructible, Pausable {
         addPriceTier(1 ether);
         addPriceTier(5 ether);
 
-        // These are the inital shares we&#39;ve had in mind when developing the game
+        // These are the inital shares we've had in mind when developing the game
         updateShares(950, 50, 5);
         
         // The CFO will be the owner, but it will change soon after the contract is deployed
@@ -309,8 +309,8 @@ contract GoGlobals is Ownable, PullPayment, Destructible, Pausable {
     }
 
     /// @notice If we need to adjust the amounts players or EthernalGo gets for each game
-    /// @param newWinnerShare the winner&#39;s share (out of 1000)
-    /// @param newHostShare EthernalGo&#39;s share (out of 1000)
+    /// @param newWinnerShare the winner's share (out of 1000)
+    /// @param newHostShare EthernalGo's share (out of 1000)
     /// @param newBonusShare Bonus that comes our of EthernalGo and goes to the loser in case of an honorable loss (out of 1000)
     function updateShares(uint newWinnerShare, uint newHostShare, uint newBonusShare) public onlyOwner {
         require(newWinnerShare + newHostShare == 1000);
@@ -363,22 +363,22 @@ contract GoBoardMetaDetails is GoGlobals {
         return allBoards.length;
     }
 
-    /// @notice We would like to easily and transparantly share the game&#39;s statistics with anyone and present on the web-app
+    /// @notice We would like to easily and transparantly share the game's statistics with anyone and present on the web-app
     function getCompletedGamesStatistics() public view returns(uint, uint) {
         uint completed = 0;
         uint ethPaid = 0;
         
-        // @dev Go through all the boards, we start with 1 as it&#39;s an unsigned int
-        for (uint i = 1; i &lt;= allBoards.length; i++) {
+        // @dev Go through all the boards, we start with 1 as it's an unsigned int
+        for (uint i = 1; i <= allBoards.length; i++) {
 
             // Get the current board
             GoBoard storage board = allBoards[i - 1];
             
-            // Check if it was a victory, otherwise it&#39;s not interesting as the players just got their deposit back
+            // Check if it was a victory, otherwise it's not interesting as the players just got their deposit back
             if ((board.status == BoardStatus.BlackWin) || (board.status == BoardStatus.WhiteWin)) {
                 ++completed;
 
-                // We need to query the table stakes as the board&#39;s balance will be zero once a game is finished
+                // We need to query the table stakes as the board's balance will be zero once a game is finished
                 ethPaid += board.tableStakes.mul(2);
             }
         }
@@ -386,7 +386,7 @@ contract GoBoardMetaDetails is GoGlobals {
         return (completed, ethPaid);
     }
 
-    /// @dev At this point there is no support for returning dynamic arrays (it&#39;s supported for web3 calls but not for internal testing) so we will &quot;only&quot; present the recent 50 games per player.
+    /// @dev At this point there is no support for returning dynamic arrays (it's supported for web3 calls but not for internal testing) so we will "only" present the recent 50 games per player.
     uint8 constant PAGE_SIZE = 50;
 
     /// @dev Make sure this board is in waiting for result status
@@ -403,13 +403,13 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Make sure this board still has balance
     modifier boardNotPaid(GoBoard storage board){
-        require(board.boardBalance &gt; 0);
+        require(board.boardBalance > 0);
         _;
     }
 
     /// @dev Make sure this board still has a spot for at least one player to join
     modifier boardWaitingForPlayers(uint boardId){
-        require(allBoards[boardId].status == BoardStatus.WaitForOpponent &amp;&amp;
+        require(allBoards[boardId].status == BoardStatus.WaitForOpponent &&
                 (allBoards[boardId].blackAddress == 0 || 
                  allBoards[boardId].whiteAddress == 0));
         _;
@@ -421,7 +421,7 @@ contract GoBoardMetaDetails is GoGlobals {
         bool didFindValue = false;
         
         // The number of tableStakesOptions can change hence it has to be dynamic
-        for (uint8 i = 0; i &lt; tableStakesOptions.length; ++ i) {
+        for (uint8 i = 0; i < tableStakesOptions.length; ++ i) {
            if (value == tableStakesOptions[i])
             didFindValue = true;
         }
@@ -430,9 +430,9 @@ contract GoBoardMetaDetails is GoGlobals {
         _;
     }
 
-    /// @dev Checks a status if and returns if it&#39;s an end game
+    /// @dev Checks a status if and returns if it's an end game
     /// @param status the value we are checking
-    /// @return true if it&#39;s an end-game status
+    /// @return true if it's an end-game status
     function isEndGameStatus(BoardStatus status) public pure returns(bool) {
         return (status == BoardStatus.BlackWin) || (status == BoardStatus.WhiteWin) || (status == BoardStatus.Draw) || (status == BoardStatus.Canceled);
     }
@@ -463,7 +463,7 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Sets the current balance of the board, this is internal and is triggerred by functions run by external player actions
     /// @param board The board to update
-    /// @param boardId The board&#39;s Id
+    /// @param boardId The board's Id
     /// @param newStatus The new status to set
     function updateBoardStatus(GoBoard storage board, uint boardId, BoardStatus newStatus) internal {    
         
@@ -497,16 +497,16 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Gets the player color given an address and board (overload for when we only have boardId)
     /// @param boardId The boardId to check
-    /// @param searchAddress The player&#39;s address we are searching for
-    /// @return the player&#39;s color
+    /// @param searchAddress The player's address we are searching for
+    /// @return the player's color
     function getPlayerColor(uint boardId, address searchAddress) internal view returns (PlayerColor) {
         return (getPlayerColor(allBoards[boardId], searchAddress));
     }
     
     /// @dev Gets the player color given an address and board
     /// @param board The board to check
-    /// @param searchAddress The player&#39;s address we are searching for
-    /// @return the player&#39;s color
+    /// @param searchAddress The player's address we are searching for
+    /// @return the player's color
     function getPlayerColor(GoBoard storage board, address searchAddress) internal view returns (PlayerColor) {
 
         // Check if this is the black player
@@ -519,33 +519,33 @@ contract GoBoardMetaDetails is GoGlobals {
             return (PlayerColor.White);
         }
 
-        // We aren&#39;t suppose to try and get the color of a player if they aren&#39;t on the board
+        // We aren't suppose to try and get the color of a player if they aren't on the board
         revert();
     }
 
     /// @dev Gets the player address given a color on the board
     /// @param boardId The board to check
     /// @param color The color of the player we want
-    /// @return the player&#39;s address
+    /// @return the player's address
     function getPlayerAddress(uint boardId, PlayerColor color) public view returns(address) {
 
-        // If it&#39;s the black player
+        // If it's the black player
         if (color == PlayerColor.Black) {
             return allBoards[boardId].blackAddress;
         }
 
-        // If it&#39;s the white player
+        // If it's the white player
         if (color == PlayerColor.White) {
             return allBoards[boardId].whiteAddress;
         }
 
-        // We aren&#39;t suppose to try and get the color of a player if they aren&#39;t on the board
+        // We aren't suppose to try and get the color of a player if they aren't on the board
         revert();
     }
 
     /// @dev Check if a player is on board (overload for boardId)
     /// @param boardId The board to check
-    /// @param searchAddress the player&#39;s address we want to check
+    /// @param searchAddress the player's address we want to check
     /// @return true if the player is playing in the board
     function isPlayerOnBoard(uint boardId, address searchAddress) public view returns(bool) {
         return (isPlayerOnBoard(allBoards[boardId], searchAddress));
@@ -553,7 +553,7 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Check if a player is on board
     /// @param board The board to check
-    /// @param searchAddress the player&#39;s address we want to check
+    /// @param searchAddress the player's address we want to check
     /// @return true if the player is playing in the board
     function isPlayerOnBoard(GoBoard storage board, address searchAddress) private view returns(bool) {
         return (board.blackAddress == searchAddress || board.whiteAddress == searchAddress);
@@ -568,11 +568,11 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @notice This is the first function a player will be using in order to start playing. This function allows 
     ///  to register to an existing or a new board, depending on the current available boards.
-    ///  Upon registeration the player will pay the board&#39;s stakes and will be the black or white player.
+    ///  Upon registeration the player will pay the board's stakes and will be the black or white player.
     ///  The black player also creates the board, and is the first player which gives a small advantage in the
     ///  game, therefore we decided that the black player will be the one paying for the additional gas
     ///  that is required to create the board.
-    /// @param  tableStakes The tablestakes to use, although this appears in the &quot;value&quot; of the message, we preferred to
+    /// @param  tableStakes The tablestakes to use, although this appears in the "value" of the message, we preferred to
     ///  add it as an additional parameter for client use for clients that allow to customize the value parameter.
     /// @return The boardId the player registered to (either a new board or an existing board)
     function registerPlayerToBoard(uint tableStakes) external payable allowedValuesOnly(msg.value) whenNotPaused returns(uint) {
@@ -601,7 +601,7 @@ contract GoBoardMetaDetails is GoGlobals {
     }
 
     /// @notice This function allows a player to cancel a match in the case they were waiting for an opponent for
-    ///  a long time but didn&#39;t find anyone and would want to get their deposit of table stakes back.
+    ///  a long time but didn't find anyone and would want to get their deposit of table stakes back.
     ///  That player may cancel the game as long as no opponent was found and the deposit will be returned in full (though gas fees still apply). The player will also need to withdraw funds from the contract after this action.
     /// @param boardId The board to cancel
     function cancelMatch(uint boardId) external {
@@ -612,7 +612,7 @@ contract GoBoardMetaDetails is GoGlobals {
         // Make sure this player is on board
         require(isPlayerOnBoard(boardId, msg.sender));
 
-        // Make sure that the game hasn&#39;t started
+        // Make sure that the game hasn't started
         require(board.status == BoardStatus.WaitForOpponent);
 
         // Update the board status to cancel (which also triggers the revenue sharing function)
@@ -627,13 +627,13 @@ contract GoBoardMetaDetails is GoGlobals {
         uint numberOfPlayerBoardsToReturn = 0;
         
         // Look at the recent boards until you find a player board
-        for (uint currBoard = allBoards.length; currBoard &gt; 0 &amp;&amp; numberOfPlayerBoardsToReturn &lt; PAGE_SIZE; currBoard--) {
+        for (uint currBoard = allBoards.length; currBoard > 0 && numberOfPlayerBoardsToReturn < PAGE_SIZE; currBoard--) {
             uint boardID = currBoard - 1;            
 
             // We only care about boards the player is in
             if (isPlayerOnBoard(boardID, msg.sender)) {
 
-                // Check if the player is the next to act, or just include it if it wasn&#39;t requested
+                // Check if the player is the next to act, or just include it if it wasn't requested
                 if (!activeTurnsOnly || getNextTurnColor(boardID) == getPlayerColor(boardID, msg.sender)) {
                     playerBoardIDsToReturn[numberOfPlayerBoardsToReturn] = boardID;
                     ++numberOfPlayerBoardsToReturn;
@@ -646,7 +646,7 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Creates a new board in case no board was found for a player to register
     /// @param tableStakesToUse The value used to set the board
-    /// @return the id of new board (which is it&#39;s position in the allBoards array)
+    /// @return the id of new board (which is it's position in the allBoards array)
     function createNewGoBoard(uint tableStakesToUse) private returns(uint, GoBoard storage) {
         GoBoard memory newBoard = GoBoard({lastUpdate: now,
                                            isHonorableLoss: false,
@@ -666,17 +666,17 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Creates a new board in case no board was found for a player to register
     /// @param tableStakes The value used to set the board
-    /// @return the id of new board (which is it&#39;s position in the allBoards array)
+    /// @return the id of new board (which is it's position in the allBoards array)
     function getOrCreateWaitingBoard(uint tableStakes) private returns(uint, GoBoard storage) {
         bool wasFound = false;
         uint selectedBoardId = 0;
         GoBoard storage board;
 
         // First, try to find a board that has an empty spot and the right table stakes
-        for (uint i = allBoards.length; i &gt; 0 &amp;&amp; !wasFound; --i) {
+        for (uint i = allBoards.length; i > 0 && !wasFound; --i) {
             board = allBoards[i - 1];
 
-            // Make sure this board is already waiting and it&#39;s stakes are the same
+            // Make sure this board is already waiting and it's stakes are the same
             if (board.tableStakes == tableStakes) {
                 
                 // If this board is waiting for an opponent
@@ -687,13 +687,13 @@ contract GoBoardMetaDetails is GoGlobals {
                     selectedBoardId = i - 1;
                 }
 
-                // If we found the rights stakes board but it isn&#39;t waiting for player we won&#39;t have another empty board.
+                // If we found the rights stakes board but it isn't waiting for player we won't have another empty board.
                 // We need to create a new one
                 break;
             }
         }
 
-        // Create a new board if we couldn&#39;t find one
+        // Create a new board if we couldn't find one
         if (!wasFound) {
             (selectedBoardId, board) = createNewGoBoard(tableStakes);
         }
@@ -703,11 +703,11 @@ contract GoBoardMetaDetails is GoGlobals {
 
     /// @dev Starts the game and sets everything up for the match
     /// @param board The board to update with the starting data
-    /// @param boardId The board&#39;s Id
+    /// @param boardId The board's Id
     function startBoardGame(GoBoard storage board, uint boardId) private {
         
         // Make sure both players are present
-        require(board.blackAddress != 0 &amp;&amp; board.whiteAddress != 0);
+        require(board.blackAddress != 0 && board.whiteAddress != 0);
         
         // The black is always the first player in GO
         board.nextTurnColor = PlayerColor.Black;
@@ -722,11 +722,11 @@ contract GoBoardMetaDetails is GoGlobals {
     /// @return true if the game should be started
     function addPlayerToBoard(GoBoard storage board, uint paidAmount) private returns(bool) {
         
-        // Make suew we are still waitinf for opponent (otherwise we can&#39;t add players)
+        // Make suew we are still waitinf for opponent (otherwise we can't add players)
         bool shouldStartTheGame = false;
         require(board.status == BoardStatus.WaitForOpponent);
 
-        // Check that the player isn&#39;t already on the board, otherwise they would pay twice for a single board... :( 
+        // Check that the player isn't already on the board, otherwise they would pay twice for a single board... :( 
         require(!isPlayerOnBoard(board, msg.sender));
 
         // We always add the black player first as they created the board
@@ -740,7 +740,7 @@ contract GoBoardMetaDetails is GoGlobals {
             // Once the white player has been added, we can start the match
             shouldStartTheGame = true;           
 
-        // If both addresses are occuipied and we got here, it&#39;s a problem
+        // If both addresses are occuipied and we got here, it's a problem
         } else {
             revert();
         }
@@ -777,7 +777,7 @@ contract GoBoardMetaDetails is GoGlobals {
 
             // Calc time periods for player
             uint timePeriodsUsed = getTimePeriodsUsed(board.lastUpdate);
-            if (timePeriods &gt; timePeriodsUsed) {
+            if (timePeriods > timePeriodsUsed) {
                 timePeriods -= timePeriodsUsed;
             } else {
                 timePeriods = 0;
@@ -787,10 +787,10 @@ contract GoBoardMetaDetails is GoGlobals {
             uint timeUsed = (now - board.lastUpdate);
             
             // Safely reduce the time used
-            if (totalTimeRemaining &gt; timeUsed) {
+            if (totalTimeRemaining > timeUsed) {
                 totalTimeRemaining -= timeUsed;
             
-            // A player can&#39;t have less than zero time to act
+            // A player can't have less than zero time to act
             } else {
                 totalTimeRemaining = 0;
             }
@@ -808,13 +808,13 @@ contract GoBoardMetaDetails is GoGlobals {
         // Reduce from the black player
         if (color == PlayerColor.Black) {
 
-            // The player can&#39;t have less than 0 periods remaining
-            board.blackPeriodsRemaining = board.blackPeriodsRemaining &gt; timePeriodsUsed ? board.blackPeriodsRemaining - timePeriodsUsed : 0;
+            // The player can't have less than 0 periods remaining
+            board.blackPeriodsRemaining = board.blackPeriodsRemaining > timePeriodsUsed ? board.blackPeriodsRemaining - timePeriodsUsed : 0;
         // Reduce from the white player
         } else if (color == PlayerColor.White) {
             
-            // The player can&#39;t have less than 0 periods remaining
-            board.whitePeriodsRemaining = board.whitePeriodsRemaining &gt; timePeriodsUsed ? board.whitePeriodsRemaining - timePeriodsUsed : 0;
+            // The player can't have less than 0 periods remaining
+            board.whitePeriodsRemaining = board.whitePeriodsRemaining > timePeriodsUsed ? board.whitePeriodsRemaining - timePeriodsUsed : 0;
 
         // We are not supposed to get here
         } else {
@@ -843,9 +843,9 @@ contract GoBoardMetaDetails is GoGlobals {
         }
     }
 
-    /// @notice The main function to split game revenues, this is triggered only by changing the game&#39;s state
+    /// @notice The main function to split game revenues, this is triggered only by changing the game's state
     ///  to one of the ending game states.
-    ///  We make sure this board has a balance and that it&#39;s only running once a board game has ended
+    ///  We make sure this board has a balance and that it's only running once a board game has ended
     ///  We used numbers for easier read through as this function is critical for the revenue sharing model
     /// @param board The board the credit will come from.
     function creditBoardGameRevenues(GoBoard storage board) private boardGameEnded(board) boardNotPaid(board) {
@@ -854,7 +854,7 @@ contract GoBoardMetaDetails is GoGlobals {
         uint updatedHostShare = HOST_SHARE;
         uint updatedLoserShare = 0;
 
-        // Start accumulating funds for each participant and EthernalGo&#39;s CFO
+        // Start accumulating funds for each participant and EthernalGo's CFO
         uint amountBlack = 0;
         uint amountWhite = 0;
         uint amountCFO = 0;
@@ -863,7 +863,7 @@ contract GoBoardMetaDetails is GoGlobals {
         // Incentivize resigns and quick end-games for the loser
         if (board.status == BoardStatus.BlackWin || board.status == BoardStatus.WhiteWin) {
             
-            // In case the game ended honorably (not by time out), the loser will get credit (from the CFO&#39;s share)
+            // In case the game ended honorably (not by time out), the loser will get credit (from the CFO's share)
             if (board.isHonorableLoss) {
                 
                 // Reduce the credit from the CFO
@@ -931,7 +931,7 @@ contract GoBoardMetaDetails is GoGlobals {
     /// @dev withdraw accumulated balance, called by payee.
     function withdrawPayments() public {
 
-        // Call Zeppelin&#39;s withdrawPayments
+        // Call Zeppelin's withdrawPayments
         super.withdrawPayments();
 
         // Send an event
@@ -946,34 +946,34 @@ contract GoBoardMetaDetails is GoGlobals {
 contract GoGameLogic is GoBoardMetaDetails {
 
     /// @dev The StoneAddedToBoard event is fired when a new stone is added to the board, 
-    ///  and includes the board Id, stone color, row &amp; column. This event will fire even if it was a suicide stone.
+    ///  and includes the board Id, stone color, row & column. This event will fire even if it was a suicide stone.
     event StoneAddedToBoard(uint boardId, PlayerColor color, uint8 row, uint8 col);
 
     /// @dev The PlayerPassedTurn event is fired when a player passes turn 
     ///  and includes the board Id, color.
     event PlayerPassedTurn(uint boardId, PlayerColor color);
     
-    /// @dev Updating the player&#39;s time periods left, according to the current time - board last update time.
+    /// @dev Updating the player's time periods left, according to the current time - board last update time.
     ///  If the player does not have enough time and chose to act, the game will end and the player will lose.
     /// @param board is the relevant board.
-    /// @param boardId is the board&#39;s Id.
+    /// @param boardId is the board's Id.
     /// @param color is the color of the player we want to update.
     /// @return true if the player can continue playing, otherwise false.
     function updatePlayerTime(GoBoard storage board, uint boardId, PlayerColor color) private returns(bool) {
 
-        // Verify that the board is in progress and that it&#39;s the current player
-        require(board.status == BoardStatus.InProgress &amp;&amp; board.nextTurnColor == color);
+        // Verify that the board is in progress and that it's the current player
+        require(board.status == BoardStatus.InProgress && board.nextTurnColor == color);
 
         // Calculate time periods used by the player
         uint timePeriodsUsed = uint(now.sub(board.lastUpdate).div(PLAYER_TURN_SINGLE_PERIOD));
 
         // Subtract time periods if needed
-        if (timePeriodsUsed &gt; 0) {
+        if (timePeriodsUsed > 0) {
 
-            // Can&#39;t spend more than MAX_UINT8
-            updatePlayerTimePeriods(board, color, timePeriodsUsed &gt; MAX_UINT8 ? MAX_UINT8 : uint8(timePeriodsUsed));
+            // Can't spend more than MAX_UINT8
+            updatePlayerTimePeriods(board, color, timePeriodsUsed > MAX_UINT8 ? MAX_UINT8 : uint8(timePeriodsUsed));
 
-            // The player losses when there aren&#39;t any time periods left
+            // The player losses when there aren't any time periods left
             if (getPlayerTimePeriods(board, color) == 0) {
                 playerLost(board, boardId, color);
                 return false;
@@ -984,30 +984,30 @@ contract GoGameLogic is GoBoardMetaDetails {
     }
 
     /// @notice Updates the board status according to the players score.
-    ///  Can only be called when the board is in a &#39;waitingToResolve&#39; status.
+    ///  Can only be called when the board is in a 'waitingToResolve' status.
     /// @param boardId is the board to check and update
     function checkVictoryByScore(uint boardId) external boardWaitingToResolve(boardId) {
         
         uint8 blackScore;
         uint8 whiteScore;
 
-        // Get the players&#39; score
+        // Get the players' score
         (blackScore, whiteScore) = calculateBoardScore(boardId);
 
         // Default to Draw
         BoardStatus status = BoardStatus.Draw;
 
-        // If black&#39;s score is bigger than white&#39;s score, black is the winner
-        if (blackScore &gt; whiteScore) {
+        // If black's score is bigger than white's score, black is the winner
+        if (blackScore > whiteScore) {
 
             status = BoardStatus.BlackWin;
-        // If white&#39;s score is bigger, white is the winner
-        } else if (whiteScore &gt; blackScore) {
+        // If white's score is bigger, white is the winner
+        } else if (whiteScore > blackScore) {
 
             status = BoardStatus.WhiteWin;
         }
 
-        // Update the board&#39;s status
+        // Update the board's status
         updateBoardStatus(boardId, status);
     }
 
@@ -1015,26 +1015,26 @@ contract GoGameLogic is GoBoardMetaDetails {
     /// @param boardId is the board to perform pass on.
     function passTurn(uint boardId) external {
 
-        // Get the board &amp; player
+        // Get the board & player
         GoBoard storage board = allBoards[boardId];
         PlayerColor activeColor = getPlayerColor(board, msg.sender);
 
         // Verify the player can act
-        require(board.status == BoardStatus.InProgress &amp;&amp; board.nextTurnColor == activeColor);
+        require(board.status == BoardStatus.InProgress && board.nextTurnColor == activeColor);
         
         // Check if this player can act
         if (updatePlayerTime(board, boardId, activeColor)) {
 
-            // If it&#39;s the second straight pass, the game is over
+            // If it's the second straight pass, the game is over
             if (board.didPassPrevTurn) {
 
                 // Finishing the game like this is considered honorable
                 board.isHonorableLoss = true;
 
-                // On second pass, the board status changes to &#39;WaitingToResolve&#39;
+                // On second pass, the board status changes to 'WaitingToResolve'
                 updateBoardStatus(board, boardId, BoardStatus.WaitingToResolve);
 
-            // If it&#39;s the first pass, we can simply continue
+            // If it's the first pass, we can simply continue
             } else {
 
                 // Move to the next player, flag that it was a pass action
@@ -1051,11 +1051,11 @@ contract GoGameLogic is GoBoardMetaDetails {
     /// @param boardId is the board to resign from.
     function resignFromMatch(uint boardId) external {
 
-        // Get the board, make sure it&#39;s in progress
+        // Get the board, make sure it's in progress
         GoBoard storage board = allBoards[boardId];
         require(board.status == BoardStatus.InProgress);
 
-        // Get the sender&#39;s color
+        // Get the sender's color
         PlayerColor activeColor = getPlayerColor(board, msg.sender);
                 
         // Finishing the game like this is considered honorable
@@ -1069,7 +1069,7 @@ contract GoGameLogic is GoBoardMetaDetails {
     /// @param boardId is the board to claim it on.
     function claimActingPlayerOutOfTime(uint boardId) external {
 
-        // Get the board, make sure it&#39;s in progress
+        // Get the board, make sure it's in progress
         GoBoard storage board = allBoards[boardId];
         require(board.status == BoardStatus.InProgress);
 
@@ -1079,16 +1079,16 @@ contract GoGameLogic is GoBoardMetaDetails {
         // Calculate remaining allowed time for the acting player
         uint playerTimeRemaining = PLAYER_TURN_SINGLE_PERIOD * getPlayerTimePeriods(board, actingPlayerColor);
 
-        // If the player doesn&#39;t have enough time left, the player losses
-        if (playerTimeRemaining &lt; now - board.lastUpdate) {
+        // If the player doesn't have enough time left, the player losses
+        if (playerTimeRemaining < now - board.lastUpdate) {
             playerLost(board, boardId, actingPlayerColor);
         }
     }
 
     /// @dev Update a board status with a losing color
     /// @param board is the board to update.
-    /// @param boardId is the board&#39;s Id.
-    /// @param color is the losing player&#39;s color.
+    /// @param boardId is the board's Id.
+    /// @param color is the losing player's color.
     function playerLost(GoBoard storage board, uint boardId, PlayerColor color) private {
 
         // If black is the losing color, white wins
@@ -1099,7 +1099,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         } else if (color == PlayerColor.White) {
             updateBoardStatus(board, boardId, BoardStatus.BlackWin);
 
-        // There&#39;s an error, revert
+        // There's an error, revert
         } else {
             revert();
         }
@@ -1116,7 +1116,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         board.lastUpdate = now;
     }
     
-    /// @notice Adding a stone to a specific board and position (row &amp; col).
+    /// @notice Adding a stone to a specific board and position (row & col).
     ///  Requires the board to be in progress, that the caller is the acting player, 
     ///  and that the spot on the board is empty.
     /// @param boardId is the board to add the stone to.
@@ -1124,20 +1124,20 @@ contract GoGameLogic is GoBoardMetaDetails {
     /// @param col is the column for the new stone.
     function addStoneToBoard(uint boardId, uint8 row, uint8 col) external {
         
-        // Get the board &amp; sender&#39;s color
+        // Get the board & sender's color
         GoBoard storage board = allBoards[boardId];
         PlayerColor activeColor = getPlayerColor(board, msg.sender);
 
         // Verify the player can act
-        require(board.status == BoardStatus.InProgress &amp;&amp; board.nextTurnColor == activeColor);
+        require(board.status == BoardStatus.InProgress && board.nextTurnColor == activeColor);
 
         // Calculate the position
         uint8 position = row * BOARD_ROW_SIZE + col;
         
-        // Check that it&#39;s an empty spot
+        // Check that it's an empty spot
         require(board.positionToColor[position] == 0);
 
-        // Update the player timeout (if the player doesn&#39;t have time left, discontinue)
+        // Update the player timeout (if the player doesn't have time left, discontinue)
         if (updatePlayerTime(board, boardId, activeColor)) {
 
             // Set the stone on the board
@@ -1159,7 +1159,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         }
     }
 
-    /// @notice Returns a board&#39;s row details, specifies which color occupies which cell in that row.
+    /// @notice Returns a board's row details, specifies which color occupies which cell in that row.
     /// @dev It returns a row and not the entire board because some nodes might fail to return arrays larger than ~50.
     /// @param boardId is the board to inquire.
     /// @param row is the row to get details on.
@@ -1170,7 +1170,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         uint8[BOARD_ROW_SIZE] memory rowToReturn;
 
         // For all columns, calculate the position and get the current status
-        for (uint8 col = 0; col &lt; BOARD_ROW_SIZE; col++) {
+        for (uint8 col = 0; col < BOARD_ROW_SIZE; col++) {
             
             uint8 position = row * BOARD_ROW_SIZE + col;
             rowToReturn[col] = allBoards[boardId].positionToColor[position];
@@ -1191,7 +1191,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         return allBoards[boardId].positionToColor[position];
     }
 
-    /// @dev Calcultes whether a position captures an enemy group, or whether it&#39;s a suicide. 
+    /// @dev Calcultes whether a position captures an enemy group, or whether it's a suicide. 
     ///  Updates the board accoridngly (clears captured groups, or the suiciding stone).
     /// @param board the board to check and update
     /// @param position the position of the new stone
@@ -1204,40 +1204,40 @@ contract GoGameLogic is GoBoardMetaDetails {
         // Is group captured, or free
         bool isGroupCaptured;
 
-        // In order to save gas, we check suicide only if the position is fully surrounded and doesn&#39;t capture enemy groups 
+        // In order to save gas, we check suicide only if the position is fully surrounded and doesn't capture enemy groups 
         bool shouldCheckSuicide = true;
 
-        // Get the position&#39;s adjacent cells
+        // Get the position's adjacent cells
         uint8[MAX_ADJACENT_CELLS] memory adjacentArray = getAdjacentCells(position);
 
         // Run as long as there an adjacent cell, or until we reach the end of the array
-        for (uint8 currAdjacentIndex = 0; currAdjacentIndex &lt; MAX_ADJACENT_CELLS &amp;&amp; adjacentArray[currAdjacentIndex] &lt; MAX_UINT8; currAdjacentIndex++) {
+        for (uint8 currAdjacentIndex = 0; currAdjacentIndex < MAX_ADJACENT_CELLS && adjacentArray[currAdjacentIndex] < MAX_UINT8; currAdjacentIndex++) {
 
-            // Get the adjacent cell&#39;s color
+            // Get the adjacent cell's color
             uint8 currColor = board.positionToColor[adjacentArray[currAdjacentIndex]];
 
-            // If the enemy&#39;s color
-            if (currColor != 0 &amp;&amp; currColor != positionColor) {
+            // If the enemy's color
+            if (currColor != 0 && currColor != positionColor) {
 
-                // Get the group&#39;s info
+                // Get the group's info
                 (group, isGroupCaptured) = getGroup(board, adjacentArray[currAdjacentIndex], currColor);
 
                 // Captured a group
                 if (isGroupCaptured) {
                     
                     // Clear the group from the board
-                    for (uint8 currGroupIndex = 0; currGroupIndex &lt; BOARD_SIZE &amp;&amp; group[currGroupIndex] &lt; MAX_UINT8; currGroupIndex++) {
+                    for (uint8 currGroupIndex = 0; currGroupIndex < BOARD_SIZE && group[currGroupIndex] < MAX_UINT8; currGroupIndex++) {
 
                         board.positionToColor[group[currGroupIndex]] = 0;
                     }
 
-                    // Shouldn&#39;t check suicide
+                    // Shouldn't check suicide
                     shouldCheckSuicide = false;
                 }
-            // There&#39;s an empty adjacent cell
+            // There's an empty adjacent cell
             } else if (currColor == 0) {
 
-                // Shouldn&#39;t check suicide
+                // Shouldn't check suicide
                 shouldCheckSuicide = false;
             }
         }
@@ -1245,10 +1245,10 @@ contract GoGameLogic is GoBoardMetaDetails {
         // Detect suicide if needed
         if (shouldCheckSuicide) {
 
-            // Get the new stone&#39;s surrounding group
+            // Get the new stone's surrounding group
             (group, isGroupCaptured) = getGroup(board, position, positionColor);
 
-            // If the group is captured, it&#39;s a suicide move, remove it
+            // If the group is captured, it's a suicide move, remove it
             if (isGroupCaptured) {
 
                 // Clear added stone
@@ -1262,7 +1262,7 @@ contract GoGameLogic is GoBoardMetaDetails {
     /// @param position the position on the board we want to flag.
     /// @param flag the flag we want to set (either 1 or 2).
     function setFlag(uint8[SHRINKED_BOARD_SIZE] visited, uint8 position, uint8 flag) private pure {
-        visited[position / 4] |= flag &lt;&lt; ((position % 4) * 2);
+        visited[position / 4] |= flag << ((position % 4) * 2);
     }
 
     /// @dev Internally used to check whether a flag in a shrinked board array is set.
@@ -1271,23 +1271,23 @@ contract GoGameLogic is GoBoardMetaDetails {
     /// @param flag the flag we want to check (either 1 or 2).
     /// @return true if that flag is set, false otherwise.
     function isFlagSet(uint8[SHRINKED_BOARD_SIZE] visited, uint8 position, uint8 flag) private pure returns (bool) {
-        return (visited[position / 4] &amp; (flag &lt;&lt; ((position % 4) * 2)) &gt; 0);
+        return (visited[position / 4] & (flag << ((position % 4) * 2)) > 0);
     }
 
     // Get group visited flags
     uint8 constant FLAG_POSITION_WAS_IN_STACK = 1;
     uint8 constant FLAG_DID_VISIT_POSITION = 2;
 
-    /// @dev Gets a group starting from the position &amp; color sent. In order for a stone to be part of the group,
-    ///  it must match the original stone&#39;s color, and be connected to it - either directly, or through adjacent cells.
-    ///  A group is captured if there aren&#39;t any empty cells around it.
-    ///  The function supports both returning colored groups - white/black, and empty groups (for that case, isGroupCaptured isn&#39;t relevant).
+    /// @dev Gets a group starting from the position & color sent. In order for a stone to be part of the group,
+    ///  it must match the original stone's color, and be connected to it - either directly, or through adjacent cells.
+    ///  A group is captured if there aren't any empty cells around it.
+    ///  The function supports both returning colored groups - white/black, and empty groups (for that case, isGroupCaptured isn't relevant).
     /// @param board the board to check and update
     /// @param position the position of the starting stone
     /// @param positionColor the color of the starting stone (this param is sent to spare another reading op)
     /// @return an array that contains the positions of the group, 
     ///  a boolean that specifies whether the group is captured or not.
-    ///  In order to save gas, if a group isn&#39;t captured, the array might not contain the enitre group.
+    ///  In order to save gas, if a group isn't captured, the array might not contain the enitre group.
     function getGroup(GoBoard storage board, uint8 position, uint8 positionColor) private view returns (uint8[BOARD_SIZE], bool isGroupCaptured) {
 
         // The return array, and its size
@@ -1306,16 +1306,16 @@ contract GoGameLogic is GoBoardMetaDetails {
         setFlag(visited, position, FLAG_POSITION_WAS_IN_STACK);
 
         // Run as long as there are positions in the stack
-        while (stackSize &gt; 0) {
+        while (stackSize > 0) {
 
             // Take the last position and clear it
             position = stack[--stackSize];
             stack[stackSize] = 0;
 
-            // Only if we didn&#39;t visit that stone before
+            // Only if we didn't visit that stone before
             if (!isFlagSet(visited, position, FLAG_DID_VISIT_POSITION)) {
                 
-                // Set the flag so we won&#39;t visit it again
+                // Set the flag so we won't visit it again
                 setFlag(visited, position, FLAG_DID_VISIT_POSITION);
 
                 // Add that position to the return value
@@ -1325,12 +1325,12 @@ contract GoGameLogic is GoBoardMetaDetails {
                 uint8[MAX_ADJACENT_CELLS] memory adjacentArray = getAdjacentCells(position);
 
                 // Run over the adjacent cells
-                for (uint8 currAdjacentIndex = 0; currAdjacentIndex &lt; MAX_ADJACENT_CELLS &amp;&amp; adjacentArray[currAdjacentIndex] &lt; MAX_UINT8; currAdjacentIndex++) {
+                for (uint8 currAdjacentIndex = 0; currAdjacentIndex < MAX_ADJACENT_CELLS && adjacentArray[currAdjacentIndex] < MAX_UINT8; currAdjacentIndex++) {
                     
                     // Get the current adjacent cell color
                     uint8 currColor = board.positionToColor[adjacentArray[currAdjacentIndex]];
                     
-                    // If it&#39;s the same color as the original position color
+                    // If it's the same color as the original position color
                     if (currColor == positionColor) {
 
                         // Add that position to the stack
@@ -1338,7 +1338,7 @@ contract GoGameLogic is GoBoardMetaDetails {
                             stack[stackSize++] = adjacentArray[currAdjacentIndex];
                             setFlag(visited, adjacentArray[currAdjacentIndex], FLAG_POSITION_WAS_IN_STACK);
                         }
-                    // If that position is empty, the group isn&#39;t captured, no need to continue running
+                    // If that position is empty, the group isn't captured, no need to continue running
                     } else if (currColor == 0) {
                         
                         return (groupPositions, false);
@@ -1348,7 +1348,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         }
 
         // Flag the end of the group array only if needed
-        if (groupSize &lt; BOARD_SIZE) {
+        if (groupSize < BOARD_SIZE) {
             groupPositions[groupSize] = MAX_UINT8;
         }
         
@@ -1361,7 +1361,7 @@ contract GoGameLogic is GoBoardMetaDetails {
 
     /// @dev returns the adjacent positions for a given position.
     /// @param position to get its adjacents.
-    /// @return the adjacent positions array, filled with MAX_INT8 in case there aren&#39;t 4 adjacent positions.
+    /// @return the adjacent positions array, filled with MAX_INT8 in case there aren't 4 adjacent positions.
     function getAdjacentCells(uint8 position) private pure returns (uint8[MAX_ADJACENT_CELLS]) {
 
         // Init the return array and current index
@@ -1369,31 +1369,31 @@ contract GoGameLogic is GoBoardMetaDetails {
         uint8 adjacentCellsIndex = 0;
 
         // Set the up position, if relevant
-        if (position / BOARD_ROW_SIZE &gt; 0) {
+        if (position / BOARD_ROW_SIZE > 0) {
             returnCells[adjacentCellsIndex++] = position - BOARD_ROW_SIZE;
         }
 
         // Set the down position, if relevant
-        if (position / BOARD_ROW_SIZE &lt; BOARD_ROW_SIZE - 1) {
+        if (position / BOARD_ROW_SIZE < BOARD_ROW_SIZE - 1) {
             returnCells[adjacentCellsIndex++] = position + BOARD_ROW_SIZE;
         }
 
         // Set the left position, if relevant
-        if (position % BOARD_ROW_SIZE &gt; 0) {
+        if (position % BOARD_ROW_SIZE > 0) {
             returnCells[adjacentCellsIndex++] = position - 1;
         }
 
         // Set the right position, if relevant
-        if (position % BOARD_ROW_SIZE &lt; BOARD_ROW_SIZE - 1) {
+        if (position % BOARD_ROW_SIZE < BOARD_ROW_SIZE - 1) {
             returnCells[adjacentCellsIndex++] = position + 1;
         }
 
         return returnCells;
     }
 
-    /// @notice Calculates the board&#39;s score, using area scoring.
+    /// @notice Calculates the board's score, using area scoring.
     /// @param boardId the board to calculate the score for.
-    /// @return blackScore &amp; whiteScore, the players&#39; scores.
+    /// @return blackScore & whiteScore, the players' scores.
     function calculateBoardScore(uint boardId) public view returns (uint8 blackScore, uint8 whiteScore) {
 
         GoBoard storage board = allBoards[boardId];
@@ -1407,7 +1407,7 @@ contract GoGameLogic is GoBoardMetaDetails {
         whiteScore = 0;
 
         // Count stones and find empty territories
-        for (uint8 position = 0; position &lt; BOARD_SIZE; position++) {
+        for (uint8 position = 0; position < BOARD_SIZE; position++) {
 
             if (PlayerColor(board.positionToColor[position]) == PlayerColor.Black) {
 
@@ -1420,23 +1420,23 @@ contract GoGameLogic is GoBoardMetaDetails {
                 uint8 groupId = boardEmptyGroups[position];
                 groupsSize[groupId]++;
 
-                // Checking is needed only if we didn&#39;t find the group is adjacent to the two colors already
-                if ((groupsState[groupId] &amp; uint8(PlayerColor.Black) == 0) || (groupsState[groupId] &amp; uint8(PlayerColor.White) == 0)) {
+                // Checking is needed only if we didn't find the group is adjacent to the two colors already
+                if ((groupsState[groupId] & uint8(PlayerColor.Black) == 0) || (groupsState[groupId] & uint8(PlayerColor.White) == 0)) {
 
                     uint8[MAX_ADJACENT_CELLS] memory adjacentArray = getAdjacentCells(position);
 
-                    // Check adjacent cells to mark the group&#39;s bounderies
-                    for (uint8 currAdjacentIndex = 0; currAdjacentIndex &lt; MAX_ADJACENT_CELLS &amp;&amp; adjacentArray[currAdjacentIndex] &lt; MAX_UINT8; currAdjacentIndex++) {
+                    // Check adjacent cells to mark the group's bounderies
+                    for (uint8 currAdjacentIndex = 0; currAdjacentIndex < MAX_ADJACENT_CELLS && adjacentArray[currAdjacentIndex] < MAX_UINT8; currAdjacentIndex++) {
 
                         // Check if the group has a black boundry
-                        if ((PlayerColor(board.positionToColor[adjacentArray[currAdjacentIndex]]) == PlayerColor.Black) &amp;&amp; 
-                            (groupsState[groupId] &amp; uint8(PlayerColor.Black) == 0)) {
+                        if ((PlayerColor(board.positionToColor[adjacentArray[currAdjacentIndex]]) == PlayerColor.Black) && 
+                            (groupsState[groupId] & uint8(PlayerColor.Black) == 0)) {
 
                             groupsState[groupId] |= uint8(PlayerColor.Black);
 
                         // Check if the group has a white boundry
-                        } else if ((PlayerColor(board.positionToColor[adjacentArray[currAdjacentIndex]]) == PlayerColor.White) &amp;&amp; 
-                                   (groupsState[groupId] &amp; uint8(PlayerColor.White) == 0)) {
+                        } else if ((PlayerColor(board.positionToColor[adjacentArray[currAdjacentIndex]]) == PlayerColor.White) && 
+                                   (groupsState[groupId] & uint8(PlayerColor.White) == 0)) {
 
                             groupsState[groupId] |= uint8(PlayerColor.White);
                         }
@@ -1446,17 +1446,17 @@ contract GoGameLogic is GoBoardMetaDetails {
         }
 
         // Add territories size to the relevant player
-        for (uint8 currGroupId = 1; currGroupId &lt; maxEmptyGroupId; currGroupId++) {
+        for (uint8 currGroupId = 1; currGroupId < maxEmptyGroupId; currGroupId++) {
             
-            // Check if it&#39;s a black territory
-            if ((groupsState[currGroupId] &amp; uint8(PlayerColor.Black) &gt; 0) &amp;&amp;
-                (groupsState[currGroupId] &amp; uint8(PlayerColor.White) == 0)) {
+            // Check if it's a black territory
+            if ((groupsState[currGroupId] & uint8(PlayerColor.Black) > 0) &&
+                (groupsState[currGroupId] & uint8(PlayerColor.White) == 0)) {
 
                 blackScore += groupsSize[currGroupId];
 
-            // Check if it&#39;s a white territory
-            } else if ((groupsState[currGroupId] &amp; uint8(PlayerColor.White) &gt; 0) &amp;&amp;
-                       (groupsState[currGroupId] &amp; uint8(PlayerColor.Black) == 0)) {
+            // Check if it's a white territory
+            } else if ((groupsState[currGroupId] & uint8(PlayerColor.White) > 0) &&
+                       (groupsState[currGroupId] & uint8(PlayerColor.Black) == 0)) {
 
                 whiteScore += groupsSize[currGroupId];
             }
@@ -1473,17 +1473,17 @@ contract GoGameLogic is GoBoardMetaDetails {
         uint8[BOARD_SIZE] memory boardEmptyGroups;
         uint8 nextGroupId = 1;
 
-        for (uint8 position = 0; position &lt; BOARD_SIZE; position++) {
+        for (uint8 position = 0; position < BOARD_SIZE; position++) {
 
             PlayerColor currPositionColor = PlayerColor(board.positionToColor[position]);
 
-            if ((currPositionColor == PlayerColor.None) &amp;&amp; (boardEmptyGroups[position] == 0)) {
+            if ((currPositionColor == PlayerColor.None) && (boardEmptyGroups[position] == 0)) {
 
                 uint8[BOARD_SIZE] memory emptyGroup;
                 bool isGroupCaptured;
                 (emptyGroup, isGroupCaptured) = getGroup(board, position, 0);
 
-                for (uint8 currGroupIndex = 0; currGroupIndex &lt; BOARD_SIZE &amp;&amp; emptyGroup[currGroupIndex] &lt; MAX_UINT8; currGroupIndex++) {
+                for (uint8 currGroupIndex = 0; currGroupIndex < BOARD_SIZE && emptyGroup[currGroupIndex] < MAX_UINT8; currGroupIndex++) {
 
                     boardEmptyGroups[emptyGroup[currGroupIndex]] = nextGroupId;
                 }

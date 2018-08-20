@@ -1,6 +1,6 @@
 pragma solidity ^0.4.17;
 
-//Based on OpenZeppelin&#39;s SafeMath
+//Based on OpenZeppelin's SafeMath
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a * b;
@@ -14,13 +14,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -30,8 +30,8 @@ contract preToken {
   using SafeMath for uint256;
 
   //Vanity settings
-  string public constant name = &quot;Presearch&quot;;
-  string public constant symbol = &quot;PRE&quot;;
+  string public constant name = "Presearch";
+  string public constant symbol = "PRE";
   uint8 public constant decimals = 18;
   uint public totalSupply = 0;
 
@@ -42,8 +42,8 @@ contract preToken {
   uint256 public constant initialSupply = 250000000e18;
 
   //Mappings
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   //Contract owner address for additional permission
   address public owner;
@@ -68,7 +68,7 @@ contract preToken {
   //Checks if now is before unlock date and the msg.sender is not the contract owner or the crowdsaleAddress
   //Allows the owner or crowdsaleAddress to transfer before the unlock date to facilitate distribution
   modifier tradable {
-      if (now &lt; unlockDate &amp;&amp; msg.sender != owner &amp;&amp; msg.sender != crowdsaleAddress) revert();
+      if (now < unlockDate && msg.sender != owner && msg.sender != crowdsaleAddress) revert();
       _;
     }
 
@@ -102,7 +102,7 @@ contract preToken {
 
   //ERC-20 transferFrom with SafeMath
   function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(2 * 32) tradable returns (bool success) {
-    require(_from != address(0) &amp;&amp; _to != address(0));
+    require(_from != address(0) && _to != address(0));
     uint256 _allowance = allowed[_from][msg.sender];
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -135,7 +135,7 @@ contract preToken {
   //plus the current totalSupply is less than or equal to 1,000,000,000
   //increases the totalSupply by the amount of tokens minted
   function mint(uint256 _amount) public onlyOwner {
-    if (totalSupply.add(_amount) &lt;= maxSupply){
+    if (totalSupply.add(_amount) <= maxSupply){
       balances[msg.sender] = balances[msg.sender].add(_amount);
       totalSupply = totalSupply.add(_amount);
     }else{
@@ -146,7 +146,7 @@ contract preToken {
   //Allows the contract owner to burn (destroy) their own tokens
   //Decreases the totalSupply so that tokens could be minted again at later date
   function burn(uint256 _amount) public onlyOwner {
-    require(balances[msg.sender] &gt;= _amount);
+    require(balances[msg.sender] >= _amount);
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     totalSupply = totalSupply.sub(_amount);
   }
@@ -159,7 +159,7 @@ contract preToken {
 
   //Allow the owner to update the unlockDate to allow trading sooner, but not later than the original unlockDate
   function updateUnlockDate(uint _newDate) public onlyOwner {
-    require (_newDate &lt;= 1512018000);
+    require (_newDate <= 1512018000);
       unlockDate=_newDate;
   }
 

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,7 +106,7 @@ contract TokenVesting is Ownable {
   bool public initialized;
   bool public active;
   ERC20Basic public token;
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   uint256 public circulatingSupply = 0;
 
@@ -174,9 +174,9 @@ contract TokenVesting is Ownable {
       uint256 _start,
       uint256 _vesting
   ) public icoResticted isActive {
-    require(_value &gt; 0);
-    require(_vesting &gt; _start);
-    require(grants[_to].length &lt; 10);
+    require(_value > 0);
+    require(_vesting > _start);
+    require(grants[_to].length < 10);
 
     TokenGrant memory grant = TokenGrant(_value, 0, _vesting, _start);
     grants[_to].push(grant);
@@ -212,7 +212,7 @@ contract TokenVesting is Ownable {
 
     uint256 claimable = 0;
     uint256 claimableFor = 0;
-    for (uint256 i = 0; i &lt; numberOfGrants; i++) {
+    for (uint256 i = 0; i < numberOfGrants; i++) {
       claimableFor = calculateVestedTokens(
         grants[_to][i].value,
         grants[_to][i].vesting,
@@ -236,7 +236,7 @@ contract TokenVesting is Ownable {
     }
 
     uint256 claimable = 0;
-    for (uint256 i = 0; i &lt; numberOfGrants; i++) {
+    for (uint256 i = 0; i < numberOfGrants; i++) {
       claimable = claimable.add(
         grants[_to][i].value.sub(grants[_to][i].claimed)
       );
@@ -259,11 +259,11 @@ contract TokenVesting is Ownable {
   ) internal constant returns (uint256) {
     uint256 time = block.timestamp;
 
-    if (time &lt; _start) {
+    if (time < _start) {
       return 0;
     }
 
-    if (time &gt;= _vesting) {
+    if (time >= _vesting) {
       return _tokens.sub(_claimed);
     }
 
@@ -286,7 +286,7 @@ contract TokenVesting is Ownable {
 
     uint256 claimable = 0;
     uint256 claimableFor = 0;
-    for (uint256 i = 0; i &lt; numberOfGrants; i++) {
+    for (uint256 i = 0; i < numberOfGrants; i++) {
       claimableFor = calculateVestedTokens(
         grants[_to][i].value,
         grants[_to][i].vesting,

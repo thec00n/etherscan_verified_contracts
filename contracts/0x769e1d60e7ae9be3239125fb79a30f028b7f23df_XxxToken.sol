@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -89,7 +89,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -135,7 +135,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -148,7 +148,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -233,8 +233,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract XxxToken is MintableToken {
     // Token Info.
-    string public constant name = &quot;XXX Token&quot;;
-    string public constant symbol = &quot;XXX&quot;;
+    string public constant name = "XXX Token";
+    string public constant symbol = "XXX";
     uint8 public constant decimals = 18;
 }
 
@@ -276,8 +276,8 @@ contract XxxTokenSale is Ownable {
                         uint256 _cap) onlyOwner {
         require(address(token) == address(0));
         require(_token.owner() == address(this));
-        require(_start &gt;= getCurrentTimestamp());
-        require(_start &lt; _end);
+        require(_start >= getCurrentTimestamp());
+        require(_start < _end);
         require(_wallet != 0x0);
 
         token = _token;
@@ -297,25 +297,25 @@ contract XxxTokenSale is Ownable {
     }
 
     function getRateAt(uint256 at) constant returns (uint256) {
-        if (at &lt; startDate) {
+        if (at < startDate) {
             return 0;
-        } else if (at &lt; (startDate + 7 days)) {
+        } else if (at < (startDate + 7 days)) {
             return 2000;
-        } else if (at &lt; (startDate + 14 days)) {
+        } else if (at < (startDate + 14 days)) {
             return 1800;
-        } else if (at &lt; (startDate + 21 days)) {
+        } else if (at < (startDate + 21 days)) {
             return 1700;
-        } else if (at &lt; (startDate + 28 days)) {
+        } else if (at < (startDate + 28 days)) {
             return 1600;
-        } else if (at &lt; (startDate + 35 days)) {
+        } else if (at < (startDate + 35 days)) {
             return 1500;
-        } else if (at &lt; (startDate + 49 days)) {
+        } else if (at < (startDate + 49 days)) {
             return 1400;
-        } else if (at &lt; (startDate + 63 days)) {
+        } else if (at < (startDate + 63 days)) {
             return 1300;
-        } else if (at &lt; (startDate + 77 days)) {
+        } else if (at < (startDate + 77 days)) {
             return 1200;
-        } else if (at &lt;= endDate) {
+        } else if (at <= endDate) {
             return 1100;
         } else {
             return 0;
@@ -331,7 +331,7 @@ contract XxxTokenSale is Ownable {
         uint256 updatedWeiRaised = weiRaised.add(weiAmount);
 
         // Can not exceed cap.
-        require(updatedWeiRaised &lt;= cap);
+        require(updatedWeiRaised <= cap);
 
         // calculate token amount to be created
         uint256 actualRate = getRateAt(getCurrentTimestamp());
@@ -362,7 +362,7 @@ contract XxxTokenSale is Ownable {
     }
 
     function saleActive() public constant returns (bool) {
-        return (getCurrentTimestamp() &gt;= startDate &amp;&amp;
-                getCurrentTimestamp() &lt;= endDate &amp;&amp; weiRaised &lt; cap);
+        return (getCurrentTimestamp() >= startDate &&
+                getCurrentTimestamp() <= endDate && weiRaised < cap);
     }
 }

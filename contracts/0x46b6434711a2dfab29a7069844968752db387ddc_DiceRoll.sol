@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 contract SafeMath {
     function safeToAdd(uint a, uint b) pure internal returns (bool) {
-        return (a + b &gt;= a);
+        return (a + b >= a);
     }
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         require(safeToAdd(a, b));
@@ -10,7 +10,7 @@ contract SafeMath {
     }
 
     function safeToSubtract(uint a, uint b) pure internal returns (bool) {
-        return (b &lt;= a);
+        return (b <= a);
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
@@ -53,12 +53,12 @@ contract DiceRoll is SafeMath {
     uint256 seed;
 
     modifier betIsValid(uint256 _betSize, uint8 _start, uint8 _end) {
-        require(_betSize &gt;= minBet &amp;&amp; _betSize &lt;= maxBet &amp;&amp; _start &gt;= minNumber &amp;&amp; _end &lt;= maxNumber);
+        require(_betSize >= minBet && _betSize <= maxBet && _start >= minNumber && _end <= maxNumber);
         _;
     }
     
     modifier oddEvenBetIsValid(uint256 _betSize, uint8 _oddeven) {
-        require(_betSize &gt;= minBet &amp;&amp; _betSize &lt;= maxBet &amp;&amp; (_oddeven == 1 || _oddeven == 0));
+        require(_betSize >= minBet && _betSize <= maxBet && (_oddeven == 1 || _oddeven == 0));
         _;
     }
 
@@ -111,10 +111,10 @@ contract DiceRoll is SafeMath {
         betId += 1;
         uint8 probability = end - start + 1;
         playerProfit = ((msg.value * (100 - probability) / probability + msg.value) * (1000 - houseEdge) / 1000) - msg.value;
-        if(playerProfit &gt; maxProfit) playerProfit = maxProfit;
+        if(playerProfit > maxProfit) playerProfit = maxProfit;
         uint8 random = uint8(rand() % 100 + 1);
         totalWeiWagered += msg.value;
-        if(start &lt;= random &amp;&amp; random &lt;= end){
+        if(start <= random && random <= end){
             totalWeiWon = safeAdd(totalWeiWon, playerProfit);
             contractBalance = safeSub(contractBalance, playerProfit);
             uint256 payout = safeAdd(playerProfit, msg.value);
@@ -145,7 +145,7 @@ contract DiceRoll is SafeMath {
         betId += 1;
         uint8 probability = 50;
         playerProfit = ((msg.value * (100 - probability) / probability + msg.value) * (1000 - houseEdge) / 1000) - msg.value;
-        if(playerProfit &gt; maxProfit) playerProfit = maxProfit;
+        if(playerProfit > maxProfit) playerProfit = maxProfit;
         uint8 random = uint8(rand() % 100 + 1);
         totalWeiWagered += msg.value;
         if(random % 2 == oddeven){
@@ -175,26 +175,26 @@ contract DiceRoll is SafeMath {
     }
 
     function sendProportion(address inviter, uint256 amount) internal {
-        require(amount &lt; contractBalance);
+        require(amount < contractBalance);
         contractBalance = safeSub(contractBalance, amount);
         inviter.transfer(amount);
     }
 
 
     function increaseJackpot(uint256 increaseAmount, uint256 _betId) internal {
-        require(increaseAmount &lt; maxProfit);
+        require(increaseAmount < maxProfit);
         emit LogJackpot(_betId, msg.sender, increaseAmount);
         jackpotBlance = safeAdd(jackpotBlance, increaseAmount);
         contractBalance = safeSub(contractBalance, increaseAmount);
-        if(msg.value &gt;= minJackpotBet){
+        if(msg.value >= minJackpotBet){
             jackpotPlayer.push(msg.sender);
         }
     }
     
     function createWinner() public onlyOwner jackpotAreActive {
         uint64 tmNow = uint64(block.timestamp);
-        require(tmNow &gt;= nextJackpotTime);
-        require(jackpotPlayer.length &gt; 0);
+        require(tmNow >= nextJackpotTime);
+        require(jackpotPlayer.length > 0);
         nextJackpotTime = tmNow + 72000;
         JackpotPeriods += 1;
         uint random = rand() % jackpotPlayer.length;
@@ -205,7 +205,7 @@ contract DiceRoll is SafeMath {
     
     function sendJackpot(address winner) public onlyOwner jackpotAreActive {
         uint256 amount = jackpotBlance * jackpotPersent / 1000;
-        require(jackpotBlance &gt; amount);
+        require(jackpotBlance > amount);
         emit SendJackpotSuccesss(winner, amount, JackpotPeriods);
         jackpotBlance = safeSub(jackpotBlance, amount);
         winner.transfer(amount);
@@ -230,17 +230,17 @@ contract DiceRoll is SafeMath {
     }
 
     function ownerSetHouseEdge(uint16 newHouseEdge) public onlyOwner{
-        require(newHouseEdge &lt;= 1000);
+        require(newHouseEdge <= 1000);
         houseEdge = newHouseEdge;
     }
 
     function ownerSetMinJackpoBet(uint256 newVal) public onlyOwner{
-        require(newVal &lt;= 1 ether);
+        require(newVal <= 1 ether);
         minJackpotBet = newVal;
     }
 
     function ownerSetMaxProfitAsPercentOfHouse(uint8 newMaxProfitAsPercent) public onlyOwner{
-        require(newMaxProfitAsPercent &lt;= 1000);
+        require(newMaxProfitAsPercent <= 1000);
         maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
         setMaxProfit();
     }
@@ -254,12 +254,12 @@ contract DiceRoll is SafeMath {
     }
 
     function ownerSetJackpotOfHouseEdge(uint16 newProportion) public onlyOwner{
-        require(newProportion &lt; 1000);
+        require(newProportion < 1000);
         jackpotOfHouseEdge = newProportion;
     }
 
     function ownerSetRecommendProportion(uint16 newRecommendProportion) public onlyOwner{
-        require(newRecommendProportion &lt; 1000);
+        require(newRecommendProportion < 1000);
         recommendProportion = newRecommendProportion;
     }
 

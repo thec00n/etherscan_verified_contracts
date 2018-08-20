@@ -7,8 +7,8 @@ contract MyToken
     uint8 public decimals;
     uint256 public totalSupply;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target,bool frozen);
     event Transfer(address indexed from,address indexed to,uint256 value);
     
@@ -31,8 +31,8 @@ contract MyToken
     function transfer(address _to, uint256 _value)
 
     {   require(!frozenAccount[msg.sender]);
-        require (balanceOf[msg.sender] &gt;= _value);
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require (balanceOf[msg.sender] >= _value);
+        require (balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);

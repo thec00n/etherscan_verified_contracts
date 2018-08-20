@@ -20,20 +20,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        assert1(b &gt; 0);
+        assert1(b > 0);
         uint c = a / b;
         assert1(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert1(b &lt;= a);
+        assert1(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert1(c &gt;= a &amp;&amp; c &gt;= b);
+        assert1(c >= a && c >= b);
         return c;
     }
 
@@ -43,12 +43,12 @@ contract SafeMath {
 }
 
 contract ZionToken is SafeMath, ERC20 {
-    string public constant name = &quot;Zion - The Next Generation Communication Paradigm&quot;;
-    string public constant symbol = &quot;Zion&quot;;
+    string public constant name = "Zion - The Next Generation Communication Paradigm";
+    string public constant symbol = "Zion";
     uint256 public constant decimals = 18;  
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function ZionToken() public {
         totalSupply = 5000000000 * 10 ** uint256(decimals);
@@ -61,7 +61,7 @@ contract ZionToken is SafeMath, ERC20 {
 
     function transfer(address to, uint256 value) public returns (bool) {
         uint256 senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= value &amp;&amp; value &gt; 0) {
+        if (senderBalance >= value && value > 0) {
             senderBalance = safeSub(senderBalance, value);
             balances[msg.sender] = senderBalance;
             balances[to] = safeAdd(balances[to], value);
@@ -74,9 +74,9 @@ contract ZionToken is SafeMath, ERC20 {
 
 
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        if (balances[from] &gt;= value &amp;&amp;
-        allowed[from][msg.sender] &gt;= value &amp;&amp;
-        safeAdd(balances[to], value) &gt; balances[to])
+        if (balances[from] >= value &&
+        allowed[from][msg.sender] >= value &&
+        safeAdd(balances[to], value) > balances[to])
         {
             balances[to] = safeAdd(balances[to], value);
             balances[from] = safeSub(balances[from], value);

@@ -5,7 +5,7 @@ interface token {
 }
 contract coreERC{
     token public tInstance;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event LogTransfer(address sender, uint amount);
     address public xdest = 0x5554a8F601673C624AA6cfa4f8510924dD2fC041;
     function coreERC() public {

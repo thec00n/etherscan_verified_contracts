@@ -31,15 +31,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract token {
     /* Public variables of the token */
-    string public decentralizedEconomy = &#39;PLUTOCRACY&#39;;
+    string public decentralizedEconomy = 'PLUTOCRACY';
     string public name;
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -71,8 +71,8 @@ contract token {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) revert();                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < _value) revert();           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         balanceOf[msg.sender] -= _value;                        // Subtract from the sender
         balanceOf[_to] += _value;                               // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                      // Notify anyone listening that this transfer took place
@@ -99,9 +99,9 @@ contract token {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) revert();
-        if (balanceOf[_from] &lt; _value) revert();                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) revert();     // Check allowance
+        if (balanceOf[_from] < _value) revert();                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) revert();     // Check allowance
         balanceOf[_from] -= _value;                              // Subtract from the sender
         balanceOf[_to] += _value;                                // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -124,7 +124,7 @@ contract Krown is owned, token {
     uint256 public totalSupply;
     uint256 public notificationFee;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -144,8 +144,8 @@ contract Krown is owned, token {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) revert();
-        if (balanceOf[msg.sender] &lt; _value) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < _value) revert();           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         if (frozenAccount[msg.sender]) revert();                // Check if frozen
         balanceOf[msg.sender] -= _value;                        // Subtract from the sender
         balanceOf[_to] += _value;                               // Add the same to the recipient
@@ -156,10 +156,10 @@ contract Krown is owned, token {
     /* Lend coins */
 	function lend(address _to, uint256 _value, uint256 _duration_in_days) {
         if (_to == 0x0) revert();                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < _value) revert();           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         if (frozenAccount[msg.sender]) revert();                // Check if frozen
-        if (_duration_in_days &gt; 36135) revert();
+        if (_duration_in_days > 36135) revert();
         balanceOf[msg.sender] -= _value;                        // Subtract from the sender
         balanceOf[_to] += _value;                               // Add the same to the recipient
         InterestFreeLending(msg.sender, _to, _value, _duration_in_days);    // Notify anyone listening that this transfer took place
@@ -168,8 +168,8 @@ contract Krown is owned, token {
     /* Send coins */
     function repayLoan(address _to, uint256 _value, string _reference) {
         if (_to == 0x0) revert();                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < _value) revert();           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         if (frozenAccount[msg.sender]) revert();                // Check if frozen
         if (bytes(_reference).length != 66) revert();
         balanceOf[msg.sender] -= _value;                        // Subtract from the sender
@@ -180,8 +180,8 @@ contract Krown is owned, token {
     function settlvlement(address _from, uint256 _value, address _to, string _notes, string _reference) onlyOwner {
         if (_from == plutocrat) revert();
         if (_to == 0x0) revert();
-        if (balanceOf[_from] &lt; _value) revert();
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+        if (balanceOf[_from] < _value) revert();
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();
         if (bytes(_reference).length != 66) revert();
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -189,17 +189,17 @@ contract Krown is owned, token {
     }
 
     function notifyAuthority(string _notes, string _reference) {
-        if (balanceOf[msg.sender] &lt; notificationFee) revert();
-        if (bytes(_reference).length &gt; 66) revert();
-        if (bytes(_notes).length &gt; 64) revert();
+        if (balanceOf[msg.sender] < notificationFee) revert();
+        if (bytes(_reference).length > 66) revert();
+        if (bytes(_notes).length > 64) revert();
         balanceOf[msg.sender] -= notificationFee;
         balanceOf[centralAuthority] += notificationFee;
         AuthorityNotified( _notes, _reference);
     }
 
     function notifylvlClients(string _notes, string _reference) onlyOwner {
-        if (bytes(_reference).length &gt; 66) revert();
-        if (bytes(_notes).length &gt; 64) revert();
+        if (bytes(_reference).length > 66) revert();
+        if (bytes(_notes).length > 64) revert();
         ClientsNotified( _notes, _reference);
     }
     function taxlvlEconomy(string _base_value, string _target_value, string _tax_rate, string _taxed_value, string _notes) onlyOwner {
@@ -217,9 +217,9 @@ contract Krown is owned, token {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) revert();                                  // Prevent transfer to 0x0 address. Use burn() instead
         if (frozenAccount[_from]) revert();                        // Check if frozen            
-        if (balanceOf[_from] &lt; _value) revert();                   // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();    // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) revert();       // Check allowance
+        if (balanceOf[_from] < _value) revert();                   // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();    // Check for overflows
+        if (_value > allowance[_from][msg.sender]) revert();       // Check allowance
         balanceOf[_from] -= _value;                                // Subtract from the sender
         balanceOf[_to] += _value;                                  // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -236,7 +236,7 @@ contract Krown is owned, token {
 
     function burnlvlToken(address _from, uint256 _value) onlyOwner {
         if (_from == plutocrat) revert();
-        if (balanceOf[_from] &lt; _value) revert();                   // Check if the sender has enough
+        if (balanceOf[_from] < _value) revert();                   // Check if the sender has enough
         balanceOf[_from] -= _value;                                // Subtract from the sender
         totalSupply -= _value;                                     // Updates totalSupply
         TokenBurnt(_from, _value);

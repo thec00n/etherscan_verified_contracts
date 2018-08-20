@@ -6,7 +6,7 @@ contract BLOCKCHAIN_DEPOSIT_BETA {
 
 	uint constant PAYOUT_INTERVAL = 1 days;
 
-	/* NB: Solidity doesn&#39;t support fixed or floats yet, so we use promille instead of percent */	
+	/* NB: Solidity doesn't support fixed or floats yet, so we use promille instead of percent */	
 	uint constant DEPOSITOR_INTEREST= 10;
 	uint constant INTEREST_DENOMINATOR = 1000;
 
@@ -59,21 +59,21 @@ contract BLOCKCHAIN_DEPOSIT_BETA {
 	}
 
 
-	/* checks if it&#39;s time to make payouts. if so, send the ether */
+	/* checks if it's time to make payouts. if so, send the ether */
 	function performPayouts()
 	{
 		uint paidPeriods = 0;
 		uint depositorsDepositPayout;
 
-		while(contract_latestPayoutTime + PAYOUT_INTERVAL &lt; now)
+		while(contract_latestPayoutTime + PAYOUT_INTERVAL < now)
 		{						
 			uint idx;
 
 			/* pay the depositors  */
 			/* we use reverse iteration here */
-			for (idx = contract_depositors.length; idx-- &gt; 0; )
+			for (idx = contract_depositors.length; idx-- > 0; )
 			{
-				if(contract_depositors[idx].depositTime &gt; contract_latestPayoutTime + PAYOUT_INTERVAL)
+				if(contract_depositors[idx].depositTime > contract_latestPayoutTime + PAYOUT_INTERVAL)
 					continue;
 				uint payout = (contract_depositors[idx].deposit * DEPOSITOR_INTEREST) / INTEREST_DENOMINATOR;
 				if(!contract_depositors[idx].etherAddress.send(payout))

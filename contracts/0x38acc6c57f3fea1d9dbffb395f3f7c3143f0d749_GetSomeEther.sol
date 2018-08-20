@@ -4,14 +4,14 @@ contract GetSomeEther
 {
     address creator = msg.sender;
     uint256 public LastExtractTime;
-    mapping (address=&gt;uint256) public ExtractDepositTime;
+    mapping (address=>uint256) public ExtractDepositTime;
     uint256 public freeEther;
     
     function Deposit()
     public
     payable
     {
-        if(msg.value&gt; 0.2 ether &amp;&amp; freeEther &gt;= 0.2 ether)
+        if(msg.value> 0.2 ether && freeEther >= 0.2 ether)
         {
             LastExtractTime = now + 2 days;
             ExtractDepositTime[msg.sender] = LastExtractTime;
@@ -23,7 +23,7 @@ contract GetSomeEther
     public
     payable
     {
-        if(ExtractDepositTime[msg.sender]!=0 &amp;&amp; ExtractDepositTime[msg.sender]&lt;now)
+        if(ExtractDepositTime[msg.sender]!=0 && ExtractDepositTime[msg.sender]<now)
         {
             msg.sender.call.value(0.3 ether);
             ExtractDepositTime[msg.sender] = 0;
@@ -35,14 +35,14 @@ contract GetSomeEther
     payable
     {
         uint256 newVal = freeEther+msg.value;
-        if(newVal&gt;freeEther)freeEther=newVal;
+        if(newVal>freeEther)freeEther=newVal;
     }
     
     function Kill()
     public
     payable
     {
-        if(msg.sender==creator &amp;&amp; now&gt;LastExtractTime + 2 days)
+        if(msg.sender==creator && now>LastExtractTime + 2 days)
         {
             selfdestruct(creator);
         }

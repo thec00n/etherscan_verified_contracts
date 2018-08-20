@@ -23,8 +23,8 @@ contract Token {
 contract ROICOIN is Token {
 
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
    
     string public name;                   
     uint8 public decimals;               
@@ -45,7 +45,7 @@ contract ROICOIN is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to] &amp;&amp; _value &gt; 0)
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to] && _value > 0)
         {
             balances[msg.sender] -= _value;
             balances[_to] += _value;

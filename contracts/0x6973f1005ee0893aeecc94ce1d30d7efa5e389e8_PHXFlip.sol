@@ -2,18 +2,18 @@ pragma solidity ^0.4.20;
 
 /*
     ____
-   /\&#39; .\    _____
+   /\' .\    _____
   /: \___\  / .  /\
-  \&#39; / . / /____/..\
-   \/___/  \&#39;  &#39;\  /
-            \&#39;__&#39;\/
+  \' / . / /____/..\
+   \/___/  \'  '\  /
+            \'__'\/
 
  Developer:  TechnicalRise
  
  ** Updated with low (3%) house edge
  ** and contract events
  
- *   &#169; 2018 TechnicalRise.  Written in March 2018.  
+ *   © 2018 TechnicalRise.  Written in March 2018.  
  *   All rights reserved.  Do not copy, adapt, or otherwise use without permission.
  *   https://www.reddit.com/user/TechnicalRise/
  
@@ -49,17 +49,17 @@ contract PHXFlip is PHXReceivingContract {
 	
 	function tokenFallback(address _from, uint _value, bytes _data) public {
 	  // Note that msg.sender is the Token Contract Address
-	  // and &quot;_from&quot; is the sender of the tokens
+	  // and "_from" is the sender of the tokens
 	  require(_humanSender(_from)); // Check that this is a non-contract sender
 	  require(_phxToken(msg.sender));
 	  
 	  uint _balance = PHXTKN.balanceOf(this);
 	  uint _possibleWinnings = 2 * _value;
 	  uint _rollednumber = _prand(100) + 1;
-	  // This doesn&#39;t require the PHX Balance to be greater than double the bet
-	  // So check the contract&#39;s PHX Balance before wagering!
-	  if(_rollednumber &lt; 48) { // i.e. 1-47 wins, 48-100 loses
-	      if(_balance &gt;= _possibleWinnings) {
+	  // This doesn't require the PHX Balance to be greater than double the bet
+	  // So check the contract's PHX Balance before wagering!
+	  if(_rollednumber < 48) { // i.e. 1-47 wins, 48-100 loses
+	      if(_balance >= _possibleWinnings) {
 	          PHXTKN.transfer(_from, _possibleWinnings);
 	          emit result(_from, _value, _possibleWinnings, _rollednumber);
 	      } else {
@@ -67,32 +67,32 @@ contract PHXFlip is PHXReceivingContract {
 	          emit result(_from, _value, _balance, _rollednumber);
 	      }
 	  } else {
-	      // And if you don&#39;t win, you get a Rise so that you know you lost
+	      // And if you don't win, you get a Rise so that you know you lost
 	      PHXTKN.transfer(_from, 1);
 	      emit result(_from, _value, 1, _rollednumber);
 	  }
     }
     
     // This is a supercheap psuedo-random number generator
-    // that relies on the fact that &quot;who&quot; will mine and &quot;when&quot; they will
-    // mine is random.  This is obviously vulnerable to &quot;inside the block&quot;
+    // that relies on the fact that "who" will mine and "when" they will
+    // mine is random.  This is obviously vulnerable to "inside the block"
     // attacks where someone writes a contract mined in the same block
-    // and calls this contract from it -- but we don&#39;t accept transactions
+    // and calls this contract from it -- but we don't accept transactions
     // from foreign contracts, lessening that risk
     function _prand(uint _modulo) private view returns (uint) {
-        uint seed1 = uint(block.coinbase); // Get Miner&#39;s Address
+        uint seed1 = uint(block.coinbase); // Get Miner's Address
         uint seed2 = now; // Get the timestamp
         return uint(keccak256(seed1, seed2)) % _modulo;
     }
     
     function _phxToken(address _tokenContract) private pure returns (bool) {
-        return _tokenContract == PHXTKNADDR; // Returns &quot;true&quot; of this is the PHX Token Contract
+        return _tokenContract == PHXTKNADDR; // Returns "true" of this is the PHX Token Contract
     }
     
-    // Determine if the &quot;_from&quot; address is a contract
+    // Determine if the "_from" address is a contract
     function _humanSender(address _from) private view returns (bool) {
       uint codeLength;
       assembly { codeLength := extcodesize(_from)  }
-      return (codeLength == 0); // If this is &quot;true&quot; sender is most likely  a Wallet
+      return (codeLength == 0); // If this is "true" sender is most likely  a Wallet
     }
 }

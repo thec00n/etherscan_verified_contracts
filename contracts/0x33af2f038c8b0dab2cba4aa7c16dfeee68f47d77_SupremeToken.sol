@@ -15,12 +15,12 @@ contract SupremeToken is IERC20 {
     
     uint public constant _totalSupply = 5000000;
     
-    string public constant symbol = &quot;SUPREME&quot;;
-    string public constant name = &quot;SUPREME&quot;;
+    string public constant symbol = "SUPREME";
+    string public constant name = "SUPREME";
     uint8 public constant decimals = 2;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function SupremeToken() {
         balances[msg.sender] = _totalSupply;
@@ -36,8 +36,8 @@ contract SupremeToken is IERC20 {
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
         );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -47,9 +47,9 @@ contract SupremeToken is IERC20 {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(
-            allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            allowed[_from][msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value > 0
         );
         balances[_from] -= _value;
         balances[_to] += _value;

@@ -68,8 +68,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -84,9 +84,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -94,7 +94,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -103,7 +103,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -115,7 +115,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -133,7 +133,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -198,8 +198,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -282,7 +282,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -324,7 +324,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 
     /**
      * @notice mints new tokens and assigns them to the target _investor.
-     * Can only be called by the STO attached to the token (Or by the ST owner if there&#39;s no STO attached yet)
+     * Can only be called by the STO attached to the token (Or by the ST owner if there's no STO attached yet)
      */
     function mint(address _investor, uint256 _amount) public returns (bool success);
 
@@ -342,7 +342,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -525,8 +525,8 @@ contract IModuleFactory is Ownable {
 
     //Pull function sig from _data
     function getSig(bytes _data) internal pure returns (bytes4 sig) {
-        uint len = _data.length &lt; 4 ? _data.length : 4;
-        for (uint i = 0; i &lt; len; i++) {
+        uint len = _data.length < 4 ? _data.length : 4;
+        for (uint i = 0; i < len; i++) {
             sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (len - 1 - i))));
         }
     }
@@ -570,7 +570,7 @@ contract IModule {
 
     address public securityToken;
 
-    bytes32 public constant FEE_ADMIN = &quot;FEE_ADMIN&quot;;
+    bytes32 public constant FEE_ADMIN = "FEE_ADMIN";
 
     ERC20 public polyToken;
 
@@ -594,22 +594,22 @@ contract IModule {
     modifier withPerm(bytes32 _perm) {
         bool isOwner = msg.sender == ISecurityToken(securityToken).owner();
         bool isFactory = msg.sender == factory;
-        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), &quot;Permission check failed&quot;);
+        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), "Permission check failed");
         _;
     }
 
     modifier onlyOwner {
-        require(msg.sender == ISecurityToken(securityToken).owner(), &quot;Sender is not owner&quot;);
+        require(msg.sender == ISecurityToken(securityToken).owner(), "Sender is not owner");
         _;
     }
 
     modifier onlyFactory {
-        require(msg.sender == factory, &quot;Sender is not factory&quot;);
+        require(msg.sender == factory, "Sender is not factory");
         _;
     }
 
     modifier onlyFactoryOwner {
-        require(msg.sender == IModuleFactory(factory).owner(), &quot;Sender is not factory owner&quot;);
+        require(msg.sender == IModuleFactory(factory).owner(), "Sender is not factory owner");
         _;
     }
 
@@ -622,7 +622,7 @@ contract IModule {
      * @notice used to withdraw the fee by the factory owner
      */
     function takeFee(uint256 _amount) public withPerm(FEE_ADMIN) returns(bool) {
-        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), &quot;Unable to take fee&quot;);
+        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), "Unable to take fee");
         return true;
     }
 }
@@ -664,13 +664,13 @@ contract PercentageTransferManager is ITransferManager {
     using SafeMath for uint256;
 
     // Permission key for modifying the whitelist
-    bytes32 public constant WHITELIST = &quot;WHITELIST&quot;;
+    bytes32 public constant WHITELIST = "WHITELIST";
 
     // Maximum percentage that any holder can have, multiplied by 10**16 - e.g. 20% is 20 * 10**16
     uint256 public maxHolderPercentage;
 
     // Addresses on this list are always able to send / receive tokens
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     event LogModifyHolderPercentage(uint256 _oldHolderPercentage, uint256 _newHolderPercentage);
     event LogModifyWhitelist(
@@ -699,7 +699,7 @@ contract PercentageTransferManager is ITransferManager {
                 return Result.NA;
             }
             uint256 newBalance = ISecurityToken(securityToken).balanceOf(_to).add(_amount);
-            if (newBalance.mul(10**uint256(ISecurityToken(securityToken).decimals())).div(ISecurityToken(securityToken).totalSupply()) &gt; maxHolderPercentage) {
+            if (newBalance.mul(10**uint256(ISecurityToken(securityToken).decimals())).div(ISecurityToken(securityToken).totalSupply()) > maxHolderPercentage) {
                 return Result.INVALID;
             }
             return Result.NA;
@@ -719,7 +719,7 @@ contract PercentageTransferManager is ITransferManager {
      * @notice This function returns the signature of configure function
      */
     function getInitFunction() public pure returns (bytes4) {
-        return bytes4(keccak256(&quot;configure(uint256)&quot;));
+        return bytes4(keccak256("configure(uint256)"));
     }
 
     /**
@@ -747,8 +747,8 @@ contract PercentageTransferManager is ITransferManager {
     * @param _valids Array of boolean value to decide whether or not the address it to be added or removed from the whitelist
     */
     function modifyWhitelistMulti(address[] _investors, bool[] _valids) public withPerm(WHITELIST) {
-        require(_investors.length == _valids.length, &quot;Input array length mis-match&quot;);
-        for (uint i = 0; i &lt; _investors.length; i++) {
+        require(_investors.length == _valids.length, "Input array length mis-match");
+        for (uint i = 0; i < _investors.length; i++) {
             modifyWhitelist(_investors[i], _valids[i]);
         }
     }
@@ -785,11 +785,11 @@ contract PercentageTransferManagerFactory is IModuleFactory {
      * @return address Contract address of the Module
      */
     function deploy(bytes _data) external returns(address) {
-        if(setupCost &gt; 0)
-            require(polyToken.transferFrom(msg.sender, owner, setupCost), &quot;Failed transferFrom because of sufficent Allowance is not provided&quot;);
+        if(setupCost > 0)
+            require(polyToken.transferFrom(msg.sender, owner, setupCost), "Failed transferFrom because of sufficent Allowance is not provided");
         PercentageTransferManager percentageTransferManager = new PercentageTransferManager(msg.sender, address(polyToken));
-        require(getSig(_data) == percentageTransferManager.getInitFunction(), &quot;Provided data is not valid&quot;);
-        require(address(percentageTransferManager).call(_data), &quot;Un-successfull call&quot;);
+        require(getSig(_data) == percentageTransferManager.getInitFunction(), "Provided data is not valid");
+        require(address(percentageTransferManager).call(_data), "Un-successfull call");
         emit LogGenerateModuleFromFactory(address(percentageTransferManager), getName(), address(this), msg.sender, now);
         return address(percentageTransferManager);
 
@@ -807,28 +807,28 @@ contract PercentageTransferManagerFactory is IModuleFactory {
      * @notice Get the name of the Module
      */
     function getName() public view returns(bytes32) {
-        return &quot;PercentageTransferManager&quot;;
+        return "PercentageTransferManager";
     }
 
     /**
      * @notice Get the description of the Module
      */
     function getDescription() public view returns(string) {
-        return &quot;Restrict the number of investors&quot;;
+        return "Restrict the number of investors";
     }
 
     /**
      * @notice Get the title of the Module
      */
     function getTitle() public view returns(string) {
-        return &quot;Percentage Transfer Manager&quot;;
+        return "Percentage Transfer Manager";
     }
 
     /**
      * @notice Get the Instructions that helped to used the module
      */
     function getInstructions() public view returns(string) {
-        return &quot;Allows an issuer to restrict the total number of non-zero token holders&quot;;
+        return "Allows an issuer to restrict the total number of non-zero token holders";
     }
 
     /**
@@ -836,8 +836,8 @@ contract PercentageTransferManagerFactory is IModuleFactory {
      */
     function getTags() public view returns(bytes32[]) {
          bytes32[] memory availableTags = new bytes32[](2);
-        availableTags[0] = &quot;Percentage&quot;;
-        availableTags[1] = &quot;Transfer Restriction&quot;;
+        availableTags[0] = "Percentage";
+        availableTags[1] = "Transfer Restriction";
         return availableTags;
     }
 }

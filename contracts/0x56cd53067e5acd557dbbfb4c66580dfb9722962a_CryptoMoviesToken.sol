@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18; // solhint-disable-line
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<span class="__cf_email__" data-cfemail="6b0f0e1f0e2b0a13020406110e05450804">[email&#160;protected]</span>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<span class="__cf_email__" data-cfemail="6b0f0e1f0e2b0a13020406110e05450804">[email protected]</span>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -41,8 +41,8 @@ contract CryptoMoviesToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoMovies&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CryptoMoviesToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoMovies"; // solhint-disable-line
+  string public constant SYMBOL = "CryptoMoviesToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private constant PROMO_CREATION_LIMIT = 20000;
@@ -53,19 +53,19 @@ contract CryptoMoviesToken is ERC721 {
 
   /// @dev A mapping from movie IDs to the address that owns them. All movies have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public movieIndexToOwner;
+  mapping (uint256 => address) public movieIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from MovieIDs to an address that has been approved to call
   ///  transferFrom(). Each Movie can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public movieIndexToApproved;
+  mapping (uint256 => address) public movieIndexToApproved;
 
   // @dev A mapping from MovieIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private movieIndexToPrice;
+  mapping (uint256 => uint256) private movieIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -132,14 +132,14 @@ contract CryptoMoviesToken is ERC721 {
 
   /// @dev Creates a new promo Movie with the given name, with given _price and assignes it to an address.
   function createPromoMovie(address _owner, string _name, uint256 _price) public onlyCOO {
-    require(promoCreatedCount &lt; PROMO_CREATION_LIMIT);
+    require(promoCreatedCount < PROMO_CREATION_LIMIT);
 
     address movieOwner = _owner;
     if (movieOwner == address(0)) {
       movieOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -204,16 +204,16 @@ contract CryptoMoviesToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 94), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       movieIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       movieIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 150), 94);
     } else {
@@ -275,7 +275,7 @@ contract CryptoMoviesToken is ERC721 {
   }
 
   /// @param _owner The owner whose cryptomovie tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Movies array looking for movies belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -290,7 +290,7 @@ contract CryptoMoviesToken is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 movieId;
-      for (movieId = 0; movieId &lt;= totalMovies; movieId++) {
+      for (movieId = 0; movieId <= totalMovies; movieId++) {
         if (movieIndexToOwner[movieId] == _owner) {
           result[resultIndex] = movieId;
           resultIndex++;
@@ -348,8 +348,8 @@ contract CryptoMoviesToken is ERC721 {
     });
     uint256 newMovieId = movies.push(_movie) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newMovieId == uint256(uint32(newMovieId)));
 
     Birth(newMovieId, _name, _owner);
@@ -377,12 +377,12 @@ contract CryptoMoviesToken is ERC721 {
 
   /// @dev Assigns ownership of a specific Movie to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of movies is capped to 2^32 we can&#39;t overflow this
+    // Since the number of movies is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     // transfer ownership
     movieIndexToOwner[_tokenId] = _to;
 
-    // When creating new movies _from is 0x0, but we can&#39;t account that address.
+    // When creating new movies _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -412,9 +412,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -422,7 +422,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -431,7 +431,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

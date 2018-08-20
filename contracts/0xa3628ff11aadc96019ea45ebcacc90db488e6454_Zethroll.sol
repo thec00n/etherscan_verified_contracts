@@ -7,7 +7,7 @@ pragma solidity ^0.4.23;
 *   https://www.reddit.com/user/TechnicalRise/
 *
 * Gas golfed by Etherguy
-* Audited &amp; commented by Klob
+* Audited & commented by Klob
 */
 
 contract ZTHReceivingContract {
@@ -31,13 +31,13 @@ contract ZTHInterface {
 contract Zethroll is ZTHReceivingContract {
   using SafeMath for uint;
 
-  // Makes sure that player profit can&#39;t exceed a maximum amount,
+  // Makes sure that player profit can't exceed a maximum amount,
   //  that the bet size is valid, and the playerNumber is in range.
   modifier betIsValid(uint _betSize, uint _playerNumber) {
-     require( calculateProfit(_betSize, _playerNumber) &lt; maxProfit
-             &amp;&amp; _betSize &gt;= minBet
-             &amp;&amp; _playerNumber &gt; minNumber
-             &amp;&amp; _playerNumber &lt; maxNumber);
+     require( calculateProfit(_betSize, _playerNumber) < maxProfit
+             && _betSize >= minBet
+             && _playerNumber > minNumber
+             && _playerNumber < maxNumber);
     _;
   }
 
@@ -81,7 +81,7 @@ contract Zethroll is ZTHReceivingContract {
 
   // Events
 
-  // Logs bets + output to web3 for precise &#39;payout on win&#39; field in UI
+  // Logs bets + output to web3 for precise 'payout on win' field in UI
   event LogBet(address sender, uint value, uint rollUnder);
 
   // Outputs to web3 UI on bet result
@@ -117,7 +117,7 @@ contract Zethroll is ZTHReceivingContract {
     // Init min bet (1 ZTH)
     ownerSetMinBet(1e18);
 
-    // Allow &#39;unlimited&#39; token transfer by the bankroll
+    // Allow 'unlimited' token transfer by the bankroll
     ZTHTKN.approve(zthbankrolladdr, MAX_INT);
   }
 
@@ -155,17 +155,17 @@ contract Zethroll is ZTHReceivingContract {
   }
 
   // Mapping because a player can do one roll at a time
-  mapping(address =&gt; playerRoll) public playerRolls;
+  mapping(address => playerRoll) public playerRolls;
 
   function _playerRollDice(uint _rollUnder, TKN _tkn) private
     gameIsActive
     betIsValid(_tkn.value, _rollUnder)
   {
-    require(_tkn.value &lt; ((2 ** 200) - 1));   // Smaller than the storage of 1 uint200;
-    require(block.number &lt; ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
+    require(_tkn.value < ((2 ** 200) - 1));   // Smaller than the storage of 1 uint200;
+    require(block.number < ((2 ** 48) - 1));  // Current block number smaller than storage of 1 uint48
 
     // Note that msg.sender is the Token Contract Address
-    // and &quot;_from&quot; is the sender of the tokens
+    // and "_from" is the sender of the tokens
 
     // Check that this is a ZTH token transfer
     require(_zthToken(msg.sender));
@@ -211,12 +211,12 @@ contract Zethroll is ZTHReceivingContract {
    */
   function _finishBet(bool delete_it, address target) private {
     playerRoll memory roll = playerRolls[target];
-    require(roll.tokenValue &gt; 0); // No re-entracy
+    require(roll.tokenValue > 0); // No re-entracy
 
-    // If the block is more than 255 blocks old, we can&#39;t get the result
+    // If the block is more than 255 blocks old, we can't get the result
     // Also, if the result has already happened, fail as well
     uint result;
-    if (block.number - roll.blockn &gt; 255) {
+    if (block.number - roll.blockn > 255) {
       result = 1000; // Cant win 
     } else {
       // Grab the result - random based ONLY on a past block (future when submitted)
@@ -225,7 +225,7 @@ contract Zethroll is ZTHReceivingContract {
 
     uint rollUnder = roll.rollUnder;
 
-    if (result &lt; rollUnder) {
+    if (result < rollUnder) {
       // Player has won!
 
       // Safely map player profit
@@ -315,7 +315,7 @@ contract Zethroll is ZTHReceivingContract {
   onlyOwner
   {
     // Restricts each bet to a maximum profit of 20% contractBalance
-    require(newMaxProfitAsPercent &lt;= 200000);
+    require(newMaxProfitAsPercent <= 200000);
     maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
     setMaxProfit();
   }
@@ -403,9 +403,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -413,7 +413,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -422,7 +422,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,8 +39,8 @@ contract EZToken {
     using SafeMath for uint256;
 
     // Public variables of the token
-    string public name = &quot;EZToken&quot; ;
-    string public symbol = &quot;EZT&quot;;
+    string public name = "EZToken" ;
+    string public symbol = "EZT";
     uint8 public decimals = 8;
     uint256 totalSupply_ = 0;
     uint256 constant icoSupply = 11500000;
@@ -49,7 +49,7 @@ contract EZToken {
     
     
     
-    mapping (address =&gt; uint) public freezedAccounts;
+    mapping (address => uint) public freezedAccounts;
 
     
     uint constant founderFronzenUntil = 1530403200;  //2018-07-01
@@ -65,8 +65,8 @@ contract EZToken {
     uint constant year10FronzenUntil = 1830297600; //2028-01-01
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     // This generates a public event on the blockchain that will notify clients
@@ -128,7 +128,7 @@ contract EZToken {
     
     /**
      * Returns the amount of tokens approved by the owner that can be
-     * transferred to the spender&#39;s account
+     * transferred to the spender's account
      */
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
@@ -141,9 +141,9 @@ contract EZToken {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
-        require(freezedAccounts[msg.sender] == 0 || freezedAccounts[msg.sender] &lt; now);
-        require(freezedAccounts[_to] == 0 || freezedAccounts[_to] &lt; now);
+        require(_value <= balances[msg.sender]);
+        require(freezedAccounts[msg.sender] == 0 || freezedAccounts[msg.sender] < now);
+        require(freezedAccounts[_to] == 0 || freezedAccounts[_to] < now);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -159,10 +159,10 @@ contract EZToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(freezedAccounts[_from] == 0 || freezedAccounts[_from] &lt; now);
-        require(freezedAccounts[_to] == 0 || freezedAccounts[_to] &lt; now);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        require(freezedAccounts[_from] == 0 || freezedAccounts[_from] < now);
+        require(freezedAccounts[_to] == 0 || freezedAccounts[_to] < now);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -215,7 +215,7 @@ contract EZToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -230,9 +230,9 @@ contract EZToken {
     * @param _value The amount of token to be burned.
     */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

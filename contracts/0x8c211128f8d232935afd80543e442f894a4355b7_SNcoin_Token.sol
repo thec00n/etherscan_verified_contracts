@@ -80,19 +80,19 @@ contract ApproveAndCallFallBack {
 // initial fixed supply
 // ----------------------------------------------------------------------------
 contract SNcoin_Token is ERC20Interface, Owned {
-    string public constant symbol = &quot;SNcoin&quot;;
-    string public constant name = &quot;scientificcoin&quot;;
+    string public constant symbol = "SNcoin";
+    string public constant name = "scientificcoin";
     uint8 public constant decimals = 18;
     uint private constant _totalSupply = 100000000 * 10**uint(decimals);
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     struct LimitedBalance {
         uint8 limitType;
         uint initial;
     }
-    mapping(address =&gt; LimitedBalance) limited_balances;
+    mapping(address => LimitedBalance) limited_balances;
     uint8 public constant limitDefaultType = 0;
     uint8 public constant limitTeamType = 1;
     uint8 public constant limitBranchType = 2;
@@ -139,10 +139,10 @@ contract SNcoin_Token is ERC20Interface, Owned {
     }
 
     function getLimitedBalanceOf(address tokenOwner) public constant returns (uint balance) {
-       if (limited_balances[tokenOwner].limitType &gt; 0) {
-           require(limited_balances[tokenOwner].limitType &lt;= limitBranchType);
+       if (limited_balances[tokenOwner].limitType > 0) {
+           require(limited_balances[tokenOwner].limitType <= limitBranchType);
            uint minimumLimit = (limited_balances[tokenOwner].initial * limits[limited_balances[tokenOwner].limitType - 1])/100;
-           require(balances[tokenOwner] &gt;= minimumLimit);
+           require(balances[tokenOwner] >= minimumLimit);
            return balances[tokenOwner] - minimumLimit;
        }
        return balanceOf(tokenOwner);
@@ -152,7 +152,7 @@ contract SNcoin_Token is ERC20Interface, Owned {
         require(transfersEnabled);
 
         uint8 previousLimit = limits[limitTeamIdx];
-        if ( previousLimit - limitTeamStep &gt;= 100) {
+        if ( previousLimit - limitTeamStep >= 100) {
             limits[limitTeamIdx] = 0;
         } else {
             limits[limitTeamIdx] = previousLimit - limitTeamStep;
@@ -165,7 +165,7 @@ contract SNcoin_Token is ERC20Interface, Owned {
         require(transfersEnabled);
 
         uint8 previousLimit = limits[limitBranchIdx];
-        if ( previousLimit - limitBranchStep &gt;= 100) {
+        if ( previousLimit - limitBranchStep >= 100) {
             limits[limitBranchIdx] = 0;
         } else {
             limits[limitBranchIdx] = previousLimit - limitBranchStep;
@@ -192,7 +192,7 @@ contract SNcoin_Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -214,7 +214,7 @@ contract SNcoin_Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -222,8 +222,8 @@ contract SNcoin_Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) public returns (bool success) {
@@ -246,7 +246,7 @@ contract SNcoin_Token is ERC20Interface, Owned {
         require(transfersEnabled);
 
         // The standard ERC 20 transferFrom functionality
-        require(allowed[_from][msg.sender] &gt;= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
         allowed[_from][msg.sender] -= _amount;
         doTransfer(_from, _to, _amount);
         return true;
@@ -254,8 +254,8 @@ contract SNcoin_Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferToTeam(address _to, uint _amount) public onlyOwner returns (bool success) {
@@ -267,8 +267,8 @@ contract SNcoin_Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferToBranch(address _to, uint _amount) public onlyOwner returns (bool success) {
@@ -280,18 +280,18 @@ contract SNcoin_Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferToLimited(address _from, address _to, uint _amount, uint8 _limitType) internal {
-        require((_limitType &gt;= limitTeamType) &amp;&amp; (_limitType &lt;= limitBranchType));
+        require((_limitType >= limitTeamType) && (_limitType <= limitBranchType));
         require((limited_balances[_to].limitType == 0) || (limited_balances[_to].limitType == _limitType));
 
         doTransfer(_from, _to, _amount);
 
         uint previousLimitedBalanceInitial = limited_balances[_to].initial;
-        require(previousLimitedBalanceInitial + _amount &gt;= previousLimitedBalanceInitial); // Check for overflow
+        require(previousLimitedBalanceInitial + _amount >= previousLimitedBalanceInitial); // Check for overflow
         limited_balances[_to].initial = previousLimitedBalanceInitial + _amount;
         limited_balances[_to].limitType = _limitType;
     }
@@ -318,7 +318,7 @@ contract SNcoin_Token is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -338,13 +338,13 @@ contract SNcoin_Token is ERC20Interface, Owned {
            }
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer throws
            uint previousBalanceFrom = balanceOf(_from);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            // Alerts the token controller of the transfer
            if (controller != 0) {
@@ -355,16 +355,16 @@ contract SNcoin_Token is ERC20Interface, Owned {
            //  sending the tokens
            balances[_from] = previousBalanceFrom - _amount;
            
-           if (limited_balances[_from].limitType &gt; 0) {
-               require(limited_balances[_from].limitType &lt;= limitBranchType);
+           if (limited_balances[_from].limitType > 0) {
+               require(limited_balances[_from].limitType <= limitBranchType);
                uint minimumLimit = (limited_balances[_from].initial * limits[limited_balances[_from].limitType - 1])/100;
-               require(balances[_from] &gt;= minimumLimit);
+               require(balances[_from] >= minimumLimit);
            }
 
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            uint previousBalanceTo = balanceOf(_to);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            balances[_to] = previousBalanceTo + _amount;
 
            // An event to make the transfer easy to find on the blockchain

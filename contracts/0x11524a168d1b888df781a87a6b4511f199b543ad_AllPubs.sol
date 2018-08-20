@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
  *
  * State Diagram:
  * 
- * UNCONTACTED -&gt; APPLIED &lt;-&gt; REJECTED
+ * UNCONTACTED -> APPLIED <-> REJECTED
  *      |            |
  *      v            v
  *    BOARD       ACCEPTED
@@ -25,9 +25,9 @@ contract AllPubs {
         SOURCE // AllPubs creator
     }
 
-    mapping (address =&gt; Membership) public membership;
+    mapping (address => Membership) public membership;
     // please do not trust REJECTED abis
-    mapping (address =&gt; string) public abis;
+    mapping (address => string) public abis;
     address[] public pubs;
 
     function AllPubs()
@@ -51,7 +51,7 @@ contract AllPubs {
     function register(address _pubish, string _abi)
     external payable {
         assert(msg.value == registrationBounty);
-        assert(membership[_pubish] &lt;= Membership.REJECTED);
+        assert(membership[_pubish] <= Membership.REJECTED);
         membership[_pubish] = Membership.APPLIED;
         abis[_pubish] = _abi;
         PubRegistered(_pubish);
@@ -59,7 +59,7 @@ contract AllPubs {
 
     function accept(address _pubish)
     external {
-        assert(membership[msg.sender] &gt;= Membership.BOARD);
+        assert(membership[msg.sender] >= Membership.BOARD);
         assert(membership[_pubish] == Membership.APPLIED);
         membership[_pubish] = Membership.ACCEPTED;
         msg.sender.transfer(registrationBounty);
@@ -69,7 +69,7 @@ contract AllPubs {
 
     function reject(address _pubish, string _reason)
     external {
-        assert(membership[msg.sender] &gt;= Membership.BOARD);
+        assert(membership[msg.sender] >= Membership.BOARD);
         assert(membership[_pubish] == Membership.APPLIED);
         membership[_pubish] = Membership.REJECTED;
         msg.sender.transfer(invalidationBounty);
@@ -80,7 +80,7 @@ contract AllPubs {
 
     function appoint(address _delegate)
     external {
-        assert(membership[msg.sender] &gt;= Membership.BOARD);
+        assert(membership[msg.sender] >= Membership.BOARD);
         assert(membership[_delegate] == Membership.UNCONTACTED);
         membership[_delegate] = Membership.BOARD;
         NewBoardMember(_delegate);

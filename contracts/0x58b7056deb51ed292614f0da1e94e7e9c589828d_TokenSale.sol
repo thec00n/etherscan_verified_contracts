@@ -39,13 +39,13 @@ library SafeMath {
         // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
 
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
@@ -54,7 +54,7 @@ library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -153,12 +153,12 @@ contract OpsManaged is Owned {
 
 
     function isAdmin(address _address) internal view returns (bool) {
-        return (adminAddress != address(0) &amp;&amp; _address == adminAddress);
+        return (adminAddress != address(0) && _address == adminAddress);
     }
 
 
     function isOps(address _address) internal view returns (bool) {
-        return (opsAddress != address(0) &amp;&amp; _address == opsAddress);
+        return (opsAddress != address(0) && _address == opsAddress);
     }
 
 
@@ -167,7 +167,7 @@ contract OpsManaged is Owned {
     }
 
 
-    // Owner and Admin can change the admin address. Address can also be set to 0 to &#39;disable&#39; it.
+    // Owner and Admin can change the admin address. Address can also be set to 0 to 'disable' it.
     function setAdminAddress(address _adminAddress) external onlyOwnerOrAdmin returns (bool) {
         require(_adminAddress != owner);
         require(_adminAddress != address(this));
@@ -181,7 +181,7 @@ contract OpsManaged is Owned {
     }
 
 
-    // Owner and Admin can change the operations address. Address can also be set to 0 to &#39;disable&#39; it.
+    // Owner and Admin can change the operations address. Address can also be set to 0 to 'disable' it.
     function setOpsAddress(address _opsAddress) external onlyOwnerOrAdmin returns (bool) {
         require(_opsAddress != owner);
         require(_opsAddress != address(this));
@@ -197,8 +197,8 @@ contract OpsManaged is Owned {
 
 contract SimpleTokenConfig {
 
-    string  public constant TOKEN_SYMBOL   = &quot;ST&quot;;
-    string  public constant TOKEN_NAME     = &quot;Simple Token&quot;;
+    string  public constant TOKEN_SYMBOL   = "ST";
+    string  public constant TOKEN_NAME     = "Simple Token";
     uint8   public constant TOKEN_DECIMALS = 18;
 
     uint256 public constant DECIMALSFACTOR = 10**uint256(TOKEN_DECIMALS);
@@ -235,8 +235,8 @@ contract ERC20Token is ERC20Interface, Owned {
     uint8   private tokenDecimals;
     uint256 internal tokenTotalSupply;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
 
     function ERC20Token(string _symbol, string _name, uint8 _decimals, uint256 _totalSupply) public
@@ -285,8 +285,8 @@ contract ERC20Token is ERC20Interface, Owned {
 
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        // According to the EIP20 spec, &quot;transfers of 0 values MUST be treated as normal
-        // transfers and fire the Transfer event&quot;.
+        // According to the EIP20 spec, "transfers of 0 values MUST be treated as normal
+        // transfers and fire the Transfer event".
         // Also, should throw if not enough balance. This is taken care of by SafeMath.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -386,7 +386,7 @@ contract SimpleToken is ERC20Token, OpsManaged, SimpleTokenConfig {
     // Implement a burn function to permit msg.sender to reduce its balance
     // which also reduces tokenTotalSupply
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         tokenTotalSupply = tokenTotalSupply.sub(_value);
@@ -438,15 +438,15 @@ contract Trustee is OpsManaged {
         bool    revokable;
     }
 
-    // The trustee has a special &#39;revoke&#39; key which is allowed to revoke allocations.
+    // The trustee has a special 'revoke' key which is allowed to revoke allocations.
     address public revokeAddress;
 
     // Total number of tokens that are currently allocated.
     // This does not include tokens that have been processed (sent to an address) already or
-    // the ones in the trustee&#39;s account that have not been allocated yet.
+    // the ones in the trustee's account that have not been allocated yet.
     uint256 public totalLocked;
 
-    mapping (address =&gt; Allocation) public allocations;
+    mapping (address => Allocation) public allocations;
 
 
     //
@@ -481,11 +481,11 @@ contract Trustee is OpsManaged {
 
 
     function isRevoke(address _address) private view returns (bool) {
-        return (revokeAddress != address(0) &amp;&amp; _address == revokeAddress);
+        return (revokeAddress != address(0) && _address == revokeAddress);
     }
 
 
-    // Owner and revoke can change the revoke address. Address can also be set to 0 to &#39;disable&#39; it.
+    // Owner and revoke can change the revoke address. Address can also be set to 0 to 'disable' it.
     function setRevokeAddress(address _revokeAddress) external onlyOwnerOrRevoke returns (bool) {
         require(_revokeAddress != owner);
         require(!isAdmin(_revokeAddress));
@@ -503,9 +503,9 @@ contract Trustee is OpsManaged {
     function grantAllocation(address _account, uint256 _amount, bool _revokable) public onlyAdminOrOps returns (bool) {
         require(_account != address(0));
         require(_account != address(this));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
-        // Can&#39;t create an allocation if there is already one for this account.
+        // Can't create an allocation if there is already one for this account.
         require(allocations[_account].amountGranted == 0);
 
         if (isOps(msg.sender)) {
@@ -515,7 +515,7 @@ contract Trustee is OpsManaged {
         }
 
         totalLocked = totalLocked.add(_amount);
-        require(totalLocked &lt;= tokenContract.balanceOf(address(this)));
+        require(totalLocked <= tokenContract.balanceOf(address(this)));
 
         allocations[_account] = Allocation({
             amountGranted     : _amount,
@@ -555,15 +555,15 @@ contract Trustee is OpsManaged {
     // exceed what has been granted.
     function processAllocation(address _account, uint256 _amount) external onlyOps returns (bool) {
         require(_account != address(0));
-        require(_amount &gt; 0);
+        require(_amount > 0);
 
         Allocation storage allocation = allocations[_account];
 
-        require(allocation.amountGranted &gt; 0);
+        require(allocation.amountGranted > 0);
 
         uint256 transferable = allocation.amountGranted.sub(allocation.amountTransferred);
 
-        if (transferable &lt; _amount) {
+        if (transferable < _amount) {
            return false;
         }
 
@@ -586,8 +586,8 @@ contract Trustee is OpsManaged {
     function reclaimTokens() external onlyAdmin returns (bool) {
         uint256 ownBalance = tokenContract.balanceOf(address(this));
 
-        // If balance &lt;= amount locked, there is nothing to reclaim.
-        require(ownBalance &gt; totalLocked);
+        // If balance <= amount locked, there is nothing to reclaim.
+        require(ownBalance > totalLocked);
 
         uint256 amountReclaimed = ownBalance.sub(totalLocked);
 
@@ -673,11 +673,11 @@ contract TokenSaleConfig is SimpleTokenConfig {
     // We use a default for when the contract is deployed but this can be changed afterwards
     // by calling the setTokensPerKEther function
     // For the public sale, tokens are priced at 0.0833 USD/token.
-    // So if we have 300 USD/ETH -&gt; 300,000 USD/KETH / 0.0833 USD/token = ~3,600,000
+    // So if we have 300 USD/ETH -> 300,000 USD/KETH / 0.0833 USD/token = ~3,600,000
     uint256 public constant TOKENS_PER_KETHER         = 3600000;
 
-    // Constant used by buyTokens as part of the cost &lt;-&gt; tokens conversion.
-    // 18 for ETH -&gt; WEI, TOKEN_DECIMALS (18 for Simple Token), 3 for the K in tokensPerKEther.
+    // Constant used by buyTokens as part of the cost <-> tokens conversion.
+    // 18 for ETH -> WEI, TOKEN_DECIMALS (18 for Simple Token), 3 for the K in tokensPerKEther.
     uint256 public constant PURCHASE_DIVIDER          = 10**(uint256(18) - TOKEN_DECIMALS + 3);
 
 }
@@ -774,7 +774,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
     // Map of addresses that have been whitelisted in advance (and passed KYC).
     // The whitelist value indicates what phase (1 or 2) the address has been whitelisted for.
     // Addresses whitelisted for phase 1 can also contribute during phase 2.
-    mapping(address =&gt; uint8) public whitelist;
+    mapping(address => uint8) public whitelist;
 
 
     //
@@ -799,11 +799,11 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
         require(address(_trusteeContract) != address(0));
         require(_wallet != address(0));
 
-        require(PHASE1_START_TIME &gt;= currentTime());
-        require(PHASE2_START_TIME &gt; PHASE1_START_TIME);
-        require(END_TIME &gt; PHASE2_START_TIME);
-        require(TOKENS_PER_KETHER &gt; 0);
-        require(PHASE1_ACCOUNT_TOKENS_MAX &gt; 0);
+        require(PHASE1_START_TIME >= currentTime());
+        require(PHASE2_START_TIME > PHASE1_START_TIME);
+        require(END_TIME > PHASE2_START_TIME);
+        require(TOKENS_PER_KETHER > 0);
+        require(PHASE1_ACCOUNT_TOKENS_MAX > 0);
 
         // Basic check that the constants add up to TOKENS_MAX
         uint256 partialAllocations = TOKENS_FOUNDERS.add(TOKENS_ADVISORS).add(TOKENS_EARLY_BACKERS);
@@ -833,7 +833,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
 
         // Simple check to confirm that tokens are present
         uint256 trusteeBalance = tokenContract.balanceOf(address(trusteeContract));
-        require(trusteeBalance &gt;= TOKENS_FUTURE);
+        require(trusteeBalance >= TOKENS_FUTURE);
 
         Initialized();
 
@@ -868,13 +868,13 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
 
     modifier onlyBeforeSale() {
         require(hasSaleEnded() == false);
-        require(currentTime() &lt; PHASE1_START_TIME);
+        require(currentTime() < PHASE1_START_TIME);
        _;
     }
 
 
     modifier onlyDuringSale() {
-        require(hasSaleEnded() == false &amp;&amp; currentTime() &gt;= PHASE1_START_TIME);
+        require(hasSaleEnded() == false && currentTime() >= PHASE1_START_TIME);
         _;
     }
 
@@ -887,11 +887,11 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
 
     function hasSaleEnded() private view returns (bool) {
         // if sold out or finalized, sale has ended
-        if (totalTokensSold &gt;= TOKENS_SALE || finalized) {
+        if (totalTokensSold >= TOKENS_SALE || finalized) {
             return true;
         // else if sale is not paused (pausedTime = 0) 
         // and endtime has past, then sale has ended
-        } else if (pausedTime == 0 &amp;&amp; currentTime() &gt;= endTime) {
+        } else if (pausedTime == 0 && currentTime() >= endTime) {
             return true;
         // otherwise it is not past and not paused; or paused
         // and as such not ended
@@ -913,7 +913,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
     // _phase = 0: Cannot contribute at all (not whitelisted).
     function updateWhitelist(address _account, uint8 _phase) external onlyOps returns (bool) {
         require(_account != address(0));
-        require(_phase &lt;= 2);
+        require(_phase <= 2);
         require(!hasSaleEnded());
 
         whitelist[_account] = _phase;
@@ -931,7 +931,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
 
     // Allows the admin to set the price for tokens sold during phases 1 and 2 of the sale.
     function setTokensPerKEther(uint256 _tokensPerKEther) external onlyAdmin onlyBeforeSale returns (bool) {
-        require(_tokensPerKEther &gt; 0);
+        require(_tokensPerKEther > 0);
 
         tokensPerKEther = _tokensPerKEther;
 
@@ -943,7 +943,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
 
     // Allows the admin to set the maximum amount of tokens that an account can buy during phase 1 of the sale.
     function setPhase1AccountTokensMax(uint256 _tokens) external onlyAdmin onlyBeforeSale returns (bool) {
-        require(_tokens &gt; 0);
+        require(_tokens > 0);
 
         phase1AccountTokensMax = _tokens;
 
@@ -960,17 +960,17 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
 
     // This is the main function to process incoming ETH contributions.
     function buyTokens() public payable whenNotPaused onlyDuringSale returns (bool) {
-        require(msg.value &gt;= CONTRIBUTION_MIN);
-        require(msg.value &lt;= CONTRIBUTION_MAX);
-        require(totalTokensSold &lt; TOKENS_SALE);
+        require(msg.value >= CONTRIBUTION_MIN);
+        require(msg.value <= CONTRIBUTION_MAX);
+        require(totalTokensSold < TOKENS_SALE);
 
         // All accounts need to be whitelisted to purchase.
         uint8 whitelistedPhase = whitelist[msg.sender];
-        require(whitelistedPhase &gt; 0);
+        require(whitelistedPhase > 0);
 
         uint256 tokensMax = TOKENS_SALE.sub(totalTokensSold);
 
-        if (currentTime() &lt; PHASE2_START_TIME) {
+        if (currentTime() < PHASE2_START_TIME) {
             // We are in phase 1 of the sale
             require(whitelistedPhase == 1);
 
@@ -980,20 +980,20 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
             // Calculate how much of that amount is still available.
             uint256 phase1Balance = phase1AccountTokensMax.sub(accountBalance);
 
-            if (phase1Balance &lt; tokensMax) {
+            if (phase1Balance < tokensMax) {
                 tokensMax = phase1Balance;
             }
         }
 
-        require(tokensMax &gt; 0);
+        require(tokensMax > 0);
 
         uint256 tokensBought = msg.value.mul(tokensPerKEther).div(PURCHASE_DIVIDER);
-        require(tokensBought &gt; 0);
+        require(tokensBought > 0);
 
         uint256 cost = msg.value;
         uint256 refund = 0;
 
-        if (tokensBought &gt; tokensMax) {
+        if (tokensBought > tokensMax) {
             // Not enough tokens available for full contribution, we will do partial.
             tokensBought = tokensMax;
 
@@ -1010,7 +1010,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
         require(tokenContract.transfer(msg.sender, tokensBought));
 
         // Issue a ETH refund for any unused portion of the funds.
-        if (refund &gt; 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
 
@@ -1038,15 +1038,15 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
         require(_account != address(0));
 
         // Presales may have 0 bonus tokens but need to have a base amount of tokens sold.
-        require(_baseTokens &gt; 0);
-        require(_bonusTokens &lt; _baseTokens);
+        require(_baseTokens > 0);
+        require(_bonusTokens < _baseTokens);
 
         // We do not count bonus tokens as part of the sale cap.
         totalTokensSold = totalTokensSold.add(_baseTokens);
-        require(totalTokensSold &lt;= TOKENS_SALE);
+        require(totalTokensSold <= TOKENS_SALE);
 
         uint256 ownBalance = tokenContract.balanceOf(address(this));
-        require(_baseTokens &lt;= ownBalance);
+        require(_baseTokens <= ownBalance);
 
         totalPresaleBase  = totalPresaleBase.add(_baseTokens);
         totalPresaleBonus = totalPresaleBonus.add(_bonusTokens);
@@ -1087,10 +1087,10 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
         uint256 current = currentTime();
 
         // If owner unpauses after sale starts, calculate how to extend end.
-        if (current &gt; PHASE1_START_TIME) {
+        if (current > PHASE1_START_TIME) {
             uint256 timeDelta;
 
-            if (pausedTime &lt; PHASE1_START_TIME) {
+            if (pausedTime < PHASE1_START_TIME) {
                 // Pause was triggered before the start time, extend by time that
                 // passed from proposed start time until now.
                 timeDelta = current.sub(PHASE1_START_TIME);
@@ -1115,7 +1115,7 @@ contract TokenSale is OpsManaged, Pausable, TokenSaleConfig { // Pausable is als
     // and all bonuses are known.
     function reclaimTokens(uint256 _amount) external onlyAfterSale onlyAdmin returns (bool) {
         uint256 ownBalance = tokenContract.balanceOf(address(this));
-        require(_amount &lt;= ownBalance);
+        require(_amount <= ownBalance);
         
         address tokenOwner = tokenContract.owner();
         require(tokenOwner != address(0));

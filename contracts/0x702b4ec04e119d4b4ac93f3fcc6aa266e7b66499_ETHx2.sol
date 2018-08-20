@@ -9,8 +9,8 @@ contract ETHx2 {
         uint256 cost;
     }
 
-    mapping(uint256 =&gt; Cost) public participant;
-    mapping(address =&gt; string) public msgs;
+    mapping(uint256 => Cost) public participant;
+    mapping(address => string) public msgs;
 
     address public Address;
     uint256 public seatPrice = 5000000000000000;
@@ -32,7 +32,7 @@ contract ETHx2 {
         participant[8] = Cost(msg.sender, 0);
         participant[9] = Cost(msg.sender, 0);
         participant[10] = Cost(msg.sender, 0);
-        msgs[msg.sender] = &quot;Claim this spot!&quot;;
+        msgs[msg.sender] = "Claim this spot!";
     }
 
     function getX2(uint256 _slot) public view returns(uint256 slot, address owner, uint256 cost, string message) {
@@ -44,7 +44,7 @@ contract ETHx2 {
 
     function purchase() public payable {
         require(msg.sender != address(0));
-        require(msg.value &gt;= seatPrice);
+        require(msg.value >= seatPrice);
         uint256 excess = SafeMath.sub(msg.value, seatPrice);
         participant[1].owner.transfer(uint256(SafeMath.mul(SafeMath.div(seatPrice, 100), SafeMath.div(100, SafeMath.div(200, 17)))));
         participant[2].owner.transfer(uint256(SafeMath.mul(SafeMath.div(seatPrice, 100), SafeMath.div(100, SafeMath.div(200, 17)))));
@@ -96,13 +96,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

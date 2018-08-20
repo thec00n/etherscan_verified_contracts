@@ -91,7 +91,7 @@ contract Bank is Owned
     address owner0l;
     uint numDeposits;
     uint releaseDate;
-    mapping (address =&gt; Depositor) public Deposits;
+    mapping (address => Depositor) public Deposits;
     address[] public Depositors;
     
     function
@@ -101,7 +101,7 @@ contract Bank is Owned
         numDeposits = 0;
         owner0l = msg.sender;
         releaseDate = now;
-        if (daysUntilRelease &gt; 0 &amp;&amp; daysUntilRelease &lt; (1 years * 5))
+        if (daysUntilRelease > 0 && daysUntilRelease < (1 years * 5))
         {
             releaseDate += daysUntilRelease * 1 days;
         }
@@ -118,9 +118,9 @@ contract Bank is Owned
     public
     payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {
-            if (msg.value &lt; 1 ether)
+            if (msg.value < 1 ether)
                 Donation(msg.sender, msg.value);
             else
                 deposit();
@@ -134,7 +134,7 @@ contract Bank is Owned
     payable
     returns (uint)
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             addDeposit();
         return getNumberOfDeposits();
     }
@@ -155,9 +155,9 @@ contract Bank is Owned
     returnDeposit()
     public
     {
-        if (now &gt; releaseDate)
+        if (now > releaseDate)
         {
-            if (Deposits[msg.sender].amount &gt; 1) {
+            if (Deposits[msg.sender].amount > 1) {
                 uint _wei = Deposits[msg.sender].amount;
                 Deposits[msg.sender].amount = 0;
                 msg.sender.send(_wei);
@@ -172,9 +172,9 @@ contract Bank is Owned
     public
     returns (bool)
     {
-        if (_wei &gt; 0)
+        if (_wei > 0)
         {
-            if (isOwner() &amp;&amp; Deposits[_to].amount &gt; 0)
+            if (isOwner() && Deposits[_to].amount > 0)
             {
                 Withdrawal(_to, _wei);
                 return _to.send(_wei);
@@ -186,7 +186,7 @@ contract Bank is Owned
     withdraw()
     public
     {
-        if (isCreator() &amp;&amp; now &gt;= releaseDate)
+        if (isCreator() && now >= releaseDate)
         {
             Withdrawal(creator, this.balance);
             creator.send(this.balance);

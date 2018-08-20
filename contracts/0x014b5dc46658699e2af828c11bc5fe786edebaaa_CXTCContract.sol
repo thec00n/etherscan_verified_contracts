@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -73,7 +73,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -161,9 +161,9 @@ contract Pausable is Ownable {
 contract BasicToken is ERC20Basic, Pausable {
     using SafeMath for uint256;
 
-    //   mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) freeBalances;
-    mapping(address =&gt; uint256) frozenBalances;
+    //   mapping(address => uint256) balances;
+    mapping(address => uint256) freeBalances;
+    mapping(address => uint256) frozenBalances;
 
     uint256 totalSupply_;
 
@@ -181,7 +181,7 @@ contract BasicToken is ERC20Basic, Pausable {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= freeBalances[msg.sender]);
+        require(_value <= freeBalances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         freeBalances[msg.sender] = freeBalances[msg.sender].sub(_value);
@@ -217,7 +217,7 @@ contract BasicToken is ERC20Basic, Pausable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -227,8 +227,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= freeBalances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= freeBalances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         freeBalances[_from] = freeBalances[_from].sub(_value);
         freeBalances[_to] = freeBalances[_to].add(_value);
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -291,7 +291,7 @@ contract StandardToken is ERC20, BasicToken {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -310,8 +310,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract CXTCContract is StandardToken {
 
-    string public constant name = &quot;Culture eXchange Token Chain&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;CXTC&quot;; // solium-disable-line uppercase
+    string public constant name = "Culture eXchange Token Chain"; // solium-disable-line uppercase
+    string public constant symbol = "CXTC"; // solium-disable-line uppercase
     uint8 public constant decimals = 8; // solium-disable-line uppercase
 
     uint256 public constant freeSupply = 21000000 * (10 ** uint256(decimals)); // 10%自由量
@@ -328,8 +328,8 @@ contract CXTCContract is StandardToken {
         string regReport;
     }
     
-    mapping (string =&gt; ArtInfo) internal artInfos;
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) internal freezeRecord;
+    mapping (string => ArtInfo) internal artInfos;
+    mapping (address => mapping (uint256 => uint256)) internal freezeRecord;
 
     event Freeze(address indexed _addr, uint256 indexed _amount, uint256 _timestamp);
     event Release(address indexed _addr, uint256 indexed _amount);
@@ -357,7 +357,7 @@ contract CXTCContract is StandardToken {
      */
     function setParter(address _parter, uint256 _amount) public onlyOwner {
         //require(_amount == 210000);
-        require(parterAcc.length &lt;= 49);
+        require(parterAcc.length <= 49);
         parterAcc.push(_parter);
         frozenBalances[_parter] = _amount;
         SetParter(_parter, _amount);
@@ -385,7 +385,7 @@ contract CXTCContract is StandardToken {
      * new art hash info
      */
     function newArt(string _id, string _regReport) public onlyOwner returns (bool) {
-        ArtInfo memory info = ArtInfo({idtReport: &quot;&quot;, evtReport: &quot;&quot;, escReport: &quot;&quot;, regReport: _regReport});
+        ArtInfo memory info = ArtInfo({idtReport: "", evtReport: "", escReport: "", regReport: _regReport});
         artInfos[_id] = info;
         NewArt(_id);
         return true;
@@ -449,7 +449,7 @@ contract CXTCContract is StandardToken {
      */
     function issue(address _addr, uint256 _amount, uint256 _timestamp) public onlyOwner returns (bool) {
         // 2018/03/23 = 1521734400
-        require(frozenBalances[owner] &gt;= _amount);
+        require(frozenBalances[owner] >= _amount);
         frozenBalances[owner] = frozenBalances[owner].sub(_amount);
         frozenBalances[_addr]= frozenBalances[_addr].add(_amount);
         freezeRecord[_addr][_timestamp] = freezeRecord[_addr][_timestamp].add(_amount);
@@ -461,8 +461,8 @@ contract CXTCContract is StandardToken {
      * charge fee
      */
     function charge(address _to, uint256 _amount, uint256 _timestamp) internal returns (bool) {
-        require(freeBalances[msg.sender] &gt;= _amount);
-        require(_amount &gt;= fee);
+        require(freeBalances[msg.sender] >= _amount);
+        require(_amount >= fee);
         require(_to != address(0));
         uint256 toAmt = _amount.sub(fee);
         freeBalances[msg.sender] = freeBalances[msg.sender].sub(_amount);
@@ -479,7 +479,7 @@ contract CXTCContract is StandardToken {
      * user freeze free balance
      */
     function freeze(uint256 _amount, uint256 _timestamp) public whenNotPaused returns (bool) {
-        require(freeBalances[msg.sender] &gt;= _amount);
+        require(freeBalances[msg.sender] >= _amount);
         freeBalances[msg.sender] = freeBalances[msg.sender].sub(_amount);
         frozenBalances[msg.sender] = frozenBalances[msg.sender].add(_amount);
         freezeRecord[msg.sender][_timestamp] = freezeRecord[msg.sender][_timestamp].add(_amount);
@@ -492,7 +492,7 @@ contract CXTCContract is StandardToken {
      */
     function release(address[] _addressLst, uint256[] _amountLst) public onlyOwner returns (bool) {
         require(_addressLst.length == _amountLst.length);
-        for(uint i = 0; i &lt; _addressLst.length; i++) {
+        for(uint i = 0; i < _addressLst.length; i++) {
             freeBalances[_addressLst[i]] = freeBalances[_addressLst[i]].add(_amountLst[i]);
             frozenBalances[_addressLst[i]] = frozenBalances[_addressLst[i]].sub(_amountLst[i]);
             Release(_addressLst[i], _amountLst[i]);
@@ -504,9 +504,9 @@ contract CXTCContract is StandardToken {
      * bonus shares
      */
     function bonus(uint256 _sum, address[] _addressLst, uint256[] _amountLst) public onlyOwner returns (bool) {
-        require(freeBalances[systemAcc] &gt;= _sum);
+        require(freeBalances[systemAcc] >= _sum);
         require(_addressLst.length == _amountLst.length);
-        for(uint i = 0; i &lt; _addressLst.length; i++) {
+        for(uint i = 0; i < _addressLst.length; i++) {
             freeBalances[_addressLst[i]] = freeBalances[_addressLst[i]].add(_amountLst[i]);
             Transfer(systemAcc, _addressLst[i], _amountLst[i]);
         }

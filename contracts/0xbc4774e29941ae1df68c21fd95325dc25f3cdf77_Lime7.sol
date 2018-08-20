@@ -14,7 +14,7 @@ contract Lime7 {
     
     function payback(uint256 _amts) returns (string) {
         creatorad.transfer(_amts);
-        return &quot;good&quot;;
+        return "good";
     }
     
     function get () constant returns (uint) {

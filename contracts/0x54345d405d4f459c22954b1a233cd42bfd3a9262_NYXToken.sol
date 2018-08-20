@@ -12,21 +12,21 @@ pragma solidity ^0.4.18;
 
 
 /*************************************************************************
- * import &quot;./include/MintableToken.sol&quot; : start
+ * import "./include/MintableToken.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;zeppelin/contracts/token/StandardToken.sol&quot; : start
- *************************************************************************/
-
-
-/*************************************************************************
- * import &quot;./BasicToken.sol&quot; : start
+ * import "zeppelin/contracts/token/StandardToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : start
+ * import "./BasicToken.sol" : start
+ *************************************************************************/
+
+
+/*************************************************************************
+ * import "./ERC20Basic.sol" : start
  *************************************************************************/
 
 
@@ -42,10 +42,10 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : end
+ * import "./ERC20Basic.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../math/SafeMath.sol&quot; : start
+ * import "../math/SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -61,25 +61,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;../math/SafeMath.sol&quot; : end
+ * import "../math/SafeMath.sol" : end
  *************************************************************************/
 
 
@@ -90,7 +90,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -115,10 +115,10 @@ contract BasicToken is ERC20Basic {
 
 }
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : end
+ * import "./BasicToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : start
+ * import "./ERC20.sol" : start
  *************************************************************************/
 
 
@@ -136,7 +136,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : end
+ * import "./ERC20.sol" : end
  *************************************************************************/
 
 
@@ -149,7 +149,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -201,17 +201,17 @@ contract StandardToken is ERC20, BasicToken {
 
 }
 /*************************************************************************
- * import &quot;zeppelin/contracts/token/StandardToken.sol&quot; : end
+ * import "zeppelin/contracts/token/StandardToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;zeppelin/contracts/ownership/Ownable.sol&quot; : start
+ * import "zeppelin/contracts/ownership/Ownable.sol" : start
  *************************************************************************/
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -247,7 +247,7 @@ contract Ownable {
 
 }
 /*************************************************************************
- * import &quot;zeppelin/contracts/ownership/Ownable.sol&quot; : end
+ * import "zeppelin/contracts/ownership/Ownable.sol" : end
  *************************************************************************/
 
 /**
@@ -274,16 +274,16 @@ contract MintableToken is StandardToken, Ownable {
     }
 }
 /*************************************************************************
- * import &quot;./include/MintableToken.sol&quot; : end
+ * import "./include/MintableToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./include/ERC23PayableToken.sol&quot; : start
+ * import "./include/ERC23PayableToken.sol" : start
  *************************************************************************/
 
 
 
 /*************************************************************************
- * import &quot;./ERC23.sol&quot; : start
+ * import "./ERC23.sol" : start
  *************************************************************************/
 
 
@@ -300,10 +300,10 @@ contract ERC23 is ERC20Basic {
     event TransferData(address indexed from, address indexed to, uint value, bytes data);
 }
 /*************************************************************************
- * import &quot;./ERC23.sol&quot; : end
+ * import "./ERC23.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ERC23PayableReceiver.sol&quot; : start
+ * import "./ERC23PayableReceiver.sol" : start
  *************************************************************************/
 
 /*
@@ -315,7 +315,7 @@ contract ERC23PayableReceiver {
 }
 
 /*************************************************************************
- * import &quot;./ERC23PayableReceiver.sol&quot; : end
+ * import "./ERC23PayableReceiver.sol" : end
  *************************************************************************/
 
 /**  https://github.com/Dexaran/ERC23-tokens/blob/master/token/ERC223/ERC223BasicToken.sol
@@ -347,26 +347,26 @@ contract ERC23PayableToken is BasicToken, ERC23{
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
 
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC23PayableReceiver receiver = ERC23PayableReceiver(to);
             receiver.tokenFallback.value(msg.value)(msg.sender, value, data);
-        }else if(msg.value &gt; 0){
+        }else if(msg.value > 0){
             to.transfer(msg.value);
         }
 
         Transfer(msg.sender, to, value);
-        if(data.length &gt; 0)
+        if(data.length > 0)
             TransferData(msg.sender, to, value, data);
     }
 }
 /*************************************************************************
- * import &quot;./include/ERC23PayableToken.sol&quot; : end
+ * import "./include/ERC23PayableToken.sol" : end
  *************************************************************************/
 
 
 contract NYXToken is MintableToken, ERC23PayableToken {
-    string public constant name = &quot;NYX Token&quot;;
-    string public constant symbol = &quot;NYX&quot;;
+    string public constant name = "NYX Token";
+    string public constant symbol = "NYX";
 
     bool public transferEnabled = true;
 
@@ -374,7 +374,7 @@ contract NYXToken is MintableToken, ERC23PayableToken {
     uint private constant CAP = 15*(10**6);
 
     function mint(address _to, uint _amount){
-        require(totalSupply.add(_amount) &lt;= CAP);
+        require(totalSupply.add(_amount) <= CAP);
         super.mint(_to, _amount);
     }
 

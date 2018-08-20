@@ -2,12 +2,12 @@
 // https://medium.com/@bryn.bellomy/solidity-tutorial-building-a-simple-auction-contract-fcc918b0878a
 //
 // 
-// Our Aetherian #0 ownership is now handled by this contract instead of our core. This contract &quot;owns&quot; 
+// Our Aetherian #0 ownership is now handled by this contract instead of our core. This contract "owns" 
 // the monster and players can bid to get their hands on this mystical creature until someone else outbids them.
 // Every following sale increases the price by x1.5 until no one is willing to outbid the current owner.
 // Once a player has lost ownership, they will get a full refund of their bid + 50% of the revenue created by the sale.
 // The other 50% go to the dev team to fund development. 
-// This &quot;hot potato&quot; style auction technically never ends and enables some very interesting scenarios
+// This "hot potato" style auction technically never ends and enables some very interesting scenarios
 // for our in-game world
 //
 
@@ -35,9 +35,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     * @dev Substracts two numbers, returns 0 if it would go into minus range.
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b &gt;= a) {
+        if (b >= a) {
             return 0;
         }
         return a - b;
@@ -56,7 +56,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -92,7 +92,7 @@ contract AuctionPotato {
     bool blockerPay;
     bool blockerWithdraw;
     
-    mapping(address =&gt; uint256) public fundsByBidder;
+    mapping(address => uint256) public fundsByBidder;
   
 
     event LogBid(address bidder, address highestBidder, uint oldHighestBindingBid, uint highestBindingBid);
@@ -116,7 +116,7 @@ contract AuctionPotato {
         
         started = false;
         
-        name = &quot;Aetherian&quot;;
+        name = "Aetherian";
         
     }
 
@@ -163,20 +163,20 @@ contract AuctionPotato {
     {   
         // we are only allowing to increase in bidIncrements to make for true hot potato style
         // while still allowing overbid to happen in case some parties are trying to 
-        require(msg.value &gt;= highestBindingBid.add(potato));
+        require(msg.value >= highestBindingBid.add(potato));
         require(msg.sender != highestBidder);
         require(started == true);
         require(blockerPay == false);
         blockerPay = true;
 
         // if someone overbids, return their
-        if (msg.value &gt; highestBindingBid.add(potato))
+        if (msg.value > highestBindingBid.add(potato))
         {
             uint overbid = msg.value - highestBindingBid.add(potato);
             msg.sender.transfer(overbid);
         }
         
-        // calculate the user&#39;s total bid based on the current amount they&#39;ve sent to the contract
+        // calculate the user's total bid based on the current amount they've sent to the contract
         // plus whatever has been sent with this transaction
 
         
@@ -244,7 +244,7 @@ contract AuctionPotato {
        
         // overbid people can withdraw their bid + profit
         // exclude owner because he is set above
-        if (msg.sender != highestBidder &amp;&amp; msg.sender != owner) {
+        if (msg.sender != highestBidder && msg.sender != owner) {
             withdrawalAccount = msg.sender;
             withdrawalAmount = fundsByBidder[withdrawalAccount];
             fundsByBidder[withdrawalAccount] = 0;
@@ -262,13 +262,13 @@ contract AuctionPotato {
     
     // amount owner can withdraw
     // that way you can easily compare the contract balance with your amount
-    // if there is more in the contract than your balance someone didn&#39;t withdraw
+    // if there is more in the contract than your balance someone didn't withdraw
     // let them know that :)
     function ownerCanWithdraw() public view returns (uint amount) {
         return fundsByBidder[owner];
     }
     
-    // just in case the contract is bust and can&#39;t pay
+    // just in case the contract is bust and can't pay
     // should never be needed but who knows
     function fuelContract() public onlyOwner payable {
         
@@ -289,7 +289,7 @@ contract AuctionPotato {
     }
 
     modifier onlyAfterStart {
-        if (now &lt; startTime) revert();
+        if (now < startTime) revert();
         _;
     }
 

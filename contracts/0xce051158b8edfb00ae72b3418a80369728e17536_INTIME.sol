@@ -18,7 +18,7 @@ contract INTIME {
         uint256 airdropBonus;
     }
     
-    mapping(address =&gt; Player) public players;
+    mapping(address => Player) public players;
     
     // System
     address public teamAddress;
@@ -51,7 +51,7 @@ contract INTIME {
     uint256 public unitStake;
     uint256 public potReserve;
     
-    mapping(string =&gt; address) addressFromName;
+    mapping(string => address) addressFromName;
     
     event Withdrawal(
         address indexed _from,
@@ -83,7 +83,7 @@ contract INTIME {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
     /**
@@ -109,14 +109,14 @@ contract INTIME {
         uint256 residualBalance = 0;
         if(currentGeneration != 0) {
             // Distribute tokens
-            // Staking distribution =&gt; distributed on deposit
-            // Pool distribution =&gt; 20%
+            // Staking distribution => distributed on deposit
+            // Pool distribution => 20%
             unitStake = 0;
             // 75% for the winner;
             players[keyAddress].balance += poolBalance / 5 * 75 / 100;
             players[keyAddress].lastKeyBonus += poolBalance / 5 * 75 / 100;
             // 15% for random participant
-            if(participantPoolEnd - participantPoolStart &gt; 0) {
+            if(participantPoolEnd - participantPoolStart > 0) {
                 uint randParticipantIndex = rand(participantPoolStart + 1, participantPoolEnd);
                 players[participantPool[randParticipantIndex - 1]].balance += poolBalance / 5 * 15 / 100;
                 players[participantPool[randParticipantIndex - 1]].lastKeyBonus += poolBalance / 5 * 15 / 100;
@@ -154,7 +154,7 @@ contract INTIME {
      */
     function setName(string name) isHuman() payable public {
         uint256 amount = msg.value;
-        require(amount &gt;= 1e15);
+        require(amount >= 1e15);
         require(addressFromName[name] == address(0));
         players[teamAddress].balance += amount;
         teamNamingIncome += amount;
@@ -168,15 +168,15 @@ contract INTIME {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function referralName (string name) isHuman() payable public {
-        if(addressFromName[name] != address(0) &amp;&amp; addressFromName[name] != msg.sender &amp;&amp; players[msg.sender].referrer == 0)
+        if(addressFromName[name] != address(0) && addressFromName[name] != msg.sender && players[msg.sender].referrer == 0)
             players[msg.sender].referrer = players[addressFromName[name]].id;
         uint256 amount = msg.value;
         deposit(amount);
     }
     function referralPay (uint referrer) isHuman() payable public {
-        if(referrer &gt; participants.length)
+        if(referrer > participants.length)
             referrer = 0;
-        if(players[msg.sender].id != referrer &amp;&amp; players[msg.sender].referrer == 0)
+        if(players[msg.sender].id != referrer && players[msg.sender].referrer == 0)
             players[msg.sender].referrer = referrer;
         uint256 amount = msg.value;
         deposit(amount);
@@ -191,31 +191,31 @@ contract INTIME {
         // Buy key from current balance
         uint256 amount = keyCount * keyPrice;
         uint256 availableWithdrawal = players[msg.sender].balance - players[msg.sender].withdrawal;
-        require(amount &lt;= availableWithdrawal);
-        require(amount &gt; 0);
+        require(amount <= availableWithdrawal);
+        require(amount > 0);
         players[msg.sender].withdrawal += amount;
         
-        if(referrer &gt; participants.length)
+        if(referrer > participants.length)
             referrer = 0;
-        if(players[msg.sender].id != referrer &amp;&amp; players[msg.sender].referrer == 0)
+        if(players[msg.sender].id != referrer && players[msg.sender].referrer == 0)
             players[msg.sender].referrer = referrer;
         keyLocked = false;
         deposit(amount);
     }
     function deposit(uint256 amount) private {
-        if(now &gt;= deadline) resetGame();
+        if(now >= deadline) resetGame();
         require(keyLocked == false);
         keyLocked = true;
         
         // Update pool balance
-		require(amount &gt;= keyPrice, &quot;You have to buy at least one key.&quot;);
+		require(amount >= keyPrice, "You have to buy at least one key.");
 		poolBalance += amount;
 		
 		currentKeyRound ++;
 		participantPool.push(msg.sender);
 		participantPoolEnd = participantPool.length;
 		// Update deadline if not last round
-		if(durationPhaseIndex &lt; 6) deadline = now + duration * 1 minutes;
+		if(durationPhaseIndex < 6) deadline = now + duration * 1 minutes;
 		
 		// Update key holder
 		keyAddress = msg.sender;
@@ -234,9 +234,9 @@ contract INTIME {
 		uint256 deltaStake = 0;
 		address _addr;
 		// 58% for staking
-		if(poolWeight &gt; 0) {
+		if(poolWeight > 0) {
 		    unitStake = amount * 58 / 100 / poolWeight;
-		    for(p_i = 0; p_i &lt; participants.length; p_i++) {
+		    for(p_i = 0; p_i < participants.length; p_i++) {
 		        _addr = participants[p_i];
 		        if(players[_addr].generation == currentGeneration) {
 		            players[_addr].balance += players[_addr].weight * unitStake;
@@ -245,14 +245,14 @@ contract INTIME {
 		    }
 		}
 		// 15% for referral
-		if(players[msg.sender].referrer &gt; 0) {
+		if(players[msg.sender].referrer > 0) {
 		    _addr = participants[players[msg.sender].referrer - 1];
 		    players[_addr].balance += amount * 15 / 100;
 		    players[_addr].referralBonus += amount * 15 / 100;
 		} else {
-		    if(poolWeight &gt; 0) {
+		    if(poolWeight > 0) {
 		        deltaStake = amount * 15 / 100 / poolWeight;
-		        for(p_i = 0; p_i &lt; participants.length; p_i++) {
+		        for(p_i = 0; p_i < participants.length; p_i++) {
 		            _addr = participants[p_i];
 		            if(players[_addr].generation == currentGeneration) {
 		                players[_addr].balance += players[_addr].weight * deltaStake;
@@ -275,18 +275,18 @@ contract INTIME {
 		airdropped = false;
 		airdroppedAmount = 0;
 		uint randNum = 0;
-		if(amount &gt;= 1e17 &amp;&amp; amount &lt; 1e18) {
+		if(amount >= 1e17 && amount < 1e18) {
 		    // 0.1 ~ 1 eth, 1% chance
 		    randNum = rand(1, 10000);
-		    if(randNum &lt;= 10) airdropped = true;
-		} else if(amount &gt;= 1e18 &amp;&amp; amount &lt; 1e19) {
+		    if(randNum <= 10) airdropped = true;
+		} else if(amount >= 1e18 && amount < 1e19) {
 		    // 1 eth ~ 10 eth, 10% chance
 		    randNum = rand(1, 10000);
-		    if(randNum &lt;= 100) airdropped = true;
-		} else if(amount &gt;= 1e19) {
+		    if(randNum <= 100) airdropped = true;
+		} else if(amount >= 1e19) {
 		    // greater than 1 eth, 5% chance
 		    randNum = rand(1, 10000);
-		    if(randNum &lt;= 500) airdropped = true;
+		    if(randNum <= 500) airdropped = true;
 		}
 		bool _phaseChanged = false;
 		if(airdropped) {
@@ -298,12 +298,12 @@ contract INTIME {
             
             airdroppedAmount = airdropBalance;
             airdropBalance = 0;
-            if(durationPhaseIndex == 0 &amp;&amp; airdropBalance &gt;= 1e18) _phaseChanged = true;
-            else if(durationPhaseIndex == 1 &amp;&amp; airdropBalance &gt;= 2e18) _phaseChanged = true;
-            else if(durationPhaseIndex == 2 &amp;&amp; airdropBalance &gt;= 3e18) _phaseChanged = true;
-            else if(durationPhaseIndex == 3 &amp;&amp; airdropBalance &gt;= 5e18) _phaseChanged = true;
-            else if(durationPhaseIndex == 4 &amp;&amp; airdropBalance &gt;= 7e18) _phaseChanged = true;
-            else if(durationPhaseIndex == 5 &amp;&amp; airdropBalance &gt;= 1e19) _phaseChanged = true;
+            if(durationPhaseIndex == 0 && airdropBalance >= 1e18) _phaseChanged = true;
+            else if(durationPhaseIndex == 1 && airdropBalance >= 2e18) _phaseChanged = true;
+            else if(durationPhaseIndex == 2 && airdropBalance >= 3e18) _phaseChanged = true;
+            else if(durationPhaseIndex == 3 && airdropBalance >= 5e18) _phaseChanged = true;
+            else if(durationPhaseIndex == 4 && airdropBalance >= 7e18) _phaseChanged = true;
+            else if(durationPhaseIndex == 5 && airdropBalance >= 1e19) _phaseChanged = true;
             if(_phaseChanged) {
                 durationPhaseIndex ++;
                 duration = durationPhaseArray[durationPhaseIndex];
@@ -319,7 +319,7 @@ contract INTIME {
 		poolWeight += weight;
 		uint256 afterPoolSegment = poolWeight / ((5e5).mul(1e7));
 		
-		// Different Segment =&gt; giveout potReserve, every 1e5 keys
+		// Different Segment => giveout potReserve, every 1e5 keys
 		potReserve += amount * 1 / 100;
 		bool _potReserveGive = false;
 		uint256 _potReserve = potReserve;
@@ -332,7 +332,7 @@ contract INTIME {
 		}
 		
 		// Grow key price
-		if(keyPrice &lt; keyPrice_max) {
+		if(keyPrice < keyPrice_max) {
 		    keyPrice = keyPrice_max - (1e23 - poolBalance).mul(keyPrice_max - keyPrice_min).div(1e23);
 		} else {
 		    keyPrice = keyPrice_max;
@@ -368,7 +368,7 @@ contract INTIME {
      */
     function safeWithdrawal() isHuman() public {
         uint256 availableWithdrawal = players[msg.sender].balance - players[msg.sender].withdrawal;
-        require(availableWithdrawal &gt; 0);
+        require(availableWithdrawal > 0);
         require(keyLocked == false);
         keyLocked = true;
         poolWithdraw += availableWithdrawal;
@@ -381,7 +381,7 @@ contract INTIME {
         // Will only be executed when user himself cannot withdraw and asks our team for help
         require(msg.sender == teamAddress);
         uint256 availableWithdrawal = players[userAddress].balance - players[userAddress].withdrawal;
-        require(availableWithdrawal &gt; 0);
+        require(availableWithdrawal > 0);
         require(keyLocked == false);
         keyLocked = true;
         poolWithdraw += availableWithdrawal;
@@ -406,8 +406,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -422,9 +422,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -432,7 +432,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -441,7 +441,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -53,19 +53,19 @@ pragma solidity ^0.4.13;
 }
   
  contract MidnightCoin is ERC20, Owned {
-     string public constant symbol = &quot;MNC&quot;;
-     string public constant name = &quot;Midnight Coin&quot;;
+     string public constant symbol = "MNC";
+     string public constant name = "Midnight Coin";
      uint8 public constant decimals = 18;
      uint256 _totalSupply = 100000000000000000000;
      uint public constant FREEZE_PERIOD = 1 years;
      uint public crowdSaleStartTimestamp;
-     string public lastLoveLetter = &quot;&quot;;
+     string public lastLoveLetter = "";
      
      // Balances for each account
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
   
      // Owner of account approves the transfer of an amount to another account
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => mapping (address => uint256)) allowed;
      
 
      // Constructor
@@ -84,11 +84,11 @@ pragma solidity ^0.4.13;
          return balances[_owner];
      }
   
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount) returns (bool success) {
-         if (balances[msg.sender] &gt;= _amount 
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[msg.sender] >= _amount 
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] -= _amount;
              balances[_to] += _amount;
              Transfer(msg.sender, _to, _amount);
@@ -100,7 +100,7 @@ pragma solidity ^0.4.13;
   
      // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
@@ -109,10 +109,10 @@ pragma solidity ^0.4.13;
          address _to,
          uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;
@@ -147,23 +147,23 @@ pragma solidity ^0.4.13;
      }
   
      function buyMNC(string _loveletter) payable{
-        require (now &gt; crowdSaleStartTimestamp);
-        require( _totalSupply &gt;= msg.value);
+        require (now > crowdSaleStartTimestamp);
+        require( _totalSupply >= msg.value);
         balances[msg.sender] += msg.value;
         _totalSupply -= msg.value;
         lastLoveLetter = _loveletter;
      }
      
      function sellMNC(uint256 _amount) {
-        require (now &gt; crowdSaleStartTimestamp + FREEZE_PERIOD);
-        require( balances[msg.sender] &gt;= _amount);
+        require (now > crowdSaleStartTimestamp + FREEZE_PERIOD);
+        require( balances[msg.sender] >= _amount);
         balances[msg.sender] -= _amount;
         _totalSupply += _amount;
         msg.sender.transfer(_amount);
      }
      
      function() payable{
-        buyMNC(&quot;Hi! I am anonymous holder&quot;);
+        buyMNC("Hi! I am anonymous holder");
      }
      
  }

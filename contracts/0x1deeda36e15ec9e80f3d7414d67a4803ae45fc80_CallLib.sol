@@ -1,13 +1,13 @@
 // Accounting v0.1 (not the same as the 0.1 release of this library)
 
 /// @title Accounting Lib - Accounting utilities
-/// @author Piper Merriam - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="27574e5742554a4255554e464a67404a464e4b0944484a">[email&#160;protected]</a>&gt;
+/// @author Piper Merriam - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="27574e5742554a4255554e464a67404a464e4b0944484a">[email protected]</a>>
 library AccountingLib {
         /*
          *  Address: 0x89efe605e9ecbe22849cd85d5449cc946c26f8f3
          */
         struct Bank {
-            mapping (address =&gt; uint) accountBalances;
+            mapping (address => uint) accountBalances;
         }
 
         /// @dev Low level method for adding funds to an account.  Protects against overflow.
@@ -15,7 +15,7 @@ library AccountingLib {
         /// @param accountAddress The address of the account the funds should be added to.
         /// @param value The amount that should be added to the account.
         function addFunds(Bank storage self, address accountAddress, uint value) public {
-                if (self.accountBalances[accountAddress] + value &lt; self.accountBalances[accountAddress]) {
+                if (self.accountBalances[accountAddress] + value < self.accountBalances[accountAddress]) {
                         // Prevent Overflow.
                         throw;
                 }
@@ -70,7 +70,7 @@ library AccountingLib {
                  *  account funds.  It has error checking to prevent
                  *  underflowing the account balance which would be REALLY bad.
                  */
-                if (value &gt; self.accountBalances[accountAddress]) {
+                if (value > self.accountBalances[accountAddress]) {
                         // Prevent Underflow.
                         throw;
                 }
@@ -85,7 +85,7 @@ library AccountingLib {
                 /*
                  *  Public API for withdrawing funds.
                  */
-                if (self.accountBalances[accountAddress] &gt;= value) {
+                if (self.accountBalances[accountAddress] >= value) {
                         deductFunds(self, accountAddress, value);
                         if (!accountAddress.send(value)) {
                                 // Potentially sending money to a contract that
@@ -105,14 +105,14 @@ library AccountingLib {
         uint constant DEFAULT_SEND_GAS = 100000;
 
         function sendRobust(address toAddress, uint value) public returns (bool) {
-                if (msg.gas &lt; DEFAULT_SEND_GAS) {
+                if (msg.gas < DEFAULT_SEND_GAS) {
                     return sendRobust(toAddress, value, msg.gas);
                 }
                 return sendRobust(toAddress, value, DEFAULT_SEND_GAS);
         }
 
         function sendRobust(address toAddress, uint value, uint maxGas) public returns (bool) {
-                if (value &gt; 0 &amp;&amp; !toAddress.send(value)) {
+                if (value > 0 && !toAddress.send(value)) {
                         // Potentially sending money to a contract that
                         // has a fallback function.  So instead, try
                         // tranferring the funds with the call api.
@@ -164,8 +164,8 @@ library CallLib {
 
         var call = FutureBlockCall(this);
 
-        if (block.number + CLAIM_GROWTH_WINDOW + MAXIMUM_CLAIM_WINDOW + BEFORE_CALL_FREEZE_WINDOW &lt; call.targetBlock()) return State.Pending;
-        if (block.number + BEFORE_CALL_FREEZE_WINDOW &lt; call.targetBlock()) {
+        if (block.number + CLAIM_GROWTH_WINDOW + MAXIMUM_CLAIM_WINDOW + BEFORE_CALL_FREEZE_WINDOW < call.targetBlock()) return State.Pending;
+        if (block.number + BEFORE_CALL_FREEZE_WINDOW < call.targetBlock()) {
             if (self.claimer == 0x0) {
                 return State.Unclaimed;
             }
@@ -173,8 +173,8 @@ library CallLib {
                 return State.Claimed;
             }
         }
-        if (block.number &lt; call.targetBlock()) return State.Frozen;
-        if (block.number &lt; call.targetBlock() + call.gracePeriod()) return State.Callable;
+        if (block.number < call.targetBlock()) return State.Frozen;
+        if (block.number < call.targetBlock() + call.gracePeriod()) return State.Callable;
         return State.Missed;
     }
 
@@ -186,8 +186,8 @@ library CallLib {
 
     function extractCallData(Call storage call, bytes data) public {
         call.callData.length = data.length - 4;
-        if (data.length &gt; 4) {
-                for (uint i = 0; i &lt; call.callData.length; i++) {
+        if (data.length > 4) {
+                for (uint i = 0; i < call.callData.length; i++) {
                         call.callData[i] = data[i + 4];
                 }
         }
@@ -197,14 +197,14 @@ library CallLib {
 
     function checkDepth(uint n) constant returns (bool) {
         if (n == 0) return true;
-        return address(this).call.gas(GAS_PER_DEPTH * n)(bytes4(sha3(&quot;__dig(uint256)&quot;)), n - 1);
+        return address(this).call.gas(GAS_PER_DEPTH * n)(bytes4(sha3("__dig(uint256)")), n - 1);
     }
 
     function sendSafe(address to_address, uint value) public returns (uint) {
-        if (value &gt; address(this).balance) {
+        if (value > address(this).balance) {
             value = address(this).balance;
         }
-        if (value &gt; 0) {
+        if (value > 0) {
             AccountingLib.sendRobust(to_address, value);
             return value;
         }
@@ -227,7 +227,7 @@ library CallLib {
         *  for the executing transaction, the higher the payout to the
         *  caller.
         */
-        if (gas_price &gt; base_gas_price) {
+        if (gas_price > base_gas_price) {
             return 100 * base_gas_price / gas_price;
         }
         else {
@@ -252,7 +252,7 @@ library CallLib {
         self.wasCalled = true;
 
         // Make the call
-        if (self.abiSignature == EMPTY_SIGNATURE &amp;&amp; self.callData.length == 0) {
+        if (self.abiSignature == EMPTY_SIGNATURE && self.callData.length == 0) {
             self.wasSuccessful = self.contractAddress.call.value(self.callValue).gas(msg.gas - overhead)();
         }
         else if (self.abiSignature == EMPTY_SIGNATURE) {
@@ -265,7 +265,7 @@ library CallLib {
             self.wasSuccessful = self.contractAddress.call.value(self.callValue).gas(msg.gas - overhead)(self.abiSignature, self.callData);
         }
 
-        call.origin().call(bytes4(sha3(&quot;updateDefaultPayment()&quot;)));
+        call.origin().call(bytes4(sha3("updateDefaultPayment()")));
 
         // Compute the scalar (0 - 200) for the donation.
         uint gasScalar = getGasScalar(self.anchorGasPrice, tx.gasprice);
@@ -300,7 +300,7 @@ library CallLib {
 
     function cancel(Call storage self, address sender) public {
         Cancelled(sender);
-        if (self.claimerDeposit &gt;= 0) {
+        if (self.claimerDeposit >= 0) {
             sendSafe(self.claimer, self.claimerDeposit);
         }
         var call = FutureCall(this);
@@ -325,7 +325,7 @@ library CallLib {
     // remain open.
     uint constant MAXIMUM_CLAIM_WINDOW = 15;
 
-    // The duration (in blocks) before the call&#39;s target block during which
+    // The duration (in blocks) before the call's target block during which
     // all actions are frozen.  This includes claiming, cancellation,
     // registering call data.
     uint constant BEFORE_CALL_FREEZE_WINDOW = 10;
@@ -348,16 +348,16 @@ library CallLib {
         uint cutoff = call.targetBlock() - BEFORE_CALL_FREEZE_WINDOW;
         
         // claim window has closed
-        if (block_number &gt; cutoff) return call.basePayment();
+        if (block_number > cutoff) return call.basePayment();
 
         cutoff -= MAXIMUM_CLAIM_WINDOW;
 
         // in the maximum claim window.
-        if (block_number &gt; cutoff) return call.basePayment();
+        if (block_number > cutoff) return call.basePayment();
 
         cutoff -= CLAIM_GROWTH_WINDOW;
 
-        if (block_number &gt; cutoff) {
+        if (block_number > cutoff) {
             uint x = block_number - cutoff;
 
             return call.basePayment() * x / CLAIM_GROWTH_WINDOW;
@@ -386,7 +386,7 @@ library CallLib {
          *  done at the contract level.
          */
         // Insufficient Deposit
-        if (deposit_amount &lt; 2 * basePayment) return false;
+        if (deposit_amount < 2 * basePayment) return false;
 
         self.claimAmount = getClaimAmountForBlock(block.number);
         self.claimer = executor;
@@ -405,11 +405,11 @@ library CallLib {
         uint targetBlock = call.targetBlock();
 
         // Invalid, not in call window.
-        if (block_number &lt; targetBlock || block_number &gt; targetBlock + call.gracePeriod()) throw;
+        if (block_number < targetBlock || block_number > targetBlock + call.gracePeriod()) throw;
 
         // Within the reserved call window so if there is a claimer, the
         // executor must be the claimdor.
-        if (block_number - targetBlock &lt; CALL_WINDOW_SIZE) {
+        if (block_number - targetBlock < CALL_WINDOW_SIZE) {
         return (self.claimer == 0x0 || self.claimer == executor);
         }
 
@@ -421,7 +421,7 @@ library CallLib {
         var _state = state(self);
         var call = FutureBlockCall(this);
 
-        if (_state == State.Pending &amp;&amp; caller == call.schedulerAddress()) {
+        if (_state == State.Pending && caller == call.schedulerAddress()) {
             return true;
         }
 
@@ -435,25 +435,25 @@ library CallLib {
 
         var call = FutureBlockCall(this);
 
-        if (startGas &lt; self.requiredGas) {
+        if (startGas < self.requiredGas) {
             // The executor has not provided sufficient gas
-            reason = &quot;NOT_ENOUGH_GAS&quot;;
+            reason = "NOT_ENOUGH_GAS";
         }
         else if (self.wasCalled) {
             // Not being called within call window.
-            reason = &quot;ALREADY_CALLED&quot;;
+            reason = "ALREADY_CALLED";
         }
-        else if (block.number &lt; call.targetBlock() || block.number &gt; call.targetBlock() + call.gracePeriod()) {
+        else if (block.number < call.targetBlock() || block.number > call.targetBlock() + call.gracePeriod()) {
             // Not being called within call window.
-            reason = &quot;NOT_IN_CALL_WINDOW&quot;;
+            reason = "NOT_IN_CALL_WINDOW";
         }
         else if (!checkExecutionAuthorization(self, executor, block.number)) {
             // Someone has claimed this call and they currently have exclusive
             // rights to execute it.
-            reason = &quot;NOT_AUTHORIZED&quot;;
+            reason = "NOT_AUTHORIZED";
         }
-        else if (self.requiredStackDepth &gt; 0 &amp;&amp; executor != tx.origin &amp;&amp; !checkDepth(self.requiredStackDepth)) {
-            reason = &quot;STACK_TOO_DEEP&quot;;
+        else if (self.requiredStackDepth > 0 && executor != tx.origin && !checkDepth(self.requiredStackDepth)) {
+            reason = "STACK_TOO_DEEP";
         }
 
         if (reason != 0x0) {
@@ -606,10 +606,10 @@ contract FutureCall {
         // only scheduler can register call data.
         if (msg.sender != schedulerAddress) return false;
         // cannot write over call data
-        if (call.callData.length &gt; 0) return false;
+        if (call.callData.length > 0) return false;
 
         var _state = state();
-        if (_state != State.Pending &amp;&amp; _state != State.Unclaimed &amp;&amp; _state != State.Claimed) return false;
+        if (_state != State.Pending && _state != State.Unclaimed && _state != State.Claimed) return false;
 
         call.callData = msg.data;
         return true;
@@ -619,10 +619,10 @@ contract FutureCall {
         // only scheduler can register call data.
         if (msg.sender != schedulerAddress) return false;
         // cannot write over call data
-        if (call.callData.length &gt; 0) return false;
+        if (call.callData.length > 0) return false;
 
         var _state = state();
-        if (_state != State.Pending &amp;&amp; _state != State.Unclaimed &amp;&amp; _state != State.Claimed) return false;
+        if (_state != State.Pending && _state != State.Unclaimed && _state != State.Claimed) return false;
 
         CallLib.extractCallData(call, msg.data);
     }
@@ -705,7 +705,7 @@ contract FutureBlockCall is FutureCall {
 
     function __dig(uint n) constant returns (bool) {
         if (n == 0) return true;
-        if (!address(this).callcode(bytes4(sha3(&quot;__dig(uint256)&quot;)), n - 1)) throw;
+        if (!address(this).callcode(bytes4(sha3("__dig(uint256)")), n - 1)) throw;
     }
 
 

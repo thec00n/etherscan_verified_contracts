@@ -18,37 +18,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) public pure returns (uint256) {
-    //assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    //assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    //assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    //assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) public pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) public pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) public pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) public pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) external pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) external pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -93,33 +93,33 @@ library SafeMath {
 
       littafiContents[] public littafi;
 
-      mapping(bytes32 =&gt; address) littClientAddress;
+      mapping(bytes32 => address) littClientAddress;
 
-      mapping(bytes32 =&gt; string)  littIPFS;
+      mapping(bytes32 => string)  littIPFS;
 
-      mapping(bytes32 =&gt; uint256) littHashID;
+      mapping(bytes32 => uint256) littHashID;
 
-      mapping(bytes32 =&gt; uint256) littCapsule;
+      mapping(bytes32 => uint256) littCapsule;
 
-      mapping(address =&gt; littafiAdmin) admins;
+      mapping(address => littafiAdmin) admins;
 
-      mapping(address =&gt; littafiSubscribtion) subscriber;
+      mapping(address => littafiSubscribtion) subscriber;
 
-      mapping(address =&gt; bool) subscriberStatus;
+      mapping(address => bool) subscriberStatus;
 
-      mapping(uint256 =&gt; address) poolAdmin;
+      mapping(uint256 => address) poolAdmin;
 
-      mapping(uint256 =&gt; address) setPoolAdmin;
+      mapping(uint256 => address) setPoolAdmin;
 
-      mapping(address =&gt; bool) isDelegateAdmin;
+      mapping(address => bool) isDelegateAdmin;
 
-      mapping(uint256 =&gt; string)  poolName;
+      mapping(uint256 => string)  poolName;
 
-      mapping(address =&gt; bytes32[]) subscriberContentHashes;
+      mapping(address => bytes32[]) subscriberContentHashes;
 
-      mapping(address =&gt; uint256)  subscriberContentCount;
+      mapping(address => uint256)  subscriberContentCount;
       
-      mapping(address =&gt; bool) transferred;
+      mapping(address => bool) transferred;
 
       struct littafiContents{
           uint256 id;
@@ -144,17 +144,17 @@ library SafeMath {
       }
 
       modifier onlyLittafiAdmin(uint256 _poolID){
-          require(admins[msg.sender].isAdmin == true &amp;&amp; admins[msg.sender].poolID == _poolID &amp;&amp; msg.sender != owner);
+          require(admins[msg.sender].isAdmin == true && admins[msg.sender].poolID == _poolID && msg.sender != owner);
           _;
       }
 
       modifier onlyLittafiSubscribed(){
-          require(msg.value &gt; 0 &amp;&amp; subscriber[msg.sender].subID &gt; 0 &amp;&amp; msg.sender != owner);
+          require(msg.value > 0 && subscriber[msg.sender].subID > 0 && msg.sender != owner);
           _;
       }
 
       modifier onlyLittafiNonSubscribed(){
-          require(msg.value &gt; 0 &amp;&amp; subscriber[msg.sender].subID == 0 &amp;&amp; msg.sender != owner);
+          require(msg.value > 0 && subscriber[msg.sender].subID == 0 && msg.sender != owner);
           _;
       }
 
@@ -190,7 +190,7 @@ library SafeMath {
 
       function subscribtionLittafi(uint256 _assignedID,string _timestamp, string _poolName) public payable onlyLittafiNonSubscribed(){
 
-          if(_assignedID &gt; 0 &amp;&amp; setPoolAdmin[_assignedID] == msg.sender){
+          if(_assignedID > 0 && setPoolAdmin[_assignedID] == msg.sender){
              subscriber[msg.sender].subID=littClientId;
              subscriber[msg.sender].clientPool=_assignedID;
              subscriberStatus[msg.sender]=true;
@@ -278,7 +278,7 @@ library SafeMath {
       }
 
       function getLittafiContent(bytes32 _hash,uint256 _poolID) public payable{
-        if (littClientAddress[_hash] != address(0) &amp;&amp; littafi[littHashID[_hash]].clientPool==_poolID){
+        if (littClientAddress[_hash] != address(0) && littafi[littHashID[_hash]].clientPool==_poolID){
             owner.transfer(msg.value);
             emit littContent(littClientAddress[_hash],_hash,littIPFS[_hash],littafi[littHashID[_hash]].timestamp,littafi[littHashID[_hash]].metadata,littafi[littHashID[_hash]].unique,littafi[littHashID[_hash]].clientPool,littafi[littHashID[_hash]].access,true);
             return;

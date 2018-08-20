@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,7 +57,7 @@ contract Blocked {
     uint public blockedUntil;
 
     modifier unblocked {
-        require(now &gt; blockedUntil);
+        require(now > blockedUntil);
         _;
     }
 }
@@ -85,7 +85,7 @@ contract ERC20 is ERC20Basic {
 contract PayloadSize {
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 }
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic, Blocked, PayloadSize {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) unblocked public returns (bool) {
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic, Blocked, PayloadSize {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) unblocked public returns (bool) {
         var _allowance = allowed[_from][msg.sender];
@@ -143,10 +143,10 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) unblocked public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -157,9 +157,9 @@ contract BurnableToken is StandardToken {
 
 contract PreNTFToken is BurnableToken, Owned {
 
-    string public constant name = &quot;PreNTF Token&quot;;
+    string public constant name = "PreNTF Token";
 
-    string public constant symbol = &quot;PreNTF&quot;;
+    string public constant symbol = "PreNTF";
 
     uint32 public constant decimals = 18;
 
@@ -207,24 +207,24 @@ contract Crowdsale is Owned, PayloadSize {
 
     uint256 public minAmountForDeal = 9 ether;
 
-    mapping (uint =&gt; AmountData) public amountsByCurrency;
+    mapping (uint => AmountData) public amountsByCurrency;
 
-    mapping (address =&gt; uint256) public bountyTokensToAddress;
+    mapping (address => uint256) public bountyTokensToAddress;
 
     modifier canBuy() {
         require(!isFinished());
-        require(now &gt;= preICOstartTime);
+        require(now >= preICOstartTime);
         _;
     }
 
     modifier minPayment() {
-        require(msg.value &gt;= minAmountForDeal);
+        require(msg.value >= minAmountForDeal);
         _;
     }
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -243,7 +243,7 @@ contract Crowdsale is Owned, PayloadSize {
     }
 
     function isFinished() public constant returns (bool) {
-        return now &gt; preICOendTime || leftTokens == 0;
+        return now > preICOendTime || leftTokens == 0;
     }
 
     function() external canBuy minPayment payable {
@@ -252,9 +252,9 @@ contract Crowdsale is Owned, PayloadSize {
         uint256 providedTokens = transferTokensTo(msg.sender, givenTokens);
         transactionCounter = transactionCounter + 1;
 
-        if (givenTokens &gt; providedTokens) {
+        if (givenTokens > providedTokens) {
             uint256 needAmount = providedTokens.mul(tokenPrice).div(1 ether);
-            require(amount &gt; needAmount);
+            require(amount > needAmount);
             require(msg.sender.call.gas(3000000).value(amount - needAmount)());
             amount = needAmount;
         }
@@ -278,7 +278,7 @@ contract Crowdsale is Owned, PayloadSize {
 
     function transferTokensTo(address to, uint256 givenTokens) private returns (uint256) {
         var providedTokens = givenTokens;
-        if (givenTokens &gt; leftTokens) {
+        if (givenTokens > leftTokens) {
             providedTokens = leftTokens;
         }
         leftTokens = leftTokens.sub(providedTokens);
@@ -288,7 +288,7 @@ contract Crowdsale is Owned, PayloadSize {
 
     function finishCrowdsale() external {
         require(isFinished());
-        if (leftTokens &gt; 0) {
+        if (leftTokens > 0) {
             token.burn(leftTokens);
             leftTokens = 0;
         }
@@ -297,14 +297,14 @@ contract Crowdsale is Owned, PayloadSize {
     function takeBountyTokens() external returns (bool){
         require(isFinished());
         uint256 allowance = bountyTokensToAddress[msg.sender];
-        require(allowance &gt; 0);
+        require(allowance > 0);
         bountyTokensToAddress[msg.sender] = 0;
         require(token.manualTransfer(msg.sender, allowance));
         return true;
     }
 
     function giveTokensTo(address holder, uint256 amount) external onlyPayloadSize(2 * 32) onlyOwner returns (bool) {
-        require(bountyTokenAmount &gt;= givenBountyTokens.add(amount));
+        require(bountyTokenAmount >= givenBountyTokens.add(amount));
         bountyTokensToAddress[holder] = bountyTokensToAddress[holder].add(amount);
         givenBountyTokens = givenBountyTokens.add(amount);
         return true;
@@ -325,7 +325,7 @@ contract Crowdsale is Owned, PayloadSize {
 
     function withdrawAmount(uint256 amount) external onlyOwner {
         uint256 givenAmount = amount;
-        if (this.balance &lt; amount) {
+        if (this.balance < amount) {
             givenAmount = this.balance;
         }
         require(msg.sender.call.gas(3000000).value(givenAmount)());

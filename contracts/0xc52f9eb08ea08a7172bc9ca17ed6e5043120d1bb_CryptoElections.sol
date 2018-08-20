@@ -35,15 +35,15 @@ contract CryptoElections {
     event pendingWithdrawalEvent(address user,uint value);
     event assignCountryEvent(address user,uint countryId);
     event buyCityEvent(address user,uint cityId);
-    mapping(uint =&gt; Country) public countries ;
-    mapping(uint =&gt;  uint[]) public countriesCities ;
-    mapping(uint =&gt;  uint) public citiesCountries ;
+    mapping(uint => Country) public countries ;
+    mapping(uint =>  uint[]) public countriesCities ;
+    mapping(uint =>  uint) public citiesCountries ;
 
-    mapping(uint =&gt;  uint) public cityPopulation ;
-    mapping(uint =&gt; City) public cities;
-    mapping(address =&gt; uint[]) public userCities;
-    mapping(address =&gt; uint) public userPendingWithdrawals;
-    mapping(address =&gt; string) public userNicknames;
+    mapping(uint =>  uint) public cityPopulation ;
+    mapping(uint => City) public cities;
+    mapping(address => uint[]) public userCities;
+    mapping(address => uint) public userPendingWithdrawals;
+    mapping(address => string) public userNicknames;
 
     function CryptoElections() public {
         creator = msg.sender;
@@ -74,7 +74,7 @@ contract CryptoElections {
     onlyCreator()
     {
         countriesCities[countryId] = _cities;
-        for (uint i = 0;i&lt;_cities.length;i++) {
+        for (uint i = 0;i<_cities.length;i++) {
             citiesCountries[_cities[i]] = countryId;
 
         }
@@ -91,7 +91,7 @@ contract CryptoElections {
     onlyCreator()
     {
 
-        for (uint i = 0;i&lt;_cities.length;i++) {
+        for (uint i = 0;i<_cities.length;i++) {
 
             cityPopulation[_cities[i]] = _populations[i];
         }
@@ -140,8 +140,8 @@ contract CryptoElections {
         uint presidentCommission = 1000000000000000;
         uint ownerCommission;
 
-        for (uint i = 1;i&lt;=purchases;i++) {
-            if (i&lt;=7)
+        for (uint i = 1;i<=purchases;i++) {
+            if (i<=7)
                 price = price*2;
             else
                 price = (price*12)/10;
@@ -165,14 +165,14 @@ contract CryptoElections {
         uint  controlledPopulation;
 
         uint  population;
-        for (uint i = 0;i&lt;countriesCities[countryId].length;i++) {
+        for (uint i = 0;i<countriesCities[countryId].length;i++) {
             population = cityPopulation[countriesCities[countryId][i]];
             if (cities[countriesCities[countryId][i]].mayor==msg.sender) {
                 controlledPopulation += population;
             }
             totalPopulation += population;
         }
-        if (controlledPopulation*2&gt;(totalPopulation)) {
+        if (controlledPopulation*2>(totalPopulation)) {
             countries[countryId].president = msg.sender;
             assignCountryEvent(msg.sender,countryId);
             return true;
@@ -192,7 +192,7 @@ contract CryptoElections {
             revert();
         }
 
-        if ( msg.value+userPendingWithdrawals[msg.sender]&gt;=prices[0]) {
+        if ( msg.value+userPendingWithdrawals[msg.sender]>=prices[0]) {
             // use user limit
             userPendingWithdrawals[msg.sender] = userPendingWithdrawals[msg.sender]+msg.value-prices[0];
             pendingWithdrawalEvent(msg.sender,userPendingWithdrawals[msg.sender]+msg.value-prices[0]);
@@ -211,7 +211,7 @@ contract CryptoElections {
                 pendingWithdrawalEvent(countries[citiesCountries[cityId]].president,prices[2]);
             }
             // change mayor
-            if (cities[cityId].mayor&gt;0) {
+            if (cities[cityId].mayor>0) {
                 _removeUserCity(cities[cityId].mayor,cityId);
             }
 
@@ -236,7 +236,7 @@ contract CryptoElections {
 
     function _addUserCity(address user,uint cityId) private {
         bool added = false;
-        for (uint i = 0; i&lt;userCities[user].length; i++) {
+        for (uint i = 0; i<userCities[user].length; i++) {
             if (userCities[user][i]==0) {
                 userCities[user][i] = cityId;
                 added = true;
@@ -248,7 +248,7 @@ contract CryptoElections {
     }
 
     function _removeUserCity(address user,uint cityId) private {
-        for (uint i = 0; i&lt;userCities[user].length; i++) {
+        for (uint i = 0; i<userCities[user].length; i++) {
             if (userCities[user][i]==cityId) {
                 delete userCities[user][i];
             }

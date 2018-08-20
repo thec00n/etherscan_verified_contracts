@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -60,7 +60,7 @@ contract BancorKillerContract {
   bool public traded_token_is_seeded;
   
 
-  mapping (address =&gt; uint256) public token_balance;
+  mapping (address => uint256) public token_balance;
 
   constructor(address _base_token, address _traded_token,uint256 _base_token_seed_amount, uint256 _traded_token_seed_amount, uint256 _commission_ratio) public {
       
@@ -126,7 +126,7 @@ contract BancorKillerContract {
       
       uint256 currentBalance_ = token_balance[traded_token];
       
-      require(currentBalance_ &gt;= _amount);
+      require(currentBalance_ >= _amount);
       
       transferTokensFromContract(admin, _amount);
       
@@ -138,7 +138,7 @@ contract BancorKillerContract {
 
       uint256 currentBalance_ = token_balance[0];
       
-      require(currentBalance_ &gt;= _amount);
+      require(currentBalance_ >= _amount);
       
       transferETHFromContract(admin, _amount);
       
@@ -180,7 +180,7 @@ contract BancorKillerContract {
 
   function market_is_open() private view returns(bool) {
   
-    return (base_token_is_seeded &amp;&amp; traded_token_is_seeded);
+    return (base_token_is_seeded && traded_token_is_seeded);
 
   }
 
@@ -218,7 +218,7 @@ contract BancorKillerContract {
 
     uint256 amount_get_ = get_amount_sell(_amount_give);
 
-    require(amount_get_ &lt; token_balance[base_token]);
+    require(amount_get_ < token_balance[base_token]);
     
     uint256 amount_get_minus_fee_ = get_amount_minus_fee(amount_get_);
     
@@ -238,7 +238,7 @@ contract BancorKillerContract {
 
     uint256 amount_get_ = get_amount_buy(amount_give_);
 
-    require(amount_get_ &lt; token_balance[traded_token]);
+    require(amount_get_ < token_balance[traded_token]);
     
     uint256 amount_get_minus_fee_ = get_amount_minus_fee(amount_get_);
 

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * TOKEN Contract
 * ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3b733c332932333432733c3638311d3a303c3431733e3230">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3b733c332932333432733c3638311d3a303c3431733e3230">[email protected]</a>
 */
 
 /**
@@ -12,13 +12,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -109,9 +109,9 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
-    mapping (address =&gt; bool) frozen; //A mapping of frozen accounts
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
+    mapping (address => bool) frozen; //A mapping of frozen accounts
 
     /**
     * @dev Get the balance of an specified address.
@@ -206,10 +206,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 * @dev Initial supply creation
 */
 contract Asset is ERC20Token {
-    string public name = &#39;SMARTRealty&#39;;
+    string public name = 'SMARTRealty';
     uint8 public decimals = 8;
-    string public symbol = &#39;RLTY&#39;;
-    string public version = &#39;1&#39;; 
+    string public symbol = 'RLTY';
+    string public version = '1'; 
 
     address DevExecutiveAdvisorTeams= 0xF9568bd772C9B517193275b3C2E0CDAd38E586bB;
     address SMARTRealtyEconomy= 0x07ADB1D9399Bd1Fa4fD613D3179DFE883755Bb13;

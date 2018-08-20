@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract EthereumSilver123 {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract EthereumSilver123 {
 
     function EthereumSilver123() {
         totalSupply = 21000000000000000000000000;
-        symbol = &#39;SlVR&#39;;
+        symbol = 'SlVR';
         owner = 0x79c3cdb9C21c65F4F0B113A79A21A45AD559747A;
         balances[owner] = totalSupply;
         decimals = 0;

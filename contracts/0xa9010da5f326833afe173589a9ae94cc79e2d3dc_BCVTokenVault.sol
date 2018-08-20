@@ -20,8 +20,8 @@ contract ERC20Interface {
 contract BCV is ERC20Interface {
     uint256 public constant decimals = 8;
 
-    string public constant symbol = &quot;BCV&quot;;
-    string public constant name = &quot;BitCapitalVendorToken&quot;;
+    string public constant symbol = "BCV";
+    string public constant name = "BitCapitalVendorToken";
 
     uint256 public _totalSupply = 120000000000000000; // total supply is 1.2 billion
 
@@ -29,16 +29,16 @@ contract BCV is ERC20Interface {
     address public owner;
 
     // Balances BCV for each account
-    mapping(address =&gt; uint256) private balances;
+    mapping(address => uint256) private balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(address => mapping (address => uint256)) private allowed;
 
     // List of approved investors
-    mapping(address =&gt; bool) private approvedInvestorList;
+    mapping(address => bool) private approvedInvestorList;
 
     // deposit
-    mapping(address =&gt; uint256) private deposit;
+    mapping(address => uint256) private deposit;
 
 
     // totalTokenSold
@@ -49,7 +49,7 @@ contract BCV is ERC20Interface {
      * @dev Fix for the ERC20 short address attack.
      */
     modifier onlyPayloadSize(uint size) {
-      if(msg.data.length &lt; size + 4) {
+      if(msg.data.length < size + 4) {
         revert();
       }
       _;
@@ -73,7 +73,7 @@ contract BCV is ERC20Interface {
         return _totalSupply;
     }
 
-    /// @dev Gets account&#39;s balance
+    /// @dev Gets account's balance
     /// @param _addr Address of the account
     /// @return Account balance
     function balanceOf(address _addr)
@@ -111,12 +111,12 @@ contract BCV is ERC20Interface {
         public
 
         returns (bool) {
-        // if sender&#39;s balance has enough unit and amount &gt;= 0,
+        // if sender's balance has enough unit and amount >= 0,
         //      and the sum is not overflow,
         // then do transfer
-        if ( (balances[msg.sender] &gt;= _amount) &amp;&amp;
-             (_amount &gt;= 0) &amp;&amp;
-             (balances[_to] + _amount &gt; balances[_to]) ) {
+        if ( (balances[msg.sender] >= _amount) &&
+             (_amount >= 0) &&
+             (balances[_to] + _amount > balances[_to]) ) {
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -129,7 +129,7 @@ contract BCV is ERC20Interface {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -141,7 +141,7 @@ contract BCV is ERC20Interface {
     public
 
     returns (bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; allowed[_from][msg.sender] &gt;= _amount) {
+        if (balances[_from] >= _amount && _amount > 0 && allowed[_from][msg.sender] >= _amount) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -194,27 +194,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 /**
  * The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -280,9 +280,9 @@ contract BCVTokenVault is Ownable {
     uint256 public finanVestingStages = 5;  // 20% each month; total 5 stages.
     uint256 public econVestingStages = 240;  // 1200000 each month for first six years and 200000 each month for next forteen years; total 240 stages.
 
-    mapping(address =&gt; uint256) public allocations;
-    mapping(address =&gt; uint256) public timeLocks;
-    mapping(address =&gt; uint256) public claimed;
+    mapping(address => uint256) public allocations;
+    mapping(address => uint256) public timeLocks;
+    mapping(address => uint256) public claimed;
     uint256 public lockedAt = 0;
 
     BCV public token;
@@ -293,47 +293,47 @@ contract BCVTokenVault is Ownable {
 
     // Any of the five reserve wallets
     modifier onlyReserveWallets {
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     // Team reserve wallet
     modifier onlyTeamReserve {
         require(msg.sender == teamReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
-        require(allocations[msg.sender] &gt; claimed[msg.sender]);
+        require(allocations[msg.sender] > 0);
+        require(allocations[msg.sender] > claimed[msg.sender]);
         _;
     }
 
     // Life token reserve wallet
     modifier onlyTokenReserveLife {
         require(msg.sender == lifeReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
-        require(allocations[msg.sender] &gt; claimed[msg.sender]);
+        require(allocations[msg.sender] > 0);
+        require(allocations[msg.sender] > claimed[msg.sender]);
         _;
     }
 
     // Finance token reserve wallet
     modifier onlyTokenReserveFinance {
         require(msg.sender == finanReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
-        require(allocations[msg.sender] &gt; claimed[msg.sender]);
+        require(allocations[msg.sender] > 0);
+        require(allocations[msg.sender] > claimed[msg.sender]);
         _;
     }
 
     // Economic token reserve wallet
     modifier onlyTokenReserveEcon {
         require(msg.sender == econReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
-        require(allocations[msg.sender] &gt; claimed[msg.sender]);
+        require(allocations[msg.sender] > 0);
+        require(allocations[msg.sender] > claimed[msg.sender]);
         _;
     }
 
     // Develop token reserve wallet
     modifier onlyTokenReserveDevelop {
         require(msg.sender == developReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
-        require(allocations[msg.sender] &gt; claimed[msg.sender]);
+        require(allocations[msg.sender] > 0);
+        require(allocations[msg.sender] > claimed[msg.sender]);
         _;
     }
 
@@ -345,7 +345,7 @@ contract BCVTokenVault is Ownable {
 
     // Already locked
     modifier locked {
-        require(lockedAt &gt; 0);
+        require(lockedAt > 0);
         _;
     }
 
@@ -420,8 +420,8 @@ contract BCVTokenVault is Ownable {
     function claimTeamReserve() onlyTeamReserve locked public {
 
         address reserveWallet = msg.sender;
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         uint256 vestingStage = teamVestingStage();
 
@@ -434,10 +434,10 @@ contract BCVTokenVault is Ownable {
         }
 
         // Total unlocked token must be smaller or equal to total locked token
-        require(totalUnlocked &lt;= allocations[teamReserveWallet]);
+        require(totalUnlocked <= allocations[teamReserveWallet]);
 
         // Previously claimed tokens must be less than what is unlocked
-        require(claimed[teamReserveWallet] &lt; totalUnlocked);
+        require(claimed[teamReserveWallet] < totalUnlocked);
 
         // Number of tokens we can get
         uint256 payment = totalUnlocked.sub(claimed[teamReserveWallet]);
@@ -458,8 +458,8 @@ contract BCVTokenVault is Ownable {
         // Number of months past our unlock time, which is the stage
         uint256 stage = (nowTime.sub(teamReserveTimeLock)).div(2592000);
 
-        // Ensures team vesting stage doesn&#39;t go past teamVestingStages
-        if(stage &gt; teamVestingStages) {
+        // Ensures team vesting stage doesn't go past teamVestingStages
+        if(stage > teamVestingStages) {
             stage = teamVestingStages;
         }
         return stage;
@@ -471,8 +471,8 @@ contract BCVTokenVault is Ownable {
 
         address reserveWallet = msg.sender;
 
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         // The vesting stage of life wallet
         uint256 vestingStage = lifeVestingStage();
@@ -481,10 +481,10 @@ contract BCVTokenVault is Ownable {
         uint256 totalUnlocked = vestingStage.mul(2.4 * (10 ** 7) * (10 ** 8));
 
         // Total unlocked token must be smaller or equal to total locked token
-        require(totalUnlocked &lt;= allocations[lifeReserveWallet]);
+        require(totalUnlocked <= allocations[lifeReserveWallet]);
 
         // Previously claimed tokens must be less than what is unlocked
-        require(claimed[lifeReserveWallet] &lt; totalUnlocked);
+        require(claimed[lifeReserveWallet] < totalUnlocked);
 
         // Number of tokens we can get
         uint256 payment = totalUnlocked.sub(claimed[lifeReserveWallet]);
@@ -505,8 +505,8 @@ contract BCVTokenVault is Ownable {
         // Number of months past our unlock time, which is the stage
         uint256 stage = (nowTime.sub(lifeReserveTimeLock)).div(2592000);
 
-        // Ensures life wallet vesting stage doesn&#39;t go past lifeVestingStages
-        if(stage &gt; lifeVestingStages) {
+        // Ensures life wallet vesting stage doesn't go past lifeVestingStages
+        if(stage > lifeVestingStages) {
             stage = lifeVestingStages;
         }
 
@@ -518,8 +518,8 @@ contract BCVTokenVault is Ownable {
 
         address reserveWallet = msg.sender;
 
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         // The vesting stage of finance wallet
         uint256 vestingStage = finanVestingStage();
@@ -528,10 +528,10 @@ contract BCVTokenVault is Ownable {
         uint256 totalUnlocked = vestingStage.mul(2.4 * (10 ** 7) * (10 ** 8));
 
         // Total unlocked token must be smaller or equal to total locked token
-        require(totalUnlocked &lt;= allocations[finanReserveWallet]);
+        require(totalUnlocked <= allocations[finanReserveWallet]);
 
         // Previously claimed tokens must be less than what is unlocked
-        require(claimed[finanReserveWallet] &lt; totalUnlocked);
+        require(claimed[finanReserveWallet] < totalUnlocked);
 
         // Number of tokens we can get
         uint256 payment = totalUnlocked.sub(claimed[finanReserveWallet]);
@@ -553,8 +553,8 @@ contract BCVTokenVault is Ownable {
         // Number of months past our unlock time, which is the stage
         uint256 stage = (nowTime.sub(finanReserveTimeLock)).div(2592000);
 
-        // Ensures finance wallet vesting stage doesn&#39;t go past finanVestingStages
-        if(stage &gt; finanVestingStages) {
+        // Ensures finance wallet vesting stage doesn't go past finanVestingStages
+        if(stage > finanVestingStages) {
             stage = finanVestingStages;
         }
 
@@ -567,8 +567,8 @@ contract BCVTokenVault is Ownable {
 
         address reserveWallet = msg.sender;
 
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         uint256 vestingStage = econVestingStage();
 
@@ -576,17 +576,17 @@ contract BCVTokenVault is Ownable {
         uint256 totalUnlocked;
 
         // For first 6 years stages
-        if (vestingStage &lt;= 72) {
+        if (vestingStage <= 72) {
           totalUnlocked = vestingStage.mul(1200000 * (10 ** 8));
         } else {        // For the next 14 years stages
           totalUnlocked = ((vestingStage.sub(72)).mul(200000 * (10 ** 8))).add(86400000 * (10 ** 8));
         }
 
         // Total unlocked token must be smaller or equal to total locked token
-        require(totalUnlocked &lt;= allocations[econReserveWallet]);
+        require(totalUnlocked <= allocations[econReserveWallet]);
 
         // Previously claimed tokens must be less than what is unlocked
-        require(claimed[econReserveWallet] &lt; totalUnlocked);
+        require(claimed[econReserveWallet] < totalUnlocked);
 
         // Number of tokens we can get
         uint256 payment = totalUnlocked.sub(claimed[econReserveWallet]);
@@ -608,8 +608,8 @@ contract BCVTokenVault is Ownable {
         // Number of months past our unlock time, which is the stage
         uint256 stage = (nowTime.sub(timeLocks[econReserveWallet])).div(2592000);
 
-        // Ensures economic wallet vesting stage doesn&#39;t go past econVestingStages
-        if(stage &gt; econVestingStages) {
+        // Ensures economic wallet vesting stage doesn't go past econVestingStages
+        if(stage > econVestingStages) {
             stage = econVestingStages;
         }
 
@@ -622,8 +622,8 @@ contract BCVTokenVault is Ownable {
 
       address reserveWallet = msg.sender;
 
-      // Can&#39;t claim before Lock ends
-      require(block.timestamp &gt; timeLocks[reserveWallet]);
+      // Can't claim before Lock ends
+      require(block.timestamp > timeLocks[reserveWallet]);
 
       // Must Only claim once
       require(claimed[reserveWallet] == 0);
@@ -644,7 +644,7 @@ contract BCVTokenVault is Ownable {
     // Checks if msg.sender can collect tokens
     function canCollect() public view onlyReserveWallets returns(bool) {
 
-        return block.timestamp &gt; timeLocks[msg.sender] &amp;&amp; claimed[msg.sender] == 0;
+        return block.timestamp > timeLocks[msg.sender] && claimed[msg.sender] == 0;
 
     }
 

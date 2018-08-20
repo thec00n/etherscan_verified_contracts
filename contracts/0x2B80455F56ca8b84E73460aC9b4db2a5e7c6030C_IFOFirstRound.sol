@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -147,16 +147,16 @@ contract IFOFirstRound is Ownable {
     uint bn = block.number;
 
     if (preStartBlock == 0) {
-      return &quot;Inactive&quot;;
+      return "Inactive";
     }
-    else if (bn &lt; preStartBlock) {
-      return &quot;PreDistInitiated&quot;;
+    else if (bn < preStartBlock) {
+      return "PreDistInitiated";
     }
-    else if (bn &lt;= preEndBlock) {
-      return &quot;PreDist&quot;;
+    else if (bn <= preEndBlock) {
+      return "PreDist";
     }
     else {
-      return &quot;InBetween&quot;;
+      return "InBetween";
     }
   }
 
@@ -182,7 +182,7 @@ contract IFOFirstRound is Ownable {
   }
 
   function _getTokens() internal {
-    require(currentState() == &quot;PreDist&quot; || currentState() == &quot;Dist&quot;);
+    require(currentState() == "PreDist" || currentState() == "Dist");
     require(msg.sender != address(0));
 
     uint balance = token.balanceOf(msg.sender);
@@ -192,11 +192,11 @@ contract IFOFirstRound is Ownable {
 
     uint limit = _toNanoNIL(maxPerWallet);
 
-    require(balance &lt; limit);
+    require(balance < limit);
 
     uint tokensToBeMinted = _toNanoNIL(getTokensAmount());
 
-    if (balance &gt; 0 &amp;&amp; balance + tokensToBeMinted &gt; limit) {
+    if (balance > 0 && balance + tokensToBeMinted > limit) {
       tokensToBeMinted = limit.sub(balance);
     }
 
@@ -205,16 +205,16 @@ contract IFOFirstRound is Ownable {
   }
 
   function getTokensAmount() public constant returns (uint) {
-    if (currentState() == &quot;PreDist&quot;) {
+    if (currentState() == "PreDist") {
       return baseAmount.mul(5);
     } else {
       return 0;
     }
   }
 
-  function startPreDistribution(uint _startBlock, uint _duration, address _project, address _founders, address _token) public onlyOwner onlyState(&quot;Inactive&quot;) {
-    require(_startBlock &gt; block.number);
-    require(_duration &gt; 0 &amp;&amp; _duration &lt; 30000);
+  function startPreDistribution(uint _startBlock, uint _duration, address _project, address _founders, address _token) public onlyOwner onlyState("Inactive") {
+    require(_startBlock > block.number);
+    require(_duration > 0 && _duration < 30000);
     require(msg.sender != address(0));
     require(_project != address(0));
     require(_founders != address(0));
@@ -230,7 +230,7 @@ contract IFOFirstRound is Ownable {
     preEndBlock = _startBlock + _duration;
   }
 
-  function reserveTokensProjectAndFounders() public onlyOwner onlyState(&quot;InBetween&quot;) {
+  function reserveTokensProjectAndFounders() public onlyOwner onlyState("InBetween") {
     require(!projectFoundersReserved);
 
     tokenSupply = 2 * token.totalSupply();
@@ -241,13 +241,13 @@ contract IFOFirstRound is Ownable {
     token.mint(founders, amount);
     projectFoundersReserved = true;
 
-    if (this.balance &gt; 0) {
+    if (this.balance > 0) {
       project.transfer(this.balance);
     }
   }
 
   function totalSupply() public constant returns (uint){
-    require(currentState() != &quot;Inactive&quot;);
+    require(currentState() != "Inactive");
     return _fromNanoNIL(token.totalSupply());
   }
 

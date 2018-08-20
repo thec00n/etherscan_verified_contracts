@@ -12,7 +12,7 @@ pragma solidity ^0.4.24;
 *                            (__ /          (_/ (, /                                      /)™ 
 *                                                 /  __  __ __ __  _   __ __  _  _/_ _  _(/
 * ┌─┐┬─┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐                          /__/ (_(__(_)/ (_/_)_(_)/ (_(_(_(__(/_(_(_
-* ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  &#169; Jekyll Island Inc. 2018
+* ├─┘├┬┘│ │ │││ ││   │                      (__ /              .-/  © Jekyll Island Inc. 2018
 * ┴  ┴└─└─┘─┴┘└─┘└─┘ ┴                                        (_/
 *    _  _   __   __ _  ____     ___   __   _  _  ____  ____  ____  ____  ____   __   ____ 
 *===/ )( \ (  ) (  ( \(_  _)===/ __) /  \ ( \/ )(  _ \(  _ \(  __)/ ___)/ ___) /  \ (  _ \===*
@@ -33,18 +33,18 @@ library UintCompressor {
         returns(uint256)
     {
         // check conditions 
-        require(_end &lt; 77 &amp;&amp; _start &lt; 77, &quot;start/end must be less than 77&quot;);
-        require(_end &gt;= _start, &quot;end must be &gt;= start&quot;);
+        require(_end < 77 && _start < 77, "start/end must be less than 77");
+        require(_end >= _start, "end must be >= start");
         
         // format our start/end points
         _end = exponent(_end).mul(10);
         _start = exponent(_start);
         
         // check that the include data fits into its segment 
-        require(_include &lt; (_end / _start));
+        require(_include < (_end / _start));
         
         // build middle
-        if (_include &gt; 0)
+        if (_include > 0)
             _include = _include.mul(_start);
         
         return((_var.sub((_var / _start).mul(_start))).add(_include).add((_var / _end).mul(_end)));
@@ -56,8 +56,8 @@ library UintCompressor {
 	    returns(uint256)
     {
         // check conditions
-        require(_end &lt; 77 &amp;&amp; _start &lt; 77, &quot;start/end must be less than 77&quot;);
-        require(_end &gt;= _start, &quot;end must be &gt;= start&quot;);
+        require(_end < 77 && _start < 77, "start/end must be less than 77");
+        require(_end >= _start, "end must be >= start");
         
         // format our start/end points
         _end = exponent(_end).mul(10);
@@ -102,7 +102,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -114,7 +114,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -127,7 +127,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -141,7 +141,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -174,7 +174,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

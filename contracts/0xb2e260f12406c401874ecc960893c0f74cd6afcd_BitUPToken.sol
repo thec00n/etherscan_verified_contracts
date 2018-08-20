@@ -17,9 +17,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,13 +92,13 @@ contract BitUPToken is ERC20, Ownable {
 
 /*----------------- Token Information -----------------*/
 
-    string public constant name = &quot;BitUP Token&quot;;
-    string public constant symbol = &quot;BUT&quot;;
+    string public constant name = "BitUP Token";
+    string public constant symbol = "BUT";
 
     uint8 public decimals = 18;                            // (ERC20 API) Decimal precision, factor is 1e18
     
-    mapping (address =&gt; uint256) balances;                 // User&#39;s balances table
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; // User&#39;s allowances table
+    mapping (address => uint256) balances;                 // User's balances table
+    mapping (address => mapping (address => uint256)) allowed; // User's allowances table
 
 /*----------------- Alloc Information -----------------*/
 
@@ -116,10 +116,10 @@ contract BitUPToken is ERC20, Ownable {
     uint256 public teamSupply18Months;                          //Amount of Team supply could be released after 18 months
     uint256 public teamSupply24Months;                          //Amount of Team supply could be released after 24 months
 
-    uint256 public TeamLockingPeriod6Months;                  // Locking period for team&#39;s supply, release 1/4 per 6 months
-    uint256 public TeamLockingPeriod12Months;                  // Locking period for team&#39;s supply, release 1/4 per 6 months
-    uint256 public TeamLockingPeriod18Months;                  // Locking period for team&#39;s supply, release 1/4 per 6 months
-    uint256 public TeamLockingPeriod24Months;                  // Locking period for team&#39;s supply, release 1/4 per 6 months
+    uint256 public TeamLockingPeriod6Months;                  // Locking period for team's supply, release 1/4 per 6 months
+    uint256 public TeamLockingPeriod12Months;                  // Locking period for team's supply, release 1/4 per 6 months
+    uint256 public TeamLockingPeriod18Months;                  // Locking period for team's supply, release 1/4 per 6 months
+    uint256 public TeamLockingPeriod24Months;                  // Locking period for team's supply, release 1/4 per 6 months
     
     address public presaleAddress;                       // Presale address
     address public angelAddress;                        // Angel address
@@ -142,32 +142,32 @@ contract BitUPToken is ERC20, Ownable {
     }
 
     modifier nonZeroAmount(uint _amount) {                 // Ensures a non-zero amount
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
     modifier nonZeroValue() {                              // Ensures a non-zero value is passed
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
     modifier checkTeamLockingPeriod6Months() {                 // Ensures locking period is over
-        assert(now &gt;= TeamLockingPeriod6Months);
+        assert(now >= TeamLockingPeriod6Months);
         _;
     }
     
     modifier checkTeamLockingPeriod12Months() {                 // Ensures locking period is over
-        assert(now &gt;= TeamLockingPeriod12Months);
+        assert(now >= TeamLockingPeriod12Months);
         _;
     }
     
     modifier checkTeamLockingPeriod18Months() {                 // Ensures locking period is over
-        assert(now &gt;= TeamLockingPeriod18Months);
+        assert(now >= TeamLockingPeriod18Months);
         _;
     }
     
     modifier checkTeamLockingPeriod24Months() {                 // Ensures locking period is over
-        assert(now &gt;= TeamLockingPeriod24Months);
+        assert(now >= TeamLockingPeriod24Months);
         _;
     }
     
@@ -185,9 +185,9 @@ contract BitUPToken is ERC20, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         // balances[burner] = balances[burner].sub(_value);
@@ -209,7 +209,7 @@ contract BitUPToken is ERC20, Ownable {
     // Transfers amount to address
     // -------------------------------------------------
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        require(balanceOf(msg.sender) &gt;= _amount);
+        require(balanceOf(msg.sender) >= _amount);
         uint previousBalances = balances[msg.sender] + balances[_to];
         addToBalance(_to, _amount);
         decrementBalance(msg.sender, _amount);
@@ -222,8 +222,8 @@ contract BitUPToken is ERC20, Ownable {
     // Transfers from one address to another (need allowance to be called first)
     // -------------------------------------------------
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-        require(balanceOf(_from) &gt;= _amount);
-        require(allowance(_from, msg.sender) &gt;= _amount);
+        require(balanceOf(_from) >= _amount);
+        require(allowance(_from, msg.sender) >= _amount);
         uint previousBalances = balances[_from] + balances[_to];
         decrementBalance(_from, _amount);
         addToBalance(_to, _amount);
@@ -244,7 +244,7 @@ contract BitUPToken is ERC20, Ownable {
     }
 
     // -------------------------------------------------
-    // Gets an address&#39;s FUEL allowance
+    // Gets an address's FUEL allowance
     // -------------------------------------------------
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
@@ -258,7 +258,7 @@ contract BitUPToken is ERC20, Ownable {
     }
 
     // -------------------------------------------------
-    // Contract&#39;s constructor
+    // Contract's constructor
     // -------------------------------------------------
     function BitUPToken() {
         totalSupply  =    1000000000 * 1e18;               // 100% - 1 billion total BUT with 18 decimals
@@ -304,7 +304,7 @@ contract BitUPToken is ERC20, Ownable {
     // Releases 1/4 of team supply after 6 months
     // -------------------------------------------------
     function releaseTeamTokensAfter6Months() checkTeamLockingPeriod6Months onlyTeam returns(bool success) {
-        require(teamSupply6Months &gt; 0);
+        require(teamSupply6Months > 0);
         addToBalance(teamAddress, teamSupply6Months);
         Transfer(0x0, teamAddress, teamSupply6Months);
         teamSupply6Months = 0;
@@ -316,7 +316,7 @@ contract BitUPToken is ERC20, Ownable {
     // Releases 1/4 of team supply after 12 months
     // -------------------------------------------------
     function releaseTeamTokensAfter12Months() checkTeamLockingPeriod12Months onlyTeam returns(bool success) {
-        require(teamSupply12Months &gt; 0);
+        require(teamSupply12Months > 0);
         addToBalance(teamAddress, teamSupply12Months);
         Transfer(0x0, teamAddress, teamSupply12Months);
         teamSupply12Months = 0;
@@ -328,7 +328,7 @@ contract BitUPToken is ERC20, Ownable {
     // Releases 1/4 of team supply after 18 months
     // -------------------------------------------------
     function releaseTeamTokensAfter18Months() checkTeamLockingPeriod18Months onlyTeam returns(bool success) {
-        require(teamSupply18Months &gt; 0);
+        require(teamSupply18Months > 0);
         addToBalance(teamAddress, teamSupply18Months);
         Transfer(0x0, teamAddress, teamSupply18Months);
         teamSupply18Months = 0;
@@ -340,7 +340,7 @@ contract BitUPToken is ERC20, Ownable {
     // Releases 1/4 of team supply after 24 months
     // -------------------------------------------------
     function releaseTeamTokensAfter24Months() checkTeamLockingPeriod24Months onlyTeam returns(bool success) {
-        require(teamSupply24Months &gt; 0);
+        require(teamSupply24Months > 0);
         addToBalance(teamAddress, teamSupply24Months);
         Transfer(0x0, teamAddress, teamSupply24Months);
         teamSupply24Months = 0;

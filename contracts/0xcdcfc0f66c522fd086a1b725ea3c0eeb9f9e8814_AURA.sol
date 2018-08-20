@@ -9,12 +9,12 @@ contract SafeMath {
     return c;
   }
   function safeSub(uint256 a, uint256 b) returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
   function safeAdd(uint256 a, uint256 b) returns (uint256) {
     uint c = a + b;
-    require(c &gt;= a &amp;&amp; c &gt;= b);
+    require(c >= a && c >= b);
     return c;
   }
 }
@@ -36,12 +36,12 @@ contract Owned {
 
 contract AURA is SafeMath, Owned {
     bool public locked = true;
-    string public name = &quot;Aurora DAO&quot;;
-    string public symbol = &quot;AURA&quot;;
+    string public name = "Aurora DAO";
+    string public symbol = "AURA";
     uint8 public decimals = 18;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -61,8 +61,8 @@ contract AURA is SafeMath, Owned {
     function _transfer(address _from, address _to, uint _value) internal {
         require(!locked || msg.sender == owner);
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -93,7 +93,7 @@ contract AURA is SafeMath, Owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -141,7 +141,7 @@ contract AURA is SafeMath, Owned {
     function uploadBalances(address[] recipients, uint256[] balances) onlyOwner {
       require(!balancesUploaded);
       uint256 sum = 0;
-      for (uint256 i = 0; i &lt; recipients.length; i++) {
+      for (uint256 i = 0; i < recipients.length; i++) {
         balanceOf[recipients[i]] = safeAdd(balanceOf[recipients[i]], balances[i]);
         sum = safeAdd(sum, balances[i]);
       }

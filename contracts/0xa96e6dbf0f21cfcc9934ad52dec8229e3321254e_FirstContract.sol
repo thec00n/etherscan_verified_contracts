@@ -20,7 +20,7 @@ contract FirstContract {
 
   //You can claim current balance if you put the same amount (or more) back in
   function claimBonus() payable {
-    if ((msg.value &gt;= this.balance) &amp;&amp; (frozen == false)) {
+    if ((msg.value >= this.balance) && (frozen == false)) {
       msg.sender.transfer(this.balance);
     }
   }

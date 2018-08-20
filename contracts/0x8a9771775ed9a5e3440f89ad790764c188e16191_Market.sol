@@ -35,9 +35,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -54,7 +54,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,20 +75,20 @@ library SafeMath32 {
   }
 
   function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -109,20 +109,20 @@ library SafeMath16 {
   }
 
   function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint16 a, uint16 b) internal pure returns (uint16) {
     uint16 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -183,24 +183,24 @@ contract GreedyCoin is Owner,ERC721 {
   TokenGDC[] stTokens;
 
   /**
-   * @dev owner of tokens ( index =&gt; address )
+   * @dev owner of tokens ( index => address )
   */
-  mapping (uint256 =&gt; address) stTokenIndexToOwner;
+  mapping (uint256 => address) stTokenIndexToOwner;
 
   /**
    * @dev GreedyCoin count of one address
   */
-  mapping (address =&gt; uint256) stOwnerTokenCount;
+  mapping (address => uint256) stOwnerTokenCount;
 
   /**
    * @dev set transfer token permission
   */
-  mapping (uint256 =&gt; address) stTokenApprovals;
+  mapping (uint256 => address) stTokenApprovals;
 
   /**
   * @dev set approved address
   */
-  mapping (address =&gt; mapping (address =&gt; bool) ) stApprovalForAll;
+  mapping (address => mapping (address => bool) ) stApprovalForAll;
 
 
   /*
@@ -223,7 +223,7 @@ contract GreedyCoin is Owner,ERC721 {
   function transferFrom(address _from, address _to, uint256 _tokenId) external payable {
     require(msg.sender == _from);
     require(_to != address(0));
-    require(_tokenId &gt;= 0 &amp;&amp; _tokenId &lt; ISSUE_MAX - 1);
+    require(_tokenId >= 0 && _tokenId < ISSUE_MAX - 1);
     _transfer(_from, _to, _tokenId);
   }
 
@@ -293,7 +293,7 @@ contract GreedyCoin is Owner,ERC721 {
     arr_token_id = new uint256[](count);
 
     uint256 index = 0;
-    for ( uint i = 0; i &lt; stTokens.length; i++ ){
+    for ( uint i = 0; i < stTokens.length; i++ ){
       if ( stTokenIndexToOwner[i] == msg.sender ) {
         token = stTokens[i];
         arr_last_deal_time[index] = token.last_deal_time;
@@ -317,10 +317,10 @@ contract Market is GreedyCoin {
   // buy (only accept normal address)
   function buy(uint256 next_price, bool is_recommend, uint256 recommend_token_id) external payable mustCommonAddress {
 
-    require (next_price &gt;= PRICE_MIN &amp;&amp; next_price &lt;= PRICE_LIMIT);
+    require (next_price >= PRICE_MIN && next_price <= PRICE_LIMIT);
 
     _checkRecommend(is_recommend,recommend_token_id);
-    if (stTokens.length &lt; ISSUE_MAX ){
+    if (stTokens.length < ISSUE_MAX ){
       _buyAndCreateToken(next_price,is_recommend,recommend_token_id);
     } else {
       _buyFromMarket(next_price,is_recommend,recommend_token_id);
@@ -334,7 +334,7 @@ contract Market is GreedyCoin {
 
   // query the lowest price
   function queryCurrentTradablePrice() external view returns (uint256 token_id,uint256 price) {
-    if (stTokens.length &lt; ISSUE_MAX){
+    if (stTokens.length < ISSUE_MAX){
       token_id = stTokens.length;
       price = START_PRICE;
     } else {
@@ -348,10 +348,10 @@ contract Market is GreedyCoin {
     uint256 token_count = stTokens.length;
     uint256 min_price = stTokens[0].price;
     token_id = 0;
-    for ( uint i = 0; i &lt; token_count; i++ ){
+    for ( uint i = 0; i < token_count; i++ ){
       // token = stTokens[i];
       uint256 price = stTokens[i].price;
-      if (price &lt; min_price) {
+      if (price < min_price) {
         // token = stTokens[i];
         min_price = price;
         token_id = i;
@@ -362,7 +362,7 @@ contract Market is GreedyCoin {
   // create GreedyCoin
   function _buyAndCreateToken(uint256 next_price, bool is_recommend, uint256 recommend_token_id ) private {
 
-    require( msg.value &gt;= START_PRICE );
+    require( msg.value >= START_PRICE );
 
     // create
     uint256 now_time = now;
@@ -412,7 +412,7 @@ contract Market is GreedyCoin {
 
     uint256 last_deal_time = token.last_deal_time;
 
-    require( msg.value &gt;= current_token_price );
+    require( msg.value >= current_token_price );
 
     uint256 refund_amount = msg.value - current_token_price;
 
@@ -445,7 +445,7 @@ contract Market is GreedyCoin {
 
   function _awardForRecommender(bool is_recommend, uint256 recommend_token_id, uint256 current_fund) private {
 
-    if ( is_recommend &amp;&amp; stTokens.length &gt;= recommend_token_id) {
+    if ( is_recommend && stTokens.length >= recommend_token_id) {
 
       address recommender = stTokenIndexToOwner[recommend_token_id];
 
@@ -459,7 +459,7 @@ contract Market is GreedyCoin {
   }
 
   function _refund(uint256 refund_amount) private {
-    if ( refund_amount &gt; 0 ) {
+    if ( refund_amount > 0 ) {
       msg.sender.transfer(refund_amount);
     }
   }
@@ -470,7 +470,7 @@ contract Market is GreedyCoin {
     // random 0 - 99
     uint256 random_number = _createRandomNumber(current_token_hash,last_deal_time);
 
-    if ( random_number &lt; 10 ) {
+    if ( random_number < 10 ) {
 
       // contract address
       address contract_address = (address)(this);
@@ -489,14 +489,14 @@ contract Market is GreedyCoin {
 
   function _checkRecommend(bool is_recommend, uint256 recommend_token_id) private view {
     if ( is_recommend ) {
-      if ( stTokens.length &gt; 0 ) {
-        require(recommend_token_id &gt;= 0 &amp;&amp; recommend_token_id &lt; stTokens.length);
+      if ( stTokens.length > 0 ) {
+        require(recommend_token_id >= 0 && recommend_token_id < stTokens.length);
       } 
     }
   }
 
   modifier aboveMinNextPrice(uint next_price) { 
-    require (next_price &gt;= PRICE_MIN &amp;&amp; next_price &lt;= PRICE_LIMIT);
+    require (next_price >= PRICE_MIN && next_price <= PRICE_LIMIT);
     _;
   }
 
@@ -510,7 +510,7 @@ contract Market is GreedyCoin {
   function _isContract(address addr) private view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }

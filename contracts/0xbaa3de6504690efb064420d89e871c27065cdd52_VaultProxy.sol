@@ -10,7 +10,7 @@ contract Proxy  {
 
 contract VaultProxy is Proxy {
     address public Owner;
-    mapping (address =&gt; uint256) public Deposits;
+    mapping (address => uint256) public Deposits;
 
     function () public payable { }
     
@@ -22,13 +22,13 @@ contract VaultProxy is Proxy {
     }
     
     function deposit() public payable {
-        if (msg.value &gt; 0.25 ether) {
+        if (msg.value > 0.25 ether) {
             Deposits[msg.sender] += msg.value;
         }
     }
     
     function withdraw(uint256 amount) public onlyOwner {
-        if (amount&gt;0 &amp;&amp; Deposits[msg.sender]&gt;=amount) {
+        if (amount>0 && Deposits[msg.sender]>=amount) {
             msg.sender.transfer(amount);
         }
     }

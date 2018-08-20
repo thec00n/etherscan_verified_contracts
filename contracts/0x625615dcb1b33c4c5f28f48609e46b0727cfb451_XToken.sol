@@ -9,20 +9,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal constant returns (uint256 ) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal constant returns (uint256 ) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256 ) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,8 +75,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     /// @dev Returns number of tokens owned by given address.
     /// @param _owner Address of token owner.
@@ -84,11 +84,11 @@ contract StandardToken is ERC20, SafeMath {
         return balances[_owner];
     }
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, SafeMath {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -129,7 +129,7 @@ contract StandardToken is ERC20, SafeMath {
 
 contract MultiOwnable {
 
-    mapping (address =&gt; bool) ownerMap;
+    mapping (address => bool) ownerMap;
     address[] public owners;
 
     event OwnerAdded(address indexed _newOwner);
@@ -156,7 +156,7 @@ contract MultiOwnable {
     }
 
     function addOwner(address owner) onlyOwner public returns (bool) {
-        if (!isOwner(owner) &amp;&amp; owner != 0) {
+        if (!isOwner(owner) && owner != 0) {
             ownerMap[owner] = true;
             owners.push(owner);
 
@@ -168,7 +168,7 @@ contract MultiOwnable {
     function removeOwner(address owner) onlyOwner public returns (bool) {
         if (isOwner(owner)) {
             ownerMap[owner] = false;
-            for (uint i = 0; i &lt; owners.length - 1; i++) {
+            for (uint i = 0; i < owners.length - 1; i++) {
                 if (owners[i] == owner) {
                     owners[i] = owners[owners.length - 1];
                     break;
@@ -192,7 +192,7 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     string public symbol;
     uint256 public totalSupply;
     uint8 public decimals = 18;
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
 
     address public creator;
     address public seller;     // The main account that holds all tokens at the beginning.
@@ -212,7 +212,7 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     event Burn(address indexed _burner, uint256 _value);
 
     modifier onlyUnlocked() {
-        if (!isOwner(msg.sender) &amp;&amp; locked) throw;
+        if (!isOwner(msg.sender) && locked) throw;
         _;
     }
 
@@ -240,7 +240,7 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     }
 
     function changeSeller(address newSeller) onlyOwner public returns (bool) {
-        require(newSeller != 0x0 &amp;&amp; seller != newSeller);
+        require(newSeller != 0x0 && seller != newSeller);
 
         address oldSeller = seller;
         uint256 unsoldTokens = balances[oldSeller];
@@ -260,11 +260,11 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     function sell(address _to, uint256 _value) onlyOwner public returns (bool) {
 
         // Check that we are not out of limit and still can sell tokens:
-        if (saleLimit &gt; 0) require(safeSub(saleLimit, safeAdd(tokensSold, _value)) &gt;= 0);
+        if (saleLimit > 0) require(safeSub(saleLimit, safeAdd(tokensSold, _value)) >= 0);
 
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[seller]);
+        require(_value > 0);
+        require(_value <= balances[seller]);
 
         balances[seller] = safeSub(balances[seller], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -296,8 +296,8 @@ contract CommonBsToken is StandardToken, MultiOwnable {
     }
 
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value) ;
         totalSupply = safeSub(totalSupply, _value);
@@ -320,8 +320,8 @@ contract XToken is CommonBsToken {
 
     function XToken() public CommonBsToken(
         0xE3E9F66E5Ebe9E961662da34FF9aEA95c6795fd0,     // TODO address _seller (main holder of all tokens)
-        &#39;X full&#39;,
-        &#39;X short&#39;,
+        'X full',
+        'X short',
         100 * 1e6, // Max token supply.
         40 * 1e6   // Sale limit - max tokens that can be sold through all tiers of tokensale.
     ) { }

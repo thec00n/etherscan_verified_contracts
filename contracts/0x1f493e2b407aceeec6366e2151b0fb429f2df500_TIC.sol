@@ -43,8 +43,8 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value) returns (bool success) {
         //默认token发行量不能超过(2^256 - 1)
         //如果你不设置发行量，并且随着时间的发型更多的token，需要确保没有超过最大值，使用下面的 if 语句
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -54,8 +54,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //向上面的方法一样，如果你想确保发行量不超过最大值
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -78,8 +78,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 contract TIC is StandardToken { 
@@ -87,7 +87,7 @@ contract TIC is StandardToken {
     string public name;                  
     uint8 public decimals;              
     string public symbol;                 
-    string public version = &#39;1.0&#39;; 
+    string public version = '1.0'; 
     uint256 public Rate;     
     uint256 public totalEthInWei;      
     address public fundsWallet;         
@@ -103,9 +103,9 @@ contract TIC is StandardToken {
         balances[msg.sender] = 5091000000000000000000000000;             
         balances[CandyBox] = 9000000000000000000000000;  
         balances[TeamBox] = 900000000000000000000000000;
-        name = &quot;TIC&quot;;                                        
+        name = "TIC";                                        
         decimals = 18;                                  
-        symbol = &quot;TIC&quot;;                                            
+        symbol = "TIC";                                            
         Rate = 50000;                                      
         fundsWallet = msg.sender;                                   
     }
@@ -126,7 +126,7 @@ contract TIC is StandardToken {
   
         uint256 amount = msg.value * Rate;
 
-        require(balances[fundsWallet] &gt;= amount);
+        require(balances[fundsWallet] >= amount);
 
 
         balances[fundsWallet] = balances[fundsWallet] - amount;
@@ -144,7 +144,7 @@ contract TIC is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

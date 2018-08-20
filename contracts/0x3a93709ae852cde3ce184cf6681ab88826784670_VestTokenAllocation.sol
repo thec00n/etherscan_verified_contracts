@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -143,7 +143,7 @@ library SafeERC20 {
 
 /**
  * @title VestTokenAllocation contract
- * @author Gustavo Guimaraes - &lt;<span class="__cf_email__" data-cfemail="80e7f5f3f4e1f6efe7f5e9ede1f2e1e5f3c0e7ede1e9ecaee3efed">[email&#160;protected]</span>&gt;
+ * @author Gustavo Guimaraes - <<span class="__cf_email__" data-cfemail="80e7f5f3f4e1f6efe7f5e9ede1f2e1e5f3c0e7ede1e9ecaee3efed">[email protected]</span>>
  */
 contract VestTokenAllocation is Ownable {
     using SafeMath for uint256;
@@ -155,8 +155,8 @@ contract VestTokenAllocation is Ownable {
     uint256 public allocatedTokens;
     uint256 public canSelfDestruct;
 
-    mapping (address =&gt; uint256) public totalTokensLocked;
-    mapping (address =&gt; uint256) public releasedTokens;
+    mapping (address => uint256) public totalTokensLocked;
+    mapping (address => uint256) public releasedTokens;
 
     ERC20 public golix;
     address public tokenDistribution;
@@ -184,10 +184,10 @@ contract VestTokenAllocation is Ownable {
         )
         public
     {
-        require(_token != address(0) &amp;&amp; _cliff != 0);
-        require(_cliff &lt;= _duration);
-        require(_start &gt; now);
-        require(_canSelfDestruct &gt; _duration.add(_start));
+        require(_token != address(0) && _cliff != 0);
+        require(_cliff <= _duration);
+        require(_start > now);
+        require(_canSelfDestruct > _duration.add(_start));
 
         duration = _duration;
         cliff = _start.add(_cliff);
@@ -211,10 +211,10 @@ contract VestTokenAllocation is Ownable {
         external
         onlyOwnerOrTokenDistributionContract
     {
-        require(totalTokensLocked[beneficiary] == 0 &amp;&amp; beneficiary != address(0)); // can only add once.
+        require(totalTokensLocked[beneficiary] == 0 && beneficiary != address(0)); // can only add once.
 
         allocatedTokens = allocatedTokens.add(allocationValue);
-        require(allocatedTokens &lt;= golix.balanceOf(this));
+        require(allocatedTokens <= golix.balanceOf(this));
 
         totalTokensLocked[beneficiary] = allocationValue;
     }
@@ -225,7 +225,7 @@ contract VestTokenAllocation is Ownable {
     function release() public {
         uint256 unreleased = releasableAmount();
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         releasedTokens[msg.sender] = releasedTokens[msg.sender].add(unreleased);
 
@@ -235,7 +235,7 @@ contract VestTokenAllocation is Ownable {
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      */
     function releasableAmount() public view returns (uint256) {
         return vestedAmount().sub(releasedTokens[msg.sender]);
@@ -247,9 +247,9 @@ contract VestTokenAllocation is Ownable {
     function vestedAmount() public view returns (uint256) {
         uint256 totalBalance = totalTokensLocked[msg.sender];
 
-        if (now &lt; cliff) {
+        if (now < cliff) {
             return 0;
-        } else if (now &gt;= start.add(duration)) {
+        } else if (now >= start.add(duration)) {
             return totalBalance;
         } else {
             return totalBalance.mul(now.sub(start)).div(duration);
@@ -260,10 +260,10 @@ contract VestTokenAllocation is Ownable {
      * @dev allow for selfdestruct possibility and sending funds to owner
      */
     function kill() public onlyOwner {
-        require(now &gt;= canSelfDestruct);
+        require(now >= canSelfDestruct);
         uint256 balance = golix.balanceOf(this);
 
-        if (balance &gt; 0) {
+        if (balance > 0) {
             golix.transfer(msg.sender, balance);
         }
 

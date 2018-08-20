@@ -39,7 +39,7 @@ contract Ownable {
 
 contract ReturnVestingRegistry is Ownable {
 
-  mapping (address =&gt; address) public returnAddress;
+  mapping (address => address) public returnAddress;
 
   function record(address from, address to) onlyOwner public {
     require(from != 0);

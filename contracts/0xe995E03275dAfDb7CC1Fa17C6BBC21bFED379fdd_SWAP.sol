@@ -11,8 +11,8 @@ contract TokenInterface{
 
 contract SWAP{
     
-    string public name=&quot;SWAP&quot;;
-    string public symbol=&quot;SWAP&quot;;
+    string public name="SWAP";
+    string public symbol="SWAP";
     
     uint256 public totalSupply; 
     uint256 public price = 50;
@@ -21,16 +21,16 @@ contract SWAP{
     address MyETHWallet;
     function SWAP() public {  
         MyETHWallet = msg.sender;
-        name=&quot;SWAP&quot;;
-        symbol=&quot;SWAP&quot;;
+        name="SWAP";
+        symbol="SWAP";
     }
 
     modifier onlyValidAddress(address _to){
         require(_to != address(0x00));
         _;
     }
-    mapping (address =&gt; uint256) balances; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance; //phu cap
+    mapping (address => uint256) balances; 
+    mapping (address => mapping (address => uint256)) public allowance; //phu cap
 
     function setPrice(uint256 _price) public returns (uint256){
         price = _price;
@@ -46,14 +46,14 @@ contract SWAP{
         return balances[_owner];
     }
     
-    //tạo ra một sự kiện c&#244;ng khai tr&#234;n blockchain sẽ th&#244;ng b&#225;o cho kh&#225;ch h&#224;ng
+    //tạo ra một sự kiện công khai trên blockchain sẽ thông báo cho khách hàng
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Withdraw(address to, uint amount); //rut tien
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
         
         uint previousBalances = balances[_from] + balances[_to];
         
@@ -69,7 +69,7 @@ contract SWAP{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);  
+        require(_value <= allowance[_from][msg.sender]);  
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -73,13 +73,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -129,8 +129,8 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-  mapping (address =&gt; uint256) public freezeOf;
+  mapping (address => mapping (address => uint)) allowed;
+  mapping (address => uint256) public freezeOf;
   /* This notifies clients about the amount burnt */
   event Burn(address indexed from, uint256 value);
 
@@ -148,7 +148,7 @@ contract StandardToken is BasicToken, ERC20 {
    */
   function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) {
     var _allowance = allowed[_from][msg.sender];
-    if (_value &gt; _allowance) throw;
+    if (_value > _allowance) throw;
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -166,7 +166,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -182,8 +182,8 @@ contract StandardToken is BasicToken, ERC20 {
     return allowed[_owner][_spender];
   }
   function burn(uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw;
+    if (balances[msg.sender] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw;
         balances[msg.sender] = balances[msg.sender].sub(_value);                      // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -191,8 +191,8 @@ contract StandardToken is BasicToken, ERC20 {
     }
 
 	function freeze(uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw;
+    if (balances[msg.sender] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw;
         balances[msg.sender] = balances[msg.sender].sub(_value);                      // Subtract from the sender
         freezeOf[msg.sender] = freezeOf[msg.sender].add(_value);                                // Updates totalSupply
         Freeze(msg.sender, _value);
@@ -200,8 +200,8 @@ contract StandardToken is BasicToken, ERC20 {
     }
 
 	function unfreeze(uint256 _value) returns (bool success) {
-    if (freezeOf[msg.sender] &lt; _value) throw;            // Check if the sender has enough
-		if (_value &lt;= 0) throw;
+    if (freezeOf[msg.sender] < _value) throw;            // Check if the sender has enough
+		if (_value <= 0) throw;
         freezeOf[msg.sender] = freezeOf[msg.sender].sub(_value);                      // Subtract from the sender
         balances[msg.sender] = balances[msg.sender].add(_value);
         Unfreeze(msg.sender, _value);
@@ -214,7 +214,7 @@ contract StandardToken is BasicToken, ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -308,16 +308,16 @@ contract ETHONOM is StandardToken, MintableToken {
   string public name;
    uint8 public decimals;
    string public symbol;
-   string public version = &#39;H1.0&#39;;
+   string public version = 'H1.0';
 
    // This is a constructor function
    // which means the following function name has to match the contract name declared above
    function ETHONOM() {
        balances[msg.sender] = 50000000000000000000000000;
        totalSupply = 50000000000000000000000000;
-       name = &quot;ETHONOM&quot;;
+       name = "ETHONOM";
        decimals = 18;
-       symbol = &quot;ETHO&quot;;
+       symbol = "ETHO";
    }
    function() payable{
    }

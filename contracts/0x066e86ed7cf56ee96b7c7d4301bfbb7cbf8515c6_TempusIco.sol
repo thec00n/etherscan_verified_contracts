@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -54,20 +54,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -110,7 +110,7 @@ contract TempusIco is Ownable {
 
     TempusToken token;
 
-    mapping(address =&gt; bool) public sellers;
+    mapping(address => bool) public sellers;
 
     modifier onlySellers() {
         require(sellers[msg.sender]);
@@ -125,16 +125,16 @@ contract TempusIco is Ownable {
     }
 
     function periodByDate() public view returns (uint periodNum) {
-        if(now &lt; period0End) {
+        if(now < period0End) {
             return 0;
         }
-        if(now &lt; period1End) {
+        if(now < period1End) {
             return 1;
         }
-        if(now &lt; period2End) {
+        if(now < period2End) {
             return 2;
         }
-        if(now &lt; period3End) {
+        if(now < period3End) {
             return 3;
         }
         return 4;
@@ -161,9 +161,9 @@ contract TempusIco is Ownable {
     * @dev Function that indicates whether pre ico is active or not
     */
     function isActive() public view returns (bool active) {
-        bool withinPeriod = now &gt;= startTime;
-        bool capIsNotMet = tokensSold &lt; hardCap;
-        return capIsNotMet &amp;&amp; withinPeriod &amp;&amp; !paused;
+        bool withinPeriod = now >= startTime;
+        bool capIsNotMet = tokensSold < hardCap;
+        return capIsNotMet && withinPeriod && !paused;
     }
 
     function() external payable {
@@ -177,7 +177,7 @@ contract TempusIco is Ownable {
     function buyFor(address beneficiary) public payable {
         require(msg.value != 0);
         uint amount = msg.value;
-        require(amount &gt;= 0.1 ether);
+        require(amount >= 0.1 ether);
         uint price = priceByPeriod();
         uint tokenAmount = amount.div(price);
         makePurchase(beneficiary, tokenAmount);
@@ -197,10 +197,10 @@ contract TempusIco is Ownable {
         require(beneficiary != 0x0);
         require(isActive());
         uint minimumTokens = 1000;
-        if(tokensSold &lt; hardCap.sub(minimumTokens)) {
-            require(amount &gt;= minimumTokens);
+        if(tokensSold < hardCap.sub(minimumTokens)) {
+            require(amount >= minimumTokens);
         }
-        require(amount.add(tokensSold) &lt;= hardCap);
+        require(amount.add(tokensSold) <= hardCap);
         tokensSold = tokensSold.add(amount);
         token.mint(beneficiary, amount);
         updatePeriodStat(amount);
@@ -214,7 +214,7 @@ contract TempusIco is Ownable {
         }
         uint amountOnStart = hardCap - tokensSold + tokensSoldInPeriod[periodNum];
         uint percentSold = (tokensSoldInPeriod[periodNum] * 100) / amountOnStart;
-        if(percentSold &gt;= 20) {
+        if(percentSold >= 20) {
             resetPeriodDates(periodNum);
         }
     }

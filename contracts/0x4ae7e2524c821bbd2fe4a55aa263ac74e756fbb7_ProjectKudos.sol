@@ -24,7 +24,7 @@ contract ProjectKudos {
 
     // keeps project votes data
     struct ProjectInfo {
-        mapping(address =&gt; uint) kudosByUser;
+        mapping(address => uint) kudosByUser;
         uint kudosTotal;
     }
 
@@ -33,15 +33,15 @@ contract ProjectKudos {
         uint kudosLimit;
         uint kudosGiven;
         bool isJudge;
-        mapping(uint =&gt; bool) grant;
+        mapping(uint => bool) grant;
     }
 
-    // keeps links between user&#39;s votes
+    // keeps links between user's votes
     // and projects he voted for
     struct UserIndex {
         bytes32[] projects;
         uint[] kudos;
-        mapping(bytes32 =&gt; uint) kudosIdx;
+        mapping(bytes32 => uint) kudosIdx;
     }
 
     // keeps time frames for vote period
@@ -50,21 +50,21 @@ contract ProjectKudos {
         uint end;
     }
 
-    // contract creator&#39;s address
+    // contract creator's address
     address owner;
 
     // vote period
     VotePeriod votePeriod;
 
     // user votes mapping
-    mapping(address =&gt; UserInfo) users;
+    mapping(address => UserInfo) users;
 
     // user index,
     // helps to get votes given by one user for every project
-    mapping(address =&gt; UserIndex) usersIndex;
+    mapping(address => UserIndex) usersIndex;
 
     // project votes mapping
-    mapping(bytes32 =&gt; ProjectInfo) projects;
+    mapping(bytes32 => ProjectInfo) projects;
 
     // emitted when vote is done
     event Vote(
@@ -77,8 +77,8 @@ contract ProjectKudos {
     );
 
     /**
-     * @dev Contract&#39;s constructor.
-     * Stores contract&#39;s owner and sets up vote period
+     * @dev Contract's constructor.
+     * Stores contract's owner and sets up vote period
      */
     function ProjectKudos() {
 
@@ -92,7 +92,7 @@ contract ProjectKudos {
 
     /**
      * @dev Registers voter to the event.
-     * Executable only by contract&#39;s owner.
+     * Executable only by contract's owner.
      *
      * @param userAddress address of the user to register
      * @param isJudge should be true if user is judge, false otherwise
@@ -101,7 +101,7 @@ contract ProjectKudos {
 
         UserInfo user = users[userAddress];
 
-        if (user.kudosLimit &gt; 0) throw;
+        if (user.kudosLimit > 0) throw;
 
         if (isJudge)
             user.kudosLimit = KUDOS_LIMIT_JUDGE;
@@ -124,12 +124,12 @@ contract ProjectKudos {
     function giveKudos(bytes32 projectCode, uint kudos) {
 
         // throw if called not during the vote period
-        if (now &lt; votePeriod.start) throw;
-        if (now &gt;= votePeriod.end) throw;        
+        if (now < votePeriod.start) throw;
+        if (now >= votePeriod.end) throw;        
         
         UserInfo giver = users[msg.sender];
 
-        if (giver.kudosGiven + kudos &gt; giver.kudosLimit) throw;
+        if (giver.kudosGiven + kudos > giver.kudosLimit) throw;
 
         ProjectInfo project = projects[projectCode];
 
@@ -157,7 +157,7 @@ contract ProjectKudos {
 
         if (user.kudosLimit == 0) throw; //probably user does not exist then
 
-        if (reason != GRANT_REASON_FACEBOOK &amp;&amp;        // Facebook
+        if (reason != GRANT_REASON_FACEBOOK &&        // Facebook
             reason != GRANT_REASON_TWITTER) throw;    // Twitter
 
         // if user is judge his identity is known
@@ -182,7 +182,7 @@ contract ProjectKudos {
     /**
      * @dev Returns total votes given to the project
      *
-     * @param projectCode project&#39;s code
+     * @param projectCode project's code
      *
      * @return number of give votes
      */
@@ -195,16 +195,16 @@ contract ProjectKudos {
      * @dev Returns an array of votes given to the project
      * corresponding to array of users passed in function call
      *
-     * @param projectCode project&#39;s code
+     * @param projectCode project's code
      * @param users array of user addresses
      *
      * @return array of votes given by passed users
      */
     function getProjectKudosByUsers(bytes32 projectCode, address[] users) constant returns(uint[]) {
         ProjectInfo project = projects[projectCode];
-        mapping(address =&gt; uint) kudosByUser = project.kudosByUser;
+        mapping(address => uint) kudosByUser = project.kudosByUser;
         uint[] memory userKudos = new uint[](users.length);
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             userKudos[i] = kudosByUser[users[i]];
        }
 
@@ -215,7 +215,7 @@ contract ProjectKudos {
      * @dev Returns votes given by specified user
      * to the list of projects ever voted by that user
      *
-     * @param giver user&#39;s address
+     * @param giver user's address
      * @return projects array of project codes represented by bytes32 array
      * @return kudos array of votes given by user,
      *         index of vote corresponds to index of project from projects array
@@ -229,7 +229,7 @@ contract ProjectKudos {
     /**
      * @dev Returns votes allowed to be given by user
      *
-     * @param addr user&#39;s address
+     * @param addr user's address
      * @return number of votes left
      */
     function getKudosLeft(address addr) constant returns(uint) {
@@ -240,7 +240,7 @@ contract ProjectKudos {
     /**
      * @dev Returns votes given by user
      *
-     * @param addr user&#39;s address
+     * @param addr user's address
      * @return number of votes given
      */
     function getKudosGiven(address addr) constant returns(uint) {
@@ -282,7 +282,7 @@ contract ProjectKudos {
     // ********************* //
 
     /**
-     * @dev Throws if called not by contract&#39;s owner
+     * @dev Throws if called not by contract's owner
      */
     modifier onlyOwner() {
         if (msg.sender != owner) throw;

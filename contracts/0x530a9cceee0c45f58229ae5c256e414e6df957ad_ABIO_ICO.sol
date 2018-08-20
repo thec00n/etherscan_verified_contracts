@@ -54,7 +54,7 @@ interface ABIO_preICO{
     function extGoalReached() external returns (uint);
 }
 contract ABIO_BaseICO is Haltable{
-    mapping(address =&gt; uint256) ethBalances;
+    mapping(address => uint256) ethBalances;
 
     uint public weiRaised;//total raised in wei
     uint public abioSold;//amount of ABIO sold
@@ -91,12 +91,12 @@ contract ABIO_BaseICO is Haltable{
          }
 
          /**
-         * @notice allows owner to adjust `minInvestment` and `weiPerABIO` in case of extreme jumps of Ether&#39;s dollar-value.
+         * @notice allows owner to adjust `minInvestment` and `weiPerABIO` in case of extreme jumps of Ether's dollar-value.
          * @param _multiplier Both `minInvestment` and `weiPerABIO` will be multiplied by `_multiplier`. It is supposed to be close to oldEthPrice/newEthPrice
          * @param _multiplier MULTIPLIER IS SUPPLIED AS PERCENTAGE
          */
          function adjustPrice(uint _multiplier) external onlyOwner{
-             require(_multiplier &lt; 400 &amp;&amp; _multiplier &gt; 25);
+             require(_multiplier < 400 && _multiplier > 25);
              minInvestment = minInvestment * _multiplier / 100;
              weiPerABIO = weiPerABIO * _multiplier / 100;
              emit PriceAdjust(msg.sender, _multiplier, minInvestment, weiPerABIO);
@@ -104,15 +104,15 @@ contract ABIO_BaseICO is Haltable{
 
          /**
           * @notice Called everytime we receive a contribution in ETH.
-          * @dev Tokens are immediately transferred to the contributor, even if goal doesn&#39;t get reached.
+          * @dev Tokens are immediately transferred to the contributor, even if goal doesn't get reached.
           */
          function () payable stopOnPause{
-             require(now &lt; deadline);
-             require(msg.value &gt;= minInvestment);
+             require(now < deadline);
+             require(msg.value >= minInvestment);
              uint amount = msg.value;
              ethBalances[msg.sender] += amount;
              weiRaised += amount;
-             if(!fundingGoalReached &amp;&amp; weiRaised &gt;= fundingGoal){goalReached();}
+             if(!fundingGoalReached && weiRaised >= fundingGoal){goalReached();}
 
              uint ABIOAmount = amount / weiPerABIO ;
              abioToken.transfer(msg.sender, ABIOAmount);
@@ -137,7 +137,7 @@ contract ABIO_BaseICO is Haltable{
 
          /**
          * @notice Burns tokens leftover from an ICO round.
-         * @dev This can be called by anyone after deadline since it&#39;s an essential and inevitable part.
+         * @dev This can be called by anyone after deadline since it's an essential and inevitable part.
          */
          function burnRestTokens() afterDeadline{
                  require(!restTokensBurned);
@@ -146,12 +146,12 @@ contract ABIO_BaseICO is Haltable{
          }
 
          function isRunning() view returns (bool){
-             return (now &lt; deadline);
+             return (now < deadline);
          }
 
          function goalReached() internal;
 
-         modifier afterDeadline() { if (now &gt;= deadline) _; }
+         modifier afterDeadline() { if (now >= deadline) _; }
 }
 
 
@@ -169,7 +169,7 @@ contract ABIO_ICO is ABIO_BaseICO{
          PICO = ABIO_preICO(_PICOAddr);
          weiRaisedInPICO = PICO.weiRaised();
          fundingGoal = PICO.fundingGoal();
-         if (weiRaisedInPICO &gt;= fundingGoal){
+         if (weiRaisedInPICO >= fundingGoal){
              goalReached();
          }
          minInvestment = _minInvestment;
@@ -181,12 +181,12 @@ contract ABIO_ICO is ABIO_BaseICO{
     }
 
     /**
-    * @notice a function that changes state if goal reached. If the PICO didn&#39;t reach goal, it reports back to it.
+    * @notice a function that changes state if goal reached. If the PICO didn't reach goal, it reports back to it.
     */
     function goalReached() internal {
         emit SoftcapReached(treasury, fundingGoal);
         fundingGoalReached = true;
-        if (weiRaisedInPICO &lt; fundingGoal){
+        if (weiRaisedInPICO < fundingGoal){
             PICO.extGoalReached();
         }
     }
@@ -194,14 +194,14 @@ contract ABIO_ICO is ABIO_BaseICO{
     /**
      * @notice Lets participants withdraw the funds if goal was missed.
      * @notice Lets treasury collect the funds if goal was reached.
-     * @dev The contract is obligated to return the ETH to contributors if goal isn&#39;t reached,
+     * @dev The contract is obligated to return the ETH to contributors if goal isn't reached,
      *      so we have to wait until the end for a withdrawal.
      */
     function safeWithdrawal() afterDeadline stopOnPause{
         if (!fundingGoalReached) {
             uint amount = ethBalances[msg.sender];
             ethBalances[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     emit FundsWithdrawn(msg.sender, amount);
                 } else {
@@ -221,13 +221,13 @@ contract ABIO_ICO is ABIO_BaseICO{
 
     /**
     * @notice Is going to be called in an extreme case where we need to prolong the ICO (e.g. missed Softcap by a few ETH)/
-    * @dev It&#39;s only called once, has to be called at least 4 days before ICO end and prolongs the ICO for no more than 3 weeks.
+    * @dev It's only called once, has to be called at least 4 days before ICO end and prolongs the ICO for no more than 3 weeks.
     */
     function prolong(uint _timeInMins) external onlyOwner{
         require(!didProlong);
-        require(now &lt;= deadline - 4 days);
+        require(now <= deadline - 4 days);
         uint t = _timeInMins * 1 minutes;
-        require(t &lt;= 3 weeks);
+        require(t <= 3 weeks);
         deadline += t;
         length += t;
 

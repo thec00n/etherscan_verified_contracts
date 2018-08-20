@@ -1,12 +1,12 @@
 /*
- * Giga Watt Token Smart Contract.  Copyright &#169; 2016 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="a4c9cdcfccc5cdc88ad2c8c5c0cdc9cdd6cbd2e4c3c9c5cdc88ac7cbc9">[email&#160;protected]</span>&gt;
+ * Giga Watt Token Smart Contract.  Copyright © 2016 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="a4c9cdcfccc5cdc88ad2c8c5c0cdc9cdd6cbd2e4c3c9c5cdc88ac7cbc9">[email protected]</span>>
  */
 pragma solidity ^0.4.1;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -109,7 +109,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &gt; MAX_UINT256 - y) throw;
+    if (x > MAX_UINT256 - y) throw;
     return x + y;
   }
 
@@ -123,7 +123,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &lt; y) throw;
+    if (x < y) throw;
     return x - y;
   }
 
@@ -138,7 +138,7 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    if (x &gt; MAX_UINT256 / y) throw;
+    if (x > MAX_UINT256 / y) throw;
     return x * y;
   }
 }
@@ -190,7 +190,7 @@ contract AbstractToken is Token, SafeMath {
   function transferFrom (address _from, address _to, uint256 _value)
   returns (bool success)
   {
-    if (_value &gt; approved [_from][msg.sender]) return false;
+    if (_value > approved [_from][msg.sender]) return false;
     if (doTransfer (_from, _to, _value)) {
       approved [_from][msg.sender] =
         safeSub (approved[_from][msg.sender], _value);
@@ -235,7 +235,7 @@ contract AbstractToken is Token, SafeMath {
    * @param _value number of new tokens to create
    */
   function createTokens (address _owner, uint256 _value) internal {
-    if (_value &gt; 0) {
+    if (_value > 0) {
       accounts [_owner] = safeAdd (accounts [_owner], _value);
       tokensCount = safeAdd (tokensCount, _value);
     }
@@ -251,8 +251,8 @@ contract AbstractToken is Token, SafeMath {
    */
   function doTransfer (address _from, address _to, uint256 _value)
   private returns (bool success) {
-    if (_value &gt; accounts [_from]) return false;
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > accounts [_from]) return false;
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
       Transfer (_from, _to, _value);
@@ -268,23 +268,23 @@ contract AbstractToken is Token, SafeMath {
   /**
    * Maps addresses of token owners to states of their accounts.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Maps addresses of token owners to mappings from addresses of spenders to
    * how many tokens belonging to the owner, the spender is currently allowed to
    * transfer.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) approved;
+  mapping (address => mapping (address => uint256)) approved;
 }
 
 /**
  * Standard Token smart contract that provides the following features:
- * &lt;ol&gt;
- *   &lt;li&gt;Centralized creation of new tokens&lt;/li&gt; 
- *   &lt;li&gt;Freeze/unfreeze token transfers&lt;/li&gt;
- *   &lt;li&gt;Change owner&lt;/li&gt;
- * &lt;/ol&gt;
+ * <ol>
+ *   <li>Centralized creation of new tokens</li> 
+ *   <li>Freeze/unfreeze token transfers</li>
+ *   <li>Change owner</li>
+ * </ol>
  */
 contract StandardToken is AbstractToken {
   /**
@@ -348,7 +348,7 @@ contract StandardToken is AbstractToken {
   returns (bool success) {
     if (msg.sender != owner) throw;
 
-    if (_value &gt; MAX_TOKENS - totalSupply ()) return false;
+    if (_value > MAX_TOKENS - totalSupply ()) return false;
 
     AbstractToken.createTokens (owner, _value);
 

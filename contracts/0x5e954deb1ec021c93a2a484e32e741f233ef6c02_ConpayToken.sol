@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -143,7 +143,7 @@ contract Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -156,7 +156,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -198,8 +198,8 @@ contract StandardToken is ERC20, BasicToken {
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 contract ConpayToken is StandardToken, Ownable {
-  string public name = &#39;ConpayToken&#39;;
-  string public symbol = &#39;COP&#39;;
+  string public name = 'ConpayToken';
+  string public symbol = 'COP';
   uint public decimals = 18;
 
   uint public constant crowdsaleEndTime = 1509580800;
@@ -218,7 +218,7 @@ contract ConpayToken is StandardToken, Ownable {
   event SaleStop();
 
   modifier crowdsaleTransferLock() {
-    require(now &gt; crowdsaleEndTime);
+    require(now > crowdsaleEndTime);
     _;
   }
 
@@ -242,12 +242,12 @@ contract ConpayToken is StandardToken, Ownable {
   function buy(address buyer) public payable {
     require(!stopped);
     require(buyer != 0x0);
-    require(msg.value &gt; 0);
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+    require(msg.value > 0);
+    require(now >= startTime && now <= endTime);
 
     uint256 tokens = msg.value.mul(rate);
-    assert(perAddressCap == 0 || balances[buyer].add(tokens) &lt;= perAddressCap);
-    assert(tokensSupply.sub(tokens) &gt;= 0);
+    assert(perAddressCap == 0 || balances[buyer].add(tokens) <= perAddressCap);
+    assert(tokensSupply.sub(tokens) >= 0);
 
     balances[buyer] = balances[buyer].add(tokens);
     balances[owner] = balances[owner].sub(tokens);

@@ -12,7 +12,7 @@ contract EtherCashLink {
         address sender;
     }
 
-    mapping(bytes32 =&gt; Payment) public payments;
+    mapping(bytes32 => Payment) public payments;
     
 
     event GotPaid(address sender, address receiver, uint amount, bytes32 verification); // Event
@@ -30,7 +30,7 @@ contract EtherCashLink {
 
     function createLink(bytes32 _verification) public payable {
         require(!payments[_verification].exists);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         var newPayment = payments[_verification];
         newPayment.paid = false;
         newPayment.verification = _verification;

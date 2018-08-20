@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;dazo&#39; CROWDSALE token contract
+// 'dazo' CROWDSALE token contract
 //
 // Deployed to : 0xa358c1a7380cc4ac584768cd51383c663ecc35a6
 // Symbol      : DAZO
@@ -11,7 +11,7 @@ pragma solidity ^0.4.18;
 //
 // Enjoy.
 //
-// (c) by Moritz Neto &amp; Daniel Bar with BokkyPooBah / Bok Consulting Pty Ltd Au 2017. The MIT Licence.
+// (c) by Moritz Neto & Daniel Bar with BokkyPooBah / Bok Consulting Pty Ltd Au 2017. The MIT Licence.
 // ----------------------------------------------------------------------------
 
 
@@ -21,10 +21,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -32,7 +32,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -109,16 +109,16 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
     uint public bonusEnds;
     uint public endDate;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function dazoToken() public {
-        symbol = &quot;DAZO&quot;;
-        name = &quot;dazo Token&quot;;
+        symbol = "DAZO";
+        name = "dazo Token";
         decimals = 18;
 		_totalSupply = 0;
 		_maxSupply = 1000000000000000000000000000;
@@ -143,8 +143,8 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -157,7 +157,7 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -190,7 +190,7 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -199,7 +199,7 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -213,11 +213,11 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
     // 100,000 DAZO Tokens per 1 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds) 
+        if (now <= bonusEnds) 
 		{
-			if(_totalSupply &lt; 20000000000000000000000000)
+			if(_totalSupply < 20000000000000000000000000)
 			{
 				tokens = msg.value * 200000;
 			}
@@ -230,7 +230,7 @@ contract dazoToken is ERC20Interface, Owned, SafeMath {
             tokens = msg.value * 100000;
         }
 // stop accepting tokens once _maxSupply is reached.
-		require(_maxSupply&gt;safeAdd(_totalSupply, tokens));
+		require(_maxSupply>safeAdd(_totalSupply, tokens));
         balances[msg.sender] = safeAdd(balances[msg.sender], tokens);
         _totalSupply = safeAdd(_totalSupply, tokens);
         Transfer(0x0, msg.sender, tokens);

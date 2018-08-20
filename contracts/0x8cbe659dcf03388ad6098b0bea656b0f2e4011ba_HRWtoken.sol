@@ -20,8 +20,8 @@ contract tokenRecipient { function receiveApproval(address from, uint256 value, 
 contract HRWtoken is owned { string public name; string public symbol; uint8 public decimals; uint256 public totalSupply; uint256 public sellPrice; uint256 public buyPrice;
 ///@notice create an array with all adresses and associated balances of the cryptocurrency
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
  ///@notice generate a event on the blockchain to show transfer information 
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -45,8 +45,8 @@ if(centralMinter != 0 ) owner = centralMinter;
   ///@notice only the contract can operate this internal funktion
   function _transfer(address _from, address _to, uint _value) internal {
       require (_to != 0x0);           
-      require (balanceOf[_from] &gt;= _value);            
-      require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+      require (balanceOf[_from] >= _value);            
+      require (balanceOf[_to] + _value > balanceOf[_to]); 
       balanceOf[_from] -= _value;                         
       balanceOf[_to] += _value;                            
       Transfer(_from, _to, _value);
@@ -64,7 +64,7 @@ if(centralMinter != 0 ) owner = centralMinter;
   /// @param _to The address of the recipient
   /// @param _value value units to send
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require (_value &lt; allowance[_from][msg.sender]);     
+      require (_value < allowance[_from][msg.sender]);     
       allowance[_from][msg.sender] -= _value;
       _transfer(_from, _to, _value);
       return true;
@@ -117,7 +117,7 @@ if(centralMinter != 0 ) owner = centralMinter;
 /// @notice the HRWToken send to the contract and exchange by SellPrice and ///send ether back
   /// @param amount HRW Token to sale
   function sell(uint256 amount) {
-      require(this.balance &gt;= amount * sellPrice);      
+      require(this.balance >= amount * sellPrice);      
       _transfer(msg.sender, this, amount);              
       msg.sender.transfer(amount * sellPrice);          
   }

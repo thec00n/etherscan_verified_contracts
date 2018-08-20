@@ -28,8 +28,8 @@ contract TokenERC20 is owned {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -68,9 +68,9 @@ contract TokenERC20 is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -92,7 +92,7 @@ contract TokenERC20 is owned {
      */
     function transfer(address _to, uint256 _value) public {
         // Master Lock: Allow transfer by other users only after 1511308799
-       if (msg.sender != owner) require(now &gt; 1511308799);   
+       if (msg.sender != owner) require(now > 1511308799);   
        _transfer(msg.sender, _to, _value);
     }
 
@@ -106,7 +106,7 @@ contract TokenERC20 is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -151,7 +151,7 @@ contract TokenERC20 is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -167,10 +167,10 @@ contract TokenERC20 is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -181,11 +181,11 @@ contract CDRTToken is TokenERC20 {
 
     uint256 public buyBackPrice;
     // Snapshot of PE balances by Ethereum Address and by year
-    mapping (uint256 =&gt; mapping (address =&gt; uint256)) public snapShot;
+    mapping (uint256 => mapping (address => uint256)) public snapShot;
     // This is time for next Profit Equivalent
     uint256 public nextPE = 1539205199;
-    // List of Team and Founders account&#39;s frozen till 15 November 2018
-    mapping (address =&gt; uint256) public frozenAccount;
+    // List of Team and Founders account's frozen till 15 November 2018
+    mapping (address => uint256) public frozenAccount;
 
     // List of all years when snapshots were made
     uint[] internal yearsPast = [17];  
@@ -195,14 +195,14 @@ contract CDRTToken is TokenERC20 {
     uint256 public bbBalance;       
     // Holds unclaimed PE balance from last periods
     uint256 internal peLastPeriod;       
-    // All ever used in transactions Ethereum Addresses&#39; positions in list
-    mapping (address =&gt; uint256) internal ownerPos;              
+    // All ever used in transactions Ethereum Addresses' positions in list
+    mapping (address => uint256) internal ownerPos;              
     // Total number of Ethereum Addresses used in transactions 
     uint256 internal pos;                                      
     // All ever used in transactions Ethereum Addresses list
-    mapping (uint256 =&gt; address) internal addressList;   
+    mapping (uint256 => address) internal addressList;   
     
-    /* Handles incoming payments to contract&#39;s address */
+    /* Handles incoming payments to contract's address */
     function() payable public {
     }
 
@@ -225,9 +225,9 @@ contract CDRTToken is TokenERC20 {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                                // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]);  // Check for overflows
-        require(frozenAccount[_from] &lt; now);                 // Check if sender is frozen
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]);  // Check for overflows
+        require(frozenAccount[_from] < now);                 // Check if sender is frozen
          _insert(_to);
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
@@ -235,7 +235,7 @@ contract CDRTToken is TokenERC20 {
     }
 
     /**
-      * @notice Freezes from sending &amp; receiving tokens. For users protection can&#39;t be used after 1542326399
+      * @notice Freezes from sending & receiving tokens. For users protection can't be used after 1542326399
       * and will not allow corrections.
       *     
       * Will set freeze to 1542326399
@@ -244,7 +244,7 @@ contract CDRTToken is TokenERC20 {
       *
       */
    function freezeAccount(address _from) onlyOwner public {
-        require(now &lt; 1542326400);
+        require(now < 1542326400);
         require(frozenAccount[_from] == 0);
         frozenAccount[_from] = 1542326399;                  
     }
@@ -256,7 +256,7 @@ contract CDRTToken is TokenERC20 {
       *
       */
     function setPrice(uint256 _newPrice) onlyOwner public {
-        require(now &gt; 1539561600);                          
+        require(now > 1539561600);                          
         buyBackPrice = _newPrice;
     }
 
@@ -269,9 +269,9 @@ contract CDRTToken is TokenERC20 {
       *
       */
    function takeSnapshot(uint256 _year, uint256 _nextPE) onlyOwner public {
-        require(_year &gt; yearsPast[yearsPast.length-1]);                             
+        require(_year > yearsPast[yearsPast.length-1]);                             
         uint256 reward = peBalance / totalSupply;
-        for (uint256 k=1; k &lt;= pos; k++){
+        for (uint256 k=1; k <= pos; k++){
             snapShot[_year][addressList[k]] = balanceOf[addressList[k]] * reward;
         }
         yearsPast.push(_year);
@@ -286,7 +286,7 @@ contract CDRTToken is TokenERC20 {
       */
     function claimProfitEquivalent() public{
         uint256 toPay;
-        for (uint k=0; k &lt;= yearsPast.length-1; k++){
+        for (uint k=0; k <= yearsPast.length-1; k++){
             toPay += snapShot[yearsPast[k]][msg.sender];
             snapShot[yearsPast[k]][msg.sender] = 0;
         }
@@ -299,12 +299,12 @@ contract CDRTToken is TokenERC20 {
       * @param _qty amount to sell and destroy
       */
     function execBuyBack(uint256 _qty) public{
-        require(now &gt; 1539561600);                          
+        require(now > 1539561600);                          
         uint256 toPay = _qty*buyBackPrice;                                        
-        require(balanceOf[msg.sender] &gt;= _qty);                     // check if user has enough CDRT Tokens 
-        require(buyBackPrice &gt; 0);                                  // check if sale price set
-        require(bbBalance &gt;= toPay);                        
-        require(frozenAccount[msg.sender] &lt; now);                   // Check if sender is frozen
+        require(balanceOf[msg.sender] >= _qty);                     // check if user has enough CDRT Tokens 
+        require(buyBackPrice > 0);                                  // check if sale price set
+        require(bbBalance >= toPay);                        
+        require(frozenAccount[msg.sender] < now);                   // Check if sender is frozen
         msg.sender.transfer(toPay);
         bbBalance -= toPay;
         burn(_qty);

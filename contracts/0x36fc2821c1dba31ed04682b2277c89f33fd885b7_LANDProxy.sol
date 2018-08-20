@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 
 contract LANDStorage {
 
-  mapping (address =&gt; uint) latestPing;
+  mapping (address => uint) latestPing;
 
   uint256 constant clearLow = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000;
   uint256 constant clearHigh = 0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff;
@@ -28,28 +28,28 @@ contract AssetRegistryStorage {
   /**
    * Stores an array of assets owned by a given account
    */
-  mapping(address =&gt; uint256[]) internal _assetsOf;
+  mapping(address => uint256[]) internal _assetsOf;
 
   /**
    * Stores the current holder of an asset
    */
-  mapping(uint256 =&gt; address) internal _holderOf;
+  mapping(uint256 => address) internal _holderOf;
 
   /**
    * Stores the index of an asset in the `_assetsOf` array of its holder
    */
-  mapping(uint256 =&gt; uint256) internal _indexOfAsset;
+  mapping(uint256 => uint256) internal _indexOfAsset;
 
   /**
    * Stores the data associated with an asset
    */
-  mapping(uint256 =&gt; string) internal _assetData;
+  mapping(uint256 => string) internal _assetData;
 
   /**
    * For a given account, for a given opperator, store whether that operator is
    * allowed to transfer and modify assets on behalf of them.
    */
-  mapping(address =&gt; mapping(address =&gt; bool)) internal _operators;
+  mapping(address => mapping(address => bool)) internal _operators;
 
   /**
    * Simple reentrancy lock
@@ -112,7 +112,7 @@ contract DelegateProxy {
   function isContract(address _target) constant internal returns (bool) {
     uint256 size;
     assembly { size := extcodesize(_target) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -136,7 +136,7 @@ contract Proxy is ProxyStorage, DelegateProxy {
   }
 
   function () payable public {
-    require(currentContract != 0); // if app code hasn&#39;t been set yet, don&#39;t call
+    require(currentContract != 0); // if app code hasn't been set yet, don't call
     delegatedFwd(currentContract, msg.data);
   }
 }

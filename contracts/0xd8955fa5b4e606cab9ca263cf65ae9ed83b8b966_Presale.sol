@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -37,7 +37,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * Based on Ownable.sol from https://github.com/OpenZeppelin/zeppelin-solidity/tree/master
  */
 contract Ownable {
@@ -114,7 +114,7 @@ contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
   
   // mapping of addresses with according balances
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 public totalSupply;
 
@@ -147,7 +147,7 @@ pragma solidity ^0.4.18;
  */
 contract CustomToken is ERC20, BasicToken, Ownable {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   // boolean if transfers can be done
   bool public enableTransfer = true;
@@ -172,7 +172,7 @@ contract CustomToken is ERC20, BasicToken, Ownable {
   */
   function transfer(address _to, uint256 _value) whenTransferEnabled public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -191,11 +191,11 @@ contract CustomToken is ERC20, BasicToken, Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) whenTransferEnabled public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
 
 
     if (msg.sender!=owner) {
-      require(_value &lt;= allowed[_from][msg.sender]);
+      require(_value <= allowed[_from][msg.sender]);
       allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
       balances[_from] = balances[_from].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -235,10 +235,10 @@ contract CustomToken is ERC20, BasicToken, Ownable {
     allowed[this][_spender] = _value;
     Approval(this, _spender, _value);
 
-    //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+    //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
     //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
     //it is assumed when one does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-    require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), this, _value, this, _extraData));
+    require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), this, _value, this, _extraData));
     return true;
   }
 
@@ -253,10 +253,10 @@ contract CustomToken is ERC20, BasicToken, Ownable {
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
 
-    //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+    //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
     //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
     //it is assumed when one does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-    require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+    require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
     return true;
   }
 
@@ -296,7 +296,7 @@ contract CustomToken is ERC20, BasicToken, Ownable {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) whenTransferEnabled public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -311,9 +311,9 @@ contract CustomToken is ERC20, BasicToken, Ownable {
    * @param _value The amount of token to be burned.
    */
   function burn(address _burner, uint256 _value) onlyOwner public returns (bool) {
-    require(_value &lt;= balances[_burner]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_burner]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_burner] = balances[_burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -350,8 +350,8 @@ pragma solidity ^0.4.18;
  */
 contract Identify is CustomToken {
 
-  string public constant name = &quot;IDENTIFY&quot;;
-  string public constant symbol = &quot;IDF&quot;; 
+  string public constant name = "IDENTIFY";
+  string public constant symbol = "IDF"; 
   uint8 public constant decimals = 6;
 
   uint256 public constant INITIAL_SUPPLY = 49253333333 * (10 ** uint256(decimals));
@@ -387,10 +387,10 @@ contract Whitelist is Ownable {
     uint256 public participantAmount;
 
     // mapping of participants
-    mapping (address =&gt; bool) public isParticipant;
+    mapping (address => bool) public isParticipant;
     
     // mapping of admins
-    mapping (address =&gt; bool) public isAdmin;
+    mapping (address => bool) public isAdmin;
 
     event AddParticipant(address _participant);
     event AddAdmin(address _admin, uint256 _timestamp);
@@ -525,7 +525,7 @@ contract Whitelist is Ownable {
      */ 
     function addMultipleParticipants(address[] _participants ) public onlyAdmin returns (bool) {
         
-        for ( uint i = 0; i &lt; _participants.length; i++ ) {
+        for ( uint i = 0; i < _participants.length; i++ ) {
             require(addParticipant(_participants[i]));
         }
 
@@ -713,14 +713,14 @@ contract Presale is Ownable {
    */
   function Presale(uint256 _startTime, address _wallet, address _token, address _whitelist, uint256 _capETH, uint256 _capTokens, uint256 _minimumETH, uint256 _maximumETH) public {
   
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(_wallet != address(0));
     require(_token != address(0));
     require(_whitelist != address(0));
-    require(_capETH &gt; 0);
-    require(_capTokens &gt; 0);
-    require(_minimumETH &gt; 0);
-    require(_maximumETH &gt; 0);
+    require(_capETH > 0);
+    require(_capTokens > 0);
+    require(_minimumETH > 0);
+    require(_maximumETH > 0);
 
     startTime = _startTime;
     endTime = _startTime.add(19 weeks);
@@ -752,7 +752,7 @@ contract Presale is Ownable {
 
     // calculate token amount to be created
     uint256 tokens = getTokenAmount(weiAmount);
-    require(tokenRaised.add(tokens) &lt;= capTokens);
+    require(tokenRaised.add(tokens) <= capTokens);
     // update state
     weiRaised = weiRaised.add(weiAmount);
     tokenRaised = tokenRaised.add(tokens);
@@ -769,9 +769,9 @@ contract Presale is Ownable {
    * @return true if crowdsale event has ended
    */
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= capWEI;
-    bool capTokensReached = tokenRaised &gt;= capTokens;
-    bool ended = now &gt; endTime;
+    bool capReached = weiRaised >= capWEI;
+    bool capTokensReached = tokenRaised >= capTokens;
+    bool ended = now > endTime;
     return (capReached || capTokensReached) || ended;
   }
 
@@ -782,7 +782,7 @@ contract Presale is Ownable {
    * @return the token amount
    */
   function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
-    // wei has 18 decimals, our token has 6 decimals -&gt; so need for convertion
+    // wei has 18 decimals, our token has 6 decimals -> so need for convertion
     uint256 bonusIntegrated = weiAmount.div(10000000000000).mul(rate).mul(bonusPercentage).div(100);
     return bonusIntegrated;
   }
@@ -801,18 +801,18 @@ contract Presale is Ownable {
    * @return true if the transaction can buy tokens
    */
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    bool underMaximumWEI = msg.value &lt;= maximumWEI;
-    bool withinCap = weiRaised.add(msg.value) &lt;= capWEI;
+    bool underMaximumWEI = msg.value <= maximumWEI;
+    bool withinCap = weiRaised.add(msg.value) <= capWEI;
     bool minimumWEIReached;
     // check to fill in last gap
-    if ( capWEI.sub(weiRaised) &lt; minimumWEI) {
+    if ( capWEI.sub(weiRaised) < minimumWEI) {
       minimumWEIReached = true;
     } else {
-      minimumWEIReached = msg.value &gt;= minimumWEI;
+      minimumWEIReached = msg.value >= minimumWEI;
     }
-    return (withinPeriod &amp;&amp; nonZeroPurchase) &amp;&amp; (withinCap &amp;&amp; (minimumWEIReached &amp;&amp; underMaximumWEI));
+    return (withinPeriod && nonZeroPurchase) && (withinCap && (minimumWEIReached && underMaximumWEI));
   }
 
   /**
@@ -871,7 +871,7 @@ contract Presale is Ownable {
     assembly {
         size := extcodesize(_addr)
      }
-    return (size &gt; 0);
+    return (size > 0);
   }
 
 

@@ -17,7 +17,7 @@ pragma solidity ^0.4.18;
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with LikeCoin Smart Contract.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+//    along with LikeCoin Smart Contract.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.18;
 
@@ -112,12 +112,12 @@ contract ArtMuseumBase is Ownable {
 	/** the id of the oldest artwork */
 	uint32 public oldest;
 	/** the artwork belonging to a given id */
-	mapping(uint32 =&gt; Artwork) artworks;
+	mapping(uint32 => Artwork) artworks;
 	/** the user purchase sequence number per each artwork type */
-	mapping(address=&gt;mapping(uint8 =&gt; uint32)) userArtworkSequenceNumber;
+	mapping(address=>mapping(uint8 => uint32)) userArtworkSequenceNumber;
 	/** the cost of each artwork type */
 	uint128[] public costs;
-	/** the value of each artwork type (cost - fee), so it&#39;s not necessary to compute it each time*/
+	/** the value of each artwork type (cost - fee), so it's not necessary to compute it each time*/
 	uint128[] public values;
 	/** the fee to be paid each time an artwork is bought in percent*/
 	uint8 public fee;
@@ -151,12 +151,12 @@ contract ArtMuseumBase is Ownable {
 
 	/**
 	 * allows the owner to collect the accumulated fees
-	 * sends the given amount to the owner&#39;s address if the amount does not exceed the
-	 * fees (cannot touch the players&#39; balances)
+	 * sends the given amount to the owner's address if the amount does not exceed the
+	 * fees (cannot touch the players' balances)
 	 * */
 	function collectFees(uint128 amount) public onlyOwner {
 		uint collectedFees = getFees();
-		if (amount &lt;= collectedFees) {
+		if (amount <= collectedFees) {
 			like.transfer(owner,amount);
 		}
 	}
@@ -171,7 +171,7 @@ contract ArtMuseumBase is Ownable {
 		types = new uint8[](numArtworks);
 		sequenceNumbers = new uint32[](numArtworks);
 		artworkValues = new uint128[](numArtworks);
-		for (uint16 i = 0; i &lt; numArtworks; i++) {
+		for (uint16 i = 0; i < numArtworks; i++) {
 			id = ids[i];
 			artworkIds[i] = id;
 			types[i] = artworks[id].artworkType;
@@ -185,7 +185,7 @@ contract ArtMuseumBase is Ownable {
 		uint16 j = 0;
 		uint16 howmany = 0;
 		address player = address(msg.sender);
-		for (uint16 k = 0; k &lt; numArtworks; k++) {
+		for (uint16 k = 0; k < numArtworks; k++) {
 			if (artworks[ids[k]].player == player)
 				howmany++;
 		}
@@ -193,7 +193,7 @@ contract ArtMuseumBase is Ownable {
 		types = new uint8[](howmany);
 		sequenceNumbers = new uint32[](howmany);
 		artworkValues = new uint128[](howmany);
-		for (uint16 i = 0; i &lt; numArtworks; i++) {
+		for (uint16 i = 0; i < numArtworks; i++) {
 			if (artworks[ids[i]].player == player) {
 				id = ids[i];
 				artworkIds[j] = id;
@@ -206,15 +206,15 @@ contract ArtMuseumBase is Ownable {
 	}
 
 	function setCosts(uint128[] _costs) public onlyOwner {
-		require(_costs.length &gt;= costs.length);
+		require(_costs.length >= costs.length);
 		costs = _costs;
 		setFee(fee);
 	}
 	
 	function setFee(uint8 _fee) public onlyOwner {
 		fee = _fee;
-		for (uint8 i = 0; i &lt; costs.length; i++) {
-			if (i &lt; values.length)
+		for (uint8 i = 0; i < costs.length; i++) {
+			if (i < values.length)
 				values[i] = costs[i] - costs[i] / 100 * fee;
 			else {
 				values.push(costs[i] - costs[i] / 100 * fee);
@@ -225,7 +225,7 @@ contract ArtMuseumBase is Ownable {
 
 	function getFees() public constant returns(uint) {
 		uint reserved = 0;
-		for (uint16 j = 0; j &lt; numArtworks; j++)
+		for (uint16 j = 0; j < numArtworks; j++)
 			reserved += artworks[ids[j]].value;
 		return like.balanceOf(this) - reserved;
 	}
@@ -235,7 +235,7 @@ contract ArtMuseumBase is Ownable {
 
 // File: contracts/oraclizeAPI.sol
 
-// &lt;ORACLIZE_API&gt;
+// <ORACLIZE_API>
 /*
 Copyright (c) 2015-2016 Oraclize SRL
 Copyright (c) 2016 Oraclize LTD
@@ -243,7 +243,7 @@ Copyright (c) 2016 Oraclize LTD
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -256,7 +256,7 @@ all copies or substantial portions of the Software.
 
 
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -267,7 +267,7 @@ THE SOFTWARE.
 
 // This api is currently targeted at 0.4.18, please import oraclizeAPI_pre0.4.sol or oraclizeAPI_0.4 where necessary
 
-pragma solidity ^0.4.20;//&lt;=0.4.20;// Incompatible compiler version... please select one stated within pragma solidity or use different oraclizeAPI version
+pragma solidity ^0.4.20;//<=0.4.20;// Incompatible compiler version... please select one stated within pragma solidity or use different oraclizeAPI version
 
 contract OraclizeI {
 	address public cbAddress;
@@ -320,35 +320,35 @@ contract usingOraclize { // is ArtMuseumBase {
 	  networkID; // silence the warning and remain backwards compatible
 	}
 	function oraclize_setNetwork() internal returns(bool){
-		if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)&gt;0){ //mainnet
+		if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
 			OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
-			oraclize_setNetworkName(&quot;eth_mainnet&quot;);
+			oraclize_setNetworkName("eth_mainnet");
 			return true;
 		}
-		if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)&gt;0){ //ropsten testnet
+		if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1)>0){ //ropsten testnet
 			OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
-			oraclize_setNetworkName(&quot;eth_ropsten3&quot;);
+			oraclize_setNetworkName("eth_ropsten3");
 			return true;
 		}
-		if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)&gt;0){ //kovan testnet
+		if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e)>0){ //kovan testnet
 			OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
-			oraclize_setNetworkName(&quot;eth_kovan&quot;);
+			oraclize_setNetworkName("eth_kovan");
 			return true;
 		}
-		if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)&gt;0){ //rinkeby testnet
+		if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48)>0){ //rinkeby testnet
 			OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
-			oraclize_setNetworkName(&quot;eth_rinkeby&quot;);
+			oraclize_setNetworkName("eth_rinkeby");
 			return true;
 		}
-		if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)&gt;0){ //ethereum-bridge
+		if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475)>0){ //ethereum-bridge
 			OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
 			return true;
 		}
-		if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)&gt;0){ //ether.camp ide
+		if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF)>0){ //ether.camp ide
 			OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
 			return true;
 		}
-		if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)&gt;0){ //browser-solidity
+		if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
 			OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
 			return true;
 		}
@@ -362,42 +362,42 @@ contract usingOraclize { // is ArtMuseumBase {
 	}
 	function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource);
-		if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
 		return oraclize.query.value(price)(0, datasource, arg);
 	}
 	function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource);
-		if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
 		return oraclize.query.value(price)(timestamp, datasource, arg);
 	}
 	function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource, gaslimit);
-		if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
 		return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
 	}
 	function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource, gaslimit);
-		if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
 		return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
 	}
 	function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource);
-		if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
 		return oraclize.query2.value(price)(0, datasource, arg1, arg2);
 	}
 	function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource);
-		if (price &gt; 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
 		return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
 	}
 	function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource, gaslimit);
-		if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
 		return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
 	}
 	function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
 		uint price = oraclize.getPrice(datasource, gaslimit);
-		if (price &gt; 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
+		if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
 		return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
 	}
 
@@ -421,8 +421,8 @@ contract usingOraclize { // is ArtMuseumBase {
 		bytes memory bresult = bytes(_a);
 		uint mint = 0;
 		bool decimals = false;
-		for (uint i=0; i&lt;bresult.length; i++){
-			if ((bresult[i] &gt;= 48)&amp;&amp;(bresult[i] &lt;= 57)){
+		for (uint i=0; i<bresult.length; i++){
+			if ((bresult[i] >= 48)&&(bresult[i] <= 57)){
 				if (decimals){
 				   if (_b == 0) break;
 					else _b--;
@@ -431,7 +431,7 @@ contract usingOraclize { // is ArtMuseumBase {
 				mint += uint(bresult[i]) - 48;
 			} else if (bresult[i] == 46) decimals = true;
 		}
-		if (_b &gt; 0) mint *= 10**_b;
+		if (_b > 0) mint *= 10**_b;
 		return mint;
 	}
 	function oraclize_setNetworkName(string _network_name) internal {
@@ -445,11 +445,11 @@ contract usingOraclize { // is ArtMuseumBase {
 // File: contracts/strings.sol
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb8a998a888385828fab85849f8f849fc5858e9f">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb8a998a888385828fab85849f8f849fc5858e9f">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -457,11 +457,11 @@ contract usingOraclize { // is ArtMuseumBase {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -476,7 +476,7 @@ contract usingOraclize { // is ArtMuseumBase {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -490,7 +490,7 @@ library strings {
 
 	function memcpy(uint dest, uint src, uint len) private pure {
 		// Copy word-length chunks while possible
-		for(; len &gt;= 32; len -= 32) {
+		for(; len >= 32; len -= 32) {
 			assembly {
 				mstore(dest, mload(src))
 			}
@@ -523,7 +523,7 @@ library strings {
 	/*
 	 * @dev Copies a slice to a new string.
 	 * @param self The slice to copy.
-	 * @return A newly allocated string containing the slice&#39;s text.
+	 * @return A newly allocated string containing the slice's text.
 	 */
 	function toString(slice self) internal pure returns (string) {
 		string memory ret = new string(self._len);
@@ -540,8 +540,8 @@ library strings {
 		uint ptr = selfptr;
 		uint idx;
 
-		if (needlelen &lt;= selflen) {
-			if (needlelen &lt;= 32) {
+		if (needlelen <= selflen) {
+			if (needlelen <= 32) {
 				bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
 				bytes32 needledata;
@@ -552,7 +552,7 @@ library strings {
 				assembly { ptrdata := and(mload(ptr), mask) }
 
 				while (ptrdata != needledata) {
-					if (ptr &gt;= end)
+					if (ptr >= end)
 						return selfptr + selflen;
 					ptr++;
 					assembly { ptrdata := and(mload(ptr), mask) }
@@ -563,7 +563,7 @@ library strings {
 				bytes32 hash;
 				assembly { hash := sha3(needleptr, needlelen) }
 
-				for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+				for (idx = 0; idx <= selflen - needlelen; idx++) {
 					bytes32 testHash;
 					assembly { testHash := sha3(ptr, needlelen) }
 					if (hash == testHash)
@@ -621,7 +621,7 @@ library strings {
 	 */
 	function count(slice self, slice needle) internal pure returns (uint cnt) {
 		uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-		while (ptr &lt;= self._ptr + self._len) {
+		while (ptr <= self._ptr + self._len) {
 			cnt++;
 			ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
 		}
@@ -682,8 +682,8 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 	}
 
 	function init1() public onlyOwner {
-		randomQuery = &quot;10 random numbers between 1 and 100000&quot;;
-		queryType = &quot;WolframAlpha&quot;;
+		randomQuery = "10 random numbers between 1 and 100000";
+		queryType = "WolframAlpha";
 		oraclizeGas = 150000;
 		oraclizeGasExtraArtwork = 14000;
 		etherExchangeLikeCoin = 100000;
@@ -696,17 +696,17 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 	 * */
 	function giveArtworks(uint8[] artworkTypes, address receiver, uint256 _value) internal {
 		uint32 len = uint32(artworkTypes.length);
-		require(numArtworks + len &lt; maxArtworks);
+		require(numArtworks + len < maxArtworks);
 		uint256 amount = 0;
-		for (uint16 i = 0; i &lt; len; i++) {
-			require(artworkTypes[i] &lt; costs.length);
+		for (uint16 i = 0; i < len; i++) {
+			require(artworkTypes[i] < costs.length);
 			amount += costs[artworkTypes[i]];
 		}
-		require(_value &gt;= amount);
+		require(_value >= amount);
 		uint8 artworkType;
 		uint32[] memory seqnolist = new uint32[](len);
-		for (uint16 j = 0; j &lt; len; j++) {
-			if (numArtworks &lt; ids.length)
+		for (uint16 j = 0; j < len; j++) {
+			if (numArtworks < ids.length)
 				ids[numArtworks] = lastId;
 			else
 				ids.push(lastId);
@@ -731,7 +731,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		numArtworks--;
 		if (artworkId == oldest) oldest = 0;
 		delete artworks[artworkId];
-		if (numArtworks&gt;0)
+		if (numArtworks>0)
 			ids[index] = ids[numArtworks];
 		delete ids[numArtworks];
 		ids.length = numArtworks;
@@ -747,8 +747,8 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 			artworkId = oldest;
 			if (artworkId==0) {
 				artworkId = ids[0];
-				for (uint16 i = 1; i &lt; numArtworks; i++) {
-					if (ids[i] &lt; artworkId) //the oldest artwork has the lowest id
+				for (uint16 i = 1; i < numArtworks; i++) {
+					if (ids[i] < artworkId) //the oldest artwork has the lowest id
 						artworkId = ids[i];
 				}
 			}
@@ -768,14 +768,14 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 			if (oldest==0) {
 				oldest = ids[0];
 				index = 0;
-				for (uint16 i = 1; i &lt; numArtworks; i++) {
-					if (ids[i] &lt; oldest) { //the oldest artwork has the lowest id
+				for (uint16 i = 1; i < numArtworks; i++) {
+					if (ids[i] < oldest) { //the oldest artwork has the lowest id
 						oldest = ids[i];
 						index = i;
 					}
 				}
 			} else {
-				for (uint16 j = 0; j &lt; numArtworks; j++) {
+				for (uint16 j = 0; j < numArtworks; j++) {
 					if (ids[j] == oldest) {
 						index = j;
 						break;
@@ -794,7 +794,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		uint256 val = uint256(artworks[artworkId].value);// - sellfee;
 		uint16 artworkIndex;
 		bool found = false;
-		for (uint16 i = 0; i &lt; numArtworks; i++) {
+		for (uint16 i = 0; i < numArtworks; i++) {
 			if (ids[i] == artworkId) {
 				artworkIndex = i;
 				found = true;
@@ -803,7 +803,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		}
 		require(found == true);
 		replaceArtwork(artworkIndex);
-		if (val&gt;0)
+		if (val>0)
 			like.transfer(msg.sender,val);
 		uint32[] memory artworkIds = new uint32[](1);
 		artworkIds[0] = artworkId;
@@ -816,30 +816,30 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 	 * manually triggers the steal
 	 * */
 	function triggerStealManually(uint32 inseconds) public payable ownerOrOperator {
-		require((nextStealTimestamp) &lt; now); // avoid two scheduled callback, asssume max 5mins wait to callback when trigger
+		require((nextStealTimestamp) < now); // avoid two scheduled callback, asssume max 5mins wait to callback when trigger
 		triggerSteal(inseconds, (oraclizeGas + oraclizeGasExtraArtwork * numArtworks));
 	}
 
 
 	/**
 	 * the frequency of the thief steal depends on the number of artworks in the game. 
-	 * many artworks -&gt; many thief steal
+	 * many artworks -> many thief steal
 	 * */
 	function timeTillNextSteal() constant internal returns(uint32) {
 		return (86400 / (1 + numArtworks / 100)) / ( numOfTimesSteal );
 	}
 
 	/**
-	 * sends a query to oraclize in order to get random numbers in &#39;inseconds&#39; seconds
+	 * sends a query to oraclize in order to get random numbers in 'inseconds' seconds
 	 */
 	function triggerSteal(uint32 inseconds, uint gasAmount) internal {
 		// Check if we have enough remaining funds
 		uint gaslimit = gasleft();
 		uint price = oraclize_getPrice(queryType, gasAmount);
 		uint balancebefore = address(this).balance;
-		require(price &lt;= address(this).balance);
-		if (numArtworks&lt;=1) {
-			removeArtworksByString(&quot;&quot;,0);
+		require(price <= address(this).balance);
+		if (numArtworks<=1) {
+			removeArtworksByString("",0);
 			distribute(0);
 			nextStealId = 0x0;
 			price = 0;
@@ -860,12 +860,12 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		if (oldest==0)
 			lastcombo = 0;
 		(artworkId,indexOldest) = setOldest();
-		if (lastcombo&gt;oldestExtraStealProbability.length-1)
+		if (lastcombo>oldestExtraStealProbability.length-1)
 			extraProbability = oldestExtraStealProbability[oldestExtraStealProbability.length-1];
 		else
 			extraProbability = oldestExtraStealProbability[lastcombo];
 		maxNumber = 100000 - extraProbability*1000;
-		if (extraProbability&gt;0 &amp;&amp; randomNumbers&gt;maxNumber) {
+		if (extraProbability>0 && randomNumbers>maxNumber) {
 			index = indexOldest;
 			artworkId = oldest;
 		} else {
@@ -883,15 +883,15 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		uint32[] memory sequenceNumbers = new uint32[](howmany);
 		uint256[] memory artworkValues = new uint256[](howmany);
 		address[] memory players = new address[](howmany);
-		if (howmany&gt;0) {
-			uint32[] memory randomNumbers = getNumbersFromString(result, &quot;,&quot;, howmany);
+		if (howmany>0) {
+			uint32[] memory randomNumbers = getNumbersFromString(result, ",", howmany);
 			uint16 index;
 			uint32 artworkId;
 			Artwork memory artworkData;
 			pot = 0;
 			if (oldest!=0)
 				lastcombo++;
-			for (uint32 i = 0; i &lt; howmany; i++) {
+			for (uint32 i = 0; i < howmany; i++) {
 				(artworkId,index) = findIndexFromRandomNumber(randomNumbers[i]);
 				artworkData = artworks[artworkId];
 				pot += artworkData.value;
@@ -918,11 +918,11 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		uint gasCost;
 		uint128 distpot;
 		uint oraclizeFeeTmp = 0; // for event log
-		if (msg.sender == oraclize_cbAddress() &amp;&amp; myid == nextStealId) {
-			howmany = numArtworks &lt; 100 ? (numArtworks &lt; 10 ? (numArtworks &lt; 2 ? 0 : 1) : numArtworks / 10) : 10; //do not kill more than 10%, but at least one
+		if (msg.sender == oraclize_cbAddress() && myid == nextStealId) {
+			howmany = numArtworks < 100 ? (numArtworks < 10 ? (numArtworks < 2 ? 0 : 1) : numArtworks / 10) : 10; //do not kill more than 10%, but at least one
 			pot = removeArtworksByString(result,howmany);
 			gasCost = ((oraclizeFee * etherExchangeLikeCoin) / 1 ether) * 1 ether + 1 ether/* not floor() */;
-			if (pot &gt; gasCost)
+			if (pot > gasCost)
 				distpot = uint128(pot - gasCost);
 			distribute(distpot); //distribute the pot minus the oraclize gas costs
 			oraclizeFeeTmp = oraclizeFee;
@@ -945,16 +945,16 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		uint128 valueSum = 0;
 		uint128 totalAmountRemain = totalAmount;
 		uint128[] memory shares = new uint128[](values.length+1);
-		if (totalAmount&gt;0) {
+		if (totalAmount>0) {
 			//distribute the rest according to their type
-			for (uint8 v = 0; v &lt; values.length; v++) {
-				if (numArtworksXType[v] &gt; 0) valueSum += values[v];
+			for (uint8 v = 0; v < values.length; v++) {
+				if (numArtworksXType[v] > 0) valueSum += values[v];
 			}
-			for (uint8 m = 0; m &lt; values.length; m++) {
-				if (numArtworksXType[m] &gt; 0)
+			for (uint8 m = 0; m < values.length; m++) {
+				if (numArtworksXType[m] > 0)
 					shares[m] = ((amount * (values[m] * 1000 / valueSum) / numArtworksXType[m]) / (1000 ether)) * (1 ether);
 			}
-			for (uint16 i = 0; i &lt; numArtworks; i++) {
+			for (uint16 i = 0; i < numArtworks; i++) {
 				artworkId = ids[i];
 				amount = shares[artworks[artworkId].artworkType];
 				artworks[artworkId].value += amount;
@@ -978,7 +978,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 	}
 
 	function get30Artworks(uint16 startIndex) public constant returns(uint32[] artworkIds,uint8[] types,uint32[] sequenceNumbers, uint128[] artworkValues,address[] players) {
-		uint32 endIndex = startIndex + 30 &gt; numArtworks ? numArtworks : startIndex + 30;
+		uint32 endIndex = startIndex + 30 > numArtworks ? numArtworks : startIndex + 30;
 		uint32 id;
 		uint32 num = endIndex - startIndex;
 		artworkIds = new uint32[](num);
@@ -987,7 +987,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		artworkValues = new uint128[](num);
 		players = new address[](num);
 		uint16 j = 0;		
-		for (uint16 i = startIndex; i &lt; endIndex; i++) {
+		for (uint16 i = startIndex; i < endIndex; i++) {
 			id = ids[i];
 			artworkIds[j] = id;
 			types[j] = artworks[id].artworkType;
@@ -999,7 +999,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 	}
 
 	function getRemainTime() public constant returns(uint remainTime) {
-		if (nextStealTimestamp&gt;now) remainTime = nextStealTimestamp - now;
+		if (nextStealTimestamp>now) remainTime = nextStealTimestamp - now;
 	}
 
 	/****************** SETTERS *************************/
@@ -1049,12 +1049,12 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 		var s2 = s.toSlice();
 		var delim = delimiter.toSlice();
 		string[] memory parts = new string[](s2.count(delim) + 1);
-		for(uint8 i = 0; i &lt; parts.length; i++) {
+		for(uint8 i = 0; i < parts.length; i++) {
 			parts[i] = s2.split(delim).toString();
 		}
 		numbers = new uint32[](howmany);
-		if (howmany&gt;parts.length) howmany = uint32(parts.length);
-		for (uint8 j = 0; j &lt; howmany; j++) {
+		if (howmany>parts.length) howmany = uint32(parts.length);
+		for (uint8 j = 0; j < howmany; j++) {
 			numbers[j] = uint32(parseInt(parts[j]));
 		}
 		return numbers;
@@ -1080,7 +1080,7 @@ contract ArtMuseumV1 is ArtMuseumBase, usingOraclize {
 			mstore(0x40, add(result , add(0x20, mul(c, 0x20))))
 		}
 		uint8[] memory result2 = new uint8[](result.length);
-		for (uint16 j=0;j&lt;result.length; j++) {
+		for (uint16 j=0;j<result.length; j++) {
 			result2[j] = uint8(result[j]);
 		}
 		giveArtworks(result2, _from, _value);
@@ -1095,21 +1095,21 @@ contract ArtMuseumV2 is ArtMuseumV1 {
 	function triggerStealManually2(string result) public payable ownerOrOperator {
 		uint gaslimit = gasleft();
 		oraclizeFee = (gaslimit + 200000 /*add gas overhead*/) * tx.gasprice + oraclizeFee;
-		require(nextStealTimestamp &lt; now); // avoid two scheduled callback, asssume max 5mins wait to callback when trigger
+		require(nextStealTimestamp < now); // avoid two scheduled callback, asssume max 5mins wait to callback when trigger
 		uint32 howmany;
 		uint128 pot;
 		uint gasCost;
 		uint128 distpot;
 		uint oraclizeFeeTmp = 0; // for event log
-		if (numArtworks&lt;=1) {
-			removeArtworksByString(&quot;&quot;,0);
+		if (numArtworks<=1) {
+			removeArtworksByString("",0);
 			distribute(0);
 			oraclizeFeeTmp = oraclizeFee;
 		} else {
-			howmany = numArtworks &lt; 100 ? (numArtworks &lt; 10 ? (numArtworks &lt; 2 ? 0 : 1) : numArtworks / 10) : 10; //do not kill more than 10%, but at least one
+			howmany = numArtworks < 100 ? (numArtworks < 10 ? (numArtworks < 2 ? 0 : 1) : numArtworks / 10) : 10; //do not kill more than 10%, but at least one
 			pot = removeArtworksByString(result,howmany);
 			gasCost = ((oraclizeFee * etherExchangeLikeCoin) / 1 ether) * 1 ether + 1 ether/* not floor() */;
-			if (pot &gt; gasCost)
+			if (pot > gasCost)
 				distpot = uint128(pot - gasCost);
 			distribute(distpot); //distribute the pot minus the oraclize gas costs
 			oraclizeFeeTmp = oraclizeFee;

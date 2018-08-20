@@ -23,13 +23,13 @@ contract Ownable {
 
 contract SafeMath {
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        sAssert(b &lt;= a);
+        sAssert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        sAssert(c&gt;=a &amp;&amp; c&gt;=b);
+        sAssert(c>=a && c>=b);
         return c;
     }
 
@@ -55,9 +55,9 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
     event Burn(address indexed fromAcct, uint256 value);
 
@@ -114,8 +114,8 @@ contract TCCCoin is Ownable, StandardToken {
     function TCCCoin() public {
     totalSupply = 100 * (10**6) * (10**6);
         balances[msg.sender] = totalSupply;
-        name = &quot;TCC&quot;;
-        symbol = &quot;TCC&quot;;
+        name = "TCC";
+        symbol = "TCC";
         decimals = 6;
     }
 

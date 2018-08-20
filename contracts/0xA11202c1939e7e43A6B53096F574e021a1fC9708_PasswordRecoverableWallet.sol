@@ -23,7 +23,7 @@ contract PasswordRecoverableWallet is Owned {
     }
 
     function recover(bytes32 password) public payable {
-        if ((sha256(password) == recoveryHash) &amp;&amp; (msg.value == recoveryValue)) owner = msg.sender;
+        if ((sha256(password) == recoveryHash) && (msg.value == recoveryValue)) owner = msg.sender;
     }
 
     function withdraw(uint amount) public onlyOwner {

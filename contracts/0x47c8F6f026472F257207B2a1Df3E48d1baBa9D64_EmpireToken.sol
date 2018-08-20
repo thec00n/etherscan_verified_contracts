@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -113,7 +113,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -156,7 +156,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -291,10 +291,10 @@ contract MintableToken is StandardToken, Ownable {
 
 contract EmpireToken is StandardToken, Ownable {
 
-  string public name = &#39;Empire Token&#39;;
+  string public name = 'Empire Token';
   uint8 public decimals = 18;
-  string public symbol = &#39;EMP&#39;;
-  string public version = &#39;0.1&#39;;
+  string public symbol = 'EMP';
+  string public version = '0.1';
 
   event Mint(address indexed to, uint256 amount);
   event MintFinished();
@@ -375,12 +375,12 @@ contract EmpireCrowdsale is Ownable, Pausable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   function EmpireCrowdsale(uint256 _start, uint256 _end, address _wallet, uint256 _presaleCap, uint256 _softCap, uint256 _graceCap) payable {
-    require(_start &gt;= now);
-    require(_end &gt;= _start);
+    require(_start >= now);
+    require(_end >= _start);
     require(_wallet != 0x0);
-    require(_presaleCap &gt; 0);
-    require(_softCap &gt; 0);
-    require(_graceCap &gt; 0);
+    require(_presaleCap > 0);
+    require(_softCap > 0);
+    require(_graceCap > 0);
 
     start = _start;
     end = _end;
@@ -394,15 +394,15 @@ contract EmpireCrowdsale is Ownable, Pausable {
   // function to get the price of the token
   // returns how many token units a buyer gets per wei
   function getRate() constant returns (uint) {
-    bool duringPresale = (now &lt; start) &amp;&amp; (weiRaised &lt; presaleCap * 1 ether);
+    bool duringPresale = (now < start) && (weiRaised < presaleCap * 1 ether);
     bool gracePeriodSet = gracePeriodStart != 0;
-    bool duringGracePeriod = gracePeriodSet &amp;&amp; now &lt;= gracePeriodStart + 24 hours;
+    bool duringGracePeriod = gracePeriodSet && now <= gracePeriodStart + 24 hours;
     uint rate = 1000;
     
     if (duringPresale) rate = 1300;               // presale, 30% bonus
-    else if (now &lt;= start +  3 days) rate = 1250; // day 1 to 3, 25% bonus
-    else if (now &lt;= start + 10 days) rate = 1150; // day 4 to 10, 15% bonus
-    else if (now &lt;= start + 20 days) rate = 1050; // day 11 to 20, 5% bonus
+    else if (now <= start +  3 days) rate = 1250; // day 1 to 3, 25% bonus
+    else if (now <= start + 10 days) rate = 1150; // day 4 to 10, 15% bonus
+    else if (now <= start + 20 days) rate = 1050; // day 11 to 20, 5% bonus
     
     if (duringGracePeriod) return rate.sub(rate.div(10)); // 10% penalization
     
@@ -418,10 +418,10 @@ contract EmpireCrowdsale is Ownable, Pausable {
   function buyTokens(address beneficiary) whenNotPaused() payable {
     require(beneficiary != 0x0);
     require(msg.value != 0);
-    require(now &lt;= end);
+    require(now <= end);
 
     // check if soft cap was reached, and for redefinition
-    if ((weiRaised &gt;= softCap * 1 ether) &amp;&amp; gracePeriodStart == 0) 
+    if ((weiRaised >= softCap * 1 ether) && gracePeriodStart == 0) 
       gracePeriodStart = block.timestamp;
 
     uint256 weiAmount = msg.value;

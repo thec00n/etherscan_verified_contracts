@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,9 +53,9 @@ contract HODLWallet {
     using SafeMath for uint256;
     
     address internal owner;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; uint256) public withdrawalCount;
-    mapping(address =&gt; mapping(address =&gt; bool)) public approvals;
+    mapping(address => uint256) public balances;
+    mapping(address => uint256) public withdrawalCount;
+    mapping(address => mapping(address => bool)) public approvals;
     
     uint256 public constant MAX_WITHDRAWAL = 0.002 * 1000000000000000000;
 
@@ -69,7 +69,7 @@ contract HODLWallet {
         
         owner = msg.sender;
         
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             balances[addrs[i]] = _balances[i];
             withdrawalCount[addrs[i]] = 0;
         }
@@ -80,9 +80,9 @@ contract HODLWallet {
         // you can only get a little at a time.
         // we will hodl the rest for you.
         
-        require(amount &lt;= MAX_WITHDRAWAL);
-        require(balances[from] &gt;= amount);
-        require(withdrawalCount[from] &lt; 3);
+        require(amount <= MAX_WITHDRAWAL);
+        require(balances[from] >= amount);
+        require(withdrawalCount[from] < 3);
 
         balances[from] = balances[from].sub(amount);
 
@@ -96,7 +96,7 @@ contract HODLWallet {
     }
 
     function doDeposit(address to) internal {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         balances[to] = balances[to].add(msg.value);
     }
@@ -130,7 +130,7 @@ contract HODLWallet {
     }
     
     function destroy() public onlyOwner {
-        // we will withdraw for you when we think it&#39;s time to stop HODLing
+        // we will withdraw for you when we think it's time to stop HODLing
         // probably in two weeks or so after moon and/or lambo
         
         selfdestruct(owner);
@@ -144,7 +144,7 @@ contract HODLWallet {
         // in case more idio^H^H^H^HHODLers want to join
         
         require(addrs.length == _balances.length);
-        for (uint256 i = 0; i &lt; addrs.length; i++) {
+        for (uint256 i = 0; i < addrs.length; i++) {
             balances[addrs[i]] = _balances[i];
             withdrawalCount[addrs[i]] = 0;
         }
@@ -153,7 +153,7 @@ contract HODLWallet {
     function approve(address toApprove) public {
         // in case you want to do your business from other addresses
         
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         
         approvals[msg.sender][toApprove] = true;
     }
@@ -161,7 +161,7 @@ contract HODLWallet {
     function unapprove(address toUnapprove) public {
         // in case trusting that address was a bad idea
         
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         
         approvals[msg.sender][toUnapprove] = false;
     }

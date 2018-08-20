@@ -52,7 +52,7 @@ contract DateTime {
                                 buf = YEAR_IN_SECONDS;
                         }
 
-                        if (secondsAccountedFor + buf &gt; timestamp) {
+                        if (secondsAccountedFor + buf > timestamp) {
                                 break;
                         }
                         dt.year += 1;
@@ -80,9 +80,9 @@ contract DateTime {
                 monthDayCounts[11] = 31;
 
                 uint secondsInMonth;
-                for (i = 0; i &lt; monthDayCounts.length; i++) {
+                for (i = 0; i < monthDayCounts.length; i++) {
                         secondsInMonth = DAY_IN_SECONDS * monthDayCounts[i];
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i + 1;
                                 break;
                         }
@@ -90,8 +90,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 0; i &lt; monthDayCounts[dt.month - 1]; i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 0; i < monthDayCounts[dt.month - 1]; i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i + 1;
                                 break;
                         }
@@ -99,8 +99,8 @@ contract DateTime {
                 }
 
                 // Hour
-                for (i = 0; i &lt; 24; i++) {
-                        if (HOUR_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 0; i < 24; i++) {
+                        if (HOUR_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.hour = i;
                                 break;
                         }
@@ -108,15 +108,15 @@ contract DateTime {
                 }
 
                 // Minute
-                for (i = 0; i &lt; 60; i++) {
-                        if (MINUTE_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 0; i < 60; i++) {
+                        if (MINUTE_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.minute = i;
                                 break;
                         }
                         secondsAccountedFor += MINUTE_IN_SECONDS;
                 }
 
-                if (timestamp - secondsAccountedFor &gt; 60) {
+                if (timestamp - secondsAccountedFor > 60) {
                         __throw();
                 }
 
@@ -172,7 +172,7 @@ contract DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -201,7 +201,7 @@ contract DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 

@@ -48,9 +48,9 @@ contract Presale {
 
     function bc(uint ci_, address ref_) public payable {
         uint cp_ = di.gcp(ci_);
-        require(cp_ &gt; 0);
+        require(cp_ > 0);
         cp_ = cp_ * pf(msg.sender)/10000;
-        require(msg.value &gt;= cp_);
+        require(msg.value >= cp_);
 
         uint excessMoney = msg.value - cp_;
 
@@ -70,11 +70,11 @@ contract Presale {
     }
 
     function bmc(uint ci_, uint c_, address ref_) public payable {
-        require(di.gcp(ci_) &gt; 0);
+        require(di.gcp(ci_) > 0);
 
         uint cmp_ = di.gcmp(ci_, c_);
         cmp_ = cmp_ * pf(msg.sender)/10000;
-        require(msg.value &gt;= cmp_);
+        require(msg.value >= cmp_);
 
         uint excessMoney = msg.value - cmp_;
             
@@ -109,7 +109,7 @@ contract Presale {
             c = c * (100 - npb) / 100;
         }
         uint _gc = di.ggc(u_);
-        if(_gc &gt; 0) {
+        if(_gc > 0) {
             c = c * (100 - _gc) / 100;
         }
     }
@@ -163,7 +163,7 @@ contract Presale {
     }
     function payoutX(address to_, uint value_) public onlyOp {
         require(address(0) != to_);
-        if(value_ &gt; this.balance)
+        if(value_ > this.balance)
             to_.transfer(this.balance);
         else
             to_.transfer(value_);

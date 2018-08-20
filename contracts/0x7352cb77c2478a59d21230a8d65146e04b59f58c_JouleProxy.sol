@@ -140,7 +140,7 @@ contract JouleAPI {
      * @dev Registers the specified contract to invoke at the specified time with the specified gas and price.
      * @notice It required amount of ETH as value, to cover gas usage. See getPrice method.
      *
-     * @param _address Contract&#39;s address. Contract MUST implements Checkable interface.
+     * @param _address Contract's address. Contract MUST implements Checkable interface.
      * @param _timestamp Timestamp at what moment contract should be called. It MUST be in future.
      * @param _gasLimit Gas which will be posted to call.
      * @param _gasPrice Gas price which is recommended to use for this invocation.
@@ -233,8 +233,8 @@ contract JouleIndex {
     using KeysUtils for bytes32;
     uint constant YEAR = 0x1DFE200;
 
-    // year -&gt; month -&gt; day -&gt; hour
-    mapping (bytes32 =&gt; bytes32) index;
+    // year -> month -> day -> hour
+    mapping (bytes32 => bytes32) index;
     bytes32 head;
 
     function insert(bytes32 _key) public {
@@ -243,11 +243,11 @@ contract JouleIndex {
         bytes32 headLow;
         bytes32 headHigh;
         (headLow, headHigh) = fromValue(head);
-        if (year &lt; headLow || headLow == 0 || year &gt; headHigh) {
-            if (year &lt; headLow || headLow == 0) {
+        if (year < headLow || headLow == 0 || year > headHigh) {
+            if (year < headLow || headLow == 0) {
                 headLow = year;
             }
-            if (year &gt; headHigh) {
+            if (year > headHigh) {
                 headHigh = year;
             }
             head = toValue(headLow, headHigh);
@@ -257,11 +257,11 @@ contract JouleIndex {
         bytes32 low;
         bytes32 high;
         (low, high) = fromValue(index[year]);
-        if (week &lt; low || week &gt; high) {
-            if (week &lt; low || low == 0) {
+        if (week < low || week > high) {
+            if (week < low || low == 0) {
                 low = week;
             }
-            if (week &gt; high) {
+            if (week > high) {
                 high = week;
             }
             index[year] = toValue(low, high);
@@ -269,11 +269,11 @@ contract JouleIndex {
 
         (low, high) = fromValue(index[week]);
         bytes32 hour = toKey(timestamp, 1 hours);
-        if (hour &lt; low || hour &gt; high) {
-            if (hour &lt; low || low == 0) {
+        if (hour < low || hour > high) {
+            if (hour < low || low == 0) {
                 low = hour;
             }
-            if (hour &gt; high) {
+            if (hour > high) {
                 high = hour;
             }
             index[week] = toValue(low, high);
@@ -281,11 +281,11 @@ contract JouleIndex {
 
         (low, high) = fromValue(index[hour]);
         bytes32 minute = toKey(timestamp, 1 minutes);
-        if (minute &lt; low || minute &gt; high) {
-            if (minute &lt; low || low == 0) {
+        if (minute < low || minute > high) {
+            if (minute < low || low == 0) {
                 low = minute;
             }
-            if (minute &gt; high) {
+            if (minute > high) {
                 high = minute;
             }
             index[hour] = toValue(low, high);
@@ -293,11 +293,11 @@ contract JouleIndex {
 
         (low, high) = fromValue(index[minute]);
         bytes32 tsKey = toKey(timestamp);
-        if (tsKey &lt; low || tsKey &gt; high) {
-            if (tsKey &lt; low || low == 0) {
+        if (tsKey < low || tsKey > high) {
+            if (tsKey < low || low == 0) {
                 low = tsKey;
             }
-            if (tsKey &gt; high) {
+            if (tsKey > high) {
                 high = tsKey;
             }
             index[minute] = toValue(low, high);
@@ -308,10 +308,10 @@ contract JouleIndex {
 
     function findFloorKeyYear(uint _timestamp, bytes32 _low, bytes32 _high) view internal returns (bytes32) {
         bytes32 year = toKey(_timestamp, YEAR);
-        if (year &lt; _low) {
+        if (year < _low) {
             return 0;
         }
-        if (year &gt; _high) {
+        if (year > _high) {
             // week
             (low, high) = fromValue(index[_high]);
             // hour
@@ -326,7 +326,7 @@ contract JouleIndex {
         bytes32 low;
         bytes32 high;
 
-        while (year &gt;= _low) {
+        while (year >= _low) {
             (low, high) = fromValue(index[year]);
             if (low != 0) {
                 bytes32 key = findFloorKeyWeek(_timestamp, low, high);
@@ -345,14 +345,14 @@ contract JouleIndex {
 
     function findFloorKeyWeek(uint _timestamp, bytes32 _low, bytes32 _high) view internal returns (bytes32) {
         bytes32 week = toKey(_timestamp, 1 weeks);
-        if (week &lt; _low) {
+        if (week < _low) {
             return 0;
         }
 
         bytes32 low;
         bytes32 high;
 
-        if (week &gt; _high) {
+        if (week > _high) {
             // hour
             (low, high) = fromValue(index[_high]);
             // minute
@@ -362,7 +362,7 @@ contract JouleIndex {
             return index[high];
         }
 
-        while (week &gt;= _low) {
+        while (week >= _low) {
             (low, high) = fromValue(index[week]);
             if (low != 0) {
                 bytes32 key = findFloorKeyHour(_timestamp, low, high);
@@ -382,14 +382,14 @@ contract JouleIndex {
 
     function findFloorKeyHour(uint _timestamp, bytes32 _low, bytes32 _high) view internal returns (bytes32) {
         bytes32 hour = toKey(_timestamp, 1 hours);
-        if (hour &lt; _low) {
+        if (hour < _low) {
             return 0;
         }
 
         bytes32 low;
         bytes32 high;
 
-        if (hour &gt; _high) {
+        if (hour > _high) {
             // minute
             (low, high) = fromValue(index[_high]);
             // ts
@@ -397,7 +397,7 @@ contract JouleIndex {
             return index[high];
         }
 
-        while (hour &gt;= _low) {
+        while (hour >= _low) {
             (low, high) = fromValue(index[hour]);
             if (low != 0) {
                 bytes32 key = findFloorKeyMinute(_timestamp, low, high);
@@ -416,20 +416,20 @@ contract JouleIndex {
 
     function findFloorKeyMinute(uint _timestamp, bytes32 _low, bytes32 _high) view internal returns (bytes32) {
         bytes32 minute = toKey(_timestamp, 1 minutes);
-        if (minute &lt; _low) {
+        if (minute < _low) {
             return 0;
         }
 
         bytes32 low;
         bytes32 high;
 
-        if (minute &gt; _high) {
+        if (minute > _high) {
             // ts
             (low, high) = fromValue(index[_high]);
             return index[high];
         }
 
-        while (minute &gt;= _low) {
+        while (minute >= _low) {
             (low, high) = fromValue(index[minute]);
             if (low != 0) {
                 bytes32 key = findFloorKeyTimestamp(_timestamp, low, high);
@@ -449,14 +449,14 @@ contract JouleIndex {
 
     function findFloorKeyTimestamp(uint _timestamp, bytes32 _low, bytes32 _high) view internal returns (bytes32) {
         bytes32 tsKey = toKey(_timestamp);
-        if (tsKey &lt; _low) {
+        if (tsKey < _low) {
             return 0;
         }
-        if (tsKey &gt; _high) {
+        if (tsKey > _high) {
             return index[_high];
         }
 
-        while (tsKey &gt;= _low) {
+        while (tsKey >= _low) {
             bytes32 key = index[tsKey];
             if (key != 0) {
                 return key;
@@ -469,8 +469,8 @@ contract JouleIndex {
     }
 
     function findFloorKey(uint _timestamp) view public returns (bytes32) {
-//        require(_timestamp &gt; 0xffffffff);
-//        if (_timestamp &lt; 1515612415) {
+//        require(_timestamp > 0xffffffff);
+//        if (_timestamp < 1515612415) {
 //            return 0;
 //        }
 
@@ -515,7 +515,7 @@ contract JouleContractHolder is usingConsts {
 //    event Found(uint timestamp);
     uint internal length;
     bytes32 head;
-    mapping (bytes32 =&gt; bytes32) objects;
+    mapping (bytes32 => bytes32) objects;
     JouleIndex index;
 
     function JouleContractHolder() public {
@@ -542,7 +542,7 @@ contract JouleContractHolder is usingConsts {
 //        Found(prevTimestamp);
         uint headTimestamp = head.getTimestamp();
         // add as head, prevTimestamp == 0 or in the past
-        if (prevTimestamp &lt; headTimestamp) {
+        if (prevTimestamp < headTimestamp) {
             objects[id] = head;
             head = id;
         }
@@ -570,7 +570,7 @@ contract JouleContractHolder is usingConsts {
         uint[] _gasLimits,
         uint[] _gasPrices
     ) {
-        uint amount = _count &lt;= length ? _count : length;
+        uint amount = _count <= length ? _count : length;
 
         _addresses = new address[](amount);
         _timestamps = new uint[](amount);
@@ -578,7 +578,7 @@ contract JouleContractHolder is usingConsts {
         _gasPrices = new uint[](amount);
 
         bytes32 current = head;
-        for (uint i = 0; i &lt; amount; i ++) {
+        for (uint i = 0; i < amount; i ++) {
             KeysUtils.Object memory obj = current.toObject();
             _addresses[i] = obj.contractAddress;
             _timestamps[i] = obj.timestamp;
@@ -631,20 +631,20 @@ contract JouleContractHolder is usingConsts {
 contract Joule is JouleAPI, JouleContractHolder {
     function register(address _address, uint _timestamp, uint _gasLimit, uint _gasPrice) external payable returns (uint) {
         uint price = this.getPrice(_gasLimit, _gasPrice);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
-        require(_timestamp &gt; now);
-        require(_timestamp &lt; 0x100000000);
-        require(_gasLimit &lt; MAX_GAS);
+        require(_timestamp > now);
+        require(_timestamp < 0x100000000);
+        require(_gasLimit < MAX_GAS);
         // from 1 gwei to 0x100000000 gwei
-        require(_gasPrice &gt; GWEI);
-        require(_gasPrice &lt; 0x100000000 * GWEI);
+        require(_gasPrice > GWEI);
+        require(_gasPrice < 0x100000000 * GWEI);
 
         insert(_address, _timestamp, _gasLimit, _gasPrice / GWEI);
 
         Registered(_address, _timestamp, _gasLimit, _gasPrice);
 
-        if (msg.value &gt; price) {
+        if (msg.value > price) {
             msg.sender.transfer(msg.value - price);
             return msg.value - price;
         }
@@ -652,9 +652,9 @@ contract Joule is JouleAPI, JouleContractHolder {
     }
 
     function getPrice(uint _gasLimit, uint _gasPrice) external view returns (uint) {
-        require(_gasLimit &lt; 4300000);
-        require(_gasPrice &gt; GWEI);
-        require(_gasPrice &lt; 0x100000000 * GWEI);
+        require(_gasLimit < 4300000);
+        require(_gasPrice > GWEI);
+        require(_gasPrice < 0x100000000 * GWEI);
 
         return getPriceInner(_gasLimit, _gasPrice);
     }
@@ -679,7 +679,7 @@ contract Joule is JouleAPI, JouleContractHolder {
         KeysUtils.Object memory current = KeysUtils.toObject(head);
 
         uint amount;
-        while (current.timestamp != 0 &amp;&amp; current.timestamp &lt; now &amp;&amp; msg.gas &gt;= current.gasLimit) {
+        while (current.timestamp != 0 && current.timestamp < now && msg.gas >= current.gasLimit) {
             uint gas = msg.gas;
             bool status = _callback(current.contractAddress, current.gasLimit);
 //            current.contractAddress.call.gas(current.gasLimit)(0x919840ad);
@@ -689,7 +689,7 @@ contract Joule is JouleAPI, JouleContractHolder {
             amount += getPriceInner(current.gasLimit, current.gasPriceGwei * GWEI);
             current = next();
         }
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
         }
         return amount;
@@ -705,7 +705,7 @@ contract Joule is JouleAPI, JouleContractHolder {
 
         uint amount = getPriceInner(current.gasLimit, current.gasPriceGwei * GWEI);
 
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
         }
         return amount;
@@ -765,7 +765,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken {
 
     function register(address _address, uint _timestamp, uint _gasLimit, uint _gasPrice) external payable returns (uint) {
         uint change = joule.register.value(msg.value)(_address, _timestamp, _gasLimit, _gasPrice);
-        if (change &gt; 0) {
+        if (change > 0) {
             msg.sender.transfer(change);
         }
         return change;
@@ -773,7 +773,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken {
 
     function invoke() public returns (uint) {
         uint amount = joule.invoke();
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
         }
         return amount;
@@ -781,7 +781,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken {
 
     function invokeTop() public returns (uint) {
         uint amount = joule.invokeTop();
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
         }
         return amount;
@@ -821,7 +821,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken {
         uint[] _gasPrices
     ) {
         uint length = joule.getCount();
-        uint amount = _count &lt;= length ? _count : length;
+        uint amount = _count <= length ? _count : length;
 
         _addresses = new address[](amount);
         _timestamps = new uint[](amount);
@@ -839,7 +839,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken {
         _gasLimits[0] = gasLimit;
         _gasPrices[0] = gasPrice;
 
-        for (uint i = 1; i &lt; amount; i ++) {
+        for (uint i = 1; i < amount; i ++) {
             (contractAddress, timestamp, gasLimit, gasPrice) = joule.getNext(contractAddress, timestamp, gasLimit, gasPrice);
             _addresses[i] = contractAddress;
             _timestamps[i] = timestamp;

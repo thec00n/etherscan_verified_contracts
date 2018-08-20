@@ -24,7 +24,7 @@ contract bro {
         pure
         returns (address)
     {
-        require(_nonce &lt; 127);
+        require(_nonce < 127);
         return address(keccak256(0xd6, 0x94, 0x0EA7AB495A36e59cc53A02C8F4a48C96df69DCDe, _nonce));
     }
 }

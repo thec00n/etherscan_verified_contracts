@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -52,8 +52,8 @@ contract OwnOracle is Ownable {
     event BankSet(address bank);
     event UpdaterSet(address updater);
 
-    bytes32 public oracleName = &quot;LibreOracle Alpha&quot;;
-    bytes16 public oracleType = &quot;Libre ETHUSD&quot;;
+    bytes32 public oracleName = "LibreOracle Alpha";
+    bytes16 public oracleType = "Libre ETHUSD";
     uint256 public updateTime;
     uint256 public callbackTime;
     address public bankAddress;
@@ -89,7 +89,7 @@ contract OwnOracle is Ownable {
      * @dev Return price of LibreOracle request.
      */
     function getPrice() view public returns (uint256) {
-        return updaterAddress.balance &lt; requestPrice ? requestPrice : 0;
+        return updaterAddress.balance < requestPrice ? requestPrice : 0;
     }
 
     /**
@@ -116,7 +116,7 @@ contract OwnOracle is Ownable {
     * @param result The callback data as-is (1000$ = 1000).
     */
     function __callback(uint256 result) public {
-        require(msg.sender == updaterAddress &amp;&amp; waitQuery);
+        require(msg.sender == updaterAddress && waitQuery);
         rate = result;
         callbackTime = now;
         waitQuery = false;

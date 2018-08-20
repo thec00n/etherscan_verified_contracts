@@ -18,20 +18,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -104,7 +104,7 @@ contract MultiVesting is Ownable, Destroyable {
     event BeneficiaryDestroyed(address _beneficiary);
 
 
-    mapping(address =&gt; Beneficiary) public beneficiaries;
+    mapping(address => Beneficiary) public beneficiaries;
     Token public token;
     uint256 public totalVested;
     uint256 public totalReleased;
@@ -164,7 +164,7 @@ contract MultiVesting is Ownable, Destroyable {
 
         uint256 unreleased = releasableAmount(_beneficiary);
 
-        require(unreleased &gt; 0);
+        require(unreleased > 0);
 
         beneficiary.released = beneficiary.released.add(unreleased);
 
@@ -200,8 +200,8 @@ contract MultiVesting is Ownable, Destroyable {
     isNotBeneficiary(_beneficiary)
     public {
         require(_beneficiary != address(0));
-        require(_cliff &gt;= _start);
-        require(token.balanceOf(this) &gt;= totalVested.sub(totalReleased).add(_vested));
+        require(_cliff >= _start);
+        require(token.balanceOf(this) >= totalVested.sub(totalReleased).add(_vested));
         beneficiaries[_beneficiary] = Beneficiary({
             released : 0,
             vested : _vested,
@@ -261,7 +261,7 @@ contract MultiVesting is Ownable, Destroyable {
     }
 
     /**
-     * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+     * @dev Calculates the amount that has already vested but hasn't been released yet.
      * @param _beneficiary Beneficiary address
      */
     function releasableAmount(address _beneficiary) public view returns (uint256) {
@@ -276,9 +276,9 @@ contract MultiVesting is Ownable, Destroyable {
         Beneficiary storage beneficiary = beneficiaries[_beneficiary];
         uint256 totalBalance = beneficiary.vested;
 
-        if (now &lt; beneficiary.cliff) {
+        if (now < beneficiary.cliff) {
             return 0;
-        } else if (now &gt;= beneficiary.start.add(beneficiary.duration) || beneficiary.revoked) {
+        } else if (now >= beneficiary.start.add(beneficiary.duration) || beneficiary.revoked) {
             return totalBalance;
         } else {
             return totalBalance.mul(now.sub(beneficiary.start)).div(beneficiary.duration);

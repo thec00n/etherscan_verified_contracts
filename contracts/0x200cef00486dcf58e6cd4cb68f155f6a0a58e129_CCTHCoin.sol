@@ -11,20 +11,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -42,8 +42,8 @@ contract CCTHCoin is SafeMath{
 	address public owner;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public freezeOf;
+    mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public freezeOf;
     
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -71,8 +71,8 @@ contract CCTHCoin is SafeMath{
     function CCTHCoin() {
         //balanceOf[msg.sender] = 2100000000000000;              // Give the creator all initial tokens
         totalSupply = 2100000000000000;                        // Update total supply
-        name = &quot;CryptoChips Coin&quot;;                            // Set the name for display purposes
-        symbol = &quot;CCTH&quot;;                               // Set the symbol for display purposes
+        name = "CryptoChips Coin";                            // Set the name for display purposes
+        symbol = "CCTH";                               // Set the symbol for display purposes
         decimals = 8;                            // Amount of decimals for display purposes
 		owner = msg.sender;
         timeOfLastHalving = now;
@@ -80,14 +80,14 @@ contract CCTHCoin is SafeMath{
 
     function updateSupply() internal returns (uint256) {
 
-      if (now - timeOfLastHalving &gt;= 2100000 minutes) {
+      if (now - timeOfLastHalving >= 2100000 minutes) {
         reward /= 2;
         timeOfLastHalving = now;
       }
 
-      if (now - timeOfLastIncrease &gt;= 150 seconds) {
+      if (now - timeOfLastIncrease >= 150 seconds) {
         uint256 increaseAmount = ((now - timeOfLastIncrease) / 60 seconds) * reward;
-      if (totalSupply&gt;(pre_mined_supply+increaseAmount))
+      if (totalSupply>(pre_mined_supply+increaseAmount))
         {
           pre_mined_supply += increaseAmount;
           mined_coin_supply += increaseAmount;
@@ -102,8 +102,8 @@ contract CCTHCoin is SafeMath{
     
     /* Send coins */
     function transfer(address _to, uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);           // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require(balanceOf[msg.sender] >= _value);           // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);               // Subtract from the sender
         balanceOf[_to] = SafeMath.safeAdd(balanceOf[_to], _value);                            // Add the same to the recipient
 
@@ -112,8 +112,8 @@ contract CCTHCoin is SafeMath{
 
     }
     function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw;                                           // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (balanceOf[msg.sender] < _value) throw;                                           // Check if the sender has enough
+		if (_value <= 0) throw; 
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);            // Subtract from the sender
         totalSupply = SafeMath.safeSub(totalSupply,_value);                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -121,8 +121,8 @@ contract CCTHCoin is SafeMath{
     }
 	
 	function freeze(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw;                                       // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (balanceOf[msg.sender] < _value) throw;                                       // Check if the sender has enough
+		if (_value <= 0) throw; 
         balanceOf[msg.sender] = SafeMath.safeSub(balanceOf[msg.sender], _value);        // Subtract from the sender
         freezeOf[msg.sender] = SafeMath.safeAdd(freezeOf[msg.sender], _value);                                // Updates totalSupply
         Freeze(msg.sender, _value);
@@ -130,8 +130,8 @@ contract CCTHCoin is SafeMath{
     }
 	
 	function unfreeze(uint256 _value) returns (bool success) {
-        if (freezeOf[msg.sender] &lt; _value) throw;                                       // Check if the sender has enough
-		if (_value &lt;= 0) throw; 
+        if (freezeOf[msg.sender] < _value) throw;                                       // Check if the sender has enough
+		if (_value <= 0) throw; 
         freezeOf[msg.sender] = SafeMath.safeSub(freezeOf[msg.sender], _value);          // Subtract from the sender
 		balanceOf[msg.sender] = SafeMath.safeAdd(balanceOf[msg.sender], _value);
         Unfreeze(msg.sender, _value);

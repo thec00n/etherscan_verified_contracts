@@ -1,7 +1,7 @@
 // Copyright (c) 2017-18 pacecoin.io
 
 // Developed by pacecoin core development team
-// Contact for information at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbd2d5ddd4fbcbdad8ded8d4d2d595d2d4">[email&#160;protected]</a>
+// Contact for information at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbd2d5ddd4fbcbdad8ded8d4d2d595d2d4">[email protected]</a>
 
 // Distributed under the MIT/X11 software license, see https://opensource.org/licenses/MIT
 
@@ -24,7 +24,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) returns (bool) {
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -67,32 +67,32 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-                                                                                // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+                                                                                // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-                                                                                // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+                                                                                // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
                                                                                 // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-                                                                                // require (_value &lt;= _allowance);
+                                                                                // require (_value <= _allowance);
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -117,8 +117,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract PACECOIN is StandardToken, Ownable
 {
-    string public name = &quot;PACECOIN&quot;;
-    string public symbol = &quot;PCN&quot;;
+    string public name = "PACECOIN";
+    string public symbol = "PCN";
 
     uint public decimals = 8;
 

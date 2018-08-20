@@ -12,11 +12,11 @@ contract Metronome {
     uint public invested = 0;
     
     // stores the last ping of every participants
-    mapping (address =&gt; uint) public lastPing;
+    mapping (address => uint) public lastPing;
     // stores the balance of each participant
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
     // stores the value of rewards the last time a player collected rewards
-    mapping (address =&gt; uint) public lastRewards;
+    mapping (address => uint) public lastRewards;
 
     uint public constant largeConstant = 1000000 ether;
     // cumulative ratio of rewards over invested (multiplied by largeConstant)
@@ -24,7 +24,7 @@ contract Metronome {
     
     // this array is not used in the rules of the game
     // it enables players to check the state of other players more easily
-    mapping (uint =&gt; address) public participants;
+    mapping (uint => address) public participants;
     uint public countParticipants = 0;
     
     
@@ -48,7 +48,7 @@ contract Metronome {
     
     // creates a new reward that can be claimed by users
     function createReward(uint value, uint oldTotal) private {
-        if (oldTotal &gt; 0)
+        if (oldTotal > 0)
             cumulativeRatios = cumulativeRatios + (value * largeConstant) / oldTotal;
     }
     
@@ -87,7 +87,7 @@ contract Metronome {
     
     // function called when a user wants to divest
     function divest(uint256 value) {
-        require(value &lt;= balanceOf[msg.sender]);
+        require(value <= balanceOf[msg.sender]);
         
         uint reward = getReward(msg.sender);
         modifyBalance(msg.sender, -value);
@@ -106,7 +106,7 @@ contract Metronome {
     // used to take create a reward from the funds of someone who has not
     // idled in the last 10 minutes
     function poke(address a) {
-        require(now &gt; lastPing[a] + 14 hours &amp;&amp; balanceOf[a] &gt; 0);
+        require(now > lastPing[a] + 14 hours && balanceOf[a] > 0);
         
         uint missed = getReward(a);
         uint toShare = balanceOf[a] / 10;

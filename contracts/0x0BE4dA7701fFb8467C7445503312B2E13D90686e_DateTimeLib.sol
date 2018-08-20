@@ -71,9 +71,9 @@ library DateTimeLib {
 
         // Month
         uint secondsInMonth;
-        for (i = 1; i &lt;= 12; i++) {
+        for (i = 1; i <= 12; i++) {
             secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-            if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+            if (secondsInMonth + secondsAccountedFor > timestamp) {
                 dt.month = i;
                 break;
             }
@@ -81,8 +81,8 @@ library DateTimeLib {
         }
 
         // Day
-        for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-            if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+        for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+            if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                 dt.day = i;
                 break;
             }
@@ -114,7 +114,7 @@ library DateTimeLib {
         secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
         secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-        while (secondsAccountedFor &gt; timestamp) {
+        while (secondsAccountedFor > timestamp) {
             if (isLeapYear(uint16(year - 1))) {
                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
             }
@@ -166,7 +166,7 @@ library DateTimeLib {
         uint16 i;
 
         // Year
-        for (i = ORIGIN_YEAR; i &lt; year; i++) {
+        for (i = ORIGIN_YEAR; i < year; i++) {
             if (isLeapYear(i)) {
                 timestamp += LEAP_YEAR_IN_SECONDS;
             }
@@ -195,7 +195,7 @@ library DateTimeLib {
         monthDayCounts[10] = 30;
         monthDayCounts[11] = 31;
 
-        for (i = 1; i &lt; month; i++) {
+        for (i = 1; i < month; i++) {
             timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
         }
 

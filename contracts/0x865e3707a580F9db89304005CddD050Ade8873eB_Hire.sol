@@ -6,7 +6,7 @@ library SafeMath {
      *  Sub function asserts that b is less than or equal to a.
      * */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -15,7 +15,7 @@ library SafeMath {
     * */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -39,10 +39,10 @@ contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
     //keeps a record of the total balances of each ETH address.
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     modifier onlyPayloadSize(uint size) {
-        if (msg.data.length &lt; size + 4) {
+        if (msg.data.length < size + 4) {
         revert();
         }
         _;
@@ -56,7 +56,7 @@ contract BasicToken is ERC20Basic {
      * @param _amount the amount of Hire tokens to be sent.
      * */
     function transfer(address _to, uint256 _amount) public onlyPayloadSize(2 * 32) returns (bool) {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -76,18 +76,18 @@ contract BasicToken is ERC20Basic {
 contract AdvancedToken is BasicToken, ERC20 {
     
     //keeps a record of all the allowances from one ETH address to another.
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances; 
+    mapping (address => mapping (address => uint256)) allowances; 
     
     /**
-     * TransferFrom function allows users to spend ETH on another&#39;s behalf, given that the _owner
+     * TransferFrom function allows users to spend ETH on another's behalf, given that the _owner
      * has allowed them to. 
      * 
      * @param _from the address of the owner.
      * @param _to the address of the recipient.
-     * @param _amount the total amount of tokens to be sent. &#39;
+     * @param _amount the total amount of tokens to be sent. '
      * */
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3 * 32) returns (bool) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -136,8 +136,8 @@ contract Hire is AdvancedToken {
     function Hire() public {
         totalSupply = 100000000e18;
         decimals = 18;
-        name = &quot;Hire&quot;;
-        symbol = &quot;HIRE&quot;;
+        name = "Hire";
+        symbol = "HIRE";
         owner = 0xaAa34A22Bd3F496b3A8648367CeeA9c03B130A30;
         balances[owner] = totalSupply;
     }

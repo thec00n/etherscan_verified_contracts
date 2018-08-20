@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -46,10 +46,10 @@ contract owned {
 contract BasicToken is owned {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) internal balance_of;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowances;
+    mapping (address => uint256) internal balance_of;
+    mapping (address => mapping (address => uint256)) internal allowances;
 
-    mapping (address =&gt; bool) private address_exist;
+    mapping (address => bool) private address_exist;
     address[] private address_list;
 
     bool public transfer_close = false;
@@ -77,7 +77,7 @@ contract BasicToken is owned {
     ) onlyOwner public returns(bool) {
         require(_hoarder != address(0));
         require(_spender != address(0));
-        require(_value &gt;= 0);
+        require(_value >= 0);
         allowances[_hoarder][_spender] = _value;
         return true;
     }
@@ -85,7 +85,7 @@ contract BasicToken is owned {
     function approve(address _spender, uint256 _value) public returns (bool) {
         require(msg.sender != address(0));
         require(_spender != address(0));
-        require(_value &gt;= 0);
+        require(_value >= 0);
         allowances[msg.sender][_spender] = _value;
         return true;
     }
@@ -199,13 +199,13 @@ contract PreSale is owned{
         uint8 bonus_rate,
         uint256 sell_token_limit
     ) onlyOwner public {
-        require(start_timestamp &gt; 0);
-        require(end_timestamp &gt; 0);
-        require(sell_token_limit &gt; 0);
+        require(start_timestamp > 0);
+        require(end_timestamp > 0);
+        require(sell_token_limit > 0);
 
         uint256 sale_number = sale_list.length;
-        for (uint i=0; i &lt; sale_list.length; i++) {
-            require(sale_list[i].end_timestamp &lt; start_timestamp);
+        for (uint i=0; i < sale_list.length; i++) {
+            require(sale_list[i].end_timestamp < start_timestamp);
         }
 
         sale_list[sale_list.length++] = Sale({
@@ -225,10 +225,10 @@ contract PreSale is owned{
         uint8 bonus_rate,
         uint256 sell_token_limit
     ) onlyOwner public returns(bool) {
-        require(_index &lt; sale_list.length);
-        require(start_timestamp &gt; 0);
-        require(end_timestamp &gt; 0);
-        require(sell_token_limit &gt; 0);
+        require(_index < sale_list.length);
+        require(start_timestamp > 0);
+        require(end_timestamp > 0);
+        require(sell_token_limit > 0);
 
         sale_list[_index].start_timestamp = start_timestamp;
         sale_list[_index].end_timestamp = end_timestamp;
@@ -241,8 +241,8 @@ contract PreSale is owned{
         uint256 _index,
         uint256 start_timestamp
     ) onlyOwner public returns(bool) {
-        require(_index &lt; sale_list.length);
-        require(start_timestamp &gt; 0);
+        require(_index < sale_list.length);
+        require(start_timestamp > 0);
         sale_list[_index].start_timestamp = start_timestamp;
         return true;
     }
@@ -251,8 +251,8 @@ contract PreSale is owned{
         uint256 _index,
         uint256 end_timestamp
     ) onlyOwner public returns(bool) {
-        require(_index &lt; sale_list.length);
-        require(end_timestamp &gt; 0);
+        require(_index < sale_list.length);
+        require(end_timestamp > 0);
         sale_list[_index].end_timestamp = end_timestamp;
         return true;
     }
@@ -261,7 +261,7 @@ contract PreSale is owned{
         uint256 _index,
         uint8 bonus_rate
     ) onlyOwner public returns(bool) {
-        require(_index &lt; sale_list.length);
+        require(_index < sale_list.length);
         sale_list[_index].bonus_rate = bonus_rate;
         return true;
     }
@@ -270,8 +270,8 @@ contract PreSale is owned{
         uint256 _index,
         uint256 sell_token_limit
     ) onlyOwner public returns(bool) {
-        require(_index &lt; sale_list.length);
-        require(sell_token_limit &gt; 0);
+        require(_index < sale_list.length);
+        require(sell_token_limit > 0);
         sale_list[_index].sell_limit = sell_token_limit;
         return true;
     }
@@ -287,9 +287,9 @@ contract PreSale is owned{
         uint8 bonus_rate = sale_list[_index].bonus_rate;
         uint256 sell_limit_plus_bonus = addBonus(sell_limit, bonus_rate);
 
-        if (now &gt;= index_end_timestamp) {
+        if (now >= index_end_timestamp) {
             return false;
-        } else if (index_sold.add(_amount) &gt; sell_limit_plus_bonus) {
+        } else if (index_sold.add(_amount) > sell_limit_plus_bonus) {
             return false;
         } else {
             return true;
@@ -297,16 +297,16 @@ contract PreSale is owned{
     }
 
     function addSaleSold(uint256 _index, uint256 amount) internal {
-        require(amount &gt; 0);
-        require(_index &lt; sale_sold.length);
+        require(amount > 0);
+        require(_index < sale_sold.length);
         require(checkSaleCanSell(_index, amount) == true);
         sale_sold[_index] += amount;
     }
 
     function subSaleSold(uint256 _index, uint256 amount) internal {
-        require(amount &gt; 0);
-        require(_index &lt; sale_sold.length);
-        require(sale_sold[_index].sub(amount) &gt;= 0);
+        require(amount > 0);
+        require(_index < sale_sold.length);
+        require(sale_sold[_index].sub(amount) >= 0);
         sale_sold[_index] -= amount;
     }
 
@@ -328,13 +328,13 @@ contract PreSale is owned{
 
     function nowSaleInfo() internal view returns(Sale sale_info, bool isSale) {
         isSale = false;
-        for (uint i=0; i &lt; sale_list.length; i++) {
+        for (uint i=0; i < sale_list.length; i++) {
             uint256 end_timestamp = sale_list[i].end_timestamp;
             uint256 sell_limit = sale_list[i].sell_limit;
             uint8 bonus_rate = sale_list[i].bonus_rate;
             uint256 sell_limit_plus_bonus = addBonus(sell_limit, bonus_rate);
             uint256 temp_sold_token = sale_sold[i];
-            if ((now &lt;= end_timestamp) &amp;&amp; (temp_sold_token &lt; sell_limit_plus_bonus)) {
+            if ((now <= end_timestamp) && (temp_sold_token < sell_limit_plus_bonus)) {
                 sale_info = Sale({
                     sale_number: sale_list[i].sale_number,
                     start_timestamp: sale_list[i].start_timestamp,
@@ -367,8 +367,8 @@ contract Vote is owned {
 
         uint256 voting_count;
         uint256 total_weight;
-        mapping (address =&gt; uint256) voteWeightOf;
-        mapping (address =&gt; bool) votedOf;
+        mapping (address => uint256) voteWeightOf;
+        mapping (address => bool) votedOf;
         address[] voter_address;
     }
 
@@ -413,8 +413,8 @@ contract Vote is owned {
         uint256 voting_cut,
         uint256 threshold
     ) onlyOwner public returns (uint256) {
-        if (Proposals.length &gt;= 1) {
-            require(Proposals[vote_id].end_timestamp &lt; start_timestamp);
+        if (Proposals.length >= 1) {
+            require(Proposals[vote_id].end_timestamp < start_timestamp);
             require(Proposals[vote_id].executed == true);
         }
 
@@ -435,15 +435,15 @@ contract Vote is owned {
     }
 
     function voting(address _voter, uint256 _weight) internal returns(bool) {
-        if (Proposals[vote_id].end_timestamp &lt; now) {
+        if (Proposals[vote_id].end_timestamp < now) {
             Proposals[vote_id].executed = true;
         }
 
         require(Proposals[vote_id].executed == false);
-        require(Proposals[vote_id].end_timestamp &gt; now);
-        require(Proposals[vote_id].start_timestamp &lt;= now);
+        require(Proposals[vote_id].end_timestamp > now);
+        require(Proposals[vote_id].start_timestamp <= now);
         require(Proposals[vote_id].votedOf[_voter] == false);
-        require(Proposals[vote_id].voting_cut &lt;= _weight);
+        require(Proposals[vote_id].voting_cut <= _weight);
 
         Proposals[vote_id].votedOf[_voter] = true;
         Proposals[vote_id].voting_count += 1;
@@ -451,35 +451,35 @@ contract Vote is owned {
         Proposals[vote_id].total_weight += _weight;
         Proposals[vote_id].voter_address[Proposals[vote_id].voter_address.length++] = _voter;
 
-        if (Proposals[vote_id].total_weight &gt;= Proposals[vote_id].threshold) {
+        if (Proposals[vote_id].total_weight >= Proposals[vote_id].threshold) {
             Proposals[vote_id].executed = true;
         }
         return true;
     }
 
     function voteClose() onlyOwner public {
-        if (Proposals.length &gt;= 1) {
+        if (Proposals.length >= 1) {
             Proposals[vote_id].executed = true;
             ProposalEnd(vote_id, Proposals[vote_id].descript);
         }
     }
 
     function checkVote() onlyOwner public {
-        if ((Proposals.length &gt;= 1) &amp;&amp;
-            (Proposals[vote_id].end_timestamp &lt; now)) {
+        if ((Proposals.length >= 1) &&
+            (Proposals[vote_id].end_timestamp < now)) {
             voteClose();
         }
     }
 }
 
 contract FreezeToken is owned {
-    mapping (address =&gt; uint256) public freezeDateOf;
+    mapping (address => uint256) public freezeDateOf;
 
     event Freeze(address indexed _who, uint256 _date);
     event Melt(address indexed _who);
 
     function checkFreeze(address _sender) public constant returns (bool) {
-        if (now &gt;= freezeDateOf[_sender]) {
+        if (now >= freezeDateOf[_sender]) {
             return false;
         } else {
             return true;
@@ -502,8 +502,8 @@ contract TokenInfo is owned {
 
     address public token_wallet_address;
 
-    string public name = &quot;CUBE&quot;;
-    string public symbol = &quot;AUTO&quot;;
+    string public name = "CUBE";
+    string public symbol = "AUTO";
     uint256 public decimals = 18;
     uint256 public total_supply = 7200000000 * (10 ** uint256(decimals));
 
@@ -539,14 +539,14 @@ contract TokenInfo is owned {
     }
 
     function changeTotalSupply(uint256 _total_supply) onlyOwner internal {
-        require(_total_supply &gt; 0);
+        require(_total_supply > 0);
         uint256 pre_total_supply = total_supply;
         total_supply = _total_supply;
         ChangeTotalSupply(pre_total_supply, total_supply);
     }
 
     function changeConversionRate(uint256 _conversion_rate) onlyOwner public {
-        require(_conversion_rate &gt; 0);
+        require(_conversion_rate > 0);
         uint256 pre_conversion_rate = conversion_rate;
         conversion_rate = _conversion_rate;
         ChangeConversionRate(pre_conversion_rate, conversion_rate);
@@ -583,9 +583,9 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
         uint256 token_amount,
         uint256 freeze_timestamp
     ) onlyOwner public returns (bool) {
-        require(token_amount &gt; 0);
-        require(balance_of[token_wallet_address] &gt;= token_amount);
-        require(balance_of[to] + token_amount &gt; balance_of[to]);
+        require(token_amount > 0);
+        require(balance_of[token_wallet_address] >= token_amount);
+        require(balance_of[to] + token_amount > balance_of[to]);
         uint256 token_plus_bonus = 0;
         uint sale_number = 0;
 
@@ -606,7 +606,7 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
         balance_of[to] += token_plus_bonus;
 
         uint256 _freeze = 0;
-        if (freeze_timestamp &gt;= 0) {
+        if (freeze_timestamp >= 0) {
             _freeze = freeze_timestamp;
         }
 
@@ -618,7 +618,7 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
 
     function mintTokenBulk(address[] _tos, uint256[] _amounts) onlyOwner public {
         require(_tos.length == _amounts.length);
-        for (uint i=0; i &lt; _tos.length; i++) {
+        for (uint i=0; i < _tos.length; i++) {
             mintToken(_tos[i], _amounts[i], 0);
         }
     }
@@ -628,15 +628,15 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
         uint256 token_amount,
         uint256 freeze_timestamp
     ) onlyOwner public returns(bool) {
-        require(token_amount &gt; 0);
-        require(balance_of[token_wallet_address] &gt;= token_amount);
-        require(balance_of[to] + token_amount &gt; balance_of[to]);
+        require(token_amount > 0);
+        require(balance_of[token_wallet_address] >= token_amount);
+        require(balance_of[to] + token_amount > balance_of[to]);
 
         balance_of[token_wallet_address] -= token_amount;
         balance_of[to] += token_amount;
 
         uint256 _freeze = 0;
-        if (freeze_timestamp &gt;= 0) {
+        if (freeze_timestamp >= 0) {
             _freeze = freeze_timestamp;
         }
 
@@ -649,7 +649,7 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
 
     function superMintBulk(address[] _tos, uint256[] _amounts) onlyOwner public {
         require(_tos.length == _amounts.length);
-        for (uint i=0; i &lt; _tos.length; i++) {
+        for (uint i=0; i < _tos.length; i++) {
             superMint(_tos[i], _amounts[i], 0);
         }
     }
@@ -660,7 +660,7 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
 
     function transferBulk(address[] tos, uint256[] values) public {
         require(tos.length == values.length);
-        for (uint i=0; i &lt; tos.length; i++) {
+        for (uint i=0; i < tos.length; i++) {
             transfer(tos[i], values[i]);
         }
     }
@@ -672,7 +672,7 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
     ) public {
         require(msg.sender != address(0));
         require(_from != address(0));
-        require(_amount &lt;= allowances[_from][msg.sender]);
+        require(_amount <= allowances[_from][msg.sender]);
         _transfer(_from, _to, _amount);
         allowances[_from][msg.sender] -= _amount;
     }
@@ -684,8 +684,8 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
     ) private {
         require(_from != address(0));
         require(_to != address(0));
-        require(balance_of[_from] &gt;= _amount);
-        require(balance_of[_to].add(_amount) &gt;= balance_of[_to]);
+        require(balance_of[_from] >= _amount);
+        require(balance_of[_to].add(_amount) >= balance_of[_to]);
         require(transfer_close == false);
         require(checkFreeze(_from) == false);
 
@@ -698,8 +698,8 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
     }
 
     function burn(address _who, uint256 _amount) onlyOwner public returns(bool) {
-        require(_amount &gt; 0);
-        require(balanceOf(_who) &gt;= _amount);
+        require(_amount > 0);
+        require(balanceOf(_who) >= _amount);
         balance_of[_who] -= _amount;
         total_supply -= _amount;
         Burn(_who, _amount);
@@ -707,7 +707,7 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
     }
 
     function additionalTotalSupply(uint256 _addition) onlyOwner public returns(bool) {
-        require(_addition &gt; 0);
+        require(_addition > 0);
         uint256 change_total_supply = total_supply.add(_addition);
         balance_of[token_wallet_address] += _addition;
         changeTotalSupply(change_total_supply);
@@ -754,14 +754,14 @@ contract Token is owned, PreSale, FreezeToken, TokenInfo, Vote, BasicToken {
     function voteAgree() public returns (bool) {
         address _voter = msg.sender;
         uint256 _balance = balanceOf(_voter);
-        require(_balance &gt; 0);
+        require(_balance > 0);
         return voting(_voter, _balance);
     }
 
     function superVoteAgree(address who) onlyOwner public returns(bool) {
         require(who != address(0));
         uint256 _balance = balanceOf(who);
-        require(_balance &gt; 0);
+        require(_balance > 0);
         return voting(who, _balance);
     }
 }

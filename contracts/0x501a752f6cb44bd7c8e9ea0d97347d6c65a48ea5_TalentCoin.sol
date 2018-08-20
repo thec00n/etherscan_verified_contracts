@@ -22,7 +22,7 @@ contract ERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -127,13 +127,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -144,16 +144,16 @@ library SafeMath {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * @dev This simplifies the implementation of &quot;user permissions&quot;.
+ * @dev This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable {
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
   
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     require(whitelist[msg.sender]);
@@ -180,7 +180,7 @@ contract Whitelist is Ownable {
    * false if all addresses were already in the whitelist  
    */
   function addAddressesToWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (addAddressToWhitelist(addrs[i])) {
         success = true;
       }
@@ -191,7 +191,7 @@ contract Whitelist is Ownable {
    * @dev remove an address from the whitelist
    * @param addr address
    * @return true if the address was removed from the whitelist, 
-   * false if the address wasn&#39;t in the whitelist in the first place 
+   * false if the address wasn't in the whitelist in the first place 
    */
   function removeAddressFromWhitelist(address addr) onlyOwner public returns(bool success) {
     if (whitelist[addr]) {
@@ -205,10 +205,10 @@ contract Whitelist is Ownable {
    * @dev remove addresses from the whitelist
    * @param addrs addresses
    * @return true if at least one address was removed from the whitelist, 
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (removeAddressFromWhitelist(addrs[i])) {
         success = true;
       }
@@ -221,12 +221,12 @@ contract TalentCoin is ERC20, Ownable, Whitelist, Pausable{
   
   using SafeMath for uint256;
 
-  mapping (address =&gt; bool) admins;  // Mapping of who is an admin
-  mapping( address =&gt; uint256 ) balances;
-  mapping( address =&gt; mapping( address =&gt; uint256 ) ) approvals;
-  mapping( address =&gt; uint256 ) ratemapping;
+  mapping (address => bool) admins;  // Mapping of who is an admin
+  mapping( address => uint256 ) balances;
+  mapping( address => mapping( address => uint256 ) ) approvals;
+  mapping( address => uint256 ) ratemapping;
   //How much ETH each address has invested
-  mapping (address =&gt; uint) public investedAmountOf;
+  mapping (address => uint) public investedAmountOf;
   address public owner;
   address public walletAddress;
   uint256 public supply;
@@ -258,12 +258,12 @@ contract TalentCoin is ERC20, Ownable, Whitelist, Pausable{
     }
     
     function createTokens() public payable onlyWhitelisted() whenNotPaused(){
-    require(msg.value &gt;0);
+    require(msg.value >0);
     if (investedAmountOf[msg.sender] == 0) {
             investorCount++;
         }
     uint256 tokens = msg.value.mul(rate);  
-    require(supply &gt;= tokens &amp;&amp; balances[owner] &gt;= tokens);
+    require(supply >= tokens && balances[owner] >= tokens);
     balances[msg.sender] = balances[msg.sender].add(tokens);
     balances[owner] = balances[owner].sub(tokens); 
     walletAddress.transfer(msg.value); 
@@ -286,7 +286,7 @@ contract TalentCoin is ERC20, Ownable, Whitelist, Pausable{
         investorCount++;
     }
     require(_to != 0x0);
-    require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; supply &gt;= _value);
+    require(balances[msg.sender] >= _value && _value > 0 && supply >= _value);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer( msg.sender, _to, _value );
@@ -295,8 +295,8 @@ contract TalentCoin is ERC20, Ownable, Whitelist, Pausable{
   }
 
   function transferFrom( address _from, address _to, uint256 _value) onlyWhitelisted() public returns (bool success) {
-    require(_from != 0x0 &amp;&amp; _to != 0x0);
-    require(approvals[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; _value &gt; 0);
+    require(_from != 0x0 && _to != 0x0);
+    require(approvals[_from][msg.sender] >= _value && balances[_from] >= _value && _value > 0);
     approvals[_from][msg.sender] = approvals[_from][msg.sender].sub(_value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -356,7 +356,7 @@ contract TalentCoin is ERC20, Ownable, Whitelist, Pausable{
 
   function decreaseApproval (address _spender, uint _subtractedValue) onlyOwner() public returns (bool success) {
     uint oldValue = approvals[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       approvals[msg.sender][_spender] = 0;
     } else {
       approvals[msg.sender][_spender] = oldValue.sub(_subtractedValue);

@@ -8,20 +8,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -33,7 +33,7 @@ contract IBancorFormula {
 
 contract BancorFormula is IBancorFormula, SafeMath {
 
-    string public version = &#39;0.2&#39;;
+    string public version = '0.2';
 
     uint256 constant ONE = 1;
     uint256 constant TWO = 2;
@@ -43,7 +43,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
 
     /**
         The values below depend on MIN_PRECISION. If you choose to change it:
-        Apply the same change in file &#39;PrintExpScalingFactors.py&#39;, run it and paste the printed results below.
+        Apply the same change in file 'PrintExpScalingFactors.py', run it and paste the printed results below.
     */
     uint256 constant SCALED_EXP_0P5 = 0x1a61298e1;
     uint256 constant SCALED_VAL_0P5 = 0x80000000;
@@ -56,7 +56,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
 
     /**
         The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
-        Apply the same change in file &#39;PrintLn2ScalingFactors.py&#39;, run it and paste the printed results below.
+        Apply the same change in file 'PrintLn2ScalingFactors.py', run it and paste the printed results below.
     */
     uint256 constant CEILING_LN2_MANTISSA = 0xb17217f8;
     uint256 constant FLOOR_LN2_MANTISSA   = 0x2c5c85fdf473de6af278ece600fcbda;
@@ -64,7 +64,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
 
     /**
         The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
-        Apply the same change in file &#39;PrintFunctionBancorFormula.py&#39;, run it and paste the printed results below.
+        Apply the same change in file 'PrintFunctionBancorFormula.py', run it and paste the printed results below.
     */
     uint256[128] maxExpArray;
     function BancorFormula() public {
@@ -213,7 +213,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
     */
     function calculatePurchaseReturn(uint256 _supply, uint256 _reserveBalance, uint8 _reserveRatio, uint256 _depositAmount) public constant returns (uint256) {
         // validate input
-        require(_supply != 0 &amp;&amp; _reserveBalance != 0 &amp;&amp; _reserveRatio &gt; 0 &amp;&amp; _reserveRatio &lt;= 100);
+        require(_supply != 0 && _reserveBalance != 0 && _reserveRatio > 0 && _reserveRatio <= 100);
 
         // special case for 0 deposit amount
         if (_depositAmount == 0)
@@ -230,7 +230,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
 
         uint8 precision = calculateBestPrecision(baseN, _reserveBalance, _reserveRatio, 100);
         uint256 resN = power(baseN, _reserveBalance, _reserveRatio, 100, precision);
-        temp = safeMul(_supply, resN) &gt;&gt; precision;
+        temp = safeMul(_supply, resN) >> precision;
         return safeSub(temp, _supply);
      }
 
@@ -249,7 +249,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
     */
     function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint8 _reserveRatio, uint256 _sellAmount) public constant returns (uint256) {
         // validate input
-        require(_supply != 0 &amp;&amp; _reserveBalance != 0 &amp;&amp; _reserveRatio &gt; 0 &amp;&amp; _reserveRatio &lt;= 100 &amp;&amp; _sellAmount &lt;= _supply);
+        require(_supply != 0 && _reserveBalance != 0 && _reserveRatio > 0 && _reserveRatio <= 100 && _sellAmount <= _supply);
 
         // special case for 0 sell amount
         if (_sellAmount == 0)
@@ -273,43 +273,43 @@ contract BancorFormula is IBancorFormula, SafeMath {
         uint8 precision = calculateBestPrecision(_supply, baseD, 100, _reserveRatio);
         uint256 resN = power(_supply, baseD, 100, _reserveRatio, precision);
         temp1 = safeMul(_reserveBalance, resN);
-        temp2 = safeMul(_reserveBalance, ONE &lt;&lt; precision);
+        temp2 = safeMul(_reserveBalance, ONE << precision);
         return safeSub(temp1, temp2) / resN;
     }
 
     /**
-        Predicts the highest precision which can be used in order to compute &quot;base ^ exp&quot; without exceeding 256 bits in any of the intermediate computations.
-        Instead of calculating &quot;base ^ exp&quot;, we calculate &quot;e ^ (ln(base) * exp)&quot;.
-        The value of &quot;ln(base)&quot; is represented with an integer slightly smaller than &quot;ln(base) * 2 ^ precision&quot;.
-        The larger &quot;precision&quot; is, the more accurately this value represents the real value.
-        However, the larger &quot;precision&quot; is, the more bits are required in order to store this value.
-        And the exponentiation function, which takes &quot;x&quot; and calculates &quot;e ^ x&quot;, is limited to a maximum exponent (maximum value of &quot;x&quot;).
-        This maximum exponent depends on the precision used (&quot;maxExpArray&quot; maps each precision between 0 and 127 to its maximum exponent).
+        Predicts the highest precision which can be used in order to compute "base ^ exp" without exceeding 256 bits in any of the intermediate computations.
+        Instead of calculating "base ^ exp", we calculate "e ^ (ln(base) * exp)".
+        The value of "ln(base)" is represented with an integer slightly smaller than "ln(base) * 2 ^ precision".
+        The larger "precision" is, the more accurately this value represents the real value.
+        However, the larger "precision" is, the more bits are required in order to store this value.
+        And the exponentiation function, which takes "x" and calculates "e ^ x", is limited to a maximum exponent (maximum value of "x").
+        This maximum exponent depends on the precision used ("maxExpArray" maps each precision between 0 and 127 to its maximum exponent).
         Hence before calling the exponentiation function, we need to determine the highest precision which can be used.
-        We do this by estimating an upper-bound for &quot;ln(base) * exp&quot;, and then choosing the highest precision which this value is permitted for.
-        Of course, we should later assert that the actual value representing &quot;ln(base) * exp&quot; is indeed not larger than the maximum exponent of the chosen precision.
-        Note that the outcome of this function only affects the accuracy of the computation of &quot;base ^ exp&quot;.
+        We do this by estimating an upper-bound for "ln(base) * exp", and then choosing the highest precision which this value is permitted for.
+        Of course, we should later assert that the actual value representing "ln(base) * exp" is indeed not larger than the maximum exponent of the chosen precision.
+        Note that the outcome of this function only affects the accuracy of the computation of "base ^ exp".
         Therefore, we do not need to assert that no intermediate result exceeds 256 bits (nor in this function, neither in any of the functions down the calling tree).
     */
     function calculateBestPrecision(uint256 _baseN, uint256 _baseD, uint256 _expN, uint256 _expD) public constant returns (uint8) {
         uint256 maxVal = lnUpperBound(_baseN, _baseD) * _expN;
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
-        while (lo + 1 &lt; hi) {
+        while (lo + 1 < hi) {
             uint8 mid = (lo + hi) / 2;
-            if ((maxVal &lt;&lt; (mid - MIN_PRECISION)) / _expD &lt;= maxExpArray[mid])
+            if ((maxVal << (mid - MIN_PRECISION)) / _expD <= maxExpArray[mid])
                 lo = mid;
             else
                 hi = mid;
         }
-        if ((maxVal &lt;&lt; (hi - MIN_PRECISION)) / _expD &lt;= maxExpArray[hi])
+        if ((maxVal << (hi - MIN_PRECISION)) / _expD <= maxExpArray[hi])
             return hi;
         else
             return lo;
     }
 
     /**
-        Calculates an integer approximation of &quot;(_baseN / _baseD) ^ (_expN / _expD) * 2 ^ _precision&quot;.
+        Calculates an integer approximation of "(_baseN / _baseD) ^ (_expN / _expD) * 2 ^ _precision".
         This method is overflow-safe.
     */
     function power(uint256 _baseN, uint256 _baseD, uint256 _expN, uint256 _expD, uint8 _precision) public constant returns (uint256) {
@@ -326,32 +326,32 @@ contract BancorFormula is IBancorFormula, SafeMath {
             denominator between 1             and 2 ^ (256 - precision) - 1
             output      between 0             and floor(ln(2 ^ (256 - precision) - 1) * 2 ^ precision)
 
-        This function asserts &quot;0 &lt; denominator &lt;= numerator &lt; 2 ^ (256 - precision)&quot;.
+        This function asserts "0 < denominator <= numerator < 2 ^ (256 - precision)".
     */
     function ln(uint256 _numerator, uint256 _denominator, uint8 _precision) public pure returns (uint256) {
-        assert(0 &lt; _denominator &amp;&amp; _denominator &lt;= _numerator &amp;&amp; _numerator &lt; (ONE &lt;&lt; (256 - _precision)));
-        return fixedLoge( (_numerator &lt;&lt; _precision) / _denominator, _precision);
+        assert(0 < _denominator && _denominator <= _numerator && _numerator < (ONE << (256 - _precision)));
+        return fixedLoge( (_numerator << _precision) / _denominator, _precision);
     }
 
     /**
-        Takes a rational number &quot;numerator / denominator&quot; as input.
-        Returns an integer upper-bound of the natural logarithm of the input scaled by &quot;2 ^ MIN_PRECISION&quot;.
-        We do this by calculating &quot;Ceiling(log2(numerator / denominator)) * Ceiling(ln(2) * 2 ^ MIN_PRECISION)&quot;.
-        For small values of &quot;numerator / denominator&quot;, this sometimes yields a bad upper-bound approximation.
+        Takes a rational number "numerator / denominator" as input.
+        Returns an integer upper-bound of the natural logarithm of the input scaled by "2 ^ MIN_PRECISION".
+        We do this by calculating "Ceiling(log2(numerator / denominator)) * Ceiling(ln(2) * 2 ^ MIN_PRECISION)".
+        For small values of "numerator / denominator", this sometimes yields a bad upper-bound approximation.
         We therefore cover these cases (and a few more) manually.
-        This function assumes &quot;0 &lt; denominator &lt; numerator &lt; 2 ^ (256 - MIN_PRECISION)&quot;.
+        This function assumes "0 < denominator < numerator < 2 ^ (256 - MIN_PRECISION)".
         Complexity is O(log(input bit-length)).
     */
     function lnUpperBound(uint256 _numerator, uint256 _denominator) public pure returns (uint256) {
-        uint256 scaledNumerator = _numerator &lt;&lt; MIN_PRECISION;
+        uint256 scaledNumerator = _numerator << MIN_PRECISION;
 
-        if (scaledNumerator &lt;= _denominator * SCALED_EXP_0P5) // _numerator / _denominator &lt; e^0.5
+        if (scaledNumerator <= _denominator * SCALED_EXP_0P5) // _numerator / _denominator < e^0.5
             return SCALED_VAL_0P5;
-        if (scaledNumerator &lt;= _denominator * SCALED_EXP_1P0) // _numerator / _denominator &lt; e^1.0
+        if (scaledNumerator <= _denominator * SCALED_EXP_1P0) // _numerator / _denominator < e^1.0
             return SCALED_VAL_1P0;
-        if (scaledNumerator &lt;= _denominator * SCALED_EXP_2P0) // _numerator / _denominator &lt; e^2.0
+        if (scaledNumerator <= _denominator * SCALED_EXP_2P0) // _numerator / _denominator < e^2.0
             return SCALED_VAL_2P0;
-        if (scaledNumerator &lt;= _denominator * SCALED_EXP_3P0) // _numerator / _denominator &lt; e^3.0
+        if (scaledNumerator <= _denominator * SCALED_EXP_3P0) // _numerator / _denominator < e^3.0
             return SCALED_VAL_3P0;
 
         return ceilLog2(_numerator, _denominator) * CEILING_LN2_MANTISSA;
@@ -359,16 +359,16 @@ contract BancorFormula is IBancorFormula, SafeMath {
 
     /**
         Returns floor(ln(x / 2 ^ precision) * 2 ^ precision)
-        Assumes x &gt;= 2 ^ precision
+        Assumes x >= 2 ^ precision
     */
     function fixedLoge(uint256 _x, uint8 _precision) public pure returns (uint256) {
         uint256 _log2 = fixedLog2(_x, _precision);
-        return (_log2 * FLOOR_LN2_MANTISSA) &gt;&gt; FLOOR_LN2_EXPONENT;
+        return (_log2 * FLOOR_LN2_MANTISSA) >> FLOOR_LN2_EXPONENT;
     }
 
     /**
         Returns floor(log2(x / 2 ^ precision) * 2 ^ precision)
-        Assumes x &gt;= 2 ^ precision
+        Assumes x >= 2 ^ precision
 
         Ranges:
             precision between MIN_PRECISION and MAX_PRECISION
@@ -377,19 +377,19 @@ contract BancorFormula is IBancorFormula, SafeMath {
     */
     function fixedLog2(uint256 _x, uint8 _precision) public pure returns (uint256) {
         uint256 hi = 0;
-        uint256 fixedOne = ONE &lt;&lt; _precision;
-        uint256 fixedTwo = TWO &lt;&lt; _precision;
+        uint256 fixedOne = ONE << _precision;
+        uint256 fixedTwo = TWO << _precision;
 
-        while (_x &gt;= fixedTwo) {
-            _x &gt;&gt;= 1;
+        while (_x >= fixedTwo) {
+            _x >>= 1;
             hi += fixedOne;
         }
 
-        for (uint8 i = 0; i &lt; _precision; ++i) {
+        for (uint8 i = 0; i < _precision; ++i) {
             _x = (_x * _x) / fixedOne;
-            if (_x &gt;= fixedTwo) {
-                _x &gt;&gt;= 1;
-                hi += ONE &lt;&lt; (_precision - 1 - i);
+            if (_x >= fixedTwo) {
+                _x >>= 1;
+                hi += ONE << (_precision - 1 - i);
             }
         }
 
@@ -397,7 +397,7 @@ contract BancorFormula is IBancorFormula, SafeMath {
     }
 
     /**
-        Takes a rational number &quot;numerator / denominator&quot; as input.
+        Takes a rational number "numerator / denominator" as input.
         Returns the smallest integer larger than or equal to the binary logarithm of the input.
         Complexity is O(log(input bit-length)).
     */
@@ -406,15 +406,15 @@ contract BancorFormula is IBancorFormula, SafeMath {
     }
 
     /**
-        Takes a natural number &quot;n&quot; as input.
+        Takes a natural number "n" as input.
         Returns the largest integer smaller than or equal to the binary logarithm of the input.
         Complexity is O(log(input bit-length)).
     */
     function floorLog2(uint256 _n) public pure returns (uint256) {
         uint8 t = 0;
-        for (uint8 s = 128; s &gt; 0; s &gt;&gt;= 1) {
-            if (_n &gt;= (ONE &lt;&lt; s)) {
-                _n &gt;&gt;= s;
+        for (uint8 s = 128; s > 0; s >>= 1) {
+            if (_n >= (ONE << s)) {
+                _n >>= s;
                 t |= s;
             }
         }
@@ -423,89 +423,89 @@ contract BancorFormula is IBancorFormula, SafeMath {
     }
 
     /**
-        fixedExp is a &#39;protected&#39; version of fixedExpUnsafe, which asserts instead of overflows.
+        fixedExp is a 'protected' version of fixedExpUnsafe, which asserts instead of overflows.
         The maximum value which can be passed to fixedExpUnsafe depends on the precision used.
         The global maxExpArray maps each precision between 0 and 127 to the maximum value permitted.
     */
     function fixedExp(uint256 _x, uint8 _precision) public constant returns (uint256) {
-        assert(_x &lt;= maxExpArray[_precision]);
+        assert(_x <= maxExpArray[_precision]);
         return fixedExpUnsafe(_x, _precision);
     }
 
     /**
-        This function can be auto-generated by the script &#39;PrintFunctionFixedExpUnsafe.py&#39;.
-        It approximates &quot;e ^ x&quot; via maclauren summation: &quot;(x^0)/0! + (x^1)/1! + ... + (x^n)/n!&quot;.
-        It returns &quot;e ^ (x &gt;&gt; precision) &lt;&lt; precision&quot;, that is, the result is upshifted for accuracy.
+        This function can be auto-generated by the script 'PrintFunctionFixedExpUnsafe.py'.
+        It approximates "e ^ x" via maclauren summation: "(x^0)/0! + (x^1)/1! + ... + (x^n)/n!".
+        It returns "e ^ (x >> precision) << precision", that is, the result is upshifted for accuracy.
         The maximum permitted value for _x depends on the value of _precision (see maxExpArray).
     */
     function fixedExpUnsafe(uint256 _x, uint8 _precision) public pure returns (uint256) {
         uint256 xi = _x;
-        uint256 res = uint256(0xde1bc4d19efcac82445da75b00000000) &lt;&lt; _precision;
+        uint256 res = uint256(0xde1bc4d19efcac82445da75b00000000) << _precision;
 
         res += xi * 0xde1bc4d19efcac82445da75b00000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x6f0de268cf7e5641222ed3ad80000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x2504a0cd9a7f7215b60f9be480000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x9412833669fdc856d83e6f920000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x1d9d4d714865f4de2b3fafea0000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x4ef8ce836bba8cfb1dff2a70000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0xb481d807d1aa66d04490610000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x16903b00fa354cda08920c2000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x281cdaac677b334ab9e732000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x402e2aad725eb8778fd85000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x5d5a6c9f31fe2396a2af000000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x7c7890d442a82f73839400000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x9931ed54034526b58e400000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0xaf147cf24ce150cf7e00000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0xbac08546b867cdaa200000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0xbac08546b867cdaa20000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0xafc441338061b2820000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x9c3cabbc0056d790000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x839168328705c30000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x694120286c049c000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x50319e98b3d2c000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x3a52a1e36b82000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x289286e0fce000;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x1b0c59eb53400;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x114f95b55400;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0xaa7210d200;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x650139600;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x39b78e80;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x1fd8080;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x10fbc0;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x8c40;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x462;
-        xi = (xi * _x) &gt;&gt; _precision;
+        xi = (xi * _x) >> _precision;
         res += xi * 0x22;
 
         return res / 0xde1bc4d19efcac82445da75b00000000;

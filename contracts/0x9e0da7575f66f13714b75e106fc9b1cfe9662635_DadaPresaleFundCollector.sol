@@ -9,18 +9,18 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 
   function divide(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
@@ -64,7 +64,7 @@ contract DadaPresaleFundCollector is Owned {
   address public presaleAddressAmountHolder = 0xF636c93F98588b7F1624C8EC4087702E5BE876b6;
 
   /** How much they have invested */
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   /** What is the minimum buy in */
   uint constant maximumIndividualCap = 500 ether;
@@ -86,7 +86,7 @@ contract DadaPresaleFundCollector is Owned {
 
   bool public isFinalized;
 
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
 
   event Invested(address investor, uint value);
   event Refunded(address investor, uint value);
@@ -114,12 +114,12 @@ contract DadaPresaleFundCollector is Owned {
   function invest() public payable {
     // execution shoulf be turned ON
     require(isExecutionAllowed);
-    // the cap shouldn&#39;t be reached yet
+    // the cap shouldn't be reached yet
     require(!isCapReached);
     // the final balance of the contract should not be greater than
     // the etherCap
     uint currentBalance = this.balance;
-    require(currentBalance &lt;= etherCap);
+    require(currentBalance <= etherCap);
 
     // Cannot invest anymore through crowdsale when moving has begun
     require(!moving);
@@ -127,10 +127,10 @@ contract DadaPresaleFundCollector is Owned {
     // the investor is whitlisted
     require(whitelist[investor]);
     
-    // the total balance of the user shouldn&#39;t be greater than the maximumIndividualCap
-    require((balances[investor].plus(msg.value)) &lt;= maximumIndividualCap);
+    // the total balance of the user shouldn't be greater than the maximumIndividualCap
+    require((balances[investor].plus(msg.value)) <= maximumIndividualCap);
 
-    require(msg.value &lt;= maximumIndividualCap);
+    require(msg.value <= maximumIndividualCap);
     balances[investor] = balances[investor].plus(msg.value);
     // if the cap is reached then turn ON the flag
     if (currentBalance == etherCap){
@@ -145,8 +145,8 @@ contract DadaPresaleFundCollector is Owned {
   function refund() public {
     require(isRefundAllowed);
     address investor = msg.sender;
-    require(this.balance &gt; 0);
-    require(balances[investor] &gt; 0);
+    require(this.balance > 0);
+    require(balances[investor] > 0);
     // We have started to move funds
     moving = true;
     uint amount = balances[investor];

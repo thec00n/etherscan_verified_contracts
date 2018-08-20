@@ -27,20 +27,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -112,8 +112,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -127,7 +127,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -311,9 +311,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -362,14 +362,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -397,7 +397,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -408,7 +408,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply.add(_amount) &lt;= cap);
+    require(totalSupply.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -428,9 +428,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -478,7 +478,7 @@ contract HTLC {
     bytes32 sha256hash;
 
     function HTLC(ERC20Basic _token, bytes32 _hash, address _beneficiary, uint256 _releaseTime) public {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -492,7 +492,7 @@ contract HTLC {
         require(sha256(preimage) == sha256hash);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.safeTransfer(beneficiary, amount);
         selfdestruct(msg.sender);
@@ -509,10 +509,10 @@ contract HTLC {
      * @notice When timeout. for default action, the token in it will lost forever
      */
     function release() public {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         onTimeout(amount);
     }
@@ -525,8 +525,8 @@ contract VCBToken is CappedToken, BurnableToken, DetailedERC20 {
 
     uint8 constant DECIMALS = 18;
     uint  constant TOTALTOKEN = 1 * 10 ** (8 + uint(DECIMALS));
-    string constant NAME = &quot;ValueCyber Token&quot;;
-    string constant SYM = &quot;VCT&quot;;
+    string constant NAME = "ValueCyber Token";
+    string constant SYM = "VCT";
 
     address constant PRESALE = 0x638a3C7dF9D1B3A56E19B92bE07eCC84b6475BD6;
     uint  constant PRESALETOKEN = 55 * 10 ** (6 + uint(DECIMALS));
@@ -548,7 +548,7 @@ contract VCBCrowdSale is Crowdsale, Ownable {
     uint constant SALELASTFOR = 50 days;
     address constant FUNDWALLET = 0x622969e0928fa6bEeda9f26F8a60D0b22Db7E6f1;
 
-    mapping(address =&gt; uint8) giftList;
+    mapping(address => uint8) giftList;
 
     event CrowdsaleFinalized();
     /**
@@ -583,9 +583,9 @@ contract VCBCrowdSale is Crowdsale, Ownable {
 
         // calculate token amount to be created
         uint256 gifttokens = weiAmount.mul(giftList[beneficiary]).mul(rate).div(RATIODENO);
-        if (gifttokens &gt; 0) {
+        if (gifttokens > 0) {
 
-            //if gift token can&#39;t be sent, contract still fails
+            //if gift token can't be sent, contract still fails
             token.mint(beneficiary, gifttokens);
             TokenGift(beneficiary, gifttokens);
         }
@@ -602,7 +602,7 @@ contract VCBCrowdSale is Crowdsale, Ownable {
     }
 
     function addGift(address beneficiary, uint8 giftratio) onlyOwner public {
-        require(giftratio &lt; RATIODENO);
+        require(giftratio < RATIODENO);
         giftList[beneficiary] = giftratio;
     }
 

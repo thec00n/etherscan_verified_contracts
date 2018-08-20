@@ -8,37 +8,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -74,7 +74,7 @@ contract Token is SafeMath {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender],_value);
             balances[_to] = safeAdd(balances[_to],_value);
             Transfer(msg.sender, _to, _value);
@@ -83,7 +83,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] =safeAdd(balances[_to],_value);
             balances[_from] =safeSub(balances[_from],_value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_value); 
@@ -106,8 +106,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply=   4500000*10**12;
     uint256 public initialSupply= 2500000*10**12;
 }
@@ -124,7 +124,7 @@ contract BomBomToken is StandardToken {
     string public name;                  
     uint8 public decimals;               
     string public symbol;
-    string public version = &#39;BOM&#39;;       
+    string public version = 'BOM';       
 
 
     function BomBomToken(
@@ -132,9 +132,9 @@ contract BomBomToken is StandardToken {
         //Add initial supply to total supply to make  7M. remaining 4.5M lockedd in escrow until pos impl        
         totalSupply+=initialSupply;
         balances[msg.sender] = initialSupply;               
-        name = &quot;BomBomToken&quot;;                              
+        name = "BomBomToken";                              
         decimals = 6;                            
-        symbol = &quot;BOM&quot;;                           
+        symbol = "BOM";                           
     }
 
    
@@ -142,7 +142,7 @@ contract BomBomToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

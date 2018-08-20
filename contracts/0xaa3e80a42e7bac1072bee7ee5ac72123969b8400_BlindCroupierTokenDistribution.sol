@@ -25,9 +25,9 @@ contract MultiOwnable {
     }
 
     /**
-     * Returns owner&#39;s info
+     * Returns owner's info
      * @param  idx - index of the owner
-     * @return owner - owner&#39;s info
+     * @return owner - owner's info
      */
     function owner (uint idx)   constant   returns (address owner_dot_recipient, uint owner_dot_share) {  
 Owner memory owner;
@@ -37,23 +37,23 @@ Owner memory owner;
 owner_dot_share = uint(owner.share);}
 
     /** reverse lookup helper */
-    mapping (address =&gt; bool) ownersIdx;
+    mapping (address => bool) ownersIdx;
 
     /**
      * Creates the contract with up to 16 owners
-     * shares must be &gt; 0
+     * shares must be > 0
      */
     function MultiOwnable (address[16] _owners_dot_recipient, uint[16] _owners_dot_share)   {  
 Owner[16] memory _owners;
 
-for(uint __recipient_iterator__ = 0; __recipient_iterator__ &lt; _owners_dot_recipient.length;__recipient_iterator__++)
+for(uint __recipient_iterator__ = 0; __recipient_iterator__ < _owners_dot_recipient.length;__recipient_iterator__++)
   _owners[__recipient_iterator__].recipient = address(_owners_dot_recipient[__recipient_iterator__]);
-for(uint __share_iterator__ = 0; __share_iterator__ &lt; _owners_dot_share.length;__share_iterator__++)
+for(uint __share_iterator__ = 0; __share_iterator__ < _owners_dot_share.length;__share_iterator__++)
   _owners[__share_iterator__].share = uint(_owners_dot_share[__share_iterator__]);
-        for(var idx = 0; idx &lt; _owners_dot_recipient.length; idx++) {
+        for(var idx = 0; idx < _owners_dot_recipient.length; idx++) {
             if(_owners[idx].recipient != 0) {
                 owners.push(_owners[idx]);
-                assert(owners[idx].share &gt; 0);
+                assert(owners[idx].share > 0);
                 ownersIdx[_owners[idx].recipient] = true;
             }
         }
@@ -155,8 +155,8 @@ contract ERC20Token {
  contract WIN is ERC20Token {
     
 
-    string public constant symbol = &quot;WIN&quot;;
-    string public constant name = &quot;WIN&quot;;
+    string public constant symbol = "WIN";
+    string public constant name = "WIN";
 
     uint8 public constant decimals = 7;
     uint256 constant TOKEN = 10**7;
@@ -164,10 +164,10 @@ contract ERC20Token {
     uint256 public totalTokenSupply = 500 * MILLION * TOKEN;
 
     /** balances of each accounts */
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /** amount of tokens approved for transfer */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /** Triggered when `owner` destroys `amount` tokens */
     event Destroyed(address indexed owner, uint256 amount);
@@ -203,13 +203,13 @@ contract ERC20Token {
      * @return success - `true` if the transfer was succesful, `false` otherwise
      */
     function transfer (address to, uint256 amount)   returns (bool success) { 
-        if(balances[msg.sender] &lt; amount)
+        if(balances[msg.sender] < amount)
             return false;
 
-        if(amount &lt;= 0)
+        if(amount <= 0)
             return false;
 
-        if(balances[to] + amount &lt;= balances[to])
+        if(balances[to] + amount <= balances[to])
             return false;
 
         balances[msg.sender] -= amount;
@@ -227,16 +227,16 @@ contract ERC20Token {
      * @return success - `true` if the transfer was succesful, `false` otherwise
      */
     function transferFrom (address from, address to, uint256 amount)   returns (bool success) { 
-        if (balances[from] &lt; amount)
+        if (balances[from] < amount)
             return false;
 
-        if(allowed[from][msg.sender] &lt; amount)
+        if(allowed[from][msg.sender] < amount)
             return false;
 
         if(amount == 0)
             return false;
 
-        if(balances[to] + amount &lt;= balances[to])
+        if(balances[to] + amount <= balances[to])
             return false;
 
         balances[from] -= amount;
@@ -276,7 +276,7 @@ contract ERC20Token {
       */
     function destroy (uint256 amount)   returns (bool success) { 
         if(amount == 0) return false;
-        if(balances[msg.sender] &lt; amount) return false;
+        if(balances[msg.sender] < amount) return false;
         balances[msg.sender] -= amount;
         totalTokenSupply -= amount;
         Destroyed(msg.sender, amount);
@@ -317,9 +317,9 @@ library Math {
 /**
  * @title Blind Croupier TokenDistribution
  * It possesses some `WIN` tokens.
- * The distribution is divided into many &#39;periods&#39;.
+ * The distribution is divided into many 'periods'.
  * The zero one is `Presale` with `TOKENS_FOR_PRESALE` tokens
- * It&#39;s ended when all tokens are sold or manually with `endPresale()` function
+ * It's ended when all tokens are sold or manually with `endPresale()` function
  * The length of first period is `FIRST_PERIOD_DURATION`.
  * The length of other periods is `PERIOD_DURATION`.
  * During each period, `TOKENS_PER_PERIOD` are offered for sale (`TOKENS_PER_FIRST_PERIOD` for the first one)
@@ -356,7 +356,7 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
     uint256 constant PERIOD_DURATION = 23 hours; /** duration of all other sale periods */
     uint256 constant PERIOD_PRICE_INCREASE = 5; /** `next_token_price = old_token_price + old_token_price * PERIOD_PRICE_INCREASE / 1000` */
     uint256 constant FULLY_SOLD_PRICE_INCREASE = 10; /** to increase price if ALL tokens sold */
-    uint256 constant TOKENS_TO_INCREASE_NEXT_PRICE = 800; /** the price is increased if `sold_tokens &gt; period_tokens * TOKENS_TO_INCREASE_NEXT_PRICE / 1000` */
+    uint256 constant TOKENS_TO_INCREASE_NEXT_PRICE = 800; /** the price is increased if `sold_tokens > period_tokens * TOKENS_TO_INCREASE_NEXT_PRICE / 1000` */
 
     uint256 constant NEVER = 0;
     uint16 constant UNKNOWN_COUNTRY = 0;
@@ -374,7 +374,7 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
     uint256 public totalTokensSold; /** total amount of Tokens sold during the TokenDistribution */
     uint256 public totalTokensDestroyed; /** total amount of Tokens destroyed by this contract */
 
-    mapping(address =&gt; uint256) public unclaimedTokensForInvestor; /** unclaimed tokens for each investor */
+    mapping(address => uint256) public unclaimedTokensForInvestor; /** unclaimed tokens for each investor */
 
     /**
      * One token sale period information
@@ -411,7 +411,7 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
     uint public currentPeriod = 0;
 
     /** information about past and current periods, by periods index, starting from `0` */
-    mapping(uint =&gt; Period) periods;
+    mapping(uint => Period) periods;
 
     /** WIN tokens contract  */
     WIN public win;
@@ -420,7 +420,7 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
     State public state;
 
     /** the counter of investment by a country code (3-digit ISO 3166 code) */
-    mapping(uint16 =&gt; uint256) investmentsByCountries;
+    mapping(uint16 => uint256) investmentsByCountries;
 
     /**
      * Returns amount of Wei invested by the specified country
@@ -462,7 +462,7 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
      * @return active - `true` if TokenDistribution is going on, `false` otherwise
      */
     function isActive ()   constant   returns (bool active) {  
-        return win.balanceOf(this) &gt;= totalUnclaimedTokens + tokensForPeriod(currentPeriod) - periods[currentPeriod].tokensSold;
+        return win.balanceOf(this) >= totalUnclaimedTokens + tokensForPeriod(currentPeriod) - periods[currentPeriod].tokensSold;
     }
 
     /**
@@ -470,10 +470,10 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
      * minimum deposit is MINIMUM_DEPOSIT
      * @param beneficiar - the address to receive Tokens
      * @param countryCode - 3-digit country code
-     * @dev if `msg.value &lt; MINIMUM_DEPOSIT` throws
+     * @dev if `msg.value < MINIMUM_DEPOSIT` throws
      */
     function deposit (address beneficiar, uint16 countryCode)   payable  {  
-        require(msg.value &gt;= MINIMUM_DEPOSIT);
+        require(msg.value >= MINIMUM_DEPOSIT);
         require(state == State.Sale || state == State.Presale);
 
         /* this should end any finished period before starting any operations */
@@ -486,7 +486,7 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
 
         uint256 tokensBought = msg.value / getTokenPrice();
 
-        if(periods[currentPeriod].tokensSold + tokensBought &gt;= tokensForPeriod(currentPeriod)) {
+        if(periods[currentPeriod].tokensSold + tokensBought >= tokensForPeriod(currentPeriod)) {
             tokensBought = tokensForPeriod(currentPeriod) - periods[currentPeriod].tokensSold;
         }
 
@@ -494,11 +494,11 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
 
         investmentsByCountries[countryCode] += moneySpent;
 
-        if(tokensBought &gt; 0) {
-            assert(moneySpent &lt;= msg.value);
+        if(tokensBought > 0) {
+            assert(moneySpent <= msg.value);
 
             /* return the rest */
-            if(msg.value &gt; moneySpent) {
+            if(msg.value > moneySpent) {
                 msg.sender.transfer(msg.value - moneySpent);
             }
 
@@ -528,9 +528,9 @@ contract BlindCroupierTokenDistribution is MultiOwnable {
     function BlindCroupierTokenDistribution (address[16] owners_dot_recipient, uint[16] owners_dot_share)   MultiOwnable(owners_dot_recipient, owners_dot_share)  {  
 MultiOwnable.Owner[16] memory owners;
 
-for(uint __recipient_iterator__ = 0; __recipient_iterator__ &lt; owners_dot_recipient.length;__recipient_iterator__++)
+for(uint __recipient_iterator__ = 0; __recipient_iterator__ < owners_dot_recipient.length;__recipient_iterator__++)
   owners[__recipient_iterator__].recipient = address(owners_dot_recipient[__recipient_iterator__]);
-for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length;__share_iterator__++)
+for(uint __share_iterator__ = 0; __share_iterator__ < owners_dot_share.length;__share_iterator__++)
   owners[__share_iterator__].share = uint(owners_dot_share[__share_iterator__]);
         state = State.NotStarted;
     }
@@ -545,7 +545,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
 
         win = WIN(tokenContractAddress);
 
-        assert(win.balanceOf(this) &gt;= tokensForPeriod(0));
+        assert(win.balanceOf(this) >= tokensForPeriod(0));
 
         periods[0] = Period(now, NEVER, PRESALE_TOKEN_PRICE, 0);
         PeriodStarted(0,
@@ -574,7 +574,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
      * @return endTime - timestamp of period end time (INCLUSIVE)
      */
     function periodTimeFrame (uint period)   constant   returns (uint256 startTime, uint256 endTime) {  
-        require(period &lt;= currentPeriod);
+        require(period <= currentPeriod);
 
         startTime = periods[period].startTime;
         endTime = periods[period].endTime;
@@ -584,7 +584,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
      * Returns `true` if the time for the `period` has already passed
      */
     function isPeriodTimePassed (uint period)   constant   returns (bool finished) {  
-        require(periods[period].startTime &gt; 0);
+        require(periods[period].startTime > 0);
 
         uint256 endTime = periods[period].endTime;
 
@@ -592,14 +592,14 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
             return false;
         }
 
-        return (endTime &lt; now);
+        return (endTime < now);
     }
 
     /**
      * Returns `true` if `period` has already finished (time passed or tokens sold)
      */
     function isPeriodClosed (uint period)   constant   returns (bool finished) {  
-        return period &lt; currentPeriod;
+        return period < currentPeriod;
     }
 
     /**
@@ -622,7 +622,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
      * @param investor - investor to claim tokens for
      */
     function claimAllTokensForInvestor (address investor)   {  
-        assert(totalUnclaimedTokens &gt;= unclaimedTokensForInvestor[investor]);
+        assert(totalUnclaimedTokens >= unclaimedTokensForInvestor[investor]);
         totalUnclaimedTokens -= unclaimedTokensForInvestor[investor];
         win.transfer(investor, unclaimedTokensForInvestor[investor]);
         TokensClaimed(investor, unclaimedTokensForInvestor[investor]);
@@ -658,7 +658,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
      * @return duration - duration in seconds
      */
     function periodDuration (uint period)   constant   returns (uint256 duration) {  
-        require(period &gt; 0);
+        require(period > 0);
 
         if(period == 1) {
             return FIRST_PERIOD_DURATION;
@@ -677,18 +677,18 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
             newPrice = SALE_INITIAL_TOKEN_PRICE;
         } else if(periods[currentPeriod].tokensSold  == tokensForPeriod(currentPeriod)) {
             newPrice = Math.addPromille(oldPrice, FULLY_SOLD_PRICE_INCREASE);
-        } else if(periods[currentPeriod].tokensSold &gt;= Math.takePromille(tokensForPeriod(currentPeriod), TOKENS_TO_INCREASE_NEXT_PRICE)) {
+        } else if(periods[currentPeriod].tokensSold >= Math.takePromille(tokensForPeriod(currentPeriod), TOKENS_TO_INCREASE_NEXT_PRICE)) {
             newPrice = Math.addPromille(oldPrice, PERIOD_PRICE_INCREASE);
         } else {
             newPrice = oldPrice;
         }
 
         /* destroy unsold tokens */
-        if(periods[currentPeriod].tokensSold &lt; tokensForPeriod(currentPeriod)) {
+        if(periods[currentPeriod].tokensSold < tokensForPeriod(currentPeriod)) {
             uint256 toDestroy = tokensForPeriod(currentPeriod) - periods[currentPeriod].tokensSold;
-            /* do not destroy if we don&#39;t have enough to pay investors */
+            /* do not destroy if we don't have enough to pay investors */
             uint256 balance = win.balanceOf(this);
-            if(balance &lt; toDestroy + totalUnclaimedTokens) {
+            if(balance < toDestroy + totalUnclaimedTokens) {
                 toDestroy = (balance - totalUnclaimedTokens);
             }
             win.destroy(toDestroy);
@@ -698,7 +698,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
         /* if we are force ending the period set in the future or without end time,
          * set end time to now
          */
-        if(periods[currentPeriod].endTime &gt; now ||
+        if(periods[currentPeriod].endTime > now ||
             periods[currentPeriod].endTime == NEVER) {
             periods[currentPeriod].endTime = now;
         }
@@ -730,7 +730,7 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
             return;
         }
 
-        while(state == State.Sale &amp;&amp;
+        while(state == State.Sale &&
             (isPeriodTimePassed(currentPeriod) ||
             isPeriodAllTokensSold(currentPeriod))) {
             nextPeriod();
@@ -742,14 +742,14 @@ for(uint __share_iterator__ = 0; __share_iterator__ &lt; owners_dot_share.length
      * @param  amount - amount of Wei to withdraw (total)
      */
     function withdraw (uint256 amount)   onlyOneOfOwners  {  
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
 
         uint totalShares = 0;
-        for(var idx = 0; idx &lt; owners.length; idx++) {
+        for(var idx = 0; idx < owners.length; idx++) {
             totalShares += owners[idx].share;
         }
 
-        for(idx = 0; idx &lt; owners.length; idx++) {
+        for(idx = 0; idx < owners.length; idx++) {
             owners[idx].recipient.transfer(amount * owners[idx].share / totalShares);
         }
     }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -53,16 +53,16 @@ contract NameProvider is Ownable {
     uint256 public FEE = 1 finney;
     
     //name storage for addresses
-    mapping(bytes32 =&gt; mapping(address =&gt; string)) addressNames;
+    mapping(bytes32 => mapping(address => string)) addressNames;
     
     //marks namespaces as already used on first name save to specified namespace
-    mapping(bytes32 =&gt; bool) takenNamespaces;
+    mapping(bytes32 => bool) takenNamespaces;
     
     //name storage for tokens
-    mapping(address =&gt; mapping(uint256 =&gt; string)) tokenNames;
+    mapping(address => mapping(uint256 => string)) tokenNames;
     
     //description storage for tokens
-    mapping(address =&gt; mapping(uint256 =&gt; string)) tokenDescriptions;
+    mapping(address => mapping(uint256 => string)) tokenDescriptions;
     
     /* EVENTS */
     
@@ -79,9 +79,9 @@ contract NameProvider is Ownable {
     
     modifier setTokenText(address _tokenInterface, uint256 _tokenId, string _text){
         //check fee
-        require(msg.value &gt;= FEE);
+        require(msg.value >= FEE);
         //no empty strings allowed
-        require(bytes(_text).length &gt; 0);
+        require(bytes(_text).length > 0);
         
         ERC721Interface tokenInterface = ERC721Interface(_tokenInterface);
         //only token owner can set its name
@@ -90,7 +90,7 @@ contract NameProvider is Ownable {
         _;//set text code
         
         //return excess
-        if (msg.value &gt; FEE) {
+        if (msg.value > FEE) {
             msg.sender.transfer(msg.value - FEE);
         }
     }
@@ -142,11 +142,11 @@ contract NameProvider is Ownable {
     //@param _name string that will be set as new address name
     function setServiceName(bytes32 _namespace, string memory _name) public payable {
         //check fee
-        require(msg.value &gt;= FEE);
+        require(msg.value >= FEE);
         //set name
         _setName(_namespace, _name);
         //return excess
-        if (msg.value &gt; FEE) {
+        if (msg.value > FEE) {
             msg.sender.transfer(msg.value - FEE);
         }
     }
@@ -211,13 +211,13 @@ contract NameProvider is Ownable {
         bytes memory stringBytes;
         uint256 size = 0;
         uint256 i;
-        for (i = 0; i &lt; length; i ++) {
+        for (i = 0; i < length; i ++) {
             stringBytes = bytes(addressNames[_namespace][_address[i]]);
             size += nameLength[i] = stringBytes.length % 32 == 0 ? stringBytes.length / 32 : stringBytes.length / 32 + 1;
         }
         namesData = new bytes32[](size);
         size = 0;
-        for (i = 0; i &lt; length; i ++) {
+        for (i = 0; i < length; i ++) {
             size += _stringToBytes32(addressNames[_namespace][_address[i]], namesData, size);
         }
     }
@@ -255,18 +255,18 @@ contract NameProvider is Ownable {
     function _getTokenTexts(address _tokenInterface, uint256[] memory _tokenIds, bool names) internal view returns(bytes32[] memory namesData, uint256[] memory nameLength) {
         uint256 length = _tokenIds.length;
         nameLength = new uint256[](length);
-        mapping(address =&gt; mapping(uint256 =&gt; string)) textMap = names ? tokenNames : tokenDescriptions;
+        mapping(address => mapping(uint256 => string)) textMap = names ? tokenNames : tokenDescriptions;
         
         bytes memory stringBytes;
         uint256 size = 0;
         uint256 i;
-        for (i = 0; i &lt; length; i ++) {
+        for (i = 0; i < length; i ++) {
             stringBytes = bytes(textMap[_tokenInterface][_tokenIds[i]]);
             size += nameLength[i] = stringBytes.length % 32 == 0 ? stringBytes.length / 32 : stringBytes.length / 32 + 1;
         }
         namesData = new bytes32[](size);
         size = 0;
-        for (i = 0; i &lt; length; i ++) {
+        for (i = 0; i < length; i ++) {
             size += _stringToBytes32(textMap[_tokenInterface][_tokenIds[i]], namesData, size);
         }
     }
@@ -280,7 +280,7 @@ contract NameProvider is Ownable {
         bytes32 word;
         uint256 index = 0;
         uint256 limit = 0;
-        for (uint256 i = 0; i &lt; length; i += 32) {
+        for (uint256 i = 0; i < length; i += 32) {
             limit = i + 32;
             assembly {
                 word := mload(add(source, limit))

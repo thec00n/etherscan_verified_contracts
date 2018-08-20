@@ -14,13 +14,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -102,9 +102,9 @@ contract Crowdsale2 is Ownable {
 	}
 
 	function validPurchase() internal view returns (bool) {
-		bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+		bool withinPeriod = now >= startTime && now <= endTime;
 		bool nonZeroPurchase = msg.value != 0;
-		return withinPeriod &amp;&amp; nonZeroPurchase;
+		return withinPeriod && nonZeroPurchase;
 	}
 
 	function setEndTime(uint256 _endTime) public onlyOwner returns (bool) {
@@ -113,6 +113,6 @@ contract Crowdsale2 is Ownable {
 	}
 
 	function hasEnded() public view returns (bool) {
-		return now &gt; endTime;
+		return now > endTime;
 	}
 }

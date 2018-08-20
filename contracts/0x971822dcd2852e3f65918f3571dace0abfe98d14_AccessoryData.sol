@@ -5,7 +5,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -54,12 +54,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -146,9 +146,9 @@ contract AccessoryData is IAccessoryData, SafeMath {
 
 
     /*** STORAGE ***/
-    mapping(uint8 =&gt; AccessorySeries) public AccessorySeriesCollection;
-    mapping(uint =&gt; Accessory) public AccessoryCollection;
-    mapping(address =&gt; uint64[]) public ownerAccessoryCollection;
+    mapping(uint8 => AccessorySeries) public AccessorySeriesCollection;
+    mapping(uint => Accessory) public AccessoryCollection;
+    mapping(address => uint64[]) public ownerAccessoryCollection;
     
     /*** FUNCTIONS ***/
     //*** Write Access ***//
@@ -159,7 +159,7 @@ contract AccessoryData is IAccessoryData, SafeMath {
     //*** Accessories***/
     function createAccessorySeries(uint8 _AccessorySeriesId, uint32 _maxTotal, uint _price) onlyCREATOR public returns(uint8) {
         
-        if ((now &gt; 1516642200) || (totalAccessorySeries &gt;= 18)) {revert();}
+        if ((now > 1516642200) || (totalAccessorySeries >= 18)) {revert();}
         //This confirms that no one, even the develoopers, can create any accessorySeries after JAN/22/2018 @ 05:30pm (UTC) or more than the original 18 series. 
         AccessorySeries storage accessorySeries = AccessorySeriesCollection[_AccessorySeriesId];
         accessorySeries.AccessorySeriesId = _AccessorySeriesId;
@@ -172,7 +172,7 @@ contract AccessoryData is IAccessoryData, SafeMath {
 	
 	function setAccessory(uint8 _seriesIDtoCreate, address _owner) external onlySERAPHIM returns(uint64) { 
         AccessorySeries storage series = AccessorySeriesCollection[_seriesIDtoCreate];
-        if (series.maxTotal &lt;= series.currentTotal) {revert();}
+        if (series.maxTotal <= series.currentTotal) {revert();}
         else {
         totalAccessories += 1;
         series.currentTotal +=1;
@@ -209,10 +209,10 @@ contract AccessoryData is IAccessoryData, SafeMath {
   function ownerAccessoryTransfer (address _to, uint64 __accessoryId)  public  {
      //Any owner of an accessory can call this function to transfer their accessory to any other address. 
      
-       if ((__accessoryId &gt; totalAccessories) || ( __accessoryId == 0)) {revert();}
+       if ((__accessoryId > totalAccessories) || ( __accessoryId == 0)) {revert();}
          Accessory storage accessory = AccessoryCollection[__accessoryId];
-        if (msg.sender == _to) {revert();} //can&#39;t send an accessory to yourself
-        if (accessory.owner != msg.sender) {revert();} //can&#39;t send an accessory you don&#39;t own. 
+        if (msg.sender == _to) {revert();} //can't send an accessory to yourself
+        if (accessory.owner != msg.sender) {revert();} //can't send an accessory you don't own. 
         else {
         accessory.owner = _to;
       addAccessoryIdMapping(_to, __accessoryId);
@@ -242,7 +242,7 @@ contract AccessoryData is IAccessoryData, SafeMath {
     }
 	
 	function getAccessoryByIndex(address _owner, uint _index) constant public returns(uint) {
-        if (_index &gt;= ownerAccessoryCollection[_owner].length)
+        if (_index >= ownerAccessoryCollection[_owner].length)
             return 0;
         return ownerAccessoryCollection[_owner][_index];
     }

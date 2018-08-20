@@ -3,7 +3,7 @@ pragma solidity ^0.4.6;
 contract Conference {  // can be killed, so the owner gets sent the money in the end
 
 	address public organizer;
-	mapping (address =&gt; uint) public registrantsPaid;
+	mapping (address => uint) public registrantsPaid;
 	uint public numRegistrants;
 	uint public quota;
 
@@ -17,7 +17,7 @@ contract Conference {  // can be killed, so the owner gets sent the money in the
 	}
 
 	function buyTicket() public {
-		if (numRegistrants &gt;= quota) { 
+		if (numRegistrants >= quota) { 
 			throw; // throw ensures funds will be returned
 		}
 		registrantsPaid[msg.sender] = msg.value;
@@ -34,7 +34,7 @@ contract Conference {  // can be killed, so the owner gets sent the money in the
 		if (msg.sender != organizer) { return; }
 		if (registrantsPaid[recipient] == amount) { 
 			address myAddress = this;
-			if (myAddress.balance &gt;= amount) { 
+			if (myAddress.balance >= amount) { 
 				(recipient.send(amount));
 				Refund(recipient, amount);
 				registrantsPaid[recipient] = 0;

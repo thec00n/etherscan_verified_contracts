@@ -8,7 +8,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -27,31 +27,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -63,8 +63,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -135,7 +135,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -146,7 +146,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -160,7 +160,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -171,7 +171,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -257,7 +257,7 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
     bool public tradeEnabled;
     ConversionRatesInterface public conversionRatesContract;
     SanityRatesInterface public sanityRatesContract;
-    mapping(bytes32=&gt;bool) public approvedWithdrawAddresses; // sha3(token,address)=&gt;bool
+    mapping(bytes32=>bool) public approvedWithdrawAddresses; // sha3(token,address)=>bool
 
     function KyberReserve(address _kyberNetwork, ConversionRatesInterface _ratesContract, address _admin) public {
         require(_admin != address(0));
@@ -404,11 +404,11 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
         uint rate = conversionRatesContract.getRate(token, blockNumber, buy, srcQty);
         uint destQty = getDestQty(src, dest, srcQty, rate);
 
-        if (getBalance(dest) &lt; destQty) return 0;
+        if (getBalance(dest) < destQty) return 0;
 
         if (sanityRatesContract != address(0)) {
             uint sanityRate = sanityRatesContract.getSanityRate(src, dest);
-            if (rate &gt; sanityRate) return 0;
+            if (rate > sanityRate) return 0;
         }
 
         return rate;
@@ -434,7 +434,7 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
     {
         // can skip validation if done at kyber network level
         if (validate) {
-            require(conversionRate &gt; 0);
+            require(conversionRate > 0);
             if (srcToken == ETH_TOKEN_ADDRESS)
                 require(msg.value == srcAmount);
             else
@@ -443,7 +443,7 @@ contract KyberReserve is KyberReserveInterface, Withdrawable, Utils {
 
         uint destAmount = getDestQty(srcToken, destToken, srcAmount, conversionRate);
         // sanity check
-        require(destAmount &gt; 0);
+        require(destAmount > 0);
 
         // add to imbalance
         ERC20 token;

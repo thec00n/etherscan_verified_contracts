@@ -34,7 +34,7 @@ contract ERC223ReceivingContract {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,8 +107,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -123,9 +123,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -133,7 +133,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -142,7 +142,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -229,7 +229,7 @@ contract Bounty0xEscrow is Ownable, ERC223ReceivingContract, Pausable {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
+    mapping (address => mapping (address => uint)) public tokens; //mapping of token addresses to mapping of account balances (token=0 means Ether)
 
     event Deposit(address indexed token, address indexed user, uint amount, uint balance);
     event Distribution(address indexed token, address indexed host, address indexed hunter, uint256 amount);
@@ -266,7 +266,7 @@ contract Bounty0xEscrow is Ownable, ERC223ReceivingContract, Pausable {
 
     function distributeTokenToAddress(address _token, address _host, address _hunter, uint256 _amount) external onlyOwner {
         require(_hunter != address(0));
-        require(tokens[_token][_host] &gt;= _amount);
+        require(tokens[_token][_host] >= _amount);
 
         tokens[_token][_host] = SafeMath.sub(tokens[_token][_host], _amount);
 
@@ -284,19 +284,19 @@ contract Bounty0xEscrow is Ownable, ERC223ReceivingContract, Pausable {
         require(_hunters.length == _amounts.length);
 
         uint256 totalAmount = 0;
-        for (uint j = 0; j &lt; _amounts.length; j++) {
+        for (uint j = 0; j < _amounts.length; j++) {
             totalAmount = SafeMath.add(totalAmount, _amounts[j]);
         }
-        require(tokens[_token][_host] &gt;= totalAmount);
+        require(tokens[_token][_host] >= totalAmount);
         tokens[_token][_host] = SafeMath.sub(tokens[_token][_host], totalAmount);
 
         if (_token == address(0)) {
-            for (uint i = 0; i &lt; _hunters.length; i++) {
+            for (uint i = 0; i < _hunters.length; i++) {
                 require(_hunters[i].send(_amounts[i]));
                 emit Distribution(_token, _host, _hunters[i], _amounts[i]);
             }
         } else {
-            for (uint k = 0; k &lt; _hunters.length; k++) {
+            for (uint k = 0; k < _hunters.length; k++) {
                 require(ERC20(_token).transfer(_hunters[k], _amounts[k]));
                 emit Distribution(_token, _host, _hunters[k], _amounts[k]);
             }
@@ -307,19 +307,19 @@ contract Bounty0xEscrow is Ownable, ERC223ReceivingContract, Pausable {
         require(_hunters.length == _amounts.length);
 
         uint256 totalAmount = 0;
-        for (uint j = 0; j &lt; _amounts.length; j++) {
+        for (uint j = 0; j < _amounts.length; j++) {
             totalAmount = SafeMath.add(totalAmount, _amounts[j]);
         }
 
         if (_token == address(0)) {
-            require(address(this).balance &gt;= totalAmount);
-            for (uint i = 0; i &lt; _hunters.length; i++) {
+            require(address(this).balance >= totalAmount);
+            for (uint i = 0; i < _hunters.length; i++) {
                 require(_hunters[i].send(_amounts[i]));
                 emit Distribution(_token, this, _hunters[i], _amounts[i]);
             }
         } else {
-            require(ERC20(_token).balanceOf(this) &gt;= totalAmount);
-            for (uint k = 0; k &lt; _hunters.length; k++) {
+            require(ERC20(_token).balanceOf(this) >= totalAmount);
+            for (uint k = 0; k < _hunters.length; k++) {
                 require(ERC20(_token).transfer(_hunters[k], _amounts[k]));
                 emit Distribution(_token, this, _hunters[k], _amounts[k]);
             }
@@ -331,12 +331,12 @@ contract Bounty0xEscrow is Ownable, ERC223ReceivingContract, Pausable {
         require(_hunters.length == _amounts.length);
 
         uint256 totalAmount = 0;
-        for (uint j = 0; j &lt; _amounts.length; j++) {
+        for (uint j = 0; j < _amounts.length; j++) {
             totalAmount = SafeMath.add(totalAmount, _amounts[j]);
         }
-        require(ERC20(_token).allowance(_ownerOfTokens, this) &gt;= totalAmount);
+        require(ERC20(_token).allowance(_ownerOfTokens, this) >= totalAmount);
 
-        for (uint i = 0; i &lt; _hunters.length; i++) {
+        for (uint i = 0; i < _hunters.length; i++) {
             require(ERC20(_token).transferFrom(_ownerOfTokens, _hunters[i], _amounts[i]));
 
             emit Distribution(_token, this, _hunters[i], _amounts[i]);

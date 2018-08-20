@@ -1,15 +1,15 @@
 // Bitcoin transaction parsing library
 
-// Copyright 2016 rain &lt;https://keybase.io/rain&gt;
+// Copyright 2016 rain <https://keybase.io/rain>
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -54,23 +54,23 @@
 // Variable integer encodings as a function of represented value:
 //
 // value           | bytes  | format
-// &lt;0xFD (253)     | 1      | uint8
-// &lt;=0xFFFF (65535)| 3      | 0xFD followed by length as uint16
-// &lt;=0xFFFF FFFF   | 5      | 0xFE followed by length as uint32
+// <0xFD (253)     | 1      | uint8
+// <=0xFFFF (65535)| 3      | 0xFD followed by length as uint16
+// <=0xFFFF FFFF   | 5      | 0xFE followed by length as uint32
 // -               | 9      | 0xFF followed by length as uint64
 //
 // Public key scripts `pk_script` are set on the output and can
 // take a number of forms. The regular transaction script is
-// called &#39;pay-to-pubkey-hash&#39; (P2PKH):
+// called 'pay-to-pubkey-hash' (P2PKH):
 //
-// OP_DUP OP_HASH160 &lt;pubKeyHash&gt; OP_EQUALVERIFY OP_CHECKSIG
+// OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
 //
 // OP_x are Bitcoin script opcodes. The bytes representation (including
 // the 0x14 20-byte stack push) is:
 //
-// 0x76 0xA9 0x14 &lt;pubKeyHash&gt; 0x88 0xAC
+// 0x76 0xA9 0x14 <pubKeyHash> 0x88 0xAC
 //
-// The &lt;pubKeyHash&gt; is the ripemd160 hash of the sha256 hash of
+// The <pubKeyHash> is the ripemd160 hash of the sha256 hash of
 // the public key, preceded by a network version byte. (21 bytes total)
 //
 // Network version bytes: 0x00 (mainnet); 0x6f (testnet); 0x34 (namecoin)
@@ -79,9 +79,9 @@
 // pubKeyHash, plus a checksum at the end.  The checksum is the first 4 bytes
 // of the (32 byte) double sha256 of the pubKeyHash. (25 bytes total)
 // This is converted to base58 to form the publicly used Bitcoin address.
-// Mainnet P2PKH transaction scripts are to addresses beginning with &#39;1&#39;.
+// Mainnet P2PKH transaction scripts are to addresses beginning with '1'.
 //
-// P2SH (&#39;pay to script hash&#39;) scripts only supply a script hash. The spender
+// P2SH ('pay to script hash') scripts only supply a script hash. The spender
 // must then provide the script that would allow them to redeem this output.
 // This allows for arbitrarily complex scripts to be funded using only a
 // hash of the script, and moves the onus on providing the script from
@@ -89,14 +89,14 @@
 //
 // The P2SH script format is simple:
 //
-// OP_HASH160 &lt;scriptHash&gt; OP_EQUAL
+// OP_HASH160 <scriptHash> OP_EQUAL
 //
-// 0xA9 0x14 &lt;scriptHash&gt; 0x87
+// 0xA9 0x14 <scriptHash> 0x87
 //
-// The &lt;scriptHash&gt; is the ripemd160 hash of the sha256 hash of the
+// The <scriptHash> is the ripemd160 hash of the sha256 hash of the
 // redeem script. The P2SH address is derived from the scriptHash.
 // Addresses are the scriptHash with a version prefix of 5, encoded as
-// Base58check. These addresses begin with a &#39;3&#39;.
+// Base58check. These addresses begin with a '3'.
 
 pragma solidity ^0.4.11;
 
@@ -109,7 +109,7 @@ library BTC {
         var ibit = uint8(txBytes[pos]);
         pos += 1;  // skip ibit
 
-        if (ibit &lt; 0xfd) {
+        if (ibit < 0xfd) {
             return (ibit, pos);
         } else if (ibit == 0xfd) {
             return (getBytesLE(txBytes, pos, 16), pos + 2);
@@ -160,7 +160,7 @@ library BTC {
 
         (output_values, script_starts, output_script_lens, pos) = scanOutputs(txBytes, pos, 2);
 
-        for (uint i = 0; i &lt; 2; i++) {
+        for (uint i = 0; i < 2; i++) {
             var pkhash = parseOutputScript(txBytes, script_starts[i], output_script_lens[i]);
             output_addresses[i] = pkhash;
         }
@@ -182,9 +182,9 @@ library BTC {
         var (output_values, script_starts, output_script_lens,) = scanOutputs(txBytes, pos, 0);
 
         // look at each output and check whether it at least value to btcAddress
-        for (uint i = 0; i &lt; output_values.length; i++) {
+        for (uint i = 0; i < output_values.length; i++) {
             var pkhash = parseOutputScript(txBytes, script_starts[i], output_script_lens[i]);
-            if (pkhash == btcAddress &amp;&amp; output_values[i] &gt;= value) {
+            if (pkhash == btcAddress && output_values[i] >= value) {
                 return (true,output_values[i]);
             }
         }
@@ -192,8 +192,8 @@ library BTC {
     // scan the inputs and find the script lengths.
     // return an array of script lengths and the end position
     // of the inputs.
-    // takes a &#39;stop&#39; argument which sets the maximum number of
-    // outputs to scan through. stop=0 =&gt; scan all.
+    // takes a 'stop' argument which sets the maximum number of
+    // outputs to scan through. stop=0 => scan all.
     function scanInputs(bytes txBytes, uint pos, uint stop)
              returns (uint[], uint)
     {
@@ -203,7 +203,7 @@ library BTC {
 
         (n_inputs, pos) = parseVarInt(txBytes, pos);
 
-        if (stop == 0 || stop &gt; n_inputs) {
+        if (stop == 0 || stop > n_inputs) {
             halt = n_inputs;
         } else {
             halt = stop;
@@ -211,7 +211,7 @@ library BTC {
 
         uint[] memory script_lens = new uint[](halt);
 
-        for (var i = 0; i &lt; halt; i++) {
+        for (var i = 0; i < halt; i++) {
             pos += 36;  // skip outpoint
             (script_len, pos) = parseVarInt(txBytes, pos);
             script_lens[i] = script_len;
@@ -223,8 +223,8 @@ library BTC {
     // scan the outputs and find the values and script lengths.
     // return array of values, array of script lengths and the
     // end position of the outputs.
-    // takes a &#39;stop&#39; argument which sets the maximum number of
-    // outputs to scan through. stop=0 =&gt; scan all.
+    // takes a 'stop' argument which sets the maximum number of
+    // outputs to scan through. stop=0 => scan all.
     function scanOutputs(bytes txBytes, uint pos, uint stop)
              returns (uint[], uint[], uint[], uint)
     {
@@ -234,7 +234,7 @@ library BTC {
 
         (n_outputs, pos) = parseVarInt(txBytes, pos);
 
-        if (stop == 0 || stop &gt; n_outputs) {
+        if (stop == 0 || stop > n_outputs) {
             halt = n_outputs;
         } else {
             halt = stop;
@@ -244,7 +244,7 @@ library BTC {
         uint[] memory script_lens = new uint[](halt);
         uint[] memory output_values = new uint[](halt);
 
-        for (var i = 0; i &lt; halt; i++) {
+        for (var i = 0; i < halt; i++) {
             output_values[i] = getBytesLE(txBytes, pos, 64);
             pos += 8;
 
@@ -259,8 +259,8 @@ library BTC {
     // Slice 20 contiguous bytes from bytes `data`, starting at `start`
     function sliceBytes20(bytes data, uint start) returns (bytes20) {
         uint160 slice = 0;
-        for (uint160 i = 0; i &lt; 20; i++) {
-            slice += uint160(data[i + start]) &lt;&lt; (8 * (19 - i));
+        for (uint160 i = 0; i < 20; i++) {
+            slice += uint160(data[i + start]) << (8 * (19 - i));
         }
         return bytes20(slice);
     }
@@ -268,19 +268,19 @@ library BTC {
     // script_len represent a P2PKH script
     function isP2PKH(bytes txBytes, uint pos, uint script_len) returns (bool) {
         return (script_len == 25)           // 20 byte pubkeyhash + 5 bytes of script
-            &amp;&amp; (txBytes[pos] == 0x76)       // OP_DUP
-            &amp;&amp; (txBytes[pos + 1] == 0xa9)   // OP_HASH160
-            &amp;&amp; (txBytes[pos + 2] == 0x14)   // bytes to push
-            &amp;&amp; (txBytes[pos + 23] == 0x88)  // OP_EQUALVERIFY
-            &amp;&amp; (txBytes[pos + 24] == 0xac); // OP_CHECKSIG
+            && (txBytes[pos] == 0x76)       // OP_DUP
+            && (txBytes[pos + 1] == 0xa9)   // OP_HASH160
+            && (txBytes[pos + 2] == 0x14)   // bytes to push
+            && (txBytes[pos + 23] == 0x88)  // OP_EQUALVERIFY
+            && (txBytes[pos + 24] == 0xac); // OP_CHECKSIG
     }
     // returns true if the bytes located in txBytes by pos and
     // script_len represent a P2SH script
     function isP2SH(bytes txBytes, uint pos, uint script_len) returns (bool) {
         return (script_len == 23)           // 20 byte scripthash + 3 bytes of script
-            &amp;&amp; (txBytes[pos + 0] == 0xa9)   // OP_HASH160
-            &amp;&amp; (txBytes[pos + 1] == 0x14)   // bytes to push
-            &amp;&amp; (txBytes[pos + 22] == 0x87); // OP_EQUAL
+            && (txBytes[pos + 0] == 0xa9)   // OP_HASH160
+            && (txBytes[pos + 1] == 0x14)   // bytes to push
+            && (txBytes[pos + 22] == 0x87); // OP_EQUAL
     }
     // Get the pubkeyhash / scripthash from an output script. Assumes
     // pay-to-pubkey-hash (P2PKH) or pay-to-script-hash (P2SH) outputs.

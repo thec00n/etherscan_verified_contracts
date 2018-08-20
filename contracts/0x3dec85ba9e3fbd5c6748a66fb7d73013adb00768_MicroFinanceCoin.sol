@@ -14,7 +14,7 @@ contract Token {
 contract StandardToken is Token {
     using SafeMath for uint256;
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             //balances[msg.sender] -= _value;
             balances[msg.sender] = balances[msg.sender].sub(_value);
             //balances[_to] += _value;
@@ -25,7 +25,7 @@ contract StandardToken is Token {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             //balances[_to] += _value;
             balances[_to] =balances[_to].add(_value);
             //balances[_from] -= _value;
@@ -52,8 +52,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -66,18 +66,18 @@ contract StandardToken is Token {
     function () {
         throw;
     }
-    string public name = &#39;MicroFinance Coin&#39;;                  
+    string public name = 'MicroFinance Coin';                  
     uint8 public decimals = 18;                
-    string public symbol = &#39;MFC&#39;;               
-    string public version = &#39;V2.0&#39;;      
+    string public symbol = 'MFC';               
+    string public version = 'V2.0';      
 
     function MicroFinanceCoin(
         ) {
         balances[msg.sender] = 20000000000000000000000000;
         totalSupply = 99999997000000000000000000;                      
-        name = &quot;MicroFinance Coin&quot;;                                   
+        name = "MicroFinance Coin";                                   
         decimals = 18;                            
-        symbol = &quot;MFC&quot;;                              
+        symbol = "MFC";                              
     }
 
     /* Approves and then calls the receiving contract */
@@ -85,7 +85,7 @@ contract StandardToken is Token {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }
@@ -106,13 +106,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

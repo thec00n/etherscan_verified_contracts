@@ -19,7 +19,7 @@ contract Airdrop {
     uint256 amountCount = _amount.length;
     require(addressCount == amountCount);
     TokenContract tkn = TokenContract(_tokenAddress);
-    for (uint256 i = 0; i &lt; addressCount; i++) {
+    for (uint256 i = 0; i < addressCount; i++) {
       tkn.transferFrom(msg.sender, addresses[i], _amount[i]);
     }
   }

@@ -1,16 +1,16 @@
 pragma solidity ^0.4.21;
 // The GNU General Public License v3
-// &#169; Musqogees Tech 2018, Redenom ™
+// © Musqogees Tech 2018, Redenom ™
 
     
 // -------------------- SAFE MATH ----------------------------------------------
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -18,7 +18,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -143,8 +143,8 @@ contract Redenom is ERC20Interface, Owned{
             // [2] [4] 8 16 32 64 128 256 512 [1024] ... - free to use
     }
     
-    mapping(address=&gt;Account) accounts; 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address=>Account) accounts; 
+    mapping(address => mapping(address => uint)) allowed;
 
     //Redenom special events
     event Redenomination(uint indexed round);
@@ -154,9 +154,9 @@ contract Redenom is ERC20Interface, Owned{
     event Vote(address indexed voter, uint indexed propId, uint voterBalance, uint indexed curentBallotId);
 
     function Redenom() public {
-        symbol = &quot;NOMT&quot;;
-        name = &quot;Redenom_test&quot;;
-        _totalSupply = 0; // total NOM&#39;s in the game 
+        symbol = "NOMT";
+        name = "Redenom_test";
+        _totalSupply = 0; // total NOM's in the game 
 
         total_fund = 10000000 * 10**decimals; // 100 000 00.00000000, 1Mt
         epoch_fund = 100000 * 10**decimals; // 100 000.00000000, 100 Kt
@@ -169,11 +169,11 @@ contract Redenom is ERC20Interface, Owned{
 
     // New epoch can be started if:
     // - Current round is 9
-    // - Curen epoch &lt; 10
+    // - Curen epoch < 10
     function StartNewEpoch() public onlyAdmin returns(bool succ){
         require(frozen == false); 
         require(round == 9);
-        require(epoch &lt; 100);
+        require(epoch < 100);
 
         dec = [0,0,0,0,0,0,0,0];  
         round = 1;
@@ -202,7 +202,7 @@ contract Redenom is ERC20Interface, Owned{
         require(votingActive == true);
         require(bitmask_check(msg.sender, 4) == true); //passed KYC
         require(bitmask_check(msg.sender, 1024) == false); // banned == false
-        require((accounts[msg.sender].lastVotedBallotId &lt; curentBallotId)); 
+        require((accounts[msg.sender].lastVotedBallotId < curentBallotId)); 
         _;
     }
 
@@ -228,7 +228,7 @@ contract Redenom is ERC20Interface, Owned{
         }));
     }
     function findWinner(uint _ballotId) public constant returns (uint winner){
-        for (uint p = 0; p &lt; winners.length; p++) {
+        for (uint p = 0; p < winners.length; p++) {
             if (winners[p].id == _ballotId) {
                 return winners[p].projId;
             }
@@ -249,7 +249,7 @@ contract Redenom is ERC20Interface, Owned{
 
     // Turns project ON and OFF
     function swapProject(uint _id) public onlyAdmin {
-        for (uint p = 0; p &lt; projects.length; p++){
+        for (uint p = 0; p < projects.length; p++){
             if(projects[p].id == _id){
                 if(projects[p].active == true){
                     projects[p].active = false;
@@ -262,7 +262,7 @@ contract Redenom is ERC20Interface, Owned{
 
     // Returns proj. weight
     function projectWeight(uint _id) public constant returns(uint PW){
-        for (uint p = 0; p &lt; projects.length; p++){
+        for (uint p = 0; p < projects.length; p++){
             if(projects[p].id == _id){
                 return projects[p].votesWeight;
             }
@@ -271,7 +271,7 @@ contract Redenom is ERC20Interface, Owned{
 
     // Returns proj. status
     function projectActive(uint _id) public constant returns(bool PA){
-        for (uint p = 0; p &lt; projects.length; p++){
+        for (uint p = 0; p < projects.length; p++){
             if(projects[p].id == _id){
                 return projects[p].active;
             }
@@ -284,8 +284,8 @@ contract Redenom is ERC20Interface, Owned{
         updateAccount(msg.sender);
         require(frozen == false);
 
-        for (uint p = 0; p &lt; projects.length; p++){
-            if(projects[p].id == _id &amp;&amp; projects[p].active == true){
+        for (uint p = 0; p < projects.length; p++){
+            if(projects[p].id == _id && projects[p].active == true){
                 projects[p].votesWeight += sqrt(accounts[msg.sender].balance);
                 accounts[msg.sender].lastVotedBallotId = curentBallotId;
             }
@@ -298,8 +298,8 @@ contract Redenom is ERC20Interface, Owned{
     // Shows currently winning proj 
     function winningProject() public constant returns (uint _winningProject){
         uint winningVoteWeight = 0;
-        for (uint p = 0; p &lt; projects.length; p++) {
-            if (projects[p].votesWeight &gt; winningVoteWeight &amp;&amp; projects[p].active == true) {
+        for (uint p = 0; p < projects.length; p++) {
+            if (projects[p].votesWeight > winningVoteWeight && projects[p].active == true) {
                 winningVoteWeight = projects[p].votesWeight;
                 _winningProject = projects[p].id;
             }
@@ -339,7 +339,7 @@ contract Redenom is ERC20Interface, Owned{
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -380,7 +380,7 @@ contract Redenom is ERC20Interface, Owned{
     // Uses payout(), bitmask_check(), bitmask_add()
     // adds 2 to bitmask
     function pay055loyal(address to) public onlyAdmin returns(bool success){
-        require(epoch &gt; 1);
+        require(epoch > 1);
         require(bitmask_check(to, 4) == true);
         uint new_amount = 55566600 + (block.timestamp%100);       
         payout(to,new_amount);
@@ -402,7 +402,7 @@ contract Redenom is ERC20Interface, Owned{
     // Emits event
     function payout(address to, uint amount) private returns (bool success){
         require(to != address(0));
-        require(amount&gt;=current_mul());
+        require(amount>=current_mul());
         require(bitmask_check(to, 1024) == false); // banned == false
         require(frozen == false); 
         
@@ -435,14 +435,14 @@ contract Redenom is ERC20Interface, Owned{
 
     // Withdraw amount from team_fund to given address
     function withdraw_team_fund(address to, uint amount) public onlyOwner returns(bool success){
-        require(amount &lt;= team_fund);
+        require(amount <= team_fund);
         accounts[to].balance = accounts[to].balance.add(amount);
         team_fund = team_fund.sub(amount);
         return true;
     }
     // Withdraw amount from redenom_dao_fund to given address
     function withdraw_dao_fund(address to, uint amount) public onlyOwner returns(bool success){
-        require(amount &lt;= redenom_dao_fund);
+        require(amount <= redenom_dao_fund);
         accounts[to].balance = accounts[to].balance.add(amount);
         redenom_dao_fund = redenom_dao_fund.sub(amount);
         return true;
@@ -467,12 +467,12 @@ contract Redenom is ERC20Interface, Owned{
     // while transaction must be called for each acc.
     function renewDec(uint initSum, uint newSum) internal returns(bool success){
 
-        if(round &lt; 9){
+        if(round < 9){
             uint tempInitSum = initSum; 
             uint tempNewSum = newSum; 
             uint cnt = 1;
 
-            while( (tempNewSum &gt; 0 || tempInitSum &gt; 0) &amp;&amp; cnt &lt;= decimals ){
+            while( (tempNewSum > 0 || tempInitSum > 0) && cnt <= decimals ){
 
                 uint lastInitSum = tempInitSum%10; // 0.0000000 (0)
                 tempInitSum = tempInitSum/10; // (0.0000000) 0
@@ -480,8 +480,8 @@ contract Redenom is ERC20Interface, Owned{
                 uint lastNewSum = tempNewSum%10; // 1.5556664 (5)
                 tempNewSum = tempNewSum/10; // (1.5556664) 5
 
-                if(cnt &gt;= round){
-                    if(lastNewSum &gt;= lastInitSum){
+                if(cnt >= round){
+                    if(lastNewSum >= lastInitSum){
                         // If new is bigger
                         dec[decimals-cnt] = dec[decimals-cnt].add(lastNewSum - lastInitSum);
                     }else{
@@ -492,7 +492,7 @@ contract Redenom is ERC20Interface, Owned{
 
                 cnt = cnt+1;
             }
-        }//if(round &lt; 9){
+        }//if(round < 9){
 
         return true;
     }
@@ -517,7 +517,7 @@ contract Redenom is ERC20Interface, Owned{
     // Checks whether some bit is present in BM
     function bitmask_check(address user, uint _bit) public view returns (bool status){
         bool flag;
-        accounts[user].bitmask &amp; _bit == 0 ? flag = false : flag = true;
+        accounts[user].bitmask & _bit == 0 ? flag = false : flag = true;
         return flag;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -540,7 +540,7 @@ contract Redenom is ERC20Interface, Owned{
     //Redenominates 
     function redenominate() public onlyAdmin returns(uint current_round){
         require(frozen == false); 
-        require(round&lt;9); // Round must be &lt; 9
+        require(round<9); // Round must be < 9
 
         // Deleting funds rest from TS
         _totalSupply = _totalSupply.sub( team_fund%mul[round] ).sub( redenom_dao_fund%mul[round] ).sub( dec[8-round]*mul[round-1] );
@@ -550,7 +550,7 @@ contract Redenom is ERC20Interface, Owned{
         team_fund = ( team_fund / mul[round] ) * mul[round]; // Redenominates team_fund
         redenom_dao_fund = ( redenom_dao_fund / mul[round] ) * mul[round]; // Redenominates redenom_dao_fund
 
-        if(round&gt;1){
+        if(round>1){
             // decimals burned in last round and not distributed
             uint superold = dec[(8-round)+1]; 
 
@@ -560,12 +560,12 @@ contract Redenom is ERC20Interface, Owned{
         }
 
         
-        if(round&lt;8){ // if round between 1 and 7 
+        if(round<8){ // if round between 1 and 7 
 
             uint unclimed = dec[8-round]; // total sum of burned decimal
-            //[23,32,43,34,34,54,34, -&gt;46&lt;- ]
+            //[23,32,43,34,34,54,34, ->46<- ]
             uint total_current = dec[8-1-round]; // total sum of last active decimal
-            //[23,32,43,34,34,54, -&gt;34&lt;-, 46]
+            //[23,32,43,34,34,54, ->34<-, 46]
 
             // security check
             if(total_current==0){
@@ -582,15 +582,15 @@ contract Redenom is ERC20Interface, Owned{
 
             uint k05summ = 0;
 
-                for (uint k = 0; k &lt; ke9.length; k++) {
+                for (uint k = 0; k < ke9.length; k++) {
                      
                     ke9[k] = numbers[k]*1e9/total_current;
-                    if(k&lt;5) k05summ += ke9[k];
+                    if(k<5) k05summ += ke9[k];
                 }             
-                for (uint k2 = 5; k2 &lt; k2e9.length; k2++) {
+                for (uint k2 = 5; k2 < k2e9.length; k2++) {
                     k2e9[k2] = uint(ke9[k2])+uint(k05summ)*uint(weight[k2])/uint(100);
                 }
-                for (uint n = 5; n &lt; current_toadd.length; n++) {
+                for (uint n = 5; n < current_toadd.length; n++) {
                     current_toadd[n] = k2e9[n]*unclimed/10/1e9;
                 }
                 // current_toadd now contains all digits
@@ -611,7 +611,7 @@ contract Redenom is ERC20Interface, Owned{
 
 
     function actual_balance(address user) public constant returns(uint _actual_balance){
-        if(epoch &gt; 1 &amp;&amp; accounts[user].lastEpoch &lt; epoch){
+        if(epoch > 1 && accounts[user].lastEpoch < epoch){
             return (accounts[user].balance/100000000)*100000000;
         }
         return (accounts[user].balance/current_mul())*current_mul();
@@ -621,13 +621,13 @@ contract Redenom is ERC20Interface, Owned{
     // Pays dividends if any
     function updateAccount(address account) public returns(uint new_balance){
         require(frozen == false); 
-        require(round&lt;=9);
+        require(round<=9);
         require(bitmask_check(account, 1024) == false); // banned == false
 
-        if(epoch &gt; 1 &amp;&amp; accounts[account].lastEpoch &lt; epoch){
+        if(epoch > 1 && accounts[account].lastEpoch < epoch){
             uint entire = accounts[account].balance/100000000; //1.
             //uint diff_ = accounts[account].balance - entire*100000000;
-            if((accounts[account].balance - entire*100000000) &gt;0){
+            if((accounts[account].balance - entire*100000000) >0){
                 emit Transfer(account, address(0), (accounts[account].balance - entire*100000000));
             }
             accounts[account].balance = entire*100000000;
@@ -636,9 +636,9 @@ contract Redenom is ERC20Interface, Owned{
             return accounts[account].balance;
         }
 
-        if(round &gt; accounts[account].lastRound){
+        if(round > accounts[account].lastRound){
 
-            if(round &gt;1 &amp;&amp; round &lt;=8){
+            if(round >1 && round <=8){
 
 
                 // Splits user bal by current multiplier
@@ -651,18 +651,18 @@ contract Redenom is ERC20Interface, Owned{
                 uint diff = accounts[account].balance - newFixedBalance;
                 // 1.5556663 [4] (r2)
 
-                if(diff &gt; 0){
+                if(diff > 0){
                     accounts[account].balance = newFixedBalance;
                     emit Transfer(account, address(0), diff);
                 }
 
                 uint toBalance = 0;
-                if(lastActiveDigit&gt;0 &amp;&amp; current_toadd[lastActiveDigit-1]&gt;0){
+                if(lastActiveDigit>0 && current_toadd[lastActiveDigit-1]>0){
                     toBalance = current_toadd[lastActiveDigit-1] * current_mul();
                 }
 
 
-                if(toBalance &gt; 0 &amp;&amp; toBalance &lt; dec[8-round+1]){ // Not enough
+                if(toBalance > 0 && toBalance < dec[8-round+1]){ // Not enough
 
                     renewDec( accounts[account].balance, accounts[account].balance.add(toBalance) );
                     emit Transfer(address(0), account, toBalance);
@@ -690,7 +690,7 @@ contract Redenom is ERC20Interface, Owned{
                     uint newBalance = fix_amount(accounts[account].balance);
                     uint _diff = accounts[account].balance.sub(newBalance);
 
-                    if(_diff &gt; 0){
+                    if(_diff > 0){
                         renewDec( accounts[account].balance, newBalance );
                         accounts[account].balance = newBalance;
                         emit Transfer(account, address(0), _diff);
@@ -715,7 +715,7 @@ contract Redenom is ERC20Interface, Owned{
     function current_mul() internal view returns(uint _current_mul){
         return mul[round-1];
     }
-    // Removes burned values 123 -&gt; 120  
+    // Removes burned values 123 -> 120  
     // Returns fixed
     function fix_amount(uint amount) public view returns(uint fixed_amount){
         return ( amount / current_mul() ) * current_mul();
@@ -742,15 +742,15 @@ contract Redenom is ERC20Interface, Owned{
     // ------------------------------------------------------------------------
     // ERC20 allowance:
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
     // ------------------------------------------------------------------------
     // ERC20 transfer:
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -761,7 +761,7 @@ contract Redenom is ERC20Interface, Owned{
         //Fixing amount, deleting burned decimals
         tokens = fix_amount(tokens);
         // Checking if greater then 0
-        require(tokens&gt;0);
+        require(tokens>0);
 
         //Refreshing accs, payng dividends
         updateAccount(to);
@@ -784,7 +784,7 @@ contract Redenom is ERC20Interface, Owned{
     // ------------------------------------------------------------------------
     // ERC20 approve:
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces 
@@ -827,7 +827,7 @@ contract Redenom is ERC20Interface, Owned{
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -839,7 +839,7 @@ contract Redenom is ERC20Interface, Owned{
         return true;
     }
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH https://github.com/ConsenSys/Ethereum-Development-Best-Practices/wiki/Fallback-functions-and-the-fundamental-limitations-of-using-send()-in-Ethereum-&amp;-Solidity
+    // Don't accept ETH https://github.com/ConsenSys/Ethereum-Development-Best-Practices/wiki/Fallback-functions-and-the-fundamental-limitations-of-using-send()-in-Ethereum-&-Solidity
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -856,4 +856,4 @@ contract Redenom is ERC20Interface, Owned{
 
 
 
-} // &#169; Musqogees Tech 2018, Redenom ™
+} // © Musqogees Tech 2018, Redenom ™

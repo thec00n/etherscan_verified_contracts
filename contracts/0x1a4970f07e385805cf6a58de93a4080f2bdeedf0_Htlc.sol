@@ -32,12 +32,12 @@ library ECRecovery {
         }
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
 
         // If the version is correct return the signer address
-        if (v != 27 &amp;&amp; v != 28) {
+        if (v != 27 && v != 28) {
             return (address(0));
         } else {
             // solium-disable-next-line arg-overflow
@@ -47,7 +47,7 @@ library ECRecovery {
 
     /**
      * toEthSignedMessageHash
-     * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+     * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
      * @dev and hash the result
      */
     function toEthSignedMessageHash(bytes32 hash)
@@ -58,7 +58,7 @@ library ECRecovery {
         // 32 is the length in bytes of hash,
         // enforced by the type signature above
         return keccak256(
-            &quot;\x19Ethereum Signed Message:\n32&quot;,
+            "\x19Ethereum Signed Message:\n32",
             hash
         );
     }
@@ -88,8 +88,8 @@ contract Htlc {
     // FIELDS
 
     address constant FEE_RECIPIENT = 0x0E5cB767Cce09A7F3CA594Df118aa519BE5e2b5A;
-    mapping (bytes32 =&gt; Multisig) public hashIdToMultisig;
-    mapping (bytes32 =&gt; AtomicSwap) public hashIdToSwap;
+    mapping (bytes32 => Multisig) public hashIdToMultisig;
+    mapping (bytes32 => AtomicSwap) public hashIdToSwap;
 
     // EVENTS
 
@@ -108,7 +108,7 @@ contract Htlc {
         internal
     {
         // Require sufficient deposit amount; Prevents buffer underflow
-        require(amount &lt;= hashIdToMultisig[msigId].deposit);
+        require(amount <= hashIdToMultisig[msigId].deposit);
         hashIdToMultisig[msigId].deposit -= amount;
         if (hashIdToMultisig[msigId].deposit == 0) {
             // Delete multisig
@@ -128,7 +128,7 @@ contract Htlc {
         internal
     {
         // Require sufficient swap amount; Prevents buffer underflow
-        require(amount &lt;= hashIdToSwap[swapId].amount);
+        require(amount <= hashIdToSwap[swapId].amount);
         hashIdToSwap[swapId].amount -= amount;
         if (hashIdToSwap[swapId].amount == 0) {
             // Delete swap
@@ -155,7 +155,7 @@ contract Htlc {
     {
         // Require not own authority and ether are sent
         require(msg.sender != authority);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         msigId = keccak256(
             msg.sender,
             authority,
@@ -185,11 +185,11 @@ contract Htlc {
     {
         Multisig storage multisig = hashIdToMultisig[msigId];
         assert(
-            multisig.deposit + msg.value &gt;=
+            multisig.deposit + msg.value >=
             multisig.deposit
         ); // Throws on overflow.
         multisig.deposit += msg.value;
-        assert(multisig.unlockTime &lt;= unlockTime); // Can only increase unlockTime
+        assert(multisig.unlockTime <= unlockTime); // Can only increase unlockTime
         multisig.unlockTime = unlockTime;
     }
 
@@ -210,9 +210,9 @@ contract Htlc {
     {
         // Require owner with sufficient deposit
         require(hashIdToMultisig[msigId].owner == msg.sender);
-        require(hashIdToMultisig[msigId].deposit &gt;= amount + fee); // Checks for underflow
-        require(now &lt;= expirationTime &amp;&amp; expirationTime &lt;= now + 86400); // Not more than 1 day
-        require(amount &gt; 0); // Non-empty amount as definition for active swap
+        require(hashIdToMultisig[msigId].deposit >= amount + fee); // Checks for underflow
+        require(now <= expirationTime && expirationTime <= now + 86400); // Not more than 1 day
+        require(amount > 0); // Non-empty amount as definition for active swap
         // Account in multisig balance
         hashIdToMultisig[msigId].deposit -= amount + fee;
         swapId = keccak256(
@@ -245,7 +245,7 @@ contract Htlc {
     function batchRegularTransfer(bytes32[] swapIds, bytes32[] secrets)
         public
     {
-        for (uint i = 0; i &lt; swapIds.length; ++i)
+        for (uint i = 0; i < swapIds.length; ++i)
             regularTransfer(swapIds[i], secrets[i]);
     }
 
@@ -274,7 +274,7 @@ contract Htlc {
     function batchReclaimExpiredSwaps(bytes32 msigId, bytes32[] swapIds)
         public
     {
-        for (uint i = 0; i &lt; swapIds.length; ++i)
+        for (uint i = 0; i < swapIds.length; ++i)
             reclaimExpiredSwaps(msigId, swapIds[i]);
     }
 
@@ -294,9 +294,9 @@ contract Htlc {
         );
         // TODO! link msigId to swapId
         // Require: is expired
-        require(now &gt;= hashIdToSwap[swapId].expirationTime);
+        require(now >= hashIdToSwap[swapId].expirationTime);
         uint amount = hashIdToSwap[swapId].amount;
-        assert(hashIdToMultisig[msigId].deposit + amount &gt;= amount); // Throws on overflow.
+        assert(hashIdToMultisig[msigId].deposit + amount >= amount); // Throws on overflow.
         delete hashIdToSwap[swapId];
         hashIdToMultisig[msigId].deposit += amount;
     }
@@ -332,8 +332,8 @@ contract Htlc {
         public
     {
         // Require sufficient amount and time passed
-        require(hashIdToMultisig[msigId].deposit &gt;= amount);
-        require(now &gt;= hashIdToMultisig[msigId].unlockTime);
+        require(hashIdToMultisig[msigId].deposit >= amount);
+        require(now >= hashIdToMultisig[msigId].unlockTime);
 
         spendFromMultisig(msigId, amount, hashIdToMultisig[msigId].owner);
     }

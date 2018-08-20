@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,17 +57,17 @@ contract BasicToken is ERC20Basic, Ownable {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     modifier onlyPayloadSize(uint size) {
-        if (msg.data.length &lt; size + 4) {
+        if (msg.data.length < size + 4) {
             revert();
         }
         _;
     }
 
     function transfer(address _to, uint256 _amount) public onlyPayloadSize(2 * 32) returns (bool) {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -81,10 +81,10 @@ contract BasicToken is ERC20Basic, Ownable {
 
 contract AdvancedToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3 * 32) returns (bool) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -106,7 +106,7 @@ contract AdvancedToken is BasicToken, ERC20 {
 
     function decreaseApproval(address _spender, uint256 _amount) public returns (bool) {
         require(allowances[msg.sender][_spender] != 0);
-        if (_amount &gt;= allowances[msg.sender][_spender]) {
+        if (_amount >= allowances[msg.sender][_spender]) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = allowances[msg.sender][_spender].sub(_amount);
@@ -128,7 +128,7 @@ contract MintableToken is AdvancedToken {
     event MintingFinished();
 
     function mint(address _to, uint256 _amount) external onlyOwner onlyPayloadSize(2 * 32) returns (bool) {
-        require(_to != 0x0 &amp;&amp; _amount &gt; 0 &amp;&amp; !mintingFinished);
+        require(_to != 0x0 && _amount > 0 && !mintingFinished);
         balances[_to] = balances[_to].add(_amount);
         totalSupply = totalSupply.add(_amount);
         Transfer(0x0, _to, _amount);
@@ -156,7 +156,7 @@ contract ACO is MintableToken {
     function ACO() public {
         totalSupply = 0;
         decimals = 18;
-        name = &quot;ACO&quot;;
-        symbol = &quot;ACO&quot;;
+        name = "ACO";
+        symbol = "ACO";
     }
 }

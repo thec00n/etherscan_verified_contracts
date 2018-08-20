@@ -8,25 +8,25 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
 
 contract EDT is SafeMath {
 
-    string public name = &quot;EDT&quot;;        //  token name
-    string public symbol = &quot;EDT&quot;;      //  token symbol
+    string public name = "EDT";        //  token name
+    string public symbol = "EDT";      //  token symbol
     uint public decimals = 8;           //  token digit
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     uint public totalSupply = 0;
 
@@ -37,7 +37,7 @@ contract EDT is SafeMath {
     address private addressTeam = 0xE5fB6dce07BCa4ffc4B79A529a8Ce43A31383BA9;
 
     // 锁定信息
-    mapping (address =&gt; uint) public lockInfo;
+    mapping (address => uint) public lockInfo;
 
     // 是否停止销售
     bool public saleStopped = false;
@@ -94,17 +94,17 @@ contract EDT is SafeMath {
     }
 
     modifier validEth {
-        assert(msg.value &gt;= minEth &amp;&amp; msg.value &lt;= maxEth);
+        assert(msg.value >= minEth && msg.value <= maxEth);
         _;
     }
 
     modifier validPeriod {
-        assert(now &gt;= openTime &amp;&amp; now &lt; closeTime);
+        assert(now >= openTime && now < closeTime);
         _;
     }
 
     modifier validQuantity {
-        assert(valueSale &gt;= saleQuantity);
+        assert(valueSale >= saleQuantity);
         _;
     }
 
@@ -129,8 +129,8 @@ contract EDT is SafeMath {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         require(validTransfer(msg.sender, _value));
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
@@ -155,9 +155,9 @@ contract EDT is SafeMath {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         require(validTransfer(_from, _value));
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
@@ -181,8 +181,8 @@ contract EDT is SafeMath {
         private
         validAddress(_to)
     {
-        require(_value &gt; 0);
-        require(lockInfo[_to] + _value &lt;= balanceOf[_to]);
+        require(_value > 0);
+        require(lockInfo[_to] + _value <= balanceOf[_to]);
         lockInfo[_to] += _value;
     }
 
@@ -195,13 +195,13 @@ contract EDT is SafeMath {
             return false;
 
         if (_from == addressTeam) {
-            return now &gt;= unlockTeamTime;
+            return now >= unlockTeamTime;
         }
 
-        if (now &gt;= unlockTime)
+        if (now >= unlockTime)
             return true;
 
-        return lockInfo[_from] + _value &lt;= balanceOf[_from];
+        return lockInfo[_from] + _value <= balanceOf[_from];
     }
 
 
@@ -226,7 +226,7 @@ contract EDT is SafeMath {
 
         // 是否超出剩余代币
         uint leftQuantity = safeSub(valueSale, saleQuantity);
-        if (quantity &gt; leftQuantity) {
+        if (quantity > leftQuantity) {
             quantity = leftQuantity;
         }
 
@@ -264,7 +264,7 @@ contract EDT is SafeMath {
             return FINISHED;
         }
 
-        if (now &lt; openTime) {
+        if (now < openTime) {
             return BEFORE_SALE;
         }
 
@@ -272,7 +272,7 @@ contract EDT is SafeMath {
             return FINISHED;
         }
 
-        if (now &gt;= openTime &amp;&amp; now &lt; closeTime) {
+        if (now >= openTime && now < closeTime) {
             return IN_SALE;
         }
 
@@ -287,7 +287,7 @@ contract EDT is SafeMath {
         uint period = getPeriod();
         require(period == FINISHED);
 
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         msg.sender.transfer(amount);
     }
 
@@ -307,8 +307,8 @@ contract EDT is SafeMath {
         isOwner
         validAddress(_vip)
     {
-        require(_value &gt; 0);
-        require(_value + totalVip &lt;= valueVip);
+        require(_value > 0);
+        require(_value + totalVip <= valueVip);
 
         balanceOf[_vip] += _value;
         Transfer(0x0, _vip, _value);

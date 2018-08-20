@@ -49,7 +49,7 @@ contract SCLCrowdsale {
     Token public sclToken;
 
     // Invested balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
 
     /**
@@ -120,40 +120,40 @@ contract SCLCrowdsale {
      */
     function toSCL(uint256 _wei) returns (uint256 amount) {
         uint256 rate = 0;
-        if (stage != Stages.Ended &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end) {
+        if (stage != Stages.Ended && now >= start && now <= end) {
 
             // Check for preico
-            if (now &lt;= start + ratePreICOEnd) {
+            if (now <= start + ratePreICOEnd) {
                 rate = ratePreICO;
             }
 
             // Check for waiting period
-            else if (now &lt;= start + rateWaitingEnd) {
+            else if (now <= start + rateWaitingEnd) {
                 rate = rateWaiting;
             }
 
             // Check for angelday
-            else if (now &lt;= start + rateAngelDayEnd) {
+            else if (now <= start + rateAngelDayEnd) {
                 rate = rateAngelDay;
             }
 
             // Check first week
-            else if (now &lt;= start + rateFirstWeekEnd) {
+            else if (now <= start + rateFirstWeekEnd) {
                 rate = rateFirstWeek;
             }
 
             // Check second week
-            else if (now &lt;= start + rateSecondWeekEnd) {
+            else if (now <= start + rateSecondWeekEnd) {
                 rate = rateSecondWeek;
             }
 
             // Check third week
-            else if (now &lt;= start + rateThirdWeekEnd) {
+            else if (now <= start + rateThirdWeekEnd) {
                 rate = rateThirdWeek;
             }
 
             // Check last week
-            else if (now &lt;= start + rateLastWeekEnd) {
+            else if (now <= start + rateLastWeekEnd) {
                 rate = rateLastWeek;
             }
         }
@@ -169,7 +169,7 @@ contract SCLCrowdsale {
     function endCrowdsale() atStage(Stages.InProgress) {
 
         // Crowdsale not ended yet
-        if (now &lt; end) {
+        if (now < end) {
             throw;
         }
 
@@ -184,7 +184,7 @@ contract SCLCrowdsale {
     function withdraw() onlyBeneficiary atStage(Stages.Ended) {
 
         // Confirm that minAmount is raised
-        if (raised &lt; minAmount) {
+        if (raised < minAmount) {
             throw;
         }
 
@@ -217,14 +217,14 @@ contract SCLCrowdsale {
     function refund() atStage(Stages.Ended) {
 
         // Only allow refunds if minAmount is not raised
-        if (raised &gt;= minAmount) {
+        if (raised >= minAmount) {
             throw;
         }
 
         uint256 receivedAmount = balances[msg.sender];
         balances[msg.sender] = 0;
 
-        if (receivedAmount &gt; 0 &amp;&amp; !msg.sender.send(receivedAmount)) {
+        if (receivedAmount > 0 && !msg.sender.send(receivedAmount)) {
             balances[msg.sender] = receivedAmount;
         }
     }
@@ -236,17 +236,17 @@ contract SCLCrowdsale {
     function () payable atStage(Stages.InProgress) {
 
         // Crowdsale not started yet
-        if (now &lt; start) {
+        if (now < start) {
             throw;
         }
 
         // Crowdsale expired
-        if (now &gt; end) {
+        if (now > end) {
             throw;
         }
 
         // Enforce min amount
-        if (msg.value &lt; minAcceptedAmount) {
+        if (msg.value < minAcceptedAmount) {
             throw;
         }
  
@@ -270,7 +270,7 @@ contract SCLCrowdsale {
             throw;
         }
 
-        if (now &lt;= start + ratePreICOEnd) {
+        if (now <= start + ratePreICOEnd) {
 
             // Fees
             uint256 ethFees = received * 5 / 10**2;
@@ -294,7 +294,7 @@ contract SCLCrowdsale {
         raised += received;
 
         // Check maxAmount raised
-        if (raised &gt;= maxAmount || sclToken.totalSupply() &gt;= maxSupply) {
+        if (raised >= maxAmount || sclToken.totalSupply() >= maxSupply) {
             stage = Stages.Ended;
         }
     }

@@ -20,25 +20,25 @@ contract EthWallet {
 
     function EthWallet(address _owner, uint256 _icoEnd) public {
         require(_owner != address(0));
-        require(_icoEnd &gt; now);
+        require(_icoEnd > now);
         owner = _owner;
         icoEndTimestamp = _icoEnd;
     }
 
     function () payable external {
-        require(now &lt; icoEndTimestamp);
-        require(msg.value &gt;= (1 ether) / 10);
+        require(now < icoEndTimestamp);
+        require(msg.value >= (1 ether) / 10);
         Transfer(msg.sender, address(this), msg.value);
         owner.transfer(msg.value);
     }
 
     function cleanup() onlyOwner public {
-        require(now &gt; icoEndTimestamp);
+        require(now > icoEndTimestamp);
         selfdestruct(owner);
     }
 
     function cleanupTo(address _to) onlyOwner public {
-        require(now &gt; icoEndTimestamp);
+        require(now > icoEndTimestamp);
         selfdestruct(_to);
     }
 

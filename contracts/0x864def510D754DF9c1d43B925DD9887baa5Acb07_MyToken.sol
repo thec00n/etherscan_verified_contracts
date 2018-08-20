@@ -28,17 +28,17 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract MyToken is owned {
     /* Public variables of the token */
-    string public name = &quot;DankToken&quot;;
-    string public symbol = &quot;DANK&quot;;
+    string public name = "DankToken";
+    string public symbol = "DANK";
     uint8 public decimals = 18;
     uint256 _totalSupply;
     uint256 public amountRaised = 0;
     uint256 public amountOfTokensPerEther = 500;
         /* this makes an array with all frozen accounts. This is needed so voters can not send their funds while the vote is going on and they have already voted      */
-    mapping (address =&gt; bool) public frozenAccounts;
+    mapping (address => bool) public frozenAccounts;
         /* This creates an array with all balances */ 
-    mapping (address =&gt; uint256) _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) _allowance;
+    mapping (address => uint256) _balanceOf;
+    mapping (address => mapping (address => uint256)) _allowance;
     bool public crowdsaleClosed = false;
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -76,7 +76,7 @@ contract MyToken is owned {
          crowdsaleClosed = false;
      }
      function changePrice(uint newAmountOfTokensPerEther) onlyOwner{
-         require(newAmountOfTokensPerEther &lt;= 500);
+         require(newAmountOfTokensPerEther <= 500);
          amountOfTokensPerEther = newAmountOfTokensPerEther;
      }
      function withdrawal(uint256 amountOfWei) onlyOwner{
@@ -91,8 +91,8 @@ contract MyToken is owned {
     /* Send coins */
     function transfer(address _to, uint256 _value) onlyPayloadSize(2*32) {
         require(!frozenAccounts[msg.sender]);
-        require(_balanceOf[msg.sender] &gt; _value);          // Check if the sender has enough
-        require(_balanceOf[_to] + _value &gt; _balanceOf[_to]); // Check for overflows
+        require(_balanceOf[msg.sender] > _value);          // Check if the sender has enough
+        require(_balanceOf[_to] + _value > _balanceOf[_to]); // Check for overflows
         _balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         _balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -108,9 +108,9 @@ contract MyToken is owned {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success)  {
         require(!frozenAccounts[_from]);
-        require(_balanceOf[_from] &gt; _value);                 // Check if the sender has enough
-        require(_balanceOf[_to] + _value &gt; _balanceOf[_to]);  // Check for overflows
-        require(_allowance[_from][msg.sender] &gt;= _value);     // Check allowance
+        require(_balanceOf[_from] > _value);                 // Check if the sender has enough
+        require(_balanceOf[_to] + _value > _balanceOf[_to]);  // Check for overflows
+        require(_allowance[_from][msg.sender] >= _value);     // Check allowance
         _balanceOf[_from] -= _value;                           // Subtract from the sender
         _balanceOf[_to] += _value;                             // Add the same to the recipient
         _allowance[_from][msg.sender] -= _value;

@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -134,7 +134,7 @@ contract IADTGE is manager {
     uint256 public completedAt;
     address public creator;
     uint256[2] public rates = [6250,5556];//Base rate is 5000 IAD/ETH - 1st 15 days 20% discount/2nd 15 days 10% discount
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //events for log
     event LogFundingReceived(address _addr, uint _amount, uint _currentTotal);
@@ -162,12 +162,12 @@ contract IADTGE is manager {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(now &gt;= startTime);
+        require(now >= startTime);
         uint256 tokenBought;
 
         totalRaised = totalRaised.add(msg.value);
 
-        if (now &lt; startTime.add(15 days)){
+        if (now < startTime.add(15 days)){
 
             tokenBought = msg.value.mul(rates[0]);
         
@@ -192,7 +192,7 @@ contract IADTGE is manager {
     */
     function checkIfFundingCompleteOrExpired() public {
 
-        if(now &gt; deadline){
+        if(now > deadline){
 
             state = State.Successful; //TGE becomes Successful
             completedAt = now; //TGE end time

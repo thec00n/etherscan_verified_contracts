@@ -13,9 +13,9 @@ contract IToken {
  */
 contract TokenEscrow {
 	// Token-related properties/description to display in Wallet client / UI
-	string public standard = &#39;PBKXToken 0.3&#39;;
-	string public name = &#39;PBKXToken&#39;;
-	string public symbol = &#39;PBKX&#39;;
+	string public standard = 'PBKXToken 0.3';
+	string public name = 'PBKXToken';
+	string public symbol = 'PBKX';
 	uint public decimals = 2;
     	uint public totalSupply = 300000000;
 	
@@ -25,11 +25,11 @@ contract TokenEscrow {
     	event Transfer(address indexed from, address indexed to, uint256 value);
 	event Error(bytes32 error);
 	
-	mapping (address =&gt; uint) balanceFor; // Presale token balance for each of holders
+	mapping (address => uint) balanceFor; // Presale token balance for each of holders
 	
 	address owner;  // Contract owner
 	
-	uint public exchangeRate; // preICO -&gt; ICO token exchange rate
+	uint public exchangeRate; // preICO -> ICO token exchange rate
 
 	// Token supply and discount policy structure
 	struct TokenSupply {
@@ -76,8 +76,8 @@ contract TokenEscrow {
 	 */	
 	function transfer(address _to, uint _value) returns (bool success) {
 		if(_to != owner) {
-			if (balanceFor[msg.sender] &lt; _value) return false;           // Check if the sender has enough
-			if (balanceFor[_to] + _value &lt; balanceFor[_to]) return false; // Check for overflows
+			if (balanceFor[msg.sender] < _value) return false;           // Check if the sender has enough
+			if (balanceFor[_to] + _value < balanceFor[_to]) return false; // Check for overflows
 			if (msg.sender == owner) {
 				transferByOwner(_value);
 			}
@@ -90,10 +90,10 @@ contract TokenEscrow {
 	}
 	
 	function transferByOwner(uint _value) private {
-		for (uint discountIndex = 0; discountIndex &lt; tokenSupplies.length; discountIndex++) {
+		for (uint discountIndex = 0; discountIndex < tokenSupplies.length; discountIndex++) {
 			TokenSupply storage tokenSupply = tokenSupplies[discountIndex];
-			if(tokenSupply.totalSupply &lt; tokenSupply.limit) {
-				if (tokenSupply.totalSupply + _value &gt; tokenSupply.limit) {
+			if(tokenSupply.totalSupply < tokenSupply.limit) {
+				if (tokenSupply.totalSupply + _value > tokenSupply.limit) {
 					_value -= tokenSupply.limit - tokenSupply.totalSupply;
 					tokenSupply.totalSupply = tokenSupply.limit;
 				} else {
@@ -187,32 +187,32 @@ contract TokenEscrow {
 		uint amountToBePaid; // Amount to be paid
 		uint amountTransfered = msg.value; // Cost/price in WEI of incoming transfer/payment
 		
-		if (amountTransfered &lt;= 0) {
-		      	Error(&#39;no eth was transfered&#39;);
+		if (amountTransfered <= 0) {
+		      	Error('no eth was transfered');
               		msg.sender.transfer(msg.value);
 		  	return;
 		}
 
-		if(balanceFor[owner] &lt;= 0) {
-		      	Error(&#39;all tokens sold&#39;);
+		if(balanceFor[owner] <= 0) {
+		      	Error('all tokens sold');
               		msg.sender.transfer(msg.value);
 		      	return;
 		}
 		
 		// Determine amount of tokens can be bought according to available supply and discount policy
-		for (uint discountIndex = 0; discountIndex &lt; tokenSupplies.length; discountIndex++) {
-			// If it&#39;s not possible to buy any tokens at all skip the rest of discount policy
+		for (uint discountIndex = 0; discountIndex < tokenSupplies.length; discountIndex++) {
+			// If it's not possible to buy any tokens at all skip the rest of discount policy
 			
 			TokenSupply storage tokenSupply = tokenSupplies[discountIndex];
 			
-			if(tokenSupply.totalSupply &lt; tokenSupply.limit) {
+			if(tokenSupply.totalSupply < tokenSupply.limit) {
 			
 				uint tokensPossibleToBuy = amountTransfered / tokenSupply.tokenPriceInWei;
 
-                if (tokensPossibleToBuy &gt; balanceFor[owner]) 
+                if (tokensPossibleToBuy > balanceFor[owner]) 
                     tokensPossibleToBuy = balanceFor[owner];
 
-				if (tokenSupply.totalSupply + tokensPossibleToBuy &gt; tokenSupply.limit) {
+				if (tokenSupply.totalSupply + tokensPossibleToBuy > tokenSupply.limit) {
 					tokensPossibleToBuy = tokenSupply.limit - tokenSupply.totalSupply;
 				}
 
@@ -229,7 +229,7 @@ contract TokenEscrow {
 		
 		// Do not waste gas if there is no tokens to buy
 		if (tokenAmount == 0) {
-		    	Error(&#39;no token to buy&#39;);
+		    	Error('no token to buy');
             		msg.sender.transfer(msg.value);
 			return;
         	}
@@ -258,8 +258,8 @@ contract TokenEscrow {
 	 * @return success/failure of transfer
 	 */
 	function transferFromOwner(address _to, uint256 _value) private returns (bool success) {
-		if (balanceFor[owner] &lt; _value) return false;                 // Check if the owner has enough
-		if (balanceFor[_to] + _value &lt; balanceFor[_to]) return false;  // Check for overflows
+		if (balanceFor[owner] < _value) return false;                 // Check if the owner has enough
+		if (balanceFor[_to] + _value < balanceFor[_to]) return false;  // Check for overflows
 		balanceFor[owner] -= _value;                          // Subtract from the owner
 		balanceFor[_to] += _value;                            // Add the same to the recipient
         	Transfer(owner,_to,_value);

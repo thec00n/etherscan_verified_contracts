@@ -11,7 +11,7 @@ pragma solidity ^0.4.23;
  * Version 18.5.7
  *
  * Web    : https://taboou.com/
- * Email  : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1c6f696c6c736e685c687d7e737369327f7371">[email&#160;protected]</a>
+ * Email  : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1c6f696c6c736e685c687d7e737369327f7371">[email protected]</a>
  * Github : https://github.com/taboou/tabooads.bit/
  */
 
@@ -55,12 +55,12 @@ contract Owned {
  */
 contract TabooDb is Owned {
     /* Initialize all storage types. */
-    mapping(bytes32 =&gt; address)    private addressStorage;
-    mapping(bytes32 =&gt; bool)       private boolStorage;
-    mapping(bytes32 =&gt; bytes)      private bytesStorage;
-    mapping(bytes32 =&gt; int256)     private intStorage;
-    mapping(bytes32 =&gt; string)     private stringStorage;
-    mapping(bytes32 =&gt; uint256)    private uIntStorage;
+    mapping(bytes32 => address)    private addressStorage;
+    mapping(bytes32 => bool)       private boolStorage;
+    mapping(bytes32 => bytes)      private bytesStorage;
+    mapping(bytes32 => int256)     private intStorage;
+    mapping(bytes32 => string)     private stringStorage;
+    mapping(bytes32 => uint256)    private uIntStorage;
 
     /**
      * @dev Only allow access from the latest version of a contract
@@ -73,11 +73,11 @@ contract TabooDb is Owned {
          * direct access is permanently disabled.
          */
         if (msg.sender == owner) {
-            /* Verify owner&#39;s write access has not already been disabled. */
-            require(boolStorage[keccak256(&#39;owner.auth.disabled&#39;)] != true);
+            /* Verify owner's write access has not already been disabled. */
+            require(boolStorage[keccak256('owner.auth.disabled')] != true);
         } else {
             /* Verify write access is only permitted to authorized accounts. */
-            require(boolStorage[keccak256(msg.sender, &#39;.has.auth&#39;)] == true);
+            require(boolStorage[keccak256(msg.sender, '.has.auth')] == true);
         }
 
         _;      // function code is inserted here

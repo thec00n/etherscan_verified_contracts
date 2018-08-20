@@ -34,7 +34,7 @@ contract ERC223 {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -52,18 +52,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -101,7 +101,7 @@ contract TokenStorage{
 
 contract GameCoin is ERC223, SafeMath {
   TokenStorage _s;
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   string public name;
   string public symbol;
@@ -129,8 +129,8 @@ contract GameCoin is ERC223, SafeMath {
   
   function GameCoin() {
         _s = TokenStorage(0x9ff62629aec4436d03a84665acfb2a3195ca784b);
-        name = &quot;GameCoin&quot;;
-        symbol = &quot;GMC&quot;;
+        name = "GameCoin";
+        symbol = "GMC";
         decimals = 2;
         totalSupply = 25907002099;
         
@@ -142,7 +142,7 @@ contract GameCoin is ERC223, SafeMath {
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) returns (bool success) {
       
     if(isContract(_to)) {
-        if (balanceOf(msg.sender) &lt; _value) throw;
+        if (balanceOf(msg.sender) < _value) throw;
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -189,12 +189,12 @@ contract GameCoin is ERC223, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) throw;
+    if (balanceOf(msg.sender) < _value) throw;
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -203,7 +203,7 @@ contract GameCoin is ERC223, SafeMath {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) throw;
+    if (balanceOf(msg.sender) < _value) throw;
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver receiver = ContractReceiver(_to);

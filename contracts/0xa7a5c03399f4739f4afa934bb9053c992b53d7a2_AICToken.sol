@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -65,7 +65,7 @@ library SafeMath {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -78,7 +78,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -119,13 +119,13 @@ library Roles {
  * See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  * for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  * to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address indexed operator, string role);
   event RoleRemoved(address indexed operator, string role);
@@ -214,7 +214,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] _roles) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; _roles.length; i++) {
+  //     for (uint8 i = 0; i < _roles.length; i++) {
   //         if (hasRole(msg.sender, _roles[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -231,7 +231,7 @@ contract RBAC {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -298,8 +298,8 @@ contract Ownable {
  * A Admin can transfer his role to a new address. 
  */
 contract Administrable is Ownable, RBAC {
-  string public constant ROLE_LOCKUP = &quot;lockup&quot;;
-  string public constant ROLE_MINT = &quot;mint&quot;;
+  string public constant ROLE_LOCKUP = "lockup";
+  string public constant ROLE_MINT = "mint";
 
   constructor () public {
     addRole(msg.sender, ROLE_LOCKUP);
@@ -307,7 +307,7 @@ contract Administrable is Ownable, RBAC {
   }
 
   /**
-   * @dev Throws if called by any account that&#39;s not a Admin.
+   * @dev Throws if called by any account that's not a Admin.
    */
   modifier onlyAdmin(string _role) {
     checkRole(msg.sender, _role);
@@ -389,7 +389,7 @@ contract Lockable is Administrable {
   }
 
   // granted to locks;
-  mapping (address =&gt; Lock[]) public grantedLocks;
+  mapping (address => Lock[]) public grantedLocks;
   
 
   /**
@@ -404,8 +404,8 @@ contract Lockable is Administrable {
     onlyOwnerOrAdmin(ROLE_LOCKUP) 
     public 
   {
-    require(_amount &gt; 0);
-    require(_expiresAt &gt; now);
+    require(_amount > 0);
+    require(_expiresAt > now);
 
     grantedLocks[_granted].push(Lock(_amount, _expiresAt));
 
@@ -422,7 +422,7 @@ contract Lockable is Administrable {
     onlyOwnerOrAdmin(ROLE_LOCKUP) 
     public 
   {
-    require(grantedLocks[_granted].length &gt; 0);
+    require(grantedLocks[_granted].length > 0);
     
     delete grantedLocks[_granted];
     emit UnlockedAll(_granted);
@@ -440,10 +440,10 @@ contract Lockable is Administrable {
     
     uint256 lockedAmount = 0;
     uint256 lockedCount = grantedLocks[_granted].length;
-    if (lockedCount &gt; 0) {
+    if (lockedCount > 0) {
       Lock[] storage locks = grantedLocks[_granted];
-      for (uint i = 0; i &lt; locks.length; i++) {
-        if (now &lt; locks[i].expiresAt) {
+      for (uint i = 0; i < locks.length; i++) {
+        if (now < locks[i].expiresAt) {
           lockedAmount = lockedAmount.add(locks[i].amount);
         } 
       }
@@ -527,7 +527,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -555,7 +555,7 @@ contract BasicToken is ERC20Basic {
     {
         require(_to != address(0));
         require(_to != msg.sender);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -583,7 +583,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -601,8 +601,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -615,7 +615,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -682,7 +682,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -711,9 +711,9 @@ contract BurnableToken is StandardToken {
     function _burn(address _who, uint256 _value) 
         internal 
     {
-        require(_value &lt;= balances[_who]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[_who]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -794,7 +794,7 @@ contract ReliableToken is MintableToken, BurnableToken, Pausable, Lockable {
     uint256 lockedAmount = lockedAmountOf(_granted);
     uint256 balance = balanceOf(_granted);
 
-    require(balance &gt; lockedAmount &amp;&amp; balance.sub(lockedAmount) &gt;= _value);
+    require(balance > lockedAmount && balance.sub(lockedAmount) >= _value);
     _;
   }
 
@@ -824,14 +824,14 @@ contract ReliableToken is MintableToken, BurnableToken, Pausable, Lockable {
     onlyOwnerOrAdmin(ROLE_LOCKUP)
     returns (bool) 
   {
-    require(_value &gt;= _lockAmount);
+    require(_value >= _lockAmount);
 
     uint256 lockCount = _expiresAtList.length;
-    if (lockCount &gt; 0) {
+    if (lockCount > 0) {
       (uint256 lockAmountEach, uint256 remainder) = _lockAmount.divRemain(lockCount);
-      if (lockAmountEach &gt; 0) {
-        for (uint i = 0; i &lt; lockCount; i++) {
-          if (i == (lockCount - 1) &amp;&amp; remainder &gt; 0)
+      if (lockAmountEach > 0) {
+        for (uint i = 0; i < lockCount; i++) {
+          if (i == (lockCount - 1) && remainder > 0)
             lockAmountEach = lockAmountEach.add(remainder);
 
           lock(_to, lockAmountEach, _expiresAtList[i]);  
@@ -870,14 +870,14 @@ contract ReliableToken is MintableToken, BurnableToken, Pausable, Lockable {
     onlyOwnerOrAdmin(ROLE_LOCKUP)
     returns (bool) 
   {
-    require(_value &gt;= _lockAmount);
+    require(_value >= _lockAmount);
 
     uint256 lockCount = _expiresAtList.length;
-    if (lockCount &gt; 0) {
+    if (lockCount > 0) {
       (uint256 lockAmountEach, uint256 remainder) = _lockAmount.divRemain(lockCount);
-      if (lockAmountEach &gt; 0) {
-        for (uint i = 0; i &lt; lockCount; i++) {
-          if (i == (lockCount - 1) &amp;&amp; remainder &gt; 0)
+      if (lockAmountEach > 0) {
+        for (uint i = 0; i < lockCount; i++) {
+          if (i == (lockCount - 1) && remainder > 0)
             lockAmountEach = lockAmountEach.add(remainder);
 
           lock(_to, lockAmountEach, _expiresAtList[i]);  
@@ -947,10 +947,10 @@ contract BundableToken is ReliableToken {
         returns (bool)
     {
         uint length = _recipients.length;
-        require(length &gt; 0);
+        require(length > 0);
         require(length == _values.length);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             require(transfer(
                 _recipients[i], 
                 _values[i]
@@ -978,11 +978,11 @@ contract BundableToken is ReliableToken {
         returns (bool)
     {
         uint length = _recipients.length;
-        require(length &gt; 0);
-        require(length == _values.length &amp;&amp; length == _lockAmounts.length);
-        require(_defaultExpiresAtList.length &gt; 0);
+        require(length > 0);
+        require(length == _values.length && length == _lockAmounts.length);
+        require(_defaultExpiresAtList.length > 0);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             require(transferLocked(
                 _recipients[i], 
                 _values[i], 
@@ -998,8 +998,8 @@ contract BundableToken is ReliableToken {
 
 contract AICToken is BundableToken {
 
-  string public constant name = &quot;AICRYPTO&quot;;
-  string public constant symbol = &quot;AIC&quot;;
+  string public constant name = "AICRYPTO";
+  string public constant symbol = "AIC";
   uint32 public constant decimals = 18;
 
   uint256 public constant INITIAL_SUPPLY = 10000000000 * (10 ** uint256(decimals));

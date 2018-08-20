@@ -50,9 +50,9 @@ contract ERC20Abstract {
 
 contract ERC20Contract is ERC20Abstract {
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
@@ -85,9 +85,9 @@ contract NeymarToken is ERC20Contract, NeymarTokenEvents {
   
     address public owner = msg.sender;
 
-    string public name = &quot;Neymar Token&quot;;
+    string public name = "Neymar Token";
 
-    string public symbol = &quot;NT&quot;;
+    string public symbol = "NT";
 
     uint256 public decimals = 18;
 
@@ -98,7 +98,7 @@ contract NeymarToken is ERC20Contract, NeymarTokenEvents {
 
     uint256[] private totalSupplies;
 
-    mapping (address =&gt; uint256) private positions;
+    mapping (address => uint256) private positions;
     //===========================
 
     // ICO Variables
@@ -130,7 +130,7 @@ contract NeymarToken is ERC20Contract, NeymarTokenEvents {
         balances[_address] += tokensIssued;
         Transfer(address(this), _address, tokensIssued);
 
-        if (totalContribution &gt;= icoETHContributionLimit) {
+        if (totalContribution >= icoETHContributionLimit) {
             purchasingAllowed = false;
         }
      }
@@ -165,7 +165,7 @@ contract NeymarToken is ERC20Contract, NeymarTokenEvents {
         uint256 totalSupplyAt = 0;
         uint256 tokensWon = 0;
 
-        while (currentPosition &lt; neymarGoals) {
+        while (currentPosition < neymarGoals) {
             tokenMintedAt = tokenMinted[currentPosition];
             totalSupplyAt = totalSupplies[currentPosition];
             tokensWon = tokenMintedAt * currentTokenNumbers / totalSupplyAt;
@@ -195,10 +195,10 @@ contract NeymarToken is ERC20Contract, NeymarTokenEvents {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (msg.data.length &lt; (2 * 32) + 4) {revert();}
+        if (msg.data.length < (2 * 32) + 4) {revert();}
         claimTokensFor(msg.sender);
         claimTokensFor(_to);
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -209,10 +209,10 @@ contract NeymarToken is ERC20Contract, NeymarTokenEvents {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (msg.data.length &lt; (3 * 32) + 4) {revert();}
+        if (msg.data.length < (3 * 32) + 4) {revert();}
         claimTokensFor(_from);
         claimTokensFor(_to);
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;

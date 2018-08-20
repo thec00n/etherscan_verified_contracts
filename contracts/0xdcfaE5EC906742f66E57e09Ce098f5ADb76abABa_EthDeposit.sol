@@ -87,9 +87,9 @@ contract EthDeposit is Owned
         uint Reserved;
     }
     
-    mapping (address =&gt; uint) public Sponsors;
+    mapping (address => uint) public Sponsors;
     
-    mapping (address =&gt; Lender) public Lenders;
+    mapping (address => Lender) public Lenders;
     
     event StartOfPayments(address indexed calledFrom, uint time);
     
@@ -172,7 +172,7 @@ contract EthDeposit is Owned
         {
             if(val!=PrcntRate)
             {
-                if(val&gt;=1)
+                if(val>=1)
                 {
                     PrcntRate = val;  
                 }
@@ -191,7 +191,7 @@ contract EthDeposit is Owned
     public
     payable
     {
-        if(msg.value&gt;= 1 ether)
+        if(msg.value>= 1 ether)
         {
             if(Sponsors[msg.sender]==0)SponsorsQty++;
             Sponsors[msg.sender]+=msg.value;
@@ -203,13 +203,13 @@ contract EthDeposit is Owned
     public 
     payable
     {
-        if(Sponsors[_addr]&gt;0)
+        if(Sponsors[_addr]>0)
         {
             if(isOwner())
             {
                  if(_addr.send(_wei))
                  {
-                   if(CharterCapital&gt;=_wei)CharterCapital-=_wei;
+                   if(CharterCapital>=_wei)CharterCapital-=_wei;
                    else CharterCapital=0;
                  }
             }
@@ -235,7 +235,7 @@ contract EthDeposit is Owned
     function FixProfit()
     public
     {
-        if(Lenders[msg.sender].Amount&gt;0)
+        if(Lenders[msg.sender].Amount>0)
         {
             Lenders[msg.sender].Reserved += CheckProfit(msg.sender);
         }

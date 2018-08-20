@@ -105,7 +105,7 @@ contract IController {
 
 contract FeeTokenFactory {
     function createFeeToken(IController _controller, IFeeWindow _feeWindow) public returns (IFeeToken) {
-        Delegator _delegator = new Delegator(_controller, &quot;FeeToken&quot;);
+        Delegator _delegator = new Delegator(_controller, "FeeToken");
         IFeeToken _feeToken = IFeeToken(_delegator);
         _feeToken.initialize(_feeWindow);
         return _feeToken;
@@ -114,7 +114,7 @@ contract FeeTokenFactory {
 
 contract MarketFactory {
     function createMarket(IController _controller, IUniverse _universe, uint256 _endTime, uint256 _feePerEthInWei, ICash _denominationToken, address _designatedReporterAddress, address _sender, uint256 _numOutcomes, uint256 _numTicks) public payable returns (IMarket _market) {
-        Delegator _delegator = new Delegator(_controller, &quot;Market&quot;);
+        Delegator _delegator = new Delegator(_controller, "Market");
         _market = IMarket(_delegator);
         IReputationToken _reputationToken = _universe.getReputationToken();
         require(_reputationToken.transfer(_market, _reputationToken.balanceOf(this)));
@@ -134,7 +134,7 @@ contract Delegator is DelegationTarget {
     }
 
     function() external payable {
-        // Do nothing if we haven&#39;t properly set up the delegator to delegate calls
+        // Do nothing if we haven't properly set up the delegator to delegate calls
         if (controllerLookupName == 0) {
             return;
         }
@@ -145,9 +145,9 @@ contract Delegator is DelegationTarget {
         assembly {
             //0x40 is the address where the next free memory slot is stored in Solidity
             let _calldataMemoryOffset := mload(0x40)
-            // new &quot;memory end&quot; including padding. The bitwise operations here ensure we get rounded up to the nearest 32 byte boundary
+            // new "memory end" including padding. The bitwise operations here ensure we get rounded up to the nearest 32 byte boundary
             let _size := and(add(calldatasize, 0x1f), not(0x1f))
-            // Update the pointer at 0x40 to point at new free memory location so any theoretical allocation doesn&#39;t stomp our memory in this call
+            // Update the pointer at 0x40 to point at new free memory location so any theoretical allocation doesn't stomp our memory in this call
             mstore(0x40, add(_calldataMemoryOffset, _size))
             // Copy method signature and parameters of this call into memory
             calldatacopy(_calldataMemoryOffset, 0x0, calldatasize)
@@ -160,7 +160,7 @@ contract Delegator is DelegationTarget {
             } default {
                 // If the call succeeded return the return data from the delegate call
                 let _returndataMemoryOffset := mload(0x40)
-                // Update the pointer at 0x40 again to point at new free memory location so any theoretical allocation doesn&#39;t stomp our memory in this call
+                // Update the pointer at 0x40 again to point at new free memory location so any theoretical allocation doesn't stomp our memory in this call
                 mstore(0x40, add(_returndataMemoryOffset, returndatasize))
                 returndatacopy(_returndataMemoryOffset, 0x0, returndatasize)
                 return(_returndataMemoryOffset, returndatasize)
@@ -209,25 +209,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -235,7 +235,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -276,7 +276,7 @@ contract BasicToken is ERC20Basic {
     using SafeMathUint256 for uint256;
 
     uint256 internal supply;
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
     /**
     * @dev transfer token for a specified address
@@ -331,7 +331,7 @@ contract StandardToken is ERC20, BasicToken {
     // Approvals of this amount are simply considered an everlasting approval which is not decremented when transfers occur
     uint256 public constant ETERNAL_APPROVAL_VALUE = 2 ** 256 - 1;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -390,7 +390,7 @@ contract StandardToken is ERC20, BasicToken {
    */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             approveInternal(msg.sender, _spender, 0);
         } else {
             approveInternal(msg.sender, _spender, oldValue.sub(_subtractedValue));
@@ -475,8 +475,8 @@ contract IFeeWindow is ITyped, ERC20 {
 contract FeeWindow is DelegationTarget, VariableSupplyToken, Initializable, IFeeWindow {
     using SafeMathUint256 for uint256;
 
-    string constant public name = &quot;Participation Token&quot;;
-    string constant public symbol = &quot;PT&quot;;
+    string constant public name = "Participation Token";
+    string constant public symbol = "PT";
     uint8 constant public decimals = 0;
 
     IUniverse private universe;
@@ -493,7 +493,7 @@ contract FeeWindow is DelegationTarget, VariableSupplyToken, Initializable, IFee
         endInitialization();
         universe = _universe;
         startTime = _feeWindowId.mul(universe.getDisputeRoundDurationInSeconds());
-        feeToken = FeeTokenFactory(controller.lookup(&quot;FeeTokenFactory&quot;)).createFeeToken(controller, this);
+        feeToken = FeeTokenFactory(controller.lookup("FeeTokenFactory")).createFeeToken(controller, this);
         return true;
     }
 
@@ -525,7 +525,7 @@ contract FeeWindow is DelegationTarget, VariableSupplyToken, Initializable, IFee
     }
 
     function buyInternal(address _buyer, uint256 _attotokens) private onlyInGoodTimes afterInitialized returns (bool) {
-        require(_attotokens &gt; 0);
+        require(_attotokens > 0);
         require(isActive());
         require(!universe.isForking());
         getReputationToken().trustedFeeWindowTransfer(_buyer, this, _attotokens);
@@ -566,19 +566,19 @@ contract FeeWindow is DelegationTarget, VariableSupplyToken, Initializable, IFee
         }
 
         // CASH
-        ICash _cash = ICash(controller.lookup(&quot;Cash&quot;));
+        ICash _cash = ICash(controller.lookup("Cash"));
         uint256 _balance = _cash.balanceOf(this);
         uint256 _feePayoutShare = _balance.mul(_totalTokens).div(_totalFeeStake);
 
-        if (_feePayoutShare &gt; 0) {
-            // We can&#39;t use the cash.withdrawEtherTo method as the ReportingParticipants are delegated and the fallback function has special behavior that will fail
+        if (_feePayoutShare > 0) {
+            // We can't use the cash.withdrawEtherTo method as the ReportingParticipants are delegated and the fallback function has special behavior that will fail
             if (_isReportingParticipant) {
                 require(_cash.transfer(_sender, _feePayoutShare));
             } else {
                 _cash.withdrawEtherTo(_sender, _feePayoutShare);
             }
         }
-        if (_attoParticipationTokens &gt; 0) {
+        if (_attoParticipationTokens > 0) {
             controller.getAugur().logFeeWindowRedeemed(universe, _sender, _attoParticipationTokens, _feePayoutShare);
         }
         return true;
@@ -606,7 +606,7 @@ contract FeeWindow is DelegationTarget, VariableSupplyToken, Initializable, IFee
     }
 
     function getTypeName() public afterInitialized view returns (bytes32) {
-        return &quot;FeeWindow&quot;;
+        return "FeeWindow";
     }
 
     function getUniverse() public afterInitialized view returns (IUniverse) {
@@ -646,17 +646,17 @@ contract FeeWindow is DelegationTarget, VariableSupplyToken, Initializable, IFee
     }
 
     function isActive() public afterInitialized view returns (bool) {
-        if (controller.getTimestamp() &lt;= getStartTime()) {
+        if (controller.getTimestamp() <= getStartTime()) {
             return false;
         }
-        if (controller.getTimestamp() &gt;= getEndTime()) {
+        if (controller.getTimestamp() >= getEndTime()) {
             return false;
         }
         return true;
     }
 
     function isOver() public afterInitialized view returns (bool) {
-        return controller.getTimestamp() &gt;= getEndTime();
+        return controller.getTimestamp() >= getEndTime();
     }
 
     function onTokenTransfer(address _from, address _to, uint256 _value) internal returns (bool) {
@@ -916,10 +916,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -940,7 +940,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -984,7 +984,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -992,17 +992,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -1020,14 +1020,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }

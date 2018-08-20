@@ -3,15 +3,15 @@ pragma solidity ^0.4.0;
 
 library ECVerifyLib {
     // From: https://gist.github.com/axic/5b33912c6f61ae6fd96d6c4a47afde6d
-    // Duplicate Solidity&#39;s ecrecover, but catching the CALL return value
+    // Duplicate Solidity's ecrecover, but catching the CALL return value
     function safer_ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal returns (bool, address) {
         // We do our own memory management here. Solidity uses memory offset
         // 0x40 to store the current end of memory. We write past it (as
-        // writes are memory extensions), but don&#39;t update the offset so
+        // writes are memory extensions), but don't update the offset so
         // Solidity will reuse it. The memory used here is only needed for
         // this context.
 
-        // FIXME: inline assembly can&#39;t access return values
+        // FIXME: inline assembly can't access return values
         bool ret;
         address addr;
 
@@ -47,13 +47,13 @@ library ECVerifyLib {
             s := mload(add(sig, 64))
 
             // Here we are loading the last 32 bytes. We exploit the fact that
-            // &#39;mload&#39; will pad with zeroes if we overread.
-            // There is no &#39;mload8&#39; to do this, but that would be nicer.
+            // 'mload' will pad with zeroes if we overread.
+            // There is no 'mload8' to do this, but that would be nicer.
             v := byte(0, mload(add(sig, 96)))
 
             // Alternative solution:
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             // v := and(mload(add(sig, 65)), 255)
         }
 
@@ -62,10 +62,10 @@ library ECVerifyLib {
         //
         // geth uses [0, 1] and some clients have followed. This might change, see:
         //  https://github.com/ethereum/go-ethereum/issues/2053
-        if (v &lt; 27)
+        if (v < 27)
           v += 27;
 
-        if (v != 27 &amp;&amp; v != 28)
+        if (v != 27 && v != 28)
             return (false, 0);
 
         return safer_ecrecover(hash, v, r, s);
@@ -75,7 +75,7 @@ library ECVerifyLib {
         bool ret;
         address addr;
         (ret, addr) = ecrecovery(hash, sig);
-        return ret == true &amp;&amp; addr == signer;
+        return ret == true && addr == signer;
     }
 }
 
@@ -281,14 +281,14 @@ contract IndividualityTokenRoot is IndividualityTokenRootInterface {
         devcon2Token = TokenInterface(_devcon2Token);
     }
 
-    // owner =&gt; token
-    mapping (address =&gt; bytes32) ownerToToken;
+    // owner => token
+    mapping (address => bytes32) ownerToToken;
 
-    // token =&gt; owner
-    mapping (bytes32 =&gt; address) tokenToOwner;
+    // token => owner
+    mapping (bytes32 => address) tokenToOwner;
 
-    // owner =&gt; spender =&gt; token
-    mapping (address =&gt; mapping (address =&gt; bytes32)) approvals;
+    // owner => spender => token
+    mapping (address => mapping (address => bytes32)) approvals;
 
     uint _upgradeCount;
 
@@ -341,7 +341,7 @@ contract IndividualityTokenRoot is IndividualityTokenRootInterface {
                 var tokenID = bytes32(devcon2Token.balanceOf(_owner));
 
                 if (tokenToOwner[tokenID] == 0x0) {
-                    // the token hasn&#39;t yet been upgraded so we can return 1.
+                    // the token hasn't yet been upgraded so we can return 1.
                     return 1;
                 }
             }
@@ -435,7 +435,7 @@ contract IndividualityTokenRoot is IndividualityTokenRootInterface {
             // Cannot transfer to an existing token owner
             return false;
         } else if (approvals[_from][msg.sender] != ownerToToken[_from]) {
-            // The approved token doesn&#39;t match the token being transferred.
+            // The approved token doesn't match the token being transferred.
             return false;
         } else if (isEligibleForUpgrade(_to)) {
             // cannot transfer to an account which is still holding their token
@@ -625,7 +625,7 @@ contract IndividualityTokenRoot is IndividualityTokenRootInterface {
         } else if (ownerToToken[_newOwner] != 0x0) {
             // new owner already owns a token
             return false;
-        } else if (_owner != _newOwner &amp;&amp; isEligibleForUpgrade(_newOwner)) {
+        } else if (_owner != _newOwner && isEligibleForUpgrade(_newOwner)) {
             // cannot upgrade to account that is still has an upgradable token
             // on the old system.
             return false;

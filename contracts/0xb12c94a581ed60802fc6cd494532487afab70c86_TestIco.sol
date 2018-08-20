@@ -21,17 +21,17 @@ contract TestIco {
     address public reserveEscrow;
     
     address[] public allowedTokens;
-    mapping(address =&gt; bool) public tokenAllowed;
-    mapping(address =&gt; uint) public tokenPrice;
-    mapping(address =&gt; uint) public tokenAmount;
+    mapping(address => bool) public tokenAllowed;
+    mapping(address => uint) public tokenPrice;
+    mapping(address => uint) public tokenAmount;
     
-    mapping(address =&gt; uint) public ethBalances;
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public ethBalances;
+    mapping(address => uint) public balances;
     
-    // user =&gt; token[]
-    mapping(address =&gt; address[]) public userTokens;
-    //  user =&gt; token =&gt; amount
-    mapping(address =&gt; mapping(address =&gt; uint)) public userTokensValues;
+    // user => token[]
+    mapping(address => address[]) public userTokens;
+    //  user => token => amount
+    mapping(address => mapping(address => uint)) public userTokensValues;
     
     modifier onlyManager {
         assert(msg.sender == manager || msg.sender == reserveManager);
@@ -57,11 +57,11 @@ contract TestIco {
     // _price is price of amount of token
     function addToken(address _token, uint _amount, uint _price) onlyManager public {
         assert(_token != 0x0);
-        assert(_amount &gt; 0);
-        assert(_price &gt; 0);
+        assert(_amount > 0);
+        assert(_price > 0);
         
         bool isNewToken = true;
-        for (uint i = 0; i &lt; allowedTokens.length; i++) {
+        for (uint i = 0; i < allowedTokens.length; i++) {
             if (allowedTokens[i] == _token) {
                 isNewToken = false;
             }
@@ -76,9 +76,9 @@ contract TestIco {
     }
     
     function removeToken(address _token) onlyManager public {
-        for (uint i = 0; i &lt; allowedTokens.length; i++) {
+        for (uint i = 0; i < allowedTokens.length; i++) {
             if (_token == allowedTokens[i]) {
-                if (i &lt; allowedTokens.length - 1) {
+                if (i < allowedTokens.length - 1) {
                     allowedTokens[i] = allowedTokens[allowedTokens.length - 1];
                 }
                 allowedTokens[allowedTokens.length - 1] = 0x0;
@@ -96,7 +96,7 @@ contract TestIco {
         buyWithTokensBy(msg.sender, _token);
     }
     function addTokenToUser(address _user, address _token) private {
-        for (uint i = 0; i &lt; userTokens[_user].length; i++) {
+        for (uint i = 0; i < userTokens[_user].length; i++) {
             if (userTokens[_user][i] == _token) {
                 return;
             }
@@ -109,7 +109,7 @@ contract TestIco {
         Token token = Token(_token);
         
         uint tokensToSend = token.allowance(_user, address(this));
-        assert(tokensToSend &gt; 0);
+        assert(tokensToSend > 0);
         uint prevBalance = token.balanceOf(address(this));
         assert(token.transferFrom(_user, address(this), tokensToSend));
         assert(token.balanceOf(address(this)) - prevBalance == tokensToSend);
@@ -119,15 +119,15 @@ contract TestIco {
     }
     
     function returnFundsFor(address _user) public onlyManagerOrContract returns(bool) {
-        if (ethBalances[_user] &gt; 0) {
+        if (ethBalances[_user] > 0) {
             _user.transfer(ethBalances[_user]);
             ethBalances[_user] = 0;
         }
         
-        for (uint i = 0; i &lt; userTokens[_user].length; i++) {
+        for (uint i = 0; i < userTokens[_user].length; i++) {
             address tokenAddress = userTokens[_user][i];
             uint userTokenValue = userTokensValues[_user][tokenAddress];
-            if (userTokenValue &gt; 0) {
+            if (userTokenValue > 0) {
                 Token token = Token(tokenAddress);
                 assert(token.transfer(_user, userTokenValue));
                 userTokensValues[_user][tokenAddress] = 0;
@@ -137,7 +137,7 @@ contract TestIco {
     
     
     function returnFundsForUsers(address[] _users) public onlyManager {
-        for (uint i = 0; i &lt; _users.length; i++) {
+        for (uint i = 0; i < _users.length; i++) {
             returnFundsFor(_users[i]);
         }
     }
@@ -150,19 +150,19 @@ contract TestIco {
     }
     
     function() public payable {
-        assert(msg.value &gt; 0);
+        assert(msg.value > 0);
         buyTokens(msg.sender, msg.value);
     }
     
     function withdrawEtherTo(address _escrow) private {
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             _escrow.transfer(this.balance);
         }
         
-        for (uint i = 0; i &lt; allowedTokens.length; i++) {
+        for (uint i = 0; i < allowedTokens.length; i++) {
             Token token = Token(allowedTokens[i]);
             uint tokenBalance = token.balanceOf(address(this));
-            if (tokenBalance &gt; 0) {
+            if (tokenBalance > 0) {
                 assert(token.transfer(_escrow, tokenBalance));
             }
         }

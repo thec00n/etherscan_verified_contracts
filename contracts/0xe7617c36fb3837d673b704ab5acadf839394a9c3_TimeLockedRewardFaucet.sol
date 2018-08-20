@@ -25,7 +25,7 @@ contract TimeLockedRewardFaucet {
     }
 
     function timeToUnlockDDHHMM() external constant returns(uint[3]) {
-        if (LOCK_RELASE_TIME &gt; now) {
+        if (LOCK_RELASE_TIME > now) {
             uint diff = LOCK_RELASE_TIME - now;
             uint dd = diff / 1 days;
             uint hh = diff % 1 days / 1 hours;
@@ -54,7 +54,7 @@ contract TimeLockedRewardFaucet {
             // setup amount to distribute
             if (amount_to_distribute==0) amount_to_distribute = token.balanceOf(this);
             //payout processing
-            require(indexOf(team_accounts, msg.sender)&gt;=0);
+            require(indexOf(team_accounts, msg.sender)>=0);
             token.transfer(msg.sender,  amount_to_distribute / team_accounts.length);
         } else if (state==State.CLOSED) {
             //collect unclaimed token to team wallet
@@ -68,12 +68,12 @@ contract TimeLockedRewardFaucet {
 
 
     enum State {INIT, LOCKED, WITHDRAWAL, CLOSED}
-    string[4] labels = [&quot;INIT&quot;, &quot;LOCKED&quot;, &quot;WITHDRAWAL&quot;, &quot;CLOSED&quot;];
+    string[4] labels = ["INIT", "LOCKED", "WITHDRAWAL", "CLOSED"];
 
     function _state() internal returns(State) {
         if (locked_since == 0)               return State.INIT;
-        else if (now &lt; LOCK_RELASE_TIME)     return State.LOCKED;
-        else if (now &lt; WITHDRAWAL_END_TIME)  return State.WITHDRAWAL;
+        else if (now < LOCK_RELASE_TIME)     return State.LOCKED;
+        else if (now < WITHDRAWAL_END_TIME)  return State.WITHDRAWAL;
         else return State.CLOSED;
     }
 
@@ -82,13 +82,13 @@ contract TimeLockedRewardFaucet {
     }
 
     function indexOf(address[] storage addrs, address addr) internal returns (int){
-         for(uint i=0; i&lt;addrs.length; ++i) {
+         for(uint i=0; i<addrs.length; ++i) {
             if (addr == addrs[i]) return int(i);
         }
         return -1;
     }
 
-    //fails if state dosn&#39;t match
+    //fails if state dosn't match
     modifier inState(State s) {
         if (_state() != s) revert();
         _;

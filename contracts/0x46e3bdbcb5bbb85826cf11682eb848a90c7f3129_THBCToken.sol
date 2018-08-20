@@ -6,12 +6,12 @@ contract SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns(uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function safeSub(uint256 a, uint256 b) internal pure returns(uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function safeMul(uint256 a, uint256 b) internal pure returns(uint256)
@@ -81,14 +81,14 @@ contract EIP20Interface {
 
 contract THBCToken is EIP20Interface,Ownable,SafeMath{
     //// Constant token specific fields
-    string public constant name =&quot;THBCToken&quot;;
-    string public constant symbol = &quot;THBC&quot;;
+    string public constant name ="THBCToken";
+    string public constant symbol = "THBC";
     uint8 public constant decimals = 18;
-    string  public version  = &#39;v0.1&#39;;
+    string  public version  = 'v0.1';
     uint256 public constant initialSupply = 20000000000;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowances;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowances;
 
     function THBCToken() public {
         totalSupply = initialSupply*10**uint256(decimals);                        //  total supply
@@ -100,9 +100,9 @@ contract THBCToken is EIP20Interface,Ownable,SafeMath{
     }
 
     function _transfer(address _from, address _to, uint _value) internal returns(bool) {
-        require(_to != address(0x0)&amp;&amp;_value&gt;0);
-        require(balances[_from] &gt;= _value);
-        require(safeAdd(balances[_to],_value) &gt; balances[_to]);
+        require(_to != address(0x0)&&_value>0);
+        require(balances[_from] >= _value);
+        require(safeAdd(balances[_to],_value) > balances[_to]);
 
         uint previousBalances = safeAdd(balances[_from],balances[_to]);
         balances[_from] = safeSub(balances[_from],_value);
@@ -117,7 +117,7 @@ contract THBCToken is EIP20Interface,Ownable,SafeMath{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowances[_from][msg.sender]);
+        require(_value <= allowances[_from][msg.sender]);
         allowances[_from][msg.sender] = safeSub(allowances[_from][msg.sender],_value);
         return _transfer(_from, _to, _value);
     }

@@ -5,19 +5,19 @@ pragma solidity ^0.4.8;
  *
  * Version 0.1
  *
- * Author Roland Kofler, Alex Kampa, Bok &#39;BokkyPooBah&#39; Khoo
+ * Author Roland Kofler, Alex Kampa, Bok 'BokkyPooBah' Khoo
  *
  * MIT LICENSE Copyright 2017 Sikoba Ltd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -56,12 +56,12 @@ contract Owned {
 
 /// ----------------------------------------------------------------------------------------
 /// @title Sikoba Presale Contract
-/// @author Roland Kofler, Alex Kampa, Bok &#39;Bokky Poo Bah&#39; Khoo
+/// @author Roland Kofler, Alex Kampa, Bok 'Bokky Poo Bah' Khoo
 /// @dev Changes to this contract will invalidate any security audits done before.
-/// It is MANDATORY to protocol audits in the &quot;Security reviews done&quot; section
+/// It is MANDATORY to protocol audits in the "Security reviews done" section
 ///  # Security checklists to use in each review:
 ///  - Consensys checklist https://github.com/ConsenSys/smart-contract-best-practices
-///  - Roland Kofler&#39;s checklist https://github.com/rolandkofler/ether-security
+///  - Roland Kofler's checklist https://github.com/rolandkofler/ether-security
 ///  - Read all of the code and use creative and lateral thinking to discover bugs
 ///  # Security reviews done:
 ///  Date         Auditors       Short summary of the review executed
@@ -130,7 +130,7 @@ contract SikobaPresale is Owned {
     ///         preallocation and public phases
     /// @dev Name complies with ERC20 token standard, etherscan for example will recognize
     ///      this and show the balances of the address
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /// @notice Log an event for each funding contributed during the public phase
     /// @notice Events are not logged when the constructor is being executed during
@@ -166,27 +166,27 @@ contract SikobaPresale is Owned {
         assertEquals(TOTAL_PREALLOCATION, totalFunding);
     }
 
-    /// @notice A participant sends a contribution to the contract&#39;s address
+    /// @notice A participant sends a contribution to the contract's address
     ///         between the PRESALE_STATE_DATE and the PRESALE_END_DATE
     /// @notice Only contributions between the MINIMUM_PARTICIPATION_AMOUNT and
     ///         MAXIMUM_PARTICIPATION_AMOUNT are accepted. Otherwise the transaction
-    ///         is rejected and contributed amount is returned to the participant&#39;s
+    ///         is rejected and contributed amount is returned to the participant's
     ///         account
-    /// @notice A participant&#39;s contribution will be rejected if the presale
+    /// @notice A participant's contribution will be rejected if the presale
     ///         has been funded to the maximum amount
     function () payable {
         // A participant cannot send funds before the presale start date
-        if (now &lt; PRESALE_START_DATE) throw;
+        if (now < PRESALE_START_DATE) throw;
         // A participant cannot send funds after the presale end date
-        if (now &gt; PRESALE_END_DATE) throw;
+        if (now > PRESALE_END_DATE) throw;
         // A participant cannot send less than the minimum amount
-        if (msg.value &lt; MINIMUM_PARTICIPATION_AMOUNT) throw;
+        if (msg.value < MINIMUM_PARTICIPATION_AMOUNT) throw;
         // A participant cannot send more than the maximum amount
-        if (msg.value &gt; MAXIMUM_PARTICIPATION_AMOUNT) throw;
+        if (msg.value > MAXIMUM_PARTICIPATION_AMOUNT) throw;
         // A participant cannot send funds if the presale has been reached the maximum
         // funding amount
-        if (safeIncrement(totalFunding, msg.value) &gt; PRESALE_MAXIMUM_FUNDING) throw;
-        // Register the participant&#39;s contribution
+        if (safeIncrement(totalFunding, msg.value) > PRESALE_MAXIMUM_FUNDING) throw;
+        // Register the participant's contribution
         addBalance(msg.sender, msg.value);
     }
 
@@ -194,7 +194,7 @@ contract SikobaPresale is Owned {
     ///         only if the minimum funding level has been reached
     function ownerWithdraw(uint256 value) external onlyOwner {
         // The owner cannot withdraw if the presale did not reach the minimum funding amount
-        if (totalFunding &lt; PRESALE_MINIMUM_FUNDING) throw;
+        if (totalFunding < PRESALE_MINIMUM_FUNDING) throw;
         // Withdraw the amount requested
         if (!owner.send(value)) throw;
     }
@@ -203,14 +203,14 @@ contract SikobaPresale is Owned {
     ///         the presale has not achieved the minimum funding level
     function participantWithdrawIfMinimumFundingNotReached(uint256 value) external {
         // Participant cannot withdraw before the presale ends
-        if (now &lt;= PRESALE_END_DATE) throw;
+        if (now <= PRESALE_END_DATE) throw;
         // Participant cannot withdraw if the minimum funding amount has been reached
-        if (totalFunding &gt;= PRESALE_MINIMUM_FUNDING) throw;
+        if (totalFunding >= PRESALE_MINIMUM_FUNDING) throw;
         // Participant can only withdraw an amount up to their contributed balance
-        if (balanceOf[msg.sender] &lt; value) throw;
-        // Participant&#39;s balance is reduced by the claimed amount.
+        if (balanceOf[msg.sender] < value) throw;
+        // Participant's balance is reduced by the claimed amount.
         balanceOf[msg.sender] = safeDecrement(balanceOf[msg.sender], value);
-        // Send ethers back to the participant&#39;s account
+        // Send ethers back to the participant's account
         if (!msg.sender.send(value)) throw;
     }
 
@@ -219,18 +219,18 @@ contract SikobaPresale is Owned {
     ///         if the minimum funding level is not reached
     function ownerClawback() external onlyOwner {
         // The owner cannot withdraw before the clawback date
-        if (now &lt; OWNER_CLAWBACK_DATE) throw;
+        if (now < OWNER_CLAWBACK_DATE) throw;
         // Send remaining funds back to the owner
         if (!owner.send(this.balance)) throw;
     }
 
     /// @dev Keep track of participants contributions and the total funding amount
     function addBalance(address participant, uint256 value) private {
-        // Participant&#39;s balance is increased by the sent amount
+        // Participant's balance is increased by the sent amount
         balanceOf[participant] = safeIncrement(balanceOf[participant], value);
         // Keep track of the total funding amount
         totalFunding = safeIncrement(totalFunding, value);
-        // Log an event of the participant&#39;s contribution
+        // Log an event of the participant's contribution
         LogParticipation(participant, value, now);
     }
 
@@ -243,7 +243,7 @@ contract SikobaPresale is Owned {
     ///      than the original base value.
     function safeIncrement(uint256 base, uint256 increment) private constant returns (uint256) {
         uint256 result = base + increment;
-        if (result &lt; base) throw;
+        if (result < base) throw;
         return result;
     }
 
@@ -251,7 +251,7 @@ contract SikobaPresale is Owned {
     ///      is smaller than the original base value
     function safeDecrement(uint256 base, uint256 increment) private constant returns (uint256) {
         uint256 result = base - increment;
-        if (result &gt; base) throw;
+        if (result > base) throw;
         return result;
     }
 }

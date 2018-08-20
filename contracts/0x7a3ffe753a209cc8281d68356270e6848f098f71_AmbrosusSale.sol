@@ -42,7 +42,7 @@ contract AmberToken is Token, Owned {
 	struct Account {
 		// Balance is always less than or equal totalSupply since totalSupply is increased straight away of when releasing locked tokens.
 		uint balance;
-		mapping (address =&gt; uint) allowanceOf;
+		mapping (address => uint) allowanceOf;
 
 		// TokensPerPhase is always less than or equal to totalSupply since anything added to it is UNLOCK_PHASES times lower than added to totalSupply.
 		uint tokensPerPhase;
@@ -87,16 +87,16 @@ contract AmberToken is Token, Owned {
 		phaseStart = now;
 	}
 
-	/// Return the current unlock-phase. Won&#39;t work until after the contract
+	/// Return the current unlock-phase. Won't work until after the contract
 	/// has `finalise()` called.
 	function currentPhase()
 		public
 		constant
 		returns (uint)
 	{
-		require (phaseStart &gt; 0);
+		require (phaseStart > 0);
 		uint p = (now - phaseStart) / PHASE_DURATION;
-		return p &gt; UNLOCK_PHASES ? UNLOCK_PHASES : p;
+		return p > UNLOCK_PHASES ? UNLOCK_PHASES : p;
 	}
 
 	/// Unlock any now freeable tokens that are locked up for account `_who`.
@@ -106,7 +106,7 @@ contract AmberToken is Token, Owned {
 		uint phase = currentPhase();
 		uint tokens = accounts[_who].tokensPerPhase;
 		uint nextPhase = accounts[_who].nextPhase;
-		if (tokens &gt; 0 &amp;&amp; phase &gt; nextPhase) {
+		if (tokens > 0 && phase > nextPhase) {
 			accounts[_who].balance += tokens * (phase - nextPhase);
 			accounts[_who].nextPhase = phase;
 		}
@@ -169,13 +169,13 @@ contract AmberToken is Token, Owned {
 
 	// The balance should be available
 	modifier when_owns(address _owner, uint _amount) {
-		require (accounts[_owner].balance &gt;= _amount);
+		require (accounts[_owner].balance >= _amount);
 		_;
 	}
 
 	// An allowance should be available
 	modifier when_has_allowance(address _owner, address _spender, uint _amount) {
-		require (accounts[_owner].allowanceOf[_spender] &gt;= _amount);
+		require (accounts[_owner].allowanceOf[_spender] >= _amount);
 		_;
 	}
 
@@ -186,9 +186,9 @@ contract AmberToken is Token, Owned {
 	}
 
 	/// Usual token descriptors.
-	string constant public name = &quot;Amber Token&quot;;
+	string constant public name = "Amber Token";
 	uint8 constant public decimals = 18;
-	string constant public symbol = &quot;AMB&quot;;
+	string constant public symbol = "AMB";
 
 	// Are the tokens non-transferrable?
 	bool public locked = true;
@@ -201,11 +201,11 @@ contract AmberToken is Token, Owned {
 	// available token supply
 	uint public totalSupply;
 
-	// storage and mapping of all balances &amp; allowances
-	mapping (address =&gt; Account) accounts;
+	// storage and mapping of all balances & allowances
+	mapping (address => Account) accounts;
 }
 
-/// Will accept Ether &quot;contributions&quot; and record each both as a log and in a
+/// Will accept Ether "contributions" and record each both as a log and in a
 /// queryable record.
 contract AmbrosusSale {
 	/// Constructor.
@@ -219,9 +219,9 @@ contract AmbrosusSale {
 	modifier only_prepurchaser { require (msg.sender == PREPURCHASER); _; }
 
 	// The transaction params are valid for buying in.
-	modifier is_valid_buyin { require (tx.gasprice &lt;= MAX_BUYIN_GAS_PRICE &amp;&amp; msg.value &gt;= MIN_BUYIN_VALUE); _; }
+	modifier is_valid_buyin { require (tx.gasprice <= MAX_BUYIN_GAS_PRICE && msg.value >= MIN_BUYIN_VALUE); _; }
 	// Requires the hard cap to be respected given the desired amount for `buyin`.
-	modifier is_under_cap_with(uint buyin) { require (buyin + saleRevenue &lt;= MAX_REVENUE); _; }
+	modifier is_under_cap_with(uint buyin) { require (buyin + saleRevenue <= MAX_REVENUE); _; }
 	// Requires sender to be certified.
 	modifier only_certified(address who) { require (CERTIFIER.certified(who)); _; }
 
@@ -231,21 +231,21 @@ contract AmbrosusSale {
 		2. Started, further purchases possible.
 			a. Normal operation (next step can be 2b or 3)
 			b. Paused (next step can be 2a or 3)
-		3. Complete (equivalent to Allocation Lifecycle 2 &amp; 3).
+		3. Complete (equivalent to Allocation Lifecycle 2 & 3).
 	*/
 
 	// Can only be called by prior to the period (1).
-	modifier only_before_period { require (now &lt; BEGIN_TIME); _; }
+	modifier only_before_period { require (now < BEGIN_TIME); _; }
 	// Can only be called during the period when not paused (2a).
-	modifier only_during_period { require (now &gt;= BEGIN_TIME &amp;&amp; now &lt; END_TIME &amp;&amp; !isPaused); _; }
+	modifier only_during_period { require (now >= BEGIN_TIME && now < END_TIME && !isPaused); _; }
 	// Can only be called during the period when paused (2b)
-	modifier only_during_paused_period { require (now &gt;= BEGIN_TIME &amp;&amp; now &lt; END_TIME &amp;&amp; isPaused); _; }
+	modifier only_during_paused_period { require (now >= BEGIN_TIME && now < END_TIME && isPaused); _; }
 	// Can only be called after the period (3).
-	modifier only_after_sale { require (now &gt;= END_TIME || saleRevenue &gt;= MAX_REVENUE); _; }
+	modifier only_after_sale { require (now >= END_TIME || saleRevenue >= MAX_REVENUE); _; }
 
 	/*
 		Allocation life cycle:
-		1. Uninitialised (sale not yet started/ended, equivalent to Sale Lifecycle 1 &amp; 2).
+		1. Uninitialised (sale not yet started/ended, equivalent to Sale Lifecycle 1 & 2).
 		2. Initialised, not yet completed (further allocations possible).
 		3. Completed (no further allocations possible).
 	*/
@@ -253,11 +253,11 @@ contract AmbrosusSale {
 	// Only when allocations have not yet been initialised (1).
 	modifier when_allocations_uninitialised { require (!allocationsInitialised); _; }
 	// Only when sufficient allocations remain for making this liquid allocation (2).
-	modifier when_allocatable_liquid(uint amount) { require (liquidAllocatable &gt;= amount); _; }
+	modifier when_allocatable_liquid(uint amount) { require (liquidAllocatable >= amount); _; }
 	// Only when sufficient allocations remain for making this locked allocation (2).
-	modifier when_allocatable_locked(uint amount) { require (lockedAllocatable &gt;= amount); _; }
+	modifier when_allocatable_locked(uint amount) { require (lockedAllocatable >= amount); _; }
 	// Only when no further allocations are possible (3).
-	modifier when_allocations_complete { require (allocationsInitialised &amp;&amp; liquidAllocatable == 0 &amp;&amp; lockedAllocatable == 0); _; }
+	modifier when_allocations_complete { require (allocationsInitialised && liquidAllocatable == 0 && lockedAllocatable == 0); _; }
 
 	/// Note a pre-ICO sale.
 	event Prepurchased(address indexed recipient, uint etherPaid, uint amberSold);
@@ -302,7 +302,7 @@ contract AmbrosusSale {
 		public
 	{
 		uint256 bought = buyinReturn(msg.sender) * msg.value;
-		require (bought &gt; 0);   // be kind and don&#39;t punish the idiots.
+		require (bought > 0);   // be kind and don't punish the idiots.
 
 		// Bounded value, see STANDARD_BUYIN.
 		tokens.mint(msg.sender, bought);
@@ -538,10 +538,10 @@ contract AmbrosusSale {
 	//
 	// Invariants:
 	// !allocationsInitialised ||
-	//   (liquidAllocatable + tokens.liquidAllocated) / LIQUID_ALLOCATION_PPM == totalSold / SALES_ALLOCATION_PPM &amp;&amp;
+	//   (liquidAllocatable + tokens.liquidAllocated) / LIQUID_ALLOCATION_PPM == totalSold / SALES_ALLOCATION_PPM &&
 	//   (lockedAllocatable + tokens.lockedAllocated) / LOCKED_ALLOCATION_PPM == totalSold / SALES_ALLOCATION_PPM
 	//
-	// when_allocations_complete || (now &lt; END_TIME &amp;&amp; saleRevenue &lt; MAX_REVENUE)
+	// when_allocations_complete || (now < END_TIME && saleRevenue < MAX_REVENUE)
 
 	// Have post-sale token allocations been initialised?
 	bool public allocationsInitialised = false;
@@ -554,7 +554,7 @@ contract AmbrosusSale {
 	// State Subset: Sale
 	//
 	// Invariants:
-	// saleRevenue &lt;= MAX_REVENUE
+	// saleRevenue <= MAX_REVENUE
 
 	// Total amount raised in both presale and sale, in Wei.
 	// Assuming TREASURY locks funds, so can not exceed total amount of Ether 1e8.

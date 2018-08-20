@@ -31,7 +31,7 @@ contract MultiOwnable {
 
     function isOwner(address addr) public view returns (bool) {
         bool _isOwner = false;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (addr == owners[i]) {
                 _isOwner = true;
                 break;
@@ -50,9 +50,9 @@ contract MultiOwnable {
         require(owner != address(0));
         require(owner != msg.sender);
         bool wasDeleted = false;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (owners[i] == owner) {
-                if (i &lt; owners.length-1) {
+                if (i < owners.length-1) {
                     owners[i] = owners[owners.length-1];
                 }
                 owners.length--;
@@ -91,7 +91,7 @@ contract AigoTokensale is MultiOwnable {
   address vaultWallet;
 
   UserWallet[] public investorList;
-  mapping(address =&gt; Investor) investors;
+  mapping(address => Investor) investors;
 
   function investorsCount() public view returns (uint256) {
     return investorList.length;
@@ -99,7 +99,7 @@ contract AigoTokensale is MultiOwnable {
   function investorInfo(address investorAddress) public view returns (bool, bool, uint256, uint256) {
     Investor storage investor = investors[investorAddress];
     uint256 investorTokens = 0;
-    for (uint i=0; i&lt;investor.payments.length; i++) {
+    for (uint i=0; i<investor.payments.length; i++) {
       investorTokens += investor.payments[i].tokens;
     }
     return (investor.isActive, investor.needUpdate, investor.payments.length, investorTokens);
@@ -114,7 +114,7 @@ contract AigoTokensale is MultiOwnable {
 
   constructor(ERC20Basic _token, uint256 _finishTime, address _vaultWallet) MultiOwnable() public {
     require(_token != address(0));
-    require(_finishTime &gt; now);
+    require(_finishTime > now);
     require(_vaultWallet != address(0));
     token = _token;
     finishTime = _finishTime;
@@ -128,7 +128,7 @@ contract AigoTokensale is MultiOwnable {
   }
 
   function postWalletPayment(uint256 value) public {
-    require(now &lt; finishTime);
+    require(now < finishTime);
     Investor storage investor = investors[msg.sender];
     require(investor.isActive);
     investor.payments.push(InvestorPayment(now, value, 0, 0));
@@ -138,8 +138,8 @@ contract AigoTokensale is MultiOwnable {
 
   function postExternalPayment(address investorAddress, uint256 time, uint256 value, uint8 currency, uint256 tokenAmount) public onlyOwner {
     require(investorAddress != address(0));
-    require(time &lt;= now);
-    require(now &lt; finishTime);
+    require(time <= now);
+    require(now < finishTime);
     Investor storage investor = investors[investorAddress];
     require(investor.isActive);
     investor.payments.push(InvestorPayment(time, value, currency, tokenAmount));
@@ -161,15 +161,15 @@ contract AigoTokensale is MultiOwnable {
   }
 
   function deliverTokens(uint limit) public onlyOwner {
-    require(now &gt; finishTime);
+    require(now > finishTime);
     uint counter = 0;
     uint256 tokensDelivered = 0;
-    for (uint i = 0; i &lt; investorList.length &amp;&amp; counter &lt; limit; i++) {
+    for (uint i = 0; i < investorList.length && counter < limit; i++) {
       UserWallet investorAddress = investorList[i];
       Investor storage investor = investors[investorAddress];
       require(!investor.needUpdate);
       uint256 investorTokens = 0;
-      for (uint j=0; j&lt;investor.payments.length; j++) {
+      for (uint j=0; j<investor.payments.length; j++) {
         investorTokens += investor.payments[j].tokens;
       }
       if (investor.isActive) {
@@ -181,9 +181,9 @@ contract AigoTokensale is MultiOwnable {
       }
       tokensDelivered = tokensDelivered + investorTokens;
     }
-    if (counter &lt; limit) {
+    if (counter < limit) {
       uint256 tokensLeft = token.balanceOf(this);
-      if (tokensLeft &gt; 0) {
+      if (tokensLeft > 0) {
         require(token.transfer(vaultWallet, tokensLeft));
       }
       emit TokensaleFinished(tokensDelivered, tokensLeft);
@@ -210,9 +210,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -220,7 +220,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -229,7 +229,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -263,7 +263,7 @@ contract UserWallet {
         if (payoutWallet != address(0)) {
             ERC20Basic token = tokensale.token();
             uint256 balance = token.balanceOf(this);
-            if (balance &gt; 0) {
+            if (balance > 0) {
                 require(token.transfer(payoutWallet, balance));
             }
         }

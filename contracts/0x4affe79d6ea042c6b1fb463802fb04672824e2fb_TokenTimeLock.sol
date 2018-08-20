@@ -24,8 +24,8 @@ contract Token {
 
 /**
  * Allows one to lock EIP-20 tokens until certain time arrives.
- * Copyright &#169; 2018 by ABDK Consulting https://abdk.consulting/
- * Author: Mikhail Vladimirov &lt;mikhail.vladimirov[at]gmail.com&gt;
+ * Copyright © 2018 by ABDK Consulting https://abdk.consulting/
+ * Author: Mikhail Vladimirov <mikhail.vladimirov[at]gmail.com>
  */
 contract TokenTimeLock {
     /**
@@ -53,7 +53,7 @@ contract TokenTimeLock {
     function lock (
         Token _token, address _beneficiary, uint256 _amount,
         uint256 _unlockTime) public returns (uint256) {
-        require (_amount &gt; 0);
+        require (_amount > 0);
 
         uint256 id = nextLockID++;
 
@@ -81,8 +81,8 @@ contract TokenTimeLock {
         TokenTimeLockInfo memory lockInfo = locks [_id];
         delete locks [_id];
 
-        require (lockInfo.amount &gt; 0);
-        require (lockInfo.unlockTime &lt;= block.timestamp);
+        require (lockInfo.amount > 0);
+        require (lockInfo.unlockTime <= block.timestamp);
 
         Unlock (_id);
 
@@ -106,7 +106,7 @@ contract TokenTimeLock {
      * Maps time lock ID to TokenTimeLockInfo structure encapsulating time lock
      * information.
      */
-    mapping (uint256 =&gt; TokenTimeLockInfo) public locks;
+    mapping (uint256 => TokenTimeLockInfo) public locks;
 
     /**
      * Encapsulates information abount time lock.

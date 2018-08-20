@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -94,14 +94,14 @@ contract ERC20 is ERC20Basic {
 contract ApprovalContract is ERC20 {
     using SafeMath for uint256;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     /**
      * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -138,7 +138,7 @@ contract ApprovalContract is ERC20 {
     function decreaseApproval (address _spender, uint _subtractedValue) public
     returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -157,7 +157,7 @@ contract ApprovalContract is ERC20 {
 contract MintableToken is ApprovalContract, Ownable {
 
     uint256 public hardCap;
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     event Mint(address indexed to, uint256 amount);
 
@@ -173,7 +173,7 @@ contract MintableToken is ApprovalContract, Ownable {
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require(_amount &lt; hardCap);
+        require(_amount < hardCap);
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);
@@ -196,7 +196,7 @@ contract Vesting is MintableToken {
         uint256 usedAmount;   //the amount of paid payments
     }
 
-    mapping (address =&gt; _Vesting ) public vestingMembers;
+    mapping (address => _Vesting ) public vestingMembers;
 
     function addVestingMember(
         address _address,
@@ -205,11 +205,11 @@ contract Vesting is MintableToken {
         uint256 _end
     ) onlyOwner public returns (bool) {
         require(
-            _address != address(0) &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            _start &lt; _end &amp;&amp;
-            vestingMembers[_address].totalSum == 0 &amp;&amp;
-            balances[msg.sender] &gt; _amount
+            _address != address(0) &&
+            _amount > 0 &&
+            _start < _end &&
+            vestingMembers[_address].totalSum == 0 &&
+            balances[msg.sender] > _amount
         );
 
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -225,10 +225,10 @@ contract Vesting is MintableToken {
     }
 
     function currentPart(address _address) private constant returns (uint256) {
-        if (vestingMembers[_address].totalSum == 0 || block.number &lt;= vestingMembers[_address].start) {
+        if (vestingMembers[_address].totalSum == 0 || block.number <= vestingMembers[_address].start) {
             return 0;
         }
-        if (block.number &gt;= vestingMembers[_address].end) {
+        if (block.number >= vestingMembers[_address].end) {
             return vestingMembers[_address].totalSum.sub(vestingMembers[_address].usedAmount);
         }
 
@@ -246,13 +246,13 @@ contract Vesting is MintableToken {
             return balances[_address];
         }
         uint256 summary = balanceOf(_address);
-        require(summary &gt;= _amount);
+        require(summary >= _amount);
 
-        if (balances[_address] &gt; _amount) {
+        if (balances[_address] > _amount) {
             balances[_address] = balances[_address].sub(_amount);
         } else {
             uint256 part = currentPart(_address);
-            if (block.number &gt;= vestingMembers[_address].end) {
+            if (block.number >= vestingMembers[_address].end) {
                 vestingMembers[_address].totalSum = 0;          //total amount
                 vestingMembers[_address].start = 0;             //start block
                 vestingMembers[_address].end = 0;               //end block
@@ -276,7 +276,7 @@ contract Vesting is MintableToken {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balanceOf(msg.sender));
+        require(_value <= balanceOf(msg.sender));
 
         subFromBalance(msg.sender, _value);
 
@@ -302,8 +302,8 @@ contract Vesting is MintableToken {
 
 contract DMToken is Vesting {
 
-    string public name = &quot;DMarket Token&quot;;
-    string public symbol = &quot;DMT&quot;;
+    string public name = "DMarket Token";
+    string public symbol = "DMT";
     uint256 public decimals = 8;
 
     function DMToken() public {
@@ -312,7 +312,7 @@ contract DMToken is Vesting {
 
     function multiTransfer(address[] recipients, uint256[] amounts) public {
         require(recipients.length == amounts.length);
-        for (uint i = 0; i &lt; recipients.length; i++) {
+        for (uint i = 0; i < recipients.length; i++) {
             transfer(recipients[i], amounts[i]);
         }
     }
@@ -324,11 +324,11 @@ contract DMToken is Vesting {
         uint256[] _end
     ) public onlyOwner {
         require(
-            _address.length == _amount.length &amp;&amp;
-            _address.length == _start.length &amp;&amp;
+            _address.length == _amount.length &&
+            _address.length == _start.length &&
             _address.length == _end.length
         );
-        for (uint i = 0; i &lt; _address.length; i++) {
+        for (uint i = 0; i < _address.length; i++) {
             addVestingMember(_address[i], _amount[i], _start[i], _end[i]);
         }
     }

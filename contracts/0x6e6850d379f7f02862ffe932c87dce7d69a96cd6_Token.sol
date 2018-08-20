@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,8 +58,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -115,7 +115,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -130,8 +130,8 @@ contract StandardToken is ERC20 {
 contract Token is StandardToken,Ownable {
     using SafeMath for uint;
 
-    string public name = &quot;Dragonfly Token&quot;;
-    string public symbol = &quot;DRF&quot;;
+    string public name = "Dragonfly Token";
+    string public symbol = "DRF";
     uint256 public decimals = 18;
 
     bool public mintingFinished = false;

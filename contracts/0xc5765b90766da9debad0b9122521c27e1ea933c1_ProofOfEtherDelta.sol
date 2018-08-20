@@ -14,15 +14,15 @@ interface ERC20 {
 
 contract ProofOfEtherDelta is ERC20 {
     
-    string public constant name  = &quot;ProofOfEtherDelta&quot;;
-    string public constant symbol = &quot;DevToken&quot;;
+    string public constant name  = "ProofOfEtherDelta";
+    string public constant symbol = "DevToken";
     uint8 public constant decimals = 0;
     uint256 private roughSupply;
     
     // Balances for each player
-    mapping(address =&gt; uint256) private gooBalance;
-    mapping(address =&gt; uint256) private lastGooSaveTime;
-    mapping(address =&gt; mapping(address =&gt; uint256)) private allowed;
+    mapping(address => uint256) private gooBalance;
+    mapping(address => uint256) private lastGooSaveTime;
+    mapping(address => mapping(address => uint256)) private allowed;
     
     // Constructor
     function ProofOfEtherDelta() public payable {
@@ -41,14 +41,14 @@ contract ProofOfEtherDelta is ERC20 {
     
     function balanceOfUnclaimedGoo(address player) internal constant returns (uint256) {
         uint256 lastSave = lastGooSaveTime[player];
-        if (lastSave &gt; 0 &amp;&amp; lastSave &lt; block.timestamp) {
+        if (lastSave > 0 && lastSave < block.timestamp) {
             return (1000 * (block.timestamp - lastSave)) / 100;
         }
         return 0;
     }
     
     function transfer(address recipient, uint256 amount) public returns (bool) {
-        require(amount &lt;= gooBalance[msg.sender]);
+        require(amount <= gooBalance[msg.sender]);
         
         gooBalance[msg.sender] -= amount;
         gooBalance[recipient] += amount;
@@ -58,7 +58,7 @@ contract ProofOfEtherDelta is ERC20 {
     }
     
     function transferFrom(address player, address recipient, uint256 amount) public returns (bool) {
-        require(amount &lt;= allowed[player][msg.sender] &amp;&amp; amount &lt;= gooBalance[player]);
+        require(amount <= allowed[player][msg.sender] && amount <= gooBalance[player]);
         
         gooBalance[player] -= amount;
         gooBalance[recipient] += amount;

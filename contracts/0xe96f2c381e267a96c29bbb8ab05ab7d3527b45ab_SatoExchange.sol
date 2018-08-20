@@ -6,10 +6,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) public pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint256 a, uint256 b) public pure returns (uint256 c) {
@@ -17,7 +17,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -105,17 +105,17 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint256 public _totalSupply;
 
-    mapping(address =&gt; uint256) internal balances;
-	mapping (address =&gt; uint256) internal freezeOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) internal balances;
+	mapping (address => uint256) internal freezeOf;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function SatoExchange() public {
-        symbol = &#39;SATX&#39;;
-        name = &#39;SatoExchange&#39;;
+        symbol = 'SATX';
+        name = 'SatoExchange';
         decimals = 8;
         _totalSupply = 30000000000000000;
         balances[msg.sender] = _totalSupply;
@@ -140,17 +140,17 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint256 tokens) public returns (bool success) {
         if (to == 0x0) revert();                               // Prevent transfer to 0x0 address. Use burn() instead
-		if (tokens &lt;= 0) revert(); 
-		require(msg.sender != address(0) &amp;&amp; msg.sender != to);
+		if (tokens <= 0) revert(); 
+		require(msg.sender != address(0) && msg.sender != to);
 	    require(to != address(0));
-        if (balances[msg.sender] &lt; tokens) revert();           // Check if the sender has enough
-        if (balances[to] + tokens &lt; balances[to]) revert(); // Check for overflows
+        if (balances[msg.sender] < tokens) revert();           // Check if the sender has enough
+        if (balances[to] + tokens < balances[to]) revert(); // Check for overflows
         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
         Transfer(msg.sender, to, tokens);
@@ -160,14 +160,14 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces 
     // ------------------------------------------------------------------------
     function approve(address spender, uint256 tokens) public returns (bool success) {
-        require(tokens &gt; 0); 
+        require(tokens > 0); 
         allowed[msg.sender][spender] = tokens;
         Approval(msg.sender, spender, tokens);
         return true;
@@ -175,8 +175,8 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
 
 
     function burn(uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &lt; _value) revert();            // Check if the sender has enough
-		if (_value &lt;= 0) revert(); 
+        if (balances[msg.sender] < _value) revert();            // Check if the sender has enough
+		if (_value <= 0) revert(); 
         balances[msg.sender] = SafeMath.safeSub(balances[msg.sender], _value);                      // Subtract from the sender
         _totalSupply = SafeMath.safeSub(_totalSupply,_value);                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -184,8 +184,8 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
     }
 	
 	function freeze(uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &lt; _value) revert();            // Check if the sender has enough
-		if (_value &lt;= 0) revert(); 
+        if (balances[msg.sender] < _value) revert();            // Check if the sender has enough
+		if (_value <= 0) revert(); 
         balances[msg.sender] = SafeMath.safeSub(balances[msg.sender], _value);                      // Subtract from the sender
         freezeOf[msg.sender] = SafeMath.safeAdd(freezeOf[msg.sender], _value);                                // Updates totalSupply
         Freeze(msg.sender, _value);
@@ -193,8 +193,8 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
     }
 	
 	function unfreeze(uint256 _value) public returns (bool success) {
-        if (freezeOf[msg.sender] &lt; _value) revert();            // Check if the sender has enough
-		if (_value &lt;= 0) revert(); 
+        if (freezeOf[msg.sender] < _value) revert();            // Check if the sender has enough
+		if (_value <= 0) revert(); 
         freezeOf[msg.sender] = SafeMath.safeSub(freezeOf[msg.sender], _value);                      // Subtract from the sender
 		balances[msg.sender] = SafeMath.safeAdd(balances[msg.sender], _value);
         Unfreeze(msg.sender, _value);
@@ -213,10 +213,10 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
         if (to == 0x0) revert();                                // Prevent transfer to 0x0 address. Use burn() instead
-		if (tokens &lt;= 0) revert(); 
-        if (balances[from] &lt; tokens) revert();                 // Check if the sender has enough
-        if (balances[to] + tokens &lt; balances[to]) revert();  // Check for overflows
-        if (tokens &gt; allowed[from][msg.sender]) revert();     // Check allowance
+		if (tokens <= 0) revert(); 
+        if (balances[from] < tokens) revert();                 // Check if the sender has enough
+        if (balances[to] + tokens < balances[to]) revert();  // Check for overflows
+        if (tokens > allowed[from][msg.sender]) revert();     // Check allowance
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -227,7 +227,7 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint256 remaining) {
         return allowed[tokenOwner][spender];
@@ -236,11 +236,11 @@ contract SatoExchange is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint256 tokens, bytes data) public returns (bool success) {
-        require(tokens &gt; 0);
+        require(tokens > 0);
         allowed[msg.sender][spender] = tokens;
         Approval(msg.sender, spender, tokens);
         ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, this, data);

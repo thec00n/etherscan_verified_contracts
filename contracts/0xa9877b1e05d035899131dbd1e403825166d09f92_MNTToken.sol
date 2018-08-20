@@ -35,18 +35,18 @@ contract Owned {
 
 contract MNTToken is ERC20, Owned {
     // Public variables of the token
-    string public name = &quot;Media Network Token&quot;;
-    string public symbol = &quot;MNT&quot;;
+    string public name = "Media Network Token";
+    string public symbol = "MNT";
     uint8 public decimals = 18;
     uint256 public totalSupply = 0; // 125 * 10**6 * 10**18;
     uint256 public maxSupply = 125 * 10**6 * 10**18;
     address public cjTeamWallet = 0x9887c2da3aC5449F3d62d4A04372a4724c21f54C;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // This creates an array with all allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /**
@@ -74,8 +74,8 @@ contract MNTToken is ERC20, Owned {
      */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address
-        require(balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value);                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -109,7 +109,7 @@ contract MNTToken is ERC20, Owned {
         uint256 _value
     ) public returns (bool success) 
     {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -178,8 +178,8 @@ contract MNTToken is ERC20, Owned {
 
     /* Issue new tokens - internal function */     
     function _mintTokens (address _to, uint256 _amount) internal {             
-        require(balanceOf[_to] + _amount &gt;= balanceOf[_to]); // check for overflows
-        require(totalSupply + _amount &lt;= maxSupply);
+        require(balanceOf[_to] + _amount >= balanceOf[_to]); // check for overflows
+        require(totalSupply + _amount <= maxSupply);
         totalSupply += _amount;                                      // Update total supply
         balanceOf[_to] += _amount;                               // Set minted coins to target
         Transfer(0x0, _to, _amount);                            // Create Transfer event from 0x
@@ -189,16 +189,16 @@ contract MNTToken is ERC20, Owned {
     /* Users send ETH and enter the token sale*/  
     function () public payable {
         require(msg.value != 0);
-        require(!(saleHasEnded || now &gt; saleEndTime)); // Throw if the token sale has ended
+        require(!(saleHasEnded || now > saleEndTime)); // Throw if the token sale has ended
         if (!saleHasStarted) {                                                // Check if this is the first token sale transaction   
-            if (now &gt;= saleStartTime) {                             // Check if the token sale should start        
+            if (now >= saleStartTime) {                             // Check if the token sale should start        
                 saleHasStarted = true;                                           // Set that the token sale has started         
             } else {
                 require(false);
             }
         }     
      
-        if (maxEthToRaise &gt; (totalEthRaised + msg.value)) {                 // Check if the user sent too much ETH         
+        if (maxEthToRaise > (totalEthRaised + msg.value)) {                 // Check if the user sent too much ETH         
             totalEthRaised += msg.value;                                    // Add to total eth Raised
             ethAvailable += msg.value;
             _mintTokens(msg.sender, msg.value * eth2mnt);
@@ -221,7 +221,7 @@ contract MNTToken is ERC20, Owned {
      * Sends the raised amount to the CJ Team. Mints 40% of tokens to send to the CJ team.
      */
     function endOfSaleFullWithdrawal() public onlyOwner {
-        if (saleHasEnded || now &gt; saleEndTime) {
+        if (saleHasEnded || now > saleEndTime) {
             //if (owner.send(ethAvailable)) {
             cjTeamWallet.transfer(this.balance);
             ethAvailable = 0;

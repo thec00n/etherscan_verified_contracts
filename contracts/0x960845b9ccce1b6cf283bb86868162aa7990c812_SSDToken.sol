@@ -1,7 +1,7 @@
 /**
  * Copyright (C) Siousada.io
  * All rights reserved.
- * Author: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d54535b527d4e5452484e5c595c135452">[email&#160;protected]</a>
+ * Author: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d54535b527d4e5452484e5c595c135452">[email protected]</a>
  *
  * This code is adapted from OpenZeppelin Project.
  * more at http://openzeppelin.org.
@@ -9,7 +9,7 @@
  * MIT License
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
- * of this software and associated documentation files (the &quot;&quot;Software&quot;&quot;), to 
+ * of this software and associated documentation files (the ""Software""), to 
  * deal in the Software without restriction, including without limitation the 
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
  * sell copies of the Software, and to permit persons to whom the Software is 
@@ -36,20 +36,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,13 +57,13 @@ library SafeMath {
 contract Guarded {
 
     modifier isValidAmount(uint256 _amount) { 
-        require(_amount &gt; 0); 
+        require(_amount > 0); 
         _; 
     }
 
     // ensure address not null, and not this contract address
     modifier isValidAddress(address _address) {
-        require(_address != 0x0 &amp;&amp; _address != address(this));
+        require(_address != 0x0 && _address != address(this));
         _;
     }
 
@@ -169,15 +169,15 @@ contract ERC20 {
 contract ERC20Token is ERC20 {
     using SafeMath for uint256;
 
-    string public standard = &#39;Cryptoken 0.1.1&#39;;
+    string public standard = 'Cryptoken 0.1.1';
 
-    string public name = &#39;&#39;;            // the token name
-    string public symbol = &#39;&#39;;          // the token symbol
+    string public name = '';            // the token name
+    string public symbol = '';          // the token symbol
     uint8 public decimals = 0;          // the number of decimals
 
     // mapping of our users to balance
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     // our constructor. We have fixed everything above, and not as 
     // parameters in the constructor.
@@ -208,9 +208,9 @@ contract ERC20Token is ERC20 {
         require(_to != address(this));
 
         // // check for overflows
-        // require(_value &gt; 0 &amp;&amp;
-        //   balances[msg.sender] &lt; _value &amp;&amp;
-        //   balances[_to] + _value &lt; balances[_to]);
+        // require(_value > 0 &&
+        //   balances[msg.sender] < _value &&
+        //   balances[_to] + _value < balances[_to]);
 
         // 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -229,21 +229,21 @@ contract ERC20Token is ERC20 {
      *
      * and Bob can claim, say 10, from that by doing
      *      Bob.transferFrom(Alice, Bob, 10);       // spend only 10
-     * and Bob&#39;s balance shall be 20 in the allowance.
+     * and Bob's balance shall be 20 in the allowance.
      */
     /// Initiate a transfer of `_value` from `_from` to `_to`
     function transferFrom(address _from, address _to, uint256 _value)         
         public returns (bool success) 
     {    
         // sanity check
-        require(_to != 0x0 &amp;&amp; _from != 0x0);
-        require(_from != _to &amp;&amp; _to != address(this));
+        require(_to != 0x0 && _from != 0x0);
+        require(_from != _to && _to != address(this));
 
         // check for overflows
-        // require(_value &gt; 0 &amp;&amp;
-        //   balances[_from] &gt;= _value &amp;&amp;
-        //   allowed[_from][_to] &lt;= _value &amp;&amp;
-        //   balances[_to] + _value &lt; balances[_to]);
+        // require(_value > 0 &&
+        //   balances[_from] >= _value &&
+        //   allowed[_from][_to] <= _value &&
+        //   balances[_to] + _value < balances[_to]);
 
         // update public balance
         allowed[_from][_to] = allowed[_from][_to].sub(_value);        
@@ -272,9 +272,9 @@ contract ERC20Token is ERC20 {
         public returns (bool success) 
     {
         // sanity check
-        require(_spender != 0x0 &amp;&amp; _spender != address(this));            
+        require(_spender != 0x0 && _spender != address(this));            
 
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent 
+        // if the allowance isn't 0, it can only be updated to 0 to prevent 
         // an allowance change immediately after withdrawal
         require(allowed[msg.sender][_spender] == 0);
 
@@ -291,8 +291,8 @@ contract ERC20Token is ERC20 {
         public constant returns (uint remaining) 
     {
         // sanity check
-        require(_spender != 0x0 &amp;&amp; _owner != 0x0);
-        require(_owner != _spender &amp;&amp; _spender != address(this));            
+        require(_spender != 0x0 && _owner != 0x0);
+        require(_owner != _spender && _spender != address(this));            
 
         // constant op. Just return the balance.
         return allowed[_owner][_spender];
@@ -306,7 +306,7 @@ contract SSDToken is ERC20Token, Guarded, Claimable {
 
     // our constructor, just supply the total supply.
     function SSDToken() 
-        ERC20Token(&#39;SIOUSADA&#39;, &#39;SSD&#39;, 18) 
+        ERC20Token('SIOUSADA', 'SSD', 18) 
     {
         totalSupply = SUPPLY;
         balances[msg.sender] = SUPPLY;

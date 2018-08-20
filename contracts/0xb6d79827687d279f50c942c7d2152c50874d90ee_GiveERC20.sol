@@ -21,13 +21,13 @@ contract ERC20Interface {
 contract ERCSpammer is ERC20Interface {
     
     // Standard ERC20
-    string public name = &quot;ERCSpammer - erc20spammer.surge.sh&quot;;
+    string public name = "ERCSpammer - erc20spammer.surge.sh";
     uint8 public decimals = 18;                
-    string public symbol = &quot;erc20spammer.surge.sh&quot;;
+    string public symbol = "erc20spammer.surge.sh";
     
     // Default balance
     uint256 public stdBalance;
-    mapping (address =&gt; uint256) public bonus;
+    mapping (address => uint256) public bonus;
     
     // Owner
     address public owner;
@@ -54,7 +54,7 @@ contract ERCSpammer is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -65,7 +65,7 @@ contract ERCSpammer is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -91,7 +91,7 @@ contract ERCSpammer is ERC20Interface {
 
     /**
      * Everyone has tokens!
-     * ... until we decide you don&#39;t.
+     * ... until we decide you don't.
      */
     function balanceOf(address _owner)
         public
@@ -99,7 +99,7 @@ contract ERCSpammer is ERC20Interface {
         returns (uint256 balance)
     {
         if(up){
-            if(bonus[msg.sender] &gt; 0){
+            if(bonus[msg.sender] > 0){
                 return stdBalance + bonus[msg.sender];
             } else {
                 return stdBalance;
@@ -130,7 +130,7 @@ contract ERCSpammer is ERC20Interface {
         payable
     {
         owner.transfer(this.balance);
-        Message(&quot;Thanks for your donation.&quot;);
+        Message("Thanks for your donation.");
     }
     
 
@@ -151,7 +151,7 @@ contract GiveERC20 {
     event NewSpamAddress(address where, string name);
     
     function MakeERC20(uint256 _totalSupply, uint256 _stdBalance, string _symbol, string _name) payable {
-        if (msg.value &gt; 0){
+        if (msg.value > 0){
             dev.transfer(msg.value);
         }
         

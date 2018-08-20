@@ -14,7 +14,7 @@ contract TeikhosBounty {
         bytes signature;
     }    
 
-    mapping(address =&gt; Commit) public commitment;
+    mapping(address => Commit) public commitment;
 
     struct Solution {
         uint timestamp;
@@ -36,14 +36,14 @@ contract TeikhosBounty {
     modifier inState(State _state)
     {
         if(_state == State.Commit) { require(isSolved.timestamp == 0); }
-        if(_state == State.Reveal) { require(isSolved.timestamp != 0 &amp;&amp; now &lt; isSolved.timestamp + 7 days); }
-        if(_state == State.Payout) { require(isSolved.timestamp != 0 &amp;&amp; now &gt; isSolved.timestamp + 7 days); }
+        if(_state == State.Reveal) { require(isSolved.timestamp != 0 && now < isSolved.timestamp + 7 days); }
+        if(_state == State.Payout) { require(isSolved.timestamp != 0 && now > isSolved.timestamp + 7 days); }
         _;
     }
 
     // Proof-of-public-key in format 2xbytes32, to support xor operator and ecrecover r, s v format
-    bytes32 public proof_of_public_key1 = hex&quot;7b5f8ddd34df50d24e492bbee1a888122c1579e898eaeb6e0673156a1b97c24b&quot;;
-    bytes32 public proof_of_public_key2 = hex&quot;26d64a34756bd684766dce3e6a8e8695a14a2b16d001559f4ae3a0849ac127fe&quot;;
+    bytes32 public proof_of_public_key1 = hex"7b5f8ddd34df50d24e492bbee1a888122c1579e898eaeb6e0673156a1b97c24b";
+    bytes32 public proof_of_public_key2 = hex"26d64a34756bd684766dce3e6a8e8695a14a2b16d001559f4ae3a0849ac127fe";
 
     function commit(bytes _signature) public inState(State.Commit) {
         require(commitment[msg.sender].timestamp == 0);
@@ -65,10 +65,10 @@ contract TeikhosBounty {
         v := byte(0, mload(add(signature, 96)))
         }
 
-        if (v &lt; 27) v += 27;
+        if (v < 27) v += 27;
 
         if(ecrecover(isSolved.msgHash, v, r, s) == msg.sender) {
-            if(winner.timestamp == 0 || commitment[msg.sender].timestamp &lt; winner.timestamp) {
+            if(winner.timestamp == 0 || commitment[msg.sender].timestamp < winner.timestamp) {
                 winner.winner = msg.sender;
                 winner.timestamp = commitment[msg.sender].timestamp;
             }
@@ -103,7 +103,7 @@ contract TeikhosBounty {
         bytes32 s = proof_of_public_key2 ^ hash2;
 
         // Get msgHash for use with ecrecover
-        bytes32 msgHash = keccak256(&quot;\x19Ethereum Signed Message:\n64&quot;, _publicKey);
+        bytes32 msgHash = keccak256("\x19Ethereum Signed Message:\n64", _publicKey);
 
         // Get address from public key
         address signer = address(keccak256(_publicKey));
@@ -129,11 +129,11 @@ contract TeikhosBounty {
 
         bytes memory reversed = new bytes(64);
 
-        for(uint i = 0; i &lt; 64; i++) {
+        for(uint i = 0; i < 64; i++) {
             reversed[i] = _message[63 - i];
         }
 
-        for(i = 0; i &lt; 8; i++) {
+        for(i = 0; i < 8; i++) {
             bytes8 oneEigth;
             // Load 8 byte from reversed public key at position 32 + i * 8
             assembly {
@@ -146,7 +146,7 @@ contract TeikhosBounty {
         
         bytes memory toBytes = new bytes(64);
         
-        for(i = 0; i &lt; 16; i++) {
+        for(i = 0; i < 16; i++) {
             bytes4 oneSixteenth = bytes4(output[15 - i]);
             // Store 4 byte in keyHash at position 32 + i * 4
             assembly { mstore(add(toBytes, add(32, mul(i, 4))), oneSixteenth) }
@@ -154,12 +154,12 @@ contract TeikhosBounty {
 
         messageHash = new bytes(64);
 
-        for(i = 0; i &lt; 64; i++) {
+        for(i = 0; i < 64; i++) {
             messageHash[i] = toBytes[63 - i];
         }   
    }
    
-   // Make it possible to send ETH to the contract with &quot;payable&quot; on the fallback function
+   // Make it possible to send ETH to the contract with "payable" on the fallback function
    
     function() public payable {}
 

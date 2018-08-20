@@ -1,15 +1,15 @@
 //sol Wallet
 // Multi-sig account proxy/wallet.
 // @authors:
-// Gav Wood &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="76113613021e1213005815191b">[email&#160;protected]</a>&gt;
-// inheritable &quot;property&quot; contract that enables methods to be protected by requiring the acquiescence of either a
+// Gav Wood <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="76113613021e1213005815191b">[email protected]</a>>
+// inheritable "property" contract that enables methods to be protected by requiring the acquiescence of either a
 // single, or, crucially, each of a number of, designated owners.
 // usage:
 // use modifiers onlyowner (just own owned) or onlymanyowners(hash), whereby the same hash must be provided by
 // some number (specified in constructor) of the set of owners (specified in the constructor, modifiable) before the
 // interior is executed.
 // 
-// Token/no-daylimit modifications: Dmitry Khovratovich &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="402b282f363221342f3629232800272d21292c6e232f2d">[email&#160;protected]</a>&gt; based on https://github.com/ethereum/dapp-bin/blob/dd5c485359074d49f571693ae064ce78970f3d6d/wallet/wallet.sol
+// Token/no-daylimit modifications: Dmitry Khovratovich <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="402b282f363221342f3629232800272d21292c6e232f2d">[email protected]</a>> based on https://github.com/ethereum/dapp-bin/blob/dd5c485359074d49f571693ae064ce78970f3d6d/wallet/wallet.sol
 
 pragma solidity ^0.4.15;
 contract multiowned {
@@ -55,11 +55,11 @@ contract multiowned {
 
 	// METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanyowners&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanyowners" transactions
     // as well as the selection of addresses capable of confirming them.
     function multiowned(address[] _owners, uint _required) {
         m_numOwners = _owners.length;
-        for (uint i = 0; i &lt; _owners.length; ++i)
+        for (uint i = 0; i < _owners.length; ++i)
         {
             m_owners[1 + i] = uint(_owners[i]);
             m_ownerIndex[uint(_owners[i])] = 1 + i;
@@ -70,11 +70,11 @@ contract multiowned {
     // Revokes a prior confirmation of the given operation
     function revoke(bytes32 _operation) external {
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return;
         uint ownerIndexBit = 2**ownerIndex;
         var pending = m_pending[_operation];
-        if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+        if (pending.ownersDone & ownerIndexBit > 0) {
             pending.yetNeeded++;
             pending.ownersDone -= ownerIndexBit;
             Revoke(msg.sender, _operation);
@@ -98,9 +98,9 @@ contract multiowned {
         if (isOwner(_owner)) return;
 
         clearPending();
-        if (m_numOwners &gt;= c_maxOwners)
+        if (m_numOwners >= c_maxOwners)
             reorganizeOwners();
-        if (m_numOwners &gt;= c_maxOwners)
+        if (m_numOwners >= c_maxOwners)
             return;
         m_numOwners++;
         m_owners[m_numOwners] = uint(_owner);
@@ -111,7 +111,7 @@ contract multiowned {
     function removeOwner(address _owner) onlymanyowners(sha3(msg.data)) external {
         uint ownerIndex = m_ownerIndex[uint(_owner)];
         if (ownerIndex == 0) return;
-        if (m_required &gt; m_numOwners - 1) return;
+        if (m_required > m_numOwners - 1) return;
 
         m_owners[ownerIndex] = 0;
         m_ownerIndex[uint(_owner)] = 0;
@@ -121,7 +121,7 @@ contract multiowned {
     }
     
     function changeRequirement(uint _newRequired) onlymanyowners(sha3(msg.data)) external {
-        if (_newRequired &gt; m_numOwners) return;
+        if (_newRequired > m_numOwners) return;
         m_required = _newRequired;
         clearPending();
         RequirementChanged(_newRequired);
@@ -134,19 +134,19 @@ contract multiowned {
     }
 
     function isOwner(address _addr) constant returns (bool) {
-        return m_ownerIndex[uint(_addr)] &gt; 0;
+        return m_ownerIndex[uint(_addr)] > 0;
     }
     
     function hasConfirmed(bytes32 _operation, address _owner) constant returns (bool) {
         var pending = m_pending[_operation];
         uint ownerIndex = m_ownerIndex[uint(_owner)];
 
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return false;
 
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        return !(pending.ownersDone &amp; ownerIndexBit == 0);
+        return !(pending.ownersDone & ownerIndexBit == 0);
 
 
 
@@ -158,11 +158,11 @@ contract multiowned {
     function confirmAndCheck(bytes32 _operation) internal returns (bool) {
         // determine what index the present sender is:
         uint ownerIndex = m_ownerIndex[uint(msg.sender)];
-        // make sure they&#39;re an owner
+        // make sure they're an owner
         if (ownerIndex == 0) return;
 
         var pending = m_pending[_operation];
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (pending.yetNeeded == 0) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_required;
@@ -173,11 +173,11 @@ contract multiowned {
         }
         // determine the bit to set for this owner.
         uint ownerIndexBit = 2**ownerIndex;
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.ownersDone &amp; ownerIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.ownersDone & ownerIndexBit == 0) {
             Confirmation(msg.sender, _operation);
             // ok - check if count is enough to go ahead.
-            if (pending.yetNeeded &lt;= 1) {
+            if (pending.yetNeeded <= 1) {
                 // enough confirmations: reset and run interior.
                 delete m_pendingIndex[m_pending[_operation].index];
                 delete m_pending[_operation];
@@ -194,11 +194,11 @@ contract multiowned {
 
     function reorganizeOwners() private {
         uint free = 1;
-        while (free &lt; m_numOwners)
+        while (free < m_numOwners)
         {
-            while (free &lt; m_numOwners &amp;&amp; m_owners[free] != 0) free++;
-            while (m_numOwners &gt; 1 &amp;&amp; m_owners[m_numOwners] == 0) m_numOwners--;
-            if (free &lt; m_numOwners &amp;&amp; m_owners[m_numOwners] != 0 &amp;&amp; m_owners[free] == 0)
+            while (free < m_numOwners && m_owners[free] != 0) free++;
+            while (m_numOwners > 1 && m_owners[m_numOwners] == 0) m_numOwners--;
+            if (free < m_numOwners && m_owners[m_numOwners] != 0 && m_owners[free] == 0)
             {
                 m_owners[free] = m_owners[m_numOwners];
                 m_ownerIndex[m_owners[free]] = free;
@@ -209,7 +209,7 @@ contract multiowned {
     
     function clearPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i)
+        for (uint i = 0; i < length; ++i)
             if (m_pendingIndex[i] != 0)
                 delete m_pending[m_pendingIndex[i]];
         delete m_pendingIndex;
@@ -226,9 +226,9 @@ contract multiowned {
     uint[256] m_owners;
     uint constant c_maxOwners = 250;
     // index on the list of owners to allow reverse lookup
-    mapping(uint =&gt; uint) m_ownerIndex;
+    mapping(uint => uint) m_ownerIndex;
     // the ongoing operations.
-    mapping(bytes32 =&gt; PendingState) m_pending;
+    mapping(bytes32 => PendingState) m_pending;
     bytes32[] m_pendingIndex;
 }
 
@@ -242,9 +242,9 @@ contract multisig {
     // logged events:
     // Funds has arrived into the wallet (record how much).
     event Deposit(address _from, uint value);
-    // Single transaction going out of the wallet (record who signed for it, how much, and to whom it&#39;s going).
+    // Single transaction going out of the wallet (record who signed for it, how much, and to whom it's going).
     event SingleTransact(address owner, uint value, address to, bytes data);
-    // Multi-sig transaction going out of the wallet (record who signed for it last, the operation hash, how much, and to whom it&#39;s going).
+    // Multi-sig transaction going out of the wallet (record who signed for it last, the operation hash, how much, and to whom it's going).
     event MultiTransact(address owner, bytes32 operation, uint value, address to, bytes data);
     // Confirmation still needed for a transaction.
     event ConfirmationNeeded(bytes32 operation, address initiator, uint value, address to, bytes data);
@@ -284,7 +284,7 @@ contract Wallet is multisig, multiowned {
     // gets called when no other function matches
     function() payable{
         // just being sent some cash?
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
     
@@ -295,7 +295,7 @@ contract Wallet is multisig, multiowned {
     function execute(address _to, uint _value, bytes _data) external onlyowner returns (bytes32 _r) {
         // determine our operation hash.
         _r = sha3(msg.data, block.number);
-        if (!confirm(_r) &amp;&amp; m_txs[_r].to == 0) {
+        if (!confirm(_r) && m_txs[_r].to == 0) {
             m_txs[_r].to = _to;
             m_txs[_r].value = _value;
             m_txs[_r].data = _data;
@@ -318,7 +318,7 @@ contract Wallet is multisig, multiowned {
     
     function clearPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i)
+        for (uint i = 0; i < length; ++i)
             delete m_txs[m_pendingIndex[i]];
         super.clearPending();
     }
@@ -326,5 +326,5 @@ contract Wallet is multisig, multiowned {
 	// FIELDS
 
     // pending transactions we have at present.
-    mapping (bytes32 =&gt; Transaction) m_txs;
+    mapping (bytes32 => Transaction) m_txs;
 }

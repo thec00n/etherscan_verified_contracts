@@ -28,9 +28,9 @@ contract SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -38,7 +38,7 @@ contract SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ contract SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -158,7 +158,7 @@ library BytesLib {
     function concatStorage(bytes storage _preBytes, bytes memory _postBytes) internal {
         assembly {
             // Read the first 32 bytes of _preBytes storage, which is the length
-            // of the array. (We don&#39;t need to use the offset into the slot
+            // of the array. (We don't need to use the offset into the slot
             // because arrays use the entire slot.)
             let fslot := sload(_preBytes_slot)
             // Arrays of 31 bytes or less have an even value in their slot,
@@ -172,7 +172,7 @@ library BytesLib {
             let mlength := mload(_postBytes)
             let newlength := add(slength, mlength)
             // slength can contain both the length and contents of the array
-            // if length &lt; 32 bytes so let&#39;s prepare for that
+            // if length < 32 bytes so let's prepare for that
             // v. http://solidity.readthedocs.io/en/latest/miscellaneous.html#layout-of-state-variables-in-storage
             switch add(lt(slength, 32), lt(newlength, 32))
             case 2 {
@@ -293,7 +293,7 @@ library BytesLib {
     }
 
     function slice(bytes _bytes, uint _start, uint _length) internal  pure returns (bytes) {
-        require(_bytes.length &gt;= (_start + _length));
+        require(_bytes.length >= (_start + _length));
 
         bytes memory tempBytes;
 
@@ -308,15 +308,15 @@ library BytesLib {
                 // word read from the original array. To read it, we calculate
                 // the length of that partial word and start copying that many
                 // bytes into the array. The first word we copy will start with
-                // data we don&#39;t care about, but the last `lengthmod` bytes will
+                // data we don't care about, but the last `lengthmod` bytes will
                 // land at the beginning of the contents of the new array. When
-                // we&#39;re done copying, we overwrite the full first word with
+                // we're done copying, we overwrite the full first word with
                 // the actual length of the slice.
                 let lengthmod := and(_length, 31)
 
                 // The multiplication in the next line is necessary
                 // because when slicing multiples of 32 bytes (lengthmod == 0)
-                // the following copy loop was copying the origin&#39;s length
+                // the following copy loop was copying the origin's length
                 // and then ending prematurely not copying everything it should.
                 let mc := add(add(tempBytes, lengthmod), mul(0x20, iszero(lengthmod)))
                 let end := add(mc, _length)
@@ -338,7 +338,7 @@ library BytesLib {
                 //allocating the array padded to 32 bytes like the compiler does now
                 mstore(0x40, and(add(mc, 31), not(31)))
             }
-            //if we want a zero-length slice let&#39;s just return a zero-length array
+            //if we want a zero-length slice let's just return a zero-length array
             default {
                 tempBytes := mload(0x40)
 
@@ -350,7 +350,7 @@ library BytesLib {
     }
 
     function toAddress(bytes _bytes, uint _start) internal  pure returns (address) {
-        require(_bytes.length &gt;= (_start + 20));
+        require(_bytes.length >= (_start + 20));
         address tempAddress;
 
         assembly {
@@ -361,7 +361,7 @@ library BytesLib {
     }
 
     function toUint(bytes _bytes, uint _start) internal  pure returns (uint256) {
-        require(_bytes.length &gt;= (_start + 32));
+        require(_bytes.length >= (_start + 32));
         uint256 tempUint;
 
         assembly {
@@ -372,7 +372,7 @@ library BytesLib {
     }
 
     function toBytes32(bytes _bytes, uint _start) internal  pure returns (bytes32) {
-        require(_bytes.length &gt;= (_start + 32));
+        require(_bytes.length >= (_start + 32));
         bytes32 tempBytes32;
 
         assembly {
@@ -383,7 +383,7 @@ library BytesLib {
     }
 
     function toBytes16(bytes _bytes, uint _start) internal  pure returns (bytes16) {
-        require(_bytes.length &gt;= (_start + 16));
+        require(_bytes.length >= (_start + 16));
         bytes16 tempBytes16;
 
         assembly {
@@ -394,7 +394,7 @@ library BytesLib {
     }
 
     function toBytes2(bytes _bytes, uint _start) internal  pure returns (bytes2) {
-        require(_bytes.length &gt;= (_start + 2));
+        require(_bytes.length >= (_start + 2));
         bytes2 tempBytes2;
 
         assembly {
@@ -405,7 +405,7 @@ library BytesLib {
     }
 
     function toBytes4(bytes _bytes, uint _start) internal  pure returns (bytes4) {
-        require(_bytes.length &gt;= (_start + 4));
+        require(_bytes.length >= (_start + 4));
         bytes4 tempBytes4;
 
         assembly {
@@ -415,7 +415,7 @@ library BytesLib {
     }
 
     function toBytes1(bytes _bytes, uint _start) internal  pure returns (bytes1) {
-        require(_bytes.length &gt;= (_start + 1));
+        require(_bytes.length >= (_start + 1));
         bytes1 tempBytes1;
 
         assembly {
@@ -431,12 +431,12 @@ library BytesLib {
         assembly {
             let length := mload(_preBytes)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(length, mload(_postBytes))
             case 1 {
-                // cb is a circuit breaker in the for loop since there&#39;s
+                // cb is a circuit breaker in the for loop since there's
                 //  no said feature for inline assembly loops
-                // cb = 1 - don&#39;t breaker
+                // cb = 1 - don't breaker
                 // cb = 0 - break
                 let cb := 1
 
@@ -446,7 +446,7 @@ library BytesLib {
                 for {
                     let cc := add(_postBytes, 0x20)
                 // the next line is the loop condition:
-                // while(uint(mc &lt; end) + cb == 2)
+                // while(uint(mc < end) + cb == 2)
                 } eq(add(lt(mc, end), cb), 2) {
                     mc := add(mc, 0x20)
                     cc := add(cc, 0x20)
@@ -478,11 +478,11 @@ library BytesLib {
             let slength := div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
             let mlength := mload(_postBytes)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(slength, mlength)
             case 1 {
                 // slength can contain both the length and contents of the array
-                // if length &lt; 32 bytes so let&#39;s prepare for that
+                // if length < 32 bytes so let's prepare for that
                 // v. http://solidity.readthedocs.io/en/latest/miscellaneous.html#layout-of-state-variables-in-storage
                 if iszero(iszero(slength)) {
                     switch lt(slength, 32)
@@ -496,9 +496,9 @@ library BytesLib {
                         }
                     }
                     default {
-                        // cb is a circuit breaker in the for loop since there&#39;s
+                        // cb is a circuit breaker in the for loop since there's
                         //  no said feature for inline assembly loops
-                        // cb = 1 - don&#39;t breaker
+                        // cb = 1 - don't breaker
                         // cb = 0 - break
                         let cb := 1
 
@@ -510,7 +510,7 @@ library BytesLib {
                         let end := add(mc, mlength)
 
                         // the next line is the loop condition:
-                        // while(uint(mc &lt; end) + cb == 2)
+                        // while(uint(mc < end) + cb == 2)
                         for {} eq(add(lt(mc, end), cb), 2) {
                             sc := add(sc, 1)
                             mc := add(mc, 0x20)
@@ -640,9 +640,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -650,8 +650,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -683,7 +683,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -735,7 +735,7 @@ contract DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -764,7 +764,7 @@ contract DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -796,16 +796,16 @@ contract DetherBank is ERC223ReceivingContract, Ownable, SafeMath, DateTime {
   event sendDth(address _from, uint amount);
   event sendEth(address _from, uint amount);
 
-  mapping(address =&gt; uint) public dthShopBalance;
-  mapping(address =&gt; uint) public dthTellerBalance;
-  mapping(address =&gt; uint) public ethShopBalance;
-  mapping(address =&gt; uint) public ethTellerBalance;
+  mapping(address => uint) public dthShopBalance;
+  mapping(address => uint) public dthTellerBalance;
+  mapping(address => uint) public ethShopBalance;
+  mapping(address => uint) public ethTellerBalance;
 
 
   // store a mapping with per day/month/year a uint256 containing the wei sold amount on that date
   //
   //      user               day               month             year      weiSold
-  mapping(address =&gt; mapping(uint16 =&gt; mapping(uint16 =&gt; mapping(uint16 =&gt; uint256)))) ethSellsUserToday;
+  mapping(address => mapping(uint16 => mapping(uint16 => mapping(uint16 => uint256)))) ethSellsUserToday;
 
   ERC223Basic public dth;
   bool public isInit = false;
@@ -824,21 +824,21 @@ contract DetherBank is ERC223ReceivingContract, Ownable, SafeMath, DateTime {
    */
   // withdraw DTH when teller delete
   function withdrawDthTeller(address _receiver) external onlyOwner {
-    require(dthTellerBalance[_receiver] &gt; 0);
+    require(dthTellerBalance[_receiver] > 0);
     uint tosend = dthTellerBalance[_receiver];
     dthTellerBalance[_receiver] = 0;
     require(dth.transfer(_receiver, tosend));
   }
   // withdraw DTH when shop delete
   function withdrawDthShop(address _receiver) external onlyOwner  {
-    require(dthShopBalance[_receiver] &gt; 0);
+    require(dthShopBalance[_receiver] > 0);
     uint tosend = dthShopBalance[_receiver];
     dthShopBalance[_receiver] = 0;
     require(dth.transfer(_receiver, tosend));
   }
   // withdraw DTH when a shop add by admin is delete
   function withdrawDthShopAdmin(address _from, address _receiver) external onlyOwner  {
-    require(dthShopBalance[_from]  &gt; 0);
+    require(dthShopBalance[_from]  > 0);
     uint tosend = dthShopBalance[_from];
     dthShopBalance[_from] = 0;
     require(dth.transfer(_receiver, tosend));
@@ -865,7 +865,7 @@ contract DetherBank is ERC223ReceivingContract, Ownable, SafeMath, DateTime {
   }
   // withdraw ETH for teller escrow + save amount sold today for the _from user
   function withdrawEth(address _from, address _to, uint _amount) external onlyOwner {
-    require(ethTellerBalance[_from] &gt;= _amount);
+    require(ethTellerBalance[_from] >= _amount);
     ethTellerBalance[_from] = SafeMath.sub(ethTellerBalance[_from], _amount);
 
     uint256 weiSoldToday = getWeiSoldToday(_from);
@@ -880,7 +880,7 @@ contract DetherBank is ERC223ReceivingContract, Ownable, SafeMath, DateTime {
   // refund all ETH from teller contract
   function refundEth(address _from) external onlyOwner {
     uint toSend = ethTellerBalance[_from];
-    if (toSend &gt; 0) {
+    if (toSend > 0) {
       ethTellerBalance[_from] = 0;
       _from.transfer(toSend);
     }

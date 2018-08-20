@@ -26,13 +26,13 @@ library SafeMath3 {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
   }
 
 }
@@ -122,8 +122,8 @@ contract ERC20Token is ERC20Interface, Owned {
 
   uint public tokensIssuedTotal = 0;
 
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping(address => uint) balances;
+  mapping(address => mapping (address => uint)) internal allowed;
 
   // Functions ------------------------
 
@@ -139,11 +139,11 @@ contract ERC20Token is ERC20Interface, Owned {
     return balances[_owner];
   }
 
-  /* Transfer the balance from owner&#39;s account to another account */
+  /* Transfer the balance from owner's account to another account */
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // update balances
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -158,7 +158,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
   function approve(address _spender, uint256 _value) public returns (bool) {
     // approval amount cannot exceed the balance
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
       
     // update allowed amount
     allowed[msg.sender][_spender] = _value;
@@ -168,13 +168,13 @@ contract ERC20Token is ERC20Interface, Owned {
     return true;
   }
 
-  /* Spender of tokens transfers tokens from the owner&#39;s balance */
+  /* Spender of tokens transfers tokens from the owner's balance */
   /* Must be pre-approved by owner */
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     // update balances and allowed amount
     balances[_from] = balances[_from].sub(_value);
@@ -209,7 +209,7 @@ contract ERC20Token is ERC20Interface, Owned {
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
 
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -227,8 +227,8 @@ contract SaintCoinToken is ERC20Token {
   
     /* Basic token data */
   
-    string public constant name = &quot;Saint Coins&quot;;
-    string public constant symbol = &quot;SAINT&quot;;
+    string public constant name = "Saint Coins";
+    string public constant symbol = "SAINT";
     uint8 public constant decimals = 0;
     
     /* Saint coinds per ETH */
@@ -237,7 +237,7 @@ contract SaintCoinToken is ERC20Token {
 
     /* Fundation contract addresses */
     
-    mapping(address =&gt; bool) public grantedContracts;
+    mapping(address => bool) public grantedContracts;
 
     /* HelpCoin address */
 
@@ -255,7 +255,7 @@ contract SaintCoinToken is ERC20Token {
 
     function sendTo(address _to, uint256 _value) public {
         require(isAuthorized(msg.sender));
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
         
         uint tokens = tokensPerEth.mul(_value) / 1 ether;
         

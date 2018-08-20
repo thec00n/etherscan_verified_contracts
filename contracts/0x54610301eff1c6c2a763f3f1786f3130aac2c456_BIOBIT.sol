@@ -19,10 +19,10 @@ contract BIOBIT {
     }
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) private balanceOf;
+    mapping (address => uint256) private balanceOf;
     
     // This creates an array with all balances
-    mapping (address =&gt; bool) public administrators;
+    mapping (address => bool) public administrators;
     
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -40,8 +40,8 @@ contract BIOBIT {
         uint256 initialSupply = 25000000;
         totalSupply = initialSupply;              // Update total supply
         balanceOf[owner] = initialSupply;       
-        name = &quot;BIOBIT&quot;;                          // Set the name for display purposes
-        symbol = &quot;฿&quot;;                             // Set the symbol for display purposes
+        name = "BIOBIT";                          // Set the name for display purposes
+        symbol = "฿";                             // Set the symbol for display purposes
     }
 
    /** Get My Balance
@@ -65,8 +65,8 @@ contract BIOBIT {
     function transfer(address _to, uint256 _value)  public
     {       // Add the same to the recipient
             require(_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-            require(balanceOf[msg.sender] &gt;= _value);                // Check if the sender has enough
-            require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+            require(balanceOf[msg.sender] >= _value);                // Check if the sender has enough
+            require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
             balanceOf[msg.sender] -= _value;                         // Subtract from the sender
             balanceOf[_to] += _value;                           // Add the same to the recipient
             Transfer(msg.sender, _to, _value);
@@ -80,7 +80,7 @@ contract BIOBIT {
     */
     function incrementSupply() onlyOwner public returns(bool){
             uint256 _value = 5000000;
-            require(totalSupply + _value &lt;= limitSupply);
+            require(totalSupply + _value <= limitSupply);
             totalSupply += _value;
             balanceOf[owner] += _value;
     }
@@ -99,8 +99,8 @@ contract BIOBIT {
         require(_from != 0x0);                             // Prevent transfer to 0x0 address. Use burn() instead
         require(_from != owner);                           // Prevent transfer token from owner
         require(administrators[_from] == false);           // prevent transfer from administrators
-        require(balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value);               // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         TransferByAdmin(msg.sender,_from, _to, _value);

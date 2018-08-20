@@ -48,11 +48,11 @@ contract Fundraiser {
                  );
 
   function Contribute(bytes24 tezos_pkh_and_chksum) payable {
-    // Don&#39;t accept contributions if fundraiser closed
+    // Don't accept contributions if fundraiser closed
     if (!accept) { throw; }
     bytes20 tezos_pk_hash = bytes20(tezos_pkh_and_chksum);
     /* shift left 20 bytes to extract checksum */
-    bytes4 expected_chksum = bytes4(tezos_pkh_and_chksum &lt;&lt; 160);
+    bytes4 expected_chksum = bytes4(tezos_pkh_and_chksum << 160);
     bytes4 chksum = bytes4(sha256(sha256(tezos_pk_hash)));
     /* revert transaction if the checksum cannot be verified */
     if (chksum != expected_chksum) { throw; }
@@ -64,7 +64,7 @@ contract Fundraiser {
   function Withdraw(address proposed_destination,
                     uint256 proposed_amount) {
     /* check amount */
-    if (proposed_amount &gt; this.balance) { throw; }
+    if (proposed_amount > this.balance) { throw; }
     /* update action */
     if (msg.sender == signer1) {
       signer1_proposal.action = Action.Withdraw;
@@ -105,9 +105,9 @@ contract Fundraiser {
 
   function MaybePerformWithdraw() internal {
     if (signer1_proposal.action == Action.Withdraw
-        &amp;&amp; signer2_proposal.action == Action.Withdraw
-        &amp;&amp; signer1_proposal.amount == signer2_proposal.amount
-        &amp;&amp; signer1_proposal.destination == signer2_proposal.destination) {
+        && signer2_proposal.action == Action.Withdraw
+        && signer1_proposal.amount == signer2_proposal.amount
+        && signer1_proposal.destination == signer2_proposal.destination) {
       signer1_proposal.action = Action.None;
       signer2_proposal.action = Action.None;
       signer1_proposal.destination.transfer(signer1_proposal.amount);
@@ -116,8 +116,8 @@ contract Fundraiser {
 
   function MaybePerformClose() internal {
     if (signer1_proposal.action == Action.Close
-        &amp;&amp; signer2_proposal.action == Action.Close
-        &amp;&amp; signer1_proposal.destination == signer2_proposal.destination) {
+        && signer2_proposal.action == Action.Close
+        && signer1_proposal.destination == signer2_proposal.destination) {
       accept = false;
       signer1_proposal.destination.transfer(this.balance);
     }
@@ -125,7 +125,7 @@ contract Fundraiser {
 
   function MaybePerformOpen() internal {
     if (signer1_proposal.action == Action.Open
-        &amp;&amp; signer2_proposal.action == Action.Open) {
+        && signer2_proposal.action == Action.Open) {
       accept = true;
     }
   }

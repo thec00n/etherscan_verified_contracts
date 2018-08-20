@@ -57,7 +57,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -67,7 +67,7 @@ library SafeMath {
         returns (uint256)
     {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -76,7 +76,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b)
@@ -84,7 +84,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b)
@@ -92,7 +92,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b)
@@ -100,7 +100,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -108,7 +108,7 @@ library SafeMath {
 /**
  * @title BytesToTypes
  * @dev The BytesToTypes contract converts the memory byte arrays to the standard solidity types
- * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="64140b110805001e050001240309050d084a070b09">[email&#160;protected]</a>
+ * @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="64140b110805001e050001240309050d084a070b09">[email protected]</a>
  */
 
 contract BytesToTypes {
@@ -137,7 +137,7 @@ contract BytesToTypes {
             size := mload(add(_input,_offst))
             let chunk_count := add(div(size,32),1) // chunk_count = size/32 + 1
             
-            if gt(mod(size,32),0) {// if size%32 &gt; 0
+            if gt(mod(size,32),0) {// if size%32 > 0
                 chunk_count := add(chunk_count,1)
             } 
             
@@ -172,7 +172,7 @@ contract BytesToTypes {
     }
 
     function slice(bytes _bytes, uint _start, uint _length) internal  pure returns (bytes) {
-        require(_bytes.length &gt;= (_start + _length));
+        require(_bytes.length >= (_start + _length));
 
         bytes memory tempBytes;
 
@@ -187,15 +187,15 @@ contract BytesToTypes {
                 // word read from the original array. To read it, we calculate
                 // the length of that partial word and start copying that many
                 // bytes into the array. The first word we copy will start with
-                // data we don&#39;t care about, but the last `lengthmod` bytes will
+                // data we don't care about, but the last `lengthmod` bytes will
                 // land at the beginning of the contents of the new array. When
-                // we&#39;re done copying, we overwrite the full first word with
+                // we're done copying, we overwrite the full first word with
                 // the actual length of the slice.
                 let lengthmod := and(_length, 31)
 
                 // The multiplication in the next line is necessary
                 // because when slicing multiples of 32 bytes (lengthmod == 0)
-                // the following copy loop was copying the origin&#39;s length
+                // the following copy loop was copying the origin's length
                 // and then ending prematurely not copying everything it should.
                 let mc := add(add(tempBytes, lengthmod), mul(0x20, iszero(lengthmod)))
                 let end := add(mc, _length)
@@ -217,7 +217,7 @@ contract BytesToTypes {
                 //allocating the array padded to 32 bytes like the compiler does now
                 mstore(0x40, and(add(mc, 31), not(31)))
             }
-            //if we want a zero-length slice let&#39;s just return a zero-length array
+            //if we want a zero-length slice let's just return a zero-length array
             default {
                 tempBytes := mload(0x40)
 
@@ -777,7 +777,7 @@ contract ITraders {
 
 contract Members is Ownable {
 
-  mapping(address =&gt; bool) public members; // Mappings of addresses of allowed addresses
+  mapping(address => bool) public members; // Mappings of addresses of allowed addresses
 
   modifier onlyMembers() {
     require(isValidMember(msg.sender));
@@ -817,7 +817,7 @@ contract FeeWallet is IFeeWallet, Ownable, Members {
   uint public servicePercentage; // Percentage times (1 ether)
   uint public affiliatePercentage; // Percentage times (1 ether)
 
-  mapping (address =&gt; uint) public pendingWithdrawals; // Balances
+  mapping (address => uint) public pendingWithdrawals; // Balances
 
   constructor(
     address _serviceAccount,
@@ -875,7 +875,7 @@ contract FeeWallet is IFeeWallet, Ownable, Members {
   }
 }
 contract ZodiacERC20 is Ownable, BytesToTypes {
-  string constant public VERSION = &#39;2.0.0&#39;;
+  string constant public VERSION = '2.0.0';
 
   ITraders public traders; // Smart contract that hold the list of valid traders
   IFeeWallet public feeWallet; // Smart contract that hold the fees collected
@@ -952,20 +952,20 @@ contract ZodiacERC20 is Ownable, BytesToTypes {
     uint volumeEffective = tradeable.balanceOf(this);
 
     // We make sure that something was traded
-    require(volumeEffective &gt; 0);
+    require(volumeEffective > 0);
 
     // Used ethers are: balance_before - balance_after.
     // And since before call balance=0; then balance_before = msg.value
     uint volumeEthEffective = SafeMath.safeSub(msg.value, address(this).balance);
 
-    // IMPORTANT: Check that: effective_price &lt;= agreed_price (guarantee a good deal for the buyer)
+    // IMPORTANT: Check that: effective_price <= agreed_price (guarantee a good deal for the buyer)
     require(
-      SafeMath.safeDiv(volumeEthEffective, volumeEffective) &lt;=
+      SafeMath.safeDiv(volumeEthEffective, volumeEffective) <=
       SafeMath.safeDiv(msg.value, volume)
     );
 
     // Return remaining ethers
-    if(address(this).balance &gt; 0) {
+    if(address(this).balance > 0) {
       destinationAddr.transfer(address(this).balance);
     }
 
@@ -987,7 +987,7 @@ contract ZodiacERC20 is Ownable, BytesToTypes {
   {
     require(tradingEnabled);
 
-    // We transfer to ouselves the user&#39;s trading volume, to operate on it
+    // We transfer to ouselves the user's trading volume, to operate on it
     // note: Our balance is 0 before this
     require(tradeable.transferFrom(msg.sender, this, volume));
 
@@ -1005,19 +1005,19 @@ contract ZodiacERC20 is Ownable, BytesToTypes {
     uint volumeEffective = SafeMath.safeSub(volume, tradeable.balanceOf(this));
 
     // We make sure that something was traded
-    require(volumeEffective &gt; 0);
+    require(volumeEffective > 0);
 
     // Collects service fee
     uint volumeEthEffective = collectSellFee(affiliate);
 
-    // IMPORTANT: Check that: effective_price &gt;= agreed_price (guarantee a good deal for the seller)
+    // IMPORTANT: Check that: effective_price >= agreed_price (guarantee a good deal for the seller)
     require(
-      SafeMath.safeDiv(volumeEthEffective, volumeEffective) &gt;=
+      SafeMath.safeDiv(volumeEthEffective, volumeEffective) >=
       SafeMath.safeDiv(volumeEth, volume)
     );
 
     // Return remaining volume
-    if (volumeEffective &lt; volume) {
+    if (volumeEffective < volume) {
      transferTradeable(tradeable, destinationAddr, SafeMath.safeSub(volume, volumeEffective));
     }
 
@@ -1040,7 +1040,7 @@ contract ZodiacERC20 is Ownable, BytesToTypes {
     uint remainingVolume = volume;
     uint offset = ordersData.length;
 
-    while(offset &gt; 0 &amp;&amp; remainingVolume &gt; 0) {
+    while(offset > 0 && remainingVolume > 0) {
       //Get the trader
       uint8 protocolId = bytesToUint8(offset, ordersData);
       ITrader trader = traders.getTrader(protocolId);
@@ -1084,7 +1084,7 @@ contract ZodiacERC20 is Ownable, BytesToTypes {
       address(this).balance
     );
 
-    if(volume &gt; 0) {
+    if(volume > 0) {
 
       if(isSell) {
         //Approve available amount of token to trader
@@ -1119,7 +1119,7 @@ contract ZodiacERC20 is Ownable, BytesToTypes {
     uint remaining;
     uint fee = feeWallet.getFee(ethers);
     //If there is enough remaining to pay fee, it substract from the balance
-    if(SafeMath.safeSub(address(this).balance, ethers) &gt;= fee)
+    if(SafeMath.safeSub(address(this).balance, ethers) >= fee)
       remaining = ethers;
     else
       remaining = SafeMath.safeSub(SafeMath.safeSub(ethers, address(this).balance), fee);

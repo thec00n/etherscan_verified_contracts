@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -114,37 +114,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -158,13 +158,13 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -196,7 +196,7 @@ contract BasicToken is ERC20Basic {
 
 /**
  * @title Helps contracts guard agains rentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e290878f818da2d0">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e290878f818da2d0">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -231,15 +231,15 @@ contract EtchReward is Pausable, BasicToken, ReentrancyGuard {
 
     // address public owner;                // Ownable
     // bool public paused = false;          // Pausable
-    // mapping(address =&gt; uint) balances;   // BasicToken
+    // mapping(address => uint) balances;   // BasicToken
     // uint public totalSupply;             // ERC20Basic
     // bool private rentrancy_lock = false; // ReentrancyGuard
 
     //
     // @dev constants
     //
-    string public constant name   = &quot;Etch Reward Token&quot;;
-    string public constant symbol = &quot;ETCHR&quot;;
+    string public constant name   = "Etch Reward Token";
+    string public constant symbol = "ETCHR";
     uint public constant decimals = 18;
 
     //
@@ -268,7 +268,7 @@ contract EtchReward is Pausable, BasicToken, ReentrancyGuard {
     //
     // @dev owner authorized addresses to participate in this pre-ico
     //
-    mapping(address =&gt; bool) contributors;
+    mapping(address => bool) contributors;
 
 
     // @dev constructor function
@@ -336,7 +336,7 @@ contract EtchReward is Pausable, BasicToken, ReentrancyGuard {
     onlyIcoContract
     whenNotPaused {
 
-        if(getBlock() &lt; block02w) {
+        if(getBlock() < block02w) {
             throw;
         }
         totalSupply = totalSupply.sub(balances[_contributor]);
@@ -352,25 +352,25 @@ contract EtchReward is Pausable, BasicToken, ReentrancyGuard {
         uint blockNow = getBlock();
 
         // are we before or after the sale period?
-        if(blockNow &lt; blockStart || block02w &lt;= blockNow) {
+        if(blockNow < blockStart || block02w <= blockNow) {
             throw;
         }
 
-        if (blockNow &lt; block24h) {
+        if (blockNow < block24h) {
 
             // only one transaction is authorized
-            if (balances[_recipient] &gt; 0) {
+            if (balances[_recipient] > 0) {
                 throw;
             }
 
             // only allowed to buy a certain amount
-            if (msg.value &gt; MAX_ETHER_24H) {
+            if (msg.value > MAX_ETHER_24H) {
                 throw;
             }
         }
 
-        // make sure we don&#39;t go over the ether cap
-        if (totalEther.add(msg.value) &gt; ETHER_CAP) {
+        // make sure we don't go over the ether cap
+        if (totalEther.add(msg.value) > ETHER_CAP) {
             throw;
         }
 

@@ -19,7 +19,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -37,7 +37,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -83,7 +83,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -101,8 +101,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -182,7 +182,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -256,9 +256,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -266,7 +266,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -275,7 +275,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -289,15 +289,15 @@ library SafeMath {
 contract Gerc is StandardToken, Ownable {
     using SafeMath for uint256;
 
-    string public constant name = &quot;Game Eternal Role Chain&quot;;
-    string public constant symbol = &quot;GERC&quot;;
+    string public constant name = "Game Eternal Role Chain";
+    string public constant symbol = "GERC";
     uint8 public constant decimals = 3;
     //总配额1000亿
     uint256 constant INITIAL_SUPPLY = 100000000000 * (10 ** uint256(decimals));
     //设置GERC代币官网短URL(32字节以内)，供管理平台自动查询
-    string public website = &quot;www.gerc.club&quot;;
+    string public website = "www.gerc.club";
     //设置GERC代币icon短URL(32字节以内)，供管理平台自动查询
-    string public icon = &quot;/css/gerc.png&quot;;
+    string public icon = "/css/gerc.png";
 
     /**
      * @dev Constructor that gives msg.sender all of existing tokens.
@@ -314,9 +314,9 @@ contract Gerc is StandardToken, Ownable {
     function airdrop(address[] payees, uint256 airdropValue) public onlyOwner returns(bool) {
         uint256 _size = payees.length;       
         uint256 amount = airdropValue.mul(_size);
-        require(amount &lt;= balances[owner], &quot;balance error&quot;); 
+        require(amount <= balances[owner], "balance error"); 
 
-        for (uint i = 0; i&lt;_size; i++) {
+        for (uint i = 0; i<_size; i++) {
             if (payees[i] == address(0)) {
                 amount = amount.sub(airdropValue);
                 continue;   

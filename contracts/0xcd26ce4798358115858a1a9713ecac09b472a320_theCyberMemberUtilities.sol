@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 
 
 contract ERC20 {
-  // We want to be able to recover &amp; donate any tokens sent to the contract.
+  // We want to be able to recover & donate any tokens sent to the contract.
   function balanceOf(address _who) public view returns (uint256);
   function transfer(address _to, uint256 _value) public returns (bool);
 }
@@ -35,7 +35,7 @@ contract theCyberMemberUtilities {
   address private constant THECYBERADDRESS_ = 0x97A99C819544AD0617F48379840941eFbe1bfAE1;
   theCyberInterface theCyber = theCyberInterface(THECYBERADDRESS_);
 
-  // Set up variables for checking the contract&#39;s membership status.
+  // Set up variables for checking the contract's membership status.
   bool private isMember_;
   uint8 private memberId_;
 
@@ -104,7 +104,7 @@ contract theCyberMemberUtilities {
     theCyber.newMember(_memberId, _memberName, _memberAddress);
   }
 
-  // Mark all members (except this contract &amp; msg.sender) as inactive.
+  // Mark all members (except this contract & msg.sender) as inactive.
   function proclaimAllInactive() public membersOnly returns (bool complete) {
     // The utility contract must be a member (and therefore have a member id).
     require(isMember_);
@@ -121,13 +121,13 @@ contract theCyberMemberUtilities {
     uint8 i = nextInactiveMemberIndex_;
 
     // make sure that the loop triggers at least once.
-    require(msg.gas &gt; 175000);
+    require(msg.gas > 175000);
 
     // Loop through members as long as sufficient gas remains.
-    while (msg.gas &gt; 170000) {
+    while (msg.gas > 170000) {
       // Make sure that the target membership is owned and active.
       (,,,inactiveSince,memberAddress) = theCyber.getMemberInformation(i);
-      if ((i != memberId_) &amp;&amp; (i != callingMemberId) &amp;&amp; (memberAddress != address(0)) &amp;&amp; (inactiveSince == 0)) {
+      if ((i != memberId_) && (i != callingMemberId) && (memberAddress != address(0)) && (inactiveSince == 0)) {
         // Mark the member as inactive.
         theCyber.proclaimInactive(i);
       }
@@ -155,7 +155,7 @@ contract theCyberMemberUtilities {
     theCyber.proclaimInactive(memberId);
   }
 
-  // Revoke all memberships (except those of the utility contract &amp; msg.sender)
+  // Revoke all memberships (except those of the utility contract & msg.sender)
   // that have been inactive for longer than the inactivity timeout.
   function revokeAllVulnerable() public membersOnly returns (bool complete) {
     // The utility contract must be a member (and therefore have a member id).
@@ -173,13 +173,13 @@ contract theCyberMemberUtilities {
     uint8 i = nextRevokedMemberIndex_;
 
     // make sure that the loop triggers at least once.
-    require(msg.gas &gt; 175000);
+    require(msg.gas > 175000);
 
     // Loop through members as long as sufficient gas remains.
-    while (msg.gas &gt; 175000) {
+    while (msg.gas > 175000) {
       // Make sure that the target membership is owned and inactive long enough.
       (,,,inactiveSince,memberAddress) = theCyber.getMemberInformation(i);
-      if ((i != memberId_) &amp;&amp; (i != callingMemberId) &amp;&amp; (memberAddress != address(0)) &amp;&amp; (inactiveSince != 0) &amp;&amp; (now &gt;= inactiveSince + inactivityTimeout_)) {
+      if ((i != memberId_) && (i != callingMemberId) && (memberAddress != address(0)) && (inactiveSince != 0) && (now >= inactiveSince + inactivityTimeout_)) {
         // Revoke the member.
         theCyber.revokeMembership(i);
       }
@@ -219,7 +219,7 @@ contract theCyberMemberUtilities {
 
   // We also want to be able to access any tokens that are sent to the contract.
   function donateTokens(address _tokenContractAddress) public membersOnly {
-    // Make sure that we didn&#39;t pass in the current contract address by mistake.
+    // Make sure that we didn't pass in the current contract address by mistake.
     require(_tokenContractAddress != address(this));
 
     // Log the donation of any tokens that have been sent into the contract.
@@ -229,7 +229,7 @@ contract theCyberMemberUtilities {
     ERC20(_tokenContractAddress).transfer(donationAddress_, ERC20(_tokenContractAddress).balanceOf(this));
   }
 
-  // The donation address for lost ether / ERC20 tokens should match theCyber&#39;s.
+  // The donation address for lost ether / ERC20 tokens should match theCyber's.
   function donationAddress() public view returns(address) {
     return donationAddress_;
   }

@@ -20,20 +20,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -142,7 +142,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -151,7 +151,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -190,7 +190,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -201,8 +201,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -251,7 +251,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -301,7 +301,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -434,10 +434,10 @@ contract BoomrCoinCrowdsale is Ownable{
   RefundVault private vault;
 
   // tracking for deposits
-  mapping (address =&gt; uint256) public deposits;
+  mapping (address => uint256) public deposits;
 
   // tracking for purchasers
-  mapping (address =&gt; uint256) public purchases;
+  mapping (address => uint256) public purchases;
 
   //***************************************************
   //  Events
@@ -463,7 +463,7 @@ contract BoomrCoinCrowdsale is Ownable{
   }
 
   function StartCrowdsale(address _token, address _wallet, uint256 _startTime) public onlyOwner{
-    require(_startTime &gt;= now);
+    require(_startTime >= now);
     require(_token != 0x0);
     require(_wallet != 0x0);
 
@@ -589,52 +589,52 @@ contract BoomrCoinCrowdsale is Ownable{
   }
 
   function isPresaleWaitPhase() internal constant returns (bool){
-    return startTime &gt;= now;
+    return startTime >= now;
   }
 
   function isPresalePhase() internal constant returns (bool){
-    return startTime &lt; now &amp;&amp; (startTime + presaleDuration) &gt;= now &amp;&amp; !maxGoalReached();
+    return startTime < now && (startTime + presaleDuration) >= now && !maxGoalReached();
   }
 
   function isCrowdsalePhase1() internal constant returns (bool){
-    return (startTime + presaleDuration) &lt; now &amp;&amp; (startTime + presaleDuration + crowdsaleDuration1) &gt;= now &amp;&amp; !maxGoalReached();
+    return (startTime + presaleDuration) < now && (startTime + presaleDuration + crowdsaleDuration1) >= now && !maxGoalReached();
   }
 
   function isCrowdsalePhase2() internal constant returns (bool){
-    return (startTime + presaleDuration + crowdsaleDuration1) &lt; now &amp;&amp; (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2) &gt;= now &amp;&amp; !maxGoalReached();
+    return (startTime + presaleDuration + crowdsaleDuration1) < now && (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2) >= now && !maxGoalReached();
   }
 
   function isCrowdsalePhase3() internal constant returns (bool){
-    return (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2) &lt; now &amp;&amp; (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3) &gt;= now &amp;&amp; !maxGoalReached();
+    return (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2) < now && (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3) >= now && !maxGoalReached();
   }
 
   function isCrowdsalePhase4() internal constant returns (bool){
-    return (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3) &lt; now &amp;&amp; (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3 + crowdsaleDuration4) &gt;= now &amp;&amp; !maxGoalReached();
+    return (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3) < now && (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3 + crowdsaleDuration4) >= now && !maxGoalReached();
   }
 
   function isCompleted() internal constant returns (bool){
-    return (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3 + crowdsaleDuration4) &lt; now || maxGoalReached();
+    return (startTime + presaleDuration + crowdsaleDuration1 + crowdsaleDuration2 + crowdsaleDuration3 + crowdsaleDuration4) < now || maxGoalReached();
   }
 
   function isDistributable() internal constant returns (bool){
-    return (startTime + presaleDuration) &lt; now;
+    return (startTime + presaleDuration) < now;
   }
 
   function isBuyable() internal constant returns (bool){
-    return isDistributable() &amp;&amp; !isCompleted();
+    return isDistributable() && !isCompleted();
   }
 
   // Test if we reached the goals
   function minGoalReached() internal constant returns (bool) {
-    return weiRaised &gt;= minGoal;
+    return weiRaised >= minGoal;
   }
 
   function maxGoalReached() internal constant returns (bool) {
-    return weiRaised &gt;= maxGoal;
+    return weiRaised >= maxGoal;
   }
 
   //***************************************************
-  //  Contract&#39;s token balance
+  //  Contract's token balance
   //***************************************************
   function getContractTokenBalance() internal constant returns (uint256) {
     return boomrToken.balanceOf(this);
@@ -668,11 +668,11 @@ contract BoomrCoinCrowdsale is Ownable{
   //  Default presale and token purchase
   //***************************************************
   function () public payable{
-    if(msg.value == 0 &amp;&amp; isDistributable())
+    if(msg.value == 0 && isDistributable())
     {
       distributePresale(msg.sender);
     }else{
-      require(!isPresaleWaitPhase() &amp;&amp; !isCompleted());
+      require(!isPresaleWaitPhase() && !isCompleted());
 
       // Select purchase action
       if (isPresalePhase()){
@@ -707,7 +707,7 @@ contract BoomrCoinCrowdsale is Ownable{
     // If real deposit from person then forward funds
     // otherwise it was from the manual routine for external
     // deposits that were made in fiat instead of ether
-    if (msg.value &gt; 0)
+    if (msg.value > 0)
     {
       // Send funds to main wallet
       forwardFunds();
@@ -733,7 +733,7 @@ contract BoomrCoinCrowdsale is Ownable{
   function distributePresale(address beneficiary) public{
     require(!halted);
     require(isDistributable());
-    require(deposits[beneficiary] &gt; 0);
+    require(deposits[beneficiary] > 0);
     require(beneficiary != 0x0);
 
     // Amount investesd
@@ -791,12 +791,12 @@ contract BoomrCoinCrowdsale is Ownable{
     uint256 tokensOut = weiAmount.mul(1 ether).div(price);
 
     // make sure we are not over sold
-    require(tokensOut + tokenCrowdsaleTotalSold &lt; tokenLimitCrowdsale);
+    require(tokensOut + tokenCrowdsaleTotalSold < tokenLimitCrowdsale);
 
     // If real deposit from person then forward funds
     // otherwise it was from the manual routine for external
     // deposits that were made in fiat instead of ether
-    if (msg.value &gt; 0)
+    if (msg.value > 0)
     {
       // Send funds to main wallet
       forwardFunds();
@@ -833,7 +833,7 @@ contract BoomrCoinCrowdsale is Ownable{
 
   // For deposits that do not come thru the contract
   function externalDeposit(address beneficiary, uint256 amount) public onlyOwner{
-      require(!isPresaleWaitPhase() &amp;&amp; !isCompleted());
+      require(!isPresaleWaitPhase() && !isCompleted());
 
       // Select purchase action
       if (isPresalePhase()){

@@ -1,11 +1,11 @@
 pragma solidity ^0.4.8;
 
 // ----------------------------------------------------------------------------------------------
-// BokkyPooBah&#39;s Autonomous Refundathon Facility Token Contract
+// BokkyPooBah's Autonomous Refundathon Facility Token Contract
 //
 // A system to incentivise The DAO token holders to withdraw their refunds
 //
-// Based on Vlad&#39;s Safe Token Sale Mechanism Contract
+// Based on Vlad's Safe Token Sale Mechanism Contract
 // - https://medium.com/@Vlad_Zamfir/a-safe-token-sale-mechanism-8d73c430ddd1
 //
 // Enjoy. (c) Bok Consulting Pty Ltd 2017. The MIT Licence.
@@ -37,10 +37,10 @@ contract ERC20Token is Owned {
     uint256 _totalSupply = 0;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Get the total token supply
     function totalSupply() constant returns (uint256 totalSupply) {
@@ -54,9 +54,9 @@ contract ERC20Token is Owned {
 
     // Send _value amount of tokens to address _to
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -75,18 +75,18 @@ contract ERC20Token is Owned {
         return true;
     }
 
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
-    // balance to the spender&#39;s account. The owner of the tokens must already
+    // Spender of tokens transfer an amount of tokens from the token owner's
+    // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     function transferFrom(
         address _from,
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -98,7 +98,7 @@ contract ERC20Token is Owned {
     }
 
     // Returns the amount of tokens approved by the owner that can be transferred
-    // to the spender&#39;s account
+    // to the spender's account
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
@@ -111,8 +111,8 @@ contract ERC20Token is Owned {
 contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
 
     // ------ Token information ------
-    string public constant symbol = &quot;BARF&quot;;
-    string public constant name = &quot;BokkyPooBah Autonomous Refundathon Facility&quot;;
+    string public constant symbol = "BARF";
+    string public constant name = "BokkyPooBah Autonomous Refundathon Facility";
     uint8 public constant decimals = 18;
 
     uint256 public deployedAt;
@@ -130,25 +130,25 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
     // if you can buy these tokens for less than this maximum price
     function buyPrice() constant returns (uint256) {
         // Members buy tokens initially at 1 BARF = 0.01 ETH
-        if (now &lt; (deployedAt + 2 days)) {
+        if (now < (deployedAt + 2 days)) {
             return 1 * 10**16;
         // Price increase to 1 BARF = 0.02 ETH after 2 days and before 1 week
-        } else if (now &lt; (deployedAt + 7 days)) {
+        } else if (now < (deployedAt + 7 days)) {
             return 2 * 10**16;
         // Price increase to 1 BARF = 0.04 ETH after 1 week and before 30 days
-        } else if (now &lt; (deployedAt + 30 days)) {
+        } else if (now < (deployedAt + 30 days)) {
             return 4 * 10**16;
         // Price increase to 1 BARF = 0.06 ETH after 30 days and before 60 days
-        } else if (now &lt; (deployedAt + 60 days)) {
+        } else if (now < (deployedAt + 60 days)) {
             return 6 * 10**16;
         // Price increase to 1 BARF = 0.08 ETH after 60 days and before 90 days
-        } else if (now &lt; (deployedAt + 90 days)) {
+        } else if (now < (deployedAt + 90 days)) {
             return 8 * 10**16;
         // Price increase to 1 BARF = 10 ETH after 90 days and before 365 days (1 year)
-        } else if (now &lt; (deployedAt + 365 days)) {
+        } else if (now < (deployedAt + 365 days)) {
             return 1 * 10**19;
         // Price increase to 1 BARF = 1,000 ETH after 365 days and before 3652 days (10 years)
-        } else if (now &lt; (deployedAt + 3652 days)) {
+        } else if (now < (deployedAt + 3652 days)) {
             return 1 * 10**22;
         // Price increase to 1 BARF = 1,000,000 ETH after 3652 days (10 years). Effectively free floating ceiling
         } else {
@@ -171,7 +171,7 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
     function amountOfEthersOwnerCanWithdraw() constant returns (uint256) {
         uint256 etherBalance = this.balance;
         uint256 ethersSupportingTokens = _totalSupply * sellPrice() / 1 ether;
-        if (etherBalance &gt; ethersSupportingTokens) {
+        if (etherBalance > ethersSupportingTokens) {
             return etherBalance - ethersSupportingTokens;
         } else {
             return 0;
@@ -180,7 +180,7 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
 
     function ownerWithdraw(uint256 amount) onlyOwner {
         uint256 maxWithdrawalAmount = amountOfEthersOwnerCanWithdraw();
-        if (amount &gt; maxWithdrawalAmount) {
+        if (amount > maxWithdrawalAmount) {
             amount = maxWithdrawalAmount;
         }
         if (!owner.send(amount)) throw;
@@ -195,7 +195,7 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
     }
 
     function memberBuyToken() payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             uint tokens = msg.value * 1 ether / buyPrice();
             _totalSupply += tokens;
             balances[msg.sender] += tokens;
@@ -207,7 +207,7 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
         uint256 tokens, uint256 newTotalSupply, uint256 buyPrice);
 
     function memberSellToken(uint256 amountOfTokens) {
-        if (amountOfTokens &gt; balances[msg.sender]) throw;
+        if (amountOfTokens > balances[msg.sender]) throw;
         balances[msg.sender] -= amountOfTokens;
         _totalSupply -= amountOfTokens;
         uint256 ethersToSend = amountOfTokens * sellPrice() / 1 ether;

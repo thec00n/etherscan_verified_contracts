@@ -11,13 +11,13 @@ library SafeMath { //standart library for uint
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -26,7 +26,7 @@ library SafeMath { //standart library for uint
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -66,8 +66,8 @@ contract BineuroToken is Ownable { //ERC - 20 token contract
   // Triggered whenever approve(address _spender, uint256 _value) is called.
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-  string public constant symbol = &quot;BNR&quot;;
-  string public constant name = &quot;BiNeuro&quot;;
+  string public constant symbol = "BNR";
+  string public constant name = "BiNeuro";
   uint8 public constant decimals = 3;
   uint256 _totalSupply = (uint256)(650000000).mul((uint256)(10).pow(decimals));
 
@@ -79,10 +79,10 @@ contract BineuroToken is Ownable { //ERC - 20 token contract
   
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   function totalSupply() public view returns (uint256) { //standart ERC-20 function
     return _totalSupply;

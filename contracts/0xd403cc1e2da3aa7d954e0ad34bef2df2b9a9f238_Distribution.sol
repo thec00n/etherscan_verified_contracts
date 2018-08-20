@@ -49,7 +49,7 @@ contract Distribution {
   function handleTokensReceived() public {
     require(state == State.AwaitingTokens);
     uint256 totalTokens = tokenContract.balanceOf(this);
-    require(totalTokens &gt; 0);
+    require(totalTokens > 0);
 
     tokensTransferred = 0;
     if (totalTokens == expectedTotalTokens) {
@@ -69,7 +69,7 @@ contract Distribution {
       uint256 tokens = actualTotalTokens.mul(contributorExpectedTokens) / expectedTotalTokens;
 
       // Handle roundoff on last contributor.
-      if (tokens &lt; tokensRemaining) {
+      if (tokens < tokensRemaining) {
         return tokens;
       } else {
         return tokensRemaining;
@@ -101,7 +101,7 @@ contract Distribution {
     uint256 tokensTransferredThisCall = 0;
     uint256 end = start + contributors.length;
     State _state = state;
-    for (uint256 i = start; i &lt; end; ++i) {
+    for (uint256 i = start; i < end; ++i) {
       address contributor = contributors[i];
       uint256 expectedTokens = contributorExpectedTokens[i];
       require(contributionHashes[i] == keccak256(contributor, expectedTokens));

@@ -1,14 +1,14 @@
 pragma solidity ^0.4.19;
 
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by CIBUS WORLD.
- * Author: <span class="__cf_email__" data-cfemail="a2c1cdccd6c3c1d6e2c1cbc0d7d18cd5cdd0cec6">[email&#160;protected]</span>
+ * Abstract Token Smart Contract.  Copyright © 2017 by CIBUS WORLD.
+ * Author: <span class="__cf_email__" data-cfemail="a2c1cdccd6c3c1d6e2c1cbc0d7d18cd5cdd0cec6">[email protected]</span>
  */
 
  
  /*
- * Safe Math Smart Contract.  Copyright &#169; 2017-2018 by CIBUS WORLD.
- * Author: <span class="__cf_email__" data-cfemail="167579786277756256757f746365386179647a72">[email&#160;protected]</span>
+ * Safe Math Smart Contract.  Copyright © 2017-2018 by CIBUS WORLD.
+ * Author: <span class="__cf_email__" data-cfemail="167579786277756256757f746365386179647a72">[email protected]</span>
  * https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol
  */
 
@@ -23,20 +23,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,7 +46,7 @@ contract SafeMath {
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   
@@ -91,13 +91,13 @@ contract AbstractToken is Token, SafeMath {
    * @param _to address to transfer tokens to the owner of
    * @param _value number of tokens to transfer to the owner of given address
    * @return true if tokens were transferred successfully, false otherwise
-   * accounts [_to] + _value &gt; accounts [_to] for overflow check
+   * accounts [_to] + _value > accounts [_to] for overflow check
    * which is already in safeMath
    */
   function transfer(address _to, uint256 _value) returns (bool success) {
     require(_to != address(0));
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -113,16 +113,16 @@ contract AbstractToken is Token, SafeMath {
    * @param _value number of tokens to transfer from given owner to given
    *        recipient
    * @return true if tokens were transferred successfully, false otherwise
-   * accounts [_to] + _value &gt; accounts [_to] for overflow check
+   * accounts [_to] + _value > accounts [_to] for overflow check
    * which is already in safeMath
    */
   function transferFrom(address _from, address _to, uint256 _value)
   returns (bool success) {
     require(_to != address(0));
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false; 
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false; 
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
 	  allowances [_from][msg.sender] = safeSub (allowances [_from][msg.sender], _value);
       accounts [_from] = safeSub (accounts [_from], _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
@@ -163,13 +163,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowances;
+  mapping (address => mapping (address => uint256)) private allowances;
 }
 
 
@@ -224,8 +224,8 @@ contract CIBUSToken is AbstractToken {
     return tokenCount;
   }
 
-  string constant public name = &quot;CIBUS Token&quot;;
-  string constant public symbol = &quot;CBT&quot;;
+  string constant public name = "CIBUS Token";
+  string constant public symbol = "CBT";
   uint8 constant public decimals = 10;
   
   /**
@@ -285,8 +285,8 @@ contract CIBUSToken is AbstractToken {
     returns (bool success) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &gt; safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
+    if (_value > 0) {
+      if (_value > safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
 	  
       accounts [msg.sender] = safeAdd (accounts [msg.sender], _value);
       tokenCount = safeAdd (tokenCount, _value);
@@ -314,7 +314,7 @@ contract CIBUSToken is AbstractToken {
   function mintToken(address target, uint256 mintedAmount) 
   returns (bool success) {
     require (msg.sender == owner);
-      if (mintedAmount &gt; 0) {
+      if (mintedAmount > 0) {
 	  
       accounts [target] = safeAdd (accounts [target], mintedAmount);
       tokenCount = safeAdd (tokenCount, mintedAmount);

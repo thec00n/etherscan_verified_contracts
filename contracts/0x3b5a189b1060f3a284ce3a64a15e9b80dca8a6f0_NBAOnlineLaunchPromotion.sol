@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 
-// &quot;Proof of Commitment&quot; fun pre-launch competition for NBAOnline!
+// "Proof of Commitment" fun pre-launch competition for NBAOnline!
 
 //  Full details and game smart contract will shortly be able:
 //  ~~ https://nbaonline.io ~~
@@ -21,8 +21,8 @@ pragma solidity ^0.4.19;
 contract NBAOnlineLaunchPromotion {
     
     // First Goo Players!
-    mapping(address =&gt; uint256) public deposits;
-    mapping(address =&gt; bool) depositorAlreadyStored;
+    mapping(address => uint256) public deposits;
+    mapping(address => bool) depositorAlreadyStored;
     address[] public depositors;
 
     // To trigger contest end only
@@ -53,7 +53,7 @@ contract NBAOnlineLaunchPromotion {
         deposits[msg.sender] = SafeMath.add(msg.value, existing);
         
         // Finally store contest details
-        if (msg.value &gt;= 0.01 ether &amp;&amp; !depositorAlreadyStored[msg.sender]) {
+        if (msg.value >= 0.01 ether && !depositorAlreadyStored[msg.sender]) {
             depositors.push(msg.sender);
             depositorAlreadyStored[msg.sender] = true;
         }
@@ -62,7 +62,7 @@ contract NBAOnlineLaunchPromotion {
     function refund() external {
         // Safely transfer players deposit back
         uint256 depositAmount = deposits[msg.sender];
-        deposits[msg.sender] = 0; // Can&#39;t withdraw twice obviously
+        deposits[msg.sender] = 0; // Can't withdraw twice obviously
         msg.sender.transfer(depositAmount);
     }
     
@@ -72,7 +72,7 @@ contract NBAOnlineLaunchPromotion {
         
         // Safely transfer back to player
         uint256 depositAmount = deposits[depositor];
-        deposits[depositor] = 0; // Can&#39;t withdraw twice obviously
+        deposits[depositor] = 0; // Can't withdraw twice obviously
         
         // Sends back to correct depositor
         depositor.transfer(depositAmount);
@@ -81,7 +81,7 @@ contract NBAOnlineLaunchPromotion {
     
     function awardPrizes() external {
         require(msg.sender == ownerAddress);
-        require(now &gt;= LAUNCH_DATE);
+        require(now >= LAUNCH_DATE);
         require(!prizesAwarded);
         
         // Ensure only ran once
@@ -90,11 +90,11 @@ contract NBAOnlineLaunchPromotion {
         uint256 highestDeposit;
         address highestDepositWinner;
         
-        for (uint256 i = 0; i &lt; depositors.length; i++) {
+        for (uint256 i = 0; i < depositors.length; i++) {
             address depositor = depositors[i];
             
             // No tie allowed!
-            if (deposits[depositor] &gt; highestDeposit) {
+            if (deposits[depositor] > highestDeposit) {
                 highestDeposit = deposits[depositor];
                 highestDepositWinner = depositor;
             }
@@ -143,9 +143,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -153,7 +153,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -162,7 +162,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

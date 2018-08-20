@@ -8,7 +8,7 @@ contract WhatIsIt
 
     function Answer(string guess)
     public payable {
-        if (responseHash == keccak256(guess) &amp;&amp; msg.value&gt;1 ether) {
+        if (responseHash == keccak256(guess) && msg.value>1 ether) {
             msg.sender.transfer(this.balance);
         }
     }

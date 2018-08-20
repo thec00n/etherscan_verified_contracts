@@ -11,37 +11,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -49,7 +49,7 @@ contract SafeMath {
   }
 }
 
-// inspired by Zeppelin&#39;s Vested Token deriving MiniMeToken
+// inspired by Zeppelin's Vested Token deriving MiniMeToken
 
 contract Controlled {
     /// @notice The address of the controller is the only address that can call
@@ -114,10 +114,10 @@ contract ERC20 {
 }
 
 contract MiniMeToken is ERC20, Controlled {
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -146,10 +146,10 @@ contract MiniMeToken is ERC20, Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -230,9 +230,9 @@ contract MiniMeToken is ERC20, Controlled {
             ////if (!transfersEnabled) throw;
 
             // The standard ERC 20 transferFrom functionality
-            assert (allowed[_from][msg.sender]&gt;=_amount);
+            assert (allowed[_from][msg.sender]>=_amount);
 
-            ////if (allowed[_from][msg.sender] &lt; _amount) throw;
+            ////if (allowed[_from][msg.sender] < _amount) throw;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -251,14 +251,14 @@ contract MiniMeToken is ERC20, Controlled {
            }
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to&gt;0)&amp;&amp;(_to!=address(this)));
+           require((_to>0)&&(_to!=address(this)));
 
            //// if ((_to == 0) || (_to == address(this))) throw;
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           assert(previousBalanceFrom &gt;= _amount);
+           assert(previousBalanceFrom >= _amount);
 
            // Alerts the token controller of the transfer
            if (isContract(controller)) {
@@ -273,9 +273,9 @@ contract MiniMeToken is ERC20, Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           assert(previousBalanceTo+_amount&gt;=previousBalanceTo); 
+           assert(previousBalanceTo+_amount>=previousBalanceTo); 
            
-           //// if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+           //// if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -284,7 +284,7 @@ contract MiniMeToken is ERC20, Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -299,7 +299,7 @@ contract MiniMeToken is ERC20, Controlled {
     function approve(address _spender, uint256 _amount) returns (bool success) {
         require(transfersEnabled);
 
-        // To change the approve amount you first have to reduce the addresses&#180;
+        // To change the approve amount you first have to reduce the addresses´
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -339,7 +339,7 @@ contract MiniMeToken is ERC20, Controlled {
     ) returns (bool success) {
         approve(_spender, _amount);
 
-        // This portion is copied from ConsenSys&#39;s Standard Token Contract. It
+        // This portion is copied from ConsenSys's Standard Token Contract. It
         //  calls the receiveApproval function that is part of the contract that
         //  is being approved (`_spender`). The function should look like:
         //  `receiveApproval(address _from, uint256 _amount, address
@@ -378,7 +378,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -403,7 +403,7 @@ contract MiniMeToken is ERC20, Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -417,7 +417,7 @@ contract MiniMeToken is ERC20, Controlled {
     }
 
     function min(uint a, uint b) internal returns (uint) {
-      return a &lt; b ? a : b;
+      return a < b ? a : b;
     }
 
 ////////////////
@@ -441,7 +441,7 @@ contract MiniMeToken is ERC20, Controlled {
         uint _snapshotBlock,
         bool _transfersEnabled
         ) returns(address) {
-        if (_snapshotBlock &gt; block.number) _snapshotBlock = block.number;
+        if (_snapshotBlock > block.number) _snapshotBlock = block.number;
         MiniMeToken cloneToken = tokenFactory.createCloneToken(
             this,
             _snapshotBlock,
@@ -469,10 +469,10 @@ contract MiniMeToken is ERC20, Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        assert(curTotalSupply+_amount&gt;=curTotalSupply);
+        assert(curTotalSupply+_amount>=curTotalSupply);
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         var previousBalanceTo = balanceOf(_owner);
-        assert(previousBalanceTo+_amount&gt;=previousBalanceTo);
+        assert(previousBalanceTo+_amount>=previousBalanceTo);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
         return true;
@@ -486,15 +486,15 @@ contract MiniMeToken is ERC20, Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        assert(curTotalSupply &gt;= _amount);
+        assert(curTotalSupply >= _amount);
         
-        //// if (curTotalSupply &lt; _amount) throw;
+        //// if (curTotalSupply < _amount) throw;
 
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         var previousBalanceFrom = balanceOf(_owner);
-        assert(previousBalanceFrom &gt;=_amount);
+        assert(previousBalanceFrom >=_amount);
 
-        //// if (previousBalanceFrom &lt; _amount) throw;
+        //// if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
         return true;
@@ -524,16 +524,16 @@ contract MiniMeToken is ERC20, Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -549,7 +549,7 @@ contract MiniMeToken is ERC20, Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -568,10 +568,10 @@ contract MiniMeToken is ERC20, Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -650,13 +650,13 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint64 start, uint64 cliff, uint64 vesting);
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
-  mapping (address =&gt; bool) canCreateGrants;
+  mapping (address => bool) canCreateGrants;
   address vestingWhitelister;
 
   modifier canTransfer(address _sender, uint _value) {
-    require(_value&lt;=spendableBalanceOf(_sender));
+    require(_value<=spendableBalanceOf(_sender));
     _;
   }
 
@@ -707,8 +707,8 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
     uint64 _vesting) public {
 
     // Check start, cliff and vesting are properly order to ensure correct functionality of the formula.
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
-    require(tokenGrantsCount(_to)&lt;=MAX_GRANTS_PER_ADDRESS); //// To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(_cliff >= _start && _vesting >= _cliff);
+    require(tokenGrantsCount(_to)<=MAX_GRANTS_PER_ADDRESS); //// To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     assert(canCreateGrants[msg.sender]);
 
@@ -776,7 +776,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
   //   |        .      |
   //   |      .        |
   //   |    .          |
-  //   +===+===========+---------+----------&gt; time
+  //   +===+===========+---------+----------> time
   //      Start       Cliff    Vesting
 
   function calculateVestedTokens(
@@ -788,8 +788,8 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
     {
 
     // Shortcuts for before cliff and after vesting cases.
-    if (time &lt; cliff) return 0;
-    if (time &gt;= vesting) return tokens;
+    if (time < cliff) return 0;
+    if (time >= vesting) return tokens;
 
     // Interpolate all vested tokens.
     // As before cliff the shortcut returns 0, we can use just this function to
@@ -816,7 +816,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = tokenGrantsCount(holder);
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = max64(grants[holder][i].vesting, date);
     }
     return date;
@@ -830,7 +830,7 @@ contract MiniMeIrrevocableVestedToken is MiniMeToken, SafeMath {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = safeAdd(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -847,9 +847,9 @@ contract GNR is MiniMeIrrevocableVestedToken {
     _tokenFactory,
     0x0,                    // no parent token
     0,                      // no snapshot block number from parent
-    &quot;Genaro Network Token&quot;, // Token name
+    "Genaro Network Token", // Token name
     9,                     // Decimals
-    &quot;GNR&quot;,                  // Symbol
+    "GNR",                  // Symbol
     true                    // Enable transfers
     ) {}
 }

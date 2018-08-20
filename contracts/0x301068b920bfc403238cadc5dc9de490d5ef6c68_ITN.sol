@@ -3,11 +3,11 @@ pragma solidity ^0.4.17;
 library SafeMathMod {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a - b) &lt; a);
+        require((c = a - b) < a);
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a + b) &gt; a);
+        require((c = a + b) > a);
     }
 }
 
@@ -24,9 +24,9 @@ contract ITN {
     * @storage allowed Holds the allowable balance to be transferable by another address.
     */
 
-    string constant public name = &quot;Litechanger.com investment token&quot;;
+    string constant public name = "Litechanger.com investment token";
 
-    string constant public symbol = &quot;ITN&quot;;
+    string constant public symbol = "ITN";
 
     uint8 constant public decimals = 8;
 
@@ -34,9 +34,9 @@ contract ITN {
 
     uint256 constant private MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -54,7 +54,7 @@ contract ITN {
     * @return Whether the transfer was successful or not
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        /* Ensures that tokens are not sent to address &quot;0x0&quot; */
+        /* Ensures that tokens are not sent to address "0x0" */
         require(_to != address(0));
         /* Prevents sending tokens directly to contracts. */
         require(isNotContract(_to));
@@ -73,12 +73,12 @@ contract ITN {
         
         uint256 allowance = allowed[_from][msg.sender];
      
-        require(_value &lt;= allowance || _from == msg.sender);
+        require(_value <= allowance || _from == msg.sender);
 
         balanceOf[_to] = balanceOf[_to].add(_value);
         balanceOf[_from] = balanceOf[_from].sub(_value);
 
-        if (allowed[_from][msg.sender] != MAX_UINT256 &amp;&amp; _from != msg.sender) {
+        if (allowed[_from][msg.sender] != MAX_UINT256 && _from != msg.sender) {
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         }
         Transfer(_from, _to, _value);

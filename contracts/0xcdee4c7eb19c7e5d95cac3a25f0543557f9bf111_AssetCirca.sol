@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 /**
 * @title Circa Token Contract
 * @dev Circa is an ERC-20 Standar Compliant Token
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="11773f707f657e7f787e3f707a747d51767c70787d3f727e7c">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="11773f707f657e7f787e3f707a747d51767c70787d3f727e7c">[email protected]</a>
 */
 
 /**
@@ -15,7 +15,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -24,7 +24,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -130,8 +130,8 @@ contract ERC20 {
 */
 contract ERC20Token is admined, ERC20 { //Standar definition of an ERC20Token
     using SafeMath for uint256; //SafeMath is used for uint256 operations
-    mapping (address =&gt; uint256) internal balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed; //A mapping of all allowances
+    mapping (address => uint256) internal balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) internal allowed; //A mapping of all allowances
     uint256 internal totalSupply_;
 
     /**
@@ -223,17 +223,17 @@ contract ERC20Token is admined, ERC20 { //Standar definition of an ERC20Token
 * @dev ERC20 Token compliant
 */
 contract AssetCirca is ERC20Token {
-    string public name = &#39;Circa&#39;;
+    string public name = 'Circa';
     uint8 public decimals = 18;
-    string public symbol = &#39;CIR&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'CIR';
+    string public version = '1';
 
     /**
     * @notice token contructor.
     */
     constructor() public {
         totalSupply_ = 1000000000 * 10 ** uint256(decimals); //Initial tokens supply 1,000,000,000;
-        //Writer&#39;s equity
+        //Writer's equity
         balances[0xEB53AD38f0C37C0162E3D1D4666e63a55EfFC65f] = totalSupply_ / 1000; //0.1%
         balances[0xEFfea09df22E0B25655BD3f23D9B531ba47d2A8B] = totalSupply_.sub(balances[0xEB53AD38f0C37C0162E3D1D4666e63a55EfFC65f]); //99.9%
 
@@ -244,7 +244,7 @@ contract AssetCirca is ERC20Token {
 
 
     /**
-    * @notice this contract will revert on direct non-function calls, also it&#39;s not payable
+    * @notice this contract will revert on direct non-function calls, also it's not payable
     * @dev Function to handle callback calls to contract
     */
     function() public {

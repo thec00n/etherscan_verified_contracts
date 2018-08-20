@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -172,7 +172,7 @@ contract DetailedERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -190,7 +190,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -219,9 +219,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -232,7 +232,7 @@ contract BurnableToken is BasicToken {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -243,8 +243,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -258,7 +258,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -307,7 +307,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -463,7 +463,7 @@ contract Crowdsale is Ownable, Pausable, Destructible {
     uint256 week_referral_4 = 5;
 
     // bonus ducks
-    mapping (address =&gt; CustomContract) public customBonuses;
+    mapping (address => CustomContract) public customBonuses;
 
     // address where funds are collected
     address public wallet;
@@ -479,13 +479,13 @@ contract Crowdsale is Ownable, Pausable, Destructible {
     uint256 public tokensOnHold;
 
     // high-ballers
-    mapping(address =&gt; Vault) ballers;
+    mapping(address => Vault) ballers;
 
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _token) public {
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
         require(_token != address(0));
 
@@ -506,7 +506,7 @@ contract Crowdsale is Ownable, Pausable, Destructible {
         require(!hasEnded());
 
         // minimum investment
-        require(minimum_invest &lt;= msg.value);
+        require(minimum_invest <= msg.value);
 
         address beneficiary = _beneficiary;
 
@@ -524,7 +524,7 @@ contract Crowdsale is Ownable, Pausable, Destructible {
             isLess = true;
 
             uint256 percentOfValue = tokensLeft().mul(100).div(tokens);
-            require(percentOfValue &lt;= 100);
+            require(percentOfValue <= 100);
 
             tokens = tokens.mul(percentOfValue).div(100);
             weiAmount = weiAmount.mul(percentOfValue).div(100);
@@ -540,7 +540,7 @@ contract Crowdsale is Ownable, Pausable, Destructible {
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
         // Require a KYC, but tokens on hold
-        if ((11 ether) &lt;= weiAmount) {
+        if ((11 ether) <= weiAmount) {
             // we have a KYC requirement
             // add tokens to his/her vault to release/refund manually afterawards
 
@@ -577,8 +577,8 @@ contract Crowdsale is Ownable, Pausable, Destructible {
     }
 
     function releaseFunds(address _wallet) onlyOwner public {
-        require(ballers[_wallet].tokenAmount &gt; 0);
-        require(ballers[_wallet].weiValue &lt;= this.balance);
+        require(ballers[_wallet].tokenAmount > 0);
+        require(ballers[_wallet].weiValue <= this.balance);
 
         // held tokens count for this buyer
         uint256 tokens = ballers[_wallet].tokenAmount;
@@ -589,7 +589,7 @@ contract Crowdsale is Ownable, Pausable, Destructible {
         // transfer ether to our wallet
         forwardFunds(ballers[_wallet].weiValue);
 
-        // if it&#39;s a referral release give bonus tokens to referral
+        // if it's a referral release give bonus tokens to referral
         if (ballers[_wallet].referralBeneficiary != address(0)) {
           uint256 refTokens = tokens.mul(10).div(100);
           token.transfer(ballers[_wallet].referralBeneficiary, refTokens);
@@ -608,8 +608,8 @@ contract Crowdsale is Ownable, Pausable, Destructible {
     }
 
     function refundFunds(address _wallet) onlyOwner public {
-        require(ballers[_wallet].tokenAmount &gt; 0);
-        require(ballers[_wallet].weiValue &lt;= this.balance);
+        require(ballers[_wallet].tokenAmount > 0);
+        require(ballers[_wallet].weiValue <= this.balance);
 
         // remove from tokens on hold
         tokensOnHold = tokensOnHold.sub(ballers[_wallet].tokenAmount);
@@ -658,17 +658,17 @@ contract Crowdsale is Ownable, Pausable, Destructible {
     }
 
     function setMinInvestment(uint256 _investment) onlyOwner public {
-      require(_investment &gt; 0);
+      require(_investment > 0);
       minimum_invest = _investment;
     }
 
     function changeEndTime(uint256 _endTime) onlyOwner public {
-        require(_endTime &gt; startTime);
+        require(_endTime > startTime);
         endTime = _endTime;
     }
 
     function changeStartTime(uint256 _startTime) onlyOwner public {
-        require(endTime &gt; _startTime);
+        require(endTime > _startTime);
         startTime = _startTime;
     }
 
@@ -709,7 +709,7 @@ contract Crowdsale is Ownable, Pausable, Destructible {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime || token.balanceOf(this) == 0 || crowdsaleConcluded;
+        return now > endTime || token.balanceOf(this) == 0 || crowdsaleConcluded;
     }
 
     function getBaseAmount(uint256 _weiAmount) public view returns (uint256) {
@@ -724,26 +724,26 @@ contract Crowdsale is Ownable, Pausable, Destructible {
          // Special bonuses
         if (customBonuses[msg.sender].isSpecial == true) {
 
-          if ( startTime &lt;= now &amp;&amp; now &lt; startTime + 7 days ) {
+          if ( startTime <= now && now < startTime + 7 days ) {
             percentage = week_special_1;
-          } else if ( startTime + 7 days &lt;= now &amp;&amp; now &lt; startTime + 14 days ) {
+          } else if ( startTime + 7 days <= now && now < startTime + 14 days ) {
             percentage = week_special_2;
-          } else if ( startTime + 14 days &lt;= now &amp;&amp; now &lt; startTime + 21 days ) {
+          } else if ( startTime + 14 days <= now && now < startTime + 21 days ) {
             percentage = week_special_3;
-          } else if ( startTime + 21 days &lt;= now &amp;&amp; now &lt;= endTime ) {
+          } else if ( startTime + 21 days <= now && now <= endTime ) {
             percentage = week_special_4;
           }
 
         // Regular bonuses
         } else {
 
-          if ( startTime &lt;= now &amp;&amp; now &lt; startTime + 7 days ) {
+          if ( startTime <= now && now < startTime + 7 days ) {
             percentage = week_1;
-          } else if ( startTime + 7 days &lt;= now &amp;&amp; now &lt; startTime + 14 days ) {
+          } else if ( startTime + 7 days <= now && now < startTime + 14 days ) {
             percentage = week_2;
-          } else if ( startTime + 14 days &lt;= now &amp;&amp; now &lt; startTime + 21 days ) {
+          } else if ( startTime + 14 days <= now && now < startTime + 21 days ) {
             percentage = week_3;
-          } else if ( startTime + 21 days &lt;= now &amp;&amp; now &lt;= endTime ) {
+          } else if ( startTime + 21 days <= now && now <= endTime ) {
             percentage = week_4;
           }
 
@@ -755,21 +755,21 @@ contract Crowdsale is Ownable, Pausable, Destructible {
         }
 
         // Large contributors
-        if (msg.value &gt;= 50 ether) {
+        if (msg.value >= 50 ether) {
           percentage += 80;
-        } else if (msg.value &gt;= 30 ether) {
+        } else if (msg.value >= 30 ether) {
           percentage += 70;
-        } else if (msg.value &gt;= 10 ether) {
+        } else if (msg.value >= 10 ether) {
           percentage += 50;
-        } else if (msg.value &gt;= 5 ether) {
+        } else if (msg.value >= 5 ether) {
           percentage += 30;
-        } else if (msg.value &gt;= 3 ether) {
+        } else if (msg.value >= 3 ether) {
           percentage += 10;
         }
 
         tokens += tokens.mul(percentage).div(100);
 
-        assert(tokens &gt; 0);
+        assert(tokens > 0);
 
         return (tokens);
     }
@@ -781,9 +781,9 @@ contract Crowdsale is Ownable, Pausable, Destructible {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     function tokensLeft() public view returns (uint256) {
@@ -791,6 +791,6 @@ contract Crowdsale is Ownable, Pausable, Destructible {
     }
 
     function hasEnoughTokensLeft(uint256 _weiAmount) public payable returns (bool) {
-        return tokensLeft().sub(_weiAmount) &gt;= getBaseAmount(_weiAmount);
+        return tokensLeft().sub(_weiAmount) >= getBaseAmount(_weiAmount);
     }
 }

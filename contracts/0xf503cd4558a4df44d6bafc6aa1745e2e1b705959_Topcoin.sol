@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns(uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -29,7 +29,7 @@ library SafeMath {
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control
-/// functions, this simplifies the implementation of &quot;user permissions&quot;.
+/// functions, this simplifies the implementation of "user permissions".
 contract Ownable {
   address public owner;
 
@@ -92,19 +92,19 @@ contract Pausable is Ownable {
 
 
 /// @title The interface to execute the tokenFallback
-/// @author Merunas Grincalaitis &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="09646c7b7c67687a6e7b60676a686568607d607a496e64686065276a6664">[email&#160;protected]</a>&gt;
+/// @author Merunas Grincalaitis <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="09646c7b7c67687a6e7b60676a686568607d607a496e64686065276a6664">[email protected]</a>>
 contract ContractReceiver {
   function tokenFallback(address from, uint value, bytes data) public;
 }
 
 
 /// @title Custom ERC223 Implementation
-/// @author Merunas Grincalaitis &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="29444c5b5c47485a4e5b40474a484548405d405a694e44484045074a4644">[email&#160;protected]</a>&gt;
+/// @author Merunas Grincalaitis <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="29444c5b5c47485a4e5b40474a484548405d405a694e44484045074a4644">[email protected]</a>>
 contract ERC223 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
 
   string public name;
   string public symbol;
@@ -187,12 +187,12 @@ contract ERC223 {
 
   /// @notice To transfer tokens to a user address
   /// @param to The receiver of the tokens
-  /// @param value How many tokens he&#39;ll receive
+  /// @param value How many tokens he'll receive
   /// @param data Additional data
   /// @return _success If the transfer was successful
   function transferToAddress(address to, uint256 value, bytes data) public returns (bool _success) {
     require(to != address(0));
-    require(value &lt;= balances[msg.sender]);
+    require(value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(value);
     balances[to] = balances[to].add(value);
@@ -204,12 +204,12 @@ contract ERC223 {
 
   /// @notice To transfer tokens to a contract address
   /// @param to The receiver of the tokens
-  /// @param value How many tokens he&#39;ll receive
+  /// @param value How many tokens he'll receive
   /// @param data Additional data
   /// @return _success If the transfer was successful
   function transferToContract(address to, uint256 value, bytes data) public returns (bool _success) {
     require(to != address(0));
-    require(value &lt;= balances[msg.sender]);
+    require(value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(value);
     balances[to] = balances[to].add(value);
@@ -237,7 +237,7 @@ contract ERC223 {
   }
 
   /// @notice To check if an address is a contract or not
-  /// @return _isContract If it&#39;s a contract or not
+  /// @return _isContract If it's a contract or not
   function isContract(address addr) public constant returns (bool _isContract) {
     require(addr != address(0));
 
@@ -247,16 +247,16 @@ contract ERC223 {
       length := extcodesize(addr)
     }
 
-    return (length &gt; 0);
+    return (length > 0);
   }
 }
 
 
 /// @title The ERC223 Topcoin Smart Contract
-/// @author Merunas Grincalaitis &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1ccc4d3d4cfc0d2c6d3c8cfc2c0cdc0c8d5c8d2e1c6ccc0c8cd8fc2cecc">[email&#160;protected]</a>&gt;
+/// @author Merunas Grincalaitis <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1ccc4d3d4cfc0d2c6d3c8cfc2c0cdc0c8d5c8d2e1c6ccc0c8cd8fc2cecc">[email protected]</a>>
 contract Topcoin is ERC223, Pausable {
-  string public constant name = &#39;Topcoin&#39;;
-  string public constant symbol = &#39;TPC&#39;;
+  string public constant name = 'Topcoin';
+  string public constant symbol = 'TPC';
   uint8 public constant decimals = 18;
 
   // 3000M tokens with 18 decimals maximum
@@ -270,7 +270,7 @@ contract Topcoin is ERC223, Pausable {
 
   // Only allow token transfers after the ICO
   modifier afterCrowdsale() {
-     require(now &gt;= ICOEndTime);
+     require(now >= ICOEndTime);
      _;
   }
 
@@ -291,7 +291,7 @@ contract Topcoin is ERC223, Pausable {
   /// @param _ICOEndTime When will the ICO end to allow token transfers after the ICO only,
   /// required parameter
   function Topcoin(uint256 _ICOEndTime) public {
-     require(_ICOEndTime &gt; 0 &amp;&amp; _ICOEndTime &gt; now);
+     require(_ICOEndTime > 0 && _ICOEndTime > now);
 
      ICOEndTime = _ICOEndTime;
      balances[msg.sender] = totalSupply;
@@ -308,11 +308,11 @@ contract Topcoin is ERC223, Pausable {
   /// @notice To distribute the presale and ICO tokens and increase the total
   /// supply accordingly. The unsold tokens will be deleted, not generated
   /// @param _to The user that will receive the tokens
-  /// @param _amount How many tokens he&#39;ll receive
+  /// @param _amount How many tokens he'll receive
   function distributeTokens(address _to, uint256 _amount) public onlyOwnerOrCrowdsale {
      require(_to != address(0));
-     require(_amount &gt; 0);
-     require(tokensRaised.add(_amount) &lt;= crowdsaleTokens);
+     require(_amount > 0);
+     require(tokensRaised.add(_amount) <= crowdsaleTokens);
 
      tokensRaised = tokensRaised.add(_amount);
      balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -324,7 +324,7 @@ contract Topcoin is ERC223, Pausable {
   /// @param _oldAmount How many old tokens does that user have
   function convertOldTokens(address _receiver, uint256 _oldAmount) external onlyOwner {
     require(_receiver != address(0));
-    require(_oldAmount &gt; 0);
+    require(_oldAmount > 0);
 
     uint256 amountNewTokens = _oldAmount.mul(2);
 

@@ -44,14 +44,14 @@ contract TimeLockedWallet {
         createdAt = now;
     }
 
-    // Don&#39;t accept ETH.
+    // Don't accept ETH.
     function () public payable {
         revert();
     }
 
     // callable by owner only, after specified time, only for Tokens implementing ERC20
     function withdrawTokens(address _tokenContract) public {
-       require(now &gt;= unlockDate);
+       require(now >= unlockDate);
        ERC20 token = ERC20(_tokenContract);
        //now send all the token balance
        uint256 tokenBalance = token.balanceOf(this);
@@ -71,7 +71,7 @@ contract TimeLockedWallet {
 
 contract TimeLockedWalletFactory {
  
-    mapping(address =&gt; address[]) wallets;
+    mapping(address => address[]) wallets;
 
     function getWallets(address _user) 
         public
@@ -89,10 +89,10 @@ contract TimeLockedWalletFactory {
         // Create new wallet.
         wallet = new TimeLockedWallet(msg.sender, _owner, _unlockDate);
         
-        // Add wallet to sender&#39;s wallets.
+        // Add wallet to sender's wallets.
         wallets[msg.sender].push(wallet);
 
-        // If owner is the same as sender then add wallet to sender&#39;s wallets too.
+        // If owner is the same as sender then add wallet to sender's wallets too.
         if(msg.sender != _owner){
             wallets[_owner].push(wallet);
         }

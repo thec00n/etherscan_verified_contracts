@@ -4,15 +4,15 @@ contract HelloChicken {
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
-  string public constant name = &quot;Chicken&quot;;
-  string public constant symbol = &quot;CHK&quot;;
+  string public constant name = "Chicken";
+  string public constant symbol = "CHK";
 
   uint256 totalSupply_;
   uint256 dailyLimit_;
 
-  mapping(address =&gt; uint256) balances_;
-  mapping(address =&gt; uint256) lastDay_;
-  mapping(address =&gt; uint256) spentToday_;
+  mapping(address => uint256) balances_;
+  mapping(address => uint256) lastDay_;
+  mapping(address => uint256) spentToday_;
 
   function Chicken() public {
     totalSupply_ = 0;
@@ -20,11 +20,11 @@ contract HelloChicken {
   }
 
   function underLimit(uint256 _value) internal returns (bool) {
-    if (today() &gt; lastDay_[msg.sender]) {
+    if (today() > lastDay_[msg.sender]) {
       spentToday_[msg.sender] = 0;
       lastDay_[msg.sender] = today();
     }
-    if (spentToday_[msg.sender] + _value &gt;= spentToday_[msg.sender] &amp;&amp; spentToday_[msg.sender] + _value &lt;= dailyLimit_) {
+    if (spentToday_[msg.sender] + _value >= spentToday_[msg.sender] && spentToday_[msg.sender] + _value <= dailyLimit_) {
       spentToday_[msg.sender] += _value;
       return true;
     }

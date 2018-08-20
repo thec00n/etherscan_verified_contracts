@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -85,12 +85,12 @@ contract Bob {
 
   uint public blocksPerDeal;
 
-  mapping (bytes32 =&gt; BobDeposit) public deposits;
+  mapping (bytes32 => BobDeposit) public deposits;
 
-  mapping (bytes32 =&gt; BobPayment) public payments;
+  mapping (bytes32 => BobPayment) public payments;
 
   function Bob(uint _blocksPerDeal) {
-    require(_blocksPerDeal &gt; 0);
+    require(_blocksPerDeal > 0);
     blocksPerDeal = _blocksPerDeal;
   }
 
@@ -99,7 +99,7 @@ contract Bob {
     address _alice,
     bytes20 _secretHash
   ) external payable {
-    require(_alice != 0x0 &amp;&amp; msg.value &gt; 0 &amp;&amp; deposits[_txId].state == DepositState.Uninitialized);
+    require(_alice != 0x0 && msg.value > 0 && deposits[_txId].state == DepositState.Uninitialized);
     bytes20 depositHash = ripemd160(
       _alice,
       msg.sender,
@@ -154,7 +154,7 @@ contract Bob {
       _amount,
       _aliceCanClaimAfter
     );
-    require(depositHash == deposits[_txId].depositHash &amp;&amp; block.number &lt; _aliceCanClaimAfter);
+    require(depositHash == deposits[_txId].depositHash && block.number < _aliceCanClaimAfter);
     deposits[_txId].state = DepositState.BobClaimedDeposit;
     if (_tokenAddress == 0x0) {
       msg.sender.transfer(_amount);
@@ -181,7 +181,7 @@ contract Bob {
       _amount,
       _aliceCanClaimAfter
     );
-    require(depositHash == deposits[_txId].depositHash &amp;&amp; block.number &gt;= _aliceCanClaimAfter);
+    require(depositHash == deposits[_txId].depositHash && block.number >= _aliceCanClaimAfter);
     deposits[_txId].state = DepositState.AliceClaimedDeposit;
     if (_tokenAddress == 0x0) {
       msg.sender.transfer(_amount);
@@ -196,7 +196,7 @@ contract Bob {
     address _alice,
     bytes20 _secretHash
   ) external payable {
-    require(_alice != 0x0 &amp;&amp; msg.value &gt; 0 &amp;&amp; payments[_txId].state == PaymentState.Uninitialized);
+    require(_alice != 0x0 && msg.value > 0 && payments[_txId].state == PaymentState.Uninitialized);
     bytes20 paymentHash = ripemd160(
       _alice,
       msg.sender,
@@ -219,9 +219,9 @@ contract Bob {
     address _tokenAddress
   ) external {
     require(
-      _alice != 0x0 &amp;&amp;
-      _amount &gt; 0 &amp;&amp;
-      payments[_txId].state == PaymentState.Uninitialized &amp;&amp;
+      _alice != 0x0 &&
+      _amount > 0 &&
+      payments[_txId].state == PaymentState.Uninitialized &&
       _tokenAddress != 0x0
     );
     bytes20 paymentHash = ripemd160(
@@ -257,7 +257,7 @@ contract Bob {
       _amount,
       _bobCanClaimAfter
     );
-    require(block.number &gt;= _bobCanClaimAfter &amp;&amp; paymentHash == payments[_txId].paymentHash);
+    require(block.number >= _bobCanClaimAfter && paymentHash == payments[_txId].paymentHash);
     payments[_txId].state = PaymentState.BobClaimedPayment;
     if (_tokenAddress == 0x0) {
       msg.sender.transfer(_amount);
@@ -284,7 +284,7 @@ contract Bob {
       _amount,
       _bobCanClaimAfter
     );
-    require(block.number &lt; _bobCanClaimAfter &amp;&amp; paymentHash == payments[_txId].paymentHash);
+    require(block.number < _bobCanClaimAfter && paymentHash == payments[_txId].paymentHash);
     payments[_txId].state = PaymentState.AliceClaimedPayment;
     if (_tokenAddress == 0x0) {
       msg.sender.transfer(_amount);

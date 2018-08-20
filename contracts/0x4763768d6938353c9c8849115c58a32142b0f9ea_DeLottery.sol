@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -136,9 +136,9 @@ contract DeLottery is Pausable {
 
 	uint public maxTickets = 100;
 
-	mapping(address =&gt; mapping(address =&gt; uint)) prizes;
+	mapping(address => mapping(address => uint)) prizes;
 
-	mapping(address =&gt; bool) lotteryRunners;
+	mapping(address => bool) lotteryRunners;
 
 	event Win(uint indexed stage, uint ticketsCount, uint ticketNumber, address indexed winner, uint prize);
 
@@ -154,22 +154,22 @@ contract DeLottery is Pausable {
 
 	function () public payable whenNotPaused {
 		require(!isContract(msg.sender));
-		require(msg.value &gt;= ticketPrice);
+		require(msg.value >= ticketPrice);
 		uint availableTicketsToBuy = maxTickets - getTicketsCount();
-		require(availableTicketsToBuy &gt; 0);
+		require(availableTicketsToBuy > 0);
 
 		uint ticketsBought = msg.value.div(ticketPrice);
 
 		uint ticketsToBuy;
 		uint refund = 0;
-		if(ticketsBought &gt; availableTicketsToBuy) {
+		if(ticketsBought > availableTicketsToBuy) {
 			ticketsToBuy = availableTicketsToBuy;
 			refund = (ticketsBought - availableTicketsToBuy).mul(ticketPrice);
 		} else {
 			ticketsToBuy = ticketsBought;
 		}
 
-		for(uint16 i = 0; i &lt; ticketsToBuy; i++) {
+		for(uint16 i = 0; i < ticketsToBuy; i++) {
 			gamblers.push(msg.sender);
 		}
 
@@ -177,7 +177,7 @@ contract DeLottery is Pausable {
 
 		//return change
 		refund = refund.add(msg.value % ticketPrice);
-		if(refund &gt; 0) {
+		if(refund > 0) {
 			msg.sender.transfer(refund);
 		}
 	}
@@ -187,7 +187,7 @@ contract DeLottery is Pausable {
 	}
 
 	function calculateWinnersCount(uint _ticketsCount) public pure returns (uint count) {
-		if(_ticketsCount &lt; 10) {
+		if(_ticketsCount < 10) {
 			return 1;
 		} else {
 			return _ticketsCount.div(10);
@@ -196,7 +196,7 @@ contract DeLottery is Pausable {
 
 	function runLottery() external whenNotPaused canRunLottery {
 		uint gamblersLength = getTicketsCount();
-		require(gamblersLength &gt;= QUORUM);
+		require(gamblersLength >= QUORUM);
 
 		uint winnersCount = calculateWinnersCount(gamblersLength);
 		uint winnerPrize = calculateWinnerPrize(prizeFund, winnersCount);
@@ -205,11 +205,11 @@ contract DeLottery is Pausable {
 
 		uint lastWinner = 0;
 		bytes32 rnd = block.blockhash(block.number - 1);
-		for(uint i = 0; i &lt; winnersCount; i++) {
+		for(uint i = 0; i < winnersCount; i++) {
 			lastWinner = generateNextWinner(rnd, lastWinner, winners, gamblers.length);
 			winners[i] = int(lastWinner);
 			address winnerAddress = gamblers[uint(winners[i])];
-			winnerAddress.transfer(winnerPrize); //safe because gambler can&#39;t be a contract
+			winnerAddress.transfer(winnerPrize); //safe because gambler can't be a contract
 			Win(stage, gamblersLength, lastWinner, winnerAddress, winnerPrize);
 		}
 
@@ -243,7 +243,7 @@ contract DeLottery is Pausable {
 	}
 
 	function setTicketPriceIfNeeded() private {
-		if(nextTicketPrice &gt; 0) {
+		if(nextTicketPrice > 0) {
 			ticketPrice = nextTicketPrice;
 			nextTicketPrice = 0;
 		}
@@ -274,7 +274,7 @@ contract DeLottery is Pausable {
 	}
 
 	function isInArray(uint element, int[] array) private pure returns (bool) {
-		for(uint64 i = 0; i &lt; array.length; i++) {
+		for(uint64 i = 0; i < array.length; i++) {
 			if(uint(array[i]) == element) {
 				return true;
 			}
@@ -288,7 +288,7 @@ contract DeLottery is Pausable {
 			//retrieve the size of the code on target address, this needs assembly
 			length := extcodesize(_addr)
 		}
-		return length &gt; 0;
+		return length > 0;
 	}
 
 }

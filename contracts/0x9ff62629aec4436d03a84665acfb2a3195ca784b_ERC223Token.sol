@@ -37,7 +37,7 @@ contract ERC223 {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -62,18 +62,18 @@ contract SafeMath {
     0xFFFFFFFFFFFF;
 
     function safeAdd(uint48 x, uint48 y) constant internal returns (uint48 z) {
-       require(x &lt;= MAX_UINT48 - y);
+       require(x <= MAX_UINT48 - y);
         return x + y;
     }
 
     function safeSub(uint48 x, uint48 y) constant internal returns (uint48 z) {
-        require(x &gt; y);
+        require(x > y);
         return x - y;
     }
 
     function safeMul(uint48 x, uint48 y) constant internal returns (uint48 z) {
         if (y == 0) return 0;
-        require(x &lt;= MAX_UINT48 / y);
+        require(x <= MAX_UINT48 / y);
         return x * y;
     }
 }
@@ -82,7 +82,7 @@ contract SafeMath {
 
 contract ERC223Token is ERC223, SafeMath {
 
-  mapping(address =&gt; uint48) balances;
+  mapping(address => uint48) balances;
   
   string public name;
   string public symbol;
@@ -332,8 +332,8 @@ contract ERC223Token is ERC223, SafeMath {
         balances[0x52437Ce5c02de9B0A5D933E6902a9509f33353B4]=86071;
         balances[0x6FBb288E14a37a94f69c18a0eD24FaC1145b9900]=522827500;
         balances[0x33C8d18e9b46872CeBb31384bFBEc53Cb32Ccf12]=24876206872;
-        name = &quot;GameCoin&quot;;
-        symbol = &quot;GMC&quot;;
+        name = "GameCoin";
+        symbol = "GMC";
         decimals = 2;
     }
 
@@ -360,7 +360,7 @@ contract ERC223Token is ERC223, SafeMath {
   function transfer(address _to, uint48 _value, bytes _data, string _custom_fallback) returns (bool success) {
       
     if(isContract(_to)) {
-        require(balanceOf(msg.sender) &gt;= _value);
+        require(balanceOf(msg.sender) >= _value);
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -407,12 +407,12 @@ contract ERC223Token is ERC223, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint48 _value, bytes _data) private returns (bool success) {
-    require(balanceOf(msg.sender) &gt;= _value);
+    require(balanceOf(msg.sender) >= _value);
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -421,7 +421,7 @@ contract ERC223Token is ERC223, SafeMath {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint48 _value, bytes _data) private returns (bool success) {
-    require(balanceOf(msg.sender) &gt;= _value);
+    require(balanceOf(msg.sender) >= _value);
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver receiver = ContractReceiver(_to);

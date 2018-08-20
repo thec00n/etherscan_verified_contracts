@@ -1,13 +1,13 @@
 /*
  * EIP-20 Standard Token Smart Contract Interface.
- * Copyright &#169; 2016–2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d505456555c5451134b515c595450544f524b7d5a505c5451135e5250">[email&#160;protected]</a>&gt;
+ * Copyright © 2016–2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d505456555c5451134b515c595450544f524b7d5a505c5451135e5250">[email protected]</a>>
  */
 pragma solidity ^0.4.20;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md&quot;&gt;here&lt;/a&gt;.
+ * <a href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md">here</a>.
  */
 contract Token {
   /**
@@ -111,7 +111,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -125,7 +125,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -140,7 +140,7 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -177,8 +177,8 @@ contract AbstractToken is Token, SafeMath {
   function transfer (address _to, uint256 _value)
   public returns (bool success) {
     uint256 fromBalance = accounts [msg.sender];
-    if (fromBalance &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (fromBalance < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -198,14 +198,14 @@ contract AbstractToken is Token, SafeMath {
   function transferFrom (address _from, address _to, uint256 _value)
   public returns (bool success) {
     uint256 spenderAllowance = allowances [_from][msg.sender];
-    if (spenderAllowance &lt; _value) return false;
+    if (spenderAllowance < _value) return false;
     uint256 fromBalance = accounts [_from];
-    if (fromBalance &lt; _value) return false;
+    if (fromBalance < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (spenderAllowance, _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -249,13 +249,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) internal accounts;
+  mapping (address => uint256) internal accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowances;
+  mapping (address => mapping (address => uint256)) internal allowances;
 }
 
 /**
@@ -281,7 +281,7 @@ contract OrgonToken is AbstractToken {
    * @return name of this token
    */
   function name () public pure returns (string) {
-    return &quot;Orgon&quot;;
+    return "Orgon";
   }
 
   /**
@@ -290,7 +290,7 @@ contract OrgonToken is AbstractToken {
    * @return symbol of this token
    */
   function symbol () public pure returns (string) {
-    return &quot;ORGN&quot;;
+    return "ORGN";
   }
 
   /**
@@ -321,8 +321,8 @@ contract OrgonToken is AbstractToken {
   function createTokens (uint256 _value) public returns (bool) {
     require (msg.sender == owner);
 
-    if (_value &gt; 0) {
-      if (_value &gt; safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
+    if (_value > 0) {
+      if (_value > safeSub (MAX_TOKEN_COUNT, tokenCount)) return false;
       accounts [msg.sender] = safeAdd (accounts [msg.sender], _value);
       tokenCount = safeAdd (tokenCount, _value);
 
@@ -342,8 +342,8 @@ contract OrgonToken is AbstractToken {
   function burnTokens (uint256 _value) public returns (bool) {
     require (msg.sender == owner);
 
-    if (_value &gt; accounts [msg.sender]) return false;
-    else if (_value &gt; 0) {
+    if (_value > accounts [msg.sender]) return false;
+    else if (_value > 0) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       tokenCount = safeSub (tokenCount, _value);
 

@@ -10,20 +10,20 @@ uint256 c = a / b;
 return c;
 }
 function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-assert(b &lt;= a);
+assert(b <= a);
 return a - b;
 }
 function add(uint256 a, uint256 b) internal constant returns(uint256) {
 uint256 c = a + b;
-assert(c &gt;= a);
+assert(c >= a);
 return c;
 }
 }
 contract Medcash {
 using SafeMath
 for uint256;
-mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-mapping(address =&gt; uint256) balances;
+mapping(address => mapping(address => uint256)) allowed;
+mapping(address => uint256) balances;
 uint256 public totalSupply;
 uint256 public decimals;
 address public owner;
@@ -32,7 +32,7 @@ event Transfer(address indexed from, address indexed to, uint256 value);
 event Approval(address indexed _owner, address indexed spender, uint256 value);
 function Medcash() {
 totalSupply = 200000000;
-symbol = &#39;MEDCASH&#39;;
+symbol = 'MEDCASH';
 owner = 0xBD0Ca8b86497a41C04c6a4fb8752370B480994bd;
 balances[owner] = totalSupply;
 decimals = 8;

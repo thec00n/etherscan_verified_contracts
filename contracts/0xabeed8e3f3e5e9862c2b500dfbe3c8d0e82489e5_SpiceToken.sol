@@ -10,7 +10,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -51,7 +51,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -86,19 +86,19 @@ contract LimitedTransferToken is ERC20 {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -253,27 +253,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -288,7 +288,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -302,7 +302,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -340,7 +340,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -400,16 +400,16 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     uint64 private lockCounter = 1;
 
     //token admins
-    mapping(address =&gt; bool) private admins;
+    mapping(address => bool) private admins;
 
     //locks
-    mapping(address =&gt; TokenLock[]) private locks;
+    mapping(address => TokenLock[]) private locks;
 
     //burn wallets
-    mapping(address =&gt; bool) private burnWallets;
+    mapping(address => bool) private burnWallets;
 
     //Redemptions made for users
-    mapping(address =&gt; TokenRedemption[]) private tokenRedemptions;
+    mapping(address => TokenRedemption[]) private tokenRedemptions;
 
     event Issued(address indexed to, uint256 value, uint256 valueLocked);
     event Locked(address indexed who, uint256 value, LockReason reason, uint releaseTime, uint64 lockId);
@@ -488,11 +488,11 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
 
         //Check input values
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_valueLocked &gt;= 0 &amp;&amp; _valueLocked &lt;= _value);
+        require(_value > 0);
+        require(_valueLocked >= 0 && _valueLocked <= _value);
 
         //Make sure we have enough inactive tokens to issue
-        require(totalInactive &gt;= _value);
+        require(totalInactive >= _value);
 
         //Adding and subtracting is done through safemath
         totalSupply = totalSupply.add(_value);
@@ -502,7 +502,7 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
         Issued(_to, _value, _valueLocked);
         Transfer(0x0, _to, _value);
 
-        if (_valueLocked &gt; 0) {
+        if (_valueLocked > 0) {
             lockTokens(_to, _valueLocked, _why, _releaseTime);
         }
     }
@@ -531,10 +531,10 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     */
     function lockTokens(address _who, uint _value, LockReason _reason, uint64 _releaseTime) onlyAdmin public returns (uint64){
         require(_who != address(0));
-        require(_value &gt; 0);
-        require(_releaseTime == 0 || _releaseTime &gt; uint64(now));
+        require(_value > 0);
+        require(_releaseTime == 0 || _releaseTime > uint64(now));
         //Only allow 20 locks per address, to prevent out-of-gas at transfer scenarios
-        require(locks[_who].length &lt; MAX_LOCKS_PER_ADDRESS);
+        require(locks[_who].length < MAX_LOCKS_PER_ADDRESS);
 
         uint64 lockId = lockCounter++;
 
@@ -555,9 +555,9 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     */
     function unlockTokens(address _who, uint64 _lockId) onlyAdmin public returns (bool) {
         require(_who != address(0));
-        require(_lockId &gt; 0);
+        require(_lockId > 0);
 
-        for (uint8 i = 0; i &lt; locks[_who].length; i++) {
+        for (uint8 i = 0; i < locks[_who].length; i++) {
             if (locks[_who][i].id == _lockId) {
                 Unlocked(_who, locks[_who][i].value, _lockId);
                 delete locks[_who][i];
@@ -591,13 +591,13 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     * @return id the unique lock id
     * @return reason the reason for the lock
     * @return value the value of tokens locked
-    * @return the timestamp in which the lock will be inactive (or 0 if it&#39;s always active until removed)
+    * @return the timestamp in which the lock will be inactive (or 0 if it's always active until removed)
     *
     * Note - a lock can be inactive (due to its time expired) but still exists for a specific address
     */
     function lockInfo(address _who, uint64 _index) public constant returns (uint64 id, uint8 reason, uint value, uint64 autoReleaseTime){
         require(_who != address(0));
-        require(_index &lt; locks[_who].length);
+        require(_index < locks[_who].length);
         id = locks[_who][_index].id;
         reason = uint8(locks[_who][_index].reason);
         value = locks[_who][_index].value;
@@ -614,9 +614,9 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     * Note - the timestamp is only used to check time-locks, the base balance used to check is always the current one.
     */
     function transferableTokens(address holder, uint64 time) public constant returns (uint256) {
-        require(time &gt; 0);
+        require(time > 0);
 
-        //If it&#39;s a burn wallet, tokens cannot be moved out
+        //If it's a burn wallet, tokens cannot be moved out
         if (isBurnWallet(holder)){
             return 0;
         }
@@ -627,9 +627,9 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
         if (holderLockCount == 0) return super.transferableTokens(holder, time);
 
         uint256 totalLockedTokens = 0;
-        for (uint8 i = 0; i &lt; holderLockCount; i ++) {
+        for (uint8 i = 0; i < holderLockCount; i ++) {
 
-            if (locks[holder][i].autoReleaseTime == 0 || locks[holder][i].autoReleaseTime &gt; time) {
+            if (locks[holder][i].autoReleaseTime == 0 || locks[holder][i].autoReleaseTime > time) {
                 totalLockedTokens = SafeMath.add(totalLockedTokens, locks[holder][i].value);
             }
         }
@@ -645,12 +645,12 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     /******************************
         REDEMPTION AND BURNING
 
-        Redeeming tokens involves removing them from an address&#39;s wallet and moving them to a (one or more)
-        specially designed &quot;burn wallets&quot;.
+        Redeeming tokens involves removing them from an address's wallet and moving them to a (one or more)
+        specially designed "burn wallets".
         The process is implemented such as the owner can choose to burn or not to burn the tokens after redeeming them,
         which is legally necessary on some buy-back scenarios
-        Each redemption is associated with a global &quot;redemption event&quot; (a unique id, supplied by the owner),
-        which can later be used to query the total value redeemed for the user in this event (and on the owner&#39;s
+        Each redemption is associated with a global "redemption event" (a unique id, supplied by the owner),
+        which can later be used to query the total value redeemed for the user in this event (and on the owner's
         backend, through event logs processing, the total value redeemed for all users in this event)
     *******************************/
 
@@ -677,9 +677,9 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     */
     function redeemTokens(address _from, address _burnWallet, uint256 _value, RedeemReason _reason, uint64 _redemptionId) onlyAdmin {
         require(_from != address(0));
-        require(_redemptionId &gt; 0);
+        require(_redemptionId > 0);
         require(isBurnWallet(_burnWallet));
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[_burnWallet] = balances[_burnWallet].add(_value);
         tokenRedemptions[_from].push(TokenRedemption(_redemptionId, _reason, _value));
@@ -695,9 +695,9 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     * @param _value value of tokens to burn
     */
     function burnTokens(address _burnWallet, uint256 _value) onlyAdmin {
-        require(_value &gt; 0);
+        require(_value > 0);
         require(isBurnWallet(_burnWallet));
-        require(balances[_burnWallet] &gt;= _value);
+        require(balances[_burnWallet] >= _value);
         balances[_burnWallet] = balances[_burnWallet].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burned(_burnWallet, _value);
@@ -731,7 +731,7 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
     */
     function redemptionInfo(address _who, uint64 _index) public constant returns (uint64 redemptionId, uint8 reason, uint value){
         require(_who != address(0));
-        require(_index &lt; tokenRedemptions[_who].length);
+        require(_index < tokenRedemptions[_who].length);
         redemptionId = tokenRedemptions[_who][_index].redemptionId;
         reason = uint8(tokenRedemptions[_who][_index].reason);
         value = tokenRedemptions[_who][_index].value;
@@ -748,7 +748,7 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
         require(_who != address(0));
         uint256 total = 0;
         uint64 numberOfRedemptions = redemptionCount(_who);
-        for (uint64 i = 0; i &lt; numberOfRedemptions; i++) {
+        for (uint64 i = 0; i < numberOfRedemptions; i++) {
             if (tokenRedemptions[_who][i].redemptionId == _redemptionId) {
                 total = SafeMath.add(total, tokenRedemptions[_who][i].value);
             }
@@ -760,8 +760,8 @@ contract RegulatedToken is StandardToken, PausableToken, LimitedTransferToken, H
 
 contract SpiceToken is RegulatedToken {
 
-    string public constant name = &quot;SPiCE VC Token&quot;;
-    string public constant symbol = &quot;SPICE&quot;;
+    string public constant name = "SPiCE VC Token";
+    string public constant symbol = "SPICE";
     uint8 public constant decimals = 8;
     uint256 private constant INITIAL_INACTIVE_TOKENS = 130 * 1000000 * (10 ** uint256(decimals));  //130 million tokens
 

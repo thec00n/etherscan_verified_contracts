@@ -75,37 +75,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -137,10 +137,10 @@ contract PaymentForwarder is Haltable, SafeMath {
   uint public customerCount;
 
   /** Total incoming money per centrally tracked customer id */
-  mapping(uint128 =&gt; uint) public paymentsByCustomer;
+  mapping(uint128 => uint) public paymentsByCustomer;
 
   /** Total incoming money per benefactor address */
-  mapping(address =&gt; uint) public paymentsByBenefactor;
+  mapping(address => uint) public paymentsByBenefactor;
 
   /** A customer has made a payment. Benefactor is the address where the tokens will be ultimately issued.*/
   event PaymentForwarded(address source, uint amount, uint128 customerId, address benefactor);

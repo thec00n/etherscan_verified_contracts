@@ -1,5 +1,5 @@
 /**
- * Investors relations: <span class="__cf_email__" data-cfemail="463627343228233435062734242f323427212f2821682529">[email&#160;protected]</span>
+ * Investors relations: <span class="__cf_email__" data-cfemail="463627343228233435062734242f323427212f2821682529">[email protected]</span>
 **/
 
 pragma solidity ^0.4.18;
@@ -22,20 +22,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -103,16 +103,16 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
 
    using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) tokenBalances;
+    mapping(address => uint256) tokenBalances;
    
-   string public constant name = &quot;ARBITRAGE&quot;;
-   string public constant symbol = &quot;ARB&quot;;
+   string public constant name = "ARBITRAGE";
+   string public constant symbol = "ARB";
    uint256 public constant decimals = 18;
 
    uint256 public constant INITIAL_SUPPLY = 10000000;
     address ownerWallet;
    // Owner of account approves the transfer of an amount to another account
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
    event Debug(string message, address addr, uint256 number);
 
     function ARBITRAGEToken(address wallet) public {
@@ -127,7 +127,7 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -143,8 +143,8 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= tokenBalances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= tokenBalances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     tokenBalances[_from] = tokenBalances[_from].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
@@ -158,7 +158,7 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -180,7 +180,7 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
      
      // ------------------------------------------------------------------------
      // Returns the amount of tokens approved by the owner that can be
-     // transferred to the spender&#39;s account
+     // transferred to the spender's account
      // ------------------------------------------------------------------------
      function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
          return allowed[tokenOwner][spender];
@@ -214,7 +214,7 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -225,7 +225,7 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
 
      
      // ------------------------------------------------------------------------
-     // Don&#39;t accept ETH
+     // Don't accept ETH
      // ------------------------------------------------------------------------
      function () public payable {
          revert();
@@ -242,14 +242,14 @@ contract ARBITRAGEToken is ERC20Interface,Ownable {
   }
 
     function mint(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[wallet] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[wallet] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller's balance
       Transfer(wallet, buyer, tokenAmount); 
       totalSupply=totalSupply.sub(tokenAmount);
     }
     function pullBack(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-        require(tokenBalances[buyer]&gt;=tokenAmount);
+        require(tokenBalances[buyer]>=tokenAmount);
         tokenBalances[buyer] = tokenBalances[buyer].sub(tokenAmount);
         tokenBalances[wallet] = tokenBalances[wallet].add(tokenAmount);
         Transfer(buyer, wallet, tokenAmount);
@@ -348,7 +348,7 @@ contract ARBITRAGECrowdsale {
     // calculate token amount to be created
 
     uint256 tokens = weiAmount.mul(ratePerWei);
-    require(tokensSoldInThisRound.add(tokens)&lt;=maxBuyLimit);
+    require(tokensSoldInThisRound.add(tokens)<=maxBuyLimit);
     // update state
     weiRaised = weiRaised.add(weiAmount);
 
@@ -363,14 +363,14 @@ contract ARBITRAGECrowdsale {
 
    // send ether to the fund collection wallet(s)
     function forwardFunds(uint256 partnerTokenAmount) internal {
-      for (uint i=0;i&lt;ownersList.length;i++)
+      for (uint i=0;i<ownersList.length;i++)
       {
          uint percent = ownersList[i].stakeholderPerc;
          uint amountToBeSent = msg.value.mul(percent);
          amountToBeSent = amountToBeSent.div(100);
          ownersList[i].stakeholderAddress.transfer(amountToBeSent);
          
-         if (ownersList[i].stakeholderAddress!=walletOwner &amp;&amp;  ownersList[i].stakeholderPerc&gt;0)
+         if (ownersList[i].stakeholderAddress!=walletOwner &&  ownersList[i].stakeholderPerc>0)
          {
              token.mint(walletOwner,ownersList[i].stakeholderAddress,partnerTokenAmount);
          }
@@ -382,7 +382,7 @@ contract ARBITRAGECrowdsale {
         require(partnersAddresses.length==partnersPercentages.length);
         
         uint sumPerc=0;
-        for(uint i=0; i&lt;partnersPercentages.length;i++)
+        for(uint i=0; i<partnersPercentages.length;i++)
         {
             sumPerc+=partnersPercentages[i];
         }
@@ -390,7 +390,7 @@ contract ARBITRAGECrowdsale {
         
         delete ownersList;
         
-        for(uint j=0; j&lt;partnersAddresses.length;j++)
+        for(uint j=0; j<partnersAddresses.length;j++)
         {
             delete stakeholderObj;
              stakeholderObj = Stakeholder({
@@ -498,7 +498,7 @@ contract ARBITRAGECrowdsale {
     function checkOwnerShare (address owner) public constant returns (uint share) {
         require(msg.sender==walletOwner);
         
-        for(uint i=0;i&lt;ownersList.length;i++)
+        for(uint i=0;i<ownersList.length;i++)
         {
             if(ownersList[i].stakeholderAddress==owner)
             {
@@ -522,8 +522,8 @@ contract ARBITRAGECrowdsale {
      **/ 
     function airDropToOldTokenHolders(address[] oldTokenHolders) public {
         require(msg.sender==walletOwner);
-        for(uint i = 0; i&lt;oldTokenHolders.length; i++){
-            if(prevXRPCToken.balanceOf(oldTokenHolders[i])&gt;0)
+        for(uint i = 0; i<oldTokenHolders.length; i++){
+            if(prevXRPCToken.balanceOf(oldTokenHolders[i])>0)
             {
                 token.mint(walletOwner,oldTokenHolders[i],prevXRPCToken.balanceOf(oldTokenHolders[i]));
             }

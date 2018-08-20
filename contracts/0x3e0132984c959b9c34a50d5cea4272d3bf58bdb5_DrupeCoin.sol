@@ -3,11 +3,11 @@ pragma solidity ^0.4.24;
 library SafeMath {
 	function add(uint a, uint b) internal pure returns (uint c) {
 		c = a + b;
-		require(c &gt;= a);
+		require(c >= a);
 	}
 
 	function sub(uint a, uint b) internal pure returns (uint c) {
-		require(b &lt;= a);
+		require(b <= a);
 		c = a - b;
 	}
 }
@@ -27,13 +27,13 @@ contract ERC20Interface {
 contract DrupeCoin is ERC20Interface {
 	using SafeMath for uint;
 
-	string public constant symbol = &quot;DPC&quot;;
-	string public constant name = &quot;DrupeCoin&quot;;
+	string public constant symbol = "DPC";
+	string public constant name = "DrupeCoin";
 	uint8 public constant decimals = 18;
 
 	uint _initialSupply;
-	mapping(address =&gt; uint) _balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) _allowed;
+	mapping(address => uint) _balances;
+	mapping(address => mapping(address => uint)) _allowed;
 
 	constructor() public {
 		_initialSupply = 200 * 1000000 * 10**uint(decimals);

@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -29,9 +29,9 @@ library SafeMath {
 contract LympoToken {
     using SafeMath for uint;
     // Public variables of the token
-    string constant public standard = &quot;ERC20&quot;;
-    string constant public name = &quot;Lympo tokens&quot;;
-    string constant public symbol = &quot;LYM&quot;;
+    string constant public standard = "ERC20";
+    string constant public name = "Lympo tokens";
+    string constant public symbol = "LYM";
     uint8 constant public decimals = 18;
     uint _totalSupply = 1000000000e18; // Total supply of 1 billion Lympo Tokens
     uint constant public tokensPreICO = 265000000e18; // 26.5%
@@ -50,8 +50,8 @@ contract LympoToken {
     bool burned;
 
     // Array with all balances
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     // Public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint value);
@@ -85,17 +85,17 @@ contract LympoToken {
 	
     // Send some of your tokens to a given address
     function transfer(address _to, uint _value) returns(bool) {
-        require(now &gt;= startTime); // Check if the crowdsale is already over
+        require(now >= startTime); // Check if the crowdsale is already over
 
         // prevent the owner of spending his share of tokens for team within first the two year
-        if (msg.sender == ownerAddr &amp;&amp; now &lt; lockReleaseDate2year)
-            require(balances[msg.sender].sub(_value) &gt;= teamReserve);
+        if (msg.sender == ownerAddr && now < lockReleaseDate2year)
+            require(balances[msg.sender].sub(_value) >= teamReserve);
 
         // prevent the ecosystem owner of spending 2/3 share of tokens for the first year, 1/3 for the next year
-        if (msg.sender == ecosystemAddr &amp;&amp; now &lt; lockReleaseDate1year)
-            require(balances[msg.sender].sub(_value) &gt;= ecoLock23);
-        else if (msg.sender == ecosystemAddr &amp;&amp; now &lt; lockReleaseDate2year)
-            require(balances[msg.sender].sub(_value) &gt;= ecoLock13);
+        if (msg.sender == ecosystemAddr && now < lockReleaseDate1year)
+            require(balances[msg.sender].sub(_value) >= ecoLock23);
+        else if (msg.sender == ecosystemAddr && now < lockReleaseDate2year)
+            require(balances[msg.sender].sub(_value) >= ecoLock13);
 
         balances[msg.sender] = balances[msg.sender].sub(_value); // Subtract from the sender
         balances[_to] = balances[_to].add(_value); // Add the same to the recipient
@@ -106,18 +106,18 @@ contract LympoToken {
     // A contract or person attempts to get the tokens of somebody else.
     // This is only allowed if the token holder approved.
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        if (now &lt; startTime)  // Check if the crowdsale is already over
+        if (now < startTime)  // Check if the crowdsale is already over
             require(_from == ownerAddr);
 
         // prevent the owner of spending his share of tokens for team within the first two year
-        if (_from == ownerAddr &amp;&amp; now &lt; lockReleaseDate2year)
-            require(balances[_from].sub(_value) &gt;= teamReserve);
+        if (_from == ownerAddr && now < lockReleaseDate2year)
+            require(balances[_from].sub(_value) >= teamReserve);
 
         // prevent the ecosystem owner of spending 2/3 share of tokens for the first year, 1/3 for the next year
-        if (_from == ecosystemAddr &amp;&amp; now &lt; lockReleaseDate1year)
-            require(balances[_from].sub(_value) &gt;= ecoLock23);
-        else if (_from == ecosystemAddr &amp;&amp; now &lt; lockReleaseDate2year)
-            require(balances[_from].sub(_value) &gt;= ecoLock13);
+        if (_from == ecosystemAddr && now < lockReleaseDate1year)
+            require(balances[_from].sub(_value) >= ecoLock23);
+        else if (_from == ecosystemAddr && now < lockReleaseDate2year)
+            require(balances[_from].sub(_value) >= ecoLock13);
 
         var _allowed = allowed[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value); // Subtract from the sender
@@ -142,7 +142,7 @@ contract LympoToken {
     // this ensures that the owner will not posses a majority of the tokens.
     function burn() {
         // If tokens have not been burned already and the crowdsale ended
-        if (!burned &amp;&amp; now &gt; startTime) {
+        if (!burned && now > startTime) {
             uint totalReserve = ecosystemReserve.add(teamReserve);
             totalReserve = totalReserve.add(advisersReserve);
             uint difference = balances[ownerAddr].sub(totalReserve);

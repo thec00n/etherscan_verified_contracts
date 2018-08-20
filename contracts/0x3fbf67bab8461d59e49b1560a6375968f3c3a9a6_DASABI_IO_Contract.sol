@@ -37,8 +37,8 @@ contract ERC20Token {
 contract DASABI_IO_Contract is ERC20Token, Owned{
 
     /* Public variables of the token */
-    string  public constant name = &quot;dasabi.io DSBC&quot;;
-    string  public constant symbol = &quot;DSBC&quot;;
+    string  public constant name = "dasabi.io DSBC";
+    string  public constant symbol = "DSBC";
     uint256 public constant decimals = 18;
     uint256 private constant etherChange = 10**18;
     
@@ -51,9 +51,9 @@ contract DASABI_IO_Contract is ERC20Token, Owned{
     
     bool    public crowdsaleIsOpen;
     bool    public CandyDropIsOpen;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
+    mapping (address => bool) public blacklist;
     
     address public multisigAddress;
     /* Events */
@@ -64,7 +64,7 @@ contract DASABI_IO_Contract is ERC20Token, Owned{
         require (crowdsaleIsOpen == true);
               
         
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
         	mintDSBCToken(msg.sender, (msg.value * ExchangeRate * 10**decimals) / etherChange);
         }
         
@@ -110,8 +110,8 @@ contract DASABI_IO_Contract is ERC20Token, Owned{
 
     /* Transfers tokens from your address to other */
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require (balances[msg.sender] &gt;= _value);            // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt; balances[_to]);   // Throw if owerflow detected
+        require (balances[msg.sender] >= _value);            // Throw if sender has insufficient balance
+        require (balances[_to] + _value > balances[_to]);   // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers blaance 
         Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -135,9 +135,9 @@ contract DASABI_IO_Contract is ERC20Token, Owned{
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {      
-        require (balances[_from] &gt; _value);                // Throw if sender does not have enough balance     
-        require (balances[_to] + _value &gt; balances[_to]);  // Throw if overflow detected    
-        require (_value &lt;= allowances[_from][msg.sender]);  // Throw if you do not have allowance       
+        require (balances[_from] > _value);                // Throw if sender does not have enough balance     
+        require (balances[_to] + _value > balances[_to]);  // Throw if overflow detected    
+        require (_value <= allowances[_from][msg.sender]);  // Throw if you do not have allowance       
         balances[_from] -= _value;                          // Deduct senders balance    
         balances[_to] += _value;                            // Add recipient blaance         
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address         
@@ -159,8 +159,8 @@ contract DASABI_IO_Contract is ERC20Token, Owned{
     
     /* Issue new tokens */     
     function mintDSBCToken(address _to, uint256 _amount) internal { 
-        require (balances[_to] + _amount &gt; balances[_to]);      // Check for overflows
-        require (totalRemainSupply &gt; _amount);
+        require (balances[_to] + _amount > balances[_to]);      // Check for overflows
+        require (totalRemainSupply > _amount);
         totalRemainSupply -= _amount;                           // Update total supply
         balances[_to] += _amount;                               // Set minted coins to target
         mintToken(_to, _amount);                                // Create Mint event       
@@ -173,7 +173,7 @@ contract DASABI_IO_Contract is ERC20Token, Owned{
     
     /* Destroy tokens from owners account */
     function burnTokens(uint256 _amount)public onlyOwner {
-        require (balances[msg.sender] &gt; _amount);               // Throw if you do not have enough balance
+        require (balances[msg.sender] > _amount);               // Throw if you do not have enough balance
         totalRemainSupply += _amount;                           // Deduct totalSupply
         balances[msg.sender] -= _amount;                             // Destroy coins on senders wallet
         burnToken(msg.sender, _amount);                              // Raise Burn event

@@ -2,19 +2,19 @@ pragma solidity ^0.4.21;
 
 // ERC20 contract which has the dividend shares of Ethopolis in it 
 // The old contract had a bug in it, thanks to ccashwell for notifying.
-// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1376677b766174666a537e727a7f3d707c7e">[email&#160;protected]</a> 
+// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1376677b766174666a537e727a7f3d707c7e">[email protected]</a> 
 // ethopolis.io 
 // etherguy.surge.sh [if the .io site is up this might be outdated, one of those sites will be up-to-date]
 // Selling tokens (and buying them) will be online at etherguy.surge.sh/dividends.html and might be moved to the ethopolis site.
 
 contract Dividends {
 
-    string public name = &quot;Ethopolis Shares&quot;;      //  token name
-    string public symbol = &quot;EPS&quot;;           //  token symbol
+    string public name = "Ethopolis Shares";      //  token name
+    string public symbol = "EPS";           //  token symbol
     uint256 public decimals = 18;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 10000000* (10 ** uint256(decimals));
     
@@ -83,10 +83,10 @@ contract Dividends {
     }
 
     function transfer(address _to, uint256 _value)  public validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // after transfer have enough to pay sell order 
-        require(sub(balanceOf[msg.sender], SellOrders[msg.sender][0]) &gt;= _value);
+        require(sub(balanceOf[msg.sender], SellOrders[msg.sender][0]) >= _value);
         require(msg.sender != _to);
 
         uint256 _toBal = balanceOf[_to];
@@ -106,8 +106,8 @@ contract Dividends {
     
     // forcetransfer does not do any withdrawals
     function _forceTransfer(address _from, address _to, uint256  _value) internal validAddress {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
@@ -117,9 +117,9 @@ contract Dividends {
     function transferFrom(address _from, address _to, uint256 _value) public validAddress returns (bool success) {
                 // after transfer have enough to pay sell order 
         require(_from != _to);
-        require(sub(balanceOf[_from], SellOrders[_from][0]) &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(sub(balanceOf[_from], SellOrders[_from][0]) >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         uint256 _toBal = balanceOf[_to];
         uint256 _fromBal = balanceOf[_from];
         balanceOf[_to] += _value;
@@ -158,15 +158,15 @@ contract Dividends {
     }
     
     function setFee(uint256 fee) public isOwner {
-        require (fee &lt;= 2500);
+        require (fee <= 2500);
         SellFee = fee;
     }
 
 
 // Market stuff start 
     
-    mapping(address =&gt; uint256[2]) public SellOrders;
-    mapping(address =&gt; uint256) public LastBalanceWithdrawn;
+    mapping(address => uint256[2]) public SellOrders;
+    mapping(address => uint256) public LastBalanceWithdrawn;
     uint256 TotalOut;
     
     function Withdraw() public{
@@ -178,7 +178,7 @@ contract Dividends {
     }
     
     // if dosend is set to false then the calling function MUST send the fees 
-    // subxtra is to handle the &quot;high LastBalanceWithdrawn bug&quot; 
+    // subxtra is to handle the "high LastBalanceWithdrawn bug" 
     // this bug was caused because the Buyer actually gets a too high LastBalanceWithdrawn;
     // this is a minor bug and could be fixed by adding these funds to the contract (which is usually not a large amount)
     // if the contract gets a lot of divs live then that should not be an issue because any new withdrawal will set it to a right value 
@@ -231,33 +231,33 @@ contract Dividends {
     
     // the price is per 10^decimals tokens 
     function PlaceSellOrder(uint256 amount, uint256 price) public {
-        require(price &gt; 0);
-        require(balanceOf[msg.sender] &gt;= amount);
+        require(price > 0);
+        require(balanceOf[msg.sender] >= amount);
         SellOrders[msg.sender] = [amount, price];
         emit SellOrderPlaced(msg.sender, amount, price);
     }
 
     // Safe buy order where user specifies the max amount to buy and the max price; prevents snipers changing their price 
     function Buy(address target, uint256 maxamount, uint256 maxprice) public payable {
-        require(SellOrders[target][0] &gt; 0);
-        require(SellOrders[target][1] &lt;= maxprice);
+        require(SellOrders[target][0] > 0);
+        require(SellOrders[target][1] <= maxprice);
         uint256 price = SellOrders[target][1];
         uint256 amount_buyable = (mul(msg.value, uint256(10**decimals))) / price; 
         
         // decide how much we buy 
         
-        if (amount_buyable &gt; SellOrders[target][0]){
+        if (amount_buyable > SellOrders[target][0]){
             amount_buyable = SellOrders[target][0];
         }
-        if (amount_buyable &gt; maxamount){
+        if (amount_buyable > maxamount){
             amount_buyable = maxamount;
         }
         //10000000000000000000,14999999999999
-        //&quot;0xca35b7d915458ef540ade6068dfe2f44e8fa733c&quot;,10000000000000000000,14999999999999
+        //"0xca35b7d915458ef540ade6068dfe2f44e8fa733c",10000000000000000000,14999999999999
         uint256 total_payment = mul(amount_buyable, price) / (uint256(10 ** decimals));
         
-        // Let&#39;s buy tokens and actually pay, okay?
-        require(amount_buyable &gt; 0 &amp;&amp; total_payment &gt; 0); 
+        // Let's buy tokens and actually pay, okay?
+        require(amount_buyable > 0 && total_payment > 0); 
         
         // From the amount we actually pay, we take exchange fee from it 
         
@@ -287,11 +287,11 @@ contract Dividends {
         // in one transfer saves gas, but its not nice in the etherscan logs 
         target.transfer(add(Left, _sendTarget));
         
-        if (add(Excess, _sendBuyer) &gt; 0){
+        if (add(Excess, _sendBuyer) > 0){
             msg.sender.transfer(add(Excess,_sendBuyer));
         }
         
-        if (Fee &gt; 0){
+        if (Fee > 0){
             owner.transfer(Fee);
         }
      
@@ -327,9 +327,9 @@ contract Dividends {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -337,7 +337,7 @@ contract Dividends {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -346,7 +346,7 @@ contract Dividends {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

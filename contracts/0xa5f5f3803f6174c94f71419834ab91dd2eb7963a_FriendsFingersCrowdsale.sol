@@ -15,7 +15,7 @@ contract ContractReceiverInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,9 +102,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -112,7 +112,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -121,7 +121,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -135,7 +135,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -153,7 +153,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -188,9 +188,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -237,7 +237,7 @@ contract DetailedERC20 is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -248,8 +248,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -263,7 +263,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -312,7 +312,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -456,9 +456,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -494,7 +494,7 @@ contract Crowdsale {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   // creates the token to be sold.
@@ -516,9 +516,9 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
 }
@@ -535,22 +535,22 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return capReached || super.hasEnded();
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinCap &amp;&amp; super.validPurchase();
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinCap && super.validPurchase();
   }
 
 }
@@ -571,7 +571,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -666,7 +666,7 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
     address public friendsFingersWallet;
 
     uint256 public investorCount = 0;
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     State public state;
 
     event Closed();
@@ -693,21 +693,21 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
     FinalizableCrowdsale ()
     Crowdsale (_startTime, _endTime, _rate, _wallet)
     {
-        require(_endTime &lt;= _startTime + 30 days);
+        require(_endTime <= _startTime + 30 days);
         require(_token != address(0));
 
-        require(_round &lt;= 5);
+        require(_round <= 5);
         if (_round == 1) {
             if (_id == 1) {
-                require(_goal &gt;= 0);
+                require(_goal >= 0);
             } else {
-                require(_goal &gt; 0);
+                require(_goal > 0);
             }
         } else {
             require(_goal == 0);
         }
-        require(_cap &gt; 0);
-        require(_cap &gt;= _goal);
+        require(_cap > 0);
+        require(_cap >= _goal);
 
         goal = _goal;
 
@@ -769,7 +769,7 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
     // View methods
 
     function goalReached() view public returns (bool) {
-        return weiRaised &gt;= goal;
+        return weiRaised >= goal;
     }
 
     // Only owner methods
@@ -789,8 +789,8 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
     }
 
     function setFriendsFingersRate(uint256 _newFriendsFingersRatePerMille) onlyOwner public {
-        require(_newFriendsFingersRatePerMille &gt;= 0);
-        require(_newFriendsFingersRatePerMille &lt;= friendsFingersRatePerMille);
+        require(_newFriendsFingersRatePerMille >= 0);
+        require(_newFriendsFingersRatePerMille <= friendsFingersRatePerMille);
         friendsFingersRatePerMille = _newFriendsFingersRatePerMille;
     }
 
@@ -802,12 +802,12 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
     // Emergency methods
 
     function safeWithdrawal() onlyOwner public {
-        require(now &gt;= endTime + 1 years);
+        require(now >= endTime + 1 years);
         friendsFingersWallet.transfer(this.balance);
     }
 
     function setExpiredAndWithdraw() onlyOwner public {
-        require((state == State.Refunding || state == State.Blocked) &amp;&amp; now &gt;= endTime + 1 years);
+        require((state == State.Refunding || state == State.Blocked) && now >= endTime + 1 years);
         state = State.Expired;
         friendsFingersWallet.transfer(this.balance);
         Expired();
@@ -826,10 +826,10 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
     // @return true if investors can buy at the moment
     function validPurchase() internal view returns (bool) {
         bool isActive = state == State.Active;
-        return isActive &amp;&amp; super.validPurchase();
+        return isActive && super.validPurchase();
     }
 
-    // We&#39;re overriding the fund forwarding from Crowdsale.
+    // We're overriding the fund forwarding from Crowdsale.
     function forwardFunds() internal {
         if (deposited[msg.sender] == 0) {
             investorCount++;
@@ -845,7 +845,7 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
             state = State.Closed;
             Closed();
 
-            if (friendsFingersRatePerMille &gt; 0) {
+            if (friendsFingersRatePerMille > 0) {
                 uint256 friendsFingersFee = weiRaised.mul(friendsFingersRatePerMille).div(1000);
                 friendsFingersWallet.transfer(friendsFingersFee);
             }
@@ -856,7 +856,7 @@ contract FriendsFingersCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Pausa
             RefundsEnabled();
         }
 
-        if (friendsFingersRatePerMille &gt; 0) {
+        if (friendsFingersRatePerMille > 0) {
             uint256 friendsFingersSupply = cap.mul(rate).mul(friendsFingersRatePerMille).div(1000);
             token.mint(owner, friendsFingersSupply);
         }

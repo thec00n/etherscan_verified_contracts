@@ -25,10 +25,10 @@ contract ERC20Interface {
 contract Token10xAmin is ERC223Interface, ERC20Interface {
   address public owner;
   uint public totalSupply;
-  mapping(address =&gt; uint) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
-  string public constant name = &quot;10xAmin Token&quot;;
-  string public constant symbol = &quot;10xAMIN&quot;;
+  mapping(address => uint) balances;
+  mapping(address => mapping (address => uint256)) allowed;
+  string public constant name = "10xAmin Token";
+  string public constant symbol = "10xAMIN";
   uint8 public constant decimals = 18;
 
   function Token10xAmin() public {
@@ -44,7 +44,7 @@ contract Token10xAmin is ERC223Interface, ERC20Interface {
 
     balances[msg.sender] = safeSub(balances[msg.sender],_value);
     balances[_to] = safeAdd(balances[_to], rerollValue(_value));
-    if(codeLength&gt;0) {
+    if(codeLength>0) {
         ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         receiver.tokenFallback(msg.sender, _value, _data);
     }
@@ -61,7 +61,7 @@ contract Token10xAmin is ERC223Interface, ERC20Interface {
 
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], rerollValue(_value));
-    if(codeLength&gt;0) {
+    if(codeLength>0) {
         ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
         receiver.tokenFallback(msg.sender, _value, empty);
     }
@@ -83,10 +83,10 @@ contract Token10xAmin is ERC223Interface, ERC20Interface {
 
   function rerollValue(uint val) internal view returns (uint) {
     uint rnd = uint(block.blockhash(block.number-1))%100;
-    if (rnd &lt; 40) {
+    if (rnd < 40) {
       return safeDiv(val, 10);
     }
-    if (rnd &lt; 80) {
+    if (rnd < 80) {
       return safeMul(val, 10);
     }
     return val;
@@ -127,20 +127,20 @@ contract Token10xAmin is ERC223Interface, ERC20Interface {
   }
 
   function safeDiv(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

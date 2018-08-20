@@ -28,8 +28,8 @@ contract Prete {
     uint256 public totalSupply; 
 
     // 모든 균형을 갖춘 배열을 생성합니다. 
-    mapping (address =&gt; uint256) public balanceOf; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance; 
+    mapping (address => uint256) public balanceOf; 
+    mapping (address => mapping (address => uint256)) public allowance; 
 
     // 이것은 블록체인에서 클라이언트에게 알려주는 공개 이벤트를 생성합니다 
     event Transfer(address indexed from, address indexed to, uint256 value); 
@@ -60,9 +60,9 @@ contract Prete {
         // Prevent transfer to 0x0 address. Use burn() instead 
         require(_to != 0x0); 
         // 발신자 점검 
-        require(balanceOf[_from] &gt;= _value); 
+        require(balanceOf[_from] >= _value); 
         // 오버플로 확인 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require(balanceOf[_to] + _value > balanceOf[_to]); 
         // 미래의 주장을 위해 이것을 저장하십시오 
         uint previousBalances = balanceOf[_from] + balanceOf[_to]; 
         // 발신자에서 차감 
@@ -89,7 +89,7 @@ contract Prete {
      * _value 전송할 금액 
      */ 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) { 
-        require(_value &lt;= allowance[_from][msg.sender]);     // 허용량 체크 
+        require(_value <= allowance[_from][msg.sender]);     // 허용량 체크 
         allowance[_from][msg.sender] -= _value; 
         _transfer(_from, _to, _value); 
         return true; 
@@ -127,7 +127,7 @@ contract Prete {
      * @param _value 소각되는 금액 
      */ 
     function burn(uint256 _value) public returns (bool success) { 
-        require(balanceOf[msg.sender] &gt;= _value);   // 보낸 사람이 충분히 있는지 확인하십시오. 
+        require(balanceOf[msg.sender] >= _value);   // 보낸 사람이 충분히 있는지 확인하십시오. 
         balanceOf[msg.sender] -= _value;            // 발신자에게서 뺍니다. 
         totalSupply -= _value;                      // 총 발행량 업데이트 
         Burn(msg.sender, _value); 
@@ -140,8 +140,8 @@ contract Prete {
      * @param _value 소각되는 금액 
      */ 
     function burnFrom(address _from, uint256 _value) public returns (bool success) { 
-        require(balanceOf[_from] &gt;= _value);                // 목표 잔액이 충분한 지 확인하십시오. 
-        require(_value &lt;= allowance[_from][msg.sender]);    // 수당 확인 
+        require(balanceOf[_from] >= _value);                // 목표 잔액이 충분한 지 확인하십시오. 
+        require(_value <= allowance[_from][msg.sender]);    // 수당 확인 
         balanceOf[_from] -= _value;                         // 목표 잔액에서 차감 
         allowance[_from][msg.sender] -= _value;             // 발송인의 허용량에서 차감 
         totalSupply -= _value;                              // 총 발행량 업데이트 
@@ -155,7 +155,7 @@ contract MyAdvancedToken is owned, Prete {
     uint256 public sellPrice;
     uint256 public buyPrice;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* 이것은 블록체인에서 클라이언트에게 알려주는 공개 이벤트를 생성합니다. */
     event FrozenFunds(address target, bool frozen);
@@ -170,8 +170,8 @@ contract MyAdvancedToken is owned, Prete {
     /* 내부 전송, 이 계약에 의해서만 호출 될 수 있음 */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // 0x0 주소로의 전송을 방지하십시오. 대신 burn () 사용
-        require (balanceOf[_from] &gt;= _value);               // 보낸 사람이 충분히 있는지 확인하십시오.
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // 오버플로 확인
+        require (balanceOf[_from] >= _value);               // 보낸 사람이 충분히 있는지 확인하십시오.
+        require (balanceOf[_to] + _value > balanceOf[_to]); // 오버플로 확인
         require(!frozenAccount[_from]);                     // 발신자가 고정되어 있는지 확인하십시오.
         require(!frozenAccount[_to]);                       // 수신자가 고정되어 있는지 확인하십시오.
         balanceOf[_from] -= _value;                         // 발신자에게서 뺍니다.
@@ -189,7 +189,7 @@ contract MyAdvancedToken is owned, Prete {
         Transfer(this, target, mintedAmount);
     }
 
-    /// @notice &#39;얼라고?&#39; | 허용의 대상에게 토큰의 송신과 수신을 금지한다.
+    /// @notice '얼라고?' | 허용의 대상에게 토큰의 송신과 수신을 금지한다.
     /// @param target 고정할 주소
     /// @param freeze 이더리움 동결 여부
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -197,7 +197,7 @@ contract MyAdvancedToken is owned, Prete {
         FrozenFunds(target, freeze);
     }
 
-    /// @notice 사용자가 &#39;newBuyPrice`에 대한 토큰을 구입하고&#39;newSellPrice`에 대한 토큰을 판매하도록 허용하십시오.
+    /// @notice 사용자가 'newBuyPrice`에 대한 토큰을 구입하고'newSellPrice`에 대한 토큰을 판매하도록 허용하십시오.
     /// @param newSellPrice 사용자가 계약에 판매 할 수있는 가격
     /// @param newBuyPrice 사용자가 계약에서 구매할 수 있는 가격
     function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner public {
@@ -211,10 +211,10 @@ contract MyAdvancedToken is owned, Prete {
         _transfer(this, msg.sender, amount); // 전송을 만든다.
     }
 
-    /// @notice 계약하기 위해 &#39;amount&#39; 토큰 판매
+    /// @notice 계약하기 위해 'amount' 토큰 판매
     /// @param amount 판매 될 토큰의 양
     function sell(uint256 amount) public {
-        require(this.balance &gt;= amount * sellPrice);      // 계약서에 충분한 이더리움이 있는지 확인
+        require(this.balance >= amount * sellPrice);      // 계약서에 충분한 이더리움이 있는지 확인
         _transfer(msg.sender, this, amount);              // 전송을 만든다.
         msg.sender.transfer(amount * sellPrice);          // 판매자에게 에테르를 보내다. 이 마지막 작업을 수행할 때는 재발을 방지하는 것이 중요합니다.
     }

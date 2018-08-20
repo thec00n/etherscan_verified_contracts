@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -82,20 +82,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -106,15 +106,15 @@ contract CryptoPhoenixes is Ownable, Pausable {
   address public subDev;
   Phoenix[] private phoenixes;
   uint256 public PHOENIX_POOL;
-  uint256 public EXPLOSION_DENOMINATOR = 1000; //Eg explosivePower = 30 -&gt; 3%
+  uint256 public EXPLOSION_DENOMINATOR = 1000; //Eg explosivePower = 30 -> 3%
   bool public ALLOW_BETA = true;
   uint BETA_CUTOFF;
 
   // devFunds
-  mapping (address =&gt; uint256) public devFunds;
+  mapping (address => uint256) public devFunds;
 
   // dividends
-  mapping (address =&gt; uint256) public userFunds;
+  mapping (address => uint256) public userFunds;
 
   // Events
   event PhoenixPurchased(
@@ -170,7 +170,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
   
 // Function anyone can call to turn off beta, thus disabling some functions
   function closeBeta() {
-    require(now &gt;= BETA_CUTOFF);
+    require(now >= BETA_CUTOFF);
     ALLOW_BETA = false;
   }
 
@@ -193,7 +193,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
     require(_payoutPercentages.length == _explosivePowers.length);
     require(_explosivePowers.length == _cooldowns.length);
     
-    for (uint256 i = 0; i &lt; _payoutPercentages.length; i++) {
+    for (uint256 i = 0; i < _payoutPercentages.length; i++) {
       createPhoenix(_payoutPercentages[i],_explosivePowers[i],_cooldowns[i]);
     }
   }
@@ -226,9 +226,9 @@ contract CryptoPhoenixes is Ownable, Pausable {
   * @param _price uint256 ID of current price
 */
   function getNextPrice (uint256 _price) private pure returns (uint256 _nextPrice) {
-    if (_price &lt; QUARTER_ETH_CAP) {
+    if (_price < QUARTER_ETH_CAP) {
       return _price.mul(140).div(100); //1.4x
-    } else if (_price &lt; ONE_ETH_CAP) {
+    } else if (_price < ONE_ETH_CAP) {
       return _price.mul(130).div(100); //1.3x
     } else {
       return _price.mul(125).div(100); //1.25x
@@ -278,8 +278,8 @@ contract CryptoPhoenixes is Ownable, Pausable {
   * @param _percentage uint256 Desired percentage
 */
   function setHigherPricePercentage (uint256 _percentage) onlyOwner inBeta {
-    require(_percentage &gt; 0);
-    require(_percentage &lt; 100);
+    require(_percentage > 0);
+    require(_percentage < 100);
     HIGHER_PRICE_RESET_PERCENTAGE = _percentage;
   }
 
@@ -288,8 +288,8 @@ contract CryptoPhoenixes is Ownable, Pausable {
   * @param _percentage uint256 Desired percentage
 */
   function setLowerPricePercentage (uint256 _percentage) onlyOwner inBeta {
-    require(_percentage &gt; 0);
-    require(_percentage &lt; 100);
+    require(_percentage > 0);
+    require(_percentage < 100);
     LOWER_PRICE_RESET_PERCENTAGE = _percentage;
   }
 
@@ -298,7 +298,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
   * @param _amount uint256 Desired amount in wei
 */
   function setBasePrice (uint256 _amount) onlyOwner {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     BASE_PRICE = _amount;
   }
 
@@ -312,8 +312,8 @@ contract CryptoPhoenixes is Ownable, Pausable {
     uint256 price = phoenix.price;
 
     // revert checks
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     //prevent multiple subsequent purchases
     require(outgoingOwner != msg.sender);
 
@@ -339,7 +339,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
     //Calculate cuts
     (devCut,dividendsCut,previousOwnerCut,phoenixPoolCut) = calculateCuts(price);
 
-    // Amount payable to old owner minus the developer&#39;s and pools&#39; cuts.
+    // Amount payable to old owner minus the developer's and pools' cuts.
     uint256 outgoingOwnerCut = price.sub(devCut);
     outgoingOwnerCut = outgoingOwnerCut.sub(dividendsCut);
     outgoingOwnerCut = outgoingOwnerCut.sub(previousOwnerCut);
@@ -369,7 +369,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
     }
 
     // Send refund to owner if needed
-    if (purchaseExcess &gt; 0) {
+    if (purchaseExcess > 0) {
       sendFunds(msg.sender,purchaseExcess);
     }
 
@@ -398,9 +398,9 @@ contract CryptoPhoenixes is Ownable, Pausable {
     }
 
   function calculatePhoenixPoolCut (uint256 _price) private pure returns (uint256 _poolCut) {
-      if (_price &lt; QUARTER_ETH_CAP) {
+      if (_price < QUARTER_ETH_CAP) {
           return _price.mul(12).div(100); //12%
-      } else if (_price &lt; ONE_ETH_CAP) {
+      } else if (_price < ONE_ETH_CAP) {
           return _price.mul(11).div(100); //11%
       } else {
           return _price.mul(10).div(100); //10%
@@ -410,7 +410,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
   function distributeDividends(uint256 _dividendsCut) private {
     uint256 totalPayout = getTotalPayout();
 
-    for (uint256 i = 0; i &lt; phoenixes.length; i++) {
+    for (uint256 i = 0; i < phoenixes.length; i++) {
       var phoenix = phoenixes[i];
       var payout = _dividendsCut.mul(phoenix.dividendPayout).div(totalPayout);
       userFunds[phoenix.currentOwner] = userFunds[phoenix.currentOwner].add(payout);
@@ -420,7 +420,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
   function getTotalPayout() private view returns(uint256) {
     uint256 totalPayout = 0;
 
-    for (uint256 i = 0; i &lt; phoenixes.length; i++) {
+    for (uint256 i = 0; i < phoenixes.length; i++) {
       var phoenix = phoenixes[i];
       totalPayout = totalPayout.add(phoenix.dividendPayout);
     }
@@ -432,8 +432,8 @@ contract CryptoPhoenixes is Ownable, Pausable {
   function explodePhoenix(uint256 _phoenixId) whenNotPaused public {
       Phoenix phoenix = phoenixes[_phoenixId];
       require(msg.sender == phoenix.currentOwner);
-      require(PHOENIX_POOL &gt; 0);
-      require(now &gt;= phoenix.nextExplosionTime);
+      require(PHOENIX_POOL > 0);
+      require(now >= phoenix.nextExplosionTime);
       
       uint256 payout = phoenix.explosivePower.mul(PHOENIX_POOL).div(EXPLOSION_DENOMINATOR);
 
@@ -441,11 +441,11 @@ contract CryptoPhoenixes is Ownable, Pausable {
       PHOENIX_POOL = PHOENIX_POOL.sub(payout);
       
       //decrease phoenix price
-      if (phoenix.price &gt;= PRICE_CUTOFF) {
+      if (phoenix.price >= PRICE_CUTOFF) {
         phoenix.price = phoenix.price.mul(HIGHER_PRICE_RESET_PERCENTAGE).div(100);
       } else {
         phoenix.price = phoenix.price.mul(LOWER_PRICE_RESET_PERCENTAGE).div(100);
-        if (phoenix.price &lt; BASE_PRICE) {
+        if (phoenix.price < BASE_PRICE) {
           phoenix.price = BASE_PRICE;
           }
       }
@@ -477,7 +477,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
 */
   function devWithdraw() public {
     uint256 funds = devFunds[msg.sender];
-    require(funds &gt; 0);
+    require(funds > 0);
     devFunds[msg.sender] = 0;
     msg.sender.transfer(funds);
   }
@@ -487,7 +487,7 @@ contract CryptoPhoenixes is Ownable, Pausable {
 */
   function withdrawFunds() public {
     uint256 funds = userFunds[msg.sender];
-    require(funds &gt; 0);
+    require(funds > 0);
     userFunds[msg.sender] = 0;
     msg.sender.transfer(funds);
     WithdrewFunds(msg.sender);

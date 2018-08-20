@@ -13,37 +13,37 @@ contract SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -51,7 +51,7 @@ contract SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -118,13 +118,13 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is SafeMath, ERC20Basic {
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4);
+    require(msg.data.length >= size + 4);
      _;
   }
 
@@ -162,7 +162,7 @@ contract BasicToken is SafeMath, ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -175,7 +175,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = add(balances[_to],_value);
     balances[_from] = sub(balances[_from],_value);
@@ -291,10 +291,10 @@ contract PausableToken is StandardToken, Pausable {
  */
 contract KYC is Ownable, SafeMath, Pausable {
   // check the address is registered for token sale
-  mapping (address =&gt; bool) public registeredAddress;
+  mapping (address => bool) public registeredAddress;
 
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
 
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
@@ -329,7 +329,7 @@ contract KYC is Ownable, SafeMath, Pausable {
     public
     onlyOwner
   {
-    require(_addr != address(0) &amp;&amp; admin[_addr] == false);
+    require(_addr != address(0) && admin[_addr] == false);
     admin[_addr] = true;
 
     NewAdmin(_addr);
@@ -356,7 +356,7 @@ contract KYC is Ownable, SafeMath, Pausable {
     onlyAdmin
     whenNotPaused
   {
-    require(_addr != address(0) &amp;&amp; registeredAddress[_addr] == false);
+    require(_addr != address(0) && registeredAddress[_addr] == false);
 
     registeredAddress[_addr] = true;
 
@@ -372,8 +372,8 @@ contract KYC is Ownable, SafeMath, Pausable {
     onlyAdmin
     whenNotPaused
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
-      require(_addrs[i] != address(0) &amp;&amp; registeredAddress[_addrs[i]] == false);
+    for(uint256 i = 0; i < _addrs.length; i++) {
+      require(_addrs[i] != address(0) && registeredAddress[_addrs[i]] == false);
 
       registeredAddress[_addrs[i]] = true;
 
@@ -403,7 +403,7 @@ contract KYC is Ownable, SafeMath, Pausable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(isRegistered(_addrs[i]));
 
       registeredAddress[_addrs[i]] = false;

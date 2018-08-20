@@ -4,12 +4,12 @@ pragma solidity ^0.4.19;
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal pure returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         return x - y;
     }
 }
@@ -33,12 +33,12 @@ contract Token {
 
 /* ERC 20 token */
 contract StandardToken is Token, SafeMath {
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     // prvent from the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -75,8 +75,8 @@ contract StandardToken is Token, SafeMath {
 
 contract XCTToken is StandardToken {
     //meta data
-    string public constant name = &quot;XChain Token&quot;;
-    string public constant symbol = &quot;NXCT&quot;;
+    string public constant name = "XChain Token";
+    string public constant symbol = "NXCT";
     uint8 public constant decimals = 18;
 
     function XCTToken() public {

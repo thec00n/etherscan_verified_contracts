@@ -53,13 +53,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a,uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a,uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -73,11 +73,11 @@ contract ShortOrder is SafeMath {
     uint coupon;
     uint balance;
     bool tokenDeposit;
-    mapping (address =&gt; uint) shortBalance;
-    mapping (address =&gt; uint) longBalance;
+    mapping (address => uint) shortBalance;
+    mapping (address => uint) longBalance;
   }
 
-  mapping (address =&gt; mapping (bytes32 =&gt; Order)) orderRecord;
+  mapping (address => mapping (bytes32 => Order)) orderRecord;
 
   event TokenFulfillment(address[2] tokenUser,uint[8] minMaxDMWCPNonce,uint8 v,bytes32[2] rs,uint amount);
   event CouponDeposit(address[2] tokenUser,uint[8] minMaxDMWCPNonce,uint8 v,bytes32[2] rs,uint value);
@@ -116,11 +116,11 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == msg.sender &amp;&amp;
-      block.number &gt; minMaxDMWCPNonce[2] &amp;&amp;
-      block.number &lt;= minMaxDMWCPNonce[3] &amp;&amp; 
-      orderRecord[tokenUser[1]][orderHash].balance &gt;= minMaxDMWCPNonce[0] &amp;&amp;
-      amount &gt;= safeMul(orderRecord[msg.sender][orderHash].balance,minMaxDMWCPNonce[6]) &amp;&amp;
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == msg.sender &&
+      block.number > minMaxDMWCPNonce[2] &&
+      block.number <= minMaxDMWCPNonce[3] && 
+      orderRecord[tokenUser[1]][orderHash].balance >= minMaxDMWCPNonce[0] &&
+      amount >= safeMul(orderRecord[msg.sender][orderHash].balance,minMaxDMWCPNonce[6]) &&
       !orderRecord[msg.sender][orderHash].tokenDeposit
     );
     Token(tokenUser[0]).transferFrom(msg.sender,this,amount);
@@ -143,8 +143,8 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == msg.sender &amp;&amp;
-      msg.value &gt;= minMaxDMWCPNonce[5]
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == msg.sender &&
+      msg.value >= minMaxDMWCPNonce[5]
     );
     orderRecord[msg.sender][orderHash].coupon = safeAdd(orderRecord[msg.sender][orderHash].coupon,msg.value);
     CouponDeposit(tokenUser,minMaxDMWCPNonce,v,rs,msg.value);
@@ -164,10 +164,10 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1] &amp;&amp;
-      block.number &lt;= minMaxDMWCPNonce[2] &amp;&amp;
-      orderRecord[tokenUser[1]][orderHash].coupon &gt;= minMaxDMWCPNonce[5]&amp;&amp;
-      orderRecord[tokenUser[1]][orderHash].balance &lt;= minMaxDMWCPNonce[1]
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1] &&
+      block.number <= minMaxDMWCPNonce[2] &&
+      orderRecord[tokenUser[1]][orderHash].coupon >= minMaxDMWCPNonce[5]&&
+      orderRecord[tokenUser[1]][orderHash].balance <= minMaxDMWCPNonce[1]
     );
     orderRecord[tokenUser[1]][orderHash].longBalance[msg.sender] = safeAdd(orderRecord[tokenUser[1]][orderHash].longBalance[msg.sender],msg.value);
     orderRecord[tokenUser[1]][orderHash].balance = safeAdd(orderRecord[tokenUser[1]][orderHash].balance,msg.value);
@@ -177,8 +177,8 @@ contract ShortOrder is SafeMath {
   function buyLong(address[2] sellerShort,uint[3] amountNonceExpiry,uint8 v,bytes32[3] hashRS) external payable {
     bytes32 longTransferHash = keccak256(sellerShort[0],amountNonceExpiry);
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,longTransferHash[0]),v,hashRS[1],hashRS[2]) == sellerShort[1] &amp;&amp;
-      msg.value &gt;= amountNonceExpiry[0] 
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",longTransferHash[0]),v,hashRS[1],hashRS[2]) == sellerShort[1] &&
+      msg.value >= amountNonceExpiry[0] 
     );
     sellerShort[0].transfer(msg.value);
     orderRecord[sellerShort[1]][hashRS[0]].longBalance[msg.sender] = orderRecord[sellerShort[1]][hashRS[0]].longBalance[sellerShort[0]];
@@ -200,10 +200,10 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1] &amp;&amp;
-      block.number &gt; minMaxDMWCPNonce[3] &amp;&amp;
-      block.number &lt;= minMaxDMWCPNonce[4] &amp;&amp;
-      orderRecord[tokenUser[1]][orderHash].balance &gt;= minMaxDMWCPNonce[0]
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1] &&
+      block.number > minMaxDMWCPNonce[3] &&
+      block.number <= minMaxDMWCPNonce[4] &&
+      orderRecord[tokenUser[1]][orderHash].balance >= minMaxDMWCPNonce[0]
     );
     uint couponProportion = safeDiv(orderRecord[tokenUser[1]][orderHash].longBalance[msg.sender],orderRecord[tokenUser[1]][orderHash].balance);
     uint couponAmount;
@@ -242,8 +242,8 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1] &amp;&amp;
-      block.number &gt; minMaxDMWCPNonce[4]
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1] &&
+      block.number > minMaxDMWCPNonce[4]
     );
     admin.transfer(safeAdd(orderRecord[tokenUser[1]][orderHash].coupon,orderRecord[tokenUser[1]][orderHash].balance));
     Token(tokenUser[0]).transfer(admin,orderRecord[tokenUser[1]][orderHash].shortBalance[tokenUser[0]]);
@@ -267,10 +267,10 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == msg.sender &amp;&amp;
-      block.number &gt; minMaxDMWCPNonce[3] &amp;&amp;
-      block.number &lt;= minMaxDMWCPNonce[4] &amp;&amp;
-      orderRecord[tokenUser[1]][orderHash].balance &lt; minMaxDMWCPNonce[0]
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == msg.sender &&
+      block.number > minMaxDMWCPNonce[3] &&
+      block.number <= minMaxDMWCPNonce[4] &&
+      orderRecord[tokenUser[1]][orderHash].balance < minMaxDMWCPNonce[0]
     );
     msg.sender.transfer(orderRecord[msg.sender][orderHash].coupon);
     orderRecord[msg.sender][orderHash].coupon = uint(0);
@@ -291,10 +291,10 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[7]
       );
     require(
-      ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1] &amp;&amp;
-      block.number &gt; minMaxDMWCPNonce[3] &amp;&amp;
-      block.number &lt;= minMaxDMWCPNonce[4] &amp;&amp;
-      orderRecord[tokenUser[1]][orderHash].balance &lt; minMaxDMWCPNonce[0]
+      ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1] &&
+      block.number > minMaxDMWCPNonce[3] &&
+      block.number <= minMaxDMWCPNonce[4] &&
+      orderRecord[tokenUser[1]][orderHash].balance < minMaxDMWCPNonce[0]
     );
     msg.sender.transfer(orderRecord[tokenUser[1]][orderHash].longBalance[msg.sender]);
     orderRecord[tokenUser[1]][orderHash].balance = safeSub(orderRecord[tokenUser[1]][orderHash].balance,orderRecord[tokenUser[1]][orderHash].longBalance[msg.sender]);
@@ -315,7 +315,7 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[6], 
         minMaxDMWCPNonce[7]
       );
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1]);
     return orderRecord[tokenUser[1]][orderHash].balance;
   }
 
@@ -332,7 +332,7 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[6], 
         minMaxDMWCPNonce[7]
       );
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1]);
     return orderRecord[tokenUser[1]][orderHash].shortBalance[tokenUser[1]];
   }
 
@@ -349,7 +349,7 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[6], 
         minMaxDMWCPNonce[7]
       );
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1]);
     return orderRecord[tokenUser[1]][orderHash].longBalance[_user];
   }
 
@@ -366,7 +366,7 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[6], 
         minMaxDMWCPNonce[7]
       );
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1]);
     return orderRecord[tokenUser[1]][orderHash].coupon;
   }
 
@@ -383,7 +383,7 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[6], 
         minMaxDMWCPNonce[7]
       );
-    require(ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash),v,rs[0],rs[1]) == tokenUser[1]);
+    require(ecrecover(keccak256("\x19Ethereum Signed Message:\n32",orderHash),v,rs[0],rs[1]) == tokenUser[1]);
     return orderRecord[tokenUser[1]][orderHash].tokenDeposit;
   }
  
@@ -400,7 +400,7 @@ contract ShortOrder is SafeMath {
         minMaxDMWCPNonce[6],
         minMaxDMWCPNonce[7]
       );
-    return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash);
+    return keccak256("\x19Ethereum Signed Message:\n32",orderHash);
   }
 
   function returnAddress(bytes32 orderHash,uint8 v,bytes32[2] rs) external pure returns (address) {
@@ -409,7 +409,7 @@ contract ShortOrder is SafeMath {
 
   function returnHashLong(address seller,uint[3] amountNonceExpiry)  external pure returns (bytes32) {
     bytes32 orderHash =  keccak256(seller,amountNonceExpiry[0],amountNonceExpiry[1],amountNonceExpiry[2]);
-    return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;,orderHash);
+    return keccak256("\x19Ethereum Signed Message:\n32",orderHash);
   }
 
   function returnLongAddress(bytes32 orderHash,uint8 v,bytes32[2] rs) external pure returns (address) {

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 contract WayneAndMichelle {
-    string constant public congratulationFromNoel = &quot;祝 Wayne 跟 Michelle 幸福健康快樂&quot;;
+    string constant public congratulationFromNoel = "祝 Wayne 跟 Michelle 幸福健康快樂";
     
     function WayneAndMichelle () payable public {}
     

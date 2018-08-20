@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
 * @notice Website: Ze.cash
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe98d09f908a91909791d09f959b92be99939f9792d09d9193">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe98d09f908a91909791d09f959b92be99939f9792d09d9193">[email protected]</a>
 */
 
 /**
@@ -26,12 +26,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -101,7 +101,7 @@ contract ICO is admined{
     token public tokenReward; //Address of the valit token used as reward
     address public creator; //Address of the contract deployer
     string public campaignUrl; //Web site of the campaing
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     FiatContract price = FiatContract(0x8055d0504666e2B6942BeB8D6014c964658Ca591); // MAINNET ADDRESS
     //FiatContract price = FiatContract(0x2CDe56E5c8235D6360CCbb0c57Ce248Ca9C80909); // TESTNET ADDRESS (ROPSTEN)
@@ -187,7 +187,7 @@ contract ICO is admined{
 
     /**
     * @notice Function to handle eth transfers
-    * @dev BEWARE: if a call to this functions doesn&#39;t have
+    * @dev BEWARE: if a call to this functions doesn't have
     * enought gas, transaction could not be finished
     */
 

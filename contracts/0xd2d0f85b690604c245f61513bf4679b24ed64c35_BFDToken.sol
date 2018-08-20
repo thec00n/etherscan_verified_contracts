@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function safeSub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -75,22 +75,22 @@ contract EIP20Interface {
 contract BFDToken is EIP20Interface, SafeMath {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
-    string constant public name = &quot;BFDToken&quot;;
+    string constant public name = "BFDToken";
     uint8 constant public decimals = 18;                //How many decimals to show.
-    string constant public symbol = &quot;BFDT&quot;;
+    string constant public symbol = "BFDT";
 
-    mapping (address =&gt; uint256) public addressType;  // 1 for team; 2 for advisors and partners; 3 for seed investors; 4 for angel investors; 5 for regular investors; 0 for others
-    mapping (address =&gt; uint256[3]) public releaseForSeed;
-    mapping (address =&gt; uint256[5]) public releaseForTeamAndAdvisor;
+    mapping (address => uint256) public addressType;  // 1 for team; 2 for advisors and partners; 3 for seed investors; 4 for angel investors; 5 for regular investors; 0 for others
+    mapping (address => uint256[3]) public releaseForSeed;
+    mapping (address => uint256[5]) public releaseForTeamAndAdvisor;
     event AllocateToken(address indexed _to, uint256 _value, uint256 _type);
 
     address public owner;
@@ -114,7 +114,7 @@ contract BFDToken is EIP20Interface, SafeMath {
 
     //
     function allocateToken(address _to, uint256 _eth, uint256 _type) isOwner notFinalised public {
-        require(_to != address(0x0) &amp;&amp; _eth != 0);
+        require(_to != address(0x0) && _eth != 0);
         require(addressType[_to] == 0 || addressType[_to] == _type);
         addressType[_to] = _type;
         uint256 temp;
@@ -151,7 +151,7 @@ contract BFDToken is EIP20Interface, SafeMath {
         balances[_to] = safeAdd(balances[_to], safeMul(_value, 10**18));
         balances[msg.sender] = safeSub(balances[msg.sender], safeMul(_value, 10**18));
 
-        for (uint256 i = 0; i &lt;= 4; ++i) {
+        for (uint256 i = 0; i <= 4; ++i) {
             releaseForTeamAndAdvisor[_to][i] = safeDiv(safeMul(balances[_to], (4 - i) * 25), 100);
         }
 
@@ -164,7 +164,7 @@ contract BFDToken is EIP20Interface, SafeMath {
         balances[_to] = safeAdd(balances[_to], safeMul(_value, 10**18));
         balances[msg.sender] = safeSub(balances[msg.sender], safeMul(_value, 10**18));
 
-        for (uint256 i = 0; i &lt;= 4; ++i) {
+        for (uint256 i = 0; i <= 4; ++i) {
             releaseForTeamAndAdvisor[_to][i] = safeDiv(safeMul(balances[_to], (4 - i) * 25), 100);
         }
         AllocateToken(_to, safeMul(_value, 10**18), 2);
@@ -181,7 +181,7 @@ contract BFDToken is EIP20Interface, SafeMath {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(canTransfer(msg.sender, _value));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -198,16 +198,16 @@ contract BFDToken is EIP20Interface, SafeMath {
         // for seed and angel investors
         if (addressType[_from] == 3 || addressType[_from] == 4) {
             index = safeSub(now, finaliseTime) / 60 days;
-            if ( index &gt;= 2) {
+            if ( index >= 2) {
                 index = 2;
             }
-            require(safeSub(balances[_from], _value) &gt;= releaseForSeed[_from][index]);
+            require(safeSub(balances[_from], _value) >= releaseForSeed[_from][index]);
         } else if (addressType[_from] == 1 || addressType[_from] == 2) {
             index = safeSub(now, finaliseTime) / 180 days;
-            if (index &gt;= 4) {
+            if (index >= 4) {
                 index = 4;
             }
-            require(safeSub(balances[_from], _value) &gt;= releaseForTeamAndAdvisor[_from][index]);
+            require(safeSub(balances[_from], _value) >= releaseForTeamAndAdvisor[_from][index]);
         }
         return true;
     }
@@ -215,10 +215,10 @@ contract BFDToken is EIP20Interface, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(canTransfer(_from, _value));
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);

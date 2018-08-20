@@ -1,13 +1,13 @@
 pragma solidity ^0.4.13;
 
 contract SpareCurrencyToken {
-  string public constant name = &quot;SpareCurrencyToken&quot;;
-  string public constant symbol = &quot;SCT&quot;;
+  string public constant name = "SpareCurrencyToken";
+  string public constant symbol = "SCT";
   uint8 public constant decimals = 18;
   
   uint256 public totalSupply;
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -18,9 +18,9 @@ contract SpareCurrencyToken {
   }
 
   function transfer(address _to, uint256 _amount) returns (bool success) {
-    if (balances[msg.sender] &gt;= _amount 
-      &amp;&amp; _amount &gt; 0
-      &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+    if (balances[msg.sender] >= _amount 
+      && _amount > 0
+      && balances[_to] + _amount > balances[_to]) {
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         return true;
@@ -39,10 +39,10 @@ contract SpareCurrencyToken {
        address _to,
        uint256 _amount
    ) returns (bool success) {
-       if (balances[_from] &gt;= _amount
-           &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-           &amp;&amp; _amount &gt; 0
-           &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+       if (balances[_from] >= _amount
+           && allowed[_from][msg.sender] >= _amount
+           && _amount > 0
+           && balances[_to] + _amount > balances[_to]) {
            balances[_from] -= _amount;
            allowed[_from][msg.sender] -= _amount;
            balances[_to] += _amount;

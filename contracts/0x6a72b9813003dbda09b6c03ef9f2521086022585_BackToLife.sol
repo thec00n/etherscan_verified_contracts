@@ -3,11 +3,11 @@ pragma solidity ^0.4.15;
 // File: contracts\strings.sol
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3d2c1d2d0dbdddad7f3dddcc7d7dcc79dddd6c7">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3d2c1d2d0dbdddad7f3dddcc7d7dcc79dddd6c7">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -15,11 +15,11 @@ pragma solidity ^0.4.15;
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -34,7 +34,7 @@ pragma solidity ^0.4.15;
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -48,7 +48,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -87,23 +87,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -139,7 +139,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -162,18 +162,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         uint ptr = self._ptr - 31;
         uint end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -201,12 +201,12 @@ library strings {
      */
     function compare(slice self, slice other) internal pure returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         uint selfptr = self._ptr;
         uint otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -216,10 +216,10 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint256 mask = uint256(-1); // 0xffff...
-                if(shortest &lt; 32) {
+                if(shortest < 32) {
                     mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
                 }
-                uint256 diff = (a &amp; mask) - (b &amp; mask);
+                uint256 diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -258,18 +258,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             l = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             l = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             l = 3;
         } else {
             l = 4;
         }
 
         // Check for truncated codepoints
-        if (l &gt; self._len) {
+        if (l > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -309,33 +309,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         uint b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -359,7 +359,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -385,7 +385,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -414,7 +414,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -442,7 +442,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -471,8 +471,8 @@ library strings {
         uint ptr = selfptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -483,7 +483,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &gt;= end)
+                    if (ptr >= end)
                         return selfptr + selflen;
                     ptr++;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -494,7 +494,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
 
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -511,8 +511,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private pure returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -523,7 +523,7 @@ library strings {
                 assembly { ptrdata := and(mload(ptr), mask) }
 
                 while (ptrdata != needledata) {
-                    if (ptr &lt;= selfptr)
+                    if (ptr <= selfptr)
                         return selfptr;
                     ptr--;
                     assembly { ptrdata := and(mload(ptr), mask) }
@@ -534,7 +534,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -656,7 +656,7 @@ library strings {
      */
     function count(slice self, slice needle) internal pure returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -698,20 +698,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal pure returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for(uint i = 0; i &lt; parts.length; i++)
+        for(uint i = 0; i < parts.length; i++)
             length += parts[i]._len;
 
         string memory ret = new string(length);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -751,7 +751,7 @@ contract MyWill {
     string listHeirsPercentages;
 
     /* The current votes */
-    mapping (string =&gt; bool) mapHeirsVoteOwnerHasDied;
+    mapping (string => bool) mapHeirsVoteOwnerHasDied;
 
     /* The status of the contract*/
     enum Status {CREATED, ALIVE, DEAD, INIT}
@@ -783,11 +783,11 @@ contract MyWill {
 
         /* Check List Percentages */
         var s = _listHeirsPercentages.toSlice().copy();
-        var delim = &quot;;&quot;.toSlice();
+        var delim = ";".toSlice();
         var parts = new uint256[](s.count(delim) + 1);
 
         uint256 countPercentage;
-        for(uint i = 0; i &lt; parts.length; i++) {
+        for(uint i = 0; i < parts.length; i++) {
             countPercentage = countPercentage + stringToUint(s.split(delim).toString());
         }
 
@@ -826,13 +826,13 @@ contract MyWill {
     modifier onlyHeir() {
 
         var s = listHeirs.toSlice().copy();
-        var delim = &quot;;&quot;.toSlice();
+        var delim = ";".toSlice();
         string[] memory listOfHeirs = new string[](s.count(delim) + 1);
         bool itsHeir = false;
 
         string memory senderStringAddress = addressToString(msg.sender);
 
-        for(uint i = 0; i &lt; listOfHeirs.length; i++) {
+        for(uint i = 0; i < listOfHeirs.length; i++) {
 
             if(keccak256(senderStringAddress) == keccak256(s.split(delim).toString())){
                 itsHeir = true;
@@ -848,13 +848,13 @@ contract MyWill {
     modifier onlyWitness() {
 
         var s = listWitnesses.toSlice().copy();
-        var delim = &quot;;&quot;.toSlice();
+        var delim = ";".toSlice();
         string[] memory arrayOfWitnesses = new string[](s.count(delim) + 1);
         bool itsWitness = false;
 
         string memory senderStringAddress = addressToString(msg.sender);
 
-        for(uint i = 0; i &lt; arrayOfWitnesses.length; i++) {
+        for(uint i = 0; i < arrayOfWitnesses.length; i++) {
 
             if(keccak256(senderStringAddress) == keccak256(s.split(delim).toString())){
                 itsWitness = true;
@@ -878,16 +878,16 @@ contract MyWill {
 
             // Check if the minimum ammount is provided
             var witnessesList = listWitnesses.toSlice().copy();
-            var witnessesLength = witnessesList.count(&quot;;&quot;.toSlice()) + 1;
+            var witnessesLength = witnessesList.count(";".toSlice()) + 1;
             var needed = getWitnessWeiCost() * witnessesLength + getCreationWeiCost();
-            require(msg.value &gt; needed);
+            require(msg.value > needed);
 
             // Send contract creation cost to club
             club.transfer(getCreationWeiCost());
 
             // Send ether to witnesses
-            for (uint i = 0; i &lt; witnessesLength; i++) {
-                var witnessAddress = parseAddr(witnessesList.split(&quot;;&quot;.toSlice()).toString());
+            for (uint i = 0; i < witnessesLength; i++) {
+                var witnessAddress = parseAddr(witnessesList.split(";".toSlice()).toString());
                 witnessAddress.transfer(getWitnessWeiCost());
             }
 
@@ -904,18 +904,18 @@ contract MyWill {
     /* Witness executes owner died */
     function ownerDied() onlyWitness onlyAlive {
 
-        require (this.balance &gt; 0);
+        require (this.balance > 0);
 
         //Set owner as died
         mapHeirsVoteOwnerHasDied[addressToString(msg.sender)] = true;
 
         var users = listWitnesses.toSlice().copy();
-        uint256 listLength = users.count(&quot;;&quot;.toSlice()) + 1;
+        uint256 listLength = users.count(";".toSlice()) + 1;
         uint8 count = 0;
 
-        for(uint i = 0; i &lt; listLength; i++) {
+        for(uint i = 0; i < listLength; i++) {
 
-            if(mapHeirsVoteOwnerHasDied[users.split(&quot;;&quot;.toSlice()).toString()] == true){
+            if(mapHeirsVoteOwnerHasDied[users.split(";".toSlice()).toString()] == true){
                 count = count + 1;
             }
         }
@@ -926,14 +926,14 @@ contract MyWill {
 
             users = listHeirs.toSlice().copy();
             var  percentages = listHeirsPercentages.toSlice().copy();
-            listLength = users.count(&quot;;&quot;.toSlice()) + 1;
+            listLength = users.count(";".toSlice()) + 1;
 
-            for(i = 0; i &lt; listLength - 1; i++) {
-                parseAddr(users.split(&quot;;&quot;.toSlice()).toString()).transfer(((this.balance * stringToUint(percentages.split(&quot;;&quot;.toSlice()).toString())) / 100000));
+            for(i = 0; i < listLength - 1; i++) {
+                parseAddr(users.split(";".toSlice()).toString()).transfer(((this.balance * stringToUint(percentages.split(";".toSlice()).toString())) / 100000));
             }
 
             // Last one gets the remaining
-            parseAddr(users.split(&quot;;&quot;.toSlice()).toString()).transfer(this.balance);
+            parseAddr(users.split(";".toSlice()).toString()).transfer(this.balance);
 
             status = Status.DEAD;
         }
@@ -977,7 +977,7 @@ contract MyWill {
     }
 
     function getWitnessesCount() returns (uint) {
-        return listWitnesses.toSlice().copy().count(&quot;;&quot;.toSlice()) + 1;
+        return listWitnesses.toSlice().copy().count(";".toSlice()) + 1;
     }
 
     function getBalance() constant returns (uint) {
@@ -996,9 +996,9 @@ contract MyWill {
         bytes memory b = bytes(s);
         uint i;
         result = 0;
-        for (i = 0; i &lt; b.length; i++) {
+        for (i = 0; i < b.length; i++) {
             uint c = uint(b[i]);
-            if (c &gt;= 48 &amp;&amp; c &lt;= 57) {
+            if (c >= 48 && c <= 57) {
                 result = result * 10 + (c - 48);
             }
         }
@@ -1006,9 +1006,9 @@ contract MyWill {
 
     function addressToString(address x) private returns (string) {
         bytes memory s = new bytes(42);
-        s[0] = &quot;0&quot;;
-        s[1] = &quot;x&quot;;
-        for (uint i = 0; i &lt; 20; i++) {
+        s[0] = "0";
+        s[1] = "x";
+        for (uint i = 0; i < 20; i++) {
             byte b = byte(uint8(uint(x) / (2**(8*(19 - i)))));
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -1019,7 +1019,7 @@ contract MyWill {
     }
 
     function char(byte b) private returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
 
@@ -1029,14 +1029,14 @@ contract MyWill {
         uint160 iaddr = 0;
         uint160 b1;
         uint160 b2;
-        for (uint i=2; i&lt;2+2*20; i+=2){
+        for (uint i=2; i<2+2*20; i+=2){
             iaddr *= 256;
             b1 = uint160(tmp[i]);
             b2 = uint160(tmp[i+1]);
-            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
             iaddr += (b1*16+b2);
         }
         return address(iaddr);
@@ -1057,7 +1057,7 @@ contract BackToLife {
 
     address club;
 
-    mapping (address =&gt; string) mapOwnerStringContract;
+    mapping (address => string) mapOwnerStringContract;
 
     /* Create base contract */
     function BackToLife () {
@@ -1071,34 +1071,34 @@ contract BackToLife {
 
         var s = _listHeirs.toSlice().copy();
 
-        if (!s.endsWith(&quot;;&quot;.toSlice())){
-            _listHeirs.toSlice().concat(&quot;;&quot;.toSlice());
+        if (!s.endsWith(";".toSlice())){
+            _listHeirs.toSlice().concat(";".toSlice());
         }
 
         s = _listWitnesses.toSlice().copy();
-        if (!s.endsWith(&quot;;&quot;.toSlice())){
-            _listWitnesses.toSlice().concat(&quot;;&quot;.toSlice());
+        if (!s.endsWith(";".toSlice())){
+            _listWitnesses.toSlice().concat(";".toSlice());
         }
 
         s = _listHeirsPercentages.toSlice().copy();
-        if (!s.endsWith(&quot;;&quot;.toSlice())){
-            _listHeirsPercentages.toSlice().concat(&quot;;&quot;.toSlice());
+        if (!s.endsWith(";".toSlice())){
+            _listHeirsPercentages.toSlice().concat(";".toSlice());
         }
 
 
         /* Add contract to the list of each heirs */
 //        s = _listHeirs.toSlice().copy();
-//        var delim = &quot;;&quot;.toSlice();
+//        var delim = ";".toSlice();
 //        uint256 listHeirsLength = s.count(delim) + 1;
 //        string memory senderStringAddress = addressToString(owner);
-//        for(uint i = 0; i &lt; listHeirsLength; i++) {
+//        for(uint i = 0; i < listHeirsLength; i++) {
 //            address heirAddress = parseAddr(s.split(delim).toString());
-//            mapOwnerStringContract[heirAddress] =  mapOwnerStringContract[heirAddress].toSlice().concat(stringContractAddress.toSlice()).toSlice().concat(&quot;;&quot;.toSlice());
+//            mapOwnerStringContract[heirAddress] =  mapOwnerStringContract[heirAddress].toSlice().concat(stringContractAddress.toSlice()).toSlice().concat(";".toSlice());
 //        }
 
         /* Calculate number of witness */
         s = _listWitnesses.toSlice().copy();
-        var delim = &quot;;&quot;.toSlice();
+        var delim = ";".toSlice();
         uint256 listWitnessLength = s.count(delim) + 1;
 
         /* Create the My Will contract */
@@ -1106,7 +1106,7 @@ contract BackToLife {
         MyWill myWillContract = MyWill(myWillAddress);
         myWillContract.setParameters(owner, _listHeirs, _listHeirsPercentages, _listWitnesses, club, _gasPrice, _gasCost);
         var myWillAddressString = addressToString(myWillAddress);
-        mapOwnerStringContract[owner] =  mapOwnerStringContract[owner].toSlice().concat(myWillAddressString.toSlice()).toSlice().concat(&quot;;&quot;.toSlice());
+        mapOwnerStringContract[owner] =  mapOwnerStringContract[owner].toSlice().concat(myWillAddressString.toSlice()).toSlice().concat(";".toSlice());
     }
 
     /* Get Address Contracts */
@@ -1116,9 +1116,9 @@ contract BackToLife {
 
     function addressToString(address x) returns (string) {
         bytes memory s = new bytes(42);
-        s[0] = &quot;0&quot;;
-        s[1] = &quot;x&quot;;
-        for (uint i = 0; i &lt; 20; i++) {
+        s[0] = "0";
+        s[1] = "x";
+        for (uint i = 0; i < 20; i++) {
             byte b = byte(uint8(uint(x) / (2**(8*(19 - i)))));
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -1129,7 +1129,7 @@ contract BackToLife {
     }
 
     function char(byte b) returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
 
@@ -1138,14 +1138,14 @@ contract BackToLife {
 //        uint160 iaddr = 0;
 //        uint160 b1;
 //        uint160 b2;
-//        for (uint i=2; i&lt;2+2*20; i+=2){
+//        for (uint i=2; i<2+2*20; i+=2){
 //            iaddr *= 256;
 //            b1 = uint160(tmp[i]);
 //            b2 = uint160(tmp[i+1]);
-//            if ((b1 &gt;= 97)&amp;&amp;(b1 &lt;= 102)) b1 -= 87;
-//            else if ((b1 &gt;= 48)&amp;&amp;(b1 &lt;= 57)) b1 -= 48;
-//            if ((b2 &gt;= 97)&amp;&amp;(b2 &lt;= 102)) b2 -= 87;
-//            else if ((b2 &gt;= 48)&amp;&amp;(b2 &lt;= 57)) b2 -= 48;
+//            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;
+//            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;
+//            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;
+//            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;
 //            iaddr += (b1*16+b2);
 //        }
 //        return address(iaddr);

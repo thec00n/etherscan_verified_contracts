@@ -8,10 +8,10 @@ contract LeanFund {
   address public beneficiary;
 
   // These are for Ethereum backers only
-  mapping (address =&gt; uint) public contributionsETH;
-  mapping (address =&gt; uint) public payoutsETH;
+  mapping (address => uint) public contributionsETH;
+  mapping (address => uint) public payoutsETH;
 
-  uint public fundingGoal;     // in wei, the amount we&#39;re aiming for
+  uint public fundingGoal;     // in wei, the amount we're aiming for
   uint public payoutETH;       // in wei, the amount withdrawn as fee
   uint public amountRaised;    // in wei, the total amount raised
 
@@ -29,10 +29,10 @@ contract LeanFund {
     open = false;
   }
 
-  // We can only initialize once, but don&#39;t add beforeDeadline guard or check deadline
+  // We can only initialize once, but don't add beforeDeadline guard or check deadline
   function initialize(uint _fundingGoalInWei, address _beneficiary, uint _deadlineBlockNumber) {
     if (open || msg.sender != owner) throw; // we can only initialize once
-    if (_deadlineBlockNumber &lt; block.number + 40) throw; // deadlines must be at least ten minutes hence
+    if (_deadlineBlockNumber < block.number + 40) throw; // deadlines must be at least ten minutes hence
     beneficiary = _beneficiary;
     payoutETH = 0;
     amountRaised = 0;
@@ -45,8 +45,8 @@ contract LeanFund {
     open = true;
   }
 
-  modifier beforeDeadline() { if ((block.number &lt; deadlineBlockNumber) &amp;&amp; open) _; else throw; }
-  modifier afterDeadline() { if ((block.number &gt;= deadlineBlockNumber) &amp;&amp; open) _; else throw; }
+  modifier beforeDeadline() { if ((block.number < deadlineBlockNumber) && open) _; else throw; }
+  modifier afterDeadline() { if ((block.number >= deadlineBlockNumber) && open) _; else throw; }
 
   // Normal pay-in function, where msg.sender is the contributor
   function() payable beforeDeadline {
@@ -64,7 +64,7 @@ contract LeanFund {
   /* As a safeguard, if we were able to pay into account without being a contributor
      allow contract owner to clean it up. */
   function safeKill() afterDeadline {
-    if ((msg.sender == owner) &amp;&amp; (this.balance &gt; amountRaised)) {
+    if ((msg.sender == owner) && (this.balance > amountRaised)) {
       uint amount = this.balance - amountRaised;
       if (owner.send(amount)) {
         open = false; // make this resettable to make testing easier
@@ -75,7 +75,7 @@ contract LeanFund {
   /* Each backer is responsible for their own safe withdrawal, because it costs gas */
   function safeWithdrawal() afterDeadline {
     uint amount = 0;
-    if (amountRaised &lt; fundingGoal &amp;&amp; payoutsETH[msg.sender] == 0) {
+    if (amountRaised < fundingGoal && payoutsETH[msg.sender] == 0) {
       // Ethereum backers can only withdraw the full amount they put in, and only once
       amount = contributionsETH[msg.sender];
       payoutsETH[msg.sender] += amount;
@@ -92,7 +92,7 @@ contract LeanFund {
       if (!beneficiary.send(amount)) {
         payoutETH = 0;
       }
-    } else if (msg.sender == owner &amp;&amp; feeWithdrawn == 0) {
+    } else if (msg.sender == owner && feeWithdrawn == 0) {
       // only the owner can withdraw the fee and any excess funds (rounding errors)
       feeWithdrawn += fee;
       selfdestruct(owner);

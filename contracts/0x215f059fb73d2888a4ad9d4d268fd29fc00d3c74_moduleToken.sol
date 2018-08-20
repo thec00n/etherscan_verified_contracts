@@ -32,7 +32,7 @@ contract moduleToken is moduleTokenInterface {
 	//管理员之一发起一个转账操作，需要多人批准时采用这个数据结构
 	struct transferEthAgreement{
 		//要哪些人签署
-	    mapping(address=&gt;bool) signUsrList;		
+	    mapping(address=>bool) signUsrList;		
 		
 		//已经签署的人数
 		uint32 signedUsrCount;
@@ -55,13 +55,13 @@ contract moduleToken is moduleTokenInterface {
 	
 	
 
-    string public name;                   //名称，例如&quot;My test token&quot;
+    string public name;                   //名称，例如"My test token"
     uint8 public decimals;               //返回token使用的小数点后几位。比如如果设置为3，就是支持0.001表示.
     string public symbol;               //token简称,like MTT
     address public owner;
     
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 	
 	//是否允许直接接受eth而不返回cot
 	bool public canRecvEthDirect=false;
@@ -74,11 +74,11 @@ contract moduleToken is moduleTokenInterface {
 	uint256 public coinPriceInWei;
 	
 	//在列表里的人转出代币必须遵守规定的时间、数量限制(比如实现代币定时解冻)
-	mapping(address=&gt;transferPlanInfo) public transferPlanList;
+	mapping(address=>transferPlanInfo) public transferPlanList;
 	
 	//指定的人按指定的以太币数量、代币数量购买代币，不按价格逻辑购买（比如天使轮募资）
 	//否则按价格相关逻辑处理购买代币的请求
-	mapping(address =&gt; ethPlanInfo) public ethPlanList;
+	mapping(address => ethPlanInfo) public ethPlanList;
 	
 	uint public blockTime=block.timestamp;
     
@@ -90,30 +90,30 @@ contract moduleToken is moduleTokenInterface {
 	    string userName;
 		string descInfo;
     }
-    mapping(address=&gt;adminUsrInfo) public adminOwners; //管理员组
+    mapping(address=>adminUsrInfo) public adminOwners; //管理员组
     bool public isAdminOwnersValid;
     uint32 public adminUsrCount;//有效的管理员用户数
-    mapping(uint256=&gt;transferEthAgreement) public transferEthAgreementList;
+    mapping(uint256=>transferEthAgreement) public transferEthAgreementList;
 
     function moduleToken(
         uint256 _initialAmount,
         uint8 _decimalUnits) public 
     {
         owner=msg.sender;//记录合约的owner
-		if(_initialAmount&lt;=0){
+		if(_initialAmount<=0){
 		    totalSupply = 100000000000;   // 设置初始总量
 		    balances[owner]=100000000000;
 		}else{
 		    totalSupply = _initialAmount;   // 设置初始总量
 		    balances[owner]=_initialAmount;
 		}
-		if(_decimalUnits&lt;=0){
+		if(_decimalUnits<=0){
 		    decimals=2;
 		}else{
 		    decimals = _decimalUnits;
 		}
-        name = &quot;CareerOn Token&quot;; 
-        symbol = &quot;COT&quot;;
+        name = "CareerOn Token"; 
+        symbol = "COT";
     }
     
     function changeContractName(string _newName,string _newSymbol) public {
@@ -139,14 +139,14 @@ contract moduleToken is moduleTokenInterface {
             revert();
             return;
 		}
-		if(balances[msg.sender] &lt; _value || 
-			balances[_to] + _value &lt;= balances[_to])
+		if(balances[msg.sender] < _value || 
+			balances[_to] + _value <= balances[_to])
 		{
 			emit Transfer(msg.sender, _to, 0);//触发转币交易事件
             revert();
             return;
 		}
-        if(transferPlanList[msg.sender].isInfoValid &amp;&amp; transferPlanList[msg.sender].transferValidValue&lt;_value)
+        if(transferPlanList[msg.sender].isInfoValid && transferPlanList[msg.sender].transferValidValue<_value)
 		{
 			emit Transfer(msg.sender, _to, 0);//触发转币交易事件
             revert();
@@ -177,14 +177,14 @@ contract moduleToken is moduleTokenInterface {
             revert();
             return;
 		}
-        if(balances[_from] &lt; _value ||
-			allowed[_from][msg.sender] &lt; _value)
+        if(balances[_from] < _value ||
+			allowed[_from][msg.sender] < _value)
 		{
 			emit Transfer(_from, _to, 0);//触发转币交易事件
             revert();
             return;
 		}
-        if(transferPlanList[_from].isInfoValid &amp;&amp; transferPlanList[_from].transferValidValue&lt;_value)
+        if(transferPlanList[_from].isInfoValid && transferPlanList[_from].transferValidValue<_value)
 		{
 			emit Transfer(_from, _to, 0);//触发转币交易事件
             revert();
@@ -207,7 +207,7 @@ contract moduleToken is moduleTokenInterface {
 
     function approve(address _spender, uint256 _value) public returns (bool success) 
     { 
-        require(msg.sender!=_spender &amp;&amp; _value&gt;0);
+        require(msg.sender!=_spender && _value>0);
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -224,7 +224,7 @@ contract moduleToken is moduleTokenInterface {
 	
 	//转移协议所有权并将附带的代币一并转移过去
 	function changeOwner(address newOwner) public{
-        require(msg.sender==owner &amp;&amp; msg.sender!=newOwner);
+        require(msg.sender==owner && msg.sender!=newOwner);
         balances[newOwner]=balances[owner];
         balances[owner]=0;
         owner=newOwner;
@@ -232,7 +232,7 @@ contract moduleToken is moduleTokenInterface {
     }
     
     function setPauseStatus(bool isPaused)public{
-        if(msg.sender!=owner &amp;&amp; !adminOwners[msg.sender].isValid){
+        if(msg.sender!=owner && !adminOwners[msg.sender].isValid){
             revert();
             return;
         }
@@ -244,7 +244,7 @@ contract moduleToken is moduleTokenInterface {
 	                        uint256 allowedMaxValue,
 	                        bool isValid) public
 	{
-	    if(msg.sender!=owner &amp;&amp; !adminOwners[msg.sender].isValid){
+	    if(msg.sender!=owner && !adminOwners[msg.sender].isValid){
 	        revert();
 	        return ;
 	    }
@@ -256,15 +256,15 @@ contract moduleToken is moduleTokenInterface {
     
     //把本代币协议账户下的eth转到指定账户
 	function TransferEthToAddr(address _to,uint256 _value)public payable{
-        require(msg.sender==owner &amp;&amp; !isAdminOwnersValid);
+        require(msg.sender==owner && !isAdminOwnersValid);
         _to.transfer(_value);
     }
     
     function createTransferAgreement(uint256 agreeMentId,
                                       uint256 transferEthInWei,
                                       address to) public {
-        require(adminOwners[msg.sender].isValid &amp;&amp; 
-        transferEthAgreementList[agreeMentId].magic!=123456789 &amp;&amp; 
+        require(adminOwners[msg.sender].isValid && 
+        transferEthAgreementList[agreeMentId].magic!=123456789 && 
         transferEthAgreementList[agreeMentId].magic!=987654321);
         transferEthAgreementList[agreeMentId].magic=123456789;
         transferEthAgreementList[agreeMentId].infoOwner=msg.sender;
@@ -277,25 +277,25 @@ contract moduleToken is moduleTokenInterface {
     }
 	
 	function disableTransferAgreement(uint256 agreeMentId) public {
-		require(transferEthAgreementList[agreeMentId].infoOwner==msg.sender &amp;&amp;
+		require(transferEthAgreementList[agreeMentId].infoOwner==msg.sender &&
 			    transferEthAgreementList[agreeMentId].magic==123456789);
 		transferEthAgreementList[agreeMentId].isValid=false;
 		transferEthAgreementList[agreeMentId].magic=987654321;
 	}
 	
 	function sign(uint256 agreeMentId,address to,uint256 transferEthInWei) public payable{
-		require(transferEthAgreementList[agreeMentId].magic==123456789 &amp;&amp;
-		transferEthAgreementList[agreeMentId].isValid &amp;&amp;
-		transferEthAgreementList[agreeMentId].transferEthInWei==transferEthInWei &amp;&amp;
-		transferEthAgreementList[agreeMentId].to==to &amp;&amp;
-		adminOwners[msg.sender].isValid &amp;&amp;
-		!transferEthAgreementList[agreeMentId].signUsrList[msg.sender]&amp;&amp;
-		adminUsrCount&gt;=2
+		require(transferEthAgreementList[agreeMentId].magic==123456789 &&
+		transferEthAgreementList[agreeMentId].isValid &&
+		transferEthAgreementList[agreeMentId].transferEthInWei==transferEthInWei &&
+		transferEthAgreementList[agreeMentId].to==to &&
+		adminOwners[msg.sender].isValid &&
+		!transferEthAgreementList[agreeMentId].signUsrList[msg.sender]&&
+		adminUsrCount>=2
 		);
 		transferEthAgreementList[agreeMentId].signUsrList[msg.sender]=true;
 		transferEthAgreementList[agreeMentId].signedUsrCount++;
 		
-		if(transferEthAgreementList[agreeMentId].signedUsrCount&lt;=adminUsrCount/2)
+		if(transferEthAgreementList[agreeMentId].signedUsrCount<=adminUsrCount/2)
 		{
 			return;
 		}
@@ -308,17 +308,17 @@ contract moduleToken is moduleTokenInterface {
 	
 	struct needToAddAdminInfo{
 		uint256 magic;
-		mapping(address=&gt;uint256) postedPeople;
+		mapping(address=>uint256) postedPeople;
 		uint32 postedCount;
 	}
-	mapping(address=&gt;needToAddAdminInfo) public needToAddAdminInfoList;
+	mapping(address=>needToAddAdminInfo) public needToAddAdminInfoList;
 	function addAdminOwners(address usrAddr,
 					  string userName,
 					  string descInfo)public 
 	{
 		needToAddAdminInfo memory info;
 		//不是管理员也不是owner，则禁止任何操作
-		if(!adminOwners[msg.sender].isValid &amp;&amp; owner!=msg.sender){
+		if(!adminOwners[msg.sender].isValid && owner!=msg.sender){
 			revert();
 			return;
 		}
@@ -338,7 +338,7 @@ contract moduleToken is moduleTokenInterface {
 			return;
 		}
 		//管理员不到2人时，owner可以至多添加2人到管理员
-		if(adminUsrCount&lt;2){
+		if(adminUsrCount<2){
 			if(msg.sender!=owner){
 				revert();
 				return;
@@ -347,7 +347,7 @@ contract moduleToken is moduleTokenInterface {
 			adminOwners[usrAddr].userName=userName;
 			adminOwners[usrAddr].descInfo=descInfo;
 			adminUsrCount++;
-			if(adminUsrCount&gt;=2) isAdminOwnersValid=true;
+			if(adminUsrCount>=2) isAdminOwnersValid=true;
 			emit adminUsrChange(usrAddr,msg.sender,true);
 			return;
 		}
@@ -379,8 +379,8 @@ contract moduleToken is moduleTokenInterface {
 			}
 			needToAddAdminInfoList[usrAddr].postedCount++;
 			needToAddAdminInfoList[usrAddr].postedPeople[msg.sender]=123456789;
-			if(adminUsrCount&gt;=2 &amp;&amp; 
-			   needToAddAdminInfoList[usrAddr].postedCount&gt;adminUsrCount/2){
+			if(adminUsrCount>=2 && 
+			   needToAddAdminInfoList[usrAddr].postedCount>adminUsrCount/2){
 				adminOwners[usrAddr].userName=userName;
 				adminOwners[usrAddr].descInfo=descInfo;
 				adminOwners[usrAddr].isValid=true;
@@ -396,10 +396,10 @@ contract moduleToken is moduleTokenInterface {
 	}
 	struct needDelFromAdminInfo{
 		uint256 magic;
-		mapping(address=&gt;uint256) postedPeople;
+		mapping(address=>uint256) postedPeople;
 		uint32 postedCount;
 	}
-	mapping(address=&gt;needDelFromAdminInfo) public needDelFromAdminInfoList;
+	mapping(address=>needDelFromAdminInfo) public needDelFromAdminInfoList;
 	function delAdminUsrs(address usrAddr) public {
 		needDelFromAdminInfo memory info;
 		//尚不是管理员，无需删除
@@ -408,7 +408,7 @@ contract moduleToken is moduleTokenInterface {
 			return;
 		}
 		//当前管理员数小于4的话不让再删用户
-		if(adminUsrCount&lt;4){
+		if(adminUsrCount<4){
 			revert();
 			return;
 		}
@@ -449,24 +449,24 @@ contract moduleToken is moduleTokenInterface {
 		needDelFromAdminInfoList[usrAddr].postedCount++;
 		needDelFromAdminInfoList[usrAddr].postedPeople[msg.sender]=123456789;
 		//同意的人数尚未超过一半则直接返回
-		if(needDelFromAdminInfoList[usrAddr].postedCount&lt;=adminUsrCount/2){
+		if(needDelFromAdminInfoList[usrAddr].postedCount<=adminUsrCount/2){
 			return;
 		}
 		//同意的人数超过一半
 		adminOwners[usrAddr].isValid=false;
-		if(adminUsrCount&gt;=1) adminUsrCount--;
-		if(adminUsrCount&lt;=1) isAdminOwnersValid=false;
+		if(adminUsrCount>=1) adminUsrCount--;
+		if(adminUsrCount<=1) isAdminOwnersValid=false;
 		needDelFromAdminInfoList[usrAddr]=info;
 		emit adminUsrChange(usrAddr,msg.sender,false);
 	}
 	
 	//设置指定人按固定eth数、固定代币数购买代币，比如天使轮募资
 	function setEthPlan(address addr,uint256 _ethNum,uint256 _coinNum,bool _isValid) public {
-	    require(msg.sender==owner &amp;&amp;
-	        _ethNum&gt;=0 &amp;&amp;
-	        _coinNum&gt;=0 &amp;&amp;
-	        (_ethNum + _coinNum)&gt;0 &amp;&amp;
-	        _coinNum&lt;=balances[owner]);
+	    require(msg.sender==owner &&
+	        _ethNum>=0 &&
+	        _coinNum>=0 &&
+	        (_ethNum + _coinNum)>0 &&
+	        _coinNum<=balances[owner]);
 	    ethPlanList[addr].isValid=_isValid;
 	    if(ethPlanList[addr].isValid){
 	        ethPlanList[addr].ethNum=_ethNum;
@@ -502,18 +502,18 @@ contract moduleToken is moduleTokenInterface {
 		if(canRecvEthDirect){
 			return;
 		}
-        if(ethPlanList[msg.sender].isValid==true &amp;&amp;
-            msg.value&gt;=ethPlanList[msg.sender].ethNum &amp;&amp;
-            ethPlanList[msg.sender].coinNum&gt;=0 &amp;&amp;
-            ethPlanList[msg.sender].coinNum&lt;=balances[owner]){
+        if(ethPlanList[msg.sender].isValid==true &&
+            msg.value>=ethPlanList[msg.sender].ethNum &&
+            ethPlanList[msg.sender].coinNum>=0 &&
+            ethPlanList[msg.sender].coinNum<=balances[owner]){
                 ethPlanList[msg.sender].isValid=false;
                 balances[owner] -= ethPlanList[msg.sender].coinNum;//从消息发送者账户中减去token数量_value
                 balances[msg.sender] += ethPlanList[msg.sender].coinNum;//往接收账户增加token数量_value
 		        emit Transfer(this, msg.sender, ethPlanList[msg.sender].coinNum);//触发转币交易事件
-        }else if(!ethPlanList[msg.sender].isValid &amp;&amp;
-            coinPriceInWei&gt;0 &amp;&amp;
-            msg.value/coinPriceInWei&lt;=balances[owner] &amp;&amp;
-            msg.value/coinPriceInWei+balances[msg.sender]&gt;balances[msg.sender]){
+        }else if(!ethPlanList[msg.sender].isValid &&
+            coinPriceInWei>0 &&
+            msg.value/coinPriceInWei<=balances[owner] &&
+            msg.value/coinPriceInWei+balances[msg.sender]>balances[msg.sender]){
             uint256 buyCount=msg.value/coinPriceInWei;
             balances[owner] -=buyCount;
             balances[msg.sender] +=buyCount;

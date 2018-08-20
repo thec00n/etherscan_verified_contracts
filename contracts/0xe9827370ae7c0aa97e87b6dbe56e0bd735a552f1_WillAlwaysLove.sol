@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -164,10 +164,10 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
     uint256 public lockCostPerHour;
     uint256 public maxLockDuration;
 
-    mapping(bytes16 =&gt; LoveStory) private loveStories;
+    mapping(bytes16 => LoveStory) private loveStories;
     uint256 public loveStoriesCount;
 
-    mapping (address =&gt; uint256) private pendingWithdrawals;
+    mapping (address => uint256) private pendingWithdrawals;
 
     // ------------------------------------------------------------
 
@@ -259,7 +259,7 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
         public
         payable
     {
-        createLoveStoryWithData(_id, _loverName, _lovedOneName, _lockDurationInHours, &quot;&quot;);
+        createLoveStoryWithData(_id, _loverName, _lovedOneName, _lockDurationInHours, "");
     }
 
     function createLoveStoryWithData(bytes16 _id, bytes32 _loverName, bytes32 _lovedOneName, uint256 _lockDurationInHours, string _data)
@@ -268,7 +268,7 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
         onlyForValidId(_id)
         onlyForUnregisteredId(_id)
     {
-        require(msg.value &gt;= createCost(_lockDurationInHours));
+        require(msg.value >= createCost(_lockDurationInHours));
 
         _updateLoveStory(_id, _loverName, _lovedOneName, _lockDurationInHours, _data);
         loveStoriesCount = loveStoriesCount.add(1);
@@ -353,8 +353,8 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
         address _oldOwner = _loveStory.owner;
 
         require(_oldOwner != msg.sender);
-        require(msg.value &gt;= transferCost(_id, _lockDurationInHours));
-        require(now &gt;= _loveStory.lockedUntil);
+        require(msg.value >= transferCost(_id, _lockDurationInHours));
+        require(now >= _loveStory.lockedUntil);
 
         _updateLoveStory(_id, _loverName, _lovedOneName, _lockDurationInHours, _data);
 
@@ -406,11 +406,11 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
         pure
         returns (bool)
     {
-        for (uint256 i = 0; i &lt; 16; i = i.add(1))
+        for (uint256 i = 0; i < 16; i = i.add(1))
         {
             if (i == 0)
             {
-                // First char must be between &#39;a&#39; and &#39;z&#39;. It CAN&#39;T be NULL.
+                // First char must be between 'a' and 'z'. It CAN'T be NULL.
                 if ( ! _isLowercaseLetter(_id[i]) )
                 {
                     return false;
@@ -418,7 +418,7 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
             }
             else if (i == 15)
             {
-                // Last char must between &#39;a&#39; and &#39;z&#39;. It can also be a terminating NULL.
+                // Last char must between 'a' and 'z'. It can also be a terminating NULL.
                 if ( !(_isLowercaseLetter(_id[i]) || _id[i] == 0) )
                 {
                     return false;
@@ -426,10 +426,10 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
             }
             else
             {
-                // In-between chars must between &#39;a&#39; and &#39;z&#39; or &#39;-&#39;. Otherwise, they should be the unset bytes.
+                // In-between chars must between 'a' and 'z' or '-'. Otherwise, they should be the unset bytes.
                 // The last part is verifiied by requiring that an in-bewteen char that is NULL
                 // must *also* be follwed by a NULL.
-                if ( !(_isLowercaseLetter(_id[i]) || (_id[i] == 0x2D &amp;&amp; _id[i+1] != 0) || (_id[i] == _id[i+1] &amp;&amp; _id[i] == 0)) )
+                if ( !(_isLowercaseLetter(_id[i]) || (_id[i] == 0x2D && _id[i+1] != 0) || (_id[i] == _id[i+1] && _id[i] == 0)) )
                 {
                     return false;
                 }
@@ -499,7 +499,7 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
     function _updateLoveStory(bytes16 _id, bytes32 _loverName, bytes32 _lovedOneName, uint256 _lockDurationInHours, string _data)
         private
     {
-        require(_lockDurationInHours * 1 hours &lt;= maxLockDuration);
+        require(_lockDurationInHours * 1 hours <= maxLockDuration);
 
         LoveStory storage _loveStory = loveStories[_id];
 
@@ -517,6 +517,6 @@ contract WillAlwaysLove is Ownable, ReentrancyGuard {
         returns (bool)
     {
         // Char must be a small case letter: [a-z]
-        return _char &gt;= 0x61 &amp;&amp; _char &lt;= 0x7A;
+        return _char >= 0x61 && _char <= 0x7A;
     }
 }

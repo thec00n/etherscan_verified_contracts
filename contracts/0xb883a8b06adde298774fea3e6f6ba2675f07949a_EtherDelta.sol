@@ -39,11 +39,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balancesVersions[version].balances[msg.sender] &gt;= _value &amp;&amp; balancesVersions[version].balances[_to] + _value &gt; balancesVersions[version].balances[_to]) {
-        //if (balancesVersions[version].balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balancesVersions[version].balances[msg.sender] >= _value && balancesVersions[version].balances[_to] + _value > balancesVersions[version].balances[_to]) {
+        //if (balancesVersions[version].balances[msg.sender] >= _value && _value > 0) {
             balancesVersions[version].balances[msg.sender] -= _value;
             balancesVersions[version].balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -53,8 +53,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balancesVersions[version].balances[_from] &gt;= _value &amp;&amp; allowedVersions[version].allowed[_from][msg.sender] &gt;= _value &amp;&amp; balancesVersions[version].balances[_to] + _value &gt; balancesVersions[version].balances[_to]) {
-        //if (balancesVersions[version].balances[_from] &gt;= _value &amp;&amp; allowedVersions[version].allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balancesVersions[version].balances[_from] >= _value && allowedVersions[version].allowed[_from][msg.sender] >= _value && balancesVersions[version].balances[_to] + _value > balancesVersions[version].balances[_to]) {
+        //if (balancesVersions[version].balances[_from] >= _value && allowedVersions[version].allowed[_from][msg.sender] >= _value && _value > 0) {
             balancesVersions[version].balances[_to] += _value;
             balancesVersions[version].balances[_from] -= _value;
             allowedVersions[version].allowed[_from][msg.sender] -= _value;
@@ -81,14 +81,14 @@ contract StandardToken is Token {
     uint public version = 0;
 
     struct BalanceStruct {
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
     }
-    mapping(uint =&gt; BalanceStruct) balancesVersions;
+    mapping(uint => BalanceStruct) balancesVersions;
 
     struct AllowedStruct {
-      mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping (address => mapping (address => uint256)) allowed;
     }
-    mapping(uint =&gt; AllowedStruct) allowedVersions;
+    mapping(uint => AllowedStruct) allowedVersions;
 
     uint256 public totalSupply;
 
@@ -107,7 +107,7 @@ contract ReserveToken is StandardToken {
         totalSupply += amount;
     }
     function destroy(address account, uint amount) onlyMinter {
-        if (balancesVersions[version].balances[account] &lt; amount) throw;
+        if (balancesVersions[version].balances[account] < amount) throw;
         balancesVersions[version].balances[account] -= amount;
         totalSupply -= amount;
     }
@@ -119,9 +119,9 @@ contract ReserveToken is StandardToken {
 
 contract EtherDelta {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) tokens; //mapping of token addresses to mapping of account balances
+  mapping (address => mapping (address => uint)) tokens; //mapping of token addresses to mapping of account balances
   //ether balances are held in the token=0 account
-  mapping (bytes32 =&gt; uint) orderFills;
+  mapping (bytes32 => uint) orderFills;
   address public feeAccount;
   uint public feeMake; //percentage times (1 ether)
   uint public feeTake; //percentage times (1 ether)
@@ -147,8 +147,8 @@ contract EtherDelta {
   }
 
   function withdraw(uint amount) {
-    if (msg.value&gt;0) throw;
-    if (tokens[0][msg.sender] &lt; amount) throw;
+    if (msg.value>0) throw;
+    if (tokens[0][msg.sender] < amount) throw;
     tokens[0][msg.sender] -= amount;
     if (!msg.sender.call.value(amount)()) throw;
     Withdraw(0, msg.sender, amount, tokens[0][msg.sender]);
@@ -156,15 +156,15 @@ contract EtherDelta {
 
   function depositToken(address token, uint amount) {
     //remember to call Token(address).approve(this, amount) or this contract will not be able to do the transfer on your behalf.
-    if (msg.value&gt;0 || token==0) throw;
+    if (msg.value>0 || token==0) throw;
     if (!Token(token).transferFrom(msg.sender, this, amount)) throw;
     tokens[token][msg.sender] += amount;
     Deposit(token, msg.sender, amount, tokens[token][msg.sender]);
   }
 
   function withdrawToken(address token, uint amount) {
-    if (msg.value&gt;0 || token==0) throw;
-    if (tokens[token][msg.sender] &lt; amount) throw;
+    if (msg.value>0 || token==0) throw;
+    if (tokens[token][msg.sender] < amount) throw;
     tokens[token][msg.sender] -= amount;
     if (!Token(token).transfer(msg.sender, amount)) throw;
     Withdraw(token, msg.sender, amount, tokens[token][msg.sender]);
@@ -175,20 +175,20 @@ contract EtherDelta {
   }
 
   function order(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, uint8 v, bytes32 r, bytes32 s) {
-    if (msg.value&gt;0) throw;
+    if (msg.value>0) throw;
     Order(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, msg.sender, v, r, s);
   }
 
   function trade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount) {
     //amount is in amountGet terms
-    if (msg.value&gt;0) throw;
+    if (msg.value>0) throw;
     bytes32 hash = sha256(tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
     if (!(
-      ecrecover(hash,v,r,s) == user &amp;&amp;
-      block.number &lt;= expires &amp;&amp;
-      orderFills[hash] + amount &lt;= amountGet &amp;&amp;
-      tokens[tokenGet][msg.sender] &gt;= amount &amp;&amp;
-      tokens[tokenGive][user] &gt;= amountGive * amount / amountGet
+      ecrecover(hash,v,r,s) == user &&
+      block.number <= expires &&
+      orderFills[hash] + amount <= amountGet &&
+      tokens[tokenGet][msg.sender] >= amount &&
+      tokens[tokenGive][user] >= amountGive * amount / amountGet
     )) throw;
     tokens[tokenGet][msg.sender] -= amount;
     tokens[tokenGet][user] += amount * ((1 ether) - feeMake) / (1 ether);
@@ -202,8 +202,8 @@ contract EtherDelta {
 
   function testTrade(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s, uint amount, address sender) constant returns(bool) {
     if (!(
-      tokens[tokenGet][sender] &gt;= amount &amp;&amp;
-      availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) &gt;= amount
+      tokens[tokenGet][sender] >= amount &&
+      availableVolume(tokenGet, amountGet, tokenGive, amountGive, expires, nonce, user, v, r, s) >= amount
     )) return false;
     return true;
   }
@@ -211,12 +211,12 @@ contract EtherDelta {
   function availableVolume(address tokenGet, uint amountGet, address tokenGive, uint amountGive, uint expires, uint nonce, address user, uint8 v, bytes32 r, bytes32 s) constant returns(uint) {
     bytes32 hash = sha256(tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
     if (!(
-      ecrecover(hash,v,r,s) == user &amp;&amp;
-      block.number &lt;= expires
+      ecrecover(hash,v,r,s) == user &&
+      block.number <= expires
     )) return 0;
     uint available1 = amountGet - orderFills[hash];
     uint available2 = tokens[tokenGive][user] * amountGet / amountGive;
-    if (available1&lt;available2) return available1;
+    if (available1<available2) return available1;
     return available2;
   }
 }

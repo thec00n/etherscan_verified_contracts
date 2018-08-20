@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,9 +91,9 @@ contract Sale{
     }
 
     function () public payable {
-        require(msg.value &gt; 70000000000000000);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 70000000000000000);
+        require(now > startDate);
+        require(now < endDate);
         uint256 amount = msg.value.mul(price); 
        
         tokenReward.transfer(msg.sender, amount);

@@ -9,37 +9,37 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -77,7 +77,7 @@ contract ERC20 {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     uint256 public endTimeLockedTokensTeam = 1598831999; // +2 years (Sun, 30 Aug 2020 23:59:59 GMT)
     uint256 public endTimeLockedTokensAdvisor = 1551398400; // + 6 months (Fri, 01 Mar 2019 00:00:00 GMT)
     address public walletTeam = 0xdEffB0629FD35AD1A462C13D65f003E9079C3bb1;
@@ -98,14 +98,14 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // Block the sending of tokens from the fund Advisors
-        if( (now &lt; endTimeLockedTokensAdvisor) &amp;&amp; (msg.sender == walletAdvisor) ) {
+        if( (now < endTimeLockedTokensAdvisor) && (msg.sender == walletAdvisor) ) {
             revert();
         }
         // Block the sending of tokens from the fund Team
-        if( (now &lt; endTimeLockedTokensTeam) &amp;&amp; (msg.sender == walletTeam) ) {
+        if( (now < endTimeLockedTokensTeam) && (msg.sender == walletTeam) ) {
             revert();
         }
 
@@ -130,7 +130,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -140,8 +140,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3) returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -190,7 +190,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -223,7 +223,7 @@ contract Ownable {
     function Ownable() public {
         permissions.push(PermissionFunction(false, false));
 /*
-        for (uint8 i = 0; i &lt; 5; i++) {
+        for (uint8 i = 0; i < 5; i++) {
             permissions.push(PermissionFunction(false, false));
         }
 */
@@ -271,8 +271,8 @@ contract Ownable {
  */
 
 contract MintableToken is StandardToken, Ownable {
-    string public constant name = &quot;Greencoin&quot;;
-    string public constant symbol = &quot;GNC&quot;;
+    string public constant name = "Greencoin";
+    string public constant symbol = "GNC";
     uint8 public constant decimals = 18;
 
     event Mint(address indexed to, uint256 amount);
@@ -292,11 +292,11 @@ contract MintableToken is StandardToken, Ownable {
     }
 
     /**
-     * Peterson&#39;s Law Protection
+     * Peterson's Law Protection
      * Claim tokens
      */
     function claimTokens(address _token) public  onlyOwner {
-        //require(permissions[4].approveOwner == true &amp;&amp; permissions[4].approveOwnerTwo == true);
+        //require(permissions[4].approveOwner == true && permissions[4].approveOwnerTwo == true);
         if (_token == 0x0) {
                 owner.transfer(this.balance);
                 return;
@@ -351,8 +351,8 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
     uint256[] public rates  = [575, 550, 525, 500];
     uint256 public weiMinSale =  1 * 10**17;
 
-    mapping (address =&gt; uint256) public deposited;
-    mapping(address =&gt; bool) public whitelist;
+    mapping (address => uint256) public deposited;
+    mapping(address => bool) public whitelist;
 
     uint256 public constant INITIAL_SUPPLY = 50 * (10 ** 6) * (10 ** uint256(decimals));
     uint256 public fundForSale = 30 * (10 ** 6) * (10 ** uint256(decimals));
@@ -416,10 +416,10 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function getTotalAmountOfTokens(uint256 _weiAmount) internal view returns (uint256) {
         uint256 currentDate = now;
-        //currentDate = 1526342400; //for test&#39;s (Tue, 15 May 2018 00:00:00 GMT)
+        //currentDate = 1526342400; //for test's (Tue, 15 May 2018 00:00:00 GMT)
         uint256 currentPeriod = getPeriod(currentDate);
         uint256 amountOfTokens = 0;
-        if(currentPeriod &lt; 4){
+        if(currentPeriod < 4){
             amountOfTokens = _weiAmount.mul(rates[currentPeriod]);
             if(whitelist[msg.sender]){
                 amountOfTokens = amountOfTokens.div(100).mul(110);
@@ -429,21 +429,21 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
     }
 
     function getPeriod(uint256 _currentDate) public pure returns (uint) {
-        //1525132800 - May, 01, 2018 00:00:00 &amp;&amp; 1527724799 - May, 30, 2018 23:59:59
-        //1530489600 - Jul, 02, 2018 00:00:00 &amp;&amp; 1531785599 - Jul, 16, 2018 23:59:59
-        //1531785600 - Jul, 17, 2018 00:00:00 &amp;&amp; 1533081599 - Jul, 31, 2018 23:59:59
-        //1533081600 - Aug, 01, 2018 00:00:00 &amp;&amp; 1535673599 - Aug, 30, 2018 23:59:59
+        //1525132800 - May, 01, 2018 00:00:00 && 1527724799 - May, 30, 2018 23:59:59
+        //1530489600 - Jul, 02, 2018 00:00:00 && 1531785599 - Jul, 16, 2018 23:59:59
+        //1531785600 - Jul, 17, 2018 00:00:00 && 1533081599 - Jul, 31, 2018 23:59:59
+        //1533081600 - Aug, 01, 2018 00:00:00 && 1535673599 - Aug, 30, 2018 23:59:59
 
-        if( 1525132800 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1527724799){
+        if( 1525132800 <= _currentDate && _currentDate <= 1527724799){
             return 0;
         }
-        if( 1530489600 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1531785599){
+        if( 1530489600 <= _currentDate && _currentDate <= 1531785599){
             return 1;
         }
-        if( 1531785600 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1533081599){
+        if( 1531785600 <= _currentDate && _currentDate <= 1533081599){
             return 2;
         }
-        if( 1533081600 &lt;= _currentDate &amp;&amp; _currentDate &lt;= 1535673599){
+        if( 1533081600 <= _currentDate && _currentDate <= 1535673599){
             return 3;
         }
         return 10;
@@ -469,14 +469,14 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
 
     function validPurchaseTokens(uint256 _weiAmount) public returns (uint256) {
         uint256 addTokens = getTotalAmountOfTokens(_weiAmount);
-        if(_weiAmount &lt; weiMinSale){
+        if(_weiAmount < weiMinSale){
             return 0;
         }
-        if (tokenAllocated.add(addTokens) &gt; fundForSale) {
+        if (tokenAllocated.add(addTokens) > fundForSale) {
             TokenLimitReached(tokenAllocated, addTokens);
             return 0;
         }
-        if (weiRaised.add(_weiAmount) &gt; hardWeiCap) {
+        if (weiRaised.add(_weiAmount) > hardWeiCap) {
             HardCapReached();
             return 0;
         }
@@ -488,9 +488,9 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
      * @return True if the operation was successful.
      */
     function ownerBurnToken(uint _value) public onlyOwner returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[owner]);
-        require(permissions[0].approveOwner == true &amp;&amp; permissions[0].approveOwnerTwo == true);
+        require(_value > 0);
+        require(_value <= balances[owner]);
+        require(permissions[0].approveOwner == true && permissions[0].approveOwnerTwo == true);
 
         balances[owner] = balances[owner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -504,7 +504,7 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
    * @param _beneficiary Address to be added to the whitelist
    */
     function addToWhitelist(address _beneficiary) external onlyOwner {
-        //require(permissions[1].approveOwner == true &amp;&amp; permissions[1].approveOwnerTwo == true);
+        //require(permissions[1].approveOwner == true && permissions[1].approveOwnerTwo == true);
         whitelist[_beneficiary] = true;
     }
 
@@ -513,8 +513,8 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
      * @param _beneficiaries Addresses to be added to the whitelist
      */
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-        //require(permissions[2].approveOwner == true &amp;&amp; permissions[2].approveOwnerTwo == true);
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        //require(permissions[2].approveOwner == true && permissions[2].approveOwnerTwo == true);
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
@@ -524,7 +524,7 @@ contract GNCCrowdsale is Ownable, Crowdsale, MintableToken {
      * @param _beneficiary Address to be removed to the whitelist
      */
     function removeFromWhitelist(address _beneficiary) external onlyOwner {
-        //require(permissions[3].approveOwner == true &amp;&amp; permissions[3].approveOwnerTwo == true);
+        //require(permissions[3].approveOwner == true && permissions[3].approveOwnerTwo == true);
         whitelist[_beneficiary] = false;
     }
 }

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -126,7 +126,7 @@ library Discounts {
 
     // for each tier starting at minimum
     // draw from the sent funds and count tokens to issue
-    for (var i = _minimumTier; i &lt; self.tiers.length &amp;&amp; issue &lt; _amount; i++) {
+    for (var i = _minimumTier; i < self.tiers.length && issue < _amount; i++) {
       // get the available tokens left at each tier
       available = self.tiers[i].available;
 
@@ -135,7 +135,7 @@ library Discounts {
 
       // either purchase what the funds can afford, or the whole supply
       // at the tier
-      if (affordable &lt; available) {
+      if (affordable < available) {
         purchase = affordable;
       } else {
         purchase = available;
@@ -143,7 +143,7 @@ library Discounts {
 
       // limit the amount purchased up to specified amount
       // use safemath here in case of unknown overflow risk
-      if (purchase.add(issue) &gt; _amount) {
+      if (purchase.add(issue) > _amount) {
         purchase = _amount.sub(issue);
       }
 
@@ -224,12 +224,12 @@ library Limits {
     uint256 amount;  // # of tokens
     uint256 duration;  // # of blocks
 
-    mapping (address =&gt; PurchaseRecord) purchases;
+    mapping (address => PurchaseRecord) purchases;
   }
 
   /*
-   * Record a purchase towards a purchaser&#39;s cap limit
-   * @dev resets the purchaser&#39;s cap if the window duration has been met
+   * Record a purchase towards a purchaser's cap limit
+   * @dev resets the purchaser's cap if the window duration has been met
    * @param _participant - purchaser
    * @param _amount - token amount of new purchase
    */
@@ -277,7 +277,7 @@ library Limits {
     returns (uint256 _blocks)
   {
     var expires = self.purchases[_participant].blockNumber + self.duration;
-    if (block.number &gt; expires) {
+    if (block.number > expires) {
       return 0;
     } else {
       return expires - block.number;
@@ -290,7 +290,7 @@ library Limits {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -375,12 +375,12 @@ contract Claimable is Ownable {
 contract SeeToken is Claimable {
   using SafeMath for uint256;
 
-  string public constant name = &quot;See Presale Token&quot;;
-  string public constant symbol = &quot;SEE&quot;;
+  string public constant name = "See Presale Token";
+  string public constant symbol = "SEE";
   uint8 public constant decimals = 18;
 
   uint256 public totalSupply;
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
 
   event Issue(address to, uint256 amount);
 
@@ -398,8 +398,8 @@ contract SeeToken is Claimable {
 
   /**
    * @dev Get the balance for a particular token holder
-   * @param _holder The token holder&#39;s address
-   * @return The holder&#39;s balance
+   * @param _holder The token holder's address
+   * @return The holder's balance
    */
   function balanceOf(address _holder) public view returns (uint256 balance) {
     balance = balances[_holder];
@@ -473,7 +473,7 @@ contract Presale is Claimable, Pausable {
   Discounts.Collection discounts;
   Limits.Window cap;
 
-  mapping (address =&gt; Participant) participants;
+  mapping (address => Participant) participants;
 
 
   event Tier(uint256 discount, uint256 available);
@@ -569,7 +569,7 @@ contract Presale is Claimable, Pausable {
     onlyOwner
     public
   {
-    for (uint256 i = 0; i &lt; _authorized.length; i++) {
+    for (uint256 i = 0; i < _authorized.length; i++) {
       participants[_authorized[i]] = Participant({
         authorized: true,
         minimumTier: _minimumTier
@@ -627,7 +627,7 @@ contract Presale is Claimable, Pausable {
     token.issue(msg.sender, purchased);
 
     // if there are funds left, send refund
-    if (refund &gt; 0) {
+    if (refund > 0) {
       msg.sender.transfer(refund);
     }
   }
@@ -662,7 +662,7 @@ contract Presale is Claimable, Pausable {
     var records = discounts.tiers;
     uint256[2][] memory tiers = new uint256[2][](records.length);
 
-    for (uint256 i = 0; i &lt; records.length; i++) {
+    for (uint256 i = 0; i < records.length; i++) {
       tiers[i][0] = records[i].discount;
       tiers[i][1] = records[i].available;
     }
@@ -683,7 +683,7 @@ contract Presale is Claimable, Pausable {
     var participant = participants[_participant];
     uint256 minimumTier = participant.minimumTier;
 
-    // minor HACK - if the participant isn&#39;t authorized, just set the
+    // minor HACK - if the participant isn't authorized, just set the
     // minimum tier above the bounds
     if (!participant.authorized) {
       minimumTier = discounts.tiers.length;
@@ -691,7 +691,7 @@ contract Presale is Claimable, Pausable {
 
     uint256[] memory tiers = new uint256[](discounts.tiers.length);
 
-    for (uint256 i = minimumTier; i &lt; tiers.length; i++) {
+    for (uint256 i = minimumTier; i < tiers.length; i++) {
       tiers[i] = discounts.tiers[i].available;
     }
 

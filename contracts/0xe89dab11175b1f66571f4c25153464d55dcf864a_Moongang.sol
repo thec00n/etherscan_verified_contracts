@@ -2,7 +2,7 @@
 
 pragma solidity ^0.4.18;
 
-//--------- OpenZeppelin&#39;s Safe Math
+//--------- OpenZeppelin's Safe Math
 //Source : https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol
 /**
  * @title SafeMath
@@ -24,13 +24,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,12 +56,12 @@ contract Moongang {
 
   modifier minAmountReached {
     //In reality, the correct amount is the amount + 1%
-    require(this.balance &gt;= SafeMath.div(SafeMath.mul(min_amount, 100), 99));
+    require(this.balance >= SafeMath.div(SafeMath.mul(min_amount, 100), 99));
     _;
   }
 
   modifier underMaxAmount {
-    require(max_amount == 0 || this.balance &lt;= max_amount);
+    require(max_amount == 0 || this.balance <= max_amount);
     _;
   }
 
@@ -80,10 +80,10 @@ contract Moongang {
   uint256 public min_amount;
 
   //Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; uint256) public balances_bonus;
+  mapping (address => uint256) public balances;
+  mapping (address => uint256) public balances_bonus;
   //whitelist
-  mapping (address =&gt; bool) public whitelist;
+  mapping (address => bool) public whitelist;
   // Track whether the contract has bought the tokens yet.
   bool public bought_tokens;
   // Record ETH value of tokens currently held by contract.
@@ -99,7 +99,7 @@ contract Moongang {
   uint256 fees;
   //Set by the owner. Allows people to refund totally or partially.
   bool public allow_refunds;
-  //The reduction of the allocation in % | example : 40 -&gt; 40% reduction
+  //The reduction of the allocation in % | example : 40 -> 40% reduction
   uint256 public percent_reduction;
   //flag controlled by owner to enable/disable whitelists
   bool public whitelist_enabled;
@@ -123,7 +123,7 @@ contract Moongang {
   // Buy the tokens. Sends ETH to the presale wallet and records the ETH amount held in the contract.
   function buy_the_tokens() onlyOwner minAmountReached underMaxAmount {
     //Avoids burning the funds
-    require(!bought_tokens &amp;&amp; sale != 0x0);
+    require(!bought_tokens && sale != 0x0);
     //Record that the contract has bought the tokens.
     bought_tokens = true;
     //Sends the fee before so the contract_eth_value contains the correct balance
@@ -132,7 +132,7 @@ contract Moongang {
     owner.transfer(SafeMath.sub(SafeMath.sub(fees, dev_fee), audit_fee));
     developer.transfer(dev_fee);
     auditor.transfer(audit_fee);
-    //Record the amount of ETH sent as the contract&#39;s current value.
+    //Record the amount of ETH sent as the contract's current value.
     contract_eth_value = this.balance;
     contract_eth_value_bonus = this.balance;
     // Transfer all the funds to the crowdsale address.
@@ -149,13 +149,13 @@ contract Moongang {
   }
 
   function force_partial_refund(address _to_refund) onlyOwner {
-    require(percent_reduction &gt; 0);
+    require(percent_reduction > 0);
     //Amount to refund is the amount minus the X% of the reduction
     //amount_to_refund = balance*X
     uint256 basic_amount = SafeMath.div(SafeMath.mul(balances[_to_refund], percent_reduction), 100);
     uint256 eth_to_withdraw = basic_amount;
     if (!bought_tokens) {
-      //We have to take in account the partial refund of the fee too if the tokens weren&#39;t bought yet
+      //We have to take in account the partial refund of the fee too if the tokens weren't bought yet
       eth_to_withdraw = SafeMath.div(SafeMath.mul(basic_amount, 100), 99);
       fees = SafeMath.sub(fees, SafeMath.div(eth_to_withdraw, FEE));
     }
@@ -165,19 +165,19 @@ contract Moongang {
   }
 
   function whitelist_addys(address[] _addys) onlyOwner {
-    for (uint256 i = 0; i &lt; _addys.length; i++) {
+    for (uint256 i = 0; i < _addys.length; i++) {
       whitelist[_addys[i]] = true;
     }
   }
 
   function blacklist_addys(address[] _addys) onlyOwner {
-    for (uint256 i = 0; i &lt; _addys.length; i++) {
+    for (uint256 i = 0; i < _addys.length; i++) {
       whitelist[_addys[i]] = false;
     }
   }
 
   function set_sale_address(address _sale) onlyOwner {
-    //Avoid mistake of putting 0x0 and can&#39;t change twice the sale address
+    //Avoid mistake of putting 0x0 and can't change twice the sale address
     require(_sale != 0x0);
     sale = _sale;
   }
@@ -199,7 +199,7 @@ contract Moongang {
   }
 
   function set_percent_reduction(uint256 _reduction) onlyOwner {
-    require(_reduction &lt;= 100);
+    require(_reduction <= 100);
     percent_reduction = _reduction;
   }
 
@@ -232,7 +232,7 @@ contract Moongang {
 
   // Allows any user to withdraw his tokens.
   function withdraw() {
-    // Disallow withdraw if tokens haven&#39;t been bought yet.
+    // Disallow withdraw if tokens haven't been bought yet.
     require(bought_tokens);
     uint256 contract_token_balance = token.balanceOf(address(this));
     // Disallow token withdrawals if there are no tokens to withdraw.
@@ -240,7 +240,7 @@ contract Moongang {
     uint256 tokens_to_withdraw = SafeMath.div(SafeMath.mul(balances[msg.sender], contract_token_balance), contract_eth_value);
     // Update the value of tokens currently held by the contract.
     contract_eth_value = SafeMath.sub(contract_eth_value, balances[msg.sender]);
-    // Update the user&#39;s balance prior to sending to prevent recursive call.
+    // Update the user's balance prior to sending to prevent recursive call.
     balances[msg.sender] = 0;
     // Send the funds.  Throws on failure to prevent loss of funds.
     require(token.transfer(msg.sender, tokens_to_withdraw));
@@ -251,7 +251,7 @@ contract Moongang {
     Special function to withdraw the bonus tokens after the 6 months lockup.
     bonus_received has to be set to true.
   */
-    require(bought_tokens &amp;&amp; bonus_received);
+    require(bought_tokens && bonus_received);
     uint256 contract_token_balance = token.balanceOf(address(this));
     require(contract_token_balance != 0);
     uint256 tokens_to_withdraw = SafeMath.div(SafeMath.mul(balances_bonus[msg.sender], contract_token_balance), contract_eth_value_bonus);
@@ -262,30 +262,30 @@ contract Moongang {
 
   // Allows any user to get his eth refunded before the purchase is made.
   function refund() {
-    require(!bought_tokens &amp;&amp; allow_refunds &amp;&amp; percent_reduction == 0);
+    require(!bought_tokens && allow_refunds && percent_reduction == 0);
     //balance of contributor = contribution * 0.99
     //so contribution = balance/0.99
     uint256 eth_to_withdraw = SafeMath.div(SafeMath.mul(balances[msg.sender], 100), 99);
-    // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+    // Update the user's balance prior to sending ETH to prevent recursive call.
     balances[msg.sender] = 0;
     //Updates the balances_bonus too
     balances_bonus[msg.sender] = 0;
     //Updates the fees variable by substracting the refunded fee
     fees = SafeMath.sub(fees, SafeMath.div(eth_to_withdraw, FEE));
-    // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+    // Return the user's funds.  Throws on failure to prevent loss of funds.
     msg.sender.transfer(eth_to_withdraw);
   }
 
   //Allows any user to get a part of his ETH refunded, in proportion
   //to the % reduced of the allocation
   function partial_refund() {
-    require(allow_refunds &amp;&amp; percent_reduction &gt; 0);
+    require(allow_refunds && percent_reduction > 0);
     //Amount to refund is the amount minus the X% of the reduction
     //amount_to_refund = balance*X
     uint256 basic_amount = SafeMath.div(SafeMath.mul(balances[msg.sender], percent_reduction), 100);
     uint256 eth_to_withdraw = basic_amount;
     if (!bought_tokens) {
-      //We have to take in account the partial refund of the fee too if the tokens weren&#39;t bought yet
+      //We have to take in account the partial refund of the fee too if the tokens weren't bought yet
       eth_to_withdraw = SafeMath.div(SafeMath.mul(basic_amount, 100), 99);
       fees = SafeMath.sub(fees, SafeMath.div(eth_to_withdraw, FEE));
     }
@@ -306,8 +306,8 @@ contract Moongang {
     //Updates both of the balances
     balances[msg.sender] = SafeMath.add(balances[msg.sender], SafeMath.sub(msg.value, fee));
     //Checks if the individual cap is respected
-    //If it&#39;s not, changes are reverted
-    require(individual_cap == 0 || balances[msg.sender] &lt;= individual_cap);
+    //If it's not, changes are reverted
+    require(individual_cap == 0 || balances[msg.sender] <= individual_cap);
     balances_bonus[msg.sender] = balances[msg.sender];
   }
 }

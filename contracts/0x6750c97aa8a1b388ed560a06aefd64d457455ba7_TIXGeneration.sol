@@ -25,20 +25,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**   
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -109,7 +109,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -128,7 +128,7 @@ contract StandardToken is ERC20, BasicToken {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -153,10 +153,10 @@ contract StandardToken is ERC20, BasicToken {
  * @dev Based on code by BAT: https://github.com/brave-intl/basic-attention-token-crowdsale/blob/master/contracts/BAToken.sol
  */
 contract TIXGeneration is StandardToken {
-    string public constant name = &quot;Blocktix Token&quot;;
-    string public constant symbol = &quot;TIX&quot;;
+    string public constant name = "Blocktix Token";
+    string public constant symbol = "TIX";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // crowdsale parameters
     bool public isFinalized;              // switched to true in operational state
@@ -198,17 +198,17 @@ contract TIXGeneration is StandardToken {
 
     // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
     modifier between(uint256 _startTime, uint256 _endTime) {
-        assert(now &gt;= _startTime &amp;&amp; now &lt; _endTime);
+        assert(now >= _startTime && now < _endTime);
         _;
     }
 
     // verifies that an amount is greater than zero
     modifier validAmount() {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -294,12 +294,12 @@ contract TIXGeneration is StandardToken {
         if (totalSupply == tokenGenerationCap)
             throw;
 
-        uint256 tokens = SafeMath.mul(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+        uint256 tokens = SafeMath.mul(msg.value, tokenExchangeRate); // check that we're not over totals
         uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
         uint256 diff;
 
         // switch to next tier
-        if (tokenExchangeRate != t3tokenExchangeRate &amp;&amp; finalTier &lt; checkedSupply)
+        if (tokenExchangeRate != t3tokenExchangeRate && finalTier < checkedSupply)
         {
             diff = SafeMath.sub(checkedSupply, finalTier);
             tokens = SafeMath.sub(tokens, diff);
@@ -310,10 +310,10 @@ contract TIXGeneration is StandardToken {
         }
 
         // return money if something goes wrong
-        if (tokenGenerationCap &lt; checkedSupply)
+        if (tokenGenerationCap < checkedSupply)
         {
             diff = SafeMath.sub(checkedSupply, tokenGenerationCap);
-            if (diff &gt; 10**12)
+            if (diff > 10**12)
                 throw;
             checkedSupply = SafeMath.sub(checkedSupply, diff);
             tokens = SafeMath.sub(tokens, diff);
@@ -332,7 +332,7 @@ contract TIXGeneration is StandardToken {
         whenNotFinalized
     {
         if (msg.sender != ethFundDeposit) throw; // locks finalize to the ultimate ETH owner
-        if (now &lt;= endTime &amp;&amp; totalSupply != tokenGenerationCap) throw;
+        if (now <= endTime && totalSupply != tokenGenerationCap) throw;
         // move to operational
         isFinalized = true;
         if(!ethFundDeposit.send(this.balance)) throw;  // send the eth to Blocktix

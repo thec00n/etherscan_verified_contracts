@@ -21,13 +21,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -106,7 +106,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -115,7 +115,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -144,7 +144,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -154,8 +154,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -169,7 +169,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -204,7 +204,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -222,8 +222,8 @@ contract CTESale is Ownable, StandardToken {
     uint8 public constant PRE_SALE_PERCENT = 20; // 20%
 
     // Public variables of the token
-    string public name = &quot;Career Trust Ecosystem&quot;;
-    string public symbol = &quot;CTE&quot;;
+    string public name = "Career Trust Ecosystem";
+    string public symbol = "CTE";
     uint8 public decimals = TOKEN_DECIMALS; // 18 decimals is the strongly suggested default, avoid changing it
 
 
@@ -247,10 +247,10 @@ contract CTESale is Ownable, StandardToken {
     bool public allowTransfers = true; // if true then allow coin transfers
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     bool public enableInternalLock = true; // if false then allow coin transfers by internal sell lock
-    mapping (address =&gt; bool) public internalLockAccount;
+    mapping (address => bool) public internalLockAccount;
 
 
 
@@ -272,33 +272,33 @@ contract CTESale is Ownable, StandardToken {
     }
 
     function _isUserInternalLock() internal view returns (bool) {
-        return (enableInternalLock &amp;&amp; internalLockAccount[msg.sender]);
+        return (enableInternalLock && internalLockAccount[msg.sender]);
     }
 
-    /// @dev increase the token&#39;s supply
+    /// @dev increase the token's supply
     function increasePreSaleSupply (uint256 _value) onlyOwner public {
-        require (_value + preSaleSupply &lt; totalSupply);
+        require (_value + preSaleSupply < totalSupply);
         preSaleSupply += _value;
         IncreasePreSaleSupply(_value);
     }
 
-    /// @dev decrease the token&#39;s supply
+    /// @dev decrease the token's supply
     function decreasePreSaleSupply (uint256 _value) onlyOwner public {
-        require (preSaleSupply - _value &gt; 0);
+        require (preSaleSupply - _value > 0);
         preSaleSupply -= _value;
         DecreasePreSaleSupply(_value);
     }
 
-    /// @dev increase the token&#39;s supply
+    /// @dev increase the token's supply
     function increaseSoldSaleSupply (uint256 _value) onlyOwner public {
-        require (_value + soldSupply &lt; totalSupply);
+        require (_value + soldSupply < totalSupply);
         soldSupply += _value;
         IncreaseSoldSaleSupply(_value);
     }
 
-    /// @dev decrease the token&#39;s supply
+    /// @dev decrease the token's supply
     function decreaseSoldSaleSupply (uint256 _value) onlyOwner public {
-        require (soldSupply - _value &gt; 0);
+        require (soldSupply - _value > 0);
         soldSupply -= _value;
         DecreaseSoldSaleSupply(_value);
     }
@@ -321,7 +321,7 @@ contract CTESale is Ownable, StandardToken {
     }
 
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -362,7 +362,7 @@ contract CTESale is Ownable, StandardToken {
     // Admin function for transfer coins
     function transferFromAdmin(address _from, address _to, uint256 _value) onlyOwner public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[_from] = balances[_from].sub(_value);
@@ -383,7 +383,7 @@ contract CTESale is Ownable, StandardToken {
     // sell token, soldSupply, lockAccount
     function internalSellTokenFromAdmin(address _to, uint256 _value, bool _lock) onlyOwner public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[owner]);
+        require(_value <= balances[owner]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[owner] = balances[owner].sub(_value);
@@ -434,7 +434,7 @@ contract CTESale is Ownable, StandardToken {
         uint256 amount = msg.value.mul(buyExchangeRate);
 
         require(!stopBuy);
-        require(amount &lt;= balances[owner]);
+        require(amount <= balances[owner]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[owner] = balances[owner].sub(amount);
@@ -451,11 +451,11 @@ contract CTESale is Ownable, StandardToken {
     function sell(uint256 amount) public {
         uint256 ethAmount = amount.div(sellExchangeRate);
         require(!stopSell);
-        require(this.balance &gt;= ethAmount);      // checks if the contract has enough ether to buy
-        require(ethAmount &gt;= 1);      // checks if the contract has enough ether to buy
+        require(this.balance >= ethAmount);      // checks if the contract has enough ether to buy
+        require(ethAmount >= 1);      // checks if the contract has enough ether to buy
 
-        require(balances[msg.sender] &gt;= amount);                   // Check if the sender has enough
-        require(balances[owner] + amount &gt; balances[owner]);       // Check for overflows
+        require(balances[msg.sender] >= amount);                   // Check if the sender has enough
+        require(balances[owner] + amount > balances[owner]);       // Check for overflows
         require(!frozenAccount[msg.sender]);                        // Check if sender is frozen
         require(!_isUserInternalLock());                                            // Check if recipient is internalSellLock
 
@@ -468,6 +468,6 @@ contract CTESale is Ownable, StandardToken {
 
         Transfer(msg.sender, owner, amount);
 
-        msg.sender.transfer(ethAmount);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(ethAmount);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 }

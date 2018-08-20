@@ -4,7 +4,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     constructor() public {
@@ -72,7 +72,7 @@ contract EtheremonAdventureClaim is BasicAccessControl {
         uint8 siteId;
     }
     
-    mapping(uint32 =&gt; uint) public bidTokens;
+    mapping(uint32 => uint) public bidTokens;
     
     address public adventureItem;
     address public adventurePresale;
@@ -93,10 +93,10 @@ contract EtheremonAdventureClaim is BasicAccessControl {
     }
     
     function claimSiteToken(uint8 _siteId, uint _index) isActive requireAdventureItem requireAdventurePresale public {
-        if (_siteId &lt; MIN_SITE_ID || _siteId &gt; MAX_SITE_ID || _index &gt;= 10) revert();
+        if (_siteId < MIN_SITE_ID || _siteId > MAX_SITE_ID || _index >= 10) revert();
         BiddingInfo memory bidInfo;
         (bidInfo.bidder, bidInfo.bidId, bidInfo.siteId, bidInfo.amount, bidInfo.time) = EtheremonAdventurePresale(adventurePresale).getBidBySiteIndex(_siteId, _index);
-        if (bidInfo.bidId == 0 || bidTokens[bidInfo.bidId] &gt; 0) revert();
+        if (bidInfo.bidId == 0 || bidTokens[bidInfo.bidId] > 0) revert();
         uint tokenId = (uint(_siteId) - 1) * 10 + _index + 1;
         bidTokens[bidInfo.bidId] = tokenId;
         EtheremonAdventureItem(adventureItem).spawnSite(_siteId, tokenId, bidInfo.bidder);

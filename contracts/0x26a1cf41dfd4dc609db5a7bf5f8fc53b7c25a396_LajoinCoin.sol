@@ -25,14 +25,14 @@ contract LajoinCoin is ERC20Basic, Owner {
   string public name;
   string public symbol;
   uint8 public decimals;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   struct FrozenToken {
     bool isFrozenAll;
     uint256 amount;
     uint256 unfrozenDate;
   }
-  mapping(address =&gt; FrozenToken) frozenTokens;
+  mapping(address => FrozenToken) frozenTokens;
 
   event onFrozenAccount(address target,bool freeze);
   event onFrozenToken(address target,uint256 amount,uint256 unforzenDate);
@@ -57,8 +57,8 @@ contract LajoinCoin is ERC20Basic, Owner {
   }
 
   function freezeToken(address target,uint256 amount,uint256 date)  onlyOwner public {
-      require(amount &gt; 0);
-      require(date &gt; now);
+      require(amount > 0);
+      require(date > now);
       frozenTokens[target].amount = amount;
       frozenTokens[target].unfrozenDate = date;
 
@@ -67,12 +67,12 @@ contract LajoinCoin is ERC20Basic, Owner {
 
   function transfer(address to,uint256 value) public returns (bool) {
     require(msg.sender != to);
-    require(value &gt; 0);
-    require(balances[msg.sender] &gt;= value);
+    require(value > 0);
+    require(balances[msg.sender] >= value);
     require(frozenTokens[msg.sender].isFrozenAll != true);
 
-    if(frozenTokens[msg.sender].unfrozenDate &gt; now){
-        require(balances[msg.sender] - value &gt;= frozenTokens[msg.sender].amount);
+    if(frozenTokens[msg.sender].unfrozenDate > now){
+        require(balances[msg.sender] - value >= frozenTokens[msg.sender].amount);
     }
 
     balances[msg.sender] -= value;

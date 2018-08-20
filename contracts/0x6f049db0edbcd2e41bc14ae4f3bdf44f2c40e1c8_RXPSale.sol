@@ -57,8 +57,8 @@ contract RXPSale {
     }
 
     function () payable public {
-        require(msg.value &gt; 1 ether);
-        require(now &gt; startDate);
+        require(msg.value > 1 ether);
+        require(now > startDate);
 	    uint amount = msg.value * price;
 	    amount += amount / 4;
         tokenReward.transferFrom(owner, msg.sender, amount);

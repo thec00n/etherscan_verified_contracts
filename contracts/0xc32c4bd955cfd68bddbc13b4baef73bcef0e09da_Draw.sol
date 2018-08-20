@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -69,13 +69,13 @@ contract Draw is Ownable {
         counter = 0;
         slots_left = MAX_PLAYERS;
         draw_number++;
-        for (uint i = 0; i &lt; players.length; i++) {
+        for (uint i = 0; i < players.length; i++) {
             players[i] = address(0);
         }
     }
 
     function () external payable {
-        for (uint i = 0; i &lt; players.length; i++) {
+        for (uint i = 0; i < players.length; i++) {
             require(players[i] != msg.sender);
         }
         joinGame();
@@ -84,19 +84,19 @@ contract Draw is Ownable {
     function joinGame() public payable {
         require(msg.sender != owner);
         require(msg.value == 100 finney);
-        require(counter &lt; MAX_PLAYERS);
+        require(counter < MAX_PLAYERS);
 
         players[counter] = msg.sender;
         counter++;
         slots_left = MAX_PLAYERS - counter;
 
-        if (counter &gt;= MAX_PLAYERS) {
+        if (counter >= MAX_PLAYERS) {
             last_winner = endGame();
         }
     }
 
     function endGame() internal returns (address winner) {
-        require(this.balance - owner_balance &gt;= 900 finney);
+        require(this.balance - owner_balance >= 900 finney);
         tdelta = now - t0;
         index = uint(tdelta % MAX_PLAYERS);
         t0 = now;

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -67,7 +67,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -111,7 +111,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -122,8 +122,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -186,7 +186,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -237,9 +237,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, StandardToken _token) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -283,14 +283,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -301,7 +301,7 @@ contract Crowdsale {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -358,7 +358,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -394,7 +394,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -441,7 +441,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 
 
@@ -455,12 +455,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -487,7 +487,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -518,7 +518,7 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Limit token transfer until the crowdsale is over.
@@ -539,7 +539,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -586,8 +586,8 @@ contract ReleasableToken is ERC20, Ownable {
 // File: contracts/BRFToken/BRFToken.sol
 
 contract BRFToken is StandardToken, ReleasableToken {
-  string public constant name = &quot;BRF Token&quot;;
-  string public constant symbol = &quot;BRF&quot;;
+  string public constant name = "BRF Token";
+  string public constant symbol = "BRF";
   uint8 public constant decimals = 18;
 
   function BRFToken() public {
@@ -612,11 +612,11 @@ contract BRFCrowdsale is RefundableCrowdsale {
   address public bountyManagementWalletAddress;
   bool public contractInitialized = false;
   uint256 public constant MINIMUM_PURCHASE = 100;
-  mapping(uint256 =&gt; uint256) public totalTokensByStage;
+  mapping(uint256 => uint256) public totalTokensByStage;
   bool public refundingComplete = false;
   uint256 public refundingIndex = 0;
-  mapping(address =&gt; uint256) public directInvestors;
-  mapping(address =&gt; uint256) public indirectInvestors;
+  mapping(address => uint256) public directInvestors;
+  mapping(address => uint256) public indirectInvestors;
   address[] private directInvestorsCollection;
 
   event TokenAllocated(address indexed beneficiary, uint256 tokensAllocated, uint256 amount);
@@ -636,12 +636,12 @@ contract BRFCrowdsale is RefundableCrowdsale {
     Crowdsale(_icoStartTimes[0], _icoEndTimes[2], _icoRates[0], _wallet, new BRFToken())
     RefundableCrowdsale(_goal)
   {
-    require((_icoCaps[0] &gt; 0) &amp;&amp; (_icoCaps[1] &gt; 0) &amp;&amp; (_icoCaps[2] &gt; 0));
-    require((_icoRates[0] &gt; 0) &amp;&amp; (_icoRates[1] &gt; 0) &amp;&amp; (_icoRates[2] &gt; 0));
-    require((_icoEndTimes[0] &gt; _icoStartTimes[0]) &amp;&amp; (_icoEndTimes[1] &gt; _icoStartTimes[1]) &amp;&amp; (_icoEndTimes[2] &gt; _icoStartTimes[2]));
-    require((_icoStartTimes[1] &gt;= _icoEndTimes[0]) &amp;&amp; (_icoStartTimes[2] &gt;= _icoEndTimes[1]));
-    require(_managementWalletAddress != owner &amp;&amp; _wallet != _managementWalletAddress);
-    require(_bountyManagementWalletAddress != owner &amp;&amp; _wallet != _bountyManagementWalletAddress);
+    require((_icoCaps[0] > 0) && (_icoCaps[1] > 0) && (_icoCaps[2] > 0));
+    require((_icoRates[0] > 0) && (_icoRates[1] > 0) && (_icoRates[2] > 0));
+    require((_icoEndTimes[0] > _icoStartTimes[0]) && (_icoEndTimes[1] > _icoStartTimes[1]) && (_icoEndTimes[2] > _icoStartTimes[2]));
+    require((_icoStartTimes[1] >= _icoEndTimes[0]) && (_icoStartTimes[2] >= _icoEndTimes[1]));
+    require(_managementWalletAddress != owner && _wallet != _managementWalletAddress);
+    require(_bountyManagementWalletAddress != owner && _wallet != _bountyManagementWalletAddress);
     icoStartTimes = _icoStartTimes;
     icoEndTimes = _icoEndTimes;
     icoRates = _icoRates;
@@ -670,11 +670,11 @@ contract BRFCrowdsale is RefundableCrowdsale {
 
   // For Allocating PreSold and Reserved Tokens
   function allocateTokens(address beneficiary, uint256 tokensToAllocate, uint256 stage, uint256 weiPrice) public onlyOwner {
-    require(stage &lt;= 5);
+    require(stage <= 5);
     uint256 tokensWithDecimals = toBRFWEI(tokensToAllocate);
     uint256 weiAmount = weiPrice * tokensWithDecimals;
     weiRaised = weiRaised.add(weiAmount);
-    if (weiAmount &gt; 0) {
+    if (weiAmount > 0) {
       totalTokensByStage[stage] = totalTokensByStage[stage].add(tokensWithDecimals);
       indirectInvestors[beneficiary] = indirectInvestors[beneficiary].add(tokensWithDecimals);
     }
@@ -691,13 +691,13 @@ contract BRFCrowdsale is RefundableCrowdsale {
     uint256 stage = getStage(currTime);
     uint256 weiAmount = msg.value;
     uint256 tokenToGet = weiAmount.mul(rate);
-    if (totalTokensByStage[stage].add(tokenToGet) &gt; stageCap) {
+    if (totalTokensByStage[stage].add(tokenToGet) > stageCap) {
       stage = stage + 1;
       rate = getRateByStage(stage);
       tokenToGet = weiAmount.mul(rate);
     }
 
-    require((tokenToGet &gt;= MINIMUM_PURCHASE));
+    require((tokenToGet >= MINIMUM_PURCHASE));
 
     if (directInvestors[beneficiary] == 0) {
       directInvestorsCollection.push(beneficiary);
@@ -711,8 +711,8 @@ contract BRFCrowdsale is RefundableCrowdsale {
     require(isFinalized);
     require(!goalReached());
     require(!refundingComplete);
-    for (uint256 i = 0; i &lt; 20; i++) {
-      if (refundingIndex &gt;= directInvestorsCollection.length) {
+    for (uint256 i = 0; i < 20; i++) {
+      if (refundingIndex >= directInvestorsCollection.length) {
         refundingComplete = true;
         break;
       }
@@ -723,7 +723,7 @@ contract BRFCrowdsale is RefundableCrowdsale {
 
   function advanceEndTime(uint256 newEndTime) public onlyOwner {
     require(!isFinalized);
-    require(newEndTime &gt; endTime);
+    require(newEndTime > endTime);
     endTime = newEndTime;
   }
 
@@ -736,9 +736,9 @@ contract BRFCrowdsale is RefundableCrowdsale {
   }
 
   function getStage(uint256 currTime) public view returns (uint256) {
-    if (currTime &lt; icoEndTimes[0]) {
+    if (currTime < icoEndTimes[0]) {
       return 0;
-    } else if ((currTime &gt; icoEndTimes[0]) &amp;&amp; (currTime &lt;= icoEndTimes[1])) {
+    } else if ((currTime > icoEndTimes[0]) && (currTime <= icoEndTimes[1])) {
       return 1;
     } else {
       return 2;

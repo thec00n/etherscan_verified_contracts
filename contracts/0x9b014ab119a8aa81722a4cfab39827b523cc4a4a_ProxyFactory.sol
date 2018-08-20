@@ -11,7 +11,7 @@ contract ProxyFactory {
     {
         address[] memory proxyAddresses = new address[](_count);
 
-        for (uint256 i = 0; i &lt; _count; ++i) {
+        for (uint256 i = 0; i < _count; ++i) {
             proxyAddresses[i] = createProxyImpl(_target, _data);
         }
 
@@ -32,7 +32,7 @@ contract ProxyFactory {
     returns (address proxyContract)
     {
         assembly {
-            let contractCode := mload(0x40) // Find empty storage location using &quot;free memory pointer&quot;
+            let contractCode := mload(0x40) // Find empty storage location using "free memory pointer"
 
             mstore(add(contractCode, 0x0b), _target) // Add target address, with a 11 bytes [i.e. 23 - (32 - 20)] offset to later accomodate first part of the bytecode
             mstore(sub(contractCode, 0x09), 0x000000000000000000603160008181600b9039f3600080808080368092803773) // First part of the bytecode, shifted left by 9 bytes, overwrites left padding of target address
@@ -43,7 +43,7 @@ contract ProxyFactory {
                 revert(0, 0)
             }
 
-        // check if the _data.length &gt; 0 and if it is forward it to the newly created contract
+        // check if the _data.length > 0 and if it is forward it to the newly created contract
             let dataLength := mload(_data)
             if iszero(iszero(dataLength)) {
                 if iszero(call(gas, proxyContract, 0, add(_data, 0x20), dataLength, 0, 0)) {

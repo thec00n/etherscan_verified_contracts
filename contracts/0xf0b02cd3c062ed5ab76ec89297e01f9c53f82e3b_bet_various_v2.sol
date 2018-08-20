@@ -13,7 +13,7 @@ contract bet_various_v2{
   uint statusprice = 0.01 ether;
   Guess[1000] guesses;
   uint    numguesses = 0;
-  bytes32 curhash = &#39;&#39;;
+  bytes32 curhash = '';
   
   uint stasticsarrayitems = 20;
   uint[20] statistics;
@@ -47,7 +47,7 @@ contract bet_various_v2{
     if(msg.sender != developer)
       return;
   	arraysize  = _contenders;
-  	if(arraysize&gt;1000)
+  	if(arraysize>1000)
   	  arraysize = 1000;
   	bettingprice = _bettingprice;
   }
@@ -67,19 +67,19 @@ contract bet_various_v2{
     uint i = 0;
     int diff = 0;
     uint guess = 0;
-    for (i = 0; i &lt; numguesses; i++) {
+    for (i = 0; i < numguesses; i++) {
       diff = (int)((int)(value)-(int)(guesses[i].guess));
-      if(diff&lt;0)
+      if(diff<0)
         diff = diff*-1;
-      if(lastdiff&gt;(uint)(diff)){
+      if(lastdiff>(uint)(diff)){
         guess = guesses[i].guess;
         lastdiff = (uint)(diff);
       }
     }
     
-    for (i = 0; i &lt; numguesses; i++) {
+    for (i = 0; i < numguesses; i++) {
       diff = (int)((int)(value)-(int)(guesses[i].guess));
-      if(diff&lt;0)
+      if(diff<0)
         diff = diff*-1;
       if(lastdiff==uint(diff)){
         winnners[numwinners++].addr = guesses[i].addr;
@@ -107,7 +107,7 @@ contract bet_various_v2{
   function getLotteryMoney() constant returns(uint)
   {
     uint developerfee = getDeveloperFee();
-    uint prize = (this.balance - developerfee)/(numwinners&lt;1?1:numwinners);
+    uint prize = (this.balance - developerfee)/(numwinners<1?1:numwinners);
     return prize;
   }
 
@@ -144,11 +144,11 @@ contract bet_various_v2{
     state = State.Locked;
 
     uint lotterynumber = (uint(curhash)+block.timestamp)%(maxguess+1);
-    // now that we know the random number was safely generate, let&#39;s do something with the random number..
+    // now that we know the random number was safely generate, let's do something with the random number..
     var guess = findWinners(lotterynumber);
     uint prize = getLotteryMoney();
     uint remain = this.balance - (prize*numwinners);
-    for (uint i = 0; i &lt; numwinners; i++) {
+    for (uint i = 0; i < numwinners; i++) {
       address winner = winnners[i].addr;
       winner.transfer(prize);
       SentPrizeToWinner(winner, prize, guess, _gameindex, lotterynumber, block.timestamp);
@@ -158,7 +158,7 @@ contract bet_various_v2{
     developer.transfer(remain); 
     
     numguesses = 0;
-    for (i = 0; i &lt; stasticsarrayitems; i++) {
+    for (i = 0; i < stasticsarrayitems; i++) {
       statistics[i] = 0;
     }
     _gameindex++;
@@ -173,12 +173,12 @@ contract bet_various_v2{
     
     uint divideby = maxguess/stasticsarrayitems;
     curhash = sha256(block.timestamp, block.coinbase, block.difficulty, curhash);
-    if((uint)(numguesses+1)&lt;=arraysize) {
+    if((uint)(numguesses+1)<=arraysize) {
       guesses[numguesses++] = Guess(msg.sender, guess);
       uint statindex = guess / divideby;
-      if(statindex&gt;=stasticsarrayitems) statindex = stasticsarrayitems-1;
+      if(statindex>=stasticsarrayitems) statindex = stasticsarrayitems-1;
       statistics[statindex] ++;
-      if((uint)(numguesses)&gt;=arraysize){
+      if((uint)(numguesses)>=arraysize){
         _finish();
       }
     }

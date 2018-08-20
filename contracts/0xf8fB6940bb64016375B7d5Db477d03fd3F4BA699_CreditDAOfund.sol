@@ -28,8 +28,8 @@ contract CreditDAOfund {
 	    require(msg.sender == creditDaoAddress);
 	    
 	    uint withdrawalAmount = creditBitContract.lockedBalanceOf(address(this)) + creditBitContract.balanceOf(address(this)) - lockedCore;
-	    require(withdrawalAmount &lt;= creditBitContract.balanceOf(address(this)));
-	    require(withdrawalAmount &gt; 0);
+	    require(withdrawalAmount <= creditBitContract.balanceOf(address(this)));
+	    require(withdrawalAmount > 0);
 	    creditBitContract.transfer(_destination, withdrawalAmount);
 	}
 	

@@ -35,7 +35,7 @@ contract Cubic {
     }
 
     function freeze(uint blocks) external payable {
-        secure(blocks, &#39;cubic&#39;);
+        secure(blocks, 'cubic');
     }
 
     function freezeAPI(uint blocks, string api) external payable {
@@ -76,7 +76,7 @@ contract Cubic {
 
 	function secure(uint blocks, string api) private {
 
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint amountToFreeze = msg.value; 
         totalEthHandled = add(totalEthHandled, amountToFreeze);
           
@@ -89,16 +89,16 @@ contract Cubic {
         */
         if (rate != 200 ) {
 
-            if (totalEthHandled &gt; 5000 ether) {
+            if (totalEthHandled > 5000 ether) {
                 setRate(200);  //.50 of one percent
-            } else if (totalEthHandled &gt; 1000 ether) { 
+            } else if (totalEthHandled > 1000 ether) { 
                 setRate(500);  //.20 of one percent
-            } else if (totalEthHandled &gt; 100 ether) { 
+            } else if (totalEthHandled > 100 ether) { 
                 setRate(1000); //.10 of one percent
             }
         }
 
-        if (rate &gt; 0) {
+        if (rate > 0) {
             uint fee = div(amountToFreeze, rate);
             amountToFreeze = sub(amountToFreeze, fee);
         }
@@ -114,19 +114,19 @@ contract Cubic {
 
     function add(uint a, uint b) private returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function div(uint a, uint b) private returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) private returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -155,7 +155,7 @@ contract Cube {
     }
 
     function deliver() external {
-        assert(block.number &gt; unlockedAfter); 
+        assert(block.number > unlockedAfter); 
         cubicContract.forgetCube(this);
 		selfdestruct(destination);		
 	}

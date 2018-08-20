@@ -18,7 +18,7 @@ contract WHAPRESALEICO {
   uint256 public unsoldTokens;
   bool public fundingGoalReached = false;
   bool public preIcoOpen = false;
-  mapping(address =&gt; uint256) public balanceOf;
+  mapping(address => uint256) public balanceOf;
 
   event GoalReached(address _beneficiary, uint _amountRaised);
   event FundTransfer(address backer, uint amount, bool isContribution);
@@ -42,32 +42,32 @@ contract WHAPRESALEICO {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
     }
     
     function safeSub(uint a, uint b) internal returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
       uint c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 
     function () payable {
-      require(now&lt;icoEndTime); 
+      require(now<icoEndTime); 
       require(preIcoOpen); 
-      require(msg.value &gt; 0);
+      require(msg.value > 0);
 
       uint amount = msg.value;
       balanceOf[msg.sender] += amount;
       amountRaised += amount;
-      if (now &gt;= bonusEndTime) {
+      if (now >= bonusEndTime) {
         uint tokens = safeMul(msg.value, tokensForOneEth);
       } else 
       {
@@ -81,11 +81,11 @@ contract WHAPRESALEICO {
       unsoldTokens = tokenReward.balanceOf(address(this));
     }
 
-    modifier aftericoEndTime() { if (now &gt;= icoEndTime) _; }
+    modifier aftericoEndTime() { if (now >= icoEndTime) _; }
 
 
     function checkGoalReached() aftericoEndTime {
-      if (amountRaised &gt;= fundingGoal){
+      if (amountRaised >= fundingGoal){
         fundingGoalReached = true;
         GoalReached(beneficiary, amountRaised);
       }
@@ -106,8 +106,8 @@ contract WHAPRESALEICO {
 
     function changeBonusPercentage(uint newBonusPercentage) {
      require(beneficiary == msg.sender);
-     require(newBonusPercentage &gt; 0);
-     require(newBonusPercentage &lt;= 50);
+     require(newBonusPercentage > 0);
+     require(newBonusPercentage <= 50);
      bonusPercentage = newBonusPercentage;
    }
 
@@ -118,20 +118,20 @@ contract WHAPRESALEICO {
 
    function shortenPreIco(uint removeMinutes) {
      require(beneficiary == msg.sender);
-     require((icoEndTime - removeMinutes * 1 minutes)&gt;now);
-     require((icoEndTime - removeMinutes * 1 minutes)&gt;bonusEndTime);
+     require((icoEndTime - removeMinutes * 1 minutes)>now);
+     require((icoEndTime - removeMinutes * 1 minutes)>bonusEndTime);
      icoEndTime = icoEndTime - removeMinutes * 1 minutes;   
    }
 
    function prolongBonusPreIco(uint addMinutes) {
     require(beneficiary == msg.sender);
-    require((bonusEndTime + addMinutes * 1 minutes) &lt;= icoEndTime);
+    require((bonusEndTime + addMinutes * 1 minutes) <= icoEndTime);
     bonusEndTime = bonusEndTime + addMinutes * 1 minutes;
   }
   function shortenBonusPreIco(uint removeMinutes) {
     require(beneficiary == msg.sender);
-    require((icoEndTime - removeMinutes * 1 minutes)&gt;now);
-    require((bonusEndTime - removeMinutes * 1 minutes) &lt;= icoEndTime);
+    require((icoEndTime - removeMinutes * 1 minutes)>now);
+    require((bonusEndTime - removeMinutes * 1 minutes) <= icoEndTime);
     bonusEndTime = bonusEndTime - removeMinutes * 1 minutes;
   }
 

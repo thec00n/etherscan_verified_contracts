@@ -24,14 +24,14 @@ library SafeMath {
     }
 
     function minus(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
 
     function plus(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -61,7 +61,7 @@ contract ERC20Token {
  * @title TokenSafe
  *
  * @dev Abstract contract that serves as a base for the token safes. It is a multi-group token safe, where each group
- *      has it&#39;s own release time and multiple accounts with locked tokens.
+ *      has it's own release time and multiple accounts with locked tokens.
  */
 contract TokenSafe {
     using SafeMath for uint;
@@ -76,11 +76,11 @@ contract TokenSafe {
         // The total remaining tokens in the group.
         uint256 remaining;
         // The individual account token balances in the group.
-        mapping (address =&gt; uint) balances;
+        mapping (address => uint) balances;
     }
 
     // The groups of locked tokens
-    mapping (uint8 =&gt; Group) public groups;
+    mapping (uint8 => Group) public groups;
 
     /**
      * @dev The constructor.
@@ -98,7 +98,7 @@ contract TokenSafe {
      * @param _releaseTimestamp Unix timestamp of the time after which the tokens can be released
      */
     function init(uint8 _id, uint _releaseTimestamp) internal {
-        require(_releaseTimestamp &gt; 0);
+        require(_releaseTimestamp > 0);
         
         Group storage group = groups[_id];
         group.releaseTimestamp = _releaseTimestamp;
@@ -125,10 +125,10 @@ contract TokenSafe {
      */
     function release(uint8 _id, address _account) public {
         Group storage group = groups[_id];
-        require(now &gt;= group.releaseTimestamp);
+        require(now >= group.releaseTimestamp);
         
         uint tokens = group.balances[_account];
-        require(tokens &gt; 0);
+        require(tokens > 0);
         
         group.balances[_account] = 0;
         group.remaining = group.remaining.minus(tokens);
@@ -153,8 +153,8 @@ contract StandardToken is ERC20Token {
     string public symbol;
     uint8 public decimals;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     /**
      * @dev The constructor assigns the token name, symbols and decimals.
@@ -168,7 +168,7 @@ contract StandardToken is ERC20Token {
     /**
      * @dev Get the balance of an address.
      *
-     * @param _address The address which&#39;s balance will be checked.
+     * @param _address The address which's balance will be checked.
      *
      * @return The current balance of the address.
      */
@@ -229,7 +229,7 @@ contract StandardToken is ERC20Token {
      * @return Whether the transfer was successful or not.
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         
         allowed[_from][msg.sender] = allowed[_from][msg.sender].minus(_value);
         executeTransfer(_from, _to, _value);
@@ -242,7 +242,7 @@ contract StandardToken is ERC20Token {
      */
     function executeTransfer(address _from, address _to, uint256 _value) internal {
         require(_to != address(0));
-        require(_value != 0 &amp;&amp; _value &lt;= balances[_from]);
+        require(_value != 0 && _value <= balances[_from]);
         
         balances[_from] = balances[_from].minus(_value);
         balances[_to] = balances[_to].plus(_value);
@@ -343,7 +343,7 @@ contract BurnableToken is StandardToken {
         require(_value != 0);
 
         address burner = msg.sender;
-        require(_value &lt;= balances[burner]);
+        require(_value <= balances[burner]);
 
         balances[burner] = balances[burner].minus(_value);
         totalSupply = totalSupply.minus(_value);
@@ -465,7 +465,7 @@ contract PausableToken is StandardToken, HasOwner {
         emit Unpause();
     }
 
-    /// Overrides of the standard token&#39;s functions to add the paused/unpaused functionality.
+    /// Overrides of the standard token's functions to add the paused/unpaused functionality.
 
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         return super.transfer(_to, _value);
@@ -611,8 +611,8 @@ contract BasicFundraiser is HasOwner, AbstractFundraiser {
     )
         internal
     {
-        require(_endTime &gt;= _startTime);
-        require(_conversionRate &gt; 0);
+        require(_endTime >= _startTime);
+        require(_conversionRate > 0);
         require(_beneficiary != address(0));
 
         startTime = _startTime;
@@ -627,7 +627,7 @@ contract BasicFundraiser is HasOwner, AbstractFundraiser {
      * @param _conversionRate New conversion rate
      */
     function setConversionRate(uint256 _conversionRate) public onlyOwner {
-        require(_conversionRate &gt; 0);
+        require(_conversionRate > 0);
 
         conversionRate = _conversionRate;
 
@@ -655,7 +655,7 @@ contract BasicFundraiser is HasOwner, AbstractFundraiser {
         validateTransaction();
 
         uint256 tokens = calculateTokens(_amount);
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         totalRaised = totalRaised.plus(_amount);
         handleTokens(_address, tokens);
@@ -683,7 +683,7 @@ contract BasicFundraiser is HasOwner, AbstractFundraiser {
      */
     function validateTransaction() internal view {
         require(msg.value != 0);
-        require(now &gt;= startTime &amp;&amp; now &lt; endTime);
+        require(now >= startTime && now < endTime);
     }
 
     /**
@@ -692,7 +692,7 @@ contract BasicFundraiser is HasOwner, AbstractFundraiser {
      * @return whether the fundraiser is passed its deadline or not.
      */
     function hasEnded() public view returns (bool) {
-        return now &gt;= endTime;
+        return now >= endTime;
     }
 }
 
@@ -795,14 +795,14 @@ contract IndividualCapsFundraiser is BasicFundraiser {
      */
     function validateTransaction() internal view {
         super.validateTransaction();
-        require(msg.value &gt;= individualMinCap);
+        require(msg.value >= individualMinCap);
     }
 
     /**
-     * @dev We validate the new amount doesn&#39;t surpass maximum contribution cap
+     * @dev We validate the new amount doesn't surpass maximum contribution cap
      */
     function handleTokens(address _address, uint256 _tokens) internal {
-        require(individualMaxCapTokens == 0 || token.balanceOf(_address).plus(_tokens) &lt;= individualMaxCapTokens);
+        require(individualMaxCapTokens == 0 || token.balanceOf(_address).plus(_tokens) <= individualMaxCapTokens);
 
         super.handleTokens(_address, _tokens);
     }
@@ -840,7 +840,7 @@ contract GasPriceLimitFundraiser is HasOwner, BasicFundraiser {
      * @dev The transaction is valid if the gas price limit is lifted-off or the transaction meets the requirement
      */
     function validateTransaction() internal view {
-        require(gasPriceLimit == 0 || tx.gasprice &lt;= gasPriceLimit);
+        require(gasPriceLimit == 0 || tx.gasprice <= gasPriceLimit);
 
         return super.validateTransaction();
     }
@@ -863,7 +863,7 @@ contract CappedFundraiser is BasicFundraiser {
      * @param _hardCap The maximum amount of ether allowed to be raised.
      */
     function initializeCappedFundraiser(uint256 _hardCap) internal {
-        require(_hardCap &gt; 0);
+        require(_hardCap > 0);
 
         hardCap = _hardCap;
     }
@@ -875,7 +875,7 @@ contract CappedFundraiser is BasicFundraiser {
      */
     function validateTransaction() internal view {
         super.validateTransaction();
-        require(totalRaised &lt; hardCap);
+        require(totalRaised < hardCap);
     }
 
     /**
@@ -885,7 +885,7 @@ contract CappedFundraiser is BasicFundraiser {
      * @return Whether or not the fundraiser has ended.
      */
     function hasEnded() public view returns (bool) {
-        return (super.hasEnded() || totalRaised &gt;= hardCap);
+        return (super.hasEnded() || totalRaised >= hardCap);
     }
 }
 
@@ -922,7 +922,7 @@ contract FinalizableFundraiser is BasicFundraiser {
 
     /**
      * @dev Override this function to add extra work when a fundraiser is finalized.
-     * Don&#39;t forget to add super.finalization() to execute this part.
+     * Don't forget to add super.finalization() to execute this part.
      */
     function finalization() internal {
         beneficiary.transfer(address(this).balance);
@@ -955,7 +955,7 @@ contract RefundSafe is HasOwner {
     enum State {ACTIVE, REFUNDING, CLOSED}
 
     /// Holds all ETH deposits of participants in the fundraiser.
-    mapping(address =&gt; uint256) public deposits;
+    mapping(address => uint256) public deposits;
 
     /// The address which will receive the funds if the fundraiser is successful.
     address public beneficiary;
@@ -1083,7 +1083,7 @@ contract RefundableFundraiser is FinalizableFundraiser {
      * @param _softCap The minimum amount of funds (in ETH) that need to be reached.
      */
     function initializeRefundableFundraiser(uint256 _softCap) internal {
-        require(_softCap &gt; 0);
+        require(_softCap > 0);
 
         refundSafe = new RefundSafe(address(this), beneficiary);
         softCap = _softCap;
@@ -1102,7 +1102,7 @@ contract RefundableFundraiser is FinalizableFundraiser {
      * @return Whether `softCap` is reached or not.
      */
     function softCapReached() public view returns (bool) {
-        return totalRaised &gt;= softCap;
+        return totalRaised >= softCap;
     }
 
     /**
@@ -1151,8 +1151,8 @@ contract RefundableFundraiser is FinalizableFundraiser {
 contract HOWToken is MintableToken, BurnableToken, PausableToken {
   constructor(address _owner, address _minter)
     StandardToken(
-      &quot;HOW Token&quot;,   // Token name
-      &quot;HOW&quot;, // Token symbol
+      "HOW Token",   // Token name
+      "HOW", // Token symbol
       18  // Token decimals
     )
     HasOwner(_owner)
@@ -1172,7 +1172,7 @@ contract HOWTokenSafe is TokenSafe {
     TokenSafe(_token)
     public
   {
-    // Group &quot;A&quot;
+    // Group "A"
     init(
       0, // Group Id
       1534170000 // Release date = 13 Aug 2018 14:20 UTC

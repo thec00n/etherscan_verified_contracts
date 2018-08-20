@@ -13,7 +13,7 @@ contract Crowdsale {
     token       public tokenReward;
     uint        public excess;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     bool    public crowdsaleClosed = false;
     bool    public crowdsaleSuccess = false;
@@ -70,7 +70,7 @@ contract Crowdsale {
     function    withdrawalMoneyBack() public {
         uint    amount;
 
-        if (crowdsaleClosed == true &amp;&amp; crowdsaleSuccess == false) {
+        if (crowdsaleClosed == true && crowdsaleSuccess == false) {
             amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
             amountRaised -= amount;
@@ -80,7 +80,7 @@ contract Crowdsale {
     }
 
     function    withdrawalOwner() public onlyOwner {
-        if (crowdsaleSuccess == true &amp;&amp; crowdsaleClosed == true) {
+        if (crowdsaleSuccess == true && crowdsaleClosed == true) {
             beneficiary.transfer(amountRaised);
             FundTransfer(beneficiary, amountRaised, false);
             burnToken();
@@ -88,7 +88,7 @@ contract Crowdsale {
     }
 
     function takeExcess () public onlyOwner {
-        require(excess &gt; 0);
+        require(excess > 0);
         beneficiary.transfer(excess);
         excess = 0;
         FundTransfer(beneficiary, excess, false);

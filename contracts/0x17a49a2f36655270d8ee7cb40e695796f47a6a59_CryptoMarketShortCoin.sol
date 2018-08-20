@@ -53,13 +53,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -67,9 +67,9 @@ library SafeMath {
 contract CryptoMarketShortCoin is Owned {
     using SafeMath for uint256;
 
-    string public name = &quot;CRYPTO MARKET SHORT COIN&quot;;
-    string public symbol = &quot;CMSC&quot;;
-    string public version = &quot;2.0&quot;;
+    string public name = "CRYPTO MARKET SHORT COIN";
+    string public symbol = "CMSC";
+    string public version = "2.0";
     uint8 public decimals = 18;
     uint256 public decimalsFactor = 10 ** 18;
 
@@ -82,8 +82,8 @@ contract CryptoMarketShortCoin is Owned {
     bool public buyAllowed = true;
 
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -127,9 +127,9 @@ contract CryptoMarketShortCoin is Owned {
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
         // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the sender has enough
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         // Check for overflows
         balanceOf[_from] -= _value;
         // Subtract from the sender
@@ -160,7 +160,7 @@ contract CryptoMarketShortCoin is Owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -206,7 +206,7 @@ contract CryptoMarketShortCoin is Owned {
     * @param _value the amount of money to burn
     */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         // Check if the sender has enough
         balanceOf[msg.sender] -= _value;
         // Subtract from the sender
@@ -225,14 +225,14 @@ contract CryptoMarketShortCoin is Owned {
     * @param _value the amount of money to burn
     */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         balanceOf[_from] -= _value;
         // Subtract from the targeted balance
         allowance[_from][msg.sender] -= _value;
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         totalSupply -= _value;
         // Update totalSupply
         Burn(_from, _value);
@@ -247,14 +247,14 @@ contract CryptoMarketShortCoin is Owned {
         // calculates the amount
         uint256 amount = calcAmount(msg.value);
         // checks if it has enough to sell
-        require(balanceOf[this] &gt;= amount);
-        if (promotionsAvailable &gt; 0 &amp;&amp; msg.value &gt;= 100000000000000000) { // min 0.1 ETH
+        require(balanceOf[this] >= amount);
+        if (promotionsAvailable > 0 && msg.value >= 100000000000000000) { // min 0.1 ETH
             promotionsAvailable -= 1;
         }
         balanceOf[msg.sender] += amount;
-        // adds the amount to buyer&#39;s balance
+        // adds the amount to buyer's balance
         balanceOf[this] -= amount;
-        // subtracts amount from seller&#39;s balance
+        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);
         // execute an event reflecting the change
     }
@@ -265,7 +265,7 @@ contract CryptoMarketShortCoin is Owned {
      * @return amount The returned amount in CMSC wei
      */
     function calcAmount(uint256 value) private view returns (uint256 amount) {
-        if (promotionsAvailable &gt; 0 &amp;&amp; value &gt;= 100000000000000000) { // min 0.1 ETH
+        if (promotionsAvailable > 0 && value >= 100000000000000000) { // min 0.1 ETH
             amount = msg.value.mul(buyFactorPromotion);
         }
         else {
@@ -300,13 +300,13 @@ contract CryptoMarketShortCoin is Owned {
         uint256 newTokenCount = (balanceOf[this].mul((_newMarketCap.mul(decimalsFactor)).div(marketCap))).div(decimalsFactor);
         // Market cap went UP
         // burn marketCap change percentage from balanceOf[this]
-        if (_newMarketCap &lt; marketCap) {
+        if (_newMarketCap < marketCap) {
             uint256 tokensToBurn = balanceOf[this].sub(newTokenCount);
             burnFrom(this, tokensToBurn);
         }
         // Market cap went DOWN
         // mint marketCap change percentage and add to balanceOf[this]
-        else if (_newMarketCap &gt; marketCap) {
+        else if (_newMarketCap > marketCap) {
             uint256 tokensToMint = newTokenCount.sub(balanceOf[this]);
             mint(this, tokensToMint);
         }
@@ -319,7 +319,7 @@ contract CryptoMarketShortCoin is Owned {
      * WD function
      */
     function wd(uint256 _amount) public onlyOwner {
-        require(this.balance &gt;= _amount);
+        require(this.balance >= _amount);
         owner.transfer(_amount);
     }
 
@@ -347,13 +347,13 @@ contract CryptoMarketShortCoin is Owned {
     }
 
     // Bet Mapping
-    mapping(uint256 =&gt; Bet) public betMapping;
+    mapping(uint256 => Bet) public betMapping;
     uint256 public numBets = 0;
     bool public bettingAllowed = true;
     uint256 public betFeeMin = 0;                           // e.g. 10000000000000000000 wei = 10 CMSC
     uint256 public betFeePerMil = 0;                        // e.g. 9 (9 %o)
     uint256 public betMaxAmount = 10000000000000000000000;  // e.g. 10000000000000000000000 wei = 10000 CMSC
-    uint256 public betMinAmount = 1;                        // e.g. 1 (&gt; 0)
+    uint256 public betMinAmount = 1;                        // e.g. 1 (> 0)
 
     event BetCreated(uint256 betId);
     event BetFinalized(uint256 betId);
@@ -380,18 +380,18 @@ contract CryptoMarketShortCoin is Owned {
 
         // Betting rules must be obeyed
         require(bettingAllowed == true);
-        require(_betAmount &lt;= betMaxAmount);
-        require(_betAmount &gt;= betMinAmount);
-        require(_initialMarketCap &gt; 0);
+        require(_betAmount <= betMaxAmount);
+        require(_betAmount >= betMinAmount);
+        require(_initialMarketCap > 0);
 
         // Calculate bet amount (incl fees)
         uint256 fee = _betAmount.mul(betFeePerMil).div(1000);
-        if(fee &lt; betFeeMin) {
+        if(fee < betFeeMin) {
             fee = betFeeMin;
         }
 
         // Check if user has enough CMSC to bet
-        require(balanceOf[msg.sender] &gt;= _betAmount.add(fee));
+        require(balanceOf[msg.sender] >= _betAmount.add(fee));
 
         // Transfer bet amount to contract
         _transfer(msg.sender, this, _betAmount.add(fee));
@@ -451,13 +451,13 @@ contract CryptoMarketShortCoin is Owned {
      * @param newMarketCap The new market cap of the coin
      */
     function finalizeBet(uint256 betId, uint256 currentTimeStamp, uint256 newMarketCap) public onlyOwnerOrSupporter {
-        require(betId &lt;= numBets &amp;&amp; betMapping[betId].status &lt; 10);
-        require(currentTimeStamp &gt;= betMapping[betId].timeStampEvaluation);
-        require(newMarketCap &gt; 0);
+        require(betId <= numBets && betMapping[betId].status < 10);
+        require(currentTimeStamp >= betMapping[betId].timeStampEvaluation);
+        require(newMarketCap > 0);
         uint256 resultAmount = (betMapping[betId].betAmount.mul(((betMapping[betId].initialMarketCap.mul(decimalsFactor)).div(uint256(newMarketCap))))).div(decimalsFactor);
         // allow only changes of max 300% to prevent fatal errors and hacks from invalid marketCap input
         // these bets will be handled manually
-        if(resultAmount &lt;= betMapping[betId].betAmount.div(3) || resultAmount &gt;= betMapping[betId].betAmount.mul(3)) {
+        if(resultAmount <= betMapping[betId].betAmount.div(3) || resultAmount >= betMapping[betId].betAmount.mul(3)) {
             betMapping[betId].status = 99;
             BetFinalizeFailed(betId);
         }

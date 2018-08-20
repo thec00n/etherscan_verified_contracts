@@ -91,16 +91,16 @@ contract HundredEtherWall {
     uint price = _width * _height * pixelPrice;
 
     //set restrictions
-    require(price &gt; 0);
-    require(msg.value &gt;= price);
+    require(price > 0);
+    require(msg.value >= price);
     require(_width % 25 == 0);
     require(_height % 25 == 0);
 
     //fill 2d array with true fo the purchased blocks
     //if the block is already true (means its already bought)
-    // -&gt; revert()
-    for(uint i = 0; i &lt; _width / 25; i++) {
-        for(uint j = 0; j &lt; _height / 25; j++) {
+    // -> revert()
+    for(uint i = 0; i < _width / 25; i++) {
+        for(uint j = 0; j < _height / 25; j++) {
             if (grid[_x / 25 + i][_y / 25 + j]) {
                 revert();
             }
@@ -152,8 +152,8 @@ contract HundredEtherWall {
     Ad storage ad = ads[_idx];
     //set restrictions
     require(msg.sender != ad.owner);
-    require(msg.value &gt; 0);
-    require(msg.value &gt;= ad.marketPrice);
+    require(msg.value > 0);
+    require(msg.value >= ad.marketPrice);
     require(ad.forSale == true);
 
     receiver = ad.owner;

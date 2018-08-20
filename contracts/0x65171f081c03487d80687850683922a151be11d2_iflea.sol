@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,12 +59,12 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -102,8 +102,8 @@ contract StandardToken is ERC20 {
 
 contract iflea is StandardToken, Ownable {
 
-    string public name = &quot;iflea&quot;;
-    string public symbol = &quot;IFLE&quot;;
+    string public name = "iflea";
+    string public symbol = "IFLE";
     uint public decimals = 18;
 
     // The token allocation
@@ -116,12 +116,12 @@ contract iflea is StandardToken, Ownable {
     
     
     // 2 groups of lockup
-    mapping(address =&gt; uint256) public contributors_locked; 
-    mapping(address =&gt; uint256) public investors_locked;
+    mapping(address => uint256) public contributors_locked; 
+    mapping(address => uint256) public investors_locked;
 
     // 2 types of releasing
-    mapping(address =&gt; uint256) public contributors_countdownDate;
-    mapping(address =&gt; uint256) public investors_deliveryDate;
+    mapping(address => uint256) public contributors_countdownDate;
+    mapping(address => uint256) public investors_deliveryDate;
 
     // MODIFIER
 
@@ -132,15 +132,15 @@ contract iflea is StandardToken, Ownable {
         uint256 remaining = balances[_sender].sub(_value);
         uint256 totalLockAmt = 0;
 
-        if (contributors_locked[_sender] &gt; 0) {
+        if (contributors_locked[_sender] > 0) {
             totalLockAmt = totalLockAmt.add(getLockedAmount_contributors(_sender));
         }
 
-        if (investors_locked[_sender] &gt; 0) {
+        if (investors_locked[_sender] > 0) {
             totalLockAmt = totalLockAmt.add(getLockedAmount_investors(_sender));
         }
 
-        require(remaining &gt;= totalLockAmt);
+        require(remaining >= totalLockAmt);
 
         _;
     }
@@ -158,7 +158,7 @@ contract iflea is StandardToken, Ownable {
         transfer(WALLET_FOUNDER, ALLOC_FOUNDER);
     }
 	
-    // get contributors&#39; locked amount of token
+    // get contributors' locked amount of token
     // this lockup will be released in 8 batches which take place every 180 days
     function getLockedAmount_contributors(address _contributor) 
         public
@@ -168,19 +168,19 @@ contract iflea is StandardToken, Ownable {
         uint256 countdownDate = contributors_countdownDate[_contributor];
         uint256 lockedAmt = contributors_locked[_contributor];
 
-        if (now &lt;= countdownDate + (180 * 1 days)) {return lockedAmt;}
-        if (now &lt;= countdownDate + (180 * 2 days)) {return lockedAmt.mul(7).div(8);}
-        if (now &lt;= countdownDate + (180 * 3 days)) {return lockedAmt.mul(6).div(8);}
-        if (now &lt;= countdownDate + (180 * 4 days)) {return lockedAmt.mul(5).div(8);}
-        if (now &lt;= countdownDate + (180 * 5 days)) {return lockedAmt.mul(4).div(8);}
-        if (now &lt;= countdownDate + (180 * 6 days)) {return lockedAmt.mul(3).div(8);}
-        if (now &lt;= countdownDate + (180 * 7 days)) {return lockedAmt.mul(2).div(8);}
-        if (now &lt;= countdownDate + (180 * 8 days)) {return lockedAmt.mul(1).div(8);}
+        if (now <= countdownDate + (180 * 1 days)) {return lockedAmt;}
+        if (now <= countdownDate + (180 * 2 days)) {return lockedAmt.mul(7).div(8);}
+        if (now <= countdownDate + (180 * 3 days)) {return lockedAmt.mul(6).div(8);}
+        if (now <= countdownDate + (180 * 4 days)) {return lockedAmt.mul(5).div(8);}
+        if (now <= countdownDate + (180 * 5 days)) {return lockedAmt.mul(4).div(8);}
+        if (now <= countdownDate + (180 * 6 days)) {return lockedAmt.mul(3).div(8);}
+        if (now <= countdownDate + (180 * 7 days)) {return lockedAmt.mul(2).div(8);}
+        if (now <= countdownDate + (180 * 8 days)) {return lockedAmt.mul(1).div(8);}
 	
         return 0;
     }
 
-    // get investors&#39; locked amount of token
+    // get investors' locked amount of token
     // this lockup will be released in 3 batches: 
     // 1. on delievery date
     // 2. three months after the delivery date
@@ -193,9 +193,9 @@ contract iflea is StandardToken, Ownable {
         uint256 delieveryDate = investors_deliveryDate[_investor];
         uint256 lockedAmt = investors_locked[_investor];
 
-        if (now &lt;= delieveryDate) {return lockedAmt;}
-        if (now &lt;= delieveryDate + 90 days) {return lockedAmt.mul(2).div(3);}
-        if (now &lt;= delieveryDate + 180 days) {return lockedAmt.mul(1).div(3);}
+        if (now <= delieveryDate) {return lockedAmt;}
+        if (now <= delieveryDate + 90 days) {return lockedAmt.mul(2).div(3);}
+        if (now <= delieveryDate + 180 days) {return lockedAmt.mul(1).div(3);}
 	
         return 0;
     }
@@ -209,7 +209,7 @@ contract iflea is StandardToken, Ownable {
 
         contributors_locked[_contributor] = _value;
         contributors_countdownDate[_contributor] = _countdownDate;
-        UpdatedLockingState(&quot;contributor&quot;, _contributor, _value, _countdownDate);
+        UpdatedLockingState("contributor", _contributor, _value, _countdownDate);
     }
 
     // set lockup for strategic investor
@@ -221,7 +221,7 @@ contract iflea is StandardToken, Ownable {
 
         investors_locked[_investor] = _value;
         investors_deliveryDate[_investor] = _delieveryDate;
-        UpdatedLockingState(&quot;investor&quot;, _investor, _value, _delieveryDate);
+        UpdatedLockingState("investor", _investor, _value, _delieveryDate);
     }
 
 	// Transfer amount of tokens from sender account to recipient.

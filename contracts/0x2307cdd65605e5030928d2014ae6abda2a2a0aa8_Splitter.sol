@@ -8,13 +8,13 @@ contract Splitter {
     // Mapping between addresses and how much money they have withdrawn. This is
     // used to calculate the balance of each account. The public keyword allows
     // reading from the map but not writing to the map using the
-    // amountsWithdrew(address) method of the contract. It&#39;s public mainly for
+    // amountsWithdrew(address) method of the contract. It's public mainly for
     // testing.
-    mapping(address =&gt; uint) public amountsWithdrew;
+    mapping(address => uint) public amountsWithdrew;
 
     // A set of parties to split the funds between. They are initialized in the
     // constructor.
-    mapping(address =&gt; bool) public between;
+    mapping(address => bool) public between;
 
     // The number of ways incoming funds will we split.
     uint public count;
@@ -28,19 +28,19 @@ contract Splitter {
     function Splitter(address[] addrs) {
         count = addrs.length;
 
-        for (uint i = 0; i &lt; addrs.length; i++) {
+        for (uint i = 0; i < addrs.length; i++) {
             // loop over addrs and update set of included accounts
             address included = addrs[i];
             between[included] = true;
         }
     }
 
-    // To save on transaction fees, it&#39;s beneficial to withdraw in one big
-    // transaction instead of many little ones. That&#39;s why a withdrawl flow is
+    // To save on transaction fees, it's beneficial to withdraw in one big
+    // transaction instead of many little ones. That's why a withdrawl flow is
     // being used.
 
-    /// @notice Withdraws from the sender&#39;s share of funds and deposits into the
-    /// sender&#39;s account. If there are insufficient funds in the contract, or
+    /// @notice Withdraws from the sender's share of funds and deposits into the
+    /// sender's account. If there are insufficient funds in the contract, or
     /// more than the share is being withdrawn, throws, canceling the
     /// transaction.
     /// @param amount The amount of funds in wei to withdraw from the contract.
@@ -49,12 +49,12 @@ contract Splitter {
     }
 
     /// @notice Withdraws all funds available to the sender and deposits them
-    /// into the sender&#39;s account.
+    /// into the sender's account.
     function withdrawAll() {
         Splitter.withdrawInternal(0, true);
     }
 
-    // Since `withdrawInternal` is internal, it isn&#39;t in the ABI and can&#39;t be
+    // Since `withdrawInternal` is internal, it isn't in the ABI and can't be
     // called from outside of the contract.
 
     /// @notice Checks whether the sender is allowed to withdraw and has
@@ -78,7 +78,7 @@ contract Splitter {
 
         // Ensures the funds are available to make the transfer, otherwise
         // throws.
-        require(transferring &lt;= available);
+        require(transferring <= available);
 
         // Updates the internal state, this is done before the transfer to
         // prevent re-entrancy bugs.
@@ -90,7 +90,7 @@ contract Splitter {
     }
 
     // We do integer division (floor(a / b)) when calculating each share, because
-    // solidity doesn&#39;t have a decimal number type. This means there will be a
+    // solidity doesn't have a decimal number type. This means there will be a
     // maximum remainder of count - 1 wei locked in the contract. We ignore this
     // because it is such a small amount of ethereum (1 Wei = 10^(-18)
     // Ethereum). The extra Wei can be extracted by depositing an amount to make
@@ -99,7 +99,7 @@ contract Splitter {
     /// @notice Gets the amount of funds in Wei available to the sender.
     function balance() constant returns (uint) {
         if (!between[msg.sender]) {
-            // The sender of the message isn&#39;t part of the split. Ignore them.
+            // The sender of the message isn't part of the split. Ignore them.
             return 0;
         }
 
@@ -109,7 +109,7 @@ contract Splitter {
         uint withdrew = amountsWithdrew[msg.sender];
         uint available = share - withdrew;
 
-        assert(available &gt;= 0 &amp;&amp; available &lt;= share);
+        assert(available >= 0 && available <= share);
 
         return available;
     }

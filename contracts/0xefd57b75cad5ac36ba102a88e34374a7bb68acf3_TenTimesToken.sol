@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -34,12 +34,12 @@ contract Ownable {
 contract TenTimesToken is Ownable {
     
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) startBalances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) startBlocks;
+    mapping(address => uint256) startBalances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) startBlocks;
     
-    string public constant name = &quot;Ten Times&quot;;
-    string public constant symbol = &quot;TENT&quot;;
+    string public constant name = "Ten Times";
+    string public constant symbol = "TENT";
     uint32 public constant decimals = 10;
 
     function TenTimesToken() public {
@@ -53,7 +53,7 @@ contract TenTimesToken is Ownable {
      * @dev Computes `k * (1+1/q) ^ N`, with precision `p`. The higher
      * the precision, the higher the gas cost. It should be
      * something around the log of `n`. When `p == n`, the
-     * precision is absolute (sans possible integer overflows). &lt;edit: NOT true, see comments&gt;
+     * precision is absolute (sans possible integer overflows). <edit: NOT true, see comments>
      * Much smaller values are sufficient to get a great approximation.
      * from https://ethereum.stackexchange.com/questions/10425/is-there-any-efficient-way-to-compute-the-exponentiation-of-a-fraction-and-an-in
      */
@@ -61,7 +61,7 @@ contract TenTimesToken is Ownable {
         uint256 s = 0;
         uint256 N = 1;
         uint256 B = 1;
-        for (uint256 i = 0; i &lt; p; ++i) {
+        for (uint256 i = 0; i < p; ++i) {
             s += k * N / B / (q**i);
             N = N * (n-i);
             B = B * (i+1);
@@ -75,7 +75,7 @@ contract TenTimesToken is Ownable {
      * about factor 10 for 2 million blocks.
      */
     function compoundInterest(address tokenOwner) view public returns (uint256) {
-        require(startBlocks[tokenOwner] &gt; 0);
+        require(startBlocks[tokenOwner] > 0);
         uint256 start = startBlocks[tokenOwner];
         uint256 current = block.number;
         uint256 blockCount = current - start;
@@ -85,7 +85,7 @@ contract TenTimesToken is Ownable {
 
 
     /**
-     * @dev Get the token balance for account &#39;tokenOwner&#39;
+     * @dev Get the token balance for account 'tokenOwner'
      */
     function balanceOf(address tokenOwner) public constant returns (uint256 balance) {
         return startBalances[tokenOwner] + compoundInterest(tokenOwner);
@@ -108,14 +108,14 @@ contract TenTimesToken is Ownable {
     
 
     /**
-     * @dev Transfer the balance from token owner&#39;s account to `to` account
-     * - Owner&#39;s account must have sufficient balance to transfer
+     * @dev Transfer the balance from token owner's account to `to` account
+     * - Owner's account must have sufficient balance to transfer
      * - 0 value transfers are allowed
      */
     function transfer(address to, uint256 tokens) public returns (bool) {
         updateBalance(msg.sender);
         updateBalance(to);
-        require(tokens &lt;= startBalances[msg.sender]);
+        require(tokens <= startBalances[msg.sender]);
 
         startBalances[msg.sender] = startBalances[msg.sender] - tokens;
         startBalances[to] = startBalances[to] + tokens;
@@ -136,7 +136,7 @@ contract TenTimesToken is Ownable {
     function transferFrom(address from, address to, uint256 tokens) public returns (bool) {
         updateBalance(from);
         updateBalance(to);
-        require(tokens &lt;= startBalances[from]);
+        require(tokens <= startBalances[from]);
 
         startBalances[from] = startBalances[from] - tokens;
         allowed[from][msg.sender] = allowed[from][msg.sender] - tokens;
@@ -146,8 +146,8 @@ contract TenTimesToken is Ownable {
     }
 
     /**
-     * @dev Allow `spender` to withdraw from your account, multiple times, up to the &#39;tokens&#39; amount.
-     * If this function is called again it overwrites the current allowance with &#39;tokens&#39;.
+     * @dev Allow `spender` to withdraw from your account, multiple times, up to the 'tokens' amount.
+     * If this function is called again it overwrites the current allowance with 'tokens'.
      */
     function approve(address spender, uint256 tokens) public returns (bool) {
         allowed[msg.sender][spender] = tokens;

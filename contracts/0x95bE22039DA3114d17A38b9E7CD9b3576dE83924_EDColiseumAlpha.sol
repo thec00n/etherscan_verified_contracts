@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -88,7 +88,7 @@ contract Pausable is Ownable {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3644535b55597604">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3644535b55597604">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -235,7 +235,7 @@ contract EDCoreInterface {
 }
 
 
-/// @dev Core Contract of &quot;Enter the Coliseum&quot; game of the ED (Ether Dungeon) Platform.
+/// @dev Core Contract of "Enter the Coliseum" game of the ED (Ether Dungeon) Platform.
 contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
     
     struct Participant {
@@ -292,7 +292,7 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
     /// @dev Array of all the participant for the previous tournament.
     Participant[] public previousParticipants;
     
-    /// @dev Array to store the participant index all winners / losers for each &quot;fighting round&quot; of the previous tournament.
+    /// @dev Array to store the participant index all winners / losers for each "fighting round" of the previous tournament.
     uint[maxParticipantCount / 2] public firstRoundWinners;
     uint[maxParticipantCount / 4] public secondRoundWinners;
     uint[maxParticipantCount / 2] public firstRoundLosers;
@@ -300,11 +300,11 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
     uint public finalWinner;
     uint public finalLoser;
     
-    /// @dev Mapping of hero ID to the hero&#39;s last participated tournament round to avoid repeated hero participation.
-    mapping(uint =&gt; uint) public heroIdToLastRound;
+    /// @dev Mapping of hero ID to the hero's last participated tournament round to avoid repeated hero participation.
+    mapping(uint => uint) public heroIdToLastRound;
     
     /// @dev Mapping of player ID to the consecutive win counts, used for calculating jackpot.
-    mapping(address =&gt; uint) public playerToWinCounts;
+    mapping(address => uint) public playerToWinCounts;
 
     
     /* ======== EVENTS ======== */
@@ -363,13 +363,13 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         require(heroIdToLastRound[_heroId] != nextTournamentRound);
         
         // Throws if participation count is full.
-        require(participants.length &lt; maxParticipantCount);
+        require(participants.length < maxParticipantCount);
         
         // Throws if payment not enough, any exceeding funds will be transferred back to the player.
-        require(msg.value &gt;= participationFee);
+        require(msg.value >= participationFee);
         tournamentRewards += participationFee;
 
-        if (msg.value &gt; participationFee) {
+        if (msg.value > participationFee) {
             msg.sender.transfer(msg.value - participationFee);
         }
         
@@ -381,7 +381,7 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         (heroPower,,,,) = edCoreContract.getHeroPower(genes, dungeonDifficulty);
         
         // Throw if heroPower is 12 (novice hero).
-        require(heroPower &gt; 12);
+        require(heroPower > 12);
         
         // Set the participant data to storage.
         participants.push(Participant(msg.sender, _heroId, heroPower));
@@ -413,11 +413,11 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // JACKPOT!
         playerToWinCounts[winner]++;
         
-        // Reset other participants&#39; consecutive winCount.
-        for (uint i = 0; i &lt; participants.length; i++) {
+        // Reset other participants' consecutive winCount.
+        for (uint i = 0; i < participants.length; i++) {
             address participant = participants[i].player;
             
-            if (participant != winner &amp;&amp; playerToWinCounts[participant] != 0) {
+            if (participant != winner && playerToWinCounts[participant] != 0) {
                 playerToWinCounts[participant] = 0;
             }
         }
@@ -447,7 +447,7 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
     
     /// @dev The onlyOwner external function to call to cancel the next tournament and refunds.
     function cancelTournament() onlyOwner nonReentrant external {
-        for (uint i = 0; i &lt; participants.length; i++) {
+        for (uint i = 0; i < participants.length; i++) {
             address participant = participants[i].player;
             
             if (participant != 0x0) {
@@ -519,9 +519,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 0 Vs 1
         rand = _getRandomNumber(100);
         if (
-            (heroPower0 &gt; heroPower1 &amp;&amp; rand &lt; 60) || 
-            (heroPower0 == heroPower1 &amp;&amp; rand &lt; 50) ||
-            (heroPower0 &lt; heroPower1 &amp;&amp; rand &lt; 40)
+            (heroPower0 > heroPower1 && rand < 60) || 
+            (heroPower0 == heroPower1 && rand < 50) ||
+            (heroPower0 < heroPower1 && rand < 40)
         ) {
             firstRoundWinners[0] = 0;
             firstRoundLosers[0] = 1;
@@ -533,9 +533,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 2 Vs 3
         rand = _getRandomNumber(100);
         if (
-            (heroPower2 &gt; heroPower3 &amp;&amp; rand &lt; 60) || 
-            (heroPower2 == heroPower3 &amp;&amp; rand &lt; 50) ||
-            (heroPower2 &lt; heroPower3 &amp;&amp; rand &lt; 40)
+            (heroPower2 > heroPower3 && rand < 60) || 
+            (heroPower2 == heroPower3 && rand < 50) ||
+            (heroPower2 < heroPower3 && rand < 40)
         ) {
             firstRoundWinners[1] = 2;
             firstRoundLosers[1] = 3;
@@ -547,9 +547,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 4 Vs 5
         rand = _getRandomNumber(100);
         if (
-            (heroPower4 &gt; heroPower5 &amp;&amp; rand &lt; 60) || 
-            (heroPower4 == heroPower5 &amp;&amp; rand &lt; 50) ||
-            (heroPower4 &lt; heroPower5 &amp;&amp; rand &lt; 40)
+            (heroPower4 > heroPower5 && rand < 60) || 
+            (heroPower4 == heroPower5 && rand < 50) ||
+            (heroPower4 < heroPower5 && rand < 40)
         ) {
             firstRoundWinners[2] = 4;
             firstRoundLosers[2] = 5;
@@ -561,9 +561,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 6 Vs 7
         rand = _getRandomNumber(100);
         if (
-            (heroPower6 &gt; heroPower7 &amp;&amp; rand &lt; 60) || 
-            (heroPower6 == heroPower7 &amp;&amp; rand &lt; 50) ||
-            (heroPower6 &lt; heroPower7 &amp;&amp; rand &lt; 40)
+            (heroPower6 > heroPower7 && rand < 60) || 
+            (heroPower6 == heroPower7 && rand < 50) ||
+            (heroPower6 < heroPower7 && rand < 40)
         ) {
             firstRoundWinners[3] = 6;
             firstRoundLosers[3] = 7;
@@ -591,9 +591,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 0 Vs 1
         rand = _getRandomNumber(100);
         if (
-            (heroPower0 &gt; heroPower1 &amp;&amp; rand &lt; 60) || 
-            (heroPower0 == heroPower1 &amp;&amp; rand &lt; 50) ||
-            (heroPower0 &lt; heroPower1 &amp;&amp; rand &lt; 40)
+            (heroPower0 > heroPower1 && rand < 60) || 
+            (heroPower0 == heroPower1 && rand < 50) ||
+            (heroPower0 < heroPower1 && rand < 40)
         ) {
             secondRoundWinners[0] = winner0;
         } else {
@@ -603,9 +603,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 2 Vs 3
         rand = _getRandomNumber(100);
         if (
-            (heroPower2 &gt; heroPower3 &amp;&amp; rand &lt; 60) || 
-            (heroPower2 == heroPower3 &amp;&amp; rand &lt; 50) ||
-            (heroPower2 &lt; heroPower3 &amp;&amp; rand &lt; 40)
+            (heroPower2 > heroPower3 && rand < 60) || 
+            (heroPower2 == heroPower3 && rand < 50) ||
+            (heroPower2 < heroPower3 && rand < 40)
         ) {
             secondRoundWinners[1] = winner2;
         } else {
@@ -631,9 +631,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 0 Vs 1
         rand = _getRandomNumber(100);
         if (
-            (heroPower0 &gt; heroPower1 &amp;&amp; rand &lt; 60) || 
-            (heroPower0 == heroPower1 &amp;&amp; rand &lt; 50) ||
-            (heroPower0 &lt; heroPower1 &amp;&amp; rand &lt; 40)
+            (heroPower0 > heroPower1 && rand < 60) || 
+            (heroPower0 == heroPower1 && rand < 50) ||
+            (heroPower0 < heroPower1 && rand < 40)
         ) {
             secondRoundLosers[0] = loser1;
         } else {
@@ -643,9 +643,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 2 Vs 3
         rand = _getRandomNumber(100);
         if (
-            (heroPower2 &gt; heroPower3 &amp;&amp; rand &lt; 60) || 
-            (heroPower2 == heroPower3 &amp;&amp; rand &lt; 50) ||
-            (heroPower2 &lt; heroPower3 &amp;&amp; rand &lt; 40)
+            (heroPower2 > heroPower3 && rand < 60) || 
+            (heroPower2 == heroPower3 && rand < 50) ||
+            (heroPower2 < heroPower3 && rand < 40)
         ) {
             secondRoundLosers[1] = loser3;
         } else {
@@ -667,9 +667,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 0 Vs 1
         rand = _getRandomNumber(100);
         if (
-            (heroPower0 &gt; heroPower1 &amp;&amp; rand &lt; 60) || 
-            (heroPower0 == heroPower1 &amp;&amp; rand &lt; 50) ||
-            (heroPower0 &lt; heroPower1 &amp;&amp; rand &lt; 40)
+            (heroPower0 > heroPower1 && rand < 60) || 
+            (heroPower0 == heroPower1 && rand < 50) ||
+            (heroPower0 < heroPower1 && rand < 40)
         ) {
             finalWinner = winner0;
         } else {
@@ -691,9 +691,9 @@ contract EDColiseumAlpha is Pausable, ReentrancyGuard, Destructible {
         // 0 Vs 1
         rand = _getRandomNumber(100);
         if (
-            (heroPower0 &gt; heroPower1 &amp;&amp; rand &lt; 60) || 
-            (heroPower0 == heroPower1 &amp;&amp; rand &lt; 50) ||
-            (heroPower0 &lt; heroPower1 &amp;&amp; rand &lt; 40)
+            (heroPower0 > heroPower1 && rand < 60) || 
+            (heroPower0 == heroPower1 && rand < 50) ||
+            (heroPower0 < heroPower1 && rand < 40)
         ) {
             finalLoser = loser1;
         } else {

@@ -30,7 +30,7 @@ contract IFinancialStrategy{
 
 contract IRightAndRoles {
     address[][] public wallets;
-    mapping(address =&gt; uint16) public roles;
+    mapping(address => uint16) public roles;
 
     event WalletChanged(address indexed newWallet, address indexed oldWallet, uint8 indexed role);
     event CloneChanged(address indexed wallet, uint8 indexed role, bool indexed mod);
@@ -52,7 +52,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
 
     uint8 public step;
 
-    mapping (uint8 =&gt; mapping (address =&gt; uint256)) public deposited;
+    mapping (uint8 => mapping (address => uint256)) public deposited;
 
                              // Partner 0   Partner 1    Partner 2
     uint256[0] public percent;
@@ -153,7 +153,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
             // arg1 = old ETH/USD (exchange)
             // arg2 = new ETH/USD (_ETHUSD)
             require(_params.length == 2);
-            for (uint8 user=0; user&lt;cap.length; user++) cap[user]=cap[user].mul(uint256(_params[0])).div(uint256(_params[1]));
+            for (uint8 user=0; user<cap.length; user++) cap[user]=cap[user].mul(uint256(_params[0])).div(uint256(_params[1]));
         }
 
     }
@@ -175,12 +175,12 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
 
         uint8 i;
 
-        for (i =0; i &lt;percent.length; i++) {
+        for (i =0; i <percent.length; i++) {
             plan=_allValue*percent[i]/100;
 
-            if(cap[i] != 0 &amp;&amp; plan &gt; cap[i]) plan = cap[i];
+            if(cap[i] != 0 && plan > cap[i]) plan = cap[i];
 
-            if (total[i] &gt;= plan) {
+            if (total[i] >= plan) {
                 debt[i]=0;
                 continue;
             }
@@ -191,17 +191,17 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
             indexes[count++] = i;
             prcSum += percent[i];
         }
-        if(common &gt; free){
+        if(common > free){
             benReady = 0;
             uint8 j = 0;
-            while (j &lt; count){
+            while (j < count){
                 i = indexes[j++];
                 plan = free*percent[i]/prcSum;
-                if(plan + total[i] &lt;= cap[i] || cap[i] ==0){
+                if(plan + total[i] <= cap[i] || cap[i] ==0){
                     debt[i] = plan;
                     continue;
                 }
-                debt[i] = cap[i] - total[i]; //&#39;total&#39; is always less than &#39;cap&#39;
+                debt[i] = cap[i] - total[i]; //'total' is always less than 'cap'
                 free -= debt[i];
                 prcSum -= percent[i];
                 indexes[j-1] = indexes[--count];
@@ -209,7 +209,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
             }
         }
         common = 0;
-        for(i = 0; i &lt; debt.length; i++){
+        for(i = 0; i < debt.length; i++){
             total[i] += debt[i];
             ready[i] += debt[i];
             common += ready[i];
@@ -221,7 +221,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
     function refund(address _investor) external {
         require(state == State.Refunding);
         uint256 depositedValue = deposited[step][_investor];
-        require(depositedValue &gt; 0);
+        require(depositedValue > 0);
         deposited[step][_investor] = 0;
         _investor.transfer(depositedValue);
         emit Refunded(_investor, depositedValue);
@@ -247,7 +247,7 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
     // Call from Crowdsale:
     function getPartnerCash(uint8 _user, address _msgsender) external canGetCash {
         require(rightAndRoles.onlyRoles(msg.sender,1));
-        require(_user&lt;wallets.length);
+        require(_user<wallets.length);
 
         onlyPartnersOrAdmin(_msgsender);
 
@@ -264,10 +264,10 @@ contract FinancialStrategy is IFinancialStrategy, GuidedByRoles{
 
     function onlyPartnersOrAdmin(address _sender) internal view {
         if (!rightAndRoles.onlyRoles(_sender,65535)) {
-            for (uint8 i=0; i&lt;wallets.length; i++) {
+            for (uint8 i=0; i<wallets.length; i++) {
                 if (wallets[i]==_sender) break;
             }
-            if (i&gt;=wallets.length) {
+            if (i>=wallets.length) {
                 revert();
             }
         }
@@ -288,16 +288,16 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
     function minus(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b&gt;=a) return 0;
+        if (b>=a) return 0;
         return a - b;
     }
 }

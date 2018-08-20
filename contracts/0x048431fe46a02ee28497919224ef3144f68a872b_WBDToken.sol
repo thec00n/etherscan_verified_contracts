@@ -2,13 +2,13 @@ pragma solidity ^0.4.19;
 
 library SafeMath {
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ contract WBDToken {
 
     address public owner;
 	
-    mapping(address =&gt; uint256) balances; // List of user balances.
+    mapping(address => uint256) balances; // List of user balances.
 
     function WBDToken(uint256 initialSupply, string tokenName, string tokenSymbol) public {
         owner           =   msg.sender;
@@ -59,7 +59,7 @@ contract WBDToken {
 	/**
      * @dev Transfer the specified amount of tokens to the specified address.
      *      This function works the same with the previous one
-     *      but doesn&#39;t contain `_data` param.
+     *      but doesn't contain `_data` param.
      *      Added due to backwards compatibility reasons.
      *
      * @param _to    Receiver address.
@@ -90,7 +90,7 @@ contract WBDToken {
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ContractReceiver receiver = ContractReceiver(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }

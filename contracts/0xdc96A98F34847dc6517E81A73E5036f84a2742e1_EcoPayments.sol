@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -104,20 +104,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -197,7 +197,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="0674636b65694634">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="0674636b65694634">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -261,7 +261,7 @@ contract EcoPayments is Ownable, Pausable, HasNoEther, CanReclaimToken {
     ERC20 public token;
     Vault public vault;
 
-    mapping (address =&gt; uint256) private withdrawals;
+    mapping (address => uint256) private withdrawals;
 
     bool public initialized = false;
 
@@ -282,7 +282,7 @@ contract EcoPayments is Ownable, Pausable, HasNoEther, CanReclaimToken {
 
     function withdraw() whenInitialized whenNotPaused public {
         uint256 amount = earningsOf(msg.sender);
-        require (amount &gt; 0);
+        require (amount > 0);
         withdrawals[msg.sender] = withdrawals[msg.sender].add(amount);
         token.safeTransfer(msg.sender, amount);
     }
@@ -291,8 +291,8 @@ contract EcoPayments is Ownable, Pausable, HasNoEther, CanReclaimToken {
         uint256 total = 0;
         uint256 interest = vault.contributionsOf(_addr).mul(833).div(10000);
 
-        for (uint8 i = 0; i &lt; payoutDates.length; i++) {
-            if (now &lt; payoutDates[i]) {
+        for (uint8 i = 0; i < payoutDates.length; i++) {
+            if (now < payoutDates[i]) {
                 break;
             }
 

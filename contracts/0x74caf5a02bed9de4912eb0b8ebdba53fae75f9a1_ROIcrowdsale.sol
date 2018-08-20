@@ -42,18 +42,18 @@ contract ROIcrowdsale {
     }
     
     function () payable public {
-        require(msg.value &gt; 0);
-        require(tokenSold &lt; 138216001);
+        require(msg.value > 0);
+        require(tokenSold < 138216001);
         uint256 _price = price / 10;
-        if(tokenSold &lt; 45136000) {
+        if(tokenSold < 45136000) {
             _price *= 4;
             _price += price; 
         }
-        if(tokenSold &gt; 45135999 &amp;&amp; tokenSold &lt; 92456000) {
+        if(tokenSold > 45135999 && tokenSold < 92456000) {
             _price *= 3;
             _price += price;
         }
-        if(tokenSold &gt; 92455999 &amp;&amp; tokenSold &lt; 138216000) {
+        if(tokenSold > 92455999 && tokenSold < 138216000) {
             _price += price; 
         }
         uint amount = msg.value * _price;

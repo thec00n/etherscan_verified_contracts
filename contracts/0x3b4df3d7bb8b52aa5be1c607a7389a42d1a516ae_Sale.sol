@@ -31,22 +31,22 @@ contract Sale {
     }
 
     function () public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint tokens = msg.value*(10**uint(token.decimals()))/tokenPrice;
         var bonus = calculateBonus(msg.value);
         var amount = bonus*tokens/100;
-        require(token.balanceOf(address(this)) &gt;= amount);
+        require(token.balanceOf(address(this)) >= amount);
         beneficiary.transfer(msg.value);
         token.transfer(msg.sender, amount);
     }
 
     //purchasing from exchange address
     function purchase(address _to) public payable onlyPayloadSize(1*32) {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint tokens = msg.value*(10**uint(token.decimals()))/tokenPrice;
         var bonus = calculateBonus(msg.value);
         var amount = bonus*tokens/100;
-        require(token.balanceOf(address(this)) &gt;= amount);
+        require(token.balanceOf(address(this)) >= amount);
         beneficiary.transfer(msg.value);
         token.transfer(_to, amount);
     }
@@ -58,13 +58,13 @@ contract Sale {
     }
 
     function calculateBonus(uint _investment) internal constant returns(uint bonus) {
-		if (_investment &lt;= threshold1) {
+		if (_investment <= threshold1) {
 			bonus = 103;
-		} else if (_investment &lt;= threshold2) {
+		} else if (_investment <= threshold2) {
 			bonus = 105;
-		} else if (_investment &lt;= threshold3) {
+		} else if (_investment <= threshold3) {
 			bonus = 107;
-		} else if (_investment &lt;= threshold4) {
+		} else if (_investment <= threshold4) {
 			bonus = 112;
         } else {
 			bonus = 115;

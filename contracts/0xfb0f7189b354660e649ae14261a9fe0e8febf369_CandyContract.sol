@@ -27,7 +27,7 @@ contract CandyContract is owned{
     uint public totalCandyNo; 
 
     address public collectorAddress;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     event GoalReached(address recipient, uint totalAmountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -50,9 +50,9 @@ contract CandyContract is owned{
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () payable public {
-        require(totalCandyNo &gt; 0);
+        require(totalCandyNo > 0);
         uint amount = getCurrentCandyAmount();
-        require(amount &gt; 0); 
+        require(amount > 0); 
         require(balanceOf[msg.sender] == 0);
 
         totalCandyNo -= amount;
@@ -64,13 +64,13 @@ contract CandyContract is owned{
 
     function getCurrentCandyAmount() private view returns (uint amount){
 
-        if (totalCandyNo &gt;= 7.5e7){
+        if (totalCandyNo >= 7.5e7){
             return 2000;
-        }else if (totalCandyNo &gt;= 5e7){
+        }else if (totalCandyNo >= 5e7){
             return 1500;
-        }else if (totalCandyNo &gt;= 2.5e7){
+        }else if (totalCandyNo >= 2.5e7){
             return 1000;
-        }else if (totalCandyNo &gt;= 500){
+        }else if (totalCandyNo >= 500){
             return 500;
         }else{
             return 0;
@@ -79,7 +79,7 @@ contract CandyContract is owned{
 
     function collectBack() onlyOwner public{
 
-        require(totalCandyNo &gt; 0);
+        require(totalCandyNo > 0);
 
         require(collectorAddress != 0x0);
 

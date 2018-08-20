@@ -5,7 +5,7 @@
 
 contract Owned {
     /// Prevents methods from perfoming any value transfer
-    modifier noEther() {if (msg.value &gt; 0) throw; _}
+    modifier noEther() {if (msg.value > 0) throw; _}
     /// Allows only the owner to call a function
     modifier onlyOwner { if (msg.sender != owner) throw; _ }
 
@@ -28,7 +28,7 @@ contract WHAuthorizeAddress is Owned {
 
     bool isClosed;
 
-    mapping (address =&gt; bool) usedAddresses;
+    mapping (address => bool) usedAddresses;
 
     event Authorize(address indexed dthContract, address indexed authorizedAddress);
 
@@ -47,7 +47,7 @@ contract WHAuthorizeAddress is Owned {
         }
 
         // sender must be a contract and _authorizedAddress must be a user account
-        if (getCodeSize(msg.sender) == 0 || getCodeSize(_authorizedAddress) &gt; 0) {
+        if (getCodeSize(msg.sender) == 0 || getCodeSize(_authorizedAddress) > 0) {
             throw;
         }
 

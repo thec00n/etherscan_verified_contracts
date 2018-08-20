@@ -35,13 +35,13 @@ contract ERC223 is ERC20 {
 }
 
 contract NGToken is ERC223 {
-	string constant private NAME 			= &quot;NEO Genesis Token&quot;;
-	string constant private SYMBOL	 		= &quot;NGT&quot;;
+	string constant private NAME 			= "NEO Genesis Token";
+	string constant private SYMBOL	 		= "NGT";
 	uint8 constant private DECIMALS 		= 18;
 	uint256 constant private INITIAL_SUPPLY	= 20000000000 * (10 ** uint256(DECIMALS));
 	uint256 private totalBurned				= 0;
-	mapping(address =&gt; uint256) private balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) private allowed;
+	mapping(address => uint256) private balances;
+	mapping(address => mapping(address => uint256)) private allowed;
 	
 	function NGToken() public {
 	  balances[msg.sender] = INITIAL_SUPPLY;
@@ -74,7 +74,7 @@ contract NGToken is ERC223 {
 			return transferToContract(_to, _value, empty);
 		} else {
 			require(_to != address(0x0));
-			require(balances[msg.sender] &gt;= _value);
+			require(balances[msg.sender] >= _value);
 			balances[msg.sender] -= _value;
 			balances[_to] += _value;
 			Transfer(msg.sender, _to, _value);
@@ -84,10 +84,10 @@ contract NGToken is ERC223 {
 	}
 
 	function multipleTransfer(address[] _to, uint256 _value) public returns (bool success) {
-		require(_value * _to.length &gt; 0);
-		require(balances[msg.sender] &gt;= _value * _to.length);
+		require(_value * _to.length > 0);
+		require(balances[msg.sender] >= _value * _to.length);
 		balances[msg.sender] -= _value * _to.length;
-		for (uint256 i = 0; i &lt; _to.length; ++i) {
+		for (uint256 i = 0; i < _to.length; ++i) {
 		 	balances[_to[i]] += _value;
 		 	Transfer(msg.sender, _to[i], _value);
 		}
@@ -95,13 +95,13 @@ contract NGToken is ERC223 {
 	}
 
 	function batchTransfer(address[] _to, uint256[] _value) public returns (bool success) {
-		require(_to.length &gt; 0);
-		require(_value.length &gt; 0);
+		require(_to.length > 0);
+		require(_value.length > 0);
 		require(_to.length == _value.length);
-		for (uint256 i = 0; i &lt; _to.length; ++i) {
+		for (uint256 i = 0; i < _to.length; ++i) {
 			address to = _to[i];
 			uint256 value = _value[i];
-			require(balances[msg.sender] &gt;= value);
+			require(balances[msg.sender] >= value);
 			balances[msg.sender] -= value;
 		 	balances[to] += value;
 		 	Transfer(msg.sender, to, value);
@@ -111,7 +111,7 @@ contract NGToken is ERC223 {
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 		require(_to != address(0x0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_from] -= _value;
         balances[_to] += _value;
 		allowed[_from][msg.sender] -= _value;
@@ -123,7 +123,7 @@ contract NGToken is ERC223 {
 	
 	function approve(address _spender, uint256 _value) public returns (bool success) {
 		//https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
-		//force to 0 before calling &quot;approve&quot; again
+		//force to 0 before calling "approve" again
 		require((_value == 0) || (allowed[msg.sender][_spender] == 0));
 		
 		allowed[msg.sender][_spender] = _value;
@@ -147,7 +147,7 @@ contract NGToken is ERC223 {
 	}
 
 	function decreaseApproval(address _spender, uint256 _subValue) public returns (bool) {
-		if (_subValue &gt; allowed[msg.sender][_spender]) {
+		if (_subValue > allowed[msg.sender][_spender]) {
 		  allowed[msg.sender][_spender] = 0;
 		} else {
 		  allowed[msg.sender][_spender] -= _subValue;
@@ -172,7 +172,7 @@ contract NGToken is ERC223 {
 	function transfer(address _to, uint256 _value, bytes _data, string _customFallback) public returns (bool success) {
 		if (isContract(_to)) {
 			require(_to != address(0x0));
-			require(balances[msg.sender] &gt;= _value);
+			require(balances[msg.sender] >= _value);
 			balances[msg.sender] -= _value;
 			balances[_to] += _value;
 			assert(_to.call.value(0)(bytes4(keccak256(_customFallback)), msg.sender, _value, _data));
@@ -186,7 +186,7 @@ contract NGToken is ERC223 {
 
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
 		require(_to != address(0x0));
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		Transfer(msg.sender, _to, _value);
@@ -196,7 +196,7 @@ contract NGToken is ERC223 {
 
     function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
 		require(_to != address(0x0));
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		ERC223Receiver receiver = ERC223Receiver(_to);
@@ -213,14 +213,14 @@ contract NGToken is ERC223 {
         assembly {
             length := extcodesize(_addr)
         }
-		return (length &gt; 0);
+		return (length > 0);
     }
 	
 	//Burn
     event Burn(address indexed burner, uint256 value, uint256 currentSupply, bytes data);
 
     function burn(uint256 _value, bytes _data) public returns (bool success) {
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 		balances[msg.sender] -= _value;
 		totalBurned += _value;
 		Burn(msg.sender, _value, totalSupply(), _data);

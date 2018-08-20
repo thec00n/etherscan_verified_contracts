@@ -27,20 +27,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,7 +52,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -61,7 +61,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,7 +101,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -112,8 +112,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -127,7 +127,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -162,7 +162,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -181,8 +181,8 @@ contract StandardToken is ERC20, BasicToken {
 //
 contract Token is StandardToken {
 
-    string  public constant name   = &quot;COPYTRACK Token&quot;;
-    string  public constant symbol = &quot;CPY&quot;;
+    string  public constant name   = "COPYTRACK Token";
+    string  public constant symbol = "CPY";
 
     uint8 public constant   decimals = 18;
 
@@ -272,7 +272,7 @@ contract Token is StandardToken {
         returns (bool success)
     {
         require(finalized);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -316,7 +316,7 @@ contract TokenSaleConfig  {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -365,7 +365,7 @@ contract TokenSale is TokenSaleConfig, Ownable {
     bool public finalized = false;
 
     // lookup for max wei amount per user allowed
-    mapping (address =&gt; uint256) public contributors;
+    mapping (address => uint256) public contributors;
 
     // the total amount of wei raised
     uint256 public totalWeiRaised = 0;
@@ -377,16 +377,16 @@ contract TokenSale is TokenSaleConfig, Ownable {
     address public fundingWalletAddress;
 
     // address which manages the whitelist (KYC)
-    mapping (address =&gt; bool) public whitelistOperators;
+    mapping (address => bool) public whitelistOperators;
 
     // lookup addresses for whitelist
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
 
     // early bird investments
     address[] public earlyBirds;
 
-    mapping (address =&gt; uint256) public earlyBirdInvestments;
+    mapping (address => uint256) public earlyBirdInvestments;
 
 
     //
@@ -398,8 +398,8 @@ contract TokenSale is TokenSaleConfig, Ownable {
     // @param _weiAmount the amount intended to spend
     modifier withinContributionLimits(address _contributorAddress, uint256 _weiAmount) {
         uint256 totalContributionAmount = contributors[_contributorAddress].add(_weiAmount);
-        require(_weiAmount &gt;= CONTRIBUTION_MIN);
-        require(totalContributionAmount &lt;= CONTRIBUTION_MAX);
+        require(_weiAmount >= CONTRIBUTION_MIN);
+        require(totalContributionAmount <= CONTRIBUTION_MAX);
         _;
     }
 
@@ -420,7 +420,7 @@ contract TokenSale is TokenSaleConfig, Ownable {
     //Throws if sale is finalized or token sale end time has been reached
     modifier onlyDuringSale() {
         require(finalized == false);
-        require(currentTime() &lt;= END_TIME);
+        require(currentTime() <= END_TIME);
         _;
     }
 
@@ -496,14 +496,14 @@ contract TokenSale is TokenSaleConfig, Ownable {
         uint256 tokensLeft = getTokensLeft();
 
         // make sure we still have tokens left for sale
-        require(tokensLeft &gt; 0);
+        require(tokensLeft > 0);
 
         uint256 tokenAmount = calculateTokenAmount(weiAmount);
         uint256 cost = weiAmount;
         uint256 refund = 0;
 
         // we sell till we dont have anything left
-        if (tokenAmount &gt; tokensLeft) {
+        if (tokenAmount > tokensLeft) {
             tokenAmount = tokensLeft;
 
             // calculate actual cost for partial amount of tokens.
@@ -521,7 +521,7 @@ contract TokenSale is TokenSaleConfig, Ownable {
 
 
         //if we got a refund process it now
-        if (refund &gt; 0) {
+        if (refund > 0) {
             // transfer back everything that exceeded the amount of tokens left
             contributorAddress.transfer(refund);
         }
@@ -560,12 +560,12 @@ contract TokenSale is TokenSaleConfig, Ownable {
         uint i;
         uint defaultTokensPerEther = tranches[tranches.length - 1].tokensPerEther;
 
-        if (currentTime() &gt;= PUBLIC_START_TIME) {
+        if (currentTime() >= PUBLIC_START_TIME) {
             return defaultTokensPerEther;
         }
 
-        for (i = 0; i &lt; tranches.length; i++) {
-            if (totalTokenSold &gt;= tranches[i].untilToken) {
+        for (i = 0; i < tranches.length; i++) {
+            if (totalTokenSold >= tranches[i].untilToken) {
                 continue;
             }
 
@@ -647,7 +647,7 @@ contract TokenSale is TokenSaleConfig, Ownable {
         returns (bool)
     {
         //allow only after the defined end_time
-        require(currentTime() &gt; END_TIME);
+        require(currentTime() > END_TIME);
 
         return finalizeInternal();
     }
@@ -689,7 +689,7 @@ contract TokenSale is TokenSaleConfig, Ownable {
     function processEarlyBirds()
         private
     {
-        for (uint256 i = 0; i &lt; earlyBirds.length; i++)
+        for (uint256 i = 0; i < earlyBirds.length; i++)
         {
             address earlyBirdAddress = earlyBirds[i];
             uint256 weiAmount = earlyBirdInvestments[earlyBirdAddress];
@@ -707,9 +707,9 @@ contract TokenSale is TokenSaleConfig, Ownable {
     {
         uint256 leftTokens = getTokensLeft();
 
-        require(leftTokens &gt; 0);
+        require(leftTokens > 0);
 
-        // let&#39;em burn
+        // let'em burn
         require(tokenContract.burn(leftTokens));
 
         UnsoldTokensBurnt(leftTokens);

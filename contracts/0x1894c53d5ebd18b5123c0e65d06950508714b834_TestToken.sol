@@ -23,9 +23,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }   
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -85,7 +85,7 @@ contract Ownable {
 }
 
 /** 
- * @title Based on the &#39;final&#39; ERC20 token standard as specified at:
+ * @title Based on the 'final' ERC20 token standard as specified at:
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md 
  */
 contract ERC20Interface {
@@ -112,10 +112,10 @@ contract TestToken is ERC20Interface, Ownable {
     using SafeMath for uint256;
     
     //Name of the token.
-    string  internal constant NAME = &quot;Test Token&quot;;
+    string  internal constant NAME = "Test Token";
     
     //Symbol of the token.
-    string  internal constant SYMBOL = &quot;TEST&quot;;     
+    string  internal constant SYMBOL = "TEST";     
     
     //Granularity of the token.
     uint8   internal constant DECIMALS = 8;        
@@ -134,22 +134,22 @@ contract TestToken is ERC20Interface, Ownable {
 
     
     //Stores all frozen TEST Global token holders.
-    mapping(address =&gt; bool)    public frostbite;
+    mapping(address => bool)    public frostbite;
     
     //Stores received frozen IPT Global tokens in an accumulated fashion. 
-    mapping(address =&gt; uint256) public frozenTokensReceived;
+    mapping(address => uint256) public frozenTokensReceived;
     
     //Stores and tracks frozen IPT Global token balances.
-    mapping(address =&gt; uint256) public frozenBalance;
+    mapping(address => uint256) public frozenBalance;
     
     //Stores custom frozen IPT Global token defrosting % rates. 
-    mapping(address =&gt; uint8) public customDefrostingRate;
+    mapping(address => uint8) public customDefrostingRate;
     
     //Stores the balance of IPT Global holders (complies with ERC-Standard).
-    mapping(address =&gt; uint256) internal balances; 
+    mapping(address => uint256) internal balances; 
     
     //Stores any allowances given to other IPT Global holders.
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed; 
+    mapping(address => mapping(address => uint256)) internal allowed; 
     
     
     //Event which allows for logging of frostbite granting activities.
@@ -225,7 +225,7 @@ contract TestToken is ERC20Interface, Ownable {
      */
     function frozenTokenTransfer(address _recipient, uint256 _frozenAmount, uint8 _customDefrostingRate) external onlyOwner returns (bool) {
         require(_recipient != address(0));
-        require(_frozenAmount &lt;= balances[msg.sender]);
+        require(_frozenAmount <= balances[msg.sender]);
         
         frozenTokensReceived[_recipient] = _frozenAmount;
                frozenBalance[_recipient] = _frozenAmount;
@@ -263,7 +263,7 @@ contract TestToken is ERC20Interface, Ownable {
      */
     function changeFrozenBalance(address _recipient, uint256 _defrostedAmount) external onlyOwner returns (bool) {
         require(_recipient != address(0));
-        require(_defrostedAmount &lt;= frozenBalance[_recipient]);
+        require(_defrostedAmount <= frozenBalance[_recipient]);
         require(frostbite[_recipient]);
         
         frozenBalance[_recipient] = frozenBalance[_recipient].sub(_defrostedAmount);
@@ -274,13 +274,13 @@ contract TestToken is ERC20Interface, Ownable {
     
     /**
      * @dev removeFrozenTokenConfigurations function allows the owner of the smart contract to remove all 
-     * frostbites, frozenbalances and defrosting rates of an array of recipient addresses &lt; 50.
+     * frostbites, frozenbalances and defrosting rates of an array of recipient addresses < 50.
      * @param _recipients the address(es) which will be recovered.
      * @return a boolean representing whether the function was executed succesfully.
      */
     function removeFrozenTokenConfigurations(address[] _recipients) external onlyOwner returns (bool) {
         
-        for (uint256 i = 0; i &lt; _recipients.length; i++) {
+        for (uint256 i = 0; i < _recipients.length; i++) {
             if (frostbite[_recipients[i]]) {
                 customDefrostingRate[_recipients[i]] = 0;
                        frozenBalance[_recipients[i]] = 0;
@@ -294,13 +294,13 @@ contract TestToken is ERC20Interface, Ownable {
     
     /**
      * @dev standardTokenDefrosting function allows the owner of the smart contract to defrost
-     * frozen tokens based on a base defrosting Rate of 0.2 % (from multiple recipients at once if desired) of particular recipient addresses &lt; 50.
+     * frozen tokens based on a base defrosting Rate of 0.2 % (from multiple recipients at once if desired) of particular recipient addresses < 50.
      * @param _recipients the address(es) which will receive defrosting of frozen tokens.
      * @return a boolean representing whether the function was executed succesfully.
      */
     function standardTokenDefrosting(address[] _recipients) external onlyOwner returns (bool) {
         
-        for (uint256 i = 0; i &lt; _recipients.length; i++) {
+        for (uint256 i = 0; i < _recipients.length; i++) {
             if (frostbite[_recipients[i]]) {
                 uint256 defrostedAmount = (frozenTokensReceived[_recipients[i]].mul(standardDefrostingValue).div(standardDefrostingNumerator)).div(100);
                 
@@ -319,13 +319,13 @@ contract TestToken is ERC20Interface, Ownable {
     
     /**
      * @dev customTokenDefrosting function allows the owner of the smart contract to defrost
-     * frozen tokens based on custom defrosting Rates (from multiple recipients at once if desired) of particular recipient addresses &lt; 50.
+     * frozen tokens based on custom defrosting Rates (from multiple recipients at once if desired) of particular recipient addresses < 50.
      * @param _recipients the address(es) which will receive defrosting of frozen tokens.
      * @return a boolean representing whether the function was executed succesfully.
      */
     function customTokenDefrosting(address[] _recipients) external onlyOwner returns (bool) {
         
-        for (uint256 i = 0; i &lt; _recipients.length; i++) {
+        for (uint256 i = 0; i < _recipients.length; i++) {
             if (frostbite[_recipients[i]]) {
                 uint256 defrostedAmount = (frozenTokensReceived[_recipients[i]].mul(customDefrostingRate[_recipients[i]])).div(100);
                 
@@ -350,10 +350,10 @@ contract TestToken is ERC20Interface, Ownable {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         
         if (frostbite[msg.sender]) {
-            require(_value &lt;= balances[msg.sender].sub(frozenBalance[msg.sender]));
+            require(_value <= balances[msg.sender].sub(frozenBalance[msg.sender]));
         }
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -372,12 +372,12 @@ contract TestToken is ERC20Interface, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
         if (frostbite[_from]) {
-            require(_value &lt;= balances[_from].sub(frozenBalance[_from]));
-            require(_value &lt;= allowed[_from][msg.sender]);
+            require(_value <= balances[_from].sub(frozenBalance[_from]));
+            require(_value <= allowed[_from][msg.sender]);
         }
 
         balances[_from] = balances[_from].sub(_value);
@@ -391,7 +391,7 @@ contract TestToken is ERC20Interface, Ownable {
      * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.

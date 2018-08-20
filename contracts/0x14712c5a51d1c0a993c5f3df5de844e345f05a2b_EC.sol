@@ -99,15 +99,15 @@ contract EC {
         uint256 da;
         uint256 db;
 
-        if (x1 == 0 &amp;&amp; y1 == 0) {
+        if (x1 == 0 && y1 == 0) {
             return (x2, y2, z2);
         }
 
-        if (x2 == 0 &amp;&amp; y2 == 0) {
+        if (x2 == 0 && y2 == 0) {
             return (x1, y1, z1);
         }
 
-        if (x1 == x2 &amp;&amp; y1 == y2) {
+        if (x1 == x2 && y1 == y2) {
             (lx, lz) = _jMul(x1, z1, x1, z1);
             (lx, lz) = _jMul(lx, lz, 3, 1);
             (lx, lz) = _jAdd(lx, lz, a, 1);
@@ -159,7 +159,7 @@ contract EC {
         }
 
         while (remaining != 0) {
-            if ((remaining &amp; 1) != 0) {
+            if ((remaining & 1) != 0) {
                 (acx,acy,acz) = _ecAdd(acx, acy, acz, px, py, pz);
             }
             remaining = remaining / 2;
@@ -198,7 +198,7 @@ contract EC {
     {
         uint256 m = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
         address signer = ecrecover(0, y1 % 2 != 0 ? 28 : 27, bytes32(x1), bytes32(mulmod(scalar, x1, m)));
-        address xyAddress = address(uint256(keccak256(abi.encodePacked(qx, qy))) &amp; 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+        address xyAddress = address(uint256(keccak256(abi.encodePacked(qx, qy))) & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
         return xyAddress == signer;
     }
 

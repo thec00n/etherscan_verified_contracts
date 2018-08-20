@@ -1,4 +1,4 @@
-pragma solidity &gt;=0.4.10;
+pragma solidity >=0.4.10;
 
 contract Token {
 	function balanceOf(address addr) returns(uint);
@@ -28,8 +28,8 @@ contract Sale {
 	}
 
 	function () payable {
-		require(block.timestamp &gt;= start);
-		if (block.timestamp &gt; end || this.balance &gt; cap) {
+		require(block.timestamp >= start);
+		if (block.timestamp > end || this.balance > cap) {
 			require(live);
 			live = false;
 			EndSale();
@@ -70,7 +70,7 @@ contract Sale {
 
 	// withdraw some of the Ether
 	function withdrawSome(uint value) onlyOwner {
-		require(value &lt;= this.balance);
+		require(value <= this.balance);
 		msg.sender.transfer(value);
 	}
 

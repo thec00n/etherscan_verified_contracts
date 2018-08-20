@@ -46,11 +46,11 @@ contract RemiCoin is ERC20Interface,Owner {
     uint256 public totalSupply;
     
     //Balance property which should be always associate with an address
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     //frozenAccount property which should be associate with an address
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
     
     //These generates a public event on the blockchain that will notify clients
     event FrozenFunds(address target, bool frozen);
@@ -76,9 +76,9 @@ contract RemiCoin is ERC20Interface,Owner {
         if (frozenAccount[msg.sender]) return false;
 
         //checking the sender should have enough coins
-        if(balances[msg.sender] &lt; value) return false;
+        if(balances[msg.sender] < value) return false;
         //checking for overflows
-        if(balances[to] + value &lt; balances[to]) return false;
+        if(balances[to] + value < balances[to]) return false;
         
         //substracting the sender balance
         balances[msg.sender] -= value;
@@ -99,13 +99,13 @@ contract RemiCoin is ERC20Interface,Owner {
         if (frozenAccount[msg.sender]) return false;
 
         //checking the from should have enough coins
-        if(balances[from] &lt; value) return false;
+        if(balances[from] < value) return false;
 
         //checking for allowance
-        if( allowed[from][msg.sender] &gt;= value ) return false;
+        if( allowed[from][msg.sender] >= value ) return false;
 
         //checking for overflows
-        if(balances[to] + value &lt; balances[to]) return false;
+        if(balances[to] + value < balances[to]) return false;
         
         balances[from] -= value;
         allowed[from][msg.sender] -= value;

@@ -58,9 +58,9 @@ contract ERC20 is Ownable {
 
     uint256 public creationBlock;
 
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -79,7 +79,7 @@ contract ERC20 is Ownable {
     bool transferAllSupplyToOwner,
     bool _locked
     ) {
-        standard = &#39;ERC20 0.1&#39;;
+        standard = 'ERC20 0.1';
 
         initialSupply = _initialSupply;
 
@@ -111,11 +111,11 @@ contract ERC20 is Ownable {
             return true;
         }
 
-        if (balances[_from] &lt; value) {
+        if (balances[_from] < value) {
             return false;
         }
 
-        if (balances[_to] + value &lt;= balances[_to]) {
+        if (balances[_to] + value <= balances[_to]) {
             return false;
         }
 
@@ -174,7 +174,7 @@ contract ERC20 is Ownable {
             return false;
         }
 
-        if (allowance[_from][msg.sender] &lt; _value) {
+        if (allowance[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -191,7 +191,7 @@ contract ERC20 is Ownable {
 
 contract MintingERC20 is ERC20 {
 
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     uint256 public maxSupply;
 
@@ -207,7 +207,7 @@ contract MintingERC20 is ERC20 {
     ERC20(_initialSupply, _tokenName, _decimals, _symbol, _transferAllSupplyToOwner, _locked)
 
     {
-        standard = &quot;MintingERC20 0.1&quot;;
+        standard = "MintingERC20 0.1";
         minters[msg.sender] = true;
         maxSupply = _maxSupply;
     }
@@ -231,10 +231,10 @@ contract MintingERC20 is ERC20 {
         if (_amount == uint256(0)) {
             return uint256(0);
         }
-        if (initialSupply + _amount &lt;= initialSupply){
+        if (initialSupply + _amount <= initialSupply){
             return uint256(0);
         }
-        if (initialSupply + _amount &gt; maxSupply) {
+        if (initialSupply + _amount > maxSupply) {
             return uint256(0);
         }
 
@@ -256,9 +256,9 @@ contract Lamden is MintingERC20 {
 
     uint8 public decimals = 18;
 
-    string public tokenName = &quot;Lamden Tau&quot;;
+    string public tokenName = "Lamden Tau";
 
-    string public tokenSymbol = &quot;TAU&quot;;
+    string public tokenSymbol = "TAU";
 
     uint256 public  maxSupply = 500 * 10 ** 6 * uint(10) ** decimals; // 500,000,000
 
@@ -269,7 +269,7 @@ contract Lamden is MintingERC20 {
     uint256 initialSupply,
     bool _locked
     ) MintingERC20(initialSupply, maxSupply, tokenName, decimals, tokenSymbol, false, _locked) {
-        standard = &#39;Lamden 0.1&#39;;
+        standard = 'Lamden 0.1';
     }
 
     function setLocked(bool _locked) onlyOwner {
@@ -351,7 +351,7 @@ contract LamdenTokenAllocation is Ownable {
         require(uint8(allocations.length) == uint8(14));
         require(address(tau) != 0x0);
         require(allocatedTokens == 0);
-        for (uint8 i = 0; i &lt; allocations.length; i++) {
+        for (uint8 i = 0; i < allocations.length; i++) {
             Allocation storage allocation = allocations[i];
             uint256 mintedAmount = tau.mint(allocation._address, allocation.amount);
             require(mintedAmount == allocation.amount);
@@ -389,7 +389,7 @@ contract LamdenPhases is Ownable {
 
     address investor = 0x3669ad54675E94e14196528786645c858b8391F1;
 
-    mapping(address =&gt; uint256) alreadyContributed;
+    mapping(address => uint256) alreadyContributed;
 
     struct Phase {
     uint256 price;
@@ -399,7 +399,7 @@ contract LamdenPhases is Ownable {
     uint256 soldTokens;
     uint256 collectedEthers;
     bool isFinished;
-    mapping (address =&gt; bool) whitelist;
+    mapping (address => bool) whitelist;
     }
 
     function LamdenPhases(
@@ -435,7 +435,7 @@ contract LamdenPhases is Ownable {
         }
         uint256 amount = 0;
 
-        for (uint8 i = 0; i &lt; phases.length; i++) {
+        for (uint8 i = 0; i < phases.length; i++) {
             Phase storage phase = phases[i];
 
             if (phase.whitelist[_address] == false) {
@@ -446,11 +446,11 @@ contract LamdenPhases is Ownable {
                 continue;
             }
 
-            if (phase.since &gt; time) {
+            if (phase.since > time) {
                 continue;
             }
 
-            if (phase.till &lt; time) {
+            if (phase.till < time) {
                 continue;
             }
             currentPhase = i;
@@ -461,7 +461,7 @@ contract LamdenPhases is Ownable {
             
             amount += phaseAmount;
 
-            if (phase.maxAmount &lt; amount + soldTokens) {
+            if (phase.maxAmount < amount + soldTokens) {
                 return uint256(0);
             }
             //            phase.soldTokens += amount;
@@ -476,7 +476,7 @@ contract LamdenPhases is Ownable {
     }
 
     function setInternalFinished(uint8 phaseId, bool _finished) internal returns (bool){
-        if (phases.length &lt; phaseId) {
+        if (phases.length < phaseId) {
             return false;
         }
 
@@ -500,12 +500,12 @@ contract LamdenPhases is Ownable {
             return false;
         }
 
-        if (phases.length &lt; currentPhase) {
+        if (phases.length < currentPhase) {
             return false;
         }
         Phase storage icoPhase = phases[1];
 
-        if (icoPhase.since &lt;= now) {
+        if (icoPhase.since <= now) {
 
             currentPhase = 1;
             uint256 daysInterval = (now - icoPhase.since) / uint256(86400);
@@ -518,7 +518,7 @@ contract LamdenPhases is Ownable {
 
             todayMaxEthers = icoInitialThresholds * (2 ** daysInterval);
 
-            if(alreadyContributed[_address] + _value &gt; todayMaxEthers) {
+            if(alreadyContributed[_address] + _value > todayMaxEthers) {
                 return false;
             }
 
@@ -548,7 +548,7 @@ contract LamdenPhases is Ownable {
     }
 
     function setPhase(uint8 phaseId, uint256 since, uint256 till, uint256 price) onlyOwner returns (bool) {
-        if (phases.length &lt;= phaseId) {
+        if (phases.length <= phaseId) {
             return false;
         }
 
@@ -575,7 +575,7 @@ contract LamdenPhases is Ownable {
 
     function addToWhitelist(uint8 phaseId, address _address) onlyOwner {
 
-        require(phases.length &gt; phaseId);
+        require(phases.length > phaseId);
 
         Phase storage phase = phases[phaseId];
 
@@ -585,7 +585,7 @@ contract LamdenPhases is Ownable {
 
     function removeFromWhitelist(uint8 phaseId, address _address) onlyOwner {
 
-        require(phases.length &gt; phaseId);
+        require(phases.length > phaseId);
 
         Phase storage phase = phases[phaseId];
 
@@ -602,7 +602,7 @@ contract LamdenPhases is Ownable {
         uint256 mintedAmount = tau.mint(_address, tokenAmount);
         require(mintedAmount == tokenAmount);
 
-        require(phases.length &gt; currentPhase);
+        require(phases.length > currentPhase);
         Phase storage phase = phases[currentPhase];
         phase.soldTokens += tokenAmount;
         soldTokens += tokenAmount;
@@ -612,7 +612,7 @@ contract LamdenPhases is Ownable {
     function getPhase(uint8 phaseId) returns (uint256, uint256, uint256, uint256, uint256, uint256, bool)
     {
 
-        require(phases.length &gt; phaseId);
+        require(phases.length > phaseId);
 
         Phase storage phase = phases[phaseId];
 

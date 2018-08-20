@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
         }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -47,7 +47,7 @@ contract EthColorAccount {
         address referrer;
     }
 
-    mapping (address =&gt; Account) accounts;
+    mapping (address => Account) accounts;
 
     event Withdraw(address indexed withdrawAddress, uint256 withdrawValue);
     event Transfer(address indexed addressFrom, address indexed addressTo, uint256 value, uint256 pixelId);
@@ -62,8 +62,8 @@ contract EthColorAccount {
 
     // To withdraw your account balance from this contract.
     function withdrawETH(uint256 amount) external {
-        assert(amount &gt; 0);
-        assert(accounts[msg.sender].balance &gt;= amount);
+        assert(amount > 0);
+        assert(accounts[msg.sender].balance >= amount);
 
         accounts[msg.sender].balance = accounts[msg.sender].balance.sub(amount);
         msg.sender.transfer(amount);
@@ -88,15 +88,15 @@ contract EthColor is Ownable, EthColorAccount {
 
     Pixel [16384] public pixels;
 
-    string public constant name = &quot;Ethcolor&quot;;
-    string public constant version = &quot;1.0.0&quot;;
+    string public constant name = "Ethcolor";
+    string public constant version = "1.0.0";
     uint256 public constant initialPrice = 0.08 ether;
 
     event Drawcolor(uint256 indexed drawGridLocation, address indexed drawerAddress, uint256 colorDraw, uint256 spend);
 
     function getColors() constant public returns (uint256[16384]) {
         uint256[16384] memory result;
-        for (uint256 i = 0; i &lt; 16384; i++) {
+        for (uint256 i = 0; i < 16384; i++) {
             result[i] = pixels[i].color;
         }
         return result;
@@ -104,7 +104,7 @@ contract EthColor is Ownable, EthColorAccount {
 
     function getTimes() constant public returns (uint256[16384]) {
         uint256[16384] memory result;
-        for (uint256 i = 0; i &lt; 16384; i++) {
+        for (uint256 i = 0; i < 16384; i++) {
             result[i] = pixels[i].times;
         }
         return result;
@@ -112,7 +112,7 @@ contract EthColor is Ownable, EthColorAccount {
 
     function getOwners() constant public returns (address[16384]) {
         address[16384] memory result;
-        for (uint256 i = 0; i &lt; 16384; i++) {
+        for (uint256 i = 0; i < 16384; i++) {
             result[i] = pixels[i].owner;
         }
         return result;
@@ -122,8 +122,8 @@ contract EthColor is Ownable, EthColorAccount {
         assert(pixelIdxs.length == colors.length);
 
         // Set referral address
-        if ((accounts[msg.sender].referrer == address(0)) &amp;&amp;
-            (referralAddress != msg.sender) &amp;&amp;
+        if ((accounts[msg.sender].referrer == address(0)) &&
+            (referralAddress != msg.sender) &&
             (referralAddress != address(0))) {
 
             accounts[msg.sender].referrer = referralAddress;
@@ -131,7 +131,7 @@ contract EthColor is Ownable, EthColorAccount {
 
         uint256 remainValue = msg.value;
         uint256 price;
-        for (uint256 i = 0; i &lt; pixelIdxs.length; i++) {
+        for (uint256 i = 0; i < pixelIdxs.length; i++) {
             uint256 pixelIdx = pixelIdxs[i];
             if (pixels[pixelIdx].times == 0) {
                 price = initialPrice.mul(9).div(10);
@@ -141,13 +141,13 @@ contract EthColor is Ownable, EthColorAccount {
                 price = pixels[pixelIdx].price.mul(11).div(10);
             }
 
-            if (remainValue &lt; price) {
+            if (remainValue < price) {
               // If the eth is not enough, the eth will be returned to his account on the contract.
               transferToAccount(pixelIdx, msg.sender, 1000, remainValue);
               break;
             }
 
-            assert(colors[i] &lt; 25);
+            assert(colors[i] < 25);
             remainValue = remainValue.sub(price);
 
             // Update pixel
@@ -166,7 +166,7 @@ contract EthColor is Ownable, EthColorAccount {
     // Transfer the ETH in contract balance
     function transferETH(uint256 pixelId, uint256 drawPrice) internal {
         // Transfer 97% to the last owner
-        if (pixels[pixelId].times &gt; 1) {
+        if (pixels[pixelId].times > 1) {
             transferToAccount(pixelId, pixels[pixelId].owner, 970, drawPrice);
         } else {
             transferToAccount(pixelId, wallet, 970, drawPrice);
@@ -185,7 +185,7 @@ contract EthColor is Ownable, EthColorAccount {
     function finalize() onlyOwner public {
         require(msg.sender == wallet);
         // Check for after the end time: 2018/12/31 23:59:59 UTC
-        require(now &gt;= 1546300799);
+        require(now >= 1546300799);
         wallet.transfer(this.balance);
     }
 

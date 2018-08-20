@@ -27,8 +27,8 @@ contract Randao {
         uint32    commitNum;
         uint32    revealsNum;
 
-        mapping (address =&gt; Consumer) consumers;
-        mapping (address =&gt; Participant) participants;
+        mapping (address => Consumer) consumers;
+        mapping (address => Participant) participants;
     }
 
     uint256 public numCampaigns;
@@ -37,11 +37,11 @@ contract Randao {
 
     modifier blankAddress(address _n) { if (_n != 0) revert(); _; }
 
-    modifier moreThanZero(uint256 _deposit) { if (_deposit &lt;= 0) revert(); _; }
+    modifier moreThanZero(uint256 _deposit) { if (_deposit <= 0) revert(); _; }
 
-    modifier notBeBlank(bytes32 _s) { if (_s == &quot;&quot;) revert(); _; }
+    modifier notBeBlank(bytes32 _s) { if (_s == "") revert(); _; }
 
-    modifier beBlank(bytes32 _s) { if (_s != &quot;&quot;) revert(); _; }
+    modifier beBlank(bytes32 _s) { if (_s != "") revert(); _; }
 
     modifier beFalse(bool _t) { if (_t) revert(); _; }
 
@@ -58,11 +58,11 @@ contract Randao {
         uint256 bountypot);
 
     modifier timeLineCheck(uint32 _bnum, uint16 _commitBalkline, uint16 _commitDeadline) {
-        if (block.number &gt;= _bnum) revert();
-        if (_commitBalkline &lt;= 0) revert();
-        if (_commitDeadline &lt;= 0) revert();
-        if (_commitDeadline &gt;= _commitBalkline) revert();
-        if (block.number &gt;= _bnum - _commitBalkline) revert();
+        if (block.number >= _bnum) revert();
+        if (_commitBalkline <= 0) revert();
+        if (_commitDeadline <= 0) revert();
+        if (_commitDeadline >= _commitBalkline) revert();
+        if (block.number >= _bnum - _commitBalkline) revert();
         _;
     }
 
@@ -96,7 +96,7 @@ contract Randao {
     }
 
     modifier checkFollowPhase(uint256 _bnum, uint16 _commitDeadline) {
-        if (block.number &gt; _bnum - _commitDeadline) revert();
+        if (block.number > _bnum - _commitDeadline) revert();
         _;
     }
 
@@ -122,8 +122,8 @@ contract Randao {
     modifier checkDeposit(uint256 _deposit) { if (msg.value != _deposit) revert(); _; }
 
     modifier checkCommitPhase(uint256 _bnum, uint16 _commitBalkline, uint16 _commitDeadline) {
-        if (block.number &lt; _bnum - _commitBalkline) revert();
-        if (block.number &gt; _bnum - _commitDeadline) revert();
+        if (block.number < _bnum - _commitBalkline) revert();
+        if (block.number > _bnum - _commitDeadline) revert();
         _;
     }
 
@@ -148,8 +148,8 @@ contract Randao {
     }
 
     modifier checkRevealPhase(uint256 _bnum, uint16 _commitDeadline) {
-        if (block.number &lt;= _bnum - _commitDeadline) revert();
-        if (block.number &gt;= _bnum) revert();
+        if (block.number <= _bnum - _commitDeadline) revert();
+        if (block.number >= _bnum) revert();
         _;
     }
 
@@ -173,7 +173,7 @@ contract Randao {
         LogReveal(_campaignID, msg.sender, _s);
     }
 
-    modifier bountyPhase(uint256 _bnum){ if (block.number &lt; _bnum) revert(); _; }
+    modifier bountyPhase(uint256 _bnum){ if (block.number < _bnum) revert(); _; }
 
     function getRandom(uint256 _campaignID) external returns (uint256) {
         Campaign storage c = campaigns[_campaignID];
@@ -203,7 +203,7 @@ contract Randao {
         Participant storage p
     ) bountyPhase(c.bnum)
     beFalse(p.rewarded) internal {
-        if (c.revealsNum &gt; 0) {
+        if (c.revealsNum > 0) {
             if (p.revealed) {
                 uint256 share = calculateShare(c);
                 returnReward(share, c, p);
@@ -216,7 +216,7 @@ contract Randao {
 
     function calculateShare(Campaign c) internal pure returns (uint256 _share) {
         // Someone does not reveal. Campaign fails.
-        if (c.commitNum &gt; c.revealsNum) {
+        if (c.commitNum > c.revealsNum) {
             _share = fines(c) / c.revealsNum;
             // Campaign succeeds.
         } else {
@@ -248,7 +248,7 @@ contract Randao {
     }
 
     modifier campaignFailed(uint32 _commitNum, uint32 _revealsNum) {
-        if (_commitNum == _revealsNum &amp;&amp; _commitNum != 0) revert();
+        if (_commitNum == _revealsNum && _commitNum != 0) revert();
         _;
     }
 

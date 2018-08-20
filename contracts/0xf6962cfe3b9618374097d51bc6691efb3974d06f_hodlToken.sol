@@ -23,13 +23,13 @@ library SafeMath {
   	}
 
 	function sub(uint256 a, uint256 b) internal returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal returns (uint256) {
 		 uint256 c = a + b;
-		 assert(c &gt;= a);
+		 assert(c >= a);
 		 return c;
 	}
 }
@@ -37,13 +37,13 @@ library SafeMath {
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 **/
 contract Ownable {
 	address public owner;
 
 	/**
-	* @dev The Ownable constructor sets the original &#39;owner&#39; of the contract to the sender
+	* @dev The Ownable constructor sets the original 'owner' of the contract to the sender
 	* account.
 	**/
 	function Ownable() {
@@ -123,7 +123,7 @@ contract Pausable is Ownable {
 	* @dev modifier to allow actions only when the crowdsale has ended
 	**/
 	modifier whenCrowdsaleEnded {
-		require(deadline &lt; now);
+		require(deadline < now);
 		_;
 	}
 
@@ -131,7 +131,7 @@ contract Pausable is Ownable {
 	* @dev modifier to allow actions only when the crowdsale has not ended
 	**/
 	modifier whenCrowdsaleNotEnded {
-		require(deadline &gt;= now);
+		require(deadline >= now);
 		_;
 	}
 
@@ -191,7 +191,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	/**
 	* @dev transfer token for a specified address
@@ -235,7 +235,7 @@ contract ERC20 is ERC20Basic {
 **/
 contract StandardToken is ERC20, BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	/**
 	* @dev Transfer tokens from one address to another
@@ -246,7 +246,7 @@ contract StandardToken is ERC20, BasicToken {
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 		var _allowance = allowed[_from][msg.sender];
 
-		require (_value &lt;= _allowance);
+		require (_value <= _allowance);
 
 		balances[_to] = balances[_to].add(_value);
 		balances[_from] = balances[_from].sub(_value);
@@ -265,8 +265,8 @@ contract StandardToken is ERC20, BasicToken {
 	function approve(address _spender, uint256 _value) returns (bool) {
 		
 		/**
-		* To change the approve amount you first have to reduce the addresses&#39;
-		* allowance to zero by calling &#39;approve(_spender, 0)&#39; if it is not
+		* To change the approve amount you first have to reduce the addresses'
+		* allowance to zero by calling 'approve(_spender, 0)' if it is not
 		* already 0 to mitigate the race condition described here: 
 		https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 		**/
@@ -292,8 +292,8 @@ contract StandardToken is ERC20, BasicToken {
 /**
 * @title hodlToken
 * @dev All tokens are pre-assigned to the creator.
-* Tokens can be transferred using &#39;transfer&#39; and other
-* &#39;StandardToken&#39; functions.
+* Tokens can be transferred using 'transfer' and other
+* 'StandardToken' functions.
 **/
 contract hodlToken is Pausable, StandardToken {
 
@@ -305,8 +305,8 @@ contract hodlToken is Pausable, StandardToken {
 	uint256 public purchasableTokens = 112000 * 10**18;
 	uint256 public founderAllocation = 28000 * 10**18;
 
-	string public name = &quot;TeamHODL Token&quot;;
-	string public symbol = &quot;THODL&quot;;
+	string public name = "TeamHODL Token";
+	string public symbol = "THODL";
 	uint256 public decimals = 18;
 	uint256 public INITIAL_SUPPLY = 140000 * 10**18;
 
@@ -346,7 +346,7 @@ contract hodlToken is Pausable, StandardToken {
 	* @dev Allows the current owner to set the new total supply, to be used iff not all tokens sold during crowdsale.
 	**/
 	function setTotalSupply() onlyOwner whenCrowdsaleEnded {
-		if (purchasableTokens &gt; 0) {
+		if (purchasableTokens > 0) {
 			totalSupply = totalSupply.sub(purchasableTokens);
 		}
 	}
@@ -359,7 +359,7 @@ contract hodlToken is Pausable, StandardToken {
 		/**
 		* Transfer money from escrow wallet up to 1 day after ICO end.
 		**/
-		if (dayAfterDeadline &gt;= now) {
+		if (dayAfterDeadline >= now) {
 			owner.transfer(escrow.balance);
 		}
 	}
@@ -373,7 +373,7 @@ contract hodlToken is Pausable, StandardToken {
 		* If break-even point has been reached (3500 Eth = 3.5*10**21 Wei),
 		* rate updates to 20% of total revenue (100% of dedicated wallet after forwarding contract)
 		**/
-		if (escrow.balance &gt;= 7*10**20) {
+		if (escrow.balance >= 7*10**20) {
 
 			/**
 			* Rounds up to address division error
@@ -392,7 +392,7 @@ contract hodlToken is Pausable, StandardToken {
 		* If break-even point has been reached (3500 Eth = 3.5*10**21 Wei),
 		* refund rate updates to 20% of total revenue (100% of dedicated wallet after forwarding contract)
 		**/
-		if (escrow.balance &gt;= 7*10**20) {
+		if (escrow.balance >= 7*10**20) {
 
 			/**
 			* Rounds up to address division error
@@ -405,7 +405,7 @@ contract hodlToken is Pausable, StandardToken {
 	* @dev fallback function
 	**/
 	function () payable {
-		if(now &lt;= deadline){
+		if(now <= deadline){
 			buyTokens(msg.sender);
 		}
 	}
@@ -420,7 +420,7 @@ contract hodlToken is Pausable, StandardToken {
 		**/
 		uint256 weiAmount = msg.value;
 		uint256 tokens = weiAmount.mul(RATE);
-		require(purchasableTokens &gt;= tokens);
+		require(purchasableTokens >= tokens);
 
 		/**
 		* Send tokens to buyer
@@ -442,13 +442,13 @@ contract hodlToken is Pausable, StandardToken {
 		* Calculate amount of THODL to refund
 		**/
 		uint256 refundTHODL = _amount.mul(10**18);
-		require(balances[msg.sender] &gt;= refundTHODL);
+		require(balances[msg.sender] >= refundTHODL);
 
 		/**
 		* Calculate refund in wei
 		**/
 		uint256 weiAmount = refundTHODL.div(REFUND_RATE);
-		require(this.balance &gt;= weiAmount);
+		require(this.balance >= weiAmount);
 
 		balances[msg.sender] = balances[msg.sender].sub(refundTHODL);
 		

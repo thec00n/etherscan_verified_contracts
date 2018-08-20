@@ -77,7 +77,7 @@ contract OwnerBase {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCOO whenNotPaused {
         paused = true;
@@ -89,7 +89,7 @@ contract OwnerBase {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCOO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
     
@@ -144,20 +144,20 @@ contract Lottery is OwnerBase {
     /// @dev buy lottery
     function buy(uint id) payable public {
         require(isNormalUser(msg.sender));
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         uint back = msg.value - price;  
         
         sn++;
         uint sum = seed + sn + now + uint(msg.sender);
         uint ran = uint16(keccak256(sum));
-        if (ran * 10000 &lt; 880 * 0xffff) { // win the reward 
+        if (ran * 10000 < 880 * 0xffff) { // win the reward 
             back = reward + back;
             emit Winner(msg.sender, id, sn);
         }else{
             emit Winner(msg.sender, id, 0);
         }
         
-        if (back &gt; 1 finney) {
+        if (back > 1 finney) {
             msg.sender.transfer(back);
         }
     }
@@ -167,7 +167,7 @@ contract Lottery is OwnerBase {
     // @dev Allows the cfo to capture the balance.
     function cfoWithdraw( uint remain) external onlyCFO {
         address myself = address(this);
-        require(myself.balance &gt; remain);
+        require(myself.balance > remain);
         cfoAddress.transfer(myself.balance - remain);
     }
     

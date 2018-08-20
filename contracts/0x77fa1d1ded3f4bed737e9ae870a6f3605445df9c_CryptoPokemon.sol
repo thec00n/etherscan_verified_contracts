@@ -24,9 +24,9 @@ return c;
 * @dev Integer division of two numbers, truncating the quotient.
 */
 function div(uint256 a, uint256 b) internal pure returns (uint256) {
-// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+// assert(b > 0); // Solidity automatically throws when dividing by 0
 uint256 c = a / b;
-// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 return c;
 }
 
@@ -34,7 +34,7 @@ return c;
 * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 */
 function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-assert(b &lt;= a);
+assert(b <= a);
 return a - b;
 }
 
@@ -43,16 +43,16 @@ return a - b;
 */
 function add(uint256 a, uint256 b) internal pure returns (uint256) {
 uint256 c = a + b;
-assert(c &gt;= a);
+assert(c >= a);
 return c;
 }
 }
 
 contract CryptoPokemon {
 using SafeMath for uint256;
-mapping (address =&gt; bool) private admins;
-mapping (uint =&gt; uint256) public levels;
-mapping (uint =&gt; bool) private lock;
+mapping (address => bool) private admins;
+mapping (uint => uint256) public levels;
+mapping (uint => bool) private lock;
 address contractCreator;
 address devFeeAddress;
 address tournamentPrizeAddress;
@@ -140,8 +140,8 @@ Users can purchase multiple PokeMon.
 */
 function purchasePokemon(uint _pokemonId) public payable {
 
-// Check new price &gt;= currentPrice &amp; gameStatus
-require(msg.value &gt;= pokemons[_pokemonId].currentPrice);
+// Check new price >= currentPrice & gameStatus
+require(msg.value >= pokemons[_pokemonId].currentPrice);
 require(pokemons[_pokemonId].ownerAddress != address(0));
 require(pokemons[_pokemonId].ownerAddress != msg.sender);
 require(lock[_pokemonId] == false);
@@ -154,8 +154,8 @@ uint256 price = pokemons[_pokemonId].currentPrice;
 uint256 excess = msg.value.sub(price);
 uint256 realValue = pokemons[_pokemonId].currentPrice;
 
-// If excess&gt;0 send back the amount
-if (excess &gt; 0) {
+// If excess>0 send back the amount
+if (excess > 0) {
 newOwner.transfer(excess);
 }
 
@@ -163,12 +163,12 @@ newOwner.transfer(excess);
 uint256 cutFee = realValue.div(10);
 
 
-// Calculate the pokemon owner commission on this sale &amp; transfer the commission to the owner.
-uint256 commissionOwner = realValue - cutFee; // =&gt; 90%
+// Calculate the pokemon owner commission on this sale & transfer the commission to the owner.
+uint256 commissionOwner = realValue - cutFee; // => 90%
 pokemons[_pokemonId].ownerAddress.transfer(commissionOwner);
 
-// Transfer the 5% commission to the developer &amp; %5 to tournamentPrizeAddress
-devFeeAddress.transfer(cutFee.div(2)); // =&gt; 10%
+// Transfer the 5% commission to the developer & %5 to tournamentPrizeAddress
+devFeeAddress.transfer(cutFee.div(2)); // => 10%
 tournamentPrizeAddress.transfer(cutFee.div(2));
 
 // Update the hero owner and set the new price

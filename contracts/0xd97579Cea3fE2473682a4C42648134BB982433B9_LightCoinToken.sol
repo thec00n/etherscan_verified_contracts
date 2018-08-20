@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 contract LightCoinToken{
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
 	address public owner;
 	address public lockOwner;
     string public name;
@@ -11,13 +11,13 @@ contract LightCoinToken{
 	// total amount of tokens
     uint256 public totalSupply;
 	// `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     function LightCoinToken() public { 
         owner = 0x9a64fE62837d8E2C0Bd0C2a96bbDdEA609Ab2F19;          // Set owner of contract 
 		lockOwner = 0x821C05372425709a68090A17075A855dd20371c7;
 		startTime = 1515686400;
-        name = &quot;Lightcoin&quot;;                                   // Set the name for display purposes
-        symbol = &quot;Light&quot;;                                           // Set the symbol for display purposes
+        name = "Lightcoin";                                   // Set the name for display purposes
+        symbol = "Light";                                           // Set the symbol for display purposes
         decimals =8;                                            // Amount of decimals for display purposes
 		totalSupply = 21000000000000000000;               // Total supply
 		balances[owner] = totalSupply * 90 /100 ;
@@ -36,8 +36,8 @@ contract LightCoinToken{
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transfer(address _to, uint256 _value) public returns (bool success) {
-	    require(_value &gt; 0 );                                      // Check send token value &gt; 0;
-		require(balances[msg.sender] &gt;= _value);
+	    require(_value > 0 );                                      // Check send token value > 0;
+		require(balances[msg.sender] >= _value);
 		balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -50,9 +50,9 @@ contract LightCoinToken{
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-	    require(balances[_from] &gt;= _value);                 // Check if the sender has enough
-        require(balances[_to] + _value &gt;= balances[_to]);   // Check for overflows
-        require(_value &lt;= allowed[_from][msg.sender]);      // Check allowance
+	    require(balances[_from] >= _value);                 // Check if the sender has enough
+        require(balances[_to] + _value >= balances[_to]);   // Check for overflows
+        require(_value <= allowed[_from][msg.sender]);      // Check allowance
 		balances[_from] -= _value;
         balances[_to] += _value;
 		allowed[_from][_to] -= _value;
@@ -65,7 +65,7 @@ contract LightCoinToken{
     /// @param _value The amount of tokens to be approved for transfer
     /// @return Whether the approval was successful or not
     function approve(address _spender, uint256 _value) public returns (bool success) {
-		require(balances[msg.sender] &gt;= _value);
+		require(balances[msg.sender] >= _value);
 		allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 		return true;
@@ -84,10 +84,10 @@ contract LightCoinToken{
     }
 	
 	function releaseToken() public{
-	   require(now &gt;= startTime +2 years);	   
+	   require(now >= startTime +2 years);	   
        uint256 i = ((now  - startTime -2 years) / (0.5 years));
 	   uint256  releasevalue = totalSupply /40 ;
-	   require(lockAmount &gt; (4 - i - 1) * releasevalue); 	   
+	   require(lockAmount > (4 - i - 1) * releasevalue); 	   
 	   lockAmount -= releasevalue ;
 	   balances[lockOwner] +=  releasevalue ;
     }

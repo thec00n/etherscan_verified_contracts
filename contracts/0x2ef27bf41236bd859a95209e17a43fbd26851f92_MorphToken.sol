@@ -37,11 +37,11 @@ contract ERC20 {
   using SafeMath for uint256;
 
   //This creates an array with all balances 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;  
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) allowed;  
 
   //This maintains list of all black list account
-  mapping(address =&gt; bool) public isblacklistedAccount;
+  mapping(address => bool) public isblacklistedAccount;
     
   // public variables of the token  
   string public name;
@@ -70,11 +70,11 @@ contract ERC20 {
 	function transfer(address _to, uint256 _value) public returns (bool) {
         require(!isblacklistedAccount[msg.sender]);                 // Check if sender is not blacklisted
         require(!isblacklistedAccount[_to]);                        // Check if receiver is not blacklisted
-		require(balanceOf[msg.sender] &gt; 0);                     
-		require(balanceOf[msg.sender] &gt;= _value);                   // Check if the sender has enough  
+		require(balanceOf[msg.sender] > 0);                     
+		require(balanceOf[msg.sender] >= _value);                   // Check if the sender has enough  
 		require(_to != address(0));                                 // Prevent transfer to 0x0 address. Use burn() instead
-		require(_value &gt; 0);
-		require(balanceOf[_to] .add(_value) &gt;= balanceOf[_to]);     // Check for overflows 
+		require(_value > 0);
+		require(balanceOf[_to] .add(_value) >= balanceOf[_to]);     // Check for overflows 
 		require(_to != msg.sender);                                 // Check if sender and receiver is not same
 		balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);  // Subtract value from sender
 		balanceOf[_to] = balanceOf[_to].add(_value);                // Add the value to the receiver
@@ -95,10 +95,10 @@ contract ERC20 {
          uint256 _amount
      ) public returns (bool success)
       {
-         if (balanceOf[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balanceOf[_to].add(_amount) &gt; balanceOf[_to])
+         if (balanceOf[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balanceOf[_to].add(_amount) > balanceOf[_to])
         {
              balanceOf[_from] = balanceOf[_from].sub(_amount);
              allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -121,7 +121,7 @@ contract ERC20 {
     } 
 
     /* This function returns the amount of tokens approved by the owner that can be
-     * transferred to the spender&#39;s account
+     * transferred to the spender's account
      * @param _owner address of the owner
      * @param _spender address of the spender 
      */
@@ -146,20 +146,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -181,7 +181,7 @@ contract MorphToken is Owned, ERC20 {
      */
 	function MorphToken() 
 
-	ERC20 (tokenSupply,&quot;MORPH&quot;,&quot;MORPH&quot;) public
+	ERC20 (tokenSupply,"MORPH","MORPH") public
     {
 		owner = msg.sender;
 	}
@@ -212,9 +212,9 @@ contract MorphToken is Owned, ERC20 {
     * @param _value The amount of token to be burned.
     */
     function burn(uint256 _value) public onlyOwner {
-      require(_value &lt;= balanceOf[msg.sender]);
-      // no need to require value &lt;= totalSupply, since that would imply the
-      // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+      require(_value <= balanceOf[msg.sender]);
+      // no need to require value <= totalSupply, since that would imply the
+      // sender's balance is greater than the totalSupply, which *should* be an assertion failure
       address burner = msg.sender;
       balanceOf[burner] = balanceOf[burner].sub(_value);
       totalSupply = totalSupply.sub(_value);

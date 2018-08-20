@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -229,8 +229,8 @@ contract IDealToken {
 }
 
 contract DealToken is MintableToken, IDealToken {
-    string public constant name = &quot;Deal Token&quot;;
-    string public constant symbol = &quot;DEAL&quot;;
+    string public constant name = "Deal Token";
+    string public constant symbol = "DEAL";
     uint8 public constant decimals = 0;
 
     uint256 public totalTokensBurnt = 0;
@@ -249,9 +249,9 @@ contract DealToken is MintableToken, IDealToken {
      * @return - A boolean that indicates if the operation was successful.
      */
     function spend(address _from, uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
 
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             return false;
         }
 
@@ -301,7 +301,7 @@ contract ForegroundCaller is IForegroundEnabledContract {
     event ForegroundPaymentResult(bool _success, uint256 indexed _promotionID, address indexed _referrer, uint256 _value);
     event ContractFunded(address indexed _sender, uint256 _value);
 
-    //Note: we don&#39;t use the &quot;relayedFromAddress&quot; variable here, but it seems like it should still be part of the API
+    //Note: we don't use the "relayedFromAddress" variable here, but it seems like it should still be part of the API
     function receiveEtherFromForegroundAddress(address _originatingAddress, address _relayedFromAddress, uint256 _promotionID, address _referrer) public payable {
         //NOTE: available Ether may be less than msg.value after this call
         //NOTE: originatingAddress indicates the true sender of the funds at this point, not msg.sender
@@ -312,11 +312,11 @@ contract ForegroundCaller is IForegroundEnabledContract {
         //NOTE: This makes a call to an external contract (Foreground), but does not use .call -- this seems unavoidable
         uint256 _paymentToForeground = foreground.calculateTotalDue(_promotionID, _amountSpent);
         //NOTE: Using .call in order to swallow any exceptions
-        bool _success = foreground.call.gas(1000000).value(_paymentToForeground)(bytes4(keccak256(&quot;payConversionFromTransaction(uint256,address,uint256)&quot;)), _promotionID, _referrer, _amountSpent);
+        bool _success = foreground.call.gas(1000000).value(_paymentToForeground)(bytes4(keccak256("payConversionFromTransaction(uint256,address,uint256)")), _promotionID, _referrer, _amountSpent);
         ForegroundPaymentResult(_success, _promotionID, _referrer, msg.value);
     }
 
-    //Abstract function to be implemented by advertiser&#39;s contract
+    //Abstract function to be implemented by advertiser's contract
     function receiveEtherFromRelayAddress(address _originatingAddress, uint256 _amount) internal returns(uint256 _amountSpent);
 
     //Function allows for additional funds to be added to the contract (without purchasing tokens)
@@ -355,7 +355,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
     DealToken public dealToken;
     SaleState public state;
 
-    mapping (address =&gt; PurchaseDetails) public purchases;
+    mapping (address => PurchaseDetails) public purchases;
 
     struct PurchaseDetails {
         uint256 tokenBalance;
@@ -376,7 +376,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
     modifier evaluateSaleState {
         require(saleSuspended == false);
 
-        if (state == SaleState.Configured &amp;&amp; block.number &gt;= startBlock) {
+        if (state == SaleState.Configured && block.number >= startBlock) {
             state = SaleState.Started;
             SaleStarted();
         }
@@ -385,7 +385,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
             setCurrentPrice();
         }
 
-        if (state == SaleState.Started &amp;&amp; (block.number &gt; endBlock || saleBalance == maxSaleBalance || maxSaleBalance.sub(saleBalance) &lt; currentTokenPrice)) {
+        if (state == SaleState.Started && (block.number > endBlock || saleBalance == maxSaleBalance || maxSaleBalance.sub(saleBalance) < currentTokenPrice)) {
             endSale();
         }
 
@@ -411,9 +411,9 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         public
         ForegroundCaller(_foreground)
     {
-        require(_publicTokenCap &gt; 0);
-        require(_tokenFloor &lt; _publicTokenCap);
-        require(_tokenRate &gt; 0);
+        require(_publicTokenCap > 0);
+        require(_tokenFloor < _publicTokenCap);
+        require(_tokenRate > 0);
 
         publicTokenCap = _publicTokenCap;
         baseTokenPrice = _tokenRate;
@@ -456,11 +456,11 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         external
         onlyOwner
     {
-        require(_startBlock &gt;= block.number);
-        require(_endBlock &gt;= _startBlock);
+        require(_startBlock >= block.number);
+        require(_endBlock >= _startBlock);
         require(state == SaleState.Deployed);
         require(_wallet != 0x0);
-        require(_stepDuration &gt; 0);
+        require(_stepDuration > 0);
         require(_devAddress != 0x0);
         require(_partnershipAddress != 0x0);
         require(_incentiveAddress != 0x0);
@@ -485,7 +485,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         evaluateSaleState
     {
         require(state == SaleState.Finalized);
-        require(purchases[msg.sender].tokenBalance &gt; 0);
+        require(purchases[msg.sender].tokenBalance > 0);
 
         uint256 _tokensPurchased = purchases[msg.sender].tokenBalance;
         purchases[msg.sender].tokenBalance = 0;
@@ -505,7 +505,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         require(state == SaleState.Refunding);
 
         uint256 _amountToRefund = purchases[msg.sender].weiBalance;
-        require(_amountToRefund &gt; 0);
+        require(_amountToRefund > 0);
         purchases[msg.sender].weiBalance = 0;
         purchases[msg.sender].tokenBalance = 0;
         msg.sender.transfer(_amountToRefund);
@@ -546,7 +546,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         returns (uint256)
     {
         require(state == SaleState.Started);
-        require(_amount &gt;= currentTokenPrice);
+        require(_amount >= currentTokenPrice);
 
         uint256 _saleRemainingBalance = maxSaleBalance.sub(saleBalance);
         bool _shouldEndSale = false;
@@ -556,7 +556,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         uint256 _purchaseAmount = _amount.sub(_amountToRefund);
 
         /* This purchase will push us over the max balance - so refund that amount that is over */
-        if (_saleRemainingBalance &lt; _purchaseAmount) {
+        if (_saleRemainingBalance < _purchaseAmount) {
             uint256 _endOfSaleRefund = _saleRemainingBalance % currentTokenPrice;
             _amountToRefund = _amountToRefund.add(_purchaseAmount.sub(_saleRemainingBalance).add(_endOfSaleRefund));
             _purchaseAmount = _saleRemainingBalance.sub(_endOfSaleRefund);
@@ -579,7 +579,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
         }
 
         /* Refund amounts due if there are any */
-        if (_amountToRefund &gt; 0) {
+        if (_amountToRefund > 0) {
             _recipient.transfer(_amountToRefund);
         }
 
@@ -615,7 +615,7 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
             currentTokenPrice = 0.065 ether;
         else if (_numIncreases == 3)
             currentTokenPrice = 0.07 ether;
-        else if (_numIncreases &gt;= 4)
+        else if (_numIncreases >= 4)
             currentTokenPrice = 0.08 ether;
     }
 
@@ -623,8 +623,8 @@ contract ForegroundTokenSale is Ownable, ForegroundCaller {
      * @dev - Sale end condition reached, determine if sale was successful and set state accordingly
      */
     function endSale() internal {
-        /* If we didn&#39;t reach the min value - set state to refund so that funds can reclaimed by sale participants */
-        if (saleBalance &lt; minSaleBalance) {
+        /* If we didn't reach the min value - set state to refund so that funds can reclaimed by sale participants */
+        if (saleBalance < minSaleBalance) {
             state = SaleState.Refunding;
         } else {
             state = SaleState.Ended;

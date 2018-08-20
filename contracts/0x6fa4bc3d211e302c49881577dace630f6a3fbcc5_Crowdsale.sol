@@ -2,7 +2,7 @@ pragma solidity ^0.4.16;
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control functions, this simplifies
-/// &amp; the implementation of &quot;user permissions&quot;.
+/// & the implementation of "user permissions".
 
 contract Ownable {
     address public owner;
@@ -62,7 +62,7 @@ contract Crowdsale is Ownable {
     
     uint public amount = 0;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -93,7 +93,7 @@ contract Crowdsale is Ownable {
 
  /// @dev Throws if called when not during sale.
     modifier onlyDuringSale() {
-        if (now &lt; startTime || now &gt;= endTime) {
+        if (now < startTime || now >= endTime) {
             throw;
         }
 
@@ -101,7 +101,7 @@ contract Crowdsale is Ownable {
     }
     
     function Withdrawal()  {
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (beneficiary.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {

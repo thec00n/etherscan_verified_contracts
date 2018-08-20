@@ -8,20 +8,20 @@ library Math {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,13 +68,13 @@ contract Cloud is Token {
     using Math for uint256;
     bool trading=false;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     event FrozenFunds(address target, bool frozen);
 
     function transfer(address _to, uint256 _value) canTrade returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
         require(!frozenAccount[msg.sender]);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -83,10 +83,10 @@ contract Cloud is Token {
 
 
     function transferFrom(address _from, address _to, uint256 _value) canTrade returns (bool success) {
-        require(_value &gt; 0);
+        require(_value > 0);
         require(!frozenAccount[_from]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
-        //require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
+        //require(balances[_from] >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -109,7 +109,7 @@ contract Cloud is Token {
     }
     /* Checks if tokens can be transferred from one account to another. Trading to be enabled after initial token release */
     modifier canTrade {
-        require(trading==true ||(canRelease==true &amp;&amp; msg.sender==owner));
+        require(trading==true ||(canRelease==true && msg.sender==owner));
         _;
     }
     
@@ -117,8 +117,8 @@ contract Cloud is Token {
         trading=allow;
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     
     /* Public variables of the token */
@@ -170,7 +170,7 @@ contract Cloud is Token {
     /// @return Whether the token transfer was successful or not was successful or not
     function invest(address receiver, uint256 _value) onlyOwner returns (bool success) {
         require(canRelease);
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 numTokens = _value;
         uint256 employeeTokens = 0;
         uint256 employeeTokenShare=0;
@@ -179,7 +179,7 @@ contract Cloud is Token {
         employeeTokenShare = employeeTokens.div(employeeWallets.length);
         //split tokens for different wallets of employees and company
         approve(owner,employeeTokens.add(numTokens));
-        for(uint i = 0; i &lt; employeeWallets.length; i++)
+        for(uint i = 0; i < employeeWallets.length; i++)
         {
             require(transferFrom(owner, employeeWallets[i], employeeTokenShare));
         }

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 // -------------------------------------------------
 // ethPoker.io EPX token - ERC20 token smart contract
-// contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c8cdc4c0c7e9ccddc1d9c6c2ccdb87c0c6">[email&#160;protected]</a> for queries
+// contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c8cdc4c0c7e9ccddc1d9c6c2ccdb87c0c6">[email protected]</a> for queries
 // Revision 20b
 // Full test suite 20r passed
 // -------------------------------------------------
@@ -41,20 +41,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -78,15 +78,15 @@ contract ERC20Interface is owned, safeMath {
 
 contract EPXToken is ERC20Interface {
   // token setup variables
-  string  public constant name                  = &quot;EthPoker.io EPX&quot;;
-  string  public constant standard              = &quot;EPX&quot;;
-  string  public constant symbol                = &quot;EPX&quot;;
+  string  public constant name                  = "EthPoker.io EPX";
+  string  public constant standard              = "EPX";
+  string  public constant symbol                = "EPX";
   uint8   public constant decimals              = 4;                              // 4 decimals for practicality
   uint256 public constant totalSupply          = 2800000000000;                   // 280 000 000 (total supply of EPX tokens is 280,000,000) + 4 decimal points (2800000000000)
 
   // token mappings
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   // ERC20 standard token possible events, matched to ICO and preSale contracts
   event Buy(address indexed _sender, uint256 _eth, uint256 _EPX);
@@ -106,9 +106,9 @@ contract EPXToken is ERC20Interface {
   // ERC20 token transfer function with additional safety
   function transfer(address _to, uint256 _amount) public returns (bool success) {
     require(!(_to == 0x0));
-    if ((balances[msg.sender] &gt;= _amount)
-    &amp;&amp; (_amount &gt; 0)
-    &amp;&amp; ((safeAdd(balances[_to],_amount) &gt; balances[_to]))) {
+    if ((balances[msg.sender] >= _amount)
+    && (_amount > 0)
+    && ((safeAdd(balances[_to],_amount) > balances[_to]))) {
       balances[msg.sender] = safeSub(balances[msg.sender], _amount);
       balances[_to] = safeAdd(balances[_to], _amount);
       Transfer(msg.sender, _to, _amount);
@@ -124,10 +124,10 @@ contract EPXToken is ERC20Interface {
     address _to,
     uint256 _amount) public returns (bool success) {
     require(!(_to == 0x0));
-    if ((balances[_from] &gt;= _amount)
-    &amp;&amp; (allowed[_from][msg.sender] &gt;= _amount)
-    &amp;&amp; (_amount &gt; 0)
-    &amp;&amp; (safeAdd(balances[_to],_amount) &gt; balances[_to])) {
+    if ((balances[_from] >= _amount)
+    && (allowed[_from][msg.sender] >= _amount)
+    && (_amount > 0)
+    && (safeAdd(balances[_to],_amount) > balances[_to])) {
       balances[_from] = safeSub(balances[_from], _amount);
       allowed[_from][msg.sender] = safeSub((allowed[_from][msg.sender]),_amount);
       balances[_to] = safeAdd(balances[_to], _amount);
@@ -167,7 +167,7 @@ contract EPXToken is ERC20Interface {
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
 
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = safeSub(oldValue,_subtractedValue);

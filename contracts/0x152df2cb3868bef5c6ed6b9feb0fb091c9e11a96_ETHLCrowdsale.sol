@@ -45,36 +45,36 @@ contract ETHLCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 amount;
         
         // stage 1
-        if (now &gt; 1525129200 &amp;&amp; now &lt; 1525734000 &amp;&amp; tokenSold &lt; 350001) {
+        if (now > 1525129200 && now < 1525734000 && tokenSold < 350001) {
             amount = msg.value * 2500;
         }
 
         // stage 2
-        if (now &gt; 1525733999 &amp;&amp; now &lt; 1526252400 &amp;&amp; tokenSold &gt; 350000 &amp;&amp; tokenSold &lt; 700001) {
+        if (now > 1525733999 && now < 1526252400 && tokenSold > 350000 && tokenSold < 700001) {
             amount = msg.value * 1250;
         }
 
         // stage 3
-        if (now &gt; 1526252399 &amp;&amp; now &lt; 1526857200 &amp;&amp; tokenSold &gt; 700000 &amp;&amp; tokenSold &lt; 1150001) {
+        if (now > 1526252399 && now < 1526857200 && tokenSold > 700000 && tokenSold < 1150001) {
             amount = msg.value * 833;
         }
 
         // stage 4
-        if (now &gt; 1526857199 &amp;&amp; now &lt; 1527721200 &amp;&amp; tokenSold &gt; 1150000 &amp;&amp; tokenSold &lt; 2000001) {
+        if (now > 1526857199 && now < 1527721200 && tokenSold > 1150000 && tokenSold < 2000001) {
             amount = msg.value * 416;
         }
 
         // stage 5
-        if (now &gt; 1527721199 &amp;&amp; now &lt; 1528671600 &amp;&amp; tokenSold &gt; 2000000 &amp;&amp; tokenSold &lt; 3000001) {
+        if (now > 1527721199 && now < 1528671600 && tokenSold > 2000000 && tokenSold < 3000001) {
             amount = msg.value * 357;
         }
 
         // stage 6
-        if (now &gt; 1528671599 &amp;&amp; now &lt; 1530399600 &amp;&amp; tokenSold &gt; 3000000 &amp;&amp; tokenSold &lt; 4000001) {
+        if (now > 1528671599 && now < 1530399600 && tokenSold > 3000000 && tokenSold < 4000001) {
             amount = msg.value * 333;
         }
 

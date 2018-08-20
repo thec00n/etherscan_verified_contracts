@@ -29,7 +29,7 @@ library StringYokes {
     function zint_bytes32ToString(bytes32 x) public pure returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (char != 0) {
                 bytesString[charCount] = char;
@@ -37,13 +37,13 @@ library StringYokes {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
     }
     function zint_convert(string key) public pure returns (bytes32 ret) {
-        if (bytes(key).length &gt; 32) revert();
+        if (bytes(key).length > 32) revert();
         assembly {
           ret := mload(add(key, 32))
         }
@@ -61,7 +61,7 @@ contract Game is ExchangeAdmin {
         uint totalPledged;
         bytes32 sideName;
         address[] usedAddresses;
-        mapping (address =&gt; Better) contribDb;
+        mapping (address => Better) contribDb;
     }
     string gName;
     address gameMaker;
@@ -69,15 +69,15 @@ contract Game is ExchangeAdmin {
     bytes32[] sides;
     uint allSidesPledged;
     uint expiry;
-    mapping (bytes32 =&gt; Side) public sideData;
-    mapping (bytes32 =&gt; uint) public idToNameRef;
+    mapping (bytes32 => Side) public sideData;
+    mapping (bytes32 => uint) public idToNameRef;
     constructor (string gameName, uint gameExpiry, bytes32[] gameSides,address maker, address mainContractAdd) public {
-        require(now&lt;gameExpiry);
+        require(now<gameExpiry);
         gName = gameName;
         gameMaker = maker;
         expiry = gameExpiry;
         mainContract = mainContractAdd;
-        for (uint i = 0; i&lt;gameSides.length; i++) {
+        for (uint i = 0; i<gameSides.length; i++) {
             sideData[gameSides[i]].sideName=gameSides[i];
             sideData[gameSides[i]].isValidSide=true;
             idToNameRef[gameSides[i]]=i;
@@ -96,7 +96,7 @@ contract Game is ExchangeAdmin {
         return sides;
     }
     function isNotExpired() view public returns (bool) {
-        return ((now &lt; expiry) &amp;&amp; !expired);
+        return ((now < expiry) && !expired);
     }
     function isExpired() view public returns(bool){
         return expired;
@@ -114,7 +114,7 @@ contract Game is ExchangeAdmin {
         return idToNameRef[StringYokes.zint_convert(toConv)];
     }
     function placeBet(address a, uint value, string betSide) public payable {
-        require(isNotExpired() &amp;&amp; value!=0 &amp;&amp; msg.sender==mainContract &amp;&amp; sideData[StringYokes.zint_convert(betSide)].isValidSide);
+        require(isNotExpired() && value!=0 && msg.sender==mainContract && sideData[StringYokes.zint_convert(betSide)].isValidSide);
         bytes32 index = StringYokes.zint_convert(betSide);
         sideData[index].totalPledged+=value;
         allSidesPledged+=value;
@@ -131,12 +131,12 @@ contract Game is ExchangeAdmin {
         return sideData[sides[i]].totalPledged;
     }
     function dish(string winner, address profit) public payable {
-        require((!expired) &amp;&amp; (mainContract==msg.sender));
+        require((!expired) && (mainContract==msg.sender));
         expired = true;
         bytes32 winByte = StringYokes.zint_convert(winner);
         uint totalGameContrib = allSidesPledged;
         uint totalSideContrib = (sideData[winByte].totalPledged);
-        for (uint i = 0; i&lt;sideData[winByte].usedAddresses.length; i++) {
+        for (uint i = 0; i<sideData[winByte].usedAddresses.length; i++) {
             address recip = sideData[winByte].usedAddresses[i];
             uint contribAmount = sideData[winByte].contribDb[recip].contribAmount;
             uint winAddition = (950*1000*contribAmount*(totalGameContrib-totalSideContrib))/(1000000*totalSideContrib);
@@ -146,9 +146,9 @@ contract Game is ExchangeAdmin {
         gameMaker.transfer(address(this).balance);
     }
     function refund(address sentBy) public payable {
-        require(!expired &amp;&amp; (mainContract==msg.sender) &amp;&amp; ((sentBy==gameMaker) || now &gt; getExpiryTime() + 259200));
-        for (uint i = 0; i&lt;sides.length; i++) {
-            for (uint j = 0; j&lt;sideData[sides[i]].usedAddresses.length; j++) {
+        require(!expired && (mainContract==msg.sender) && ((sentBy==gameMaker) || now > getExpiryTime() + 259200));
+        for (uint i = 0; i<sides.length; i++) {
+            for (uint j = 0; j<sideData[sides[i]].usedAddresses.length; j++) {
                 address recip = sideData[sides[i]].usedAddresses[j];
                 uint contribAmount = sideData[sides[i]].contribDb[recip].contribAmount;
                 recip.transfer(contribAmount);
@@ -185,7 +185,7 @@ contract BEthy is ExchangeAdmin {
         recipient.transfer(amount);
     }
     function addGame(string gameName, uint gameExpiry, bytes32[] gameSides) public {
-        require(gameSides.length &gt; 1);
+        require(gameSides.length > 1);
         current.push(new Game(gameName, gameExpiry, gameSides, msg.sender, address(this)));
     }
     function endGame(uint gameId, string winningSide) public  {

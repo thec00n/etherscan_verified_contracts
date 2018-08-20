@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	address public owner;
@@ -60,7 +60,7 @@ contract EthernalBridge is Ownable {
 	uint constant MEDIUM_TYPE = 1001;
 	uint constant PREMIUM_TYPE = 2001;
 
-	/// Bridge max width &amp; height: This can be increased later to make the bridge bigger
+	/// Bridge max width & height: This can be increased later to make the bridge bigger
 	uint public maxBridgeHeight = 24; // 480px
 	uint public maxBridgeWidth = 400; // 8000px
 
@@ -74,7 +74,7 @@ contract EthernalBridge is Ownable {
 	uint8 public premiumMod = 3;
 
 	/// Locks position
-	mapping (uint =&gt; uint) public grid;
+	mapping (uint => uint) public grid;
 
 
 	/// withdrawWallet is the fixed destination of funds to withdraw. It might
@@ -203,15 +203,15 @@ contract EthernalBridge is Ownable {
 
 	function _checks(uint _x, uint _y, uint _sizeSkin) private {
 
-		uint _size = _sizeSkin % 10; // Size &amp; skin are packed together. Last digit is the size. (1, 2, 3)
+		uint _size = _sizeSkin % 10; // Size & skin are packed together. Last digit is the size. (1, 2, 3)
 		uint _skin = (_sizeSkin - _size) / 10;
 
 		/// Size must be 20 / 40 / 60 pixels
 		require(_size == 1 || _size == 2 || _size == 3);
 
-		require(maxBridgeHeight &gt;= (_y + _size) &amp;&amp; maxBridgeWidth &gt;= (_x + _size));
+		require(maxBridgeHeight >= (_y + _size) && maxBridgeWidth >= (_x + _size));
 
-		require(msg.value &gt;= calculateCost(_size, _skin));
+		require(msg.value >= calculateCost(_size, _skin));
 
 		// Check if lock position is available
 		_checkGrid(_x, _y, _size);
@@ -231,9 +231,9 @@ contract EthernalBridge is Ownable {
 			cost = smallPrice;
 
 		// Apply price modifiers
-		if(_skin &gt;= PREMIUM_TYPE)
+		if(_skin >= PREMIUM_TYPE)
 			cost = cost * premiumMod;
-		else if(_skin &gt;= MEDIUM_TYPE)
+		else if(_skin >= MEDIUM_TYPE)
 			cost = cost * mediumMod;
 
 		return cost;
@@ -246,20 +246,20 @@ contract EthernalBridge is Ownable {
 	/// @param _size The lock size
 	function _checkGrid(uint _x, uint _y, uint _size) public {
 
-		for(uint i = 0; i &lt; _size; i++) {
+		for(uint i = 0; i < _size; i++) {
 
 			uint row = grid[_x + i];
 
-			for(uint j = 0; j &lt; _size; j++) {
+			for(uint j = 0; j < _size; j++) {
 
 				// if (_y + j) bit is set in row
-				if((row &gt;&gt; (_y + j)) &amp; uint(1) == uint(1)) {
+				if((row >> (_y + j)) & uint(1) == uint(1)) {
 					// lock exists in this slot
 					revert();
 				}
 
 				// set bit (_y + j)
-				row = row | (uint(1) &lt;&lt; (_y + j));
+				row = row | (uint(1) << (_y + j));
 			}
 
 			grid[_x + i] = row;

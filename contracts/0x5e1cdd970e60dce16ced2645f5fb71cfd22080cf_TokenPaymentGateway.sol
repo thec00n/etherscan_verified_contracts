@@ -113,7 +113,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3644535b55597604">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3644535b55597604">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -231,7 +231,7 @@ contract Pausable is Ownable {
   }
 }
 contract StandardContract {
-    // allows usage of &quot;require&quot; as a modifier
+    // allows usage of "require" as a modifier
     modifier requires(bool b) {
         require(b);
         _;
@@ -266,7 +266,7 @@ contract TokenPaymentGateway is Claimable, HasNoEther, HasNoTokens, ReentrancyGu
 
   function receiveApproval(address _from, uint256 _amount, address _ignoreToken, bytes _extraData)
     requires(msg.sender == address(token))
-    requires(_extraData.length &gt; 0)
+    requires(_extraData.length > 0)
     whenNotPaused
     nonReentrant
     external

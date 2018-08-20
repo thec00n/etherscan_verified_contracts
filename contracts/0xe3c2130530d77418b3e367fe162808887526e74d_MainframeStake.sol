@@ -28,9 +28,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -47,7 +47,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -130,14 +130,14 @@ contract MainframeStake is Ownable, StakeInterface {
   uint256 public arrayLimit = 200;
   uint256 public totalDepositBalance;
   uint256 public requiredStake;
-  mapping (address =&gt; uint256) public balances;
+  mapping (address => uint256) public balances;
 
   struct Staker {
     uint256 stakedAmount;
     address stakerAddress;
   }
 
-  mapping (address =&gt; Staker) public whitelist; // map of whitelisted addresses for efficient hasStaked check
+  mapping (address => Staker) public whitelist; // map of whitelisted addresses for efficient hasStaked check
 
   constructor(address tokenAddress) public {
     token = ERC20(tokenAddress);
@@ -196,7 +196,7 @@ contract MainframeStake is Ownable, StakeInterface {
   */
 
   function withdraw(address toAddress, uint256 withdrawAmount) private returns (bool success) {
-    require(balances[toAddress] &gt;= withdrawAmount);
+    require(balances[toAddress] >= withdrawAmount);
     token.transfer(toAddress, withdrawAmount);
     balances[toAddress] = balances[toAddress].sub(withdrawAmount);
     totalDepositBalance = totalDepositBalance.sub(withdrawAmount);
@@ -213,7 +213,7 @@ contract MainframeStake is Ownable, StakeInterface {
   }
 
   function hasStake(address _address) external view returns (bool) {
-    return whitelist[_address].stakedAmount &gt; 0;
+    return whitelist[_address].stakedAmount > 0;
   }
 
   function requiredStake() external view returns (uint256) {
@@ -229,10 +229,10 @@ contract MainframeStake is Ownable, StakeInterface {
   }
 
   function refundBalances(address[] addresses) external onlyOwner {
-    require(addresses.length &lt;= arrayLimit);
-    for (uint256 i = 0; i &lt; addresses.length; i++) {
+    require(addresses.length <= arrayLimit);
+    for (uint256 i = 0; i < addresses.length; i++) {
       address _address = addresses[i];
-      require(balances[_address] &gt; 0);
+      require(balances[_address] > 0);
       token.transfer(_address, balances[_address]);
       totalDepositBalance = totalDepositBalance.sub(balances[_address]);
       emit RefundedBalance(_address, balances[_address]);

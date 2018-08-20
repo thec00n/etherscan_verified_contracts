@@ -13,7 +13,7 @@ contract Proxy  {
 
 contract DepositProxy is Proxy {
     address public Owner;
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
 
     event Deposited(address who, uint amount);
     event Withdrawn(address who, uint amount);
@@ -26,14 +26,14 @@ contract DepositProxy is Proxy {
     }
 
     function deposit() payable {
-        if (msg.value &gt;= 1 ether) {
+        if (msg.value >= 1 ether) {
             Deposits[msg.sender] += msg.value;
             Deposited(msg.sender, msg.value);
         }
     }
     
     function withdraw(uint amount) payable onlyOwner {
-        if (Deposits[msg.sender]&gt;=amount) {
+        if (Deposits[msg.sender]>=amount) {
             msg.sender.transfer(amount);
             Withdrawn(msg.sender, amount);
         }

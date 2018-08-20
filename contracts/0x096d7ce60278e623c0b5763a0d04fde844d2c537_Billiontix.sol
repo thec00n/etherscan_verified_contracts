@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
  
 contract Ownable {
@@ -136,12 +136,12 @@ contract NonFungibleToken is DetailedERC721 {
     uint public numTokensTotal;
     uint public currentTokenIdNumber;
 
-    mapping(uint =&gt; address) internal tokenIdToOwner;
-    mapping(uint =&gt; address) internal tokenIdNumber;
-    mapping(uint =&gt; address) internal tokenIdToApprovedAddress;
-   // mapping(uint =&gt; string) internal tokenIdToMetadata;
-    mapping(address =&gt; uint[]) internal ownerToTokensOwned;
-    mapping(uint =&gt; uint) internal tokenIdToOwnerArrayIndex;
+    mapping(uint => address) internal tokenIdToOwner;
+    mapping(uint => address) internal tokenIdNumber;
+    mapping(uint => address) internal tokenIdToApprovedAddress;
+   // mapping(uint => string) internal tokenIdToMetadata;
+    mapping(address => uint[]) internal ownerToTokensOwned;
+    mapping(uint => uint) internal tokenIdToOwnerArrayIndex;
 
     event Transfer(
         address indexed _from,
@@ -466,8 +466,8 @@ contract Auction is NonFungibleToken, Ownable {
   }
   
  
-    mapping(uint =&gt; ActiveAuctionsStruct) private activeAuctionsStructs;
-    mapping(address =&gt; uint[]) private activeAuctionsByAddressStructs;
+    mapping(uint => ActiveAuctionsStruct) private activeAuctionsStructs;
+    mapping(address => uint[]) private activeAuctionsByAddressStructs;
 
     event LiveAuctionEvent (address auctionowner, uint indexed tixNumberforSale, uint indexed startingPrice, uint indexed buynowPrice, uint auctionLength);
     event RunningAuctionsEvent (address auctionowner, uint indexed tixNumberforSale, uint indexed isBeingAuctioned, uint auctionLength);
@@ -483,9 +483,9 @@ contract Auction is NonFungibleToken, Ownable {
     address ticketownwer;
     address public auctionleader;
 
-    string public approval = &quot;Auction Approved&quot;;
-    string public notapproved = &quot;You Do Not Own This Ticket or Ticket is Already For Sale&quot;;
-    string public bidfailure =&quot;Bid Failure&quot;;
+    string public approval = "Auction Approved";
+    string public notapproved = "You Do Not Own This Ticket or Ticket is Already For Sale";
+    string public bidfailure ="Bid Failure";
    
     uint public tixNumberforSale;
     uint public leadingBid;
@@ -505,10 +505,10 @@ contract Auction is NonFungibleToken, Ownable {
 
     function createAuction (uint _startprice, uint _buynowprice, uint _tixforsale, uint _auctiontime) public  {
         
-        require (_startprice &gt;= 0);
-        require (_buynowprice &gt;= 0);
-        require (_tixforsale &gt; 0);
-        require (_auctiontime &gt; 0);
+        require (_startprice >= 0);
+        require (_buynowprice >= 0);
+        require (_tixforsale > 0);
+        require (_auctiontime > 0);
         
         address auctionowner = msg.sender;
         tixNumberforSale = _tixforsale;
@@ -520,7 +520,7 @@ contract Auction is NonFungibleToken, Ownable {
         uint auctionstatus = auctionDetails.isBeingAuctioned;
 
 
-        if (auctionowner == ticketownwer &amp;&amp; auctionstatus != 1) {
+        if (auctionowner == ticketownwer && auctionstatus != 1) {
          
          startingPrice = _startprice;
          buynowPrice = _buynowprice;
@@ -558,18 +558,18 @@ contract Auction is NonFungibleToken, Ownable {
       address leadingbidder = auctionDetails.winningBidder;
       uint endofauction = auctionDetails.auctionEnd;
       
-      require (now &lt;= endofauction);
+      require (now <= endofauction);
       require (auctionavailable == 1);
-      require (msg.value &gt; leadbid);
+      require (msg.value > leadbid);
       
-        if (msg.value &gt; leadbid) {
+        if (msg.value > leadbid) {
            
             auctionDetails.winningBidder = msg.sender;
             auctionDetails.highestBid = msg.value;
             auctionDetails.numberofBids++;
             uint bidnumber = auctionDetails.numberofBids;
             
-             if (bidtotal &gt; 0) {
+             if (bidtotal > 0) {
             returnPrevBid(leadingbidder, leadbid, _tixforsale);
            }
             LogBid(auctionowner, auctionDetails.winningBidder, _tixforsale, auctionDetails.highestBid, bidnumber);
@@ -587,7 +587,7 @@ contract Auction is NonFungibleToken, Ownable {
    
     function returnPrevBid(address _highestbidder, uint _leadbid, uint _tixnumberforsale) internal {
       
-        if (_highestbidder != 0 &amp;&amp; _leadbid &gt; 0) {
+        if (_highestbidder != 0 && _leadbid > 0) {
            
             _highestbidder.transfer(_leadbid);
             
@@ -630,9 +630,9 @@ contract Auction is NonFungibleToken, Ownable {
       uint256 winningBid = auctionDetails.highestBid;
       uint numberofBids = auctionDetails.numberofBids;
 
-        require (now &gt; auctionEnd);
+        require (now > auctionEnd);
 
-       if ((msg.sender == auctionowner || msg.sender == auctionwinner) &amp;&amp; numberofBids &gt; 0 &amp;&amp; winningBid &gt; 0) {
+       if ((msg.sender == auctionowner || msg.sender == auctionwinner) && numberofBids > 0 && winningBid > 0) {
           
 
            uint256 ownersCut = winningBid * ownerCut / 10000;
@@ -651,7 +651,7 @@ contract Auction is NonFungibleToken, Ownable {
            
        }
        
-       if (msg.sender == auctionowner &amp;&amp; numberofBids == 0) {
+       if (msg.sender == auctionowner && numberofBids == 0) {
           
 
            auctionDetails.isBeingAuctioned = 0;
@@ -684,7 +684,7 @@ contract Auction is NonFungibleToken, Ownable {
         uint auctionEnd = auctionDetails.auctionEnd;
         uint numberofBids = auctionDetails.numberofBids;
 
-        require (now &lt; auctionEnd);
+        require (now < auctionEnd);
         
         
         
@@ -692,7 +692,7 @@ contract Auction is NonFungibleToken, Ownable {
          address auctionwinner = auctionDetails.winningBidder;
          address auctionowner = auctionDetails.auctionOwner;
          
-                if (msg.sender == auctionowner &amp;&amp; msg.value &gt;= cancelCost &amp;&amp; numberofBids &gt; 0) {
+                if (msg.sender == auctionowner && msg.value >= cancelCost && numberofBids > 0) {
 
         
                         auctionwinner.transfer(highestBid);
@@ -714,7 +714,7 @@ contract Auction is NonFungibleToken, Ownable {
 
                 } 
                 
-                if (msg.sender == auctionowner &amp;&amp; msg.value &gt;= cancelCost &amp;&amp; numberofBids == 0) {
+                if (msg.sender == auctionowner && msg.value >= cancelCost && numberofBids == 0) {
 
                         owner.transfer(cancelCost);
                         
@@ -753,8 +753,8 @@ contract Auction is NonFungibleToken, Ownable {
       uint256 buynowownersCut = buynowPrice * buynowcut / 10000;
 
 
-      require(buynowprice &gt; 0);
-      require(now &lt; auctionEnd);
+      require(buynowprice > 0);
+      require(now < auctionEnd);
         
       if (msg.value == buynowPrice) {
           
@@ -776,7 +776,7 @@ contract Auction is NonFungibleToken, Ownable {
 
           BuyNowEvent(auctionowner, msg.sender, _tixnumberforsale, msg.value);
           
-           if (auctionDetails.numberofBids &gt; 0) {
+           if (auctionDetails.numberofBids > 0) {
          
           returnPrevBid(auctionlead, highestBid, _tixnumberforsale);
 
@@ -853,7 +853,7 @@ contract Auction is NonFungibleToken, Ownable {
     }
 
     function removeByIndex(uint i) internal {
-        while (i&lt;runningauctions.length-1) {
+        while (i<runningauctions.length-1) {
             runningauctions[i] = runningauctions[i+1];
             i++;
         }
@@ -882,18 +882,18 @@ contract Auction is NonFungibleToken, Ownable {
 contract Billiontix is MintableNonFungibleToken, Auction {
    address owner;
 
-    string public name = &#39;BillionTix&#39;;
-    string public symbol = &#39;BTIX&#39;;
+    string public name = 'BillionTix';
+    string public symbol = 'BTIX';
    
-    string internal TenTimesEther = &quot;0.005 Ether&quot;;
-    string internal OneHundredTimesEther = &quot;0.05 Ether&quot;;
-    string internal OneThousandTimesEther = &quot;0.5 Ether&quot;;
-    string internal TenThousandTimesEther = &quot;5 Ether&quot;;
-    string internal OneHundredThousandTimesEther = &quot;50 Ether&quot;;
-    string internal OneMillionTimesEther = &quot;500 Ether&quot;;
-    string internal TenMillionTimesEther = &quot;5,000 Ether&quot;;
-    string internal OneHundredMillionTimesEther = &quot;50,000 Ether&quot;;
-    string internal OneBillionTimesEther = &quot;500,000 Ether&quot;;
+    string internal TenTimesEther = "0.005 Ether";
+    string internal OneHundredTimesEther = "0.05 Ether";
+    string internal OneThousandTimesEther = "0.5 Ether";
+    string internal TenThousandTimesEther = "5 Ether";
+    string internal OneHundredThousandTimesEther = "50 Ether";
+    string internal OneMillionTimesEther = "500 Ether";
+    string internal TenMillionTimesEther = "5,000 Ether";
+    string internal OneHundredMillionTimesEther = "50,000 Ether";
+    string internal OneBillionTimesEther = "500,000 Ether";
    
    
     //SET THESE PRICES IN WEI
@@ -912,7 +912,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
     uint[] supertixarray = [10000,100000,500000,1000000,5000000,10000000,50000000,100000000,500000000,750000000];
 
  
-    mapping(address =&gt; uint256) public balanceOf; 
+    mapping(address => uint256) public balanceOf; 
     
     event PayoutEvent (uint indexed WinningNumber, address indexed _to, uint indexed value);
     event WinningNumbersEvent (uint256 indexed WinningNumber, string AmountWon); 
@@ -936,7 +936,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
         Mint(msg.sender, _tokenId);          
 
-       if (numTokensTotal &gt; 1 &amp;&amp; numTokensTotal &lt; 10000000002) {
+       if (numTokensTotal > 1 && numTokensTotal < 10000000002) {
        playDraw();
        playDraw2();
        supertixdraw();
@@ -954,7 +954,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
      function buy5 () payable public 
    onlyNonexistentToken(_tokenId)
     {
-       for (uint i = 0; i &lt; 5; i++) {
+       for (uint i = 0; i < 5; i++) {
        if ((msg.value) == buy5Price) {
            
         uint256 _tokenId = numTokensTotal +1;
@@ -966,7 +966,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
         Mint(msg.sender, _tokenId);          
 
-       if (numTokensTotal &gt; 1 &amp;&amp; numTokensTotal &lt; 10000000002) {
+       if (numTokensTotal > 1 && numTokensTotal < 10000000002) {
        playDraw();
        playDraw2();
        supertixdraw();
@@ -984,7 +984,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
   function buy10 () payable public 
    onlyNonexistentToken(_tokenId)
     {
-       for (uint i = 0; i &lt; 10; i++) {
+       for (uint i = 0; i < 10; i++) {
        if ((msg.value) == buy10Price) {
            
         uint256 _tokenId = numTokensTotal +1;
@@ -996,7 +996,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
         Mint(msg.sender, _tokenId);          
 
-       if (numTokensTotal &gt; 1 &amp;&amp; numTokensTotal &lt; 10000000002) {
+       if (numTokensTotal > 1 && numTokensTotal < 10000000002) {
        playDraw();
        playDraw2();
        supertixdraw();
@@ -1012,7 +1012,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
     function buy20 () payable public 
    onlyNonexistentToken(_tokenId)
     {
-       for (uint i = 0; i &lt; 20; i++) {
+       for (uint i = 0; i < 20; i++) {
        if ((msg.value) == buy20Price) {
            
         uint256 _tokenId = numTokensTotal +1;
@@ -1024,7 +1024,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
         Mint(msg.sender, _tokenId);          
 
-       if (numTokensTotal &gt; 1 &amp;&amp; numTokensTotal &lt; 10000000002) {
+       if (numTokensTotal > 1 && numTokensTotal < 10000000002) {
        playDraw();
        playDraw2();
         supertixdraw();
@@ -1040,7 +1040,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
     function buy50 () payable public 
    onlyNonexistentToken(_tokenId)
     {
-       for (uint i = 0; i &lt; 50; i++) {
+       for (uint i = 0; i < 50; i++) {
        if ((msg.value) == buy50Price) {
            
          uint256 _tokenId = numTokensTotal +1;
@@ -1052,7 +1052,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
         Mint(msg.sender, _tokenId);          
 
-       if (numTokensTotal &gt; 1 &amp;&amp; numTokensTotal &lt; 10000000002) {
+       if (numTokensTotal > 1 && numTokensTotal < 10000000002) {
        playDraw();
        playDraw2();
         supertixdraw();
@@ -1068,7 +1068,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
     function buy100 () payable public 
    onlyNonexistentToken(_tokenId)
     {
-       for (uint i = 0; i &lt; 100; i++) {
+       for (uint i = 0; i < 100; i++) {
        if ((msg.value) == buy100Price) {
            
         uint256 _tokenId = numTokensTotal +1;
@@ -1080,7 +1080,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
         Mint(msg.sender, _tokenId);          
 
-       if (numTokensTotal &gt; 1 &amp;&amp; numTokensTotal &lt; 10000000002) {
+       if (numTokensTotal > 1 && numTokensTotal < 10000000002) {
        playDraw();
        playDraw2();
        supertixdraw();
@@ -1114,7 +1114,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
   
      
-       if (A == 1 &amp;&amp; B == 0) {
+       if (A == 1 && B == 0) {
          
          winningrandomNumber1 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 1))%100 + (1000000000 * J) + (100000000 * I) + (10000000 * H) + (1000000 * G) + (100000 * F) + (10000 * E) + (1000 * D) + (100 * (C - 1)));
         
@@ -1133,7 +1133,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
 
- if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0) {
+ if (A == 1 && B == 0 && C == 0) {
          
          winningrandomNumber2 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 2))%1000 + (1000000000 * J) + (100000000 * I) + (10000000 * H) + (1000000 * G) + (100000 * F) + (10000 * E) + (1000 * (D - 1)));
              
@@ -1154,7 +1154,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
  
- if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0) {
+ if (A == 1 && B == 0 && C == 0 && D == 0) {
          
           winningrandomNumber3 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 3))%10000 + (1000000000 * J) + (100000000 * I) + (10000000 * H) + (1000000 * G) + (100000 * F) + (10000 * (E - 1)));
           WinningNumbersEvent(winningrandomNumber3, OneThousandTimesEther);
@@ -1172,7 +1172,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
 
-     if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0) {
+     if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0) {
          
           winningrandomNumber4 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 4))%100000 + (1000000000 * J) + (100000000 * I) + (10000000 * H) + (1000000 * G) + (100000 * (F - 1)));
           WinningNumbersEvent(winningrandomNumber4, TenThousandTimesEther);
@@ -1191,7 +1191,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
      
-  if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0 &amp;&amp; F == 0) {
+  if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0 && F == 0) {
          
           winningrandomNumber5 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 5))%1000000 + (1000000000 * J) + (100000000 * I) + (10000000 * H) + (1000000 * (G - 1)));
           WinningNumbersEvent(winningrandomNumber5, OneHundredThousandTimesEther);
@@ -1233,7 +1233,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
 
    
   
-  if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0 &amp;&amp; F == 0 &amp;&amp; G == 0) {
+  if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0 && F == 0 && G == 0) {
          
           winningrandomNumber6 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 6))%10000000 + (1000000000 * J) + (100000000 * I) + (10000000 * (H - 1)));
           WinningNumbersEvent(winningrandomNumber6, OneMillionTimesEther);
@@ -1252,7 +1252,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
      
-      if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0 &amp;&amp; F == 0 &amp;&amp; G == 0 &amp;&amp; H == 0) {
+      if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0 && F == 0 && G == 0 && H == 0) {
          
          winningrandomNumber7 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 7))%100000000 + (1000000000 * J) + (100000000 * (I - 1)));
          WinningNumbersEvent(winningrandomNumber7, TenMillionTimesEther);
@@ -1272,7 +1272,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
  
-     if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0 &amp;&amp; F == 0 &amp;&amp; G == 0 &amp;&amp; H == 0 &amp;&amp; I == 0) {
+     if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0 && F == 0 && G == 0 && H == 0 && I == 0) {
          
           winningrandomNumber8 = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 8))%1000000000 + (1000000000 * (J - 1)));
           WinningNumbersEvent(winningrandomNumber8, OneHundredMillionTimesEther);
@@ -1290,7 +1290,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
          //Do stuff here with non winning ticket if needed
      }
      
-     if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0 &amp;&amp; F == 0 &amp;&amp; G == 0 &amp;&amp; H == 0 &amp;&amp; I == 0 &amp;&amp; J == 0 &amp;&amp; K == 1) {
+     if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0 && F == 0 && G == 0 && H == 0 && I == 0 && J == 0 && K == 1) {
          
          billiondollarwinningNumber = (uint(keccak256(block.blockhash(block.number-1), numTokensTotal + 9))%10000000000);
          WinningNumbersEvent(billiondollarwinningNumber, OneBillionTimesEther);
@@ -1328,7 +1328,7 @@ contract Billiontix is MintableNonFungibleToken, Auction {
      
    
      
-      if (A == 1 &amp;&amp; B == 0 &amp;&amp; C == 0 &amp;&amp; D == 0 &amp;&amp; E == 0 &amp;&amp; F == 0 &amp;&amp; G == 0 &amp;&amp; H == 0 &amp;&amp; I == 0 &amp;&amp; J==1) {
+      if (A == 1 && B == 0 && C == 0 && D == 0 && E == 0 && F == 0 && G == 0 && H == 0 && I == 0 && J==1) {
           
           //AT TICKET 1Billion and 1 Sold - Give Away 10Million times Ether to SuperTix holder
           

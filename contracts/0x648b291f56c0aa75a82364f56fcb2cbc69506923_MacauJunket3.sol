@@ -7,13 +7,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -77,7 +77,7 @@ contract MacauJunket3{
   function release(uint256 _amount) public {
     
     uint256 balance = token.balanceOf(address(this));
-    require(balance &gt; 0);
+    require(balance > 0);
     
     if(!withdrawalsInitiated){
         // unlock 50% of existing balance
@@ -85,11 +85,11 @@ contract MacauJunket3{
         withdrawalsInitiated = true;
     }
     
-    if(now &gt;= releaseTime){
+    if(now >= releaseTime){
         unlocked = balance;
     }
     
-    require(_amount &lt;= unlocked);
+    require(_amount <= unlocked);
     unlocked = unlocked.sub(_amount);
     
     token.safeTransfer(beneficiary, _amount);

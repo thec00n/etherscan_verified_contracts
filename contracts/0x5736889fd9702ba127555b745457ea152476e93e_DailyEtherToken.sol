@@ -2,7 +2,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b2f2e3f2e0b2a33222426312e25652824">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b2f2e3f2e0b2a33222426312e25652824">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -41,11 +41,11 @@ contract DailyEtherToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;DailyEther&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;DailyEtherToken&quot;; // solhint-disable-line
+  string public constant NAME = "DailyEther"; // solhint-disable-line
+  string public constant SYMBOL = "DailyEtherToken"; // solhint-disable-line
 
   uint256 private ticketPrice = 0.2 ether;
-  string private betTitle = &quot;&quot;;     // Title of bet
+  string private betTitle = "";     // Title of bet
   uint256 private answerID = 0;     // The correct answer id, set when the bet is closed
 
   // A bet can have the following states:
@@ -58,10 +58,10 @@ contract DailyEtherToken is ERC721 {
   /*** STORAGE ***/
 
   // Used to implement proper ERC721 implementation
-  mapping (address =&gt; uint256) private addressToBetCount;
+  mapping (address => uint256) private addressToBetCount;
 
   // Holds the number of participants who placed a bet on specific answer
-  mapping (uint256 =&gt; uint256) private answerIdToParticipantsCount;
+  mapping (uint256 => uint256) private answerIdToParticipantsCount;
 
   // Addresses of the accounts (or contracts) that can execute actions within each roles.
   address public roleAdminAddress;
@@ -153,11 +153,11 @@ contract DailyEtherToken is ERC721 {
     // Calculate the prize we need to transfer per winner
     uint256 paymentPerParticipant = uint256(SafeMath.div(totalPrize, answerIdToParticipantsCount[_answerId]));
 
-    // Mark contract as closed so we won&#39;t close it again
+    // Mark contract as closed so we won't close it again
     isClosed = true;
 
     // Transfer the winning amount to each of the winners
-    for(uint i=0; i&lt;participants.length; i++)
+    for(uint i=0; i<participants.length; i++)
     {
         if (participants[i].answer_id == _answerId) {
             if (participants[i].user_address != address(this)) {
@@ -174,10 +174,10 @@ contract DailyEtherToken is ERC721 {
     require(isLocked == false);
 
     // Answer ID not allowed to be 0, check it is 1 or greater
-    require(_answerId &gt;= 1);
+    require(_answerId >= 1);
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= ticketPrice);
+    require(msg.value >= ticketPrice);
 
     // Store new bet
     Participant memory _p = Participant({
@@ -272,9 +272,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -282,7 +282,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -291,7 +291,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

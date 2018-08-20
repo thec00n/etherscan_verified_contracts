@@ -1,13 +1,13 @@
 // Copyright (c) 2017 Sweetbridge Stiftung (Sweetbridge Foundation)
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -16,11 +16,11 @@
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 pragma solidity ^0.4.17;
@@ -30,29 +30,29 @@ library Math {
 
     // standard uint256 functions
     function add(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         z = x * y;
-        require((z == 0 &amp;&amp; (x == 0 || y == 0)) || z &gt;= (x &gt; y ? x : y));
+        require((z == 0 && (x == 0 || y == 0)) || z >= (x > y ? x : y));
     }
 
     //division by zero is ignored and returns zero
     function div(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        z = y &gt; 0 ? x / y : 0;
+        z = y > 0 ? x / y : 0;
     }
 
     function min(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function max(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -60,28 +60,28 @@ library Math {
      */
 
     function hadd(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        require((z = x * y) &gt;= x);
+        require((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        require(y &gt; 0);
+        require(y > 0);
         z = x / y;
     }
 
     function hmin(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function hmax(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -89,11 +89,11 @@ library Math {
      */
 
     function imin(int256 x, int256 y) pure internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function imax(int256 x, int256 y) pure internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -149,10 +149,10 @@ library Math {
     }
 
     function rpow(uint128 x, uint64 n) pure internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -250,14 +250,14 @@ contract SecuredWithRoles is Owned {
     }
 
     function senderHasRole(string roleName) public view returns (bool) {
-        return hasRole(roleName) &amp;&amp; roles.roleList(contractHash, keccak256(roleName), msg.sender);
+        return hasRole(roleName) && roles.roleList(contractHash, keccak256(roleName), msg.sender);
     }
 
-    function stop() public roleOrOwner(&quot;stopper&quot;) {
+    function stop() public roleOrOwner("stopper") {
         stopped = true;
     }
 
-    function restart() public roleOrOwner(&quot;restarter&quot;) {
+    function restart() public roleOrOwner("restarter") {
         stopped = false;
     }
 
@@ -290,32 +290,32 @@ contract RolesEvents {
 
 
 contract Roles is RolesEvents, SecuredWithRoles {
-    // mapping is contract -&gt; role -&gt; sender_address -&gt; boolean
-    mapping(bytes32 =&gt; mapping (bytes32 =&gt; mapping (address =&gt; bool))) public roleList;
+    // mapping is contract -> role -> sender_address -> boolean
+    mapping(bytes32 => mapping (bytes32 => mapping (address => bool))) public roleList;
     // the intention is
-    mapping (bytes32 =&gt; mapping (bytes32 =&gt; bool)) public knownRoleNames;
+    mapping (bytes32 => mapping (bytes32 => bool)) public knownRoleNames;
 
-    function Roles() SecuredWithRoles(&quot;RolesRepository&quot;, this) public {}
+    function Roles() SecuredWithRoles("RolesRepository", this) public {}
 
-    function addContractRole(bytes32 ctrct, string roleName) public roleOrOwner(&quot;admin&quot;) {
+    function addContractRole(bytes32 ctrct, string roleName) public roleOrOwner("admin") {
         require(!knownRoleNames[ctrct][keccak256(roleName)]);
         knownRoleNames[ctrct][keccak256(roleName)] = true;
         LogRoleAdded(ctrct, roleName);
     }
 
-    function removeContractRole(bytes32 ctrct, string roleName) public roleOrOwner(&quot;admin&quot;) {
+    function removeContractRole(bytes32 ctrct, string roleName) public roleOrOwner("admin") {
         require(knownRoleNames[ctrct][keccak256(roleName)]);
         delete knownRoleNames[ctrct][keccak256(roleName)];
         LogRoleRemoved(ctrct, roleName);
     }
 
-    function grantUserRole(bytes32 ctrct, string roleName, address user) public roleOrOwner(&quot;admin&quot;) {
+    function grantUserRole(bytes32 ctrct, string roleName, address user) public roleOrOwner("admin") {
         require(knownRoleNames[ctrct][keccak256(roleName)]);
         roleList[ctrct][keccak256(roleName)][user] = true;
         LogRoleGranted(ctrct, roleName, user);
     }
 
-    function revokeUserRole(bytes32 ctrct, string roleName, address user) public roleOrOwner(&quot;admin&quot;) {
+    function revokeUserRole(bytes32 ctrct, string roleName, address user) public roleOrOwner("admin") {
         delete roleList[ctrct][keccak256(roleName)][user];
         LogRoleRevoked(ctrct, roleName, user);
     }
@@ -343,8 +343,8 @@ contract ERC20 is ERC20Events {
 
 contract TokenData is Owned {
     uint256 public supply;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public approvals;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public approvals;
     address logic;
 
     modifier onlyLogic {
@@ -421,18 +421,18 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
     Token public token;     // facade: Token.sol:Token
 
     /* White lists are used to restrict who can transact with whom.
-     * Since we can&#39;t iterate over the mapping we need to store the keys separaterly in the
+     * Since we can't iterate over the mapping we need to store the keys separaterly in the
      *   listNames
      */
     bytes32[] public listNames;
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) public whiteLists;
+    mapping (address => mapping (bytes32 => bool)) public whiteLists;
     // by default there is no need for white listing addresses, anyone can transact freely
     bool public freeTransfer = true;
 
     function TokenLogic(
         address token_,
         address tokenData_,
-        address rolesContract) public SecuredWithRoles(&quot;TokenLogic&quot;, rolesContract)
+        address rolesContract) public SecuredWithRoles("TokenLogic", rolesContract)
     {
         require(token_ != address(0x0));
         require(rolesContract != address(0x0));
@@ -457,9 +457,9 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
     }
 
     function sameWhiteList(address src, address dst) internal view returns(bool) {
-        for(uint8 i = 0; i &lt; listNames.length; i++) {
+        for(uint8 i = 0; i < listNames.length; i++) {
             bytes32 listName = listNames[i];
-            if(whiteLists[src][listName] &amp;&amp; whiteLists[dst][listName]) {
+            if(whiteLists[src][listName] && whiteLists[dst][listName]) {
                 return true;
             }
         }
@@ -476,7 +476,7 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
     }
 
     function indexOf(bytes32 listName) public view returns (uint8, bool) {
-        for(uint8 i = 0; i &lt; listNames.length; i++) {
+        for(uint8 i = 0; i < listNames.length; i++) {
             if(listNames[i] == listName) {
                 return (i, true);
             }
@@ -491,17 +491,17 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
     }
 
     /* creating a removeWhiteList would be too onerous. Therefore it does not exist*/
-    function addWhiteList(bytes32 listName) public onlyRole(&quot;admin&quot;) {
+    function addWhiteList(bytes32 listName) public onlyRole("admin") {
         require(! listExists(listName));
-        require(listNames.length &lt; 256);
+        require(listNames.length < 256);
         listNames.push(listName);
         WhiteListAddition(listName);
     }
 
-    function removeWhiteList(bytes32 listName) public onlyRole(&quot;admin&quot;) {
+    function removeWhiteList(bytes32 listName) public onlyRole("admin") {
         var (i, ok) = indexOf(listName);
         require(ok);
-        if(i &lt; listNames.length - 1) {
+        if(i < listNames.length - 1) {
             listNames[i] = listNames[listNames.length - 1];
         }
         delete listNames[listNames.length - 1];
@@ -509,14 +509,14 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
         WhiteListRemoval(listName);
     }
 
-    function addToWhiteList(bytes32 listName, address guy) public onlyRole(&quot;userManager&quot;) {
+    function addToWhiteList(bytes32 listName, address guy) public onlyRole("userManager") {
         require(listExists(listName));
 
         whiteLists[guy][listName] = true;
         AdditionToWhiteList(listName, guy);
     }
 
-    function removeFromWhiteList(bytes32 listName, address guy) public onlyRole(&quot;userManager&quot;) {
+    function removeFromWhiteList(bytes32 listName, address guy) public onlyRole("userManager") {
         require(listExists(listName));
 
         whiteLists[guy][listName] = false;
@@ -544,7 +544,7 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
     }
 
     function transfer(address src, address dst, uint256 wad) public tokenOnly canTransfer(src, dst)  returns (bool) {
-        // balance check is not needed because sub(a, b) will throw if a&lt;b
+        // balance check is not needed because sub(a, b) will throw if a<b
         data.setBalances(src, Math.sub(data.balances(src), wad));
         data.setBalances(dst, Math.add(data.balances(dst), wad));
 
@@ -552,7 +552,7 @@ contract TokenLogic is TokenLogicEvents, TokenLogicI, SecuredWithRoles {
     }
 
     function transferFrom(address src, address dst, uint256 wad) public tokenOnly canTransfer(src, dst)  returns (bool) {
-        // balance and approval check is not needed because sub(a, b) will throw if a&lt;b
+        // balance and approval check is not needed because sub(a, b) will throw if a<b
         data.setApprovals(src, dst, Math.sub(data.approvals(src, dst), wad));
         data.setBalances(src, Math.sub(data.balances(src), wad));
         data.setBalances(dst, Math.add(data.balances(dst), wad));
@@ -605,7 +605,7 @@ contract Token is TokenI, SecuredWithRoles, TokenEvents {
     TokenLogicI public logic;
 
     function Token(string name_, string symbol_, address rolesContract) public SecuredWithRoles(name_, rolesContract) {
-        // you can&#39;t create logic here, because this contract would be the owner.
+        // you can't create logic here, because this contract would be the owner.
         name = name_;
         symbol = symbol_;
     }
@@ -652,7 +652,7 @@ contract Token is TokenI, SecuredWithRoles, TokenEvents {
             // Retrieve the size of the code on target address, this needs assembly .
                 codeLength := extcodesize(dst)
             }
-            if (codeLength&gt;0) {
+            if (codeLength>0) {
                 ERC223ReceivingContract receiver = ERC223ReceivingContract(dst);
                 bytes memory empty;
                 receiver.tokenFallback(msg.sender, wad, empty);
@@ -671,7 +671,7 @@ contract Token is TokenI, SecuredWithRoles, TokenEvents {
             // Retrieve the size of the code on target address, this needs assembly .
                 codeLength := extcodesize(dst)
             }
-            if (codeLength&gt;0) {
+            if (codeLength>0) {
                 ERC223ReceivingContract receiver = ERC223ReceivingContract(dst);
                 bytes memory empty;
                 receiver.tokenFallback(src, wad, empty);
@@ -693,7 +693,7 @@ contract Token is TokenI, SecuredWithRoles, TokenEvents {
         return transferFrom(src, msg.sender, wad);
     }
 
-    function mintFor(address recipient, uint256 wad) public stoppable onlyRole(&quot;minter&quot;) {
+    function mintFor(address recipient, uint256 wad) public stoppable onlyRole("minter") {
         logic.mintFor(recipient, wad);
         LogMint(recipient, wad);
         Transfer(address(0x0), recipient, wad);
@@ -704,7 +704,7 @@ contract Token is TokenI, SecuredWithRoles, TokenEvents {
         LogBurn(msg.sender, wad);
     }
 
-    function setName(string name_) public roleOrOwner(&quot;admin&quot;) {
+    function setName(string name_) public roleOrOwner("admin") {
         name = name_;
     }
 }
@@ -722,7 +722,7 @@ contract SweetTokenLogic is TokenLogic {
         if (tokenData_ == address(0x0)) {
             uint256 totalSupply;
             require(initialBalances.length == initialWallets.length);
-            for (uint256 i = 0; i &lt; initialWallets.length; i++) {
+            for (uint256 i = 0; i < initialWallets.length; i++) {
                 data.setBalances(initialWallets[i], initialBalances[i]);
                 token.triggerTransfer(address(0x0), initialWallets[i], initialBalances[i]);
                 totalSupply = Math.add(totalSupply, initialBalances[i]);

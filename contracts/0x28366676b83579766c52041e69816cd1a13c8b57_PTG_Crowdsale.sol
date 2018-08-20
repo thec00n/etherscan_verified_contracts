@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -212,9 +212,9 @@ contract PTG_Crowdsale is Pausable {
    * @return The number of tokens a buyer gets per wei at a given time
    */
   function getCurrentRate() public view returns (uint256) {
-    if (now &lt;= openingTime.add(14 days)) return rate.add(rate/5);   // bonus 20% first two weeks
-    if (now &gt; openingTime.add(14 days) &amp;&amp; now &lt;= openingTime.add(28 days)) return rate.add(rate*3/20);   // bonus 15% second two weeks
-    if (now &gt; openingTime.add(28 days) &amp;&amp; now &lt;= openingTime.add(42 days)) return rate.add(rate/10);   // bonus 10% third two weeks
+    if (now <= openingTime.add(14 days)) return rate.add(rate/5);   // bonus 20% first two weeks
+    if (now > openingTime.add(14 days) && now <= openingTime.add(28 days)) return rate.add(rate*3/20);   // bonus 15% second two weeks
+    if (now > openingTime.add(28 days) && now <= openingTime.add(42 days)) return rate.add(rate/10);   // bonus 10% third two weeks
   }
 
   // -----------------------------------------
@@ -261,7 +261,7 @@ contract PTG_Crowdsale is Pausable {
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_beneficiary != address(0));
     require(_weiAmount != 0);
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
   }
 
   /**
@@ -304,7 +304,7 @@ contract PTG_Crowdsale is Pausable {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**

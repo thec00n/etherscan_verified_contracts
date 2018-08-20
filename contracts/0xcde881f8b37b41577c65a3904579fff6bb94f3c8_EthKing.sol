@@ -110,7 +110,7 @@ contract EthKing {
 	}
 
 	// Player mapping
-	mapping (address =&gt; Player) private players;
+	mapping (address => Player) private players;
 
 	// Current round number
 	uint public round;
@@ -123,7 +123,7 @@ contract EthKing {
 
 	function EthKing() public payable {
 		// We should seed the game
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
 		// Set owner and round
 		owner = msg.sender;
@@ -133,8 +133,8 @@ contract EthKing {
 		uint _bonusPot = msg.value.mul(BONUS_POT_FRAC_TOP).div(BONUS_POT_FRAC_BOT);
 		uint _mainPot = msg.value.sub(_bonusPot);
 
-		// Make sure we didn&#39;t make a mistake
-		require(_bonusPot + _mainPot &lt;= msg.value);
+		// Make sure we didn't make a mistake
+		require(_bonusPot + _mainPot <= msg.value);
 
 		mainPot = _mainPot;
 		bonusPot = _bonusPot;
@@ -158,13 +158,13 @@ contract EthKing {
 		// Check to see if King now is in first or second place.
 		// If second place, just replace second place with King.
 		// If first place, move first place down to second and King to first
-		if (players[king].points &gt; players[first].points) {
+		if (players[king].points > players[first].points) {
 			second = first;
 			first = king;
 
 			PlaceChange(now, first, second, players[first].points, players[second].points);
 
-		} else if (players[king].points &gt; players[second].points &amp;&amp; king != first) {
+		} else if (players[king].points > players[second].points && king != first) {
 			second = king;
 
 			PlaceChange(now, first, second, players[first].points, players[second].points);
@@ -173,11 +173,11 @@ contract EthKing {
 		_;
 	}
 
-	// Check current leader&#39;s points
-	// Advances the round if he&#39;s at 1 million or greater
+	// Check current leader's points
+	// Advances the round if he's at 1 million or greater
 	// Pays out main pot and bonus pot
 	modifier advanceRoundIfNeeded {
-		if (players[first].points &gt;= POINTS_TO_WIN) {
+		if (players[first].points >= POINTS_TO_WIN) {
 			// Calculate next pots and winnings
 			uint _nextMainPot = mainPot.mul(NEXT_POT_FRAC_TOP).div(NEXT_POT_FRAC_BOT);
 			uint _nextBonusPot = bonusPot.mul(NEXT_POT_FRAC_TOP).div(NEXT_POT_FRAC_BOT);
@@ -214,20 +214,20 @@ contract EthKing {
 	function calculatePoints(uint _earlierTime, uint _laterTime) private pure returns (uint) {
 		// Earlier time could be the same as latertime (same block)
 		// But it should never be later than laterTime!
-		assert(_earlierTime &lt;= _laterTime);
+		assert(_earlierTime <= _laterTime);
 
 		// If crowned and dethroned on same block, no points
 		if (_earlierTime == _laterTime) { return 0; }
 
 		// Calculate points. Less than 1 minute is no payout
 		uint timeElapsedInSeconds = _laterTime.sub(_earlierTime);
-		if (timeElapsedInSeconds &lt; 60) { return 0; }
+		if (timeElapsedInSeconds < 60) { return 0; }
 
 		uint timeElapsedInMinutes = timeElapsedInSeconds.div(60);
-		assert(timeElapsedInMinutes &gt; 0);
+		assert(timeElapsedInMinutes > 0);
 
 		// 1000 minutes is an automatic win.
-		if (timeElapsedInMinutes &gt;= 1000) { return POINTS_TO_WIN; }
+		if (timeElapsedInMinutes >= 1000) { return POINTS_TO_WIN; }
 
 		return timeElapsedInMinutes**POINT_EXPONENT;
 	}
@@ -235,29 +235,29 @@ contract EthKing {
 	// Pays out current King
 	// Advances round, if necessary
 	// Makes sender King
-	// Reverts if bid isn&#39;t high enough
+	// Reverts if bid isn't high enough
 	function becomeKing() public payable
 		payoutOldKingPoints
 		advanceRoundIfNeeded
 	{
 		// Calculate minimum bid amount
 		uint _minLeaderAmount = mainPot.mul(MIN_LEADER_FRAC_TOP).div(MIN_LEADER_FRAC_BOT);
-		require(msg.value &gt;= _minLeaderAmount);
+		require(msg.value >= _minLeaderAmount);
 
 		uint _bidAmountToDeveloper = msg.value.mul(DEV_FEE_FRAC_TOP).div(DEV_FEE_FRAC_BOT);
 		uint _bidAmountToBonusPot = msg.value.mul(BONUS_POT_FRAC_TOP).div(BONUS_POT_FRAC_BOT);
 		uint _bidAmountToMainPot = msg.value.sub(_bidAmountToDeveloper).sub(_bidAmountToBonusPot);
 
-		assert(_bidAmountToDeveloper + _bidAmountToBonusPot + _bidAmountToMainPot &lt;= msg.value);
+		assert(_bidAmountToDeveloper + _bidAmountToBonusPot + _bidAmountToMainPot <= msg.value);
 
-		// Transfer dev fee to owner&#39;s winnings
+		// Transfer dev fee to owner's winnings
 		players[owner].winnings = players[owner].winnings.add(_bidAmountToDeveloper);
 
 		// Set new pot values
 		mainPot = mainPot.add(_bidAmountToMainPot);
 		bonusPot = bonusPot.add(_bidAmountToBonusPot);
 
-		// Clear out King&#39;s points if they are from last round
+		// Clear out King's points if they are from last round
 		if (players[king].roundLastPlayed != round) {
 			players[king].points = 0;	
 		}
@@ -272,8 +272,8 @@ contract EthKing {
 
 	// Transfer players their winnings
 	function withdrawEarnings() public {
-		require(players[msg.sender].winnings &gt; 0);
-		assert(players[msg.sender].winnings &lt;= this.balance);
+		require(players[msg.sender].winnings > 0);
+		assert(players[msg.sender].winnings <= this.balance);
 
 		uint _amount = players[msg.sender].winnings;
 		players[msg.sender].winnings = 0;
@@ -285,7 +285,7 @@ contract EthKing {
 
 	// Fallback function.
 	// If 0 ether, triggers tryAdvance()
-	// If &gt; 0 ether, triggers becomeKing()
+	// If > 0 ether, triggers becomeKing()
 	function () public payable {
 		if (msg.value == 0) { tryAdvance(); }
 		else { becomeKing(); }
@@ -293,33 +293,33 @@ contract EthKing {
 
 	// Utility function to advance the round / payout the winner
 	function tryAdvance() public {
-		// Calculate the King&#39;s current points.
-		// If he&#39;s won, we payout and advance the round.
+		// Calculate the King's current points.
+		// If he's won, we payout and advance the round.
 		// Equivalent to a bid, but without an actual bid.
 		uint kingTotalPoints = calculatePoints(crownedTime, now) + players[king].points;
-		if (kingTotalPoints &gt;= POINTS_TO_WIN) { forceAdvance(); }
+		if (kingTotalPoints >= POINTS_TO_WIN) { forceAdvance(); }
 	}
 
 	// Internal function called by tryAdvance if current King has won
 	function forceAdvance() private payoutOldKingPoints advanceRoundIfNeeded { }
 	
-	// Gets a player&#39;s information
+	// Gets a player's information
 	function getPlayerInfo(address _player) public constant returns(uint, uint, uint) {
 		return (players[_player].points, players[_player].roundLastPlayed, players[_player].winnings);
 	}
 	
-	// Gets the sender&#39;s information
+	// Gets the sender's information
 	function getMyInfo() public constant returns(uint, uint, uint) {
 		return getPlayerInfo(msg.sender);		
 	}
 	
-	// Get the King&#39;s current points
+	// Get the King's current points
 	function getKingPoints() public constant returns(uint) { return players[king].points; }
 	
-	// Get the first player&#39;s current points
+	// Get the first player's current points
 	function getFirstPoints() public constant returns(uint) { return players[first].points; }
 	
-	// Get the second player&#39;s current points
+	// Get the second player's current points
 	function getSecondPoints() public constant returns(uint) { return players[second].points; }
 }
 
@@ -344,9 +344,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -354,7 +354,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -363,7 +363,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

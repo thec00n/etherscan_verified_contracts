@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -67,7 +67,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -111,7 +111,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -122,8 +122,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -137,7 +137,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -198,10 +198,10 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -215,7 +215,7 @@ contract BurnableToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -312,7 +312,7 @@ contract CappedToken is MintableToken {
   uint256 public cap;
 
   function CappedToken(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -323,7 +323,7 @@ contract CappedToken is MintableToken {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply.add(_amount) &lt;= cap);
+    require(totalSupply.add(_amount) <= cap);
 
     return super.mint(_to, _amount);
   }
@@ -334,8 +334,8 @@ contract CappedToken is MintableToken {
 
 contract MMMbCoin is CappedToken, BurnableToken {
 
-  string public constant name = &quot;MMMbCoin Utils&quot;;
-  string public constant symbol = &quot;MMB&quot;;
+  string public constant name = "MMMbCoin Utils";
+  string public constant symbol = "MMB";
   uint256 public constant decimals = 18;
 
   function MMMbCoin(uint256 _cap) public CappedToken(_cap) {
@@ -382,9 +382,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -433,14 +433,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -464,8 +464,8 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
   uint256 public emission;
 
   // Discount border-lines
-  mapping(uint8 =&gt; uint256) discountTokens;
-  mapping(address =&gt; uint256) pendingOrders;
+  mapping(uint8 => uint256) discountTokens;
+  mapping(address => uint256) pendingOrders;
 
   uint256 public totalSupply;
   address public vault;
@@ -505,19 +505,19 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
 
     uint256 tokens;
 
-    if (sold &lt; _discount(25)) {
+    if (sold < _discount(25)) {
       tokens = _calculateTokens(weiAmount, 25, sold);
     }
-    else if (sold &gt;= _discount(25) &amp;&amp; sold &lt; _discount(20)) {
+    else if (sold >= _discount(25) && sold < _discount(20)) {
       tokens = _calculateTokens(weiAmount, 20, sold);
     }
-    else if (sold &gt;= _discount(20) &amp;&amp; sold &lt; _discount(15)) {
+    else if (sold >= _discount(20) && sold < _discount(15)) {
       tokens = _calculateTokens(weiAmount, 15, sold);
     }
-    else if (sold &gt;= _discount(15) &amp;&amp; sold &lt; _discount(10)) {
+    else if (sold >= _discount(15) && sold < _discount(10)) {
       tokens = _calculateTokens(weiAmount, 10, sold);
     }
-    else if (sold &gt;= _discount(10) &amp;&amp; sold &lt; _discount(5)) {
+    else if (sold >= _discount(10) && sold < _discount(5)) {
       tokens = _calculateTokens(weiAmount, 5, sold);
     }
     else {
@@ -525,7 +525,7 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
     }
 
     // Check limit
-    require(sold.add(tokens) &lt;= totalSupply);
+    require(sold.add(tokens) <= totalSupply);
 
     weiRaised = weiRaised.add(weiAmount);
     token.transferFrom(vault, beneficiary, tokens);
@@ -547,7 +547,7 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
     require(!hasEnded());
     require(_to != address(0));
     require(_amount != 0);
-    require(token.balanceOf(vault) &gt;= _amount);
+    require(token.balanceOf(vault) >= _amount);
 
     token.transferFrom(vault, _to, _amount);
   }
@@ -555,7 +555,7 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
   function transferPreSaleTokens(address _to, uint256 tokens) public onlyOwner {
     require(_to != address(0));
     require(tokens != 0);
-    require(tokens &lt; token.balanceOf(preSaleVault));
+    require(tokens < token.balanceOf(preSaleVault));
 
     token.transferFrom(preSaleVault, _to, tokens);
   }
@@ -582,9 +582,9 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
     uint256 weiValue = msg.value;
 
     bool defaultCase = super.validPurchase();
-    bool capCase = token.balanceOf(vault) &gt; 0;
-    bool extraCase = weiValue != 0 &amp;&amp; capCase &amp;&amp; manualState == ManualState.WORKING;
-    return defaultCase &amp;&amp; capCase || extraCase;
+    bool capCase = token.balanceOf(vault) > 0;
+    bool extraCase = weiValue != 0 && capCase && manualState == ManualState.WORKING;
+    return defaultCase && capCase || extraCase;
   }
 
   /** 
@@ -644,13 +644,13 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
     * @return has or not
     */
   function hasAccountPendingOrders(address _account) public view returns(bool) {
-    return pendingOrders[_account] &gt; 0;
+    return pendingOrders[_account] > 0;
   }
 
   /**
     * @dev this method is used for getting account pending value
     * @param _account which is checked
-    * @return if account doesn&#39;t have any pending orders, it will return 0
+    * @return if account doesn't have any pending orders, it will return 0
     */
   function getAccountPendingValue(address _account) public view returns(uint256) {
     return pendingOrders[_account];
@@ -663,7 +663,7 @@ contract MMMbCoinCrowdsale is Crowdsale, Ownable {
   function _calculateTokens(uint256 _value, uint8 _off, uint256 _sold) internal view returns (uint256) {
     uint256 withoutDiscounts = _value.mul(rate);
     uint256 byDiscount = withoutDiscounts.mul(100).div(100 - _off);
-    if (_sold.add(byDiscount) &gt; _discount(_off)) {
+    if (_sold.add(byDiscount) > _discount(_off)) {
       uint256 couldBeSold = _discount(_off).sub(_sold);
       uint256 weiByDiscount = couldBeSold.div(rate).div(100).mul(100 - _off);
       uint256 weiLefts = _value.sub(weiByDiscount);

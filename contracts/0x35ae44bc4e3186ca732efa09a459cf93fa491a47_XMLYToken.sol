@@ -18,10 +18,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -29,7 +29,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -105,19 +105,19 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; bool) freezed;
-    mapping(address =&gt; uint) freezeAmount;
-    mapping(address =&gt; uint) unlockTime;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => bool) freezed;
+    mapping(address => uint) freezeAmount;
+    mapping(address => uint) unlockTime;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function XMLYToken() public {
-        symbol = &quot;XMLY&quot;;
-        name = &quot;XiMaLaYa&quot;;
+        symbol = "XMLY";
+        name = "XiMaLaYa";
         decimals = 18;
         _totalSupply = 100000000000000000000000000000;
         balances[0x5B807E379170d42f3B099C01A5399a2e1e58963B] = _totalSupply;
@@ -142,8 +142,8 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -152,8 +152,8 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
             balances[to] = safeAdd(balances[to], tokens);
             Transfer(msg.sender, to, tokens);
         } else {
-            if(balances[msg.sender] &gt; freezeAmount[msg.sender]) {
-                require(tokens &lt;= safeSub(balances[msg.sender], freezeAmount[msg.sender]));
+            if(balances[msg.sender] > freezeAmount[msg.sender]) {
+                require(tokens <= safeSub(balances[msg.sender], freezeAmount[msg.sender]));
                 balances[msg.sender] = safeSub(balances[msg.sender], tokens);
                 balances[to] = safeAdd(balances[to], tokens);
                 Transfer(msg.sender, to, tokens);
@@ -166,7 +166,7 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -200,7 +200,7 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         require(freezed[msg.sender] != true);
@@ -210,7 +210,7 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -233,7 +233,7 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
     // Freeze Tokens
     // ------------------------------------------------------------------------
     function freeze(address user, uint amount, uint period) public onlyOwner {
-        require(balances[user] &gt;= amount);
+        require(balances[user] >= amount);
         freezed[user] = true;
         unlockTime[user] = uint(now) + period;
         freezeAmount[user] = amount;
@@ -244,7 +244,7 @@ contract XMLYToken is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     function unFreeze() public {
         require(freezed[msg.sender] == true);
-        require(unlockTime[msg.sender] &lt; uint(now));
+        require(unlockTime[msg.sender] < uint(now));
         freezed[msg.sender] = false;
         freezeAmount[msg.sender] = 0;
     }

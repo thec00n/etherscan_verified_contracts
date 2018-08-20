@@ -8,8 +8,8 @@ pragma solidity ^0.4.8;
 //config contract
 contract TokenConfig {
 
-    string public constant name = &quot;BlockSwap Wrapped Golem Network Token&quot;;
-    string public constant symbol = &quot;BSGNT&quot;;
+    string public constant name = "BlockSwap Wrapped Golem Network Token";
+    string public constant symbol = "BSGNT";
 
 }
 

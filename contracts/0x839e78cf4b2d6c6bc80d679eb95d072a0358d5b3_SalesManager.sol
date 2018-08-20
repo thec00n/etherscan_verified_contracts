@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,7 +45,7 @@ contract Token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,7 +88,7 @@ contract Pausable is Ownable {
    * @dev modifier to allow actions only when the contract IS not paused
    */
   modifier whenNotPaused() {
-    require(now &gt;= endDate || endITO);
+    require(now >= endDate || endITO);
     _;
   }
 
@@ -101,9 +101,9 @@ contract Pausable is Ownable {
 
 contract StandardToken is Token, Pausable {
     using SafeMath for uint256;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -136,7 +136,7 @@ contract StandardToken is Token, Pausable {
    */
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -150,7 +150,7 @@ contract StandardToken is Token, Pausable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -185,7 +185,7 @@ contract StandardToken is Token, Pausable {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public whenNotPaused returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -208,8 +208,8 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -220,8 +220,8 @@ contract BurnableToken is StandardToken {
 
 contract KeeppetToken is BurnableToken {
 
-    string public constant name = &quot;KeepPet Token&quot;;
-    string public constant symbol = &quot;PET&quot;;
+    string public constant name = "KeepPet Token";
+    string public constant symbol = "PET";
     uint8 public constant decimals = 0;
 
     uint256 public constant INITIAL_SUPPLY = 3500000;
@@ -235,7 +235,7 @@ contract KeeppetToken is BurnableToken {
     }
 
     function sendTokens(address _to, uint _amount) external onlyOwner {
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -253,7 +253,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -332,7 +332,7 @@ contract SalesManager is Ownable {
      * @dev modifier to allow actions only when Pre-ICO end date is now
      */
     modifier isFinished() {
-        require(now &gt;= endDate);
+        require(now >= endDate);
         _;
     }
 
@@ -343,8 +343,8 @@ contract SalesManager is Ownable {
     }
 
     function () payable public {
-       require(msg.value &gt;= 2 * 10**15  &amp;&amp; now &gt;= startDate &amp;&amp; now &lt; endDate);
-       require(stat.ethAmount + stat.additionalEthAmount &lt; hardCap);
+       require(msg.value >= 2 * 10**15  && now >= startDate && now < endDate);
+       require(stat.ethAmount + stat.additionalEthAmount < hardCap);
        buyTokens();
     }
 
@@ -357,25 +357,25 @@ contract SalesManager is Ownable {
         uint256 current = stat.ethAmount + stat.additionalEthAmount;
         uint256 withAmount = current.add(amount);
 
-        return ((current &lt; bonusX2Stage1 &amp;&amp; bonusX2Stage1 &lt;= withAmount)
-        || (current &lt; bonusX2Stage2 &amp;&amp; bonusX2Stage2 &lt;= withAmount)
-        || (current &lt; bonusX2Stage3 &amp;&amp; bonusX2Stage3 &lt;= withAmount)
-        || (current &lt; bonusX2Stage4 &amp;&amp; bonusX2Stage4 &lt;= withAmount));
+        return ((current < bonusX2Stage1 && bonusX2Stage1 <= withAmount)
+        || (current < bonusX2Stage2 && bonusX2Stage2 <= withAmount)
+        || (current < bonusX2Stage3 && bonusX2Stage3 <= withAmount)
+        || (current < bonusX2Stage4 && bonusX2Stage4 <= withAmount));
     }
 
     uint private bonusPeriod = 1 days;
 
     function countMultiplyBonus(uint256 amount) internal returns (uint) {
-        if (now &gt;= startDate &amp;&amp; now &lt;= startDate + bonusPeriod) { // From 31 december 2017 to 1 january 2018 (12:00 GMT) — x5
+        if (now >= startDate && now <= startDate + bonusPeriod) { // From 31 december 2017 to 1 january 2018 (12:00 GMT) — x5
             return 5;
         }
-        if (now &gt; startDate + bonusPeriod &amp;&amp; now &lt;= startDate + 2 * bonusPeriod) { // From 1 january 2017 to 2 january 2018 (12:00 GMT) — x4
+        if (now > startDate + bonusPeriod && now <= startDate + 2 * bonusPeriod) { // From 1 january 2017 to 2 january 2018 (12:00 GMT) — x4
             return 4;
         }
-        if (now &gt; startDate + 2 * bonusPeriod &amp;&amp; now &lt;= startDate + 3 * bonusPeriod) { // From 2 january 2017 to 3 january 2018 (12:00 GMT) — x3
+        if (now > startDate + 2 * bonusPeriod && now <= startDate + 3 * bonusPeriod) { // From 2 january 2017 to 3 january 2018 (12:00 GMT) — x3
             return 3;
         }
-        if (now &gt; startDate + 3 * bonusPeriod &amp;&amp; now &lt;= startDate + 4 * bonusPeriod) { // From 3 january 2017 to 4 january 2018 (12:00 GMT) — x2
+        if (now > startDate + 3 * bonusPeriod && now <= startDate + 4 * bonusPeriod) { // From 3 january 2017 to 4 january 2018 (12:00 GMT) — x2
             return 2;
         }
         if (checkBonus(amount)) {
@@ -389,7 +389,7 @@ contract SalesManager is Ownable {
         uint256 balance = keeppetToken.balanceOf(this);
         tokens = tokens.mul(countMultiplyBonus(msg.value));
 
-        if (balance &lt; tokens) {
+        if (balance < tokens) {
             uint256 tempTokenPrice = msg.value.div(tokens); // Temp token price for tokens which were bought.
             uint256 toReturn = tempTokenPrice.mul(tokens.sub(balance)); // Amount for returing.
             sendTokens(balance, msg.value - toReturn);
@@ -409,8 +409,8 @@ contract SalesManager is Ownable {
     }
 
     function sendTokensManually(address _to, uint256 ethAmount, uint multiplier) public onlyOwner {
-        require(multiplier &lt; 6); // can be multiplier more then in five times.
-        require(_to != address(0) &amp;&amp; now &lt;= endDate + 3 days); // available to send 72 hours after endDate
+        require(multiplier < 6); // can be multiplier more then in five times.
+        require(_to != address(0) && now <= endDate + 3 days); // available to send 72 hours after endDate
         uint256 tokens = ethAmount.div(tokenPrice).mul(multiplier);
         keeppetToken.sendTokens(_to, tokens);
         stat.currentFundraiser += tokens;
@@ -423,7 +423,7 @@ contract SalesManager is Ownable {
         uint256 leftValue = keeppetToken.balanceOf(this);
         keeppetToken.burn(leftValue);
         uint256 fullAmount = stat.additionalEthAmount.add(stat.ethAmount);
-        if (fullAmount &lt; softCap) {
+        if (fullAmount < softCap) {
             // If soft cap is not reached enable refunds
             refundVaultContract.enableRefunds();
         } else {

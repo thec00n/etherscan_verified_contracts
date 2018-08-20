@@ -27,7 +27,7 @@ contract TrezorMultiSig2of3 {
   // The 3 addresses which control the funds in this contract.  The
   // owners of 2 of these addresses will need to both sign a message
   // allowing the funds in this contract to be spent.
-  mapping(address =&gt; bool) private owners;
+  mapping(address => bool) private owners;
 
   // The contract nonce is not accessible to the contract so we
   // implement a nonce-like variable for replay protection.
@@ -67,7 +67,7 @@ contract TrezorMultiSig2of3 {
   }
 
   // Generates the message to sign given the output destination address and amount.
-  // includes this contract&#39;s address and a nonce for replay protection.
+  // includes this contract's address and a nonce for replay protection.
   // One option to  independently verify: https://leventozturk.com/engineering/sha3/ and select keccak
   function generateMessageToSign(address destination, uint256 value) public constant returns (bytes32) {
     require(destination != address(this));
@@ -81,7 +81,7 @@ contract TrezorMultiSig2of3 {
   function spend(address destination, uint256 value, uint8 v1, bytes32 r1, bytes32 s1, uint8 v2, bytes32 r2, bytes32 s2) public {
     // This require is handled by generateMessageToSign()
     // require(destination != address(this));
-    require(this.balance &gt;= value);
+    require(this.balance >= value);
     require(_validSignature(destination, value, v1, r1, s1, v2, r2, s2));
     spendNonce = spendNonce + 1;
     destination.transfer(value);
@@ -89,7 +89,7 @@ contract TrezorMultiSig2of3 {
   }
 
   // Confirm that the two signature triplets (v1, r1, s1) and (v2, r2, s2)
-  // both authorize a spend of this contract&#39;s funds to the given
+  // both authorize a spend of this contract's funds to the given
   // destination address.
   function _validSignature(address destination, uint256 value, uint8 v1, bytes32 r1, bytes32 s1, uint8 v2, bytes32 r2, bytes32 s2) private constant returns (bool) {
     bytes32 message = _messageToRecover(destination, value);
@@ -99,7 +99,7 @@ contract TrezorMultiSig2of3 {
     return true;
   }
 
-  // Generate the the unsigned message (in bytes32) that each owner&#39;s
+  // Generate the the unsigned message (in bytes32) that each owner's
   // Trezor would have signed for the given destination and amount.
   //
   // The generated message from generateMessageToSign is converted to
@@ -111,7 +111,7 @@ contract TrezorMultiSig2of3 {
   function _messageToRecover(address destination, uint256 value) private constant returns (bytes32) {
     bytes32 hashedUnsignedMessage = generateMessageToSign(destination, value);
     bytes memory unsignedMessageBytes = _hashToAscii(hashedUnsignedMessage);
-    bytes memory prefix = &quot;\x19Ethereum Signed Message:\n&quot;;
+    bytes memory prefix = "\x19Ethereum Signed Message:\n";
     return keccak256(prefix,bytes1(unsignedMessageBytes.length),unsignedMessageBytes);
   }
 
@@ -131,7 +131,7 @@ contract TrezorMultiSig2of3 {
   // hashed message written in hex.
    function _hashToAscii(bytes32 hash) private pure returns (bytes) {
     bytes memory s = new bytes(64);
-    for (uint i = 0; i &lt; 32; i++) {
+    for (uint i = 0; i < 32; i++) {
       byte b  = hash[i];
       byte hi = byte(uint8(b) / 16);
       byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -144,7 +144,7 @@ contract TrezorMultiSig2of3 {
   // Convert from byte to ASCII of 0-f
   // http://www.unicode.org/charts/PDF/U0000.pdf
   function _char(byte b) private pure returns (byte c) {
-    if (b &lt; 10) return byte(uint8(b) + 0x30);
+    if (b < 10) return byte(uint8(b) + 0x30);
     else return byte(uint8(b) + 0x57);
   }
 }

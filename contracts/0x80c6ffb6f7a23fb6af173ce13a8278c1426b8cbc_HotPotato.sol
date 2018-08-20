@@ -26,7 +26,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -67,7 +67,7 @@ contract HotPotato {
         // whether the game is running and the timer has started
         bool running;
 
-        // game has completed it&#39;s whole run
+        // game has completed it's whole run
         bool finished;
 
         // who owns the hot potato in the game
@@ -76,8 +76,8 @@ contract HotPotato {
         // the unix timestamp of when the game when started
         uint gameStart;
 
-        // players to their stakes (a stake &gt;0 indicates the address is playing)
-        mapping(address =&gt; uint) stakes;
+        // players to their stakes (a stake >0 indicates the address is playing)
+        mapping(address => uint) stakes;
 
         // the total amount of Ether staked on the game
         uint totalStake;
@@ -86,10 +86,10 @@ contract HotPotato {
         uint players;
 
         // whether an address has withdrawed there stake or not
-        mapping(address =&gt; bool) withdrawals;
+        mapping(address => bool) withdrawals;
 
         // the time the addresses held the potato for in seconds
-        mapping(address =&gt; uint) holdTimes;
+        mapping(address => uint) holdTimes;
 
         // the block the game was created on (i.e. when players could join it)
         uint blockCreated;
@@ -126,7 +126,7 @@ contract HotPotato {
     uint public currentGameId;
 
     // game ids to games
-    mapping(uint =&gt; Game) public games;
+    mapping(uint => Game) public games;
 
     modifier gameRunning(uint gameId) {
         require(games[gameId].running);
@@ -147,7 +147,7 @@ contract HotPotato {
     }
 
     modifier hasValue(uint amount) {
-        require(msg.value &gt;= amount);
+        require(msg.value >= amount);
 
         _;
     }
@@ -159,13 +159,13 @@ contract HotPotato {
     }
 
     modifier inGame(uint gameId, address player) {
-        require(games[gameId].stakes[player] &gt; 0);
+        require(games[gameId].stakes[player] > 0);
 
         _;
     }
 
     modifier enoughPlayers(uint gameId) {
-        require(games[gameId].players &gt;= MIN_PLAYERS);
+        require(games[gameId].players >= MIN_PLAYERS);
 
         _;
     }
@@ -177,13 +177,13 @@ contract HotPotato {
     }
 
     modifier notLost(uint gameId, address player) {
-        require(games[gameId].hotPotatoOwner != player &amp;&amp; games[gameId].maxTimeHolder != player);
+        require(games[gameId].hotPotatoOwner != player && games[gameId].maxTimeHolder != player);
 
         _;
     }
 
     modifier gameTerminable(uint gameId) {
-        require(block.timestamp.sub(games[gameId].gameStart) &gt;= GAME_DURATION);
+        require(block.timestamp.sub(games[gameId].gameStart) >= GAME_DURATION);
 
         _;
     }
@@ -259,7 +259,7 @@ contract HotPotato {
         game.holdTimes[msg.sender] = game.holdTimes[msg.sender].add(timeHeld);
         AddressHeldFor(currentGameId, msg.sender, game.holdTimes[msg.sender]);
 
-        if (game.holdTimes[msg.sender] &gt; game.holdTimes[game.maxTimeHolder]) {
+        if (game.holdTimes[msg.sender] > game.holdTimes[game.maxTimeHolder]) {
             game.maxTimeHolder = msg.sender;
             NewMaxTimeHolder(currentGameId, game.maxTimeHolder);
         }
@@ -284,7 +284,7 @@ contract HotPotato {
         game.holdTimes[game.hotPotatoOwner] = game.holdTimes[game.hotPotatoOwner].add(timeHeld);
         AddressHeldFor(currentGameId, game.hotPotatoOwner, game.holdTimes[msg.sender]);
 
-        if (game.holdTimes[game.hotPotatoOwner] &gt; game.holdTimes[game.maxTimeHolder]) {
+        if (game.holdTimes[game.hotPotatoOwner] > game.holdTimes[game.maxTimeHolder]) {
             game.maxTimeHolder = game.hotPotatoOwner;
             NewMaxTimeHolder(currentGameId, game.maxTimeHolder);
         }

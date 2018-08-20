@@ -8,13 +8,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -32,12 +32,12 @@ contract ERC20 {
 }
 
 contract StandardToken is ERC20, SafeMath {
-  mapping (address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) public returns (bool success) {
     // This test is implied by safeSub()
-    // if (balances[msg.sender] &lt; _value) { throw; }
+    // if (balances[msg.sender] < _value) { throw; }
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
     emit Transfer(msg.sender, _to, _value);
@@ -48,8 +48,8 @@ contract StandardToken is ERC20, SafeMath {
     uint _allowance = allowed[_from][msg.sender];
 
     // These tests are implied by safeSub()
-    // if (balances[_from] &lt; _value) { throw; }
-    // if (_allowance &lt; _value) { throw; }
+    // if (balances[_from] < _value) { throw; }
+    // if (_allowance < _value) { throw; }
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
     allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -76,11 +76,11 @@ contract MDOT is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
-    string public name = &quot;Maolulu Polkadot&quot;;   // Fancy name: eg: Maolulu Polkadot
-    string public symbol = &quot;MDOT&quot;; // An identifier: eg MDOT
+    string public name = "Maolulu Polkadot";   // Fancy name: eg: Maolulu Polkadot
+    string public symbol = "MDOT"; // An identifier: eg MDOT
     uint public decimals = 8;      // Unit precision
 
     constructor() public {

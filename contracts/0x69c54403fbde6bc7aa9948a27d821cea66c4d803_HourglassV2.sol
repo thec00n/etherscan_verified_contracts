@@ -10,7 +10,7 @@ pragma solidity ^0.4.20;
 ╚╝──╚══╝─╚╝╚╝─╚╝╚╝─────╚╝─╚═══╝
 
 
-* -&gt; About P4D
+* -> About P4D
 * An autonomousfully automated passive income:
 * [x] Created by a team of professional Developers from India who run a software company and specialize in Internet and Cryptographic Security
 * [x] Pen-tested multiple times with zero vulnerabilities!
@@ -37,13 +37,13 @@ contract HourglassV2
     =================================
     // only people with tokens
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
 
     // only people with profits
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
 
@@ -55,13 +55,13 @@ contract HourglassV2
 
         // are we still in the vulnerable phase?
         // if so, enact anti early whale protocol 
-        if( onlyDevs &amp;&amp; ((totalEthereumBalance() - _amountOfEthereum) &lt;= devsQuota_ )){
+        if( onlyDevs && ((totalEthereumBalance() - _amountOfEthereum) <= devsQuota_ )){
             require(
                 // is the customer in the ambassador list?
-                developers_[_customerAddress] == true &amp;&amp;
+                developers_[_customerAddress] == true &&
 
                 // does the customer purchase exceed the max ambassador quota?
-                (devsAccumulatedQuota_[_customerAddress] + _amountOfEthereum) &lt;= devsMaxPurchase_
+                (devsAccumulatedQuota_[_customerAddress] + _amountOfEthereum) <= devsMaxPurchase_
             );
 
             // updated the accumulated quota    
@@ -70,7 +70,7 @@ contract HourglassV2
             // execute
             _;
         } else {
-            // in case the ether count drops low, the ambassador phase won&#39;t reinitiate
+            // in case the ether count drops low, the ambassador phase won't reinitiate
             onlyDevs = false;
             _;    
         }
@@ -92,13 +92,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -133,12 +133,12 @@ contract HourglassV2 is ERC20 {
     using SafeMath for uint256;
     address owner = msg.sender;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public blacklist;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public blacklist;
 
-    string public constant name = &quot;PoWH v2&quot;;
-    string public constant symbol = &quot;PD4&quot;;
+    string public constant name = "PoWH v2";
+    string public constant symbol = "PD4";
     uint public constant decimals = 8;
     
     uint256 public totalSupply = 80000000e8;
@@ -198,51 +198,51 @@ contract HourglassV2 is ERC20 {
         Transfer(address(0), _to, _amount);
         return true;
         
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function airdrop(address[] addresses) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(value &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(value <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(value &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(value <= totalRemaining);
             distr(addresses[i], value);
         }
 	
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function distribution(address[] addresses, uint256 amount) onlyOwner canDistr public {
         
-        require(addresses.length &lt;= 255);
-        require(amount &lt;= totalRemaining);
+        require(addresses.length <= 255);
+        require(amount <= totalRemaining);
         
-        for (uint i = 0; i &lt; addresses.length; i++) {
-            require(amount &lt;= totalRemaining);
+        for (uint i = 0; i < addresses.length; i++) {
+            require(amount <= totalRemaining);
             distr(addresses[i], amount);
         }
 	
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
     }
     
     function distributeAmounts(address[] addresses, uint256[] amounts) onlyOwner canDistr public {
 
-        require(addresses.length &lt;= 255);
+        require(addresses.length <= 255);
         require(addresses.length == amounts.length);
         
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
-            require(amounts[i] &lt;= totalRemaining);
+        for (uint8 i = 0; i < addresses.length; i++) {
+            require(amounts[i] <= totalRemaining);
             distr(addresses[i], amounts[i]);
             
-            if (totalDistributed &gt;= totalSupply) {
+            if (totalDistributed >= totalSupply) {
                 distributionFinished = true;
             }
         }
@@ -254,22 +254,22 @@ contract HourglassV2 is ERC20 {
     
     function getTokens() payable canDistr public {
         
-        if (value &gt; totalRemaining) {
+        if (value > totalRemaining) {
             value = totalRemaining;
         }
         
-        require(value &lt;= totalRemaining);
+        require(value <= totalRemaining);
         
         address investor = msg.sender;
         uint256 toGive = value;
         
         distr(investor, toGive);
         
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             blacklist[investor] = true;
         }
 
-        if (totalDistributed &gt;= totalSupply) {
+        if (totalDistributed >= totalSupply) {
             distributionFinished = true;
         }
         
@@ -282,14 +282,14 @@ contract HourglassV2 is ERC20 {
 
     // mitigates the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
     
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -300,8 +300,8 @@ contract HourglassV2 is ERC20 {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -312,7 +312,7 @@ contract HourglassV2 is ERC20 {
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -334,9 +334,9 @@ contract HourglassV2 is ERC20 {
     }
     
     function burn(uint256 _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

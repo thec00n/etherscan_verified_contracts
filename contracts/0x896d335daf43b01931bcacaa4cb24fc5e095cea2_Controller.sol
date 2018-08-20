@@ -29,7 +29,7 @@ interface TokenHandler {
 }
 
 contract HasWorkers is Ownable {
-    mapping(address =&gt; uint256) private workerToIndex;    
+    mapping(address => uint256) private workerToIndex;    
     address[] private workers;
 
     event AddedWorker(address _worker);
@@ -55,7 +55,7 @@ contract HasWorkers is Ownable {
 
     function allWorkers() public view returns (address[] memory result) {
         result = new address[](workers.length - 1);
-        for (uint256 i = 1; i &lt; workers.length; i++) {
+        for (uint256 i = 1; i < workers.length; i++) {
             result[i - 1] = workers[i];
         }
     }
@@ -86,7 +86,7 @@ contract ControllerStorage {
     address public controllerDelegate;
     address public forward;
     uint256 public createdWallets;
-    mapping(bytes32 =&gt; bytes32) public gStorage;
+    mapping(bytes32 => bytes32) public gStorage;
 }
 
 contract WalletStorage {
@@ -135,7 +135,7 @@ contract ControllerProxy is ControllerStorage, Ownable, HasWorkers, DelegateProv
     }
 
     function() public payable {
-        if (gasleft() &gt; 2400) {
+        if (gasleft() > 2400) {
             delegatedFwd(controllerDelegate, msg.data);
         }
     }
@@ -158,10 +158,10 @@ contract WalletProxy is WalletStorage, DelegateProxy {
     }
 
     function() public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             emit ReceivedETH(msg.sender, msg.value);
         }
-        if (gasleft() &gt; 2400) {
+        if (gasleft() > 2400) {
             delegatedFwd(DelegateProvider(owner).getDelegate(), msg.data);
         }
     }
@@ -217,7 +217,7 @@ contract Controller is ControllerStorage, Ownable, HasWorkers {
         @param number Amount of user wallets
     */
     function createWallets(uint256 number) public onlyWorker returns (bool) {
-        for (uint256 i = 0; i &lt; number; i++) {
+        for (uint256 i = 0; i < number; i++) {
             emit CreatedUserWallet(new WalletProxy());
         }
 
@@ -252,7 +252,7 @@ contract Controller is ControllerStorage, Ownable, HasWorkers {
         
         Wallet wallet;
 
-        for (uint256 i = 0; i &lt; size; i++) {
+        for (uint256 i = 0; i < size; i++) {
             wallet = wallets[i];
             balance = wallet.balance;
             
@@ -296,7 +296,7 @@ contract Controller is ControllerStorage, Ownable, HasWorkers {
         uint256 balance;
         Wallet wallet;
 
-        for (uint256 i = 0; i &lt; size; i++) {
+        for (uint256 i = 0; i < size; i++) {
             wallet = wallets[i];
             balance = token.balanceOf(wallet);
             

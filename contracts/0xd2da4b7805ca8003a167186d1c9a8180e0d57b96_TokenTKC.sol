@@ -6,15 +6,15 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract TokenTKC {
     
-    string public name = &quot;iTech Token&quot;;
-    string public symbol = &quot;TKC&quot;;
+    string public name = "iTech Token";
+    string public symbol = "TKC";
     uint256 public decimals = 18;
     
     uint256 public totalSupply = 100*1000*1000*(10**decimals);
 
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -39,9 +39,9 @@ contract TokenTKC {
         
         require(_to != 0x0);
         
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         
@@ -75,7 +75,7 @@ contract TokenTKC {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     
+        require(_value <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -122,7 +122,7 @@ contract TokenTKC {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);
@@ -138,8 +138,8 @@ contract TokenTKC {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              

@@ -25,10 +25,10 @@ pragma solidity ^0.4.11;
 // CATCrowdsale
 //
 
-// Date.now()/1000+3600,  Date.now()/1000+3600*2, 4700, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;
-// 1508896220, 1509899832, 4700, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;, &quot;0x00A617f5bE726F92B29985bB4c1850630d907db4&quot;
-// 1507909923, 1508514723, 4700, &quot;0x0b8e27013dfA822bF1cc01b6Ae394B76DA230a03&quot;, &quot;0x5F85A0e9DD5Bd2F11a54b208427b286e9B0B519F&quot;, &quot;0x7F781d08FD165DBEE1D573Bdb79c43045442eac4&quot;, &quot;0x98bf67b6a03DA7AcF2Ee7348FdB3F9c96425a130&quot;
-// 1509120669, 1519120669, 3000, &quot;0x06E58BD5DeEC639d9a79c9cD3A653655EdBef820&quot;, &quot;0x06E58BD5DeEC639d9a79c9cD3A653655EdBef820&quot;, &quot;0x06E58BD5DeEC639d9a79c9cD3A653655EdBef820&quot;
+// Date.now()/1000+3600,  Date.now()/1000+3600*2, 4700, "0x00A617f5bE726F92B29985bB4c1850630d907db4", "0x00A617f5bE726F92B29985bB4c1850630d907db4", "0x00A617f5bE726F92B29985bB4c1850630d907db4", "0x00A617f5bE726F92B29985bB4c1850630d907db4"
+// 1508896220, 1509899832, 4700, "0x00A617f5bE726F92B29985bB4c1850630d907db4", "0x00A617f5bE726F92B29985bB4c1850630d907db4", "0x00A617f5bE726F92B29985bB4c1850630d907db4", "0x00A617f5bE726F92B29985bB4c1850630d907db4"
+// 1507909923, 1508514723, 4700, "0x0b8e27013dfA822bF1cc01b6Ae394B76DA230a03", "0x5F85A0e9DD5Bd2F11a54b208427b286e9B0B519F", "0x7F781d08FD165DBEE1D573Bdb79c43045442eac4", "0x98bf67b6a03DA7AcF2Ee7348FdB3F9c96425a130"
+// 1509120669, 1519120669, 3000, "0x06E58BD5DeEC639d9a79c9cD3A653655EdBef820", "0x06E58BD5DeEC639d9a79c9cD3A653655EdBef820", "0x06E58BD5DeEC639d9a79c9cD3A653655EdBef820"
 
 /**
  * @title SafeMath
@@ -42,20 +42,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -196,7 +196,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -233,7 +233,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -262,7 +262,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -299,7 +299,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) public
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -391,10 +391,10 @@ contract PausableToken is StandardToken, Pausable {
 contract BTLToken is MintableToken, PausableToken {
     
     // Metadata
-    string public constant symbol = &quot;BTL&quot;;
-    string public constant name = &quot;BitClave Token&quot;;
+    string public constant symbol = "BTL";
+    string public constant name = "BitClave Token";
     uint8 public constant decimals = 18;
-    string public constant version = &quot;1.0&quot;;
+    string public constant version = "1.0";
 
     /**
     * @dev Override MintableTokenn.finishMinting() to add canMint modifier
@@ -412,10 +412,10 @@ contract BTLToken is MintableToken, PausableToken {
 contract CAToken is BTLToken, Destructible {
 
     // Metadata
-    string public constant symbol = &quot;testCAT&quot;;
-    string public constant name = &quot;testCAT&quot;;
+    string public constant symbol = "testCAT";
+    string public constant name = "testCAT";
     uint8 public constant decimals = 18;
-    string public constant version = &quot;1.0&quot;;
+    string public constant version = "1.0";
 
     // Overrided destructor
     function destroy() public onlyOwner {
@@ -469,9 +469,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -520,14 +520,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -551,7 +551,7 @@ contract PausableCrowdsale is Crowdsale, Pausable {
     // overriding Crowdsale#validPurchase to add extra paused logic
     // @return true if investors can buy at the moment
     function validPurchase() internal constant returns(bool) {
-        return super.validPurchase() &amp;&amp; !paused;
+        return super.validPurchase() && !paused;
     }
 
 }
@@ -598,8 +598,8 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     */
     function setBonusesForTimes(uint32[] times, uint32[] values) public onlyOwner {
         require(times.length == values.length);
-        for (uint i = 0; i + 1 &lt; times.length; i++) {
-            require(times[i] &lt; times[i+1]);
+        for (uint i = 0; i + 1 < times.length; i++) {
+            require(times[i] < times[i+1]);
         }
 
         BONUS_TIMES = times;
@@ -619,8 +619,8 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     */
     function setBonusesForAmounts(uint32[] amounts, uint32[] values) public onlyOwner {
         require(amounts.length == values.length);
-        for (uint i = 0; i + 1 &lt; amounts.length; i++) {
-            require(amounts[i] &gt; amounts[i+1]);
+        for (uint i = 0; i + 1 < amounts.length; i++) {
+            require(amounts[i] > amounts[i+1]);
         }
 
         BONUS_AMOUNTS = amounts;
@@ -659,10 +659,10 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     * @return bonus percentage scaled by 10
     */
     function computeTimeBonus() public constant returns(uint256) {
-        require(now &gt;= startTime);
+        require(now >= startTime);
 
-        for (uint i = 0; i &lt; BONUS_TIMES.length; i++) {
-            if (now.sub(startTime) &lt;= BONUS_TIMES[i]) {
+        for (uint i = 0; i < BONUS_TIMES.length; i++) {
+            if (now.sub(startTime) <= BONUS_TIMES[i]) {
                 return BONUS_TIMES_VALUES[i];
             }
         }
@@ -675,8 +675,8 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     * @return bonus percentage scaled by 10
     */
     function computeAmountBonus(uint256 usdValue) public constant returns(uint256) {
-        for (uint i = 0; i &lt; BONUS_AMOUNTS.length; i++) {
-            if (usdValue &gt;= BONUS_AMOUNTS[i]) {
+        for (uint i = 0; i < BONUS_AMOUNTS.length; i++) {
+            if (usdValue >= BONUS_AMOUNTS[i]) {
                 return BONUS_AMOUNTS_VALUES[i];
             }
         }
@@ -704,14 +704,14 @@ contract TokensCappedCrowdsale is Crowdsale {
     // @return true if investors can buy at the moment
     function validPurchase() internal constant returns(bool) {
         uint256 tokens = token.totalSupply().add(msg.value.mul(rate));
-        bool withinCap = tokens &lt;= tokensCap;
-        return super.validPurchase() &amp;&amp; withinCap;
+        bool withinCap = tokens <= tokensCap;
+        return super.validPurchase() && withinCap;
     }
 
     // overriding Crowdsale#hasEnded to add tokens cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns(bool) {
-        bool capReached = token.totalSupply() &gt;= tokensCap;
+        bool capReached = token.totalSupply() >= tokensCap;
         return super.hasEnded() || capReached;
     }
 
@@ -731,7 +731,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -787,8 +787,8 @@ contract CATCrowdsale is FinalizableCrowdsale, TokensCappedCrowdsale(CATCrowdsal
     */
     function setEndTime(uint256 _endTime) external onlyOwner {
         require(!isFinalized);
-        require(_endTime &gt;= startTime);
-        require(_endTime &gt;= now);
+        require(_endTime >= startTime);
+        require(_endTime >= now);
         endTime = _endTime;
     }
 
@@ -856,7 +856,7 @@ contract CATCrowdsale is FinalizableCrowdsale, TokensCappedCrowdsale(CATCrowdsal
         super.finalization();
 
         // Mint tokens up to CAP
-        if (token.totalSupply() &lt; tokensCap) {
+        if (token.totalSupply() < tokensCap) {
             uint tokens = tokensCap.sub(token.totalSupply());
             token.mint(remainingTokensWallet, tokens);
         }
@@ -908,10 +908,10 @@ contract CATCrowdsale is FinalizableCrowdsale, TokensCappedCrowdsale(CATCrowdsal
     */
     function mintTokens(address beneficiary, uint256 tokens) public onlyOwner {
         require(beneficiary != 0x0);
-        require(tokens &gt; 0);
-        require(now &lt;= endTime);                               // Crowdsale (without startTime check)
+        require(tokens > 0);
+        require(now <= endTime);                               // Crowdsale (without startTime check)
         require(!isFinalized);                                 // FinalizableCrowdsale
-        require(token.totalSupply().add(tokens) &lt;= tokensCap); // TokensCappedCrowdsale
+        require(token.totalSupply().add(tokens) <= tokensCap); // TokensCappedCrowdsale
         
         token.mint(beneficiary, tokens);
     }

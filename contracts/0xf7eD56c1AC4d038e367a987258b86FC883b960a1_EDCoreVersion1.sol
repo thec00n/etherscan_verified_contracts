@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -126,9 +126,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -136,7 +136,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -145,7 +145,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -161,7 +161,7 @@ contract PullPayment {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -172,7 +172,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -220,10 +220,10 @@ contract EDStructs {
     /**
      * @dev The main Dungeon struct. Every dungeon in the game is represented by this structure.
      * A dungeon is consists of an unlimited number of floors for your heroes to challenge, 
-     * the power level of a dungeon is encoded in the floorGenes. Some dungeons are in fact more &quot;challenging&quot; than others,
+     * the power level of a dungeon is encoded in the floorGenes. Some dungeons are in fact more "challenging" than others,
      * the secret formula for that is left for user to find out.
      * 
-     * Each dungeon also has a &quot;training area&quot;, heroes can perform trainings and upgrade their stat,
+     * Each dungeon also has a "training area", heroes can perform trainings and upgrade their stat,
      * and some dungeons are more effective in the training, which is also a secret formula!
      * 
      * When player challenge or do training in a dungeon, the fee will be collected as the dungeon rewards,
@@ -242,17 +242,17 @@ contract EDStructs {
         // 0: Active | 1: Transport Only | 2: Challenge Only | 3: Train Only | 4: InActive
         uint8 status;
         
-        // The dungeon&#39;s difficulty, the higher the difficulty, 
-        // normally, the &quot;rarer&quot; the seedGenes, the higher the diffculty,
+        // The dungeon's difficulty, the higher the difficulty, 
+        // normally, the "rarer" the seedGenes, the higher the diffculty,
         // and the higher the contribution fee it is to challenge, train, and transport to the dungeon,
         // the formula for the contribution fee is in DungeonChallenge and DungeonTraining contracts.
-        // A dungeon&#39;s difficulty never change.
+        // A dungeon's difficulty never change.
         uint8 difficulty;
         
-        // The dungeon&#39;s capacity, maximum number of players allowed to stay on this dungeon.
+        // The dungeon's capacity, maximum number of players allowed to stay on this dungeon.
         // The capacity of the newbie dungeon (Holyland) is set at 0 (which is infinity).
         // Using 16-bit unsigned integers can have a maximum of 65535 in capacity.
-        // A dungeon&#39;s capacity never change.
+        // A dungeon's capacity never change.
         uint16 capacity;
         
         // The current floor number, a dungeon is consists of an umlimited number of floors,
@@ -269,12 +269,12 @@ contract EDStructs {
         // The seed genes of the dungeon, it is used as the base gene for first floor, 
         // some dungeons are rarer and some are more common, the exact details are, 
         // of course, top secret of the game! 
-        // A dungeon&#39;s seedGenes never change.
+        // A dungeon's seedGenes never change.
         uint seedGenes;
         
         // The genes for current floor, it encodes the difficulty level of the current floor.
         // We considered whether to store the entire array of genes for all floors, but
-        // in order to save some precious gas we&#39;re willing to sacrifice some functionalities with that.
+        // in order to save some precious gas we're willing to sacrifice some functionalities with that.
         uint floorGenes;
         
     }
@@ -296,7 +296,7 @@ contract EDStructs {
         uint32 cooldownIndex;
         
         // The seed of the hero, the gene encodes the power level of the hero.
-        // This is another top secret of the game! Hero&#39;s gene can be upgraded via
+        // This is another top secret of the game! Hero's gene can be upgraded via
         // training in a dungeon.
         uint genes;
         
@@ -335,7 +335,7 @@ contract ERC721 {
      * it can get difficult to keep track of the individual tokens that a user may own. 
      * To do this, the contract keeps a record of the IDs of each token that each user owns.
      */
-    mapping(address =&gt; uint[]) public ownerTokens;
+    mapping(address => uint[]) public ownerTokens;
 
 }
 
@@ -350,12 +350,12 @@ contract DungeonTokenInterface is ERC721, EDStructs {
     /**
      * @dev Name of token.
      */
-    string public constant name = &quot;Dungeon&quot;;
+    string public constant name = "Dungeon";
     
     /**
      * @dev Symbol of token.
      */
-    string public constant symbol = &quot;DUNG&quot;;
+    string public constant symbol = "DUNG";
     
     /**
      * @dev An array containing the Dungeon struct, which contains all the dungeons in existance.
@@ -397,12 +397,12 @@ contract HeroTokenInterface is ERC721, EDStructs {
     /**
      * @dev Name of token.
      */
-    string public constant name = &quot;Hero&quot;;
+    string public constant name = "Hero";
     
     /**
      * @dev Symbol of token.
      */
-    string public constant symbol = &quot;HERO&quot;;
+    string public constant symbol = "HERO";
 
     /**
      * @dev An array containing the Hero struct, which contains all the heroes in existance.
@@ -413,7 +413,7 @@ contract HeroTokenInterface is ERC721, EDStructs {
     /**
      * @dev An external function that creates a new hero and stores it,
      *  only contract owners can create new token.
-     *  method doesn&#39;t do any checking and should only be called when the
+     *  method doesn't do any checking and should only be called when the
      *  input data is known to be valid.
      * @param _genes The gene of the new hero.
      * @param _owner The inital owner of this hero.
@@ -518,7 +518,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
     uint public transportationFeeMultiplier = 250 szabo;
     
     ///@dev All hero starts in the novice dungeon, also hero can only be recruited in novice dungoen.
-    uint public noviceDungeonId = 31; // &lt; dungeon ID 31 = Abyss
+    uint public noviceDungeonId = 31; // < dungeon ID 31 = Abyss
     
     /// @dev Amount of faith required to claim a portion of the grandConsolationRewards.
     uint public consolationRewardsRequiredFaith = 100;
@@ -534,7 +534,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
     uint public constant challengeFeeMultiplier = 1 finney;
     
     /**
-     * @dev The percentage for which successful challenger be rewarded of the dungeons&#39; accumulated rewards.
+     * @dev The percentage for which successful challenger be rewarded of the dungeons' accumulated rewards.
      *  The remaining rewards subtract dungeon master rewards and consolation rewards will be used as the base rewards for new floor.
      */
     uint public constant challengeRewardsPercent = 45;
@@ -586,27 +586,27 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
      *  The hero power will be auto updated during next challenge/training for any player.
      *  Or calling the setTempHeroPower() public function directly.
      */
-    mapping(address =&gt; uint) playerToLastActionBlockNumber;
+    mapping(address => uint) playerToLastActionBlockNumber;
     uint tempSuccessTrainingHeroId;
     uint tempSuccessTrainingNewHeroGenes = 1; // value 1 is used as no pending update
     
     /// @dev The total accumulated consolidation jackpot / rewards amount.
-    uint public grandConsolationRewards = 168203010964693559; // &lt; migrated from previous contract
+    uint public grandConsolationRewards = 168203010964693559; // < migrated from previous contract
     
     /// @dev A mapping from token IDs to the address that owns them, the value can get by getPlayerDetails.
-    mapping(address =&gt; uint) playerToDungeonID;
+    mapping(address => uint) playerToDungeonID;
     
-    /// @dev A mapping from player address to the player&#39;s faith value, the value can get by getPlayerDetails.
-    mapping(address =&gt; uint) playerToFaith;
+    /// @dev A mapping from player address to the player's faith value, the value can get by getPlayerDetails.
+    mapping(address => uint) playerToFaith;
 
     /**
      * @dev A mapping from owner address to a boolean flag of whether the player recruited the first hero.
      *  Note that transferring a hero from other address do not count, the value can get by getPlayerDetails.
      */
-    mapping(address =&gt; bool) playerToFirstHeroRecruited;
+    mapping(address => bool) playerToFirstHeroRecruited;
 
     /// @dev A mapping from owner address to count of tokens that address owns, the value can get by getDungeonDetails.
-    mapping(uint =&gt; uint) dungeonIdToPlayerCount;
+    mapping(uint => uint) dungeonIdToPlayerCount;
     
     
     /* ======== EVENTS ======== */
@@ -632,7 +632,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
     function getHeroAttributes(uint _genes) public pure returns (uint[]) {
         uint[] memory attributes = new uint[](12);
         
-        for (uint i = 0; i &lt; 12; i++) {
+        for (uint i = 0; i < 12; i++) {
             attributes[11 - i] = _genes % 32;
             _genes /= 32 ** 4;
         }
@@ -679,7 +679,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
         // Calculate total equipment power.
         superRank = attributes[0];
         
-        for (uint i = 0; i &lt; 8; i++) {
+        for (uint i = 0; i < 8; i++) {
             uint equipment = attributes[i];
             equipmentPower += EQUIPMENT_POWERS[equipment];
             
@@ -690,19 +690,19 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
         }
         
         // Calculate total stats power.
-        for (uint j = 8; j &lt; 12; j++) {
+        for (uint j = 8; j < 12; j++) {
             // Stat power is gene number + 1.
             statsPower += attributes[j] + 1;
         }
         
         // Calculate Super/Ultra/Mega Power Boost.
-        isSuper = superRank &gt;= 16;
+        isSuper = superRank >= 16;
         
-        if (superRank &gt;= 28) { // Mega Hero
+        if (superRank >= 28) { // Mega Hero
             superBoost = (_dungeonDifficulty - 1) * MEGA_HERO_MULTIPLIER;
-        } else if (superRank &gt;= 24) { // Ultra Hero
+        } else if (superRank >= 24) { // Ultra Hero
             superBoost = (_dungeonDifficulty - 1) * ULTRA_HERO_MULTIPLIER;
-        } else if (superRank &gt;= 16) { // Super Hero
+        } else if (superRank >= 16) { // Super Hero
             superBoost = (_dungeonDifficulty - 1) * SUPER_HERO_MULTIPLIER;
         }
         
@@ -737,7 +737,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
         // Calculate total dungeon power.
         uint dungeonPower;
         
-        for (uint j = 0; j &lt; 12; j++) {
+        for (uint j = 0; j < 12; j++) {
             dungeonPower += EQUIPMENT_POWERS[_genes % 32];
             _genes /= 32 ** 4;
         }
@@ -764,7 +764,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
         // Compute all hero powers for further calculation.
         uint[] memory heroPowers = new uint[](heroCount);
         
-        for (uint i = 0; i &lt; heroCount; i++) {
+        for (uint i = 0; i < heroCount; i++) {
             uint heroId = heroTokenContract.ownerTokens(_address, i);
             uint genes;
             (,,, genes) = heroTokenContract.heroes(heroId);
@@ -776,9 +776,9 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
         uint curMax;
         uint curMaxIndex;
         
-        for (uint j; j &lt; 5; j++) {
-            for (uint k = 0; k &lt; heroPowers.length; k++) {
-                if (heroPowers[k] &gt; curMax) {
+        for (uint j; j < 5; j++) {
+            for (uint k = 0; k < heroPowers.length; k++) {
+                if (heroPowers[k] > curMax) {
                     curMax = heroPowers[k];
                     curMaxIndex = k;
                 }
@@ -891,7 +891,7 @@ contract EDBase is EjectableOwnable, Pausable, PullPayment, EDStructs {
      * @dev Throws if _dungeonId is not created yet.
      */
     modifier dungeonExists(uint _dungeonId) {
-        require(_dungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_dungeonId < dungeonTokenContract.totalSupply());
         _;
     }
     
@@ -908,7 +908,7 @@ contract EDTransportation is EDBase {
         require(playerToDungeonID[msg.sender] == noviceDungeonId || !playerToFirstHeroRecruited[msg.sender]);
         
         // Checks for payment, any exceeding funds will be transferred back to the player.
-        require(msg.value &gt;= recruitHeroFee);
+        require(msg.value >= recruitHeroFee);
         
         // ** STORAGE UPDATE **
         // Increment the accumulated rewards for the dungeon, 
@@ -918,7 +918,7 @@ contract EDTransportation is EDBase {
         // Calculate any excess funds and make it available to be withdrawed by the player.
         asyncSend(msg.sender, msg.value - recruitHeroFee);
         
-        // If it is the first time recruiting a hero, set the player&#39;s location to the novice dungeon.
+        // If it is the first time recruiting a hero, set the player's location to the novice dungeon.
         if (!playerToFirstHeroRecruited[msg.sender]) {
             // ** STORAGE UPDATE **
             dungeonIdToPlayerCount[noviceDungeonId]++;
@@ -944,9 +944,9 @@ contract EDTransportation is EDBase {
         uint difficulty;
         (,, difficulty,,,,,,) = dungeonTokenContract.dungeons(_destinationDungeonId);
         
-        // Disallow weaker user to transport to &quot;difficult&quot; dungeon.
+        // Disallow weaker user to transport to "difficult" dungeon.
         uint top5HeroesPower = calculateTop5HeroesPower(msg.sender, _destinationDungeonId);
-        require(top5HeroesPower &gt;= difficulty * 12);
+        require(top5HeroesPower >= difficulty * 12);
         
         // Checks for payment, any exceeding funds will be transferred back to the player.
         // The transportation fee is calculated by a base fee from transportationFeeMultiplier,
@@ -954,7 +954,7 @@ contract EDTransportation is EDBase {
         uint baseFee = difficulty * transportationFeeMultiplier;
         uint additionalFee = top5HeroesPower / 64 * transportationFeeMultiplier;
         uint requiredFee = baseFee + additionalFee;
-        require(msg.value &gt;= requiredFee);
+        require(msg.value >= requiredFee);
         
         // ** STORAGE UPDATE **
         // Increment the accumulated rewards for the dungeon.
@@ -972,10 +972,10 @@ contract EDTransportation is EDBase {
     /// @dev Internal function to assigns location of a player.
     function _transport(uint _originDungeonId, uint _destinationDungeonId) internal {
         // ** STORAGE UPDATE **
-        // Update the dungeons&#39; player count.
-        // Normally the player count of original dungeon will already be &gt; 0,
+        // Update the dungeons' player count.
+        // Normally the player count of original dungeon will already be > 0,
         // perform checking to avoid unexpected overflow
-        if (dungeonIdToPlayerCount[_originDungeonId] &gt; 0) {
+        if (dungeonIdToPlayerCount[_originDungeonId] > 0) {
             dungeonIdToPlayerCount[_originDungeonId]--;
         }
         
@@ -997,7 +997,7 @@ contract EDTransportation is EDBase {
      *  Also check if the capacity of the destination dungeon is reached.
      */
     modifier dungeonCanTransport(uint _destinationDungeonId) {
-        require(_destinationDungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_destinationDungeonId < dungeonTokenContract.totalSupply());
         
         uint status;
         uint capacity;
@@ -1006,14 +1006,14 @@ contract EDTransportation is EDBase {
         
         // Check if the capacity of the destination dungeon is reached.
         // Capacity 0 = Infinity
-        require(capacity == 0 || dungeonIdToPlayerCount[_destinationDungeonId] &lt; capacity);
+        require(capacity == 0 || dungeonIdToPlayerCount[_destinationDungeonId] < capacity);
         _;
     }
     
     /// @dev Throws if player did recruit first hero yet.
     modifier playerAllowedToTransport() {
         // Note that we check playerToFirstHeroRecruited instead of heroTokenContract.balanceOf
-        // in order to prevent &quot;capacity attack&quot;.
+        // in order to prevent "capacity attack".
         require(playerToFirstHeroRecruited[msg.sender]);
         _;
     }
@@ -1044,7 +1044,7 @@ contract EDChallenge is EDTransportation {
         
         // Checks for payment, any exceeding funds will be transferred back to the player.
         uint requiredFee = difficulty * challengeFeeMultiplier;
-        require(msg.value &gt;= requiredFee);
+        require(msg.value >= requiredFee);
         
         // ** STORAGE UPDATE **
         // Increment the accumulated rewards for the dungeon.
@@ -1069,13 +1069,13 @@ contract EDChallenge is EDTransportation {
         // Cooldown period is FLOOR(challenge count / 2) ^ 2 minutes
         uint cooldownPeriod = (cooldownIndex / 2) ** 2 * 1 minutes;
         
-        if (cooldownPeriod &gt; 100 minutes) {
+        if (cooldownPeriod > 100 minutes) {
             cooldownPeriod = 100 minutes;
         }
         
         uint cooldownEndTime = cooldownStartTime + cooldownPeriod;
         
-        if (cooldownEndTime &lt;= now) {
+        if (cooldownEndTime <= now) {
             return 0;
         } else {
             return cooldownEndTime - now;
@@ -1109,7 +1109,7 @@ contract EDChallenge is EDTransportation {
             
             consolationRewards = rewards * consolationRewardsPercent / 100;
             
-            if (floorNumber &lt; rushTimeFloorCount) { // rush time right after prepration period
+            if (floorNumber < rushTimeFloorCount) { // rush time right after prepration period
                 successRewards = rewards * rushTimeChallengeRewardsPercent / 100;
                 
                 // The dungeon rewards for new floor as total rewards - challenge rewards - devleoper fee.
@@ -1120,7 +1120,7 @@ contract EDChallenge is EDTransportation {
             }
             
             // TRIPLE CONFIRM sanity check.
-            require(successRewards + masterRewards + consolationRewards + newRewards &lt;= rewards);
+            require(successRewards + masterRewards + consolationRewards + newRewards <= rewards);
             
             // ** STORAGE UPDATE **
             // Add the consolation rewards to grandConsolationRewards.
@@ -1152,7 +1152,7 @@ contract EDChallenge is EDTransportation {
         
         uint floorPower = getDungeonPower(_floorGenes);
         
-        return heroPower &gt; floorPower;
+        return heroPower > floorPower;
     }
     
     /// @dev Split the challenge function into multiple parts because of stack too deep error.
@@ -1164,12 +1164,12 @@ contract EDChallenge is EDTransportation {
         // Calculate the new floor gene.
         uint floorPower = getDungeonPower(floorGenes);
         
-        // Call the external closed source secret function that determines the resulting floor &quot;genes&quot;.
+        // Call the external closed source secret function that determines the resulting floor "genes".
         uint newFloorGenes = challengeFormulaContract.calculateResult(floorGenes, seedGenes);
         uint newFloorPower = getDungeonPower(newFloorGenes);
         
         // If the power decreased, rollback to the current floor genes.
-        if (newFloorPower &lt; floorPower) {
+        if (newFloorPower < floorPower) {
             newFloorGenes = floorGenes;
         }
         
@@ -1185,7 +1185,7 @@ contract EDChallenge is EDTransportation {
      *  Also check if the dungeon is not in preparation period.
      */
     modifier dungeonCanChallenge(uint _dungeonId) {
-        require(_dungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_dungeonId < dungeonTokenContract.totalSupply());
         
         uint creationTime;
         uint status;
@@ -1196,7 +1196,7 @@ contract EDChallenge is EDTransportation {
         require(playerToDungeonID[msg.sender] == _dungeonId);
         
         // Check if the dungeon is not in preparation period.
-        require(creationTime + dungeonPreparationTime &lt;= now);
+        require(creationTime + dungeonPreparationTime <= now);
         _;
     }
     
@@ -1213,7 +1213,7 @@ contract EDChallenge is EDTransportation {
         require(cooldownRemainingTime == 0);
         
         // Prevent player to perform training and challenge in the same block to avoid bot exploit.
-        require(block.number &gt; playerToLastActionBlockNumber[msg.sender]);
+        require(block.number > playerToLastActionBlockNumber[msg.sender]);
         _;
     }
     
@@ -1249,7 +1249,7 @@ contract EDTraining is EDChallenge {
      *  1: weapon | 2: shield | 3: armor | 4: shoe | 5: helmet | 6: gloves | 7: belt | 8: shawl
      */
     function trainEquipment(uint _dungeonId, uint _heroId, uint _equipmentIndex) whenNotPaused dungeonCanTrain(_dungeonId) heroAllowedToTrain(_heroId) external payable {
-        require(_equipmentIndex &lt;= 8);
+        require(_equipmentIndex <= 8);
         
         _train(_dungeonId, _heroId, _equipmentIndex, 1);
     }
@@ -1278,29 +1278,29 @@ contract EDTraining is EDChallenge {
         uint floorGenes;
         (creationTime,, difficulty,, floorNumber,, rewards, seedGenes, floorGenes) = dungeonTokenContract.dungeons(_dungeonId);
         
-        // Check for _trainingTimes abnormality, we probably won&#39;t have any feature that train a hero 10 times with a single call.
-        require(_trainingTimes &lt; 10);
+        // Check for _trainingTimes abnormality, we probably won't have any feature that train a hero 10 times with a single call.
+        require(_trainingTimes < 10);
         
         // Checks for payment, any exceeding funds will be transferred back to the player.
         uint requiredFee;
         
         // Calculate the required training fee.
-        if (now &lt; creationTime + dungeonPreparationTime) {
+        if (now < creationTime + dungeonPreparationTime) {
             // Apply preparation period discount. 
-            if (_equipmentIndex &gt; 0) { // train specific equipments
+            if (_equipmentIndex > 0) { // train specific equipments
                 requiredFee = difficulty * preparationPeriodEquipmentTrainingFeeMultiplier * _trainingTimes;
             } else { // train all attributes
                 requiredFee = difficulty * preparationPeriodTrainingFeeMultiplier * _trainingTimes;
             }
         } else {
-            if (_equipmentIndex &gt; 0) { // train specific equipments
+            if (_equipmentIndex > 0) { // train specific equipments
                 requiredFee = difficulty * equipmentTrainingFeeMultiplier * _trainingTimes;
             } else { // train all attributes
                 requiredFee = difficulty * trainingFeeMultiplier * _trainingTimes;
             }
         }
         
-        require(msg.value &gt;= requiredFee);
+        require(msg.value >= requiredFee);
         
         // Get the hero gene.
         uint heroGenes;
@@ -1339,7 +1339,7 @@ contract EDTraining is EDChallenge {
 
         // Set the new hero genes if updated (sometimes there is no power increase during equipment forging).
         if (newHeroGenes != _heroGenes) {
-            if (newHeroPower &gt;= 256) {
+            if (newHeroPower >= 256) {
                 // Do not update immediately to prevent deterministic training exploit.
                 tempSuccessTrainingHeroId = _heroId;
                 tempSuccessTrainingNewHeroGenes = newHeroGenes;
@@ -1352,7 +1352,7 @@ contract EDTraining is EDChallenge {
         
         // Training is successful only when power increase, changing another equipment with same power is considered failure
         // and faith will be given accordingly.
-        bool success = newHeroPower &gt; heroPower;
+        bool success = newHeroPower > heroPower;
         
         if (!success) {
             // Handle training failure - consolation rewards mechanics.
@@ -1379,21 +1379,21 @@ contract EDTraining is EDChallenge {
         
         // Train the hero multiple times according to _trainingTimes, 
         // each time if the resulting power is larger, update new hero power.
-        for (uint i = 0; i &lt; _trainingTimes; i++) {
-            // Call the external closed source secret function that determines the resulting hero &quot;genes&quot;.
+        for (uint i = 0; i < _trainingTimes; i++) {
+            // Call the external closed source secret function that determines the resulting hero "genes".
             uint tmpHeroGenes = trainingFormulaContract.calculateResult(newHeroGenes, _floorGenes, _equipmentIndex);
             
             uint tmpHeroPower;
             bool tmpIsSuper;
             (tmpHeroPower,,, tmpIsSuper,,) = getHeroPower(tmpHeroGenes, _dungeonDifficulty);
             
-            if (tmpHeroPower &gt; newHeroPower) {
+            if (tmpHeroPower > newHeroPower) {
                 // Prevent Super Hero downgrade.
-                if (!(newIsSuper &amp;&amp; !tmpIsSuper)) {
+                if (!(newIsSuper && !tmpIsSuper)) {
                     newHeroGenes = tmpHeroGenes;
                     newHeroPower = tmpHeroPower;
                 }
-            } else if (_equipmentIndex &gt; 0 &amp;&amp; tmpHeroPower == newHeroPower &amp;&amp; tmpHeroGenes != newHeroGenes) {
+            } else if (_equipmentIndex > 0 && tmpHeroPower == newHeroPower && tmpHeroGenes != newHeroGenes) {
                 // Allow Equipment Forging to replace current requipemnt with a same power equipment.
                 // The training is considered failed (faith will be given, but the equipment will change).
                 newHeroGenes = tmpHeroGenes;
@@ -1404,7 +1404,7 @@ contract EDTraining is EDChallenge {
     
     /// @dev Calculate and assign the appropriate faith value to the player.
     function _handleTrainingFailure(uint _equipmentIndex, uint _trainingTimes, uint _dungeonDifficulty) private {
-        // Failed training in a dungeon will add to player&#39;s faith value.
+        // Failed training in a dungeon will add to player's faith value.
         uint faith = playerToFaith[msg.sender];
         uint faithEarned;
         
@@ -1419,7 +1419,7 @@ contract EDTraining is EDChallenge {
         uint newFaith = faith + faithEarned;
         
         // Hitting the required amount in faith will get a proportion of grandConsolationRewards
-        if (newFaith &gt;= consolationRewardsRequiredFaith) {
+        if (newFaith >= consolationRewardsRequiredFaith) {
             uint consolationRewards = grandConsolationRewards * consolationRewardsClaimPercent / 100;
             
             // ** STORAGE UPDATE **
@@ -1446,7 +1446,7 @@ contract EDTraining is EDChallenge {
      *  Also check if the user is in the dungeon.
      */
     modifier dungeonCanTrain(uint _dungeonId) {
-        require(_dungeonId &lt; dungeonTokenContract.totalSupply());
+        require(_dungeonId < dungeonTokenContract.totalSupply());
         uint status;
         (,status,,,,,,,) = dungeonTokenContract.dungeons(_dungeonId);
         require(status == 0 || status == 3);
@@ -1463,7 +1463,7 @@ contract EDTraining is EDChallenge {
         require(heroTokenContract.ownerOf(_heroId) == msg.sender);
         
         // Prevent player to perform training and challenge in the same block to avoid bot exploit.
-        require(block.number &gt; playerToLastActionBlockNumber[msg.sender]);
+        require(block.number > playerToLastActionBlockNumber[msg.sender]);
         _;
     }
     
@@ -1539,7 +1539,7 @@ contract EDCoreVersion1 is Destructible, EDTraining {
         faith = playerToFaith[_address];
         firstHeroRecruited = playerToFirstHeroRecruited[_address];
         
-        // If a player didn&#39;t recruit any hero yet, consider the player is in novice dungeon
+        // If a player didn't recruit any hero yet, consider the player is in novice dungeon
         if (firstHeroRecruited) {
             dungeonId = playerToDungeonID[_address];
         } else {
@@ -1560,14 +1560,14 @@ contract EDCoreVersion1 is Destructible, EDTraining {
         bool isReady, 
         uint playerCount
     ) {
-        require(_id &lt; dungeonTokenContract.totalSupply());
+        require(_id < dungeonTokenContract.totalSupply());
         
-        // Didn&#39;t get the &quot;floorCreationTime&quot; because of Stack Too Deep error.
+        // Didn't get the "floorCreationTime" because of Stack Too Deep error.
         (creationTime, status, difficulty, capacity,,,,,) = dungeonTokenContract.dungeons(_id);
         
         // Dungeon is ready to be challenged (not in preparation mode).
         owner = dungeonTokenContract.ownerOf(_id);
-        isReady = creationTime + dungeonPreparationTime &lt;= now;
+        isReady = creationTime + dungeonPreparationTime <= now;
         playerCount = dungeonIdToPlayerCount[_id];
     }
     
@@ -1582,9 +1582,9 @@ contract EDCoreVersion1 is Destructible, EDTraining {
         uint seedGenes, 
         uint floorGenes
     ) {
-        require(_id &lt; dungeonTokenContract.totalSupply());
+        require(_id < dungeonTokenContract.totalSupply());
         
-        // Didn&#39;t get the &quot;floorCreationTime&quot; because of Stack Too Deep error.
+        // Didn't get the "floorCreationTime" because of Stack Too Deep error.
         (,,,, floorNumber, floorCreationTime, rewards, seedGenes, floorGenes) = dungeonTokenContract.dungeons(_id);
     }
 
@@ -1601,7 +1601,7 @@ contract EDCoreVersion1 is Destructible, EDTraining {
         bool isReady, 
         uint cooldownRemainingTime
     ) {
-        require(_id &lt; heroTokenContract.totalSupply());
+        require(_id < heroTokenContract.totalSupply());
 
         (creationTime, cooldownStartTime, cooldownIndex, genes) = heroTokenContract.heroes(_id);
         
@@ -1620,7 +1620,7 @@ contract EDCoreVersion1 is Destructible, EDTraining {
      */
     function migrateDungeon(uint _id, uint _playerCount) external {
         // Migration will be finished before maintenance period ends, tx.origin is used within a short period only.
-        require(now &lt; 1520694000 &amp;&amp; tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);
+        require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);
         
         dungeonIdToPlayerCount[_id] = _playerCount;
     }
@@ -1630,15 +1630,15 @@ contract EDCoreVersion1 is Destructible, EDTraining {
      */
     function migratePlayer(address _address, uint _ownerDungeonId, uint _payment, uint _faith) external {
         // Migration will be finished before maintenance period ends, tx.origin is used within a short period only.
-        require(now &lt; 1520694000 &amp;&amp; tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);
+        require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);
         
         playerToDungeonID[_address] = _ownerDungeonId;
         
-        if (_payment &gt; 0) {
+        if (_payment > 0) {
             asyncSend(_address, _payment);
         }
         
-        if (_faith &gt; 0) {
+        if (_faith > 0) {
             playerToFaith[_address] = _faith;
         }
         

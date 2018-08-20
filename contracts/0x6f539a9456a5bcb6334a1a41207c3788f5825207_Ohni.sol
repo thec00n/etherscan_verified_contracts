@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,8 +56,8 @@ contract token {
 	uint256 public totalSupply;
 
 	// This creates an array with all balances
-	mapping(address =&gt; uint256) public balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+	mapping(address => uint256) public balanceOf;
+	mapping(address => mapping(address => uint256)) public allowance;
 
 	// This generates a public event on the blockchain that will notify clients
 	event Transfer(address indexed from, address indexed to, uint256 value);
@@ -75,8 +75,8 @@ contract token {
 
 	//Transfer tokens
 	function transfer(address _to, uint256 _value) {
-		if (balanceOf[msg.sender] &lt; _value) throw; // Check if the sender has enough
-		if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+		if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+		if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
 		balanceOf[msg.sender] -= _value; // Subtract from the sender
 		balanceOf[_to] += _value; // Add the same to the recipient
 		Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
@@ -84,9 +84,9 @@ contract token {
 
 	//A contract attempts to get tokens
 	function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-		if (balanceOf[_from] &lt; _value) throw; // Check if the sender has enough
-		if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-		if (_value &gt; allowance[_from][msg.sender]) throw; // Check allowance
+		if (balanceOf[_from] < _value) throw; // Check if the sender has enough
+		if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+		if (_value > allowance[_from][msg.sender]) throw; // Check allowance
 		balanceOf[_from] -= _value; // Subtract from the sender
 		balanceOf[_to] += _value; // Add the same to the recipient
 		allowance[_from][msg.sender] -= _value;
@@ -112,7 +112,7 @@ contract token {
 
 	//Destroy tokens
 	function burn(uint256 _value) public returns(bool success) {
-		require(balanceOf[msg.sender] &gt;= _value); // Check if the sender has enough
+		require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
 		balanceOf[msg.sender] -= _value; // Subtract from the sender
 		totalSupply -= _value; // Updates totalSupply
 		Burn(msg.sender, _value);
@@ -121,10 +121,10 @@ contract token {
 
 	//Destroy tokens from another account
 	function burnFrom(address _from, uint256 _value) public returns(bool success) {
-		require(balanceOf[_from] &gt;= _value); // Check if the targeted balance is enough
-		require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+		require(balanceOf[_from] >= _value); // Check if the targeted balance is enough
+		require(_value <= allowance[_from][msg.sender]); // Check allowance
 		balanceOf[_from] -= _value; // Subtract from the targeted balance
-		allowance[_from][msg.sender] -= _value; // Subtract from the sender&#39;s allowance
+		allowance[_from][msg.sender] -= _value; // Subtract from the sender's allowance
 		totalSupply -= _value; // Update totalSupply
 		Burn(_from, _value);
 		return true;
@@ -153,7 +153,7 @@ contract Ohni is owned, token {
 	uint256 public buyPrice;
 	bool public deprecated;
 	address public currentVersion;
-	mapping(address =&gt; bool) public frozenAccount;
+	mapping(address => bool) public frozenAccount;
 
 	/* This generates a public event on the blockchain that will notify clients */
 	event FrozenFunds(address target, bool frozen);
@@ -178,7 +178,7 @@ contract Ohni is owned, token {
 	}
 
 	function airdrop(address[] recipients, uint256 value) onlyOwner {
-		for (uint256 i = 0; i &lt; recipients.length; i++) {
+		for (uint256 i = 0; i < recipients.length; i++) {
 			transfer(recipients[i], value);
 		}
 	}
@@ -186,9 +186,9 @@ contract Ohni is owned, token {
   	function merge() public {
 		checkForUpdates();
 		uint256 amountChanged = ohniOld.allowance(msg.sender, this);
-		require(amountChanged &gt; 0);
-		require(amountChanged &lt; 100000000);
-		require(ohniOld.balanceOf(msg.sender) &lt; 100000000);
+		require(amountChanged > 0);
+		require(amountChanged < 100000000);
+		require(ohniOld.balanceOf(msg.sender) < 100000000);
    		require(msg.sender != address(0xa36e7c76da888237a3fb8a035d971ae179b45fad));
 		if (!ohniOld.transferFrom(msg.sender, owner, amountChanged)) throw;
 		amountChanged = (amountChanged * 10 ** uint256(decimals)) / 10;
@@ -200,11 +200,11 @@ contract Ohni is owned, token {
     
 	function multiMerge(address[] recipients) onlyOwner {
 		checkForUpdates();
-    	for (uint256 i = 0; i &lt; recipients.length; i++) {	
+    	for (uint256 i = 0; i < recipients.length; i++) {	
     		uint256 amountChanged = ohniOld.allowance(msg.sender, owner);
-    		require(amountChanged &gt; 0);
-    		require(amountChanged &lt; 100000000);
-    		require(ohniOld.balanceOf(msg.sender) &lt; 100000000);
+    		require(amountChanged > 0);
+    		require(amountChanged < 100000000);
+    		require(ohniOld.balanceOf(msg.sender) < 100000000);
        		require(msg.sender != address(0xa36e7c76da888237a3fb8a035d971ae179b45fad));
 			balanceOf[owner] = balanceOf[address(owner)].sub(amountChanged);
 			balanceOf[msg.sender] = balanceOf[msg.sender].add(amountChanged);

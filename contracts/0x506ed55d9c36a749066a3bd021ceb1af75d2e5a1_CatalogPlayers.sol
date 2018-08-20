@@ -3,12 +3,12 @@ pragma solidity ^0.4.16;
 contract SafeMath {
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -294,7 +294,7 @@ contract CatalogPlayers is FMWorldAccessControl
 
     }
 
-    mapping(uint256 =&gt; mapping(uint256 =&gt; boxPlayer)) public boxPlayers;
+    mapping(uint256 => mapping(uint256 => boxPlayer)) public boxPlayers;
 
     function newClassPlayer(
         uint256 _league,

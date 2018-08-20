@@ -2,19 +2,19 @@ pragma solidity ^0.4.11;
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -28,7 +28,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -146,8 +146,8 @@ contract ICOBuyer is Ownable {
 
   // Buys tokens in the crowdsale and rewards the caller, callable by anyone.
   function buyICO() onlyExecutorOrOwner {
-    // Short circuit to save gas if the earliest buy time hasn&#39;t been reached.
-    if (getBlockNumber() &lt; icoStartBlock) return;
+    // Short circuit to save gas if the earliest buy time hasn't been reached.
+    if (getBlockNumber() < icoStartBlock) return;
     // Return if no balance
     if (this.balance == 0) return;
 

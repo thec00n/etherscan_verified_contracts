@@ -37,9 +37,9 @@ contract DynamicCeiling {
 
 contract StatusBuyer {
   // Store the amount of ETH deposited by each account.
-  mapping (address =&gt; uint256) public deposits;
+  mapping (address => uint256) public deposits;
   // Track how much SNT each account would have been able to purchase on their own.
-  mapping (address =&gt; uint256) public simulated_snt;
+  mapping (address => uint256) public simulated_snt;
   // Bounty for executing buy.
   uint256 public bounty;
   // Track whether the contract has bought tokens yet.
@@ -56,16 +56,16 @@ contract StatusBuyer {
   
   // Withdraws all ETH/SNT owned by the user in the ratio currently owned by the contract.
   function withdraw() {
-    // Store the user&#39;s deposit prior to withdrawal in a temporary variable.
+    // Store the user's deposit prior to withdrawal in a temporary variable.
     uint256 user_deposit = deposits[msg.sender];
-    // Update the user&#39;s deposit prior to sending ETH to prevent recursive call.
+    // Update the user's deposit prior to sending ETH to prevent recursive call.
     deposits[msg.sender] = 0;
     // Retrieve current ETH balance of contract (less the bounty).
     uint256 contract_eth_balance = this.balance - bounty;
     // Retrieve current SNT balance of contract.
     uint256 contract_snt_balance = token.balanceOf(address(this));
     // Calculate total SNT value of ETH and SNT owned by the contract.
-    // 1 ETH Wei -&gt; 10000 SNT Wei
+    // 1 ETH Wei -> 10000 SNT Wei
     uint256 contract_value = (contract_eth_balance * 10000) + contract_snt_balance;
     // Calculate amount of ETH to withdraw.
     uint256 eth_amount = (user_deposit * contract_eth_balance * 10000) / contract_value;
@@ -74,7 +74,7 @@ contract StatusBuyer {
     // No fee for withdrawing if user would have made it into the crowdsale alone.
     uint256 fee = 0;
     // 1% fee on portion of tokens user would not have been able to buy alone.
-    if (simulated_snt[msg.sender] &lt; snt_amount) {
+    if (simulated_snt[msg.sender] < snt_amount) {
       fee = (snt_amount - simulated_snt[msg.sender]) / 100;
     }
     // Send the funds.  Throws on failure to prevent loss of funds.
@@ -94,9 +94,9 @@ contract StatusBuyer {
   // Allow users to simulate entering the crowdsale to avoid the fee.  Callable by anyone.
   function simulate_ico() {
     // Limit maximum gas price to the same value as the Status ICO (50 GWei).
-    if (tx.gasprice &gt; sale.maxGasPrice()) throw;
+    if (tx.gasprice > sale.maxGasPrice()) throw;
     // Restrict until after the ICO has started.
-    if (block.number &lt; sale.startBlock()) throw;
+    if (block.number < sale.startBlock()) throw;
     if (dynamic.revealedCurves() == 0) throw;
     // Extract the buy limit and rate-limiting slope factor of the current curve/cap.
     uint256 limit;
@@ -105,8 +105,8 @@ contract StatusBuyer {
     // Retrieve amount of ETH the ICO has collected so far.
     uint256 totalNormalCollected = sale.totalNormalCollected();
     // Verify the ICO is not currently at a cap, waiting for a reveal.
-    if (limit &lt;= totalNormalCollected) throw;
-    // Add the maximum contributable amount to the user&#39;s simulated SNT balance.
+    if (limit <= totalNormalCollected) throw;
+    // Add the maximum contributable amount to the user's simulated SNT balance.
     simulated_snt[msg.sender] += ((limit - totalNormalCollected) / slopeFactor);
   }
   
@@ -117,7 +117,7 @@ contract StatusBuyer {
     // Record that the contract has bought tokens first to prevent recursive call.
     bought_tokens = true;
     // Transfer all the funds (less the bounty) to the Status ICO contract 
-    // to buy tokens.  Throws if the crowdsale hasn&#39;t started yet or has 
+    // to buy tokens.  Throws if the crowdsale hasn't started yet or has 
     // already completed, preventing loss of funds.
     sale.proxyPayment.value(this.balance - bounty)(address(this));
     // Send the user their bounty for buying tokens for the contract.
@@ -126,22 +126,22 @@ contract StatusBuyer {
   
   // A helper function for the default function, allowing contracts to interact.
   function default_helper() payable {
-    // Only allow deposits if the contract hasn&#39;t already purchased the tokens.
+    // Only allow deposits if the contract hasn't already purchased the tokens.
     if (!bought_tokens) {
       // Update records of deposited ETH to include the received amount.
       deposits[msg.sender] += msg.value;
-      // Block each user from contributing more than 30 ETH.  No whales!  &gt;:C
-      if (deposits[msg.sender] &gt; 30 ether) throw;
+      // Block each user from contributing more than 30 ETH.  No whales!  >:C
+      if (deposits[msg.sender] > 30 ether) throw;
     }
     else {
       // Reject ETH sent after the contract has already purchased tokens.
       if (msg.value != 0) throw;
-      // If the ICO isn&#39;t over yet, simulate entering the crowdsale.
+      // If the ICO isn't over yet, simulate entering the crowdsale.
       if (sale.finalizedBlock() == 0) {
         simulate_ico();
       }
       else {
-        // Withdraw user&#39;s funds if they sent 0 ETH to the contract after the ICO.
+        // Withdraw user's funds if they sent 0 ETH to the contract after the ICO.
         withdraw();
       }
     }

@@ -14,7 +14,7 @@ contract token is owned{
     uint8 public decimals = 10;  
     uint256 public totalSupply; 
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);  
     event Burn(address indexed from, uint256 value);  
@@ -33,8 +33,8 @@ contract token is owned{
     function _transfer(address _from, address _to, uint256 _value) internal {
 
       require(_to != 0x0); 
-      require(balanceOf[_from] &gt;= _value); 
-      require(balanceOf[_to] + _value &gt; balanceOf[_to]); 
+      require(balanceOf[_from] >= _value); 
+      require(balanceOf[_to] + _value > balanceOf[_to]); 
       
       uint previousBalances = balanceOf[_from] + balanceOf[_to]; 
       balanceOf[_from] -= _value; 
@@ -48,7 +48,7 @@ contract token is owned{
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
         
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
 
 		balanceOf[msg.sender] -= _value; 
         totalSupply -= _value; 
@@ -66,7 +66,7 @@ contract MyAdvancedToken is token {
     uint public deadline = 0; 
     uint public fundingGoal = 0;  
 
-	mapping (address =&gt; bool) public frozenAccount; 
+	mapping (address => bool) public frozenAccount; 
     
     event FrozenFunds(address target, bool frozen); 
 	event FundTransfer(address _backer, uint _amount, bool _isContribution); 
@@ -77,8 +77,8 @@ contract MyAdvancedToken is token {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0); 
-        require (balanceOf[_from] &gt; _value); 
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_from] > _value); 
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         require(!frozenAccount[_from]); 
         require(!frozenAccount[_to]);
         
@@ -107,9 +107,9 @@ contract MyAdvancedToken is token {
     }
 
 	function check_status() internal {
-	  if (deadline &gt;0 &amp;&amp; now &gt;= deadline)
+	  if (deadline >0 && now >= deadline)
 		  crowdFunding = false;
-	  if( fundingGoal &gt;0 &amp;&amp; amountRaised &gt; fundingGoal )
+	  if( fundingGoal >0 && amountRaised > fundingGoal )
 		  crowdFunding = false;
 
 	  if( crowdFunding == false ){
@@ -126,15 +126,15 @@ contract MyAdvancedToken is token {
 		
 		crowdFunding = bOpen;
 
-		if(totalEth &gt;0){
+		if(totalEth >0){
 			fundingGoal = totalEth;
 		}
-		if(durationInMinutes &gt;0)
+		if(durationInMinutes >0)
 			deadline = now + durationInMinutes * 1 minutes;
 	}
 	
     function getEth() public  onlyOwner { //ok
-		require( amountTotal &gt;= 100 );
+		require( amountTotal >= 100 );
         uint256 amt = amountTotal-100;
         owner.transfer(amt);
         emit FundTransfer(owner, amt, false);

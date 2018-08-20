@@ -67,12 +67,12 @@ contract E4Token is Token, E4RowRewards {
 	address e4_partner; // e4row  contract addresses
 
 
-	mapping (address =&gt; tokenAccount) holderAccounts ; // who holds how many tokens (high two bytes contain curPayId)
-	mapping (uint =&gt; address) holderIndexes ; // for iteration thru holder
+	mapping (address => tokenAccount) holderAccounts ; // who holds how many tokens (high two bytes contain curPayId)
+	mapping (uint => address) holderIndexes ; // for iteration thru holder
 	uint numAccounts;
 
 	uint partnerCredits; // amount partner (e4row)  has paid
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed; // approvals
+	mapping (address => mapping (address => uint256)) allowed; // approvals
 
 
 	uint maxMintableTokens; // ...
@@ -140,11 +140,11 @@ contract E4Token is Token, E4RowRewards {
  	 	settingsState = qState;
 
 		// this second test allows locking without changing other permanent settings
-		// WARNING, MAKE SURE YOUR&#39;RE HAPPY WITH ALL SETTINGS 
+		// WARNING, MAKE SURE YOUR'RE HAPPY WITH ALL SETTINGS 
 		// BEFORE LOCKING
 
 		if (qState == SettingStateValue.lockedRelease) {
-			StatEvent(&quot;Locking!&quot;);
+			StatEvent("Locking!");
 			return;
 		}
 
@@ -159,8 +159,8 @@ contract E4Token is Token, E4RowRewards {
 		// leave alloced on, leave num accounts
 		// cant delete them anyways
 	
-		if (totalTokensMinted &gt; 0) {
-			for (uint i = 0; i &lt; numAccounts; i++ ) {
+		if (totalTokensMinted > 0) {
+			for (uint i = 0; i < numAccounts; i++ ) {
 				address a = holderIndexes[i];
 				if (a != address(0)) {
 					holderAccounts[a].tokens = 0;
@@ -195,11 +195,11 @@ contract E4Token is Token, E4RowRewards {
 		developersGranted = false;
 		lastPayoutTime = 0;
 
-		if (this.balance &gt; 0) {
+		if (this.balance > 0) {
 			if (!owner.call.gas(rfGas).value(this.balance)())
-				StatEvent(&quot;ERROR!&quot;);
+				StatEvent("ERROR!");
 		}
-		StatEvent(&quot;ok&quot;);
+		StatEvent("ok");
 
 	}
 
@@ -212,12 +212,12 @@ contract E4Token is Token, E4RowRewards {
 	// ---------------------------------------------------
 	function getPayIdAndHeld(uint _tokHeld) internal returns (uint _payId, uint _held)
 	{
-		_payId = (_tokHeld / (2 ** 48)) &amp; 0xffff;
-		_held = _tokHeld &amp; 0xffffffffffff;
+		_payId = (_tokHeld / (2 ** 48)) & 0xffff;
+		_held = _tokHeld & 0xffffffffffff;
 	}
 	function getHeld(uint _tokHeld) internal  returns (uint _held)
 	{
-		_held = _tokHeld &amp; 0xffffffffffff;
+		_held = _tokHeld & 0xffffffffffff;
 	}
 	// ---------------------------------------------------
 	// allocate a new account by setting alloc to true
@@ -246,19 +246,19 @@ contract E4Token is Token, E4RowRewards {
 	function transfer(address _to, uint256 _value) returns (bool success) {
 
 		if ((msg.sender == developers) 
-			&amp;&amp;  (now &lt; vestTime)) {
-			//statEvent(&quot;Tokens not yet vested.&quot;);
+			&&  (now < vestTime)) {
+			//statEvent("Tokens not yet vested.");
 			return false;
 		}
 
 
-	        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-	        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+	        //Default assumes totalSupply can't be over max (2^256 - 1).
+	        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
 	        //Replace the if with this one instead.
-	        //if (holderAccounts[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; holderAccounts[_to]) {
+	        //if (holderAccounts[msg.sender] >= _value && balances[_to] + _value > holderAccounts[_to]) {
 
 		var (pidFrom, heldFrom) = getPayIdAndHeld(holderAccounts[msg.sender].tokens);
-	        if (heldFrom &gt;= _value &amp;&amp; _value &gt; 0) {
+	        if (heldFrom >= _value && _value > 0) {
 
 	            holderAccounts[msg.sender].tokens -= _value;
 
@@ -278,17 +278,17 @@ contract E4Token is Token, E4RowRewards {
     	function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
 
 		if ((_from == developers) 
-			&amp;&amp;  (now &lt; vestTime)) {
-			//statEvent(&quot;Tokens not yet vested.&quot;);
+			&&  (now < vestTime)) {
+			//statEvent("Tokens not yet vested.");
 			return false;
 		}
 
 
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 
 		var (pidFrom, heldFrom) = getPayIdAndHeld(holderAccounts[_from].tokens);
-        	if (heldFrom &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        	if (heldFrom >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 	            holderAccounts[_from].tokens -= _value;
 
 		    if (!holderAccounts[_to].alloced)
@@ -360,14 +360,14 @@ contract E4Token is Token, E4RowRewards {
 
 		uint nvalue = msg.value; // being careful to preserve msg.value
 		address npurchaser = msg.sender;
-		if (nvalue &lt; tokenPrice) 
+		if (nvalue < tokenPrice) 
 			throw;
 
 		uint qty = nvalue/tokenPrice;
 		updateIcoStatus();
 		if (icoStatus != IcoStatusValue.saleOpen) // purchase is closed
 			throw;
-		if (totalTokensMinted + qty &gt; maxMintableTokens)
+		if (totalTokensMinted + qty > maxMintableTokens)
 			throw;
 		if (!holderAccounts[npurchaser].alloced)
 			addAccount(npurchaser);
@@ -381,11 +381,11 @@ contract E4Token is Token, E4RowRewards {
 
 		if (totalTokensMinted == maxMintableTokens) {
 			icoStatus = IcoStatusValue.saleClosed;
-			//test unnecessary -  if (getNumTokensPurchased() &gt;= minIcoTokenGoal)
+			//test unnecessary -  if (getNumTokensPurchased() >= minIcoTokenGoal)
 			doDeveloperGrant();
-			StatEventI(&quot;Purchased,Granted&quot;, qty);
+			StatEventI("Purchased,Granted", qty);
 		} else
-			StatEventI(&quot;Purchased&quot;, qty);
+			StatEventI("Purchased", qty);
 
 	}
 
@@ -396,7 +396,7 @@ contract E4Token is Token, E4RowRewards {
 	function feePayment() payable  
 	{
 		if (msg.sender != e4_partner) {
-			StatEvent(&quot;forbidden&quot;);
+			StatEvent("forbidden");
 			return; // thank you
 		}
 		uint nfvalue = msg.value; // preserve value in case changed in dev grant
@@ -405,10 +405,10 @@ contract E4Token is Token, E4RowRewards {
 
 		holdoverBalance += nfvalue;
 		partnerCredits += nfvalue;
-		StatEventI(&quot;Payment&quot;, nfvalue);
+		StatEventI("Payment", nfvalue);
 
-		if (holdoverBalance &gt; payoutThreshold
-			|| payoutBalance &gt; 0)
+		if (holdoverBalance > payoutThreshold
+			|| payoutBalance > 0)
 			doPayout(maxPaysPer);
 		
 	
@@ -419,15 +419,15 @@ contract E4Token is Token, E4RowRewards {
 	// ---------------------------
 	function setE4RowPartner(address _addr) public	
 	{
-	// ONLY owner can set and ONLY ONCE! (unless &quot;unlocked&quot; debug)
+	// ONLY owner can set and ONLY ONCE! (unless "unlocked" debug)
 	// once its locked. ONLY ONCE!
 		if (msg.sender == owner) {
 			if ((e4_partner == address(0)) || (settingsState == SettingStateValue.debug)) {
 				e4_partner = _addr;
 				partnerCredits = 0;
-				//StatEventI(&quot;E4-Set&quot;, 0);
+				//StatEventI("E4-Set", 0);
 			} else {
-				StatEvent(&quot;Already Set&quot;);
+				StatEvent("Already Set");
 			}
 		}
 	}
@@ -451,7 +451,7 @@ contract E4Token is Token, E4RowRewards {
 			_games = uint(pe4.getNumGamesStarted());
 		} 
 		//else
-		//StatEvent(&quot;Empty E4&quot;);
+		//StatEvent("Empty E4");
 	}
 
 	// ------------------------------------------------
@@ -478,35 +478,35 @@ contract E4Token is Token, E4RowRewards {
 			|| icoStatus == IcoStatusValue.failed)
 			return;
 		else if (icoStatus == IcoStatusValue.anouncement) {
-			if (now &gt; fundingStart &amp;&amp; now &lt;= fundingDeadline) {
+			if (now > fundingStart && now <= fundingDeadline) {
 				icoStatus = IcoStatusValue.saleOpen;
 				
-			} else if (now &gt; fundingDeadline) {
+			} else if (now > fundingDeadline) {
 				// should not be here - this will eventually fail
 				icoStatus = IcoStatusValue.saleClosed;
 			}
 		} else {
 			uint numP = getNumTokensPurchased();
 			uint numG = getNumGames();
-			if ((now &gt; fundingDeadline &amp;&amp; numP &lt; minIcoTokenGoal)
-				|| (now &gt; usageDeadline &amp;&amp; numG &lt; minUsageGoal)) {
+			if ((now > fundingDeadline && numP < minIcoTokenGoal)
+				|| (now > usageDeadline && numG < minUsageGoal)) {
 				icoStatus = IcoStatusValue.failed;
-			} else if ((now &gt; fundingDeadline) // dont want to prevent more token sales
-				&amp;&amp; (numP &gt;= minIcoTokenGoal)
-				&amp;&amp; (numG &gt;= minUsageGoal)) {
+			} else if ((now > fundingDeadline) // dont want to prevent more token sales
+				&& (numP >= minIcoTokenGoal)
+				&& (numG >= minUsageGoal)) {
 				icoStatus = IcoStatusValue.succeeded; // hooray
 			}
 			if (icoStatus == IcoStatusValue.saleOpen
-				&amp;&amp; ((numP &gt;= maxMintableTokens)
-				|| (now &gt; fundingDeadline))) {
+				&& ((numP >= maxMintableTokens)
+				|| (now > fundingDeadline))) {
 					icoStatus = IcoStatusValue.saleClosed;
 				}
 		}
 
 		if (!developersGranted
-			&amp;&amp; icoStatus != IcoStatusValue.saleOpen 
-			&amp;&amp; icoStatus != IcoStatusValue.anouncement
-			&amp;&amp; getNumTokensPurchased() &gt;= minIcoTokenGoal) {
+			&& icoStatus != IcoStatusValue.saleOpen 
+			&& icoStatus != IcoStatusValue.anouncement
+			&& getNumTokensPurchased() >= minIcoTokenGoal) {
 				doDeveloperGrant(); // grant whenever status goes from open to anything...
 		}
 
@@ -526,17 +526,17 @@ contract E4Token is Token, E4RowRewards {
 
 		uint ntokens = getHeld(holderAccounts[nrequester].tokens);
 		if (icoStatus != IcoStatusValue.failed)
-			StatEvent(&quot;No Refund&quot;);
+			StatEvent("No Refund");
 		else if (ntokens == 0)
-			StatEvent(&quot;No Tokens&quot;);
+			StatEvent("No Tokens");
 		else {
 			uint nrefund = ntokens * tokenPrice;
-			if (getNumTokensPurchased() &gt;= minIcoTokenGoal)
+			if (getNumTokensPurchased() >= minIcoTokenGoal)
 				nrefund -= (nrefund /10); // only 90 percent b/c 10 percent payout
 
 			holderAccounts[developers].tokens += ntokens;
 			holderAccounts[nrequester].tokens = 0;
-			if (holderAccounts[nrequester].balance &gt; 0) {
+			if (holderAccounts[nrequester].balance > 0) {
 				// see above warning!!
 				if (!holderAccounts[developers].alloced) 
 					addAccount(developers);
@@ -546,7 +546,7 @@ contract E4Token is Token, E4RowRewards {
 
 			if (!nrequester.call.gas(rfGas).value(nrefund)())
 				throw;
-			//StatEventI(&quot;Refunded&quot;, nrefund);
+			//StatEventI("Refunded", nrefund);
 		}
 	}
 
@@ -556,8 +556,8 @@ contract E4Token is Token, E4RowRewards {
 	// payout rewards to all token holders
 	// use a second holding variable called PayoutBalance to do 
 	// the actual payout from b/c too much gas to iterate thru 
-	// each payee. Only start a new run at most once per &quot;minpayinterval&quot;.
-	// Its done in runs of &quot;_numPays&quot;
+	// each payee. Only start a new run at most once per "minpayinterval".
+	// Its done in runs of "_numPays"
 	// we use special coding for the holderAccounts to avoid a hack
 	// of getting paid at the top of the list then transfering tokens
 	// to another address at the bottom of the list.
@@ -569,12 +569,12 @@ contract E4Token is Token, E4RowRewards {
 		if (totalTokensMinted == 0)
 			return;
 
-		if ((holdoverBalance &gt; 0) 
-			&amp;&amp; (payoutBalance == 0)
-			&amp;&amp; (now &gt; (lastPayoutTime+minPayInterval))) {
+		if ((holdoverBalance > 0) 
+			&& (payoutBalance == 0)
+			&& (now > (lastPayoutTime+minPayInterval))) {
 			// start a new run
 			curPayoutId++;
-			if (curPayoutId &gt;= 32768)
+			if (curPayoutId >= 32768)
 				curPayoutId = 1;
 			lastPayoutTime = now;
 			payoutBalance = int(holdoverBalance);
@@ -582,22 +582,22 @@ contract E4Token is Token, E4RowRewards {
 			prOrigTokensMint = totalTokensMinted;
 			holdoverBalance = 0;
 			lastPayoutIndex = 0;
-			StatEventI(&quot;StartRun&quot;, uint(curPayoutId));
-		} else if (payoutBalance &gt; 0) {
+			StatEventI("StartRun", uint(curPayoutId));
+		} else if (payoutBalance > 0) {
 			// work down the p.o.b
 			uint nAmount;
 			uint nPerTokDistrib = uint(prOrigPayoutBal)/prOrigTokensMint;
 			uint paids = 0;
 			uint i; // intentional
-			for (i = lastPayoutIndex; (paids &lt; _numPays) &amp;&amp; (i &lt; numAccounts) &amp;&amp; (payoutBalance &gt; 0); i++ ) {
+			for (i = lastPayoutIndex; (paids < _numPays) && (i < numAccounts) && (payoutBalance > 0); i++ ) {
 				address a = holderIndexes[i];
 				if (a == address(0)) {
 					continue;
 				}
 				var (pid, held) = getPayIdAndHeld(holderAccounts[a].tokens);
-				if ((held &gt; 0) &amp;&amp; (pid != curPayoutId)) {
+				if ((held > 0) && (pid != curPayoutId)) {
 					nAmount = nPerTokDistrib * held;
-					if (int(nAmount) &lt;= payoutBalance){
+					if (int(nAmount) <= payoutBalance){
 						holderAccounts[a].balance += nAmount; 
 						holderAccounts[a].tokens = (curPayoutId * (2 ** 48)) | held;
 						payoutBalance -= int(nAmount);					
@@ -606,15 +606,15 @@ contract E4Token is Token, E4RowRewards {
 				}
 			}
 			lastPayoutIndex = i;
-			if (lastPayoutIndex &gt;= numAccounts || payoutBalance &lt;= 0) {
+			if (lastPayoutIndex >= numAccounts || payoutBalance <= 0) {
 				lastPayoutIndex = 0;
-				if (payoutBalance &gt; 0)
+				if (payoutBalance > 0)
 					holdoverBalance += uint(payoutBalance);// put back any leftovers
 				payoutBalance = 0;
-				StatEventI(&quot;RunComplete&quot;, uint(prOrigPayoutBal) );
+				StatEventI("RunComplete", uint(prOrigPayoutBal) );
 
 			} else {
-				StatEventI(&quot;PayRun&quot;, paids );
+				StatEventI("PayRun", paids );
 			}
 		}
 		
@@ -628,12 +628,12 @@ contract E4Token is Token, E4RowRewards {
 	{
 		if (holderAccounts[msg.sender].balance == 0) { 
 			//_amount = 0;
-			StatEvent(&quot;0 Balance&quot;);
+			StatEvent("0 Balance");
 			return;
 		} else {
 			if ((msg.sender == developers) 
-				&amp;&amp;  (now &lt; vestTime)) {
-				//statEvent(&quot;Tokens not yet vested.&quot;);
+				&&  (now < vestTime)) {
+				//statEvent("Tokens not yet vested.");
 				//_amount = 0;
 				return;
 			}
@@ -642,7 +642,7 @@ contract E4Token is Token, E4RowRewards {
 			holderAccounts[msg.sender].balance = 0; 
 			if (!msg.sender.call.gas(rwGas).value(_amount)())
 				throw;
-			//StatEventI(&quot;Paid&quot;, _amount);
+			//StatEventI("Paid", _amount);
 	
 		}
 
@@ -653,8 +653,8 @@ contract E4Token is Token, E4RowRewards {
 	// ----------------------------
 	function setOpGas(uint _rm, uint _rf, uint _rw)
 	{
-		if (msg.sender != owner &amp;&amp; msg.sender != developers) {
-			//StatEvent(&quot;only owner calls&quot;);
+		if (msg.sender != owner && msg.sender != developers) {
+			//StatEvent("only owner calls");
 			return;
 		} else {
 			rmGas = _rm;
@@ -693,15 +693,15 @@ contract E4Token is Token, E4RowRewards {
 	// ------------------------------------------------
 	function icoCheckup() public
 	{
-		if (msg.sender != owner &amp;&amp; msg.sender != developers)
+		if (msg.sender != owner && msg.sender != developers)
 			throw;
 
 		uint nmsgmask;
 		//nmsgmask = 0;
 	
 		if (icoStatus == IcoStatusValue.saleClosed) {
-			if ((getNumTokensPurchased() &gt;= minIcoTokenGoal)
-				&amp;&amp; (remunerationStage == 0 )) {
+			if ((getNumTokensPurchased() >= minIcoTokenGoal)
+				&& (remunerationStage == 0 )) {
 				remunerationStage = 1;
 				remunerationBalance = (totalTokenFundsReceived/100)*9; // 9 percent
 				auxPartnerBalance =  (totalTokenFundsReceived/100); // 1 percent
@@ -726,7 +726,7 @@ contract E4Token is Token, E4RowRewards {
 
 		uint ntmp;
 
-		if (remunerationBalance &gt; 0) { 
+		if (remunerationBalance > 0) { 
 		// only pay one entity per call, dont want to run out of gas
 				ntmp = remunerationBalance;
 				remunerationBalance = 0;
@@ -736,8 +736,8 @@ contract E4Token is Token, E4RowRewards {
 				} else {
 					nmsgmask |= 64;
 				}	
-		} else 	if (auxPartnerBalance &gt; 0) {
-		// note the &quot;else&quot; only pay one entity per call, dont want to run out of gas
+		} else 	if (auxPartnerBalance > 0) {
+		// note the "else" only pay one entity per call, dont want to run out of gas
 			ntmp = auxPartnerBalance;
 			auxPartnerBalance = 0;
 			if (!auxPartner.call.gas(rmGas).value(ntmp)()) {
@@ -749,7 +749,7 @@ contract E4Token is Token, E4RowRewards {
 
 		} 
 		
-		StatEventI(&quot;ico-checkup&quot;, nmsgmask);
+		StatEventI("ico-checkup", nmsgmask);
 	}
 
 
@@ -835,16 +835,16 @@ contract E4Token is Token, E4RowRewards {
 	// ANYONE CAN CALL THIS FUNCTION BUT YOU HAVE TO SUPPLY 
 	// THE CORRECT AMOUNT OF GAS WHICH MAY DEPEND ON 
 	// THE _NUMPAYS PARAMETER.  WHICH MUST BE BETWEEN 1 AND 1000
-	// THE STANDARD VALUE IS STORED IN &quot;maxPaysPer&quot;
+	// THE STANDARD VALUE IS STORED IN "maxPaysPer"
 	// ----------------------------
 	function flushDividends(uint _numPays)
 	{
-		if ((_numPays == 0) || (_numPays &gt; 1000)) {
-			StatEvent(&quot;Invalid.&quot;);
-		} else if (holdoverBalance &gt; 0 || payoutBalance &gt; 0) {
+		if ((_numPays == 0) || (_numPays > 1000)) {
+			StatEvent("Invalid.");
+		} else if (holdoverBalance > 0 || payoutBalance > 0) {
 			doPayout(_numPays);
 		} else {
-			StatEvent(&quot;Nothing to do.&quot;);
+			StatEvent("Nothing to do.");
 		}
 				
 	}

@@ -84,8 +84,8 @@ contract StandardToken is Token,Mortal,Pausable {
     
     function transfer(address _to, uint256 _value) whenNotPaused returns (bool success) {
         require(_to!=0x0);
-        require(_value&gt;0);
-         if (balances[msg.sender] &gt;= _value) {
+        require(_value>0);
+         if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -96,9 +96,9 @@ contract StandardToken is Token,Mortal,Pausable {
     function transferFrom(address _from, address _to, uint256 totalTokensToTransfer)whenNotPaused returns (bool success) {
         require(_from!=0x0);
         require(_to!=0x0);
-        require(totalTokensToTransfer&gt;0);
+        require(totalTokensToTransfer>0);
     
-       if (balances[_from] &gt;= totalTokensToTransfer&amp;&amp;allowance(_from,_to)&gt;=totalTokensToTransfer) {
+       if (balances[_from] >= totalTokensToTransfer&&allowance(_from,_to)>=totalTokensToTransfer) {
             balances[_to] += totalTokensToTransfer;
             balances[_from] -= totalTokensToTransfer;
             allowed[_from][msg.sender] -= totalTokensToTransfer;
@@ -121,13 +121,13 @@ contract StandardToken is Token,Mortal,Pausable {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 contract DIGI is StandardToken{
-    string public constant name = &quot;DIGI&quot;;
+    string public constant name = "DIGI";
     uint8 public constant decimals = 4;
-    string public constant symbol = &quot;DIGI&quot;;
+    string public constant symbol = "DIGI";
     uint256 constant priceOfToken=1666666666666666;
     uint256 twoWeeksBonusTime;
     uint256 thirdWeekBonusTime;
@@ -148,22 +148,22 @@ contract DIGI is StandardToken{
      */
     function() payable whenNotPaused{
         require(msg.sender != 0x0);
-        require(msg.value &gt;= priceOfToken);//must be atleate single token price
-        require(now&lt;deadLine);
+        require(msg.value >= priceOfToken);//must be atleate single token price
+        require(now<deadLine);
         uint bonus=0;
-        if(now &lt; twoWeeksBonusTime){
+        if(now < twoWeeksBonusTime){
             bonus=40;
         }
-        else if(now&lt;thirdWeekBonusTime){
+        else if(now<thirdWeekBonusTime){
           bonus=20;  
         }
-        else if (now &lt;fourthWeekBonusTime){
+        else if (now <fourthWeekBonusTime){
             bonus = 10;
         }
         uint tokensToTransfer=((msg.value*10000)/priceOfToken);
         uint bonusTokens=(tokensToTransfer * bonus) /100;
         tokensToTransfer=tokensToTransfer+bonusTokens;
-       if(balances[owner] &lt;tokensToTransfer) //check etiher owner can have token otherwise reject transaction and ether
+       if(balances[owner] <tokensToTransfer) //check etiher owner can have token otherwise reject transaction and ether
        {
            revert();
        }
@@ -190,7 +190,7 @@ contract DIGI is StandardToken{
     * To transfer all balace to any account by only owner
     * */
     function transferFundToAccount(address _accountByOwner) onlyOwner whenPaused returns(uint256 result){
-        require(etherRaised&gt;0);
+        require(etherRaised>0);
         _accountByOwner.transfer(etherRaised);
         etherRaised=0;
         return etherRaised;
@@ -199,8 +199,8 @@ contract DIGI is StandardToken{
     * To transfer all balace to any account by only owner
     * */
     function transferLimitedFundToAccount(address _accountByOwner,uint256 balanceToTransfer) onlyOwner whenPaused {
-        require(etherRaised&gt;0);
-        require(balanceToTransfer&lt;etherRaised);
+        require(etherRaised>0);
+        require(balanceToTransfer<etherRaised);
         _accountByOwner.transfer(balanceToTransfer);
         etherRaised=etherRaised-balanceToTransfer;
     }

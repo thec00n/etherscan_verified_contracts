@@ -35,20 +35,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,18 +60,18 @@ contract HybridBlock is ERC20 {
   address public owner;
 
   // The balance in HybridBlock token that every address has
-  mapping (address =&gt; uint256) balances;
+  mapping (address => uint256) balances;
 
   // Keeps track of allowances for particular address
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => mapping (address => uint256)) public allowed;
 
   /**
    * The constructor for the HybridBlock token
    */
   function HybridBlock() public {
     owner = 0x35118ba64fD141F43958cF9EB493F13aca976e6a;
-    name = &quot;Hybrid Block&quot;;
-    symbol = &quot;HYB&quot;;
+    name = "Hybrid Block";
+    symbol = "HYB";
     decimals = 18;
     totalSupply = 1e9 * 10 ** uint256(decimals);
 
@@ -95,7 +95,7 @@ contract HybridBlock is ERC20 {
    */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
   
     // Subtract first
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -117,8 +117,8 @@ contract HybridBlock is ERC20 {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     // Decrease both the _from amount and the allowed transfer amount
     balances[_from] = balances[_from].sub(_value);
@@ -182,7 +182,7 @@ contract HybridBlock is ERC20 {
    */
   function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
     uint _value = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; _value) {
+    if (_subtractedValue > _value) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = _value.sub(_subtractedValue);

@@ -13,7 +13,7 @@ contract Crowdsale {
     uint public saleStage = 1;
     bool public crowdsaleClosed = false;
     bool public adminVer = false;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
 
     event GoalReached(address recipient, uint totalAmountRaised);
@@ -76,11 +76,11 @@ contract Crowdsale {
      * The price depends on `saleStage` and `amountRaised`
      */
     function getPrice() returns (uint) {
-        if (amountRaised &gt; 12000 ether || saleStage == 4) {
+        if (amountRaised > 12000 ether || saleStage == 4) {
             return 0.000142857 ether;
-        } else if (amountRaised &gt; 8000 ether || saleStage == 3) {
+        } else if (amountRaised > 8000 ether || saleStage == 3) {
             return 0.000125000 ether;
-        } else if (amountRaised &gt; 4000 ether || saleStage == 2) {
+        } else if (amountRaised > 4000 ether || saleStage == 2) {
             return 0.000119047 ether;
         }
         return 0.000109890 ether;
@@ -92,12 +92,12 @@ contract Crowdsale {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () payable {
-        require(!crowdsaleClosed &amp;&amp; msg.value &gt;= 1 ether);                                 //1 ether is minimum to contribute
+        require(!crowdsaleClosed && msg.value >= 1 ether);                                 //1 ether is minimum to contribute
         price = getPrice();                                                                //get current token price
         uint amount = msg.value;                                                           //save users eth value
         balanceOf[msg.sender] += amount;                                                   //save users eth value in balance list 
         amountRaised += amount;                                                            //update total amount of crowdsale
-        uint sendTokens = (amount / price) * 10 ** uint256(18);                            //calculate user&#39;s tokens
+        uint sendTokens = (amount / price) * 10 ** uint256(18);                            //calculate user's tokens
         tokenReward.transfer(msg.sender, sendTokens);                                      //send tokens to user
         soldTokensCounter += sendTokens;                                                   //update total sold tokens counter
         FundTransfer(msg.sender, amount, price, true);                                     //pin transaction data in blockchain

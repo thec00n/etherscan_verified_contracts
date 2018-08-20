@@ -145,14 +145,14 @@ contract Rubik {
     */
 
     function verifySide(Color[9][6] memory aState, uint8 FACE, Color expectedColor) internal pure returns (bool) {
-        return aState[FACE][0] == expectedColor &amp;&amp;
-        aState[FACE][1] == expectedColor &amp;&amp;
-        aState[FACE][2] == expectedColor &amp;&amp;
-        aState[FACE][3] == expectedColor &amp;&amp;
-        aState[FACE][4] == expectedColor &amp;&amp;
-        aState[FACE][5] == expectedColor &amp;&amp;
-        aState[FACE][6] == expectedColor &amp;&amp;
-        aState[FACE][7] == expectedColor &amp;&amp;
+        return aState[FACE][0] == expectedColor &&
+        aState[FACE][1] == expectedColor &&
+        aState[FACE][2] == expectedColor &&
+        aState[FACE][3] == expectedColor &&
+        aState[FACE][4] == expectedColor &&
+        aState[FACE][5] == expectedColor &&
+        aState[FACE][6] == expectedColor &&
+        aState[FACE][7] == expectedColor &&
         aState[FACE][8] == expectedColor;
     }
 
@@ -164,11 +164,11 @@ contract Rubik {
     */
 
     function isSolved(Color[9][6] memory aState) public pure returns (bool) {
-        return verifySide(aState, FRONT, Color.Red) &amp;&amp;
-        verifySide(aState, LEFT, Color.Blue) &amp;&amp;
-        verifySide(aState, UP, Color.Yellow) &amp;&amp;
-        verifySide(aState, RIGHT, Color.Green) &amp;&amp;
-        verifySide(aState, DOWN, Color.White) &amp;&amp;
+        return verifySide(aState, FRONT, Color.Red) &&
+        verifySide(aState, LEFT, Color.Blue) &&
+        verifySide(aState, UP, Color.Yellow) &&
+        verifySide(aState, RIGHT, Color.Green) &&
+        verifySide(aState, DOWN, Color.White) &&
         verifySide(aState, BACK, Color.Orange);
     }
 
@@ -181,11 +181,11 @@ contract Rubik {
      Shuffles a single side of a face. For instance:
 
          1 2 3       7 4 1
-         4 5 6   -&gt;  8 5 2
+         4 5 6   ->  8 5 2
          7 8 9       9 6 3
 
      Calling only this function does not leave the cube in a valid state as
-     also the &quot;sides&quot; of the cubes must move.
+     also the "sides" of the cubes must move.
     */
 
     function shuffleFace(Color[9][6] memory aState, uint FACE) pure internal {
@@ -406,7 +406,7 @@ contract Rubik {
     function trySolution(uint8[] moves) public view returns (Color[9][6]) {
         Color[9][6] memory aState = state;
 
-        for (uint i = 0; i &lt; moves.length; i++) {
+        for (uint i = 0; i < moves.length; i++) {
             if (moves[i] == FRONT) {
                 shuffleFront(aState);
             } else if (moves[i] == LEFT) {
@@ -432,15 +432,15 @@ contract Rubik {
     function submitSolution(uint8[] moves) public {
 
         Submission(msg.sender, moves);
-        //don&#39;t allow submissions after contest time has passed
-        require(now &lt; contestEndTime);
+        //don't allow submissions after contest time has passed
+        require(now < contestEndTime);
         Color[9][6] memory stateAfterMoves = trySolution(moves);
 
         //the cube must be in a solved state
         if (isSolved(stateAfterMoves)) {
 
             //the new leader is set if the solution has fewer moves than the current winner
-            if(moves.length &lt; currentWinnerMoveCount) {
+            if(moves.length < currentWinnerMoveCount) {
                 currentWinnerMoveCount = moves.length;
                 currentWinner = msg.sender;
                 NewLeader(msg.sender, moves);
@@ -453,7 +453,7 @@ contract Rubik {
     claim the reward after the contest has ended
 */
     function claim() public {
-        require(now &gt;= contestEndTime);
+        require(now >= contestEndTime);
         require(msg.sender == currentWinner);
         msg.sender.transfer(this.balance);
     }

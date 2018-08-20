@@ -11,20 +11,20 @@ contract SafeMath {
 	}
 
 	function safeDiv(uint256 a, uint256 b) pure internal returns (uint256) {
-		judgement(b &gt; 0);
+		judgement(b > 0);
 		uint256 c = a / b;
 		judgement(a == b * c + a % b);
 		return c;
 	}
 
 	function safeSub(uint256 a, uint256 b) pure internal returns (uint256) {
-		judgement(b &lt;= a);
+		judgement(b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint256 a, uint256 b) pure internal returns (uint256) {
 		uint256 c = a + b;
-		judgement(c&gt;=a &amp;&amp; c&gt;=b);
+		judgement(c>=a && c>=b);
 		return c;
 	}
 	function safeMulWithPresent(uint256 a , uint256 b) pure internal returns (uint256){
@@ -127,13 +127,13 @@ contract Token is SafeMath {
 contract StandardToken is Token ,CENStop{
 
 	function transfer(address _to, uint256 _value) stoppable public returns (bool ind) {
-		//Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-		//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+		//Default assumes totalSupply can't be over max (2^256 - 1).
+		//If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
 		//Replace the if with this one instead.
-		//if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+		//if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
 		require(_to!= address(0));
 		require(frozenCheck(msg.sender,_to));
-		if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		if (balances[msg.sender] >= _value && _value > 0) {
 			balances[msg.sender] = safeSub(balances[msg.sender] , _value);
 			balances[_to]  = safeAdd(balances[_to],_value);
 			emit Transfer(msg.sender, _to, _value);
@@ -145,7 +145,7 @@ contract StandardToken is Token ,CENStop{
 		//same as above. Replace this line with the following if you want to protect against wrapping uints.
 		require(frozenCheck(_from,_to));
 		require(_to!= address(0));
-		if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
 			balances[_to]  = safeAdd(balances[_to],_value);
 			balances[_from] = safeSub(balances[_from] , _value);
 			allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_value);
@@ -161,7 +161,7 @@ contract StandardToken is Token ,CENStop{
 	function approve(address _spender, uint256 _value) stoppable public returns (bool success) {
 		require(frozenCheck(_spender,msg.sender));
 		require(_spender!= address(0));
-		require(_value&gt;0);
+		require(_value>0);
 		require(allowed[msg.sender][_spender]==0);
 		allowed[msg.sender][_spender] = _value;
 		emit Approval(msg.sender, _spender, _value);
@@ -172,7 +172,7 @@ contract StandardToken is Token ,CENStop{
 		return allowed[_owner][_spender];
 	}
 	function burn(uint256 amount) stoppable onlyOwner public returns (bool){
-		if(balances[msg.sender] &gt; amount ){
+		if(balances[msg.sender] > amount ){
 			balances[msg.sender] = safeSub(balances[msg.sender],amount);
 			totalSupply = safeSub(totalSupply,amount);
 			emit Burn(msg.sender,amount);
@@ -190,16 +190,16 @@ contract StandardToken is Token ,CENStop{
 		frozenAccount[target] = freeze;
 	}
 
-	mapping (address =&gt; uint256)                      internal  balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) private  allowed;
-	mapping (address =&gt; bool)                         private  frozenAccount;    //Save frozen account
+	mapping (address => uint256)                      internal  balances;
+	mapping (address => mapping (address => uint256)) private  allowed;
+	mapping (address => bool)                         private  frozenAccount;    //Save frozen account
 
 }
 contract CENToken is StandardToken{
 
-	string public name = &quot;CEN&quot;;                                   /// Set the full name of this contract
+	string public name = "CEN";                                   /// Set the full name of this contract
 	uint256 public decimals = 18;                                 /// Set the decimal
-	string public symbol = &quot;CEN&quot;;                                 /// Set the symbol of this contract
+	string public symbol = "CEN";                                 /// Set the symbol of this contract
 
 	constructor() public {                    /// Should have sth in this
 		owner = msg.sender;

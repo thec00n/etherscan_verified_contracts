@@ -3,12 +3,12 @@ contract HeebuToken {
     
     uint public constant _totalSupply = 23000000;
     
-    string public constant symbol = &quot;HBU&quot;;
-    string public constant name = &quot;Heebu Token&quot;;
+    string public constant symbol = "HBU";
+    string public constant name = "Heebu Token";
     uint8 public constant decimals = 0;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     function HeebuToken() {
         balances[msg.sender] = _totalSupply;
@@ -24,8 +24,8 @@ contract HeebuToken {
     
     function transfer (address _to, uint256 _value) returns (bool success) {
         require(	
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0 
+            balances[msg.sender] >= _value
+            && _value > 0 
         );
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -35,9 +35,9 @@ contract HeebuToken {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(
-            allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt; 0 
+            allowed[_from][msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value > 0 
         );
         balances[_from] -= _value;
         balances[_to] += _value;

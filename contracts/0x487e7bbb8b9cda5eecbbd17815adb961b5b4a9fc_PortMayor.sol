@@ -9,7 +9,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -55,7 +55,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1b3a4aca2ae81f3">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1b3a4aca2ae81f3">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -184,12 +184,12 @@ contract PortCoin is ERC20 {
 
   address mayor;
 
-  string public name = &quot;Portland Maine Token&quot;;
-  string public symbol = &quot;PORT&quot;;
+  string public name = "Portland Maine Token";
+  string public symbol = "PORT";
   uint public decimals = 0;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping(address =&gt; uint256)) approvals;
+  mapping(address => uint256) balances;
+  mapping(address => mapping(address => uint256)) approvals;
 
   event NewMayor(address indexed oldMayor, address indexed newMayor);
 
@@ -220,7 +220,7 @@ contract PortCoin is ERC20 {
   }
 
   function transfer(address to, uint256 value) public returns (bool) {
-    require(balances[msg.sender] &gt;= value);
+    require(balances[msg.sender] >= value);
     balances[to] += value;
     balances[msg.sender] -= value;
     Transfer(msg.sender, to, value);
@@ -238,8 +238,8 @@ contract PortCoin is ERC20 {
   }
 
   function transferFrom(address from, address to, uint256 value) public returns (bool) {
-    require(approvals[from][msg.sender] &gt;= value);
-    require(balances[from] &gt;= value);
+    require(approvals[from][msg.sender] >= value);
+    require(balances[from] >= value);
 
     balances[to] += value;
     balances[from] -= value;
@@ -253,7 +253,7 @@ contract PortCoin is ERC20 {
 contract PortMayor is Ownable, HasNoEther, CanReclaimToken {
 
   PortCoin coin;
-  mapping(address =&gt; uint256) tickets;
+  mapping(address => uint256) tickets;
 
   event Attend(address indexed attendee, uint256 ticket, address indexed eventAddress);
   event EventCreated(address eventAddress);
@@ -267,11 +267,11 @@ contract PortMayor is Ownable, HasNoEther, CanReclaimToken {
   }
 
   function isEvent(address eventAddress) view public returns (bool) {
-    return tickets[eventAddress] &gt; 0;
+    return tickets[eventAddress] > 0;
   }
 
   function isValidTicket(address eventAddress, uint8 ticket) view public returns (bool){
-    return (tickets[eventAddress] &amp; (uint256(2) ** ticket)) &gt; 0;
+    return (tickets[eventAddress] & (uint256(2) ** ticket)) > 0;
   }
 
   function createEvent(address eventAddress) onlyOwner public {
@@ -288,7 +288,7 @@ contract PortMayor is Ownable, HasNoEther, CanReclaimToken {
   }
 
   function attend(uint8 ticket, bytes32 r, bytes32 s, uint8 v) public {
-    address eventAddress = ecrecover(keccak256(&quot;\x19Ethereum Signed Message:\n3&quot;,stringify(ticket)),v,r,s);
+    address eventAddress = ecrecover(keccak256("\x19Ethereum Signed Message:\n3",stringify(ticket)),v,r,s);
     require(isValidTicket(eventAddress, ticket));
     tickets[eventAddress] = tickets[eventAddress] ^ (uint256(2) ** ticket);
     coin.issue(msg.sender, 1);

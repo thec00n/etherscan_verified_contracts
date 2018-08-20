@@ -18,7 +18,7 @@ pragma solidity ^0.4.21;
  * For further information: truebit.io, modular.network,
  * consensys.net
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -49,13 +49,13 @@ library InteractiveCrowdsaleLib {
     uint256 startingTokenBalance; //initial amount of tokens for sale
 
     //shows how much wei an address has contributed
-  	mapping (address =&gt; uint256) hasContributed;
+  	mapping (address => uint256) hasContributed;
 
     //For token withdraw function, maps a user address to the amount of tokens they can withdraw
-  	mapping (address =&gt; uint256) withdrawTokensMap;
+  	mapping (address => uint256) withdrawTokensMap;
 
-    // any leftover wei that buyers contributed that didn&#39;t add up to a whole token amount
-    mapping (address =&gt; uint256) leftoverWei;
+    // any leftover wei that buyers contributed that didn't add up to a whole token amount
+    mapping (address => uint256) leftoverWei;
 
   	InteractiveCrowdsaleToken token; //token being sold
 
@@ -81,7 +81,7 @@ library InteractiveCrowdsaleLib {
     // determines where the cutoff point is for bids in the sale
     uint256 currentBucket;
 
-    // the fraction of each minimal valuation bidder&#39;s ether refund, &#39;q&#39; is from the paper
+    // the fraction of each minimal valuation bidder's ether refund, 'q' is from the paper
     // and is calculated when finalizing the sale
     uint256 q;
 
@@ -102,19 +102,19 @@ library InteractiveCrowdsaleLib {
     bool isCanceled;
 
     // shows the price that the address purchased tokens at
-    mapping (address =&gt; uint256) pricePurchasedAt;
+    mapping (address => uint256) pricePurchasedAt;
 
     // the sums of bids at each valuation.  Used to calculate the current bucket for the valuation pointer
-    mapping (uint256 =&gt; uint256) valuationSums;
+    mapping (uint256 => uint256) valuationSums;
 
     // the number of active bids at a certain valuation cap
-    mapping (uint256 =&gt; uint256) numBidsAtValuation;
+    mapping (uint256 => uint256) numBidsAtValuation;
 
     // the valuation cap that each address has submitted
-    mapping (address =&gt; uint256) personalCaps;
+    mapping (address => uint256) personalCaps;
 
     // shows if an address has done a manual withdrawal. manual withdrawals are only allowed once
-    mapping (address =&gt; bool) hasManuallyWithdrawn;
+    mapping (address => bool) hasManuallyWithdrawn;
   }
 
   // Indicates when an address has withdrawn their supply of tokens
@@ -146,7 +146,7 @@ library InteractiveCrowdsaleLib {
   event BucketAndValuationAndCommitted(uint256 bucket, uint256 valuation, uint256 committed);
 
   modifier saleEndedNotFinal(InteractiveCrowdsaleStorage storage self) {
-    require(now &gt; self.endTime &amp;&amp; (!self.isFinalized));
+    require(now > self.endTime && (!self.isFinalized));
     _;
   }
 
@@ -160,8 +160,8 @@ library InteractiveCrowdsaleLib {
   /// @param _endWithdrawalTime timestamp that indicates that manual withdrawals are no longer allowed
   /// @param _endTime Timestamp of sale end time
   /// @param _percentBeingSold percentage of total tokens being sold in the sale
-  /// @param _tokenName name of the token being sold. ex: &quot;Jason Network Token&quot;
-  /// @param _tokenSymbol symbol of the token. ex: &quot;JNT&quot;
+  /// @param _tokenName name of the token being sold. ex: "Jason Network Token"
+  /// @param _tokenSymbol symbol of the token. ex: "JNT"
   /// @param _tokenDecimals number of decimals in the token
   function init(InteractiveCrowdsaleStorage storage self,
                 address _owner,
@@ -178,15 +178,15 @@ library InteractiveCrowdsaleLib {
   {
     //g base.startTime is start of ICO
     //g base.endTime is end of ICO
-    //g times are checked endTime &gt; endWithdrawalTime &gt; startTime
+    //g times are checked endTime > endWithdrawalTime > startTime
     require(self.owner == 0);
-    require(_owner &gt; 0);
-    require(_endWithdrawalTime &lt; _endTime);
-    require(_endWithdrawalTime &gt; _startTime);
-    require(_minimumRaise &gt; 0);
-    require(_percentBeingSold &gt; 0);
-    require(_percentBeingSold &lt;= 100);
-    require(_priceBonusPercent &gt; 0);
+    require(_owner > 0);
+    require(_endWithdrawalTime < _endTime);
+    require(_endWithdrawalTime > _startTime);
+    require(_minimumRaise > 0);
+    require(_percentBeingSold > 0);
+    require(_percentBeingSold <= 100);
+    require(_priceBonusPercent > 0);
 
     /* Just sets a bunch of parameters for the sale in the struct. */
     self.owner = _owner;
@@ -203,7 +203,7 @@ library InteractiveCrowdsaleLib {
   }
 
   /// @dev calculates the number of digits in a given number
-  /// @param _number the number for which we&#39;re caluclating digits
+  /// @param _number the number for which we're caluclating digits
   /// @return _digits the number of digits in _number
   /* J: I tested out this and it seemed to work for  */
   function numDigits(uint256 _number) private pure returns (uint256) {
@@ -266,8 +266,8 @@ library InteractiveCrowdsaleLib {
 
     bool nonZeroPurchase = msg.value != 0;
     require(nonZeroPurchase);
-    // bidder can&#39;t have already bid   /* Hmmm... why not? Probably just makes logic easier. */ &lt;--- To prevent false signaling
-    require((self.personalCaps[msg.sender] == 0) &amp;&amp; (self.hasContributed[msg.sender] == 0));
+    // bidder can't have already bid   /* Hmmm... why not? Probably just makes logic easier. */ <--- To prevent false signaling
+    require((self.personalCaps[msg.sender] == 0) && (self.hasContributed[msg.sender] == 0));
     return true;
   }
 
@@ -290,21 +290,21 @@ library InteractiveCrowdsaleLib {
     uint256 placeholder;
     // token purchase bonus only applies before the withdrawal lock
     if (isBeforeWithdrawalLock(self)) { /* first half of the sale */
-      require(_personalCap &gt; _amount); /* Kind of a silly check, but I guess it would be bad if this was false. */
+      require(_personalCap > _amount); /* Kind of a silly check, but I guess it would be bad if this was false. */
       _bonusPercent = getCurrentBonus(self);
-    } else { /* Thus we&#39;re in the second half of the sale. validPurchase ensures it&#39;s not over.*/
+    } else { /* Thus we're in the second half of the sale. validPurchase ensures it's not over.*/
       // The personal valuation submitted must be greater than the current
       // valuation plus the bid if after the withdrawal lock.
-      require(_personalCap &gt;= self.totalValuation.add(_amount)); /* Your max cap must be at least the current total valuation, plus your contribution. */
+      require(_personalCap >= self.totalValuation.add(_amount)); /* Your max cap must be at least the current total valuation, plus your contribution. */
     }
 
     // personal valuation and minimum should be set to the proper granularity,
     // only three most significant values can be non-zero. reduces the number of possible
     // valuation buckets in the linked list
     placeholder = numDigits(_personalCap);
-    if(placeholder &gt; 3) {
+    if(placeholder > 3) {
       /* Must be divisible by 10x the number of digits over 3.
-        ie. 1230 has 4 digits. It&#39;s divisible by (4-3)*10 = 10, so it&#39;s OK.
+        ie. 1230 has 4 digits. It's divisible by (4-3)*10 = 10, so it's OK.
        */
       require((_personalCap % (10**(placeholder - 3))) == 0);
     }
@@ -316,7 +316,7 @@ library InteractiveCrowdsaleLib {
         self.valuationsList.insert(placeholder,_personalCap,PREV);
     }
 
-    // add the bid to the address =&gt; cap mapping
+    // add the bid to the address => cap mapping
     self.personalCaps[msg.sender] = _personalCap;
 
     // add the bid to the sum of bids at this valuation. Needed for calculating correct valuation pointer
@@ -324,7 +324,7 @@ library InteractiveCrowdsaleLib {
 
     self.numBidsAtValuation[_personalCap] = self.numBidsAtValuation[_personalCap].add(1);
 
-    // add the bid to bidder&#39;s contribution amount
+    // add the bid to bidder's contribution amount
     self.hasContributed[msg.sender] = self.hasContributed[msg.sender].add(_amount);
 
     // temp variables for calculation
@@ -334,7 +334,7 @@ library InteractiveCrowdsaleLib {
     bool exists;
 
     // we only affect the pointer if we are coming in above it
-    if(_personalCap &gt; self.currentBucket){
+    if(_personalCap > self.currentBucket){
 
       // if our valuation is sitting at the current bucket then we are using
       // commitments right at their cap
@@ -343,19 +343,19 @@ library InteractiveCrowdsaleLib {
         // greater than the current bucket without them
         _proposedCommit = (self.valueCommitted.sub(self.valuationSums[self.currentBucket])).add(_amount);
 
-        if(_proposedCommit &gt; self.currentBucket){ loop = true; }
+        if(_proposedCommit > self.currentBucket){ loop = true; }
       } else {
-        // else we&#39;re sitting in between buckets and have already dropped the
+        // else we're sitting in between buckets and have already dropped the
         // previous commitments
         _proposedCommit = self.totalValuation.add(_amount);
         loop = true;
       }
 
       if(loop){
-        // if we&#39;re going to loop we move to the next bucket
+        // if we're going to loop we move to the next bucket
         (exists,_currentBucket) = self.valuationsList.getAdjacent(self.currentBucket, NEXT);
 
-        while(_proposedCommit &gt;= _currentBucket){
+        while(_proposedCommit >= _currentBucket){
           // while we are proposed higher than the next bucket we drop commitments
           // and iterate to the next
           _proposedCommit = _proposedCommit.sub(self.valuationSums[_currentBucket]);
@@ -363,15 +363,15 @@ library InteractiveCrowdsaleLib {
           /**Stop checking err here**/
           (exists,_currentBucket) = self.valuationsList.getAdjacent(_currentBucket, NEXT);
         }
-        // once we&#39;ve reached a bucket too high we move back to the last bucket and set it
+        // once we've reached a bucket too high we move back to the last bucket and set it
         (exists, _currentBucket) = self.valuationsList.getAdjacent(_currentBucket, PREV);
         self.currentBucket = _currentBucket;
       } else {
-        // else we&#39;re staying at the current bucket
+        // else we're staying at the current bucket
         _currentBucket = self.currentBucket;
       }
       // if our proposed commitment is less than or equal to the bucket
-      if(_proposedCommit &lt;= _currentBucket){
+      if(_proposedCommit <= _currentBucket){
         // we add the commitments in that bucket
         _proposedCommit = self.valuationSums[_currentBucket].add(_proposedCommit);
         // and our value is capped at that bucket
@@ -399,13 +399,13 @@ library InteractiveCrowdsaleLib {
   /// @return true on succesful
   function withdrawBid(InteractiveCrowdsaleStorage storage self) public returns (bool) {
     // The sender has to have already bid on the sale
-    require(self.personalCaps[msg.sender] &gt; 0);
+    require(self.personalCaps[msg.sender] > 0);
     require(crowdsaleIsActive(self));
     uint256 refundWei;
-    // cannot withdraw after compulsory withdraw period is over unless the bid&#39;s
+    // cannot withdraw after compulsory withdraw period is over unless the bid's
     // valuation is below the cutoff
     if (isAfterWithdrawalLock(self)) {
-      require(self.personalCaps[msg.sender] &lt; self.totalValuation);
+      require(self.personalCaps[msg.sender] < self.totalValuation);
 
       // full refund because their bid no longer affects the total sale valuation
       refundWei = self.hasContributed[msg.sender];
@@ -440,10 +440,10 @@ library InteractiveCrowdsaleLib {
 
     }
 
-    // Put the sender&#39;s contributed wei into the leftoverWei mapping for later withdrawal
+    // Put the sender's contributed wei into the leftoverWei mapping for later withdrawal
     self.leftoverWei[msg.sender] = self.leftoverWei[msg.sender].add(refundWei);
 
-    // subtract the bidder&#39;s refund from its total contribution
+    // subtract the bidder's refund from its total contribution
     self.hasContributed[msg.sender] = self.hasContributed[msg.sender].sub(refundWei);
 
     uint256 _proposedCommit;
@@ -452,21 +452,21 @@ library InteractiveCrowdsaleLib {
     bool loop;
     bool exists;
 
-    // bidder&#39;s withdrawal only affects the pointer if the personal cap is at or
+    // bidder's withdrawal only affects the pointer if the personal cap is at or
     // above the current valuation
-    if(self.personalCaps[msg.sender] &gt;= self.totalValuation){
+    if(self.personalCaps[msg.sender] >= self.totalValuation){
 
       // first we remove the refundWei from the committed value
       _proposedCommit = self.valueCommitted.sub(refundWei);
 
-      // if we&#39;ve dropped below the current bucket
-      if(_proposedCommit &lt;= self.currentBucket){
+      // if we've dropped below the current bucket
+      if(_proposedCommit <= self.currentBucket){
         // and current valuation is above the bucket
-        if(self.totalValuation &gt; self.currentBucket){
+        if(self.totalValuation > self.currentBucket){
           _proposedCommit = self.valuationSums[self.currentBucket].add(_proposedCommit);
         }
 
-        if(_proposedCommit &gt;= self.currentBucket){
+        if(_proposedCommit >= self.currentBucket){
           _proposedValue = self.currentBucket;
         } else {
           // if we are still below the current bucket then we need to iterate
@@ -481,13 +481,13 @@ library InteractiveCrowdsaleLib {
       }
 
       if(loop){
-        // if we&#39;re going to loop we move to the previous bucket
+        // if we're going to loop we move to the previous bucket
         (exists,_currentBucket) = self.valuationsList.getAdjacent(self.currentBucket, PREV);
-        while(_proposedCommit &lt;= _currentBucket){
+        while(_proposedCommit <= _currentBucket){
           // while we are proposed lower than the previous bucket we add commitments
           _proposedCommit = self.valuationSums[_currentBucket].add(_proposedCommit);
           // and iterate to the previous
-          if(_proposedCommit &gt;= _currentBucket){
+          if(_proposedCommit >= _currentBucket){
             _proposedValue = _currentBucket;
           } else {
             (exists,_currentBucket) = self.valuationsList.getAdjacent(_currentBucket, PREV);
@@ -509,10 +509,10 @@ library InteractiveCrowdsaleLib {
   }
 
   /// @dev This should be called once the sale is over to commit all bids into
-  ///      the owner&#39;s bucket.
+  ///      the owner's bucket.
   /// @param self stored crowdsale from crowdsale contract
 
-  //g !!! Shouldn&#39;t this just be callable by the owner !!!
+  //g !!! Shouldn't this just be callable by the owner !!!
   function finalizeSale(InteractiveCrowdsaleStorage storage self) public
            saleEndedNotFinal(self)
            returns (bool)
@@ -581,27 +581,27 @@ library InteractiveCrowdsaleLib {
   }
 
   /// @dev returns a boolean indicating if the sale is canceled.
-  ///      This can either be if the minimum raise hasn&#39;t been met
-  ///      or if it is 30 days after the sale and the owner hasn&#39;t finalized the sale.
-  /* That&#39;s a weird condition */
+  ///      This can either be if the minimum raise hasn't been met
+  ///      or if it is 30 days after the sale and the owner hasn't finalized the sale.
+  /* That's a weird condition */
   /// @return bool canceled indicating if the sale is canceled or not
   function setCanceled(InteractiveCrowdsaleStorage storage self) private returns(bool){
-    bool canceled = (self.totalValuation &lt; self.minimumRaise) ||
-                    ((now &gt; (self.endTime + 30 days)) &amp;&amp; !self.isFinalized);
+    bool canceled = (self.totalValuation < self.minimumRaise) ||
+                    ((now > (self.endTime + 30 days)) && !self.isFinalized);
 
     if(canceled) {self.isCanceled = true;}
 
     return self.isCanceled;
   }
 
-  /// @dev If the address&#39; personal cap is below the pointer, refund them all their ETH.
+  /// @dev If the address' personal cap is below the pointer, refund them all their ETH.
   ///      if it is above the pointer, calculate tokens purchased and refund leftoever ETH
   /// @param self Stored crowdsale from crowdsale contract
   /// @return bool success if the contract runs successfully
   /* What should not happen here? */
   function retrieveFinalResult(InteractiveCrowdsaleStorage storage self) public returns (bool) {
-    require(now &gt; self.endTime); /* This ensure that the endTime is past */
-    require(self.personalCaps[msg.sender] &gt; 0); /* This requires that  */
+    require(now > self.endTime); /* This ensure that the endTime is past */
+    require(self.personalCaps[msg.sender] > 0); /* This requires that  */
 
     uint256 numTokens; /* setup some pointers */
     uint256 remainder;
@@ -614,11 +614,11 @@ library InteractiveCrowdsaleLib {
       // if the sale was canceled, everyone gets a full refund
       self.leftoverWei[msg.sender] = self.leftoverWei[msg.sender].add(self.hasContributed[msg.sender]);
       self.hasContributed[msg.sender] = 0;
-      LogErrorMsg(self.totalValuation, &quot;Sale is canceled, all bids have been refunded!&quot;);
+      LogErrorMsg(self.totalValuation, "Sale is canceled, all bids have been refunded!");
       return true;
     }
 
-    if (self.personalCaps[msg.sender] &lt; self.totalValuation) {
+    if (self.personalCaps[msg.sender] < self.totalValuation) {
 
       // full refund if personal cap is less than total valuation
       self.leftoverWei[msg.sender] += self.hasContributed[msg.sender];
@@ -637,9 +637,9 @@ library InteractiveCrowdsaleLib {
       // refund that amount of wei to the address
       self.leftoverWei[msg.sender] = self.leftoverWei[msg.sender].add(refundAmount);
 
-      // subtract that amount the address&#39; contribution
+      // subtract that amount the address' contribution
       self.hasContributed[msg.sender] = self.hasContributed[msg.sender].sub(refundAmount);
-      if(dust &gt; 0) {
+      if(dust > 0) {
         self.leftoverWei[msg.sender] = self.leftoverWei[msg.sender].add(dust);
         self.hasContributed[msg.sender] = self.hasContributed[msg.sender].sub(dust);
       }
@@ -678,13 +678,13 @@ library InteractiveCrowdsaleLib {
     bool ok;
 
     if (self.withdrawTokensMap[msg.sender] == 0) {
-      LogErrorMsg(0, &quot;Sender has no tokens to withdraw!&quot;);
+      LogErrorMsg(0, "Sender has no tokens to withdraw!");
       return false;
     }
 
     if (msg.sender == self.owner) {
       if(!self.isFinalized){
-        LogErrorMsg(0, &quot;Owner cannot withdraw extra tokens until after the sale!&quot;);
+        LogErrorMsg(0, "Owner cannot withdraw extra tokens until after the sale!");
         return false;
       }
     }
@@ -702,7 +702,7 @@ library InteractiveCrowdsaleLib {
   /// @return true if wei was withdrawn
   function withdrawLeftoverWei(InteractiveCrowdsaleStorage storage self) public returns (bool) {
     if (self.leftoverWei[msg.sender] == 0) {
-      LogErrorMsg(0, &quot;Sender has no extra wei to withdraw!&quot;);
+      LogErrorMsg(0, "Sender has no extra wei to withdraw!");
       return false;
     }
 
@@ -718,27 +718,27 @@ library InteractiveCrowdsaleLib {
   /// @return true if owner withdrew eth
   function withdrawOwnerEth(InteractiveCrowdsaleStorage storage self) public returns (bool) {
     require(msg.sender == self.owner);
-    require(self.ownerBalance &gt; 0);
+    require(self.ownerBalance > 0);
     require(self.isFinalized);
 
     uint256 amount = self.ownerBalance;
     self.ownerBalance = 0;
     self.owner.transfer(amount);
-    LogOwnerEthWithdrawn(msg.sender,amount,&quot;Crowdsale owner has withdrawn all funds!&quot;);
+    LogOwnerEthWithdrawn(msg.sender,amount,"Crowdsale owner has withdrawn all funds!");
 
     return true;
   }
 
   function crowdsaleIsActive(InteractiveCrowdsaleStorage storage self) public view returns (bool) {
-    return (now &gt;= self.startTime &amp;&amp; now &lt;= self.endTime);
+    return (now >= self.startTime && now <= self.endTime);
   }
 
   function isBeforeWithdrawalLock(InteractiveCrowdsaleStorage storage self) public view returns (bool) {
-    return now &lt; self.endWithdrawalTime;
+    return now < self.endWithdrawalTime;
   }
 
   function isAfterWithdrawalLock(InteractiveCrowdsaleStorage storage self) public view returns (bool) {
-    return now &gt;= self.endWithdrawalTime;
+    return now >= self.endWithdrawalTime;
   }
 
   function getPersonalCap(InteractiveCrowdsaleStorage storage self, address _bidder) public view returns (uint256) {
@@ -774,7 +774,7 @@ pragma solidity 0.4.21;
  * technology. For further information: modular.network
  *
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -792,7 +792,7 @@ library LinkedListLib {
     bool constant NEXT = true;
 
     struct LinkedList{
-        mapping (uint256 =&gt; mapping (bool =&gt; uint256)) list;
+        mapping (uint256 => mapping (bool => uint256)) list;
     }
 
     /// @dev returns true if the list exists
@@ -816,7 +816,7 @@ library LinkedListLib {
         public
         view returns (bool)
     {
-        if (self.list[_node][PREV] == HEAD &amp;&amp; self.list[_node][NEXT] == HEAD) {
+        if (self.list[_node][PREV] == HEAD && self.list[_node][NEXT] == HEAD) {
             if (self.list[HEAD][NEXT] == _node) {
                 return true;
             } else {
@@ -872,7 +872,7 @@ library LinkedListLib {
     /// @param _node an existing node to search from, e.g. HEAD.
     /// @param _value value to seek
     /// @param _direction direction to seek in
-    //  @return next first node beyond &#39;_node&#39; in direction `_direction`
+    //  @return next first node beyond '_node' in direction `_direction`
     function getSortedSpot(LinkedList storage self, uint256 _node, uint256 _value, bool _direction)
         public view returns (uint256)
     {
@@ -881,7 +881,7 @@ library LinkedListLib {
         bool exists;
         uint256 next;
         (exists,next) = getAdjacent(self, _node, _direction);
-        while  ((next != 0) &amp;&amp; (_value != next) &amp;&amp; ((_value &lt; next) != _direction)) next = self.list[next][_direction];
+        while  ((next != 0) && (_value != next) && ((_value < next) != _direction)) next = self.list[next][_direction];
         return next;
     }
 
@@ -900,7 +900,7 @@ library LinkedListLib {
     /// @param _new  new node to insert
     /// @param _direction direction to insert node in
     function insert(LinkedList storage self, uint256 _node, uint256 _new, bool _direction) internal returns (bool) {
-        if(!nodeExists(self,_new) &amp;&amp; nodeExists(self,_node)) {
+        if(!nodeExists(self,_new) && nodeExists(self,_node)) {
             uint256 c = self.list[_node][_direction];
             createLink(self, _node, _new, _direction);
             createLink(self, _new, c, _direction);
@@ -1023,8 +1023,8 @@ library TokenLib {
 
   struct TokenStorage {
     bool initialized;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     string name;
     string symbol;
@@ -1069,7 +1069,7 @@ library TokenLib {
     self.balances[_owner] = _initial_supply;
   }
 
-  /// @dev Transfer tokens from caller&#39;s account to another account.
+  /// @dev Transfer tokens from caller's account to another account.
   /// @param self Stored token from token contract
   /// @param _to Address to send tokens
   /// @param _value Number of tokens to send
@@ -1082,7 +1082,7 @@ library TokenLib {
     (err,balance) = self.balances[msg.sender].minus(_value);
     require(!err);
     self.balances[msg.sender] = balance;
-    //It&#39;s not possible to overflow token supply
+    //It's not possible to overflow token supply
     self.balances[_to] = self.balances[_to] + _value;
     emit Transfer(msg.sender, _to, _value);
     return true;
@@ -1128,7 +1128,7 @@ library TokenLib {
     return self.balances[_owner];
   }
 
-  /// @dev Authorize an account to send tokens on caller&#39;s behalf
+  /// @dev Authorize an account to send tokens on caller's behalf
   /// @param self Stored token from token contract
   /// @param _spender Address to authorize
   /// @param _value Number of tokens authorized account may send
@@ -1146,7 +1146,7 @@ library TokenLib {
   /// @param self Stored token from token contract
   /// @param _owner Address of token holder
   /// @param _spender Address of authorized spender
-  /// @return remaining Number of tokens spender has left in owner&#39;s account
+  /// @return remaining Number of tokens spender has left in owner's account
   function allowance(TokenStorage storage self, address _owner, address _spender)
                      public
                      view
@@ -1172,7 +1172,7 @@ library TokenLib {
 
       self.allowed[msg.sender][_spender] = _newAllowed;
     } else {
-      if (_valueChange &gt; self.allowed[msg.sender][_spender]) {
+      if (_valueChange > self.allowed[msg.sender][_spender]) {
         self.allowed[msg.sender][_spender] = 0;
       } else {
         _newAllowed = self.allowed[msg.sender][_spender] - _valueChange;
@@ -1189,7 +1189,7 @@ library TokenLib {
   /// @param _newOwner Address for the new owner
   /// @return True if completed
   function changeOwner(TokenStorage storage self, address _newOwner) public returns (bool) {
-    require((self.owner == msg.sender) &amp;&amp; (_newOwner &gt; 0));
+    require((self.owner == msg.sender) && (_newOwner > 0));
 
     self.owner = _newOwner;
     emit OwnerChange(msg.sender, _newOwner);
@@ -1201,7 +1201,7 @@ library TokenLib {
   /// @param _amount Number of tokens to mint
   /// @return True if completed
   function mintToken(TokenStorage storage self, uint256 _amount) public returns (bool) {
-    require((self.owner == msg.sender) &amp;&amp; self.stillMinting);
+    require((self.owner == msg.sender) && self.stillMinting);
     uint256 _newAmount;
     bool err;
 
@@ -1340,9 +1340,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -1350,7 +1350,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -1359,7 +1359,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

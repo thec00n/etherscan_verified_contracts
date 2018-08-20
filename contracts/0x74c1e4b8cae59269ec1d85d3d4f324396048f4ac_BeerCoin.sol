@@ -3,13 +3,13 @@
  * Copyright 2016; licensed CC-BY-SA.
  * 
  * BeerCoin is a new cryptocurrency intended to encapsulate and record the
- * concept of &quot;I owe you a beer&quot;. Did someone answer a difficult question you
+ * concept of "I owe you a beer". Did someone answer a difficult question you
  * had? Send them a BeerCoin. Did they help you carry something heavy? Send
  * them a BeerCoin. Someone buy you a beer? Send them a BeerCoin.
  * 
  * Unlike traditional currency, anyone can issue BeerCoin simply by sending it
- * to someone else. A person&#39;s BeerCoin is only as valuable as the recipient&#39;s
- * belief that they&#39;re good for the beer, should it ever be redeemed; a beer
+ * to someone else. A person's BeerCoin is only as valuable as the recipient's
+ * belief that they're good for the beer, should it ever be redeemed; a beer
  * owed to you by Vitalik Buterin is probably worth more than a beer owed to you
  * by the DAO hacker (but your opinions may differ on that point).
  * 
@@ -20,22 +20,22 @@
  * if Satoshi Nakamoto owes you a beer, you can transfer that obligation to your
  * friend who just bought you one down at the pub. Methods are also provided for
  * determining the total number of beers a person owes, to help determine if
- * they&#39;re good for it, and for getting a list of accounts that owe someone a
+ * they're good for it, and for getting a list of accounts that owe someone a
  * beer.
  * 
  * BeerCoin may confuse some wallets, such as Mist, that expect you can only
  * send currency up to your current total balance; since BeerCoin operates as
- * individual IOUs, that restriction doesn&#39;t apply. As a result, you will
- * sometimes need to call the &#39;transfer&#39; function on the contract itself
- * instead of using the wallet&#39;s built in token support.
+ * individual IOUs, that restriction doesn't apply. As a result, you will
+ * sometimes need to call the 'transfer' function on the contract itself
+ * instead of using the wallet's built in token support.
  * 
- * If anyone finds a bug in the contract, I&#39;ll buy you a beer. If you find a bug
- * you can exploit to adjust balances without users&#39; consent, I&#39;ll buy you two
+ * If anyone finds a bug in the contract, I'll buy you a beer. If you find a bug
+ * you can exploit to adjust balances without users' consent, I'll buy you two
  * (or more).
  * 
  * If you feel obliged to me for creating this, send me a ? at
- * 0x5fC8A61e097c118cE43D200b3c4dcf726Cf783a9. Don&#39;t do it unless you mean it;
- * if we meet I&#39;ll surely redeem it.
+ * 0x5fC8A61e097c118cE43D200b3c4dcf726Cf783a9. Don't do it unless you mean it;
+ * if we meet I'll surely redeem it.
  */
 contract BeerCoin {
     using Itmap for Itmap.AddressUintMap;
@@ -46,7 +46,7 @@ contract BeerCoin {
     struct UserAccount {
         bool exists;
         Itmap.AddressUintMap debtors; // People who owe you a beer
-        mapping(address=&gt;uint) allowances;
+        mapping(address=>uint) allowances;
         uint maxCredit; // Most beers any individual may owe you
         uint beersOwed; // Beers owed by this person
         uint beersOwing; // Beers owed to this person
@@ -62,7 +62,7 @@ contract BeerCoin {
         defaultMaxCredit = _defaultMaxCredit;
     }
     
-    mapping(address=&gt;UserAccount) accounts;
+    mapping(address=>UserAccount) accounts;
 
     function maximumCredit(address owner) constant returns (uint) {
         if(accounts[owner].exists) {
@@ -74,7 +74,7 @@ contract BeerCoin {
 
     function setMaximumCredit(uint credit) {
         //640k ought to be enough for anyone
-        if(credit &gt; 655360)
+        if(credit > 655360)
             return;
 
         if(!accounts[msg.sender].exists)
@@ -115,7 +115,7 @@ contract BeerCoin {
     }
     
     function transferFrom(address from, address to, uint256 value) returns (bool) {
-        if(accounts[from].allowances[msg.sender] &gt;= value &amp;&amp; doTransfer(from, to, value)) {
+        if(accounts[from].allowances[msg.sender] >= value && doTransfer(from, to, value)) {
             accounts[from].allowances[msg.sender] -= value;
             return true;
         }
@@ -131,8 +131,8 @@ contract BeerCoin {
             accounts[to].maxCredit = defaultMaxCredit;
         }
         
-        // Don&#39;t allow transfers that would exceed the recipient&#39;s credit limit.
-        if(value &gt; accounts[to].maxCredit + accounts[from].debtors.get(to))
+        // Don't allow transfers that would exceed the recipient's credit limit.
+        if(value > accounts[to].maxCredit + accounts[from].debtors.get(to))
             return false;
         
         Transfer(from, to, value);
@@ -150,7 +150,7 @@ contract BeerCoin {
 
     // Allows a third party to transfer debt owed to you by `debtor` to `to`.    
     function transferOtherFrom(address from, address to, address debtor, uint value) returns (bool) {
-        if(accounts[from].allowances[msg.sender] &gt;= value &amp;&amp; doTransferOther(from, to, debtor, value)) {
+        if(accounts[from].allowances[msg.sender] >= value && doTransferOther(from, to, debtor, value)) {
             accounts[from].allowances[msg.sender] -= value;
             return true;
         }
@@ -175,13 +175,13 @@ contract BeerCoin {
     }
     
     // Creates debt owed by `debtor` to `creditor` of amount `value`.
-    // Returns false without making changes if this would exceed `creditor`&#39;s
+    // Returns false without making changes if this would exceed `creditor`'s
     // credit limit.
     function createDebt(address debtor, address creditor, uint value) internal returns (bool) {
         if(value == 0)
             return true;
         
-        if(value &gt; accounts[creditor].maxCredit)
+        if(value > accounts[creditor].maxCredit)
             return false;
 
         accounts[creditor].debtors.set(
@@ -197,7 +197,7 @@ contract BeerCoin {
     // whichever is less. Returns the amount of debt erased.
     function reduceDebt(address debtor, address creditor, uint value) internal returns (uint) {
         var owed = accounts[creditor].debtors.get(debtor);
-        if(value &gt;= owed) {
+        if(value >= owed) {
             value = owed;
             
             accounts[creditor].debtors.remove(debtor);
@@ -214,14 +214,14 @@ contract BeerCoin {
     
     // Transfers debt owed by `debtor` from `oldCreditor` to `newCreditor`.
     // Returns false without making any changes if `value` exceeds the amount
-    // owed or if the transfer would exceed `newCreditor`&#39;s credit limit.
+    // owed or if the transfer would exceed `newCreditor`'s credit limit.
     function transferDebt(address oldCreditor, address newCreditor, address debtor, uint value) internal returns (bool) {
         var owedOld = accounts[oldCreditor].debtors.get(debtor);
-        if(owedOld &lt; value)
+        if(owedOld < value)
             return false;
         
         var owedNew = accounts[newCreditor].debtors.get(debtor);
-        if(value + owedNew &gt; accounts[newCreditor].maxCredit)
+        if(value + owedNew > accounts[newCreditor].maxCredit)
             return false;
         
         
@@ -257,7 +257,7 @@ library Itmap {
     }
     
     struct AddressUintMap {
-        mapping(address=&gt;AddressUintMapEntry) entries;
+        mapping(address=>AddressUintMapEntry) entries;
         address[] keys;
     }
     
@@ -275,12 +275,12 @@ library Itmap {
     }
     
     function contains(AddressUintMap storage self, address k) internal returns (bool) {
-        return self.entries[k].idx &gt; 0;
+        return self.entries[k].idx > 0;
     }
     
     function remove(AddressUintMap storage self, address k) internal {
         var entry = self.entries[k];
-        if(entry.idx &gt; 0) {
+        if(entry.idx > 0) {
             var otherkey = self.keys[self.keys.length - 1];
             self.keys[entry.idx - 1] = otherkey;
             self.keys.length -= 1;

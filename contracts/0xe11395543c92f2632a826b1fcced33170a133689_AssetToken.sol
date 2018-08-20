@@ -20,7 +20,7 @@ contract admined {
 
 contract Token {
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	// balanceOf[address] = 5;
 	string public name;
 	string public symbol;
@@ -38,8 +38,8 @@ contract Token {
 	}
 
 	function transfer(address _to, uint256 _value){
-		if(balanceOf[msg.sender] &lt; _value) throw;
-		if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+		if(balanceOf[msg.sender] < _value) throw;
+		if(balanceOf[_to] + _value < balanceOf[_to]) throw;
 		//if(admin)
 
 		balanceOf[msg.sender] -= _value;
@@ -70,9 +70,9 @@ contract AssetToken is admined, Token{
 	}
 
 	function transfer(address _to, uint256 _value){
-		if(balanceOf[msg.sender] &lt;= 0) throw;
-		if(balanceOf[msg.sender] &lt; _value) throw;
-		if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+		if(balanceOf[msg.sender] <= 0) throw;
+		if(balanceOf[msg.sender] < _value) throw;
+		if(balanceOf[_to] + _value < balanceOf[_to]) throw;
 		//if(admin)
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += _value;

@@ -3,8 +3,8 @@ pragma solidity ^0.4.24;
 contract CompanyShare {
     using SafeMath for *;
 
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) returns player id by address
-    mapping (uint256 =&gt; CompanySharedatasets.Player) public team_;          // (team =&gt; fees) fee distribution by team
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) returns player id by address
+    mapping (uint256 => CompanySharedatasets.Player) public team_;          // (team => fees) fee distribution by team
 
     /**
      * @dev prevents contracts from interacting with fomo3d
@@ -14,7 +14,7 @@ contract CompanyShare {
         uint256 _codeLength;
 
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
 
@@ -80,7 +80,7 @@ function giveGen(uint256 _eth)
     {
         // fetch player ID
         uint256 _pID = pIDxAddr_[msg.sender];
-        require(_pID != 0, &quot;sorry not team&quot;);
+        require(_pID != 0, "sorry not team");
         // setup temp var for player eth
         uint256 _eth;
         // get their earnings
@@ -89,7 +89,7 @@ function giveGen(uint256 _eth)
     }
 
         /**
-     * @dev adds up unmasked earnings, &amp; vault earnings, sets them all to 0
+     * @dev adds up unmasked earnings, & vault earnings, sets them all to 0
      * @return earnings in wei format
      */
     function withdrawEarnings(uint256 _pID)
@@ -99,7 +99,7 @@ function giveGen(uint256 _eth)
 
         // from vaults
         uint256 _earnings = team_[_pID].gen;
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             team_[_pID].gen = 0;
         }
@@ -113,7 +113,7 @@ function giveGen(uint256 _eth)
     returns(uint256)
     {
         uint256 _pID = pIDxAddr_[msg.sender];
-        require(_pID != 0, &quot;sorry not team&quot;);
+        require(_pID != 0, "sorry not team");
         uint256 _earnings = team_[_pID].gen;
         return _earnings;
     }
@@ -157,7 +157,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -169,7 +169,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -182,7 +182,7 @@ library SafeMath {
         returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 
@@ -196,7 +196,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y)
+        while (z < y)
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -229,7 +229,7 @@ library SafeMath {
         else
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

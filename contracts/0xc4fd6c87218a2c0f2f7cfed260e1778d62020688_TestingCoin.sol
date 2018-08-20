@@ -2,11 +2,11 @@ pragma solidity ^0.4.18;
 
 /*
 
- .|&#39;&#39;&#39;.|    .           &#39;||      &#39;||            ..|&#39;&#39;&#39;.|          ||
- ||..  &#39;  .||.   ....    || ...   ||    ....  .|&#39;     &#39;    ...   ...  .. ...
-  &#39;&#39;|||.   ||   &#39;&#39; .||   ||&#39;  ||  ||  .|...|| ||         .|  &#39;|.  ||   ||  ||
-.     &#39;||  ||   .|&#39; ||   ||    |  ||  ||      &#39;|.      . ||   ||  ||   ||  ||
-|&#39;....|&#39;   &#39;|.&#39; &#39;|..&#39;|&#39;  &#39;|...&#39;  .||.  &#39;|...&#39;  &#39;&#39;|....&#39;   &#39;|..|&#39; .||. .||. ||.
+ .|'''.|    .           '||      '||            ..|'''.|          ||
+ ||..  '  .||.   ....    || ...   ||    ....  .|'     '    ...   ...  .. ...
+  ''|||.   ||   '' .||   ||'  ||  ||  .|...|| ||         .|  '|.  ||   ||  ||
+.     '||  ||   .|' ||   ||    |  ||  ||      '|.      . ||   ||  ||   ||  ||
+|'....|'   '|.' '|..'|'  '|...'  .||.  '|...'  ''|....'   '|..|' .||. .||. ||.
 100% fresh code. Novel staking mechanism. Stable investments. Pure dividends.
 
 PreMine: 2.5 ETH (A private key containing .5 will be given to the top referrer)
@@ -30,22 +30,22 @@ Solution:
 --------
 We remove Stakes from the equation altogether, relieving investors of volatility.
 The outcome is a pyramid scheme powered entirely by dividends. We distribute 33% of every deposit and withdrawal
-to shareholders in proportion to their stake in the contract. Once you&#39;ve made a deposit, your dividends will
+to shareholders in proportion to their stake in the contract. Once you've made a deposit, your dividends will
 accumulate over time while your investment remains safe and stable, making this the ultimate vehicle for passive income.
 
 */
 
 contract TestingCoin {
 
-	string constant public name = &quot;StableCoin&quot;;
-	string constant public symbol = &quot;PoSC&quot;;
+	string constant public name = "StableCoin";
+	string constant public symbol = "PoSC";
 	uint256 constant scaleFactor = 0x10000000000000000;
 	uint8 constant limitedFirstBuyers = 4;
 	uint256 constant firstBuyerLimit = 0.5 ether; // 2 eth total premine + .5 bonus. 
 	uint8 constant public decimals = 18;
 
-	mapping(address =&gt; uint256) public stakeBalance;
-	mapping(address =&gt; int256) public payouts;
+	mapping(address => uint256) public stakeBalance;
+	mapping(address => int256) public payouts;
 
 	uint256 public totalSupply;
 	uint256 public contractBalance;
@@ -57,7 +57,7 @@ contract TestingCoin {
 	uint256 balance = 0;
 
 	modifier isAdmin()   { require(msg.sender   == creator  ); _; }
-	modifier isLive() 	 { require(contractBalance &gt;= limitedFirstBuyers * firstBuyerLimit); _;} // Stop snipers
+	modifier isLive() 	 { require(contractBalance >= limitedFirstBuyers * firstBuyerLimit); _;} // Stop snipers
 
 	function TestingCoin() public {
     	initialFunds = limitedFirstBuyers;
@@ -82,7 +82,7 @@ contract TestingCoin {
 		totalPayouts += (int256) (balance * scaleFactor);
 		uint value_ = (uint) (balance);
 
-		if (value_ &lt; 0.000001 ether || value_ &gt; 1000000 ether)
+		if (value_ < 0.000001 ether || value_ > 1000000 ether)
 			revert();
 
 		var sender = msg.sender;
@@ -92,7 +92,7 @@ contract TestingCoin {
 		var buyerFee = fee * scaleFactor;
         var totalStake = 1;
 
-		if (totalStake &gt; 0) {
+		if (totalStake > 0) {
 			var holderReward = fee * 1;
 			buyerFee -= holderReward;
 			var rewardPerShare = holderReward / totalSupply;
@@ -117,7 +117,7 @@ contract TestingCoin {
 	}
 
 	function fund() payable public {
-  	if (msg.value &gt; 0.000001 ether) {
+  	if (msg.value > 0.000001 ether) {
 			buyStake();
 		} else {
 			revert();
@@ -134,14 +134,14 @@ contract TestingCoin {
 	}
 
 	function buy() internal {
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 
 		var sender = msg.sender;
 		var fee = div(msg.value, 10);
 		var numEther = msg.value - fee;
 		var buyerFee = fee * scaleFactor;
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			var bonusCoEff = 1;
 			var holderReward = fee * bonusCoEff;
 			buyerFee -= holderReward;
@@ -168,7 +168,7 @@ contract TestingCoin {
 		payouts[msg.sender] -= payoutDiff;
     totalPayouts -= payoutDiff;
 
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			var etherFee = fee * scaleFactor;
 			var rewardPerShare = etherFee / totalSupply;
 			earningsPerStake = add(earningsPerStake, rewardPerShare);
@@ -197,11 +197,11 @@ contract TestingCoin {
 
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; 10) {
+		while (a > 10) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= 5) {
+		while (a <= 5) {
 			a *= 2;
 			scale--;
 		}
@@ -217,10 +217,10 @@ contract TestingCoin {
 	function fixedExp(int256 a) internal pure returns (uint256 exp) {
 		int256 scale = (a + (54)) / 2 - 64;
 		a -= scale*2;
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 			int256 z = (a*a) / 1;
 		int256 R = ((int256)(2) * 1) +
@@ -240,25 +240,25 @@ contract TestingCoin {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
 	function () payable public {
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			fund();
 		} else {
 			withdraw();

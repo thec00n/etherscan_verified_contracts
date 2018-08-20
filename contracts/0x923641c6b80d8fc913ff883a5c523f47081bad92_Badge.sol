@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 contract ConfigInterface {
         address public owner;
-        mapping(address =&gt; bool) admins;
-        mapping(bytes32 =&gt; address) addressMap;
-        mapping(bytes32 =&gt; bool) boolMap;
-        mapping(bytes32 =&gt; bytes32) bytesMap;
-        mapping(bytes32 =&gt; uint256) uintMap;
+        mapping(address => bool) admins;
+        mapping(bytes32 => address) addressMap;
+        mapping(bytes32 => bool) boolMap;
+        mapping(bytes32 => bytes32) bytesMap;
+        mapping(bytes32 => uint256) uintMap;
 
         /// @notice setConfigAddress sets configuration `_key` to `_val`
         /// @param _key The key name of the configuration.
@@ -31,22 +31,22 @@ contract ConfigInterface {
         /// @return Whether the configuration setting was successful or not.
         function setConfigUint(bytes32 _key, uint256 _val) returns(bool success);
 
-        /// @notice getConfigAddress gets configuration `_key`&#39;s value
+        /// @notice getConfigAddress gets configuration `_key`'s value
         /// @param _key The key name of the configuration.
         /// @return The configuration value
         function getConfigAddress(bytes32 _key) returns(address val);
 
-        /// @notice getConfigBool gets configuration `_key`&#39;s value
+        /// @notice getConfigBool gets configuration `_key`'s value
         /// @param _key The key name of the configuration.
         /// @return The configuration value
         function getConfigBool(bytes32 _key) returns(bool val);
 
-        /// @notice getConfigBytes gets configuration `_key`&#39;s value
+        /// @notice getConfigBytes gets configuration `_key`'s value
         /// @param _key The key name of the configuration.
         /// @return The configuration value
         function getConfigBytes(bytes32 _key) returns(bytes32 val);
 
-        /// @notice getConfigUint gets configuration `_key`&#39;s value
+        /// @notice getConfigUint gets configuration `_key`'s value
         /// @param _key The key name of the configuration.
         /// @return The configuration value
         function getConfigUint(bytes32 _key) returns(uint256 val);
@@ -55,7 +55,7 @@ contract ConfigInterface {
         /// @return Whether the configuration setting was successful or not.
         function addAdmin(address _admin) returns(bool success);
 
-        /// @notice removeAdmin removes  `_admin`&#39;s rights
+        /// @notice removeAdmin removes  `_admin`'s rights
         /// @param _admin The key name of the configuration.
         /// @return Whether the configuration setting was successful or not.
         function removeAdmin(address _admin) returns(bool success);
@@ -64,9 +64,9 @@ contract ConfigInterface {
 
 contract TokenInterface {
 
-        mapping(address =&gt; uint256) balances;
-        mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-        mapping(address =&gt; bool) seller;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowed;
+        mapping(address => bool) seller;
 
         address config;
         address owner;
@@ -175,8 +175,8 @@ contract TokenSalesInterface {
 
         uint256 public ethToCents;
 
-        mapping(address =&gt; Buyer) buyers;
-        mapping(address =&gt; SaleProxy) proxies;
+        mapping(address => Buyer) buyers;
+        mapping(address => SaleProxy) proxies;
 
         /// @notice Calculates the parts per billion 1⁄1,000,000,000 of `_a` to `_b`
         /// @param _a The antecedent
@@ -296,15 +296,15 @@ contract TokenSalesInterface {
 }
 
 contract Badge {
-        mapping(address =&gt; uint256) balances;
-        mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowed;
 
         address public owner;
         bool public locked;
         string public name;                   //fancy name: eg Simon Bucks
-        uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+        uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
         string public symbol;                 //An identifier: eg SBX
-        string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+        string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
         /// @return total amount of tokens
         uint256 public totalSupply;
@@ -338,7 +338,7 @@ contract Badge {
         }
 
         function safeToAdd(uint a, uint b) returns(bool) {
-                return (a + b &gt;= a);
+                return (a + b >= a);
         }
 
         function addSafely(uint a, uint b) returns(uint result) {
@@ -351,7 +351,7 @@ contract Badge {
         }
 
         function safeToSubtract(uint a, uint b) returns(bool) {
-                return (b &lt;= a);
+                return (b <= a);
         }
 
         function subtractSafely(uint a, uint b) returns(uint) {
@@ -364,7 +364,7 @@ contract Badge {
         }
 
         function transfer(address _to, uint256 _value) returns(bool success) {
-                if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+                if (balances[msg.sender] >= _value && _value > 0) {
                         balances[msg.sender] = subtractSafely(balances[msg.sender], _value);
                         balances[_to] = addSafely(_value, balances[_to]);
                         Transfer(msg.sender, _to, _value);
@@ -376,7 +376,7 @@ contract Badge {
         }
 
         function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-                if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+                if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
                         balances[_to] = addSafely(balances[_to], _value);
                         balances[_from] = subtractSafely(balances[_from], _value);
                         allowed[_from][msg.sender] = subtractSafely(allowed[_from][msg.sender], _value);
@@ -422,9 +422,9 @@ contract Token {
         address public badgeLedger;
         uint256 public totalSupply;
 
-        mapping(address =&gt; uint256) balances;
-        mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-        mapping(address =&gt; bool) seller;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowed;
+        mapping(address => bool) seller;
 
         /// @return total amount of tokens
 
@@ -450,13 +450,13 @@ contract Token {
         function Token(address _config) {
                 config = _config;
                 owner = msg.sender;
-                address _initseller = ConfigInterface(_config).getConfigAddress(&quot;sale1:address&quot;);
+                address _initseller = ConfigInterface(_config).getConfigAddress("sale1:address");
                 seller[_initseller] = true;
                 locked = false;
         }
 
         function safeToAdd(uint a, uint b) returns(bool) {
-                return (a + b &gt;= a);
+                return (a + b >= a);
         }
 
         function addSafely(uint a, uint b) returns(uint result) {
@@ -469,7 +469,7 @@ contract Token {
         }
 
         function safeToSubtract(uint a, uint b) returns(bool) {
-                return (b &lt;= a);
+                return (b <= a);
         }
 
         function subtractSafely(uint a, uint b) returns(uint) {
@@ -482,7 +482,7 @@ contract Token {
         }
 
         function transfer(address _to, uint256 _value) returns(bool success) {
-                if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+                if (balances[msg.sender] >= _value && _value > 0) {
                         balances[msg.sender] = subtractSafely(balances[msg.sender], _value);
                         balances[_to] = addSafely(balances[_to], _value);
                         Transfer(msg.sender, _to, _value);
@@ -494,7 +494,7 @@ contract Token {
         }
 
         function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-                if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+                if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
                         balances[_to] = addSafely(balances[_to], _value);
                         balances[_from] = subtractSafely(balances[_from], _value);
                         allowed[_from][msg.sender] = subtractSafely(allowed[_from][msg.sender], _value);

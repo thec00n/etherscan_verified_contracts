@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -143,7 +143,7 @@ contract ClockAuctionBase {
 
     uint256 public ownerCut;
 
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice,uint256 startingPriceEth, uint256 endingPriceEth, uint256 duration);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice,uint ccy, address winner);
@@ -152,12 +152,12 @@ contract ClockAuctionBase {
     function() external {}
 
     modifier canBeStoredWith64Bits(uint256 _value) {
-        require(_value &lt;= 18446744073709551615);
+        require(_value <= 18446744073709551615);
         _;
     }
 
     modifier canBeStoredWith128Bits(uint256 _value) {
-        require(_value &lt; 340282366920938463463374607431768211455);
+        require(_value < 340282366920938463463374607431768211455);
         _;
     }
 
@@ -174,7 +174,7 @@ contract ClockAuctionBase {
     }
 
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
         
@@ -202,13 +202,13 @@ contract ClockAuctionBase {
         require(_isOnAuction(auction));
 
         uint256 price = _currentPrice(auction,0,ccy);
-        require(_orderAmount &gt;= price);
+        require(_orderAmount >= price);
 
         address seller = auction.seller;
 
         _removeAuction(_tokenId);
 
-        if (price &gt; 0 &amp;&amp; ccy ==0) {
+        if (price > 0 && ccy ==0) {
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
             seller.transfer(sellerProceeds);
@@ -223,7 +223,7 @@ contract ClockAuctionBase {
     }
     
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
     
     function _currentPrice(Auction storage _auction, uint256 timeDelay, uint8 ccy)
@@ -232,7 +232,7 @@ contract ClockAuctionBase {
         returns (uint256)
     {
         uint256 secondsPassed = 0;
-        if (now &gt; _auction.startedAt) {
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt + timeDelay;
         }
         if(ccy == 0){
@@ -263,7 +263,7 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
@@ -285,8 +285,8 @@ contract ClockAuctionBase {
 
 contract ClockAuction is Pausable, ClockAuctionBase {
    // bool public isClockAuction = true;
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) public addressIndexToAuctionCount;
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) public addressIndexToOrderCount;
+    mapping (address => mapping (uint256 => uint256)) public addressIndexToAuctionCount;
+    mapping (address => mapping (uint256 => uint256)) public addressIndexToOrderCount;
    
     event DayPass(uint256 _dayPass, uint256 _startTime, uint256 _now, uint256 time );
     
@@ -303,7 +303,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
    
    
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
         
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -495,7 +495,7 @@ contract SaleClockAuction is ClockAuction {
 
     function averageGen0SalePrice() public view returns (uint256) {
         uint256 sum = 0;
-        for (uint256 i = 0; i &lt; 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             sum += lastGen0SalePrices[i];
         }
         return sum / 5;

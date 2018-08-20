@@ -106,7 +106,7 @@ contract Owned is DBC {
 
 contract BugBountyCompliance is ComplianceInterface, DBC, Owned {
 
-    mapping (address =&gt; bool) isWhitelisted;
+    mapping (address => bool) isWhitelisted;
 
     // PUBLIC VIEW METHODS
 

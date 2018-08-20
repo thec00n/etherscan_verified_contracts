@@ -2,22 +2,22 @@ pragma solidity ^0.4.18;
 
 /************************************************** */
 /* WhenHub Token Smart Contract                     */
-/* Author: Nik Kalyani  <span class="__cf_email__" data-cfemail="07696e6c47706f62696f72652964686a">[email&#160;protected]</span>             */
+/* Author: Nik Kalyani  <span class="__cf_email__" data-cfemail="07696e6c47706f62696f72652964686a">[email protected]</span>             */
 /* Copyright (c) 2018 CalendarTree, Inc.            */
 /* https://interface.whenhub.com                    */
 /************************************************** */
 contract WHENToken {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;                               // Token balance for each address
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed; // Approval granted to transfer tokens by one address to another address
+    mapping(address => uint256) balances;                               // Token balance for each address
+    mapping (address => mapping (address => uint256)) internal allowed; // Approval granted to transfer tokens by one address to another address
 
     /* ERC20 fields */
     string public name;
     string public symbol;
     uint public decimals = 18;
-    string public sign = &quot;￦&quot;;
-    string public logoPng = &quot;https://github.com/WhenHub/WHEN/raw/master/assets/when-token-icon.png&quot;;
+    string public sign = "￦";
+    string public logoPng = "https://github.com/WhenHub/WHEN/raw/master/assets/when-token-icon.png";
 
 
     /* Each registered user on WhenHub Interface Network has a record in this contract */
@@ -35,13 +35,13 @@ contract WHENToken {
         bool icoOwner;                                                   // Flag to indicate SupportManager has authorized
     }
 
-    // PurchaseCredit is used to track purchases made by USD when user isn&#39;t already registered
+    // PurchaseCredit is used to track purchases made by USD when user isn't already registered
     struct PurchaseCredit {
         uint256 jiffys;                                                  // Number of jiffys purchased
         uint256 purchaseTimestamp;                                       // Date/time of original purchase
     }
 
-    mapping(address =&gt; PurchaseCredit) purchaseCredits;                  // Temporary store for USD-purchased tokens
+    mapping(address => PurchaseCredit) purchaseCredits;                  // Temporary store for USD-purchased tokens
 
     uint private constant ONE_WEEK = 604800;
     uint private constant SECONDS_IN_MONTH = 2629743;
@@ -94,10 +94,10 @@ contract WHENToken {
     address private supportManager;                                     // Account used by support team to reimburse users
     address private icoWallet;                                          // Account to which ICO ETH is sent
 
-    mapping(address =&gt; User) private users;                             // All registered users   
-    mapping(address =&gt; uint256) private vestingEscrows;                 // Unvested tokens held in escrow
+    mapping(address => User) private users;                             // All registered users   
+    mapping(address => uint256) private vestingEscrows;                 // Unvested tokens held in escrow
 
-    mapping(address =&gt; uint256) private authorizedContracts;            // Contracts authorized to call this one           
+    mapping(address => uint256) private authorizedContracts;            // Contracts authorized to call this one           
 
     address[] private registeredUserLookup;                             // Lookup table of registered users     
 
@@ -139,7 +139,7 @@ contract WHENToken {
 
 
     /**
-    * @dev Modifier that requires the &quot;operational&quot; boolean variable to be &quot;true&quot;
+    * @dev Modifier that requires the "operational" boolean variable to be "true"
     *      This is used on all state changing functions to pause the contract in 
     *      the event there is an issue that needs to be fixed
     */
@@ -150,7 +150,7 @@ contract WHENToken {
     }
 
     /**
-    * @dev Modifier that requires the &quot;ContractOwner&quot; account to be the function caller
+    * @dev Modifier that requires the "ContractOwner" account to be the function caller
     */
     modifier requireContractOwner()
     {
@@ -159,7 +159,7 @@ contract WHENToken {
     }
 
     /**
-    * @dev Modifier that requires the &quot;PlatformManager&quot; account to be the function caller
+    * @dev Modifier that requires the "PlatformManager" account to be the function caller
     */
     modifier requirePlatformManager()
     {
@@ -347,7 +347,7 @@ contract WHENToken {
     {
         require(to != address(0));
         require(to != msg.sender);
-        require(value &lt;= transferableBalanceOf(msg.sender));                                         
+        require(value <= transferableBalanceOf(msg.sender));                                         
 
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -377,8 +377,8 @@ contract WHENToken {
                             returns (bool) 
     {
         require(from != address(0));
-        require(value &lt;= allowed[from][msg.sender]);
-        require(value &lt;= transferableBalanceOf(from));                                         
+        require(value <= allowed[from][msg.sender]);
+        require(value <= transferableBalanceOf(from));                                         
         require(to != address(0));
         require(from != to);
 
@@ -413,7 +413,7 @@ contract WHENToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param spender The address which will spend the funds.
     * @param value The amount of tokens to be spent.
@@ -450,7 +450,7 @@ contract WHENToken {
         require(account != address(0));
 
         if (users[account].isRegistered) {
-            uint256 restrictedJiffys = users[account].interfaceEscrowJiffys &gt;= users[account].seedJiffys ? users[account].interfaceEscrowJiffys : users[account].seedJiffys;
+            uint256 restrictedJiffys = users[account].interfaceEscrowJiffys >= users[account].seedJiffys ? users[account].interfaceEscrowJiffys : users[account].seedJiffys;
             return balances[account].sub(restrictedJiffys);
         }
         return balances[account];
@@ -461,7 +461,7 @@ contract WHENToken {
     *
     * Since seed tokens can be used to pay for Interface transactions
     * this balance indicates what the user can afford to spend for such
-    * &quot;internal&quot; transactions ignoring distinction between paid and signup tokens
+    * "internal" transactions ignoring distinction between paid and signup tokens
     *
     * @param account The address to query the balance of.
     * @return An uint256 representing the spendable amount owned by the passed address.
@@ -528,7 +528,7 @@ contract WHENToken {
     function authorizeIcoBurn() 
                             external
     {
-        require(balances[icoOwner] &gt; 0);
+        require(balances[icoOwner] > 0);
         require((msg.sender == contractOwner) || (msg.sender == platformManager) || (msg.sender == icoOwner));
 
         if (msg.sender == contractOwner) {
@@ -539,7 +539,7 @@ contract WHENToken {
             icoBurnAuthorized.icoOwner = true;
         }
 
-        if (icoBurnAuthorized.contractOwner &amp;&amp; icoBurnAuthorized.platformManager &amp;&amp; icoBurnAuthorized.icoOwner) {
+        if (icoBurnAuthorized.contractOwner && icoBurnAuthorized.platformManager && icoBurnAuthorized.icoOwner) {
             balances[icoOwner] = 0;
         }
     }
@@ -560,7 +560,7 @@ contract WHENToken {
                             requireIsOperational 
                             requireContractOwner
     {
-        require(basisPoints &gt;= 0);
+        require(basisPoints >= 0);
 
         winNetworkFeeBasisPoints = basisPoints;
     }
@@ -578,7 +578,7 @@ contract WHENToken {
                             requireIsOperational 
                             requireContractOwner
     {
-        require(tokens &lt;= 10000);
+        require(tokens <= 10000);
 
         userSignupJiffys = jiffysMultiplier.mul(tokens);
     }
@@ -596,7 +596,7 @@ contract WHENToken {
                             requireIsOperational 
                             requireContractOwner
     {
-        require(tokens &lt;= 10000);
+        require(tokens <= 10000);
 
         referralSignupJiffys = jiffysMultiplier.mul(tokens);
     }
@@ -684,7 +684,7 @@ contract WHENToken {
                             requireIsOperational
                             requireContractOwner
     {
-        require(rate &gt;= 0); // Cannot set to less than 0.0001 ETH/￦
+        require(rate >= 0); // Cannot set to less than 0.0001 ETH/￦
 
         weiExchangeRate = rate;
     }
@@ -702,7 +702,7 @@ contract WHENToken {
                             requireIsOperational
                             requireContractOwner
     {
-        require(rate &gt;= 1);
+        require(rate >= 1);
 
         centsExchangeRate = rate;
     }
@@ -793,7 +793,7 @@ contract WHENToken {
                             returns(bool) 
     {
         uint256 requiredJiffys = referralSignupJiffys.mul(2);
-        return (referralJiffysBalance &gt;= requiredJiffys) &amp;&amp; (balances[platformManager] &gt;= requiredJiffys);
+        return (referralJiffysBalance >= requiredJiffys) && (balances[platformManager] >= requiredJiffys);
     }
 
     /**
@@ -810,7 +810,7 @@ contract WHENToken {
                             view 
                             returns(bool) 
     {
-        return (account != address(0)) &amp;&amp; users[account].isRegistered;
+        return (account != address(0)) && users[account].isRegistered;
     }
 
     /**
@@ -831,14 +831,14 @@ contract WHENToken {
         require(account != address(0));                                             // No invalid account
         require(!users[account].isRegistered);                                      // No double registration
         require(referrer == address(0) ? true : users[referrer].isRegistered);      // Referrer, if present, must be a registered user
-        require(referrer != account);                                               // User can&#39;t refer her/himself
+        require(referrer != account);                                               // User can't refer her/himself
 
         // Initialize user with restricted jiffys
         users[account] = User(true, 0, 0, referrer);
         registeredUserLookup.push(account);
 
 
-        if (purchaseCredits[creditAccount].jiffys &gt; 0) {
+        if (purchaseCredits[creditAccount].jiffys > 0) {
             processPurchase(creditAccount, account, purchaseCredits[creditAccount].jiffys, purchaseCredits[creditAccount].purchaseTimestamp);
             purchaseCredits[creditAccount].jiffys = 0;
             delete purchaseCredits[creditAccount];
@@ -852,7 +852,7 @@ contract WHENToken {
     * @param account The wallet address
     * @param creditAccount The address containing any tokens purchased with USD
     * @param referrer The referring user address
-    * @return A uint256 with the user&#39;s token balance
+    * @return A uint256 with the user's token balance
     */ 
     function registerUser
                             (
@@ -878,7 +878,7 @@ contract WHENToken {
     * @param account The wallet address
     * @param creditAccount The address containing any tokens purchased with USD
     * @param referrer The referring user address
-    * @return A uint256 with the user&#39;s token balance
+    * @return A uint256 with the user's token balance
     */
     function registerUserBonus
                             (
@@ -897,7 +897,7 @@ contract WHENToken {
         
         // Allocate if there are any remaining signup tokens
         uint256 jiffys = 0;
-        if ((incentiveJiffysBalance &gt;= userSignupJiffys) &amp;&amp; (balances[platformManager] &gt;= userSignupJiffys)) {
+        if ((incentiveJiffysBalance >= userSignupJiffys) && (balances[platformManager] >= userSignupJiffys)) {
             incentiveJiffysBalance = incentiveJiffysBalance.sub(userSignupJiffys);
             users[account].seedJiffys = users[account].seedJiffys.add(userSignupJiffys);
             transfer(account, userSignupJiffys);
@@ -907,10 +907,10 @@ contract WHENToken {
         UserRegister(account, balanceOf(account), jiffys);          // Fire event
 
        // Allocate referral tokens for both user and referrer if available       
-       if ((referrer != address(0)) &amp;&amp; isReferralSupported()) {
+       if ((referrer != address(0)) && isReferralSupported()) {
             referralJiffysBalance = referralJiffysBalance.sub(referralSignupJiffys.mul(2));
 
-            // Referal tokens are restricted so it is necessary to update user&#39;s account
+            // Referal tokens are restricted so it is necessary to update user's account
             transfer(referrer, referralSignupJiffys);
             users[referrer].seedJiffys = users[referrer].seedJiffys.add(referralSignupJiffys);
 
@@ -941,10 +941,10 @@ contract WHENToken {
                             external 
                             requireIsOperational 
     {
-        if (jiffys &gt; 0) {
+        if (jiffys > 0) {
             require(isContractAuthorized(msg.sender) || isPlatformManager(msg.sender));   
             require(isUserRegistered(account));                                                     
-            require(spendableBalanceOf(account) &gt;= jiffys);
+            require(spendableBalanceOf(account) >= jiffys);
 
             users[account].interfaceEscrowJiffys = users[account].interfaceEscrowJiffys.add(jiffys);
         }
@@ -967,10 +967,10 @@ contract WHENToken {
                             external 
                             requireIsOperational 
     {
-        if (jiffys &gt; 0) {
+        if (jiffys > 0) {
             require(isContractAuthorized(msg.sender) || isPlatformManager(msg.sender));   
             require(isUserRegistered(account));                                                     
-            require(users[account].interfaceEscrowJiffys &gt;= jiffys);
+            require(users[account].interfaceEscrowJiffys >= jiffys);
 
             users[account].interfaceEscrowJiffys = users[account].interfaceEscrowJiffys.sub(jiffys);
         }
@@ -981,7 +981,7 @@ contract WHENToken {
     *
     * This function is called by the InterfaceData contract when the front-end
     * application makes a settle() call indicating that the transaction is
-    * complete and it&#39;s time to pay the Expert. To prevent unauthorized use
+    * complete and it's time to pay the Expert. To prevent unauthorized use
     * the function is only callable by a previously authorized contract and
     * is limited to paying out funds previously escrowed.
     *
@@ -1006,11 +1006,11 @@ contract WHENToken {
                             returns(uint256, uint256)
     {
         require(isContractAuthorized(msg.sender));   
-        require(billableJiffys &gt;= 0);
-        require(users[payer].interfaceEscrowJiffys &gt;= billableJiffys);  // Only payment of Interface escrowed funds is allowed
+        require(billableJiffys >= 0);
+        require(users[payer].interfaceEscrowJiffys >= billableJiffys);  // Only payment of Interface escrowed funds is allowed
         require(users[payee].isRegistered);
 
-        // This function may be called if the Expert&#39;s surety is
+        // This function may be called if the Expert's surety is
         // being forfeited. In that case, the payment is made to the 
         // Support and then funds will be distributed as appropriate
         // to parties following a grievance process. Since the rules 
@@ -1023,7 +1023,7 @@ contract WHENToken {
         uint256 referralFeeJiffys = 0;
         uint256 winNetworkFeeJiffys = 0;
 
-        if (billableJiffys &gt; 0) {
+        if (billableJiffys > 0) {
 
             // Second, pay the payee
             processPayment(payer, payee, billableJiffys);
@@ -1032,13 +1032,13 @@ contract WHENToken {
             if (payee != supportManager) {
 
                 // Third, Payee pays Referrer and referral fees due
-                if ((referralFeeBasisPoints &gt; 0) &amp;&amp; (referrer != address(0)) &amp;&amp; (users[referrer].isRegistered)) {
+                if ((referralFeeBasisPoints > 0) && (referrer != address(0)) && (users[referrer].isRegistered)) {
                     referralFeeJiffys = billableJiffys.mul(referralFeeBasisPoints).div(BASIS_POINTS_TO_PERCENTAGE); // Basis points to percentage conversion
                     processPayment(payee, referrer, referralFeeJiffys);
                 }
 
                 // Finally, Payee pays contract owner WIN network fee
-                if (winNetworkFeeBasisPoints &gt; 0) {
+                if (winNetworkFeeBasisPoints > 0) {
                     winNetworkFeeJiffys = billableJiffys.mul(winNetworkFeeBasisPoints).div(BASIS_POINTS_TO_PERCENTAGE); // Basis points to percentage conversion
                     processPayment(payee, contractOwner, winNetworkFeeJiffys);
                 }                    
@@ -1065,7 +1065,7 @@ contract WHENToken {
     {
         require(isUserRegistered(payer));
         require(isUserRegistered(payee));
-        require(spendableBalanceOf(payer) &gt;= jiffys);
+        require(spendableBalanceOf(payer) >= jiffys);
 
         balances[payer] = balances[payer].sub(jiffys); 
         balances[payee] = balances[payee].add(jiffys);
@@ -1077,7 +1077,7 @@ contract WHENToken {
         // tokens are not allowed to be transferred out of an account. As a user
         // makes payments to other users, those tokens have served their purpose
         // of encouraging use of the network and are no longer are restricted.
-        if (users[payer].seedJiffys &gt;= jiffys) {
+        if (users[payer].seedJiffys >= jiffys) {
             users[payer].seedJiffys = users[payer].seedJiffys.sub(jiffys);
         } else {
             users[payer].seedJiffys = 0;
@@ -1107,18 +1107,18 @@ contract WHENToken {
                             requireIsOperational 
     {
         require(isContractAuthorized(msg.sender));   
-        require(spendableBalanceOf(issuer) &gt;= unvestedJiffys.add(vestedJiffys));
+        require(spendableBalanceOf(issuer) >= unvestedJiffys.add(vestedJiffys));
 
 
         // Any vestedJiffys are transferred immediately to the beneficiary
-        if (vestedJiffys &gt; 0) {
+        if (vestedJiffys > 0) {
             balances[issuer] = balances[issuer].sub(vestedJiffys);
             balances[beneficiary] = balances[beneficiary].add(vestedJiffys);
             Transfer(issuer, beneficiary, vestedJiffys);
         }
 
         // Any unvestedJiffys are removed from the granting account balance
-        // A corresponding number of Jiffys is added to the granting account&#39;s
+        // A corresponding number of Jiffys is added to the granting account's
         // vesting escrow balance.
         balances[issuer] = balances[issuer].sub(unvestedJiffys);
         vestingEscrows[issuer] = vestingEscrows[issuer].add(unvestedJiffys);
@@ -1145,7 +1145,7 @@ contract WHENToken {
                             requireIsOperational 
     {
         require(isContractAuthorized(msg.sender));   
-        require(vestingEscrows[issuer] &gt;= jiffys);
+        require(vestingEscrows[issuer] >= jiffys);
 
         vestingEscrows[issuer] = vestingEscrows[issuer].sub(jiffys);
         balances[beneficiary] = balances[beneficiary].add(jiffys);
@@ -1197,7 +1197,7 @@ contract WHENToken {
                                   returns(bool, uint256, uint256, uint256, uint256, uint256)
     {
         return (
-                    balances[icoOwner] &gt; 0, 
+                    balances[icoOwner] > 0, 
                     weiExchangeRate, 
                     centsExchangeRate, 
                     bonus20EndTimestamp, 
@@ -1237,9 +1237,9 @@ contract WHENToken {
                             payable 
                             requireIsOperational 
     {
-        require(balances[icoOwner] &gt; 0);
+        require(balances[icoOwner] > 0);
         require(account != address(0));        
-        require(msg.value &gt;= weiExchangeRate);    // Minimum 1 token
+        require(msg.value >= weiExchangeRate);    // Minimum 1 token
 
         uint256 weiReceived = msg.value;
 
@@ -1266,9 +1266,9 @@ contract WHENToken {
                             requireIsOperational 
                             requirePlatformManager
     {
-        require(balances[icoOwner] &gt; 0);
+        require(balances[icoOwner] > 0);
         require(account != address(0));        
-        require(cents &gt;= centsExchangeRate);    // Minimum 1 token
+        require(cents >= centsExchangeRate);    // Minimum 1 token
 
 
 
@@ -1313,17 +1313,17 @@ contract WHENToken {
 
 
         // Transfer purchased Jiffys to buyer
-        require(transferableBalanceOf(source) &gt;= totalJiffys);        
+        require(transferableBalanceOf(source) >= totalJiffys);        
         balances[source] = balances[source].sub(totalJiffys);
         balances[account] = balances[account].add(totalJiffys);            
         Transfer(source, account, totalJiffys);
 
         // If the buyer has a referrer attached to their profile, then
-        // transfer 3% of the purchased Jiffys to the referrer&#39;s account
-        if (users[account].isRegistered &amp;&amp; (users[account].referrer != address(0))) {
+        // transfer 3% of the purchased Jiffys to the referrer's account
+        if (users[account].isRegistered && (users[account].referrer != address(0))) {
             address referrer = users[account].referrer;
             uint256 referralJiffys = (buyJiffys.mul(BUYER_REFERRER_BOUNTY)).div(100);
-            if ((referralJiffys &gt; 0) &amp;&amp; (transferableBalanceOf(icoOwner) &gt;= referralJiffys)) {
+            if ((referralJiffys > 0) && (transferableBalanceOf(icoOwner) >= referralJiffys)) {
                 balances[icoOwner] = balances[icoOwner].sub(referralJiffys);
                 balances[referrer] = balances[referrer].add(referralJiffys);  
                 Transfer(icoOwner, referrer, referralJiffys);
@@ -1349,9 +1349,9 @@ contract WHENToken {
         uint256 bonusPercentage = 0;
 
         // Time-based bonus
-        if (purchaseTimestamp &lt;= bonus5EndTimestamp) {
-            if (purchaseTimestamp &lt;= bonus10EndTimestamp) {
-                if (purchaseTimestamp &lt;= bonus20EndTimestamp) {
+        if (purchaseTimestamp <= bonus5EndTimestamp) {
+            if (purchaseTimestamp <= bonus10EndTimestamp) {
+                if (purchaseTimestamp <= bonus20EndTimestamp) {
                     bonusPercentage = 20;
                 } else {
                     bonusPercentage = 10;
@@ -1376,7 +1376,7 @@ Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
+"Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -1385,7 +1385,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -1409,20 +1409,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

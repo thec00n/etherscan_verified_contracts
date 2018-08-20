@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract PREZ46Coin  {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract PREZ46Coin  {
 
     function PREZ46Coin () public {
         totalSupply = 1000000000000000000;
-        symbol = &#39;PZ46&#39;;
+        symbol = 'PZ46';
         owner = 0xCe2588aB8C2fB15c8b60c5A251552a613f9c8FE9;
         balances[owner] = totalSupply;
         decimals = 9;

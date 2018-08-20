@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
-// folio.ninja ERC20 Token &amp; Crowdsale Contract
-// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761f1810193610191a1f1958181f181c17">[email&#160;protected]</a>
+// folio.ninja ERC20 Token & Crowdsale Contract
+// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761f1810193610191a1f1958181f181c17">[email protected]</a>
 // Cap of 12,632,000 Tokens
 // 632,000 Tokens to Foundation
 // 25,000 ETH Cap that goes to Developers
@@ -21,13 +21,13 @@ contract SafeMath is Assertive{
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -46,7 +46,7 @@ contract ERC20Protocol {
 
 contract ERC20 is ERC20Protocol {
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -57,7 +57,7 @@ contract ERC20 is ERC20Protocol {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -82,9 +82,9 @@ contract ERC20 is ERC20Protocol {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 }
@@ -92,8 +92,8 @@ contract ERC20 is ERC20Protocol {
 // Folio Ninja Token Contract
 contract FolioNinjaToken is ERC20, SafeMath {
     // Consant token specific fields
-    string public constant name = &quot;folio.ninja&quot;;
-    string public constant symbol = &quot;FLN&quot;;
+    string public constant name = "folio.ninja";
+    string public constant symbol = "FLN";
     uint public constant decimals = 18;
     uint public constant MAX_TOTAL_TOKEN_AMOUNT = 12632000 * 10 ** decimals;
 
@@ -115,12 +115,12 @@ contract FolioNinjaToken is ERC20, SafeMath {
     }
 
     modifier is_later_than(uint x) {
-        assert(now &gt; x);
+        assert(now > x);
         _;
     }
 
     modifier max_total_token_amount_not_reached(uint amount) {
-        assert(safeAdd(totalSupply, amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+        assert(safeAdd(totalSupply, amount) <= MAX_TOTAL_TOKEN_AMOUNT);
         _;
     }
 
@@ -218,17 +218,17 @@ contract Contribution is SafeMath {
     }
 
     modifier ether_cap_not_reached {
-        assert(safeAdd(etherRaised, msg.value) &lt;= ETHER_CAP);
+        assert(safeAdd(etherRaised, msg.value) <= ETHER_CAP);
         _;
     }
 
     modifier is_not_earlier_than(uint x) {
-        assert(now &gt;= x);
+        assert(now >= x);
         _;
     }
 
     modifier is_earlier_than(uint x) {
-        assert(now &lt; x);
+        assert(now < x);
         _;
     }
 
@@ -238,13 +238,13 @@ contract Contribution is SafeMath {
     /// Post: Price rate at given blockTime; One ether equals priceRate() of FLN tokens
     function priceRate() constant returns (uint) {
         // Four price tiers
-        if (startTime &lt;= now &amp;&amp; now &lt; startTime + 1 weeks)
+        if (startTime <= now && now < startTime + 1 weeks)
             return PRICE_RATE_FIRST;
-        if (startTime + 1 weeks &lt;= now &amp;&amp; now &lt; startTime + 2 weeks)
+        if (startTime + 1 weeks <= now && now < startTime + 2 weeks)
             return PRICE_RATE_SECOND;
-        if (startTime + 2 weeks &lt;= now &amp;&amp; now &lt; startTime + 3 weeks)
+        if (startTime + 2 weeks <= now && now < startTime + 3 weeks)
             return PRICE_RATE_THIRD;
-        if (startTime + 3 weeks &lt;= now &amp;&amp; now &lt; endTime)
+        if (startTime + 3 weeks <= now && now < endTime)
             return PRICE_RATE_FOURTH;
         // Should not be called before or after contribution period
         assert(false);

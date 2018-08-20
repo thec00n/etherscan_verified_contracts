@@ -25,34 +25,34 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint256) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract BitEyeEx is SafeMath {
-  mapping (address =&gt; mapping (address =&gt; uint256)) public balances;
-  mapping (bytes32 =&gt; bool) public traded;
-  mapping (bytes32 =&gt; uint256) public orderFills;
+  mapping (address => mapping (address => uint256)) public balances;
+  mapping (bytes32 => bool) public traded;
+  mapping (bytes32 => uint256) public orderFills;
   address public owner;
   address public feeAccount;
-  mapping (address =&gt; bool) public signers;
-  mapping (address =&gt; uint256) public cancels;
-  mapping (bytes32 =&gt; bool) public withdraws;
+  mapping (address => bool) public signers;
+  mapping (address => uint256) public cancels;
+  mapping (bytes32 => bool) public withdraws;
 
   uint256 public teamLocked = 300000000 * 1e18;
   uint256 public teamClaimed = 0;
   uint256 public totalForMining = 600000000 * 1e18;
   uint256 public unmined = 600000000 * 1e18;
-  mapping (address =&gt; uint256) public mined;
+  mapping (address => uint256) public mined;
   address public BEY;
-  mapping (address =&gt; uint256) public miningRate;
+  mapping (address => uint256) public miningRate;
   bool public paused = false;
   
 
@@ -128,7 +128,7 @@ contract BitEyeEx is SafeMath {
   }
 
   function withdraw(address token, uint amount, uint nonce, address _signer, uint8 v, bytes32 r, bytes32 s) public {
-    require(balances[token][msg.sender] &gt;= amount);
+    require(balances[token][msg.sender] >= amount);
     require(signers[_signer]);
     bytes32 hash = keccak256(this, msg.sender, token, amount, nonce);
     require(isValidSignature(_signer, hash, v, r, s));
@@ -149,23 +149,23 @@ contract BitEyeEx is SafeMath {
   }
 
   function updateCancels(address user, uint256 nonce) public onlySigner {
-    require(nonce &gt; cancels[user]);
+    require(nonce > cancels[user]);
     cancels[user] = nonce;
   }
 
   function getMiningRate(address _quoteToken) public view returns(uint256) {
     uint256 initialRate = miningRate[_quoteToken];
-    if (unmined &gt; 500000000e18){
+    if (unmined > 500000000e18){
       return initialRate;
-    } else if (unmined &gt; 400000000e18 &amp;&amp; unmined &lt;= 500000000e18){
+    } else if (unmined > 400000000e18 && unmined <= 500000000e18){
       return initialRate * 9e17 / 1e18;
-    } else if (unmined &gt; 300000000e18 &amp;&amp; unmined &lt;= 400000000e18){
+    } else if (unmined > 300000000e18 && unmined <= 400000000e18){
       return initialRate * 8e17 / 1e18;
-    } else if (unmined &gt; 200000000e18 &amp;&amp; unmined &lt;= 300000000e18){
+    } else if (unmined > 200000000e18 && unmined <= 300000000e18){
       return initialRate * 7e17 / 1e18;
-    } else if (unmined &gt; 100000000e18 &amp;&amp; unmined &lt;= 200000000e18){
+    } else if (unmined > 100000000e18 && unmined <= 200000000e18){
       return initialRate * 6e17 / 1e18;
-    } else if(unmined &lt;= 100000000e18) {
+    } else if(unmined <= 100000000e18) {
       return initialRate * 5e17 / 1e18;
     }
   }
@@ -179,11 +179,11 @@ contract BitEyeEx is SafeMath {
     returns (bool)
   {
     require(signers[addrs[4]]);
-    require(cancels[addrs[2]] &lt; vals[2]);
-    require(cancels[addrs[3]] &lt; vals[5]);
+    require(cancels[addrs[2]] < vals[2]);
+    require(cancels[addrs[3]] < vals[5]);
 
-    require(vals[6] &gt; 0 &amp;&amp; vals[7] &gt; 0 &amp;&amp; vals[8] &gt; 0);
-    require(vals[1] &gt;= vals[7] &amp;&amp; vals[4] &gt;= vals[7]);
+    require(vals[6] > 0 && vals[7] > 0 && vals[8] > 0);
+    require(vals[1] >= vals[7] && vals[4] >= vals[7]);
     require(msg.sender == addrs[2] || msg.sender == addrs[3] || msg.sender == addrs[4]);
 
     bytes32 buyHash = keccak256(address(this), addrs[0], addrs[1], addrs[2], vals[0], vals[1], vals[2]);
@@ -198,12 +198,12 @@ contract BitEyeEx is SafeMath {
     require(!traded[tradeHash]);
     traded[tradeHash] = true;
     
-    require(safeAdd(orderFills[buyHash], vals[6]) &lt;= vals[0]);
-    require(safeAdd(orderFills[sellHash], vals[6]) &lt;= vals[3]);
-    require(balances[addrs[1]][addrs[2]] &gt;= vals[7]);
+    require(safeAdd(orderFills[buyHash], vals[6]) <= vals[0]);
+    require(safeAdd(orderFills[sellHash], vals[6]) <= vals[3]);
+    require(balances[addrs[1]][addrs[2]] >= vals[7]);
 
     balances[addrs[1]][addrs[2]] = safeSub(balances[addrs[1]][addrs[2]], vals[7]);
-    require(balances[addrs[0]][addrs[3]] &gt;= vals[6]);
+    require(balances[addrs[0]][addrs[3]] >= vals[6]);
     balances[addrs[0]][addrs[3]] = safeSub(balances[addrs[0]][addrs[3]], vals[6]);
     balances[addrs[0]][addrs[2]] = safeAdd(balances[addrs[0]][addrs[2]], safeSub(vals[6], (safeMul(vals[6], vals[9]) / 1 ether)));
     balances[addrs[1]][addrs[3]] = safeAdd(balances[addrs[1]][addrs[3]], safeSub(vals[7], (safeMul(vals[7], vals[10]) / 1 ether)));
@@ -215,10 +215,10 @@ contract BitEyeEx is SafeMath {
     orderFills[sellHash] = safeAdd(orderFills[sellHash], vals[6]);
 
     // mining BEYs
-    if(unmined &gt; 0) {
-      if(miningRate[addrs[1]] &gt; 0){
+    if(unmined > 0) {
+      if(miningRate[addrs[1]] > 0){
         uint256 minedBEY = safeMul(safeMul(vals[7], getMiningRate(addrs[1])), 2) / 1 ether;
-        if(unmined &gt; minedBEY) {
+        if(unmined > minedBEY) {
           mined[addrs[2]] = safeAdd(mined[addrs[2]], minedBEY / 2);
           mined[addrs[3]] = safeAdd(mined[addrs[3]], minedBEY / 2);
           unmined = safeSub(unmined, minedBEY);
@@ -233,7 +233,7 @@ contract BitEyeEx is SafeMath {
   }
 
   function claim() public returns(bool) {
-    require(mined[msg.sender] &gt; 0);
+    require(mined[msg.sender] > 0);
     require(BEY != address(0));
     uint256 amount = mined[msg.sender];
     mined[msg.sender] = 0;
@@ -244,10 +244,10 @@ contract BitEyeEx is SafeMath {
 
   function claimByTeam() public onlyOwner returns(bool) {
     uint256 totalMined = safeSub(totalForMining, unmined);
-    require(totalMined &gt; 0);
+    require(totalMined > 0);
     uint256 released = safeMul(teamLocked, totalMined) / totalForMining;
     uint256 amount = safeSub(released, teamClaimed);
-    require(amount &gt; 0);
+    require(amount > 0);
     teamClaimed = released;
     require(Token(BEY).transfer(msg.sender, amount));
     Release(msg.sender, amount);
@@ -284,7 +284,7 @@ contract BitEyeEx is SafeMath {
         returns (bool)
   {
     return signer == ecrecover(
-      keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+      keccak256("\x19Ethereum Signed Message:\n32", hash),
       v,
       r,
       s

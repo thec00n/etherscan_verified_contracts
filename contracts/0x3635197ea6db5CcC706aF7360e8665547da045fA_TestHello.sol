@@ -4,12 +4,12 @@ contract TestHello {
 
     /// Create a new ballot with $(_numProposals) different proposals.
     function TestHello() public {
-        logite(&quot;HELLO_TestHello&quot;);
+        logite("HELLO_TestHello");
     }
 
 
     /// Delegate your vote to the voter $(to).
     function logit() public {
-        logite(&quot;LOGIT_TestHello&quot;);
+        logite("LOGIT_TestHello");
     }
 }

@@ -19,8 +19,8 @@ contract TokenRecipient {
 
 
 contract T is ERC20 {
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	uint8 public decimals;
 	string public name;
 	string public symbol;
@@ -46,7 +46,7 @@ contract T is ERC20 {
 		assembly {
 			length := extcodesize(_addr)
 		}
-		return length &gt; 0;
+		return length > 0;
 	}
 	
 	constructor() public {
@@ -55,15 +55,15 @@ contract T is ERC20 {
 		decimals = 18;
 		totalSupply = 2500000000 * uint(10)**decimals;
 		balances[owner] = totalSupply;
-		name = &quot;HOTCOIN&quot;;
-		symbol = &quot;HCN&quot;;
+		name = "HOTCOIN";
+		symbol = "HCN";
 		emit Transfer(address(0), owner, totalSupply);
 	}
 	
 	
 	
 	function transfer(address _to, uint256 _value) public isRunning returns (bool) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+		require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		if (isContract(_to)) {
@@ -75,7 +75,7 @@ contract T is ERC20 {
 	}
 	
 	function transfer(address _to, uint256 _value, bytes _data) public isRunning returns (bool) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+		require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		if (isContract(_to)) {
@@ -86,7 +86,7 @@ contract T is ERC20 {
 	}
 	
 	function transfer(address _to, uint256 _value, bytes _data, string _callback) public isRunning returns (bool) {
-		require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+		require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
 		if (isContract(_to)) {
@@ -98,24 +98,24 @@ contract T is ERC20 {
 	
 	function transfer(address[] _tos, uint256[] _values) public isRunning returns (bool) {
 		uint cnt = _tos.length;
-		require(cnt &gt; 0 &amp;&amp; cnt &lt;= 1000 &amp;&amp; cnt == _values.length);
+		require(cnt > 0 && cnt <= 1000 && cnt == _values.length);
 		uint256 totalAmount = 0;
 		uint256 val;
 		address to;
 		uint i;
 		
-		for (i = 0; i &lt; cnt; i++) {
+		for (i = 0; i < cnt; i++) {
 			val = _values[i];
 			to = _tos[i];
-			require(balances[to] + val &gt;= balances[to] &amp;&amp; totalAmount + val &gt;= totalAmount);
+			require(balances[to] + val >= balances[to] && totalAmount + val >= totalAmount);
 			totalAmount += val;
 		}
 		
-		require(balances[msg.sender] &gt;= totalAmount);
+		require(balances[msg.sender] >= totalAmount);
 		balances[msg.sender] -= totalAmount;
 		bytes memory empty;
 		
-		for (i = 0; i &lt; cnt; i++) {
+		for (i = 0; i < cnt; i++) {
 			to = _tos[i];
 			val = _values[i];
 			balances[to] += val;
@@ -135,7 +135,7 @@ contract T is ERC20 {
 	}
 	
 	function transferFrom(address _from, address _to, uint256 _value) public isRunning returns (bool) {
-		require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]);
+		require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
 		balances[_to] += _value;
 		balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;

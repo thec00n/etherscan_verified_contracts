@@ -4,11 +4,11 @@ contract Snake {
     address public ownerAddress;
     uint256 public length; // stores length of the snake
 
-    mapping (uint256 =&gt; uint256) public snake; // stores prices of the tokens
-    mapping (uint256 =&gt; address) public owners; // stoes owners of the tokens
-    mapping (uint256 =&gt; uint256) public stamps; // timestamps of last trades of tokens
+    mapping (uint256 => uint256) public snake; // stores prices of the tokens
+    mapping (uint256 => address) public owners; // stoes owners of the tokens
+    mapping (uint256 => uint256) public stamps; // timestamps of last trades of tokens
     
-    event Sale(address owner, uint256 profit, uint256 stamp); // &#39;stores&#39; sales of tokens
+    event Sale(address owner, uint256 profit, uint256 stamp); // 'stores' sales of tokens
     
     function Snake() public {
         ownerAddress = msg.sender; 
@@ -18,8 +18,8 @@ contract Snake {
     
     // this function is called when someone buys a token from someone else
     function buy(uint256 id) external payable {
-        require(snake[id] &gt; 0); // must be a valid token
-        require(msg.value &gt;= snake[id] / 100 * 150); // must send enough ether to buy it
+        require(snake[id] > 0); // must be a valid token
+        require(msg.value >= snake[id] / 100 * 150); // must send enough ether to buy it
         address owner = owners[id];
         uint256 amount = snake[id];
 
@@ -28,7 +28,7 @@ contract Snake {
         stamps[id] = uint256(now); // set timestamp of last trade of token to now
 
         owner.transfer(amount / 100 * 125); // transfer investment+gain to previous owner. 
-        Sale(owner, amount, uint256(now)); // broadcast Sale event to the &#39;chain
+        Sale(owner, amount, uint256(now)); // broadcast Sale event to the 'chain
         // if this is the head token being traded:
         if (id == 0) { 
             length++; // increase the length of the snake

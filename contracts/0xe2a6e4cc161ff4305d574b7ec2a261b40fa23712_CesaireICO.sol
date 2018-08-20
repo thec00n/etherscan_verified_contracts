@@ -11,10 +11,10 @@ pragma solidity ^0.4.17;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -22,7 +22,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -92,7 +92,7 @@ contract CesaireICO is Owned {
     uint256 public totalDistributed; //tokens distributed
     CesaireToken public CSE; // CSE token address
     
-    mapping(address =&gt; bool) whitelist; // whitelisting for KYC verified users
+    mapping(address => bool) whitelist; // whitelisting for KYC verified users
 
     // events for log
     event LogWhiteListed(address _addr);
@@ -132,7 +132,7 @@ contract CesaireICO is Owned {
     // ----------------------------------------------------------------------------
     // Function to handle eth transfers
     // It invokes when someone sends ETH to this contract address.
-    // Requires enough gas for the execution otherwise it&#39;ll throw out of gas error.
+    // Requires enough gas for the execution otherwise it'll throw out of gas error.
     // tokens are transferred to user
     // ETH are transferred to current owner
     // minimum 1 ETH investment
@@ -157,43 +157,43 @@ contract CesaireICO is Owned {
         
         //Token allocation calculation
         if (state == State.PrivatePreSale){
-            require(msg.value &gt;= 2 ether); // min 2 ETH investment
+            require(msg.value >= 2 ether); // min 2 ETH investment
             tokenPrice = 160000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = tokenBought; // 100 % bonus
         } 
         else if (state == State.PreICO){
-            require(msg.value &gt;= 1 ether); // min 1 ETH investment
+            require(msg.value >= 1 ether); // min 1 ETH investment
             tokenPrice = 160000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = tokenBought.mul(50).div(100); // 50 % bonus
         } 
         else if (state == State.ICORound1){
-            require(msg.value &gt;= 0.7 ether); // min 0.7 ETH investment
+            require(msg.value >= 0.7 ether); // min 0.7 ETH investment
             tokenPrice = 140000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = tokenBought.mul(40).div(100); // 40 % bonus
         } 
         else if (state == State.ICORound2){
-            require(msg.value &gt;= 0.5 ether); // min 0.5 ETH investment
+            require(msg.value >= 0.5 ether); // min 0.5 ETH investment
             tokenPrice = 120000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = tokenBought.mul(30).div(100); // 30 % bonus
         } 
         else if (state == State.ICORound3){
-            require(msg.value &gt;= 0.3 ether); // min 0.3 ETH investment
+            require(msg.value >= 0.3 ether); // min 0.3 ETH investment
             tokenPrice = 100000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = tokenBought.mul(20).div(100); // 20 % bonus
         } 
         else if (state == State.ICORound4){
-            require(msg.value &gt;= 0.2 ether); // min 0.2 ETH investment
+            require(msg.value >= 0.2 ether); // min 0.2 ETH investment
             tokenPrice = 80000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = tokenBought.mul(10).div(100); // 10 % bonus
         } 
         else if (state == State.ICORound5){
-            require(msg.value &gt;= 0.1 ether); // min 0.1 ETH investment
+            require(msg.value >= 0.1 ether); // min 0.1 ETH investment
             tokenPrice = 60000;
             tokenBought = msg.value.mul(tokenPrice);
             bonus = 0; // 0 % bonus
@@ -202,7 +202,7 @@ contract CesaireICO is Owned {
         tokenBought = tokenBought.add(bonus); // add bonus to the tokenBought
         
         // this smart contract should have enough tokens to distribute
-        require(CSE.balanceOf(this) &gt;= tokenBought);
+        require(CSE.balanceOf(this) >= tokenBought);
         
         totalRaised = totalRaised.add(msg.value); // Save the total eth totalRaised (in wei)
         totalDistributed = totalDistributed.add(tokenBought); //Save to total tokens distributed
@@ -222,7 +222,7 @@ contract CesaireICO is Owned {
         uint256 remainder = CSE.balanceOf(this); //Remaining tokens on contract
         
         //Funds send to creator if any
-        if(address(this).balance &gt; 0) {
+        if(address(this).balance > 0) {
             owner.transfer(address(this).balance);
             emit LogBeneficiaryPaid(owner);
         }

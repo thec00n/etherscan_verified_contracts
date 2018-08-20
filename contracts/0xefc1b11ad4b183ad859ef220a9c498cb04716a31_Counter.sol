@@ -17,7 +17,7 @@ contract Counter {
     }
     
     function inc() public payable {
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
         i++;
         if (i==2) {
             emit Won(msg.sender,address(this).balance);

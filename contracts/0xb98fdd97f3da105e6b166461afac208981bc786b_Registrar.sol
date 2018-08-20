@@ -41,15 +41,15 @@ contract Registrar {
         bool active;
     }
 
-    mapping(address =&gt; uint) public registrantIndex;
+    mapping(address => uint) public registrantIndex;
     Registrant[] public registrants;
 
     /**
-    * Function can&#39;t have ether.
+    * Function can't have ether.
     * modifier
     */
     modifier noEther() {
-        if (msg.value &gt; 0) throw;
+        if (msg.value > 0) throw;
         _
     }
 
@@ -79,7 +79,7 @@ contract Registrar {
     * @param _data - The registrant data string.
     */
     function add(address _registrant, bytes _data) isRegistrar noEther returns (bool) {
-        if (registrantIndex[_registrant] &gt; 0) {
+        if (registrantIndex[_registrant] > 0) {
             Error(2); // Duplicate registrant
             return false;
         }
@@ -125,7 +125,7 @@ contract Registrar {
     */
     function isActiveRegistrant(address _registrant) constant returns (bool) {
         uint pos = registrantIndex[_registrant];
-        return (pos &gt; 0 &amp;&amp; registrants[pos].active);
+        return (pos > 0 && registrants[pos].active);
     }
 
     /**
@@ -134,7 +134,7 @@ contract Registrar {
     */
     function getRegistrants() constant returns (address[]) {
         address[] memory result = new address[](registrants.length-1);
-        for (uint j = 1; j &lt; registrants.length; j++) {
+        for (uint j = 1; j < registrants.length; j++) {
             result[j-1] = registrants[j].addr;
         }
         return result;
@@ -148,7 +148,7 @@ contract Registrar {
 
     /**
     * Desctruct the smart contract. Since this is first, alpha release of Open Registry for IoT, updated versions will follow.
-    * Registry&#39;s discontinue must be executed first.
+    * Registry's discontinue must be executed first.
     */
     function discontinue() isRegistrar noEther {
       selfdestruct(msg.sender);

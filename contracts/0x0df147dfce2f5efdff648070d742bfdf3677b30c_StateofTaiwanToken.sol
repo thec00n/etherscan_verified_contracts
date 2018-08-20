@@ -51,9 +51,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -61,7 +61,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -70,7 +70,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -105,7 +105,7 @@ contract owned {
 contract BasicToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -139,7 +139,7 @@ contract BasicToken is ERC20 {
  */
 contract StandardToken is  BasicToken ,owned{
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
 
@@ -148,7 +148,7 @@ contract StandardToken is  BasicToken ,owned{
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -197,7 +197,7 @@ contract StandardToken is  BasicToken ,owned{
    */
   function decreaseApproval(address _spender, uint _subtractedValue)onlyOwner public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -216,7 +216,7 @@ contract StateofTaiwanToken is StandardToken{
     uint256 public totalSupply;
     uint8 public decimals=6;
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
    
     
     // This notifies clients about the amount burnt
@@ -231,8 +231,8 @@ contract StateofTaiwanToken is StandardToken{
 function StateofTaiwanToken() public onlyOwner{
         totalSupply = (189500000000 *10**uint256(decimals));  // Update total supply with the decimal amount
         balances[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;TaiwanIsaCountry&quot;;                                   // Set the name for display purposes
-        symbol = &quot;TOK&quot;;                               // Set the symbol for display purposes
+        name = "TaiwanIsaCountry";                                   // Set the name for display purposes
+        symbol = "TOK";                               // Set the symbol for display purposes
        
         
     }
@@ -246,14 +246,14 @@ function StateofTaiwanToken() public onlyOwner{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
         return true;
     }
     
-     /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+     /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -266,7 +266,7 @@ function StateofTaiwanToken() public onlyOwner{
     
     function _transfer(address _from, address _to, uint256 _value) internal{
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
+    require(_value <= balances[_from]);
     require(!frozenAccount[_from]);                     // Check if sender is frozen
     require(!frozenAccount[_to]);  
     // SafeMath.sub will throw if there is not enough balance.
@@ -285,8 +285,8 @@ function StateofTaiwanToken() public onlyOwner{
     function transferFrom(address _from, address _to, uint tokens) public returns (bool success) {
 
     require(_to != address(0));
-    require(tokens &lt;= balances[_from]);
-    require(tokens &lt;= allowed[_from][msg.sender]);
+    require(tokens <= balances[_from]);
+    require(tokens <= allowed[_from][msg.sender]);
     require(!frozenAccount[_from]);                     // Check if sender is frozen
     require(!frozenAccount[_to]);  
 

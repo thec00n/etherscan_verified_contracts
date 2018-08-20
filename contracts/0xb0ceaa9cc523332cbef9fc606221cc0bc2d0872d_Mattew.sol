@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// ## Mattew - a contract for increasing &quot;whaleth&quot;
+// ## Mattew - a contract for increasing "whaleth"
 // README: https://github.com/rolandkofler/mattew
 // MIT LICENSE 2016 Roland Kofler, thanks to Crul for testing
 
@@ -26,19 +26,19 @@ contract Mattew {
     
     /// The rich get richer, the whale get whaler
     function () payable{
-        if (block.number - PERIOD &gt; blockheight){
+        if (block.number - PERIOD > blockheight){
             bool isSuccess = whale.send(stake);
-            MattewWon(&quot;Mattew won (mattew, stake, blockheight)&quot;, whale, stake, block.number);
+            MattewWon("Mattew won (mattew, stake, blockheight)", whale, stake, block.number);
             setFacts();
             // selfdestruct(whale); People with Ethereum Foundation are ok with it.
             return;
             
         }else{
             
-            if (msg.value &lt; stake + DELTA) throw;
+            if (msg.value < stake + DELTA) throw;
             bool isOtherSuccess = msg.sender.send(stake);
             setFacts();
-            StakeIncreased(&quot;stake increased (whale, stake, blockheight)&quot;, whale, stake, blockheight);
+            StakeIncreased("stake increased (whale, stake, blockheight)", whale, stake, blockheight);
         }
     }
     
@@ -48,7 +48,7 @@ contract Mattew {
     }
     
     function getBlocksTillMattew() public constant returns(uint){
-        if (blockheight + PERIOD &gt; block.number)
+        if (blockheight + PERIOD > block.number)
             return blockheight + PERIOD - block.number;
         else
             return 0;

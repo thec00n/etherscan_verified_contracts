@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,8 +69,8 @@ contract KpopItem is ERC721 {
   address public coauthor;
   address public manufacturer;
 
-  string public constant NAME = &quot;KpopItem&quot;;
-  string public constant SYMBOL = &quot;KpopItem&quot;;
+  string public constant NAME = "KpopItem";
+  string public constant SYMBOL = "KpopItem";
 
   uint public GROWTH_BUMP = 0.4 ether;
   uint public MIN_STARTING_PRICE = 0.001 ether;
@@ -86,12 +86,12 @@ contract KpopItem is ERC721 {
 
   Item[] public items;
 
-  mapping(uint =&gt; address) public itemIdToOwner;
-  mapping(uint =&gt; uint) public itemIdToPrice;
-  mapping(address =&gt; uint) public userToNumItems;
-  mapping(uint =&gt; address) public itemIdToApprovedRecipient;
-  mapping(uint =&gt; uint[6]) public itemIdToTraitValues;
-  mapping(uint =&gt; uint) public itemIdToCelebId;
+  mapping(uint => address) public itemIdToOwner;
+  mapping(uint => uint) public itemIdToPrice;
+  mapping(address => uint) public userToNumItems;
+  mapping(uint => address) public itemIdToApprovedRecipient;
+  mapping(uint => uint[6]) public itemIdToTraitValues;
+  mapping(uint => uint) public itemIdToCelebId;
 
   event Transfer(address indexed from, address indexed to, uint itemId);
   event Approval(address indexed owner, address indexed approved, uint itemId);
@@ -106,7 +106,7 @@ contract KpopItem is ERC721 {
   function _transfer(address _from, address _to, uint _itemId) private {
     require(ownerOf(_itemId) == _from);
     require(!isNullAddress(_to));
-    require(balanceOf(_from) &gt; 0);
+    require(balanceOf(_from) > 0);
 
     uint prevBalances = balanceOf(_from) + balanceOf(_to);
     itemIdToOwner[_itemId] = _to;
@@ -126,7 +126,7 @@ contract KpopItem is ERC721 {
 
     require(prevOwner != msg.sender);
     require(!isNullAddress(msg.sender));
-    require(msg.value &gt;= currentPrice);
+    require(msg.value >= currentPrice);
 
     // Set dividend
     uint dividend = uint(SafeMath.div(SafeMath.mul(currentPrice, DIVIDEND), 100));
@@ -139,7 +139,7 @@ contract KpopItem is ERC721 {
 
     _transfer(prevOwner, msg.sender, _itemId);
 
-    if (currentPrice &lt; GROWTH_BUMP) {
+    if (currentPrice < GROWTH_BUMP) {
       newPrice = SafeMath.mul(currentPrice, 2);
     } else {
       newPrice = SafeMath.div(SafeMath.mul(currentPrice, PRICE_INCREASE_SCALE), 100);
@@ -152,11 +152,11 @@ contract KpopItem is ERC721 {
       prevOwner.transfer(payment);
     }
 
-    // Pay dividend to the current owner of the celeb that&#39;s connected to the item
+    // Pay dividend to the current owner of the celeb that's connected to the item
     uint celebId = celebOf(_itemId);
     KpopCeleb KPOP_CELEB = KpopCeleb(KPOP_CELEB_CONTRACT_ADDRESS);
     address celebOwner = KPOP_CELEB.ownerOf(celebId);
-    if (celebOwner != address(this) &amp;&amp; !isNullAddress(celebOwner)) {
+    if (celebOwner != address(this) && !isNullAddress(celebOwner)) {
       celebOwner.transfer(dividend);
     }
 
@@ -189,7 +189,7 @@ contract KpopItem is ERC721 {
   /** START FUNCTIONS FOR AUTHORS **/
 
   function createItem(string _name, uint _price, uint _celebId, uint[6] _traitValues) public onlyManufacturer {
-    require(_price &gt;= MIN_STARTING_PRICE);
+    require(_price >= MIN_STARTING_PRICE);
 
     uint itemId = items.push(Item(_name)) - 1;
     itemIdToOwner[itemId] = author;
@@ -201,7 +201,7 @@ contract KpopItem is ERC721 {
 
   function withdraw(uint _amount, address _to) public onlyAuthors {
     require(!isNullAddress(_to));
-    require(_amount &lt;= this.balance);
+    require(_amount <= this.balance);
 
     _to.transfer(_amount);
   }

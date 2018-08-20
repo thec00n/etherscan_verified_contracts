@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-//  (;&#180;д`)｡･ﾟﾟ･  SCAM penis
+//  (;´д`)｡･ﾟﾟ･  SCAM penis
 //  (ヽηﾉ 
 //  　ヽ ヽ
 
@@ -13,8 +13,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-      // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-      // benefit is lost if &#39;b&#39; is also tested.
+      // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+      // benefit is lost if 'b' is also tested.
       // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
       if (a == 0) {
         return 0;
@@ -29,9 +29,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       // uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return a / b;
     }
 
@@ -39,7 +39,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
@@ -48,7 +48,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
       c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 }
@@ -57,13 +57,13 @@ library SafeMath {
 
 /**
  * @title Ownable
- * @dev The Ownable contract has an owner address &amp; authorized addresses, and provides basic
+ * @dev The Ownable contract has an owner address & authorized addresses, and provides basic
  * authorization control functions, this simplifies the implementation of user permissions.
  */
 contract Ownable {
     address public owner;
     bool public canRenounce = false;
-    mapping (address =&gt; bool) public authorized;
+    mapping (address => bool) public authorized;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event AuthorizedAdded(address indexed authorized);
@@ -187,19 +187,19 @@ contract ContractReceiver {
 contract MANJ is ERC223, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;MANJCOIN&quot;;
-    string public symbol = &quot;MANJ&quot;;
+    string public name = "MANJCOIN";
+    string public symbol = "MANJ";
     uint8 public decimals = 8;
     uint256 public totalSupply = 19190721 * 1e8;
     uint256 public codeSize = 0;
     bool public mintingFinished = false;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public cannotSend;
-    mapping (address =&gt; bool) public cannotReceive;
-    mapping (address =&gt; uint256) public cannotSendUntil;
-    mapping (address =&gt; uint256) public cannotReceiveUntil;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public cannotSend;
+    mapping (address => bool) public cannotReceive;
+    mapping (address => uint256) public cannotSendUntil;
+    mapping (address => uint256) public cannotReceiveUntil;
 
     event FrozenFunds(address indexed target, bool cannotSend, bool cannotReceive);
     event LockedFunds(address indexed target, uint256 cannotSendUntil, uint256 cannotReceiveUntil);
@@ -242,9 +242,9 @@ contract MANJ is ERC223, Ownable {
      * @param _cannotReceive Whether to prevent targets from receiving tokens or not
      */
     function freezeAccounts(address[] targets, bool _cannotSend, bool _cannotReceive) onlyOwner public {
-        require(targets.length &gt; 0);
+        require(targets.length > 0);
 
-        for (uint i = 0; i &lt; targets.length; i++) {
+        for (uint i = 0; i < targets.length; i++) {
             cannotSend[targets[i]] = _cannotSend;
             cannotReceive[targets[i]] = _cannotReceive;
             emit FrozenFunds(targets[i], _cannotSend, _cannotReceive);
@@ -258,11 +258,11 @@ contract MANJ is ERC223, Ownable {
      * @param _cannotReceiveUntil Unix time when locking up receiving function will be finished
      */
     function lockupAccounts(address[] targets, uint256 _cannotSendUntil, uint256 _cannotReceiveUntil) onlyOwner public {
-        require(targets.length &gt; 0);
+        require(targets.length > 0);
 
-        for(uint i = 0; i &lt; targets.length; i++){
-            require(cannotSendUntil[targets[i]] &lt;= _cannotSendUntil
-                    &amp;&amp; cannotReceiveUntil[targets[i]] &lt;= _cannotReceiveUntil);
+        for(uint i = 0; i < targets.length; i++){
+            require(cannotSendUntil[targets[i]] <= _cannotSendUntil
+                    && cannotReceiveUntil[targets[i]] <= _cannotReceiveUntil);
 
             cannotSendUntil[targets[i]] = _cannotSendUntil;
             cannotReceiveUntil[targets[i]] = _cannotReceiveUntil;
@@ -274,11 +274,11 @@ contract MANJ is ERC223, Ownable {
      * @dev Function that is called when a user or another contract wants to transfer funds
      */
     function transfer(address _to, uint _value, bytes _data) public returns (bool success) {
-        require(_value &gt; 0
-                &amp;&amp; cannotSend[msg.sender] == false
-                &amp;&amp; cannotReceive[_to] == false
-                &amp;&amp; now &gt; cannotSendUntil[msg.sender]
-                &amp;&amp; now &gt; cannotReceiveUntil[_to]);
+        require(_value > 0
+                && cannotSend[msg.sender] == false
+                && cannotReceive[_to] == false
+                && now > cannotSendUntil[msg.sender]
+                && now > cannotReceiveUntil[_to]);
 
         if (isContract(_to)) {
             return transferToContract(_to, _value, _data);
@@ -292,11 +292,11 @@ contract MANJ is ERC223, Ownable {
      *      Added due to backwards compatibility reasons
      */
     function transfer(address _to, uint _value) public returns (bool success) {
-        require(_value &gt; 0
-                &amp;&amp; cannotSend[msg.sender] == false
-                &amp;&amp; cannotReceive[_to] == false
-                &amp;&amp; now &gt; cannotSendUntil[msg.sender]
-                &amp;&amp; now &gt; cannotReceiveUntil[_to]);
+        require(_value > 0
+                && cannotSend[msg.sender] == false
+                && cannotReceive[_to] == false
+                && now > cannotSendUntil[msg.sender]
+                && now > cannotReceiveUntil[_to]);
 
         bytes memory empty;
         if (isContract(_to)) {
@@ -314,7 +314,7 @@ contract MANJ is ERC223, Ownable {
     function isContract(address _addr) internal view returns (bool) {
       uint256 size;
       assembly { size := extcodesize(_addr) }
-      return size &gt; codeSize ;
+      return size > codeSize ;
     }
 
     function setCodeSize(uint256 _codeSize) onlyOwner public {
@@ -323,7 +323,7 @@ contract MANJ is ERC223, Ownable {
 
     // function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -333,7 +333,7 @@ contract MANJ is ERC223, Ownable {
 
     // function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -352,13 +352,13 @@ contract MANJ is ERC223, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)
-                &amp;&amp; _value &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _value
-                &amp;&amp; allowance[_from][msg.sender] &gt;= _value
-                &amp;&amp; cannotSend[msg.sender] == false
-                &amp;&amp; cannotReceive[_to] == false
-                &amp;&amp; now &gt; cannotSendUntil[msg.sender]
-                &amp;&amp; now &gt; cannotReceiveUntil[_to]);
+                && _value > 0
+                && balanceOf[_from] >= _value
+                && allowance[_from][msg.sender] >= _value
+                && cannotSend[msg.sender] == false
+                && cannotReceive[_to] == false
+                && now > cannotSendUntil[msg.sender]
+                && now > cannotReceiveUntil[_to]);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -395,8 +395,8 @@ contract MANJ is ERC223, Ownable {
      * @param _unitAmount The amount of token to be burned.
      */
     function burn(address _from, uint256 _unitAmount) onlyOwner public {
-        require(_unitAmount &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _unitAmount);
+        require(_unitAmount > 0
+                && balanceOf[_from] >= _unitAmount);
 
         balanceOf[_from] = balanceOf[_from].sub(_unitAmount);
         totalSupply = totalSupply.sub(_unitAmount);
@@ -416,7 +416,7 @@ contract MANJ is ERC223, Ownable {
      * @param _unitAmount The amount of tokens to mint.
      */
     function mint(address _to, uint256 _unitAmount) onlyOwner canMint public returns (bool) {
-        require(_unitAmount &gt; 0);
+        require(_unitAmount > 0);
 
         totalSupply = totalSupply.add(_unitAmount);
         balanceOf[_to] = balanceOf[_to].add(_unitAmount);
@@ -438,19 +438,19 @@ contract MANJ is ERC223, Ownable {
      * @dev Function to distribute tokens to the list of addresses by the provided amount
      */
     function batchTransfer(address[] addresses, uint256 amount) public returns (bool) {
-        require(amount &gt; 0
-                &amp;&amp; addresses.length &gt; 0
-                &amp;&amp; cannotSend[msg.sender] == false
-                &amp;&amp; now &gt; cannotSendUntil[msg.sender]);
+        require(amount > 0
+                && addresses.length > 0
+                && cannotSend[msg.sender] == false
+                && now > cannotSendUntil[msg.sender]);
 
         amount = amount.mul(1e8);
         uint256 totalAmount = amount.mul(addresses.length);
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             require(addresses[i] != address(0)
-                    &amp;&amp; cannotReceive[addresses[i]] == false
-                    &amp;&amp; now &gt; cannotReceiveUntil[addresses[i]]);
+                    && cannotReceive[addresses[i]] == false
+                    && now > cannotReceiveUntil[addresses[i]]);
 
             balanceOf[addresses[i]] = balanceOf[addresses[i]].add(amount);
             emit Transfer(msg.sender, addresses[i], amount);
@@ -460,18 +460,18 @@ contract MANJ is ERC223, Ownable {
     }
 
     function batchTransfer(address[] addresses, uint[] amounts) public returns (bool) {
-        require(addresses.length &gt; 0
-                &amp;&amp; addresses.length == amounts.length
-                &amp;&amp; cannotSend[msg.sender] == false
-                &amp;&amp; now &gt; cannotSendUntil[msg.sender]);
+        require(addresses.length > 0
+                && addresses.length == amounts.length
+                && cannotSend[msg.sender] == false
+                && now > cannotSendUntil[msg.sender]);
 
         uint256 totalAmount = 0;
 
-        for(uint i = 0; i &lt; addresses.length; i++){
-            require(amounts[i] &gt; 0
-                    &amp;&amp; addresses[i] != address(0)
-                    &amp;&amp; cannotReceive[addresses[i]] == false
-                    &amp;&amp; now &gt; cannotReceiveUntil[addresses[i]]);
+        for(uint i = 0; i < addresses.length; i++){
+            require(amounts[i] > 0
+                    && addresses[i] != address(0)
+                    && cannotReceive[addresses[i]] == false
+                    && now > cannotReceiveUntil[addresses[i]]);
 
             amounts[i] = amounts[i].mul(1e8);
             balanceOf[addresses[i]] = balanceOf[addresses[i]].add(amounts[i]);
@@ -479,21 +479,21 @@ contract MANJ is ERC223, Ownable {
             emit Transfer(msg.sender, addresses[i], amounts[i]);
         }
 
-        require(balanceOf[msg.sender] &gt;= totalAmount);
+        require(balanceOf[msg.sender] >= totalAmount);
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(totalAmount);
         return true;
     }
 
     /**
-     * @dev Function to transfer tokens between addresses, only for Owner &amp; subOwner
+     * @dev Function to transfer tokens between addresses, only for Owner & subOwner
      */
     function transferFromTo(address _from, address _to, uint256 _value, bytes _data) onlyAuthorized public returns (bool) {
-        require(_value &gt; 0
-                &amp;&amp; balanceOf[_from] &gt;= _value
-                &amp;&amp; cannotSend[_from] == false
-                &amp;&amp; cannotReceive[_to] == false
-                &amp;&amp; now &gt; cannotSendUntil[_from]
-                &amp;&amp; now &gt; cannotReceiveUntil[_to]);
+        require(_value > 0
+                && balanceOf[_from] >= _value
+                && cannotSend[_from] == false
+                && cannotReceive[_to] == false
+                && now > cannotSendUntil[_from]
+                && now > cannotReceiveUntil[_to]);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);

@@ -10,7 +10,7 @@ contract PreTgeExperty {
     bool rejected;
   }
   Contributor[] public contributors;
-  mapping(address =&gt; bool) public isWhitelisted;
+  mapping(address => bool) public isWhitelisted;
   address public managerAddr;
 
   // wallet
@@ -19,7 +19,7 @@ contract PreTgeExperty {
     address destAddr;
     bool active;
   }
-  mapping (address =&gt; bool) public founders;
+  mapping (address => bool) public founders;
   Tx[] public txs;
   
   // preICO constructor

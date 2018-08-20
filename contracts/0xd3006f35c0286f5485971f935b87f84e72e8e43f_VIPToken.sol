@@ -57,18 +57,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,12 +93,12 @@ contract Token is Owner, Mortal {
     }
 
     //所有的账户数据
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     //代理
-    mapping(address =&gt; mapping(address =&gt; uint)) approved;
+    mapping(address => mapping(address => uint)) approved;
 
     //所有的账户冻结数据，时间，到期自动解冻，同时只支持一次冻结
-    mapping (address =&gt; Fund) public frozenAccount;
+    mapping (address => Fund) public frozenAccount;
 
     //事件日志
     event Transfer(address indexed from, address indexed to, uint value);
@@ -118,12 +118,12 @@ contract Token is Owner, Mortal {
 
     //冻结固定时间
     function freezeAccount(address target, uint value, uint unlockStartTime, uint unlockIntervalUnit, uint unlockInterval, uint unlockPercent) external onlyOwner freezeOutCheck(target, 0) {
-        require (value &gt; 0);
+        require (value > 0);
         require (frozenAccount[target].isValue == false);
-        require (balances[msg.sender] &gt;= value);
-        require (unlockStartTime &gt; now);
-        require (unlockInterval &gt; 0);
-        require (unlockPercent &gt; 0 &amp;&amp; unlockPercent &lt;= 100);
+        require (balances[msg.sender] >= value);
+        require (unlockStartTime > now);
+        require (unlockInterval > 0);
+        require (unlockPercent > 0 && unlockPercent <= 100);
 
         uint unlockIntervalSecond = toSecond(unlockIntervalUnit, unlockInterval);
 
@@ -133,11 +133,11 @@ contract Token is Owner, Mortal {
 
     //转账并冻结
     function transferAndFreeze(address target, uint256 value, uint unlockStartTime, uint unlockIntervalUnit, uint unlockInterval, uint unlockPercent) external onlyOwner freezeOutCheck(target, 0) {
-        require (value &gt; 0);
+        require (value > 0);
         require (frozenAccount[target].isValue == false);
-        require (unlockStartTime &gt; now);
-        require (unlockInterval &gt; 0);
-        require (unlockPercent &gt; 0 &amp;&amp; unlockPercent &lt;= 100);
+        require (unlockStartTime > now);
+        require (unlockInterval > 0);
+        require (unlockPercent > 0 && unlockPercent <= 100);
 
         _transfer(msg.sender, target, value);
 
@@ -166,7 +166,7 @@ contract Token is Owner, Mortal {
     }
 
     modifier freezeOutCheck(address sender, uint value) {
-        require ( getAvailableBalance(sender) &gt;= value);
+        require ( getAvailableBalance(sender) >= value);
         _;
     }
 
@@ -174,19 +174,19 @@ contract Token is Owner, Mortal {
     function getAvailableBalance(address sender) internal returns(uint balance) {
         if (frozenAccount[sender].isValue) {
             //未开始解锁
-            if (now &lt; frozenAccount[sender].unlockStartTime){
+            if (now < frozenAccount[sender].unlockStartTime){
                 return balances[sender] - frozenAccount[sender].amount;
             }else{
                 //计算解锁了多少数量
                 uint unlockPercent = ((now - frozenAccount[sender].unlockStartTime ) / frozenAccount[sender].unlockInterval + 1) * frozenAccount[sender].unlockPercent;
-                if (unlockPercent &gt; 100){
+                if (unlockPercent > 100){
                     unlockPercent = 100;
                 }
 
                 //计算可用余额 = 总额 - 冻结总额
-                assert(frozenAccount[sender].amount &lt;= balances[sender]);
+                assert(frozenAccount[sender].amount <= balances[sender]);
                 uint available = balances[sender] - (100 - unlockPercent) * frozenAccount[sender].amount / 100;
-                if ( unlockPercent &gt;= 100){
+                if ( unlockPercent >= 100){
                     //release
                     frozenAccount[sender].isValue = false;
                     delete frozenAccount[sender];
@@ -210,7 +210,7 @@ contract Token is Owner, Mortal {
     function _transfer(address _from, address _to, uint _value) internal freezeOutCheck(_from, _value) {
         require(_to != 0x0);
         require(_from != _to);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -236,9 +236,9 @@ contract Token is Owner, Mortal {
     //0值的传输必须被视为正常传输并触发传输事件
     //代理交易不自动为对方补充gas
     function transferFrom(address from, address to, uint256 value) external stopInEmergency freezeOutCheck(from, value)  returns (bool success) {
-        require(value &gt; 0);
-        require(value &lt;= approved[from][msg.sender]);
-        require(value &lt;= balances[from]);
+        require(value > 0);
+        require(value <= approved[from][msg.sender]);
+        require(value <= balances[from]);
 
         approved[from][msg.sender] = approved[from][msg.sender].sub(value);
         _transfer(from, to, value);
@@ -275,7 +275,7 @@ contract UpgradeableToken is Owner, Token {
 
   function () public payable {
     require(migrationAgent != 0);
-    require(balances[msg.sender] &gt; 0);
+    require(balances[msg.sender] > 0);
     migrate();
     msg.sender.transfer(msg.value);
   }
@@ -289,15 +289,15 @@ contract UpgradeableToken is Owner, Token {
 contract VIPToken is UpgradeableToken {
 
   function VIPToken() public {
-    name = &quot;VIP Tokens&quot;;
-    symbol = &quot;VIP&quot;;
+    name = "VIP Tokens";
+    symbol = "VIP";
     decimals = 18;
 
     owner = msg.sender;
     uint initialSupply = 300000000;
 
     totalSupply = initialSupply * 10 ** uint256(decimals);
-    require (totalSupply &gt;= initialSupply);
+    require (totalSupply >= initialSupply);
 
     balances[msg.sender] = totalSupply;
     Transfer(0x0, msg.sender, totalSupply);

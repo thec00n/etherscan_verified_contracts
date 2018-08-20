@@ -17,10 +17,10 @@ contract EmtCrowdfund is owned {
     uint public maxBuyAmount = 13000000000000000000;     // 13 eth
     uint public bonusPercent = 20;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint[]) public paymentHistory;
-    mapping (address =&gt; mapping (uint =&gt; uint)) public paymentDetail;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint[]) public paymentHistory;
+    mapping (address => mapping (uint => uint)) public paymentDetail;
 
     event Transfer(address indexed from, address indexed to, uint value);
     event Burn(address indexed from, uint value);
@@ -40,8 +40,8 @@ contract EmtCrowdfund is owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);
-        require (balanceOf[_from] &gt;= _value);
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require (balanceOf[_from] >= _value);
+        require (balanceOf[_to] + _value >= balanceOf[_to]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balanceOf[_from] -= _value;
@@ -49,7 +49,7 @@ contract EmtCrowdfund is owned {
         emit Transfer(_from, _to, _value);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -72,7 +72,7 @@ contract EmtCrowdfund is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint _value) public onlyOwner returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         balanceOf[_from] -= _value;
         totalSupply -= _value;
         emit Burn(_from, _value);
@@ -104,35 +104,35 @@ contract EmtCrowdfund is owned {
 
         uint now_ = now;
 
-        if(minBuyAmount &gt; 0){
-            require(msg.value &gt;= minBuyAmount);
+        if(minBuyAmount > 0){
+            require(msg.value >= minBuyAmount);
         }
 
-        if(maxBuyAmount &gt; 0){
-            require(msg.value &lt;= maxBuyAmount);
+        if(maxBuyAmount > 0){
+            require(msg.value <= maxBuyAmount);
 
-            if(paymentHistory[msg.sender].length &gt; 0){
+            if(paymentHistory[msg.sender].length > 0){
                 uint lastTotal = 0;
                 uint thisDay = now_ - 86400;
 
-                for (uint i = 0; i &lt; paymentHistory[msg.sender].length; i++) {
-                    if(paymentHistory[msg.sender][i] &gt;= thisDay){
+                for (uint i = 0; i < paymentHistory[msg.sender].length; i++) {
+                    if(paymentHistory[msg.sender][i] >= thisDay){
                         lastTotal += paymentDetail[msg.sender][paymentHistory[msg.sender][i]];
                     }
                 }
 
-                require(lastTotal &lt;= maxBuyAmount);
+                require(lastTotal <= maxBuyAmount);
             }
         }
 
         uint amount = msg.value / tokenPrice;
 
-        if(bonusPercent &gt; 0){
+        if(bonusPercent > 0){
             uint bonusAmount = amount / 100 * bonusPercent;
             amount += bonusAmount;
         }
 
-        require (totalSupply &gt;= amount);
+        require (totalSupply >= amount);
         require(!frozenAccount[msg.sender]);
         totalSupply -= amount;
         balanceOf[msg.sender] += amount;
@@ -149,7 +149,7 @@ contract EmtCrowdfund is owned {
     * @param _value the amount of tokens
     */
     function manualTransfer(address _to, uint _value) public onlyOwner returns (bool success) {
-        require (totalSupply &gt;= _value);
+        require (totalSupply >= _value);
         require(!frozenAccount[_to]);
         totalSupply -= _value;
         balanceOf[_to] += _value;

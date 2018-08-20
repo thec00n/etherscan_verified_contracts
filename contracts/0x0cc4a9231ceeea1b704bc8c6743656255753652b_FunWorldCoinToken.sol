@@ -41,10 +41,10 @@ contract Owned {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -52,7 +52,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -103,10 +103,10 @@ contract FunWorldCoinToken is ERC20Interface, Owned {
     uint  _totalSupply;
 
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     using SafeMath for uint;
@@ -114,8 +114,8 @@ contract FunWorldCoinToken is ERC20Interface, Owned {
 
 
     function FunWorldCoinToken() public {
-        symbol = &quot;FWC&quot;;
-        name = &quot;FunWorldCoin Token&quot;;
+        symbol = "FWC";
+        name = "FunWorldCoin Token";
         decimals = 18;
         _totalSupply = 1 * (10 ** 10) * (10 ** uint(decimals));
         balances[owner] = _totalSupply;

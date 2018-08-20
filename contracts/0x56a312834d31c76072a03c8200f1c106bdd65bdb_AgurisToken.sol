@@ -11,11 +11,11 @@ interface tokenRecipient {
 }
 
 contract AgurisToken {
-    bytes32 public constant name = &quot;Aguris&quot;;
-    bytes32 public constant symbol = &quot;AGS&quot;;
+    bytes32 public constant name = "Aguris";
+    bytes32 public constant symbol = "AGS";
     uint8 public decimals = 18;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -31,8 +31,8 @@ contract AgurisToken {
     internal 
     {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -50,7 +50,7 @@ contract AgurisToken {
     public 
     returns (bool success) 
     {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);

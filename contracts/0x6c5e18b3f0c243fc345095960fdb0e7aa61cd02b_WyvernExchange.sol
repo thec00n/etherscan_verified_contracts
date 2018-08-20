@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -114,7 +114,7 @@ library ArrayUtils {
 
     /**
      * Replace bytes in an array with bytes in another array, guarded by a bitmask
-     * Efficiency of this function is a bit unpredictable because of the EVM&#39;s word-specific model (arrays under 32 bytes will be slower)
+     * Efficiency of this function is a bit unpredictable because of the EVM's word-specific model (arrays under 32 bytes will be slower)
      * 
      * @dev Mask must be the size of the byte array. A nonzero byte means the byte array can be changed.
      * @param array The original array
@@ -134,8 +134,8 @@ library ArrayUtils {
         assert(index / 0x20 == words);
         uint i;
 
-        for (i = 0; i &lt; words; i++) {
-            /* Conceptually: array[i] = (!mask[i] &amp;&amp; array[i]) || (mask[i] &amp;&amp; desired[i]), bitwise in word chunks. */
+        for (i = 0; i < words; i++) {
+            /* Conceptually: array[i] = (!mask[i] && array[i]) || (mask[i] && desired[i]), bitwise in word chunks. */
             assembly {
                 let commonIndex := mul(0x20, add(1, i))
                 let maskValue := mload(add(mask, commonIndex))
@@ -144,7 +144,7 @@ library ArrayUtils {
         }
 
         /* Deal with the last section of the byte array. */
-        if (words &gt; 0) {
+        if (words > 0) {
             /* This overlaps with bytes already set but is still more efficient than iterating through each of the remaining bytes individually. */
             i = array.length - 0x20;
             assembly {
@@ -155,8 +155,8 @@ library ArrayUtils {
         } else {
             /* If the byte array is shorter than a word, we must unfortunately do the whole thing bytewise.
                (bounds checks could still probably be optimized away in assembly, but this is a rare case) */
-            for (i = index; i &lt; array.length; i++) {
-                array[i] = ((mask[i] ^ 0xff) &amp; array[i]) | (mask[i] &amp; desired[i]);
+            for (i = index; i < array.length; i++) {
+                array[i] = ((mask[i] ^ 0xff) & array[i]) | (mask[i] & desired[i]);
             }
         }
     }
@@ -180,12 +180,12 @@ library ArrayUtils {
         assembly {
             let length := mload(a)
 
-            // if lengths don&#39;t match the arrays are not equal
+            // if lengths don't match the arrays are not equal
             switch eq(length, mload(b))
             case 1 {
-                // cb is a circuit breaker in the for loop since there&#39;s
+                // cb is a circuit breaker in the for loop since there's
                 //  no said feature for inline assembly loops
-                // cb = 1 - don&#39;t breaker
+                // cb = 1 - don't breaker
                 // cb = 0 - break
                 let cb := 1
 
@@ -195,7 +195,7 @@ library ArrayUtils {
                 for {
                     let cc := add(b, 0x20)
                 // the next line is the loop condition:
-                // while(uint(mc &lt; end) + cb == 2)
+                // while(uint(mc < end) + cb == 2)
                 } eq(add(lt(mc, end), cb), 2) {
                     mc := add(mc, 0x20)
                     cc := add(cc, 0x20)
@@ -229,7 +229,7 @@ library ArrayUtils {
         pure
         returns (uint)
     {
-        if (source.length &gt; 0) {
+        if (source.length > 0) {
             assembly {
                 let length := mload(source)
                 let end := add(source, add(0x20, length))
@@ -259,7 +259,7 @@ library ArrayUtils {
         pure
         returns (uint)
     {
-        uint conv = uint(source) &lt;&lt; 0x60;
+        uint conv = uint(source) << 0x60;
         assembly {
             mstore(index, conv)
             index := add(index, 0x14)
@@ -360,10 +360,10 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
     TokenTransferProxy public tokenTransferProxy;
 
     /* Cancelled / finalized orders, by hash. */
-    mapping(bytes32 =&gt; bool) public cancelledOrFinalized;
+    mapping(bytes32 => bool) public cancelledOrFinalized;
 
     /* Orders verified by on-chain approval (alternative to ECDSA signatures so that smart contracts can place orders directly). */
-    mapping(bytes32 =&gt; bool) public approvedOrders;
+    mapping(bytes32 => bool) public approvedOrders;
 
     /* For split fee orders, minimum required protocol maker fee, in basis points. Paid to owner (who can change it). */
     uint public minimumMakerProtocolFee = 0;
@@ -488,7 +488,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
     function transferTokens(address token, address from, address to, uint amount)
         internal
     {
-        if (amount &gt; 0) {
+        if (amount > 0) {
             require(tokenTransferProxy.transferFrom(token, from, to, amount));
         }
     }
@@ -554,7 +554,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
         pure
         returns (bytes32 hash)
     {
-        /* Unfortunately abi.encodePacked doesn&#39;t work here, stack size constraints. */
+        /* Unfortunately abi.encodePacked doesn't work here, stack size constraints. */
         uint size = sizeOf(order);
         bytes memory array = new bytes(size);
         uint index;
@@ -600,7 +600,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
         pure
         returns (bytes32)
     {
-        return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hashOrder(order));
+        return keccak256("\x19Ethereum Signed Message:\n32", hashOrder(order));
     }
 
     /**
@@ -638,7 +638,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
         }
 
         /* If using the split fee method, order must have sufficient protocol fees. */
-        if (order.feeMethod == FeeMethod.SplitFee &amp;&amp; (order.makerProtocolFee &lt; minimumMakerProtocolFee || order.takerProtocolFee &lt; minimumTakerProtocolFee)) {
+        if (order.feeMethod == FeeMethod.SplitFee && (order.makerProtocolFee < minimumMakerProtocolFee || order.takerProtocolFee < minimumTakerProtocolFee)) {
             return false;
         }
 
@@ -771,14 +771,14 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
         uint buyPrice = SaleKindInterface.calculateFinalPrice(buy.side, buy.saleKind, buy.basePrice, buy.extra, buy.listingTime, buy.expirationTime);
 
         /* Require price cross. */
-        require(buyPrice &gt;= sellPrice);
+        require(buyPrice >= sellPrice);
         
         /* Maker/taker priority. */
         return sell.feeRecipient != address(0) ? sellPrice : buyPrice;
     }
 
     /**
-     * @dev Execute all ERC20 token / Ether transfers associated with an order match (fees and buyer =&gt; seller transfer)
+     * @dev Execute all ERC20 token / Ether transfers associated with an order match (fees and buyer => seller transfer)
      * @param buy Buy-side order
      * @param sell Sell-side order
      */
@@ -795,7 +795,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
         uint price = calculateMatchPrice(buy, sell);
 
         /* If paying using a token (not Ether), transfer tokens. This is done prior to fee payments to that a seller will have tokens before being charged fees. */
-        if (price &gt; 0 &amp;&amp; sell.paymentToken != address(0)) {
+        if (price > 0 && sell.paymentToken != address(0)) {
             transferTokens(sell.paymentToken, buy.maker, sell.maker, price);
         }
 
@@ -810,15 +810,15 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
             /* Sell-side order is maker. */
       
             /* Assert taker fee is less than or equal to maximum fee specified by buyer. */
-            require(sell.takerRelayerFee &lt;= buy.takerRelayerFee);
+            require(sell.takerRelayerFee <= buy.takerRelayerFee);
 
             if (sell.feeMethod == FeeMethod.SplitFee) {
                 /* Assert taker fee is less than or equal to maximum fee specified by buyer. */
-                require(sell.takerProtocolFee &lt;= buy.takerProtocolFee);
+                require(sell.takerProtocolFee <= buy.takerProtocolFee);
 
                 /* Maker fees are deducted from the token amount that the maker receives. Taker fees are extra tokens that must be paid by the taker. */
 
-                if (sell.makerRelayerFee &gt; 0) {
+                if (sell.makerRelayerFee > 0) {
                     uint makerRelayerFee = SafeMath.div(SafeMath.mul(sell.makerRelayerFee, price), INVERSE_BASIS_POINT);
                     if (sell.paymentToken == address(0)) {
                         receiveAmount = SafeMath.sub(receiveAmount, makerRelayerFee);
@@ -828,7 +828,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
                     }
                 }
 
-                if (sell.takerRelayerFee &gt; 0) {
+                if (sell.takerRelayerFee > 0) {
                     uint takerRelayerFee = SafeMath.div(SafeMath.mul(sell.takerRelayerFee, price), INVERSE_BASIS_POINT);
                     if (sell.paymentToken == address(0)) {
                         requiredAmount = SafeMath.add(requiredAmount, takerRelayerFee);
@@ -838,7 +838,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
                     }
                 }
 
-                if (sell.makerProtocolFee &gt; 0) {
+                if (sell.makerProtocolFee > 0) {
                     uint makerProtocolFee = SafeMath.div(SafeMath.mul(sell.makerProtocolFee, price), INVERSE_BASIS_POINT);
                     if (sell.paymentToken == address(0)) {
                         receiveAmount = SafeMath.sub(receiveAmount, makerProtocolFee);
@@ -848,7 +848,7 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
                     }
                 }
 
-                if (sell.takerProtocolFee &gt; 0) {
+                if (sell.takerProtocolFee > 0) {
                     uint takerProtocolFee = SafeMath.div(SafeMath.mul(sell.takerProtocolFee, price), INVERSE_BASIS_POINT);
                     if (sell.paymentToken == address(0)) {
                         requiredAmount = SafeMath.add(requiredAmount, takerProtocolFee);
@@ -869,31 +869,31 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
             /* Buy-side order is maker. */
 
             /* Assert taker fee is less than or equal to maximum fee specified by seller. */
-            require(buy.takerRelayerFee &lt;= sell.takerRelayerFee);
+            require(buy.takerRelayerFee <= sell.takerRelayerFee);
 
             if (sell.feeMethod == FeeMethod.SplitFee) {
                 /* The Exchange does not escrow Ether, so direct Ether can only be used to with sell-side maker / buy-side taker orders. */
                 require(sell.paymentToken != address(0));
 
                 /* Assert taker fee is less than or equal to maximum fee specified by seller. */
-                require(buy.takerProtocolFee &lt;= sell.takerProtocolFee);
+                require(buy.takerProtocolFee <= sell.takerProtocolFee);
 
-                if (buy.makerRelayerFee &gt; 0) {
+                if (buy.makerRelayerFee > 0) {
                     makerRelayerFee = SafeMath.div(SafeMath.mul(buy.makerRelayerFee, price), INVERSE_BASIS_POINT);
                     transferTokens(sell.paymentToken, buy.maker, buy.feeRecipient, makerRelayerFee);
                 }
 
-                if (buy.takerRelayerFee &gt; 0) {
+                if (buy.takerRelayerFee > 0) {
                     takerRelayerFee = SafeMath.div(SafeMath.mul(buy.takerRelayerFee, price), INVERSE_BASIS_POINT);
                     transferTokens(sell.paymentToken, sell.maker, buy.feeRecipient, takerRelayerFee);
                 }
 
-                if (buy.makerProtocolFee &gt; 0) {
+                if (buy.makerProtocolFee > 0) {
                     makerProtocolFee = SafeMath.div(SafeMath.mul(buy.makerProtocolFee, price), INVERSE_BASIS_POINT);
                     transferTokens(sell.paymentToken, buy.maker, protocolFeeRecipient, makerProtocolFee);
                 }
 
-                if (buy.takerProtocolFee &gt; 0) {
+                if (buy.takerProtocolFee > 0) {
                     takerProtocolFee = SafeMath.div(SafeMath.mul(buy.takerProtocolFee, price), INVERSE_BASIS_POINT);
                     transferTokens(sell.paymentToken, sell.maker, protocolFeeRecipient, takerProtocolFee);
                 }
@@ -909,11 +909,11 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
 
         if (sell.paymentToken == address(0)) {
             /* Special-case Ether, order must be matched by buyer. */
-            require(msg.value &gt;= requiredAmount);
+            require(msg.value >= requiredAmount);
             sell.maker.transfer(receiveAmount);
             /* Allow overshoot for variable-price auctions, refund difference. */
             uint diff = SafeMath.sub(msg.value, requiredAmount);
-            if (diff &gt; 0) {
+            if (diff > 0) {
                 buy.maker.transfer(diff);
             }
         }
@@ -936,22 +936,22 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
     {
         return (
             /* Must be opposite-side. */
-            (buy.side == SaleKindInterface.Side.Buy &amp;&amp; sell.side == SaleKindInterface.Side.Sell) &amp;&amp;     
+            (buy.side == SaleKindInterface.Side.Buy && sell.side == SaleKindInterface.Side.Sell) &&     
             /* Must use same fee method. */
-            (buy.feeMethod == sell.feeMethod) &amp;&amp;
+            (buy.feeMethod == sell.feeMethod) &&
             /* Must use same payment token. */
-            (buy.paymentToken == sell.paymentToken) &amp;&amp;
+            (buy.paymentToken == sell.paymentToken) &&
             /* Must match maker/taker addresses. */
-            (sell.taker == address(0) || sell.taker == buy.maker) &amp;&amp;
-            (buy.taker == address(0) || buy.taker == sell.maker) &amp;&amp;
+            (sell.taker == address(0) || sell.taker == buy.maker) &&
+            (buy.taker == address(0) || buy.taker == sell.maker) &&
             /* One must be maker and the other must be taker (no bool XOR in Solidity). */
-            ((sell.feeRecipient == address(0) &amp;&amp; buy.feeRecipient != address(0)) || (sell.feeRecipient != address(0) &amp;&amp; buy.feeRecipient == address(0))) &amp;&amp;
+            ((sell.feeRecipient == address(0) && buy.feeRecipient != address(0)) || (sell.feeRecipient != address(0) && buy.feeRecipient == address(0))) &&
             /* Must match target. */
-            (buy.target == sell.target) &amp;&amp;
+            (buy.target == sell.target) &&
             /* Must match howToCall. */
-            (buy.howToCall == sell.howToCall) &amp;&amp;
+            (buy.howToCall == sell.howToCall) &&
             /* Buy-side order must be settleable. */
-            SaleKindInterface.canSettleOrder(buy.listingTime, buy.expirationTime) &amp;&amp;
+            SaleKindInterface.canSettleOrder(buy.listingTime, buy.expirationTime) &&
             /* Sell-side order must be settleable. */
             SaleKindInterface.canSettleOrder(sell.listingTime, sell.expirationTime)
         );
@@ -995,13 +995,13 @@ contract ExchangeCore is ReentrancyGuarded, Ownable {
         assembly {
             size := extcodesize(target)
         }
-        require(size &gt; 0);
+        require(size > 0);
       
         /* Must match calldata after replacement, if specified. */ 
-        if (buy.replacementPattern.length &gt; 0) {
+        if (buy.replacementPattern.length > 0) {
           ArrayUtils.guardedArrayReplace(buy.calldata, sell.calldata, buy.replacementPattern);
         }
-        if (sell.replacementPattern.length &gt; 0) {
+        if (sell.replacementPattern.length > 0) {
           ArrayUtils.guardedArrayReplace(sell.calldata, buy.calldata, sell.replacementPattern);
         }
         require(ArrayUtils.arrayEq(buy.calldata, sell.calldata));
@@ -1301,22 +1301,22 @@ contract Exchange is ExchangeCore {
     }
 
     /**
-     * @dev Return whether or not two orders&#39; calldata specifications can match
+     * @dev Return whether or not two orders' calldata specifications can match
      * @param buyCalldata Buy-side order calldata
      * @param buyReplacementPattern Buy-side order calldata replacement mask
      * @param sellCalldata Sell-side order calldata
      * @param sellReplacementPattern Sell-side order calldata replacement mask
-     * @return Whether the orders&#39; calldata can be matched
+     * @return Whether the orders' calldata can be matched
      */
     function orderCalldataCanMatch(bytes buyCalldata, bytes buyReplacementPattern, bytes sellCalldata, bytes sellReplacementPattern)
         public
         pure
         returns (bool)
     {
-        if (buyReplacementPattern.length &gt; 0) {
+        if (buyReplacementPattern.length > 0) {
           ArrayUtils.guardedArrayReplace(buyCalldata, sellCalldata, buyReplacementPattern);
         }
-        if (sellReplacementPattern.length &gt; 0) {
+        if (sellReplacementPattern.length > 0) {
           ArrayUtils.guardedArrayReplace(sellCalldata, buyCalldata, sellReplacementPattern);
         }
         return ArrayUtils.arrayEq(buyCalldata, sellCalldata);
@@ -1379,11 +1379,11 @@ contract Exchange is ExchangeCore {
 
 contract WyvernExchange is Exchange {
 
-    string public constant name = &quot;Project Wyvern Exchange&quot;;
+    string public constant name = "Project Wyvern Exchange";
 
-    string public constant version = &quot;2&quot;;
+    string public constant version = "2";
 
-    string public constant codename = &quot;Bakunawa&quot;;
+    string public constant codename = "Bakunawa";
 
     /**
      * @dev Initialize a WyvernExchange instance
@@ -1426,7 +1426,7 @@ library SaleKindInterface {
         returns (bool)
     {
         /* Auctions must have a set expiration date. */
-        return (saleKind == SaleKind.FixedPrice || expirationTime &gt; 0);
+        return (saleKind == SaleKind.FixedPrice || expirationTime > 0);
     }
 
     /**
@@ -1440,7 +1440,7 @@ library SaleKindInterface {
         internal
         returns (bool)
     {
-        return (listingTime &lt; now) &amp;&amp; (expirationTime == 0 || now &lt; expirationTime);
+        return (listingTime < now) && (expirationTime == 0 || now < expirationTime);
     }
 
     /**
@@ -1529,7 +1529,7 @@ contract AuthenticatedProxy is TokenRecipient {
         public
         returns (bool result)
     {
-        require(msg.sender == user || (!revoked &amp;&amp; registry.contracts(msg.sender)));
+        require(msg.sender == user || (!revoked && registry.contracts(msg.sender)));
         if (howToCall == HowToCall.Call) {
             result = dest.call(calldata);
         } else if (howToCall == HowToCall.DelegateCall) {
@@ -1557,13 +1557,13 @@ contract AuthenticatedProxy is TokenRecipient {
 contract ProxyRegistry is Ownable {
 
     /* Authenticated proxies by user. */
-    mapping(address =&gt; AuthenticatedProxy) public proxies;
+    mapping(address => AuthenticatedProxy) public proxies;
 
     /* Contracts pending access. */
-    mapping(address =&gt; uint) public pending;
+    mapping(address => uint) public pending;
 
     /* Contracts allowed to call those proxies. */
-    mapping(address =&gt; bool) public contracts;
+    mapping(address => bool) public contracts;
 
     /* Delay period for adding an authenticated contract.
        This mitigates a particular class of potential attack on the Wyvern DAO (which owns this registry) - if at any point the value of assets held by proxy contracts exceeded the value of half the WYV supply (votes in the DAO),
@@ -1582,7 +1582,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] == 0);
+        require(!contracts[addr] && pending[addr] == 0);
         pending[addr] = now;
     }
 
@@ -1596,7 +1596,7 @@ contract ProxyRegistry is Ownable {
         public
         onlyOwner
     {
-        require(!contracts[addr] &amp;&amp; pending[addr] != 0 &amp;&amp; ((pending[addr] + DELAY_PERIOD) &lt; now));
+        require(!contracts[addr] && pending[addr] != 0 && ((pending[addr] + DELAY_PERIOD) < now));
         pending[addr] = 0;
         contracts[addr] = true;
     }

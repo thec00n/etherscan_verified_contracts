@@ -3,11 +3,11 @@ pragma solidity ^0.4.19;
 contract SafeMath {
 	function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
 		uint256 z = x + y;
-		if (z &lt; x || z &lt; y) revert();
+		if (z < x || z < y) revert();
 		return z;
 	}
 	function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-		if (x &lt; y) revert();
+		if (x < y) revert();
 		return x - y;
 	}
 	function safeMult(uint256 x, uint256 y) pure internal returns(uint256) {
@@ -21,7 +21,7 @@ contract SafeMath {
 contract AccessMgr {
 	address public mOwner;
 	
-	mapping(address =&gt; uint) public mModerators;
+	mapping(address => uint) public mModerators;
 	address[] public mModeratorKeys;
 	
 	function AccessMgr() public {
@@ -35,7 +35,7 @@ contract AccessMgr {
 	}
 	
 	modifier Moderators {
-		if (msg.sender != mOwner &amp;&amp; mModerators[msg.sender] == 0)
+		if (msg.sender != mOwner && mModerators[msg.sender] == 0)
 			revert();
 		_;
 	}
@@ -47,7 +47,7 @@ contract AccessMgr {
 	
 	function addModerator(address moderator) Owner public {
 		if (moderator != address(0x0)) {
-			if (mModerators[moderator] &gt; 0)
+			if (mModerators[moderator] > 0)
 				return;
 			mModerators[moderator] = mModeratorKeys.length;
 			mModeratorKeys.push(moderator);
@@ -79,14 +79,14 @@ contract UserMgr is SafeMath {
 		uint256[] inventory;
 	}
 
-	mapping(address =&gt; User) public mUsers;
+	mapping(address => User) public mUsers;
 	
 	function UserMgr() public {}
 	
 	function getUser(address addr) public view returns (string name, uint256 balance, uint256[] hostedItems, uint256[] inventory) {
 		User memory user = mUsers[addr];
 		return (
-			&quot;Anonymous&quot;,
+			"Anonymous",
 			user.balance,
 			user.hostedItems,
 			user.inventory);
@@ -131,7 +131,7 @@ contract ItemMgr {
 			returns (string name, address hostAddress, uint256 price, uint256 numSold,
 					uint256 basePrice, uint256 growthAmount, uint256 growthPeriod) {
 		uint256 length = mItems.length;
-		if (index &gt;= length) index = length-1;
+		if (index >= length) index = length-1;
 		Item memory item = mItems[index];
 		return (
 			item.name, item.hostAddress, item.price, item.numSold,
@@ -160,27 +160,27 @@ contract PonziBaseProcessor is SafeMath, AccessMgr, UserMgr, ItemMgr {
 		User storage user = mUsers[sender];
 		uint256 balance = user.balance;
 		
-		if (msg.value &gt; 0)
+		if (msg.value > 0)
 			balance = safeAdd(balance, msg.value);
 		
-		if (basePrice &lt;= 0)
+		if (basePrice <= 0)
 			revert(); // Base price must be non-zero.
 		
-		//if (growthAmount &lt;= 0) Allow non-growing items.
+		//if (growthAmount <= 0) Allow non-growing items.
 		//	revert(); // Growth amount must be non-zero.
 		
-		if (growthPeriod &lt;= 0)
+		if (growthPeriod <= 0)
 			revert(); // Growth period must be non-zero.
 		
-		if (bytes(name).length &gt; 32)
+		if (bytes(name).length > 32)
 			revert(); // Name must be 32 characters max.
 		
 		uint256 fee = basePrice;
 		uint256 minFee = mHostFee;
-		if (fee &lt; minFee)
+		if (fee < minFee)
 			fee = minFee;
 		
-		if (balance &lt; fee)
+		if (balance < fee)
 			revert(); // Insufficient balance.
 		
 		uint256 id = mItems.length;
@@ -220,7 +220,7 @@ contract PonziBaseProcessor is SafeMath, AccessMgr, UserMgr, ItemMgr {
 		User storage user = mUsers[sender];
 		uint256 balance = user.balance;
 		
-		if (msg.value &gt; 0)
+		if (msg.value > 0)
 			balance = safeAdd(balance, msg.value);
 		
 		Item storage item = mItems[id];
@@ -229,7 +229,7 @@ contract PonziBaseProcessor is SafeMath, AccessMgr, UserMgr, ItemMgr {
 		if (price == 0)
 			revert(); // Item not found.
 		
-		if (balance &lt; price)
+		if (balance < price)
 			revert(); // Insufficient balance.
 		
 		balance = safeSubtract(balance, price);
@@ -240,7 +240,7 @@ contract PonziBaseProcessor is SafeMath, AccessMgr, UserMgr, ItemMgr {
 		
 		uint256 refund = price;
 		uint256 dividend = price / length;
-		for (uint256 i=0; i&lt;length; i++) {
+		for (uint256 i=0; i<length; i++) {
 			User storage holder = mUsers[item.purchases[i]];
 			holder.balance = safeAdd(holder.balance, dividend);
 			refund -= dividend;

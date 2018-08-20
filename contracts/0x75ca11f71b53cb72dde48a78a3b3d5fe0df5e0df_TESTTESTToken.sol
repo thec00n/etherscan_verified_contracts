@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -41,8 +41,8 @@ contract ERC20 {
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool);
     function approve(address _spender, uint256 _value) public returns(bool);
     function allowance(address _owner, address _spender) public constant returns(uint256);
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
@@ -53,8 +53,8 @@ contract ERC20 {
  */
 contract TESTTESTToken is ERC20 {
     using SafeMath for uint256;
-    string public name = &quot;TESTTEST TOKEN&quot;;
-    string public symbol = &quot;TTT&quot;;
+    string public name = "TESTTEST TOKEN";
+    string public symbol = "TTT";
     uint256 public decimals = 18;
     uint256 public totalSupply = 0;
     uint256 public constant MAX_TOKENS = 166000000 * 1e18;
@@ -87,8 +87,8 @@ contract TESTTESTToken is ERC20 {
     *   @param _value        number of tokens
     */
     function mintTokens(address _investor, uint256 _value) external onlyOwner {
-        require(_value &gt; 0);
-        require(totalSupply.add(_value) &lt;= MAX_TOKENS);
+        require(_value > 0);
+        require(totalSupply.add(_value) <= MAX_TOKENS);
         balances[_investor] = balances[_investor].add(_value);
         totalSupply = totalSupply.add(_value);
         emit Transfer(0x0, _investor, _value);
@@ -114,7 +114,7 @@ contract TESTTESTToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _investor, uint256 _value) external onlyOwner {
-        require(balances[_investor] &gt; 0);
+        require(balances[_investor] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_investor] = balances[_investor].sub(_value);
         emit Burn(_investor, _value);
@@ -122,7 +122,7 @@ contract TESTTESTToken is ERC20 {
 
    /**
     *   @dev Get balance of investor
-    *   @param _owner        investor&#39;s address
+    *   @param _owner        investor's address
     *   @return              balance of investor
     */
     function balanceOf(address _owner) public constant returns(uint256) {
@@ -237,15 +237,15 @@ contract TESTTESTICO {
 
 
     // Mapping
-    mapping(address =&gt; uint256) public preInvestments; // Mapping for remembering investors eth in preICO
-    mapping(address =&gt; uint256) public icoInvestments; // Mapping for remembering investors eth in ICO
-    mapping(address =&gt; bool) public returnStatusPre; // Users can return their funds one time in PreICO and ICO
-    mapping(address =&gt; bool) public returnStatusIco; // Users can return their funds one time in PreICO and ICO
-    mapping(address =&gt; uint256) public tokensPreIco; // Mapping for remembering tokens of investors who paid at preICO in ether
-    mapping(address =&gt; uint256) public tokensIco; // Mapping for remembering tokens of investors who paid at ICO in ether
-    mapping(address =&gt; uint256) public tokensPreIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at preICO in other crypto
-    mapping(address =&gt; uint256) public tokensIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at ICO in other crypto
-    mapping(address =&gt; uint256) public tokensNoBonusSold;
+    mapping(address => uint256) public preInvestments; // Mapping for remembering investors eth in preICO
+    mapping(address => uint256) public icoInvestments; // Mapping for remembering investors eth in ICO
+    mapping(address => bool) public returnStatusPre; // Users can return their funds one time in PreICO and ICO
+    mapping(address => bool) public returnStatusIco; // Users can return their funds one time in PreICO and ICO
+    mapping(address => uint256) public tokensPreIco; // Mapping for remembering tokens of investors who paid at preICO in ether
+    mapping(address => uint256) public tokensIco; // Mapping for remembering tokens of investors who paid at ICO in ether
+    mapping(address => uint256) public tokensPreIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at preICO in other crypto
+    mapping(address => uint256) public tokensIcoInOtherCrypto; // Mapping for remembering tokens of investors who paid at ICO in other crypto
+    mapping(address => uint256) public tokensNoBonusSold;
 
     // Events Log
     event LogStartPreIcoStage(uint stageNum);
@@ -284,17 +284,17 @@ contract TESTTESTICO {
     }
     
     function currentStage() public view returns (string) {
-        if(statusICO == StatusICO.Created){return &quot;Created&quot;;}
-        else if(statusICO == StatusICO.PreIcoStage1){return  &quot;PreIcoStage1&quot;;}
-        else if(statusICO == StatusICO.PreIcoStage2){return &quot;PreIcoStage2&quot;;}
-        else if(statusICO == StatusICO.PreIcoStage3){return &quot;PreIcoStage3&quot;;}
-        else if(statusICO == StatusICO.PreIcoFinished){return &quot;PreIcoFinished&quot;;}
-        else if(statusICO == StatusICO.IcoStage1){return &quot;IcoStage1&quot;;}
-        else if(statusICO == StatusICO.IcoStage2){return &quot;IcoStage2&quot;;}
-        else if(statusICO == StatusICO.IcoStage1){return &quot;IcoStage3&quot;;}
-        else if(statusICO == StatusICO.IcoStage1){return &quot;IcoStage4&quot;;}
-        else if(statusICO == StatusICO.IcoStage1){return &quot;IcoStage5&quot;;}
-        else if(statusICO == StatusICO.IcoStage1){return &quot;IcoFinished&quot;;}
+        if(statusICO == StatusICO.Created){return "Created";}
+        else if(statusICO == StatusICO.PreIcoStage1){return  "PreIcoStage1";}
+        else if(statusICO == StatusICO.PreIcoStage2){return "PreIcoStage2";}
+        else if(statusICO == StatusICO.PreIcoStage3){return "PreIcoStage3";}
+        else if(statusICO == StatusICO.PreIcoFinished){return "PreIcoFinished";}
+        else if(statusICO == StatusICO.IcoStage1){return "IcoStage1";}
+        else if(statusICO == StatusICO.IcoStage2){return "IcoStage2";}
+        else if(statusICO == StatusICO.IcoStage1){return "IcoStage3";}
+        else if(statusICO == StatusICO.IcoStage1){return "IcoStage4";}
+        else if(statusICO == StatusICO.IcoStage1){return "IcoStage5";}
+        else if(statusICO == StatusICO.IcoStage1){return "IcoFinished";}
     }
 
    /**
@@ -379,7 +379,7 @@ contract TESTTESTICO {
         LTO.mintTokens(Company, companyPart.mul(totalAmount).div(1000));
         statusICO = StatusICO.IcoFinished;
         canIBuy = false;
-        if(soldTotal &gt;= SOFT_CAP){canIWithdraw = false;}
+        if(soldTotal >= SOFT_CAP){canIWithdraw = false;}
         emit LogFinishICO(BountyFund, Company, TeamFund);
     }
 
@@ -405,14 +405,14 @@ contract TESTTESTICO {
     */
     function() external payable {
         require(canIBuy);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         createTokens(msg.sender, msg.value.mul(Token_Price), msg.value);
     }
     
     
     function buyToken() external payable {
         require(canIBuy);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         createTokens(msg.sender, msg.value.mul(Token_Price), msg.value);
     }
 
@@ -420,17 +420,17 @@ contract TESTTESTICO {
 
 
     function buyForInvestor(address _investor, uint256 _value) external managerOnly {
-        require(_value &gt; 0);
+        require(_value > 0);
         require(canIBuy);
         uint256 decvalue = _value.mul(1 ether);
         uint256 bonus = getBonus(decvalue);
         uint256 total = decvalue.add(bonus);
         if(!isItIco){
-            require(LTO.totalSupply().add(total) &lt;= MAX_PREICO_TOKENS);
+            require(LTO.totalSupply().add(total) <= MAX_PREICO_TOKENS);
             tokensPreIcoInOtherCrypto[_investor] = tokensPreIcoInOtherCrypto[_investor].add(total);}
         else {
-            require(LTO.totalSupply().add(total) &lt;= TOKENS_FOR_SALE);
-            require(soldTotal.add(decvalue) &lt;= HARD_CAP);
+            require(LTO.totalSupply().add(total) <= TOKENS_FOR_SALE);
+            require(soldTotal.add(decvalue) <= HARD_CAP);
             tokensIcoInOtherCrypto[_investor] = tokensIcoInOtherCrypto[_investor].add(total);
             soldTotal = soldTotal.add(decvalue);}
         LTO.mintTokens(_investor, total);
@@ -442,16 +442,16 @@ contract TESTTESTICO {
 
 
     function createTokens(address _investor, uint256 _value, uint256 _ethValue) internal {
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 bonus = getBonus(_value);
         uint256 total = _value.add(bonus);
         if(!isItIco){
-            require(LTO.totalSupply().add(total) &lt;= MAX_PREICO_TOKENS);
+            require(LTO.totalSupply().add(total) <= MAX_PREICO_TOKENS);
             tokensPreIco[_investor] = tokensPreIco[_investor].add(total);
             preInvestments[_investor] = preInvestments[_investor].add(_ethValue);}
         else {
-            require(LTO.totalSupply().add(total) &lt;= TOKENS_FOR_SALE);
-            require(soldTotal.add(_value) &lt;= HARD_CAP);
+            require(LTO.totalSupply().add(total) <= TOKENS_FOR_SALE);
+            require(soldTotal.add(_value) <= HARD_CAP);
             tokensIco[_investor] = tokensIco[_investor].add(total);
             icoInvestments[_investor] = icoInvestments[_investor].add(_ethValue);
             soldTotal = soldTotal.add(_value);}
@@ -497,7 +497,7 @@ contract TESTTESTICO {
         require(canIWithdraw);
         if (!isItIco) {
             require(!returnStatusPre[msg.sender]);
-            require(preInvestments[msg.sender] &gt; 0);
+            require(preInvestments[msg.sender] > 0);
             eth = preInvestments[msg.sender];
             tokens = tokensPreIco[msg.sender];
             preInvestments[msg.sender] = 0;
@@ -506,7 +506,7 @@ contract TESTTESTICO {
         }
         else {
             require(!returnStatusIco[msg.sender]);
-            require(icoInvestments[msg.sender] &gt; 0);
+            require(icoInvestments[msg.sender] > 0);
             eth = icoInvestments[msg.sender];
             tokens = tokensIco[msg.sender];
             icoInvestments[msg.sender] = 0;

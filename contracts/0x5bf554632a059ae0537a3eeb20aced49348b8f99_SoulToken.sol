@@ -11,10 +11,10 @@ pragma solidity ^0.4.17;
 contract ERC20Interface {
 
     // Token symbol
-    string public constant symbol = &quot;TBA&quot;;
+    string public constant symbol = "TBA";
 
     // Name of token
-    string public constant name =&quot;TBA&quot;;
+    string public constant name ="TBA";
 
     // Decimals of token
     uint8 public constant decimals = 18;
@@ -51,10 +51,10 @@ contract ERC20Interface {
 contract ERC20Token is ERC20Interface{
 
     // account balances
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Function to access acount balances
     function balanceOf(address _owner) public constant returns (uint256) {
@@ -63,8 +63,8 @@ contract ERC20Token is ERC20Interface{
 
     // Transfer the _amount from msg.sender to _to account
     function transfer(address _to, uint256 _amount) public returns (bool) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-                &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount && _amount > 0
+                && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -76,7 +76,7 @@ contract ERC20Token is ERC20Interface{
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -85,9 +85,9 @@ contract ERC20Token is ERC20Interface{
         address _to,
         uint256 _amount
     ) public returns (bool) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0
-                &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount && _amount > 0
+                && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -106,7 +106,7 @@ contract ERC20Token is ERC20Interface{
         return true;
     }
 
-    // Function to specify how much _spender is allowed to transfer on _owner&#39;s behalf
+    // Function to specify how much _spender is allowed to transfer on _owner's behalf
     function allowance(address _owner, address _spender) public constant returns (uint256) {
         return allowed[_owner][_spender];
     }
@@ -118,10 +118,10 @@ contract ERC20Token is ERC20Interface{
 contract SoulToken is ERC20Token{
 
     // The three letter symbol of token
-    string public constant symbol = &quot;SOUL&quot;;
+    string public constant symbol = "SOUL";
 
     // Name of token
-    string public constant name = &quot;Soul Napkins&quot;;
+    string public constant name = "Soul Napkins";
 
     // 6 is a holy number (2*3) so there are 6 decimals
     uint8 public constant decimals = 6;
@@ -140,19 +140,19 @@ contract SoulToken is ERC20Token{
     uint256 constant totalSupply_ = 144000 * unit;
 
     // mapping to keep the reason of the soul sale!
-    mapping(address =&gt; string) reasons;
+    mapping(address => string) reasons;
 
     // prices that people put up for their soul
-    mapping(address =&gt; uint256) soulPrices;
+    mapping(address => uint256) soulPrices;
 
     // who owns a particular soul
-    mapping(address =&gt; address) ownedBy;
+    mapping(address => address) ownedBy;
 
     // number of souls owned by someone
-    mapping(address =&gt; uint256) soulsOwned;
+    mapping(address => uint256) soulsOwned;
 
     // book of souls, listing all souls on sale and sold
-    mapping(uint256 =&gt; address) soulBook;
+    mapping(uint256 => address) soulBook;
 
     // owner of the contract
     address public owner;
@@ -211,7 +211,7 @@ contract SoulToken is ERC20Token{
         bookingFee = fee;
     }
 
-    // changes Charon&#39;s boat, i.e. the address where the obol is paid to
+    // changes Charon's boat, i.e. the address where the obol is paid to
     function changeBoat(address newBoat) public{
         require(msg.sender == owner);
         charonsBoat = newBoat;
@@ -222,7 +222,7 @@ contract SoulToken is ERC20Token{
         return totalSupply_;
     }
 
-    // returns the reason for the selling of one&#39;s soul
+    // returns the reason for the selling of one's soul
     function soldSoulBecause(address noSoulMate) public constant returns(string){
         return reasons[noSoulMate];
     }
@@ -253,14 +253,14 @@ contract SoulToken is ERC20Token{
         string storage has_reason = reasons[msg.sender];
 
         // require that user gives a reason
-        require(bytes(reason).length &gt; 0);
+        require(bytes(reason).length > 0);
 
         // require to pay bookingFee
-        require(msg.value &gt;= bookingFee);
+        require(msg.value >= bookingFee);
 
         // you cannot give away your soul for free, at least Charon wants some share
         charonsObol = price / obol;
-        require(charonsObol &gt; 0);
+        require(charonsObol > 0);
 
         // assert has not sold her or his soul, yet
         require(bytes(has_reason).length == 0);
@@ -289,14 +289,14 @@ contract SoulToken is ERC20Token{
         // get the price of the soul
         price = soulPrices[noSoulMate];
         // Soul must be for sale
-        require(price &gt; 0);
-        require(bytes(reasons[noSoulMate]).length &gt; 0);
+        require(price > 0);
+        require(bytes(reasons[noSoulMate]).length > 0);
         // Msg sender needs to pay the soul price
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         charonsObol = msg.value / obol;
 
         // check for wrap around
-        require(soulsOwned[msg.sender] + 1 &gt; soulsOwned[msg.sender]);
+        require(soulsOwned[msg.sender] + 1 > soulsOwned[msg.sender]);
 
         // pay Charon
         payCharon(charonsObol);
@@ -306,7 +306,7 @@ contract SoulToken is ERC20Token{
         // Update the soul stats
         soulsForSale -= 1;
         soulsSold += 1;
-        // Increase the sender&#39;s balance by the appropriate amount of souls ;-)
+        // Increase the sender's balance by the appropriate amount of souls ;-)
         soulsOwned[msg.sender] += 1;
         ownedBy[noSoulMate] = msg.sender;
         // log the transfer
@@ -315,7 +315,7 @@ contract SoulToken is ERC20Token{
         // and give away napkins proportional to obol plus 1 bonus napkin ;-)
         amount = charonsObol / napkinPrice + unit;
         amount = checkAmount(amount);
-        if (amount &gt; 0){
+        if (amount > 0){
             // only payout napkins if they are available
             payOutNapkins(amount);
         }
@@ -329,10 +329,10 @@ contract SoulToken is ERC20Token{
 
         // require correct ownership
         require(ownedBy[noSoulMate] == msg.sender);
-        require(soulsOwned[_to] + 1 &gt; soulsOwned[_to]);
+        require(soulsOwned[_to] + 1 > soulsOwned[_to]);
         // require transfer fee is payed again
         charonsObol = soulPrices[noSoulMate] / obol;
-        require(msg.value &gt;= charonsObol);
+        require(msg.value >= charonsObol);
         // pay Charon
         payCharon(msg.value);
         // transfer the soul
@@ -353,7 +353,7 @@ contract SoulToken is ERC20Token{
     // checks if napkins are still available and adjusts amount accordingly
     function checkAmount(uint256 amount) internal constant returns(uint256 checkedAmount){
 
-        if (amount &gt; balances[this]){
+        if (amount > balances[this]){
             checkedAmount = balances[this];
         } else {
             checkedAmount = amount;
@@ -365,9 +365,9 @@ contract SoulToken is ERC20Token{
     // transfers napkins to people
     function payOutNapkins(uint256 amount) internal{
         // check for amount and wrap around
-        require(amount &gt; 0);
+        require(amount > 0);
         // yeah some sanity check
-        require(amount &lt;= balances[this]);
+        require(amount <= balances[this]);
 
         // send napkins from contract to msg.sender
         balances[this] -= amount;

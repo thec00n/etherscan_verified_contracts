@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,8 +38,8 @@ contract Roles {
 
 
     // initiators and validators can be many
-    mapping (address =&gt; bool) public initiators ; 
-    mapping (address =&gt; bool) public validators ;  
+    mapping (address => bool) public initiators ; 
+    mapping (address => bool) public validators ;  
     address[] validatorsAcct ; 
 
     // keep track of the current qty. of initiators around 
@@ -119,7 +119,7 @@ function revokeValidator(address _validatorAddr) public onlySuperAdmin
   require(validators[_validatorAddr]) ; 
   validators[_validatorAddr] = false ; 
   
-  for(uint i = 0 ; i &lt; qtyValidators ; i++ ) 
+  for(uint i = 0 ; i < qtyValidators ; i++ ) 
     {
       if (validatorsAcct[i] == _validatorAddr)
          validatorsAcct[i] = address(0) ; 
@@ -165,19 +165,19 @@ struct Proposal
     uint totalNegativeVotes ; 
     uint totalVoters ; 
     address[] votersAcct ; 
-    mapping (address =&gt; uint) votes ; 
+    mapping (address => uint) votes ; 
   }
 
 // storage to keep track of all the proposals 
-mapping (bytes32 =&gt; Proposal) public proposals ; 
+mapping (bytes32 => Proposal) public proposals ; 
 uint256 totalProposals ; 
 
 // helper array to keep track of all rootHashes proposals
 bytes32[] rootHashesProposals ; 
 
 
-// storage records the final &amp;&amp; immutable ipfsAddresses validated by majority consensus of validators
-mapping (bytes32 =&gt; string) public ipfsAddresses ; 
+// storage records the final && immutable ipfsAddresses validated by majority consensus of validators
+mapping (bytes32 => string) public ipfsAddresses ; 
 
 // Helper vector to track all keys (rootHasshes) added to ipfsAddresses
 bytes32[] ipfsAddressesAcct ;
@@ -241,7 +241,7 @@ function propose(bytes32 _rootHash, string _ipfsAddress) public onlyInitiators
   // proposal should not be present already, i.e timestamp has to be in an uninitialized state, i.e. zero 
   require(proposals[_rootHash].timestamp == 0 ) ;
 
-  // writes the proposal for the _ipfsAddress, timestamp it &#39;now&#39; and set the qty to zero (i.e. no votes yet)
+  // writes the proposal for the _ipfsAddress, timestamp it 'now' and set the qty to zero (i.e. no votes yet)
   address[] memory newVoterAcct = new address[](maxValidators) ; 
   Proposal memory newProposal = Proposal( _ipfsAddress , now, 0, 0, 0, newVoterAcct ) ; 
   proposals[_rootHash] = newProposal ; 
@@ -274,8 +274,8 @@ function howManyVoters(bytes32 _rootHash) constant public returns (uint)
 function vote(bytes32 _rootHash, bool _vote) public onlyValidators
 {
   // if timestamp == 0 it means such proposal does not exist, i.e. was never timestamped hence 
-  //  contains the &#39;zero&#39; uninitialized value
-  require(proposals[_rootHash].timestamp &gt; 0) ;
+  //  contains the 'zero' uninitialized value
+  require(proposals[_rootHash].timestamp > 0) ;
 
   // checks this validator have not already voted for this proposal
   // 0 no voted yet
@@ -305,7 +305,7 @@ function vote(bytes32 _rootHash, bool _vote) public onlyValidators
   if ( isConsensusObtained(proposals[_rootHash].totalAffirmativeVotes) )
   {
   // need to make sure the consensuated vote had not already been written to the storage area ipfsAddresses
-  // so we don&#39;t write duplicate info again, just to save some gas :) and also b/c it&#39;s the right thing to do 
+  // so we don't write duplicate info again, just to save some gas :) and also b/c it's the right thing to do 
   // to minimize entropy in the universe... hence, we need to check for an empty string
     bytes memory tempEmptyString = bytes(ipfsAddresses[_rootHash]) ; 
     if ( tempEmptyString.length == 0 ) 
@@ -321,7 +321,7 @@ function vote(bytes32 _rootHash, bool _vote) public onlyValidators
 } 
 
 
-// returns the total number of ipfsAddresses ever stored in the definitive immutable storage &#39;ipfsAddresses&#39;
+// returns the total number of ipfsAddresses ever stored in the definitive immutable storage 'ipfsAddresses'
 function getTotalQtyIpfsAddresses() constant public returns (uint)
 { 
   return ipfsAddressesAcct.length ; 
@@ -330,7 +330,7 @@ function getTotalQtyIpfsAddresses() constant public returns (uint)
 // returns one rootHash which is stored at a specific _index position
 function getOneByOneRootHash(uint _index) constant public returns (bytes32 _rootHash )
 {
-  require( _index &lt;= (getTotalQtyIpfsAddresses()-1) ) ; 
+  require( _index <= (getTotalQtyIpfsAddresses()-1) ) ; 
   return ipfsAddressesAcct[_index] ; 
 }
 
@@ -341,24 +341,24 @@ function isConsensusObtained(uint _totalAffirmativeVotes) constant public return
  // multiplying by 10000 (10 thousand) for decimal precision management
  // note: This scales up to 9999 validators only
 
- require (qtyValidators &gt; 0) ; // prevents division by zero 
+ require (qtyValidators > 0) ; // prevents division by zero 
  uint dTotalVotes = _totalAffirmativeVotes * 10000 ; 
- return (dTotalVotes / qtyValidators &gt; 5000 ) ;
+ return (dTotalVotes / qtyValidators > 5000 ) ;
 
 }
 
 
 // Validators:
 // returns one proposal (the first one) greater than, STRICTLY GREATER THAN the given _timestampFrom 
-// timestamp &gt; _timestampFrom 
+// timestamp > _timestampFrom 
 function getProposals(uint _timestampFrom) constant public returns (bytes32 _rootHash)
 {
    // returns the first rootHash corresponding to a timestamp greater than the parameter 
    uint max = rootHashesProposals.length ; 
 
-   for(uint i = 0 ; i &lt; max ; i++ ) 
+   for(uint i = 0 ; i < max ; i++ ) 
     {
-      if (proposals[rootHashesProposals[i]].timestamp &gt; _timestampFrom)
+      if (proposals[rootHashesProposals[i]].timestamp > _timestampFrom)
          return rootHashesProposals[i] ; 
     }
 
@@ -375,21 +375,21 @@ function getTimestampProposal(bytes32 _rootHash) constant public returns (uint _
 
 
 // returns the total quantity of active validators
-// only &#39;active&#39; ones quantity  
+// only 'active' ones quantity  
 function getQtyValidators() constant public returns (uint)
 {
   return qtyValidators ; 
 }
 
-// It returns the address of an active validator in the specific &#39;_t&#39; vector position of active validators 
-// vector positions start at zero and ends at &#39;getQtyValidators - 1&#39; so in order to get all vaidators 
-// you have to iterate one by one from 0 to &#39; getQtyValidators -1 &#39;
+// It returns the address of an active validator in the specific '_t' vector position of active validators 
+// vector positions start at zero and ends at 'getQtyValidators - 1' so in order to get all vaidators 
+// you have to iterate one by one from 0 to ' getQtyValidators -1 '
 function getValidatorAddress(int _t) constant public returns (address _validatorAddr)
 {
    int x = -1 ; 
    uint size = validatorsAcct.length ; 
 
-   for ( uint i = 0 ; i &lt; size ; i++ )
+   for ( uint i = 0 ; i < size ; i++ )
    {
 
       if ( validators[validatorsAcct[i]] ) x++ ; 
@@ -397,7 +397,7 @@ function getValidatorAddress(int _t) constant public returns (address _validator
    }
 }
  
-// returns true if the rootHash was impacted, i.e. it&#39;s available and exists in the ipfsAddresses array
+// returns true if the rootHash was impacted, i.e. it's available and exists in the ipfsAddresses array
 // and false if otherwise
 
 function getStatusForRootHash(bytes32 _rootHash) constant public returns (bool)
@@ -420,7 +420,7 @@ function getStatusForRootHash(bytes32 _rootHash) constant public returns (bool)
 // rootHash examples below, always 32 bytes in the format:
 // 0x12207D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E
 // 0x12207D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458F
-// ipfs address, string: &quot;whatever here&quot;,
+// ipfs address, string: "whatever here",
 
 // JUN-5 v1 contract deployed at https://rinkeby.etherscan.io/address/0xbe2ee825339c25749fb8ff8f6621d304fb2e2be5
 // JUN-5 v1 contract deployed at https://ropsten.etherscan.io/address/0xbe2ee825339c25749fb8ff8f6621d304fb2e2be5

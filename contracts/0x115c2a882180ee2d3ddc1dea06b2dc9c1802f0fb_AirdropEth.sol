@@ -4,7 +4,7 @@ contract ERC20 {
 
 contract AirdropEth {
   function drop(address[] recipients, uint256[] values) payable public {
-    for (uint256 i = 0; i &lt; recipients.length; i++) {
+    for (uint256 i = 0; i < recipients.length; i++) {
       recipients[i].transfer(values[i]);
     }
   }

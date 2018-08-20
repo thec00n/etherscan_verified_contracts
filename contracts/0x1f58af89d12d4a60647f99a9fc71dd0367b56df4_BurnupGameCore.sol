@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -326,13 +326,13 @@ contract BurnupGameBase is BurnupGameAccessControl {
         uint256 gameStartTimestamp;
     
         /// @dev Keep track of tile ownership.
-        mapping (uint256 =&gt; address) identifierToOwner;
+        mapping (uint256 => address) identifierToOwner;
         
         /// @dev Keep track of the timestamp at which a tile was flipped last.
-        mapping (uint256 =&gt; uint256) identifierToBuyoutTimestamp;
+        mapping (uint256 => uint256) identifierToBuyoutTimestamp;
         
         /// @dev Current tile price.
-        mapping (uint256 =&gt; uint256) identifierToBuyoutPrice;
+        mapping (uint256 => uint256) identifierToBuyoutPrice;
         
         /// @dev Keep track of the tile that was flipped last.
         uint256 lastFlippedTile;
@@ -342,10 +342,10 @@ contract BurnupGameBase is BurnupGameAccessControl {
     }
     
     /// @notice Mapping from game indices to game settings.
-    mapping (uint256 =&gt; GameSettings) public gameSettings;
+    mapping (uint256 => GameSettings) public gameSettings;
     
     /// @notice Mapping from game indices to game states.
-    mapping (uint256 =&gt; GameState) public gameStates;
+    mapping (uint256 => GameState) public gameStates;
     
     /// @notice The index of the current game.
     uint256 public gameIndex = 0;
@@ -371,7 +371,7 @@ contract BurnupGameBase is BurnupGameAccessControl {
     /// @param x The x-part of the coordinate to test.
     /// @param y The y-part of the coordinate to test.
     function validCoordinate(uint256 x, uint256 y) public view returns(bool) {
-        return x &lt; gameSettings[gameIndex].cols &amp;&amp; y &lt; gameSettings[gameIndex].rows;
+        return x < gameSettings[gameIndex].cols && y < gameSettings[gameIndex].rows;
     }
     
     /// @dev Represent a 2D coordinate as a single uint.
@@ -407,10 +407,10 @@ contract BurnupGameBase is BurnupGameAccessControl {
     {
         // Buyout dividend must be 2% at the least.
         // Buyout dividend percentage may be 12.5% at the most.
-        require(2000 &lt;= buyoutDividendPercentage &amp;&amp; buyoutDividendPercentage &lt;= 12500);
+        require(2000 <= buyoutDividendPercentage && buyoutDividendPercentage <= 12500);
         
         // Buyout fee may be 5% at the most.
-        require(buyoutFeePercentage &lt;= 5000);
+        require(buyoutFeePercentage <= 5000);
         
         nextGameSettings = GameSettings({
             rows: rows,
@@ -435,12 +435,12 @@ contract BurnupGameOwnership is BurnupGameBase {
     
     /// @notice Name of the collection of deeds (non-fungible token), as defined in ERC721Metadata.
     function name() public pure returns (string _deedName) {
-        _deedName = &quot;Burnup Tiles&quot;;
+        _deedName = "Burnup Tiles";
     }
     
     /// @notice Symbol of the collection of deeds (non-fungible token), as defined in ERC721Metadata.
     function symbol() public pure returns (string _deedSymbol) {
-        _deedSymbol = &quot;BURN&quot;;
+        _deedSymbol = "BURN";
     }
     
     /// @dev Checks if a given address owns a particular tile.
@@ -494,7 +494,7 @@ contract BurnupGameOwnership is BurnupGameBase {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -505,7 +505,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -530,7 +530,7 @@ contract BurnupHoldingAccessControl is Claimable, Pausable, CanReclaimToken {
     address public cfoAddress;
     
     /// Boolean indicating whether an address is a BurnUp Game contract.
-    mapping (address =&gt; bool) burnupGame;
+    mapping (address => bool) burnupGame;
 
     function BurnupHoldingAccessControl() public {
         // The creator of the contract is the initial CFO.
@@ -578,7 +578,7 @@ contract BurnupHoldingReferral is BurnupHoldingAccessControl {
     event SetReferrer(address indexed referral, address indexed referrer);
 
     /// Referrer of player.
-    mapping (address =&gt; address) addressToReferrerAddress;
+    mapping (address => address) addressToReferrerAddress;
     
     /// Get the referrer of a player.
     /// @param player The address of the player to get the referrer of.
@@ -643,7 +643,7 @@ contract BurnupHoldingCore is BurnupHoldingReferral, PullPayment {
     /// @param playerAddr The address to set the referrer for.
     /// @param referrerAddr The address of the referrer to set.
     function setReferrer(address playerAddr, address referrerAddr) external onlyBurnupGame whenNotPaused returns(bool) {
-        if (referrerOf(playerAddr) == address(0x0) &amp;&amp; playerAddr != referrerAddr) {
+        if (referrerOf(playerAddr) == address(0x0) && playerAddr != referrerAddr) {
             // Set the referrer, if no referrer has been set yet, and the player
             // and referrer are not the same address.
             _setReferrer(playerAddr, referrerAddr);
@@ -679,9 +679,9 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
         uint256[] memory _tiles = new uint256[](8);
         
         // Loop through all neighbors.
-        for (int256 dx = -1; dx &lt;= 1; dx++) {
-            for (int256 dy = -1; dy &lt;= 1; dy++) {
-                if (dx == 0 &amp;&amp; dy == 0) {
+        for (int256 dx = -1; dx <= 1; dx++) {
+            for (int256 dy = -1; dy <= 1; dy++) {
+                if (dx == 0 && dy == 0) {
                     // Skip the center (i.e., the tile itself).
                     continue;
                 }
@@ -689,7 +689,7 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
                 uint256 nx = uint256(int256(x) + dx);
                 uint256 ny = uint256(int256(y) + dy);
                 
-                if (nx &gt;= gameSettings[gameIndex].cols || ny &gt;= gameSettings[gameIndex].rows) {
+                if (nx >= gameSettings[gameIndex].cols || ny >= gameSettings[gameIndex].rows) {
                     // This coordinate is outside the game bounds.
                     continue;
                 }
@@ -711,7 +711,7 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
         // tiles from the buffer to the tile array.
         uint256[] memory tiles = new uint256[](claimed);
         
-        for (uint256 i = 0; i &lt; claimed; i++) {
+        for (uint256 i = 0; i < claimed; i++) {
             tiles[i] = _tiles[i];
         }
         
@@ -721,7 +721,7 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
     /// @dev Calculate the next buyout price given the current total buyout cost.
     /// @param price The current buyout price.
     function nextBuyoutPrice(uint256 price) public pure returns (uint256) {
-        if (price &lt; 0.02 ether) {
+        if (price < 0.02 ether) {
             return price.mul(200).div(100); // * 2.0
         } else {
             return price.mul(150).div(100); // * 1.5
@@ -742,7 +742,7 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
     {
     
         if (currentOwner != 0x0) {
-            // Send the current owner&#39;s winnings.
+            // Send the current owner's winnings.
             _sendFunds(currentOwner, currentOwnerWinnings);
         } else {
             // There is no current owner.
@@ -750,7 +750,7 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
         }
         
         // Assign dividends to owners of surrounding tiles.
-        for (uint256 i = 0; i &lt; claimedSurroundingTiles.length; i++) {
+        for (uint256 i = 0; i < claimedSurroundingTiles.length; i++) {
             address beneficiary = gameStates[gameIndex].identifierToOwner[claimedSurroundingTiles[i]];
             _sendFunds(beneficiary, totalDividendPerBeneficiary);
         }
@@ -808,7 +808,7 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
         uint256 currentOwnerWinnings = price.sub(fee).sub(referralBonus.mul(2)).sub(prizePoolFunds);
         
         uint256 totalDividendPerBeneficiary;
-        if (claimedSurroundingTiles.length &gt; 0) {
+        if (claimedSurroundingTiles.length > 0) {
             // If there are surrounding tiles, variable dividend is to be paid
             // based on the buyout price.
             // Calculate the dividend per surrounding tile.
@@ -830,8 +830,8 @@ contract BurnupGameFinance is BurnupGameOwnership, PullPayment {
     }
     
     /// @dev Send funds to a beneficiary. If sending fails, assign
-    /// funds to the beneficiary&#39;s balance for manual withdrawal.
-    /// @param beneficiary The beneficiary&#39;s address to send funds to
+    /// funds to the beneficiary's balance for manual withdrawal.
+    /// @param beneficiary The beneficiary's address to send funds to
     /// @param amount The amount to send.
     function _sendFunds(address beneficiary, uint256 amount) internal {
         if (!beneficiary.send(amount)) {
@@ -898,10 +898,10 @@ contract BurnupGameCore is BurnupGameFinance {
         // Tile must be unowned, or active.
         if (currentOwner == address(0x0)) {
             // Tile must still be flippable.
-            require(gameStates[gameIndex].gameStartTimestamp.add(gameSettings[gameIndex].activityTimer) &gt;= block.timestamp);
+            require(gameStates[gameIndex].gameStartTimestamp.add(gameSettings[gameIndex].activityTimer) >= block.timestamp);
         } else {
             // Tile must be active.
-            require(gameStates[gameIndex].identifierToBuyoutTimestamp[identifier].add(gameSettings[gameIndex].activityTimer) &gt;= block.timestamp);
+            require(gameStates[gameIndex].identifierToBuyoutTimestamp[identifier].add(gameSettings[gameIndex].activityTimer) >= block.timestamp);
         }
         
         // Get existing surrounding tiles.
@@ -911,7 +911,7 @@ contract BurnupGameCore is BurnupGameFinance {
         uint256 price = _calculateAndAssignBuyoutProceeds(currentOwner, identifier, claimedSurroundingTiles);
         
         // Enough Ether must be supplied.
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         // Transfer the tile.
         _transfer(currentOwner, msg.sender, identifier);
@@ -933,14 +933,14 @@ contract BurnupGameCore is BurnupGameFinance {
         // so this cannot underflow.
         uint256 excess = msg.value - price;
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
             // Refund any excess Ether (not susceptible to re-entry attack, as
             // the owner is assigned before the transfer takes place).
             msg.sender.transfer(excess);
         }
     }
     
-    /// @notice Buy the current owner out of the tile. Set the player&#39;s referrer.
+    /// @notice Buy the current owner out of the tile. Set the player's referrer.
     /// @param _gameIndex The index of the game to play on.
     /// @param startNewGameIfIdle Start a new game if the current game is idle.
     /// @param x The x-coordinate of the tile to buy.
@@ -967,7 +967,7 @@ contract BurnupGameCore is BurnupGameFinance {
         require(gameStates[gameIndex].gameStarted || !paused);
         
         // Funds must be sent.
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         // Add funds to the prize pool.
         gameStates[gameIndex].prizePool = gameStates[gameIndex].prizePool.add(msg.value);
@@ -997,12 +997,12 @@ contract BurnupGameCore is BurnupGameFinance {
         }
         
         // The last flipped tile must have become inactive.
-        if (gameStates[gameIndex].identifierToBuyoutTimestamp[gameStates[gameIndex].lastFlippedTile].add(gameSettings[gameIndex].activityTimer) &gt;= block.timestamp) {
+        if (gameStates[gameIndex].identifierToBuyoutTimestamp[gameStates[gameIndex].lastFlippedTile].add(gameSettings[gameIndex].activityTimer) >= block.timestamp) {
             return false;
         }
         
         // Assign prize pool to the owner of the last-flipped tile.
-        if (gameStates[gameIndex].prizePool &gt; 0) {
+        if (gameStates[gameIndex].prizePool > 0) {
             _sendFunds(currentOwner, gameStates[gameIndex].prizePool);
         }
         
@@ -1012,7 +1012,7 @@ contract BurnupGameCore is BurnupGameFinance {
         // Emit event.
         End(gameIndex, currentOwner, gameStates[gameIndex].lastFlippedTile, x, y, gameStates[gameIndex].identifierToBuyoutTimestamp[gameStates[gameIndex].lastFlippedTile].add(gameSettings[gameIndex].activityTimer), gameStates[gameIndex].prizePool);
         
-        // Increment the game index. This won&#39;t overflow before the heat death of the universe.
+        // Increment the game index. This won't overflow before the heat death of the universe.
         gameIndex++;
         
         // Indicate ending the game was successful.

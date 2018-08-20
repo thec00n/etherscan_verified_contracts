@@ -4,20 +4,20 @@ pragma solidity ^0.4.0;
 // Soldity contract for proof of perception
 contract Percept {
 
-    mapping(bytes32 =&gt; Proof) public proofs;    // Proof storage mappings (key =&gt; value data)
+    mapping(bytes32 => Proof) public proofs;    // Proof storage mappings (key => value data)
 
     struct Proof {              // Proof data type
         // Pre-release data
         address creator;        // Address of the proof maker
         bytes32 hash;           // 1-way hash of the proof text
-        uint timestamp;         // Unix timestamp of the proof&#39;s creation
+        uint timestamp;         // Unix timestamp of the proof's creation
         uint blockNum;          // Latest block number during proof creation
         bytes32 proofMapping;   // Mapping hash of sender address, timestamp, block number, and proof hash
 
         // Post-release data
         string release;         // Proof string of perception
         bool released;          // Whether this proof has been released or not
-        uint releaseTime;       // Unix timestamp of the proof&#39;s release
+        uint releaseTime;       // Unix timestamp of the proof's release
         uint releaseBlockNum;   // Latest block number during proof release
     }
 
@@ -30,7 +30,7 @@ contract Percept {
         bytes32 proofMapping = keccak256(abi.encodePacked(msg.sender, timestamp, blockNum, hash));    // Mapping hash of proof data
 
         // Construct the proof in memory, unreleased
-        Proof memory proof = Proof(msg.sender, hash, timestamp, blockNum, proofMapping, &quot;&quot;, false, 0, 0);
+        Proof memory proof = Proof(msg.sender, hash, timestamp, blockNum, proofMapping, "", false, 0, 0);
 
         // Store the proof in the contract mapping storage
         proofs[proofMapping] = proof;
@@ -46,8 +46,8 @@ contract Percept {
         Proof storage proof = proofs[proofMapping];
 
         require(msg.sender == proof.creator);       // Ensure the releaser was the creator
-        require(proof.hash == keccak256(abi.encodePacked(release)));  // Ensure the release string&#39;s hash is the same as the proof
-        require(!proof.released);                   // Ensure the proof isn&#39;t released yet
+        require(proof.hash == keccak256(abi.encodePacked(release)));  // Ensure the release string's hash is the same as the proof
+        require(!proof.released);                   // Ensure the proof isn't released yet
 
         proof.release = release;                // Release the proof text
         proof.released = true;                  // Set proof released flag to true
@@ -64,7 +64,7 @@ contract Percept {
 
         require(proof.creator != 0); // Ensure the proof exists
 
-        return proof.hash == keccak256(abi.encodePacked(verify)); // Return whether the proof hash matches the verification&#39;s hash
+        return proof.hash == keccak256(abi.encodePacked(verify)); // Return whether the proof hash matches the verification's hash
     }
 
     // Functon to retrieve a proof that has not been completed yet

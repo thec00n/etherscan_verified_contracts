@@ -27,7 +27,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &gt; MAX_UINT256 - y) throw;
+    if (x > MAX_UINT256 - y) throw;
     return x + y;
   }
 
@@ -41,7 +41,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &lt; y) throw;
+    if (x < y) throw;
     return x - y;
   }
 
@@ -56,15 +56,15 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    if (x &gt; MAX_UINT256 / y) throw;
+    if (x > MAX_UINT256 / y) throw;
     return x * y;
   }
 }
 
 contract Vote is ERC20, SafeMath{
 
-	mapping (address =&gt; uint) balances;
-	mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	mapping (address => uint) balances;
+	mapping (address => mapping (address => uint)) allowed;
 
 	uint public totalSupply;
 	uint public initialSupply;
@@ -76,8 +76,8 @@ contract Vote is ERC20, SafeMath{
 		initialSupply = 100000;
 		totalSupply = initialSupply;
 		balances[msg.sender] = initialSupply;
-		name = &quot;EthTaipei Logo Vote&quot;;
-		symbol = &quot;EthTaipei Logo&quot;;
+		name = "EthTaipei Logo Vote";
+		symbol = "EthTaipei Logo";
 		decimals = 0;
 	}
 

@@ -52,8 +52,8 @@ contract IRideManagementTeam {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
+        require(msg.value > 0);
+        require(now > startDate);
 	    uint amount = msg.value * price;
         tokenReward.transferFrom(owner, msg.sender, amount);
         FundTransfer(msg.sender, amount, true);

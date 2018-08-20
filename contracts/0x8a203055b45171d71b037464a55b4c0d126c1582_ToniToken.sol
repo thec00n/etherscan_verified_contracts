@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) public pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function safeSub(uint256 a, uint256 b) public pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 }
@@ -46,15 +46,15 @@ contract Owned {
 
 contract ToniToken is ERC20Interface, Owned, SafeMath {
 
-    string constant public symbol = &quot;TOTO&quot;;
-    string constant public name = &quot;Toni Token&quot;;
+    string constant public symbol = "TOTO";
+    string constant public name = "Toni Token";
     uint8 constant public decimals = 2;
 
     //SNB M3: 2018-01, 1036.941 Mrd. CHF
     uint256 public totalSupply = 1000 * 10**uint256(decimals);
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     event Migrate(address indexed _from, address indexed _to, uint256 _value);
 
@@ -84,7 +84,7 @@ contract ToniToken is ERC20Interface, Owned, SafeMath {
 
     function bulkTransfer(address[] _tos, uint256[] _tokens) public returns (bool) {
 
-        for (uint i = 0; i &lt; _tos.length; i++) {
+        for (uint i = 0; i < _tos.length; i++) {
             require(transfer(_tos[i], _tokens[i]));
         }
 

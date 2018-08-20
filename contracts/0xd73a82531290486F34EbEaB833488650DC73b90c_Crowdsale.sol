@@ -20,20 +20,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,11 +41,11 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -61,13 +61,13 @@ contract BasicToken is ERC20Basic {
 }
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -94,7 +94,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -149,7 +149,7 @@ contract MintableToken is StandardToken, Ownable {
 contract BurnableToken is StandardToken {
 
   function burn(uint _value) public {
-    require(_value &gt; 0);
+    require(_value > 0);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -163,9 +163,9 @@ contract BurnableToken is StandardToken {
 
 contract EWA is MintableToken, BurnableToken {
     
-    string public constant name = &quot;EWAcoin&quot;;
+    string public constant name = "EWAcoin";
     
-    string public constant symbol = &quot;EWA&quot;;
+    string public constant symbol = "EWA";
     
     uint32 public constant decimals = 0;
     
@@ -175,11 +175,11 @@ contract EWA is MintableToken, BurnableToken {
         uint value;
     }
     
-    mapping (uint =&gt; Trnsaction) TrnsactionLog;
+    mapping (uint => Trnsaction) TrnsactionLog;
     
-    mapping (address =&gt; uint256) securities;
+    mapping (address => uint256) securities;
      
-    mapping (address =&gt; uint256) production;
+    mapping (address => uint256) production;
     
     uint public startsecurities;
     
@@ -200,9 +200,9 @@ contract EWA is MintableToken, BurnableToken {
     }
     
     function destroyforsecurities (uint _value) public {
-        require (_value &gt; 99999);
-        require (now &gt; startsecurities);
-        if(balances[msg.sender] &gt;= _value &amp;&amp; securities[msg.sender] + _value &gt;= securities[msg.sender]) {
+        require (_value > 99999);
+        require (now > startsecurities);
+        if(balances[msg.sender] >= _value && securities[msg.sender] + _value >= securities[msg.sender]) {
             burn (_value);
             securities[msg.sender] += _value;
         }
@@ -213,9 +213,9 @@ contract EWA is MintableToken, BurnableToken {
     }
     
     function destroyforproduction (uint _value) public {
-        require (_value &gt; 0);
-        require (now &gt; startproduction);
-        if(balances[msg.sender] &gt;= _value &amp;&amp; production[msg.sender] + _value &gt;= production[msg.sender]) {
+        require (_value > 0);
+        require (now > startproduction);
+        if(balances[msg.sender] >= _value && production[msg.sender] + _value >= production[msg.sender]) {
             burn (_value);
             production[msg.sender] += _value;
         }
@@ -226,10 +226,10 @@ contract EWA is MintableToken, BurnableToken {
     }
     
     function destroyforeth (uint _value) public {
-        require (_value &gt; 0);
-        require (now &gt; starteth);
-        require (this.balance &gt; _value.mul(120000000000000));
-        if(balances[msg.sender] &gt;= _value) {
+        require (_value > 0);
+        require (now > starteth);
+        require (this.balance > _value.mul(120000000000000));
+        if(balances[msg.sender] >= _value) {
             burn (_value);
             TrnsactionLog[i].addr = msg.sender;
             TrnsactionLog[i].time = now;
@@ -246,7 +246,7 @@ contract EWA is MintableToken, BurnableToken {
     function moneyback () public {
         require  (msg.sender == moneybackaddr);
         uint256 bal = balance1();
-        if (bal &gt; 10 ) {
+        if (bal > 10 ) {
             moneybackaddr.transfer(bal);
         }
     }
@@ -305,44 +305,44 @@ contract Crowdsale is Ownable {
     }
     
     function() external payable {
-        require((now &gt; start1 &amp;&amp; now &lt; end1)||(now &gt; start2 &amp;&amp; now &lt; end2)||(now &gt; start3 &amp;&amp; now &lt; end3)||(now &gt; start4 &amp;&amp; now &lt; end4));
+        require((now > start1 && now < end1)||(now > start2 && now < end2)||(now > start3 && now < end3)||(now > start4 && now < end4));
         uint tokadd;
-        if (now &gt; start1 &amp;&amp; now &lt;end1) {
-            if (msg.value &lt; 2000000000000000000) {
+        if (now > start1 && now <end1) {
+            if (msg.value < 2000000000000000000) {
                 tokadd = msg.value.div(price11);
-                require (token.totalSupply() + tokadd &lt; hardcap1);
+                require (token.totalSupply() + tokadd < hardcap1);
                 ethgetter.transfer(msg.value);
                 token.mint(msg.sender, tokadd);
                 
             }
-            if (msg.value &gt;= 2000000000000000000 &amp;&amp; msg.value &lt; 50000000000000000000) {
+            if (msg.value >= 2000000000000000000 && msg.value < 50000000000000000000) {
                 tokadd = msg.value.div(price12);
-                require (token.totalSupply() + tokadd &lt; hardcap1);
+                require (token.totalSupply() + tokadd < hardcap1);
                 ethgetter.transfer(msg.value);
                 token.mint(msg.sender, tokadd);
             }
-            if (msg.value &gt;= 50000000000000000000) {
+            if (msg.value >= 50000000000000000000) {
                 tokadd = msg.value.div(price13);
-                require (token.totalSupply() + tokadd &lt; hardcap1);
+                require (token.totalSupply() + tokadd < hardcap1);
                 ethgetter.transfer(msg.value);
                 token.mint(msg.sender, tokadd);
             }
         }
-        if (now &gt; start2 &amp;&amp; now &lt;end2) {
+        if (now > start2 && now <end2) {
             tokadd = msg.value.div(price2);
-            require (token.totalSupply() + tokadd &lt; hardcap2);
+            require (token.totalSupply() + tokadd < hardcap2);
             ethgetter.transfer(msg.value);
             token.mint(msg.sender, tokadd);
         }
-        if (now &gt; start3 &amp;&amp; now &lt;end3) {
+        if (now > start3 && now <end3) {
             tokadd = msg.value.div(price3);
-            require (token.totalSupply() + tokadd &lt; hardcap2);
+            require (token.totalSupply() + tokadd < hardcap2);
             ethgetter.transfer(msg.value);
             token.mint(msg.sender, tokadd);
         }
-        if (now &gt; start4 &amp;&amp; now &lt;end4) {
+        if (now > start4 && now <end4) {
             tokadd = msg.value.div(price4);
-            require (token.totalSupply() + tokadd &lt; hardcap2);
+            require (token.totalSupply() + tokadd < hardcap2);
             ethgetter.transfer(msg.value);
             token.mint(msg.sender, tokadd);
         }
@@ -354,8 +354,8 @@ contract Crowdsale is Ownable {
     }
     
     function mint(address _to, uint _value) public onlyOwner {
-        require(_value &gt; 0);
-        require(_value + token.totalSupply() &lt; hardcap2 + 3000000);
+        require(_value > 0);
+        require(_value + token.totalSupply() < hardcap2 + 3000000);
         token.mint(_to, _value);
     }
     

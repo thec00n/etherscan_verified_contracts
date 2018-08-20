@@ -1,12 +1,12 @@
 /*
   8888888 .d8888b.   .d88888b.   .d8888b.  888                     888                 888      
-    888  d88P  Y88b d88P&quot; &quot;Y88b d88P  Y88b 888                     888                 888      
+    888  d88P  Y88b d88P" "Y88b d88P  Y88b 888                     888                 888      
     888  888    888 888     888 Y88b.      888                     888                 888      
-    888  888        888     888  &quot;Y888b.   888888  8888b.  888d888 888888      .d8888b 88888b.  
-    888  888        888     888     &quot;Y88b. 888        &quot;88b 888P&quot;   888        d88P&quot;    888 &quot;88b 
-    888  888    888 888     888       &quot;888 888    .d888888 888     888        888      888  888 
+    888  888        888     888  "Y888b.   888888  8888b.  888d888 888888      .d8888b 88888b.  
+    888  888        888     888     "Y88b. 888        "88b 888P"   888        d88P"    888 "88b 
+    888  888    888 888     888       "888 888    .d888888 888     888        888      888  888 
     888  Y88b  d88P Y88b. .d88P Y88b  d88P Y88b.  888  888 888     Y88b.  d8b Y88b.    888  888 
-  8888888 &quot;Y8888P&quot;   &quot;Y88888P&quot;   &quot;Y8888P&quot;   &quot;Y888 &quot;Y888888 888      &quot;Y888 Y8P  &quot;Y8888P 888  888 
+  8888888 "Y8888P"   "Y88888P"   "Y8888P"   "Y888 "Y888888 888      "Y888 Y8P  "Y8888P 888  888 
 
   Rocket startup for your ICO
 
@@ -21,7 +21,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -128,9 +128,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -138,7 +138,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -147,7 +147,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -191,8 +191,8 @@ contract ICOStartSale is Pausable {
   }
 
   Period[] private periods;
-  mapping(address =&gt; bool) public whitelistedAddresses;
-  mapping(address =&gt; uint256) public whitelistedRates;
+  mapping(address => bool) public whitelistedAddresses;
+  mapping(address => uint256) public whitelistedRates;
 
   ERC20 public token;
   address public wallet;
@@ -232,9 +232,9 @@ contract ICOStartSale is Pausable {
   function () external payable {
     // Preconditions.
     require(msg.sender != address(0));
-    require(msg.value &gt;= MINIMUM_AMOUNT);
+    require(msg.value >= MINIMUM_AMOUNT);
     require(isOpen());
-    if (msg.value &gt; MAXIMUM_NON_WHITELIST_AMOUNT) {
+    if (msg.value > MAXIMUM_NON_WHITELIST_AMOUNT) {
       require(isAddressInWhitelist(msg.sender));
     }
 
@@ -255,7 +255,7 @@ contract ICOStartSale is Pausable {
    */
   function addPeriod(uint256 _startTimestamp, uint256 _endTimestamp, uint256 _rate) onlyOwner public {
     require(_startTimestamp != 0);
-    require(_endTimestamp &gt; _startTimestamp);
+    require(_endTimestamp > _startTimestamp);
     require(_rate != 0);
     Period memory period = Period(_startTimestamp, _endTimestamp, _rate);
     periods.push(period);
@@ -297,7 +297,7 @@ contract ICOStartSale is Pausable {
    */
   function addAddressesToWhitelist(address[] _addresses, uint256 _rate) onlyOwner public returns (bool success) {
     success = false;
-    for (uint256 i = 0; i &lt;_addresses.length; i++) {
+    for (uint256 i = 0; i <_addresses.length; i++) {
       if (addAddressToWhitelist(_addresses[i], _rate)) {
         success = true;
       }
@@ -308,7 +308,7 @@ contract ICOStartSale is Pausable {
    * @dev Remove an address from the whitelist.
    * @param _address Address to remove.
    * @return true if the address was removed from the whitelist, 
-   * false if the address wasn&#39;t in the whitelist in the first place.
+   * false if the address wasn't in the whitelist in the first place.
    */
   function removeAddressFromWhitelist(address _address) onlyOwner public returns (bool success) {
     require(_address != address(0));
@@ -326,11 +326,11 @@ contract ICOStartSale is Pausable {
    * @dev Remove addresses from the whitelist.
    * @param _addresses addresses
    * @return true if at least one address was removed from the whitelist, 
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _addresses) onlyOwner public returns (bool success) {
     success = false;
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       if (removeAddressFromWhitelist(_addresses[i])) {
         success = true;
       }
@@ -348,7 +348,7 @@ contract ICOStartSale is Pausable {
    * @dev True while the sale is open (i.e. accepting contributions). False otherwise.
    */
   function isOpen() view public returns (bool) {
-    return ((!paused) &amp;&amp; (_getCurrentPeriod().rate != 0));
+    return ((!paused) && (_getCurrentPeriod().rate != 0));
   }
 
   /**
@@ -394,8 +394,8 @@ contract ICOStartSale is Pausable {
   function _getCurrentPeriod() view internal returns (Period memory _period) {
     _period = Period(0, 0, 0);
     uint256 len = periods.length;
-    for (uint256 i = 0; i &lt; len; i++) {
-      if ((periods[i].startTimestamp &lt;= block.timestamp) &amp;&amp; (periods[i].endTimestamp &gt;= block.timestamp)) {
+    for (uint256 i = 0; i < len; i++) {
+      if ((periods[i].startTimestamp <= block.timestamp) && (periods[i].endTimestamp >= block.timestamp)) {
         _period = periods[i];
         break;
       }

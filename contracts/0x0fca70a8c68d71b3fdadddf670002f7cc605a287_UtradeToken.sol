@@ -10,19 +10,19 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint256 c = a / b;
       return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
   }
 }
@@ -82,15 +82,15 @@ contract UtradeToken is ERC20,Ownable {
 	uint256 public constant decimals = 8;
 
 
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) allowed;
 
 	event FundTransfer(address fundWallet, uint256 amount);
 	event Logs(string);
 
 	constructor( ) public {  		
-		name=&quot;UTP FOUNDATION&quot;;
-		symbol=&quot;UTP&quot;;
+		name="UTP FOUNDATION";
+		symbol="UTP";
 		totalSupply = 1000000000*(10**decimals);
 		balanceOf[msg.sender] = totalSupply;	
 	}
@@ -102,8 +102,8 @@ contract UtradeToken is ERC20,Ownable {
 	function _transferFrom(address _from, address _to, uint256 _value)  internal {
 		require(_from != 0x0);
 	    require(_to != 0x0);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to] + _value >= balanceOf[_to]);
 
 	    uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
 
@@ -142,10 +142,10 @@ contract UtradeToken is ERC20,Ownable {
 	function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
 	    require(_from != 0x0);
 	    require(_to != 0x0);
-	    require(_value &gt; 0);
-	    require (allowed[_from][msg.sender] &gt;= _value);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+	    require(_value > 0);
+	    require (allowed[_from][msg.sender] >= _value);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to] + _value >= balanceOf[_to]);
 
         balanceOf[_from] = balanceOf[_from].sub(_value);
         balanceOf[_to] = balanceOf[_to].add(_value);
@@ -157,9 +157,9 @@ contract UtradeToken is ERC20,Ownable {
 
     function mintToken(address _target, uint256 _mintedAmount) onlyOwner public {
         require(_target != 0x0);
-        require(_mintedAmount &gt; 0);
-        require(totalSupply + _mintedAmount &gt; totalSupply);
-        require(balanceOf[_target] + _mintedAmount &gt; balanceOf[_target]);
+        require(_mintedAmount > 0);
+        require(totalSupply + _mintedAmount > totalSupply);
+        require(balanceOf[_target] + _mintedAmount > balanceOf[_target]);
         balanceOf[_target] = balanceOf[_target].add(_mintedAmount);
         totalSupply = totalSupply.add(_mintedAmount);
         emit Transfer(0, this, _mintedAmount);
@@ -169,7 +169,7 @@ contract UtradeToken is ERC20,Ownable {
     function transferA2B(address _from ,address _to) onlyOwnerAdmin public {	 
     	require(_from != 0x0);
 	    require(_to != 0x0);  	  
-    	require(balanceOf[_from] &gt; 0); 
+    	require(balanceOf[_from] > 0); 
     	//require(balanceOf[_to] == 0); 
 	    _transferFrom(_from,_to,balanceOf[_from]);	   
 	}

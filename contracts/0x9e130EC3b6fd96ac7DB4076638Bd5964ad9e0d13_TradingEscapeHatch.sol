@@ -114,16 +114,16 @@ contract CashAutoConverter is Controlled {
     }
 
     function ethToCash() private returns (bool) {
-        if (msg.value &gt; 0) {
-            ICash(controller.lookup(&quot;Cash&quot;)).depositEtherFor.value(msg.value)(msg.sender);
+        if (msg.value > 0) {
+            ICash(controller.lookup("Cash")).depositEtherFor.value(msg.value)(msg.sender);
         }
         return true;
     }
 
     function cashToEth() private returns (bool) {
-        ICash _cash = ICash(controller.lookup(&quot;Cash&quot;));
+        ICash _cash = ICash(controller.lookup("Cash"));
         uint256 _tokenBalance = _cash.balanceOf(msg.sender);
-        if (_tokenBalance &gt; 0) {
+        if (_tokenBalance > 0) {
             IAugur augur = controller.getAugur();
             augur.trustedTransfer(_cash, msg.sender, this, _tokenBalance);
             _cash.withdrawEtherTo(msg.sender, _tokenBalance);
@@ -185,25 +185,25 @@ library SafeMathUint256 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &lt;= b) {
+        if (a <= b) {
             return a;
         } else {
             return b;
@@ -211,7 +211,7 @@ library SafeMathUint256 {
     }
 
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a &gt;= b) {
+        if (a >= b) {
             return a;
         } else {
             return b;
@@ -489,10 +489,10 @@ library Order {
 
     // No validation is needed here as it is simply a librarty function for organizing data
     function create(IController _controller, address _creator, uint256 _outcome, Order.Types _type, uint256 _attoshares, uint256 _price, IMarket _market, bytes32 _betterOrderId, bytes32 _worseOrderId) internal view returns (Data) {
-        require(_outcome &lt; _market.getNumberOfOutcomes());
-        require(_price &lt; _market.getNumTicks());
+        require(_outcome < _market.getNumberOfOutcomes());
+        require(_price < _market.getNumTicks());
 
-        IOrders _orders = IOrders(_controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(_controller.lookup("Orders"));
         IAugur _augur = _controller.getAugur();
 
         return Data({
@@ -513,7 +513,7 @@ library Order {
     }
 
     //
-    // &quot;public&quot; functions
+    // "public" functions
     //
 
     function getOrderId(Order.Data _orderData) internal view returns (bytes32) {
@@ -557,7 +557,7 @@ library Order {
 
         // Figure out how many almost-complete-sets (just missing `outcome` share) the creator has
         uint256 _attosharesHeld = 2**254;
-        for (uint256 _i = 0; _i &lt; _numberOfOutcomes; _i++) {
+        for (uint256 _i = 0; _i < _numberOfOutcomes; _i++) {
             if (_i != _orderData.outcome) {
                 uint256 _creatorShareTokenBalance = _orderData.market.getShareToken(_i).balanceOf(_orderData.creator);
                 _attosharesHeld = SafeMathUint256.min(_creatorShareTokenBalance, _attosharesHeld);
@@ -565,17 +565,17 @@ library Order {
         }
 
         // Take shares into escrow if they have any almost-complete-sets
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
-            for (_i = 0; _i &lt; _numberOfOutcomes; _i++) {
+            for (_i = 0; _i < _numberOfOutcomes; _i++) {
                 if (_i != _orderData.outcome) {
                     _orderData.market.getShareToken(_i).trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
                 }
             }
         }
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _attosharesToCover.mul(_orderData.price);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -593,14 +593,14 @@ library Order {
         uint256 _attosharesHeld = _shareToken.balanceOf(_orderData.creator);
 
         // Take shares in escrow if user has shares
-        if (_attosharesHeld &gt; 0) {
+        if (_attosharesHeld > 0) {
             _orderData.sharesEscrowed = SafeMathUint256.min(_attosharesHeld, _attosharesToCover);
             _attosharesToCover -= _orderData.sharesEscrowed;
             _shareToken.trustedOrderTransfer(_orderData.creator, _orderData.market, _orderData.sharesEscrowed);
         }
 
         // If not able to cover entire order with shares alone, then cover remaining with tokens
-        if (_attosharesToCover &gt; 0) {
+        if (_attosharesToCover > 0) {
             _orderData.moneyEscrowed = _orderData.market.getNumTicks().sub(_orderData.price).mul(_attosharesToCover);
             require(_orderData.augur.trustedTransfer(_orderData.market.getDenominationToken(), _orderData.creator, _orderData.market, _orderData.moneyEscrowed));
         }
@@ -612,8 +612,8 @@ library Order {
 contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValidator, ITradingEscapeHatch {
     using SafeMathUint256 for uint256;
 
-    // market =&gt; (outcome =&gt; frozenShareValue)
-    mapping(address =&gt; mapping(uint256 =&gt; uint256)) private frozenShareValues;
+    // market => (outcome => frozenShareValue)
+    mapping(address => mapping(uint256 => uint256)) private frozenShareValues;
 
     function claimSharesInUpdate(IMarket _market) public marketIsLegit(_market) convertToAndFromCash onlyInBadTimes returns(bool) {
         ICash _marketCurrency = _market.getDenominationToken();
@@ -626,10 +626,10 @@ contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValida
         uint256 _numOutcomes = _market.getNumberOfOutcomes();
         uint256 _frozenShareValueInMarket = 0;
 
-        for (uint256 _outcome = 0; _outcome &lt; _numOutcomes; ++_outcome) {
+        for (uint256 _outcome = 0; _outcome < _numOutcomes; ++_outcome) {
             IShareToken _shareToken = _market.getShareToken(_outcome);
             uint256 _sharesOwned = _shareToken.balanceOf(msg.sender);
-            if (_sharesOwned &gt; 0) {
+            if (_sharesOwned > 0) {
                 uint256 _frozenShareValue = getFrozenShareValue(_market, _numOutcomes, _outcome);
                 _frozenShareValueInMarket += _sharesOwned.mul(_frozenShareValue);
             }
@@ -641,10 +641,10 @@ contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValida
         uint256 _numOutcomes = _market.getNumberOfOutcomes();
         uint256 _frozenShareValueInMarket = 0;
 
-        for (uint256 _outcome = 0; _outcome &lt; _numOutcomes; ++_outcome) {
+        for (uint256 _outcome = 0; _outcome < _numOutcomes; ++_outcome) {
             IShareToken _shareToken = _market.getShareToken(_outcome);
             uint256 _sharesOwned = _shareToken.balanceOf(msg.sender);
-            if (_sharesOwned &gt; 0) {
+            if (_sharesOwned > 0) {
                 uint256 _frozenShareValue = getFrozenShareValue(_market, _numOutcomes, _outcome);
                 _shareToken.destroyShares(msg.sender, _sharesOwned);
                 _frozenShareValueInMarket += _sharesOwned.mul(_frozenShareValue);
@@ -654,7 +654,7 @@ contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValida
     }
 
     function getFrozenShareValue(IMarket _market, uint256 _numOutcomes, uint256 _outcome) internal returns(uint256) {
-        require(_outcome &lt; _numOutcomes);
+        require(_outcome < _numOutcomes);
 
         if (frozenShareValues[_market][_outcome] != 0) {
             return frozenShareValues[_market][_outcome];
@@ -668,13 +668,13 @@ contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValida
         uint256 _numberOfMissingBids = 0;
         uint256[] memory _shiftedPrices = new uint256[](_numOutcomes);
         uint256 _sumOfBids = 0;
-        IOrders _orders = IOrders(controller.lookup(&quot;Orders&quot;));
+        IOrders _orders = IOrders(controller.lookup("Orders"));
 
         // fill in any outcome prices that have an order history
-        for (uint256 _tempOutcome = 0; _tempOutcome &lt; _numOutcomes; ++_tempOutcome) {
+        for (uint256 _tempOutcome = 0; _tempOutcome < _numOutcomes; ++_tempOutcome) {
             uint256 _lastTradePrice = uint256(_orders.getLastOutcomePrice(_market, _tempOutcome));
             uint256 _lastTradePriceShifted = _lastTradePrice;
-            if (_lastTradePriceShifted &gt; 0) {
+            if (_lastTradePriceShifted > 0) {
                 _shiftedPrices[_tempOutcome] = _lastTradePriceShifted;
                 _sumOfBids += _lastTradePriceShifted;
             } else {
@@ -683,14 +683,14 @@ contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValida
         }
 
         // fill in any outcome prices that have no order history
-        if (_numberOfMissingBids &gt; 0) {
+        if (_numberOfMissingBids > 0) {
             // Leaving the redundant / here for stack depth issues
             uint256 _fauxBidPrice = (_market.getNumTicks().sub(_sumOfBids)) / _numberOfMissingBids;
             // to avoid any oddities, every share is worth _something_, even if it is just 1 attotoken
             if (_fauxBidPrice == 0) {
                 _fauxBidPrice = 1;
             }
-            for (_tempOutcome = 0; _tempOutcome &lt; _numOutcomes; ++_tempOutcome) {
+            for (_tempOutcome = 0; _tempOutcome < _numOutcomes; ++_tempOutcome) {
                 if (_shiftedPrices[_tempOutcome] == 0) {
                     _shiftedPrices[_tempOutcome] = _fauxBidPrice;
                     _sumOfBids += _fauxBidPrice;
@@ -699,8 +699,8 @@ contract TradingEscapeHatch is DelegationTarget, CashAutoConverter, MarketValida
         }
 
         // set the final prices to be what should be paid out to each outcome share holder
-        for (_tempOutcome = 0; _tempOutcome &lt; _numOutcomes; ++_tempOutcome) {
-            // The market denominator will have to be &lt; ~10**26 or a single complete set would be unpurchaseable with the total supply of ETH, so there is no realistic risk of overflow here in any case where shares actually exist in the market
+        for (_tempOutcome = 0; _tempOutcome < _numOutcomes; ++_tempOutcome) {
+            // The market denominator will have to be < ~10**26 or a single complete set would be unpurchaseable with the total supply of ETH, so there is no realistic risk of overflow here in any case where shares actually exist in the market
             frozenShareValues[_market][_tempOutcome] = _shiftedPrices[_tempOutcome].mul(_market.getNumTicks()).div(_sumOfBids);
         }
     }

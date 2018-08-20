@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 ETHB Crowdsale Contract
 
 Contract developer: Fares A. Akel C.
-<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="70165e111e041f1e191f5e111b151c30171d11191c5e131f1d">[email&#160;protected]</a>
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="70165e111e041f1e191f5e111b151c30171d11191c5e131f1d">[email protected]</a>
 MIT PGP KEY ID: 078E41CB
 */
 
@@ -20,12 +20,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
   }
 }
@@ -106,12 +106,12 @@ contract ETHBCrowdsale is admined{
     * @dev Exchange function
     */
     function exchange() public payable {
-    	require (tokenReward.balanceOf(this) &gt; 0);
-    	require (msg.value &gt; 1 finney);
+    	require (tokenReward.balanceOf(this) > 0);
+    	require (msg.value > 1 finney);
 
     	uint256 tokenBought = SafeMath.div(msg.value,exchangeRate);
 
-    	require(tokenReward.balanceOf(this) &gt;= tokenBought );
+    	require(tokenReward.balanceOf(this) >= tokenBought );
     	currentBalance = SafeMath.add(currentBalance,msg.value);
     	totalDistributed = SafeMath.add(totalDistributed,tokenBought);
     	tokenReward.transfer(msg.sender,tokenBought);
@@ -124,7 +124,7 @@ contract ETHBCrowdsale is admined{
     */
     function tokenWithdraw (address _to) onlyAdmin public {
     	require( _to != 0x0 );
-    	require(tokenReward.balanceOf(this)&gt;0);
+    	require(tokenReward.balanceOf(this)>0);
     	uint256 withdraw = tokenReward.balanceOf(this);
     	tokenReward.transfer(_to,withdraw);
     	TokenWithdrawal(_to,withdraw);
@@ -133,7 +133,7 @@ contract ETHBCrowdsale is admined{
     * @dev Withdraw collected ether to ethWallet
     */
     function ethWithdraw () onlyAdmin public {
-    	require(this.balance &gt; 0);
+    	require(this.balance > 0);
     	uint256 withdraw = this.balance;
     	currentBalance = 0;
     	require(ethWallet.send(withdraw));

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.17;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Tricky Stick Leaderboard (Cancun)
+// BokkyPooBah's Tricky Stick Leaderboard (Cancun)
 //
 // Deployed to 0xA0ecd8eF29750E7c3501C5568FDD9F4f5bCfe3d9
 //
@@ -9,7 +9,7 @@ pragma solidity ^0.4.17;
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah&#39;s Tricky Stick Leaderboard (Cancun)
+// BokkyPooBah's Tricky Stick Leaderboard (Cancun)
 // ----------------------------------------------------------------------------
 contract BokkyPooBahTrickyStickLeaderboard  {
 
@@ -28,7 +28,7 @@ contract BokkyPooBahTrickyStickLeaderboard  {
 
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers - no payable modifier
+    // Don't accept ethers - no payable modifier
     // ------------------------------------------------------------------------
     function () public {
     }

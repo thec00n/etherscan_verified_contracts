@@ -2,12 +2,12 @@ pragma solidity ^0.4.9;
  library SafeMath { 
  function mul(uint256 a, uint256 b) internal constant returns (uint256) { uint256 c = a * b; assert(a == 0 || c / a == b); return c; } 
  function div(uint256 a, uint256 b) internal constant returns (uint256) { uint256 c = a / b; return c; } 
- function sub(uint256 a, uint256 b) internal constant returns (uint256) { assert(b &lt;= a); return a - b; } 
- function add(uint256 a, uint256 b) internal constant returns (uint256) { uint256 c = a + b; assert(c &gt;= a); return c; } 
+ function sub(uint256 a, uint256 b) internal constant returns (uint256) { assert(b <= a); return a - b; } 
+ function add(uint256 a, uint256 b) internal constant returns (uint256) { uint256 c = a + b; assert(c >= a); return c; } 
 } 
  contract Topinvestmentcoin { 
    using SafeMath 
-   for uint256; mapping (address =&gt;       mapping (address =&gt; uint256)) allowed; mapping(address =&gt; uint256) balances; uint256 public totalSupply; 
+   for uint256; mapping (address =>       mapping (address => uint256)) allowed; mapping(address => uint256) balances; uint256 public totalSupply; 
 uint256 public decimals; 
 address public owner;
  string public symbol; 
@@ -15,7 +15,7 @@ address public owner;
  event Approval(address indexed _owner, address indexed spender, uint256 value); 
  function Topinvestmentcoin (){ 
        totalSupply = 100000000000000000;                       
-        symbol = &#39;TICO&#39;; 
+        symbol = 'TICO'; 
        owner =0x1850363833E923C99e555710f889716C5bb46bB1; 
          balances[owner] = totalSupply; 
          decimals = 8; 

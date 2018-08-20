@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -32,7 +32,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -121,7 +121,7 @@ contract DragonPricing is Ownable {
     
     function presalePackage ( uint amount ) internal returns ( bool )  {
         
-        if( amount != .3333333 ether &amp;&amp; amount != 3.3333333 ether &amp;&amp; amount != 33.3333333 ether  ) return false;
+        if( amount != .3333333 ether && amount != 3.3333333 ether && amount != 33.3333333 ether  ) return false;
         return true;
    }
     
@@ -140,8 +140,8 @@ contract DragonPricing is Ownable {
         
        
         //uint crowdsaleCounter  = dragoncrowdsalecore.crowdsaleCounter();
-        if ( crowdsaleCounter &gt; 1000000000000000 &amp;&amp;  crowdsaleCounter &lt; 2500000000000000 ) price = secondroundprice;
-        if ( crowdsaleCounter &gt;= 2500000000000000 ) price = thirdroundprice;
+        if ( crowdsaleCounter > 1000000000000000 &&  crowdsaleCounter < 2500000000000000 ) price = secondroundprice;
+        if ( crowdsaleCounter >= 2500000000000000 ) price = thirdroundprice;
           
         return ( amount / price );
           
@@ -206,7 +206,7 @@ contract DragonCrowdsaleCore is Ownable, DragonPricing {
     
    
     
-    mapping ( address =&gt; bool ) public alreadyParticipated;
+    mapping ( address => bool ) public alreadyParticipated;
     
     
     
@@ -246,7 +246,7 @@ contract DragonCrowdsaleCore is Ownable, DragonPricing {
     function precrowdsale ( address tokenholder ) onlyFront payable {
         
         
-        require ( presold &lt; presoldMax );
+        require ( presold < presoldMax );
         uint award;  // amount of dragons to credit to tokenholder
         uint donation; // donation to charity
         require ( alreadyParticipated[ tokenholder ]  != true ) ;  
@@ -262,7 +262,7 @@ contract DragonCrowdsaleCore is Ownable, DragonPricing {
         tokensSold = tokensSold.add(donation);  //add charity donation to total number of tokens sold 
         tokenReward.transfer ( tokenholder , award ); // immediate transfer of dragons to token buyer
         
-        if ( advisorCut &lt; advisorTotal ) { advisorSiphon();} 
+        if ( advisorCut < advisorTotal ) { advisorSiphon();} 
        
         else 
           { beneficiary.transfer ( msg.value ); } //send ether to beneficiary
@@ -285,7 +285,7 @@ contract DragonCrowdsaleCore is Ownable, DragonPricing {
         
         tokenReward.transfer ( tokenholder , award ); // immediate transfer to token holders
        
-        if ( advisorCut &lt; advisorTotal ) { advisorSiphon();} // send advisor his share
+        if ( advisorCut < advisorTotal ) { advisorSiphon();} // send advisor his share
        
         else 
           { beneficiary.transfer ( msg.value ); } //send all ether to beneficiary
@@ -304,7 +304,7 @@ contract DragonCrowdsaleCore is Ownable, DragonPricing {
          uint share = msg.value/10;
          uint foradvisor = share;
              
-           if ( (advisorCut + share) &gt; advisorTotal ) foradvisor = advisorTotal.sub( advisorCut ); 
+           if ( (advisorCut + share) > advisorTotal ) foradvisor = advisorTotal.sub( advisorCut ); 
              
            advisor.transfer ( foradvisor );  // advisor gets 10% of the incoming ether
             
@@ -367,7 +367,7 @@ contract DragonCrowdsaleCore is Ownable, DragonPricing {
     function manualSend ( address tokenholder, uint packagenumber ) onlyOwner {
         
           require ( tokenholder != 0x00 );
-          if ( packagenumber != 1 &amp;&amp;  packagenumber != 2 &amp;&amp;  packagenumber != 3 ) revert();
+          if ( packagenumber != 1 &&  packagenumber != 2 &&  packagenumber != 3 ) revert();
         
           uint award;
           uint donation;

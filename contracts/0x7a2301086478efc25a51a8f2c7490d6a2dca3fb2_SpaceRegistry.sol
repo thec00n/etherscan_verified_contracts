@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -80,8 +80,8 @@ contract SpaceRegistry is Stoppable {
     event Add();
     uint constant START_INDEX = 1;
     Space[] spaces;
-    mapping(uint =&gt; uint) spaceMap;
-    mapping(uint =&gt; uint[]) userSpaceLookup;
+    mapping(uint => uint) spaceMap;
+    mapping(uint => uint[]) userSpaceLookup;
     
     struct Space {
         uint id;
@@ -106,17 +106,17 @@ contract SpaceRegistry is Stoppable {
         uint topRight, uint bottomRight, string txType, string txId, uint txTime) 
         onlyOwner whenNotStopped {
 
-        require(id &gt; 0);
+        require(id > 0);
         require(spaceMap[id] == 0);
-        require(userId &gt; 0);
-        require(userHash.length &gt; 0);
-        require(bottomLeft &gt; 0);
-        require(topLeft &gt; 0);
-        require(topRight &gt; 0);
-        require(bottomRight &gt; 0);
-        require(bytes(txType).length &gt; 0);
-        require(bytes(txId).length &gt; 0);
-        require(txTime &gt; 0);
+        require(userId > 0);
+        require(userHash.length > 0);
+        require(bottomLeft > 0);
+        require(topLeft > 0);
+        require(topRight > 0);
+        require(bottomRight > 0);
+        require(bytes(txType).length > 0);
+        require(bytes(txId).length > 0);
+        require(txTime > 0);
         
         var space = Space({
             id: id,
@@ -133,7 +133,7 @@ contract SpaceRegistry is Stoppable {
         });
 
         var _index = spaces.push(space) - 1;
-        assert(_index &gt;= START_INDEX);
+        assert(_index >= START_INDEX);
         spaceMap[id] = _index;
         userSpaceLookup[userId].push(id);
         Add();
@@ -153,7 +153,7 @@ contract SpaceRegistry is Stoppable {
         uint created) {
 
         var _index = index + START_INDEX;
-        require(spaces.length &gt; _index);
+        require(spaces.length > _index);
         var space = spaces[_index];
         id = space.id;
         userId = space.userId;
@@ -181,7 +181,7 @@ contract SpaceRegistry is Stoppable {
         uint txTime,
         uint created) {
 
-        require(_id &gt; 0);
+        require(_id > 0);
         id = _id;
         var index = spaceMap[id];
         var space = spaces[index];
@@ -198,20 +198,20 @@ contract SpaceRegistry is Stoppable {
     }
 
     function getUserSpaceIds(uint userId) external constant returns(uint[]) {
-        require(userId &gt; 0);
+        require(userId > 0);
         return userSpaceLookup[userId]; 
     }
 
     function getUserId(uint id) external constant returns(uint) {
-        require(id &gt; 0);
+        require(id > 0);
         var index = spaceMap[id];
-        require(index &gt; 0);
+        require(index > 0);
         var space = spaces[index];
         return space.userId; 
     }
 
     function exists(uint id) external constant returns(bool) {
-        require(id &gt; 0);
+        require(id > 0);
         return spaceMap[id] != 0;
     }
     

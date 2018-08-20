@@ -23,7 +23,7 @@ contract Ownable {
 
 contract TokenAware is Ownable {
   function withdrawToken (address addressOfToken, uint256 amount) onlyOwner public returns (bool) {
-    bytes4 hashOfTransfer = bytes4(keccak256(&#39;transfer(address,uint256)&#39;));
+    bytes4 hashOfTransfer = bytes4(keccak256('transfer(address,uint256)'));
 
     return addressOfToken.call(hashOfTransfer, owner, amount);
   }
@@ -67,7 +67,7 @@ contract Operable is Pausable {
   }
 
   modifier restricted () {
-    if (owner != msg.sender &amp;&amp;
+    if (owner != msg.sender &&
         !containsOperator(msg.sender)) revert();
     _;
   }
@@ -78,7 +78,7 @@ contract Operable is Pausable {
   }
 
   function containsOperator (address candidate) public constant returns (bool) {
-    for (uint256 x = 0; x &lt; operators.length; x++) {
+    for (uint256 x = 0; x < operators.length; x++) {
       address operator = operators[x];
       if (candidate == operator) {
         return true;
@@ -89,7 +89,7 @@ contract Operable is Pausable {
   }
 
   function indexOfOperator (address candidate) public constant returns (int256) {
-    for (uint256 x = 0; x &lt; operators.length; x++) {
+    for (uint256 x = 0; x < operators.length; x++) {
       address operator = operators[x];
       if (candidate == operator) {
         return int256(x);
@@ -108,7 +108,7 @@ contract Operable is Pausable {
   function removeOperator (address operator) public onlyOwner {
     int256 indexOf = indexOfOperator(operator);
 
-    if (indexOf &lt; 0) revert();
+    if (indexOf < 0) revert();
 
     // overwrite operator with last operator in the array
     if (uint256(indexOf) != operators.length - 1) {
@@ -137,10 +137,10 @@ contract EtherShuffle is Operable {
   uint8 public constant countOfParticipants = 5;
   uint256 public gamePrice = 100 finney;
 
-  mapping (uint256 =&gt; Shuffle) public games;
-  mapping (address =&gt; uint256[]) public gamesByPlayer;
-  mapping (uint256 =&gt; uint256) public gamesWithoutQuorum;
-  mapping (address =&gt; uint256) public balances;
+  mapping (uint256 => Shuffle) public games;
+  mapping (address => uint256[]) public gamesByPlayer;
+  mapping (uint256 => uint256) public gamesWithoutQuorum;
+  mapping (address => uint256) public balances;
 
   struct Shuffle {
     uint256 id;
@@ -166,7 +166,7 @@ contract EtherShuffle is Operable {
     uint size;
     address addr = msg.sender;
     assembly { size := extcodesize(addr) }
-    if (size &gt; 0) revert();
+    if (size > 0) revert();
     _;
   }
 
@@ -180,13 +180,13 @@ contract EtherShuffle is Operable {
   }
 
   function play () public payable whenNotPaused onlyExternalAccount {
-    if (msg.value &lt; gamePrice) revert();
+    if (msg.value < gamePrice) revert();
     joinGames(msg.sender, msg.value);
   }
 
   function playFromBalance () public whenNotPaused onlyExternalAccount {
     uint256 balanceOf = balances[msg.sender];
-    if (balanceOf &lt; gamePrice) revert();
+    if (balanceOf < gamePrice) revert();
 
     balances[msg.sender] = 0;
     joinGames(msg.sender, balanceOf);
@@ -196,7 +196,7 @@ contract EtherShuffle is Operable {
 
   function joinGames (address player, uint256 value) private {
 
-    while (value &gt;= gamePrice) {
+    while (value >= gamePrice) {
       uint256 id = findAvailableGame(player);
       Shuffle storage game = games[id];
 
@@ -205,7 +205,7 @@ contract EtherShuffle is Operable {
     }
     
     balances[player] += value;
-    if (balances[player] &lt; value) revert();
+    if (balances[player] < value) revert();
   }
 
   function joinGame (Shuffle storage game, address player, uint256 value) private {
@@ -213,7 +213,7 @@ contract EtherShuffle is Operable {
 
     if (value != gamePrice) revert();
     game.value += gamePrice;
-    if (game.value &lt; gamePrice) revert();
+    if (game.value < gamePrice) revert();
 
     game.players.push(player);
     gamesByPlayer[player].push(game.id);
@@ -224,11 +224,11 @@ contract EtherShuffle is Operable {
       emit Quorum(game.id);
     }
 
-    if (game.players.length &gt; countOfParticipants) revert();
+    if (game.players.length > countOfParticipants) revert();
   }
 
   function findAvailableGame (address player) private returns (uint256) {
-    for (uint256 x = lowestGameWithoutQuorum; x &lt; nextGameId; x++) {
+    for (uint256 x = lowestGameWithoutQuorum; x < nextGameId; x++) {
       Shuffle storage game = games[x];
 
       // games which have met quorum are removed from this mapping
@@ -239,7 +239,7 @@ contract EtherShuffle is Operable {
       }
     }
 
-    // if a sender gets here, they&#39;ve joined all available games,
+    // if a sender gets here, they've joined all available games,
     // create a new one
     return newGame();
   }
@@ -313,7 +313,7 @@ contract EtherShuffle is Operable {
   function reveal (uint256 gameId, uint8[5] result, bytes32 secret) public whenNotPaused restricted {
     Shuffle storage game = games[gameId];
     if (game.id == 0) revert();
-    if (game.players.length &lt; uint256(countOfParticipants)) revert();
+    if (game.players.length < uint256(countOfParticipants)) revert();
     if (game.hash == bytes32(0)) revert();
     if (game.secret != bytes32(0)) revert();
 
@@ -331,7 +331,7 @@ contract EtherShuffle is Operable {
 
     uint256 totalValue = game.value;
 
-    for (uint8 x = 0; x &lt; game.result.length; x++) {
+    for (uint8 x = 0; x < game.result.length; x++) {
       uint256 indexOfDistribution = game.result[x];
       address player = game.players[x];
       uint256 playerDistribution = distributions[indexOfDistribution];
@@ -340,7 +340,7 @@ contract EtherShuffle is Operable {
 
       game.value -= disbursement;
       playerBalance += disbursement;
-      if (playerBalance &lt; disbursement) revert();
+      if (playerBalance < disbursement) revert();
       balances[player] = playerBalance;
     }
 
@@ -360,7 +360,7 @@ contract EtherShuffle is Operable {
 
   // anyone can withdraw on behalf of someone (when the player lacks the gas, for instance)
   function withdrawToMany (address[] players) public {
-    for (uint8 x = 0; x &lt; players.length; x++) {
+    for (uint8 x = 0; x < players.length; x++) {
       address player = players[x];
 
       withdrawTo(player);
@@ -374,7 +374,7 @@ contract EtherShuffle is Operable {
   function withdrawTo (address player) public {
     uint256 playerBalance = balances[player];
 
-    if (playerBalance &gt; 0) {
+    if (playerBalance > 0) {
       balances[player] = 0;
 
       player.transfer(playerBalance);
@@ -387,7 +387,7 @@ contract EtherShuffle is Operable {
   }
 
   function contains (Shuffle storage game, address candidate) private constant returns (bool) {
-    for (uint256 x = 0; x &lt; game.players.length; x++) {
+    for (uint256 x = 0; x < game.players.length; x++) {
       address player = game.players[x];
       if (candidate == player) {
         return true;
@@ -412,7 +412,7 @@ contract EtherShuffle is Operable {
   }
 
   function verifySignature (address signer, bytes32 hash, uint8 v, bytes32 r, bytes32 s) public pure returns (bool) {
-    bytes memory prefix = &#39;\x19Ethereum Signed Message:\n32&#39;;
+    bytes memory prefix = '\x19Ethereum Signed Message:\n32';
     bytes32 prefixedHash = keccak256(prefix, hash);
     return ecrecover(prefixedHash, v, r, s) == signer;
   }

@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     if (a == 0) {
       return 0;
     }
@@ -25,9 +25,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -72,7 +72,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -167,9 +167,9 @@ interface ERC721 /* is ERC165 */ {
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -178,7 +178,7 @@ interface ERC721 /* is ERC165 */ {
 
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;.
+    ///  except this function just sets data to "".
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -204,8 +204,8 @@ interface ERC721 /* is ERC165 */ {
     /// @param _tokenId The NFT to approve
     function approve(address _approved, uint256 _tokenId) external;
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
-    ///  all of `msg.sender`&#39;s assets
+    /// @notice Enable or disable approval for a third party ("operator") to manage
+    ///  all of `msg.sender`'s assets
     /// @dev Emits the ApprovalForAll event. The contract MUST allow
     ///  multiple operators per owner.
     /// @param _operator Address to add to the set of authorized operators
@@ -234,14 +234,14 @@ interface ERC721Enumerable /* is ERC721 */ {
     function totalSupply() external view returns (uint256);
 
     /// @notice Enumerate valid NFTs
-    /// @dev Throws if `_index` &gt;= `totalSupply()`.
+    /// @dev Throws if `_index` >= `totalSupply()`.
     /// @param _index A counter less than `totalSupply()`
     /// @return The token identifier for the `_index`th NFT,
     ///  (sort order not specified)
     function tokenByIndex(uint256 _index) external view returns (uint256);
 
     /// @notice Enumerate NFTs assigned to an owner
-    /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+    /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
     ///  `_owner` is the zero address, representing invalid NFTs.
     /// @param _owner An address where we are interested in NFTs owned by them
     /// @param _index A counter less than `balanceOf(_owner)`
@@ -261,8 +261,8 @@ interface ERC721Metadata /* is ERC721 */ {
 
   /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
   /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-  ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-  ///  Metadata JSON Schema&quot;.
+  ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+  ///  Metadata JSON Schema".
   function tokenURI(uint256 _tokenId) external view returns (string);
 }
 
@@ -278,7 +278,7 @@ interface ERC721TokenReceiver {
     /// @param _from The address which previously owned the token
     /// @param _tokenId The NFT identifier which is being transferred
     /// @param _data Additional data with no specified format
-    /// @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+    /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     ///  unless throwing
     function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
 }
@@ -293,13 +293,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
-   *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+   *   bytes4(keccak256('supportsInterface(bytes4)'))
    */
 
   /**
-   * @dev a mapping of interface id to whether or not it&#39;s supported
+   * @dev a mapping of interface id to whether or not it's supported
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev A contract implementing SupportsInterfaceWithLookup
@@ -336,7 +336,7 @@ contract SupportsInterfaceWithLookup is ERC165 {
 
 /**
  * @title BitGuildAccessAdmin
- * @dev Allow two roles: &#39;owner&#39; or &#39;operator&#39;
+ * @dev Allow two roles: 'owner' or 'operator'
  *      - owner: admin/superuser (e.g. with financial rights)
  *      - operator: can update configurations
  */
@@ -346,7 +346,7 @@ contract BitGuildAccessAdmin {
 
   uint public MAX_OPS = 20; // Default maximum number of operators allowed
 
-  mapping(address =&gt; bool) public isOperator;
+  mapping(address => bool) public isOperator;
 
   event OwnershipTransferred(
       address indexed previousOwner,
@@ -370,7 +370,7 @@ contract BitGuildAccessAdmin {
   modifier onlyOperator {
     require(
       isOperator[msg.sender] || msg.sender == owner,
-      &quot;Permission denied. Must be an operator or the owner.&quot;);
+      "Permission denied. Must be an operator or the owner.");
     _;
   }
 
@@ -381,7 +381,7 @@ contract BitGuildAccessAdmin {
   function transferOwnership(address _newOwner) public onlyOwner {
     require(
       _newOwner != address(0),
-      &quot;Invalid new owner address.&quot;
+      "Invalid new owner address."
     );
     emit OwnershipTransferred(owner, _newOwner);
     owner = _newOwner;
@@ -394,19 +394,19 @@ contract BitGuildAccessAdmin {
   function addOperator(address _newOperator) public onlyOwner {
     require(
       _newOperator != address(0),
-      &quot;Invalid new operator address.&quot;
+      "Invalid new operator address."
     );
 
     // Make sure no dups
     require(
       !isOperator[_newOperator],
-      &quot;New operator exists.&quot;
+      "New operator exists."
     );
 
     // Only allow so many ops
     require(
-      operators.length &lt; MAX_OPS,
-      &quot;Overflow.&quot;
+      operators.length < MAX_OPS,
+      "Overflow."
     );
 
     operators.push(_newOperator);
@@ -422,21 +422,21 @@ contract BitGuildAccessAdmin {
   function removeOperator(address _operator) public onlyOwner {
     // Make sure operators array is not empty
     require(
-      operators.length &gt; 0,
-      &quot;No operator.&quot;
+      operators.length > 0,
+      "No operator."
     );
 
     // Make sure the operator exists
     require(
       isOperator[_operator],
-      &quot;Not an operator.&quot;
+      "Not an operator."
     );
 
     // Manual array manipulation:
     // - replace the _operator with last operator in array
     // - remove the last item from array
     address lastOperator = operators[operators.length - 1];
-    for (uint i = 0; i &lt; operators.length; i++) {
+    for (uint i = 0; i < operators.length; i++) {
       if (operators[i] == _operator) {
         operators[i] = lastOperator;
       }
@@ -449,7 +449,7 @@ contract BitGuildAccessAdmin {
 
   // @dev Remove ALL operators
   function removeAllOps() public onlyOwner {
-    for (uint i = 0; i &lt; operators.length; i++) {
+    for (uint i = 0; i < operators.length; i++) {
       isOperator[operators[i]] = false;
     }
     operators.length = 0;
@@ -464,7 +464,7 @@ contract BitGuildAccessAdminExtend is BitGuildAccessAdmin {
 
   bool public isPaused = false;
   
-  mapping(address =&gt; bool)  frozenAccount;
+  mapping(address => bool)  frozenAccount;
 
   modifier whenNotPaused {
     require(!isPaused);
@@ -547,17 +547,17 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   uint256 constant TOKEN_OWNER_OF = 0x89885a59;
   uint256 constant OWNER_OF_CHILD = 0xeadb80b8;
 
-  // tokenId =&gt; token owner
-  mapping (uint256 =&gt; address) internal tokenIdToTokenOwner;
+  // tokenId => token owner
+  mapping (uint256 => address) internal tokenIdToTokenOwner;
 
-  // root token owner address =&gt; (tokenId =&gt; approved address)
-  mapping (address =&gt; mapping (uint256 =&gt; address)) internal rootOwnerAndTokenIdToApprovedAddress;
+  // root token owner address => (tokenId => approved address)
+  mapping (address => mapping (uint256 => address)) internal rootOwnerAndTokenIdToApprovedAddress;
 
-  // token owner address =&gt; token count
-  mapping (address =&gt; uint256) internal tokenOwnerToTokenCount;
+  // token owner address => token count
+  mapping (address => uint256) internal tokenOwnerToTokenCount;
 
-  // token owner =&gt; (operator address =&gt; bool)
-  mapping (address =&gt; mapping (address =&gt; bool)) internal tokenOwnerToOperators;
+  // token owner => (operator address => bool)
+  mapping (address => mapping (address => bool)) internal tokenOwnerToOperators;
 
 
   //from zepellin ERC721Receiver.sol
@@ -567,19 +567,19 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   bytes4 constant ERC721_RECEIVED_NEW = 0x150b7a02;
     /**
    * 0x5b5e139f ===
-   *   bytes4(keccak256(&#39;name()&#39;)) ^
-   *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+   *   bytes4(keccak256('name()')) ^
+   *   bytes4(keccak256('symbol()')) ^
+   *   bytes4(keccak256('tokenURI(uint256)'))
    */
   bytes4  constant InterfaceId_ERC998 = 0x520bdcbe;
-              //InterfaceId_ERC998 = bytes4(keccak256(&#39;tokenOwnerOf(uint256)&#39;)) ^
-              // bytes4(keccak256(&#39;ownerOfChild(address,uint256)&#39;)) ^
-              // bytes4(keccak256(&#39;onERC721Received(address,address,uint256,bytes)&#39;)) ^
-              // bytes4(keccak256(&#39;onERC998RemovedChild(address,address,uint256,bytes)&#39;)) ^
-              // bytes4(keccak256(&#39;transferChild(address,address,uint256)&#39;)) ^
-              // bytes4(keccak256(&#39;safeTransferChild(address,address,uint256)&#39;)) ^
-              // bytes4(keccak256(&#39;safeTransferChild(address,address,uint256,bytes)&#39;)) ^
-              // bytes4(keccak256(&#39;getChild(address,address,uint256,uint256)&#39;));
+              //InterfaceId_ERC998 = bytes4(keccak256('tokenOwnerOf(uint256)')) ^
+              // bytes4(keccak256('ownerOfChild(address,uint256)')) ^
+              // bytes4(keccak256('onERC721Received(address,address,uint256,bytes)')) ^
+              // bytes4(keccak256('onERC998RemovedChild(address,address,uint256,bytes)')) ^
+              // bytes4(keccak256('transferChild(address,address,uint256)')) ^
+              // bytes4(keccak256('safeTransferChild(address,address,uint256)')) ^
+              // bytes4(keccak256('safeTransferChild(address,address,uint256,bytes)')) ^
+              // bytes4(keccak256('getChild(address,address,uint256,uint256)'));
 
 
 
@@ -597,7 +597,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   function isContract(address _addr) internal view returns (bool) {
     uint256 size;
     assembly { size := extcodesize(_addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
   function tokenOwnerOf(uint256 _tokenId) external view returns (address tokenOwner, uint256 parentTokenId, uint256 isParent) {
@@ -617,11 +617,11 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
           isParent := mload(add(calldata,0x20))
         }
       }
-      if(callSuccess &amp;&amp; isParent &gt;&gt; 8 == OWNER_OF_CHILD) {
-        isParent = TOKEN_OWNER_OF &lt;&lt; 8 | uint8(isParent);
+      if(callSuccess && isParent >> 8 == OWNER_OF_CHILD) {
+        isParent = TOKEN_OWNER_OF << 8 | uint8(isParent);
       }
       else {
-        isParent = TOKEN_OWNER_OF &lt;&lt; 8;
+        isParent = TOKEN_OWNER_OF << 8;
         parentTokenId = 0;
       }
     }
@@ -639,16 +639,16 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
     uint256 isParent = 1;
     bool callSuccess;
     bytes memory calldata;
-    while(uint8(isParent) &gt; 0) {
+    while(uint8(isParent) > 0) {
       if(rootOwner == address(this)) {
         (_tokenId, isParent) = ownerOfChild(address(this), _tokenId);
-        if(uint8(isParent) &gt; 0) {
+        if(uint8(isParent) > 0) {
           rootOwner = tokenIdToTokenOwner[_tokenId];
         }
       }
       else {
         if(isContract(rootOwner)) {
-          //0x89885a59 == &quot;tokenOwnerOf(uint256)&quot;
+          //0x89885a59 == "tokenOwnerOf(uint256)"
           calldata = abi.encodeWithSelector(0x89885a59, _tokenId);
           assembly {
             callSuccess := staticcall(gas, rootOwner, add(calldata, 0x20), mload(calldata), calldata, 0x60)
@@ -659,8 +659,8 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
             }
           }
           
-          if(callSuccess == false || isParent &gt;&gt; 8 != TOKEN_OWNER_OF) {
-            //0x6352211e == &quot;_ownerOf(uint256)&quot;
+          if(callSuccess == false || isParent >> 8 != TOKEN_OWNER_OF) {
+            //0x6352211e == "_ownerOf(uint256)"
             calldata = abi.encodeWithSelector(0x6352211e, _tokenId);
             assembly {
               callSuccess := staticcall(gas, rootOwner, add(calldata, 0x20), mload(calldata), calldata, 0x20)
@@ -668,7 +668,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
                 rootOwner := mload(calldata)
               }
             }
-            require(callSuccess, &quot;rootOwnerOf failed&quot;);
+            require(callSuccess, "rootOwnerOf failed");
             isParent = 0;
           }
         }
@@ -738,7 +738,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
 
     // remove and transfer token
     if(_from != _to) {
-      assert(tokenOwnerToTokenCount[_from] &gt; 0);
+      assert(tokenOwnerToTokenCount[_from] > 0);
       tokenOwnerToTokenCount[_from]--;
       tokenIdToTokenOwner[_tokenId] = _to;
       tokenOwnerToTokenCount[_to]++;
@@ -746,8 +746,8 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
     emit Transfer(_from, _to, _tokenId);
 
     if(isContract(_from)) {
-      //0x0da719ec == &quot;onERC998Removed(address,address,uint256,bytes)&quot;
-      bytes memory calldata = abi.encodeWithSelector(0x0da719ec, msg.sender, _to, _tokenId,&quot;&quot;);
+      //0x0da719ec == "onERC998Removed(address,address,uint256,bytes)"
+      bytes memory calldata = abi.encodeWithSelector(0x0da719ec, msg.sender, _to, _tokenId,"");
       assembly {
         let success := call(gas, _from, 0, add(calldata, 0x20), mload(calldata), calldata, 0)
       }
@@ -762,7 +762,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) external {
     _transfer(_from, _to, _tokenId);
     if(isContract(_to)) {
-      bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, &quot;&quot;);
+      bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, "");
       require(retval == ERC721_RECEIVED_OLD);
     }
   }
@@ -779,20 +779,20 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   // ERC998ERC721 and ERC998ERC721Enumerable implementation
   ////////////////////////////////////////////////////////
 
-  // tokenId =&gt; child contract
-  mapping(uint256 =&gt; address[]) internal childContracts;
+  // tokenId => child contract
+  mapping(uint256 => address[]) internal childContracts;
 
-  // tokenId =&gt; (child address =&gt; contract index+1)
-  mapping(uint256 =&gt; mapping(address =&gt; uint256)) internal childContractIndex;
+  // tokenId => (child address => contract index+1)
+  mapping(uint256 => mapping(address => uint256)) internal childContractIndex;
 
-  // tokenId =&gt; (child address =&gt; array of child tokens)
-  mapping(uint256 =&gt; mapping(address =&gt; uint256[])) internal childTokens;
+  // tokenId => (child address => array of child tokens)
+  mapping(uint256 => mapping(address => uint256[])) internal childTokens;
 
-  // tokenId =&gt; (child address =&gt; (child token =&gt; child index+1)
-  mapping(uint256 =&gt; mapping(address =&gt; mapping(uint256 =&gt; uint256))) internal childTokenIndex;
+  // tokenId => (child address => (child token => child index+1)
+  mapping(uint256 => mapping(address => mapping(uint256 => uint256))) internal childTokenIndex;
 
-  // child address =&gt; childId =&gt; tokenId
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) internal childTokenOwner;
+  // child address => childId => tokenId
+  mapping(address => mapping(uint256 => uint256)) internal childTokenOwner;
 
   function onERC998Removed(address _operator, address _toContract, uint256 _childTokenId, bytes _data) external {
     uint256 tokenId = childTokenOwner[msg.sender][_childTokenId];
@@ -802,7 +802,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
 
   function safeTransferChild(address _to, address _childContract, uint256 _childTokenId) external {
     (uint256 tokenId, uint256 isParent) = ownerOfChild(_childContract, _childTokenId);
-    require(uint8(isParent) &gt; 0);
+    require(uint8(isParent) > 0);
     address tokenOwner = tokenIdToTokenOwner[tokenId];
     require(_to != address(0));
     address rootOwner = _ownerOf(tokenId);
@@ -817,7 +817,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
 
   function safeTransferChild(address _to, address _childContract, uint256 _childTokenId, bytes _data) external {
     (uint256 tokenId, uint256 isParent) = ownerOfChild(_childContract, _childTokenId);
-    require(uint8(isParent) &gt; 0);
+    require(uint8(isParent) > 0);
     address tokenOwner = tokenIdToTokenOwner[tokenId];
     require(_to != address(0));
     address rootOwner = _ownerOf(tokenId);
@@ -839,8 +839,8 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   }
 
   function onERC721Received(address _from, uint256 _childTokenId, bytes _data) external returns(bytes4) {
-    require(_data.length &gt; 0, &quot;_data must contain the uint256 tokenId to transfer the child token to.&quot;);
-    require(isContract(msg.sender), &quot;msg.sender is not a contract.&quot;);
+    require(_data.length > 0, "_data must contain the uint256 tokenId to transfer the child token to.");
+    require(isContract(msg.sender), "msg.sender is not a contract.");
     /**************************************
     * TODO move to library
     **************************************/
@@ -851,12 +851,12 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
       //tokenId := calldataload(164)
       tokenId := calldataload(132)
     }
-    if(_data.length &lt; 32) {
-      tokenId = tokenId &gt;&gt; 256 - _data.length * 8;
+    if(_data.length < 32) {
+      tokenId = tokenId >> 256 - _data.length * 8;
     }
     //END TODO
 
-    //require(this == ERC721Basic(msg.sender)._ownerOf(_childTokenId), &quot;This contract does not own the child token.&quot;);
+    //require(this == ERC721Basic(msg.sender)._ownerOf(_childTokenId), "This contract does not own the child token.");
 
     _receiveChild(_from, tokenId, msg.sender, _childTokenId);
     //cause out of gas error if circular ownership
@@ -866,8 +866,8 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
 
 
   function onERC721Received(address _operator, address _from, uint256 _childTokenId, bytes _data) external returns(bytes4) {
-    require(_data.length &gt; 0, &quot;_data must contain the uint256 tokenId to transfer the child token to.&quot;);
-    require(isContract(msg.sender), &quot;msg.sender is not a contract.&quot;);
+    require(_data.length > 0, "_data must contain the uint256 tokenId to transfer the child token to.");
+    require(isContract(msg.sender), "msg.sender is not a contract.");
     /**************************************
     * TODO move to library
     **************************************/
@@ -878,12 +878,12 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
       tokenId := calldataload(164)
       //tokenId := calldataload(132)
     }
-    if(_data.length &lt; 32) {
-      tokenId = tokenId &gt;&gt; 256 - _data.length * 8;
+    if(_data.length < 32) {
+      tokenId = tokenId >> 256 - _data.length * 8;
     }
     //END TODO
 
-    //require(this == ERC721Basic(msg.sender)._ownerOf(_childTokenId), &quot;This contract does not own the child token.&quot;);
+    //require(this == ERC721Basic(msg.sender)._ownerOf(_childTokenId), "This contract does not own the child token.");
 
     _receiveChild(_from, tokenId, msg.sender, _childTokenId);
     //cause out of gas error if circular ownership
@@ -893,7 +893,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
 
   function _transferChild(address _to, address _childContract, uint256 _childTokenId) internal {
     (uint256 tokenId, uint256 isParent) = ownerOfChild(_childContract, _childTokenId);
-    require(uint8(isParent) &gt; 0);
+    require(uint8(isParent) > 0);
     address tokenOwner = tokenIdToTokenOwner[tokenId];
     require(_to != address(0));
     address rootOwner = _ownerOf(tokenId);
@@ -905,7 +905,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
     //this is here to be compatible with cryptokitties and other old contracts that require being owner and approved
     // before transferring.
     //does not work with current standard which does not allow approving self, so we must let it fail in that case.
-    //0x095ea7b3 == &quot;approve(address,uint256)&quot;
+    //0x095ea7b3 == "approve(address,uint256)"
     bytes memory calldata = abi.encodeWithSelector(0x095ea7b3, this, _childTokenId);
     assembly {
       let success := call(gas, _childContract, 0, add(calldata, 0x20), mload(calldata), calldata, 0)
@@ -926,8 +926,8 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   }
 
   function _receiveChild(address _from,  uint256 _tokenId, address _childContract, uint256 _childTokenId) private whenNotPaused {  
-    require(tokenIdToTokenOwner[_tokenId] != address(0), &quot;_tokenId does not exist.&quot;);
-    require(childTokenIndex[_tokenId][_childContract][_childTokenId] == 0, &quot;Cannot receive child token because it has already been received.&quot;);
+    require(tokenIdToTokenOwner[_tokenId] != address(0), "_tokenId does not exist.");
+    require(childTokenIndex[_tokenId][_childContract][_childTokenId] == 0, "Cannot receive child token because it has already been received.");
     uint256 childTokensLength = childTokens[_tokenId][_childContract].length;
     if(childTokensLength == 0) {
       childContractIndex[_tokenId][_childContract] = childContracts[_tokenId].length;
@@ -941,7 +941,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   
   function _removeChild(uint256 _tokenId, address _childContract, uint256 _childTokenId) private whenNotPaused {
     uint256 tokenIndex = childTokenIndex[_tokenId][_childContract][_childTokenId];
-    require(tokenIndex != 0, &quot;Child token not owned by token.&quot;);
+    require(tokenIndex != 0, "Child token not owned by token.");
 
     // remove child token
     uint256 lastTokenIndex = childTokens[_tokenId][_childContract].length-1;
@@ -975,10 +975,10 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
 
   function ownerOfChild(address _childContract, uint256 _childTokenId) public view returns (uint256 parentTokenId, uint256 isParent) {
     parentTokenId = childTokenOwner[_childContract][_childTokenId];
-    if(parentTokenId == 0 &amp;&amp; childTokenIndex[parentTokenId][_childContract][_childTokenId] == 0) {
-      return (0, OWNER_OF_CHILD &lt;&lt; 8);
+    if(parentTokenId == 0 && childTokenIndex[parentTokenId][_childContract][_childTokenId] == 0) {
+      return (0, OWNER_OF_CHILD << 8);
     }
-    return (parentTokenId, OWNER_OF_CHILD &lt;&lt; 8 | 1);
+    return (parentTokenId, OWNER_OF_CHILD << 8 | 1);
   }
 
   function childExists(address _childContract, uint256 _childTokenId) external view returns (bool) {
@@ -991,7 +991,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   }
 
   function childContractByIndex(uint256 _tokenId, uint256 _index) external view returns (address childContract) {
-    require(_index &lt; childContracts[_tokenId].length, &quot;Contract address does not exist for this token and index.&quot;);
+    require(_index < childContracts[_tokenId].length, "Contract address does not exist for this token and index.");
     return childContracts[_tokenId][_index];
   }
 
@@ -1000,7 +1000,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   }
 
   function childTokenByIndex(uint256 _tokenId, address _childContract, uint256 _index) external view returns (uint256 childTokenId) {
-    require(_index &lt; childTokens[_tokenId][_childContract].length, &quot;Token does not own a child token at contract address and index.&quot;);
+    require(_index < childTokens[_tokenId][_childContract].length, "Token does not own a child token at contract address and index.");
     return childTokens[_tokenId][_childContract][_index];
   }
 
@@ -1008,14 +1008,14 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   // ERC998ERC223 and ERC998ERC223Enumerable implementation
   ////////////////////////////////////////////////////////
 
-  // tokenId =&gt; token contract
-  mapping(uint256 =&gt; address[]) erc223Contracts;
+  // tokenId => token contract
+  mapping(uint256 => address[]) erc223Contracts;
 
-  // tokenId =&gt; (token contract =&gt; token contract index)
-  mapping(uint256 =&gt; mapping(address =&gt; uint256)) erc223ContractIndex;
+  // tokenId => (token contract => token contract index)
+  mapping(uint256 => mapping(address => uint256)) erc223ContractIndex;
   
-  // tokenId =&gt; (token contract =&gt; balance)
-  mapping(uint256 =&gt; mapping(address =&gt; uint256)) erc223Balances;
+  // tokenId => (token contract => balance)
+  mapping(uint256 => mapping(address => uint256)) erc223Balances;
   
   function balanceOfERC20(uint256 _tokenId, address _erc223Contract) external view returns(uint256) {
     return erc223Balances[_tokenId][_erc223Contract];
@@ -1026,7 +1026,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
       return;
     }
     uint256 erc223Balance = erc223Balances[_tokenId][_erc223Contract];
-    require(erc223Balance &gt;= _value, &quot;Not enough token available to transfer.&quot;);
+    require(erc223Balance >= _value, "Not enough token available to transfer.");
     uint256 newERC223Balance = erc223Balance - _value;
     erc223Balances[_tokenId][_erc223Contract] = newERC223Balance;
     if(newERC223Balance == 0) {
@@ -1052,7 +1052,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
       rootOwnerAndTokenIdToApprovedAddress[rootOwner][_tokenId] == msg.sender ||
       tokenOwner == msg.sender || tokenOwnerToOperators[tokenOwner][msg.sender]);
     removeERC223(_tokenId, _erc223Contract, _value);
-    require(ERC20AndERC223(_erc223Contract).transfer(_to, _value), &quot;ERC20 transfer failed.&quot;);
+    require(ERC20AndERC223(_erc223Contract).transfer(_to, _value), "ERC20 transfer failed.");
     emit TransferERC20(_tokenId, _to, _erc223Contract, _value);
   }
   
@@ -1066,7 +1066,7 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
       rootOwnerAndTokenIdToApprovedAddress[rootOwner][_tokenId] == msg.sender ||
       tokenOwner == msg.sender || tokenOwnerToOperators[tokenOwner][msg.sender]);
     removeERC223(_tokenId, _erc223Contract, _value);
-    require(ERC20AndERC223(_erc223Contract).transfer(_to, _value, _data), &quot;ERC223 transfer failed.&quot;);
+    require(ERC20AndERC223(_erc223Contract).transfer(_to, _value, _data), "ERC223 transfer failed.");
     emit TransferERC20(_tokenId, _to, _erc223Contract, _value);
   }
 
@@ -1084,17 +1084,17 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
           remaining := mload(calldata)
         }
       }
-      require(callSuccess, &quot;call to allowance failed&quot;);
-      require(remaining &gt;= _value, &quot;Value greater than remaining&quot;);
+      require(callSuccess, "call to allowance failed");
+      require(remaining >= _value, "Value greater than remaining");
       allowed = true;
     }
-    require(allowed, &quot;not allowed to getERC20&quot;);
+    require(allowed, "not allowed to getERC20");
     erc223Received(_from, _tokenId, _erc223Contract, _value);
-    require(ERC20AndERC223(_erc223Contract).transferFrom(_from, this, _value), &quot;ERC20 transfer failed.&quot;);
+    require(ERC20AndERC223(_erc223Contract).transferFrom(_from, this, _value), "ERC20 transfer failed.");
   }
 
   function erc223Received(address _from, uint256 _tokenId, address _erc223Contract, uint256 _value) private {
-    require(tokenIdToTokenOwner[_tokenId] != address(0), &quot;_tokenId does not exist.&quot;);
+    require(tokenIdToTokenOwner[_tokenId] != address(0), "_tokenId does not exist.");
     if(_value == 0) {
       return;
     }
@@ -1109,8 +1109,8 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
   
   // used by ERC 223
   function tokenFallback(address _from, uint256 _value, bytes _data) external {
-    require(_data.length &gt; 0, &quot;_data must contain the uint256 tokenId to transfer the token to.&quot;);
-    require(isContract(msg.sender), &quot;msg.sender is not a contract&quot;);
+    require(_data.length > 0, "_data must contain the uint256 tokenId to transfer the token to.");
+    require(isContract(msg.sender), "msg.sender is not a contract");
     /**************************************
     * TODO move to library
     **************************************/
@@ -1119,15 +1119,15 @@ contract ComposableTopDown is ERC721, ERC998ERC721TopDown, ERC998ERC721TopDownEn
     assembly {
       tokenId := calldataload(132)
     }
-    if(_data.length &lt; 32) {
-      tokenId = tokenId &gt;&gt; 256 - _data.length * 8;
+    if(_data.length < 32) {
+      tokenId = tokenId >> 256 - _data.length * 8;
     }
     //END TODO
     erc223Received(_from, tokenId, msg.sender, _value);
   }
   
   function erc20ContractByIndex(uint256 _tokenId, uint256 _index) external view returns(address) {
-    require(_index &lt; erc223Contracts[_tokenId].length, &quot;Contract address does not exist for this token and index.&quot;);
+    require(_index < erc223Contracts[_tokenId].length, "Contract address does not exist for this token and index.");
     return erc223Contracts[_tokenId][_index];
   }
   
@@ -1144,26 +1144,26 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
   bytes4 private constant InterfaceId_ERC721Enumerable = 0x780e9d63;
   /**
    * 0x780e9d63 ===
-   *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+   *   bytes4(keccak256('totalSupply()')) ^
+   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+   *   bytes4(keccak256('tokenByIndex(uint256)'))
    */
   bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
               
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -1177,7 +1177,7 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
 
   modifier existsToken(uint256 _tokenId){
     address owner = tokenIdToTokenOwner[_tokenId];
-    require(owner != address(0), &quot;This tokenId is invalid&quot;); 
+    require(owner != address(0), "This tokenId is invalid"); 
     _;
   }
 
@@ -1186,7 +1186,7 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
    * @return string representing the token name
    */
   function name() external view returns (string) {
-    return &quot;Bitizen&quot;;
+    return "Bitizen";
   }
 
   /**
@@ -1194,7 +1194,7 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
    * @return string representing the token symbol
    */
   function symbol() external view returns (string) {
-    return &quot;BTZN&quot;;
+    return "BTZN";
   }
 
   /**
@@ -1203,7 +1203,7 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
    * @param _tokenId uint256 ID of the token to query
    */
   function tokenURI(uint256 _tokenId) external view existsToken(_tokenId) returns (string) {
-    return &quot;&quot;;
+    return "";
   }
 
   /**
@@ -1221,7 +1221,7 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
     returns (uint256)
   {
     require(address(0) != _owner);
-    require(_index &lt; tokenOwnerToTokenCount[_owner]);
+    require(_index < tokenOwnerToTokenCount[_owner]);
     return ownedTokens[_owner][_index];
   }
 
@@ -1240,7 +1240,7 @@ contract ERC998TopDownToken is SupportsInterfaceWithLookup, ERC721Enumerable, ER
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -1324,7 +1324,7 @@ contract AvatarToken is ERC998TopDownToken, AvatarService {
   }
 
   // For erc721 metadata
-  string internal BASE_URL = &quot;https://www.bitguild.com/bitizens/api/avatar/getAvatar/00000000&quot;;
+  string internal BASE_URL = "https://www.bitguild.com/bitizens/api/avatar/getAvatar/00000000";
 
   Avatar[] avatars;
 
@@ -1343,7 +1343,7 @@ contract AvatarToken is ERC998TopDownToken, AvatarService {
   }
   
   function updateAvatarInfo(address _owner, uint256 _tokenId, string _name, uint256 _dna) external onlyOperator existsToken(_tokenId){
-    require(_owner != address(0), &quot;Invalid address&quot;);
+    require(_owner != address(0), "Invalid address");
     require(_owner == tokenIdToTokenOwner[_tokenId] || msg.sender == owner);
     Avatar storage avatar = avatars[allTokensIndex[_tokenId]];
     avatar.name = _name;
@@ -1370,10 +1370,10 @@ contract AvatarToken is ERC998TopDownToken, AvatarService {
 
   function batchMount(address _childContract, uint256[] _childTokenIds, uint256 _tokenId) external {
     uint256 _len = _childTokenIds.length;
-    require(_len &gt; 0, &quot;No token need to mount&quot;);
+    require(_len > 0, "No token need to mount");
     address tokenOwner = _ownerOf(_tokenId);
     require(tokenOwner == msg.sender);
-    for(uint8 i = 0; i &lt; _len; ++i) {
+    for(uint8 i = 0; i < _len; ++i) {
       uint256 childTokenId = _childTokenIds[i];
       require(ERC721(_childContract).ownerOf(childTokenId) == tokenOwner);
       _getChild(msg.sender, _tokenId, _childContract, childTokenId);
@@ -1383,10 +1383,10 @@ contract AvatarToken is ERC998TopDownToken, AvatarService {
  
   function batchUnmount(address _childContract, uint256[] _childTokenIds, uint256 _tokenId) external {
     uint256 len = _childTokenIds.length;
-    require(len &gt; 0, &quot;No token need to unmount&quot;);
+    require(len > 0, "No token need to unmount");
     address tokenOwner = _ownerOf(_tokenId);
     require(tokenOwner == msg.sender);
-    for(uint8 i = 0; i &lt; len; ++i) {
+    for(uint8 i = 0; i < len; ++i) {
       uint256 childTokenId = _childTokenIds[i];
       _transferChild(msg.sender, _childContract, childTokenId);
     }
@@ -1403,7 +1403,7 @@ contract AvatarToken is ERC998TopDownToken, AvatarService {
 
   function _unmountSameSocketItem(address _owner, uint256 _tokenId, address _childContract, uint256 _childTokenId) internal {
     uint256[] storage tokens = childTokens[_tokenId][_childContract];
-    for(uint256 i = 0; i &lt; tokens.length; ++i) {
+    for(uint256 i = 0; i < tokens.length; ++i) {
       // if the child no compareItemSlots(uint256,uint256) ,this will lead to a error and stop this operate
       if(AvatarChildService(_childContract).compareItemSlots(tokens[i], _childTokenId)) {
         // unmount the old avatar item
@@ -1415,7 +1415,7 @@ contract AvatarToken is ERC998TopDownToken, AvatarService {
   // override  
   function _transfer(address _from, address _to, uint256 _tokenId) internal whenNotPaused {
     // not allown to transfer when  only one  avatar 
-    require(tokenOwnerToTokenCount[_from] &gt; 1);
+    require(tokenOwnerToTokenCount[_from] > 1);
     super._transfer(_from, _to, _tokenId);
   }
 

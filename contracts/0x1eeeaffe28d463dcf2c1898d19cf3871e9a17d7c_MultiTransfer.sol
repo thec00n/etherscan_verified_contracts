@@ -6,7 +6,7 @@ contract SNOVToken {
 
 contract MultiOwnable {
 
-    mapping(address =&gt; bool) ownerMap;
+    mapping(address => bool) ownerMap;
     address[] public owners;
 
     event OwnerAdded(address indexed _newOwner);
@@ -33,7 +33,7 @@ contract MultiOwnable {
     }
 
     function addOwner(address owner) public onlyOwner returns (bool) {
-        if (!isOwner(owner) &amp;&amp; owner != 0) {
+        if (!isOwner(owner) && owner != 0) {
             ownerMap[owner] = true;
             owners.push(owner);
 
@@ -45,7 +45,7 @@ contract MultiOwnable {
     function removeOwner(address owner) public onlyOwner returns (bool) {
         if (isOwner(owner)) {
             ownerMap[owner] = false;
-            for (uint i = 0; i &lt; owners.length - 1; i++) {
+            for (uint i = 0; i < owners.length - 1; i++) {
                 if (owners[i] == owner) {
                     owners[i] = owners[owners.length - 1];
                     break;
@@ -63,7 +63,7 @@ contract MultiTransfer is MultiOwnable {
     
     function MultiTransaction(address _tokenAddress, address[] _addresses, uint256[] _values) public onlyOwner {
         SNOVToken token = SNOVToken(_tokenAddress);
-        for (uint256 i = 0; i &lt; _addresses.length; i++) {
+        for (uint256 i = 0; i < _addresses.length; i++) {
             token.transfer(_addresses[i], _values[i]);
         }
     }

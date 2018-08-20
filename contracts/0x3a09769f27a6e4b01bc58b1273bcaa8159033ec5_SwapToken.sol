@@ -21,7 +21,7 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 contract SwapToken is owned {
     /* Public variables of the token */
     
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
 
     // buyer tokens
     string public buyerTokenName;
@@ -70,9 +70,9 @@ contract SwapToken is owned {
     }
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOfBuyer;
-    mapping (address =&gt; uint256) public balanceOfIssuer;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOfBuyer;
+    mapping (address => uint256) public balanceOfIssuer;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -94,12 +94,12 @@ contract SwapToken is owned {
     
     /* Check if contract has started */
     /*function has_contract_started() private constant returns (bool) {
-	    return block.number &gt;= startBlock;
+	    return block.number >= startBlock;
     }
     
     /* Check if contract has ended */
     /*function has_contract_ended() private constant returns (bool) {
-        return block.number &gt; endBlock;
+        return block.number > endBlock;
     }*/
     
     /* Set a project Wallet */
@@ -143,8 +143,8 @@ contract SwapToken is owned {
     
     // send buyer coins
     function transferBuyer(address _to, uint256 _value) {
-        if (balanceOfBuyer[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOfBuyer[_to] + _value &lt; balanceOfBuyer[_to]) throw; // Check for overflows
+        if (balanceOfBuyer[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOfBuyer[_to] + _value < balanceOfBuyer[_to]) throw; // Check for overflows
         balanceOfBuyer[msg.sender] -= _value;                     // Subtract from the sender
         balanceOfBuyer[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -152,8 +152,8 @@ contract SwapToken is owned {
     
     // send issuer coins
     function transferIssue(address _to, uint256 _value) {
-        if (balanceOfIssuer[msg.sender] &lt; _value) throw;
-        if (balanceOfIssuer[_to] + _value &lt; balanceOfIssuer[_to]) throw;
+        if (balanceOfIssuer[msg.sender] < _value) throw;
+        if (balanceOfIssuer[_to] + _value < balanceOfIssuer[_to]) throw;
         balanceOfIssuer[msg.sender] -= _value;
         balanceOfIssuer[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -179,9 +179,9 @@ contract SwapToken is owned {
 
     /* A contract attempts to get the coins 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOfBuyer[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOfBuyer[_to] + _value &lt; balanceOfBuyer[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOfBuyer[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOfBuyer[_to] + _value < balanceOfBuyer[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOfBuyer[_from] -= _value;                          // Subtract from the sender
         balanceOfBuyer[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -204,16 +204,16 @@ contract SwapToken is owned {
         //if(!has_contract_started()) throw;                  // checks if the contract has started
         //if(has_contract_ended()) throw;                     // checks if the contract has ended 
         uint amount = msg.value / buyPrice;                // calculates the amount
-        if (balanceOfBuyer[this] &lt; amount) throw;               // checks if it has enough to sell
-        balanceOfBuyer[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-        balanceOfBuyer[this] -= amount;                         // subtracts amount from seller&#39;s balance
+        if (balanceOfBuyer[this] < amount) throw;               // checks if it has enough to sell
+        balanceOfBuyer[msg.sender] += amount;                   // adds the amount to buyer's balance
+        balanceOfBuyer[this] -= amount;                         // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);                // execute an event reflecting the change
     }
     
     // buy issuer tokens
     function buyIssuerTokens() payable {
         uint amount = msg.value / issuePrice;
-        if (balanceOfIssuer[this] &lt; amount) throw;
+        if (balanceOfIssuer[this] < amount) throw;
         balanceOfIssuer[msg.sender] += amount;
         balanceOfIssuer[this] -= amount;
         Transfer(this, msg.sender, amount);
@@ -229,11 +229,11 @@ contract SwapToken is owned {
     // buyer collection sale
     function sellBuyerTokens(uint amount) returns (uint revenue){
         if (creditStatus == false) throw;                       // checks if buyer is eligible for a claim
-        if (balanceOfBuyer[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
-        balanceOfBuyer[this] += amount;                         // adds the amount to owner&#39;s balance
-        balanceOfBuyer[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
+        if (balanceOfBuyer[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+        balanceOfBuyer[this] += amount;                         // adds the amount to owner's balance
+        balanceOfBuyer[msg.sender] -= amount;                   // subtracts the amount from seller's balance
         revenue = amount * cPT;
-        if (!msg.sender.send(revenue)) {                   // sends ether to the seller: it&#39;s important
+        if (!msg.sender.send(revenue)) {                   // sends ether to the seller: it's important
             throw;                                         // to do this last to prevent recursion attacks
         } else {
             Transfer(msg.sender, this, amount);             // executes an event reflecting on the change
@@ -249,7 +249,7 @@ contract SwapToken is owned {
     
     // issuer collection sale
     function sellIssuerTokens(uint amount) returns (uint revenue){
-        if (balanceOfIssuer[msg.sender] &lt; amount ) throw;
+        if (balanceOfIssuer[msg.sender] < amount ) throw;
         balanceOfIssuer[this] += amount;
         balanceOfIssuer[msg.sender] -= amount;
         revenue = amount * getPremium();

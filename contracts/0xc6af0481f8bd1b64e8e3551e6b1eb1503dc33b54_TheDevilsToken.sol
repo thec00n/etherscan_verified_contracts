@@ -33,9 +33,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -52,7 +52,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,8 +63,8 @@ contract TheDevilsToken is IERC20 {
     uint public _totalSupply = 0;
     uint public constant maxSupply = 666666000000000000000000;
     
-    string public constant name = &#39;The Devil\&#39;s Token&#39;;
-    string public constant symbol = &#39;DVL&#39;;
+    string public constant name = 'The Devil\'s Token';
+    string public constant symbol = 'DVL';
     uint8 public constant decimals = 18;
     
     // 1 ETH = 666 DVL
@@ -72,8 +72,8 @@ contract TheDevilsToken is IERC20 {
     
     address public owner;
     
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     function () public payable {
         createTokens();
@@ -84,13 +84,13 @@ contract TheDevilsToken is IERC20 {
     }
     
     function createTokens() public payable {
-        require(msg.value &gt; 0 &amp;&amp; _totalSupply &lt; maxSupply);
+        require(msg.value > 0 && _totalSupply < maxSupply);
         
         uint requestedTokens = msg.value.mul(RATE);
         uint tokens = requestedTokens;
         uint newTokensCount = _totalSupply.add(requestedTokens);
         
-        if (newTokensCount &gt; maxSupply) {
+        if (newTokensCount > maxSupply) {
             tokens = maxSupply - _totalSupply;
         }
         
@@ -110,9 +110,9 @@ contract TheDevilsToken is IERC20 {
     
     function transfer(address to, uint tokens) public returns (bool success) {
         require(
-            msg.data.length &gt;= (2 * 32) + 4 &amp;&amp;
-            tokens &gt; 0 &amp;&amp;
-            balances[msg.sender] &gt;= tokens
+            msg.data.length >= (2 * 32) + 4 &&
+            tokens > 0 &&
+            balances[msg.sender] >= tokens
         );
         
         balances[msg.sender] = balances[msg.sender].sub(tokens);
@@ -125,10 +125,10 @@ contract TheDevilsToken is IERC20 {
     
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         require(
-            msg.data.length &gt;= (3 * 32) + 4 &amp;&amp;
-            tokens &gt; 0 &amp;&amp;
-            balances[from] &gt;= tokens &amp;&amp;
-            allowed[from][msg.sender] &gt;= tokens
+            msg.data.length >= (3 * 32) + 4 &&
+            tokens > 0 &&
+            balances[from] >= tokens &&
+            allowed[from][msg.sender] >= tokens
         );
         
         balances[from] = balances[from].sub(tokens);

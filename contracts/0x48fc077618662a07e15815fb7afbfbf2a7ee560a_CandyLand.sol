@@ -18,9 +18,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -28,7 +28,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -172,10 +172,10 @@ contract LandAccessControl {
 contract CanReceiveApproval {
     event ReceiveApproval(address from, uint256 value, address token);
 
-    mapping (bytes4 =&gt; bool) allowedFuncs;
+    mapping (bytes4 => bool) allowedFuncs;
 
     modifier onlyPayloadSize(uint numwords) {
-        assert(msg.data.length &gt;= numwords * 32 + 4);
+        assert(msg.data.length >= numwords * 32 + 4);
         _;
     }
 
@@ -186,8 +186,8 @@ contract CanReceiveApproval {
 
 
     function bytesToBytes4(bytes b) internal pure returns (bytes4 out) {
-        for (uint i = 0; i &lt; 4; i++) {
-            out |= bytes4(b[i] &amp; 0xFF) &gt;&gt; (i &lt;&lt; 3);
+        for (uint i = 0; i < 4; i++) {
+            out |= bytes4(b[i] & 0xFF) >> (i << 3);
         }
     }
 
@@ -217,8 +217,8 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
         uint ownerPlantationIndex;
     }
 
-    string public constant name = &quot;Unicorn Land&quot;;
-    string public constant symbol = &quot;Land&quot;;
+    string public constant name = "Unicorn Land";
+    string public constant symbol = "Land";
     uint8 public constant decimals = 0;
 
     uint256 totalSupply_;
@@ -228,22 +228,22 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
     uint public constant plantedRate = 1 ether;
     //uint public constant priceRate = 1 ether;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; uint256) planted;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) internal allowed;
+    mapping(address => uint256) planted;
 
-    mapping(uint =&gt; Gardener) public gardeners;
+    mapping(uint => Gardener) public gardeners;
     // Mapping from garden ID to Garde struct
-    mapping(uint =&gt; Garden) public gardens;
+    mapping(uint => Garden) public gardens;
 
-    // garden index =&gt; gardenId
-    mapping(uint =&gt; uint) public plantation;
+    // garden index => gardenId
+    mapping(uint => uint) public plantation;
     uint public plantationSize = 0;
 
     //user plantations
-    // owner =&gt; array (index =&gt; gardenId)
-    mapping(address =&gt; mapping(uint =&gt; uint)) public ownerPlantation;
-    mapping(address =&gt; uint) public ownerPlantationSize;
+    // owner => array (index => gardenId)
+    mapping(address => mapping(uint => uint)) public ownerPlantation;
+    mapping(address => uint) public ownerPlantationSize;
 
 
     uint gardenerId = 0;
@@ -259,7 +259,7 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
     event TokensTransferred(address wallet, uint value);
 
     function CandyLand(address _landManagementAddress) LandAccessControl(_landManagementAddress) public {
-        allowedFuncs[bytes4(keccak256(&quot;_receiveMakePlant(address,uint256,uint256)&quot;))] = true;
+        allowedFuncs[bytes4(keccak256("_receiveMakePlant(address,uint256,uint256)"))] = true;
 
         addGardener(24,   700000000000000000);
         addGardener(120, 3000000000000000000);
@@ -281,8 +281,8 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender].sub(planted[msg.sender]));
-        require(balances[_to].add(_value) &lt;= userRank.getUserLandLimit(_to));
+        require(_value <= balances[msg.sender].sub(planted[msg.sender]));
+        require(balances[_to].add(_value) <= userRank.getUserLandLimit(_to));
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -305,9 +305,9 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from].sub(planted[_from]));
-        require(_value &lt;= allowed[_from][msg.sender]);
-        require(balances[_to].add(_value) &lt;= userRank.getUserLandLimit(_to));
+        require(_value <= balances[_from].sub(planted[_from]));
+        require(_value <= allowed[_from][msg.sender]);
+        require(balances[_to].add(_value) <= userRank.getUserLandLimit(_to));
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -334,7 +334,7 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -345,9 +345,9 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
     function transferFromSystem(address _from, address _to, uint256 _value) onlyUnicornContract public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from].sub(planted[_from]));
-        //    require(_value &lt;= balances[_from]);
-        require(balances[_to].add(_value) &lt;= userRank.getUserLandLimit(_to));
+        require(_value <= balances[_from].sub(planted[_from]));
+        //    require(_value <= balances[_from]);
+        require(balances[_to].add(_value) <= userRank.getUserLandLimit(_to));
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -356,8 +356,8 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
     }
 
     function mint(address _to, uint256 _amount) onlyUnicornContract public returns (bool) {
-        require(totalSupply_.add(_amount) &lt;= MAX_SUPPLY);
-        require(balances[_to].add(_amount) &lt;= userRank.getUserLandLimit(_to));
+        require(totalSupply_.add(_amount) <= MAX_SUPPLY);
+        require(balances[_to].add(_amount) <= userRank.getUserLandLimit(_to));
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Mint(_to, _amount);
@@ -377,11 +377,11 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
 
     function _makePlant(address _owner, uint _count, uint _gardenerId) internal {
-        require(_count &lt;= balances[_owner].sub(planted[_owner]) &amp;&amp; _count &gt; 0);
+        require(_count <= balances[_owner].sub(planted[_owner]) && _count > 0);
 
         //require(candyToken.transferFrom(msg.sender, this, _count.mul(priceRate)));
 
-        if (_gardenerId &gt; 0) {
+        if (_gardenerId > 0) {
             require(gardeners[_gardenerId].exists);
             require(candyToken.transferFrom(_owner, this, gardeners[_gardenerId].price.mul(_count)));
         }
@@ -408,16 +408,16 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
     function getCrop(uint _gardenId) public {
         require(msg.sender == gardens[_gardenId].owner);
-        require(now &gt;= gardens[_gardenId].lastCropTime.add(plantedTime));
+        require(now >= gardens[_gardenId].lastCropTime.add(plantedTime));
 
         uint crop = 0;
         uint cropCount = 1;
         uint remainingCrops = 0;
 
-        if (gardens[_gardenId].gardenerId &gt; 0) {
+        if (gardens[_gardenId].gardenerId > 0) {
             uint finishTime = gardens[_gardenId].startTime.add(gardeners[gardens[_gardenId].gardenerId].period);
             //время текущей сбоки урожая
-            uint currentCropTime = now &lt; finishTime ? now : finishTime;
+            uint currentCropTime = now < finishTime ? now : finishTime;
             //количество урожаев которое соберем сейчас
             cropCount = currentCropTime.sub(gardens[_gardenId].lastCropTime).div(plantedTime);
             //время последней сборки урожая + время 1 урожая на количество урожаев которое соберем сейчас
@@ -496,7 +496,7 @@ contract CandyLand is ERC20, LandAccessControl, CanReceiveApproval {
 
 
     function withdrawTokens() onlyManager public {
-        require(candyToken.balanceOf(this) &gt; 0);
+        require(candyToken.balanceOf(this) > 0);
         candyToken.transfer(landManagement.walletAddress(), candyToken.balanceOf(this));
         emit TokensTransferred(landManagement.walletAddress(), candyToken.balanceOf(this));
     }

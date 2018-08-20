@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -118,7 +118,7 @@ contract BuildingStatus is Ownable {
  * Manager that stores permitted addresses 
  */
 contract PermissionManager is Ownable {
-    mapping (address =&gt; bool) permittedAddresses;
+    mapping (address => bool) permittedAddresses;
 
     function addAddress(address newAddress) public onlyOwner {
         permittedAddresses[newAddress] = true;
@@ -338,9 +338,9 @@ contract Object is BuildingStatus {
   }
 
   function setProperty(string property, string typeArg, uint intVal, string strVal) public onlyObserver {
-    string memory set = &quot;set&quot;;
-    string memory s = &quot;(&quot;;
-    string memory s2 = &quot;)&quot;;
+    string memory set = "set";
+    string memory s = "(";
+    string memory s2 = ")";
     bytes memory _ba = bytes(set);
     bytes memory _bb = bytes(property);
     bytes memory _t = bytes(typeArg);
@@ -350,15 +350,15 @@ contract Object is BuildingStatus {
     bytes memory babcde = bytes(ab);
     uint k = 0;
 
-    for (uint i = 0; i &lt; _ba.length; i++) {
+    for (uint i = 0; i < _ba.length; i++) {
       babcde[k++] = _ba[i];
     }
-    for (i = 0; i &lt; _bb.length; i++) {
+    for (i = 0; i < _bb.length; i++) {
       babcde[k++] = _bb[i];
     }
     babcde[k++] = _s[0];
 
-    for (i = 0; i &lt; _t.length; i++) {
+    for (i = 0; i < _t.length; i++) {
       babcde[k++] = _t[i];
     }
 

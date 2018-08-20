@@ -13,7 +13,7 @@ pragma solidity ^0.4.24;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.23; */
 
@@ -72,7 +72,7 @@ contract DSAuth is DSAuthEvents {
 }
 
 ////// lib/ds-stop/lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ contract DSAuth is DSAuthEvents {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.23; */
 
@@ -130,12 +130,12 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.23; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
-/* import &quot;ds-note/note.sol&quot;; */
+/* import "ds-auth/auth.sol"; */
+/* import "ds-note/note.sol"; */
 
 contract DSStop is DSNote, DSAuth {
 
@@ -170,13 +170,13 @@ contract DSStop is DSNote, DSAuth {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.24; */
 
-/* import &quot;ds-auth/auth.sol&quot;; */
-/* import &quot;ds-stop/stop.sol&quot;; */
-// import &quot;ds-value/value.sol&quot;;
+/* import "ds-auth/auth.sol"; */
+/* import "ds-stop/stop.sol"; */
+// import "ds-value/value.sol";
 
 interface DSValue {
     function peek() external returns (bytes32,bool);
@@ -219,7 +219,7 @@ contract OSM is DSAuth, DSStop {
     }
 
     function step(uint16 ts) external auth {
-        require(ts &gt; 0);
+        require(ts > 0);
         hop = ts;
     }
 
@@ -229,7 +229,7 @@ contract OSM is DSAuth, DSStop {
     }
 
     function pass() public view returns (bool ok) {
-        return era() &gt;= zzz + hop;
+        return era() >= zzz + hop;
     }
 
     function poke() external stoppable {

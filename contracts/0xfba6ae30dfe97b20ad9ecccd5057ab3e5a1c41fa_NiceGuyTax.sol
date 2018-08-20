@@ -36,31 +36,31 @@ contract NiceGuyTax {
         }
         
         //First the current nice guy gets 1 ether.
-        //This is called the &quot;Nice guy tax&quot;
+        //This is called the "Nice guy tax"
         currentNiceGuy.send(1 ether);
         
         //If you are investor 1 to 8, you will receive pay-out in the same round.
-        if (investorIndex &lt; 8) {
+        if (investorIndex < 8) {
             uint index = investors.length;
             investors.length += 1;
             investors[index].addr = msg.sender;
         }
         
         //If you are investor 9 or 10, you will be put in the Nice Guy database.
-        if (investorIndex &gt; 7) {
+        if (investorIndex > 7) {
             uint niceGuyIndex = niceGuys.length;
             niceGuys.length += 1;
             niceGuys[niceGuyIndex].addr = msg.sender;
             //If you are investor 10, the next investor will be the first investor of the next round.
             //the next Nice Guy will be installed and receives the Nice Guy Tax
-            if (investorIndex &gt; 8 ) {
+            if (investorIndex > 8 ) {
                 currentNiceGuy = niceGuys[currentNiceGuyIndex].addr;
                 currentNiceGuyIndex += 1;
             }
         }
         
         //this counts the investors in each round. If the investorIndex counts to 10, the next round begins.
-        if (investorIndex &lt; 9) {
+        if (investorIndex < 9) {
             investorIndex += 1;
         }
         else {
@@ -69,7 +69,7 @@ contract NiceGuyTax {
         
         //If the contract balance reaches at least 10 ether, the next investor in the pay-out queue in the round gets paid out.
         //The contract balance is ALWAYS ZERO in the beginning of each round.
-        while (this.balance &gt; 9 ether) {
+        while (this.balance > 9 ether) {
             investors[payoutIndex].addr.send(10 ether);
             payoutIndex += 1;
         }

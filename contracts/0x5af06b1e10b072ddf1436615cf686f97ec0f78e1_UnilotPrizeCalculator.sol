@@ -56,7 +56,7 @@ contract UnilotPrizeCalculator {
     {
         var (numWinners, numFixedAmountWinners) = getNumWinners(numPlayers);
 
-        require( uint(numWinners + numFixedAmountWinners) &lt;= prizes.length );
+        require( uint(numWinners + numFixedAmountWinners) <= prizes.length );
 
         uint[] memory y = new uint[]((numWinners - 1));
         uint z = 0; // Sum of all Y values
@@ -65,23 +65,23 @@ contract UnilotPrizeCalculator {
             prizes[0] = getPrizeAmount(uint(bet*numPlayers));
 
             return prizes;
-        } else if ( numWinners &lt; 1 ) {
+        } else if ( numWinners < 1 ) {
             return prizes;
         }
 
-        for (uint i = 0; i &lt; y.length; i++) {
+        for (uint i = 0; i < y.length; i++) {
             y[i] = formula( (calculateStep(numWinners) * i) );
             z += y[i];
         }
 
         bool stop = false;
 
-        for (i = 0; i &lt; 10; i++) {
+        for (i = 0; i < 10; i++) {
             uint[5] memory chunk = distributePrizeCalculation(
                 i, z, y, numPlayers, bet);
 
-            for ( uint j = 0; j &lt; chunk.length; j++ ) {
-                if ( ( (i * chunk.length) + j ) &gt;= ( numWinners + numFixedAmountWinners ) ) {
+            for ( uint j = 0; j < chunk.length; j++ ) {
+                if ( ( (i * chunk.length) + j ) >= ( numWinners + numFixedAmountWinners ) ) {
                     stop = true;
                     break;
                 }
@@ -111,8 +111,8 @@ contract UnilotPrizeCalculator {
 
         uint startPoint = chunkNumber * prizes.length;
 
-        for ( uint i = 0; i &lt; prizes.length; i++ ) {
-            if ( i &gt;= uint(numWinners + numFixedAmountWinners) ) {
+        for ( uint i = 0; i < prizes.length; i++ ) {
+            if ( i >= uint(numWinners + numFixedAmountWinners) ) {
                 break;
             }
             prizes[ i ] = (bet * minPrizeCoeficent);
@@ -120,9 +120,9 @@ contract UnilotPrizeCalculator {
 
             if ( i == ( numWinners - 1 ) ) {
                 extraPrize = undeligatedAmount;
-            } else if ( i == 0 &amp;&amp; chunkNumber == 0 ) {
+            } else if ( i == 0 && chunkNumber == 0 ) {
                 extraPrize = mainWinnerBaseAmount;
-            } else if ( ( startPoint + i ) &lt; numWinners ) {
+            } else if ( ( startPoint + i ) < numWinners ) {
                 extraPrize = ( ( y[ ( startPoint + i ) - 1 ] * (prizeAmountForDeligation - mainWinnerBaseAmount) ) / z);
             }
 

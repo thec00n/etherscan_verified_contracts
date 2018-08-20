@@ -42,12 +42,12 @@ contract ERC20StandardToken is IERC20StandardToken{
         FALSE: return false
     */
     function transfer(address _to, uint256 _value) external returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
-        //if (_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; (balances[_to] + _value) &gt; balances[_to]) {
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
+        //if (_value > 0 && balances[msg.sender] >= _value && (balances[_to] + _value) > balances[_to]) {
         
-        //If transferAmount &gt; 0 and balance &gt;= transferAmount
-        if (_value &gt; 0 &amp;&amp; balances[msg.sender] &gt;= _value) {
+        //If transferAmount > 0 and balance >= transferAmount
+        if (_value > 0 && balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             emit Transfer(msg.sender, _to, _value);
@@ -57,8 +57,8 @@ contract ERC20StandardToken is IERC20StandardToken{
 
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -81,8 +81,8 @@ contract ERC20StandardToken is IERC20StandardToken{
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -105,8 +105,8 @@ contract TKDToken is ERC20StandardToken {
     uint256 private constant TOTAL_MARKETING_AMOUNT = 2000000 * DECIMALS_AMOUNT;
  
     //TOKEN INFORMATION
-    string public name = &quot;TKDToken&quot;;                   
-    string public symbol =&quot;TKD&quot;;
+    string public name = "TKDToken";                   
+    string public symbol ="TKD";
  
     uint8 public decimals =  18;
     address public fundsWallet;
@@ -126,7 +126,7 @@ contract TKDToken is ERC20StandardToken {
     
     function() public payable{
         uint256 ethReceiveAmount = msg.value;
-        require(ethReceiveAmount &gt; 0);
+        require(ethReceiveAmount > 0);
         
         address tokenReceiveAddress = msg.sender;
         
@@ -143,9 +143,9 @@ contract TKDToken is ERC20StandardToken {
             tokenSendAmount = TOTAL_MARKETING_AMOUNT;
         }
         
-        require(tokenSendAmount &gt; 0);
+        require(tokenSendAmount > 0);
         //Enough token to send
-        require(balances[fundsWallet] &gt;= tokenSendAmount);
+        require(balances[fundsWallet] >= tokenSendAmount);
         
         //Transfer
         balances[fundsWallet] -= tokenSendAmount;
@@ -163,10 +163,10 @@ contract TKDToken is ERC20StandardToken {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { assert(false); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { assert(false); }
         return true;
     }
 }

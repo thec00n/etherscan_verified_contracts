@@ -14,18 +14,18 @@ contract ERC20 {
 
 contract StandardToken is ERC20 {
 
-  string public constant name = &quot;testcbs&quot;;
-  string public constant symbol = &quot;KKL&quot;;
+  string public constant name = "testcbs";
+  string public constant symbol = "KKL";
   uint8 public constant decimals = 18; 
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-  mapping (address =&gt; uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
+  mapping (address => uint) balances;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] +=_value;
     balances[_from] -= _value;

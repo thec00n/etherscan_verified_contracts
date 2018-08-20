@@ -40,12 +40,12 @@ contract SafeMath {
 
     function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
     function safeSub(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -73,7 +73,7 @@ contract TokenHolder is Owned {
     function TokenHolder() {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -94,7 +94,7 @@ contract StandardToken is SmartToken,SafeMath {
     string public name;
     uint8 public decimals=18;
     string public symbol;
-    string public version = &#39;V0.1&#39;;
+    string public version = 'V0.1';
     uint256 public totalSupply=0;
 
     bool public transferEnabled=false;
@@ -103,7 +103,7 @@ contract StandardToken is SmartToken,SafeMath {
         symbol = _symbol;
     }
     function transfer(address _to, uint256 _value) transferAllowed returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -112,7 +112,7 @@ contract StandardToken is SmartToken,SafeMath {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) transferAllowed returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -135,8 +135,8 @@ contract StandardToken is SmartToken,SafeMath {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**

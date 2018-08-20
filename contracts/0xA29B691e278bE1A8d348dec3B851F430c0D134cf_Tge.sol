@@ -22,20 +22,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,7 +43,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -52,7 +52,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -75,7 +75,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -86,8 +86,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -252,7 +252,7 @@ contract MintableToken is StandardToken, Ownable {
   }
 
   function mint(address _to, uint256 _amount) public returns (bool) {
-    require(msg.sender == saleAgent &amp;&amp; !mintingFinished);
+    require(msg.sender == saleAgent && !mintingFinished);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
@@ -264,7 +264,7 @@ contract MintableToken is StandardToken, Ownable {
    * @return True if the operation was successful.
    */
   function finishMinting() public returns (bool) {
-    require((msg.sender == saleAgent || msg.sender == owner) &amp;&amp; !mintingFinished);
+    require((msg.sender == saleAgent || msg.sender == owner) && !mintingFinished);
     mintingFinished = true;
     MintFinished();
     return true;
@@ -298,42 +298,42 @@ contract StagedCrowdsale is Pausable {
   //period in days of sale
   uint public period;
 
-  //sale&#39;s hardcap
+  //sale's hardcap
   uint public totalHardcap;
  
   //total invested so far in the sale in wei
   uint public totalInvested;
 
-  //sale&#39;s softcap
+  //sale's softcap
   uint public softcap;
 
-  //sale&#39;s stages
+  //sale's stages
   Stage[] public stages;
 
   event MilestoneAdded(uint hardcap, uint price);
 
   modifier saleIsOn() {
-    require(stages.length &gt; 0 &amp;&amp; now &gt;= start &amp;&amp; now &lt; lastSaleDate());
+    require(stages.length > 0 && now >= start && now < lastSaleDate());
     _;
   }
 
   modifier saleIsFinished() {
-    require(totalInvested &gt;= softcap || now &gt; lastSaleDate());
+    require(totalInvested >= softcap || now > lastSaleDate());
     _;
   }
   
   modifier isUnderHardcap() {
-    require(totalInvested &lt;= totalHardcap);
+    require(totalInvested <= totalHardcap);
     _;
   }
 
   modifier saleIsUnsuccessful() {
-    require(totalInvested &lt; softcap || now &gt; lastSaleDate());
+    require(totalInvested < softcap || now > lastSaleDate());
     _;
   }
 
   /**
-    * counts current sale&#39;s stages
+    * counts current sale's stages
     */
   function stagesCount() public constant returns(uint) {
     return stages.length;
@@ -344,7 +344,7 @@ contract StagedCrowdsale is Pausable {
     * @param newSoftcap new softcap
     */
   function setSoftcap(uint newSoftcap) public onlyOwner {
-    require(newSoftcap &gt; 0);
+    require(newSoftcap > 0);
     softcap = newSoftcap.mul(1 ether);
   }
 
@@ -366,11 +366,11 @@ contract StagedCrowdsale is Pausable {
 
   /**
     * adds stage to sale
-    * @param hardcap stage&#39;s hardcap in ethers
-    * @param price stage&#39;s price
+    * @param hardcap stage's hardcap in ethers
+    * @param price stage's price
     */
   function addStage(uint hardcap, uint price) public onlyOwner {
-    require(hardcap &gt; 0 &amp;&amp; price &gt; 0);
+    require(hardcap > 0 && price > 0);
     Stage memory stage = Stage(hardcap.mul(1 ether), price, 0, 0);
     stages.push(stage);
     totalHardcap = totalHardcap.add(stage.hardcap);
@@ -382,11 +382,11 @@ contract StagedCrowdsale is Pausable {
     * @param number index of item to delete
     */
   function removeStage(uint8 number) public onlyOwner {
-    require(number &gt;= 0 &amp;&amp; number &lt; stages.length);
+    require(number >= 0 && number < stages.length);
     Stage storage stage = stages[number];
     totalHardcap = totalHardcap.sub(stage.hardcap);    
     delete stages[number];
-    for (uint i = number; i &lt; stages.length - 1; i++) {
+    for (uint i = number; i < stages.length - 1; i++) {
       stages[i] = stages[i+1];
     }
     stages.length--;
@@ -395,11 +395,11 @@ contract StagedCrowdsale is Pausable {
   /**
     * updates stage
     * @param number index of item to update
-    * @param hardcap stage&#39;s hardcap in ethers
-    * @param price stage&#39;s price
+    * @param hardcap stage's hardcap in ethers
+    * @param price stage's price
     */
   function changeStage(uint8 number, uint hardcap, uint price) public onlyOwner {
-    require(number &gt;= 0 &amp;&amp; number &lt; stages.length);
+    require(number >= 0 && number < stages.length);
     Stage storage stage = stages[number];
     totalHardcap = totalHardcap.sub(stage.hardcap);    
     stage.hardcap = hardcap.mul(1 ether);
@@ -410,15 +410,15 @@ contract StagedCrowdsale is Pausable {
   /**
     * inserts stage
     * @param numberAfter index to insert
-    * @param hardcap stage&#39;s hardcap in ethers
-    * @param price stage&#39;s price
+    * @param hardcap stage's hardcap in ethers
+    * @param price stage's price
     */
   function insertStage(uint8 numberAfter, uint hardcap, uint price) public onlyOwner {
-    require(numberAfter &lt; stages.length);
+    require(numberAfter < stages.length);
     Stage memory stage = Stage(hardcap.mul(1 ether), price, 0, 0);
     totalHardcap = totalHardcap.add(stage.hardcap);
     stages.length++;
-    for (uint i = stages.length - 2; i &gt; numberAfter; i--) {
+    for (uint i = stages.length - 2; i > numberAfter; i--) {
       stages[i + 1] = stages[i];
     }
     stages[numberAfter + 1] = stage;
@@ -428,7 +428,7 @@ contract StagedCrowdsale is Pausable {
     * deletes all stages
     */
   function clearStages() public onlyOwner {
-    for (uint i = 0; i &lt; stages.length; i++) {
+    for (uint i = 0; i < stages.length; i++) {
       delete stages[i];
     }
     stages.length -= stages.length;
@@ -446,7 +446,7 @@ contract StagedCrowdsale is Pausable {
     * returns index of current stage
     */
   function currentStage() public saleIsOn isUnderHardcap constant returns(uint) {
-    for(uint i = 0; i &lt; stages.length; i++) {
+    for(uint i = 0; i < stages.length; i++) {
       if(stages[i].closed == 0) {
         return i;
       }
@@ -486,13 +486,13 @@ contract CommonSale is StagedCrowdsale {
   address public directMintAgent;
 
   // How much ETH each address has invested in crowdsale
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   // How much tokens crowdsale has credited for each investor address
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   // Crowdsale contributors
-  mapping (uint =&gt; address) public contributors;
+  mapping (uint => address) public contributors;
 
   // Crowdsale unique contributors number
   uint public uniqueContributors;  
@@ -580,7 +580,7 @@ contract CommonSale is StagedCrowdsale {
 
   /**
     * mints directly from network
-    * @param to invesyor&#39;s adress to transfer the minted tokens to
+    * @param to invesyor's adress to transfer the minted tokens to
     * @param investedWei number of wei invested
     */
   function directMint(address to, uint investedWei) public onlyDirectMintAgentOrOwner saleIsOn {
@@ -592,7 +592,7 @@ contract CommonSale is StagedCrowdsale {
     * splits investment into master and slave wallets for security reasons
     */
   function createTokens() public whenNotPaused payable {
-    require(msg.value &gt;= minInvestment);
+    require(msg.value >= minInvestment);
     uint masterValue = msg.value.mul(percentRate.sub(slaveWalletPercent)).div(percentRate);
     uint slaveValue = msg.value.sub(masterValue);
     masterWallet.transfer(masterValue);
@@ -603,7 +603,7 @@ contract CommonSale is StagedCrowdsale {
 
   /**
     * Calculates and records contributions
-    * @param to invesyor&#39;s adress to transfer the minted tokens to
+    * @param to invesyor's adress to transfer the minted tokens to
     * @param weiInvested number of wei invested
     */
   function calculateAndMintTokens(address to, uint weiInvested) internal {
@@ -624,7 +624,7 @@ contract CommonSale is StagedCrowdsale {
     totalInvested = totalInvested.add(weiInvested);
     stage.invested = stage.invested.add(weiInvested);
     //check if cap of staged is reached
-    if(stage.invested &gt;= stage.hardcap) {
+    if(stage.invested >= stage.hardcap) {
       stage.closed = now;
     }
   }
@@ -671,7 +671,7 @@ contract CommonSale is StagedCrowdsale {
 
 contract WhiteListToken is CommonSale {
 
-  mapping(address =&gt; bool)  public whiteList;
+  mapping(address => bool)  public whiteList;
 
   modifier onlyIfWhitelisted() {
     require(whiteList[msg.sender]);
@@ -683,7 +683,7 @@ contract WhiteListToken is CommonSale {
   }
 
   function addAddressesToWhitelist(address[] _addresses) public onlyDirectMintAgentOrOwner {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       addToWhiteList(_addresses[i]);
     }
   }
@@ -693,7 +693,7 @@ contract WhiteListToken is CommonSale {
   }
 
   function deleteAddressesFromWhitelist(address[] _addresses) public onlyDirectMintAgentOrOwner {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       deleteFromWhiteList(_addresses[i]);
     }
   }
@@ -703,22 +703,22 @@ contract WhiteListToken is CommonSale {
 contract MYTCToken is MintableToken {	
     
   //Token name
-  string public constant name = &quot;MYTC&quot;;
+  string public constant name = "MYTC";
    
   //Token symbol
-  string public constant symbol = &quot;MYTC&quot;;
+  string public constant symbol = "MYTC";
     
-  //Token&#39;s number of decimals
+  //Token's number of decimals
   uint32 public constant decimals = 18;
 
   //Dictionary with locked accounts
-  mapping (address =&gt; uint) public locked;
+  mapping (address => uint) public locked;
 
   /**
     * transfer for unlocked accounts
     */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(locked[msg.sender] &lt; now);
+    require(locked[msg.sender] < now);
     return super.transfer(_to, _value);
   }
 
@@ -726,7 +726,7 @@ contract MYTCToken is MintableToken {
     * transfer from for unlocked accounts
     */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(locked[_from] &lt; now);
+    require(locked[_from] < now);
     return super.transferFrom(_from, _to, _value);
   }
   
@@ -736,7 +736,7 @@ contract MYTCToken is MintableToken {
     * @param periodInDays days to be locked
     */
   function lock(address addr, uint periodInDays) public {
-    require(locked[addr] &lt; now &amp;&amp; (msg.sender == saleAgent || msg.sender == addr));
+    require(locked[addr] < now && (msg.sender == saleAgent || msg.sender == addr));
     locked[addr] = now + periodInDays * 1 days;
   }
 
@@ -792,7 +792,7 @@ contract Tge is WhiteListToken {
   //Reserved tokens percentage
   uint public reservedTokensPercent;
   
-  //Lock period in days for team&#39;s wallet
+  //Lock period in days for team's wallet
   uint public lockPeriod;  
 
   //maximum amount of tokens ever minted
@@ -806,7 +806,7 @@ contract Tge is WhiteListToken {
   event TgeFinalized(address indexed finalizer, uint256 saleEnded);
 
   /**
-    * sets lock period in days for team&#39;s wallet
+    * sets lock period in days for team's wallet
     * @param newLockPeriod new lock period in days
     */
   function setLockPeriod(uint newLockPeriod) public onlyOwner {
@@ -814,16 +814,16 @@ contract Tge is WhiteListToken {
   }
 
   /**
-    * sets percentage for team&#39;s wallet
-    * @param newTeamTokensPercent new percentage for team&#39;s wallet
+    * sets percentage for team's wallet
+    * @param newTeamTokensPercent new percentage for team's wallet
     */
   function setTeamTokensPercent(uint newTeamTokensPercent) public onlyOwner {
     teamTokensPercent = newTeamTokensPercent;
   }
 
   /**
-    * sets percentage for bounty&#39;s wallet
-    * @param newBountyTokensPercent new percentage for bounty&#39;s wallet
+    * sets percentage for bounty's wallet
+    * @param newBountyTokensPercent new percentage for bounty's wallet
     */
   function setBountyTokensPercent(uint newBountyTokensPercent) public onlyOwner {
     bountyTokensPercent = newBountyTokensPercent;
@@ -846,16 +846,16 @@ contract Tge is WhiteListToken {
   }
 
   /**
-    * sets address for team&#39;s wallet
-    * @param newTeamTokensWallet new address for team&#39;s wallet
+    * sets address for team's wallet
+    * @param newTeamTokensWallet new address for team's wallet
     */
   function setTeamTokensWallet(address newTeamTokensWallet) public onlyOwner {
     teamTokensWallet = newTeamTokensWallet;
   }
 
   /**
-    * sets address for bountys&#39;s wallet
-    * @param newBountyTokensWallet new address for bountys&#39;s wallet
+    * sets address for bountys's wallet
+    * @param newBountyTokensWallet new address for bountys's wallet
     */
   function setBountyTokensWallet(address newBountyTokensWallet) public onlyOwner {
     bountyTokensWallet = newBountyTokensWallet;
@@ -884,7 +884,7 @@ contract Tge is WhiteListToken {
     mintTokens(teamTokensWallet, foundersTokens);
     mintTokens(bountyTokensWallet, bountyTokens); 
     uint currentSupply = token.totalSupply();
-    if (currentSupply &lt; totalTokenSupply) {
+    if (currentSupply < totalTokenSupply) {
       // send remaining tokens to reserved wallet
       mintTokens(reservedTokensWallet, totalTokenSupply.sub(currentSupply));
     }  
@@ -897,7 +897,7 @@ contract Tge is WhiteListToken {
     * Payable function
     */
   function() external onlyIfWhitelisted payable {
-    require(now &gt;= start &amp;&amp; now &lt; lastSaleDate());
+    require(now >= start && now < lastSaleDate());
     createTokens();
   }
 }

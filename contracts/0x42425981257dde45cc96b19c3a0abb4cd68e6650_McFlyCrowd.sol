@@ -3,10 +3,10 @@ pragma solidity ^0.4.19;
 /**
  * @title ERC20 Basic smart contract
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="3e535f504b5b525f4c5f51447e59535f5752105d5153">[email&#160;protected]</span>&gt;&quot;
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="3e535f504b5b525f4c5f51447e59535f5752105d5153">[email protected]</span>>"
  * @dev Simpler version of ERC20 interface
  * @dev see https://github.com/ethereum/EIPs/issues/179
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @author modification: Dmitriy Khizhinskiy @McFly.aero
  */
 contract ERC20Basic {
@@ -20,7 +20,7 @@ contract ERC20Basic {
  * @title LengthValidator smart contract - fix ERC20 short address attack
  * @author Copyright (c) 2018 McFly.aero
  * @author Dmitriy Khizhinskiy
- * @author &quot;MIT&quot;
+ * @author "MIT"
  */
 contract LengthValidator {
     modifier valid_short(uint _cntArgs) {
@@ -32,11 +32,11 @@ contract LengthValidator {
 /**
  * @title Ownable smart contract
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="f39e929d86969f9281929c89b3949e929a9fdd909c9e">[email&#160;protected]</span>&gt;&quot;
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="f39e929d86969f9281929c89b3949e929a9fdd909c9e">[email protected]</span>>"
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @author modification: Dmitriy Khizhinskiy @McFly.aero
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -87,14 +87,14 @@ contract Ownable {
  * @title MultiOwners smart contract
  * @author Copyright (c) 2018 McFly.aero
  * @author Dmitriy Khizhinskiy
- * @author &quot;MIT&quot;
+ * @author "MIT"
  */
 contract MultiOwners {
 
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
     address public publisher;
 
 
@@ -141,8 +141,8 @@ contract MultiOwners {
 /**
  * @title SafeMath
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="711c101f04141d1003101e0b31161c10181d5f121e1c">[email&#160;protected]</span>&gt;&quot;
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="711c101f04141d1003101e0b31161c10181d5f121e1c">[email protected]</span>>"
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @dev Math operations with safety checks that throw on error
  */
 library SafeMath {
@@ -163,9 +163,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -174,7 +174,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -184,7 +184,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -202,8 +202,8 @@ library SafeMath {
 /**
  * @title BasicToken smart contract
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="97faf6f9e2f2fbf6e5f6f8edd7f0faf6fefbb9f4f8fa">[email&#160;protected]</span>&gt;&quot;
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="97faf6f9e2f2fbf6e5f6f8edd7f0faf6fefbb9f4f8fa">[email protected]</span>>"
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @author modification: Dmitriy Khizhinskiy @McFly.aero
  */
 
@@ -219,7 +219,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic, LengthValidator {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -238,7 +238,7 @@ contract BasicToken is ERC20Basic, LengthValidator {
     */
     function transfer(address _to, uint256 _value) valid_short(2) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -263,8 +263,8 @@ contract BasicToken is ERC20Basic, LengthValidator {
 /**
  * @title ERC20 smart contract
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="a6cbc7c8d3c3cac7d4c7c9dce6c1cbc7cfca88c5c9cb">[email&#160;protected]</span>&gt;&quot;
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="a6cbc7c8d3c3cac7d4c7c9dce6c1cbc7cfca88c5c9cb">[email protected]</span>>"
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @author modification: Dmitriy Khizhinskiy @McFly.aero
  */
 
@@ -285,8 +285,8 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Standard ERC20 token
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="395458574c5c55584b585643795e54585055175a5654">[email&#160;protected]</span>&gt;&quot;
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="395458574c5c55584b585643795e54585055175a5654">[email protected]</span>>"
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @author modification: Dmitriy Khizhinskiy @McFly.aero
  * @dev Implementation of the basic standard token.
  * @dev https://github.com/ethereum/EIPs/issues/20
@@ -294,7 +294,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
   
     /** 
     * @dev Transfer tokens from one address to another
@@ -304,8 +304,8 @@ contract StandardToken is ERC20, BasicToken {
     */
     function transferFrom(address _from, address _to, uint256 _value) valid_short(3) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -320,7 +320,7 @@ contract StandardToken is ERC20, BasicToken {
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -372,7 +372,7 @@ contract StandardToken is ERC20, BasicToken {
     */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -386,8 +386,8 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Mintable token smart contract
  * @author Copyright (c) 2016 Smart Contract Solutions, Inc.
- * @author &quot;Manuel Araoz &lt;<span class="__cf_email__" data-cfemail="016c606f74646d6073606e7b41666c60686d2f626e6c">[email&#160;protected]</span>&gt;&quot;
- * @dev license: &quot;MIT&quot;, source: https://github.com/OpenZeppelin/zeppelin-solidity
+ * @author "Manuel Araoz <<span class="__cf_email__" data-cfemail="016c606f74646d6073606e7b41666c60686d2f626e6c">[email protected]</span>>"
+ * @dev license: "MIT", source: https://github.com/OpenZeppelin/zeppelin-solidity
  * @author modification: Dmitriy Khizhinskiy @McFly.aero
  * @dev Simple ERC20 Token example, with mintable token creation
  * @dev Issue: * https://github.com/OpenZeppelin/zeppelin-solidity/issues/120
@@ -436,15 +436,15 @@ contract MintableToken is StandardToken, Ownable {
  * @title McFly token smart contract
  * @author Copyright (c) 2018 McFly.aero
  * @author Dmitriy Khizhinskiy
- * @author &quot;MIT&quot;
+ * @author "MIT"
  */
 contract McFlyToken is MintableToken {
-    string public constant name = &quot;McFlyToken&quot;;
-    string public constant symbol = &quot;McFly&quot;;
+    string public constant name = "McFlyToken";
+    string public constant symbol = "McFly";
     uint8 public constant decimals = 18;
 
     /// @dev mapping for whitelist
-    mapping(address=&gt;bool) whitelist;
+    mapping(address=>bool) whitelist;
 
     /// @dev event throw when allowed to transfer address added to whitelist
     /// @param from address
@@ -471,7 +471,7 @@ contract McFlyToken is MintableToken {
         return super.transferFrom(from, to, value);
     }
 
-    /// @dev Do the transfer from token address to &quot;to&quot; address value
+    /// @dev Do the transfer from token address to "to" address value
     /// @param to address to
     /// @param value uint256 value
     function transfer(address to, uint256 value) canTransfer public returns (bool) {
@@ -489,7 +489,7 @@ contract McFlyToken is MintableToken {
  * @title Haltable smart contract - controls owner access
  * @author Copyright (c) 2018 McFly.aero
  * @author Dmitriy Khizhinskiy
- * @author &quot;MIT&quot;
+ * @author "MIT"
  */
 contract Haltable is MultiOwners {
     bool public halted;
@@ -525,13 +525,13 @@ contract Haltable is MultiOwners {
  * @title McFly crowdsale smart contract
  * @author Copyright (c) 2018 McFly.aero
  * @author Dmitriy Khizhinskiy
- * @author &quot;MIT&quot;
- * @dev inherited from MultiOwners &amp; Haltable
+ * @author "MIT"
+ * @dev inherited from MultiOwners & Haltable
  */
 contract McFlyCrowd is MultiOwners, Haltable {
     using SafeMath for uint256;
 
-    /// @dev Total ETH received during WAVES, TLP1.2 &amp; window[1-5]
+    /// @dev Total ETH received during WAVES, TLP1.2 & window[1-5]
     uint256 public counter_in; // tlp2
     
     /// @dev minimum ETH to partisipate in window 1-5
@@ -614,7 +614,7 @@ contract McFlyCrowd is MultiOwners, Haltable {
         address addr;
         uint256 amount;
     }
-    mapping (uint32 =&gt; Ppl) public ppls;
+    mapping (uint32 => Ppl) public ppls;
 
     /// @dev Window structure for Win1-5
     struct Window {
@@ -624,7 +624,7 @@ contract McFlyCrowd is MultiOwners, Haltable {
         uint32 refundIndex;
         uint256 tokenPerWindow;
     } 
-    mapping (uint8 =&gt; Window) public ww;
+    mapping (uint8 => Window) public ww;
 
 
     /// @dev Events
@@ -692,7 +692,7 @@ contract McFlyCrowd is MultiOwners, Haltable {
      * @param _reservedWallet - wallet for reserved vesting
      * @param _airdropWallet - wallet for airdrop
      * @param _airdropGW - wallet for airdrop GW
-     * @param _preMcFlyWallet - wallet for transfer old MFL-&gt;McFly (once)
+     * @param _preMcFlyWallet - wallet for transfer old MFL->McFly (once)
      */
     function McFlyCrowd(
         uint256 _startTimeTLP2,
@@ -712,8 +712,8 @@ contract McFlyCrowd is MultiOwners, Haltable {
         address _preMcFlyWallet
     ) public 
     {   
-        require(_startTimeTLP2 &gt;= block.timestamp);
-        require(_preMcFlyTotalSupply &gt; 0);
+        require(_startTimeTLP2 >= block.timestamp);
+        require(_preMcFlyTotalSupply > 0);
         require(_wallet != 0x0);
         require(_wavesAgent != 0x0);
         require(_wavesGW != 0x0);
@@ -791,7 +791,7 @@ contract McFlyCrowd is MultiOwners, Haltable {
      * @return false if crowd TLP2 event was ended
      */
     function withinPeriod() constant public returns (bool) {
-        bool withinPeriodTLP2 = (now &gt;= sT2 &amp;&amp; now &lt;= (sT2+dTLP2));
+        bool withinPeriodTLP2 = (now >= sT2 && now <= (sT2+dTLP2));
         return withinPeriodTLP2;
     }
 
@@ -801,7 +801,7 @@ contract McFlyCrowd is MultiOwners, Haltable {
      * @return false if crowd event was ended
      */
     function running() constant public returns (bool) {
-        return withinPeriod() &amp;&amp; !token.mintingFinished();
+        return withinPeriod() && !token.mintingFinished();
     }
 
 
@@ -812,20 +812,20 @@ contract McFlyCrowd is MultiOwners, Haltable {
     function stageName() constant public returns (uint8) {
         uint256 eT2 = sT2+dTLP2;
 
-        if (now &lt; sT2) {return 101;} // not started
-        if (now &gt;= sT2 &amp;&amp; now &lt;= eT2) {return (102);} // TLP1.2
+        if (now < sT2) {return 101;} // not started
+        if (now >= sT2 && now <= eT2) {return (102);} // TLP1.2
 
-        if (now &gt; eT2 &amp;&amp; now &lt; eT2+dBt) {return (103);} // preTLP1.3
-        if (now &gt;= (eT2+dBt) &amp;&amp; now &lt;= (eT2+dBt+dW)) {return (0);} // TLP1.3
-        if (now &gt; (eT2+dBt+dW) &amp;&amp; now &lt; (eT2+dBt+dW+dBt)) {return (104);} // preTLP1.4
-        if (now &gt;= (eT2+dBt+dW+dBt) &amp;&amp; now &lt;= (eT2+dBt+dW+dBt+dW)) {return (1);} // TLP1.4
-        if (now &gt; (eT2+dBt+dW+dBt+dW) &amp;&amp; now &lt; (eT2+dBt+dW+dBt+dW+dBt)) {return (105);} // preTLP1.5
-        if (now &gt;= (eT2+dBt+dW+dBt+dW+dBt) &amp;&amp; now &lt;= (eT2+dBt+dW+dBt+dW+dBt+dW)) {return (2);} // TLP1.5
-        if (now &gt; (eT2+dBt+dW+dBt+dW+dBt+dW) &amp;&amp; now &lt; (eT2+dBt+dW+dBt+dW+dBt+dW+dBt)) {return (106);} // preTLP1.6
-        if (now &gt;= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt) &amp;&amp; now &lt;= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW)) {return (3);} // TLP1.6
-        if (now &gt; (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW) &amp;&amp; now &lt; (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt)) {return (107);} // preTLP1.7
-        if (now &gt;= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt) &amp;&amp; now &lt;= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt+dW)) {return (4);} // TLP1.7&quot;
-        if (now &gt; (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt+dW)) {return (200);} // Finished
+        if (now > eT2 && now < eT2+dBt) {return (103);} // preTLP1.3
+        if (now >= (eT2+dBt) && now <= (eT2+dBt+dW)) {return (0);} // TLP1.3
+        if (now > (eT2+dBt+dW) && now < (eT2+dBt+dW+dBt)) {return (104);} // preTLP1.4
+        if (now >= (eT2+dBt+dW+dBt) && now <= (eT2+dBt+dW+dBt+dW)) {return (1);} // TLP1.4
+        if (now > (eT2+dBt+dW+dBt+dW) && now < (eT2+dBt+dW+dBt+dW+dBt)) {return (105);} // preTLP1.5
+        if (now >= (eT2+dBt+dW+dBt+dW+dBt) && now <= (eT2+dBt+dW+dBt+dW+dBt+dW)) {return (2);} // TLP1.5
+        if (now > (eT2+dBt+dW+dBt+dW+dBt+dW) && now < (eT2+dBt+dW+dBt+dW+dBt+dW+dBt)) {return (106);} // preTLP1.6
+        if (now >= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt) && now <= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW)) {return (3);} // TLP1.6
+        if (now > (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW) && now < (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt)) {return (107);} // preTLP1.7
+        if (now >= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt) && now <= (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt+dW)) {return (4);} // TLP1.7"
+        if (now > (eT2+dBt+dW+dBt+dW+dBt+dW+dBt+dW+dBt+dW)) {return (200);} // Finished
         return (201); // unknown
     }
 
@@ -881,12 +881,12 @@ contract McFlyCrowd is MultiOwners, Haltable {
 
 
     /**
-     * @dev set TLP1.X (2-7) start &amp; end dates
+     * @dev set TLP1.X (2-7) start & end dates
      * @param _at - new or old start date
      */
     function setStartEndTimeTLP(uint256 _at) onlyOwner public {
-        require(block.timestamp &lt; sT2); // forbid change time when TLP1.2 is active
-        require(block.timestamp &lt; _at); // should be great than current block timestamp
+        require(block.timestamp < sT2); // forbid change time when TLP1.2 is active
+        require(block.timestamp < _at); // should be great than current block timestamp
 
         sT2 = _at;
         SetStartTimeTLP2(_at);
@@ -900,9 +900,9 @@ contract McFlyCrowd is MultiOwners, Haltable {
      */
     function fundMinting(address to, uint256 amount) stopInEmergency public {
         require(msg.sender == fundMintingAgent || isOwner());
-        require(block.timestamp &lt; sT2);
-        require(fundTotalSupply + amount &lt;= fundTokens);
-        require(token.totalSupply() + amount &lt;= hardCapInTokens);
+        require(block.timestamp < sT2);
+        require(fundTotalSupply + amount <= fundTokens);
+        require(token.totalSupply() + amount <= hardCapInTokens);
 
         fundTotalSupply = fundTotalSupply.add(amount);
         token.mint(to, amount);
@@ -927,20 +927,20 @@ contract McFlyCrowd is MultiOwners, Haltable {
         uint256 estimate;
         uint256 price;
         
-        if (at &gt;= sT2 &amp;&amp; at &lt;= (sT2+dTLP2)) {
-            if (at &lt;= sT2 + 15 days) {price = 12e13;} else if (at &lt;= sT2 + 30 days) {
-                price = 14e13;} else if (at &lt;= sT2 + 45 days) {
-                    price = 16e13;} else if (at &lt;= sT2 + 60 days) {
-                        price = 18e13;} else if (at &lt;= sT2 + 75 days) {
-                            price = 20e13;} else if (at &lt;= sT2 + 90 days) {
-                                price = 22e13;} else if (at &lt;= sT2 + 105 days) {
-                                    price = 24e13;} else if (at &lt;= sT2 + 118 days) {
+        if (at >= sT2 && at <= (sT2+dTLP2)) {
+            if (at <= sT2 + 15 days) {price = 12e13;} else if (at <= sT2 + 30 days) {
+                price = 14e13;} else if (at <= sT2 + 45 days) {
+                    price = 16e13;} else if (at <= sT2 + 60 days) {
+                        price = 18e13;} else if (at <= sT2 + 75 days) {
+                            price = 20e13;} else if (at <= sT2 + 90 days) {
+                                price = 22e13;} else if (at <= sT2 + 105 days) {
+                                    price = 24e13;} else if (at <= sT2 + 118 days) {
                                         price = 26e13;} else {revert();}
         } else {revert();}
 
         estimate = _totalSupply.add(amount.mul(1e18).div(price));
 
-        if (estimate &gt; hardCapInTokens) {
+        if (estimate > hardCapInTokens) {
             return (
                 hardCapInTokens.sub(_totalSupply),
                 estimate.sub(hardCapInTokens).mul(price).div(1e18)
@@ -977,7 +977,7 @@ contract McFlyCrowd is MultiOwners, Haltable {
         
             (amount, oddEthers) = calcAmountAt(msg.value, _at, token.totalSupply());  // recheck!!!
   
-            require(amount + token.totalSupply() &lt;= hardCapInTokens);
+            require(amount + token.totalSupply() <= hardCapInTokens);
 
             ethers = msg.value.sub(oddEthers);
 
@@ -986,20 +986,20 @@ contract McFlyCrowd is MultiOwners, Haltable {
             counter_in = counter_in.add(ethers);
             crowdTokensTLP2 = crowdTokensTLP2.add(amount);
 
-            if (oddEthers &gt; 0) {
-                require(oddEthers &lt; msg.value);
+            if (oddEthers > 0) {
+                require(oddEthers < msg.value);
                 contributor.transfer(oddEthers);
                 TransferOddEther(contributor, oddEthers);
             }
 
             wallet.transfer(ethers);
         } else {
-            require(msg.value &gt;= minETHin); // checks min ETH income
+            require(msg.value >= minETHin); // checks min ETH income
             _winNum = stageName();
-            require(_winNum &gt;= 0 &amp;&amp; _winNum &lt; 5);
+            require(_winNum >= 0 && _winNum < 5);
             Window storage w = ww[_winNum];
 
-            require(w.tokenPerWindow &gt; 0); // check that we have tokens!
+            require(w.tokenPerWindow > 0); // check that we have tokens!
 
             w.totalEthInWindow = w.totalEthInWindow.add(msg.value);
             ppls[w.totalTransCnt].addr = contributor;
@@ -1035,12 +1035,12 @@ contract McFlyCrowd is MultiOwners, Haltable {
         TokenETH(ww[_winNum].totalEthInWindow, ww[_winNum].totalTransCnt);
 
         require(ww[_winNum].active);
-        require(ww[_winNum].totalEthInWindow &gt; 0);
-        require(ww[_winNum].totalTransCnt &gt; 0);
+        require(ww[_winNum].totalEthInWindow > 0);
+        require(ww[_winNum].totalTransCnt > 0);
 
         _tokenPerETH = ww[_winNum].tokenPerWindow.div(ww[_winNum].totalEthInWindow); // max McFly in window / ethInWindow
 
-        while (index &lt; ww[_winNum].totalTransCnt &amp;&amp; msg.gas &gt; 100000) {
+        while (index < ww[_winNum].totalTransCnt && msg.gas > 100000) {
             _tokenToSend = _tokenPerETH.mul(ppls[index].amount);
             ppls[index].amount = 0;
             _tempAddr = ppls[index].addr;
@@ -1069,13 +1069,13 @@ contract McFlyCrowd is MultiOwners, Haltable {
      */
     function finishCrowd() onlyOwner public {
         uint256 _tokenPerWindow;
-        require(now &gt; (sT2.add(dTLP2)) || hardCapInTokens == token.totalSupply());
+        require(now > (sT2.add(dTLP2)) || hardCapInTokens == token.totalSupply());
         require(!token.mintingFinished());
 
         _tokenPerWindow = (mintCapInTokens.sub(crowdTokensTLP2).sub(fundTotalSupply)).div(5);
         token.mint(this, _tokenPerWindow.mul(5)); // mint to contract address
         // shoud be MAX tokens minted!!! 1,800,000,000
-        for (uint8 y = 0; y &lt; 5; y++) {
+        for (uint8 y = 0; y < 5; y++) {
             newWindow(y, _tokenPerWindow);
         }
 
@@ -1095,12 +1095,12 @@ contract McFlyCrowd is MultiOwners, Haltable {
         require(msg.sender == withdrawWallet || isOwner());
 
         uint256 currentPeriod = (block.timestamp.sub(sT2.add(dTLP2))).div(VestingPeriodInSeconds);
-        if (currentPeriod &gt; VestingPeriodsCount) {
+        if (currentPeriod > VestingPeriodsCount) {
             currentPeriod = VestingPeriodsCount;
         }
         uint256 tokenAvailable = withdrawTokens.mul(currentPeriod).div(VestingPeriodsCount).sub(withdrawTotalSupply);  // RECHECK!!!!!
 
-        require(withdrawTotalSupply + tokenAvailable &lt;= withdrawTokens);
+        require(withdrawTotalSupply + tokenAvailable <= withdrawTokens);
 
         uint256 _withdrawTotalSupply = withdrawTotalSupply + tokenAvailable;
 

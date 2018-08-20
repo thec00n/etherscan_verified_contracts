@@ -11,14 +11,14 @@ contract SafeMath
 
      function safeSub(uint a, uint b) internal returns (uint) 
      {
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
      }
 
      function safeAdd(uint a, uint b) internal returns (uint) 
      {
           uint c = a + b;
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
      }
 
@@ -72,15 +72,15 @@ contract Token
 contract StdToken is Token 
 {
 // Fields:
-     mapping(address =&gt; uint256) balances;
-     mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
 
      uint256 public allSupply = 0;
 
 // Functions:
      function transfer(address _to, uint256 _value) returns (bool success) 
      {
-          if((balances[msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])) 
+          if((balances[msg.sender] >= _value) && (balances[_to] + _value > balances[_to])) 
           {
                balances[msg.sender] -= _value;
                balances[_to] += _value;
@@ -96,7 +96,7 @@ contract StdToken is Token
 
      function transferFrom(address _from, address _to, uint256 _value) returns (bool success) 
      {
-          if((balances[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value) &amp;&amp; (balances[_to] + _value &gt; balances[_to])) 
+          if((balances[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (balances[_to] + _value > balances[_to])) 
           {
                balances[_to] += _value;
                balances[_from] -= _value;
@@ -138,9 +138,9 @@ contract StdToken is Token
 
 contract ZilleriumToken is StdToken
 {
-     string public name = &quot;Zillerium Token&quot;;
+     string public name = "Zillerium Token";
      uint public decimals = 18;
-     string public symbol = &quot;ZTK&quot;;
+     string public symbol = "ZTK";
 
      address public creator = 0x0;
      address public tokenClient = 0x0; // who can issue more tokens
@@ -248,7 +248,7 @@ contract ZilleriumPresale is Presale, SafeMath
 
      function transfer(address _to, uint256 _value) returns (bool success) 
      {
-          if(!presaleEnded() &amp;&amp; (msg.sender!=creator)) {
+          if(!presaleEnded() && (msg.sender!=creator)) {
                throw;
           }
 
@@ -257,7 +257,7 @@ contract ZilleriumPresale is Presale, SafeMath
      
      function transferFrom(address _from, address _to, uint256 _value) returns (bool success) 
      {
-          if(!presaleEnded() &amp;&amp; (msg.sender!=creator)) {
+          if(!presaleEnded() && (msg.sender!=creator)) {
                throw;
           }
 
@@ -283,7 +283,7 @@ contract ZilleriumPresale is Presale, SafeMath
           if(presaleEnded()) throw;
 
           uint pricePerToken = getCurrentTokenPriceWei();
-          if(msg.value&lt;pricePerToken)
+          if(msg.value<pricePerToken)
           {
                // Not enough Wei to buy at least 1 token
                throw; 
@@ -305,7 +305,7 @@ contract ZilleriumPresale is Presale, SafeMath
      }
 
      function presaleEnded() returns(bool){
-          return (presaleTotalWei&gt;=maxPresaleWei);
+          return (presaleTotalWei>=maxPresaleWei);
      }
 
      /// This function is called when someone sends money to this contract directly.

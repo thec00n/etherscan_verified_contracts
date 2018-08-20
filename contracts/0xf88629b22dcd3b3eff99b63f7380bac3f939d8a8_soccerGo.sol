@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 // v.1.0.0  2018.04.02
 contract soccerGo {
     address private owner;
-    mapping (address =&gt; bool) private admins;
+    mapping (address => bool) private admins;
     
     uint256 gameId = 0;
     address callAddr = 0x0;
@@ -25,7 +25,7 @@ contract soccerGo {
     
     // Slot 1~10 win limit settings
     function SetLimit(uint _slot, uint win_limit) onlyAdmins() public {
-        require(_slot &gt; 0 &amp;&amp; _slot &lt; 12);
+        require(_slot > 0 && _slot < 12);
         slot_limit[_slot - 1] = win_limit;
     }
     
@@ -84,11 +84,11 @@ contract soccerGo {
     public
     payable
     {
-        require(_left &gt;= 1 &amp;&amp; _left &lt;= 13);
-        require(_right &gt;= 1 &amp;&amp; _right &lt;= 13);
-        require(_right - _left &gt;= 1);
-        require(msg.value &gt;= min_value);
-        require(msg.value &lt;= max_value);
+        require(_left >= 1 && _left <= 13);
+        require(_right >= 1 && _right <= 13);
+        require(_right - _left >= 1);
+        require(msg.value >= min_value);
+        require(msg.value <= max_value);
         
         uint256 betValue = msg.value;
         uint256 result = getRandom(callAddr);
@@ -96,7 +96,7 @@ contract soccerGo {
         uint256 winValue = 0;
         gameId++;
         
-        if (result &gt; _left &amp;&amp; result &lt; _right) {
+        if (result > _left && result < _right) {
             winValue = betValue * types / 100;
             msg.sender.transfer((winValue * fee) / 100);
         }

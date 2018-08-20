@@ -66,13 +66,13 @@ contract ERC223 {
 
 contract BalanceManager is Serverable {
     /** player balances **/
-    mapping(uint32 =&gt; uint64) public balances;
+    mapping(uint32 => uint64) public balances;
     /** player blocked tokens number **/
-    mapping(uint32 =&gt; uint64) public blockedBalances;
+    mapping(uint32 => uint64) public blockedBalances;
     /** wallet balances **/
-    mapping(address =&gt; uint64) public walletBalances;
+    mapping(address => uint64) public walletBalances;
     /** adress users **/
-    mapping(address =&gt; uint32) public userIds;
+    mapping(address => uint32) public userIds;
 
     /** Dispatcher contract address **/
     address public dispatcher;
@@ -101,7 +101,7 @@ contract BalanceManager is Serverable {
      * Deposits from user
      */
     function tokenFallback(address _from, uint256 _amount, bytes _data) public {
-        if (userIds[_from] &gt; 0) {
+        if (userIds[_from] > 0) {
             balances[userIds[_from]] += uint64(_amount);
         } else {
             walletBalances[_from] += uint64(_amount);
@@ -118,7 +118,7 @@ contract BalanceManager is Serverable {
         require(_user != owner);
 
         userIds[_user] = _id;
-        if (walletBalances[_user] &gt; 0) {
+        if (walletBalances[_user] > 0) {
             balances[_id] += walletBalances[_user];
             walletBalances[_user] = 0;
         }
@@ -128,9 +128,9 @@ contract BalanceManager is Serverable {
      * Deposits tokens in game to some user
      */
     function sendTo(address _user, uint64 _amount) external {
-        require(walletBalances[msg.sender] &gt;= _amount);
+        require(walletBalances[msg.sender] >= _amount);
         walletBalances[msg.sender] -= _amount;
-        if (userIds[_user] &gt; 0) {
+        if (userIds[_user] > 0) {
             balances[userIds[_user]] += _amount;
         } else {
             walletBalances[_user] += _amount;
@@ -143,14 +143,14 @@ contract BalanceManager is Serverable {
      */
     function withdraw(uint64 _amount) external {
         uint32 userId = userIds[msg.sender];
-        if (userId &gt; 0) {
-            require(balances[userId] - blockedBalances[userId] &gt;= _amount);
+        if (userId > 0) {
+            require(balances[userId] - blockedBalances[userId] >= _amount);
             if (gameToken.transfer(msg.sender, _amount)) {
                 balances[userId] -= _amount;
                 emit Withdraw(msg.sender, _amount);
             }
         } else {
-            require(walletBalances[msg.sender] &gt;= _amount);
+            require(walletBalances[msg.sender] >= _amount);
             if (gameToken.transfer(msg.sender, _amount)) {
                 walletBalances[msg.sender] -= _amount;
                 emit Withdraw(msg.sender, _amount);
@@ -163,7 +163,7 @@ contract BalanceManager is Serverable {
      */
     function systemWithdraw(address _user, uint64 _amount) external onlyServer {
         uint32 userId = userIds[_user];
-        require(balances[userId] - blockedBalances[userId] &gt;= _amount);
+        require(balances[userId] - blockedBalances[userId] >= _amount);
 
         if (gameToken.transfer(_user, _amount)) {
             balances[userId] -= _amount;
@@ -182,10 +182,10 @@ contract BalanceManager is Serverable {
      * Dispatcher can change user balance
      */
     function spendUserBalance(uint32 _userId, uint64 _amount) external onlyDispatcher {
-        require(balances[_userId] &gt;= _amount);
+        require(balances[_userId] >= _amount);
         balances[_userId] -= _amount;
-        if (blockedBalances[_userId] &gt; 0) {
-            if (blockedBalances[_userId] &lt;= _amount)
+        if (blockedBalances[_userId] > 0) {
+            if (blockedBalances[_userId] <= _amount)
                 blockedBalances[_userId] = 0;
             else
                 blockedBalances[_userId] -= _amount;
@@ -199,11 +199,11 @@ contract BalanceManager is Serverable {
         require(_userIds.length == _amounts.length);
 
         uint64 sum = 0;
-        for (uint32 i = 0; i &lt; _amounts.length; i++)
+        for (uint32 i = 0; i < _amounts.length; i++)
             sum += _amounts[i];
 
-        require(walletBalances[owner] &gt;= sum);
-        for (i = 0; i &lt; _userIds.length; i++) {
+        require(walletBalances[owner] >= sum);
+        for (i = 0; i < _userIds.length; i++) {
             balances[_userIds[i]] += _amounts[i];
             blockedBalances[_userIds[i]] += _amounts[i];
         }
@@ -223,7 +223,7 @@ contract BalanceManager is Serverable {
      * Owner withdraw service fee tokens 
      */
     function serviceFeeWithdraw() external onlyOwner {
-        require(serviceReward &gt; 0);
+        require(serviceReward > 0);
         if (gameToken.transfer(msg.sender, serviceReward))
             serviceReward = 0;
     }
@@ -249,7 +249,7 @@ contract BrokerManager is Ownable {
 	/** server address **/
 	address public server;
 	/** invesor fees **/
-	mapping (uint32 =&gt; mapping (uint32 =&gt; InvestTerm)) public investTerms;
+	mapping (uint32 => mapping (uint32 => InvestTerm)) public investTerms;
 
 	modifier onlyServer() {require(msg.sender == server); _;}
 
@@ -261,7 +261,7 @@ contract BrokerManager is Ownable {
      * Create investition 
      */
 	function invest(uint32 _playerId, uint32 _investorId, uint64 _amount, uint16 _userFee) external onlyServer {
-		require(_amount &gt; 0 &amp;&amp; _userFee &gt; 0);
+		require(_amount > 0 && _userFee > 0);
 		investTerms[_investorId][_playerId] = InvestTerm(_amount, _userFee);
 	}
 
@@ -301,9 +301,9 @@ contract Dispatcher is BrokerManager {
     /** balance manager **/
     BalanceManager public balanceManager;
     /** player teams **/
-    mapping(uint32 =&gt; mapping(uint48 =&gt; GameTeam)) public teams;
+    mapping(uint32 => mapping(uint48 => GameTeam)) public teams;
     /** games **/
-    mapping(uint32 =&gt; Game) public games;
+    mapping(uint32 => Game) public games;
 
     constructor(address _balanceManagerAddress) public {
         balanceManager = BalanceManager(_balanceManagerAddress);
@@ -323,9 +323,9 @@ contract Dispatcher is BrokerManager {
     {
         require(
             games[_gameId].entryFee == 0
-            &amp;&amp; _gameId &gt; 0
-            &amp;&amp; _entryFee &gt; 0
-            &amp;&amp; _registrationDueDate &gt; 0
+            && _gameId > 0
+            && _entryFee > 0
+            && _registrationDueDate > 0
         );
         games[_gameId] = Game(GameState.Initialized, _entryFee, _serviceFee, _registrationDueDate, 0x0, 0x0, 0, 0);
     }
@@ -344,23 +344,23 @@ contract Dispatcher is BrokerManager {
     {
         Game storage game = games[_gameId];
         require(
-            _gameId &gt; 0
-            &amp;&amp; game.state == GameState.Initialized
-            &amp;&amp; _teamId &gt; 0
-            &amp;&amp; _userId &gt; 0
-            &amp;&amp; teams[_gameId][_teamId].userId == 0
-            &amp;&amp; game.registrationDueDate &gt; uint32(now)
+            _gameId > 0
+            && game.state == GameState.Initialized
+            && _teamId > 0
+            && _userId > 0
+            && teams[_gameId][_teamId].userId == 0
+            && game.registrationDueDate > uint32(now)
         );
 
         uint16 userFee = 0;
-        if (_sponsorId &gt; 0) {
-            require(balanceManager.balances(_sponsorId) &gt;= game.entryFee &amp;&amp; investTerms[_sponsorId][_userId].amount &gt; game.entryFee);
+        if (_sponsorId > 0) {
+            require(balanceManager.balances(_sponsorId) >= game.entryFee && investTerms[_sponsorId][_userId].amount > game.entryFee);
             balanceManager.spendUserBalance(_sponsorId, game.entryFee);
             investTerms[_sponsorId][_userId].amount -= game.entryFee;
             userFee = investTerms[_sponsorId][_userId].userFee;
         }
         else {
-            require(balanceManager.balances(_userId) &gt;= game.entryFee);
+            require(balanceManager.balances(_userId) >= game.entryFee);
             balanceManager.spendUserBalance(_userId, game.entryFee);
         }
 
@@ -375,8 +375,8 @@ contract Dispatcher is BrokerManager {
         Game storage game = games[_gameId];
         require(
             game.state == GameState.Initialized
-            &amp;&amp; _gameId &gt; 0
-        &amp;&amp; _hash != 0x0
+            && _gameId > 0
+        && _hash != 0x0
         );
 
         game.teamsHash = _hash;
@@ -389,8 +389,8 @@ contract Dispatcher is BrokerManager {
     function cancelGame(uint32 _gameId) external onlyServer {
         Game storage game = games[_gameId];
         require(
-            _gameId &gt; 0
-            &amp;&amp; game.state &lt; GameState.Finished
+            _gameId > 0
+            && game.state < GameState.Finished
         );
         game.state = GameState.Cancelled;
     }
@@ -401,9 +401,9 @@ contract Dispatcher is BrokerManager {
     function finishGame(uint32 _gameId, bytes32 _hash) external onlyServer {
         Game storage game = games[_gameId];
         require(
-            _gameId &gt; 0
-            &amp;&amp; game.state &lt; GameState.Finished
-        &amp;&amp; _hash != 0x0
+            _gameId > 0
+            && game.state < GameState.Finished
+        && _hash != 0x0
         );
         game.statsHash = _hash;
         game.state = GameState.Finished;
@@ -417,18 +417,18 @@ contract Dispatcher is BrokerManager {
         require(game.state == GameState.Finished);
 
         uint64 sumPrize = 0;
-        for (uint32 i = 0; i &lt; _teamPrizes.length; i++)
+        for (uint32 i = 0; i < _teamPrizes.length; i++)
             sumPrize += _teamPrizes[i];
 
-        require(uint(sumPrize + game.awardSent) &lt;= uint(game.entryFee * game.teamsNumber));
+        require(uint(sumPrize + game.awardSent) <= uint(game.entryFee * game.teamsNumber));
 
-        for (i = 0; i &lt; _teamIds.length; i++) {
+        for (i = 0; i < _teamIds.length; i++) {
             uint32 teamId = _teamIds[i];
             GameTeam storage team = teams[_gameId][teamId];
             uint32 userId = team.userId;
 
             if (team.prizeSum == 0) {
-                if (team.sponsorId &gt; 0) {
+                if (team.sponsorId > 0) {
                     uint64 userFee = team.userFee * _teamPrizes[i] / 100;
                     balanceManager.addUserBalance(team.sponsorId, userFee);
                     balanceManager.addUserBalance(userId, _teamPrizes[i] - userFee);
@@ -448,14 +448,14 @@ contract Dispatcher is BrokerManager {
         Game storage game = games[_gameId];
         require(game.state == GameState.Cancelled);
 
-        for (uint32 i = 0; i &lt; _teamIds.length; i++) {
+        for (uint32 i = 0; i < _teamIds.length; i++) {
             uint32 teamId = _teamIds[i];
             GameTeam storage team = teams[_gameId][teamId];
 
             require(teams[_gameId][teamId].prizeSum == 0);
 
             if (team.prizeSum == 0) {
-                if (team.sponsorId &gt; 0) {
+                if (team.sponsorId > 0) {
                     balanceManager.addUserBalance(team.sponsorId, game.entryFee);
                 } else {
                     balanceManager.addUserBalance(team.userId, game.entryFee);

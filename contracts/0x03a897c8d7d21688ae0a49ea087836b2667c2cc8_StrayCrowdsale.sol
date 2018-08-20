@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 // produced by the Solididy File Flattener (c) David Appleton 2018
-// contact : <span class="__cf_email__" data-cfemail="96f2f7e0f3d6f7fdf9fbf4f7b8f5f9fb">[email&#160;protected]</span>
+// contact : <span class="__cf_email__" data-cfemail="96f2f7e0f3d6f7fdf9fbf4f7b8f5f9fb">[email protected]</span>
 // released under Apache 2.0 licence
 contract Ownable {
   address public owner;
@@ -72,8 +72,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -88,9 +88,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -98,7 +98,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -107,7 +107,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -153,7 +153,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -171,7 +171,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -203,9 +203,9 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_who]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
@@ -216,7 +216,7 @@ contract BurnableToken is BasicToken {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -234,8 +234,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -315,7 +315,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -331,8 +331,8 @@ contract StrayToken is StandardToken, BurnableToken, Ownable {
 	
 	uint256 public INITIAL_SUPPLY = 1000000000;
 	
-	string public name = &quot;Stray&quot;;
-	string public symbol = &quot;ST&quot;;
+	string public name = "Stray";
+	string public symbol = "ST";
 	uint8 public decimals = 18;
 
 	address public companyWallet;
@@ -376,7 +376,7 @@ contract StrayToken is StandardToken, BurnableToken, Ownable {
 	}
 	
 	/**
-	 * @dev The DAICO fund contract calls this function to burn the user&#39;s token
+	 * @dev The DAICO fund contract calls this function to burn the user's token
 	 * to avoid over refund.
 	 * @param _from The address which just took its refund.
 	 */
@@ -437,7 +437,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -584,7 +584,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -645,7 +645,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -656,8 +656,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   constructor(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -669,7 +669,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -698,7 +698,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -750,7 +750,7 @@ contract StrayCrowdsale is FinalizableCrowdsale {
     uint256 public mininumContributeWei;
     
     // The exchange rate from USD to Token.
-    // 1 USD =&gt; 100 Token (0.01 USD =&gt; 1 Token).
+    // 1 USD => 100 Token (0.01 USD => 1 Token).
     uint256 public exchangeRateUSDToToken = 100;
     
     // Stray token contract.
@@ -786,9 +786,9 @@ contract StrayCrowdsale is FinalizableCrowdsale {
         public 
     {
         // Validate ico stage time.
-        require(_bonusClosingTime0 &gt;= _openingTime);
-        require(_bonusClosingTime1 &gt;= _bonusClosingTime0);
-        require(_closingTime &gt;= _bonusClosingTime1);
+        require(_bonusClosingTime0 >= _openingTime);
+        require(_bonusClosingTime1 >= _bonusClosingTime0);
+        require(_closingTime >= _bonusClosingTime1);
         
         bonusClosingTime0 = _bonusClosingTime0;
         bonusClosingTime1 = _bonusClosingTime1;
@@ -797,12 +797,12 @@ contract StrayCrowdsale is FinalizableCrowdsale {
         strayToken = StrayToken(token);
         
         // Set soft cap and hard cap.
-        require(_softCapInUSD &gt; 0 &amp;&amp; _softCapInUSD &lt;= _hardCapInUSD);
+        require(_softCapInUSD > 0 && _softCapInUSD <= _hardCapInUSD);
         
         softCapInToken = _softCapInUSD * exchangeRateUSDToToken * (10 ** uint256(strayToken.decimals()));
         hardCapInToken = _hardCapInUSD * exchangeRateUSDToToken * (10 ** uint256(strayToken.decimals()));
         
-        require(strayToken.balanceOf(owner) &gt;= hardCapInToken);
+        require(strayToken.balanceOf(owner) >= hardCapInToken);
         
         // Create the refund vault.
         vault = new RefundVault(_fund);
@@ -811,7 +811,7 @@ contract StrayCrowdsale is FinalizableCrowdsale {
         mininumPurchaseTokenQuantity = exchangeRateUSDToToken * mininumContributeUSD 
             * (10 ** (uint256(strayToken.decimals())));
         
-        // Set default exchange rate ETH =&gt; USD: 400.00
+        // Set default exchange rate ETH => USD: 400.00
         setExchangeRateETHToUSD(40000, 2);
     }
     
@@ -823,18 +823,18 @@ contract StrayCrowdsale is FinalizableCrowdsale {
     function setExchangeRateETHToUSD(uint256 _rate, uint256 _decimals) onlyOwner public {
         // wei * 1e-18 * _rate * 1e(-_decimals) * 1e2          = amount * 1e(-token.decimals);
         // -----------   ----------------------   -------------
-        // Wei =&gt; ETH      ETH =&gt; USD             USD =&gt; Token
+        // Wei => ETH      ETH => USD             USD => Token
         //
         // If _rate = 1, wei = 1,
         // Then  amount = 1e(token.decimals + 2 - 18 - _decimals).
-        // We need amount &gt;= 1 to ensure the precision.
+        // We need amount >= 1 to ensure the precision.
         
-        require(uint256(strayToken.decimals()).add(2) &gt;= _decimals.add(18));
+        require(uint256(strayToken.decimals()).add(2) >= _decimals.add(18));
         
         exchangeRateETHToUSD = _rate;
         decimalsETHToUSD = _decimals;
         rate = _rate.mul(exchangeRateUSDToToken);
-        if (uint256(strayToken.decimals()) &gt;= _decimals.add(18)) {
+        if (uint256(strayToken.decimals()) >= _decimals.add(18)) {
             rate = rate.mul(10 ** (uint256(strayToken.decimals()).sub(18).sub(_decimals)));
         } else {
             rate = rate.div(10 ** (_decimals.add(18).sub(uint256(strayToken.decimals()))));
@@ -843,7 +843,7 @@ contract StrayCrowdsale is FinalizableCrowdsale {
         mininumContributeWei = mininumPurchaseTokenQuantity.div(rate); 
         
         // Avoid rounding error.
-        if (mininumContributeWei * rate &lt; mininumPurchaseTokenQuantity)
+        if (mininumContributeWei * rate < mininumPurchaseTokenQuantity)
             mininumContributeWei += 1;
             
         emit RateUpdated(rate, mininumContributeWei);
@@ -864,28 +864,28 @@ contract StrayCrowdsale is FinalizableCrowdsale {
      * @return Whether funding goal was reached
      */
     function softCapReached() public view returns (bool) {
-        return soldToken &gt;= softCapInToken;
+        return soldToken >= softCapInToken;
     }
     
     /**
      * @dev Validate if it is in ICO stage 1.
      */
     function isInStage1() view public returns (bool) {
-        return now &lt;= bonusClosingTime0 &amp;&amp; now &gt;= openingTime;
+        return now <= bonusClosingTime0 && now >= openingTime;
     }
     
     /**
      * @dev Validate if it is in ICO stage 2.
      */
     function isInStage2() view public returns (bool) {
-        return now &lt;= bonusClosingTime1 &amp;&amp; now &gt; bonusClosingTime0;
+        return now <= bonusClosingTime1 && now > bonusClosingTime0;
     }
     
     /**
      * @dev Validate if crowdsale has started.
      */
     function hasStarted() view public returns (bool) {
-        return now &gt;= openingTime;
+        return now >= openingTime;
     }
     
     /**
@@ -895,7 +895,7 @@ contract StrayCrowdsale is FinalizableCrowdsale {
         internal
     {
         super._preValidatePurchase(_beneficiary, _weiAmount);
-        require(_weiAmount &gt;= mininumContributeWei);
+        require(_weiAmount >= mininumContributeWei);
     }
     
     /**
@@ -905,7 +905,7 @@ contract StrayCrowdsale is FinalizableCrowdsale {
      */
     function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
         soldToken = soldToken.add(_tokenAmount);
-        require(soldToken &lt;= hardCapInToken);
+        require(soldToken <= hardCapInToken);
         
        _tokenAmount = _addBonus(_tokenAmount);
         
@@ -939,13 +939,13 @@ contract StrayCrowdsale is FinalizableCrowdsale {
      * @dev Calculate the token amount and add bonus if needed.
      */
     function _addBonus(uint256 _tokenAmount) internal view returns (uint256) {
-        if (bonusClosingTime0 &gt;= now) {
+        if (bonusClosingTime0 >= now) {
             _tokenAmount = _tokenAmount.mul(100 + bonusRateInPercent0).div(100);
-        } else if (bonusClosingTime1 &gt;= now) {
+        } else if (bonusClosingTime1 >= now) {
             _tokenAmount = _tokenAmount.mul(100 + bonusRateInPercent1).div(100);
         }
         
-        require(_tokenAmount &lt;= token.balanceOf(address(this)));
+        require(_tokenAmount <= token.balanceOf(address(this)));
         
         return _tokenAmount;
     }

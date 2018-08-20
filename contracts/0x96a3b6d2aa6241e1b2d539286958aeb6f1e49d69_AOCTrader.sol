@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 // Axie AOC sell contract. Not affiliated with the game developers. Use at your own risk.
 //
 // BUYERS: to protect against scams:
-// 1) check the price by clicking on &quot;Read smart contract&quot; in etherscan. Two prices are published
+// 1) check the price by clicking on "Read smart contract" in etherscan. Two prices are published
 //     a) price for 1 AOC in wei (1 wei = 10^-18 ETH), and b) number of AOC you get for 1 ETH
 // 2) Make sure you use high enough gas price that your TX confirms within 1 hour, to avoid the scam
 //    detailed below*
@@ -39,8 +39,8 @@ pragma solidity ^0.4.19;
 // *) There is a cooldown period of 1 hour after the contract is reset, before it can be used again.
 //    This is to avoid possible scams where the seller sees a pending TX on the contract, then resets
 //    the contract and call setup() is a much higher price. If the seller does that with very high gas price,
-//    they could change the price for the buyer&#39;s pending TX. A cooldown of 1 hour prevents this attac, as long
-//    as the buyer&#39;s TX confirms within the hour.
+//    they could change the price for the buyer's pending TX. A cooldown of 1 hour prevents this attac, as long
+//    as the buyer's TX confirms within the hour.
 
 
 interface AOCToken {
@@ -68,15 +68,15 @@ contract AOCTrader {
 
     // convenience is_empty function. Sellers should check this before using the contract
     function is_empty() public view returns (bool) {
-        return (now - cooldown_start_time &gt; 1 hours) &amp;&amp; (this.balance==0) &amp;&amp; (AOC.balanceOf(this) == 0);
+        return (now - cooldown_start_time > 1 hours) && (this.balance==0) && (AOC.balanceOf(this) == 0);
     }
     
     // Before calling setup, the sender must call Approve() on the AOC token 
-    // That sets allowance for this contract to sell the tokens on sender&#39;s behalf
+    // That sets allowance for this contract to sell the tokens on sender's behalf
     function setup(uint256 AOC_amount, uint256 price_in_wei) public {
         require(is_empty()); // must not be in cooldown
-        require(AOC.allowance(msg.sender, this) &gt;= AOC_amount); // contract needs enough allowance
-        require(price_in_wei &gt; 1000); // to avoid mistakes, require price to be more than 1000 wei
+        require(AOC.allowance(msg.sender, this) >= AOC_amount); // contract needs enough allowance
+        require(price_in_wei > 1000); // to avoid mistakes, require price to be more than 1000 wei
         
         price = price_in_wei;
         AOC_available = AOC_amount;
@@ -96,14 +96,14 @@ contract AOCTrader {
             Amount_of_AOC_for_One_ETH = 0; // reset price
             cooldown_start_time = now; // start cooldown timer
 
-            if(eth_balance &gt; 0) msg.sender.transfer(eth_balance); // withdraw all ETH
-            if(AOC_balance &gt; 0) require(AOC.transfer(msg.sender, AOC_balance)); // withdraw all AOC
+            if(eth_balance > 0) msg.sender.transfer(eth_balance); // withdraw all ETH
+            if(AOC_balance > 0) require(AOC.transfer(msg.sender, AOC_balance)); // withdraw all AOC
         }        
         else{
-            require(msg.value &gt; 0); // must send some ETH to buy AOC
-            require(price &gt; 0); // cannot divide by zero
+            require(msg.value > 0); // must send some ETH to buy AOC
+            require(price > 0); // cannot divide by zero
             uint256 num_AOC = msg.value / price; // calculate number of AOC tokens for the ETH amount sent
-            require(AOC_balance &gt;= num_AOC); // must have enough AOC in the contract
+            require(AOC_balance >= num_AOC); // must have enough AOC in the contract
             AOC_available = AOC_balance - num_AOC; // recalculate available AOC
 
             require(AOC.transfer(msg.sender, num_AOC)); // send AOC to buyer

@@ -44,20 +44,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -102,7 +102,7 @@ contract BOSTokenCrowdfund is owned, SafeMath {
     /* crowdsale is open */
     bool public crowdsaleClosed = false;
     /* map balance of address */
-    mapping (address =&gt; uint) public balanceOf;
+    mapping (address => uint) public balanceOf;
     /* allow public withdraw */
     bool public allowPublicWithdraw = false;
 
@@ -135,7 +135,7 @@ contract BOSTokenCrowdfund is owned, SafeMath {
     {
         require (!crowdsaleClosed);
         /* do not allow creating 0 */
-        require (msg.value &gt; 0);
+        require (msg.value > 0);
 
         uint tokens = SafeMath.safeMul(SafeMath.safeDiv(msg.value, sellPrice), 1 ether);
         if(tokenReward.transfer(msg.sender, tokens)) {
@@ -177,7 +177,7 @@ contract BOSTokenCrowdfund is owned, SafeMath {
         /* sets balance to 0 */
         balanceOf[_addressToRefund] = 0;
         /* is there any balance? */
-        if (amount &gt; 0) {
+        if (amount > 0) {
             /* call to untrusted address */
             _addressToRefund.transfer(amount);
             /* log event */

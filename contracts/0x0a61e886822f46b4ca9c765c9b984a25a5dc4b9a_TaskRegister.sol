@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -67,7 +67,7 @@ contract VanityLib {
     uint constant m = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f;
 
     function lengthOfCommonPrefix(bytes32 a, bytes32 b) public pure returns(uint) {
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             if (a[i] != b[i] || a[i] == 0) {
                 return i;
             }
@@ -83,7 +83,7 @@ contract VanityLib {
 
     /* Converts given number to base58, limited by 32 symbols */
     function toBase58Checked(uint256 _value, byte appCode) public pure returns(bytes32) {
-        string memory letters = &quot;123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz&quot;;
+        string memory letters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         bytes memory alphabet = bytes(letters);
         uint8 base = 58;
         uint8 len = 0;
@@ -92,13 +92,13 @@ contract VanityLib {
         bytes memory bytesReversed = bytes(new string(32));
         
         for (uint8 i = 0; true; i++) {
-            if (_value &lt; base) {
+            if (_value < base) {
                 needBreak = true;
             }
             remainder = _value % base;
             _value = uint256(_value / base);
             if (len == 32) {
-                for (uint j = 0; j &lt; len - 1; j++) {
+                for (uint j = 0; j < len - 1; j++) {
                     bytesReversed[j] = bytesReversed[j + 1];
                 }
                 len--;
@@ -113,7 +113,7 @@ contract VanityLib {
         // Reverse
         bytes memory result = bytes(new string(32));
         result[0] = appCode;
-        for (i = 0; i &lt; 31; i++) {
+        for (i = 0; i < 31; i++) {
             result[i + 1] = bytesReversed[len - 1 - i];
         }
         
@@ -126,11 +126,11 @@ contract VanityLib {
         bytes32 publicKeyCheckCode = sha256(sha256(byte(0x00), publicKeyPart));
         
         bytes memory publicKey = new bytes(32);
-        for (uint i = 0; i &lt; 7; i++) {
+        for (uint i = 0; i < 7; i++) {
             publicKey[i] = 0x00;
         }
         publicKey[7] = 0x00; // Main Network
-        for (uint j = 0; j &lt; 20; j++) {
+        for (uint j = 0; j < 20; j++) {
             publicKey[j + 8] = publicKeyPart[j];
         }
         publicKey[28] = publicKeyCheckCode[0];
@@ -142,7 +142,7 @@ contract VanityLib {
     }
     
     function createBtcAddress(uint256 publicXPoint, uint256 publicYPoint) public pure returns(bytes32) {
-        return toBase58Checked(createBtcAddressHex(publicXPoint, publicYPoint), &quot;1&quot;);
+        return toBase58Checked(createBtcAddressHex(publicXPoint, publicYPoint), "1");
     }
 
     function complexityForBtcAddressPrefix(bytes prefix) public pure returns(uint) {
@@ -151,7 +151,7 @@ contract VanityLib {
 
     // https://bitcoin.stackexchange.com/questions/48586
     function complexityForBtcAddressPrefixWithLength(bytes prefix, uint length) public pure returns(uint) {
-        require(prefix.length &gt;= length);
+        require(prefix.length >= length);
         
         uint8[128] memory unbase58 = [
             255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 
@@ -168,31 +168,31 @@ contract VanityLib {
 
         uint256 prefixValue = 0;
         uint256 prefix1 = 1;
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             uint index = uint(prefix[i]);
             require(index != 255);
             prefixValue = prefixValue * 58 + unbase58[index];
             prefix1 *= 58;
         }
 
-        uint256 top = (uint256(1) &lt;&lt; (200 - 8*leadingOnes));
+        uint256 top = (uint256(1) << (200 - 8*leadingOnes));
         uint256 total = 0;
         uint256 prefixMin = prefixValue;
         uint256 diff = 0;
-        for (uint digits = 1; prefix1/58 &lt; (1 &lt;&lt; 192); digits++) {
+        for (uint digits = 1; prefix1/58 < (1 << 192); digits++) {
             prefix1 *= 58;
             prefixMin *= 58;
             prefixValue = prefixValue * 58 + 57;
 
             diff = 0;
-            if (prefixValue &gt;= top) {
+            if (prefixValue >= top) {
                 diff += prefixValue - top;
             }
-            if (prefixMin &lt; (top &gt;&gt; 8)) {
-                diff += (top &gt;&gt; 8) - prefixMin;
+            if (prefixMin < (top >> 8)) {
+                diff += (top >> 8) - prefixMin;
             }
             
-            if ((58 ** digits) &gt;= diff) {
+            if ((58 ** digits) >= diff) {
                 total += (58 ** digits) - diff;
             }
         }
@@ -201,31 +201,31 @@ contract VanityLib {
             total = (58 ** (digits - 1)) - diff;
         }
 
-        return (1 &lt;&lt; 192) / total;
+        return (1 << 192) / total;
     }
 
     function countBtcAddressLeadingOnes(bytes prefix, uint length) public pure returns(uint) {
         uint leadingOnes = 1;
-        for (uint j = 0; j &lt; length &amp;&amp; prefix[j] == 49; j++) {
+        for (uint j = 0; j < length && prefix[j] == 49; j++) {
             leadingOnes = j + 1;
         }
         return leadingOnes;
     }
 
     function isValidBicoinAddressPrefix(bytes prefixArg) public pure returns(bool) {
-        if (prefixArg.length &lt; 5) {
+        if (prefixArg.length < 5) {
             return false;
         }
-        if (prefixArg[0] != &quot;1&quot; &amp;&amp; prefixArg[0] != &quot;3&quot;) {
+        if (prefixArg[0] != "1" && prefixArg[0] != "3") {
             return false;
         }
         
-        for (uint i = 0; i &lt; prefixArg.length; i++) {
+        for (uint i = 0; i < prefixArg.length; i++) {
             byte ch = prefixArg[i];
-            if (ch == &quot;0&quot; || ch == &quot;O&quot; || ch == &quot;I&quot; || ch == &quot;l&quot;) {
+            if (ch == "0" || ch == "O" || ch == "I" || ch == "l") {
                 return false;
             }
-            if (!((ch &gt;= &quot;1&quot; &amp;&amp; ch &lt;= &quot;9&quot;) || (ch &gt;= &quot;a&quot; &amp;&amp; ch &lt;= &quot;z&quot;) || (ch &gt;= &quot;A&quot; &amp;&amp; ch &lt;= &quot;Z&quot;))) {
+            if (!((ch >= "1" && ch <= "9") || (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z"))) {
                 return false;
             }
         }
@@ -358,7 +358,7 @@ contract TaskRegister is Upgradable, VanityLib {
     
     Task[] public tasks;
     Task[] public completedTasks;
-    mapping(uint256 =&gt; uint) public indexOfTaskId; // Starting from 1
+    mapping(uint256 => uint) public indexOfTaskId; // Starting from 1
     event TaskCreated(uint256 indexed taskId);
     event TaskSolved(uint256 indexed taskId);
     event TaskPayed(uint256 indexed taskId);
@@ -381,11 +381,11 @@ contract TaskRegister is Upgradable, VanityLib {
 
         // Migrate tasks
 
-        for (uint i = index; i &lt; index + size &amp;&amp; i &lt; tasksCount; i++) {
+        for (uint i = index; i < index + size && i < tasksCount; i++) {
             tasks.push(Task(TaskType.BITCOIN_ADDRESS_PREFIX,0,0,0,bytes32(0),0,0,0,0));
         }
 
-        for (uint j = index; j &lt; index + size &amp;&amp; j &lt; tasksCount; j++) {
+        for (uint j = index; j < index + size && j < tasksCount; j++) {
             (
                 tasks[j].taskType,
                 tasks[j].taskId,
@@ -400,7 +400,7 @@ contract TaskRegister is Upgradable, VanityLib {
             indexOfTaskId[tasks[j].taskId] = j + 1;
         }
 
-        for (uint k = index; k &lt; index + size &amp;&amp; k &lt; tasksCount; k++) {
+        for (uint k = index; k < index + size && k < tasksCount; k++) {
             (
                 ,//tasks[k].taskType,
                 ,//tasks[k].taskId,
@@ -433,7 +433,7 @@ contract TaskRegister is Upgradable, VanityLib {
 
     function payForTask(uint256 taskId, uint256 reward) public isLastestVersion {
         uint index = safeIndexOfTaskId(taskId);
-        if (reward &gt; 0) {
+        if (reward > 0) {
             token.transferFrom(tx.origin, this, reward);
         } else {
             reward = token.balanceOf(this) - totalReward;
@@ -445,18 +445,18 @@ contract TaskRegister is Upgradable, VanityLib {
 
     function safeIndexOfTaskId(uint taskId) public constant returns(uint) {
         uint index = indexOfTaskId[taskId];
-        require(index &gt; 0);
+        require(index > 0);
         return index - 1;
     }
 
     // Pass reward == 0 for automatically determine already transferred value
     function createBitcoinAddressPrefixTask(bytes prefix, uint256 reward, uint256 requestPublicXPoint, uint256 requestPublicYPoint) public isLastestVersion {
-        require(prefix.length &gt; 5);
-        require(prefix[0] == &quot;1&quot;);
-        require(prefix[1] != &quot;1&quot;); // Do not support multiple 1s yet
+        require(prefix.length > 5);
+        require(prefix[0] == "1");
+        require(prefix[1] != "1"); // Do not support multiple 1s yet
         require(isValidBicoinAddressPrefix(prefix));
         require(isValidPublicKey(requestPublicXPoint, requestPublicYPoint));
-        if (reward &gt; 0) {
+        if (reward > 0) {
             token.transferFrom(tx.origin, this, reward);
         } else {
             reward = token.balanceOf(this) - totalReward;
@@ -491,8 +491,8 @@ contract TaskRegister is Upgradable, VanityLib {
 
         // Require private key to be part of address to prevent front-running attack
         bytes32 answerPrivateKeyBytes = bytes32(answerPrivateKey);
-        bytes32 senderAddressBytes = bytes32(uint256(msg.sender) &lt;&lt; 96);
-        for (uint i = 0; i &lt; 16; i++) {
+        bytes32 senderAddressBytes = bytes32(uint256(msg.sender) << 96);
+        for (uint i = 0; i < 16; i++) {
             require(answerPrivateKeyBytes[i] == senderAddressBytes[i]);
         }
 
@@ -534,7 +534,7 @@ contract TaskRegister is Upgradable, VanityLib {
 
     function completeTask(uint taskId, uint index) internal {
         completedTasks.push(tasks[index]);
-        if (index &lt; tasks.length - 1) { // if not latest
+        if (index < tasks.length - 1) { // if not latest
             tasks[index] = tasks[tasks.length - 1];
             indexOfTaskId[tasks[index].taskId] = index + 1;
         }

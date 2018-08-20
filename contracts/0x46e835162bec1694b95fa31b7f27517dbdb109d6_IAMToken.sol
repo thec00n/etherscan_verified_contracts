@@ -8,20 +8,20 @@ library SafeCalc {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -96,8 +96,8 @@ contract ERC20StandardToken is ERC20Standard {
     /*
      *  ERC20StandardToken
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     function transfer(address to, uint256 value) public returns (bool){
         require(to !=address(0));
@@ -140,8 +140,8 @@ contract ERC20StandardToken is ERC20Standard {
 contract IAMToken is ERC20StandardToken, Ownable {
 
     // token information
-    string public constant name = &quot;IAM Token&quot;;
-    string public constant symbol = &quot;IAM&quot;;
+    string public constant name = "IAM Token";
+    string public constant symbol = "IAM";
     uint256 public constant decimals = 18;
     uint TotalTokenSupply=1*(10**8)* (10**decimals);
 

@@ -32,8 +32,8 @@ contract ColorsData is Ownable {
 	
     Color[] colors;
 
-    mapping (uint256 =&gt; address) public ColorIdToOwner;
-    mapping (uint256 =&gt; uint256) public ColorIdToLastPaid;
+    mapping (uint256 => address) public ColorIdToOwner;
+    mapping (uint256 => uint256) public ColorIdToLastPaid;
     
 }
 
@@ -71,10 +71,10 @@ contract ColorsApis is ColorsData {
         
     function bid(uint256 _ColorId) external payable {
         uint256 lastPaid = ColorIdToLastPaid[_ColorId];
-        require(lastPaid &gt; 0);
+        require(lastPaid > 0);
 		
 		uint256 price = lastPaid + ((lastPaid * 2) / 10);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 		
 		address colorOwner = ColorIdToOwner[_ColorId];
 		uint256 colorOwnerPayout = lastPaid + (lastPaid / 10);

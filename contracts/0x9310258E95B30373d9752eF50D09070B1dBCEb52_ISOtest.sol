@@ -1,17 +1,17 @@
 contract ISOtest {
 
-    mapping (bytes32 =&gt; string) data;
+    mapping (bytes32 => string) data;
     
-    string ctype = &quot;ISO 9001:2015&quot;;
-    string scope = &quot;Provision and control of quality of help desk, support, project procesing&quot;;
-    string issuedTo = &quot;Digital Edge&quot;;
-    string companyAddress = &quot;7 Teleport Drive, Staten Island, NY 10311&quot;;
-    string issuedBy = &quot;Dekra&quot;;
-    string signerBy = &quot;Cem O.Onus&quot;;
-    string title = &quot;Managin Director&quot;;
-    string certificateIssued = &quot;2/20/2018&quot;;
-    string certificateSince = &quot;3/1/2018&quot;;
-    string certificateExpires = &quot;2/29/2024&quot;;
+    string ctype = "ISO 9001:2015";
+    string scope = "Provision and control of quality of help desk, support, project procesing";
+    string issuedTo = "Digital Edge";
+    string companyAddress = "7 Teleport Drive, Staten Island, NY 10311";
+    string issuedBy = "Dekra";
+    string signerBy = "Cem O.Onus";
+    string title = "Managin Director";
+    string certificateIssued = "2/20/2018";
+    string certificateSince = "3/1/2018";
+    string certificateExpires = "2/29/2024";
     
     address owner;
 
@@ -22,7 +22,7 @@ contract ISOtest {
 
     function setData(string key, string value) public{
         require(msg.sender == owner);
-        require(keccak256(data[keccak256(key)]) == keccak256(&quot;&quot;));
+        require(keccak256(data[keccak256(key)]) == keccak256(""));
         data[keccak256(key)] = value;
     }
     
@@ -31,7 +31,7 @@ contract ISOtest {
     }
     
     function getName() public constant returns (string) {
-        return data[keccak256(&#39;name&#39;)];
+        return data[keccak256('name')];
     }
     
     function getIssued() public constant returns (string) {

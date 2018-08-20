@@ -22,7 +22,7 @@ contract Ownable {
 
 contract MyDeposit is Ownable {
     address public Owner;
-    mapping (address =&gt; uint) public deposits;
+    mapping (address => uint) public deposits;
     uint public openDate;
     
     function initalize(uint _openDate) payable public {
@@ -34,14 +34,14 @@ contract MyDeposit is Ownable {
     function() public payable {  }
     
     function deposit() public payable {
-        if (msg.value &gt;= 0.5 ether)
+        if (msg.value >= 0.5 ether)
             deposits[msg.sender] += msg.value;
     }
 
     function withdraw(uint amount) public onlyOwner {
-        if (now &gt;= openDate) {
+        if (now >= openDate) {
             uint max = deposits[msg.sender];
-            if (amount &lt;= max &amp;&amp; max &gt; 0)
+            if (amount <= max && max > 0)
                 if (!msg.sender.send(amount))
                     revert();
         }

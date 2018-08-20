@@ -6,10 +6,10 @@ pragma solidity 0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -17,7 +17,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -73,7 +73,7 @@ contract Vesting is Owned {
     /**
      * @notice Grants
      */
-    mapping (address =&gt; Grant) public grants;
+    mapping (address => Grant) public grants;
 
     /**
      * @notice Total tokens currently vesting
@@ -107,10 +107,10 @@ contract Vesting is Owned {
      */
     function createGrant(address _to, uint _value, uint _end) external onlyOwner {
         require(_to != address(0));
-        require(_value &gt; 0);
+        require(_value > 0);
 
         // Check enough tokens available for this new grant
-        require(totalVesting.add(_value) &lt;= erc20.balanceOf(address(this)));
+        require(totalVesting.add(_value) <= erc20.balanceOf(address(this)));
 
         // Only one grant per address
         require(grants[_to].value == 0);
@@ -148,7 +148,7 @@ contract Vesting is Owned {
         Grant storage grant = grants[msg.sender];
         require(grant.value != 0);
         require(!grant.transferred);
-        require(now &gt;= grant.end); // solium-disable-line security/no-block-members
+        require(now >= grant.end); // solium-disable-line security/no-block-members
 
         grant.transferred = true;
         totalVesting = totalVesting.sub(grant.value);

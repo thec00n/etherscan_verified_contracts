@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -39,9 +39,9 @@ contract IERC20 {
 contract StandardToken is IERC20{
     using SafeMath for uint256;
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
 
     // What is the balance of a particular account?
     // @param who The address of the particular account
@@ -56,7 +56,7 @@ contract StandardToken is IERC20{
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -71,7 +71,7 @@ contract StandardToken is IERC20{
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -86,7 +86,7 @@ contract StandardToken is IERC20{
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
@@ -104,8 +104,8 @@ contract TLC is StandardToken {
     
   using SafeMath for uint256;
  
-  string public constant name = &quot;Toplancer&quot;;
-  string public constant symbol = &quot;TLC&quot;;
+  string public constant name = "Toplancer";
+  string public constant symbol = "TLC";
   uint256 public constant decimals = 18;
   
   uint256 public constant totalSupply = 400000000e18;  
@@ -134,7 +134,7 @@ contract TLCMarketCrowdsale is TLC {
   // how many token units a buyer gets per wei
   uint256 public rate = 3500 ; // 1 ether = 3500 TLC
   // How much ETH each address has invested to this publicsale
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
   // How many distinct addresses have invested
   uint256 public investorCount;
   // fund raised during public sale 
@@ -152,7 +152,7 @@ contract TLCMarketCrowdsale is TLC {
  
 
   function TLCMarketCrowdsale(uint256 _startTime, uint256 _endTime, address _wallet) {
-        require( _endTime &gt;= _startTime &amp;&amp; _wallet != 0x0);
+        require( _endTime >= _startTime && _wallet != 0x0);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -174,10 +174,10 @@ contract TLCMarketCrowdsale is TLC {
     tokens = tokens.add(timebasedBonus);
     forwardFunds();
     if (stage == Stage.PRESALE) {
-        assert (soldTokenInPresale + tokens &lt;= presaleCap);
+        assert (soldTokenInPresale + tokens <= presaleCap);
         soldTokenInPresale = soldTokenInPresale.add(tokens);
     } else {
-        assert (soldTokenInPublicsale + tokens &lt;= publicSaleCap);
+        assert (soldTokenInPublicsale + tokens <= publicSaleCap);
          if(investedAmountOf[beneficiary] == 0) {
            // A new investor
            investorCount++;
@@ -217,7 +217,7 @@ contract TLCMarketCrowdsale is TLC {
     }
     // @return true if crowdsale current lot event has ended
     function hasEnded() public constant returns (bool) {
-        return getNow() &gt; endTime;
+        return getNow() > endTime;
     }
      // @return  current time
     function getNow() public constant returns (uint256) {
@@ -226,10 +226,10 @@ contract TLCMarketCrowdsale is TLC {
    
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-        bool withinPeriod = getNow() &gt;= startTime &amp;&amp; getNow() &lt;= endTime;
+        bool withinPeriod = getNow() >= startTime && getNow() <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool minContribution = minContribAmount &lt;= msg.value;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; minContribution;
+        bool minContribution = minContribAmount <= msg.value;
+        return withinPeriod && nonZeroPurchase && minContribution;
     }
   // Get the time-based bonus rate
   function getTimebasedBonusRate() internal constant returns (uint256) {
@@ -242,13 +242,13 @@ contract TLCMarketCrowdsale is TLC {
           uint256 bonusSecondWeek = bonusFirstWeek + (7 days * 1000);
           uint256 bonusThirdWeek = bonusSecondWeek + (7 days * 1000);
           uint256 bonusFourthWeek = bonusThirdWeek + (7 days * 1000);
-          if (nowTime &lt;= bonusFirstWeek) {
+          if (nowTime <= bonusFirstWeek) {
               bonusRate = 25;
-          } else if (nowTime &lt;= bonusSecondWeek) {
+          } else if (nowTime <= bonusSecondWeek) {
               bonusRate = 20;
-          } else if (nowTime &lt;= bonusThirdWeek) {
+          } else if (nowTime <= bonusThirdWeek) {
               bonusRate = 10;
-          } else if (nowTime &lt;= bonusFourthWeek) {
+          } else if (nowTime <= bonusFourthWeek) {
               bonusRate = 5;
           }
       }
@@ -257,7 +257,7 @@ contract TLCMarketCrowdsale is TLC {
 
   // Start public sale
   function startPublicsale(uint256 _startTime, uint256 _endTime, uint256 _tokenPrice) public onlyOwner {
-      require(hasEnded() &amp;&amp; stage == Stage.PRESALE &amp;&amp; _endTime &gt;= _startTime &amp;&amp; _tokenPrice &gt; 0);
+      require(hasEnded() && stage == Stage.PRESALE && _endTime >= _startTime && _tokenPrice > 0);
       stage = Stage.PUBLICSALE;
       startTime = _startTime;
       endTime = _endTime;
@@ -266,13 +266,13 @@ contract TLCMarketCrowdsale is TLC {
   
     // @return true if the crowdsale has raised enough money to be successful.
     function isMaximumGoalReached() public constant returns (bool reached) {
-        return weiRaised &gt;= hardCap;
+        return weiRaised >= hardCap;
     }
 
     // Validate and update the crowdsale stage
     function updateICOStatus() public onlyOwner {
-        require(hasEnded() &amp;&amp; stage == Stage.PUBLICSALE);
-        if (hasEnded() &amp;&amp; weiRaised &gt;= softCap) {
+        require(hasEnded() && stage == Stage.PUBLICSALE);
+        if (hasEnded() && weiRaised >= softCap) {
             stage = Stage.SUCCESS;
         } else if (hasEnded()) {
             stage = Stage.FAILURE;
@@ -283,7 +283,7 @@ contract TLCMarketCrowdsale is TLC {
     function loadRefund() public payable isFailure{
         require(msg.value != 0);
         loadedRefund = loadedRefund.add(msg.value);
-        if (loadedRefund &lt;= fundRaisedDuringPublicSale) {
+        if (loadedRefund <= fundRaisedDuringPublicSale) {
             stage = Stage.REFUNDING;
         }
     }
@@ -301,7 +301,7 @@ contract TLCMarketCrowdsale is TLC {
         
         msg.sender.transfer(weiValue);
         
-        if (weiRefunded &lt;= fundRaisedDuringPublicSale) {
+        if (weiRefunded <= fundRaisedDuringPublicSale) {
             stage = Stage.CLOSED;
         }
     }
@@ -317,7 +317,7 @@ contract TLCMarketCrowdsale is TLC {
      
      //Change Presale Publicsale end time
      function changeEndTime(uint256 _endTime) public onlyOwner {
-        require(endTime &gt; startTime);
+        require(endTime > startTime);
     	endTime = _endTime;
     }
 
@@ -325,7 +325,7 @@ contract TLCMarketCrowdsale is TLC {
     // _founderAndTeamCap = 10000000e18; 10%
      function sendFounderAndTeamToken(address to, uint256 value) public onlyOwner{
          require (
-             to != 0x0 &amp;&amp; value &gt; 0 &amp;&amp; distributionSupply &gt;= value
+             to != 0x0 && value > 0 && distributionSupply >= value
          );
          balances[multisig] = balances[multisig].sub(value);
          balances[to] = balances[to].add(value);

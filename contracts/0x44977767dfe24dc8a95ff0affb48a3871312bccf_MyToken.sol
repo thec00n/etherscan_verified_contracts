@@ -18,7 +18,7 @@ contract owned {
 /* 注意“contract MyToken is owned”，这类似于C++中的派生类的概念 */
 contract MyToken is owned{
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -28,8 +28,8 @@ contract MyToken is owned{
         uint minBalanceForAccounts;                                         //threshold amount
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-        mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+        mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -54,10 +54,10 @@ contract MyToken is owned{
     /* 代币转移的函数 */
     function transfer(address _to, uint256 _value) {
             if (frozenAccount[msg.sender]) throw;
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
-        if(msg.sender.balance&lt;minBalanceForAccounts) sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
-        if(_to.balance&lt;minBalanceForAccounts)      _to.send(sell((minBalanceForAccounts-_to.balance)/sellPrice));
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+        if(msg.sender.balance<minBalanceForAccounts) sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
+        if(_to.balance<minBalanceForAccounts)      _to.send(sell((minBalanceForAccounts-_to.balance)/sellPrice));
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -83,17 +83,17 @@ contract MyToken is owned{
          /* 从合约购买货币的函数 */
         function buy() returns (uint amount){
             amount = msg.value / buyPrice;                     // calculates the amount
-            if (balanceOf[this] &lt; amount) throw;               // checks if it has enough to sell
-            balanceOf[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-            balanceOf[this] -= amount;                         // subtracts amount from seller&#39;s balance
+            if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
+            balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+            balanceOf[this] -= amount;                         // subtracts amount from seller's balance
             Transfer(this, msg.sender, amount);                // execute an event reflecting the change
             return amount;                                     // ends function and returns
         }
         /* 向合约出售货币的函数 */
         function sell(uint amount) returns (uint revenue){
-            if (balanceOf[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
-            balanceOf[this] += amount;                         // adds the amount to owner&#39;s balance
-            balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
+            if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+            balanceOf[this] += amount;                         // adds the amount to owner's balance
+            balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance
             revenue = amount * sellPrice;                      // calculate the revenue
             msg.sender.send(revenue);                          // sends ether to the seller
             Transfer(msg.sender, this, amount);                // executes an event reflecting on the change

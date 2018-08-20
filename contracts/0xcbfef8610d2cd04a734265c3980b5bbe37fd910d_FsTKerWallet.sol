@@ -11,7 +11,7 @@ contract ERC {
 
 contract FsTKerWallet {
 
-  string constant public walletVersion = &quot;v1.0.0&quot;;
+  string constant public walletVersion = "v1.0.0";
 
   ERC public FST;
 
@@ -95,7 +95,7 @@ contract FsTKerWallet {
   }
 
   function setFST (ERC _FST) onlyOwner public returns (bool) {
-    require(address(_FST) != address(this) &amp;&amp; address(_FST) != address(0x0));
+    require(address(_FST) != address(this) && address(_FST) != address(0x0));
     FST = _FST;
     return true;
   }

@@ -19,7 +19,7 @@ pragma solidity ^0.4.24;
      ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
                                                                            
 
-&#169; 2018 SuperCountries
+© 2018 SuperCountries
 
 所有权 - 4CE434B6058EC7C24889EC2512734B5DBA26E39891C09DF50C3CE3191CE9C51E
 
@@ -47,9 +47,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   * @dev subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -66,7 +66,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -157,22 +157,22 @@ contract SuperCountriesEth {
 
   /// All countries
   uint256[] private listedItems;
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; uint256) private priceOfItem;
-  mapping (uint256 =&gt; uint256) private previousPriceOfItem;
-  mapping (uint256 =&gt; address) private approvedOfItem;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => uint256) private priceOfItem;
+  mapping (uint256 => uint256) private previousPriceOfItem;
+  mapping (uint256 => address) private approvedOfItem;
    
   
   /// Referrals and their referrers
-  mapping(address =&gt; address) public referrerOf;
+  mapping(address => address) public referrerOf;
   
   /// Dividends and score
   uint256 private worldScore ; /// Worldscore = cumulated price of all owned countries + all spent ethers in this game
-  mapping (address =&gt; uint256) private playerScore; /// For each player, the sum of each owned country + the sum of all spent ethers since the beginning of the game
+  mapping (address => uint256) private playerScore; /// For each player, the sum of each owned country + the sum of all spent ethers since the beginning of the game
   uint256 private dividendsScore ; /// Balance of dividends divided by the worldScore 
-  mapping(uint256 =&gt; mapping(address =&gt; uint256)) private pendingBalance; /// Divs from referrals, bonus and dividends calculated after the playerScore change ; if the playerScore didn&#39;t change recently, there are some pending divs that can be calculated using dividendsScore and playerScore. The first mapping (uint256) is the jackpot version to use, the value goes up after each pot distribution and the previous pendingBalance are reseted.
-  mapping(uint256 =&gt; mapping(address =&gt; uint256)) private handicap; /// a player cannot claim a % of all dividends but a % of the cumulated dividends after his join date, this is a handicap
-  mapping(uint256 =&gt; mapping(address =&gt; uint256)) private balanceToWithdraw; /// A player cannot withdraw pending divs, he must request a withdraw first (pending divs move to balanceToWithdraw) then withdraw.	
+  mapping(uint256 => mapping(address => uint256)) private pendingBalance; /// Divs from referrals, bonus and dividends calculated after the playerScore change ; if the playerScore didn't change recently, there are some pending divs that can be calculated using dividendsScore and playerScore. The first mapping (uint256) is the jackpot version to use, the value goes up after each pot distribution and the previous pendingBalance are reseted.
+  mapping(uint256 => mapping(address => uint256)) private handicap; /// a player cannot claim a % of all dividends but a % of the cumulated dividends after his join date, this is a handicap
+  mapping(uint256 => mapping(address => uint256)) private balanceToWithdraw; /// A player cannot withdraw pending divs, he must request a withdraw first (pending divs move to balanceToWithdraw) then withdraw.	
 
   uint256 private potVersion = 1; /// Number of jackpots
   uint256 private lastWithdrawPotVersion = 1; /// Latest withdraw in the game (pot version)
@@ -186,9 +186,9 @@ contract SuperCountriesEth {
 		uint256 startingPrice; /// starting price of the country
 		}
 
-  mapping (uint256 =&gt; CountryStruct) public countryStructs;
+  mapping (uint256 => CountryStruct) public countryStructs;
   
-  mapping (uint256 =&gt; mapping(address =&gt; uint256)) private itemHistory; /// Store price history (cumulated) for each address for each country
+  mapping (uint256 => mapping(address => uint256)) private itemHistory; /// Store price history (cumulated) for each address for each country
   
   uint256 private HUGE = 1e13;
  
@@ -235,14 +235,14 @@ contract SuperCountriesEth {
 ///////////////////////////////////
 	
 	function listMultipleItems (uint256[] _itemIds, uint256 _price, address _owner) onlyOwner() external {
-		for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+		for (uint256 i = 0; i < _itemIds.length; i++) {
 			listItem(_itemIds[i], _price, _owner);
 		}
 	}
 
 	
 	function listItem (uint256 _itemId, uint256 _price, address _owner) onlyOwner() public {
-		require(_price &gt; 0);
+		require(_price > 0);
 		require(priceOfItem[_itemId] == 0);
 		require(ownerOfItem[_itemId] == address(0));
 
@@ -283,13 +283,13 @@ contract SuperCountriesEth {
 ///////////////////////
 
 	function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-		if (_price &lt; increaseLimit1) {
+		if (_price < increaseLimit1) {
 			return _price.mul(200).div(95);
-		} else if (_price &lt; increaseLimit2) {
+		} else if (_price < increaseLimit2) {
 			return _price.mul(160).div(96);
-		} else if (_price &lt; increaseLimit3) {
+		} else if (_price < increaseLimit3) {
 			return _price.mul(148).div(97);
-		} else if (_price &lt; increaseLimit4) {
+		} else if (_price < increaseLimit4) {
 			return _price.mul(136).div(97);
 		} else {
 			return _price.mul(124).div(98);
@@ -297,11 +297,11 @@ contract SuperCountriesEth {
 	}
 
 	function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-		if (_price &lt; increaseLimit1) {
+		if (_price < increaseLimit1) {
 			return _price.mul(5).div(100); // 5%
-		} else if (_price &lt; increaseLimit2) {
+		} else if (_price < increaseLimit2) {
 			return _price.mul(4).div(100); // 4%
-		} else if (_price &lt; increaseLimit4) {
+		} else if (_price < increaseLimit4) {
 			return _price.mul(3).div(100); // 3%
 		} else {
 			return _price.mul(2).div(100); // 2%
@@ -313,7 +313,7 @@ contract SuperCountriesEth {
 
  
 //////////////////////////////
-/// BALANCES &amp; WITHDRAWALS ///
+/// BALANCES & WITHDRAWALS ///
 //////////////////////////////
 
 	function getBalance(address _playerAddress)
@@ -351,9 +351,9 @@ contract SuperCountriesEth {
    * Then this sum moves to balanceReadyToWithdraw, the player can call the next function and withdraw divs
    */
 	function confirmDividends() public onlyRealAddress {
-		require(playerScore[msg.sender] &gt; 0);/// the player exists
-		require (dividendsScore &gt;= handicap[potVersion][msg.sender]);
-		require (dividendsScore &gt;= 0);
+		require(playerScore[msg.sender] > 0);/// the player exists
+		require (dividendsScore >= handicap[potVersion][msg.sender]);
+		require (dividendsScore >= 0);
 		
 		address _playerAddress = msg.sender;
 		uint256 playerSc = playerScore[_playerAddress];
@@ -380,8 +380,8 @@ contract SuperCountriesEth {
    * @dev Second step to withdraw : after confirming divs, players can withdraw divs to their wallet
    */	
 	function withdraw() public onlyRealAddress {
-		require(balanceOf(msg.sender) &gt; 0);
-		require(balanceToWithdraw[potVersion][msg.sender] &gt; 0);
+		require(balanceOf(msg.sender) > 0);
+		require(balanceToWithdraw[potVersion][msg.sender] > 0);
 				
 		address _playerAddress = msg.sender;
 		
@@ -406,9 +406,9 @@ contract SuperCountriesEth {
    * @dev After 7 days without any buy, the richest user and the latest player will share the contract balance !
    */		
 	function confirmDividendsFromPot() public {
-		require(richestBuyer != address(0) &amp;&amp; lastBuyer != address(0)) ;
-		require(address(this).balance &gt; 100000000);	/// mini 1e8 wei
-		require(block.timestamp &gt; timestampLimit);
+		require(richestBuyer != address(0) && lastBuyer != address(0)) ;
+		require(address(this).balance > 100000000);	/// mini 1e8 wei
+		require(block.timestamp > timestampLimit);
 		
 		uint256 confirmation_TimeStamp = timestampLimit;
 		potVersion ++;
@@ -443,14 +443,14 @@ contract SuperCountriesEth {
 
 	
   /**
-   * @dev If no new buys occur (dividendsScore = 0) and the richest and latest players don&#39;t withdraw their dividends after 3 jackpots, the game can be stuck forever
+   * @dev If no new buys occur (dividendsScore = 0) and the richest and latest players don't withdraw their dividends after 3 jackpots, the game can be stuck forever
    * Prevent from jackpot vicious circle : same dividends are shared between latest and richest users again and again
    * If the richest and/or the latest player withdraw(s) at least once between 3 jackpots, it means the game is alive
    * Or if contract balance drops down to 1e8 wei (that means many successful jackpots and that a current withdrawal could cost too much gas for players)
    */	
 	function withdrawAll() public onlyOwner {
-		require((potVersion &gt; lastWithdrawPotVersion.add(3) &amp;&amp; dividendsScore == 0) || (address(this).balance &lt; 100000001) );
-		require (address(this).balance &gt;0);
+		require((potVersion > lastWithdrawPotVersion.add(3) && dividendsScore == 0) || (address(this).balance < 100000001) );
+		require (address(this).balance >0);
 		
 		potVersion ++;
 		updateTimestampLimit();
@@ -484,10 +484,10 @@ contract SuperCountriesEth {
    * @param newReferral The address to set the referrer for.
    * @param referrer The address of the referrer to set.
    * The referrer must own at least one country to keep his reflink active
-   * Referrals got with an active link are forever, even if all the referrer&#39;s countries are sold
+   * Referrals got with an active link are forever, even if all the referrer's countries are sold
    */
     function setReferrer(address newReferral, address referrer) internal {
-		if (getReferrerOf(newReferral) == address(0x0) &amp;&amp; newReferral != referrer &amp;&amp; balanceOf(referrer) &gt; 0 &amp;&amp; playerScore[newReferral] == 0) {
+		if (getReferrerOf(newReferral) == address(0x0) && newReferral != referrer && balanceOf(referrer) > 0 && playerScore[newReferral] == 0) {
 			
 			/// Set the referrer, if no referrer has been set yet, and the player
 			/// and referrer are not the same address.
@@ -537,20 +537,20 @@ contract SuperCountriesEth {
    * @dev Dispatch dividends to former owners of a country
    */
 	function bonusPreviousOwner(uint256 _itemSoldId, uint256 _paidPrice, uint256 _bonusToDispatch) private {
-		require(_bonusToDispatch &lt; (_paidPrice.mul(5).div(100)));
-		require(countryStructs[_itemSoldId].priceHistory &gt; 0);
+		require(_bonusToDispatch < (_paidPrice.mul(5).div(100)));
+		require(countryStructs[_itemSoldId].priceHistory > 0);
 
 		CountryStruct storage c = countryStructs[_itemSoldId];
 		uint256 countryScore = c.priceHistory;
 		uint256 kBonus = _bonusToDispatch.mul(HUGE).div(countryScore);
 		uint256 bonusDispatched = 0;
 		  
-		for (uint256 i = 0; i &lt; c.itemToAddressArray.length &amp;&amp; bonusDispatched &lt; _bonusToDispatch ; i++) {
+		for (uint256 i = 0; i < c.itemToAddressArray.length && bonusDispatched < _bonusToDispatch ; i++) {
 			address listedBonusPlayer = c.itemToAddressArray[i];
 			uint256 playerBonusScore = itemHistory[_itemSoldId][listedBonusPlayer];
 			uint256 bonusToGet = playerBonusScore.mul(kBonus).div(HUGE);
 				
-				if (bonusDispatched.add(bonusToGet) &lt;= _bonusToDispatch) {
+				if (bonusDispatched.add(bonusToGet) <= _bonusToDispatch) {
 					pendingBalance[potVersion][listedBonusPlayer] += bonusToGet;
 					bonusDispatched += bonusToGet;
 					
@@ -572,20 +572,20 @@ contract SuperCountriesEth {
 
   /**
    * @dev we need to update the oldOwner and newOwner balances each time a country is sold, their handicap and playerscore will also change
-   * Worldscore and dividendscore : we don&#39;t care, it will be updated later.
+   * Worldscore and dividendscore : we don't care, it will be updated later.
    * If accurate, set a new richest player
    */
 	function updateScoreAndBalance(uint256 _paidPrice, uint256 _itemId, address _oldOwner, address _newOwner) internal {	
 		uint256 _previousPaidPrice = previousPriceOfItem[_itemId];
-		assert (_paidPrice &gt; _previousPaidPrice);
+		assert (_paidPrice > _previousPaidPrice);
 
 		
 		/// OLD OWNER ///
 			uint256 scoreSubHandicap = dividendsScore.sub(handicap[potVersion][_oldOwner]);
 			uint256 playerScore_ = playerScore[_oldOwner];
 		
-			/// If the old owner is the owner of this contract, we skip this part, the owner of the contract won&#39;t get dividends
-				if (_oldOwner != owner &amp;&amp; scoreSubHandicap &gt;= 0 &amp;&amp; playerScore_ &gt; _previousPaidPrice) {
+			/// If the old owner is the owner of this contract, we skip this part, the owner of the contract won't get dividends
+				if (_oldOwner != owner && scoreSubHandicap >= 0 && playerScore_ > _previousPaidPrice) {
 					pendingBalance[potVersion][_oldOwner] += playerScore_.mul(scoreSubHandicap).div(HUGE);
 					playerScore[_oldOwner] -= _previousPaidPrice; ///for the oldOwner, the playerScore goes down the previous price
 					handicap[potVersion][_oldOwner] = dividendsScore; /// and setting his handicap to dividendsScore after updating his balance
@@ -597,7 +597,7 @@ contract SuperCountriesEth {
 			playerScore_ = playerScore[_newOwner]; /// Rewrite the var playerScore with the newOwner PlayerScore
 				
 			/// If new player, his playerscore = 0, handicap = 0, so the pendingBalance math = 0
-				if (scoreSubHandicap &gt;= 0) {
+				if (scoreSubHandicap >= 0) {
 					pendingBalance[potVersion][_newOwner] += playerScore_.mul(scoreSubHandicap).div(HUGE);
 					playerScore[_newOwner] += _paidPrice.mul(2); ///for the newOwner, the playerScore goes up twice the value of the purchase price
 					handicap[potVersion][_newOwner] = dividendsScore; /// and setting his handicap to dividendsScore after updating his balance
@@ -605,7 +605,7 @@ contract SuperCountriesEth {
 
 				
 		/// Change the richest user if this is the case...
-				if (playerScore[_newOwner] &gt; playerScore[richestBuyer]) {
+				if (playerScore[_newOwner] > playerScore[richestBuyer]) {
 					richestBuyer = _newOwner;
 					
 					emit newRichest(_newOwner, playerScore[_newOwner], block.timestamp, block.number);
@@ -644,7 +644,7 @@ contract SuperCountriesEth {
    */ 
 	function excessRefund(address _newOwner, uint256 _price) internal {		
 		uint256 excess = msg.value.sub(_price);
-			if (excess &gt; 0) {
+			if (excess > 0) {
 				_newOwner.transfer(excess);
 			}
 	}	
@@ -664,13 +664,13 @@ contract SuperCountriesEth {
 */
 	
 	function buy (uint256 _itemId, address referrerAddress) payable public onlyRealAddress {
-		require(priceOf(_itemId) &gt; 0);
+		require(priceOf(_itemId) > 0);
 		require(ownerOf(_itemId) != address(0));
-		require(msg.value &gt;= priceOf(_itemId));
+		require(msg.value >= priceOf(_itemId));
 		require(ownerOf(_itemId) != msg.sender);
 		require(!isContract(msg.sender));
 		require(msg.sender != owner);
-		require(block.timestamp &lt; timestampLimit || block.timestamp &gt; timestampLimit.add(3600));
+		require(block.timestamp < timestampLimit || block.timestamp > timestampLimit.add(3600));
 		
 		
 		address oldOwner = ownerOf(_itemId);
@@ -693,12 +693,12 @@ contract SuperCountriesEth {
 	/// Update scores and timestamp ///
 	///////////////////////////////////
 		
-		/// Dividends are dispatched among players accordingly to their &quot;playerScore&quot;.
+		/// Dividends are dispatched among players accordingly to their "playerScore".
 		/// The playerScore equals the sum of all their countries (owned now, paid price) + sum of all their previously owned countries 
 		/// After each sell / buy, players that owned at least one country can claim dividends
 		/// DIVS of a player = playerScore * DIVS to dispatch / worldScore
 		/// If a player is a seller or a buyer, his playerScore will change, we need to adjust his parameters
-		/// If a player is not a buyer / seller, his playerScore doesn&#39;t change, no need to adjust
+		/// If a player is not a buyer / seller, his playerScore doesn't change, no need to adjust
 			updateScoreAndBalance(price, _itemId, oldOwner, newOwner);
 			
 		/// worldScore change after each flip, we need to adjust
@@ -718,8 +718,8 @@ contract SuperCountriesEth {
 	
 		/// When a country flips, who earns how much?
 		/// Devs : 2% to 5% of country price
-		/// Seller&#39;s reward : current paidPrice - previousPrice - devsCut = net profit. The seller gets the previous Price + ca.65% of net Profit
-		/// The referrers of the seller : % of netProfit from their referrals R+1 &amp; R+2. If no referrers, all the referrers&#39; cut goes to dividends to all players.
+		/// Seller's reward : current paidPrice - previousPrice - devsCut = net profit. The seller gets the previous Price + ca.65% of net Profit
+		/// The referrers of the seller : % of netProfit from their referrals R+1 & R+2. If no referrers, all the referrers' cut goes to dividends to all players.
 		/// All players, with or without a country now : dividends (% of netProfit)
 		/// All previous owners of the flipped country : a special part of dividends called Bonus. If no previous buyer, all the bonus is also added up to dividends to all players.
 			
@@ -732,12 +732,12 @@ contract SuperCountriesEth {
 		/// Calculate dividends cut from netProfit and what referrers left
 			uint256 dividendsCut_ = netProfit.mul(30).div(100);
 			
-		/// Calculate the seller&#39;s reward
+		/// Calculate the seller's reward
 		/// Price sub the cuts : dev cut and 35% including referrer cut (5% max), 30% (25% if referrers) dividends (including 80% divs / 20% bonus max) and 5% (jackpot)
 			uint256 oldOwnerReward = price.sub(devCut_).sub(netProfit.mul(35).div(100));
 
-		/// Calculate the referrers cut and store the referrer&#39;s cut in the referrer&#39;s pending balance ///
-		/// Update dividend&#39;s cut : 30% max ; 27,5% if 1 referrer ; 25% if 2 referrers
+		/// Calculate the referrers cut and store the referrer's cut in the referrer's pending balance ///
+		/// Update dividend's cut : 30% max ; 27,5% if 1 referrer ; 25% if 2 referrers
 			uint256 refCut = payReferrer(oldOwner, netProfit);
 			dividendsCut_ -= refCut;
 		
@@ -753,7 +753,7 @@ contract SuperCountriesEth {
 		/// If no previous owners, 100% to all countries owners
 	
 		/// Are there previous owners for the current flipped country?
-			if (price &gt; countryStructs[_itemId].startingPrice &amp;&amp; dividendsCut_ &gt; 1000000 &amp;&amp; worldScore &gt; 0) {
+			if (price > countryStructs[_itemId].startingPrice && dividendsCut_ > 1000000 && worldScore > 0) {
 				
 				/// Yes, there are previous owners, they will get 20% of dividends of this country
 					bonusPreviousOwner(_itemId, price, dividendsCut_.mul(20).div(100));
@@ -766,7 +766,7 @@ contract SuperCountriesEth {
 		
 		/// Dispatch dividends to all country owners, no matter the country
 		/// Note : to avoid floating numbers, we divide a constant called HUGE (1e13) by worldScore, of course we will multiply by HUGE when retrieving
-			if (worldScore &gt; 0) { /// worldScore must be greater than 0, the opposite is impossible and dividends are not calculated
+			if (worldScore > 0) { /// worldScore must be greater than 0, the opposite is impossible and dividends are not calculated
 				
 				dividendsScore += HUGE.mul(dividendsCut_).div(worldScore);
 			}
@@ -778,7 +778,7 @@ contract SuperCountriesEth {
 	////////////////////////////////////////////////
 	
 		/// The newOwner is now known as an OWNER for this country
-		/// We&#39;ll store his cumulated buy price for this country in a mapping
+		/// We'll store his cumulated buy price for this country in a mapping
 		/// Bonus : each time a country is flipped, players that previously owned this country get bonuses proportionally to the sum of their buys	
 			updateEntity(_itemId, newOwner, price);
 			itemHistory[_itemId][newOwner] += price;
@@ -790,7 +790,7 @@ contract SuperCountriesEth {
 	/// Update the price ///
 	////////////////////////
 	
-		/// The price of purchase becomes the &quot;previousPrice&quot;, and the &quot;price&quot; is the next price 
+		/// The price of purchase becomes the "previousPrice", and the "price" is the next price 
 			previousPriceOfItem[_itemId] = price;
 			priceOfItem[_itemId] = nextPriceOf(_itemId);
 	
@@ -800,9 +800,9 @@ contract SuperCountriesEth {
 	/// Transfer the reward to the seller ///
 	/////////////////////////////////////////
 
-		/// The seller&#39;s reward is transfered automatically to his wallet
+		/// The seller's reward is transfered automatically to his wallet
 		/// The dev cut is transfered automatically out the contract
-		/// The other rewards (bonus, dividends, referrer&#39;s cut) will be stored in a pending balance
+		/// The other rewards (bonus, dividends, referrer's cut) will be stored in a pending balance
 			oldOwner.transfer(oldOwnerReward);
 			owner.transfer(devCut_);
 			
@@ -849,12 +849,12 @@ contract SuperCountriesEth {
 
 	
 	function name() public pure returns (string _name) {
-		return &quot;SuperCountries&quot;;
+		return "SuperCountries";
 	}
 
 	
 	function symbol() public pure returns (string _symbol) {
-		return &quot;SUP&quot;;
+		return "SUP";
 	}
 
 	
@@ -866,7 +866,7 @@ contract SuperCountriesEth {
 	function balanceOf (address _owner) public view returns (uint256 _balance) {
 		uint256 counter = 0;
 
-			for (uint256 i = 0; i &lt; listedItems.length; i++) {
+			for (uint256 i = 0; i < listedItems.length; i++) {
 				if (ownerOf(listedItems[i]) == _owner) {
 					counter++;
 				}
@@ -885,7 +885,7 @@ contract SuperCountriesEth {
 		uint256[] memory items = new uint256[](balanceOf(_owner));
 		uint256 itemCounter = 0;
 			
-			for (uint256 i = 0; i &lt; listedItems.length; i++) {
+			for (uint256 i = 0; i < listedItems.length; i++) {
 				if (ownerOf(listedItems[i]) == _owner) {
 					items[itemCounter] = listedItems[i];
 					itemCounter += 1;
@@ -897,7 +897,7 @@ contract SuperCountriesEth {
 
 
 	function tokenExists (uint256 _itemId) public view returns (bool _exists) {
-		return priceOf(_itemId) &gt; 0;
+		return priceOf(_itemId) > 0;
 	}
 
 	
@@ -980,7 +980,7 @@ contract SuperCountriesEth {
 	function isContract(address addr) internal view returns (bool) {
 		uint size;
 		assembly { size := extcodesize(addr) } // solium-disable-line
-		return size &gt; 0;
+		return size > 0;
 	}
 
 

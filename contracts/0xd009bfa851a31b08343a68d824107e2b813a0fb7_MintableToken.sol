@@ -19,9 +19,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -29,7 +29,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -38,7 +38,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ library SafeMath {
 contract BasicToken {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -67,7 +67,7 @@ contract BasicToken {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -102,7 +102,7 @@ contract ERC20 {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -112,8 +112,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -127,7 +127,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -191,7 +191,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -315,8 +315,8 @@ contract Pausable is Manageable {
  */
 contract MintableToken is StandardToken, Manageable, Pausable  {
   
-  string public name = &quot;Pointium&quot;;
-  string public symbol = &quot;PNT&quot;;
+  string public name = "Pointium";
+  string public symbol = "PNT";
   uint256 public decimals = 18;
   
   event Mint(address indexed to, uint256 amount);
@@ -380,9 +380,9 @@ contract MintableToken is StandardToken, Manageable, Pausable  {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) onlyOwnerOrManager public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -390,9 +390,9 @@ contract MintableToken is StandardToken, Manageable, Pausable  {
     Burn(burner, _value);
   }
     function burn_from(address _address, uint256 _value) onlyOwnerOrManager public {
-    require(_value &lt;= balances[_address]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[_address]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = _address;
     balances[burner] = balances[burner].sub(_value);
@@ -440,13 +440,13 @@ contract Crowdsale is Manageable{
   function init(uint256 _startTime, uint256 _endTime, uint256 _cap, uint256 _rate, address _wallet, MintableToken _token, uint256 _tokenWeiMax, uint256 _tokenWeiMin) onlyOwner public{
 
     
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
-    require(_cap &gt; 0);
-    require(_tokenWeiMax &gt; 0);
-    require(_tokenWeiMin &gt; 0);
+    require(_cap > 0);
+    require(_tokenWeiMax > 0);
+    require(_tokenWeiMin > 0);
 
     cap = _cap;
     startTime = _startTime;
@@ -484,13 +484,13 @@ contract Crowdsale is Manageable{
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    return capReached || now &gt; endTime;
+    bool capReached = weiRaised >= cap;
+    return capReached || now > endTime;
   }
 
   // Override this method to have a way to add business logic to your crowdsale when buying
   function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
-    if(now &lt;= startTime.add(1209600)){
+    if(now <= startTime.add(1209600)){
         return weiAmount.mul(rate);
     }
     else{
@@ -506,11 +506,11 @@ contract Crowdsale is Manageable{
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    bool withinMaxMin = tokenWeiMax &gt;= msg.value &amp;&amp; tokenWeiMin &lt;= msg.value;
-    return withinCap &amp;&amp; withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinMaxMin;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    bool withinMaxMin = tokenWeiMax >= msg.value && tokenWeiMin <= msg.value;
+    return withinCap && withinPeriod && nonZeroPurchase && withinMaxMin;
   }
 }
 

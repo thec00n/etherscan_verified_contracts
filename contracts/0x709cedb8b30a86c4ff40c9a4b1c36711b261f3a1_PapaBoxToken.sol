@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function safediv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function safesub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeadd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,8 +39,8 @@ contract Token {
     string internal _name;
     uint8 internal _decimals;
     uint internal _totalSupply = 1000;
-    mapping (address =&gt; uint) internal _balanceOf;
-    mapping (address =&gt; mapping(address =&gt; uint)) internal _allowances;
+    mapping (address => uint) internal _balanceOf;
+    mapping (address => mapping(address => uint)) internal _allowances;
     
     constructor(string symbol, string name, uint8 decimals, uint totalSupply) public {
         _symbol = symbol;
@@ -70,7 +70,7 @@ contract Token {
     event Transfer(address indexed _from, address indexed _to, uint _value);
 }
 
-contract PapaBoxToken is Token(&quot;PaPB&quot;, &quot;Papa Box Beta&quot;, 6, 10 ** 15 ), ERC20 {
+contract PapaBoxToken is Token("PaPB", "Papa Box Beta", 6, 10 ** 15 ), ERC20 {
     using SafeMath for uint256;
     
     constructor() public {
@@ -86,8 +86,8 @@ contract PapaBoxToken is Token(&quot;PaPB&quot;, &quot;Papa Box Beta&quot;, 6, 1
     }
     
     function transfer(address _to, uint _value) public returns (bool){
-        if(_value &gt; 0 &amp;&amp;
-            _value &lt;= _balanceOf[msg.sender] &amp;&amp;
+        if(_value > 0 &&
+            _value <= _balanceOf[msg.sender] &&
             !isContract(_to)) {
                 
             _balanceOf[msg.sender] = _balanceOf[msg.sender].safesub(_value);
@@ -105,13 +105,13 @@ contract PapaBoxToken is Token(&quot;PaPB&quot;, &quot;Papa Box Beta&quot;, 6, 1
         assembly {
             codeSize := extcodesize(_addr)
         }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
     
     function transferFrom(address _from, address _to, uint _value) public returns(bool)  {
-        if(_allowances[_from][msg.sender] &gt; 0 &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            _allowances[_from][msg.sender] &gt;= _value) {
+        if(_allowances[_from][msg.sender] > 0 &&
+            _value > 0 &&
+            _allowances[_from][msg.sender] >= _value) {
                 
                 _balanceOf[_from] = _balanceOf[_from].safesub(_value);
                 _balanceOf[_to] = _balanceOf[_to].safeadd(_value);

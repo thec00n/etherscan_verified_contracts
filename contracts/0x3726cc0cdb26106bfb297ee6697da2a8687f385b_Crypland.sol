@@ -9,8 +9,8 @@ contract Crypland {
   address public owner;
 
   Element[][25][4] public elements;
-  mapping (uint =&gt; mapping (uint =&gt; mapping (uint =&gt; address))) public addresses;
-  mapping (uint =&gt; mapping (uint =&gt; mapping (uint =&gt; Offer))) public offers;
+  mapping (uint => mapping (uint => mapping (uint => address))) public addresses;
+  mapping (uint => mapping (uint => mapping (uint => Offer))) public offers;
 
   event ElementBought(uint indexed group, uint indexed asset, uint indexed unit, address user, uint price, uint level, uint worth);
   event ElementUpgraded(uint indexed group, uint indexed asset, uint indexed unit, address user, uint price, uint level, uint worth);
@@ -41,17 +41,17 @@ contract Crypland {
   }
 
   modifier whenElementHolder(uint group, uint asset, uint unit) {
-    require(group &gt;= 0 &amp;&amp; group &lt; 4);
-    require(asset &gt;= 0 &amp;&amp; asset &lt; 25);
-    require(unit &gt;= 0 &amp;&amp; unit &lt; elements[group][asset].length);
+    require(group >= 0 && group < 4);
+    require(asset >= 0 && asset < 25);
+    require(unit >= 0 && unit < elements[group][asset].length);
     require(addresses[group][asset][unit] == msg.sender);
     _;
   }
 
   modifier whenNotElementHolder(uint group, uint asset, uint unit) {
-    require(group &gt;= 0 &amp;&amp; group &lt; 4);
-    require(asset &gt;= 0 &amp;&amp; asset &lt; 25);
-    require(unit &gt;= 0 &amp;&amp; unit &lt; elements[group][asset].length);
+    require(group >= 0 && group < 4);
+    require(asset >= 0 && asset < 25);
+    require(unit >= 0 && unit < elements[group][asset].length);
     require(addresses[group][asset][unit] != msg.sender);
     _;
   }
@@ -106,10 +106,10 @@ contract Crypland {
   function userAssignElement(uint group, uint asset, address ref) public payable whenNotPaused {
     uint price = calcAssetBuyPrice(asset);
 
-    require(group &gt;= 0 &amp;&amp; group &lt; 4);
-    require(asset &gt;= 0 &amp;&amp; asset &lt; 23);
-    require(calcAssetAssigned(group, asset) &lt; calcAssetMax(asset));
-    require(msg.value &gt;= price);
+    require(group >= 0 && group < 4);
+    require(asset >= 0 && asset < 23);
+    require(calcAssetAssigned(group, asset) < calcAssetMax(asset));
+    require(msg.value >= price);
 
     if (ref == address(0) || ref == msg.sender) {
       ref = owner;
@@ -141,8 +141,8 @@ contract Crypland {
   function userUpgradeElement(uint group, uint asset, uint unit) public payable whenNotPaused whenElementHolder(group, asset, unit) {
     uint price = calcAssetUpgradePrice(asset);
 
-    require(elements[group][asset][unit].cooldown &lt; block.number);
-    require(msg.value &gt;= price);
+    require(elements[group][asset][unit].cooldown < block.number);
+    require(msg.value >= price);
 
     elements[group][asset][unit].level = elements[group][asset][unit].level + 1;
     elements[group][asset][unit].cooldown = block.number + ((elements[group][asset][unit].level - 1) * 120);
@@ -153,7 +153,7 @@ contract Crypland {
 
   function userOfferSubmitElement(uint group, uint asset, uint unit, uint startPrice, uint endPrice, uint duration) public whenNotPaused whenElementHolder(group, asset, unit) {
     require(!offers[group][asset][unit].isOffer); 
-    require(startPrice &gt; 0 &amp;&amp; endPrice &gt; 0 &amp;&amp; duration &gt; 0 &amp;&amp; startPrice &gt;= endPrice);
+    require(startPrice > 0 && endPrice > 0 && duration > 0 && startPrice >= endPrice);
 
     offers[group][asset][unit].isOffer = true;
     offers[group][asset][unit].startPrice = startPrice;
@@ -175,7 +175,7 @@ contract Crypland {
     uint price = calcElementCurrentPrice(group, asset, unit);
 
     require(offers[group][asset][unit].isOffer);
-    require(msg.value &gt;= price);
+    require(msg.value >= price);
 
     address seller = addresses[group][asset][unit];
 
@@ -191,11 +191,11 @@ contract Crypland {
   }
 
   function calcAssetWorthIndex(uint asset) pure internal returns (uint) {
-    return asset &lt; 23 ? (24 - asset) : 1;
+    return asset < 23 ? (24 - asset) : 1;
   }
 
   function calcAssetBuyPrice(uint asset) pure internal returns (uint) {
-    return asset &lt; 23 ? ((24 - asset) * (25 - asset) * 10**15 / 2) : 0;
+    return asset < 23 ? ((24 - asset) * (25 - asset) * 10**15 / 2) : 0;
   }
 
   function calcAssetUpgradePrice(uint asset) pure internal returns (uint) {
@@ -203,7 +203,7 @@ contract Crypland {
   }
 
   function calcAssetMax(uint asset) pure internal returns (uint) {
-    return asset &lt; 23 ? ((asset + 1) * (asset + 2) / 2) : 2300;
+    return asset < 23 ? ((asset + 1) * (asset + 2) / 2) : 2300;
   }
 
   function calcAssetAssigned(uint group, uint asset) view internal returns (uint) {
@@ -215,15 +215,15 @@ contract Crypland {
   }
 
   function calcElementCooldown(uint group, uint asset, uint unit) view internal returns (uint) {
-    return elements[group][asset][unit].cooldown &gt; block.number ? elements[group][asset][unit].cooldown - block.number : 0;
+    return elements[group][asset][unit].cooldown > block.number ? elements[group][asset][unit].cooldown - block.number : 0;
   }
 
   function calcElementCurrentPrice(uint group, uint asset, uint unit) view internal returns (uint) {
     uint price = 0;
     if (offers[group][asset][unit].isOffer) {
-      if (block.number &gt;= offers[group][asset][unit].endBlock) {
+      if (block.number >= offers[group][asset][unit].endBlock) {
         price = offers[group][asset][unit].endPrice;
-      } else if (block.number &lt;= offers[group][asset][unit].startBlock) {
+      } else if (block.number <= offers[group][asset][unit].startBlock) {
         price = offers[group][asset][unit].startPrice;
       } else if (offers[group][asset][unit].endPrice == offers[group][asset][unit].startPrice) {
         price = offers[group][asset][unit].endPrice;

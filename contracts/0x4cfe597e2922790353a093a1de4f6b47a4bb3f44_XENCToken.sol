@@ -13,10 +13,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -24,7 +24,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -83,13 +83,13 @@ contract XENCToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     function XENCToken() public {
-        symbol = &quot;XENC&quot;;
-        name = &quot;XENC Token&quot;;
+        symbol = "XENC";
+        name = "XENC Token";
         decimals = 6;
         _totalSupply = 200000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;

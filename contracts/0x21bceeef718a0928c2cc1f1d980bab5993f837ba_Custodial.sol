@@ -1,6 +1,6 @@
 /*
- * Custodial Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="b8d5d1d3d0d9d1d496ced4d9dcd1d5d1cad7cef8dfd5d9d1d496dbd7d5">[email&#160;protected]</span>&gt;
+ * Custodial Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="b8d5d1d3d0d9d1d496ced4d9dcd1d5d1cad7cef8dfd5d9d1d496dbd7d5">[email protected]</span>>
  */
 pragma solidity ^0.4.10;
 
@@ -18,12 +18,12 @@ contract Custodial {
 
   /**
    * Address of the advisor, i.e. the one who receives fee charged by the
-   * contract for keeping client&#39;s ether.
+   * contract for keeping client's ether.
    */
   address advisor;
 
   /**
-   * Capital, i.e. amount of client&#39;s ether (in Wei) kept by the contract.
+   * Capital, i.e. amount of client's ether (in Wei) kept by the contract.
    */
   uint256 capital;
 
@@ -47,7 +47,7 @@ contract Custodial {
    * @param _feeFactor fee factor
    */
   function Custodial (address _client, address _advisor, uint256 _feeFactor) {
-    if (_feeFactor &gt; TWO_128)
+    if (_feeFactor > TWO_128)
       throw; // Fee factor must be less then or equal to 2^128
 
     client = _client;
@@ -56,26 +56,26 @@ contract Custodial {
   }
 
   /**
-   * Get client&#39;s capital (in Wei).
+   * Get client's capital (in Wei).
    *
    * @param _currentTime current time in seconds since epoch
-   * @return client&#39;s capital
+   * @return client's capital
    */
   function getCapital (uint256 _currentTime)
   constant returns (uint256 _result) {
     _result = capital;
-    if (capital &gt; 0 &amp;&amp; capitalTimestamp &lt; _currentTime &amp;&amp; feeFactor &lt; TWO_128) {
+    if (capital > 0 && capitalTimestamp < _currentTime && feeFactor < TWO_128) {
       _result = mul (_result, pow (feeFactor, _currentTime - capitalTimestamp));
     }
   }
 
   /**
-   * Deposit ether on the client&#39;s account.
+   * Deposit ether on the client's account.
    */
   function deposit () payable {
-    if (msg.value &gt; 0) {
+    if (msg.value > 0) {
       updateCapital ();
-      if (msg.value &gt;= TWO_128 - capital)
+      if (msg.value >= TWO_128 - capital)
         throw; // Capital should never exceed 2^128 Wei
       capital += msg.value;
       Deposit (msg.sender, msg.value);
@@ -83,7 +83,7 @@ contract Custodial {
   }
 
   /**
-   * Withdraw ether from client&#39;s account and sent it to the client&#39;s address.
+   * Withdraw ether from client's account and sent it to the client's address.
    * May only be called by client.
    *
    * @param _value value to withdraw (in Wei)
@@ -93,9 +93,9 @@ contract Custodial {
   returns (bool _success) {
     if (msg.sender != client) throw;
 
-    if (_value &gt; 0) {
+    if (_value > 0) {
       updateCapital ();
-      if (_value &lt;= capital) {
+      if (_value <= capital) {
         if (client.send (_value)) {
           Withdrawal (_value);
           capital -= _value;
@@ -106,7 +106,7 @@ contract Custodial {
   }
 
   /**
-   * Withdraw all ether from client&#39;s account and sent it to the client&#39;s
+   * Withdraw all ether from client's account and sent it to the client's
    * address.  May only be called by client.
    *
    * @return true if ether was successfully withdrawn, false otherwise
@@ -116,7 +116,7 @@ contract Custodial {
     if (msg.sender != client) throw;
 
     updateCapital ();
-    if (capital &gt; 0) {
+    if (capital > 0) {
       if (client.send (capital)) {
         Withdrawal (capital);
         capital = 0;
@@ -127,7 +127,7 @@ contract Custodial {
 
   /**
    * Withdraw fee charged by the contract as well as all unaccounted ether on
-   * contract&#39;s balance and send it to the advisor&#39;s address.  May only be
+   * contract's balance and send it to the advisor's address.  May only be
    * called by advisor.
    *
    * @return true if fee and unaccounted ether was successfully withdrawn,
@@ -138,7 +138,7 @@ contract Custodial {
     if (msg.sender != advisor) throw;
 
     uint256 _value = this.balance - getCapital (now);
-    if (_value &gt; 0) {
+    if (_value > 0) {
       return advisor.send (_value);
     } else return true;
   }
@@ -150,8 +150,8 @@ contract Custodial {
   function terminate () {
     if (msg.sender != advisor) throw;
 
-    if (capital &gt; 0) throw;
-    if (this.balance &gt; 0) {
+    if (capital > 0) throw;
+    if (this.balance > 0) {
       if (!advisor.send (this.balance)) {
         // Ignore error
       }
@@ -164,7 +164,7 @@ contract Custodial {
    */
   function updateCapital ()
   internal {
-    if (capital &gt; 0 &amp;&amp; capitalTimestamp &lt; now &amp;&amp; feeFactor &lt; TWO_128) {
+    if (capital > 0 && capitalTimestamp < now && feeFactor < TWO_128) {
       capital = mul (capital, pow (feeFactor, now - capitalTimestamp));
     }
     capitalTimestamp = now;
@@ -180,9 +180,9 @@ contract Custodial {
    */
   function mul (uint256 _a, uint256 _b)
   internal constant returns (uint256 _result) {
-    if (_a &gt; TWO_128) throw;
-    if (_b &gt;= TWO_128) throw;
-    return (_a * _b + TWO_127) &gt;&gt; 128;
+    if (_a > TWO_128) throw;
+    if (_b >= TWO_128) throw;
+    return (_a * _b + TWO_127) >> 128;
   }
 
   /**
@@ -194,13 +194,13 @@ contract Custodial {
    */
   function pow (uint256 _a, uint256 _b)
   internal constant returns (uint256 _result) {
-    if (_a &gt;= TWO_128) throw;
+    if (_a >= TWO_128) throw;
 
     _result = TWO_128;
-    while (_b &gt; 0) {
-      if (_b &amp; 1 == 0) {
+    while (_b > 0) {
+      if (_b & 1 == 0) {
         _a = mul (_a, _a);
-        _b &gt;&gt;= 1;
+        _b >>= 1;
       } else {
         _result = mul (_result, _a);
         _b -= 1;
@@ -209,7 +209,7 @@ contract Custodial {
   }
 
   /**
-   * Logged when ether was deposited on client&#39;s account.
+   * Logged when ether was deposited on client's account.
    *
    * @param from address ether came from
    * @param value amount of ether deposited (in Wei)
@@ -217,7 +217,7 @@ contract Custodial {
   event Deposit (address indexed from, uint256 value);
 
   /**
-   * Logged when ether was withdrawn from client&#39;s account.
+   * Logged when ether was withdrawn from client's account.
    *
    * @param value amount of ether withdrawn (in Wei)
    */

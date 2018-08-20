@@ -5,11 +5,11 @@ pragma solidity ^0.4.20;
 /*
 Copyright 2018 etherich.co
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 contract Etherich {
@@ -18,8 +18,8 @@ contract Etherich {
     uint constant public PARTICIPATION_FEE = 0.1 ether;
     uint[] public REFERRAL_RATE = [40, 25, 15, 10, 5];
 
-    mapping (address =&gt; address) members;
-    mapping (string =&gt; address) referralCodes;
+    mapping (address => address) members;
+    mapping (string => address) referralCodes;
     uint public memberCount;
 
     event HasNewMember(uint memberCount);
@@ -44,7 +44,7 @@ contract Etherich {
         string memory alphabetHash = hash(msg.sender);
         referralCodes[alphabetHash] = msg.sender;
         
-        for (uint16 i = 0; i&lt;5; i++) {
+        for (uint16 i = 0; i<5; i++) {
             if (referrer == 1) {
                 break;
             }
@@ -70,7 +70,7 @@ contract Etherich {
         if (this.isMember(a)) {
             return hash(a);
         } else {
-            return &quot;&quot;;
+            return "";
         }
     }
 
@@ -79,7 +79,7 @@ contract Etherich {
     }
     
     function payout(address receiver, uint amount) public restricted {
-        if (amount &gt; this.balance) {
+        if (amount > this.balance) {
             receiver.transfer(this.balance);
         } else {
             receiver.transfer(amount);
@@ -99,7 +99,7 @@ contract Etherich {
         bytes memory bytesString = new bytes(32);
         uint8 charCount = 0;
 
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             uint8 value = uint8(x[j]) % 24;
             byte char = byte(65 + value);
             bytesString[charCount] = char;
@@ -129,12 +129,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

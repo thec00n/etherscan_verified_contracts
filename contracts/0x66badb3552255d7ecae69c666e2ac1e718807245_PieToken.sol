@@ -2,8 +2,8 @@ pragma solidity ^0.4.18;
 
 contract PieTokenBase {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
     
     event Transfer( address indexed from, address indexed to, uint value);
     event Approval( address indexed owner, address indexed spender, uint value);
@@ -23,7 +23,7 @@ contract PieTokenBase {
     }
     
     function transfer(address dst, uint wad) public returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -34,8 +34,8 @@ contract PieTokenBase {
     }
     
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
         
         _balances[src] = sub(_balances[src], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -55,17 +55,17 @@ contract PieTokenBase {
     }
 
     function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 }
 
 contract PieToken is PieTokenBase {
-    string  public  symbol = &quot;PIE&quot;;
-    string  public name = &quot;CANDY PIE&quot;;
+    string  public  symbol = "PIE";
+    string  public name = "CANDY PIE";
     uint256  public  decimals = 18; 
     address public owner;
 

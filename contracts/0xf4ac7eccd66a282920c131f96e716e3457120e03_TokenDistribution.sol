@@ -12,7 +12,7 @@ contract Math {
 
         uint c = a * b;
 
-        assert(a != 0 &amp;&amp; b != 0 );
+        assert(a != 0 && b != 0 );
 
         return c;
 
@@ -22,7 +22,7 @@ contract Math {
 
     function safeSub(uint a, uint b) internal returns (uint) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -34,7 +34,7 @@ contract Math {
 
         uint c = a + b;
 
-        assert(b &lt;= c &amp;&amp; c &gt;= a);
+        assert(b <= c && c >= a);
 
         return c;
 
@@ -52,7 +52,7 @@ contract ERC20 {
 
     function transfer(address to, uint value) returns (bool success) {
 
-        if (tokenOwned[msg.sender] &gt;= value &amp;&amp; tokenOwned[to] + value &gt; tokenOwned[to]) {
+        if (tokenOwned[msg.sender] >= value && tokenOwned[to] + value > tokenOwned[to]) {
 
             tokenOwned[msg.sender] -= value;
 
@@ -70,7 +70,7 @@ contract ERC20 {
 
     function transferFrom(address from, address to, uint value) returns (bool success) {
 
-        if (tokenOwned[from] &gt;= value &amp;&amp; allowed[from][msg.sender] &gt;= value &amp;&amp; tokenOwned[to] + value &gt; tokenOwned[to]) {
+        if (tokenOwned[from] >= value && allowed[from][msg.sender] >= value && tokenOwned[to] + value > tokenOwned[to]) {
 
             tokenOwned[to] += value;
 
@@ -122,11 +122,11 @@ contract ERC20 {
 
  
 
-    mapping(address =&gt; uint) internal tokenOwned; // Contract field for storing token balance owned by certain address
+    mapping(address => uint) internal tokenOwned; // Contract field for storing token balance owned by certain address
 
  
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
  
 
@@ -134,11 +134,11 @@ contract ERC20 {
 
  
 
-    string public name = &quot;BitMohar&quot;;
+    string public name = "BitMohar";
 
  
 
-    string public symbol = &quot;MOH&quot;;
+    string public symbol = "MOH";
 
  
 
@@ -160,7 +160,7 @@ contract TokenDistribution is Math, ERC20 {
 
  
 
-    //assigns owner to the contract &amp; initilizes the number of tranches
+    //assigns owner to the contract & initilizes the number of tranches
 
     function TokenDistribution() {
 
@@ -190,7 +190,7 @@ contract TokenDistribution is Math, ERC20 {
 
     function preMine() returns (bool z) {
 
-        if(msg.sender == owner &amp;&amp; !preMineDone) {
+        if(msg.sender == owner && !preMineDone) {
 
             tokenOwned[0x60212b87C6e106d3852890FE6e8d00db3D99d002] = 9000000000000000000;
 
@@ -224,11 +224,11 @@ contract TokenDistribution is Math, ERC20 {
 
         uint mined = 0;
 
-        if(blockTime &gt; 1) { //after halving
+        if(blockTime > 1) { //after halving
 
             uint prevMinted = 0;
 
-            for (uint i = 1; i &lt;= blockTime; i++) {
+            for (uint i = 1; i <= blockTime; i++) {
 
                 prevMinted += (blocksPerYear * (emissionPerblock / i));
 
@@ -246,7 +246,7 @@ contract TokenDistribution is Math, ERC20 {
 
  
 
-        if(safeAdd(preMined, safeAdd(mined, tokensMinted)) &gt; totalSupply) {
+        if(safeAdd(preMined, safeAdd(mined, tokensMinted)) > totalSupply) {
 
             return false;
 
@@ -302,7 +302,7 @@ contract TokenDistribution is Math, ERC20 {
 
     address owner;
 
-    mapping (address =&gt; uint) internal etherSent; // Contract field for storing how much Ether was sent from certain address
+    mapping (address => uint) internal etherSent; // Contract field for storing how much Ether was sent from certain address
 
     uint startBlock;
 

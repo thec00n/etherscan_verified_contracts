@@ -5,18 +5,18 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
@@ -57,11 +57,11 @@ contract ContractReceiver {
 contract MTTT_Token is SafeMath, Owned {    
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
     
     //address public owner    = msg.sender;
-    string public name    = &quot;MelobnBIT223&quot;;
-    string public symbol  = &quot;MTTT&quot;;
+    string public name    = "MelobnBIT223";
+    string public symbol  = "MTTT";
     uint8 public decimals = 8;
     uint256 public totalSupply;
     
@@ -95,7 +95,7 @@ contract MTTT_Token is SafeMath, Owned {
     function transfer(address _to, uint _value, bytes _data, string _custom_fallback) returns (bool success) {
         
         if(isContract(_to)) {
-            if (balanceOf(msg.sender) &lt; _value) throw;
+            if (balanceOf(msg.sender) < _value) throw;
             balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
             balances[_to] = safeAdd(balanceOf(_to), _value);
             assert(_to.call.value(0)(bytes4(sha3(_custom_fallback)), msg.sender, _value, _data));
@@ -141,12 +141,12 @@ contract MTTT_Token is SafeMath, Owned {
                 //retrieve the size of the code on target address, this needs assembly
                 length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 
     //function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) throw;
+        if (balanceOf(msg.sender) < _value) throw;
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         Transfer(msg.sender, _to, _value, _data);
@@ -155,7 +155,7 @@ contract MTTT_Token is SafeMath, Owned {
     
     //function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-        if (balanceOf(msg.sender) &lt; _value) throw;
+        if (balanceOf(msg.sender) < _value) throw;
         balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
         balances[_to] = safeAdd(balanceOf(_to), _value);
         ContractReceiver receiver = ContractReceiver(_to);

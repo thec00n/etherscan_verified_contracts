@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -35,7 +35,7 @@ contract Base {
 
     modifier noAnyReentrancy {
         uint _locks = bitlocks;
-        require(_locks &lt;= 0);
+        require(_locks <= 0);
         bitlocks = uint(-1);
         _;
         bitlocks = _locks;
@@ -56,8 +56,8 @@ contract Base {
 
 contract ERC20 is Base {
     
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     using SafeMath for uint;
     uint public totalSupply;
     bool public isFrozen = false;
@@ -113,8 +113,8 @@ contract ERC20 is Base {
 
 contract Token is ERC20 {
 
-    string public name = &quot;Array.io Token&quot;;
-    string public symbol = &quot;eRAY&quot;;
+    string public name = "Array.io Token";
+    string public symbol = "eRAY";
     uint8 public decimals = 18;
     uint public constant BIT = 10**18;
     bool public tgeLive = false;
@@ -130,7 +130,7 @@ contract Token is ERC20 {
     address public projectWallet;
     address public foundersWallet;
     address constant public burnAddress = address(0);
-    mapping (address =&gt; uint) public invBalances;
+    mapping (address => uint) public invBalances;
     uint public totalInvSupply;
 
     modifier isTgeLive(){
@@ -144,15 +144,15 @@ contract Token is ERC20 {
     }
 
     modifier maxStagesIsNotAchieved() {
-        if (totalSupply &gt; BIT) {
+        if (totalSupply > BIT) {
             uint stage = block.number.sub(tgeStartBlock).div(tgeSettingsBlocksPerStage);
-            require(stage &lt; tgeSettingsMaxStages);
+            require(stage < tgeSettingsMaxStages);
         }
         _;
     }
 
     modifier targetIsNotAchieved(){
-        require(tgeSettingsAmountCollect &lt; tgeSettingsAmount);
+        require(tgeSettingsAmountCollect < tgeSettingsAmount);
         _;
     }
 
@@ -163,7 +163,7 @@ contract Token is ERC20 {
         require(_to != address(this));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        if(balances[projectWallet] &lt; 1 * BIT &amp;&amp; !tgeLive){
+        if(balances[projectWallet] < 1 * BIT && !tgeLive){
             _internalTgeSetLive();
         }
         Transfer(msg.sender, _to, _value);
@@ -188,13 +188,13 @@ contract Token is ERC20 {
     maxStagesIsNotAchieved
     noAnyReentrancy
     {
-        require(msg.value &gt; 0);
-        if(tgeSettingsAmountCollect.add(msg.value) &gt;= tgeSettingsAmount){
+        require(msg.value > 0);
+        if(tgeSettingsAmountCollect.add(msg.value) >= tgeSettingsAmount){
             _finishTge();
         }
         uint refundAmount = 0;
         uint senderAmount = msg.value;
-        if(tgeSettingsAmountCollect.add(msg.value) &gt;= tgeSettingsAmount){
+        if(tgeSettingsAmountCollect.add(msg.value) >= tgeSettingsAmount){
             refundAmount = tgeSettingsAmountCollect.add(msg.value).sub(tgeSettingsAmount);
             senderAmount = (msg.value).sub(refundAmount);
         }
@@ -210,15 +210,15 @@ contract Token is ERC20 {
     }
 
     function setFinished() public only(projectWallet) isNotFrozenOnly isTgeLive {
-        if(balances[projectWallet] &gt; 1*BIT){
+        if(balances[projectWallet] > 1*BIT){
             _finishTge();
         }
     }
 
     function updateStatus() public {
-        if (totalSupply &gt; BIT) {
+        if (totalSupply > BIT) {
             uint stage = block.number.sub(tgeStartBlock).div(tgeSettingsBlocksPerStage);
-            if (stage &gt; tgeSettingsMaxStages) {
+            if (stage > tgeSettingsMaxStages) {
                 tgeLive = false;
             }
         }
@@ -246,7 +246,7 @@ contract Token is ERC20 {
     /// @param values array amount of tokens to transfer    
     function multiTransfer(address[] dests, uint[] values) public isNotFrozenOnly returns(uint) {
         uint i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            transfer(dests[i], values[i]);
            i += 1;
         }
@@ -264,7 +264,7 @@ contract Token is ERC20 {
 
     /// @dev Allows to users withdraw eth in frozen stage 
     function withdrawFrozen() public isFrozenOnly noAnyReentrancy {
-        require(invBalances[msg.sender] &gt; 0);
+        require(invBalances[msg.sender] > 0);
         uint amountWithdraw = totalInvSupply.mul(invBalances[msg.sender]).div(totalSupply);        
         invBalances[msg.sender] = 0;
         msg.sender.transfer(amountWithdraw);

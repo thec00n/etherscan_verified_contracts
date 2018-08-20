@@ -31,13 +31,13 @@ contract Owned {
 // Functions for safe operation with input values (subtraction and addition)
 library SafeMath {
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -58,15 +58,15 @@ contract ERC20 {
 contract Skraps is ERC20, Owned {
     using SafeMath for uint;
 
-    string public name = &quot;Skraps&quot;;
-    string public symbol = &quot;SKRP&quot;;
+    string public name = "Skraps";
+    string public symbol = "SKRP";
     uint8 public decimals = 18;
     uint public totalSupply;
 
     uint private endOfFreeze = 1518912000; // Sun, 18 Feb 2018 00:00:00 GMT
 
-    mapping (address =&gt; uint) private balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) private allowed;
+    mapping (address => uint) private balances;
+    mapping (address => mapping (address => uint)) private allowed;
 
     function balanceOf(address _who) public constant returns (uint) {
         return balances[_who];
@@ -84,8 +84,8 @@ contract Skraps is ERC20, Owned {
 
     function transfer(address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(now &gt;= endOfFreeze || msg.sender == owner);
-        require(balances[msg.sender] &gt;= _value);
+        require(now >= endOfFreeze || msg.sender == owner);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -94,8 +94,8 @@ contract Skraps is ERC20, Owned {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
         require(_to != address(0));
-        require(now &gt;= endOfFreeze || msg.sender == owner);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(now >= endOfFreeze || msg.sender == owner);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -113,7 +113,7 @@ contract Skraps is ERC20, Owned {
 
     // Withdraws tokens from the contract if they accidentally or on purpose was it placed there
     function withdrawTokens(uint _value) public onlyOwner {
-        require(balances[this] &gt; 0 &amp;&amp; balances[this] &gt;= _value);
+        require(balances[this] > 0 && balances[this] >= _value);
         balances[this] = balances[this].sub(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
         Transfer(this, msg.sender, _value);

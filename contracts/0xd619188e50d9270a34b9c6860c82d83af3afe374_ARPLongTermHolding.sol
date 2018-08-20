@@ -7,19 +7,19 @@ pragma solidity ^0.4.23;
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -33,8 +33,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -49,9 +49,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -59,7 +59,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -68,7 +68,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -160,7 +160,7 @@ contract ARPLongTermHolding {
         uint256 timestamp;
     }
 
-    mapping (address =&gt; Record) records;
+    mapping (address => Record) records;
 
     /* 
      * EVENTS
@@ -193,10 +193,10 @@ contract ARPLongTermHolding {
     function drain() public {
         require(msg.sender == owner);
         // solium-disable-next-line security/no-block-members
-        require(now &gt;= depositStartTime.add(DRAIN_DELAY));
+        require(now >= depositStartTime.add(DRAIN_DELAY));
 
         uint256 balance = arpToken.balanceOf(address(this));
-        require(balance &gt; 0);
+        require(balance > 0);
 
         arpToken.safeTransfer(owner, balance);
 
@@ -205,10 +205,10 @@ contract ARPLongTermHolding {
 
     function() public {
         // solium-disable-next-line security/no-block-members
-        if (now &gt;= depositStartTime &amp;&amp; now &lt; depositStopTime) {
+        if (now >= depositStartTime && now < depositStopTime) {
             deposit();
         // solium-disable-next-line security/no-block-members
-        } else if (now &gt; depositStopTime){
+        } else if (now > depositStopTime){
             withdraw();
         } else {
             revert();
@@ -230,7 +230,7 @@ contract ARPLongTermHolding {
         uint256 amount = arpToken
             .balanceOf(msg.sender)
             .min256(arpToken.allowance(msg.sender, address(this)));
-        require(amount &gt; 0);
+        require(amount > 0);
 
         uint256 bonus = amount.div(BONUS_SCALE);
 
@@ -242,7 +242,7 @@ contract ARPLongTermHolding {
 
         arpDeposited = arpDeposited.add(amount).add(bonus);
 
-        if (bonus &gt; 0) {
+        if (bonus > 0) {
             arpToken.safeTransferFrom(owner, address(this), bonus);
         }
         arpToken.safeTransferFrom(msg.sender, address(this), amount);
@@ -252,12 +252,12 @@ contract ARPLongTermHolding {
 
     /// Withdraws ARP.
     function withdraw() private {
-        require(arpDeposited &gt; 0);
+        require(arpDeposited > 0);
 
         Record storage record = records[msg.sender];
-        require(record.amount &gt; 0);
+        require(record.amount > 0);
         // solium-disable-next-line security/no-block-members
-        require(now &gt;= record.timestamp.add(WITHDRAWAL_DELAY));
+        require(now >= record.timestamp.add(WITHDRAWAL_DELAY));
         uint256 amount = record.amount;
         delete records[msg.sender];
 

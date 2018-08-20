@@ -8,7 +8,7 @@ contract RemiCoin {
     uint256 public totalSupply;
     
     //Balance property which should be always associate with an address
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     //These generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -25,9 +25,9 @@ contract RemiCoin {
     //Function for transer the coin from one address to another
     function transfer(address to, uint value) {
         //checking the sender should have enough coins
-        if(balanceOf[msg.sender] &lt; value) throw;
+        if(balanceOf[msg.sender] < value) throw;
         //checking for overflows
-        if(balanceOf[to] + value &lt; balanceOf[to]) throw;
+        if(balanceOf[to] + value < balanceOf[to]) throw;
         
         //substracting the sender balance
         balanceOf[msg.sender] -= value;

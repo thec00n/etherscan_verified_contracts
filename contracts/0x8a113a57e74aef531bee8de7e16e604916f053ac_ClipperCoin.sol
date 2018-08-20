@@ -12,7 +12,7 @@
 //								BTC raised: 386.808										//
 //								ETH raised: 24451.896									//
 //								EOS raised: 1468860										//
-//								In accordance with Clipper Coin Venture&#39;s plan (also	//
+//								In accordance with Clipper Coin Venture's plan (also	//
 //								viewable on the same website), the appropriate 			//
 //								proportion of coins will be delivered to ICOInfo, a 	//
 //								certain proportion will be deleted, and the rest held 	//
@@ -78,37 +78,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -154,16 +154,16 @@ contract StandardToken is ERC20Protocol {
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -173,8 +173,8 @@ contract StandardToken is ERC20Protocol {
 
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -203,8 +203,8 @@ contract StandardToken is ERC20Protocol {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 }
 
 contract tokenRecipient { 
@@ -219,16 +219,16 @@ contract ClipperCoin is Owned{
     using SafeMath for uint;
 
     /// Constant token specific fields
-    string public name = &quot;Clipper Coin&quot;;
-    string public symbol = &quot;CCCT&quot;;
+    string public name = "Clipper Coin";
+    string public symbol = "CCCT";
     uint public decimals = 18;
 
     /// Total supply of Clipper Coin
     uint public totalSupply = 200000000 ether;
     
     /// Create an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     /// Generate public event on the blockchain that will notify clients of transfers
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -276,10 +276,10 @@ contract ClipperCoin is Owned{
     	require (_to != 0x0);
     	
     	// Check that the account has enough Clipper Coins to be transferred
-        require (balanceOf[_from] &gt; _value);                
+        require (balanceOf[_from] > _value);                
         
         // Check that the subraction of coins is not occuring
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         balanceOf[_from] -= _value;                         
         balanceOf[_to] += _value;                           
         Transfer(_from, _to, _value);
@@ -302,7 +302,7 @@ contract ClipperCoin is Owned{
     	address _from, 
     	address _to, 
     	uint256 _value) returns (bool success) {
-        require (_value &lt; allowance[_from][msg.sender]);     
+        require (_value < allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -337,7 +337,7 @@ contract ClipperCoin is Owned{
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) returns (bool success) {
-        require (balanceOf[msg.sender] &gt; _value);            
+        require (balanceOf[msg.sender] > _value);            
         balanceOf[msg.sender] -= _value;                      
         totalSupply -= _value;                                
         Burn(msg.sender, _value);
@@ -347,8 +347,8 @@ contract ClipperCoin is Owned{
     function burnFrom(
     	address _from, 
     	uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                         
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              

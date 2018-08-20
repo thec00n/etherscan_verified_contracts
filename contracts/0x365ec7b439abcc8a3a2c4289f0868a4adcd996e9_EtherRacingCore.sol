@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public Master;
@@ -110,11 +110,11 @@ contract EtherRacingCore is Ownable, Pausable {
 
     struct CarProduct {
         string name;
-        uint32 basePR; // 44.4 * 100 =&gt; 4440
-        uint32 baseTopSpeed; // 155mph * 100 =&gt; 15500
-        uint32 baseAcceleration; // 2.70s * 100 =&gt; 270
-        uint32 baseBraking; // 99ft * 100 =&gt; 9900
-        uint32 baseGrip; // 1.20g * 100 =&gt; 120
+        uint32 basePR; // 44.4 * 100 => 4440
+        uint32 baseTopSpeed; // 155mph * 100 => 15500
+        uint32 baseAcceleration; // 2.70s * 100 => 270
+        uint32 baseBraking; // 99ft * 100 => 9900
+        uint32 baseGrip; // 1.20g * 100 => 120
 
         // variables for auction
         uint256 startPrice;
@@ -160,10 +160,10 @@ contract EtherRacingCore is Ownable, Pausable {
     uint256 public newAuctionID = 1;
     bool canInit = true;
 
-    mapping(uint32 =&gt; CarEntity) cars;
-    mapping(uint32 =&gt; CarProduct) carProducts;
-    mapping(uint256 =&gt; AuctionEntity) auctions;
-    mapping(address =&gt; uint256) balances;
+    mapping(uint32 => CarEntity) cars;
+    mapping(uint32 => CarProduct) carProducts;
+    mapping(uint256 => AuctionEntity) auctions;
+    mapping(address => uint256) balances;
 
     event EventCashOut (
         address indexed player,
@@ -257,14 +257,14 @@ contract EtherRacingCore is Ownable, Pausable {
 
     function EtherRacingCore() public {
 
-        addCarProduct(&quot;ER-1&quot;, 830,  15500, 530, 11200, 90,  10 finney,   0.1 finney);
-        addCarProduct(&quot;ER-2&quot;, 1910, 17100, 509, 10700, 95,  50 finney,   0.5 finney);
-        addCarProduct(&quot;ER-3&quot;, 2820, 18300, 450, 10500, 100, 100 finney,  1 finney);
-        addCarProduct(&quot;ER-4&quot;, 3020, 17700, 419, 10400, 99,  500 finney,  5 finney);
-        addCarProduct(&quot;ER-5&quot;, 4440, 20500, 379, 10100, 99,  1000 finney, 10 finney);
-        addCarProduct(&quot;ER-6&quot;, 4520, 22000, 350, 10400, 104, 1500 finney, 15 finney);
-        addCarProduct(&quot;ER-7&quot;, 4560, 20500, 340, 10200, 104, 2000 finney, 20 finney);
-        addCarProduct(&quot;ER-8&quot;, 6600, 21700, 290, 9100,  139, 2500 finney, 25 finney);
+        addCarProduct("ER-1", 830,  15500, 530, 11200, 90,  10 finney,   0.1 finney);
+        addCarProduct("ER-2", 1910, 17100, 509, 10700, 95,  50 finney,   0.5 finney);
+        addCarProduct("ER-3", 2820, 18300, 450, 10500, 100, 100 finney,  1 finney);
+        addCarProduct("ER-4", 3020, 17700, 419, 10400, 99,  500 finney,  5 finney);
+        addCarProduct("ER-5", 4440, 20500, 379, 10100, 99,  1000 finney, 10 finney);
+        addCarProduct("ER-6", 4520, 22000, 350, 10400, 104, 1500 finney, 15 finney);
+        addCarProduct("ER-7", 4560, 20500, 340, 10200, 104, 2000 finney, 20 finney);
+        addCarProduct("ER-8", 6600, 21700, 290, 9100,  139, 2500 finney, 25 finney);
     }
 
     function CompleteInit() public onlyMaster {
@@ -272,10 +272,10 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function cashOut(uint256 _amount) public whenNotPaused {
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
         require(_amount == uint256(uint128(_amount)));
-        require(this.balance &gt;= _amount);
-        require(balances[msg.sender] &gt;= _amount);
+        require(this.balance >= _amount);
+        require(balances[msg.sender] >= _amount);
 
         if (_amount == 0)
             _amount = balances[msg.sender];
@@ -289,11 +289,11 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function cashOutCar(uint32 _carID) public whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].owner == msg.sender);
         uint256 _amount = getCarEarning(_carID);
-        require(this.balance &gt;= _amount);
-        require(_amount &gt; 0);
+        require(this.balance >= _amount);
+        require(_amount > 0);
 
         var car = cars[_carID];
 
@@ -311,11 +311,11 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function upgradeCar(uint32 _carID, uint8 _statID) public payable whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].owner == msg.sender);
-        require(_statID &gt;= 0 &amp;&amp; _statID &lt; 8);
-        require(cars[_statID].upgrades[_statID] &lt; 20);
-        require(msg.value &gt;= upgradePrice);
+        require(_statID >= 0 && _statID < 8);
+        require(cars[_statID].upgrades[_statID] < 20);
+        require(msg.value >= upgradePrice);
         require(upgradeInterface != address(0));
 
         //
@@ -331,7 +331,7 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function levelUpCar(uint32 _carID, uint32 _level, uint32 _exp) public onlyMaster {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
 
         cars[_carID].level = _level;
         cars[_carID].exp = _exp;
@@ -340,7 +340,7 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function _transfer(uint32 _carID, address _receiver) public whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].owner == msg.sender);
         require(msg.sender != _receiver);
         require(cars[_carID].selling == false);
@@ -351,7 +351,7 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function _transferAction(uint32 _carID, address _receiver, uint8 _ActionType) public whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].owner == msg.sender);
         require(msg.sender != _receiver);
         require(cars[_carID].selling == false);
@@ -361,12 +361,12 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function addAuction(uint32 _carID, uint256 _startPrice, uint256 _finishPrice, uint256 _duration) public whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].owner == msg.sender);
         require(cars[_carID].selling == false);
-        require(_startPrice &gt;= _finishPrice);
-        require(_startPrice &gt; 0 &amp;&amp; _finishPrice &gt;= 0);
-        require(_duration &gt; 0);
+        require(_startPrice >= _finishPrice);
+        require(_startPrice > 0 && _finishPrice >= 0);
+        require(_duration > 0);
         require(_startPrice == uint256(uint128(_startPrice)));
         require(_finishPrice == uint256(uint128(_finishPrice)));
 
@@ -378,13 +378,13 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function bid(uint32 _carID) public payable whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].selling == true);
 
         //
         uint256 currentPrice = getCarCurrentPriceAuction(_carID);
-        require(currentPrice &gt;= 0);
-        require(msg.value &gt;= currentPrice);
+        require(currentPrice >= 0);
+        require(msg.value >= currentPrice);
 
         //
         uint256 marketFee = currentPrice * ownerCut / 10000;
@@ -404,7 +404,7 @@ contract EtherRacingCore is Ownable, Pausable {
 
     // Cancel auction
     function cancelAuction(uint32 _carID) public whenNotPaused {
-        require(_carID &gt; 0 &amp;&amp; _carID &lt; newCarID);
+        require(_carID > 0 && _carID < newCarID);
         require(cars[_carID].selling == true);
         require(cars[_carID].owner == msg.sender);
         // only owner can do this.
@@ -427,7 +427,7 @@ contract EtherRacingCore is Ownable, Pausable {
 
     // car sales are limited
     function endSaleCarProduct(uint32 _carProductID) public onlyMaster {
-        require(_carProductID &gt; 0 &amp;&amp; _carProductID &lt; newCarProductID);
+        require(_carProductID > 0 && _carProductID < newCarProductID);
         carProducts[_carProductID].sale = false;
 
         EventProductEndSale(_carProductID);
@@ -435,7 +435,7 @@ contract EtherRacingCore is Ownable, Pausable {
 
     function addCarInit(address owner, uint32 _carProductID, uint32 level, uint32 exp, uint64 genes) public onlyMaster {
         require(canInit == true);
-        require(_carProductID &gt; 0 &amp;&amp; _carProductID &lt; newCarProductID);
+        require(_carProductID > 0 && _carProductID < newCarProductID);
 
         //
         carProducts[_carProductID].currentPrice += carProducts[_carProductID].earning;
@@ -450,13 +450,13 @@ contract EtherRacingCore is Ownable, Pausable {
     }
 
     function buyCar(uint32 _carProductID) public payable {
-        require(_carProductID &gt; 0 &amp;&amp; _carProductID &lt; newCarProductID);
-        require(carProducts[_carProductID].currentPrice &gt; 0 &amp;&amp; msg.value &gt; 0);
-        require(msg.value &gt;= carProducts[_carProductID].currentPrice);
+        require(_carProductID > 0 && _carProductID < newCarProductID);
+        require(carProducts[_carProductID].currentPrice > 0 && msg.value > 0);
+        require(msg.value >= carProducts[_carProductID].currentPrice);
         require(carProducts[_carProductID].sale);
 
         //
-        if (msg.value &gt; carProducts[_carProductID].currentPrice)
+        if (msg.value > carProducts[_carProductID].currentPrice)
             balances[msg.sender] += msg.value - carProducts[_carProductID].currentPrice;
 
         carProducts[_carProductID].currentPrice += carProducts[_carProductID].earning;
@@ -536,7 +536,7 @@ contract EtherRacingCore is Ownable, Pausable {
         var currentAuction = auctions[car.auctionID];
         uint256 currentPrice = currentAuction.startPrice
         - (((currentAuction.startPrice - currentAuction.finishPrice) / (currentAuction.duration)) * (now - currentAuction.startTime));
-        if (currentPrice &lt; currentAuction.finishPrice)
+        if (currentPrice < currentAuction.finishPrice)
             currentPrice = currentAuction.finishPrice;
         return currentPrice;
     }

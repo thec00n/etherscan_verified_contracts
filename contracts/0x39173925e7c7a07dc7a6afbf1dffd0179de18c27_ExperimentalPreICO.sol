@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,7 +72,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="a6d4c3cbc5c9e694">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="a6d4c3cbc5c9e694">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -102,7 +102,7 @@ contract ERC20Basic {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="384a5d555b57780a">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="384a5d555b57780a">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -134,8 +134,8 @@ contract ExperimentalPreICO is reclaimTokens, HasNoContracts {
   uint256 public amountRaised;
   uint256 public rate;
 
-  mapping(address =&gt; uint256) public balanceOf;
-  mapping(address =&gt; bool) public whitelistedAddresses;
+  mapping(address => uint256) public balanceOf;
+  mapping(address => bool) public whitelistedAddresses;
   event GoalReached(address beneficiaryAddress, uint256 amount);
   event FundTransfer(address backer, uint256 amount, bool isContribution);
 
@@ -149,11 +149,11 @@ contract ExperimentalPreICO is reclaimTokens, HasNoContracts {
                               uint256 _maxPaymentInEthers,
                               uint256 _rate,
                               address _rewardToken) {
-    require(_goalInEthers &gt; 0);
-    require(_capInEthers &gt;= _goalInEthers);
-    require(_minPaymentInEthers &gt; 0);
-    require(_maxPaymentInEthers &gt; _minPaymentInEthers);
-    require(_rate &gt; 0);
+    require(_goalInEthers > 0);
+    require(_capInEthers >= _goalInEthers);
+    require(_minPaymentInEthers > 0);
+    require(_maxPaymentInEthers > _minPaymentInEthers);
+    require(_rate > 0);
     require(_wallet != 0x0);
     beneficiary = _wallet;
     fundingGoal = _goalInEthers.mul(1 ether);
@@ -198,16 +198,16 @@ contract ExperimentalPreICO is reclaimTokens, HasNoContracts {
    */
   function validPurchase() internal returns (bool) {
     bool whitelisted = whitelistedAddresses[msg.sender] == true;
-    bool validAmmount = msg.value &gt;= paymentMin &amp;&amp; msg.value &lt;= paymentMax;
-    bool availableFunding = fundingCap &gt;= amountRaised.add(msg.value);
-    return whitelisted &amp;&amp; validAmmount &amp;&amp; availableFunding;
+    bool validAmmount = msg.value >= paymentMin && msg.value <= paymentMax;
+    bool availableFunding = fundingCap >= amountRaised.add(msg.value);
+    return whitelisted && validAmmount && availableFunding;
   }
 
   /**
    * @dev checks if the goal has been reached
    */
   function checkGoal() external onlyOwner {
-    if (amountRaised &gt;= fundingGoal){
+    if (amountRaised >= fundingGoal){
       fundingGoalReached = true;
       GoalReached(beneficiary, amountRaised);
     }
@@ -228,7 +228,7 @@ contract ExperimentalPreICO is reclaimTokens, HasNoContracts {
     if (!fundingGoalReached) {
       uint256 amount = balanceOf[msg.sender];
       balanceOf[msg.sender] = 0;
-      if (amount &gt; 0) {
+      if (amount > 0) {
         if (msg.sender.send(amount)) {
           FundTransfer(msg.sender, amount, false);
         } else {
@@ -237,7 +237,7 @@ contract ExperimentalPreICO is reclaimTokens, HasNoContracts {
       }
     }
 
-    if (fundingGoalReached &amp;&amp; owner == msg.sender) {
+    if (fundingGoalReached && owner == msg.sender) {
       if (beneficiary.send(amountRaised)) {
         FundTransfer(beneficiary, amountRaised, false);
       } else {
@@ -251,7 +251,7 @@ contract ExperimentalPreICO is reclaimTokens, HasNoContracts {
    * @dev Whitelists a list of addresses
    */
   function whitelistAddress (address[] addresses) external onlyOwner crowdsaleActive {
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
       whitelistedAddresses[addresses[i]] = true;
     }
   }

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &gt; 0); 
+      assert(b > 0); 
       uint256 c = a / b;
       assert(a == b * c + a % b); 
       return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,13 +78,13 @@ contract ERC20StandardToken is ERC20Standard {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
 
     function transfer(address to, uint256 value) public returns (bool){
         require(to !=address(0));
-        require(value&lt;=balances[msg.sender]);
+        require(value<=balances[msg.sender]);
 
         balances[msg.sender]=balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -95,8 +95,8 @@ contract ERC20StandardToken is ERC20Standard {
 
     function transferFrom(address from, address to, uint256 value) public returns (bool){
         require(to != address(0));
-        require(value &lt;= balances[from]);
-        require(value &lt;= allowances[from][msg.sender]);
+        require(value <= balances[from]);
+        require(value <= allowances[from][msg.sender]);
 
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -126,8 +126,8 @@ contract ERC20StandardToken is ERC20Standard {
 contract IOBT is ERC20StandardToken, Ownable {
 
     // token information
-    string public constant name = &quot;Internet of Blockchain Token&quot;;
-    string public constant symbol = &quot;IOBT&quot;;
+    string public constant name = "Internet of Blockchain Token";
+    string public constant symbol = "IOBT";
     uint8 public constant decimals = 18;
     uint256 TotalTokenSupply=5*(10**8)*(10**uint256(decimals));
 

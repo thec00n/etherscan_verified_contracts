@@ -7,7 +7,7 @@ This Contract is distributed WITHOUT ANY WARRANTY; without even the implied warr
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 You should have received a copy of the GNU lesser General Public License
-&lt;http://www.gnu.org/licenses/&gt;.
+<http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.18;
@@ -23,7 +23,7 @@ contract InterfaceERC20Token
 contract LittleStoreERC20Token
 {
 
-    mapping (address =&gt; bool) public agents;
+    mapping (address => bool) public agents;
     address public addressERC20Token;
     InterfaceERC20Token internal ERC20Token;
 
@@ -107,20 +107,20 @@ contract LittleStoreERC20Token
     function buy () payable
     {
         uint thisBalance = ERC20Token.balanceOf (this);
-        require (thisBalance &gt; 0 &amp;&amp; sale);
+        require (thisBalance > 0 && sale);
         
         uint countToken;
         uint countBonusToken;
         
         countToken = msg.value / price;
-        require (countToken &gt; 0);
+        require (countToken > 0);
         
-        if (thisBalance &gt; countToken)
+        if (thisBalance > countToken)
         {
             thisBalance -= countToken;
             countBonusToken = (countToken / bonusLine) * bonusSize;
             
-            if (countBonusToken &gt; 0 &amp;&amp; thisBalance &lt;= countBonusToken)
+            if (countBonusToken > 0 && thisBalance <= countBonusToken)
             {
                 countBonusToken = thisBalance;
             }

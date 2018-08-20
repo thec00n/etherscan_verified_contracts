@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -157,7 +157,7 @@ contract ICrowdsaleProcessor is Ownable, HasManager {
   // Total collected Ethereum: must be updated every time tokens has been sold
   uint256 public totalCollected;
 
-  // Total amount of project&#39;s token sold: must be updated every time tokens has been sold
+  // Total amount of project's token sold: must be updated every time tokens has been sold
   uint256 public totalSold;
 
   // Crowdsale minimal goal, must be greater or equal to Forecasting min amount
@@ -199,7 +199,7 @@ contract ICrowdsaleProcessor is Ownable, HasManager {
   function start(uint256 _startTimestamp, uint256 _endTimestamp, address _fundingAddress)
     public onlyManager() hasntStarted() hasntStopped();
 
-  // Is crowdsale failed (completed, but minimal goal wasn&#39;t reached)
+  // Is crowdsale failed (completed, but minimal goal wasn't reached)
   function isFailed() public constant returns (bool);
 
   // Is crowdsale active (i.e. the token can be sold)
@@ -212,7 +212,7 @@ contract ICrowdsaleProcessor is Ownable, HasManager {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -230,7 +230,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -314,19 +314,19 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
     public
     onlyManager()   // manager is CrowdsaleController instance
     hasntStarted()  // not yet started
-    hasntStopped()  // crowdsale wasn&#39;t cancelled
+    hasntStopped()  // crowdsale wasn't cancelled
   {
     require(_fundingAddress != address(0));
 
     // start time must not be earlier than current time
-    require(_startTimestamp &gt;= block.timestamp);
+    require(_startTimestamp >= block.timestamp);
 
     // range must be sane
-    require(_endTimestamp &gt; _startTimestamp);
+    require(_endTimestamp > _startTimestamp);
     duration = _endTimestamp - _startTimestamp;
 
     // duration must fit constraints
-    require(duration &gt;= MIN_CROWDSALE_TIME &amp;&amp; duration &lt;= MAX_CROWDSALE_TIME);
+    require(duration >= MIN_CROWDSALE_TIME && duration <= MAX_CROWDSALE_TIME);
 
     startTimestamp = _startTimestamp;
     endTimestamp = _endTimestamp;
@@ -346,13 +346,13 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
   {
     return (
       // it was started
-      started &amp;&amp;
+      started &&
 
       // crowdsale period has finished
-      block.timestamp &gt;= endTimestamp &amp;&amp;
+      block.timestamp >= endTimestamp &&
 
       // but collected ETH is below the required minimum
-      totalCollected &lt; minimalGoal
+      totalCollected < minimalGoal
     );
   }
 
@@ -364,14 +364,14 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
   {
     return (
       // it was started
-      started &amp;&amp;
+      started &&
 
-      // hard cap wasn&#39;t reached yet
-      totalCollected &lt; hardCap &amp;&amp;
+      // hard cap wasn't reached yet
+      totalCollected < hardCap &&
 
       // and current time is within the crowdfunding period
-      block.timestamp &gt;= startTimestamp &amp;&amp;
-      block.timestamp &lt; endTimestamp
+      block.timestamp >= startTimestamp &&
+      block.timestamp < endTimestamp
     );
   }
 
@@ -383,10 +383,10 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
   {
     return (
       // either the hard cap is collected
-      totalCollected &gt;= hardCap ||
+      totalCollected >= hardCap ||
 
       // ...or the crowdfunding period is over, but the minimum has been reached
-      (block.timestamp &gt;= endTimestamp &amp;&amp; totalCollected &gt;= minimalGoal)
+      (block.timestamp >= endTimestamp && totalCollected >= minimalGoal)
     );
   }
 }
@@ -508,7 +508,7 @@ contract Bridge is BasicCrowdsale {
     view
     returns (bool)
   {
-    return (started &amp;&amp; !completed);
+    return (started && !completed);
   }
 
   function isSuccessful()
@@ -530,7 +530,7 @@ contract Bridge is BasicCrowdsale {
     return (ethReward, tokenReward);
   }
 
-  // Change token address (in case you&#39;ve used the dafault token address during bridge deployment)
+  // Change token address (in case you've used the dafault token address during bridge deployment)
   function changeToken(address _newToken) public onlyOwner() {
     token = DefaultToken(_newToken);
 

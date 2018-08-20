@@ -11,12 +11,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -40,7 +40,7 @@ contract ExtFueldToken {
     }
 
 // self transfer
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     event Transfer(address indexed from, address indexed to, uint256 value);
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
@@ -54,7 +54,7 @@ contract ExtFueldToken {
     }
 
 // allowed transfer
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     event Approval(address indexed owner_, address indexed spender, uint256 value);
     function approve(address _spender, uint256 _value) public returns (bool) {
         allowed[msg.sender][_spender] = _value;
@@ -80,7 +80,7 @@ contract ExtFueldToken {
     }
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) { allowed[msg.sender][_spender] = 0; } 
+        if (_subtractedValue > oldValue) { allowed[msg.sender][_spender] = 0; } 
         else {allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue); }
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
@@ -89,11 +89,11 @@ contract ExtFueldToken {
 // mintable
     uint256 public totalSupply = 13500000; // minting in constructor
 // sale
-    mapping (address =&gt; uint256) public privatePreICOdepositors;
-    mapping (address =&gt; uint256) public preICOdepositors;
-    mapping (address =&gt; uint256) public ICOdepositors;
-    mapping (address =&gt; uint256) public ICObalances;
-    mapping (address =&gt; uint256) public depositorCurrency;
+    mapping (address => uint256) public privatePreICOdepositors;
+    mapping (address => uint256) public preICOdepositors;
+    mapping (address => uint256) public ICOdepositors;
+    mapping (address => uint256) public ICObalances;
+    mapping (address => uint256) public depositorCurrency;
     
     uint256 constant public maxPreICOSupply = 13500000; // including free bonus tokens
     uint256 constant public maxPreICOandICOSupply = 13500000;
@@ -110,32 +110,32 @@ contract ExtFueldToken {
     event SaleStatus(string indexed status, uint256 indexed _date);
 
     function startPrivatePreICO() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimePreICO = now;
         startTimePrivatePreICO = startTimePreICO;
-        SaleStatus(&#39;Private Pre ICO started&#39;, startTimePreICO);
+        SaleStatus('Private Pre ICO started', startTimePreICO);
     }
     
     function startPreICO() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimePreICO = now;
-        SaleStatus(&#39;Public Pre ICO started&#39;, startTimePreICO);
+        SaleStatus('Public Pre ICO started', startTimePreICO);
     }
 
     function startICO() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimeICO = now;
-        SaleStatus(&#39;start ICO&#39;, startTimePreICO);
+        SaleStatus('start ICO', startTimePreICO);
     }
 
     function stopSale() onlyOwner public {
-        require(startTimeICO &gt; 0 || startTimePreICO &gt; 0);
-        if (startTimeICO &gt; 0){
-            SaleStatus(&#39;ICO stopped&#39;, now);
+        require(startTimeICO > 0 || startTimePreICO > 0);
+        if (startTimeICO > 0){
+            SaleStatus('ICO stopped', now);
         }
         else{
             capPreICO = 0;
-            SaleStatus(&#39;Pre ICO stopped&#39;, now);
+            SaleStatus('Pre ICO stopped', now);
         }
         startTimeICO = 0;
         startTimePreICO = 0;
@@ -144,7 +144,7 @@ contract ExtFueldToken {
 
     event ExtTokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 currencyCode, uint256 amount);
     function buyTokens(address beneficiary_, uint256 fiatAmount_, uint256 currencyCode_, uint256 amountETH_, uint256 tokensAmount_) onlyOwner public { 
-        require(startTimeICO &gt; 0 || startTimePreICO &gt; 0);
+        require(startTimeICO > 0 || startTimePreICO > 0);
         require(msg.sender != address(0));
         
         address depositor = beneficiary_;
@@ -158,15 +158,15 @@ contract ExtFueldToken {
         depositorCurrency[depositor] = currencyCode;
         soldTokenCount = soldTokenCount.add(tokens);
         capETH = capETH.add(amountETH);
-        if (startTimeICO &gt; 0){
+        if (startTimeICO > 0){
             ICObalances[depositor] = ICObalances[depositor].add(tokens);
         }
 
-        if (startTimeICO &gt; 0){
+        if (startTimeICO > 0){
             ICOdepositors[depositor] = ICOdepositors[depositor].add(deposit);
         }
         else{
-            if(startTimePrivatePreICO &gt; 0) {
+            if(startTimePrivatePreICO > 0) {
                 privatePreICOdepositors[depositor] = privatePreICOdepositors[depositor].add(deposit);
             }
             else {
@@ -174,7 +174,7 @@ contract ExtFueldToken {
             }
         }
         cap = cap.add(deposit);
-        if(startTimePreICO &gt; 0) {
+        if(startTimePreICO > 0) {
             capPreICO = capPreICO.add(deposit);
         }
 
@@ -186,7 +186,7 @@ contract ExtFueldToken {
     event FixSale(uint256 fixTime);
     bool public fixSaleCompleted = false;
     function fixSale() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         uint256 currentTime = now;
         soldTokenCount = 0;
         fixSaleCompleted = true;
@@ -197,7 +197,7 @@ contract ExtFueldToken {
     event Burn(address indexed burner, uint indexed value);
     function burn(uint _value) onlyOwner public {
         require(fixSaleCompleted == true);
-        require(_value &gt; 0);
+        require(_value > 0);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -206,8 +206,8 @@ contract ExtFueldToken {
     }
 
 // constructor
-    string constant public name = &quot;EXTFUELD&quot;;
-    string constant public symbol = &quot;EFL&quot;;
+    string constant public name = "EXTFUELD";
+    string constant public symbol = "EFL";
     uint32 constant public decimals = 18;
 
     function setMainContractAddress(address mainContract_) onlyOwner public {

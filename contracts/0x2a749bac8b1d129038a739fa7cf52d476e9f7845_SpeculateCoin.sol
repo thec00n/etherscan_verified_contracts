@@ -7,14 +7,14 @@ contract SpeculateCoin {
     uint8 public decimals;
     address public owner;
     uint256 public transactions;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     event Transfer(address indexed from, address indexed to, uint256 value);
     
     function SpeculateCoin() {
         balances[this] = 2100000000000000;
-        name = &quot;SpeculateCoin&quot;;     
-        symbol = &quot;SPC&quot;;
+        name = "SpeculateCoin";     
+        symbol = "SPC";
         owner = msg.sender;
         decimals = 8;
         transactions = 124; //number of transactions for the moment of creating new contract
@@ -35,16 +35,16 @@ contract SpeculateCoin {
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (2 * 32) + 4) { throw; }
+        if(msg.data.length < (2 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -55,18 +55,18 @@ contract SpeculateCoin {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (3 * 32) + 4) { throw; }
+        if(msg.data.length < (3 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
         
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             
@@ -79,7 +79,7 @@ contract SpeculateCoin {
     
     function approve(address _spender, uint256 _value) returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -98,7 +98,7 @@ contract SpeculateCoin {
         if(msg.value == 0) { return; }
         uint256 price = 100 + (transactions * 100);
         uint256 amount = msg.value / price;
-        if (amount &lt; 100000000 || amount &gt; 1000000000000 || balances[this] &lt; amount) {
+        if (amount < 100000000 || amount > 1000000000000 || balances[this] < amount) {
             msg.sender.transfer(msg.value);
             return; 
         }

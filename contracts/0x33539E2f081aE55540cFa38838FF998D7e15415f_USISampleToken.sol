@@ -6,13 +6,13 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -40,8 +40,8 @@ contract ERC20Token {
 contract BasicToken is ERC20Token {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping (address => uint256)) allowed;
 
   /**
   * @dev transfer token for a specified address
@@ -88,7 +88,7 @@ contract BasicToken is ERC20Token {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Token {
   function decreaseApproval (address _spender, uint _subtractedValue) public
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -132,7 +132,7 @@ contract BasicToken is ERC20Token {
 
 /**
  * @title Owned 
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Owned {
   address public owner;
@@ -158,13 +158,13 @@ contract Owned {
 
 contract USISampleToken is BasicToken, Owned {
     
-    string public version = &quot;1.0&quot;;
-    string public name = &quot;USISample Token&quot;;
-    string public symbol = &quot;USISample&quot;;
+    string public version = "1.0";
+    string public name = "USISample Token";
+    string public symbol = "USISample";
     uint8 public  decimals = 18;
 
-    mapping(address=&gt;uint256)  lockedBalance;
-    mapping(address=&gt;uint)     timeRelease; 
+    mapping(address=>uint256)  lockedBalance;
+    mapping(address=>uint)     timeRelease; 
     
     uint256 internal constant INITIAL_SUPPLY = 500 * (10**6) * (10 **18);
     uint256 internal constant DEVELOPER_RESERVED = 175 * (10**6) * (10**18);
@@ -188,20 +188,20 @@ contract USISampleToken is BasicToken, Owned {
 
     function transferAndLock(address _to, uint256 _value, uint _releaseTime) public returns (bool success) {
         require(_to != 0x0);
-        require(_value &lt;= balances[msg.sender]);
-        require(_value &gt; 0);
-        require(_releaseTime &gt; now &amp;&amp; _releaseTime &lt;= now + 60*60*24*365*5);
+        require(_value <= balances[msg.sender]);
+        require(_value > 0);
+        require(_releaseTime > now && _releaseTime <= now + 60*60*24*365*5);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
        
         uint preRelease = timeRelease[_to];
-        if (preRelease &lt;= now &amp;&amp; preRelease != 0x0) {
+        if (preRelease <= now && preRelease != 0x0) {
             balances[_to] = balances[_to].add(lockedBalance[_to]);
             lockedBalance[_to] = 0;
         }
 
         lockedBalance[_to] = lockedBalance[_to].add(_value);
-        timeRelease[_to] =  _releaseTime &gt;= timeRelease[_to] ? _releaseTime : timeRelease[_to]; 
+        timeRelease[_to] =  _releaseTime >= timeRelease[_to] ? _releaseTime : timeRelease[_to]; 
         Transfer(msg.sender, _to, _value);
         Lock(_to, _value, _releaseTime);
         return true;
@@ -213,8 +213,8 @@ contract USISampleToken is BasicToken, Owned {
    */
    function unlock() public returns (bool success){
         uint256 amount = lockedBalance[msg.sender];
-        require(amount &gt; 0);
-        require(now &gt;= timeRelease[msg.sender]);
+        require(amount > 0);
+        require(now >= timeRelease[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].add(amount);
         lockedBalance[msg.sender] = 0;
@@ -233,8 +233,8 @@ contract USISampleToken is BasicToken, Owned {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
     
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -244,7 +244,7 @@ contract USISampleToken is BasicToken, Owned {
     }
 
     function isSoleout() public constant returns (bool) {
-        return (totalSupply &gt;= INITIAL_SUPPLY);
+        return (totalSupply >= INITIAL_SUPPLY);
     }
 
     modifier canMint() {
@@ -262,10 +262,10 @@ contract USISampleToken is BasicToken, Owned {
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
 
-        if (_lockAmount &gt; 0) {
+        if (_lockAmount > 0) {
             totalSupply = totalSupply.add(_lockAmount);
             lockedBalance[_to] = lockedBalance[_to].add(_lockAmount);
-            timeRelease[_to] =  _releaseTime &gt;= timeRelease[_to] ? _releaseTime : timeRelease[_to];            
+            timeRelease[_to] =  _releaseTime >= timeRelease[_to] ? _releaseTime : timeRelease[_to];            
             Lock(_to, _lockAmount, _releaseTime);
         }
 

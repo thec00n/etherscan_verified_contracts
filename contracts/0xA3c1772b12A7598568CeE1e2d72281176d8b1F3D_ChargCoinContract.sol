@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -62,7 +62,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -129,7 +129,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -180,7 +180,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -219,9 +219,9 @@ contract Ownable {
  */
 contract ChargCoinContract is StandardToken, Ownable {
     
-  string public standard = &quot;Charg Coin&quot;;
-  string public name = &quot;Charg Coin&quot;;
-  string public symbol = &quot;CHARG&quot;;
+  string public standard = "Charg Coin";
+  string public name = "Charg Coin";
+  string public symbol = "CHARG";
   uint public decimals = 16;
   address public multisig = 0x0fA3d47B2F9C01396108D81aa63e4F20d4cd7994;
   
@@ -237,9 +237,9 @@ contract ChargCoinContract is StandardToken, Ownable {
     balances[msg.sender] = totalSupply;
   }
 
-  mapping(address =&gt; ContributorData) public contributorList;
+  mapping(address => ContributorData) public contributorList;
   uint nextContributorIndex;
-  mapping(uint =&gt; address) contributorIndexes;
+  mapping(uint => address) contributorIndexes;
   
   state public crowdsaleState = state.pendingStart;
   enum state { pendingStart, crowdsale, crowdsaleEnded }
@@ -267,7 +267,7 @@ contract ChargCoinContract is StandardToken, Ownable {
   bool slushFundTokensClaimed = false;
 
   uint nextContributorToClaim;
-  mapping(address =&gt; bool) hasClaimedEthWhenFail;
+  mapping(address => bool) hasClaimedEthWhenFail;
 
   function() payable {
   require(msg.value != 0);
@@ -286,19 +286,19 @@ contract ChargCoinContract is StandardToken, Ownable {
   // Check crowdsale state and calibrate it
   //
   function checkCrowdsaleState() internal returns (bool) {
-    if (ethRaised &gt;= maxCap &amp;&amp; crowdsaleState != state.crowdsaleEnded) { // Check if max cap is reached
+    if (ethRaised >= maxCap && crowdsaleState != state.crowdsaleEnded) { // Check if max cap is reached
       crowdsaleState = state.crowdsaleEnded;
       CrowdsaleEnded(block.number); // Raise event
       return true;
     }
     
-    if(now &gt;= END_TIME) {   
+    if(now >= END_TIME) {   
       crowdsaleState = state.crowdsaleEnded;
       CrowdsaleEnded(block.number); // Raise event
       return true;
     }
 
-    if(now &gt;= BEGIN_TIME &amp;&amp; now &lt; END_TIME) {        // Check if we are in crowdsale state
+    if(now >= BEGIN_TIME && now < END_TIME) {        // Check if we are in crowdsale state
       if (crowdsaleState != state.crowdsale) {                                                   // Check if state needs to be changed
         crowdsaleState = state.crowdsale;                                                       // Set new state
         CrowdsaleStarted(block.number);                                                         // Raise event
@@ -327,16 +327,16 @@ contract ChargCoinContract is StandardToken, Ownable {
     uint contributionAmount = _amount;
     uint returnAmount = 0;
     
-    if (_amount &gt; (maxCap - ethRaised)) {                                          // Check if max contribution is lower than _amount sent
+    if (_amount > (maxCap - ethRaised)) {                                          // Check if max contribution is lower than _amount sent
       contributionAmount = maxCap - ethRaised;                                     // Set that user contibutes his maximum alowed contribution
       returnAmount = _amount - contributionAmount;                                 // Calculate how much he must get back
     }
 
-    if (ethRaised + contributionAmount &gt; minCap &amp;&amp; minCap &gt; ethRaised) {
+    if (ethRaised + contributionAmount > minCap && minCap > ethRaised) {
       MinCapReached(block.number);
     }
 
-    if (ethRaised + contributionAmount == maxCap &amp;&amp; ethRaised &lt; maxCap) {
+    if (ethRaised + contributionAmount == maxCap && ethRaised < maxCap) {
       MaxCapReached(block.number);
     }
 
@@ -349,7 +349,7 @@ contract ChargCoinContract is StandardToken, Ownable {
     ethRaised += contributionAmount;                                              // Add to eth raised
 
     uint256 tokenAmount = calculateEthToChargcoin(contributionAmount);      // Calculate how much tokens must contributor get
-    if (tokenAmount &gt; 0) {
+    if (tokenAmount > 0) {
       transferToContributor(_contributor, tokenAmount);
       contributorList[_contributor].tokensIssued += tokenAmount;                  // log token issuance
     }
@@ -370,7 +370,7 @@ contract ChargCoinContract is StandardToken, Ownable {
     uint tokens = _eth.mul(getPrice());
     uint percentage = 0;
     
-    if (ethRaised &gt; 0)
+    if (ethRaised > 0)
     {
         percentage = ethRaised * 100 / maxCap;
     }
@@ -381,11 +381,11 @@ contract ChargCoinContract is StandardToken, Ownable {
   function getStageBonus(uint percentage, uint tokens) constant returns (uint) {
     uint stageBonus = 0;
       
-    if (percentage &lt;= 10) stageBonus = tokens * 60 / 100; // Stage 1
-    else if (percentage &lt;= 50) stageBonus = tokens * 30 / 100;
-    else if (percentage &lt;= 70) stageBonus = tokens * 20 / 100;
-    else if (percentage &lt;= 90) stageBonus = tokens * 15 / 100;
-    else if (percentage &lt;= 100) stageBonus = tokens * 10 / 100;
+    if (percentage <= 10) stageBonus = tokens * 60 / 100; // Stage 1
+    else if (percentage <= 50) stageBonus = tokens * 30 / 100;
+    else if (percentage <= 70) stageBonus = tokens * 20 / 100;
+    else if (percentage <= 90) stageBonus = tokens * 15 / 100;
+    else if (percentage <= 100) stageBonus = tokens * 10 / 100;
 
     return stageBonus;
   }
@@ -393,26 +393,26 @@ contract ChargCoinContract is StandardToken, Ownable {
   function getAmountBonus(uint _eth, uint tokens) constant returns (uint) {
     uint amountBonus = 0;  
       
-    if (_eth &gt;= 3000 ether) amountBonus = tokens * 13 / 100;
-    else if (_eth &gt;= 2000 ether) amountBonus = tokens * 12 / 100;
-    else if (_eth &gt;= 1500 ether) amountBonus = tokens * 11 / 100;
-    else if (_eth &gt;= 1000 ether) amountBonus = tokens * 10 / 100;
-    else if (_eth &gt;= 750 ether) amountBonus = tokens * 9 / 100;
-    else if (_eth &gt;= 500 ether) amountBonus = tokens * 8 / 100;
-    else if (_eth &gt;= 300 ether) amountBonus = tokens * 75 / 1000;
-    else if (_eth &gt;= 200 ether) amountBonus = tokens * 7 / 100;
-    else if (_eth &gt;= 150 ether) amountBonus = tokens * 6 / 100;
-    else if (_eth &gt;= 100 ether) amountBonus = tokens * 55 / 1000;
-    else if (_eth &gt;= 75 ether) amountBonus = tokens * 5 / 100;
-    else if (_eth &gt;= 50 ether) amountBonus = tokens * 45 / 1000;
-    else if (_eth &gt;= 30 ether) amountBonus = tokens * 4 / 100;
-    else if (_eth &gt;= 20 ether) amountBonus = tokens * 35 / 1000;
-    else if (_eth &gt;= 15 ether) amountBonus = tokens * 3 / 100;
-    else if (_eth &gt;= 10 ether) amountBonus = tokens * 25 / 1000;
-    else if (_eth &gt;= 7 ether) amountBonus = tokens * 2 / 100;
-    else if (_eth &gt;= 5 ether) amountBonus = tokens * 15 / 1000;
-    else if (_eth &gt;= 3 ether) amountBonus = tokens * 1 / 100;
-    else if (_eth &gt;= 2 ether) amountBonus = tokens * 5 / 1000;
+    if (_eth >= 3000 ether) amountBonus = tokens * 13 / 100;
+    else if (_eth >= 2000 ether) amountBonus = tokens * 12 / 100;
+    else if (_eth >= 1500 ether) amountBonus = tokens * 11 / 100;
+    else if (_eth >= 1000 ether) amountBonus = tokens * 10 / 100;
+    else if (_eth >= 750 ether) amountBonus = tokens * 9 / 100;
+    else if (_eth >= 500 ether) amountBonus = tokens * 8 / 100;
+    else if (_eth >= 300 ether) amountBonus = tokens * 75 / 1000;
+    else if (_eth >= 200 ether) amountBonus = tokens * 7 / 100;
+    else if (_eth >= 150 ether) amountBonus = tokens * 6 / 100;
+    else if (_eth >= 100 ether) amountBonus = tokens * 55 / 1000;
+    else if (_eth >= 75 ether) amountBonus = tokens * 5 / 100;
+    else if (_eth >= 50 ether) amountBonus = tokens * 45 / 1000;
+    else if (_eth >= 30 ether) amountBonus = tokens * 4 / 100;
+    else if (_eth >= 20 ether) amountBonus = tokens * 35 / 1000;
+    else if (_eth >= 15 ether) amountBonus = tokens * 3 / 100;
+    else if (_eth >= 10 ether) amountBonus = tokens * 25 / 1000;
+    else if (_eth >= 7 ether) amountBonus = tokens * 2 / 100;
+    else if (_eth >= 5 ether) amountBonus = tokens * 15 / 1000;
+    else if (_eth >= 3 ether) amountBonus = tokens * 1 / 100;
+    else if (_eth >= 2 ether) amountBonus = tokens * 5 / 1000;
     
     return amountBonus;
   }
@@ -427,10 +427,10 @@ contract ChargCoinContract is StandardToken, Ownable {
   //
   function batchReturnEthIfFailed(uint _numberOfReturns) onlyOwner {
     require(crowdsaleState != state.crowdsaleEnded);                // Check if crowdsale has ended
-    require(ethRaised &lt; minCap);                // Check if crowdsale has failed
+    require(ethRaised < minCap);                // Check if crowdsale has failed
     address currentParticipantAddress;
     uint contribution;
-    for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++){
+    for (uint cnt = 0; cnt < _numberOfReturns; cnt++){
       currentParticipantAddress = contributorIndexes[nextContributorToClaim];         // Get next unclaimed participant
       if (currentParticipantAddress == 0x0) return;                                   // Check if all the participants were compensated
       if (!hasClaimedEthWhenFail[currentParticipantAddress]) {                        // Check if participant has already claimed

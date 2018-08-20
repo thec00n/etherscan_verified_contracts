@@ -74,9 +74,9 @@ contract ERC20Interface {
 
 contract FixedSupplyToken is ERC20Interface {
 
-    string public constant symbol = &quot;SPCD&quot;;
+    string public constant symbol = "SPCD";
 
-    string public constant name = &quot;Space Dollars&quot;;
+    string public constant name = "Space Dollars";
 
     uint8 public constant decimals = 4;
 
@@ -92,13 +92,13 @@ contract FixedSupplyToken is ERC20Interface {
 
     // Balances for each account
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
  
 
     // Owner of account approves the transfer of an amount to another account
 
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
  
 
@@ -148,15 +148,15 @@ contract FixedSupplyToken is ERC20Interface {
 
  
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
 
     function transfer(address _to, uint256 _amount) returns (bool success) {
 
-        if (balances[msg.sender] &gt;= _amount 
+        if (balances[msg.sender] >= _amount 
 
-            &amp;&amp; _amount &gt; 0
+            && _amount > 0
 
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+            && balances[_to] + _amount > balances[_to]) {
 
             balances[msg.sender] -= _amount;
 
@@ -180,7 +180,7 @@ contract FixedSupplyToken is ERC20Interface {
 
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
 
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
 
     // fees in sub-currencies; the command should fail unless the _from account has
 
@@ -198,13 +198,13 @@ contract FixedSupplyToken is ERC20Interface {
 
     ) returns (bool success) {
 
-        if (balances[_from] &gt;= _amount
+        if (balances[_from] >= _amount
 
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
+            && allowed[_from][msg.sender] >= _amount
 
-            &amp;&amp; _amount &gt; 0
+            && _amount > 0
 
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+            && balances[_to] + _amount > balances[_to]) {
 
             balances[_from] -= _amount;
 

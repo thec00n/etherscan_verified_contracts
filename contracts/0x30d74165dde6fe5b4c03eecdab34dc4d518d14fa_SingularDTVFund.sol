@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -76,7 +76,7 @@ contract AbstractPaymentEscrow is Ownable {
 
     address public wallet;
 
-    mapping (uint =&gt; uint) public deposits;
+    mapping (uint => uint) public deposits;
 
     event Payment(address indexed _customer, uint indexed _projectId, uint value);
     event Withdraw(address indexed _wallet, uint value);
@@ -95,9 +95,9 @@ contract AbstractPaymentEscrow is Ownable {
     }
 
     /**
-     * @dev Get the amount deposited for the provided project, returns 0 if there&#39;s no deposit for that project or the amount in wei
+     * @dev Get the amount deposited for the provided project, returns 0 if there's no deposit for that project or the amount in wei
      * @param _projectId The id of the project
-     * @return 0 if there&#39;s either no deposit for _projectId, otherwise returns the deposited amount in wei
+     * @return 0 if there's either no deposit for _projectId, otherwise returns the deposited amount in wei
      */
     function getDeposit(uint _projectId)
         public
@@ -116,13 +116,13 @@ contract TokitRegistry is Ownable {
         address campaign;
     }
 
-    // registrar =&gt; true/false
-    mapping (address =&gt; bool) public registrars;
+    // registrar => true/false
+    mapping (address => bool) public registrars;
 
-    // customer =&gt; project_id =&gt; token/campaign
-    mapping (address =&gt; mapping(uint =&gt; ProjectContracts)) public registry;
-    // project_id =&gt; token/campaign
-    mapping (uint =&gt; ProjectContracts) public project_registry;
+    // customer => project_id => token/campaign
+    mapping (address => mapping(uint => ProjectContracts)) public registry;
+    // project_id => token/campaign
+    mapping (uint => ProjectContracts) public project_registry;
 
     event RegisteredToken(address indexed _projectOwner, uint indexed _projectId, address _token, address _fund);
     event RegisteredCampaign(address indexed _projectOwner, uint indexed _projectId, address _campaign);
@@ -240,10 +240,10 @@ contract AbstractSingularDTVToken is Token {
 }
 
 /// @title Fund contract - Implements reward distribution.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cefe8f9fafdf2b2fbf9f3eefbf9dcfff3f2eff9f2efe5efb2f2f9e8">[email&#160;protected]</a>&gt;
-/// @author Milad Mostavi - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bfd2d6d3dedb91d2d0cccbdec9d6ffdcd0d1ccdad1ccc6cc91d1dacb">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cefe8f9fafdf2b2fbf9f3eefbf9dcfff3f2eff9f2efe5efb2f2f9e8">[email protected]</a>>
+/// @author Milad Mostavi - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bfd2d6d3dedb91d2d0cccbdec9d6ffdcd0d1ccdad1ccc6cc91d1dacb">[email protected]</a>>
 contract SingularDTVFund {
-    string public version = &quot;0.1.0&quot;;
+    string public version = "0.1.0";
 
     /*
      *  External contracts
@@ -256,11 +256,11 @@ contract SingularDTVFund {
     address public owner;
     uint public totalReward;
 
-    // User&#39;s address =&gt; Reward at time of withdraw
-    mapping (address =&gt; uint) public rewardAtTimeOfWithdraw;
+    // User's address => Reward at time of withdraw
+    mapping (address => uint) public rewardAtTimeOfWithdraw;
 
-    // User&#39;s address =&gt; Reward which can be withdrawn
-    mapping (address =&gt; uint) public owed;
+    // User's address => Reward which can be withdrawn
+    mapping (address => uint) public owed;
 
     modifier onlyOwner() {
         // Only guard is allowed to do this action.
@@ -284,7 +284,7 @@ contract SingularDTVFund {
     }
 
     /// @dev Withdraws reward for user. Returns reward.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function calcReward(address forAddress) private returns (uint) {
         return singularDTVToken.balanceOf(forAddress) * (totalReward - rewardAtTimeOfWithdraw[forAddress]) / singularDTVToken.totalSupply();
     }
@@ -297,14 +297,14 @@ contract SingularDTVFund {
         uint value = calcReward(msg.sender) + owed[msg.sender];
         rewardAtTimeOfWithdraw[msg.sender] = totalReward;
         owed[msg.sender] = 0;
-        if (value &gt; 0 &amp;&amp; !msg.sender.send(value)) {
+        if (value > 0 && !msg.sender.send(value)) {
             revert();
         }
         return value;
     }
 
     /// @dev Credits reward to owed balance.
-    /// @param forAddress user&#39;s address.
+    /// @param forAddress user's address.
     function softWithdrawRewardFor(address forAddress)
         external
         returns (uint)
@@ -349,11 +349,11 @@ contract SingularDTVFund {
 }
 
 /// @title Token Creation contract - Implements token creation functionality.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82f1f6e7e4e3ecace5e7edf0e5e7c2e1edecf1e7ecf1fbf1acece7f6">[email&#160;protected]</a>&gt;
-/// @author Razvan Pop - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb998a919d8a85c59b849bab888485988e85989298c5858e9f">[email&#160;protected]</a>&gt;
-/// @author Milad Mostavi - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e38e8a8f8287cd8e8c909782958aa3808c8d90868d909a90cd8d8697">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82f1f6e7e4e3ecace5e7edf0e5e7c2e1edecf1e7ecf1fbf1acece7f6">[email protected]</a>>
+/// @author Razvan Pop - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb998a919d8a85c59b849bab888485988e85989298c5858e9f">[email protected]</a>>
+/// @author Milad Mostavi - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e38e8a8f8287cd8e8c909782958aa3808c8d90868d909a90cd8d8697">[email protected]</a>>
 contract SingularDTVLaunch {
-    string public version = &quot;0.1.0&quot;;
+    string public version = "0.1.0";
 
     event Contributed(address indexed contributor, uint contribution, uint tokens);
 
@@ -392,11 +392,11 @@ contract SingularDTVLaunch {
     uint public valuePerToken; //in wei
     uint public tokensSent;
 
-    // participant address =&gt; value in Wei
-    mapping (address =&gt; uint) public contributions;
+    // participant address => value in Wei
+    mapping (address => uint) public contributions;
 
-    // participant address =&gt; token amount in wei scale
-    mapping (address =&gt; uint) public sentTokens;
+    // participant address => token amount in wei scale
+    mapping (address => uint) public sentTokens;
 
     // Initialize stage
     Stages public stage = Stages.Deployed;
@@ -417,7 +417,7 @@ contract SingularDTVLaunch {
     }
 
     modifier atStageOR(Stages _stage1, Stages _stage2) {
-        if (stage != _stage1 &amp;&amp; stage != _stage2) {
+        if (stage != _stage1 && stage != _stage2) {
             revert();
         }
         _;
@@ -426,7 +426,7 @@ contract SingularDTVLaunch {
     modifier timedTransitions() {
         uint timeElapsed = now - startDate;
 
-        if (timeElapsed &gt;= DURATION) {
+        if (timeElapsed >= DURATION) {
             if (stage == Stages.GoingAndGoalNotReached) {
                 stage = Stages.EndedAndGoalNotReached;
             } else if (stage == Stages.GoingAndGoalReached) {
@@ -441,7 +441,7 @@ contract SingularDTVLaunch {
      */
     /// dev Validates invariants.
     function checkInvariants() constant internal {
-        if (fundBalance &gt; this.balance) {
+        if (fundBalance > this.balance) {
             revert();
         }
     }
@@ -451,8 +451,8 @@ contract SingularDTVLaunch {
         public
         returns (bool)
     {
-        if (fundBalance &gt; this.balance) {
-            if (this.balance &gt; 0 &amp;&amp; !SingularDTVWorkshop.send(this.balance)) {
+        if (fundBalance > this.balance) {
+            if (this.balance > 0 && !SingularDTVWorkshop.send(this.balance)) {
                 revert();
             }
             return true;
@@ -469,8 +469,8 @@ contract SingularDTVLaunch {
         returns (uint)
     {
         uint tokenCount = (msg.value * (10**18)) / valuePerToken; // Token count in wei is rounded down. Sent ETH should be multiples of valuePerToken.
-        require(tokenCount &gt; 0);
-        if (tokensSent + tokenCount &gt; CAP) {
+        require(tokenCount > 0);
+        if (tokensSent + tokenCount > CAP) {
             // User wants to create more tokens than available. Set tokens to possible maximum.
             tokenCount = CAP - tokensSent;
         }
@@ -478,10 +478,10 @@ contract SingularDTVLaunch {
 
         uint contribution = (tokenCount * valuePerToken) / (10**18); // Ether spent by user.
         // Send change back to user.
-        if (msg.value &gt; contribution &amp;&amp; !msg.sender.send(msg.value - contribution)) {
+        if (msg.value > contribution && !msg.sender.send(msg.value - contribution)) {
             revert();
         }
-        // Update fund and user&#39;s balance and total supply of tokens.
+        // Update fund and user's balance and total supply of tokens.
         fundBalance += contribution;
         contributions[msg.sender] += contribution;
         sentTokens[msg.sender] += tokenCount;
@@ -491,7 +491,7 @@ contract SingularDTVLaunch {
         }
         // Update stage
         if (stage == Stages.GoingAndGoalNotReached) {
-            if (tokensSent &gt;= TOKEN_TARGET) {
+            if (tokensSent >= TOKEN_TARGET) {
                 stage = Stages.GoingAndGoalReached;
             }
         }
@@ -522,12 +522,12 @@ contract SingularDTVLaunch {
             revert();
         }
 
-        // Update fund&#39;s and user&#39;s balance and total supply of tokens.
+        // Update fund's and user's balance and total supply of tokens.
         uint contribution = contributions[msg.sender];
         contributions[msg.sender] = 0;
         fundBalance -= contribution;
         // Send ETH back to user.
-        if (contribution &gt; 0) {
+        if (contribution > 0) {
             msg.sender.transfer(contribution);
         }
         checkInvariants();
@@ -544,14 +544,14 @@ contract SingularDTVLaunch {
         uint value = fundBalance;
         fundBalance = 0;
 
-        require(value &gt; 0);
+        require(value > 0);
 
         uint networkFee = value * SingularDTVWorkshopFee / 100;
         workshop.transfer(value - networkFee);
         SingularDTVWorkshop.transfer(networkFee);
 
         uint remainingTokens = CAP - tokensSent;
-        if (remainingTokens &gt; 0 &amp;&amp; !singularDTVToken.transfer(owner, remainingTokens)) {
+        if (remainingTokens > 0 && !singularDTVToken.transfer(owner, remainingTokens)) {
             revert();
         }
 
@@ -567,7 +567,7 @@ contract SingularDTVLaunch {
         returns (uint)
     {
         uint remainingTokens = CAP - tokensSent;
-        if (remainingTokens &gt; 0 &amp;&amp; !singularDTVToken.transfer(owner, remainingTokens)) {
+        if (remainingTokens > 0 && !singularDTVToken.transfer(owner, remainingTokens)) {
             revert();
         }
 
@@ -659,11 +659,11 @@ contract AbstractSingularDTVFund {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -672,8 +672,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -700,22 +700,22 @@ contract StandardToken is Token {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /// @title Token contract - Implements token issuance.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d3e39282b2c23632a28223f2a280d2e22233e28233e343e63232839">[email&#160;protected]</a>&gt;
-/// @author Milad Mostavi - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f1216131e1b5112100c0b1e09163f1c10110c1a110c060c51111a0b">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d3e39282b2c23632a28223f2a280d2e22233e28233e343e63232839">[email protected]</a>>
+/// @author Milad Mostavi - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f1216131e1b5112100c0b1e09163f1c10110c1a110c060c51111a0b">[email protected]</a>>
 contract SingularDTVToken is StandardToken {
-    string public version = &quot;0.1.0&quot;;
+    string public version = "0.1.0";
 
     /*
      *  External contracts
@@ -729,7 +729,7 @@ contract SingularDTVToken is StandardToken {
     string public symbol;
     uint8 public constant decimals = 18;
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param to Address of token receiver.
     /// @param value Number of tokens to transfer.
     function transfer(address to, uint256 value)
@@ -776,8 +776,8 @@ contract TokitDeployer is Ownable {
 
     TokitRegistry public registry;
 
-    // payment_type =&gt; payment_contract
-    mapping (uint8 =&gt; AbstractPaymentEscrow) public paymentContracts;
+    // payment_type => payment_contract
+    mapping (uint8 => AbstractPaymentEscrow) public paymentContracts;
 
     event DeployedToken(address indexed _customer, uint indexed _projectId, address _token, address _fund);
     event DeployedCampaign(address indexed _customer, uint indexed _projectId, address _campaign);
@@ -796,7 +796,7 @@ contract TokitDeployer is Ownable {
         onlyOwner()
     {
         // payed for
-        require(AbstractPaymentEscrow(paymentContracts[_payedWith]).getDeposit(_projectId) &gt;= _amountNeeded);
+        require(AbstractPaymentEscrow(paymentContracts[_payedWith]).getDeposit(_projectId) >= _amountNeeded);
 
         var (t,,) = registry.lookup(_customer, _projectId);
         // not deployed yet
@@ -823,8 +823,8 @@ contract TokitDeployer is Ownable {
         // not deployed yet
         require(c == address(0));
 
-        // payed for, token &amp; fund deployed
-        require(t != address(0) &amp;&amp; f != address(0));
+        // payed for, token & fund deployed
+        require(t != address(0) && f != address(0));
 
         SingularDTVLaunch campaign = new SingularDTVLaunch(t, _workshop, _customer, _total, _unitPrice, _duration, _threshold, _networkFee);
 

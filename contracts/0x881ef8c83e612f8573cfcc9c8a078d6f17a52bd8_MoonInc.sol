@@ -47,9 +47,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -66,7 +66,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -80,13 +80,13 @@ contract ProductionUnitToken {
 
     /// @dev Only people with tokens
     modifier onlyBagholders {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
 
     /// @dev Only people with profits
     modifier onlyStronghands {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
 
@@ -143,8 +143,8 @@ contract ProductionUnitToken {
     =            CONFIGURABLES            =
     =====================================*/
 
-    string public name = &quot;Production Unit | Moon, Inc.&quot;;
-    string public symbol = &quot;ProductionUnit&quot;;
+    string public name = "Production Unit | Moon, Inc.";
+    string public symbol = "ProductionUnit";
     uint8 constant public decimals = 18;
 
     /// @dev dividends for token purchase
@@ -173,9 +173,9 @@ contract ProductionUnitToken {
     uint256 public startTime;
 
     // Maximum amount of dev one time pre-mine
-    mapping(address =&gt; uint) public ambassadorsMaxPremine;
-    mapping(address =&gt; bool) public ambassadorsPremined;
-    mapping(address =&gt; address) public ambassadorsPrerequisite;
+    mapping(address => uint) public ambassadorsMaxPremine;
+    mapping(address => bool) public ambassadorsPremined;
+    mapping(address => address) public ambassadorsPrerequisite;
 
 
    /*=================================
@@ -183,9 +183,9 @@ contract ProductionUnitToken {
     ================================*/
 
     // amount of shares for each address (scaled number)
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_;
-    mapping(address =&gt; uint256) internal referralBalance_;
-    mapping(address =&gt; int256) internal payoutsTo_;
+    mapping(address => uint256) internal tokenBalanceLedger_;
+    mapping(address => uint256) internal referralBalance_;
+    mapping(address => int256) internal payoutsTo_;
     uint256 internal tokenSupply_;
 
 
@@ -207,10 +207,10 @@ contract ProductionUnitToken {
         cookieProductionMultiplier = _cookieProductionMultiplier;
         startTime = _startTime;
 
-        // Set ambassadors&#39; maximum one time pre-mine amount (Total 1.47 ETH pre-mine including last 2 ambassadors from contest).
+        // Set ambassadors' maximum one time pre-mine amount (Total 1.47 ETH pre-mine including last 2 ambassadors from contest).
         // MA
         ambassadorsMaxPremine[0xFEA0904ACc8Df0F3288b6583f60B86c36Ea52AcD] = 0.28 ether;
-        ambassadorsPremined[address(0)] = true; // first ambassador don&#39;t need prerequisite
+        ambassadorsPremined[address(0)] = true; // first ambassador don't need prerequisite
 
         // BL
         ambassadorsMaxPremine[0xc951D3463EbBa4e9Ec8dDfe1f42bc5895C46eC8f] = 0.28 ether;
@@ -245,7 +245,7 @@ contract ProductionUnitToken {
 
     /// @dev Add the last 2 ambassadors from the invite contest because they both offline in the time the contract is deployed.
     function addLastTwoAmbassadors(address _address1, address _address2) public {
-        require(msg.sender == 0xFEA0904ACc8Df0F3288b6583f60B86c36Ea52AcD &amp;&amp; !lastTwoAmbassadorsAdded);
+        require(msg.sender == 0xFEA0904ACc8Df0F3288b6583f60B86c36Ea52AcD && !lastTwoAmbassadorsAdded);
 
         lastTwoAmbassadorsAdded = true;
 
@@ -271,7 +271,7 @@ contract ProductionUnitToken {
         purchaseTokens(msg.value, 0x0);
     }
 
-    /// @dev Converts all of caller&#39;s dividends to tokens.
+    /// @dev Converts all of caller's dividends to tokens.
     function reinvest() onlyStronghands public {
         // fetch dividends
         uint256 _dividends = myDividends(false); // retrieve ref. bonus later in the code
@@ -284,7 +284,7 @@ contract ProductionUnitToken {
         _dividends += referralBalance_[_customerAddress];
         referralBalance_[_customerAddress] = 0;
 
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(_dividends, 0x0);
 
         // fire event
@@ -293,10 +293,10 @@ contract ProductionUnitToken {
 
     /// @dev Alias of sell() and withdraw().
     function exit() public {
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if (_tokens &gt; 0) sell(_tokens);
+        if (_tokens > 0) sell(_tokens);
 
         // lambo delivery service
         withdraw();
@@ -324,12 +324,12 @@ contract ProductionUnitToken {
 
     /// @dev Liquifies tokens to ethereum.
     function sell(uint256 _amountOfTokens) onlyBagholders public {
-        require(now &gt;= startTime);
+        require(now >= startTime);
 
         // setup data
         address _customerAddress = msg.sender;
         // russian hackers BTFO
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(SafeMath.mul(_ethereum, exitFee_), 100);
@@ -352,17 +352,17 @@ contract ProductionUnitToken {
 
     /**
      * @dev Transfer tokens from the caller to a new holder.
-     *  Remember, there&#39;s a fee here as well.
+     *  Remember, there's a fee here as well.
      */
     function transfer(address _toAddress, uint256 _amountOfTokens) onlyBagholders public returns (bool) {
         // setup
         address _customerAddress = msg.sender;
 
         // make sure we have the requested tokens
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
 
         // withdraw all outstanding dividends first
-        if (myDividends(true) &gt; 0) {
+        if (myDividends(true) > 0) {
             withdraw();
         }
 
@@ -479,7 +479,7 @@ contract ProductionUnitToken {
 
     /// @dev Function for the frontend to dynamically retrieve the price scaling of sell orders.
     function calculateEthereumReceived(uint256 _tokensToSell) public view returns (uint256) {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(SafeMath.mul(_ethereum, exitFee_), 100);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -495,14 +495,14 @@ contract ProductionUnitToken {
     function purchaseTokens(uint256 _incomingEthereum, address _referredBy) internal returns (uint256) {
         require(
             // auto start
-            now &gt;= startTime ||
+            now >= startTime ||
             // ambassador pre-mine within 1 hour before startTime, sequences enforced
-            (now &gt;= startTime - 1 hours &amp;&amp; !ambassadorsPremined[msg.sender] &amp;&amp; ambassadorsPremined[ambassadorsPrerequisite[msg.sender]] &amp;&amp; _incomingEthereum &lt;= ambassadorsMaxPremine[msg.sender]) ||
+            (now >= startTime - 1 hours && !ambassadorsPremined[msg.sender] && ambassadorsPremined[ambassadorsPrerequisite[msg.sender]] && _incomingEthereum <= ambassadorsMaxPremine[msg.sender]) ||
             // ambassador pre-mine within 10 minutes before startTime, sequences not enforced
-            (now &gt;= startTime - 10 minutes &amp;&amp; !ambassadorsPremined[msg.sender] &amp;&amp; _incomingEthereum &lt;= ambassadorsMaxPremine[msg.sender])
+            (now >= startTime - 10 minutes && !ambassadorsPremined[msg.sender] && _incomingEthereum <= ambassadorsMaxPremine[msg.sender])
         );
 
-        if (now &lt; startTime) {
+        if (now < startTime) {
             ambassadorsPremined[msg.sender] = true;
         }
 
@@ -517,20 +517,20 @@ contract ProductionUnitToken {
         // no point in continuing execution if OP is a poorfag russian hacker
         // prevents overflow in the case that the pyramid somehow magically starts being used by everyone in the world
         // (or hackers)
-        // and yes we know that the safemath function automatically rules out the &quot;greater then&quot; equasion.
-        require(_amountOfTokens &gt; 0 &amp;&amp; SafeMath.add(_amountOfTokens, tokenSupply_) &gt; tokenSupply_);
+        // and yes we know that the safemath function automatically rules out the "greater then" equasion.
+        require(_amountOfTokens > 0 && SafeMath.add(_amountOfTokens, tokenSupply_) > tokenSupply_);
 
         // is the user referred by a masternode?
         if (
             // is this a referred purchase?
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            _referredBy != _customerAddress &amp;&amp;
+            _referredBy != _customerAddress &&
 
             // does the referrer have at least X whole tokens?
             // i.e is the referrer a godly chad masternode
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ) {
             // wealth redistribution
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -543,7 +543,7 @@ contract ProductionUnitToken {
         // add tokens to the pool
         tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
 
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         tokenBalanceLedger_[_customerAddress] = SafeMath.add(tokenBalanceLedger_[_customerAddress], _amountOfTokens);
 
         // Tell MoonInc contract for tokens amount change, and transfer dividends.
@@ -557,7 +557,7 @@ contract ProductionUnitToken {
 
     /**
      * @dev Calculate Token price based on an amount of incoming ethereum
-     *  It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     *  It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      *  Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function ethereumToTokens_(uint256 _ethereum) internal view returns (uint256) {
@@ -587,7 +587,7 @@ contract ProductionUnitToken {
 
     /**
      * @dev Calculate token sell value.
-     *  It&#39;s an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
+     *  It's an algorithm, hopefully we gave you the whitepaper with it in scientific notation;
      *  Some conversions occurred to prevent decimal errors or underflows / overflows in solidity code.
      */
     function tokensToEthereum_(uint256 _tokens) internal view returns (uint256) {
@@ -615,7 +615,7 @@ contract ProductionUnitToken {
         uint256 z = (x + 1) / 2;
         y = x;
 
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -626,8 +626,8 @@ contract ProductionUnitToken {
 
 contract MoonInc {
 
-    string public constant name  = &quot;Cookie | Moon, Inc.&quot;;
-    string public constant symbol = &quot;Cookie&quot;;
+    string public constant name  = "Cookie | Moon, Inc.";
+    string public constant symbol = "Cookie";
     uint8 public constant decimals = 18;
 
     // Global balances
@@ -636,16 +636,16 @@ contract MoonInc {
     uint256 private lastTotalCookieSaveTime; // Last time any player claimed their produced cookie
 
     // Balances for each player
-    mapping(address =&gt; uint256) public cookieProduction;
-    mapping(address =&gt; uint256) public cookieBalance;
-    mapping(address =&gt; uint256) private lastCookieSaveTime; // Last time player claimed their produced cookie
+    mapping(address => uint256) public cookieProduction;
+    mapping(address => uint256) public cookieBalance;
+    mapping(address => uint256) private lastCookieSaveTime; // Last time player claimed their produced cookie
 
     // Mapping of approved ERC20 transfers (by player)
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     // Production unit contracts
     ProductionUnitToken[] public productionUnitTokenContracts;
-    mapping(address =&gt; bool) productionUnitTokenContractAddresses;
+    mapping(address => bool) productionUnitTokenContractAddresses;
 
     // Store the production unit start time to calculate sell price.
     uint256[] public tokenContractStartTime;
@@ -758,7 +758,7 @@ contract MoonInc {
     }
 
     function balanceOfTotalUnclaimedCookie() public constant returns(uint256) {
-        if (lastTotalCookieSaveTime &gt; 0 &amp;&amp; lastTotalCookieSaveTime &lt; block.timestamp) {
+        if (lastTotalCookieSaveTime > 0 && lastTotalCookieSaveTime < block.timestamp) {
             return (totalCookieProduction * (block.timestamp - lastTotalCookieSaveTime));
         }
 
@@ -768,7 +768,7 @@ contract MoonInc {
     function balanceOfUnclaimedCookie(address player) internal constant returns (uint256) {
         uint256 lastSave = lastCookieSaveTime[player];
 
-        if (lastSave &gt; 0 &amp;&amp; lastSave &lt; block.timestamp) {
+        if (lastSave > 0 && lastSave < block.timestamp) {
             return (cookieProduction[player] * (block.timestamp - lastSave));
         }
 
@@ -777,7 +777,7 @@ contract MoonInc {
 
     function transfer(address recipient, uint256 amount) public returns (bool) {
         updatePlayersCookie(msg.sender);
-        require(amount &lt;= cookieBalance[msg.sender]);
+        require(amount <= cookieBalance[msg.sender]);
 
         cookieBalance[msg.sender] -= amount;
         cookieBalance[recipient] += amount;
@@ -789,7 +789,7 @@ contract MoonInc {
 
     function transferFrom(address player, address recipient, uint256 amount) public returns (bool) {
         updatePlayersCookie(player);
-        require(amount &lt;= allowed[player][msg.sender] &amp;&amp; amount &lt;= cookieBalance[player]);
+        require(amount <= allowed[player][msg.sender] && amount <= cookieBalance[player]);
 
         cookieBalance[player] -= amount;
         cookieBalance[recipient] += amount;
@@ -825,7 +825,7 @@ contract MoonInc {
 
         uint256 sellPrice = computeSellPrice();
 
-        require(sellPrice &gt; 0);
+        require(sellPrice > 0);
 
         uint256 myCookies = cookieBalance[msg.sender];
         uint256 value = myCookies * sellPrice / (1 ether);
@@ -847,19 +847,19 @@ contract MoonInc {
         uint index;
         uint lastTokenContractStartTime = now;
 
-        while (index &lt; tokenContractStartTime.length &amp;&amp; tokenContractStartTime[index] &lt; now) {
+        while (index < tokenContractStartTime.length && tokenContractStartTime[index] < now) {
             lastTokenContractStartTime = tokenContractStartTime[index];
             index++;
         }
 
-        if (now &lt; lastTokenContractStartTime + 1 hours) {
+        if (now < lastTokenContractStartTime + 1 hours) {
             return 0;
         }
 
         uint timeToMaxValue = 5 days;
 
         uint256 secondsPassed = now - lastTokenContractStartTime;
-        secondsPassed = secondsPassed &lt;= timeToMaxValue ? secondsPassed : timeToMaxValue;
+        secondsPassed = secondsPassed <= timeToMaxValue ? secondsPassed : timeToMaxValue;
         uint256 multiplier = 5000 + 5000 * secondsPassed / timeToMaxValue;
 
         return 1 ether * address(this).balance / supply * multiplier / 10000;

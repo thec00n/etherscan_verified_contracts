@@ -36,14 +36,14 @@ contract ERC20Token {
 */
 contract MCToken is ERC20Token {
 
-    string private _name = &quot;Master Coin&quot;;
-    string private _symbol = &quot;MC&quot;;
+    string private _name = "Master Coin";
+    string private _symbol = "MC";
     uint8 private _decimals = 18;
 
     uint256 private _totalSupply = 210000000 * (10 ** uint256(_decimals));
 
-    mapping(address=&gt;uint256) private _balances;
-    mapping(address=&gt;mapping(address=&gt;uint256)) private _allowances;
+    mapping(address=>uint256) private _balances;
+    mapping(address=>mapping(address=>uint256)) private _allowances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -73,7 +73,7 @@ contract MCToken is ERC20Token {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success){
-        require(_balances[msg.sender] &gt;= _value);
+        require(_balances[msg.sender] >= _value);
         _balances[msg.sender] -= _value;
         _balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -81,8 +81,8 @@ contract MCToken is ERC20Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
-        require(_balances[_from] &gt;= _value);
-        require(_allowances[_from][msg.sender] &gt;= _value);
+        require(_balances[_from] >= _value);
+        require(_allowances[_from][msg.sender] >= _value);
 
         uint256 previousBalances = _balances[_from] + _balances[_to];
 

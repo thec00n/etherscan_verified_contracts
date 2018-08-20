@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -54,9 +54,9 @@ contract Ownable {
  */
 contract BRDCrowdsaleAuthorizer is Ownable {
   // these accounts are authorized to participate in the crowdsale
-  mapping (address =&gt; bool) internal authorizedAccounts;
+  mapping (address => bool) internal authorizedAccounts;
   // these accounts are authorized to authorize accounts
-  mapping (address =&gt; bool) internal authorizers;
+  mapping (address => bool) internal authorizers;
 
   // emitted when a new account is authorized
   event Authorized(address indexed _to);
@@ -121,20 +121,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -194,8 +194,8 @@ contract BRDLockup is Ownable {
   // update the allocation storage remaining balances
   function processInterval() onlyOwner public returns (bool _shouldProcessRewards) {
     // ensure the time interval is correct
-    bool _correctInterval = now &gt;= unlockDate &amp;&amp; now.sub(unlockDate) &gt; currentInterval.mul(intervalDuration);
-    bool _validInterval = currentInterval &lt; numIntervals;
+    bool _correctInterval = now >= unlockDate && now.sub(unlockDate) > currentInterval.mul(intervalDuration);
+    bool _validInterval = currentInterval < numIntervals;
     if (!_correctInterval || !_validInterval)
       return false;
 
@@ -206,7 +206,7 @@ contract BRDLockup is Ownable {
     uint _allocationsIndex = allocations.length;
 
     // loop through every allocation
-    for (uint _i = 0; _i &lt; _allocationsIndex; _i++) {
+    for (uint _i = 0; _i < _allocationsIndex; _i++) {
       // the current reward for the allocation at index `i`
       uint256 _amountToReward;
 
@@ -237,7 +237,7 @@ contract BRDLockup is Ownable {
   // reward the beneficiary at `_index`
   function unlock(uint _index) onlyOwner public returns (bool _shouldReward, address _beneficiary, uint256 _rewardAmount) {
     // ensure the beneficiary is not rewarded twice during the same interval
-    if (allocations[_index].currentInterval &lt; currentInterval) {
+    if (allocations[_index].currentInterval < currentInterval) {
       // record the currentInterval so the above check is useful
       allocations[_index].currentInterval = currentInterval;
       // subtract the reward from their remaining balance
@@ -258,7 +258,7 @@ contract BRDLockup is Ownable {
 
   // add a new allocation to the lockup
   function pushAllocation(address _beneficiary, uint256 _numTokens) onlyOwner public {
-    require(now &lt; unlockDate);
+    require(now < unlockDate);
     allocations.push(
       Allocation(
         _beneficiary,
@@ -295,7 +295,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -304,7 +304,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -348,7 +348,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -359,8 +359,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -374,7 +374,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -409,7 +409,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -471,8 +471,8 @@ contract MintableToken is StandardToken, Ownable {
 contract BRDToken is MintableToken {
   using SafeMath for uint256;
 
-  string public name = &quot;Bread Token&quot;;
-  string public symbol = &quot;BRD&quot;;
+  string public name = "Bread Token";
+  string public symbol = "BRD";
   uint256 public decimals = 18;
 
   // override StandardToken#transferFrom
@@ -530,9 +530,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -581,14 +581,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -610,7 +610,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -671,7 +671,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     Crowdsale(_startTime, _endTime, _rate, _wallet)
    public
   {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
     minContribution = _minWei;
     maxContribution = _maxWei;
@@ -682,13 +682,13 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool _capReached = weiRaised &gt;= cap;
+    bool _capReached = weiRaised >= cap;
     return super.hasEnded() || _capReached;
   }
 
   // @return true if the crowdsale has started
   function hasStarted() public constant returns (bool) {
-    return now &gt; startTime;
+    return now > startTime;
   }
 
   // overriding Crowdsale#buyTokens
@@ -753,7 +753,7 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     uint _numAllocations = lockup.numAllocations();
 
     // for every allocation, attempt to unlock the reward
-    for (uint _i = 0; _i &lt; _numAllocations; _i++) {
+    for (uint _i = 0; _i < _numAllocations; _i++) {
       // attempt to unlock the reward
       var (_shouldReward, _to, _amount) = lockup.unlock(_i);
       // if the beneficiary should be rewarded, send them tokens
@@ -765,19 +765,19 @@ contract BRDCrowdsale is FinalizableCrowdsale {
     return true;
   }
 
-  // sets the authorizer contract if the crowdsale hasn&#39;t started
+  // sets the authorizer contract if the crowdsale hasn't started
   function setAuthorizer(BRDCrowdsaleAuthorizer _authorizer) onlyOwner public {
     require(!hasStarted());
     authorizer = _authorizer;
   }
 
-  // sets the lockup contract if the crowdsale hasn&#39;t started
+  // sets the lockup contract if the crowdsale hasn't started
   function setLockup(BRDLockup _lockup) onlyOwner public {
     require(!hasStarted());
     lockup = _lockup;
   }
 
-  // sets the token contract if the crowdsale hasn&#39;t started
+  // sets the token contract if the crowdsale hasn't started
   function setToken(BRDToken _token) onlyOwner public {
     require(!hasStarted());
     token = _token;
@@ -818,11 +818,11 @@ contract BRDCrowdsale is FinalizableCrowdsale {
   // been authorized, and their contribution is within the min/max
   // thresholds
   function validPurchase() internal constant returns (bool) {
-    bool _withinCap = weiRaised.add(msg.value) &lt;= cap;
+    bool _withinCap = weiRaised.add(msg.value) <= cap;
     bool _isAuthorized = authorizer.isAuthorized(msg.sender);
-    bool _isMin = msg.value &gt;= minContribution;
+    bool _isMin = msg.value >= minContribution;
     uint256 _alreadyContributed = token.balanceOf(msg.sender).div(rate);
-    bool _withinMax = msg.value.add(_alreadyContributed) &lt;= maxContribution;
-    return super.validPurchase() &amp;&amp; _withinCap &amp;&amp; _isAuthorized &amp;&amp; _isMin &amp;&amp; _withinMax;
+    bool _withinMax = msg.value.add(_alreadyContributed) <= maxContribution;
+    return super.validPurchase() && _withinCap && _isAuthorized && _isMin && _withinMax;
   }
 }

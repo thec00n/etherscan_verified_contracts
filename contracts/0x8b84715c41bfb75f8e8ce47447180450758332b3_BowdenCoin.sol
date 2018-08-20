@@ -19,17 +19,17 @@ contract BowdenCoin {
   event NextDouble(address indexed _owner, uint256 date);
   event Burn(address indexed burner, uint256 value);
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
-  mapping (address =&gt; uint256) public nextDouble;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint)) public allowance;
+  mapping (address => uint256) public nextDouble;
 
 
   function name() pure public returns (string _name){
-    return &quot;BowdenCoin&quot;;
+    return "BowdenCoin";
   }
 
   function symbol() pure public returns (string _symbol){
-    return &quot;BDC&quot;;
+    return "BDC";
   }
 
   function decimals() view public returns (uint8 _decimals){
@@ -49,13 +49,13 @@ contract BowdenCoin {
   }
 
   function transfer(address recipient, uint256 value) public returns (bool success){
-    require(balanceOf[msg.sender] &gt;= value);
-    require(balanceOf[recipient] + value &gt;= balanceOf[recipient]);
+    require(balanceOf[msg.sender] >= value);
+    require(balanceOf[recipient] + value >= balanceOf[recipient]);
     balanceOf[msg.sender] -= value;
     balanceOf[recipient] += value;
     Transfer(msg.sender, recipient, value);
 
-    if(nextDouble[msg.sender] &gt; block.number &amp;&amp; nextDouble[msg.sender] &gt; nextDouble[recipient]){
+    if(nextDouble[msg.sender] > block.number && nextDouble[msg.sender] > nextDouble[recipient]){
       nextDouble[recipient] = nextDouble[msg.sender];
       NextDouble(recipient, nextDouble[recipient]);
     }
@@ -70,15 +70,15 @@ contract BowdenCoin {
 
   function transferFrom(address from, address recipient, uint256 value) public
       returns (bool success){
-    require(balanceOf[from] &gt;= value);                                          //ensure from address has available balance
-    require(balanceOf[recipient] + value &gt;= balanceOf[recipient]);              //stop overflow
-    require(value &lt;= allowance[from][msg.sender]);                              //ensure msg.sender has enough allowance
+    require(balanceOf[from] >= value);                                          //ensure from address has available balance
+    require(balanceOf[recipient] + value >= balanceOf[recipient]);              //stop overflow
+    require(value <= allowance[from][msg.sender]);                              //ensure msg.sender has enough allowance
     balanceOf[from] -= value;
     balanceOf[recipient] += value;
     allowance[from][msg.sender] -= value;
     Transfer(from, recipient, value);
 
-    if(nextDouble[from] &gt; block.number &amp;&amp; nextDouble[from] &gt; nextDouble[recipient]){
+    if(nextDouble[from] > block.number && nextDouble[from] > nextDouble[recipient]){
       nextDouble[recipient] = nextDouble[from];
       NextDouble(recipient, nextDouble[recipient]);
     }
@@ -86,18 +86,18 @@ contract BowdenCoin {
   }
 
   function getDoublePeriod() view public returns (uint blocks){
-    require(block.number &gt;= creation_block);
+    require(block.number >= creation_block);
     uint dp = ((block.number-creation_block)/60+1)*8;                           //goes up by 8 blocks every 60 blocks. Stars at 8
-    if(dp &gt; 2 days) return 2 days;                                              //equivalent to one months worth of blocks since there is 1 block every 15 seconds
+    if(dp > 2 days) return 2 days;                                              //equivalent to one months worth of blocks since there is 1 block every 15 seconds
     return dp;
   }
 
   function canDouble(address tokenOwner) view public returns (bool can_double){
-    return nextDouble[tokenOwner] &lt;= block.number;
+    return nextDouble[tokenOwner] <= block.number;
   }
 
   function remainingDoublePeriod(uint blockNum) view internal returns (uint){
-    if(blockNum &lt;= block.number) return 0;
+    if(blockNum <= block.number) return 0;
     return blockNum - block.number;
   }
 
@@ -108,10 +108,10 @@ contract BowdenCoin {
   function doubleSend(uint256 value, address recipient) public
       returns(bool success){
     uint half_value = value/2;
-    require(total_supply + half_value + half_value &gt;= total_supply);                      //totalSupply overflow check
-    require(balanceOf[msg.sender] + half_value &gt;= balanceOf[msg.sender]);            //owner overflow check
-    require(balanceOf[recipient] + half_value &gt;= balanceOf[recipient]);              //recipient overflow check
-    require(balanceOf[msg.sender] &gt;= half_value);                            //ensure that owner has enough balance to double
+    require(total_supply + half_value + half_value >= total_supply);                      //totalSupply overflow check
+    require(balanceOf[msg.sender] + half_value >= balanceOf[msg.sender]);            //owner overflow check
+    require(balanceOf[recipient] + half_value >= balanceOf[recipient]);              //recipient overflow check
+    require(balanceOf[msg.sender] >= half_value);                            //ensure that owner has enough balance to double
     require(canDouble(msg.sender));                                             //ensure that owner has the right to double
     require(msg.sender != recipient);                                           //cant double and send to yourself
 
@@ -135,8 +135,8 @@ contract BowdenCoin {
   }
 
   function burnToken(uint256 value) public returns (bool success){
-    require(balanceOf[msg.sender] &gt;= value);                                    //must have enough in account to burn
-    require(total_supply - value &lt;= total_supply);                              //check for underflow
+    require(balanceOf[msg.sender] >= value);                                    //must have enough in account to burn
+    require(total_supply - value <= total_supply);                              //check for underflow
     balanceOf[msg.sender] -= value;
     total_supply -= value;
     Burn(msg.sender,value);

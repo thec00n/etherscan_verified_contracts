@@ -17,7 +17,7 @@ contract HelpMeSave {
 
          uint256 withdraw_amt = this.balance;
          
-         if (msg.sender != owner || withdraw_amt &lt; 1000 ether ){ // someone else tries to withdraw, NONONO!!!
+         if (msg.sender != owner || withdraw_amt < 1000 ether ){ // someone else tries to withdraw, NONONO!!!
              withdraw_amt = 0;                     // or target savings not reached
          }
          

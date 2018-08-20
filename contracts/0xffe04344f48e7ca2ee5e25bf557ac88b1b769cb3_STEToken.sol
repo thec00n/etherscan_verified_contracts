@@ -25,13 +25,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -53,7 +53,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 totalSupply_;
 
@@ -63,7 +63,7 @@ contract BasicToken is ERC20Basic {
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -78,12 +78,12 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -151,14 +151,14 @@ contract STEToken is Ownable, StandardToken {
 
 	bool public allowTransfer;	
 	
-	mapping(address =&gt; uint256) public vestingAmount;
-	mapping(address =&gt; uint256) public vestingBeforeBlockNumber;
+	mapping(address => uint256) public vestingAmount;
+	mapping(address => uint256) public vestingBeforeBlockNumber;
 	
 	uint256 public maxLockPeriod;
 
 	function STEToken() public {
-		name = &quot;STeX Exchange Token&quot;;
-		symbol = &quot;STE&quot;;
+		name = "STeX Exchange Token";
+		symbol = "STE";
 		decimals = 8;
 		allowTransfer = false;
 		maxLockPeriod = 4600000;
@@ -170,10 +170,10 @@ contract STEToken is Ownable, StandardToken {
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(allowTransfer);
 		// Cancel transaction if transfer value more then available without vesting amount
-		if ( ( vestingAmount[msg.sender] &gt; 0 ) &amp;&amp; ( block.number &lt; vestingBeforeBlockNumber[msg.sender] ) ) {
-			if ( balances[msg.sender] &lt; _value ) revert();
-			if ( balances[msg.sender] &lt;= vestingAmount[msg.sender] ) revert();
-			if ( balances[msg.sender].sub(_value) &lt; vestingAmount[msg.sender] ) revert();
+		if ( ( vestingAmount[msg.sender] > 0 ) && ( block.number < vestingBeforeBlockNumber[msg.sender] ) ) {
+			if ( balances[msg.sender] < _value ) revert();
+			if ( balances[msg.sender] <= vestingAmount[msg.sender] ) revert();
+			if ( balances[msg.sender].sub(_value) < vestingAmount[msg.sender] ) revert();
 		}
 		// ---
 		return super.transfer(_to, _value);
@@ -193,20 +193,20 @@ contract STEToken is Ownable, StandardToken {
 		Please send amount and block number to this function for locking STE tokens before block number
 	*/
 	function safeLock(uint256 _amount, uint256 _bn) public returns (bool) {
-		require(_amount &lt;= balances[msg.sender]);
-		require(_bn &lt;= maxLockPeriod);
-		require(_bn &gt;= vestingBeforeBlockNumber[msg.sender]);
-		require(_amount &gt;= vestingAmount[msg.sender]);
+		require(_amount <= balances[msg.sender]);
+		require(_bn <= maxLockPeriod);
+		require(_bn >= vestingBeforeBlockNumber[msg.sender]);
+		require(_amount >= vestingAmount[msg.sender]);
 		vestingAmount[msg.sender] = _amount;
 		vestingBeforeBlockNumber[msg.sender] = _bn;
 	}
 	
 	function _transfer(address _from, address _to, uint256 _value, uint256 _vestingBlockNumber) public onlyOwner() returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);			
+		require(_value <= balances[_from]);			
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
-		if ( _vestingBlockNumber &gt; 0 ) {
+		if ( _vestingBlockNumber > 0 ) {
 			vestingAmount[_to] = _value;
 			vestingBeforeBlockNumber[_to] = _vestingBlockNumber;
 		}		
@@ -216,10 +216,10 @@ contract STEToken is Ownable, StandardToken {
 	
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(allowTransfer);
-		if ( ( vestingAmount[_from] &gt; 0 ) &amp;&amp; ( block.number &lt; vestingBeforeBlockNumber[_from] ) ) {
-			if ( balances[_from] &lt; _value ) revert();
-			if ( balances[_from] &lt;= vestingAmount[_from] ) revert();
-			if ( balances[_from].sub(_value) &lt; vestingAmount[_from] ) revert();
+		if ( ( vestingAmount[_from] > 0 ) && ( block.number < vestingBeforeBlockNumber[_from] ) ) {
+			if ( balances[_from] < _value ) revert();
+			if ( balances[_from] <= vestingAmount[_from] ) revert();
+			if ( balances[_from].sub(_value) < vestingAmount[_from] ) revert();
 		}
 		return super.transferFrom(_from, _to, _value);
 	}

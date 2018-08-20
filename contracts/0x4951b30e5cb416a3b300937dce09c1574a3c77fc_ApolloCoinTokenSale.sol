@@ -4,7 +4,7 @@ pragma solidity 0.4.20;
  * @author Denver Brittain
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -99,7 +99,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev transfer token for a specified address
@@ -135,7 +135,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
  * have been sold and transferred from the holding contract.
  * @dev from Crowdsale by Zepellin with a few differences, the most important of 
  * which are the tiered presale pricing structure, presale start 
- * and conclusion times, and the ongoing ICO.&quot;
+ * and conclusion times, and the ongoing ICO."
  */
 contract StandardCrowdsale {
     using SafeMath for uint256;
@@ -264,8 +264,8 @@ contract StandardCrowdsale {
         uint256 _tier4Rate,
         address _wallet) {
 
-        require(_icoStartTime &gt;= now);
-        require(_icoRate &gt; 0);
+        require(_icoStartTime >= now);
+        require(_icoRate > 0);
         require(_wallet != 0x0);
 
         icoStartTime = _icoStartTime;
@@ -308,14 +308,14 @@ contract StandardCrowdsale {
 
         // if presale is active, confirm that purchase does not go over presale 
         // funding cap and calculate presale tokens to be transferred
-        if ((now &gt;= presaleStartTime &amp;&amp; now &lt; presaleEndTime) &amp;&amp; weiRaised.add(weiAmount) &lt;= 600 ether) {        
-            if (weiAmount &lt; 2 ether) 
+        if ((now >= presaleStartTime && now < presaleEndTime) && weiRaised.add(weiAmount) <= 600 ether) {        
+            if (weiAmount < 2 ether) 
                 tokens = weiAmount.mul(tier1Rate);
-            if (weiAmount &gt;= 2 ether &amp;&amp; weiAmount &lt; 5 ether) 
+            if (weiAmount >= 2 ether && weiAmount < 5 ether) 
                 tokens = weiAmount.mul(tier2Rate);
-            if (weiAmount &gt;= 5 ether &amp;&amp; weiAmount &lt; 10 ether)
+            if (weiAmount >= 5 ether && weiAmount < 10 ether)
                 tokens = weiAmount.mul(tier3Rate);
-            if (weiAmount &gt;= 10 ether)
+            if (weiAmount >= 10 ether)
                 tokens = weiAmount.mul(tier4Rate);
         } 
 
@@ -330,10 +330,10 @@ contract StandardCrowdsale {
 
     // @return true if the transaction can buy tokens from presale or ICO, includes funding cap check 
     function validPurchase() internal returns(bool) {
-        bool withinPresalePeriod = now &gt;= presaleStartTime;
-        bool withinICOPeriod = now &gt;= icoStartTime;
+        bool withinPresalePeriod = now >= presaleStartTime;
+        bool withinICOPeriod = now >= icoStartTime;
         bool nonZeroPurchase = msg.value != 0;
-        return (withinPresalePeriod &amp;&amp; nonZeroPurchase &amp;&amp; weiRaised &lt;= 600 ether) || (withinICOPeriod &amp;&amp; nonZeroPurchase &amp;&amp; weiRaised &lt;= 3000 ether);
+        return (withinPresalePeriod && nonZeroPurchase && weiRaised <= 600 ether) || (withinICOPeriod && nonZeroPurchase && weiRaised <= 3000 ether);
     }
 }
 
@@ -347,21 +347,21 @@ contract CappedCrowdsale is StandardCrowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return capReached;
   }
 }
@@ -375,7 +375,7 @@ contract CappedCrowdsale is StandardCrowdsale {
 */ 
 contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
     
-    mapping(address=&gt;bool) public registered;
+    mapping(address=>bool) public registered;
 
     event RegistrationStatusChanged(address target, bool isRegistered);
 
@@ -385,13 +385,13 @@ contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
     }
 
     function changeRegistrationStatuses(address[] targets, bool isRegistered) public onlyOwner {
-        for (uint i = 0; i &lt; targets.length; i++) {
+        for (uint i = 0; i < targets.length; i++) {
             changeRegistrationStatus(targets[i], isRegistered);
         }
     }
 
     function validPurchase() internal returns (bool) {
-        return super.validPurchase() &amp;&amp; registered[msg.sender];
+        return super.validPurchase() && registered[msg.sender];
     }
 }
 
@@ -401,8 +401,8 @@ contract WhitelistedCrowdsale is StandardCrowdsale, Ownable {
  * and a valid transfer destination check
 */
 contract ApolloCoinToken is StandardToken, Ownable {
-    string  public  constant name = &quot;ApolloCoin&quot;;
-    string  public  constant symbol = &quot;APC&quot;;
+    string  public  constant name = "ApolloCoin";
+    string  public  constant symbol = "APC";
     uint8   public  constant decimals = 18;
 
     uint    public  transferableStartTime;
@@ -412,7 +412,7 @@ contract ApolloCoinToken is StandardToken, Ownable {
 
 
     modifier onlyWhenTransferEnabled() {
-        if ( now &lt;= transferableStartTime ) {
+        if ( now <= transferableStartTime ) {
             require(msg.sender == tokenSaleContract || msg.sender == earlyInvestorWallet || msg.sender == owner);
         }
         _;

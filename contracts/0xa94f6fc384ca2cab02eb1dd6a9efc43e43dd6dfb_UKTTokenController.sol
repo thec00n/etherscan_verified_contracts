@@ -22,7 +22,7 @@ library AddressTools {
 			codeSize := extcodesize(a)
 		}
 		
-		if(codeSize &gt; 0) {
+		if(codeSize > 0) {
 			return true;
 		}
 		
@@ -34,7 +34,7 @@ library AddressTools {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 	
@@ -137,7 +137,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
@@ -147,7 +147,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -160,7 +160,7 @@ library SafeMath {
 			return 1;
 		}
 		uint c = a ** b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	
@@ -194,7 +194,7 @@ contract BasicToken is ERC20Basic {
 	
 	using SafeMath for uint256;
 	
-	mapping(address =&gt; uint256) public balances;
+	mapping(address => uint256) public balances;
 	
 	uint256 public totalSupply_;
 	
@@ -214,7 +214,7 @@ contract BasicToken is ERC20Basic {
 	*/
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 		
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -248,9 +248,9 @@ contract BurnableToken is BasicToken {
 	 * @param _value The amount of token to be burned.
 	 */
 	function burn(uint256 _value) public {
-		require(_value &lt;= balances[msg.sender]);
-		// no need to require value &lt;= totalSupply, since that would imply the
-		// sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+		require(_value <= balances[msg.sender]);
+		// no need to require value <= totalSupply, since that would imply the
+		// sender's balance is greater than the totalSupply, which *should* be an assertion failure
 		
 		address burner = msg.sender;
 		balances[burner] = balances[burner].sub(_value);
@@ -291,11 +291,11 @@ contract UKTTokenBasic is ERC223, BurnableToken {
 	bool public isAllocated = false;
 	
 	// mapping of string labels to initial allocated addresses
-	mapping(bytes32 =&gt; address) public allocationAddressesTypes;
+	mapping(bytes32 => address) public allocationAddressesTypes;
 	// mapping of addresses to time lock period
-	mapping(address =&gt; uint32) public timelockedAddresses;
+	mapping(address => uint32) public timelockedAddresses;
 	// mapping of addresses to lock flag
-	mapping(address =&gt; bool) public lockedAddresses;
+	mapping(address => bool) public lockedAddresses;
 	
 	
 	function setConfiguration(string _name, string _symbol, uint _totalSupply) external returns (bool);
@@ -317,7 +317,7 @@ contract UKTTokenBasic is ERC223, BurnableToken {
 
 /**
  * @title  Basic controller contract for basic UKT token
- * @author  Oleg Levshin &lt;<span class="__cf_email__" data-cfemail="96faf3e0e5fefff8d6e3f5f9ecbbe2f3f7fbb8f8f3e2">[email&#160;protected]</span>&gt;
+ * @author  Oleg Levshin <<span class="__cf_email__" data-cfemail="96faf3e0e5fefff8d6e3f5f9ecbbe2f3f7fbb8f8f3e2">[email protected]</span>>
  */
 contract UKTTokenController is Ownable {
 	
@@ -328,10 +328,10 @@ contract UKTTokenController is Ownable {
 	
 	// address of the controlled token
 	UKTTokenBasic public token;
-	// finalize function type. One of two values is possible: &quot;transfer&quot; or &quot;burn&quot;
-	bytes32 public finalizeType = &quot;transfer&quot;;
+	// finalize function type. One of two values is possible: "transfer" or "burn"
+	bytes32 public finalizeType = "transfer";
 	// address type where finalize function will transfer undistributed tokens
-	bytes32 public finalizeTransferAddressType = &quot;&quot;;
+	bytes32 public finalizeTransferAddressType = "";
 	// maximum quantity of addresses to distribute
 	uint8 internal MAX_ADDRESSES_FOR_DISTRIBUTE = 100;
 	// list of locked initial allocation addresses
@@ -350,12 +350,12 @@ contract UKTTokenController is Ownable {
 		bytes32 _finalizeType,
 		bytes32 _finalizeTransferAddressType
 	) public {
-		require(_finalizeType == &quot;transfer&quot; || _finalizeType == &quot;burn&quot;);
+		require(_finalizeType == "transfer" || _finalizeType == "burn");
 		
-		if (_finalizeType == &quot;transfer&quot;) {
-			require(_finalizeTransferAddressType != &quot;&quot;);
-		} else if (_finalizeType == &quot;burn&quot;) {
-			require(_finalizeTransferAddressType == &quot;&quot;);
+		if (_finalizeType == "transfer") {
+			require(_finalizeTransferAddressType != "");
+		} else if (_finalizeType == "burn") {
+			require(_finalizeTransferAddressType == "");
 		}
 		
 		finalizeType = _finalizeType;
@@ -427,7 +427,7 @@ contract UKTTokenController is Ownable {
 		
 		token.setInitialAllocationUnlock(allocationAddress);
 		
-		for (uint idx = 0; idx &lt; lockedAddressesList.length; idx++) {
+		for (uint idx = 0; idx < lockedAddressesList.length; idx++) {
 			if (lockedAddressesList[idx] == allocationAddress) {
 				lockedAddressesList[idx] = address(0);
 				break;
@@ -442,7 +442,7 @@ contract UKTTokenController is Ownable {
 	 * @dev Unlocks all allocation addresses
 	 */
 	function unlockAllAllocationAddresses() public onlyOwner returns (bool) {
-		for(uint a = 0; a &lt; lockedAddressesList.length; a++) {
+		for(uint a = 0; a < lockedAddressesList.length; a++) {
 			if (lockedAddressesList[a] == address(0)) {
 				continue;
 			}
@@ -476,11 +476,11 @@ contract UKTTokenController is Ownable {
 	) public onlyOwner returns (bool) {
 		require(token != address(0));
 		// quantity of addresses should be less than MAX_ADDRESSES_FOR_DISTRIBUTE
-		require(addresses.length &lt; MAX_ADDRESSES_FOR_DISTRIBUTE);
+		require(addresses.length < MAX_ADDRESSES_FOR_DISTRIBUTE);
 		// the array of addresses should be the same length as the array of amounts
-		require(addresses.length == amounts.length &amp;&amp; addresses.length == trackingIds.length);
+		require(addresses.length == amounts.length && addresses.length == trackingIds.length);
 		
-		for(uint a = 0; a &lt; addresses.length; a++) {
+		for(uint a = 0; a < addresses.length; a++) {
 			token.transfer(addresses[a], amounts[a]);
 			emit Distributed(addresses[a], trackingIds[a], amounts[a]);
 		}
@@ -494,13 +494,13 @@ contract UKTTokenController is Ownable {
 	 */
 	function finalize() public onlyOwner {
 		
-		if (finalizeType == &quot;transfer&quot;) {
+		if (finalizeType == "transfer") {
 			// transfer all undistributed tokens to particular address
 			token.transfer(
 				token.allocationAddressesTypes(finalizeTransferAddressType),
 				token.balanceOf(this)
 			);
-		} else if (finalizeType == &quot;burn&quot;) {
+		} else if (finalizeType == "burn") {
 			// burn all undistributed tokens
 			token.burn(token.balanceOf(this));
 		}

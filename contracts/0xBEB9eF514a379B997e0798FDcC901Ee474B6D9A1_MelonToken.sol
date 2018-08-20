@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
 /// @title Assertive contract
-/// @author Melonport AG &lt;<span class="__cf_email__" data-cfemail="7e0a1b1f133e131b1211100e110c0a501d1113">[email&#160;protected]</span>&gt;
+/// @author Melonport AG <<span class="__cf_email__" data-cfemail="7e0a1b1f133e131b1211100e110c0a501d1113">[email protected]</span>>
 /// @notice Asserts function
 contract Assertive {
 
@@ -12,7 +12,7 @@ contract Assertive {
 }
 
 /// @title Overflow aware uint math functions.
-/// @author Melonport AG &lt;<span class="__cf_email__" data-cfemail="3440515559745951585b5a445b46401a575b59">[email&#160;protected]</span>&gt;
+/// @author Melonport AG <<span class="__cf_email__" data-cfemail="3440515559745951585b5a445b46401a575b59">[email protected]</span>>
 /// @notice Inspired by https://github.com/MakerDAO/maker-otc/blob/master/contracts/simple_market.sol
 contract SafeMath is Assertive{
 
@@ -23,20 +23,20 @@ contract SafeMath is Assertive{
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
 }
 
 /// @title ERC20 Token Protocol
-/// @author Melonport AG &lt;<span class="__cf_email__" data-cfemail="0b7f6e6a664b666e6764657b64797f25686466">[email&#160;protected]</span>&gt;
+/// @author Melonport AG <<span class="__cf_email__" data-cfemail="0b7f6e6a664b666e6764657b64797f25686466">[email protected]</span>>
 /// @notice See https://github.com/ethereum/EIPs/issues/20
 contract ERC20Protocol {
 
@@ -53,13 +53,13 @@ contract ERC20Protocol {
 }
 
 /// @title ERC20 Token
-/// @author Melonport AG &lt;<span class="__cf_email__" data-cfemail="5c28393d311c31393033322c332e28723f3331">[email&#160;protected]</span>&gt;
+/// @author Melonport AG <<span class="__cf_email__" data-cfemail="5c28393d311c31393033322c332e28723f3331">[email protected]</span>>
 /// @notice Original taken from https://github.com/ethereum/EIPs/issues/20
 /// @notice Checked against integer overflow
 contract ERC20 is ERC20Protocol {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -68,7 +68,7 @@ contract ERC20 is ERC20Protocol {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -91,9 +91,9 @@ contract ERC20 is ERC20Protocol {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 
@@ -101,14 +101,14 @@ contract ERC20 is ERC20Protocol {
 
 
 /// @title Melon Token Contract
-/// @author Melonport AG &lt;<span class="__cf_email__" data-cfemail="85f1e0e4e8c5e8e0e9eaebf5eaf7f1abe6eae8">[email&#160;protected]</span>&gt;
+/// @author Melonport AG <<span class="__cf_email__" data-cfemail="85f1e0e4e8c5e8e0e9eaebf5eaf7f1abe6eae8">[email protected]</span>>
 contract MelonToken is ERC20, SafeMath {
 
     // FIELDS
 
     // Constant token specific fields
-    string public constant name = &quot;Melon Token&quot;;
-    string public constant symbol = &quot;MLN&quot;;
+    string public constant name = "Melon Token";
+    string public constant symbol = "MLN";
     uint public constant decimals = 18;
     uint public constant THAWING_DURATION = 2 years; // Time needed for iced tokens to thaw into liquid tokens
     uint public constant MAX_TOTAL_TOKEN_AMOUNT_OFFERED_TO_PUBLIC = 1000000 * 10 ** decimals; // Max amount of tokens offered to the public
@@ -121,7 +121,7 @@ contract MelonToken is ERC20, SafeMath {
     uint public endTime; // Contribution end time in seconds
 
     // Fields that can be changed by functions
-    mapping (address =&gt; uint) lockedBalances;
+    mapping (address => uint) lockedBalances;
 
     // MODIFIERS
 
@@ -136,12 +136,12 @@ contract MelonToken is ERC20, SafeMath {
     }
 
     modifier is_later_than(uint x) {
-        assert(now &gt; x);
+        assert(now > x);
         _;
     }
 
     modifier max_total_token_amount_not_reached(uint amount) {
-        assert(safeAdd(totalSupply, amount) &lt;= MAX_TOTAL_TOKEN_AMOUNT);
+        assert(safeAdd(totalSupply, amount) <= MAX_TOTAL_TOKEN_AMOUNT);
         _;
     }
 
@@ -225,7 +225,7 @@ contract MelonToken is ERC20, SafeMath {
 
 
 /// @title Contribution Contract
-/// @author Melonport AG &lt;<span class="__cf_email__" data-cfemail="176372767a577a727b7879677865633974787a">[email&#160;protected]</span>&gt;
+/// @author Melonport AG <<span class="__cf_email__" data-cfemail="176372767a577a727b7879677865633974787a">[email protected]</span>>
 /// @notice This follows Condition-Orientated Programming as outlined here:
 /// @notice   https://medium.com/@gavofyork/condition-orientated-programming-969f6ba0161a#.saav3bvva
 contract Contribution is SafeMath {
@@ -318,22 +318,22 @@ contract Contribution is SafeMath {
     }
 
     modifier ether_cap_not_reached {
-        assert(safeAdd(etherRaised, msg.value) &lt;= ETHER_CAP);
+        assert(safeAdd(etherRaised, msg.value) <= ETHER_CAP);
         _;
     }
 
     modifier btcs_ether_cap_not_reached {
-        assert(safeAdd(etherRaised, msg.value) &lt;= BTCS_ETHER_CAP);
+        assert(safeAdd(etherRaised, msg.value) <= BTCS_ETHER_CAP);
         _;
     }
 
     modifier is_not_earlier_than(uint x) {
-        assert(now &gt;= x);
+        assert(now >= x);
         _;
     }
 
     modifier is_earlier_than(uint x) {
-        assert(now &lt; x);
+        assert(now < x);
         _;
     }
 
@@ -343,13 +343,13 @@ contract Contribution is SafeMath {
     /// Post: Price rate at given blockTime; One ether equals priceRate() / DIVISOR_PRICE of melon tokens
     function priceRate() constant returns (uint) {
         // Four price tiers
-        if (startTime &lt;= now &amp;&amp; now &lt; startTime + 1 weeks)
+        if (startTime <= now && now < startTime + 1 weeks)
             return PRICE_RATE_FIRST;
-        if (startTime + 1 weeks &lt;= now &amp;&amp; now &lt; startTime + 2 weeks)
+        if (startTime + 1 weeks <= now && now < startTime + 2 weeks)
             return PRICE_RATE_SECOND;
-        if (startTime + 2 weeks &lt;= now &amp;&amp; now &lt; startTime + 3 weeks)
+        if (startTime + 2 weeks <= now && now < startTime + 3 weeks)
             return PRICE_RATE_THIRD;
-        if (startTime + 3 weeks &lt;= now &amp;&amp; now &lt; endTime)
+        if (startTime + 3 weeks <= now && now < endTime)
             return PRICE_RATE_FOURTH;
         // Should not be called before or after contribution period
         assert(false);

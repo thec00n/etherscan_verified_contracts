@@ -5,10 +5,10 @@ contract Neulaut {
     uint256 public totalSupply = 10**26;
     uint256 public fee = 10**16; // 0.01 NUA
     address owner = 0x1E79E69BFC1aB996c6111952B388412aA248c926;
-    string public name = &quot;Neulaut&quot;;
+    string public name = "Neulaut";
     uint8 public decimals = 18;
-    string public symbol = &quot;NUA&quot;;
-    mapping (address =&gt; uint256) balances;
+    string public symbol = "NUA";
+    mapping (address => uint256) balances;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     function Neulaut() {
@@ -20,8 +20,8 @@ contract Neulaut {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        require(_value &gt; fee);
-        require(balances[msg.sender] &gt;= _value);
+        require(_value > fee);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += (_value - fee);
         balances[owner] += fee;

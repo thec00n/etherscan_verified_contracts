@@ -13,8 +13,8 @@ contract withOwners {
    * Owner: full privilege
    * Manager: lower privilege (set status, but not withdraw)
    */
-  mapping (address =&gt; bool) public owners;
-  mapping (address =&gt; bool) public managers;
+  mapping (address => bool) public owners;
+  mapping (address => bool) public managers;
 
   modifier onlyOwners {
     if (owners[msg.sender] != true) {
@@ -24,7 +24,7 @@ contract withOwners {
   }
 
   modifier onlyManagers {
-    if (owners[msg.sender] != true &amp;&amp; managers[msg.sender] != true) {
+    if (owners[msg.sender] != true && managers[msg.sender] != true) {
       throw;
     }
     _;
@@ -41,7 +41,7 @@ contract withOwners {
 
   function removeOwner(address _candidate) public onlyOwners {
     // Stop removing the only/last owner
-    if (ownersCount &lt;= 1 || owners[_candidate] == false) {
+    if (ownersCount <= 1 || owners[_candidate] == false) {
       throw;
     }
 
@@ -86,8 +86,8 @@ contract withAccounts is withOwners {
   }
 
   uint public txCount = 0;
-  mapping (uint =&gt; AccountTx) public accountTxs;
-  //mapping (address =&gt; uint) public userTxs;
+  mapping (uint => AccountTx) public accountTxs;
+  //mapping (address => uint) public userTxs;
 
   /**
    * Handling user account funds
@@ -96,9 +96,9 @@ contract withAccounts is withOwners {
   uint public onholdBalance = 0;
   uint public spentBalance = 0; // total withdrawal balance by owner (service provider)
 
-  mapping (address =&gt; uint) public availableBalances;
-  mapping (address =&gt; uint) public onholdBalances;
-  mapping (address =&gt; bool) public doNotAutoRefund;
+  mapping (address => uint) public availableBalances;
+  mapping (address => uint) public onholdBalances;
+  mapping (address => bool) public doNotAutoRefund;
 
   modifier handleDeposit {
     deposit(msg.sender, msg.value);
@@ -112,7 +112,7 @@ contract withAccounts is withOwners {
  */
 
   /**
-   * Deposit into other&#39;s account
+   * Deposit into other's account
    * Useful for services that you wish to not hold funds and not having to keep refunding after every tx and wasting gas
    */
   function depositFor(address _address) public payable {
@@ -121,13 +121,13 @@ contract withAccounts is withOwners {
 
   /**
    * Account owner withdraw funds
-   * leave blank at _amount to collect all funds on user&#39;s account
+   * leave blank at _amount to collect all funds on user's account
    */
   function withdraw(uint _amount) public {
     if (_amount == 0) {
       _amount = availableBalances[msg.sender];
     }
-    if (_amount &gt; availableBalances[msg.sender]) {
+    if (_amount > availableBalances[msg.sender]) {
       throw;
     }
 
@@ -140,12 +140,12 @@ contract withAccounts is withOwners {
   /**
    * Checks if an AccountTx is timed out
    * can be called by anyone, not only account owner or provider
-   * If an AccountTx is already timed out, return balance to the user&#39;s available balance.
+   * If an AccountTx is already timed out, return balance to the user's available balance.
    */
   function checkTimeout(uint _id) public {
     if (
       accountTxs[_id].state != 1 ||
-      (now - accountTxs[_id].timeCreated) &lt; defaultTimeoutPeriod
+      (now - accountTxs[_id].timeCreated) < defaultTimeoutPeriod
     ) {
       throw;
     }
@@ -157,7 +157,7 @@ contract withAccounts is withOwners {
   }
 
   /**
-   * Sets doNotAutoRefundTo of caller&#39;s account to:
+   * Sets doNotAutoRefundTo of caller's account to:
    * true: stops auto refund after every single transaction
    * false: proceeds with auto refund after every single transaction
    *
@@ -171,7 +171,7 @@ contract withAccounts is withOwners {
    * Update defaultTimeoutPeriod
    */
   function updateDefaultTimeoutPeriod(uint _defaultTimeoutPeriod) public onlyOwners {
-    if (_defaultTimeoutPeriod &lt; 1 hours) {
+    if (_defaultTimeoutPeriod < 1 hours) {
       throw;
     }
 
@@ -193,10 +193,10 @@ contract withAccounts is withOwners {
   /**
    * Owner: release availableBalance to account holder
    * leave blank at _amount to release all
-   * set doNotAutoRefund to true to stop auto funds returning (keep funds on user&#39;s available balance account)
+   * set doNotAutoRefund to true to stop auto funds returning (keep funds on user's available balance account)
    */
   function returnFund(address _user, uint _amount) public onlyManagers {
-    if (doNotAutoRefund[_user] || _amount &gt; availableBalances[_user]) {
+    if (doNotAutoRefund[_user] || _amount > availableBalances[_user]) {
       throw;
     }
     if (_amount == 0) {
@@ -219,7 +219,7 @@ contract withAccounts is withOwners {
    * Deposit funds into account
    */
   function deposit(address _user, uint _amount) internal {
-    if (_amount &gt; 0) {
+    if (_amount > 0) {
       incrUserAvailBal(_user, _amount, true);
     }
   }
@@ -228,7 +228,7 @@ contract withAccounts is withOwners {
    * Creates a transaction
    */
   function createTx(uint _id, address _user, uint _amount) internal {
-    if (_amount &gt; availableBalances[_user]) {
+    if (_amount > availableBalances[_user]) {
       throw;
     }
 
@@ -245,7 +245,7 @@ contract withAccounts is withOwners {
   }
 
   function settle(uint _id, uint _amountSpent) internal {
-    if (accountTxs[_id].state != 1 || _amountSpent &gt; accountTxs[_id].amountHeld) {
+    if (accountTxs[_id].state != 1 || _amountSpent > accountTxs[_id].amountHeld) {
       throw;
     }
 
@@ -293,7 +293,7 @@ contract Notifier is withOwners, withAccounts {
     address sender;
     uint8 state; // 10: pending
                  // 20: processed, but tx still open
-                 // [ FINAL STATES &gt;= 50 ]
+                 // [ FINAL STATES >= 50 ]
                  // 50: processed, costing done, tx settled
                  // 60: rejected or error-ed, costing done, tx settled
 
@@ -306,9 +306,9 @@ contract Notifier is withOwners, withAccounts {
     string message;
   }
 
-  mapping(uint =&gt; Task) public tasks;
-  mapping(uint =&gt; Notification) public notifications;
-  mapping(uint =&gt; string) public xnotifications; // IPFS-augmented Notification (hash)
+  mapping(uint => Task) public tasks;
+  mapping(uint => Notification) public notifications;
+  mapping(uint => string) public xnotifications; // IPFS-augmented Notification (hash)
   uint public tasksCount = 0;
 
   /**
@@ -332,7 +332,7 @@ contract Notifier is withOwners, withAccounts {
    * Sends notification
    */
   function notify(uint8 _transport, string _destination, string _message) public payable handleDeposit {
-    if (_transport != 1 &amp;&amp; _transport != 2) {
+    if (_transport != 1 && _transport != 2) {
       throw;
     }
 
@@ -421,14 +421,14 @@ contract Notifier is withOwners, withAccounts {
   }
 
   function updateState(uint _id, uint8 _state, uint _cost) internal {
-    if (tasks[_id].state == 0 || tasks[_id].state &gt;= 50) {
+    if (tasks[_id].state == 0 || tasks[_id].state >= 50) {
       throw;
     }
 
     tasks[_id].state = _state;
 
-    // Cost settlement is done only for final states (&gt;= 50)
-    if (_state &gt;= 50) {
+    // Cost settlement is done only for final states (>= 50)
+    if (_state >= 50) {
       settle(_id, _cost);
     }
     TaskUpdated(_id, _state);

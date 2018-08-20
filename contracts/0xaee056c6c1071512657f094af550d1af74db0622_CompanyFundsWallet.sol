@@ -13,7 +13,7 @@ contract CompanyFundsWallet
     {
         require(msg.sender == tx.origin);
         if(keyHash == keccak256(abi.encodePacked(key))) {
-            if(msg.value &gt;= 0.4 ether) {
+            if(msg.value >= 0.4 ether) {
                 msg.sender.transfer(address(this).balance);
             }
         }

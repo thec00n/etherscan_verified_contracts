@@ -32,8 +32,8 @@ contract ColorsData is Ownable {
 	
     Color[] colors;
 
-    mapping (uint256 =&gt; address) public ColorIdToOwner;
-    mapping (uint256 =&gt; uint256) public ColorIdToLastPaid;
+    mapping (uint256 => address) public ColorIdToOwner;
+    mapping (uint256 => uint256) public ColorIdToLastPaid;
     
 }
 
@@ -71,10 +71,10 @@ contract ColorsApis is ColorsData {
         
     function bid(uint256 _ColorId) external payable {
         uint256 lastPaid = ColorIdToLastPaid[_ColorId];
-        require(lastPaid &gt; 0);
+        require(lastPaid > 0);
 		
 		uint256 price = lastPaid + ((lastPaid * 2) / 10);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 		
 		address colorOwner = ColorIdToOwner[_ColorId];
 		uint256 colorOwnerPayout = lastPaid + (lastPaid / 10);
@@ -104,7 +104,7 @@ contract ColorsMain is ColorsApis {
     
     function createStartingColors() external onlyOwner {
         require(colors.length == 0);
-        this.registerColor(&quot;Red&quot;, 1);
+        this.registerColor("Red", 1);
     }
     
     function() external payable {
@@ -123,7 +123,7 @@ contract PixelsData is Ownable {
 
     event Sold(uint256 x, uint256 y, uint256 colorId, uint256 priceWei, address winner);
 	
-    mapping (uint256 =&gt; Pixel) public PixelKeyToPixel;
+    mapping (uint256 => Pixel) public PixelKeyToPixel;
     
     ColorsMain colorsMain;
     
@@ -133,12 +133,12 @@ contract PixelsData is Ownable {
 contract PixelsApi is PixelsData {
     
     function bidBatch(uint256[] inputs, address optionlReferrer) external payable {
-        require(inputs.length &gt; 0);
+        require(inputs.length > 0);
         require(inputs.length % 3 == 0);        
         
         uint256 rollingPriceRequired = 0;
         
-        for(uint256 i = 0; i &lt; inputs.length; i+=3)
+        for(uint256 i = 0; i < inputs.length; i+=3)
         {
             uint256 x = inputs[i];
             uint256 y = inputs[i+1];
@@ -154,9 +154,9 @@ contract PixelsApi is PixelsData {
     		rollingPriceRequired += lastPaid + ((lastPaid * 2) / 10);
         }
         
-        require(msg.value &gt;= rollingPriceRequired);
+        require(msg.value >= rollingPriceRequired);
         
-        for(uint256 z = 0; z &lt; inputs.length; z+=3)
+        for(uint256 z = 0; z < inputs.length; z+=3)
         {
             uint256 x1 = inputs[z];
             uint256 y1 = inputs[z+1];
@@ -178,7 +178,7 @@ contract PixelsApi is PixelsData {
         }
 		
 		uint256 price = lastPaid + ((lastPaid * 2) / 10);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         address colorOwner;
         

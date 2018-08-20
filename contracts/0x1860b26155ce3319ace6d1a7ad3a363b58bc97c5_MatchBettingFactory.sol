@@ -54,9 +54,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -64,7 +64,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -73,7 +73,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -85,8 +85,8 @@ contract MatchBetting {
     //Represents a team, along with betting information
     struct Team {
         string name;
-        mapping(address =&gt; uint) bettingContribution;
-        mapping(address =&gt; uint) ledgerBettingContribution;
+        mapping(address => uint) bettingContribution;
+        mapping(address => uint) ledgerBettingContribution;
         uint totalAmount;
         uint totalParticipants;
     }
@@ -143,11 +143,11 @@ contract MatchBetting {
 
     //@notice Allows a user to place Bet on the match
     function placeBet(uint index) public payable {
-        require(msg.value &gt;= minimumBetAmount);
+        require(msg.value >= minimumBetAmount);
         require(!stopMatchBetting);
         require(!matchCompleted);
 
-        if(teams[0].bettingContribution[msg.sender] == 0 &amp;&amp; teams[1].bettingContribution[msg.sender] == 0) {
+        if(teams[0].bettingContribution[msg.sender] == 0 && teams[1].bettingContribution[msg.sender] == 0) {
             betters.push(msg.sender);
         }
 
@@ -166,7 +166,7 @@ contract MatchBetting {
             require(compareStrings(teams[winnerIndex].name, teamName));
             uint loosingIndex = (winnerIndex == 0) ? 1 : 0;
             // Send Share to jackpot only when Ether are placed on both the teams
-            if (teams[winnerIndex].totalAmount != 0 &amp;&amp; teams[loosingIndex].totalAmount != 0) {
+            if (teams[winnerIndex].totalAmount != 0 && teams[loosingIndex].totalAmount != 0) {
                 uint jackpotShare = (teams[loosingIndex].totalAmount).div(5);
                 jackpotAddress.transfer(jackpotShare);
             }

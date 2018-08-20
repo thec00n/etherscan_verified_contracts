@@ -24,8 +24,8 @@ contract PixelFactory {
 
     Pixel[] public pixels;
 
-    mapping(uint =&gt; address) pixelToOwner;
-    mapping(address =&gt; string) ownerToUsername;
+    mapping(uint => address) pixelToOwner;
+    mapping(address => string) ownerToUsername;
 
     /** ACCOUNT FUNCTIONS **/
     event Username(string username);
@@ -94,12 +94,12 @@ contract PixelFactory {
     /** PIXEL FUNCTIONS **/
     function createPixels(uint amount) public onlyOwner {
         // it can be max 400 pixels
-        require(pixels.length + amount &lt;= 400);
+        require(pixels.length + amount <= 400);
         
-        // P.S. creating 400 pixels in one time is costing too much gas that&#39;s why we are using amount
+        // P.S. creating 400 pixels in one time is costing too much gas that's why we are using amount
         
         // system is creating pixels
-        for(uint i=0; i&lt;amount; i++) {
+        for(uint i=0; i<amount; i++) {
             uint id = pixels.push(Pixel(startPrice)) - 1;
             pixelToOwner[id] = msg.sender;
         }
@@ -110,7 +110,7 @@ contract PixelFactory {
         uint[]    memory price        = new uint[](pixels.length);
         address[] memory owner        = new address[](pixels.length);
 
-        for (uint i = 0; i &lt; pixels.length; i++) {
+        for (uint i = 0; i < pixels.length; i++) {
             Pixel storage pixel = pixels[i];
             
             id[i]           = i;
@@ -122,7 +122,7 @@ contract PixelFactory {
     }
 
     function _checkPixelIdExists(uint id) private constant returns(bool) {
-        if(id &lt; pixels.length) return true;
+        if(id < pixels.length) return true;
         return false;
     }
 

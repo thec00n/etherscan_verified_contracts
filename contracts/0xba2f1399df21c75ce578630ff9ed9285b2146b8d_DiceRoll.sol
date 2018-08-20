@@ -22,7 +22,7 @@ contract DiceRoll is owned {
 	uint public maxBet = 2 ether;
 	uint private countRolls = 0;
 	uint private totalEthSended = 0;
-    mapping (address =&gt; uint) public totalRollsByUser;
+    mapping (address => uint) public totalRollsByUser;
     enum GameState {
 		InProgress,
 		PlayerWon,
@@ -67,7 +67,7 @@ contract DiceRoll is owned {
 		uint8 seed;
 	}
 
-	mapping (address =&gt; Game) public games;
+	mapping (address => Game) public games;
 	
 	modifier gameIsNotInProgress() {
 		if (gameInProgress(games[msg.sender])) {
@@ -77,7 +77,7 @@ contract DiceRoll is owned {
 	}
 	
 	modifier betValueIsOk() {
-		if (msg.value &lt; minBet || msg.value &gt; maxBet) {
+		if (msg.value < minBet || msg.value > maxBet) {
 			throw; // incorrect bet
 		}
 		_;
@@ -130,7 +130,7 @@ contract DiceRoll is owned {
 		
         totalRollsByUser[msg.sender]++;
         
-		if(payout &gt; this.balance){
+		if(payout > this.balance){
 		    isBank = false;
 		    games[msg.sender].state = GameState.NoBank;
 		    if(msg.sender.send(bet)) {
@@ -149,7 +149,7 @@ contract DiceRoll is owned {
             log256(chance);
     
     		
-    		if(rnd &gt; value){
+    		if(rnd > value){
     		    log8(0);
     		    games[msg.sender].state = GameState.PlayerLose;
             } else {
@@ -159,11 +159,11 @@ contract DiceRoll is owned {
     		    if(msg.sender.send(payout)) {
     	            totalEthSended += payout;
     	        } else {
-    	            logStr(&quot;Money is not send.&quot;);
+    	            logStr("Money is not send.");
     	        }
             }
 		}
-		logState(&quot;state:&quot;, games[msg.sender].state);
+		logState("state:", games[msg.sender].state);
 	}
 	
 	function randomGen(address player) private returns (uint) {
@@ -180,7 +180,7 @@ contract DiceRoll is owned {
 		Game memory game = games[msg.sender];
 		
 		if (game.player == 0) {
-			// game doesn&#39;t exist
+			// game doesn't exist
 			throw;
 		}
 
@@ -191,7 +191,7 @@ contract DiceRoll is owned {
 		Game memory game = games[msg.sender];
         
 		if (game.player == 0) {
-			// game doesn&#39;t exist
+			// game doesn't exist
 			throw;
 		}
 

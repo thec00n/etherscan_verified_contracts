@@ -57,9 +57,9 @@ contract ProxyContract is IERC20Token {
     
     bool public proxyWorking;
 
-    string public standard = &#39;Neter proxy&#39;;
-    string public name = &#39;Neter&#39;;
-    string public symbol = &#39;NTR&#39;;
+    string public standard = 'Neter proxy';
+    string public name = 'Neter';
+    string public symbol = 'NTR';
     uint8 public decimals = 8;
 
     IToken tokenContract;

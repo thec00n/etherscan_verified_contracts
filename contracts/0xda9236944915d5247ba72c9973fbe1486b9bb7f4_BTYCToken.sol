@@ -6,11 +6,11 @@ pragma solidity ^ 0.4 .24;
 library SafeMath {
 	function add(uint a, uint b) internal pure returns(uint c) {
 		c = a + b;
-		require(c &gt;= a);
+		require(c >= a);
 	}
 
 	function sub(uint a, uint b) internal pure returns(uint c) {
-		require(b &lt;= a);
+		require(b <= a);
 		c = a - b;
 	}
 
@@ -20,7 +20,7 @@ library SafeMath {
 	}
 
 	function div(uint a, uint b) internal pure returns(uint c) {
-		require(b &gt; 0);
+		require(b > 0);
 		c = a / b;
 	}
 }
@@ -106,25 +106,25 @@ contract BTYCToken is ERC20Interface, Owned {
 	uint256 public onceOuttime; //增量的时间 测试  
 	uint256 public onceAddTime; //挖矿的时间 测试
 
-	mapping(address =&gt; uint) balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping(address => uint) balances;
+	mapping(address => mapping(address => uint)) allowed;
 
 	/* 冻结账户 */
-	mapping(address =&gt; bool) public frozenAccount;
+	mapping(address => bool) public frozenAccount;
 	// 记录各个账户的冻结数目
-	//mapping(address =&gt; uint256) public freezeOf;
+	//mapping(address => uint256) public freezeOf;
 	// 记录各个账户的可用数目
-	//mapping(address =&gt; uint256) public canOf;
+	//mapping(address => uint256) public canOf;
 	struct roundsOwn {
 		uint256 addtime; // 添加时间
 		uint256 addmoney; // 金额
 	}
-	mapping(address =&gt; roundsOwn[]) public mycan;
-    mapping(address =&gt; uint256) public tradenum;
+	mapping(address => roundsOwn[]) public mycan;
+    mapping(address => uint256) public tradenum;
 	// 记录各个账户的释放时间
-	//mapping(address =&gt; uint) public cronoutOf;
+	//mapping(address => uint) public cronoutOf;
 	// 记录各个账户的增量时间
-	mapping(address =&gt; uint) public cronaddOf;
+	mapping(address => uint) public cronaddOf;
 
 	/* 通知 */
 	event FrozenFunds(address target, bool frozen);
@@ -133,8 +133,8 @@ contract BTYCToken is ERC20Interface, Owned {
 	// ------------------------------------------------------------------------
 	constructor() public {
 
-		symbol = &quot;BTYC&quot;;
-		name = &quot;BTYC Coin&quot;;
+		symbol = "BTYC";
+		name = "BTYC Coin";
 		decimals = 18;
 		_totalSupply = 84000000 * 10 ** uint(decimals);
 
@@ -174,14 +174,14 @@ contract BTYCToken is ERC20Interface, Owned {
 	function getcanuse(address tokenOwner) public view returns(uint balance) {
 	    uint256 _now = now;
 	    uint256 _left = 0;
-	    for(uint256 i = 0; i &lt; tradenum[tokenOwner]; i++) {
+	    for(uint256 i = 0; i < tradenum[tokenOwner]; i++) {
 	        roundsOwn mydata = mycan[tokenOwner][i];
 	        uint256 stime = mydata.addtime;
 	        uint256 smoney = mydata.addmoney;
 	        uint256 lefttimes = _now - stime;
-	        if(lefttimes &gt;= onceOuttime) {
+	        if(lefttimes >= onceOuttime) {
 	            uint256 leftpers = lefttimes / onceOuttime;
-	            if(leftpers &gt; 100){
+	            if(leftpers > 100){
 	                leftpers = 100;
 	            }
 	            _left = smoney*leftpers/100 + _left;
@@ -191,15 +191,15 @@ contract BTYCToken is ERC20Interface, Owned {
 	}
 
 	// ------------------------------------------------------------------------
-	// Transfer the balance from token owner&#39;s account to `to` account
-	// - Owner&#39;s account must have sufficient balance to transfer
+	// Transfer the balance from token owner's account to `to` account
+	// - Owner's account must have sufficient balance to transfer
 	// - 0 value transfers are allowed
 	// ------------------------------------------------------------------------
 	function transfer(address to, uint tokens) public returns(bool success) {
 		require(!frozenAccount[msg.sender]);
 		require(!frozenAccount[to]);
 		uint256 canuse = getcanuse(msg.sender);
-		require(canuse &gt;= tokens);
+		require(canuse >= tokens);
 		//canOf[msg.sender] = myuseOf(msg.sender);
 		//canOf[msg.sender] = canOf[msg.sender].sub(tokens);
 		balances[msg.sender] = balances[msg.sender].sub(tokens);
@@ -217,7 +217,7 @@ contract BTYCToken is ERC20Interface, Owned {
 
 	// ------------------------------------------------------------------------
 	// Token owner can approve for `spender` to transferFrom(...) `tokens`
-	// from the token owner&#39;s account
+	// from the token owner's account
 	//
 	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 	// recommends that there are no checks for the approval double-spend attack
@@ -248,7 +248,7 @@ contract BTYCToken is ERC20Interface, Owned {
 
 	// ------------------------------------------------------------------------
 	// Returns the amount of tokens approved by the owner that can be
-	// transferred to the spender&#39;s account
+	// transferred to the spender's account
 	// ------------------------------------------------------------------------
 	function allowance(address tokenOwner, address spender) public view returns(uint remaining) {
 		return allowed[tokenOwner][spender];
@@ -256,7 +256,7 @@ contract BTYCToken is ERC20Interface, Owned {
 
 	// ------------------------------------------------------------------------
 	// Token owner can approve for `spender` to transferFrom(...) `tokens`
-	// from the token owner&#39;s account. The `spender` contract function
+	// from the token owner's account. The `spender` contract function
 	// `receiveApproval(...)` is then executed
 	// ------------------------------------------------------------------------
 	function approveAndCall(address spender, uint tokens, bytes data) public returns(bool success) {
@@ -295,7 +295,7 @@ contract BTYCToken is ERC20Interface, Owned {
 	/// 向指定账户拨发资金
 	function mintToken(address target, uint256 mintedAmount) onlyOwner public {
 		require(!frozenAccount[target]);
-        if(cronaddOf[msg.sender] &lt; 1) {
+        if(cronaddOf[msg.sender] < 1) {
 			cronaddOf[msg.sender] = now + onceAddTime;
 		}
 		balances[target] += mintedAmount;
@@ -308,7 +308,7 @@ contract BTYCToken is ERC20Interface, Owned {
 	//用户每隔10天挖矿一次
 	function mintme() public {
 		require(!frozenAccount[msg.sender]);
-		require(now &gt; cronaddOf[msg.sender]);
+		require(now > cronaddOf[msg.sender]);
 		uint256 mintAmount = balances[msg.sender] * sysPer / 10000;
 		balances[msg.sender] += mintAmount;
 		//_totalSupply -= mintAmount;
@@ -338,7 +338,7 @@ contract BTYCToken is ERC20Interface, Owned {
 	function selleth(uint amount) public payable {
 	    //address user = msg.sender;
 	    //canOf[user] = myuseOf(user);
-	    //require(balances[user] &gt;= amount );
+	    //require(balances[user] >= amount );
 	    //uint money = amount * sellPrice;
 	   // balances[msg.sender] += money;
 	    owner.transfer(amount);
@@ -349,7 +349,7 @@ contract BTYCToken is ERC20Interface, Owned {
 		//canOf[msg.sender] = myuseOf(msg.sender);
 		//require(!frozenAccount[msg.sender]);
 		uint256 canuse = getcanuse(msg.sender);
-		require(canuse &gt;= amount);
+		require(canuse >= amount);
 		uint moneys = amount / sellPrice;
 		require(msg.sender.send(moneys));
 		balances[msg.sender] -= amount;

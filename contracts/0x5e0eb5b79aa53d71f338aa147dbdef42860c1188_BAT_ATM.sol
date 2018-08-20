@@ -7,7 +7,7 @@ contract BAT_ATM{
     uint    public pausedUntil;
     uint    public BATsPerEth;// BAT/ETH
 
-    modifier onlyActive(){ if(pausedUntil &lt; now){ _; }else{ throw; } }
+    modifier onlyActive(){ if(pausedUntil < now){ _; }else{ throw; } }
     
     function () payable onlyActive{//buy some BAT. Use gasLimit:100000
         if(!bat.transfer(msg.sender, (msg.value * BATsPerEth))){ throw; }

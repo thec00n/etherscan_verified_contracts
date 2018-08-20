@@ -55,7 +55,7 @@ The owner calls the multisend method to send out payments
 */
 contract BatchedPayments is Ownable {
 
-    mapping(bytes32 =&gt; bool) successfulPayments;
+    mapping(bytes32 => bool) successfulPayments;
 
 
     function paymentSuccessful(bytes32 paymentId) public constant returns (bool){
@@ -79,12 +79,12 @@ contract BatchedPayments is Ownable {
     returns (uint256)
      {
 
-        require(dests.length &gt; 0);
-        require(values.length &gt;= dests.length);
+        require(dests.length > 0);
+        require(values.length >= dests.length);
         require(successfulPayments[paymentId] != true);
 
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            require(ERC20(_tokenAddr).transfer(dests[i], values[i]));
            i += 1;
         }

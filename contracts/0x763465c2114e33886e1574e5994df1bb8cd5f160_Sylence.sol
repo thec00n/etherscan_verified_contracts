@@ -4,9 +4,9 @@ contract Sylence {
 
   struct User {
     uint256 pubKeysCount;
-    mapping(uint256 =&gt; string) pubKeys;
+    mapping(uint256 => string) pubKeys;
   }
-  mapping(string =&gt; User) users;
+  mapping(string => User) users;
 
   address owner;
   function Sylence() { owner = msg.sender; }

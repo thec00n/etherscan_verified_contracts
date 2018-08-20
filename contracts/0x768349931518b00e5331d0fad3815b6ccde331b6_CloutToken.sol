@@ -12,37 +12,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -76,10 +76,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -115,7 +115,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -147,8 +147,8 @@ contract CloutToken is StandardToken {
     
 	uint256 public tokenAmount;
   
-    string public constant name = &quot;Clout Token&quot;;
-    string public constant symbol = &quot;CLOUT&quot;;
+    string public constant name = "Clout Token";
+    string public constant symbol = "CLOUT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 	
 
@@ -184,7 +184,7 @@ contract CloutToken is StandardToken {
             
             
             //If all the tokens are gone, stop!
-            if (totalSupply &gt; 999999)
+            if (totalSupply > 999999)
             {
                 revert();
             }
@@ -193,28 +193,28 @@ contract CloutToken is StandardToken {
             
             //Set the price to 0.0003 ETH/CLOUT
             //$0.10 per
-            if (totalSupply &lt; 25000)
+            if (totalSupply < 25000)
             {
                 rate = 3340;
             }
             
             //Set the price to 0.0015 ETH/CLOUT
             //$0.50 per
-            if (totalSupply &gt;= 25000)
+            if (totalSupply >= 25000)
             {
                 rate = 668;
             }
             
             //Set the price to 0.0030 ETH/CLOUT
             //$1.00 per
-            if (totalSupply &gt;= 125000)
+            if (totalSupply >= 125000)
             {
                 rate = 334;
             }
             
             //Set the price to 0.0075 ETH/CLOUT
             //$2.50 per
-            if (totalSupply &gt;= 525000)
+            if (totalSupply >= 525000)
             {
                 rate = 134;
             }
@@ -227,37 +227,37 @@ contract CloutToken is StandardToken {
             
             
             //Make sure they send enough to buy atleast 1 token.
-            if (tokenAmount &lt; 0)
+            if (tokenAmount < 0)
             {
                 revert();
             }
             
             
-            //Make sure someone isn&#39;t buying more than the remaining supply
+            //Make sure someone isn't buying more than the remaining supply
             check = 0;
             
             check = safeAdd(totalSupply, tokenAmount);
             
-            if (check &gt; 1000000)
+            if (check > 1000000)
             {
                 revert();
             }
             
             
-            //Make sure someone isn&#39;t buying more than the current tier
-            if (totalSupply &lt; 25000 &amp;&amp; check &gt; 25000)
+            //Make sure someone isn't buying more than the current tier
+            if (totalSupply < 25000 && check > 25000)
             {
                 revert();
             }
             
-            //Make sure someone isn&#39;t buying more than the current tier
-            if (totalSupply &lt; 125000 &amp;&amp; check &gt; 125000)
+            //Make sure someone isn't buying more than the current tier
+            if (totalSupply < 125000 && check > 125000)
             {
                 revert();
             }
             
-            //Make sure someone isn&#39;t buying more than the current tier
-            if (totalSupply &lt; 525000 &amp;&amp; check &gt; 525000)
+            //Make sure someone isn't buying more than the current tier
+            if (totalSupply < 525000 && check > 525000)
             {
                 revert();
             }
@@ -265,7 +265,7 @@ contract CloutToken is StandardToken {
             
             //Prevent any ETH address from buying more than 50 CLOUT during the pre-sale
             uint256 senderBalance = (balances[msg.sender]/1 ether);
-            if ((senderBalance + tokenAmount) &gt; 50 &amp;&amp; totalSupply &lt; 25000)
+            if ((senderBalance + tokenAmount) > 50 && totalSupply < 25000)
             {
                 revert();
             }
@@ -273,7 +273,7 @@ contract CloutToken is StandardToken {
     
             totalSupply = oldSupply;
         	mint(msg.sender, tokenAmount);
-        	tokenAmount = 0;							//set the &#39;amount&#39; var back to zero
+        	tokenAmount = 0;							//set the 'amount' var back to zero
         	check = 0;
         	rate = 0;
         		

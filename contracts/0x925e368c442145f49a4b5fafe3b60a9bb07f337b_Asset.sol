@@ -3,7 +3,7 @@ pragma solidity 0.4.19;
 * @title TOKEN Contract
 * @dev ERC-20 Token Standard Compliant
 * @notice Website: Ze.cash
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="57317936392338393e3879363c323b17303a363e3b7934383a">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="57317936392338393e3879363c323b17303a363e3b7934383a">[email protected]</span>
 */
 
 /**
@@ -13,13 +13,13 @@ pragma solidity 0.4.19;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -99,8 +99,8 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -182,10 +182,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 * @dev Initial supply creation
 */
 contract Asset is ERC20Token {
-    string public name = &#39;ZECASH&#39;;
+    string public name = 'ZECASH';
     uint8 public decimals = 18;
-    string public symbol = &#39;ZCH&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'ZCH';
+    string public version = '1';
 
     function Asset() public {
         totalSupply = 500000000 * (10**uint256(decimals)); //initial token creation

@@ -41,7 +41,7 @@ contract Doubler {
       	
 	  // if there are enough ether on the balance we can pay out to an earlier participant
 	  	uint txAmount = participants[payoutIdx].amount * 2;
-        if(balance &gt;= txAmount){
+        if(balance >= txAmount){
         	if(!participants[payoutIdx].etherAddress.send(txAmount)) throw;
 
             balance -= txAmount;

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4c2f2322382d2f380c093824293e29212322622f2321">[email&#160;protected]</a>
+// copyright <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4c2f2322382d2f380c093824293e29212322622f2321">[email protected]</a>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -182,7 +182,7 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         uint createTime;
     }
     
-    // Gen0 has return price &amp; no longer can be caught when this contract is deployed
+    // Gen0 has return price & no longer can be caught when this contract is deployed
     struct Gen0Config {
         uint32 classId;
         uint256 originalPrice;
@@ -197,8 +197,8 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         uint32[] xfactors;
     }
     
-    mapping(uint32 =&gt; Gen0Config) public gen0Config;
-    mapping(uint32 =&gt; GenXProperty) public genxProperty;
+    mapping(uint32 => Gen0Config) public gen0Config;
+    mapping(uint32 => GenXProperty) public genxProperty;
     uint256 public totalCashout = 0; // for admin
     uint256 public totalEarn = 0; // exclude gen 0
     uint16 public priceIncreasingRatio = 1000;
@@ -218,7 +218,7 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         dataContract = _dataContract;
     }
     
-     // admin &amp; moderators
+     // admin & moderators
     function setMaxDexSize(uint _value) onlyModerators external {
         maxDexSize = _value;
     }
@@ -253,12 +253,12 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
     function getEarningAmount() constant public returns(uint256) {
         // calculate value for gen0
         uint256 totalValidAmount = 0;
-        for (uint32 classId=1; classId &lt;= GEN0_NO; classId++) {
+        for (uint32 classId=1; classId <= GEN0_NO; classId++) {
             // make sure there is a class
             Gen0Config storage gen0 = gen0Config[classId];
-            if (gen0.total &gt;0 &amp;&amp; gen0.classId == classId &amp;&amp; gen0.originalPrice &gt; 0 &amp;&amp; gen0.returnPrice &gt; 0) {
+            if (gen0.total >0 && gen0.classId == classId && gen0.originalPrice > 0 && gen0.returnPrice > 0) {
                 uint256 rate = gen0.originalPrice/gen0.returnPrice;
-                if (rate &lt; gen0.total) {
+                if (rate < gen0.total) {
                     totalValidAmount += (gen0.originalPrice + gen0.returnPrice) * rate / 2;
                     totalValidAmount += (gen0.total - rate) * gen0.returnPrice;
                 } else {
@@ -276,13 +276,13 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
     }
     
     function withdrawEther(address _sendTo, uint _amount) onlyModerators external returns(ResultCode) {
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             EventWithdrawEther(_sendTo, ResultCode.ERROR_INVALID_AMOUNT, 0);
             return ResultCode.ERROR_INVALID_AMOUNT;
         }
         
         uint256 totalValidAmount = getEarningAmount();
-        if (_amount &gt; totalValidAmount) {
+        if (_amount > totalValidAmount) {
             EventWithdrawEther(_sendTo, ResultCode.ERROR_INVALID_AMOUNT, 0);
             return ResultCode.ERROR_INVALID_AMOUNT;
         }
@@ -321,13 +321,13 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         uint8 _st1, uint8 _st2, uint8 _st3, uint8 _st4, uint8 _st5, uint8 _st6 ) onlyModerators external {
 
         EtheremonDataBase data = EtheremonDataBase(dataContract);
-        if (_classId == 0 || data.getSizeArrayType(ArrayType.STAT_STEP, uint64(_classId)) &gt; 0)
+        if (_classId == 0 || data.getSizeArrayType(ArrayType.STAT_STEP, uint64(_classId)) > 0)
             revert();
 
-        if (_type2 &gt; 0) {
+        if (_type2 > 0) {
             data.addElementToArrayType(ArrayType.CLASS_TYPE, uint64(_classId), _type2);
         }
-        if (_type3 &gt; 0) {
+        if (_type3 > 0) {
             data.addElementToArrayType(ArrayType.CLASS_TYPE, uint64(_classId), _type3);
         }
         
@@ -385,7 +385,7 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
     // helper
     function getRandom(uint8 maxRan, uint8 index, address priAddress) constant public returns(uint8) {
         uint256 genNum = uint256(block.blockhash(block.number-1)) + uint256(priAddress);
-        for (uint8 i = 0; i &lt; index &amp;&amp; i &lt; 6; i ++) {
+        for (uint8 i = 0; i < index && i < 6; i ++) {
             genNum /= 256;
         }
         return uint8(genNum % maxRan);
@@ -460,9 +460,9 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         
         uint32 currentGap = 0;
         uint32 totalGap = 0;
-        if (lastClaimIndex &lt; gen0.total)
+        if (lastClaimIndex < gen0.total)
             currentGap = gen0.total - lastClaimIndex;
-        if (createIndex &lt; gen0.total)
+        if (createIndex < gen0.total)
             totalGap = gen0.total - createIndex;
         return (safeMult(currentGap, gen0.returnPrice), safeMult(totalGap, gen0.returnPrice));
     }
@@ -494,15 +494,15 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         }
         
         // can not keep too much etheremon 
-        if (data.getMonsterDexSize(msg.sender) &gt; maxDexSize)
+        if (data.getMonsterDexSize(msg.sender) > maxDexSize)
             revert();
         
         uint256 totalBalance = safeAdd(msg.value, data.getExtraBalance(msg.sender));
         uint256 payPrice = class.price;
         // increase price for each etheremon created
-        if (class.total &gt; 0)
+        if (class.total > 0)
             payPrice += class.price*(class.total-1)/priceIncreasingRatio;
-        if (payPrice &gt; totalBalance) {
+        if (payPrice > totalBalance) {
             revert();
         }
         totalEarn += payPrice;
@@ -513,7 +513,7 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         // add monster
         uint64 objId = data.addMonsterObj(_classId, msg.sender, _name);
         // generate base stat for the previous one
-        for (uint i=0; i &lt; STAT_COUNT; i+= 1) {
+        for (uint i=0; i < STAT_COUNT; i+= 1) {
             uint8 value = getRandom(STAT_MAX, uint8(i), lastHunter) + data.getElementInArrayType(ArrayType.STAT_START, uint64(_classId), i);
             data.addElementToArrayType(ArrayType.STAT_BASE, objId, value);
         }
@@ -531,19 +531,19 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
 
         // collect gen 0 return price 
         uint dexSize = data.getMonsterDexSize(msg.sender);
-        for (uint i = 0; i &lt; dexSize; i++) {
+        for (uint i = 0; i < dexSize; i++) {
             objId = data.getMonsterObjId(msg.sender, i);
-            if (objId &gt; 0) {
+            if (objId > 0) {
                 MonsterObjAcc memory obj;
                 (obj.monsterId, obj.classId, obj.trainer, obj.exp, obj.createIndex, obj.lastClaimIndex, obj.createTime) = data.getMonsterObj(objId);
                 Gen0Config storage gen0 = gen0Config[obj.classId];
                 if (gen0.classId == obj.classId) {
-                    if (obj.lastClaimIndex &lt; gen0.total) {
+                    if (obj.lastClaimIndex < gen0.total) {
                         uint32 gap = uint32(safeSubtract(gen0.total, obj.lastClaimIndex));
-                        if (gap &gt; 0) {
+                        if (gap > 0) {
                             totalAmount += safeMult(gap, gen0.returnPrice);
                             // reset total (except name is cleared :( )
-                            data.setMonsterObj(obj.monsterId, &quot; name me &quot;, obj.exp, obj.createIndex, gen0.total);
+                            data.setMonsterObj(obj.monsterId, " name me ", obj.exp, obj.createIndex, gen0.total);
                         }
                     }
                 }
@@ -554,18 +554,18 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         if (_amount == 0) {
             _amount = totalAmount;
         }
-        if (_amount &gt; totalAmount) {
+        if (_amount > totalAmount) {
             revert();
         }
         
         // check contract has enough money
-        if (this.balance + data.balance &lt; _amount){
+        if (this.balance + data.balance < _amount){
             revert();
-        } else if (this.balance &lt; _amount) {
+        } else if (this.balance < _amount) {
             data.withdrawEther(address(this), data.balance);
         }
         
-        if (_amount &gt; 0) {
+        if (_amount > 0) {
             data.setExtraBalance(msg.sender, totalAmount - _amount);
             if (!msg.sender.send(_amount)) {
                 data.setExtraBalance(msg.sender, totalAmount);
@@ -588,9 +588,9 @@ contract EtheremonWorld is EtheremonGateway, SafeMath {
         uint256 gen0total = 0;
         uint64 objId = 0;
         uint dexSize = data.getMonsterDexSize(_trainer);
-        for (uint i = 0; i &lt; dexSize; i++) {
+        for (uint i = 0; i < dexSize; i++) {
             objId = data.getMonsterObjId(_trainer, i);
-            if (objId &gt; 0) {
+            if (objId > 0) {
                 (gen0current, gen0total) = getReturnFromMonster(objId);
                 returnFromMonster += gen0current;
             }

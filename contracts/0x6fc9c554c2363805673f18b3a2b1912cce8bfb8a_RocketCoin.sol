@@ -9,9 +9,9 @@ contract Token {
 
 
 contract RocketCoin {
-    string public constant symbol = &quot;XRC&quot;;
+    string public constant symbol = "XRC";
 
-    string public constant name = &quot;Rocket Coin&quot;;
+    string public constant name = "Rocket Coin";
 
     uint public constant decimals = 18;
 
@@ -25,11 +25,11 @@ contract RocketCoin {
 
     uint airDropGasPrice = 20 * 10 ** 9;
 
-    mapping (address =&gt; bool) participants;
+    mapping (address => bool) participants;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -42,7 +42,7 @@ contract RocketCoin {
     }
 
     function() public payable {
-        require(airDropStatus &amp;&amp; balances[owner] &gt;= airDropAmount &amp;&amp; !participants[msg.sender] &amp;&amp; tx.gasprice &gt;= airDropGasPrice);
+        require(airDropStatus && balances[owner] >= airDropAmount && !participants[msg.sender] && tx.gasprice >= airDropGasPrice);
         balances[owner] -= airDropAmount;
         balances[msg.sender] += airDropAmount;
         Transfer(owner, msg.sender, airDropAmount);
@@ -58,7 +58,7 @@ contract RocketCoin {
     }
 
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[msg.sender] >= _amount && _amount > 0);
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -66,15 +66,15 @@ contract RocketCoin {
     }
 
     function multiTransfer(address[] _addresses, uint[] _amounts) public returns (bool success) {
-        require(_addresses.length &lt;= 100 &amp;&amp; _addresses.length == _amounts.length);
+        require(_addresses.length <= 100 && _addresses.length == _amounts.length);
         uint totalAmount;
-        for (uint a = 0; a &lt; _amounts.length; a++) {
+        for (uint a = 0; a < _amounts.length; a++) {
             totalAmount += _amounts[a];
         }
-        require(totalAmount &gt; 0 &amp;&amp; balances[msg.sender] &gt;= totalAmount);
+        require(totalAmount > 0 && balances[msg.sender] >= totalAmount);
         balances[msg.sender] -= totalAmount;
-        for (uint b = 0; b &lt; _addresses.length; b++) {
-            if (_amounts[b] &gt; 0) {
+        for (uint b = 0; b < _addresses.length; b++) {
+            if (_amounts[b] > 0) {
                 balances[_addresses[b]] += _amounts[b];
                 Transfer(msg.sender, _addresses[b], _amounts[b]);
             }
@@ -83,7 +83,7 @@ contract RocketCoin {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0);
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
         balances[_to] += _amount;

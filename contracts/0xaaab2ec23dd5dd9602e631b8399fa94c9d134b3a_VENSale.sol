@@ -30,20 +30,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -118,14 +118,14 @@ contract Token {
 contract VEN is Token, Owned {
     using SafeMath for uint256;
 
-    string public constant name    = &quot;VeChain Token&quot;;  //The Token&#39;s name
+    string public constant name    = "VeChain Token";  //The Token's name
     uint8 public constant decimals = 18;               //Number of decimals of the smallest unit
-    string public constant symbol  = &quot;VEN&quot;;            //An identifier    
+    string public constant symbol  = "VEN";            //An identifier    
 
     // packed to 256bit to save gas usage.
     struct Supplies {
-        // uint128&#39;s max value is about 3e38.
-        // it&#39;s enough to present amount of tokens
+        // uint128's max value is about 3e38.
+        // it's enough to present amount of tokens
         uint128 total;
         uint128 rawTokens;
     }
@@ -134,8 +134,8 @@ contract VEN is Token, Owned {
 
     // Packed to 256bit to save gas usage.    
     struct Account {
-        // uint112&#39;s max value is about 5e33.
-        // it&#39;s enough to present amount of tokens
+        // uint112's max value is about 5e33.
+        // it's enough to present amount of tokens
         uint112 balance;
 
         // raw token can be transformed into balance with bonus        
@@ -146,10 +146,10 @@ contract VEN is Token, Owned {
     }
 
     // Balances for each account
-    mapping(address =&gt; Account) accounts;
+    mapping(address => Account) accounts;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     // bonus that can be shared by raw tokens
     uint256 bonusOffered;
@@ -187,7 +187,7 @@ contract VEN is Token, Owned {
 
             accounts[_owner].balance = realBalance.toUINT112();
             accounts[_owner].rawTokens = 0;
-            if(bonus &gt; 0){
+            if(bonus > 0){
                 Transfer(this, _owner, bonus);
             }
         }
@@ -198,7 +198,7 @@ contract VEN is Token, Owned {
         if (accounts[_owner].rawTokens == 0)
             return accounts[_owner].balance;
 
-        if (bonusOffered &gt; 0) {
+        if (bonusOffered > 0) {
             uint256 bonus = bonusOffered
                  .mul(accounts[_owner].rawTokens)
                  .div(supplies.rawTokens);
@@ -211,7 +211,7 @@ contract VEN is Token, Owned {
             .add(accounts[_owner].rawTokens);
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) returns (bool success) {
         require(isSealed());
 
@@ -219,9 +219,9 @@ contract VEN is Token, Owned {
         claimBonus(msg.sender);
         claimBonus(_to);
 
-        // according to VEN&#39;s total supply, never overflow here
-        if (accounts[msg.sender].balance &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {            
+        // according to VEN's total supply, never overflow here
+        if (accounts[msg.sender].balance >= _amount
+            && _amount > 0) {            
             accounts[msg.sender].balance -= uint112(_amount);
             accounts[_to].balance = _amount.add(accounts[_to].balance).toUINT112();
             Transfer(msg.sender, _to, _amount);
@@ -233,7 +233,7 @@ contract VEN is Token, Owned {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -248,10 +248,10 @@ contract VEN is Token, Owned {
         claimBonus(_from);
         claimBonus(_to);
 
-        // according to VEN&#39;s total supply, never overflow here
-        if (accounts[_from].balance &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        // according to VEN's total supply, never overflow here
+        if (accounts[_from].balance >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0) {
             accounts[_from].balance -= uint112(_amount);
             allowed[_from][msg.sender] -= _amount;
             accounts[_to].balance = _amount.add(accounts[_to].balance).toUINT112();
@@ -275,10 +275,10 @@ contract VEN is Token, Owned {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        //if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        //if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         ApprovalReceiver(_spender).receiveApproval(msg.sender, _value, this, _extraData);
         return true;
     }
@@ -326,8 +326,8 @@ contract VENSale is Owned{
     /// chart of stage transition 
     ///
     /// deploy   initialize      startTime                            endTime                 finalize
-    ///                              | &lt;-earlyStageLasts-&gt; |             | &lt;- closedStageLasts -&gt; |
-    ///  O-----------O---------------O---------------------O-------------O------------------------O------------&gt;
+    ///                              | <-earlyStageLasts-> |             | <- closedStageLasts -> |
+    ///  O-----------O---------------O---------------------O-------------O------------------------O------------>
     ///     Created     Initialized           Early             Normal             Closed            Finalized
     enum Stage {
         NotCreated,
@@ -362,7 +362,7 @@ contract VENSale is Owned{
         uint16 placeholder; // placeholder to make struct pre-alloced
 
         // amount of tokens officially sold out.
-        // max value of 120bit is about 1e36, it&#39;s enough for token amount
+        // max value of 120bit is about 1e36, it's enough for token amount
         uint120 official; 
 
         uint120 channels; // amount of tokens sold out via channels
@@ -421,19 +421,19 @@ contract VENSale is Owned{
             return Stage.Created;
         }
 
-        if (blockTime() &lt; startTime) {
+        if (blockTime() < startTime) {
             // not started yet
             return Stage.Initialized;
         }
 
-        if (uint256(soldOut.official).add(soldOut.channels) &gt;= publicSupply) {
+        if (uint256(soldOut.official).add(soldOut.channels) >= publicSupply) {
             // all sold out
             return Stage.Closed;
         }
 
-        if (blockTime() &lt; endTime) {
+        if (blockTime() < endTime) {
             // in sale            
-            if (blockTime() &lt; startTime.add(earlyStageLasts)) {
+            if (blockTime() < startTime.add(earlyStageLasts)) {
                 // early bird stage
                 return Stage.Early;
             }
@@ -451,7 +451,7 @@ contract VENSale is Owned{
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
     /// @notice entry to buy tokens
@@ -463,30 +463,30 @@ contract VENSale is Owned{
     function buy() payable {
         // reject contract buyer to avoid breaking interval limit
         require(!isContract(msg.sender));
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
 
         uint256 rate = exchangeRate();
-        // here don&#39;t need to check stage. rate is only valid when in sale
-        require(rate &gt; 0);
+        // here don't need to check stage. rate is only valid when in sale
+        require(rate > 0);
         // each account is allowed once in minBuyInterval
-        require(blockTime() &gt;= ven.lastMintedTimestamp(msg.sender) + minBuyInterval);
+        require(blockTime() >= ven.lastMintedTimestamp(msg.sender) + minBuyInterval);
 
         uint256 requested;
         // and limited to maxBuyEthAmount
-        if (msg.value &gt; maxBuyEthAmount) {
+        if (msg.value > maxBuyEthAmount) {
             requested = maxBuyEthAmount.mul(rate);
         } else {
             requested = msg.value.mul(rate);
         }
 
         uint256 remained = officialLimit.sub(soldOut.official);
-        if (requested &gt; remained) {
+        if (requested > remained) {
             //exceed remained
             requested = remained;
         }
 
         uint256 ethCost = requested.div(rate);
-        if (requested &gt; 0) {
+        if (requested > 0) {
             ven.mint(msg.sender, requested, true, blockTime());
             // transfer ETH to vault
             ethVault.transfer(ethCost);
@@ -496,7 +496,7 @@ contract VENSale is Owned{
         }
 
         uint256 toReturn = msg.value.sub(ethCost);
-        if(toReturn &gt; 0) {
+        if(toReturn > 0) {
             // return over payed ETH
             msg.sender.transfer(toReturn);
         }        
@@ -515,13 +515,13 @@ contract VENSale is Owned{
     /// @notice manually offer tokens to channel
     function offerToChannel(address _channelAccount, uint256 _venAmount) onlyOwner {
         Stage stg = stage();
-        // since the settlement may be delayed, so it&#39;s allowed in closed stage
+        // since the settlement may be delayed, so it's allowed in closed stage
         require(stg == Stage.Early || stg == Stage.Normal || stg == Stage.Closed);
 
         soldOut.channels = _venAmount.add(soldOut.channels).toUINT120();
 
         //should not exceed limit
-        require(soldOut.channels &lt;= channelsLimit);
+        require(soldOut.channels <= channelsLimit);
 
         ven.mint(
             _channelAccount,
@@ -557,7 +557,7 @@ contract VENSale is Owned{
         ven.mint(
             venVault,
             reservedForTeam.add(reservedForOperations),
-            false, // team and operations reserved portion can&#39;t share unsold tokens
+            false, // team and operations reserved portion can't share unsold tokens
             blockTime()
         );
 
@@ -579,7 +579,7 @@ contract VENSale is Owned{
 
         uint256 unsold = publicSupply.sub(soldOut.official).sub(soldOut.channels);
 
-        if (unsold &gt; 0) {
+        if (unsold > 0) {
             // unsold VEN as bonus
             ven.offerBonus(unsold);        
         }

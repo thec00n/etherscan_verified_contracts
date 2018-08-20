@@ -22,13 +22,13 @@ library SafeMath {
   }
 
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -56,14 +56,14 @@ contract ERC20 {
 contract BMVToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 totalSupply_ = 1500000000000000;
-  string public name  = &quot;BlockMoveVelocity&quot;;                   
+  string public name  = "BlockMoveVelocity";                   
   uint8 public decimals = 6;               
-  string public symbol =&quot;BMV&quot;;               
+  string public symbol ="BMV";               
   
   constructor() public {
     balances[msg.sender] = totalSupply_; 
@@ -83,7 +83,7 @@ contract BMVToken is ERC20 {
   }
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     require(_to != address(0));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -100,8 +100,8 @@ contract BMVToken is ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool)
   {
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
     balances[_from] = balances[_from].sub(_value);

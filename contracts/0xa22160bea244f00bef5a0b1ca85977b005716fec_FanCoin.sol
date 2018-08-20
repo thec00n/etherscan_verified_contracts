@@ -9,13 +9,13 @@ pragma solidity ^0.4.21;
  */
 library SafeMath {
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -55,18 +55,18 @@ contract Stampable is ERC20 {
 
     // A struct that represents a particular address balance
     struct AddressBalance {
-        mapping (uint256 =&gt; TokenBalance) tokens;
+        mapping (uint256 => TokenBalance) tokens;
         uint256[] tokenIndex;
     }
 
     // A mapping of address to balances
-    mapping (address =&gt; AddressBalance) balances;
+    mapping (address => AddressBalance) balances;
 
     // The total number of tokens owned per address
-    mapping (address =&gt; uint256) ownershipCount;
+    mapping (address => uint256) ownershipCount;
 
     // Whitelist for addresses allowed to stamp tokens
-    mapping (address =&gt; bool) public stampingWhitelist;
+    mapping (address => bool) public stampingWhitelist;
 
     /**
     * Modifier for only whitelisted addresses
@@ -80,7 +80,7 @@ contract Stampable is ERC20 {
     event TokenStamp (address indexed from, uint256 tokenStamped, uint256 stamp, uint256 amt);
 
     /**
-    * @dev Function to stamp a token in the msg.sender&#39;s wallet
+    * @dev Function to stamp a token in the msg.sender's wallet
     * @param _tokenToStamp uint256 The tokenId of theirs to stamp (0 for unstamped tokens)
     * @param _stamp uint256 The new stamp to apply
     * @param _amt uint256 The quantity of tokens to stamp
@@ -88,12 +88,12 @@ contract Stampable is ERC20 {
     function stampToken (uint256 _tokenToStamp, uint256 _stamp, uint256 _amt)
         onlyStampingWhitelisted
         public returns (bool) {
-        require(_amt &lt;= balances[msg.sender].tokens[_tokenToStamp].amount);
+        require(_amt <= balances[msg.sender].tokens[_tokenToStamp].amount);
 
         // Subtract balance of 0th token ID _amt value.
         removeToken(msg.sender, _tokenToStamp, _amt);
 
-        // &quot;Stamp&quot; the token
+        // "Stamp" the token
         addToken(msg.sender, _stamp, _amt);
 
         // Emit the stamping event
@@ -103,7 +103,7 @@ contract Stampable is ERC20 {
     }
 
     function addToken(address _owner, uint256 _token, uint256 _amount) internal {
-        // If they don&#39;t yet have any, assign this token an index
+        // If they don't yet have any, assign this token an index
         if (balances[_owner].tokens[_token].amount == 0) {
             balances[_owner].tokens[_token].index = balances[_owner].tokenIndex.push(_token) - 1;
         }
@@ -122,14 +122,14 @@ contract Stampable is ERC20 {
         // Decrease their balance of the token
         balances[_owner].tokens[_token].amount = balances[_owner].tokens[_token].amount.sub(_amount);
 
-        // If they don&#39;t have any left, remove it
+        // If they don't have any left, remove it
         if (balances[_owner].tokens[_token].amount == 0) {
             uint index = balances[_owner].tokens[_token].index;
             uint256 lastCoin = balances[_owner].tokenIndex[balances[_owner].tokenIndex.length - 1];
             balances[_owner].tokenIndex[index] = lastCoin;
             balances[_owner].tokens[lastCoin].index = index;
             balances[_owner].tokenIndex.length--;
-            // Make sure the user&#39;s token is removed
+            // Make sure the user's token is removed
             delete balances[_owner].tokens[_token];
         }
     }
@@ -144,7 +144,7 @@ contract FanCoin is Stampable {
     address public owner;
 
     // Keeps track of allowances for particular address. - ERC20 Method
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     event TokenTransfer (address indexed from, address indexed to, uint256 tokenId, uint256 value);
     event MintTransfer  (address indexed from, address indexed to, uint256 originalTokenId, uint256 tokenId, uint256 value);
@@ -159,8 +159,8 @@ contract FanCoin is Stampable {
     */
     function FanCoin() public {
         owner = 0x7DDf115B8eEf3058944A3373025FB507efFAD012;
-        name = &quot;FanChain&quot;;
-        symbol = &quot;FANZ&quot;;
+        name = "FanChain";
+        symbol = "FANZ";
         decimals = 4;
 
         // Total supply is one billion tokens
@@ -208,8 +208,8 @@ contract FanCoin is Stampable {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= totalSupply);
-        require(_value &lt;= ownershipCount[msg.sender]);
+        require(_value <= totalSupply);
+        require(_value <= ownershipCount[msg.sender]);
 
         // Cast the value as the ERC20 standard uses uint256
         uint256 _tokensToTransfer = uint256(_value);
@@ -231,7 +231,7 @@ contract FanCoin is Stampable {
     */
     function transferToken(address _to, uint256 _tokenId, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender].tokens[_tokenId].amount);
+        require(_value <= balances[msg.sender].tokens[_tokenId].amount);
 
         // Do the transfer
         internalTransfer(msg.sender, _to, _tokenId, _value);
@@ -252,16 +252,16 @@ contract FanCoin is Stampable {
     function transferTokens(address _to, uint256[] _tokenIds, uint256[] _values) public returns (bool) {
         require(_to != address(0));
         require(_tokenIds.length == _values.length);
-        require(_tokenIds.length &lt; 100); // Arbitrary limit
+        require(_tokenIds.length < 100); // Arbitrary limit
 
         // Do verification first
-        for (uint i = 0; i &lt; _tokenIds.length; i++) {
-            require(_values[i] &gt; 0);
-            require(_values[i] &lt;= balances[msg.sender].tokens[_tokenIds[i]].amount);
+        for (uint i = 0; i < _tokenIds.length; i++) {
+            require(_values[i] > 0);
+            require(_values[i] <= balances[msg.sender].tokens[_tokenIds[i]].amount);
         }
 
         // Transfer every type of token specified
-        for (i = 0; i &lt; _tokenIds.length; i++) {
+        for (i = 0; i < _tokenIds.length; i++) {
             require(internalTransfer(msg.sender, _to, _tokenIds[i], _values[i]));
             emit TokenTransfer(msg.sender, _to, _tokenIds[i], _values[i]);
             emit Transfer(msg.sender, _to, _values[i]);
@@ -283,11 +283,11 @@ contract FanCoin is Stampable {
         // as their balances reach 0, we just run the loop until we have transferred all
         // of the tokens we need to
         uint256 _tokensToTransfer = _value;
-        while (_tokensToTransfer &gt; 0) {
+        while (_tokensToTransfer > 0) {
             uint256 tokenId = balances[_from].tokenIndex[0];
             uint256 tokenBalance = balances[_from].tokens[tokenId].amount;
 
-            if (tokenBalance &gt;= _tokensToTransfer) {
+            if (tokenBalance >= _tokensToTransfer) {
                 require(internalTransfer(_from, _to, tokenId, _tokensToTransfer));
                 _tokensToTransfer = 0;
             } else {
@@ -320,8 +320,8 @@ contract FanCoin is Stampable {
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= ownershipCount[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= ownershipCount[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Get the uint256 version of value
         uint256 _castValue = uint256(_value);
@@ -348,7 +348,7 @@ contract FanCoin is Stampable {
     function mintTransfer(address _to, uint256 _tokenToStamp, uint256 _stamp, uint256 _amount) public
         onlyStampingWhitelisted returns (bool) {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender].tokens[_tokenToStamp].amount);
+        require(_amount <= balances[msg.sender].tokens[_tokenToStamp].amount);
 
         // Decrease the amount being sent first
         removeToken(msg.sender, _tokenToStamp, _amount);
@@ -429,7 +429,7 @@ contract FanCoin is Stampable {
     */
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
         uint _value = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; _value) {
+        if (_subtractedValue > _value) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = _value.sub(_subtractedValue);

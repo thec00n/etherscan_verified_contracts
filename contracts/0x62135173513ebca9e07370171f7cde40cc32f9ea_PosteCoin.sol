@@ -24,20 +24,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -52,8 +52,8 @@ contract PosteCoin is IERC20{
 	bool public purchasingAllowed = true;
 	bool public bonusAllowed = true;	
 
-	string public symbol = &quot;PTC&quot;;//Simbolo del token es. ETH
-	string public constant name = &quot;PosteCoin&quot;; //Nome del token es. Ethereum
+	string public symbol = "PTC";//Simbolo del token es. ETH
+	string public constant name = "PosteCoin"; //Nome del token es. Ethereum
 	uint256 public constant decimals = 18; //Numero di decimali del token, il bitcoin ne ha 8, ethereum 18
 
 	uint256 public CREATOR_TOKEN = 15000000 * 10**decimals; //Numero massimo di token da emettere 
@@ -70,8 +70,8 @@ contract PosteCoin is IERC20{
 		
 	address public owner;
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	uint start;
 	uint end;
@@ -79,13 +79,13 @@ contract PosteCoin is IERC20{
 	uint end3;
 	uint end4;
 	
-	//Funzione che permette di ricevere token solo specificando l&#39;indirizzo
+	//Funzione che permette di ricevere token solo specificando l'indirizzo
 	function() payable{
 		require(purchasingAllowed);		
 		createTokens();
 	}
    
-	//Salviamo l&#39;indirizzo del creatore del contratto per inviare gli ether ricevuti
+	//Salviamo l'indirizzo del creatore del contratto per inviare gli ether ricevuti
 	function PosteCoin(){
 		owner = msg.sender;
 		balances[msg.sender] = CREATOR_TOKEN;
@@ -98,31 +98,31 @@ contract PosteCoin is IERC20{
    
 	//Creazione dei token
 	function createTokens() payable{
-		require(msg.value &gt;= 0);
+		require(msg.value >= 0);
 		uint256 tokens = msg.value.mul(10 ** decimals);
 		tokens = tokens.mul(RATE);
 		tokens = tokens.div(10 ** 18);
 		if (bonusAllowed)
 		{
-			if (now &gt;= start &amp;&amp; now &lt; end)
+			if (now >= start && now < end)
 			{
 			tokens += tokens.mul(PERC_BONUS).div(100);
 			}
-			if (now &gt;= end &amp;&amp; now &lt; end2)
+			if (now >= end && now < end2)
 			{
 			tokens += tokens.mul(PERC_BONUS2).div(100);
 			}
-			if (now &gt;= end2 &amp;&amp; now &lt; end3)
+			if (now >= end2 && now < end3)
 			{
 			tokens += tokens.mul(PERC_BONUS3).div(100);
 			}
-			if (now &gt;= end3 &amp;&amp; now &lt; end4)
+			if (now >= end3 && now < end4)
 			{
 			tokens += tokens.mul(PERC_BONUS4).div(100);
 			}
 		}
 		uint256 sum2 = balances[owner].sub(tokens);		
-		require(sum2 &gt;= CREATOR_TOKEN_END);
+		require(sum2 >= CREATOR_TOKEN_END);
 		uint256 sum = _totalSupply.add(tokens);		
 		balances[msg.sender] = balances[msg.sender].add(tokens);
 		balances[owner] = balances[owner].sub(tokens);
@@ -136,18 +136,18 @@ contract PosteCoin is IERC20{
 		return _totalSupply;
 	}
    
-	//Ritorna il bilancio dell&#39;utente di un indirizzo
+	//Ritorna il bilancio dell'utente di un indirizzo
 	function balanceOf(address _owner) constant returns (uint balance){
 		return balances[_owner];
 	}
 	
-	//Abilita l&#39;acquisto di token
+	//Abilita l'acquisto di token
 	function enablePurchasing() {
 		require(msg.sender == owner); 
 		purchasingAllowed = true;
 	}
 	
-	//Disabilita l&#39;acquisto di token
+	//Disabilita l'acquisto di token
 	function disablePurchasing() {
 		require(msg.sender == owner);
 		purchasingAllowed = false;
@@ -167,7 +167,7 @@ contract PosteCoin is IERC20{
 
 	//Per inviare i Token
 	function transfer(address _to, uint256 _value) returns (bool success){
-		require(balances[msg.sender] &gt;= _value	&amp;&amp; _value &gt; 0);
+		require(balances[msg.sender] >= _value	&& _value > 0);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -176,7 +176,7 @@ contract PosteCoin is IERC20{
    
 	//Invio dei token con delega
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-		require(allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[msg.sender] &gt;= _value	&amp;&amp; _value &gt; 0);
+		require(allowed[_from][msg.sender] >= _value && balances[msg.sender] >= _value	&& _value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -184,14 +184,14 @@ contract PosteCoin is IERC20{
 		return true;
 	}
    
-	//Delegare qualcuno all&#39;invio di token
+	//Delegare qualcuno all'invio di token
 	function approve(address _spender, uint256 _value) returns (bool success){
 		allowed[msg.sender][_spender] = _value;
 		Approval(msg.sender, _spender, _value);
 		return true;
 	}
    
-	//Ritorna il numero di token che un delegato pu&#242; ancora inviare
+	//Ritorna il numero di token che un delegato può ancora inviare
 	function allowance(address _owner, address _spender) constant returns (uint remaining){
 		return allowed[_owner][_spender];
 	}
@@ -201,27 +201,27 @@ contract PosteCoin is IERC20{
 		require(msg.sender == owner);
 		address burner = msg.sender;
 		uint256 total = balances[burner];
-		if (total &gt; CREATOR_TOKEN_END) {
+		if (total > CREATOR_TOKEN_END) {
 			total = total.sub(CREATOR_TOKEN_END);
 			balances[burner] = balances[burner].sub(total);
-			if (_totalSupply &gt;= total){
+			if (_totalSupply >= total){
 				_totalSupply = _totalSupply.sub(total);
 			}
 			Burn(burner, total);
 		}
 	}
 	
-	//brucia la quantita&#39; _value di token
+	//brucia la quantita' _value di token
 	function burn(uint256 _value) public {
 		require(msg.sender == owner);
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 		_value = _value.mul(10 ** decimals);
         address burner = msg.sender;
 		uint t = balances[burner].sub(_value);
-		require(t &gt;= CREATOR_TOKEN_END);
+		require(t >= CREATOR_TOKEN_END);
         balances[burner] = balances[burner].sub(_value);
-        if (_totalSupply &gt;= _value){
+        if (_totalSupply >= _value){
 			_totalSupply = _totalSupply.sub(_value);
 		}
         Burn(burner, _value);

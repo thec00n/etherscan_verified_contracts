@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -70,20 +70,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -96,7 +96,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -164,7 +164,7 @@ contract StandardToken is ERC20, BasicToken {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -188,10 +188,10 @@ contract GenesisToken is StandardToken, Ownable {
   using SafeMath for uint256;
 
   // metadata
-  string public constant name = &#39;Genesis&#39;;
-  string public constant symbol = &#39;GNS&#39;;
+  string public constant name = 'Genesis';
+  string public constant symbol = 'GNS';
   uint256 public constant decimals = 18;
-  string public version = &#39;0.0.1&#39;;
+  string public version = '0.0.1';
 
   // events
   event EarnedGNS(address indexed contributor, uint256 amount);
@@ -243,10 +243,10 @@ contract CrowdWallet is Ownable {
   GenesisToken public token;
 
   // Track deposits/payouts by address
-  mapping (address =&gt; Deposit[]) public deposits;
-  mapping (address =&gt; Payout[]) public payouts;
+  mapping (address => Deposit[]) public deposits;
+  mapping (address => Payout[]) public payouts;
 
-  // Track the sum of all payouts &amp; deposits ever made to this contract.
+  // Track the sum of all payouts & deposits ever made to this contract.
   uint public lifetimeDeposits;
   uint public lifetimePayouts;
 
@@ -295,21 +295,21 @@ contract CrowdWallet is Ownable {
    * their tokens to another wallet and withdraw again.
    */
   function withdraw() {
-    require(previousPayoutBlock &gt; 0);
+    require(previousPayoutBlock > 0);
 
     // Ensure the user has not already made a withdrawal this period.
     require(!isAddressLocked(msg.sender));
 
     uint payoutAmount = calculatePayoutForAddress(msg.sender);
 
-    // Ensure user&#39;s payout is above the minimum threshold for withdrawals.
-    require(payoutAmount &gt; minWithdrawalThreshold);
+    // Ensure user's payout is above the minimum threshold for withdrawals.
+    require(payoutAmount > minWithdrawalThreshold);
 
     // User qualifies. Save the transaction with the current block number,
     // effectively locking their tokens until the next payout date.
     payouts[msg.sender].push(Payout({ amount: payoutAmount, block: now }));
 
-    require(this.balance &gt;= payoutAmount);
+    require(this.balance >= payoutAmount);
 
     onPayout(msg.sender, payoutAmount);
 
@@ -332,14 +332,14 @@ contract CrowdWallet is Ownable {
 
     var lastPayment = paymentHistory[paymentHistory.length - 1];
 
-    return (lastPayment.block &gt;= previousPayoutBlock) &amp;&amp; (lastPayment.block &lt; nextPayoutBlock);
+    return (lastPayment.block >= previousPayoutBlock) && (lastPayment.block < nextPayoutBlock);
   }
 
   /**
    * Check if we are in a new payout cycle.
    */
   function isNewPayoutPeriod() constant returns(bool) {
-    return now &gt;= nextPayoutBlock;
+    return now >= nextPayoutBlock;
   }
 
   /**
@@ -366,7 +366,7 @@ contract CrowdWallet is Ownable {
   }
 
   /**
-   * Check the contract&#39;s ETH balance.
+   * Check the contract's ETH balance.
    */
   function ethBalance() constant returns(uint) {
     return this.balance;

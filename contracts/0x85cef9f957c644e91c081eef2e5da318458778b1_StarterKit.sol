@@ -41,20 +41,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -222,18 +222,18 @@ contract StarterKit is Ownable {
                        bytes32 _s
                       ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_CopperPrice, _expiration), _v, _r, _s);
         require(signer == neverdieSigner);
 
-        require(msg.value &gt;= _CopperPrice);
+        require(msg.value >= _CopperPrice);
         
         assert(ndc.transfer(msg.sender, COPPER_AMOUNT_NDC) 
-            &amp;&amp; tpt.transfer(msg.sender, COPPER_AMOUNT_TPT)
-            &amp;&amp; skl.transfer(msg.sender, COPPER_AMOUNT_SKL)
-            &amp;&amp; xper.transfer(msg.sender, COPPER_AMOUNT_XPER));
+            && tpt.transfer(msg.sender, COPPER_AMOUNT_TPT)
+            && skl.transfer(msg.sender, COPPER_AMOUNT_SKL)
+            && xper.transfer(msg.sender, COPPER_AMOUNT_XPER));
            
 
         // Emit BuyCopper event
@@ -253,17 +253,17 @@ contract StarterKit is Ownable {
                        bytes32 _s
                       ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_BronzePrice, _expiration), _v, _r, _s);
         require(signer == neverdieSigner);
 
-        require(msg.value &gt;= _BronzePrice);
+        require(msg.value >= _BronzePrice);
         assert(ndc.transfer(msg.sender, BRONZE_AMOUNT_NDC) 
-            &amp;&amp; tpt.transfer(msg.sender, BRONZE_AMOUNT_TPT)
-            &amp;&amp; skl.transfer(msg.sender, BRONZE_AMOUNT_SKL)
-            &amp;&amp; xper.transfer(msg.sender, BRONZE_AMOUNT_XPER));
+            && tpt.transfer(msg.sender, BRONZE_AMOUNT_TPT)
+            && skl.transfer(msg.sender, BRONZE_AMOUNT_SKL)
+            && xper.transfer(msg.sender, BRONZE_AMOUNT_XPER));
 
         // Emit BuyBronze event
         emit BuyBronze(msg.sender, _BronzePrice, msg.value);
@@ -282,17 +282,17 @@ contract StarterKit is Ownable {
                        bytes32 _s
                       ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_SilverPrice, _expiration), _v, _r, _s);
         require(signer == neverdieSigner);
 
-        require(msg.value &gt;= _SilverPrice);
+        require(msg.value >= _SilverPrice);
         assert(ndc.transfer(msg.sender, SILVER_AMOUNT_NDC) 
-            &amp;&amp; tpt.transfer(msg.sender, SILVER_AMOUNT_TPT)
-            &amp;&amp; skl.transfer(msg.sender, SILVER_AMOUNT_SKL)
-            &amp;&amp; xper.transfer(msg.sender, SILVER_AMOUNT_XPER));
+            && tpt.transfer(msg.sender, SILVER_AMOUNT_TPT)
+            && skl.transfer(msg.sender, SILVER_AMOUNT_SKL)
+            && xper.transfer(msg.sender, SILVER_AMOUNT_XPER));
 
         // Emit BuySilver event
         emit BuySilver(msg.sender, _SilverPrice, msg.value);
@@ -311,17 +311,17 @@ contract StarterKit is Ownable {
                        bytes32 _s
                       ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_GoldPrice, _expiration), _v, _r, _s);
         require(signer == neverdieSigner);
 
-        require(msg.value &gt;= _GoldPrice);
+        require(msg.value >= _GoldPrice);
         assert(ndc.transfer(msg.sender, GOLD_AMOUNT_NDC) 
-            &amp;&amp; tpt.transfer(msg.sender, GOLD_AMOUNT_TPT)
-            &amp;&amp; skl.transfer(msg.sender, GOLD_AMOUNT_SKL)
-            &amp;&amp; xper.transfer(msg.sender, GOLD_AMOUNT_XPER));
+            && tpt.transfer(msg.sender, GOLD_AMOUNT_TPT)
+            && skl.transfer(msg.sender, GOLD_AMOUNT_SKL)
+            && xper.transfer(msg.sender, GOLD_AMOUNT_XPER));
 
         // Emit BuyGold event
         emit BuyGold(msg.sender, _GoldPrice, msg.value);
@@ -340,17 +340,17 @@ contract StarterKit is Ownable {
                        bytes32 _s
                       ) payable external {
         // Check if the signature did not expire yet by inspecting the timestamp
-        require(_expiration &gt;= block.timestamp);
+        require(_expiration >= block.timestamp);
 
         // Check if the signature is coming from the neverdie address
         address signer = ecrecover(keccak256(_PlatinumPrice, _expiration), _v, _r, _s);
         require(signer == neverdieSigner);
 
-        require(msg.value &gt;= _PlatinumPrice);
+        require(msg.value >= _PlatinumPrice);
         assert(ndc.transfer(msg.sender, PLATINUM_AMOUNT_NDC) 
-            &amp;&amp; tpt.transfer(msg.sender, PLATINUM_AMOUNT_TPT)
-            &amp;&amp; skl.transfer(msg.sender, PLATINUM_AMOUNT_SKL)
-            &amp;&amp; xper.transfer(msg.sender, PLATINUM_AMOUNT_XPER));
+            && tpt.transfer(msg.sender, PLATINUM_AMOUNT_TPT)
+            && skl.transfer(msg.sender, PLATINUM_AMOUNT_SKL)
+            && xper.transfer(msg.sender, PLATINUM_AMOUNT_XPER));
 
         // Emit BuyPlatinum event
         emit BuyPlatinum(msg.sender, _PlatinumPrice, msg.value);
@@ -366,10 +366,10 @@ contract StarterKit is Ownable {
       uint256 allTPT = tpt.balanceOf(this);
       uint256 allSKL = skl.balanceOf(this);
       uint256 allXPER = xper.balanceOf(this);
-      if (allNDC &gt; 0) ndc.transfer(msg.sender, allNDC);
-      if (allTPT &gt; 0) tpt.transfer(msg.sender, allTPT);
-      if (allSKL &gt; 0) skl.transfer(msg.sender, allSKL);
-      if (allXPER &gt; 0) xper.transfer(msg.sender, allXPER);
+      if (allNDC > 0) ndc.transfer(msg.sender, allNDC);
+      if (allTPT > 0) tpt.transfer(msg.sender, allTPT);
+      if (allSKL > 0) skl.transfer(msg.sender, allSKL);
+      if (allXPER > 0) xper.transfer(msg.sender, allXPER);
     }
 
     /// @dev withdraw token

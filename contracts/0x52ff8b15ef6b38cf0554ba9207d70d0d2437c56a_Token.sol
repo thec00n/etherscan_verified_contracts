@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
  
 contract Token {
-    string public symbol = &quot;711&quot;;
-    string public name = &quot;711 token&quot;;
+    string public symbol = "711";
+    string public name = "711 token";
     uint8 public constant decimals = 18;
     uint256 _totalSupply = 711000000000000000000;
     address owner = 0;
@@ -16,14 +16,14 @@ contract Token {
     uint unreserved = 80;
     uint _durationInMinutes = 0;
     bool fundingGoalReached = false;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 	
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
  
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
  
     function Token(address adr) {
 		owner = adr;        
@@ -31,7 +31,7 @@ contract Token {
 	
 	function StartICO(uint256 durationInMinutes)
 	{
-		if (msg.sender == owner &amp;&amp; startDone == false)
+		if (msg.sender == owner && startDone == false)
 		{
 			balances[owner] = _totalSupply;
 			_durationInMinutes = durationInMinutes;
@@ -49,9 +49,9 @@ contract Token {
     }
  
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount 
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
             Transfer(msg.sender, _to, _amount);
@@ -66,10 +66,10 @@ contract Token {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0
+            && balances[_to] + _amount > balances[_to]) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -84,13 +84,13 @@ contract Token {
         uint _amount = msg.value;
         uint amount = msg.value;
         _amount = _amount * rate;
-        if (amountRaised + _amount &lt;= _totalSupply * unreserved / 100
-            &amp;&amp; balances[owner] &gt;= _amount
-            &amp;&amp; _amount &gt; 0
-            &amp;&amp; balances[msg.sender] + _amount &gt; balances[msg.sender]
-            &amp;&amp; now &lt;= deadline
-            &amp;&amp; !fundingGoalReached 
-            &amp;&amp; startDone) {
+        if (amountRaised + _amount <= _totalSupply * unreserved / 100
+            && balances[owner] >= _amount
+            && _amount > 0
+            && balances[msg.sender] + _amount > balances[msg.sender]
+            && now <= deadline
+            && !fundingGoalReached 
+            && startDone) {
         backers += 1;
         balances[msg.sender] += _amount;
         balances[owner] -= _amount;
@@ -113,14 +113,14 @@ contract Token {
         return allowed[_owner][_spender];
     }
     
-    modifier afterDeadline() { if (now &gt; deadline || amountRaised &gt;= _totalSupply / successcoef) _; }
+    modifier afterDeadline() { if (now > deadline || amountRaised >= _totalSupply / successcoef) _; }
 
     function safeWithdrawal() afterDeadline {
 
-    if (amountRaised &lt; _totalSupply / successcoef) {
+    if (amountRaised < _totalSupply / successcoef) {
             uint _amount = balances[msg.sender];
             balances[msg.sender] = 0;
-            if (_amount &gt; 0) {
+            if (_amount > 0) {
                 if (msg.sender.send(_amount / rate)) {
                     balances[owner] += _amount;
                     amountRaised -= _amount;
@@ -132,7 +132,7 @@ contract Token {
         }
 
     if (owner == msg.sender
-    	&amp;&amp; amountRaised &gt;= _totalSupply / successcoef) {
+    	&& amountRaised >= _totalSupply / successcoef) {
            if (owner.send(this.balance)) {
                fundingGoalReached = true;
             } 

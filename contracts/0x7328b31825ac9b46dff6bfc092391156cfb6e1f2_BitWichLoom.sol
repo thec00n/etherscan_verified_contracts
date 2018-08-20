@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -197,8 +197,8 @@ contract BitWich is Pausable {
     constructor(uint _buyCost, 
                 uint _sellValue,
                 address _erc20ContractAddress) public {
-        require(_buyCost &gt; 0);
-        require(_sellValue &gt; 0);
+        require(_buyCost > 0);
+        require(_sellValue > 0);
         
         buyCost = _buyCost;
         sellValue = _sellValue;
@@ -249,8 +249,8 @@ contract BitWich is Pausable {
     // NOTE: _minAmountDesired protects against cost increase between send time and process time
     function processBuy(address _buyer, uint _minAmountDesired) internal {
         uint amountPurchased = msg.value.mul(buyCost);
-        require(erc20Contract.balanceOf(address(this)) &gt;= amountPurchased);
-        require(amountPurchased &gt;= _minAmountDesired);
+        require(erc20Contract.balanceOf(address(this)) >= amountPurchased);
+        require(amountPurchased >= _minAmountDesired);
         
         netAmountBought = netAmountBought.add(amountPurchased);
         emit LogBought(_buyer, buyCost, amountPurchased);
@@ -260,11 +260,11 @@ contract BitWich is Pausable {
     
     // NOTE: _weiExpected protects against a value decrease between send time and process time
     function processSell(address _seller, uint _amount, uint _weiExpected) internal {
-        require(netAmountBought &gt;= _amount);
-        require(erc20Contract.allowance(_seller, address(this)) &gt;= _amount);
+        require(netAmountBought >= _amount);
+        require(erc20Contract.allowance(_seller, address(this)) >= _amount);
         uint value = _amount.div(sellValue); // tokens divided by (tokens per wei) equals wei
-        require(value &gt;= _weiExpected);
-        assert(address(this).balance &gt;= value); // contract should always have enough wei
+        require(value >= _weiExpected);
+        assert(address(this).balance >= value); // contract should always have enough wei
         _amount = value.mul(sellValue); // in case of rounding down, reduce the _amount sold
         
         netAmountBought = netAmountBought.sub(_amount);
@@ -276,7 +276,7 @@ contract BitWich is Pausable {
     
     // NOTE: this should never return true unless this contract has a bug 
     function lacksFunds() external view returns(bool) {
-        return address(this).balance &lt; getRequiredBalance(sellValue);
+        return address(this).balance < getRequiredBalance(sellValue);
     }
     
     /* OWNER FUNCTIONS */
@@ -288,7 +288,7 @@ contract BitWich is Pausable {
     // Owner function for cashing out extra ETH not needed for buying tokens
     function cashout() external onlyOwner {
         uint requiredBalance = getRequiredBalance(sellValue);
-        assert(address(this).balance &gt;= requiredBalance);
+        assert(address(this).balance >= requiredBalance);
         
         owner.transfer(address(this).balance.sub(requiredBalance));
     }
@@ -303,7 +303,7 @@ contract BitWich is Pausable {
     // in order to change sell price to proposed price
     function extraBalanceNeeded(uint _proposedSellValue) external view onlyOwner returns (uint) {
         uint requiredBalance = getRequiredBalance(_proposedSellValue);
-        return (requiredBalance &gt; address(this).balance) ? requiredBalance.sub(address(this).balance) : 0;
+        return (requiredBalance > address(this).balance) ? requiredBalance.sub(address(this).balance) : 0;
     }
     
     // Owner function for adjusting prices (might need to add ETH if raising sell price)
@@ -312,7 +312,7 @@ contract BitWich is Pausable {
         sellValue = _sellValue == 0 ? sellValue : _sellValue;
         
         uint requiredBalance = getRequiredBalance(sellValue);
-        require(msg.value.add(address(this).balance) &gt;= requiredBalance);
+        require(msg.value.add(address(this).balance) >= requiredBalance);
         
         emit LogPriceChanged(buyCost, sellValue);
     }

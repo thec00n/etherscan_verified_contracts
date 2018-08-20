@@ -8,13 +8,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -88,17 +88,17 @@ contract EKTSale is SafeMath {
     }
 
     modifier validPeriod {
-        assert(now &gt;= openTime &amp;&amp; now &lt; closeTime);
+        assert(now >= openTime && now < closeTime);
         _;
     }
 
     modifier validQuantity {
-        assert(totalQuantity &gt;= saleQuantity);
+        assert(totalQuantity >= saleQuantity);
         _;
     }
 
     modifier validEth {
-        assert(msg.value &gt;= minEth &amp;&amp; msg.value &lt;= maxEth);
+        assert(msg.value >= minEth && msg.value <= maxEth);
         _;
     }
 
@@ -119,7 +119,7 @@ contract EKTSale is SafeMath {
         isOwner
         returns(bool)
     {
-        assert(_price &gt; 0);
+        assert(_price > 0);
         price = _price;
         return true;
     }
@@ -146,7 +146,7 @@ contract EKTSale is SafeMath {
 
         // 是否超出剩余代币
         uint leftQuantity = safeSub(totalQuantity, saleQuantity);
-        if (quantity &gt; leftQuantity) {
+        if (quantity > leftQuantity) {
             quantity = leftQuantity;
         }
 
@@ -167,7 +167,7 @@ contract EKTSale is SafeMath {
         uint period = getPeriod();
         require(period == FINISHED);
 
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
         msg.sender.transfer(amount);
     }
 
@@ -191,7 +191,7 @@ contract EKTSale is SafeMath {
             return FINISHED;
         }
 
-        if (now &lt; openTime) {
+        if (now < openTime) {
             return BEFORE_SALE;
         }
 
@@ -199,7 +199,7 @@ contract EKTSale is SafeMath {
             return FINISHED;
         }
 
-        if (now &gt;= openTime &amp;&amp; now &lt; closeTime) {
+        if (now >= openTime && now < closeTime) {
             return IN_SALE;
         }
 

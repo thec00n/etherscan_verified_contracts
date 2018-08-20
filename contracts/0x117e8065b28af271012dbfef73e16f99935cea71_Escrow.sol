@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -61,7 +61,7 @@ contract Escrow is Ownable {
         DealState state;
     }
     
-    mapping (uint256 =&gt; Deal) public deals;
+    mapping (uint256 => Deal) public deals;
     uint256 lastDealId;
     
     function createNew(address _customer, address _beneficiary, address _agent,
@@ -103,12 +103,12 @@ contract Escrow is Ownable {
      */
     function finishDeal(uint256 _dealId) public onlyOwner {
         require(deals[_dealId].state == DealState.InProgress);
-        if (deals[_dealId].customerAns &amp;&amp; deals[_dealId].beneficiaryAns) {
+        if (deals[_dealId].customerAns && deals[_dealId].beneficiaryAns) {
             deals[_dealId].beneficiary.transfer(deals[_dealId].value);
             deals[_dealId].agent.transfer(deals[_dealId].commission);
             deals[_dealId].state = DealState.Finished;
         } else {
-            require(now &gt;= deals[_dealId].endtime);
+            require(now >= deals[_dealId].endtime);
             deals[_dealId].state = DealState.InTrial;
         }
     }

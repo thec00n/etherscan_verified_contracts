@@ -43,11 +43,11 @@ contract theCyberAssigner {
     require(active_);
 
     // Require a large transaction so that members are added in bulk.
-    require(msg.gas &gt; 6000000);
+    require(msg.gas > 6000000);
 
     // All entrants must be registered in order to assign new members.
     uint8 totalEntrants = theCyberGatekeeperTwoInterface(THECYBERGATEKEEPERADDRESS_).totalEntrants();
-    require(totalEntrants &gt;= MAXENTRANTS_);
+    require(totalEntrants >= MAXENTRANTS_);
 
     // Initialize variables for checking membership statuses.
     bool member;
@@ -61,7 +61,7 @@ contract theCyberAssigner {
     uint8 i = nextAssigneeIndex_;
 
     // Loop through entrants as long as sufficient gas remains.
-    while (i &lt; MAXENTRANTS_ &amp;&amp; msg.gas &gt; 200000) {
+    while (i < MAXENTRANTS_ && msg.gas > 200000) {
       // Find the entrant at the given index.
       address entrant = theCyberGatekeeperTwoInterface(THECYBERGATEKEEPERADDRESS_).entrants(i);
 
@@ -72,9 +72,9 @@ contract theCyberAssigner {
       (,,,,memberAddress) = theCyberInterface(THECYBERADDRESS_).getMemberInformation(i + 1);
       
       // Ensure that there was no member found with the given id / address.
-      if ((entrant != address(0)) &amp;&amp; (!member) &amp;&amp; (memberAddress == address(0))) {
+      if ((entrant != address(0)) && (!member) && (memberAddress == address(0))) {
         // Add the entrant as a new member of theCyber.
-        theCyberInterface(THECYBERADDRESS_).newMember(i + 1, bytes32(&quot;&quot;), entrant);
+        theCyberInterface(THECYBERADDRESS_).newMember(i + 1, bytes32(""), entrant);
       }
 
       // Move on to the next entrant / member id.
@@ -83,7 +83,7 @@ contract theCyberAssigner {
 
     // Set the index where the function left off; set as inactive if finished.
     nextAssigneeIndex_ = i;
-    if (nextAssigneeIndex_ &gt;= MAXENTRANTS_) {
+    if (nextAssigneeIndex_ >= MAXENTRANTS_) {
       active_ = false;
     }
 

@@ -1,6 +1,6 @@
 /*
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -32,14 +32,14 @@ Features of this Contract:
 
 
 Example in detail: How a Token-Holder can get rewards in ETH for his tokens?
-* Six day&#39;s in a week this Reward-SC can receive profits in ETH from (TokenCreator or DApp&#39;s).
+* Six day's in a week this Reward-SC can receive profits in ETH from (TokenCreator or DApp's).
   In this period the SC can receive ETH and tokens.
   - ETH are received by normal ETH transactions ( function () payable )
   - Tokens are received by 1) calling the approve-function of the ERC-20 token contract,
                            2) calling the confirm_token_deposit() of this smart contract.
  
                            
-* One day in a week is &#39;claiming day&#39; for 24 hours. In this period all token deposits should
+* One day in a week is 'claiming day' for 24 hours. In this period all token deposits should
   have done. By calling (...to be continued)
 
 withdraw_token_and_eth()
@@ -67,20 +67,20 @@ library SafeMath {
   }
   
  function safeDiv(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }  
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -145,7 +145,7 @@ uint256 last_claimed_day;  // Remember the used claiming_day of this account
 } // struct Account
 
 // Public mapping of all accounts
-mapping(address =&gt; Account) public AccountStructs;
+mapping(address => Account) public AccountStructs;
 
     
 
@@ -169,7 +169,7 @@ CLAIM_INTERVAL_DAYS      = 2;
 
 // ----------------------------------------------------------------------------------
 
-TokenContract            = ERC20Interface(TokenContractAddress); // LOV&#39;s is 0x26B1FBE292502da2C8fCdcCF9426304d0900b703
+TokenContract            = ERC20Interface(TokenContractAddress); // LOV's is 0x26B1FBE292502da2C8fCdcCF9426304d0900b703
 NumberAddresses          = 0; // Solidity uses zero-state default values, only to make it more obvious
 
 // Address of this contract
@@ -182,7 +182,7 @@ thisAddress              = address(this);
 
 // (FIN)
 //
-// Calculates &#39;percent&#39; 
+// Calculates 'percent' 
 // (Inspired by https://stackoverflow.com/questions/42738640/division-in-ethereum-solidity)
 //
 function percent(uint numerator, uint denominator, uint precision) public 
@@ -252,7 +252,7 @@ uint256 wei_rewards;
 if ( is_claim_period( now ) == true )
    {
    // Calculate current day number since starttime.
-   uint seconds_since_start = now - timestamp_contract_start; // &#39;now&#39; is a keyword in solidity - current timestamp / blocktime
+   uint seconds_since_start = now - timestamp_contract_start; // 'now' is a keyword in solidity - current timestamp / blocktime
    uint days_since_start    = seconds_since_start / 86400;    // A day has 86400 seconds.
 
    // A tokenholder may only claim one time during the claim period.
@@ -285,7 +285,7 @@ return(ret);
 
 // (FIN)
 // VORHER Externer Token-Aufruf: function (allowance)
-// -&gt; External call ERC20 Token
+// -> External call ERC20 Token
 // approve(address _spender, uint256 _value)
 // approve(0xab98cbeb247331ab72a924bd41ce6a3a64161a4e, 5042 ); // Einzahlung von 5042 Tokens
 function confirm_token_deposit() public returns (bool)
@@ -301,7 +301,7 @@ if ( is_claim_period( now ) == false )
    //
    // if new Account
    //
-   if ( AccountStructs[msg.sender].id &lt;= 0 )
+   if ( AccountStructs[msg.sender].id <= 0 )
       {
       NumberAddresses++;
       if (NumberAddresses == 1) firstAddress  = msg.sender;
@@ -317,7 +317,7 @@ if ( is_claim_period( now ) == false )
    TokenContract.transfer(thisAddress, amount_token);
    
    // Register the new token
-   if (amount_token &gt; 0)
+   if (amount_token > 0)
       {      
       TokenTotal = TokenTotal.safeAdd(amount_token);
       AccountStructs[msg.sender].amount_token = AccountStructs[msg.sender].amount_token.safeAdd( amount_token ) ;
@@ -465,7 +465,7 @@ if (msg.sender != owner) return;
 
 // Transfer tokens back to owner
 uint256 balance = TokenContract.balanceOf(this);
-assert(balance &gt; 0);
+assert(balance > 0);
 TokenContract.transfer(owner, balance);
  
 owner.transfer( this.balance );

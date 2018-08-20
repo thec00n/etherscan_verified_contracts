@@ -69,20 +69,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -145,8 +145,8 @@ contract GATToken is ERC20Interface, Owned {
     string public name;
     uint256 public decimals;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
 
     function GATToken(string _symbol, string _name, uint256 _decimals, uint256 _totalSupply) public
@@ -216,8 +216,8 @@ pragma solidity ^0.4.17;
 
 contract GATTokenSaleConfig {
 
-    string  public constant SYMBOL                  = &quot;GAT&quot;;
-    string  public constant NAME                    = &quot;GAT Token&quot;;
+    string  public constant SYMBOL                  = "GAT";
+    string  public constant NAME                    = "GAT Token";
     uint256 public constant DECIMALS                = 18;
 
     uint256 public constant DECIMALSFACTOR          = 10**uint256(DECIMALS);
@@ -242,7 +242,7 @@ contract GATTokenSaleConfig {
     // Default value for tokensPerKEther based on ETH at 300 USD.
     // The owner can update this value before the sale starts based on the
     // price of ether at that time.
-    // E.g. 300 USD/ETH -&gt; 300,000 USD/KETH / 0.2 USD/TOKEN = 1,500,000
+    // E.g. 300 USD/ETH -> 300,000 USD/KETH / 0.2 USD/TOKEN = 1,500,000
     uint256 public constant TOKENS_PER_KETHER = 1500000;
 }
 
@@ -312,8 +312,8 @@ contract GATTokenSale is GATToken, GATTokenSaleConfig {
         GATToken(SYMBOL, NAME, DECIMALS, 0)
     {
         // Can only create the contract is the sale has not yet started or ended.
-        require(START_TIME &gt;= currentTime());
-        require(END_TIME &gt; START_TIME);
+        require(START_TIME >= currentTime());
+        require(END_TIME > START_TIME);
 
         // Need valid wallet addresses
         require(_bankAddress    != address(0x0));
@@ -383,7 +383,7 @@ contract GATTokenSale is GATToken, GATTokenSaleConfig {
     // Allows the owner to change the price for tokens.
     //
     function setTokensPerKEther(uint256 _tokensPerKEther) external onlyOwner returns(bool) {
-        require(_tokensPerKEther &gt; 0);
+        require(_tokensPerKEther > 0);
 
         // Set the tokensPerKEther amount for any new sale.
         tokensPerKEther = _tokensPerKEther;
@@ -398,10 +398,10 @@ contract GATTokenSale is GATToken, GATTokenSaleConfig {
     //
     function setBonus(uint256 _bonus) external onlyOwner returns(bool) {
         // 100 means no bonus
-        require(_bonus &gt;= 100);
+        require(_bonus >= 100);
 
         // 200 means 100% bonus
-        require(_bonus &lt;= 200);
+        require(_bonus <= 200);
 
         bonus = _bonus;
 
@@ -414,8 +414,8 @@ contract GATTokenSale is GATToken, GATTokenSaleConfig {
     // Allows the owner to change the time window for the sale.
     //
     function setTimeWindow(uint256 _startTime, uint256 _endTime) external onlyOwner returns(bool) {
-        require(_startTime &gt;= START_TIME);
-        require(_endTime &gt; _startTime);
+        require(_startTime >= START_TIME);
+        require(_endTime > _startTime);
 
         startTime = _startTime;
         endTime   = _endTime;
@@ -470,23 +470,23 @@ contract GATTokenSale is GATToken, GATTokenSaleConfig {
         require(!suspended);
         require(beneficiary != address(0x0));
         require(beneficiary != address(this));
-        require(currentTime() &gt;= startTime);
-        require(currentTime() &lt;= endTime);
-        require(msg.value &gt;= CONTRIBUTION_MIN);
+        require(currentTime() >= startTime);
+        require(currentTime() <= endTime);
+        require(msg.value >= CONTRIBUTION_MIN);
         require(msg.sender != fundingAddress);
 
         // Check if the sale contract still has tokens for sale.
         uint256 saleBalance = balanceOf(address(this));
-        require(saleBalance &gt; 0);
+        require(saleBalance > 0);
 
         // Calculate the number of tokens that the ether should convert to.
         uint256 tokens = msg.value.mul(tokensPerKEther).mul(bonus).div(10**(18 - DECIMALS + 3 + 2));
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         uint256 cost = msg.value;
         uint256 refund = 0;
 
-        if (tokens &gt; saleBalance) {
+        if (tokens > saleBalance) {
             // Not enough tokens left for sale to fulfill the full order.
             tokens = saleBalance;
 
@@ -504,7 +504,7 @@ contract GATTokenSale is GATToken, GATTokenSaleConfig {
         balances[beneficiary]   = balances[beneficiary].add(tokens);
         Transfer(address(this), beneficiary, tokens);
 
-        if (refund &gt; 0) {
+        if (refund > 0) {
            msg.sender.transfer(refund);
         }
 

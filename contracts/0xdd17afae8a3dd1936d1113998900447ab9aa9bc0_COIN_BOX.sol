@@ -8,7 +8,7 @@ contract COIN_BOX
         uint balance;
     }
     
-    mapping (address =&gt; Holder) public Acc;
+    mapping (address => Holder) public Acc;
     
     uint public MinSum;
     
@@ -42,8 +42,8 @@ contract COIN_BOX
     {
         var acc = Acc[msg.sender];
         acc.balance += msg.value;
-        if(now+_lockTime&gt;acc.unlockTime)acc.unlockTime=now+_lockTime;
-        LogFile.AddMessage(msg.sender,msg.value,&quot;Put&quot;);
+        if(now+_lockTime>acc.unlockTime)acc.unlockTime=now+_lockTime;
+        LogFile.AddMessage(msg.sender,msg.value,"Put");
     }
     
     function Collect(uint _am)
@@ -51,12 +51,12 @@ contract COIN_BOX
     payable
     {
         var acc = Acc[msg.sender];
-        if( acc.balance&gt;=MinSum &amp;&amp; acc.balance&gt;=_am &amp;&amp; now&gt;acc.unlockTime)
+        if( acc.balance>=MinSum && acc.balance>=_am && now>acc.unlockTime)
         {
             if(msg.sender.call.value(_am)())
             {
                 acc.balance-=_am;
-                LogFile.AddMessage(msg.sender,_am,&quot;Collect&quot;);
+                LogFile.AddMessage(msg.sender,_am,"Collect");
             }
         }
     }

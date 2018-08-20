@@ -1,15 +1,15 @@
 pragma solidity ^0.4.18;
 
 contract EtherealId{
-     string public constant CONTRACT_NAME = &quot;EtherealId&quot;;
-    string public constant CONTRACT_VERSION = &quot;A&quot;;
-    mapping (address =&gt; bool) private IsAuthority;
+     string public constant CONTRACT_NAME = "EtherealId";
+    string public constant CONTRACT_VERSION = "A";
+    mapping (address => bool) private IsAuthority;
 	address private Creator;
 	address private Owner;
     bool private Active;
     
-	mapping(bytes32 =&gt; bool) private Proof;
-	mapping (address =&gt; bool) private BlockedAddresses;
+	mapping(bytes32 => bool) private Proof;
+	mapping (address => bool) private BlockedAddresses;
 	function SubmitProofOfOwnership(bytes32 proof) public onlyOwner{
 		Proof[proof] = true;
 	}	
@@ -37,7 +37,7 @@ contract EtherealId{
     function IsActive() public view returns(bool)    {
         return Active;
     }
-    mapping(bytes32 =&gt; bool) private VerifiedInfoHashes;//key is hash, true if verified
+    mapping(bytes32 => bool) private VerifiedInfoHashes;//key is hash, true if verified
     
     event Added(bytes32 indexed hash);
     function AddVerifiedInfo( bytes32 hash) public onlyAuthority    {

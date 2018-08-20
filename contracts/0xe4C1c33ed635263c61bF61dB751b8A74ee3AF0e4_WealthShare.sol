@@ -26,7 +26,7 @@ contract WealthShare {
   uint public Balance = 0;
   uint public Total_Deposited=0;
   uint public Total_Paid_Out=0;
-string public Message=&quot;Welcome to Wealth Share deposit Eth, and generate more with it!&quot;;
+string public Message="Welcome to Wealth Share deposit Eth, and generate more with it!";
 	
   address public owner;
 
@@ -48,7 +48,7 @@ string public Message=&quot;Welcome to Wealth Share deposit Eth, and generate mo
 //********************************************ENTER
 
   function enter() {
-    if (msg.value &gt; 200 finney) {
+    if (msg.value > 200 finney) {
 
     uint amount=msg.value;
 
@@ -76,7 +76,7 @@ string public Message=&quot;Welcome to Wealth Share deposit Eth, and generate mo
      if (Fees != 0) 
      {
 	uint minimal= 1990 finney;
-	if(Fees&lt;minimal)
+	if(Fees<minimal)
 	{
       	owner.send(Fees);		//send fee to owner
 	Total_Paid_Out+=Fees;        //update paid out amount
@@ -85,8 +85,8 @@ string public Message=&quot;Welcome to Wealth Share deposit Eth, and generate mo
 	{
 	uint Times= Fees/minimal;
 
-	for(uint i=0; i&lt;Times;i++)   // send the Fees out in packets compatible to EthVentures dividend function
-	if(Fees&gt;0)
+	for(uint i=0; i<Times;i++)   // send the Fees out in packets compatible to EthVentures dividend function
+	if(Fees>0)
 	{
 	owner.send(minimal);		//send fee to owner
 	Total_Paid_Out+=Fees;        //update paid out amount
@@ -99,12 +99,12 @@ string public Message=&quot;Welcome to Wealth Share deposit Eth, and generate mo
     uint payout;
     uint nr=0;
 
-if(Total_Deposited * 50/100 &lt; Balance )  //if balance is at 50% or higher, then pay depositors
+if(Total_Deposited * 50/100 < Balance )  //if balance is at 50% or higher, then pay depositors
 {
   
 
 	
-    while (Balance &gt; 0  &amp;&amp; nr&lt;depositors.length)  //exit condition to avoid infinite loop
+    while (Balance > 0  && nr<depositors.length)  //exit condition to avoid infinite loop
     { 
       payout = Balance / (nr+1);                           	//calculate pay out
       depositors[nr].etherAddress.send(payout);                      	//send pay out to participant
@@ -113,9 +113,9 @@ if(Total_Deposited * 50/100 &lt; Balance )  //if balance is at 50% or higher, th
       nr += 1;                                                                         //go to next participant
     }
     
-	Message=&quot;The Wealth has been paid to Depositors!&quot;;
+	Message="The Wealth has been paid to Depositors!";
 } 
-else Message=&quot;The Balance has to be at least 50% full to be able to pay out!&quot;;
+else Message="The Balance has to be at least 50% full to be able to pay out!";
 
   }
 

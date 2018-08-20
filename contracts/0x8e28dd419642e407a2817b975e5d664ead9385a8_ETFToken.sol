@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -112,9 +112,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -122,7 +122,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -131,7 +131,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -172,7 +172,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -190,7 +190,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -221,7 +221,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -232,8 +232,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -247,7 +247,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -296,7 +296,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -313,7 +313,7 @@ library AddressArrayUtils {
 
     /// @return Returns index and ok of the first occurrence starting from index 0
     function index(address[] addresses, address a) internal pure returns (uint, bool) {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             if (addresses[i] == a) {
                 return (i, true);
             }
@@ -355,7 +355,7 @@ contract ETFToken is StandardToken, Pausable {
     /// @notice Requires value to be non-zero
     /// @param value Number to be checked
     modifier requireNonZero(uint256 value) {
-        require(value &gt; 0);
+        require(value > 0);
         _;
     }
 
@@ -364,20 +364,20 @@ contract ETFToken is StandardToken, Pausable {
     /// required for a creation unit
     /// @param addresses Addresses of the underlying ERC20 token contracts
     /// @param tokenUnits Number of token base units required per grain
-    /// @param _granularity Smallest part of the token that&#39;s not divisible
+    /// @param _granularity Smallest part of the token that's not divisible
     function ETFToken(
         address[] addresses,
         uint256[] tokenUnits,
         uint256 _granularity
     ) public {
-        require(addresses.length &gt; 0 &amp;&amp; addresses.length &lt; 256);
-        require(tokenUnits.length &gt; 0);
+        require(addresses.length > 0 && addresses.length < 256);
+        require(tokenUnits.length > 0);
         require(addresses.length == tokenUnits.length);
-        require(_granularity &gt;= 1);
+        require(_granularity >= 1);
 
         granularity_ = _granularity;
 
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             tokens.push(TokenInfo({
                 addr: addresses[i],
                 tokenUnits: tokenUnits[i]
@@ -394,7 +394,7 @@ contract ETFToken is StandardToken, Pausable {
     /// calling, underlying tokens must be approved to be moved by the ETF Token
     /// contract. The amount of approved tokens required depends on
     /// baseUnitsToCreate.
-    /// @dev If any underlying tokens&#39; `transferFrom` fails (eg. the token is
+    /// @dev If any underlying tokens' `transferFrom` fails (eg. the token is
     /// frozen), create will no longer work. At this point a token upgrade will
     /// be necessary.
     /// @param baseUnitsToCreate Number of base units to create
@@ -405,9 +405,9 @@ contract ETFToken is StandardToken, Pausable {
         requireMultiple(baseUnitsToCreate)
     {
         // Check overflow
-        require((totalSupply_ + baseUnitsToCreate) &gt; totalSupply_);
+        require((totalSupply_ + baseUnitsToCreate) > totalSupply_);
 
-        for (uint8 i = 0; i &lt; tokens.length; i++) {
+        for (uint8 i = 0; i < tokens.length; i++) {
             TokenInfo memory tokenInfo = tokens[i];
             ERC20 erc20 = ERC20(tokenInfo.addr);
             transferUnderlyingTokensWhenCreate(erc20, tokenInfo.tokenUnits, baseUnitsToCreate);
@@ -428,13 +428,13 @@ contract ETFToken is StandardToken, Pausable {
         requireNonZero(baseUnitsToRedeem)
         requireMultiple(baseUnitsToRedeem)
     {
-        require((totalSupply_ &gt;= baseUnitsToRedeem));
-        require((balances[msg.sender] &gt;= baseUnitsToRedeem));
+        require((totalSupply_ >= baseUnitsToRedeem));
+        require((balances[msg.sender] >= baseUnitsToRedeem));
 
         // Burn before to prevent re-entrancy
         burn(msg.sender, baseUnitsToRedeem);
 
-        for (uint8 i = 0; i &lt; tokens.length; i++) {
+        for (uint8 i = 0; i < tokens.length; i++) {
             TokenInfo memory tokenInfo = tokens[i];
             ERC20 erc20 = ERC20(tokenInfo.addr);
             uint index;
@@ -450,7 +450,7 @@ contract ETFToken is StandardToken, Pausable {
     /// @return tokenAddresses Underlying token addresses
     function tokenAddresses() external view returns (address[]){
         address[] memory tokenAddresses = new address[](tokens.length);
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             tokenAddresses[i] = tokens[i].addr;
         }
         return tokenAddresses;
@@ -459,7 +459,7 @@ contract ETFToken is StandardToken, Pausable {
     /// @return tokenUnits Number of token base units required per grain
     function tokenUnits() external view returns (uint256[]){
         uint256[] memory tokenUnits = new uint256[](tokens.length);
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             tokenUnits[i] = tokens[i].tokenUnits;
         }
         return tokenUnits;
@@ -520,7 +520,7 @@ contract ETFToken is StandardToken, Pausable {
     // @return (tokenUnits, ok) Units of underlying token, and whether the
     // operation was successful
     function getTokenUnits(address token) internal view returns (uint256, bool) {
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             if (tokens[i].addr == token) {
                 return (tokens[i].tokenUnits, true);
             }
@@ -528,7 +528,7 @@ contract ETFToken is StandardToken, Pausable {
         return (0, false);
     }
 
-    /// @notice Owner: Withdraw excess funds which don&#39;t belong to ETF Token
+    /// @notice Owner: Withdraw excess funds which don't belong to ETF Token
     /// holders
     /// @param token ERC20 token address to withdraw
     function withdrawExcessToken(address token)

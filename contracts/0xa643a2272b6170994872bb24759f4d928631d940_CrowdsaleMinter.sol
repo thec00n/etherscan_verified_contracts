@@ -6,9 +6,9 @@ pragma solidity ^0.4.11;
 // ALTHOUGH THIS SMART CONTRACT WAS CREATED WITH GREAT CARE AND IN THE HOPE OF BEING USEFUL, NO GUARANTEES OF FLAWLESS OPERATION CAN BE GIVEN.
 // IN PARTICULAR - SUBTILE BUGS, HACKER ATTACKS OR MALFUNCTION OF UNDERLYING TECHNOLOGY CAN CAUSE UNINTENTIONAL BEHAVIOUR.
 // YOU ARE STRONGLY ENCOURAGED TO STUDY THIS SMART CONTRACT CAREFULLY IN ORDER TO UNDERSTAND POSSIBLE EDGE CASES AND RISKS.
-// DON&#39;T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON&#39;T KNOW WHAT YOU ARE DOING.
+// DON'T USE THIS SMART CONTRACT IF YOU HAVE SUBSTANTIAL DOUBTS OR IF YOU DON'T KNOW WHAT YOU ARE DOING.
 //
-// THIS SOFTWARE IS PROVIDED &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
 // AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 // INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
 // OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
@@ -21,8 +21,8 @@ pragma solidity ^0.4.11;
 
 contract Base {
 
-    function max(uint a, uint b) returns (uint) { return a &gt;= b ? a : b; }
-    function min(uint a, uint b) returns (uint) { return a &lt;= b ? a : b; }
+    function max(uint a, uint b) returns (uint) { return a >= b ? a : b; }
+    function min(uint a, uint b) returns (uint) { return a <= b ? a : b; }
 
     modifier only(address allowed) {
         if (msg.sender != allowed) throw;
@@ -37,7 +37,7 @@ contract Base {
         assembly {
             size := extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
     // *************************************************
@@ -56,7 +56,7 @@ contract Base {
     uint private bitlocks = 0;
     modifier noReentrancy(uint m) {
         var _locks = bitlocks;
-        if (_locks &amp; m &gt; 0) throw;
+        if (_locks & m > 0) throw;
         bitlocks |= m;
         _;
         bitlocks = _locks;
@@ -64,7 +64,7 @@ contract Base {
 
     modifier noAnyReentrancy {
         var _locks = bitlocks;
-        if (_locks &gt; 0) throw;
+        if (_locks > 0) throw;
         bitlocks = uint(-1);
         _;
         bitlocks = _locks;
@@ -124,7 +124,7 @@ contract PresaleBonusVoting {
 
 contract CrowdsaleMinter is Owned {
 
-    string public constant VERSION = &quot;0.2.1-TEST.ET.1&quot;;
+    string public constant VERSION = "0.2.1-TEST.ET.1";
 
     /* ====== configuration START ====== */
     uint public constant COMMUNITY_SALE_START = 3972380; /* approx. 04.07.2017 12:00 */
@@ -158,8 +158,8 @@ contract CrowdsaleMinter is Owned {
         //check configuration if something in setup is looking weird
         if (
             TOKEN_PER_ETH == 0
-            || TEAM_BONUS_PER_CENT + ADVISORS_AND_PARTNERS_PER_CENT &gt;=100
-            || MIN_ACCEPTED_AMOUNT_FINNEY &lt; 1
+            || TEAM_BONUS_PER_CENT + ADVISORS_AND_PARTNERS_PER_CENT >=100
+            || MIN_ACCEPTED_AMOUNT_FINNEY < 1
             || owner == 0x0
             || address(COMMUNITY_ALLOWANCE_LIST) == 0x0
             || address(PRIORITY_ADDRESS_LIST) == 0x0
@@ -173,13 +173,13 @@ contract CrowdsaleMinter is Owned {
             || MIN_TOTAL_AMOUNT_TO_RECEIVE == 0
             || MAX_TOTAL_AMOUNT_TO_RECEIVE == 0
             || COMMUNITY_PLUS_PRIORITY_SALE_CAP == 0
-            || COMMUNITY_SALE_START &lt;= block.number
-            || COMMUNITY_SALE_START &gt;= PRIORITY_SALE_START
-            || PRIORITY_SALE_START &gt;= PUBLIC_SALE_START
-            || PUBLIC_SALE_START &gt;= PUBLIC_SALE_END
-            || PUBLIC_SALE_END &gt;= WITHDRAWAL_END
-            || COMMUNITY_PLUS_PRIORITY_SALE_CAP &gt; MAX_TOTAL_AMOUNT_TO_RECEIVE
-            || MIN_TOTAL_AMOUNT_TO_RECEIVE &gt; MAX_TOTAL_AMOUNT_TO_RECEIVE )
+            || COMMUNITY_SALE_START <= block.number
+            || COMMUNITY_SALE_START >= PRIORITY_SALE_START
+            || PRIORITY_SALE_START >= PUBLIC_SALE_START
+            || PUBLIC_SALE_START >= PUBLIC_SALE_END
+            || PUBLIC_SALE_END >= WITHDRAWAL_END
+            || COMMUNITY_PLUS_PRIORITY_SALE_CAP > MAX_TOTAL_AMOUNT_TO_RECEIVE
+            || MIN_TOTAL_AMOUNT_TO_RECEIVE > MAX_TOTAL_AMOUNT_TO_RECEIVE )
         throw;
     }
 
@@ -188,7 +188,7 @@ contract CrowdsaleMinter is Owned {
     /* ====== public states START====== */
 
     bool public isAborted = false;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     bool public TOKEN_STARTED = false;
     uint public total_received_amount;
     address[] public investors;
@@ -207,7 +207,7 @@ contract CrowdsaleMinter is Owned {
 
     /* ====== public states END ====== */
 
-    string[] private stateNames = [&quot;BEFORE_START&quot;, &quot;COMMUNITY_SALE&quot;, &quot;PRIORITY_SALE&quot;, &quot;PRIORITY_SALE_FINISHED&quot;, &quot;PUBLIC_SALE&quot;, &quot;BONUS_MINTING&quot;, &quot;WITHDRAWAL_RUNNING&quot;, &quot;REFUND_RUNNING&quot;, &quot;CLOSED&quot; ];
+    string[] private stateNames = ["BEFORE_START", "COMMUNITY_SALE", "PRIORITY_SALE", "PRIORITY_SALE_FINISHED", "PUBLIC_SALE", "BONUS_MINTING", "WITHDRAWAL_RUNNING", "REFUND_RUNNING", "CLOSED" ];
     enum State { BEFORE_START, COMMUNITY_SALE, PRIORITY_SALE, PRIORITY_SALE_FINISHED, PUBLIC_SALE, BONUS_MINTING, WITHDRAWAL_RUNNING, REFUND_RUNNING, CLOSED }
 
     uint private constant COMMUNITY_PLUS_PRIORITY_SALE_CAP = COMMUNITY_PLUS_PRIORITY_SALE_CAP_ETH * 1 ether;
@@ -231,8 +231,8 @@ contract CrowdsaleMinter is Owned {
             var (min_finney, max_finney) = COMMUNITY_ALLOWANCE_LIST.allowed(msg.sender);
             var (min, max) = (min_finney * 1 finney, max_finney * 1 finney);
             var sender_balance = balances[msg.sender];
-            assert (sender_balance &lt;= max); //sanity check: should be always true;
-            assert (msg.value &gt;= min);      //reject payments less than minimum
+            assert (sender_balance <= max); //sanity check: should be always true;
+            assert (msg.value >= min);      //reject payments less than minimum
             amount_allowed = max - sender_balance;
             _receiveFundsUpTo(amount_allowed);
         } else if (state == State.PRIORITY_SALE) {
@@ -268,7 +268,7 @@ contract CrowdsaleMinter is Owned {
         if (!owner.send(this.balance)) throw;
 
         //notify token contract to start
-        if (TOKEN.call(bytes4(sha3(&quot;start()&quot;)))) {
+        if (TOKEN.call(bytes4(sha3("start()")))) {
             TOKEN_STARTED = true;
             TokenStarted(TOKEN);
         }
@@ -306,10 +306,10 @@ contract CrowdsaleMinter is Owned {
     function mintPresaleBonuses() internal returns(uint amount) {
         uint total_presale_amount_with_bonus = 0;
         //mint presale bonuses
-        for(uint i=0; i &lt; PRESALE_ADDRESSES.length; ++i) {
+        for(uint i=0; i < PRESALE_ADDRESSES.length; ++i) {
             address addr = PRESALE_ADDRESSES[i];
             var amount_with_bonus = presaleTokenAmount(addr);
-            if (amount_with_bonus&gt;0) {
+            if (amount_with_bonus>0) {
                 _mint(amount_with_bonus, addr);
                 total_presale_amount_with_bonus += amount_with_bonus;
             }
@@ -319,18 +319,18 @@ contract CrowdsaleMinter is Owned {
 
     function presaleTokenAmount(address addr) public constant returns(uint){
         uint presale_balance = PRESALE_BALANCES.balances(addr);
-        if (presale_balance &gt; 0) {
+        if (presale_balance > 0) {
             // this calculation is about waived pre-sale bonus.
             // rawVote contains a value [0..1 ether].
-            //     0 ether    - means &quot;default value&quot; or &quot;no vote&quot; : 100% bonus saved
-            //     1 ether    - means &quot;vote 100%&quot; : 100% bonus saved
-            //    &lt;=10 finney - special value &quot;vote 0%&quot; : no bonus at all (100% bonus waived).
-            //  other value - &quot;PRE_SALE_BONUS_PER_CENT * rawVote / 1 ether&quot; is an effective bonus per cent for particular presale member.
+            //     0 ether    - means "default value" or "no vote" : 100% bonus saved
+            //     1 ether    - means "vote 100%" : 100% bonus saved
+            //    <=10 finney - special value "vote 0%" : no bonus at all (100% bonus waived).
+            //  other value - "PRE_SALE_BONUS_PER_CENT * rawVote / 1 ether" is an effective bonus per cent for particular presale member.
             //
             var rawVote = PRESALE_BONUS_VOTING.rawVotes(addr);
-            if (rawVote == 0)              rawVote = 1 ether; //special case &quot;no vote&quot; (default value) ==&gt; (1 ether is 100%)
-            else if (rawVote &lt;= 10 finney) rawVote = 0;       //special case &quot;0%&quot; (no bonus)           ==&gt; (0 ether is   0%)
-            else if (rawVote &gt; 1 ether)    rawVote = 1 ether; //max bonus is 100% (should not occur)
+            if (rawVote == 0)              rawVote = 1 ether; //special case "no vote" (default value) ==> (1 ether is 100%)
+            else if (rawVote <= 10 finney) rawVote = 0;       //special case "0%" (no bonus)           ==> (0 ether is   0%)
+            else if (rawVote > 1 ether)    rawVote = 1 ether; //max bonus is 100% (should not occur)
             var presale_bonus = presale_balance * PRE_SALE_BONUS_PER_CENT * rawVote / 1 ether / 100;
             return presale_balance + presale_bonus;
         } else {
@@ -370,8 +370,8 @@ contract CrowdsaleMinter is Owned {
     function _receiveFundsUpTo(uint amount) private
     notTooSmallAmountOnly
     {
-        require (amount &gt; 0);
-        if (msg.value &gt; amount) {
+        require (amount > 0);
+        if (msg.value > amount) {
             // accept amount only and return change
             var change_to_return = msg.value - amount;
             if (!msg.sender.send(change_to_return)) throw;
@@ -393,22 +393,22 @@ contract CrowdsaleMinter is Owned {
     returns (State)
     {
         if (isAborted) {
-            return this.balance &gt; 0
+            return this.balance > 0
                    ? State.REFUND_RUNNING
                    : State.CLOSED;
-        } else if (block.number &lt; COMMUNITY_SALE_START || address(TOKEN) == 0x0) {
+        } else if (block.number < COMMUNITY_SALE_START || address(TOKEN) == 0x0) {
              return State.BEFORE_START;
-        } else if (block.number &lt; PRIORITY_SALE_START) {
+        } else if (block.number < PRIORITY_SALE_START) {
             return State.COMMUNITY_SALE;
-        } else if (block.number &lt; PUBLIC_SALE_START) {
-            return total_received_amount &lt; COMMUNITY_PLUS_PRIORITY_SALE_CAP
+        } else if (block.number < PUBLIC_SALE_START) {
+            return total_received_amount < COMMUNITY_PLUS_PRIORITY_SALE_CAP
                 ? State.PRIORITY_SALE
                 : State.PRIORITY_SALE_FINISHED;
-        } else if (block.number &lt;= PUBLIC_SALE_END &amp;&amp; total_received_amount &lt; MAX_TOTAL_AMOUNT_TO_RECEIVE) {
+        } else if (block.number <= PUBLIC_SALE_END && total_received_amount < MAX_TOTAL_AMOUNT_TO_RECEIVE) {
             return State.PUBLIC_SALE;
         } else if (this.balance == 0) {
             return State.CLOSED;
-        } else if (block.number &lt;= WITHDRAWAL_END &amp;&amp; total_received_amount &gt;= MIN_TOTAL_AMOUNT_TO_RECEIVE) {
+        } else if (block.number <= WITHDRAWAL_END && total_received_amount >= MIN_TOTAL_AMOUNT_TO_RECEIVE) {
             return allBonusesAreMinted
                 ? State.WITHDRAWAL_RUNNING
                 : State.BONUS_MINTING;
@@ -421,7 +421,7 @@ contract CrowdsaleMinter is Owned {
     // ============ modifiers ============
     //
 
-    //fails if state dosn&#39;t match
+    //fails if state dosn't match
     modifier inState(State state) {
         if (state != currentState()) throw;
         _;
@@ -429,7 +429,7 @@ contract CrowdsaleMinter is Owned {
 
     //fails if the current state is not before than the given one.
     modifier inStateBefore(State state) {
-        if (currentState() &gt;= state) throw;
+        if (currentState() >= state) throw;
         _;
     }
 
@@ -442,7 +442,7 @@ contract CrowdsaleMinter is Owned {
 
     // don`t accept transactions with value less than allowed minimum
     modifier notTooSmallAmountOnly(){
-        if (msg.value &lt; MIN_ACCEPTED_AMOUNT) throw;
+        if (msg.value < MIN_ACCEPTED_AMOUNT) throw;
         _;
     }
 

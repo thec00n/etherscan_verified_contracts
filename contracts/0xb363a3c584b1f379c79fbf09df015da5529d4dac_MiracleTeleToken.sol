@@ -50,9 +50,9 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -61,7 +61,7 @@ library SafeMath {
         pure
         returns (uint256)
     {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -71,7 +71,7 @@ library SafeMath {
         returns (uint256)
     {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -87,10 +87,10 @@ contract ERC20Token {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
 	// Mapping for allowance
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -181,13 +181,13 @@ contract ERC20Token {
     	returns (bool success)
     {
 		// Do not allow transfer to 0x0 or the token contract itself or from address to itself
-		require((_to != address(0)) &amp;&amp; (_to != address(this)) &amp;&amp; (_to != _from));
+		require((_to != address(0)) && (_to != address(this)) && (_to != _from));
 
         // Check if the sender has enough
-        require((_value &gt; 0) &amp;&amp; (balances[_from] &gt;= _value));
+        require((_value > 0) && (balances[_from] >= _value));
 
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
 
         // Subtract from the sender
         balances[_from] -= _value;
@@ -229,7 +229,7 @@ contract ERC20Token {
     	returns (bool success)
     {
 		// Check allowance
-    	require(_value &lt;= allowed[_from][msg.sender]);
+    	require(_value <= allowed[_from][msg.sender]);
 
 		//decrement allowance
 		allowed[_from][msg.sender] -= _value;
@@ -246,9 +246,9 @@ contract MiracleTeleToken is ERC20Token, Owned {
     using SafeMath for uint256;
 
     // Mapping for allowance
-    mapping (address =&gt; uint8) public delegations;
+    mapping (address => uint8) public delegations;
 
-	mapping (address =&gt; uint256) public contributions;
+	mapping (address => uint256) public contributions;
 
     // This generates a public event on the blockchain that will notify clients
     event Delegate(address indexed from, address indexed to);
@@ -261,7 +261,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
     /**
 	 * Initializes contract with initial supply tokens to the creator of the contract
 	 */
-    function MiracleTeleToken(uint256 _supply) ERC20Token(_supply, &quot;MiracleTele&quot;, &quot;TELE&quot;) public {}
+    function MiracleTeleToken(uint256 _supply) ERC20Token(_supply, "MiracleTele", "TELE") public {}
 
 	/**
 	 * Mint new tokens
@@ -273,7 +273,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
         onlyOwner
     {
     	// Prevent mine 0 tokens
-        require(_value &gt; 0);
+        require(_value > 0);
 
     	// Check overflow
     	balances[owner] = balances[owner].add(_value);
@@ -316,7 +316,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
     }
 
     /**
-     * @notice Hash a hash with `&quot;\x19Ethereum Signed Message:\n32&quot;`
+     * @notice Hash a hash with `"\x19Ethereum Signed Message:\n32"`
      * @param _message Data to ign
      * @return signHash Hash to be signed.
      */
@@ -325,7 +325,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
         public
         returns(bytes32 signHash)
     {
-        signHash = keccak256(&quot;\x19Ethereum Signed Message:\n20&quot;, _message);
+        signHash = keccak256("\x19Ethereum Signed Message:\n20", _message);
     }
 
     /**
@@ -365,7 +365,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
     	require(delegations[_from]==1);
 
         // Check if the sender has enough
-        require((_value &gt; 0) &amp;&amp; (balances[_from] &gt;= _value));
+        require((_value > 0) && (balances[_from] >= _value));
 
         // Subtract from the sender
         balances[_from] = balances[_from].sub(_value);
@@ -387,7 +387,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
         public
         onlySigner
     {
-        require(contributions[_from]&gt;=_value);
+        require(contributions[_from]>=_value);
 
         contributions[_from] = contributions[_from].sub(_value);
 
@@ -397,7 +397,7 @@ contract MiracleTeleToken is ERC20Token, Owned {
     }
 
     /**
-     * Don&#39;t accept ETH, it is utility token
+     * Don't accept ETH, it is utility token
      */
 	function ()
 	    public

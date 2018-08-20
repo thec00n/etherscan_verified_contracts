@@ -29,7 +29,7 @@ contract DomainAuction {
     ///////////////////////////////////
 
     function placeBid(string url) public payable {
-        require(msg.value &gt;= ((highestBid.amount * 11) / 10));
+        require(msg.value >= ((highestBid.amount * 11) / 10));
         Bid memory newBid = Bid(now, msg.sender, msg.value, url);
 
         // Refund the current highest bid.
@@ -44,7 +44,7 @@ contract DomainAuction {
     }
 
     // This might fail if the bidder is trying some contract bullshit, but they do this
-    // at their own risk. It won&#39;t fail if the bidder is a non-contract address.
+    // at their own risk. It won't fail if the bidder is a non-contract address.
     // It is very important to use `send` instead of `transfer`. Otherwise this could fail
     // and this contract could get hijacked.
     // See https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
@@ -59,7 +59,7 @@ contract DomainAuction {
 
         if (winningBid.bidTimestamp != highestBid.timestamp) {
           // Have to store the new winning bid in memory in order to emit it as part
-          // of an event. Can&#39;t emit an event straight from a stored variable.
+          // of an event. Can't emit an event straight from a stored variable.
           WinningBid memory newWinningBid = WinningBid(now, highestBid.timestamp, highestBid.bidder, highestBid.amount, highestBid.url);
           winningBid = newWinningBid;
           emit WinningBidLog(

@@ -5,7 +5,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 */
 
 pragma solidity ^0.4.15;
@@ -23,10 +23,10 @@ contract ERC20Token
     uint8 public decimals = 0;
     
     // Token ownership mapping
-    mapping (address =&gt; uint) balance;
+    mapping (address => uint) balance;
     
     // Allowances mapping
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
 /* Events */
     // Triggered when tokens are transferred.
@@ -83,7 +83,7 @@ contract ERC20Token
     // Reentry protection prevents attacks upon the state
     function transferFrom(address fromAddress, address toAddress, uint256 amount) public
     {
-        require(amount &lt;= allowed[fromAddress][msg.sender]);
+        require(amount <= allowed[fromAddress][msg.sender]);
         allowed[fromAddress][msg.sender] -= amount;
         xfer(fromAddress, toAddress, amount);
     }
@@ -91,7 +91,7 @@ contract ERC20Token
     // Process a transfer internally.
     function xfer(address fromAddress, address toAddress, uint amount) internal
     {
-        require(amount &lt;= balance[fromAddress]);
+        require(amount <= balance[fromAddress]);
         balance[fromAddress] -= amount;
         balance[toAddress] += amount;
         Transfer(fromAddress, toAddress, amount);
@@ -137,7 +137,7 @@ contract TransferableMeetupToken is ERC20Token
     
     function redeem(uint amount) public
     {
-        require(balance[msg.sender] &gt;= amount);
+        require(balance[msg.sender] >= amount);
         totSupply -= amount;
         balance[msg.sender] -= amount;
         Redeem(msg.sender, amount);

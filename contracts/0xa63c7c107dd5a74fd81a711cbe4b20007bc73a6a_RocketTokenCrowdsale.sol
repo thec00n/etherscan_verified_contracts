@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ pragma solidity ^0.4.11;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -62,7 +62,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -110,7 +110,7 @@ pragma solidity ^0.4.11;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -121,8 +121,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -171,7 +171,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -186,7 +186,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -274,8 +274,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract RocketToken is MintableToken {
-    string public name = &quot;ICO ROCKET&quot;;
-    string public symbol = &quot;ROCKET&quot;;
+    string public name = "ICO ROCKET";
+    string public symbol = "ROCKET";
     uint256 public decimals = 18;
 }
 /**
@@ -316,9 +316,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -367,14 +367,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -433,7 +433,7 @@ contract RocketTokenCrowdsale is Ownable, Crowdsale {
 
     modifier canWithdrawLockup() {
         require(state == State.Lockup);
-        require(endTime.add(lockupPeriod) &lt; block.timestamp);
+        require(endTime.add(lockupPeriod) < block.timestamp);
         _;
     }
 
@@ -485,11 +485,11 @@ contract RocketTokenCrowdsale is Ownable, Crowdsale {
     }
 
     function buyTokensUpdateState() internal {
-        if(state == State.BeforeSale &amp;&amp; now &gt;= startTimeNumber) { state = State.Bonus; }
-        if(state == State.Bonus &amp;&amp; now &gt;= bonusEndTime) { state = State.NormalSale; }
+        if(state == State.BeforeSale && now >= startTimeNumber) { state = State.Bonus; }
+        if(state == State.Bonus && now >= bonusEndTime) { state = State.NormalSale; }
         calculateCurrentRate();
-        require(state != State.ShouldFinalize &amp;&amp; state != State.Lockup &amp;&amp; state != State.SaleOver &amp;&amp; msg.value &gt;= toDec.div(2));
-        if(msg.value.mul(rate) &gt;= tokensLeft) { state = State.ShouldFinalize; }
+        require(state != State.ShouldFinalize && state != State.Lockup && state != State.SaleOver && msg.value >= toDec.div(2));
+        if(msg.value.mul(rate) >= tokensLeft) { state = State.ShouldFinalize; }
     }
 
     function buyTokens(address beneficiary) public payable {
@@ -537,7 +537,7 @@ contract RocketTokenCrowdsale is Ownable, Crowdsale {
     }
 
     function finalizeUpdateState() internal {
-        if(now &gt; endTime) { state = State.ShouldFinalize; }
+        if(now > endTime) { state = State.ShouldFinalize; }
         if(tokensLeft == 0) { state = State.ShouldFinalize; }
     }
 

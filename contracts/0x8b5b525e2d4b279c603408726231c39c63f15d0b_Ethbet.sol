@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -106,7 +106,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -121,7 +121,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -174,7 +174,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -190,8 +190,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract EthbetToken is StandardToken {
 
-  string public constant name = &quot;Ethbet&quot;;
-  string public constant symbol = &quot;EBET&quot;;
+  string public constant name = "Ethbet";
+  string public constant symbol = "EBET";
   uint8 public constant decimals = 2; // only two deciminals, token cannot be divided past 1/100th
 
   uint256 public constant INITIAL_SUPPLY = 1000000000; // 10 million + 2 decimals
@@ -229,9 +229,9 @@ library SafeMath2 {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -239,7 +239,7 @@ library SafeMath2 {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -248,7 +248,7 @@ library SafeMath2 {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -280,9 +280,9 @@ contract Ethbet {
 
   EthbetToken public token;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping(address =&gt; uint256) lockedBalances;
+  mapping(address => uint256) lockedBalances;
 
   /*
   * Modifiers
@@ -328,13 +328,13 @@ contract Ethbet {
    * @param _amount Amount to deposit
    */
   function deposit(uint _amount) public {
-    require(_amount &gt; 0);
+    require(_amount > 0);
 
     // token.approve needs to be called beforehand
     // transfer tokens from the user to the contract
     require(token.transferFrom(msg.sender, this, _amount));
 
-    // add the tokens to the user&#39;s balance
+    // add the tokens to the user's balance
     balances[msg.sender] = balances[msg.sender].add(_amount);
 
     Deposit(msg.sender, _amount, balances[msg.sender]);
@@ -345,10 +345,10 @@ contract Ethbet {
    * @param _amount Amount to withdraw
    */
   function withdraw(uint _amount) public {
-    require(_amount &gt; 0);
-    require(balances[msg.sender] &gt;= _amount);
+    require(_amount > 0);
+    require(balances[msg.sender] >= _amount);
 
-    // subtract the tokens from the user&#39;s balance
+    // subtract the tokens from the user's balance
     balances[msg.sender] = balances[msg.sender].sub(_amount);
 
     // transfer tokens from the contract to the user
@@ -364,13 +364,13 @@ contract Ethbet {
    * @param _amount Amount to be locked
    */
   function lockBalance(address _userAddress, uint _amount) public isRelay {
-    require(_amount &gt; 0);
-    require(balances[_userAddress] &gt;= _amount);
+    require(_amount > 0);
+    require(balances[_userAddress] >= _amount);
 
-    // subtract the tokens from the user&#39;s balance
+    // subtract the tokens from the user's balance
     balances[_userAddress] = balances[_userAddress].sub(_amount);
 
-    // add the tokens to the user&#39;s locked balance
+    // add the tokens to the user's locked balance
     lockedBalances[_userAddress] = lockedBalances[_userAddress].add(_amount);
 
     LockedBalance(_userAddress, _amount);
@@ -382,13 +382,13 @@ contract Ethbet {
    * @param _amount Amount to be locked
    */
   function unlockBalance(address _userAddress, uint _amount) public isRelay {
-    require(_amount &gt; 0);
-    require(lockedBalances[_userAddress] &gt;= _amount);
+    require(_amount > 0);
+    require(lockedBalances[_userAddress] >= _amount);
 
-    // subtract the tokens from the user&#39;s locked balance
+    // subtract the tokens from the user's locked balance
     lockedBalances[_userAddress] = lockedBalances[_userAddress].sub(_amount);
 
-    // add the tokens to the user&#39;s  balance
+    // add the tokens to the user's  balance
     balances[_userAddress] = balances[_userAddress].add(_amount);
 
     UnlockedBalance(_userAddress, _amount);
@@ -419,10 +419,10 @@ contract Ethbet {
    */
   function executeBet(address _maker, address _caller, bool _makerWon, uint _amount) isRelay public {
     //The caller must have enough balance
-    require(balances[_caller] &gt;= _amount);
+    require(balances[_caller] >= _amount);
 
     //The maker must have enough locked balance
-    require(lockedBalances[_maker] &gt;= _amount);
+    require(lockedBalances[_maker] >= _amount);
 
     // unlock maker balance
     unlockBalance(_maker, _amount);
@@ -430,9 +430,9 @@ contract Ethbet {
     var winner = _makerWon ? _maker : _caller;
     var loser = _makerWon ? _caller : _maker;
 
-    // add the tokens to the winner&#39;s balance
+    // add the tokens to the winner's balance
     balances[winner] = balances[winner].add(_amount);
-    // remove the tokens from the loser&#39;s  balance
+    // remove the tokens from the loser's  balance
     balances[loser] = balances[loser].sub(_amount);
 
     //Log the event

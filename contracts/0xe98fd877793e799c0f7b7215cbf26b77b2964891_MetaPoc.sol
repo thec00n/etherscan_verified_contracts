@@ -12,7 +12,7 @@ contract MetaPoc {
         uint dateValidated;
     }
     
-    mapping (string =&gt; uint) private mapExecs;
+    mapping (string => uint) private mapExecs;
     Execution[] private executions;
     
     /* PRIVATE CONST */
@@ -20,17 +20,17 @@ contract MetaPoc {
     uint private nb_notVal = 0;
     uint private nb_val = 0;
     
-    string private last_exec = &quot;none&quot;;
+    string private last_exec = "none";
     uint private last_execDateCreated = 0;
     
-    string private notVal_list = &quot;none&quot;;
+    string private notVal_list = "none";
     uint private notVal_since = 0;
-    string private notVal_last = &quot;none&quot;;
+    string private notVal_last = "none";
     uint private notVal_lastDateCreated = 0;
     
-    string private val_list = &quot;none&quot;;
+    string private val_list = "none";
     uint private val_since = 0;
-    string private val_last = &quot;none&quot;;
+    string private val_last = "none";
     uint private val_lastDateCreated = 0;
     uint private val_lastDateValidated = 0;
     
@@ -53,13 +53,13 @@ contract MetaPoc {
     /* MAPPING */
     function map(string hash) internal returns(uint) {
         uint ret = mapExecs[hash];
-        if(ret &gt;= executions.length || !strEqual(executions[ret].hash, hash)) throw;
+        if(ret >= executions.length || !strEqual(executions[ret].hash, hash)) throw;
         return ret;
     }
     
     /* MODIFIERS */
     modifier bothAllowed() {
-        if(msg.sender != _owner &amp;&amp; msg.sender != _filiate) throw;
+        if(msg.sender != _owner && msg.sender != _filiate) throw;
         _;
     }
     
@@ -75,7 +75,7 @@ contract MetaPoc {
     
     modifier notYetExist(string hash) {
         uint num = mapExecs[hash];
-        if(num &lt; executions.length &amp;&amp; strEqual(executions[num].hash, hash)) throw;
+        if(num < executions.length && strEqual(executions[num].hash, hash)) throw;
         _;
     }
     
@@ -93,14 +93,14 @@ contract MetaPoc {
     
     /* INIT */
     function ChangeOwner(address owner) ownerAllowed() {
-        if(owner.balance &lt;= 0) throw;
+        if(owner.balance <= 0) throw;
         
         _owner = owner;
         Owner_Changed(_owner);
     }
     
     function ChangeFiliate(address filiate) bothAllowed() {
-        if(filiate.balance &lt;= 0) throw;
+        if(filiate.balance <= 0) throw;
         
         _filiate = filiate;
         Filiate_Changed(_filiate);
@@ -119,7 +119,7 @@ contract MetaPoc {
         e.hash = Hash;
         executions[num] = e;
         
-        /* m&#224;j public const */
+        /* màj public const */
         nb_total++;
         nb_notVal++;
         notVal_last = e.hash;
@@ -135,7 +135,7 @@ contract MetaPoc {
         e.dateValidated = now;
         executions[map(Hash)] = e;
         
-        /* m&#224;j public const */
+        /* màj public const */
         nb_val++;
         nb_notVal--;
         val_last = e.hash;
@@ -149,7 +149,7 @@ contract MetaPoc {
     
     function CheckExec(string Hash) public bothAllowed() {
         uint ret = mapExecs[Hash];
-        if(ret &gt;= executions.length || !strEqual(executions[ret].hash, Hash)) {
+        if(ret >= executions.length || !strEqual(executions[ret].hash, Hash)) {
             Checked(Hash, false, 0, false, 0);
         } else {
             Execution e = executions[ret];
@@ -206,35 +206,35 @@ contract MetaPoc {
     }
     
     function MajListVal() private {
-        val_list = &quot;none&quot;;
-        for(uint i = 0; i &lt; executions.length; i++) {
-            if(executions[i].dateCreated &gt;= val_since &amp;&amp; executions[i].validated) {
-                if(strEqual(val_list, &quot;none&quot;)) val_list = executions[i].hash;
-                else val_list = strConcat(val_list, &quot; ; &quot;, executions[i].hash);
+        val_list = "none";
+        for(uint i = 0; i < executions.length; i++) {
+            if(executions[i].dateCreated >= val_since && executions[i].validated) {
+                if(strEqual(val_list, "none")) val_list = executions[i].hash;
+                else val_list = strConcat(val_list, " ; ", executions[i].hash);
             }
         }
     }
     
     function MajListNotVal() private {
-        notVal_list = &quot;none&quot;;
-        for(uint i = 0; i &lt; executions.length; i++) {
-            if(executions[i].dateCreated &gt;= notVal_since &amp;&amp; !executions[i].validated) {
-                if(strEqual(notVal_list, &quot;none&quot;)) notVal_list = executions[i].hash;
-                else notVal_list = strConcat(notVal_list, &quot; ; &quot;, executions[i].hash);
+        notVal_list = "none";
+        for(uint i = 0; i < executions.length; i++) {
+            if(executions[i].dateCreated >= notVal_since && !executions[i].validated) {
+                if(strEqual(notVal_list, "none")) notVal_list = executions[i].hash;
+                else notVal_list = strConcat(notVal_list, " ; ", executions[i].hash);
             }
         }
     }
     
     function MajLastNotVal() private {
         notVal_lastDateCreated = 0;
-        notVal_last = &quot;none&quot;;
-        if(executions.length &gt; 0) {
+        notVal_last = "none";
+        if(executions.length > 0) {
             if(!executions[0].validated) {
                 notVal_last = executions[0].hash;
                 notVal_lastDateCreated = executions[0].dateCreated;
             }
-            for(uint i = executions.length - 1; i &gt; 0; i--) {
-                if(!executions[i].validated &amp;&amp; executions[i].dateCreated &gt; notVal_lastDateCreated) {
+            for(uint i = executions.length - 1; i > 0; i--) {
+                if(!executions[i].validated && executions[i].dateCreated > notVal_lastDateCreated) {
                     notVal_last = executions[i].hash;
                     notVal_lastDateCreated = executions[i].dateCreated;
                     break;
@@ -250,7 +250,7 @@ contract MetaPoc {
 		if (a.length != b.length)
 			return false;
 
-		for (uint i = 0; i &lt; a.length; i ++)
+		for (uint i = 0; i < a.length; i ++)
 			if (a[i] != b[i])
 				return false;
 		return true;
@@ -265,24 +265,24 @@ contract MetaPoc {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
     
     function strConcat(string _a, string _b, string _c, string _d) internal returns(string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
     
     function strConcat(string _a, string _b, string _c) internal returns(string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
     
     function strConcat(string _a, string _b) internal returns(string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
     
 }

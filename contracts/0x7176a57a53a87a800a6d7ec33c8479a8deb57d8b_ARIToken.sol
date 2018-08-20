@@ -16,8 +16,8 @@ contract ARIToken {
      *  Constants
     /*/
 
-    string public constant name = &quot;ARI Token&quot;;
-    string public constant symbol = &quot;ARI&quot;;
+    string public constant name = "ARI Token";
+    string public constant symbol = "ARI";
     uint   public constant decimals = 18;
 
     /*/
@@ -44,13 +44,13 @@ contract ARIToken {
     // functions on this contract.
     address public tokenManager;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow;
 
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager;
 
-    mapping (address =&gt; uint256) private balance;
+    mapping (address => uint256) private balance;
 
 
     modifier onlyTokenManager()     { if(msg.sender != tokenManager) throw; _; }
@@ -81,9 +81,9 @@ contract ARIToken {
         // Available only if presale is running.
         if(currentPhase != Phase.Running) throw;
 
-        if(msg.value &lt;= 0) throw;
+        if(msg.value <= 0) throw;
         uint newTokens = msg.value * price;
-        if (totalSupply + newTokens &gt; tokenSupplyLimit) throw;
+        if (totalSupply + newTokens > tokenSupplyLimit) throw;
         balance[_buyer] += newTokens;
         totalSupply += newTokens;
         LogBuy(_buyer, newTokens);
@@ -127,16 +127,16 @@ contract ARIToken {
         onlyTokenManager
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         if(!canSwitchPhase) throw;
         currentPhase = _nextPhase;
@@ -148,7 +148,7 @@ contract ARIToken {
         onlyTokenManager
     {
         // Available at any phase.
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             if(!escrow.send(this.balance)) throw;
         }
     }
@@ -157,7 +157,7 @@ contract ARIToken {
     function setCrowdsaleManager(address _mgr) public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         if(currentPhase == Phase.Migrating) throw;
         crowdsaleManager = _mgr;
     }
@@ -165,8 +165,8 @@ contract ARIToken {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (!transferable) throw;
-        if (balance[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balance[_to] + _value &lt; balance[_to]) throw; // Check for overflows
+        if (balance[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balance[_to] + _value < balance[_to]) throw; // Check for overflows
         balance[msg.sender] -= _value;                     // Subtract from the sender
         balance[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -182,7 +182,7 @@ contract ARIToken {
         onlyTokenManager
     {
         if(currentPhase != Phase.Paused) throw;
-        if(_price &lt;= 0) throw;
+        if(_price <= 0) throw;
 
         price = _price;
     }
@@ -191,12 +191,12 @@ contract ARIToken {
         onlyTokenManager
     {
         if(currentPhase != Phase.Paused) throw;
-        if(_value &lt;= 0) throw;
+        if(_value <= 0) throw;
 
         uint _tokenSupplyLimit;
         _tokenSupplyLimit = _value * (1 ether / 1 wei);
 
-        if(totalSupply &gt; _tokenSupplyLimit) throw;
+        if(totalSupply > _tokenSupplyLimit) throw;
 
         tokenSupplyLimit = _tokenSupplyLimit;
     }

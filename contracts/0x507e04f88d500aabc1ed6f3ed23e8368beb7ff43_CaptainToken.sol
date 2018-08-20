@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 /* ==================================================================== */
 /* Copyright (c) 2018 The Priate Conquest Project.  All rights reserved.
 /* 
-/* https://www.pirateconquest.com One of the world&#39;s slg games of blockchain 
+/* https://www.pirateconquest.com One of the world's slg games of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd8f9c949384bd91948b988e899c8fd39e9290">[email&#160;protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ce84a1a0a0b7e088bb8ea2a7b8abbdbaafbce0ada1a3">[email&#160;protected]</a>
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd8f9c949384bd91948b988e899c8fd39e9290">[email protected]</a>/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ce84a1a0a0b7e088bb8ea2a7b8abbdbaafbce0ada1a3">[email protected]</a>
 /*                 
 /* ==================================================================== */
 /// @title ERC-721 Non-Fungible Token Standard
@@ -56,7 +56,7 @@ interface ERC721Enumerable /* is ERC721 */ {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -164,16 +164,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function div32(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -181,12 +181,12 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function sub32(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -195,13 +195,13 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function add32(uint32 a, uint32 b) internal pure returns (uint32) {
     uint32 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -209,10 +209,10 @@ library SafeMath {
 contract AccessAdmin is Pausable {
 
   /// @dev Admin Address
-  mapping (address =&gt; bool) adminContracts;
+  mapping (address => bool) adminContracts;
 
   /// @dev Trust contract
-  mapping (address =&gt; bool) actionContracts;
+  mapping (address => bool) actionContracts;
 
   function setAdminContract(address _addr, bool _useful) public onlyOwner {
     require(_addr != address(0));
@@ -269,23 +269,23 @@ contract CaptainToken is AccessAdmin, ERC721 {
   }
 
   /**MAPPING**/
-  /// @dev tokenId to owner  tokenId -&gt; address
-  mapping (uint256 =&gt; address) public captainTokenIdToOwner;
-  /// @dev Equipment token ID search in owner array captainId -&gt; tokenId
-  mapping (uint256 =&gt; uint256) captainIdToOwnerIndex;  
+  /// @dev tokenId to owner  tokenId -> address
+  mapping (uint256 => address) public captainTokenIdToOwner;
+  /// @dev Equipment token ID search in owner array captainId -> tokenId
+  mapping (uint256 => uint256) captainIdToOwnerIndex;  
   /// @dev captains owner by the owner (array)
-  mapping (address =&gt; uint256[]) ownerToCaptainArray;
+  mapping (address => uint256[]) ownerToCaptainArray;
   /// @dev price of each token
-  mapping (uint256 =&gt; uint256) captainTokenIdToPrice;
+  mapping (uint256 => uint256) captainTokenIdToPrice;
   /// @dev token count of captain
-  mapping (uint32 =&gt; uint256) tokenCountOfCaptain;
+  mapping (uint32 => uint256) tokenCountOfCaptain;
   /// @dev tokens by the captain
-  mapping (uint256 =&gt; uint32) IndexToCaptain;
+  mapping (uint256 => uint32) IndexToCaptain;
   /// @dev The authorized address for each Captain
-  mapping (uint256 =&gt; address) captainTokenIdToApprovals;
+  mapping (uint256 => address) captainTokenIdToApprovals;
   /// @dev The authorized operators for each address
-  mapping (address =&gt; mapping (address =&gt; bool)) operatorToApprovals;
-  mapping(uint256 =&gt; bool) tokenToSell;
+  mapping (address => mapping (address => bool)) operatorToApprovals;
+  mapping(uint256 => bool) tokenToSell;
   
 
   /*** CONSTRUCTOR ***/
@@ -295,7 +295,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
   // modifier
   /// @dev Check if token ID is valid
   modifier isValidToken(uint256 _tokenId) {
-    require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= captains.length);
+    require(_tokenId >= 1 && _tokenId <= captains.length);
     require(captainTokenIdToOwner[_tokenId] != address(0)); 
     _;
   }
@@ -356,7 +356,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
   /// @param _tokenId The tokenId of the Captain
   function _transfer(address _from, address _to, uint256 _tokenId) internal {
     if (_from != address(0)) {
-      uint256 indexFrom = captainIdToOwnerIndex[_tokenId];  // tokenId -&gt; captainId
+      uint256 indexFrom = captainIdToOwnerIndex[_tokenId];  // tokenId -> captainId
       uint256[] storage cpArray = ownerToCaptainArray[_from];
       require(cpArray[indexFrom] == _tokenId);
 
@@ -373,7 +373,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
       }      
     }
 
-    // Give the Captain to &#39;_to&#39;
+    // Give the Captain to '_to'
     captainTokenIdToOwner[_tokenId] = _to;
     ownerToCaptainArray[_to].push(_tokenId);
     captainIdToOwnerIndex[_tokenId] = ownerToCaptainArray[_to].length - 1;
@@ -415,9 +415,9 @@ contract CaptainToken is AccessAdmin, ERC721 {
     uint32 level = captain.level;
     uint256 cur_exp = SafeMath.mul(SafeMath.mul(level,SafeMath.sub(level,1)),25); // level*(level-1)*25
     uint256 req_exp = SafeMath.mul(SafeMath.mul(_level,SafeMath.sub(_level,1)),25);
-    require(captain.exp&gt;=SafeMath.sub(req_exp,cur_exp));
+    require(captain.exp>=SafeMath.sub(req_exp,cur_exp));
     uint256 exp = SafeMath.sub(captain.exp,SafeMath.sub(req_exp,cur_exp));
-    if (SafeMath.add32(level,_level)&gt;=99) {
+    if (SafeMath.add32(level,_level)>=99) {
       captains[_tokenId].level = 99;
     } else {
       captains[_tokenId].level = _level;
@@ -443,7 +443,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
     _safeTransferFrom(_from, _to, _tokenId, data);
   }
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable {
-    _safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    _safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /// @dev Actually perform the safeTransferFrom
@@ -453,7 +453,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
     canTransfer(_tokenId)
     {
     address owner = captainTokenIdToOwner[_tokenId];
-    require(owner != address(0) &amp;&amp; owner == _from);
+    require(owner != address(0) && owner == _from);
     require(_to != address(0));
         
     _transfer(_from, _to, _tokenId);
@@ -465,11 +465,11 @@ contract CaptainToken is AccessAdmin, ERC721 {
       return;
     }*/
     bytes4 retval = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, data);
-    // bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;)) = 0xf0b9e5ba;
+    // bytes4(keccak256("onERC721Received(address,uint256,bytes)")) = 0xf0b9e5ba;
     require(retval == 0xf0b9e5ba);
   }
     
-  /// @dev Transfer ownership of an Captain, &#39;_to&#39; must be a vaild address, or the WAR will lost
+  /// @dev Transfer ownership of an Captain, '_to' must be a vaild address, or the WAR will lost
   /// @param _from The current owner of the Captain
   /// @param _to The new owner
   /// @param _tokenId The Captain to transfer
@@ -495,7 +495,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
   {
     require(actionContracts[msg.sender]);
 
-    require(_tokenId &gt;= 1 &amp;&amp; _tokenId &lt;= captains.length);
+    require(_tokenId >= 1 && _tokenId <= captains.length);
     address owner = captainTokenIdToOwner[_tokenId];
     require(owner != address(0));
     require(_to != address(0));
@@ -521,7 +521,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
     Approval(owner, _approved, _tokenId);
   }
 
-  /// @dev Enable or disable approval for a third party (&quot;operator&quot;) to manage all your asset.
+  /// @dev Enable or disable approval for a third party ("operator") to manage all your asset.
   /// @param _operator Address to add to the set of authorized operators.
   /// @param _approved True if the operators is approved, false to revoke approval
   function setApprovalForAll(address _operator, bool _approved) 
@@ -548,16 +548,16 @@ contract CaptainToken is AccessAdmin, ERC721 {
   }
   /// @notice A descriptive name for a collection of NFTs in this contract
   function name() public pure returns(string) {
-    return &quot;Pirate Conquest Token&quot;;
+    return "Pirate Conquest Token";
   }
   /// @notice An abbreviated name for NFTs in this contract
   function symbol() public pure returns(string) {
-    return &quot;PCT&quot;;
+    return "PCT";
   }
   /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
   /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-  ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-  ///  Metadata JSON Schema&quot;.
+  ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+  ///  Metadata JSON Schema".
   //function tokenURI(uint256 _tokenId) external view returns (string);
 
   /// @notice Count NFTs tracked by this contract
@@ -567,24 +567,24 @@ contract CaptainToken is AccessAdmin, ERC721 {
     return captains.length - destroyCaptainCount -1;
   }
   /// @notice Enumerate valid NFTs
-  /// @dev Throws if `_index` &gt;= `totalSupply()`.
+  /// @dev Throws if `_index` >= `totalSupply()`.
   /// @param _index A counter less than `totalSupply()`
   /// @return The token identifier for the `_index`th NFT,
   ///  (sort order not specified)
   function tokenByIndex(uint256 _index) external view returns (uint256) {
-    require(_index&lt;(captains.length - destroyCaptainCount));
+    require(_index<(captains.length - destroyCaptainCount));
     //return captainIdToOwnerIndex[_index];
     return _index;
   }
   /// @notice Enumerate NFTs assigned to an owner
-  /// @dev Throws if `_index` &gt;= `balanceOf(_owner)` or if
+  /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
   ///  `_owner` is the zero address, representing invalid NFTs.
   /// @param _owner An address where we are interested in NFTs owned by them
   /// @param _index A counter less than `balanceOf(_owner)`
   /// @return The token identifier for the `_index`th NFT assigned to `_owner`,
   ///   (sort order not specified)
   function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
-    require(_index &lt; ownerToCaptainArray[_owner].length);
+    require(_index < ownerToCaptainArray[_owner].length);
     if (_owner != address(0)) {
       uint256 tokenId = ownerToCaptainArray[_owner][_index];
       return tokenId;
@@ -592,7 +592,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -602,7 +602,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
     uint32[] memory captainss = new uint32[](len);
     uint256 icount;
     if (_owner != address(0)) {
-      for (uint256 i=0;i&lt;len;i++) {
+      for (uint256 i=0;i<len;i++) {
         tokens[i] = ownerToCaptainArray[_owner][icount];
         captainss[i] = IndexToCaptain[ownerToCaptainArray[_owner][icount]];
         icount++;
@@ -612,7 +612,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
   }
 
   /// @param _captainId The captain whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -627,7 +627,7 @@ contract CaptainToken is AccessAdmin, ERC721 {
       uint256 resultIndex = 0;
 
       uint256 tokenId;
-      for (tokenId = 0; tokenId &lt;= totalcaptains; tokenId++) {
+      for (tokenId = 0; tokenId <= totalcaptains; tokenId++) {
         if (IndexToCaptain[tokenId] == _captainId) {
           result[resultIndex] = tokenId;
           resultIndex++;

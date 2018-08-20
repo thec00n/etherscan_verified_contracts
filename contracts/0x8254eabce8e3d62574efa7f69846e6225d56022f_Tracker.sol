@@ -17,7 +17,7 @@ contract Ownable {
 ///This is the blockchain side of the notifier. Here so that payment, registering,etc is painless async and
 /// most importantly *trustless* since you can exit at any time taking your funds having lost nothing
 
-///@author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="deb5b7b0b9bdb1bdb1b3bfb0b9b19eb9b3bfb7b2f0bdb1b3">[email&#160;protected]</a>
+///@author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="deb5b7b0b9bdb1bdb1b3bfb0b9b19eb9b3bfb7b2f0bdb1b3">[email protected]</a>
 ///@title Price notifier
 contract Tracker is Ownable{
     // This represents a client in the simplest form
@@ -30,7 +30,7 @@ contract Tracker is Ownable{
     }
     
     // This is the mapping between eth addr and client structs
-    mapping(address =&gt; SimpleClient) public Clients;
+    mapping(address => SimpleClient) public Clients;
     // This is used to store the current total obligations to clients
     uint public obligations;
     
@@ -47,7 +47,7 @@ contract Tracker is Ownable{
     
     // This function registers a new client, and can be used to add funds or change ratio
     function Register(uint8 ratio, string Hash) payable external {
-        var NewClient = SimpleClient(ratio&gt;=MininumPercent?ratio:MininumPercent, msg.value, Hash, now); // create new client
+        var NewClient = SimpleClient(ratio>=MininumPercent?ratio:MininumPercent, msg.value, Hash, now); // create new client
         // note that ratio is not allowed to be smaller than MininumPercent%
         // In case someone registers over themselves, keep their money around
         NewClient.dosh += Clients[msg.sender].dosh; // keep their old account running
@@ -82,12 +82,12 @@ contract Tracker is Ownable{
         uint TotalFee;
         uint timedif = now-Clients[client].time; // how long since last call on this client
         uint periodmulti = timedif/Period; // How many periods passed
-        if(periodmulti&gt;0){ // timedif is &gt;= Period
+        if(periodmulti>0){ // timedif is >= Period
           TotalFee = Fee*periodmulti; // 1 period fee per multiple of period
         }else{// it was smaller than period. Wasted gas
           throw;
         }
-        if(Clients[client].dosh &lt; TotalFee){ // not enough
+        if(Clients[client].dosh < TotalFee){ // not enough
           throw;
         }
         Clients[client].dosh -= TotalFee;
@@ -97,10 +97,10 @@ contract Tracker is Ownable{
     // used to charge for a single time period, in case client doesnt have enough dosh to pay all fees 
     function DebitClientOnce(address client) external{// since owner is provable an EOC, cant abuse reentrancy
         uint timedif = now-Clients[client].time; // how long since last call on this client
-        if(timedif&lt;Period){ // too soon, wasted.
+        if(timedif<Period){ // too soon, wasted.
           throw;
         }
-        if(Clients[client].dosh &lt; Fee){ // not enough
+        if(Clients[client].dosh < Fee){ // not enough
           throw;
         }
         Clients[client].dosh -= Fee;
@@ -110,11 +110,11 @@ contract Tracker is Ownable{
     
     // This function is used to withdraw ether
     function Withdraw(uint amount) onlyOwner external{ // since owner is provable an EOC, cant abuse reentrancy
-        if(this.balance &lt;= obligations){ // this should probably be removed from production code. But theoretically it can never happen
+        if(this.balance <= obligations){ // this should probably be removed from production code. But theoretically it can never happen
             throw; // Somehow, we cant even cover our obligations. This means something very wrong has happened
             selfdestruct(owner);// This should be impossible, but it means I can manually reimburse if SHTF
         }
-        if((this.balance - obligations) &lt;= amount ){// available balance doesnt cover withdrawal
+        if((this.balance - obligations) <= amount ){// available balance doesnt cover withdrawal
             throw; // not allowed
         }
         owner.transfer(amount);// All checks passed, take the money

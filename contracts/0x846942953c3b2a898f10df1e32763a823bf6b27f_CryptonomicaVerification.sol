@@ -17,50 +17,50 @@ contract CryptonomicaVerification {
 
     // ---- mappings to store verification data, to make it accessible for other smart contracts
     // we store sting data as bytes32 (http://solidity.readthedocs.io/en/develop/types.html#fixed-size-byte-arrays)
-    // !!! -&gt; up to 32 ASCII letters,
+    // !!! -> up to 32 ASCII letters,
     // see: https://ethereum.stackexchange.com/questions/6729/how-many-letters-can-bytes32-keep
 
-    // OpenPGP Message Format https://tools.ietf.org/html/rfc4880#section-12.2 : &quot;A V4 fingerprint is the 160-bit SHA-1 hash ...&quot;
+    // OpenPGP Message Format https://tools.ietf.org/html/rfc4880#section-12.2 : "A V4 fingerprint is the 160-bit SHA-1 hash ..."
     // thus fingerprint is 20 bytes, in hexadecimal 40 symbols string representation
     // fingerprints are stored as upper case strings like:
     // 57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5
-    // or as bytes20: &quot;0x57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5&quot; from web3.js or Bytes20 from web3j
+    // or as bytes20: "0x57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5" from web3.js or Bytes20 from web3j
     // see: https://crypto.stackexchange.com/questions/32087/how-to-generate-fingerprint-for-pgp-public-key
-    mapping(address =&gt; bytes20) public fingerprint; // ..............................................................0
+    mapping(address => bytes20) public fingerprint; // ..............................................................0
 
     // we use unverifiedFingerprintAsString to store fingerprint provided by user
-    mapping(address =&gt; string) public unverifiedFingerprint; // (!) Gas requirement: infinite
+    mapping(address => string) public unverifiedFingerprint; // (!) Gas requirement: infinite
 
-    mapping(address =&gt; uint) public keyCertificateValidUntil; // unix time ..........................................1
-    mapping(address =&gt; bytes32) public firstName; // ................................................................2
-    mapping(address =&gt; bytes32) public lastName; // .................................................................3
-    mapping(address =&gt; uint) public birthDate; // unix time .........................................................4
+    mapping(address => uint) public keyCertificateValidUntil; // unix time ..........................................1
+    mapping(address => bytes32) public firstName; // ................................................................2
+    mapping(address => bytes32) public lastName; // .................................................................3
+    mapping(address => uint) public birthDate; // unix time .........................................................4
     // Nationality - from user passport or id document:
     // 2-letter country codes defined in ISO 3166
     // like returned by Locale.getISOCountries() in Java (upper case)
     // see: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-    mapping(address =&gt; bytes32) public nationality; //      .........................................................5
-    mapping(address =&gt; uint256) public verificationAddedOn; // unix time ............................................6
-    mapping(address =&gt; uint256) public revokedOn; // unix time, returns uint256: 0 if verification is not revoked ...7
-    // this will be longer than 32 char, and have to be properly formatted (with &quot;\n&quot;)
-    mapping(address =&gt; string) public signedString; //.(!) Gas requirement: infinite.................................8
+    mapping(address => bytes32) public nationality; //      .........................................................5
+    mapping(address => uint256) public verificationAddedOn; // unix time ............................................6
+    mapping(address => uint256) public revokedOn; // unix time, returns uint256: 0 if verification is not revoked ...7
+    // this will be longer than 32 char, and have to be properly formatted (with "\n")
+    mapping(address => string) public signedString; //.(!) Gas requirement: infinite.................................8
 
     // unix time online converter: https://www.epochconverter.com
     // for coders: http://www.convert-unix-time.com
-    mapping(address =&gt; uint256) public signedStringUploadedOnUnixTime;
+    mapping(address => uint256) public signedStringUploadedOnUnixTime;
 
     // this allows to search for account connected to fingerprint
     // as a key we use fingerprint as bytes32, like 0x57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5
-    mapping(bytes20 =&gt; address) public addressAttached; //
+    mapping(bytes20 => address) public addressAttached; //
 
     // (!) Gas requirement: infinite
-    string public stringToSignExample = &quot;I hereby confirm that the address &lt;address lowercase&gt; is my Ethereum address&quot;;
+    string public stringToSignExample = "I hereby confirm that the address <address lowercase> is my Ethereum address";
 
     /* the same data as above stored as a struct:
-    struct will be returned as &#39;List&#39; in web3j (only one function call needed) */
-    mapping(address =&gt; Verification) public verification; // (!) Gas requirement: infinite
+    struct will be returned as 'List' in web3j (only one function call needed) */
+    mapping(address => Verification) public verification; // (!) Gas requirement: infinite
     struct Verification {
-        // all string have to be &lt;= 32 chars
+        // all string have to be <= 32 chars
         string fingerprint; // ................................................0
         uint keyCertificateValidUntil; // .....................................1
         string firstName; // ..................................................2
@@ -75,7 +75,7 @@ contract CryptonomicaVerification {
 
     /*  -------------------- Administrative Data */
     address public owner; // smart contract owner (super admin)
-    mapping(address =&gt; bool) public isManager; // list of managers
+    mapping(address => bool) public isManager; // list of managers
 
     uint public priceForVerificationInWei; // see converter on https://etherconverter.online/
 
@@ -92,17 +92,17 @@ contract CryptonomicaVerification {
     /* -------------------- Utility functions : ---------------------- */
 
     // (?) CryptonomicaVerification.stringToBytes32(string memory) : Is constant but potentially should not be.
-    // probably because of &#39;using low-level calls&#39; or &#39;using inline assembly that contains certain opcodes&#39;
-    // but &#39;The compiler does not enforce yet that a pure method is not reading from the state.&#39;
-    // &gt; in fact works as constant
+    // probably because of 'using low-level calls' or 'using inline assembly that contains certain opcodes'
+    // but 'The compiler does not enforce yet that a pure method is not reading from the state.'
+    // > in fact works as constant
     function stringToBytes32(string memory source) public pure returns (bytes32 result) {// (!) Gas requirement: infinite
-        // require(bytes(source).length &lt;= 32); // causes error, but string have to be max 32 chars
+        // require(bytes(source).length <= 32); // causes error, but string have to be max 32 chars
 
         // https://ethereum.stackexchange.com/questions/9603/understanding-mload-assembly-function
         // http://solidity.readthedocs.io/en/latest/assembly.html
         // this converts every char to its byte representation
-        // see hex codes on http://www.asciitable.com/ (7 &gt; 37, a &gt; 61, z &gt; 7a)
-        // &quot;az7&quot; &gt; 0x617a370000000000000000000000000000000000000000000000000000000000
+        // see hex codes on http://www.asciitable.com/ (7 > 37, a > 61, z > 7a)
+        // "az7" > 0x617a370000000000000000000000000000000000000000000000000000000000
         assembly {
             result := mload(add(source, 32))
         }
@@ -111,13 +111,13 @@ contract CryptonomicaVerification {
     // see also:
     // https://ethereum.stackexchange.com/questions/2519/how-to-convert-a-bytes32-to-string
     // https://ethereum.stackexchange.com/questions/1081/how-to-concatenate-a-bytes32-array-to-a-string
-    // 0x617a370000000000000000000000000000000000000000000000000000000000 &gt; &quot;az7&quot;
+    // 0x617a370000000000000000000000000000000000000000000000000000000000 > "az7"
     function bytes32ToString(bytes32 _bytes32) public pure returns (string){// (!) Gas requirement: infinite
         // string memory str = string(_bytes32);
-        // TypeError: Explicit type conversion not allowed from &quot;bytes32&quot; to &quot;string storage pointer&quot;
+        // TypeError: Explicit type conversion not allowed from "bytes32" to "string storage pointer"
         // thus we should convert bytes32 to bytes (to dynamically-sized byte array)
         bytes memory bytesArray = new bytes(32);
-        for (uint256 i; i &lt; 32; i++) {
+        for (uint256 i; i < 32; i++) {
             bytesArray[i] = _bytes32[i];
         }
         return string(bytesArray);
@@ -133,14 +133,14 @@ contract CryptonomicaVerification {
         // it expected to be a 64 chars string signed with OpenPGP standard signature
         // bytes: Dynamically-sized byte array,
         // see: http://solidity.readthedocs.io/en/develop/types.html#dynamically-sized-byte-array
-        // if (bytes(_signedString).length &gt; 1000) {//
+        // if (bytes(_signedString).length > 1000) {//
         //    revert();
         //    // (payable)
         // }
-        // --- not needed: if string is to big -&gt; out of gas
+        // --- not needed: if string is to big -> out of gas
 
         // check payment :
-        if (msg.value &lt; priceForVerificationInWei) {
+        if (msg.value < priceForVerificationInWei) {
             revert();
             // (payable)
         }
@@ -164,7 +164,7 @@ contract CryptonomicaVerification {
         }
 
         // at this stage we can not be sure that key with this fingerprint really owned by user
-        // thus we store it as &#39;unverified&#39;
+        // thus we store it as 'unverified'
         unverifiedFingerprint[msg.sender] = _fingerprint;
 
         signedString[msg.sender] = verification[msg.sender].signedString = _signedString;
@@ -178,12 +178,12 @@ contract CryptonomicaVerification {
 
     event SignedStringUploaded(address indexed fromAccount, string fingerprint, string uploadedString);
 
-    // from &#39;manager&#39; account only
+    // from 'manager' account only
     // (!) Gas requirement: infinite
     function addVerificationData(
         address _acc, //
-        string _fingerprint, // &quot;57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5&quot;
-        bytes20 _fingerprintBytes20, // &quot;0x57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5&quot;
+        string _fingerprint, // "57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5"
+        bytes20 _fingerprintBytes20, // "0x57A5FEE5A34D563B4B85ADF3CE369FD9E77173E5"
         uint _keyCertificateValidUntil, //
         string _firstName, //
         string _lastName, //
@@ -196,11 +196,11 @@ contract CryptonomicaVerification {
         // check input
         // fingerprint should be uppercase 40 symbols
         // require(bytes(_fingerprint).length == 40);
-        // require(bytes(_firstName).length &lt;= 32);
-        // require(bytes(_lastName).length &lt;= 32);
-        // _nationality should be like &quot;IL&quot; or &quot;US&quot;
+        // require(bytes(_firstName).length <= 32);
+        // require(bytes(_lastName).length <= 32);
+        // _nationality should be like "IL" or "US"
         // require(bytes(_nationality).length == 2);
-        // &gt;&gt;&gt; if we control manager account we can make checks before sending data to smart contract (cheaper)
+        // >>> if we control manager account we can make checks before sending data to smart contract (cheaper)
 
         // check if signed string uploaded
         require(signedStringUploadedOnUnixTime[_acc] != 0);
@@ -246,7 +246,7 @@ contract CryptonomicaVerification {
         address verificationAddedByAccount
     );
 
-    // from user or &#39;manager&#39; account
+    // from user or 'manager' account
     function revokeVerification(address _acc) public {// (!) Gas requirement: infinite
         require(msg.sender == _acc || isManager[msg.sender]);
 
@@ -316,10 +316,10 @@ contract CryptonomicaVerification {
 
     // !!! can be called by any user or contract
     // check for re-entrancy vulnerability http://solidity.readthedocs.io/en/develop/security-considerations.html#re-entrancy
-    // &gt;&gt;&gt; since we are making a withdrawal to our own contract only there is no possible attack using re-entrancy vulnerability,
+    // >>> since we are making a withdrawal to our own contract only there is no possible attack using re-entrancy vulnerability,
     function withdrawAllToWithdrawalAddress() public returns (bool) {// (!) Gas requirement: infinite
         // http://solidity.readthedocs.io/en/develop/security-considerations.html#sending-and-receiving-ether
-        // about &lt;address&gt;.send(uint256 amount) and &lt;address&gt;.transfer(uint256 amount)
+        // about <address>.send(uint256 amount) and <address>.transfer(uint256 amount)
         // see: http://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=transfer#address-related
         // https://ethereum.stackexchange.com/questions/19341/address-send-vs-address-transfer-best-practice-usage
         uint sum = this.balance;

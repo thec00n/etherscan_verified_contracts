@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,7 +64,7 @@ contract ERC721 {
 contract Marketplace is Ownable {
     ERC721 public nft;
 
-    mapping (uint256 =&gt; Listing) public listings;
+    mapping (uint256 => Listing) public listings;
 
     uint256 public minListingSeconds;
     uint256 public maxListingSeconds;
@@ -93,8 +93,8 @@ contract Marketplace is Ownable {
     }
 
     function list(address _tokenSeller, uint256 _tokenId, uint256 _startingPrice, uint256 _minimumPrice, uint256 _durationSeconds) public nftOnly {
-        require(_durationSeconds &gt;= minListingSeconds &amp;&amp; _durationSeconds &lt;= maxListingSeconds);
-        require(_startingPrice &gt;= _minimumPrice);
+        require(_durationSeconds >= minListingSeconds && _durationSeconds <= maxListingSeconds);
+        require(_startingPrice >= _minimumPrice);
         require(! listingActive(_tokenId));
         listings[_tokenId] = Listing(_tokenSeller, _startingPrice, _minimumPrice, now, _durationSeconds);
         nft.takeOwnership(_tokenId);
@@ -103,7 +103,7 @@ contract Marketplace is Ownable {
 
     function unlist(address _caller, uint256 _tokenId) public nftOnly {
         address _seller = listings[_tokenId].seller;
-        // Allow owner to unlist (via nft) for when it&#39;s time to shut this down
+        // Allow owner to unlist (via nft) for when it's time to shut this down
         require(_seller == _caller || address(owner) == _caller);
         nft.transfer(_seller, _tokenId);
         delete listings[_tokenId];
@@ -114,11 +114,11 @@ contract Marketplace is Ownable {
         Listing memory _listing = listings[_tokenId];
         address _seller = _listing.seller;
 
-        require(_caller != _seller); // Doesn&#39;t make sense for someone to buy/sell their own token.
+        require(_caller != _seller); // Doesn't make sense for someone to buy/sell their own token.
         require(listingActive(_tokenId));
 
         uint256 _price = currentPrice(_tokenId);
-        require(_totalPaid &gt;= _price);
+        require(_totalPaid >= _price);
 
         delete listings[_tokenId];
 
@@ -129,10 +129,10 @@ contract Marketplace is Ownable {
 
     function currentPrice(uint256 _tokenId) public view returns (uint256) {
         Listing memory listing = listings[_tokenId];
-        require(now &gt;= listing.createdAt);
+        require(now >= listing.createdAt);
 
         uint256 _deadline = listing.createdAt + listing.durationSeconds;
-        require(now &lt;= _deadline);
+        require(now <= _deadline);
 
         uint256 _elapsedTime = now - listing.createdAt;
         uint256 _progress = (_elapsedTime * 100) / listing.durationSeconds;
@@ -142,7 +142,7 @@ contract Marketplace is Ownable {
 
     function listingActive(uint256 _tokenId) internal view returns (bool) {
         Listing memory listing = listings[_tokenId];
-        return listing.createdAt + listing.durationSeconds &gt;= now &amp;&amp; now &gt;= listing.createdAt;
+        return listing.createdAt + listing.durationSeconds >= now && now >= listing.createdAt;
     }
 }
 
@@ -216,9 +216,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -226,7 +226,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -235,7 +235,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -253,16 +253,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -456,14 +456,14 @@ contract ERC721Token is ERC721 {
 
 contract PineappleArcadeTrophy is ERC721Token, Pausable {
     /// @notice Name and Symbol are part of the ERC721 standard
-    string public constant name = &quot;PineappleArcadeTrophy&quot;;
-    string public constant symbol = &quot;DEGEN&quot;;
+    string public constant name = "PineappleArcadeTrophy";
+    string public constant symbol = "DEGEN";
 
     Marketplace public marketplace;
     uint256 public maxTrophies;
 
     /// @dev trophyId to trophyName
-    mapping (uint256 =&gt; bytes32) public trophies;
+    mapping (uint256 => bytes32) public trophies;
 
     function PineappleArcadeTrophy(uint256 _maxTrophies) public {
         maxTrophies = _maxTrophies;
@@ -475,7 +475,7 @@ contract PineappleArcadeTrophy is ERC721Token, Pausable {
     }
 
     function grantTrophy(address _initialOwner, bytes32 _trophyName) external onlyOwner {
-        require(totalSupply() &lt; maxTrophies);
+        require(totalSupply() < maxTrophies);
         require(_trophyName != 0x0);
         trophies[nextId()] = _trophyName;
         _mint(_initialOwner, nextId());
@@ -503,7 +503,7 @@ contract PineappleArcadeTrophy is ERC721Token, Pausable {
         marketplace.purchase.value(_sellerTake)(msg.sender, _trophyId, msg.value);
     }
 
-    /// @notice With each call to purchaseTrophy, fees will build up in this contract&#39;s balance.
+    /// @notice With each call to purchaseTrophy, fees will build up in this contract's balance.
     /// This method allows the contract owner to transfer that balance to their account.
     function withdrawBalance() external onlyOwner {
         owner.transfer(this.balance);

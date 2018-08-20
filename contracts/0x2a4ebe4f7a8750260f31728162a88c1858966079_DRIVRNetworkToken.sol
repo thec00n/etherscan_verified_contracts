@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -100,7 +100,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -122,8 +122,8 @@ contract DRIVRNetworkToken is BasicToken,Ownable {
 
    using SafeMath for uint256;
    
-   string public constant name = &quot;DRIVR Network&quot;;
-   string public constant symbol = &quot;DVR&quot;;
+   string public constant name = "DRIVR Network";
+   string public constant symbol = "DVR";
    uint256 public constant decimals = 18;
 
    uint256 public constant INITIAL_SUPPLY = 750000000;
@@ -137,9 +137,9 @@ contract DRIVRNetworkToken is BasicToken,Ownable {
     }
 
     function mint(address wallet, address buyer, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[wallet] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[wallet] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[buyer] = tokenBalances[buyer].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[wallet] = tokenBalances[wallet].sub(tokenAmount);                        // subtracts amount from seller's balance
       Transfer(wallet, buyer, tokenAmount); 
       totalSupply = totalSupply.sub(tokenAmount);
     }

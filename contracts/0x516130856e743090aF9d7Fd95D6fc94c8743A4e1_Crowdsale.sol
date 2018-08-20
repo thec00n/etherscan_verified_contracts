@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
  
@@ -65,14 +65,14 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   bool public mintingFinished = false;
 
-  mapping(address =&gt; uint256) releaseTime;
+  mapping(address => uint256) releaseTime;
   // Only after finishMinting and checks for bounty accounts time restrictions
   modifier timeAllowed() {
     require(mintingFinished);
-    require(now &gt; releaseTime[msg.sender]); //finishSale + releasedays * 1 days
+    require(now > releaseTime[msg.sender]); //finishSale + releasedays * 1 days
     _;
   }
 
@@ -123,7 +123,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -177,7 +177,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -238,7 +238,7 @@ contract MintableToken is StandardToken, Ownable {
   function mint(address _to, uint256 _amount, uint256 _releaseTime) public onlyOwner canMint returns (bool) {
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
-    if ( _releaseTime &gt; 0 ) {
+    if ( _releaseTime > 0 ) {
         releaseTime[_to] = _releaseTime;
     }
     Mint(_to, _amount);
@@ -267,8 +267,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract ArconaToken is MintableToken {
     
-    string public constant name = &quot;Arcona Distribution Contract&quot;;
-    string public constant symbol = &quot;Arcona&quot;;
+    string public constant name = "Arcona Distribution Contract";
+    string public constant symbol = "Arcona";
     uint32 public constant decimals = 3; // 0.001
    
 }
@@ -284,10 +284,10 @@ contract Crowdsale is Ownable {
     address public release12m;
     address public release18m;
 
-    mapping (address =&gt; uint) public weiBalances;
-    mapping (address =&gt; bool) registered;
-    mapping (address =&gt; address) referral;
-    mapping (string =&gt; address) certificate;
+    mapping (address => uint) public weiBalances;
+    mapping (address => bool) registered;
+    mapping (address => address) referral;
+    mapping (string => address) certificate;
 
     uint restrictedPercent;
     uint refererPercent = 55; // 5.5%
@@ -331,22 +331,22 @@ contract Crowdsale is Ownable {
     }
 
     modifier preSaleIsOn() {
-        require(now &gt; startPreSale &amp;&amp; now &lt; finishPreSale &amp;&amp; !isGlobalPause);
+        require(now > startPreSale && now < finishPreSale && !isGlobalPause);
         _;
     }
 
     modifier saleIsOn() {
-        require(now &gt; startSale &amp;&amp; now &lt; finishSale &amp;&amp; !isGlobalPause);
+        require(now > startSale && now < finishSale && !isGlobalPause);
         _;
     }
 
     modifier anySaleIsOn() {
-        require((now &gt; startPreSale &amp;&amp; now &lt; finishPreSale &amp;&amp; !isGlobalPause) || (now &gt; startSale &amp;&amp; now &lt; finishSale &amp;&amp; !isGlobalPause));
+        require((now > startPreSale && now < finishPreSale && !isGlobalPause) || (now > startSale && now < finishSale && !isGlobalPause));
         _;
     }
 
     modifier isUnderHardCap() {
-        require(totalWeiSale &lt;= hardcap);
+        require(totalWeiSale <= hardcap);
         _;
     }
 
@@ -417,7 +417,7 @@ contract Crowdsale is Ownable {
         require(msg.sender == registerbot || msg.sender == owner);
         require(_customer != address(0));
         registered[_customer] = true;
-        if (_referral != address(0) &amp;&amp; _referral != _customer) {
+        if (_referral != address(0) && _referral != _customer) {
             referral[_customer] = _referral;
         }
     }
@@ -433,9 +433,9 @@ contract Crowdsale is Ownable {
         require(_customer!= address(0));
         delete registered[_customer];
         delete referral[_customer];
-        // return Wei &amp;&amp; Drain tokens
+        // return Wei && Drain tokens
         token.unMint(_customer);
-        if ( weiBalances[_customer] &gt; 0 ) {
+        if ( weiBalances[_customer] > 0 ) {
             _customer.transfer(weiBalances[_customer]);
             weiBalances[_customer] = 0;
         }
@@ -446,12 +446,12 @@ contract Crowdsale is Ownable {
     }
 
     function changeRateSale(uint _tokenAmount) public onlyOwner {
-        require(isGlobalPause || (now &gt; startSale &amp;&amp; now &lt; finishSale));
+        require(isGlobalPause || (now > startSale && now < finishSale));
         rateSale = _tokenAmount;
     }
 
     function changeRatePreSale(uint _tokenAmount) public onlyOwner {
-        require(isGlobalPause || (now &gt; startPreSale &amp;&amp; now &lt; finishPreSale));
+        require(isGlobalPause || (now > startPreSale && now < finishPreSale));
         ratePreSale = _tokenAmount;
     }
 
@@ -472,7 +472,7 @@ contract Crowdsale is Ownable {
     }
 
     function finishMinting() public onlyOwner {
-        require(totalWeiSale &gt;= softcap);
+        require(totalWeiSale >= softcap);
         require(!isFinished);
         multisig.transfer(this.balance);
         uint issuedTokenSupply = token.totalSupply();
@@ -481,7 +481,7 @@ contract Crowdsale is Ownable {
         issuedTokenSupply = issuedTokenSupply.add(restrictedTokens);
         // 13% - 11% for any purpose and 2% bounty
         token.mint(restricted, issuedTokenSupply.mul(13).div(100), now);
-        // 27% - freezed founds to team &amp; adwisers
+        // 27% - freezed founds to team & adwisers
         token.mint(release6m, issuedTokenSupply.mul(85).div(1000), now + 180 * 1 days); // 8.5 %
         token.mint(release12m, issuedTokenSupply.mul(85).div(1000), now + 365 * 1 days); // 8.5 %
         token.mint(release18m, issuedTokenSupply.mul(10).div(100), now + 545 * 1 days); // 10 %
@@ -491,14 +491,14 @@ contract Crowdsale is Ownable {
     }
 
     function foreignBuyTest(uint256 _weiAmount, uint256 _rate) public pure returns (uint tokenAmount) {
-        require(_weiAmount &gt; 0);
-        require(_rate &gt; 0);
+        require(_weiAmount > 0);
+        require(_rate > 0);
         return _rate.mul(_weiAmount).div(1 ether);
     }
 
     function foreignBuy(address _holder, uint256 _weiAmount, uint256 _rate) public isUnderHardCap preSaleIsOn onlyOwner {
-        require(_weiAmount &gt; 0);
-        require(_rate &gt; 0);
+        require(_weiAmount > 0);
+        require(_rate > 0);
         registered[_holder] = true;
         uint tokens = _rate.mul(_weiAmount).div(1 ether);
         token.mint(_holder, tokens, 0);
@@ -506,10 +506,10 @@ contract Crowdsale is Ownable {
         totalWeiSale = totalWeiSale.add(_weiAmount);
     }
 
-    // Refund Either &amp;&amp; Drain tokens
+    // Refund Either && Drain tokens
     function refund() public {
-        require(totalWeiSale &lt;= softcap &amp;&amp; now &gt;= finishSale);
-        require(weiBalances[msg.sender] &gt; 0);
+        require(totalWeiSale <= softcap && now >= finishSale);
+        require(weiBalances[msg.sender] > 0);
         token.unMint(msg.sender);
         msg.sender.transfer(weiBalances[msg.sender]);
         totalWeiSale = totalWeiSale.sub(weiBalances[msg.sender]);
@@ -519,17 +519,17 @@ contract Crowdsale is Ownable {
 
     function buyTokensPreSale() public isRegistered isUnderHardCap preSaleIsOn payable {
         uint tokens = ratePreSale.mul(msg.value).div(1 ether);
-        require(tokens &gt;= 10000); // min 10 tokens
+        require(tokens >= 10000); // min 10 tokens
         multisig.transfer(msg.value);
         uint bonusValueTokens = 0;
         uint saleEther = (msg.value).mul(10).div(1 ether);
-        if (saleEther &gt;= 125 &amp;&amp; saleEther &lt; 375 ) { // 12,5 ETH
+        if (saleEther >= 125 && saleEther < 375 ) { // 12,5 ETH
             bonusValueTokens = tokens.mul(15).div(100);
-        } else if (saleEther &gt;= 375 &amp;&amp; saleEther &lt; 750 ) { // 37,5 ETH
+        } else if (saleEther >= 375 && saleEther < 750 ) { // 37,5 ETH
             bonusValueTokens = tokens.mul(20).div(100);
-        } else if (saleEther &gt;= 750 &amp;&amp; saleEther &lt; 1250 ) { // 75 ETH
+        } else if (saleEther >= 750 && saleEther < 1250 ) { // 75 ETH
             bonusValueTokens=tokens.mul(25).div(100);
-        } else if (saleEther &gt;= 1250  ) { // 125 ETH
+        } else if (saleEther >= 1250  ) { // 125 ETH
             bonusValueTokens = tokens.mul(30).div(100);
         }
         tokens = tokens.add(bonusValueTokens);
@@ -544,11 +544,11 @@ contract Crowdsale is Ownable {
 
     function createTokens() public isRegistered isUnderHardCap saleIsOn payable {
         uint tokens = rateSale.mul(msg.value).div(1 ether);
-        require(tokens &gt;= 10000); // min 10 tokens
+        require(tokens >= 10000); // min 10 tokens
         uint bonusTokens = 0;
-        if ( now &lt; startSale + (bonusPeriod * 1 days) ) {
+        if ( now < startSale + (bonusPeriod * 1 days) ) {
             uint percent = bonusPeriod - (now - startSale).div(1 days);
-            if ( percent &gt; 0 ) {
+            if ( percent > 0 ) {
                 bonusTokens = tokens.mul(percent).div(100);
             }
         }
@@ -564,9 +564,9 @@ contract Crowdsale is Ownable {
     }
 
     function createTokensAnySale() public isUnderHardCap anySaleIsOn payable {
-        if ((now &gt; startPreSale &amp;&amp; now &lt; finishPreSale) &amp;&amp; !isGlobalPause) {
+        if ((now > startPreSale && now < finishPreSale) && !isGlobalPause) {
             buyTokensPreSale();
-        } else if ((now &gt; startSale &amp;&amp; now &lt; finishSale) &amp;&amp; !isGlobalPause) {
+        } else if ((now > startSale && now < finishSale) && !isGlobalPause) {
             createTokens();
         } else {
             revert();

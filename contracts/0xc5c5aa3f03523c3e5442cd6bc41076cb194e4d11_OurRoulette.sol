@@ -8,7 +8,7 @@ pragma solidity ^0.4.19;
         
     Thanks to:
     
-        FrontEnd help &amp; tips:
+        FrontEnd help & tips:
             CiernaOvca
             Matt007
             Kebabist
@@ -31,7 +31,7 @@ contract OurRoulette{
         uint tier; //min bet amount
         bytes betdata;
     }
-    mapping (address =&gt; Bet) bets;
+    mapping (address => Bet) bets;
     
     // These functions will be removed in the real thing, they are only here for testing purposes
     address owner = msg.sender;
@@ -68,10 +68,10 @@ contract OurRoulette{
             0x0888888888888888888, //10: odd
             0x2aaaaaaaa8000000000  //11: 19 to 36
         ];
-        return (groups[groupID]&gt;&gt;(number*2))&amp;3; //this function is only public so you can verify that group multipliers are working correctly
+        return (groups[groupID]>>(number*2))&3; //this function is only public so you can verify that group multipliers are working correctly
     }
     
-    //returns a &quot;random&quot; number based on blockhashes and addresses
+    //returns a "random" number based on blockhashes and addresses
     function GetNumber(address adr,uint height) public view returns(uint){
         bytes32 hash1=block.blockhash(height+1);
         bytes32 hash2=block.blockhash(height+2);
@@ -79,7 +79,7 @@ contract OurRoulette{
         return ((uint)(keccak256(adr,hash1,hash2)))%37;
     }
     
-    //returns user&#39;s payout from his last bet
+    //returns user's payout from his last bet
     function BetPayout() public view returns (uint payout) {
         Bet memory tmp = bets[msg.sender];
         
@@ -87,7 +87,7 @@ contract OurRoulette{
         if(n==69)return 0; //unable to get blockhash - too late
         
         payout=((uint)(tmp.betdata[n]))*36; //if there is a bet on the winning number, set payout to the bet*36
-        for(uint i=37;i&lt;49;i++)payout+=((uint)(tmp.betdata[i]))*GroupMultiplier(n,i-37); //check all groups
+        for(uint i=37;i<49;i++)payout+=((uint)(tmp.betdata[i]))*GroupMultiplier(n,i-37); //check all groups
         
         return payout*tmp.tier;
     }
@@ -95,22 +95,22 @@ contract OurRoulette{
     //claims last bet (if it exists), creates a new one and sends back any leftover balance
     function PlaceBet(uint tier,bytes betdata) public payable {
         Bet memory tmp = bets[msg.sender];
-        uint balance=msg.value; //user&#39;s balance
-        require(tier&lt;(realReserve()/12500)); //tier has to be 12500 times lower than current balance
+        uint balance=msg.value; //user's balance
+        require(tier<(realReserve()/12500)); //tier has to be 12500 times lower than current balance
         
-        require((tmp.height+2)&lt;=(block.number-1)); //if there is a bet that can&#39;t be claimed yet, revert (this bet must be resolved before placing another one)
-        if(tmp.height!=0&amp;&amp;((block.number-1)&gt;=(tmp.height+2))){ //if there is an unclaimed bet that can be resolved...
+        require((tmp.height+2)<=(block.number-1)); //if there is a bet that can't be claimed yet, revert (this bet must be resolved before placing another one)
+        if(tmp.height!=0&&((block.number-1)>=(tmp.height+2))){ //if there is an unclaimed bet that can be resolved...
             uint win=BetPayout();
             
-            if(win&gt;0&amp;&amp;tmp.tier&gt;(realReserve()/12500)){
+            if(win>0&&tmp.tier>(realReserve()/12500)){
                 // tier has to be 12500 times lower than current balance
                 // if it isnt, refund the bet and cancel the new bet
                 
                 //   - this shouldnt ever happen, only in a very specific scenario where
                 //     most of the people pull out at the same time.
                 
-                if(contractBalance&gt;=tmp.value){
-                    bets[msg.sender].height=0; //set bet height to 0 so it can&#39;t be claimed again
+                if(contractBalance>=tmp.value){
+                    bets[msg.sender].height=0; //set bet height to 0 so it can't be claimed again
                     contractBalance-=tmp.value;
                     SubFromDividends(tmp.value);
                     msg.sender.transfer(tmp.value+balance); //refund both last bet and current bet
@@ -121,17 +121,17 @@ contract OurRoulette{
                 return; //cancel the new bet
             }
             
-            balance+=win; //if all is right, add last bet&#39;s payout to user&#39;s balance
+            balance+=win; //if all is right, add last bet's payout to user's balance
         }
         
         uint betsz=0;
-        for(uint i=0;i&lt;49;i++)betsz+=(uint)(betdata[i]);
-        require(betsz&lt;=50); //bet size can&#39;t be greater than 50 &quot;chips&quot;
+        for(uint i=0;i<49;i++)betsz+=(uint)(betdata[i]);
+        require(betsz<=50); //bet size can't be greater than 50 "chips"
         
         betsz*=tier; //convert chips to wei
-        require(betsz&lt;=balance); //betsz must be smaller or equal to user&#39;s current balance
+        require(betsz<=balance); //betsz must be smaller or equal to user's current balance
         
-        tmp.height=block.number; //fill the new bet&#39;s structure
+        tmp.height=block.number; //fill the new bet's structure
         tmp.value=betsz;
         tmp.tier=tier;
         tmp.betdata=betdata;
@@ -140,9 +140,9 @@ contract OurRoulette{
         
         balance-=betsz; //balance now contains (msg.value)+(winnings from last bet) - (current bet size)
         
-        if(balance&gt;0){
+        if(balance>0){
             contractBalance-=balance;
-            if(balance&gt;=msg.value){
+            if(balance>=msg.value){
                 contractBalance-=(balance-msg.value);
                 SubFromDividends(balance-msg.value);
             }else{
@@ -157,12 +157,12 @@ contract OurRoulette{
         }
     }
     
-    //adds &quot;value&quot; to dividends
+    //adds "value" to dividends
     function AddToDividends(uint256 value) internal {
         earningsPerToken+=(int256)((value*scaleFactor)/totalSupply);
     }
     
-    //subtract &quot;value&quot; from dividends
+    //subtract "value" from dividends
     function SubFromDividends(uint256 value)internal {
         earningsPerToken-=(int256)((value*scaleFactor)/totalSupply);
     }
@@ -170,20 +170,20 @@ contract OurRoulette{
     //claims last bet
     function ClaimMyBet() public{
         Bet memory tmp = bets[msg.sender];
-        require((tmp.height+2)&lt;=(block.number-1)); //if it is a bet that can&#39;t be claimed yet
+        require((tmp.height+2)<=(block.number-1)); //if it is a bet that can't be claimed yet
         
         uint win=BetPayout();
         
-        if(win&gt;0){
-            if(bets[msg.sender].tier&gt;(realReserve()/12500)){
+        if(win>0){
+            if(bets[msg.sender].tier>(realReserve()/12500)){
                 // tier has to be 12500 times lower than current balance
                 // if it isnt, refund the bet
                 
                 //   - this shouldnt ever happen, only in a very specific scenario where
                 //     most of the people pull out at the same time.
                 
-                if(contractBalance&gt;=tmp.value){
-                    bets[msg.sender].height=0; //set bet height to 0 so it can&#39;t be claimed again
+                if(contractBalance>=tmp.value){
+                    bets[msg.sender].height=0; //set bet height to 0 so it can't be claimed again
                     contractBalance-=tmp.value;
                     SubFromDividends(tmp.value);
                     msg.sender.transfer(tmp.value);
@@ -194,7 +194,7 @@ contract OurRoulette{
                 return;
             }
             
-            bets[msg.sender].height=0; //set bet height to 0 so it can&#39;t be claimed again
+            bets[msg.sender].height=0; //set bet height to 0 so it can't be claimed again
             contractBalance-=win;
             SubFromDividends(win);
             msg.sender.transfer(win);
@@ -210,11 +210,11 @@ contract OurRoulette{
 
 /*
           ,/`.
-        ,&#39;/ __`.
-      ,&#39;_/_  _ _`.
-    ,&#39;__/_ ___ _  `.
-  ,&#39;_  /___ __ _ __ `.
- &#39;-.._/___...-&quot;-.-..__`.
+        ,'/ __`.
+      ,'_/_  _ _`.
+    ,'__/_ ___ _  `.
+  ,'_  /___ __ _ __ `.
+ '-.._/___...-"-.-..__`.
   B
 
  EthPyramid. A no-bullshit, transparent, self-sustaining pyramid scheme.
@@ -245,7 +245,7 @@ contract OurRoulette{
  
 */
     
-    // scaleFactor is used to convert Ether into tokens and vice-versa: they&#39;re of different
+    // scaleFactor is used to convert Ether into tokens and vice-versa: they're of different
 	// orders of magnitude, hence the need to bridge between the two.
 	uint256 constant scaleFactor = 0x10000000000000000;  // 2^64
 
@@ -260,11 +260,11 @@ contract OurRoulette{
 	int constant price_coeff = -0x296ABF784A358468C;
 
 	// Array between each address and their number of tokens.
-	mapping(address =&gt; uint256) public tokenBalance;
+	mapping(address => uint256) public tokenBalance;
 		
 	// Array between each address and how much Ether has been paid out to it.
 	// Note that this is scaled by the scaleFactor variable.
-	mapping(address =&gt; int256) public payouts;
+	mapping(address => int256) public payouts;
 
 	// Variable tracking how many tokens are in existence overall.
 	uint256 public totalSupply;
@@ -296,7 +296,7 @@ contract OurRoulette{
 		// Update the payouts array, incrementing the request address by `balance`.
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (balance * scaleFactor);
 		
 		// Send the dividends to the address that requested the withdraw.
@@ -314,7 +314,7 @@ contract OurRoulette{
 		// Since this is essentially a shortcut to withdrawing and reinvesting, this step still holds.
 		payouts[msg.sender] += (int256) (balance * scaleFactor);
 		
-		// Increase the total amount that&#39;s been paid out to maintain invariance.
+		// Increase the total amount that's been paid out to maintain invariance.
 		totalPayouts += (int256) (balance * scaleFactor);
 		
 		// Assign balance to a new variable.
@@ -322,7 +322,7 @@ contract OurRoulette{
 		
 		// If your dividends are worth less than 1 szabo, or more than a million Ether
 		// (in which case, why are you even here), abort.
-		if (value_ &lt; 0.000001 ether || value_ &gt; 1000000 ether)
+		if (value_ < 0.000001 ether || value_ > 1000000 ether)
 			revert();
 			
 		// msg.sender is the address of the caller.
@@ -345,8 +345,8 @@ contract OurRoulette{
 		uint256 buyerFee = fee * scaleFactor;
 		
 		// Check that we have tokens in existence (this should always be true), or
-		// else you&#39;re gonna have a bad time.
-		if (totalSupply &gt; 0) {
+		// else you're gonna have a bad time.
+		if (totalSupply > 0) {
 			// Compute the bonus co-efficient for all existing holders and the buyer.
 			// The buyer receives part of the distribution for each token bought in the
 			// same way they would have if they bought each token individually.
@@ -368,7 +368,7 @@ contract OurRoulette{
 			earningsPerToken += (int256)(rewardPerShare);
 		}
 		
-		// Add the numTokens which were just created to the total supply. We&#39;re a crypto central bank!
+		// Add the numTokens which were just created to the total supply. We're a crypto central bank!
 		totalSupply = add(totalSupply, numTokens);
 		
 		// Assign the tokens to the balance of the buyer.
@@ -402,11 +402,11 @@ contract OurRoulette{
         withdraw();
 	}
 
-	// Gatekeeper function to check if the amount of Ether being sent isn&#39;t either
+	// Gatekeeper function to check if the amount of Ether being sent isn't either
 	// too small or too large. If it passes, goes direct to buy().
 	function fund() payable public {
-		// Don&#39;t allow for funding if the amount of Ether sent is less than 1 szabo.
-		if (msg.value &gt; 0.000001 ether) {
+		// Don't allow for funding if the amount of Ether sent is less than 1 szabo.
+		if (msg.value > 0.000001 ether) {
 		    contractBalance = add(contractBalance, msg.value);
 			buy();
 		} else {
@@ -434,7 +434,7 @@ contract OurRoulette{
 	// Ether that has already been paid out. Returns 0 in case of negative dividends
 	function dividends(address _owner) public constant returns (uint256 amount) {
 	    int256 r=((earningsPerToken * (int256)(tokenBalance[_owner])) - payouts[_owner]) / (int256)(scaleFactor);
-	    if(r&lt;0)return 0;
+	    if(r<0)return 0;
 		return (uint256)(r);
 	}
 	
@@ -451,7 +451,7 @@ contract OurRoulette{
 
 	function buy() internal {
 		// Any transaction of less than 1 szabo is likely to be worth less than the gas used to send it.
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 						
 		// msg.sender is the address of the caller.
@@ -470,8 +470,8 @@ contract OurRoulette{
 		uint256 buyerFee = fee * scaleFactor;
 		
 		// Check that we have tokens in existence (this should always be true), or
-		// else you&#39;re gonna have a bad time.
-		if (totalSupply &gt; 0) {
+		// else you're gonna have a bad time.
+		if (totalSupply > 0) {
 			// Compute the bonus co-efficient for all existing holders and the buyer.
 			// The buyer receives part of the distribution for each token bought in the
 			// same way they would have if they bought each token individually.
@@ -494,7 +494,7 @@ contract OurRoulette{
 			
 		}
 
-		// Add the numTokens which were just created to the total supply. We&#39;re a crypto central bank!
+		// Add the numTokens which were just created to the total supply. We're a crypto central bank!
 		totalSupply = add(totalSupply, numTokens);
 
 		// Assign the tokens to the balance of the buyer.
@@ -529,7 +529,7 @@ contract OurRoulette{
 		// Net Ether for the seller after the fee has been subtracted.
         uint256 numEthers = numEthersBeforeFee - fee;
 		
-		// *Remove* the numTokens which were just sold from the total supply. We&#39;re /definitely/ a crypto central bank.
+		// *Remove* the numTokens which were just sold from the total supply. We're /definitely/ a crypto central bank.
 		totalSupply = sub(totalSupply, amount);
 		
         // Remove the tokens from the balance of the buyer.
@@ -540,20 +540,20 @@ contract OurRoulette{
 		int256 payoutDiff = (earningsPerToken * (int256)(amount) + (int256)(numEthers * scaleFactor));
 		
         // We reduce the amount paid out to the seller (this effectively resets their payouts value to zero,
-		// since they&#39;re selling all of their tokens). This makes sure the seller isn&#39;t disadvantaged if
+		// since they're selling all of their tokens). This makes sure the seller isn't disadvantaged if
 		// they decide to buy back in.
 		payouts[msg.sender] -= payoutDiff;
 		
-		// Decrease the total amount that&#39;s been paid out to maintain invariance.
+		// Decrease the total amount that's been paid out to maintain invariance.
         totalPayouts -= payoutDiff;
 		
-		// Check that we have tokens in existence (this is a bit of an irrelevant check since we&#39;re
+		// Check that we have tokens in existence (this is a bit of an irrelevant check since we're
 		// selling tokens, but it guards against division by zero).
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// Scale the Ether taken as the selling fee by the scaleFactor variable.
 			uint256 etherFee = fee * scaleFactor;
 			
-			if(penalty&gt;0)etherFee += (penalty * scaleFactor); //if there is any penalty, use it to settle the debt
+			if(penalty>0)etherFee += (penalty * scaleFactor); //if there is any penalty, use it to settle the debt
 			
 			// Fee is distributed to all remaining token holders.
 			// rewardPerShare is the amount gained per token thanks to this sell.
@@ -573,7 +573,7 @@ contract OurRoulette{
 	function reserve() internal constant returns (uint256 amount) {
 	    int256 divs=totalDiv();
 	    
-	    if(divs&lt;0)return balance()+(uint256)(divs*-1);
+	    if(divs<0)return balance()+(uint256)(divs*-1);
 	    return balance()-(uint256)(divs);
 	}
 	
@@ -581,7 +581,7 @@ contract OurRoulette{
 	function realReserve() public view returns (uint256 amount) {
 	    int256 divs=totalDiv();
 	    
-	    if(divs&lt;0)return balance();
+	    if(divs<0)return balance();
 	    return balance()-(uint256)(divs);
 	}
 
@@ -596,17 +596,17 @@ contract OurRoulette{
 		return sub(fixedExp(fixedLog(reserve() - subvalue + ethervalue)*crr_n/crr_d + price_coeff), totalSupply);
 	}
 	
-	// Converts a number tokens into an Ether value. Doesn&#39;t account for negative dividends
+	// Converts a number tokens into an Ether value. Doesn't account for negative dividends
 	function getEtherForTokensOld(uint256 tokens) public constant returns (uint256 ethervalue) {
 		// How much reserve Ether do we have left in the contract?
 		uint256 reserveAmount = reserve();
 
-		// If you&#39;re the Highlander (or bagholder), you get The Prize. Everything left in the vault.
+		// If you're the Highlander (or bagholder), you get The Prize. Everything left in the vault.
 		if (tokens == totalSupply)
 			return reserveAmount;
 
 		// If there would be excess Ether left after the transaction this is called within, return the Ether
-		// corresponding to the equation in Dr Jochen Hoenicke&#39;s original Ponzi paper, which can be found
+		// corresponding to the equation in Dr Jochen Hoenicke's original Ponzi paper, which can be found
 		// at https://test.jochen-hoenicke.de/eth/ponzitoken/ in the third equation, with the CRR numerator 
 		// and denominator altered to 1 and 2 respectively.
 		return sub(reserveAmount, fixedExp((fixedLog(totalSupply - tokens) - price_coeff) * crr_d/crr_n));
@@ -616,16 +616,16 @@ contract OurRoulette{
 	function getEtherForTokens(uint256 tokens) public constant returns (uint256 ethervalue,uint256 penalty) {
 		uint256 eth=getEtherForTokensOld(tokens);
 		int256 divs=totalDiv();
-		if(divs&gt;=0)return (eth,0);
+		if(divs>=0)return (eth,0);
 		
 		uint256 debt=(uint256)(divs*-1);
 		penalty=(((debt*scaleFactor)/totalSupply)*tokens)/scaleFactor;
 		
-		if(penalty&gt;eth)return (0,penalty);
+		if(penalty>eth)return (0,penalty);
 		return (eth-penalty,penalty);
 	}
 
-	// You don&#39;t care about these, but if you really do they&#39;re hex values for 
+	// You don't care about these, but if you really do they're hex values for 
 	// co-efficients used to simulate approximations of the log and exp functions.
 	int256  constant one        = 0x10000000000000000;
 	uint256 constant sqrt2      = 0x16a09e667f3bcc908;
@@ -644,11 +644,11 @@ contract OurRoulette{
 	// Hence R(s) = log((1+s)/(1-s)) = log(a)
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; sqrt2) {
+		while (a > sqrt2) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= sqrtdot5) {
+		while (a <= sqrtdot5) {
 			a *= 2;
 			scale--;
 		}
@@ -674,10 +674,10 @@ contract OurRoulette{
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 	
@@ -694,20 +694,20 @@ contract OurRoulette{
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -715,7 +715,7 @@ contract OurRoulette{
 	// without including any transaction data (useful for, say, mobile wallet apps).
 	function () payable public {
 		// msg.value is the amount of Ether sent by the transaction.
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			fund();
 		} else {
 			getMeOutOfHere();

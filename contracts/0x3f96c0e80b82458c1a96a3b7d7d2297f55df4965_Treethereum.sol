@@ -2,11 +2,11 @@ pragma solidity ^0.4.20;
 
 contract Treethereum {  
     uint timeout; // PAY WHAT YOU WANT PROMO ENDS Saturday, March 10, 2018 7:01:29 AM, 0.2 ETH after
-    mapping (address =&gt; address) inviter;
+    mapping (address => address) inviter;
     
     function bytesToAddr (bytes b) constant returns (address)  {
         uint result = 0;
-        for (uint i = b.length-1; i+1 &gt; 0; i--) {
+        for (uint i = b.length-1; i+1 > 0; i--) {
             uint c = uint(b[i]);
             uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
             result += to_inc;
@@ -31,11 +31,11 @@ contract Treethereum {
         addrecruit(recaddress, invaddress);
         uint i=0;
         uint amount = msg.value;
-        if (amount &lt; 0.2 ether &amp;&amp; now &gt; timeout) {
+        if (amount < 0.2 ether && now > timeout) {
             msg.sender.transfer(msg.value);
             revert();
         }
-        while (i &lt; 7) {
+        while (i < 7) {
             uint share = amount/2;
             if (recaddress == 0x0) {
                 inviter[recaddress].transfer(share);

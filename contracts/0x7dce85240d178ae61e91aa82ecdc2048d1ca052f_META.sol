@@ -1,8 +1,8 @@
 contract META {
 
-    string public name = &quot;Dunaton Metacurrency&quot;;
+    string public name = "Dunaton Metacurrency";
     uint8 public decimals = 18;
-    string public symbol = &quot;META&quot;;
+    string public symbol = "META";
 
     address public _owner;
     address public dev = 0xC96CfB18C39DC02FBa229B6EA698b1AD5576DF4c;
@@ -13,7 +13,7 @@ contract META {
     event Transfer(address indexed from, address indexed to, uint value, bytes data);
 
     // Storage
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     function META() {
         _owner = msg.sender;
@@ -23,7 +23,7 @@ contract META {
 
     function transfer(address _to, uint _value, bytes _data) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         uint codeLength;
 
@@ -40,7 +40,7 @@ contract META {
 
     function transfer(address _to, uint _value) public {
         // sender must have enough tokens to transfer
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         uint codeLength;
         bytes memory empty;
@@ -59,7 +59,7 @@ contract META {
     // fallback to receive ETH into contract and send tokens back based on current exchange rate
     function () payable public {
         bytes memory empty;
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint incomingValueAsEth = msg.value / 1 ether;
 
@@ -67,7 +67,7 @@ contract META {
 
         uint256 _calcToken = (incomingValueAsEth * _tokePerEth); // value of payment in tokens
 
-        require(_totalSupply &gt;= _calcToken);
+        require(_totalSupply >= _calcToken);
         _totalSupply = sub(_totalSupply, _calcToken);
 
         balances[msg.sender] = add(balances[msg.sender], _calcToken);
@@ -76,14 +76,14 @@ contract META {
     }
 
     function changePayRate(uint256 _newRate) public {
-        require((msg.sender == _owner) &amp;&amp; (_newRate &gt;= 0));
+        require((msg.sender == _owner) && (_newRate >= 0));
         _tokePerEth = _newRate;
     }
 
     function safeWithdrawal(address _receiver, uint256 _value) public {
         require((msg.sender == _owner));
         uint256 valueAsEth = _value * 1 ether;
-        require((valueAsEth * 1 ether) &lt; this.balance);
+        require((valueAsEth * 1 ether) < this.balance);
         _receiver.send(valueAsEth);
     }
 
@@ -112,37 +112,37 @@ contract META {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {

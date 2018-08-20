@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -107,20 +107,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -201,7 +201,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -212,8 +212,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -227,7 +227,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -276,7 +276,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -327,8 +327,8 @@ contract BearToken is PausableToken {
     using SafeMath for uint;
 
     /// Constant token specific fields
-    string public constant name = &quot;BearToken&quot;;
-    string public constant symbol = &quot;BBC&quot;;
+    string public constant name = "BearToken";
+    string public constant symbol = "BBC";
     uint public constant decimals = 18;
 
     /// bear total tokens supply
@@ -346,12 +346,12 @@ contract BearToken is PausableToken {
     }
 
     modifier isLaterThan (uint x){
-        assert(now &gt; x);
+        assert(now > x);
         _;
     }
 
     modifier maxTokenAmountNotReached (uint amount){
-        assert(totalSupply.add(amount) &lt;= maxTotalSupply);
+        assert(totalSupply.add(amount) <= maxTotalSupply);
         _;
     }
 
@@ -441,7 +441,7 @@ contract TokenTimelock {
   uint public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -451,10 +451,10 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -521,22 +521,22 @@ contract BearCrowdSale is Pausable {
     event NewWallet(address onwer, address oldWallet, address newWallet);
 
     modifier notEarlierThan(uint x) {
-        require(now &gt;= x);
+        require(now >= x);
         _;
     }
 
     modifier earlierThan(uint x) {
-        require(now &lt; x);
+        require(now < x);
         _;
     }
 
     modifier ceilingNotReached() {
-        require(openSoldTokens &lt; MAX_OPEN_SOLD);
+        require(openSoldTokens < MAX_OPEN_SOLD);
         _;
     }  
 
     modifier isSaleEnded() {
-        require(now &gt; endTime || openSoldTokens &gt;= MAX_OPEN_SOLD);
+        require(now > endTime || openSoldTokens >= MAX_OPEN_SOLD);
         _;
     }
 
@@ -600,7 +600,7 @@ contract BearCrowdSale is Pausable {
 
     /// @return true if sale not ended, false otherwise.
     function saleNotEnd() constant internal returns (bool) {
-        return now &lt; endTime &amp;&amp; openSoldTokens &lt; MAX_OPEN_SOLD;
+        return now < endTime && openSoldTokens < MAX_OPEN_SOLD;
     }
 
     /**
@@ -626,12 +626,12 @@ contract BearCrowdSale is Pausable {
         validAddress(receipient)
         returns (bool) 
     {
-        require(msg.value &gt;= minBuyLimit);
-        require(msg.value &lt;= maxBuyLimit);
+        require(msg.value >= minBuyLimit);
+        require(msg.value <= maxBuyLimit);
         // Do not allow contracts to game the system
         require(!isContract(msg.sender));        
 
-        require(tx.gasprice &lt;= 50000000000 wei);
+        require(tx.gasprice <= 50000000000 wei);
         
         doBuy(receipient);
 
@@ -643,11 +643,11 @@ contract BearCrowdSale is Pausable {
     function doBuy(address receipient) internal {
         // protect partner quota in stage one
         uint tokenAvailable = MAX_OPEN_SOLD.sub(openSoldTokens);
-        require(tokenAvailable &gt; 0);
+        require(tokenAvailable > 0);
         uint toFund;
         uint toCollect;
         (toFund, toCollect) = costAndBuyTokens(tokenAvailable);
-        if (toFund &gt; 0) {
+        if (toFund > 0) {
             require(bearToken.mint(receipient, toCollect));         
             wallet.transfer(toFund);
             openSoldTokens = openSoldTokens.add(toCollect);
@@ -656,7 +656,7 @@ contract BearCrowdSale is Pausable {
 
         // not enough token sale, just return eth
         uint toReturn = msg.value.sub(toFund);
-        if (toReturn &gt; 0) {
+        if (toReturn > 0) {
             msg.sender.transfer(toReturn);
         }
     }
@@ -664,11 +664,11 @@ contract BearCrowdSale is Pausable {
     /// CONSTANT METHODS
     /// @dev Get current exchange rate
     function priceRate() public view returns (uint) {
-        if (startTime &lt;= now &amp;&amp; now &lt; startTime + 1 years ) {
+        if (startTime <= now && now < startTime + 1 years ) {
             return  PRICE_RATE_FIRST;
-        }else if (startTime + 1 years &lt;= now &amp;&amp; now &lt; startTime + 2 years ) {
+        }else if (startTime + 1 years <= now && now < startTime + 2 years ) {
             return PRICE_RATE_SECOND;
-        }else if (startTime + 2 years &lt;= now &amp;&amp; now &lt; endTime) {
+        }else if (startTime + 2 years <= now && now < endTime) {
             return PRICE_RATE_LAST;
         }else {
             assert(false);
@@ -682,7 +682,7 @@ contract BearCrowdSale is Pausable {
         uint exchangeRate = priceRate();
         getTokens = exchangeRate * msg.value;
 
-        if (availableToken &gt;= getTokens) {
+        if (availableToken >= getTokens) {
             costValue = msg.value;
         } else {
             costValue = availableToken / exchangeRate;
@@ -702,7 +702,7 @@ contract BearCrowdSale is Pausable {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 
     // release lock token 

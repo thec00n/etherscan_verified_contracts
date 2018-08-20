@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -81,13 +81,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -125,7 +125,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -138,7 +138,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -157,7 +157,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -180,17 +180,17 @@ contract CATToken is StandardToken {
 	using SafeMath for uint256;
 	
 	// keccak256 hash of hidden cap
-	string public constant HIDDEN_CAP = &quot;0xd22f19d54193ff5e08e7ba88c8e52ec1b9fc8d4e0cf177e1be8a764fa5b375fa&quot;;
+	string public constant HIDDEN_CAP = "0xd22f19d54193ff5e08e7ba88c8e52ec1b9fc8d4e0cf177e1be8a764fa5b375fa";
 	
 	// Events
 	event CreatedCAT(address indexed _creator, uint256 _amountOfCAT);
 	event CATRefundedForWei(address indexed _refunder, uint256 _amountOfWei);
 	
 	// Token data
-	string public constant name = &quot;BlockCAT Token&quot;;
-	string public constant symbol = &quot;CAT&quot;;
-	uint256 public constant decimals = 18;  // Since our decimals equals the number of wei per ether, we needn&#39;t multiply sent values when converting between CAT and ETH.
-	string public version = &quot;1.0&quot;;
+	string public constant name = "BlockCAT Token";
+	string public constant symbol = "CAT";
+	uint256 public constant decimals = 18;  // Since our decimals equals the number of wei per ether, we needn't multiply sent values when converting between CAT and ETH.
+	string public version = "1.0";
 	
 	// Addresses and contracts
 	address public executor;
@@ -202,7 +202,7 @@ contract CATToken is StandardToken {
 	bool public saleHasEnded;
 	bool public minCapReached;
 	bool public allowRefund;
-	mapping (address =&gt; uint256) public ETHContributed;
+	mapping (address => uint256) public ETHContributed;
 	uint256 public totalETHRaised;
 	uint256 public saleStartBlock;
 	uint256 public saleEndBlock;
@@ -228,9 +228,9 @@ contract CATToken is StandardToken {
 		if (_devCATDestination == address(0x0)) throw;
 		if (_reserveCATDestination == address(0x0)) throw;
 		// Reject if sale ends before the current block
-		if (_saleEndBlock &lt;= block.number) throw;
+		if (_saleEndBlock <= block.number) throw;
 		// Reject if the sale end time is less than the sale start time
-		if (_saleEndBlock &lt;= _saleStartBlock) throw;
+		if (_saleEndBlock <= _saleStartBlock) throw;
 
 		executor = msg.sender;
 		saleHasEnded = false;
@@ -251,20 +251,20 @@ contract CATToken is StandardToken {
 	function createTokens() payable external {
 		// If sale is not active, do not create CAT
 		if (saleHasEnded) throw;
-		if (block.number &lt; saleStartBlock) throw;
-		if (block.number &gt; saleEndBlock) throw;
+		if (block.number < saleStartBlock) throw;
+		if (block.number > saleEndBlock) throw;
 		// Check if the balance is greater than the security cap
 		uint256 newEtherBalance = totalETHRaised.add(msg.value);
-		if (newEtherBalance &gt; SECURITY_ETHER_CAP) throw; 
+		if (newEtherBalance > SECURITY_ETHER_CAP) throw; 
 		// Do not do anything if the amount of ether sent is 0
 		if (0 == msg.value) throw;
 		
 		// Calculate the CAT to ETH rate for the current time period of the sale
 		uint256 curTokenRate = CAT_PER_ETH_BASE_RATE;
-		if (block.number &lt; saleFirstEarlyBirdEndBlock) {
+		if (block.number < saleFirstEarlyBirdEndBlock) {
 			curTokenRate = CAT_PER_ETH_FIRST_EARLY_BIRD_RATE;
 		}
-		else if (block.number &lt; saleSecondEarlyBirdEndBlock) {
+		else if (block.number < saleSecondEarlyBirdEndBlock) {
 			curTokenRate = CAT_PER_ETH_SECOND_EARLY_BIRD_RATE;
 		}
 		
@@ -289,7 +289,7 @@ contract CATToken is StandardToken {
 	function endSale() {
 		// Do not end an already ended sale
 		if (saleHasEnded) throw;
-		// Can&#39;t end a sale that hasn&#39;t hit its minimum cap
+		// Can't end a sale that hasn't hit its minimum cap
 		if (!minCapReached) throw;
 		// Only allow the owner to end the sale
 		if (msg.sender != executor) throw;
@@ -310,14 +310,14 @@ contract CATToken is StandardToken {
 		CreatedCAT(devCATDestination, devShare);
 		CreatedCAT(reserveCATDestination, reserveShare);
 
-		if (this.balance &gt; 0) {
+		if (this.balance > 0) {
 			if (!devETHDestination.call.value(this.balance)()) throw;
 		}
 	}
 
 	// Allows BlockCAT to withdraw funds
 	function withdrawFunds() {
-		// Disallow withdraw if the minimum hasn&#39;t been reached
+		// Disallow withdraw if the minimum hasn't been reached
 		if (!minCapReached) throw;
 		if (0 == this.balance) throw;
 
@@ -338,7 +338,7 @@ contract CATToken is StandardToken {
 		// No refunds if minimum cap is hit
 		if (minCapReached) throw;
 		// No refunds if the sale is still progressing
-		if (block.number &lt; saleEndBlock) throw;
+		if (block.number < saleEndBlock) throw;
 		if (msg.sender != executor) throw;
 
 		allowRefund = true;

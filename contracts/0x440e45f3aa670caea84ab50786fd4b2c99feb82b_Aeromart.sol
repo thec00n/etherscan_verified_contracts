@@ -21,7 +21,7 @@ contract Aeromart is Owned {
     }
     
     uint public notesLength;
-    mapping (uint256 =&gt; Note) public notes;
+    mapping (uint256 => Note) public notes;
     
     event noteInfo(
        bytes20 serialNumber,

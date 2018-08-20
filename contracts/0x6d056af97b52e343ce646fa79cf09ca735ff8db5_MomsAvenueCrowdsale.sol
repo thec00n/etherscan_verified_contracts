@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -56,7 +56,7 @@ contract MomsAvenueCrowdsale {
     address public wallet;
     address public tokenOwner;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
@@ -68,7 +68,7 @@ contract MomsAvenueCrowdsale {
     * @param _tokenOwner Address of the token owner who can execute restricted functions
     */
     function MomsAvenueCrowdsale(uint256 _startTime, uint256 _endTime, address _wallet, address _token, address _tokenOwner) public {
-        require(_startTime &lt; _endTime);
+        require(_startTime < _endTime);
         require(_wallet != address(0));
         require(_token != address(0));
         require(_tokenOwner != address(0));
@@ -89,7 +89,7 @@ contract MomsAvenueCrowdsale {
     // low level token purchase function
     function buyTokens(address investor) public payable {
         require(investor != address(0));
-        require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        require(now >= startTime && now <= endTime);
         require(crowdsaleActive);
         require(msg.value != 0);
 
@@ -98,7 +98,7 @@ contract MomsAvenueCrowdsale {
         // calculate token amount to be created
         uint256 tokens = weiAmount.mul(rate);
 
-        require(tokensSold.add(tokens) &lt;= goal);
+        require(tokensSold.add(tokens) <= goal);
 
         // update state
         weiRaised = weiRaised.add(weiAmount);

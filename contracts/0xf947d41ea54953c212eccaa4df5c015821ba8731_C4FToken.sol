@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;C4F&#39; Coins4Favors contracts
+// 'C4F' Coins4Favors contracts
 //
 // contracts for C4FEscrow and C4FToken Crowdsale
 //
@@ -15,10 +15,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -26,7 +26,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -79,7 +79,7 @@ contract Owned {
 }
 
 // ----------------------------------------------------------------------------
-// &#39;C4F&#39; FavorEscrow contract
+// 'C4F' FavorEscrow contract
 //
 // Escrow contract for favor request
 // allows to reserve tokens till a favor is completed, cancelled or arbitrated
@@ -226,7 +226,7 @@ contract C4FEscrow {
     // ----------------------------------------------------------------------------
     function changeDeadline(uint newDeadline) public onlyRequester returns (bool success) {
         // deadline can only be changed if not locked by provider and not completed
-        require ((!providerLocked) &amp;&amp; (!providerDisputed) &amp;&amp; (!providerCompleted) &amp;&amp; (status==1));
+        require ((!providerLocked) && (!providerDisputed) && (!providerCompleted) && (status==1));
         deadlineChanged(newDeadline, deadline);
         deadline = newDeadline;
         return true;
@@ -362,7 +362,7 @@ contract C4FEscrow {
     // ----------------------------------------------------------------------------
     function cancelFavor() public onlyRequester returns (bool success) {
         // cannot cancel if locked by provider unless deadline expired by 12 hours and not completed/disputed
-        require((!providerLocked) || ((now &gt; deadline.add(12*3600)) &amp;&amp; (!providerCompleted) &amp;&amp; (!providerDisputed)));
+        require((!providerLocked) || ((now > deadline.add(12*3600)) && (!providerCompleted) && (!providerDisputed)));
         // cannot cancel after completed or arbitrated
         require(status==1);
         // send tokens back to requester
@@ -381,14 +381,14 @@ contract C4FEscrow {
     // ----------------------------------------------------------------------------
     function changeTokenOffer(uint256 newOffer) public onlyRequester returns (bool success) {
         // cannot change if locked by provider
-        require((!providerLocked) &amp;&amp; (!providerDisputed) &amp;&amp; (!providerCompleted));
+        require((!providerLocked) && (!providerDisputed) && (!providerCompleted));
         // cannot change if cancelled, closed or arbitrated
         require(status==1);
         // only use for reducing tokens (to increase simply transfer tokens to contract)
         uint256 actTokenvalue = getTokenValue();
-        require(newOffer &lt; actTokenvalue);
+        require(newOffer < actTokenvalue);
         // cannot set to 0, use cancel to do that
-        require(newOffer &gt; 0);
+        require(newOffer > 0);
         // pay back tokens to reach new offer level
         C4FToken C4F = C4FToken(owner);
         if(!C4F.transfer(requester, actTokenvalue.sub(newOffer))) revert();
@@ -432,7 +432,7 @@ contract C4FEscrow {
         // arbitration fee to system for distribution
         if(!C4F.transfer(commissionTarget, arbitrationTokens)) revert();
         
-        // set status &amp; closeTime
+        // set status & closeTime
         status = 4;
         closeTime = now;
         success = true;
@@ -443,7 +443,7 @@ contract C4FEscrow {
 }
 
 // ----------------------------------------------------------------------------
-// &#39;C4F&#39; &#39;Coins4Favors FavorCoin contract
+// 'C4F' 'Coins4Favors FavorCoin contract
 //
 // Symbol      : C4F
 // Name        : FavorCoin
@@ -484,10 +484,10 @@ contract C4FToken is ERC20Interface, Owned {
     address[]   EscrowAddresses;
     uint public _escrowIndex;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    mapping(address =&gt; uint) whitelisted_amount;
-    mapping(address =&gt; bool) C4FEscrowContracts;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    mapping(address => uint) whitelisted_amount;
+    mapping(address => bool) C4FEscrowContracts;
     
     
     event newEscrowCreated(uint ID, address contractAddress, address requester);   
@@ -510,8 +510,8 @@ contract C4FToken is ERC20Interface, Owned {
     // Constructor
     // ------------------------------------------------------------------------
     function C4FToken() public {
-        symbol          = &quot;C4F&quot;;
-        name            = &quot;C4F FavorCoins&quot;;
+        symbol          = "C4F";
+        name            = "C4F FavorCoins";
         decimals        = 18;
         
         _totalSupply    = 100000000000 * 10**uint(decimals);
@@ -553,7 +553,7 @@ contract C4FToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     
     modifier notLocked {
-        require((msg.sender == owner) || (now &gt;= _endOfICO));
+        require((msg.sender == owner) || (now >= _endOfICO));
         _;
     }
     
@@ -562,7 +562,7 @@ contract C4FToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     
     modifier onlyDuringICO {
-        require((now &gt;= _beginOfICO) &amp;&amp; (now &lt;= _endOfICO));
+        require((now >= _beginOfICO) && (now <= _endOfICO));
         _;
     }
     
@@ -660,14 +660,14 @@ contract C4FToken is ERC20Interface, Owned {
     // C4F tokens for operating costs of the system. Percentage is capped at 2%
     // ------------------------------------------------------------------------
     function setCommission(uint comm) public onlyOwner returns (bool success) {
-        require(comm &lt; 200); // we allow a maximum of 2% commission
+        require(comm < 200); // we allow a maximum of 2% commission
         _commission = comm;
         commissionSet(comm);
         return true;
     }
 
     function setArbitrationPercentage(uint8 arbitPct) public onlyOwner returns (bool success) {
-        require(arbitPct &lt;= 15); // we allow a maximum of 15% arbitration costs
+        require(arbitPct <= 15); // we allow a maximum of 15% arbitration costs
         _arbitrationPercent = arbitPct;
         arbitrationPctSet(_arbitrationPercent);
         return true;
@@ -685,8 +685,8 @@ contract C4FToken is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // - users cannot transfer C4Fs prior to close of ICO
     // - only owner can transfer anytime to do airdrops, etc.
@@ -730,7 +730,7 @@ contract C4FToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -754,7 +754,7 @@ contract C4FToken is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public notLocked notPaused returns (bool success) {
         // check allowance is high enough
-        require(allowed[from][msg.sender] &gt;= tokens);
+        require(allowed[from][msg.sender] >= tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         balances[from] = balances[from].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -765,7 +765,7 @@ contract C4FToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -778,7 +778,7 @@ contract C4FToken is ERC20Interface, Owned {
     
     function startFavorEscrow(uint256 ID, uint256 deadl, uint tokens) public notLocked returns (address C4FFavorContractAddr) {
         // check if sufficient coins available
-        require(balanceOf(msg.sender) &gt;= tokens);
+        require(balanceOf(msg.sender) >= tokens);
         // create contract
         address newFavor = new C4FEscrow(address(this), ID, msg.sender, deadl, _arbitrationPercent);
         // add to list of C4FEscrowContratcs
@@ -805,7 +805,7 @@ contract C4FToken is ERC20Interface, Owned {
     }
     
     function getEscrowAddress(uint ind) public view returns(address esa) {
-        require (ind &lt;= EscrowAddresses.length);
+        require (ind <= EscrowAddresses.length);
         esa = EscrowAddresses[ind];
         return esa;
     }
@@ -889,22 +889,22 @@ contract C4FToken is ERC20Interface, Owned {
         // check bonus ratio
         uint bonusratio = 100;
         // check for second week bonus
-        if(now &lt;= _bonusTime1) {
+        if(now <= _bonusTime1) {
             bonusratio = _bonusRatio1;    
         }
         // check for first week bonus
-        if(now &lt;= _bonusTime2) {
+        if(now <= _bonusTime2) {
             bonusratio = _bonusRatio2;    
         }
         
         // minimum contribution met ?
-        require (msg.value &gt;= _minimumContribution);
+        require (msg.value >= _minimumContribution);
         
         // send C4F tokens back to sender based on Ether received
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             
-            // check if whitelisted and sufficient contribution left (AML &amp; KYC)
-            if(!(whitelisted_amount[msg.sender] &gt;= msg.value)) revert();
+            // check if whitelisted and sufficient contribution left (AML & KYC)
+            if(!(whitelisted_amount[msg.sender] >= msg.value)) revert();
             // reduce remaining contribution limit
             whitelisted_amount[msg.sender] = whitelisted_amount[msg.sender].sub(msg.value);
             
@@ -915,13 +915,13 @@ contract C4FToken is ERC20Interface, Owned {
             
             uint256 new_total = _total_sold.add(token_amount);
             // check if PreICO volume sold off 
-            if(now &lt;= _endOfPreICO){
+            if(now <= _endOfPreICO){
                 // check if we are above the limit with this transfer, then bounce
-                if(new_total &gt; _maxTokenSoldPreICO) revert();
+                if(new_total > _maxTokenSoldPreICO) revert();
             }
             
             // check if exceeding total ICO sale tokens
-            if(new_total &gt; _maxTokenSoldICO) revert();
+            if(new_total > _maxTokenSoldICO) revert();
             
             // transfer tokens from owner account to sender
             if(!transferInternal(msg.sender, token_amount)) revert();

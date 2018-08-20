@@ -5,7 +5,7 @@ DVIP Terms of Service
 The following Terms of Service specify the agreement between Decentralized Capital Ltd. (DC) and the purchaser of DVIP Memberships (customer/member). By purchasing, using, or possessing the DVIP token you agree to be legally bound by these terms, which shall take effect immediately upon purchase of the membership.
 
 
-1. Rights of DVIP Membership holders: Each membership entitles the customer to ZERO transaction fees on all on-chain transfers of DC Assets, and &#189; off fees for purchasing and redeeming DC Assets through Crypto Capital. DVIP also entitles the customer to discounts on select future Decentralized Capital Ltd. services. These discounts only apply to the fees specified on the DC website. DC is not responsible for any fees charged by third parties including, but not limited to, dapps, exchanges, Crypto Capital, and Coinapult.
+1. Rights of DVIP Membership holders: Each membership entitles the customer to ZERO transaction fees on all on-chain transfers of DC Assets, and ½ off fees for purchasing and redeeming DC Assets through Crypto Capital. DVIP also entitles the customer to discounts on select future Decentralized Capital Ltd. services. These discounts only apply to the fees specified on the DC website. DC is not responsible for any fees charged by third parties including, but not limited to, dapps, exchanges, Crypto Capital, and Coinapult.
 
 2. DVIP membership rights expire on January 1st, 2020. Upon expiration of membership benefits, each 1/100th of a token is redeemable for an additional $1.50 in fees on eligible DC products. This additional discount expires on January 1st, 2022.
 
@@ -25,7 +25,7 @@ The following Terms of Service specify the agreement between Decentralized Capit
 
 10. DVIP Buyback Rights: Decentralized Capital Ltd. reserves the right to repurchase the DVIP from token holders at any time. Repurchase will occur at the average price of all markets where DVIP is listed.
 
-11. Entire Agreement. The foregoing Membership Terms &amp; Conditions contain the entire terms and agreements in connection with Member&#39;s participation in the DC service and no representations, inducements, promises or agreement, or otherwise, between DC and the Member not included herein, shall be of any force or effect. If any of the foregoing terms or provisions shall be invalid or unenforceable, the remaining terms and provisions hereof shall not be affected.
+11. Entire Agreement. The foregoing Membership Terms & Conditions contain the entire terms and agreements in connection with Member's participation in the DC service and no representations, inducements, promises or agreement, or otherwise, between DC and the Member not included herein, shall be of any force or effect. If any of the foregoing terms or provisions shall be invalid or unenforceable, the remaining terms and provisions hereof shall not be affected.
 
 12. This agreement shall be governed by and construed under, and the legal relations among the parties hereto shall be determined in accordance with, the laws of the United Kingdom of Great Britain and Northern Ireland.
 
@@ -66,7 +66,7 @@ contract StateTransferrable is Owned {
     PropertySet(msg.sender);
   }
   modifier onlyOwnerUnlocked {
-    assert(!locked &amp;&amp; msg.sender == owner);
+    assert(!locked && msg.sender == owner);
     _
   }
   function lock() onlyOwner onlyIfUnlocked {
@@ -87,7 +87,7 @@ contract Relay {
 }
 
 contract TokenBase is Owned {
-    bytes32 public standard = &#39;Token 0.1&#39;;
+    bytes32 public standard = 'Token 0.1';
     bytes32 public name;
     bytes32 public symbol;
     bool public allowTransactions;
@@ -95,8 +95,8 @@ contract TokenBase is Owned {
 
     event Approval(address indexed from, address indexed spender, uint256 amount);
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -123,13 +123,13 @@ contract TrustEvents {
 
 contract Trust is StateTransferrable, TrustEvents {
 
-  mapping (address =&gt; bool) public masterKeys;
-  mapping (address =&gt; bytes32) public nameRegistry;
+  mapping (address => bool) public masterKeys;
+  mapping (address => bytes32) public nameRegistry;
   address[] public masterKeyIndex;
-  mapping (address =&gt; bool) public masterKeyActive;
-  mapping (address =&gt; bool) public trustedClients;
-  mapping (uint256 =&gt; address) public functionCalls;
-  mapping (address =&gt; uint256) public functionCalling;
+  mapping (address => bool) public masterKeyActive;
+  mapping (address => bool) public trustedClients;
+  mapping (uint256 => address) public functionCalls;
+  mapping (address => uint256) public functionCalling;
 
   /* ---------------  modifiers  --------------*/
 
@@ -359,7 +359,7 @@ contract DVIPBackend {
   function assert(bool assertion) {
     if (!assertion) throw;
   }
-  bytes32 public standard = &#39;Token 0.1&#39;;
+  bytes32 public standard = 'Token 0.1';
   bytes32 public name;
   bytes32 public symbol;
   bool public allowTransactions;
@@ -368,20 +368,20 @@ contract DVIPBackend {
   event Approval(address indexed from, address indexed spender, uint256 amount);
   event PropertySet(address indexed from);
 
-  mapping (address =&gt; uint256) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+  mapping (address => uint256) public balanceOf;
+  mapping (address => mapping (address => uint256)) public allowance;
 
 /*
-  mapping (address =&gt; bool) public balanceOfActive;
+  mapping (address => bool) public balanceOfActive;
   address[] public balanceOfIndex;
 */
 
 /*
-  mapping (address =&gt; bool) public allowanceActive;
+  mapping (address => bool) public allowanceActive;
   address[] public allowanceIndex;
 
-  mapping (address =&gt; mapping (address =&gt; bool)) public allowanceRecordActive;
-  mapping (address =&gt; address[]) public allowanceRecordIndex;
+  mapping (address => mapping (address => bool)) public allowanceRecordActive;
+  mapping (address => address[]) public allowanceRecordIndex;
 */
 
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -398,7 +398,7 @@ contract DVIPBackend {
   address public owner;
 
   modifier onlyOwnerUnlocked {
-    assert(msg.sender == owner &amp;&amp; !locked);
+    assert(msg.sender == owner && !locked);
     _
   }
 
@@ -427,18 +427,18 @@ contract DVIPBackend {
     uint256 ts;
   }
 
-  mapping (address =&gt; Validity) public validAfter;
+  mapping (address => Validity) public validAfter;
   uint256 public mustHoldFor;
   address public hotwalletAddress;
   address public frontendAddress;
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping (address => bool) public frozenAccount;
 /*
-  mapping (address =&gt; bool) public frozenAccountActive;
+  mapping (address => bool) public frozenAccountActive;
   address[] public frozenAccountIndex;
 */
-  mapping (address =&gt; uint256) public exportFee;
+  mapping (address => uint256) public exportFee;
 /*
-  mapping (address =&gt; bool) public exportFeeActive;
+  mapping (address => bool) public exportFeeActive;
   address[] public exportFeeIndex;
 */
 
@@ -460,8 +460,8 @@ contract DVIPBackend {
     frontendAddress = _frontendAddress;
     allowTransactions = true;
     totalSupply = 0;
-    name = &quot;DVIP&quot;;
-    symbol = &quot;DVIP&quot;;
+    name = "DVIP";
+    symbol = "DVIP";
     feeDecimals = 6;
     decimals = 1;
     expiry = 1514764800; //1 jan 2018
@@ -487,8 +487,8 @@ contract DVIPBackend {
    */
   function transfer(address caller, address _to, uint256 _amount) onlyAsset returns (bool success) {
     assert(allowTransactions);
-    assert(balanceOf[caller] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
+    assert(balanceOf[caller] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
     assert(!frozenAccount[caller]);
     assert(!frozenAccount[_to]);
     balanceOf[caller] -= _amount;
@@ -496,12 +496,12 @@ contract DVIPBackend {
     // activateBalance(_to);
     uint256 preBalance = balanceOf[_to];
     balanceOf[_to] += _amount;
-    bool alreadyMax = preBalance &gt;= singleDVIPQty;
+    bool alreadyMax = preBalance >= singleDVIPQty;
     if (!alreadyMax) {
-      if (now &gt;= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
+      if (now >= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
       validAfter[_to].ts = now;
     }
-    if (validAfter[caller].last &gt; balanceOf[caller]) validAfter[caller].last = balanceOf[caller];
+    if (validAfter[caller].last > balanceOf[caller]) validAfter[caller].last = balanceOf[caller];
     Transfer(caller, _to, _amount);
     return true;
   }
@@ -516,9 +516,9 @@ contract DVIPBackend {
    */
   function transferFrom(address caller, address _from, address _to, uint256 _amount) onlyAsset returns (bool success) {
     assert(allowTransactions);
-    assert(balanceOf[_from] &gt;= _amount);
-    assert(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
-    assert(_amount &lt;= allowance[_from][caller]);
+    assert(balanceOf[_from] >= _amount);
+    assert(balanceOf[_to] + _amount >= balanceOf[_to]);
+    assert(_amount <= allowance[_from][caller]);
     assert(!frozenAccount[caller]);
     assert(!frozenAccount[_from]);
     assert(!frozenAccount[_to]);
@@ -528,12 +528,12 @@ contract DVIPBackend {
     // activateBalance(_from);
     // activateBalance(_to);
     allowance[_from][caller] -= _amount;
-    bool alreadyMax = preBalance &gt;= singleDVIPQty;
+    bool alreadyMax = preBalance >= singleDVIPQty;
     if (!alreadyMax) {
-      if (now &gt;= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
+      if (now >= validAfter[_to].ts + mustHoldFor) validAfter[_to].last = preBalance;
       validAfter[_to].ts = now;
     }
-    if (validAfter[_from].last &gt; balanceOf[_from]) validAfter[_from].last = balanceOf[_from];
+    if (validAfter[_from].last > balanceOf[_from]) validAfter[_from].last = balanceOf[_from];
     Transfer(_from, _to, _amount);
     return true;
   }
@@ -604,7 +604,7 @@ contract DVIPBackend {
   }
 
   function seizeTokens(address target, uint256 amount) onlyOwner {
-    assert(balanceOf[target] &gt;= amount);
+    assert(balanceOf[target] >= amount);
     assert(frozenAccount[target]);
     balanceOf[target] -= amount;
     balanceOf[hotwalletAddress] += amount;
@@ -612,7 +612,7 @@ contract DVIPBackend {
   }
 
   function destroyTokens(uint256 amt) onlyOwner {
-    assert(balanceOf[hotwalletAddress] &gt;= amt);
+    assert(balanceOf[hotwalletAddress] >= amt);
     balanceOf[hotwalletAddress] -= amt;
     Processed(msg.sender);
   }
@@ -643,9 +643,9 @@ contract DVIPBackend {
   /* --------------- fee calculation method ---------------- */
 
   /**
-   * @notice &#39;Returns the fee for a transfer from `from` to `to` on an amount `amount`.
+   * @notice 'Returns the fee for a transfer from `from` to `to` on an amount `amount`.
    *
-   * Fee&#39;s consist of a possible
+   * Fee's consist of a possible
    *    - import fee on transfers to an address
    *    - export fee on transfers from an address
    * DVIP ownership on an address
@@ -663,12 +663,12 @@ contract DVIPBackend {
   function feeFor(address from, address to, uint256 amount) constant external returns (uint256 value) {
     uint256 fee = exportFee[from];
     if (fee == 0) return 0;
-    if (now &gt;= expiry) return amount*fee / baseFeeDivisor;
+    if (now >= expiry) return amount*fee / baseFeeDivisor;
     uint256 amountHeld;
     if (balanceOf[to] != 0) {
-      if (validAfter[to].ts + mustHoldFor &lt; now) amountHeld = balanceOf[to];
+      if (validAfter[to].ts + mustHoldFor < now) amountHeld = balanceOf[to];
       else amountHeld = validAfter[to].last;
-      if (amountHeld &gt;= singleDVIPQty) return 0;
+      if (amountHeld >= singleDVIPQty) return 0;
       return amount*fee*(singleDVIPQty - amountHeld) / feeDivisor;
     } else return amount*fee / baseFeeDivisor;
   }
@@ -678,13 +678,13 @@ contract DVIPBackend {
     singleDVIPQty = pow10(1, decimals);
   }
   function div10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a /= 10;
     }
     return a;
   }
   function pow10(uint256 a, uint8 b) internal returns (uint256 result) {
-    for (uint8 i = 0; i &lt; b; i++) {
+    for (uint8 i = 0; i < b; i++) {
       a *= 10;
     }
     return a;

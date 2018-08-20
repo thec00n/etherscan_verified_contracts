@@ -8,37 +8,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -78,13 +78,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /*
    * Fix for the ERC20 short address attack  
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -104,13 +104,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transferFrom(address _from, address _to, uint _value) {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -155,7 +155,7 @@ https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/token/Ve
 contract LimitedTransferToken is ERC20 {
   // Checks whether it can transfer or otherwise throws.
   modifier canTransfer(address _sender, uint _value) {
-   if (_value &gt; transferableTokens(_sender, uint64(now))) throw;
+   if (_value > transferableTokens(_sender, uint64(now))) throw;
    _;
   }
 
@@ -214,8 +214,8 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
   event OwnerTokensAllocated(uint _amount);
   event SaleStarted(uint _saleEndTime);
 
-  string public name = &quot;OxToken&quot;;
-  string public symbol = &quot;OX&quot;;
+  string public name = "OxToken";
+  string public symbol = "OX";
 
   uint public decimals = 3;
   uint public multiplier = 10**decimals;
@@ -251,7 +251,7 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
     if (saleStartTime == 0) {
       return false;
     }
-    if (getNow() &gt; SafeMath.add(saleStartTime, 31 days)) {
+    if (getNow() > SafeMath.add(saleStartTime, 31 days)) {
       return false;
     }
     return true;
@@ -274,7 +274,7 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
     if (saleStartTime != 0) {
       throw;
     }
-    //Can&#39;t start unless balances have been initialized
+    //Can't start unless balances have been initialized
     if (!balancesInitialized) {
       throw;
     }
@@ -289,7 +289,7 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
   function createTokens(address recipient) payable {
 
     //Only allow purchases over the MIN_PURCHASE
-    if (msg.value &lt; MIN_PURCHASE) {
+    if (msg.value < MIN_PURCHASE) {
       throw;
     }
 
@@ -311,8 +311,8 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
 
     totalSupply = totalSupply.add(tokens);
 
-    //Don&#39;t allow totalSupply to be larger than MAX_SUPPLY
-    if (totalSupply &gt; MAX_SUPPLY) {
+    //Don't allow totalSupply to be larger than MAX_SUPPLY
+    if (totalSupply > MAX_SUPPLY) {
       throw;
     }
 
@@ -323,7 +323,7 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
 
   }
 
-  //Function to assign team &amp; bounty tokens to owner
+  //Function to assign team & bounty tokens to owner
   function allocateOwnerTokens() public {
 
     //Can only be called once
@@ -351,11 +351,11 @@ contract OxToken is StandardToken, LimitedTransferToken, Ownable, Destructible {
 
     uint elapsed = SafeMath.sub(getNow(), saleStartTime);
 
-    if (elapsed &lt; 1 days) return 25;
-    if (elapsed &lt; 1 weeks) return 20;
-    if (elapsed &lt; 2 weeks) return 15;
-    if (elapsed &lt; 3 weeks) return 10;
-    if (elapsed &lt; 4 weeks) return 5;
+    if (elapsed < 1 days) return 25;
+    if (elapsed < 1 weeks) return 20;
+    if (elapsed < 2 weeks) return 15;
+    if (elapsed < 3 weeks) return 10;
+    if (elapsed < 4 weeks) return 5;
 
     return 0;
   }

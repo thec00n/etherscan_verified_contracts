@@ -1,7 +1,7 @@
 pragma solidity ^0.4.2;
 // Stampd.io Contract v1.00
 contract StampdPostHash {
-  mapping (string =&gt; bool) private stampdLedger;
+  mapping (string => bool) private stampdLedger;
   function _storeProof(string hashResult) {
     stampdLedger[hashResult] = true;
   }

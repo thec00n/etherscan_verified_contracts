@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 
 
 
-/// Will accept Ether &quot;contributions&quot; and records each both as a log and in a
+/// Will accept Ether "contributions" and records each both as a log and in a
 /// queryable records.
 contract Fundraiser {
     using SafeMath for uint;
@@ -67,7 +67,7 @@ contract Fundraiser {
     bool public isHalted = false;
 
     // The `records` mapping maps musereum addresses to the amount of ETM.
-    mapping (address =&gt; uint) public records;
+    mapping (address => uint) public records;
 
     // The total amount of ether raised
     uint public totalWei = 0;
@@ -88,8 +88,8 @@ contract Fundraiser {
         uint _weiPerBtc,
         uint _EtmPerBtc
     ) {
-        require(_weiPerBtc &gt; 0);
-        require(_EtmPerBtc &gt; 0);
+        require(_weiPerBtc > 0);
+        require(_EtmPerBtc > 0);
 
         admin = _admin;
         treasury = _treasury;
@@ -103,15 +103,15 @@ contract Fundraiser {
     // Can only be called by admin.
     modifier only_admin { require(msg.sender == admin); _; }
     // Can only be called by prior to the period.
-    //modifier only_before_period { require(block.number &lt; beginBlock); _; }
+    //modifier only_before_period { require(block.number < beginBlock); _; }
     // Can only be called during the period when not halted.
-    modifier only_during_period { require(/*block.number &gt;= beginBlock || block.number &lt; endBlock &amp;&amp; */!isHalted); _; }
+    modifier only_during_period { require(/*block.number >= beginBlock || block.number < endBlock && */!isHalted); _; }
     // Can only be called during the period when halted.
-    modifier only_during_halted_period { require(/*block.number &gt;= beginBlock || block.number &lt; endBlock &amp;&amp; */isHalted); _; }
+    modifier only_during_halted_period { require(/*block.number >= beginBlock || block.number < endBlock && */isHalted); _; }
     // Can only be called after the period.
-    //modifier only_after_period { require(block.number &gt;= endBlock); _; }
+    //modifier only_after_period { require(block.number >= endBlock); _; }
     // The value of the message must be sufficiently large to not be considered dust.
-    modifier is_not_dust { require(msg.value &gt;= dust); _; }
+    modifier is_not_dust { require(msg.value >= dust); _; }
 
     /// Some contribution `amount` received from `recipient` at rate of `currentRate` with emergency return of `returnAddr`.
     event Received(address indexed recipient, address returnAddr, uint weiAmount, uint currentRate);
@@ -123,7 +123,7 @@ contract Fundraiser {
 
     // Is the fundraiser active?
     function isActive() public constant returns (bool active) {
-        return (/*block.number &gt;= beginBlock &amp;&amp; block.number &lt; endBlock &amp;&amp; */ !isHalted);
+        return (/*block.number >= beginBlock && block.number < endBlock && */ !isHalted);
     }
 
     /// Receive a contribution for a donor musereum address.

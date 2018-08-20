@@ -12,7 +12,7 @@ pragma solidity ^0.4.18;
 // 2. the ownership of the devfee can transfer through sacrificing sperm
 //  a. the new requirement will be how many remaining sperm you have after the sacrifice
 //  b. you cannot sacrifice sperm if you are the spermlord
-// 3. the &quot;free&quot; 500 sperm cost 0.001 eth (in line with the mining fee)
+// 3. the "free" 500 sperm cost 0.001 eth (in line with the mining fee)
 // bots should have a harder time, and whales can compete for the devfee
 
 contract SpermLabsReborn {
@@ -24,10 +24,10 @@ contract SpermLabsReborn {
     bool public initialized = false;
     address public spermlordAddress;
     uint256 public spermlordReq = 500000; // starts at 500k sperm
-    mapping (address =&gt; uint256) public ballSperm;
-    mapping (address =&gt; uint256) public claimedCells;
-    mapping (address =&gt; uint256) public lastEvent;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public ballSperm;
+    mapping (address => uint256) public claimedCells;
+    mapping (address => uint256) public lastEvent;
+    mapping (address => address) public referrals;
     uint256 public marketCells;
 
     function SpermLabsReborn() public {
@@ -37,7 +37,7 @@ contract SpermLabsReborn {
     function makeSperm(address ref) public {
         require(initialized);
 
-        if (referrals[msg.sender] == 0 &amp;&amp; referrals[msg.sender] != msg.sender) {
+        if (referrals[msg.sender] == 0 && referrals[msg.sender] != msg.sender) {
             referrals[msg.sender] = ref;
         }
 
@@ -61,7 +61,7 @@ contract SpermLabsReborn {
         uint256 cellValue = calculateCellSell(cellCount);
         uint256 fee = devFee(cellValue);
         
-        // one third of your sperm die :&#39;(
+        // one third of your sperm die :'(
         ballSperm[msg.sender] = SafeMath.mul(SafeMath.div(ballSperm[msg.sender], 3), 2); // =66%
         claimedCells[msg.sender] = 0;
         lastEvent[msg.sender] = now;
@@ -135,7 +135,7 @@ contract SpermLabsReborn {
     function becomeSpermlord() public {
         require(initialized);
         require(msg.sender != spermlordAddress);
-        require(ballSperm[msg.sender] &gt;= spermlordReq);
+        require(ballSperm[msg.sender] >= spermlordReq);
 
         ballSperm[msg.sender] = SafeMath.sub(ballSperm[msg.sender], spermlordReq);
         spermlordReq = ballSperm[msg.sender]; // the requirement now becomes the balance at that time
@@ -156,7 +156,7 @@ contract SpermLabsReborn {
     }
 
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -178,9 +178,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -188,7 +188,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -197,7 +197,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

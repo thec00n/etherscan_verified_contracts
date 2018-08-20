@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -60,7 +60,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -107,7 +107,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -195,10 +195,10 @@ contract MigrationAgent {
 contract BBDToken is StandardToken, Ownable {
 
     // Metadata
-    string public constant name = &quot;BlockChain Board Of Derivatives Token&quot;;
-    string public constant symbol = &quot;BBD&quot;;
+    string public constant name = "BlockChain Board Of Derivatives Token";
+    string public constant symbol = "BBD";
     uint256 public constant decimals = 18;
-    string private constant version = &#39;1.0.0&#39;;
+    string private constant version = '1.0.0';
 
     // Crowdsale parameters
     uint256 public constant startTime = 1506844800; //Sunday, 1 October 2017 08:00:00 GMT
@@ -240,7 +240,7 @@ contract BBDToken is StandardToken, Ownable {
 
     // Since we have different exchange rates, we need to keep track of how
     // much ether each contributed in case that we need to issue a refund
-    mapping (address =&gt; uint256) private ethBalances;
+    mapping (address => uint256) private ethBalances;
 
     uint256 private constant divisor = 10000;
 
@@ -251,7 +251,7 @@ contract BBDToken is StandardToken, Ownable {
 
     // Check if min cap was archived.
     modifier onlyWhenICOReachedCreationMinCap() {
-        require( totalSupply &gt;= creationMinCap );
+        require( totalSupply >= creationMinCap );
         _;
     }
 
@@ -262,7 +262,7 @@ contract BBDToken is StandardToken, Ownable {
     function creationRateOnTime() public constant returns (uint256) {
         uint256 currentPrice;
 
-        if (now &gt; endTime) {
+        if (now > endTime) {
             currentPrice = endCreationRateOnTime;
         }
         else {
@@ -280,16 +280,16 @@ contract BBDToken is StandardToken, Ownable {
         uint256 bonus;
 
         //We provide bonus depending on eth value
-        if (_ethVal &lt; quantityThreshold_10) {
+        if (_ethVal < quantityThreshold_10) {
             bonus = 0; // 0% bonus
         }
-        else if (_ethVal &lt; quantityThreshold_30) {
+        else if (_ethVal < quantityThreshold_30) {
             bonus = quantityBonus_10; // 5% bonus
         }
-        else if (_ethVal &lt; quantityThreshold_100) {
+        else if (_ethVal < quantityThreshold_100) {
             bonus = quantityBonus_30; // 10% bonus
         }
-        else if (_ethVal &lt; quantityThreshold_300) {
+        else if (_ethVal < quantityThreshold_300) {
             bonus = quantityBonus_100; // 15% bonus
         }
         else {
@@ -304,8 +304,8 @@ contract BBDToken is StandardToken, Ownable {
     function buy(address _beneficiary) payable {
         require(!finalized);
         require(msg.value != 0);
-        require(now &lt;= endTime);
-        require(now &gt;= startTime);
+        require(now <= endTime);
+        require(now >= startTime);
 
         uint256 bbdTokens = calculateBDD(msg.value);
         uint256 additionalBBDTokensForMainAccount = bbdTokens.mul(2250).div(divisor); // 22.5%
@@ -316,7 +316,7 @@ contract BBDToken is StandardToken, Ownable {
                                            .add(additionalBBDTokensForMainAccount)
                                            .add(2 * additionalBBDTokensForCoreTeamMember);
 
-        require(creationMaxCap &gt;= checkedSupply);
+        require(creationMaxCap >= checkedSupply);
 
         totalSupply = checkedSupply;
 
@@ -330,7 +330,7 @@ contract BBDToken is StandardToken, Ownable {
 
         raised += msg.value;
 
-        if (exchangeAddress != 0x0 &amp;&amp; totalSupply &gt;= creationMinCap &amp;&amp; msg.value &gt;= 1 ether) {
+        if (exchangeAddress != 0x0 && totalSupply >= creationMinCap && msg.value >= 1 ether) {
             // After archiving min cap we start moving 10% to exchange. It will help with liquidity on exchange.
             exchangeAddress.transfer(msg.value.mul(1000).div(divisor)); // 10%
         }
@@ -341,7 +341,7 @@ contract BBDToken is StandardToken, Ownable {
     // Finalize for successful ICO
     function finalize() onlyOwner external {
         require(!finalized);
-        require(now &gt;= endTime || totalSupply &gt;= creationMaxCap);
+        require(now >= endTime || totalSupply >= creationMaxCap);
 
         finalized = true;
 
@@ -352,15 +352,15 @@ contract BBDToken is StandardToken, Ownable {
         mainAccount.transfer(this.balance); //90%
     }
 
-    // Refund if ICO won&#39;t reach min cap
+    // Refund if ICO won't reach min cap
     function refund() external {
-        require(now &gt; endTime);
-        require(totalSupply &lt; creationMinCap);
+        require(now > endTime);
+        require(totalSupply < creationMinCap);
 
         uint256 bddVal = balances[msg.sender];
-        require(bddVal &gt; 0);
+        require(bddVal > 0);
         uint256 ethVal = ethBalances[msg.sender];
-        require(ethVal &gt; 0);
+        require(ethVal > 0);
 
         balances[msg.sender] = 0;
         ethBalances[msg.sender] = 0;
@@ -375,8 +375,8 @@ contract BBDToken is StandardToken, Ownable {
     function migrate(uint256 _value) external {
         require(finalized);
         require(migrationAgent != 0x0);
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);

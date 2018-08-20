@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -100,10 +100,10 @@ contract FollowCoin is Ownable, ERC20 {
     uint8 public decimals;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; bool) public allowedAccount;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public isHolder;
+    mapping (address => uint256) public balances;
+    mapping (address => bool) public allowedAccount;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public isHolder;
     address [] public holders;
 
     // This notifies clients about the amount burnt
@@ -154,8 +154,8 @@ contract FollowCoin is Ownable, ERC20 {
     function _transfer(address _from, address _to, uint _value) internal coinsLocked {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
 
-        require(balanceOf(_from) &gt;= _value);                // Check if the sender has enough
-        require(balanceOf(_to).add(_value) &gt; balanceOf(_to)); // Check for overflows
+        require(balanceOf(_from) >= _value);                // Check if the sender has enough
+        require(balanceOf(_to).add(_value) > balanceOf(_to)); // Check for overflows
         balances[_from] = balanceOf(_from).sub(_value);                         // Subtract from the sender
         balances[_to] = balanceOf(_to).add(_value);                           // Add the same to the recipient
 
@@ -190,7 +190,7 @@ contract FollowCoin is Ownable, ERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -241,7 +241,7 @@ contract FollowCoin is Ownable, ERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner returns (bool success) {
-        require(balanceOf(msg.sender) &gt;= _value);   // Check if the sender has enough
+        require(balanceOf(msg.sender) >= _value);   // Check if the sender has enough
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);            // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -299,7 +299,7 @@ contract FollowCoinTokenSale is Haltable {
     uint public deadline;
     uint public tokensPerEther;
     FollowCoin public tokenReward;
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -356,14 +356,14 @@ contract FollowCoinTokenSale is Haltable {
     }
 
     function buyTokens() payable preSaleActive inNormalState {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
        
         uint amount = msg.value;
-        require(balanceOf(msg.sender).add(amount) &lt;= tokenLimitPerWallet);
+        require(balanceOf(msg.sender).add(amount) <= tokenLimitPerWallet);
 
         uint tokens =  calculateTokenAmount(amount);
-        require(totalTokens &gt;= tokens);
-        require(tokensSold.add(tokens) &lt;= hardCap); // hardCap limit
+        require(totalTokens >= tokens);
+        require(tokensSold.add(tokens) <= hardCap); // hardCap limit
         
         balances[msg.sender] = balances[msg.sender].add(amount);
         amountRaised = amountRaised.add(amount);
@@ -379,8 +379,8 @@ contract FollowCoinTokenSale is Haltable {
     }
 
     modifier preSaleActive() {
-      require(now &gt;= startTimestamp);
-      require(now &lt; deadline);
+      require(now >= startTimestamp);
+      require(now < deadline);
       _;
     }
 

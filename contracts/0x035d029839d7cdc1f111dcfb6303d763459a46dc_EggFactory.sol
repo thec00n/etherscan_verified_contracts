@@ -81,7 +81,7 @@ contract AccessControl {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCLevel whenNotPaused {
         paused = true;
@@ -93,7 +93,7 @@ contract AccessControl {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCEO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -129,15 +129,15 @@ contract EggFactory is AccessControl{
 
     // Mapping of existing eggs 
     // @dev: uint256 is the ID of the egg scheme
-    mapping (uint256 =&gt; EggScheme) public eggs;
+    mapping (uint256 => EggScheme) public eggs;
     uint256[] public eggsIndexes;
     
     uint256[] public activeEggs;
-    mapping (uint256 =&gt; uint256) indexesActiveEggs;
+    mapping (uint256 => uint256) indexesActiveEggs;
 
     // Mapping of eggs owned by an address
-    // @dev: owner =&gt; ( eggId =&gt; eggsAmount )
-    mapping ( address =&gt; mapping ( uint256 =&gt; uint256 ) ) public eggsOwned;
+    // @dev: owner => ( eggId => eggsAmount )
+    mapping ( address => mapping ( uint256 => uint256 ) ) public eggsOwned;
     
 
     // Extend constructor
@@ -218,8 +218,8 @@ contract EggFactory is AccessControl{
     function buyEgg(uint256 _eggId, uint256 _amount) public payable returns(bool){
         require(eggs[_eggId].active == true);
         require((currentEggPrice(_eggId)*_amount) == msg.value);
-        require(eggs[_eggId].maxAllowedToBuy == 0 || _amount&lt;=eggs[_eggId].maxAllowedToBuy);
-        require(eggs[_eggId].stock == 0 || eggs[_eggId].purchased+_amount&lt;=eggs[_eggId].stock); // until max
+        require(eggs[_eggId].maxAllowedToBuy == 0 || _amount<=eggs[_eggId].maxAllowedToBuy);
+        require(eggs[_eggId].stock == 0 || eggs[_eggId].purchased+_amount<=eggs[_eggId].stock); // until max
         
         vaultAddress.transfer(msg.value); // transfer the amount to vault
         
@@ -235,7 +235,7 @@ contract EggFactory is AccessControl{
     
     function openEgg(uint256 _eggId, uint256 _amount) external {
         require(eggs[_eggId].open == true);
-        require(eggsOwned[msg.sender][_eggId] &gt;= _amount);
+        require(eggsOwned[msg.sender][_eggId] >= _amount);
         
         eggsOwned[msg.sender][_eggId] -= _amount;
         emit EggOpened(msg.sender, _eggId, _amount);

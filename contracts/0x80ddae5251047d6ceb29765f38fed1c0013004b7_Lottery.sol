@@ -23,7 +23,7 @@ contract Lottery {
     // Make a bet
     function makeBet() {
         // Won if block number is even
-        // (note: this is a terrible source of randomness, please don&#39;t use this with real money)
+        // (note: this is a terrible source of randomness, please don't use this with real money)
         bool won = (block.number % 2) == 0; 
         
         // Record the bet with an event
@@ -42,7 +42,7 @@ contract Lottery {
     function getBets() {
         if(msg.sender != organizer) { throw; }
         
-        for (uint i = 0; i &lt; bets.length; i++) {
+        for (uint i = 0; i < bets.length; i++) {
             GetBet(bets[i].betAmount, bets[i].blockNumber, bets[i].won);
         }
     }

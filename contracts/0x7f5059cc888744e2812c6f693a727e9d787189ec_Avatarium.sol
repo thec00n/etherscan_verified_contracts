@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -74,7 +74,7 @@ contract Ownable {
 }
 
 // @title Interface for contracts conforming to ERC-721 Non-Fungible Tokens
-// @author Dieter Shirley <span class="__cf_email__" data-cfemail="2b4f4e5f4e6b4a53424446514e45054844">[email&#160;protected]</span> (httpsgithub.comdete)
+// @author Dieter Shirley <span class="__cf_email__" data-cfemail="2b4f4e5f4e6b4a53424446514e45054844">[email protected]</span> (httpsgithub.comdete)
 contract ERC721 {
     //Required methods
     function approve(address _to, uint256 _tokenId) public;
@@ -123,8 +123,8 @@ contract Avatarium is Ownable, ERC721 {
 
 
     // The name and the symbol of the NFT, as defined in ERC-721.
-    string public constant NAME = &quot;Avatarium&quot;;
-    string public constant SYMBOL = &quot;ΛV&quot;;
+    string public constant NAME = "Avatarium";
+    string public constant SYMBOL = "ΛV";
 
     // Prices and iteration steps
     uint256 private startingPrice = 0.02 ether;
@@ -139,18 +139,18 @@ contract Avatarium is Ownable, ERC721 {
     // --- Storage --- //
 
 
-    // @dev A mapping from Avatar ID to the owner&#39;s address.
-    mapping (uint =&gt; address) public avatarIndexToOwner;
+    // @dev A mapping from Avatar ID to the owner's address.
+    mapping (uint => address) public avatarIndexToOwner;
 
-    // @dev A mapping from the owner&#39;s address to the tokens it owns.
-    mapping (address =&gt; uint256) public ownershipTokenCount;
+    // @dev A mapping from the owner's address to the tokens it owns.
+    mapping (address => uint256) public ownershipTokenCount;
 
-    // @dev A mapping from Avatar&#39;s ID to an address that has been approved
+    // @dev A mapping from Avatar's ID to an address that has been approved
     // to call transferFrom().
-    mapping (uint256 =&gt; address) public avatarIndexToApproved;
+    mapping (uint256 => address) public avatarIndexToApproved;
 
-    // @dev A private mapping from Avatar&#39;s ID to its price.
-    mapping (uint256 =&gt; uint256) private avatarIndexToPrice;
+    // @dev A private mapping from Avatar's ID to its price.
+    mapping (uint256 => uint256) private avatarIndexToPrice;
 
 
     // --- Datatypes --- //
@@ -276,10 +276,10 @@ contract Avatarium is Ownable, ERC721 {
         uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
         // Updating prices
-        if (sellingPrice &lt; firstIterationLimit) {
+        if (sellingPrice < firstIterationLimit) {
         // first stage
             avatarIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 94);
-        } else if (sellingPrice &lt; secondIterationLimit) {
+        } else if (sellingPrice < secondIterationLimit) {
         // second stage
             avatarIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 94);
         } else {
@@ -289,7 +289,7 @@ contract Avatarium is Ownable, ERC721 {
 
         _transfer(oldOwner, newOwner, _tokenId);
 
-        // Pay previous token Owner, if it&#39;s not the contract
+        // Pay previous token Owner, if it's not the contract
         if (oldOwner != address(this)) {
             oldOwner.transfer(payment);
         }

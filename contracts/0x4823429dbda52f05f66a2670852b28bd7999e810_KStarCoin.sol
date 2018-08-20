@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 
-//&gt;&gt; Reference to https://github.com/Arachnid/solidity-stringutils
+//>> Reference to https://github.com/Arachnid/solidity-stringutils
 
 library strings {
     struct slice {
@@ -32,12 +32,12 @@ library strings {
     }
 }
 
-//&lt;&lt; Reference to https://github.com/Arachnid/solidity-stringutils
+//<< Reference to https://github.com/Arachnid/solidity-stringutils
 
 
 
 
-//&gt;&gt; Reference to https://github.com/OpenZeppelin/zeppelin-solidity
+//>> Reference to https://github.com/OpenZeppelin/zeppelin-solidity
 
 /**
  * @title SafeMath
@@ -61,9 +61,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -71,7 +71,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -80,7 +80,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -139,7 +139,7 @@ library SafeERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -187,7 +187,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -198,8 +198,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -262,7 +262,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -304,7 +304,7 @@ contract ERC827Token is ERC827, StandardToken {
      Beware that changing an allowance with this method brings the risk that
      someone may use both the old and the new allowance by unfortunate
      transaction ordering. One possible solution to mitigate this race condition
-     is to first reduce the spender&#39;s allowance to 0 and set the desired value
+     is to first reduce the spender's allowance to 0 and set the desired value
      afterwards:
      https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      @param _spender The address that will spend the funds.
@@ -403,7 +403,7 @@ contract ERC827Token is ERC827, StandardToken {
 
 }
 
-//&lt;&lt; Reference to https://github.com/OpenZeppelin/zeppelin-solidity
+//<< Reference to https://github.com/OpenZeppelin/zeppelin-solidity
 
 
 
@@ -413,7 +413,7 @@ contract ERC827Token is ERC827, StandardToken {
  */
 contract MultiOwnable {
     address public root;
-    mapping (address =&gt; address) public owners; // owner =&gt; parent of owner
+    mapping (address => address) public owners; // owner => parent of owner
     
     /**
     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
@@ -445,7 +445,7 @@ contract MultiOwnable {
      * @dev Deleting owners
      */
     function deleteOwner(address _owner) onlyOwner public returns (bool) {
-        require(owners[_owner] == msg.sender || (owners[_owner] != 0 &amp;&amp; msg.sender == root));
+        require(owners[_owner] == msg.sender || (owners[_owner] != 0 && msg.sender == root));
         owners[_owner]= 0;
         return true;
     }
@@ -464,19 +464,19 @@ contract KStarCoinBasic is ERC827Token, MultiOwnable {
     // - Crowdsale : 9%(softcap) ~ 45%(hardcap)
     // - Reserve: 15%
     // - Team: 10%
-    // - Advisors &amp; Partners: 5%
+    // - Advisors & Partners: 5%
     // - Bounty Program + Ecosystem : 25% ~ 61%
     uint256 public capOfTotalSupply;
-    uint256 public constant INITIAL_SUPPLY= 30e6 * 1 ether; // Reserve(15) + Team(10) + Advisors&amp;Patners(5)
+    uint256 public constant INITIAL_SUPPLY= 30e6 * 1 ether; // Reserve(15) + Team(10) + Advisors&Patners(5)
 
     uint256 public crowdsaleRaised;
     uint256 public constant CROWDSALE_HARDCAP= 45e6 * 1 ether; // Crowdsale(Max 45)
 
     /**
-     * @dev Function to increase capOfTotalSupply in the next phase of KStarCoin&#39;s ecosystem
+     * @dev Function to increase capOfTotalSupply in the next phase of KStarCoin's ecosystem
      */
     function increaseCap(uint256 _addedValue) onlyOwner public returns (bool) {
-        require(_addedValue &gt;= 100e6 * 1 ether);
+        require(_addedValue >= 100e6 * 1 ether);
         capOfTotalSupply = capOfTotalSupply.add(_addedValue);
         return true;
     }
@@ -485,70 +485,70 @@ contract KStarCoinBasic is ERC827Token, MultiOwnable {
      * @dev Function to check whether the current supply exceeds capOfTotalSupply
      */
     function checkCap(uint256 _amount) public view returns (bool) {
-        return (totalSupply_.add(_amount) &lt;= capOfTotalSupply);
+        return (totalSupply_.add(_amount) <= capOfTotalSupply);
     }
     
-    //&gt; for ERC20
+    //> for ERC20
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(super.transfer(_to, _value));
-        KSC_Send(msg.sender, _to, _value, &quot;&quot;);
-        KSC_Receive(_to, msg.sender, _value, &quot;&quot;);
+        KSC_Send(msg.sender, _to, _value, "");
+        KSC_Receive(_to, msg.sender, _value, "");
         return true;
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(super.transferFrom(_from, _to, _value));
-        KSC_SendTo(_from, _to, _value, &quot;&quot;);
-        KSC_ReceiveFrom(_to, _from, _value, &quot;&quot;);
+        KSC_SendTo(_from, _to, _value, "");
+        KSC_ReceiveFrom(_to, _from, _value, "");
         return true;
     }
     
     function approve(address _to, uint256 _value) public returns (bool) {
         require(super.approve(_to, _value));
-        KSC_Approve(msg.sender, _to, _value, &quot;&quot;);
+        KSC_Approve(msg.sender, _to, _value, "");
         return true;
     }
     
     // additional StandardToken method of zeppelin-solidity
     function increaseApproval(address _to, uint _addedValue) public returns (bool) {
         require(super.increaseApproval(_to, _addedValue));
-        KSC_ApprovalInc(msg.sender, _to, _addedValue, &quot;&quot;);
+        KSC_ApprovalInc(msg.sender, _to, _addedValue, "");
         return true;
     }
     
     // additional StandardToken method of zeppelin-solidity
     function decreaseApproval(address _to, uint _subtractedValue) public returns (bool) {
         require(super.decreaseApproval(_to, _subtractedValue));
-        KSC_ApprovalDec(msg.sender, _to, _subtractedValue, &quot;&quot;);
+        KSC_ApprovalDec(msg.sender, _to, _subtractedValue, "");
         return true;
     }
-	//&lt;
+	//<
     
-    //&gt; for ERC827
+    //> for ERC827
     function transfer(address _to, uint256 _value, bytes _data) public returns (bool) {
-        return transfer(_to, _value, _data, &quot;&quot;);
+        return transfer(_to, _value, _data, "");
     }
     
     function transferFrom(address _from, address _to, uint256 _value, bytes _data) public returns (bool) {
-        return transferFrom(_from, _to, _value, _data, &quot;&quot;);
+        return transferFrom(_from, _to, _value, _data, "");
     }
     
     function approve(address _to, uint256 _value, bytes _data) public returns (bool) {
-        return approve(_to, _value, _data, &quot;&quot;);
+        return approve(_to, _value, _data, "");
     }
     
     // additional StandardToken method of zeppelin-solidity
     function increaseApproval(address _to, uint _addedValue, bytes _data) public returns (bool) {
-        return increaseApproval(_to, _addedValue, _data, &quot;&quot;);
+        return increaseApproval(_to, _addedValue, _data, "");
     }
     
     // additional StandardToken method of zeppelin-solidity
     function decreaseApproval(address _to, uint _subtractedValue, bytes _data) public returns (bool) {
-        return decreaseApproval(_to, _subtractedValue, _data, &quot;&quot;);
+        return decreaseApproval(_to, _subtractedValue, _data, "");
     }
-	//&lt;
+	//<
     
-    //&gt; notation for ERC827
+    //> notation for ERC827
     function transfer(address _to, uint256 _value, bytes _data, string _note) public returns (bool) {
         require(super.transfer(_to, _value, _data));
         KSC_Send(msg.sender, _to, _value, _note);
@@ -580,7 +580,7 @@ contract KStarCoinBasic is ERC827Token, MultiOwnable {
         KSC_ApprovalDec(msg.sender, _to, _subtractedValue, _note);
         return true;
     }
-	//&lt;
+	//<
       
     /**
      * @dev Function to mint coins
@@ -623,7 +623,7 @@ contract KStarCoinBasic is ERC827Token, MultiOwnable {
      */
     function burn(address _to, uint256 _amount) onlyOwner internal returns (bool) {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
         balances[_to]= balances[_to].sub(_amount);
         totalSupply_= totalSupply_.sub(_amount);
@@ -654,7 +654,7 @@ contract KStarCoinBasic is ERC827Token, MultiOwnable {
      * @return A boolean that indicates if the operation was successful.
      */
     function sell(address _to, uint256 _value, string _note) onlyOwner public returns (bool) {
-        require(crowdsaleRaised.add(_value) &lt;= CROWDSALE_HARDCAP);
+        require(crowdsaleRaised.add(_value) <= CROWDSALE_HARDCAP);
         require(mint(_to, _value));
         
         crowdsaleRaised= crowdsaleRaised.add(_value);
@@ -745,8 +745,8 @@ contract KStarCoinBasic is ERC827Token, MultiOwnable {
  * @notice KStarCoin is an ERC20 (with an alternative of ERC827) Ethereum based token, which will be integrated in KStarLive platform.
  */
 contract KStarCoin is KStarCoinBasic {
-    string public constant name= &quot;KStarCoin&quot;;
-    string public constant symbol= &quot;KSC&quot;;
+    string public constant name= "KStarCoin";
+    string public constant symbol= "KSC";
     uint8 public constant decimals= 18;
     
     // Constructure
@@ -757,6 +757,6 @@ contract KStarCoin is KStarCoinBasic {
         crowdsaleRaised= 0;
         
         Transfer(0x0, msg.sender, INITIAL_SUPPLY);
-        KSC_Initialize(msg.sender, 0x0, INITIAL_SUPPLY, &quot;&quot;);
+        KSC_Initialize(msg.sender, 0x0, INITIAL_SUPPLY, "");
     }
 }

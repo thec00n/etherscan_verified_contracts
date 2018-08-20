@@ -13,7 +13,7 @@ contract ERC20 {
 }
 
 // UbiTok.io on-chain continuous limit order book matching engine.
-// This variation is for a &quot;nice&quot; ERC20 token as base, ETH as quoted, and standard fees with reward token.
+// This variation is for a "nice" ERC20 token as base, ETH as quoted, and standard fees with reward token.
 // Copyright (c) Bonnag Limited. All Rights Reserved.
 // Version 1.1.0y - variant with totalsupply validation disabled
 // This contract allows minPriceExponent, baseMinInitialSize, and baseMinRemainingSize
@@ -168,7 +168,7 @@ contract BookERC20EthV1p1y {
   // and then multiplied by ethRwrdRate, it still fits in 2^127, allowing us to save
   // some gas by storing executed + fee fields as uint128.
   // even with 18 decimals, this still allows order sizes up to 1,000,000,000.
-  // if we encounter a token with e.g. 36 decimals we&#39;ll have to revisit ...
+  // if we encounter a token with e.g. 36 decimals we'll have to revisit ...
   uint constant baseMaxSize = 10 ** 30;
 
   // the counter currency (ETH)
@@ -189,9 +189,9 @@ contract BookERC20EthV1p1y {
   
   // funds that belong to clients (base, counter, and reward)
 
-  mapping (address =&gt; uint) balanceBaseForClient;
-  mapping (address =&gt; uint) balanceCntrForClient;
-  mapping (address =&gt; uint) balanceRwrdForClient;
+  mapping (address => uint) balanceBaseForClient;
+  mapping (address => uint) balanceCntrForClient;
+  mapping (address => uint) balanceRwrdForClient;
 
   // fee charged on liquidity taken, expressed as a divisor
   // (e.g. 2000 means 1/2000, or 0.05%)
@@ -204,24 +204,24 @@ contract BookERC20EthV1p1y {
 
   // all orders ever created
   
-  mapping (uint128 =&gt; Order) orderForOrderId;
+  mapping (uint128 => Order) orderForOrderId;
 
   // Effectively a compact mapping from price to whether there are any open orders at that price.
-  // See &quot;Price Calculation Constants&quot; below as to why 85.
+  // See "Price Calculation Constants" below as to why 85.
 
   uint256[85] occupiedPriceBitmaps;
 
   // These allow us to walk over the orders in the book at a given price level (and add more).
 
-  mapping (uint16 =&gt; OrderChain) orderChainForOccupiedPrice;
-  mapping (uint128 =&gt; OrderChainNode) orderChainNodeForOpenOrderId;
+  mapping (uint16 => OrderChain) orderChainForOccupiedPrice;
+  mapping (uint128 => OrderChainNode) orderChainNodeForOpenOrderId;
 
   // These allow a client to (reasonably) efficiently find their own orders
   // without relying on events (which even indexed are a bit expensive to search
   // and cannot be accessed from smart contracts). See walkOrders.
 
-  mapping (address =&gt; uint128) mostRecentOrderIdForClient;
-  mapping (uint128 =&gt; uint128) clientPreviousOrderIdBeforeOrderId;
+  mapping (address => uint128) mostRecentOrderIdForClient;
+  mapping (uint128 => uint128) clientPreviousOrderIdBeforeOrderId;
 
   // Price Calculation Constants.
   //
@@ -273,7 +273,7 @@ contract BookERC20EthV1p1y {
     feeCollector = creator;
   }
 
-  // &quot;Public&quot; Management - set address of base and reward tokens.
+  // "Public" Management - set address of base and reward tokens.
   //
   // Can only be done once (normally immediately after creation) by the fee collector.
   //
@@ -295,24 +295,24 @@ contract BookERC20EthV1p1y {
     require(address(_baseToken) != 0);
     require(address(rwrdToken) == 0);
     require(address(_rwrdToken) != 0);
-    require(_baseMinInitialSize &gt;= 10);
-    require(_baseMinInitialSize &lt; baseMaxSize / 1000000);
-    require(_minPriceExponent &gt;= -20 &amp;&amp; _minPriceExponent &lt;= 20);
-    if (_minPriceExponent &lt; 2) {
-      require(_baseMinInitialSize &gt;= 10 ** uint(3-int(minPriceExponent)));
+    require(_baseMinInitialSize >= 10);
+    require(_baseMinInitialSize < baseMaxSize / 1000000);
+    require(_minPriceExponent >= -20 && _minPriceExponent <= 20);
+    if (_minPriceExponent < 2) {
+      require(_baseMinInitialSize >= 10 ** uint(3-int(minPriceExponent)));
     }
     baseMinInitialSize = _baseMinInitialSize;
-    // dust prevention. truncation ok, know &gt;= 10
+    // dust prevention. truncation ok, know >= 10
     baseMinRemainingSize = _baseMinInitialSize / 10;
     minPriceExponent = _minPriceExponent;
     // attempt to catch bad tokens (disabled for YOLO)
-    //require(_baseToken.totalSupply() &gt; 0);
+    //require(_baseToken.totalSupply() > 0);
     baseToken = _baseToken;
-    require(_rwrdToken.totalSupply() &gt; 0);
+    require(_rwrdToken.totalSupply() > 0);
     rwrdToken = _rwrdToken;
   }
 
-  // &quot;Public&quot; Management - change fee collector
+  // "Public" Management - change fee collector
   //
   // The new fee collector only gets fees charged after this point.
   //
@@ -349,7 +349,7 @@ contract BookERC20EthV1p1y {
   //
   // Helps a web ui get a consistent snapshot of balances.
   //
-  // It would be nice to return the off-exchange ETH balance too but there&#39;s a
+  // It would be nice to return the off-exchange ETH balance too but there's a
   // bizarre bug in geth (and apparently as a result via MetaMask) that leads
   // to unpredictable behaviour when looking up client balances in constant
   // functions - see e.g. https://github.com/ethereum/solidity/issues/2325 .
@@ -380,8 +380,8 @@ contract BookERC20EthV1p1y {
     // we trust the ERC20 token contract not to do nasty things like call back into us -
     // if we cannot trust the token then why are we allowing it to be traded?
     uint amountBase = baseToken.allowance(client, book);
-    require(amountBase &gt; 0);
-    // NB: needs change for older ERC20 tokens that don&#39;t return bool
+    require(amountBase > 0);
+    // NB: needs change for older ERC20 tokens that don't return bool
     require(baseToken.transferFrom(client, book, amountBase));
     // belt and braces
     assert(baseToken.allowance(client, book) == 0);
@@ -393,13 +393,13 @@ contract BookERC20EthV1p1y {
   //
   function transferBase(uint amountBase) public {
     address client = msg.sender;
-    require(amountBase &gt; 0);
-    require(amountBase &lt;= balanceBaseForClient[client]);
+    require(amountBase > 0);
+    require(amountBase <= balanceBaseForClient[client]);
     // overflow safe since we checked less than balance above
     balanceBaseForClient[client] -= amountBase;
     // we trust the ERC20 token contract not to do nasty things like call back into us -
     // if we cannot trust the token then why are we allowing it to be traded?
-    // NB: needs change for older ERC20 tokens that don&#39;t return bool
+    // NB: needs change for older ERC20 tokens that don't return bool
     require(baseToken.transfer(client, amountBase));
     ClientPaymentEvent(client, ClientPaymentEventType.Transfer, BalanceType.Base, -int(amountBase));
   }
@@ -409,7 +409,7 @@ contract BookERC20EthV1p1y {
   function depositCntr() public payable {
     address client = msg.sender;
     uint amountCntr = msg.value;
-    require(amountCntr &gt; 0);
+    require(amountCntr > 0);
     // overflow safe - if someone owns pow(2,255) ETH we have bigger problems
     balanceCntrForClient[client] += amountCntr;
     ClientPaymentEvent(client, ClientPaymentEventType.Deposit, BalanceType.Cntr, int(amountCntr));
@@ -419,8 +419,8 @@ contract BookERC20EthV1p1y {
   //
   function withdrawCntr(uint amountCntr) public {
     address client = msg.sender;
-    require(amountCntr &gt; 0);
-    require(amountCntr &lt;= balanceCntrForClient[client]);
+    require(amountCntr > 0);
+    require(amountCntr <= balanceCntrForClient[client]);
     // overflow safe - checked less than balance above
     balanceCntrForClient[client] -= amountCntr;
     // safe - not enough gas to do anything interesting in fallback, already adjusted balance
@@ -434,7 +434,7 @@ contract BookERC20EthV1p1y {
     address client = msg.sender;
     address book = address(this);
     uint amountRwrd = rwrdToken.allowance(client, book);
-    require(amountRwrd &gt; 0);
+    require(amountRwrd > 0);
     // we wrote the reward token so we know it supports ERC20 properly and is not evil
     require(rwrdToken.transferFrom(client, book, amountRwrd));
     // belt and braces
@@ -447,8 +447,8 @@ contract BookERC20EthV1p1y {
   //
   function transferRwrd(uint amountRwrd) public {
     address client = msg.sender;
-    require(amountRwrd &gt; 0);
-    require(amountRwrd &lt;= balanceRwrdForClient[client]);
+    require(amountRwrd > 0);
+    require(amountRwrd <= balanceRwrdForClient[client]);
     // overflow safe - checked less than balance above
     balanceRwrdForClient[client] -= amountRwrd;
     // we wrote the reward token so we know it supports ERC20 properly and is not evil
@@ -511,7 +511,7 @@ contract BookERC20EthV1p1y {
     while (true) {
       if (orderId == 0) return;
       Order storage order = orderForOrderId[orderId];
-      if (orderId &gt;= minClosedOrderIdCutoff) break;
+      if (orderId >= minClosedOrderIdCutoff) break;
       if (order.status == Status.Open || order.status == Status.NeedsGas) break;
       orderId = clientPreviousOrderIdBeforeOrderId[orderId];
     }
@@ -527,12 +527,12 @@ contract BookERC20EthV1p1y {
     ) {
     uint sidedPriceIndex = uint(price);
     uint priceIndex;
-    if (sidedPriceIndex &lt; 1 || sidedPriceIndex &gt; maxSellPrice) {
+    if (sidedPriceIndex < 1 || sidedPriceIndex > maxSellPrice) {
       direction = Direction.Invalid;
       mantissa = 0;
       exponent = 0;
       return;
-    } else if (sidedPriceIndex &lt;= minBuyPrice) {
+    } else if (sidedPriceIndex <= minBuyPrice) {
       direction = Direction.Buy;
       priceIndex = minBuyPrice - sidedPriceIndex;
     } else {
@@ -552,7 +552,7 @@ contract BookERC20EthV1p1y {
   //
   function isBuyPrice(uint16 price) internal constant returns (bool isBuy) {
     // yes, this looks odd, but max here is highest _unpacked_ price
-    return price &gt;= maxBuyPrice &amp;&amp; price &lt;= minBuyPrice;
+    return price >= maxBuyPrice && price <= minBuyPrice;
   }
   
   // Internal Price Calculation - turn a packed buy price into a packed sell price.
@@ -560,9 +560,9 @@ contract BookERC20EthV1p1y {
   // Invalid price remains invalid.
   //
   function computeOppositePrice(uint16 price) internal constant returns (uint16 opposite) {
-    if (price &lt; maxBuyPrice || price &gt; maxSellPrice) {
+    if (price < maxBuyPrice || price > maxSellPrice) {
       return uint16(invalidPrice);
-    } else if (price &lt;= minBuyPrice) {
+    } else if (price <= minBuyPrice) {
       return uint16(maxSellPrice - (price - maxBuyPrice));
     } else {
       return uint16(maxBuyPrice + (maxSellPrice - price));
@@ -583,7 +583,7 @@ contract BookERC20EthV1p1y {
   function computeCntrAmountUsingUnpacked(
       uint baseAmount, uint16 mantissa, int8 exponent
     ) internal constant returns (uint cntrAmount) {
-    if (exponent &lt; 0) {
+    if (exponent < 0) {
       return baseAmount * uint(mantissa) / 1000 / 10 ** uint(-exponent);
     } else {
       return baseAmount * uint(mantissa) / 1000 * 10 ** uint(exponent);
@@ -615,7 +615,7 @@ contract BookERC20EthV1p1y {
       uint128 orderId, uint16 price, uint sizeBase, Terms terms, uint maxMatches
     ) public {
     address client = msg.sender;
-    require(orderId != 0 &amp;&amp; orderForOrderId[orderId].client == 0);
+    require(orderId != 0 && orderForOrderId[orderId].client == 0);
     ClientOrderEvent(client, ClientOrderEventType.Create, orderId, maxMatches);
     orderForOrderId[orderId] =
       Order(client, price, sizeBase, terms, Status.Unknown, ReasonCode.None, 0, 0, 0, 0);
@@ -629,18 +629,18 @@ contract BookERC20EthV1p1y {
       order.reasonCode = ReasonCode.InvalidPrice;
       return;
     }
-    if (sizeBase &lt; baseMinInitialSize || sizeBase &gt; baseMaxSize) {
+    if (sizeBase < baseMinInitialSize || sizeBase > baseMaxSize) {
       order.status = Status.Rejected;
       order.reasonCode = ReasonCode.InvalidSize;
       return;
     }
     uint sizeCntr = computeCntrAmountUsingUnpacked(sizeBase, mantissa, exponent);
-    if (sizeCntr &lt; cntrMinInitialSize || sizeCntr &gt; cntrMaxSize) {
+    if (sizeCntr < cntrMinInitialSize || sizeCntr > cntrMaxSize) {
       order.status = Status.Rejected;
       order.reasonCode = ReasonCode.InvalidSize;
       return;
     }
-    if (terms == Terms.MakerOnly &amp;&amp; maxMatches != 0) {
+    if (terms == Terms.MakerOnly && maxMatches != 0) {
       order.status = Status.Rejected;
       order.reasonCode = ReasonCode.InvalidTerms;
       return;
@@ -660,7 +660,7 @@ contract BookERC20EthV1p1y {
     Order storage order = orderForOrderId[orderId];
     require(order.client == client);
     Status status = order.status;
-    if (status != Status.Open &amp;&amp; status != Status.NeedsGas) {
+    if (status != Status.Open && status != Status.NeedsGas) {
       return;
     }
     ClientOrderEvent(client, ClientOrderEventType.Cancel, orderId, 0);
@@ -672,7 +672,7 @@ contract BookERC20EthV1p1y {
     refundUnmatchedAndFinish(orderId, Status.Done, ReasonCode.ClientCancel);
   }
 
-  // Public Order Placement - continue placing an order in &#39;NeedsGas&#39; state
+  // Public Order Placement - continue placing an order in 'NeedsGas' state
   //
   function continueOrder(uint128 orderId, uint maxMatches) public {
     address client = msg.sender;
@@ -688,7 +688,7 @@ contract BookERC20EthV1p1y {
 
   // Internal Order Placement - remove a still-open order from the book.
   //
-  // Caller&#39;s job to update/refund the order + raise event, this just
+  // Caller's job to update/refund the order + raise event, this just
   // updates the order chain and bitmask.
   //
   // Too expensive to do on each resting order match - we only do this for an
@@ -713,7 +713,7 @@ contract BookERC20EthV1p1y {
     } else {
       orderChain.firstOrderId = nextOrderId;
     }
-    if (nextOrderId == 0 &amp;&amp; prevOrderId == 0) {
+    if (nextOrderId == 0 && prevOrderId == 0) {
       uint bmi = price / 256;  // index into array of bitmaps
       uint bti = price % 256;  // bit position within bitmap
       // we know was previously occupied so XOR clears
@@ -731,17 +731,17 @@ contract BookERC20EthV1p1y {
     // however we also accept reward tokens from the reward balance if it covers the fee,
     // with the reward amount converted from the ETH amount (the counter currency here)
     // at a fixed exchange rate.
-    // Overflow safe since we ensure order size &lt; 10^30 in both currencies (see baseMaxSize).
+    // Overflow safe since we ensure order size < 10^30 in both currencies (see baseMaxSize).
     // Can truncate to zero, which is fine.
     uint feesRwrd = liquidityTakenCntr / feeDivisor * ethRwrdRate;
     uint feesBaseOrCntr;
     address client = order.client;
     uint availRwrd = balanceRwrdForClient[client];
-    if (feesRwrd &lt;= availRwrd) {
+    if (feesRwrd <= availRwrd) {
       balanceRwrdForClient[client] = availRwrd - feesRwrd;
       balanceRwrdForClient[feeCollector] = feesRwrd;
       // Need += rather than = because could have paid some fees earlier in NeedsGas situation.
-      // Overflow safe since we ensure order size &lt; 10^30 in both currencies (see baseMaxSize).
+      // Overflow safe since we ensure order size < 10^30 in both currencies (see baseMaxSize).
       // Can truncate to zero, which is fine.
       order.feesRwrd += uint128(feesRwrd);
       if (isBuyPrice(order.price)) {
@@ -863,7 +863,7 @@ contract BookERC20EthV1p1y {
 
     uint cbm = occupiedPriceBitmaps[bmi]; // original copy of current bitmap
     uint dbm = cbm; // dirty version of current bitmap where we may have cleared bits
-    uint wbm = cbm &gt;&gt; bti; // working copy of current bitmap which we keep shifting
+    uint wbm = cbm >> bti; // working copy of current bitmap which we keep shifting
     
     // these loops are pretty ugly, and somewhat unpredicatable in terms of gas,
     // ... but no-one else has come up with a better matching engine yet!
@@ -871,7 +871,7 @@ contract BookERC20EthV1p1y {
     bool removedLastAtPrice;
     matchStopReason = MatchStopReason.None;
 
-    while (bmi &lt; bmiEnd) {
+    while (bmi < bmiEnd) {
       if (wbm == 0 || bti == 256) {
         if (dbm != cbm) {
           occupiedPriceBitmaps[bmi] = dbm;
@@ -882,7 +882,7 @@ contract BookERC20EthV1p1y {
         wbm = cbm;
         dbm = cbm;
       } else {
-        if ((wbm &amp; 1) != 0) {
+        if ((wbm & 1) != 0) {
           // careful - copy-and-pasted in loop below ...
           (removedLastAtPrice, maxMatches, matchStopReason) =
             matchWithOccupiedPrice(order, uint16(bmi * 256 + bti), maxMatches);
@@ -901,10 +901,10 @@ contract BookERC20EthV1p1y {
       }
     }
     if (matchStopReason == MatchStopReason.None) {
-      // we&#39;ve reached the last bitmap we need to search,
-      // we&#39;ll stop at btiEnd not 256 this time.
-      while (bti &lt;= btiEnd &amp;&amp; wbm != 0) {
-        if ((wbm &amp; 1) != 0) {
+      // we've reached the last bitmap we need to search,
+      // we'll stop at btiEnd not 256 this time.
+      while (bti <= btiEnd && wbm != 0) {
+        if ((wbm & 1) != 0) {
           // careful - copy-and-pasted in loop above ...
           (removedLastAtPrice, maxMatches, matchStopReason) =
             matchWithOccupiedPrice(order, uint16(bmi * 256 + bti), maxMatches);
@@ -922,7 +922,7 @@ contract BookERC20EthV1p1y {
       }
     }
     // Careful - if we exited the first loop early, or we went into the second loop,
-    // (luckily can&#39;t both happen) then we haven&#39;t flushed the dirty bitmap back to
+    // (luckily can't both happen) then we haven't flushed the dirty bitmap back to
     // storage - do that now if we need to.
     if (dbm != cbm) {
       occupiedPriceBitmaps[bmi] = dbm;
@@ -1017,7 +1017,7 @@ contract BookERC20EthV1p1y {
   //   nextTheirOrderId:
   //     If we did not completely match their order, will be same as theirOrderId.
   //     If we completely matched their order, will be orderId of next order at the
-  //     same price - or zero if this was the last order and we&#39;ve now filled it.
+  //     same price - or zero if this was the last order and we've now filled it.
   //
   //   matchStopReason:
   //     If our order is completely matched, matchStopReason will be Satisfied.
@@ -1029,7 +1029,7 @@ contract BookERC20EthV1p1y {
     uint128 nextTheirOrderId, uint matchBase, uint matchCntr, MatchStopReason matchStopReason) {
     Order storage theirOrder = orderForOrderId[theirOrderId];
     uint theirRemainingBase = theirOrder.sizeBase - theirOrder.executedBase;
-    if (ourRemainingBase &lt; theirRemainingBase) {
+    if (ourRemainingBase < theirRemainingBase) {
       matchBase = ourRemainingBase;
     } else {
       matchBase = theirRemainingBase;
@@ -1039,7 +1039,7 @@ contract BookERC20EthV1p1y {
     // there could still be resting orders we can match it against. But the gas
     // cost of matching each order is quite high - potentially high enough to
     // wipe out the profit the taker hopes for from trading the tiny amount left.
-    if ((ourRemainingBase - matchBase) &lt; baseMinRemainingSize) {
+    if ((ourRemainingBase - matchBase) < baseMinRemainingSize) {
       matchStopReason = MatchStopReason.Satisfied;
     } else {
       matchStopReason = MatchStopReason.None;
@@ -1047,7 +1047,7 @@ contract BookERC20EthV1p1y {
     bool theirsDead = recordTheirMatch(theirOrder, theirOrderId, theirPrice, matchBase, matchCntr);
     if (theirsDead) {
       nextTheirOrderId = orderChainNodeForOpenOrderId[theirOrderId].nextOrderId;
-      if (matchStopReason == MatchStopReason.None &amp;&amp; nextTheirOrderId == 0) {
+      if (matchStopReason == MatchStopReason.None && nextTheirOrderId == 0) {
         matchStopReason = MatchStopReason.PriceExhausted;
       }
     } else {
@@ -1060,13 +1060,13 @@ contract BookERC20EthV1p1y {
   // Record match (partial or complete) of resting order, and credit them their funds.
   //
   // If their order is completely matched, the order is marked as done,
-  // and &quot;theirsDead&quot; is returned as true.
+  // and "theirsDead" is returned as true.
   //
   // The order is NOT removed from the book by this call - the caller
   // must do that if theirsDead is true.
   //
   // No sanity checks are made - the caller must be sure the order is
-  // not already done and has sufficient remaining. (Yes, we&#39;d like to
+  // not already done and has sufficient remaining. (Yes, we'd like to
   // check here too but we cannot afford the gas).
   //
   function recordTheirMatch(
@@ -1074,7 +1074,7 @@ contract BookERC20EthV1p1y {
     ) internal returns (bool theirsDead) {
     // they are a maker so no fees
     // overflow safe - see comments about baseMaxSize
-    // executedBase cannot go &gt; sizeBase due to logic in matchWithTheirs
+    // executedBase cannot go > sizeBase due to logic in matchWithTheirs
     theirOrder.executedBase += uint128(matchBase);
     theirOrder.executedCntr += uint128(matchCntr);
     if (isBuyPrice(theirPrice)) {
@@ -1086,7 +1086,7 @@ contract BookERC20EthV1p1y {
     }
     uint stillRemainingBase = theirOrder.sizeBase - theirOrder.executedBase;
     // avoid leaving tiny amounts in the book - refund remaining if too small
-    if (stillRemainingBase &lt; baseMinRemainingSize) {
+    if (stillRemainingBase < baseMinRemainingSize) {
       refundUnmatchedAndFinish(theirOrderId, Status.Done, ReasonCode.None);
       // someone building an UI on top needs to know how much was match and how much was refund
       MarketOrderEvent(block.timestamp, theirOrderId, MarketOrderEventType.CompleteFill,
@@ -1166,14 +1166,14 @@ contract BookERC20EthV1p1y {
     ) internal returns (bool success) {
     if (direction == Direction.Buy) {
       uint availableCntr = balanceCntrForClient[client];
-      if (availableCntr &lt; sizeCntr) {
+      if (availableCntr < sizeCntr) {
         return false;
       }
       balanceCntrForClient[client] = availableCntr - sizeCntr;
       return true;
     } else if (direction == Direction.Sell) {
       uint availableBase = balanceBaseForClient[client];
-      if (availableBase &lt; sizeBase) {
+      if (availableBase < sizeBase) {
         return false;
       }
       balanceBaseForClient[client] = availableBase - sizeBase;
@@ -1197,7 +1197,7 @@ contract BookERC20EthV1p1y {
   // Returns the price where we found the order(s), the depth at that price
   // (zero if none found), order count there, and the current blockNumber.
   //
-  // (The blockNumber is handy if you&#39;re taking a snapshot which you intend
+  // (The blockNumber is handy if you're taking a snapshot which you intend
   //  to keep up-to-date with the market order events).
   //
   // To walk the book, the caller should start by calling walkBook with the
@@ -1221,15 +1221,15 @@ contract BookERC20EthV1p1y {
     uint bmiEnd = priceEnd / 256;
     uint btiEnd = priceEnd % 256;
 
-    uint wbm = occupiedPriceBitmaps[bmi] &gt;&gt; bti;
+    uint wbm = occupiedPriceBitmaps[bmi] >> bti;
     
-    while (bmi &lt; bmiEnd) {
+    while (bmi < bmiEnd) {
       if (wbm == 0 || bti == 256) {
         bti = 0;
         bmi++;
         wbm = occupiedPriceBitmaps[bmi];
       } else {
-        if ((wbm &amp; 1) != 0) {
+        if ((wbm & 1) != 0) {
           // careful - copy-pasted in below loop
           price = uint16(bmi * 256 + bti);
           (depthBase, orderCount) = sumDepth(orderChainForOccupiedPrice[price].firstOrderId);
@@ -1239,9 +1239,9 @@ contract BookERC20EthV1p1y {
         wbm /= 2;
       }
     }
-    // we&#39;ve reached the last bitmap we need to search, stop at btiEnd not 256 this time.
-    while (bti &lt;= btiEnd &amp;&amp; wbm != 0) {
-      if ((wbm &amp; 1) != 0) {
+    // we've reached the last bitmap we need to search, stop at btiEnd not 256 this time.
+    while (bti <= btiEnd && wbm != 0) {
+      if ((wbm & 1) != 0) {
         // careful - copy-pasted in above loop
         price = uint16(bmi * 256 + bti);
         (depthBase, orderCount) = sumDepth(orderChainForOccupiedPrice[price].firstOrderId);

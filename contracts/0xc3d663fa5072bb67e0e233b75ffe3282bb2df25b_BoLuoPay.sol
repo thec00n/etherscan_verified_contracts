@@ -30,7 +30,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -87,20 +87,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -110,9 +110,9 @@ library SafeMath {
 contract BoLuoPay is ERC20,Ownable{
 	using SafeMath for uint256;
 
-	string public name=&quot;BoLuoPay&quot;;
-	string public symbol=&quot;boluo&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public name="BoLuoPay";
+	string public symbol="boluo";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 	//总已经发行量
 	uint256 public totalSupply;
@@ -125,13 +125,13 @@ contract BoLuoPay is ERC20,Ownable{
 	uint256 public  MAX_SUPPLY;
 
 	
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
     event Wasted(address to, uint256 value, uint256 date);
 
 	function BoLuoPay(){
-		name = &quot;BoLuoPay&quot;;
-		symbol = &quot;boluo&quot;;
+		name = "BoLuoPay";
+		symbol = "boluo";
 		totalSupply = 0;
 		airdropSupply = 0;
 		directSellSupply = 0;
@@ -140,7 +140,7 @@ contract BoLuoPay is ERC20,Ownable{
 	}
 
 	modifier notReachTotalSupply(uint256 _value,uint256 _rate){
-		assert(MAX_SUPPLY&gt;=totalSupply.add(_value.mul(_rate)));
+		assert(MAX_SUPPLY>=totalSupply.add(_value.mul(_rate)));
 		_;
 	}
 
@@ -172,8 +172,8 @@ contract BoLuoPay is ERC20,Ownable{
     	onlyOwner 
 	{
         uint256 count = _holders.length;
-        assert(paySize.mul(count) &lt;= balanceOf(msg.sender));
-        for (uint256 i = 0; i &lt; count; i++) {
+        assert(paySize.mul(count) <= balanceOf(msg.sender));
+        for (uint256 i = 0; i < count; i++) {
             transfer(_holders [i], paySize);
 			airdropSupply = airdropSupply.add(paySize);
         }

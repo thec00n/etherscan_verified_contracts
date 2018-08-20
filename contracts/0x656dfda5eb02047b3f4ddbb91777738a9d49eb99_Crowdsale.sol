@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -49,20 +49,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -137,8 +137,8 @@ contract Ledger is Shared {
   using SafeMath for uint;
 
   address public controller;
-  mapping(address =&gt; uint) public balanceOf;
-  mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping(address => uint) public balanceOf;
+  mapping (address => mapping (address => uint)) public allowed;
   uint public totalSupply;
 
   function setController(address _address) onlyOwner notFinalized {
@@ -299,17 +299,17 @@ contract Controller is Shared, Pausable {
 
   function withdrawVested(address _withdrawTo) returns (uint amountWithdrawn) {
     require(msg.sender == LIFE_CHANGE_VESTING_WALLET);
-    require(vestingAmount &gt; 0);
+    require(vestingAmount > 0);
     
     uint _elapsed = now.sub(vestingStart);
     uint _rate = vestingAmount.div(vestingDuration);
     uint _unlocked = _rate.mul(_elapsed);
 
-    if (_unlocked &gt; vestingAmount) {
+    if (_unlocked > vestingAmount) {
        _unlocked = vestingAmount;
     }
 
-    if (_unlocked &lt;= vestingPaid) {
+    if (_unlocked <= vestingPaid) {
       amountWithdrawn = 0;
       return;
     }
@@ -325,8 +325,8 @@ contract Controller is Shared, Pausable {
 contract ChristCoin is Shared {
   using SafeMath for uint;
 
-  string public name = &quot;Christ Coin&quot;;
-  string public symbol = &quot;CCLC&quot;;
+  string public name = "Christ Coin";
+  string public symbol = "CCLC";
   uint8 public decimals = 8;
 
   Controller public controller;
@@ -431,7 +431,7 @@ contract Crowdsale is Shared, Pausable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint value, uint amount);
 
   function Crowdsale() {
-    require(END &gt;= START);
+    require(END >= START);
 
     rounds.push(Round(0, 75 * (10 ** (6 + DECIMALS)), 35460992907801, 4));
     rounds.push(Round(1, 150 * (10 ** (6 + DECIMALS)), 106382978723404, 10));
@@ -458,7 +458,7 @@ contract Crowdsale is Shared, Pausable {
 
   function processPurchase(address _from, address _beneficiary, uint _weiAmount) internal returns (Purchase purchase) {
     purchase = getPurchase(_weiAmount, tokensDistributed);
-    require(tokensDistributed.add(purchase.tokens) &lt;= CAP);
+    require(tokensDistributed.add(purchase.tokens) <= CAP);
     uint _tokensWithBonus = purchase.tokens.add(purchase.bonus);
     bonusTokensDistributed = bonusTokensDistributed.add(purchase.bonus);
     tokensDistributed = tokensDistributed.add(purchase.tokens);
@@ -473,17 +473,17 @@ contract Crowdsale is Shared, Pausable {
     uint _tokens = _weiAmount.div(currentRound.rate).mul(10 ** DECIMALS);
     uint _incentiveDivisor = currentRound.incentiveDivisor;
     
-    if (_tokens &lt;= _roundTokensRemaining) {
+    if (_tokens <= _roundTokensRemaining) {
       purchase.tokens = _tokens;
 
-      if (_incentiveDivisor &gt; 0) {
+      if (_incentiveDivisor > 0) {
         purchase.bonus = _tokens.div(_incentiveDivisor);
       }
     } else {
       currentRound = rounds[currentRound.index + 1];
 
       uint _roundBonus = 0;
-      if (_incentiveDivisor &gt; 0) {
+      if (_incentiveDivisor > 0) {
         _roundBonus = _roundTokensRemaining.div(_incentiveDivisor);
       }
       
@@ -494,15 +494,15 @@ contract Crowdsale is Shared, Pausable {
   }
 
   function validPurchase() internal constant returns (bool) {
-    bool notAtCap = tokensDistributed &lt; CAP;
+    bool notAtCap = tokensDistributed < CAP;
     bool nonZeroPurchase = msg.value != 0;
-    bool withinPeriod = now &gt;= START &amp;&amp; now &lt;= END;
+    bool withinPeriod = now >= START && now <= END;
 
-    return notAtCap &amp;&amp; nonZeroPurchase &amp;&amp; withinPeriod &amp;&amp; presaleFinalized;
+    return notAtCap && nonZeroPurchase && withinPeriod && presaleFinalized;
   }
 
   function hasEnded() constant returns (bool) {
-    return crowdsaleFinalized || tokensDistributed == CAP || now &gt; END;
+    return crowdsaleFinalized || tokensDistributed == CAP || now > END;
   }
 
   function addPresale(address _beneficiary, uint _weiAmount) onlyOwner returns (bool) {

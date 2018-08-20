@@ -60,18 +60,18 @@ contract StandardToken is AbstractToken, Owned {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -87,7 +87,7 @@ contract StandardToken is AbstractToken, Owned {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -137,33 +137,33 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 
 /// @title Token contract - Implements Standard ERC20 with additional features.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="afc6c1cdc0d7efd5caddc6c0c181c6c0">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="afc6c1cdc0d7efd5caddc6c0c181c6c0">[email protected]</span>>
 contract Token is StandardToken, SafeMath {
 
     // Time of the contract creation
@@ -195,15 +195,15 @@ contract Token is StandardToken, SafeMath {
 
 
 /// @title Token contract - Implements Standard ERC20 Token for Tokenbox project.
-/// @author Zerion - &lt;<span class="__cf_email__" data-cfemail="80e9eee2eff8c0fae5f2e9efeeaee9ef">[email&#160;protected]</span>&gt;
+/// @author Zerion - <<span class="__cf_email__" data-cfemail="80e9eee2eff8c0fae5f2e9efeeaee9ef">[email protected]</span>>
 contract TokenboxToken is Token {
 
     /*
      * Token meta data
      */
-    string constant public name = &quot;Tokenbox&quot;;
+    string constant public name = "Tokenbox";
     //TODO: Fix before production
-    string constant public symbol = &quot;TBX&quot;;
+    string constant public symbol = "TBX";
     uint8 constant public decimals = 18;
 
     // Address where Foundation tokens are allocated
@@ -263,12 +263,12 @@ contract TokenboxToken is Token {
     }
 
     modifier icoIsActive {
-        require(now &gt;= startDate &amp;&amp; now &lt; startDate + duration);
+        require(now >= startDate && now < startDate + duration);
         _;
     }
 
     modifier icoIsCompleted {
-        require(now &gt;= startDate + duration);
+        require(now >= startDate + duration);
         _;
     }
 
@@ -284,14 +284,14 @@ contract TokenboxToken is Token {
         payable
     {
         // Check the hash
-        require(sha256(uint(investor) &lt;&lt; 96 | tokenPriceInPicoUsd) == hash);
+        require(sha256(uint(investor) << 96 | tokenPriceInPicoUsd) == hash);
 
         // Check the signature
         require(ecrecover(hash, v, r, s) == signer);
 
         // Difference between the value argument and actual value should not be
         // more than 0.005 ETH (gas commission)
-        require(sub(investedInWei, msg.value) &lt;= withDecimals(5, 15));
+        require(sub(investedInWei, msg.value) <= withDecimals(5, 15));
 
         uint tokenPriceInWei = div(mul(tokenPriceInPicoUsd, WeiToUSD), pow(10, usdDecimals));
 
@@ -299,7 +299,7 @@ contract TokenboxToken is Token {
         uint256 tokensNumber = div(withDecimals(investedInWei, decimals), tokenPriceInWei);
 
         // Check if there is enough tokens left
-        require(balances[icoAllocation] &gt;= tokensNumber);
+        require(balances[icoAllocation] >= tokensNumber);
 
         // Send Ether to the multisig
         require(multisig.send(msg.value));
@@ -323,7 +323,7 @@ contract TokenboxToken is Token {
         uint256 tokensNumber = div(withDecimals(investedInSatoshi, decimals), tokenPriceInSatoshi);
 
         // Check if there is enough tokens left
-        require(balances[icoAllocation] &gt;= tokensNumber);
+        require(balances[icoAllocation] >= tokensNumber);
 
         uint256 investedInPicoUsd = div(withDecimals(investedInSatoshi, usdDecimals), satoshiToUSD);
 
@@ -354,7 +354,7 @@ contract TokenboxToken is Token {
        uint256 tokensNumber = div(withDecimals(investedInUsdCents, decimals), tokenPriceInUsdCents);
 
        // Check if there is enough tokens left
-       require(balances[icoAllocation] &gt;= tokensNumber);
+       require(balances[icoAllocation] >= tokensNumber);
 
        // We subtract 2 because the value is in cents.
        uint256 investedInPicoUsd = withDecimals(investedInUsdCents, usdDecimals - 2);
@@ -373,7 +373,7 @@ contract TokenboxToken is Token {
       uint256 tokensNumberWithDecimals = withDecimals(tokensNumber, decimals);
 
       // Check if there is enough tokens left
-      require(balances[preIcoAllocation] &gt;= tokensNumberWithDecimals);
+      require(balances[preIcoAllocation] >= tokensNumberWithDecimals);
 
       // Allocate tokens to an investor
       balances[preIcoAllocation] -= tokensNumberWithDecimals;
@@ -393,7 +393,7 @@ contract TokenboxToken is Token {
         public
         onlyOwner
     {
-        require(now &gt;= vestingDateEnd);
+        require(now >= vestingDateEnd);
 
         // Allow the owner to withdraw tokens from the Foundation reserve
         allowed[foundationReserve][msg.sender] = balanceOf(foundationReserve);
@@ -405,7 +405,7 @@ contract TokenboxToken is Token {
         public
         onlyOwner
     {
-        require(now &gt;= vestingDateEnd);
+        require(now >= vestingDateEnd);
         // Withdraw tokens from Foundation reserve to multisig address
         require(transferFrom(foundationReserve, multisig, amount));
     }

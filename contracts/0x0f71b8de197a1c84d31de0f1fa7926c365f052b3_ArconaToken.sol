@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
  
@@ -65,14 +65,14 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   bool public mintingFinished = false;
 
-  mapping(address =&gt; uint256) releaseTime;
+  mapping(address => uint256) releaseTime;
   // Only after finishMinting and checks for bounty accounts time restrictions
   modifier timeAllowed() {
     require(mintingFinished);
-    require(releaseTime[msg.sender] == 0 || now &gt; releaseTime[msg.sender]); //finishSale + releasedays * 1 days
+    require(releaseTime[msg.sender] == 0 || now > releaseTime[msg.sender]); //finishSale + releasedays * 1 days
     _;
   }
 
@@ -114,7 +114,7 @@ contract BasicToken is ERC20Basic {
     return true;
   }
 
-  // release Customer&#39;s account after KYC
+  // release Customer's account after KYC
   function releaseAccount(address _owner) internal returns (bool) {
     releaseTime[_owner] = now;
     return true;
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -143,8 +143,8 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(mintingFinished);
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -158,7 +158,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -207,7 +207,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -220,7 +220,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -271,13 +271,13 @@ contract MintableToken is StandardToken, Ownable {
    * @dev Function to mint tokens
    * @param _to The address that will recieve the minted tokens.
    * @param _amount The amount of tokens to mint.
-   * @param _releaseTime The (optional) freeze time - KYC &amp; bounty accounts.
+   * @param _releaseTime The (optional) freeze time - KYC & bounty accounts.
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount, uint256 _releaseTime) internal canMint returns (bool) {
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
-    if ( _releaseTime &gt; 0 ) {
+    if ( _releaseTime > 0 ) {
         releaseTime[_to] = _releaseTime;
     }
     emit Transfer(0x0, _to, _amount);
@@ -297,8 +297,8 @@ contract MintableToken is StandardToken, Ownable {
    
 contract ArconaToken is MintableToken {
 
-    string public constant name = &quot;Arcona Distribution Contract&quot;;
-    string public constant symbol = &quot;ARCONA&quot;;
+    string public constant name = "Arcona Distribution Contract";
+    string public constant symbol = "ARCONA";
     uint8 public constant decimals = 18;
    
     using SafeMath for uint;
@@ -311,9 +311,9 @@ contract ArconaToken is MintableToken {
     address public release12m;
     address public release18m;
 
-    mapping (address =&gt; bool) registered;
-    mapping (address =&gt; address) referral;
-    mapping (string =&gt; address) certificate;
+    mapping (address => bool) registered;
+    mapping (address => address) referral;
+    mapping (string => address) certificate;
 
     uint restrictedPercent = 40;
     uint refererPercent = 55; // 5.5%
@@ -353,13 +353,13 @@ contract ArconaToken is MintableToken {
     }
 
     modifier anySaleIsOn() {
-        require(now &gt; startSale &amp;&amp; now &lt; finishSale &amp;&amp; !isGlobalPause);
+        require(now > startSale && now < finishSale && !isGlobalPause);
         _;
     }
 
     modifier isUnderHardCap() {
         uint totalUsdSale = rateUSD.mul(totalWeiSale).div(1 ether);
-        require(totalUsdSale &lt;= hardcap);
+        require(totalUsdSale <= hardcap);
         _;
     }
 
@@ -446,7 +446,7 @@ contract ArconaToken is MintableToken {
         require(msg.sender == registerbot || msg.sender == owner);
         require(_customer != address(0));
         registered[_customer] = true;
-        if (_referral != address(0) &amp;&amp; _referral != _customer) {
+        if (_referral != address(0) && _referral != _customer) {
             referral[_customer] = _referral;
         }
     }
@@ -459,9 +459,9 @@ contract ArconaToken is MintableToken {
     function importCustomer(address _customer, address _referral, uint _tokenAmount) public {
         require(msg.sender == registerbot || msg.sender == owner);
         require(_customer != address(0));
-        require(now &lt; startSale); // before ICO starts
+        require(now < startSale); // before ICO starts
         registered[_customer] = true;
-        if (_referral != address(0) &amp;&amp; _referral != _customer) {
+        if (_referral != address(0) && _referral != _customer) {
             referral[_customer] = _referral;
         }
         mint(_customer, _tokenAmount, now + 99 * 1 years); // till KYC is completed
@@ -481,7 +481,7 @@ contract ArconaToken is MintableToken {
     }
 
     function changeRateSale(uint _tokenAmount) public onlyOwner {
-        require(isGlobalPause || (now &gt; startSale &amp;&amp; now &lt; finishSale));
+        require(isGlobalPause || (now > startSale && now < finishSale));
         rateSale = _tokenAmount;
     }
 
@@ -498,10 +498,10 @@ contract ArconaToken is MintableToken {
     }
 
     function setAuction(uint256 _startAuction, uint256 _finishAuction, uint256 _auctionPercent) public onlyOwner {
-        require(_startAuction &lt; _finishAuction);
-        require(_auctionPercent &gt; 0);
-        require(_startAuction &gt; startSale);
-        require(_finishAuction &lt;= finishSale);
+        require(_startAuction < _finishAuction);
+        require(_auctionPercent > 0);
+        require(_startAuction > startSale);
+        require(_finishAuction <= finishSale);
         finishAuction = _finishAuction;
         startAuction = _startAuction;
         auctionPercent = _auctionPercent;
@@ -516,7 +516,7 @@ contract ArconaToken is MintableToken {
         issuedTokenSupply = issuedTokenSupply.add(restrictedTokens);
         // 13% - 11% for any purpose and 2% bounty
         mint(restricted, issuedTokenSupply.mul(13).div(100), now);
-        // 27% - freezed founds to team &amp; adwisers
+        // 27% - freezed founds to team & adwisers
         mint(release6m, issuedTokenSupply.mul(85).div(1000), now + 180 * 1 days); // 8.5 %
         mint(release12m, issuedTokenSupply.mul(85).div(1000), now + 365 * 1 days); // 8.5 %
         mint(release18m, issuedTokenSupply.mul(10).div(100), now + 545 * 1 days); // 10 %
@@ -524,16 +524,16 @@ contract ArconaToken is MintableToken {
     }
 
     function foreignBuyTest(uint256 _weiAmount, uint256 _rate) public pure returns (uint tokenAmount) {
-        require(_weiAmount &gt; 0);
-        require(_rate &gt; 0);
+        require(_weiAmount > 0);
+        require(_rate > 0);
         return _rate.mul(_weiAmount).div(1 ether);
     }
     
     // BTC external payments
     function foreignBuy(address _holder, uint256 _weiAmount, uint256 _rate) public {
         require(msg.sender == registerbot || msg.sender == owner);
-        require(_weiAmount &gt; 0);
-        require(_rate &gt; 0);
+        require(_weiAmount > 0);
+        require(_rate > 0);
         registered[_holder] = true;
         uint tokens = _rate.mul(_weiAmount).div(1 ether);
         mint(_holder, tokens, now + 99 * 1 years); // till KYC is completed
@@ -542,28 +542,28 @@ contract ArconaToken is MintableToken {
 
     function createTokens() public isRegistered anySaleIsOn isUnderHardCap payable {
         uint tokens = rateSale.mul(msg.value).div(1 ether);
-        require(tokens &gt;= minTokenSale); // min 10 tokens
+        require(tokens >= minTokenSale); // min 10 tokens
         multisig.transfer(msg.value);
         uint percent = 0;
         uint bonusTokens = 0;
         uint finishBonus = startSale + (bonusPeriod * 1 days);
-        if ( now &lt; finishBonus ) {
-            if ( now &lt;= startSale + 1 days ) {
+        if ( now < finishBonus ) {
+            if ( now <= startSale + 1 days ) {
                 percent = first24Percent;   // 1st day: 50% (for registered whitelist only)
            } else {        // 25% total:
                percent = (finishBonus - now).div(1 days); // last 15days -1% every day
-               if ( percent &gt;= 15 ) {  //  first 5days, -1% every 12h
+               if ( percent >= 15 ) {  //  first 5days, -1% every 12h
                   percent = 27 - (now - startSale).div(1 hours).div(12);
                } else {
                   percent = percent.add(1);
                }				
           }
         } else {
-            if ( now &gt;= startAuction &amp;&amp; now &lt; finishAuction ) {
+            if ( now >= startAuction && now < finishAuction ) {
                 percent = auctionPercent;
             }
         }
-        if ( percent &gt; 0 ) {
+        if ( percent > 0 ) {
             bonusTokens = tokens.mul(percent).div(100);
             tokens = tokens.add(bonusTokens);
         }

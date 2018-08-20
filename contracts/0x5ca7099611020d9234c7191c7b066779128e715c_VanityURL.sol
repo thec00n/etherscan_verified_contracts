@@ -111,16 +111,16 @@ contract VanityURL is Ownable,Pausable {
   // This declares a state variable that would store the contract address
   Token public tokenAddress;
   // This declares a state variable that mapping for vanityURL to address
-  mapping (string =&gt; address) vanity_address_mapping;
+  mapping (string => address) vanity_address_mapping;
   // This declares a state variable that mapping for address to vanityURL
-  mapping (address =&gt; string ) address_vanity_mapping;
+  mapping (address => string ) address_vanity_mapping;
   // This declares a state variable that stores pricing
   uint256 public reservePricing;
   // This declares a state variable address to which token to be transfered
   address public transferTokenTo;
 
   /*
-    constructor function to set token address &amp; Pricing for reserving and token transfer address
+    constructor function to set token address & Pricing for reserving and token transfer address
    */
   function VanityURL(address _tokenAddress, uint256 _reservePricing, address _transferTokenTo){
     tokenAddress = Token(_tokenAddress);
@@ -184,9 +184,9 @@ contract VanityURL is Ownable,Pausable {
   function _toLower(string str) internal returns (string) {
 		bytes memory bStr = bytes(str);
 		bytes memory bLower = new bytes(bStr.length);
-		for (uint i = 0; i &lt; bStr.length; i++) {
+		for (uint i = 0; i < bStr.length; i++) {
 			// Uppercase character...
-			if ((bStr[i] &gt;= 65) &amp;&amp; (bStr[i] &lt;= 90)) {
+			if ((bStr[i] >= 65) && (bStr[i] <= 90)) {
 				// So we add 32 to make it lowercase
 				bLower[i] = bytes1(int(bStr[i]) + 32);
 			} else {
@@ -204,10 +204,10 @@ contract VanityURL is Ownable,Pausable {
    */
   function checkForValidity(string _vanity_url) returns (bool) {
     uint length =  bytes(_vanity_url).length;
-    require(length &gt;= 4 &amp;&amp; length &lt;= 200);
-    for (uint i =0; i&lt; length; i++){
+    require(length >= 4 && length <= 200);
+    for (uint i =0; i< length; i++){
       var c = bytes(_vanity_url)[i];
-      if ((c &lt; 48 ||  c &gt; 122 || (c &gt; 57 &amp;&amp; c &lt; 65) || (c &gt; 90 &amp;&amp; c &lt; 97 )) &amp;&amp; (c != 95))
+      if ((c < 48 ||  c > 122 || (c > 57 && c < 65) || (c > 90 && c < 97 )) && (c != 95))
         return false;
     }
     return true;

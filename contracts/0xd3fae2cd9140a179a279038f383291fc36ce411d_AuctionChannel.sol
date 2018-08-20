@@ -39,12 +39,12 @@ library ECRecovery {
         }
 
         // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-        if (v &lt; 27) {
+        if (v < 27) {
             v += 27;
         }
 
         // If the version is correct return the signer address
-        if (v != 27 &amp;&amp; v != 28) {
+        if (v != 27 && v != 28) {
             return (address(0));
         } else {
         // solium-disable-next-line arg-overflow
@@ -54,7 +54,7 @@ library ECRecovery {
 
     /**
     * toEthSignedMessageHash
-    * @dev prefix a bytes32 value with &quot;\x19Ethereum Signed Message:&quot;
+    * @dev prefix a bytes32 value with "\x19Ethereum Signed Message:"
     * and hash the result
     */
     function toEthSignedMessageHash(bytes32 hash)
@@ -65,7 +65,7 @@ library ECRecovery {
         // 32 is the length in bytes of hash,
         // enforced by the type signature above
         return keccak256(
-            abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, hash)
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
         );
     }
 }
@@ -130,7 +130,7 @@ contract AuctionChannel {
     {
         bytes32 _fingerprint = keccak256(
             abi.encodePacked(
-                &quot;openingAuctionChannel&quot;,
+                "openingAuctionChannel",
                 _auctioneer,
                 _assistant,
                 _challengePeriod,
@@ -173,12 +173,12 @@ contract AuctionChannel {
         require(phase != PHASE_CLOSED);
 
         require(!_isAskBid);
-        require(_bidValue &gt; winnerBidValue);
-        require(_bidValue &gt;= minBidValue);
+        require(_bidValue > winnerBidValue);
+        require(_bidValue >= minBidValue);
 
         bytes32 _fingerprint = keccak256(
             abi.encodePacked(
-                &quot;auctionBid&quot;,
+                "auctionBid",
                 _isAskBid,
                 _bidder,
                 _bidValue,
@@ -203,7 +203,7 @@ contract AuctionChannel {
      * @dev Close the auction
      */
     function tryClose() public {
-        if (phase == PHASE_CHALLENGE &amp;&amp; block.number &gt; closingBlock) {
+        if (phase == PHASE_CHALLENGE && block.number > closingBlock) {
             phase = PHASE_CLOSED;
         }
     }

@@ -8,13 +8,13 @@ contract Totalizeum {
         uint256 balance;
         Resolve resolve;
         Settings settings;
-        mapping (uint256 =&gt; Outcome) outcomes;
+        mapping (uint256 => Outcome) outcomes;
     }
 
     struct Outcome {
         uint256 balance;
         bool won;
-        mapping (address =&gt; uint256) bets;
+        mapping (address => uint256) bets;
     }
 
     struct Resolve {
@@ -28,9 +28,9 @@ contract Totalizeum {
         uint256 share;
     }
 
-    string public constant symbol = &quot;TOT&quot;;
+    string public constant symbol = "TOT";
 
-    string public constant name = &quot;Totalizeum&quot;;
+    string public constant name = "Totalizeum";
 
     uint8 public constant decimals = 18;
 
@@ -41,15 +41,15 @@ contract Totalizeum {
 
     uint256 private constant sub = 1000000;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
-    mapping (address =&gt; mapping(uint256 =&gt; Market)) markets;
+    mapping (address => mapping(uint256 => Market)) markets;
 
-    mapping (address =&gt; Settings) oracleSettings;
+    mapping (address => Settings) oracleSettings;
 
-    mapping (address =&gt; mapping (address =&gt; bool)) public successor;
+    mapping (address => mapping (address => bool)) public successor;
 
     uint256 public sellable = totalSupply;
 
@@ -64,11 +64,11 @@ contract Totalizeum {
     }
 
     function transfer(address _to, uint256 _amount) returns (bool) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
 
-        if (balances[msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount &&
+            _amount > 0 &&
+            balances[_to] + _amount > balances[_to]) {
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -83,12 +83,12 @@ contract Totalizeum {
     function transferFrom(
         address _from, address _to, uint256 _amount
     ) returns (bool) {
-        require(msg.data.length &gt;= (3 * 32) + 4);
+        require(msg.data.length >= (3 * 32) + 4);
 
-        if (balances[_from] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            allowed[_from][msg.sender] &gt;= _amount &amp;&amp;
-            balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+            _amount > 0 &&
+            allowed[_from][msg.sender] >= _amount &&
+            balances[_to] + _amount > balances[_to]) {
 
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -122,20 +122,20 @@ contract Totalizeum {
         Market storage market = markets[_oracle][_timestamp];
         Outcome storage outcome = market.outcomes[_outcome];
 
-        if (balances[msg.sender] &gt;= _amount &amp;&amp;
-            _amount &gt; 0 &amp;&amp;
-            now &lt; _timestamp &amp;&amp;
-            market.state == MarketState.Initial &amp;&amp;
-            market.balance + _amount &gt; market.balance &amp;&amp;
+        if (balances[msg.sender] >= _amount &&
+            _amount > 0 &&
+            now < _timestamp &&
+            market.state == MarketState.Initial &&
+            market.balance + _amount > market.balance &&
             (market.balance + _amount) * sub / sub
-                == (market.balance + _amount) &amp;&amp;
-            outcome.balance + _amount &gt; outcome.balance &amp;&amp;
-            outcome.bets[msg.sender] + _amount &gt; outcome.bets[msg.sender]) {
+                == (market.balance + _amount) &&
+            outcome.balance + _amount > outcome.balance &&
+            outcome.bets[msg.sender] + _amount > outcome.bets[msg.sender]) {
 
             if (market.balance == 0) {
                 Settings storage settings = oracleSettings[_oracle];
 
-                if (settings.refundDelay &gt; 0) {
+                if (settings.refundDelay > 0) {
 
                     market.settings = settings;
                 } else {
@@ -169,20 +169,20 @@ contract Totalizeum {
             _resolve.remainingBalance = market.balance;
         }
 
-        if (market.state == MarketState.Resolving &amp;&amp;
-            now &gt;= _timestamp &amp;&amp;
-            market.balance &gt; 0) {
+        if (market.state == MarketState.Resolving &&
+            now >= _timestamp &&
+            market.balance > 0) {
 
-            if (!outcome.won &amp;&amp;
-                outcome.balance &gt; 0) {
+            if (!outcome.won &&
+                outcome.balance > 0) {
 
                 outcome.won = true;
                 _resolve.winningBalance += outcome.balance;
                 _resolve.winningOutcomes += 1;
             }
 
-            if (_final &amp;&amp;
-                _resolve.winningOutcomes &gt; 0) {
+            if (_final &&
+                _resolve.winningOutcomes > 0) {
 
                 uint256 share = market.balance - market.balance / 1000
                     * settings.share;
@@ -207,10 +207,10 @@ contract Totalizeum {
         Resolve storage _resolve = market.resolve;
         Settings storage settings = market.settings;
 
-        if (outcome.bets[msg.sender] &gt; 0) {
+        if (outcome.bets[msg.sender] > 0) {
             uint256 amount = outcome.bets[msg.sender];
 
-            if (market.state == MarketState.Resolved &amp;&amp;
+            if (market.state == MarketState.Resolved &&
                 outcome.won) {
 
                 uint256 share = market.balance * sub / 1000 * settings.share
@@ -232,8 +232,8 @@ contract Totalizeum {
                 return true;
             } else if ((market.state == MarketState.Initial ||
                     market.state == MarketState.Resolving ||
-                    market.state == MarketState.Unresolved) &amp;&amp;
-                now &gt;= _timestamp + settings.refundDelay) {
+                    market.state == MarketState.Unresolved) &&
+                now >= _timestamp + settings.refundDelay) {
 
                 market.state = MarketState.Unresolved;
 
@@ -274,9 +274,9 @@ contract Totalizeum {
         uint256 _refundDelay, uint256 _share
     ) returns (bool) {
 
-        if (_refundDelay &gt; 0 &amp;&amp;
-            _refundDelay &lt;= 28 days &amp;&amp;
-            _share &lt;= 250) {
+        if (_refundDelay > 0 &&
+            _refundDelay <= 28 days &&
+            _share <= 250) {
 
             oracleSettings[msg.sender] = Settings(_refundDelay,
                 1000 - _share);
@@ -295,8 +295,8 @@ contract Totalizeum {
     function () payable {
         uint256 amount = msg.value * 1000;
 
-        if (amount / 1000 == msg.value &amp;&amp;
-            amount &lt;= sellable) {
+        if (amount / 1000 == msg.value &&
+            amount <= sellable) {
 
             owner.transfer(msg.value);
             sellable -= amount;

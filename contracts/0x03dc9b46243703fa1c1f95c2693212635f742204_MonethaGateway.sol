@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,7 +51,7 @@ contract Ownable {
  */
 contract Restricted is Ownable {
 
-    mapping (address =&gt; bool) public isMonethaAddress;
+    mapping (address => bool) public isMonethaAddress;
 
     /**
      *  Restrict methods in such way, that they can be invoked only by monethaAddress account.
@@ -152,20 +152,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -195,13 +195,13 @@ contract Contactable is Ownable{
 /**
  *  @title MonethaGateway
  *
- *  MonethaGateway forward funds from order payment to merchant&#39;s wallet and collects Monetha fee.
+ *  MonethaGateway forward funds from order payment to merchant's wallet and collects Monetha fee.
  */
 contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
 
     using SafeMath for uint256;
     
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
     /**
      *  Fee permille of Monetha fee.
@@ -233,9 +233,9 @@ contract MonethaGateway is Pausable, Contactable, Destructible, Restricted {
     }
     
     /**
-     *  acceptPayment accept payment from PaymentAcceptor, forwards it to merchant&#39;s wallet
+     *  acceptPayment accept payment from PaymentAcceptor, forwards it to merchant's wallet
      *      and collects Monetha fee.
-     *  @param _merchantWallet address of merchant&#39;s wallet for fund transfer
+     *  @param _merchantWallet address of merchant's wallet for fund transfer
      */
     function acceptPayment(address _merchantWallet) external payable onlyMonetha whenNotPaused {
         require(_merchantWallet != 0x0);

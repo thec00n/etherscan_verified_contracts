@@ -1,9 +1,9 @@
 pragma solidity ^0.4.15;
 
-//import &quot;./SingleTokenCoin.sol&quot;;
-//import &quot;./SafeMath.sol&quot;;
-//import &quot;./AuthAdmin.sol&quot;;
-// import &quot;./Ownable.sol&quot;;
+//import "./SingleTokenCoin.sol";
+//import "./SafeMath.sol";
+//import "./AuthAdmin.sol";
+// import "./Ownable.sol";
 
 
 contract ERC20Basic {
@@ -27,38 +27,38 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function mod(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a % b;
     //uint256 z = a / b;
-    assert(a == (a / b) * b + c); // There is no case in which this doesn&#39;t hold
+    assert(a == (a / b) * b + c); // There is no case in which this doesn't hold
     return c;
   }
 }
 
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; bool) public holders;
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public holders;
     address[] public token_holders_array;
     
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         if (!holders[_to]) {
             holders[_to] = true;
@@ -82,7 +82,7 @@ contract BasicToken is ERC20Basic {
     }
     
     function get_index (address _whom) constant internal returns (uint256) {
-        for (uint256 i = 0; i&lt;token_holders_array.length; i++) {
+        for (uint256 i = 0; i<token_holders_array.length; i++) {
             if (token_holders_array[i] == _whom) {
                 return i;
             }
@@ -105,14 +105,14 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     if (!holders[_to]) {
@@ -146,7 +146,7 @@ contract StandardToken is ERC20, BasicToken {
   }
   function decreaseApproval (address _spender, uint256 _subtractedValue) public returns (bool success) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -204,8 +204,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract SingleTokenCoin is MintableToken {
-  string public constant name = &quot;Symmetry Fund Token&quot;;
-  string public constant symbol = &quot;SYMM&quot;;
+  string public constant name = "Symmetry Fund Token";
+  string public constant symbol = "SYMM";
   uint256 public constant decimals = 6;
  }
 contract AuthAdmin {
@@ -213,8 +213,8 @@ contract AuthAdmin {
     address[] admins_array;
     address[] users_array;
     
-    mapping (address =&gt; bool) admin_addresses;
-    mapping (address =&gt; bool) user_addresses;
+    mapping (address => bool) admin_addresses;
+    mapping (address => bool) user_addresses;
 
     event NewAdmin(address addedBy, address admin);
     event RemoveAdmin(address removedBy, address admin);
@@ -266,7 +266,7 @@ contract AuthAdmin {
     }
 
     function isCurrentOrPastAdmin(address _address) public constant returns (bool) {
-        for (uint256 i = 0; i &lt; admins_array.length; i++)
+        for (uint256 i = 0; i < admins_array.length; i++)
             require (admins_array[i] == _address);
                 return true;
         return false;
@@ -277,7 +277,7 @@ contract AuthAdmin {
     }
 
     function isCurrentOrPastUser(address _address) public constant returns (bool) {
-        for (uint256 i = 0; i &lt; users_array.length; i++)
+        for (uint256 i = 0; i < users_array.length; i++)
             require (users_array[i] == _address);
                 return true;
         return false;
@@ -294,7 +294,7 @@ contract DividendManager is Ownable {
     SingleTokenCoin token;
     AuthAdmin authAdmin;
 
-    mapping (address =&gt; uint256) public dividends;
+    mapping (address => uint256) public dividends;
 
     event PaymentAvailable(address addr, uint256 amount);
     event DividendPayment(uint256 dividend_per_token, uint256 timestamp);
@@ -319,12 +319,12 @@ contract DividendManager is Ownable {
         uint256 dividend_per_token = funds_for_dividends.div(token.totalSupply());
         require (dividend_per_token != 0);
         uint256 totalPaidOut = 0;
-        for (uint256 i = 0; i &lt; token.count_token_holders(); i++) {
+        for (uint256 i = 0; i < token.count_token_holders(); i++) {
             address addr = token.tokenHolder(i);
-            if (token.balanceOf(addr) &lt; 1000E6) {
+            if (token.balanceOf(addr) < 1000E6) {
                 uint256 dividends_before_commision = dividend_per_token.mul(token.balanceOf(addr));    
                 uint256 dividends_after_commision = dividends_before_commision.mul(85).div(100);
-            } else if (token.balanceOf(addr) &gt; 1000E6) {
+            } else if (token.balanceOf(addr) > 1000E6) {
                 dividends_before_commision = dividend_per_token.mul(token.balanceOf(addr));
                 dividends_after_commision = dividends_before_commision.mul(925).div(1000);
             }
@@ -334,7 +334,7 @@ contract DividendManager is Ownable {
         }
         DividendPayment(dividend_per_token, now);
         // uint256 remainder = msg.value.sub(totalPaidOut);
-        // require (remainder &gt; 0 &amp;&amp; !msg.sender.send(remainder));
+        // require (remainder > 0 && !msg.sender.send(remainder));
         // dividends[msg.sender] = dividends[msg.sender].add(remainder);
         // PaymentAvailable(msg.sender, remainder);
     }
@@ -344,7 +344,7 @@ contract DividendManager is Ownable {
     }
 
     function set_new_dividend_share (uint256 new_dividends_share) public adminOnly {
-        require (new_dividends_share &gt; 0 &amp;&amp; new_dividends_share &lt;= 100);
+        require (new_dividends_share > 0 && new_dividends_share <= 100);
         dividends_share = new_dividends_share;
         reinvestment_share = 100 - dividends_share;                                                                                                                                                                                                                                                                                                                                                                                
     }

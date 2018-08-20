@@ -25,7 +25,7 @@ contract CoinFlipLotto
         return greeting;
     }
     
-    function getBlockNumber()  constant returns (uint)  // this doesn&#39;t have anything to do with the act of greeting
+    function getBlockNumber()  constant returns (uint)  // this doesn't have anything to do with the act of greeting
     {													// just demonstrating return of some global variable
         return block.number;
     }

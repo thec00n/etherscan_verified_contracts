@@ -1,9 +1,9 @@
 pragma solidity ^0.4.19;
 
 contract EthermiumAffiliates {
-	mapping(address =&gt; address[]) public referrals; // mapping of affiliate address to referral addresses
-	mapping(address =&gt; address) public affiliates; // mapping of referrals addresses to affiliate addresses
-	mapping(address =&gt; bool) public admins; // mapping of admin accounts
+	mapping(address => address[]) public referrals; // mapping of affiliate address to referral addresses
+	mapping(address => address) public affiliates; // mapping of referrals addresses to affiliate addresses
+	mapping(address => bool) public admins; // mapping of admin accounts
 	string[] public affiliateList;
 	address public owner;
 

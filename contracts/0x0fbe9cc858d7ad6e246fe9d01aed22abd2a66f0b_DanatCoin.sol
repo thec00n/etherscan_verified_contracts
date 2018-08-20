@@ -4,10 +4,10 @@ pragma solidity ^0.4.19;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -88,18 +88,18 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
     uint _rewardedTokens = 0;
     uint _rewardTokenValue = 5;
     
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
     
     
     event FrozenFunds(address target, bool frozen); // notifies clients about the fund frozen
   
     // Constructor
     function DanatCoin() public {
-        symbol = &quot;DNC&quot;;
-        name = &quot;Danat Coin&quot;;
+        symbol = "DNC";
+        name = "Danat Coin";
         decimals = 18;
         _totalSupply = 100000000 * 10 ** uint(decimals);    //totalSupply = initialSupply * 10 ** uint(decimals);
         balances[msg.sender] = _totalSupply;                // Give the creator all initial tokens
@@ -119,8 +119,8 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
     // Internal transfer, only can be called by this contract 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               			// Prevent transfer to 0x0 address.
-        require (balances[_from] &gt;= _value);               			    // Check if the sender has enough balance
-        require (balances[_to] + _value &gt; balances[_to]); 			    // Check for overflows
+        require (balances[_from] >= _value);               			    // Check if the sender has enough balance
+        require (balances[_to] + _value > balances[_to]); 			    // Check for overflows
         require(!frozenAccount[_from]);                     			// Check if sender is frozen
         require(!frozenAccount[_to]);                       			// Check if recipient is frozen
         uint previousBalances = balances[_from] + balances[_to];		// Save this for an assertion in the future
@@ -131,7 +131,7 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
     }
     
    
-    // Transfer the balance from token owner&#39;s account to user account
+    // Transfer the balance from token owner's account to user account
 
     function transfer(address to, uint tokens) public returns (bool success) {
        _transfer(msg.sender, to, tokens);
@@ -142,7 +142,7 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
   
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         
-        require(tokens &lt;= allowed[from][msg.sender]); // The calling account must already have sufficient tokens approved for spending from the from account
+        require(tokens <= allowed[from][msg.sender]); // The calling account must already have sufficient tokens approved for spending from the from account
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);   // substract the send tokens from allowed limit
         _transfer(from, to, tokens);
         return true;
@@ -170,7 +170,7 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
         return true;
     }
 
-    // Get the amount of tokens approved by the owner that can be transferred to the spender&#39;s account
+    // Get the amount of tokens approved by the owner that can be transferred to the spender's account
 
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -178,7 +178,7 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for spender to transferFrom(...) tokens
-    // from the token owner&#39;s account. The spender contract function
+    // from the token owner's account. The spender contract function
     // receiveApproval(...) is then executed
     ///* Allow another contract to spend some tokens in your behalf */
     // ------------------------------------------------------------------------
@@ -192,13 +192,13 @@ contract DanatCoin is ERC20Interface, Owned, SafeMath {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
 
     function freezeAccount(address target, bool freeze) onlyOwner public {
         frozenAccount[target] = freeze;

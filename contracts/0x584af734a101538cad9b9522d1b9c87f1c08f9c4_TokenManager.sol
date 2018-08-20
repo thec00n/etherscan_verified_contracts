@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026f6b61697b426c6d756e6b74672c706d">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026f6b61697b426c6d756e6b74672c706d">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f62666c64764f6160786366796a217d60">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f62666c64764f6160786366796a217d60">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Token Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe2e6ece4f6cfe1e0f8e3e6f9eaa1fde0">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe2e6ece4f6cfe1e0f8e3e6f9eaa1fde0">[email protected]</a>>
 
  Zeppelin ERC20 Standard Token
 
@@ -287,8 +287,8 @@ contract ABIToken {
     uint8 public   decimals;
     uint256 public totalSupply;
     string public  version;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
     address public manager;
     address public deployer;
     bool public mintingFinished = false;
@@ -316,7 +316,7 @@ contract ABIToken {
 
  * @name        Token Stake Calculation And Distribution Algorithm - Type 3 - Sell a variable amount of tokens for a fixed price
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdf7ffedd4fafbe3f8fde2f1bae6fb">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdf7ffedd4fafbe3f8fde2f1bae6fb">[email protected]</a>>
 
 
     Inputs:
@@ -355,7 +355,7 @@ contract ABITokenSCADAVariable {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="107d79737b69507e7f677c7966753e627f">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="107d79737b69507e7f677c7966753e627f">[email protected]</a>>
 
 */
 
@@ -382,7 +382,7 @@ contract TokenManager is ApplicationAsset {
     }
 
     function mint(address _to, uint256 _amount)
-        onlyAsset(&#39;FundingManager&#39;)
+        onlyAsset('FundingManager')
         public
         returns (bool)
     {
@@ -390,7 +390,7 @@ contract TokenManager is ApplicationAsset {
     }
 
     function finishMinting()
-        onlyAsset(&#39;FundingManager&#39;)
+        onlyAsset('FundingManager')
         public
         returns (bool)
     {
@@ -417,7 +417,7 @@ contract TokenManager is ApplicationAsset {
 
     function ReleaseOwnersLockedTokens(address _multiSigOutputAddress)
         public
-        onlyAsset(&#39;FundingManager&#39;)
+        onlyAsset('FundingManager')
         returns (bool)
     {
         require(OwnerTokenBalancesReleased == false);

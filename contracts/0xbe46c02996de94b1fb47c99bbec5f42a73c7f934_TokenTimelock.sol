@@ -74,10 +74,10 @@ contract TokenTimelock is Ownable {
   )
     public
   {
-    require(block.timestamp &lt; releaseTime1);
-    require(block.timestamp &lt; releaseTime2);
-    require(block.timestamp &lt; releaseTime3);
-    require(block.timestamp &lt; releaseTime4);
+    require(block.timestamp < releaseTime1);
+    require(block.timestamp < releaseTime2);
+    require(block.timestamp < releaseTime3);
+    require(block.timestamp < releaseTime4);
     
     require(_beneficiary != address(0));
     require(_token != address(0));
@@ -93,11 +93,11 @@ contract TokenTimelock is Ownable {
     }
   function checkCanRelease(bool rState, uint256 rTime, uint256 rAmount) private 
   {
-    require(block.timestamp &gt;= rTime);
+    require(block.timestamp >= rTime);
     require(false == rState);
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
-    require(amount &gt;= rAmount);
+    require(amount > 0);
+    require(amount >= rAmount);
   }
   function releaseImpl(uint256 rAmount) private 
   {
@@ -142,7 +142,7 @@ contract TokenTimelock is Ownable {
     require(true == releaseState4);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     releaseImpl(amount);
   }

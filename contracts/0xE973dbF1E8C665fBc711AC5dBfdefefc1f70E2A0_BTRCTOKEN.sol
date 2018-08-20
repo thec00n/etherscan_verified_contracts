@@ -5,8 +5,8 @@ pragma solidity ^0.4.15;
 */
 contract BTRCTOKEN {
   
-  string public constant symbol = &quot;BTRC&quot;;
-  string public constant name = &quot;BİTUBER&quot;;
+  string public constant symbol = "BTRC";
+  string public constant name = "BİTUBER";
   
   uint8 public constant decimals = 18;
   
@@ -21,9 +21,9 @@ contract BTRCTOKEN {
   address private owner;
   address private cur_coin;
   
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-  mapping (address =&gt; uint256) private etherClients;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => uint256) private etherClients;
 
   event FundsGot(address indexed _sender, uint256 _value);
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -53,7 +53,7 @@ contract BTRCTOKEN {
   }
 
   modifier producibleFlag {
-    require((generationState == true)&amp;&amp;(_totalSupply&lt;_maxSupply));
+    require((generationState == true)&&(_totalSupply<_maxSupply));
     _;
   }
 
@@ -108,16 +108,16 @@ contract BTRCTOKEN {
 
   function contractState() public view returns (string state) {
     if (workingState) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
 
 
   function enableGeneration() public onlyOwner {
-    if(_totalSupply&lt;_maxSupply) {
+    if(_totalSupply<_maxSupply) {
 		generationState = true;
 		TokenGenerationEnabled();
 	} else {
@@ -132,10 +132,10 @@ contract BTRCTOKEN {
 
   function tokenGenerationState() public view returns (string state) {
     if (generationState) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
   
@@ -151,10 +151,10 @@ contract BTRCTOKEN {
   }
   function transferState() public view returns (string state) {
     if (transferAllowed) {
-      state = &quot;Working&quot;;
+      state = "Working";
     }
     else {
-      state = &quot;Stopped&quot;;
+      state = "Stopped";
     }
   }
   
@@ -162,9 +162,9 @@ contract BTRCTOKEN {
   //token controller functions
   function generateTokens(address _client, uint256 _amount) public ownerAndCoin workingFlag producibleFlag {
 	
-	if(_totalSupply&lt;=_maxSupply) {
+	if(_totalSupply<=_maxSupply) {
 	
-		if(_totalSupply+_amount&gt;_maxSupply) {
+		if(_totalSupply+_amount>_maxSupply) {
 			_amount = (_totalSupply+_amount)-_maxSupply;
 		}
 		
@@ -175,7 +175,7 @@ contract BTRCTOKEN {
 		}
 		else
 		{
-		  if (balances[address(this)] &gt;= _amount)
+		  if (balances[address(this)] >= _amount)
 		  {
 			transferFrom(address(this), _client, _amount);
 		  }
@@ -190,7 +190,7 @@ contract BTRCTOKEN {
 		
 		TokensSent(_client, _amount);
 		
-		if(_totalSupply&gt;=_maxSupply) {
+		if(_totalSupply>=_maxSupply) {
 			generationState = false;
 			TokenGenerationDisabled();
 		}	
@@ -214,7 +214,7 @@ contract BTRCTOKEN {
   function () public workingFlag payable {
     bool ret = false;
     if (generationState) {
-       ret = cur_coin.call(bytes4(keccak256(&quot;pay(address,uint256,uint256)&quot;)), msg.sender, msg.value, price);
+       ret = cur_coin.call(bytes4(keccak256("pay(address,uint256,uint256)")), msg.sender, msg.value, price);
     }
     PaymentGot(ret);
   }
@@ -226,9 +226,9 @@ contract BTRCTOKEN {
     return balances[_owner];
   }
   function transfer(address _to, uint256 _value) public workingFlag returns (bool success) {
-    if (balances[msg.sender] &gt;= _value
-      &amp;&amp; _value &gt; 0
-      &amp;&amp; balances[_to] + _value &gt; balances[_to])
+    if (balances[msg.sender] >= _value
+      && _value > 0
+      && balances[_to] + _value > balances[_to])
       {
         if ((msg.sender == address(this))||(_to == address(this))) {
           balances[msg.sender] -= _value;
@@ -256,10 +256,10 @@ contract BTRCTOKEN {
     if ((msg.sender == cur_coin)||(msg.sender == owner)) {
       allowed[_from][_to] = _value;
     }
-    if (balances[_from] &gt;= _value
-      &amp;&amp; allowed[_from][_to] &gt;= _value
-      &amp;&amp; _value &gt; 0
-      &amp;&amp; balances[_to] + _value &gt; balances[_to])
+    if (balances[_from] >= _value
+      && allowed[_from][_to] >= _value
+      && _value > 0
+      && balances[_to] + _value > balances[_to])
       {
         if ((_from == address(this))||(_to == address(this))) {
           balances[_from] -= _value;

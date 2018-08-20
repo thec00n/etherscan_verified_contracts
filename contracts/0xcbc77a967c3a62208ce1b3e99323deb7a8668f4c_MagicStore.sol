@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,7 +106,7 @@ contract HeroCore{
 contract MagicStore is Pausable {
 		HeroCore public heroCore;
     
-    mapping (uint8 =&gt;mapping (uint8 =&gt; uint256)) public itemIndexToPrice; 
+    mapping (uint8 =>mapping (uint8 => uint256)) public itemIndexToPrice; 
 			
 		function MagicStore(address _heroCore){
         HeroCore candidateContract2 = HeroCore(_heroCore);
@@ -115,13 +115,13 @@ contract MagicStore is Pausable {
     
     function buyItem(uint8 itemX,uint8 itemY, uint256 tokenId, uint256 amount) public{
         require( msg.sender == heroCore.ownerOf(tokenId) );
-        require( heroCore.ownerIndexToERC20Balance(msg.sender) &gt;= amount);
-        require( itemX &gt;0);
+        require( heroCore.ownerIndexToERC20Balance(msg.sender) >= amount);
+        require( itemX >0);
         uint256 fee= itemIndexToPrice[itemX][itemY];           
-        require(fee !=0 &amp;&amp; fee &lt;= amount); 
+        require(fee !=0 && fee <= amount); 
            uint32 items = heroCore.getHeroItems(tokenId);
            uint32 location = 1;
-		       for(uint8 index = 2; index &lt;= itemX; index++){
+		       for(uint8 index = 2; index <= itemX; index++){
 		          location *=10;
 		       }
         uint32 _itemsId = items+ uint32(itemY) *location - items%location *location;
@@ -131,7 +131,7 @@ contract MagicStore is Pausable {
     
     
     function setItem(uint8 itemX,uint8 itemY, uint256 amount) public onlyOwner{
-    	 require( itemX &lt;=9 &amp;&amp; itemY &lt;=9 &amp;&amp; amount !=0);
+    	 require( itemX <=9 && itemY <=9 && amount !=0);
     
        itemIndexToPrice[itemX][itemY] =amount;    
     }

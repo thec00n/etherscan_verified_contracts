@@ -20,7 +20,7 @@ contract aiaPrivatesale is myOwned {
     uint public exchangeRate;
     token public tokenReward;
     address public beneficiary;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event GoalReached(address receiver, uint amount);
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -39,7 +39,7 @@ contract aiaPrivatesale is myOwned {
     }
 
     function saleActive() public constant returns (bool) {
-        return (now &gt;= startDate &amp;&amp; now &lt;= stopDate &amp;&amp; amountRaised &lt; fundingGoal);
+        return (now >= startDate && now <= stopDate && amountRaised < fundingGoal);
     }
     
     function getCurrentTimestamp() internal returns (uint256) {
@@ -47,14 +47,14 @@ contract aiaPrivatesale is myOwned {
     }
 
     function getRateAt(uint256 at) constant returns (uint256) {
-        if (at &lt; startDate) {return 0;} 
-        else if (at &lt;= stopDate) {return 6500;} 
-        else if (at &gt; stopDate) {return 0;}
+        if (at < startDate) {return 0;} 
+        else if (at <= stopDate) {return 6500;} 
+        else if (at > stopDate) {return 0;}
     }
 
     function () payable {
         require(saleActive());
-        require(amountRaised &lt; fundingGoal);
+        require(amountRaised < fundingGoal);
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
@@ -67,7 +67,7 @@ contract aiaPrivatesale is myOwned {
 
     function saleEnd() onlyOwner {
         require(!saleActive());
-        require(now &gt; stopDate );
+        require(now > stopDate );
         beneficiary.transfer(this.balance);
         tokenReward.transfer(beneficiary, this.balance);
 

@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -186,7 +186,7 @@ contract EIP20Wrapper {
             }
         }
 
-        require(result, &quot;eip20Transfer failed&quot;);
+        require(result, "eip20Transfer failed");
     }
 
     function eip20TransferFrom(
@@ -213,7 +213,7 @@ contract EIP20Wrapper {
             }
         }
 
-        require(result, &quot;eip20TransferFrom failed&quot;);
+        require(result, "eip20TransferFrom failed");
     }
 
     function eip20Approve(
@@ -239,7 +239,7 @@ contract EIP20Wrapper {
             }
         }
 
-        require(result, &quot;eip20Approve failed&quot;);
+        require(result, "eip20Approve failed");
     }
 }
 
@@ -252,9 +252,9 @@ contract BZxOwnable is Ownable {
 
     event BZxOwnershipTransferred(address indexed previousBZxContract, address indexed newBZxContract);
 
-    // modifier reverts if bZxContractAddress isn&#39;t set
+    // modifier reverts if bZxContractAddress isn't set
     modifier onlyBZx() {
-        require(msg.sender == bZxContractAddress, &quot;only bZx contracts can call this function&quot;);
+        require(msg.sender == bZxContractAddress, "only bZx contracts can call this function");
         _;
     }
 
@@ -263,7 +263,7 @@ contract BZxOwnable is Ownable {
     * @param newBZxContractAddress The bZx contract address to transfer ownership to.
     */
     function transferBZxOwnership(address newBZxContractAddress) public onlyOwner {
-        require(newBZxContractAddress != address(0) &amp;&amp; newBZxContractAddress != owner, &quot;transferBZxOwnership::unauthorized&quot;);
+        require(newBZxContractAddress != address(0) && newBZxContractAddress != owner, "transferBZxOwnership::unauthorized");
         emit BZxOwnershipTransferred(bZxContractAddress, newBZxContractAddress);
         bZxContractAddress = newBZxContractAddress;
     }
@@ -274,7 +274,7 @@ contract BZxOwnable is Ownable {
     * This overrides transferOwnership in Ownable to prevent setting the new owner the same as the bZxContract
     */
     function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0) &amp;&amp; newOwner != bZxContractAddress, &quot;transferOwnership::unauthorized&quot;);
+        require(newOwner != address(0) && newOwner != bZxContractAddress, "transferOwnership::unauthorized");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
     }
@@ -361,9 +361,9 @@ contract BZxTo0x is EIP20Wrapper, BZxOwnable {
             orderValues0x,
             signature0x);
 
-        if (sourceTokenUsedAmount &lt; sourceTokenAmountToUse) {
+        if (sourceTokenUsedAmount < sourceTokenAmountToUse) {
             // all sourceToken has to be traded
-            revert(&quot;BZxTo0x::take0xTrade: sourceTokenUsedAmount &lt; sourceTokenAmountToUse&quot;);
+            revert("BZxTo0x::take0xTrade: sourceTokenUsedAmount < sourceTokenAmountToUse");
         }
 
         // transfer the destToken to the vault
@@ -396,7 +396,7 @@ contract BZxTo0x is EIP20Wrapper, BZxOwnable {
         uint salt;
         orderAddresses = new address[5][](orderData0x.length/352);
         orderValues = new uint[6][](orderData0x.length/352);
-        for (uint i = 0; i &lt; orderData0x.length/352; i++) {
+        for (uint i = 0; i < orderData0x.length/352; i++) {
             assembly {
                 maker := mload(add(orderData0x, add(mul(i, 352), 32)))
                 taker := mload(add(orderData0x, add(mul(i, 352), 64)))
@@ -441,7 +441,7 @@ contract BZxTo0x is EIP20Wrapper, BZxOwnable {
         vs = new uint8[](signatures.length/65);
         rs = new bytes32[](signatures.length/65);
         ss = new bytes32[](signatures.length/65);
-        for (uint i = 0; i &lt; signatures.length/65; i++) {
+        for (uint i = 0; i < signatures.length/65; i++) {
             uint8 v;
             bytes32 r;
             bytes32 s;
@@ -450,7 +450,7 @@ contract BZxTo0x is EIP20Wrapper, BZxOwnable {
                 s := mload(add(signatures, add(mul(i, 65), 64)))
                 v := mload(add(signatures, add(mul(i, 65), 65)))
             }
-            if (v &lt; 27) {
+            if (v < 27) {
                 v = v + 27;
             }
             vs[i] = v;
@@ -523,17 +523,17 @@ contract BZxTo0x is EIP20Wrapper, BZxOwnable {
     {
         uint[3] memory summations; // takerTokenAmountTotal, makerTokenAmountTotal, zrxTokenAmount
 
-        for (uint i = 0; i &lt; orderAddresses0x.length; i++) {
+        for (uint i = 0; i < orderAddresses0x.length; i++) {
             summations[0] += orderValues0x[0][1]; // takerTokenAmountTotal
             summations[1] += orderValues0x[0][0]; // makerTokenAmountTotal
             
-            if (orderAddresses0x[i][4] != address(0) &amp;&amp; // feeRecipient
-                    orderValues0x[i][3] &gt; 0 // takerFee
+            if (orderAddresses0x[i][4] != address(0) && // feeRecipient
+                    orderValues0x[i][3] > 0 // takerFee
             ) {
                 summations[2] += orderValues0x[i][3]; // zrxTokenAmount
             }
         }
-        if (summations[2] &gt; 0) {
+        if (summations[2] > 0) {
             // The 0x TokenTransferProxy already has unlimited transfer allowance for ZRX from this contract (set during deployment of this contract)
             eip20TransferFrom(
                 zrxTokenContract,
@@ -545,13 +545,13 @@ contract BZxTo0x is EIP20Wrapper, BZxOwnable {
         (uint8[] memory v, bytes32[] memory r, bytes32[] memory s) = getSignatureParts(signature);
 
         // Increase the allowance for 0x Exchange Proxy to transfer the sourceToken needed for the 0x trade
-        // orderAddresses0x[0][3] -&gt; takerToken/sourceToken
+        // orderAddresses0x[0][3] -> takerToken/sourceToken
         eip20Approve(
             orderAddresses0x[0][3],
             tokenTransferProxyContract,
             EIP20(orderAddresses0x[0][3]).allowance(this, tokenTransferProxyContract).add(sourceTokenAmountToUse));
 
-        if (orderAddresses0x.length &gt; 0) {
+        if (orderAddresses0x.length > 0) {
             sourceTokenUsedAmount = ExchangeInterface(exchangeContract).fillOrdersUpTo(
                 orderAddresses0x,
                 orderValues0x,

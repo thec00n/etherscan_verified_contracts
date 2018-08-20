@@ -32,7 +32,7 @@ contract MonethaBuyerWithdrawHelper{
     uint256 min_fee;
 
     // store the amount of ETH donated by supporters
-    mapping (address =&gt; uint256) public supporterBalances;
+    mapping (address => uint256) public supporterBalances;
 
     // constructor
     function WithdrawMonethaBuyerUtility(){
@@ -66,12 +66,12 @@ contract MonethaBuyerWithdrawHelper{
             min_fee = MB.balances(msg.sender) / 100;
 
             // cap to 3 ETH
-            if(min_fee &gt; 3000000000000000000){
+            if(min_fee > 3000000000000000000){
                 min_fee = 3000000000000000000;
             }
 
             // if min fee sent, call the withdraw function on MonethaBuyer
-            if(msg.value &gt;= min_fee){
+            if(msg.value >= min_fee){
                 MB.withdraw( msg.sender );
             }
         }

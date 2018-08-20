@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,7 +46,7 @@ contract ERC20Token {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -126,12 +126,12 @@ contract Crowdsale is Ownable {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _token, uint256 _maxWei) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
-    require(_maxWei &gt; 0);
+    require(_maxWei > 0);
 
     startTime = _startTime;
     endTime = _endTime;
@@ -186,7 +186,7 @@ contract Crowdsale is Ownable {
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
     require(paused == false);
-    require(msg.value &lt;= maxWei);
+    require(msg.value <= maxWei);
     require(beneficiary != address(0));
     require(validPurchase());
 
@@ -212,14 +212,14 @@ contract Crowdsale is Ownable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -235,7 +235,7 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -246,21 +246,21 @@ contract CappedCrowdsale is Crowdsale {
    */
 
   function updateCap(uint256 _newCap) public onlyOwner {
-    require(_newCap &gt; weiRaised);
+    require(_newCap > weiRaised);
     cap = _newCap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -276,14 +276,14 @@ contract WinTokenCrowdsale is CappedCrowdsale {
     CappedCrowdsale(_cap)
     Crowdsale(_startTime, _endTime, _rate, _wallet, _token, _maxWei)
   {
-      require(_maxWei &gt; 0);
+      require(_maxWei > 0);
 
   }
 
   function updateEndTime(uint256 _unixTime) public onlyOwner {
 
     endTime = _unixTime;
-    require(endTime &gt; now);
+    require(endTime > now);
 
   }
 

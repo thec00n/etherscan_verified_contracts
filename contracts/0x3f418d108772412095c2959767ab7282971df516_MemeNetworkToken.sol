@@ -14,13 +14,13 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 contract MemeNetworkToken {
     // Token information.
-    string public constant name = &quot;Meme Network Token&quot;;
-    string public constant symbol = &quot;MNT&quot;;
+    string public constant name = "Meme Network Token";
+    string public constant symbol = "MNT";
     uint8 public constant decimals = 18;
 
     uint256 public constant tokenCreationRate = 10;
@@ -36,7 +36,7 @@ contract MemeNetworkToken {
     bool public funding = true;
     
     // Array of balances.
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -60,9 +60,9 @@ contract MemeNetworkToken {
     function transfer(address _to, uint256 _value) {
         
         //check for proper balance and overflows
-        if (balances[msg.sender] &lt; _value)
+        if (balances[msg.sender] < _value)
             throw;
-        if (balances[_to] + _value &lt; balances[_to])
+        if (balances[_to] + _value < balances[_to])
             throw;
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -77,11 +77,11 @@ contract MemeNetworkToken {
         // Abort if tokens created would cause 
         // totalTokens to be greater than tokenCreationCap
         if(!funding) throw;
-        if (block.number &gt; endingBlock)
+        if (block.number > endingBlock)
             throw;
         // Do not allow creating 0 or more than the cap.
         if (msg.value == 0) throw;
-        if (msg.value &gt; (tokenCreationCap - totalTokens) / tokenCreationRate)
+        if (msg.value > (tokenCreationCap - totalTokens) / tokenCreationRate)
             throw;
         
         var numTokens = msg.value * tokenCreationRate;
@@ -93,8 +93,8 @@ contract MemeNetworkToken {
     }
     function finalize() {
         if (!funding) throw;
-        if (block.number &lt;= endingBlock &amp;&amp;
-            totalTokens &lt; tokenCreationCap)
+        if (block.number <= endingBlock &&
+            totalTokens < tokenCreationCap)
             throw;
         
         funding = false;

@@ -257,7 +257,7 @@ contract InputValidator {
 contract Token is IToken, InputValidator {
 
     // Ethereum token standard
-    string public standard = &quot;Token 0.3&quot;;
+    string public standard = "Token 0.3";
     string public name;
     string public symbol;
     uint8 public decimals = 8;
@@ -266,10 +266,10 @@ contract Token is IToken, InputValidator {
     uint internal totalTokenSupply;
 
     // Token balances
-    mapping (address =&gt; uint) internal balances;
+    mapping (address => uint) internal balances;
 
     // Token allowances
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => mapping (address => uint)) internal allowed;
 
 
     // Events
@@ -321,10 +321,10 @@ contract Token is IToken, InputValidator {
     function transfer(address _to, uint _value) public safe_arguments(2) returns (bool) {
 
         // Check if the sender has enough tokens
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
 
         // Transfer tokens
         balances[msg.sender] -= _value;
@@ -347,13 +347,13 @@ contract Token is IToken, InputValidator {
     function transferFrom(address _from, address _to, uint _value) public safe_arguments(3) returns (bool) {
 
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
 
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
 
         // Check allowance
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         // Transfer tokens
         balances[_to] += _value;
@@ -506,7 +506,7 @@ contract ManagedToken is IManagedToken, Token, TransferableOwnership {
     function issue(address _to, uint _value) public only_owner safe_arguments(2) returns (bool) {
 
         // Check for overflows
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_to] + _value >= balances[_to]);
 
         // Create tokens
         balances[_to] += _value;
@@ -535,7 +535,7 @@ contract NUToken is ManagedToken, ITokenRetreiver {
      * Starts with a total supply of zero and the creator starts with
      * zero tokens (just like everyone else)
      */
-    function NUToken() ManagedToken(&quot;NU&quot;, &quot;NU&quot;, true) {}
+    function NUToken() ManagedToken("NU", "NU", true) {}
 
 
     /**
@@ -548,7 +548,7 @@ contract NUToken is ManagedToken, ITokenRetreiver {
     function retreiveTokens(address _tokenContract) public only_owner {
         IToken tokenInstance = IToken(_tokenContract);
         uint tokenBalance = tokenInstance.balanceOf(this);
-        if (tokenBalance &gt; 0) {
+        if (tokenBalance > 0) {
             tokenInstance.transfer(owner, tokenBalance);
         }
     }

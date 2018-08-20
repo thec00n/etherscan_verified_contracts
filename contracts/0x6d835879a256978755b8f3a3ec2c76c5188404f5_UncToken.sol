@@ -39,10 +39,10 @@ contract Owned {
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -50,7 +50,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -75,7 +75,7 @@ contract ERC20 {
 // File: contracts/UncToken.sol
 
 // ----------------------------------------------------------------------------
-// &#39;UNC&#39; &#39;Uncloak&#39; token contract
+// 'UNC' 'Uncloak' token contract
 // Symbol      : UNC
 // Name        : Uncloak
 // Total supply: 4,200,000,000
@@ -97,10 +97,10 @@ contract UncToken is SafeMath, Owned, ERC20 {
     bool private transferEnabled = false;
 
     // track addresses that can transfer regardless of whether transfers are enables
-    mapping(address =&gt; bool) public transferAdmins;
+    mapping(address => bool) public transferAdmins;
 
-    mapping(address =&gt; uint) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) internal allowed;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) internal allowed;
 
     event Burned(address indexed burner, uint256 value);
 
@@ -114,8 +114,8 @@ contract UncToken is SafeMath, Owned, ERC20 {
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;UNC&quot;;
-        name = &quot;Uncloak&quot;;
+        symbol = "UNC";
+        name = "Uncloak";
         decimals = 18;
         _totalSupply = 4200000000 * 10**uint(decimals);
         transferAdmins[owner] = true; // Enable transfers for owner
@@ -138,16 +138,16 @@ contract UncToken is SafeMath, Owned, ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) canTransfer (msg.sender) public returns (bool success) {
-        require(to != address(this)); //make sure we&#39;re not transfering to this contract
+        require(to != address(this)); //make sure we're not transfering to this contract
 
         //check edge cases
-        if (balances[msg.sender] &gt;= tokens
-            &amp;&amp; tokens &gt; 0) {
+        if (balances[msg.sender] >= tokens
+            && tokens > 0) {
 
                 //update balances
                 balances[msg.sender] = safeSub(balances[msg.sender], tokens);
@@ -164,7 +164,7 @@ contract UncToken is SafeMath, Owned, ERC20 {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     // ------------------------------------------------------------------------
     function approve(address spender, uint tokens) public returns (bool success) {
         // Ownly allow changes to or from 0. Mitigates vulnerabiilty of race description
@@ -189,9 +189,9 @@ contract UncToken is SafeMath, Owned, ERC20 {
         require(to != address(this));
 
         //check edge cases
-        if (allowed[from][msg.sender] &gt;= tokens
-            &amp;&amp; balances[from] &gt;= tokens
-            &amp;&amp; tokens &gt; 0) {
+        if (allowed[from][msg.sender] >= tokens
+            && balances[from] >= tokens
+            && tokens > 0) {
 
             //update balances and allowances
             balances[from] = safeSub(balances[from], tokens);
@@ -209,7 +209,7 @@ contract UncToken is SafeMath, Owned, ERC20 {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -230,7 +230,7 @@ contract UncToken is SafeMath, Owned, ERC20 {
     // Burns a specific number of tokens
     // ------------------------------------------------------------------------
     function burn(uint256 _value) public onlyOwner {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = safeSub(balances[burner], _value);
@@ -239,7 +239,7 @@ contract UncToken is SafeMath, Owned, ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Doesn&#39;t Accept Eth
+    // Doesn't Accept Eth
     // ------------------------------------------------------------------------
     function () public payable {
         revert();

@@ -3,7 +3,7 @@ pragma solidity 0.4.21;
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
 * @notice Website: Ze.cash
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="0b6d256a657f64656264256a606e674b6c666a626725686466">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="0b6d256a657f64656264256a606e674b6c666a626725686466">[email protected]</span>
 */
 
 /**
@@ -26,12 +26,12 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -101,7 +101,7 @@ contract ICO is admined{
     token public tokenReward; //Address of the valit token used as reward
     address public creator; //Address of the contract deployer
     string public campaignUrl; //Web site of the campaing
-    string public version = &#39;2&#39;;
+    string public version = '2';
 
     FiatContract price = FiatContract(0x8055d0504666e2B6942BeB8D6014c964658Ca591); // MAINNET ADDRESS
     //FiatContract price = FiatContract(0x2CDe56E5c8235D6360CCbb0c57Ce248Ca9C80909); // TESTNET ADDRESS (ROPSTEN)
@@ -192,14 +192,14 @@ contract ICO is admined{
     */
     function batch(address[] _data,uint256[] _amount) onlyAdmin public { //It takes array of addresses and array of amount
         require(_data.length == _amount.length);//same array sizes
-        for (uint i=0; i&lt;_data.length; i++) { //It moves over the array
+        for (uint i=0; i<_data.length; i++) { //It moves over the array
             tokenReward.transfer(_data[i],_amount[i]);
         }
     }
 
     /**
     * @notice Function to handle eth transfers
-    * @dev BEWARE: if a call to this functions doesn&#39;t have
+    * @dev BEWARE: if a call to this functions doesn't have
     * enought gas, transaction could not be finished
     */
 

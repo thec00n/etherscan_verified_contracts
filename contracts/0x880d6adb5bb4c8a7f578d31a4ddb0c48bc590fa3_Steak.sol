@@ -22,20 +22,20 @@ pragma solidity ^0.4.15;
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,7 +45,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
  contract Ownable {
   address public owner;
@@ -70,13 +70,13 @@ contract SteakToken is Ownable {
 
   using SafeMath for uint256;
 
-  string public name = &quot;Steak Token&quot;;
-  string public symbol = &quot;BOV&quot;;
+  string public name = "Steak Token";
+  string public symbol = "BOV";
   uint public decimals = 18;
   uint public totalSupply;      // Total BOV in circulation.
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed ownerAddress, address indexed spenderAddress, uint256 value);
@@ -88,7 +88,7 @@ contract SteakToken is Ownable {
   }
 
   function transfer(address _to, uint256 _value) returns (bool) {
-    if(msg.data.length &lt; (2 * 32) + 4) { revert(); } // protect against short address attack
+    if(msg.data.length < (2 * 32) + 4) { revert(); } // protect against short address attack
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -100,7 +100,7 @@ contract SteakToken is Ownable {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -181,9 +181,9 @@ contract SteakToken is Ownable {
 
   address[] public investors;               // Investor addresses
   uint public numberOfInvestors;
-  mapping(address =&gt; uint256) public investments; // How much each address has invested.
+  mapping(address => uint256) public investments; // How much each address has invested.
 
-  mapping(address =&gt; bool) public claimed;      // Keep track of whether each investor has been awarded their BOV tokens.
+  mapping(address => bool) public claimed;      // Keep track of whether each investor has been awarded their BOV tokens.
 
 
   bool public bovBatchDistributed;              // TODO: this can be removed with manual crowdsale end-time
@@ -207,7 +207,7 @@ contract SteakToken is Ownable {
 
 
 
-   // Sending ETH to this contract&#39;s address registers the investment.
+   // Sending ETH to this contract's address registers the investment.
    function () payable {
     invest(msg.sender);
   }
@@ -225,7 +225,7 @@ contract SteakToken is Ownable {
 
     forwardFunds();
 
-    if (investedAmount &gt; 0) { // If they&#39;ve already invested, increase their balance.
+    if (investedAmount > 0) { // If they've already invested, increase their balance.
       investments[beneficiary] = investedAmount + weiAmount; // investedAmount.add(weiAmount);
     } else { // If new investor
       investors.push(beneficiary);
@@ -240,9 +240,9 @@ contract SteakToken is Ownable {
 
   // @return true if the transaction can invest
   function validInvestment() internal constant returns (bool) {
-    bool withinPeriod = saleStarted &amp;&amp; !saleEnded;
-    bool nonZeroPurchase = (msg.value &gt; 0);
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    bool withinPeriod = saleStarted && !saleEnded;
+    bool nonZeroPurchase = (msg.value > 0);
+    return withinPeriod && nonZeroPurchase;
   }
 
 
@@ -257,9 +257,9 @@ contract SteakToken is Ownable {
 
     // Allocate BOV proportionally to each investor.
 
-    for (uint i=0; i &lt; numberOfInvestors; i++) {
+    for (uint i=0; i < numberOfInvestors; i++) {
       address investorAddr = investors[i];
-      if (!claimed[investorAddr]) { // If the investor hasn&#39;t already claimed their BOV.
+      if (!claimed[investorAddr]) { // If the investor hasn't already claimed their BOV.
         claimed[investorAddr] = true;
         uint amountInvested = investments[investorAddr];
         uint bovEarned = amountInvested.mul(initialSale).div(weiRaised);
@@ -286,7 +286,7 @@ contract SteakToken is Ownable {
 
   // Investors: see how many BOV you are currently entitled to (before the end of the crowdsale and distribution of tokens).
   function getCurrentShare(address addr) public constant returns (uint) {
-    require(!bovBatchDistributed &amp;&amp; !claimed[addr]); // Tokens cannot have already been distributed.
+    require(!bovBatchDistributed && !claimed[addr]); // Tokens cannot have already been distributed.
     uint amountInvested = investments[addr];
     uint currentBovShare = amountInvested.mul(initialSale).div(weiRaised);
     return currentBovShare;
@@ -302,14 +302,14 @@ contract SteakToken is Ownable {
 
   // The owner manually starts the crowdsale at a pre-determined time.
   function startCrowdsale() onlyOwner {
-    require(!saleStarted &amp;&amp; !saleEnded);
+    require(!saleStarted && !saleEnded);
     saleStarted = true;
   }
 
   // endCrowdsale() and endCrowdsalePublic() moved to Steak contract
     // Normally, the owner will end the crowdsale at the pre-determined time.
   function endCrowdsale() onlyOwner {
-    require(saleStarted &amp;&amp; !saleEnded);
+    require(saleStarted && !saleEnded);
     dailyHashExpires = now; // Will end crowdsale at 3am EST, so expiration time will roughly be around 3am.
     saleEnded = true;
     setInitialPrize();
@@ -317,15 +317,15 @@ contract SteakToken is Ownable {
 
   // Normally, Madame BOV ends the crowdsale at the pre-determined time, but if Madame BOV fails to do so, anybody can trigger endCrowdsalePublic() after absoluteEndBlock.
   function endCrowdsalePublic() public {
-    require(block.number &gt; absoluteEndBlock);
-    require(saleStarted &amp;&amp; !saleEnded);
+    require(block.number > absoluteEndBlock);
+    require(saleStarted && !saleEnded);
     dailyHashExpires = now;
     saleEnded = true;
     setInitialPrize();
   }
 
 
-  // Calculate initial mining prize (0.0357 ether&#39;s worth of BOV). This is called in endCrowdsale().
+  // Calculate initial mining prize (0.0357 ether's worth of BOV). This is called in endCrowdsale().
   function setInitialPrize() internal returns (uint) {
     require(crowdsaleHasEnded());
     require(initialPrizeBov == 0); // Can only be set once
@@ -337,7 +337,7 @@ contract SteakToken is Ownable {
 
   // @return true if crowdsale event has ended
   function crowdsaleHasEnded() public constant returns (bool) {
-    return saleStarted &amp;&amp; saleEnded;
+    return saleStarted && saleEnded;
   }
 
   function getInvestors() public returns (address[]) {
@@ -363,7 +363,7 @@ contract Steak is AuctionCrowdsale {
   uint public numSubmissions;
 
   Submission[] public approvedSubmissions;
-  mapping (address =&gt; uint) public memberId;    // Get member ID from address.
+  mapping (address => uint) public memberId;    // Get member ID from address.
   Member[] public members;                      // Index is memberId
 
   uint public halvingInterval;                  // BOV award is halved every x steaks
@@ -433,8 +433,8 @@ contract Steak is AuctionCrowdsale {
 
   // Add Madame BOV as a beef judge.
   function initMembers() onlyOwner {
-    addMember(0, &#39;&#39;);                        // Must add an empty first member
-    addMember(msg.sender, &#39;Madame BOV&#39;);
+    addMember(0, '');                        // Must add an empty first member
+    addMember(msg.sender, 'Madame BOV');
   }
 
 
@@ -471,7 +471,7 @@ contract Steak is AuctionCrowdsale {
 
     memberId[targetMember] = 0;
 
-    for (uint i = memberId[targetMember]; i&lt;members.length-1; i++){
+    for (uint i = memberId[targetMember]; i<members.length-1; i++){
       members[i] = members[i+1];
     }
     delete members[members.length-1];
@@ -482,11 +482,11 @@ contract Steak is AuctionCrowdsale {
 
   /* Submit a steak picture. (After crowdsale has ended.)
   *  WARNING: Before taking the picture, call getDailyHash() and  minutesToPost()
-  *  so you can be sure that you have the correct dailyHash and that it won&#39;t expire before you post it.
+  *  so you can be sure that you have the correct dailyHash and that it won't expire before you post it.
   */
   function submitSteak(address addressToAward, bytes32 steakPicUrl)  returns (uint submissionID) {
     require(crowdsaleHasEnded());
-    require(block.number &lt;= lastMiningBlock); // Cannot submit beyond this block.
+    require(block.number <= lastMiningBlock); // Cannot submit beyond this block.
     submissionID = submissions.length++; // Increase length of array
     Submission storage s = submissions[submissionID];
     s.recipient = addressToAward;
@@ -520,7 +520,7 @@ contract Steak is AuctionCrowdsale {
   // Members judge steak pics, providing justification if necessary.
   function judge(uint submissionNumber, bool supportsSubmission, bytes32 justificationText) onlyMembers {
     Submission storage s = submissions[submissionNumber];         // Get the submission.
-    require(!s.judged);                                     // Musn&#39;t be judged.
+    require(!s.judged);                                     // Musn't be judged.
 
     s.judged = true;
     s.judgedBy = msg.sender;
@@ -530,7 +530,7 @@ contract Steak is AuctionCrowdsale {
     if (supportsSubmission) { // If it passed muster, credit the user and admin.
       uint prizeAmount = getSteakPrize(); // Calculate BOV prize
       s.awarded = prizeAmount;            // Record amount in the Submission
-      mint(s.recipient, prizeAmount);     // Credit the user&#39;s account
+      mint(s.recipient, prizeAmount);     // Credit the user's account
 
       // Credit the member one-third of the prize amount.
       uint adminAward = prizeAmount.div(3);
@@ -545,15 +545,15 @@ contract Steak is AuctionCrowdsale {
 
   // Calculate how many BOV are rewarded per approved steak pic.
   function getSteakPrize() public constant returns (uint) {
-    require(initialPrizeBov &gt; 0); // crowdsale must be over (endCrowdsale() calls setInitialPrize())
+    require(initialPrizeBov > 0); // crowdsale must be over (endCrowdsale() calls setInitialPrize())
     uint halvings = numberOfApprovedSteaks().div(halvingInterval);
-    if (halvings &gt; numberOfHalvings) {  // After 8 halvings, no more BOV is awarded.
+    if (halvings > numberOfHalvings) {  // After 8 halvings, no more BOV is awarded.
       return 0;
     }
 
     uint prize = initialPrizeBov;
 
-    prize = prize &gt;&gt; halvings; // Halve the initial prize &quot;halvings&quot;-number of times.
+    prize = prize >> halvings; // Halve the initial prize "halvings"-number of times.
     return prize;
   }
 
@@ -564,9 +564,9 @@ contract Steak is AuctionCrowdsale {
 
 
   // Always call this before calling dailyHash and submitting a steak.
-  // If expired, the new hash is set to the last block&#39;s hash.
+  // If expired, the new hash is set to the last block's hash.
   function getDailyHash() public returns (bytes32) {
-    if (dailyHashExpires &gt; now) { // If the hash hasn&#39;t expired yet, return it.
+    if (dailyHashExpires > now) { // If the hash hasn't expired yet, return it.
       return dailyHash;
     } else { // Udderwise, set the new dailyHash and dailyHashExpiration.
 
@@ -576,7 +576,7 @@ contract Steak is AuctionCrowdsale {
 
       // Set the new expiration, jumping ahead in 24-hour increments so the expiration time remains roughly constant from day to day (e.g. 3am).
       uint nextExpiration = dailyHashExpires + 24 hours; // It will already be expired, so set it to next possible date.
-      while (nextExpiration &lt; now) { // if it&#39;s still in the past, advance by 24 hours.
+      while (nextExpiration < now) { // if it's still in the past, advance by 24 hours.
         nextExpiration += 24 hours;
       }
       dailyHashExpires = nextExpiration;
@@ -586,7 +586,7 @@ contract Steak is AuctionCrowdsale {
 
   // Returns the amount of minutes to post with the current dailyHash
   function minutesToPost() public constant returns (uint) {
-    if (dailyHashExpires &gt; now) {
+    if (dailyHashExpires > now) {
       return (dailyHashExpires - now) / 60; // returns minutes
     } else {
       return 0;

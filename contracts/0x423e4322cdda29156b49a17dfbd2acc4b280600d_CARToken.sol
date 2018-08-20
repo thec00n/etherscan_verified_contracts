@@ -8,18 +8,18 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        require(c&gt;=a &amp;&amp; c&gt;=b);
+        require(c>=a && c>=b);
         return c;
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        require(b &gt; 0);
+        require(b > 0);
         uint c = a / b;
         require(a == b * c + a % b);
         return c;
@@ -41,7 +41,7 @@ contract Token {
 contract ERC20Token is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract ERC20Token is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -73,9 +73,9 @@ contract ERC20Token is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
 }
@@ -87,8 +87,8 @@ contract ERC20Token is Token {
  */
 contract CARToken is ERC20Token, SafeMath {
 
-    string public name = &quot;CAR SHARING&quot;;
-    string public symbol = &quot;CAR&quot;;
+    string public name = "CAR SHARING";
+    string public symbol = "CAR";
 	uint public decimals = 9;
 
     address public tokenIssuer = 0x0;
@@ -135,7 +135,7 @@ contract CARToken is ERC20Token, SafeMath {
         require(msg.sender==tokenIssuer);
         uint tokens = 0;
      
-		if(block.timestamp &gt; month12Unlock &amp;&amp; !month12Allocated)
+		if(block.timestamp > month12Unlock && !month12Allocated)
         {
 			month12Allocated = true;
 			tokens = safeDiv(totalTokensReserve, 5);
@@ -143,7 +143,7 @@ contract CARToken is ERC20Token, SafeMath {
 			totalSupply = safeAdd(totalSupply, tokens);
             
         }
-        else if(block.timestamp &gt; month24Unlock &amp;&amp; !month24Allocated)
+        else if(block.timestamp > month24Unlock && !month24Allocated)
         {
 			month24Allocated = true;
 			tokens = safeDiv(totalTokensReserve, 5);
@@ -151,7 +151,7 @@ contract CARToken is ERC20Token, SafeMath {
 			totalSupply = safeAdd(totalSupply, tokens);
 			
         }
-		if(block.timestamp &gt; month30Unlock &amp;&amp; !month30Allocated)
+		if(block.timestamp > month30Unlock && !month30Allocated)
         {
 			month30Allocated = true;
 			tokens = safeDiv(totalTokensReserve, 5);
@@ -159,14 +159,14 @@ contract CARToken is ERC20Token, SafeMath {
 			totalSupply = safeAdd(totalSupply, tokens);
             
         }
-        else if(block.timestamp &gt; month48Unlock &amp;&amp; !month48Allocated)
+        else if(block.timestamp > month48Unlock && !month48Allocated)
         {
 			month48Allocated = true;
 			tokens = safeDiv(totalTokensReserve, 5);
 			balances[tokenIssuer] = safeAdd(balances[tokenIssuer], tokens);
 			totalSupply = safeAdd(totalSupply, tokens);
         }
-		else if(block.timestamp &gt; month60Unlock &amp;&amp; !month60Allocated)
+		else if(block.timestamp > month60Unlock && !month60Allocated)
         {
             month60Allocated = true;
             tokens = safeDiv(totalTokensReserve, 5);
@@ -184,7 +184,7 @@ contract CARToken is ERC20Token, SafeMath {
     {
 		require(msg.sender==tokenIssuer);
 		
-		if(totalTokenSaled + amountToken &lt;= totalTokensCrowdSale &amp;&amp; block.timestamp &lt;= endTokenSale)
+		if(totalTokenSaled + amountToken <= totalTokensCrowdSale && block.timestamp <= endTokenSale)
 		{
 			balances[tokenHolder] = safeAdd(balances[tokenHolder], amountToken);
 			totalTokenSaled = safeAdd(totalTokenSaled, amountToken);

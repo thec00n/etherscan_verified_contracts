@@ -30,20 +30,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -52,10 +52,10 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
-    mapping(address =&gt; bool)  internal owners;
+    mapping(address => bool)  internal owners;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -92,8 +92,8 @@ contract Ownable {
 contract BigToken is ERC20, Ownable {
     using SafeMath for uint256;
 
-    string public name = &quot;Big Token&quot;;
-    string public symbol = &quot;BIG&quot;;
+    string public name = "Big Token";
+    string public symbol = "BIG";
     uint256 public decimals = 18;
     uint256 public mintPerBlock = 333333333333333;
 
@@ -107,13 +107,13 @@ contract BigToken is ERC20, Ownable {
     bool public enabledMint = true;
     uint256 public totalMembers;
 
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
-    mapping(uint256 =&gt; BigTransaction) public transactions;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; uint) public lastMint;
-    mapping(address =&gt; bool) invested;
-    mapping(address =&gt; bool) public confirmed;
-    mapping(address =&gt; bool) public members;
+    mapping(address => mapping (address => uint256)) internal allowed;
+    mapping(uint256 => BigTransaction) public transactions;
+    mapping(address => uint256) public balances;
+    mapping(address => uint) public lastMint;
+    mapping(address => bool) invested;
+    mapping(address => bool) public confirmed;
+    mapping(address => bool) public members;
 
     event Mint(address indexed to, uint256 amount);
     event Commission(uint256 amount);
@@ -129,9 +129,9 @@ contract BigToken is ERC20, Ownable {
         uint256 currentBalance = balances[msg.sender];
         uint256 balanceToMint = getBalanceToMint(msg.sender);
         uint256 commission = _value * commissionPercent / 100;
-        require((_value + commission) &lt;= (currentBalance + balanceToMint));
+        require((_value + commission) <= (currentBalance + balanceToMint));
 
-        if(balanceToMint &gt; 0){
+        if(balanceToMint > 0){
             currentBalance = currentBalance.add(balanceToMint);
             Mint(msg.sender, balanceToMint);
             lastMint[msg.sender] = block.number;
@@ -161,14 +161,14 @@ contract BigToken is ERC20, Ownable {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
         uint256 currentBalance = balances[_from];
         uint256 balanceToMint = getBalanceToMint(_from);
         uint256 commission = _value * commissionPercent / 100;
-        require((_value + commission) &lt;= (currentBalance + balanceToMint));
+        require((_value + commission) <= (currentBalance + balanceToMint));
 
-        if(balanceToMint &gt; 0){
+        if(balanceToMint > 0){
             currentBalance = currentBalance.add(balanceToMint);
             Mint(_from, balanceToMint);
             lastMint[_from] = block.number;
@@ -209,7 +209,7 @@ contract BigToken is ERC20, Ownable {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -244,7 +244,7 @@ contract BigToken is ERC20, Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -277,10 +277,10 @@ contract BigToken is ERC20, Ownable {
 
         uint256 balanceToMint = (block.number - lastMint[_address]) * mintPerBlock;
         
-        for(uint i = totalTransactions - 1; i &gt;= 0; i--){
+        for(uint i = totalTransactions - 1; i >= 0; i--){
             if(block.number == transactions[i].blockNumber) continue;
-            if(transactions[i].blockNumber &lt; lastMint[_address]) return balanceToMint;
-            if(transactions[i].amount &gt; mintPerBlock) {
+            if(transactions[i].blockNumber < lastMint[_address]) return balanceToMint;
+            if(transactions[i].amount > mintPerBlock) {
                 balanceToMint = balanceToMint.add(transactions[i].amount - mintPerBlock);
             }
         }
@@ -298,7 +298,7 @@ contract BigToken is ERC20, Ownable {
 
     function confirm(address _address) onlyOwner public {
         confirmed[_address] = true;
-        if(!members[_address] &amp;&amp; invested[_address]){
+        if(!members[_address] && invested[_address]){
             members[_address] = true;
             totalMembers = totalMembers.add(1);
             setLastMint(_address, block.number);
@@ -327,7 +327,7 @@ contract BigToken is ERC20, Ownable {
 
     function setInvested(address _address) onlyOwner public{
         invested[_address] = true;
-        if(confirmed[_address] &amp;&amp; !members[_address]){
+        if(confirmed[_address] && !members[_address]){
             members[_address] = true;
             totalMembers = totalMembers.add(1);
             refreshBalance(_address);
@@ -356,14 +356,14 @@ contract Crowdsale is Ownable{
     }
 
     function () payable {
-        require(msg.value &gt;= 0.01 ether);
+        require(msg.value >= 0.01 ether);
         uint256 amount = msg.value / 0.01 ether * 1 ether;
 
-        if(msg.value &gt;= 100 ether &amp;&amp; msg.value &lt; 500 ether) amount = amount * 11 / 10;
-        if(msg.value &gt;= 500 ether &amp;&amp; msg.value &lt; 1000 ether) amount = amount * 12 / 10;
-        if(msg.value &gt;= 1000 ether &amp;&amp; msg.value &lt; 5000 ether) amount = amount * 13 / 10;
-        if(msg.value &gt;= 5000 ether &amp;&amp; msg.value &lt; 10000 ether) amount = amount * 14 / 10;
-        if(msg.value &gt;= 10000 ether) amount = amount * 15 / 10;
+        if(msg.value >= 100 ether && msg.value < 500 ether) amount = amount * 11 / 10;
+        if(msg.value >= 500 ether && msg.value < 1000 ether) amount = amount * 12 / 10;
+        if(msg.value >= 1000 ether && msg.value < 5000 ether) amount = amount * 13 / 10;
+        if(msg.value >= 5000 ether && msg.value < 10000 ether) amount = amount * 14 / 10;
+        if(msg.value >= 10000 ether) amount = amount * 15 / 10;
 
         collected = collected.add(msg.value);
 

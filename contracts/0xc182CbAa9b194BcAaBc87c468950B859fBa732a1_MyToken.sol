@@ -32,11 +32,11 @@ contract MyToken is owned{
     uint256 public sellPrice;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; uint256) public voted;  
-    mapping (address =&gt; string) public votedFor;  
-    mapping (address =&gt; uint256) public restFinish; 
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => uint256) public voted;  
+    mapping (address => string) public votedFor;  
+    mapping (address => uint256) public restFinish; 
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -53,16 +53,16 @@ contract MyToken is owned{
     function MyToken() {
         balanceOf[msg.sender] = 3000000;              // Give the creator all initial tokens
         totalSupply = 3000000;                        // Update total supply
-        name = &#39;GamityTest4&#39;;                                   // Set the name for display purposes
-        symbol = &#39;GMTEST4&#39;;                                     // Set the symbol for display purposes
+        name = 'GamityTest4';                                   // Set the name for display purposes
+        symbol = 'GMTEST4';                                     // Set the symbol for display purposes
         decimals = 0;                                       // Amount of decimals for display purposes
     }
 
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt; _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] > _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(_from, _to, _value);
@@ -80,7 +80,7 @@ contract MyToken is owned{
     /// @param _to The address of the recipient
     /// @param _value the amount to send
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require (_value &lt; allowance[_from][msg.sender]);     // Check allowance
+        require (_value < allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -111,7 +111,7 @@ contract MyToken is owned{
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
     function burn(uint256 _value) returns (bool success) {
-        require (balanceOf[msg.sender] &gt; _value);            // Check if the sender has enough
+        require (balanceOf[msg.sender] > _value);            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Burn(msg.sender, _value);
@@ -119,10 +119,10 @@ contract MyToken is owned{
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -154,8 +154,8 @@ contract MyToken is owned{
     
     
     function rest()  returns (bool success){    
-        require(balanceOf[msg.sender] &gt;= 5000);         // checks if the sender has enough to sell
-        balanceOf[this] += 5000;                        // adds the amount to owner&#39;s balance
+        require(balanceOf[msg.sender] >= 5000);         // checks if the sender has enough to sell
+        balanceOf[this] += 5000;                        // adds the amount to owner's balance
         balanceOf[msg.sender] -= 5000; 
         restFinish[msg.sender] = block.timestamp + 3 days;
         return true; 
@@ -165,25 +165,25 @@ contract MyToken is owned{
     
     
     function setPrice(uint256 newSellPrice) onlyOwner {
-        require(newSellPrice &gt; 0); 
+        require(newSellPrice > 0); 
         sellPrice = newSellPrice;
     }
      
 
     function sell(uint amount) returns (uint revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[this] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[this] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        require(msg.sender.send(revenue));                // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        require(msg.sender.send(revenue));                // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(msg.sender, this, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }
     
     function getTokens() onlyOwner  returns (uint amount) {
-        require(balanceOf[this] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[this] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
@@ -194,7 +194,7 @@ contract MyToken is owned{
 
     
     function getEther(uint amount) onlyOwner returns (bool success) {
-        require(msg.sender.send(amount));                 // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        require(msg.sender.send(amount));                 // sends ether to the seller: it's important to do this last to prevent recursion attacks
         return true;                                  // ends function and returns
     }
     

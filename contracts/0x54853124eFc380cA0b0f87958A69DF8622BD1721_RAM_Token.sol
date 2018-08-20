@@ -8,20 +8,20 @@ contract SafeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -43,14 +43,14 @@ contract ERC20 {
 
 contract StdToken is ERC20,SafeMath {
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
    modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
     }
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
   
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
     
@@ -64,10 +64,10 @@ contract StdToken is ERC20,SafeMath {
   }
 
     function transferFrom(address _from, address _to, uint256 _value)public validAddress(_to)  returns (bool success) {
-        if (_value &lt;= 0) revert();
-        if (balances[_from] &lt; _value) revert();
-        if (balances[_to] + _value &lt; balances[_to]) revert();
-        if (_value &gt; allowed[_from][msg.sender]) revert();
+        if (_value <= 0) revert();
+        if (balances[_from] < _value) revert();
+        if (balances[_to] + _value < balances[_to]) revert();
+        if (_value > allowed[_from][msg.sender]) revert();
         balances[_from] = safeSub(balances[_from], _value);                           
         balances[_to] = safeAdd(balances[_to], _value);
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -112,8 +112,8 @@ contract Ownable {
 
 
 contract RAM_Token is StdToken,Ownable{
-    string public name=&quot;RAM Token&quot;;
-    string public symbol=&quot;RAM&quot;;
+    string public name="RAM Token";
+    string public symbol="RAM";
     uint public decimals = 18;
     uint256 TokenValue;
     uint256 public minToken=1000;
@@ -127,9 +127,9 @@ contract RAM_Token is StdToken,Ownable{
 
     
     modifier isActive{
-        if(now&gt;=startTime &amp;&amp; now&lt;=endTime &amp;&amp; limit&gt;0){
+        if(now>=startTime && now<=endTime && limit>0){
         _;
-        }else{ if(now&gt;endTime  || limit==0){
+        }else{ if(now>endTime  || limit==0){
                 active=false;
             }
         revert();
@@ -156,7 +156,7 @@ contract RAM_Token is StdToken,Ownable{
     }    
     
     function Mint(uint _value)public onlyOwner returns(uint256){
-        if(_value&gt;0){
+        if(_value>0){
         balances[owner] = safeAdd(balances[owner],_value);
         totalSupply =safeAdd(totalSupply, _value);
         return totalSupply;
@@ -164,7 +164,7 @@ contract RAM_Token is StdToken,Ownable{
     }
         
     function burn(uint _value)public onlyOwner returns(uint256){
-        if(_value&gt;0 &amp;&amp; balances[msg.sender] &gt;= _value){
+        if(_value>0 && balances[msg.sender] >= _value){
             balances[owner] = safeSub(balances[owner],_value);
             totalSupply = safeSub(totalSupply,_value);
             return totalSupply;
@@ -172,7 +172,7 @@ contract RAM_Token is StdToken,Ownable{
     }
    
     function wihtdraw()public onlyOwner returns(bool success){
-        if(this.balance &gt; 0){
+        if(this.balance > 0){
             msg.sender.transfer(this.balance);
             return true;
         }
@@ -181,8 +181,8 @@ contract RAM_Token is StdToken,Ownable{
     function crowdsale(uint256 _limit,uint _startTime,uint _endTime)external onlyOwner{
     if(active){ revert();}
         endTime = _endTime;
-    if(now&gt;=endTime){ revert();}
-    if(_limit==0 || _limit &gt; balances[owner]){revert();}
+    if(now>=endTime){ revert();}
+    if(_limit==0 || _limit > balances[owner]){revert();}
         startTime= _startTime;
         limit = _limit * (10**decimals);
         active=true;
@@ -190,10 +190,10 @@ contract RAM_Token is StdToken,Ownable{
 
     function ()public isActive payable{
         if(!active)revert();
-        if(msg.value&lt;=0)revert();
+        if(msg.value<=0)revert();
         TokenValue=msg.value*rate;
-        if(TokenValue&lt;minToken*(10**decimals))revert();
-        if(limit -TokenValue&lt;0)revert();
+        if(TokenValue<minToken*(10**decimals))revert();
+        if(limit -TokenValue<0)revert();
         balances[msg.sender]=safeAdd(balances[msg.sender],TokenValue);
         balances[owner]=safeSub(balances[owner],TokenValue);
         limit = safeSub(limit,TokenValue);

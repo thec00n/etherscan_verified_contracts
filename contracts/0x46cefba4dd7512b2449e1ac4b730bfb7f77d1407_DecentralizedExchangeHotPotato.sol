@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 /// @author MinakoKojima (https://github.com/lychees)
 contract DecentralizedExchangeHotPotato {
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
   
   struct Order {
     address creator;    
@@ -57,7 +57,7 @@ contract DecentralizedExchangeHotPotato {
 
   /* ERC721 */
   function name() public pure returns (string _name) {
-    return &quot;dapdap.io | HotPotatoExchange&quot;;
+    return "dapdap.io | HotPotatoExchange";
   }
 
   /* Read */
@@ -75,7 +75,7 @@ contract DecentralizedExchangeHotPotato {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
 
   function getNextPrice (uint256 _price) public pure returns (uint256 _nextPrice) {
@@ -85,7 +85,7 @@ contract DecentralizedExchangeHotPotato {
   /* Buy */
   function put(address _issuer, uint256 _tokenId, uint256 _price,
                uint256 _startTime, uint256 _endTime) public {
-    require(_startTime &lt;= _endTime);                 
+    require(_startTime <= _endTime);                 
     Issuer issuer = Issuer(_issuer);
     require(issuer.ownerOf(_tokenId) == msg.sender);
     issuer.transferFrom(msg.sender, address(this), _tokenId);
@@ -97,13 +97,13 @@ contract DecentralizedExchangeHotPotato {
     orderBookSize += 1;
   }
   function buy(uint256 _id) public payable{
-    require(msg.value &gt;= orderBook[_id].price);
+    require(msg.value >= orderBook[_id].price);
     require(msg.sender != orderBook[_id].owner);
     require(!isContract(msg.sender));
-    require(orderBook[_id].startTime &lt;= now &amp;&amp; now &lt;= orderBook[_id].endTime);
+    require(orderBook[_id].startTime <= now && now <= orderBook[_id].endTime);
     orderBook[_id].owner.transfer(orderBook[_id].price*24/25); // 96%
     orderBook[_id].creator.transfer(orderBook[_id].price/50);  // 2%    
-    if (msg.value &gt; orderBook[_id].price) {
+    if (msg.value > orderBook[_id].price) {
         msg.sender.transfer(msg.value - orderBook[_id].price);
     }
     orderBook[_id].owner = msg.sender;
@@ -111,7 +111,7 @@ contract DecentralizedExchangeHotPotato {
   }
   function revoke(uint256 _id) public {
     require(msg.sender == orderBook[_id].owner);
-    require(orderBook[_id].endTime &lt;= now);
+    require(orderBook[_id].endTime <= now);
     
     Issuer issuer = Issuer(orderBook[_id].issuer);
     issuer.transfer(msg.sender, orderBook[_id].tokenId);    

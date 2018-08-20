@@ -8,7 +8,7 @@ interface KittyCoreI {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -54,7 +54,7 @@ contract KittyBirther is Ownable {
     }
 
     function birth(uint blockNumber, uint64[] kittyIds) public {
-        if (blockNumber &lt; block.number) {
+        if (blockNumber < block.number) {
             return;
         }
 
@@ -62,7 +62,7 @@ contract KittyBirther is Ownable {
             return;
         }
 
-        for (uint i = 0; i &lt; kittyIds.length; i ++) {
+        for (uint i = 0; i < kittyIds.length; i ++) {
             kittyCore.giveBirth(kittyIds[i]);
         }
     }

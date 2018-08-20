@@ -20,7 +20,7 @@ contract Owned {
 contract ImpactRegistry is Owned {
 
   modifier onlyMaster {
-    if (msg.sender != owner &amp;&amp; msg.sender != masterContract)
+    if (msg.sender != owner && msg.sender != masterContract)
         throw;
     _;
   }
@@ -28,7 +28,7 @@ contract ImpactRegistry is Owned {
   address public masterContract;
 
   /* This creates a map with donations per user */
-  mapping (address =&gt; uint) accountBalances;
+  mapping (address => uint) accountBalances;
 
   /* Additional structure to help to iterate over donations */
   address[] accountIndex;
@@ -40,12 +40,12 @@ contract ImpactRegistry is Owned {
     uint linked;
     uint accountCursor;
     uint count;
-    mapping(uint =&gt; address) addresses;
-    mapping(address =&gt; uint) values;
+    mapping(uint => address) addresses;
+    mapping(address => uint) values;
   }
 
   /* Structures that store a match between validated outcomes and donations */
-  mapping (string =&gt; Impact) impact;
+  mapping (string => Impact) impact;
 
 
   function ImpactRegistry(address _masterContract, uint _unit) {
@@ -58,7 +58,7 @@ contract ImpactRegistry is Owned {
       accountIndex.push(_from);
     }
 
-    if (accountBalances[_from] + _value &lt; accountBalances[_from])
+    if (accountBalances[_from] + _value < accountBalances[_from])
       throw;
 
     accountBalances[_from] += _value;
@@ -78,18 +78,18 @@ contract ImpactRegistry is Owned {
 
   function linkImpact(string _name) onlyOwner {
     uint left = impact[_name].value - impact[_name].linked;
-    if (left &gt; 0) {
+    if (left > 0) {
 
       uint i = impact[_name].accountCursor;
 
-      if (accountBalances[accountIndex[i]] &gt;= 0) {
+      if (accountBalances[accountIndex[i]] >= 0) {
         /*Calculate shard */
         uint shard = accountBalances[accountIndex[i]];
-        if (shard &gt; left) {
+        if (shard > left) {
           shard = left;
         }
 
-        if (shard &gt; unit) {
+        if (shard > unit) {
           shard = unit;
         }
 
@@ -114,7 +114,7 @@ contract ImpactRegistry is Owned {
 
       /* Update cursor */
 
-      if (accountIndex.length &gt; 0) {
+      if (accountIndex.length > 0) {
         i = (i + 1) % accountIndex.length;
       } else {
         i = 0;
@@ -173,7 +173,7 @@ contract Charity is Owned {
 
 
     /* This creates a map with donations per user */
-    mapping (address =&gt; uint) accountBalances;
+    mapping (address => uint) accountBalances;
 
     /* Additional structure to help to iterate over donations */
     address[] accountIndex;
@@ -206,7 +206,7 @@ contract Charity is Owned {
     }
 
     function notify(address _from, uint _value) onlyOwner {
-        if (total + _value &lt; total)
+        if (total + _value < total)
           throw;
 
         total += _value;
@@ -215,7 +215,7 @@ contract Charity is Owned {
     }
 
     function fund(uint _value) onlyOwner {
-        if (total + _value &lt; total)
+        if (total + _value < total)
           throw;
 
         total += _value;
@@ -223,9 +223,9 @@ contract Charity is Owned {
 
     function unlockOutcome(string _name, uint _value) {
         if (msg.sender != judgeAddress) throw;
-        if (total &lt; _value) throw;
+        if (total < _value) throw;
 
-        address tokenAddress = ContractProvider(CONTRACT_PROVIDER_ADDRESS).contracts(&quot;digitalGBP&quot;);
+        address tokenAddress = ContractProvider(CONTRACT_PROVIDER_ADDRESS).contracts("digitalGBP");
         Token(tokenAddress).transfer(beneficiaryAddress, _value);
         total -= _value;
 
@@ -236,8 +236,8 @@ contract Charity is Owned {
 
     function payBack(address account) onlyOwner {
         uint balance = getBalance(account);
-        if (balance &gt; 0) {
-            address tokenAddress = ContractProvider(CONTRACT_PROVIDER_ADDRESS).contracts(&quot;digitalGBP&quot;);
+        if (balance > 0) {
+            address tokenAddress = ContractProvider(CONTRACT_PROVIDER_ADDRESS).contracts("digitalGBP");
             Token(tokenAddress).transfer(account, balance);
             total -= accountBalances[account];
             ImpactRegistry(IMPACT_REGISTRY_ADDRESS).payBack(account);
@@ -250,7 +250,7 @@ contract Charity is Owned {
 
     /* Extra security measure to save funds in case of critical error or attack */
     function escape(address escapeAddress) onlyOwner {
-        address tokenAddress = ContractProvider(CONTRACT_PROVIDER_ADDRESS).contracts(&quot;digitalGBP&quot;);
+        address tokenAddress = ContractProvider(CONTRACT_PROVIDER_ADDRESS).contracts("digitalGBP");
         Token(tokenAddress).transfer(escapeAddress, total);
         total = 0;
     }

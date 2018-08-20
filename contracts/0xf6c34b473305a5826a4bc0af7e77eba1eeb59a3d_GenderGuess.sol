@@ -3,7 +3,7 @@ pragma solidity ^0.4.20;
 library SafeMathLib {
     function plus(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -27,14 +27,14 @@ contract GenderGuess {
     address[] lucky_two_prtcpnts;
     uint[] prtcpnt_donation;
     
-    mapping (address =&gt; bool) public Wallets;
+    mapping (address => bool) public Wallets;
 
     constructor (uint _enddate) public {
         manager = msg.sender;
         enddate = _enddate;
         donatedAmount = 0;
-        girl = &quot;girl&quot;;
-        boy = &quot;boy&quot;;
+        girl = "girl";
+        boy = "boy";
         binanceContribute = 0xA73d9021f67931563fDfe3E8f66261086319a1FC;
     } 
     
@@ -45,7 +45,7 @@ contract GenderGuess {
     modifier manageronly (){
         require(
             msg.sender == manager,
-            &quot;Sender is not authorized.&quot;
+            "Sender is not authorized."
         );
         _;
     }
@@ -53,28 +53,28 @@ contract GenderGuess {
     
     modifier conditions (){
         require(
-            msg.value &gt;= 0.01 ether,
-            &quot;Minimum ETH not sent&quot;
+            msg.value >= 0.01 ether,
+            "Minimum ETH not sent"
         );
         require(
             Wallets[msg.sender] == false,
-            &quot;Sender has already participated.&quot;
+            "Sender has already participated."
         );
         _;
     }
     
     modifier participateBefore (uint _enddate){
         require(
-            now &lt;= _enddate,
-            &quot;Paticipants not allwoed.Time up!&quot;
+            now <= _enddate,
+            "Paticipants not allwoed.Time up!"
         );
         _;
     }      
     
     modifier pickOnlyAfter (uint _enddate){
         require(
-            now &gt; _enddate,
-            &quot;Not yet time&quot;
+            now > _enddate,
+            "Not yet time"
         );
         _;
     }
@@ -83,7 +83,7 @@ contract GenderGuess {
         emit ParticipantJoined(msg.sender, gender);
         require(
             ((gender == boy) || (gender == girl)),
-            &quot;Invalid Entry!&quot;
+            "Invalid Entry!"
         );
         
         //first transfer funds to binance ETH address
@@ -103,7 +103,7 @@ contract GenderGuess {
     }
     
     function pickWinner(bytes32 _gender, uint256 _randomvalue) public manageronly pickOnlyAfter(enddate) {
-        if ((all_prtcpnts.length &lt; 100) || (boy_prtcpnts.length &lt; 30) || (girl_prtcpnts.length &lt; 30)) {
+        if ((all_prtcpnts.length < 100) || (boy_prtcpnts.length < 30) || (girl_prtcpnts.length < 30)) {
             binanceContribute.transfer(this.getRewardAmount());
         } else {
             if(_gender == boy) { 
@@ -118,7 +118,7 @@ contract GenderGuess {
     function winnerSelect(uint256 _randomvalue) private  {
         
         //select 2 from all
-        for (uint i = 0; i &lt; 2; i++){ 
+        for (uint i = 0; i < 2; i++){ 
             
             uint index = doRandom(crrct_prtcpnts, _randomvalue) % crrct_prtcpnts.length;
             
@@ -141,7 +141,7 @@ contract GenderGuess {
     }
     
     function checkIsOpen() public view returns(bool){
-        if (now &lt;= enddate){
+        if (now <= enddate){
             return true;
         } else {
             return false;

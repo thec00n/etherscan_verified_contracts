@@ -44,8 +44,8 @@ contract Owned {
 }
 
 contract AMLOveCoin is EIP20Interface, Owned{
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalContribution = 0;
     uint februaryLastTime = 1519862399;
     uint marchLastTime = 1522540799;
@@ -65,12 +65,12 @@ contract AMLOveCoin is EIP20Interface, Owned{
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
         if (_value == 0) { return false; }
         uint256 fromBalance = balances[msg.sender];
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -79,14 +79,14 @@ contract AMLOveCoin is EIP20Interface, Owned{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(msg.data.length &gt;= (2 * 32) + 4);
+        require(msg.data.length >= (2 * 32) + 4);
         if (_value == 0) { return false; }
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -96,7 +96,7 @@ contract AMLOveCoin is EIP20Interface, Owned{
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -117,14 +117,14 @@ contract AMLOveCoin is EIP20Interface, Owned{
     }
 
     function getStats() public constant returns (uint256, uint256, bool) {
-        bool purchasingAllowed = (getTime() &lt; juneLastTime);
+        bool purchasingAllowed = (getTime() < juneLastTime);
         return (totalContribution, totalSupply, purchasingAllowed);
     }
 
     function AMLOveCoin() public {
         owner = msg.sender;
-        symbol = &quot;AML&quot;;
-        name = &quot;AMLOve&quot;;
+        symbol = "AML";
+        name = "AMLOve";
         decimals = 18;
         uint256 tokensIssued = 1300000 ether;
         totalSupply += tokensIssued;
@@ -133,19 +133,19 @@ contract AMLOveCoin is EIP20Interface, Owned{
     }
 
     function() payable public {
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         uint rightNow = getTime();
-        require(rightNow &lt; juneLastTime);
+        require(rightNow < juneLastTime);
         owner.transfer(msg.value);
         totalContribution += msg.value;
         uint rate = 10000;
-        if(rightNow &lt; februaryLastTime){
+        if(rightNow < februaryLastTime){
            rate = 15000;
         } else {
-           if(rightNow &lt; marchLastTime){
+           if(rightNow < marchLastTime){
               rate = 13000;
            } else {
-              if(rightNow &lt; aprilLastTime){
+              if(rightNow < aprilLastTime){
                  rate = 11000;
               }
            }
@@ -153,7 +153,7 @@ contract AMLOveCoin is EIP20Interface, Owned{
         uint256 tokensIssued = (msg.value * rate);
         uint256 futureTokenSupply = (totalSupply + tokensIssued);
         uint256 maxSupply = 13000000 ether;
-        require(futureTokenSupply &lt; maxSupply);
+        require(futureTokenSupply < maxSupply);
         totalSupply += tokensIssued;
         balances[msg.sender] += tokensIssued;
         Transfer(address(this), msg.sender, tokensIssued);

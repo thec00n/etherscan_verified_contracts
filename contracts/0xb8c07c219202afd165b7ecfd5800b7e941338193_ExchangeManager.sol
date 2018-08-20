@@ -14,13 +14,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -77,7 +77,7 @@ contract GlobalCryptoFund is Owned, GlobalToken {
 	address public minter;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
 	modifier onlyMinter {
 		require(msg.sender == minter);
@@ -90,8 +90,8 @@ contract GlobalCryptoFund is Owned, GlobalToken {
     
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function GlobalCryptoFund() {
-		name = &quot;GlobalCryptoFund&quot;;                    								// Set the name for display purposes
-        symbol = &quot;GCF&quot;;                												// Set the symbol for display purposes
+		name = "GlobalCryptoFund";                    								// Set the name for display purposes
+        symbol = "GCF";                												// Set the symbol for display purposes
         decimals = 18;                          									// Amount of decimals for display purposes
         totalSupply = 0;                									// Update total supply
         balanceOf[msg.sender] = totalSupply;       									// Give the creator all initial tokens
@@ -104,8 +104,8 @@ contract GlobalCryptoFund is Owned, GlobalToken {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               						// Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                						// Check if the sender has enough
-        require (balanceOf[_to].add(_value) &gt;= balanceOf[_to]); 						// Check for overflows
+        require (balanceOf[_from] >= _value);                						// Check if the sender has enough
+        require (balanceOf[_to].add(_value) >= balanceOf[_to]); 						// Check for overflows
         require(_to != address(this));
         balanceOf[_from] = balanceOf[_from].sub(_value);                         	// Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add(_value);                           		// Add the same to the recipient
@@ -128,7 +128,7 @@ contract GlobalCryptoFund is Owned, GlobalToken {
     
 	event Burn(address indexed from, uint256 value);
     function burn(uint256 _value) onlyMinter returns (bool success) {
-        require (balanceOf[msg.sender] &gt;= _value);            					// Check if the sender has enough
+        require (balanceOf[msg.sender] >= _value);            					// Check if the sender has enough
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);              // Subtract from the sender
         totalSupply = totalSupply.sub(_value);                                	// Updates totalSupply
         Burn(msg.sender, _value);
@@ -172,10 +172,10 @@ contract ExchangeManager is Owned {
         _;
     }
   
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) public buyTokens;
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) public sellTokens;
-	mapping (address =&gt; address) public myUserWallet;
-    mapping (address =&gt; bool) public isReg;
+    mapping (address => mapping (uint256 => uint256)) public buyTokens;
+    mapping (address => mapping (uint256 => uint256)) public sellTokens;
+	mapping (address => address) public myUserWallet;
+    mapping (address => bool) public isReg;
 	
 
     function ExchangeManager() {
@@ -255,7 +255,7 @@ contract ExchangeManager is Owned {
 
 	event BuyEvent(address indexed _from, uint256 period, uint256 _amountEthers, uint256 _ethAtThePeriod);
     function buy(uint256 _amount) onlyReg returns (bool) {
-        require(_amount &gt; 0.01 ether);
+        require(_amount > 0.01 ether);
 		
         uint256 thisPeriod = getActualPeriod();
         thisPeriod = thisPeriod.sub(1);
@@ -276,7 +276,7 @@ contract ExchangeManager is Owned {
 	
 	event ReederemEvent(address indexed _from, uint256 period, uint256 _amountTokens, uint256 _tokensAtThePeriod);
     function Reederem(uint256 _amount) onlyReg returns (bool) {
-		require(_amount &gt; 0);
+		require(_amount > 0);
 		
         uint256 thisPeriod = getActualPeriod();
 		thisPeriod = thisPeriod.sub(1);
@@ -304,7 +304,7 @@ contract ExchangeManager is Owned {
 	
 	event ClaimTokensEvent(address indexed _from, uint256 period, uint256 _tokensValue, uint256 _tokensPrice, uint256 _ethersAmount);
     function claimTokens(uint256 _period) onlyReg returns (bool) {
-        require(periods.length &gt; _period);
+        require(periods.length > _period);
 		
         uint256 _ethValue = buyTokens[msg.sender][_period];
 		
@@ -322,7 +322,7 @@ contract ExchangeManager is Owned {
 	
 	event ClaimEthersEvent(address indexed _from, uint256 period, uint256 _ethValue, uint256 _tokensPrice, uint256 _tokensAmount);
     function claimEthers(uint256 _period) onlyReg returns (bool) {
-        require(periods.length &gt; _period);
+        require(periods.length > _period);
 		
         uint256 _tokensValue = sellTokens[msg.sender][_period];
 		
@@ -359,7 +359,7 @@ contract ExchangeManager is Owned {
     }
 	
     function transferEther(address _to, uint256 _amount) onlyOwner returns (bool) {
-		require(_amount &lt;= (this.balance).sub(ethTax));
+		require(_amount <= (this.balance).sub(ethTax));
         _to.transfer(_amount);
         return true;
     }
@@ -392,10 +392,10 @@ library ConvertStringToUint {
         totNum--;
         bool hasDot = false;
         
-        for (i = 0; i &lt; b.length; i++) {
+        for (i = 0; i < b.length; i++) {
             uint c = uint(b[i]);
             
-            if (c &gt;= 48 &amp;&amp; c &lt;= 57) {
+            if (c >= 48 && c <= 57) {
                 result = result * 10 + (c - 48);
                 counterBeforeDot ++;
                 totNum--;
@@ -408,10 +408,10 @@ library ConvertStringToUint {
         }
         
         if(hasDot) {
-            for (uint j = counterBeforeDot + 1; j &lt; 18; j++) {
+            for (uint j = counterBeforeDot + 1; j < 18; j++) {
                 uint m = uint(b[j]);
                 
-                if (m &gt;= 48 &amp;&amp; m &lt;= 57) {
+                if (m >= 48 && m <= 57) {
                     result = result * 10 + (m - 48);
                     counterAfterDot ++;
                     totNum--;
@@ -422,7 +422,7 @@ library ConvertStringToUint {
                 }
             }
         }
-         if(counterAfterDot &lt; 18){
+         if(counterAfterDot < 18){
              uint addNum = 18 - counterAfterDot;
              uint multuply = 10 ** addNum;
              return result = result * multuply;
@@ -442,8 +442,8 @@ contract UserWallet is Owned {
     uint256[] public investedPeriods;
     uint256[] public reederemPeriods;
     
-	mapping (uint256 =&gt; bool) isInvested;
-	mapping (uint256 =&gt; bool) isReederem;
+	mapping (uint256 => bool) isInvested;
+	mapping (uint256 => bool) isReederem;
 	
     function UserWallet(address _fund, address _token) {
         fund = ExchangeManager(_fund);
@@ -510,7 +510,7 @@ contract UserWallet is Owned {
     
     function claimTokens() onlyOwner {
         uint256 period;
-        for(uint256 i = 0; i &lt; investedPeriods.length; i++) {
+        for(uint256 i = 0; i < investedPeriods.length; i++) {
             period = investedPeriods[i];
             fund.claimTokens(period);
         }
@@ -519,7 +519,7 @@ contract UserWallet is Owned {
 
     function claimEthers() onlyOwner {
         uint256 period;
-        for(uint256 i = 0; i &lt; reederemPeriods.length; i++) {
+        for(uint256 i = 0; i < reederemPeriods.length; i++) {
             period = reederemPeriods[i];
             fund.claimEthers(period);
         }

@@ -25,10 +25,10 @@ struct Domain {                 // Domain record. Linked list.
     address transfer;           // Address of the new owner
     uint next_domain;           // Makes linked list for scanning
     uint root_id;               // Name of the first ID in the list
-    mapping (uint =&gt; Id) ids;   // Map of the ID&#39;s
+    mapping (uint => Id) ids;   // Map of the ID's
 }
 
-mapping (uint =&gt; Domain) domains; // Map of the domains
+mapping (uint => Domain) domains; // Map of the domains
 
 function EtherId()
 {
@@ -64,7 +64,7 @@ function changeDomain( uint domain, uint expires, uint price, address transfer )
 {
     uint money_used = 0;            // How much was spent here
 
-    if( expires &gt; MAX_PROLONG )     // Not prolong for too long
+    if( expires > MAX_PROLONG )     // Not prolong for too long
     {
         expires = MAX_PROLONG;
     }
@@ -85,7 +85,7 @@ function changeDomain( uint domain, uint expires, uint price, address transfer )
         
         //****************************************************************************
         //*** SPECIAL CODE FOR TRANSFERING FIRST 32301 DOMAINS INTO THE NEW CONTRACT
-        if( msg.sender == contract_owner &amp;&amp; n_domains &lt; 32301 &amp;&amp; transfer != 0 ) { 
+        if( msg.sender == contract_owner && n_domains < 32301 && transfer != 0 ) { 
             d.owner = transfer; // immediately transfer the ownership to the old owner
             d.transfer = 0;
         }
@@ -97,7 +97,7 @@ function changeDomain( uint domain, uint expires, uint price, address transfer )
     }
     else                            // The domain already has an owner
     {
-        if( d.owner == msg.sender || block.number &gt; d.expires ) { // If it is yours or expired, you have all rights to change
+        if( d.owner == msg.sender || block.number > d.expires ) { // If it is yours or expired, you have all rights to change
             d.owner = msg.sender;   // Possible change of the ownershp if expired
             d.price = price;
             d.transfer = transfer;
@@ -107,9 +107,9 @@ function changeDomain( uint domain, uint expires, uint price, address transfer )
         else                        // Not yours and not expired
         {
             if( d.transfer != 0 ) { // The new owner is specified and ...
-                if( d.transfer == msg.sender &amp;&amp; msg.value &gt;= d.price ) // ... it is you and enought money 
+                if( d.transfer == msg.sender && msg.value >= d.price ) // ... it is you and enought money 
                 {
-                    if( d.price &gt; 0 ) 
+                    if( d.price > 0 ) 
                     { 
                         if( address( d.owner ).send( d.price ) ) // The money goes to the owner
                         {
@@ -127,7 +127,7 @@ function changeDomain( uint domain, uint expires, uint price, address transfer )
             } 
             else  // not set for transfer, but...
             {
-                if( d.price &gt; 0 &amp;&amp;  msg.value &gt;= d.price ) // ... on sale, and enough money
+                if( d.price > 0 &&  msg.value >= d.price ) // ... on sale, and enough money
                 {
                     if( address( d.owner ).send( d.price ) ) // The money goes to the owner
                     {
@@ -145,7 +145,7 @@ function changeDomain( uint domain, uint expires, uint price, address transfer )
         }
     }
     
-    if( msg.value &gt; money_used ) // If transaction has more money than was needed
+    if( msg.value > money_used ) // If transaction has more money than was needed
     {
         if( !msg.sender.send( msg.value - money_used ) ) throw; // We do not need your leftover
     }
@@ -208,7 +208,7 @@ function changeId( uint domain, uint name, uint value ) {
         }
     }
     
-    if( msg.value &gt; 0 ) // If transaction has any money...
+    if( msg.value > 0 ) // If transaction has any money...
     {
         if( !msg.sender.send( msg.value ) ) throw; // ... it is a mistake, so send it back
     }

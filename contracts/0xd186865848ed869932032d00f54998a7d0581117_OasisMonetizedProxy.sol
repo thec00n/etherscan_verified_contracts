@@ -86,25 +86,25 @@ contract Mortal is DSAuth {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -162,7 +162,7 @@ contract OasisMonetizedProxy is Mortal, DSMath {
         uint minBuyAmt
     ) public returns (uint) {
         require(payToken.transferFrom(msg.sender, this, payAmt));
-        if (payToken.allowance(this, otc) &lt; payAmt) {
+        if (payToken.allowance(this, otc) < payAmt) {
             payToken.approve(otc, uint(-1));
         }
         uint buyAmt = otc.sellAllAmount(payToken, payAmt, buyToken, minBuyAmt);
@@ -180,7 +180,7 @@ contract OasisMonetizedProxy is Mortal, DSMath {
         uint minBuyAmt
     ) public payable returns (uint) {
         wethToken.deposit.value(msg.value)();
-        if (wethToken.allowance(this, otc) &lt; msg.value) {
+        if (wethToken.allowance(this, otc) < msg.value) {
             wethToken.approve(otc, uint(-1));
         }
         uint buyAmt = otc.sellAllAmount(wethToken, msg.value, buyToken, minBuyAmt); 
@@ -198,7 +198,7 @@ contract OasisMonetizedProxy is Mortal, DSMath {
         uint minBuyAmt
     ) public returns (uint) {
         require(payToken.transferFrom(msg.sender, this, payAmt));
-        if (payToken.allowance(this, otc) &lt; payAmt) {
+        if (payToken.allowance(this, otc) < payAmt) {
             payToken.approve(otc, uint(-1));
         }
         uint wethAmt = otc.sellAllAmount(payToken, payAmt, wethToken, minBuyAmt);
@@ -216,9 +216,9 @@ contract OasisMonetizedProxy is Mortal, DSMath {
         uint maxPayAmt
     ) public returns (uint payAmt) {
         uint payAmtNow = otc.getPayAmount(payToken, buyToken, buyAmt);
-        require(payAmtNow &lt;= maxPayAmt);
+        require(payAmtNow <= maxPayAmt);
         require(payToken.transferFrom(msg.sender, this, payAmtNow));
-        if (payToken.allowance(this, otc) &lt; payAmtNow) {
+        if (payToken.allowance(this, otc) < payAmtNow) {
             payToken.approve(otc, uint(-1));
         } 
         payAmt = otc.buyAllAmount(buyToken, buyAmt, payToken, payAmtNow);
@@ -236,7 +236,7 @@ contract OasisMonetizedProxy is Mortal, DSMath {
     ) public payable returns (uint wethAmt) {
         // In this case user needs to send more ETH than a estimated value, then contract will send back the rest
         wethToken.deposit.value(msg.value)();
-        if (wethToken.allowance(this, otc) &lt; msg.value) {
+        if (wethToken.allowance(this, otc) < msg.value) {
             wethToken.approve(otc, uint(-1));
         }
         wethAmt = otc.buyAllAmount(buyToken, buyAmt, wethToken, msg.value);
@@ -255,9 +255,9 @@ contract OasisMonetizedProxy is Mortal, DSMath {
         uint maxPayAmt
     ) public returns (uint payAmt) {
         uint payAmtNow = otc.getPayAmount(payToken, wethToken, wethAmt);
-        require(payAmtNow &lt;= maxPayAmt);
+        require(payAmtNow <= maxPayAmt);
         require(payToken.transferFrom(msg.sender, this, payAmtNow));
-        if (payToken.allowance(this, otc) &lt; payAmtNow) {
+        if (payToken.allowance(this, otc) < payAmtNow) {
             payToken.approve(otc, uint(-1));
         }
         payAmt = otc.buyAllAmount(wethToken, wethAmt, payToken, payAmtNow);

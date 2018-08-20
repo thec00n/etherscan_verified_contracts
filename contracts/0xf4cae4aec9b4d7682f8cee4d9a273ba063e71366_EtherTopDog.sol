@@ -9,13 +9,13 @@ contract EtherTopDog {
 	// percent of underdog deposit amount to go in bailout fund
 	uint constant private bailoutFundPercent = 70;
 
-	// percent of underdog deposit that goes to the top dog&#39;s dividend
+	// percent of underdog deposit that goes to the top dog's dividend
 	uint constant private topDogDividend = 15;
 
-	// percent of underdog deposit sent chip away top dog&#39;s strength
+	// percent of underdog deposit sent chip away top dog's strength
 	uint constant private topDogDecayPercent = 10;
 
-	// percent of underdog deposiot that goes to lucky dog&#39;s dividend
+	// percent of underdog deposiot that goes to lucky dog's dividend
 	uint constant private luckyDogDividend = 3;
 
 	// vision dog takes a small fee from each underdog deposit
@@ -29,7 +29,7 @@ contract EtherTopDog {
 
 	// minimum required deposit to become the next Top Dog
 	// (aka Top Dog strength / lowest possible takeover threshold)
-	// starts at 125% of Top Dog&#39;s deposit, slowly declines as underdogs join
+	// starts at 125% of Top Dog's deposit, slowly declines as underdogs join
 	uint private topDogMinPrice = 1;
 
 	// range above the topdog strength (aka topDogMinPrice) within which
@@ -43,7 +43,7 @@ contract EtherTopDog {
 
 	// underdog payout markup, as a percentage of their deposits
 	// gets reset to 150% after each round when the top dog gets replaced
-	// gradually decays to mininum of 120% as underdogs chip away at top dog&#39;s strength
+	// gradually decays to mininum of 120% as underdogs chip away at top dog's strength
 	uint private underDogMarkup = 150;
 
 	// as top dog price declines, these keep track of the range
@@ -69,7 +69,7 @@ contract EtherTopDog {
 	Underdog[] private Underdogs;
 
 	// player names for fun
-	mapping (address =&gt; string) dogNames;
+	mapping (address => string) dogNames;
 
 	// current lucky dog (if exists) will receive 3% of underdog payins
 	// specified as index in Underdogs array
@@ -97,7 +97,7 @@ contract EtherTopDog {
 	}
 
 	function nextUnderdogPayout() public constant returns (uint) {
-		if (Underdogs.length - payoutIndex &gt;= 1) {
+		if (Underdogs.length - payoutIndex >= 1) {
 			return Underdogs[payoutIndex].payout;
 		}
 	}
@@ -111,15 +111,15 @@ contract EtherTopDog {
 		if (topDog != address(0x0)) {
 			name = getDogName(topDog);
 		} else {
-			name = &quot;[not set]&quot;;
+			name = "[not set]";
 		}
 		strength = topDogMinPrice;
 	}
 	function luckyDogInfo() public constant returns (string name) {
-		if (luckyDog &gt; 0) {
+		if (luckyDog > 0) {
 			name = getDogName(Underdogs[luckyDog].addr);
 		} else {
-			name = &quot;[nobody]&quot;;
+			name = "[nobody]";
 		}
 	}
 
@@ -128,7 +128,7 @@ contract EtherTopDog {
 	} 
 
 	function underdogInfo(uint linePosition) constant returns (string name, address dogAddress, uint deposit, uint payout, uint scrapBonus) {
-		if (linePosition &gt; 0 &amp;&amp; linePosition &lt;= Underdogs.length - payoutIndex) {
+		if (linePosition > 0 && linePosition <= Underdogs.length - payoutIndex) {
 
 			Underdog thedog = Underdogs[payoutIndex + (linePosition - 1)];
 			name = getDogName(thedog.addr);
@@ -152,11 +152,11 @@ contract EtherTopDog {
 	
 	// sets name, optionally plays a round if Ether was sent
 	function setName(string DogName) {
-		if (bytes(DogName).length &gt;= 2 &amp;&amp; bytes(DogName).length &lt;= 16)
+		if (bytes(DogName).length >= 2 && bytes(DogName).length <= 16)
 			dogNames[msg.sender] = DogName;
 
 		// if a deposit was sent, play it!
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			dogFight();
 		}
 		
@@ -164,7 +164,7 @@ contract EtherTopDog {
 
 	function dogFight() public {
 		// minimum 1 ETH required to play
-		if (msg.value &lt; 1 ether) {
+		if (msg.value < 1 ether) {
 			msg.sender.send(msg.value);
 			return;
 		}
@@ -176,11 +176,11 @@ contract EtherTopDog {
 			uint topDogPrice = topDogMinPrice + randInt( (topDogMinPrice * topDogBuyoutRange / 100) - topDogMinPrice, 4321);
 
 			// Calculate the top dog price
-			if (msg.value &gt;= topDogPrice) {
+			if (msg.value >= topDogPrice) {
 				// They bought out the top dog!
 				buyTopDog(topDogPrice, msg.value - topDogPrice);
 			} else {
-				// didn&#39;t buy the top dog, this participant becomes an underdog!
+				// didn't buy the top dog, this participant becomes an underdog!
 				addUnderDog(msg.value);
 			}
 		} else {
@@ -220,7 +220,7 @@ contract EtherTopDog {
 		uint luckydividend = buyin * luckyDogDividend / 100;
 
 		// is there a lucky dog?
-		if (luckyDog != 0 &amp;&amp; luckyDog &gt;= payoutIndex) {
+		if (luckyDog != 0 && luckyDog >= payoutIndex) {
 			// pay lucky dog dividends
 			Underdogs[luckyDog].addr.send(luckydividend);
 		} else {
@@ -232,7 +232,7 @@ contract EtherTopDog {
 		topDog.send(topdividend);
 
 
-		// chip away at the top dog&#39;s strength
+		// chip away at the top dog's strength
 		uint topdecay = (buyin * topDogDecayPercent / 100);
 		topDogMinPrice -= topdecay;
 
@@ -242,7 +242,7 @@ contract EtherTopDog {
 		uint decayfactor = 0;
 
 		// calculate the payout markup for next underdog
-		if (topDogMinPrice &gt; topDogPriceFloor) {
+		if (topDogMinPrice > topDogPriceFloor) {
 			uint decayrange = (topDogPriceCeiling - topDogPriceFloor);
 			decayfactor = 100000 * (topDogPriceCeiling - topDogMinPrice) / decayrange;
 		} else {
@@ -258,14 +258,14 @@ contract EtherTopDog {
 		
 
 		// payout as many previous underdogs as the fund can afford
-		while (payoutIndex &lt; Underdogs.length &amp;&amp; bailoutBalance &gt;= Underdogs[payoutIndex].payout ) {
+		while (payoutIndex < Underdogs.length && bailoutBalance >= Underdogs[payoutIndex].payout ) {
 			payoutCount -= Underdogs[payoutIndex].bailouts;
 			bailoutBalance -= Underdogs[payoutIndex].payout;
 			Underdogs[payoutIndex].addr.send(Underdogs[payoutIndex].payout);
 
 
 			// if the lucky dog was bailed out, the user who did it now becomes the lucky dog
-			if (payoutIndex == luckyDog &amp;&amp; luckyDog != 0)
+			if (payoutIndex == luckyDog && luckyDog != 0)
 				luckyDog = Underdogs.length;
 
 			payoutIndex++;
@@ -307,7 +307,7 @@ contract EtherTopDog {
 
 
 		// check for eligible lucky dog...
-//		if (Underdogs.length - payoutIndex &gt; 0) {
+//		if (Underdogs.length - payoutIndex > 0) {
 			// lucky dog is most recent underdog to make an entry
 //			luckyDog = Underdogs.length - 1;
 //		} else {
@@ -327,13 +327,13 @@ contract EtherTopDog {
 
 
 		// are there underdogs around to receive the scraps?
-		if (surplus &gt; 0 &amp;&amp; linelength &gt; 0 ) {
+		if (surplus > 0 && linelength > 0 ) {
 			throwScraps(surplus);
 		}
 
 
 		// if there are any underdogs in line, the lucky dog will be picked from among them	
-		if (linelength &gt; 0) {
+		if (linelength > 0) {
 
 			// randomly pick a new lucky dog, with luck weighted toward more recent entries
 
@@ -357,7 +357,7 @@ contract EtherTopDog {
 			uint pickpos = luckypickline - linelength;
 			uint linepos = 1;
 
-			while (pickpos &gt;= luckypick &amp;&amp; linepos &lt; linelength) {
+			while (pickpos >= luckypick && linepos < linelength) {
 				pickpos -= (linelength - linepos);
 				linepos++;
 			}
@@ -393,7 +393,7 @@ contract EtherTopDog {
 		uint scrapbasesize = totalscrapvalue / (pieces + payoutCount);
 
 		// minimum base scrap size of 0.5 eth
-		if (scrapbasesize &lt; 500 finney) {
+		if (scrapbasesize < 500 finney) {
 			scrapbasesize = 500 finney;
 		}
 
@@ -402,14 +402,14 @@ contract EtherTopDog {
 
 		uint scrapvalueleft = totalscrapvalue;
 
-		while (pieces &gt; 0 &amp;&amp; scrapvalueleft &gt; 0 &amp;&amp; sptr &gt;= payoutIndex) {
+		while (pieces > 0 && scrapvalueleft > 0 && sptr >= payoutIndex) {
 			// those who bailed out other dogs get bigger scraps
 			// size of the scrap is multiplied by # of other dogs the user bailed out
 			scrapsize = scrapbasesize * (Underdogs[sptr].bailouts + 1);
 
 
-			// scraps can never be more than what&#39;s in the pile
-			if (scrapsize &lt; scrapvalueleft) {
+			// scraps can never be more than what's in the pile
+			if (scrapsize < scrapvalueleft) {
 				scrapvalueleft -= scrapsize;
 			} else {
 				scrapsize = scrapvalueleft;
@@ -423,16 +423,16 @@ contract EtherTopDog {
 		}
 
 		// any scraps left uncaught? put them in the bailout fund for the underdogs
-		if (scrapvalueleft &gt; 0) {
+		if (scrapvalueleft > 0) {
 			bailoutBalance += scrapvalueleft;
 		}
 	}
 
 	function getDogName(address adr) private constant returns (string thename) {
-		if (bytes(dogNames[adr]).length &gt; 0)
+		if (bytes(dogNames[adr]).length > 0)
 			thename = dogNames[adr];
 		else
-			thename = &#39;Unnamed Mutt&#39;;
+			thename = 'Unnamed Mutt';
 	}
 	
 	// Generate pseudo semi-random number between 1 - max 

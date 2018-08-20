@@ -17,7 +17,7 @@ contract CrowdSale {
     uint public price;
     uint public minPurchase;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool public crowdsaleClosed = false;
 
@@ -102,17 +102,17 @@ contract CrowdSale {
     }
 
     modifier afterStart() {
-        require(now &gt;= startTime);
+        require(now >= startTime);
         _;
     }
 
     modifier afterDeadline() {
-        require(now &gt;= deadline);
+        require(now >= deadline);
         _;
     }
 
     modifier previousDeadline() {
-        require(now &lt;= deadline);
+        require(now <= deadline);
         _;
     }
 
@@ -132,12 +132,12 @@ contract CrowdSale {
     }
 
     modifier hardCapNotReached() {
-        require(amountRaised &lt; hardCap);
+        require(amountRaised < hardCap);
         _;
     }
 
     modifier aboveMinValue() {
-        require(msg.value &gt;= minPurchase);
+        require(msg.value >= minPurchase);
         _;
     }
 
@@ -146,7 +146,7 @@ contract CrowdSale {
      *
      */
     function checkGoalReached() internal {
-        if (amountRaised &gt;= fundingGoal &amp;&amp; !fundingGoalReached) {
+        if (amountRaised >= fundingGoal && !fundingGoalReached) {
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -187,7 +187,7 @@ contract CrowdSale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -196,7 +196,7 @@ contract CrowdSale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {
@@ -207,12 +207,12 @@ contract CrowdSale {
     }
 
     function getBonus() view public returns (uint) {
-        if (startTime &lt;= now) {
-            if (now &lt;= endFirstBonus) {
+        if (startTime <= now) {
+            if (now <= endFirstBonus) {
                 return 50;
-            } else if (now &lt;= endSecondBonus) {
+            } else if (now <= endSecondBonus) {
                 return 40;
-            } else if (now &lt;= endThirdBonus) {
+            } else if (now <= endThirdBonus) {
                 return 30;
             } else {
                 return 20;

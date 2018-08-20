@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -155,7 +155,7 @@ contract LavaDeposit is Owned {
   using SafeMath for uint;
 
   // balances[tokenContractAddress][EthereumAccountAddress] = 0
-   mapping(address =&gt; mapping (address =&gt; uint256)) balances;
+   mapping(address => mapping (address => uint256)) balances;
 
 
    address public walletContract;
@@ -185,7 +185,7 @@ contract LavaDeposit is Owned {
 
        if(!LavaWalletInterface(walletContract).depositTokens(this, token, tokens)) revert();
 
-      //transfer the tokens into the lava balance of the &#39;to&#39; account
+      //transfer the tokens into the lava balance of the 'to' account
        if(!LavaWalletInterface(walletContract).transferTokens(to, token, tokens)) revert();
 
        Deposit(token, from, to, tokens);
@@ -209,7 +209,7 @@ contract LavaDeposit is Owned {
 
      function bytesToAddr (bytes b) constant returns (address) {
       uint result = 0;
-      for (uint i = b.length-1; i+1 &gt; 0; i--) {
+      for (uint i = b.length-1; i+1 > 0; i--) {
         uint c = uint(b[i]);
         uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
         result += to_inc;

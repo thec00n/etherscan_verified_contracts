@@ -12,8 +12,8 @@ contract KnowsConstants {
 // knows what a valid box is
 contract KnowsSquares {
     modifier isValidSquare(uint home, uint away) {
-        require(home &gt;= 0 &amp;&amp; home &lt; 10);
-        require(away &gt;= 0 &amp;&amp; away &lt; 10);
+        require(home >= 0 && home < 10);
+        require(away >= 0 && away < 10);
         _;
     }
 }
@@ -55,19 +55,19 @@ interface IScoreOracle {
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -88,20 +88,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -111,7 +111,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -167,13 +167,13 @@ contract Squares is KnowsConstants, KnowsTime, KnowsSquares, IKnowsVoterStakes {
     address public developer;
 
     // staked ether for each player and each box
-    mapping(address =&gt; uint[10][10]) public totalSquareStakesByUser;
+    mapping(address => uint[10][10]) public totalSquareStakesByUser;
 
     // total stakes for each box
     uint[10][10] public totalSquareStakes;
 
     // the total stakes for each user
-    mapping(address =&gt; uint) public totalUserStakes;
+    mapping(address => uint) public totalUserStakes;
 
     // the overall total of money stakes in the grid
     uint public totalStakes;
@@ -181,8 +181,8 @@ contract Squares is KnowsConstants, KnowsTime, KnowsSquares, IKnowsVoterStakes {
     event LogBet(address indexed better, uint indexed home, uint indexed away, uint stake);
 
     function bet(uint home, uint away) public payable isValidSquare(home, away) {
-        require(msg.value &gt; 0);
-        require(currentTime() &lt; GAME_START_TIME);
+        require(msg.value > 0);
+        require(currentTime() < GAME_START_TIME);
 
         // the stake is the message value
         uint stake = msg.value;
@@ -204,7 +204,7 @@ contract Squares is KnowsConstants, KnowsTime, KnowsSquares, IKnowsVoterStakes {
 
     event LogPayout(address indexed winner, uint payout, uint donation);
 
-    // calculate the winnings owed for a user&#39;s bet on a particular square
+    // calculate the winnings owed for a user's bet on a particular square
     function getWinnings(address user, uint home, uint away) public view returns (uint winnings) {
         // the square wins and the total wins are used to calculate
         // the percentage of the total stake that the square is worth
@@ -223,15 +223,15 @@ contract Squares is KnowsConstants, KnowsTime, KnowsSquares, IKnowsVoterStakes {
         require(oracle.isFinalized());
 
         // optional donation
-        require(donationPercentage &lt;= 100);
+        require(donationPercentage <= 100);
 
         // we cannot pay out more than we have
         // but we should not prevent paying out what we do have
         // this should never happen since integer math always truncates, we should only end up with too much
-        // however it&#39;s worth writing in the protection
+        // however it's worth writing in the protection
         uint winnings = Math.min256(this.balance, getWinnings(msg.sender, home, away));
 
-        require(winnings &gt; 0);
+        require(winnings > 0);
 
         // the donation amount
         uint donation = winnings.mul(donationPercentage).div(100);

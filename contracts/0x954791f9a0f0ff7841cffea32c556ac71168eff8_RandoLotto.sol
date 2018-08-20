@@ -1,10 +1,10 @@
 pragma solidity 0.4.23;
 
 // Random lottery
-// Smart contracts can&#39;t bet
+// Smart contracts can't bet
 
 // Pay 0.001 to get a random number
-// If your random number is the highest so far you&#39;re in the lead
+// If your random number is the highest so far you're in the lead
 // If no one beats you in 1 day you can claim your winnnings - the entire balance.
 
 contract RandoLotto {
@@ -22,18 +22,18 @@ contract RandoLotto {
     
     function () public payable {
         require(msg.sender == tx.origin);
-        require(msg.value &gt;= 0.001 ether);
+        require(msg.value >= 0.001 ether);
     
         uint256 randomNumber = uint256(keccak256(blockhash(block.number - 1)));
         
-        if (randomNumber &gt; highScore) {
+        if (randomNumber > highScore) {
             currentWinner = msg.sender;
             lastTimestamp = now;
         }
     }
     
     function claimWinnings() public {
-        require(now &gt; lastTimestamp + 1 days);
+        require(now > lastTimestamp + 1 days);
         require(msg.sender == currentWinner);
         
         msg.sender.transfer(address(this).balance);
@@ -62,9 +62,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -72,7 +72,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -81,7 +81,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

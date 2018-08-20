@@ -11,27 +11,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -116,7 +116,7 @@ contract Lending is Ownable, Pausable {
     uint256 public minContribAmount = 0.1 ether;                          // 0.01 ether
     enum LendingState {AcceptingContributions, AwaitingReturn, ProjectNotFunded, ContributionReturned}
 
-    mapping(address =&gt; Investor) public investors;
+    mapping(address => Investor) public investors;
     uint256 public fundingStartTime;                                     // Start time of contribution period in UNIX time
     uint256 public fundingEndTime;                                       // End time of contribution period in UNIX time
     uint256 public totalContributed;
@@ -169,7 +169,7 @@ contract Lending is Ownable, Pausable {
     }
 
     function isContribPeriodRunning() public constant returns(bool){
-        return fundingStartTime &lt;= now &amp;&amp; fundingEndTime &gt; now &amp;&amp; !capReached;
+        return fundingStartTime <= now && fundingEndTime > now && !capReached;
     }
 
     // @notice Function to participate in contribution period
@@ -178,7 +178,7 @@ contract Lending is Ownable, Pausable {
     //  Funds should be transferred into multisig wallet
     // @param contributor Address
     function contributeWithAddress(address contributor) public payable whenNotPaused {
-        require(msg.value &gt;= minContribAmount);
+        require(msg.value >= minContribAmount);
         require(isContribPeriodRunning());
 
         uint contribValue = msg.value;
@@ -191,8 +191,8 @@ contract Lending is Ownable, Pausable {
         uint newTotalContributed = totalContributed;
 
         // cap was reached
-        if (newTotalContributed &gt;=  totalLendingAmount &amp;&amp;
-            oldTotalContributed &lt; totalLendingAmount)
+        if (newTotalContributed >=  totalLendingAmount &&
+            oldTotalContributed < totalLendingAmount)
         {
             capReached = true;
             fundingEndTime = now;
@@ -211,7 +211,7 @@ contract Lending is Ownable, Pausable {
 
         investors[contributor].amount = investors[contributor].amount.add(contribValue);
 
-        if (excessContribValue &gt; 0) {
+        if (excessContribValue > 0) {
             msg.sender.transfer(excessContribValue);
             excessContributionReturned(msg.sender, excessContribValue);
         }
@@ -219,8 +219,8 @@ contract Lending is Ownable, Pausable {
     }
 
     function enableReturnContribution() external onlyOwner {
-        require(totalContributed &lt; totalLendingAmount);
-        require(now &gt; fundingEndTime);
+        require(totalContributed < totalLendingAmount);
+        require(now > fundingEndTime);
         state = LendingState.ProjectNotFunded;
         StateChange(uint(state));
     }
@@ -243,7 +243,7 @@ contract Lending is Ownable, Pausable {
     function reclaimContribution(address beneficiary) external {
         require(state == LendingState.ProjectNotFunded);
         uint contribution = investors[beneficiary].amount;
-        require(contribution &gt; 0);
+        require(contribution > 0);
         beneficiary.transfer(contribution);
     }
 
@@ -255,7 +255,7 @@ contract Lending is Ownable, Pausable {
 
     function returnBorroweedEth() payable public {
         require(state == LendingState.AwaitingReturn);
-        require(borrowerReturnFiatPerEthRate &gt; 0);
+        require(borrowerReturnFiatPerEthRate > 0);
         require(msg.value == borrowerReturnAmount);
         state = LendingState.ContributionReturned;
         StateChange(uint(state));
@@ -264,7 +264,7 @@ contract Lending is Ownable, Pausable {
     function reclaimContributionWithInterest(address beneficiary) external {
         require(state == LendingState.ContributionReturned);
         uint contribution = investors[beneficiary].amount.mul(initialFiatPerEthRate).mul(lendingInterestRatePercentage).div(borrowerReturnFiatPerEthRate).div(100);
-        require(contribution &gt; 0);
+        require(contribution > 0);
         beneficiary.transfer(contribution);
     }
 

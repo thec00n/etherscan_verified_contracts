@@ -18,13 +18,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ interface Token {
 contract FuddCrowdsale {
 
     using SafeMath for uint256;
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     Token public fuddToken;
 
     // Crowdsale details
@@ -126,7 +126,7 @@ contract FuddCrowdsale {
     }
     
     function hasEnded() atStage(Stages.InProgress) {
-        if (now &gt;= startTimestamp.add(endTimer)){
+        if (now >= startTimestamp.add(endTimer)){
             purchasingAllowed = false;
             stage = Stages.Ended;
         }
@@ -179,14 +179,14 @@ contract FuddCrowdsale {
         uint256 received = weiAmount.div(10e7);
         uint256 tokens = (received).mul(rate);
 
-        if (msg.value &gt;= 10 finney) {
-            if (now &lt;= startTimestamp.add(firstTimer)){
+        if (msg.value >= 10 finney) {
+            if (now <= startTimestamp.add(firstTimer)){
                 uint256 firstBonusToken = (tokens.div(100)).mul(firstBonus);
                 tokens = tokens.add(firstBonusToken);
             }
             
-            if (startTimestamp.add(firstTimer) &lt; now &amp;&amp; 
-            now &lt;= startTimestamp.add(secondTimer)){
+            if (startTimestamp.add(firstTimer) < now && 
+            now <= startTimestamp.add(secondTimer)){
                 uint256 secondBonusToken = (tokens.div(100)).mul(secondBonus);
                 tokens = tokens.add(secondBonusToken);
             }
@@ -196,7 +196,7 @@ contract FuddCrowdsale {
         fuddToken.transfer(investor, tokens);
         totalSupplied = (totalSupplied).add(tokens);
             
-        if (totalSupplied &gt;= maxSupply) {
+        if (totalSupplied >= maxSupply) {
             purchasingAllowed = false;
             stage = Stages.Ended;
         }

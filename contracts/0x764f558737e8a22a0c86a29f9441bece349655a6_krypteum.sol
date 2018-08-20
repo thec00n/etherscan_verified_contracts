@@ -67,20 +67,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,8 +121,8 @@ contract ERC20Coin is ERC20Interface, Owned {
   using SafeMath for uint;
 
   uint public coinsIssuedTotal = 0;
-  mapping(address =&gt; uint) public balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) public allowed;
+  mapping(address => uint) public balances;
+  mapping(address => mapping (address => uint)) public allowed;
 
   // Functions ------------------------
 
@@ -138,11 +138,11 @@ contract ERC20Coin is ERC20Interface, Owned {
     return balances[_owner];
   }
 
-  /* Transfer the balance from owner&#39;s account to another account */
+  /* Transfer the balance from owner's account to another account */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
     // amount sent cannot exceed balance
-    require(balances[msg.sender] &gt;= _amount);
+    require(balances[msg.sender] >= _amount);
 
     // update balances
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -157,7 +157,7 @@ contract ERC20Coin is ERC20Interface, Owned {
 
   function approve(address _spender, uint _amount) public returns (bool success) {
     // approval amount cannot exceed the balance
-    require (balances[msg.sender] &gt;= _amount);
+    require (balances[msg.sender] >= _amount);
       
     // update allowed amount
     allowed[msg.sender][_spender] = _amount;
@@ -167,13 +167,13 @@ contract ERC20Coin is ERC20Interface, Owned {
     return true;
   }
 
-  /* Spender of coins transfers coins from the owner&#39;s balance */
+  /* Spender of coins transfers coins from the owner's balance */
   /* Must be pre-approved by owner */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
     // balance checks
-    require(balances[_from] &gt;= _amount);
-    require(allowed[_from][msg.sender] &gt;= _amount);
+    require(balances[_from] >= _amount);
+    require(allowed[_from][msg.sender] >= _amount);
 
     // update balances and allowed amount
     balances[_from] = balances[_from].sub(_amount);
@@ -198,8 +198,8 @@ contract krypteum is ERC20Coin {
 
   /* Basic coin data */
 
-  string public constant name = &quot;krypteum&quot;;
-  string public constant symbol = &quot;KTM&quot;;
+  string public constant name = "krypteum";
+  string public constant symbol = "KTM";
   uint8  public constant decimals = 2;
 
   /* Wallet and Admin addresses - initially set to owner at deployment */
@@ -241,14 +241,14 @@ contract krypteum is ERC20Coin {
 
   /* Keep track of Ether contributed and coins received during Crowdsale */
 
-  mapping(address =&gt; uint) public icoEtherContributed;
-  mapping(address =&gt; uint) public icoCoinsReceived;
+  mapping(address => uint) public icoEtherContributed;
+  mapping(address => uint) public icoCoinsReceived;
 
   /* Keep track of participants who
   /* - have reclaimed their contributions in case of failed Crowdsale */
   /* - are locked */
 
-  mapping(address =&gt; bool) public locked;
+  mapping(address => bool) public locked;
 
   // Events ---------------------------
 
@@ -294,7 +294,7 @@ contract krypteum is ERC20Coin {
     /* Are coins transferable? */
 
   function isTransferable() public constant returns (bool transferable) {
-      return atNow() &gt;= DATE_ICO_END + COOLDOWN_PERIOD;
+      return atNow() >= DATE_ICO_END + COOLDOWN_PERIOD;
   }
 
   // Lock functions -------------------
@@ -311,7 +311,7 @@ contract krypteum is ERC20Coin {
   function removeLockMultiple(address[] _participants) public {
     require(msg.sender == administrator || msg.sender == owner);
 
-    for (uint i = 0; i &lt; _participants.length; i++) {
+    for (uint i = 0; i < _participants.length; i++) {
       locked[_participants[i]] = false;
       LockRemoved(_participants[i]);
     }
@@ -339,7 +339,7 @@ contract krypteum is ERC20Coin {
 
   function grantCoins(address _participant, uint _coins) public onlyOwner {
     // check amount
-    require(_coins &lt;= COIN_SUPPLY_MARKETING_TOTAL.sub(coinsIssuedMkt));
+    require(_coins <= COIN_SUPPLY_MARKETING_TOTAL.sub(coinsIssuedMkt));
 
     // update balances
     balances[_participant] = balances[_participant].add(_coins);
@@ -370,17 +370,17 @@ contract krypteum is ERC20Coin {
     uint change = 0;
 
     // check dates for ICO
-    require(DATE_ICO_START &lt; ts &amp;&amp; ts &lt; DATE_ICO_END);
+    require(DATE_ICO_START < ts && ts < DATE_ICO_END);
 
     (coins, change) = calculateCoinsPerWeiAndUpdateAvailableIcoCoins(msg.value);
 
     // ICO coins are available to be sold.
-    require(coins &gt; 0);
+    require(coins > 0);
 
     // ICO coin volume cap
     require(coinsIssuedIco.add(coins).add(sumOfAvailableIcoCoins()) == COIN_SUPPLY_ICO_TOTAL);
 
-    // change is not given back unless we&#39;re selling the last available ICO coins.
+    // change is not given back unless we're selling the last available ICO coins.
     require(change == 0 || coinsIssuedIco.add(coins) == COIN_SUPPLY_ICO_TOTAL);
 
     // register coins
@@ -401,7 +401,7 @@ contract krypteum is ERC20Coin {
     CoinsIssued(msg.sender, coins, balances[msg.sender], msg.value.sub(change));
 
     // return a change if not enough ICO coins left
-    if (change &gt; 0)
+    if (change > 0)
        msg.sender.transfer(change);
 
     wallet.transfer(this.balance);
@@ -409,7 +409,7 @@ contract krypteum is ERC20Coin {
 
   function sumOfAvailableIcoCoins() internal constant returns (uint totalAvailableIcoCoins) {
     totalAvailableIcoCoins = 0;
-    for (uint8 i = 0; i &lt; numberOfCoinsAvailableInIcoTier.length; i++) {
+    for (uint8 i = 0; i < numberOfCoinsAvailableInIcoTier.length; i++) {
       totalAvailableIcoCoins = totalAvailableIcoCoins.add(numberOfCoinsAvailableInIcoTier[i]);
     }
   }
@@ -418,10 +418,10 @@ contract krypteum is ERC20Coin {
     coins = 0;
     change = value;
 
-    for (uint8 i = 0; i &lt; numberOfCoinsAvailableInIcoTier.length; i++) {
+    for (uint8 i = 0; i < numberOfCoinsAvailableInIcoTier.length; i++) {
       uint costOfAvailableCoinsInCurrentTier = numberOfCoinsAvailableInIcoTier[i].mul(costOfACoinInWeiForTier[i]);
 
-      if (change &lt;= costOfAvailableCoinsInCurrentTier) {
+      if (change <= costOfAvailableCoinsInCurrentTier) {
         uint coinsInCurrentTierToBuy = change.div(costOfACoinInWeiForTier[i]);
         coins = coins.add(coinsInCurrentTierToBuy);
         numberOfCoinsAvailableInIcoTier[i] = numberOfCoinsAvailableInIcoTier[i].sub(coinsInCurrentTierToBuy);
@@ -437,7 +437,7 @@ contract krypteum is ERC20Coin {
 
   // ERC20 functions ------------------
 
-  /* Override &quot;transfer&quot; (ERC20) */
+  /* Override "transfer" (ERC20) */
 
   function transfer(address _to, uint _amount) public returns (bool success) {
     require(isTransferable());
@@ -447,7 +447,7 @@ contract krypteum is ERC20Coin {
     return super.transfer(_to, _amount);
   }
 
-  /* Override &quot;transferFrom&quot; (ERC20) */
+  /* Override "transferFrom" (ERC20) */
 
   function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
     require(isTransferable());
@@ -467,7 +467,7 @@ contract krypteum is ERC20Coin {
     require(locked[msg.sender] == false);
     require(_addresses.length == _amounts.length);
 
-    for (uint i = 0; i &lt; _addresses.length; i++) {
+    for (uint i = 0; i < _addresses.length; i++) {
       if (locked[_addresses[i]] == false)
          super.transfer(_addresses[i], _amounts[i]);
     }

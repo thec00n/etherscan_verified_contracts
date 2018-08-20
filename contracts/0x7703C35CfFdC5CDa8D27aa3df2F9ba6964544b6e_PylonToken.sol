@@ -21,15 +21,15 @@ contract owned {
 
 contract PylonToken is owned {
     // Public variables of the token
-    string public standard = &quot;Pylon Token - The first decentralized energy exchange platform powered by renewable energy&quot;;
-    string public name = &#39;Pylon Token&#39;;
-    string public symbol = &#39;PYLNT&#39;;
+    string public standard = "Pylon Token - The first decentralized energy exchange platform powered by renewable energy";
+    string public name = 'Pylon Token';
+    string public symbol = 'PYLNT';
     uint8 public decimals = 18;
     uint256 public totalSupply = 3750000000000000000000000;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
 
     // This notifies about accounts locked
     event FrozenFunds(address target, bool frozen);
@@ -82,7 +82,7 @@ contract PylonToken is owned {
     //uint256 public ultimosTokensEntregados;
 
     modifier contributionOpen() {
-        require(getBlockNumber() &gt;= startBlock &amp;&amp; getBlockNumber() &lt;= deadline);
+        require(getBlockNumber() >= startBlock && getBlockNumber() <= deadline);
         _;
     }
 
@@ -144,8 +144,8 @@ contract PylonToken is owned {
      */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);                                // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // Check for overflows
+        require(balanceOf[_from] >= _value);                // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);  // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -173,7 +173,7 @@ contract PylonToken is owned {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -189,7 +189,7 @@ contract PylonToken is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
@@ -215,7 +215,7 @@ contract PylonToken is owned {
     /**
      * Lock or unlock accounts
      *
-     * Lock or unlock `target` accounts which don&#39;t use the token correctly.
+     * Lock or unlock `target` accounts which don't use the token correctly.
      *
      * @param target the address of the locked or unlicked account
      * @param freeze if this account has to be freeze or not
@@ -239,16 +239,16 @@ contract PylonToken is owned {
         require (!crowdsaleClosed); // Check if crowdsale is open or not
         require(investor != 0x0);  // Check the address
         require(validPurchase()); //Validate the transfer
-        require(maxEtherInvestment &gt;= msg.value); //Check if It&#39;s more than maximum to invest
-        require(balanceOf[investor] &lt;= maxTokens); // Check if the investor has more tokens than 5% of total supply
-        require(amountRaised &lt;= fundingGoal); // Check if fundingGoal is rised
-        require(pylonSelled &lt;= totalTokensToSend); //Check if pylons we have sell is more or equal than total tokens ew have
+        require(maxEtherInvestment >= msg.value); //Check if It's more than maximum to invest
+        require(balanceOf[investor] <= maxTokens); // Check if the investor has more tokens than 5% of total supply
+        require(amountRaised <= fundingGoal); // Check if fundingGoal is rised
+        require(pylonSelled <= totalTokensToSend); //Check if pylons we have sell is more or equal than total tokens ew have
 
 
-        //Check if It&#39;s time for pre ICO or ICO
-        if(startBlockBonus &lt;= getBlockNumber() &amp;&amp; startBlock &lt;= getBlockNumber() &amp;&amp; endBlockBonus3 &gt;= getBlockNumber() &amp;&amp; pylonSelled &lt;= bonusCap){
+        //Check if It's time for pre ICO or ICO
+        if(startBlockBonus <= getBlockNumber() && startBlock <= getBlockNumber() && endBlockBonus3 >= getBlockNumber() && pylonSelled <= bonusCap){
           buyPreIco(investor);
-        } else if(deadline &gt;= getBlockNumber()){
+        } else if(deadline >= getBlockNumber()){
           buyIco(investor);
         }
 
@@ -260,9 +260,9 @@ contract PylonToken is owned {
       // calculate token amount to be sent
       uint256 tokens = weiAmount.mul(10**18).div(price);
 
-      require((balanceOf[investor] + tokens) &lt;= maxTokens);         // Check if the investor has more tokens than 5% of total supply
-      require(balanceOf[this] &gt;= tokens);             // checks if it has enough to sell
-      require(pylonSelled + tokens &lt;= totalTokensToSend); //Overflow - Check if pylons we have sell is more or equal than total tokens ew have
+      require((balanceOf[investor] + tokens) <= maxTokens);         // Check if the investor has more tokens than 5% of total supply
+      require(balanceOf[this] >= tokens);             // checks if it has enough to sell
+      require(pylonSelled + tokens <= totalTokensToSend); //Overflow - Check if pylons we have sell is more or equal than total tokens ew have
 
       balanceOf[this] -= tokens;
       balanceOf[investor] += tokens;
@@ -283,70 +283,70 @@ contract PylonToken is owned {
       uint256 bonusPrice = 0;
       uint256 tokens = weiAmount.mul(10**18).div(price);
 
-      if(endBlockBonus1 &gt;= getBlockNumber()){
+      if(endBlockBonus1 >= getBlockNumber()){
         if(tokens == qnt10k.mul(19) ){
           bonusPrice = 2775652173913040;
-        }else if(tokens &gt;= qnt10k.mul(18) &amp;&amp; tokens &lt; qnt10k.mul(19)){
+        }else if(tokens >= qnt10k.mul(18) && tokens < qnt10k.mul(19)){
           bonusPrice = 2907826086956520;
-        }else if(tokens &gt;= qnt10k.mul(17) &amp;&amp; tokens &lt; qnt10k.mul(18)){
+        }else if(tokens >= qnt10k.mul(17) && tokens < qnt10k.mul(18)){
           bonusPrice = 3040000000000000;
-        }else if(tokens &gt;= qnt10k.mul(16) &amp;&amp; tokens &lt; qnt10k.mul(17)){
+        }else if(tokens >= qnt10k.mul(16) && tokens < qnt10k.mul(17)){
           bonusPrice = 3172173913043480;
-        }else if(tokens &gt;= qnt10k.mul(15) &amp;&amp; tokens &lt; qnt10k.mul(16)){
+        }else if(tokens >= qnt10k.mul(15) && tokens < qnt10k.mul(16)){
           bonusPrice = 3304347826086960;
-        }else if(tokens &gt;= qnt10k.mul(14) &amp;&amp; tokens &lt; qnt10k.mul(15)){
+        }else if(tokens >= qnt10k.mul(14) && tokens < qnt10k.mul(15)){
           bonusPrice = 3436521739130430;
-        }else if(tokens &gt;= qnt10k.mul(13) &amp;&amp; tokens &lt; qnt10k.mul(14)){
+        }else if(tokens >= qnt10k.mul(13) && tokens < qnt10k.mul(14)){
           bonusPrice = 3568695652173910;
-        }else if(tokens &gt;= qnt10k.mul(12) &amp;&amp; tokens &lt; qnt10k.mul(13)){
+        }else if(tokens >= qnt10k.mul(12) && tokens < qnt10k.mul(13)){
           bonusPrice = 3700869565217390;
-        }else if(tokens &gt;= qnt10k.mul(11) &amp;&amp; tokens &lt; qnt10k.mul(12)){
+        }else if(tokens >= qnt10k.mul(11) && tokens < qnt10k.mul(12)){
           bonusPrice = 3833043478260870;
-        }else if(tokens &gt;= qnt10k.mul(10) &amp;&amp; tokens &lt; qnt10k.mul(11)){
+        }else if(tokens >= qnt10k.mul(10) && tokens < qnt10k.mul(11)){
           bonusPrice = 3965217391304350;
-        }else if(tokens &gt;= qnt10k.mul(9) &amp;&amp; tokens &lt; qnt10k.mul(10)){
+        }else if(tokens >= qnt10k.mul(9) && tokens < qnt10k.mul(10)){
           bonusPrice = 4097391304347830;
-        }else if(tokens &gt;= qnt10k.mul(8) &amp;&amp; tokens &lt; qnt10k.mul(9)){
+        }else if(tokens >= qnt10k.mul(8) && tokens < qnt10k.mul(9)){
           bonusPrice = 4229565217391300;
-        }else if(tokens &gt;= qnt10k.mul(7) &amp;&amp; tokens &lt; qnt10k.mul(8)){
+        }else if(tokens >= qnt10k.mul(7) && tokens < qnt10k.mul(8)){
           bonusPrice = 4361739130434780;
-        }else if(tokens &gt;= qnt10k.mul(6) &amp;&amp; tokens &lt; qnt10k.mul(7)){
+        }else if(tokens >= qnt10k.mul(6) && tokens < qnt10k.mul(7)){
           bonusPrice = 4493913043478260;
-        }else if(tokens &gt;= qnt10k.mul(5) &amp;&amp; tokens &lt; qnt10k.mul(6)){
+        }else if(tokens >= qnt10k.mul(5) && tokens < qnt10k.mul(6)){
           bonusPrice = 4626086956521740;
         }else{
           bonusPrice = 5286956521739130;
         }
-      }else if(endBlockBonus2 &gt;= getBlockNumber()){
+      }else if(endBlockBonus2 >= getBlockNumber()){
         if(tokens == qnt10k.mul(19) ){
           bonusPrice = 3436521739130430;
-        }else if(tokens &gt;= qnt10k.mul(18) &amp;&amp; tokens &lt; qnt10k.mul(19)){
+        }else if(tokens >= qnt10k.mul(18) && tokens < qnt10k.mul(19)){
           bonusPrice = 3568695652173910;
-        }else if(tokens &gt;= qnt10k.mul(17) &amp;&amp; tokens &lt; qnt10k.mul(18)){
+        }else if(tokens >= qnt10k.mul(17) && tokens < qnt10k.mul(18)){
           bonusPrice = 3700869565217390;
-        }else if(tokens &gt;= qnt10k.mul(16) &amp;&amp; tokens &lt; qnt10k.mul(17)){
+        }else if(tokens >= qnt10k.mul(16) && tokens < qnt10k.mul(17)){
           bonusPrice = 3833043478260870;
-        }else if(tokens &gt;= qnt10k.mul(15) &amp;&amp; tokens &lt; qnt10k.mul(16)){
+        }else if(tokens >= qnt10k.mul(15) && tokens < qnt10k.mul(16)){
           bonusPrice = 3965217391304350;
-        }else if(tokens &gt;= qnt10k.mul(14) &amp;&amp; tokens &lt; qnt10k.mul(15)){
+        }else if(tokens >= qnt10k.mul(14) && tokens < qnt10k.mul(15)){
           bonusPrice = 4097391304347830;
-        }else if(tokens &gt;= qnt10k.mul(13) &amp;&amp; tokens &lt; qnt10k.mul(14)){
+        }else if(tokens >= qnt10k.mul(13) && tokens < qnt10k.mul(14)){
           bonusPrice = 4229565217391300;
-        }else if(tokens &gt;= qnt10k.mul(12) &amp;&amp; tokens &lt; qnt10k.mul(13)){
+        }else if(tokens >= qnt10k.mul(12) && tokens < qnt10k.mul(13)){
           bonusPrice = 4361739130434780;
-        }else if(tokens &gt;= qnt10k.mul(11) &amp;&amp; tokens &lt; qnt10k.mul(12)){
+        }else if(tokens >= qnt10k.mul(11) && tokens < qnt10k.mul(12)){
           bonusPrice = 4493913043478260;
-        }else if(tokens &gt;= qnt10k.mul(10) &amp;&amp; tokens &lt; qnt10k.mul(11)){
+        }else if(tokens >= qnt10k.mul(10) && tokens < qnt10k.mul(11)){
           bonusPrice = 4626086956521740;
-        }else if(tokens &gt;= qnt10k.mul(9) &amp;&amp; tokens &lt; qnt10k.mul(10)){
+        }else if(tokens >= qnt10k.mul(9) && tokens < qnt10k.mul(10)){
           bonusPrice = 4758260869565220;
-        }else if(tokens &gt;= qnt10k.mul(8) &amp;&amp; tokens &lt; qnt10k.mul(9)){
+        }else if(tokens >= qnt10k.mul(8) && tokens < qnt10k.mul(9)){
           bonusPrice = 4890434782608700;
-        }else if(tokens &gt;= qnt10k.mul(7) &amp;&amp; tokens &lt; qnt10k.mul(8)){
+        }else if(tokens >= qnt10k.mul(7) && tokens < qnt10k.mul(8)){
           bonusPrice = 5022608695652170;
-        }else if(tokens &gt;= qnt10k.mul(6) &amp;&amp; tokens &lt; qnt10k.mul(7)){
+        }else if(tokens >= qnt10k.mul(6) && tokens < qnt10k.mul(7)){
           bonusPrice = 5154782608695650;
-        }else if(tokens &gt;= qnt10k.mul(5) &amp;&amp; tokens &lt; qnt10k.mul(6)){
+        }else if(tokens >= qnt10k.mul(5) && tokens < qnt10k.mul(6)){
           bonusPrice = 5286956521739130;
         }else{
           bonusPrice = 5947826086956520;
@@ -354,33 +354,33 @@ contract PylonToken is owned {
       }else{
         if(tokens == qnt10k.mul(19) ){
           bonusPrice = 3766956521739130;
-        }else if(tokens &gt;= qnt10k.mul(18) &amp;&amp; tokens &lt; qnt10k.mul(19)){
+        }else if(tokens >= qnt10k.mul(18) && tokens < qnt10k.mul(19)){
           bonusPrice = 3899130434782610;
-        }else if(tokens &gt;= qnt10k.mul(17) &amp;&amp; tokens &lt; qnt10k.mul(18)){
+        }else if(tokens >= qnt10k.mul(17) && tokens < qnt10k.mul(18)){
           bonusPrice = 4031304347826090;
-        }else if(tokens &gt;= qnt10k.mul(16) &amp;&amp; tokens &lt; qnt10k.mul(17)){
+        }else if(tokens >= qnt10k.mul(16) && tokens < qnt10k.mul(17)){
           bonusPrice = 4163478260869570;
-        }else if(tokens &gt;= qnt10k.mul(15) &amp;&amp; tokens &lt; qnt10k.mul(16)){
+        }else if(tokens >= qnt10k.mul(15) && tokens < qnt10k.mul(16)){
           bonusPrice = 4295652173913040;
-        }else if(tokens &gt;= qnt10k.mul(14) &amp;&amp; tokens &lt; qnt10k.mul(15)){
+        }else if(tokens >= qnt10k.mul(14) && tokens < qnt10k.mul(15)){
           bonusPrice = 4427826086956520;
-        }else if(tokens &gt;= qnt10k.mul(13) &amp;&amp; tokens &lt; qnt10k.mul(14)){
+        }else if(tokens >= qnt10k.mul(13) && tokens < qnt10k.mul(14)){
           bonusPrice = 4560000000000000;
-        }else if(tokens &gt;= qnt10k.mul(12) &amp;&amp; tokens &lt; qnt10k.mul(13)){
+        }else if(tokens >= qnt10k.mul(12) && tokens < qnt10k.mul(13)){
           bonusPrice = 4692173913043480;
-        }else if(tokens &gt;= qnt10k.mul(11) &amp;&amp; tokens &lt; qnt10k.mul(12)){
+        }else if(tokens >= qnt10k.mul(11) && tokens < qnt10k.mul(12)){
           bonusPrice = 4824347826086960;
-        }else if(tokens &gt;= qnt10k.mul(10) &amp;&amp; tokens &lt; qnt10k.mul(11)){
+        }else if(tokens >= qnt10k.mul(10) && tokens < qnt10k.mul(11)){
           bonusPrice = 4956521739130430;
-        }else if(tokens &gt;= qnt10k.mul(9) &amp;&amp; tokens &lt; qnt10k.mul(10)){
+        }else if(tokens >= qnt10k.mul(9) && tokens < qnt10k.mul(10)){
           bonusPrice = 5088695652173910;
-        }else if(tokens &gt;= qnt10k.mul(8) &amp;&amp; tokens &lt; qnt10k.mul(9)){
+        }else if(tokens >= qnt10k.mul(8) && tokens < qnt10k.mul(9)){
           bonusPrice = 5220869565217390;
-        }else if(tokens &gt;= qnt10k.mul(7) &amp;&amp; tokens &lt; qnt10k.mul(8)){
+        }else if(tokens >= qnt10k.mul(7) && tokens < qnt10k.mul(8)){
           bonusPrice = 5353043478260870;
-        }else if(tokens &gt;= qnt10k.mul(6) &amp;&amp; tokens &lt; qnt10k.mul(7)){
+        }else if(tokens >= qnt10k.mul(6) && tokens < qnt10k.mul(7)){
           bonusPrice = 5485217391304350;
-        }else if(tokens &gt;= qnt10k.mul(5) &amp;&amp; tokens &lt; qnt10k.mul(6)){
+        }else if(tokens >= qnt10k.mul(5) && tokens < qnt10k.mul(6)){
           bonusPrice = 5617391304347830;
         }else{
           bonusPrice = 6278260869565220;
@@ -389,9 +389,9 @@ contract PylonToken is owned {
 
       tokens = weiAmount.mul(10**18).div(bonusPrice);
 
-      require(pylonSelled + tokens &lt;= bonusCap); // Check if want to sell more than total tokens for pre-ico
-      require(balanceOf[investor] + tokens &lt;= maxTokens); // Check if the investor has more tokens than 5% of total supply
-      require(balanceOf[this] &gt;= tokens);             // checks if it has enough to sell
+      require(pylonSelled + tokens <= bonusCap); // Check if want to sell more than total tokens for pre-ico
+      require(balanceOf[investor] + tokens <= maxTokens); // Check if the investor has more tokens than 5% of total supply
+      require(balanceOf[this] >= tokens);             // checks if it has enough to sell
 
       balanceOf[this] -= tokens;
       balanceOf[investor] += tokens;
@@ -407,7 +407,7 @@ contract PylonToken is owned {
 
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -415,7 +415,7 @@ contract PylonToken is owned {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline onlyOwner {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -426,9 +426,9 @@ contract PylonToken is owned {
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
         uint256 current = getBlockNumber();
-        bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= deadline;
+        bool withinPeriod = current >= startBlock && current <= deadline;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     //////////
@@ -462,20 +462,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

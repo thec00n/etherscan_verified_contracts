@@ -18,7 +18,7 @@ contract MultiAsset {
 contract Safe {
     // Should always be placed as first modifier!
     modifier noValue {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             // Internal Out Of Gas/Throw: revert this transaction too;
             // Call Stack Depth Limit reached: revert this transaction too;
             // Recursive Call: safe, no any changes applied yet, we are inside of modifier.
@@ -55,7 +55,7 @@ contract Safe {
         if (stackDepthLib == 0x0) {
             throw;
         }
-        if (_depth &gt; 1023) {
+        if (_depth > 1023) {
             throw;
         }
         if (!stackDepthLib.delegatecall(0x32921690, stackDepthLib, _depth)) {
@@ -133,7 +133,7 @@ contract KUNA_SHARES is Safe {
     }
 
     function transfer(address _to, uint _value) returns(bool) {
-        return __transferWithReference(_to, _value, &quot;&quot;);
+        return __transferWithReference(_to, _value, "");
     }
 
     function transferWithReference(address _to, uint _value, string _reference) returns(bool) {
@@ -147,7 +147,7 @@ contract KUNA_SHARES is Safe {
     }
 
     function transferToICAP(bytes32 _icap, uint _value) returns(bool) {
-        return __transferToICAPWithReference(_icap, _value, &quot;&quot;);
+        return __transferToICAPWithReference(_icap, _value, "");
     }
 
     function transferToICAPWithReference(bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -161,7 +161,7 @@ contract KUNA_SHARES is Safe {
     }
     
     function transferFrom(address _from, address _to, uint _value) returns(bool) {
-        return __transferFromWithReference(_from, _to, _value, &quot;&quot;);
+        return __transferFromWithReference(_from, _to, _value, "");
     }
 
     function transferFromWithReference(address _from, address _to, uint _value, string _reference) returns(bool) {
@@ -173,7 +173,7 @@ contract KUNA_SHARES is Safe {
     }
 
     function transferFromToICAP(address _from, bytes32 _icap, uint _value) returns(bool) {
-        return __transferFromToICAPWithReference(_from, _icap, _value, &quot;&quot;);
+        return __transferFromToICAPWithReference(_from, _icap, _value, "");
     }
 
     function transferFromToICAPWithReference(address _from, bytes32 _icap, uint _value, string _reference) returns(bool) {
@@ -204,9 +204,9 @@ contract KUNA_SHARES is Safe {
         address owner = multiAsset.owner(symbol);
         uint balance = this.balance;
         bool success = true;
-        if (balance &gt; 0) {
+        if (balance > 0) {
             success = _unsafeSend(owner, balance);
         }
-        return multiAsset.transfer(owner, balanceOf(owner), symbol) &amp;&amp; success;
+        return multiAsset.transfer(owner, balanceOf(owner), symbol) && success;
     }
 }

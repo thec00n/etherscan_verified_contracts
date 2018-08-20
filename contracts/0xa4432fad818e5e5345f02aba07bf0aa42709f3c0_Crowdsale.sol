@@ -18,22 +18,22 @@ library SafeMath {
 
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ contract RTcoin {
 	uint8 public decimals;
 	string public symbol;
 	bool private allowEmission = true;
-	mapping (address =&gt; uint256) balances;
+	mapping (address => uint256) balances;
     
     
     function RTcoin(string _name, string _symbol, uint8 _decimals) public {
@@ -63,7 +63,7 @@ contract RTcoin {
     function changeSaleAgent(address newSaleAgent) public onlyOwner {
         require (newSaleAgent!=address(0));
         uint256 tokenAmount = balances[saleAgent];
-        if (tokenAmount&gt;0) {
+        if (tokenAmount>0) {
             balances[newSaleAgent] = balances[newSaleAgent].add(tokenAmount);
             balances[saleAgent] = balances[saleAgent].sub(tokenAmount);
             Transfer(saleAgent, newSaleAgent, tokenAmount);
@@ -83,7 +83,7 @@ contract RTcoin {
     
     
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
         address burner;
         if (msg.sender==owner)
             burner = saleAgent;
@@ -152,7 +152,7 @@ contract Crowdsale {
     
     
     function() external isOpen payable {
-        require(tokenLimit&gt;0);
+        require(tokenLimit>0);
         fundsWallet.transfer(msg.value);
         uint256 tokens = calculateTokenAmount(msg.value);
         token.transfer(msg.sender, tokens);
@@ -167,7 +167,7 @@ contract Crowdsale {
 	
 	
     function changeRate(uint256 newRate) public onlyOwner {
-        require(newRate&gt;0);
+        require(newRate>0);
         rate = newRate;
     }
     

@@ -41,15 +41,15 @@ contract ERC20Interface {
 
 /// Blocklancer Token (LNC) - crowdfunding code for Blocklancer Project
 contract BlocklancerToken is ERC20Interface {
-    string public constant name = &quot;Lancer Token&quot;;
-    string public constant symbol = &quot;LNC&quot;;
+    string public constant name = "Lancer Token";
+    string public constant symbol = "LNC";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     // The funding cap in weis.
     uint256 public constant tokenCreationCap = 1000000000* 10**18;
     uint256 public constant tokenCreationMin = 150000000* 10**18;
     
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     uint public fundingStart;
     uint public fundingEnd;
@@ -67,12 +67,12 @@ contract BlocklancerToken is ERC20Interface {
     //the price increases by 1 % for every 10 million LNC sold after power day
     uint256 soldAfterPowerHour;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint) lastTransferred;
+    mapping (address => uint256) balances;
+    mapping (address => uint) lastTransferred;
     
     //needed to refund everyone should the ICO fail
-    // needed because the price per LNC isn&#39;t linear
-    mapping (address =&gt; uint256) balancesEther;
+    // needed because the price per LNC isn't linear
+    mapping (address => uint256) balancesEther;
 
     //address of the contract that manages the migration
     //can only be changed by the creator
@@ -107,12 +107,12 @@ contract BlocklancerToken is ERC20Interface {
 
     /// allows to transfer token to another address
     function transfer(address _to, uint256 _value) returns (bool success) {
-        // Don&#39;t allow in funding state
+        // Don't allow in funding state
         if(funding) throw;
 
         var senderBalance = balances[msg.sender];
-        //only allow if the balance of the sender is more than he want&#39;s to send
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        //only allow if the balance of the sender is more than he want's to send
+        if (senderBalance >= _value && _value > 0) {
             //reduce the sender balance by the amount he sends
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
@@ -150,7 +150,7 @@ contract BlocklancerToken is ERC20Interface {
     
     //time left before the crodsale ends
     function TimeLeft() external constant returns (uint256) {
-        if(fundingEnd&gt;block.timestamp)
+        if(fundingEnd>block.timestamp)
             return fundingEnd-block.timestamp;
         else
             return 0;
@@ -158,7 +158,7 @@ contract BlocklancerToken is ERC20Interface {
     
     //time left before the crodsale begins
     function TimeLeftBeforeCrowdsale() external constant returns (uint256) {
-        if(fundingStart&gt;block.timestamp)
+        if(fundingStart>block.timestamp)
             return fundingStart-block.timestamp;
         else
             return 0;
@@ -176,7 +176,7 @@ contract BlocklancerToken is ERC20Interface {
         if(_value == 0) throw;
         
         //if the value is higher than the sender owns abort
-        if(_value &gt; balances[msg.sender]) throw;
+        if(_value > balances[msg.sender]) throw;
 
         //reduce the balance of the owner
         balances[msg.sender] -= _value;
@@ -206,16 +206,16 @@ contract BlocklancerToken is ERC20Interface {
         migrationAgent = _agent;
     }
     
-    //return the current exchange rate -&gt; LNC per Ether
+    //return the current exchange rate -> LNC per Ether
     function getExchangeRate() constant returns(uint){
         //15000 LNC at power day
-        if(fundingStart + 1 * 1 days &gt; block.timestamp){
+        if(fundingStart + 1 * 1 days > block.timestamp){
             return 15000;
         }
         //otherwise reduce by 1 % every 10 million LNC sold
         else{
             uint256 decrease=100-(soldAfterPowerHour/10000000/1000000000000000000);
-            if(decrease&lt;70){
+            if(decrease<70){
                 decrease=70;
             }
             return 10000*decrease/100;
@@ -225,9 +225,9 @@ contract BlocklancerToken is ERC20Interface {
     //returns if the crowd sale is still open
     function ICOopen() constant returns(bool){
         if(!funding) return false;
-        else if(block.timestamp &lt; fundingStart) return false;
-        else if(block.timestamp &gt; fundingEnd) return false;
-        else if(tokenCreationCap &lt;= totalTokens) return false;
+        else if(block.timestamp < fundingStart) return false;
+        else if(block.timestamp > fundingEnd) return false;
+        else if(tokenCreationCap <= totalTokens) return false;
         else return true;
     }
 
@@ -239,16 +239,16 @@ contract BlocklancerToken is ERC20Interface {
         if(!funding) throw;
         
         //not possible before the funding started
-        if(block.timestamp &lt; fundingStart) throw;
+        if(block.timestamp < fundingStart) throw;
         
         //not possible after the funding ended
-        if(block.timestamp &gt; fundingEnd) throw;
+        if(block.timestamp > fundingEnd) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if(msg.value == 0) throw;
         
-        //don&#39;t allow to create more token than the maximum cap
-        if((msg.value  * getExchangeRate()) &gt; (tokenCreationCap - totalTokens)) throw;
+        //don't allow to create more token than the maximum cap
+        if((msg.value  * getExchangeRate()) > (tokenCreationCap - totalTokens)) throw;
 
         //calculate the amount of LNC the sender receives
         var numTokens = msg.value * getExchangeRate();
@@ -281,9 +281,9 @@ contract BlocklancerToken is ERC20Interface {
         
         //only possible if funding ended and the minimum cap is reached - or
         //the total amount of token is the same as the maximum cap
-        if((block.timestamp &lt;= fundingEnd ||
-             totalTokens &lt; tokenCreationMin) &amp;&amp;
-            (totalTokens+5000000000000000000000) &lt; tokenCreationCap) throw;
+        if((block.timestamp <= fundingEnd ||
+             totalTokens < tokenCreationMin) &&
+            (totalTokens+5000000000000000000000) < tokenCreationCap) throw;
 
         // allows to tranfer token to another address
         // disables buying LNC
@@ -309,10 +309,10 @@ contract BlocklancerToken is ERC20Interface {
         if(!funding) throw;
         
         //not possible before the ICO ended
-        if(block.timestamp &lt;= fundingEnd) throw;
+        if(block.timestamp <= fundingEnd) throw;
         
         //not possible if more token were created than the minimum
-        if(totalTokens &gt;= tokenCreationMin) throw;
+        if(totalTokens >= tokenCreationMin) throw;
 
         var lncValue = balances[msg.sender];
         var ethValue = balancesEther[msg.sender];
@@ -331,16 +331,16 @@ contract BlocklancerToken is ERC20Interface {
 	
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom(address _from,address _to,uint256 _amount) returns (bool success) {
          if(funding) throw;
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;

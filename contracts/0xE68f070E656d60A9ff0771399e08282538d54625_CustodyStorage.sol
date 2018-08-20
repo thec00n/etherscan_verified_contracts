@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -67,7 +67,7 @@ contract BBODServiceRegistry is Ownable {
 
   //1. Manager
   //2. CustodyStorage
-  mapping(uint =&gt; address) public registry;
+  mapping(uint => address) public registry;
 
     constructor(address _owner) {
         owner = _owner;
@@ -82,7 +82,7 @@ contract CustodyStorage {
 
   BBODServiceRegistry public bbodServiceRegistry;
 
-  mapping(address =&gt; bool) public custodiesMap;
+  mapping(address => bool) public custodiesMap;
 
   //Number of all custodies in the contract
   uint public custodyCounter = 0;

@@ -10,8 +10,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -26,9 +26,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -45,7 +45,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ library SafeMath {
  */
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -71,7 +71,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -111,13 +111,13 @@ library Roles {
  * @dev See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -194,7 +194,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -210,14 +210,14 @@ contract RBAC {
 /**
  * @title RBACWithAdmin
  * @author Matt Condon (@Shrugs)
- * @dev It&#39;s recommended that you define constants in the contract,
+ * @dev It's recommended that you define constants in the contract,
  * @dev like ROLE_ADMIN below, to avoid typos.
  */
 contract RBACWithAdmin is RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
+  string public constant ROLE_ADMIN = "admin";
 
   /**
    * @dev modifier to scope access to admins
@@ -266,7 +266,7 @@ contract RBACWithAdmin is RBAC {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -323,7 +323,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -341,7 +341,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -392,7 +392,7 @@ contract DetailedERC20 is ERC20 {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -403,8 +403,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -418,7 +418,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -467,7 +467,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -540,9 +540,9 @@ contract ERC865 {
 contract ERC865Token is ERC865, StandardToken, Ownable {
 
     /* Nonces of transfers performed */
-    mapping(bytes =&gt; bool) signatures;
+    mapping(bytes => bool) signatures;
     /* mapping of nonces of each user */
-    mapping (address =&gt; uint256) nonces;
+    mapping (address => uint256) nonces;
 
     event TransferPreSigned(address indexed from, address indexed to, address indexed delegate, uint256 amount, uint256 fee);
     event ApprovalPreSigned(address indexed from, address indexed to, address indexed delegate, uint256 amount, uint256 fee);
@@ -583,7 +583,7 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
         address from = recover(hashedTx, _signature);
         require(from != address(0));
         require(_nonce == nonces[from].add(1));
-        require(_value.add(_fee) &lt;= balances[from]);
+        require(_value.add(_fee) <= balances[from]);
 
         nonces[from] = _nonce;
         signatures[_signature] = true;
@@ -622,7 +622,7 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
         address from = recover(hashedTx, _signature);
         require(from != address(0));
         require(_nonce == nonces[from].add(1));
-        require(_value.add(_fee) &lt;= balances[from]);
+        require(_value.add(_fee) <= balances[from]);
 
         nonces[from] = _nonce;
         signatures[_signature] = true;
@@ -661,8 +661,8 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
         address from = recover(hashedTx, _signature);
         require(from != address(0));
         require(_nonce == nonces[from].add(1));
-        require(allowed[from][_spender].add(_addedValue).add(_fee) &lt;= balances[from]);
-        //require(_addedValue &lt;= allowed[from][_spender]);
+        require(allowed[from][_spender].add(_addedValue).add(_fee) <= balances[from]);
+        //require(_addedValue <= allowed[from][_spender]);
 
         nonces[from] = _nonce;
         signatures[_signature] = true;
@@ -701,15 +701,15 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
         address from = recover(hashedTx, _signature);
         require(from != address(0));
         require(_nonce == nonces[from].add(1));
-        //require(_subtractedValue &lt;= balances[from]);
-        //require(_subtractedValue &lt;= allowed[from][_spender]);
-        //require(_subtractedValue &lt;= allowed[from][_spender]);
-        require(_fee &lt;= balances[from]);
+        //require(_subtractedValue <= balances[from]);
+        //require(_subtractedValue <= allowed[from][_spender]);
+        //require(_subtractedValue <= allowed[from][_spender]);
+        require(_fee <= balances[from]);
 
         nonces[from] = _nonce;
         signatures[_signature] = true;
         uint oldValue = allowed[from][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[from][_spender] = 0;
         } else {
             allowed[from][_spender] = oldValue.sub(_subtractedValue);
@@ -751,7 +751,7 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
 
         address spender = recover(hashedTx, _signature);
         require(spender != address(0));
-        require(_value.add(_fee) &lt;= balances[_from])​;
+        require(_value.add(_fee) <= balances[_from])​;
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -809,12 +809,12 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
       }
 
       // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-      if (v &lt; 27) {
+      if (v < 27) {
         v += 27;
       }
 
       // If the version is correct return the signer address
-      if (v != 27 &amp;&amp; v != 28) {
+      if (v != 27 && v != 28) {
         return (address(0));
       } else {
         return ecrecover(hash, v, r, s);
@@ -825,14 +825,14 @@ contract ERC865Token is ERC865, StandardToken, Ownable {
 
 contract BeepToken is ERC865Token, RBAC{
 
-    string public constant name = &quot;Beepnow Token&quot;;
-    string public constant symbol = &quot;BPN&quot;;
+    string public constant name = "Beepnow Token";
+    string public constant symbol = "BPN";
     uint8 public constant decimals = 0;
     
     /* Mapping of whitelisted users */
-    mapping (address =&gt; bool) transfersBlacklist;
-    string constant ROLE_ADMIN = &quot;admin&quot;;
-    string constant ROLE_DELEGATE = &quot;delegate&quot;;
+    mapping (address => bool) transfersBlacklist;
+    string constant ROLE_ADMIN = "admin";
+    string constant ROLE_DELEGATE = "delegate";
 
     bytes4 internal constant transferSig = 0x48664c16;
 
@@ -983,7 +983,7 @@ contract BeepToken is ERC865Token, RBAC{
         require(_nonce == nonces[_from].add(1));
         require(signatures[_signature] == false);
         uint256 _total = _value.add(_fee);
-        require(_total &lt;= balances[_from]);
+        require(_total <= balances[_from]);
 
         nonces[_from] = _nonce;
         signatures[_signature] = true;
@@ -1004,7 +1004,7 @@ contract BeepToken is ERC865Token, RBAC{
         require(hasRole(_admin, ROLE_ADMIN));
         require(_nonce == nonces[_from].add(1));
         require(signatures[_signature] == false);
-        require(_value.add(_fee) &lt;= balances[_from]);
+        require(_value.add(_fee) <= balances[_from]);
 
         nonces[_from] = _nonce;
         signatures[_signature] = true;

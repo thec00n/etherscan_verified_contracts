@@ -8,7 +8,7 @@ contract Token {
     function transferFrom(address from, address to, uint256 value) returns (bool success);
     function approve(address spender, uint256 value) returns (bool success);
 
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions.
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions.
     //function totalSupply() constant returns (uint256 supply) {};
     function balanceOf(address owner) constant returns (uint256 balance);
     function allowance(address owner, address spender) constant returns (uint256 remaining);
@@ -24,14 +24,14 @@ contract StandardToken is Token {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
@@ -39,7 +39,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             // Balance too low
             revert();
         }
@@ -58,7 +58,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        if (balances[_from] &lt; _value || allowed[_from][msg.sender] &lt; _value) {
+        if (balances[_from] < _value || allowed[_from][msg.sender] < _value) {
             // Balance or allowance too low
             revert();
         }
@@ -115,8 +115,8 @@ contract VirtuePlayerPoints is StandardToken {
     /*
      *  Token meta data
      */
-    string constant public name = &quot;Virtue Player Points&quot;;
-    string constant public symbol = &quot;VPP&quot;;
+    string constant public name = "Virtue Player Points";
+    string constant public symbol = "VPP";
     uint8 constant public decimals = 18;
 
     /*
@@ -135,7 +135,7 @@ contract VirtuePlayerPoints is StandardToken {
         balances[dutchAuction] = 5000000 * 10**18;
         Transfer(0, dutchAuction, balances[dutchAuction]);
         uint assignedTokens = balances[dutchAuction];
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             require (owners[i] != 0);
                 // Address should not be null.
             balances[owners[i]] += tokens[i];

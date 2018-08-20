@@ -28,7 +28,7 @@ contract SimpleCertifier is Owned, Certifier {
 
 	struct Certification {
 		bool active;
-		mapping (string =&gt; bytes32) meta;
+		mapping (string => bytes32) meta;
 	}
 
 	function certify(address _who) only_delegate {
@@ -45,8 +45,8 @@ contract SimpleCertifier is Owned, Certifier {
 	function getUint(address _who, string _field) constant returns (uint) { return uint(certs[_who].meta[_field]); }
 	function setDelegate(address _new) only_owner { delegate = _new; }
 
-	mapping (address =&gt; Certification) certs;
-	// So that the server posting puzzles doesn&#39;t have access to the ETH.
+	mapping (address => Certification) certs;
+	// So that the server posting puzzles doesn't have access to the ETH.
 	address public delegate = msg.sender;
 }
 
@@ -54,7 +54,7 @@ contract SimpleCertifier is Owned, Certifier {
 
 contract ProofOfSMS is SimpleCertifier {
 
-	modifier when_fee_paid { if (msg.value &lt; fee) return; _; }
+	modifier when_fee_paid { if (msg.value < fee) return; _; }
 
 	event Requested(address indexed who);
 	event Puzzled(address indexed who, bytes32 puzzle);
@@ -92,7 +92,7 @@ contract ProofOfSMS is SimpleCertifier {
 		return certs[_who].active;
 	}
 
-	mapping (address =&gt; bytes32) puzzles;
+	mapping (address => bytes32) puzzles;
 
 	uint public fee = 30 finney;
 }

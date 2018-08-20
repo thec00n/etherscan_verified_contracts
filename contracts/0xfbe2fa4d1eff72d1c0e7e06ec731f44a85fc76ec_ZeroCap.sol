@@ -4,16 +4,16 @@ contract Token {
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        require(balanceOf[msg.sender] &gt;= _value);            // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);  // Check for overflows
+        require(balanceOf[msg.sender] >= _value);            // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]);  // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -27,9 +27,9 @@ contract Token {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                 // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);  // Check for overflows
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(balanceOf[_from] >= _value);                 // Check if the sender has enough
+        require(balanceOf[_to] + _value >= balanceOf[_to]);  // Check for overflows
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -50,7 +50,7 @@ contract Token {
     function mint(address _to, uint256 _value) returns (bool) {
         require(msg.sender == owner);                        // Only the owner is allowed to mint
         require(!sealed);                                    // Can only mint while unsealed
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);  // Check for overflows
+        require(balanceOf[_to] + _value >= balanceOf[_to]);  // Check for overflows
         balanceOf[_to] += _value;
         totalSupply += _value;
         return true;
@@ -73,7 +73,7 @@ contract Withdraw {
 
     function withdraw() {
         require(token.sealed());
-        require(token.balanceOf(msg.sender) &gt; 0);
+        require(token.balanceOf(msg.sender) > 0);
         uint token_amount = token.balanceOf(msg.sender);
         uint wei_amount = this.balance * token_amount / token.totalSupply();
         if (!token.transferFrom(msg.sender, this, token_amount) || !msg.sender.send(wei_amount)) {
@@ -106,13 +106,13 @@ contract TokenGame {
     }
 
     function play() payable {
-        require(now &lt;= end_time);   // Check that the sale has not ended
-        require(msg.value &gt; 0);     // Check that something has been sent
+        require(now <= end_time);   // Check that the sale has not ended
+        require(msg.value > 0);     // Check that something has been sent
         total_wei_given += msg.value;
         ema = msg.value + ema * time_of_half_decay / (time_of_half_decay + (now - last_time) );
         last_time = now;
         uint extended_time = now + ema * time_extension_from_doubling / total_wei_given;
-        if (extended_time &gt; end_time) {
+        if (extended_time > end_time) {
             end_time = extended_time;
         }
         if (!excess_token.mint(msg.sender, msg.value) || !game_token.mint(msg.sender, msg.value)) {
@@ -121,11 +121,11 @@ contract TokenGame {
     }
 
     function finalise() {
-        require(now &gt; end_time);
+        require(now > end_time);
         excess_token.seal();
         game_token.seal();
         uint to_owner = 0;
-        if (this.balance &gt; cap_in_wei) {
+        if (this.balance > cap_in_wei) {
             to_owner = cap_in_wei;
             if (!excess_withdraw.send(this.balance - cap_in_wei)) {
                 throw;
@@ -133,7 +133,7 @@ contract TokenGame {
         } else {
             to_owner = this.balance;
         }
-        if (to_owner &gt; 0) {
+        if (to_owner > 0) {
             if (!owner.send(to_owner)) {
                 throw;
             }

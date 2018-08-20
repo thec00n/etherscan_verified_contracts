@@ -60,20 +60,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,11 +92,11 @@ contract ListingsERC20 is Ownable {
     event ListingCancelled(bytes32 indexed listingId, uint256 dateCancelled);
     event ListingBought(bytes32 indexed listingId, address tokenContractAddress, uint256 price, uint256 amount, uint256 dateBought, address buyer);
 
-    string constant public VERSION = &quot;1.0.1&quot;;
+    string constant public VERSION = "1.0.1";
     uint16 constant public GAS_LIMIT = 4999;
     uint256 public ownerPercentage;
-    mapping (bytes32 =&gt; Listing) public listings;
-    mapping (bytes32 =&gt; uint256) public sold;
+    mapping (bytes32 => Listing) public listings;
+    mapping (bytes32 => uint256) public sold;
     function ListingsERC20(uint256 percentage) public {
         ownerPercentage = percentage;
     }
@@ -129,10 +129,10 @@ contract ListingsERC20 is Ownable {
     }
 
     function createListing(address tokenContractAddress, uint256 price, uint256 allowance, uint256 dateEnds, uint256 salt) external {
-        require(price &gt; 0);
-        require(allowance &gt; 0);
-        require(dateEnds &gt; 0);
-        require(getBalance(tokenContractAddress, msg.sender) &gt;= allowance);
+        require(price > 0);
+        require(allowance > 0);
+        require(dateEnds > 0);
+        require(getBalance(tokenContractAddress, msg.sender) >= allowance);
         bytes32 listingId = getHashInternal(tokenContractAddress, price, allowance, dateEnds, salt);
         Listing memory listing = Listing(msg.sender, tokenContractAddress, price, allowance, now, dateEnds);
         listings[listingId] = listing;
@@ -153,11 +153,11 @@ contract ListingsERC20 is Ownable {
         uint256 price = listing.price;
         uint256 sale = price.mul(amount);
         uint256 allowance = listing.allowance;
-        require(now &lt;= listing.dateEnds);
-        require(allowance - sold[listingId] &gt; amount);
-        require(allowance - amount &gt; 0);
-        require(getBalance(contractAddress, seller) &gt;= allowance);
-        require(getAllowance(contractAddress, seller, this) &lt;= allowance);
+        require(now <= listing.dateEnds);
+        require(allowance - sold[listingId] > amount);
+        require(allowance - amount > 0);
+        require(getBalance(contractAddress, seller) >= allowance);
+        require(getAllowance(contractAddress, seller, this) <= allowance);
         require(msg.value == sale);
         ERC20 tokenContract = ERC20(contractAddress);
         require(tokenContract.transferFrom(seller, msg.sender, amount));

@@ -12,13 +12,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -128,7 +128,7 @@ contract ShareCrowdsale is Ownable{
   
   function () public payable {
     require (isIco());
-    require (msg.value &gt;= MIN_DEPOSIT);
+    require (msg.value >= MIN_DEPOSIT);
     require (buy(msg.sender, msg.value));
   }
 
@@ -142,7 +142,7 @@ contract ShareCrowdsale is Ownable{
     uint _tokenPrice = _phasePrice.add(_phasePrice.mul(icoStages[currentStage].discount)/10000);
     uint tokensToSend = _value.mul(_tokenPrice)/(uint(10).pow(uint(12))); //decimals difference
 
-    if(ethCollected &gt;= ICO_MIN_CAP){
+    if(ethCollected >= ICO_MIN_CAP){
       distributionAddress.transfer(address(this).balance);
     }
 
@@ -158,9 +158,9 @@ contract ShareCrowdsale is Ownable{
     uint buffer;
 
     if(isIco()){
-      for (uint i = 0; i &lt; icoStages.length; i++){
+      for (uint i = 0; i < icoStages.length; i++){
         buffer += icoStages[i].tokensDistribution;
-        if(tokensSold &lt;= buffer &amp;&amp; icoStages[i].isActive){
+        if(tokensSold <= buffer && icoStages[i].isActive){
           return i;
         }
       }
@@ -169,7 +169,7 @@ contract ShareCrowdsale is Ownable{
   }
 
   function isIco() public view returns(bool) {
-    if(ICO_START &lt;= now &amp;&amp; now &lt;= ICO_FINISH){
+    if(ICO_START <= now && now <= ICO_FINISH){
       return true;
     }
     return false;

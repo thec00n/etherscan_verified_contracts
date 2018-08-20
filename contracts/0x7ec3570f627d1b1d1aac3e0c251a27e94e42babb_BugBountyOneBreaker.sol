@@ -1,9 +1,9 @@
 /**
 ___________    _________        .____________  ____  __.
 \__    ___/___ \_   ___ \  _____|   \_   ___ \|    |/ _|
-  |    | /  _ \/    \  \/ /  ___/   /    \  \/|      &lt;  
-  |    |(  &lt;_&gt; )     \____\___ \|   \     \___|    |  \ 
-  |____| \____/ \______  /____  &gt;___|\______  /____|__ \
+  |    | /  _ \/    \  \/ /  ___/   /    \  \/|      <  
+  |    |(  <_> )     \____\___ \|   \     \___|    |  \ 
+  |____| \____/ \______  /____  >___|\______  /____|__ \
                        \/     \/            \/        \/
 */
 
@@ -25,7 +25,7 @@ contract BugBountyOneBreaker {
         address CryptoKitties = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
         
         uint seed1 = s;
-        uint seed2 = uint(block.coinbase); // Get Miner&#39;s Address
+        uint seed2 = uint(block.coinbase); // Get Miner's Address
         uint seed3 = now; // Get the timestamp
         uint seed4 = CryptoKitties.balance;
         uint rand = uint(keccak256(seed1, seed2, seed3, seed4));
@@ -42,8 +42,8 @@ contract secretHolder {
 
 contract BugBountyOne {
 
-    mapping(address =&gt; bool) public authorizedToDrain;
-    mapping(address =&gt; bool) public notAllowedToDrain;
+    mapping(address => bool) public authorizedToDrain;
+    mapping(address => bool) public notAllowedToDrain;
     address public TechnicalRise; // TechnicalRise is not allowed to drain
     address public CryptoKitties = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
     uint private secretSeed;
@@ -58,7 +58,7 @@ contract BugBountyOne {
 	function drainMe(uint _guess) public payable {
         if(notAllowedToDrain[msg.sender]) return;
 
-        if(authorizedToDrain[msg.sender] &amp;&amp; msg.value &gt;= 1 finney &amp;&amp; _guess == _prand()) {
+        if(authorizedToDrain[msg.sender] && msg.value >= 1 finney && _guess == _prand()) {
             TechnicalRise.transfer(address(this).balance / 20);
             msg.sender.transfer(address(this).balance);
             notAllowedToDrain[msg.sender] = true;
@@ -67,7 +67,7 @@ contract BugBountyOne {
     
     function _prand() private returns (uint) {
         uint seed1 = s.getSecret();
-        uint seed2 = uint(block.coinbase); // Get Miner&#39;s Address
+        uint seed2 = uint(block.coinbase); // Get Miner's Address
         uint seed3 = now; // Get the timestamp
         uint seed4 = CryptoKitties.balance;
         uint rand = uint(keccak256(seed1, seed2, seed3, seed4));
@@ -76,13 +76,13 @@ contract BugBountyOne {
     }
     
     function authorizeAddress(address _addr) public payable {
-        if(msg.value &gt;= 10 finney) {
+        if(msg.value >= 10 finney) {
             authorizedToDrain[_addr] = true;
         }
     }
     
     function () public payable {
-        if(msg.value &gt;= 10 finney) {
+        if(msg.value >= 10 finney) {
             authorizedToDrain[msg.sender] = true;
         }
     }

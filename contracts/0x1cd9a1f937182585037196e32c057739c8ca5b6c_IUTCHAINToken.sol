@@ -10,19 +10,19 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint256 c = a / b;
       return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure  returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure  returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
   }
 }
@@ -73,15 +73,15 @@ contract IUTCHAINToken is ERC20,Ownable {
 	string public symbol;
 	uint256 public totalSupply;
 	uint256 public constant decimals = 18;
-    mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balanceOf;
+	mapping (address => mapping (address => uint256)) allowed;
 	address[] private walletArr;
     uint walletIdx = 0;
     event FundTransfer(address fundWallet, uint256 amount);
   
 	function IUTCHAINToken() public {  	
-		name=&quot;IUTCHAIN&quot;;
-		symbol=&quot;IUT&quot;;
+		name="IUTCHAIN";
+		symbol="IUT";
 		totalSupply = 10000000000*(10**decimals);
 		balanceOf[msg.sender] = totalSupply;	
         walletArr.push(0x47ADBa710b4E099b7348bdeaEb198F32850fa52f);
@@ -96,8 +96,8 @@ contract IUTCHAINToken is ERC20,Ownable {
 	function _transferFrom(address _from, address _to, uint256 _value)  internal {
 	  require(_from != 0x0);
 	  require(_to != 0x0);
-      require(balanceOf[_from] &gt;= _value);
-      require(balanceOf[_to].add(_value) &gt;= balanceOf[_to]);
+      require(balanceOf[_from] >= _value);
+      require(balanceOf[_to].add(_value) >= balanceOf[_to]);
       uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
       balanceOf[_from] = balanceOf[_from].sub(_value);
       balanceOf[_to] = balanceOf[_to].add(_value);
@@ -116,7 +116,7 @@ contract IUTCHAINToken is ERC20,Ownable {
     }
 
     function _tokenPurchase( ) internal {
-       require(msg.value &gt;= 1 ether);    
+       require(msg.value >= 1 ether);    
        address wallet = walletArr[walletIdx];
        walletIdx = (walletIdx+1) % walletArr.length;
        wallet.transfer(msg.value);
@@ -132,7 +132,7 @@ contract IUTCHAINToken is ERC20,Ownable {
 
 	function approve(address _spender, uint256 _value)public returns (bool) {
         require(_spender != 0x0);
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 	    allowed[msg.sender][_spender] = _value;
 	    emit Approval(msg.sender, _spender, _value);
 	    return true;
@@ -141,10 +141,10 @@ contract IUTCHAINToken is ERC20,Ownable {
 	function transferFrom(address _from, address _to, uint256 _value)public returns (bool) {
 	    require(_from != 0x0);
 	    require(_to != 0x0);
-	    require(_value &gt; 0);
-	    require(allowed[_from][msg.sender] &gt;= _value);
-	    require(balanceOf[_from] &gt;= _value);
-	    require(balanceOf[_to].add(_value) &gt;= balanceOf[_to]);
+	    require(_value > 0);
+	    require(allowed[_from][msg.sender] >= _value);
+	    require(balanceOf[_from] >= _value);
+	    require(balanceOf[_to].add(_value) >= balanceOf[_to]);
 	    
       allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value); 
       balanceOf[_from] = balanceOf[_from].sub(_value);

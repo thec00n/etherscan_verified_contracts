@@ -5,11 +5,11 @@ contract DependentOnIPFS {
    * @dev Validate a multihash bytes value
    */
   function isValidIPFSMultihash(bytes _multihashBytes) internal pure returns (bool) {
-    require(_multihashBytes.length &gt; 2);
+    require(_multihashBytes.length > 2);
 
     uint8 _size;
 
-    // There isn&#39;t another way to extract only this byte into a uint8
+    // There isn't another way to extract only this byte into a uint8
     // solhint-disable no-inline-assembly
     assembly {
       // Seek forward 33 bytes beyond the solidity length value and the hash function byte
@@ -21,7 +21,7 @@ contract DependentOnIPFS {
 }
 
 contract Poll is DependentOnIPFS {
-  // There isn&#39;t a way around using time to determine when votes can be cast
+  // There isn't a way around using time to determine when votes can be cast
   // solhint-disable not-rely-on-time
 
   bytes public pollDataMultihash;
@@ -30,7 +30,7 @@ contract Poll is DependentOnIPFS {
   uint256 public endTime;
   address public author;
 
-  mapping(address =&gt; uint16) public votes;
+  mapping(address => uint16) public votes;
 
   event VoteCast(address indexed voter, uint16 indexed choice);
 
@@ -41,7 +41,7 @@ contract Poll is DependentOnIPFS {
     uint256 _endTime,
     address _author
   ) public {
-    require(_startTime &gt;= now &amp;&amp; _endTime &gt; _startTime);
+    require(_startTime >= now && _endTime > _startTime);
     require(isValidIPFSMultihash(_ipfsHash));
 
     numChoices = _numChoices;
@@ -56,15 +56,15 @@ contract Poll is DependentOnIPFS {
    * @param _choice The index of the option in the corresponding IPFS document.
    */
   function vote(uint16 _choice) public duringPoll {
-    // Choices are indexed from 1 since the mapping returns 0 for &quot;no vote cast&quot;
-    require(_choice &lt;= numChoices &amp;&amp; _choice &gt; 0);
+    // Choices are indexed from 1 since the mapping returns 0 for "no vote cast"
+    require(_choice <= numChoices && _choice > 0);
 
     votes[msg.sender] = _choice;
     VoteCast(msg.sender, _choice);
   }
 
   modifier duringPoll {
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+    require(now >= startTime && now <= endTime);
     _;
   }
 }

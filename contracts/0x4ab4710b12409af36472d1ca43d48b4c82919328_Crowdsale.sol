@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -101,11 +101,11 @@ contract Crowdsale is Ownable {
   }
 
   function isActive() constant returns (bool) {
-    return (now &gt;= START &amp;&amp; now &lt;= START.add(DAYS * 1 days));
+    return (now >= START && now <= START.add(DAYS * 1 days));
   }
 
   function goalReached() constant returns (bool) {
-    return (raisedAmount &gt;= CAP * 1 ether);
+    return (raisedAmount >= CAP * 1 ether);
   }
 
   function () payable {
@@ -123,13 +123,13 @@ contract Crowdsale is Ownable {
     uint256 bonus = 0;
 
     // Calculate Bonus
-    if (now &lt;= START.add(7 days)) {
+    if (now <= START.add(7 days)) {
       bonus = tokens.mul(30).div(100);
-    } else if (now &lt;= START.add(14 days)) {
+    } else if (now <= START.add(14 days)) {
       bonus = tokens.mul(25).div(100);
-    } else if (now &lt;= START.add(21 days)) {
+    } else if (now <= START.add(21 days)) {
       bonus = tokens.mul(20).div(100);
-    } else if (now &lt;= START.add(30 days)) {
+    } else if (now <= START.add(30 days)) {
       bonus = tokens.mul(10).div(100);
     }
 

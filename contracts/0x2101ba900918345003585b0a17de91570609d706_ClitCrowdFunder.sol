@@ -3,14 +3,14 @@ pragma solidity ^0.4.11;
 /*
    Copyright 2017 DappHub, LLC
 
-   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
@@ -70,13 +70,13 @@ pragma solidity ^0.4.11;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -129,13 +129,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled, ERC20Token {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
     ///  given value, the block number attached is the one that last changed the
@@ -163,10 +163,10 @@ contract MiniMeToken is Controlled, ERC20Token {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -257,7 +257,7 @@ contract MiniMeToken is Controlled, ERC20Token {
             if (!transfersEnabled) throw;
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -276,7 +276,7 @@ contract MiniMeToken is Controlled, ERC20Token {
                return true;
            }
 
-           if (parentSnapShotBlock &gt;= block.number) throw;
+           if (parentSnapShotBlock >= block.number) throw;
 
            // Do not allow transfer to 0x0 or the token contract itself
            if ((_to == 0) || (_to == address(this))) throw;
@@ -284,7 +284,7 @@ contract MiniMeToken is Controlled, ERC20Token {
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -301,7 +301,7 @@ contract MiniMeToken is Controlled, ERC20Token {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+           if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -310,7 +310,7 @@ contract MiniMeToken is Controlled, ERC20Token {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -329,7 +329,7 @@ contract MiniMeToken is Controlled, ERC20Token {
         //  allowance to zero by calling `approve(_spender,0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_amount!=0) &amp;&amp; (allowed[msg.sender][_spender] !=0)) throw;
+        if ((_amount!=0) && (allowed[msg.sender][_spender] !=0)) throw;
 
         // Alerts the token controller of the approve function call
         if (isContract(controller)) {
@@ -397,7 +397,7 @@ contract MiniMeToken is Controlled, ERC20Token {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -422,7 +422,7 @@ contract MiniMeToken is Controlled, ERC20Token {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -483,11 +483,11 @@ contract MiniMeToken is Controlled, ERC20Token {
     /// @return True if the tokens are generated correctly
     function generateTokens(address _owner, uint _amount) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply + _amount &lt; curTotalSupply) throw; // Check for overflow
+        if (curTotalSupply + _amount < curTotalSupply) throw; // Check for overflow
 		
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         var previousBalanceTo = balanceOf(_owner);
-        if (previousBalanceTo + _amount &lt; previousBalanceTo) throw; // Check for overflow
+        if (previousBalanceTo + _amount < previousBalanceTo) throw; // Check for overflow
 		
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -502,10 +502,10 @@ contract MiniMeToken is Controlled, ERC20Token {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = getValueAt(totalSupplyHistory, block.number);
-        if (curTotalSupply &lt; _amount) throw;
+        if (curTotalSupply < _amount) throw;
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         var previousBalanceFrom = balanceOf(_owner);
-        if (previousBalanceFrom &lt; _amount) throw;
+        if (previousBalanceFrom < _amount) throw;
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
         return true;
@@ -535,16 +535,16 @@ contract MiniMeToken is Controlled, ERC20Token {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -560,7 +560,7 @@ contract MiniMeToken is Controlled, ERC20Token {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -579,15 +579,15 @@ contract MiniMeToken is Controlled, ERC20Token {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -664,12 +664,12 @@ contract ClitCoinToken is MiniMeToken {
 		0x0,
 		0x0,            // no parent token
 		0,              // no snapshot block number from parent
-		&quot;CLIT Token&quot;, 	// Token name
+		"CLIT Token", 	// Token name
 		0,              // Decimals
-		&quot;CLIT&quot;,         // Symbol
+		"CLIT",         // Symbol
 		false            // Enable transfers
 	) {
-		version = &quot;CLIT 1.0&quot;;
+		version = "CLIT 1.0";
 	}
 
 
@@ -686,20 +686,20 @@ contract SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -745,8 +745,8 @@ contract ClitCrowdFunder is Controlled, SafeMath {
 	event RefundPeriodStarted();
 
 	/* data structure to hold information about campaign contributors */
-	mapping(address =&gt; uint256) private balanceOf;
-	mapping (address =&gt; bool) private frozenAccount;
+	mapping(address => uint256) private balanceOf;
+	mapping (address => bool) private frozenAccount;
 	
 	// Data structures
     enum State {
@@ -767,7 +767,7 @@ contract ClitCrowdFunder is Controlled, SafeMath {
 	
 	// Add one week to endBlockNumber
 	modifier atEndOfLifecycle() {
-        if(!((state == State.ExpiredRefund &amp;&amp; block.number &gt; eolBlockNumber) || state == State.Successful)) {
+        if(!((state == State.ExpiredRefund && block.number > eolBlockNumber) || state == State.Successful)) {
             throw;
         }
         _;
@@ -780,12 +780,12 @@ contract ClitCrowdFunder is Controlled, SafeMath {
 	
     modifier minInvestment() {
       // User has to send at least 0.01 Eth
-      require(msg.value &gt;= 10 ** 16);
+      require(msg.value >= 10 ** 16);
       _;
     }
 	
 	modifier isStarted() {
-		require(block.number &gt;= startBlockNumber);
+		require(block.number >= startBlockNumber);
 		_;
 	}
 
@@ -833,15 +833,15 @@ contract ClitCrowdFunder is Controlled, SafeMath {
     }	
 	
 	function getCurrentExchangeRate(uint amount) public constant returns(uint) {
-		if (block.number &lt;= firstExchangeRatePeriod) {
+		if (block.number <= firstExchangeRatePeriod) {
 			return firstTokenExchangeRate * amount / 1 ether;
-		} else if (block.number &lt;= secondExchangeRatePeriod) {
+		} else if (block.number <= secondExchangeRatePeriod) {
 			return secondTokenExchangeRate * amount / 1 ether;
-		} else if (block.number &lt;= thirdExchangeRatePeriod) {
+		} else if (block.number <= thirdExchangeRatePeriod) {
 			return thirdTokenExchangeRate * amount / 1 ether;
-		} else if (block.number &lt;= fourthExchangeRatePeriod) {
+		} else if (block.number <= fourthExchangeRatePeriod) {
 			return fourthTokenExchangeRate * amount / 1 ether;
-		} else if (block.number &lt;= endBlockNumber) {
+		} else if (block.number <= endBlockNumber) {
 			return finalTokenExchangeRate * amount / 1 ether;
 		}
 		
@@ -871,9 +871,9 @@ contract ClitCrowdFunder is Controlled, SafeMath {
 	}
 
 	function checkIfFundingCompleteOrExpired() {
-		if (block.number &gt; endBlockNumber || totalTokensIssued &gt;= capTokenAmount ) {
+		if (block.number > endBlockNumber || totalTokensIssued >= capTokenAmount ) {
 			// Hard limit reached
-			if (currentBalance &gt; fundingGoal || fundingGoalReached == true) {
+			if (currentBalance > fundingGoal || fundingGoalReached == true) {
 				state = State.Successful;
 				payOut();
 				
@@ -887,7 +887,7 @@ contract ClitCrowdFunder is Controlled, SafeMath {
 				
 				RefundPeriodStarted();
 			}
-		} else if (currentBalance &gt; fundingGoal &amp;&amp; fundingGoalReached == false) {
+		} else if (currentBalance > fundingGoal && fundingGoalReached == false) {
 			// Once goal reached
 			fundingGoalReached = true;
 			

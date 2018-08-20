@@ -7,14 +7,14 @@ pragma solidity ^0.4.11;
 /*
 *****************************************************************************************
 
-below is &#39;OpenZeppelin  - Ownable.sol&#39;
+below is 'OpenZeppelin  - Ownable.sol'
 
 */
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -59,7 +59,7 @@ contract Ownable {
 
 /*
 *****************************************************************************************
-below is &#39;OpenZeppelin  - ERC20Basic.sol&#39;
+below is 'OpenZeppelin  - ERC20Basic.sol'
 
  * @title ERC20Basic
  * @dev Simpler version of ERC20 interface
@@ -75,7 +75,7 @@ contract ERC20Basic {
 
 /*
 *****************************************************************************************
-below is &#39;OpenZeppelin  - BasicToken.sol&#39;
+below is 'OpenZeppelin  - BasicToken.sol'
 
 */
 /**
@@ -85,22 +85,22 @@ below is &#39;OpenZeppelin  - BasicToken.sol&#39;
 contract BasicFrozenToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   
     /**
-   * @dev mapping sender -&gt; unfrozeTimestamp
+   * @dev mapping sender -> unfrozeTimestamp
    * when sender is unfrozen
    */
-  mapping(address =&gt; uint256) unfrozeTimestamp;
+  mapping(address => uint256) unfrozeTimestamp;
 
     // Custom code - checking for on frozen
   // @return true if the sending is allowed (not frozen)
   function isUnfrozen(address sender) constant returns (bool) {
     // frozeness is checked until  07.07.18 00:00:00 (1530921600), after all tokens are minted as unfrozen
-    if(now &gt; 1530921600)
+    if(now > 1530921600)
       return true;
     else
-     return unfrozeTimestamp[sender] &lt; now;
+     return unfrozeTimestamp[sender] < now;
   }
 
 
@@ -120,7 +120,7 @@ contract BasicFrozenToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     
     // Custom code - checking for frozen state
     require(isUnfrozen(msg.sender));
@@ -149,7 +149,7 @@ contract BasicFrozenToken is ERC20Basic {
 
 /*
 *****************************************************************************************
-below is &#39;OpenZeppelin  - ERC20.sol&#39;
+below is 'OpenZeppelin  - ERC20.sol'
 
 */
 
@@ -171,7 +171,7 @@ contract ERC20 is ERC20Basic {
 /*
 *****************************************************************************************
 
-below is &#39;OpenZeppelin  - StandardToken.sol&#39;
+below is 'OpenZeppelin  - StandardToken.sol'
 
 */
 
@@ -184,7 +184,7 @@ below is &#39;OpenZeppelin  - StandardToken.sol&#39;
  */
 contract StandardToken is ERC20, BasicFrozenToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -195,8 +195,8 @@ contract StandardToken is ERC20, BasicFrozenToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     
     // Custom code - проверка на факт разморозки
     require(isUnfrozen(_from));
@@ -213,7 +213,7 @@ contract StandardToken is ERC20, BasicFrozenToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicFrozenToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -265,7 +265,7 @@ contract StandardToken is ERC20, BasicFrozenToken {
 
 /*
 *****************************************************************************************
-below is &#39;OpenZeppelin  - SafeMath.sol&#39;
+below is 'OpenZeppelin  - SafeMath.sol'
  * @title SafeMath
  * @dev Math operations with safety checks that throw on error
  */
@@ -277,20 +277,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -306,8 +306,8 @@ library SafeMath {
 
 contract QuasacoinToken is StandardToken, Ownable {
     
-  string public name = &quot;Quasacoin&quot;;
-  string public symbol = &quot;QUA&quot;;
+  string public name = "Quasacoin";
+  string public symbol = "QUA";
   uint public decimals = 18;
 
 
@@ -333,36 +333,36 @@ contract QuasacoinToken is StandardToken, Ownable {
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
     require(_to != address(0));
-    require(_amount &gt; 0);
+    require(_amount > 0);
 
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
 
     uint frozenTime = 0; 
     // frozeness is checked until  07.07.18 00:00:00 (1530921600), after all tokens are minted as unfrozen
-    if(now &lt; 1530921600) {
+    if(now < 1530921600) {
       // выпуск                      до 15.01.18 00:00:00 (1515974400) - заморозка до 30.03.18 00:00:00 (1522368000)
-      if(now &lt; 1515974400)
+      if(now < 1515974400)
         frozenTime = 1522368000;
 
       // выпуск c 15.01.18 00:00:00  до 15.02.18 00:00:00 (1518652800) - заморозка до 30.05.18 00:00:00 (1527638400)     
-      else if(now &lt; 1518652800)
+      else if(now < 1518652800)
         frozenTime = 1527638400;
 
       // выпуск c 15.02.18 00:00:00  до 26.03.18 00:00:00 (1522022400) - заморозка до 30.06.18 00:00:00 (1530316800)
-      else if(now &lt; 1522022400)
+      else if(now < 1522022400)
         frozenTime = 1530316800;
 
       // выпуск c 26.03.18 00:00:00  до 15.04.18 00:00:00 (1523750400) - заморозка до 01.07.18 00:00:00 (1530403200)
-      else if(now &lt; 1523750400)
+      else if(now < 1523750400)
         frozenTime = 1530403200;
 
       // выпуск c 15.04.18 00:00:00  до 15.05.18 00:00:00 (1526342400) - заморозка до 07.07.18 00:00:00 (1530921600)
-      else if(now &lt; 1526342400)
+      else if(now < 1526342400)
         frozenTime = 1530921600;
 
       // выпуск c 15.05.18 00:00:00  до 15.06.18 00:00:00 (1529020800) - заморозка до 30.06.18 00:00:00 (1530316800)
-      else if(now &lt; 1529020800)
+      else if(now < 1529020800)
         frozenTime = 1530316800;
       else 
       // выпуск с 15.06.18 00:00:00  после до 07.07.18 00:00:00 (1530921600) - заморозка до 07.07.18 00:00:00 (1530921600)

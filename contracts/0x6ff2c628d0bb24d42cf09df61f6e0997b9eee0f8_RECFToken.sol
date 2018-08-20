@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,16 +75,16 @@ contract RECFToken is owned {
     using SafeMath for uint256;
     
     // Public variables of the token
-    string public constant name = &quot;RealEstateCryptoFund&quot;;
-    string public constant symbol = &quot;RECF&quot;;
+    string public constant name = "RealEstateCryptoFund";
+    string public constant symbol = "RECF";
     // 18 decimals is the strongly suggested default, avoid changing it
     uint8 public constant decimals = 18;
 
     uint256 public totalSupply;
 
     // This creates an array with all balanceOf
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     
     event Mint(address indexed to, uint256 amount);
@@ -122,7 +122,7 @@ contract RECFToken is owned {
     */
 function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balanceOf[msg.sender]);
+    require(_value <= balanceOf[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
     balanceOf[_to] = balanceOf[_to].add(_value);
@@ -138,8 +138,8 @@ function transfer(address _to, uint256 _value) public returns (bool) {
    */
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balanceOf[_from]);
-    require(_value &lt;= allowance[_from][msg.sender]);
+    require(_value <= balanceOf[_from]);
+    require(_value <= allowance[_from][msg.sender]);
 
     balanceOf[_from] = balanceOf[_from].sub(_value);
     balanceOf[_to] = balanceOf[_to].add(_value);
@@ -152,8 +152,8 @@ function transferFrom(address _from, address _to, uint256 _value) public returns
 /* Internal transfer, only can be called by this contract */
 function _transfer(address _from, address _to, uint _value) internal {
         require(_to != address(0));                                // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                      // Check if the sender has enough
-        require (balanceOf[_to].add(_value) &gt;= balanceOf[_to]);    // Check for overflows
+        require (balanceOf[_from] >= _value);                      // Check if the sender has enough
+        require (balanceOf[_to].add(_value) >= balanceOf[_to]);    // Check for overflows
         balanceOf[_from] = balanceOf[_from].sub(_value);             // Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add(_value);               // Add the same to the recipient
         emit Transfer(_from, _to, _value);
@@ -189,9 +189,9 @@ function finishMinting() onlyOwner canMint public returns (bool) {
    * @param _value The amount of token to be burned.
    */
 function burn(uint256 _value) onlyOwner public {
-    require(_value &lt;= balanceOf[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balanceOf[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balanceOf[burner] = balanceOf[burner].sub(_value);
@@ -211,10 +211,10 @@ function burn(uint256 _value) onlyOwner public {
       
      */
 function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                                                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);                                    // Check allowance
+        require(balanceOf[_from] >= _value);                                                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);                                    // Check allowance
         balanceOf[_from] = balanceOf[_from].sub(_value);                                   // Subtract from the targeted balance
-        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         totalSupply = totalSupply.sub(_value);                                                // Update totalSupply
         emit Burn(_from, _value);
         return true;

@@ -29,28 +29,28 @@ contract EpisodeManager {
 
     uint256 public episodesNum = 0;
 
-    //Episode - (branch =&gt; (step =&gt; random and command))
+    //Episode - (branch => (step => random and command))
     struct CommandAndRandom {
         uint256 random;
         string command;
         bool isSet;
     }
 
-    //Episode - (branches =&gt; (branch and cost))
+    //Episode - (branches => (branch and cost))
     struct BranchAndCost {
         uint256 price;
         bool isBranch;
     }
 
     struct Episode {
-        //(branch =&gt; (step =&gt; random and command))
-        mapping (uint256 =&gt; mapping(uint256 =&gt; CommandAndRandom)) data;
-        //(branches =&gt; (branch and cost))
-        mapping (uint256 =&gt; BranchAndCost) branches;
+        //(branch => (step => random and command))
+        mapping (uint256 => mapping(uint256 => CommandAndRandom)) data;
+        //(branches => (branch and cost))
+        mapping (uint256 => BranchAndCost) branches;
         bool isEpisode;
     }
 
-    mapping (uint256 =&gt; Episode) public episodes;
+    mapping (uint256 => Episode) public episodes;
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -91,9 +91,9 @@ contract EpisodeManager {
         uint256 _campaignID,
         string _command) public onlyOwner returns (bool)
     {
-        require(_branch &gt; 0);
-        require(_step &gt; 0);
-        require(_campaignID &gt; 0);
+        require(_branch > 0);
+        require(_step > 0);
+        require(_campaignID > 0);
         require(episodes[episodesNum].isEpisode);
         require(!episodes[episodesNum].data[_branch][_step].isSet);
 
@@ -106,7 +106,7 @@ contract EpisodeManager {
     }
 
     function addNewBranchInEpisode(uint256 _branch, uint256 _price) public onlyOwner returns (bool) {
-        require(_branch &gt; 0);
+        require(_branch > 0);
         require(!episodes[episodesNum].branches[_branch].isBranch);
         episodes[episodesNum].branches[_branch].price = _price;
         episodes[episodesNum].branches[_branch].isBranch = true;
@@ -114,7 +114,7 @@ contract EpisodeManager {
     }
 
     function changeBranch(uint256 _id, uint8 _branch) public payable returns(bool) {
-        require(_branch &gt; 0);
+        require(_branch > 0);
         require(episodes[episodesNum].branches[_branch].isBranch);
         require((msg.sender == lottery.getHolder(_id)) || (msg.sender == owner));
 
@@ -129,8 +129,8 @@ contract EpisodeManager {
     }
 
     function changeState(uint256 _id, uint8 _state) public onlyOwner returns (bool) {
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
-        require(_state &lt;= 1);
+        require(_id > 0 && _id <= cap);
+        require(_state <= 1);
         return lottery.changeState(_id, _state);
     }
 

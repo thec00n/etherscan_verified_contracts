@@ -75,7 +75,7 @@ contract Utils {
     uint  constant internal MAX_RATE  = (PRECISION * 10**6); // up to 1M tokens per ETH
     uint  constant internal MAX_DECIMALS = 18;
     uint  constant internal ETH_DECIMALS = 18;
-    mapping(address=&gt;uint) internal decimals;
+    mapping(address=>uint) internal decimals;
 
     function setDecimals(ERC20 token) internal {
         if (token == ETH_TOKEN_ADDRESS) decimals[token] = ETH_DECIMALS;
@@ -94,31 +94,31 @@ contract Utils {
     }
 
     function calcDstQty(uint srcQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(srcQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(srcQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (srcQty * rate * (10**(dstDecimals - srcDecimals))) / PRECISION;
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (srcQty * rate) / (PRECISION * (10**(srcDecimals - dstDecimals)));
         }
     }
 
     function calcSrcQty(uint dstQty, uint srcDecimals, uint dstDecimals, uint rate) internal pure returns(uint) {
-        require(dstQty &lt;= MAX_QTY);
-        require(rate &lt;= MAX_RATE);
+        require(dstQty <= MAX_QTY);
+        require(rate <= MAX_RATE);
         
         //source quantity is rounded up. to avoid dest quantity being too low.
         uint numerator;
         uint denominator;
-        if (srcDecimals &gt;= dstDecimals) {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+        if (srcDecimals >= dstDecimals) {
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty * (10**(srcDecimals - dstDecimals)));
             denominator = rate;
         } else {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             numerator = (PRECISION * dstQty);
             denominator = (rate * (10**(dstDecimals - srcDecimals)));
         }
@@ -160,14 +160,14 @@ contract Utils2 is Utils {
     function calcRateFromQty(uint srcAmount, uint destAmount, uint srcDecimals, uint dstDecimals)
         internal pure returns(uint)
     {
-        require(srcAmount &lt;= MAX_QTY);
-        require(destAmount &lt;= MAX_QTY);
+        require(srcAmount <= MAX_QTY);
+        require(destAmount <= MAX_QTY);
 
-        if (dstDecimals &gt;= srcDecimals) {
-            require((dstDecimals - srcDecimals) &lt;= MAX_DECIMALS);
+        if (dstDecimals >= srcDecimals) {
+            require((dstDecimals - srcDecimals) <= MAX_DECIMALS);
             return (destAmount * PRECISION / ((10 ** (dstDecimals - srcDecimals)) * srcAmount));
         } else {
-            require((srcDecimals - dstDecimals) &lt;= MAX_DECIMALS);
+            require((srcDecimals - dstDecimals) <= MAX_DECIMALS);
             return (destAmount * PRECISION * (10 ** (srcDecimals - dstDecimals)) / srcAmount);
         }
     }
@@ -185,8 +185,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -257,7 +257,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -268,7 +268,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -282,7 +282,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -293,7 +293,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -344,16 +344,16 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
 
     uint public negligibleRateDiff = 10; // basic rate steps will be in 0.01%
     KyberReserveInterface[] public reserves;
-    mapping(address=&gt;bool) public isReserve;
+    mapping(address=>bool) public isReserve;
     WhiteListInterface public whiteListContract;
     ExpectedRateInterface public expectedRateContract;
     FeeBurnerInterface    public feeBurnerContract;
     address               public kyberNetworkProxyContract;
     uint                  public maxGasPriceValue = 50 * 1000 * 1000 * 1000; // 50 gwei
     bool                  public isEnabled = false; // network is enabled
-    mapping(bytes32=&gt;uint) public infoFields; // this is only a UI field for external app.
-    mapping(address=&gt;address[]) public reservesPerTokenSrc; //reserves supporting token to eth
-    mapping(address=&gt;address[]) public reservesPerTokenDest;//reserves support eth to token
+    mapping(bytes32=>uint) public infoFields; // this is only a UI field for external app.
+    mapping(address=>address[]) public reservesPerTokenSrc; //reserves supporting token to eth
+    mapping(address=>address[]) public reservesPerTokenDest;//reserves support eth to token
 
     function KyberNetwork(address _admin) public {
         require(_admin != address(0));
@@ -432,7 +432,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         } else {
             isReserve[reserve] = false;
             // will have trouble if more than 50k reserves...
-            for (uint i = 0; i &lt; reserves.length; i++) {
+            for (uint i = 0; i < reserves.length; i++) {
                 if (reserves[i] == reserve) {
                     reserves[i] = reserves[reserves.length - 1];
                     reserves.length--;
@@ -499,7 +499,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         public
         onlyAdmin
     {
-        require(_negligibleRateDiff &lt;= 100 * 100); // at most 100%
+        require(_negligibleRateDiff <= 100 * 100); // at most 100%
 
         maxGasPriceValue = _maxGasPrice;
         negligibleRateDiff = _negligibleRateDiff;
@@ -594,7 +594,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
     /* solhint-disable code-complexity */
     // Not sure how solhing defines complexity. Anyway, from our point of view, below code follows the required
     //  algorithm to choose a reserve, it has been tested, reviewed and found to be clear enough.
-    //@dev this function always src or dest are ether. can&#39;t do token to token
+    //@dev this function always src or dest are ether. can't do token to token
     function searchBestRate(ERC20 src, ERC20 dest, uint srcAmount) public view returns(address, uint) {
         uint bestRate = 0;
         uint bestReserve = 0;
@@ -616,27 +616,27 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         uint[] memory rates = new uint[](reserveArr.length);
         uint[] memory reserveCandidates = new uint[](reserveArr.length);
 
-        for (uint i = 0; i &lt; reserveArr.length; i++) {
+        for (uint i = 0; i < reserveArr.length; i++) {
             //list all reserves that have this token.
             rates[i] = (KyberReserveInterface(reserveArr[i])).getConversionRate(src, dest, srcAmount, block.number);
 
-            if (rates[i] &gt; bestRate) {
+            if (rates[i] > bestRate) {
                 //best rate is highest rate
                 bestRate = rates[i];
             }
         }
 
-        if (bestRate &gt; 0) {
+        if (bestRate > 0) {
             uint random = 0;
             uint smallestRelevantRate = (bestRate * 10000) / (10000 + negligibleRateDiff);
 
-            for (i = 0; i &lt; reserveArr.length; i++) {
-                if (rates[i] &gt;= smallestRelevantRate) {
+            for (i = 0; i < reserveArr.length; i++) {
+                if (rates[i] >= smallestRelevantRate) {
                     reserveCandidates[numRelevantReserves++] = i;
                 }
             }
 
-            if (numRelevantReserves &gt; 1) {
+            if (numRelevantReserves > 1) {
                 //when encountering small rate diff from bestRate. draw from relevant reserves
                 random = uint(block.blockhash(block.number-1)) % numRelevantReserves;
             }
@@ -669,7 +669,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
             reserveArr = reservesPerTokenSrc[token];
         }
 
-        for (i = 0; i &lt; reserveArr.length; i++) {
+        for (i = 0; i < reserveArr.length; i++) {
             if (reserve == reserveArr[i]) {
                 if (add) {
                     break; //already added
@@ -681,8 +681,8 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
             }
         }
 
-        if (add &amp;&amp; i == reserveArr.length) {
-            //if reserve wasn&#39;t found add it
+        if (add && i == reserveArr.length) {
+            //if reserve wasn't found add it
             reserveArr.push(reserve);
         }
     }
@@ -697,15 +697,15 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
     /// @param tradeInput structure of trade inputs
     function trade(TradeInput tradeInput) internal returns(uint) {
         require(isEnabled);
-        require(tx.gasprice &lt;= maxGasPriceValue);
+        require(tx.gasprice <= maxGasPriceValue);
         require(validateTradeInput(tradeInput.src, tradeInput.srcAmount, tradeInput.dest, tradeInput.destAddress));
 
         BestRateResult memory rateResult =
         findBestRateTokenToToken(tradeInput.src, tradeInput.dest, tradeInput.srcAmount);
 
-        require(rateResult.rate &gt; 0);
-        require(rateResult.rate &lt; MAX_RATE);
-        require(rateResult.rate &gt;= tradeInput.minConversionRate);
+        require(rateResult.rate > 0);
+        require(rateResult.rate < MAX_RATE);
+        require(rateResult.rate >= tradeInput.minConversionRate);
 
         uint actualDestAmount;
         uint weiAmount;
@@ -717,8 +717,8 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
             tradeInput.maxDestAmount,
             rateResult);
 
-        if (actualSrcAmount &lt; tradeInput.srcAmount) {
-            //if there is &quot;change&quot; send back to trader
+        if (actualSrcAmount < tradeInput.srcAmount) {
+            //if there is "change" send back to trader
             if (tradeInput.src == ETH_TOKEN_ADDRESS) {
                 tradeInput.trader.transfer(tradeInput.srcAmount - actualSrcAmount);
             } else {
@@ -727,7 +727,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         }
 
         // verify trade size is smaller than user cap
-        require(weiAmount &lt;= getUserCapInWei(tradeInput.trader));
+        require(weiAmount <= getUserCapInWei(tradeInput.trader));
 
         //do the trade
         //src to ETH
@@ -752,8 +752,8 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
                 rateResult.rateEthToDest,
                 true));
 
-        //when src is ether, reserve1 is doing a &quot;fake&quot; trade. (ether to ether) - don&#39;t burn.
-        //when dest is ether, reserve2 is doing a &quot;fake&quot; trade. (ether to ether) - don&#39;t burn.
+        //when src is ether, reserve1 is doing a "fake" trade. (ether to ether) - don't burn.
+        //when dest is ether, reserve2 is doing a "fake" trade. (ether to ether) - don't burn.
         if (tradeInput.src != ETH_TOKEN_ADDRESS)
             require(feeBurnerContract.handleFees(weiAmount, rateResult.reserve1, tradeInput.walletId));
         if (tradeInput.dest != ETH_TOKEN_ADDRESS)
@@ -769,11 +769,11 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
     function calcActualAmounts (ERC20 src, ERC20 dest, uint srcAmount, uint maxDestAmount, BestRateResult rateResult)
         internal view returns(uint actualSrcAmount, uint weiAmount, uint actualDestAmount)
     {
-        if (rateResult.destAmount &gt; maxDestAmount) {
+        if (rateResult.destAmount > maxDestAmount) {
             actualDestAmount = maxDestAmount;
             weiAmount = calcSrcAmount(ETH_TOKEN_ADDRESS, dest, actualDestAmount, rateResult.rateEthToDest);
             actualSrcAmount = calcSrcAmount(src, ETH_TOKEN_ADDRESS, weiAmount, rateResult.rateSrcToEth);
-            require(actualSrcAmount &lt;= srcAmount);
+            require(actualSrcAmount <= srcAmount);
         } else {
             actualDestAmount = rateResult.destAmount;
             actualSrcAmount = srcAmount;
@@ -806,7 +806,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         uint callValue = 0;
 
         if (src == dest) {
-            //this is for a &quot;fake&quot; trade when both src and dest are ethers.
+            //this is for a "fake" trade when both src and dest are ethers.
             if (destAddress != (address(this)))
                 destAddress.transfer(amount);
             return true;
@@ -841,7 +841,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         view
         returns(bool)
     {
-        require(srcAmount &lt;= MAX_QTY);
+        require(srcAmount <= MAX_QTY);
         require(srcAmount != 0);
         require(destAddress != address(0));
         require(src != dest);
@@ -851,7 +851,7 @@ contract KyberNetwork is Withdrawable, Utils2, KyberNetworkInterface {
         } else {
             require(msg.value == 0);
             //funds should have been moved to this contract already.
-            require(src.balanceOf(this) &gt;= srcAmount);
+            require(src.balanceOf(this) >= srcAmount);
         }
 
         return true;
@@ -876,7 +876,7 @@ contract ExpectedRate is Withdrawable, ExpectedRateInterface, Utils2 {
     event QuantityFactorSet (uint newFactor, uint oldFactor, address sender);
 
     function setQuantityFactor(uint newFactor) public onlyOperator {
-        require(newFactor &lt;= 100);
+        require(newFactor <= 100);
 
         QuantityFactorSet(newFactor, quantityFactor, msg.sender);
         quantityFactor = newFactor;
@@ -885,7 +885,7 @@ contract ExpectedRate is Withdrawable, ExpectedRateInterface, Utils2 {
     event MinSlippageFactorSet (uint newMin, uint oldMin, address sender);
 
     function setWorstCaseRateFactor(uint bps) public onlyOperator {
-        require(bps &lt;= 100 * 100);
+        require(bps <= 100 * 100);
 
         MinSlippageFactorSet(bps, worstCaseRateFactorInBps, msg.sender);
         worstCaseRateFactorInBps = bps;
@@ -899,8 +899,8 @@ contract ExpectedRate is Withdrawable, ExpectedRateInterface, Utils2 {
         returns (uint expectedRate, uint slippageRate)
     {
         require(quantityFactor != 0);
-        require(srcQty &lt;= MAX_QTY);
-        require(srcQty * quantityFactor &lt;= MAX_QTY);
+        require(srcQty <= MAX_QTY);
+        require(srcQty * quantityFactor <= MAX_QTY);
 
         if (srcQty == 0) srcQty = 1;
 
@@ -914,10 +914,10 @@ contract ExpectedRate is Withdrawable, ExpectedRateInterface, Utils2 {
             expectedRate = expectedRateSmallQty(src, dest, srcQty);
         }
 
-        require(expectedRate &lt;= MAX_RATE);
+        require(expectedRate <= MAX_RATE);
 
         worstCaseSlippageRate = ((10000 - worstCaseRateFactorInBps) * expectedRate) / 10000;
-        if (slippageRate &gt;= worstCaseSlippageRate) {
+        if (slippageRate >= worstCaseSlippageRate) {
             slippageRate = worstCaseSlippageRate;
         }
 

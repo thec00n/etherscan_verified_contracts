@@ -12,7 +12,7 @@ contract Ownable {
 
 contract XcLottery is Ownable{
     
-    mapping (string =&gt; uint256) randomSeedMap;
+    mapping (string => uint256) randomSeedMap;
     
     event DrawLottery(string period, uint256 randomSeed);
     

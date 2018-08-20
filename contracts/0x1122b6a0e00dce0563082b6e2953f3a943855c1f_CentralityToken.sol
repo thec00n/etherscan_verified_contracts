@@ -24,13 +24,13 @@ contract Ownable {
 
 contract SafeMath {
     function safeSub(uint a, uint b) pure internal returns (uint) {
-        sAssert(b &lt;= a);
+        sAssert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) pure internal returns (uint) {
         uint c = a + b;
-        sAssert(c&gt;=a &amp;&amp; c&gt;=b);
+        sAssert(c>=a && c>=b);
         return c;
     }
 
@@ -54,8 +54,8 @@ contract ERC20 {
 }
 
 contract StandardToken is ERC20, SafeMath {
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function transfer(address _to, uint _value) public returns (bool success) {
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -90,8 +90,8 @@ contract StandardToken is ERC20, SafeMath {
 }
 
 contract CentralityToken is Ownable, StandardToken {
-    string public name = &quot;Centrality Token&quot;;
-    string public symbol = &quot;CENNZ&quot;;
+    string public name = "Centrality Token";
+    string public symbol = "CENNZ";
     uint public decimals = 18;
 
     uint public totalSupply = 1200 * (10**6) * (10**18); // 1.20 Billion

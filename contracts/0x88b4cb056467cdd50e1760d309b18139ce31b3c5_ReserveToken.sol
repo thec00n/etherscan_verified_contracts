@@ -32,8 +32,8 @@ contract ReserveToken {
     uint256 public coinprice; //This is calculated on the fly in the sellprice. This is the last buy price. not the current.
 
     //Standard Token
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
 
 
@@ -45,9 +45,9 @@ contract ReserveToken {
 
 
     function ReserveToken() payable public {
-        name = &quot;Reserve Token&quot;;
+        name = "Reserve Token";
         //Setting the name of the contract
-        symbol = &quot;RSRV&quot;;
+        symbol = "RSRV";
         //Setting the symbol
         tank = msg.sender;
         //setting the tank
@@ -60,9 +60,9 @@ contract ReserveToken {
         uint256 inMsgValue = msg.value;
 
         if (inAddress != tank) {
-            require(inMsgValue &gt; 1000); //The minimum money supplied
-            require(inMsgValue &gt; priceOfToken * minTokens); //The minimum amount of tokens you can buy
-            require(inMsgValue &lt; priceOfToken * maxTokens); //The maximum amount of tokens.
+            require(inMsgValue > 1000); //The minimum money supplied
+            require(inMsgValue > priceOfToken * minTokens); //The minimum amount of tokens you can buy
+            require(inMsgValue < priceOfToken * maxTokens); //The maximum amount of tokens.
         }
 
 
@@ -76,9 +76,9 @@ contract ReserveToken {
 
 
          //Ensure that we dont go over the max the tank has set.
-        require(totalSupply + newcoins &lt; maxSupply);
-        //Ensure that we don&#39;t go oever the maximum amount of coins.
-        require(totalSupply + newcoins &lt; tankImposedMax);
+        require(totalSupply + newcoins < maxSupply);
+        //Ensure that we don't go oever the maximum amount of coins.
+        require(totalSupply + newcoins < tankImposedMax);
 
         
 
@@ -92,7 +92,7 @@ contract ReserveToken {
         address inAddress = msg.sender;
         uint256 theirBalance = balances[inAddress];
         //Get their balance without any crap code
-        require(theirBalance &gt; 0);
+        require(theirBalance > 0);
         //Make sure that they have enough money to cover this.
         balances[inAddress] = 0;
         //Remove the amount now, for re entry prevention
@@ -117,7 +117,7 @@ contract ReserveToken {
         address inAddress = msg.sender;
         uint256 theirBalance = balances[inAddress];
         //Get their balance without any crap code
-        require(_amount &lt;= theirBalance);
+        require(_amount <= theirBalance);
         //Make sure that they have enough money to cover this.
         balances[inAddress] -= _amount;
         //Remove the amount now, for re entry prevention
@@ -152,8 +152,8 @@ contract ReserveToken {
         //Require person to be the tank
 
         //if our allowance is greater than the value of the contract then the contract must be empty.
-        if (tankAllowance &lt; valueOfContract) {
-            require(_amount &lt;= tankAllowance - tankOut);
+        if (tankAllowance < valueOfContract) {
+            require(_amount <= tankAllowance - tankOut);
         }
 
         //Require the amount to be less than the amount for tank0.
@@ -161,7 +161,7 @@ contract ReserveToken {
         tankOut += _amount;
         //Adding in new tank withdraw.
         tank.transfer(_amount);
-        //transfering amount to tank&#39;s balance.
+        //transfering amount to tank's balance.
     }
 
     //This is an ethereum withdraw for the tank.
@@ -171,8 +171,8 @@ contract ReserveToken {
         //Require person to be the tank
 
         //if our allowance is greater than the value of the contract then the contract must be empty.
-        if (tankAllowance &lt; valueOfContract) {
-            require(tankAllowance - tankOut &gt; 0); //Tank allowance - tankout = whats left for tank. and it must be over zero
+        if (tankAllowance < valueOfContract) {
+            require(tankAllowance - tankOut > 0); //Tank allowance - tankout = whats left for tank. and it must be over zero
         }
 
         //Require the amount to be less than the amount for tank0.
@@ -180,7 +180,7 @@ contract ReserveToken {
         tankOut += tankAllowance - tankOut; //We give whats left to our tankout makeing whats left zero. so tank cant double withdraw.
         //Adding in new tank withdraw.
         tank.transfer(tankAllowance - tankOut);
-        //transfering amount to tank&#39;s balance.
+        //transfering amount to tank's balance.
     }
 
 
@@ -194,7 +194,7 @@ contract ReserveToken {
         require(inAddress == tank);
         //require the person to be a the tank
 
-        if (inValue &lt; tankOut) {
+        if (inValue < tankOut) {
             tankOut -= inValue;
             // We cant underflow here because it has to be less.
         }
@@ -216,14 +216,14 @@ contract ReserveToken {
 
     function transferFee(uint256 _amount) view internal returns (uint256){
         //If Amount is above the tax amount return the tax
-        if (_amount &gt; secondTTaxAmount)
+        if (_amount > secondTTaxAmount)
             return secondTTax;
 
-        if (_amount &gt; firstTTaxAmount)
+        if (_amount > firstTTaxAmount)
             return firstTTax;
     }
 
-    // Transfer the balance from tank&#39;s account to another account
+    // Transfer the balance from tank's account to another account
     function transfer(address _to, uint256 _amount) public returns (bool success) {
         //variables we are working with.
         uint256 fromBalance = balances[msg.sender];
@@ -232,11 +232,11 @@ contract ReserveToken {
 
 
         //Require the balance be greater than the amount + fee
-        require(fromBalance &gt;= _amount + tFee);
+        require(fromBalance >= _amount + tFee);
         //Require the amount ot be greater than 0.
-        require(_amount &gt; 0);
+        require(_amount > 0);
         //Require the toBalance to be greater than the current amount. w
-        require(toBalance + _amount &gt; toBalance);
+        require(toBalance + _amount > toBalance);
 
         balances[msg.sender] -= _amount + tFee;
         balances[_to] += _amount;
@@ -254,7 +254,7 @@ contract ReserveToken {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -264,13 +264,13 @@ contract ReserveToken {
         uint256 tFee = transferFee(_amount);    //The transaction fee that will be accociated with this transaction
 
         //Require the from balance to have more than the amount they want to send + the current fee
-        require(fromBalance &gt;= _amount + tFee);
+        require(fromBalance >= _amount + tFee);
         //Require the allowed balance to be greater than that amount as well.
-        require(allowed[_from][msg.sender] &gt;= _amount + tFee);
+        require(allowed[_from][msg.sender] >= _amount + tFee);
         //Require the current amount to be greater than 0.
-        require(_amount &gt; 0);
+        require(_amount > 0);
         //Require the to balance to gain an amount. protect against under and over flows
-        require(toBalance + _amount &gt; toBalance);
+        require(toBalance + _amount > toBalance);
 
         //Update from balance, allowed balance, to balance, tank balance, total supply. create Transfer event.
         balances[_from] -= _amount + tFee;
@@ -302,10 +302,10 @@ contract ReserveToken {
      function GrabUnallocatedValue() public {
          address inAddress = msg.sender;
          require(inAddress == tank);
-         //Sometimes someone sends money straight to the contract but that isn&#39;t recorded in the value of teh contract.
+         //Sometimes someone sends money straight to the contract but that isn't recorded in the value of teh contract.
          //So here we allow tank to withdraw those extra funds
          address walletaddress = this;
-         if (walletaddress.balance * 1 ether &gt; valueOfContract) {
+         if (walletaddress.balance * 1 ether > valueOfContract) {
             tank.transfer(walletaddress.balance - (valueOfContract / 1 ether));
          }
     }

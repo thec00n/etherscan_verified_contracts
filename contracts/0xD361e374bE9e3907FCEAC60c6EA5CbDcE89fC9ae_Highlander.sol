@@ -43,7 +43,7 @@ contract Highlander {
 	return;
 	}
 	
-	if(CurrentTime - PreviousTime &gt; 1 days){
+	if(CurrentTime - PreviousTime > 1 days){
 
 	contestant[idx-1].etherAddress.send(this.balance - 5 ether);
 	PreviousTime = CurrentTime;
@@ -57,7 +57,7 @@ contract Highlander {
 	}
 	
   function kill(){
-  if(msg.sender == owner &amp;&amp; this.balance &lt;= 5) {
+  if(msg.sender == owner && this.balance <= 5) {
   active = 0;
   suicide(owner);
   

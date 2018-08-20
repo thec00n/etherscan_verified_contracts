@@ -1,6 +1,6 @@
 contract RequiringFunds {
     modifier NeedEth () {
-        if (msg.value &lt;= 0 ) throw;
+        if (msg.value <= 0 ) throw;
         _
     }
 }
@@ -24,14 +24,14 @@ contract ReplaySafeSplit is RequiringFunds {
         if (targetNoFork == 0) throw;
 
         if (amIOnTheFork.forked()                   // if we are on the fork 
-            &amp;&amp; targetFork.send(msg.value)) {        // send the ETH to the targetFork address
+            && targetFork.send(msg.value)) {        // send the ETH to the targetFork address
             return true;
         } else if (!amIOnTheFork.forked()           // if we are NOT on the fork 
-            &amp;&amp; targetNoFork.send(msg.value)) {      // send the ETH to the targetNoFork address 
+            && targetNoFork.send(msg.value)) {      // send the ETH to the targetNoFork address 
             return true;
         }
 
-        throw;                                      // don&#39;t accept value transfer, otherwise it would be trapped.
+        throw;                                      // don't accept value transfer, otherwise it would be trapped.
     }
 
     // Reject value transfers.

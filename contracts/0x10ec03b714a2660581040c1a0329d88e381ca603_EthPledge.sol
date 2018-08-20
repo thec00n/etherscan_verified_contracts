@@ -6,9 +6,9 @@ EthPledge allows people to pledge to donate a certain amount to a charity, which
 
 Matching pledges of this kind are quite common (companies may pledge to match all charitable donations their employees make up to a certain amount, for example, or it may just be a casual arrangement between 2 people) and by running on the Ethereum blockchain, EthPledge guarantees 100% transparency. 
 
-Note that as Ethereum is still relatively new at this stage, not many charities have an Ethereum address to take donations yet, though it&#39;s our hope that more will come. The main charity with an Ethereum donation address at this time is Heifer International, whose Ethereum address is 0xb30cb3b3E03A508Db2A0a3e07BA1297b47bb0fb1 (see https://www.heifer.org/what-you-can-do/give/digital-currency.html)
+Note that as Ethereum is still relatively new at this stage, not many charities have an Ethereum address to take donations yet, though it's our hope that more will come. The main charity with an Ethereum donation address at this time is Heifer International, whose Ethereum address is 0xb30cb3b3E03A508Db2A0a3e07BA1297b47bb0fb1 (see https://www.heifer.org/what-you-can-do/give/digital-currency.html)
 
-Visit EthPledge.com to play with this smart contract. Reach out: <span class="__cf_email__" data-cfemail="3d5e5253495c5e497d7849556d5158595a58135e5250">[email&#160;protected]</span>
+Visit EthPledge.com to play with this smart contract. Reach out: <span class="__cf_email__" data-cfemail="3d5e5253495c5e497d7849556d5158595a58135e5250">[email protected]</span>
 
 */
 
@@ -41,13 +41,13 @@ contract EthPledge {
         bytes32 descriptionPart4;
     }
     
-    mapping (uint =&gt; Campaign) public campaign;
+    mapping (uint => Campaign) public campaign;
     
-    mapping (address =&gt; uint[]) public campaignsStartedByUser;
+    mapping (address => uint[]) public campaignsStartedByUser;
     
-    mapping (address =&gt; mapping(uint =&gt; uint)) public addressToCampaignIDToFundsDonated;
+    mapping (address => mapping(uint => uint)) public addressToCampaignIDToFundsDonated;
     
-    mapping (address =&gt; uint[]) public campaignIDsDonatedToByUser; // Will contain duplicates if a user donates to a campaign twice
+    mapping (address => uint[]) public campaignIDsDonatedToByUser; // Will contain duplicates if a user donates to a campaign twice
     
     struct Donation {
         address donator;
@@ -55,7 +55,7 @@ contract EthPledge {
         uint timeSent;
     }
     
-    mapping (uint =&gt; mapping(uint =&gt; Donation)) public campaignIDtoDonationNumberToDonation;
+    mapping (uint => mapping(uint => Donation)) public campaignIDtoDonationNumberToDonation;
     
     uint public totalCampaigns;
     
@@ -66,8 +66,8 @@ contract EthPledge {
     uint public minimumPledgeAmount = 10**14; // Basically nothing, can be adjusted later
     
     function createCampaign (address charity, uint multiplier, bytes32 descriptionPart1, bytes32 descriptionPart2, bytes32 descriptionPart3, bytes32 descriptionPart4) payable {
-        require (msg.value &gt;= minimumPledgeAmount);
-        require (multiplier &gt; 0);
+        require (msg.value >= minimumPledgeAmount);
+        require (multiplier > 0);
         campaign[totalCampaigns].benefactor = msg.sender;
         campaign[totalCampaigns].charity = charity;
         campaign[totalCampaigns].multiplier = multiplier;
@@ -98,7 +98,7 @@ contract EthPledge {
     }
     
     function contributeToCampaign (uint campaignID) payable {
-        require (msg.value &gt; 0);
+        require (msg.value > 0);
         require (campaign[campaignID].active == true);
         campaignIDsDonatedToByUser[msg.sender].push(campaignID);
         addressToCampaignIDToFundsDonated[msg.sender][campaignID] += msg.value;
@@ -111,7 +111,7 @@ contract EthPledge {
         totalDonations++;
         totalETHraised += msg.value;
         campaign[campaignID].amountRaised += msg.value;
-        if (campaign[campaignID].amountRaised &gt;= (campaign[campaignID].amountPledged / campaign[campaignID].multiplier)) {
+        if (campaign[campaignID].amountRaised >= (campaign[campaignID].amountPledged / campaign[campaignID].multiplier)) {
             // Target reached
             campaign[campaignID].active = false;
             campaign[campaignID].successful = true;
@@ -120,7 +120,7 @@ contract EthPledge {
     }
     
     function adjustMinimumPledgeAmount (uint newMinimum) onlyOwner {
-        require (newMinimum &gt; 0);
+        require (newMinimum > 0);
         minimumPledgeAmount = newMinimum;
     }
     

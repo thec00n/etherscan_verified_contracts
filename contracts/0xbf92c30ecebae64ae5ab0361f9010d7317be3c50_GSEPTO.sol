@@ -1,13 +1,13 @@
 pragma solidity ^0.4.16;
 
 contract GSEPTO {
-    string public name = &quot;GSEPTO&quot;;
-    string public symbol = &quot;GSEPTO&quot;;
+    string public name = "GSEPTO";
+    string public symbol = "GSEPTO";
 
     address private owner;//操作者
     uint256 public fundingGoal; //目标金额
     uint256 public amountRaised; //当前金额
-    mapping(address =&gt; uint256) public balanceOf; //每个地址的众筹数目，map类型
+    mapping(address => uint256) public balanceOf; //每个地址的众筹数目，map类型
 
     event Transfer(address indexed _from, address indexed _to, uint256 _amount);//转账
     event FundTransfer(address indexed _backer, uint256 _amount);//事件，资金转账记录
@@ -35,8 +35,8 @@ contract GSEPTO {
 
     function record(address _to, uint256 _amount) public ownerOnly validCrowdsale returns (bool success) {
         require(_to != 0x0);
-        require(balanceOf[msg.sender] &gt;= _amount);
-        require(balanceOf[_to] + _amount &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _amount);
+        require(balanceOf[_to] + _amount >= balanceOf[_to]);
         balanceOf[msg.sender] -= _amount;
         //计入统计，发送者发送的数量
         balanceOf[_to] += _amount;

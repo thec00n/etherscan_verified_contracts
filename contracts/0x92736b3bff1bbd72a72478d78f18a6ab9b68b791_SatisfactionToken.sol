@@ -2,19 +2,19 @@ pragma solidity ^0.4.23;
 
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -36,9 +36,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -234,17 +234,17 @@ contract CheckpointStorage {
       return 0;
 
     // Shortcut for the actual value
-    if (_block &gt;= checkpoints[checkpoints.length - 1].fromBlock)
+    if (_block >= checkpoints[checkpoints.length - 1].fromBlock)
       return checkpoints[checkpoints.length - 1].value;
-    if (_block &lt; checkpoints[0].fromBlock)
+    if (_block < checkpoints[0].fromBlock)
       return 0;
 
     // Binary search of the value in the array
     uint min = 0;
     uint max = checkpoints.length - 1;
-    while (max &gt; min) {
+    while (max > min) {
       uint mid = (max + min + 1) / 2;
-      if (checkpoints[mid].fromBlock &lt;= _block) {
+      if (checkpoints[mid].fromBlock <= _block) {
         min = mid;
       } else {
         max = mid - 1;
@@ -261,7 +261,7 @@ contract CheckpointStorage {
    * @param _value The new number of tokens
    */
   function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
-    if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock &lt; block.number)) {
+    if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock < block.number)) {
       Checkpoint storage newCheckPoint = checkpoints[checkpoints.length++];
       newCheckPoint.fromBlock = uint128(block.number);
       newCheckPoint.value = uint128(_value);
@@ -283,9 +283,9 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
 
   using SafeMath for uint256;
 
-  string public name = &quot;Satisfaction Token&quot;;
+  string public name = "Satisfaction Token";
   uint8 public decimals = 18;
-  string public symbol = &quot;SAT&quot;;
+  string public symbol = "SAT";
   string public version;
 
   /**
@@ -308,10 +308,10 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    *  contract when the balance changes the block number that the change
    *  occurred is also included in the map
    */
-  mapping(address =&gt; Checkpoint[]) internal balances;
+  mapping(address => Checkpoint[]) internal balances;
 
   // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-  mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+  mapping(address => mapping(address => uint256)) internal allowed;
 
   // Flag that determines if the token is transferable or not.
   bool public transfersEnabled;
@@ -344,11 +344,11 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(transfersEnabled);
-    require(parentSnapShotBlock &lt; block.number);
+    require(parentSnapShotBlock < block.number);
     require(_to != address(0));
 
     uint256 lastBalance = balanceOfAt(msg.sender, block.number);
-    require(_value &lt;= lastBalance);
+    require(_value <= lastBalance);
 
     return doTransfer(msg.sender, _to, _value, lastBalance);
   }
@@ -382,12 +382,12 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(transfersEnabled);
-    require(parentSnapShotBlock &lt; block.number);
+    require(parentSnapShotBlock < block.number);
     require(_to != address(0));
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     uint256 lastBalance = balanceOfAt(_from, block.number);
-    require(_value &lt;= lastBalance);
+    require(_value <= lastBalance);
 
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 
@@ -427,7 +427,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    *
    * @param _spender The address which will spend the funds.
@@ -455,7 +455,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    *
    * @dev approve should be called when allowed[_spender] == 0. To increment
    * @dev allowed value is better to use this function to avoid 2 calls (and wait until
-   * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="790d391d1c0f">[email&#160;protected]</a> he first transaction is mined)
+   * <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="790d391d1c0f">[email protected]</a> he first transaction is mined)
    * @dev From MonolithDAO Token.sol
    *
    * @param _spender The address which will spend the funds.
@@ -504,7 +504,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -538,7 +538,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
   }
 
   /**
-   * @param _owner The address that&#39;s balance is being requested
+   * @param _owner The address that's balance is being requested
    * @return The balance of `_owner` at the current block
    */
   function balanceOf(address _owner) public view returns (uint256) {
@@ -558,7 +558,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
     //  requires that the `parentToken.balanceOfAt` be queried at the
     //  genesis block for that token as this contains initial balance of
     //  this token
-    if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+    if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
       if (address(parentToken) != address(0)) {
         return parentToken.balanceOfAt(_owner, Math.min256(_blockNumber, parentSnapShotBlock));
       } else {
@@ -593,7 +593,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
     //  requires that the `parentToken.totalSupplyAt` be queried at the
     //  genesis block for this token as that contains totalSupply of this
     //  token at this block number.
-    if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+    if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
       if (address(parentToken) != 0) {
         return parentToken.totalSupplyAt(Math.min256(_blockNumber, parentSnapShotBlock));
       } else {
@@ -642,7 +642,7 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    */
   function burn(uint256 _value) public {
     uint256 lastBalance = balanceOf(msg.sender);
-    require(_value &lt;= lastBalance);
+    require(_value <= lastBalance);
 
     address burner = msg.sender;
     uint256 curTotalSupply = totalSupply();
@@ -660,10 +660,10 @@ contract SatisfactionToken is ERC20, CheckpointStorage, NoOwner {
    * @param _value uint256 The amount of token to be burned.
    */
   function burnFrom(address _from, uint256 _value) public {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
 
     uint256 lastBalance = balanceOfAt(_from, block.number);
-    require(_value &lt;= lastBalance);
+    require(_value <= lastBalance);
 
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
 

@@ -5,12 +5,12 @@ contract SafeMath {
 
 function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
 uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -27,10 +27,10 @@ uint256 z = x + y;
 contract EvenCoin is SafeMath {
 
     // metadata
-    string public constant name = &quot;EvenCoin&quot;;
-    string public constant symbol = &quot;EVN&quot;;
+    string public constant name = "EvenCoin";
+    string public constant symbol = "EVN";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public founder;      // deposit address for ETH for EvenCoin
@@ -53,8 +53,8 @@ contract EvenCoin is SafeMath {
     uint256 public constant founderFund = 5 * (10**6) * 10**decimals;   // 12.5m EvenCoin reserved for Owners
     uint256 public constant preMinedFund = 10 * (10**6) * 10**decimals;   // 12.5m EvenCoin reserved for Promotion, Exchange etc.
     uint256 public tokenExchangeRate = 2000; //  EvenCoin tokens per 1 ETH
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; bool) public genesisAddress;
+    mapping (address => uint256) balances;
+    mapping (address => bool) public genesisAddress;
 
 
     // events
@@ -67,7 +67,7 @@ contract EvenCoin is SafeMath {
       isFinalized = false;                   //controls pre through crowdsale state
       saleStarted = false;
       soldCoins = 0;
-      founder = &#39;0x9e8De5BE5B046D2c85db22324260D624E0ddadF4&#39;;
+      founder = '0x9e8De5BE5B046D2c85db22324260D624E0ddadF4';
       initialSupplyPerAddress = 21250 * 10**decimals;
       rewardPerBlockPerAddress = 898444106206663;
       totalGenesisAddresses = 4000;
@@ -103,12 +103,12 @@ contract EvenCoin is SafeMath {
     {
       if(initialBlockCount == 0) throw;
       uint256 tempGenesisAddresses = currentGenesisAddresses + _address.length;
-      if (tempGenesisAddresses &lt;= totalGenesisAddresses )
+      if (tempGenesisAddresses <= totalGenesisAddresses )
     	{
     		if (msg.sender == founder)
     		{
           currentGenesisAddresses = currentGenesisAddresses + _address.length;
-    			for (uint i = 0; i &lt; _address.length; i++)
+    			for (uint i = 0; i < _address.length; i++)
     			{
     				balances[_address[i]] = initialSupplyPerAddress;
     				genesisAddress[_address[i]] = true;
@@ -128,7 +128,7 @@ contract EvenCoin is SafeMath {
           minedBlocks = minedBlocks - 1;
         }
 
-    		if (minedBlocks &gt;= 23652000) return balances[_address];
+    		if (minedBlocks >= 23652000) return balances[_address];
     		  availableAmount = rewardPerBlockPerAddress*minedBlocks;
     		  totalMaxAvailableAmount = initialSupplyPerAddress - availableAmount;
           availableBalance = balances[_address] - totalMaxAvailableAmount;
@@ -164,9 +164,9 @@ contract EvenCoin is SafeMath {
     {
       if (genesisAddress[_to]) throw;
 
-      if (balances[msg.sender] &lt; _value) throw;
+      if (balances[msg.sender] < _value) throw;
 
-      if (balances[_to] + _value &lt; balances[_to]) throw;
+      if (balances[_to] + _value < balances[_to]) throw;
 
       if (genesisAddress[msg.sender])
       {
@@ -174,12 +174,12 @@ contract EvenCoin is SafeMath {
          if(minedBlocks % 2 != 0){
            minedBlocks = minedBlocks - 1;
          }
-    	    if (minedBlocks &lt; 23652000)
+    	    if (minedBlocks < 23652000)
     	     {
     		       availableAmount = rewardPerBlockPerAddress*minedBlocks;
     		       totalMaxAvailableAmount = initialSupplyPerAddress - availableAmount;
     		       availableBalance = balances[msg.sender] - totalMaxAvailableAmount;
-    		       if (_value &gt; availableBalance) throw;
+    		       if (_value > availableBalance) throw;
     	     }
       }
       balances[msg.sender] -= _value;
@@ -194,21 +194,21 @@ contract EvenCoin is SafeMath {
       if (!saleStarted) throw;
       if (msg.value == 0) throw;
       //change exchange rate based on duration
-      if (now &gt; firstWeek &amp;&amp; now &lt; secondWeek){
+      if (now > firstWeek && now < secondWeek){
         tokenExchangeRate = 1500;
       }
-      else if (now &gt; secondWeek &amp;&amp; now &lt; thirdWeek){
+      else if (now > secondWeek && now < thirdWeek){
         tokenExchangeRate = 1000;
       }
-      else if (now &gt; thirdWeek){
+      else if (now > thirdWeek){
         tokenExchangeRate = 500;
       }
       //create tokens
-      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(soldCoins, tokens);
 
       // return money if something goes wrong
-      if (preMinedFund &lt; checkedSupply) throw;  // odd fractions won&#39;t be found
+      if (preMinedFund < checkedSupply) throw;  // odd fractions won't be found
       soldCoins = checkedSupply;
       //All good. start the transfer
       balances[msg.sender] += tokens;  // safeAdd not needed
@@ -219,10 +219,10 @@ contract EvenCoin is SafeMath {
     function finalize() external {
       if (isFinalized) throw;
       if (msg.sender != founder) throw; // locks finalize to the ultimate ETH owner
-      if (soldCoins &lt; preMinedFund){
+      if (soldCoins < preMinedFund){
         uint256 remainingTokens = safeSubtract(preMinedFund, soldCoins);
         uint256 checkedSupply = safeAdd(soldCoins, remainingTokens);
-        if (preMinedFund &lt; checkedSupply) throw;
+        if (preMinedFund < checkedSupply) throw;
         soldCoins = checkedSupply;
         balances[msg.sender] += remainingTokens;
         CreateEVN(msg.sender, remainingTokens);

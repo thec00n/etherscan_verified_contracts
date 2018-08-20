@@ -5,8 +5,8 @@ pragma solidity ^0.4.0;
 contract PonzICO {
     address public owner;
     uint public total;
-    mapping (address =&gt; uint) public invested;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public invested;
+    mapping (address => uint) public balances;
     address[] investors;
 
     //log event of successful investment/withdraw and address
@@ -15,7 +15,7 @@ contract PonzICO {
 
     //modifiers for various things
     modifier checkZeroBalance() { if (balances[msg.sender] == 0) { throw; } _;}
-    modifier accreditedInvestor() { if (msg.value &lt; 100 finney) { throw; } _;}
+    modifier accreditedInvestor() { if (msg.value < 100 finney) { throw; } _;}
 
 	//constructor for initializing PonzICO.
     //the owner is the genius who made this revolutionary smart contract
@@ -26,7 +26,7 @@ contract PonzICO {
     //the logic for a small fee for the creator of this contract
     //miniscule in the grand scheme of things
     function ownerFee(uint amount) private returns (uint fee) {
-        if (total &lt; 200000 ether) {
+        if (total < 200000 ether) {
             fee = amount/2;
             balances[owner] += fee;
         }
@@ -47,7 +47,7 @@ contract PonzICO {
         }
     }
 
-    //What&#39;s better than withdrawing? Re-investing profits!
+    //What's better than withdrawing? Re-investing profits!
     function reinvest()
     checkZeroBalance()
     {
@@ -55,7 +55,7 @@ contract PonzICO {
         balances[msg.sender] = 0;
         uint fee = ownerFee(dividend);
         dividend -= fee;
-        for (uint i = 0; i &lt; investors.length; i++) {
+        for (uint i = 0; i < investors.length; i++) {
             balances[investors[i]] += dividend * invested[investors[i]] / total;
         }
         invested[msg.sender] += (dividend + fee);
@@ -69,12 +69,12 @@ contract PonzICO {
 	function invest() payable
     accreditedInvestor()
     {
-        //first send the owner&#39;s modest 50% fee but only if the total invested is less than 200000 ETH
+        //first send the owner's modest 50% fee but only if the total invested is less than 200000 ETH
         uint dividend = msg.value;
         uint fee = ownerFee(dividend);
         dividend -= fee;
         //then accrue balances from the generous remainder to everyone else previously invested
-        for (uint i = 0; i &lt; investors.length; i++) {
+        for (uint i = 0; i < investors.length; i++) {
             balances[investors[i]] += dividend * invested[investors[i]] / total;
         }
 

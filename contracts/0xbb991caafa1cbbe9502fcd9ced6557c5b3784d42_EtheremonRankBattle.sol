@@ -4,7 +4,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = false;
 
     function BasicAccessControl() public {
@@ -170,9 +170,9 @@ contract EtheremonRankBattle is BasicAccessControl, EtheremonEnum {
             return false;
         if (_a3 == _s1 || _a3 == _s2 || _a3 == _s3)
             return false;
-        if (_s1 &gt; 0 &amp;&amp; (_s1 == _s2 || _s1 == _s3))
+        if (_s1 > 0 && (_s1 == _s2 || _s1 == _s3))
             return false;
-        if (_s2 &gt; 0 &amp;&amp; (_s2 == _s3))
+        if (_s2 > 0 && (_s2 == _s3))
             return false;
         
         uint32 classA1 = getValidClassId(_a1, _trainer);
@@ -183,11 +183,11 @@ contract EtheremonRankBattle is BasicAccessControl, EtheremonEnum {
             return false;
         if (classA1 == classA2 || classA1 == classA3 || classA2 == classA3)
             return false;
-        if (_s1 &gt; 0 &amp;&amp; getValidClassId(_s1, _trainer) == 0)
+        if (_s1 > 0 && getValidClassId(_s1, _trainer) == 0)
             return false;
-        if (_s2 &gt; 0 &amp;&amp; getValidClassId(_s2, _trainer) == 0)
+        if (_s2 > 0 && getValidClassId(_s2, _trainer) == 0)
             return false;
-        if (_s3 &gt; 0 &amp;&amp; getValidClassId(_s3, _trainer) == 0)
+        if (_s3 > 0 && getValidClassId(_s3, _trainer) == 0)
             return false;
         return true;
     }
@@ -212,7 +212,7 @@ contract EtheremonRankBattle is BasicAccessControl, EtheremonEnum {
         EtheremonDataBase data = EtheremonDataBase(dataContract);
 
         // can not keep too many etheremon 
-        if (data.getMonsterDexSize(msg.sender) &gt; maxDexSize)
+        if (data.getMonsterDexSize(msg.sender) > maxDexSize)
             revert();
         
         uint i = 0;
@@ -221,11 +221,11 @@ contract EtheremonRankBattle is BasicAccessControl, EtheremonEnum {
         uint64 objId = 0;
         uint32 classId = 0;
         uint8 value = 0;
-        for (i = 0; i &lt; starterClasses.length; i+=1) {
+        for (i = 0; i < starterClasses.length; i+=1) {
             classId = starterClasses[i];
             seed = getRandom(uint(block.blockhash(block.number - i)));
-            objId = data.addMonsterObj(classId, msg.sender, &quot;..name me...&quot;);
-            for (j = 0; j &lt; 6; j += 1) {
+            objId = data.addMonsterObj(classId, msg.sender, "..name me...");
+            for (j = 0; j < 6; j += 1) {
                 seed = seed ^ (i + j);
                 value = uint8(seed % 32) + data.getElementInArrayType(ArrayType.STAT_START, uint64(classId), j);
                 data.addElementToArrayType(ArrayType.STAT_BASE, objId, value);

@@ -14,12 +14,12 @@ contract Airdropper
 {
   function multisend(address _tokenAddr, address[] addr, uint256[] values) public
   {
-    require(addr.length == values.length &amp;&amp; addr.length &gt; 0);
+    require(addr.length == values.length && addr.length > 0);
     uint256 i=0;
-    while(i &lt; addr.length)
+    while(i < addr.length)
     {
       require(addr[i] != address(0));
-      require(values[i] &gt; 0);
+      require(values[i] > 0);
       require(ERC20(_tokenAddr).transferFrom(msg.sender, addr[i], values[i]));
       i++;
     }

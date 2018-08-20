@@ -29,7 +29,7 @@ contract JeiCoinToken {
     string public name;
     string public symbol;
     uint8 public decimals; 
-    string public version = &#39;v1.5&#39;;
+    string public version = 'v1.5';
     uint256 public totalSupply;
     uint public price;
     bool public locked;
@@ -38,13 +38,13 @@ contract JeiCoinToken {
     address public rootAddress;
     address public Owner;
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
-    mapping(address =&gt; bool) public freezed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
+    mapping(address => bool) public freezed;
 
-    mapping(address =&gt; uint) public maxIndex; // To store index of last batch: points to the next one
-    mapping(address =&gt; uint) public minIndex; // To store index of first batch
-    mapping(address =&gt; mapping(uint =&gt; Batch)) public batches; // To store batches with quantities and ages
+    mapping(address => uint) public maxIndex; // To store index of last batch: points to the next one
+    mapping(address => uint) public minIndex; // To store index of first batch
+    mapping(address => mapping(uint => Batch)) public batches; // To store batches with quantities and ages
 
     struct Batch {
         uint quant;
@@ -59,7 +59,7 @@ contract JeiCoinToken {
     // Modifiers
 
     modifier onlyOwner() {
-        if ( msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+        if ( msg.sender != rootAddress && msg.sender != Owner ) revert();
         _;
     }
 
@@ -69,7 +69,7 @@ contract JeiCoinToken {
     }
 
     modifier isUnlocked() {
-    	if ( locked &amp;&amp; msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+    	if ( locked && msg.sender != rootAddress && msg.sender != Owner ) revert();
 		_;    	
     }
 
@@ -80,15 +80,15 @@ contract JeiCoinToken {
 
     // Safe math
     function safeSub(uint x, uint y) pure internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
 
     // Token constructor
     constructor(address _root) {        
         locked = false;
-        name = &#39;JeiCoin Gold&#39;; 
-        symbol = &#39;JEIG&#39;; 
+        name = 'JeiCoin Gold'; 
+        symbol = 'JEIG'; 
         decimals = 18; 
         multiplier = 10 ** uint(decimals);
         totalSupply = 63000000 * multiplier; // 63,000,000 tokens
@@ -145,7 +145,7 @@ contract JeiCoinToken {
     }
 
     function burn(uint256 _value) onlyOwner returns(bool) {
-        require (balances[msg.sender] &gt;= _value);
+        require (balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender] - _value;
         totalSupply = safeSub( totalSupply,  _value );
         emit Transfer(msg.sender, 0x0,_value);
@@ -156,7 +156,7 @@ contract JeiCoinToken {
     // Standard transfer function
     function transfer(address _to, uint _value) isUnlocked public returns (bool success) {
         require(msg.sender != _to);
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         if (freezed[msg.sender] || freezed[_to]) return false; // Check if destination address is freezed
         balances[msg.sender] = balances[msg.sender] - _value;
         balances[_to] = balances[_to] + _value;
@@ -171,8 +171,8 @@ contract JeiCoinToken {
     function transferFrom(address _from, address _to, uint256 _value) isUnlocked public returns(bool) {
         require(_from != _to);
         if ( freezed[_from] || freezed[_to] ) return false; // Check if destination address is freezed
-        if ( balances[_from] &lt; _value ) return false; // Check if the sender has enough
-    	if ( _value &gt; allowed[_from][msg.sender] ) return false; // Check allowance
+        if ( balances[_from] < _value ) return false; // Check if the sender has enough
+    	if ( _value > allowed[_from][msg.sender] ) return false; // Check allowance
 
         balances[_from] = balances[_from] - _value; // Subtract from the sender
         balances[_to] = balances[_to] + _value; // Add the same to the recipient
@@ -222,9 +222,9 @@ contract JeiCoinToken {
         // Discounting tokens from batches AT SOURCE
         uint count = _value;
         uint i = minIndex[_from];
-         while(count &gt; 0) { // To iterate over the mapping. // &amp;&amp; i &lt; maxIndex is just a protection from infinite loop, that should not happen anyways
+         while(count > 0) { // To iterate over the mapping. // && i < maxIndex is just a protection from infinite loop, that should not happen anyways
             uint _quant = batches[_from][i].quant;
-            if ( count &gt;= _quant ) { // If there is more to send than the batch
+            if ( count >= _quant ) { // If there is more to send than the batch
                 // Empty batch and continue counting
                 count -= _quant; // First rest the batch to the count
                 batches[_from][i].quant = 0; // Then empty the batch

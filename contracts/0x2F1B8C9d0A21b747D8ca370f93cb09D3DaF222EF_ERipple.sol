@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -104,7 +104,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -117,7 +117,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -193,12 +193,12 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract ERipple is MintableToken {
-  string public constant name = &quot;eRipple&quot;;
-  string public constant symbol = &quot;EXRP&quot;;
+  string public constant name = "eRipple";
+  string public constant symbol = "EXRP";
   uint   public constant decimals = 18;
   uint   public unlockTimeStamp = 0;  
 
-  mapping (address =&gt; bool) private _lockByPass;
+  mapping (address => bool) private _lockByPass;
   
   function ERipple(uint unlockTs){
     setUnlockTimeStamp(unlockTs);
@@ -209,24 +209,24 @@ contract ERipple is MintableToken {
   }
 
   function airdrop(address[] addresses, uint amount) onlyOwner{
-    require(amount &gt; 0);
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    require(amount > 0);
+    for (uint i = 0; i < addresses.length; i++) {
        super.transfer(addresses[i], amount);
     }
   }
 
   function transfer(address _to, uint _value) returns (bool success) {
-    if (now &lt; unlockTimeStamp &amp;&amp; !_lockByPass[msg.sender]) return false;
+    if (now < unlockTimeStamp && !_lockByPass[msg.sender]) return false;
     return super.transfer(_to, _value);
   }
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
-    if (now &lt; unlockTimeStamp &amp;&amp; !_lockByPass[_from]) return false;
+    if (now < unlockTimeStamp && !_lockByPass[_from]) return false;
     return super.transferFrom(_from, _to, _value);
   }
 
   function setLockByPass(address[] addresses, bool locked) onlyOwner{
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
        _lockByPass[addresses[i]] = locked;
     }
   }

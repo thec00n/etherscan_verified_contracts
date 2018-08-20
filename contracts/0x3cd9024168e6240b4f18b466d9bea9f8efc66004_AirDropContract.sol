@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -64,7 +64,7 @@ contract AirDropContract is Ownable {
 
     address public collectorAddress;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     event FundTransfer(address backer, uint256 amount, bool isContribution);
     event Additional(uint amount);
@@ -89,10 +89,10 @@ contract AirDropContract is Ownable {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function() payable public {
-        require(totalAirDropToken &gt; 0);
+        require(totalAirDropToken > 0);
         require(balanceOf[msg.sender] == 0);
         uint256 amount = getCurrentCandyAmount();
-        require(amount &gt; 0);
+        require(amount > 0);
 
         totalAirDropToken = totalAirDropToken.sub(amount);
         balanceOf[msg.sender] = amount;
@@ -102,13 +102,13 @@ contract AirDropContract is Ownable {
     }
 
     function getCurrentCandyAmount() private view returns (uint256 amount){
-        if (totalAirDropToken &gt;= 10e6) {
+        if (totalAirDropToken >= 10e6) {
             return 200;
-        } else if (totalAirDropToken &gt;= 2.5e6) {
+        } else if (totalAirDropToken >= 2.5e6) {
             return 150;
-        } else if (totalAirDropToken &gt;= 0.5e6) {
+        } else if (totalAirDropToken >= 0.5e6) {
             return 100;
-        } else if (totalAirDropToken &gt;= 50) {
+        } else if (totalAirDropToken >= 50) {
             return 50;
         } else {
             return 0;
@@ -119,7 +119,7 @@ contract AirDropContract is Ownable {
      *  Add airdrop tokens
      */
     function additional(uint256 amount) public onlyOwner {
-        require(amount &gt; 0);
+        require(amount > 0);
 
         totalAirDropToken = totalAirDropToken.add(amount);
         emit Additional(amount);
@@ -129,7 +129,7 @@ contract AirDropContract is Ownable {
     *  burn airdrop tokens
     */
     function burn(uint256 amount) public onlyOwner {
-        require(amount &gt; 0);
+        require(amount > 0);
 
         totalAirDropToken = totalAirDropToken.sub(amount);
         emit Burn(amount);
@@ -147,10 +147,10 @@ contract AirDropContract is Ownable {
      *  Recovery of remaining tokens
      */
     function collectAirDropTokenBack(uint256 airDropTokenNum) public onlyOwner {
-        require(totalAirDropToken &gt; 0);
+        require(totalAirDropToken > 0);
         require(collectorAddress != 0x0);
 
-        if (airDropTokenNum &gt; 0) {
+        if (airDropTokenNum > 0) {
             tokenRewardContract.transfer(collectorAddress, airDropTokenNum * 1e18);
         } else {
             tokenRewardContract.transfer(collectorAddress, totalAirDropToken * 1e18);
@@ -164,7 +164,7 @@ contract AirDropContract is Ownable {
      */
     function collectEtherBack() public onlyOwner {
         uint256 b = address(this).balance;
-        require(b &gt; 0);
+        require(b > 0);
         require(collectorAddress != 0x0);
 
         collectorAddress.transfer(b);

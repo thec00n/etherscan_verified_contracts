@@ -3,10 +3,10 @@ pragma solidity 0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -60,8 +60,8 @@ contract StandardToken is ERC20 {
     uint8 public decimals;
     uint public totalSupply;
 
-    mapping(address =&gt; uint) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping(address => uint) internal balances;
+    mapping (address => mapping (address => uint)) internal allowed;
 
     constructor(string _name, string _symbol, uint8 _decimals, uint _totalSupply) public {
         name = _name;
@@ -86,7 +86,7 @@ contract StandardToken is ERC20 {
 
     function transfer(address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -96,8 +96,8 @@ contract StandardToken is ERC20 {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -180,7 +180,7 @@ contract VotingToken is StandardToken, Owned {
         require(!opened);
         require(_tos.length == _amounts.length);
         uint sum = 0;
-        for (uint i = 0; i &lt; _tos.length; i++) {
+        for (uint i = 0; i < _tos.length; i++) {
             address to = _tos[i];
             uint amount = _amounts[i];
             sum = sum.add(amount);
@@ -197,20 +197,20 @@ contract VotingToken is StandardToken, Owned {
     }
 
     function close() onlyOwner external {
-        require(opened &amp;&amp; !closed);
+        require(opened && !closed);
         closed = true;
     }
 
     function destroy(address[] tokens) onlyOwner external {
 
         // Transfer tokens to owner
-        for (uint i = 0; i &lt; tokens.length; i++) {
+        for (uint i = 0; i < tokens.length; i++) {
             ERC20 token = ERC20(tokens[i]);
             uint balance = token.balanceOf(this);
             token.transfer(owner, balance);
         }
 
-        for (uint j = 0; j &lt; numberOfAlternatives; j++) {
+        for (uint j = 0; j < numberOfAlternatives; j++) {
             address votingAddress = votingAddresses[j];
             uint votes = balances[votingAddress];
             emit Result(votingAddress, votes);
@@ -224,7 +224,7 @@ contract VotingToken is StandardToken, Owned {
 
     function _rewardVote(address _from, address _to, uint _value) private {
         if(_isVotingAddress(_to)) {
-            require(opened &amp;&amp; !closed);
+            require(opened && !closed);
             uint rewardTokens = _value.div(100);
             require(rewardToken.transfer(_from, rewardTokens));
             emit Reward(_from, _value);
@@ -232,7 +232,7 @@ contract VotingToken is StandardToken, Owned {
     }
 
     function _isVotingAddress(address votingAddress) private view returns (bool) {
-        for (uint i = 0; i &lt; numberOfAlternatives; i++) {
+        for (uint i = 0; i < numberOfAlternatives; i++) {
             if (votingAddresses[i] == votingAddress) return true;
         }
         return false;

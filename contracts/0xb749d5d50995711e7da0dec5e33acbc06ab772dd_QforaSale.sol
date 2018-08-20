@@ -16,13 +16,13 @@ library SafeMath {                             //SafeMath.sol
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,9 +45,9 @@ contract QforaSale {
   address public wallet;                              //RefundVault.sol
   address public owner;                               //Ownable.sol
   bool public isFinalized;                     //FinalizableCrowdsale.sol
-  mapping(address =&gt; uint256) public balances;       //PostDeliveryCrowdsale.sol, info for withdraw
-  mapping(address =&gt; uint256) public deposited;      //RefundVault.sol,           info for refund
-  mapping(address =&gt; bool) public whitelist;          //WhitelistedCrowdsale.sol
+  mapping(address => uint256) public balances;       //PostDeliveryCrowdsale.sol, info for withdraw
+  mapping(address => uint256) public deposited;      //RefundVault.sol,           info for refund
+  mapping(address => bool) public whitelist;          //WhitelistedCrowdsale.sol
   enum State { Active, Refunding, Closed }            //RefundVault.sol
   State public state;                                 //RefundVault.sol
   QurozToken public token;
@@ -60,7 +60,7 @@ contract QforaSale {
   event TokenPurchase(address indexed purchaser,address indexed beneficiary,uint256 value,uint256 amount); //Crowdsale
 
   constructor(address _wallet, QurozToken _token) public {
-    require(_wallet != address(0) &amp;&amp; _token != address(0));
+    require(_wallet != address(0) && _token != address(0));
     owner = msg.sender;
     wallet = _wallet;
     token = _token;
@@ -71,7 +71,7 @@ contract QforaSale {
     bonusRate = 20;
     openingTime = now.add(0 minutes);
     closingTime = openingTime.add(22 days + 5 hours + 30 minutes);
-    require(block.timestamp &lt;= openingTime &amp;&amp; openingTime &lt;= closingTime);
+    require(block.timestamp <= openingTime && openingTime <= closingTime);
   }
 
   modifier onlyOwner() {require(msg.sender == owner); _;}            //Ownable.sol
@@ -82,7 +82,7 @@ contract QforaSale {
   }
 
   function addManyToWhitelist(address[] _beneficiaries) public onlyOwner { //WhitelistedCrowdsale.sol (external to public)
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -92,10 +92,10 @@ contract QforaSale {
   }
 
   function () external payable {                                            //Crowdsale.sol
-    require(openingTime &lt;= block.timestamp &amp;&amp; block.timestamp &lt;= closingTime);      // new
+    require(openingTime <= block.timestamp && block.timestamp <= closingTime);      // new
     require(whitelist[msg.sender]);        // new
-    require(msg.value &gt;= threshold );      // new
-    require(weiRaised.add(msg.value) &lt;= hardCap );      // new
+    require(msg.value >= threshold );      // new
+    require(weiRaised.add(msg.value) <= hardCap );      // new
     buyTokens(msg.sender);
   }
 
@@ -131,7 +131,7 @@ contract QforaSale {
   }
 
   function hasClosed() public view returns (bool) {               //TimedCrowdsale.sol
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   function deposit(address investor, uint256 value) internal {  //RefundVault.sol (liternal, no payable, add value)
@@ -140,7 +140,7 @@ contract QforaSale {
   }
 
   function goalReached() public view returns (bool) {    //RefundableCrowdsale.sol
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
   function finalize() onlyOwner public {          //FinalizableCrowdsale.sol
@@ -157,14 +157,14 @@ contract QforaSale {
     //super.finalization();
   }
 
-  function close() onlyOwner public {   //RefundVault.sol (Active -&gt; Closed if goal reached)
+  function close() onlyOwner public {   //RefundVault.sol (Active -> Closed if goal reached)
     require(state == State.Active);
     state = State.Closed;
     emit Closed();
     wallet.transfer(address(this).balance);
   }
 
-  function enableRefunds() onlyOwner public { //RefundVault.sol (Active -&gt; Refunding if goal not reached)
+  function enableRefunds() onlyOwner public { //RefundVault.sol (Active -> Refunding if goal not reached)
     require(state == State.Active);
     state = State.Refunding;
     emit RefundsEnabled();
@@ -178,7 +178,7 @@ contract QforaSale {
 
   function refund(address investor) public {       //RefundVault.sol
     require(state == State.Refunding);
-    require(deposited[investor] &gt; 0);                                                                   // new     
+    require(deposited[investor] > 0);                                                                   // new     
     uint256 depositedValue = deposited[investor];
     balances[investor] = 0;                                                                             // new
     deposited[investor] = 0;
@@ -193,7 +193,7 @@ contract QforaSale {
   function withdrawTokens() public {                              //PostDeliveryCrowdsale.sol
     require(hasClosed());
     uint256 amount = balances[msg.sender];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[msg.sender] = 0;
     _deliverTokens(msg.sender, amount);
     deposited[msg.sender] = 0;                        //new
@@ -244,8 +244,8 @@ contract QforaSale {
 
   function addSmallInvestor(address _beneficiary, uint256 weiAmount, uint256 totalTokens) public onlyOwner {
     require(whitelist[_beneficiary]);
-    require(weiAmount &gt;= 1 ether );
-    require(weiRaised.add(weiAmount) &lt;= hardCap );
+    require(weiAmount >= 1 ether );
+    require(weiRaised.add(weiAmount) <= hardCap );
     weiRaised = weiRaised.add(weiAmount);
     tokenSold = tokenSold.add(totalTokens);
     _processPurchase(_beneficiary, totalTokens);

@@ -5,7 +5,7 @@
 // We have more than 15-years history of creation of aviation equipment and helicopters. 
 // Company with great potential for development in real time.
 
-// By this link you&#39;ll find more information about I AM AERO 
+// By this link you'll find more information about I AM AERO 
 // https://www.youtube.com/watch?v=7NJS4UFVMDQ
 
 // For more information, please visit our website: www.iamaero.io
@@ -14,7 +14,7 @@
 // Telegram: @Kosachev_as
 // Best regards,
 // Alexander Kosachev, 
-// Founder&amp;CEO I AM AERO
+// Founder&CEO I AM AERO
 // Facebook www.facebook.com/kosachev.as
 // Telegram: @Kosachev_as
 
@@ -32,7 +32,7 @@ contract TokenDrop {
     }
 
     function multiTransfer(uint256 _value, address[] _to) public returns(bool) {
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             token.transfer(_to[i], _value);
         }
 

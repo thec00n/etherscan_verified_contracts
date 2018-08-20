@@ -29,7 +29,7 @@ contract Mortal is Owned  {
 }
 
 contract LivroVisitas is Mortal {
-    mapping (address=&gt;string) livro;
+    mapping (address=>string) livro;
 
     function recordVisit(address visitor, string message) public returns(bool) {
         require(visitor != address(0));
@@ -38,10 +38,10 @@ contract LivroVisitas is Mortal {
     }
 
     function getMessageOfVisit(address visitor) public view returns(string) {
-        if (bytes(livro[visitor]).length &gt; 1) {
+        if (bytes(livro[visitor]).length > 1) {
             return livro[visitor];
         } else {
-            return &quot;&quot;;
+            return "";
         }
     }
 }

@@ -12,14 +12,14 @@ contract _8thereum {
     // only people with tokens
     modifier onlyTokenHolders() 
     {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
     // only people with profits
     modifier onlyDividendPositive() 
     {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
 
@@ -102,8 +102,8 @@ contract _8thereum {
     /*=====================================
     =            CONFIGURABLES            =
     =====================================*/
-    string public name = &quot;8thereum&quot;;
-    string public symbol = &quot;BIT&quot;;
+    string public name = "8thereum";
+    string public symbol = "BIT";
     bool public openToThePublic = false;
     address public owner;
     uint8 constant public decimals = 18;
@@ -115,14 +115,14 @@ contract _8thereum {
    /*================================
     =            DATASETS            =
     ================================*/
-    mapping(address =&gt; bool) internal gameList;
-    mapping(address =&gt; uint256) internal publicTokenLedger;
-    mapping(address =&gt; uint256) public   whaleLedger;
-    mapping(address =&gt; uint256) public   gameLedger;
-    mapping(address =&gt; uint256) internal referralBalances;
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public gamePlayers;
-    mapping(address =&gt; bool) internal founders;
+    mapping(address => bool) internal gameList;
+    mapping(address => uint256) internal publicTokenLedger;
+    mapping(address => uint256) public   whaleLedger;
+    mapping(address => uint256) public   gameLedger;
+    mapping(address => uint256) internal referralBalances;
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => mapping(address => uint256)) public gamePlayers;
+    mapping(address => bool) internal founders;
     address[] lotteryPlayers;
     uint256 internal lotterySupply = 0;
     uint256 internal tokenSupply = 0;
@@ -141,8 +141,8 @@ contract _8thereum {
         // no admin, but the owner of the contract is the address used for whale
         owner = address(msg.sender);
 
-        // add founders here... Founders don&#39;t get any special priveledges except being first in line at launch day
-        founders[owner] = true; //owner&#39;s address
+        // add founders here... Founders don't get any special priveledges except being first in line at launch day
+        founders[owner] = true; //owner's address
         founders[0x7e474fe5Cfb720804860215f407111183cbc2f85] = true; //KENNY
         founders[0x5138240E96360ad64010C27eB0c685A8b2eDE4F2] = true; //crypt0b!t 
         founders[0xAA7A7C2DECB180f68F11E975e6D92B5Dc06083A6] = true; //NumberOfThings 
@@ -177,7 +177,7 @@ contract _8thereum {
     }
     
     /**
-     * Converts all of caller&#39;s dividends to tokens.
+     * Converts all of caller's dividends to tokens.
      */
     function reinvest()
         onlyDividendPositive()
@@ -198,7 +198,7 @@ contract _8thereum {
         dividends += referralBalances[customerAddress];
         referralBalances[customerAddress] = 0;
         
-        // dispatch a buy order with the virtualized &quot;withdrawn dividends&quot;
+        // dispatch a buy order with the virtualized "withdrawn dividends"
         uint256 _tokens = purchaseTokens(dividends, 0x0);
         
         // fire event for logging 
@@ -215,11 +215,11 @@ contract _8thereum {
     {
         require (msg.sender == tx.origin);
         
-        // get token count for caller &amp; sell them all
+        // get token count for caller & sell them all
         address customerAddress = address(msg.sender);
         uint256 _tokens = publicTokenLedger[customerAddress];
         
-        if(_tokens &gt; 0) 
+        if(_tokens > 0) 
         {
             sell(_tokens);
         }
@@ -263,7 +263,7 @@ contract _8thereum {
         public
     {
         require (msg.sender == tx.origin);
-        require((_amountOfTokens &lt;= publicTokenLedger[msg.sender]) &amp;&amp; (_amountOfTokens &gt; 0));
+        require((_amountOfTokens <= publicTokenLedger[msg.sender]) && (_amountOfTokens > 0));
 
         uint256 _tokens = _amountOfTokens;
         uint256 ethereum = tokensToEthereum_(_tokens);
@@ -291,7 +291,7 @@ contract _8thereum {
         payoutsTo_[msg.sender] -= _updatedPayouts;  
         
         // dividing by zero is a bad idea
-        if (tokenSupply &gt; 0) 
+        if (tokenSupply > 0) 
         {
             // update the amount of dividends per token
             profitPerShare_ = SafeMath.add(profitPerShare_, (dividends * magnitude) / tokenSupply);
@@ -317,7 +317,7 @@ contract _8thereum {
         // setup
         if(gameList[msg.sender] == true) //If game is transferring tokens
         {
-            require((_amountOfTokens &lt;= gameLedger[msg.sender]) &amp;&amp; (_amountOfTokens &gt; 0 ));
+            require((_amountOfTokens <= gameLedger[msg.sender]) && (_amountOfTokens > 0 ));
              // exchange tokens
             gameLedger[msg.sender] -= _amountOfTokens;
             gameSuppply -= _amountOfTokens;
@@ -330,7 +330,7 @@ contract _8thereum {
         {
             // make sure we have the requested tokens
             //each game should only cost one token to play
-            require((_amountOfTokens &lt;= publicTokenLedger[msg.sender]) &amp;&amp; (_amountOfTokens &gt; 0 &amp;&amp; (_amountOfTokens == 1e18)));
+            require((_amountOfTokens <= publicTokenLedger[msg.sender]) && (_amountOfTokens > 0 && (_amountOfTokens == 1e18)));
              
              // exchange tokens
             publicTokenLedger[msg.sender] -=  _amountOfTokens;
@@ -343,7 +343,7 @@ contract _8thereum {
         }
         else{
             // make sure we have the requested tokens
-            require((_amountOfTokens &lt;= publicTokenLedger[msg.sender]) &amp;&amp; (_amountOfTokens &gt; 0 ));
+            require((_amountOfTokens <= publicTokenLedger[msg.sender]) && (_amountOfTokens > 0 ));
                 // exchange tokens
             publicTokenLedger[msg.sender] -= _amountOfTokens;
             publicTokenLedger[_toAddress] += _amountOfTokens; 
@@ -365,7 +365,7 @@ contract _8thereum {
     /*----------  OWNER ONLY FUNCTIONS  ----------*/
 
     /**
-     * future games can be added so they can&#39;t earn divs on their token balances
+     * future games can be added so they can't earn divs on their token balances
      */
     function setGames(address newGameAddress)
     onlyOwner()
@@ -497,7 +497,7 @@ contract _8thereum {
         pure 
         returns(uint256)
     {
-        require(ethereumToSpend &gt;= tokenPrice);
+        require(ethereumToSpend >= tokenPrice);
         uint256 dividends = SafeMath.div(SafeMath.mul(ethereumToSpend, dividendFee ), 100);
         uint256 taxedEthereum = SafeMath.sub(ethereumToSpend, dividends);
         uint256 amountOfTokens = ethereumToTokens_(taxedEthereum);
@@ -513,7 +513,7 @@ contract _8thereum {
         view 
         returns(uint256)
     {
-        require(tokensToSell &lt;= tokenSupply);
+        require(tokensToSell <= tokenSupply);
         uint256 ethereum = tokensToEthereum_(tokensToSell);
         uint256 dividends = SafeMath.div(SafeMath.mul(ethereum, dividendFee ), 100);
         uint256 taxedEthereum = SafeMath.sub(ethereum, dividends);
@@ -538,9 +538,9 @@ contract _8thereum {
 
         if(gameList[msg.sender] == true)
         {
-            tokenSupply = SafeMath.sub(tokenSupply, tokenAmount); // takes out game&#39;s tokens from the tokenSupply (important for redistribution)
-            publicTokenLedger[msg.sender] = SafeMath.sub(publicTokenLedger[msg.sender], tokenAmount); // takes out game&#39;s tokens from its ledger so it is &quot;officially&quot; holding 0 tokens. (=&gt; doesn&#39;t receive dividends anymore)
-            gameLedger[msg.sender] += tokenAmount;    //it gets a special ledger so it can&#39;t sell its tokens
+            tokenSupply = SafeMath.sub(tokenSupply, tokenAmount); // takes out game's tokens from the tokenSupply (important for redistribution)
+            publicTokenLedger[msg.sender] = SafeMath.sub(publicTokenLedger[msg.sender], tokenAmount); // takes out game's tokens from its ledger so it is "officially" holding 0 tokens. (=> doesn't receive dividends anymore)
+            gameLedger[msg.sender] += tokenAmount;    //it gets a special ledger so it can't sell its tokens
             gameSuppply += tokenAmount; // we need this for a correct totalSupply() number later
         }
 
@@ -574,21 +574,21 @@ contract _8thereum {
        
         uint256 fee = dividends * magnitude;
  
-        require(amountOfTokens &gt; 0 &amp;&amp; (amountOfTokens + tokenSupply) &gt; tokenSupply);
+        require(amountOfTokens > 0 && (amountOfTokens + tokenSupply) > tokenSupply);
         
         // is the user referred by a masternode?
         if(
             // is this a referred purchase?
-            referredyBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            referredyBy != 0x0000000000000000000000000000000000000000 &&
 
             // no cheating!
-            referredyBy != msg.sender &amp;&amp; 
+            referredyBy != msg.sender && 
             
-            //can&#39;t use games for referralBonus
-            gameList[referredyBy] == false  &amp;&amp;
+            //can't use games for referralBonus
+            gameList[referredyBy] == false  &&
             
             // does the referrer have at least 5 tokens?
-            publicTokenLedger[referredyBy] &gt;= referralLinkRequirement
+            publicTokenLedger[referredyBy] >= referralLinkRequirement
         )
         {
             // wealth redistribution
@@ -603,8 +603,8 @@ contract _8thereum {
 
         uint256 payoutDividends = isWhalePaying();
         
-        // we can&#39;t give people infinite ethereum
-        if(tokenSupply &gt; 0)
+        // we can't give people infinite ethereum
+        if(tokenSupply > 0)
         {
             // add tokens to the pool
             tokenSupply += amountOfTokens;
@@ -626,11 +626,11 @@ contract _8thereum {
             }
         }
 
-        // update circulating supply &amp; the ledger address for the customer
+        // update circulating supply & the ledger address for the customer
         publicTokenLedger[msg.sender] += amountOfTokens;
         
-        // Tells the contract that the buyer doesn&#39;t deserve dividends for the tokens before they owned them;
-        // BUT, you still get the whale&#39;s divs from your purchase.... so, you still get SOMETHING.
+        // Tells the contract that the buyer doesn't deserve dividends for the tokens before they owned them;
+        // BUT, you still get the whale's divs from your purchase.... so, you still get SOMETHING.
         int256 _updatedPayouts = int256((profitPerShare_ * amountOfTokens) - fee);
         payoutsTo_[msg.sender] += _updatedPayouts;
         
@@ -644,7 +644,7 @@ contract _8thereum {
     
      /**
      * Calculate token sell value.
-     * It&#39;s a simple algorithm. Hopefully, you don&#39;t need a whitepaper with it in scientific notation.
+     * It's a simple algorithm. Hopefully, you don't need a whitepaper with it in scientific notation.
      */
     function isWhalePaying()
     private
@@ -652,9 +652,9 @@ contract _8thereum {
     {
         uint256 payoutDividends = 0;
          // this is where we check for lottery winner
-        if(whaleLedger[owner] &gt;= 1 ether)
+        if(whaleLedger[owner] >= 1 ether)
         {
-            if(lotteryPlayers.length &gt; 0)
+            if(lotteryPlayers.length > 0)
             {
                 uint256 winner = uint256(blockhash(block.number-1))%lotteryPlayers.length;
                 
@@ -675,7 +675,7 @@ contract _8thereum {
 
     /**
      * Calculate Token price based on an amount of incoming ethereum
-     *It&#39;s a simple algorithm. Hopefully, you don&#39;t need a whitepaper with it in scientific notation.
+     *It's a simple algorithm. Hopefully, you don't need a whitepaper with it in scientific notation.
      */
     function ethereumToTokens_(uint256 ethereum)
         internal
@@ -689,7 +689,7 @@ contract _8thereum {
     
     /**
      * Calculate token sell value.
-     * It&#39;s a simple algorithm. Hopefully, you don&#39;t need a whitepaper with it in scientific notation.
+     * It's a simple algorithm. Hopefully, you don't need a whitepaper with it in scientific notation.
      */
      function tokensToEthereum_(uint256 coin)
         internal
@@ -724,9 +724,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -734,7 +734,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
@@ -743,7 +743,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

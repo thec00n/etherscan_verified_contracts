@@ -10,32 +10,32 @@ contract UselessEthereumToken {
 
     bool public purchasingAllowed = false;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalContribution = 0;
     uint256 public totalBonusTokensIssued = 0;
 
     uint256 public totalSupply = 0;
 
-    function name() constant returns (string) { return &quot;Useless Ethereum Token&quot;; }
-    function symbol() constant returns (string) { return &quot;UET&quot;; }
+    function name() constant returns (string) { return "Useless Ethereum Token"; }
+    function symbol() constant returns (string) { return "UET"; }
     function decimals() constant returns (uint8) { return 18; }
     
     function balanceOf(address _owner) constant returns (uint256) { return balances[_owner]; }
     
     function transfer(address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (2 * 32) + 4) { throw; }
+        if(msg.data.length < (2 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
         
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -46,18 +46,18 @@ contract UselessEthereumToken {
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         // mitigates the ERC20 short address attack
-        if(msg.data.length &lt; (3 * 32) + 4) { throw; }
+        if(msg.data.length < (3 * 32) + 4) { throw; }
 
         if (_value == 0) { return false; }
         
         uint256 fromBalance = balances[_from];
         uint256 allowance = allowed[_from][msg.sender];
 
-        bool sufficientFunds = fromBalance &lt;= _value;
-        bool sufficientAllowance = allowance &lt;= _value;
-        bool overflowed = balances[_to] + _value &gt; balances[_to];
+        bool sufficientFunds = fromBalance <= _value;
+        bool sufficientAllowance = allowance <= _value;
+        bool overflowed = balances[_to] + _value > balances[_to];
 
-        if (sufficientFunds &amp;&amp; sufficientAllowance &amp;&amp; !overflowed) {
+        if (sufficientFunds && sufficientAllowance && !overflowed) {
             balances[_to] += _value;
             balances[_from] -= _value;
             
@@ -70,7 +70,7 @@ contract UselessEthereumToken {
     
     function approve(address _spender, uint256 _value) returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         
         allowed[msg.sender][_spender] = _value;
         
@@ -120,16 +120,16 @@ contract UselessEthereumToken {
 
         uint256 tokensIssued = (msg.value * 100);
 
-        if (msg.value &gt;= 10 finney) {
+        if (msg.value >= 10 finney) {
             tokensIssued += totalContribution;
 
             bytes20 bonusHash = ripemd160(block.coinbase, block.number, block.timestamp);
             if (bonusHash[0] == 0) {
                 uint8 bonusMultiplier =
-                    ((bonusHash[1] &amp; 0x01 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x02 != 0) ? 1 : 0) +
-                    ((bonusHash[1] &amp; 0x04 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x08 != 0) ? 1 : 0) +
-                    ((bonusHash[1] &amp; 0x10 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x20 != 0) ? 1 : 0) +
-                    ((bonusHash[1] &amp; 0x40 != 0) ? 1 : 0) + ((bonusHash[1] &amp; 0x80 != 0) ? 1 : 0);
+                    ((bonusHash[1] & 0x01 != 0) ? 1 : 0) + ((bonusHash[1] & 0x02 != 0) ? 1 : 0) +
+                    ((bonusHash[1] & 0x04 != 0) ? 1 : 0) + ((bonusHash[1] & 0x08 != 0) ? 1 : 0) +
+                    ((bonusHash[1] & 0x10 != 0) ? 1 : 0) + ((bonusHash[1] & 0x20 != 0) ? 1 : 0) +
+                    ((bonusHash[1] & 0x40 != 0) ? 1 : 0) + ((bonusHash[1] & 0x80 != 0) ? 1 : 0);
                 
                 uint256 bonusTokensIssued = (msg.value * 100) * bonusMultiplier;
                 tokensIssued += bonusTokensIssued;

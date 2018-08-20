@@ -60,24 +60,24 @@ contract LVRCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
         uint _amount = amount / 20;
         
         // period 1 : 30%
-        if(now &gt; 1522839600 &amp;&amp; now &lt; 1523098800) {
+        if(now > 1522839600 && now < 1523098800) {
             amount += _amount * 6;
         }
         
         // period 2 : 20%
-        if(now &gt; 1523098800 &amp;&amp; now &lt; 1523703600) {
+        if(now > 1523098800 && now < 1523703600) {
             amount += _amount * 4;
         }
 
         // period 3 : 10%
-        if(now &gt; 1523703600 &amp;&amp; now &lt; 1524913200) {
+        if(now > 1523703600 && now < 1524913200) {
             amount += _amount * 2;
         }
 

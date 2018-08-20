@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,7 +76,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -122,7 +122,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -132,8 +132,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -147,7 +147,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -210,7 +210,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address internal owner;
@@ -312,8 +312,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract KassotBasicToken is MintableToken {
     
-  string public constant name = &quot;Kassot Token&quot;;  
-  string public constant symbol = &quot;KATOK&quot;;  
+  string public constant name = "Kassot Token";  
+  string public constant symbol = "KATOK";  
   uint8 public constant decimals = 18;
   
   uint public constant decimalMultiply = 1000000000000000000;  
@@ -323,7 +323,7 @@ contract KassotBasicToken is MintableToken {
 /*
  * @title KassotToken
  * @dev Kassot token crowdsale contract
- * @dev Author: Alexander Kazorin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb9a909a8194899295bb9c969a9297d5989496">[email&#160;protected]</a>&gt;
+ * @dev Author: Alexander Kazorin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb9a909a8194899295bb9c969a9297d5989496">[email protected]</a>>
  */ 
 contract KassotToken is ERC20, Ownable {
   
@@ -342,9 +342,9 @@ contract KassotToken is ERC20, Ownable {
   uint public currentRound;
   bool public allowRefund = false;        // Set to true if under softcap
   KassotBasicToken internal token = new KassotBasicToken();
-  mapping (uint =&gt; mapping (address =&gt; uint)) public balances;
-  mapping(uint =&gt; uint) internal bonuses;
-  mapping(uint =&gt; uint) internal amounts;
+  mapping (uint => mapping (address => uint)) public balances;
+  mapping(uint => uint) internal bonuses;
+  mapping(uint => uint) internal amounts;
 
   constructor(address _multisig, address _restricted) public {
     multisig = _multisig;
@@ -367,7 +367,7 @@ contract KassotToken is ERC20, Ownable {
   }
 
   modifier isUnderHardCap() {
-    require(address(this).balance &lt;= hardcap);
+    require(address(this).balance <= hardcap);
     _;
   }
   
@@ -477,7 +477,7 @@ contract KassotToken is ERC20, Ownable {
   }
 
   function finishSale() public onlyOwner {
-    if (address(this).balance &gt; softcap) {
+    if (address(this).balance > softcap) {
       multisig.transfer(address(this).balance);
       uint issuedTokenSupply = token.totalSupply();
       uint restrictedTokens = issuedTokenSupply.mul(restrictedPercent).div(100);
@@ -509,12 +509,12 @@ contract KassotToken is ERC20, Ownable {
     int amount = int(_amount);
     
     uint i = _stage;
-    while (amount &gt; 0) {
-      if (i &gt; 3) {
+    while (amount > 0) {
+      if (i > 3) {
         amounts[i] = uint(amount);
         break;
       }
-      if (amount - int(_stageAmount) &gt; 0) {
+      if (amount - int(_stageAmount) > 0) {
         amounts[i] = _stageAmount;
         amount -= int(_stageAmount);
         i++;
@@ -527,7 +527,7 @@ contract KassotToken is ERC20, Ownable {
     uint tokens = 0;
     uint bonusTokens = 0;
     uint _tokens = 0;
-    for (i = _stage; i &lt;= 4; i++) {
+    for (i = _stage; i <= 4; i++) {
       if (amounts[i] == 0) {
         break;
       }
@@ -544,11 +544,11 @@ contract KassotToken is ERC20, Ownable {
     uint tokens = 0;    
     uint stageAmount = hardcap.div(4);
     
-    if (address(this).balance &lt;= stageAmount) {
+    if (address(this).balance <= stageAmount) {
       tokens = calculateTokens(amount, 1, stageAmount);
-    } else if (address(this).balance &lt;= stageAmount * 2) {
+    } else if (address(this).balance <= stageAmount * 2) {
       tokens = calculateTokens(amount, 2, stageAmount);
-    } else if (address(this).balance &lt;= stageAmount * 3) {
+    } else if (address(this).balance <= stageAmount * 3) {
       tokens = calculateTokens(amount, 3, stageAmount);
     } else {
       tokens = calculateTokens(amount, 4, stageAmount);

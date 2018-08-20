@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) view internal returns (uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) view internal returns (uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -21,7 +21,7 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) view internal returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -31,15 +31,15 @@ contract SafeMath {
 contract Owner {
 	
 	// Адреса владельцев
-	mapping ( address =&gt; bool ) public ownerAddressMap;
+	mapping ( address => bool ) public ownerAddressMap;
 	// Соответсвие адреса владельца и его номера
-	mapping ( address =&gt; uint256 ) public ownerAddressNumberMap;
+	mapping ( address => uint256 ) public ownerAddressNumberMap;
 	// список менеджеров
-	mapping ( uint256 =&gt; address ) public ownerListMap;
+	mapping ( uint256 => address ) public ownerListMap;
 	// сколько всего менеджеров
 	uint256 public ownerCountInt = 0;
 	
-	// событие &quot;изменение в контракте&quot;
+	// событие "изменение в контракте"
 	event ContractManagementUpdate( string _type, address _initiator, address _to, bool _newvalue );
 
 	// модификатор - если смотрит владелец
@@ -50,16 +50,16 @@ contract Owner {
 	
 	// создание/включение владельца
 	function ownerOn( address _onOwnerAddress ) external isOwner returns (bool retrnVal) {
-		// Check if it&#39;s a non-zero address
+		// Check if it's a non-zero address
 		require( _onOwnerAddress != address(0) );
 		// если такой владелец есть (стартового владельца удалить нельзя)
-		if ( ownerAddressNumberMap[ _onOwnerAddress ]&gt;0 )
+		if ( ownerAddressNumberMap[ _onOwnerAddress ]>0 )
 		{
 			// если такой владелец отключен, влючим его обратно
 			if ( !ownerAddressMap[ _onOwnerAddress ] )
 			{
 				ownerAddressMap[ _onOwnerAddress ] = true;
-				ContractManagementUpdate( &quot;Owner&quot;, msg.sender, _onOwnerAddress, true );
+				ContractManagementUpdate( "Owner", msg.sender, _onOwnerAddress, true );
 				retrnVal = true;
 			}
 			else
@@ -74,7 +74,7 @@ contract Owner {
 			ownerAddressNumberMap[ _onOwnerAddress ] = ownerCountInt;
 			ownerListMap[ ownerCountInt ] = _onOwnerAddress;
 			ownerCountInt++;
-			ContractManagementUpdate( &quot;Owner&quot;, msg.sender, _onOwnerAddress, true );
+			ContractManagementUpdate( "Owner", msg.sender, _onOwnerAddress, true );
 			retrnVal = true;
 		}
 	}
@@ -83,10 +83,10 @@ contract Owner {
 	function ownerOff( address _offOwnerAddress ) external isOwner returns (bool retrnVal) {
 		// если такой менеджер есть и он не 0-вой, а также активен
 		// 0-вой менеджер не может быть отключен
-		if ( ownerAddressNumberMap[ _offOwnerAddress ]&gt;0 &amp;&amp; ownerAddressMap[ _offOwnerAddress ] )
+		if ( ownerAddressNumberMap[ _offOwnerAddress ]>0 && ownerAddressMap[ _offOwnerAddress ] )
 		{
 			ownerAddressMap[ _offOwnerAddress ] = false;
-			ContractManagementUpdate( &quot;Owner&quot;, msg.sender, _offOwnerAddress, false );
+			ContractManagementUpdate( "Owner", msg.sender, _offOwnerAddress, false );
 			retrnVal = true;
 		}
 		else
@@ -95,7 +95,7 @@ contract Owner {
 		}
 	}
 
-	// конструктор, при создании контракта добалвяет создателя в &quot;неудаляемые&quot; создатели
+	// конструктор, при создании контракта добалвяет создателя в "неудаляемые" создатели
 	function Owner() public {
 		// создаем владельца
 		ownerAddressMap[ msg.sender ] = true;
@@ -108,11 +108,11 @@ contract Owner {
 contract SpecialManager is Owner {
 
 	// адреса специальных менеджеров
-	mapping ( address =&gt; bool ) public specialManagerAddressMap;
+	mapping ( address => bool ) public specialManagerAddressMap;
 	// Соответсвие адреса специального менеджера и его номера
-	mapping ( address =&gt; uint256 ) public specialManagerAddressNumberMap;
+	mapping ( address => uint256 ) public specialManagerAddressNumberMap;
 	// список специальноых менеджеров
-	mapping ( uint256 =&gt; address ) public specialManagerListMap;
+	mapping ( uint256 => address ) public specialManagerListMap;
 	// сколько всего специальных менеджеров
 	uint256 public specialManagerCountInt = 0;
 	
@@ -124,16 +124,16 @@ contract SpecialManager is Owner {
 	
 	// создание/включение специального менеджера
 	function specialManagerOn( address _onSpecialManagerAddress ) external isOwner returns (bool retrnVal) {
-		// Check if it&#39;s a non-zero address
+		// Check if it's a non-zero address
 		require( _onSpecialManagerAddress != address(0) );
 		// если такой менеджер есть
-		if ( specialManagerAddressNumberMap[ _onSpecialManagerAddress ]&gt;0 )
+		if ( specialManagerAddressNumberMap[ _onSpecialManagerAddress ]>0 )
 		{
 			// если такой менеджер отключен, влючим его обратно
 			if ( !specialManagerAddressMap[ _onSpecialManagerAddress ] )
 			{
 				specialManagerAddressMap[ _onSpecialManagerAddress ] = true;
-				ContractManagementUpdate( &quot;Special Manager&quot;, msg.sender, _onSpecialManagerAddress, true );
+				ContractManagementUpdate( "Special Manager", msg.sender, _onSpecialManagerAddress, true );
 				retrnVal = true;
 			}
 			else
@@ -148,7 +148,7 @@ contract SpecialManager is Owner {
 			specialManagerAddressNumberMap[ _onSpecialManagerAddress ] = specialManagerCountInt;
 			specialManagerListMap[ specialManagerCountInt ] = _onSpecialManagerAddress;
 			specialManagerCountInt++;
-			ContractManagementUpdate( &quot;Special Manager&quot;, msg.sender, _onSpecialManagerAddress, true );
+			ContractManagementUpdate( "Special Manager", msg.sender, _onSpecialManagerAddress, true );
 			retrnVal = true;
 		}
 	}
@@ -157,10 +157,10 @@ contract SpecialManager is Owner {
 	function specialManagerOff( address _offSpecialManagerAddress ) external isOwner returns (bool retrnVal) {
 		// если такой менеджер есть и он не 0-вой, а также активен
 		// 0-вой менеджер не может быть отключен
-		if ( specialManagerAddressNumberMap[ _offSpecialManagerAddress ]&gt;0 &amp;&amp; specialManagerAddressMap[ _offSpecialManagerAddress ] )
+		if ( specialManagerAddressNumberMap[ _offSpecialManagerAddress ]>0 && specialManagerAddressMap[ _offSpecialManagerAddress ] )
 		{
 			specialManagerAddressMap[ _offSpecialManagerAddress ] = false;
-			ContractManagementUpdate( &quot;Special Manager&quot;, msg.sender, _offSpecialManagerAddress, false );
+			ContractManagementUpdate( "Special Manager", msg.sender, _offSpecialManagerAddress, false );
 			retrnVal = true;
 		}
 		else
@@ -183,11 +183,11 @@ contract SpecialManager is Owner {
 contract Manager is SpecialManager {
 	
 	// адрес менеджеров
-	mapping ( address =&gt; bool ) public managerAddressMap;
+	mapping ( address => bool ) public managerAddressMap;
 	// Соответсвие адреса менеджеров и его номера
-	mapping ( address =&gt; uint256 ) public managerAddressNumberMap;
+	mapping ( address => uint256 ) public managerAddressNumberMap;
 	// список менеджеров
-	mapping ( uint256 =&gt; address ) public managerListMap;
+	mapping ( uint256 => address ) public managerListMap;
 	// сколько всего менеджеров
 	uint256 public managerCountInt = 0;
 	
@@ -199,16 +199,16 @@ contract Manager is SpecialManager {
 	
 	// создание/включение менеджера
 	function managerOn( address _onManagerAddress ) external isOwner returns (bool retrnVal) {
-		// Check if it&#39;s a non-zero address
+		// Check if it's a non-zero address
 		require( _onManagerAddress != address(0) );
 		// если такой менеджер есть
-		if ( managerAddressNumberMap[ _onManagerAddress ]&gt;0 )
+		if ( managerAddressNumberMap[ _onManagerAddress ]>0 )
 		{
 			// если такой менеджер отключен, влючим его обратно
 			if ( !managerAddressMap[ _onManagerAddress ] )
 			{
 				managerAddressMap[ _onManagerAddress ] = true;
-				ContractManagementUpdate( &quot;Manager&quot;, msg.sender, _onManagerAddress, true );
+				ContractManagementUpdate( "Manager", msg.sender, _onManagerAddress, true );
 				retrnVal = true;
 			}
 			else
@@ -223,7 +223,7 @@ contract Manager is SpecialManager {
 			managerAddressNumberMap[ _onManagerAddress ] = managerCountInt;
 			managerListMap[ managerCountInt ] = _onManagerAddress;
 			managerCountInt++;
-			ContractManagementUpdate( &quot;Manager&quot;, msg.sender, _onManagerAddress, true );
+			ContractManagementUpdate( "Manager", msg.sender, _onManagerAddress, true );
 			retrnVal = true;
 		}
 	}
@@ -232,10 +232,10 @@ contract Manager is SpecialManager {
 	function managerOff( address _offManagerAddress ) external isOwner returns (bool retrnVal) {
 		// если такой менеджер есть и он не 0-вой, а также активен
 		// 0-вой менеджер не может быть отключен
-		if ( managerAddressNumberMap[ _offManagerAddress ]&gt;0 &amp;&amp; managerAddressMap[ _offManagerAddress ] )
+		if ( managerAddressNumberMap[ _offManagerAddress ]>0 && managerAddressMap[ _offManagerAddress ] )
 		{
 			managerAddressMap[ _offManagerAddress ] = false;
-			ContractManagementUpdate( &quot;Manager&quot;, msg.sender, _offManagerAddress, false );
+			ContractManagementUpdate( "Manager", msg.sender, _offManagerAddress, false );
 			retrnVal = true;
 		}
 		else
@@ -258,7 +258,7 @@ contract Manager is SpecialManager {
 contract Management is Manager {
 	
 	// текстовое описание контракта
-	string public description = &quot;&quot;;
+	string public description = "";
 	
 	// текущий статус разрешения транзакций
 	// TRUE - транзакции возможны
@@ -303,7 +303,7 @@ contract Management is Manager {
 		tokenCreationCap = _newVal;
 	}
 	
-	// событие, &quot;смена описания&quot;
+	// событие, "смена описания"
 	event DescriptionPublished( string _description, address _initiator);
 	
 	// изменение текста
@@ -318,27 +318,27 @@ contract Management is Manager {
 contract FoodcoinEcosystem is SafeMath, Management {
 	
 	// название токена
-	string public constant name = &quot;FoodCoin EcoSystem&quot;;
+	string public constant name = "FoodCoin EcoSystem";
 	// короткое название токена
-	string public constant symbol = &quot;FOOD&quot;;
+	string public constant symbol = "FOOD";
 	// точность токена (знаков после запятой для вывода в кошельках)
 	uint256 public constant decimals = 8;
 	// общее кол-во выпущенных токенов
 	uint256 public totalSupply = 0;
 	
 	// состояние счета
-	mapping ( address =&gt; uint256 ) balances;
+	mapping ( address => uint256 ) balances;
 	// список всех счетов
-	mapping ( uint256 =&gt; address ) public balancesListAddressMap;
+	mapping ( uint256 => address ) public balancesListAddressMap;
 	// соответсвие счета и его номера
-	mapping ( address =&gt; uint256 ) public balancesListNumberMap;
+	mapping ( address => uint256 ) public balancesListNumberMap;
 	// текстовое описание счета
-	mapping ( address =&gt; string ) public balancesAddressDescription;
+	mapping ( address => string ) public balancesAddressDescription;
 	// общее кол-во всех счетов
 	uint256 balancesCountInt = 1;
 	
 	// делегирование на управление счетом на определенную сумму
-	mapping ( address =&gt; mapping ( address =&gt; uint256 ) ) allowed;
+	mapping ( address => mapping ( address => uint256 ) ) allowed;
 	
 	
 	// событие - транзакция
@@ -389,11 +389,11 @@ contract FoodcoinEcosystem is SafeMath, Management {
 	function _transfer( address _from, address _to, uint256 _value ) internal isTransactionsOn returns ( bool success )
 	{
 		// If the amount to transfer is greater than 0, and sender has funds available
-		if ( _value &gt; 0 &amp;&amp; balances[ _from ] &gt;= _value )
+		if ( _value > 0 && balances[ _from ] >= _value )
 		{
 			// Subtract from sender account
 			balances[ _from ] -= _value;
-			// Add to receiver&#39;s account
+			// Add to receiver's account
 			_addClientAddress( _to, _value );
 			// Perform the transfer
 			Transfer( _from, _to, _value, msg.sender );
@@ -414,8 +414,8 @@ contract FoodcoinEcosystem is SafeMath, Management {
 	// функция перевода токенов с делегированного счета
 	function transferFrom(address _from, address _to, uint256 _value) external isTransactionsOn returns ( bool success )
 	{
-		// Check if the transfer initiator has permissions to move funds from the sender&#39;s account
-		if ( allowed[_from][msg.sender] &gt;= _value )
+		// Check if the transfer initiator has permissions to move funds from the sender's account
+		if ( allowed[_from][msg.sender] >= _value )
 		{
 			// If yes - perform transfer 
 			if ( _transfer( _from, _to, _value ) )
@@ -447,19 +447,19 @@ contract FoodcoinEcosystem is SafeMath, Management {
 	// функция эмиссии (менеджер или владелец контракта создает токены и отправляет их на определенный счет)
 	function tokenEmission(address _reciever, uint256 _amount) external isManagerOrOwner isEmissionOn returns ( bool returnVal )
 	{
-		// Check if it&#39;s a non-zero address
+		// Check if it's a non-zero address
 		require( _reciever != address(0) );
 		// Calculate number of tokens after generation
 		uint256 checkedSupply = safeAdd( totalSupply, _amount );
 		// сумма к эмиссии
 		uint256 amountTmp = _amount;
 		// Если потолок эмиссии установлен, то нельзя выпускать больше этого потолка
-		if ( tokenCreationCap &gt; 0 &amp;&amp; tokenCreationCap &lt; checkedSupply )
+		if ( tokenCreationCap > 0 && tokenCreationCap < checkedSupply )
 		{
 			amountTmp = 0;
 		}
 		// если попытка добавить больше 0-ля токенов
-		if ( amountTmp &gt; 0 )
+		if ( amountTmp > 0 )
 		{
 			// If no error, add generated tokens to a given address
 			_addClientAddress( _reciever, amountTmp );
@@ -478,12 +478,12 @@ contract FoodcoinEcosystem is SafeMath, Management {
 	function withdraw( address _to, uint256 _amount ) external isSpecialManagerOrOwner returns ( bool returnVal, uint256 withdrawValue, uint256 newBalancesValue )
 	{
 		// check if this is a valid account
-		if ( balances[ _to ] &gt; 0 )
+		if ( balances[ _to ] > 0 )
 		{
 			// сумма к списанию
 			uint256 amountTmp = _amount;
 			// нельзя списать больше, чем есть на счету
-			if ( balances[ _to ] &lt; _amount )
+			if ( balances[ _to ] < _amount )
 			{
 				amountTmp = balances[ _to ];
 			}
@@ -510,7 +510,7 @@ contract FoodcoinEcosystem is SafeMath, Management {
 	function balancesAddressDescriptionUpdate( string _newDescription ) external returns ( bool returnVal )
 	{
 		// если такой аккаунт есть или владелец контракта
-		if ( balancesListNumberMap[ msg.sender ] &gt; 0 || ownerAddressMap[msg.sender]==true )
+		if ( balancesListNumberMap[ msg.sender ] > 0 || ownerAddressMap[msg.sender]==true )
 		{
 			balancesAddressDescription[ msg.sender ] = _newDescription;
 			returnVal = true;

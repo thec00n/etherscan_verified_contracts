@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="8cefe3e2f8edeff8ccc9f8e4e9fee9e1e3e2a2efe3e1">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="8cefe3e2f8edeff8ccc9f8e4e9fee9e1e3e2a2efe3e1">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -202,12 +202,12 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         uint32[] ancestors;
     }
     
-    mapping(uint8 =&gt; GymTrainer) public gymTrainers;
-    mapping(address =&gt; TrainingLog) public trainees;
-    mapping(uint8 =&gt; uint8) typeAdvantages;
-    mapping(uint32 =&gt; CacheClassInfo) cacheClasses;
-    mapping(uint8 =&gt; uint32) levelExps;
-    mapping(uint8 =&gt; uint32) levelExpGains;
+    mapping(uint8 => GymTrainer) public gymTrainers;
+    mapping(address => TrainingLog) public trainees;
+    mapping(uint8 => uint8) typeAdvantages;
+    mapping(uint32 => CacheClassInfo) cacheClasses;
+    mapping(uint8 => uint32) levelExps;
+    mapping(uint8 => uint32) levelExpGains;
     uint256 public gymFee = 0.001 ether;
     uint8 public maxTrainerLevel = 5;
     uint8 public totalTrainer = 0;
@@ -238,7 +238,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     
-     // admin &amp; moderators
+     // admin & moderators
     function setTypeAdvantages() onlyModerators external {
         typeAdvantages[1] = 14;
         typeAdvantages[2] = 16;
@@ -273,7 +273,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         // add type
         i = data.getSizeArrayType(ArrayType.CLASS_TYPE, uint64(_classId));
         uint8[] memory aTypes = new uint8[](i);
-        for(; i &gt; 0 ; i--) {
+        for(; i > 0 ; i--) {
             aTypes[i-1] = data.getElementInArrayType(ArrayType.CLASS_TYPE, uint64(_classId), i-1);
         }
         classInfo.types = aTypes;
@@ -281,7 +281,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         // add steps
         i = data.getSizeArrayType(ArrayType.STAT_STEP, uint64(_classId));
         uint8[] memory steps = new uint8[](i);
-        for(; i &gt; 0 ; i--) {
+        for(; i > 0 ; i--) {
             steps[i-1] = data.getElementInArrayType(ArrayType.STAT_STEP, uint64(_classId), i-1);
         }
         classInfo.steps = steps;
@@ -289,7 +289,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         // add ancestor
         i = gateway.getClassPropertySize(_classId, PropertyType.ANCESTOR);
         uint32[] memory ancestors = new uint32[](i);
-        for(; i &gt; 0 ; i--) {
+        for(; i > 0 ; i--) {
             ancestors[i-1] = gateway.getClassPropertyValue(_classId, PropertyType.ANCESTOR, i-1);
         }
         classInfo.ancestors = ancestors;
@@ -410,7 +410,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 level = 1;
         uint32 requirement = 100;
         uint32 sum = requirement;
-        while(level &lt;= 100) {
+        while(level <= 100) {
             levelExps[level] = sum;
             level += 1;
             requirement = (requirement * 11) / 10 + 5;
@@ -436,7 +436,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     function withdrawEther(address _sendTo, uint _amount) onlyModerators external {
-        if (_amount &gt; this.balance) {
+        if (_amount > this.balance) {
             revert();
         }
         _sendTo.transfer(_amount);
@@ -456,7 +456,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getRandom(uint8 maxRan, uint8 index) constant public returns(uint8) {
         uint256 genNum = uint256(block.blockhash(block.number-1));
-        for (uint8 i = 0; i &lt; index &amp;&amp; i &lt; 6; i ++) {
+        for (uint8 i = 0; i < index && i < 6; i ++) {
             genNum /= 256;
         }
         return uint8(genNum % maxRan);
@@ -467,9 +467,9 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 maxIndex = 100;
         uint8 currentIndex;
      
-        while (minIndex &lt; maxIndex) {
+        while (minIndex < maxIndex) {
             currentIndex = (minIndex + maxIndex) / 2;
-            if (exp &lt; levelExps[currentIndex])
+            if (exp < levelExps[currentIndex])
                 maxIndex = currentIndex;
             else
                 minIndex = currentIndex + 1;
@@ -479,12 +479,12 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getGainExp(uint8 xLevel, uint8 yLevel) constant public returns(uint32 winExp, uint32 loseExp){
         winExp = levelExpGains[yLevel] * expPercentage / 100;
-        if (xLevel &gt; yLevel) {
-            if (xLevel &gt; yLevel + 10) {
+        if (xLevel > yLevel) {
+            if (xLevel > yLevel + 10) {
                 winExp = 5;
             } else {
                 winExp /= uint32(3) ** (xLevel - yLevel) / uint32(2) ** (xLevel - yLevel);
-                if (winExp &lt; 5)
+                if (winExp < 5)
                     winExp = 5;
             }
         }
@@ -492,7 +492,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     function safeDeduct(uint16 a, uint16 b) pure private returns(uint16){
-        if (a &gt; b) {
+        if (a > b) {
             return a - b;
         }
         return 0;
@@ -500,8 +500,8 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     
     function getTypeSupport(uint32 _aClassId, uint32 _bClassId) constant private returns (bool aHasAdvantage, bool bHasAdvantage) {
         // check types 
-        for (uint i = 0; i &lt; cacheClasses[_aClassId].types.length; i++) {
-            for (uint j = 0; j &lt; cacheClasses[_bClassId].types.length; j++) {
+        for (uint i = 0; i < cacheClasses[_aClassId].types.length; i++) {
+            for (uint j = 0; j < cacheClasses[_bClassId].types.length; j++) {
                 if (typeAdvantages[cacheClasses[_aClassId].types[i]] == cacheClasses[_bClassId].types[j]) {
                     aHasAdvantage = true;
                 }
@@ -519,15 +519,15 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         }
         uint16 hpDeducted = safeDeduct(_attack, _defense * 3 /4);
         uint16 hpSpecialDeducted = safeDeduct(_specialAttack, _specialDefense* 3 / 4);
-        if (hpDeducted &lt; minHpDeducted &amp;&amp; hpSpecialDeducted &lt; minHpDeducted)
+        if (hpDeducted < minHpDeducted && hpSpecialDeducted < minHpDeducted)
             return minHpDeducted;
-        if (hpDeducted &gt; hpSpecialDeducted)
+        if (hpDeducted > hpSpecialDeducted)
             return hpDeducted;
         return hpSpecialDeducted;
     }
     
     function attack(uint8 _index, uint8 _ran, uint16[6] _aStats, uint16[6] _bStats) constant public returns(bool win) {
-        if (_ran &lt; _index * maxRandomRound)
+        if (_ran < _index * maxRandomRound)
             _ran = maxRandomRound;
         else
             _ran = _ran - _index * maxRandomRound;
@@ -535,8 +535,8 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         uint16 round = 0;
         uint16 aHp = _aStats[0];
         uint16 bHp = _bStats[0];
-        if (_aStats[5] &gt; _bStats[5]) {
-            while (round &lt; maxRandomRound &amp;&amp; aHp &gt; 0 &amp;&amp; bHp &gt; 0) {
+        if (_aStats[5] > _bStats[5]) {
+            while (round < maxRandomRound && aHp > 0 && bHp > 0) {
                 if (round % 2 == 0) {
                     // a attack 
                     bHp = safeDeduct(bHp, calHpDeducted(_aStats[1], _aStats[3], _bStats[2], _bStats[4], round==_ran));
@@ -546,7 +546,7 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
                 round++;
             }
         } else {
-            while (round &lt; maxRandomRound &amp;&amp; aHp &gt; 0 &amp;&amp; bHp &gt; 0) {
+            while (round < maxRandomRound && aHp > 0 && bHp > 0) {
                 if (round % 2 != 0) {
                     bHp = safeDeduct(bHp, calHpDeducted(_aStats[1], _aStats[3], _bStats[2], _bStats[4], round==_ran));
                 } else {
@@ -556,17 +556,17 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
             }
         }
         
-        win = aHp &gt;= bHp;
+        win = aHp >= bHp;
     }
     
     function attackTrainer(uint8 _index, uint8 _ran, uint8 _trainerId, uint8 _trainerLevel, uint32 _objClassId, uint16[6] _objStats) constant public returns(bool result) {
         GymTrainer memory trainer = gymTrainers[_trainerId];
         uint16[6] memory trainerStats;
         uint i = 0;
-        for (i=0; i &lt; STAT_COUNT; i+=1) {
+        for (i=0; i < STAT_COUNT; i+=1) {
             trainerStats[i] = trainer.statBases[i];
         }
-        for (i=0; i &lt; cacheClasses[trainer.classId].steps.length; i++) {
+        for (i=0; i < cacheClasses[trainer.classId].steps.length; i++) {
             trainerStats[i] += uint16(safeMult(cacheClasses[trainer.classId].steps[i], _trainerLevel*3));
         }
         
@@ -596,13 +596,13 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
     }
     
     function startTraining(uint64 _objId, uint8 _trainerLevel, uint8 _t1, uint8 _t2, uint8 _t3) isActive requireDataContract requireWorldContract payable external {
-        if (_trainerLevel &gt; maxTrainerLevel)
+        if (_trainerLevel > maxTrainerLevel)
             revert();
         if (msg.value != gymFee)
             revert();
         if (_t1 == _t2 || _t1 == _t3 || _t2 == _t3)
             revert();
-        if (_t1 == 0 || _t2 == 0 || _t3 == 0 || _t1 &gt; totalTrainer || _t2 &gt; totalTrainer || _t3 &gt; totalTrainer)
+        if (_t1 == 0 || _t2 == 0 || _t3 == 0 || _t1 > totalTrainer || _t2 > totalTrainer || _t3 > totalTrainer)
             revert();
 
         AttackData memory att;
@@ -613,10 +613,10 @@ contract EtheremonGym is EtheremonEnum, BasicAccessControl, SafeMath {
         uint i = 0;
         uint16[6] memory objStats;
         EtheremonDataBase data = EtheremonDataBase(dataContract);
-        for (i=0; i &lt; STAT_COUNT; i+=1) {
+        for (i=0; i < STAT_COUNT; i+=1) {
             objStats[i] = data.getElementInArrayType(ArrayType.STAT_BASE, _objId, i);
         }
-        for (i=0; i &lt; cacheClasses[att.objClassId].steps.length; i++) {
+        for (i=0; i < cacheClasses[att.objClassId].steps.length; i++) {
             objStats[i] += uint16(safeMult(cacheClasses[att.objClassId].steps[i], att.objLevel*3));
         }
         

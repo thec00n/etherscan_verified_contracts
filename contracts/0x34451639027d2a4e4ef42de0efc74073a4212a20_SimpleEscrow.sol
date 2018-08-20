@@ -42,7 +42,7 @@ contract SimpleEscrow {
     }
 
     function orderNotAccepted() public onlyCustomer {
-        require(now &gt;= orderLastDate);
+        require(now >= orderLastDate);
         safeLastDate += SAFE_PERIOD;
     }
 
@@ -51,7 +51,7 @@ contract SimpleEscrow {
     }
     
     function completeOrderBySafePeriod() public onlyDeveloper {
-        require(now &gt;= safeLastDate);
+        require(now >= safeLastDate);
         developerWallet.transfer(this.balance);
     }
     

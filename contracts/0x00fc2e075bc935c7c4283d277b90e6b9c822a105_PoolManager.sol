@@ -16,13 +16,13 @@ contract SmartPool {
 	//End triggers
 	uint duration;		//The pool ends when the duration expire
     uint ticketCount;	//Or when the reserve of tickets has been sold
-    bool ended;			//Current state (can&#39;t buy tickets when ended)
+    bool ended;			//Current state (can't buy tickets when ended)
 	bool terminated;	//true if a winner has been picked
 	bool moneySent;		//true if the winner has picked his money
     
 	//Min wait duration between ended and terminated states
 	uint constant blockDuration = 15; // we use 15 sec for the block duration
-	uint constant minWaitDuration = 240; // (= 3600 / blockDuration =&gt; 60 minutes waiting between &#39;ended&#39; and &#39;terminated&#39;)
+	uint constant minWaitDuration = 240; // (= 3600 / blockDuration => 60 minutes waiting between 'ended' and 'terminated')
 	
     //Players
     address[] players;	//List of tickets owners, each ticket gives an entry in the array
@@ -37,10 +37,10 @@ contract SmartPool {
     function SmartPool(uint _ticketPrice, uint _ticketCount, uint _duration) public
     {
 		//Positive ticket price and either ticketCount or duration must be provided
-        require(_ticketPrice &gt; 0 &amp;&amp; (_ticketCount &gt; 0 || _duration &gt; blockDuration));
+        require(_ticketPrice > 0 && (_ticketCount > 0 || _duration > blockDuration));
 		
 		//Check for overflows
-		require(now + _duration &gt;= now);
+		require(now + _duration >= now);
 		
 		//Set ticketCount if needed (according to max balance)
 		if (_ticketCount == 0)
@@ -48,7 +48,7 @@ contract SmartPool {
 			_ticketCount = (2 ** 256 - 1) / _ticketPrice;
 		}
 		
-		require(_ticketCount * _ticketPrice &gt;= _ticketPrice);
+		require(_ticketCount * _ticketPrice >= _ticketPrice);
 		
 		//Store manager
 		poolManager = msg.sender;
@@ -153,7 +153,7 @@ contract SmartPool {
 	//End trigger
 	function checkEnd() public
 	{
-		if ( (duration &gt; 0 &amp;&amp; block.number &gt;= startBlock + duration) || (players.length &gt;= ticketCount) )
+		if ( (duration > 0 && block.number >= startBlock + duration) || (players.length >= ticketCount) )
         {
 			ended = true;
 			endDate = now;
@@ -174,7 +174,7 @@ contract SmartPool {
         currAmount += amount; // amount has been checked by the manager
         
         //Add player to the ticket owner array, for each bought ticket
-		for (uint i = 0; i &lt; ticketBoughtCount; i++)
+		for (uint i = 0; i < ticketBoughtCount; i++)
 			players.push(player);
         
         //Check end	
@@ -183,7 +183,7 @@ contract SmartPool {
 	
 	function canTerminate() public constant returns(bool)
 	{
-		return ended &amp;&amp; !terminated &amp;&amp; block.number - endBlock &gt;= minWaitDuration;
+		return ended && !terminated && block.number - endBlock >= minWaitDuration;
 	}
 
     //Terminate the pool by picking a winner (only poolManager can do this, after the pool is ended and some time has passed so the seed has changed many times)
@@ -193,16 +193,16 @@ contract SmartPool {
 		require(msg.sender == poolManager);
 		
         //The pool need to be ended, but not terminated
-        require(ended &amp;&amp; !terminated);
+        require(ended && !terminated);
 		
 		//Min duration between ended and terminated
-		require(block.number - endBlock &gt;= minWaitDuration);
+		require(block.number - endBlock >= minWaitDuration);
 		
 		//Only one call to this function
         terminated = true;
 
 		//Pick a winner
-		if (players.length &gt; 0)
+		if (players.length > 0)
 			winner = players[randSeed % players.length];
     }
 	
@@ -238,7 +238,7 @@ contract PoolManager {
 	address wallet;
 	
 	//Fees infos (external websites providing access to pools get 1% too)
-	mapping(address =&gt; uint) fees;
+	mapping(address => uint) fees;
 		
 	//Fees divider (1% for the wallet, and 1% for external website where player can buy tickets)
 	uint constant feeDivider = 100; //(1/100 of the amount)
@@ -255,7 +255,7 @@ contract PoolManager {
 	//History (contains all the pools since the deploy)
 	SmartPool[] poolsHistory;
 	
-	//Current rand seed (it changes a lot so it&#39;s pretty hard to know its value when the winner is picked)
+	//Current rand seed (it changes a lot so it's pretty hard to know its value when the winner is picked)
 	uint randSeed;
 
 	//Constructor (only owner)
@@ -277,7 +277,7 @@ contract PoolManager {
 	function addPool(uint ticketPrice, uint ticketCount, uint duration) public
 	{
 		require(msg.sender == owner);
-		require(ticketPrice &gt;= ticketPriceMultiple &amp;&amp; ticketPrice % ticketPriceMultiple == 0);
+		require(ticketPrice >= ticketPriceMultiple && ticketPrice % ticketPriceMultiple == 0);
 		
 		//Deploy a new pool
 		pools.push(new SmartPool(ticketPrice, ticketCount, duration));
@@ -292,7 +292,7 @@ contract PoolManager {
 	}
 	function getPool(uint index) public constant returns(address)
 	{
-		require(index &lt; pools.length);
+		require(index < pools.length);
 		return pools[index];
 	}
 	
@@ -303,7 +303,7 @@ contract PoolManager {
 	}
 	function getPoolDone(uint index) public constant returns(address)
 	{
-		require(index &lt; poolsDone.length);
+		require(index < poolsDone.length);
 		return poolsDone[index];
 	}
 
@@ -314,15 +314,15 @@ contract PoolManager {
 	}
 	function getPoolHistory(uint index) public constant returns(address)
 	{
-		require(index &lt; poolsHistory.length);
+		require(index < poolsHistory.length);
 		return poolsHistory[index];
 	}
 		
 	//Buy tickets for a pool (public)
 	function buyTicket(uint poolIndex, uint ticketCount, address websiteFeeAddr) public payable
 	{
-		require(poolIndex &lt; pools.length);
-		require(ticketCount &gt; 0);
+		require(poolIndex < pools.length);
+		require(ticketCount > 0);
 		
 		//Get pool and check state
 		SmartPool pool = pools[poolIndex];
@@ -331,12 +331,12 @@ contract PoolManager {
 		
 		//Adjust ticketCount according to available tickets
 		uint availableCount = pool.getAvailableTicketCount();
-		if (ticketCount &gt; availableCount)
+		if (ticketCount > availableCount)
 			ticketCount = availableCount;
 		
 		//Get amount required and check msg.value
 		uint amountRequired = ticketCount * pool.getTicketPrice();
-		require(msg.value &gt;= amountRequired);
+		require(msg.value >= amountRequired);
 		
 		//If too much value sent, we send it back to player
 		uint amountLeft = msg.value - amountRequired;
@@ -355,7 +355,7 @@ contract PoolManager {
 		pool.addPlayer(msg.sender, ticketCount, amountRequired - 2 * feeAmount);
 		
 		//Send back amountLeft to player if too much value sent
-		if (amountLeft &gt; 0 &amp;&amp; !msg.sender.send(amountLeft))
+		if (amountLeft > 0 && !msg.sender.send(amountLeft))
 		{
 			addFee(wallet, amountLeft); // if it fails, we take it as a fee..
 		}
@@ -366,17 +366,17 @@ contract PoolManager {
 	//Check pools end. (called by our console each 10 minutes, or can be called by anybody)
 	function checkPoolsEnd() public 
 	{
-		for (uint i = 0; i &lt; pools.length; i++)
+		for (uint i = 0; i < pools.length; i++)
 		{
 			//Check each pool and restart the ended ones
 			checkPoolEnd(i);
 		}
 	}
 	
-	//Check end of a pool and restart it if it&#39;s ended (public)
+	//Check end of a pool and restart it if it's ended (public)
 	function checkPoolEnd(uint i) public 
 	{
-		require(i &lt; pools.length);
+		require(i < pools.length);
 		
 		//Check end (if not triggered yet)
 		SmartPool pool = pools[i];
@@ -398,7 +398,7 @@ contract PoolManager {
 	//Check pools done. (called by our console, or can be called by anybody)
 	function checkPoolsDone() public 
 	{
-		for (uint i = 0; i &lt; poolsDone.length; i++)
+		for (uint i = 0; i < poolsDone.length; i++)
 		{
 			checkPoolDone(i);
 		}
@@ -407,7 +407,7 @@ contract PoolManager {
 	//Check end of one pool
 	function checkPoolDone(uint i) public
 	{
-		require(i &lt; poolsDone.length);
+		require(i < poolsDone.length);
 		
 		SmartPool pool = poolsDone[i];
 		if (pool.isTerminated())
@@ -425,7 +425,7 @@ contract PoolManager {
 	//Send money of the pool to the winner (public)
 	function sendPoolMoney(uint i) public
 	{
-		require(i &lt; poolsDone.length);
+		require(i < poolsDone.length);
 		
 		SmartPool pool = poolsDone[i];
 		require (pool.isTerminated()); // we need a winner picked
@@ -435,7 +435,7 @@ contract PoolManager {
 		uint amount = pool.getCurrAmount();
 		address winner = pool.getWinner();
 		pool.onMoneySent();
-		if (amount &gt; 0 &amp;&amp; !winner.send(amount)) // the winner can&#39;t get his money (should not happen)
+		if (amount > 0 && !winner.send(amount)) // the winner can't get his money (should not happen)
 		{
 			addFee(wallet, amount);
 		}
@@ -448,13 +448,13 @@ contract PoolManager {
 	function clearPoolsDone() public
 	{
 		//Make sure all pools are terminated with no money left
-		for (uint i = 0; i &lt; poolsDone.length; i++)
+		for (uint i = 0; i < poolsDone.length; i++)
 		{
 			if (!poolsDone[i].isMoneySent())
 				return;
 		}
 		
-		//&quot;Clear&quot; poolsDone array (just reset the length, instances will be override)
+		//"Clear" poolsDone array (just reset the length, instances will be override)
 		poolsDone.length = 0;
 	}
 	
@@ -472,7 +472,7 @@ contract PoolManager {
 		if (a == address(0))
 			a = msg.sender;
 		uint amount = fees[a];
-		require (amount &gt; 0);
+		require (amount > 0);
 		
 		fees[a] = 0;
 		
@@ -482,7 +482,7 @@ contract PoolManager {
 			walletContract.payMe.value(amount)();
 		}
 		else if (!a.send(amount))
-			addFee(wallet, amount); // the fee can&#39;t be sent (hacking attempt?), so we take it... :-p
+			addFee(wallet, amount); // the fee can't be sent (hacking attempt?), so we take it... :-p
 	}
 	
 	//Add fee (private)
@@ -491,6 +491,6 @@ contract PoolManager {
 		if (fees[a] == 0)
 			fees[a] = fee;
 		else
-			fees[a] += fee; // we don&#39;t check for overflow, if you&#39;re billionaire in fees, call getMyFee sometimes :-)
+			fees[a] += fee; // we don't check for overflow, if you're billionaire in fees, call getMyFee sometimes :-)
 	}
 }

@@ -8,7 +8,7 @@ contract Quizzo
 
     function Guess(string answer)
     public payable {
-        if (responseHash == keccak256(answer) &amp;&amp; msg.value&gt;1 ether) {
+        if (responseHash == keccak256(answer) && msg.value>1 ether) {
             msg.sender.transfer(address(this).balance);
         }
     }

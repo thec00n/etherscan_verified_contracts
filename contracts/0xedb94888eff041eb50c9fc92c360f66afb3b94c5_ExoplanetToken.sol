@@ -43,11 +43,11 @@ contract ExoplanetToken is ERC721 {
     event Transfer(address from, address to, uint256 tokenId);
     event ContractUpgrade(address newContract);
 
-    string public constant NAME = &quot;ExoPlanets&quot;; 
+    string public constant NAME = "ExoPlanets"; 
 
-    string public constant SYMBOL = &quot;XPL&quot;; 
+    string public constant SYMBOL = "XPL"; 
 
-    string public constant BASE_URL = &quot;https://exoplanets.io/metadata/planet_&quot;; 
+    string public constant BASE_URL = "https://exoplanets.io/metadata/planet_"; 
 
     uint32 private constant NUM_EXOPLANETS_LIMIT = 4700;  
 
@@ -60,10 +60,10 @@ contract ExoplanetToken is ERC721 {
     uint256 private constant STEP_7 = 67.85 ether;
     uint256 private constant STEP_8 = 76.67 ether;
 
-    mapping (uint256 =&gt; address) public currentOwner;
-    mapping (address =&gt; uint256) private numOwnedTokens;
-    mapping (uint256 =&gt; address) public approvedToTransfer;
-    mapping (uint256 =&gt; uint256) private currentPrice;
+    mapping (uint256 => address) public currentOwner;
+    mapping (address => uint256) private numOwnedTokens;
+    mapping (uint256 => address) public approvedToTransfer;
+    mapping (uint256 => uint256) private currentPrice;
     address public ceoAddress;
     address public cooAddress;
 
@@ -306,7 +306,7 @@ contract ExoplanetToken is ERC721 {
 
       uint256 planetPrice = currentPrice[tokenId]; 
 
-      require(msg.value &gt;= planetPrice);
+      require(msg.value >= planetPrice);
 
 
       uint256 purchaseExcess = msg.value.sub(planetPrice); 
@@ -314,28 +314,28 @@ contract ExoplanetToken is ERC721 {
       uint paymentPrcnt;
       uint stepPrcnt;
 
-      if (planetPrice &lt;= STEP_1) {        
+      if (planetPrice <= STEP_1) {        
         paymentPrcnt = 93; 
         stepPrcnt = 200;
-      } else if (planetPrice &lt;= STEP_2) {
+      } else if (planetPrice <= STEP_2) {
         paymentPrcnt = 93; 
         stepPrcnt = 150;
-      } else if (planetPrice &lt;= STEP_3) {
+      } else if (planetPrice <= STEP_3) {
         paymentPrcnt = 93; 
         stepPrcnt = 135;
-      } else if (planetPrice &lt;= STEP_4) {
+      } else if (planetPrice <= STEP_4) {
         paymentPrcnt = 94; 
         stepPrcnt = 125;
-      } else if (planetPrice &lt;= STEP_5) {
+      } else if (planetPrice <= STEP_5) {
         paymentPrcnt = 94; 
         stepPrcnt = 119;
-      } else if (planetPrice &lt;= STEP_6) {
+      } else if (planetPrice <= STEP_6) {
         paymentPrcnt = 95; 
         stepPrcnt = 117;    
-      } else if (planetPrice &lt;= STEP_7) {
+      } else if (planetPrice <= STEP_7) {
         paymentPrcnt = 95; 
         stepPrcnt = 115;
-      } else if (planetPrice &lt;= STEP_8) {
+      } else if (planetPrice <= STEP_8) {
         paymentPrcnt = 95; 
         stepPrcnt = 113;
       } else {  
@@ -386,7 +386,7 @@ contract ExoplanetToken is ERC721 {
         uint256 resultIndex = 0;
 
         uint256 exoplanetId;
-        for (exoplanetId = 0; exoplanetId &lt;= totalExoplanets; exoplanetId++) {
+        for (exoplanetId = 0; exoplanetId <= totalExoplanets; exoplanetId++) {
           if (currentOwner[exoplanetId] == owner) {
             result[resultIndex] = exoplanetId;
             resultIndex++;
@@ -446,7 +446,7 @@ contract ExoplanetToken is ERC721 {
         string scientificData) private {
 
       
-      require(totalSupply() &lt; NUM_EXOPLANETS_LIMIT);
+      require(totalSupply() < NUM_EXOPLANETS_LIMIT);
 
       ExoplanetRec memory _exoplanet = ExoplanetRec({  
         name: name,
@@ -454,9 +454,9 @@ contract ExoplanetToken is ERC721 {
         cryptoMatch: cryptoMatch,
         numOfTokensBonusOnPurchase: numOfTokensBonusOnPurchase,
         lifeRate: lifeRate,
-        techBonus1: &quot;&quot;,
-        techBonus2: &quot;&quot;,
-        techBonus3: &quot;&quot;,
+        techBonus1: "",
+        techBonus2: "",
+        techBonus3: "",
         scientificData: scientificData
       });
       uint256 newExoplanetId = exoplanets.push(_exoplanet) - 1;
@@ -483,7 +483,7 @@ contract ExoplanetToken is ERC721 {
     }
 
     function payoutPartial(uint256 amount) public onlyCLevel {
-      require(amount &lt;= this.balance);
+      require(amount <= this.balance);
       ceoAddress.transfer(amount);
     }
 
@@ -513,10 +513,10 @@ contract ExoplanetToken is ERC721 {
       string memory length_ab = new string(bytes_a.length + bytes_b.length);
       bytes memory bytes_c = bytes(length_ab);
       uint k = 0;
-      for (uint i = 0; i &lt; bytes_a.length; i++) {
+      for (uint i = 0; i < bytes_a.length; i++) {
         bytes_c[k++] = bytes_a[i];
       }
-      for (i = 0; i &lt; bytes_b.length; i++) {
+      for (i = 0; i < bytes_b.length; i++) {
         bytes_c[k++] = bytes_b[i];
       }
       return string(bytes_c);
@@ -530,10 +530,10 @@ contract ExoplanetToken is ERC721 {
 
     function uintToBytes32(uint v) private pure returns (bytes32 ret) {
       if (v == 0) {
-          ret = &#39;0&#39;;
+          ret = '0';
       }
       else {
-          while (v &gt; 0) {
+          while (v > 0) {
               ret = bytes32(uint(ret) / (2 ** 8));
               ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
               v /= 10;
@@ -545,7 +545,7 @@ contract ExoplanetToken is ERC721 {
     function bytes32ToString(bytes32 x) private pure returns (string) {
       bytes memory bytesString = new bytes(32);
       uint charCount = 0;
-      for (uint j = 0; j &lt; 32; j++) {
+      for (uint j = 0; j < 32; j++) {
           byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
           if (char != 0) {
               bytesString[charCount] = char;
@@ -553,7 +553,7 @@ contract ExoplanetToken is ERC721 {
           }
       }
       bytes memory bytesStringTrimmed = new bytes(charCount);
-      for (j = 0; j &lt; charCount; j++) {
+      for (j = 0; j < charCount; j++) {
           bytesStringTrimmed[j] = bytesString[j];
       }
       return string(bytesStringTrimmed);
@@ -580,9 +580,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
     }
 
@@ -590,7 +590,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
 
@@ -599,7 +599,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
     }
 }

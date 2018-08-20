@@ -36,7 +36,7 @@ contract casino is mortal {
   /** the maximum bet **/
   uint public maximumBet;
   /** tells if an address is authorized to call game functions **/
-  mapping(address =&gt; bool) public authorized;
+  mapping(address => bool) public authorized;
 
   /** notify listeners that an error occurred**/
   event Error(uint8 errorCode);
@@ -111,13 +111,13 @@ contract blackjack is casino {
   uint8[13] cardValues = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
 
   /** use the game id to reference the games **/
-  mapping(bytes32 =&gt; Game) games;
+  mapping(bytes32 => Game) games;
   /** list of splits per game - length 0 in most cases **/
-  mapping(bytes32 =&gt; uint8[]) splits;
+  mapping(bytes32 => uint8[]) splits;
   /** tells if a hand of a given game has been doubled **/
-  mapping(bytes32 =&gt; mapping(uint8 =&gt; bool)) doubled;
+  mapping(bytes32 => mapping(uint8 => bool)) doubled;
   /** tells if the player already claimed his win **/
-  mapping(bytes32 =&gt; bool) over;
+  mapping(bytes32 => bool) over;
 
   /** notify listeners that a new round of blackjack started **/
   event NewGame(bytes32 indexed id, bytes32 deck, bytes32 srvSeed, bytes32 cSeed, address player, uint bet);
@@ -152,7 +152,7 @@ contract blackjack is casino {
    **/
   function initGame(address player, uint value, bytes32 deck, bytes32 srvSeed, bytes32 cSeed) onlyAuthorized public {
     //throw if game with id already exists. later maybe throw only if game with id is still running
-    assert(value &gt;= minimumBet &amp;&amp; value &lt;= maximumBet);
+    assert(value >= minimumBet && value <= maximumBet);
     assert(!gameExists(srvSeed));
     games[srvSeed] = Game(deck, srvSeed, player, value);
     NewGame(srvSeed, deck, srvSeed, cSeed, player, value);
@@ -167,7 +167,7 @@ contract blackjack is casino {
   function double(bytes32 id, uint8 hand, uint value) onlyAuthorized public {
     Game storage game = games[id];
     require(value == game.bet);
-    require(hand &lt;= splits[id].length &amp;&amp; !doubled[id][hand]);
+    require(hand <= splits[id].length && !doubled[id][hand]);
     doubled[id][hand] = true;
     Double(id, hand);
   }
@@ -182,7 +182,7 @@ contract blackjack is casino {
   function split(bytes32 id, uint8 hand, uint value) onlyAuthorized public {
     Game storage game = games[id];
     require(value == game.bet);
-    require(splits[id].length &lt; 3);
+    require(splits[id].length < 3);
     splits[id].push(hand);
     Split(id, hand);
   }
@@ -190,7 +190,7 @@ contract blackjack is casino {
 
   /**
    * by surrendering half the bet is returned to the player.
-   * send the plain server seed to check if it&#39;s correct
+   * send the plain server seed to check if it's correct
    * @param seed the server seed
    **/
   function surrender(bytes32 seed) onlyAuthorized public {
@@ -199,12 +199,12 @@ contract blackjack is casino {
     require(id == game.seedHash);
     require(!over[id]);
     over[id] = true;
-    assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256)&quot;)), game.player, game.bet / 2));
+    assert(msg.sender.call(bytes4(keccak256("shift(address,uint256)")), game.player, game.bet / 2));
     Result(id, game.player, game.bet / 2);
   }
 
   /** 
-   * first checks if deck and the player&#39;s number of cards are correct, then checks if the player won and if so, sends the win.
+   * first checks if deck and the player's number of cards are correct, then checks if the player won and if so, sends the win.
    * @param deck      the partial deck
    *        seed      the plain server seed
    *        numCards  the number of cards per hand
@@ -217,7 +217,7 @@ contract blackjack is casino {
     assert(splits[gameId].length == numCards.length - 1);
     over[gameId] = true;
     uint win = determineOutcome(gameId, deck, numCards);
-    if (win &gt; 0) assert(msg.sender.call(bytes4(keccak256(&quot;shift(address,uint256)&quot;)), game.player, win));
+    if (win > 0) assert(msg.sender.call(bytes4(keccak256("shift(address,uint256)")), game.player, win));
     Result(gameId, game.player, win);
   }
 
@@ -249,7 +249,7 @@ contract blackjack is casino {
    **/
   function convertToBytes(uint8[] byteArray) internal constant returns(bytes b) {
     b = new bytes(byteArray.length);
-    for (uint8 i = 0; i &lt; byteArray.length; i++)
+    for (uint8 i = 0; i < byteArray.length; i++)
       b[i] = byte(byteArray[i]);
   }
 
@@ -266,16 +266,16 @@ contract blackjack is casino {
     var playerValues = getPlayerValues(cards, numCards, splits[gameId]);
     var (dealerValue, dealerBJ) = getDealerValue(cards, sum(numCards));
     uint win;
-    for (uint8 h = 0; h &lt; numCards.length; h++) {
+    for (uint8 h = 0; h < numCards.length; h++) {
       uint8 playerValue = playerValues[h];
-      //bust if value &gt; 21
-      if (playerValue &gt; 21) win = 0;
+      //bust if value > 21
+      if (playerValue > 21) win = 0;
       //player blackjack but no dealer blackjack
-      else if (numCards.length == 1 &amp;&amp; playerValue == 21 &amp;&amp; numCards[h] == 2 &amp;&amp; !dealerBJ) {
+      else if (numCards.length == 1 && playerValue == 21 && numCards[h] == 2 && !dealerBJ) {
         win = game.bet * 5 / 2; //pay 3 to 2
       }
       //player wins regularly
-      else if (playerValue &gt; dealerValue || dealerValue &gt; 21)
+      else if (playerValue > dealerValue || dealerValue > 21)
         win = game.bet * 2;
       //tie
       else if (playerValue == dealerValue)
@@ -290,11 +290,11 @@ contract blackjack is casino {
   }
 
   /**
-   *   calculates the value of the player&#39;s hands.
+   *   calculates the value of the player's hands.
    *   @param cards     holds the (partial) deck.
    *          numCards  the number of cards per player hand
-   *          pSplits   the player&#39;s splits (hand index)
-   *   @return the values of the player&#39;s hands
+   *          pSplits   the player's splits (hand index)
+   *   @return the values of the player's hands
    **/
   function getPlayerValues(uint8[] cards, uint8[] numCards, uint8[] pSplits) constant internal returns(uint8[5] playerValues) {
     uint8 cardIndex;
@@ -303,32 +303,32 @@ contract blackjack is casino {
   }
 
   /**
-   *   recursively plays the player&#39;s hands.
+   *   recursively plays the player's hands.
    *   @param hIndex        the hand index
    *          cIndex        the index of the next card to draw
    *          sIndex        the index of the next split, if there is any
-   *          playerValues  the values of the player&#39;s hands (not yet complete)
+   *          playerValues  the values of the player's hands (not yet complete)
    *          cards         holds the (partial) deck.
    *          numCards      the number of cards per player hand
    *          pSplits        the array of splits
-   *   @return the values of the player&#39;s hands and the current card index
+   *   @return the values of the player's hands and the current card index
    **/
   function playHand(uint8 hIndex, uint8 cIndex, uint8 sIndex, uint8[5] playerValues, uint8[] cards, uint8[] numCards, uint8[] pSplits) constant internal returns(uint8, uint8, uint8[5]) {
     playerValues[hIndex] = cardValues[cards[cIndex] % 13];
-    cIndex = cIndex &lt; 4 ? cIndex + 2 : cIndex + 1;
-    while (sIndex &lt; pSplits.length &amp;&amp; pSplits[sIndex] == hIndex) {
+    cIndex = cIndex < 4 ? cIndex + 2 : cIndex + 1;
+    while (sIndex < pSplits.length && pSplits[sIndex] == hIndex) {
       sIndex++;
       (cIndex, sIndex, playerValues) = playHand(sIndex, cIndex, sIndex, playerValues, cards, numCards, pSplits);
     }
     uint8 numAces = playerValues[hIndex] == 11 ? 1 : 0;
     uint8 card;
-    for (uint8 i = 1; i &lt; numCards[hIndex]; i++) {
+    for (uint8 i = 1; i < numCards[hIndex]; i++) {
       card = cards[cIndex] % 13;
       playerValues[hIndex] += cardValues[card];
       if (card == 0) numAces++;
-      cIndex = cIndex &lt; 4 ? cIndex + 2 : cIndex + 1;
+      cIndex = cIndex < 4 ? cIndex + 2 : cIndex + 1;
     }
-    while (numAces &gt; 0 &amp;&amp; playerValues[hIndex] &gt; 21) {
+    while (numAces > 0 && playerValues[hIndex] > 21) {
       playerValues[hIndex] -= 10;
       numAces--;
     }
@@ -338,10 +338,10 @@ contract blackjack is casino {
 
 
   /**
-   *   calculates the value of a dealer&#39;s hand.
+   *   calculates the value of a dealer's hand.
    *   @param cards     holds the (partial) deck.
    *          numCards  the number of cards the player holds
-   *   @return the value of the dealer&#39;s hand and a flag indicating if the dealer has got a blackjack
+   *   @return the value of the dealer's hand and a flag indicating if the dealer has got a blackjack
    **/
   function getDealerValue(uint8[] cards, uint8 numCards) constant internal returns(uint8 dealerValue, bool bj) {
 
@@ -352,7 +352,7 @@ contract blackjack is casino {
     uint8 numAces;
     if (card == 0) numAces++;
     if (card2 == 0) numAces++;
-    if (dealerValue &gt; 21) { //2 aces,count as 12
+    if (dealerValue > 21) { //2 aces,count as 12
       dealerValue -= 10;
       numAces--;
     } else if (dealerValue == 21) {
@@ -360,11 +360,11 @@ contract blackjack is casino {
     }
     //take cards until value reaches 17 or more. 
     uint8 i;
-    while (dealerValue &lt; 17) {
+    while (dealerValue < 17) {
       card = cards[numCards + i + 2] % 13;
       dealerValue += cardValues[card];
       if (card == 0) numAces++;
-      if (dealerValue &gt; 21 &amp;&amp; numAces &gt; 0) {
+      if (dealerValue > 21 && numAces > 0) {
         dealerValue -= 10;
         numAces--;
       }
@@ -379,7 +379,7 @@ contract blackjack is casino {
    * @return the sum of the numbers
    **/
   function sum(uint8[] numbers) constant internal returns(uint8 s) {
-    for (uint i = 0; i &lt; numbers.length; i++) {
+    for (uint i = 0; i < numbers.length; i++) {
       s += numbers[i];
     }
   }

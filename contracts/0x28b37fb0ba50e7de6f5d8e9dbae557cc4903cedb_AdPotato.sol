@@ -36,17 +36,17 @@ contract AdPotato{
     /*** PUBLIC FUNCTIONS ***/
     function initialize(address fund) public onlyCLevel{
         fundsTarget=GPUMining(fund);
-        for(uint i=0;i&lt;NUM_ADS;i++){
-            ads.push(Advertisement({text:&quot;Your Text Here&quot;,url:&quot;&quot;,owner:ceoAddress,startingLevel:0,startingTime:now,halfLife:12 hours}));
+        for(uint i=0;i<NUM_ADS;i++){
+            ads.push(Advertisement({text:"Your Text Here",url:"",owner:ceoAddress,startingLevel:0,startingTime:now,halfLife:12 hours}));
         }
     }
     function buyAd(uint256 index,string text,string url) public payable{
-        require(ads.length&gt;index);
+        require(ads.length>index);
         require(msg.sender==tx.origin);
         Advertisement storage toBuy=ads[index];
         uint256 currentLevel=getCurrentLevel(toBuy.startingLevel,toBuy.startingTime,toBuy.halfLife);
         uint256 currentPrice=getCurrentPrice(currentLevel);
-        require(msg.value&gt;=currentPrice);
+        require(msg.value>=currentPrice);
         uint256 purchaseExcess = SafeMath.sub(msg.value, currentPrice);
         toBuy.text=text;
         toBuy.url=url;
@@ -77,7 +77,7 @@ contract AdPotato{
     function getCurrentLevel(uint256 startingLevel,uint256 startingTime,uint256 halfLife)public view returns(uint256){
         uint256 timePassed=SafeMath.sub(now,startingTime);
         uint256 levelsPassed=SafeMath.div(timePassed,halfLife);
-        if(startingLevel&lt;levelsPassed){
+        if(startingLevel<levelsPassed){
             return 0;
         }
         return SafeMath.sub(startingLevel,levelsPassed);
@@ -103,9 +103,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -113,7 +113,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -122,7 +122,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,18 +41,18 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
-//Submit ETH to show how big your &quot;Eth penis&quot; is. Each submission
+//Submit ETH to show how big your "Eth penis" is. Each submission
 //bigger than the prior is awarded 20% of the original added to
 //their ETH amount. The biggest previous submitter gets 80% of
 //their original submission back. The biggest ETH dick for 1 day
 //wins the total accrued balance. During cashout the creator gets
 //1% and the winner gets the rest. The winner can be paid and the
-//game reset by calling &quot;Withdraw()&quot;.
+//game reset by calling "Withdraw()".
 contract EthDickMeasuringGamev3 {
     address owner;
     address public largestPenisOwner;
@@ -66,7 +66,7 @@ contract EthDickMeasuringGamev3 {
     }
 
     function () public payable{
-        require(largestPenis &lt; msg.value);
+        require(largestPenis < msg.value);
         address prevOwner = largestPenisOwner;
         uint256 prevSize = largestPenis;
         
@@ -74,7 +74,7 @@ contract EthDickMeasuringGamev3 {
         largestPenis = msg.value;
         withdrawDate = 1 days;
         
-        //Verify this isn&#39;t a new round. Then
+        //Verify this isn't a new round. Then
         //send back eth to smaller penis submission
         if(prevOwner != 0x0)
             prevOwner.transfer(SafeMath.div(SafeMath.mul(prevSize, 80),100));
@@ -82,14 +82,14 @@ contract EthDickMeasuringGamev3 {
     }
 
     function withdraw() public{
-        require(now &gt;= withdrawDate);
+        require(now >= withdrawDate);
         address roundWinner = largestPenisOwner;
 
         //Reset game
         largestPenis = 0;
         largestPenisOwner = 0;
 
-        //Judging penises isn&#39;t a fun job
+        //Judging penises isn't a fun job
         //taking my 1% from the total prize.
         owner.transfer(SafeMath.div(SafeMath.mul(this.balance, 1),100));
         

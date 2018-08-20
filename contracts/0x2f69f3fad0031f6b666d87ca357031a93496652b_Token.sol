@@ -30,8 +30,8 @@ contract TokenBase is Owned {
     uint public wanUnit = 10000 * tokenUnit;
     uint public foundingTime;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
 
@@ -41,8 +41,8 @@ contract TokenBase is Owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -55,7 +55,7 @@ contract TokenBase is Owned {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -93,16 +93,16 @@ contract WorkProff is TokenBase {
     }
     
     function proofOfWork(uint nonce) public {
-        require(minerTotalReward &lt; minerTotalSupply);
+        require(minerTotalReward < minerTotalSupply);
         bytes8 n = bytes8(sha3(nonce, minerCurrentChallenge));
-        require(n &gt;= bytes8(minerDifficulty));
+        require(n >= bytes8(minerDifficulty));
 
         uint timeSinceLastProof = (now - minerTimeOfLastProof);
-        require(timeSinceLastProof &gt;= 5 seconds);
+        require(timeSinceLastProof >= 5 seconds);
         
         uint reward = 0;
         uint difficuty = 0;
-        if (now - foundingTime &lt; minerPreTime) {
+        if (now - foundingTime < minerPreTime) {
             reward = timeSinceLastProof * minerPreSupply / minerPreTime;
             difficuty = 0;
         } else {
@@ -127,8 +127,8 @@ contract Option is WorkProff {
     uint public optionTotalTimes = 5;                       // 期权：总行权次数
     uint public optionExerciseSpan = 1 years;               // 期权：行权间隔
 
-    mapping (address =&gt; uint) public optionOf;              // 期权：期权总数量
-    mapping (address =&gt; uint) public optionExerciseOf;      // 期权：已经行权的期权
+    mapping (address => uint) public optionOf;              // 期权：期权总数量
+    mapping (address => uint) public optionExerciseOf;      // 期权：已经行权的期权
 
     event OptionTransfer(address indexed from, address indexed to, uint option, uint exercised);
     event OptionExercise(address indexed addr, uint value);
@@ -140,20 +140,20 @@ contract Option is WorkProff {
     }
 
     function min(uint a, uint b) private returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function _checkOptionExercise(uint option, uint exercised) internal returns (bool) {
         uint canExercisedTimes = min(optionTotalTimes, (now - foundingTime) / optionExerciseSpan + 1);
-        return exercised &lt;= option * canExercisedTimes / optionTotalTimes;
+        return exercised <= option * canExercisedTimes / optionTotalTimes;
     }
 
     function _optionTransfer(address _from, address _to, uint _option, uint _exercised) internal {
         require(_to != 0x0);
-        require(optionOf[_from] &gt;= _option);
-        require(optionOf[_to] + _option &gt; optionOf[_to]);
-        require(optionExerciseOf[_from] &gt;= _exercised);
-        require(optionExerciseOf[_to] + _exercised &gt; optionExerciseOf[_to]);
+        require(optionOf[_from] >= _option);
+        require(optionOf[_to] + _option > optionOf[_to]);
+        require(optionExerciseOf[_from] >= _exercised);
+        require(optionExerciseOf[_to] + _exercised > optionExerciseOf[_to]);
         require(_checkOptionExercise(_option, _exercised));
         require(_checkOptionExercise(optionOf[_from] - _option, optionExerciseOf[_from] - _exercised));
 
@@ -191,12 +191,12 @@ contract Token is Option {
     function Token() public {
         totalSupply = initialSupply;
         balanceOf[msg.sender] = initialSupply;
-        name = &quot;ZBC&quot;;
-        symbol = &quot;ZBC&quot;;
+        name = "ZBC";
+        symbol = "ZBC";
     }
 
     function releaseReserve(uint value) onlyOwner public {
-        require(reserveSupply &gt;= value);
+        require(reserveSupply >= value);
         balanceOf[owner] += value;
         totalSupply += value;
         reserveSupply -= value;
@@ -205,7 +205,7 @@ contract Token is Option {
     }
 
     function releaseSell(uint value) onlyOwner public {
-        require(sellSupply &gt;= value);
+        require(sellSupply >= value);
         balanceOf[owner] += value;
         totalSupply += value;
         sellSupply -= value;

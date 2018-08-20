@@ -28,7 +28,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -51,7 +51,7 @@ contract ERC20Basic {
  * @notice This contract is administered
  */
 contract admined {
-    mapping(address =&gt; uint8) level; 
+    mapping(address => uint8) level; 
     //0 normal user
     //1 basic admin
     //2 master admin
@@ -68,7 +68,7 @@ contract admined {
     * @dev This modifier limits function execution to the admin
     */
     modifier onlyAdmin(uint8 _level) { //A modifier to define admin-only functions
-        require(level[msg.sender] &gt;= _level );
+        require(level[msg.sender] >= _level );
         _;
     }
 
@@ -117,19 +117,19 @@ contract ViVICO is admined {
     uint256 public softCap = 11000000 * (10 ** 18); //11M Tokens
     uint256 public hardCap = 140000000 * (10 ** 18); // 140M tokens
     //User balances handlers
-    mapping (address =&gt; uint256) public ethOnContract; //Balance of sent eth per user
-    mapping (address =&gt; uint256) public tokensSent; //Tokens sent per user
-    mapping (address =&gt; uint256) public balance; //Tokens pending to send per user
+    mapping (address => uint256) public ethOnContract; //Balance of sent eth per user
+    mapping (address => uint256) public tokensSent; //Tokens sent per user
+    mapping (address => uint256) public balance; //Tokens pending to send per user
     //Contract details
     address public creator;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     //Tokens per eth rates
     uint256[5] rates = [2520,2070,1980,1890,1800];
 
     //User rights handlers
-    mapping (address =&gt; bool) public whiteList; //List of allowed to send eth
-    mapping (address =&gt; bool) public KYCValid; //KYC validation to claim tokens
+    mapping (address => bool) public whiteList; //List of allowed to send eth
+    mapping (address => bool) public KYCValid; //KYC validation to claim tokens
 
     //events for log
     event LogFundrisingInitialized(address _creator);
@@ -143,7 +143,7 @@ contract ViVICO is admined {
 
     //Modofoer to prevent execution if ico has ended or is holded
     modifier notFinishedOrHold() {
-        require(state != State.Successful &amp;&amp; state != State.OnHold &amp;&amp; state != State.Failed);
+        require(state != State.Successful && state != State.OnHold && state != State.Failed);
         _;
     }
 
@@ -178,7 +178,7 @@ contract ViVICO is admined {
     */
     function setMainSaleStart(uint256 _startTime) public onlyAdmin(2) {
         require(state == State.OnHold);
-        require(_startTime &gt; now);
+        require(_startTime > now);
         MainSaleStart = _startTime;
         MainSaleDeadline = MainSaleStart.add(12 weeks);
         state = State.MainSale;
@@ -191,7 +191,7 @@ contract ViVICO is admined {
     */
     function contribute() public notFinishedOrHold payable {
         require(whiteList[msg.sender] == true); //User must be whitelisted
-        require(msg.value &gt;= 0.1 ether); //Minimal contribution
+        require(msg.value >= 0.1 ether); //Minimal contribution
         
         uint256 tokenBought = 0; //tokens bought variable
 
@@ -201,26 +201,26 @@ contract ViVICO is admined {
         //Rate of exchange depends on stage
         if (state == State.PreSale){
             
-            require(now &gt;= PreSaleStart);
+            require(now >= PreSaleStart);
 
             tokenBought = msg.value.mul(rates[0]);
             PreSaleDistributed = PreSaleDistributed.add(tokenBought); //Tokens sold on presale updated
         
         } else if (state == State.MainSale){
 
-            require(now &gt;= MainSaleStart);
+            require(now >= MainSaleStart);
 
-            if (now &lt;= MainSaleStart.add(1 weeks)){
+            if (now <= MainSaleStart.add(1 weeks)){
                 tokenBought = msg.value.mul(rates[1]);
-            } else if (now &lt;= MainSaleStart.add(2 weeks)){
+            } else if (now <= MainSaleStart.add(2 weeks)){
                 tokenBought = msg.value.mul(rates[2]);
-            } else if (now &lt;= MainSaleStart.add(3 weeks)){
+            } else if (now <= MainSaleStart.add(3 weeks)){
                 tokenBought = msg.value.mul(rates[3]);
             } else tokenBought = msg.value.mul(rates[4]);
                 
         }
 
-        require(totalDistributed.add(tokenBought) &lt;= hardCap);
+        require(totalDistributed.add(tokenBought) <= hardCap);
 
         if(KYCValid[msg.sender] == true){
             //if there are any unclaimed tokens
@@ -252,7 +252,7 @@ contract ViVICO is admined {
     function checkIfFundingCompleteOrExpired() public {
 
         //If hardCap is reached ICO ends
-        if (totalDistributed == hardCap &amp;&amp; state != State.Successful){
+        if (totalDistributed == hardCap && state != State.Successful){
 
             state = State.Successful; //ICO becomes Successful
             completedAt = now; //ICO is complete
@@ -260,13 +260,13 @@ contract ViVICO is admined {
             emit LogFundingSuccessful(totalRaised); //we log the finish
             successful(); //and execute closure
 
-        } else if(state == State.PreSale &amp;&amp; now &gt; PreSaleDeadline){
+        } else if(state == State.PreSale && now > PreSaleDeadline){
 
             state = State.OnHold; //Once presale ends the ICO holds
 
-        } else if(state == State.MainSale &amp;&amp; now &gt; MainSaleDeadline){
+        } else if(state == State.MainSale && now > MainSaleDeadline){
             //Once main sale deadline is reached, softCap has to be compared
-            if(totalDistributed &gt;= softCap){
+            if(totalDistributed >= softCap){
                 //If softCap is reached
                 state = State.Successful; //ICO becomes Successful
                 completedAt = now; //ICO is finished
@@ -293,10 +293,10 @@ contract ViVICO is admined {
         //When successful
         require(state == State.Successful);
         //Users have 14 days period to claim tokens
-        if (now &gt; completedAt.add(14 days)){
+        if (now > completedAt.add(14 days)){
             //If there is any token left after
             uint256 remanent = tokenReward.balanceOf(this);
-            //It&#39;s send to creator
+            //It's send to creator
             tokenReward.transfer(creator,remanent);
             emit LogContributorsPayout(creator, remanent);
         }
@@ -309,7 +309,7 @@ contract ViVICO is admined {
 
     function claimEth() onlyAdmin(2) public {
         //Only if softcap is reached
-        require(totalDistributed &gt;= softCap);
+        require(totalDistributed >= softCap);
         //eth is send to creator
         creator.transfer(address(this).balance);
         emit LogBeneficiaryPaid(creator);
@@ -358,16 +358,16 @@ contract ViVICO is admined {
         //If funding fail
         require(state == State.Failed);
         //Users have 90 days to claim a refund
-        if (now &lt; completedAt.add(90 days)){
+        if (now < completedAt.add(90 days)){
             //We take the amount of tokens already sent to user
             uint256 holderTokens = tokensSent[msg.sender];
-            //For security it&#39;s cleared            
+            //For security it's cleared            
             tokensSent[msg.sender] = 0;
             //Also pending tokens are cleared
             balance[msg.sender] = 0;
             //Amount of ether sent by user is checked
             uint256 holderETH = ethOnContract[msg.sender];
-            //For security it&#39;s cleared            
+            //For security it's cleared            
             ethOnContract[msg.sender] = 0;
             //Contract try to retrieve tokens from user balance using allowance
             require(tokenReward.transferFrom(msg.sender,address(this),holderTokens));
@@ -377,7 +377,7 @@ contract ViVICO is admined {
             emit LogRefund(msg.sender,holderETH);
         } else{
             //After 90 days period only a master admin can use the function
-            require(level[msg.sender] &gt;= 2);
+            require(level[msg.sender] >= 2);
             //To claim remanent tokens on contract
             uint256 remanent = tokenReward.balanceOf(this);
             //And ether

@@ -50,12 +50,12 @@ contract IOXToken is IOXInterface, IOXOwned {
     uint public number_of_token;
     uint public _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function IOXToken() public {
-        symbol = &quot;IOX&quot;;
-        name = &quot;IOX Token&quot;;
+        symbol = "IOX";
+        name = "IOX Token";
         decimals = 18;
         number_of_token = 100000000;
         _totalSupply = number_of_token*10**uint(decimals);
@@ -118,10 +118,10 @@ contract IOXToken is IOXInterface, IOXOwned {
 library Calculation {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -129,7 +129,7 @@ library Calculation {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }

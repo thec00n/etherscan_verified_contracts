@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 
 contract WordCloud {
   address guyWhoGetsPaid = msg.sender;
-  mapping (string =&gt; uint) wordSizes;
+  mapping (string => uint) wordSizes;
   event WordSizeIncreased(string word, uint newSize);
 
   function increaseWordSize(string word) external payable {

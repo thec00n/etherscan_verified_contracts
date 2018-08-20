@@ -11,12 +11,12 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -50,7 +50,7 @@ contract FueldToken{
     }
 
 // self transfer
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     event Transfer(address indexed from, address indexed to, uint256 value);
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
@@ -64,7 +64,7 @@ contract FueldToken{
     }
 
 // allowed transfer
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     event Approval(address indexed owner_, address indexed spender, uint256 value);
     function approve(address _spender, uint256 _value) public returns (bool) {
         allowed[msg.sender][_spender] = _value;
@@ -90,7 +90,7 @@ contract FueldToken{
     }
     function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) { allowed[msg.sender][_spender] = 0; } 
+        if (_subtractedValue > oldValue) { allowed[msg.sender][_spender] = 0; } 
         else {allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue); }
         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
@@ -99,10 +99,10 @@ contract FueldToken{
 // mintable
     uint256 public totalSupply = 200000000; // minting in constructor
 // sale
-    mapping (address =&gt; uint256) public privatePreICOdepositors;
-    mapping (address =&gt; uint256) public preICOdepositors;
-    mapping (address =&gt; uint256) public ICOdepositors;
-    mapping (address =&gt; uint256) public ICObalances;
+    mapping (address => uint256) public privatePreICOdepositors;
+    mapping (address => uint256) public preICOdepositors;
+    mapping (address => uint256) public ICOdepositors;
+    mapping (address => uint256) public ICObalances;
     
     uint256 constant public softCap = 6700 ether;
     uint256 constant public hardCap = 67000 ether;
@@ -136,34 +136,34 @@ contract FueldToken{
     event SaleStatus(string indexed status, uint256 indexed _date);
 
     function startPrivatePreICO() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimePreICO = now;
         startTimePrivatePreICO = startTimePreICO;
-        SaleStatus(&#39;Private Pre ICO started&#39;, startTimePreICO);
+        SaleStatus('Private Pre ICO started', startTimePreICO);
     }
     
     function startPreICO() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimePreICO = now;
-        SaleStatus(&#39;Public Pre ICO started&#39;, startTimePreICO);
+        SaleStatus('Public Pre ICO started', startTimePreICO);
     }
 
     function startICO() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimeICO = now;
-        SaleStatus(&#39;start ICO&#39;, startTimePreICO);
+        SaleStatus('start ICO', startTimePreICO);
     }
 
     function stopSale() onlyOwner public {
-        require(startTimeICO &gt; 0 || startTimePreICO &gt; 0);
-        if (startTimeICO &gt; 0){
-            SaleStatus(&#39;ICO stopped&#39;, now);
+        require(startTimeICO > 0 || startTimePreICO > 0);
+        if (startTimeICO > 0){
+            SaleStatus('ICO stopped', now);
         }
         else{
             multisigPreICO.transfer(capPreICO);
             capPreICOTrasferred = capPreICOTrasferred.add(capPreICO);
             capPreICO = 0;
-            SaleStatus(&#39;Pre ICO stopped&#39;, now);
+            SaleStatus('Pre ICO stopped', now);
         }
         startTimeICO = 0;
         startTimePreICO = 0;
@@ -171,20 +171,20 @@ contract FueldToken{
     }
 
     function currentBonusPercent() public constant returns(uint256 bonus_percent) {
-        require(startTimeICO &gt; 0 || startTimePreICO &gt; 0);
+        require(startTimeICO > 0 || startTimePreICO > 0);
         uint256 current_date = now;
         uint256 bonusPercent = 0;
-        if (startTimeICO &gt; 0){
-            if (current_date &gt; startTimeICO &amp;&amp; current_date &lt;= (startTimeICO.add(1 weeks))){ bonusPercent = ICOBonusPercent1week; }
+        if (startTimeICO > 0){
+            if (current_date > startTimeICO && current_date <= (startTimeICO.add(1 weeks))){ bonusPercent = ICOBonusPercent1week; }
             else{
-                if (current_date &gt; startTimeICO &amp;&amp; current_date &lt;= (startTimeICO.add(2 weeks))){ bonusPercent = ICOBonusPercent2week; }
+                if (current_date > startTimeICO && current_date <= (startTimeICO.add(2 weeks))){ bonusPercent = ICOBonusPercent2week; }
                 else{
-                    if (current_date &gt; startTimeICO &amp;&amp; current_date &lt;= (startTimeICO.add(3 weeks))){ bonusPercent = ICOBonusPercent3week; }
+                    if (current_date > startTimeICO && current_date <= (startTimeICO.add(3 weeks))){ bonusPercent = ICOBonusPercent3week; }
                 }
             }
         }
         else{
-            if(startTimePrivatePreICO &gt; 0) {
+            if(startTimePrivatePreICO > 0) {
                 bonusPercent = privatePreICOBonusPercent;
             }
             else {
@@ -196,40 +196,40 @@ contract FueldToken{
 
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
     function() payable public { 
-        require(startTimeICO &gt; 0 || startTimePreICO &gt; 0);
+        require(startTimeICO > 0 || startTimePreICO > 0);
         require(msg.sender != address(0));
-        require(msg.value &gt; 0);
-        require(cap &lt; hardCap);
+        require(msg.value > 0);
+        require(cap < hardCap);
         uint256 bonusPercent = currentBonusPercent();
         uint256 currentPrice = price.mul(100 - bonusPercent).div(100);
         address depositor = msg.sender;
         uint256 deposit = msg.value;
         uint256 tokens = deposit/currentPrice;
-        if (startTimeICO &gt; 0){
-            require(soldTokenCount.add(tokens) &lt;= maxPreICOandICOSupply);
+        if (startTimeICO > 0){
+            require(soldTokenCount.add(tokens) <= maxPreICOandICOSupply);
         }
         else{
-            if(startTimePrivatePreICO &gt; 0) {
+            if(startTimePrivatePreICO > 0) {
                 tokens = (tokens * (100 + privatePreICOFreeBonusPercent)) / 100;
             }
             else {
                 tokens = (tokens * (100 + preICOFreeBonusPercent)) / 100;
             }
-            require(soldTokenCount.add(tokens) &lt;= maxPreICOSupply);
+            require(soldTokenCount.add(tokens) <= maxPreICOSupply);
         }
 
         balances[owner] = balances[owner].sub(tokens);
         balances[depositor] = balances[depositor].add(tokens);
         soldTokenCount = soldTokenCount.add(tokens);
-        if (startTimeICO &gt; 0){
+        if (startTimeICO > 0){
             ICObalances[depositor] = ICObalances[depositor].add(tokens);
         }
 
-        if (startTimeICO &gt; 0){
+        if (startTimeICO > 0){
             ICOdepositors[depositor] = ICOdepositors[depositor].add(deposit);
         }
         else{
-            if(startTimePrivatePreICO &gt; 0) {
+            if(startTimePrivatePreICO > 0) {
                 privatePreICOdepositors[depositor] = privatePreICOdepositors[depositor].add(deposit);
             }
             else {
@@ -237,12 +237,12 @@ contract FueldToken{
             }
         }
         cap = cap.add(deposit);
-        if(startTimePreICO &gt; 0) {
+        if(startTimePreICO > 0) {
             capPreICO = capPreICO.add(deposit);
         }
 
         capFiatAndETH = capFiat.add(cap);
-        if(capFiatAndETH &gt;= softCap) {
+        if(capFiatAndETH >= softCap) {
             capReached = true;
         }
         TokenPurchase(owner, depositor, deposit, tokens);
@@ -250,7 +250,7 @@ contract FueldToken{
 
     event ExtTokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 amount);
     function extBuyTokens(address beneficiary_, uint256 tokensAmount_, uint256 amountETH_) public { 
-        require(startTimeICO &gt; 0 || startTimePreICO &gt; 0);
+        require(startTimeICO > 0 || startTimePreICO > 0);
         require(msg.sender != address(0));
         require(msg.sender == extOwner);
         address depositor = beneficiary_;
@@ -263,7 +263,7 @@ contract FueldToken{
 
         capFiat = capFiat.add(amountETH);
         capFiatAndETH = capFiat.add(cap);
-        if(capFiatAndETH &gt;= softCap) {
+        if(capFiatAndETH >= softCap) {
             capReached = true;
         }
 
@@ -279,22 +279,22 @@ contract FueldToken{
     uint256 public startTimeRefund = 0;
 
     function startRefund() onlyOwner public {
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0);
         startTimeRefund = now;
-        SaleStatus(&#39;Refund started&#39;, startTimeRefund);
+        SaleStatus('Refund started', startTimeRefund);
     }
 
     function stopRefund() onlyOwner public {
-        require(startTimeRefund &gt; 0);
+        require(startTimeRefund > 0);
         startTimeRefund = 0;
         refundCompleted = true;
-        SaleStatus(&#39;Refund stopped&#39;, now);
+        SaleStatus('Refund stopped', now);
     }
 
     event Refunded(address indexed depositor, uint256 indexed deposit, uint256 indexed tokens);
     function refund() public {
-        require(capFiatAndETH &lt; softCap);
-        require(startTimeRefund &gt; 0);
+        require(capFiatAndETH < softCap);
+        require(startTimeRefund > 0);
         address depositor = msg.sender;
         uint256 deposit = ICOdepositors[depositor];
         uint256 tokens = ICObalances[depositor];    
@@ -312,7 +312,7 @@ contract FueldToken{
     bool public fixSaleCompleted = false;
     function fixSale() onlyOwner public {
         require(refundCompleted == true);
-        require(startTimeICO == 0 &amp;&amp; startTimePreICO == 0 &amp;&amp; startTimeRefund == 0);
+        require(startTimeICO == 0 && startTimePreICO == 0 && startTimeRefund == 0);
         require(multisig != address(0));
         uint256 restrictedTokens = soldTokenCount * (totalSupply - maxPreICOandICOSupply) / maxPreICOandICOSupply;
         transfer(multisig, restrictedTokens);
@@ -325,7 +325,7 @@ contract FueldToken{
     event Burn(address indexed burner, uint indexed value);
     function burn(uint _value) onlyOwner public {
         require(fixSaleCompleted == true);
-        require(_value &gt; 0);
+        require(_value > 0);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -335,8 +335,8 @@ contract FueldToken{
     }
 
 // constructor
-    string constant public name = &quot;FUELD&quot;;
-    string constant public symbol = &quot;FLD&quot;;
+    string constant public name = "FUELD";
+    string constant public symbol = "FLD";
     uint32 constant public decimals = 18;
 
     function FueldToken() public {

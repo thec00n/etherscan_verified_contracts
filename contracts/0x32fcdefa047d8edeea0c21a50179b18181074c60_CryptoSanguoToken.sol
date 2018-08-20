@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract CryptoSanguoToken {
   event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
   IItemRegistry private itemRegistry;
   bool private erc721Enabled = false;
 
@@ -62,10 +62,10 @@ contract CryptoSanguoToken {
   uint256 private min_value = 0.01 ether;
 
   uint256[] private listedItems;
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; uint256) private startingPriceOfItem;
-  mapping (uint256 =&gt; uint256) private priceOfItem;
-  mapping (uint256 =&gt; address) private approvedOfItem;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => uint256) private startingPriceOfItem;
+  mapping (uint256 => uint256) private priceOfItem;
+  mapping (uint256 => address) private approvedOfItem;
 
   function CryptoSanguoToken () public {
     owner = msg.sender;
@@ -113,7 +113,7 @@ contract CryptoSanguoToken {
 
   /* Withdraw */
   /*
-    NOTICE: These functions withdraw the developer&#39;s cut which is left
+    NOTICE: These functions withdraw the developer's cut which is left
     in the contract by `buy`. User funds are immediately sent to the old
     owner in `buy`, no user funds are left in the contract.
   */
@@ -127,8 +127,8 @@ contract CryptoSanguoToken {
 
   /* Listing */
   function populateFromItemRegistry (uint256[] _itemIds) onlyOwner() public {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
-      if (priceOfItem[_itemIds[i]] &gt; 0 || itemRegistry.priceOf(_itemIds[i]) == 0) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
+      if (priceOfItem[_itemIds[i]] > 0 || itemRegistry.priceOf(_itemIds[i]) == 0) {
         continue;
       }
 
@@ -139,7 +139,7 @@ contract CryptoSanguoToken {
   function listItemFromRegistry (uint256 _itemId) onlyOwner() public {
     require(itemRegistry != address(0));
     require(itemRegistry.ownerOf(_itemId) != address(0));
-    require(itemRegistry.priceOf(_itemId) &gt; 0);
+    require(itemRegistry.priceOf(_itemId) > 0);
 
     uint256 price = itemRegistry.priceOf(_itemId);
     address itemOwner = itemRegistry.ownerOf(_itemId);
@@ -147,13 +147,13 @@ contract CryptoSanguoToken {
   }
 
   function listMultipleItems (uint256[] _itemIds, uint256 _price, address _owner) onlyAdmins() external {
-    for (uint256 i = 0; i &lt; _itemIds.length; i++) {
+    for (uint256 i = 0; i < _itemIds.length; i++) {
       listItem(_itemIds[i], _price, _owner);
     }
   }
 
   function listItem (uint256 _itemId, uint256 _price, address _owner) onlyAdmins() public {
-    require(_price &gt; 0);
+    require(_price > 0);
     require(priceOfItem[_itemId] == 0);
     require(ownerOfItem[_itemId] == address(0));
 
@@ -165,13 +165,13 @@ contract CryptoSanguoToken {
 
   /* Buying */
   function calculateNextPrice (uint256 _price) public view returns (uint256 _nextPrice) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(200).div(92);
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(135).div(93);
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(125).div(94);
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(117).div(94);
     } else {
       return _price.mul(115).div(95);
@@ -179,13 +179,13 @@ contract CryptoSanguoToken {
   }
 
   function calculateDevCut (uint256 _price) public view returns (uint256 _devCut) {
-    if (_price &lt; increaseLimit1) {
+    if (_price < increaseLimit1) {
       return _price.mul(8).div(100); // 8%
-    } else if (_price &lt; increaseLimit2) {
+    } else if (_price < increaseLimit2) {
       return _price.mul(7).div(100); // 7%
-    } else if (_price &lt; increaseLimit3) {
+    } else if (_price < increaseLimit3) {
       return _price.mul(6).div(100); // 6%
-    } else if (_price &lt; increaseLimit4) {
+    } else if (_price < increaseLimit4) {
       return _price.mul(6).div(100); // 6%
     } else {
       return _price.mul(5).div(100); // 5%
@@ -199,9 +199,9 @@ contract CryptoSanguoToken {
      directly to the previous owner and are never stored in the contract.
   */
   function buy (uint256 _itemId) payable public {
-    require(priceOf(_itemId) &gt; 0);
+    require(priceOf(_itemId) > 0);
     require(ownerOf(_itemId) != address(0));
-    require(msg.value &gt;= priceOf(_itemId));
+    require(msg.value >= priceOf(_itemId));
     require(ownerOf(_itemId) != msg.sender);
     require(!isContract(msg.sender));
     require(msg.sender != address(0));
@@ -217,14 +217,14 @@ contract CryptoSanguoToken {
     Bought(_itemId, newOwner, price);
     Sold(_itemId, oldOwner, price);
 
-    // Devevloper&#39;s cut which is left in contract and accesed by
+    // Devevloper's cut which is left in contract and accesed by
     // `withdrawAll` and `withdrawAmountTo` methods.
     uint256 devCut = calculateDevCut(price);
 
-    // Transfer payment to old owner minus the developer&#39;s cut.
+    // Transfer payment to old owner minus the developer's cut.
     oldOwner.transfer(price.sub(devCut));
 
-    if (excess &gt; 0) {
+    if (excess > 0) {
       newOwner.transfer(excess);
     }
   }
@@ -235,11 +235,11 @@ contract CryptoSanguoToken {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;CryptoSanguo.io&quot;;
+    return "CryptoSanguo.io";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;CSG&quot;;
+    return "CSG";
   }
 
   function totalSupply() public view returns (uint256 _totalSupply) {
@@ -249,7 +249,7 @@ contract CryptoSanguoToken {
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         counter++;
       }
@@ -266,7 +266,7 @@ contract CryptoSanguoToken {
     uint256[] memory items = new uint256[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         items[itemCounter] = listedItems[i];
         itemCounter += 1;
@@ -277,7 +277,7 @@ contract CryptoSanguoToken {
   }
 
   function tokenExists (uint256 _itemId) public view returns (bool _exists) {
-    return priceOf(_itemId) &gt; 0;
+    return priceOf(_itemId) > 0;
   }
 
   function approvedFor(uint256 _itemId) public view returns (address _approved) {
@@ -347,7 +347,7 @@ contract CryptoSanguoToken {
   function itemsForSaleLimit (uint256 _from, uint256 _take) public view returns (uint256[] _items) {
     uint256[] memory items = new uint256[](_take);
 
-    for (uint256 i = 0; i &lt; _take; i++) {
+    for (uint256 i = 0; i < _take; i++) {
       items[i] = listedItems[_from + i];
     }
 
@@ -358,17 +358,17 @@ contract CryptoSanguoToken {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
   
   function changePrice(uint256 _itemId, uint256 _price) public onlyAdmins() {
-    require(_price &gt; 0);
+    require(_price > 0);
     require(admins[ownerOfItem[_itemId]]);
     priceOfItem[_itemId] = _price * min_value;
   }
   
   function issueCard(uint256 l, uint256 r, uint256 price) onlyAdmins() public {
-    for (uint256 i = l; i &lt;= r; i++) {
+    for (uint256 i = l; i <= r; i++) {
       ownerOfItem[i] = msg.sender;
       priceOfItem[i] = price * min_value;
       listedItems.push(i);

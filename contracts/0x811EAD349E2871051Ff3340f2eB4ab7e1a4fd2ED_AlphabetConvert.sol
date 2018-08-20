@@ -1,7 +1,7 @@
 // Copyright Alphabet Inc. 2015 - current.
 //
 // A simple conversion contract for ETH to ABC. ABC represents an ownership
-// position in Alphabet&#39;s decentralized enterprise properties.
+// position in Alphabet's decentralized enterprise properties.
 //
 // Release date: April 14th, 2017
 // Token issuance: 100,000 ABC
@@ -22,7 +22,7 @@ contract AlphabetConvert {
     token public tokenReward;
     uint public amountRaised;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -42,7 +42,7 @@ contract AlphabetConvert {
     function withdraw() {
         uint amount = balanceOf[msg.sender];
         balanceOf[msg.sender] = 0;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             if (msg.sender.send(amount)) {
                 FundTransfer(msg.sender, amount, false);
             } else {

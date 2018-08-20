@@ -7,7 +7,7 @@ contract Utils {
     function Utils() internal {
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -31,7 +31,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -44,7 +44,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -67,7 +67,7 @@ contract Utils {
     ERC20 Standard Token interface
 */
 contract IERC20Token {
-    // these functions aren&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // these functions aren't abstract since the compiler emits automatically generated getter functions as external
     function name() public constant returns (string) { name; }
     function symbol() public constant returns (string) { symbol; }
     function decimals() public constant returns (uint8) { decimals; }
@@ -85,12 +85,12 @@ contract IERC20Token {
     ERC20 Standard Token implementation
 */
 contract StandardERC20Token is IERC20Token, Utils {
-    string public name = &quot;&quot;;
-    string public symbol = &quot;&quot;;
+    string public name = "";
+    string public symbol = "";
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -105,7 +105,7 @@ contract StandardERC20Token is IERC20Token, Utils {
         @param _decimals    decimal points, for display purposes
     */
     function StandardERC20Token(string _name, string _symbol, uint8 _decimals) public{
-        require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0); // validate input
+        require(bytes(_name).length > 0 && bytes(_symbol).length > 0); // validate input
 
         name = _name;
         symbol = _symbol;
@@ -125,14 +125,14 @@ contract StandardERC20Token is IERC20Token, Utils {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transfer(address _to, uint256 _value)
         public
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balanceOf[msg.sender] >= _value && _value > 0);
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -147,7 +147,7 @@ contract StandardERC20Token is IERC20Token, Utils {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, false if it wasn&#39;t
+        @return true if the transfer was successful, false if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value)
         public
@@ -155,8 +155,8 @@ contract StandardERC20Token is IERC20Token, Utils {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value &amp;&amp; _value &gt; 0);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value && _value > 0);
+        require(allowance[_from][msg.sender] >= _value);
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender], _value);
         balanceOf[_from] = safeSub(balanceOf[_from], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -175,14 +175,14 @@ contract StandardERC20Token is IERC20Token, Utils {
         @param _spender approved address
         @param _value   allowance amount
 
-        @return true if the approval was successful, false if it wasn&#39;t
+        @return true if the approval was successful, false if it wasn't
     */
     function approve(address _spender, uint256 _value)
         public
         validAddress(_spender)
         returns (bool success)
     {
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
+        // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
         require(_value == 0 || allowance[msg.sender][_spender] == 0);
 
         allowance[msg.sender][_spender] = _value;
@@ -195,7 +195,7 @@ contract StandardERC20Token is IERC20Token, Utils {
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -309,7 +309,7 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         
     */
     function YOOBAToken(address _airdropAddress, address _ecosystemAddress, address _backupAddress, address _yoobaTeamAddress,address _earlyCommunityAddress)
-    StandardERC20Token(&quot;Yooba token&quot;, &quot;YOO&quot;, 18) public
+    StandardERC20Token("Yooba token", "YOO", 18) public
      {
         airdropAddress = _airdropAddress;
         yoobaTeamAddress = _yoobaTeamAddress;
@@ -326,8 +326,8 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
     */
      function initAirdropAndEarlyAlloc()   public ownerOnly stoppable returns(bool success){
          require(!isInitAirdropAndEarlyAlloc);
-         require(airdropAddress != 0x0 &amp;&amp; earlyCommunityAddress != 0x0);
-         require((currentSupply + earlyCommunitySupply + airdropSupply) &lt;= totalSupply);
+         require(airdropAddress != 0x0 && earlyCommunityAddress != 0x0);
+         require((currentSupply + earlyCommunitySupply + airdropSupply) <= totalSupply);
          balanceOf[earlyCommunityAddress] += earlyCommunitySupply; 
          currentSupply += earlyCommunitySupply;
          Transfer(0x0, earlyCommunityAddress, earlyCommunitySupply);
@@ -348,7 +348,7 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, throws if it wasn&#39;t
+        @return true if the transfer was successful, throws if it wasn't
     */
     function transfer(address _to, uint256 _value) public stoppable returns (bool success) {
         return super.transfer(_to, _value);
@@ -363,7 +363,7 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @param _to      target address
         @param _value   transfer amount
 
-        @return true if the transfer was successful, throws if it wasn&#39;t
+        @return true if the transfer was successful, throws if it wasn't
     */
     function transferFrom(address _from, address _to, uint256 _value) public stoppable returns (bool success) {
             return super.transferFrom(_from, _to, _value);
@@ -376,14 +376,14 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @return true if successful, throws if not
     */
     function releaseForEcosystem()   public ownerOnly stoppable returns(bool success) {
-        require(now &gt;= createTime + 12 weeks);
-        require(tokensReleasedToEcosystem &lt; ecosystemSupply);
+        require(now >= createTime + 12 weeks);
+        require(tokensReleasedToEcosystem < ecosystemSupply);
 
         uint256 temp = ecosystemSupply / 10000;
         uint256 allocAmount = safeMul(temp, 625);
         uint256 currentTranche = uint256(now - createTime) /  12 weeks;
 
-        if(ecosystemTranchesReleased &lt; maxTranches &amp;&amp; currentTranche &gt; ecosystemTranchesReleased &amp;&amp; (currentSupply + allocAmount) &lt;= totalSupply) {
+        if(ecosystemTranchesReleased < maxTranches && currentTranche > ecosystemTranchesReleased && (currentSupply + allocAmount) <= totalSupply) {
             ecosystemTranchesReleased++;
             balanceOf[ecosystemAddress] = safeAdd(balanceOf[ecosystemAddress], allocAmount);
             currentSupply += allocAmount;
@@ -400,14 +400,14 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @return true if successful, throws if not
     */
     function releaseForYoobaTeam()   public ownerOnly stoppable returns(bool success) {
-        require(now &gt;= createTime + 12 weeks);
-        require(tokensReleasedToTeam &lt; teamSupply);
+        require(now >= createTime + 12 weeks);
+        require(tokensReleasedToTeam < teamSupply);
 
         uint256 temp = teamSupply / 10000;
         uint256 allocAmount = safeMul(temp, 625);
         uint256 currentTranche = uint256(now - createTime) / 12 weeks;
 
-        if(teamTranchesReleased &lt; maxTranches &amp;&amp; currentTranche &gt; teamTranchesReleased &amp;&amp; (currentSupply + allocAmount) &lt;= totalSupply) {
+        if(teamTranchesReleased < maxTranches && currentTranche > teamTranchesReleased && (currentSupply + allocAmount) <= totalSupply) {
             teamTranchesReleased++;
             balanceOf[yoobaTeamAddress] = safeAdd(balanceOf[yoobaTeamAddress], allocAmount);
             currentSupply += allocAmount;
@@ -426,7 +426,7 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @return true if successful, throws if not
     */
     function releaseForIco(address _icoAddress, uint256 _value) public  ownerOnly stoppable returns(bool success) {
-          require(_icoAddress != address(0x0) &amp;&amp; _value &gt; 0  &amp;&amp; (tokensReleasedToIco + _value) &lt;= icoReservedSupply &amp;&amp; (currentSupply + _value) &lt;= totalSupply);
+          require(_icoAddress != address(0x0) && _value > 0  && (tokensReleasedToIco + _value) <= icoReservedSupply && (currentSupply + _value) <= totalSupply);
           balanceOf[_icoAddress] = safeAdd(balanceOf[_icoAddress], _value);
           currentSupply += _value;
           tokensReleasedToIco += _value;
@@ -440,7 +440,7 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @return true if successful, throws if not
     */
     function releaseForEarlyInvestor(address _investorAddress, uint256 _value) public  ownerOnly  stoppable  returns(bool success) {
-          require(_investorAddress != address(0x0) &amp;&amp; _value &gt; 0  &amp;&amp; (tokensReleasedToEarlyInvestor + _value) &lt;= earlyInvestorSupply &amp;&amp; (currentSupply + _value) &lt;= totalSupply);
+          require(_investorAddress != address(0x0) && _value > 0  && (tokensReleasedToEarlyInvestor + _value) <= earlyInvestorSupply && (currentSupply + _value) <= totalSupply);
           balanceOf[_investorAddress] = safeAdd(balanceOf[_investorAddress], _value);
           currentSupply += _value;
           tokensReleasedToEarlyInvestor += _value;
@@ -453,7 +453,7 @@ contract YOOBAToken is StandardERC20Token, Owned,YooStop {
         @return true if successful, throws if not
     */
     function processWhenStop() public  ownerOnly   returns(bool success) {
-        require(currentSupply &lt;=  totalSupply &amp;&amp; stopped);
+        require(currentSupply <=  totalSupply && stopped);
         balanceOf[backupAddress] += (totalSupply - currentSupply);
         currentSupply = totalSupply;
        Transfer(0x0, backupAddress, (totalSupply - currentSupply));

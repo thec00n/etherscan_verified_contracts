@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,7 +68,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -77,7 +77,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -106,7 +106,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -117,8 +117,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -132,7 +132,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -217,10 +217,10 @@ contract MintableToken is StandardToken, Ownable {
 
 contract FundCruToken is MintableToken {
   // token identity
-  string public constant name = &quot;FundCru&quot;;
-  string public constant symbol = &quot;FUND&quot;;
+  string public constant name = "FundCru";
+  string public constant symbol = "FUND";
   uint256 public constant decimals = 18;
-  bytes4 public constant magic = 0x46554E44;    // &quot;FUND&quot;
+  bytes4 public constant magic = 0x46554E44;    // "FUND"
 
   // whether token transfering will be blocked during crowdsale timeframe
   bool public blockTransfering;
@@ -315,21 +315,21 @@ contract FundCruCrowdsale is Ownable {
   // transaction sanity test
   modifier validPurchase() {
     require(crowdsaleActive);
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime);    // buy within valid timeframe
-    require(msg.value &gt;= minimumPurchaseInWei);     // buy at least minimumPurchaseInWei
+    require(now >= startTime && now <= endTime);    // buy within valid timeframe
+    require(msg.value >= minimumPurchaseInWei);     // buy at least minimumPurchaseInWei
     _;
   }
 
   // state transition
   modifier stateTransition() {
-    require(currentState &gt;= 0 &amp;&amp; currentState &lt;= lastState);
-    require(now &gt;= currentStateStartTime);
+    require(currentState >= 0 && currentState <= lastState);
+    require(now >= currentStateStartTime);
 
     if (currentState == lastState) {
       // If we achieve the soft cap goal, make sure the timeframe is valid
       uint256 totalSupply = fundcruToken.totalSupply();
-      if (totalSupply &gt;= goalOfState[lastState - 1]) {
-        assert(now &lt; currentStateStartTime + softCapCountDownTimer);
+      if (totalSupply >= goalOfState[lastState - 1]) {
+        assert(now < currentStateStartTime + softCapCountDownTimer);
       }
     } else {
       // how long since current state start time
@@ -338,9 +338,9 @@ contract FundCruCrowdsale is Ownable {
       // what state we suppose to be in
       uint256 newState;
       uint256 sumTime = 0;
-      for (uint256 i=currentState; i&lt;lastState; i++) {
+      for (uint256 i=currentState; i<lastState; i++) {
         sumTime = sumTime.add(durationOfState[i]);
-        if (sumTime &gt;= timePassed) {
+        if (sumTime >= timePassed) {
           newState = i;
           break;
         }
@@ -365,25 +365,25 @@ contract FundCruCrowdsale is Ownable {
                             uint256   _minimumPurchaseInWei,    // minimum accepted transaction
                             uint256[] _goalOfState,             // goal of each state in FUND
                             uint256[] _durationOfState,         // how long each funding state lasts, in seconds
-                            uint256[] _conversionRateOfState,   // ETH -&gt; FUND conversion rate
+                            uint256[] _conversionRateOfState,   // ETH -> FUND conversion rate
                             uint256   _softCapCountDownTimer,   // count down timer (in seconds) after soft cap goal reached
                             uint256   _fundcruVaultLockTime,
                             address   _crowdsaleOwner) public {
-    require(_duration &gt; 0);
-    require(_minimumPurchaseInWei &gt; 0);
-    require(_goalOfState.length &gt; 0);
+    require(_duration > 0);
+    require(_minimumPurchaseInWei > 0);
+    require(_goalOfState.length > 0);
     require(_crowdsaleOwner != 0x0);
 
     duration = _duration;
     minimumPurchaseInWei = _minimumPurchaseInWei;
 
     lastState = _goalOfState.length - 1;
-    require(_durationOfState.length == (lastState + 1) &amp;&amp;
+    require(_durationOfState.length == (lastState + 1) &&
             _conversionRateOfState.length == (lastState + 1));
 
     // funding goal configs
-    for (uint256 i=0; i&lt;=lastState; i++) {
-      goalOfState.push(_goalOfState[i].mul(1 ether)); // 10^18, like our token&#39;s decimal
+    for (uint256 i=0; i<=lastState; i++) {
+      goalOfState.push(_goalOfState[i].mul(1 ether)); // 10^18, like our token's decimal
       durationOfState.push(_durationOfState[i]);
       conversionRateOfState.push(_conversionRateOfState[i]);
     }
@@ -405,7 +405,7 @@ contract FundCruCrowdsale is Ownable {
   // creates the token to be sold.
   // override this method to have crowdsale of a specific mintable token.
   function createTokenContract() internal returns (FundCruToken) {
-    // don&#39;t allow FUND tokens being traded during crowdsale period
+    // don't allow FUND tokens being traded during crowdsale period
     return new FundCruToken(/*_blockTransfering = */true);
   }
 
@@ -429,11 +429,11 @@ contract FundCruCrowdsale is Ownable {
     uint256 totalSupply = fundcruToken.totalSupply();
 
     // check if we need to go to new state
-    if (currentState &lt; lastState) {
+    if (currentState < lastState) {
       // what state we suppose to be in after this transaction
       uint256 newState = currentState;
-      for (uint256 i=currentState; i&lt;lastState; i++) {
-        if (goalOfState[i] &gt; totalSupply) {
+      for (uint256 i=currentState; i<lastState; i++) {
+        if (goalOfState[i] > totalSupply) {
           newState = i;
           break;
         }
@@ -492,12 +492,12 @@ contract FundCruCrowdsale is Ownable {
   function withdrawTokens() public onlyOwner {
     // must wait until lock-up time expires
     require(!crowdsaleActive);
-    require(now &gt; fundcruVaultLockTime);
+    require(now > fundcruVaultLockTime);
 
     // withdraw all FUND tokens to company wallet
     fundcruToken.transfer(crowdsaleOwner, fundcruToken.balanceOf(this));
 
-    // transfer ownership to crowdsale&#39;s organizer
+    // transfer ownership to crowdsale's organizer
     fundcruToken.transferOwnership(crowdsaleOwner);
   }
 

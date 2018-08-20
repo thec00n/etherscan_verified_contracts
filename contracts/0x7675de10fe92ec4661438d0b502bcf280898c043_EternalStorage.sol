@@ -43,7 +43,7 @@ contract EternalStorage is Ownable {
         require(msg.sender == acceptableAddress || msg.sender == owner);
     }
 
-    mapping(bytes32 =&gt; uint) public uintStorage;
+    mapping(bytes32 => uint) public uintStorage;
 
     function getUInt(bytes32 record) public view returns (uint) {
         return uintStorage[record];
@@ -53,7 +53,7 @@ contract EternalStorage is Ownable {
         uintStorage[record] = value;
     }
 
-    mapping(bytes32 =&gt; string) public stringStorage;
+    mapping(bytes32 => string) public stringStorage;
 
     function getString(bytes32 record) public view returns (string) {
         return stringStorage[record];
@@ -63,7 +63,7 @@ contract EternalStorage is Ownable {
         stringStorage[record] = value;
     }
 
-    mapping(bytes32 =&gt; address) public addressStorage;
+    mapping(bytes32 => address) public addressStorage;
 
     function getAdd(bytes32 record) public view returns (address) {
         return addressStorage[record];
@@ -73,7 +73,7 @@ contract EternalStorage is Ownable {
         addressStorage[record] = value;
     }
 
-    mapping(bytes32 =&gt; bytes) public bytesStorage;
+    mapping(bytes32 => bytes) public bytesStorage;
 
     function getBytes(bytes32 record) public view returns (bytes) {
         return bytesStorage[record];
@@ -83,7 +83,7 @@ contract EternalStorage is Ownable {
         bytesStorage[record] = value;
     }
 
-    mapping(bytes32 =&gt; bytes32) public bytes32Storage;
+    mapping(bytes32 => bytes32) public bytes32Storage;
 
     function getBytes32(bytes32 record) public view returns (bytes32) {
         return bytes32Storage[record];
@@ -93,7 +93,7 @@ contract EternalStorage is Ownable {
         bytes32Storage[record] = value;
     }
 
-    mapping(bytes32 =&gt; bool) public booleanStorage;
+    mapping(bytes32 => bool) public booleanStorage;
 
     function getBool(bytes32 record) public view returns (bool) {
         return booleanStorage[record];
@@ -103,7 +103,7 @@ contract EternalStorage is Ownable {
         booleanStorage[record] = value;
     }
 
-    mapping(bytes32 =&gt; int) public intStorage;
+    mapping(bytes32 => int) public intStorage;
 
     function getInt(bytes32 record) public view returns (int) {
         return intStorage[record];
@@ -118,8 +118,8 @@ contract EternalStorage is Ownable {
     }
 
     function withdraw(address beneficiary) public onlyAcceptable {
-        uint balance = getUInt(keccak256(beneficiary, &quot;balance&quot;));
-        setUInt(keccak256(beneficiary, &quot;balance&quot;), 0);
+        uint balance = getUInt(keccak256(beneficiary, "balance"));
+        setUInt(keccak256(beneficiary, "balance"), 0);
         beneficiary.transfer(balance);
     }
 }

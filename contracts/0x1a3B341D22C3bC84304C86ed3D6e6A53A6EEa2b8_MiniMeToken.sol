@@ -48,13 +48,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -83,10 +83,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -164,7 +164,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -183,15 +183,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -207,7 +207,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -216,7 +216,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -302,7 +302,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -327,7 +327,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -389,9 +389,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -406,9 +406,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -439,16 +439,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -464,7 +464,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -483,15 +483,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -615,7 +615,7 @@ contract Ownable {
 
 contract WhiteList is Ownable {
 
-  mapping (address =&gt; bool) public whiteListed;
+  mapping (address => bool) public whiteListed;
   address[] public investors;
   address[] public contracts;
 
@@ -623,7 +623,7 @@ contract WhiteList is Ownable {
   event WhiteListed(address addr, bool status);
 
   modifier areWhiteListed(address[] addrs) {
-    for (uint i=0; i&lt;addrs.length; i++) {
+    for (uint i=0; i<addrs.length; i++) {
         if (!whiteListed[addrs[i]] || addrs[i] == 0)
             revert();
     }
@@ -631,7 +631,7 @@ contract WhiteList is Ownable {
   }
 
   modifier areNotWhiteListed(address[] addrs) {
-    for (uint i=0; i&lt;addrs.length; i++) {
+    for (uint i=0; i<addrs.length; i++) {
         if (whiteListed[addrs[i]] || addrs[i] == 0)
             revert();
     }
@@ -639,7 +639,7 @@ contract WhiteList is Ownable {
   }
 
   function WhiteList(address[] addrs) public {
-    for (uint i=0; i&lt;addrs.length; i++) {
+    for (uint i=0; i<addrs.length; i++) {
         if(isContract(addrs[i])){
             contracts.push(addrs[i]);
         } else {
@@ -654,7 +654,7 @@ contract WhiteList is Ownable {
   }
 
   function addAddress(address[] addrs) public onlyOwner areNotWhiteListed(addrs) {
-    for (uint i=0; i&lt;addrs.length; i++) {
+    for (uint i=0; i<addrs.length; i++) {
         whiteListed[addrs[i]] = true;
         if(isContract(addrs[i])){
             contracts.push(addrs[i]);
@@ -668,7 +668,7 @@ contract WhiteList is Ownable {
   function removeAddress(address addr) public onlyOwner {
     require(whiteListed[addr]);
     if (isContract(addr)) {
-        for (uint i=0; i&lt;contracts.length - 1; i++) {
+        for (uint i=0; i<contracts.length - 1; i++) {
             if (contracts[i] == addr) {
                 contracts[i] = contracts[contracts.length - 1];
                 break;
@@ -676,7 +676,7 @@ contract WhiteList is Ownable {
         }
         contracts.length -= 1;
     } else {
-        for (uint j=0; j&lt;investors.length - 1; j++) {
+        for (uint j=0; j<investors.length - 1; j++) {
             if (investors[j] == addr) {
                 investors[j] = investors[investors.length - 1];
                 break;
@@ -697,7 +697,7 @@ contract WhiteList is Ownable {
     assembly {
         size := extcodesize(_addr)
     }
-    return size&gt;0;
+    return size>0;
   }
 
 
@@ -740,9 +740,9 @@ contract MultiSigWallet {
     /*
      *  Storage
      */
-    mapping (uint =&gt; Transaction) public transactions;
-    mapping (uint =&gt; mapping (address =&gt; bool)) public confirmations;
-    mapping (address =&gt; bool) public isOwner;
+    mapping (uint => Transaction) public transactions;
+    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (address => bool) public isOwner;
     address[] public owners;
     uint public required;
     uint public transactionCount;
@@ -813,8 +813,8 @@ contract MultiSigWallet {
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        if (   ownerCount &gt; MAX_OWNER_COUNT
-            || _required &gt; ownerCount
+        if (   ownerCount > MAX_OWNER_COUNT
+            || _required > ownerCount
             || _required == 0
             || ownerCount == 0)
             revert();
@@ -824,7 +824,7 @@ contract MultiSigWallet {
     /// @dev Fallback function allows to deposit ether.
     function() public payable
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             Deposit(msg.sender, msg.value);
     }
 
@@ -832,7 +832,7 @@ contract MultiSigWallet {
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i&lt;_owners.length; i++) {
+        for (uint i=0; i<_owners.length; i++) {
             if (isOwner[_owners[i]] || _owners[i] == 0)
                 revert();
             isOwner[_owners[i]] = true;
@@ -863,13 +863,13 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i&lt;owners.length - 1; i++)
+        for (uint i=0; i<owners.length - 1; i++)
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
         owners.length -= 1;
-        if (required &gt; owners.length)
+        if (required > owners.length)
             changeRequirement(owners.length);
         OwnerRemoval(owner);
     }
@@ -883,7 +883,7 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
@@ -972,7 +972,7 @@ contract MultiSigWallet {
         returns (bool)
     {
         uint count = 0;
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             if (confirmations[transactionId][owners[i]])
                 count += 1;
             if (count == required)
@@ -1015,7 +1015,7 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;owners.length; i++)
+        for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]])
                 count += 1;
     }
@@ -1029,9 +1029,9 @@ contract MultiSigWallet {
         constant
         returns (uint count)
     {
-        for (uint i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (uint i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
                 count += 1;
     }
 
@@ -1056,13 +1056,13 @@ contract MultiSigWallet {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;owners.length; i++)
+        for (i=0; i<owners.length; i++)
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
         _confirmations = new address[](count);
-        for (i=0; i&lt;count; i++)
+        for (i=0; i<count; i++)
             _confirmations[i] = confirmationsTemp[i];
     }
 
@@ -1080,15 +1080,15 @@ contract MultiSigWallet {
         uint[] memory transactionIdsTemp = new uint[](transactionCount);
         uint count = 0;
         uint i;
-        for (i=0; i&lt;transactionCount; i++)
-            if (   pending &amp;&amp; !transactions[i].executed
-                || executed &amp;&amp; transactions[i].executed)
+        for (i=0; i<transactionCount; i++)
+            if (   pending && !transactions[i].executed
+                || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
         _transactionIds = new uint[](to - from);
-        for (i=from; i&lt;to; i++)
+        for (i=from; i<to; i++)
             _transactionIds[i - from] = transactionIdsTemp[i];
     }
 }
@@ -1115,18 +1115,18 @@ contract Market is TokenController, MultiSigWallet {
     }
 
     modifier inProgress {
-        require(saleStarted() &amp;&amp; ! saleEnded());
+        require(saleStarted() && ! saleEnded());
         _;
     }
 
 	/// @return true if sale has started, false otherwise.
     function saleStarted() public constant returns (bool) {
-        return (startFundingTime &gt; 0 &amp;&amp; now &gt;= startFundingTime);
+        return (startFundingTime > 0 && now >= startFundingTime);
     }
 
 	/// @return true if sale is due when the last phase is finished.
     function saleEnded() public constant returns (bool) {
-        return now &gt;= endFundingTime;
+        return now >= endFundingTime;
     }
 
 
@@ -1152,7 +1152,7 @@ contract Market is TokenController, MultiSigWallet {
 		require (MyWhiteList.isWhiteListed(_to));
 		if(address(this) == _to) {
 			uint ethAmount = computeEtherAmount(_amount);
-			require(this.balance &gt; ethAmount);
+			require(this.balance > ethAmount);
 			totalTokenCollected = totalTokenCollected + _amount;
 			_from.transfer(ethAmount);
 		}
@@ -1167,7 +1167,7 @@ contract Market is TokenController, MultiSigWallet {
 
 	function deposit() public onlyOwner payable {
 		// deposit ether in this contract but do not get any token;
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			Deposit(msg.sender, msg.value);
 		}
 	}
@@ -1184,16 +1184,16 @@ contract Market is TokenController, MultiSigWallet {
 	}
 
 	function doPayment(address _owner) inProgress internal {
-		require((tokenContract.controller() != 0) &amp;&amp; (msg.value != 0));
+		require((tokenContract.controller() != 0) && (msg.value != 0));
 
 		uint tokenAmount = computeTokenAmount(msg.value);
 		uint generateTokenAmount = tokenAmount - totalTokenCollected;
 		uint currentSupply = tokenContract.totalSupply();
 		// total supply must not exceed marketCap after execution
-		require(currentSupply + generateTokenAmount &lt;= marketCap);
+		require(currentSupply + generateTokenAmount <= marketCap);
 
 		// transfer collected token first. only generate token when necessary.
-		if (tokenAmount &gt;= totalTokenCollected) {
+		if (tokenAmount >= totalTokenCollected) {
 			if(totalTokenCollected !=0) {
 				tokenContract.transfer(_owner, totalTokenCollected);
 				totalTokenCollected = 0;

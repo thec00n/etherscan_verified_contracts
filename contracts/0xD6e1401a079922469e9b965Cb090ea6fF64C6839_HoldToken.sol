@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -174,7 +174,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -185,8 +185,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -249,7 +249,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -310,8 +310,8 @@ contract MintableToken is StandardToken, Ownable {
 contract HoldToken is MintableToken {
     using SafeMath for uint256;
 
-    string public name = &#39;HOLD&#39;;
-    string public symbol = &#39;HOLD&#39;;
+    string public name = 'HOLD';
+    string public symbol = 'HOLD';
     uint8 public decimals = 18;
 
     event Burn(address indexed burner, uint256 value);
@@ -335,7 +335,7 @@ contract HoldToken is MintableToken {
     }
 
     function burn(uint256 _value) public onlyBurner {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
         Burn(msg.sender, _value);
@@ -388,10 +388,10 @@ contract Crowdsale {
         address _wallet,
         uint256 _initialWeiRaised
     ) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
         require(_wallet != address(0));
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
         token = new HoldToken(_wallet);
         startTime = _startTime;
@@ -403,7 +403,7 @@ contract Crowdsale {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 }
 
@@ -457,7 +457,7 @@ contract TokenTimelock {
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime &gt; block.timestamp);
+    require(_releaseTime > block.timestamp);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -468,10 +468,10 @@ contract TokenTimelock {
    */
   function release() public {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= releaseTime);
+    require(block.timestamp >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -496,9 +496,9 @@ contract CappedCrowdsale is Crowdsale, Ownable {
     );
 
     function CappedCrowdsale(uint256 _hardCap, uint256 _tokensToLock, uint256 _releaseTime) public {
-        require(_hardCap &gt; 0);
-        require(_tokensToLock &gt; 0);
-        require(_releaseTime &gt; endTime);
+        require(_hardCap > 0);
+        require(_tokensToLock > 0);
+        require(_releaseTime > endTime);
         hardCap = _hardCap;
         releaseTime = _releaseTime;
         tokensToLock = _tokensToLock;
@@ -508,7 +508,7 @@ contract CappedCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -530,7 +530,7 @@ contract CappedCrowdsale is Crowdsale, Ownable {
     function mint(address beneficiary, uint256 amount) onlyOwner public {
         require(!token.mintingFinished());
         require(isFinalized);
-        require(amount &gt; 0);
+        require(amount > 0);
         require(beneficiary != address(0));
         token.mint(beneficiary, amount);
 
@@ -540,7 +540,7 @@ contract CappedCrowdsale is Crowdsale, Ownable {
     // overriding Crowdsale#hasEnded to add cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        bool capReached = weiRaised &gt;= hardCap;
+        bool capReached = weiRaised >= hardCap;
         return super.hasEnded() || capReached || isFinalized;
     }
 
@@ -551,8 +551,8 @@ contract CappedCrowdsale is Crowdsale, Ownable {
 contract OnlyWhiteListedAddresses is Ownable {
     using SafeMath for uint256;
     address utilityAccount;
-    mapping (address =&gt; bool) whitelist;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => bool) whitelist;
+    mapping (address => address) public referrals;
 
     modifier onlyOwnerOrUtility() {
         require(msg.sender == owner || msg.sender == utilityAccount);
@@ -573,7 +573,7 @@ contract OnlyWhiteListedAddresses is Ownable {
     }
 
     function whitelistAddress (address[] users) public onlyOwnerOrUtility {
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             whitelist[users[i]] = true;
         }
         WhitelistedAddresses(users);
@@ -581,7 +581,7 @@ contract OnlyWhiteListedAddresses is Ownable {
 
     function addAddressReferrals (address[] users, address[] _referrals) public onlyOwnerOrUtility {
         require(users.length == _referrals.length);
-        for (uint i = 0; i &lt; users.length; i++) {
+        for (uint i = 0; i < users.length; i++) {
             require(isWhiteListedAddress(users[i]));
 
             referrals[users[i]] = _referrals[i];
@@ -607,8 +607,8 @@ contract HoldCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
 
     uint256 transactionId = 1;
 
-    mapping (uint256 =&gt; TokenPurchaseRecord) pendingTransactions;
-    mapping (uint256 =&gt; bool) completedTransactions;
+    mapping (uint256 => TokenPurchaseRecord) pendingTransactions;
+    mapping (uint256 => bool) completedTransactions;
 
     uint256 public referralPercentage;
     uint256 public individualCap;
@@ -671,7 +671,7 @@ contract HoldCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
         require(!isFinalized);
         require(beneficiary == msg.sender);
         require(msg.value != 0);
-        require(msg.value &gt;= individualCap);
+        require(msg.value >= individualCap);
 
         uint256 weiAmount = msg.value;
         require(isWhiteListedAddress(beneficiary));
@@ -694,7 +694,7 @@ contract HoldCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
     function issueTokensMultiple(uint256[] _transactionIds, uint256[] bonusTokensAmounts) public onlyOwner {
         require(isFinalized);
         require(_transactionIds.length == bonusTokensAmounts.length);
-        for (uint i = 0; i &lt; _transactionIds.length; i++) {
+        for (uint i = 0; i < _transactionIds.length; i++) {
             issueTokens(_transactionIds[i], bonusTokensAmounts[i]);
         }
     }
@@ -726,9 +726,9 @@ contract HoldCrowdsale is CappedCrowdsale, OnlyWhiteListedAddresses {
     }
 
     function validPurchase(uint256 weiAmount) internal view returns (bool) {
-        bool withinCap = weiRaised.add(weiAmount) &lt;= hardCap;
-        bool withinCrowdsaleInterval = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        return withinCrowdsaleInterval &amp;&amp; withinCap;
+        bool withinCap = weiRaised.add(weiAmount) <= hardCap;
+        bool withinCrowdsaleInterval = now >= startTime && now <= endTime;
+        return withinCrowdsaleInterval && withinCap;
     }
 
     function forwardFunds() internal {

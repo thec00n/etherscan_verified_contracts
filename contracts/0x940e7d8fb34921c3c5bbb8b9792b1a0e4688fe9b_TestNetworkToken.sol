@@ -4,15 +4,15 @@ pragma solidity ^0.4.4;
 contract MockTestNetworkToken {
 
     // Token metadata
-    string public constant name = &quot;Test Network Token&quot;;
-    string public constant symbol = &quot;TNT&quot;;
+    string public constant name = "Test Network Token";
+    string public constant symbol = "TNT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     // The current total token supply
     uint256 totalTokens;
 
     // Balances are stored here
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Always false, corresponds to ongoing crowdfunding
     bool transferable;
@@ -25,7 +25,7 @@ contract MockTestNetworkToken {
     // ERC20 interface - minimal functional subset
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (transferable &amp;&amp; balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (transferable && balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -91,7 +91,7 @@ contract TestNetworkToken is MockTestNetworkToken {
     
     function kill() {
         if (msg.sender != owner) throw;
-        if (totalTokens &gt; 0) throw;
+        if (totalTokens > 0) throw;
 
         selfdestruct(msg.sender);
     }

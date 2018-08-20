@@ -80,7 +80,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public pure returns (bool){
@@ -111,9 +111,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -121,7 +121,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -130,7 +130,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -156,13 +156,13 @@ contract UbricoinPresale {
     // functions on this contract.
     address public tokenManager=0xAC762012330350DDd97Cc64B133536F8E32193a8;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow=0x28970854Bfa61C0d6fE56Cc9daAAe5271CEaEC09;
 
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager=0x9888375f4663891770DaaaF9286d97d44FeFC82E;
 
-    mapping (address =&gt; uint256) private balance;
+    mapping (address => uint256) private balance;
 
 
     modifier onlyTokenManager()     { if(msg.sender != tokenManager) revert(); _; }
@@ -209,16 +209,16 @@ contract UbricoinPresale {
         onlyTokenManager
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         if(!canSwitchPhase) revert();
         currentPhase = _nextPhase;
@@ -231,7 +231,7 @@ contract UbricoinPresale {
         onlyTokenManager
     {
         // Available at any phase.
-        if(address(this).balance &gt; 0) {
+        if(address(this).balance > 0) {
             if(!escrow.send(address(this).balance)) revert();
         }
     }
@@ -240,7 +240,7 @@ contract UbricoinPresale {
     function setCrowdsaleManager(address _mgr) public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         if(currentPhase == Phase.Migrating) revert();
         crowdsaleManager = _mgr;
     }
@@ -255,7 +255,7 @@ contract Haltable is Ownable  {
   }
 
   modifier stopNonOwnersInEmergency {
-    if (halted &amp;&amp; msg.sender != owner) revert();
+    if (halted && msg.sender != owner) revert();
     _;
   }
 
@@ -277,7 +277,7 @@ contract Haltable is Ownable  {
 }
 contract WhitelistedCrowdsale is Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -300,7 +300,7 @@ contract WhitelistedCrowdsale is Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) onlyOwner public {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -328,7 +328,7 @@ contract WhitelistedCrowdsale is Ownable {
     uint256 public amountRaised;
     uint256 public deadline;
        
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
     uint256 public investorCount = 0;
@@ -353,7 +353,7 @@ contract WhitelistedCrowdsale is Ownable {
  
      
  
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
     
 
     /**
@@ -380,7 +380,7 @@ contract WhitelistedCrowdsale is Ownable {
      
      
     function checkGoalReached() afterDeadline public {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             emit GoalReached(beneficiary, amountRaised);
         }
@@ -400,7 +400,7 @@ contract WhitelistedCrowdsale is Ownable {
         if (!fundingGoalReached) {
             uint256 amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                 emit FundTransfer(beneficiary,amountRaised,false);
                 } else {
@@ -409,7 +409,7 @@ contract WhitelistedCrowdsale is Ownable {
             }
         }
 
-        if  (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if  (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                emit FundTransfer(beneficiary,amountRaised,false);
             } else {
@@ -455,7 +455,7 @@ contract WhitelistedCrowdsale is Ownable {
 
 }
 contract Upgradeable {
-    mapping(bytes4=&gt;uint32) _sizes;
+    mapping(bytes4=>uint32) _sizes;
     address _dest;
 
     /**
@@ -477,12 +477,12 @@ contract Upgradeable {
      */
     function replace(address target) internal {
         _dest = target;
-        require(target.delegatecall(bytes4(keccak256(&quot;initialize()&quot;))));
+        require(target.delegatecall(bytes4(keccak256("initialize()"))));
     }
 }
 /**
- * The dispatcher is a minimal &#39;shim&#39; that dispatches calls to a targeted
- * contract. Calls are made using &#39;delegatecall&#39;, meaning all storage and value
+ * The dispatcher is a minimal 'shim' that dispatches calls to a targeted
+ * contract. Calls are made using 'delegatecall', meaning all storage and value
  * is kept on the dispatcher. As a result, when the target is updated, the new
  * contract inherits all the stored data and value from the old contract.
  */
@@ -519,7 +519,7 @@ contract Example is Upgradeable {
     uint _value;
     
     function initialize() public {
-        _sizes[bytes4(keccak256(&quot;getUint()&quot;))] = 32;
+        _sizes[bytes4(keccak256("getUint()"))] = 32;
     }
     
     function getUint() public view returns (uint) {
@@ -538,7 +538,7 @@ interface tokenRecipient {
  /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgradeable {
@@ -546,9 +546,9 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
     using SafeMath for uint256;
     
     // Public variables of the token
-    string public name =&#39;Ubricoin&#39;;
-    string public symbol =&#39;UBN&#39;;
-    string public version= &quot;1.0&quot;;
+    string public name ='Ubricoin';
+    string public symbol ='UBN';
+    string public version= "1.0";
     uint public decimals=18;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint public totalSupply = 10000000000;
@@ -558,8 +558,8 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
     
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -577,13 +577,13 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
 }
     
     
-    mapping (address =&gt; Allocation) public allocations;
+    mapping (address => Allocation) public allocations;
 
     // List of admins
-    mapping (address =&gt; bool) public airdropAdmins;
+    mapping (address => bool) public airdropAdmins;
 
     // Keeps track of whether or not an Ubricoin airdrop has been made to a particular address
-    mapping (address =&gt; bool) public airdrops;
+    mapping (address => bool) public airdrops;
 
   modifier onlyOwnerOrAdmin() {
     require(msg.sender == owner || airdropAdmins[msg.sender]);
@@ -602,10 +602,10 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
      
     function proofOfWork(uint256 nonce) public{
         bytes8 n = bytes8(keccak256(abi.encodePacked(nonce, currentChallenge)));    // Generate a random hash based on input
-        require(n &gt;= bytes8(difficulty));                   // Check if it&#39;s under the difficulty
+        require(n >= bytes8(difficulty));                   // Check if it's under the difficulty
 
         uint256 timeSinceLastProof = (now - timeOfLastProof);  // Calculate time since last reward was given
-        require(timeSinceLastProof &gt;=  5 seconds);         // Rewards cannot be given too quickly
+        require(timeSinceLastProof >=  5 seconds);         // Rewards cannot be given too quickly
         balanceOf[msg.sender] += timeSinceLastProof / 60 seconds;  // The reward to the winner grows by the minute
 
         difficulty = difficulty * 10 minutes / timeSinceLastProof + 1;  // Adjusts the difficulty
@@ -616,7 +616,7 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
 
 
    function () payable public whenNotPaused {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 tokens = msg.value.mul(RATE);
         balanceOf[msg.sender] = balanceOf[msg.sender].add(tokens);
         totalSupply = totalSupply.add(tokens);
@@ -630,9 +630,9 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -676,7 +676,7 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -723,7 +723,7 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -738,8 +738,8 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
     }
 
     function validPurchase() internal returns (bool) {
-    bool lessThanMaxInvestment = msg.value &lt;= 1000 ether; // change the value to whatever you need
-    return validPurchase() &amp;&amp; lessThanMaxInvestment;
+    bool lessThanMaxInvestment = msg.value <= 1000 ether; // change the value to whatever you need
+    return validPurchase() && lessThanMaxInvestment;
 }
 
     /**
@@ -751,10 +751,10 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -774,7 +774,7 @@ contract Ubricoin is UbricoinPresale,Ownable,Haltable, UbricoinCrowdsale,Upgrade
   function airdropTokens(address[] _recipient) public onlyOwnerOrAdmin {
     
     uint airdropped;
-    for(uint256 i = 0; i&lt; _recipient.length; i++)
+    for(uint256 i = 0; i< _recipient.length; i++)
     {
         if (!airdrops[_recipient[i]]) {
           airdrops[_recipient[i]] = true;

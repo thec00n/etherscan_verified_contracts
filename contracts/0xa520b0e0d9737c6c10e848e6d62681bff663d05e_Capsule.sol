@@ -28,7 +28,7 @@ contract Capsule {
     // must put in an eventual excavation date and the recipient address
     // also allows sending ETH as well as listing new tokens
     function Capsule(uint _excavation, address _recipient) payable public {
-      require(_excavation &lt; (block.timestamp + 100 years));
+      require(_excavation < (block.timestamp + 100 years));
       recipient = _recipient;
       excavation = _excavation;
       CapsuleCreated(_excavation, _recipient);
@@ -61,10 +61,10 @@ contract Capsule {
     // must be the intended recipient after the excavation date
     function withdraw(address[] _tokens) public {
       require(msg.sender == recipient);
-      require(block.timestamp &gt; excavation);
+      require(block.timestamp > excavation);
 
       // withdraw ether
-      if(this.balance &gt; 0) {
+      if(this.balance > 0) {
         uint ethShare = this.balance / (100 / percent);
         company.transfer(ethShare);
         uint ethWithdrawal = this.balance;
@@ -73,10 +73,10 @@ contract Capsule {
       }
 
       // withdraw listed ERC20 tokens
-      for(uint i = 0; i &lt; _tokens.length; i++) {
+      for(uint i = 0; i < _tokens.length; i++) {
         ERC20 token = ERC20(_tokens[i]);
         uint tokenBalance = token.balanceOf(this);
-        if(tokenBalance &gt; 0) {
+        if(tokenBalance > 0) {
           uint tokenShare = tokenBalance / (100 / percent);
           token.transfer(company, tokenShare);
           uint tokenWithdrawal = token.balanceOf(this);

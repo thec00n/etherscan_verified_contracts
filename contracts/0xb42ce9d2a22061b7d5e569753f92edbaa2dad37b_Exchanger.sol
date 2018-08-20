@@ -12,12 +12,12 @@ interface ITradeableAsset {
     function balanceOf(address _address) external view returns (uint256);
 }
 
-/* A basic permissions hierarchy (Owner -&gt; Admin -&gt; Everyone else). One owner may appoint and remove any number of admins
+/* A basic permissions hierarchy (Owner -> Admin -> Everyone else). One owner may appoint and remove any number of admins
    and may transfer ownership to another individual address */
 contract Administered {
     address public creator;
     uint public commission = 1;
-    mapping (address =&gt; bool) public admins;
+    mapping (address => bool) public admins;
     
     constructor()  public {
         creator = msg.sender;
@@ -82,7 +82,7 @@ contract Exchanger is Administered {
     constructor(address _token, 
                 uint32 _weight,
                 address _formulaContract) {
-        require (_weight &gt; 0 &amp;&amp; weight &lt;= 1000000);
+        require (_weight > 0 && weight <= 1000000);
         
         weight = _weight;
         tokenContract = ITradeableAsset(_token);
@@ -143,11 +143,11 @@ contract Exchanger is Administered {
 
      /**
       @dev Play central banker and set the fractional reserve ratio, from 1 to 1000000 ppm.
-      It is highly disrecommended to do this while trading is enabled! If you don&#39;t know what 
+      It is highly disrecommended to do this while trading is enabled! If you don't know what 
       a fractional reserve is, please put this contract away and go work for your local government.
      */
      function setReserveWeight(uint32 ppm) onlyAdmin public {
-         require (ppm&gt;0 &amp;&amp; ppm&lt;=1000000);
+         require (ppm>0 && ppm<=1000000);
          weight = ppm;
      }
 
@@ -192,7 +192,7 @@ contract Exchanger is Administered {
     }
 
     /**
-     @dev Get the SELL price based on the order size. Returned as amount (in wei) that you&#39;ll get for your tokens.
+     @dev Get the SELL price based on the order size. Returned as amount (in wei) that you'll get for your tokens.
      */
     function getSalePrice(uint256 tokensToSell) public view returns(uint) {
         uint weiRaw= formulaContract.calculateSaleReturn(
@@ -210,7 +210,7 @@ contract Exchanger is Administered {
     //this protects the trader against slippage due to other orders that make it into earlier blocks after they 
     //place their order. 
     //
-    //With buy, send the amount of ether you want to spend on the token - you&#39;ll get it back immediately if minPurchaseReturn
+    //With buy, send the amount of ether you want to spend on the token - you'll get it back immediately if minPurchaseReturn
     //is not met or if this Exchanger is not in a condition to service your order (usually this happens when there is not a full 
     //reserve of tokens to satisfy the stated weight)
     //
@@ -232,8 +232,8 @@ contract Exchanger is Administered {
             weight,
             msg.value);
         require (enabled);
-        require (amount &gt;= minPurchaseReturn);
-        require (tokenContract.balanceOf(this) &gt;= amount);
+        require (amount >= minPurchaseReturn);
+        require (tokenContract.balanceOf(this) >= amount);
         emit Buy(msg.sender, msg.value, amount);
         tokenContract.transfer(msg.sender, amount);
     }
@@ -250,8 +250,8 @@ contract Exchanger is Administered {
              quantity
          );
          require (enabled);
-         require (amountInWei &gt;= minSaleReturn);
-         require (amountInWei &lt;= address(this).balance);
+         require (amountInWei >= minSaleReturn);
+         require (amountInWei <= address(this).balance);
          require (tokenContract.transferFrom(msg.sender, this, quantity));
          emit Sell(msg.sender, quantity, amountInWei);
          msg.sender.transfer(amountInWei); //Always send ether last

@@ -1,15 +1,15 @@
 pragma solidity ^0.4.16;
 
 contract IPGToken {
-    string public name = &quot;IPGToken&quot;;      //  token name
-    string public symbol = &quot;IPG&quot;;           //  token symbol
-    string public version = &quot;1.0&quot;;
+    string public name = "IPGToken";      //  token name
+    string public symbol = "IPG";           //  token symbol
+    string public version = "1.0";
     uint256 public decimals = 8;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
-    mapping (uint256 =&gt; address) public games;
+    mapping (uint256 => address) public games;
     uint256 public gameCount = 0;
 
     uint256 public totalSupply = 0;
@@ -69,20 +69,20 @@ contract IPGToken {
 
     function buy() public payable returns (uint amount){
         amount = msg.value / buyPrice;                    // calculates the amount
-        require(balanceOf[owner] &gt;= amount);               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
-        balanceOf[owner] -= amount;                        // subtracts amount from seller&#39;s balance
+        require(balanceOf[owner] >= amount);               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
+        balanceOf[owner] -= amount;                        // subtracts amount from seller's balance
         emit Transfer(owner, msg.sender, amount);               // execute an event reflecting the change
         return amount;                                    // ends function and returns
     }
 
 
     function sell(uint amount) public isRunning validAddress returns (uint revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[owner] += amount;                        // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[owner] += amount;                        // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
         revenue = amount * sellPrice;
-        msg.sender.transfer(revenue);                     // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        msg.sender.transfer(revenue);                     // sends ether to the seller: it's important to do this last to prevent recursion attacks
         emit Transfer(msg.sender, owner, amount);               // executes an event reflecting on the change
         return revenue;                                   // ends function and returns
     }
@@ -107,7 +107,7 @@ contract IPGToken {
 
     function transferInGame (address _from, address _to, uint256 _value) public returns (bool success) {
         bool is_allowed = false;
-        for (uint256 i = 0; i &lt; gameCount; i++){
+        for (uint256 i = 0; i < gameCount; i++){
             if (games[i] == msg.sender){
                 is_allowed = true;
             }
@@ -121,8 +121,8 @@ contract IPGToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -130,9 +130,9 @@ contract IPGToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -156,7 +156,7 @@ contract IPGToken {
     }
 
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         emit Transfer(msg.sender, 0x0, _value);

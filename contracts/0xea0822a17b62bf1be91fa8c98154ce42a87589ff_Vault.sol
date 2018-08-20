@@ -5,7 +5,7 @@ contract Vault {
     event Deposit(address indexed depositor, uint amount);
     event Withdrawal(address indexed to, uint amount);
 
-    mapping (address =&gt; uint) public deposits;
+    mapping (address => uint) public deposits;
     uint minDeposit;
     bool Locked;
     address Owner;
@@ -21,10 +21,10 @@ contract Vault {
 
     function MinimumDeposit() constant returns (uint) { return minDeposit; }
     function ReleaseDate() constant returns (uint) { return Date; }
-    function WithdrawalEnabled() internal returns (bool) { return Date &gt; 0 &amp;&amp; Date &lt;= now; }
+    function WithdrawalEnabled() internal returns (bool) { return Date > 0 && Date <= now; }
 
     function deposit() payable {
-        if (msg.value &gt;= MinimumDeposit()) {
+        if (msg.value >= MinimumDeposit()) {
             deposits[msg.sender] += msg.value;
         }
         Deposit(msg.sender, msg.value);
@@ -32,7 +32,7 @@ contract Vault {
 
     function withdraw(address to, uint amount) onlyOwner {
         if (WithdrawalEnabled()) {
-            if (deposits[msg.sender] &gt; 0 &amp;&amp; amount &lt;= deposits[msg.sender]) {
+            if (deposits[msg.sender] > 0 && amount <= deposits[msg.sender]) {
                 to.transfer(amount);
                 Withdrawal(to, amount);
             }

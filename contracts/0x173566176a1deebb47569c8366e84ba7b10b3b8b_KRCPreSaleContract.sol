@@ -15,27 +15,27 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -137,7 +137,7 @@ interface TokenInterface {
     	string Email;
     }
     
-    mapping (address =&gt; Whitelist) Whitelists;
+    mapping (address => Whitelist) Whitelists;
     
     address[] public WhitelistsAccts;
     
@@ -172,13 +172,13 @@ interface TokenInterface {
 
   function KRCPreSaleContract(uint256 _startTime, address _wallet, address _tokenAddress) public 
   {
-    require(_startTime &gt;=now);
+    require(_startTime >=now);
     require(_wallet != 0x0);
 
     startTime = _startTime;  
     
     endTime = startTime + totalDurationInDays;
-    require(endTime &gt;= startTime);
+    require(endTime >= startTime);
    
     owner = _wallet;
     
@@ -214,7 +214,7 @@ interface TokenInterface {
      //buyTokens(msg.sender);
       
      var isexist = searchWhitelist(msg.sender);
-     if(bytes(isexist).length &gt; 0){
+     if(bytes(isexist).length > 0){
         buyTokens(msg.sender);
      }else{
          revert();
@@ -227,22 +227,22 @@ interface TokenInterface {
         uint256 timeElapsedInDays = timeElapsed.div(1 days);
         uint256 bonus = 0;
         //Phase 1 (15 days)
-        if (timeElapsedInDays &lt;15)
+        if (timeElapsedInDays <15)
         {
             tokens = value.mul(ratePerWei);
             bonus = tokens.mul(bonusInPhase1); 
             bonus = bonus.div(100);
             tokens = tokens.add(bonus);
-            require (TOKENS_SOLD.add(tokens) &lt;= maxTokensToSale);
+            require (TOKENS_SOLD.add(tokens) <= maxTokensToSale);
         }
         //Phase 2 (15 days)
-        else if (timeElapsedInDays &gt;=15 &amp;&amp; timeElapsedInDays &lt;30)
+        else if (timeElapsedInDays >=15 && timeElapsedInDays <30)
         {
             tokens = value.mul(ratePerWei);
             bonus = tokens.mul(bonusInPhase2); 
             bonus = bonus.div(100);
             tokens = tokens.add(bonus);
-            require (TOKENS_SOLD.add(tokens) &lt;= maxTokensToSale);
+            require (TOKENS_SOLD.add(tokens) <= maxTokensToSale);
         }
         else 
         {
@@ -258,7 +258,7 @@ interface TokenInterface {
     require(validPurchase());
 
     
-    require(TOKENS_SOLD&lt;maxTokensToSale);
+    require(TOKENS_SOLD<maxTokensToSale);
    
     uint256 weiAmount = msg.value.div(10**16);
     
@@ -307,15 +307,15 @@ interface TokenInterface {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    bool withinContributionLimit = msg.value &gt;= minimumContribution &amp;&amp; msg.value &lt;= maximumContribution;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinContributionLimit;
+    bool withinContributionLimit = msg.value >= minimumContribution && msg.value <= maximumContribution;
+    return withinPeriod && nonZeroPurchase && withinContributionLimit;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   
    /**
@@ -379,7 +379,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/  
     function withdrawLongTermFoundationBudget() public onlyOwner {
-        require(LongTermFoundationBudgetAccumulated &gt; 0);
+        require(LongTermFoundationBudgetAccumulated > 0);
         owner.transfer(LongTermFoundationBudgetAccumulated);
         LongTermFoundationBudgetAccumulated = 0;
     }
@@ -390,7 +390,7 @@ interface TokenInterface {
      **/
      
     function withdrawLegalContingencyFunds() public onlyOwner {
-        require(LegalContingencyFundsAccumulated &gt; 0);
+        require(LegalContingencyFundsAccumulated > 0);
         owner.transfer(LegalContingencyFundsAccumulated);
         LegalContingencyFundsAccumulated = 0;
     }
@@ -400,7 +400,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/
     function withdrawMarketingAndCommunityOutreach() public onlyOwner {
-        require (MarketingAndCommunityOutreachAccumulated &gt; 0);
+        require (MarketingAndCommunityOutreachAccumulated > 0);
         owner.transfer(MarketingAndCommunityOutreachAccumulated);
         MarketingAndCommunityOutreachAccumulated = 0;
     }
@@ -410,7 +410,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/
     function withdrawCashReserveFund() public onlyOwner {
-        require(CashReserveFundAccumulated &gt; 0);
+        require(CashReserveFundAccumulated > 0);
         owner.transfer(CashReserveFundAccumulated);
         CashReserveFundAccumulated = 0;
     }
@@ -420,7 +420,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/
     function withdrawOperationalExpenses() public onlyOwner {
-        require(OperationalExpensesAccumulated &gt; 0);
+        require(OperationalExpensesAccumulated > 0);
         owner.transfer(OperationalExpensesAccumulated);
         OperationalExpensesAccumulated = 0;
     }
@@ -430,7 +430,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/
     function withdrawSoftwareProductDevelopment() public onlyOwner {
-        require (SoftwareProductDevelopmentAccumulated &gt; 0);
+        require (SoftwareProductDevelopmentAccumulated > 0);
         owner.transfer(SoftwareProductDevelopmentAccumulated);
         SoftwareProductDevelopmentAccumulated = 0;
     }
@@ -440,7 +440,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/
     function withdrawFoundersTeamAndAdvisors() public onlyOwner {
-        require (FoundersTeamAndAdvisorsAccumulated &gt; 0);
+        require (FoundersTeamAndAdvisorsAccumulated > 0);
         owner.transfer(FoundersTeamAndAdvisorsAccumulated);
         FoundersTeamAndAdvisorsAccumulated = 0;
     }
@@ -450,7 +450,7 @@ interface TokenInterface {
      * can only be called from owner wallet
      **/
     function withdrawAllFunds() public onlyOwner {
-        require (address(this).balance &gt; 0);
+        require (address(this).balance > 0);
         owner.transfer(address(this).balance);
     }
 }

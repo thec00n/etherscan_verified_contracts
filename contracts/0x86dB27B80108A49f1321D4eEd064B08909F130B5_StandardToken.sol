@@ -14,30 +14,30 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(b &lt;= a);
+        require(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max(uint a, uint b) internal pure returns (uint) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -61,14 +61,14 @@ contract StandardToken {
     // --- ERC20 Token Section ---
     uint8 constant public decimals = 6; // **** decimals ****
     uint constant public totalSupply = 1*10**(8+6);  // 100 Million **** decimals ****
-    string constant public name = &quot;Standard Token Template Token&quot;;
-    string constant public symbol = &quot;MNT&quot;;
+    string constant public name = "Standard Token Template Token";
+    string constant public symbol = "MNT";
     
     address public owner;
     bool public frozen = false; // 
     
-    mapping(address =&gt; uint) ownerance; // Owner Balance
-    mapping(address =&gt; mapping(address =&gt; uint)) public allowance; // Allower Balance
+    mapping(address => uint) ownerance; // Owner Balance
+    mapping(address => mapping(address => uint)) public allowance; // Allower Balance
     
     // === Modifier ===
     modifier isOwner() {
@@ -82,13 +82,13 @@ contract StandardToken {
     }
 
     modifier hasEnoughBalance(uint _amount) {
-        require(ownerance[msg.sender] &gt;= _amount);
-        require(ownerance[msg.sender] + _amount &gt;= ownerance[msg.sender]); // Overflow detected
+        require(ownerance[msg.sender] >= _amount);
+        require(ownerance[msg.sender] + _amount >= ownerance[msg.sender]); // Overflow detected
         _;
     }
 
     modifier hasAllowBalance(address _owner, address _allower, uint _amount) {
-        require(allowance[_owner][_allower] &gt;= _amount);
+        require(allowance[_owner][_allower] >= _amount);
         _;
     }
 
@@ -127,9 +127,9 @@ contract StandardToken {
         isNotFrozen
         public returns (bool success) 
     {
-        require(ownerance[_from] &gt;= _value);
-        require(ownerance[_to] + _value &gt;= ownerance[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(ownerance[_from] >= _value);
+        require(ownerance[_to] + _value >= ownerance[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         ownerance[_to] = ownerance[_to].add(_value);
         ownerance[_from] = ownerance[_from].sub(_value);
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);

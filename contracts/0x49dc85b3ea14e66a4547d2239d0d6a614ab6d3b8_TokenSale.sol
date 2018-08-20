@@ -13,20 +13,20 @@ library SafeMath {
 
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -95,7 +95,7 @@ contract TokenSale is Ownable ,Pausable {
   uint256 public mtStartTime; 
   uint256 public mtEndTime;      
 
-  mapping (address =&gt; uint256) public beneficiaryFunded; 
+  mapping (address => uint256) public beneficiaryFunded; 
 
   function TokenSale() public 
     { 
@@ -121,20 +121,20 @@ contract TokenSale is Ownable ,Pausable {
     require(validPurchase());   
         
     uint256 postWeiRaised = SafeMath.add(weiRaised, toFund); 
-    require(postWeiRaised &lt;= saleHardcap);
+    require(postWeiRaised <= saleHardcap);
 
     weiRaised = SafeMath.add(weiRaised, toFund);     
     beneficiaryFunded[beneficiary] = SafeMath.add(beneficiaryFunded[msg.sender], toFund);
   }
 
   function validPurchase() internal constant returns (bool) {
-    bool validValue = msg.value &gt;= personalMincap;                                                       
-    bool validTime = now &gt;= startTime &amp;&amp; now &lt;= endTime &amp;&amp; !checkMaintenanceTime(); 
-    return validValue &amp;&amp; !maxReached() &amp;&amp; validTime;  
+    bool validValue = msg.value >= personalMincap;                                                       
+    bool validTime = now >= startTime && now <= endTime && !checkMaintenanceTime(); 
+    return validValue && !maxReached() && validTime;  
   }
 
   function maxReached() public constant returns (bool) {
-    return weiRaised &gt;= saleHardcap;
+    return weiRaised >= saleHardcap;
   }
 
   function getNowTime() public constant returns(uint256) {
@@ -159,7 +159,7 @@ contract TokenSale is Ownable ,Pausable {
   }
 
   function FinishTokensale() public onlyOwner {
-    require(maxReached() || now &gt; endTime);
+    require(maxReached() || now > endTime);
     isFinalized = true;
     
     owner.transfer(address(this).balance);
@@ -173,7 +173,7 @@ contract TokenSale is Ownable ,Pausable {
   function checkMaintenanceTime() public view returns (bool)
   {
     uint256 datetime = now % (60 * 60 * 24);
-    return (datetime &gt;= mtStartTime &amp;&amp; datetime &lt; mtEndTime);
+    return (datetime >= mtStartTime && datetime < mtEndTime);
   }
 
 }

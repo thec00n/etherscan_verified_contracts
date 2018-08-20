@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ contract Owned {
   event OwnerRemoval(address indexed owner);
 
   // owner address to enable admin functions
-  mapping (address =&gt; bool) public isOwner;
+  mapping (address => bool) public isOwner;
 
   address[] public owners;
 
@@ -63,9 +63,9 @@ contract Owned {
   }
 
   function removeOwner(address _owner) public onlyOwner {
-    require(owners.length &gt; 1);
+    require(owners.length > 1);
     isOwner[_owner] = false;
-    for (uint i = 0; i &lt; owners.length - 1; i++) {
+    for (uint i = 0; i < owners.length - 1; i++) {
       if (owners[i] == _owner) {
         owners[i] = owners[SafeMath.sub(owners.length, 1)];
         break;
@@ -84,7 +84,7 @@ contract Owned {
   }
 
   function setOwners(address[] _owners) internal {
-    for (uint i = 0; i &lt; _owners.length; i++) {
+    for (uint i = 0; i < _owners.length; i++) {
       require(_owners[i] != address(0));
       isOwner[_owners[i]] = true;
       OwnerAddition(_owners[i]);
@@ -155,7 +155,7 @@ contract Token {
 You should inherit from StandardToken or, for a token like you would want to
 deploy in something like Mist, see HumanStandardToken.sol.
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -165,11 +165,11 @@ pragma solidity ^0.4.19;
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -178,8 +178,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -201,8 +201,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 // File: contracts/Validating.sol
@@ -239,9 +239,9 @@ contract Fee is Owned, Validating, StandardToken {
   event Burn(address indexed from, uint256 value);
 
   string public name;                   //fancy name: eg Simon Bucks
-  uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+  uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
   string public symbol;                 //An identifier: eg SBX
-  string public version = &#39;F0.2&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+  string public version = 'F0.2';       //human 0.1 standard. Just an arbitrary versioning scheme.
   address public minter;
 
   modifier onlyMinter {
@@ -275,7 +275,7 @@ contract Fee is Owned, Validating, StandardToken {
   /// @notice To eliminate tokens and adjust the price of the FEE tokens
   /// @param _value Amount of tokens to delete
   function burnTokens(uint _value) public notZero(_value) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
     totalSupply = SafeMath.sub(totalSupply, _value);
     Burn(msg.sender, _value);
@@ -342,10 +342,10 @@ contract Stake is Owned, Validating, GenericCall {
   event StakingInterval(uint startBlock, uint endBlock);
 
   // User address to (lev tokens)*(blocks left to end)
-  mapping (address =&gt; uint) public levBlocks;
+  mapping (address => uint) public levBlocks;
 
   // User address to lev tokens at stake
-  mapping (address =&gt; uint) public stakes;
+  mapping (address => uint) public stakes;
 
   uint public totalLevs;
 
@@ -373,12 +373,12 @@ contract Stake is Owned, Validating, GenericCall {
   bool public feeCalculated = false;
 
   modifier isStaking {
-    require(startBlock &lt;= block.number &amp;&amp; block.number &lt; endBlock);
+    require(startBlock <= block.number && block.number < endBlock);
     _;
   }
 
   modifier isDoneStaking {
-    require(block.number &gt;= endBlock);
+    require(block.number >= endBlock);
     _;
   }
 
@@ -412,7 +412,7 @@ contract Stake is Owned, Validating, GenericCall {
   }
 
   function version() external pure returns (string) {
-    return &quot;1.0.0&quot;;
+    return "1.0.0";
   }
 
   /// @notice To set the the address of the LEV token
@@ -438,7 +438,7 @@ contract Stake is Owned, Validating, GenericCall {
   /// Refer to the tests for more information
   /// @param _quantity How many LEV tokens to lock for staking
   function stakeTokens(uint _quantity) external isStaking notZero(_quantity) {
-    require(levToken.allowance(msg.sender, this) &gt;= _quantity);
+    require(levToken.allowance(msg.sender, this) >= _quantity);
 
     levBlocks[msg.sender] = levBlocks[msg.sender].add(_quantity.mul(endBlock.sub(block.number)));
     stakes[msg.sender] = stakes[msg.sender].add(_quantity);
@@ -460,8 +460,8 @@ contract Stake is Owned, Validating, GenericCall {
     feeForTheStakingInterval = feeForTheStakingInterval.add(feeReceived.add(this.balance.div(weiPerFee)));
     feeCalculated = true;
     FeeCalculated(feeForTheStakingInterval, feeReceived, this.balance, startBlock, endBlock);
-    if (feeReceived &gt; 0) feeToken.burnTokens(feeReceived);
-    if (this.balance &gt; 0) wallet.transfer(this.balance);
+    if (feeReceived > 0) feeToken.burnTokens(feeReceived);
+    if (this.balance > 0) wallet.transfer(this.balance);
   }
 
   /// @notice To unlock and recover your LEV and FEE tokens after staking and fee to any user
@@ -470,22 +470,22 @@ contract Stake is Owned, Validating, GenericCall {
   }
 
   function redeemLevAndFeeToStakers(address[] _stakers) external onlyOperator {
-    for (uint i = 0; i &lt; _stakers.length; i++) redeemLevAndFee(_stakers[i]);
+    for (uint i = 0; i < _stakers.length; i++) redeemLevAndFee(_stakers[i]);
   }
 
   function redeemLevAndFee(address _staker) private validAddress(_staker) isDoneStaking {
     require(feeCalculated);
-    require(totalLevBlocks &gt; 0);
+    require(totalLevBlocks > 0);
 
     uint levBlock = levBlocks[_staker];
     uint stake = stakes[_staker];
-    require(stake &gt; 0);
+    require(stake > 0);
 
     uint feeEarned = levBlock.mul(feeForTheStakingInterval).div(totalLevBlocks);
     delete stakes[_staker];
     delete levBlocks[_staker];
     totalLevs = totalLevs.sub(stake);
-    if (feeEarned &gt; 0) feeToken.sendTokens(_staker, feeEarned);
+    if (feeEarned > 0) feeToken.sendTokens(_staker, feeEarned);
     require(levToken.transfer(_staker, stake));
     RedeemEvent(_staker, stake, feeEarned, startBlock, endBlock);
   }

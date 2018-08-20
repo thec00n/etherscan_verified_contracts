@@ -94,20 +94,20 @@ contract HFTCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
-        require(period &lt; periods.length);
-        require(price &lt; prices.length);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
+        require(period < periods.length);
+        require(price < prices.length);
 
         uint256 amount = msg.value * prices[price];
         amountSoldPerPeriod += amount / 1 ether;
 
-        if (amountSoldPerPeriod &gt; periods[period]) {
+        if (amountSoldPerPeriod > periods[period]) {
             price += 1;
             period += 1;
-            require(period &lt; periods.length);
-            require(price &lt; prices.length);
+            require(period < periods.length);
+            require(price < prices.length);
             amountSoldPerPeriod = 0;
             amount = msg.value * prices[price];
             amountSoldPerPeriod += amount / 1 ether;

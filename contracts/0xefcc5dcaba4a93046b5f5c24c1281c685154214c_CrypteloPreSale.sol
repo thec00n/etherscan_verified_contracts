@@ -6,15 +6,15 @@ contract CrypteloERC20{
 
 contract CrypteloPreSale {
     using SafeMath for uint256;
-    mapping (address =&gt; bool) private owners;
-    mapping (address =&gt; uint) private WhiteListed; 
+    mapping (address => bool) private owners;
+    mapping (address => uint) private WhiteListed; 
     //if 1 its the first group, if 2 second group
     //1st group minimum = 0.1 Ether
     //2st group minimum = 40 Ether
     
-    mapping (address =&gt; uint256) private vestedTokens;
-    mapping (address =&gt; uint256) private dateInvested;
-    mapping (address =&gt; uint256) private firstDeadline;
+    mapping (address => uint256) private vestedTokens;
+    mapping (address => uint256) private dateInvested;
+    mapping (address => uint256) private firstDeadline;
 
     uint private firstGminimumWeiAmount =  100000000000000000; //0.1 ether
     uint private secondGminimumWeiAmount = 40000000000000000000; //40 ether
@@ -54,35 +54,35 @@ contract CrypteloPreSale {
         uint tokensToSend = 0;
         uint limit = 0;
 
-        if ( WhiteListed[sender] == 0 || amountEthWei &gt; weiLeft){
+        if ( WhiteListed[sender] == 0 || amountEthWei > weiLeft){
             refund(sender, amountEthWei);
-            eRefund(sender, amountEthWei, &quot;L 58&quot;);
+            eRefund(sender, amountEthWei, "L 58");
         }else{
             if(WhiteListed[sender] == 1){ //sender is first group
                 limit = firstGminimumWeiAmount;
             }else{
                 limit = secondGminimumWeiAmount;
             }
-            if(amountEthWei &gt;= limit){
+            if(amountEthWei >= limit){
                 uint amountMicroEther = amountEthWei.div(1000000000000);
                 tokensToSend = amountMicroEther.mul(CRLperMicroEther);
                 eTokensToSend(sender, tokensToSend);
-                if (totalCRLDistributed.add(tokensToSend) &lt;= CRLToSell){
+                if (totalCRLDistributed.add(tokensToSend) <= CRLToSell){
                     sendTokens(sender, tokensToSend);
                     totalCRLDistributed = totalCRLDistributed.add(tokensToSend);
                     vestTokens(sender, tokensToSend); //vest the same amount
                     forwardFunds(amountEthWei);
                     weiRaised = weiRaised.add(amountEthWei);
-                    assert(weiLeft &gt;= amountEthWei);
+                    assert(weiLeft >= amountEthWei);
                     weiLeft = weiLeft.sub(amountEthWei);
                 }else{
                     refund(sender, amountEthWei);
-                    eRefund(sender, amountEthWei, &quot;L 84&quot;);
+                    eRefund(sender, amountEthWei, "L 84");
                 }
                 
             }else{
                 refund(sender, amountEthWei);
-                eRefund(sender, amountEthWei, &quot;L 75&quot;);
+                eRefund(sender, amountEthWei, "L 75");
             }
         }
     }
@@ -125,10 +125,10 @@ contract CrypteloPreSale {
     function claimTokens(address _addr){ //add wallet here
         uint amount = 0;
 
-        if (dateInvested[_addr] &gt; 0 &amp;&amp; vestedTokens[_addr] &gt; 0 &amp;&amp; now &gt; firstDeadline[_addr]){
+        if (dateInvested[_addr] > 0 && vestedTokens[_addr] > 0 && now > firstDeadline[_addr]){
             amount = amount.add(vestedTokens[_addr]); //allow half of the tokens to be transferred
             vestedTokens[_addr] = 0;
-            if (amount &gt; 0){
+            if (amount > 0){
                 //transfer amount to owner
                 sendTokens(msg.sender, amount); 
                 totalVesting = totalVesting.sub(amount);
@@ -141,7 +141,7 @@ contract CrypteloPreSale {
         _sender.send(_amountWei);
     }
     function addWhiteList(address _addr, uint group){
-        if (owners[msg.sender] &amp;&amp; group &lt;= 2){
+        if (owners[msg.sender] && group <= 2){
             WhiteListed[_addr] = group; 
         }
     }
@@ -192,9 +192,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -202,7 +202,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -211,7 +211,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

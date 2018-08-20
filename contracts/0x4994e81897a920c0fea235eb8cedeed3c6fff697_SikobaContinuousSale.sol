@@ -75,12 +75,12 @@ contract ERC20Token is Owned, ERC20Interface {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // ------------------------------------------------------------------------
     // Get the total token supply
@@ -97,15 +97,15 @@ contract ERC20Token is Owned, ERC20Interface {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount             // User has balance
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[msg.sender] >= _amount             // User has balance
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -131,7 +131,7 @@ contract ERC20Token is Owned, ERC20Interface {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
@@ -140,10 +140,10 @@ contract ERC20Token is Owned, ERC20Interface {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -157,7 +157,7 @@ contract ERC20Token is Owned, ERC20Interface {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner, 
@@ -178,8 +178,8 @@ contract SikobaContinuousSale is ERC20Token {
     // ------------------------------------------------------------------------
     // Token information
     // ------------------------------------------------------------------------
-    string public constant symbol = &quot;SKO1&quot;;
-    string public constant name = &quot;Sikoba Continuous Sale&quot;;
+    string public constant symbol = "SKO1";
+    string public constant name = "Sikoba Continuous Sale";
     uint8 public constant decimals = 18;
 
     // Thursday, 01-Jun-17 00:00:00 UTC
@@ -240,16 +240,16 @@ contract SikobaContinuousSale is ERC20Token {
 
     // ------------------------------------------------------------------------
     // Calculate the number of tokens per ETH contributed
-    // Linear (START_DATE, START_SKO1_UNITS) -&gt; (END_DATE, END_SKO1_UNITS)
+    // Linear (START_DATE, START_SKO1_UNITS) -> (END_DATE, END_SKO1_UNITS)
     // ------------------------------------------------------------------------
     function unitsPerEth() constant returns (uint256) {
         return unitsPerEthAt(now);
     }
 
     function unitsPerEthAt(uint256 at) constant returns (uint256) {
-        if (at &lt; START_DATE) {
+        if (at < START_DATE) {
             return START_SKO1_UNITS * MULT_FACTOR;
-        } else if (at &gt; END_DATE) {
+        } else if (at > END_DATE) {
             return END_SKO1_UNITS * MULT_FACTOR;
         } else {
             return START_SKO1_UNITS * MULT_FACTOR
@@ -268,10 +268,10 @@ contract SikobaContinuousSale is ERC20Token {
     function buyTokens() payable {
         // Check conditions
         if (fundingPaused) throw;
-        if (now &lt; START_DATE) throw;
-        if (now &gt; END_DATE) throw;
-        if (now &gt; softEndDate) throw;
-        if (msg.value &lt; MIN_CONTRIBUTION) throw;
+        if (now < START_DATE) throw;
+        if (now > END_DATE) throw;
+        if (now > softEndDate) throw;
+        if (msg.value < MIN_CONTRIBUTION) throw;
 
         // Issue tokens
         uint256 _unitsPerEth = unitsPerEth();
@@ -282,7 +282,7 @@ contract SikobaContinuousSale is ERC20Token {
 
         // Approximative funding in USD
         totalUsdFunding += msg.value * usdPerHundredEth / 10**20;
-        if (!maxUsdFundingReached &amp;&amp; totalUsdFunding &gt; MAX_USD_FUNDING) {
+        if (!maxUsdFundingReached && totalUsdFunding > MAX_USD_FUNDING) {
             softEndDate = now + ONE_DAY;
             maxUsdFundingReached = true;
         }

@@ -3,12 +3,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -36,8 +36,8 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token, SafeMath {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint numwords) {
         assert(msg.data.length == numwords * 32 + 4);
@@ -47,7 +47,7 @@ contract StandardToken is Token, SafeMath {
     function transfer(address _to, uint256 _value)
     returns (bool success)
     {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -60,7 +60,7 @@ contract StandardToken is Token, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value)
     returns (bool success)
     {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSubtract(balances[_from], _value);
             allowed[_from][msg.sender] = safeSubtract(allowed[_from][msg.sender], _value);
@@ -100,8 +100,8 @@ contract PrivateCityTokens {
 contract PCXToken is StandardToken {
 
     // Token metadata
-	string public name = &quot;PRIVATE CITY TOKENS EXCHANGE&quot;;
-	string public symbol = &quot;PCTX&quot;;
+	string public name = "PRIVATE CITY TOKENS EXCHANGE";
+	string public symbol = "PCTX";
     uint256 public constant decimals = 18;
 
     // Deposit address of account controlled by the creators
@@ -129,7 +129,7 @@ contract PCXToken is StandardToken {
 
     // Since we have different exchange rates at different stages, we need to keep track
     // of how much ether each contributed in case that we need to issue a refund
-    mapping (address =&gt; uint256) private ethBalances;
+    mapping (address => uint256) private ethBalances;
 	
 
     modifier isFinalized() {
@@ -158,7 +158,7 @@ contract PCXToken is StandardToken {
     }
 
     modifier isFundraisingIgnorePaused() {
-        require(state == ContractState.Fundraising || (state == ContractState.Paused &amp;&amp; savedState == ContractState.Fundraising));
+        require(state == ContractState.Fundraising || (state == ContractState.Paused && savedState == ContractState.Fundraising));
         _;
     }
 
@@ -168,7 +168,7 @@ contract PCXToken is StandardToken {
     }
 
     modifier minimumReached() {
-        require(totalReceivedEth &gt;= ETH_RECEIVED_MIN);
+        require(totalReceivedEth >= ETH_RECEIVED_MIN);
         _;
     }
 
@@ -207,19 +207,19 @@ contract PCXToken is StandardToken {
     external
     isFundraising
     {
-        require(now &gt;= startDate);
-        require(now &lt;= endDate);
-        require(msg.value &gt; 0);
+        require(now >= startDate);
+        require(now <= endDate);
+        require(msg.value > 0);
         
 
-        // First we check the ETH cap, as it&#39;s easier to calculate, return
+        // First we check the ETH cap, as it's easier to calculate, return
         // the contribution if the cap has been reached already
         uint256 checkedReceivedEth = safeAdd(totalReceivedEth, msg.value);
 
         // If all is fine with the ETH cap, we continue to check the
         // minimum amount of tokens
         uint256 tokens = safeMult(msg.value, getCurrentTokenPrice());
-        require(tokens &gt;= TOKEN_MIN);
+        require(tokens >= TOKEN_MIN);
 
         // Only when all the checks have passed, then we update the state (ethBalances,
         // totalReceivedEth, totalSupply, and balances) of the contract
@@ -250,9 +250,9 @@ contract PCXToken is StandardToken {
     isRedeeming
     {
         uint256 vibeVal = balances[msg.sender];
-        require(vibeVal &gt;= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
+        require(vibeVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
 
-        // Move the tokens of the caller to Vibehub&#39;s address
+        // Move the tokens of the caller to Vibehub's address
         //if (!super.transfer(ethFundDeposit, vibeVal)) revert();
         balances[msg.sender]=0;
         

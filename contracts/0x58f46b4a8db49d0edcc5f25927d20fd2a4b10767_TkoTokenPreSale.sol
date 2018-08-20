@@ -12,7 +12,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -116,9 +116,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -126,7 +126,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -135,7 +135,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -174,7 +174,7 @@ contract ERC20 is ERC20Basic {
  * The external interface represents the basic interface for purchasing tokens, and conform
  * the base architecture for crowdsales. They are *not* intended to be modified / overriden.
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override 
- * the methods to add functionality. Consider using &#39;super&#39; where appropiate to concatenate
+ * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
 
@@ -208,7 +208,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -333,7 +333,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range. 
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -343,8 +343,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -355,7 +355,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
   
   /**
@@ -384,7 +384,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -413,7 +413,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -431,7 +431,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -460,7 +460,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -471,8 +471,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -486,7 +486,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -535,7 +535,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -630,9 +630,9 @@ contract BurnableToken is BasicToken {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public {
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -643,9 +643,9 @@ contract BurnableToken is BasicToken {
 
 contract TkoToken is MintableToken, BurnableToken, PausableToken {
 
-    string public constant name = &#39;TkoToken&#39;;
+    string public constant name = 'TkoToken';
 
-    string public constant symbol = &#39;TKO&#39;;
+    string public constant symbol = 'TKO';
 
     uint public constant decimals = 18;
 
@@ -654,8 +654,8 @@ contract TkoToken is MintableToken, BurnableToken, PausableToken {
 
 
 /// @title Whitelist for TKO token sale.
-/// @author Takeoff Technology OU - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41282f272e0135202a242e27276f3632">[email&#160;protected]</a>&gt;
-/// @dev Based on code by OpenZeppelin&#39;s WhitelistedCrowdsale.sol
+/// @author Takeoff Technology OU - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="41282f272e0135202a242e27276f3632">[email protected]</a>>
+/// @dev Based on code by OpenZeppelin's WhitelistedCrowdsale.sol
 contract TkoWhitelist is Ownable{
 
     using SafeMath for uint256;
@@ -663,15 +663,15 @@ contract TkoWhitelist is Ownable{
     // Manage whitelist account address.
     address public admin;
 
-    mapping(address =&gt; uint256) internal totalIndividualWeiAmount;
-    mapping(address =&gt; bool) internal whitelist;
+    mapping(address => uint256) internal totalIndividualWeiAmount;
+    mapping(address => bool) internal whitelist;
 
     event AdminChanged(address indexed previousAdmin, address indexed newAdmin);
 
 
     /**
      * TkoWhitelist
-     * @dev TkoWhitelist is the storage for whitelist and total amount by contributor&#39;s address.
+     * @dev TkoWhitelist is the storage for whitelist and total amount by contributor's address.
      * @param _admin Address of managing whitelist.
      */
     function TkoWhitelist (address _admin) public {
@@ -725,7 +725,7 @@ contract TkoWhitelist is Ownable{
      * @param _beneficiaries Addresses to be added to the whitelist
      */
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwnerOrAdmin {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
@@ -768,7 +768,7 @@ contract TkoWhitelist is Ownable{
 }
 
 /// @title TKO Token presale contract.
-/// @author Takeoff Technology OU - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfa6a1a9a08fbbaea4aaa0a9a9e1b8bc">[email&#160;protected]</a>&gt;
+/// @author Takeoff Technology OU - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfa6a1a9a08fbbaea4aaa0a9a9e1b8bc">[email protected]</a>>
 contract TkoTokenPreSale is FinalizableCrowdsale, Pausable {
 
     using SafeMath for uint256;
@@ -834,7 +834,7 @@ contract TkoTokenPreSale is FinalizableCrowdsale, Pausable {
 
         uint256 limitWeiAmount = limitEther.mul(1 ether);
         require( whitelist.isWhitelisted(_beneficiary) ||
-                    whitelist.getTotalIndividualWeiAmount(_beneficiary).add(_weiAmount) &lt; limitWeiAmount);
+                    whitelist.getTotalIndividualWeiAmount(_beneficiary).add(_weiAmount) < limitWeiAmount);
         super._preValidatePurchase(_beneficiary, _weiAmount);
     }
 
@@ -862,7 +862,7 @@ contract TkoTokenPreSale is FinalizableCrowdsale, Pausable {
         uint256 tokenAmount = currentRate.mul(_weiAmount);
 
         uint256 largeContribThresholdWeiAmount = largeContribThreshold.mul(1 ether);
-        if ( _weiAmount &gt;= largeContribThresholdWeiAmount ) {
+        if ( _weiAmount >= largeContribThresholdWeiAmount ) {
             tokenAmount = tokenAmount.mul(largeContribPercentage).div(100);
         }
 
@@ -870,7 +870,7 @@ contract TkoTokenPreSale is FinalizableCrowdsale, Pausable {
     }
 
     /**
-     * @dev Add wei amount to the address&#39;s amount on the whitelist contract.
+     * @dev Add wei amount to the address's amount on the whitelist contract.
      * @param _beneficiary Address receiving the tokens
      * @param _weiAmount Value in wei involved in the purchase
      */
@@ -885,7 +885,7 @@ contract TkoTokenPreSale is FinalizableCrowdsale, Pausable {
     * @param _tokenAmount Number of tokens to be minted
     */
     function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal onlyWhileOpen whenNotPaused {
-        // Don&#39;t call super._deliverTokens() to transfer token.
+        // Don't call super._deliverTokens() to transfer token.
         // Following call will mint FOR _beneficiary, So need not to call transfer token .
         require(TkoToken(token).mint(_beneficiary, _tokenAmount));
     }

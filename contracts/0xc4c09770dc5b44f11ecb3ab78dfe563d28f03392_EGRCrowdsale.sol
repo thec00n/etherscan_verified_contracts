@@ -33,7 +33,7 @@ contract EGRCrowdsale {
     uint256 public maxAirdropParticipants = 500;
 
     // Check if this is the first participation in the airdrop
-    mapping (address =&gt; bool) public participatedInAirdrop;
+    mapping (address => bool) public participatedInAirdrop;
 
     // ETH to EGR rate
     uint256 public rateAngelsDay = 100000;
@@ -71,14 +71,14 @@ contract EGRCrowdsale {
     EngravedToken public engravedToken;
 
     // Invested balances
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
 
     struct Proposal {
         address engravedAddress;
         uint256 deadline;
         uint256 approvedWeight;
         uint256 disapprovedWeight;
-        mapping (address =&gt; uint256) voted;
+        mapping (address => uint256) voted;
     }
 
     // Ownership transfer proposal
@@ -123,25 +123,25 @@ contract EGRCrowdsale {
      * Throw if sender has a EGR balance of zero
      */
     modifier onlyTokenholders() {
-        require(engravedToken.balanceOf(msg.sender) &gt; 0);
+        require(engravedToken.balanceOf(msg.sender) > 0);
         _;
     }
 
     /**
-     * Throw if the current transfer proposal&#39;s deadline
+     * Throw if the current transfer proposal's deadline
      * is in the past
      */
     modifier beforeDeadline() {
-        require(now &lt; transferProposal.deadline);
+        require(now < transferProposal.deadline);
         _;
     }
 
     /**
-     * Throw if the current transfer proposal&#39;s deadline
+     * Throw if the current transfer proposal's deadline
      * is in the future
      */
     modifier afterDeadline() {
-        require(now &gt; transferProposal.deadline);
+        require(now > transferProposal.deadline);
         _;
     }
 
@@ -165,11 +165,11 @@ contract EGRCrowdsale {
     function() public payable atStage(Stages.InProgress) {
         // Crowdsale not started and not ended yet
         // Enforce min amount
-        require(now &gt; start &amp;&amp; now &lt; end &amp;&amp; msg.value &gt;= minAcceptedAmount);
+        require(now > start && now < end && msg.value >= minAcceptedAmount);
 
         uint256 valueInEGR = toEGR(msg.value);
 
-        require((engravedToken.totalSupply() + valueInEGR) &lt;= (maxSupply * 10**3));
+        require((engravedToken.totalSupply() + valueInEGR) <= (maxSupply * 10**3));
         require(engravedToken.issue(msg.sender, valueInEGR));
 
         uint256 received = msg.value;
@@ -205,27 +205,27 @@ contract EGRCrowdsale {
      */
     function toEGR(uint256 _wei) public view returns (uint256 amount) {
         uint256 rate = 0;
-        if (stage != Stages.Ended &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end) {
+        if (stage != Stages.Ended && now >= start && now <= end) {
             // Check for cool down after airdrop
-            if (now &lt;= start + airdropCooldownEnd) {
+            if (now <= start + airdropCooldownEnd) {
                 rate = 0;
             // Check for AngelsDay
-            } else if (now &lt;= start + rateAngelsDayEnd) {
+            } else if (now <= start + rateAngelsDayEnd) {
                 rate = rateAngelsDay;
             // Check for cool down after the angels day
-            } else if (now &lt;= start + angelsDayCooldownEnd) {
+            } else if (now <= start + angelsDayCooldownEnd) {
                 rate = 0;
             // Check first week
-            } else if (now &lt;= start + rateFirstWeekEnd) {
+            } else if (now <= start + rateFirstWeekEnd) {
                 rate = rateFirstWeek;
             // Check second week
-            } else if (now &lt;= start + rateSecondWeekEnd) {
+            } else if (now <= start + rateSecondWeekEnd) {
                 rate = rateSecondWeek;
             // Check third week
-            } else if (now &lt;= start + rateThirdWeekEnd) {
+            } else if (now <= start + rateThirdWeekEnd) {
                 rate = rateThirdWeek;
             // Check last week
-            } else if (now &lt;= start + rateLastWeekEnd) {
+            } else if (now <= start + rateLastWeekEnd) {
                 rate = rateLastWeek;
             }
         }
@@ -239,9 +239,9 @@ contract EGRCrowdsale {
     function claim() public atStage(Stages.Airdrop) {
         // Crowdsal not started yet nor Airdrop expired
         // Only once per address
-        require(airdropParticipants &lt; maxAirdropParticipants
-            &amp;&amp; now &gt; start &amp;&amp; now &lt; start + airdropEnd
-            &amp;&amp; participatedInAirdrop[msg.sender] == false);
+        require(airdropParticipants < maxAirdropParticipants
+            && now > start && now < start + airdropEnd
+            && participatedInAirdrop[msg.sender] == false);
 
         require(engravedToken.issue(msg.sender, rateAirDrop * 10**3));
 
@@ -253,7 +253,7 @@ contract EGRCrowdsale {
      * Function to end the airdrop and start crowdsale
      */
     function endAirdrop() public atStage(Stages.Airdrop) {
-        require(now &gt; start + airdropEnd);
+        require(now > start + airdropEnd);
         stage = Stages.InProgress;
     }
 
@@ -263,7 +263,7 @@ contract EGRCrowdsale {
      */
     function endCrowdsale() public atStage(Stages.InProgress) {
         // Crowdsale not ended yet
-        require(now &gt; end);
+        require(now > end);
         stage = Stages.Ended;
     }
 
@@ -302,7 +302,7 @@ contract EGRCrowdsale {
     function proposeTransfer(address _engravedAddress) public onlyBeneficiary
     atStages(Stages.Withdrawn, Stages.Proposed) {
         // Check for a pending proposal
-        require(stage != Stages.Proposed || now &gt; transferProposal.deadline + transferProposalCooldown);
+        require(stage != Stages.Proposed || now > transferProposal.deadline + transferProposalCooldown);
 
         transferProposal = Proposal({
             engravedAddress: _engravedAddress,
@@ -323,7 +323,7 @@ contract EGRCrowdsale {
      */
     function vote(bool _approve) public onlyTokenholders beforeDeadline atStage(Stages.Proposed) {
         // One vote per proposal
-        require(transferProposal.voted[msg.sender] &lt; transferProposal.deadline - transferProposalEnd);
+        require(transferProposal.voted[msg.sender] < transferProposal.deadline - transferProposalEnd);
 
         transferProposal.voted[msg.sender] = now;
         uint256 weight = engravedToken.balanceOf(msg.sender);
@@ -344,7 +344,7 @@ contract EGRCrowdsale {
      */
     function executeTransfer() public afterDeadline atStage(Stages.Proposed) {
         // Check approved
-        require(transferProposal.approvedWeight &gt; transferProposal.disapprovedWeight);
+        require(transferProposal.approvedWeight > transferProposal.disapprovedWeight);
         require(engravedToken.unlock());
         require(engravedToken.startIncentiveDistribution());
 

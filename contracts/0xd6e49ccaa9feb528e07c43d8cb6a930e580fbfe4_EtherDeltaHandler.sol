@@ -85,9 +85,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -95,7 +95,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -104,7 +104,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -172,7 +172,7 @@ contract EtherDeltaHandler is ExchangeHandler {
         bytes32 s
     ) external returns (uint256) {
 
-        if(block.number &gt; orderValues[2]) {
+        if(block.number > orderValues[2]) {
             // Order has expired
             return 0;
         }
@@ -203,7 +203,7 @@ contract EtherDeltaHandler is ExchangeHandler {
         bytes32 r,
         bytes32 s
     ) external payable returns (uint256) {
-        require(msg.value == amountToFill, &quot;EtherDeltaHandler - amountToFill != msg.value&quot;);
+        require(msg.value == amountToFill, "EtherDeltaHandler - amountToFill != msg.value");
 
         deposit(amountToFill);
 
@@ -296,7 +296,7 @@ contract EtherDeltaHandler is ExchangeHandler {
     }
 
     function depositToken(address token, uint256 amount) internal {
-        require(Token(token).approve(address(exchange), amount), &quot;EtherDeltaHandler - unable to deposit token, approve failed&quot;);
+        require(Token(token).approve(address(exchange), amount), "EtherDeltaHandler - unable to deposit token, approve failed");
         exchange.depositToken(token, amount);
     }
 
@@ -309,7 +309,7 @@ contract EtherDeltaHandler is ExchangeHandler {
     }
 
     function transferTokenToSender(address token, uint256 amount) internal {
-        require(Token(token).transfer(msg.sender, amount), &quot;EtherDeltaHandler - failed to transfer token to sender&quot;);
+        require(Token(token).transfer(msg.sender, amount), "EtherDeltaHandler - failed to transfer token to sender");
     }
 
     function transferEtherToSender(uint256 amount) internal {
@@ -321,6 +321,6 @@ contract EtherDeltaHandler is ExchangeHandler {
     }
 
     function() public payable {
-        require(msg.sender == address(exchange), &quot;EtherDeltaHandler - Only exchange allowed to send ether&quot;);
+        require(msg.sender == address(exchange), "EtherDeltaHandler - Only exchange allowed to send ether");
     }
 }

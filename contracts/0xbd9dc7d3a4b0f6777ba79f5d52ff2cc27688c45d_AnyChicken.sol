@@ -15,8 +15,8 @@ contract AnyChicken {
 	}
 	
 	function () public payable {
-		if (block.number &lt;= lastBlock + 1000) {
-			require(msg.value &gt; bigAmount);
+		if (block.number <= lastBlock + 1000) {
+			require(msg.value > bigAmount);
 			bigChicken = msg.sender;
 			bigAmount = msg.value;
 			lastBlock = block.number;

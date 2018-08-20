@@ -18,7 +18,7 @@ contract owned {
 
 contract MyToken is owned{
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -28,8 +28,8 @@ contract MyToken is owned{
         uint minBalanceForAccounts;                                         //threshold amount
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-        mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+        mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -54,11 +54,11 @@ contract MyToken is owned{
 
     function transfer(address _to, uint256 _value) public{
         require(msg.sender != 0x00);
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
                   // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
-        if(msg.sender.balance&lt;minBalanceForAccounts) sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
-        if(_to.balance&lt;minBalanceForAccounts){
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
+        if(msg.sender.balance<minBalanceForAccounts) sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
+        if(_to.balance<minBalanceForAccounts){
              _to.transfer (sell((minBalanceForAccounts-_to.balance)/sellPrice));
         }      
        
@@ -88,19 +88,19 @@ contract MyToken is owned{
 
         function buy() public payable returns (uint amount){
             amount =  msg.value / buyPrice;                     // calculates the amount
-            require(balanceOf[this] &gt;= amount);
-           // if (balanceOf[this] &lt; amount) throw;               // checks if it has enough to sell
-            balanceOf[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-            balanceOf[this] -= amount;                         // subtracts amount from seller&#39;s balance
+            require(balanceOf[this] >= amount);
+           // if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
+            balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+            balanceOf[this] -= amount;                         // subtracts amount from seller's balance
             emit Transfer(this, msg.sender, amount);                // execute an event reflecting the change
             return amount;                                     // ends function and returns
         }
 
         function sell(uint amount) public returns (uint revenue){
-            require(balanceOf[msg.sender] &gt;= amount);
-           // if (balanceOf[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
-            balanceOf[this] += amount;                         // adds the amount to owner&#39;s balance
-            balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
+            require(balanceOf[msg.sender] >= amount);
+           // if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+            balanceOf[this] += amount;                         // adds the amount to owner's balance
+            balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance
             revenue = amount * sellPrice;                      // calculate the revenue
             msg.sender.transfer(revenue);                          // sends ether to the seller
             emit Transfer(msg.sender, this, amount);                // executes an event reflecting on the change

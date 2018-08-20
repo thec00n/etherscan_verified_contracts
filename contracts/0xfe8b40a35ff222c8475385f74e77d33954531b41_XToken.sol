@@ -20,7 +20,7 @@ pragma solidity ^0.4.24;
 // TEAM X All Rights Received. http://teamx.club 
 // This product is protected under license.  Any unauthorized copy, modification, or use without 
 // express written consent from the creators is prohibited.
-// Any cooperation Please email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b180e191d02080e2b1f0e0a06134508071e09">[email&#160;protected]</a>
+// Any cooperation Please email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b180e191d02080e2b1f0e0a06134508071e09">[email protected]</a>
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 contract Owned {
@@ -57,10 +57,10 @@ contract XToken is Owned {
     using SafeMath for uint256;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
-    string public name = &quot;XToken&quot;;
-    string public symbol = &quot;XT&quot;;
+    string public name = "XToken";
+    string public symbol = "XT";
     uint8 public decimals = 18;
     uint256 private fee_ = 5; // 5% fee to buy and sell
 
@@ -84,7 +84,7 @@ contract XToken is Owned {
     //=|=======================================================
     function () public payable {
         if (!isContract(msg.sender)) {
-            revert(&quot;Can not Send Eth directly to this token&quot;);
+            revert("Can not Send Eth directly to this token");
         }
     }
 
@@ -93,13 +93,13 @@ contract XToken is Owned {
         uint256 taxed = ethAmount.sub(ethAmount.mul(fee_).div(100));
         uint256 tokenAmount = taxed.mul(1 ether).div(poolPrice);
 
-        require(tokenMarketPool &gt;= tokenAmount, &quot;No enough token in market pool&quot;);
+        require(tokenMarketPool >= tokenAmount, "No enough token in market pool");
         tokenMarketPool = tokenMarketPool.sub(tokenAmount);
         balances[msg.sender] = balanceOf(msg.sender).add(tokenAmount);
     }
 
     function sell(uint256 tokenAmount) public {
-        require(balanceOf(msg.sender) &gt;= tokenAmount, &quot;No enough token&quot;);
+        require(balanceOf(msg.sender) >= tokenAmount, "No enough token");
         uint256 sellPrice = getSellPrice();
         uint256 soldEth = tokenAmount.mul(sellPrice).div(1 ether);
 
@@ -111,7 +111,7 @@ contract XToken is Owned {
 
     function transfer(address _to, uint256 _value, bytes _data, string _custom_fallback) public returns (bool success) {
         if (isContract(_to)) {
-            require(balanceOf(msg.sender) &gt;= _value, &quot;no enough token&quot;);
+            require(balanceOf(msg.sender) >= _value, "no enough token");
             balances[msg.sender] = balanceOf(msg.sender).sub(_value);
             balances[_to] = balanceOf(_to).add(_value);
             assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -166,11 +166,11 @@ contract XToken is Owned {
     function isContract(address addr) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
     function transferToAddress(address _to, uint256 _value, bytes _data) private returns (bool success) {
-        require (balanceOf(msg.sender) &gt;= _value, &quot;No Enough Token&quot;);
+        require (balanceOf(msg.sender) >= _value, "No Enough Token");
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
         emit Transfer(msg.sender, _to, _value, _data);
@@ -178,7 +178,7 @@ contract XToken is Owned {
     }
 
     function transferToContract(address _to, uint256 _value, bytes _data) private returns (bool success) {
-        require (balanceOf(msg.sender) &gt;= _value, &quot;No Enough Token&quot;);
+        require (balanceOf(msg.sender) >= _value, "No Enough Token");
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
         ContractReceiver receiver = ContractReceiver(_to);
@@ -210,8 +210,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -226,9 +226,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -236,7 +236,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -245,7 +245,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

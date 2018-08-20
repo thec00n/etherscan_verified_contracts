@@ -10,12 +10,12 @@ contract BinksBucksToken {
     This class implements the ERC20 Functionality for Binks Bucks
     along with other standard token helpers (e.g. Name, symbol, etc.).
     **/
-    string public constant name = &quot;Binks Bucks&quot;;
-    string public constant symbol = &quot;BINX&quot;;
+    string public constant name = "Binks Bucks";
+    string public constant symbol = "BINX";
     uint8 public constant decimals = 18;
     uint internal _totalSupply = 0;
-    mapping(address =&gt; uint256) internal _balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) _allowed;
+    mapping(address => uint256) internal _balances;
+    mapping(address => mapping (address => uint256)) _allowed;
 
     function totalSupply() public constant returns (uint) {
         /*
@@ -33,24 +33,24 @@ contract BinksBucksToken {
 
     // Helper Functions
     function hasAtLeast(address adr, uint amount) constant internal returns (bool) {
-        if (amount &lt;= 0) {return false;}
-        return _balances[adr] &gt;= amount;
+        if (amount <= 0) {return false;}
+        return _balances[adr] >= amount;
     }
 
     function canRecieve(address adr, uint amount) constant internal returns (bool) {
-        if (amount &lt;= 0) {return false;}
+        if (amount <= 0) {return false;}
         uint balance = _balances[adr];
-        return (balance + amount &gt; balance);
+        return (balance + amount > balance);
     }
 
     function hasAllowance(address proxy, address spender, uint amount) constant internal returns (bool) {
-        if (amount &lt;= 0) {return false;}
-        return _allowed[spender][proxy] &gt;= amount;
+        if (amount <= 0) {return false;}
+        return _allowed[spender][proxy] >= amount;
     }
 
     function canAdd(uint x, uint y) pure internal returns (bool) {
         uint total = x + y;
-        if (total &gt; x &amp;&amp; total &gt; y) {return true;}
+        if (total > x && total > y) {return true;}
         return false;
     }
 
@@ -118,7 +118,7 @@ contract Giveaway is BinksBucksToken {
     uint internal _max_distributions = 100;
     uint internal _distributions_left = 100;
     uint internal _distribution_number = 0;
-    mapping(address =&gt; uint256) internal _last_distribution;
+    mapping(address => uint256) internal _last_distribution;
 
     function transferAdmin(address newImperator) public {
             require(msg.sender == imperator);
@@ -157,7 +157,7 @@ contract Giveaway is BinksBucksToken {
         /*
         Checks if you can enter a code yet.
         **/
-        return (_code != 0 &amp;&amp; _distributions_left &gt; 0 &amp;&amp; _distribution_number &gt; _last_distribution[msg.sender]);
+        return (_code != 0 && _distributions_left > 0 && _distribution_number > _last_distribution[msg.sender]);
     }
 
     function EnterCode(uint32 code) public {

@@ -18,12 +18,12 @@ library SafeMath {
     uint256 constant private    MAX_UINT256     = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd (uint256 x, uint256 y) internal pure returns (uint256 z) {
-        assert (x &lt;= MAX_UINT256 - y);
+        assert (x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub (uint256 x, uint256 y) internal pure returns (uint256 z) {
-        assert (x &gt;= y);
+        assert (x >= y);
         return x - y;
     }
 
@@ -50,8 +50,8 @@ contract DetailedERC20 is ERC20 {
     string  public              description;
     uint256 private             summarySupply;
 
-    mapping(address =&gt; uint256)                      private   accounts;
-    mapping(address =&gt; mapping (address =&gt; uint256)) private   allowed;
+    mapping(address => uint256)                      private   accounts;
+    mapping(address => mapping (address => uint256)) private   allowed;
 
     function DetailedERC20(string _name, string _symbol,string _description, uint8 _decimals, uint256 _startTokens) public {
         owner = msg.sender;
@@ -65,12 +65,12 @@ contract DetailedERC20 is ERC20 {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(64) external returns (bool success) {
-        if (accounts[msg.sender] &gt;= _value) {
+        if (accounts[msg.sender] >= _value) {
             accounts[msg.sender] = accounts[msg.sender].safeSub(_value);
             accounts[_to] = accounts[_to].safeAdd(_value);
             Transfer(msg.sender, _to, _value);
@@ -81,7 +81,7 @@ contract DetailedERC20 is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(64) external returns (bool success) {
-        if ((accounts[_from] &gt;= _value) &amp;&amp; (allowed[_from][msg.sender] &gt;= _value)) {
+        if ((accounts[_from] >= _value) && (allowed[_from][msg.sender] >= _value)) {
             accounts[_from] = accounts[_from].safeSub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].safeSub(_value);
             accounts[_to] = accounts[_to].safeAdd(_value);

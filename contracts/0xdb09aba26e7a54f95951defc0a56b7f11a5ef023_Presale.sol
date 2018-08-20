@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -81,20 +81,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -149,10 +149,10 @@ contract TakeProfitToken is Token, Haltable {
     using SafeMath for uint256;
 
 
-    string constant public name = &quot;TakeProfit&quot;;
+    string constant public name = "TakeProfit";
     uint8 constant public decimals = 8;
-    string constant public symbol = &quot;XTP&quot;;       
-    string constant public version = &quot;1.1&quot;;
+    string constant public symbol = "XTP";       
+    string constant public version = "1.1";
 
 
     uint256 constant public UNIT = uint256(10)**decimals;
@@ -167,7 +167,7 @@ contract TakeProfitToken is Token, Haltable {
 
     function transfer(address _to, uint256 _value) public stopInEmergency returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -177,10 +177,10 @@ contract TakeProfitToken is Token, Haltable {
     function transferFrom(address _from, address _to, uint256 _value) public stopInEmergency returns (bool success) {
         require(_to != address(0));
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] = allowance.sub(_value);
         }
         Transfer(_from, _to, _value);
@@ -201,8 +201,8 @@ contract TakeProfitToken is Token, Haltable {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -251,27 +251,27 @@ contract Presale is Haltable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
   // we always refund to address from which we get money, while tokens can be bought for another address
-  mapping (address =&gt; uint256) purchasedTokens;
-  mapping (address =&gt; uint256) receivedFunds;
+  mapping (address => uint256) purchasedTokens;
+  mapping (address => uint256) receivedFunds;
 
   enum State{Unknown, Prepairing, PreFunding, Funding, Success, Failure, Finalized, Refunding}
 
   function Presale(address token_address, address _withdrawAddress) public {
-    require(startTime &gt;= now);
-    require(endTime &gt;= startTime);
-    require(default_rate &gt; 0);
+    require(startTime >= now);
+    require(endTime >= startTime);
+    require(default_rate > 0);
     require(withdrawAddress == address(0));
     require(_withdrawAddress != address(0));
-    require(tokenCap&gt;0);
+    require(tokenCap>0);
     token = Token(token_address);
     require(token.totalSupply()==100*uint256(10)**(6+8));
     withdrawAddress = _withdrawAddress;
   }
 
   function initiate() public onlyOwner {
-    require(token.balanceOf(this) &gt;= tokenCap);
+    require(token.balanceOf(this) >= tokenCap);
     initiated = true;
-    if(token.balanceOf(this)&gt;tokenCap)
+    if(token.balanceOf(this)>tokenCap)
       require(token.transfer(withdrawAddress, token.balanceOf(this).sub(tokenCap)));
   }
 
@@ -291,7 +291,7 @@ contract Presale is Haltable {
 
     // calculate token amount to be bought
     uint256 tokens = weiAmount.div(rate());
-    if(tokenSold.add(tokens)&gt;tokenCap) {
+    if(tokenSold.add(tokens)>tokenCap) {
       tokens = tokenCap.sub(tokenSold);
     }
 
@@ -305,7 +305,7 @@ contract Presale is Haltable {
 
     purchasedTokens[beneficiary] += tokens;
     receivedFunds[msg.sender] += weiAmountConsumed;
-    if(weiExcess&gt;0) {
+    if(weiExcess>0) {
       msg.sender.transfer(weiExcess);
     }
     TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
@@ -313,7 +313,7 @@ contract Presale is Haltable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool valuablePurchase = (msg.value &gt;= 0.1 ether);
+    bool valuablePurchase = (msg.value >= 0.1 ether);
     return valuablePurchase;
   }
 
@@ -331,7 +331,7 @@ contract Presale is Haltable {
 
 
   function claimTokens(address beneficiary) public stopInEmergency inState(State.Finalized) {
-    require(purchasedTokens[beneficiary]&gt;0);
+    require(purchasedTokens[beneficiary]>0);
     uint256 value = purchasedTokens[beneficiary];
     purchasedTokens[beneficiary] -= value;
     require(token.transfer(beneficiary, value));
@@ -342,7 +342,7 @@ contract Presale is Haltable {
   }
 
   function delegatedRefund(address beneficiary) public stopInEmergency inState(State.Refunding) {
-    require(receivedFunds[beneficiary]&gt;0);
+    require(receivedFunds[beneficiary]>0);
     uint256 value = receivedFunds[beneficiary];
     receivedFunds[beneficiary] = 0;
     beneficiary.transfer(value);
@@ -371,21 +371,21 @@ contract Presale is Haltable {
   }
 
   function rate() public constant returns (uint256) {
-    if (block.timestamp &lt; startTime) return 0;
-    else if (block.timestamp &gt;= startTime &amp;&amp; block.timestamp &lt; (startTime + 1 weeks)) return uint256(default_rate/2);
-    else if (block.timestamp &gt;= (startTime+1 weeks) &amp;&amp; block.timestamp &lt; (startTime + 2 weeks)) return uint256(10*default_rate/19);
-    else if (block.timestamp &gt;= (startTime+2 weeks) &amp;&amp; block.timestamp &lt; (startTime + 3 weeks)) return uint256(10*default_rate/18);
+    if (block.timestamp < startTime) return 0;
+    else if (block.timestamp >= startTime && block.timestamp < (startTime + 1 weeks)) return uint256(default_rate/2);
+    else if (block.timestamp >= (startTime+1 weeks) && block.timestamp < (startTime + 2 weeks)) return uint256(10*default_rate/19);
+    else if (block.timestamp >= (startTime+2 weeks) && block.timestamp < (startTime + 3 weeks)) return uint256(10*default_rate/18);
     return 0;
   }
 
-  //It is function and not variable, thus it can&#39;t be stale
+  //It is function and not variable, thus it can't be stale
   function getState() public constant returns (State) {
     if(finalized) return State.Finalized;
     if(!initiated) return State.Prepairing;
-    else if (block.timestamp &lt; startTime) return State.PreFunding;
-    else if (block.timestamp &lt;= endTime &amp;&amp; tokenSold&lt;tokenCap) return State.Funding;
-    else if (tokenSold&gt;=tokenCap) return State.Success;
-    else if (weiRaised &gt; 0 &amp;&amp; block.timestamp &gt;= endTime &amp;&amp; tokenSold&lt;tokenCap) return State.Refunding;
+    else if (block.timestamp < startTime) return State.PreFunding;
+    else if (block.timestamp <= endTime && tokenSold<tokenCap) return State.Funding;
+    else if (tokenSold>=tokenCap) return State.Success;
+    else if (weiRaised > 0 && block.timestamp >= endTime && tokenSold<tokenCap) return State.Refunding;
     else return State.Failure;
   }
 

@@ -26,13 +26,13 @@ contract quadrupler {
   }
   
   function enter() {
-    if (msg.value &lt; 1 ether) {
+    if (msg.value < 1 ether) {
         msg.sender.send(msg.value);
         return;
     }
 	
 		uint amount;
-		if (msg.value &gt; 999 ether) {
+		if (msg.value > 999 ether) {
 			msg.sender.send(msg.value - 999 ether);	
 			amount = 999 ether;
     }
@@ -58,7 +58,7 @@ contract quadrupler {
     }
 
 
-    while (balance &gt; persons[payoutIdx].amount / 100 * 400) {
+    while (balance > persons[payoutIdx].amount / 100 * 400) {
       uint transactionAmount = persons[payoutIdx].amount / 100 * 400;
       persons[payoutIdx].etherAddress.send(transactionAmount);
 

@@ -5,12 +5,12 @@ contract SafeMath {
     uint256 constant MAX_UINT256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        require(x &lt;= MAX_UINT256 - y);
+        require(x <= MAX_UINT256 - y);
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        require(x &gt;= y);
+        require(x >= y);
         return x - y;
     }
 
@@ -18,7 +18,7 @@ contract SafeMath {
         if (y == 0) {
             return 0;
         }
-        require(x &lt;= (MAX_UINT256 / y));
+        require(x <= (MAX_UINT256 / y));
         return x * y;
     }
 }
@@ -108,12 +108,12 @@ contract LuckyTree is Owned, SafeMath{
     uint public participantIndex;
     bool public fundsTransfered;
     address public winner;
-    mapping(uint =&gt; address) public participants;
-    mapping(uint =&gt; uint) public participationAmount;
-    mapping(address =&gt; bool) public hasParticipated;
-    mapping(address =&gt; bool) public hasWithdrawn;
-    mapping(address =&gt; uint) public participantIndexes;
-    mapping(uint =&gt; address) public leafOwners;
+    mapping(uint => address) public participants;
+    mapping(uint => uint) public participationAmount;
+    mapping(address => bool) public hasParticipated;
+    mapping(address => bool) public hasWithdrawn;
+    mapping(address => uint) public participantIndexes;
+    mapping(uint => address) public leafOwners;
     
     event GameWinner(address winner);
     event GameEnded(uint block);
@@ -191,7 +191,7 @@ contract LuckyTree is Owned, SafeMath{
      * Check that more than 1 wallet contributed
      **/
     function pickWinner() internal{
-        if(numberOfLeafs &gt; 0){
+        if(numberOfLeafs > 0){
             if(participantIndex == 1){
                 //a single account contributed - just transfer funds back
                 IERC20Token(tokenAddress).transfer(leafOwners[0], totalParticipationAmount);
@@ -296,11 +296,11 @@ contract LuckyTree is Owned, SafeMath{
      * 
      **/
     function processTransaction(address _from, uint _value) internal returns (uint) {
-        require(gameStart &lt;= block.number);
+        require(gameStart <= block.number);
         
         uint valueToProcess = 0;
         
-        if(gameStart &lt;= block.number &amp;&amp; gameDuration &gt;= block.number){
+        if(gameStart <= block.number && gameDuration >= block.number){
             if(gameState != state.running){
                 gameState = state.running;
                 emit GameStarted(block.number);
@@ -326,7 +326,7 @@ contract LuckyTree is Owned, SafeMath{
             valueToProcess = _value;
             return valueToProcess;
         //If block.number over game duration, pick winner
-        }else if(gameDuration &lt; block.number){
+        }else if(gameDuration < block.number){
             gameState = state.finished;
             pickWinner();
             return valueToProcess;
@@ -347,9 +347,9 @@ contract LuckyTree is Owned, SafeMath{
      **/
     function manuallyProcessTransaction(address _from, uint _value) onlyOwner public {
         require(_value == leafPrice);
-        require(IERC20Token(tokenAddress).balanceOf(address(this)) &gt;= _value + totalParticipationAmount);
+        require(IERC20Token(tokenAddress).balanceOf(address(this)) >= _value + totalParticipationAmount);
 
-        if(gameState == state.running &amp;&amp; block.number &lt; gameDuration){
+        if(gameState == state.running && block.number < gameDuration){
             uint tokensToTake = processTransaction(_from, _value);
             IERC20Token(tokenAddress).transferFrom(_from, address(this), tokensToTake);
         }

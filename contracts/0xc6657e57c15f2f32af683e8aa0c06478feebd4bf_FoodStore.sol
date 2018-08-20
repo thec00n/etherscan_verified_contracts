@@ -80,7 +80,7 @@ contract OwnerBase {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCOO whenNotPaused {
         paused = true;
@@ -92,7 +92,7 @@ contract OwnerBase {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCOO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -134,11 +134,11 @@ contract FoodStore is OwnerBase {
 		require(newContractAddress == address(0));
 		
         uint cost = _bundles * price;
-		require(msg.value &gt;= cost);
+		require(msg.value >= cost);
 		
         // Return the funds. 
         uint fundsExcess = msg.value - cost;
-        if (fundsExcess &gt; 1 finney) {
+        if (fundsExcess > 1 finney) {
             msg.sender.transfer(fundsExcess);
         }
 		emit Bought(msg.sender, _bundles);

@@ -39,7 +39,7 @@ interface Token {
 }
 
 library NettingChannelLibrary {
-    string constant public contract_version = &quot;0.1._&quot;;
+    string constant public contract_version = "0.1._";
 
     struct Participant
     {
@@ -64,7 +64,7 @@ library NettingChannelLibrary {
         uint64 nonce;
 
         // A mapping to keep track of locks that have been withdrawn.
-        mapping(bytes32 =&gt; bool) withdrawn_locks;
+        mapping(bytes32 => bool) withdrawn_locks;
     }
 
     struct Data {
@@ -75,23 +75,23 @@ library NettingChannelLibrary {
         address closing_address;
         Token token;
         Participant[2] participants;
-        mapping(address =&gt; uint8) participant_index;
+        mapping(address => uint8) participant_index;
         bool updated;
     }
 
 
     modifier notSettledButClosed(Data storage self) {
-        require(self.settled &lt;= 0 &amp;&amp; self.closed &gt; 0);
+        require(self.settled <= 0 && self.closed > 0);
         _;
     }
 
     modifier stillTimeout(Data storage self) {
-        require(self.closed + self.settle_timeout &gt;= block.number);
+        require(self.closed + self.settle_timeout >= block.number);
         _;
     }
 
     modifier timeoutOver(Data storage self) {
-        require(self.closed + self.settle_timeout &lt;= block.number);
+        require(self.closed + self.settle_timeout <= block.number);
         _;
     }
 
@@ -111,9 +111,9 @@ library NettingChannelLibrary {
     {
         uint8 index;
 
-        require(self.opened &gt; 0);
+        require(self.opened > 0);
         require(self.closed == 0);
-        require(self.token.balanceOf(msg.sender) &gt;= amount);
+        require(self.token.balanceOf(msg.sender) >= amount);
 
         index = index_or_throw(self, msg.sender);
         Participant storage participant = self.participants[index];
@@ -281,7 +281,7 @@ library NettingChannelLibrary {
 
         // The lock must not have expired, it does not matter how far in the
         // future it would have expired
-        require(expiration &gt;= block.number);
+        require(expiration >= block.number);
         require(hashlock == sha3(secret));
 
         h = computeMerkleRoot(locked_encoded, merkle_proof);
@@ -289,7 +289,7 @@ library NettingChannelLibrary {
         require(counterparty.locksroot == h);
 
         // This implementation allows for each transfer to be set only once, so
-        // it&#39;s safe to update the transferred_amount in place.
+        // it's safe to update the transferred_amount in place.
         //
         // Once third parties are allowed to update the counter party transfer
         // (#293, #182) the locksroot may change, if the locksroot change the
@@ -297,7 +297,7 @@ library NettingChannelLibrary {
         // this is also safe.
         //
         // This may be problematic if an update changes the transferred_amount
-        // but not the locksroot, since the locks don&#39;t need to be
+        // but not the locksroot, since the locks don't need to be
         // re-withdrawn, the difference in the transferred_amount must be
         // accounted for.
         counterparty.transferred_amount += amount;
@@ -315,12 +315,12 @@ library NettingChannelLibrary {
         bytes32 el;
 
         h = sha3(lock);
-        for (i = 32; i &lt;= merkle_proof.length; i += 32) {
+        for (i = 32; i <= merkle_proof.length; i += 32) {
             assembly {
                 el := mload(add(merkle_proof, i))
             }
 
-            if (h &lt; el) {
+            if (h < el) {
                 h = sha3(h, el);
             } else {
                 h = sha3(el, h);
@@ -378,11 +378,11 @@ library NettingChannelLibrary {
         // is safe.
         closer_amount = total_deposit - counter_amount;
 
-        if (counter_amount &gt; 0) {
+        if (counter_amount > 0) {
             require(self.token.transfer(counter_party.node_address, counter_amount));
         }
 
-        if (closer_amount &gt; 0) {
+        if (closer_amount > 0) {
             require(self.token.transfer(closing_party.node_address, closer_amount));
         }
 
@@ -453,10 +453,10 @@ library NettingChannelLibrary {
             r := mload(add(signature, 32))
             s := mload(add(signature, 64))
             // Here we are loading the last 32 bytes, including 31 bytes
-            // of &#39;s&#39;. There is no &#39;mload8&#39; to do this.
+            // of 's'. There is no 'mload8' to do this.
             //
-            // &#39;byte&#39; is not working due to the Solidity parser, so lets
-            // use the second best option, &#39;and&#39;
+            // 'byte' is not working due to the Solidity parser, so lets
+            // use the second best option, 'and'
             v := and(mload(add(signature, 65)), 0xff)
         }
 
@@ -472,11 +472,11 @@ library NettingChannelLibrary {
     }
 
     function min(uint a, uint b) constant internal returns (uint) {
-        return a &gt; b ? b : a;
+        return a > b ? b : a;
     }
 
     function max(uint a, uint b) constant internal returns (uint) {
-        return a &gt; b ? a : b;
+        return a > b ? a : b;
     }
 
     function kill(Data storage self) channelSettled(self) {

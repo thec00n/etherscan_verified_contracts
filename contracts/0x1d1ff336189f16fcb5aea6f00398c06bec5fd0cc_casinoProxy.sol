@@ -35,13 +35,13 @@ contract owned {
 contract safeMath {
 	//internals
 	function safeSub(uint a, uint b) constant internal returns(uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint a, uint b) constant internal returns(uint) {
 		uint c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 	
@@ -56,9 +56,9 @@ contract casinoBank is owned, safeMath{
 	/** the total balance of all players with 4 virtual decimals **/
 	uint public playerBalance;
 	/** the balance per player in edgeless tokens with 4 virtual decimals */
-  mapping(address=&gt;uint) public balanceOf;
+  mapping(address=>uint) public balanceOf;
 	/** in case the user wants/needs to call the withdraw function from his own wallet, he first needs to request a withdrawal */
-	mapping(address=&gt;uint) public withdrawAfter;
+	mapping(address=>uint) public withdrawAfter;
 	/** the price per kgas in tokens (4 decimals) */
 	uint public gasPrice = 20;
 	/** the edgeless token contract */
@@ -80,10 +80,10 @@ contract casinoBank is owned, safeMath{
 	* edgeless tokens do not have any decimals, but are represented on this contract with 4 decimals.
 	* @param receiver  address of the receiver
 	*        numTokens number of tokens to deposit (0 decimals)
-	*				 chargeGas indicates if the gas cost is subtracted from the user&#39;s edgeless token balance
+	*				 chargeGas indicates if the gas cost is subtracted from the user's edgeless token balance
 	**/
 	function deposit(address receiver, uint numTokens, bool chargeGas) public isAlive{
-		require(numTokens &gt; 0);
+		require(numTokens > 0);
 		uint value = safeMul(numTokens,10000); 
 		if(chargeGas) value = safeSub(value, msg.gas/1000 * gasPrice);
 		assert(edg.transferFrom(msg.sender, address(this), numTokens));
@@ -114,7 +114,7 @@ contract casinoBank is owned, safeMath{
 	* @param amount the amount of tokens to withdraw
 	**/
 	function withdraw(uint amount) public keepAlive{
-		require(withdrawAfter[msg.sender]&gt;0 &amp;&amp; now&gt;withdrawAfter[msg.sender]);
+		require(withdrawAfter[msg.sender]>0 && now>withdrawAfter[msg.sender]);
 		withdrawAfter[msg.sender] = 0;
 		uint value = safeMul(amount,10000);
 		balanceOf[msg.sender]=safeSub(balanceOf[msg.sender],value);
@@ -128,7 +128,7 @@ contract casinoBank is owned, safeMath{
 	* @param numTokens the number of tokens to withdraw (0 decimals)
 	**/
 	function withdrawBankroll(uint numTokens) public onlyOwner {
-		require(numTokens &lt;= bankroll());
+		require(numTokens <= bankroll());
 		assert(edg.transfer(owner, numTokens));
 	}
 	
@@ -145,7 +145,7 @@ contract casinoBank is owned, safeMath{
   function close() onlyOwner public{
 		if(playerBalance == 0) selfdestruct(owner);
 		if(closeAt == 0) closeAt = now + 30 days;
-		else if(closeAt &lt; now) selfdestruct(owner);
+		else if(closeAt < now) selfdestruct(owner);
   }
 	
 	/**
@@ -167,22 +167,22 @@ contract casinoBank is owned, safeMath{
 	* delays the time of closing.
 	**/
 	modifier keepAlive {
-		if(closeAt &gt; 0) closeAt = now + 30 days;
+		if(closeAt > 0) closeAt = now + 30 days;
 		_;
 	}
 }
 
 contract casinoProxy is casinoBank{
 	/** indicates if an address is authorized to call game functions  */
-  mapping(address =&gt; bool) public authorized;
+  mapping(address => bool) public authorized;
   /** indicates if the user allowed a casino game address to move his/her funds **/
-  mapping(address =&gt; mapping(address =&gt; bool)) public authorizedByUser;
-  /** counts how often an address has been deauthorized by the user =&gt; make sure signatzures can&#39;t be reused**/
-  mapping(address =&gt; mapping(address =&gt; uint8)) public lockedByUser;
+  mapping(address => mapping(address => bool)) public authorizedByUser;
+  /** counts how often an address has been deauthorized by the user => make sure signatzures can't be reused**/
+  mapping(address => mapping(address => uint8)) public lockedByUser;
 	/** list of casino game contract addresses */
   address[] public casinoGames;
 	/** a number to count withdrawal signatures to ensure each signature is different even if withdrawing the same amount to the same address */
-	mapping(address =&gt; uint) public count;
+	mapping(address => uint) public count;
 
 	modifier onlyAuthorized {
     require(authorized[msg.sender]);
@@ -191,7 +191,7 @@ contract casinoProxy is casinoBank{
 	
 	modifier onlyCasinoGames {
 		bool isCasino;
-		for (uint i = 0; i &lt; casinoGames.length; i++){
+		for (uint i = 0; i < casinoGames.length; i++){
 			if(msg.sender == casinoGames[i]){
 				isCasino = true;
 				break;
@@ -235,7 +235,7 @@ contract casinoProxy is casinoBank{
 	}
   
   /**
-  * transfers an amount from the contract balance to the owner&#39;s wallet.
+  * transfers an amount from the contract balance to the owner's wallet.
   * @param receiver the receiver address
 	*				 amount   the amount of tokens to withdraw (0 decimals)
 	*				 v,r,s 		the signature of the player
@@ -257,7 +257,7 @@ contract casinoProxy is casinoBank{
   *        newAddress the new address of the game
   **/
   function setGameAddress(uint8 game, address newAddress) public onlyOwner{
-    if(game&lt;casinoGames.length) casinoGames[game] = newAddress;
+    if(game<casinoGames.length) casinoGames[game] = newAddress;
     else casinoGames.push(newAddress);
   }
   
@@ -280,7 +280,7 @@ contract casinoProxy is casinoBank{
   /**
    * authorize a casino contract address to access the funds
    * @param casinoAddress the address of the casino contract
-   *				v, r, s the player&#39;s signature of the casino address, the number of times the address has already been locked 
+   *				v, r, s the player's signature of the casino address, the number of times the address has already been locked 
    *								and a bool stating if the signature is meant for authourization (true) or deauthorization (false)
    * */
   function authorizeCasino(address playerAddress, address casinoAddress, uint8 v, bytes32 r, bytes32 s) public{
@@ -292,7 +292,7 @@ contract casinoProxy is casinoBank{
   /**
    * deauthorize a casino contract address to access the funds
    * @param casinoAddress the address of the casino contract
-   *    		v, r, s the player&#39;s signature of the casino address, the number of times the address has already been locked 
+   *    		v, r, s the player's signature of the casino address, the number of times the address has already been locked 
    *								and a bool stating if the signature is meant for authourization (true) or deauthorization (false)
    * */
   function deauthorizeCasino(address playerAddress, address casinoAddress, uint8 v, bytes32 r, bytes32 s) public{
@@ -315,12 +315,12 @@ contract casinoProxy is casinoBank{
   * The casino contract ensures it is no duplicate move.
   * @param game  specifies which game contract to call
   *        data  the function call
-  *        v,r,s the player&#39;s signature of the data
+  *        v,r,s the player's signature of the data
   **/
   function move(uint8 game, bytes data, uint8 v, bytes32 r, bytes32 s) public onlyAuthorized isAlive{
-    require(game &lt; casinoGames.length);
+    require(game < casinoGames.length);
     var player = ecrecover(keccak256(data), v, r, s);
-		require(withdrawAfter[player] == 0 || now&lt;withdrawAfter[player]);
+		require(withdrawAfter[player] == 0 || now<withdrawAfter[player]);
 		assert(checkAddress(player, data));
     assert(casinoGames[game].call(data));
   }
@@ -338,7 +338,7 @@ contract casinoProxy is casinoBank{
       mstore(0x40, add(m, 52))
       ba := m
    }
-   for(uint8 i = 0; i &lt; 20; i++){
+   for(uint8 i = 0; i < 20; i++){
    	if(data[16+i]!=ba[i]) return false;
    }
    return true;

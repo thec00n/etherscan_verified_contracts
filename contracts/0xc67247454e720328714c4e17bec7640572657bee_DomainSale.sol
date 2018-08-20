@@ -11,8 +11,8 @@ contract Registrar {
     function entries(bytes32 _hash) public constant returns (uint, Deed, uint, uint, uint);
 }
 contract Permissioned {
-    mapping(address=&gt;mapping(bytes32=&gt;bool)) internal permissions;
-    bytes32 internal constant PERM_SUPERUSER = keccak256(&quot;_superuser&quot;);
+    mapping(address=>mapping(bytes32=>bool)) internal permissions;
+    bytes32 internal constant PERM_SUPERUSER = keccak256("_superuser");
     function Permissioned() public {
         permissions[msg.sender][PERM_SUPERUSER] = true;
     }
@@ -47,7 +47,7 @@ contract Pausable is Permissioned {
     event Pause();
     event Unpause();
     bool public paused = false;
-    bytes32 internal constant PERM_PAUSE = keccak256(&quot;_pausable&quot;);
+    bytes32 internal constant PERM_PAUSE = keccak256("_pausable");
     modifier ifNotPaused() {
         require(!paused);
         _;
@@ -78,20 +78,20 @@ library SafeMath {
         return c;
     }
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract DomainSale is ENSReverseRegister, Pausable {
     using SafeMath for uint256;
     Registrar public registrar;
-    mapping (string =&gt; Sale) private sales;
-    mapping (address =&gt; uint256) private balances;
+    mapping (string => Sale) private sales;
+    mapping (address => uint256) private balances;
     uint256 private constant AUCTION_DURATION = 24 hours;
     uint256 private constant HIGH_BID_KICKIN = 7 days;
     uint256 private constant NORMAL_BID_INCREASE_PERCENTAGE = 10;
@@ -99,7 +99,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
     uint256 private constant SELLER_SALE_PERCENTAGE = 90;
     uint256 private constant START_REFERRER_SALE_PERCENTAGE = 5;
     uint256 private constant BID_REFERRER_SALE_PERCENTAGE = 5;
-    string private constant CONTRACT_ENS = &quot;domainsale.eth&quot;;
+    string private constant CONTRACT_ENS = "domainsale.eth";
     bytes32 private constant NAMEHASH_ETH = 0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae;
     struct Sale {
         uint256 price;
@@ -152,7 +152,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
         return sales[_name].reserve != 0;
     }
     function isBuyable(string _name) public constant returns (bool) {
-        return sales[_name].price != 0 &amp;&amp; sales[_name].auctionStarted == 0;
+        return sales[_name].price != 0 && sales[_name].auctionStarted == 0;
     }
     function auctionStarted(string _name) public constant returns (bool) {
         return sales[_name].lastBid != 0;
@@ -164,7 +164,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
         Sale storage s = sales[_name];
         if (s.auctionStarted == 0) {
             return s.reserve;
-        } else if (s.auctionStarted.add(HIGH_BID_KICKIN) &gt; now) {
+        } else if (s.auctionStarted.add(HIGH_BID_KICKIN) > now) {
             return s.lastBid.add(s.lastBid.mul(NORMAL_BID_INCREASE_PERCENTAGE).div(100));
         } else {
             return s.lastBid.add(s.lastBid.mul(HIGH_BID_INCREASE_PERCENTAGE).div(100));
@@ -177,7 +177,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
         return balances[addr];
     }
     function offer(string _name, uint256 _price, uint256 reserve, address referrer) onlyNameSeller(_name) auctionNotStarted(_name) deedValid(_name) ifNotPaused public {
-        require(_price == 0 || _price &gt; reserve);
+        require(_price == 0 || _price > reserve);
         require(_price != 0 || reserve != 0);
         Sale storage s = sales[_name];
         s.reserve = reserve;
@@ -192,7 +192,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
     }
     function buy(string _name, address bidReferrer) canBuy(_name) deedValid(_name) ifNotPaused public payable {
         Sale storage s = sales[_name];
-        require(msg.value &gt;= s.price);
+        require(msg.value >= s.price);
         require(s.auctionStarted == 0);
         Deed deed;
         (,deed,,,) = registrar.entries(keccak256(_name));
@@ -204,9 +204,9 @@ contract DomainSale is ENSReverseRegister, Pausable {
         withdraw();
     }
     function bid(string _name, address bidReferrer) canBid(_name) deedValid(_name) ifNotPaused public payable {
-        require(msg.value &gt;= minimumBid(_name));
+        require(msg.value >= minimumBid(_name));
         Sale storage s = sales[_name];
-        require(s.auctionStarted == 0 || now &lt; s.auctionEnds);
+        require(s.auctionStarted == 0 || now < s.auctionEnds);
         if (s.auctionStarted == 0) {
           s.auctionStarted = now;
         } else {
@@ -221,7 +221,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
     }
     function finish(string _name) deedValid(_name) ifNotPaused public {
         Sale storage s = sales[_name];
-        require(now &gt; s.auctionEnds);
+        require(now > s.auctionEnds);
         Deed deed;
         (,deed,,,) = registrar.entries(keccak256(_name));
         address previousOwner = deed.previousOwner();
@@ -233,7 +233,7 @@ contract DomainSale is ENSReverseRegister, Pausable {
     }
     function withdraw() ifNotPaused public {
         uint256 amount = balances[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             balances[msg.sender] = 0;
             msg.sender.transfer(amount);
             Withdraw(msg.sender, amount);

@@ -50,7 +50,7 @@ contract owned {
 contract DSSafeAddSub {
 
     function safeToAdd(uint a, uint b) internal returns (bool) {
-        return (a + b &gt;= a);
+        return (a + b >= a);
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
@@ -59,7 +59,7 @@ contract DSSafeAddSub {
     }
 
     function safeToSubtract(uint a, uint b) internal returns (bool) {
-        return (b &lt;= a);
+        return (b <= a);
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
@@ -88,7 +88,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
     *  checks only after crowdfund deadline
     */    
     modifier onlyAfterDeadline() { 
-        if (now &lt; deadline) throw;
+        if (now < deadline) throw;
         _; 
     }
 
@@ -123,7 +123,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
     /* 20% of funds raised */    
     uint public etherollBeneficiaryAmount;
     /* map balance of address */
-    mapping (address =&gt; uint) public balanceOf; 
+    mapping (address => uint) public balanceOf; 
     /* funding goal has not been reached */ 
     bool public fundingGoalReached = false;   
     /* escape hatch for all in emergency */
@@ -171,7 +171,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
     {
 
         /* crowdfund period is over */
-        if(now &gt; deadline) crowdsaleClosed = true;  
+        if(now > deadline) crowdsaleClosed = true;  
 
         /* crowdsale is closed */
         if (crowdsaleClosed) throw;
@@ -183,7 +183,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
         *  transfer tokens
         *  check/set week two price rise
         */
-        if(now &lt; weekTwoPriceRiseBegin) {
+        if(now < weekTwoPriceRiseBegin) {
                       
             /* week 1 power token conversion * 2: 1 ETH = 200 tokens */
             if(tokenReward.transfer(msg.sender, ((msg.value*price)/price)*2)) {
@@ -220,7 +220,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
         onlyAfterDeadline
     {
 
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             /* allows funds to be moved to beneficiary */
             fundingGoalReached = true;
             /* log event */            
@@ -244,7 +244,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
         *  funding goal reached 
         *  move funds to beneficiary addresses
         */        
-        if (msg.sender == owner &amp;&amp; fundingGoalReached) {
+        if (msg.sender == owner && fundingGoalReached) {
 
             /* multi-sig bankrollBeneficiary receives 80% */
             bankrollBeneficiaryAmount = (this.balance*80)/100;   
@@ -286,7 +286,7 @@ contract EtherollCrowdfund is owned, DSSafeAddSub {
         /* sets balance to 0 */
         balanceOf[_addressToRefund] = 0;
         /* is there any balance? */
-        if (amount &gt; 0) {
+        if (amount > 0) {
             /* call to untrusted address */
             if (_addressToRefund.call.value(amount)()) {
                 /* log event */

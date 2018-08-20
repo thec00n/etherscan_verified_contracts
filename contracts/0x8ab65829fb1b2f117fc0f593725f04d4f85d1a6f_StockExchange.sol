@@ -24,8 +24,8 @@ contract StockExchange {
     // address of tokens
     address public deusETH;
 
-    mapping(uint256 =&gt; uint256) public priceList;
-    mapping(uint256 =&gt; address) public holderList;
+    mapping(uint256 => uint256) public priceList;
+    mapping(uint256 => address) public holderList;
 
     InterfaceDeusETH private lottery = InterfaceDeusETH(0x0);
 
@@ -51,10 +51,10 @@ contract StockExchange {
 
     function sale(uint256 _id, uint256 _price) public returns (bool) {
         require(started);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require(!lottery.gameOver());
         require(!lottery.gameOverByUser());
-        require(now &gt; stopTime);
+        require(now > stopTime);
         require(lottery.getHolder(_id) == msg.sender);
 
         priceList[_id] = _price;
@@ -67,10 +67,10 @@ contract StockExchange {
 
     function getBackToken(uint256 _id) public returns (bool) {
         require(started);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require(!lottery.gameOver());
         require(!lottery.gameOverByUser());
-        require(now &gt; stopTime);
+        require(now > stopTime);
         require(holderList[_id] == msg.sender);
 
         holderList[_id] = 0x0;
@@ -82,10 +82,10 @@ contract StockExchange {
 
     function buy(uint256 _id) public payable returns (bool) {
         require(started);
-        require(_id &gt; 0 &amp;&amp; _id &lt;= cap);
+        require(_id > 0 && _id <= cap);
         require(!lottery.gameOver());
         require(!lottery.gameOverByUser());
-        require(now &gt; stopTime);
+        require(now > stopTime);
 
         require(priceList[_id] == msg.value);
         address oldHolder = holderList[_id];

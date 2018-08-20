@@ -10,10 +10,10 @@ contract pixelgrid {
     }
 
     function setColors(uint32[] pixelIndex, uint8[] color) public payable  {
-      require(pixelIndex.length &lt; 256);
-      require(msg.value &gt;= pixelIndex.length * 0.0001 ether || msg.sender == manager);
+      require(pixelIndex.length < 256);
+      require(msg.value >= pixelIndex.length * 0.0001 ether || msg.sender == manager);
       require(color.length == pixelIndex.length);
-    for (uint8 i=0; i&lt;pixelIndex.length; i++) {
+    for (uint8 i=0; i<pixelIndex.length; i++) {
     pixels[pixelIndex[i]] = color[i];
     }
     emit Updated();
@@ -22,9 +22,9 @@ contract pixelgrid {
 
 
     function getColors(uint32 start) public view returns (uint8[50000] ) {
-      require(start &lt; 1000000);
+      require(start < 1000000);
         uint8[50000] memory partialPixels;
-           for (uint32 i=0; i&lt;50000; i++) {
+           for (uint32 i=0; i<50000; i++) {
                partialPixels[i]=pixels[start+i];
            }
 

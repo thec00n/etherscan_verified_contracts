@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -63,7 +63,7 @@ contract BlockvPublicLedger is Ownable {
   }
   uint256 public txCount = 0;
   uint256 public distributionEntryCount = 0;
-  mapping (string =&gt; index) distributionIndex;
+  mapping (string => index) distributionIndex;
   logEntry[] public transactionLog;
   distributionEntry[] public distributionList;
   bool public distributionFixed = false;
@@ -93,16 +93,16 @@ contract BlockvPublicLedger is Ownable {
           revert();
         }
 
-        if ( _discount &gt; 100 ) {
+        if ( _discount > 100 ) {
           revert();
         }
         /* build the log record and add it to the transaction log first */
         if ( !idx.set ) {
             ret = false;
-            le.txType = &quot;INSERT&quot;;
+            le.txType = "INSERT";
         } else {
             ret = true;
-            le.txType = &quot;UPDATE&quot;;          
+            le.txType = "UPDATE";          
         }
         le.to = _to;
         le.amountContributed = _amount;
@@ -146,16 +146,16 @@ contract BlockvPublicLedger is Ownable {
       revert();
     }
 
-    for(i = 0; i &lt; distributionEntryCount; i++) {
+    for(i = 0; i < distributionEntryCount; i++) {
       de = distributionList[i];
       de.tokenAmount = (de.amountContributed * _usdToEthConversionRate * 100) / (_tokenPrice  * de.discount / 100);
       distributionList[i] = de;
     }
     distributionFixed = true;
   
-    le.txType = &quot;FIXED&quot;;
+    le.txType = "FIXED";
     le.blockTimestamp = block.timestamp;
-    le.txId = &quot;__FIXED__DISTRIBUTION__&quot;;
+    le.txId = "__FIXED__DISTRIBUTION__";
     transactionLog.push(le);
     txCount++;
 

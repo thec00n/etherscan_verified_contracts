@@ -6,7 +6,7 @@ contract TokenERC20 {
 
   /* Begin Owned Contract Members */
   // An array of owners
-  mapping (address =&gt; bool) public owners;
+  mapping (address => bool) public owners;
 
   // Has the next action been authorised by another owner
   bool public nextActionIsAuthorised = false;
@@ -44,7 +44,7 @@ contract TokenERC20 {
 
   function checkActionIsAuthorisedAndReset() public {
     require(isOwner(msg.sender));
-    bool isValidAuthorisationRequest = (nextActionIsAuthorised &amp;&amp; actionAuthorisedBy != msg.sender);
+    bool isValidAuthorisationRequest = (nextActionIsAuthorised && actionAuthorisedBy != msg.sender);
     require(isValidAuthorisationRequest);
     nextActionIsAuthorised = false;
   }
@@ -72,9 +72,9 @@ contract TokenERC20 {
   bool public allowBuying = false;    // buy tokens
 
   // This creates an array with...
-  mapping (address =&gt; uint256) public balanceOf;    // all balances
-  mapping (address =&gt; uint256) public etherSpent;   // how much an addeess has spent
-  mapping (address =&gt; bool) public frozenAccounts;  // frozen accounts
+  mapping (address => uint256) public balanceOf;    // all balances
+  mapping (address => uint256) public etherSpent;   // how much an addeess has spent
+  mapping (address => bool) public frozenAccounts;  // frozen accounts
   address[] investors;
   uint64 public investorCount;
 
@@ -105,7 +105,7 @@ contract TokenERC20 {
   uint8 firstYearAllowancePercentage;
   uint8 secondYearAllowancePercentage;
 
-  mapping (uint8 =&gt; uint8) public weekBonuses; // Bonus of 20% is stored as 120, 10% as 110 etc.
+  mapping (uint8 => uint8) public weekBonuses; // Bonus of 20% is stored as 120, 10% as 110 etc.
 
 
 
@@ -184,8 +184,8 @@ contract TokenERC20 {
 
   function initialiseToken() public {
     require(!tokenInitialised);
-    name = &quot;BaraToken&quot;;
-    symbol = &quot;BRT&quot;;
+    name = "BaraToken";
+    symbol = "BRT";
     totalSupply = 160000000 * 10 ** uint256(decimals);
     balanceOf[msg.sender] = totalSupply;
     currentSeller = msg.sender;
@@ -203,9 +203,9 @@ contract TokenERC20 {
 
 
   function updateContract() onlyWhenIcoParametersAreSet public {
-    if (hasSoftCapBeenReached() &amp;&amp; dateSoftCapWasReached == 0) {
+    if (hasSoftCapBeenReached() && dateSoftCapWasReached == 0) {
       dateSoftCapWasReached = now;
-      bool reachingSoftCapWillExtendIco = (dateSoftCapWasReached + runTimeAfterSoftCapReached &gt; icoEndDate);
+      bool reachingSoftCapWillExtendIco = (dateSoftCapWasReached + runTimeAfterSoftCapReached > icoEndDate);
       if (!reachingSoftCapWillExtendIco)
         icoEndDate = dateSoftCapWasReached + runTimeAfterSoftCapReached;
     }
@@ -216,32 +216,32 @@ contract TokenERC20 {
 
 
   function isBeforeIco() onlyWhenIcoParametersAreSet internal view returns (bool) {
-    return (now &lt;= icoBeginDate);
+    return (now <= icoBeginDate);
   }
 
 
 
   function isIcoRunning() onlyWhenIcoParametersAreSet internal view returns (bool) {
-    bool reachingSoftCapWillExtendIco = (dateSoftCapWasReached + runTimeAfterSoftCapReached) &gt; icoEndDate;
-    bool afterBeginDate = now &gt; icoBeginDate;
-    bool beforeEndDate = now &lt; icoEndDate;
-    if (hasSoftCapBeenReached() &amp;&amp; !reachingSoftCapWillExtendIco)
-      beforeEndDate = now &lt; (dateSoftCapWasReached + runTimeAfterSoftCapReached);
-    bool running = afterBeginDate &amp;&amp; beforeEndDate;
+    bool reachingSoftCapWillExtendIco = (dateSoftCapWasReached + runTimeAfterSoftCapReached) > icoEndDate;
+    bool afterBeginDate = now > icoBeginDate;
+    bool beforeEndDate = now < icoEndDate;
+    if (hasSoftCapBeenReached() && !reachingSoftCapWillExtendIco)
+      beforeEndDate = now < (dateSoftCapWasReached + runTimeAfterSoftCapReached);
+    bool running = afterBeginDate && beforeEndDate;
     return running;
   }
 
 
 
   function isAfterIco() onlyWhenIcoParametersAreSet internal view returns (bool) {
-    return (now &gt; icoEndDate);
+    return (now > icoEndDate);
   }
 
 
 
 
   function hasSoftCapBeenReached() onlyWhenIcoParametersAreSet internal view returns (bool) {
-    return (tokensSoldAtIco &gt;= softCap &amp;&amp; softCap != 0);
+    return (tokensSoldAtIco >= softCap && softCap != 0);
   }
 
 
@@ -258,7 +258,7 @@ contract TokenERC20 {
 
 
   function getTimeSinceEndOfIco() onlyWhenIcoParametersAreSet internal view returns (uint256) {
-    require(now &gt; icoEndDate);
+    require(now > icoEndDate);
     uint256 timeSinceEndOfIco = now - icoEndDate;
     return timeSinceEndOfIco;
   }
@@ -281,13 +281,13 @@ contract TokenERC20 {
       uint256 totalFunds = this.balance;
       maxFundsThatCanBeWithdrawnByOwners = 0;
       uint256 immediateAllowance = (totalFunds * immediateAllowancePercentage) / 100;
-      bool secondYear = now - icoEndDate &gt;= yearLength;
+      bool secondYear = now - icoEndDate >= yearLength;
       uint8 monthsPassedSinceIco = getMonthsPassedEndOfSinceIco();
       if (secondYear) {
         uint256 monthsPassedInSecondYear = monthsPassedSinceIco - 12;
         // (monthsPassed / 12) * (allowancePercentage / 100) i.e. (monthsPassed * allowancePercentage / 1200)
         // all multiplied by the totalFunds available to be withdrwan
-        // They&#39;re multiplied in one line to ensure not losing any information since we don&#39;t have floats
+        // They're multiplied in one line to ensure not losing any information since we don't have floats
         // The minimum a person can buy is 1/10^12 tokens and we have 18 decimals, meaning always at least
         // 6 decimals to hold information done in multiplication/division
         uint256 secondYearAllowance = ((totalFunds * secondYearAllowancePercentage * monthsPassedInSecondYear) / 1200);
@@ -312,10 +312,10 @@ contract TokenERC20 {
 
   // Check if the amount the owners are attempting to withdraw is within their current allowance
   function amountIsWithinOwnersAllowance(uint256 amountToWithdraw) internal view returns (bool) {
-    if (now - icoEndDate &gt;= yearLength * 2)
+    if (now - icoEndDate >= yearLength * 2)
       return true;
     uint256 totalFundsWithdrawnAfterThisTransaction = fundsWithdrawnByOwners + amountToWithdraw;
-    bool withinAllowance = totalFundsWithdrawnAfterThisTransaction &lt;= maxFundsThatCanBeWithdrawnByOwners;
+    bool withinAllowance = totalFundsWithdrawnAfterThisTransaction <= maxFundsThatCanBeWithdrawnByOwners;
     return withinAllowance;
   }
 
@@ -324,13 +324,13 @@ contract TokenERC20 {
   function buyTokens() onlyDuringIco payable public {
     require(allowBuying);
     require(!frozenAccounts[msg.sender]);
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     uint256 numberOfTokensPurchased = msg.value / sellPrice;
-    require(numberOfTokensPurchased &gt;= 10 ** 6);
+    require(numberOfTokensPurchased >= 10 ** 6);
     numberOfTokensPurchased = getWeekBonus(numberOfTokensPurchased);
     _transfer(currentSeller, msg.sender, numberOfTokensPurchased);
     tokensSoldAtIco += numberOfTokensPurchased;
-    if (!(etherSpent[msg.sender] &gt; 0)) {
+    if (!(etherSpent[msg.sender] > 0)) {
       investors[investorCount] = msg.sender;
       investorCount++;
     }
@@ -397,7 +397,7 @@ contract TokenERC20 {
 
 
   function transfer(address _to, uint256 _value) public {
-    require(allowTransfers &amp;&amp; !isOwner(msg.sender));
+    require(allowTransfers && !isOwner(msg.sender));
     _transfer(msg.sender, _to, _value);
   }
 
@@ -405,8 +405,8 @@ contract TokenERC20 {
 
   function _transfer(address _from, address _to, uint _value) internal {
     require (_to != 0x0);
-    require (balanceOf[_from] &gt;= _value);
-    require (balanceOf[_to] + _value &gt; balanceOf[_to]);
+    require (balanceOf[_from] >= _value);
+    require (balanceOf[_to] + _value > balanceOf[_to]);
     require(!frozenAccounts[_from]);
     require(!frozenAccounts[_to]);
     balanceOf[_from] -= _value;
@@ -426,8 +426,8 @@ contract TokenERC20 {
 
 
   function burn(uint256 amount) public {
-    require(allowBurns &amp;&amp; !isOwner(msg.sender));
-    require(balanceOf[msg.sender] &gt;= amount);
+    require(allowBurns && !isOwner(msg.sender));
+    require(balanceOf[msg.sender] >= amount);
     balanceOf[msg.sender] -= amount;
     totalSupply -= amount;
     Burn(msg.sender, amount);
@@ -436,7 +436,7 @@ contract TokenERC20 {
 
 
   function burnFrom(address from, uint256 amount) onlyOwners public {
-    require (balanceOf[from] &gt;= amount);
+    require (balanceOf[from] >= amount);
     balanceOf[from] -= amount;
     totalSupply -= amount;
     Burn(from, amount);
@@ -466,8 +466,8 @@ contract TokenERC20 {
   function sendContractFundsToAddress(uint256 amount, address recipient) onlyOwners public {
     require(icoParametersSet);
     require(isAfterIco());
-    require(tokensSoldAtIco &gt;= minimumTokenThreshold);
-    require(amount &lt;= this.balance);
+    require(tokensSoldAtIco >= minimumTokenThreshold);
+    require(amount <= this.balance);
     updateContract();
     require(amountIsWithinOwnersAllowance(amount));
     recipient.transfer(amount);
@@ -478,8 +478,8 @@ contract TokenERC20 {
   function returnEtherToInvestors() onlyOwners onlyWhenIcoParametersAreSet public {
     require(isAfterIco());
     require(!etherHasBeenReturnedToInvestors);
-    require(tokensSoldAtIco &lt; minimumTokenThreshold);
-    for (uint64 investorNumber; investorNumber &lt; investorCount; investorNumber++) {
+    require(tokensSoldAtIco < minimumTokenThreshold);
+    for (uint64 investorNumber; investorNumber < investorCount; investorNumber++) {
       address investor = investors[investorNumber];
       uint256 amountToSend = etherSpent[investor];
       investor.transfer(amountToSend);

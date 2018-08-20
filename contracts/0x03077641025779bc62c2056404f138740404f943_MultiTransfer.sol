@@ -11,7 +11,7 @@ library SafeMath {
   * @dev Exponentiation two numbers, throws on overflow.
   */
   function pow(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(a ** b &gt; 0);
+    assert(a ** b > 0);
     return a ** b;
   }
 
@@ -31,9 +31,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -50,7 +50,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -98,16 +98,16 @@ contract MultiTransfer {
     uint256 sum = 0;
 
     // Check receiver effectiveness
-    for (uint256 i = 0; i &lt; _to.length; i++) {
+    for (uint256 i = 0; i < _to.length; i++) {
       require(_to[i] != address(0));
       sum.add(_value[i]);
     }
 
     // Check allowed token balance effectiveness
-    assert(allowance(_token) &gt;= sum);
+    assert(allowance(_token) >= sum);
 
     // Send token
-    for (i = 0; i &lt; _to.length; i++) {
+    for (i = 0; i < _to.length; i++) {
       require(ERC20StandardToken(_token).transferFrom(msg.sender, _to[i], _value[i]));
     }
 

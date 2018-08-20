@@ -1,6 +1,6 @@
 contract ProofOfExistence {
 
-  mapping (string =&gt; uint) private proofs;
+  mapping (string => uint) private proofs;
 
   function notarize(string sha256) {
 

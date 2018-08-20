@@ -47,12 +47,12 @@ contract SafeMath {
 
   function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
   }
 
   function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
   }
@@ -66,15 +66,15 @@ contract SafeMath {
 
 contract Klein is ERC20, owned, SafeMath {
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; mapping (address =&gt; mapping (uint256 =&gt; bool))) specificAllowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => mapping (address => mapping (uint256 => bool))) specificAllowed;
     
                                                                     // The Swarm address of the artwork is saved here for reference and posterity
-    string public constant zonesSwarmAddress = &quot;0a52f265d8d60a89de41a65069fa472ac3b130c269b4788811220b6546784920&quot;;
+    string public constant zonesSwarmAddress = "0a52f265d8d60a89de41a65069fa472ac3b130c269b4788811220b6546784920";
     address public constant theRiver = 0x8aDE9bCdA847852DE70badA69BBc9358C1c7B747;                      // ROPSTEN REVIVAL address
-    string public constant name = &quot;Digital Zone of Immaterial Pictorial Sensibility&quot;;
-    string public constant symbol = &quot;IKB&quot;;
+    string public constant name = "Digital Zone of Immaterial Pictorial Sensibility";
+    string public constant symbol = "IKB";
     uint256 public constant decimals = 0;
     uint256 public maxSupplyPossible;
     uint256 public initialPrice = 10**17;                              // should equal 0.1 ETH
@@ -84,7 +84,7 @@ contract Klein is ERC20, owned, SafeMath {
     uint256 public burnedToDate;
     bool first = true;
                                                                     // IKB are issued in tranches, or series of editions. There will be 8 total
-                                                                    // Each IBKSeries represents one of Klein&#39;s receipt books, or a series of issued tokens.
+                                                                    // Each IBKSeries represents one of Klein's receipt books, or a series of issued tokens.
     struct IKBSeries {
         uint256 price;
         uint256 seriesSupply;
@@ -108,7 +108,7 @@ contract Klein is ERC20, owned, SafeMath {
         currentSeries = 0;
         series[0] = IKBSeries(initialPrice, 31);                    // the first series has unique values...
     
-        for(uint256 i = 1; i &lt; series.length; i++){                    // ...while the next 7 can be defined in a for loop
+        for(uint256 i = 1; i < series.length; i++){                    // ...while the next 7 can be defined in a for loop
             series[i] = IKBSeries(series[i-1].price*2, 10);
         }     
         
@@ -145,11 +145,11 @@ contract Klein is ERC20, owned, SafeMath {
     }
 
     function issueNewSeries() onlyOwner returns (bool success){
-        require(balances[this] &lt;= 0);                            //can only issue a new series if you&#39;ve sold all the old ones
-        require(currentSeries &lt; 7);
+        require(balances[this] <= 0);                            //can only issue a new series if you've sold all the old ones
+        require(currentSeries < 7);
         
         if(!first){
-            currentSeries++;                                        // the first time we run this function, don&#39;t run up the currentSeries counter. Keep it at 0
+            currentSeries++;                                        // the first time we run this function, don't run up the currentSeries counter. Keep it at 0
         } else if (first){
             first=false;                                            // ...but only let this work once.
         } 
@@ -161,24 +161,24 @@ contract Klein is ERC20, owned, SafeMath {
     }
     
     function buy() payable returns (bool success){
-        require(balances[this] &gt; 0);
-        require(msg.value &gt;= series[currentSeries].price);
+        require(balances[this] > 0);
+        require(msg.value >= series[currentSeries].price);
         uint256 amount = msg.value / series[currentSeries].price;      // calculates the number of tokens the sender will buy
         uint256 receivable = msg.value;
-        if (balances[this] &lt; amount) {                              // this section handles what happens if someone tries to buy more than the currently available supply
+        if (balances[this] < amount) {                              // this section handles what happens if someone tries to buy more than the currently available supply
             receivable = safeMult(balances[this], series[currentSeries].price);
             uint256 returnable = safeSubtract(msg.value, receivable);
             amount = balances[this];
             msg.sender.transfer(returnable);             
         }
         
-        if (receivable % series[currentSeries].price &gt; 0) assert(returnChange(receivable));
+        if (receivable % series[currentSeries].price > 0) assert(returnChange(receivable));
         
-        balances[msg.sender] = safeAdd(balances[msg.sender], amount);                             // adds the amount to buyer&#39;s balance
-        balances[this] = safeSubtract(balances[this], amount);      // subtracts amount from seller&#39;s balance
+        balances[msg.sender] = safeAdd(balances[msg.sender], amount);                             // adds the amount to buyer's balance
+        balances[this] = safeSubtract(balances[this], amount);      // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);                         // execute an event reflecting the change
 
-        for(uint k = 0; k &lt; amount; k++){                           // now let&#39;s make a record of every sale
+        for(uint k = 0; k < amount; k++){                           // now let's make a record of every sale
             records[totalSold] = record(msg.sender, series[currentSeries].price, false);
             totalSold++;
         }
@@ -193,14 +193,14 @@ contract Klein is ERC20, owned, SafeMath {
     }
                                                                     // when this function is called, the caller is transferring any number of tokens. The function automatically chooses the tokens with the LOWEST index to transfer.
     function transfer(address _to, uint _value) returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0); 
+        require(balances[msg.sender] >= _value);
+        require(_value > 0); 
         uint256 recordsChanged = 0;
 
-        for(uint k = 0; k &lt; records.length; k++){                 // go through every record
-            if(records[k].addr == msg.sender &amp;&amp; recordsChanged &lt; _value) {
+        for(uint k = 0; k < records.length; k++){                 // go through every record
+            if(records[k].addr == msg.sender && recordsChanged < _value) {
                 records[k].addr = _to;                            // change the address associated with this record
-                recordsChanged++;                                 // keep track of how many records you&#39;ve changed in this transfer. After you&#39;ve changed as many records as there are tokens being transferred, conditions of this loop will cease to be true.
+                recordsChanged++;                                 // keep track of how many records you've changed in this transfer. After you've changed as many records as there are tokens being transferred, conditions of this loop will cease to be true.
                 UpdateRecord(k, _to, records[k].price, records[k].burned);
             }
         }
@@ -212,15 +212,15 @@ contract Klein is ERC20, owned, SafeMath {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balances[_from] &gt;= _value); 
-        require(allowed[_from][msg.sender] &gt;= _value); 
-        require(_value &gt; 0);
+        require(balances[_from] >= _value); 
+        require(allowed[_from][msg.sender] >= _value); 
+        require(_value > 0);
         uint256 recordsChanged = 0;
         
-        for(uint256 k = 0; k &lt; records.length; k++){                 // go through every record
-            if(records[k].addr == _from &amp;&amp; recordsChanged &lt; _value) {
+        for(uint256 k = 0; k < records.length; k++){                 // go through every record
+            if(records[k].addr == _from && recordsChanged < _value) {
                 records[k].addr = _to;                            // change the address associated with this record
-                recordsChanged++;                                 // keep track of how many records you&#39;ve changed in this transfer. After you&#39;ve changed as many records as there are tokens being transferred, conditions of this loop will cease to be true.
+                recordsChanged++;                                 // keep track of how many records you've changed in this transfer. After you've changed as many records as there are tokens being transferred, conditions of this loop will cease to be true.
                 UpdateRecord(k, _to, records[k].price, records[k].burned);
             }
         }
@@ -233,7 +233,7 @@ contract Klein is ERC20, owned, SafeMath {
     }   
                                                                     // when this function is called, the caller is transferring only 1 IKB to another account, and specifying exactly which token they would like to transfer.
     function specificTransfer(address _to, uint _edition) returns (bool success) {
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         require(records[_edition].addr == msg.sender); 
         balances[msg.sender] = safeSubtract(balances[msg.sender], 1);
         balances[_to] = safeAdd(balances[_to], 1);
@@ -245,7 +245,7 @@ contract Klein is ERC20, owned, SafeMath {
     }
     
     function specificTransferFrom(address _from, address _to, uint _edition) returns (bool success){
-        require(balances[_from] &gt; 0);
+        require(balances[_from] > 0);
         require(records[_edition].addr == _from);
         require(specificAllowed[_from][msg.sender][_edition]);
         balances[_from] = safeSubtract(balances[_from], 1);
@@ -265,7 +265,7 @@ contract Klein is ERC20, owned, SafeMath {
     function getHolderEditions(address _holder) public constant returns (uint256[] _editions) {
         uint256[] memory editionsOwned = new uint256[](balances[_holder]);
         uint256 index;
-        for(uint256 k = 0; k &lt; records.length; k++) {
+        for(uint256 k = 0; k < records.length; k++) {
             if(records[k].addr == _holder) {
                 editionsOwned[index] = k;
                 index++;
@@ -287,13 +287,13 @@ contract Klein is ERC20, owned, SafeMath {
         require(records[_edition].addr == msg.sender); 
         require(!records[_edition].burned);
         uint256 halfTheGold = records[_edition].price / 2;
-        require(this.balance &gt;= halfTheGold);
+        require(this.balance >= halfTheGold);
         
         records[_edition].addr = 0xdead;
         records[_edition].burned = true;
         burnedToDate++;
         balances[msg.sender] = safeSubtract(balances[msg.sender], 1);
-        theRiver.transfer(halfTheGold);                             // call should fail if this contract isn&#39;t holding enough ETH
+        theRiver.transfer(halfTheGold);                             // call should fail if this contract isn't holding enough ETH
         return true;
     }
 }

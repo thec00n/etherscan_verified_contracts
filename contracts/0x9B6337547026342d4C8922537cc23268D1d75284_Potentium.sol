@@ -24,20 +24,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,7 +93,7 @@ contract UserTokensControl is Ownable{
     uint256 isUserAbleToTransferTime = 1579174400000;//control for transfer Thu Jan 16 2020 
     modifier isUserAbleToTransferCheck(uint balance,uint _value) {
       if(msg.sender == 0x3b06AC092339D382050C892aD035b5F140B7C628){
-         if(now&lt;isUserAbleToTransferTime){
+         if(now<isUserAbleToTransferTime){
              revert();
          }
          _;
@@ -122,7 +122,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic, Pausable , UserTokensControl{
   using SafeMath for uint256;
  
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic, Pausable , UserTokensControl{
   */
   function transfer(address _to, uint256 _value) public whenNotPaused isUserAbleToTransferCheck(balances[msg.sender],_value) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -163,7 +163,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   
   /**
@@ -174,8 +174,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused isUserAbleToTransferCheck(balances[msg.sender],_value) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -224,7 +224,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -237,18 +237,18 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract Potentium is StandardToken, Mortal {
-    string public constant name = &quot;POTENTIAM&quot;;
+    string public constant name = "POTENTIAM";
     uint public constant decimals = 18;
-    string public constant symbol = &quot;PTM&quot;;
+    string public constant symbol = "PTM";
     address companyReserve;
     uint saleEndDate;
     uint public amountRaisedInWei;
     uint public priceOfToken=1041600000000000;//0.0010416 ETH
     address[] allParticipants;
     uint tokenSales=0;
-     mapping(address =&gt; uint256)public  balancesHold;
+     mapping(address => uint256)public  balancesHold;
     event TokenHold( address indexed to, uint256 value);
-    mapping (address =&gt; bool) isParticipated;
+    mapping (address => bool) isParticipated;
     uint public icoStartDate;
     uint public icoWeek1Bonus = 10;
     uint public icoWeek2Bonus = 7;
@@ -266,36 +266,36 @@ contract Potentium is StandardToken, Mortal {
     
     function() payable whenNotPaused public {
         require(msg.sender !=0x0);
-        require(now&lt;=saleEndDate);
-        require(msg.value &gt;=40000000000000000); //minimum 0.04 eth
-        require(tokenSales&lt;=(60000000 * (10 ** decimals)));
+        require(now<=saleEndDate);
+        require(msg.value >=40000000000000000); //minimum 0.04 eth
+        require(tokenSales<=(60000000 * (10 ** decimals)));
         uint256 tokens = (msg.value * (10 ** decimals)) / priceOfToken;
         uint256 bonusTokens = 0;
-        if(now &lt;1513555100000){
+        if(now <1513555100000){
             bonusTokens = (tokens * 40) /100; //17 dec 2017 % bonus presale
-        }else if(now &lt;1514760800000) {
+        }else if(now <1514760800000) {
             bonusTokens = (tokens * 35) /100; //31 dec 2017 % bonus
-        }else if(now &lt;1515369600000){
+        }else if(now <1515369600000){
             bonusTokens = (tokens * 30) /100; //jan 7 2018 bonus
-        }else if(now &lt;1515974400000){
+        }else if(now <1515974400000){
             bonusTokens = (tokens * 25) /100; //jan 14 2018 bonus
         }
-        else if(now &lt;1516578400000){
+        else if(now <1516578400000){
             bonusTokens = (tokens * 20) /100; //jan 21 2018 bonus
-        }else if(now &lt;1517011400000){
+        }else if(now <1517011400000){
               bonusTokens = (tokens * 15) /100; //jan 26 2018 bonus
         }
-        else if(now&gt;=icoStartDate){
-            if(now &lt;= (icoStartDate + 1 * 7 days) ){
+        else if(now>=icoStartDate){
+            if(now <= (icoStartDate + 1 * 7 days) ){
                 bonusTokens = (tokens * icoWeek1Bonus) /100; 
             }
-            else if(now &lt;= (icoStartDate + 2 * 7 days) ){
+            else if(now <= (icoStartDate + 2 * 7 days) ){
                 bonusTokens = (tokens * icoWeek2Bonus) /100; 
             }
-           else if(now &lt;= (icoStartDate + 3 * 7 days) ){
+           else if(now <= (icoStartDate + 3 * 7 days) ){
                 bonusTokens = (tokens * icoWeek3Bonus) /100; 
             }
-           else if(now &lt;= (icoStartDate + 4 * 7 days) ){
+           else if(now <= (icoStartDate + 4 * 7 days) ){
                 bonusTokens = (tokens * icoWeek4Bonus) /100; 
             }
             
@@ -310,10 +310,10 @@ contract Potentium is StandardToken, Mortal {
         TokenHold(msg.sender,tokens);//event to dispactc as token hold successfully
     }
     function distributeTokensAfterIcoByOwner()public onlyOwner{
-        for (uint i = 0; i &lt; allParticipants.length; i++) {
+        for (uint i = 0; i < allParticipants.length; i++) {
                     address userAdder=allParticipants[i];
                     var tokens = balancesHold[userAdder];
-                    if(tokens&gt;0){
+                    if(tokens>0){
                     allowed[owner][userAdder] += tokens;
                     transferFrom(owner, userAdder, tokens);
                     balancesHold[userAdder] = 0;
@@ -360,7 +360,7 @@ contract Potentium is StandardToken, Mortal {
     * Transfer entire balance to any account (by owner and admin only)
     **/
     function transferFundToAccount(address _accountByOwner) public onlyOwner {
-        require(amountRaisedInWei &gt; 0);
+        require(amountRaisedInWei > 0);
         _accountByOwner.transfer(amountRaisedInWei);
         amountRaisedInWei = 0;
     }
@@ -374,7 +374,7 @@ contract Potentium is StandardToken, Mortal {
     * Transfer part of balance to any account (by owner and admin only)
     **/
     function transferLimitedFundToAccount(address _accountByOwner, uint256 balanceToTransfer) public onlyOwner   {
-        require(amountRaisedInWei &gt; balanceToTransfer);
+        require(amountRaisedInWei > balanceToTransfer);
         _accountByOwner.transfer(balanceToTransfer);
         amountRaisedInWei -= balanceToTransfer;
     }

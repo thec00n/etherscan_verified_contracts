@@ -10,7 +10,7 @@ contract Ambi2Enabled {
     Ambi2 ambi2;
 
     modifier onlyRole(bytes32 _role) {
-        if (address(ambi2) != 0x0 &amp;&amp; ambi2.hasRole(this, _role, msg.sender)) {
+        if (address(ambi2) != 0x0 && ambi2.hasRole(this, _role, msg.sender)) {
             _;
         }
     }
@@ -33,7 +33,7 @@ contract Ambi2EnabledFull is Ambi2Enabled {
         if (address(ambi2) != 0x0) {
             return false;
         }
-        if (!_ambi2.claimFor(this, msg.sender) &amp;&amp; !_ambi2.isOwner(this, msg.sender)) {
+        if (!_ambi2.claimFor(this, msg.sender) && !_ambi2.isOwner(this, msg.sender)) {
             return false;
         }
 
@@ -48,13 +48,13 @@ contract AssetProxyInterface {
 
 contract DeviceReputation is Ambi2EnabledFull {
 
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) public reputationProblems;
+    mapping (address => mapping (bytes32 => bool)) public reputationProblems;
 
     event ReputationProblems(address device, string description);
     event ReputationClear(address device, string description);
 
     function setReputationProblems(address _device, string _description)
-        onlyRole(&#39;admin&#39;)
+        onlyRole('admin')
         returns(bool)
     {
         reputationProblems[_device][keccak256(_description)] = true;
@@ -63,7 +63,7 @@ contract DeviceReputation is Ambi2EnabledFull {
     }
 
     function reputationClear(address _device, string _description)
-        onlyRole(&#39;admin&#39;)
+        onlyRole('admin')
         returns(bool)
     {
         reputationProblems[_device][keccak256(_description)] = false;

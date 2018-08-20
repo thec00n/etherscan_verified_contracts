@@ -19,7 +19,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 \******************************************************************************/
 
@@ -31,7 +31,7 @@ contract RegBase
 // Constants
 //
 
-    bytes32 constant public VERSION = &quot;RegBase v0.2.1&quot;;
+    bytes32 constant public VERSION = "RegBase v0.2.1";
 
 //
 // State Variables
@@ -133,7 +133,7 @@ email:  o0ragman0o AT gmail.com
 This file is part of the SandalStraps framework
 
 Factories are a core but independant concept of the SandalStraps framework and 
-can be used to create SandalStraps compliant &#39;product&#39; contracts from embed
+can be used to create SandalStraps compliant 'product' contracts from embed
 bytecode.
 
 The abstract Factory contract is to be used as a SandalStraps compliant base for
@@ -149,13 +149,13 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 \******************************************************************************/
 
 pragma solidity ^0.4.10;
 
-// import &quot;https://github.com/o0ragman0o/SandalStraps/contracts/RegBase.sol&quot;;
+// import "https://github.com/o0ragman0o/SandalStraps/contracts/RegBase.sol";
 
 contract Factory is RegBase
 {
@@ -164,13 +164,13 @@ contract Factory is RegBase
 //
 
     // Deriving factories should have `bytes32 constant public regName` being
-    // the product&#39;s contract name, e.g for products &quot;Foo&quot;:
-    // bytes32 constant public regName = &quot;Foo&quot;;
+    // the product's contract name, e.g for products "Foo":
+    // bytes32 constant public regName = "Foo";
 
     // Deriving factories should have `bytes32 constant public VERSION` being
-    // the product&#39;s contract name appended with &#39;Factory` and the version
-    // of the product, e.g for products &quot;Foo&quot;:
-    // bytes32 constant public VERSION &quot;FooFactory 0.0.1&quot;;
+    // the product's contract name appended with 'Factory` and the version
+    // of the product, e.g for products "Foo":
+    // bytes32 constant public VERSION "FooFactory 0.0.1";
 
 //
 // State Variables
@@ -264,7 +264,7 @@ constructor, then a `init()` function can be used instead post deployment.
 
     contract Foo is RegBase
     {
-        bytes32 constant public VERSION = &quot;Foo v0.0.1&quot;;
+        bytes32 constant public VERSION = "Foo v0.0.1";
         uint val;
         uint8 public __initFuse = 1;
         
@@ -317,12 +317,12 @@ The Trustee has unilateral powers to:
 
 Holders have the power to:
     - vote for a preferred Trustee
-    - veto a transaction if owned or owns &gt; 10% of tokens
+    - veto a transaction if owned or owns > 10% of tokens
     - purchase tokens offer with ether.
     - redeem tokens for ether at the token price or a price proportional to
       the fund.
     - withdraw their balance of ether.
-    - Cause a panic state in the contract if holds &gt; 10% of tokens
+    - Cause a panic state in the contract if holds > 10% of tokens
 
 This contract uses integer tokens so ERC20 `decimalPlaces` is 0.
 
@@ -339,7 +339,7 @@ Ropsten: 0.3.4-beta-test1 @ 0xc446575f7ed13f7b4b849f70ffa9f209a64db742
 
 */
 
-// import &quot;https://github.com/o0ragman0o/SandalStraps/contracts/Factory.sol&quot;;
+// import "https://github.com/o0ragman0o/SandalStraps/contracts/Factory.sol";
 
 pragma solidity ^0.4.10;
 
@@ -358,7 +358,7 @@ contract BaktInterface
         uint etherBalance;
         uint votes;
         uint offerAmount;
-        mapping (address =&gt; uint) allowances;
+        mapping (address => uint) allowances;
     }
 
     struct TX {
@@ -377,7 +377,7 @@ contract BaktInterface
     // overflows in 10e17 fixed point     
     uint constant MAXTOKENS = 2**128 - 10**18;
     uint constant MAXETHER = 2**128;
-    uint constant BLOCKPCNT = 10; // 10% holding required to block TX&#39;s
+    uint constant BLOCKPCNT = 10; // 10% holding required to block TX's
     uint constant TOKENPRICE = 1000000000000000;
     uint8 public constant decimalPlaces = 15;
 
@@ -437,7 +437,7 @@ contract BaktInterface
 
     /// @param address The address of a holder.
     /// @return Holder data cast from struct Holder to an array
-    mapping (address =&gt; Holder) public holders;
+    mapping (address => Holder) public holders;
 
     /// @param uint8 The index of a holder
     /// @return An address of a holder
@@ -530,7 +530,7 @@ contract BaktInterface
     function balanceOf(address _addr) constant returns (uint);
 
     /// @notice Transfer `_amount` of tokens to `_to`
-    /// @param _to the recipient holder&#39;s address
+    /// @param _to the recipient holder's address
     /// @param _amount the number of tokens to transfer
     /// @return success state
     /// @dev `_to` must be an existing holder
@@ -538,7 +538,7 @@ contract BaktInterface
 
     /// @notice Transfer `_amount` of tokens from `_from` to `_to`
     /// @param _from The holder address from which to take tokens
-    /// @param _to the recipient holder&#39;s address
+    /// @param _to the recipient holder's address
     /// @param _amount the number of tokens to transfer
     /// @return success state
     /// @dev `_from` and `_to` must be existing holders
@@ -608,10 +608,10 @@ contract BaktInterface
     function getHolders() constant returns(address[256]);
 
     /// @param _addr The address of a holder
-    /// @return Returns the holder&#39;s withdrawable balance of ether
+    /// @return Returns the holder's withdrawable balance of ether
     function etherBalanceOf(address _addr) constant returns (uint);
 
-    /// @notice Initiate a withdrawal of the holder&#39;s `etherBalance`
+    /// @notice Initiate a withdrawal of the holder's `etherBalance`
     /// Follow up with sendPending() once the timelock has expired
     function withdraw() returns(uint8);
 
@@ -628,7 +628,7 @@ contract BaktInterface
     /// @return success state
     /// @dev The amount of tokens created is:
     ///     tokens = floor((`etherBalance` + `msg.value`)/`tokenPrice`)
-    ///     Any remainder of ether is credited to the holder&#39;s `etherBalance`
+    ///     Any remainder of ether is credited to the holder's `etherBalance`
     function purchase() payable returns (bool);
 
     /// @notice Redeem `_amount` tokens back to the contract
@@ -649,7 +649,7 @@ contract BaktInterface
 
 contract Bakt is BaktInterface
 {
-    bytes32 constant public VERSION = &quot;Bakt 0.3.4-beta&quot;;
+    bytes32 constant public VERSION = "Bakt 0.3.4-beta";
 
 //
 // Bakt Functions
@@ -669,8 +669,8 @@ contract Bakt is BaktInterface
     function()
         payable
     {
-        require(msg.value &gt; 0 &amp;&amp;
-            msg.value + this.balance &lt; MAXETHER &amp;&amp;
+        require(msg.value > 0 &&
+            msg.value + this.balance < MAXETHER &&
             acceptingPayments);
         Deposit(msg.value);
     }
@@ -683,7 +683,7 @@ contract Bakt is BaktInterface
         canEnter
         onlyTrustee
     {
-        require(totalSupply == 0 &amp;&amp; committedEther == 0);
+        require(totalSupply == 0 && committedEther == 0);
         
         delete holders[trustee];
         selfdestruct(msg.sender);
@@ -767,7 +767,7 @@ contract Bakt is BaktInterface
         isHolder(_to)
         returns (bool)
     {
-        require(_amount &lt;= holders[_from].allowances[msg.sender]);
+        require(_amount <= holders[_from].allowances[msg.sender]);
         
         Holder from = holders[_from];
         Holder to = holders[_to];
@@ -834,7 +834,7 @@ contract Bakt is BaktInterface
         returns (bool)
     {
         // A blocking holder requires at least 10% of tokens
-        require(holders[msg.sender].tokenBalance &gt;= totalSupply / 10);
+        require(holders[msg.sender].tokenBalance >= totalSupply / 10);
         
         panicked = true;
         timeToCalm = uint40(now + PANICPERIOD);
@@ -848,7 +848,7 @@ contract Bakt is BaktInterface
         isHolder(msg.sender)
         returns (bool)
     {
-        require(uint40(now) &gt; timeToCalm &amp;&amp; panicked);
+        require(uint40(now) > timeToCalm && panicked);
         
         panicked = false;
         Calm();
@@ -887,7 +887,7 @@ contract Bakt is BaktInterface
         if (ptxTail == ptxHead) return false; // TX queue is empty
         
         TX memory tx = pendingTxs[ptxTail];
-        if(now &lt; tx.timeLock) return false;
+        if(now < tx.timeLock) return false;
         
         // Have memory cached the TX so deleting store now to prevent any chance
         // of double spends.
@@ -927,7 +927,7 @@ contract Bakt is BaktInterface
         
         // A blocking holder requires at least 10% of tokens or is trustee or
         // is from own account
-        require(holders[msg.sender].tokenBalance &gt;= totalSupply / BLOCKPCNT ||
+        require(holders[msg.sender].tokenBalance >= totalSupply / BLOCKPCNT ||
             msg.sender == pendingTxs[ptxTail].from ||
             msg.sender == trustee);
         
@@ -948,7 +948,7 @@ contract Bakt is BaktInterface
         onlyTrustee
         returns (uint8)
     {
-        require(_value &lt;= fundBalance());
+        require(_value <= fundBalance());
 
         committedEther += _value;
         return timeLockSend(address(this), _to, _value, _data);
@@ -961,7 +961,7 @@ contract Bakt is BaktInterface
         onlyTrustee
         returns (bool)
     {
-        require(_value &lt;= fundBalance());
+        require(_value <= fundBalance());
         // Calculates dividend as percent of current `totalSupply` in 10e17
         // fixed point math
         dividendPoints += 10**18 * _value / totalSupply;
@@ -1024,7 +1024,7 @@ contract Bakt is BaktInterface
         returns (bool)
     {
         // prevent overflows in total supply
-        assert(totalSupply + _amount &lt; MAXTOKENS);
+        assert(totalSupply + _amount < MAXTOKENS);
         
         join(_addr);
         Holder holder = holders[_addr];
@@ -1060,7 +1060,7 @@ contract Bakt is BaktInterface
         return holderIndex;
     }
 
-    // Returns the holder&#39;s withdrawable balance of ether
+    // Returns the holder's withdrawable balance of ether
     function etherBalanceOf(address _addr)
         public
         constant
@@ -1079,7 +1079,7 @@ contract Bakt is BaktInterface
         Holder holder = holders[msg.sender];
         updateDividendsFor(holder);
         
-        pTxId_ = timeLockSend(msg.sender, msg.sender, holder.etherBalance, &quot;&quot;);
+        pTxId_ = timeLockSend(msg.sender, msg.sender, holder.etherBalance, "");
         holder.etherBalance = 0;
     }
 
@@ -1102,7 +1102,7 @@ contract Bakt is BaktInterface
         
         delete holderIndex[holder.id];
         delete holders[_addr];
-        // NB can&#39;t garbage collect holder.allowances mapping
+        // NB can't garbage collect holder.allowances mapping
         return (true);
     }
 
@@ -1118,9 +1118,9 @@ contract Bakt is BaktInterface
     {
         Holder holder = holders[msg.sender];
         // offer must exist
-        require(holder.offerAmount &gt; 0);
+        require(holder.offerAmount > 0);
         // offer not expired
-        require(holder.offerExpiry &gt; now);
+        require(holder.offerExpiry > now);
         // correct payment has been sent
         require(msg.value == holder.offerAmount * TOKENPRICE);
         
@@ -1152,7 +1152,7 @@ contract Bakt is BaktInterface
         uint eth;
         
         Holder holder = holders[msg.sender];
-        require(_amount &lt;= holder.tokenBalance);
+        require(_amount <= holder.tokenBalance);
         
         updateDividendsFor(holder);
         
@@ -1161,12 +1161,12 @@ contract Bakt is BaktInterface
         redeemPrice = fundBalance() / totalSupply;
         // prevent redeeming above token price which would allow an arbitrage
         // attack on the fund balance
-        redeemPrice = redeemPrice &lt; TOKENPRICE ? redeemPrice : TOKENPRICE;
+        redeemPrice = redeemPrice < TOKENPRICE ? redeemPrice : TOKENPRICE;
         
         eth = _amount * redeemPrice;
         
         // will throw if either `amount` or `redeemPRice` are 0
-        require(eth &gt; 0);
+        require(eth > 0);
         
         totalSupply -= _amount;
         holder.tokenBalance -= _amount;
@@ -1240,7 +1240,7 @@ contract Bakt is BaktInterface
             addr = holderIndex[i];
             if (addr != 0x0) {
                 votes = holders[addr].votes;
-                if (votes &gt; max) {
+                if (votes > max) {
                     max = votes;
                     winner = i;
                 }
@@ -1285,7 +1285,7 @@ contract Bakt is BaktInterface
         _;
     }
 
-    // Blocks if &#39;_addr&#39; is not a holder
+    // Blocks if '_addr' is not a holder
     modifier isHolder(address _addr) {
         require(0 != holders[_addr].id);
         _;
@@ -1310,8 +1310,8 @@ contract BaktFactory is Factory
 
 /* Constants */
 
-    bytes32 constant public regName = &quot;Bakt&quot;;
-    bytes32 constant public VERSION = &quot;Bakt Factory v0.3.4-beta&quot;;
+    bytes32 constant public regName = "Bakt";
+    bytes32 constant public VERSION = "Bakt Factory v0.3.4-beta";
 
 /* Constructor Destructor*/
 

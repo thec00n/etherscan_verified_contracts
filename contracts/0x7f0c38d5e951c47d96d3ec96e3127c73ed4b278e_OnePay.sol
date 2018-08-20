@@ -27,18 +27,18 @@ interface ERC20 {
 contract OnePay is ERC20 {
 
     // Token basic information
-    string public constant name = &quot;OnePay&quot;;
-    string public constant symbol = &quot;1PAY&quot;;
+    string public constant name = "OnePay";
+    string public constant symbol = "1PAY";
     uint256 public constant decimals = 18;
 
     // Director address
     address public director;
 
     // Balances for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     // Public sale control
     bool public saleClosed;
@@ -108,20 +108,20 @@ contract OnePay is ERC20 {
         require(!saleClosed);
 
         // Minimum amount is 0.02 eth
-        require(msg.value &gt;= 0.02 ether);
+        require(msg.value >= 0.02 ether);
 
         // If 1500 eth is received switch the sale price
-        if (totalReceived &gt;= 1500 ether) {
+        if (totalReceived >= 1500 ether) {
             currentSalePhase = SALE;
         }
 
         uint256 c = mul(msg.value, currentSalePhase);
 
-        // Calculate tokens to mint based on the &quot;current sale phase&quot;
+        // Calculate tokens to mint based on the "current sale phase"
         uint256 amount = c;
 
-        // Make sure that mintedCoins don&#39;t exceed the hardcap sale
-        require(mintedCoins + amount &lt;= hardCapSale);
+        // Make sure that mintedCoins don't exceed the hardcap sale
+        require(mintedCoins + amount <= hardCapSale);
 
         // Check for totalSupply max amount
         balances[msg.sender] += amount;
@@ -145,20 +145,20 @@ contract OnePay is ERC20 {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -169,7 +169,7 @@ contract OnePay is ERC20 {
     {
         amount = amount * 10 ** uint256(decimals);
 
-        require((totalSupply + amount) &lt;= tokenCap);
+        require((totalSupply + amount) <= tokenCap);
 
         balances[director] = amount;
 
@@ -249,11 +249,11 @@ contract OnePay is ERC20 {
     function transfer(address _to, uint256 _value) public returns (bool success) {
 
         // Make sure the sender has enough value in their account
-        require(balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
-        // Subtract value from sender&#39;s account
+        require(balances[msg.sender] >= _value && _value > 0);
+        // Subtract value from sender's account
         balances[msg.sender] = balances[msg.sender] - _value;
 
-        // Add value to receiver&#39;s account
+        // Add value to receiver's account
         balances[_to] = add(balances[_to], _value);
 
         // Log
@@ -278,7 +278,7 @@ contract OnePay is ERC20 {
       */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
     {
-        require(allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(allowed[_from][msg.sender] >= _value && balances[_from] >= _value && _value > 0);
         balances[_from] = balances[_from] - _value;
         balances[_to] = add(balances[_to], _value);
         allowed[_from][msg.sender] = sub(allowed[_from][msg.sender], _value);

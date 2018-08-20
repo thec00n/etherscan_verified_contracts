@@ -77,7 +77,7 @@ contract Token {
 /*
 You should inherit from StandardToken 
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 */
 
@@ -86,11 +86,11 @@ contract StandardToken is Token {
     uint256 constant MAX_UINT256 = 2**256 - 1;
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -99,24 +99,24 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
 
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         
-        require(_value &gt; 0);
+        require(_value > 0);
         
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         
         uint256 allowance = allowed[_from][msg.sender];
         // Check if the sender has enough     
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         // Add the same to the recipient
         balances[_to] += _value;
         // Subtract from the sender
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -137,7 +137,7 @@ contract StandardToken is Token {
      */
     function approve(address _spender, uint256 _value) returns (bool success) {
     		
-    		require(_value &gt; 0);
+    		require(_value > 0);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -148,8 +148,8 @@ contract StandardToken is Token {
     }
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -161,7 +161,7 @@ Imagine coins, currencies, shares, voting weight, etc.
 Machine-based, rapid creation of many tokens would not necessarily need these extra features or will be minted in other manners.
 
 1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol &amp; Name.
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
 3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
 
 .*/
@@ -174,13 +174,13 @@ contract ZigguratToken is admined, StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Ziggurat Token
     uint8 public decimals = 18;           //How many decimals to show. ie. 18 decimals is the strongly suggested default, avoid changing it
     string public symbol;                 //An identifier: eg ZIG
-    string public version = &quot;1.0&quot;;       //1 standard. Just an arbitrary versioning scheme.
+    string public version = "1.0";       //1 standard. Just an arbitrary versioning scheme.
     uint256 public totalMaxSupply = 5310000000 * 10 ** 17; // 531M Limit
     
     function ZigguratToken(
@@ -201,7 +201,7 @@ contract ZigguratToken is admined, StandardToken {
 
     function mintToken(address target, uint256 mintedAmount) onlyAdmin returns (bool success) {
          // Maximum supply set and minting would break the limit
-        require ((totalMaxSupply == 0) || ((totalMaxSupply != 0) &amp;&amp; (safeAdd (totalSupply, mintedAmount) &lt;= totalMaxSupply )));
+        require ((totalMaxSupply == 0) || ((totalMaxSupply != 0) && (safeAdd (totalSupply, mintedAmount) <= totalMaxSupply )));
 
         balances[target] = safeAdd(balances[target], mintedAmount);
         totalSupply = safeAdd(totalSupply, mintedAmount);
@@ -211,7 +211,7 @@ contract ZigguratToken is admined, StandardToken {
 	} 
 
     function safeAdd(uint a, uint b) internal returns (uint) {
-        require (a + b &gt;= a); 
+        require (a + b >= a); 
         return a + b;
     }
 
@@ -219,7 +219,7 @@ contract ZigguratToken is admined, StandardToken {
     //There is one caveat: the token balance of the provided party must be at least equal to the amount being subtracted from total supply.
 
     function decreaseSupply(uint _value, address _from) onlyAdmin returns (bool success) {
-    	  require(_value &gt; 0);
+    	  require(_value > 0);
         balances[_from] = safeSub(balances[_from], _value);
         totalSupply = safeSub(totalSupply, _value);  
         Transfer(_from, 0, _value);
@@ -227,7 +227,7 @@ contract ZigguratToken is admined, StandardToken {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        require (b &lt;= a); 
+        require (b <= a); 
         return a - b;
     }
 
@@ -242,14 +242,14 @@ contract ZigguratToken is admined, StandardToken {
      * @param _extraData some extra information to send to the approved contract
      */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
-    		require(_value &gt; 0);
+    		require(_value > 0);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed when one does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

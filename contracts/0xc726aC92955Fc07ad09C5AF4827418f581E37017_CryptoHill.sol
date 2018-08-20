@@ -30,13 +30,13 @@ contract CryptoHill {
     gameLength = 1 weeks;
 
     //Initial seed for the first challenge. This should always be in rotation afterward.
-    leaderHash = sha3(&quot;09F911029D74E35BD84156C5635688C0&quot;);
+    leaderHash = sha3("09F911029D74E35BD84156C5635688C0");
 
     //First leader is the creator of the contract
     leader = msg.sender;
 
     //The placeholder leader message
-    defaultLeaderMessage = &quot;If you&#39;re this weeks leader, you own this field. Write a message here.&quot;;
+    defaultLeaderMessage = "If you're this weeks leader, you own this field. Write a message here.";
     leaderMessage = defaultLeaderMessage;
     
     //This difficulty starts as easy as possible. Any XOR will be less, to start.
@@ -48,7 +48,7 @@ contract CryptoHill {
     //Counter for successful collisions this week.
     fallenLeaders = 0;
 
-    Begin(&quot;Collide the most bits of the leader&#39;s hash to replace the leader. Leader will win any bounty at the end of the week.&quot;);
+    Begin("Collide the most bits of the leader's hash to replace the leader. Leader will win any bounty at the end of the week.");
 
   }
   
@@ -67,13 +67,13 @@ contract CryptoHill {
   function checkDate() private returns (bool success) {
       
       //Are we one week beyond the last game? TODO change time for mainnet
-      if (block.timestamp &gt; (startingTime + gameLength)) {
+      if (block.timestamp > (startingTime + gameLength)) {
           
-          //If so, log winner. If the admin &quot;wins&quot;, it&#39;s because no one else won.
+          //If so, log winner. If the admin "wins", it's because no one else won.
           if(leader != admin){
-            Winner(&quot;Victory! Game will be reset to end in 1 week (in block time).&quot;, leader);
+            Winner("Victory! Game will be reset to end in 1 week (in block time).", leader);
             leader.send(this.balance);
-          }else NoWinner(&quot;No winner! Game will be reset to end in 1 week (in block time).&quot;);
+          }else NoWinner("No winner! Game will be reset to end in 1 week (in block time).");
 
           startingTime = block.timestamp;
 
@@ -98,10 +98,10 @@ contract CryptoHill {
             return false;
 
         //Check Three: Core gaming logic favoring collisions of MSB
-        if((challengeHash ^ leaderHash) &gt; difficulty)
+        if((challengeHash ^ leaderHash) > difficulty)
           return false;
 
-        //If player survived the checks, they&#39;ve overcome difficulty level and beat the leader.
+        //If player survived the checks, they've overcome difficulty level and beat the leader.
         //Update the difficulty. This makes the game progressively harder through the week.
         difficulty = (challengeHash ^ leaderHash);
         
@@ -115,18 +115,18 @@ contract CryptoHill {
         leaderHash = challengeHash;
         
         //Announce our new victor. Congratulations!    
-        Leader(&quot;New leader! This is their address, and the new hash to collide.&quot;, leader, leaderHash);
+        Leader("New leader! This is their address, and the new hash to collide.", leader, leaderHash);
         
-        //Keep track of how many new leaders we&#39;ve had this week.
+        //Keep track of how many new leaders we've had this week.
         fallenLeaders++;
         
         return true;
   }
   
   function challengeWorldRecord (bytes32 difficultyChallenge) private {
-      if(difficultyChallenge &lt; difficultyWorldRecord) {
+      if(difficultyChallenge < difficultyWorldRecord) {
         difficultyWorldRecord = difficultyChallenge;
-        WorldRecord(&quot;A record setting collision occcured!&quot;, difficultyWorldRecord, msg.sender);
+        WorldRecord("A record setting collision occcured!", difficultyWorldRecord, msg.sender);
       }
   }
   
@@ -158,7 +158,7 @@ contract CryptoHill {
 
   function kill(){
       if (msg.sender == admin){
-        GameOver(&quot;The Crypto Hill has ended.&quot;);
+        GameOver("The Crypto Hill has ended.");
         selfdestruct(admin);
       }
   }

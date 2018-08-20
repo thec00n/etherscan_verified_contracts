@@ -33,7 +33,7 @@ function confirmOwner() public {
 contract Limitedsale is miningrealmoney{
 
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -45,14 +45,14 @@ Transfer(this, owner, balanceOf[owner]);
 }
     
     function () payable {
-        require(balanceOf[this] &gt; 0);
+        require(balanceOf[this] > 0);
         uint256 tokens = 300 * msg.value/10000000000000000;
-        if (tokens &gt; balanceOf[this]) {
+        if (tokens > balanceOf[this]) {
             tokens = balanceOf[this];
             uint valueWei = tokens * 10000000000000000 / 300;
             msg.sender.transfer(msg.value - valueWei);
         }
-    require(tokens &gt; 0);
+    require(tokens > 0);
     balanceOf[msg.sender] += tokens;
     balanceOf[this] -= tokens;
     Transfer(this, msg.sender, tokens);
@@ -60,20 +60,20 @@ Transfer(this, owner, balanceOf[owner]);
 }
 
 contract DiXiEnergy is Limitedsale {
-    string public standart = &#39;Token 0.1&#39;;
-    string public name = &#39;DiXiEnergy&#39;;
-    string public symbol = &quot;DXE&quot;;
+    string public standart = 'Token 0.1';
+    string public name = 'DiXiEnergy';
+    string public symbol = "DXE";
     uint8 public decimals = 2;
 
     
      modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
   }
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) {
-    require(balanceOf[msg.sender] &gt;= _value);
+    require(balanceOf[msg.sender] >= _value);
      balanceOf[msg.sender] -= _value;
 balanceOf[_to] += _value;  
     Transfer(msg.sender, _to, _value);

@@ -2,8 +2,8 @@ pragma solidity ^0.4.11;
 
 contract Base {
 
-    function max(uint a, uint b) returns (uint) { return a &gt;= b ? a : b; }
-    function min(uint a, uint b) returns (uint) { return a &lt;= b ? a : b; }
+    function max(uint a, uint b) returns (uint) { return a >= b ? a : b; }
+    function min(uint a, uint b) returns (uint) { return a <= b ? a : b; }
 
     modifier only(address allowed) {
         if (msg.sender != allowed) throw;
@@ -18,7 +18,7 @@ contract Base {
         assembly {
             size := extcodesize(_addr)
         }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
     // *************************************************
@@ -37,7 +37,7 @@ contract Base {
     uint private bitlocks = 0;
     modifier noReentrancy(uint m) {
         var _locks = bitlocks;
-        if (_locks &amp; m &gt; 0) throw;
+        if (_locks & m > 0) throw;
         bitlocks |= m;
         _;
         bitlocks = _locks;
@@ -45,7 +45,7 @@ contract Base {
 
     modifier noAnyReentrancy {
         var _locks = bitlocks;
-        if (_locks &gt; 0) throw;
+        if (_locks > 0) throw;
         bitlocks = uint(-1);
         _;
         bitlocks = _locks;
@@ -86,7 +86,7 @@ contract ERC20 is Owned {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     function transfer(address _to, uint256 _value) isStartedOnly returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -95,7 +95,7 @@ contract ERC20 is Owned {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isStartedOnly returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -118,8 +118,8 @@ contract ERC20 is Owned {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public totalSupply;
     bool    public isStarted = false;
@@ -143,8 +143,8 @@ contract SubscriptionModule {
 
 contract SAN is Owned, ERC20 {
 
-    string public constant name     = &quot;SANtiment TEST token&quot;;
-    string public constant symbol   = &quot;SAN.TEST.MAX.3&quot;;
+    string public constant name     = "SANtiment TEST token";
+    string public constant symbol   = "SAN.TEST.MAX.3";
     uint8  public constant decimals = 15;
 
     address CROWDSALE_MINTER = 0xe86b6cD49Bcf43F94E3566CfAF5e0d136e3cF8fD;
@@ -161,7 +161,7 @@ contract SAN is Owned, ERC20 {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ethers
+    // Don't accept ethers
     // ------------------------------------------------------------------------
     function () {
         throw;
@@ -184,14 +184,14 @@ contract SAN is Owned, ERC20 {
     external
     only(owner) {
         SUBSCRIPTION_MODULE = subModule;
-        if (address(subModule) &gt; 0) subModule.attachToken(this);
+        if (address(subModule) > 0) subModule.attachToken(this);
     }
 
-    ///@notice set platform fee denominated in 1/10000 of SAN token. Thus &quot;1&quot; means 0.01% of SAN token.
+    ///@notice set platform fee denominated in 1/10000 of SAN token. Thus "1" means 0.01% of SAN token.
     function setPlatformFeePer10000(uint newFee)
     external
     only(owner) {
-        require (newFee &lt;= 10000); //formally maximum fee is 100% (completely insane but technically possible)
+        require (newFee <= 10000); //formally maximum fee is 100% (completely insane but technically possible)
         PLATFORM_FEE_PER_10000 = newFee;
     }
 
@@ -212,7 +212,7 @@ contract SAN is Owned, ERC20 {
     public
     onlyTrusted
     returns(bool success) {
-        success = _from != msg_sender &amp;&amp; allowed[_from][msg_sender] &gt;= _value;
+        success = _from != msg_sender && allowed[_from][msg_sender] >= _value;
         if (!success) {
             Payment(_from, _to, _value, _fee(_value), msg_sender, PaymentStatus.APPROVAL_ERROR, 0);
         } else {
@@ -231,8 +231,8 @@ contract SAN is Owned, ERC20 {
     onlyTrusted
     returns (bool success) {
         var fee = _fee(_value);
-        assert (fee &lt;= _value); //internal sanity check
-        if (balances[_from] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        assert (fee <= _value); //internal sanity check
+        if (balances[_from] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             balances[_to] += _value - fee;
             balances[beneficiary] += fee;
@@ -264,7 +264,7 @@ contract SAN is Owned, ERC20 {
     public
     onlyTrusted
     returns (bool success) {
-        if (balances[owner] &gt;= amount) {
+        if (balances[owner] >= amount) {
             balances[owner] -= amount;
             totalOnDeposit += amount;
             totalInCirculation -= amount;

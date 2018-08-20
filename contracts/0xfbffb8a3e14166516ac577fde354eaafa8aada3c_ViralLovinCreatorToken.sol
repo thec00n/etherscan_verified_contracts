@@ -1,7 +1,7 @@
 pragma solidity ^0.4.20; // solhint-disable-line
 
 /// @title A standard interface for non-fungible tokens.
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="abcfcedfceebcad3c2c4c6d1cec585c8c4">[email&#160;protected]</a>&gt;
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="abcfcedfceebcad3c2c4c6d1cec585c8c4">[email protected]</a>>
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -18,7 +18,7 @@ contract ERC721 {
 }
 
 /// @title ViralLo.vin, Creator token smart contract
-/// @author Sam Morris &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cf4f5dceffdf1b2eaf5eefdf0f3b2eaf5f2">[email&#160;protected]</a>&gt;
+/// @author Sam Morris <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cf4f5dceffdf1b2eaf5eefdf0f3b2eaf5f2">[email protected]</a>>
 contract ViralLovinCreatorToken is ERC721 {
 
   /*** EVENTS ***/
@@ -49,8 +49,8 @@ contract ViralLovinCreatorToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;ViralLovin Creator Token&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CREATOR&quot;; // solhint-disable-line
+  string public constant NAME = "ViralLovin Creator Token"; // solhint-disable-line
+  string public constant SYMBOL = "CREATOR"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
 
@@ -58,19 +58,19 @@ contract ViralLovinCreatorToken is ERC721 {
 
   /// @dev A mapping from Creator IDs to the address that owns them. 
   /// All Creators have some valid owner address.
-  mapping (uint256 =&gt; address) public creatorIndexToOwner;
+  mapping (uint256 => address) public creatorIndexToOwner;
 
   /// @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from Creator IDs to an address that has been approved to call
   ///  transferFrom(). Each Creator can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public creatorIndexToApproved;
+  mapping (uint256 => address) public creatorIndexToApproved;
 
   // @dev A mapping from creator IDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private creatorIndexToPrice;
+  mapping (uint256 => uint256) private creatorIndexToPrice;
 
   // The addresses that can execute actions within each roles.
   address public ceoAddress;
@@ -148,7 +148,7 @@ contract ViralLovinCreatorToken is ERC721 {
       creatorOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -207,7 +207,7 @@ contract ViralLovinCreatorToken is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     // Transfer contract to new owner
     _transfer(oldOwner, newOwner, _tokenId);
@@ -280,7 +280,7 @@ contract ViralLovinCreatorToken is ERC721 {
       uint256 totalCreators = totalSupply();
       uint256 resultIndex = 0;
       uint256 creatorId;
-      for (creatorId = 0; creatorId &lt;= totalCreators; creatorId++) {
+      for (creatorId = 0; creatorId <= totalCreators; creatorId++) {
         if (creatorIndexToOwner[creatorId] == _owner) {
           result[resultIndex] = creatorId;
           resultIndex++;
@@ -381,7 +381,7 @@ contract ViralLovinCreatorToken is ERC721 {
     // transfer ownership
     creatorIndexToOwner[_tokenId] = _to;
 
-    // When creating new creators _from is 0x0, we can&#39;t account that address.
+    // When creating new creators _from is 0x0, we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership

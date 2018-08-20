@@ -2,18 +2,18 @@ pragma solidity ^0.4.16;
 
 contract ShpingCoin {
 
-    string public name = &quot;Shping Coin&quot;; 
-    string public symbol = &quot;SHPING&quot;;
+    string public name = "Shping Coin"; 
+    string public symbol = "SHPING";
     uint8 public decimals = 18;
     uint256 public coinsaleDeadline = 1521845940; // 23/03/2018, 22:59:00 GMT | 23/03/2018, 23:59:00 CET | Saturday, 24 March 2018 9:59:00 AM GMT+11:00
 
     uint256 public totalSupply;
-    mapping(address =&gt; uint256) balances; 
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed; 
+    mapping(address => uint256) balances; 
+    mapping(address => mapping (address => uint256)) allowed; 
 
-    mapping(address =&gt; mapping(string =&gt; bool)) platinumUsers;
-    mapping(address =&gt; mapping(string =&gt; uint256)) campaigns; // Requests for a campaign activation 
-    mapping(address =&gt; uint256) budgets; // Account budget for rewards campaigns
+    mapping(address => mapping(string => bool)) platinumUsers;
+    mapping(address => mapping(string => uint256)) campaigns; // Requests for a campaign activation 
+    mapping(address => uint256) budgets; // Account budget for rewards campaigns
 
     address public owner;
     address public operator;
@@ -38,8 +38,8 @@ contract ShpingCoin {
     function changeOperator(address newOperator) public onlyOwner {
         require(newOperator != address(0));
         require(newOperator != operator);
-        require(balances[newOperator]+balances[operator] &gt;= balances[newOperator]);
-        require(budgets[newOperator]+budgets[operator] &gt;= budgets[newOperator]);
+        require(balances[newOperator]+balances[operator] >= balances[newOperator]);
+        require(budgets[newOperator]+budgets[operator] >= budgets[newOperator]);
 
         if (operator != owner) {
             balances[newOperator] += balances[operator];
@@ -69,8 +69,8 @@ contract ShpingCoin {
     function activateCampaign(string campaign, uint256 budget) public returns (bool) {
         require(campaigns[msg.sender][campaign] == 0);
         require(budget != 0);
-        require(balances[msg.sender] &gt;= budgets[msg.sender]);
-        require(balances[msg.sender] - budgets[msg.sender] &gt;= budget);
+        require(balances[msg.sender] >= budgets[msg.sender]);
+        require(balances[msg.sender] - budgets[msg.sender] >= budget);
         campaigns[msg.sender][campaign] = budget;
         Activate(msg.sender, budget, campaign);
         return true;
@@ -90,9 +90,9 @@ contract ShpingCoin {
     function setBudget(address account, string campaign) public onlyOperator returns (bool) {
         require(account != address(0));
         require(campaigns[account][campaign] != 0);
-        require(balances[account] &gt;= budgets[account]);
-        require(balances[account] - budgets[account] &gt;= campaigns[account][campaign]);
-        require(budgets[account] + campaigns[account][campaign] &gt; budgets[account]);
+        require(balances[account] >= budgets[account]);
+        require(balances[account] - budgets[account] >= campaigns[account][campaign]);
+        require(budgets[account] + campaigns[account][campaign] > budgets[account]);
 
         budgets[account] += campaigns[account][campaign];
         campaigns[account][campaign] = 0;
@@ -103,9 +103,9 @@ contract ShpingCoin {
     function releaseBudget(address account, uint256 budget) public onlyOperator returns (bool) {
         require(account != address(0));
         require(budget != 0);
-        require(budgets[account] &gt;= budget);
-        require(balances[account] &gt;= budget);
-        require(balances[operator] + budget &gt; balances[operator]);
+        require(budgets[account] >= budget);
+        require(balances[account] >= budget);
+        require(balances[operator] + budget > balances[operator]);
 
         budgets[account] -= budget;
         balances[account] -= budget;
@@ -132,9 +132,9 @@ contract ShpingCoin {
     }
 
     function transfer(address to, uint256 value) public returns (bool) {
-        require(msg.sender == owner || msg.sender == operator || now &gt; coinsaleDeadline);
-        require(balances[msg.sender] - budgets[msg.sender] &gt;= value);
-        require(balances[to] + value &gt;= balances[to]);
+        require(msg.sender == owner || msg.sender == operator || now > coinsaleDeadline);
+        require(balances[msg.sender] - budgets[msg.sender] >= value);
+        require(balances[to] + value >= balances[to]);
         
         balances[msg.sender] -= value;
         balances[to] += value;
@@ -143,10 +143,10 @@ contract ShpingCoin {
     }
 
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        require(from == owner || from == operator || msg.sender == owner || msg.sender == operator || now &gt; coinsaleDeadline);
-        require(balances[from] - budgets[from] &gt;= value);
-        require(allowed[from][msg.sender] &gt;= value);
-        require(balances[to] + value &gt;= balances[to]);
+        require(from == owner || from == operator || msg.sender == owner || msg.sender == operator || now > coinsaleDeadline);
+        require(balances[from] - budgets[from] >= value);
+        require(allowed[from][msg.sender] >= value);
+        require(balances[to] + value >= balances[to]);
 
         balances[from] -= value;
         allowed[from][msg.sender] -= value;

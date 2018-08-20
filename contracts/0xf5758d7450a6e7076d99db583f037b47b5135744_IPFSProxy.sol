@@ -53,13 +53,13 @@ contract Multimember {
 
     // METHODS
 
-    // constructor is given number of sigs required to do protected &quot;onlymanymembers&quot; transactions
+    // constructor is given number of sigs required to do protected "onlymanymembers" transactions
     // as well as the selection of addresses capable of confirming them.
     function Multimember(address[] _members, uint _required) public {
         m_numMembers = _members.length + 1;
         m_members[1] = uint(msg.sender);
         m_memberIndex[uint(msg.sender)] = 1;
-        for (uint i = 0; i &lt; _members.length; ++i) {
+        for (uint i = 0; i < _members.length; ++i) {
             m_members[2 + i] = uint(_members[i]);
             m_memberIndex[uint(_members[i])] = 2 + i;
         }
@@ -69,12 +69,12 @@ contract Multimember {
     // Revokes a prior confirmation of the given operation
     function revoke(bytes32 _operation) external {
         uint memberIndex = m_memberIndex[uint(msg.sender)];
-        // make sure they&#39;re an member
+        // make sure they're an member
         if (memberIndex == 0) 
             return;
         uint memberIndexBit = 2**memberIndex;
         var pending = m_pending[_operation];
-        if (pending.membersDone &amp; memberIndexBit &gt; 0) {
+        if (pending.membersDone & memberIndexBit > 0) {
             pending.yetNeeded++;
             pending.membersDone -= memberIndexBit;
             Revoke(msg.sender, _operation);
@@ -101,9 +101,9 @@ contract Multimember {
             return;
 
         clearPending();
-        if (m_numMembers &gt;= MAXMEMBERS)
+        if (m_numMembers >= MAXMEMBERS)
             reorganizeMembers();
-        if (m_numMembers &gt;= MAXMEMBERS)
+        if (m_numMembers >= MAXMEMBERS)
             return;
         m_numMembers++;
         m_members[m_numMembers] = uint(_member);
@@ -115,7 +115,7 @@ contract Multimember {
         uint memberIndex = m_memberIndex[uint(_member)];
         if (memberIndex == 0) 
             return;
-        if (m_required &gt; m_numMembers - 1) 
+        if (m_required > m_numMembers - 1) 
             return;
 
         m_members[memberIndex] = 0;
@@ -126,7 +126,7 @@ contract Multimember {
     }
     
     function changeRequirement(uint _newRequired) onlymanymembers(keccak256(_newRequired)) external {
-        if (_newRequired &gt; m_numMembers) 
+        if (_newRequired > m_numMembers) 
             return;
         m_required = _newRequired;
         clearPending();
@@ -134,20 +134,20 @@ contract Multimember {
     }
     
     function isMember(address _addr) public constant returns (bool) { 
-        return m_memberIndex[uint(_addr)] &gt; 0;
+        return m_memberIndex[uint(_addr)] > 0;
     }
     
     function hasConfirmed(bytes32 _operation, address _member) external constant returns (bool) {
         var pending = m_pending[_operation];
         uint memberIndex = m_memberIndex[uint(_member)];
 
-        // make sure they&#39;re an member
+        // make sure they're an member
         if (memberIndex == 0) 
             return false;
 
         // determine the bit to set for this member.
         uint memberIndexBit = 2**memberIndex;
-        return !(pending.membersDone &amp; memberIndexBit == 0);
+        return !(pending.membersDone & memberIndexBit == 0);
     }
     
     // INTERNAL METHODS
@@ -155,12 +155,12 @@ contract Multimember {
     function confirmAndCheck(bytes32 _operation) internal returns (bool) {
         // determine what index the present sender is:
         uint memberIndex = m_memberIndex[uint(msg.sender)];
-        // make sure they&#39;re an member
+        // make sure they're an member
         if (memberIndex == 0) 
             return;
 
         var pending = m_pending[_operation];
-        // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+        // if we're not yet working on this operation, switch over and reset the confirmation status.
         if (pending.yetNeeded == 0) {
             // reset count of confirmations needed.
             pending.yetNeeded = m_required;
@@ -171,11 +171,11 @@ contract Multimember {
         }
         // determine the bit to set for this member.
         uint memberIndexBit = 2**memberIndex;
-        // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-        if (pending.membersDone &amp; memberIndexBit == 0) {
+        // make sure we (the message sender) haven't confirmed this operation previously.
+        if (pending.membersDone & memberIndexBit == 0) {
             Confirmation(msg.sender, _operation);
             // ok - check if count is enough to go ahead.
-            if (pending.yetNeeded &lt;= 1) {
+            if (pending.yetNeeded <= 1) {
                 // enough confirmations: reset and run interior.
                 delete m_pendingIndex[m_pending[_operation].index];
                 delete m_pending[_operation];
@@ -190,16 +190,16 @@ contract Multimember {
 
     function reorganizeMembers() private returns (bool) {
         uint free = 1;
-        while (free &lt; m_numMembers) {
-            while (free &lt; m_numMembers &amp;&amp; m_members[free] != 0) {
+        while (free < m_numMembers) {
+            while (free < m_numMembers && m_members[free] != 0) {
                 free++;
             } 
 
-            while (m_numMembers &gt; 1 &amp;&amp; m_members[m_numMembers] == 0) {
+            while (m_numMembers > 1 && m_members[m_numMembers] == 0) {
                 m_numMembers--;
             } 
 
-            if (free &lt; m_numMembers &amp;&amp; m_members[m_numMembers] != 0 &amp;&amp; m_members[free] == 0) {
+            if (free < m_numMembers && m_members[m_numMembers] != 0 && m_members[free] == 0) {
                 m_members[free] = m_members[m_numMembers];
                 m_memberIndex[m_members[free]] = free;
                 m_members[m_numMembers] = 0;
@@ -209,7 +209,7 @@ contract Multimember {
     
     function clearPending() internal {
         uint length = m_pendingIndex.length;
-        for (uint i = 0; i &lt; length; ++i) {
+        for (uint i = 0; i < length; ++i) {
             if (m_pendingIndex[i] != 0) {
                 delete m_pending[m_pendingIndex[i]];
             }
@@ -228,9 +228,9 @@ contract Multimember {
     uint[256] m_members;
     uint constant MAXMEMBERS = 250;
     // index on the list of members to allow reverse lookup
-    mapping(uint =&gt; uint) m_memberIndex;
+    mapping(uint => uint) m_memberIndex;
     // the ongoing operations.
-    mapping(bytes32 =&gt; PendingState) m_pending;
+    mapping(bytes32 => PendingState) m_pending;
     bytes32[] m_pendingIndex;
 }
 
@@ -248,7 +248,7 @@ contract IPFSProxy is IPFSEvents, Multimember {
     */
     function IPFSProxy(address[] _members,uint _required, uint _persistlimit) Multimember (_members, _required) public {
         setTotalPersistLimit(_persistlimit);
-        for (uint i = 0; i &lt; _members.length; ++i) {
+        for (uint i = 0; i < _members.length; ++i) {
             MemberAdded(_members[i]);
         }
         addContract(this,block.number);

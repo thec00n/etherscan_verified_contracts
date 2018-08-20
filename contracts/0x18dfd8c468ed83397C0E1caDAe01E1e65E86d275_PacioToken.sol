@@ -7,7 +7,7 @@ Pacio Core Ltd https://www.pacio.io
 2017.08.22 Logging revised
 
 Owned is a Base Contract for contracts that are:
-• &quot;owned&quot;
+• "owned"
 • can have their owner changed by a call to ChangeOwner() by the owner
 • can be paused  from an active state by a call to Pause() by the owner
 • can be resumed from a paused state by a call to Resume() by the owner
@@ -55,7 +55,7 @@ contract Owned {
   // Change owner
   function ChangeOwner(address vNewOwnerA) IsOwner {
     require(vNewOwnerA != address(0)
-         &amp;&amp; vNewOwnerA != ownerA);
+         && vNewOwnerA != ownerA);
     LogOwnerChange(ownerA, vNewOwnerA);
     ownerA = vNewOwnerA;
   }
@@ -81,11 +81,11 @@ contract Owned {
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 contract DSMath {
@@ -94,11 +94,11 @@ contract DSMath {
   */
 
   function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-    assert((z = x + y) &gt;= x);
+    assert((z = x + y) >= x);
   }
 
   function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-    assert((z = x - y) &lt;= x);
+    assert((z = x - y) <= x);
   }
 
   function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -106,7 +106,7 @@ contract DSMath {
     assert(x == 0 || z / x == y);
   }
 
-  // div isn&#39;t needed. Only error case is div by zero and Solidity throws on that
+  // div isn't needed. Only error case is div by zero and Solidity throws on that
   // function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
   //   z = x / y;
   // }
@@ -114,7 +114,7 @@ contract DSMath {
   // subMaxZero(x, y)
   // Pacio addition to avoid throwing if a subtraction goes below zero and return 0 in that case.
   function subMaxZero(uint256 x, uint256 y) constant internal returns (uint256 z) {
-    if (y &gt; x)
+    if (y > x)
       z = 0;
     else
       z = x - y;
@@ -138,8 +138,8 @@ contract ERC20Token is Owned, DSMath {
   uint public totalSupply;     // Total tokens minted
   bool public saleInProgressB; // when true stops transfers
 
-  mapping(address =&gt; uint) internal iTokensOwnedM;                 // Tokens owned by an account
-  mapping(address =&gt; mapping (address =&gt; uint)) private pAllowedM; // Owner of account approves the transfer of an amount to another account
+  mapping(address => uint) internal iTokensOwnedM;                 // Tokens owned by an account
+  mapping(address => mapping (address => uint)) private pAllowedM; // Owner of account approves the transfer of an amount to another account
 
   // ERC20 Events
   // ============
@@ -162,7 +162,7 @@ contract ERC20Token is Owned, DSMath {
   }
 
   // allowance()
-  // Returns the number of tokens approved by guy that can be transferred (&quot;spent&quot;) by spender
+  // Returns the number of tokens approved by guy that can be transferred ("spent") by spender
   function allowance(address guy, address spender) public constant returns (uint) {
     return pAllowedM[guy][spender];
   }
@@ -171,22 +171,22 @@ contract ERC20Token is Owned, DSMath {
   // ------------------
   modifier IsTransferOK(address src, address dst, uint wad) {
     require(!saleInProgressB          // Sale not in progress
-         &amp;&amp; !pausedB                  // IsActive
-         &amp;&amp; iTokensOwnedM[src] &gt;= wad // Source has the tokens available
-      // &amp;&amp; wad &gt; 0                   // Non-zero transfer No! The std says: Note Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event
-         &amp;&amp; dst != src                // Destination is different from source
-         &amp;&amp; dst != address(this)      // Not transferring to this token contract
-         &amp;&amp; dst != ownerA);           // Not transferring to the owner of this contract - the token sale contract
+         && !pausedB                  // IsActive
+         && iTokensOwnedM[src] >= wad // Source has the tokens available
+      // && wad > 0                   // Non-zero transfer No! The std says: Note Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event
+         && dst != src                // Destination is different from source
+         && dst != address(this)      // Not transferring to this token contract
+         && dst != ownerA);           // Not transferring to the owner of this contract - the token sale contract
     _;
   }
 
   // State changing public methods made pause-able and with call logging
   // -----------------------------
   // transfer()
-  // Transfers wad of sender&#39;s tokens to another account, address dst
+  // Transfers wad of sender's tokens to another account, address dst
   // No need for overflow check given that totalSupply is always far smaller than max uint
   function transfer(address dst, uint wad) IsTransferOK(msg.sender, dst, wad) returns (bool) {
-    iTokensOwnedM[msg.sender] -= wad; // There is no need to check this for underflow via a sub() call given the IsTransferOK iTokensOwnedM[src] &gt;= wad check
+    iTokensOwnedM[msg.sender] -= wad; // There is no need to check this for underflow via a sub() call given the IsTransferOK iTokensOwnedM[src] >= wad check
     iTokensOwnedM[dst] = add(iTokensOwnedM[dst], wad);
     Transfer(msg.sender, dst, wad);
     return true;
@@ -194,11 +194,11 @@ contract ERC20Token is Owned, DSMath {
 
   // transferFrom()
   // Sender transfers wad tokens from src account src to dst account, if
-  // sender had been approved by src for a transfer of &gt;= wad tokens from src&#39;s account
-  // by a prior call to approve() with that call&#39;s sender being this calls src,
-  //  and its spender being this call&#39;s sender.
+  // sender had been approved by src for a transfer of >= wad tokens from src's account
+  // by a prior call to approve() with that call's sender being this calls src,
+  //  and its spender being this call's sender.
   function transferFrom(address src, address dst, uint wad) IsTransferOK(src, dst, wad) returns (bool) {
-    require(pAllowedM[src][msg.sender] &gt;= wad); // Transfer is approved
+    require(pAllowedM[src][msg.sender] >= wad); // Transfer is approved
     iTokensOwnedM[src]         -= wad; // There is no need to check this for underflow given the require above
     pAllowedM[src][msg.sender] -= wad; // There is no need to check this for underflow given the require above
     iTokensOwnedM[dst] = add(iTokensOwnedM[dst], wad);
@@ -237,8 +237,8 @@ contract PacioToken is ERC20Token {
   // enum NFF {  // Founders/Foundation enum
   //   Founders, // 0 Pacio Founders
   //   Foundatn} // 1 Pacio Foundation
-  string public constant name   = &quot;Pacio Token&quot;;
-  string public constant symbol = &quot;PIOE&quot;;
+  string public constant name   = "Pacio Token";
+  string public constant symbol = "PIOE";
   uint8  public constant decimals = 12;
   uint   public tokensIssued;           // Tokens issued - tokens in circulation
   uint   public tokensAvailable;        // Tokens available = total supply less allocated and issued tokens
@@ -270,13 +270,13 @@ contract PacioToken is ERC20Token {
   // Can only be called once. If the sale contract changes but the token contract stays the same then ChangeOwner() can be called via PacioICO.ChangeTokenContractOwner() to change the owner to the new contract
   function Initialise(address vNewOwnerA) { // IsOwner c/o the super.ChangeOwner() call
     require(totalSupply == 0);          // can only be called once
-    super.ChangeOwner(vNewOwnerA);      // includes an IsOwner check so don&#39;t need to repeat it here
+    super.ChangeOwner(vNewOwnerA);      // includes an IsOwner check so don't need to repeat it here
     founderTokensAllocated    = 10**20; // 10% or 100 million = 1e20 Picos
     foundationTokensAllocated = 10**20; // 10% or 100 million = 1e20 Picos This call sets tokensAvailable
-    // Equivalent of Mint(10**21) which can&#39;t be used here as msg.sender is the old (deployment) owner // 1 Billion PIOEs    = 1e21 Picos, all minted)
+    // Equivalent of Mint(10**21) which can't be used here as msg.sender is the old (deployment) owner // 1 Billion PIOEs    = 1e21 Picos, all minted)
     totalSupply           = 10**21; // 1 Billion PIOEs    = 1e21 Picos, all minted)
     iTokensOwnedM[ownerA] = 10**21;
-    tokensAvailable       = 8*(10**20); // 800 million [String: &#39;800000000000000000000&#39;] s: 1, e: 20, c: [ 8000000 ] }
+    tokensAvailable       = 8*(10**20); // 800 million [String: '800000000000000000000'] s: 1, e: 20, c: [ 8000000 ] }
     // From the EIP20 Standard: A token contract which creates new tokens SHOULD trigger a Transfer event with the _from address set to 0x0 when tokens are created.
     Transfer(0x0, ownerA, 10**21); // log event 0x0 from == minting
   }
@@ -303,7 +303,7 @@ contract PacioToken is ERC20Token {
   // Transfers any minted tokens from old to new sale contract
   function ChangeOwner(address vNewOwnerA) { // IsOwner c/o the super.ChangeOwner() call
     transfer(vNewOwnerA, iTokensOwnedM[ownerA]); // includes checks
-    super.ChangeOwner(vNewOwnerA); // includes an IsOwner check so don&#39;t need to repeat it here
+    super.ChangeOwner(vNewOwnerA); // includes an IsOwner check so don't need to repeat it here
   }
 
   // Public Constant Methods
@@ -316,13 +316,13 @@ contract PacioToken is ERC20Token {
   // Transfers picos tokens to dst to issue them. IsOwner because this is expected to be called from the token sale contract
   function Issue(address dst, uint picos) IsOwner IsActive returns (bool) {
     require(saleInProgressB      // Sale is in progress
-         &amp;&amp; iTokensOwnedM[ownerA] &gt;= picos // Owner has the tokens available
-      // &amp;&amp; picos &gt; 0            // Non-zero issue No need to check for this
-         &amp;&amp; dst != address(this) // Not issuing to this token contract
-         &amp;&amp; dst != ownerA);      // Not issuing to the owner of this contract - the token sale contract
+         && iTokensOwnedM[ownerA] >= picos // Owner has the tokens available
+      // && picos > 0            // Non-zero issue No need to check for this
+         && dst != address(this) // Not issuing to this token contract
+         && dst != ownerA);      // Not issuing to the owner of this contract - the token sale contract
     if (iTokensOwnedM[dst] == 0)
       contributors++;
-    iTokensOwnedM[ownerA] -= picos; // There is no need to check this for underflow via a sub() call given the iTokensOwnedM[ownerA] &gt;= picos check
+    iTokensOwnedM[ownerA] -= picos; // There is no need to check this for underflow via a sub() call given the iTokensOwnedM[ownerA] >= picos check
     iTokensOwnedM[dst]     = add(iTokensOwnedM[dst], picos);
     tokensIssued           = add(tokensIssued,       picos);
     tokensAvailable    = subMaxZero(tokensAvailable, picos); // subMaxZero() in case a sale goes over, only possible for full ICO, when cap is for all available tokens.
@@ -357,8 +357,8 @@ contract PacioToken is ERC20Token {
   function SetFFSettings(address vFounderTokensA, address vFoundationTokensA, uint vFounderTokensAllocation, uint vFoundationTokensAllocation) IsOwner {
     if (vFounderTokensA    != address(0)) pFounderToksA    = vFounderTokensA;
     if (vFoundationTokensA != address(0)) pFoundationToksA = vFoundationTokensA;
-    if (vFounderTokensAllocation &gt; 0)    assert((founderTokensAllocated    = vFounderTokensAllocation)    &gt;= founderTokensVested);
-    if (vFoundationTokensAllocation &gt; 0) assert((foundationTokensAllocated = vFoundationTokensAllocation) &gt;= foundationTokensVested);
+    if (vFounderTokensAllocation > 0)    assert((founderTokensAllocated    = vFounderTokensAllocation)    >= founderTokensVested);
+    if (vFoundationTokensAllocation > 0) assert((foundationTokensAllocated = vFoundationTokensAllocation) >= foundationTokensVested);
     tokensAvailable = totalSupply - founderTokensAllocated - foundationTokensAllocated - tokensIssued;
   }
 
@@ -369,17 +369,17 @@ contract PacioToken is ERC20Token {
   // To be be called manually via PacioICO
   function VestFFTokens(uint vFounderTokensVesting, uint vFoundationTokensVesting) IsOwner IsActive {
     require(icoCompleteB); // ICO must be completed before vesting can occur. djh?? Add other time restriction?
-    if (vFounderTokensVesting &gt; 0) {
+    if (vFounderTokensVesting > 0) {
       assert(pFounderToksA != address(0)); // Founders token address must have been set
-      assert((founderTokensVested  = add(founderTokensVested,          vFounderTokensVesting)) &lt;= founderTokensAllocated);
+      assert((founderTokensVested  = add(founderTokensVested,          vFounderTokensVesting)) <= founderTokensAllocated);
       iTokensOwnedM[ownerA]        = sub(iTokensOwnedM[ownerA],        vFounderTokensVesting);
       iTokensOwnedM[pFounderToksA] = add(iTokensOwnedM[pFounderToksA], vFounderTokensVesting);
       LogIssue(pFounderToksA,          vFounderTokensVesting);
       tokensIssued = add(tokensIssued, vFounderTokensVesting);
     }
-    if (vFoundationTokensVesting &gt; 0) {
+    if (vFoundationTokensVesting > 0) {
       assert(pFoundationToksA != address(0)); // Foundation token address must have been set
-      assert((foundationTokensVested  = add(foundationTokensVested,          vFoundationTokensVesting)) &lt;= foundationTokensAllocated);
+      assert((foundationTokensVested  = add(foundationTokensVested,          vFoundationTokensVesting)) <= foundationTokensAllocated);
       iTokensOwnedM[ownerA]           = sub(iTokensOwnedM[ownerA],           vFoundationTokensVesting);
       iTokensOwnedM[pFoundationToksA] = add(iTokensOwnedM[pFoundationToksA], vFoundationTokensVesting);
       LogIssue(pFoundationToksA,       vFoundationTokensVesting);

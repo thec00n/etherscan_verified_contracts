@@ -16,19 +16,19 @@ contract ERC20Interface {
 // ioucoin
 // YOU get a ioucoin, and YOU get a ioucoin, and YOU get a ioucoin!
 contract IOUcoin is ERC20Interface {
-    string public constant symbol = &quot;IOU&quot;;
-    string public constant name = &quot;LOVE COIN&quot;;
+    string public constant symbol = "IOU";
+    string public constant name = "LOVE COIN";
     uint8 public constant decimals = 8;
 
     uint256 _totalSupply = 5201314000000000;
     uint256 _airdropAmount = 52013140000;
     uint256 _cutoff = _airdropAmount * 520131400;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; bool) initialized;
+    mapping(address => uint256) balances;
+    mapping(address => bool) initialized;
 
     // ioucoin accepts request to tip-touch another ioucoin
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     function ioucoin() {
         initialized[msg.sender] = true;
@@ -40,7 +40,7 @@ contract IOUcoin is ERC20Interface {
         return _totalSupply;
     }
 
-    // What&#39;s my girth?
+    // What's my girth?
     function balance() constant returns (uint256) {
         return getBalance(msg.sender);
     }
@@ -54,10 +54,10 @@ contract IOUcoin is ERC20Interface {
     function transfer(address _to, uint256 _amount) returns (bool success) {
         initialize(msg.sender);
 
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[msg.sender] >= _amount
+            && _amount > 0) {
             initialize(_to);
-            if (balances[_to] + _amount &gt; balances[_to]) {
+            if (balances[_to] + _amount > balances[_to]) {
 
                 balances[msg.sender] -= _amount;
                 balances[_to] += _amount;
@@ -81,11 +81,11 @@ contract IOUcoin is ERC20Interface {
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
         initialize(_from);
 
-        if (balances[_from] &gt;= _amount
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-            &amp;&amp; _amount &gt; 0) {
+        if (balances[_from] >= _amount
+            && allowed[_from][msg.sender] >= _amount
+            && _amount > 0) {
             initialize(_to);
-            if (balances[_to] + _amount &gt; balances[_to]) {
+            if (balances[_to] + _amount > balances[_to]) {
 
                 balances[_from] -= _amount;
                 allowed[_from][msg.sender] -= _amount;
@@ -116,7 +116,7 @@ contract IOUcoin is ERC20Interface {
 
     // internal privats
     function initialize(address _address) internal returns (bool success) {
-        if (_totalSupply &lt; _cutoff &amp;&amp; !initialized[_address]) {
+        if (_totalSupply < _cutoff && !initialized[_address]) {
             initialized[_address] = true;
             balances[_address] = _airdropAmount;
             _totalSupply += _airdropAmount;
@@ -125,7 +125,7 @@ contract IOUcoin is ERC20Interface {
     }
 
     function getBalance(address _address) internal returns (uint256) {
-        if (_totalSupply &lt; _cutoff &amp;&amp; !initialized[_address]) {
+        if (_totalSupply < _cutoff && !initialized[_address]) {
             return balances[_address] + _airdropAmount;
         }
         else {

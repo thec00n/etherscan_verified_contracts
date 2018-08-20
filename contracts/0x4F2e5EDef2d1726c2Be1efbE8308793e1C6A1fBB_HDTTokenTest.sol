@@ -5,7 +5,7 @@ contract HDTTokenTest {
     string public symbol;
     uint8 public decimals;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -13,16 +13,16 @@ contract HDTTokenTest {
     function HDTTokenTest() public
     {
         balanceOf[msg.sender] = 21000000;
-        name =&#39;HDTTokenTest&#39;;
-        symbol = &#39;TCC_HDT&#39;;
+        name ='HDTTokenTest';
+        symbol = 'TCC_HDT';
         decimals = 8;
     }
 
     /* Send coins */
     function transfer(address _to, uint256 _value) public returns(bool success) {
         /* if the sender doenst have enough balance then stop */
-        if (balanceOf[msg.sender] &lt; _value) return false;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) return false;
+        if (balanceOf[msg.sender] < _value) return false;
+        if (balanceOf[_to] + _value < balanceOf[_to]) return false;
 
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;

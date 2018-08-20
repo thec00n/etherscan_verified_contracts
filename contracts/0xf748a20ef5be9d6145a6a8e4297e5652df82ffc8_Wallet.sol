@@ -47,10 +47,10 @@ contract WalletProxy is WalletStorage, DelegateProxy {
     }
 
     function() public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             emit ReceivedETH(msg.sender, msg.value);
         }
-        if (gasleft() &gt; 2400) {
+        if (gasleft() > 2400) {
             delegatedFwd(DelegateProvider(owner).getDelegate(), msg.data);
         }
     }

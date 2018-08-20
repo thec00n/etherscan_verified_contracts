@@ -31,19 +31,19 @@ contract ERC20 {
 contract OsherCoin is ERC20 {
 
 
-    string public standard = &#39;OsherCoin 1.0&#39;;
-    string public constant name = &quot;OsherCoin&quot;;
-    string public constant symbol = &quot;OSH&quot;;
+    string public standard = 'OsherCoin 1.0';
+    string public constant name = "OsherCoin";
+    string public constant symbol = "OSH";
     uint8 public decimals;
     uint256 public totalSupply;
   
     
     address public owner;
-    mapping( address =&gt; uint256) public balanceOf;
-    mapping( uint =&gt; address) public accountIndex;
+    mapping( address => uint256) public balanceOf;
+    mapping( uint => address) public accountIndex;
     uint public accountCount;
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
  
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -108,8 +108,8 @@ contract OsherCoin is ERC20 {
     
     function transfer(address _to, uint256 _value) returns(bool ok) {
    
-        if (balanceOf[msg.sender] &lt; _value) throw; 
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw; 
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         
         appendTokenHolders(_to);
         balanceOf[msg.sender] -= _value; 
@@ -143,9 +143,9 @@ contract OsherCoin is ERC20 {
  
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
      
-        if (balanceOf[_from] &lt; _value) throw;  
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if (balanceOf[_from] < _value) throw;  
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  
+        if (_value > allowance[_from][msg.sender]) throw; 
         appendTokenHolders(_to);
         balanceOf[_from] -= _value; 
         balanceOf[_to] += _value; 
@@ -156,8 +156,8 @@ contract OsherCoin is ERC20 {
     }
   
     function burn(uint256 _value) returns(bool success) {
-        if (balanceOf[msg.sender] &lt; _value) throw; 
-        if( totalSupply -  _value &lt; 2100000000000000) throw;
+        if (balanceOf[msg.sender] < _value) throw; 
+        if( totalSupply -  _value < 2100000000000000) throw;
         balanceOf[msg.sender] -= _value; 
         totalSupply -= _value; 
         Burn(msg.sender, _value);
@@ -166,9 +166,9 @@ contract OsherCoin is ERC20 {
 
     function burnFrom(address _from, uint256 _value) returns(bool success) {
         
-        if( totalSupply -  _value &lt; 2100000000000000) throw;
-        if (balanceOf[_from] &lt; _value) throw; 
-        if (_value &gt; allowance[_from][msg.sender]) throw; 
+        if( totalSupply -  _value < 2100000000000000) throw;
+        if (balanceOf[_from] < _value) throw; 
+        if (_value > allowance[_from][msg.sender]) throw; 
         balanceOf[_from] -= _value; 
         allowance[_from][msg.sender] -= _value; 
         totalSupply -= _value; 

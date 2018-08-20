@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// &#39;buckycoin&#39; AIRDROP token contract
+// 'buckycoin' AIRDROP token contract
 //
 // Deployed to : 0xbf4de56095f9e39d59fd4f54bc63b39f4f0f7afc
 // Symbol      : BUC
@@ -16,7 +16,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,13 +66,13 @@ contract DistributeTokens is Ownable{
   }
 
   function distributeVariable(address[] _addrs, uint[] _bals) onlyOwner{
-    for(uint i = 0; i &lt; _addrs.length; ++i){
+    for(uint i = 0; i < _addrs.length; ++i){
       tokenReward.transfer(_addrs[i],_bals[i]);
     }
   }
 
   function distributeFixed(address[] _addrs, uint _amoutToEach) onlyOwner{
-    for(uint i = 0; i &lt; _addrs.length; ++i){
+    for(uint i = 0; i < _addrs.length; ++i){
       tokenReward.transfer(_addrs[i],_amoutToEach);
     }
   }

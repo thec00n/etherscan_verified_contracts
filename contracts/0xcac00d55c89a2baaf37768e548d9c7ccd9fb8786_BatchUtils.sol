@@ -25,20 +25,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -46,7 +46,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -87,7 +87,7 @@ contract Ownable {
 
 contract BatchUtils is Ownable {
   using SafeMath for uint256;
-  mapping (address =&gt; bool) public operational;
+  mapping (address => bool) public operational;
   uint256 public sendlimit = 10;
   
   function BatchUtils() {
@@ -99,27 +99,27 @@ contract BatchUtils is Ownable {
   }
   
   function setOperational(address[] addresses, bool op) onlyOwner public {
-    for (uint i = 0; i &lt; addresses.length; i++) {
+    for (uint i = 0; i < addresses.length; i++) {
         operational[addresses[i]] = op;
     }
   }
   
   function batchTransfer(address[] _tokens, address[] _receivers, uint256 _value) {
     require(operational[msg.sender]); 
-    require(_value &lt;= sendlimit);
+    require(_value <= sendlimit);
     
     uint cnt = _receivers.length;
-    require(cnt &gt; 0 &amp;&amp; cnt &lt;= 121);
+    require(cnt > 0 && cnt <= 121);
     
-    for (uint j = 0; j &lt; _tokens.length; j++) {
+    for (uint j = 0; j < _tokens.length; j++) {
         ERC20Basic token = ERC20Basic(_tokens[j]);
         
         uint256 value = _value.mul(10**uint256(token.decimals()));
         uint256 amount = uint256(cnt).mul(value);
         
-        require(value &gt; 0 &amp;&amp; token.balanceOf(this) &gt;= amount);
+        require(value > 0 && token.balanceOf(this) >= amount);
         
-        for (uint i = 0; i &lt; cnt; i++) {
+        for (uint i = 0; i < cnt; i++) {
             token.transfer(_receivers[i], value);
         }
     }

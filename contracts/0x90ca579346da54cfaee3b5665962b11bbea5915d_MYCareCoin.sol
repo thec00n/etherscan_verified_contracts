@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -100,8 +100,8 @@ contract ERC20StandardToken is ERC20Standard {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
 
 
     function transfer(address to, uint256 value) public returns (bool){
@@ -147,8 +147,8 @@ contract ERC20StandardToken is ERC20Standard {
 contract MYCareCoin is ERC20StandardToken, Ownable {
 
     // token information
-    string public constant name = &quot;MY Care Coin&quot;;
-    string public constant symbol = &quot;MYCC&quot;;
+    string public constant name = "MY Care Coin";
+    string public constant symbol = "MYCC";
     uint256 public constant decimals = 18;
     uint TotalTokenSupply=3.65*(10**8)* (10**decimals);
 

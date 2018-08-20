@@ -7,16 +7,16 @@ contract EscrowExchange {
         uint course;
         address tokenContractAddress;
     }
-    mapping(address=&gt;courseAndAddress) public tokenSellData;
+    mapping(address=>courseAndAddress) public tokenSellData;
     function setTokenForSale(uint course, address tokenContractAddress) {
         tokenSellData[msg.sender].course = course;        
         tokenSellData[msg.sender].tokenContractAddress = tokenContractAddress;
     }
     function buyToken(address sellerAddress) payable returns(bool) {
-        require(msg.value&gt;0);
+        require(msg.value>0);
         Token token = Token(tokenSellData[sellerAddress].tokenContractAddress);
         var tokens = msg.value/tokenSellData[sellerAddress].course;
-        require(tokens&gt;0);
+        require(tokens>0);
         bool success = false;
         if(token.transferFrom(sellerAddress, msg.sender, tokens)) {
             sellerAddress.transfer(msg.value);

@@ -17,7 +17,7 @@ pragma solidity ^0.4.11;
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -87,7 +87,7 @@ contract Burnable is Controlled {
   ///  a function with this modifier, also the burner can call but also the
   /// target of the function must be the burner
   modifier onlyControllerOrBurner(address target) {
-    assert(msg.sender == controller || (msg.sender == burner &amp;&amp; msg.sender == target));
+    assert(msg.sender == controller || (msg.sender == burner && msg.sender == target));
     _;
   }
 
@@ -108,10 +108,10 @@ contract Burnable is Controlled {
 
 contract MiniMeTokenI is ERC20Token, Burnable {
 
-      string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+      string public name;                //The Token's name: e.g. DigixDAO Tokens
       uint8 public decimals;             //Number of decimals of the smallest unit
       string public symbol;              //An identifier: e.g. REP
-      string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+      string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 ///////////////////
 // ERC20 Methods
@@ -216,7 +216,7 @@ contract MiniMeTokenI is ERC20Token, Burnable {
 
 contract ReferalsTokenHolder is Controlled {
   MiniMeTokenI public msp;
-  mapping (address =&gt; bool) been_spread;
+  mapping (address => bool) been_spread;
 
   function ReferalsTokenHolder(address _msp) {
     msp = MiniMeTokenI(_msp);
@@ -225,7 +225,7 @@ contract ReferalsTokenHolder is Controlled {
   function spread(address[] _addresses, uint256[] _amounts) public onlyController {
     require(_addresses.length == _amounts.length);
 
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       address addr = _addresses[i];
       if (!been_spread[addr]) {
         uint256 amount = _amounts[i];

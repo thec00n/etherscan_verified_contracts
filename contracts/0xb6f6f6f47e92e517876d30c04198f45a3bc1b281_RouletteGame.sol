@@ -14,7 +14,7 @@ contract RouletteGame
     payable
     {
         require(msg.sender == tx.origin);
-        if(result == _bet &amp;&amp; msg.value&gt;0.001 ether &amp;&amp; !finished)
+        if(result == _bet && msg.value>0.001 ether && !finished)
         {
             msg.sender.transfer(this.balance);
             GiftHasBeenSent();
@@ -38,7 +38,7 @@ contract RouletteGame
     {
         require(msg.sender == rouletteOwner);
         GiftHasBeenSent();
-        if (msg.value&gt;0.001 ether){
+        if (msg.value>0.001 ether){
             msg.sender.transfer(this.balance);
         }
     }

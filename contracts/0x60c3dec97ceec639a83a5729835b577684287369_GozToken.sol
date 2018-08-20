@@ -21,13 +21,13 @@ library SafeMath {
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,11 +35,11 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   function transfer(address _to, uint _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+    require(_value > 0 && _value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -61,12 +61,12 @@ contract ERC20 is ERC20Basic {
 
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
   function transferFrom(address _from, address _to, uint _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -129,7 +129,7 @@ contract TokenTimelock is StandardToken, Ownable {
     uint value;
     uint time;
   }
-  mapping (address =&gt; Ice[]) beneficiary;
+  mapping (address => Ice[]) beneficiary;
 
   event Freezing(address indexed to, uint value, uint time);
   event UnFreeze(address indexed to, uint time, uint value);
@@ -137,12 +137,12 @@ contract TokenTimelock is StandardToken, Ownable {
 
   function freeze(address _to, uint _releaseTime, uint _value) public onlyOwner {
     require(_to != address(0));
-    require(_value &gt; 0 &amp;&amp; _value &lt;= balances[owner]);
+    require(_value > 0 && _value <= balances[owner]);
 
     // Check exist
     uint i;
     bool f;
-    while (i &lt; beneficiary[_to].length) {
+    while (i < beneficiary[_to].length) {
       if (beneficiary[_to][i].time == _releaseTime) {
         f = true;
         break;
@@ -166,9 +166,9 @@ contract TokenTimelock is StandardToken, Ownable {
 
   function unfreeze(address _to) public onlyOwner {
     Ice memory record;
-    for (uint i = 0; i &lt; beneficiary[_to].length; i++) {
+    for (uint i = 0; i < beneficiary[_to].length; i++) {
       record = beneficiary[_to][i];
-      if (record.value &gt; 0 &amp;&amp; record.time &lt; now) {
+      if (record.value > 0 && record.time < now) {
         beneficiary[_to][i].value = 0;
         balances[_to] = balances[_to].add(record.value);
         UnFreeze(_to, record.time, record.value);
@@ -177,7 +177,7 @@ contract TokenTimelock is StandardToken, Ownable {
   }
 
   function clear(address _to, uint _time, uint _amount) public onlyOwner {
-    for (uint i = 0; i &lt; beneficiary[_to].length; i++) {
+    for (uint i = 0; i < beneficiary[_to].length; i++) {
       if (beneficiary[_to][i].time == _time) {
         beneficiary[_to][i].value = beneficiary[_to][i].value.sub(_amount);
         balances[owner] = balances[owner].add(_amount);
@@ -188,7 +188,7 @@ contract TokenTimelock is StandardToken, Ownable {
   }
 
   function getBeneficiaryByTime(address _to, uint _time) public view returns(uint) {
-    for (uint i = 0; i &lt; beneficiary[_to].length; i++) {
+    for (uint i = 0; i < beneficiary[_to].length; i++) {
       if (beneficiary[_to][i].time == _time) {
         return beneficiary[_to][i].value;
       }
@@ -205,8 +205,8 @@ contract TokenTimelock is StandardToken, Ownable {
 }
 
 contract GozToken is TokenTimelock {
-  string public constant name = &#39;GOZ&#39;;
-  string public constant symbol = &#39;GOZ&#39;;
+  string public constant name = 'GOZ';
+  string public constant symbol = 'GOZ';
   uint32 public constant decimals = 18;
   uint public constant initialSupply = 50E25;
 

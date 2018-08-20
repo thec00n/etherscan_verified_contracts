@@ -15,7 +15,7 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         assert(a == b * c);
         return c;
@@ -23,14 +23,14 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a - b;
-        assert(b &lt;= a);
+        assert(b <= a);
         assert(a == c + b);
         return c;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         assert(a == c - b);
         return c;
     }
@@ -52,7 +52,7 @@ contract QunQunTokenIssue {
     function getRate() internal returns (uint256){
         if(inflateCount == 10){
             // decreasing 0.5% per year until the overall inflation rate reaches 1%.
-            if(lastRate &gt; 100){
+            if(lastRate > 100){
                 lastRate -= 50;
             }
             // reset count
@@ -67,18 +67,18 @@ contract QunQunTokenIssue {
         //ensure first year can not inflate
         if(isFirstYear){
             // 2102400 blocks is about one year, suppose it takes 15 seconds to generate a new block
-            require(SafeMath.sub(block.number, lastBlockNumber) &gt; 2102400);
+            require(SafeMath.sub(block.number, lastBlockNumber) > 2102400);
             isFirstYear = false;
         }
         // 210240 blocks is about one tenth year, ensure only 10 times inflation per year
-        require(SafeMath.sub(block.number, lastBlockNumber) &gt; 210240);
+        require(SafeMath.sub(block.number, lastBlockNumber) > 210240);
         QunQunToken tokenContract = QunQunToken(tokenContractAddress);
         //adjust total supply every year
         if(inflateCount == 10){
             lastYearTotalSupply = tokenContract.totalSupply();
         }
         uint256 amount = SafeMath.div(SafeMath.mul(lastYearTotalSupply, getRate()), 10000);
-        require(amount &gt; 0);
+        require(amount > 0);
         tokenContract.issue(amount);
         lastBlockNumber = block.number;
         inflateCount += 1;
@@ -93,9 +93,9 @@ interface tokenRecipient {
 contract QunQunToken {
 
     // Public variables of the token
-    string public name = &#39;QunQunCommunities&#39;;
+    string public name = 'QunQunCommunities';
 
-    string public symbol = &#39;QUN&#39;;
+    string public symbol = 'QUN';
 
     uint8 public decimals = 18;
 
@@ -105,9 +105,9 @@ contract QunQunToken {
     address public owner;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -156,9 +156,9 @@ contract QunQunToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -193,7 +193,7 @@ contract QunQunToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
@@ -209,7 +209,7 @@ contract QunQunToken {
      * @param _value the max amount they can spend
      */
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -244,7 +244,7 @@ contract QunQunToken {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         // Check if the sender has enough
         balanceOf[msg.sender] -= _value;
         // Subtract from the sender
@@ -263,14 +263,14 @@ contract QunQunToken {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         // Check allowance
         balanceOf[_from] -= _value;
         // Subtract from the targeted balance
         allowance[_from][msg.sender] -= _value;
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         totalSupply -= _value;
         // Update totalSupply
         Burn(_from, _value);

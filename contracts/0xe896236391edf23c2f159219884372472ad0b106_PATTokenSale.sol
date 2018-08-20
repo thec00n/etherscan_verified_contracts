@@ -1,12 +1,12 @@
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<span class="__cf_email__" data-cfemail="b2dfdbd9dad3dbde9cc4ded3d6dbdfdbc0ddc4f2d5dfd3dbde9cd1dddf">[email&#160;protected]</span>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<span class="__cf_email__" data-cfemail="b2dfdbd9dad3dbde9cc4ded3d6dbdfdbc0ddc4f2d5dfd3dbde9cd1dddf">[email protected]</span>>
  */
 pragma solidity ^0.4.16;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
     /**
@@ -109,7 +109,7 @@ contract SafeMath {
     function safeAdd (uint256 x, uint256 y)
     constant internal
     returns (uint256 z) {
-        assert (x &lt;= MAX_UINT256 - y);
+        assert (x <= MAX_UINT256 - y);
         return x + y;
     }
 
@@ -123,7 +123,7 @@ contract SafeMath {
     function safeSub (uint256 x, uint256 y)
     constant internal
     returns (uint256 z) {
-        assert (x &gt;= y);
+        assert (x >= y);
         return x - y;
     }
 
@@ -138,7 +138,7 @@ contract SafeMath {
     constant internal
     returns (uint256 z) {
         if (y == 0) return 0; // Prevent division by zero at the next line
-        assert (x &lt;= MAX_UINT256 / y);
+        assert (x <= MAX_UINT256 / y);
         return x * y;
     }
 }
@@ -199,16 +199,16 @@ contract Math is SafeMath {
      * @return index of most significant non-zero bit in given number
      */
     function mostSignificantBit (uint256 x) pure internal returns (uint8) {
-        require (x &gt; 0);
+        require (x > 0);
 
         uint8 l = 0;
         uint8 h = 255;
 
-        while (h &gt; l) {
-            uint8 m = uint8 ((uint16 (l) + uint16 (h)) &gt;&gt; 1);
-            uint256 t = x &gt;&gt; m;
+        while (h > l) {
+            uint8 m = uint8 ((uint16 (l) + uint16 (h)) >> 1);
+            uint256 t = x >> m;
             if (t == 0) h = m - 1;
-            else if (t &gt; 1) l = m + 1;
+            else if (t > 1) l = m + 1;
             else return m;
         }
 
@@ -222,25 +222,25 @@ contract Math is SafeMath {
      * @return log_2 (x / 2^128) * 2^128
      */
     function log_2 (uint256 x) pure internal returns (int256) {
-        require (x &gt; 0);
+        require (x > 0);
 
         uint8 msb = mostSignificantBit (x);
 
-        if (msb &gt; 128) x &gt;&gt;= msb - 128;
-        else if (msb &lt; 128) x &lt;&lt;= 128 - msb;
+        if (msb > 128) x >>= msb - 128;
+        else if (msb < 128) x <<= 128 - msb;
 
-        x &amp;= TWO128_1;
+        x &= TWO128_1;
 
-        int256 result = (int256 (msb) - 128) &lt;&lt; 128; // Integer part of log_2
+        int256 result = (int256 (msb) - 128) << 128; // Integer part of log_2
 
         int256 bit = TWO127;
-        for (uint8 i = 0; i &lt; 128 &amp;&amp; x &gt; 0; i++) {
-            x = (x &lt;&lt; 1) + ((x * x + TWO127) &gt;&gt; 128);
-            if (x &gt; TWO128_1) {
+        for (uint8 i = 0; i < 128 && x > 0; i++) {
+            x = (x << 1) + ((x * x + TWO127) >> 128);
+            if (x > TWO128_1) {
                 result |= bit;
-                x = (x &gt;&gt; 1) - TWO127;
+                x = (x >> 1) - TWO127;
             }
-            bit &gt;&gt;= 1;
+            bit >>= 1;
         }
 
         return result;
@@ -253,18 +253,18 @@ contract Math is SafeMath {
      * @return ln (x / 2^128) * 2^128
      */
     function ln (uint256 x) pure internal returns (int256) {
-        require (x &gt; 0);
+        require (x > 0);
 
         int256 l2 = log_2 (x);
         if (l2 == 0) return 0;
         else {
-            uint256 al2 = uint256 (l2 &gt; 0 ? l2 : -l2);
+            uint256 al2 = uint256 (l2 > 0 ? l2 : -l2);
             uint8 msb = mostSignificantBit (al2);
-            if (msb &gt; 127) al2 &gt;&gt;= msb - 127;
-            al2 = (al2 * LN2 + TWO127) &gt;&gt; 128;
-            if (msb &gt; 127) al2 &lt;&lt;= msb - 127;
+            if (msb > 127) al2 >>= msb - 127;
+            al2 = (al2 * LN2 + TWO127) >> 128;
+            if (msb > 127) al2 <<= msb - 127;
 
-            return int256 (l2 &gt;= 0 ? al2 : -al2);
+            return int256 (l2 >= 0 ? al2 : -al2);
         }
     }
 
@@ -276,18 +276,18 @@ contract Math is SafeMath {
      * @return x * y / 2^128
      */
     function fpMul (uint256 x, uint256 y) pure internal returns (uint256) {
-        uint256 xh = x &gt;&gt; 128;
-        uint256 xl = x &amp; TWO128_1;
-        uint256 yh = y &gt;&gt; 128;
-        uint256 yl = y &amp; TWO128_1;
+        uint256 xh = x >> 128;
+        uint256 xl = x & TWO128_1;
+        uint256 yh = y >> 128;
+        uint256 yl = y & TWO128_1;
 
         uint256 result = xh * yh;
-        require (result &lt;= TWO128_1);
-        result &lt;&lt;= 128;
+        require (result <= TWO128_1);
+        result <<= 128;
 
         result = safeAdd (result, xh * yl);
         result = safeAdd (result, xl * yh);
-        result = safeAdd (result, (xl * yl) &gt;&gt; 128);
+        result = safeAdd (result, (xl * yl) >> 128);
 
         return result;
     }
@@ -301,10 +301,10 @@ contract Math is SafeMath {
      */
     function longMul (uint256 x, uint256 y)
     pure internal returns (uint256 h, uint256 l) {
-        uint256 xh = x &gt;&gt; 128;
-        uint256 xl = x &amp; TWO128_1;
-        uint256 yh = y &gt;&gt; 128;
-        uint256 yl = y &amp; TWO128_1;
+        uint256 xh = x >> 128;
+        uint256 xl = x & TWO128_1;
+        uint256 yh = y >> 128;
+        uint256 yl = y & TWO128_1;
 
         h = xh * yh;
         l = xl * yl;
@@ -312,16 +312,16 @@ contract Math is SafeMath {
         uint256 m1 = xh * yl;
         uint256 m2 = xl * yh;
 
-        h += m1 &gt;&gt; 128;
-        h += m2 &gt;&gt; 128;
+        h += m1 >> 128;
+        h += m2 >> 128;
 
-        m1 &lt;&lt;= 128;
-        m2 &lt;&lt;= 128;
+        m1 <<= 128;
+        m2 <<= 128;
 
-        if (l &gt; TWO256_1 - m1) h += 1;
+        if (l > TWO256_1 - m1) h += 1;
         l += m1;
 
-        if (l &gt; TWO256_1 - m2) h += 1;
+        if (l > TWO256_1 - m2) h += 1;
         l += m2;
     }
 
@@ -333,17 +333,17 @@ contract Math is SafeMath {
      * @return x * y / 2^128
      */
     function fpMulI (int256 x, int256 y) pure internal returns (int256) {
-        bool negative = (x ^ y) &lt; 0; // Whether result is negative
+        bool negative = (x ^ y) < 0; // Whether result is negative
 
         uint256 result = fpMul (
-            x &lt; 0 ? uint256 (-1 - x) + 1 : uint256 (x),
-            y &lt; 0 ? uint256 (-1 - y) + 1 : uint256 (y));
+            x < 0 ? uint256 (-1 - x) + 1 : uint256 (x),
+            y < 0 ? uint256 (-1 - y) + 1 : uint256 (y));
 
         if (negative) {
-            require (result &lt;= TWO255);
+            require (result <= TWO255);
             return result == 0 ? 0 : -1 - int256 (result - 1);
         } else {
-            require (result &lt; TWO255);
+            require (result < TWO255);
             return int256 (result);
         }
     }
@@ -356,11 +356,11 @@ contract Math is SafeMath {
      * @return x + y
      */
     function safeAddI (int256 x, int256 y) pure internal returns (int256) {
-        if (x &lt; 0 &amp;&amp; y &lt; 0)
-            assert (x &gt;= MINUS_TWO255 - y);
+        if (x < 0 && y < 0)
+            assert (x >= MINUS_TWO255 - y);
 
-        if (x &gt; 0 &amp;&amp; y &gt; 0)
-            assert (x &lt;= TWO255_1 - y);
+        if (x > 0 && y > 0)
+            assert (x <= TWO255_1 - y);
 
         return x + y;
     }
@@ -373,23 +373,23 @@ contract Math is SafeMath {
      * @return  x / y * 2^128
      */
     function fpDiv (uint256 x, uint256 y) pure internal returns (uint256) {
-        require (y &gt; 0); // Division by zero is forbidden
+        require (y > 0); // Division by zero is forbidden
 
         uint8 maxShiftY = mostSignificantBit (y);
-        if (maxShiftY &gt;= 128) maxShiftY -= 127;
+        if (maxShiftY >= 128) maxShiftY -= 127;
         else maxShiftY = 0;
 
         uint256 result = 0;
 
         while (true) {
-            uint256 rh = x &gt;&gt; 128;
-            uint256 rl = x &lt;&lt; 128;
+            uint256 rh = x >> 128;
+            uint256 rl = x << 128;
 
             uint256 ph;
             uint256 pl;
 
             (ph, pl) = longMul (result, y);
-            if (rl &lt; pl) {
+            if (rl < pl) {
                 ph = safeAdd (ph, 1);
             }
 
@@ -400,27 +400,27 @@ contract Math is SafeMath {
                 result = safeAdd (result, rl / y);
                 break;
             } else {
-                uint256 reminder = (rh &lt;&lt; 128) + (rl &gt;&gt; 128);
+                uint256 reminder = (rh << 128) + (rl >> 128);
 
                 // How many bits to shift reminder left
                 uint8 shiftReminder = 255 - mostSignificantBit (reminder);
-                if (shiftReminder &gt; 128) shiftReminder = 128;
+                if (shiftReminder > 128) shiftReminder = 128;
 
                 // How many bits to shift result left
                 uint8 shiftResult = 128 - shiftReminder;
 
                 // How many bits to shift Y right
                 uint8 shiftY = maxShiftY;
-                if (shiftY &gt; shiftResult) shiftY = shiftResult;
+                if (shiftY > shiftResult) shiftY = shiftResult;
 
                 shiftResult -= shiftY;
 
-                uint256 r = (reminder &lt;&lt; shiftReminder) / (((y - 1) &gt;&gt; shiftY) + 1);
+                uint256 r = (reminder << shiftReminder) / (((y - 1) >> shiftY) + 1);
 
                 uint8 msbR = mostSignificantBit (r);
-                require (msbR &lt;= 255 - shiftResult);
+                require (msbR <= 255 - shiftResult);
 
-                result = safeAdd (result, r &lt;&lt; shiftResult);
+                result = safeAdd (result, r << shiftResult);
             }
         }
 
@@ -492,17 +492,17 @@ contract PATTokenSale is Math {
      */
     function buy () payable public {
         require (!finished);
-        require (now &gt;= saleStartTime);
-        require (now &lt; safeAdd (saleStartTime, saleDuration));
+        require (now >= saleStartTime);
+        require (now < safeAdd (saleStartTime, saleDuration));
 
-        require (msg.value &gt;= minimumInvestment);
+        require (msg.value >= minimumInvestment);
 
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             uint256 remainingCap = safeSub (saleCap, totalInvested);
             uint256 toInvest;
             uint256 toRefund;
 
-            if (msg.value &lt;= remainingCap) {
+            if (msg.value <= remainingCap) {
                 toInvest = msg.value;
                 toRefund = 0;
             } else {
@@ -512,13 +512,13 @@ contract PATTokenSale is Math {
 
             Investor storage investor = investors [msg.sender];
             investor.amount = safeAdd (investor.amount, toInvest);
-            if (now &lt; safeAdd (saleStartTime, TRIPLE_BONUS))
+            if (now < safeAdd (saleStartTime, TRIPLE_BONUS))
                 investor.bonusAmount = safeAdd (
                     investor.bonusAmount, safeMul (toInvest, 6));
-            else if (now &lt; safeAdd (saleStartTime, DOUBLE_BONUS))
+            else if (now < safeAdd (saleStartTime, DOUBLE_BONUS))
                 investor.bonusAmount = safeAdd (
                     investor.bonusAmount, safeMul (toInvest, 4));
-            else if (now &lt; safeAdd (saleStartTime, SINGLE_BONUS))
+            else if (now < safeAdd (saleStartTime, SINGLE_BONUS))
                 investor.bonusAmount = safeAdd (
                     investor.bonusAmount, safeMul (toInvest, 2));
 
@@ -532,7 +532,7 @@ contract PATTokenSale is Math {
                 Finished (finalPrice);
             }
 
-            if (toRefund &gt; 0)
+            if (toRefund > 0)
                 msg.sender.transfer (toRefund);
         }
     }
@@ -548,7 +548,7 @@ contract PATTokenSale is Math {
         Investor storage referee = investors [_referralCode];
 
         // Make sure referee actually did invest something
-        require (referee.amount &gt; 0);
+        require (referee.amount > 0);
 
         Investor storage referrer = investors [msg.sender];
         uint256 oldAmount = referrer.amount;
@@ -558,7 +558,7 @@ contract PATTokenSale is Math {
         uint256 invested = safeSub (referrer.amount, oldAmount);
 
         // Make sure referrer actually did invest something
-        require (invested &gt; 0);
+        require (invested > 0);
 
         referee.investedByReferrers = safeAdd (
             referee.investedByReferrers, invested);
@@ -578,7 +578,7 @@ contract PATTokenSale is Math {
     function outstandingTokens (address _investor)
     constant public returns (uint256) {
         require (finished);
-        assert (finalPrice &gt; 0);
+        assert (finalPrice > 0);
 
         Investor storage investor = investors [_investor];
         uint256 bonusAmount = investor.bonusAmount;
@@ -601,10 +601,10 @@ contract PATTokenSale is Math {
         require (finished);
 
         Investor storage investor = investors [_investor];
-        require (investor.amount &gt; 0);
+        require (investor.amount > 0);
 
         uint256 value = outstandingTokens (_investor);
-        if (value &gt; 0) {
+        if (value > 0) {
             if (!token.transferFrom (centralBank, _investor, value)) return false;
         }
 
@@ -631,20 +631,20 @@ contract PATTokenSale is Math {
      * @return price at given time as 128.128 fixed point number
      */
     function price (uint256 _time) constant public returns (uint256) {
-        require (_time &gt;= saleStartTime);
-        require (_time &lt;= safeAdd (saleStartTime, saleDuration));
+        require (_time >= saleStartTime);
+        require (_time <= safeAdd (saleStartTime, saleDuration));
 
-        require (_time &lt;= TWO128_1);
-        uint256 t = _time &lt;&lt; 128;
+        require (_time <= TWO128_1);
+        uint256 t = _time << 128;
 
-        uint256 cPlusT = (c &gt;= 0) ?
+        uint256 cPlusT = (c >= 0) ?
         safeAdd (t, uint256 (c)) :
         safeSub (t, uint256 (-1 - c) + 1);
         int256 lnCPlusT = ln (cPlusT);
         int256 bLnCPlusT = fpMulI (b, lnCPlusT);
         int256 aPlusBLnCPlusT = safeAddI (a, bLnCPlusT);
 
-        require (aPlusBLnCPlusT &gt;= 0);
+        require (aPlusBLnCPlusT >= 0);
         return uint256 (aPlusBLnCPlusT);
     }
 
@@ -655,7 +655,7 @@ contract PATTokenSale is Math {
         require (msg.sender == centralBank);
         require (!finished);
         uint256 saleEndTime = safeAdd (saleStartTime, saleDuration);
-        require (now &gt;= saleEndTime);
+        require (now >= saleEndTime);
 
         finished = true;
         finalPrice = price (saleEndTime);
@@ -669,7 +669,7 @@ contract PATTokenSale is Math {
     function destroy () public {
         require (msg.sender == centralBank);
         require (finished);
-        require (now &gt;= safeAdd (saleStartTime, saleDuration));
+        require (now >= safeAdd (saleStartTime, saleDuration));
         require (totalInvested == 0);
         require (this.balance == 0);
 
@@ -684,7 +684,7 @@ contract PATTokenSale is Math {
      * @return minimum of two values
      */
     function min (uint256 x, uint256 y) internal pure returns (uint256) {
-        return x &lt; y ? x : y;
+        return x < y ? x : y;
     }
 
     /**
@@ -736,9 +736,9 @@ contract PATTokenSale is Math {
     uint256 internal finalPrice;
 
     /**
-     * Maps investor&#39;s address to corresponding Investor structure.
+     * Maps investor's address to corresponding Investor structure.
      */
-    mapping (address =&gt; Investor) internal investors;
+    mapping (address => Investor) internal investors;
 
     /**
      * Total amount invested in Wei.

@@ -2,13 +2,13 @@ pragma solidity ^0.4.6;
 
 contract CoinPaws {
 
-  string public name = &quot;CoinPaws&quot;;
-  string public symbol = &quot;CPS&quot;;
+  string public name = "CoinPaws";
+  string public symbol = "CPS";
   uint public decimals = 10;
   uint public INITIAL_SUPPLY = 88000000000000000000;
   
-    mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
   uint256 public _totalSupply;
   address public _creator;
   bool bIsFreezeAll = false;
@@ -17,13 +17,13 @@ contract CoinPaws {
   event Approval(address indexed owner, address indexed spender, uint value);
   
   function safeSub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 

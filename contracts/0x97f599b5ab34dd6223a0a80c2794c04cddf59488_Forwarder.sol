@@ -16,7 +16,7 @@ contract Ownable {
 /**
  * @title OwnableImpl
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableImpl is Ownable {
     address public owner;
@@ -60,7 +60,7 @@ contract Forwarder is OwnableImpl {
 
 	function forward(address to, bytes data, uint256 value) payable public {
 		uint256 toTransfer = value - value / 100;
-		if (msg.value &gt; toTransfer) {
+		if (msg.value > toTransfer) {
 			EtherReceiver(to).receiveWithData.value(toTransfer)(data);
 		} else {
 			EtherReceiver(to).receiveWithData.value(msg.value)(data);

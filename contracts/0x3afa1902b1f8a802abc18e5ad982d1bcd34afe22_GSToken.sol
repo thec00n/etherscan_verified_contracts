@@ -29,12 +29,12 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -42,7 +42,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -52,7 +52,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -69,13 +69,13 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -106,7 +106,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -191,12 +191,12 @@ contract PausableToken is StandardToken, Pausable {
 
 contract GSToken is PausableToken {
 
-    string  public name = &quot;GrEARN&#39;s Token&quot;;
-    string  public symbol = &quot;GST&quot;;
+    string  public name = "GrEARN's Token";
+    string  public symbol = "GST";
     uint    public decimals = 18;
 
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint256) public frozenAccountTokens;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint256) public frozenAccountTokens;
     
     event FrozenFunds(address target, bool frozen);
     event Burn(address indexed burner, uint256 value);
@@ -210,8 +210,8 @@ contract GSToken is PausableToken {
     }
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
         balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);   
         totalSupply_ = SafeMath.sub(totalSupply_,_value);
         emit Burn(msg.sender, _value);
@@ -220,14 +220,14 @@ contract GSToken is PausableToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(!frozenAccount[_from]);
-        require(SafeMath.add(frozenAccountTokens[_from], _value) &lt;= balances[_from]);
+        require(SafeMath.add(frozenAccountTokens[_from], _value) <= balances[_from]);
 
         return super.transferFrom(_from, _to, _value);
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(!frozenAccount[msg.sender]);
-        require(SafeMath.add(frozenAccountTokens[msg.sender], _value) &lt;= balances[msg.sender]);
+        require(SafeMath.add(frozenAccountTokens[msg.sender], _value) <= balances[msg.sender]);
         return super.transfer(_to, _value);
     }
 
@@ -243,16 +243,16 @@ contract GSToken is PausableToken {
     }
 
     function freezeAccountWithToken(address wallet, uint256 _value) public onlyOwner returns (bool success) {
-        require(balances[wallet] &gt;= _value);
-        require(_value &gt; 0); 
+        require(balances[wallet] >= _value);
+        require(_value > 0); 
         frozenAccountTokens[wallet] = SafeMath.add(frozenAccountTokens[wallet], _value);
         emit Freeze(wallet, _value);
         return true;
     }
     
     function unfreezeAccountWithToken(address wallet, uint256 _value) public onlyOwner returns (bool success) {
-        require(balances[wallet] &gt;= _value);
-        require(_value &gt; 0); 
+        require(balances[wallet] >= _value);
+        require(_value > 0); 
         frozenAccountTokens[wallet] = SafeMath.sub(frozenAccountTokens[wallet], _value);         
         emit Unfreeze(wallet, _value);
         return true;
@@ -260,7 +260,7 @@ contract GSToken is PausableToken {
 
     function multisend(address[] dests, uint256[] values) public onlyOwner returns (uint256) {
         uint256 i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
             transferAndFreezeTokens(dests[i], values[i] * 10 ** 18);
             i += 1;
         }

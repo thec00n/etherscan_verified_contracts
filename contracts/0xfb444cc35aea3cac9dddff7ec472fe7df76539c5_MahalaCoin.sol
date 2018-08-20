@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -100,8 +100,8 @@ contract BasicToken is ERC20Basic, Ownable {
   using SafeMath for uint256;
   address public addressTeam =  0x04cFbFa64917070d7AEECd20225782240E8976dc;
   bool public frozenAccountICO = true;
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; bool) public frozenAccount;
+  mapping(address => uint256) balances;
+  mapping (address => bool) public frozenAccount;
   function setFrozenAccountICO(bool _frozenAccountICO) public onlyOwner{
     frozenAccountICO = _frozenAccountICO;   
   }
@@ -113,7 +113,7 @@ contract BasicToken is ERC20Basic, Ownable {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    if (msg.sender != owner &amp;&amp; msg.sender != addressTeam){  
+    if (msg.sender != owner && msg.sender != addressTeam){  
       require(!frozenAccountICO); 
     }
     require(!frozenAccount[_to]);   // Check if recipient is frozen  
@@ -143,7 +143,7 @@ contract BasicToken is ERC20Basic, Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   
   /**
    * @dev Transfer tokens from one address to another
@@ -152,14 +152,14 @@ contract StandardToken is ERC20, BasicToken {
    * @param _value uint256 the amout of tokens to be transfered
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    if (msg.sender != owner &amp;&amp; msg.sender != addressTeam){  
+    if (msg.sender != owner && msg.sender != addressTeam){  
       require(!frozenAccountICO); 
     }    
     require(!frozenAccount[_from]);                     // Check if sender is frozen
     require(!frozenAccount[_to]);                       // Check if recipient is frozen      
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -244,8 +244,8 @@ contract MintableToken is StandardToken {
 
 contract MahalaCoin is Ownable, MintableToken {
   using SafeMath for uint256;    
-  string public constant name = &quot;Mahala Coin&quot;;
-  string public constant symbol = &quot;MHC&quot;;
+  string public constant name = "Mahala Coin";
+  string public constant symbol = "MHC";
   uint32 public constant decimals = 18;
 
   // address public addressTeam; 
@@ -257,7 +257,7 @@ contract MahalaCoin is Ownable, MintableToken {
     mint(addressTeam, summTeam);
 	mint(owner, 70000000 * 1 ether);
   }
-      /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+      /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -292,9 +292,9 @@ contract Crowdsale is Ownable {
   uint hardcap;  
   MahalaCoin public token;
   // balances for softcap
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
   // balances for softcap
-  mapping(address =&gt; uint) public balancesToken;  
+  mapping(address => uint) public balancesToken;  
   // The token being offered
 
   // start and end timestamps where investments are allowed (both inclusive)
@@ -395,22 +395,22 @@ contract Crowdsale is Ownable {
     uint256 backAmount;
     require(beneficiary != address(0));
     //minimum amount in ETH
-    require(weiAmount &gt;= minQuanValues);
+    require(weiAmount >= minQuanValues);
     //maximum amount in ETH
-    require(weiAmount.add(balances[msg.sender]) &lt;= maxQuanValues);    
+    require(weiAmount.add(balances[msg.sender]) <= maxQuanValues);    
     //hard cap
     address _this = this;
-    require(hardcap &gt; _this.balance);
+    require(hardcap > _this.balance);
 
     //Pre-sale
-    if (now &gt;= startPreSale &amp;&amp; now &lt; endPreSale &amp;&amp; totalPreSale &lt; maxPreSale){
+    if (now >= startPreSale && now < endPreSale && totalPreSale < maxPreSale){
       tokens = weiAmount.mul(ratePreSale);
-	  if (maxPreSale.sub(totalPreSale) &lt;= tokens){
+	  if (maxPreSale.sub(totalPreSale) <= tokens){
 	    endPreSale = now;
 	    startIco = now;
 	    endIco = startIco + 40 * 1 days; 
 	  }
-      if (maxPreSale.sub(totalPreSale) &lt; tokens){
+      if (maxPreSale.sub(totalPreSale) < tokens){
         tokens = maxPreSale.sub(totalPreSale); 
         weiAmount = tokens.div(ratePreSale);
         backAmount = msg.value.sub(weiAmount);
@@ -419,9 +419,9 @@ contract Crowdsale is Ownable {
     }
        
     //ico   
-    if (now &gt;= startIco &amp;&amp; now &lt; endIco &amp;&amp; totalIco &lt; maxIco){
+    if (now >= startIco && now < endIco && totalIco < maxIco){
       tokens = weiAmount.mul(rateIco);
-      if (maxIco.sub(totalIco) &lt; tokens){
+      if (maxIco.sub(totalIco) < tokens){
         tokens = maxIco.sub(totalIco); 
         weiAmount = tokens.div(rateIco);
         backAmount = msg.value.sub(weiAmount);
@@ -429,12 +429,12 @@ contract Crowdsale is Ownable {
       totalIco = totalIco.add(tokens);
     }        
 
-    require(tokens &gt; 0);
+    require(tokens > 0);
     balances[msg.sender] = balances[msg.sender].add(msg.value);
     token.transfer(msg.sender, tokens);
    // balancesToken[msg.sender] = balancesToken[msg.sender].add(tokens);
     
-    if (backAmount &gt; 0){
+    if (backAmount > 0){
       msg.sender.transfer(backAmount);    
     }
     emit TokenProcurement(msg.sender, beneficiary, weiAmount, tokens);
@@ -442,8 +442,8 @@ contract Crowdsale is Ownable {
 
   function refund() public{
     address _this = this;
-    require(_this.balance &lt; softcap &amp;&amp; now &gt; endIco);
-    require(balances[msg.sender] &gt; 0);
+    require(_this.balance < softcap && now > endIco);
+    require(balances[msg.sender] > 0);
     uint value = balances[msg.sender];
     balances[msg.sender] = 0;
     msg.sender.transfer(value);
@@ -451,17 +451,17 @@ contract Crowdsale is Ownable {
   
   function transferTokenToMultisig(address _address) public onlyOwner {
     address _this = this;
-    require(_this.balance &lt; softcap &amp;&amp; now &gt; endIco);  
+    require(_this.balance < softcap && now > endIco);  
     token.transfer(_address, token.balanceOf(_this));
   }   
   
   function transferEthToMultisig() public onlyOwner {
     address _this = this;
-    require(_this.balance &gt;= softcap &amp;&amp; now &gt; endIco);  
+    require(_this.balance >= softcap && now > endIco);  
     wallet.transfer(_this.balance);
     token.setFrozenAccountICO(false);
   }  
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
   function freezeAccount(address target, bool freeze) onlyOwner public {

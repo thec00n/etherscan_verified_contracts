@@ -9,13 +9,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -31,7 +31,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -139,7 +139,7 @@ Set the king to the Ethereum Address which is encoded as 160 bits of the 256 bit
 
       uint previousEpochCount = ERC918Interface(minedToken).epochCount();
 
-      //Forward to another contract, typically a pool&#39;s owned  mint contract
+      //Forward to another contract, typically a pool's owned  mint contract
       require(proxyMinterInterface(proxyMinter).proxyMint(nonce, challenge_digest));
 
      //make sure that the minedToken really was proxy minted through the proxyMint delegate call chain
@@ -155,7 +155,7 @@ Set the king to the Ethereum Address which is encoded as 160 bits of the 256 bit
  function uintToBytesForAddress(uint256 x) constant returns (bytes b) {
 
       b = new bytes(20);
-      for (uint i = 0; i &lt; 20; i++) {
+      for (uint i = 0; i < 20; i++) {
           b[i] = byte(uint8(x / (2**(8*(31 - i)))));
       }
 
@@ -165,7 +165,7 @@ Set the king to the Ethereum Address which is encoded as 160 bits of the 256 bit
 
  function bytesToAddress (bytes b) constant returns (address) {
      uint result = 0;
-     for (uint i = b.length-1; i+1 &gt; 0; i--) {
+     for (uint i = b.length-1; i+1 > 0; i--) {
        uint c = uint(b[i]);
        uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
        result += to_inc;

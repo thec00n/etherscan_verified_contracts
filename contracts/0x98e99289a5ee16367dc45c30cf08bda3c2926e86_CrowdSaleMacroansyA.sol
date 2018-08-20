@@ -4,10 +4,10 @@ pragma solidity ^0.4.19;
 contract SafeMath {
     function safeAdd(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) internal pure returns (uint c) {
@@ -15,7 +15,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -48,7 +48,7 @@ contract CrowdSaleMacroansyA is SafeMath {
     uint internal deadline;
     uint internal amountWithdrawn;
     //
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     //
     bool internal fundingGoalReached;
     bool internal crowdsaleClosed; 
@@ -148,7 +148,7 @@ contract CrowdSaleMacroansyA is SafeMath {
 
       if(msg.sender != owner){
 
-        require(crowdsaleClosed == false &amp;&amp; crowdsaleStart == true);
+        require(crowdsaleClosed == false && crowdsaleStart == true);
 
         token t = token( _getTknAddr() );
 
@@ -157,7 +157,7 @@ contract CrowdSaleMacroansyA is SafeMath {
         require(sucsBuyCoinAtToken == true);
 
         // return payment to buyer 
-            if( retPayment &gt; 0 ) {
+            if( retPayment > 0 ) {
                     
               bool sucsTrPaymnt;
               sucsTrPaymnt = _safeTransferPaymnt( msg.sender, retPayment );
@@ -175,10 +175,10 @@ contract CrowdSaleMacroansyA is SafeMath {
 //
     function viewCrowdSaleLive(bool show, bool showFundsInWei) public view returns(uint fundingGoal_, uint fundRaised, uint fundWithDrawn, uint timeRemainingInMin, uint tokenPriceInWei, bool fundingGoalReached_ ){
         
-        if(show == true &amp;&amp; crowdsaleStart == true){
+        if(show == true && crowdsaleStart == true){
             
-            if( deadline &gt;= now ) timeRemainingInMin = safeSub( deadline, now) / 60;
-            if( now &gt; deadline ) timeRemainingInMin == 0;
+            if( deadline >= now ) timeRemainingInMin = safeSub( deadline, now) / 60;
+            if( now > deadline ) timeRemainingInMin == 0;
             
             ICO ico = ICO(_getIcoAddr());
             uint buyPrice_; 
@@ -196,14 +196,14 @@ contract CrowdSaleMacroansyA is SafeMath {
 //_______________________________________________
 //
     function viewMyContribution(bool show) public view returns(uint yourContributionInWEI){
-        if(show == true &amp;&amp; crowdsaleStart == true){
+        if(show == true && crowdsaleStart == true){
 
             return(balanceOf[msg.sender]);
         }
     }
 //________________________________________________
 //
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 //________________________________________________
 //
     /**
@@ -213,13 +213,13 @@ contract CrowdSaleMacroansyA is SafeMath {
 
        if(crowdsaleStart == true){
 
-            if (amountRaised &gt;= fundingGoal){
+            if (amountRaised >= fundingGoal){
                 fundingGoalReached = true;
                 GoalReached(beneficiaryFunds, amountRaised);
                 crowdsaleClosed = true;               
             } 
             //
-             if (amountRaised &lt; fundingGoal)  fundingGoalReached = false;             
+             if (amountRaised < fundingGoal)  fundingGoalReached = false;             
        }
     }
 //________________________________________________
@@ -230,11 +230,11 @@ contract CrowdSaleMacroansyA is SafeMath {
      */
     function safeWithdrawal() afterDeadline public {
 
-        if ( (!fundingGoalReached || unlockFundersBalance == true) &amp;&amp; msg.sender != owner) {
+        if ( (!fundingGoalReached || unlockFundersBalance == true) && msg.sender != owner) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
-                require(this.balance &gt;= amount );
+            if (amount > 0) {
+                require(this.balance >= amount );
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                     amountWithdrawn = safeAdd( amountWithdrawn, amount); 
@@ -252,10 +252,10 @@ contract CrowdSaleMacroansyA is SafeMath {
     */
     function withdrawFund(uint withdrawAmount, bool withdrawTotalAmountBalance) onlyOwner public returns(bool success) {
       
-        if (fundingGoalReached &amp;&amp; beneficiaryFunds == msg.sender &amp;&amp; unlockFundersBalance == false ) {
+        if (fundingGoalReached && beneficiaryFunds == msg.sender && unlockFundersBalance == false ) {
                       
             if( withdrawTotalAmountBalance == true ) withdrawAmount = safeSub( amountRaised, amountWithdrawn);
-            require(this.balance &gt;= withdrawAmount );
+            require(this.balance >= withdrawAmount );
             amountWithdrawn = safeAdd( amountWithdrawn, withdrawAmount); 
             success = _withdraw(withdrawAmount);   
             require(success == true); 
@@ -296,7 +296,7 @@ contract CrowdSaleMacroansyA is SafeMath {
                 //
                 function endOfRewardsConfirmed(bool isEndNow) public onlyOwner{
 
-                    if(isEndOk == true &amp;&amp; isEndNow == true) selfdestruct(owner);
+                    if(isEndOk == true && isEndNow == true) selfdestruct(owner);
                 }
 //________________________________________________
 }

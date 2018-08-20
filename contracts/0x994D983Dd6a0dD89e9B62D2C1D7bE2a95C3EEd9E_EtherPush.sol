@@ -8,13 +8,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -83,11 +83,11 @@ contract Token {
 contract StandardToken is Token {
 
   function transfer(address _to, uint256 _value) returns (bool success) {
-    //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+    //Default assumes totalSupply can't be over max (2^256 - 1).
+    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
     //Replace the if with this one instead.
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    //if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -97,8 +97,8 @@ contract StandardToken is Token {
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     //same as above. Replace this line with the following if you want to protect against wrapping uints.
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
@@ -121,9 +121,9 @@ contract StandardToken is Token {
     return allowed[_owner][_spender];
   }
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   uint256 public totalSupply;
 }
@@ -142,11 +142,11 @@ contract EtherPush is SafeMath {
     uint    timestamp;
   }
 
-  mapping (address =&gt; mapping (address =&gt; uint))            public tokens;
-  mapping (uint =&gt; mapping (address =&gt; Order))              public orders;
+  mapping (address => mapping (address => uint))            public tokens;
+  mapping (uint => mapping (address => Order))              public orders;
 
-  string  public constant  name = &quot;EtherPush&quot;;
-  string  public constant  version = &quot;20170913&quot;;
+  string  public constant  name = "EtherPush";
+  string  public constant  version = "20170913";
 
   bool    public           running = true;
 
@@ -196,7 +196,7 @@ contract EtherPush is SafeMath {
     /*
      * between [0.1%, 2%]
      */
-    require (_fee &gt;= 0.001 ether &amp;&amp; _fee &lt;= 0.02 ether);
+    require (_fee >= 0.001 ether && _fee <= 0.02 ether);
 
     sellerfee = _fee;
   }
@@ -208,7 +208,7 @@ contract EtherPush is SafeMath {
     /*
      * between [0.1%, 2%]
      */
-    require (_fee &gt;= 0.001 ether &amp;&amp; _fee &lt;= 0.02 ether);
+    require (_fee >= 0.001 ether && _fee <= 0.02 ether);
     buyerfee = _fee;
   }
 
@@ -216,7 +216,7 @@ contract EtherPush is SafeMath {
     public
     onlyOwner
   {
-    require (_owner &gt; 0);
+    require (_owner > 0);
     owner = _owner;
   }
 
@@ -247,7 +247,7 @@ contract EtherPush is SafeMath {
   }
 
   function withdrawAmountETH(uint amount) {
-    if (tokens[0][msg.sender] &lt; amount) {
+    if (tokens[0][msg.sender] < amount) {
       revert();
     }
 
@@ -287,7 +287,7 @@ contract EtherPush is SafeMath {
       revert();
     }
 
-    if (tokens[token][msg.sender] &lt; amount) {
+    if (tokens[token][msg.sender] < amount) {
       revert();
     }
 
@@ -336,17 +336,17 @@ contract EtherPush is SafeMath {
     public
     onlyRunning
   {
-    if (orders[id][seller].expired &lt; block.number) {
+    if (orders[id][seller].expired < block.number) {
       revert();
     }
 
-    if (orders[id][seller].buyer &gt; 0) {
+    if (orders[id][seller].buyer > 0) {
       if (orders[id][seller].buyer != msg.sender) {
         revert();
       }
     }
 
-    if (orders[id][seller].buyamount &lt; buyamount) {
+    if (orders[id][seller].buyamount < buyamount) {
       revert();
     }
 
@@ -357,15 +357,15 @@ contract EtherPush is SafeMath {
     uint    sellamount = safeMul(ordersellamount, buyamount) / orderbuyamount;
     buyamount = safeMul(sellamount, orderbuyamount) / ordersellamount;
 
-    if (ordersellamount &lt; sellamount) {
+    if (ordersellamount < sellamount) {
       revert();
     }
 
-    if (tokens[sell][seller] &lt; sellamount) {
+    if (tokens[sell][seller] < sellamount) {
       revert();
     }
 
-    if (tokens[buy][msg.sender] &lt; buyamount) {
+    if (tokens[buy][msg.sender] < buyamount) {
       revert();
     }
 
@@ -428,12 +428,12 @@ contract EtherPush is SafeMath {
     onlyRunning
   {
 
-    if (tokens[sell][msg.sender] &lt; sellamount) {
+    if (tokens[sell][msg.sender] < sellamount) {
       revert();
     }
 
     /*
-     * if buyer &gt; 0, the order only can be purchased by the specified buyer.
+     * if buyer > 0, the order only can be purchased by the specified buyer.
      * and here we do not check the token balance to imporve the poor performance
      */
 

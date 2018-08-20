@@ -32,7 +32,7 @@ contract ERC20 is ERC20Basic {
 }
 
 contract MultiOwnable {
-    mapping (address =&gt; bool) owners;
+    mapping (address => bool) owners;
     address unremovableOwner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -77,8 +77,8 @@ contract MultiOwnable {
 
 contract TokenLock is MultiOwnable {
     ERC20 public token;
-    mapping (address =&gt; uint256) public lockAmounts;
-    mapping (address =&gt; uint256) public releaseTimestamps;
+    mapping (address => uint256) public lockAmounts;
+    mapping (address => uint256) public releaseTimestamps;
 
     constructor (address _token) public {
         token = ERC20(_token);
@@ -101,7 +101,7 @@ contract TokenLock is MultiOwnable {
 
     function release(address _addr) external {
         require(owners[msg.sender] || msg.sender == _addr);
-        require(block.timestamp &gt;= releaseTimestamps[_addr]);
+        require(block.timestamp >= releaseTimestamps[_addr]);
         uint256 amount = lockAmounts[_addr];
         lockAmounts[_addr] = 0;
         releaseTimestamps[_addr] = 0;

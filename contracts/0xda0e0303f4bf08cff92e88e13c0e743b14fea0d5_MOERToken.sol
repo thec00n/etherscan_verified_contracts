@@ -11,12 +11,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -45,7 +45,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -56,7 +56,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -81,20 +81,20 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract MOERToken is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;Moer Digital Assets Platform&quot;;
-    string public constant symbol = &quot;MOER&quot;;
+    string public constant name = "Moer Digital Assets Platform";
+    string public constant symbol = "MOER";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
-    address public owner;                                             // owner&#39;s address for MOER Team.
+    address public owner;                                             // owner's address for MOER Team.
 
     // MOER parameters
     uint256 public currentSupply = 0;                                 // current supply tokens for sell
@@ -127,9 +127,9 @@ contract MOERToken is StandardToken, SafeMath {
       _;
     }
 
-    /// @dev increase MOER&#39;s current supply
+    /// @dev increase MOER's current supply
     function increaseSupply (uint256 _value, address _to) onlyOwner external {
-        if (_value + currentSupply &gt; totalSupply) throw;
+        if (_value + currentSupply > totalSupply) throw;
         currentSupply = safeAdd(currentSupply, _value);
         balances[_to] = safeAdd(balances[_to], _value);
         Transfer(address(0x0), _to, _value);
@@ -141,7 +141,7 @@ contract MOERToken is StandardToken, SafeMath {
         owner = _newOwner;
     }
     
-    /// @dev set the token&#39;s tokenExchangeRate,
+    /// @dev set the token's tokenExchangeRate,
     function setTokenExchangeRate(uint256 _tokenExchangeRate) onlyOwner external {
         if (_tokenExchangeRate == 0) throw;
         if (_tokenExchangeRate == tokenExchangeRate) throw;
@@ -149,11 +149,11 @@ contract MOERToken is StandardToken, SafeMath {
         tokenExchangeRate = _tokenExchangeRate;
     }    
     
-    /// @dev set the token&#39;s totalFundingAmount,
+    /// @dev set the token's totalFundingAmount,
     function setFundingAmount(uint256 _totalFundingAmount) onlyOwner external {
         if (_totalFundingAmount == 0) throw;
         if (_totalFundingAmount == totalFundingAmount) throw;
-        if (_totalFundingAmount - currentFundingAmount + currentSupply &gt; totalSupply) throw;
+        if (_totalFundingAmount - currentFundingAmount + currentSupply > totalSupply) throw;
 
         totalFundingAmount = _totalFundingAmount;
     }    
@@ -167,8 +167,8 @@ contract MOERToken is StandardToken, SafeMath {
     /// @dev turn on the funding state
     function startFunding (uint256 _fundingStartBlock, uint256 _fundingStopBlock) onlyOwner external {
         if (isFunding) throw;
-        if (_fundingStartBlock &gt;= _fundingStopBlock) throw;
-        if (block.number &gt;= _fundingStartBlock) throw;
+        if (_fundingStartBlock >= _fundingStopBlock) throw;
+        if (block.number >= _fundingStartBlock) throw;
 
         fundingStartBlock = _fundingStartBlock;
         fundingStopBlock = _fundingStopBlock;
@@ -186,11 +186,11 @@ contract MOERToken is StandardToken, SafeMath {
         if (!isFunding) throw;
         if (msg.value == 0) throw;
 
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingStopBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingStopBlock) throw;
 
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);
-        if (tokens + currentFundingAmount &gt; totalFundingAmount) throw;
+        if (tokens + currentFundingAmount > totalFundingAmount) throw;
 
         currentFundingAmount = safeAdd(currentFundingAmount, tokens);
         currentSupply = safeAdd(currentSupply, tokens);

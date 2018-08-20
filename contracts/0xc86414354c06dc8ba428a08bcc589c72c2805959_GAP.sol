@@ -31,11 +31,11 @@ library MathFunction
     // standard uint256 functions
 
     function plus(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function minus(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function multiply(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -50,11 +50,11 @@ library MathFunction
     // uint256 function
 
     function hplus(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hminus(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmultiply(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -113,13 +113,13 @@ contract token is owned, ERC20
 	uint8 public decimals;
 	uint256 public totalSupply;
 	
-	mapping (address =&gt; uint256) public contrubutedAmount;
-	mapping (address =&gt; uint256) public balanceOf;													// This creates an array with all balances
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;								// Creates an array with allowed amount of tokens for sender
+	mapping (address => uint256) public contrubutedAmount;
+	mapping (address => uint256) public balanceOf;													// This creates an array with all balances
+	mapping (address => mapping (address => uint256)) public allowance;								// Creates an array with allowed amount of tokens for sender
 	
 	modifier onlyContributer
 	{
-		require(balanceOf[msg.sender] &gt; 0);
+		require(balanceOf[msg.sender] > 0);
 		_;
 	}
 	
@@ -129,8 +129,8 @@ contract token is owned, ERC20
 		totalSupply = 166000;  																		// Update total supply
 		totalSupply = totalSupply.multiply(10 ** 18);
 		balanceOf[msg.sender] = totalSupply;              											// Give the creator all initial tokens
-		name = &quot;Global Academy Place&quot;;               										// Set the name for display purposes
-		symbol = &quot;GAP&quot;;                                											// Set the symbol for display purposes
+		name = "Global Academy Place";               										// Set the name for display purposes
+		symbol = "GAP";                                											// Set the symbol for display purposes
 		decimals = 18;                            													// Amount of decimals for display purposes
 	}
 	
@@ -146,8 +146,8 @@ contract token is owned, ERC20
   
 	function transfer(address _to, uint256 _value) returns (bool success) 
 	{
-		require(balanceOf[msg.sender] &gt;= _value);													// Check if the sender has enough    
-		require(balanceOf[_to] &lt;= balanceOf[_to].plus(_value));										// Check for overflows
+		require(balanceOf[msg.sender] >= _value);													// Check if the sender has enough    
+		require(balanceOf[_to] <= balanceOf[_to].plus(_value));										// Check for overflows
 								
 		balanceOf[msg.sender] = balanceOf[msg.sender].minus(_value);                     			// Subtract from the sender
 		balanceOf[_to] = balanceOf[_to].plus(_value);                            					// Add the same to the recipient
@@ -159,9 +159,9 @@ contract token is owned, ERC20
 	// A contract attempts to get the coins
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success)			
 	{
-		require(_value &lt;= balanceOf[_from]);														// Check if the sender has enough
-		require(balanceOf[_to] &lt;= balanceOf[_to].plus(_value));										// Check for overflows
-		require(_value &lt;= allowance[_from][msg.sender]);											// Check allowance
+		require(_value <= balanceOf[_from]);														// Check if the sender has enough
+		require(balanceOf[_to] <= balanceOf[_to].plus(_value));										// Check for overflows
+		require(_value <= allowance[_from][msg.sender]);											// Check allowance
   									
 		balanceOf[_from] = balanceOf[_from].minus(_value);                          				// Subtract from the sender
 		balanceOf[_to] = balanceOf[_to].plus(_value);                            					// Add the same to the recipient
@@ -202,10 +202,10 @@ contract token is owned, ERC20
 contract ICOToken is token
 {
 	// Public variables
-	string public firstLevelPrice = &quot;Token 0.0100 ETH per Token&quot;;
-	string public secondLevelPrice = &quot;Token 0.0125 ETH per Token&quot;;
-	string public thirdLevelPrice = &quot;Token 0.0166 ETH per Token&quot;;
-	string public CapLevelPrice = &quot;Token 0.0250 ETH per Token&quot;;
+	string public firstLevelPrice = "Token 0.0100 ETH per Token";
+	string public secondLevelPrice = "Token 0.0125 ETH per Token";
+	string public thirdLevelPrice = "Token 0.0166 ETH per Token";
+	string public CapLevelPrice = "Token 0.0250 ETH per Token";
 	uint256 public _firstLevelEth;
 	uint256 public _secondLevelEth;
 	uint256 public _thirdLevelEth;
@@ -219,7 +219,7 @@ contract ICOToken is token
 	uint256 public maximumBuyBackAmountInWEI;
 	address public beneficiary;	
 	
-	mapping (address =&gt; uint256) public KilledTokens;												// This creates an array with all killed tokens
+	mapping (address => uint256) public KilledTokens;												// This creates an array with all killed tokens
 	
 	// Private variables
 	uint256 _currentLevelEth;
@@ -307,7 +307,7 @@ contract ICOToken is token
 	// Check if the tokens amount is bigger than total supply
 	function safeCheck (uint256 _TokensAmount) internal
 	{
-		require(_TokensAmount &lt;= totalSupply);
+		require(_TokensAmount <= totalSupply);
 	}
 	
 	// Calculates the tokens amount
@@ -335,9 +335,9 @@ contract ICOToken is token
 		assert(!crowdsaleClosed);																	// Checks if the crowdsale is closed
 	
 		amount = msg.value;																			// Amount in ether
-		assert(amountRaisedEth.plus(amount) &lt;= _nextLevelEth);										// Check if you are going to jump over one level (e.g. from first to third - not allowed)					
+		assert(amountRaisedEth.plus(amount) <= _nextLevelEth);										// Check if you are going to jump over one level (e.g. from first to third - not allowed)					
 								
-		if(amountRaisedEth.plus(amount) &gt; _currentLevelEth)											
+		if(amountRaisedEth.plus(amount) > _currentLevelEth)											
 		{								
 			TokensAmount = tokensAmount();															// The current level is passed and calculate new buy price and change level
 			safeCheck(TokensAmount);						
@@ -353,7 +353,7 @@ contract ICOToken is token
 		_currentSupply = _currentSupply.plus(TokensAmount);
 		contrubutedAmount[msg.sender] = contrubutedAmount[msg.sender].plus(msg.value);		
 		balanceOf[this] = balanceOf[this].minus(TokensAmount);						
-		balanceOf[msg.sender] = balanceOf[msg.sender].plus(TokensAmount);                   		// Adds tokens amount to buyer&#39;s balance
+		balanceOf[msg.sender] = balanceOf[msg.sender].plus(TokensAmount);                   		// Adds tokens amount to buyer's balance
 		Transfer(this, msg.sender, TokensAmount);                									// Execute an event reflecting the change					
 		return;                                     	            								// Ends function and returns
 	}						
@@ -364,7 +364,7 @@ contract ICOToken is token
 	// Checks if the goal or time limit has been reached and ends the campaign 
 	function CloseCrowdSale(uint256 _maximumBuyBackAmountInCents) internal 								
 	{
-		if (amountRaisedEth &gt;= fundingGoal)
+		if (amountRaisedEth >= fundingGoal)
 		{
 			fundingGoalReached = true;																// Checks if the funding goal is reached
 			GoalReached(beneficiary, amountRaisedEth);
@@ -381,7 +381,7 @@ contract ICOToken is token
 contract GAP is ICOToken
 {	
 	// Public variables
-	string public maximumBuyBack = &quot;Token 0.05 ETH per Token&quot;;										// Max price in ETH for buy back
+	string public maximumBuyBack = "Token 0.05 ETH per Token";										// Max price in ETH for buy back
 	uint256 public KilledTillNow;
 	uint256 public sellPrice;
 	uint256 public mustToSellCourses;
@@ -417,10 +417,10 @@ contract GAP is ICOToken
 	
 	function deposit (uint _deposits, uint256 actualSellPriceInWei, uint _actualPriceInCents) onlyOwner payable												
 	{
-		assert(_deposits &lt; 100);																	// Check if the deposits are less than 10	
+		assert(_deposits < 100);																	// Check if the deposits are less than 10	
 		depositsTillNow = depositsTillNow.plus(_deposits);          								// Increase the deposit counter
-		assert(mustToSellCourses &gt; 0);
-		if(mustToSellCourses &lt; _deposits)
+		assert(mustToSellCourses > 0);
+		if(mustToSellCourses < _deposits)
 		{
 			_deposits = mustToSellCourses;		
 		}
@@ -431,15 +431,15 @@ contract GAP is ICOToken
 				
 	function sell(uint256 amount) onlyContributer returns (uint256 revenue)			
 	{	
-	    require(this.balance &gt;= amount * sellPrice);                                                 // checks if the contract has enough ether to buy
+	    require(this.balance >= amount * sellPrice);                                                 // checks if the contract has enough ether to buy
 		revenue = amount.multiply(sellPrice);														// The revenue you receive when you sell your tokens
 		amount = amount.multiply(10 ** 18);
-		balanceOf[msg.sender] = balanceOf[msg.sender].minus(amount);                   				// Subtracts the amount from seller&#39;s balance
-		balanceOf[Killer] = balanceOf[Killer].plus(amount);                         				// Adds the amount to owner&#39;s balance
+		balanceOf[msg.sender] = balanceOf[msg.sender].minus(amount);                   				// Subtracts the amount from seller's balance
+		balanceOf[Killer] = balanceOf[Killer].plus(amount);                         				// Adds the amount to owner's balance
 		KilledTokens[msg.sender] = KilledTokens[msg.sender].plus(amount);							// Calculates the killed tokens of the contibuter
 		KilledTillNow = KilledTillNow.plus(amount);													// Calculates all the killed tokens until now
 			
-		msg.sender.transfer(revenue);															// Sends ether to the seller: it&#39;s important // To do this last to prevent recursion attacks
+		msg.sender.transfer(revenue);															// Sends ether to the seller: it's important // To do this last to prevent recursion attacks
 		
 		Transfer(msg.sender, Killer, amount);             											// Executes an event reflecting on the change
 		return revenue;                                 											// Ends function and returns the revenue	
@@ -460,14 +460,14 @@ contract GAP is ICOToken
 			balanceOf[msg.sender] = 0;
 			KilledTillNow = KilledTillNow.plus(tokensAmount);
 			KilledTokens[msg.sender] = KilledTokens[msg.sender].plus(tokensAmount);
-			require(tokensAmount &gt; 0);
+			require(tokensAmount > 0);
 			contrubutedAmount[msg.sender] = contrubutedAmount[msg.sender].minus(amountForReturn);
             msg.sender.transfer(amountForReturn);
 		}
 		
-		if(fundingGoalReached &amp;&amp; beneficiary == msg.sender)
+		if(fundingGoalReached && beneficiary == msg.sender)
 		{
-			require(fundingGoalReached &amp;&amp; beneficiary == msg.sender);
+			require(fundingGoalReached && beneficiary == msg.sender);
 			beneficiary.transfer(amountRaisedEth); 
 		}
 	}

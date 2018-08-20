@@ -20,13 +20,13 @@ contract owned {
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 
 contract AzurionToken is owned {
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply;
-    string public constant name = &quot;Azurion&quot;;
-    string public constant symbol = &quot;AZU&quot;;
+    string public constant name = "Azurion";
+    string public constant symbol = "AZU";
     uint8 public constant decimals = 18;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -42,8 +42,8 @@ contract AzurionToken is owned {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               
-        require (balanceOf[_from] &gt; _value);                
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); 
+        require (balanceOf[_from] > _value);                
+        require (balanceOf[_to] + _value > balanceOf[_to]); 
         require(!frozenAccount[_from]);                     
         require(!frozenAccount[_to]);                       
         balanceOf[_from] -= _value;                         
@@ -73,7 +73,7 @@ contract AzurionToken is owned {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -131,7 +131,7 @@ contract AzurionToken is owned {
       * @param _value the amount of money to burn
       */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -147,10 +147,10 @@ contract AzurionToken is owned {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

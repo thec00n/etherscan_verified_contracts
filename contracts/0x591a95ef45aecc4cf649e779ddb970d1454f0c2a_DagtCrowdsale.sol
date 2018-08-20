@@ -20,9 +20,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -30,7 +30,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -39,7 +39,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -139,7 +139,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   function Crowdsale(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -267,7 +267,7 @@ contract TimedCrowdsale is Crowdsale {
    * @dev Reverts if not in crowdsale time range.
    */
   modifier onlyWhileOpen {
-    require(now &gt;= openingTime &amp;&amp; now &lt;= closingTime);
+    require(now >= openingTime && now <= closingTime);
     _;
   }
 
@@ -277,8 +277,8 @@ contract TimedCrowdsale is Crowdsale {
    * @param _closingTime Crowdsale closing time
    */
   function TimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public {
-    require(_openingTime &gt;= now);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= now);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -289,7 +289,7 @@ contract TimedCrowdsale is Crowdsale {
    * @return Whether crowdsale period has elapsed
    */
   function hasClosed() public view returns (bool) {
-    return now &gt; closingTime;
+    return now > closingTime;
   }
 
   /**
@@ -313,7 +313,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
    
@@ -343,7 +343,7 @@ contract FinalizableCrowdsale is TimedCrowdsale, Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
   
@@ -364,7 +364,7 @@ contract BasicToken is ERC20Basic {
       
   
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -393,7 +393,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -404,8 +404,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -419,7 +419,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -468,7 +468,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -531,7 +531,7 @@ contract CappedCrowdsale is Crowdsale {
    * @param _cap Max amount of wei to be contributed
    */
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
@@ -540,7 +540,7 @@ contract CappedCrowdsale is Crowdsale {
    * @return Whether the cap was reached
    */
   function capReached() public view returns (bool) {
-    return weiRaised &gt;= cap;
+    return weiRaised >= cap;
   }
 
   /**
@@ -550,14 +550,14 @@ contract CappedCrowdsale is Crowdsale {
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     super._preValidatePurchase(_beneficiary, _weiAmount);
-    require(weiRaised.add(_weiAmount) &lt;= cap);
+    require(weiRaised.add(_weiAmount) <= cap);
   }
 
 }
 
 contract WhitelistedCrowdsale is Crowdsale, Ownable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -580,7 +580,7 @@ contract WhitelistedCrowdsale is Crowdsale, Ownable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -634,7 +634,7 @@ contract MintedCrowdsale is Crowdsale {
 contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
     using SafeMath for uint256;
     // Constants
-    string public constant version = &quot;1.1&quot;;
+    string public constant version = "1.1";
     // DAGT token unit.1000000000000000000
     // Using same decimal value as ETH (makes ETH-DAGT conversion much easier).
     // This is the same as in DAGT token contract.
@@ -675,7 +675,7 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     }
     /**
     * @dev Checks whether _beneficiary in whitelisted for the Presale And sale.
-    * @param _beneficiary , User&#39;s Address. 
+    * @param _beneficiary , User's Address. 
     * @return Whether _beneficiary in whitelisted.
     */
     function isWhitelistedAddress(address _beneficiary) public constant returns (bool) {
@@ -710,8 +710,8 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     * @param _closingTime Crowdsale closing time
     */
     function setTimedCrowdsale(uint256 _openingTime, uint256 _closingTime) public onlyOwner {
-        // require(_openingTime &gt;= now);
-        require(_closingTime &gt;= _openingTime);
+        // require(_openingTime >= now);
+        require(_closingTime >= _openingTime);
 
         openingTime = _openingTime;
         closingTime = _closingTime;
@@ -722,7 +722,7 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     * @return tokens 
     */
     function computeTokens(uint256 _weiAmount) public constant returns(uint256) {
-        if(_weiAmount &lt; minWeiAmount){ 
+        if(_weiAmount < minWeiAmount){ 
             return 0;
         }
         
@@ -735,7 +735,7 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     * @param _minWeiAmount Value in wei
     */
     function setMinAmount(uint256 _minWeiAmount)  public onlyOwner{
-        require(_minWeiAmount &gt; uint256(0));
+        require(_minWeiAmount > uint256(0));
         minWeiAmount = _minWeiAmount;
     }
     
@@ -744,7 +744,7 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     * @param _lockingRatio locking ratio except bunus
     */
     function setLockedRatio(uint _lockingRatio)  public onlyOwner{
-        require(_lockingRatio &gt; uint(0));
+        require(_lockingRatio > uint(0));
         lockingRatio = _lockingRatio;
     }
     /**
@@ -752,10 +752,10 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     * @return bonus 
     */
     function computeTimeBonus(uint256 _time) public constant returns(uint256) {
-        require(_time &gt;= openingTime);
+        require(_time >= openingTime);
 
-        for (uint i = 0; i &lt; BONUS_TIMES.length; i++) {
-            if (_time.sub(openingTime) &lt;= BONUS_TIMES[i]) {
+        for (uint i = 0; i < BONUS_TIMES.length; i++) {
+            if (_time.sub(openingTime) <= BONUS_TIMES[i]) {
                 return BONUS_TIMES_VALUES[i];
             }
         }
@@ -767,8 +767,8 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     * @return bonus 
     */
     function computeAmountBonus(uint256 _weiAmount) public constant returns(uint256) {
-        for (uint i = 0; i &lt; BONUS_AMOUNTS.length; i++) {
-            if (_weiAmount &gt;= BONUS_AMOUNTS[i]) {
+        for (uint i = 0; i < BONUS_AMOUNTS.length; i++) {
+            if (_weiAmount >= BONUS_AMOUNTS[i]) {
                 return BONUS_AMOUNTS_VALUES[i];
             }
         }
@@ -787,8 +787,8 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     */
     function setBonusesForTimes(uint32[] times, uint32[] values) public onlyOwner {
         require(times.length == values.length);
-        for (uint i = 0; i + 1 &lt; times.length; i++) {
-            require(times[i] &lt; times[i+1]);
+        for (uint i = 0; i + 1 < times.length; i++) {
+            require(times[i] < times[i+1]);
         }
 
         BONUS_TIMES = times;
@@ -808,8 +808,8 @@ contract DagtCrowdsale is CappedCrowdsale, MintedCrowdsale, FinalizableCrowdsale
     */
     function setBonusesForAmounts(uint256[] amounts, uint32[] values) public onlyOwner {
         require(amounts.length == values.length);
-        for (uint i = 0; i + 1 &lt; amounts.length; i++) {
-            require(amounts[i] &gt; amounts[i+1]);
+        for (uint i = 0; i + 1 < amounts.length; i++) {
+            require(amounts[i] > amounts[i+1]);
         }
 
         BONUS_AMOUNTS = amounts;

@@ -10,11 +10,11 @@
  * 
  * You can also use the contract in https://www.myetherwallet.com/#contracts. 
  * With ABI / JSON Interface:
- * [{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;showPendingAdmin&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_password&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_originAddress&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;Retrieve&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;ping&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;whoIsAdmin&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_newAdmin&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setAdmin&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_originAddressHash&quot;,&quot;type&quot;:&quot;bytes20&quot;},{&quot;name&quot;:&quot;_releaseTime&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_privacyCommission&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;name&quot;:&quot;SafeGuard&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:true,&quot;stateMutability&quot;:&quot;payable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_originAddressHash&quot;,&quot;type&quot;:&quot;bytes20&quot;}],&quot;name&quot;:&quot;AuditSafeGuard&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;_safeGuarded&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_timelock&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_privacypercentage&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;AuditBalances&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;confirmAdmin&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;RetrieveCommissions&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:true,&quot;stateMutability&quot;:&quot;payable&quot;,&quot;type&quot;:&quot;fallback&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;pendingAdmin&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;currentAdmin&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;ContractAdminTransferPending&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;newAdmin&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;previousAdmin&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;NewContractAdmin&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;CommissionsWithdrawn&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;hash&quot;,&quot;type&quot;:&quot;bytes20&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;comissions&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;SafeGuardSuccess&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;RetrieveSuccess&quot;,&quot;type&quot;:&quot;event&quot;}]
+ * [{"constant":true,"inputs":[],"name":"showPendingAdmin","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_password","type":"string"},{"name":"_originAddress","type":"address"}],"name":"Retrieve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ping","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"whoIsAdmin","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newAdmin","type":"address"}],"name":"setAdmin","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_originAddressHash","type":"bytes20"},{"name":"_releaseTime","type":"uint256"},{"name":"_privacyCommission","type":"uint16"}],"name":"SafeGuard","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_originAddressHash","type":"bytes20"}],"name":"AuditSafeGuard","outputs":[{"name":"_safeGuarded","type":"uint256"},{"name":"_timelock","type":"uint256"},{"name":"_privacypercentage","type":"uint16"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"AuditBalances","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"confirmAdmin","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"RetrieveCommissions","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"pendingAdmin","type":"address"},{"indexed":false,"name":"currentAdmin","type":"address"}],"name":"ContractAdminTransferPending","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"newAdmin","type":"address"},{"indexed":false,"name":"previousAdmin","type":"address"}],"name":"NewContractAdmin","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"value","type":"uint256"}],"name":"CommissionsWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"hash","type":"bytes20"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"comissions","type":"uint256"}],"name":"SafeGuardSuccess","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"value","type":"uint256"}],"name":"RetrieveSuccess","type":"event"}]
  * 
  * ABOUT
  * This Distributed Application (DAPP) provides private (pseudo-anonymous) transactions on the ETH blockchain.
- * A forensic expert will be able to trace these transaction with some time and effort. If you don&#39;t do
+ * A forensic expert will be able to trace these transaction with some time and effort. If you don't do
  * anything illegal where time and effort will be spend to trace you down this should be providing you enough privacy. 
  * You can create public and private transfers (public: anybody with the password can retrieve, private: only a specific address can retrieve).
  * For private transfers there will be no direct link between safeguarding and retrieving the funds, only an indirect link
@@ -23,7 +23,7 @@
  *
  * You can check our FAQ at https://cryptodivert.io/faq for details.
  * 
- * This software is supplied &quot;AS IS&quot; without any warranties and support. 
+ * This software is supplied "AS IS" without any warranties and support. 
  * Cryptology ltd assumes no responsibility or liability for the use of the software, 
  * conveys no license or title under any patent, copyright, or mask work right to the product. 
  * Cryptology ltd make no representation or warranty that such application will be suitable for 
@@ -49,7 +49,7 @@
 pragma solidity ^0.4.21;
 
 contract CryptoDivert {
-    using SafeMath for uint256; // We don&#39;t like overflow errors.
+    using SafeMath for uint256; // We don't like overflow errors.
     
     // ETH address of the admin.
     // Some methods from this contract can only be executed by the admin address.
@@ -65,16 +65,16 @@ contract CryptoDivert {
     
     // Store the originating addresses for every SafeGuard. These will be used to 
     // verify the bytes20 hash when a safeguard is retrieved.
-    mapping (bytes20 =&gt; address) private senders;
+    mapping (bytes20 => address) private senders;
     
     // Allow a SafeGuard to be locked until a certain time (e.g. can`t be retrieved before).
-    mapping (bytes20 =&gt; uint256) private timers;
+    mapping (bytes20 => uint256) private timers;
     
     // Allow a maximum deviation of the amount by x% where x/100 is x * 1%
-    mapping (bytes20 =&gt; uint16) private privacyDeviation;
+    mapping (bytes20 => uint16) private privacyDeviation;
     
     // Store the value of every SafeGuard.
-    mapping (bytes20 =&gt; uint256) private balances;
+    mapping (bytes20 => uint256) private balances;
     
     // Keep balance administrations. 
     uint256 private userBalance; // The total value of all outstanding safeguards combined.
@@ -91,7 +91,7 @@ contract CryptoDivert {
     
     /// MODIFIERS ///
     /**
-     * @dev Only allow a method to be executed if &#39;_who&#39; is not the 0x address
+     * @dev Only allow a method to be executed if '_who' is not the 0x address
      */
     modifier isAddress(address _who) {
         require(_who != NO_ADDRESS);
@@ -99,15 +99,15 @@ contract CryptoDivert {
     }
     
     /**
-     * @dev Only allow a method the be executed if the input hasn&#39;t been messed with.
+     * @dev Only allow a method the be executed if the input hasn't been messed with.
      */
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size +4); // +4 because the 4 bytes of the method.
+        assert(msg.data.length >= size +4); // +4 because the 4 bytes of the method.
         _;
     }
     
     /**
-     * @dev Only allow a method to be executed if &#39;msg.sender&#39; is the admin.
+     * @dev Only allow a method to be executed if 'msg.sender' is the admin.
      */
     modifier OnlyByAdmin() {
         require(msg.sender == admin);
@@ -115,7 +115,7 @@ contract CryptoDivert {
     }
     
     /**
-     * @dev Only allow a method to be executed if &#39;_who&#39; is not the admin.
+     * @dev Only allow a method to be executed if '_who' is not the admin.
      */
     modifier isNotAdmin(address _who) {
         require(_who != admin);
@@ -132,10 +132,10 @@ contract CryptoDivert {
     
     /**
      * @dev Process users sending ETH to this contract.
-     * Don&#39;t send ETH directly to this contract, use the SafeGuard method to 
-     * safeguard your ETHs; then again we don&#39;t mind if you like to 
+     * Don't send ETH directly to this contract, use the SafeGuard method to 
+     * safeguard your ETHs; then again we don't mind if you like to 
      * buy us a beer (or a Lambo). In that case thanks for the ETH! 
-     * We&#39;ll assume you actually intended to tip us.
+     * We'll assume you actually intended to tip us.
      */
     function() public payable {
     }
@@ -145,13 +145,13 @@ contract CryptoDivert {
      * @dev Test for web3js interface to see if contract is correctly initialized.
      */
     function ping() external view returns(string, uint256) {
-        return (&quot;CryptoDivert version 2018.04.05&quot;, now);
+        return ("CryptoDivert version 2018.04.05", now);
     }
     
     
     /**
      * @dev Shows who is the pending admin for this contract
-     * @return &#39;pendingAdmin&#39;
+     * @return 'pendingAdmin'
      */
     function showPendingAdmin() external view 
     OnlyByAdmin()
@@ -163,7 +163,7 @@ contract CryptoDivert {
     
     /**
      * @dev Shows who is the admin for this contract
-     * @return &#39;admin&#39;
+     * @return 'admin'
      */
     function whoIsAdmin() external view 
     returns(address) 
@@ -175,11 +175,11 @@ contract CryptoDivert {
      * @dev Check if the internal administration is correct. The safeguarded user balances added to the 
      * un-retrieved admin commission should be the same as the ETH balance of this contract.
      * 
-     * @return uint256 The total current safeguarded balance of all users &#39;userBalance&#39; + &#39;privacyfund&#39;.
-     * @return uint256 The outstanding admin commissions &#39;commissions&#39;.
+     * @return uint256 The total current safeguarded balance of all users 'userBalance' + 'privacyfund'.
+     * @return uint256 The outstanding admin commissions 'commissions'.
      */
     function AuditBalances() external view returns(uint256, uint256) {
-        assert(address(this).balance &gt;= userBalance);
+        assert(address(this).balance >= userBalance);
         uint256 pendingBalance = userBalance.add(privacyFund);
         uint256 commissions = address(this).balance.sub(pendingBalance);
         
@@ -208,16 +208,16 @@ contract CryptoDivert {
     
     /// EXTERNAL METHODS ///
     /**
-     * @dev Safeguard a value in Wei. You can retreive this after &#39;_releaseTime&#39; via any ETH address 
+     * @dev Safeguard a value in Wei. You can retreive this after '_releaseTime' via any ETH address 
      * by callling the Retreive method with your password and the originating ETH address.
      * 
      * To prevent the password from being visible in the blockchain (everything added is visible in the blockchain!)
      * and allow more users to set the same password, you need to create a RIPEMD160 Hash from your password
-     * and your originating (or intended receiver) ETH address: e.g. if you choose password: &#39;secret&#39; and transfer balance 
-     * from (or to) ETH address (ALL LOWERCASE!) &#39;0x14723a09acff6d2a60dcdf7aa4aff308fddc160c&#39; you should RIPEMD160 Hash:
-     * &#39;secret0x14723a09acff6d2a60dcdf7aa4aff308fddc160c&#39;.
-     * http://www.md5calc.com/ RIPEMD160 gives us the 20 bytes Hash: &#39;602bc74a8e09f80c2d5bbc4374b8f400f33f2683&#39;.
-     * If you manually transfer value to this contract make sure to enter the hash as a bytes20 &#39;0x602bc74a8e09f80c2d5bbc4374b8f400f33f2683&#39;.
+     * and your originating (or intended receiver) ETH address: e.g. if you choose password: 'secret' and transfer balance 
+     * from (or to) ETH address (ALL LOWERCASE!) '0x14723a09acff6d2a60dcdf7aa4aff308fddc160c' you should RIPEMD160 Hash:
+     * 'secret0x14723a09acff6d2a60dcdf7aa4aff308fddc160c'.
+     * http://www.md5calc.com/ RIPEMD160 gives us the 20 bytes Hash: '602bc74a8e09f80c2d5bbc4374b8f400f33f2683'.
+     * If you manually transfer value to this contract make sure to enter the hash as a bytes20 '0x602bc74a8e09f80c2d5bbc4374b8f400f33f2683'.
      * Before you transfer any value to SafeGuard, test the example above and make sure you get the same hash, 
      * then test a transfer (and Retreive!) with a small amount (minimal 1 finney) before SafeGuarding a larger amount. 
      * 
@@ -234,16 +234,16 @@ contract CryptoDivert {
     {
         // We can only SafeGuard anything if there is value transferred.
         // Minimal value is 1 finney, to prevent SPAM and any errors with the commissions calculations.
-        require(msg.value &gt;= 1 finney); 
+        require(msg.value >= 1 finney); 
         
         // Prevent Re-usage of a compromised password by this address; Check that we have not used this before. 
-        // In case we have used this password, but haven&#39;t retrieved the amount, the password is still 
+        // In case we have used this password, but haven't retrieved the amount, the password is still 
         // uncompromised and we can add this amount to the existing amount.
         // A password/ETH combination that was used before will be known to the blockchain (clear text) 
-        // after the Retrieve method has been called and can&#39;t be used again to prevent others retrieving you funds.
-        require(senders[_originAddressHash] == NO_ADDRESS || balances[_originAddressHash] &gt; 0);
+        // after the Retrieve method has been called and can't be used again to prevent others retrieving you funds.
+        require(senders[_originAddressHash] == NO_ADDRESS || balances[_originAddressHash] > 0);
        
-        // We don&#39;t know your password (Only you do!) so we can&#39;t possible check wether or not 
+        // We don't know your password (Only you do!) so we can't possible check wether or not 
         // you created the correct hash, we have to assume you did. Only store the first sender of this hash
         // to prevent someone uploading a small amount with this hash to gain access to the AuditSafeGuard method 
         // or reset the timer.
@@ -251,20 +251,20 @@ contract CryptoDivert {
             
             senders[_originAddressHash] = msg.sender;
             
-            // If you set a timer we check if it&#39;s in the future and add it to this SafeGuard.
-            if (_releaseTime &gt; now) {
+            // If you set a timer we check if it's in the future and add it to this SafeGuard.
+            if (_releaseTime > now) {
                 timers[_originAddressHash] = _releaseTime;
             } else {
                 timers[_originAddressHash] = now;
             }
             
             // if we have set a privacy deviation store it, max 100% = 10000.
-            if (_privacyCommission &gt; 0 &amp;&amp; _privacyCommission &lt;= 10000) {
+            if (_privacyCommission > 0 && _privacyCommission <= 10000) {
                 privacyDeviation[_originAddressHash] = _privacyCommission;
             }
         }    
         
-        // To pay for our servers (and maybe a beer or two) we charge a 0.8% fee (that&#39;s 80cents per 100$).
+        // To pay for our servers (and maybe a beer or two) we charge a 0.8% fee (that's 80cents per 100$).
         uint256 _commission = msg.value.div(125); //100/125 = 0.8
         uint256 _balanceAfterCommission = msg.value.sub(_commission);
         balances[_originAddressHash] = balances[_originAddressHash].add(_balanceAfterCommission);
@@ -275,7 +275,7 @@ contract CryptoDivert {
         // Double check that our administration is correct.
         // The administration can only be incorrect if someone found a loophole in Solidity or in our programming.
         // The assert will effectively revert the transaction in case someone is cheating.
-        assert(address(this).balance &gt;= userBalance); 
+        assert(address(this).balance >= userBalance); 
         
         // Let the user know what a great success.
         emit SafeGuardSuccess(_originAddressHash, _balanceAfterCommission, _commission);
@@ -311,23 +311,23 @@ contract CryptoDivert {
     {
         
         // Re-create the _originAddressHash that was given when transferring to this contract.
-        // Either the sender&#39;s address was hashed (and allows to retrieve from any address) or 
-        // the receiver&#39;s address was hashed (more private, but only allows to retrieve from that address).
+        // Either the sender's address was hashed (and allows to retrieve from any address) or 
+        // the receiver's address was hashed (more private, but only allows to retrieve from that address).
         bytes20 _addressHash = _getOriginAddressHash(_originAddress, _password); 
         bytes20 _senderHash = _getOriginAddressHash(msg.sender, _password); 
         bytes20 _transactionHash;
         uint256 _randomPercentage; // used to make a receiver hashed transaction more private.
         uint256 _month = 30 * 24 * 60 * 60;
         
-        // Check if the given &#39;_originAddress&#39; is the same as the address that transferred to this contract.
+        // Check if the given '_originAddress' is the same as the address that transferred to this contract.
         // We do this to prevent people simply giving any hash.
         if (_originAddress == senders[_addressHash]) { // Public Transaction, hashed with originating address.
             
-            // Anybody with the password and the sender&#39;s address
+            // Anybody with the password and the sender's address
             _transactionHash = _addressHash;
             
         } 
-        else if (msg.sender == senders[_addressHash] &amp;&amp; timers[_addressHash].add(_month) &lt; now ) { // Private transaction, retrieve by sender after a month delay. 
+        else if (msg.sender == senders[_addressHash] && timers[_addressHash].add(_month) < now ) { // Private transaction, retrieve by sender after a month delay. 
             
             // Allow a sender to retrieve his transfer, only a month after the timelock expired 
             _transactionHash = _addressHash;
@@ -339,7 +339,7 @@ contract CryptoDivert {
             _transactionHash = _senderHash;
         }
         
-        // Check if the _transactionHash exists and this balance hasn&#39;t been received already.
+        // Check if the _transactionHash exists and this balance hasn't been received already.
         // We would normally do this with a require(), but to keep it more private we need the 
         // method to be executed also if it will not result.
         if (balances[_transactionHash] == 0) {
@@ -351,7 +351,7 @@ contract CryptoDivert {
         // In case the transaction was sent to a pre-defined address, the sender can retrieve the transaction 1 month after it expired.
         // We would normally do this with a require(), but to keep it more private we need the 
         // method to be executed also if it will not result.
-        if (timers[_transactionHash] &gt; now ) {
+        if (timers[_transactionHash] > now ) {
             emit RetrieveSuccess(0);
             return false;
         }
@@ -364,22 +364,22 @@ contract CryptoDivert {
         // To do this we need to randomize the balance a little so it
         // become less traceable: To make the tracement harder, we will calculate an 
         // additional random commission between 0 and the allowed deviation which can be added to or substracted from 
-        // this transfer&#39;s balance so the outgoing value is randomized.
-        if (privacyDeviation[_transactionHash] &gt; 0) {
+        // this transfer's balance so the outgoing value is randomized.
+        if (privacyDeviation[_transactionHash] > 0) {
              _randomPercentage = _randomize(now, privacyDeviation[_transactionHash]);
         }
         
-        if(_randomPercentage &gt; 0) {
+        if(_randomPercentage > 0) {
             // Calculate the privacy commissions amount in wei.
             uint256 _privacyCommission = _balance.div(10000).mul(_randomPercentage);
             
             // Check integrity of privacyFund
-            if (userBalance.add(privacyFund) &gt; address(this).balance) {
+            if (userBalance.add(privacyFund) > address(this).balance) {
                 privacyFund = 0;
             }
             
             // Check if we have enough availability in the privacy fund to add to this Retrieve
-            if (_privacyCommission &lt;= privacyFund) {
+            if (_privacyCommission <= privacyFund) {
                 // we have enough funds to add
                  privacyFund = privacyFund.sub(_privacyCommission);
                  userBalance = userBalance.add(_privacyCommission);
@@ -400,7 +400,7 @@ contract CryptoDivert {
         msg.sender.transfer(_balance);
         
         // Double check that our admin is correct. If not then revert this transaction.
-        assert(address(this).balance &gt;= userBalance);
+        assert(address(this).balance >= userBalance);
         
         emit RetrieveSuccess(_balance);
         
@@ -420,7 +420,7 @@ contract CryptoDivert {
         msg.sender.transfer(commissions);
         
         // Double check that our admin is correct.
-        assert(address(this).balance &gt;= userBalance);
+        assert(address(this).balance >= userBalance);
     } 
     
     /**
@@ -455,7 +455,7 @@ contract CryptoDivert {
     /// PRIVATE METHODS ///
     /**
      * @dev Create a (semi) random number.
-     * This is not truely random, as that isn&#39;t possible in the blockchain, but 
+     * This is not truely random, as that isn't possible in the blockchain, but 
      * random enough for our purpose.
      * 
      * @param _seed Randomizing seed.
@@ -468,12 +468,12 @@ contract CryptoDivert {
     
     function _getOriginAddressHash(address _address, string _password) private pure returns(bytes20) {
         string memory _addressString = toAsciiString(_address);
-        return ripemd160(_password,&quot;0x&quot;,_addressString);
+        return ripemd160(_password,"0x",_addressString);
     }
     
     function toAsciiString(address x) private pure returns (string) {
     bytes memory s = new bytes(40);
-        for (uint i = 0; i &lt; 20; i++) {
+        for (uint i = 0; i < 20; i++) {
             byte b = byte(uint8(uint(x) / (2**(8*(19 - i)))));
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -484,7 +484,7 @@ contract CryptoDivert {
     }
     
     function char(byte b) private pure returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
 }
@@ -511,9 +511,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -521,7 +521,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -530,7 +530,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

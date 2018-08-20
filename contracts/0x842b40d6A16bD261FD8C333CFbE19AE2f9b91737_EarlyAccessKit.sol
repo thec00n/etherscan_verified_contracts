@@ -34,7 +34,7 @@ contract EarlyAccessKit is LootboxInterface {
 
   function buy(address _buyer) external {
     require(msg.sender == coreContract);
-    require(kitsSold &lt; 500);
+    require(kitsSold < 500);
     kitsSold++;
     LootboxPurchased(_buyer, _displayValue);
     ExternalInterface store = ExternalInterface(msg.sender);

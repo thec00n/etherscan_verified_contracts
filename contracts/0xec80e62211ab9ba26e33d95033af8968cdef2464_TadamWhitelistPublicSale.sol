@@ -1,8 +1,8 @@
 contract TadamWhitelistPublicSale{
     
-    mapping (address =&gt; bool) private owner;
-    mapping (address =&gt; bool) public canWhiteList;
-    mapping (address =&gt; uint) public PublicSaleWhiteListed; 
+    mapping (address => bool) private owner;
+    mapping (address => bool) public canWhiteList;
+    mapping (address => uint) public PublicSaleWhiteListed; 
     
     function TadamWhitelistPublicSale(){
         owner[msg.sender] = true;
@@ -17,7 +17,7 @@ contract TadamWhitelistPublicSale{
             _group 1 : early whitelisted
             _group 2 : late whitelisted
         */
-        require( (canWhiteList[msg.sender]) &amp;&amp; (_group &gt;=0 &amp;&amp; _group &lt;= 2) );
+        require( (canWhiteList[msg.sender]) && (_group >=0 && _group <= 2) );
         PublicSaleWhiteListed[_addr] = _group;
     }
     

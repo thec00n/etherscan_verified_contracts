@@ -8,11 +8,11 @@ pragma solidity ^0.4.11;
 contract SafeMath {
 	
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 	
 	function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -20,7 +20,7 @@ contract SafeMath {
     }
 	
 	function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        z = x &lt;= y ? x : y;
+        z = x <= y ? x : y;
     }
 }
 
@@ -74,8 +74,8 @@ contract ERC20 {
 contract StandardToken is ERC20, SafeMath {
 	
 	uint256                                            _totalSupply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
     
     modifier onlyPayloadSize(uint numwords) {
 		assert(msg.data.length == numwords * 32 + 4);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, SafeMath {
     }
     
     function transfer(address _to, uint _value) onlyPayloadSize(2) returns (bool success) {
-        assert(_balances[msg.sender] &gt;= _value);
+        assert(_balances[msg.sender] >= _value);
         
         _balances[msg.sender] = sub(_balances[msg.sender], _value);
         _balances[_to] = add(_balances[_to], _value);
@@ -104,8 +104,8 @@ contract StandardToken is ERC20, SafeMath {
     }
     
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3) returns (bool success) {
-        assert(_balances[_from] &gt;= _value);
-        assert(_approvals[_from][msg.sender] &gt;= _value);
+        assert(_balances[_from] >= _value);
+        assert(_approvals[_from][msg.sender] >= _value);
         
         _approvals[_from][msg.sender] = sub(_approvals[_from][msg.sender], _value);
         _balances[_from] = sub(_balances[_from], _value);
@@ -129,8 +129,8 @@ contract StandardToken is ERC20, SafeMath {
 contract HUNT is StandardToken, Owned {
 
     // Token information
-	string public constant name = &quot;HUNT&quot;;
-    string public constant symbol = &quot;HT&quot;;
+	string public constant name = "HUNT";
+    string public constant symbol = "HT";
     uint8 public constant decimals = 18;
 	
     // Initial contract data
@@ -142,7 +142,7 @@ contract HUNT is StandardToken, Owned {
 	address addrcnt;
 	uint256 public totalTokens;
 	uint256 public totalEthers;
-	mapping (address =&gt; uint256) _userBonus;
+	mapping (address => uint256) _userBonus;
 	
     event BoughtTokens(address indexed buyer, uint256 ethers,uint256 newEtherBalance, uint256 tokens, uint _buyPrice);
 	event Collect(address indexed addrcnt,uint256 amount);
@@ -172,17 +172,17 @@ contract HUNT is StandardToken, Owned {
     }
 
 	function buyPriceAt(uint256 at) constant returns (uint256) {
-        if (at &lt; startDate) {
+        if (at < startDate) {
             return 0;
-        } else if (at &lt; (startDate + 2 days)) {
+        } else if (at < (startDate + 2 days)) {
             return div(curs,100);
-        } else if (at &lt; (startDate + 5 days)) {
+        } else if (at < (startDate + 5 days)) {
             return div(curs,120);
-        } else if (at &lt; (startDate + 10 days)) {
+        } else if (at < (startDate + 10 days)) {
             return div(curs,130);
-        } else if (at &lt; (startDate + 15 days)) {
+        } else if (at < (startDate + 15 days)) {
             return div(curs,140);
-        } else if (at &lt;= endDate) {
+        } else if (at <= endDate) {
             return div(curs,150);
         } else {
             return 0;
@@ -198,13 +198,13 @@ contract HUNT is StandardToken, Owned {
     function buyTokens(address participant) payable {
         
 		// No contributions before the start of the crowdsale
-        require(time() &gt;= startDate);
+        require(time() >= startDate);
         
 		// No contributions after the end of the crowdsale
-        require(time() &lt;= endDate);
+        require(time() <= endDate);
         
 		// No 0 contributions
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Add ETH raised to total
         totalEthers = add(totalEthers, msg.value);
@@ -216,23 +216,23 @@ contract HUNT is StandardToken, Owned {
         // and msg.value is restricted to valid values
         uint tokens = msg.value * _buyPrice;
 
-        // Check tokens &gt; 0
-        require(tokens &gt; 0);
+        // Check tokens > 0
+        require(tokens > 0);
 
-		if ((time() &gt;= (startDate + 15 days)) &amp;&amp; (time() &lt;= endDate)){
+		if ((time() >= (startDate + 15 days)) && (time() <= endDate)){
 			uint leftTokens=sub(capTokens,add(totalTokens, tokens));
-			leftTokens = (leftTokens&gt;0)? leftTokens:0;
+			leftTokens = (leftTokens>0)? leftTokens:0;
 			uint bonusTokens = min(_userBonus[participant],min(tokens,leftTokens));
 			
-			// Check bonusTokens &gt;= 0
-			require(bonusTokens &gt;= 0);
+			// Check bonusTokens >= 0
+			require(bonusTokens >= 0);
 			
 			tokens = add(tokens,bonusTokens);
         }
 		
 		// Cannot exceed capTokens
 		totalTokens = add(totalTokens, tokens);
-        require(totalTokens &lt;= capTokens);
+        require(totalTokens <= capTokens);
 
 		// Compute tokens for foundation 38%
         // Number of tokens restricted so maths is safe
@@ -247,7 +247,7 @@ contract HUNT is StandardToken, Owned {
 		_balances[owner] = add(_balances[owner], ownerTokens);
 
 		// Add to user bonus
-		if (time() &lt; (startDate + 2 days)){
+		if (time() < (startDate + 2 days)){
 			uint bonus = div(tokens,2);
 			_userBonus[participant] = add(_userBonus[participant], bonus);
         }
@@ -259,43 +259,43 @@ contract HUNT is StandardToken, Owned {
 
     }
 
-    // Transfer the balance from owner&#39;s account to another account, with a
+    // Transfer the balance from owner's account to another account, with a
     // check that the crowdsale is finalised 
     function transfer(address _to, uint _amount) returns (bool success) {
         // Cannot transfer before crowdsale ends + 7 days
-        require((time() &gt; endDate + 7 days ));
+        require((time() > endDate + 7 days ));
         // Standard transfer
         return super.transfer(_to, _amount);
     }
 
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account, with a check that the crowdsale is
     // finalised 
     function transferFrom(address _from, address _to, uint _amount) returns (bool success) {
         // Cannot transfer before crowdsale ends + 7 days
-        require((time() &gt; endDate + 7 days ));
+        require((time() > endDate + 7 days ));
         // Standard transferFrom
         return super.transferFrom(_from, _to, _amount);
     }
 
     function mint(uint256 _amount) onlyOwner {
-        require((time() &gt; endDate + 7 days ));
-        require(_amount &gt; 0);
+        require((time() > endDate + 7 days ));
+        require(_amount > 0);
         _balances[owner] = add(_balances[owner], _amount);
         _totalSupply = add(_totalSupply, _amount);
         Transfer(0x0, owner, _amount);
     }
 
     function burn(uint256 _amount) onlyOwner {
-		require((time() &gt; endDate + 7 days ));
-        require(_amount &gt; 0);
+		require((time() > endDate + 7 days ));
+        require(_amount > 0);
         _balances[owner] = sub(_balances[owner],_amount);
         _totalSupply = sub(_totalSupply,_amount);
 		Transfer(owner, 0x0 , _amount);
     }
     
 	function setCurs(uint8 _curs) onlyOwner {
-        require(_curs &gt; 0);
+        require(_curs > 0);
         curs = _curs;
     }
 

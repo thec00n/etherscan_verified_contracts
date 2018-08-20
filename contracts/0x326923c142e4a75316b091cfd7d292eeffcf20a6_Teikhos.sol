@@ -18,9 +18,9 @@ contract Teikhos {
 
     // Use a string as the account identifier, so people can use any name they want
 
-    mapping(string =&gt; bytes) proof_of_public_key;
+    mapping(string => bytes) proof_of_public_key;
     
-    mapping(string =&gt; uint) balanceOf;
+    mapping(string => uint) balanceOf;
 
 
     function checkAccount(string _name) view public returns (uint balance, bytes proof) {
@@ -79,7 +79,7 @@ contract Teikhos {
         bytes32 s = proof_of_public_key2 ^ hash2;
 
         // Get msgHash for use with ecrecover
-        bytes32 msgHash = keccak256(&quot;\x19Ethereum Signed Message:\n64&quot;, _publicKey);
+        bytes32 msgHash = keccak256("\x19Ethereum Signed Message:\n64", _publicKey);
 
         // The value v is not known, try both 27 and 28
         if(ecrecover(msgHash, 27, r, s) == signer || ecrecover(msgHash, 28, r, s) == signer ) {
@@ -105,11 +105,11 @@ contract Teikhos {
 
         bytes memory reversed = new bytes(64);
 
-        for(uint i = 0; i &lt; 64; i++) {
+        for(uint i = 0; i < 64; i++) {
             reversed[i] = _message[63 - i];
         }
 
-        for(i = 0; i &lt; 8; i++) {
+        for(i = 0; i < 8; i++) {
             bytes8 oneEigth;
             // Load 8 byte from reversed public key at position 32 + i * 8
             assembly {
@@ -122,7 +122,7 @@ contract Teikhos {
         
         bytes memory toBytes = new bytes(64);
         
-        for(i = 0; i &lt; 16; i++) {
+        for(i = 0; i < 16; i++) {
             bytes4 oneSixteenth = bytes4(output[15 - i]);
             // Store 4 byte in keyHash at position 32 + i * 4
             assembly { mstore(add(toBytes, add(32, mul(i, 4))), oneSixteenth) }
@@ -130,7 +130,7 @@ contract Teikhos {
 
         messageHash = new bytes(64);
 
-        for(i = 0; i &lt; 64; i++) {
+        for(i = 0; i < 64; i++) {
             messageHash[i] = toBytes[63 - i];
         }   
    }

@@ -32,13 +32,13 @@ contract Intermediary is mortal{
   }
   function transfer(uint8[] animalTypes, uint8[] numsXType, uint32[] ids) payable{
     uint needed;
-     for(uint8 i = 0; i &lt; animalTypes.length; i++){
+     for(uint8 i = 0; i < animalTypes.length; i++){
       needed+=values[animalTypes[i]]*numsXType[i];
     }
-    if (msg.value&lt;needed) throw;
+    if (msg.value<needed) throw;
     
     uint8 from;
-    for(i = 0; i &lt; animalTypes.length; i++){
+    for(i = 0; i < animalTypes.length; i++){
       aquarium.receive.value(values[animalTypes[i]]*numsXType[i])(msg.sender,animalTypes[i],slice(ids,from,numsXType[i]));
       from+=numsXType[i];
     }
@@ -54,7 +54,7 @@ contract Intermediary is mortal{
   
   function slice(uint32[] array, uint8 from, uint8 number) returns (uint32[] sliced){
     sliced = new uint32[](number);
-    for(uint8 i = from; i &lt; from+number; i++){
+    for(uint8 i = from; i < from+number; i++){
       sliced[i-from] = array[i];
     }
   }

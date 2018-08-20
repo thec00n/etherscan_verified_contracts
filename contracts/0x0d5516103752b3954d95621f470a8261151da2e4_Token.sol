@@ -13,13 +13,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -78,8 +78,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) constant returns(uint256 balance) {
         return balances[_owner];
@@ -135,7 +135,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) returns(bool success) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -151,7 +151,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
 
@@ -197,16 +197,16 @@ contract MintableToken is StandardToken, Ownable {
     - 50 000 000 (50%) токенов передается команде во время создания токена
     - Бонусы на PreICO: +50% токенов
     - Бонусы на ICO: +25% первый день, +20% с 2 по 3 день, +15% с 4 по 5 день, +10% с 6 по 7 день, +7% с 8 по 9 день, +5% с 10 по 11 день
-    - Бонусы на ICO: +3% при покупке &gt;= 3 000 токенов, +5% при покупке &gt; 5 000 токенов, +7% при покупке &gt; 10 000 токенов, +10% при покупке &gt; 15 000 токенов
+    - Бонусы на ICO: +3% при покупке >= 3 000 токенов, +5% при покупке > 5 000 токенов, +7% при покупке > 10 000 токенов, +10% при покупке > 15 000 токенов
     - Бонусы расчитываются на начальную сумму, бонусы сумируются
     - Минимальная и максимальная сумма покупки: 0.5 ETH и 10000 ETH
     - Средства от покупки токенов передаются бенефициару
     - Crowdsale ограничен по времени
-    - Закрытие Crowdsale происходит с помощью функции &quot;withdraw()&quot;, минтинг закрывается, управление токеном передаются бенефициару
+    - Закрытие Crowdsale происходит с помощью функции "withdraw()", минтинг закрывается, управление токеном передаются бенефициару
 */
 contract Token is BurnableToken, MintableToken {
-    string public name = &quot;Bloomzed Token&quot;;
-    string public symbol = &quot;BZT&quot;;
+    string public name = "Bloomzed Token";
+    string public symbol = "BZT";
     uint256 public decimals = 18;
 
     function Token() {
@@ -250,44 +250,44 @@ contract Crowdsale is Pausable {
     
     function purchase() whenNotPaused payable {
         require(!crowdsaleFinished);
-        require((now &gt;= piStartTime &amp;&amp; now &lt; piEndTime &amp;&amp; tokensSold &lt; piTokensForSale) || (now &gt;= startTime &amp;&amp; now &lt; endTime));
-        require(tokensSold &lt; tokensForSale);
-        require(msg.value &gt;= 0.5 * 1 ether &amp;&amp; msg.value &lt;= 10000 * 1 ether);
+        require((now >= piStartTime && now < piEndTime && tokensSold < piTokensForSale) || (now >= startTime && now < endTime));
+        require(tokensSold < tokensForSale);
+        require(msg.value >= 0.5 * 1 ether && msg.value <= 10000 * 1 ether);
 
         uint sum = msg.value;
         uint amount = sum.div(priceTokenWei).mul(1 ether);
         uint retSum = 0;
 
         // ICO
-        if(now &gt; piEndTime) {
+        if(now > piEndTime) {
             uint bonus = 0;
 
             // Day bonus
-            if(tokensSold.add(amount) &lt; piTokensForSale) {
+            if(tokensSold.add(amount) < piTokensForSale) {
                 bonus.add(
-                    now &lt; startTime + 1 days ? 25
-                        : (now &lt; startTime + 3 days ? 20
-                            : (now &lt; startTime + 5 days ? 15
-                                : (now &lt; startTime + 7 days ? 10
-                                    : (now &lt; startTime + 9 days ? 7
-                                        : (now &lt; startTime + 11 days ? 5 : 0
+                    now < startTime + 1 days ? 25
+                        : (now < startTime + 3 days ? 20
+                            : (now < startTime + 5 days ? 15
+                                : (now < startTime + 7 days ? 10
+                                    : (now < startTime + 9 days ? 7
+                                        : (now < startTime + 11 days ? 5 : 0
                 ))))));
 
                 // Amount bonus
-                if(amount &gt;= 3000 * 1 ether) {
+                if(amount >= 3000 * 1 ether) {
                     bonus.add(
-                        amount &gt; 15000 * 1 ether ? 10 : 
-                            (amount &gt; 10000 * 1 ether ? 7 : 
-                                (amount &gt; 5000 * 1 ether ? 5 : 3
+                        amount > 15000 * 1 ether ? 10 : 
+                            (amount > 10000 * 1 ether ? 7 : 
+                                (amount > 5000 * 1 ether ? 5 : 3
                     )));
                 }
             }
 
-            if(bonus &gt; 0) {
+            if(bonus > 0) {
                 amount = amount.add(amount.div(100).mul(bonus));
             }
 
-            if(tokensSold.add(amount) &gt; piTokensForSale) {
+            if(tokensSold.add(amount) > piTokensForSale) {
                 uint retAmount = tokensSold.add(amount).sub(piTokensForSale);
                 retSum = retAmount.mul(price).div(1 ether);
 
@@ -300,7 +300,7 @@ contract Crowdsale is Pausable {
             uint price = priceTokenWei.mul(100).div(150);
             amount = sum.div(price).mul(1 ether);
             
-            if(tokensSold.add(amount) &gt; piTokensForSale) {
+            if(tokensSold.add(amount) > piTokensForSale) {
                 retAmount = tokensSold.add(amount).sub(piTokensForSale);
                 retSum = retAmount.mul(price).div(1 ether);
 
@@ -315,7 +315,7 @@ contract Crowdsale is Pausable {
         beneficiary.transfer(sum);
         token.mint(msg.sender, amount);
 
-        if(retSum &gt; 0) {
+        if(retSum > 0) {
             msg.sender.transfer(retSum);
         }
 
@@ -324,7 +324,7 @@ contract Crowdsale is Pausable {
 
     function externalPurchase(address _to, uint _value) whenNotPaused onlyManager {
         require(!crowdsaleFinished);
-        require(tokensSold &lt; tokensForSale);
+        require(tokensSold < tokensForSale);
 
         uint amount = _value.mul(1 ether);
 

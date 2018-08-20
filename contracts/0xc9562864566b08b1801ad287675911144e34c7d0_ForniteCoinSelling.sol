@@ -49,14 +49,14 @@ contract ForniteCoinSelling {
     
     function() public payable {
         uint256 numberOfCoin = msg.value/pricePerCoin;
-        if(numberOfCoin&lt;=0) revert();
-        if(coin.balanceOf(coinOwner) &lt; numberOfCoin) revert();
+        if(numberOfCoin<=0) revert();
+        if(coin.balanceOf(coinOwner) < numberOfCoin) revert();
         if(!coin.transferFrom(coinOwner, msg.sender, numberOfCoin)) revert();
     }
 }
 
 contract Token {
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     function transferFrom(
          address _from,
          address _to,

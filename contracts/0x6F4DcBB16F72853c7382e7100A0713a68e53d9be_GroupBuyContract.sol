@@ -13,10 +13,10 @@ contract GroupBuyContract {
   struct Group {
     // Array of addresses of contributors in group
     address[] contributorArr;
-    // Maps address to an address&#39;s position (+ 1) in the contributorArr;
+    // Maps address to an address's position (+ 1) in the contributorArr;
     // 1 is added to the position because zero is the default value in the mapping
-    mapping(address =&gt; uint256) addressToContributorArrIndex;
-    mapping(address =&gt; uint256) addressToContribution; // user address to amount contributed
+    mapping(address => uint256) addressToContributorArrIndex;
+    mapping(address => uint256) addressToContribution; // user address to amount contributed
     bool exists; // For tracking whether a group has been initialized or not
     uint256 contributedBalance; // Total amount contributed
     uint256 purchasePrice; // Price of purchased token
@@ -26,9 +26,9 @@ contract GroupBuyContract {
   //  this group buy contract. It stores the group ids the user contributed to
   //  and a record of their sale proceeds.
   struct Contributor {
-    // Maps tokenId to an tokenId&#39;s position (+ 1) in the groupArr;
+    // Maps tokenId to an tokenId's position (+ 1) in the groupArr;
     // 1 is added to the position because zero is the default value in the mapping
-    mapping(uint256 =&gt; uint) tokenIdToGroupArrIndex;
+    mapping(uint256 => uint) tokenIdToGroupArrIndex;
     // Array of tokenIds contributed to by a contributor
     uint256[] groupArr;
     bool exists;
@@ -49,7 +49,7 @@ contract GroupBuyContract {
   event FundsReceived(address _from, uint256 amount);
 
   /// User Events
-  // @dev Event marking funds deposited into user _to&#39;s account
+  // @dev Event marking funds deposited into user _to's account
   event FundsDeposited(address _to, uint256 amount);
 
   // @dev Event marking a withdrawal of amount by user _to
@@ -101,10 +101,10 @@ contract GroupBuyContract {
   CelebrityToken public linkedContract;
 
   /// @dev A mapping from token IDs to the group associated with that token.
-  mapping(uint256 =&gt; Group) private tokenIndexToGroup;
+  mapping(uint256 => Group) private tokenIndexToGroup;
 
   // @dev A mapping from owner address to available balance not held by a Group.
-  mapping(address =&gt; Contributor) private userAddressToContributor;
+  mapping(address => Contributor) private userAddressToContributor;
 
   /*** ACCESS MODIFIERS ***/
   /// @dev Access modifier for CEO-only functionality
@@ -189,7 +189,7 @@ contract GroupBuyContract {
   /// @param _tokenId The ID of the Token group
   function activatePurchase(uint256 _tokenId) external whenNotPaused {
     var group = tokenIndexToGroup[_tokenId];
-    require(group.addressToContribution[msg.sender] &gt; 0 ||
+    require(group.addressToContribution[msg.sender] > 0 ||
             msg.sender == ceoAddress ||
             msg.sender == cooAddress1 ||
             msg.sender == cooAddress2 ||
@@ -198,7 +198,7 @@ contract GroupBuyContract {
 
     // Safety check that enough money has been contributed to group
     var price = linkedContract.priceOf(_tokenId);
-    require(group.contributedBalance &gt;= price);
+    require(group.contributedBalance >= price);
 
     // Safety check that token had not be purchased yet
     require(group.purchasePrice == 0);
@@ -230,22 +230,22 @@ contract GroupBuyContract {
       require(contributor.tokenIdToGroupArrIndex[_tokenId] == 0);
     }
 
-    // Safety check to make sure group isn&#39;t currently holding onto token
+    // Safety check to make sure group isn't currently holding onto token
     //  or has a group record stored (for sales proceeds distribution)
     require(group.purchasePrice == 0);
 
     /// Safety check to ensure amount contributed is higher than min required percentage
     ///  of purchase price
     uint256 tokenPrice = linkedContract.priceOf(_tokenId);
-    require(msg.value &gt;= uint256(SafeMath.div(tokenPrice, MAX_CONTRIBUTION_SLOTS)));
+    require(msg.value >= uint256(SafeMath.div(tokenPrice, MAX_CONTRIBUTION_SLOTS)));
 
-    // Index saved is 1 + the array&#39;s index, b/c 0 is the default value in a mapping,
+    // Index saved is 1 + the array's index, b/c 0 is the default value in a mapping,
     //  so as stored on the mapping, array index will begin at 1
     uint256 cIndex = tokenIndexToGroup[_tokenId].contributorArr.push(userAdd);
     tokenIndexToGroup[_tokenId].addressToContributorArrIndex[userAdd] = cIndex;
 
     uint256 amountNeeded = SafeMath.sub(tokenPrice, group.contributedBalance);
-    if (msg.value &gt; amountNeeded) {
+    if (msg.value > amountNeeded) {
       tokenIndexToGroup[_tokenId].addressToContribution[userAdd] = amountNeeded;
       tokenIndexToGroup[_tokenId].contributedBalance += amountNeeded;
       // refund excess paid
@@ -256,7 +256,7 @@ contract GroupBuyContract {
       tokenIndexToGroup[_tokenId].contributedBalance += msg.value;
     }
 
-    // Index saved is 1 + the array&#39;s index, b/c 0 is the default value in a mapping,
+    // Index saved is 1 + the array's index, b/c 0 is the default value in a mapping,
     //  so as stored on the mapping, array index will begin at 1
     uint256 gIndex = userAddressToContributor[userAdd].groupArr.push(_tokenId);
     userAddressToContributor[userAdd].tokenIdToGroupArrIndex[_tokenId] = gIndex;
@@ -269,7 +269,7 @@ contract GroupBuyContract {
     );
 
     // Purchase token if enough funds contributed
-    if (tokenIndexToGroup[_tokenId].contributedBalance &gt;= tokenPrice) {
+    if (tokenIndexToGroup[_tokenId].contributedBalance >= tokenPrice) {
       _purchase(_tokenId, tokenPrice);
     }
   }
@@ -290,12 +290,12 @@ contract GroupBuyContract {
     // Safety check to make sure group exists;
     require(group.exists);
 
-    // Safety check to make sure group hasn&#39;t purchased token already
+    // Safety check to make sure group hasn't purchased token already
     require(group.purchasePrice == 0);
 
     // Safety checks to ensure contributor has contributed to group
-    require(group.addressToContributorArrIndex[userAdd] &gt; 0);
-    require(contributor.tokenIdToGroupArrIndex[_tokenId] &gt; 0);
+    require(group.addressToContributorArrIndex[userAdd] > 0);
+    require(contributor.tokenIdToGroupArrIndex[_tokenId] > 0);
 
     uint refundBalance = _clearContributorRecordInGroup(_tokenId, userAdd);
     _clearGroupRecordInContributor(_tokenId, userAdd);
@@ -326,12 +326,12 @@ contract GroupBuyContract {
     // Safety check to make sure group exists;
     require(group.exists);
 
-    // Safety check to make sure group hasn&#39;t purchased token already
+    // Safety check to make sure group hasn't purchased token already
     require(group.purchasePrice == 0);
 
     // Safety checks to ensure contributor has contributed to group
-    require(group.addressToContributorArrIndex[userAdd] &gt; 0);
-    require(contributor.tokenIdToGroupArrIndex[_tokenId] &gt; 0);
+    require(group.addressToContributorArrIndex[userAdd] > 0);
+    require(contributor.tokenIdToGroupArrIndex[_tokenId] > 0);
 
     uint refundBalance = _clearContributorRecordInGroup(_tokenId, userAdd);
     _clearGroupRecordInContributor(_tokenId, userAdd);
@@ -362,13 +362,13 @@ contract GroupBuyContract {
   /// @param numerator Numerator for calculating funds distributed
   /// @param denominator Denominator for calculating funds distributed
   function adjustCommission(uint256 numerator, uint256 denominator) external onlyCLevel {
-    require(numerator &lt;= denominator);
+    require(numerator <= denominator);
     distributionNumerator = numerator;
     distributionDenominator = denominator;
   }
 
   /// @dev In the event of needing a fork, this function moves all
-  ///  of a group&#39;s contributors&#39; contributions into their withdrawable balance.
+  ///  of a group's contributors' contributions into their withdrawable balance.
   /// @notice Group is dissolved after fn call
   /// @param _tokenId The ID of the Token purchase group
   function dissolveTokenGroup(uint256 _tokenId) external onlyCOO whenForking {
@@ -378,7 +378,7 @@ contract GroupBuyContract {
     require(group.exists);
     require(group.purchasePrice == 0);
 
-    for (uint i = 0; i &lt; tokenIndexToGroup[_tokenId].contributorArr.length; i++) {
+    for (uint i = 0; i < tokenIndexToGroup[_tokenId].contributorArr.length; i++) {
       address userAdd = tokenIndexToGroup[_tokenId].contributorArr[i];
 
       var userContribution = group.addressToContribution[userAdd];
@@ -389,7 +389,7 @@ contract GroupBuyContract {
       tokenIndexToGroup[_tokenId].addressToContribution[userAdd] = 0;
       tokenIndexToGroup[_tokenId].addressToContributorArrIndex[userAdd] = 0;
 
-      // move contributor&#39;s contribution to their withdrawable balance
+      // move contributor's contribution to their withdrawable balance
       userAddressToContributor[userAdd].withdrawableBalance += userContribution;
       ProceedsDeposited(_tokenId, userAdd, userContribution);
     }
@@ -407,8 +407,8 @@ contract GroupBuyContract {
 
     // Safety check to make sure group exists and had purchased the token
     require(group.exists);
-    require(group.purchasePrice &gt; 0);
-    require(_amount &gt; 0);
+    require(group.purchasePrice > 0);
+    require(_amount > 0);
 
     _distributeProceeds(_tokenId, _amount);
   }
@@ -423,13 +423,13 @@ contract GroupBuyContract {
 
     // Safety check to make sure group exists and had purchased the token
     require(group.exists);
-    require(group.purchasePrice &gt; 0);
-    require(amount &gt; 0);
+    require(group.purchasePrice > 0);
+    require(amount > 0);
 
-    for (uint i = 0; i &lt; tokenIndexToGroup[_tokenId].contributorArr.length; i++) {
+    for (uint i = 0; i < tokenIndexToGroup[_tokenId].contributorArr.length; i++) {
       address userAdd = tokenIndexToGroup[_tokenId].contributorArr[i];
 
-      // calculate contributor&#39;s interest proceeds and add to their withdrawable balance
+      // calculate contributor's interest proceeds and add to their withdrawable balance
       uint256 userProceeds = uint256(SafeMath.div(SafeMath.mul(amount,
         tokenIndexToGroup[_tokenId].addressToContribution[userAdd]),
         tokenIndexToGroup[_tokenId].contributedBalance));
@@ -451,18 +451,18 @@ contract GroupBuyContract {
 
     // Safety check to make sure group exists and had purchased the token
     require(group.exists);
-    require(group.purchasePrice &gt; 0);
+    require(group.purchasePrice > 0);
 
     // Safety check to make sure token had been sold
     uint256 currPrice = linkedContract.priceOf(_tokenId);
     uint256 soldPrice = _newPrice(group.purchasePrice);
-    require(currPrice &gt; soldPrice);
+    require(currPrice > soldPrice);
 
     uint256 paymentIntoContract = uint256(SafeMath.div(SafeMath.mul(soldPrice, 94), 100));
     _distributeProceeds(_tokenId, paymentIntoContract);
   }
 
-  /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+  /// @dev Called by any "C-level" role to pause the contract. Used only when
   ///  a bug or exploit is detected and we need to limit damage.
   function pause() external onlyCLevel whenNotPaused {
     paused = true;
@@ -472,11 +472,11 @@ contract GroupBuyContract {
   ///  one reason we may pause the contract is when CFO or COO accounts are
   ///  compromised.
   function unpause() external onlyCEO whenPaused {
-    // can&#39;t unpause if contract was upgraded
+    // can't unpause if contract was upgraded
     paused = false;
   }
 
-  /// @dev Called by any &quot;C-level&quot; role to set the contract to . Used only when
+  /// @dev Called by any "C-level" role to set the contract to . Used only when
   ///  a bug or exploit is detected and we need to limit damage.
   function setToForking() external onlyCLevel whenNotForking {
     forking = true;
@@ -486,7 +486,7 @@ contract GroupBuyContract {
   ///  one reason we may pause the contract is when CFO or COO accounts are
   ///  compromised.
   function setToNotForking() external onlyCEO whenForking {
-    // can&#39;t unpause if contract was upgraded
+    // can't unpause if contract was upgraded
     forking = false;
   }
 
@@ -540,7 +540,7 @@ contract GroupBuyContract {
 
     // Safety check to make sure group exists and had purchased the token
     require(group.exists);
-    require(group.purchasePrice &gt; 0);
+    require(group.purchasePrice > 0);
 
     linkedContract.transfer(_to, _tokenId);
   }
@@ -551,7 +551,7 @@ contract GroupBuyContract {
     uint256 balance = commissionBalance;
     address transferee = (_to == address(0)) ? cfoAddress : _to;
     commissionBalance = 0;
-    if (balance &gt; 0) {
+    if (balance > 0) {
       transferee.transfer(balance);
     }
     FundsWithdrawn(transferee, balance);
@@ -574,7 +574,7 @@ contract GroupBuyContract {
     balance = group.addressToContribution[msg.sender];
   }
 
-  /// @dev Get array of contributors&#39; addresses in _tokenId token group
+  /// @dev Get array of contributors' addresses in _tokenId token group
   /// @param _tokenId The ID of the token to be queried
   function getContributorsInTokenGroup(uint256 _tokenId) external view returns (address[] contribAddr) {
     var group = tokenIndexToGroup[_tokenId];
@@ -616,7 +616,7 @@ contract GroupBuyContract {
   function getGroupPurchasedPrice(uint256 _tokenId) external view returns (uint256 price) {
     var group = tokenIndexToGroup[_tokenId];
     require(group.exists);
-    require(group.purchasePrice &gt; 0);
+    require(group.purchasePrice > 0);
     price = group.purchasePrice;
   }
 
@@ -646,13 +646,13 @@ contract GroupBuyContract {
     return _to != address(0);
   }
 
-  /// @dev Clears record of a Contributor from a Group&#39;s record
+  /// @dev Clears record of a Contributor from a Group's record
   /// @param _tokenId Token ID of Group to be cleared
   /// @param _userAdd Address of Contributor
   function _clearContributorRecordInGroup(uint256 _tokenId, address _userAdd) private returns (uint256 refundBalance) {
     var group = tokenIndexToGroup[_tokenId];
 
-    // Index was saved is 1 + the array&#39;s index, b/c 0 is the default value
+    // Index was saved is 1 + the array's index, b/c 0 is the default value
     //  in a mapping.
     uint cIndex = group.addressToContributorArrIndex[_userAdd] - 1;
     uint lastCIndex = group.contributorArr.length - 1;
@@ -662,8 +662,8 @@ contract GroupBuyContract {
     tokenIndexToGroup[_tokenId].addressToContributorArrIndex[_userAdd] = 0;
     tokenIndexToGroup[_tokenId].addressToContribution[_userAdd] = 0;
 
-    // move address in last position to deleted contributor&#39;s spot
-    if (lastCIndex &gt; 0) {
+    // move address in last position to deleted contributor's spot
+    if (lastCIndex > 0) {
       tokenIndexToGroup[_tokenId].addressToContributorArrIndex[group.contributorArr[lastCIndex]] = cIndex;
       tokenIndexToGroup[_tokenId].contributorArr[cIndex] = group.contributorArr[lastCIndex];
     }
@@ -672,11 +672,11 @@ contract GroupBuyContract {
     tokenIndexToGroup[_tokenId].contributedBalance -= refundBalance;
   }
 
-  /// @dev Clears record of a Group from a Contributor&#39;s record
+  /// @dev Clears record of a Group from a Contributor's record
   /// @param _tokenId Token ID of Group to be cleared
   /// @param _userAdd Address of Contributor
   function _clearGroupRecordInContributor(uint256 _tokenId, address _userAdd) private {
-    // Index saved is 1 + the array&#39;s index, b/c 0 is the default value
+    // Index saved is 1 + the array's index, b/c 0 is the default value
     //  in a mapping.
     uint gIndex = userAddressToContributor[_userAdd].tokenIdToGroupArrIndex[_tokenId] - 1;
     uint lastGIndex = userAddressToContributor[_userAdd].groupArr.length - 1;
@@ -684,8 +684,8 @@ contract GroupBuyContract {
     // clear Group record in Contributor
     userAddressToContributor[_userAdd].tokenIdToGroupArrIndex[_tokenId] = 0;
 
-    // move tokenId from end of array to deleted Group record&#39;s spot
-    if (lastGIndex &gt; 0) {
+    // move tokenId from end of array to deleted Group record's spot
+    if (lastGIndex > 0) {
       userAddressToContributor[_userAdd].tokenIdToGroupArrIndex[userAddressToContributor[_userAdd].groupArr[lastGIndex]] = gIndex;
       userAddressToContributor[_userAdd].groupArr[gIndex] = userAddressToContributor[_userAdd].groupArr[lastGIndex];
     }
@@ -701,10 +701,10 @@ contract GroupBuyContract {
       distributionNumerator), distributionDenominator));
     uint256 commission = _amount;
 
-    for (uint i = 0; i &lt; tokenIndexToGroup[_tokenId].contributorArr.length; i++) {
+    for (uint i = 0; i < tokenIndexToGroup[_tokenId].contributorArr.length; i++) {
       address userAdd = tokenIndexToGroup[_tokenId].contributorArr[i];
 
-      // calculate contributor&#39;s sale proceeds and add to their withdrawable balance
+      // calculate contributor's sale proceeds and add to their withdrawable balance
       uint256 userProceeds = uint256(SafeMath.div(SafeMath.mul(fundsForDistribution,
         tokenIndexToGroup[_tokenId].addressToContribution[userAdd]),
         tokenIndexToGroup[_tokenId].contributedBalance));
@@ -733,10 +733,10 @@ contract GroupBuyContract {
   /// @dev Calculates next price of celebrity token
   /// @param _oldPrice Previous price
   function _newPrice(uint256 _oldPrice) private view returns (uint256 newPrice) {
-    if (_oldPrice &lt; firstStepLimit) {
+    if (_oldPrice < firstStepLimit) {
       // first stage
       newPrice = SafeMath.div(SafeMath.mul(_oldPrice, 200), 94);
-    } else if (_oldPrice &lt; secondStepLimit) {
+    } else if (_oldPrice < secondStepLimit) {
       // second stage
       newPrice = SafeMath.div(SafeMath.mul(_oldPrice, 120), 94);
     } else {
@@ -758,7 +758,7 @@ contract GroupBuyContract {
     uint256 balance = userAddressToContributor[userAdd].withdrawableBalance;
     userAddressToContributor[userAdd].withdrawableBalance = 0;
 
-    if (balance &gt; 0) {
+    if (balance > 0) {
       FundsWithdrawn(userAdd, balance);
       userAdd.transfer(balance);
     }
@@ -767,7 +767,7 @@ contract GroupBuyContract {
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a7a6b7a683a2bbaaacaeb9a6adeda0ac">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a7a6b7a683a2bbaaacaeb9a6adeda0ac">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -807,8 +807,8 @@ contract CelebrityToken is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoCelebrities&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;CelebrityToken&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoCelebrities"; // solhint-disable-line
+  string public constant SYMBOL = "CelebrityToken"; // solhint-disable-line
 
   address public ceoAddress;
   address public cooAddress;
@@ -891,7 +891,7 @@ contract CelebrityToken is ERC721 {
   function takeOwnership(uint256 _tokenId) public;
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Persons array looking for persons belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -959,9 +959,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -969,7 +969,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -978,7 +978,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -88,15 +88,15 @@ contract EcroContract is Ownable
 
 using SafeMath for uint256;
     //INVESTOR REPOSITORY
-    mapping(address =&gt; uint256) internal balances;
+    mapping(address => uint256) internal balances;
 
-    mapping (address =&gt; mapping(uint256=&gt;uint256)) masterNodes;
+    mapping (address => mapping(uint256=>uint256)) masterNodes;
     
-    mapping (address =&gt; uint256[]) masterNodesDates;
+    mapping (address => uint256[]) masterNodesDates;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
-    mapping (address =&gt; uint256) internal totalAllowed;
+    mapping (address => uint256) internal totalAllowed;
 
     /**
     * @dev total number of tokens in existence
@@ -182,7 +182,7 @@ using SafeMath for uint256;
     {
         require(_spender!=0x0000000000000000000000000000000000000000);
         uint256 newTotal = getTotalAllowed(_owner).sub(allowance(_owner, _spender)).add(_newValue);
-        require(newTotal &lt;= balanceOf(_owner));
+        require(newTotal <= balanceOf(_owner));
         allowed[_owner][_spender]=_newValue;
         setTotalAllowed(_owner,newTotal);
     }
@@ -192,11 +192,11 @@ using SafeMath for uint256;
 // TOKEN 
     function EcroContract(uint256 _rate, uint256 _minPurchase,uint256 _tokenReturnRate,uint256 _cap,uint256 _nodePrice) public
     {
-        require(_minPurchase&gt;0);
-        require(_rate &gt; 0);
-        require(_cap &gt; 0);
-        require(_nodePrice&gt;0);
-        require(_tokenReturnRate&gt;0);
+        require(_minPurchase>0);
+        require(_rate > 0);
+        require(_cap > 0);
+        require(_nodePrice>0);
+        require(_tokenReturnRate>0);
         rate=_rate;
         minPurchase=_minPurchase;
         tokenReturnRate=_tokenReturnRate;
@@ -204,9 +204,9 @@ using SafeMath for uint256;
         nodePrice = _nodePrice;
     }
 
-    bytes32 internal constant name = &quot;ECRO Coin&quot;;
+    bytes32 internal constant name = "ECRO Coin";
 
-    bytes3 internal constant symbol = &quot;ECR&quot;;
+    bytes3 internal constant symbol = "ECR";
 
     uint8 internal constant decimals = 8;
 
@@ -276,7 +276,7 @@ using SafeMath for uint256;
 
     function setNodePrice(uint256 _newPrice) external onlyOwner
     {
-        require(_newPrice&gt;0);
+        require(_newPrice>0);
         nodePrice=_newPrice;
     }
 
@@ -287,9 +287,9 @@ using SafeMath for uint256;
     */
 
   function burn(address _owner,uint256 _value) internal  {
-    require(_value &lt;= balanceOf(_owner));
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balanceOf(_owner));
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     setBalanceOf(_owner, balanceOf(_owner).sub(_value));
     setTotalSupply(totalSupply().sub(_value));
@@ -299,7 +299,7 @@ using SafeMath for uint256;
 
     function freezeTokens(address _who, uint256 _value) internal
     {
-        require(_value &lt;= balanceOf(_who));
+        require(_value <= balanceOf(_who));
         setBalanceOf(_who, balanceOf(_who).sub(_value));
         emit TokenFrozen(_who, _value);
         emit Transfer(_who, address(0), _value);
@@ -340,7 +340,7 @@ using SafeMath for uint256;
 
     function transfer(address _to, uint256 _value) external{
         require(msg.sender!=_to);
-        require(_value &lt;= balanceOf(msg.sender));
+        require(_value <= balanceOf(msg.sender));
 
         // SafeMath.sub will throw if there is not enough balance.
         setBalanceOf(msg.sender, balanceOf(msg.sender).sub(_value));
@@ -356,8 +356,8 @@ using SafeMath for uint256;
      * @param _value uint256 the amount of tokens to be transferred
      */
     function transferFrom(address _from, address _to, uint256 _value) external {
-        require(_value &lt;= balanceOf(_from));
-        require(_value &lt;= allowance(_from,_to));
+        require(_value <= balanceOf(_from));
+        require(_value <= allowance(_from,_to));
         setBalanceOf(_from, balanceOf(_from).sub(_value));
         setBalanceOf(_to, balanceOf(_to).add(_value));
         setAllowance(_from,_to,allowance(_from,_to).sub(_value));
@@ -369,7 +369,7 @@ using SafeMath for uint256;
  *
  * Beware that changing an allowance with this method brings the risk that someone may use both the old
  * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
- * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+ * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
  * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
  * @param _owner The address of the owner which allows tokens to a spender
  * @param _spender The address which will spend the funds.
@@ -414,7 +414,7 @@ using SafeMath for uint256;
         require(msg.sender==_owner);
 
         uint oldValue = allowance(_owner,_spender);
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             setAllowance(_owner,_spender, 0);
         } else {
             setAllowance(_owner,_spender, oldValue.sub(_subtractedValue));
@@ -431,7 +431,7 @@ using SafeMath for uint256;
 
 
     function mint(address _to, uint256 _amount) canMint internal{
-        require(totalSupply().add(_amount) &lt;= getTokenCap());
+        require(totalSupply().add(_amount) <= getTokenCap());
         setTotalSupply(totalSupply().add(_amount));
         setBalanceOf(_to, balanceOf(_to).add(_amount));
         Mint(_to, _amount);
@@ -439,7 +439,7 @@ using SafeMath for uint256;
     }
     
     function addTokens(address _to, uint256 _amount) canMint internal{
-        require( totalSupply().add(_amount) &lt;= getTokenCap());
+        require( totalSupply().add(_amount) <= getTokenCap());
         setTotalSupply(totalSupply().add(_amount));
         setBalanceOf(_to, balanceOf(_to).add(_amount));
         Transfer(address(0), _to, _amount);
@@ -518,7 +518,7 @@ using SafeMath for uint256;
 
     // low level token purchase function
     function buyTokens() external payable{
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 weiAmount = msg.value;
 
         // calculate token amount to be created
@@ -545,7 +545,7 @@ using SafeMath for uint256;
     
     function returnTokens(uint256 _amount) external
     {
-        require(balanceOf(msg.sender) &gt;= _amount);
+        require(balanceOf(msg.sender) >= _amount);
         burn(msg.sender,_amount);
         // return (rate * amount) *  returnTokenRate %
         msg.sender.transfer(getTokenRate().mul(_amount).div(100).mul(tokenReturnRate));
@@ -564,8 +564,8 @@ using SafeMath for uint256;
     // @return true if the transaction can buy tokens
     function validPurchase(uint256 tokensAmount) internal view returns (bool) {
         bool nonZeroPurchase = tokensAmount != 0;
-        bool acceptableAmount = tokensAmount &gt;= getMinimumPurchase();
-        return nonZeroPurchase &amp;&amp; acceptableAmount;
+        bool acceptableAmount = tokensAmount >= getMinimumPurchase();
+        return nonZeroPurchase && acceptableAmount;
     }
     
 }

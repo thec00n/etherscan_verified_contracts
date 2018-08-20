@@ -22,8 +22,8 @@ contract EtherenaEventsSimulation {
     }
 
     function fireFightResultsEvents(uint8[4] _results) public {
-        for(uint8 i = 0; i &lt; 4; i++) {
-            if(_results[i] &lt; 3) { //tie:0, p1:1, p2:2    send 3+ to ignore
+        for(uint8 i = 0; i < 4; i++) {
+            if(_results[i] < 3) { //tie:0, p1:1, p2:2    send 3+ to ignore
             Fight_Results(fights++,
                           0x3A428Ec0AB92844de91d9116F8660DfccE42CD83,
                           0x826C1FD15e39A9cdda00532Df316DEE4BfC6a469,

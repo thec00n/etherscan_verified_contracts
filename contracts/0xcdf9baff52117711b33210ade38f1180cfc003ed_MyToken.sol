@@ -24,8 +24,8 @@ contract Token {
     uint8 internal _decimals;
     uint internal _totalSupply;
 
-    mapping (address =&gt; uint) internal _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
+    mapping (address => uint) internal _balanceOf;
+    mapping (address => mapping (address => uint)) internal _allowances;
 
     constructor(string symbol, string name, uint8 decimals, uint totalSupply) public {
         _symbol = symbol;
@@ -72,7 +72,7 @@ library SafeMath {
         internal
         pure
         returns (uint) {
-        assert(_value &lt;= _base);
+        assert(_value <= _base);
         return _base - _value;
     }
 
@@ -81,14 +81,14 @@ library SafeMath {
         pure
         returns (uint _ret) {
         _ret = _base + _value;
-        assert(_ret &gt;= _base);
+        assert(_ret >= _base);
     }
 
     function div(uint _base, uint _value)
         internal
         pure
         returns (uint) {
-        assert(_value &gt; 0 &amp;&amp; (_base % _value) == 0);
+        assert(_value > 0 && (_base % _value) == 0);
         return _base / _value;
     }
 
@@ -107,11 +107,11 @@ library Addresses {
             assembly {
             codeSize := extcodesize(_base)
             }
-        return codeSize &gt; 0;
+        return codeSize > 0;
     }
 }
 
-contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 5000000000000000), ERC20, ERC223 {
+contract MyToken is Token("LOCA", "Locanza", 8, 5000000000000000), ERC20, ERC223 {
 
     using SafeMath for uint;
     using Addresses for address;
@@ -140,7 +140,7 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
     Stages internal stage = Stages.FirstLoyaltyProgram;
 
 // Locked Balance + Balance = total _totalsupply
-    mapping(address=&gt;lockDetail)  _Locked;
+    mapping(address=>lockDetail)  _Locked;
 
 //Lock event
     event Locked(address indexed _locker, uint _amount);
@@ -170,14 +170,14 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
     function transfer(address _to, uint _value)
         public
         returns (bool) {
-        return transfer(_to, _value, &quot;&quot;);
+        return transfer(_to, _value, "");
     }
 //checked
     function transfer(address _to, uint _value, bytes _data)
         public
         returns (bool) {
-        require (_value &gt; 0 &amp;&amp;
-            _value &lt;= _balanceOf[msg.sender]); 
+        require (_value > 0 &&
+            _value <= _balanceOf[msg.sender]); 
         
         _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);
         _balanceOf[_to] = _balanceOf[_to].add(_value);
@@ -197,17 +197,17 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
     function transferFrom(address _from, address _to, uint _value)
         public
         returns (bool) {
-        return transferFrom(_from, _to, _value, &quot;&quot;);
+        return transferFrom(_from, _to, _value, "");
     }
 
 //checked
     function transferFrom(address _from, address _to, uint _value, bytes _data)
         public
         returns (bool) {
-        require (_allowances[_from][msg.sender] &gt; 0 &amp;&amp; 
-            _value &gt; 0 &amp;&amp;
-            _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            _balanceOf[_from] &gt;= _value); 
+        require (_allowances[_from][msg.sender] > 0 && 
+            _value > 0 &&
+            _allowances[_from][msg.sender] >= _value &&
+            _balanceOf[_from] >= _value); 
 
         _allowances[_from][msg.sender] = _allowances[_from][msg.sender].sub(_value);
         _balanceOf[_from] = _balanceOf[_from].sub(_value);
@@ -227,7 +227,7 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
     function approve(address _spender, uint _value)
         public
         returns (bool) {
-        require (_balanceOf[msg.sender] &gt;= _value &amp;&amp; _value &gt;= 0); 
+        require (_balanceOf[msg.sender] >= _value && _value >= 0); 
             _allowances[msg.sender][_spender] = _value;
             emit Approval(msg.sender, _spender, _value);
             return true;
@@ -250,11 +250,11 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
 // Only minting sets a new stage (first stage is the FirstLoyaltyProgram after initial token creation)
 
     function coinMinter (uint _amount, uint _days) public onlyOwner  returns (bool) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         // max 1 year lock only
-        require(_days &gt; 30 &amp;&amp; _days &lt;= 365);
+        require(_days > 30 && _days <= 365);
     // this is where we eventualy set the total supply
-        require (_amount + _totalSupply &lt;= 10000000000000000);
+        require (_amount + _totalSupply <= 10000000000000000);
         _totalSupply += _amount;
         stage = Stages(uint(stage)+1);
         lockAfterMinting(_amount, _days);
@@ -265,8 +265,8 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
 
     function lockAfterMinting( uint _amount, uint _days) internal onlyOwner returns(bool) {
      // only one token lock (per stage) is possible
-        require(_amount &gt; 0);
-        require(_days &gt; 30 &amp;&amp; _days &lt;= 365);
+        require(_amount > 0);
+        require(_days > 30 && _days <= 365);
         require(_Locked[msg.sender].Locked != true);
         _Locked[msg.sender].amount = _amount;
         _Locked[msg.sender].lockedDate = now;
@@ -278,9 +278,9 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
 
     function lockOwnerBalance( uint _amount, uint _days) public onlyOwner returns(bool) {
    // max 1 year lock only
-        require(_amount &gt; 0);
-        require(_days &gt; 30 &amp;&amp; _days &lt;= 365);
-        require(_balanceOf[msg.sender] &gt;= _amount);
+        require(_amount > 0);
+        require(_days > 30 && _days <= 365);
+        require(_balanceOf[msg.sender] >= _amount);
    // only one token lock (per stage) is possible
         require(_Locked[msg.sender].Locked != true);
   // extract tokens from the owner balance
@@ -305,7 +305,7 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
         require(_Locked[msg.sender].Locked == true);
 // require statement regarding the date time require for unlock
 // for testing purposes only in seconds
-        require(now &gt; _Locked[msg.sender].lockedDate + _Locked[msg.sender].daysLocked * 1 days);
+        require(now > _Locked[msg.sender].lockedDate + _Locked[msg.sender].daysLocked * 1 days);
         _balanceOf[msg.sender] += _Locked[msg.sender].amount;
         delete _Locked[msg.sender];
 
@@ -316,17 +316,17 @@ contract MyToken is Token(&quot;LOCA&quot;, &quot;Locanza&quot;, 8, 500000000000
     function getStage() public view returns(string){
 
         if (uint(stage)==0) {
-            return &quot;FirstLoyalty&quot;;
+            return "FirstLoyalty";
         } else if(uint(stage)==1){
-            return &quot;Stage1&quot;;
+            return "Stage1";
          } else if (uint(stage)==2){
-            return &quot;Stage2&quot;;
+            return "Stage2";
         }  else if(uint(stage)==3){
-            return &quot;Stage3&quot; ;
+            return "Stage3" ;
         } else if(uint(stage)==4){
-            return &quot;Stage4&quot; ;
+            return "Stage4" ;
         }else if(uint(stage)==5){
-            return &quot;Stage5&quot; ;
+            return "Stage5" ;
         }
     }
 

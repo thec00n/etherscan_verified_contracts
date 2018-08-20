@@ -6,13 +6,13 @@ pragma solidity ^0.4.21;
  *   __________                                                          
  *   \______   \ ____   ____   _____   ________________    ____    ____  
  *    |    |  _//  _ \ /  _ \ /     \_/ __ \_  __ \__  \  /    \  / ___\ 
- *    |    |   (  &lt;_&gt; |  &lt;_&gt; )  Y Y  \  ___/|  | \// __ \|   |  \/ /_/  &gt;
- *    |______  /\____/ \____/|__|_|  /\___  &gt;__|  (____  /___|  /\___  / 
+ *    |    |   (  <_> |  <_> )  Y Y  \  ___/|  | \// __ \|   |  \/ /_/  >
+ *    |______  /\____/ \____/|__|_|  /\___  >__|  (____  /___|  /\___  / 
  *           \/                    \/     \/           \/     \//_____/  
  *          .____    .__             .__    .___.__  __                  
  *          |    |   |__| ________ __|__| __| _/|__|/  |_ ___.__.        
- *          |    |   |  |/ ____/  |  \  |/ __ | |  \   __&lt;   |  |        
- *          |    |___|  &lt; &lt;_|  |  |  /  / /_/ | |  ||  |  \___  |        
+ *          |    |   |  |/ ____/  |  \  |/ __ | |  \   __<   |  |        
+ *          |    |___|  < <_|  |  |  /  / /_/ | |  ||  |  \___  |        
  *          |_______ \__|\__   |____/|__\____ | |__||__|  / ____|        
  *                  \/      |__|             \/           \/             
  *    _____          __               .__    ___________                .___
@@ -24,8 +24,8 @@ pragma solidity ^0.4.21;
  *     ___________            __               .__                          
  *     \_   _____/___ _____ _/  |_ __ _________|__| ____    ____            
  *      |    __)/ __ \\__  \\   __\  |  \_  __ \  |/    \  / ___\           
- *      |     \\  ___/ / __ \|  | |  |  /|  | \/  |   |  \/ /_/  &gt;          
- *      \___  / \___  &gt;____  /__| |____/ |__|  |__|___|  /\___  /           
+ *      |     \\  ___/ / __ \|  | |  |  /|  | \/  |   |  \/ /_/  >          
+ *      \___  / \___  >____  /__| |____/ |__|  |__|___|  /\___  /           
  *          \/      \/     \/                          \//_____/           
  *                   _          _           _            _                      
  *                  /\ \       /\ \        /\ \         /\ \     _              
@@ -52,7 +52,7 @@ pragma solidity ^0.4.21;
  *                                                                                        
  *                          .___ __________________ ________                
  *       _____    ____    __| _/ \______   \_____  \\______ \               
- *       \__  \  /    \  / __ |   |     ___/ _(__  &lt; |    |  \              
+ *       \__  \  /    \  / __ |   |     ___/ _(__  < |    |  \              
  *        / __ \|   |  \/ /_/ |   |    |    /       \|    `   \             
  *       (____  /___|  /\____ |   |____|   /______  /_______  /             
  *            \/     \/      \/                   \/        \/                    
@@ -61,26 +61,26 @@ pragma solidity ^0.4.21;
  * 
  * This code? IS NOT DESIGNED FOR ACTUAL USE.
  * 
- * The author of this code really wishes you wouldn&#39;t send your ETH to it.
+ * The author of this code really wishes you wouldn't send your ETH to it.
  * 
- * No, seriously. It&#39;s probablly illegal anyway. So don&#39;t do it.
+ * No, seriously. It's probablly illegal anyway. So don't do it.
  * 
- * Let me repeat that: Don&#39;t actually send money to this contract. You are 
+ * Let me repeat that: Don't actually send money to this contract. You are 
  * likely breaking several local and national laws in doing so.
  * 
  * This code is intended to educate. Nothing else. If you use it, expect S.W.A.T 
  * teams at your door. I wrote this code because I wanted to experiment
  * with smart contracts, and I think code should be open source. So consider
  * it public domain, No Rights Reserved. Participating in pyramid schemes
- * is genuinely illegal so just don&#39;t even think about going beyond
+ * is genuinely illegal so just don't even think about going beyond
  * reading the code and understanding how it works.
  * 
- * Seriously. I&#39;m not kidding. It&#39;s probablly broken in some critical way anyway
+ * Seriously. I'm not kidding. It's probablly broken in some critical way anyway
  * and will suck all your money out your wallet, install a virus on your computer
  * sleep with your wife, kidnap your children and sell them into slavery,
  * make you forget to file your taxes, and give you cancer.
  * 
- * So.... tl;dr: This contract sucks, don&#39;t send money to it.
+ * So.... tl;dr: This contract sucks, don't send money to it.
  * 
  * What it does:
  * 
@@ -91,7 +91,7 @@ pragma solidity ^0.4.21;
  * The tokens collect dividends, which in turn pay into the payout pool
  * to be split 50/50.
  * 
- * If your seeing this contract in it&#39;s initial configuration, it should be
+ * If your seeing this contract in it's initial configuration, it should be
  * set to 200% (double deposits), and pointed at PoWH:
  * 0xB3775fB83F7D12A36E0475aBdD1FCA35c091efBe
  * 
@@ -190,7 +190,7 @@ contract IronHands is Owned {
     //The creditor line
     Participant[] public participants;
     //How much each person is owed
-    mapping(address =&gt; uint256) public creditRemaining;
+    mapping(address => uint256) public creditRemaining;
     //What we will be buying
     POWH weak_hands;
 
@@ -217,7 +217,7 @@ contract IronHands is Owned {
      */ 
     function deposit() payable public {
         //You have to send more than 1000000 wei.
-        require(msg.value &gt; 1000000);
+        require(msg.value > 1000000);
         //Compute how much to pay them
         uint256 amountCredited = (msg.value * multiplier) / 100;
         //Get in line to be paid back.
@@ -229,7 +229,7 @@ contract IronHands is Owned {
         //Emit a deposit event.
         emit Deposit(msg.value, msg.sender);
         //If I have dividends
-        if(myDividends() &gt; 0){
+        if(myDividends() > 0){
             //Withdraw dividends
             withdraw();
         }
@@ -245,7 +245,7 @@ contract IronHands is Owned {
         //Take everything in the pool
         uint balance = address(this).balance;
         //It needs to be something worth splitting up
-        require(balance &gt; 1);
+        require(balance > 1);
         //Increase our total throughput
         throughput += balance;
         //Split it into two parts
@@ -257,12 +257,12 @@ contract IronHands is Owned {
         //Record that tokens were purchased
         emit Purchase(investment, tokens);
         //While we still have money to send
-        while (balance &gt; 0) {
+        while (balance > 0) {
             //Either pay them what they are owed or however much we have, whichever is lower.
-            uint payoutToSend = balance &lt; participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
+            uint payoutToSend = balance < participants[payoutOrder].payout ? balance : participants[payoutOrder].payout;
             //if we have something to pay them
-            if(payoutToSend &gt; 0){
-                //subtract how much we&#39;ve spent
+            if(payoutToSend > 0){
+                //subtract how much we've spent
                 balance -= payoutToSend;
                 //subtract the amount paid from the amount owed
                 backlog -= payoutToSend;
@@ -270,7 +270,7 @@ contract IronHands is Owned {
                 creditRemaining[participants[payoutOrder].etherAddress] -= payoutToSend;
                 //credit their account the amount they are being paid
                 participants[payoutOrder].payout -= payoutToSend;
-                //Try and pay them, making best effort. But if we fail? Run out of gas? That&#39;s not our problem any more.
+                //Try and pay them, making best effort. But if we fail? Run out of gas? That's not our problem any more.
                 if(participants[payoutOrder].etherAddress.call.value(payoutToSend).gas(1000000)()){
                     //Record that they were paid
                     emit Payout(payoutToSend, participants[payoutOrder].etherAddress);
@@ -284,12 +284,12 @@ contract IronHands is Owned {
 
             }
             //If we still have balance left over
-            if(balance &gt; 0){
+            if(balance > 0){
                 // go to the next person in line
                 payoutOrder += 1;
             }
-            //If we&#39;ve run out of people to pay, stop
-            if(payoutOrder &gt;= participants.length){
+            //If we've run out of people to pay, stop
+            if(payoutOrder >= participants.length){
                 return;
             }
         }

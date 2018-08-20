@@ -3,11 +3,11 @@ pragma solidity ^0.4.11;
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
 
@@ -17,7 +17,7 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -25,10 +25,10 @@ library SafeMath {
 contract CCCP {
     using SafeMath for uint256;
     address[] users;
-    mapping(address =&gt; bool) usersExist;
-    mapping(address =&gt; address) users2users;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; uint256) balancesTotal;
+    mapping(address => bool) usersExist;
+    mapping(address => address) users2users;
+    mapping(address => uint256) balances;
+    mapping(address => uint256) balancesTotal;
     uint256 nextUserId = 0;
     uint256 cyles = 100;
     
@@ -50,7 +50,7 @@ contract CCCP {
     }
     
     function _register(address user, uint256 amount, address parentUser) internal {
-        if (users.length &gt; 0) {
+        if (users.length > 0) {
             require(parentUser!=user);
             require(usersExist[parentUser]);
         }
@@ -72,9 +72,9 @@ contract CCCP {
         uint256 length = users.length;
         uint256 existLastIndex = length.sub(1);
         
-        for (uint i = 1; i &lt;= cyles; i++) {
+        for (uint i = 1; i <= cyles; i++) {
             nextUserId = nextUserId.add(1);
-            if(nextUserId &gt; existLastIndex){
+            if(nextUserId > existLastIndex){
                 nextUserId = 0;
             }
             balances[users[nextUserId]] = balances[users[nextUserId]].add(referalBonus.div(cyles));
@@ -84,7 +84,7 @@ contract CCCP {
     }
     
     function getMyMoney() public {
-        require(balances[msg.sender]&gt;0);
+        require(balances[msg.sender]>0);
         msg.sender.transfer(balances[msg.sender]);
         emit GetMyMoney(msg.sender, balances[msg.sender]);
         balances[msg.sender]=0;

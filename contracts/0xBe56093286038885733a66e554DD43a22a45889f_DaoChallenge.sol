@@ -1,6 +1,6 @@
 contract DaoChallenge
 {
-	modifier noEther() {if (msg.value &gt; 0) throw; _}
+	modifier noEther() {if (msg.value > 0) throw; _}
 
 	modifier onlyOwner() {if (owner != msg.sender) throw; _}
 
@@ -9,15 +9,15 @@ contract DaoChallenge
 	event notifyTerminate(uint256 finalBalance);
 
 	/* This creates an array with all balances */
-  mapping (address =&gt; uint256) public tokenBalanceOf;
+  mapping (address => uint256) public tokenBalanceOf;
 
 	uint256 constant tokenPrice = 1000000000000000; // 1 finney
 
-	// Owner of the challenge; a real DAO doesn&#39;t an owner.
+	// Owner of the challenge; a real DAO doesn't an owner.
 	address owner;
 
 	function DaoChallenge () {
-		owner = msg.sender; // Owner of the challenge. Don&#39;t use this in a real DAO.
+		owner = msg.sender; // Owner of the challenge. Don't use this in a real DAO.
 	}
 
 	function () {
@@ -32,13 +32,13 @@ contract DaoChallenge
 	function refund() noEther {
 		address sender = msg.sender;
 		uint256 tokenBalance = tokenBalanceOf[sender];
-		if (tokenBalance &lt;= 0) { throw; }
+		if (tokenBalance <= 0) { throw; }
 		tokenBalanceOf[sender] = 0;
 		sender.send(tokenBalance * tokenPrice);
 		notifyRefundToken(tokenBalance, sender);
 	}
 
-	// The owner of the challenge can terminate it. Don&#39;t use this in a real DAO.
+	// The owner of the challenge can terminate it. Don't use this in a real DAO.
 	function terminate() noEther onlyOwner {
 		notifyTerminate(this.balance);
 		suicide(owner);

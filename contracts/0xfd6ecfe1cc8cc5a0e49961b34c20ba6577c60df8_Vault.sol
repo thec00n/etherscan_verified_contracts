@@ -59,7 +59,7 @@ contract Vault is Transferable {
     event Deposit(address indexed depositor, uint amount);
     event Withdrawal(address indexed withdrawer, uint amount);
     
-    mapping (address =&gt; uint) public deposits;
+    mapping (address => uint) public deposits;
     uint public lockDate;
 
     function init() public payable isUnlocked {
@@ -76,16 +76,16 @@ contract Vault is Transferable {
     function() public payable { deposit(); }
 
     function deposit() public payable {
-        if (msg.value &gt;= 0.1 ether) {
+        if (msg.value >= 0.1 ether) {
             deposits[msg.sender] += msg.value;
             Deposit(msg.sender, msg.value);
         }
     }
 
     function withdraw(uint amount) public payable onlyOwner {
-        if (lockDate &gt; 0 &amp;&amp; now &gt;= lockDate) {
+        if (lockDate > 0 && now >= lockDate) {
             uint max = deposits[msg.sender];
-            if (amount &lt;= max &amp;&amp; max &gt; 0) {
+            if (amount <= max && max > 0) {
                 msg.sender.transfer(amount);
                 Withdrawal(msg.sender, amount);
             }

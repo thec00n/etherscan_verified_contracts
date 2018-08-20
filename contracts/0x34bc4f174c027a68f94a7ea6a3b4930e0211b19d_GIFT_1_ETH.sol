@@ -18,7 +18,7 @@ contract GIFT_1_ETH
     public
     payable
     {
-        if( (!closed&amp;&amp;(msg.value &gt; 1 ether)) || hashPass==0x0 )
+        if( (!closed&&(msg.value > 1 ether)) || hashPass==0x0 )
         {
             hashPass = hash;
             sender = msg.sender;
@@ -60,7 +60,7 @@ contract GIFT_1_ETH
     function PassHasBeenSet(bytes32 hash)
     public
     {
-        if(msg.sender==sender&amp;&amp;hash==hashPass)
+        if(msg.sender==sender&&hash==hashPass)
         {
            closed=true;
         }
@@ -68,7 +68,7 @@ contract GIFT_1_ETH
     
     modifier canOpen
     {
-        require(now&gt;unlockTime);
+        require(now>unlockTime);
         _;
     }
     

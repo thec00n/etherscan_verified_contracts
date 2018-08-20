@@ -21,20 +21,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,7 +44,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,7 +106,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -115,7 +115,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -159,7 +159,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -170,8 +170,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -185,7 +185,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -234,7 +234,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -331,9 +331,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -382,14 +382,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -397,15 +397,15 @@ contract Crowdsale {
 
 
 contract OHC_CrowdsaleToken is MintableToken {
-  string public constant name = &quot;One Hundred Coin&quot;;
-  string public constant symbol = &quot;OHC&quot;;
+  string public constant name = "One Hundred Coin";
+  string public constant symbol = "OHC";
   uint8 public constant decimals = 18;
 
   // overriding BasicToken#transfer
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    require(now &gt;= 1521795600);
+    require(_value <= balances[msg.sender]);
+    require(now >= 1521795600);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -449,26 +449,26 @@ contract OHC_Crowdsale is Crowdsale {
 
   // overriding Crowdsale#validPurchase
   function validPurchase() internal constant returns (bool) {
-    if (msg.value &lt; 20000000000000000) {
+    if (msg.value < 20000000000000000) {
       return false;
     }
 
-    if (token.totalSupply().add(msg.value.mul(getRate())) &gt;= CAP) {
+    if (token.totalSupply().add(msg.value.mul(getRate())) >= CAP) {
       return false;
     }
 
-    if (now &gt; 1525939200 &amp;&amp; now &lt; 1539158400) {
+    if (now > 1525939200 && now < 1539158400) {
       return false;
     }
 
-    if (1523347200 &gt;= now &amp;&amp; 1525939200 &lt;= now) {
-      if (token.totalSupply().add(msg.value.mul(getRate())) &gt;= CAP_PRE_SALE) {
+    if (1523347200 >= now && 1525939200 <= now) {
+      if (token.totalSupply().add(msg.value.mul(getRate())) >= CAP_PRE_SALE) {
         return false;
       }
     }
 
-    if (1539158400 &gt;= now &amp;&amp; 1541840400 &lt;= now) {
-      if (totalSupplyIco.add(msg.value.mul(getRate())) &gt;= CAP_ICO_SALE) {
+    if (1539158400 >= now && 1541840400 <= now) {
+      if (totalSupplyIco.add(msg.value.mul(getRate())) >= CAP_ICO_SALE) {
         return false;
       }
     }
@@ -491,35 +491,35 @@ contract OHC_Crowdsale is Crowdsale {
   }
 
   function getRate() public constant returns (uint256) {
-    if (1523347200 &lt;= now &amp;&amp; now &lt;= 1523952000) {
+    if (1523347200 <= now && now <= 1523952000) {
       return RATE1;
     }
 
-    if (1523952005 &lt;= now &amp;&amp; now &lt;= 1524556800) {
+    if (1523952005 <= now && now <= 1524556800) {
       return RATE2;
     }
 
-    if (1524556805 &lt;= now &amp;&amp; now &lt;= 1525161600) {
+    if (1524556805 <= now && now <= 1525161600) {
       return RATE3;
     }
 
-    if (1525161601 &lt;= now &amp;&amp; now &lt;= 1525959860) {
+    if (1525161601 <= now && now <= 1525959860) {
       return RATE4;
     }
 
-    if (1539158400 &lt;= now &amp;&amp; now &lt;= 1539763200) {
+    if (1539158400 <= now && now <= 1539763200) {
       return RATE5;
     }
 
-    if (1539763205 &lt;= now &amp;&amp; now &lt;= 1540368000) {
+    if (1539763205 <= now && now <= 1540368000) {
       return RATE6;
     }
 
-    if (1540368005 &lt;= now &amp;&amp; now &lt;= 1540976400) {
+    if (1540368005 <= now && now <= 1540976400) {
       return RATE7;
     }
 
-    if (1540976405 &lt;= now &amp;&amp; now &lt;= 1541840400) {
+    if (1540976405 <= now && now <= 1541840400) {
       return RATE8;
     }
 
@@ -528,7 +528,7 @@ contract OHC_Crowdsale is Crowdsale {
 
   function mintTokens(address walletToMint, uint256 t) payable public {
     require(msg.sender == wallet);
-    require(token.totalSupply().add(t) &lt; CAP);
+    require(token.totalSupply().add(t) < CAP);
 
     token.mint(walletToMint, t);
   }

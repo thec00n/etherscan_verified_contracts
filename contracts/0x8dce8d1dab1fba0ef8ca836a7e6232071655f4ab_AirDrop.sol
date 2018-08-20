@@ -20,7 +20,7 @@ contract AirDrop {
 
 	function drop() public {
 		require(msg.sender == owner);	
-	    for (uint256 i = 0; i &lt; recipients.length; i++) {
+	    for (uint256 i = 0; i < recipients.length; i++) {
 	    	UUU.transfer(recipients[i], values[i] * 10 ** 18);
 	    }
 	}

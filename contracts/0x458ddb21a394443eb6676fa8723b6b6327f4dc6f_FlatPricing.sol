@@ -73,13 +73,13 @@ library SafeMathLib {
   }
 
   function minus(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function plus(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 
@@ -97,7 +97,7 @@ contract FlatPricing is PricingStrategy {
   uint public oneTokenInWei;
 
   function FlatPricing(uint _oneTokenInWei) {
-    require(_oneTokenInWei &gt; 0);
+    require(_oneTokenInWei > 0);
     oneTokenInWei = _oneTokenInWei;
   }
 

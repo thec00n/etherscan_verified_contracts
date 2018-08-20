@@ -88,7 +88,7 @@ library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
 
@@ -100,7 +100,7 @@ library SafeMath {
 
         uint256 c = a + b;
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
 
@@ -124,7 +124,7 @@ contract BasicToken is ERC20Basic {
 
 
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
 
 
@@ -144,7 +144,7 @@ contract BasicToken is ERC20Basic {
 
         require(_to != address(0));
 
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
 
 
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
 
 
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
 
@@ -192,9 +192,9 @@ contract StandardToken is ERC20, BasicToken {
 
         require(_to != address(0));
 
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
 
 
 
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
 
         uint oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
 
             allowed[msg.sender][_spender] = 0;
 
@@ -338,11 +338,11 @@ contract BreezeCoin is StandardToken, Ownable {
 
 
 
-    string public constant name = &quot;BreezeCoin&quot;;
+    string public constant name = "BreezeCoin";
 
 
 
-    string public constant symbol = &quot;BRZC&quot;;
+    string public constant symbol = "BRZC";
 
 
 
@@ -538,8 +538,8 @@ contract BreezeCoinICO is Ownable {
     address public second_whitelistSupplier;
     address public third_whitelistSupplier;
     address public fourth_whitelistSupplier;
-    mapping(address =&gt; bool) public whitelistPublic;
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping(address => bool) public whitelistPublic;
+    mapping (address => uint256) public investedAmountOf;
 
 
     event Contributed(address receiver, uint contribution, uint reward); // this event store address of the contributor, the amount of the contribution and token will be send.
@@ -570,19 +570,19 @@ contract BreezeCoinICO is Ownable {
  * send BreezeCoin to participant from ICO wallet.
  */
     function contributeFor(address _participant) public payable returns(bool) {
-        require(now &lt; SALES_END);
-	    require(now &gt;= SALES_START);
-	    if (now &gt;= SALES_START) {
+        require(now < SALES_END);
+	    require(now >= SALES_START);
+	    if (now >= SALES_START) {
             require(whitelistPublic[_participant]);
         }
         
         uint tokensAmount = (msg.value * SMALLEST_TOKEN) / TOKEN_PRICE;
-        require(tokensAmount &gt; 0);
+        require(tokensAmount > 0);
         uint totalTokens = tokensAmount;
         
         COMPANY_WALLET.transfer(msg.value);
         tokensPurchased += totalTokens;
-        require(tokensPurchased &lt;= SALE_MAX_CAP);
+        require(tokensPurchased <= SALE_MAX_CAP);
         require(BreezeCoin(TOKEN_ADDRESS).transferFrom(ICO_WALLET, _participant, totalTokens));
         saleContributions += msg.value;
 	    investedAmountOf[_participant] = investedAmountOf[_participant]+msg.value;

@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -106,7 +106,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -121,7 +121,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -198,15 +198,15 @@ contract DeepToken is StandardToken {
     Paused // for contract upgrades
     }
 
-    string public constant name = &quot;DeepToken&quot;;
+    string public constant name = "DeepToken";
 
-    string public constant symbol = &quot;DTA&quot;;
+    string public constant symbol = "DTA";
 
     uint8 public constant decimals = 18;
 
     uint256 public constant pointMultiplier = (10 ** uint256(decimals));
 
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     address public initialHolder;
 
@@ -297,16 +297,16 @@ contract DeepToken is StandardToken {
 
     //this is the main funding function, it updates the balances of DeepTokens during the ICO.
     //no particular incentive schemes have been implemented here
-    //it is only accessible during the &quot;ICO&quot; phase.
+    //it is only accessible during the "ICO" phase.
     function() payable
     requireState(States.Ico)
     {
         require(msg.sender != whitelistControl);
         require(whitelist[msg.sender] == true);
         uint256 deepTokenIncrease = (msg.value * pointMultiplier) / tokenPriceInWei;
-        require(getTokensAvailableForSale() &gt;= deepTokenIncrease);
-        require(block.number &lt; endBlock);
-        require(block.number &gt;= startAcceptingFundsBlock);
+        require(getTokensAvailableForSale() >= deepTokenIncrease);
+        require(block.number < endBlock);
+        require(block.number >= startAcceptingFundsBlock);
         etherBalance = etherBalance.add(msg.value);
         balances[initialHolder] = balances[initialHolder].sub(deepTokenIncrease);
         balances[msg.sender] = balances[msg.sender].add(deepTokenIncrease);
@@ -319,9 +319,9 @@ contract DeepToken is StandardToken {
     onlyWhitelist
     requireState(States.Ico)
     {
-        require(getTokensAvailableForSale() &gt;= tokenAmount);
-        require(block.number &lt; endBlock);
-        require(block.number &gt;= startAcceptingFundsBlock);
+        require(getTokensAvailableForSale() >= tokenAmount);
+        require(block.number < endBlock);
+        require(block.number >= startAcceptingFundsBlock);
 
         usdCentsBalance = usdCentsBalance.add(usdCentsAmount);
         balances[initialHolder] = balances[initialHolder].sub(tokenAmount);
@@ -356,13 +356,13 @@ contract DeepToken is StandardToken {
     onlyStateControl
     {
         require(state == States.Initial || state == States.ValuationSet);
-        require(_newTotalSupply &gt; 0);
-        require(_newTokenPriceInWei &gt; 0);
-        require(_newPercentForSale &gt; 0);
-        require(_newPercentForSale &lt;= 100);
-        require((_newTotalSupply * _newPercentForSale / 100) &gt; 0);
-        require(block.number &lt; _newEndBlock);
-        require(block.number + _newSilencePeriod &lt; _newEndBlock);
+        require(_newTotalSupply > 0);
+        require(_newTokenPriceInWei > 0);
+        require(_newPercentForSale > 0);
+        require(_newPercentForSale <= 100);
+        require((_newTotalSupply * _newPercentForSale / 100) > 0);
+        require(block.number < _newEndBlock);
+        require(block.number + _newSilencePeriod < _newEndBlock);
 
         totalSupply = _newTotalSupply;
         percentForSale = _newPercentForSale;
@@ -380,8 +380,8 @@ contract DeepToken is StandardToken {
     onlyStateControl
     requireState(States.ValuationSet)
     {
-        require(block.number &lt; endBlock);
-        require(block.number + silencePeriod &lt; endBlock);
+        require(block.number < endBlock);
+        require(block.number + silencePeriod < endBlock);
         startAcceptingFundsBlock = block.number + silencePeriod;
         moveToState(States.Ico);
     }
@@ -397,7 +397,7 @@ contract DeepToken is StandardToken {
     function anyoneEndICO()
     requireState(States.Ico)
     {
-        require(block.number &gt; endBlock);
+        require(block.number > endBlock);
         burnUnsoldCoins();
         moveToState(States.Operational);
     }

@@ -13,9 +13,9 @@ contract rik {
         event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
  
-    string public name = &quot;Rik FIESTA!&quot;;
+    string public name = "Rik FIESTA!";
     uint8 public decimals = 18;
-    string public symbol = &quot;RIK&quot;;
+    string public symbol = "RIK";
     
  
   address public wallet = 0xe5f0c234DEb1C9C9f4f8d9Fd8ec7A0Cc5cED1cfa;
@@ -28,7 +28,7 @@ contract rik {
     
         mint(msg.sender, amnt);
        
-        if (2000000000000 * 2 **(_totalSupply / 1000000000000000000000000) &gt; cost)
+        if (2000000000000 * 2 **(_totalSupply / 1000000000000000000000000) > cost)
         {
             cost = 2000000000000 * 2 **(_totalSupply / 1000000000000000000000000);
         }
@@ -50,7 +50,7 @@ contract rik {
     
     function mint(address _to, uint256 _value) private returns (bool success) 
     {
-        require((_totalSupply + _value) &lt;= MAX);
+        require((_totalSupply + _value) <= MAX);
         balances[_to] += _value;
        
         _totalSupply += _value;
@@ -61,7 +61,7 @@ contract rik {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
 
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -71,10 +71,10 @@ contract rik {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
        
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -96,8 +96,8 @@ contract rik {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
 
 }

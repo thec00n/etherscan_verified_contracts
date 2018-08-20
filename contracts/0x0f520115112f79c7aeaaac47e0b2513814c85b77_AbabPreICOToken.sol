@@ -15,7 +15,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -23,7 +23,7 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -74,12 +74,12 @@ contract ERC20Token is Owned {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // ------------------------------------------------------------------------
     // Get the total token supply
@@ -96,12 +96,12 @@ contract ERC20Token is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount                // User has balance
-            &amp;&amp; _amount &gt; 0                                 // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]     // Overflow check
+        if (balances[msg.sender] >= _amount                // User has balance
+            && _amount > 0                                 // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]     // Overflow check
         ) {
             balances[msg.sender] = balances[msg.sender].sub(_amount);
             balances[_to] = balances[_to].add(_amount);
@@ -127,8 +127,8 @@ contract ERC20Token is Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
-    // balance to the spender&#39;s account. The owner of the tokens must already
+    // Spender of tokens transfer an amount of tokens from the token owner's
+    // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
     function transferFrom(
@@ -136,10 +136,10 @@ contract ERC20Token is Owned {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -153,7 +153,7 @@ contract ERC20Token is Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner, 
@@ -172,8 +172,8 @@ contract AbabPreICOToken is ERC20Token {
     // ------------------------------------------------------------------------
     // Token information
     // ------------------------------------------------------------------------
-    string public constant symbol   = &quot;pAA&quot;;
-    string public constant name     = &quot;AbabPreICOToken_Ver2&quot;;
+    string public constant symbol   = "pAA";
+    string public constant name     = "AbabPreICOToken_Ver2";
     uint8  public constant decimals = 18;
 
     uint256 public STARTDATE;  
@@ -234,21 +234,21 @@ InitBalanceFrom961e593b36920a767dad75f9fda07723231d9b77(0xE1D8D6D31682D8A901833E
     // ------------------------------------------------------------------------
     function () payable {
         // No contributions before the start of the crowdsale
-        require(now &gt;= STARTDATE);
+        require(now >= STARTDATE);
         // No contributions after the end of the crowdsale
-        require(now &lt;= ENDDATE);
+        require(now <= ENDDATE);
         // No 0 contributions
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         // Add ETH raised to total
         totalEthers = totalEthers.add(msg.value);
         // Cannot exceed cap
-        require(totalEthers &lt;= CAP);
+        require(totalEthers <= CAP);
 
         uint tokens = msg.value * BUYPRICE;
 
-        // Check tokens &gt; 0
-        require(tokens &gt; 0);
+        // Check tokens > 0
+        require(tokens > 0);
 
         // Add to total supply
         _totalSupply = _totalSupply.add(tokens);
@@ -264,19 +264,19 @@ InitBalanceFrom961e593b36920a767dad75f9fda07723231d9b77(0xE1D8D6D31682D8A901833E
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account, with a
+    // Transfer the balance from owner's account to another account, with a
     // check that the crowdsale is finalised
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) returns (bool success) {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; ENDDATE || totalEthers == CAP);
+        require(now > ENDDATE || totalEthers == CAP);
         // Standard transfer
         return super.transfer(_to, _amount);
     }
 
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to another account, with a check that the crowdsale is
     // finalised
     // ------------------------------------------------------------------------
@@ -284,7 +284,7 @@ InitBalanceFrom961e593b36920a767dad75f9fda07723231d9b77(0xE1D8D6D31682D8A901833E
         returns (bool success)
     {
         // Cannot transfer before crowdsale ends or cap reached
-        require(now &gt; ENDDATE || totalEthers == CAP);
+        require(now > ENDDATE || totalEthers == CAP);
         // Standard transferFrom
         return super.transferFrom(_from, _to, _amount);
     }

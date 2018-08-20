@@ -21,7 +21,7 @@ contract PiggyBank
 
     function deposit() payable returns (uint)
     {
-        if( msg.value &gt; 0 )
+        if( msg.value > 0 )
             deposits = deposits + 1;
 
         return getNumberOfDeposits();
@@ -39,7 +39,7 @@ contract PiggyBank
 
     function kill()
     {
-        if( msg.sender == creator &amp;&amp; now &gt;= unlockTime )
+        if( msg.sender == creator && now >= unlockTime )
             selfdestruct(creator);
     }
 }

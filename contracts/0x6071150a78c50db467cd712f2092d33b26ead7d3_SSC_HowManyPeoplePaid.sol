@@ -14,7 +14,7 @@ contract SSC_HowManyPeoplePaid {
     uint256 private _price = 1500000000000000;
     
     // Only update the counter if the mapping is false. This ensures uniqueness.
-    mapping (address =&gt; bool) _clients;
+    mapping (address => bool) _clients;
     
     constructor() public {
         _owner = msg.sender;   
@@ -31,7 +31,7 @@ contract SSC_HowManyPeoplePaid {
     
     function buy() public payable {
         // Price must be at least _price, can be higher.
-        assert(msg.value &gt;= _price);
+        assert(msg.value >= _price);
         
         // No mapping exists? Unique! Increase counter.
         if (!_clients[msg.sender]) {
@@ -47,7 +47,7 @@ contract SSC_HowManyPeoplePaid {
     
     function setPrice(uint256 newPrice) public {
         require(msg.sender == _owner);
-        assert(newPrice &gt; 0);
+        assert(newPrice > 0);
         
         // Set value
         _price = newPrice;

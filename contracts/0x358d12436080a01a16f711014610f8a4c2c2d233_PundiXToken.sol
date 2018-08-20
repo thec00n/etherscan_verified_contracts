@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,9 +102,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -153,14 +153,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -183,7 +183,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -213,7 +213,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -228,7 +228,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -281,7 +281,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -301,7 +301,7 @@ contract BurnableToken is StandardToken {
     function burn(uint _value)
         public
     {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -355,8 +355,8 @@ contract PundiXToken is MintableToken, BurnableToken {
     event ShowCurrentIndex(address indexed to, uint256 value);
     event ShowBonus(address indexed to, uint256 value);
 
-    string public constant name = &quot;Pundi X Token&quot;;
-    string public constant symbol = &quot;PXS&quot;;
+    string public constant name = "Pundi X Token";
+    string public constant symbol = "PXS";
     uint8 public constant decimals = 18;
 
     uint256 public totalSupplyBonus;
@@ -374,7 +374,7 @@ contract PundiXToken is MintableToken, BurnableToken {
     }
 
     // --------------------------------------------------------
-    mapping(address=&gt;uint256) weiBalance;
+    mapping(address=>uint256) weiBalance;
     address[] public investors;
 
     function addWei(address _address, uint256 _value) onlyOwner canMint public {
@@ -398,7 +398,7 @@ contract PundiXToken is MintableToken, BurnableToken {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         bool result = super.transferFrom(_from, _to, _value);
-        if (result &amp;&amp; currentTimeIndex &lt; bonusTimeList.length) {
+        if (result && currentTimeIndex < bonusTimeList.length) {
             bonus(_from);
             bonus(_to);
         }
@@ -407,7 +407,7 @@ contract PundiXToken is MintableToken, BurnableToken {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         bool result = super.transfer(_to, _value);
-        if (result &amp;&amp; currentTimeIndex &lt; bonusTimeList.length) {
+        if (result && currentTimeIndex < bonusTimeList.length) {
             bonus(msg.sender);
             bonus(_to);
         }
@@ -425,14 +425,14 @@ contract PundiXToken is MintableToken, BurnableToken {
 
     function burn(uint256 _value) public {
         super.burn(_value);
-        if (currentTimeIndex &lt; bonusTimeList.length) {
+        if (currentTimeIndex < bonusTimeList.length) {
             bonus(msg.sender);
         }
 
     }
     // --------------------------------------------------------
 
-    mapping(address =&gt; User) public users;
+    mapping(address => User) public users;
 
     struct User {
         uint256 txTimestamp;
@@ -447,16 +447,16 @@ contract PundiXToken is MintableToken, BurnableToken {
         tryNextTimeRange();
 
         uint64 maxTime = bonusTimeList[currentTimeIndex];
-        if (user.txTimestamp &gt; maxTime) {
+        if (user.txTimestamp > maxTime) {
             return;
         }
 
         uint64 minTime = 0;
-        if (currentTimeIndex &gt; 0) {
+        if (currentTimeIndex > 0) {
             minTime = bonusTimeList[currentTimeIndex-1];
         }
 
-        for (uint _i = user.monthBalance.length; _i &lt;= currentTimeIndex; _i++) {
+        for (uint _i = user.monthBalance.length; _i <= currentTimeIndex; _i++) {
             user.monthBalance.push(0);
         }
 
@@ -464,11 +464,11 @@ contract PundiXToken is MintableToken, BurnableToken {
         if (user.txTimestamp == 0) {
             user.monthBalance[currentTimeIndex] = balances[_address];
             user.monthIndex = currentTimeIndex;
-        } else if (user.txTimestamp &gt;= minTime) {
+        } else if (user.txTimestamp >= minTime) {
             user.monthBalance[currentTimeIndex] = balances[_address];
-        } else { // (user.txTimestamp &lt; minTime) cross month
+        } else { // (user.txTimestamp < minTime) cross month
             uint256 pBalance = user.monthBalance[user.monthIndex];
-            for (uint8 i = user.monthIndex; i &lt; currentTimeIndex; i++) {
+            for (uint8 i = user.monthIndex; i < currentTimeIndex; i++) {
                 user.monthBalance[i] = pBalance;
             }
             user.monthBalance[currentTimeIndex] = balances[_address];
@@ -481,8 +481,8 @@ contract PundiXToken is MintableToken, BurnableToken {
     function tryNextTimeRange() internal {
         uint8 len = uint8(bonusTimeList.length) - 1;
         uint64 _now = uint64(now);
-        for(; currentTimeIndex &lt; len; currentTimeIndex++) {
-            if (bonusTimeList[currentTimeIndex] &gt;= _now) {
+        for(; currentTimeIndex < len; currentTimeIndex++) {
+            if (bonusTimeList[currentTimeIndex] >= _now) {
                 break;
             }
         }
@@ -499,27 +499,27 @@ contract PundiXToken is MintableToken, BurnableToken {
 
         User storage user = users[addr];
 
-        if (user.monthIndex &lt; currentTimeIndex) {
+        if (user.monthIndex < currentTimeIndex) {
             bonus(addr);
         }
 
         User storage xuser = users[addr];
 
-        if (xuser.receiveIndex == xuser.monthIndex || xuser.receiveIndex &gt;= bonusTimeList.length) {
+        if (xuser.receiveIndex == xuser.monthIndex || xuser.receiveIndex >= bonusTimeList.length) {
             return;
         }
 
 
-        require(user.receiveIndex &lt; user.monthIndex);
+        require(user.receiveIndex < user.monthIndex);
 
         uint8 monthInterval = xuser.monthIndex - xuser.receiveIndex;
 
         uint256 bonusToken = 0;
 
-        if (monthInterval &gt; 6) {
+        if (monthInterval > 6) {
             uint8 _length = monthInterval - 6;
 
-            for (uint8 j = 0; j &lt; _length; j++) {
+            for (uint8 j = 0; j < _length; j++) {
                 xuser.receiveBonus.push(0);
                 xuser.receiveIndex++;
             }
@@ -527,7 +527,7 @@ contract PundiXToken is MintableToken, BurnableToken {
 
         uint256 balance = xuser.monthBalance[xuser.monthIndex];
 
-        for (uint8 i = xuser.receiveIndex; i &lt; xuser.monthIndex; i++) {
+        for (uint8 i = xuser.receiveIndex; i < xuser.monthIndex; i++) {
             uint256 preMonthBonus = calculateBonusToken(i, balance);
             balance = preMonthBonus.add(balance);
             bonusToken = bonusToken.add(preMonthBonus);
@@ -549,13 +549,13 @@ contract PundiXToken is MintableToken, BurnableToken {
 
     function calculateBonusToken(uint8 _monthIndex, uint256 _balance) internal returns (uint256) {
         uint256 bonusToken = 0;
-        if (_monthIndex &lt; 12) {
+        if (_monthIndex < 12) {
             // 7.31606308769453%
             bonusToken = _balance.div(10000000000000000).mul(731606308769453);
-        } else if (_monthIndex &lt; 24) {
+        } else if (_monthIndex < 24) {
             // 2.11637098909784%
             bonusToken = _balance.div(10000000000000000).mul(211637098909784);
-        } else if (_monthIndex &lt; 36) {
+        } else if (_monthIndex < 36) {
             // 0.881870060450728%
             bonusToken = _balance.div(100000000000000000).mul(881870060450728);
         }
@@ -576,7 +576,7 @@ contract PundiXToken is MintableToken, BurnableToken {
 
     function recycleUnreceivedBonus(address _address) onlyOwner {
         tryNextTimeRange();
-        require(currentTimeIndex &gt; 34);
+        require(currentTimeIndex > 34);
 
         uint64 _now = uint64(now);
 
@@ -587,7 +587,7 @@ contract PundiXToken is MintableToken, BurnableToken {
         // TODO 180 days
         uint64 finalTime = 180 days + maxTime;
 
-        if (_now &gt; finalTime) {
+        if (_now > finalTime) {
             bonusToken = totalSupplyBonus;
             totalSupplyBonus = 0;
         }

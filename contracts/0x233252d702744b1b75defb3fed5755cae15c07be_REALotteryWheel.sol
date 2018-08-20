@@ -4,14 +4,14 @@ pragma solidity ^0.4.17;
 
 	The constructor sets last_hash to some initial value.
 	Every call to spin() will increase the round_count by one and
-	a put a new &quot;random&quot; hash into the storage map &quot;hashes&quot;.
-	spin() accepts an argument which can be used to introdue more &quot;randomness&quot;.
+	a put a new "random" hash into the storage map "hashes".
+	spin() accepts an argument which can be used to introdue more "randomness".
 
 	The community can participate by sending small amounts of Eth (no matter the value)
 	to the smart contract. The value sent together with timestamp and blocknumber increase
-	the &quot;randomness&quot;.
+	the "randomness".
 
-	The outcome of round &lt;n&gt; can be retrived via call to get_hash(&lt;n&gt;).  
+	The outcome of round <n> can be retrived via call to get_hash(<n>).  
 
 	WARNING and DISCLAIMER: 
 	We fully understand the fact that Ethereum Smart Contracts
@@ -35,7 +35,7 @@ contract REALotteryWheel{
     bytes32 public last_hash;
     address public controller;
     
-    mapping (uint16 =&gt; bytes32) public hashes;
+    mapping (uint16 => bytes32) public hashes;
     
     function REALotteryWheel() public {
         controller = msg.sender;

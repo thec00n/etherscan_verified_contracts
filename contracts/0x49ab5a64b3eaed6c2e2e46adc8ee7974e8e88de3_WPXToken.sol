@@ -9,31 +9,31 @@ library SafeMath {
     return c;
   }
 function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function assert(bool assertion) internal {
     if (!assertion) {
@@ -59,13 +59,13 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -119,7 +119,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -132,7 +132,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) revert();
+    // if (_value > _allowance) revert();
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,7 +151,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -191,7 +191,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint _value) {
-   if (_value &gt; transferableTokens(_sender, uint64(now))) revert();
+   if (_value > transferableTokens(_sender, uint64(now))) revert();
    _;
   }
 
@@ -243,7 +243,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -266,11 +266,11 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   ) public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    if (_cliff &lt; _start || _vesting &lt; _cliff) {
+    if (_cliff < _start || _vesting < _cliff) {
       revert();
     }
 
-    if (tokenGrantsCount(_to) &gt; MAX_GRANTS_PER_ADDRESS) revert();   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    if (tokenGrantsCount(_to) > MAX_GRANTS_PER_ADDRESS) revert();   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint count = grants[_to].push(
                 TokenGrant(
@@ -325,7 +325,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -334,7 +334,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = SafeMath.add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -376,7 +376,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(
@@ -387,12 +387,12 @@ contract VestedToken is StandardToken, LimitedTransferToken {
     uint256 vesting) constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = tokens * (time - start) / (vesting - start)
       uint256 vestedTokens = SafeMath.div(
@@ -462,7 +462,7 @@ contract VestedToken is StandardToken, LimitedTransferToken {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = SafeMath.max64(grants[holder][i].vesting, date);
     }
   }
@@ -478,8 +478,8 @@ contract VestedToken is StandardToken, LimitedTransferToken {
 
 contract WPXToken is VestedToken {
   //FIELDS
-  string public name = &quot;WorkPress&quot;; //(important input)
-  string public symbol = &quot;WPX&quot;;    //(important input)
+  string public name = "WorkPress"; //(important input)
+  string public symbol = "WPX";    //(important input)
   uint public decimals = 4;        //(important input)
 // Multiplier for the decimals
   uint private constant DECIMALS = 10000;
@@ -534,13 +534,13 @@ contract WPXToken is VestedToken {
   // MODIFIERS
   //Is currently in the period after the private start time and before the public start time.
   modifier is_pre_crowdfund_period() {
-    if (now &gt;= publicStartTime || now &lt; privateStartTime) revert();
+    if (now >= publicStartTime || now < privateStartTime) revert();
     _;
   }
 
   //Is currently the crowdfund period
   modifier is_crowdfund_period() {
-    if (now &lt; publicStartTime) revert();
+    if (now < publicStartTime) revert();
     if (isCrowdfundCompleted()) revert();
     _;
   }
@@ -551,7 +551,7 @@ contract WPXToken is VestedToken {
     _;
   }
   function isCrowdfundCompleted() internal returns (bool) {
-    if (now &gt; publicEndTime || WPXSold+50000*DECIMALS &gt;= ALLOC_CROWDSALE || etherRaised &gt;= hardcapInEth*1000000000000000000) {return true; }
+    if (now > publicEndTime || WPXSold+50000*DECIMALS >= ALLOC_CROWDSALE || etherRaised >= hardcapInEth*1000000000000000000) {return true; }
 	
     return false;
   }
@@ -631,13 +631,13 @@ contract WPXToken is VestedToken {
   {
       uint delta = SafeMath.sub(now, publicStartTime);
 
-      if (delta &gt; STAGE_TWO_TIME_END) return PRICE_STAGE_THREE;
-      if (delta &gt; STAGE_ONE_TIME_END) return PRICE_STAGE_TWO;
+      if (delta > STAGE_TWO_TIME_END) return PRICE_STAGE_THREE;
+      if (delta > STAGE_ONE_TIME_END) return PRICE_STAGE_TWO;
 
       return (PRICE_STAGE_ONE);
   }
 
-  // calculates wmount of WPX we get, given the wei and the rates we&#39;ve defined per 1 eth
+  // calculates wmount of WPX we get, given the wei and the rates we've defined per 1 eth
   function calcAmount(uint _wei, uint _rate) 
     constant
     returns (uint) 
@@ -654,7 +654,7 @@ contract WPXToken is VestedToken {
   {
     o_amount = calcAmount(msg.value, _rate);
 
-    if (o_amount &gt; _remaining) revert();
+    if (o_amount > _remaining) revert();
     if (!multisigAddress.send(msg.value)) revert();
 
     balances[ownerAddress] = balances[ownerAddress].sub(o_amount);

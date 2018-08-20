@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -107,14 +107,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -166,7 +166,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -289,7 +289,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -368,7 +368,7 @@ contract HasNoTokens is CanReclaimToken {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -383,7 +383,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -397,7 +397,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -434,7 +434,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -522,7 +522,7 @@ contract FlipCrowdsale is Contactable, Pausable, HasNoContracts, HasNoTokens, Fi
     {
         // deployment must set token.owner = FlipCrowdsale.address to allow minting
         token = _token;
-        contactInformation = &#39;https://tokensale.gameflip.com/&#39;;
+        contactInformation = 'https://tokensale.gameflip.com/';
     }
 
     function setWallet(address _wallet) onlyOwner public {
@@ -594,7 +594,7 @@ contract FlipCrowdsale is Contactable, Pausable, HasNoContracts, HasNoTokens, Fi
        */
     function finalization() internal {
         // if we own the token, pass ownership to our owner when finalized
-        if(address(token) != address(0) &amp;&amp; token.owner() == address(this) &amp;&amp; owner != address(0)) {
+        if(address(token) != address(0) && token.owner() == address(this) && owner != address(0)) {
             token.transferOwnership(owner);
         }
         super.finalization();
@@ -603,8 +603,8 @@ contract FlipCrowdsale is Contactable, Pausable, HasNoContracts, HasNoTokens, Fi
 
 contract FlipToken is Contactable, HasNoTokens, HasNoEther, MintableToken, PausableToken {
 
-    string public constant name = &quot;FLIP Token&quot;;
-    string public constant symbol = &quot;FLP&quot;;
+    string public constant name = "FLIP Token";
+    string public constant symbol = "FLP";
     uint8 public constant decimals = 18;
 
     uint256 public constant ONE_TOKENS = (10 ** uint256(decimals));
@@ -619,12 +619,12 @@ contract FlipToken is Contactable, HasNoTokens, HasNoEther, MintableToken, Pausa
     MintableToken()
     PausableToken()
     {
-        contactInformation = &#39;https://tokensale.gameflip.com/&#39;;
+        contactInformation = 'https://tokensale.gameflip.com/';
     }
 
-    // cap minting so that totalSupply &lt;= TOTAL_TOKENS
+    // cap minting so that totalSupply <= TOTAL_TOKENS
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        require(totalSupply.add(_amount) &lt;= TOTAL_TOKENS);
+        require(totalSupply.add(_amount) <= TOTAL_TOKENS);
         return super.mint(_to, _amount);
     }
 
@@ -652,7 +652,7 @@ contract PreSale is FlipCrowdsale {
     }
 
     function setMinPurchaseAmt(uint256 _wei) onlyOwner public {
-        require(_wei &gt;= 0);
+        require(_wei >= 0);
         minPurchaseAmt = _wei;
     }
 
@@ -667,26 +667,26 @@ contract PreSale is FlipCrowdsale {
     function applyExchangeRate(uint256 _wei) constant internal returns (uint256) {
         // white paper (6.3 Token Pre-Sale) specifies rates based on purchase value
         // those values here hard-coded here
-        require(_wei &gt;= minPurchaseAmt);
+        require(_wei >= minPurchaseAmt);
         uint256 tokens;
-        if(_wei &gt;= 5000 ether) {
+        if(_wei >= 5000 ether) {
             tokens = _wei.mul(340);
-        } else if(_wei &gt;= 3000 ether) {
+        } else if(_wei >= 3000 ether) {
             tokens = _wei.mul(320);
-        } else if(_wei &gt;= 1000 ether) {
+        } else if(_wei >= 1000 ether) {
             tokens = _wei.mul(300);
-        } else if(_wei &gt;= 100 ether) {
+        } else if(_wei >= 100 ether) {
             tokens = _wei.mul(280);
         } else {
             tokens = _wei.mul(260);
         }
         // check token cap
         uint256 remaining = tokensRemaining();
-        require(remaining &gt;= tokens);
-        // if remaining tokens cannot be purchased (at min rate) then gift to current buyer ... it&#39;s a sellout!
+        require(remaining >= tokens);
+        // if remaining tokens cannot be purchased (at min rate) then gift to current buyer ... it's a sellout!
         uint256 min_tokens_purchasable = minPurchaseAmt.mul(260);
         remaining = remaining.sub(tokens);
-        if(remaining &lt; min_tokens_purchasable) {
+        if(remaining < min_tokens_purchasable) {
             tokens = tokens.add(remaining);
         }
         return tokens;

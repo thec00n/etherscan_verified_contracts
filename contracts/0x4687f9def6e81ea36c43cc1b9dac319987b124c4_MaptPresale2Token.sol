@@ -26,8 +26,8 @@ contract MaptPresale2Token {
     /*/
      *  Constants
     /*/
-    string public constant name = &quot;MAT Presale2 Token&quot;;
-    string public constant symbol = &quot;MAPT2&quot;;
+    string public constant name = "MAT Presale2 Token";
+    string public constant symbol = "MAPT2";
     uint   public constant decimals = 18;
 
     // Cup is 2M tokens
@@ -52,13 +52,13 @@ contract MaptPresale2Token {
     // functions on this contract.
     address public tokenManager;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow;
 
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager;
 
-    mapping (address =&gt; uint256) private balanceTable;
+    mapping (address => uint256) private balanceTable;
 
     /*/
      * Modifiers
@@ -137,7 +137,7 @@ contract MaptPresale2Token {
         public
         onlyTokenManager
     {
-      require( uint(Phase.Migrated) &gt;= phase &amp;&amp; phase &gt;= 0 );
+      require( uint(Phase.Migrated) >= phase && phase >= 0 );
       setPresalePhase(Phase(phase));
     }
 
@@ -153,16 +153,16 @@ contract MaptPresale2Token {
         private
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         if(!canSwitchPhase) throw;
         currentPhase = _nextPhase;
@@ -173,7 +173,7 @@ contract MaptPresale2Token {
         public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         if(currentPhase == Phase.Migrating) throw;
         crowdsaleManager = _mgr;
     }
@@ -183,19 +183,19 @@ contract MaptPresale2Token {
         public
         payable
     {
-        require(totalSupply &lt; TOKEN_SUPPLY_LIMIT);
+        require(totalSupply < TOKEN_SUPPLY_LIMIT);
         uint valueWei = msg.value;
 
         //conditions
         require(currentPhase == Phase.Running);
-        require(valueWei &gt;= MIN_TRANSACTION_AMOUNT_ETH);
-        require(now &gt;= PRESALE_START_DATE);
-        require(now &lt;= PRESALE_END_DATE);
+        require(valueWei >= MIN_TRANSACTION_AMOUNT_ETH);
+        require(now >= PRESALE_START_DATE);
+        require(now <= PRESALE_END_DATE);
 
         uint newTokens = calculatePrice(valueWei);
 
-        require(newTokens &gt; 0);
-        require(totalSupply + newTokens &lt;= TOKEN_SUPPLY_LIMIT);
+        require(newTokens > 0);
+        require(totalSupply + newTokens <= TOKEN_SUPPLY_LIMIT);
 
         totalSupply += newTokens;
         balanceTable[_buyer] += newTokens;
@@ -213,7 +213,7 @@ contract MaptPresale2Token {
     {
         // Available at any phase.
         LogEscrowWeiReq(balWei);
-        if(this.balance &gt;= balWei) {
+        if(this.balance >= balWei) {
             escrow.transfer(balWei);
             LogEscrowWei(balWei);
             return 0;
@@ -232,7 +232,7 @@ contract MaptPresale2Token {
         // Available at any phase.
         LogEscrowEthReq(sumEther);
         uint sumWei = sumEther * 1 ether / 1 wei;
-        if(this.balance &gt;= sumWei) {
+        if(this.balance >= sumWei) {
             escrow.transfer(sumWei);
             LogEscrowWei(sumWei);
             return 0;

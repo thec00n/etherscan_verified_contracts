@@ -20,8 +20,8 @@ contract ERC20Token is ERC20Interface {
     // Total amount of tokens issued
     uint256 internal totalTokenIssued;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
     function totalSupply() public view returns (uint256) {
         return totalTokenIssued;
@@ -36,11 +36,11 @@ contract ERC20Token is ERC20Interface {
     function isContract(address addr) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(addr) }
-        return (size &gt; 0);
+        return (size > 0);
     }
 
 
-    /* Transfer the balance from owner&#39;s account to another account */
+    /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint256 _amount) public returns (bool) {
 
         require(_to != address(0x0));
@@ -49,7 +49,7 @@ contract ERC20Token is ERC20Interface {
         require(isContract(_to) == false);
 
         // amount sent cannot exceed balance
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
 
         
         // update balances
@@ -75,7 +75,7 @@ contract ERC20Token is ERC20Interface {
         return true;
     }
 
-    /* Spender of tokens transfers tokens from the owner&#39;s balance */
+    /* Spender of tokens transfers tokens from the owner's balance */
     /* Must be pre-approved by owner */
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
         
@@ -85,8 +85,8 @@ contract ERC20Token is ERC20Interface {
         require(isContract(_to) == false);
 
         // balance checks
-        require(balances[_from] &gt;= _amount);
-        require(allowed[_from][msg.sender] &gt;= _amount);
+        require(balances[_from] >= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
 
         // update balances and allowed amount
         balances[_from]            = balances[_from].sub(_amount);
@@ -154,16 +154,16 @@ library SafeMath {
         return c;
     }
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         return (a / b);
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return (a - b);
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -171,7 +171,7 @@ library SafeMath {
 contract WhiteListManager is Ownable {
 
     // The list here will be updated by multiple separate WhiteList contracts
-    mapping (address =&gt; bool) public list;
+    mapping (address => bool) public list;
 
     function unset(address addr) public onlyOwner {
 
@@ -180,7 +180,7 @@ contract WhiteListManager is Ownable {
 
     function unsetMany(address[] addrList) public onlyOwner {
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
             
             unset(addrList[i]);
         }
@@ -193,7 +193,7 @@ contract WhiteListManager is Ownable {
 
     function setMany(address[] addrList) public onlyOwner {
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
             
             set(addrList[i]);
         }
@@ -209,8 +209,8 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     using SafeMath for uint256;
 
-    string public constant name = &quot;ShareToken&quot;;
-    string public constant symbol = &quot;SHR&quot;;
+    string public constant name = "ShareToken";
+    string public constant symbol = "SHR";
     uint8  public constant decimals = 2;
 
     address public icoContract;
@@ -218,7 +218,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
     // Any token amount must be multiplied by this const to reflect decimals
     uint256 constant E2 = 10**2;
 
-    mapping(address =&gt; bool) public rewardTokenLocked;
+    mapping(address => bool) public rewardTokenLocked;
     bool public mainSaleTokenLocked = true;
 
     uint256 public constant TOKEN_SUPPLY_MAINSALE_LIMIT = 1000000000 * E2; // 1,000,000,000 tokens (1 billion)
@@ -265,7 +265,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     function unlockRewardTokenMany(address[] addrList) public onlyOwner {
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
 
             unlockRewardToken(addrList[i]);
         }
@@ -278,7 +278,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     function lockRewardTokenMany(address[] addrList) public onlyOwner {
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
 
             lockRewardToken(addrList[i]);
         }
@@ -353,13 +353,13 @@ contract ShareToken is ERC20Token, WhiteListManager {
         require (icoContract != address(0));
         // The sell() method can only be called by the fixedly-set ICO contract
         require (msg.sender == icoContract);
-        require (tokens &gt; 0);
+        require (tokens > 0);
         require (buyer != address(0));
 
         // Only whitelisted address can buy tokens. Otherwise, refund
         require (isWhitelisted(buyer));
 
-        require (totalTokenIssued.add(tokens) &lt;= TOKEN_SUPPLY_MAINSALE_LIMIT);
+        require (totalTokenIssued.add(tokens) <= TOKEN_SUPPLY_MAINSALE_LIMIT);
 
         // Register tokens issued to the buyer
         balances[buyer] = balances[buyer].add(tokens);
@@ -375,12 +375,12 @@ contract ShareToken is ERC20Token, WhiteListManager {
     function rewardAirdrop(address _to, uint256 _amount) public onlyOwner {
 
         // this check also ascertains _amount is positive
-        require(_amount &lt;= TOKEN_SUPPLY_AIRDROP_LIMIT);
+        require(_amount <= TOKEN_SUPPLY_AIRDROP_LIMIT);
 
-        require(airDropTokenIssuedTotal &lt; TOKEN_SUPPLY_AIRDROP_LIMIT);
+        require(airDropTokenIssuedTotal < TOKEN_SUPPLY_AIRDROP_LIMIT);
 
         uint256 remainingTokens = TOKEN_SUPPLY_AIRDROP_LIMIT.sub(airDropTokenIssuedTotal);
-        if (_amount &gt; remainingTokens) {
+        if (_amount > remainingTokens) {
             _amount = remainingTokens;
         }
 
@@ -399,12 +399,12 @@ contract ShareToken is ERC20Token, WhiteListManager {
     function rewardBounty(address _to, uint256 _amount) public onlyOwner {
 
         // this check also ascertains _amount is positive
-        require(_amount &lt;= TOKEN_SUPPLY_BOUNTY_LIMIT);
+        require(_amount <= TOKEN_SUPPLY_BOUNTY_LIMIT);
 
-        require(bountyTokenIssuedTotal &lt; TOKEN_SUPPLY_BOUNTY_LIMIT);
+        require(bountyTokenIssuedTotal < TOKEN_SUPPLY_BOUNTY_LIMIT);
 
         uint256 remainingTokens = TOKEN_SUPPLY_BOUNTY_LIMIT.sub(bountyTokenIssuedTotal);
-        if (_amount &gt; remainingTokens) {
+        if (_amount > remainingTokens) {
             _amount = remainingTokens;
         }
 
@@ -424,7 +424,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
         require(addrList.length == amountList.length);
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
 
             rewardBounty(addrList[i], amountList[i]);
         }
@@ -434,7 +434,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
         require(addrList.length == amountList.length);
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
 
             rewardAirdrop(addrList[i], amountList[i]);
         }
@@ -442,12 +442,12 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     function handlePresaleToken(address _to, uint256 _amount) public onlyOwner {
 
-        require(_amount &lt;= TOKEN_SUPPLY_SEED_PRESALE_LIMIT);
+        require(_amount <= TOKEN_SUPPLY_SEED_PRESALE_LIMIT);
 
-        require(seedAndPresaleTokenIssuedTotal &lt; TOKEN_SUPPLY_SEED_PRESALE_LIMIT);
+        require(seedAndPresaleTokenIssuedTotal < TOKEN_SUPPLY_SEED_PRESALE_LIMIT);
 
         uint256 remainingTokens = TOKEN_SUPPLY_SEED_PRESALE_LIMIT.sub(seedAndPresaleTokenIssuedTotal);
-        require (_amount &lt;= remainingTokens);
+        require (_amount <= remainingTokens);
 
         // Register tokens to the receiver
         balances[_to] = balances[_to].add(_amount);
@@ -465,7 +465,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
         require(addrList.length == amountList.length);
 
-        for (uint256 i = 0; i &lt; addrList.length; i++) {
+        for (uint256 i = 0; i < addrList.length; i++) {
 
             handlePresaleToken(addrList[i], amountList[i]);
         }

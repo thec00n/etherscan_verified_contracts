@@ -17,11 +17,11 @@ contract MigrationRecipientV1Interface {
 }
 
 contract MainToken is ERC20TokenInterface, MigrationRecipientV1Interface {
-    string public name = &quot;Swag&quot;;
-    string public symbol = &quot;SWAG&quot;;
+    string public name = "Swag";
+    string public symbol = "SWAG";
     uint8 public decimals = 0;
-    string public version = &#39;1&#39;;
-    mapping (address =&gt; uint256) balances;
+    string public version = '1';
+    mapping (address => uint256) balances;
     address migrateToAddress = 0x0;
     address[] migrationSources;
 
@@ -34,7 +34,7 @@ contract MainToken is ERC20TokenInterface, MigrationRecipientV1Interface {
     }
 
     function transfer(address _to, uint256 _value) public onlyIfNotMigrating returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -47,7 +47,7 @@ contract MainToken is ERC20TokenInterface, MigrationRecipientV1Interface {
     // Migrate tokens to a new version of the contract
     function migrateMyTokens() public onlyIfMigrating {
         var balance = balances[msg.sender];
-        if (balance &gt; 0) {
+        if (balance > 0) {
             totalSupply -= balance;
             balances[msg.sender] = 0;
             MigrationRecipientV1Interface(migrateToAddress).migrateTokensV1(msg.sender, balance);
@@ -72,7 +72,7 @@ contract MainToken is ERC20TokenInterface, MigrationRecipientV1Interface {
 
     function airdrop(address[] _targets, uint256 _value) public migrationSourcesOnly {
         totalSupply += _targets.length * _value;
-        for (uint256 i = 0; i &lt; _targets.length; i++) {
+        for (uint256 i = 0; i < _targets.length; i++) {
             address target = _targets[i];
             balances[target] += _value;
             Transfer(0x0, target, _value);
@@ -97,9 +97,9 @@ contract MainToken is ERC20TokenInterface, MigrationRecipientV1Interface {
         _;
     }
 
-    // &quot;addresses&quot; may not be longer than 256
+    // "addresses" may not be longer than 256
     function arrayContainsAddress256(address[] addresses, address value) internal pure returns (bool) {
-        for (uint8 i = 0; i &lt; addresses.length; i++) {
+        for (uint8 i = 0; i < addresses.length; i++) {
             if (addresses[i] == value) {
                 return true;
             }

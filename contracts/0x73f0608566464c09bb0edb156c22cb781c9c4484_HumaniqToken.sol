@@ -4,7 +4,7 @@ pragma solidity ^0.4.2;
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -23,18 +23,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -91,7 +91,7 @@ contract StandardToken is AbstractToken {
 
 
 /// @title Token contract - Implements Standard Token Interface with HumaniQ features.
-/// @author Evgeny Yurtaev - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="21445746444f58614455494453484e4f4d40430f424e4c">[email&#160;protected]</a>&gt;
+/// @author Evgeny Yurtaev - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="21445746444f58614455494453484e4f4d40430f424e4c">[email protected]</a>>
 contract HumaniqToken is StandardToken {
 
     /*
@@ -102,8 +102,8 @@ contract HumaniqToken is StandardToken {
     /*
      * Token meta data
      */
-    string constant public name = &quot;HumaniQ&quot;;
-    string constant public symbol = &quot;HMQ&quot;;
+    string constant public name = "HumaniQ";
+    string constant public symbol = "HMQ";
     uint8 constant public decimals = 8;
 
     address public founder = 0x0;

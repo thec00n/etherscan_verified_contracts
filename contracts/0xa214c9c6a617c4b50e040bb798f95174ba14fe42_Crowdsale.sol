@@ -11,13 +11,13 @@ library SafeMath { //standart library for uint
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -26,7 +26,7 @@ library SafeMath { //standart library for uint
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -133,7 +133,7 @@ contract Crowdsale is Ownable{
   
   //check is now ICO
   function isIco(uint _time) public view returns (bool){
-    if((icoStart &lt;= _time) &amp;&amp; (_time &lt; icoFinish)){
+    if((icoStart <= _time) && (_time < icoFinish)){
       return true;
     }
     return false;
@@ -142,8 +142,8 @@ contract Crowdsale is Ownable{
   function timeBasedBonus(uint _time) public view returns(uint res) {
     res = 20;
     uint timeBuffer = icoStart;
-    for (uint i = 0; i&lt;10; i++){
-      if(_time &lt;= timeBuffer + 7 days){
+    for (uint i = 0; i<10; i++){
+      if(_time <= timeBuffer + 7 days){
         return res;
       }else{
         res = res - 2;
@@ -157,16 +157,16 @@ contract Crowdsale is Ownable{
   }
   
   function volumeBasedBonus(uint _value)public pure returns(uint res) {
-    if(_value &lt; 5 ether){
+    if(_value < 5 ether){
       return 0;
     }
-    if (_value &lt; 15 ether){
+    if (_value < 15 ether){
       return 2;
     }
-    if (_value &lt; 30 ether){
+    if (_value < 30 ether){
       return 5;
     }
-    if (_value &lt; 50 ether){
+    if (_value < 50 ether){
       return 8;
     }
     return 10;
@@ -175,7 +175,7 @@ contract Crowdsale is Ownable{
   //fallback function (when investor send ether to contract)
   function() public payable{
     require(isIco(now));
-    require(ethCollected.add(msg.value) &lt;= maxCap);
+    require(ethCollected.add(msg.value) <= maxCap);
     require(buy(msg.sender,msg.value, now)); //redirect to func buy
   }
 
@@ -183,7 +183,7 @@ contract Crowdsale is Ownable{
   function buy(address _address, uint _value, uint _time) internal returns (bool){
     uint tokensForSend = etherToTokens(_value,_time);
 
-    require (tokensForSend &gt;= minDeposit);
+    require (tokensForSend >= minDeposit);
 
     tokensSold = tokensSold.add(tokensForSend);
     ethCollected = ethCollected.add(_value);
@@ -212,7 +212,7 @@ contract Crowdsale is Ownable{
   function endIco () public {
     require(!isIcoEnded);
     require(msg.sender == owner || msg.sender == techSupport);
-    require(now &gt; icoFinish + 5 days);
+    require(now > icoFinish + 5 days);
     token.burnTokens(etherDistribution1, etherDistribution2, bountyAddress, tokensSold);
     isIcoEnded = true;
   }

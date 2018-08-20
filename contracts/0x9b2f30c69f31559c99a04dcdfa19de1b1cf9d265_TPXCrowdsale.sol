@@ -2,10 +2,10 @@
  *
  * MIT License
  *
- * Copyright (c) 2018, TOPEX Developers &amp; OpenZeppelin Project.
+ * Copyright (c) 2018, TOPEX Developers & OpenZeppelin Project.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -14,7 +14,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -37,20 +37,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -148,7 +148,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -178,7 +178,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -188,8 +188,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -203,7 +203,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -252,7 +252,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -300,8 +300,8 @@ contract MintableToken is StandardToken, Ownable {
 
 contract TPXToken is MintableToken, Destructible {
 
-  string  public name = &#39;TOPEX Token&#39;;
-  string  public symbol = &#39;TPX&#39;;
+  string  public name = 'TOPEX Token';
+  string  public symbol = 'TPX';
   uint8   public decimals = 18;
   uint256 public maxSupply = 200000000 ether;    // max allowable minting.
   bool    public transferDisabled = true;         // disable transfer init.
@@ -316,8 +316,8 @@ contract TPXToken is MintableToken, Destructible {
    * mistakenly sent the TPX tokens to the wrong address. We can disable
    * the usage of the TPX tokens here.
    */
-  mapping(address =&gt; bool) quarantined;           // quarantined addresses
-  mapping(address =&gt; bool) gratuity;              // locked addresses for owners
+  mapping(address => bool) quarantined;           // quarantined addresses
+  mapping(address => bool) gratuity;              // locked addresses for owners
 
   modifier canTransfer() {
     if (msg.sender == owner) {
@@ -371,7 +371,7 @@ contract TPXToken is MintableToken, Destructible {
    */
   function confiscate(address _offender) onlyOwner public returns (bool) {
     uint256 all = balances[_offender];
-    require(all &gt; 0);
+    require(all > 0);
     
     balances[_offender] = balances[_offender].sub(all);
     balances[msg.sender] = balances[msg.sender].add(all);
@@ -386,7 +386,7 @@ contract TPXToken is MintableToken, Destructible {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-    require(totalSupply &lt;= maxSupply);
+    require(totalSupply <= maxSupply);
     return super.mint(_to, _amount);
   }
 
@@ -414,7 +414,7 @@ contract TPXToken is MintableToken, Destructible {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -450,13 +450,13 @@ contract TPXCrowdsale is CanReclaimToken, Destructible {
   uint256 public cap = 20000 ether;
 
   // whitelist backers
-  mapping(address =&gt; bool) whiteList;
+  mapping(address => bool) whiteList;
 
   // addmin list
-  mapping(address =&gt; bool) adminList;
+  mapping(address => bool) adminList;
 
   // mappig of our days, and rates.
-  mapping(uint8 =&gt; uint256) daysRates;
+  mapping(uint8 => uint256) daysRates;
 
   modifier onlyAdmin() { 
     require(adminList[msg.sender] == true || msg.sender == owner);
@@ -539,7 +539,7 @@ contract TPXCrowdsale is CanReclaimToken, Destructible {
     // update state
     weiRaised = weiRaised.add(weiAmount);
 
-    if (tokens &gt; 0) {
+    if (tokens > 0) {
       token.mint(beneficiary, tokens);
       emit TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);      
     }
@@ -556,25 +556,25 @@ contract TPXCrowdsale is CanReclaimToken, Destructible {
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
     // 73 days of sale.
-    bool withinPeriod = (now &gt;= startTime &amp;&amp; now &lt;= endTime) || msg.sender == owner;
+    bool withinPeriod = (now >= startTime && now <= endTime) || msg.sender == owner;
     bool nonZeroPurchase = msg.value != 0;
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinPeriod && nonZeroPurchase && withinCap;
   }
 
   function getRate() internal view returns (uint256 rate) {
     uint256 diff = (now - startTime);
 
-    if (diff &lt;= 51 days) {
+    if (diff <= 51 days) {
       require(whiteList[msg.sender] == true);
       return daysRates[51];
-    } else if (diff &gt; 51 &amp;&amp; diff &lt;= 58 days) {
+    } else if (diff > 51 && diff <= 58 days) {
       return daysRates[58];
-    } else if (diff &gt; 58 &amp;&amp; diff &lt;= 65 days) {
+    } else if (diff > 58 && diff <= 65 days) {
       return daysRates[65];
-    } else if (diff &gt; 65 &amp;&amp; diff &lt;= 72 days) {
+    } else if (diff > 65 && diff <= 72 days) {
       return daysRates[72];
-    } else if (diff &lt;= 79 days) {
+    } else if (diff <= 79 days) {
       return daysRates[79];
     } 
     return 0;
@@ -582,7 +582,7 @@ contract TPXCrowdsale is CanReclaimToken, Destructible {
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    return now &gt; endTime || capReached;
+    bool capReached = weiRaised >= cap;
+    return now > endTime || capReached;
   }
 }

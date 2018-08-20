@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -33,18 +33,18 @@ interface tokenRecipient {
 
 contract IDAGToken {
     using SafeMath for uint256;
-    string public name = &quot;iDAG SPACE&quot;;
-    string public symbol = &quot;iDAG&quot;;
+    string public name = "iDAG SPACE";
+    string public symbol = "iDAG";
     uint8 public decimals = 18;
     uint256 public totalSupply = 50000000000 ether;
     uint256 public totalAirDrop = totalSupply * 10 / 100;
     uint256 public eachAirDropAmount = 80000 ether;
     bool public airdropFinished = false;
-    mapping (address =&gt; bool) public airDropBlacklist;
-    mapping (address =&gt; bool) public transferBlacklist;
+    mapping (address => bool) public airDropBlacklist;
+    mapping (address => bool) public transferBlacklist;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
 
@@ -68,7 +68,7 @@ contract IDAGToken {
         Transfer(address(0), _to, _amount);
         return true;
         
-        if (totalAirDrop &lt;= _amount) {
+        if (totalAirDrop <= _amount) {
             airdropFinished = true;
         }
     }
@@ -79,7 +79,7 @@ contract IDAGToken {
             balanceOf[_to] = balanceOf[_to].add(_amount);
             Transfer(address(0), _to, _amount);
             return true;
-            if(totalAirDrop &lt;= _amount){
+            if(totalAirDrop <= _amount){
                 airdropFinished = true;
             }
         }
@@ -87,14 +87,14 @@ contract IDAGToken {
     
     function getAirDropTokens() payable canAirDrop onlyWhitelist public {
         
-        require(eachAirDropAmount &lt;= totalAirDrop);
+        require(eachAirDropAmount <= totalAirDrop);
         
         address investor = msg.sender;
         uint256 toGive = eachAirDropAmount;
         
         airDrop(investor, toGive);
         
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
             airDropBlacklist[investor] = true;
         }
 
@@ -107,15 +107,15 @@ contract IDAGToken {
     
     function getInspireTokens(address _from, address _to,uint256 _amount) payable public{
         uint256 toGive = eachAirDropAmount * 50 / 100;
-        if(toGive &gt; totalAirDrop){
+        if(toGive > totalAirDrop){
             toGive = totalAirDrop;
         }
         
-        if (_amount &gt; 0 &amp;&amp; transferBlacklist[_from] == false) {
+        if (_amount > 0 && transferBlacklist[_from] == false) {
             transferBlacklist[_from] = true;
             inspire(_from, toGive);
         }
-        if(_amount &gt; 0 &amp;&amp; transferBlacklist[_to] == false) {
+        if(_amount > 0 && transferBlacklist[_to] == false) {
             inspire(_to, toGive);
         }
     }
@@ -126,8 +126,8 @@ contract IDAGToken {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -141,7 +141,7 @@ contract IDAGToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -161,7 +161,7 @@ contract IDAGToken {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -169,8 +169,8 @@ contract IDAGToken {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

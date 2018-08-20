@@ -25,13 +25,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,16 +75,16 @@ contract BasicToken is ERC20Basic, Ownable {
 
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
-     * Transfers tokens from the sender&#39;s account to another given account.
+     * Transfers tokens from the sender's account to another given account.
      * 
      * @param _to The address of the recipient.
      * @param _amount The amount of tokens to send.
      * */
     function transfer(address _to, uint256 _amount) public returns (bool) {
-        require(balances[msg.sender] &gt;= _amount);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
         Transfer(msg.sender, _to, _amount);
@@ -112,7 +112,7 @@ contract ERC20 is ERC20Basic {
 
 contract AdvancedToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     /**
      * Transfers tokens from the account of the owner by an approved spender. 
@@ -122,7 +122,7 @@ contract AdvancedToken is BasicToken, ERC20 {
      * @param _amount The amount of tokens to transfer.
      * */
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
-        require(allowances[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_from] &gt;= _amount);
+        require(allowances[_from][msg.sender] >= _amount && balances[_from] >= _amount);
         allowances[_from][msg.sender] = allowances[_from][msg.sender].sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -132,7 +132,7 @@ contract AdvancedToken is BasicToken, ERC20 {
 
     /**
      * Allows another account to spend a given amount of tokens on behalf of the 
-     * sender&#39;s account.
+     * sender's account.
      * 
      * @param _spender The address of the spenders account.
      * @param _amount The amount of tokens the spender is allowed to spend.
@@ -144,7 +144,7 @@ contract AdvancedToken is BasicToken, ERC20 {
     }
 
     /**
-     * Increases the amount a given account can spend on behalf of the sender&#39;s 
+     * Increases the amount a given account can spend on behalf of the sender's 
      * account.
      * 
      * @param _spender The address of the spenders account.
@@ -158,14 +158,14 @@ contract AdvancedToken is BasicToken, ERC20 {
 
     /**
      * Decreases the amount of tokens a given account can spend on behalf of the 
-     * sender&#39;s account.
+     * sender's account.
      * 
      * @param _spender The address of the spenders account.
      * @param _amount The amount of tokens the spender is allowed to spend.
      * */
     function decreaseApproval(address _spender, uint256 _amount) public returns (bool) {
         require(allowances[msg.sender][_spender] != 0);
-        if (_amount &gt;= allowances[msg.sender][_spender]) {
+        if (_amount >= allowances[msg.sender][_spender]) {
             allowances[msg.sender][_spender] = 0;
         } else {
             allowances[msg.sender][_spender] = allowances[msg.sender][_spender].sub(_amount);
@@ -195,7 +195,7 @@ contract BurnableToken is AdvancedToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+        require(_value > 0 && _value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
         Burn(msg.sender, _value);
@@ -206,8 +206,8 @@ contract BurnableToken is AdvancedToken {
 contract UKW is BurnableToken {
 
     function UKW() public {
-        name = &quot;Ubuntukingdomwealth&quot;;
-        symbol = &quot;UKW&quot;;
+        name = "Ubuntukingdomwealth";
+        symbol = "UKW";
         decimals = 18;
         totalSupply = 200000000e18;
         balances[msg.sender] = totalSupply;

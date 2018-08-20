@@ -9,20 +9,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 }
@@ -42,12 +42,12 @@ contract ERC20 {
 // ERC20Token
 contract ERC20Token is ERC20, SafeMath {
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalTokens; 
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -59,7 +59,7 @@ contract ERC20Token is ERC20, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         var _allowance = allowed[_from][msg.sender];
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(_allowance, _value);
@@ -92,8 +92,8 @@ contract ERC20Token is ERC20, SafeMath {
 contract Wolk is ERC20Token {
 
     // TOKEN INFO
-    string  public constant name = &quot;Wolk Protocol Token&quot;;
-    string  public constant symbol = &quot;WOLK&quot;;
+    string  public constant name = "Wolk Protocol Token";
+    string  public constant symbol = "WOLK";
     uint256 public constant decimals = 18;
 
     // RESERVE
@@ -106,7 +106,7 @@ contract Wolk is ERC20Token {
     modifier onlyOwner { assert(msg.sender == owner); _; }
 
     // TOKEN GENERATION EVENT
-    mapping (address =&gt; uint256) contribution;
+    mapping (address => uint256) contribution;
     uint256 public constant tokenGenerationMin = 50 * 10**6 * 10**decimals;
     uint256 public constant tokenGenerationMax = 500 * 10**6 * 10**decimals;
     uint256 public start_block; 
@@ -115,7 +115,7 @@ contract Wolk is ERC20Token {
     modifier isTransferable { assert(saleCompleted); _; }
 
     // WOLK SETTLERS
-    mapping (address =&gt; bool) settlers;
+    mapping (address => bool) settlers;
     modifier onlySettler { assert(settlers[msg.sender] == true); _; }
 
     // TOKEN GENERATION EVENTLOG
@@ -129,7 +129,7 @@ contract Wolk is ERC20Token {
     // @return success
     // @dev Wolk Genesis Event [only accessible by Contract Owner]
     function wolkGenesis(uint256 _startBlock, uint256 _endBlock, address _wolkWallet) onlyOwner returns (bool success){
-        require( (totalTokens &lt; 1) &amp;&amp; (!settlers[msg.sender]) &amp;&amp; (_endBlock &gt; _startBlock) );
+        require( (totalTokens < 1) && (!settlers[msg.sender]) && (_endBlock > _startBlock) );
         start_block = _startBlock;
         end_block = _endBlock;
         multisigWallet = _wolkWallet;
@@ -149,10 +149,10 @@ contract Wolk is ERC20Token {
     // @dev Token Generation Event for Wolk Protocol Token. TGE Participant send Eth into this func in exchange of Wolk Protocol Token
     function tokenGenerationEvent() payable external {
         require(!saleCompleted);
-        require( (block.number &gt;= start_block) &amp;&amp; (block.number &lt;= end_block) );
+        require( (block.number >= start_block) && (block.number <= end_block) );
         uint256 tokens = safeMul(msg.value, 5*10**9); //exchange rate
         uint256 checkedSupply = safeAdd(totalTokens, tokens);
-        require(checkedSupply &lt;= tokenGenerationMax);
+        require(checkedSupply <= tokenGenerationMax);
         totalTokens = checkedSupply;
         balances[msg.sender] = safeAdd(balances[msg.sender], tokens);  
         contribution[msg.sender] = safeAdd(contribution[msg.sender], msg.value);  
@@ -161,7 +161,7 @@ contract Wolk is ERC20Token {
 
     // @dev If Token Generation Minimum is Not Met, TGE Participants can call this func and request for refund
     function refund() external {
-        require( (contribution[msg.sender] &gt; 0) &amp;&amp; (!saleCompleted) &amp;&amp; (totalTokens &lt; tokenGenerationMin) &amp;&amp; (block.number &gt; end_block) );
+        require( (contribution[msg.sender] > 0) && (!saleCompleted) && (totalTokens < tokenGenerationMin) && (block.number > end_block) );
         uint256 tokenBalance = balances[msg.sender];
         uint256 refundBalance = contribution[msg.sender];
         balances[msg.sender] = 0;
@@ -174,7 +174,7 @@ contract Wolk is ERC20Token {
 
     // @dev Finalizing the Token Generation Event. 20% of Eth will be kept in contract to provide liquidity
     function finalize() onlyOwner {
-        require( (!saleCompleted) &amp;&amp; (totalTokens &gt;= tokenGenerationMin) );
+        require( (!saleCompleted) && (totalTokens >= tokenGenerationMin) );
         saleCompleted = true;
         end_block = block.number;
         reserveBalance = safeDiv(safeMul(this.balance, percentageETHReserve), 100);
@@ -186,9 +186,9 @@ contract Wolk is ERC20Token {
 contract WolkProtocol is Wolk {
 
     // WOLK NETWORK PROTOCOL
-    uint256 public burnBasisPoints = 500;  // Burn rate (in BP) when Service Provider withdraws from data buyers&#39; accounts
-    mapping (address =&gt; mapping (address =&gt; bool)) authorized; // holds which accounts have approved which Service Providers
-    mapping (address =&gt; uint256) feeBasisPoints;   // Fee (in BP) earned by Service Provider when depositing to data seller 
+    uint256 public burnBasisPoints = 500;  // Burn rate (in BP) when Service Provider withdraws from data buyers' accounts
+    mapping (address => mapping (address => bool)) authorized; // holds which accounts have approved which Service Providers
+    mapping (address => uint256) feeBasisPoints;   // Fee (in BP) earned by Service Provider when depositing to data seller 
 
     // WOLK PROTOCOL Events:
     event AuthorizeServiceProvider(address indexed _owner, address _serviceProvider);
@@ -200,7 +200,7 @@ contract WolkProtocol is Wolk {
     // @return success
     // @dev Set BurnRate on Wolk Protocol -- only Wolk Foundation can set this, affects Service Provider settleBuyer
     function setBurnRate(uint256 _burnBasisPoints) onlyOwner returns (bool success) {
-        require( (_burnBasisPoints &gt; 0) &amp;&amp; (_burnBasisPoints &lt;= 1000) );
+        require( (_burnBasisPoints > 0) && (_burnBasisPoints <= 1000) );
         burnBasisPoints = _burnBasisPoints;
         return true;
     }
@@ -210,7 +210,7 @@ contract WolkProtocol is Wolk {
     // @return success
     // @dev Set Service Provider fee -- only Contract Owner can do this, affects Service Provider settleSeller
     function setServiceFee(address _serviceProvider, uint256 _feeBasisPoints) onlyOwner returns (bool success) {
-        if ( _feeBasisPoints &lt;= 0 || _feeBasisPoints &gt; 4000){
+        if ( _feeBasisPoints <= 0 || _feeBasisPoints > 4000){
             // revoke Settler privilege
             settlers[_serviceProvider] = false;
             feeBasisPoints[_serviceProvider] = 0;
@@ -235,8 +235,8 @@ contract WolkProtocol is Wolk {
     // @return success
     // @dev Service Provider Settlement with Buyer: a small percent is burnt (set in setBurnRate, stored in burnBasisPoints) when funds are transferred from buyer to Service Provider [only accessible by settlers]
     function settleBuyer(address _buyer, uint256 _value) onlySettler returns (bool success) {
-        require( (burnBasisPoints &gt; 0) &amp;&amp; (burnBasisPoints &lt;= 1000) &amp;&amp; authorized[_buyer][msg.sender] ); // Buyer must authorize Service Provider 
-        if ( balances[_buyer] &gt;= _value &amp;&amp; _value &gt; 0) {
+        require( (burnBasisPoints > 0) && (burnBasisPoints <= 1000) && authorized[_buyer][msg.sender] ); // Buyer must authorize Service Provider 
+        if ( balances[_buyer] >= _value && _value > 0) {
             var burnCap = safeDiv(safeMul(_value, burnBasisPoints), 10000);
             var transferredToServiceProvider = safeSub(_value, burnCap);
             balances[_buyer] = safeSub(balances[_buyer], _value);
@@ -257,8 +257,8 @@ contract WolkProtocol is Wolk {
     function settleSeller(address _seller, uint256 _value) onlySettler returns (bool success) {
         // Service Providers have a % fee for Sellers (e.g. 20%)
         var serviceProviderBP = feeBasisPoints[msg.sender];
-        require( (serviceProviderBP &gt; 0) &amp;&amp; (serviceProviderBP &lt;= 4000) );
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        require( (serviceProviderBP > 0) && (serviceProviderBP <= 4000) );
+        if (balances[msg.sender] >= _value && _value > 0) {
             var fee = safeDiv(safeMul(_value, serviceProviderBP), 10000);
             var transferredToSeller = safeSub(_value, fee);
             balances[_seller] = safeAdd(balances[_seller], transferredToSeller);
@@ -299,11 +299,11 @@ contract WolkProtocol is Wolk {
     // @param _owner
     // @param _providerToAdd
     // @return authorizationStatus
-    // @dev Grant authorization between account and Service Provider on buyers&#39; behalf [only accessible by Contract Owner]
+    // @dev Grant authorization between account and Service Provider on buyers' behalf [only accessible by Contract Owner]
     // @note Explicit permission from balance owner MUST be obtained beforehand
     function grantService(address _owner, address _providerToAdd) onlyOwner returns (bool authorizationStatus) {
         var isPreauthorized = authorized[_owner][msg.sender];
-        if (isPreauthorized &amp;&amp; settlers[_providerToAdd] ) {
+        if (isPreauthorized && settlers[_providerToAdd] ) {
             authorized[_owner][_providerToAdd] = true;
             AuthorizeServiceProvider(msg.sender, _providerToAdd);
             return true;
@@ -315,7 +315,7 @@ contract WolkProtocol is Wolk {
     // @param _owner
     // @param _providerToRemove
     // @return authorization_status
-    // @dev Revoke authorization between account and Service Provider on buyers&#39; behalf [only accessible by Contract Owner]
+    // @dev Revoke authorization between account and Service Provider on buyers' behalf [only accessible by Contract Owner]
     // @note Explicit permission from balance owner are NOT required for disabling ill-intent Service Provider
     function removeService(address _owner, address _providerToRemove) onlyOwner returns (bool authorizationStatus) {
         authorized[_owner][_providerToRemove] = false;
@@ -328,9 +328,9 @@ contract BancorFormula is SafeMath {
 
     // Taken from https://github.com/bancorprotocol/contracts/blob/master/solidity/contracts/BancorFormula.sol
     uint8 constant PRECISION   = 32;  // fractional bits
-    uint256 constant FIXED_ONE = uint256(1) &lt;&lt; PRECISION; // 0x100000000
-    uint256 constant FIXED_TWO = uint256(2) &lt;&lt; PRECISION; // 0x200000000
-    uint256 constant MAX_VAL   = uint256(1) &lt;&lt; (256 - PRECISION); // 0x0000000100000000000000000000000000000000000000000000000000000000
+    uint256 constant FIXED_ONE = uint256(1) << PRECISION; // 0x100000000
+    uint256 constant FIXED_TWO = uint256(2) << PRECISION; // 0x200000000
+    uint256 constant MAX_VAL   = uint256(1) << (256 - PRECISION); // 0x0000000100000000000000000000000000000000000000000000000000000000
 
     /**
         @dev given a token supply, reserve, CRR and a deposit amount (in the reserve token), calculates the return for a given change (in the main token)
@@ -347,7 +347,7 @@ contract BancorFormula is SafeMath {
     */
     function calculatePurchaseReturn(uint256 _supply, uint256 _reserveBalance, uint16 _reserveRatio, uint256 _depositAmount) public constant returns (uint256) {
         // validate input
-        require(_supply != 0 &amp;&amp; _reserveBalance != 0 &amp;&amp; _reserveRatio &gt; 0 &amp;&amp; _reserveRatio &lt;= 100);
+        require(_supply != 0 && _reserveBalance != 0 && _reserveRatio > 0 && _reserveRatio <= 100);
 
         // special case for 0 deposit amount
         if (_depositAmount == 0)
@@ -387,7 +387,7 @@ contract BancorFormula is SafeMath {
     */
     function calculateSaleReturn(uint256 _supply, uint256 _reserveBalance, uint16 _reserveRatio, uint256 _sellAmount) public constant returns (uint256) {
         // validate input
-        require(_supply != 0 &amp;&amp; _reserveBalance != 0 &amp;&amp; _reserveRatio &gt; 0 &amp;&amp; _reserveRatio &lt;= 100 &amp;&amp; _sellAmount &lt;= _supply);
+        require(_supply != 0 && _reserveBalance != 0 && _reserveRatio > 0 && _reserveRatio <= 100 && _sellAmount <= _supply);
 
         // special case for 0 sell amount
         if (_sellAmount == 0)
@@ -437,8 +437,8 @@ contract BancorFormula is SafeMath {
     
     /**
         input range: 
-            - numerator: [1, uint256_max &gt;&gt; PRECISION]    
-            - denominator: [1, uint256_max &gt;&gt; PRECISION]
+            - numerator: [1, uint256_max >> PRECISION]    
+            - denominator: [1, uint256_max >> PRECISION]
         output range:
             [0, 0x9b43d4f8d6]
 
@@ -446,15 +446,15 @@ contract BancorFormula is SafeMath {
 
     */
     function ln(uint256 _numerator, uint256 _denominator) internal returns (uint256) {
-        // denominator &gt; numerator: less than one yields negative values. Unsupported
-        assert(_denominator &lt;= _numerator);
+        // denominator > numerator: less than one yields negative values. Unsupported
+        assert(_denominator <= _numerator);
 
         // log(1) is the lowest we can go
-        assert(_denominator != 0 &amp;&amp; _numerator != 0);
+        assert(_denominator != 0 && _numerator != 0);
 
         // Upper 32 bits are scaled off by PRECISION
-        assert(_numerator &lt; MAX_VAL);
-        assert(_denominator &lt; MAX_VAL);
+        assert(_numerator < MAX_VAL);
+        assert(_denominator < MAX_VAL);
 
         return fixedLoge( (_numerator * FIXED_ONE) / _denominator);
     }
@@ -475,18 +475,18 @@ contract BancorFormula is SafeMath {
         for `ln(2)`. This one is used since it’s the max accuracy 
         of Python `ln(2)`
 
-        0xb17217f7d1cf78 = ln(2) * (1 &lt;&lt; 56)
+        0xb17217f7d1cf78 = ln(2) * (1 << 56)
         
         */
         //Cannot represent negative numbers (below 1)
-        assert(_x &gt;= FIXED_ONE);
+        assert(_x >= FIXED_ONE);
 
         uint256 log2 = fixedLog2(_x);
-        logE = (log2 * 0xb17217f7d1cf78) &gt;&gt; 56;
+        logE = (log2 * 0xb17217f7d1cf78) >> 56;
     }
 
     /**
-        Returns log2(x &gt;&gt; 32) &lt;&lt; 32 [1]
+        Returns log2(x >> 32) << 32 [1]
         So x is assumed to be already upshifted 32 bits, and 
         the result is also upshifted 32 bits. 
         
@@ -503,19 +503,19 @@ contract BancorFormula is SafeMath {
     */
     function fixedLog2(uint256 _x) internal returns (uint256) {
         // Numbers below 1 are negative. 
-        assert( _x &gt;= FIXED_ONE);
+        assert( _x >= FIXED_ONE);
 
         uint256 hi = 0;
-        while (_x &gt;= FIXED_TWO) {
-            _x &gt;&gt;= 1;
+        while (_x >= FIXED_TWO) {
+            _x >>= 1;
             hi += FIXED_ONE;
         }
 
-        for (uint8 i = 0; i &lt; PRECISION; ++i) {
+        for (uint8 i = 0; i < PRECISION; ++i) {
             _x = (_x * _x) / FIXED_ONE;
-            if (_x &gt;= FIXED_TWO) {
-                _x &gt;&gt;= 1;
-                hi += uint256(1) &lt;&lt; (PRECISION - 1 - i);
+            if (_x >= FIXED_TWO) {
+                _x >>= 1;
+                hi += uint256(1) << (PRECISION - 1 - i);
             }
         }
 
@@ -527,7 +527,7 @@ contract BancorFormula is SafeMath {
         asserts instead of overflows
     */
     function fixedExp(uint256 _x) internal returns (uint256) {
-        assert(_x &lt;= 0x386bfdba29);
+        assert(_x <= 0x386bfdba29);
         return fixedExpUnsafe(_x);
     }
 
@@ -537,25 +537,25 @@ contract BancorFormula is SafeMath {
 
         e^x = 1+x+x^2/2!...+x^n/n!
 
-        and returns e^(x&gt;&gt;32) &lt;&lt; 32, that is, upshifted for accuracy
+        and returns e^(x>>32) << 32, that is, upshifted for accuracy
 
         Input range:
-            - Function ok at    &lt;= 242329958953 
-            - Function fails at &gt;= 242329958954
+            - Function ok at    <= 242329958953 
+            - Function fails at >= 242329958954
 
         This method is is visible for testcases, but not meant for direct use. 
  
         The values in this method been generated via the following python snippet: 
 
         def calculateFactorials():
-            “”&quot;Method to print out the factorials for fixedExp”“”
+            “”"Method to print out the factorials for fixedExp”“”
 
             ni = []
             ni.append( 295232799039604140847618609643520000000) # 34!
             ITERATIONS = 34
             for n in range( 1,  ITERATIONS,1 ) :
                 ni.append(math.floor(ni[n - 1] / n))
-            print( “\n        “.join([“xi = (xi * _x) &gt;&gt; PRECISION;\n        res += xi * %s;” % hex(int(x)) for x in ni]))
+            print( “\n        “.join([“xi = (xi * _x) >> PRECISION;\n        res += xi * %s;” % hex(int(x)) for x in ni]))
 
     */
     function fixedExpUnsafe(uint256 _x) internal returns (uint256) {
@@ -563,71 +563,71 @@ contract BancorFormula is SafeMath {
         uint256 xi = FIXED_ONE;
         uint256 res = 0xde1bc4d19efcac82445da75b00000000 * xi;
 
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xde1bc4d19efcb0000000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x6f0de268cf7e58000000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x2504a0cd9a7f72000000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x9412833669fdc800000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x1d9d4d714865f500000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x4ef8ce836bba8c0000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xb481d807d1aa68000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x16903b00fa354d000000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x281cdaac677b3400000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x402e2aad725eb80000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x5d5a6c9f31fe24000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x7c7890d442a83000000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x9931ed540345280000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xaf147cf24ce150000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xbac08546b867d000000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xbac08546b867d00000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xafc441338061b8000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x9c3cabbc0056e000000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x839168328705c80000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x694120286c04a0000;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x50319e98b3d2c400;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x3a52a1e36b82020;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x289286e0fce002;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x1b0c59eb53400;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x114f95b55400;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0xaa7210d200;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x650139600;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x39b78e80;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x1fd8080;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x10fbc0;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x8c40;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x462;
-        xi = (xi * _x) &gt;&gt; PRECISION;
+        xi = (xi * _x) >> PRECISION;
         res += xi * 0x22;
 
         return res / 0xde1bc4d19efcac82445da75b00000000;
@@ -642,7 +642,7 @@ contract WolkExchange is WolkProtocol, BancorFormula {
     // @return success
     // @dev Set max sell token amount per transaction -- only Wolk Foundation can set this
     function setMaxPerExchange(uint256 _maxPerExchange) onlyOwner returns (bool success) {
-        require( (_maxPerExchange &gt;= 10) &amp;&amp; (_maxPerExchange &lt;= 100) );
+        require( (_maxPerExchange >= 10) && (_maxPerExchange <= 100) );
         maxPerExchangeBP = _maxPerExchange;
         return true;
     }
@@ -652,7 +652,7 @@ contract WolkExchange is WolkProtocol, BancorFormula {
     function EstLiquidationCap() public constant returns (uint256) {
         if (saleCompleted){
             var liquidationMax  = safeDiv(safeMul(totalTokens, maxPerExchangeBP), 10000);
-            if (liquidationMax &lt; 100 * 10**decimals){ 
+            if (liquidationMax < 100 * 10**decimals){ 
                 liquidationMax = 100 * 10**decimals;
             }
             return liquidationMax;   
@@ -667,7 +667,7 @@ contract WolkExchange is WolkProtocol, BancorFormula {
     function sellWolk(uint256 _wolkAmount) isTransferable() external returns(uint256) {
         uint256 sellCap = EstLiquidationCap();
         uint256 ethReceivable = calculateSaleReturn(totalTokens, reserveBalance, percentageETHReserve, _wolkAmount);
-        require( (sellCap &gt;= _wolkAmount) &amp;&amp; (balances[msg.sender] &gt;= _wolkAmount) &amp;&amp; (this.balance &gt; ethReceivable) );
+        require( (sellCap >= _wolkAmount) && (balances[msg.sender] >= _wolkAmount) && (this.balance > ethReceivable) );
         balances[msg.sender] = safeSub(balances[msg.sender], _wolkAmount);
         totalTokens = safeSub(totalTokens, _wolkAmount);
         reserveBalance = safeSub(this.balance, ethReceivable);
@@ -693,7 +693,7 @@ contract WolkExchange is WolkProtocol, BancorFormula {
     // @note Purchase with the insufficient eth will be cancelled and returned; exceeding eth balanance from purchase, if any, will be returned.     
     function purchaseExactWolk(uint256 _exactWolk) isTransferable() payable external returns(uint256){
         uint256 wolkReceivable = calculatePurchaseReturn(totalTokens, reserveBalance, percentageETHReserve, msg.value);
-        if (wolkReceivable &lt; _exactWolk){
+        if (wolkReceivable < _exactWolk){
             // Cancel Insufficient Purchase
             revert();
             return msg.value;
@@ -701,7 +701,7 @@ contract WolkExchange is WolkProtocol, BancorFormula {
             var wolkDiff = safeSub(wolkReceivable, _exactWolk);
             uint256 ethRefundable = 0;
             // Refund if wolkDiff exceeds 1 Wolk
-            if (wolkDiff &lt; 10**decimals){
+            if (wolkDiff < 10**decimals){
                 // Credit Buyer Full amount if within margin of error
                 totalTokens = safeAdd(totalTokens, wolkReceivable);
                 balances[msg.sender] = safeAdd(balances[msg.sender], wolkReceivable);

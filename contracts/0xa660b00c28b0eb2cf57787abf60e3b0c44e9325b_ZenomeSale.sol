@@ -71,20 +71,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -166,7 +166,7 @@ contract EtherReceiver {
 
 contract EtherReceiveAdapter is EtherReceiver, ReceiveAdapter {
     function () payable public {
-        receiveWithData(&quot;&quot;);
+        receiveWithData("");
     }
 
     function receiveWithData(bytes _data) payable public {
@@ -189,7 +189,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
 
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 sold = getSold(_token, _value);
-        require(sold &gt; 0);
+        require(sold > 0);
         uint256 bonus = getBonus(sold);
         address buyer;
         if (_data.length == 20) {
@@ -206,7 +206,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
 
     function getSold(address _token, uint256 _value) constant public returns (uint256) {
         uint256 rate = getRate(_token);
-        require(rate &gt; 0);
+        require(rate > 0);
         return _value.mul(rate).div(10**18);
     }
 
@@ -225,7 +225,7 @@ contract AbstractSale is Sale, CompatReceiveAdapter, Ownable {
     }
 
     function toBytes20(bytes b, uint256 _start) pure internal returns (bytes20 result) {
-        require(_start + 20 &lt;= b.length);
+        require(_start + 20 <= b.length);
         assembly {
             let from := add(_start, add(b, 0x20))
             result := mload(from)
@@ -277,7 +277,7 @@ contract MintingSale is AbstractSale {
 /**
  * @title OwnableImpl
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract OwnableImpl is Ownable {
     address public owner;
@@ -321,7 +321,7 @@ contract CappedBonusSale is AbstractSale {
 
     function checkPurchaseValid(address buyer, uint256 sold, uint256 bonus) internal {
         super.checkPurchaseValid(buyer, sold, bonus);
-        require(cap &gt;= sold.add(bonus));
+        require(cap >= sold.add(bonus));
     }
 
     function onPurchase(address buyer, address token, uint256 value, uint256 sold, uint256 bonus) internal {
@@ -344,7 +344,7 @@ contract Secured {
 }
 
 contract SecuredImpl is Ownable, Secured {
-	mapping(string =&gt; address) users;
+	mapping(string => address) users;
 	event RoleTransferred(address indexed previousUser, address indexed newUser, string role);
 
 	function getRole(string role) constant public returns (address) {
@@ -359,14 +359,14 @@ contract SecuredImpl is Ownable, Secured {
 }
 
 contract Whitelist is Secured {
-	mapping(address =&gt; bool) whitelist;
+	mapping(address => bool) whitelist;
 	event WhitelistChange(address indexed addr, bool allow);
 
 	function isInWhitelist(address addr) constant public returns (bool) {
 		return whitelist[addr];
 	}
 
-	function setWhitelist(address addr, bool allow) only(&quot;operator&quot;) public {
+	function setWhitelist(address addr, bool allow) only("operator") public {
 		setWhitelistInternal(addr, allow);
 	}
 
@@ -390,8 +390,8 @@ contract DaoxCommissionSale is AbstractSale {
 }
 
 contract ReadOnlyTokenImpl is ReadOnlyToken {
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     /**
     * @dev Gets the balance of the specified address.
@@ -430,7 +430,7 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -451,8 +451,8 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -466,7 +466,7 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -491,7 +491,7 @@ contract TokenImpl is Token, ReadOnlyTokenImpl {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -513,9 +513,9 @@ contract BurnableTokenImpl is TokenImpl, BurnableToken {
 	 * @param _value The amount of token to be burned.
 	 */
 	function burn(uint256 _value) public {
-		require(_value &lt;= balances[msg.sender]);
-		// no need to require value &lt;= totalSupply, since that would imply the
-		// sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+		require(_value <= balances[msg.sender]);
+		// no need to require value <= totalSupply, since that would imply the
+		// sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
 		address burner = msg.sender;
 		balances[burner] = balances[burner].sub(_value);
@@ -612,8 +612,8 @@ contract PausableToken is Pausable, TokenImpl {
 }
 
 contract ZenomeToken is OwnableImpl, PausableToken, MintableTokenImpl, BurnableTokenImpl {
-	string public constant name = &quot;Zenome&quot;;
-	string public constant symbol = &quot;sZNA&quot;;
+	string public constant name = "Zenome";
+	string public constant symbol = "sZNA";
 	uint8 public constant decimals = 18;
 
 	function burn(uint256 _value) public whenNotPaused {
@@ -648,11 +648,11 @@ contract ZenomeSale is OwnableImpl, SecuredImpl, DaoxCommissionSale, MintingSale
 	}
 
 	function getBonus(uint256 sold) constant public returns (uint256) {
-		if (sold &gt; 850000 * 10**18) {
+		if (sold > 850000 * 10**18) {
 			return sold.mul(50).div(100);
-		} else if (sold &gt; 340000 * 10**18) {
+		} else if (sold > 340000 * 10**18) {
 			return sold.mul(33).div(100);
-		} else if (sold &gt; 85000 * 10**18) {
+		} else if (sold > 85000 * 10**18) {
 			return sold.mul(20).div(100);
 		} else {
 			return 0;

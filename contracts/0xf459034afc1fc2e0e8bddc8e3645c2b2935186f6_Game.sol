@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,7 +59,7 @@ contract Game is Owned {
     // The address of the owner 
     address public ownerWallet;
     // The address of the activator
-    mapping(address =&gt; bool) internal activator;
+    mapping(address => bool) internal activator;
     
     // Constants
     uint256 public constant BET = 100 finney; //0.1 ETH
@@ -79,17 +79,17 @@ contract Game is Owned {
     uint256[] targetBlocks;
     
     // Mappings
-    mapping(address =&gt; Participant) public participants;
+    mapping(address => Participant) public participants;
 
-    mapping(uint256 =&gt; mapping(uint256 =&gt; uint256)) oddAndEvenBets; // Stores the msg.value for the block and the bet (odd or even)
+    mapping(uint256 => mapping(uint256 => uint256)) oddAndEvenBets; // Stores the msg.value for the block and the bet (odd or even)
 
-    mapping(uint256 =&gt; uint256) blockResult; // Stores if the blockhash&#39;s last char is odd or even
-    mapping(uint256 =&gt; bytes32) blockHash; // Stores the hash of block (block.number)
+    mapping(uint256 => uint256) blockResult; // Stores if the blockhash's last char is odd or even
+    mapping(uint256 => bytes32) blockHash; // Stores the hash of block (block.number)
 
-    mapping(uint256 =&gt; uint256) blockRevenuePerTicket; // Stores the amount of the revenue per person for given block
-    mapping(uint256 =&gt; bool) isBlockRevenueCalculated; // Stores if the blocks revenue is calculated
+    mapping(uint256 => uint256) blockRevenuePerTicket; // Stores the amount of the revenue per person for given block
+    mapping(uint256 => bool) isBlockRevenueCalculated; // Stores if the blocks revenue is calculated
 
-    mapping(uint256 =&gt; uint256) comissionsAtBlock; // Stores the commision amount for given block
+    mapping(uint256 => uint256) comissionsAtBlock; // Stores the commision amount for given block
     
     // Public variables
     uint256 public _startBetBlock;
@@ -99,7 +99,7 @@ contract Game is Owned {
     
     // Modifiers
     modifier afterBlock(uint256 _blockNumber) {
-        require(block.number &gt;= _blockNumber);
+        require(block.number >= _blockNumber);
         _;
     }
 
@@ -110,7 +110,7 @@ contract Game is Owned {
     
     // Structures
     struct Participant {
-        mapping(uint256 =&gt; Bet) bets;
+        mapping(uint256 => Bet) bets;
         bool isParticipated;
     }
 
@@ -149,7 +149,7 @@ contract Game is Owned {
         if (_startBlock == 0) {
             _startBlock = block.number;
         }
-        require(block.number &gt;= _endBetBlock);
+        require(block.number >= _endBetBlock);
 
         _startBetBlock = _startBlock;
         _endBetBlock = _startBetBlock.add(END_DURATION_BETTING_BLOCK);
@@ -170,11 +170,11 @@ contract Game is Owned {
       * @return success Is the bet successful.
       */
     function bet(uint8 oddOrEven, uint256 betsAmount) public payable returns (bool _success) {
-		require(betsAmount &gt; 0);
+		require(betsAmount > 0);
 		uint256 participantBet = betsAmount.mul(BET);
 		require(msg.value == participantBet);
         require(oddOrEven == ODD || oddOrEven == EVEN);
-        require(block.number &lt;= _endBetBlock &amp;&amp; block.number &gt;= _startBetBlock);
+        require(block.number <= _endBetBlock && block.number >= _startBetBlock);
 
 		// @dev - check if participant already betted
 		if (participants[msg.sender].isParticipated == false) {
@@ -210,7 +210,7 @@ contract Game is Owned {
       */
     function calculateRevenueAtBlock(uint256 _blockNumber) public afterBlock(_blockNumber) {
         require(isBlockRevenueCalculated[_blockNumber] == false);
-        if(oddAndEvenBets[_blockNumber][ODD] &gt; 0 || oddAndEvenBets[_blockNumber][EVEN] &gt; 0) {
+        if(oddAndEvenBets[_blockNumber][ODD] > 0 || oddAndEvenBets[_blockNumber][EVEN] > 0) {
             blockResult[_blockNumber] = getBlockHashOddOrEven(_blockNumber);
             require(blockResult[_blockNumber] == ODD || blockResult[_blockNumber] == EVEN);
             if (blockResult[_blockNumber] == ODD) {
@@ -256,7 +256,7 @@ contract Game is Owned {
       */
     function calculateRevenue(uint256 _blockNumber, uint256 winner, uint256 loser) internal {
         uint256 revenue = oddAndEvenBets[_blockNumber][loser];
-        if (oddAndEvenBets[_blockNumber][ODD] != 0 &amp;&amp; oddAndEvenBets[_blockNumber][EVEN] != 0) {
+        if (oddAndEvenBets[_blockNumber][ODD] != 0 && oddAndEvenBets[_blockNumber][EVEN] != 0) {
             uint256 comission = (revenue.div(100)).mul(COMMISSION_PERCENTAGE);
             revenue = revenue.sub(comission);
             comissionsAtBlock[_blockNumber] = comission;
@@ -275,12 +275,12 @@ contract Game is Owned {
       * @return _success Is the revenue withdrawn successfully.
       */
     function withdrawRevenue(uint256 _blockNumber) public returns (bool _success) {
-        require(participants[msg.sender].bets[_blockNumber].ODDBets &gt; 0 || participants[msg.sender].bets[_blockNumber].EVENBets &gt; 0);
+        require(participants[msg.sender].bets[_blockNumber].ODDBets > 0 || participants[msg.sender].bets[_blockNumber].EVENBets > 0);
         require(participants[msg.sender].bets[_blockNumber].isRevenuePaid == false);
         require(isBlockRevenueCalculated[_blockNumber] == true);
 
         if (oddAndEvenBets[_blockNumber][ODD] == 0 || oddAndEvenBets[_blockNumber][EVEN] == 0) {
-			if(participants[msg.sender].bets[_blockNumber].ODDBets &gt; 0) {
+			if(participants[msg.sender].bets[_blockNumber].ODDBets > 0) {
 				IMoneyManager(moneyManager).payTo(msg.sender, participants[msg.sender].bets[_blockNumber].ODDBets);
 			}else{
 				IMoneyManager(moneyManager).payTo(msg.sender, participants[msg.sender].bets[_blockNumber].EVENBets);
@@ -407,7 +407,7 @@ contract Game is Owned {
       * @return _isParticipate
       */
     function getIsParticipate(address _participant, uint256 _blockNumber) public view returns (bool _isParticipate) {
-        return (participants[_participant].bets[_blockNumber].ODDBets &gt; 0 || participants[_participant].bets[_blockNumber].EVENBets &gt; 0);
+        return (participants[_participant].bets[_blockNumber].ODDBets > 0 || participants[_participant].bets[_blockNumber].EVENBets > 0);
     }
     
      /** @dev Function for getting the block revenue per ticket.

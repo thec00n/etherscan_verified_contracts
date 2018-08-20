@@ -10,7 +10,7 @@ contract GEMCHAIN {
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
 	
-	mapping(address=&gt;bool) public frozenAccount;
+	mapping(address=>bool) public frozenAccount;
 	uint256 public rate = 30000 ;//1 ether=how many tokens
 	uint256 public amount; 
 	
@@ -20,8 +20,8 @@ contract GEMCHAIN {
 	bool public exchangeStart=true;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -50,8 +50,8 @@ contract GEMCHAIN {
 		decimals=18;
         totalSupply = 10000000000 * (10 ** uint256(decimals));  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;GEMCHAIN&quot;;                                   // Set the name for display purposes
-        symbol = &quot;GEM&quot;;                               // Set the symbol for display purposes
+        name = "GEMCHAIN";                                   // Set the name for display purposes
+        symbol = "GEM";                               // Set the symbol for display purposes
 		owner = msg.sender;
 		rate=30000;
 		fundOnContract=true;
@@ -66,9 +66,9 @@ contract GEMCHAIN {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -108,8 +108,8 @@ contract GEMCHAIN {
 		if(!contractStart){
 			revert();
 		}
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
-		require(_value &gt; 0);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
+		require(_value > 0);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -128,7 +128,7 @@ contract GEMCHAIN {
 		if(!contractStart){
 			revert();
 		}
-		require(balanceOf[msg.sender] &gt;= _value);
+		require(balanceOf[msg.sender] >= _value);
         allowance[msg.sender][_spender] = _value;
         return true;
     }
@@ -166,8 +166,8 @@ contract GEMCHAIN {
 		if(!contractStart){
 			revert();
 		}
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
-		require(_value &gt; 0);
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
+		require(_value > 0);
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
 		Transfer(msg.sender, 0, _value);
@@ -183,8 +183,8 @@ contract GEMCHAIN {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public onlyOwner returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-		require(_value&gt; 0); 
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+		require(_value> 0); 
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
         totalSupply -= _value;                              // Update totalSupply
 		Transfer(_from, 0, _value);
@@ -198,18 +198,18 @@ contract GEMCHAIN {
         if(frozenAccount[msg.sender]){
             revert();
         }
-		if(rate &lt;= 0){
+		if(rate <= 0){
             revert();
         }
 		amount = uint256(msg.value * rate);
 		
-		if(balanceOf[msg.sender]+amount&lt;balanceOf[msg.sender]){
+		if(balanceOf[msg.sender]+amount<balanceOf[msg.sender]){
 			revert();
 		}
-		if(balanceOf[owner]&lt;amount){
+		if(balanceOf[owner]<amount){
 			revert();
 		}
-		//if(amount&gt;0){
+		//if(amount>0){
 			if(exchangeStart){
 				balanceOf[owner] -=amount ;
 				balanceOf[msg.sender] +=amount;
@@ -225,10 +225,10 @@ contract GEMCHAIN {
 		if(frozenAccount[target]){
             revert();
         }
-		if(_value&lt;=0){
+		if(_value<=0){
 			revert();
 		}
-		if(_value&gt;this.balance){
+		if(_value>this.balance){
 			revert();
 		}
 		if(target != 0){
@@ -251,7 +251,7 @@ contract GEMCHAIN {
         }
     }
 	function setRate(uint thisRate) public onlyOwner{
-	   if(thisRate&gt;0){
+	   if(thisRate>0){
          rate = thisRate;
 		}
     }

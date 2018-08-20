@@ -17,9 +17,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -36,7 +36,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,10 +47,10 @@ contract CryptoScams {
   event Sold (uint256 indexed _scamId, address indexed _owner, uint256 _price);  
   address public owner;
   uint256[] private scams; 
-  mapping (uint256 =&gt; uint256) private startingPriceOfScam;
-  mapping (uint256 =&gt; uint256) private priceOfScam;
-  mapping (uint256 =&gt; address) private ownerOfScam;
-  mapping (uint256 =&gt; string) private nameOfScam;
+  mapping (uint256 => uint256) private startingPriceOfScam;
+  mapping (uint256 => uint256) private priceOfScam;
+  mapping (uint256 => address) private ownerOfScam;
+  mapping (uint256 => string) private nameOfScam;
   uint256 cutPercent = 5;
 
   function CryptoScams () public {
@@ -63,7 +63,7 @@ contract CryptoScams {
   }
   
   function setCut (uint256 _n) onlyOwner() public {
-	  require(_n &gt;= 0 &amp;&amp; _n &lt;= 10);
+	  require(_n >= 0 && _n <= 10);
     cutPercent = _n;
   }
 
@@ -76,7 +76,7 @@ contract CryptoScams {
   }
 
   function listScam (uint256 _scamId, string _name, uint256 _price) onlyOwner() public {
-    require(_price &gt; 0);
+    require(_price > 0);
     require(priceOfScam[_scamId] == 0);
     require(ownerOfScam[_scamId] == address(0));
     ownerOfScam[_scamId] = owner;
@@ -122,7 +122,7 @@ contract CryptoScams {
 
   function buy (uint256 _scamId) payable public {
     require(!isContract(msg.sender));
-    require(priceOf(_scamId) &gt; 0);
+    require(priceOf(_scamId) > 0);
     require(getOwner(_scamId) != address(0));
     require(msg.value == priceOf(_scamId));
     require(getOwner(_scamId) != msg.sender);
@@ -140,6 +140,6 @@ contract CryptoScams {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }

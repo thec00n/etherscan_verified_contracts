@@ -334,7 +334,7 @@ contract BitpaintingBase is Pausable {
 // File: contracts/libs/ERC721.sol
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bedadbcadbfedfc6d7d1d3c4dbd090ddd1">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bedadbcadbfedfc6d7d1d3c4dbd090ddd1">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function totalSupply() public constant returns (uint256 total);
@@ -366,17 +366,17 @@ contract ERC721Metadata {
     /// @dev Given a token Id, returns a byte array that is supposed to be converted into string.
     function getMetadata(uint256 _tokenId, string) public constant returns (bytes32[4] buffer, uint256 count) {
         if (_tokenId == 1) {
-            buffer[0] = &quot;Hello World! :D&quot;;
+            buffer[0] = "Hello World! :D";
             count = 15;
         } else if (_tokenId == 2) {
-            buffer[0] = &quot;I would definitely choose a medi&quot;;
-            buffer[1] = &quot;um length string.&quot;;
+            buffer[0] = "I would definitely choose a medi";
+            buffer[1] = "um length string.";
             count = 49;
         } else if (_tokenId == 3) {
-            buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-            buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-            buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-            buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+            buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+            buffer[1] = "st accumsan dapibus augue lorem,";
+            buffer[2] = " tristique vestibulum id, libero";
+            buffer[3] = " suscipit varius sapien aliquam.";
             count = 128;
         }
     }
@@ -387,25 +387,25 @@ contract ERC721Metadata {
 contract PaintingOwnership is BitpaintingBase, ERC721 {
 
     /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-    string public constant name = &quot;BitPaintings&quot;;
-    string public constant symbol = &quot;BP&quot;;
+    string public constant name = "BitPaintings";
+    string public constant symbol = "BP";
 
     ERC721Metadata public erc721Metadata;
 
     bytes4 constant InterfaceSignature_ERC165 =
-        bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+        bytes4(keccak256('supportsInterface(bytes4)'));
 
     bytes4 constant InterfaceSignature_ERC721 =
-        bytes4(keccak256(&#39;name()&#39;)) ^
-        bytes4(keccak256(&#39;symbol()&#39;)) ^
-        bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-        bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-        bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-        bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transfer(address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-        bytes4(keccak256(&#39;tokensOfOwner(address)&#39;)) ^
-        bytes4(keccak256(&#39;tokenMetadata(uint256,string)&#39;));
+        bytes4(keccak256('name()')) ^
+        bytes4(keccak256('symbol()')) ^
+        bytes4(keccak256('totalSupply()')) ^
+        bytes4(keccak256('balanceOf(address)')) ^
+        bytes4(keccak256('ownerOf(uint256)')) ^
+        bytes4(keccak256('approve(address,uint256)')) ^
+        bytes4(keccak256('transfer(address,uint256)')) ^
+        bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+        bytes4(keccak256('tokensOfOwner(address)')) ^
+        bytes4(keccak256('tokenMetadata(uint256,string)'));
 
     /// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
     ///  Returns true for any standardized interfaces implemented by this contract. We implement
@@ -413,7 +413,7 @@ contract PaintingOwnership is BitpaintingBase, ERC721 {
     function supportsInterface(bytes4 _interfaceID) external constant returns (bool)
     {
         // DEBUG ONLY
-        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+        //require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
 
         return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
     }
@@ -521,7 +521,7 @@ contract PaintingOwnership is BitpaintingBase, ERC721 {
 
         uint256 paintingId;
 
-        for (paintingId = 1; paintingId &lt;= totalCats; paintingId++) {
+        for (paintingId = 1; paintingId <= totalCats; paintingId++) {
             if (bitpaintingStorage.getPaintingOwner(paintingId) == _owner) {
                 result[resultIndex] = paintingId;
                 resultIndex++;
@@ -531,12 +531,12 @@ contract PaintingOwnership is BitpaintingBase, ERC721 {
         return result;
     }
 
-    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5031223133383e3934103e3f24343f247e3e3524">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from memcpy() by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5031223133383e3934103e3f24343f247e3e3524">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _memcpy(uint _dest, uint _src, uint _len) private constant {
       // Copy word-length chunks while possible
-      for(; _len &gt;= 32; _len -= 32) {
+      for(; _len >= 32; _len -= 32) {
           assembly {
               mstore(_dest, mload(_src))
           }
@@ -553,7 +553,7 @@ contract PaintingOwnership is BitpaintingBase, ERC721 {
       }
     }
 
-    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ffeedfefcf7f1f6fbdff1f0ebfbf0ebb1f1faeb">[email&#160;protected]</a>&gt;)
+    /// @dev Adapted from toString(slice) by @arachnid (Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ffeedfefcf7f1f6fbdff1f0ebfbf0ebb1f1faeb">[email protected]</a>>)
     ///  This method is licenced under the Apache License.
     ///  Ref: https://github.com/Arachnid/solidity-stringutils/blob/2f6ca9accb48ae14c66f1437ec50ed19a0616f78/strings.sol
     function _toString(bytes32[4] _rawBytes, uint256 _stringLength) private constant returns (string) {
@@ -637,7 +637,7 @@ contract BitpaintingEditions is PaintingOwnership, IEditions {
         currentCounts = new uint8[](length);
         limitCounts = new uint8[](length);
 
-        for(uint index = 0; index &lt; tokenCount; index++) {
+        for(uint index = 0; index < tokenCount; index++) {
             uint tokenId = bitpaintingStorage.getPaintingIdAtIndex(index);
 
             if (tokenId == 0) {
@@ -686,7 +686,7 @@ contract BitpaintingEditions is PaintingOwnership, IEditions {
     }
 
     function signature() external constant returns (uint _signature) {
-        return uint(keccak256(&quot;editions&quot;));
+        return uint(keccak256("editions"));
     }
 
 }

@@ -80,16 +80,16 @@ contract Founders is ERC20Interface, Owned {
     uint public _ratio;
     bool disabled;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     
     // ------------------------------------------------------------------------
     // Launched once when contract starts
     // ------------------------------------------------------------------------
     function Founders() public {
         disabled = false;
-        symbol = &quot;FCF&quot;;
-        name = &quot;Founder Chibi Fighters&quot;;
+        symbol = "FCF";
+        name = "Founder Chibi Fighters";
         decimals = 18;
         // the first coins go to creator to share among GARRY investors
         _totalSupply = 330 * 10**uint(decimals);      
@@ -117,12 +117,12 @@ contract Founders is ERC20Interface, Owned {
     
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        require(balances[msg.sender] &gt;= tokens);
+        require(balances[msg.sender] >= tokens);
         balances[msg.sender] -= tokens;
         balances[to] += tokens;
         emit Transfer(msg.sender, to, tokens);
@@ -132,7 +132,7 @@ contract Founders is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -155,8 +155,8 @@ contract Founders is ERC20Interface, Owned {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        require (allowed[from][msg.sender] &gt;= tokens);
-        require (balances[from] &gt;= tokens);
+        require (allowed[from][msg.sender] >= tokens);
+        require (balances[from] >= tokens);
         
         balances[from] -= tokens;
         allowed[from][msg.sender] -= tokens;
@@ -168,7 +168,7 @@ contract Founders is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -177,7 +177,7 @@ contract Founders is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -200,7 +200,7 @@ contract Founders is ERC20Interface, Owned {
     // 0.01 is minimum to avoid spamming
     // ------------------------------------------------------------------------
     function () public payable {
-        require(msg.value &gt;= 10000000000000000);
+        require(msg.value >= 10000000000000000);
         require(disabled == false);
         
         uint tokens;
@@ -214,7 +214,7 @@ contract Founders is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Owner can transfer out any accidentally sent ERC20 tokens
-    // Only if he is in the mood though, I won&#39;t give a damn if you are an annoying bot
+    // Only if he is in the mood though, I won't give a damn if you are an annoying bot
     // ------------------------------------------------------------------------
     function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
         return ERC20Interface(tokenAddress).transfer(owner, tokens);
@@ -233,7 +233,7 @@ contract Founders is ERC20Interface, Owned {
     // Send Contracts Ethereum to address owner
     // ------------------------------------------------------------------------
     function weiToOwner(address _address, uint amount) public onlyOwner {
-        require(amount &lt;= address(this).balance);
+        require(amount <= address(this).balance);
         _address.transfer(amount);
     }
 }

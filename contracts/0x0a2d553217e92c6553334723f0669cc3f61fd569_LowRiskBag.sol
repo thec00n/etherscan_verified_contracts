@@ -16,16 +16,16 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   /**
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   /**
@@ -33,7 +33,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,8 +77,8 @@ contract LowRiskBag {
     uint256 currentPrice = tokenPrice;
 
     require(currentOwner != msg.sender);
-    require(msg.value &gt;= currentPrice);
-    require(currentPrice &gt; 0);
+    require(msg.value >= currentPrice);
+    require(currentPrice > 0);
 
     uint256 paidTooMuch = msg.value.sub(currentPrice);
     uint256 payment = currentPrice.div(2);
@@ -90,12 +90,12 @@ contract LowRiskBag {
     Transfer(currentOwner, msg.sender, currentPrice);
     if (currentOwner != address(0))
       currentOwner.transfer(payment);
-    if (paidTooMuch &gt; 0)
+    if (paidTooMuch > 0)
       msg.sender.transfer(paidTooMuch);
   }
 
   function getBlocksToNextRound() public view returns(uint) {
-    if (lastBuyBlock + newRoundDelay &lt; block.number)
+    if (lastBuyBlock + newRoundDelay < block.number)
       return 0;
     return lastBuyBlock + newRoundDelay + 1 - block.number;
   }
@@ -113,8 +113,8 @@ contract LowRiskBag {
   }
 
   function finishRound() public {
-    require(tokenPrice &gt; tokenStartPrice);
-    require(tokenOwner == msg.sender || lastBuyBlock + newRoundDelay &lt; block.number);
+    require(tokenPrice > tokenStartPrice);
+    require(tokenOwner == msg.sender || lastBuyBlock + newRoundDelay < block.number);
     lastBuyBlock = block.number;
     uint payout = tokenPrice.mul(50).div(110).mul(85).div(100); // 85% of last paid price
     address owner = tokenOwner;
@@ -127,16 +127,16 @@ contract LowRiskBag {
   function payout(uint amount) public {
     require(contractOwner == msg.sender);
     uint balance = this.balance;
-    if (tokenPrice &gt; tokenStartPrice)
+    if (tokenPrice > tokenStartPrice)
       balance -= tokenPrice.mul(50).div(110).mul(85).div(100); // payout for tokenOwner cant be paid out from contract owner
-    if (amount&gt;balance)
+    if (amount>balance)
       amount = balance;
     contractOwner.transfer(amount);
   }
   
   function getBalance() public view returns(uint balance) {
     balance = this.balance;
-    if (tokenPrice &gt; tokenStartPrice)
+    if (tokenPrice > tokenStartPrice)
       balance -= tokenPrice.mul(50).div(110).mul(85).div(100); // payout for tokenOwner cant be paid out from contract owner
       
   }

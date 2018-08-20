@@ -8,37 +8,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -111,16 +111,16 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     uint public totalSupply;
     uint public freezeMintUntil;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-    mapping (address =&gt; uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
+    mapping (address => uint) balances;
 
     modifier canMint {
-        require(totalSupply &lt; maxSupply);
+        require(totalSupply < maxSupply);
         _;
     }
 
     modifier mintIsNotFrozen {
-        require(freezeMintUntil &lt; now);
+        require(freezeMintUntil < now);
         _;
     }
 
@@ -145,7 +145,7 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     }
 
     function transfer(address _to, uint _value) returns (bool) {
-        if (_value &lt;= 0) {
+        if (_value <= 0) {
             return false;
         }
 
@@ -157,7 +157,7 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (_value &lt;= 0) {
+        if (_value <= 0) {
             return false;
         }
 
@@ -176,7 +176,7 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     }
 
     function mint(address _to, uint _amount) public canMint mintIsNotFrozen onlyOwner {
-        if (maxSupply &lt; totalSupply.add(_amount)) throw;
+        if (maxSupply < totalSupply.add(_amount)) throw;
 
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);

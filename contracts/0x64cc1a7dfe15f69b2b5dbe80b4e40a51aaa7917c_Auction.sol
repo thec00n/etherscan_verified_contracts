@@ -26,7 +26,7 @@ contract Auction {
     }
 
     function bid() public payable {
-        require(now &lt;= deadline);
+        require(now <= deadline);
         require(msg.value == getNextBid());
         owner.transfer(msg.value);
         bids++;
@@ -35,7 +35,7 @@ contract Auction {
     }
 
     function claim() public {
-        require(now &gt; deadline);
+        require(now > deadline);
         require(msg.sender == leader);
         require(!claimed);
         claimed = true;

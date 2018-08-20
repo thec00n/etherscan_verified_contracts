@@ -59,9 +59,9 @@ contract VestingContract is Owned {
     }
     
     function claimReward() public onlyOwner {
-        require(block.number &gt;= lastBlockClaimed + blockDelay);
+        require(block.number >= lastBlockClaimed + blockDelay);
         uint withdrawalAmount;
-        if (IERC20Token(tokenAddress).balanceOf(address(this)) &gt; getReward()) {
+        if (IERC20Token(tokenAddress).balanceOf(address(this)) > getReward()) {
             withdrawalAmount = getReward();
         }else {
             withdrawalAmount = IERC20Token(tokenAddress).balanceOf(address(this));

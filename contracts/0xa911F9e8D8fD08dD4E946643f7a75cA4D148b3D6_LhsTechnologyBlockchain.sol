@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 contract LhsTechnologyBlockchain {
-    string constant message = &quot;Welcome to the Library Of The Human Soul&quot;;
+    string constant message = "Welcome to the Library Of The Human Soul";
 
     function getMessage() public pure returns (string ret) {
         ret = message;

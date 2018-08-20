@@ -16,19 +16,19 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  * @dev Based on code by OpenZeppelin: https://github.com/OpenZeppelin/zeppelin-solidity/blob/v1.4.0/contracts/ownership/Ownable.sol
  */
 contract Ownable {
@@ -139,7 +139,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev Transfer token for a specified address
@@ -148,7 +148,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -188,7 +188,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by OpenZeppelin: https://github.com/OpenZeppelin/zeppelin-solidity/blob/v1.4.0/contracts/token/StandardToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     /**
      * @dev Transfer tokens from one address to another
@@ -199,8 +199,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         uint256 _allowance = allowed[_from][msg.sender];
 
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -320,7 +320,7 @@ contract TokenTimelock {
      * @param _releaseTime Time that will allow release the tokens
      */
     function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         token = _token;
         beneficiary = _beneficiary;
         releaseTime = _releaseTime;
@@ -330,10 +330,10 @@ contract TokenTimelock {
      * @dev Transfers tokens held by timelock to beneficiary.
      */
     function release() public {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         token.transfer(beneficiary, amount);
     }
@@ -347,7 +347,7 @@ contract CraftyCrowdsale is Pausable {
     using SafeMath for uint256;
 
     // Amount received from each address
-    mapping(address =&gt; uint256) received;
+    mapping(address => uint256) received;
 
     // The token being sold
     MintableToken public token;
@@ -409,10 +409,10 @@ contract CraftyCrowdsale is Pausable {
     modifier saleIsOn() {
         require(
             (
-                (now &gt;= preSaleStart &amp;&amp; now &lt; preSaleEnd) || 
-                (now &gt;= saleStart &amp;&amp; now &lt; saleEnd)
-            ) &amp;&amp; 
-            issuedTokens &lt; hardCap &amp;&amp; 
+                (now >= preSaleStart && now < preSaleEnd) || 
+                (now >= saleStart && now < saleEnd)
+            ) && 
+            issuedTokens < hardCap && 
             currentState == State.SALE
         );
         _;
@@ -422,12 +422,12 @@ contract CraftyCrowdsale is Pausable {
      * @dev modifier to allow action only before sale
      */
     modifier beforeSale() {
-        require( now &lt; preSaleStart);
+        require( now < preSaleStart);
         _;
     }
 
     /**
-     * @dev modifier that fails if state doesn&#39;t match
+     * @dev modifier that fails if state doesn't match
      */
     modifier inState(State _state) {
         require(currentState == _state);
@@ -445,8 +445,8 @@ contract CraftyCrowdsale is Pausable {
      */
     function CraftyCrowdsale(address _token, uint256 _preSaleStart, uint256 _preSaleEnd, uint256 _saleStart, uint256 _saleEnd, uint256 _rate) public {
         require(_token != address(0));
-        require(_preSaleStart &lt; _preSaleEnd &amp;&amp; _preSaleEnd &lt; _saleStart &amp;&amp; _saleStart &lt; _saleEnd);
-        require(_rate &gt; 0);
+        require(_preSaleStart < _preSaleEnd && _preSaleEnd < _saleStart && _saleStart < _saleEnd);
+        require(_rate > 0);
 
         token = MintableToken(_token);
         preSaleStart = _preSaleStart;
@@ -469,7 +469,7 @@ contract CraftyCrowdsale is Pausable {
      */
     function buyTokens() public saleIsOn whenNotPaused payable {
         require(msg.sender != address(0));
-        require(msg.value &gt;= 20 finney);
+        require(msg.value >= 20 finney);
 
         uint256 weiAmount = msg.value;
         uint256 currentRate = getRate(weiAmount);
@@ -477,7 +477,7 @@ contract CraftyCrowdsale is Pausable {
         // calculate token amount to be created
         uint256 newTokens = weiAmount.mul(currentRate).div(10**18);
 
-        require(issuedTokens.add(newTokens) &lt;= hardCap);
+        require(issuedTokens.add(newTokens) <= hardCap);
         
         issuedTokens = issuedTokens.add(newTokens);
         received[msg.sender] = received[msg.sender].add(weiAmount);
@@ -492,7 +492,7 @@ contract CraftyCrowdsale is Pausable {
      * @param _rate The new rate.
      */
     function setRate(uint256 _rate) public onlyOwner beforeSale {
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
         rate = _rate;
     }
@@ -539,8 +539,8 @@ contract CraftyCrowdsale is Pausable {
      */
     function generateTokens(address beneficiary, uint256 newTokens) public onlyOwner {
         require(beneficiary != address(0));
-        require(newTokens &gt; 0);
-        require(issuedTokens.add(newTokens) &lt;= hardCap);
+        require(newTokens > 0);
+        require(issuedTokens.add(newTokens) <= hardCap);
 
         issuedTokens = issuedTokens.add(newTokens);
         token.mint(beneficiary, newTokens);
@@ -551,7 +551,7 @@ contract CraftyCrowdsale is Pausable {
      * @dev Finish crowdsale and token minting.
      */
     function finishCrowdsale() public onlyOwner inState(State.SALE) {
-        require(now &gt; saleEnd);
+        require(now > saleEnd);
         // tokens not sold to fund
         uint256 unspentTokens = hardCap.sub(issuedTokens);
         token.mint(fundWallet, unspentTokens);
@@ -580,7 +580,7 @@ contract CraftyCrowdsale is Pausable {
      * @dev Function used to claim wei if refund is enabled.
      */
     function claimRefund() public whenNotPaused inState(State.REFUND) {
-        require(received[msg.sender] &gt; 0);
+        require(received[msg.sender] > 0);
 
         uint256 amount = received[msg.sender];
         received[msg.sender] = 0;
@@ -608,22 +608,22 @@ contract CraftyCrowdsale is Pausable {
      * @return An uint256 representing the exchange rate.
      */
     function getRate(uint256 amount) internal view returns (uint256) {
-        if(now &lt; preSaleEnd) {
-            require(amount &gt;= 6797 finney);
+        if(now < preSaleEnd) {
+            require(amount >= 6797 finney);
 
-            if(amount &lt;= 8156 finney)
+            if(amount <= 8156 finney)
                 return rate.mul(105).div(100);
-            if(amount &lt;= 9515 finney)
+            if(amount <= 9515 finney)
                 return rate.mul(1055).div(1000);
-            if(amount &lt;= 10874 finney)
+            if(amount <= 10874 finney)
                 return rate.mul(1065).div(1000);
-            if(amount &lt;= 12234 finney)
+            if(amount <= 12234 finney)
                 return rate.mul(108).div(100);
-            if(amount &lt;= 13593 finney)
+            if(amount <= 13593 finney)
                 return rate.mul(110).div(100);
-            if(amount &lt;= 27185 finney)
+            if(amount <= 27185 finney)
                 return rate.mul(113).div(100);
-            if(amount &gt; 27185 finney)
+            if(amount > 27185 finney)
                 return rate.mul(120).div(100);
         }
 

@@ -9,8 +9,8 @@ contract DINRegistry {
         uint256 updated;   // Unix timestamp.
     }
 
-    // DIN =&gt; Record
-    mapping (uint256 =&gt; Record) records;
+    // DIN => Record
+    mapping (uint256 => Record) records;
 
     // The address of DINRegistrar.
     address public registrar;

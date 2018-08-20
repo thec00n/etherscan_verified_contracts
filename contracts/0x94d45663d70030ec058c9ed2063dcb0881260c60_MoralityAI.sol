@@ -8,20 +8,20 @@ contract SafeMath{
 	}
 
 	function safeDiv(uint a, uint b) internal returns (uint) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		uint c = a / b;
 		assert(a == b * c + a % b);
 		return c;
 	}
 
 	function safeSub(uint a, uint b) internal returns (uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint a, uint b) internal returns (uint) {
 		uint c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 	function assert(bool assertion) internal {
@@ -58,11 +58,11 @@ contract admined {
 contract Token is SafeMath {
 
 	// Contract balance
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	// Token name
-	string public name = &quot;MoralityAI&quot;;
+	string public name = "MoralityAI";
 	// Token symbol
-	string public symbol = &quot;Mo&quot;;
+	string public symbol = "Mo";
 	// Decimals to use
 	uint8 public decimal = 18; 
 	// Total initial suppy
@@ -79,9 +79,9 @@ contract Token is SafeMath {
 	// Transfer function used to send tokens to an address
 	function transfer(address _to, uint256 _value){
 		// Check if the creator actually has the required balance
-		require(balanceOf[msg.sender] &gt;= _value);
+		require(balanceOf[msg.sender] >= _value);
 		// Check if the amount sent will not overflow
-		require(safeAdd(balanceOf[_to], _value) &gt;= balanceOf[_to]);
+		require(safeAdd(balanceOf[_to], _value) >= balanceOf[_to]);
 		// Substract tokens from the creator
 		balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);
 		// Add tokens to the transfer address
@@ -116,11 +116,11 @@ contract MoralityAI is admined, Token{
 	// Toekn transfer function
 	function transfer(address _to, uint256 _value) public{
 		// Check if balance of the sender is not negative
-		require(balanceOf[msg.sender] &gt; 0);
+		require(balanceOf[msg.sender] > 0);
 		// Check if balance of the sender is greater than or equal than the amount transfered
-		require(balanceOf[msg.sender] &gt;= _value);
+		require(balanceOf[msg.sender] >= _value);
 		// Check for overflow
-		require(safeAdd(balanceOf[_to], _value) &gt;= balanceOf[_to]);
+		require(safeAdd(balanceOf[_to], _value) >= balanceOf[_to]);
 
 		// Substract the amount of tokens from the creator
 		balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);

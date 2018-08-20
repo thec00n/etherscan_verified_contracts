@@ -22,7 +22,7 @@ contract Token {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -67,22 +67,22 @@ contract StandardToken is Token {
     /*
      * Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /*
      * Public functions
      */
     /// @notice Send `_value` tokens to `_to` from `msg.sender`.
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -115,7 +115,7 @@ contract StandardToken is Token {
             codeLength := extcodesize(_to)
         }
 
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -137,9 +137,9 @@ contract StandardToken is Token {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -196,8 +196,8 @@ contract StandardToken is Token {
 
 contract RealFundToken is StandardToken {
 
-  string constant public name = &quot;REAL FUND Token&quot;;
-  string constant public symbol = &quot;REF&quot;;
+  string constant public name = "REAL FUND Token";
+  string constant public symbol = "REF";
   uint8 constant public decimals = 8;
   uint constant multiplier = 10 ** uint(decimals);
 
@@ -213,9 +213,9 @@ contract RealFundToken is StandardToken {
   }
 
   function burn(uint num) public {
-        require(num &gt; 0);
-        require(balances[msg.sender] &gt;= num);
-        require(totalSupply &gt;= num);
+        require(num > 0);
+        require(balances[msg.sender] >= num);
+        require(totalSupply >= num);
 
         uint preBalance = balances[msg.sender];
 
@@ -249,7 +249,7 @@ contract PreSale {
     function () public payable {
         uint amount = msg.value;
         uint tokenAmount = amount / price;
-        require(tokenAmount &gt;= minSaleAmount);
+        require(tokenAmount >= minSaleAmount);
         amountRaised += amount;
         token.transfer(msg.sender, tokenAmount * (100 + bonus) / 100);
     }

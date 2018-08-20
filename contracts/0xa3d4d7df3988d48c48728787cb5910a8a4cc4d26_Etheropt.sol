@@ -4,7 +4,7 @@ contract Etheropt {
     int strike;
   }
   struct Position {
-    mapping(uint =&gt; int) positions;
+    mapping(uint => int) positions;
     int cash;
     bool expired;
     bool hasPosition;
@@ -16,30 +16,30 @@ contract Etheropt {
     uint realityID;
     bytes32 factHash;
     address ethAddr;
-    mapping(uint =&gt; Option) options;
+    mapping(uint => Option) options;
     uint numOptions;
     bool expired;
-    mapping(address =&gt; Position) positions;
+    mapping(address => Position) positions;
     uint numPositions;
     uint numPositionsExpired;
   }
-  mapping(uint =&gt; OptionChain) optionChains;
+  mapping(uint => OptionChain) optionChains;
   uint numOptionChains;
   struct Account {
     address user;
     int capital;
   }
-  mapping(bytes32 =&gt; int) orderFills; //keeps track of cumulative order fills
+  mapping(bytes32 => int) orderFills; //keeps track of cumulative order fills
   struct MarketMaker {
     address user;
     string server;
   }
-  mapping(uint =&gt; MarketMaker) marketMakers; //starts at 1
+  mapping(uint => MarketMaker) marketMakers; //starts at 1
   uint public numMarketMakers = 0;
-  mapping(address =&gt; uint) marketMakerIDs;
-  mapping(uint =&gt; Account) accounts;
+  mapping(address => uint) marketMakerIDs;
+  mapping(uint => Account) accounts;
   uint public numAccounts;
-  mapping(address =&gt; uint) accountIDs; //starts at 1
+  mapping(address => uint) accountIDs; //starts at 1
 
   function Market() {
   }
@@ -53,7 +53,7 @@ contract Etheropt {
   }
 
   function addFunds() {
-    if (accountIDs[msg.sender]&gt;0) {
+    if (accountIDs[msg.sender]>0) {
       accounts[accountIDs[msg.sender]].capital += int(msg.value);
     } else {
       uint accountID = ++numAccounts;
@@ -64,8 +64,8 @@ contract Etheropt {
   }
 
   function withdrawFunds(uint amount) {
-    if (accountIDs[msg.sender]&gt;0) {
-      if (int(amount)&lt;=getFunds(msg.sender, true) &amp;&amp; int(amount)&gt;0) {
+    if (accountIDs[msg.sender]>0) {
+      if (int(amount)<=getFunds(msg.sender, true) && int(amount)>0) {
         accounts[accountIDs[msg.sender]].capital -= int(amount);
         msg.sender.send(amount);
       }
@@ -73,7 +73,7 @@ contract Etheropt {
   }
 
   function getFunds(address user, bool onlyAvailable) constant returns(int) {
-    if (accountIDs[user]&gt;0) {
+    if (accountIDs[user]>0) {
       if (onlyAvailable == false) {
         return accounts[accountIDs[user]].capital;
       } else {
@@ -89,22 +89,22 @@ contract Etheropt {
   }
 
   function marketMaker(string server) {
-    if (msg.value&gt;0) throw;
-    if (marketMakerIDs[msg.sender]&gt;0) {
+    if (msg.value>0) throw;
+    if (marketMakerIDs[msg.sender]>0) {
       marketMakers[marketMakerIDs[msg.sender]].server = server;
     } else {
       int funds = getFunds(marketMakers[i].user, false);
       uint marketMakerID = 0;
-      if (numMarketMakers&lt;6) {
+      if (numMarketMakers<6) {
         marketMakerID = ++numMarketMakers;
       } else {
-        for (uint i=2; i&lt;=numMarketMakers; i++) {
-          if (getFunds(marketMakers[i].user, false)&lt;=funds &amp;&amp; (marketMakerID==0 || getFunds(marketMakers[i].user, false)&lt;getFunds(marketMakers[marketMakerID].user, false))) {
+        for (uint i=2; i<=numMarketMakers; i++) {
+          if (getFunds(marketMakers[i].user, false)<=funds && (marketMakerID==0 || getFunds(marketMakers[i].user, false)<getFunds(marketMakers[marketMakerID].user, false))) {
             marketMakerID = i;
           }
         }
       }
-      if (marketMakerID&gt;0) {
+      if (marketMakerID>0) {
         marketMakerIDs[marketMakers[marketMakerID].user] = 0;
         marketMakers[marketMakerID].user = msg.sender;
         marketMakers[marketMakerID].server = server;
@@ -117,7 +117,7 @@ contract Etheropt {
 
   function getMarketMakers() constant returns(string, string, string, string, string, string) {
     string[] memory servers = new string[](6);
-    for (uint i=1; i&lt;=numMarketMakers; i++) {
+    for (uint i=1; i<=numMarketMakers; i++) {
       servers[i-1] = marketMakers[i].server;
     }
     return (servers[0], servers[1], servers[2], servers[3], servers[4], servers[5]);
@@ -125,7 +125,7 @@ contract Etheropt {
 
   function getMarketMakerFunds() constant returns(int, int, int, int, int, int) {
     int[] memory funds = new int[](6);
-    for (uint i=1; i&lt;=numMarketMakers; i++) {
+    for (uint i=1; i<=numMarketMakers; i++) {
       funds[i-1] = getFunds(marketMakers[i].user, false);
     }
     return (funds[0], funds[1], funds[2], funds[3], funds[4], funds[5]);
@@ -141,9 +141,9 @@ contract Etheropt {
     int[] memory positions = new int[](60);
     int[] memory cashes = new int[](60);
     uint z = 0;
-    for (int optionChainID=int(numOptionChains)-1; optionChainID&gt;=0 &amp;&amp; z&lt;60; optionChainID--) {
+    for (int optionChainID=int(numOptionChains)-1; optionChainID>=0 && z<60; optionChainID--) {
       if (optionChains[uint(optionChainID)].expired == false) {
-        for (uint optionID=0; optionID&lt;optionChains[uint(optionChainID)].numOptions; optionID++) {
+        for (uint optionID=0; optionID<optionChains[uint(optionChainID)].numOptions; optionID++) {
           optionIDs[z] = uint(optionChainID)*1000 + optionID;
           strikes[z] = optionChains[uint(optionChainID)].options[optionID].strike;
           positions[z] = optionChains[uint(optionChainID)].positions[user].positions[optionID];
@@ -164,10 +164,10 @@ contract Etheropt {
         } else {
           lastAccount = accountID;
         }
-        for (accountID=accountID; accountID&lt;=lastAccount; accountID++) {
+        for (accountID=accountID; accountID<=lastAccount; accountID++) {
           if (optionChains[optionChainID].positions[accounts[accountID].user].expired == false) {
             int result = optionChains[optionChainID].positions[accounts[accountID].user].cash / 1000000000000000000;
-            for (uint optionID=0; optionID&lt;optionChains[optionChainID].numOptions; optionID++) {
+            for (uint optionID=0; optionID<optionChains[optionChainID].numOptions; optionID++) {
               int moneyness = getMoneyness(optionChains[optionChainID].options[optionID].strike, uint(value), optionChains[optionChainID].margin);
               result += moneyness * optionChains[optionChainID].positions[accounts[accountID].user].positions[optionID] / 1000000000000000000;
             }
@@ -184,9 +184,9 @@ contract Etheropt {
   }
 
   function getMoneyness(int strike, uint settlement, uint margin) constant returns(int) {
-    if (strike&gt;=0) { //call
-      if (settlement&gt;uint(strike)) {
-        if (settlement-uint(strike)&lt;margin) {
+    if (strike>=0) { //call
+      if (settlement>uint(strike)) {
+        if (settlement-uint(strike)<margin) {
           return int(settlement-uint(strike));
         } else {
           return int(margin);
@@ -195,8 +195,8 @@ contract Etheropt {
         return 0;
       }
     } else { //put
-      if (settlement&lt;uint(-strike)) {
-        if (uint(-strike)-settlement&lt;margin) {
+      if (settlement<uint(-strike)) {
+        if (uint(-strike)-settlement<margin) {
           return int(uint(-strike)-settlement);
         } else {
           return int(margin);
@@ -209,16 +209,16 @@ contract Etheropt {
 
   function addOptionChain(uint expiration, string underlying, uint margin, uint realityID, bytes32 factHash, address ethAddr, int[] strikes) {
     uint optionChainID = 6;
-    if (numOptionChains&lt;6) {
+    if (numOptionChains<6) {
       optionChainID = numOptionChains++;
     } else {
-      for (uint i=0; i &lt; numOptionChains &amp;&amp; optionChainID&gt;=6; i++) {
+      for (uint i=0; i < numOptionChains && optionChainID>=6; i++) {
         if (optionChains[i].expired==true || optionChains[i].numPositions==0 || optionChains[i].numOptions==0) {
           optionChainID = i;
         }
       }
     }
-    if (optionChainID&lt;6) {
+    if (optionChainID<6) {
       delete optionChains[optionChainID];
       optionChains[optionChainID].expiration = expiration;
       optionChains[optionChainID].underlying = underlying;
@@ -226,8 +226,8 @@ contract Etheropt {
       optionChains[optionChainID].realityID = realityID;
       optionChains[optionChainID].factHash = factHash;
       optionChains[optionChainID].ethAddr = ethAddr;
-      for (i=0; i &lt; strikes.length; i++) {
-        if (optionChains[optionChainID].numOptions&lt;10) {
+      for (i=0; i < strikes.length; i++) {
+        if (optionChains[optionChainID].numOptions<10) {
           uint optionID = optionChains[optionChainID].numOptions++;
           Option option = optionChains[optionChainID].options[i];
           option.strike = strikes[i];
@@ -238,7 +238,7 @@ contract Etheropt {
   }
 
   function orderMatchTest(uint optionChainID, uint optionID, uint price, int size, uint orderID, uint blockExpires, address addr, address sender, int matchSize) constant returns(bool) {
-    if (block.number&lt;=blockExpires &amp;&amp; ((size&gt;0 &amp;&amp; matchSize&lt;0 &amp;&amp; orderFills[sha3(optionChainID, optionID, price, size, orderID, blockExpires)]-matchSize&lt;=size) || (size&lt;0 &amp;&amp; matchSize&gt;0 &amp;&amp; orderFills[sha3(optionChainID, optionID, price, size, orderID, blockExpires)]-matchSize&gt;=size)) &amp;&amp; getFunds(addr, false)+getMaxLossAfterTrade(addr, optionChainID, optionID, -matchSize, matchSize * int(price))&gt;0 &amp;&amp; getFunds(sender, false)+getMaxLossAfterTrade(sender, optionChainID, optionID, matchSize, -matchSize * int(price))&gt;0) {
+    if (block.number<=blockExpires && ((size>0 && matchSize<0 && orderFills[sha3(optionChainID, optionID, price, size, orderID, blockExpires)]-matchSize<=size) || (size<0 && matchSize>0 && orderFills[sha3(optionChainID, optionID, price, size, orderID, blockExpires)]-matchSize>=size)) && getFunds(addr, false)+getMaxLossAfterTrade(addr, optionChainID, optionID, -matchSize, matchSize * int(price))>0 && getFunds(sender, false)+getMaxLossAfterTrade(sender, optionChainID, optionID, matchSize, -matchSize * int(price))>0) {
       return true;
     }
     return false;
@@ -246,7 +246,7 @@ contract Etheropt {
 
   function orderMatch(uint optionChainID, uint optionID, uint price, int size, uint orderID, uint blockExpires, address addr, uint8 v, bytes32 r, bytes32 s, int matchSize) {
     bytes32 hash = sha256(optionChainID, optionID, price, size, orderID, blockExpires);
-    if (ecrecover(hash, v, r, s) == addr &amp;&amp; block.number&lt;=blockExpires &amp;&amp; ((size&gt;0 &amp;&amp; matchSize&lt;0 &amp;&amp; orderFills[hash]-matchSize&lt;=size) || (size&lt;0 &amp;&amp; matchSize&gt;0 &amp;&amp; orderFills[hash]-matchSize&gt;=size)) &amp;&amp; getFunds(addr, false)+getMaxLossAfterTrade(addr, optionChainID, optionID, -matchSize, matchSize * int(price))&gt;0 &amp;&amp; getFunds(msg.sender, false)+getMaxLossAfterTrade(msg.sender, optionChainID, optionID, matchSize, -matchSize * int(price))&gt;0) {
+    if (ecrecover(hash, v, r, s) == addr && block.number<=blockExpires && ((size>0 && matchSize<0 && orderFills[hash]-matchSize<=size) || (size<0 && matchSize>0 && orderFills[hash]-matchSize>=size)) && getFunds(addr, false)+getMaxLossAfterTrade(addr, optionChainID, optionID, -matchSize, matchSize * int(price))>0 && getFunds(msg.sender, false)+getMaxLossAfterTrade(msg.sender, optionChainID, optionID, matchSize, -matchSize * int(price))>0) {
       if (optionChains[optionChainID].positions[msg.sender].hasPosition == false) {
         optionChains[optionChainID].positions[msg.sender].hasPosition = true;
         optionChains[optionChainID].numPositions++;
@@ -265,23 +265,23 @@ contract Etheropt {
 
   function getMaxLossAfterTrade(address user, uint optionChainID, uint optionID, int positionChange, int cashChange) constant returns(int) {
     int totalMaxLoss = 0;
-    for (uint i=0; i&lt;numOptionChains; i++) {
-      if (optionChains[i].positions[user].expired == false &amp;&amp; optionChains[i].numOptions&gt;0) {
+    for (uint i=0; i<numOptionChains; i++) {
+      if (optionChains[i].positions[user].expired == false && optionChains[i].numOptions>0) {
         bool maxLossInitialized = false;
         int maxLoss = 0;
-        for (uint s=0; s&lt;optionChains[i].numOptions; s++) {
+        for (uint s=0; s<optionChains[i].numOptions; s++) {
           int pnl = optionChains[i].positions[user].cash / 1000000000000000000;
           if (i==optionChainID) {
             pnl += cashChange / 1000000000000000000;
           }
           uint settlement = 0;
-          if (optionChains[i].options[s].strike&lt;0) {
+          if (optionChains[i].options[s].strike<0) {
             settlement = uint(-optionChains[i].options[s].strike);
           } else {
             settlement = uint(optionChains[i].options[s].strike);
           }
           pnl += moneySumAtSettlement(user, optionChainID, optionID, positionChange, i, settlement);
-          if (pnl&lt;maxLoss || maxLossInitialized==false) {
+          if (pnl<maxLoss || maxLossInitialized==false) {
             maxLossInitialized = true;
             maxLoss = pnl;
           }
@@ -290,8 +290,8 @@ contract Etheropt {
             pnl += cashChange / 1000000000000000000;
           }
           settlement = 0;
-          if (optionChains[i].options[s].strike&lt;0) {
-            if (uint(-optionChains[i].options[s].strike)&gt;optionChains[i].margin) {
+          if (optionChains[i].options[s].strike<0) {
+            if (uint(-optionChains[i].options[s].strike)>optionChains[i].margin) {
               settlement = uint(-optionChains[i].options[s].strike)-optionChains[i].margin;
             } else {
               settlement = 0;
@@ -300,7 +300,7 @@ contract Etheropt {
             settlement = uint(optionChains[i].options[s].strike)+optionChains[i].margin;
           }
           pnl += moneySumAtSettlement(user, optionChainID, optionID, positionChange, i, settlement);
-          if (pnl&lt;maxLoss) {
+          if (pnl<maxLoss) {
             maxLoss = pnl;
           }
         }
@@ -312,9 +312,9 @@ contract Etheropt {
 
   function moneySumAtSettlement(address user, uint optionChainID, uint optionID, int positionChange, uint i, uint settlement) internal returns(int) {
     int pnl = 0;
-    for (uint j=0; j&lt;optionChains[i].numOptions; j++) {
+    for (uint j=0; j<optionChains[i].numOptions; j++) {
       pnl += optionChains[i].positions[user].positions[j] * getMoneyness(optionChains[i].options[j].strike, settlement, optionChains[i].margin) / 1000000000000000000;
-      if (i==optionChainID &amp;&amp; j==optionID) {
+      if (i==optionChainID && j==optionID) {
         pnl += positionChange * getMoneyness(optionChains[i].options[j].strike, settlement, optionChains[i].margin) / 1000000000000000000;
       }
     }
@@ -322,7 +322,7 @@ contract Etheropt {
   }
 
   function min(uint a, uint b) constant returns(uint) {
-    if (a&lt;b) {
+    if (a<b) {
       return a;
     } else {
       return b;

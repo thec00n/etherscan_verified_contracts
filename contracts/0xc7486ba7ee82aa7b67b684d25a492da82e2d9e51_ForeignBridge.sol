@@ -82,7 +82,7 @@ library Message {
     // }
 
     function addressArrayContains(address[] array, address value) internal pure returns (bool) {
-        for (uint256 i = 0; i &lt; array.length; i++) {
+        for (uint256 i = 0; i < array.length; i++) {
             if (array[i] == value) {
                 return true;
             }
@@ -138,9 +138,9 @@ library Message {
     }
 
     function hashMessage(bytes message) internal pure returns (bytes32) {
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n";
         // message is always 116 length
-        string memory msgLength = &quot;116&quot;;
+        string memory msgLength = "116";
         return keccak256(prefix, msgLength, message);
     }
 
@@ -152,11 +152,11 @@ library Message {
         IBridgeValidators _validatorContract) internal view {
         require(isMessageValid(_message));
         uint256 requiredSignatures = _validatorContract.requiredSignatures();
-        require(_vs.length &gt;= requiredSignatures);
+        require(_vs.length >= requiredSignatures);
         bytes32 hash = hashMessage(_message);
         address[] memory encounteredAddresses = new address[](requiredSignatures);
 
-        for (uint256 i = 0; i &lt; requiredSignatures; i++) {
+        for (uint256 i = 0; i < requiredSignatures; i++) {
             address recoveredAddress = ecrecover(hash, _vs[i], _rs[i], _ss[i]);
             require(_validatorContract.isValidator(recoveredAddress));
             if (addressArrayContains(encounteredAddresses, recoveredAddress)) {
@@ -191,9 +191,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -201,7 +201,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -210,7 +210,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -223,12 +223,12 @@ library SafeMath {
  */
 contract EternalStorage {
 
-    mapping(bytes32 =&gt; uint256) internal uintStorage;
-    mapping(bytes32 =&gt; string) internal stringStorage;
-    mapping(bytes32 =&gt; address) internal addressStorage;
-    mapping(bytes32 =&gt; bytes) internal bytesStorage;
-    mapping(bytes32 =&gt; bool) internal boolStorage;
-    mapping(bytes32 =&gt; int256) internal intStorage;
+    mapping(bytes32 => uint256) internal uintStorage;
+    mapping(bytes32 => string) internal stringStorage;
+    mapping(bytes32 => address) internal addressStorage;
+    mapping(bytes32 => bytes) internal bytesStorage;
+    mapping(bytes32 => bool) internal boolStorage;
+    mapping(bytes32 => int256) internal intStorage;
 
 }
 
@@ -238,7 +238,7 @@ contract BasicBridge is EternalStorage {
     event GasPriceChanged(uint256 gasPrice);
     event RequiredBlockConfirmationChanged(uint256 requiredBlockConfirmations);
     function validatorContract() public view returns(IBridgeValidators) {
-        return IBridgeValidators(addressStorage[keccak256(&quot;validatorContract&quot;)]);
+        return IBridgeValidators(addressStorage[keccak256("validatorContract")]);
     }
 
     modifier onlyValidator() {
@@ -252,23 +252,23 @@ contract BasicBridge is EternalStorage {
     }
 
     function setGasPrice(uint256 _gasPrice) public onlyOwner {
-        require(_gasPrice &gt; 0);
-        uintStorage[keccak256(&quot;gasPrice&quot;)] = _gasPrice;
+        require(_gasPrice > 0);
+        uintStorage[keccak256("gasPrice")] = _gasPrice;
         emit GasPriceChanged(_gasPrice);
     }
 
     function gasPrice() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;gasPrice&quot;)];
+        return uintStorage[keccak256("gasPrice")];
     }
 
     function setRequiredBlockConfirmations(uint256 _blockConfirmations) public onlyOwner {
-        require(_blockConfirmations &gt; 0);
-        uintStorage[keccak256(&quot;requiredBlockConfirmations&quot;)] = _blockConfirmations;
+        require(_blockConfirmations > 0);
+        uintStorage[keccak256("requiredBlockConfirmations")] = _blockConfirmations;
         emit RequiredBlockConfirmationChanged(_blockConfirmations);
     }
 
     function requiredBlockConfirmations() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;requiredBlockConfirmations&quot;)];
+        return uintStorage[keccak256("requiredBlockConfirmations")];
     }
 }
 
@@ -302,16 +302,16 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
     ) public returns(bool) {
         require(!isInitialized());
         require(_validatorContract != address(0));
-        require(_minPerTx &gt; 0 &amp;&amp; _maxPerTx &gt; _minPerTx &amp;&amp; _foreignDailyLimit &gt; _maxPerTx);
-        require(_foreignGasPrice &gt; 0);
-        addressStorage[keccak256(&quot;validatorContract&quot;)] = _validatorContract;
+        require(_minPerTx > 0 && _maxPerTx > _minPerTx && _foreignDailyLimit > _maxPerTx);
+        require(_foreignGasPrice > 0);
+        addressStorage[keccak256("validatorContract")] = _validatorContract;
         setErc677token(_erc677token);
-        uintStorage[keccak256(&quot;foreignDailyLimit&quot;)] = _foreignDailyLimit;
-        uintStorage[keccak256(&quot;deployedAtBlock&quot;)] = block.number;
-        uintStorage[keccak256(&quot;maxPerTx&quot;)] = _maxPerTx;
-        uintStorage[keccak256(&quot;minPerTx&quot;)] = _minPerTx;
-        uintStorage[keccak256(&quot;gasPrice&quot;)] = _foreignGasPrice;
-        uintStorage[keccak256(&quot;requiredBlockConfirmations&quot;)] = _requiredBlockConfirmations;
+        uintStorage[keccak256("foreignDailyLimit")] = _foreignDailyLimit;
+        uintStorage[keccak256("deployedAtBlock")] = block.number;
+        uintStorage[keccak256("maxPerTx")] = _maxPerTx;
+        uintStorage[keccak256("minPerTx")] = _minPerTx;
+        uintStorage[keccak256("gasPrice")] = _foreignGasPrice;
+        uintStorage[keccak256("requiredBlockConfirmations")] = _requiredBlockConfirmations;
         setInitialize(true);
         return isInitialized();
     }
@@ -326,13 +326,13 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
     }
 
     function setMaxPerTx(uint256 _maxPerTx) external onlyOwner {
-        require(_maxPerTx &lt; foreignDailyLimit());
-        uintStorage[keccak256(&quot;maxPerTx&quot;)] = _maxPerTx;
+        require(_maxPerTx < foreignDailyLimit());
+        uintStorage[keccak256("maxPerTx")] = _maxPerTx;
     }
 
     function setMinPerTx(uint256 _minPerTx) external onlyOwner {
-        require(_minPerTx &lt; foreignDailyLimit() &amp;&amp; _minPerTx &lt; maxPerTx());
-        uintStorage[keccak256(&quot;minPerTx&quot;)] = _minPerTx;
+        require(_minPerTx < foreignDailyLimit() && _minPerTx < maxPerTx());
+        uintStorage[keccak256("minPerTx")] = _minPerTx;
     }
 
     function claimTokens(address _token, address _to) external onlyOwner {
@@ -352,40 +352,40 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
     }
 
     function minPerTx() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;minPerTx&quot;)];
+        return uintStorage[keccak256("minPerTx")];
     }
 
     function maxPerTx() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;maxPerTx&quot;)];
+        return uintStorage[keccak256("maxPerTx")];
     }
 
     function totalSpentPerDay(uint256 _day) public view returns(uint256) {
-        return uintStorage[keccak256(&quot;totalSpentPerDay&quot;, _day)];
+        return uintStorage[keccak256("totalSpentPerDay", _day)];
     }
 
     function deployedAtBlock() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;deployedAtBlock&quot;)];
+        return uintStorage[keccak256("deployedAtBlock")];
     }
 
     function gasLimitDepositRelay() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;gasLimitDepositRelay&quot;)];
+        return uintStorage[keccak256("gasLimitDepositRelay")];
     }
 
     function gasLimitWithdrawConfirm() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;gasLimitWithdrawConfirm&quot;)];
+        return uintStorage[keccak256("gasLimitWithdrawConfirm")];
     }
 
     function foreignDailyLimit() public view returns(uint256) {
-        return uintStorage[keccak256(&quot;foreignDailyLimit&quot;)];
+        return uintStorage[keccak256("foreignDailyLimit")];
     }
 
     function erc677token() public view returns(IBurnableMintableERC677Token) {
-        return IBurnableMintableERC677Token(addressStorage[keccak256(&quot;erc677token&quot;)]);
+        return IBurnableMintableERC677Token(addressStorage[keccak256("erc677token")]);
     }
 
     function setGasLimits(uint256 _gasLimitDepositRelay, uint256 _gasLimitWithdrawConfirm) external onlyOwner {
-        uintStorage[keccak256(&quot;gasLimitDepositRelay&quot;)] = _gasLimitDepositRelay;
-        uintStorage[keccak256(&quot;gasLimitWithdrawConfirm&quot;)] = _gasLimitWithdrawConfirm;
+        uintStorage[keccak256("gasLimitDepositRelay")] = _gasLimitDepositRelay;
+        uintStorage[keccak256("gasLimitWithdrawConfirm")] = _gasLimitWithdrawConfirm;
         emit GasConsumptionLimitsUpdated(gasLimitDepositRelay(), gasLimitWithdrawConfirm());
     }
 
@@ -405,7 +405,7 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
 
         emit SignedForDeposit(msg.sender, transactionHash);
 
-        if (signed &gt;= validatorContract().requiredSignatures()) {
+        if (signed >= validatorContract().requiredSignatures()) {
             // If the bridge contract does not own enough tokens to transfer
             // it will couse funds lock on the home side of the bridge
             setNumDepositsSigned(hashMsg, markAsProcessed(signed));
@@ -433,7 +433,7 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
         require(!isAlreadyProcessed(signed));
         // the check above assumes that the case when the value could be overflew will not happen in the addition operation below
         signed = signed + 1;
-        if (signed &gt; 1) {
+        if (signed > 1) {
             // Duplicated signatures
             require(!messagesSigned(hashSender));
         } else {
@@ -447,7 +447,7 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
         setNumMessagesSigned(hashMsg, signed);
 
         emit SignedForWithdraw(msg.sender, hashMsg);
-        if (signed &gt;= validatorContract().requiredSignatures()) {
+        if (signed >= validatorContract().requiredSignatures()) {
             setNumMessagesSigned(hashMsg, markAsProcessed(signed));
             emit CollectedSignatures(msg.sender, hashMsg);
         }
@@ -458,7 +458,7 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
     }
 
     function isAlreadyProcessed(uint256 _number) public pure returns(bool) {
-        return _number &amp; 2**255 == 2**255;
+        return _number & 2**255 == 2**255;
     }
 
     function signature(bytes32 _hash, uint256 _index) public view returns (bytes) {
@@ -476,41 +476,41 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
     }
 
     function setForeignDailyLimit(uint256 _foreignDailyLimit) public onlyOwner {
-        uintStorage[keccak256(&quot;foreignDailyLimit&quot;)] = _foreignDailyLimit;
+        uintStorage[keccak256("foreignDailyLimit")] = _foreignDailyLimit;
         emit DailyLimit(_foreignDailyLimit);
     }
 
     function withinLimit(uint256 _amount) public view returns(bool) {
         uint256 nextLimit = totalSpentPerDay(getCurrentDay()).add(_amount);
-        return foreignDailyLimit() &gt;= nextLimit &amp;&amp; _amount &lt;= maxPerTx() &amp;&amp; _amount &gt;= minPerTx();
+        return foreignDailyLimit() >= nextLimit && _amount <= maxPerTx() && _amount >= minPerTx();
     }
 
     function isInitialized() public view returns(bool) {
-        return boolStorage[keccak256(&quot;isInitialized&quot;)];
+        return boolStorage[keccak256("isInitialized")];
     }
 
     function messages(bytes32 _hash) private view returns(bytes) {
-        return bytesStorage[keccak256(&quot;messages&quot;, _hash)];
+        return bytesStorage[keccak256("messages", _hash)];
     }
 
     function setMessages(bytes32 _hash, bytes _message) private {
-        bytesStorage[keccak256(&quot;messages&quot;, _hash)] = _message;
+        bytesStorage[keccak256("messages", _hash)] = _message;
     }
 
     function signatures(bytes32 _hash) private view returns(bytes) {
-        return bytesStorage[keccak256(&quot;signatures&quot;, _hash)];
+        return bytesStorage[keccak256("signatures", _hash)];
     }
 
     function setSignatures(bytes32 _hash, bytes _signature) private {
-        bytesStorage[keccak256(&quot;signatures&quot;, _hash)] = _signature;
+        bytesStorage[keccak256("signatures", _hash)] = _signature;
     }
 
     function messagesSigned(bytes32 _message) public view returns(bool) {
-        return boolStorage[keccak256(&quot;messagesSigned&quot;, _message)];
+        return boolStorage[keccak256("messagesSigned", _message)];
     }
 
     function depositsSigned(bytes32 _deposit) public view returns(bool) {
-        return boolStorage[keccak256(&quot;depositsSigned&quot;, _deposit)];
+        return boolStorage[keccak256("depositsSigned", _deposit)];
     }
 
     function markAsProcessed(uint256 _v) private pure returns(uint256) {
@@ -518,40 +518,40 @@ contract ForeignBridge is ERC677Receiver, BasicBridge {
     }
 
     function numMessagesSigned(bytes32 _message) private view returns(uint256) {
-        return uintStorage[keccak256(&quot;numMessagesSigned&quot;, _message)];
+        return uintStorage[keccak256("numMessagesSigned", _message)];
     }
 
     function numDepositsSigned(bytes32 _deposit) private view returns(uint256) {
-        return uintStorage[keccak256(&quot;numDepositsSigned&quot;, _deposit)];
+        return uintStorage[keccak256("numDepositsSigned", _deposit)];
     }
 
     function setMessagesSigned(bytes32 _hash, bool _status) private {
-        boolStorage[keccak256(&quot;messagesSigned&quot;, _hash)] = _status;
+        boolStorage[keccak256("messagesSigned", _hash)] = _status;
     }
 
     function setDepositsSigned(bytes32 _deposit, bool _status) private {
-        boolStorage[keccak256(&quot;depositsSigned&quot;, _deposit)] = _status;
+        boolStorage[keccak256("depositsSigned", _deposit)] = _status;
     }
 
     function setNumMessagesSigned(bytes32 _message, uint256 _number) private {
-        uintStorage[keccak256(&quot;numMessagesSigned&quot;, _message)] = _number;
+        uintStorage[keccak256("numMessagesSigned", _message)] = _number;
     }
 
     function setNumDepositsSigned(bytes32 _deposit, uint256 _number) private {
-        uintStorage[keccak256(&quot;numDepositsSigned&quot;, _deposit)] = _number;
+        uintStorage[keccak256("numDepositsSigned", _deposit)] = _number;
     }
 
     function setTotalSpentPerDay(uint256 _day, uint256 _value) private {
-        uintStorage[keccak256(&quot;totalSpentPerDay&quot;, _day)] = _value;
+        uintStorage[keccak256("totalSpentPerDay", _day)] = _value;
     }
 
     function setErc677token(address _token) private {
         require(_token != address(0));
-        addressStorage[keccak256(&quot;erc677token&quot;)] = _token;
+        addressStorage[keccak256("erc677token")] = _token;
     }
 
     function setInitialize(bool _status) private {
-        boolStorage[keccak256(&quot;isInitialized&quot;)] = _status;
+        boolStorage[keccak256("isInitialized")] = _status;
     }
 
 }

@@ -1,21 +1,21 @@
 pragma solidity ^0.4.16;
 
 /*
- * Abstract Token Smart Contract.  Copyright &#169; 2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="701d191b1811191c5e061c1114191d19021f0630171d11191c5e131f1d">[email&#160;protected]</a>&gt;
+ * Abstract Token Smart Contract.  Copyright © 2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="701d191b1811191c5e061c1114191d19021f0630171d11191c5e131f1d">[email protected]</a>>
  */
 pragma solidity ^0.4.20;
 
 /*
  * EIP-20 Standard Token Smart Contract Interface.
- * Copyright &#169; 2016–2018 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c313537343d3530722a303d383531352e332a1c3b313d3530723f3331">[email&#160;protected]</a>&gt;
+ * Copyright © 2016–2018 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c313537343d3530722a303d383531352e332a1c3b313d3530723f3331">[email protected]</a>>
  */
 pragma solidity ^0.4.20;
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md&quot;&gt;here&lt;/a&gt;.
+ * <a href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md">here</a>.
  */
 contract Token {
   /**
@@ -103,8 +103,8 @@ contract Token {
     address indexed _owner, address indexed _spender, uint256 _value);
 }
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016–2017 by ABDK Consulting.
- * Author: Mikhail Vladimirov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761b1f1d1e171f1a58001a17121f1b1f04190036111b171f1a5815191b">[email&#160;protected]</a>&gt;
+ * Safe Math Smart Contract.  Copyright © 2016–2017 by ABDK Consulting.
+ * Author: Mikhail Vladimirov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761b1f1d1e171f1a58001a17121f1b1f04190036111b171f1a5815191b">[email protected]</a>>
  */
 pragma solidity ^0.4.20;
 
@@ -125,7 +125,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &lt;= MAX_UINT256 - y);
+    assert (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -139,7 +139,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   pure internal
   returns (uint256 z) {
-    assert (x &gt;= y);
+    assert (x >= y);
     return x - y;
   }
 
@@ -154,7 +154,7 @@ contract SafeMath {
   pure internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    assert (x &lt;= MAX_UINT256 / y);
+    assert (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
@@ -193,8 +193,8 @@ contract AbstractToken is Token, SafeMath {
   function transfer (address _to, uint256 _value)
   public returns (bool success) {
     uint256 fromBalance = accounts [msg.sender];
-    if (fromBalance &lt; _value) return false;
-    if (_value &gt; 0 &amp;&amp; msg.sender != _to) {
+    if (fromBalance < _value) return false;
+    if (_value > 0 && msg.sender != _to) {
       accounts [msg.sender] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -214,14 +214,14 @@ contract AbstractToken is Token, SafeMath {
   function transferFrom (address _from, address _to, uint256 _value)
   public returns (bool success) {
     uint256 spenderAllowance = allowances [_from][msg.sender];
-    if (spenderAllowance &lt; _value) return false;
+    if (spenderAllowance < _value) return false;
     uint256 fromBalance = accounts [_from];
-    if (fromBalance &lt; _value) return false;
+    if (fromBalance < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (spenderAllowance, _value);
 
-    if (_value &gt; 0 &amp;&amp; _from != _to) {
+    if (_value > 0 && _from != _to) {
       accounts [_from] = safeSub (fromBalance, _value);
       accounts [_to] = safeAdd (accounts [_to], _value);
     }
@@ -265,13 +265,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) internal accounts;
+  mapping (address => uint256) internal accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowances;
+  mapping (address => mapping (address => uint256)) internal allowances;
 }
 
 
@@ -322,7 +322,7 @@ contract DroidEIP20Token is AbstractToken {
    * @return name of this token
    */
   function name () public pure returns (string result) {
-    return &quot;Droid&quot;;
+    return "Droid";
   }
 
   /**
@@ -331,7 +331,7 @@ contract DroidEIP20Token is AbstractToken {
    * @return symbol of this token
    */
   function symbol () public pure returns (string result) {
-    return &quot;Droid&quot;;
+    return "Droid";
   }
 
   /**

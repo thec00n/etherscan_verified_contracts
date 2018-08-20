@@ -19,13 +19,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -89,8 +89,8 @@ contract BurnableToken {
 
 
 contract ArnaToken is BurnableToken {
-    string public constant name = &quot;ArnaToken&quot;;
-    string public constant symbol = &quot;ARNA&quot;;
+    string public constant name = "ArnaToken";
+    string public constant symbol = "ARNA";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 1000000000 * (10 ** uint256(decimals));
 
@@ -122,7 +122,7 @@ contract ArnaVault is Ownable {
         token = _token;
         period = _period;
         percent = _percent;
-        // 2500 -&gt; 2.5%
+        // 2500 -> 2.5%
         beneficiary = _beneficiary;
     }
 
@@ -131,7 +131,7 @@ contract ArnaVault is Ownable {
     }
 
     function start() public onlyOwner {
-        assert(token.balanceOf(this) &gt; 0);
+        assert(token.balanceOf(this) > 0);
         amount = token.balanceOf(this);
         startTime = block.timestamp;
     }
@@ -144,7 +144,7 @@ contract ArnaVault is Ownable {
 
     function withdraw() public {
         assert(msg.sender == beneficiary || msg.sender == owner);
-        assert(tokensAvailable() &gt; 0);
+        assert(tokensAvailable() > 0);
         token.transfer(beneficiary, tokensAvailable());
         withdrawn = withdrawn.add(tokensAvailable());
     }
@@ -188,13 +188,13 @@ contract ArnaCrowdsale is Ownable {
 
     function() public payable {
         uint256 amount = msg.value.mul(1 ether).div(priceWithBonus());
-        assert(token.balanceOf(this) &gt; amount);
+        assert(token.balanceOf(this) > amount);
         token.transfer(msg.sender, amount);
         totalRise = totalRise.add(msg.value);
     }
 
     function sendTokens(address beneficiary, uint256 amount) public onlyOwner {
-        assert(token.balanceOf(this) &gt; amount);
+        assert(token.balanceOf(this) > amount);
         token.transfer(beneficiary, amount);
         totalRise = totalRise.add(amount.mul(priceWithBonus()));
     }
@@ -228,7 +228,7 @@ contract ArnaControl is Ownable {
 
     uint256  price = 0.000266 ether;
 
-    uint256  priceWithBonus = 0.000266 ether; //  15% =&gt; 0.000231304 ether;
+    uint256  priceWithBonus = 0.000266 ether; //  15% => 0.000231304 ether;
 
     address public coldWallet;
 
@@ -291,9 +291,9 @@ contract ArnaControl is Ownable {
         return price;
     }
 
-    // _newPrice : 266 =&gt; 0.000266
+    // _newPrice : 266 => 0.000266
     function setPrice(uint256 _newPrice) public onlyOwner {
-        assert(_newPrice &gt; 0);
+        assert(_newPrice > 0);
         price = _newPrice * (10 ** 12);
     }
 
@@ -301,10 +301,10 @@ contract ArnaControl is Ownable {
         return priceWithBonus;
     }
 
-    // _newPrice : 266 =&gt; 0.000266
+    // _newPrice : 266 => 0.000266
     function setPriceWithBonus(uint256 _newPrice) public onlyOwner {
-        assert(_newPrice &gt; 0);
-        assert(_newPrice * (10 ** 12) &lt;= price);
+        assert(_newPrice > 0);
+        assert(_newPrice * (10 ** 12) <= price);
         priceWithBonus = _newPrice * (10 ** 12);
     }
 
@@ -318,12 +318,12 @@ contract ArnaControl is Ownable {
     }
 
     function withdraw() public onlyOwner returns (bool) {
-        if (crowdsale.balance &gt; 0)
+        if (crowdsale.balance > 0)
             crowdsale.withdraw();
         return coldWallet.send(this.balance);
     }
 
-    // amount : 12345000 =&gt; 12.345000 ARNA = 12345000000000000000;
+    // amount : 12345000 => 12.345000 ARNA = 12345000000000000000;
     function sendTokens(address beneficiary, uint256 amount) public onlyOwner {
         crowdsale.sendTokens(beneficiary, amount * (10 ** 12));
     }
@@ -334,9 +334,9 @@ contract ArnaControl is Ownable {
 
     //refund if the softcap is not reached
     function refund(address beneficiary, uint256 amount) public onlyOwner returns(bool){
-        if (crowdsale.balance &gt; 0)
+        if (crowdsale.balance > 0)
             crowdsale.withdraw();
-        assert(crowdsale.balance + this.balance &gt;= amount);
+        assert(crowdsale.balance + this.balance >= amount);
         return beneficiary.send(amount);
     }
 }

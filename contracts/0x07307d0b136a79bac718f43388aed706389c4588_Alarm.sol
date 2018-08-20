@@ -11,10 +11,10 @@ library StringLib {
     /// @param v The number to be converted.
     function uintToBytes(uint v) constant returns (bytes32 ret) {
         if (v == 0) {
-            ret = &#39;0&#39;;
+            ret = '0';
         }
         else {
-            while (v &gt; 0) {
+            while (v > 0) {
                 ret = bytes32(uint(ret) / (2 ** 8));
                 ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
                 v /= 10;
@@ -23,7 +23,7 @@ library StringLib {
         return ret;
     }
 
-    /// @dev Converts a numeric string to it&#39;s unsigned integer representation.
+    /// @dev Converts a numeric string to it's unsigned integer representation.
     /// @param v The string to be converted.
     function bytesToUInt(bytes32 v) constant returns (uint ret) {
         if (v == 0x0) {
@@ -32,12 +32,12 @@ library StringLib {
 
         uint digit;
 
-        for (uint i = 0; i &lt; 32; i++) {
-            digit = uint((uint(v) / (2 ** (8 * (31 - i)))) &amp; 0xff);
+        for (uint i = 0; i < 32; i++) {
+            digit = uint((uint(v) / (2 ** (8 * (31 - i)))) & 0xff);
             if (digit == 0) {
                 break;
             }
-            else if (digit &lt; 48 || digit &gt; 57) {
+            else if (digit < 48 || digit > 57) {
                 throw;
             }
             ret *= 10;
@@ -57,7 +57,7 @@ library AccountingLib {
          *  Address: 0x7de615d8a51746a9f10f72a593fb5b3718dc3d52
          */
         struct Bank {
-            mapping (address =&gt; uint) accountBalances;
+            mapping (address => uint) accountBalances;
         }
 
         /// @dev Low level method for adding funds to an account.  Protects against overflow.
@@ -65,7 +65,7 @@ library AccountingLib {
         /// @param accountAddress The address of the account the funds should be added to.
         /// @param value The amount that should be added to the account.
         function addFunds(Bank storage self, address accountAddress, uint value) public {
-                if (self.accountBalances[accountAddress] + value &lt; self.accountBalances[accountAddress]) {
+                if (self.accountBalances[accountAddress] + value < self.accountBalances[accountAddress]) {
                         // Prevent Overflow.
                         throw;
                 }
@@ -120,7 +120,7 @@ library AccountingLib {
                  *  account funds.  It has error checking to prevent
                  *  underflowing the account balance which would be REALLY bad.
                  */
-                if (value &gt; self.accountBalances[accountAddress]) {
+                if (value > self.accountBalances[accountAddress]) {
                         // Prevent Underflow.
                         throw;
                 }
@@ -135,7 +135,7 @@ library AccountingLib {
                 /*
                  *  Public API for withdrawing funds.
                  */
-                if (self.accountBalances[accountAddress] &gt;= value) {
+                if (self.accountBalances[accountAddress] >= value) {
                         deductFunds(self, accountAddress, value);
                         if (!accountAddress.send(value)) {
                                 // Potentially sending money to a contract that
@@ -166,7 +166,7 @@ library GroveLib {
          */
         struct Index {
                 bytes32 root;
-                mapping (bytes32 =&gt; Node) nodes;
+                mapping (bytes32 => Node) nodes;
         }
 
         struct Node {
@@ -179,7 +179,7 @@ library GroveLib {
         }
 
         function max(uint a, uint b) internal returns (uint) {
-            if (a &gt;= b) {
+            if (a >= b) {
                 return a;
             }
             return b;
@@ -255,7 +255,7 @@ library GroveLib {
 
             if (currentNode.parent != 0x0) {
                 // Now we trace back up through parent relationships, looking
-                // for a link where the child is the right child of it&#39;s
+                // for a link where the child is the right child of it's
                 // parent.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -301,7 +301,7 @@ library GroveLib {
             }
 
             if (currentNode.parent != 0x0) {
-                // if the node is the left child of it&#39;s parent, then the
+                // if the node is the left child of it's parent, then the
                 // parent is the next one.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -329,7 +329,7 @@ library GroveLib {
         /// @dev Updates or Inserts the id into the index at its appropriate location based on the value provided.
         /// @param index The index that the node is part of.
         /// @param id The unique identifier of the data element the index node will represent.
-        /// @param value The value of the data element that represents it&#39;s total ordering with respect to other elementes.
+        /// @param value The value of the data element that represents it's total ordering with respect to other elementes.
         function insert(Index storage index, bytes32 id, int value) public {
                 if (index.nodes[id].id == id) {
                     // A node with this id already exists.  If the value is
@@ -365,7 +365,7 @@ library GroveLib {
                     previousNodeId = currentNode.id;
 
                     // The new node belongs in the right subtree
-                    if (value &gt;= currentNode.value) {
+                    if (value >= currentNode.value) {
                         if (currentNode.right == 0x0) {
                             currentNode.right = id;
                         }
@@ -409,7 +409,7 @@ library GroveLib {
 
             if (nodeToDelete.left != 0x0 || nodeToDelete.right != 0x0) {
                 // This node is not a leaf node and thus must replace itself in
-                // it&#39;s tree by either the previous or next node.
+                // it's tree by either the previous or next node.
                 if (nodeToDelete.left != 0x0) {
                     // This node is guaranteed to not have a right child.
                     replacementNode = index.nodes[getPreviousNode(index, nodeToDelete.id)];
@@ -476,7 +476,7 @@ library GroveLib {
                 }
             }
             else if (nodeToDelete.parent != 0x0) {
-                // The node being deleted is a leaf node so we only erase it&#39;s
+                // The node being deleted is a leaf node so we only erase it's
                 // parent linkage.
                 parent = index.nodes[nodeToDelete.parent];
 
@@ -509,24 +509,24 @@ library GroveLib {
             }
         }
 
-        bytes2 constant GT = &quot;&gt;&quot;;
-        bytes2 constant LT = &quot;&lt;&quot;;
-        bytes2 constant GTE = &quot;&gt;=&quot;;
-        bytes2 constant LTE = &quot;&lt;=&quot;;
-        bytes2 constant EQ = &quot;==&quot;;
+        bytes2 constant GT = ">";
+        bytes2 constant LT = "<";
+        bytes2 constant GTE = ">=";
+        bytes2 constant LTE = "<=";
+        bytes2 constant EQ = "==";
 
         function _compare(int left, bytes2 operator, int right) internal returns (bool) {
             if (operator == GT) {
-                return (left &gt; right);
+                return (left > right);
             }
             if (operator == LT) {
-                return (left &lt; right);
+                return (left < right);
             }
             if (operator == GTE) {
-                return (left &gt;= right);
+                return (left >= right);
             }
             if (operator == LTE) {
-                return (left &lt;= right);
+                return (left <= right);
             }
             if (operator == EQ) {
                 return (left == right);
@@ -560,12 +560,12 @@ library GroveLib {
 
 
         /** @dev Query the index for the edge-most node that satisfies the
-         *  given query.  For &gt;, &gt;=, and ==, this will be the left-most node
-         *  that satisfies the comparison.  For &lt; and &lt;= this will be the
+         *  given query.  For >, >=, and ==, this will be the left-most node
+         *  that satisfies the comparison.  For < and <= this will be the
          *  right-most node that satisfies the comparison.
          */
         /// @param index The index that should be queried
-        /** @param operator One of &#39;&gt;&#39;, &#39;&gt;=&#39;, &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39; to specify what
+        /** @param operator One of '>', '>=', '<', '<=', '==' to specify what
          *  type of comparison operator should be used.
          */
         function query(Index storage index, bytes2 operator, int value) public returns (bytes32) {
@@ -632,7 +632,7 @@ library GroveLib {
                     }
 
                     if (operator == EQ) {
-                        if (currentNode.value &lt; value) {
+                        if (currentNode.value < value) {
                             if (currentNode.right == 0x0) {
                                 return 0x0;
                             }
@@ -640,7 +640,7 @@ library GroveLib {
                             continue;
                         }
 
-                        if (currentNode.value &gt; value) {
+                        if (currentNode.value > value) {
                             if (currentNode.left == 0x0) {
                                 return 0x0;
                             }
@@ -681,7 +681,7 @@ library GroveLib {
                     _rotateLeft(index, currentNode.id);
                 }
 
-                if ((-1 &lt;= balanceFactor) &amp;&amp; (balanceFactor &lt;= 1)) {
+                if ((-1 <= balanceFactor) && (balanceFactor <= 1)) {
                     _updateNodeHeight(index, currentNode.id);
                 }
 
@@ -717,11 +717,11 @@ library GroveLib {
             }
 
             // The right child is the new root, so it gets the original
-            // `originalRoot.parent` as it&#39;s parent.
+            // `originalRoot.parent` as it's parent.
             Node storage newRoot = index.nodes[originalRoot.right];
             newRoot.parent = originalRoot.parent;
 
-            // The original root needs to have it&#39;s right child nulled out.
+            // The original root needs to have it's right child nulled out.
             originalRoot.right = 0x0;
 
             if (originalRoot.parent != 0x0) {
@@ -729,7 +729,7 @@ library GroveLib {
                 // the newRoot which is rotating into the place where `node` was.
                 Node storage parent = index.nodes[originalRoot.parent];
 
-                // figure out if we&#39;re a left or right child and have the
+                // figure out if we're a left or right child and have the
                 // parent point to the new node.
                 if (parent.left == originalRoot.id) {
                     parent.left = newRoot.id;
@@ -748,7 +748,7 @@ library GroveLib {
                 leftChild.parent = originalRoot.id;
             }
 
-            // Update the newRoot&#39;s left node to point at the original node.
+            // Update the newRoot's left node to point at the original node.
             originalRoot.parent = newRoot.id;
             newRoot.left = originalRoot.id;
 
@@ -770,7 +770,7 @@ library GroveLib {
                 throw;
             }
 
-            // The left child is taking the place of node, so we update it&#39;s
+            // The left child is taking the place of node, so we update it's
             // parent to be the original parent of the node.
             Node storage newRoot = index.nodes[originalRoot.left];
             newRoot.parent = originalRoot.parent;
@@ -797,7 +797,7 @@ library GroveLib {
                 rightChild.parent = originalRoot.id;
             }
 
-            // Update the new root&#39;s right node to point to the original node.
+            // Update the new root's right node to point to the original node.
             originalRoot.parent = newRoot.id;
             newRoot.right = originalRoot.id;
 
@@ -831,8 +831,8 @@ library ResourcePoolLib {
                 GroveLib.Index generationStart;
                 GroveLib.Index generationEnd;
 
-                mapping (uint =&gt; Generation) generations;
-                mapping (address =&gt; uint) bonds;
+                mapping (uint => Generation) generations;
+                mapping (address => uint) bonds;
         }
 
         /*
@@ -842,7 +842,7 @@ library ResourcePoolLib {
          *
          *    1   2   3   4   5   6   7   8   9   10  11  12  13
          *    [1:-----------------]
-         *                [4:---------------------&gt;
+         *                [4:--------------------->
          */
         struct Generation {
                 uint id;
@@ -851,12 +851,12 @@ library ResourcePoolLib {
                 address[] members;
         }
 
-        /// @dev Creates the next generation for the given pool.  All members from the current generation are carried over (with their order randomized).  The current generation will have it&#39;s endAt block set.
+        /// @dev Creates the next generation for the given pool.  All members from the current generation are carried over (with their order randomized).  The current generation will have it's endAt block set.
         /// @param self The pool to operate on.
         function createNextGeneration(Pool storage self) public returns (uint) {
                 /*
                  *  Creat a new pool generation with all of the current
-                 *  generation&#39;s members copied over in random order.
+                 *  generation's members copied over in random order.
                  */
                 Generation storage previousGeneration = self.generations[self._id];
 
@@ -868,7 +868,7 @@ library ResourcePoolLib {
 
                 if (previousGeneration.id == 0) {
                         // This is the first generation so we just need to set
-                        // it&#39;s `id` and `startAt`.
+                        // it's `id` and `startAt`.
                         return nextGeneration.id;
                 }
 
@@ -880,15 +880,15 @@ library ResourcePoolLib {
                 // the next generation as well as randomizing their order.
                 address[] memory members = previousGeneration.members;
 
-                for (uint i = 0; i &lt; members.length; i++) {
+                for (uint i = 0; i < members.length; i++) {
                     // Pick a *random* index and push it onto the next
-                    // generation&#39;s members.
+                    // generation's members.
                     uint index = uint(sha3(block.blockhash(block.number))) % (members.length - nextGeneration.members.length);
                     nextGeneration.members.length += 1;
                     nextGeneration.members[nextGeneration.members.length - 1] = members[index];
 
                     // Then move the member at the last index into the picked
-                    // index&#39;s location.
+                    // index's location.
                     members[index] = members[members.length - 1];
                 }
 
@@ -901,19 +901,19 @@ library ResourcePoolLib {
         /// @param rightBound The right bound for the block window (inclusive)
         function getGenerationForWindow(Pool storage self, uint leftBound, uint rightBound) constant returns (uint) {
             // TODO: tests
-                var left = GroveLib.query(self.generationStart, &quot;&lt;=&quot;, int(leftBound));
+                var left = GroveLib.query(self.generationStart, "<=", int(leftBound));
 
                 if (left != 0x0) {
                     Generation memory leftCandidate = self.generations[StringLib.bytesToUInt(left)];
-                    if (leftCandidate.startAt &lt;= leftBound &amp;&amp; (leftCandidate.endAt &gt;= rightBound || leftCandidate.endAt == 0)) {
+                    if (leftCandidate.startAt <= leftBound && (leftCandidate.endAt >= rightBound || leftCandidate.endAt == 0)) {
                         return leftCandidate.id;
                     }
                 }
 
-                var right = GroveLib.query(self.generationEnd, &quot;&gt;=&quot;, int(rightBound));
+                var right = GroveLib.query(self.generationEnd, ">=", int(rightBound));
                 if (right != 0x0) {
                     Generation memory rightCandidate = self.generations[StringLib.bytesToUInt(right)];
-                    if (rightCandidate.startAt &lt;= leftBound &amp;&amp; (rightCandidate.endAt &gt;= rightBound || rightCandidate.endAt == 0)) {
+                    if (rightCandidate.startAt <= leftBound && (rightCandidate.endAt >= rightBound || rightCandidate.endAt == 0)) {
                         return rightCandidate.id;
                     }
                 }
@@ -925,7 +925,7 @@ library ResourcePoolLib {
         /// @param self The pool to operate on.
         function getNextGenerationId(Pool storage self) constant returns (uint) {
             // TODO: tests
-                var next = GroveLib.query(self.generationStart, &quot;&gt;&quot;, int(block.number));
+                var next = GroveLib.query(self.generationStart, ">", int(block.number));
                 if (next == 0x0) {
                     return 0;
                 }
@@ -936,12 +936,12 @@ library ResourcePoolLib {
         /// @param self The pool to operate on.
         function getCurrentGenerationId(Pool storage self) constant returns (uint) {
             // TODO: tests
-                var next = GroveLib.query(self.generationEnd, &quot;&gt;&quot;, int(block.number));
+                var next = GroveLib.query(self.generationEnd, ">", int(block.number));
                 if (next != 0x0) {
                     return StringLib.bytesToUInt(next);
                 }
 
-                next = GroveLib.query(self.generationStart, &quot;&lt;=&quot;, int(block.number));
+                next = GroveLib.query(self.generationStart, "<=", int(block.number));
                 if (next != 0x0) {
                     return StringLib.bytesToUInt(next);
                 }
@@ -961,7 +961,7 @@ library ResourcePoolLib {
                 return false;
             }
             Generation memory generation = self.generations[generationId];
-            for (uint i = 0; i &lt; generation.members.length; i++) {
+            for (uint i = 0; i < generation.members.length; i++) {
                 if (generation.members[i] == resourceAddress) {
                     return true;
                 }
@@ -1021,7 +1021,7 @@ library ResourcePoolLib {
              *  - not already left it.
              */
             // TODO: tests
-            if (self.bonds[resourceAddress] &lt; minimumBond) {
+            if (self.bonds[resourceAddress] < minimumBond) {
                 // Insufficient bond balance;
                 return false;
             }
@@ -1035,7 +1035,7 @@ library ResourcePoolLib {
             var nextGenerationId = getNextGenerationId(self);
             if (nextGenerationId != 0) {
                 var nextGeneration = self.generations[nextGenerationId];
-                if (block.number + self.freezePeriod &gt;= nextGeneration.startAt) {
+                if (block.number + self.freezePeriod >= nextGeneration.startAt) {
                     // Next generation starts too soon.
                     return false;
                 }
@@ -1044,7 +1044,7 @@ library ResourcePoolLib {
             return true;
         }
 
-        /// @dev Adds the address to pool by adding them to the next generation (as well as creating it if it doesn&#39;t exist).
+        /// @dev Adds the address to pool by adding them to the next generation (as well as creating it if it doesn't exist).
         /// @param self The pool to operate on.
         /// @param resourceAddress The address to be added to the pool
         /// @param minimumBond The minimum bond amount that should be required for entry.
@@ -1075,11 +1075,11 @@ library ResourcePoolLib {
 
             uint nextGenerationId = getNextGenerationId(self);
             if (nextGenerationId == 0) {
-                // Next generation hasn&#39;t been generated yet.
+                // Next generation hasn't been generated yet.
                 return true;
             }
 
-            if (self.generations[nextGenerationId].startAt - self.freezePeriod &lt;= block.number) {
+            if (self.generations[nextGenerationId].startAt - self.freezePeriod <= block.number) {
                 // Next generation starts too soon.
                 return false;
             }
@@ -1090,7 +1090,7 @@ library ResourcePoolLib {
         }
 
 
-        /// @dev Removes the address from the pool by removing them from the next generation (as well as creating it if it doesn&#39;t exist)
+        /// @dev Removes the address from the pool by removing them from the next generation (as well as creating it if it doesn't exist)
         /// @param self The pool to operate on.
         /// @param resourceAddress The address in question
         function exitPool(Pool storage self, address resourceAddress) public returns (uint) {
@@ -1107,14 +1107,14 @@ library ResourcePoolLib {
             return nextGenerationId;
         }
 
-        /// @dev Removes the address from a generation&#39;s members array. Returns boolean as to whether removal was successful.
+        /// @dev Removes the address from a generation's members array. Returns boolean as to whether removal was successful.
         /// @param self The pool to operate on.
         /// @param generationId The id of the generation to operate on.
         /// @param resourceAddress The address to be removed.
         function removeFromGeneration(Pool storage self, uint generationId, address resourceAddress) public returns (bool){
             Generation storage generation = self.generations[generationId];
             // now remove the address
-            for (uint i = 0; i &lt; generation.members.length; i++) {
+            for (uint i = 0; i < generation.members.length; i++) {
                 if (generation.members[i] == resourceAddress) {
                     generation.members[i] = generation.members[generation.members.length - 1];
                     generation.members.length -= 1;
@@ -1128,7 +1128,7 @@ library ResourcePoolLib {
          *  Bonding
          */
 
-        /// @dev Subtracts the amount from an account&#39;s bond balance.
+        /// @dev Subtracts the amount from an account's bond balance.
         /// @param self The pool to operate on.
         /// @param resourceAddress The address of the account
         /// @param value The value to subtract.
@@ -1137,14 +1137,14 @@ library ResourcePoolLib {
                  *  deduct funds from a bond value without risk of an
                  *  underflow.
                  */
-                if (value &gt; self.bonds[resourceAddress]) {
+                if (value > self.bonds[resourceAddress]) {
                         // Prevent Underflow.
                         throw;
                 }
                 self.bonds[resourceAddress] -= value;
         }
 
-        /// @dev Adds the amount to an account&#39;s bond balance.
+        /// @dev Adds the amount to an account's bond balance.
         /// @param self The pool to operate on.
         /// @param resourceAddress The address of the account
         /// @param value The value to add.
@@ -1153,14 +1153,14 @@ library ResourcePoolLib {
                  *  Add funds to a bond value without risk of an
                  *  overflow.
                  */
-                if (self.bonds[resourceAddress] + value &lt; self.bonds[resourceAddress]) {
+                if (self.bonds[resourceAddress] + value < self.bonds[resourceAddress]) {
                         // Prevent Overflow
                         throw;
                 }
                 self.bonds[resourceAddress] += value;
         }
 
-        /// @dev Withdraws a bond amount from an address&#39;s bond account, sending them the corresponding amount in ether.
+        /// @dev Withdraws a bond amount from an address's bond account, sending them the corresponding amount in ether.
         /// @param self The pool to operate on.
         /// @param resourceAddress The address of the account
         /// @param value The value to withdraw.
@@ -1169,14 +1169,14 @@ library ResourcePoolLib {
                  *  Only if you are not in either of the current call pools.
                  */
                 // Prevent underflow
-                if (value &gt; self.bonds[resourceAddress]) {
+                if (value > self.bonds[resourceAddress]) {
                         throw;
                 }
 
                 // Do a permissions check to be sure they can withdraw the
                 // funds.
                 if (isInPool(self, resourceAddress)) {
-                        if (self.bonds[resourceAddress] - value &lt; minimumBond) {
+                        if (self.bonds[resourceAddress] - value < minimumBond) {
                             return;
                         }
                 }
@@ -1232,10 +1232,10 @@ library ScheduledCallLib {
 
         AccountingLib.Bank gasBank;
 
-        mapping (bytes32 =&gt; Call) calls;
-        mapping (bytes32 =&gt; bytes) data_registry;
+        mapping (bytes32 => Call) calls;
+        mapping (bytes32 => bytes) data_registry;
 
-        mapping (bytes32 =&gt; bool) accountAuthorizations;
+        mapping (bytes32 => bool) accountAuthorizations;
     }
 
     struct Call {
@@ -1366,7 +1366,7 @@ library ScheduledCallLib {
              *  designated as the executor of this call.
              */
             Call call = self.calls[callKey];
-            if (blockNumber &lt; call.targetBlock || blockNumber &gt; call.targetBlock + call.gracePeriod) {
+            if (blockNumber < call.targetBlock || blockNumber > call.targetBlock + call.gracePeriod) {
                     // blockNumber not within call window.
                     return 0x0;
             }
@@ -1375,7 +1375,7 @@ library ScheduledCallLib {
             uint numWindows = call.gracePeriod / CALL_WINDOW_SIZE;
             uint blockWindow = (blockNumber - call.targetBlock) / CALL_WINDOW_SIZE;
 
-            if (blockWindow + 2 &gt; numWindows) {
+            if (blockWindow + 2 > numWindows) {
                     // We are within the free-for-all period.
                     return 0x0;
             }
@@ -1409,11 +1409,11 @@ library ScheduledCallLib {
             // If the bond balance is lower than the award
             // balance, then adjust the reward amount to
             // match the bond balance.
-            if (bonusAmount &gt; bondBalance) {
+            if (bonusAmount > bondBalance) {
                     bonusAmount = bondBalance;
             }
 
-            // Transfer the funds fromCaller =&gt; toCaller
+            // Transfer the funds fromCaller => toCaller
             ResourcePoolLib.deductFromBond(self.callerPool, fromCaller, bonusAmount);
             ResourcePoolLib.addToBond(self.callerPool, toCaller, bonusAmount);
 
@@ -1433,11 +1433,11 @@ library ScheduledCallLib {
 
             // Check if we are within the free-for-all period.  If so, we
             // award from all pool members.
-            if (blockWindow + 2 &gt; numWindows) {
+            if (blockWindow + 2 > numWindows) {
                     address firstCaller = getDesignatedCaller(self, callKey, call.targetBlock);
-                    for (i = call.targetBlock; i &lt;= call.targetBlock + call.gracePeriod; i += CALL_WINDOW_SIZE) {
+                    for (i = call.targetBlock; i <= call.targetBlock + call.gracePeriod; i += CALL_WINDOW_SIZE) {
                             fromCaller = getDesignatedCaller(self, callKey, i);
-                            if (fromCaller == firstCaller &amp;&amp; i != call.targetBlock) {
+                            if (fromCaller == firstCaller && i != call.targetBlock) {
                                     // We have already gone through all of
                                     // the pool callers so we should break
                                     // out of the loop.
@@ -1455,12 +1455,12 @@ library ScheduledCallLib {
             }
 
             // Special case for single member and empty pools
-            if (generation.members.length &lt; 2) {
+            if (generation.members.length < 2) {
                     return;
             }
 
             // Otherwise the award comes from the previous caller.
-            for (i = 0; i &lt; generation.members.length; i++) {
+            for (i = 0; i < generation.members.length; i++) {
                     // Find where the member is in the pool and
                     // award from the previous pool members bond.
                     if (generation.members[i] == toCaller) {
@@ -1494,8 +1494,8 @@ library ScheduledCallLib {
 
     function registerData(CallDatabase storage self, bytes data) public {
             self.lastData.length = data.length - 4;
-            if (data.length &gt; 4) {
-                    for (uint i = 0; i &lt; self.lastData.length; i++) {
+            if (data.length > 4) {
+                    for (uint i = 0; i < self.lastData.length; i++) {
                             self.lastData[i] = data[i + 4];
                     }
             }
@@ -1531,64 +1531,64 @@ library ScheduledCallLib {
             Call storage call = self.calls[callKey];
 
             if (call.wasCalled) {
-                    // The call has already been executed so don&#39;t do it again.
-                    _CallAborted(msg.sender, callKey, &quot;ALREADY CALLED&quot;);
+                    // The call has already been executed so don't do it again.
+                    _CallAborted(msg.sender, callKey, "ALREADY CALLED");
                     return;
             }
 
             if (call.isCancelled) {
-                    // The call was cancelled so don&#39;t execute it.
-                    _CallAborted(msg.sender, callKey, &quot;CANCELLED&quot;);
+                    // The call was cancelled so don't execute it.
+                    _CallAborted(msg.sender, callKey, "CANCELLED");
                     return;
             }
 
             if (call.contractAddress == 0x0) {
                     // This call key doesnt map to a registered call.
-                    _CallAborted(msg.sender, callKey, &quot;UNKNOWN&quot;);
+                    _CallAborted(msg.sender, callKey, "UNKNOWN");
                     return;
             }
 
-            if (block.number &lt; call.targetBlock) {
+            if (block.number < call.targetBlock) {
                     // Target block hasnt happened yet.
-                    _CallAborted(msg.sender, callKey, &quot;TOO EARLY&quot;);
+                    _CallAborted(msg.sender, callKey, "TOO EARLY");
                     return;
             }
 
-            if (block.number &gt; call.targetBlock + call.gracePeriod) {
+            if (block.number > call.targetBlock + call.gracePeriod) {
                     // The blockchain has advanced passed the period where
                     // it was allowed to be called.
-                    _CallAborted(msg.sender, callKey, &quot;TOO LATE&quot;);
+                    _CallAborted(msg.sender, callKey, "TOO LATE");
                     return;
             }
 
             uint heldBalance = getCallMaxCost(self, callKey);
 
-            if (self.gasBank.accountBalances[call.scheduledBy] &lt; heldBalance) {
-                    // The scheduledBy&#39;s account balance is less than the
-                    // current gasLimit and thus potentiall can&#39;t pay for
+            if (self.gasBank.accountBalances[call.scheduledBy] < heldBalance) {
+                    // The scheduledBy's account balance is less than the
+                    // current gasLimit and thus potentiall can't pay for
                     // the call.
 
                     // Mark it as called since it was.
                     call.wasCalled = true;
                     
                     // Log it.
-                    _CallAborted(msg.sender, callKey, &quot;INSUFFICIENT_FUNDS&quot;);
+                    _CallAborted(msg.sender, callKey, "INSUFFICIENT_FUNDS");
                     return;
             }
 
             // Check if this caller is allowed to execute the call.
-            if (self.callerPool.generations[ResourcePoolLib.getCurrentGenerationId(self.callerPool)].members.length &gt; 0) {
+            if (self.callerPool.generations[ResourcePoolLib.getCurrentGenerationId(self.callerPool)].members.length > 0) {
                     address designatedCaller = getDesignatedCaller(self, callKey, block.number);
-                    if (designatedCaller != 0x0 &amp;&amp; designatedCaller != msgSender) {
+                    if (designatedCaller != 0x0 && designatedCaller != msgSender) {
                             // This call was reserved for someone from the
                             // bonded pool of callers and can only be
                             // called by them during this block window.
-                            _CallAborted(msg.sender, callKey, &quot;WRONG_CALLER&quot;);
+                            _CallAborted(msg.sender, callKey, "WRONG_CALLER");
                             return;
                     }
 
                     uint blockWindow = (block.number - call.targetBlock) / CALL_WINDOW_SIZE;
-                    if (blockWindow &gt; 0) {
+                    if (blockWindow > 0) {
                             // Someone missed their call so this caller
                             // gets to claim their bond for picking up
                             // their slack.
@@ -1616,7 +1616,7 @@ library ScheduledCallLib {
                     call.wasSuccessful = self.unauthorizedRelay.relayCall.gas(msg.gas - CALL_OVERHEAD)(call.contractAddress, call.abiSignature, data);
             }
 
-            // Add the held funds back into the scheduler&#39;s account.
+            // Add the held funds back into the scheduler's account.
             AccountingLib.deposit(self.gasBank, call.scheduledBy, heldBalance);
 
             // Mark the call as having been executed.
@@ -1632,8 +1632,8 @@ library ScheduledCallLib {
             call.gasCost = call.gasUsed * call.gasPrice;
 
             // Now we need to pay the caller as well as keep fee.
-            // callerPayout -&gt; call cost + 1%
-            // fee -&gt; 1% of callerPayout
+            // callerPayout -> call cost + 1%
+            // fee -> 1% of callerPayout
             call.payout = call.gasCost * feeScalar * 101 / 10000;
             call.fee = call.gasCost * feeScalar / 10000;
 
@@ -1673,7 +1673,7 @@ library ScheduledCallLib {
              *  for the executing transaction, the higher the payout to the
              *  caller.
              */
-            if (gasPrice &gt; baseGasPrice) {
+            if (gasPrice > baseGasPrice) {
                     return 100 * baseGasPrice / gasPrice;
             }
             else {
@@ -1685,7 +1685,7 @@ library ScheduledCallLib {
      *  Call Scheduling API
      */
 
-    // The result of `sha()` so that we can validate that people aren&#39;t
+    // The result of `sha()` so that we can validate that people aren't
     // looking up call data that failed to register.
     bytes32 constant emptyDataHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
 
@@ -1721,26 +1721,26 @@ library ScheduledCallLib {
              */
             bytes32 callKey = computeCallKey(schedulerAddress, contractAddress, abiSignature, dataHash, targetBlock, gracePeriod, nonce);
 
-            if (dataHash != emptyDataHash &amp;&amp; self.data_registry[dataHash].length == 0) {
-                    // Don&#39;t allow registering calls if the data hash has
+            if (dataHash != emptyDataHash && self.data_registry[dataHash].length == 0) {
+                    // Don't allow registering calls if the data hash has
                     // not actually been registered.  The only exception is
                     // the *emptyDataHash*.
-                    return &quot;NO_DATA&quot;;
+                    return "NO_DATA";
             }
 
-            if (targetBlock &lt; block.number + MAX_BLOCKS_IN_FUTURE) {
-                    // Don&#39;t allow scheduling further than
+            if (targetBlock < block.number + MAX_BLOCKS_IN_FUTURE) {
+                    // Don't allow scheduling further than
                     // MAX_BLOCKS_IN_FUTURE
-                    return &quot;TOO_SOON&quot;;
+                    return "TOO_SOON";
             }
             Call storage call = self.calls[callKey];
 
             if (call.contractAddress != 0x0) {
-                    return &quot;DUPLICATE&quot;;
+                    return "DUPLICATE";
             }
 
-            if (gracePeriod &lt; getMinimumGracePeriod()) {
-                    return &quot;GRACE_TOO_SHORT&quot;;
+            if (gracePeriod < getMinimumGracePeriod()) {
+                    return "GRACE_TOO_SHORT";
             }
 
             self.lastCallKey = callKey;
@@ -1778,7 +1778,7 @@ library ScheduledCallLib {
                     // No need to cancel a call that already was executed.
                     return false;
             }
-            if (call.targetBlock - MIN_CANCEL_WINDOW &lt;= block.number) {
+            if (call.targetBlock - MIN_CANCEL_WINDOW <= block.number) {
                     // Call cannot be cancelled this close to execution.
                     return false;
             }
@@ -2156,7 +2156,7 @@ contract Alarm {
         }
 
         function getNextCall(uint blockNumber) constant returns (bytes32) {
-                return GroveLib.query(callDatabase.callIndex, &quot;&gt;=&quot;, int(blockNumber));
+                return GroveLib.query(callDatabase.callIndex, ">=", int(blockNumber));
         }
 
         function getNextCallSibling(bytes32 callKey) constant returns (bytes32) {

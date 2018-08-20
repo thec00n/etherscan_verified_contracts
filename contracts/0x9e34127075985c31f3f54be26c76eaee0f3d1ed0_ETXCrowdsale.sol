@@ -45,21 +45,21 @@ contract ETXCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 amount;
         
         // period 1
-        if (now &gt; 1519862400 &amp;&amp; now &lt; 1522018800 &amp;&amp; tokenSold &lt; 2100001) {
+        if (now > 1519862400 && now < 1522018800 && tokenSold < 2100001) {
             amount = msg.value * 600;
         }
 
         // period 2
-        if (now &gt; 1522537200 &amp;&amp; now &lt; 1524697200 &amp;&amp; tokenSold &lt; 6300001) {
+        if (now > 1522537200 && now < 1524697200 && tokenSold < 6300001) {
             amount = msg.value * 500;
         }
 
         // period 3
-        if (now &gt; 1525129200 &amp;&amp; now &lt; 1527721200 &amp;&amp; tokenSold &lt; 12600001) {
+        if (now > 1525129200 && now < 1527721200 && tokenSold < 12600001) {
             amount = msg.value * 400;
         }
 

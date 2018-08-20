@@ -56,9 +56,9 @@ contract CryptoSurprise
     BagType[] public bagTypes;
     Bag[] public bags;
     
-    mapping(address =&gt; uint256) public addressToTotalEtherSpent;
-    mapping(address =&gt; uint256) public addressToTotalPurchasesMade;
-    mapping(address =&gt; SetLibrary.Set) private ownerToBagIndices;
+    mapping(address => uint256) public addressToTotalEtherSpent;
+    mapping(address => uint256) public addressToTotalPurchasesMade;
+    mapping(address => SetLibrary.Set) private ownerToBagIndices;
     address[] public allParticipants;
     
     
@@ -68,17 +68,17 @@ contract CryptoSurprise
     function buyBag(uint256 _bagIndex) external payable
     {
         // Make sure that the bag exists
-        require(_bagIndex &lt; bags.length);
+        require(_bagIndex < bags.length);
         
         // Reference the bag data and bag type data
         Bag storage bag = bags[_bagIndex];
         BagType storage bagType = bagTypes[bag.bagTypeIndex];
         
         // Make sure the bag is already available
-        require(now &gt;= bag.availableTimestamp);
+        require(now >= bag.availableTimestamp);
         
         // Make sure the caller payed at least the current price
-        require(msg.value &gt;= bag.price);
+        require(msg.value >= bag.price);
         uint256 refund = msg.value - bag.price;
         
         // Remember who the previous owner was
@@ -114,14 +114,14 @@ contract CryptoSurprise
         bag.amountOfBuys++;
         
         // If this is NOT the first buy of this bag:
-        if (bag.amountOfBuys &gt; 1)
+        if (bag.amountOfBuys > 1)
         {
             // Increase the commission up to the maximum
-            if (bag.commission &lt; bagType.maximumCommission)
+            if (bag.commission < bagType.maximumCommission)
             {
                 uint256 newCommission = bag.commission + bagType.commissionIncrementPerBuy;
                 
-                if (newCommission &gt;= bagType.maximumCommission)
+                if (newCommission >= bagType.maximumCommission)
                 {
                     bag.commission = bagType.maximumCommission;
                 }
@@ -141,14 +141,14 @@ contract CryptoSurprise
         addressToTotalPurchasesMade[msg.sender]++;
         
         // Transfer the reward to the previous owner. If the previous owner is
-        // the CryptoSurprise smart contract itself, we don&#39;t need to perform any
+        // the CryptoSurprise smart contract itself, we don't need to perform any
         // transfer because the contract already has it.
         if (previousOwner != address(this))
         {
             previousOwner.transfer(previousOwnerReward);
         }
         
-        if (refund &gt; 0)
+        if (refund > 0)
         {
             msg.sender.transfer(refund);
         }
@@ -173,7 +173,7 @@ contract CryptoSurprise
         owner = msg.sender;
         
         bagTypes.push(BagType({
-            name: &quot;Blue&quot;,
+            name: "Blue",
             
             startPrice: 0.04 ether,
             priceMultiplierPerBuy: 1300000, // 130%
@@ -187,7 +187,7 @@ contract CryptoSurprise
             currentSupply: 0
         }));
 		bagTypes.push(BagType({
-            name: &quot;Red&quot;,
+            name: "Red",
             
             startPrice: 0.03 ether,
             priceMultiplierPerBuy: 1330000, // 133%
@@ -201,7 +201,7 @@ contract CryptoSurprise
             currentSupply: 0
         }));
 		bagTypes.push(BagType({
-            name: &quot;Green&quot;,
+            name: "Green",
             
             startPrice: 0.02 ether,
             priceMultiplierPerBuy: 1360000, // 136%
@@ -215,7 +215,7 @@ contract CryptoSurprise
             currentSupply: 0
         }));
 		bagTypes.push(BagType({
-            name: &quot;Black&quot;,
+            name: "Black",
             
             startPrice: 0.1 ether,
             priceMultiplierPerBuy: 1450000, // 145%
@@ -229,7 +229,7 @@ contract CryptoSurprise
             currentSupply: 0
         }));
 		bagTypes.push(BagType({
-            name: &quot;Pink&quot;,
+            name: "Pink",
             
             startPrice: 1 ether,
             priceMultiplierPerBuy: 1500000, // 150%
@@ -243,7 +243,7 @@ contract CryptoSurprise
             currentSupply: 0
         }));
 		bagTypes.push(BagType({
-            name: &quot;White&quot;,
+            name: "White",
             
             startPrice: 10 ether,
             priceMultiplierPerBuy: 1500000, // 150%
@@ -296,11 +296,11 @@ contract CryptoSurprise
     {
         require(msg.sender == owner);
         
-        require(_bagTypeIndex &lt; bagTypes.length);
+        require(_bagTypeIndex < bagTypes.length);
         
         BagType storage bagType = bagTypes[_bagTypeIndex];
         
-        require(bagType.currentSupply &lt; bagType.supplyHardCap);
+        require(bagType.currentSupply < bagType.supplyHardCap);
         
         bags.push(Bag({
             bagTypeIndex: _bagTypeIndex,
@@ -324,10 +324,10 @@ contract CryptoSurprise
     function _transferBag(address _from, address _to, uint256 _bagIndex) internal
     {
         // Make sure that the bag exists
-        require(_bagIndex &lt; bags.length);
+        require(_bagIndex < bags.length);
         
         // Bag may not be transferred before it has been bought x times
-        require(bags[_bagIndex].amountOfBuys &gt;= BAG_TRANSFER_MINIMUM_AMOUNT_OF_BUYS);
+        require(bags[_bagIndex].amountOfBuys >= BAG_TRANSFER_MINIMUM_AMOUNT_OF_BUYS);
         
         // Make sure that the sender is the current owner of the bag
         require(bags[_bagIndex].owner == _from);
@@ -367,12 +367,12 @@ contract CryptoSurprise
     
     function name() external pure returns (string)
     {
-        return &quot;Bags&quot;;
+        return "Bags";
     }
     
     function symbol() external pure returns (string)
     {
-        return &quot;BAG&quot;;
+        return "BAG";
     }
     
     function totalSupply() external view returns (uint256)
@@ -387,14 +387,14 @@ contract CryptoSurprise
     
     function ownerOf(uint256 _bagIndex) external view returns (address)
     {
-        require(_bagIndex &lt; bags.length);
+        require(_bagIndex < bags.length);
         
         return bags[_bagIndex].owner;
     }
-    mapping(address =&gt; mapping(address =&gt; mapping(uint256 =&gt; bool))) private ownerToAddressToBagIndexAllowed;
+    mapping(address => mapping(address => mapping(uint256 => bool))) private ownerToAddressToBagIndexAllowed;
     function approve(address _to, uint256 _bagIndex) external
     {
-        require(_bagIndex &lt; bags.length);
+        require(_bagIndex < bags.length);
         
         require(msg.sender == bags[_bagIndex].owner);
         
@@ -403,7 +403,7 @@ contract CryptoSurprise
     
     function takeOwnership(uint256 _bagIndex) external
     {
-        require(_bagIndex &lt; bags.length);
+        require(_bagIndex < bags.length);
         
         address previousOwner = bags[_bagIndex].owner;
         
@@ -421,7 +421,7 @@ contract CryptoSurprise
     
     function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256)
     {
-        require(_index &lt; ownerToBagIndices[_owner].size());
+        require(_index < ownerToBagIndices[_owner].size());
         
         return ownerToBagIndices[_owner].values[_index];
     }
@@ -436,15 +436,15 @@ library SetLibrary
     }
     struct Set
     {
-        mapping(uint256 =&gt; ArrayIndexAndExistsFlag) valuesMapping;
+        mapping(uint256 => ArrayIndexAndExistsFlag) valuesMapping;
         uint256[] values;
     }
     function add(Set storage self, uint256 value) public returns (bool added)
     {
-        // If the value is already in the set, we don&#39;t need to do anything
+        // If the value is already in the set, we don't need to do anything
         if (self.valuesMapping[value].exists == true) return false;
         
-        // Remember that the value is in the set, and remember the value&#39;s array index
+        // Remember that the value is in the set, and remember the value's array index
         self.valuesMapping[value] = ArrayIndexAndExistsFlag({index: self.values.length, exists: true});
         
         // Add the value to the array of unique values
@@ -458,7 +458,7 @@ library SetLibrary
     }
     function remove(Set storage self, uint256 value) public returns (bool removed)
     {
-        // If the value is not in the set, we don&#39;t need to do anything
+        // If the value is not in the set, we don't need to do anything
         if (self.valuesMapping[value].exists == false) return false;
         
         // Remember that the value is not in the set
@@ -466,8 +466,8 @@ library SetLibrary
         
         // Now we need to remove the value from the array. To prevent leaking
         // storage space, we move the last value in the array into the spot that
-        // contains the element we&#39;re removing.
-        if (self.valuesMapping[value].index &lt; self.values.length-1)
+        // contains the element we're removing.
+        if (self.valuesMapping[value].index < self.values.length-1)
         {
             uint256 valueToMove = self.values[self.values.length-1];
             uint256 indexToMoveItTo = self.valuesMapping[value].index;
@@ -476,7 +476,7 @@ library SetLibrary
         }
         
         // Now we remove the last element from the array, because we just duplicated it.
-        // We don&#39;t free the storage allocation of the removed last element,
+        // We don't free the storage allocation of the removed last element,
         // because it will most likely be used again by a call to add().
         // De-allocating and re-allocating storage space costs more gas than
         // just keeping it allocated and unused.
@@ -496,7 +496,7 @@ library SetLibrary
         return self.values.length;
     }
     
-    // Also accept address and bytes32 types, so the user doesn&#39;t have to cast.
+    // Also accept address and bytes32 types, so the user doesn't have to cast.
     function add(Set storage self, address value) public returns (bool added) { return add(self, uint256(value)); }
     function add(Set storage self, bytes32 value) public returns (bool added) { return add(self, uint256(value)); }
     function contains(Set storage self, address value) public view returns (bool contained) { return contains(self, uint256(value)); }

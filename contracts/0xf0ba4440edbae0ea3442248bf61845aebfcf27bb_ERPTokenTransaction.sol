@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -75,7 +75,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -83,7 +83,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -104,8 +104,8 @@ contract ERP is BasicToken,Ownable {
 
    using SafeMath for uint256;
    
-   string public constant name = &quot;ERP&quot;;
-   string public constant symbol = &quot;ERP&quot;;
+   string public constant name = "ERP";
+   string public constant symbol = "ERP";
    uint256 public constant decimals = 18;  
    address public ethStore = 0xDcbFE8d41D4559b3EAD3179fa7Bb3ad77EaDa564;
    uint256 public REMAINING_SUPPLY = 100000000000  * (10 ** uint256(decimals));
@@ -125,9 +125,9 @@ contract ERP is BasicToken,Ownable {
     }
     
      function mint(address from, address to, uint256 tokenAmount) public onlyOwner {
-      require(tokenBalances[from] &gt;= tokenAmount);               // checks if it has enough to sell
-      tokenBalances[to] = tokenBalances[to].add(tokenAmount);                  // adds the amount to buyer&#39;s balance
-      tokenBalances[from] = tokenBalances[from].sub(tokenAmount);                        // subtracts amount from seller&#39;s balance
+      require(tokenBalances[from] >= tokenAmount);               // checks if it has enough to sell
+      tokenBalances[to] = tokenBalances[to].add(tokenAmount);                  // adds the amount to buyer's balance
+      tokenBalances[from] = tokenBalances[from].sub(tokenAmount);                        // subtracts amount from seller's balance
       REMAINING_SUPPLY = tokenBalances[wallet];
       Transfer(from, to, tokenAmount); 
     }
@@ -164,10 +164,10 @@ contract ERPTokenTransaction {
     uint[] allTransactionIdsList;
     
     uint[] allTransactionIdsAgainstAnEntityList;
-    mapping(address=&gt;uint[])  entityTransactionsIds;
-    mapping(address=&gt;Transaction[])  entityTransactions;
-    mapping(address=&gt;AccountChart)  entityAccountChart;
-    mapping(address=&gt;bool) freezedTokens;
+    mapping(address=>uint[])  entityTransactionsIds;
+    mapping(address=>Transaction[])  entityTransactions;
+    mapping(address=>AccountChart)  entityAccountChart;
+    mapping(address=>bool) freezedTokens;
     address wallet;
     ERP public token;   
     uint256 transactionIdSequence = 0;
@@ -248,7 +248,7 @@ contract ERPTokenTransaction {
             transactionId : transactionIdSequence,
             transactionType: transType,
             amount: amt,
-            transactionDate : &quot;NA&quot;,
+            transactionDate : "NA",
             transactionTimeStamp: now,
             currency : curr,
             accountingPeriod : accPr
@@ -268,10 +268,10 @@ contract ERPTokenTransaction {
             transactionId : transactionIdSequence,
             transactionType: 0, //debit type
             amount: perTransactionRate,
-            transactionDate : &quot;NA&quot;,
+            transactionDate : "NA",
             transactionTimeStamp: now,
-            currency : &quot;ERP&quot;,
-            accountingPeriod : &quot;&quot;
+            currency : "ERP",
+            accountingPeriod : ""
           });
           entityTransactions[entId].push(transObj);
           allTransactionIdsList.push(transactionIdSequence);
@@ -285,10 +285,10 @@ contract ERPTokenTransaction {
             transactionId : transactionIdSequence,
             transactionType: 1,     //credit
             amount: perTransactionRate,
-            transactionDate : &quot;NA&quot;,
+            transactionDate : "NA",
             transactionTimeStamp: now,
-            currency : &quot;ERP&quot;,
-            accountingPeriod : &quot;&quot;
+            currency : "ERP",
+            accountingPeriod : ""
           });
           
           entityTransactions[entId].push(transObj);
@@ -298,7 +298,7 @@ contract ERPTokenTransaction {
     //add accout chart against entity
     function updateAccountChartAgainstExistingEntity(address entId, uint accPayable, uint accReceivable,uint sale) public
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[entId] == false);
         require (entityAccountChart[entId].isEntityInitialized == 1);
         token.mint(msg.sender, wallet, perTransactionRate);
@@ -319,7 +319,7 @@ contract ERPTokenTransaction {
     }
     function addEntity(address entId) public
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[entId] == false);
         require (entityAccountChart[entId].isEntityInitialized == 0);
         token.mint(msg.sender, wallet, perTransactionRate);
@@ -339,7 +339,7 @@ contract ERPTokenTransaction {
     
     function getAllEntityIds() public returns (address[] entityList) 
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         token.mint(msg.sender, wallet, perTransactionRate);
         require(freezedTokens[msg.sender] == false);
         MakeTokenCreditAndDebitEntry(msg.sender);
@@ -349,7 +349,7 @@ contract ERPTokenTransaction {
     
     function getAllTransactionIdsByEntityId(address entId) public returns (uint[] transactionIds)
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[entId] == false);
         token.mint(msg.sender, wallet, perTransactionRate);
         MakeTokenCreditAndDebitEntry(msg.sender);
@@ -359,7 +359,7 @@ contract ERPTokenTransaction {
     
     function getAllTransactionIds() public returns (uint[] transactionIds)
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[msg.sender] == false);
         token.mint(msg.sender,wallet,perTransactionRate);
         MakeTokenCreditAndDebitEntry(msg.sender);
@@ -369,15 +369,15 @@ contract ERPTokenTransaction {
     
     function getTransactionByTransactionId(uint transId) public 
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[msg.sender] == false);
         token.mint(msg.sender, wallet, perTransactionRate);
         MakeTokenCreditAndDebitEntry(msg.sender);
-        for(uint i=0; i&lt;entities.length;i++)
+        for(uint i=0; i<entities.length;i++)
         {
             //loop through all the enitities , gets each entity by entity[i]
             Transaction[] storage transactionsListByEntityId = entityTransactions[entities[i]];
-            for (uint j=0;j&lt;transactionsListByEntityId.length;j++)
+            for (uint j=0;j<transactionsListByEntityId.length;j++)
             {
                 //loop through all the transactions list against each entity
                 // checks if transaction id is matched returns the transaction object
@@ -391,18 +391,18 @@ contract ERPTokenTransaction {
                
             }
         }
-        EmitTransactionDetails (0,0,0,0,&quot;NA&quot;,&quot;NA&quot;,&quot;NA&quot;);
+        EmitTransactionDetails (0,0,0,0,"NA","NA","NA");
     }
     
     function getTransactionByTransactionAndEntityId(address entId, uint transId) public 
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[msg.sender] == false);
         token.mint(msg.sender, wallet, perTransactionRate);
         MakeTokenCreditAndDebitEntry(msg.sender);
         // gets each entity by entity[entId]
         Transaction[] storage transactionsListByEntityId = entityTransactions[entId];
-        for (uint j=0;j&lt;transactionsListByEntityId.length;j++)
+        for (uint j=0;j<transactionsListByEntityId.length;j++)
         {
             //loop through all the transactions list against each entity
             // checks if transaction id is matched returns the transaction object
@@ -414,12 +414,12 @@ contract ERPTokenTransaction {
                             transactionsListByEntityId[j].accountingPeriod);
             }
         }
-        EmitTransactionDetails (0,0,0,0,&quot;NA&quot;,&quot;NA&quot;,&quot;NA&quot;);
+        EmitTransactionDetails (0,0,0,0,"NA","NA","NA");
     }
     
     function getAccountChartDetailsByEntityId(address entId) public
     {
-        require(token.getTokenBalance(msg.sender)&gt;=perTransactionRate);
+        require(token.getTokenBalance(msg.sender)>=perTransactionRate);
         require(freezedTokens[msg.sender] == false);
         token.mint(msg.sender, wallet, perTransactionRate);
         MakeTokenCreditAndDebitEntry(msg.sender);

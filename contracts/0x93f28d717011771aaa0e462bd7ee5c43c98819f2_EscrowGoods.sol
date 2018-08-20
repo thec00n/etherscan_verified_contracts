@@ -4,7 +4,7 @@
 Contract:
 Owner: seller
 Last address: dynamic
-ABI: [{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;escrows&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;buyer&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;lockedFunds&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;frozenFunds&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;frozenTime&quot;,&quot;type&quot;:&quot;uint64&quot;},{&quot;name&quot;:&quot;count&quot;,&quot;type&quot;:&quot;uint16&quot;},{&quot;name&quot;:&quot;buyerNo&quot;,&quot;type&quot;:&quot;bool&quot;},{&quot;name&quot;:&quot;sellerNo&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;count&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;cancel&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;seller&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;freezePeriod&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_count&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;name&quot;:&quot;buy&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;status&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;rewardPromille&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;getMoney&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;no&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;kill&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;reject&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;accept&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;totalEscrows&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_who&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_payment&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;arbYes&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;feeFunds&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;yes&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;buyers&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;availableCount&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;price&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;contentCount&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;logsCount&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;unbuy&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;getFees&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;feePromille&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;pendingCount&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint16&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;_version&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;addDescription&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;arbiter&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[{&quot;name&quot;:&quot;_arbiter&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;_freezePeriod&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_feePromille&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_rewardPromille&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;_count&quot;,&quot;type&quot;:&quot;uint16&quot;},{&quot;name&quot;:&quot;_price&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;type&quot;:&quot;constructor&quot;},{&quot;payable&quot;:false,&quot;type&quot;:&quot;fallback&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;message&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;name&quot;:&quot;LogDebug&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;lockId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;dataInfo&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;version&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;eventType&quot;,&quot;type&quot;:&quot;uint16&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;sender&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;count&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;payment&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;LogEvent&quot;,&quot;type&quot;:&quot;event&quot;}]
+ABI: [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"escrows","outputs":[{"name":"buyer","type":"address"},{"name":"lockedFunds","type":"uint256"},{"name":"frozenFunds","type":"uint256"},{"name":"frozenTime","type":"uint64"},{"name":"count","type":"uint16"},{"name":"buyerNo","type":"bool"},{"name":"sellerNo","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"count","outputs":[{"name":"","type":"uint16"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"cancel","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"seller","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"freezePeriod","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"},{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"},{"name":"_count","type":"uint16"}],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"status","outputs":[{"name":"","type":"uint16"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"rewardPromille","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"}],"name":"getMoney","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"},{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"no","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"},{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"reject","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"},{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"accept","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalEscrows","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"},{"name":"_who","type":"address"},{"name":"_payment","type":"uint256"},{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"arbYes","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"feeFunds","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_lockId","type":"uint256"},{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"yes","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"buyers","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableCount","outputs":[{"name":"","type":"uint16"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"price","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"contentCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"logsCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"unbuy","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"getFees","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"feePromille","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"pendingCount","outputs":[{"name":"","type":"uint16"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_dataInfo","type":"string"},{"name":"_version","type":"uint256"}],"name":"addDescription","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"arbiter","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_arbiter","type":"address"},{"name":"_freezePeriod","type":"uint256"},{"name":"_feePromille","type":"uint256"},{"name":"_rewardPromille","type":"uint256"},{"name":"_count","type":"uint16"},{"name":"_price","type":"uint256"}],"type":"constructor"},{"payable":false,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"LogDebug","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"lockId","type":"uint256"},{"indexed":false,"name":"dataInfo","type":"string"},{"indexed":true,"name":"version","type":"uint256"},{"indexed":false,"name":"eventType","type":"uint16"},{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"count","type":"uint256"},{"indexed":false,"name":"payment","type":"uint256"}],"name":"LogEvent","type":"event"}]
 Optimized: yes
 Solidity version: v0.4.4
 */
@@ -64,7 +64,7 @@ contract EscrowGoods {
     uint public feeFunds;
     uint public totalEscrows;
 
-    mapping (uint =&gt; EscrowInfo) public escrows;
+    mapping (uint => EscrowInfo) public escrows;
 
     //goods related
 
@@ -79,7 +79,7 @@ contract EscrowGoods {
     //price per item
     uint public price;
 
-    mapping (address =&gt; bool) public buyers;
+    mapping (address => bool) public buyers;
 
     bool private atomicLock;
 
@@ -140,13 +140,13 @@ contract EscrowGoods {
     function kill() onlyOwner {
 
         //do not allow killing contract with active escrows
-        if(totalEscrows &gt; 0) {
-            logDebug(&quot;totalEscrows &gt; 0&quot;);
+        if(totalEscrows > 0) {
+            logDebug("totalEscrows > 0");
             return;
         }
         //do not allow killing contract with unclaimed escrow fees
-        if(feeFunds &gt; 0) {
-            logDebug(&quot;feeFunds &gt; 0&quot;);
+        if(feeFunds > 0) {
+            logDebug("feeFunds > 0");
             return;
         }
         suicide(msg.sender);
@@ -171,18 +171,18 @@ contract EscrowGoods {
         EscrowInfo info = escrows[_lockId];
 
         if(info.lockedFunds == 0) {
-            logDebug(&quot;info.lockedFunds == 0&quot;);
+            logDebug("info.lockedFunds == 0");
             return;
         }
-        if(msg.sender != info.buyer &amp;&amp; msg.sender != seller) {
-            logDebug(&quot;msg.sender != info.buyer &amp;&amp; msg.sender != seller&quot;);
+        if(msg.sender != info.buyer && msg.sender != seller) {
+            logDebug("msg.sender != info.buyer && msg.sender != seller");
             return;
         }
 
         uint payment = info.lockedFunds;
-        if(payment &gt; this.balance) {
+        if(payment > this.balance) {
             //HACK: should not get here - funds cannot be unlocked in this case
-            logDebug(&quot;payment &gt; this.balance&quot;);
+            logDebug("payment > this.balance");
             return;
         }
 
@@ -196,12 +196,12 @@ contract EscrowGoods {
             safeSend(info.buyer, payment);
         } else {
             //HACK: should not get here
-            logDebug(&quot;unknown msg.sender&quot;);
+            logDebug("unknown msg.sender");
             return;
         }
 
         //remove record from escrows
-        if(totalEscrows &gt; 0) totalEscrows -= 1;
+        if(totalEscrows > 0) totalEscrows -= 1;
         info.lockedFunds = 0;
 
         logEvent(_lockId, _dataInfo, _version, Unlock, msg.sender, info.count, payment);
@@ -213,11 +213,11 @@ contract EscrowGoods {
         EscrowInfo info = escrows[_lockId];
 
         if(info.lockedFunds == 0) {
-            logDebug(&quot;info.lockedFunds == 0&quot;);
+            logDebug("info.lockedFunds == 0");
             return;
         }
-        if(msg.sender != info.buyer &amp;&amp; msg.sender != seller) {
-            logDebug(&quot;msg.sender != info.buyer &amp;&amp; msg.sender != seller&quot;);
+        if(msg.sender != info.buyer && msg.sender != seller) {
+            logDebug("msg.sender != info.buyer && msg.sender != seller");
             return;
         }
 
@@ -235,14 +235,14 @@ contract EscrowGoods {
             info.sellerNo = true;
         } else {
             //HACK: should not get here
-            logDebug(&quot;unknown msg.sender&quot;);
+            logDebug("unknown msg.sender");
             return;
         }
 
         logEvent(_lockId, _dataInfo, _version, Freeze, msg.sender, info.count, info.lockedFunds);
     }
 
-    //arbiter&#39;s decision on the case.
+    //arbiter's decision on the case.
     //arbiter can only decide when both buyer and seller voted NO
     //arbiter decides on his own reward but not bigger than announced percentage (rewardPromille)
     function arbYes(uint _lockId, address _who, uint _payment, string _dataInfo, uint _version) onlyArbiter {
@@ -250,38 +250,38 @@ contract EscrowGoods {
         EscrowInfo info = escrows[_lockId];
 
         if(info.lockedFunds == 0) {
-            logDebug(&quot;info.lockedFunds == 0&quot;);
+            logDebug("info.lockedFunds == 0");
             return;
         }
         if(info.frozenFunds == 0) {
-            logDebug(&quot;info.frozenFunds == 0&quot;);
+            logDebug("info.frozenFunds == 0");
             return;
         }
 
-        if(_who != seller &amp;&amp; _who != info.buyer) {
-            logDebug(&quot;_who != seller &amp;&amp; _who != info.buyer&quot;);
+        if(_who != seller && _who != info.buyer) {
+            logDebug("_who != seller && _who != info.buyer");
             return;
         }
         //requires both NO to arbitration
         if(!info.buyerNo || !info.sellerNo) {
-            logDebug(&quot;!info.buyerNo || !info.sellerNo&quot;);
+            logDebug("!info.buyerNo || !info.sellerNo");
             return;
         }
 
-        if(_payment &gt; info.lockedFunds) {
-            logDebug(&quot;_payment &gt; info.lockedFunds&quot;);
+        if(_payment > info.lockedFunds) {
+            logDebug("_payment > info.lockedFunds");
             return;
         }
-        if(_payment &gt; this.balance) {
+        if(_payment > this.balance) {
             //HACK: should not get here - funds cannot be unlocked in this case
-            logDebug(&quot;_payment &gt; this.balance&quot;);
+            logDebug("_payment > this.balance");
             return;
         }
 
         //limit payment
         uint reward = (info.lockedFunds * rewardPromille) / 1000;
-        if(reward &gt; (info.lockedFunds - _payment)) {
-            logDebug(&quot;reward &gt; (info.lockedFunds - _payment)&quot;);
+        if(reward > (info.lockedFunds - _payment)) {
+            logDebug("reward > (info.lockedFunds - _payment)");
             return;
         }
 
@@ -299,9 +299,9 @@ contract EscrowGoods {
     //allow arbiter to get his collected fees
     function getFees() onlyArbiter {
 
-        if(feeFunds &gt; this.balance) {
+        if(feeFunds > this.balance) {
             //HACK: should not get here - funds cannot be unlocked in this case
-            logDebug(&quot;feeFunds &gt; this.balance&quot;);
+            logDebug("feeFunds > this.balance");
             return;
         }
         
@@ -318,34 +318,34 @@ contract EscrowGoods {
         EscrowInfo info = escrows[_lockId];
 
         if(info.lockedFunds == 0) {
-            logDebug(&quot;info.lockedFunds == 0&quot;);
+            logDebug("info.lockedFunds == 0");
             return;
         }
         //HACK: this check is necessary since frozenTime == 0 at escrow creation
         if(info.frozenFunds == 0) {
-            logDebug(&quot;info.frozenFunds == 0&quot;);
+            logDebug("info.frozenFunds == 0");
             return;
         }
 
         //timout for voting not over yet
-        if(now &lt; (info.frozenTime + freezePeriod)) {
-            logDebug(&quot;now &lt; (info.frozenTime + freezePeriod)&quot;);
+        if(now < (info.frozenTime + freezePeriod)) {
+            logDebug("now < (info.frozenTime + freezePeriod)");
             return;
         }
 
         uint payment = info.lockedFunds;
-        if(payment &gt; this.balance) {
+        if(payment > this.balance) {
             //HACK: should not get here - funds cannot be unlocked in this case
-            logDebug(&quot;payment &gt; this.balance&quot;);
+            logDebug("payment > this.balance");
             return;
         }
 
         //both has voted - money is under arbitration
-        if(info.buyerNo &amp;&amp; info.sellerNo) {
+        if(info.buyerNo && info.sellerNo) {
 
             //arbitration timeout is not over yet
-            if(now &lt; (info.frozenTime + freezePeriod + arbitrationPeriod)) {
-                logDebug(&quot;now &lt; (info.frozenTime + freezePeriod + arbitrationPeriod)&quot;);
+            if(now < (info.frozenTime + freezePeriod + arbitrationPeriod)) {
+                logDebug("now < (info.frozenTime + freezePeriod + arbitrationPeriod)");
                 return;
             }
 
@@ -387,24 +387,24 @@ contract EscrowGoods {
         //reject money transfers for bad item status
 
         if(status != Available) throw;
-        if(msg.value &lt; (price * _count)) throw;
-        if(_count &gt; availableCount) throw;
+        if(msg.value < (price * _count)) throw;
+        if(_count > availableCount) throw;
         if(_count == 0) throw;
-        if(feePromille &gt; 1000) throw;
-        if(rewardPromille &gt; 1000) throw;
-        if((feePromille + rewardPromille) &gt; 1000) throw;
+        if(feePromille > 1000) throw;
+        if(rewardPromille > 1000) throw;
+        if((feePromille + rewardPromille) > 1000) throw;
 
         //create default EscrowInfo struct or access existing
         EscrowInfo info = escrows[_lockId];
 
         //lock only once for a given id
-        if(info.lockedFunds &gt; 0) throw;
+        if(info.lockedFunds > 0) throw;
 
         //lock funds
 
         uint fee = (msg.value * feePromille) / 1000;
         //limit fees
-        if(fee &gt; msg.value) throw;
+        if(fee > msg.value) throw;
 
         uint funds = (msg.value - fee);
         feeFunds += fee;
@@ -428,12 +428,12 @@ contract EscrowGoods {
 
         EscrowInfo info = escrows[_lockId];
         
-        if(info.count &gt; availableCount) {
-            logDebug(&quot;info.count &gt; availableCount&quot;);
+        if(info.count > availableCount) {
+            logDebug("info.count > availableCount");
             return;
         }
-        if(info.count &gt; pendingCount) {
-            logDebug(&quot;info.count &gt; pendingCount&quot;);
+        if(info.count > pendingCount) {
+            logDebug("info.count > pendingCount");
             return;
         }
 
@@ -448,8 +448,8 @@ contract EscrowGoods {
         
         EscrowInfo info = escrows[_lockId];
 
-        if(info.count &gt; pendingCount) {
-            logDebug(&quot;info.count &gt; pendingCount&quot;);
+        if(info.count > pendingCount) {
+            logDebug("info.count > pendingCount");
             return;
         }
 
@@ -459,7 +459,7 @@ contract EscrowGoods {
         yes(_lockId, _dataInfo, _version);
 
         //Reject order to event log
-        //HACK: &quot;yes&quot; call above may fail and this event will be non-relevant. Do not rely on it.
+        //HACK: "yes" call above may fail and this event will be non-relevant. Do not rely on it.
         logEvent(_lockId, _dataInfo, _version, Reject, msg.sender, info.count, info.lockedFunds);
     }
 

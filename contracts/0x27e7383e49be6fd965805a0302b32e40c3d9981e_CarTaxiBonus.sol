@@ -28,7 +28,7 @@ contract CarTaxiBonus {
     
     bool init = false;
 
-    //mapping (address =&gt; bool) private contributors;
+    //mapping (address => bool) private contributors;
 
 
     modifier onlyOwner() {
@@ -63,8 +63,8 @@ contract CarTaxiBonus {
 
         uint256 addrTokens = carTaxiToken.balanceOf(addr);
 
-        require(addrTokens &gt; 0);
-        require(totalTokens &gt; 0);
+        require(addrTokens > 0);
+        require(totalTokens > 0);
 
         uint256 pie = addrTokens * totalBonuses / totalTokens;
 
@@ -73,7 +73,7 @@ contract CarTaxiBonus {
     }
 
     function withdrawEther() public onlyOwner {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         owner.transfer(this.balance);
     }
     

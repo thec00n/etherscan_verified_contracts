@@ -8,10 +8,10 @@ pragma solidity ^0.4.23;
 library SafeMath {
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint256 a, uint256 b) internal pure returns (uint256 c) {
@@ -19,7 +19,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -89,7 +89,7 @@ contract Owned {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -123,7 +123,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].safeAdd(_value);
         balances[_from] = balances[_from].safeSub(_value);
@@ -177,7 +177,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt;= oldValue) {
+        if (_subtractedValue >= oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.safeSub(_subtractedValue);
@@ -203,14 +203,14 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract ENTA is StandardToken,Owned {
 
-    string public name = &quot;ENTA&quot;;
-    string public symbol = &quot;ENTA&quot;;
+    string public name = "ENTA";
+    string public symbol = "ENTA";
     uint256 public decimals = 8;
     uint256 public INITIAL_SUPPLY = 2000000000 * (10 ** decimals); // Two billion
     uint256 public publicSell = 1530374400;//2018-07-01
 
     bool public allowTransfers = true; // if true then allow coin transfers
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address indexed target, bool frozen);
     event MinedBalancesUnlocked(address indexed target, uint256 amount);
@@ -220,7 +220,7 @@ contract ENTA is StandardToken,Owned {
         uint256 left;
     }
 
-    mapping(address =&gt; MinedBalance) minedBalances;
+    mapping(address => MinedBalance) minedBalances;
 
     constructor() public {
         totalSupply = INITIAL_SUPPLY;
@@ -236,8 +236,8 @@ contract ENTA is StandardToken,Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to to account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to to account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // - @dev override
     // ------------------------------------------------------------------------
@@ -248,19 +248,19 @@ contract ENTA is StandardToken,Owned {
             require(!frozenAccount[to]);                                               // Check if recipient is frozen
         }
         
-        if (now &gt;= publicSell) {
+        if (now >= publicSell) {
             uint256 month = (now-publicSell)/(30 days);
-            if(month&gt;=7){
+            if(month>=7){
                 unlockMinedBalances(100);
-            } else if(month&gt;=6){
+            } else if(month>=6){
                 unlockMinedBalances(90);
-            } else if(month&gt;=3){
+            } else if(month>=3){
                 unlockMinedBalances(80);
-            } else if(month&gt;=2){
+            } else if(month>=2){
                 unlockMinedBalances(60);
-            } else if(month&gt;=1){
+            } else if(month>=1){
                 unlockMinedBalances(40);
-            } else if(month&gt;=0){
+            } else if(month>=0){
                 unlockMinedBalances(20);
             }
         }
@@ -269,7 +269,7 @@ contract ENTA is StandardToken,Owned {
 
     function unlockMinedBalances(uint256 unlockPercent) internal {
         uint256 lockedMinedTokens = minedBalances[msg.sender].total*(100-unlockPercent)/100;
-        if(minedBalances[msg.sender].left &gt; lockedMinedTokens){
+        if(minedBalances[msg.sender].left > lockedMinedTokens){
             uint256 unlock = minedBalances[msg.sender].left.safeSub(lockedMinedTokens);
             minedBalances[msg.sender].left = lockedMinedTokens;
             balances[msg.sender] = balances[msg.sender].safeAdd(unlock);
@@ -288,7 +288,7 @@ contract ENTA is StandardToken,Owned {
         emit Transfer(this, 0, amount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {

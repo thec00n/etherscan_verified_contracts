@@ -17,10 +17,10 @@ contract SVDelegation {
         uint256 prevDelegation;
     }
 
-    mapping (address =&gt; mapping (address =&gt; Delegation)) tokenDlgts;
-    mapping (address =&gt; Delegation) globalDlgts;
+    mapping (address => mapping (address => Delegation)) tokenDlgts;
+    mapping (address => Delegation) globalDlgts;
 
-    mapping (uint256 =&gt; Delegation) public historicalDelegations;
+    mapping (uint256 => Delegation) public historicalDelegations;
     uint256 public totalDelegations = 0;
 
     event SetGlobalDelegation(address voter, address delegate);
@@ -59,7 +59,7 @@ contract SVDelegation {
         Delegation memory _tokenDlgt = tokenDlgts[tokenContract][voter];
 
         // probs simplest test to check if we have a valid delegation
-        if (_tokenDlgt.setAtBlock &gt; 0) {
+        if (_tokenDlgt.setAtBlock > 0) {
             return _dlgtRet(_tokenDlgt);
         } else {
             return _dlgtRet(globalDlgts[voter]);

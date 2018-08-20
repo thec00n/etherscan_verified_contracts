@@ -12,35 +12,35 @@ library SafeMath {
     return c;
   }
   function safeSub(uint a, uint b) internal returns (uint) {
-    asserts(b &lt;= a);
+    asserts(b <= a);
     return a - b;
   }
   function div(uint a, uint b) internal returns (uint) {
-    asserts(b &gt; 0);
+    asserts(b > 0);
     uint c = a / b;
     asserts(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    asserts(b &lt;= a);
+    asserts(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    asserts(c &gt;= a);
+    asserts(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function asserts(bool assertion) internal {
     if (!assertion) {
@@ -53,7 +53,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -152,11 +152,11 @@ contract StandardToken is Token {
    * - Interger overflow = OK, checked
    */
   function transfer(address _to, uint256 _value) returns (bool success) {
-    //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+    //Default assumes totalSupply can't be over max (2^256 - 1).
+    //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
     //Replace the if with this one instead.
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-    //if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+    if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+    //if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(msg.sender, _to, _value);
@@ -167,7 +167,7 @@ contract StandardToken is Token {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-    if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
@@ -192,9 +192,9 @@ contract StandardToken is Token {
     return allowed[_owner][_spender];
   }
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   uint256 public totalSupply;
 }
@@ -208,10 +208,10 @@ contract DigipulseToken is StandardToken, Pausable {
   using SafeMath for uint;
 
   // Digipulse Token setup
-  string public           name                    = &quot;DigiPulse Token&quot;;
-  string public           symbol                  = &quot;DGPT&quot;;
+  string public           name                    = "DigiPulse Token";
+  string public           symbol                  = "DGPT";
   uint8 public            decimals                = 18;
-  string public           version                 = &#39;v0.0.3&#39;;
+  string public           version                 = 'v0.0.3';
   address public          owner                   = msg.sender;
   uint freezeTransferForOwnerTime;
 
@@ -246,12 +246,12 @@ contract DigipulseToken is StandardToken, Pausable {
 
   // Modifiers
   modifier minCapNotReached() {
-    require (now &lt; endTime &amp;&amp; etherReceived &lt;= MIN_CAP);
+    require (now < endTime && etherReceived <= MIN_CAP);
     _;
   }
 
   // Mappings
-  mapping(address =&gt; Backer) public backers;
+  mapping(address => Backer) public backers;
   struct Backer {
     uint weiReceived;
     uint coinSent;
@@ -275,7 +275,7 @@ contract DigipulseToken is StandardToken, Pausable {
 
 
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
 
@@ -347,7 +347,7 @@ contract DigipulseToken is StandardToken, Pausable {
 
   function isOriginalRoundContributor() constant returns (bool _state){
     uint balance = coin.balanceOf(msg.sender);
-    if (balance &gt; 0) return true;
+    if (balance > 0) return true;
   }
 
 
@@ -363,8 +363,8 @@ contract DigipulseToken is StandardToken, Pausable {
   function buyDigipulseOriginalBackersRound(address beneficiary) internal  {
     // User must have old tokens
     require (isOBR);
-    require(msg.value &gt; 0);
-    require(msg.value &gt; MIN_INVEST_ETHER);
+    require(msg.value > 0);
+    require(msg.value > MIN_INVEST_ETHER);
     require(isOriginalRoundContributor());
 
     uint ethRaised          = raisedOBR;
@@ -374,7 +374,7 @@ contract DigipulseToken is StandardToken, Pausable {
     Backer storage backer   = backers[beneficiary];
 
     // Define excess and amount to include
-    if (shouldBecome &gt; MAX_OBR_CAP) {
+    if (shouldBecome > MAX_OBR_CAP) {
       userContribution = MAX_OBR_CAP - ethRaised;
       excess = msg.value - userContribution;
     }
@@ -386,7 +386,7 @@ contract DigipulseToken is StandardToken, Pausable {
     backer.coinSent = backer.coinSent.add(tierBonus);
     backer.weiReceived = backer.weiReceived.add(userContribution);
 
-    if (raisedOBR &gt;= MAX_OBR_CAP) {
+    if (raisedOBR >= MAX_OBR_CAP) {
       isOBR = false;
     }
 
@@ -395,7 +395,7 @@ contract DigipulseToken is StandardToken, Pausable {
     LogReceivedETH(beneficiary, userContribution);
 
     // Send excess back
-    if (excess &gt; 0) {
+    if (excess > 0) {
       assert(msg.sender.send(excess));
     }
   }
@@ -403,8 +403,8 @@ contract DigipulseToken is StandardToken, Pausable {
 
   function buyDigipulseTokens(address beneficiary) internal {
     require (!finalizedCrowdfunding);
-    require (now &gt; OBR_Duration);
-    require (msg.value &gt; MIN_INVEST_ETHER);
+    require (now > OBR_Duration);
+    require (msg.value > MIN_INVEST_ETHER);
 
     uint CurrentTierMax = getCurrentTier().mul(TierAmount);
 
@@ -421,7 +421,7 @@ contract DigipulseToken is StandardToken, Pausable {
     Backer storage backer = backers[beneficiary];
 
     // Define excess over tier and amount to include
-    if (shouldBecome &gt; CurrentTierMax) {
+    if (shouldBecome > CurrentTierMax) {
       userContribution = CurrentTierMax - etherReceived;
       excess = msg.value - userContribution;
     }
@@ -435,7 +435,7 @@ contract DigipulseToken is StandardToken, Pausable {
     Transfer(this, beneficiary, tierBonus);
 
     // Tap into next tier with appropriate bonuses
-    if (excess &gt; 0 &amp;&amp; etherReceived &lt; MAX_CAP) {
+    if (excess > 0 && etherReceived < MAX_CAP) {
       excess_bonus = getBonusPercentage( excess );
       balances[beneficiary] += excess_bonus;
       balances[this] -= excess_bonus;
@@ -448,12 +448,12 @@ contract DigipulseToken is StandardToken, Pausable {
     LogCoinsEmited(beneficiary, tierBonus.add(excess_bonus));
     LogReceivedETH(beneficiary, userContribution.add(excess));
 
-    if(etherReceived &gt;= MAX_CAP) {
+    if(etherReceived >= MAX_CAP) {
       finalizedCrowdfunding = true;
     }
 
     // Send excess back
-    if (excess &gt; 0 &amp;&amp; etherReceived == MAX_CAP) {
+    if (excess > 0 && etherReceived == MAX_CAP) {
       assert(msg.sender.send(excess));
     }
   }
@@ -464,12 +464,12 @@ contract DigipulseToken is StandardToken, Pausable {
 
     if (isOBR) return uint(TierState.OBR);
 
-    if (ethRaised &gt;= 0 &amp;&amp; ethRaised &lt; toWei(8300)) return uint(TierState.Tier01);
-    else if (ethRaised &gt;= toWei(8300) &amp;&amp; ethRaised &lt; toWei(16600)) return uint(TierState.Tier02);
-    else if (ethRaised &gt;= toWei(16600) &amp;&amp; ethRaised &lt; toWei(24900)) return uint(TierState.Tier03);
-    else if (ethRaised &gt;= toWei(24900) &amp;&amp; ethRaised &lt; toWei(33200)) return uint(TierState.Tier04);
-    else if (ethRaised &gt;= toWei(33200) &amp;&amp; ethRaised &lt;= toWei(MAX_CAP)) return uint(TierState.Tier05); // last tier has 8650
-    else if (ethRaised &gt; toWei(MAX_CAP)) {
+    if (ethRaised >= 0 && ethRaised < toWei(8300)) return uint(TierState.Tier01);
+    else if (ethRaised >= toWei(8300) && ethRaised < toWei(16600)) return uint(TierState.Tier02);
+    else if (ethRaised >= toWei(16600) && ethRaised < toWei(24900)) return uint(TierState.Tier03);
+    else if (ethRaised >= toWei(24900) && ethRaised < toWei(33200)) return uint(TierState.Tier04);
+    else if (ethRaised >= toWei(33200) && ethRaised <= toWei(MAX_CAP)) return uint(TierState.Tier05); // last tier has 8650
+    else if (ethRaised > toWei(MAX_CAP)) {
       finalizedCrowdfunding = true;
       return uint(TierState.Overspend);
     }
@@ -500,15 +500,15 @@ contract DigipulseToken is StandardToken, Pausable {
     uint ETHToSend = backers[msg.sender].weiReceived;
     backers[msg.sender].weiReceived=0;
 
-    if (ETHToSend &gt; 0) {
+    if (ETHToSend > 0) {
       asyncSend(msg.sender, ETHToSend); // pull payment to get refund in ETH
     }
   }
 
 
   function finalize() onlyOwner public {
-    require (now &gt;= endTime);
-    require (etherReceived &gt;= MIN_CAP);
+    require (now >= endTime);
+    require (etherReceived >= MIN_CAP);
 
     finalizedCrowdfunding = true;
     isFinalized = true;
@@ -520,7 +520,7 @@ contract DigipulseToken is StandardToken, Pausable {
     require(isFinalized);
 
     if (msg.sender == owner) {
-      require(now &gt; freezeTransferForOwnerTime);
+      require(now > freezeTransferForOwnerTime);
     }
 
     return super.transfer(_to, _value);
@@ -531,7 +531,7 @@ contract DigipulseToken is StandardToken, Pausable {
     require(isFinalized);
 
     if (msg.sender == owner) {
-      require(now &gt; freezeTransferForOwnerTime);
+      require(now > freezeTransferForOwnerTime);
     }
 
     return super.transferFrom(_from, _to, _value);

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.16;
 
-// copyright <span class="__cf_email__" data-cfemail="d2b1bdbca6b3b1a69297a6bab7a0b7bfbdbcfcb1bdbf">[email&#160;protected]</span>
+// copyright <span class="__cf_email__" data-cfemail="d2b1bdbca6b3b1a69297a6bab7a0b7bfbdbcfcb1bdbf">[email protected]</span>
 
 contract SafeMath {
 
@@ -12,12 +12,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) pure internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) pure internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -34,7 +34,7 @@ contract BasicAccessControl {
     address public owner;
     // address[] public moderators;
     uint16 public totalModerators = 0;
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
     bool public isMaintaining = true;
 
     function BasicAccessControl() public {
@@ -177,7 +177,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
     function getLevel(uint32 exp) view public returns (uint8) {
         uint8 level = 1;
         uint32 requirement = maxLevel;
-        while(level &lt; maxLevel &amp;&amp; exp &gt; requirement) {
+        while(level < maxLevel && exp > requirement) {
             exp -= requirement;
             level += 1;
             requirement = requirement * 11 / 10 + 5;
@@ -202,7 +202,7 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         (classId, exp, stats) = getCurrentStats(_objId);
         
         uint256 total;
-        for(uint i=0; i &lt; STAT_COUNT; i+=1) {
+        for(uint i=0; i < STAT_COUNT; i+=1) {
             total += stats[i];
         }
         return uint64(total/STAT_COUNT);
@@ -229,12 +229,12 @@ contract EtheremonBattle is EtheremonEnum, BasicAccessControl, SafeMath {
         uint8 level = getLevel(exp);
         uint baseSize = data.getSizeArrayType(ArrayType.STAT_BASE, _objId);
         if (baseSize != STAT_COUNT) {
-            for(i=0; i &lt; STAT_COUNT; i+=1) {
+            for(i=0; i < STAT_COUNT; i+=1) {
                 stats[i] += data.getElementInArrayType(ArrayType.STAT_START, uint64(classId), i);
                 stats[i] += uint16(safeMult(data.getElementInArrayType(ArrayType.STAT_STEP, uint64(classId), i), level));
             }
         } else {
-            for(i=0; i &lt; STAT_COUNT; i+=1) {
+            for(i=0; i < STAT_COUNT; i+=1) {
                 stats[i] += data.getElementInArrayType(ArrayType.STAT_BASE, _objId, i);
                 stats[i] += uint16(safeMult(data.getElementInArrayType(ArrayType.STAT_STEP, uint64(classId), i), level));
             }

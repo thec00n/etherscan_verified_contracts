@@ -4,7 +4,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address owner;
@@ -55,7 +55,7 @@ contract SharkProxy is Ownable {
   function forward(address _destination, uint256 _value, bytes _data) onlyOwner {
     require(_destination != address(0));
     assert(_destination.call.value(_value)(_data)); // send eth and/or data
-    if (_value &gt; 0) {
+    if (_value > 0) {
       Withdrawal(_destination, _value, _data);
     }
   }
@@ -116,9 +116,9 @@ contract FishProxy is SharkProxy {
    */
   function() payable {
     // if locked, only allow 0.1 ETH max
-    // Note this doesn&#39;t prevent other contracts to send funds by using selfdestruct(address);
+    // Note this doesn't prevent other contracts to send funds by using selfdestruct(address);
     // See: https://github.com/ConsenSys/smart-contract-best-practices#remember-that-ether-can-be-forcibly-sent-to-an-account
-    assert(lockAddr == address(0) || this.balance &lt;= 1e17);
+    assert(lockAddr == address(0) || this.balance <= 1e17);
     Deposit(msg.sender, msg.value);
   }
 

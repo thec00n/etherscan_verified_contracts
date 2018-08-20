@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -73,7 +73,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -110,7 +110,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -125,7 +125,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -139,7 +139,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -176,7 +176,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -229,7 +229,7 @@ contract MultiOwners {
     event AccessGrant(address indexed owner);
     event AccessRevoke(address indexed owner);
     
-    mapping(address =&gt; bool) owners;
+    mapping(address => bool) owners;
     address public publisher;
 
 
@@ -299,7 +299,7 @@ contract Stage is FixedRate, MultiOwners {
     using SafeMath for uint256;
 
     // Global
-    string _stageName = &quot;Pre-ICO&quot;;
+    string _stageName = "Pre-ICO";
 
     // Maximum possible cap in USD
     uint256 public mainCapInUSD = 1000000e2;
@@ -346,12 +346,12 @@ contract Stage is FixedRate, MultiOwners {
         uint256 estimate;
         uint256 odd;
 
-        if(_value.add(totalWei) &gt; hardCapInWei) {
+        if(_value.add(totalWei) > hardCapInWei) {
             odd = _value.add(totalWei).sub(hardCapInWei);
             _value = hardCapInWei.sub(totalWei);
         } 
         estimate = _value.mul(1 ether).div(weiPerToken);
-        require(_value + totalWei &lt;= hardCapInWei);
+        require(_value + totalWei <= hardCapInWei);
         return (estimate, odd);
     }
 }
@@ -375,13 +375,13 @@ contract TripleAlphaCrowdsalePreICO is MultiOwners, Haltable, Stage {
     modifier validPurchase() {
         bool nonZeroPurchase = msg.value != 0;
 
-        require(withinPeriod() &amp;&amp; nonZeroPurchase);
+        require(withinPeriod() && nonZeroPurchase);
 
         _;        
     }
 
     modifier isExpired() {
-        require(now &gt; endTime);
+        require(now > endTime);
 
         _;        
     }
@@ -390,7 +390,7 @@ contract TripleAlphaCrowdsalePreICO is MultiOwners, Haltable, Stage {
      * @return true if in period or false if not
      */
     function withinPeriod() constant returns(bool res) {
-        return (now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        return (now >= startTime && now <= endTime);
     }
 
     /**
@@ -400,7 +400,7 @@ contract TripleAlphaCrowdsalePreICO is MultiOwners, Haltable, Stage {
     function TripleAlphaCrowdsalePreICO(uint256 _startTime, address _wallet) Stage(_startTime)
 
     {
-        require(_startTime &gt;= now);
+        require(_startTime >= now);
         require(_wallet != 0x0);
 
         token = new TripleAlphaTokenPreICO();
@@ -412,18 +412,18 @@ contract TripleAlphaCrowdsalePreICO is MultiOwners, Haltable, Stage {
      * @return current stage name
      */
     function stageName() constant public returns (string) {
-        bool before = (now &lt; startTime);
-        bool within = (now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        bool before = (now < startTime);
+        bool within = (now >= startTime && now <= endTime);
 
         if(before) {
-            return &#39;Not started&#39;;
+            return 'Not started';
         }
 
         if(within) {
             return _stageName;
         } 
 
-        return &#39;Finished&#39;;
+        return 'Finished';
     }
 
     
@@ -449,15 +449,15 @@ contract TripleAlphaCrowdsalePreICO is MultiOwners, Haltable, Stage {
         (amount, odd_ethers) = calcAmountAt(msg.value, now);
   
         require(contributor != 0x0) ;
-        require(minimalTokens &lt;= amount);
+        require(minimalTokens <= amount);
 
         token.mint(contributor, amount);
         TokenPurchase(contributor, msg.value, amount);
 
         totalWei = totalWei.add(msg.value);
 
-        if(odd_ethers &gt; 0) {
-            require(odd_ethers &lt; msg.value);
+        if(odd_ethers > 0) {
+            require(odd_ethers < msg.value);
             OddMoney(contributor, odd_ethers);
             contributor.transfer(odd_ethers);
         }
@@ -469,21 +469,21 @@ contract TripleAlphaCrowdsalePreICO is MultiOwners, Haltable, Stage {
      * @dev finish crowdsale
      */
     function finishCrowdsale() onlyOwner public {
-        require(now &gt; endTime || totalWei == hardCapInWei);
+        require(now > endTime || totalWei == hardCapInWei);
         require(!token.mintingFinished());
         token.finishMinting();
     }
 
     // @return true if crowdsale event has ended
     function running() constant public returns (bool) {
-        return withinPeriod() &amp;&amp; !token.mintingFinished();
+        return withinPeriod() && !token.mintingFinished();
     }
 }
 
 contract TripleAlphaTokenPreICO is MintableToken {
 
-    string public constant name = &#39;Triple Alpha Token Pre-ICO&#39;;
-    string public constant symbol = &#39;pTRIA&#39;;
+    string public constant name = 'Triple Alpha Token Pre-ICO';
+    string public constant symbol = 'pTRIA';
     uint8 public constant decimals = 18;
 
     function transferFrom(address from, address to, uint256 value) returns (bool) {

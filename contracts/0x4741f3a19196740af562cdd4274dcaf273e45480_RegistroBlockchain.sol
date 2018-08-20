@@ -6,7 +6,7 @@ contract RegistroBlockchain {
         uint block_number;
     }
 
-    mapping(bytes32 =&gt; Registro) public registros;
+    mapping(bytes32 => Registro) public registros;
     address public admin;
 
     constructor() public {

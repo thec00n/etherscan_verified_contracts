@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 /************************************************** */
 /* WhenHub TokenVesting Contract                    */
-/* Author: Nik Kalyani  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3334361d2a35383335283f733e3230">[email&#160;protected]</a>             */
+/* Author: Nik Kalyani  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3334361d2a35383335283f733e3230">[email protected]</a>             */
 /* Copyright (c) 2018 CalendarTree, Inc.            */
 /* https://interface.whenhub.com                    */
 /************************************************** */
@@ -23,7 +23,7 @@ contract TokenVesting {
         uint256 releasedJiffys;                                         // Number of Jiffys already released
     }
 
-    mapping(address =&gt; VestingGrant) private vestingGrants;             // Token grants subject to vesting
+    mapping(address => VestingGrant) private vestingGrants;             // Token grants subject to vesting
     address[] private vestingGrantLookup;                               // Lookup table of token grants
 
     uint private constant GENESIS_TIMESTAMP = 1514764800;                       // Jan 1, 2018 00:00:00 UTC (arbitrary date/time for timestamp validation)
@@ -55,7 +55,7 @@ contract TokenVesting {
         revert();
     }
 
-    string public name = &quot;TokenVesting&quot;;
+    string public name = "TokenVesting";
 
     // Controlling WHENToken contract (cannot be changed)
     WHENToken whenContract;
@@ -143,13 +143,13 @@ contract TokenVesting {
                             requireIsOperational
     {
         require(beneficiary != address(0));
-        require(!vestingGrants[beneficiary].isGranted);         // Can&#39;t have multiple grants for same account
-        require((vestedJiffys &gt; 0) || (unvestedJiffys &gt; 0));    // There must be Jiffys that are being granted
+        require(!vestingGrants[beneficiary].isGranted);         // Can't have multiple grants for same account
+        require((vestedJiffys > 0) || (unvestedJiffys > 0));    // There must be Jiffys that are being granted
 
-        require(startTimestamp &gt;= GENESIS_TIMESTAMP);           // Just a way to prevent really old dates
-        require(vestingSeconds &gt; 0);
-        require(cliffSeconds &gt;= 0);
-        require(cliffSeconds &lt; vestingSeconds);
+        require(startTimestamp >= GENESIS_TIMESTAMP);           // Just a way to prevent really old dates
+        require(vestingSeconds > 0);
+        require(cliffSeconds >= 0);
+        require(cliffSeconds < vestingSeconds);
 
         whenContract.vestingGrant(msg.sender, beneficiary, vestedJiffys, unvestedJiffys);
 
@@ -172,7 +172,7 @@ contract TokenVesting {
 
         // If the cliff time has already passed or there is no cliff, then release
         // any Jiffys for which the beneficiary is already eligible
-        if (vestingGrants[beneficiary].cliffTimestamp &lt;= now) {
+        if (vestingGrants[beneficiary].cliffTimestamp <= now) {
             releaseFor(beneficiary);
         }
     }
@@ -238,7 +238,7 @@ contract TokenVesting {
     {
         require(account != address(0));
         require(vestingGrants[account].isGranted);
-        require(vestingGrants[account].cliffTimestamp &lt;= now);
+        require(vestingGrants[account].cliffTimestamp <= now);
         
         // Calculate vesting rate per second        
         uint256 jiffysPerSecond = (vestingGrants[account].grantJiffys.div(vestingGrants[account].endTimestamp.sub(vestingGrants[account].startTimestamp)));
@@ -248,11 +248,11 @@ contract TokenVesting {
 
         // If the additional released Jiffys would cause the total released to exceed total granted, then
         // cap the releasable Jiffys to whatever was granted.
-        if ((vestingGrants[account].releasedJiffys.add(releasableJiffys)) &gt; vestingGrants[account].grantJiffys) {
+        if ((vestingGrants[account].releasedJiffys.add(releasableJiffys)) > vestingGrants[account].grantJiffys) {
             releasableJiffys = vestingGrants[account].grantJiffys.sub(vestingGrants[account].releasedJiffys);
         }
 
-        if (releasableJiffys &gt; 0) {
+        if (releasableJiffys > 0) {
             // Update the released Jiffys counter
             vestingGrants[account].releasedJiffys = vestingGrants[account].releasedJiffys.add(releasableJiffys);
             whenContract.vestingTransfer(vestingGrants[account].issuer, account, releasableJiffys);
@@ -300,7 +300,7 @@ contract TokenVesting {
         Revoke(vestingGrants[account].issuer, account, balanceJiffys);
 
         // If there is any balance left, return it to the issuer
-        if (balanceJiffys &gt; 0) {
+        if (balanceJiffys > 0) {
             whenContract.vestingTransfer(msg.sender, msg.sender, balanceJiffys);
         }
     }
@@ -324,7 +324,7 @@ Copyright (c) 2016 Smart Contract Solutions, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction, including
+"Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -333,7 +333,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -357,20 +357,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

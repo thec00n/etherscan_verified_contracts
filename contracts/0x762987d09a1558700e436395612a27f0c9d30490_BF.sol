@@ -17,13 +17,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -102,11 +102,11 @@ contract Pausable is Ownable {
 contract BasicBF is Pausable {
     using SafeMath for uint256;
     
-    mapping (address =&gt; uint256) public balances;
-    // match -&gt; team -&gt; amount
-    mapping (uint256 =&gt; mapping (uint256 =&gt; uint256)) public betMatchBalances;
-    // match -&gt; team -&gt; user -&gt; amount
-    mapping (uint256 =&gt; mapping (uint256 =&gt; mapping (address =&gt; uint256))) public betMatchRecords;
+    mapping (address => uint256) public balances;
+    // match -> team -> amount
+    mapping (uint256 => mapping (uint256 => uint256)) public betMatchBalances;
+    // match -> team -> user -> amount
+    mapping (uint256 => mapping (uint256 => mapping (address => uint256))) public betMatchRecords;
 
     event Withdraw(address indexed user, uint256 indexed amount);
     event WithdrawOwner(address indexed user, uint256 indexed amount);
@@ -138,7 +138,7 @@ contract BF is BasicBF {
     
     function issue(address[] _addrLst, uint256[] _amtLst) public whenNotPaused onlyManager returns (bool) {
         require(_addrLst.length == _amtLst.length);
-        for (uint i=0; i&lt;_addrLst.length; i++) {
+        for (uint i=0; i<_addrLst.length; i++) {
             balances[_addrLst[i]] = balances[_addrLst[i]].add(_amtLst[i]);
             balances[this] = balances[this].sub(_amtLst[i]);
             emit Issue(_addrLst[i], _amtLst[i]);
@@ -147,7 +147,7 @@ contract BF is BasicBF {
     }
     
     function withdraw(uint256 _value) public whenNotPaused returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         msg.sender.transfer(_value);
         emit Withdraw(msg.sender, _value);
@@ -155,7 +155,7 @@ contract BF is BasicBF {
     }
     
     function withdrawOwner(uint256 _value) public onlyManager returns (bool) {
-        require(_value &lt;= balances[this]);
+        require(_value <= balances[this]);
         balances[this] = balances[this].sub(_value);
         msg.sender.transfer(_value);
         emit WithdrawOwner(msg.sender, _value);

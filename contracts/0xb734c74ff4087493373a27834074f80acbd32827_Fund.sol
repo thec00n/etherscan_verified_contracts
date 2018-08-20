@@ -5,8 +5,8 @@ contract StandardToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
@@ -18,11 +18,11 @@ contract StandardToken {
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -38,7 +38,7 @@ contract StandardToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -79,7 +79,7 @@ contract StandardToken {
 
 
 /// @title Token contract - Implements Standard Token Interface for TokenFund.
-/// @author Evgeny Yurtaev - &lt;<span class="__cf_email__" data-cfemail="d5b0a3b2b0bbac95b0a1bdb0a7bcbabbb9b4b7fbb6bab8">[email&#160;protected]</span>&gt;
+/// @author Evgeny Yurtaev - <<span class="__cf_email__" data-cfemail="d5b0a3b2b0bbac95b0a1bdb0a7bcbabbb9b4b7fbb6bab8">[email protected]</span>>
 contract TokenFund is StandardToken {
 
     /*
@@ -90,8 +90,8 @@ contract TokenFund is StandardToken {
     /*
      * Token meta data
      */
-    string constant public name = &quot;TheToken Fund&quot;;
-    string constant public symbol = &quot;TKN&quot;;
+    string constant public name = "TheToken Fund";
+    string constant public symbol = "TKN";
     uint8 constant public decimals = 8;
 
     /*
@@ -149,7 +149,7 @@ contract TokenFund is StandardToken {
         returns (bool)
     {
         uint balance = balances[msg.sender];
-        if (balance &lt; tokenCount) {
+        if (balance < tokenCount) {
             return false;
         }
         balances[msg.sender] -= tokenCount;
@@ -253,7 +253,7 @@ contract Fund is owned {
     address public supportAddress;
     uint public tokenPrice = 1 finney; // 0.001 ETH
 
-    mapping (address =&gt; address) public referrals;
+    mapping (address => address) public referrals;
 
     /*
      * Contract functions
@@ -336,7 +336,7 @@ contract Fund is owned {
         uint roundedInvestment = tokenCount * tokenPrice / 100000000;
 
         // Send change back to user.
-        if (msg.value &gt; roundedInvestment &amp;&amp; !beneficiary.send(msg.value - roundedInvestment)) {
+        if (msg.value > roundedInvestment && !beneficiary.send(msg.value - roundedInvestment)) {
           throw;
         }
         // Send money to the fund ethereum address

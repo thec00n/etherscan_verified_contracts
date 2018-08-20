@@ -33,15 +33,15 @@ contract ERC20 {
 }
 
 contract StandardToken is ERC20 {
-    mapping (address =&gt; uint) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) public balances;
+    mapping (address => mapping (address => uint)) allowed;
     
     function balanceOf(address _owner) public constant returns (uint balance) {
         return balances[_owner];
     }
     
     function transfer(address _to,uint _value) public returns (bool success) {
-        if(balances[msg.sender] &gt; _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]){
+        if(balances[msg.sender] > _value && _value > 0 && balances[_to] + _value > balances[_to]){
             balances[_to] += _value;
             balances[msg.sender] -= _value;
             emit Transfer(msg.sender,_to,_value);
@@ -52,7 +52,7 @@ contract StandardToken is ERC20 {
     }
     
     function transferFrom(address _from,address _to,uint _value) public returns (bool success) {
-        if(balances[_from] &gt; _value &amp;&amp; _value &gt; 0 &amp;&amp; allowed[_from][msg.sender] &gt; _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if(balances[_from] > _value && _value > 0 && allowed[_from][msg.sender] > _value && balances[_to] + _value > balances[_to]) {
             balances[_from] -= _value;
             balances[_to] += _value;
             allowed[_from][msg.sender] -= _value;
@@ -75,8 +75,8 @@ contract StandardToken is ERC20 {
 }
 
 contract CEC is StandardToken,Ownable {
-    string public constant name =&quot;17CE&quot;;//name of name
-    string public constant symbol = &quot;CEC&quot;;//symbol of token
+    string public constant name ="17CE";//name of name
+    string public constant symbol = "CEC";//symbol of token
     uint8 public constant decimals = 18;
     uint public  constant intial_supply = 100 * (10 ** 6) * (10 ** uint(decimals));//initial 1 hundred million tokens
     uint public reservedteamtoken = intial_supply * 3 / 10; //reserved for team 30%

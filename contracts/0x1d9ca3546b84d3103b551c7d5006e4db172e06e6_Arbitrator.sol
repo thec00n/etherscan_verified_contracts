@@ -31,10 +31,10 @@ contract RealityCheckAPI {
 
 contract Arbitrator is Owned {
 
-    mapping(bytes32 =&gt; uint256) public arbitration_bounties;
+    mapping(bytes32 => uint256) public arbitration_bounties;
 
     uint256 dispute_fee;
-    mapping(bytes32 =&gt; uint256) custom_dispute_fees;
+    mapping(bytes32 => uint256) custom_dispute_fees;
 
     event LogRequestArbitration(
         bytes32 indexed question_id,
@@ -81,12 +81,12 @@ contract Arbitrator is Owned {
         LogSetCustomDisputeFee(question_id, fee);
     }
 
-    /// @notice Return the dispute fee for the specified question. 0 indicates that we won&#39;t arbitrate it.
+    /// @notice Return the dispute fee for the specified question. 0 indicates that we won't arbitrate it.
     /// @param question_id The question in question
     /// @dev Uses a general default, but can be over-ridden on a question-by-question basis.
     function getDisputeFee(bytes32 question_id) 
     public constant returns (uint256) {
-        return (custom_dispute_fees[question_id] &gt; 0) ? custom_dispute_fees[question_id] : dispute_fee;
+        return (custom_dispute_fees[question_id] > 0) ? custom_dispute_fees[question_id] : dispute_fee;
     }
 
     /// @notice Set a fee for asking a question with us as the arbitrator
@@ -103,7 +103,7 @@ contract Arbitrator is Owned {
         LogSetQuestionFee(fee);
     }
 
-    /// @notice Submit the arbitrator&#39;s answer to a question.
+    /// @notice Submit the arbitrator's answer to a question.
     /// @param realitycheck The RealityCheck contract address
     /// @param question_id The question in question
     /// @param answer The answer
@@ -124,12 +124,12 @@ contract Arbitrator is Owned {
     external payable returns (bool) {
 
         uint256 arbitration_fee = getDisputeFee(question_id);
-        require(arbitration_fee &gt; 0);
+        require(arbitration_fee > 0);
 
         arbitration_bounties[question_id] += msg.value;
         uint256 paid = arbitration_bounties[question_id];
 
-        if (paid &gt;= arbitration_fee) {
+        if (paid >= arbitration_fee) {
             RealityCheckAPI(realitycheck).notifyOfArbitrationRequest(question_id, msg.sender);
             LogRequestArbitration(question_id, msg.value, msg.sender, 0);
             return true;

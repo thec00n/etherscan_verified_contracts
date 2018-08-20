@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-//vicent nos &amp; enrique santos
+//vicent nos & enrique santos
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
     if (a == 0) {
@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract Ownable {
 
 //////////////////////////////////////////////////////////////
 //                                                          //
-//  MineBlocks, Shareholder&#39;s ERC20  //
+//  MineBlocks, Shareholder's ERC20  //
 //                                                          //
 //////////////////////////////////////////////////////////////
 
@@ -73,9 +73,9 @@ contract MineBlocks is Ownable {
   uint256 public totalSupply;
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping(address =&gt; uint256) holded;
+  mapping(address => uint256) holded;
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -84,8 +84,8 @@ contract MineBlocks is Ownable {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
-    if(block.number&gt;blockEndICO || msg.sender==owner){
+    require(_value <= balances[msg.sender]);
+    if(block.number>blockEndICO || msg.sender==owner){
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     holded[_to]=block.number;
@@ -101,13 +101,13 @@ contract MineBlocks is Ownable {
   }
 
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     holded[_to]=block.number;
@@ -141,7 +141,7 @@ contract MineBlocks is Ownable {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -150,7 +150,7 @@ contract MineBlocks is Ownable {
     return true;
   }
 
-    string public constant standard = &quot;ERC20 MineBlocks&quot;;
+    string public constant standard = "ERC20 MineBlocks";
 
     /* Public variables for the ERC20 token, defined when calling the constructor */
     string public name;
@@ -163,15 +163,15 @@ contract MineBlocks is Ownable {
     uint256 public buyPrice = minPrice;
 
     uint256 constant initialSupply=1000000000000000;
-    string constant tokenName=&quot;MineBlocks Token&quot;;
-    string constant tokenSymbol=&quot;MBK&quot;;
+    string constant tokenName="MineBlocks Token";
+    string constant tokenSymbol="MBK";
 
     uint256 public tokenReward = 0;
     // constant to simplify conversion of token amounts into integer form
     uint256 private constant tokenUnit = uint256(10)**decimals;
     
     // Spread in parts per 100 millions, such that expressing percentages is 
-    // just to append the postfix &#39;e6&#39;. For example, 4.53% is: spread = 4.53e6
+    // just to append the postfix 'e6'. For example, 4.53% is: spread = 4.53e6
     address public MineBlocksAddr = 0x0d518b5724C6aee0c7F1B2eB1D89d62a2a7b1b58;
 
     //Declare logging events
@@ -194,15 +194,15 @@ contract MineBlocks is Ownable {
     modifier status() {
         _;  // modified function code should go before prices update
 
-    if(balances[this]&gt;600000000000000){
+    if(balances[this]>600000000000000){
       buyPrice=1500000000000000;
-    }else if(balances[this]&gt;500000000000000 &amp;&amp; balances[this]&lt;=600000000000000){
+    }else if(balances[this]>500000000000000 && balances[this]<=600000000000000){
 
       buyPrice=2000000000000000;
-    }else if(balances[this]&gt;400000000000000 &amp;&amp; balances[this]&lt;=500000000000000){
+    }else if(balances[this]>400000000000000 && balances[this]<=500000000000000){
 
       buyPrice=2500000000000000;
-    }else if(balances[this]&gt;300000000000000 &amp;&amp; balances[this]&lt;=400000000000000){
+    }else if(balances[this]>300000000000000 && balances[this]<=400000000000000){
 
       buyPrice=3000000000000000;
     }else{
@@ -214,7 +214,7 @@ contract MineBlocks is Ownable {
 
     function deposit() public payable status returns(bool success) {
         // Check for overflows;
-        assert (this.balance + msg.value &gt;= this.balance); // Check for overflows
+        assert (this.balance + msg.value >= this.balance); // Check for overflows
       tokenReward=this.balance/totalSupply;
         //executes event to reflect the changes
         LogDeposit(msg.sender, msg.value);
@@ -225,8 +225,8 @@ contract MineBlocks is Ownable {
   function withdrawReward() public status{
 
     
-      if(block.number-holded[msg.sender]&gt;172800){ //1 month
-     //// if(block.number-holded[msg.sender]&gt;10){
+      if(block.number-holded[msg.sender]>172800){ //1 month
+     //// if(block.number-holded[msg.sender]>10){
 
       holded[msg.sender]=block.number;
 
@@ -252,7 +252,7 @@ contract MineBlocks is Ownable {
 
     function transferBuy(address _to, uint256 _value) internal returns (bool) {
       require(_to != address(0));
-      require(_value &lt;= balances[this]);
+      require(_value <= balances[this]);
 
       // SafeMath.sub will throw if there is not enough balance.
       balances[this] = balances[this].sub(_value);
@@ -265,8 +265,8 @@ contract MineBlocks is Ownable {
 
 
     function buy() public payable status{
-      require (msg.sender.balance &gt;= msg.value);  // Check if the sender has enought eth to buy
-      assert (msg.sender.balance + msg.value &gt;= msg.sender.balance); //check for overflows
+      require (msg.sender.balance >= msg.value);  // Check if the sender has enought eth to buy
+      assert (msg.sender.balance + msg.value >= msg.sender.balance); //check for overflows
          
       uint256 tokenAmount = (msg.value / buyPrice)*tokenUnit ;  // calculates the amount
 

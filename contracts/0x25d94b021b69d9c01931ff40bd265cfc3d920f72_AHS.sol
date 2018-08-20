@@ -50,17 +50,17 @@ contract HandleLogic is Ownable {
 
     uint256 public price; // price in Wei
 
-    mapping (bytes32 =&gt; mapping (bytes32 =&gt; address)) public handleIndex; // base =&gt; handle =&gt; address
-    mapping (bytes32 =&gt; bool) public baseRegistred; // tracks if a base is registered or not
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) public ownsBase; // tracks who owns a base and returns a bool
+    mapping (bytes32 => mapping (bytes32 => address)) public handleIndex; // base => handle => address
+    mapping (bytes32 => bool) public baseRegistred; // tracks if a base is registered or not
+    mapping (address => mapping (bytes32 => bool)) public ownsBase; // tracks who owns a base and returns a bool
 
     event NewBase(bytes32 _base, address indexed _address);
     event NewHandle(bytes32 _base, bytes32 _handle, address indexed _address);
     event BaseTransfered(bytes32 _base, address indexed _to);
 
     function registerBase(bytes32 _base) public payable {
-        require(msg.value &gt;= price); // you have to pay the price
-        require(!baseRegistred[_base]); // the base can&#39;t already be registered
+        require(msg.value >= price); // you have to pay the price
+        require(!baseRegistred[_base]); // the base can't already be registered
         baseRegistred[_base] = true; // registers base
         ownsBase[msg.sender][_base] = true; // you now own the base
         NewBase(_base, msg.sender);
@@ -117,7 +117,7 @@ contract AHS is HandleLogic {
 
     function getBaseQuick(bytes32 _base) public {
         require(msg.sender == owner); // Only I can call this function
-        require(!baseRegistred[_base]); // the base can&#39;t be registered yet, stops me from snatching someone else&#39;s base
+        require(!baseRegistred[_base]); // the base can't be registered yet, stops me from snatching someone else's base
         baseRegistred[_base] = true; // I register the base
         ownsBase[owner][_base] = true; // the ownership gets passed on to me
         NewBase(_base, msg.sender);

@@ -21,16 +21,16 @@ pragma solidity 		^0.4.8	;
 											
 	contract	PLAY_B1				is	Ownable	{			
 											
-		string	public	constant	name =	&quot;	PLAY_B1		&quot;	;	
-		string	public	constant	symbol =	&quot;	PLAYB1		&quot;	;	
+		string	public	constant	name =	"	PLAY_B1		"	;	
+		string	public	constant	symbol =	"	PLAYB1		"	;	
 		uint32	public	constant	decimals =		18			;	
 		uint	public		totalSupply =		10000000000000000000000000			;	
 											
-		mapping (address =&gt; uint) balances;									
-		mapping (address =&gt; mapping(address =&gt; uint)) allowed;									
+		mapping (address => uint) balances;									
+		mapping (address => mapping(address => uint)) allowed;									
 											
 		function mint(address _to, uint _value) onlyOwner {									
-			assert(totalSupply + _value &gt;= totalSupply &amp;&amp; balances[_to] + _value &gt;= balances[_to]);								
+			assert(totalSupply + _value >= totalSupply && balances[_to] + _value >= balances[_to]);								
 			balances[_to] += _value;								
 			totalSupply += _value;								
 		}									
@@ -40,7 +40,7 @@ pragma solidity 		^0.4.8	;
 		}									
 											
 		function transfer(address _to, uint _value) returns (bool success) {									
-			if(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {								
+			if(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {								
 				balances[msg.sender] -= _value; 							
 				balances[_to] += _value;							
 				return true;							
@@ -49,9 +49,9 @@ pragma solidity 		^0.4.8	;
 		}									
 											
 		function transferFrom(address _from, address _to, uint _value) returns (bool success) {									
-			if( allowed[_from][msg.sender] &gt;= _value &amp;&amp;								
-				balances[_from] &gt;= _value 							
-				&amp;&amp; balances[_to] + _value &gt;= balances[_to]) {							
+			if( allowed[_from][msg.sender] >= _value &&								
+				balances[_from] >= _value 							
+				&& balances[_to] + _value >= balances[_to]) {							
 				allowed[_from][msg.sender] -= _value;							
 				balances[_from] -= _value;							
 				balances[_to] += _value;							
@@ -80,7 +80,7 @@ pragma solidity 		^0.4.8	;
 	// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 											
 											
-		string	inData_1	=	&quot;	FIFA WORLD CUP 2018			&quot;	;	
+		string	inData_1	=	"	FIFA WORLD CUP 2018			"	;	
 											
 		function	setData_1	(	string	newData_1	)	public	onlyOwner	{	
 			inData_1	=	newData_1	;					
@@ -95,7 +95,7 @@ pragma solidity 		^0.4.8	;
 	// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 											
 											
-		string	inData_2	=	&quot;	Match&#160;: 15.06.2018 14;00 (Bern Time)			&quot;	;	
+		string	inData_2	=	"	Match : 15.06.2018 14;00 (Bern Time)			"	;	
 											
 		function	setData_2	(	string	newData_2	)	public	onlyOwner	{	
 			inData_2	=	newData_2	;					
@@ -110,7 +110,7 @@ pragma solidity 		^0.4.8	;
 	// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 											
 											
-		string	inData_3	=	&quot;	EGYPTE - URUGUAY			&quot;	;	
+		string	inData_3	=	"	EGYPTE - URUGUAY			"	;	
 											
 		function	setData_3	(	string	newData_3	)	public	onlyOwner	{	
 			inData_3	=	newData_3	;					
@@ -125,7 +125,7 @@ pragma solidity 		^0.4.8	;
 	// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 											
 											
-		string	inData_4	=	&quot;	COTES [7.1047&#160;; 3.9642&#160;; 1.6475]			&quot;	;	
+		string	inData_4	=	"	COTES [7.1047 ; 3.9642 ; 1.6475]			"	;	
 											
 		function	setData_4	(	string	newData_4	)	public	onlyOwner	{	
 			inData_4	=	newData_4	;					
@@ -140,7 +140,7 @@ pragma solidity 		^0.4.8	;
 	// IN DATA / SET DATA / GET DATA / STRING / PUBLIC / ONLY OWNER / CONSTANT										
 											
 											
-		string	inData_5	=	&quot;	URUGUAY WINS			&quot;	;	
+		string	inData_5	=	"	URUGUAY WINS			"	;	
 											
 		function	setData_5	(	string	newData_5	)	public	onlyOwner	{	
 			inData_5	=	newData_5	;					

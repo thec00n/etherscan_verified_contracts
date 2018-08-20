@@ -63,12 +63,12 @@ contract Marriage {
     */
     function add(uint256 a, uint256 b) private pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     /**
-    * @dev ringBell is a payable function that allows people to celebrate the couple&#39;s marriage, and
+    * @dev ringBell is a payable function that allows people to celebrate the couple's marriage, and
     * also send Ether to the marriage contract
     */
     function ringBell() public payable {

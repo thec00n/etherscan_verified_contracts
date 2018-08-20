@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -115,7 +115,7 @@ contract ERC223 {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -137,14 +137,14 @@ contract C2L is ERC223, Owned {
   uint internal constant INITIAL_COIN_BALANCE = 21000000; //starting balance of 21 million coins
 
   //variables
-  string public name = &quot;C2L&quot;; //name of currency
-  string public symbol = &quot;C2L&quot;;
+  string public name = "C2L"; //name of currency
+  string public symbol = "C2L";
   uint8 public decimals = 0;
-  mapping(address =&gt; bool) beingEdited; //mapping to prevent multiple edits of the same account occuring at the same time (reentrancy)
+  mapping(address => bool) beingEdited; //mapping to prevent multiple edits of the same account occuring at the same time (reentrancy)
 
   uint public totalCoinSupply = INITIAL_COIN_BALANCE; //number of this coin in active existence
-  mapping(address =&gt; uint) internal balances; //balances of users with this coin
-  mapping(address =&gt; mapping(address =&gt; uint)) internal allowed; //map holding how much each user is allowed to transfer out of other addresses
+  mapping(address => uint) internal balances; //balances of users with this coin
+  mapping(address => mapping(address => uint)) internal allowed; //map holding how much each user is allowed to transfer out of other addresses
   address[] addressLUT;
 
   //C2L contract constructor
@@ -201,7 +201,7 @@ contract C2L is ERC223, Owned {
           //retrieve the size of the code on target address, this needs assembly
           length := extcodesize(_addr)
     }
-    return (length&gt;0);
+    return (length>0);
   }
 
   /*
@@ -231,9 +231,9 @@ contract C2L is ERC223, Owned {
   */
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
     if(isContract(_to)) {
-      require(beingEdited[_to] != true &amp;&amp; beingEdited[msg.sender] != true);
+      require(beingEdited[_to] != true && beingEdited[msg.sender] != true);
       //make sure the sender has enough coins to transfer
-      require (balances[msg.sender] &gt;= _value); 
+      require (balances[msg.sender] >= _value); 
       setEditedTrue(_to);
       setEditedTrue(msg.sender);
       //transfer the coins
@@ -288,8 +288,8 @@ contract C2L is ERC223, Owned {
 
   //transfer function that is called when transaction target is an address
     function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-      require(beingEdited[_to] != true &amp;&amp; beingEdited[msg.sender] != true);
-      require (balanceOf(msg.sender) &gt;= _value);
+      require(beingEdited[_to] != true && beingEdited[msg.sender] != true);
+      require (balanceOf(msg.sender) >= _value);
       setEditedTrue(_to);
       setEditedTrue(msg.sender);
       balances[msg.sender] = SafeMath.sub(balanceOf(msg.sender), _value);
@@ -304,8 +304,8 @@ contract C2L is ERC223, Owned {
 
   //transfer function that is called when transaction target is a contract
     function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-      require(beingEdited[_to] != true &amp;&amp; beingEdited[msg.sender] != true);
-      require (balanceOf(msg.sender) &gt;= _value);
+      require(beingEdited[_to] != true && beingEdited[msg.sender] != true);
+      require (balanceOf(msg.sender) >= _value);
       setEditedTrue(_to);
       setEditedTrue(msg.sender);
       balances[msg.sender] = SafeMath.sub(balanceOf(msg.sender), _value);
@@ -325,7 +325,7 @@ contract C2L is ERC223, Owned {
     @param _lookup The address to check if it is in the list
   */
   function updateAddresses(address _lookup) private {
-    for(uint i = 0; i &lt; addressLUT.length; i++) {
+    for(uint i = 0; i < addressLUT.length; i++) {
       if(addressLUT[i] == _lookup) return;
     }
     addressLUT.push(_lookup);

@@ -1,6 +1,6 @@
 //
 // This file is part of TrustEth.
-// Copyright (c) 2016 Jacob Dawid &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c0aaa1a3afa280afada7eda9b4eeb7afb2abb3">[email&#160;protected]</a>&gt;
+// Copyright (c) 2016 Jacob Dawid <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c0aaa1a3afa280afada7eda9b4eeb7afb2abb3">[email protected]</a>>
 //
 // TrustEth is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,7 @@
 //
 // You should have received a copy of the GNU Affero General Public
 // License along with TrustEth.
-// If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// If not, see <http://www.gnu.org/licenses/>.
 //
 
 contract TrustEth {
@@ -53,7 +53,7 @@ contract TrustEth {
     Seller[] public sellers; // All sellers
 
     // This mapping makes it easier to loopkup the seller that belongs to a certain address.
-    mapping (address =&gt; uint) sellerLookup;
+    mapping (address => uint) sellerLookup;
 
     // The sole contract owner.
     address public owner;
@@ -101,7 +101,7 @@ contract TrustEth {
 
     // Make a donation and acknowledge our development efforts. Thank you!
     function donate() {
-      // That&#39;s awesome. Thank you.
+      // That's awesome. Thank you.
       return;
     }
 
@@ -111,7 +111,7 @@ contract TrustEth {
       // Retrieve the amount of ethers that have been sent along.
       uint etherPaid = msg.value;
       
-      if(etherPaid &lt; registrationFee) { throw; }
+      if(etherPaid < registrationFee) { throw; }
 
       // Create a new seller.
       uint sellerId = sellers.length;
@@ -144,13 +144,13 @@ contract TrustEth {
       transactions[transactionId].sellerId = sellerId;
       transactions[transactionId].amount = amount;
 
-      // -&gt; Pass transactionId to customer now.
+      // -> Pass transactionId to customer now.
     }
 
     // As a buyer, pay a transaction.
     function payEther(uint transactionId) {
       // Bail out in case the transaction id is invalid.      
-      if(transactionId &lt; 1 || transactionId &gt;= transactions.length) { throw; }
+      if(transactionId < 1 || transactionId >= transactions.length) { throw; }
 
       // Retrieve the amount of ethers that have been sent along.
       uint etherPaid = msg.value;
@@ -158,7 +158,7 @@ contract TrustEth {
       uint etherNeeded = etherAskedFor + transactionFee;
 
       // If the amount of ethers does not suffice to pay, bail out :(      
-      if(etherPaid &lt; etherNeeded) { throw; }
+      if(etherPaid < etherNeeded) { throw; }
 
       // Calculate how much has been overpaid.
       uint payback = etherPaid - etherNeeded;
@@ -170,7 +170,7 @@ contract TrustEth {
       // Rise transactions paid counter.
       sellers[transactions[transactionId].sellerId].transactionsPaid += 1;
 
-      // Overpaid ethers send back, seller has been paid, now we&#39;re done.
+      // Overpaid ethers send back, seller has been paid, now we're done.
       // Mark the transaction as finished.
 
       // Flag the invoice as paid.
@@ -178,7 +178,7 @@ contract TrustEth {
       // Save the payers address so he is eligible to rate.
       transactions[transactionId].paidWithAddress = msg.sender;
     
-      // -&gt; Now the transaction can be rated by the address that has paid it.
+      // -> Now the transaction can be rated by the address that has paid it.
     }
 
     // As a buyer, rate a transaction.
@@ -186,13 +186,13 @@ contract TrustEth {
       // Only the address that has paid the transaction may rate it.
       if(transactions[transactionId].paidWithAddress != msg.sender) { throw; }
       // Bail out in case the transaction id is invalid.        
-      if(transactionId &lt; 1 || transactionId &gt;= transactions.length) { throw; }
+      if(transactionId < 1 || transactionId >= transactions.length) { throw; }
       // Oops, transaction has already been rated!
       if(transactions[transactionId].rated) { throw; }
       // Oops, transaction has not been paid yet and cannot be rated!
       if(!transactions[transactionId].paid) { throw; }
       // Rating range is from 1 (incl.) to 10 (incl.).
-      if(ratingValue &lt; 1 || ratingValue &gt; 10) { throw; }
+      if(ratingValue < 1 || ratingValue > 10) { throw; }
 
       transactions[transactionId].ratingValue = ratingValue;
       transactions[transactionId].ratingComment = ratingComment;

@@ -42,7 +42,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic, Ownable {
 
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     bool public transfersEnabledFlag;
 
@@ -59,7 +59,7 @@ contract BasicToken is ERC20Basic, Ownable {
 
     function transfer(address _to, uint256 _value) transfersEnabled() public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -99,13 +99,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -121,14 +121,14 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -176,7 +176,7 @@ contract MintableToken is StandardToken {
 
     bool public mintingFinished = false;
 
-    mapping(address =&gt; bool) public minters;
+    mapping(address => bool) public minters;
 
     modifier canMint() {
         require(!mintingFinished);
@@ -219,13 +219,13 @@ contract CappedToken is MintableToken {
     
 
     function CappedToken(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
 
     function mint(address _to, uint256 _amount) onlyMinters canMint public returns (bool) {
-        require(totalSupply.add(_amount) &lt;= cap);
+        require(totalSupply.add(_amount) <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -256,8 +256,8 @@ contract ParameterizedToken is CappedToken {
     }
     
     function burn(uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &lt; _value) throw;            
-		if (_value &lt;= 0) throw; 
+        if (balances[msg.sender] < _value) throw;            
+		if (_value <= 0) throw; 
 		//update blances and  totalSupply and cap 
         balances[msg.sender] = balances[msg.sender].sub(_value);  
         totalSupply = SafeMath.sub(totalSupply,_value);    
@@ -273,7 +273,7 @@ contract ParameterizedToken is CappedToken {
 
 contract TigerCash is ParameterizedToken {
 
-    function TigerCash() public ParameterizedToken(&quot;TigerCash&quot;, &quot;TCH&quot;, 18, 1050000000) {
+    function TigerCash() public ParameterizedToken("TigerCash", "TCH", 18, 1050000000) {
     }
     
     

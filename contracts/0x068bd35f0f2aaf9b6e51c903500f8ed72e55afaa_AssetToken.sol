@@ -20,7 +20,7 @@ contract admined {
 
 contract AllInOne {
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 	// balanceOf[address] = 5;
 	string public name;
 	string public symbol;
@@ -36,13 +36,13 @@ contract AllInOne {
 		balanceOf[msg.sender] = intialSupply;
 		totalSupply = intialSupply;
 		decimal = 2;
-		symbol = &quot;AIO&quot;;
-		name = &quot;AllInOne&quot;;
+		symbol = "AIO";
+		name = "AllInOne";
 	}
 
 	function transfer(address _to, uint256 _value){
-		require(balanceOf[msg.sender] &gt; _value);
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]) ;
+		require(balanceOf[msg.sender] > _value);
+		require(balanceOf[_to] + _value > balanceOf[_to]) ;
 		//if(admin)
 
 		balanceOf[msg.sender] -= _value;
@@ -70,9 +70,9 @@ contract AssetToken is admined, AllInOne{
 	}
 
 	function transfer(address _to, uint256 _value){
-		require(balanceOf[msg.sender] &gt; 0);
-		require(balanceOf[msg.sender] &gt; _value) ;
-		require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+		require(balanceOf[msg.sender] > 0);
+		require(balanceOf[msg.sender] > _value) ;
+		require(balanceOf[_to] + _value > balanceOf[_to]);
 		//if(admin)
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += _value;

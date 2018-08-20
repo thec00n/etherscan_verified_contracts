@@ -18,20 +18,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -119,10 +119,10 @@ contract AnimalFactory is Ownable
     uint uniqueAnimalId=0;
 
     //mapping to show all the animal properties against a single id
-    mapping(uint=&gt;AnimalProperties)  animalAgainstId;
+    mapping(uint=>AnimalProperties)  animalAgainstId;
     
     //mapping to show how many children does a single animal has
-    mapping(uint=&gt;uint[])  childrenIdAgainstAnimalId;
+    mapping(uint=>uint[])  childrenIdAgainstAnimalId;
     
     //the animals that have been advertised for mating
     uint[] upForMatingList;
@@ -258,7 +258,7 @@ contract AnimalFactory is Ownable
         //owner can claim as many free animals as he or she wants
         if (msg.sender!=owner)
         {
-            require(token.getTotalTokensAgainstAddress(msg.sender)&lt;freeAnimalsLimit);
+            require(token.getTotalTokensAgainstAddress(msg.sender)<freeAnimalsLimit);
             gId=1;
         }
 
@@ -372,7 +372,7 @@ contract AnimalFactory is Ownable
         uint priceWithOwnerPercentage = animalAgainstId[animalId].priceForSale.add(OwnerPercentage);
         
         //funds sent should be enough to cover the selling price plus the owner fees
-        require(msg.value&gt;=priceWithOwnerPercentage); 
+        require(msg.value>=priceWithOwnerPercentage); 
 
         // transfer token only
        // token.mint(prevOwner,msg.sender,1); 
@@ -384,7 +384,7 @@ contract AnimalFactory is Ownable
         animalAgainstId[animalId].priceForSale=0;
 
         //remove from for sale list
-        for (uint j=0;j&lt;upForSaleList.length;j++)
+        for (uint j=0;j<upForSaleList.length;j++)
         {
           if (upForSaleList[j] == animalId)
             delete upForSaleList[j];
@@ -397,7 +397,7 @@ contract AnimalFactory is Ownable
         owner.transfer(OwnerPercentage);
         
         // return extra funds if sent by mistake
-        if(msg.value&gt;priceWithOwnerPercentage)
+        if(msg.value>priceWithOwnerPercentage)
         {
             msg.sender.transfer(msg.value.sub(priceWithOwnerPercentage));
         }
@@ -435,10 +435,10 @@ contract AnimalFactory is Ownable
         uint priceWithOwnerPercentage = animalAgainstId[parent1Id].priceForMating.add(OwnerPercentage);
         
         // the ethers sent should be enough to cover the mating price and the owner fees
-        require(msg.value&gt;=priceWithOwnerPercentage);
+        require(msg.value>=priceWithOwnerPercentage);
         uint generationnum = 1;
 
-        if(animalAgainstId[parent1Id].generationId &gt;= animalAgainstId[parent2Id].generationId)
+        if(animalAgainstId[parent1Id].generationId >= animalAgainstId[parent2Id].generationId)
         {
         generationnum = animalAgainstId[parent1Id].generationId+1;
         }
@@ -479,7 +479,7 @@ contract AnimalFactory is Ownable
         childrenIdAgainstAnimalId[parent2Id].push(uniqueAnimalId);
 
         //remove from for mate list
-        for (uint i=0;i&lt;upForMatingList.length;i++)
+        for (uint i=0;i<upForMatingList.length;i++)
         {
             if (upForMatingList[i]==parent1Id)
                 delete upForMatingList[i];   
@@ -496,7 +496,7 @@ contract AnimalFactory is Ownable
         owner.transfer(OwnerPercentage);
         
         // return extra funds if sent by mistake
-        if(msg.value&gt;priceWithOwnerPercentage)
+        if(msg.value>priceWithOwnerPercentage)
         {
             msg.sender.transfer(msg.value.sub(priceWithOwnerPercentage));
         }
@@ -532,7 +532,7 @@ contract AnimalFactory is Ownable
         //everyone except owner has to pay the adertisement fees
         if (msg.sender!=owner)
         {
-            require(msg.value&gt;=priceForSaleAdvertisement);  
+            require(msg.value>=priceForSaleAdvertisement);  
         }
         
         //the advertiser is actually the owner of the animal id provided
@@ -574,7 +574,7 @@ contract AnimalFactory is Ownable
         animalAgainstId[animalId].priceForSale=0;
 
         // remove the animal from sale list
-        for (uint i=0;i&lt;upForSaleList.length;i++)
+        for (uint i=0;i<upForSaleList.length;i++)
         {
             if (upForSaleList[i]==animalId)
                 delete upForSaleList[i];     
@@ -593,7 +593,7 @@ contract AnimalFactory is Ownable
         // the owner of the contract does not need to pay the mate advertisement fees
         if (msg.sender!=owner)
         {
-            require(msg.value&gt;=priceForMateAdvertisement);
+            require(msg.value>=priceForMateAdvertisement);
         }
     
         require(token.ownerOf(animalId)==msg.sender);
@@ -624,7 +624,7 @@ contract AnimalFactory is Ownable
         require(animalAgainstId[animalId].upForMating==true);
         animalAgainstId[animalId].upForMating=false;
         animalAgainstId[animalId].priceForMating=0;
-        for (uint i=0;i&lt;upForMatingList.length;i++)
+        for (uint i=0;i<upForMatingList.length;i++)
         {
             if (upForMatingList[i]==animalId)
                 delete upForMatingList[i];    
@@ -635,14 +635,14 @@ contract AnimalFactory is Ownable
     function validPurchase() internal constant returns (bool) 
     {
         // check validity of purchase
-        if(msg.value.div(weiPerAnimal)&lt;1)
+        if(msg.value.div(weiPerAnimal)<1)
             return false;
     
         uint quotient=msg.value.div(weiPerAnimal); 
    
         uint actualVal=quotient.mul(weiPerAnimal);
    
-        if(msg.value&gt;actualVal)
+        if(msg.value>actualVal)
             return false;
         else 
             return true;
@@ -751,11 +751,11 @@ contract AnimalFactory is Ownable
      **/  
     function removeFromEggPhase(uint animalId) public
     {
-        for (uint i=0;i&lt;memberAddresses.length;i++)
+        for (uint i=0;i<memberAddresses.length;i++)
         {
             if (memberAddresses[i]==msg.sender)
             {
-                for (uint j=0;j&lt;eggPhaseAnimalIds.length;j++)
+                for (uint j=0;j<eggPhaseAnimalIds.length;j++)
                 {
                     if (eggPhaseAnimalIds[j]==animalId)
                     {
@@ -797,7 +797,7 @@ contract AnimalFactory is Ownable
      **/  
     function buyCostume(uint cId, uint aId) public payable 
     {
-        require(msg.value&gt;=priceForBuyingCostume);
+        require(msg.value>=priceForBuyingCostume);
         require(!isContractPaused);
         require(token.ownerOf(aId)==msg.sender);
         require(animalAgainstId[aId].costumeId==0);
@@ -814,11 +814,11 @@ contract AnimalFactory is Ownable
      **/  
     function approvePendingCostume(uint animalId) public
     {
-        for (uint i=0;i&lt;memberAddresses.length;i++)
+        for (uint i=0;i<memberAddresses.length;i++)
         {
             if (memberAddresses[i]==msg.sender)
             {
-                for (uint j=0;j&lt;animalIdsWithPendingCostumes.length;j++)
+                for (uint j=0;j<animalIdsWithPendingCostumes.length;j++)
                 {
                     if (animalIdsWithPendingCostumes[j]==animalId)
                     {
@@ -852,7 +852,7 @@ contract AnimalFactory is Ownable
      **/  
     function deleteMember(address member) public onlyOwner 
     { 
-        for (uint i=0;i&lt;memberAddresses.length;i++)
+        for (uint i=0;i<memberAddresses.length;i++)
         {
             if (memberAddresses[i]==member)
             {

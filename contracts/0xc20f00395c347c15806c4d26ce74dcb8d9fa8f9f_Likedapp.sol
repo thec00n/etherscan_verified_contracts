@@ -26,7 +26,7 @@ contract Likedapp{
 
     //Fetch User
     //TO:do we need id or address to reference user
-    mapping(address =&gt; User) public users;
+    mapping(address => User) public users;
     //Store User Count
     uint public userCount;
 
@@ -48,7 +48,7 @@ contract Likedapp{
     function addUser(string _username) public {
 
         //check string length
-        require(bytes(_username).length &gt; 1);
+        require(bytes(_username).length > 1);
 
         //TO DO: Check if username exist
         require(users[msg.sender].id == 0);
@@ -56,7 +56,7 @@ contract Likedapp{
         userCount++;
         userStore.length++;
         User storage u = userStore[userStore.length - 1];
-        Reactions memory react = Reactions(0, &quot;Welcome to LikeDapp! :D&quot;);
+        Reactions memory react = Reactions(0, "Welcome to LikeDapp! :D");
         u.reactions.push(react);
         u.id = userCount;
         u.user_address = msg.sender;
@@ -69,15 +69,15 @@ contract Likedapp{
 
 
     function getUserReaction(uint _i) external view returns (int8,string){
-        require(_i &gt;= 0);
+        require(_i >= 0);
         return (users[msg.sender].reactions[_i].action, users[msg.sender].reactions[_i].message);
     }
 
     function sendReaction(address _a, int8 _l, string _m) public payable {
-         require(_l &gt;= 1 &amp;&amp; _l &lt;= 5);
-         require(users[_a].id &gt; 0);
+         require(_l >= 1 && _l <= 5);
+         require(users[_a].id > 0);
 
-        if(bytes(_m).length &gt;= 1){
+        if(bytes(_m).length >= 1){
             buyMessage();
         }
 
@@ -101,7 +101,7 @@ contract Likedapp{
 
     //Payments
     function buyMessage() public payable{
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
     }
 
     function withdraw() external{

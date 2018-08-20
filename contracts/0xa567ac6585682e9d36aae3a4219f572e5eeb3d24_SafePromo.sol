@@ -3,7 +3,7 @@
            `+hMMMMMMMMMMMMMMMMMMMMMMh+`           
          .yMMMMMMMmyo/:----:/oymMMMMMMMy.         
        `sMMMMMMy/`              `/yMMMMMMs`       
-      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        *** End-to-End Encrypted Email &amp; File Storage ***
+      -NMMMMNo`    ./sydddhys/.    `oNMMMMN-        *** End-to-End Encrypted Email & File Storage ***
      /MMMMMy`   .sNMMMMMMMMMMMMmo.   `yMMMMM/       
     :MMMMM+   `yMMMMMMNmddmMMMMMMMs`   +MMMMM:      SAFE TOKENS SALE IS IN PROGRESS!
     mMMMMo   .NMMMMNo-  ``  -sNMMMMm.   oMMMMm      
@@ -12,7 +12,7 @@
    hMMMM/   sMMMMs     :MMy     yMMMMo   /MMMMh     Live project with thousands active users!
    yMMMMo   +MMMMd     yMMN`   `mMMMM:   oMMMMy   
    /MMMMm   `mMMMMh`  `MMMM/   +MMMMd    mMMMM/     In late 2018 Safe services will be paid by SAFE tokens only!
-    mMMMMo   .mMMMMNs-`&#39;`&#39;`    /MMMMm- `sMMMMm    
+    mMMMMo   .mMMMMNs-`'`'`    /MMMMm- `sMMMMm    
     :MMMMM+   `sMMMMMMMmmmmy.   hMMMMMMMMMMMN-      
      /MMMMMy`   .omMMMMMMMMMy    +mMMMMMMMMy.     
       -NMMMMNo`    ./oyhhhho`      ./oso+:`       
@@ -42,7 +42,7 @@ contract SafePromo {
 
 		require(msg.sender == owner);
 
-		for(uint256 i = 0; i &lt; _recipients.length; i++){
+		for(uint256 i = 0; i < _recipients.length; i++){
 
 			_recipients[i].transfer(77777777777);
 			emit Transfer(address(this), _recipients[i], 777777777777);

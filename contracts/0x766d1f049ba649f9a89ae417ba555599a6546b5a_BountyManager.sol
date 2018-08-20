@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Entity Generic Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d7babeb4bcae97b9b8a0bbbea1b2f9a5b8">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d7babeb4bcae97b9b8a0bbbea1b2f9a5b8">[email protected]</a>>
 
     Used for the ABI interface when assets need to call Application Entity.
 
@@ -35,11 +35,11 @@ contract ApplicationEntityABI {
     address public GatewayInterfaceAddress;
     address public deployerAddress;
     address testAddressAllowUpgradeFrom;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; address) public AssetCollection;
-    mapping (uint8 =&gt; bytes32) public AssetCollectionIdToName;
-    mapping (bytes32 =&gt; uint256) public BylawsUint256;
-    mapping (bytes32 =&gt; bytes32) public BylawsBytes32;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => address) public AssetCollection;
+    mapping (uint8 => bytes32) public AssetCollectionIdToName;
+    mapping (bytes32 => uint256) public BylawsUint256;
+    mapping (bytes32 => bytes32) public BylawsBytes32;
 
     function ApplicationEntity() public;
     function getEntityState(bytes32 name) public view returns (uint8);
@@ -82,7 +82,7 @@ contract ApplicationEntityABI {
 
  * @name        Application Asset Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6abafa5adbf86a8a9b1aaafb0a3e8b4a9">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6abafa5adbf86a8a9b1aaafb0a3e8b4a9">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -98,8 +98,8 @@ contract ApplicationAsset {
     event EventRunBeforeApplyingSettings(bytes32 indexed _name);
 
 
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
     uint8 public CurrentEntityState;
 
     event EventEntityProcessor(bytes32 indexed _assetName, uint8 indexed _current, uint8 indexed _required);
@@ -137,7 +137,7 @@ contract ApplicationAsset {
         setAssetStates();
         assetName = _name;
         // set initial state
-        CurrentEntityState = getEntityState(&quot;NEW&quot;);
+        CurrentEntityState = getEntityState("NEW");
         runBeforeInitialization();
         _initialized = true;
         EventAppAssetOwnerSet(_name, owner);
@@ -146,10 +146,10 @@ contract ApplicationAsset {
 
     function setAssetStates() internal {
         // Asset States
-        EntityStates[&quot;__IGNORED__&quot;]     = 0;
-        EntityStates[&quot;NEW&quot;]             = 1;
+        EntityStates["__IGNORED__"]     = 0;
+        EntityStates["NEW"]             = 1;
         // Funding Stage States
-        RecordStates[&quot;__IGNORED__&quot;]     = 0;
+        RecordStates["__IGNORED__"]     = 0;
     }
 
     function getRecordState(bytes32 name) public view returns (uint8) {
@@ -181,7 +181,7 @@ contract ApplicationAsset {
     }
 
     function transferToNewOwner(address _newOwner) public requireInitialised onlyOwner returns (bool) {
-        require(owner != address(0x0) &amp;&amp; _newOwner != address(0x0));
+        require(owner != address(0x0) && _newOwner != address(0x0));
         owner = _newOwner;
         EventAppAssetOwnerSet(assetName, owner);
         return true;
@@ -272,7 +272,7 @@ contract ApplicationAsset {
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0865616b63714866677f64617e6d267a67">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0865616b63714866677f64617e6d267a67">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -289,8 +289,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -314,7 +314,7 @@ contract ABIApplicationAsset {
 
  * @name        Funding Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2cfcbc1c9dbe2cccdd5cecbd4c78cd0cd">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2cfcbc1c9dbe2cccdd5cecbd4c78cd0cd">[email protected]</a>>
 
  Contains the Funding Contract code deployed and linked to the Application Entity
 
@@ -353,7 +353,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint8   index;
     }
 
-    mapping (uint8 =&gt; FundingStage) public Collection;
+    mapping (uint8 => FundingStage) public Collection;
     uint8 public FundingStageNum;
     uint8 public currentFundingStage;
     uint256 public AmountRaised;
@@ -374,7 +374,7 @@ contract ABIFunding is ABIApplicationAsset {
         uint256 _time_start,
         uint256 _time_end,
         uint256 _amount_cap_soft,
-        uint256 _amount_cap_hard,   // required &gt; 0
+        uint256 _amount_cap_hard,   // required > 0
         uint8   _methods,
         uint256 _minimum_entry,
         uint256 _fixed_tokens,
@@ -403,7 +403,7 @@ contract ABIFunding is ABIApplicationAsset {
 
  * @name        Token Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdf7ffedd4fafbe3f8fde2f1bae6fb">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f9fdf7ffedd4fafbe3f8fde2f1bae6fb">[email protected]</a>>
 
  Zeppelin ERC20 Standard Token
 
@@ -418,8 +418,8 @@ contract ABIToken {
     uint8 public   decimals;
     uint256 public totalSupply;
     string public  version;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) allowed;
     address public manager;
     address public deployer;
     bool public mintingFinished = false;
@@ -447,7 +447,7 @@ contract ABIToken {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f62666c64764f6160786366796a217d60">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f62666c64764f6160786366796a217d60">[email protected]</a>>
 
 */
 
@@ -477,7 +477,7 @@ contract ABITokenManager is ABIApplicationAsset {
 
  * @name        Bounty Program Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e984808a8290a987869e85809f8cc79b86">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e984808a8290a987869e85809f8cc79b86">[email protected]</a>>
 
     Bounty program contract that holds and distributes tokens upon successful funding.
 */
@@ -500,10 +500,10 @@ contract BountyManager is ApplicationAsset {
         requireInitialised
         requireSettingsNotApplied
     {
-        address FundingAddress = getApplicationAssetAddressByName(&#39;Funding&#39;);
+        address FundingAddress = getApplicationAssetAddressByName('Funding');
         FundingEntity = ABIFunding(FundingAddress);
 
-        address TokenManagerAddress = getApplicationAssetAddressByName(&#39;TokenManager&#39;);
+        address TokenManagerAddress = getApplicationAssetAddressByName('TokenManager');
         ABITokenManager TokenManagerEntity = ABITokenManager(TokenManagerAddress);
         TokenEntity = ABIToken(TokenManagerEntity.TokenEntity());
 
@@ -516,7 +516,7 @@ contract BountyManager is ApplicationAsset {
         requireSettingsApplied
         onlyDeployer
     {
-        if( FundingEntity.CurrentEntityState() == FundingEntity.getEntityState(&quot;SUCCESSFUL_FINAL&quot;) ) {
+        if( FundingEntity.CurrentEntityState() == FundingEntity.getEntityState("SUCCESSFUL_FINAL") ) {
             TokenEntity.transfer( _receiver, _amount );
         } else {
             revert();

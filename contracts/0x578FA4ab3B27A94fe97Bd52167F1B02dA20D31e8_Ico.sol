@@ -29,12 +29,12 @@ library SafeMath {
     /* Internals */
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert( c &gt;= a );
+        assert( c >= a );
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a - b;
-        assert( c &lt;= a );
+        assert( c <= a );
         return c;
     }
     function mul(uint256 a, uint256 b) internal pure returns(uint256 c) {
@@ -64,8 +64,8 @@ contract Token is Owned {
     /* Declarations */
     using SafeMath for uint256;
     /* Variables */
-    string  public name = &quot;Inlock token&quot;;
-    string  public symbol = &quot;ILK&quot;;
+    string  public name = "Inlock token";
+    string  public symbol = "ILK";
     uint8   public decimals = 8;
     uint256 public totalSupply = 44e16;
     address public libAddress;
@@ -112,9 +112,9 @@ contract Ico is Owned {
         uint256 claimedAmount;
     }
     /* Variables */
-    mapping(address =&gt; bool) public KYC;
-    mapping(address =&gt; bool) public transferRight;
-    mapping(address =&gt; vesting_s) public vesting;
+    mapping(address => bool) public KYC;
+    mapping(address => bool) public transferRight;
+    mapping(address => vesting_s) public vesting;
     phaseType public currentPhase;
     uint256   public currentRate;
     uint256   public currentRateM = 1e3;

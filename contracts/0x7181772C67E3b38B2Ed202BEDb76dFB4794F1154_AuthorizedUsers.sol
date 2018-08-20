@@ -156,11 +156,11 @@ contract Claimable is Ownable {
 
 
 contract AuthorizedUsers is Claimable, HasNoEther, HasNoTokens {
-  // account =&gt; user
-  mapping(address =&gt; address) public authorizedUsers;
+  // account => user
+  mapping(address => address) public authorizedUsers;
 
-  // account =&gt; token =&gt; user
-  mapping(address =&gt; mapping(address =&gt; address)) public authorizedTokenUsers;
+  // account => token => user
+  mapping(address => mapping(address => address)) public authorizedTokenUsers;
 
   function AuthorizedUsers()
     public

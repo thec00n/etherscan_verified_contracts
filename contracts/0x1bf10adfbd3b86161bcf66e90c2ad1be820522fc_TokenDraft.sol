@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -31,7 +31,7 @@ contract Administration {
 
     address     public owner; // temporary address
     
-    mapping (address =&gt; bool) public moderators;
+    mapping (address => bool) public moderators;
 
     event AddMod(address indexed _invoker, address indexed _newMod, bool indexed _modAdded);
     event RemoveMod(address indexed _invoker, address indexed _removeMod, bool indexed _modRemoved);
@@ -80,8 +80,8 @@ contract TokenDraft is Administration {
     string  public symbol;
     string  public name;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     
     event Transfer(address indexed _sender, address indexed _recipient, uint256 indexed _amount);
     event Approval(address indexed _owner, address indexed _spender, uint256 indexed _allowance);
@@ -91,8 +91,8 @@ contract TokenDraft is Administration {
         // 500 million in wei
         totalSupply = 500000000000000000000000000;
         decimals = 18;
-        name = &quot;TokenDraft&quot;;
-        symbol = &quot;FAN&quot;;
+        name = "TokenDraft";
+        symbol = "FAN";
         balances[owner] = totalSupply;
     }
 
@@ -100,9 +100,9 @@ contract TokenDraft is Administration {
         onlyAdmin
         returns (bool burned)
     {
-        require(_amountBurn &gt; 0);
-        require(balances[msg.sender] &gt;= _amountBurn);
-        require(totalSupply.sub(_amountBurn) &gt;= 0);
+        require(_amountBurn > 0);
+        require(balances[msg.sender] >= _amountBurn);
+        require(totalSupply.sub(_amountBurn) >= 0);
         balances[msg.sender] = balances[msg.sender].sub(_amountBurn);
         totalSupply = totalSupply.sub(_amountBurn);
         BurnTokens(msg.sender, _amountBurn, true);
@@ -115,11 +115,11 @@ contract TokenDraft is Administration {
         constant
         returns (bool valid)
     {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_recipient != address(0x0));
-        require(balances[_sender] &gt;= _amount);
-        require(balances[_sender].sub(_amount) &gt;= 0);
-        require(balances[_recipient].add(_amount) &gt; balances[_recipient]);
+        require(balances[_sender] >= _amount);
+        require(balances[_sender].sub(_amount) >= 0);
+        require(balances[_recipient].add(_amount) > balances[_recipient]);
         return true;
     }
 
@@ -138,9 +138,9 @@ contract TokenDraft is Administration {
         public
         returns (bool transferredFrom)
     {
-        require(allowed[_owner][msg.sender] &gt;= _amount);
+        require(allowed[_owner][msg.sender] >= _amount);
         require(transferCheck(_owner, _recipient, _amount));
-        require(allowed[_owner][msg.sender].sub(_amount) &gt;= 0);
+        require(allowed[_owner][msg.sender].sub(_amount) >= 0);
         allowed[_owner][msg.sender] = allowed[_owner][msg.sender].sub(_amount);
         balances[_owner] = balances[_owner].sub(_amount);
         balances[_recipient] = balances[_recipient].add(_amount);
@@ -152,7 +152,7 @@ contract TokenDraft is Administration {
         public
         returns (bool approved)
     {
-        require(_allowance &gt; 0);
+        require(_allowance > 0);
         allowed[msg.sender][_spender] = _allowance;
         Approval(msg.sender, _spender, _allowance);
         return true;

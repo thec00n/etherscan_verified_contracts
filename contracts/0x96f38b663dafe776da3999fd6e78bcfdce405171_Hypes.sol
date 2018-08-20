@@ -8,8 +8,8 @@ contract Hypes {
     uint256 cost;
   }
 
-  mapping (uint256 =&gt; Hype) public hypes;
-  mapping (address =&gt; string) public msgs;
+  mapping (uint256 => Hype) public hypes;
+  mapping (address => string) public msgs;
 
   address public ceoAddress;
   uint256 public seatPrice = 2500000000000000;
@@ -27,7 +27,7 @@ contract Hypes {
     hypes[7] = Hype(msg.sender, 0);
     hypes[8] = Hype(msg.sender, 0);
     hypes[9] = Hype(msg.sender, 0);
-    msgs[msg.sender] = &quot;Claim this spot!&quot;;
+    msgs[msg.sender] = "Claim this spot!";
   }
 
   function getHype(uint256 _slot) public view returns (
@@ -44,7 +44,7 @@ contract Hypes {
 
   function purchase() public payable {
     require(msg.sender != address(0));
-    require(msg.value &gt;= seatPrice);
+    require(msg.value >= seatPrice);
     uint256 excess = SafeMath.sub(msg.value, seatPrice);
     hypes[1].owner.transfer(uint256(SafeMath.mul(SafeMath.div(seatPrice, 100), 9)));
     hypes[2].owner.transfer(uint256(SafeMath.mul(SafeMath.div(seatPrice, 100), 9)));
@@ -88,12 +88,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

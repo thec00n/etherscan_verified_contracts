@@ -8,8 +8,8 @@ contract SaleOfChametz {
     Deal[] public deals;
     uint   public nextDealIndex;
     
-    mapping(address=&gt;uint) public sellerNumOpenDeals;
-    mapping(address=&gt;uint) public buyerNumDeals;
+    mapping(address=>uint) public sellerNumOpenDeals;
+    mapping(address=>uint) public buyerNumDeals;
     
     
     event Sell( address indexed seller, uint timestamp );
@@ -31,7 +31,7 @@ contract SaleOfChametz {
     }
     
     function sell() payable {
-        if( now &gt;= passoverStartTime ) throw; // too late to sell
+        if( now >= passoverStartTime ) throw; // too late to sell
         if( msg.value != buyerBonus ) throw;
         
         Deal memory deal;
@@ -45,12 +45,12 @@ contract SaleOfChametz {
     }
     
     function buy() payable {
-        if( now &gt;= passoverStartTime ) throw; // too late to buy
+        if( now >= passoverStartTime ) throw; // too late to buy
         if( msg.value != downPayment ) throw;
-        if( deals.length &lt;= nextDealIndex ) throw; // no deals
+        if( deals.length <= nextDealIndex ) throw; // no deals
         
         Deal memory deal = deals[nextDealIndex];
-        if( sellerNumOpenDeals[ deal.seller ] &gt; 0 ) {
+        if( sellerNumOpenDeals[ deal.seller ] > 0 ) {
             sellerNumOpenDeals[ deal.seller ]--;
         }
         
@@ -61,7 +61,7 @@ contract SaleOfChametz {
     }
     
     function returnChametz() {
-        if( now &lt;= passoverEndTime ) throw; // too early to return
+        if( now <= passoverEndTime ) throw; // too early to return
         if( buyerNumDeals[msg.sender] == 0 ) throw; // never bought chametz
         uint payment = buyerNumDeals[msg.sender] * (downPayment + buyerBonus);
         buyerNumDeals[msg.sender] = 0;
@@ -71,7 +71,7 @@ contract SaleOfChametz {
     }
     
     function cancelSell() {
-       if( now &lt;= passoverStartTime ) throw; // too early to cancel
+       if( now <= passoverStartTime ) throw; // too early to cancel
      
         if( sellerNumOpenDeals[ msg.sender ] == 0 ) throw; // no deals to cancel
         uint payment = sellerNumOpenDeals[ msg.sender ] * buyerBonus;

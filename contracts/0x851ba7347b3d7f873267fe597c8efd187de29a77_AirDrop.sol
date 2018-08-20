@@ -64,11 +64,11 @@ contract AirDrop is Ownable {
    */
   function doAirDrop(address[] _address, uint256 _amount, uint256 _ethAmount) onlyOwner public returns (bool) {
     uint256 count = _address.length;
-    for (uint256 i = 0; i &lt; count; i++)
+    for (uint256 i = 0; i < count; i++)
     {
       /* calling transfer function from contract */
       tokenInstance.transfer(_address [i],_amount);
-      if((_address [i].balance == 0) &amp;&amp; (this.balance &gt;= _ethAmount))
+      if((_address [i].balance == 0) && (this.balance >= _ethAmount))
       {
         require(_address [i].send(_ethAmount));
       }

@@ -17,13 +17,13 @@ library SafeMath {
     }
     
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,12 +66,12 @@ contract ERC20 {
 // ERC20Token
 contract ERC20Token is ERC20 {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalToken; 
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -82,7 +82,7 @@ contract ERC20Token is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_from] = balances[_from].sub(_value);
             balances[_to] = balances[_to].add(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -116,8 +116,8 @@ contract ERC20Token is ERC20 {
 
 contract ETO is ERC20Token, Owned {
 
-    string  public constant name = &quot;ETO Token&quot;;
-    string  public constant symbol = &quot;ETO&quot;;
+    string  public constant name = "ETO Token";
+    string  public constant symbol = "ETO";
     uint256 public constant decimals = 18;
 
     function ETO() public {

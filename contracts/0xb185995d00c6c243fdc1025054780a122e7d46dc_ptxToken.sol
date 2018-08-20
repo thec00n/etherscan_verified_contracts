@@ -3,8 +3,8 @@ pragma solidity ^0.4.16;
 contract ptxToken {
 
 using SafeMath for uint256;
-string public constant symbol = &quot;PTX&quot;;
-string public constant name = &quot;ptx Token&quot;;
+string public constant symbol = "PTX";
+string public constant name = "ptx Token";
 uint8 public constant decimals = 18;
 uint256 _totalSupply = 1000000000 * 10 ** uint256(decimals);
 
@@ -12,10 +12,10 @@ uint256 _totalSupply = 1000000000 * 10 ** uint256(decimals);
 address public owner;
 
 // Balances for each account
-mapping(address =&gt; uint256) balances;
+mapping(address => uint256) balances;
 
 // Owner of account approves the transfer of an amount to another account
-mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+mapping(address => mapping (address => uint256)) allowed;
 
 // Constructor
 function ptxToken() public {
@@ -33,7 +33,7 @@ function balanceOf(address _owner) public constant returns (uint256 balance) {
 }
 
 function transfer(address _to, uint256 _amount) public returns (bool success) {
-   if (balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+   if (balances[msg.sender] >= _amount && _amount > 0) {
        balances[msg.sender] = balances[msg.sender].sub(_amount);
        balances[_to] = balances[_to].add(_amount);
        Transfer(msg.sender, _to, _amount);
@@ -44,7 +44,7 @@ function transfer(address _to, uint256 _amount) public returns (bool success) {
 }
 
 function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-   if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+   if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0) {
        balances[_from] = balances[_from].sub(_amount);
        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
        balances[_to] = balances[_to].add(_amount);
@@ -56,7 +56,7 @@ function transferFrom(address _from, address _to, uint256 _amount) public return
 }
 
 function approve(address _spender, uint256 _amount) public returns (bool success) {
-   if(balances[msg.sender]&gt;=_amount &amp;&amp; _amount&gt;0) {
+   if(balances[msg.sender]>=_amount && _amount>0) {
        allowed[msg.sender][_spender] = _amount;
        Approval(msg.sender, _spender, _amount);
        return true;
@@ -93,13 +93,13 @@ return c;
 }
 
 function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-assert(b &lt;= a);
+assert(b <= a);
 return a - b;
 }
 
 function add(uint256 a, uint256 b) internal constant returns (uint256) {
 uint256 c = a + b;
-assert(c &gt;= a);
+assert(c >= a);
 return c;
 }
 }

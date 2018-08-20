@@ -7,7 +7,7 @@ pragma solidity ^0.4.18;
     Copyright 2018, All rights reserved.
      _      _
     \ \    / / ___   ___  _ __
-     \ \  / / / _ \ / _ \| &#39;_ \
+     \ \  / / / _ \ / _ \| '_ \
       \ \/ / |  __/|  __/| | | |
        \__/   \___| \___||_| |_|
 
@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 contract Ownable {
@@ -101,10 +101,10 @@ contract Ownable {
 contract Pausable is Ownable {
   event Pause();
   event Unpause();
-  mapping(address =&gt; uint256) private _lock_list_period;
-  mapping(address =&gt; bool) private _lock_list;
+  mapping(address => uint256) private _lock_list_period;
+  mapping(address => bool) private _lock_list;
   bool public paused = false;
-  mapping(address =&gt; uint256) internal _balances;
+  mapping(address => uint256) internal _balances;
   uint256 internal _tokenSupply;
 
   /**
@@ -139,7 +139,7 @@ contract Pausable is Ownable {
   }
 
   function check_lock_period(address check_address) {
-      if(now &gt; _lock_list_period[check_address] &amp;&amp; _lock_list[check_address]){
+      if(now > _lock_list_period[check_address] && _lock_list[check_address]){
         _lock_list[check_address] = false;
         _tokenSupply = _tokenSupply.add(_balances[check_address]);
       }
@@ -188,7 +188,7 @@ contract Pausable is Ownable {
     Copyright 2018, All rights reserved.
      _      _
     \ \    / / ___   ___  _ __
-     \ \  / / / _ \ / _ \| &#39;_ \
+     \ \  / / / _ \ / _ \| '_ \
       \ \/ / |  __/|  __/| | | |
        \__/   \___| \___||_| |_|
 
@@ -237,7 +237,7 @@ interface ERC223 {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
 
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -256,7 +256,7 @@ interface ERC223 {
     Copyright 2018, All rights reserved.
      _      _
     \ \    / / ___   ___  _ __
-     \ \  / / / _ \ / _ \| &#39;_ \
+     \ \  / / / _ \ / _ \| '_ \
       \ \/ / |  __/|  __/| | | |
        \__/   \___| \___||_| |_|
 
@@ -269,13 +269,13 @@ contract Veen is ERC20Token, Pausable, ERC223{
 
     using SafeMath for uint;
 
-    string public constant name = &quot;Veen&quot;;
-    string public constant symbol = &quot;VEEN&quot;;
+    string public constant name = "Veen";
+    string public constant symbol = "VEEN";
     uint8 public constant decimals = 18;
 
     uint private _totalSupply;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) private _allowed;
+    mapping(address => mapping(address => uint256)) private _allowed;
     event MintedLog(address to, uint256 amount);
     event Transfer(address indexed from, address indexed to, uint value);
 
@@ -293,7 +293,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
     function mint(address to, uint256 amount) onlyOwner public returns (bool){
 
         amount = amount * (uint256(10) ** decimals);
-        if(_totalSupply + 1 &gt; (_tokenSupply+amount)){
+        if(_totalSupply + 1 > (_tokenSupply+amount)){
             _tokenSupply = _tokenSupply.add(amount);
             _balances[to]= _balances[to].add(amount);
             emit MintedLog(to, amount);
@@ -305,7 +305,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
 
     function dist_list_set(address[] dist_list, uint256[] token_list) onlyOwner external{
 
-        for(uint i=0; i &lt; dist_list.length ;i++){
+        for(uint i=0; i < dist_list.length ;i++){
             transfer(dist_list[i],token_list[i]);
         }
 
@@ -327,7 +327,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
 
     function approve(address spender, uint256 tokens) public returns (bool success) {
 
-        if (tokens &gt; 0 &amp;&amp; balanceOf(msg.sender) &gt;= tokens) {
+        if (tokens > 0 && balanceOf(msg.sender) >= tokens) {
             _allowed[msg.sender][spender] = tokens;
             emit Approval(msg.sender, spender, tokens);
             return true;
@@ -341,7 +341,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
     }
 
     function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
-        if (tokens &gt; 0 &amp;&amp; balanceOf(from) &gt;= tokens &amp;&amp; _allowed[from][msg.sender] &gt;= tokens) {
+        if (tokens > 0 && balanceOf(from) >= tokens && _allowed[from][msg.sender] >= tokens) {
             _balances[from] = _balances[from].sub(tokens);
             _allowed[from][msg.sender] = _allowed[from][msg.sender].sub(tokens);
             _balances[to] = _balances[to].add(tokens);
@@ -352,7 +352,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
     }
 
     function burn(uint256 tokens) public returns (bool success) {
-        if ( tokens &gt; 0 &amp;&amp; balanceOf(msg.sender) &gt;= tokens ) {
+        if ( tokens > 0 && balanceOf(msg.sender) >= tokens ) {
             _balances[msg.sender] = _balances[msg.sender].sub(tokens);
             _tokenSupply = _tokenSupply.sub(tokens);
             return true;
@@ -361,7 +361,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
         return false;
     }
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     _balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     _balances[_to] = balanceOf(_to).add(_value);
     emit Transfer(msg.sender, _to, _value);
@@ -370,7 +370,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
 
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     _balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     _balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -386,7 +386,7 @@ contract Veen is ERC20Token, Pausable, ERC223{
       assembly {
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
     function () public payable {

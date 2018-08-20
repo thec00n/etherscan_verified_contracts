@@ -43,7 +43,7 @@ contract SellERC20Token is Owned {
     return ERC20(token).transfer(owner, tokens);
   }
   function WithdrawEther(uint256 ethers) onlyOwner public returns (bool ok) {
-    if (this.balance&gt;=ethers) return owner.send(ethers);
+    if (this.balance>=ethers) return owner.send(ethers);
   }
   function SetPrice (uint256 newprice) onlyOwner public {
     sellPrice = newprice;
@@ -55,18 +55,18 @@ contract SellERC20Token is Owned {
     TradeStatus(owner,token,sellPrice,minLot);
   }
   function SetLot (uint256 newlot) onlyOwner public {
-    if (newlot&lt;=0) revert();
+    if (newlot<=0) revert();
     minLot=newlot;
     TradeStatus(owner,token,sellPrice,minLot);
   }
   function SellToken() payable public {
     uint tokens=msg.value/sellPrice;
-    if (tokens&lt;minLot) revert();
+    if (tokens<minLot) revert();
     uint total=ERC20(token).balanceOf(address(this));
     uint256 change=0;
     uint256 maxeth=total*sellPrice;
-    if (msg.value&gt;maxeth) change=msg.value-maxeth;
-    if (change&gt;0) if (!msg.sender.send(change)) revert();
+    if (msg.value>maxeth) change=msg.value-maxeth;
+    if (change>0) if (!msg.sender.send(change)) revert();
     if (!ERC20(token).transfer(msg.sender, tokens)) revert();
     TokensBought(msg.sender, msg.value, tokens);
     TradeStatus(owner,token,sellPrice,minLot);

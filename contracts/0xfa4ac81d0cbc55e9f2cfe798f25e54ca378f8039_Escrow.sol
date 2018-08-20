@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 contract Escrow {
   address public owner;
   uint public fee;
-  mapping (address =&gt;  mapping (address =&gt; uint)) public balances;
+  mapping (address =>  mapping (address => uint)) public balances;
 
   function Escrow() public {
     owner = msg.sender;

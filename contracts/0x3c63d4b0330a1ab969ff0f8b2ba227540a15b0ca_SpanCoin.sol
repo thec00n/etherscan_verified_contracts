@@ -10,12 +10,12 @@ library safemath {
     return c;
   }
     function safeSub(uint a, uint b) public pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
     function safeAdd(uint a, uint b) public pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
     function safeDiv(uint256 a, uint256 b) public pure returns (uint256) {
@@ -31,8 +31,8 @@ contract ContractReceiver {
 contract SpanToken  {
     using safemath for uint256;
     uint256 public _totalsupply;
-    string public constant name = &quot;Span Coin&quot;;
-    string public constant symbol = &quot;SPAN&quot;;
+    string public constant name = "Span Coin";
+    string public constant symbol = "SPAN";
     uint8 public constant decimals = 18;
   
     uint256 public StartTime;   // start and end timestamps where investments are allowed (both inclusive)
@@ -42,10 +42,10 @@ contract SpanToken  {
     address onlyadmin;
     address[] admins_array;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) admin_addresses;
-    mapping (address =&gt; uint256) public frozenAccount;    
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) admin_addresses;
+    mapping (address => uint256) public frozenAccount;    
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event NewAdmin(address admin);
     event RemoveAdmin(address admin);    
@@ -59,7 +59,7 @@ contract SpanToken  {
         _;
     }    
     modifier notfrozen() {
-     require (frozenAccount[msg.sender] &lt; now );   
+     require (frozenAccount[msg.sender] < now );   
       _;  
     }
     function totalSupply() public view returns (uint256 _totalSupply){
@@ -117,7 +117,7 @@ contract SpanCoin is SpanToken {
         string ProductName;
         uint256 ProductPrice;
     }
-    mapping (uint256 =&gt; PriceTable) products;
+    mapping (uint256 => PriceTable) products;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -142,10 +142,10 @@ contract SpanCoin is SpanToken {
          require(msg.value != 0);
           }
     function PurchaseToken() public payable{
-        require( msg.value &gt; 0);
+        require( msg.value > 0);
          uint256 tokens = msg.value.safeMul(Rate);
          uint256 BonusTokens = tokens.safeDiv(100).safeMul(currentBonus);
-      if (now &gt; StartTime &amp;&amp; now &lt; EndTime){
+      if (now > StartTime && now < EndTime){
             _transfer(onlyadmin,msg.sender,tokens + BonusTokens);
         CoinPurchase(msg.sender, tokens + BonusTokens);
        } else {
@@ -154,8 +154,8 @@ contract SpanCoin is SpanToken {
        }
         }
     function buytobeneficiary(address beneficiary) public payable {
-        require(beneficiary != address(0) &amp;&amp; msg.value &gt; 0);
-        require(now &gt; StartTime &amp;&amp; now &lt; EndTime);
+        require(beneficiary != address(0) && msg.value > 0);
+        require(now > StartTime && now < EndTime);
         uint256 tokentoAmount = msg.value.safeMul(Rate);
         uint256 bountytoken = tokentoAmount.safeDiv(10);
         _transfer(onlyadmin, msg.sender, tokentoAmount);
@@ -164,7 +164,7 @@ contract SpanCoin is SpanToken {
     }
     function payproduct (uint256 _ProductID) public returns (bool){
         uint256 price = products[_ProductID].ProductPrice;
-       if (balances[msg.sender] &gt;= price &amp;&amp; price &gt; 0 ) {
+       if (balances[msg.sender] >= price && price > 0 ) {
         _transfer(msg.sender, onlyadmin, price);
         ServicePurchase(msg.sender, _ProductID, price, now);
         return true;
@@ -178,7 +178,7 @@ contract SpanCoin is SpanToken {
         	}
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         uint previousBalances = balances[_from] + balances[_to];
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -208,7 +208,7 @@ contract SpanCoin is SpanToken {
     function isContract(address _addr) public constant returns (bool is_contract) {
       uint length;
       assembly { length := extcodesize(_addr) }
-        if(length &gt; 0){
+        if(length > 0){
             return true;
         }
         else {
@@ -216,7 +216,7 @@ contract SpanCoin is SpanToken {
         }
     }
     function transferToAddress(address _to, uint256 _value) notfrozen public returns (bool success) {
-            require (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+            require (balances[msg.sender] >= _value && _value > 0);
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -224,7 +224,7 @@ contract SpanCoin is SpanToken {
          
      }
     function transferToContract(address _to, uint256 _value, bytes _data) notfrozen public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             ContractReceiver reciever = ContractReceiver(_to);
@@ -237,7 +237,7 @@ contract SpanCoin is SpanToken {
         }
   }
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -271,7 +271,7 @@ contract SpanCoin is SpanToken {
         return true;
     }
     function updateProduct(uint256 _ProductID, string _productName, uint256 _productPrice) onlyauthorized public returns (bool success){
-        require(products[_ProductID].ProductID == _ProductID &amp;&amp; _productPrice &gt; 0);
+        require(products[_ProductID].ProductID == _ProductID && _productPrice > 0);
         products[_ProductID] = PriceTable(_ProductID, _productName, _productPrice);
         ProductUpdated(_ProductID, _productName, _productPrice, msg.sender);
         return true;
@@ -286,14 +286,14 @@ contract SpanCoin is SpanToken {
 //////////////////////////////////////////////     
 
     function payshop(address _Seller, uint256 price, uint ItemID) public returns (bool sucess){
-       require (balances[msg.sender] &gt;= price &amp;&amp; price &gt; 0 );
+       require (balances[msg.sender] >= price && price > 0 );
         _transfer(msg.sender,_Seller,price);
         ShopItemSold(msg.sender, _Seller, ItemID, price, now);
         return true;
            
     } 
     function payshopwithfees(address _Seller, uint256 _value, uint ItemID) public returns (bool sucess){
-        require (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require (balances[msg.sender] >= _value && _value > 0);
         uint256 priceaftercomm = _value.safeMul(900).safeDiv(1000);
         uint256 amountofcomm = _value.safeSub(priceaftercomm);
         _transfer(msg.sender, onlyadmin, amountofcomm);
@@ -327,8 +327,8 @@ contract SpanCoin is SpanToken {
      assert(SharePrice == _SharePrice);
     }
     function Requestprofit() public returns(bool) {
-        require(now &gt; Monthprofitstart &amp;&amp; now &lt; Monthprofitend);
-        require (balances[msg.sender] &gt;= 500000E18 &amp;&amp; frozenAccount[msg.sender] &lt; now);
+        require(now > Monthprofitstart && now < Monthprofitend);
+        require (balances[msg.sender] >= 500000E18 && frozenAccount[msg.sender] < now);
 
         uint256 actualclaimable = (balances[msg.sender] / 1 ether); 
         uint256 actualprofit = actualclaimable.safeMul(SharePrice);
@@ -353,7 +353,7 @@ contract SpanCoin is SpanToken {
     }
     //reported lost wallet //Critical emergency
     function BustTokens(address _target, uint256 _amount) onlyOwner public returns (bool){
-        require(balances[_target] &gt; 0);
+        require(balances[_target] > 0);
         _transfer(_target, onlyadmin, _amount);
         return true;
     }

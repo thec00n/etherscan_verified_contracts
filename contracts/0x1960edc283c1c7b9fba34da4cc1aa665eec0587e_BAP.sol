@@ -10,13 +10,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns(uint) {
-        Assert(b &lt;= a);
+        Assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns(uint) {
         uint c = a + b;
-        Assert(c &gt;= a &amp;&amp; c &gt;= b);
+        Assert(c >= a && c >= b);
         return c;
     }
 
@@ -29,9 +29,9 @@ contract SafeMath {
 
 contract BAP is SafeMath {
     /* Public variables of the token */
-    string public standard = &#39;ERC20&#39;;
-    string public name = &#39;BAP token&#39;;
-    string public symbol = &#39;BAP&#39;;
+    string public standard = 'ERC20';
+    string public name = 'BAP token';
+    string public symbol = 'BAP';
     uint8 public decimals = 0;
     uint256 public totalSupply;
     address public owner;
@@ -45,8 +45,8 @@ contract BAP is SafeMath {
     /* This wallet will hold tokens after ICO*/
     address tokensHolder = 0x12bF8E198A6474FC65cEe0e1C6f1C7f23324C8D5;
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -72,12 +72,12 @@ contract BAP is SafeMath {
     /* Send some of your tokens to a given address */
     function transfer(address _to, uint256 _value) returns(bool success) {
         //check if the crowdsale is already over
-        if (now &lt; startTime) {
+        if (now < startTime) {
             revert();
         }
 
         //prevent owner transfer all tokens immediately after ICO ended
-        if (msg.sender == owner &amp;&amp; !burned) {
+        if (msg.sender == owner && !burned) {
             burn();
             return;
         }
@@ -95,7 +95,7 @@ contract BAP is SafeMath {
 
     /* Allow another contract or person to spend some tokens in your behalf */
     function approve(address _spender, uint256 _value) returns(bool success) {
-        if( now &lt; startTime &amp;&amp; hasICOStarted) { // during ICO only allow execute this function one time
+        if( now < startTime && hasICOStarted) { // during ICO only allow execute this function one time
             revert();
         }
         hasICOStarted = true;
@@ -108,14 +108,14 @@ contract BAP is SafeMath {
     /* A contract or  person attempts to get the tokens of somebody else.
     *  This is only allowed if the token holder approved. */
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-        if (now &lt; startTime &amp;&amp; _from != owner) revert(); //check if the crowdsale is already over
+        if (now < startTime && _from != owner) revert(); //check if the crowdsale is already over
         //prevent the owner of spending his share of tokens so that owner has to burn the token left after ICO
-        if (_from == owner &amp;&amp; now &gt;= startTime &amp;&amp; !burned) {
+        if (_from == owner && now >= startTime && !burned) {
             burn();
             return;
         }
-        if (now &lt; startTime){
-            if(_value &lt; maxGoalInICO ) {
+        if (now < startTime){
+            if(_value < maxGoalInICO ) {
                 tokensSoldToInvestors = safeAdd(tokensSoldToInvestors, _value);
             } else {
                 _value = safeSub(_value, maxGoalInICO);
@@ -134,7 +134,7 @@ contract BAP is SafeMath {
 
     function burn(){
         // if tokens have not been burned already and the ICO ended or Tokens have been sold out before ICO end.
-        if(!burned &amp;&amp; ( now &gt; startTime || tokensSoldToInvestors &gt;= maxGoalInICO) ) {
+        if(!burned && ( now > startTime || tokensSoldToInvestors >= maxGoalInICO) ) {
             // checked for overflow above
             totalSupply = safeSub(totalSupply, balanceOf[owner]) + 900000000;
             uint tokensLeft = balanceOf[owner];

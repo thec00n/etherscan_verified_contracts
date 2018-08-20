@@ -5,12 +5,12 @@ This is the smart contract for the ERC 20 standard Tratok token.
 During development of the smart contract, active attention was paid to make the contract as simple as possible.
 As the majority of functions are simple addition and subtraction of existing balances, we have been able to make the contract very lightweight.
 This has the added advantage of reducing gas costs and ensuring that transaction fees remain low.
-The smart contract has been made publically available, keeping with the team&#39;s philosophy of transparency.
+The smart contract has been made publically available, keeping with the team's philosophy of transparency.
 
-@version &quot;1.0&quot;
-@developer &quot;Tratok Team&quot;
-@date &quot;12 February 2017&quot;
-@thoughts &quot;207 lines that can change the travel and tourism industry!. Good luck!&quot;
+@version "1.0"
+@developer "Tratok Team"
+@date "12 February 2017"
+@thoughts "207 lines that can change the travel and tourism industry!. Good luck!"
 */
 
 /*
@@ -22,14 +22,14 @@ library SafeMath {
     
 	//Ensures that b is greater than a to handle negatives.
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     //Ensures that the sum of two values is greater than the intial value.
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -54,7 +54,7 @@ contract ERC20 {
 
     /*	
        The transfer function which takes the address of the recipient and the amount of Tratok needed to be sent and complete the transfer
-       @param _to The address of the recipient (usually a &quot;service provider&quot;) who will receive the Tratok.
+       @param _to The address of the recipient (usually a "service provider") who will receive the Tratok.
        @param _value The amount of Tratok that needs to be transferred.
        @return Returns a boolean value to verify the transaction has succeeded or failed.
       */
@@ -120,7 +120,7 @@ contract Ownable {
 contract StandardToken is ERC20, Ownable {
 	using SafeMath for uint256;
     function transfer(address _to, uint256 _value) returns(bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, Ownable {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = balances[_to].add(_value);
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -156,8 +156,8 @@ contract StandardToken is ERC20, Ownable {
         return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -173,7 +173,7 @@ contract Tratok is StandardToken {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;H1.0&#39;;
+    string public version = 'H1.0';
 
     /*
      * Declaring the customized details of the token. The token will be called Tratok, with a total supply of 100 billion tokens.
@@ -185,9 +185,9 @@ contract Tratok is StandardToken {
         //we will create 100 Billion Coins and send them to the creating wallet.
         balances[msg.sender] = 10000000000000000;
         totalSupply = 10000000000000000;
-        name = &quot;Tratok&quot;;
+        name = "Tratok";
         decimals = 5;
-        symbol = &quot;TRAT&quot;;
+        symbol = "TRAT";
     }
 
     /*
@@ -198,8 +198,8 @@ contract Tratok is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //If the call fails, result to &quot;vanilla&quot; approval.
-        if (!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) {
+        //If the call fails, result to "vanilla" approval.
+        if (!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) {
             throw;
         }
         return true;

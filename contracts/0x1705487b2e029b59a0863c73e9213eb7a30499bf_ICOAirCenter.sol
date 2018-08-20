@@ -1,5 +1,5 @@
 pragma solidity ^0.4.21;
-// import &#39;./bonbon.sol&#39;;
+// import './bonbon.sol';
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
     if (a == 0) {
@@ -15,13 +15,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -92,7 +92,7 @@ contract ICOAirCenter is Ownable {
     _preValidatePurchase(_beneficiary, weiAmount);
     uint256 tokens = _getTokenAmount(weiAmount);
     uint256 tokenbalance = icotoken.balanceOf(this);
-    require(tokenbalance &gt;= tokens);
+    require(tokenbalance >= tokens);
     weiRaised = weiRaised.add(weiAmount);
     _processPurchase(_beneficiary, tokens);
     emit TokenPurchase(msg.sender,_beneficiary,weiAmount,tokens);
@@ -130,7 +130,7 @@ contract ICOAirCenter is Ownable {
 
   function isActive() public constant returns (bool) {
     return (
-      tokensAvailable() &gt; 0 // Tokens must be available to send
+      tokensAvailable() > 0 // Tokens must be available to send
       );
   }
 
@@ -151,7 +151,7 @@ contract ICOAirCenter is Ownable {
     require(dests.length == values.length);
     require(tokenaddress == airdroptoken);
     uint256 i = 0;
-    while (i &lt; dests.length) {
+    while (i < dests.length) {
       uint256 toSend = values[i].mul(10**decimals);
       sendInternally(dests[i] , toSend, values[i]);
       i++;
@@ -164,7 +164,7 @@ contract ICOAirCenter is Ownable {
     
     uint256 i = 0;
     uint256 toSend = value.mul(10**decimals);
-    while (i &lt; dests.length) {
+    while (i < dests.length) {
       sendInternally(dests[i] , toSend, value);
       i++;
     }
@@ -173,7 +173,7 @@ contract ICOAirCenter is Ownable {
   function sendInternally(address recipient, uint256 tokensToSend, uint256 valueToPresent) internal {
     if(recipient == address(0)) return;
 
-    if(tokensAvailable() &gt;= tokensToSend) {
+    if(tokensAvailable() >= tokensToSend) {
       token.transfer(recipient, tokensToSend);
       emit TransferredToken(recipient, valueToPresent);
     }else {
@@ -189,20 +189,20 @@ contract ICOAirCenter is Ownable {
   function retrieveToken(address tokenaddress) public onlyOwner{
     tmptoken = AirdropToken(tokenaddress);
     uint256 balance = tmptoken.balanceOf(this);
-    require (balance &gt; 0);
+    require (balance > 0);
     tmptoken.transfer(owner,balance);
   }
 
   function retrieveEth(uint256 value) public onlyOwner{
     uint256 ethamount = value.mul(10**18);
     uint256 balance = address(this).balance;
-    require (balance &gt; 0 &amp;&amp; ethamount&lt;= balance);
+    require (balance > 0 && ethamount<= balance);
     owner.transfer(ethamount);
   }
 
   function destroy() public onlyOwner {
     uint256 balance = tokensAvailable();
-    require (balance &gt; 0);
+    require (balance > 0);
     token.transfer(owner, balance);
     selfdestruct(owner);
   }

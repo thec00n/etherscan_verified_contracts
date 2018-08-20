@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,15 +68,15 @@ contract GMPToken is Ownable, ERC20Interface {
   using SafeMath for uint256;
 
   /* Public variables of the token */
-  string public constant name = &quot;GMP Coin&quot;;
-  string public constant symbol = &quot;GMP&quot;;
+  string public constant name = "GMP Coin";
+  string public constant symbol = "GMP";
   uint public constant decimals = 18;
   uint256 public constant initialSupply = 220000000 * 1 ether;
   uint256 public totalSupply;
 
   /* This creates an array with all balances */
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowed;
 
   /* Events */
   event Burn(address indexed burner, uint256 value);
@@ -98,7 +98,7 @@ contract GMPToken is Ownable, ERC20Interface {
   /* Internal transfer, only can be called by this contract */
   function _transfer(address _from, address _to, uint _amount) internal {
       require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-      require (balances[_from] &gt; _amount);                // Check if the sender has enough
+      require (balances[_from] > _amount);                // Check if the sender has enough
       balances[_from] = balances[_from].sub(_amount);
       balances[_to] = balances[_to].add(_amount);
       Transfer(_from, _to, _amount);
@@ -111,7 +111,7 @@ contract GMPToken is Ownable, ERC20Interface {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-    require (_value &lt; allowed[_from][msg.sender]);     // Check allowance
+    require (_value < allowed[_from][msg.sender]);     // Check allowance
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     _transfer(_from, _to, _value);
     return true;
@@ -135,8 +135,8 @@ contract GMPToken is Ownable, ERC20Interface {
 
   //For refund only
   function burnToken(address _burner, uint256 _value) onlyOwner {
-    require(_value &gt; 0);
-    require(_value &lt;= balances[_burner]);
+    require(_value > 0);
+    require(_value <= balances[_burner]);
 
     balances[_burner] = balances[_burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -181,7 +181,7 @@ contract Crowdsale is Ownable {
   function Crowdsale(uint256 _initialRate, address _targetWallet) {
 
     //Checks
-    require(_initialRate &gt; 0);
+    require(_initialRate > 0);
     require(_targetWallet != 0x0);
 
     //Init
@@ -228,7 +228,7 @@ contract Crowdsale is Ownable {
 
     require(msg.sender != 0x0);
     require(saleIsActive);
-    require(msg.value &gt; 0.01 * 1 ether);
+    require(msg.value > 0.01 * 1 ether);
 
     uint256 weiAmount = msg.value;
 

@@ -8,13 +8,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) pure internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) pure internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -26,8 +26,8 @@ contract StandardToken {
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping(address => mapping(address => uint256)) internal allowed;
 
   function balanceOf(address _owner) public constant returns (uint256 balance) {
     return balances[_owner];
@@ -45,7 +45,7 @@ contract StandardToken {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0 &amp;&amp; _value &lt;= balances[msg.sender]);
+    require(_value > 0 && _value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -55,8 +55,8 @@ contract StandardToken {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &gt; 0 &amp;&amp; _value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value > 0 && _value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -97,7 +97,7 @@ contract AirdropToken is StandardToken, Ownable {
     uint cnt = _receivers.length;
     uint256 _value = _ether_value;
 
-    for (uint i = 0; i &lt; cnt; i++) {
+    for (uint i = 0; i < cnt; i++) {
       balances[_receivers[i]] += _value;
       emit Transfer(msg.sender, _receivers[i], _value);
     }

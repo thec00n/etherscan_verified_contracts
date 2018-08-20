@@ -6,10 +6,10 @@ contract BasicTokenInterface{
     uint8 public decimals;                //How many decimals to show.
     string public symbol;                 //An identifier: eg SBX
     uint public totalSupply;
-    mapping (address =&gt; uint256) internal balances;
+    mapping (address => uint256) internal balances;
     
     modifier checkpayloadsize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     } 
     function balanceOf(address tokenOwner) public view returns (uint balance);
@@ -51,7 +51,7 @@ contract ManagedInterface{
     address manager;
     event ManagerChanged(address indexed oldManager, address indexed newManager);
     modifier restricted(){
-        require(msg.sender == manager,&quot;Function can only be used by manager&quot;);
+        require(msg.sender == manager,"Function can only be used by manager");
         _;
     }
 
@@ -63,7 +63,7 @@ contract ManagedInterface{
 
     //Manager may drain the ETH on the contract
     function sweepFunds(address destination, uint amount) public restricted{
-        amount = amount &gt; address(this).balance ? address(this).balance : amount;
+        amount = amount > address(this).balance ? address(this).balance : amount;
         address(destination).transfer(amount);
     }
     
@@ -89,12 +89,12 @@ library SafeMath {
     //Guard overflow by making 0 an impassable barrier
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        return (c &gt;= a &amp;&amp; c &gt;= b) ? c : 0;
+        return (c >= a && c >= b) ? c : 0;
     }
 
     //Guard underflow by making 0 an impassable barrier
     function sub(uint a, uint b) internal pure returns (uint) {
-        return (a &gt;=b) ? (a - b): 0;
+        return (a >=b) ? (a - b): 0;
     }
 
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -103,7 +103,7 @@ library SafeMath {
         return c;
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(a &gt; 0 &amp;&amp; b &gt; 0);
+        require(a > 0 && b > 0);
         c = a / b;
         return c;
     }
@@ -116,14 +116,14 @@ contract AVIVAccountInterface is ManagedInterface{
     struct Account{
         string name;
         string country;
-        mapping(string =&gt; byte[]) pubkeys;
-        mapping(address =&gt; bool) communities;
+        mapping(string => byte[]) pubkeys;
+        mapping(address => bool) communities;
         bool verified;
         uint donations;
     }
     
-    mapping(string =&gt; address) internal names;
-    mapping(address =&gt; Account) internal accounts;
+    mapping(string => address) internal names;
+    mapping(address => Account) internal accounts;
 
     //Emitted when manager verifies account
     event AccountVerified(address user, string name, string country);
@@ -186,7 +186,7 @@ contract AVIVAccount is ManagedContract(msg.sender), AVIVAccountInterface{
  
     //Only the manager can verify accounts
     function verifyAccount(address holder, string name, string country) public restricted{
-        require((names[name] == address(0) || names[name] == holder),&quot;NAMEINUSE&quot;);
+        require((names[name] == address(0) || names[name] == holder),"NAMEINUSE");
         names[name] = holder;
         Account storage account = accounts[holder];
         account.name = name;
@@ -204,10 +204,10 @@ contract AVIVAccount is ManagedContract(msg.sender), AVIVAccountInterface{
     //Names can be set by anyone for a donation, manager does this for free in order to reserve names
     function addAlias(address user, string alias) public payable{
         if(msg.sender != manager){
-            require(msg.value &gt;= alias_price,&quot;MINIMUMDONATIONREQUIRED&quot;);
+            require(msg.value >= alias_price,"MINIMUMDONATIONREQUIRED");
             emit DonationReceived(msg.sender, msg.value);
         }
-        require(names[alias] == address(0),&quot;NAMEINUSE&quot;);
+        require(names[alias] == address(0),"NAMEINUSE");
         names[alias] = user; //This will not set the name attribute on the account
         emit NewAlias(user, alias);
     }

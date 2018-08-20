@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -53,8 +53,8 @@ contract Ownable {
 contract VitManToken is Ownable {
     using SafeMath for uint256;
      
-    string public constant name       = &quot;VitMan&quot;;
-    string public constant symbol     = &quot;VITMAN&quot;;
+    string public constant name       = "VitMan";
+    string public constant symbol     = "VITMAN";
     uint32 public constant decimals   = 18;
     
     uint256 public totalSupply        = 100000000000 ether;
@@ -62,9 +62,9 @@ contract VitManToken is Ownable {
     uint256 public startBalance       = 2018 ether;
 
     
-    mapping(address =&gt; bool) touched;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => bool) touched;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     
      
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -73,7 +73,7 @@ contract VitManToken is Ownable {
     
   
     function _touched(address _address) internal returns(bool) {
-         if( !touched[_address] &amp;&amp; _address!=owner){
+         if( !touched[_address] && _address!=owner){
             balances[_address] = balances[_address].add( startBalance );
             currentTotalSupply = currentTotalSupply.add( startBalance );
             touched[_address] = true;
@@ -89,11 +89,11 @@ contract VitManToken is Ownable {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
         _touched(msg.sender);
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -104,7 +104,7 @@ contract VitManToken is Ownable {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //Same as above. Replace this line with the following if you want to protect against wrapping uints.
         _touched(_from);
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -137,7 +137,7 @@ contract VitManToken is Ownable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
           allowed[msg.sender][_spender] = 0;
         } else {
           allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -147,7 +147,7 @@ contract VitManToken is Ownable {
      }
      
      function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   
+        require(balances[msg.sender] >= _value);   
         balances[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);
@@ -155,8 +155,8 @@ contract VitManToken is Ownable {
     }
 
     function burnFrom(address _from, uint256 _value) public onlyOwner returns (bool success) {
-        require(balances[_from] &gt;= _value);                
-        require(allowed[_from][msg.sender]&gt;=_value);    
+        require(balances[_from] >= _value);                
+        require(allowed[_from][msg.sender]>=_value);    
         balances[_from] -= _value;                         
         allowed[_from][msg.sender] -= _value;             
         totalSupply -= _value;                              
@@ -174,7 +174,7 @@ contract VitManToken is Ownable {
  
      
     function setStartBalance(uint256 _startBalance) onlyOwner public {
-        require(_startBalance&gt;=0);
+        require(_startBalance>=0);
         startBalance=_startBalance * 1 ether;
     }
     

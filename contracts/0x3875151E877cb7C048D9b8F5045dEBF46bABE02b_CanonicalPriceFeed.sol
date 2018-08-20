@@ -125,9 +125,9 @@ contract DSGroup is DSExec, DSNote {
     uint       public  window;
     uint       public  actionCount;
 
-    mapping (uint =&gt; Action)                     public  actions;
-    mapping (uint =&gt; mapping (address =&gt; bool))  public  confirmedBy;
-    mapping (address =&gt; bool)                    public  isMember;
+    mapping (uint => Action)                     public  actions;
+    mapping (uint => mapping (address => bool))  public  confirmedBy;
+    mapping (address => bool)                    public  isMember;
 
     // Legacy events
     event Proposed   (uint id, bytes calldata);
@@ -153,7 +153,7 @@ contract DSGroup is DSExec, DSNote {
         quorum   = quorum_;
         window   = window_;
 
-        for (uint i = 0; i &lt; members.length; i++) {
+        for (uint i = 0; i < members.length; i++) {
             isMember[members[i]] = true;
         }
     }
@@ -183,10 +183,10 @@ contract DSGroup is DSExec, DSNote {
     }
 
     function confirmed(uint id) constant returns (bool) {
-        return confirmations(id) &gt;= quorum;
+        return confirmations(id) >= quorum;
     }
     function expired(uint id) constant returns (bool) {
-        return now &gt; deadline(id);
+        return now > deadline(id);
     }
 
     function deposit() note payable {
@@ -267,7 +267,7 @@ contract DSGroup is DSExec, DSNote {
 }
 
 contract DSGroupFactory is DSNote {
-    mapping (address =&gt; bool)  public  isGroup;
+    mapping (address => bool)  public  isGroup;
 
     function newGroup(
         address[]  members,
@@ -281,26 +281,26 @@ contract DSGroupFactory is DSNote {
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -319,10 +319,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -361,7 +361,7 @@ interface AssetInterface {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -437,7 +437,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         address breakIn; // Break in contract on destination chain
         address breakOut; // Break out contract on this chain; A way to leave
         uint[] standards; // compliance with standards like ERC20, ERC223, ERC777, etc. (the uint is the standard number)
-        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund&lt;-&gt;Asset` as much as possible. I.e. name same concepts with the same functionSignature.
+        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund<->Asset` as much as possible. I.e. name same concepts with the same functionSignature.
         uint price; // Price of asset quoted against `QUOTE_ASSET` * 10 ** decimals
         uint timestamp; // Timestamp of last price update of this asset
     }
@@ -447,7 +447,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         address adapter; // adapter contract for this exchange
         // One-time note: takesCustody is inverse case of isApproveOnly
         bool takesCustody; // True in case of exchange implementation which requires  are approved when an order is made instead of transfer
-        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund&lt;-&gt;ExchangeAdapter` as much as possible. I.e. name same concepts with the same functionSignature.
+        bytes4[] functionSignatures; // Whitelisted function signatures that can be called using `useExternalFunction` in Fund contract. Note: Adhere to a naming convention for `Fund<->ExchangeAdapter` as much as possible. I.e. name same concepts with the same functionSignature.
     }
     // TODO: populate each field here
     // TODO: add whitelistFunction function
@@ -455,10 +455,10 @@ contract CanonicalRegistrar is DSThing, DBC {
     // FIELDS
 
     // Methods fields
-    mapping (address =&gt; Asset) public assetInformation;
+    mapping (address => Asset) public assetInformation;
     address[] public registeredAssets;
 
-    mapping (address =&gt; Exchange) public exchangeInformation;
+    mapping (address => Exchange) public exchangeInformation;
     address[] public registeredExchanges;
 
     // METHODS
@@ -597,7 +597,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         require(registeredAssets[assetIndex] == ofAsset);
         delete assetInformation[ofAsset]; // Sets exists boolean to false
         delete registeredAssets[assetIndex];
-        for (uint i = assetIndex; i &lt; registeredAssets.length-1; i++) {
+        for (uint i = assetIndex; i < registeredAssets.length-1; i++) {
             registeredAssets[i] = registeredAssets[i+1];
         }
         registeredAssets.length--;
@@ -618,7 +618,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         require(registeredExchanges[exchangeIndex] == ofExchange);
         delete exchangeInformation[ofExchange];
         delete registeredExchanges[exchangeIndex];
-        for (uint i = exchangeIndex; i &lt; registeredExchanges.length-1; i++) {
+        for (uint i = exchangeIndex; i < registeredExchanges.length-1; i++) {
             registeredExchanges[i] = registeredExchanges[i+1];
         }
         registeredExchanges.length--;
@@ -639,7 +639,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         returns (bool)
     {
         bytes4[] memory signatures = assetInformation[ofAsset].functionSignatures;
-        for (uint i = 0; i &lt; signatures.length; i++) {
+        for (uint i = 0; i < signatures.length; i++) {
             if (signatures[i] == querySignature) {
                 return true;
             }
@@ -672,7 +672,7 @@ contract CanonicalRegistrar is DSThing, DBC {
         returns (bool)
     {
         bytes4[] memory signatures = exchangeInformation[ofExchange].functionSignatures;
-        for (uint i = 0; i &lt; signatures.length; i++) {
+        for (uint i = 0; i < signatures.length; i++) {
             if (signatures[i] == querySignature) {
                 return true;
             }
@@ -710,7 +710,7 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     }
 
     // FIELDS
-    mapping(address =&gt; Data) public assetsToPrices;
+    mapping(address => Data) public assetsToPrices;
 
     // Constructor fields
     address public QUOTE_ASSET; // Asset of a portfolio against which all other assets are priced
@@ -767,8 +767,8 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     @dev Asset has been registered
     @param ofAsset Asset for which price should be returned
     @return {
-      &quot;price&quot;: &quot;Price formatting: mul(exchangePrice, 10 ** decimal), to avoid floating numbers&quot;,
-      &quot;timestamp&quot;: &quot;When the asset&#39;s price was updated&quot;
+      "price": "Price formatting: mul(exchangePrice, 10 ** decimal), to avoid floating numbers",
+      "timestamp": "When the asset's price was updated"
     }
     */
     function getPrice(address ofAsset)
@@ -784,8 +784,8 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     @dev Convention for price formatting: mul(price, 10 ** decimal), to avoid floating numbers
     @param ofAssets Assets for which prices should be returned
     @return {
-        &quot;prices&quot;:       &quot;Array of prices&quot;,
-        &quot;timestamps&quot;:   &quot;Array of timestamps&quot;,
+        "prices":       "Array of prices",
+        "timestamps":   "Array of timestamps",
     }
     */
     function getPrices(address[] ofAssets)
@@ -794,7 +794,7 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
     {
         uint[] memory prices = new uint[](ofAssets.length);
         uint[] memory timestamps = new uint[](ofAssets.length);
-        for (uint i; i &lt; ofAssets.length; i++) {
+        for (uint i; i < ofAssets.length; i++) {
             var (price, timestamp) = getPrice(ofAssets[i]);
             prices[i] = price;
             timestamps[i] = timestamp;
@@ -810,7 +810,7 @@ contract SimplePriceFeed is SimplePriceFeedInterface, DSThing, DBC {
         pre_cond(ofAssets.length == newPrices.length)
     {
         updateId++;
-        for (uint i = 0; i &lt; ofAssets.length; ++i) {
+        for (uint i = 0; i < ofAssets.length; ++i) {
             require(registrar.assetIsRegistered(ofAssets[i]));
             require(assetsToPrices[ofAssets[i]].timestamp != now); // prevent two updates in one block
             assetsToPrices[ofAssets[i]].timestamp = now;
@@ -901,14 +901,14 @@ contract OperatorStaking is DBC {
     uint public minimumStake;
     uint public numOperators;
     uint public withdrawalDelay;
-    mapping (address =&gt; bool) public isRanked;
-    mapping (address =&gt; uint) public latestUnstakeTime;
-    mapping (address =&gt; uint) public stakeToWithdraw;
-    mapping (address =&gt; uint) public stakedAmounts;
+    mapping (address => bool) public isRanked;
+    mapping (address => uint) public latestUnstakeTime;
+    mapping (address => uint) public stakeToWithdraw;
+    mapping (address => uint) public stakedAmounts;
     uint public numStakers; // Current number of stakers (Needed because of array holes)
     AssetInterface public stakingToken;
 
-    // TODO: consider renaming &quot;operator&quot; depending on how this is implemented
+    // TODO: consider renaming "operator" depending on how this is implemented
     //  (i.e. is pricefeed staking itself?)
     function OperatorStaking(
         AssetInterface _stakingToken,
@@ -934,7 +934,7 @@ contract OperatorStaking is DBC {
         bytes data
     )
         public
-        pre_cond(amount &gt;= minimumStake)
+        pre_cond(amount >= minimumStake)
     {
         uint tailNodeId = stakeNodes[0].prev;
         stakedAmounts[msg.sender] += amount;
@@ -950,8 +950,8 @@ contract OperatorStaking is DBC {
     {
         uint preStake = stakedAmounts[msg.sender];
         uint postStake = preStake - amount;
-        require(postStake &gt;= minimumStake || postStake == 0);
-        require(stakedAmounts[msg.sender] &gt;= amount);
+        require(postStake >= minimumStake || postStake == 0);
+        require(stakedAmounts[msg.sender] >= amount);
         latestUnstakeTime[msg.sender] = block.timestamp;
         stakedAmounts[msg.sender] -= amount;
         stakeToWithdraw[msg.sender] += amount;
@@ -961,8 +961,8 @@ contract OperatorStaking is DBC {
 
     function withdrawStake()
         public
-        pre_cond(stakeToWithdraw[msg.sender] &gt; 0)
-        pre_cond(block.timestamp &gt;= latestUnstakeTime[msg.sender] + withdrawalDelay)
+        pre_cond(stakeToWithdraw[msg.sender] > 0)
+        pre_cond(block.timestamp >= latestUnstakeTime[msg.sender] + withdrawalDelay)
     {
         uint amount = stakeToWithdraw[msg.sender];
         stakeToWithdraw[msg.sender] = 0;
@@ -974,7 +974,7 @@ contract OperatorStaking is DBC {
     function isValidNode(uint id) view returns (bool) {
         // 0 is a sentinel and therefore invalid.
         // A valid node is the head or has a previous node.
-        return id != 0 &amp;&amp; (id == stakeNodes[0].next || stakeNodes[id].prev != 0);
+        return id != 0 && (id == stakeNodes[0].next || stakeNodes[id].prev != 0);
     }
 
     function searchNode(address staker) view returns (uint) {
@@ -990,7 +990,7 @@ contract OperatorStaking is DBC {
 
     function isOperator(address user) view returns (bool) {
         address[] memory operators = getOperators();
-        for (uint i; i &lt; operators.length; i++) {
+        for (uint i; i < operators.length; i++) {
             if (operators[i] == user) {
                 return true;
             }
@@ -1002,12 +1002,12 @@ contract OperatorStaking is DBC {
         view
         returns (address[])
     {
-        uint arrLength = (numOperators &gt; numStakers) ?
+        uint arrLength = (numOperators > numStakers) ?
             numStakers :
             numOperators;
         address[] memory operators = new address[](arrLength);
         uint current = stakeNodes[0].next;
-        for (uint i; i &lt; arrLength; i++) {
+        for (uint i; i < arrLength; i++) {
             operators[i] = stakeNodes[current].data.staker;
             current = stakeNodes[current].next;
         }
@@ -1021,7 +1021,7 @@ contract OperatorStaking is DBC {
         address[] memory stakers = new address[](numStakers);
         uint[] memory amounts = new uint[](numStakers);
         uint current = stakeNodes[0].next;
-        for (uint i; i &lt; numStakers; i++) {
+        for (uint i; i < numStakers; i++) {
             stakers[i] = stakeNodes[current].data.staker;
             amounts[i] = stakeNodes[current].data.amount;
             current = stakeNodes[current].next;
@@ -1044,7 +1044,7 @@ contract OperatorStaking is DBC {
         uint current = stakeNodes[0].next;
         if (current == 0) return insertNodeAfter(0, amount, staker);
         while (isValidNode(current)) {
-            if (amount &gt; stakeNodes[current].data.amount) {
+            if (amount > stakeNodes[current].data.amount) {
                 break;
             }
             current = stakeNodes[current].next;
@@ -1106,7 +1106,7 @@ contract OperatorStaking is DBC {
 
     function removeStakerFromArray(address _staker) internal {
         uint id = searchNode(_staker);
-        require(id &gt; 0);
+        require(id > 0);
         removeNode(id);
     }
 
@@ -1128,7 +1128,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     uint public minimumPriceCount = 1;
     uint public VALIDITY;
     uint public INTERVAL;
-    mapping (address =&gt; bool) public isStakingFeed; // If the Staking Feed has been created through this contract
+    mapping (address => bool) public isStakingFeed; // If the Staking Feed has been created through this contract
     HistoricalPrices[] public priceHistory;
 
     // METHODS
@@ -1212,7 +1212,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         stakedAmounts[user] = 0;
         stakeToWithdraw[user] = 0;
         updateStakerRanking(user);
-        emit StakeBurned(user, totalToBurn, &quot;&quot;);
+        emit StakeBurned(user, totalToBurn, "");
     }
 
     // PUBLIC METHODS
@@ -1270,12 +1270,12 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     {
         address[] memory operators = getOperators();
         uint[] memory newPrices = new uint[](ofAssets.length);
-        for (uint i = 0; i &lt; ofAssets.length; i++) {
+        for (uint i = 0; i < ofAssets.length; i++) {
             uint[] memory assetPrices = new uint[](operators.length);
-            for (uint j = 0; j &lt; operators.length; j++) {
+            for (uint j = 0; j < operators.length; j++) {
                 SimplePriceFeed feed = SimplePriceFeed(operators[j]);
                 var (price, timestamp) = feed.assetsToPrices(ofAssets[i]);
-                if (now &gt; add(timestamp, VALIDITY)) {
+                if (now > add(timestamp, VALIDITY)) {
                     continue; // leaves a zero in the array (dealt with later)
                 }
                 assetPrices[j] = price;
@@ -1291,27 +1291,27 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         returns (uint)
     {
         uint numValidEntries;
-        for (uint i = 0; i &lt; unsorted.length; i++) {
+        for (uint i = 0; i < unsorted.length; i++) {
             if (unsorted[i] != 0) {
                 numValidEntries++;
             }
         }
-        if (numValidEntries &lt; minimumPriceCount) {
+        if (numValidEntries < minimumPriceCount) {
             revert();
         }
         uint counter;
         uint[] memory out = new uint[](numValidEntries);
-        for (uint j = 0; j &lt; unsorted.length; j++) {
+        for (uint j = 0; j < unsorted.length; j++) {
             uint item = unsorted[j];
             if (item != 0) {    // skip zero (invalid) entries
-                if (counter == 0 || item &gt;= out[counter - 1]) {
+                if (counter == 0 || item >= out[counter - 1]) {
                     out[counter] = item;  // item is larger than last in array (we are home)
                 } else {
                     uint k = 0;
-                    while (item &gt;= out[k]) {
+                    while (item >= out[k]) {
                         k++;  // get to where element belongs (between smaller and larger items)
                     }
-                    for (uint l = counter; l &gt; k; l--) {
+                    for (uint l = counter; l > k; l--) {
                         out[l] = out[l - 1];    // bump larger elements rightward to leave slot
                     }
                     out[k] = item;
@@ -1355,7 +1355,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         returns (bool isRecent)
     {
         var ( , timestamp) = getPrice(ofAsset);
-        return (sub(now, timestamp) &lt;= VALIDITY);
+        return (sub(now, timestamp) <= VALIDITY);
     }
 
     /// @notice Whether prices of assets have been updated less than VALIDITY seconds ago
@@ -1365,7 +1365,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         view
         returns (bool areRecent)
     {
-        for (uint i; i &lt; ofAssets.length; i++) {
+        for (uint i; i < ofAssets.length; i++) {
             if (!hasRecentPrice(ofAssets[i])) {
                 return false;
             }
@@ -1388,9 +1388,9 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     @dev Existing price ofAssets quoted in QUOTE_ASSET (convention)
     @param ofAsset Asset for which inverted price should be return
     @return {
-        &quot;isRecent&quot;: &quot;Whether the price is fresh, given VALIDITY interval&quot;,
-        &quot;invertedPrice&quot;: &quot;Price based (instead of quoted) against QUOTE_ASSET&quot;,
-        &quot;assetDecimals&quot;: &quot;Decimal places for this asset&quot;
+        "isRecent": "Whether the price is fresh, given VALIDITY interval",
+        "invertedPrice": "Price based (instead of quoted) against QUOTE_ASSET",
+        "assetDecimals": "Decimal places for this asset"
     }
     */
     function getInvertedPriceInfo(address ofAsset)
@@ -1407,7 +1407,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         return (
             isRecent,
             mul(10 ** uint(quoteDecimals), 10 ** uint(assetDecimals)) / inputPrice,
-            quoteDecimals   // TODO: check on this; shouldn&#39;t it be assetDecimals?
+            quoteDecimals   // TODO: check on this; shouldn't it be assetDecimals?
         );
     }
 
@@ -1418,9 +1418,9 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
     @param ofBase Address of base asset
     @param ofQuote Address of quote asset
     @return {
-        &quot;isRecent&quot;: &quot;Whether the price is fresh, given VALIDITY interval&quot;,
-        &quot;referencePrice&quot;: &quot;Reference price&quot;,
-        &quot;decimal&quot;: &quot;Decimal places for this asset&quot;
+        "isRecent": "Whether the price is fresh, given VALIDITY interval",
+        "referencePrice": "Reference price",
+        "decimal": "Decimal places for this asset"
     }
     */
     function getReferencePriceInfo(address ofBase, address ofQuote)
@@ -1464,9 +1464,9 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         returns (bool isExistent)
     {
         return
-            hasRecentPrice(sellAsset) &amp;&amp; // Is tradable asset (TODO cleaner) and datafeed delivering data
-            hasRecentPrice(buyAsset) &amp;&amp; // Is tradable asset (TODO cleaner) and datafeed delivering data
-            (buyAsset == QUOTE_ASSET || sellAsset == QUOTE_ASSET) &amp;&amp; // One asset must be QUOTE_ASSET
+            hasRecentPrice(sellAsset) && // Is tradable asset (TODO cleaner) and datafeed delivering data
+            hasRecentPrice(buyAsset) && // Is tradable asset (TODO cleaner) and datafeed delivering data
+            (buyAsset == QUOTE_ASSET || sellAsset == QUOTE_ASSET) && // One asset must be QUOTE_ASSET
             (buyAsset != QUOTE_ASSET || sellAsset != QUOTE_ASSET); // Pair must consists of diffrent assets
     }
 
@@ -1478,7 +1478,7 @@ contract CanonicalPriceFeed is OperatorStaking, SimplePriceFeed, CanonicalRegist
         address[] memory ofPriceFeeds = new address[](numStakers);
         if (numStakers == 0) return ofPriceFeeds;
         uint current = stakeNodes[0].next;
-        for (uint i; i &lt; numStakers; i++) {
+        for (uint i; i < numStakers; i++) {
             StakingPriceFeed stakingFeed = StakingPriceFeed(stakeNodes[current].data.staker);
             if (stakingFeed.owner() == _owner) {
                 ofPriceFeeds[i] = address(stakingFeed);

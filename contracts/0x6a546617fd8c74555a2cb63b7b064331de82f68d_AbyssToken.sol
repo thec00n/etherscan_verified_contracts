@@ -5,12 +5,12 @@ pragma solidity ^0.4.21;
 /**
  * @title MultiOwnable
  * @dev The MultiOwnable contract has owners addresses and provides basic authorization control
- * functions, this simplifies the implementation of &quot;users permissions&quot;.
+ * functions, this simplifies the implementation of "users permissions".
  */
 contract MultiOwnable {
     address public manager; // address used to set owners
     address[] public owners;
-    mapping(address =&gt; bool) public ownerByAddress;
+    mapping(address => bool) public ownerByAddress;
 
     event SetOwners(address[] owners);
 
@@ -36,12 +36,12 @@ contract MultiOwnable {
     }
 
     function _setOwners(address[] _owners) internal {
-        for(uint256 i = 0; i &lt; owners.length; i++) {
+        for(uint256 i = 0; i < owners.length; i++) {
             ownerByAddress[owners[i]] = false;
         }
 
 
-        for(uint256 j = 0; j &lt; _owners.length; j++) {
+        for(uint256 j = 0; j < _owners.length; j++) {
             ownerByAddress[_owners[j]] = true;
         }
         owners = _owners;
@@ -78,13 +78,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -118,12 +118,12 @@ contract IERC20Token {
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 contract ERC20Token is IERC20Token, SafeMath {
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -133,7 +133,7 @@ contract ERC20Token is IERC20Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
@@ -236,7 +236,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool) {
         bool success = super.transfer(_to, _value);
-        if(hasListener() &amp;&amp; success) {
+        if(hasListener() && success) {
             eventListener.onTokenTransfer(msg.sender, _to, _value);
         }
         return success;
@@ -244,7 +244,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 
     function transferFrom(address _from, address _to, uint256 _value) public transfersAllowed returns (bool) {
         bool success = super.transferFrom(_from, _to, _value);
-        if(hasListener() &amp;&amp; success) {
+        if(hasListener() && success) {
             eventListener.onTokenTransfer(_from, _to, _value);
         }
         return success;
@@ -277,7 +277,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
      */
     function destroy(address _from, uint256 _value) external {
         require(ownerByAddress[msg.sender] || msg.sender == _from);
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         totalSupply = safeSub(totalSupply, _value);
         balances[_from] = safeSub(balances[_from], _value);
         Transfer(_from, address(0), _value);
@@ -312,7 +312,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = safeSub(oldValue, _subtractedValue);
@@ -341,7 +341,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 contract TransferLimitedToken is ManagedToken {
     uint256 public constant LIMIT_TRANSFERS_PERIOD = 365 days;
 
-    mapping(address =&gt; bool) public limitedWallets;
+    mapping(address => bool) public limitedWallets;
     uint256 public limitEndDate;
     address public limitedWalletsManager;
     bool public isLimitEnabled;
@@ -357,7 +357,7 @@ contract TransferLimitedToken is ManagedToken {
      * @param _to To address
      */
     modifier canTransfer(address _from, address _to)  {
-        require(now &gt;= limitEndDate || !isLimitEnabled || (!limitedWallets[_from] &amp;&amp; !limitedWallets[_to]));
+        require(now >= limitEndDate || !isLimitEnabled || (!limitedWallets[_from] && !limitedWallets[_to]));
         _;
     }
 
@@ -425,8 +425,8 @@ contract AbyssToken is TransferLimitedToken {
     function AbyssToken(address _listener, address[] _owners, address manager) public
         TransferLimitedToken(SALE_END_TIME, _listener, _owners, manager)
     {
-        name = &quot;ABYSS&quot;;
-        symbol = &quot;ABYSS&quot;;
+        name = "ABYSS";
+        symbol = "ABYSS";
         decimals = 18;
     }
 }

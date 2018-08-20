@@ -55,9 +55,9 @@ contract ERC20Interface {
 /// @title Yoyo Ark Coin (YAC)
 contract YoyoArkCoin is owned, ERC20Interface {
     // Public variables of the token
-    string public constant standard = &#39;ERC20&#39;;
-    string public constant name = &#39;Yoyo Ark Coin&#39;;
-    string public constant symbol = &#39;YAC&#39;;
+    string public constant standard = 'ERC20';
+    string public constant name = 'Yoyo Ark Coin';
+    string public constant symbol = 'YAC';
     uint8  public constant decimals = 18;
     uint public registrationTime = 0;
     bool public registered = false;
@@ -66,14 +66,14 @@ contract YoyoArkCoin is owned, ERC20Interface {
 
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // These are related to YAC team members
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (address =&gt; uint[3]) public frozenTokens;
+    mapping (address => bool) public frozenAccount;
+    mapping (address => uint[3]) public frozenTokens;
 
     // Variable of token frozen rules for YAC team members.
     uint public unlockat;
@@ -106,17 +106,17 @@ contract YoyoArkCoin is owned, ERC20Interface {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount)
         public
         returns (bool success)
     {
         if (!registered) return false;
-        if (_amount &lt;= 0) return false;
+        if (_amount <= 0) return false;
         if (frozenRules(msg.sender, _amount)) return false;
 
-        if (balances[msg.sender] &gt;= _amount
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+            && balances[_to] + _amount > balances[_to]) {
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -129,7 +129,7 @@ contract YoyoArkCoin is owned, ERC20Interface {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
@@ -137,10 +137,10 @@ contract YoyoArkCoin is owned, ERC20Interface {
         returns (bool success)
     {
         if (!registered) return false;
-        if (_amount &lt;= 0) return false;
+        if (_amount <= 0) return false;
         if (frozenRules(_from, _amount)) return false;
 
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && balances[_to] + _amount > balances[_to]) {
 
             balances[_from] -= _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -215,9 +215,9 @@ contract YoyoArkCoin is owned, ERC20Interface {
         returns (bool success)
     {
         if (frozenAccount[_from]) {
-            if (now &lt; unlockat) {
+            if (now < unlockat) {
                // 100% locked within the first 6 months.
-               if (balances[_from] - _value &lt; frozenTokens[_from][0])
+               if (balances[_from] - _value < frozenTokens[_from][0])
                     return true;
             } else {
                // 100% unlocked after 6 months.

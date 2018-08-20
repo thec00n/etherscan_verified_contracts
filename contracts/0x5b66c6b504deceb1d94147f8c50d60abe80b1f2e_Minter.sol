@@ -4,7 +4,7 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -161,10 +161,10 @@ contract Minter is Ownable {
   uint256 public total = 9764845721712500000000;
 
   function proceed() public onlyOwner {
-    // Start giving errors if we&#39;re not done.
+    // Start giving errors if we're not done.
     require(!complete);
     token.mint(this, total);
-    for(uint256 i = 0; i &lt; holders.length; i++) {
+    for(uint256 i = 0; i < holders.length; i++) {
       token.transfer(holders[i], amounts[i]);
     }
     returnOwnership();

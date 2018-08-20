@@ -16,22 +16,22 @@ contract ERC20Basic {
  */
 contract Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -69,31 +69,31 @@ contract SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 /**
@@ -101,7 +101,7 @@ contract SafeMath {
  * @dev Basic version of StandardToken, with no allowances.
  */
 contract BasicToken is SafeMath, ERC20Basic {
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -140,7 +140,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
   function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
     var _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_to] = add(balances[_to],_value);
     balances[_from] = sub(balances[_from],_value);
     allowed[_from][msg.sender] = sub(_allowance,_value);
@@ -287,7 +287,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-   require(_value &lt;= transferableTokens(_sender, uint64(now)));
+   require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
   /**
@@ -331,7 +331,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
     bool revokable;
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
   /**
    * @dev Grant tokens to a specified address
@@ -351,8 +351,8 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
     bool _burnsOnRevoke
   ) public {
     // Check for date inconsistencies that may cause unexpected behavior
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
-    require(tokenGrantsCount(_to) &lt; MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(_cliff >= _start && _vesting >= _cliff);
+    require(tokenGrantsCount(_to) < MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
     uint256 count = grants[_to].push(
                 TokenGrant(
                   _revokable ? msg.sender : 0, // avoid storing an extra 20 bytes when it is non-revokable
@@ -390,14 +390,14 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint256 representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint256 representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) constant public returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
     if (grantIndex == 0) return super.transferableTokens(holder, time); // shortcut for holder without grants
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
     // Balance - totalNonVested is the amount of tokens a holder can transfer at any given time
@@ -435,7 +435,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Clift    Vesting
    */
   function calculateVestedTokens(
@@ -446,11 +446,11 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
     uint256 vesting) constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
       // vestedTokens = tokens * (time - start) / (vesting - start)
       uint256 vestedTokens = div(
                                     mul(
@@ -512,7 +512,7 @@ contract VestedToken is Math, StandardToken, LimitedTransferToken {
   function lastTokenIsTransferableDate(address holder) constant public returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = max64(grants[holder][i].vesting, date);
     }
   }
@@ -530,7 +530,7 @@ contract BurnableToken is SafeMath, StandardToken {
     function burn(uint _value)
         public
     {
-        require(_value &gt; 0);
+        require(_value > 0);
         address burner = msg.sender;
         balances[burner] = sub(balances[burner], _value);
         totalSupply = sub(totalSupply, _value);
@@ -543,8 +543,8 @@ contract BurnableToken is SafeMath, StandardToken {
  * VestedToken, BurnableToken contract from open zeppelin.
  */
 contract PLC is MintableToken, PausableToken, VestedToken, BurnableToken {
-  string public name = &quot;PlusCoin&quot;;
-  string public symbol = &quot;PLC&quot;;
+  string public name = "PlusCoin";
+  string public symbol = "PLC";
   uint256 public decimals = 18;
 }
 /**
@@ -555,8 +555,8 @@ contract PLC is MintableToken, PausableToken, VestedToken, BurnableToken {
  */
 contract RefundVault is Ownable, SafeMath{
   enum State { Active, Refunding, Closed }
-  mapping (address =&gt; uint256) public deposited;
-  mapping (address =&gt; uint256) public refunded;
+  mapping (address => uint256) public deposited;
+  mapping (address => uint256) public refunded;
   State public state;
   address public devMultisig;
   address[] public reserveWallet;
@@ -598,7 +598,7 @@ contract RefundVault is Ownable, SafeMath{
     Transferred(devMultisig, devAmount);
     uint256 reserveAmount = div(mul(balance, 9), 10);
     uint256 reserveAmountForEach = div(reserveAmount, reserveWallet.length);
-    for(uint8 i = 0; i &lt; reserveWallet.length; i++){
+    for(uint8 i = 0; i < reserveWallet.length; i++){
       reserveWallet[i].transfer(reserveAmountForEach);
       Transferred(reserveWallet[i], reserveAmountForEach);
     }
@@ -618,7 +618,7 @@ contract RefundVault is Ownable, SafeMath{
    */
   function refund(address investor) returns (bool) {
     require(state == State.Refunding);
-    if (refunded[investor] &gt; 0) {
+    if (refunded[investor] > 0) {
       return false;
     }
     uint256 depositedValue = deposited[investor];
@@ -637,9 +637,9 @@ contract RefundVault is Ownable, SafeMath{
  */
 contract KYC is Ownable, SafeMath, Pausable {
   // check the address is registered for token sale
-  mapping (address =&gt; bool) public registeredAddress;
+  mapping (address => bool) public registeredAddress;
   // check the address is admin of kyc contract
-  mapping (address =&gt; bool) public admin;
+  mapping (address => bool) public admin;
   event Registered(address indexed _addr);
   event Unregistered(address indexed _addr);
   event NewAdmin(address indexed _addr);
@@ -669,7 +669,7 @@ contract KYC is Ownable, SafeMath, Pausable {
     public
     onlyOwner
   {
-    require(_addr != address(0) &amp;&amp; admin[_addr] == false);
+    require(_addr != address(0) && admin[_addr] == false);
     admin[_addr] = true;
     NewAdmin(_addr);
   }
@@ -693,7 +693,7 @@ contract KYC is Ownable, SafeMath, Pausable {
     onlyAdmin
     whenNotPaused
   {
-    require(_addr != address(0) &amp;&amp; registeredAddress[_addr] == false);
+    require(_addr != address(0) && registeredAddress[_addr] == false);
     registeredAddress[_addr] = true;
     Registered(_addr);
   }
@@ -706,8 +706,8 @@ contract KYC is Ownable, SafeMath, Pausable {
     onlyAdmin
     whenNotPaused
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
-      require(_addrs[i] != address(0) &amp;&amp; registeredAddress[_addrs[i]] == false);
+    for(uint256 i = 0; i < _addrs.length; i++) {
+      require(_addrs[i] != address(0) && registeredAddress[_addrs[i]] == false);
       registeredAddress[_addrs[i]] = true;
       Registered(_addrs[i]);
     }
@@ -732,7 +732,7 @@ contract KYC is Ownable, SafeMath, Pausable {
     public
     onlyAdmin
   {
-    for(uint256 i = 0; i &lt; _addrs.length; i++) {
+    for(uint256 i = 0; i < _addrs.length; i++) {
       require(isRegistered(_addrs[i]));
       registeredAddress[_addrs[i]] = false;
       Unregistered(_addrs[i]);
@@ -756,31 +756,31 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
   uint64 public startTime; // 1506384000; //2017.9.26 12:00 am (UTC)
   uint64 public endTime; // 1507593600; //2017.10.10 12:00 am (UTC)
   uint64[5] public deadlines; // [1506643200, 1506902400, 1507161600, 1507420800, 1507593600]; // [2017.9.26, 2017.10.02, 2017.10.05, 2017.10.08, 2017.10.10]
-  mapping (address =&gt; uint256) public presaleRate;
+  mapping (address => uint256) public presaleRate;
   uint8[5] public rates = [240, 230, 220, 210, 200];
   // amount of raised money in wei
   uint256 public weiRaised;
   // amount of ether buyer can buy
   uint256 constant public maxGuaranteedLimit = 5000 ether;
   // amount of ether presale buyer can buy
-  mapping (address =&gt; uint256) public presaleGuaranteedLimit;
-  mapping (address =&gt; bool) public isDeferred;
+  mapping (address => uint256) public presaleGuaranteedLimit;
+  mapping (address => bool) public isDeferred;
   // amount of ether funded for each buyer
   // bool: true if deferred otherwise false
-  mapping (bool =&gt; mapping (address =&gt; uint256)) public buyerFunded;
+  mapping (bool => mapping (address => uint256)) public buyerFunded;
   // amount of tokens minted for deferredBuyers
   uint256 public deferredTotalTokens;
   // buyable interval in block number 20
   uint256 constant public maxCallFrequency = 20;
   // block number when buyer buy
-  mapping (address =&gt; uint256) public lastCallBlock;
+  mapping (address => uint256) public lastCallBlock;
   bool public isFinalized = false;
   // minimum amount of funds to be raised in weis
   uint256 public maxEtherCap; // 100000 ether;
   uint256 public minEtherCap; // 30000 ether;
   // investor address list
   address[] buyerList;
-  mapping (address =&gt; bool) inBuyerList;
+  mapping (address => bool) inBuyerList;
   // number of refunded investors
   uint256 refundCompleted;
   // new owner of token contract when crowdsale is Finalized
@@ -795,7 +795,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
    * @dev Checks whether buyer is sending transaction too frequently
    */
   modifier canBuyInBlock () {
-    require(add(lastCallBlock[msg.sender], maxCallFrequency) &lt; block.number);
+    require(add(lastCallBlock[msg.sender], maxCallFrequency) < block.number);
     lastCallBlock[msg.sender] = block.number;
     _;
   }
@@ -803,14 +803,14 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
    * @dev Checks whether ico is started
    */
   modifier onlyAfterStart() {
-    require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+    require(now >= startTime && now <= endTime);
     _;
   }
   /**
    * @dev Checks whether ico is not started
    */
   modifier onlyBeforeStart() {
-    require(now &lt; startTime);
+    require(now < startTime);
     _;
   }
   /**
@@ -869,17 +869,17 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
     uint256 _minEtherCap)
   {
     //timelines check
-    for(uint8 i = 0; i &lt; _timelines.length-1; i++){
-      require(_timelines[i] &lt; _timelines[i+1]);
+    for(uint8 i = 0; i < _timelines.length-1; i++){
+      require(_timelines[i] < _timelines[i+1]);
     }
-    require(_timelines[0] &gt;= now);
+    require(_timelines[0] >= now);
     //address check
-    require(_kyc != 0x00 &amp;&amp; _token != 0x00 &amp;&amp; _refundVault != 0x00 &amp;&amp; _devMultisig != 0x00);
-    for(i = 0; i &lt; _reserveWallet.length; i++){
+    require(_kyc != 0x00 && _token != 0x00 && _refundVault != 0x00 && _devMultisig != 0x00);
+    for(i = 0; i < _reserveWallet.length; i++){
       require(_reserveWallet[i] != 0x00);
     }
     //cap check
-    require(_minEtherCap &lt; _maxEtherCap);
+    require(_minEtherCap < _maxEtherCap);
     kyc   = KYC(_kyc);
     token = PLC(_token);
     vault = RefundVault(_refundVault);
@@ -901,7 +901,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
   function () payable {
     if(isDeferred[msg.sender])
       buyDeferredPresaleTokens(msg.sender);
-    else if(now &lt; startTime)
+    else if(now < startTime)
       buyPresaleTokens(msg.sender);
     else
       buyTokens();
@@ -928,8 +928,8 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
     onlyOwner
   {
     require(presaleInvestor != 0x00);
-    require(presaleAmount &gt; 0);
-    require(_presaleRate &gt; 0);
+    require(presaleAmount > 0);
+    require(_presaleRate > 0);
     require(presaleGuaranteedLimit[presaleInvestor] == 0);
     presaleGuaranteedLimit[presaleInvestor] = presaleAmount;
     presaleRate[presaleInvestor] = _presaleRate;
@@ -954,7 +954,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
     onlyOwner
   {
     require(presaleInvestor != 0x00);
-    require(presaleGuaranteedLimit[presaleInvestor] &gt; 0);
+    require(presaleGuaranteedLimit[presaleInvestor] > 0);
     uint256 _amount = presaleGuaranteedLimit[presaleInvestor];
     uint256 _rate = presaleRate[presaleInvestor];
     bool _isDeferred = isDeferred[presaleInvestor];
@@ -984,18 +984,18 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
     require(beneficiary != 0x00);
     require(isDeferred[beneficiary]);
     uint guaranteedLimit = presaleGuaranteedLimit[beneficiary];
-    require(guaranteedLimit &gt; 0);
+    require(guaranteedLimit > 0);
     uint256 weiAmount = msg.value;
     require(weiAmount != 0);
     uint256 totalAmount = add(buyerFunded[true][beneficiary], weiAmount);
     uint256 toFund;
-    if (totalAmount &gt; guaranteedLimit) {
+    if (totalAmount > guaranteedLimit) {
       toFund = sub(guaranteedLimit, buyerFunded[true][beneficiary]);
     } else {
       toFund = weiAmount;
     }
-    require(toFund &gt; 0);
-    require(weiAmount &gt;= toFund);
+    require(toFund > 0);
+    require(weiAmount >= toFund);
     uint256 tokens = mul(toFund, presaleRate[beneficiary]);
     uint256 toReturn = sub(weiAmount, toFund);
     buy(beneficiary, tokens, toFund, toReturn, true);
@@ -1023,18 +1023,18 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
     require(validPurchase());
     require(!isDeferred[beneficiary]);
     uint guaranteedLimit = presaleGuaranteedLimit[beneficiary];
-    require(guaranteedLimit &gt; 0);
+    require(guaranteedLimit > 0);
     // calculate eth amount
     uint256 weiAmount = msg.value;
     uint256 totalAmount = add(buyerFunded[false][beneficiary], weiAmount);
     uint256 toFund;
-    if (totalAmount &gt; guaranteedLimit) {
+    if (totalAmount > guaranteedLimit) {
       toFund = sub(guaranteedLimit, buyerFunded[false][beneficiary]);
     } else {
       toFund = weiAmount;
     }
-    require(toFund &gt; 0);
-    require(weiAmount &gt;= toFund);
+    require(toFund > 0);
+    require(weiAmount >= toFund);
     uint256 tokens = mul(toFund, presaleRate[beneficiary]);
     uint256 toReturn = sub(weiAmount, toFund);
     buy(beneficiary, tokens, toFund, toReturn, false);
@@ -1053,21 +1053,21 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
   {
     // check validity
     require(validPurchase());
-    require(buyerFunded[false][msg.sender] &lt; maxGuaranteedLimit);
+    require(buyerFunded[false][msg.sender] < maxGuaranteedLimit);
     // calculate eth amount
     uint256 weiAmount = msg.value;
     uint256 totalAmount = add(buyerFunded[false][msg.sender], weiAmount);
     uint256 toFund;
-    if (totalAmount &gt; maxGuaranteedLimit) {
+    if (totalAmount > maxGuaranteedLimit) {
       toFund = sub(maxGuaranteedLimit, buyerFunded[false][msg.sender]);
     } else {
       toFund = weiAmount;
     }
-    if(add(weiRaised,toFund) &gt; maxEtherCap) {
+    if(add(weiRaised,toFund) > maxEtherCap) {
       toFund = sub(maxEtherCap, weiRaised);
     }
-    require(toFund &gt; 0);
-    require(weiAmount &gt;= toFund);
+    require(toFund > 0);
+    require(weiAmount >= toFund);
     uint256 tokens = mul(toFund, getRate());
     uint256 toReturn = sub(weiAmount, toFund);
     buy(msg.sender, tokens, toFund, toReturn, false);
@@ -1079,8 +1079,8 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
    * @return rate uint256 rate for now
    */
   function getRate() constant returns (uint256 rate) {
-    for(uint8 i = 0; i &lt; deadlines.length; i++)
-      if(now &lt; deadlines[i])
+    for(uint8 i = 0; i < deadlines.length; i++)
+      if(now < deadlines[i])
         return rates[i];
       return rates[rates.length-1];//should never be returned, but to be sure to not divide by 0
   }
@@ -1104,7 +1104,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
    */
   function validPurchase() internal constant returns (bool) {
     bool nonZeroPurchase = msg.value != 0;
-    return nonZeroPurchase &amp;&amp; !maxReached();
+    return nonZeroPurchase && !maxReached();
   }
   function buy(
     address _beneficiary,
@@ -1132,7 +1132,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
       false,
       false);
     // return ether if needed
-    if (_toReturn &gt; 0) {
+    if (_toReturn > 0) {
       msg.sender.transfer(_toReturn);
     }
   }
@@ -1155,11 +1155,11 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
       false,
       false);
     if (_isDeferred) {
-      for(uint8 i = 0; i &lt; reserveWallet.length; i++) {
+      for(uint8 i = 0; i < reserveWallet.length; i++) {
         token.transfer(reserveWallet[i], eachReserveAmount);
       }
     } else {
-      for(uint8 j = 0; j &lt; reserveWallet.length; j++) {
+      for(uint8 j = 0; j < reserveWallet.length; j++) {
         token.mint(reserveWallet[j], eachReserveAmount);
       }
     }
@@ -1172,7 +1172,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
   function distributeEther(uint256 devAmount, uint256 reserveAmount) internal {
     uint256 eachReserveAmount = div(reserveAmount, reserveWallet.length);
     devMultisig.transfer(devAmount);
-    for(uint8 i = 0; i &lt; reserveWallet.length; i++){
+    for(uint8 i = 0; i < reserveWallet.length; i++){
       reserveWallet[i].transfer(eachReserveAmount);
     }
   }
@@ -1181,7 +1181,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
    * @return true if crowdsale event has ended
    */
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
   /**
    * @dev should be called after crowdsale ends, to do
@@ -1228,12 +1228,12 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
   function refundAll(uint256 numToRefund) onlyOwner {
     require(isFinalized);
     require(!minReached());
-    require(numToRefund &gt; 0);
+    require(numToRefund > 0);
     uint256 limit = refundCompleted + numToRefund;
-    if (limit &gt; buyerList.length) {
+    if (limit > buyerList.length) {
       limit = buyerList.length;
     }
-    for(uint256 i = refundCompleted; i &lt; limit; i++) {
+    for(uint256 i = refundCompleted; i < limit; i++) {
       vault.refund(buyerList[i]);
     }
     refundCompleted = limit;
@@ -1259,7 +1259,7 @@ contract PLCCrowdsale is Ownable, SafeMath, Pausable {
    * @return true if min ether cap is reaced
    */
   function minReached() public constant returns (bool) {
-    return weiRaised &gt;= minEtherCap;
+    return weiRaised >= minEtherCap;
   }
   /**
    * @dev should burn unpaid tokens of deferred presale investors

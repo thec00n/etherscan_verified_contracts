@@ -28,13 +28,13 @@ contract SafeMath {
     }
 
     function safeSub(uint a, uint b) internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -52,7 +52,7 @@ contract BTCxCrowdsale is owned, SafeMath {
     uint public tokensSold = 0;  //the amount of UzmanbuCoin sold  
     /* the start date of the crowdsale*/
     uint public start; /* the start date of the crowdsale*/
-    mapping(address =&gt; uint256) public balanceOf;  //Ether deposited by the investor
+    mapping(address => uint256) public balanceOf;  //Ether deposited by the investor
     // bool fundingGoalReached = false;
     bool crowdsaleClosed = false; //It will be true when the crowsale gets closed
 
@@ -86,7 +86,7 @@ contract BTCxCrowdsale is owned, SafeMath {
         uint amount = msg.value;  //amount received by the contract
         uint numTokens; //number of token which will be send to the investor
         numTokens = getNumTokens(amount);   //It will be true if the soft capital was reached
-        require(numTokens&gt;0 &amp;&amp; !crowdsaleClosed &amp;&amp; now &gt; start &amp;&amp; now &lt; deadline);
+        require(numTokens>0 && !crowdsaleClosed && now > start && now < deadline);
         balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], amount);
         amountRaised = safeAdd(amountRaised, amount); //Amount raised increments with the amount received by the investor
         tokensSold += numTokens; //Tokens sold increased too
@@ -102,7 +102,7 @@ contract BTCxCrowdsale is owned, SafeMath {
         return numTokens;
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -111,7 +111,7 @@ contract BTCxCrowdsale is owned, SafeMath {
      */
     function checkGoalReached() afterDeadline {
         require(msg.sender == owner); //Checks if the one who executes the function is the owner of the contract
-        if (tokensSold &gt;=fundingGoal){
+        if (tokensSold >=fundingGoal){
             GoalReached(beneficiary, amountRaised);
         }
         tokenReward.burn(tokenReward.balanceOf(this)); //Burns all the remaining tokens in the contract 

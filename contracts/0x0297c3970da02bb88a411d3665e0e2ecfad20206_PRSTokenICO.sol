@@ -10,14 +10,14 @@ contract PRSTokenICO {
 
     bool private purchasingAllowed = true;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     uint256 private totalContribution = 0;
 
     uint256 private totalSupply = 0;
 
-    function name() constant returns (string) { return &quot;Useless Ethereum Token 2&quot;; }
-    function symbol() constant returns (string) { return &quot;UET2&quot;; }
+    function name() constant returns (string) { return "Useless Ethereum Token 2"; }
+    function symbol() constant returns (string) { return "UET2"; }
     function decimals() constant returns (uint8) { return 18; }
     
     function balanceOf(address _owner) constant returns (uint256) { return balances[_owner]; }
@@ -51,7 +51,7 @@ contract PRSTokenICO {
 
         uint256 tokensIssued = (msg.value * 100);
 
-        if (msg.value &gt;= 10 finney) {
+        if (msg.value >= 10 finney) {
             tokensIssued += totalContribution;
         }
 

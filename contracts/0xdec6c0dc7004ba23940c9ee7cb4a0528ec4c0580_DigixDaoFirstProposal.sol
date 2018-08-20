@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-/// @title DigixDAO&#39;s 2nd Carbon Voting contracts
+/// @title DigixDAO's 2nd Carbon Voting contracts
 /// @author Digix Holdings
 
 /// @notice NumberCarbonVoting contract, generalized carbon voting contract
@@ -11,13 +11,13 @@ contract NumberCarbonVoting {
         bytes32 title;
         uint256 minValue;
         uint256 maxValue;
-        mapping (address =&gt; uint256) votes;
+        mapping (address => uint256) votes;
     }
 
-    mapping(uint256 =&gt; VoteItem) public voteItems;
+    mapping(uint256 => VoteItem) public voteItems;
     uint256 public itemCount;
 
-    mapping(address =&gt; bool) public voted;
+    mapping(address => bool) public voted;
     address[] public voters;
 
     constructor (
@@ -31,7 +31,7 @@ contract NumberCarbonVoting {
         public
     {
         itemCount = _itemCount;
-        for (uint256 i=0;i&lt;itemCount;i++) {
+        for (uint256 i=0;i<itemCount;i++) {
             voteItems[i].title = _titles[i];
             voteItems[i].minValue = _minValues[i];
             voteItems[i].maxValue = _maxValues[i];
@@ -42,7 +42,7 @@ contract NumberCarbonVoting {
 
     function vote(uint256[] _votes) public {
         require(_votes.length == itemCount);
-        require(now &gt;= start &amp;&amp; now &lt; end);
+        require(now >= start && now < end);
 
         address voter = msg.sender;
         if (!voted[voter]) {
@@ -50,8 +50,8 @@ contract NumberCarbonVoting {
             voters.push(voter);
         }
 
-        for (uint256 i=0;i&lt;itemCount;i++) {
-            require(_votes[i] &gt;= voteItems[i].minValue &amp;&amp; _votes[i] &lt;= voteItems[i].maxValue);
+        for (uint256 i=0;i<itemCount;i++) {
+            require(_votes[i] >= voteItems[i].minValue && _votes[i] <= voteItems[i].maxValue);
             voteItems[i].votes[voter] = _votes[i];
         }
     }
@@ -73,13 +73,13 @@ contract NumberCarbonVoting {
     function getVotesForItemFromVoterIndex(uint256 _itemIndex, uint256 _voterIndex, uint256 _count) public view
         returns (address[] _voters, uint256[] _votes)
     {
-        require(_itemIndex &lt; itemCount);
-        require(_voterIndex &lt; voters.length);
+        require(_itemIndex < itemCount);
+        require(_voterIndex < voters.length);
 
         _count = min(voters.length - _voterIndex, _count);
         _voters = new address[](_count);
         _votes = new uint256[](_count);
-        for (uint256 i=0;i&lt;_count;i++) {
+        for (uint256 i=0;i<_count;i++) {
             _voters[i] = voters[_voterIndex + i];
             _votes[i] = voteItems[_itemIndex].votes[_voters[i]];
         }
@@ -87,7 +87,7 @@ contract NumberCarbonVoting {
 
     function min(uint256 _a, uint256 _b) returns (uint256 _min) {
         _min = _a;
-        if (_b &lt; _a) {
+        if (_b < _a) {
             _min = _b;
         }
     }
@@ -105,13 +105,13 @@ contract NumberCarbonVoting {
     {
         _voted = voted[_voter];
         _votes = new uint256[](itemCount);
-        for (uint256 i=0;i&lt;itemCount;i++) {
+        for (uint256 i=0;i<itemCount;i++) {
             _votes[i] = voteItems[i].votes[_voter];
         }
     }
 }
 
-/// @notice the actual carbon voting contract, specific to DigixDAO&#39;s 2nd carbon voting: DigixDAO&#39;s first proposal
+/// @notice the actual carbon voting contract, specific to DigixDAO's 2nd carbon voting: DigixDAO's first proposal
 contract DigixDaoFirstProposal is NumberCarbonVoting {
     constructor (
         uint256 _itemCount,

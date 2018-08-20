@@ -8,20 +8,20 @@ library SafeMath {
   }
 
  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,7 +82,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) tokenBalances;
+  mapping(address => uint256) tokenBalances;
 
   /**
   * @dev transfer token for a specified address
@@ -90,7 +90,7 @@ contract BasicToken is ERC20Basic {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(tokenBalances[msg.sender]&gt;=_value);
+    require(tokenBalances[msg.sender]>=_value);
     tokenBalances[msg.sender] = tokenBalances[msg.sender].sub(_value);
     tokenBalances[_to] = tokenBalances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -112,8 +112,8 @@ contract RevolutionCoin is BasicToken,Ownable {
 
    using SafeMath for uint256;
    
-   string public constant name = &quot;R-evolutioncoin&quot;;
-   string public constant symbol = &quot;RVL&quot;;
+   string public constant name = "R-evolutioncoin";
+   string public constant symbol = "RVL";
    uint256 public constant decimals = 18;
    uint256 public preIcoBuyPrice = 222222222222222;   // per token the price is 2.2222*10^-4 eth, this price is equivalent in wei
    uint256 public IcoPrice = 1000000000000000;
@@ -151,31 +151,31 @@ contract RevolutionCoin is BasicToken,Ownable {
         uint priceCharged = 0;
         
         //pre-ico phase
-        if (TOKENS_SOLD &lt;4500000)
+        if (TOKENS_SOLD <4500000)
         {
             tokensRequired = amt.div(preIcoBuyPrice);
-            if (tokensRequired + TOKENS_SOLD &gt; 4500000)
+            if (tokensRequired + TOKENS_SOLD > 4500000)
             {
                 tokensYouCanGive = 4500000 - TOKENS_SOLD;
                 returnAmount = tokensRequired - tokensYouCanGive;
                 returnAmount = returnAmount.mul(preIcoBuyPrice);
-                log(&quot;Tokens being bought exceed the limit of pre-ico. Returning remaining amount&quot;,returnAmount);
+                log("Tokens being bought exceed the limit of pre-ico. Returning remaining amount",returnAmount);
             }
             else
             {
                 tokensYouCanGive = tokensRequired;
                 returnAmount = 0;
             }
-            require (tokensYouCanGive + TOKENS_SOLD &lt;= 4500000);
+            require (tokensYouCanGive + TOKENS_SOLD <= 4500000);
         }
         //ico phase 1 with 30% bonus
-        else if (TOKENS_SOLD &gt;=4500000 &amp;&amp; TOKENS_SOLD &lt;24000000)
+        else if (TOKENS_SOLD >=4500000 && TOKENS_SOLD <24000000)
         {
              tokensRequired = amt.div(IcoPrice);
              bonus = tokensRequired.mul(bonusPhase1);
              bonus = bonus.div(100);
              tokensRequired = tokensRequired.add(bonus);
-             if (tokensRequired + TOKENS_SOLD &gt; 24000000)
+             if (tokensRequired + TOKENS_SOLD > 24000000)
              {
                 tokensYouCanGive = 24000000 - TOKENS_SOLD;
                 tokensWithoutBonus = tokensYouCanGive.mul(10);
@@ -184,23 +184,23 @@ contract RevolutionCoin is BasicToken,Ownable {
                 priceCharged = tokensWithoutBonus.mul(IcoPrice); 
                 returnAmount = amt - priceCharged;
                 
-                log(&quot;Tokens being bought exceed the limit of ico phase 1. Returning remaining amount&quot;,returnAmount);
+                log("Tokens being bought exceed the limit of ico phase 1. Returning remaining amount",returnAmount);
              }
              else
             {
                 tokensYouCanGive = tokensRequired;
                 returnAmount = 0;
             }
-            require (tokensYouCanGive + TOKENS_SOLD &lt;= 24000000);
+            require (tokensYouCanGive + TOKENS_SOLD <= 24000000);
         }
         //ico phase 2 with 20% bonus
-        if (TOKENS_SOLD &gt;=24000000 &amp;&amp; TOKENS_SOLD &lt;42000000)
+        if (TOKENS_SOLD >=24000000 && TOKENS_SOLD <42000000)
         {
              tokensRequired = amt.div(IcoPrice);
              bonus = tokensRequired.mul(bonusPhase2);
              bonus = bonus.div(100);
              tokensRequired = tokensRequired.add(bonus);
-             if (tokensRequired + TOKENS_SOLD &gt; 42000000)
+             if (tokensRequired + TOKENS_SOLD > 42000000)
              {
                 tokensYouCanGive = 42000000 - TOKENS_SOLD;
                 tokensWithoutBonus = tokensYouCanGive.mul(10);
@@ -208,23 +208,23 @@ contract RevolutionCoin is BasicToken,Ownable {
                 
                 priceCharged = tokensWithoutBonus.mul(IcoPrice); 
                 returnAmount = amt - priceCharged;
-                log(&quot;Tokens being bought exceed the limit of ico phase 2. Returning remaining amount&quot;,returnAmount);
+                log("Tokens being bought exceed the limit of ico phase 2. Returning remaining amount",returnAmount);
              }
               else
             {
                 tokensYouCanGive = tokensRequired;
                 returnAmount = 0;
             }
-             require (tokensYouCanGive + TOKENS_SOLD &lt;= 42000000);
+             require (tokensYouCanGive + TOKENS_SOLD <= 42000000);
         }
         //ico phase 3 with 10% bonus
-        if (TOKENS_SOLD &gt;=42000000 &amp;&amp; TOKENS_SOLD &lt;58500000)
+        if (TOKENS_SOLD >=42000000 && TOKENS_SOLD <58500000)
         {
              tokensRequired = amt.div(IcoPrice);
              bonus = tokensRequired.mul(bonusPhase3);
              bonus = bonus.div(100);
              tokensRequired = tokensRequired.add(bonus);
-              if (tokensRequired + TOKENS_SOLD &gt; 58500000)
+              if (tokensRequired + TOKENS_SOLD > 58500000)
              {
                 tokensYouCanGive = 58500000 - TOKENS_SOLD;
                 tokensWithoutBonus = tokensYouCanGive.mul(10);
@@ -232,22 +232,22 @@ contract RevolutionCoin is BasicToken,Ownable {
                 
                 priceCharged = tokensWithoutBonus.mul(IcoPrice); 
                 returnAmount = amt - priceCharged;
-                log(&quot;Tokens being bought exceed the limit of ico phase 3. Returning remaining amount&quot;,returnAmount);
+                log("Tokens being bought exceed the limit of ico phase 3. Returning remaining amount",returnAmount);
              }
             else
             {
                 tokensYouCanGive = tokensRequired;
                 returnAmount = 0;
             }
-             require (tokensYouCanGive + TOKENS_SOLD &lt;= 58500000);
+             require (tokensYouCanGive + TOKENS_SOLD <= 58500000);
         }
         if (TOKENS_SOLD == 58500000)
         {
-            log(&quot;ICO has ended. All tokens sold.&quot;, 58500000);
+            log("ICO has ended. All tokens sold.", 58500000);
             tokensYouCanGive = 0;
             returnAmount = amt;
         }
-        require(TOKENS_SOLD &lt;=58500000);
+        require(TOKENS_SOLD <=58500000);
     }
     
     function buy(address beneficiary) payable public returns (uint tokens) {
@@ -257,14 +257,14 @@ contract RevolutionCoin is BasicToken,Ownable {
         TOKENS_SOLD += tokens;
         tokens = tokens * (10 ** uint256(decimals));
         
-        require(tokenBalances[owner] &gt;= tokens);               // checks if it has enough to sell
+        require(tokenBalances[owner] >= tokens);               // checks if it has enough to sell
         
-        tokenBalances[beneficiary] = tokenBalances[beneficiary].add(tokens);                  // adds the amount to buyer&#39;s balance
-        tokenBalances[owner] = tokenBalances[owner].sub(tokens);                        // subtracts amount from seller&#39;s balance
+        tokenBalances[beneficiary] = tokenBalances[beneficiary].add(tokens);                  // adds the amount to buyer's balance
+        tokenBalances[owner] = tokenBalances[owner].sub(tokens);                        // subtracts amount from seller's balance
         
         Transfer(owner, beneficiary, tokens);               // execute an event reflecting the change
     
-        if (paymentToGiveBack &gt;0)
+        if (paymentToGiveBack >0)
         {
             beneficiary.transfer(paymentToGiveBack);
         }

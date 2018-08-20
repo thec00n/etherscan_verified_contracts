@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -78,8 +78,8 @@ contract Owned {
 
 contract Callable is Owned {
 
-    //sender =&gt; _allowed
-    mapping(address =&gt; bool) public callers;
+    //sender => _allowed
+    mapping(address => bool) public callers;
 
     //modifiers
     modifier onlyCaller {
@@ -95,12 +95,12 @@ contract Callable is Owned {
 
 contract EternalStorage is Callable {
 
-    mapping(bytes32 =&gt; uint) uIntStorage;
-    mapping(bytes32 =&gt; string) stringStorage;
-    mapping(bytes32 =&gt; address) addressStorage;
-    mapping(bytes32 =&gt; bytes) bytesStorage;
-    mapping(bytes32 =&gt; bool) boolStorage;
-    mapping(bytes32 =&gt; int) intStorage;
+    mapping(bytes32 => uint) uIntStorage;
+    mapping(bytes32 => string) stringStorage;
+    mapping(bytes32 => address) addressStorage;
+    mapping(bytes32 => bytes) bytesStorage;
+    mapping(bytes32 => bool) boolStorage;
+    mapping(bytes32 => int) intStorage;
 
     // *** Getter Methods ***
     function getUint(bytes32 _key) external view returns (uint) {
@@ -189,17 +189,17 @@ contract FundRepository is Callable {
 
     EternalStorage public db;
 
-    //platform -&gt; platformId =&gt; _funding
-    mapping(bytes32 =&gt; mapping(string =&gt; Funding)) funds;
+    //platform -> platformId => _funding
+    mapping(bytes32 => mapping(string => Funding)) funds;
 
     struct Funding {
         address[] funders; //funders that funded tokens
         address[] tokens; //tokens that were funded
-        mapping(address =&gt; TokenFunding) tokenFunding;
+        mapping(address => TokenFunding) tokenFunding;
     }
 
     struct TokenFunding {
-        mapping(address =&gt; uint256) balance;
+        mapping(address => uint256) balance;
         uint256 totalTokenBalance;
     }
 
@@ -208,62 +208,62 @@ contract FundRepository is Callable {
     }
 
     function updateFunders(address _from, bytes32 _platform, string _platformId) public onlyCaller {
-        bool existing = db.getBool(keccak256(abi.encodePacked(&quot;funds.userHasFunded&quot;, _platform, _platformId, _from)));
+        bool existing = db.getBool(keccak256(abi.encodePacked("funds.userHasFunded", _platform, _platformId, _from)));
         if (!existing) {
             uint funderCount = getFunderCount(_platform, _platformId);
-            db.setAddress(keccak256(abi.encodePacked(&quot;funds.funders.address&quot;, _platform, _platformId, funderCount)), _from);
-            db.setUint(keccak256(abi.encodePacked(&quot;funds.funderCount&quot;, _platform, _platformId)), funderCount.add(1));
+            db.setAddress(keccak256(abi.encodePacked("funds.funders.address", _platform, _platformId, funderCount)), _from);
+            db.setUint(keccak256(abi.encodePacked("funds.funderCount", _platform, _platformId)), funderCount.add(1));
         }
     }
 
     function updateBalances(address _from, bytes32 _platform, string _platformId, address _token, uint256 _value) public onlyCaller {
-        if (db.getBool(keccak256(abi.encodePacked(&quot;funds.token.address&quot;, _platform, _platformId, _token))) == false) {
-            db.setBool(keccak256(abi.encodePacked(&quot;funds.token.address&quot;, _platform, _platformId, _token)), true);
+        if (db.getBool(keccak256(abi.encodePacked("funds.token.address", _platform, _platformId, _token))) == false) {
+            db.setBool(keccak256(abi.encodePacked("funds.token.address", _platform, _platformId, _token)), true);
             //add to the list of tokens for this platformId
             uint tokenCount = getFundedTokenCount(_platform, _platformId);
-            db.setAddress(keccak256(abi.encodePacked(&quot;funds.token.address&quot;, _platform, _platformId, tokenCount)), _token);
-            db.setUint(keccak256(abi.encodePacked(&quot;funds.tokenCount&quot;, _platform, _platformId)), tokenCount.add(1));
+            db.setAddress(keccak256(abi.encodePacked("funds.token.address", _platform, _platformId, tokenCount)), _token);
+            db.setUint(keccak256(abi.encodePacked("funds.tokenCount", _platform, _platformId)), tokenCount.add(1));
         }
 
         //add to the balance of this platformId for this token
-        db.setUint(keccak256(abi.encodePacked(&quot;funds.tokenBalance&quot;, _platform, _platformId, _token)), balance(_platform, _platformId, _token).add(_value));
+        db.setUint(keccak256(abi.encodePacked("funds.tokenBalance", _platform, _platformId, _token)), balance(_platform, _platformId, _token).add(_value));
 
         //add to the balance the user has funded for the request
-        db.setUint(keccak256(abi.encodePacked(&quot;funds.amountFundedByUser&quot;, _platform, _platformId, _from, _token)), amountFunded(_platform, _platformId, _from, _token).add(_value));
+        db.setUint(keccak256(abi.encodePacked("funds.amountFundedByUser", _platform, _platformId, _from, _token)), amountFunded(_platform, _platformId, _from, _token).add(_value));
 
         //add the fact that the user has now funded this platformId
-        db.setBool(keccak256(abi.encodePacked(&quot;funds.userHasFunded&quot;, _platform, _platformId, _from)), true);
+        db.setBool(keccak256(abi.encodePacked("funds.userHasFunded", _platform, _platformId, _from)), true);
     }
 
     function claimToken(bytes32 platform, string platformId, address _token) public onlyCaller returns (uint256) {
-        require(!issueResolved(platform, platformId), &quot;Can&#39;t claim token, issue is already resolved.&quot;);
+        require(!issueResolved(platform, platformId), "Can't claim token, issue is already resolved.");
         uint256 totalTokenBalance = balance(platform, platformId, _token);
-        db.deleteUint(keccak256(abi.encodePacked(&quot;funds.tokenBalance&quot;, platform, platformId, _token)));
+        db.deleteUint(keccak256(abi.encodePacked("funds.tokenBalance", platform, platformId, _token)));
         return totalTokenBalance;
     }
 
     function refundToken(bytes32 _platform, string _platformId, address _owner, address _token) public onlyCaller returns (uint256) {
-        require(!issueResolved(_platform, _platformId), &quot;Can&#39;t refund token, issue is already resolved.&quot;);
+        require(!issueResolved(_platform, _platformId), "Can't refund token, issue is already resolved.");
 
-        //delete amount from user, so he can&#39;t refund again
+        //delete amount from user, so he can't refund again
         uint256 userTokenBalance = amountFunded(_platform, _platformId, _owner, _token);
-        db.deleteUint(keccak256(abi.encodePacked(&quot;funds.amountFundedByUser&quot;, _platform, _platformId, _owner, _token)));
+        db.deleteUint(keccak256(abi.encodePacked("funds.amountFundedByUser", _platform, _platformId, _owner, _token)));
 
 
         uint256 oldBalance = balance(_platform, _platformId, _token);
         uint256 newBalance = oldBalance.sub(userTokenBalance);
 
-        require(newBalance &lt;= oldBalance);
+        require(newBalance <= oldBalance);
 
         //subtract amount from tokenBalance
-        db.setUint(keccak256(abi.encodePacked(&quot;funds.tokenBalance&quot;, _platform, _platformId, _token)), newBalance);
+        db.setUint(keccak256(abi.encodePacked("funds.tokenBalance", _platform, _platformId, _token)), newBalance);
 
         return userTokenBalance;
     }
 
     function finishResolveFund(bytes32 platform, string platformId) public onlyCaller returns (bool) {
-        db.setBool(keccak256(abi.encodePacked(&quot;funds.issueResolved&quot;, platform, platformId)), true);
-        db.deleteUint(keccak256(abi.encodePacked(&quot;funds.funderCount&quot;, platform, platformId)));
+        db.setBool(keccak256(abi.encodePacked("funds.issueResolved", platform, platformId)), true);
+        db.deleteUint(keccak256(abi.encodePacked("funds.funderCount", platform, platformId)));
         return true;
     }
 
@@ -277,31 +277,31 @@ contract FundRepository is Callable {
     }
 
     function issueResolved(bytes32 _platform, string _platformId) public view returns (bool) {
-        return db.getBool(keccak256(abi.encodePacked(&quot;funds.issueResolved&quot;, _platform, _platformId)));
+        return db.getBool(keccak256(abi.encodePacked("funds.issueResolved", _platform, _platformId)));
     }
 
     function getFundedTokenCount(bytes32 _platform, string _platformId) public view returns (uint256) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;funds.tokenCount&quot;, _platform, _platformId)));
+        return db.getUint(keccak256(abi.encodePacked("funds.tokenCount", _platform, _platformId)));
     }
 
     function getFundedTokensByIndex(bytes32 _platform, string _platformId, uint _index) public view returns (address) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;funds.token.address&quot;, _platform, _platformId, _index)));
+        return db.getAddress(keccak256(abi.encodePacked("funds.token.address", _platform, _platformId, _index)));
     }
 
     function getFunderCount(bytes32 _platform, string _platformId) public view returns (uint) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;funds.funderCount&quot;, _platform, _platformId)));
+        return db.getUint(keccak256(abi.encodePacked("funds.funderCount", _platform, _platformId)));
     }
 
     function getFunderByIndex(bytes32 _platform, string _platformId, uint index) external view returns (address) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;funds.funders.address&quot;, _platform, _platformId, index)));
+        return db.getAddress(keccak256(abi.encodePacked("funds.funders.address", _platform, _platformId, index)));
     }
 
     function amountFunded(bytes32 _platform, string _platformId, address _funder, address _token) public view returns (uint256) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;funds.amountFundedByUser&quot;, _platform, _platformId, _funder, _token)));
+        return db.getUint(keccak256(abi.encodePacked("funds.amountFundedByUser", _platform, _platformId, _funder, _token)));
     }
 
     function balance(bytes32 _platform, string _platformId, address _token) view public returns (uint256) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;funds.tokenBalance&quot;, _platform, _platformId, _token)));
+        return db.getUint(keccak256(abi.encodePacked("funds.tokenBalance", _platform, _platformId, _token)));
     }
 }
 
@@ -312,47 +312,47 @@ contract ClaimRepository is Callable {
 
     constructor(address _eternalStorage) public {
         //constructor
-        require(_eternalStorage != address(0), &quot;Eternal storage cannot be 0x0&quot;);
+        require(_eternalStorage != address(0), "Eternal storage cannot be 0x0");
         db = EternalStorage(_eternalStorage);
     }
 
     function addClaim(address _solverAddress, bytes32 _platform, string _platformId, string _solver, address _token, uint256 _requestBalance) public onlyCaller returns (bool) {
-        if (db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId))) != address(0)) {
-            require(db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId))) == _solverAddress, &quot;Adding a claim needs to happen with the same claimer as before&quot;);
+        if (db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId))) != address(0)) {
+            require(db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId))) == _solverAddress, "Adding a claim needs to happen with the same claimer as before");
         } else {
-            db.setString(keccak256(abi.encodePacked(&quot;claims.solver&quot;, _platform, _platformId)), _solver);
-            db.setAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId)), _solverAddress);
+            db.setString(keccak256(abi.encodePacked("claims.solver", _platform, _platformId)), _solver);
+            db.setAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId)), _solverAddress);
         }
 
-        uint tokenCount = db.getUint(keccak256(abi.encodePacked(&quot;claims.tokenCount&quot;, _platform, _platformId)));
-        db.setUint(keccak256(abi.encodePacked(&quot;claims.tokenCount&quot;, _platform, _platformId)), tokenCount.add(1));
-        db.setUint(keccak256(abi.encodePacked(&quot;claims.token.amount&quot;, _platform, _platformId, _token)), _requestBalance);
-        db.setAddress(keccak256(abi.encodePacked(&quot;claims.token.address&quot;, _platform, _platformId, tokenCount)), _token);
+        uint tokenCount = db.getUint(keccak256(abi.encodePacked("claims.tokenCount", _platform, _platformId)));
+        db.setUint(keccak256(abi.encodePacked("claims.tokenCount", _platform, _platformId)), tokenCount.add(1));
+        db.setUint(keccak256(abi.encodePacked("claims.token.amount", _platform, _platformId, _token)), _requestBalance);
+        db.setAddress(keccak256(abi.encodePacked("claims.token.address", _platform, _platformId, tokenCount)), _token);
         return true;
     }
 
     function isClaimed(bytes32 _platform, string _platformId) view external returns (bool claimed) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId))) != address(0);
+        return db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId))) != address(0);
     }
 
     function getSolverAddress(bytes32 _platform, string _platformId) view external returns (address solverAddress) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;claims.solver_address&quot;, _platform, _platformId)));
+        return db.getAddress(keccak256(abi.encodePacked("claims.solver_address", _platform, _platformId)));
     }
 
     function getSolver(bytes32 _platform, string _platformId) view external returns (string){
-        return db.getString(keccak256(abi.encodePacked(&quot;claims.solver&quot;, _platform, _platformId)));
+        return db.getString(keccak256(abi.encodePacked("claims.solver", _platform, _platformId)));
     }
 
     function getTokenCount(bytes32 _platform, string _platformId) view external returns (uint count) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;claims.tokenCount&quot;, _platform, _platformId)));
+        return db.getUint(keccak256(abi.encodePacked("claims.tokenCount", _platform, _platformId)));
     }
 
     function getTokenByIndex(bytes32 _platform, string _platformId, uint _index) view external returns (address token) {
-        return db.getAddress(keccak256(abi.encodePacked(&quot;claims.token.address&quot;, _platform, _platformId, _index)));
+        return db.getAddress(keccak256(abi.encodePacked("claims.token.address", _platform, _platformId, _index)));
     }
 
     function getAmountByToken(bytes32 _platform, string _platformId, address _token) view external returns (uint token) {
-        return db.getUint(keccak256(abi.encodePacked(&quot;claims.token.amount&quot;, _platform, _platformId, _token)));
+        return db.getUint(keccak256(abi.encodePacked("claims.token.amount", _platform, _platformId, _token)));
     }
 }
 
@@ -361,11 +361,11 @@ contract ApproveAndCallFallBack {
 }
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<span class="__cf_email__" data-cfemail="bcddcedddfd4d2d5d8fcd2d3c8d8d3c892d2d9c8">[email&#160;protected]</span>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<span class="__cf_email__" data-cfemail="bcddcedddfd4d2d5d8fcd2d3c8d8d3c892d2d9c8">[email protected]</span>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -373,11 +373,11 @@ contract ApproveAndCallFallBack {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -392,7 +392,7 @@ contract ApproveAndCallFallBack {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -406,7 +406,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -445,23 +445,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -497,7 +497,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal pure returns (string) {
         string memory ret = new string(self._len);
@@ -520,18 +520,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         uint ptr = self._ptr - 31;
         uint end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly {b := and(mload(ptr), 0xFF)}
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if (b &lt; 0xE0) {
+            } else if (b < 0xE0) {
                 ptr += 2;
-            } else if (b &lt; 0xF0) {
+            } else if (b < 0xF0) {
                 ptr += 3;
-            } else if (b &lt; 0xF8) {
+            } else if (b < 0xF8) {
                 ptr += 4;
-            } else if (b &lt; 0xFC) {
+            } else if (b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -559,12 +559,12 @@ library strings {
      */
     function compare(slice self, slice other) internal pure returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         uint selfptr = self._ptr;
         uint otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -574,7 +574,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint256 mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                uint256 diff = (a &amp; mask) - (b &amp; mask);
+                uint256 diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -613,18 +613,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly {b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF)}
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             l = 1;
-        } else if (b &lt; 0xE0) {
+        } else if (b < 0xE0) {
             l = 2;
-        } else if (b &lt; 0xF0) {
+        } else if (b < 0xF0) {
             l = 3;
         } else {
             l = 4;
         }
 
         // Check for truncated codepoints
-        if (l &gt; self._len) {
+        if (l > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -664,33 +664,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly {word := mload(mload(add(self, 32)))}
         uint b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if (b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if (b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if (b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if (b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -714,7 +714,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -740,7 +740,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -769,7 +769,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal pure returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -797,7 +797,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal pure returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -826,8 +826,8 @@ library strings {
         uint ptr = selfptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -838,7 +838,7 @@ library strings {
                 assembly {ptrdata := and(mload(ptr), mask)}
 
                 while (ptrdata != needledata) {
-                    if (ptr &gt;= end)
+                    if (ptr >= end)
                         return selfptr + selflen;
                     ptr++;
                     assembly {ptrdata := and(mload(ptr), mask)}
@@ -849,7 +849,7 @@ library strings {
                 bytes32 hash;
                 assembly {hash := sha3(needleptr, needlelen)}
 
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly {testHash := sha3(ptr, needlelen)}
                     if (hash == testHash)
@@ -866,8 +866,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private pure returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
@@ -878,7 +878,7 @@ library strings {
                 assembly {ptrdata := and(mload(ptr), mask)}
 
                 while (ptrdata != needledata) {
-                    if (ptr &lt;= selfptr)
+                    if (ptr <= selfptr)
                         return selfptr;
                     ptr--;
                     assembly {ptrdata := and(mload(ptr), mask)}
@@ -889,7 +889,7 @@ library strings {
                 bytes32 hash;
                 assembly {hash := sha3(needleptr, needlelen)}
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly {testHash := sha3(ptr, needlelen)}
                     if (hash == testHash)
@@ -1011,7 +1011,7 @@ library strings {
      */
     function count(slice self, slice needle) internal pure returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -1053,20 +1053,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal pure returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for (uint i = 0; i &lt; parts.length; i++)
+        for (uint i = 0; i < parts.length; i++)
             length += parts[i]._len;
 
         string memory ret = new string(length);
         uint retptr;
         assembly {retptr := add(ret, 32)}
 
-        for (i = 0; i &lt; parts.length; i++) {
+        for (i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -1100,47 +1100,47 @@ library strings {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) pure internal returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) pure internal returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) pure internal returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     function addressToString(address x) internal pure returns (string) {
         bytes memory s = new bytes(40);
-        for (uint i = 0; i &lt; 20; i++) {
+        for (uint i = 0; i < 20; i++) {
             byte b = byte(uint8(uint(x) / (2 ** (8 * (19 - i)))));
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
             s[2 * i] = charToByte(hi);
             s[2 * i + 1] = charToByte(lo);
         }
-        return strConcat(&quot;0x&quot;, string(s));
+        return strConcat("0x", string(s));
     }
 
     function charToByte(byte b) internal pure returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
 
     function bytes32ToString(bytes32 x) internal pure returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte ch = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (ch != 0) {
                 bytesString[charCount] = ch;
@@ -1148,7 +1148,7 @@ library strings {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
@@ -1211,10 +1211,10 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
     /*
      * Public function, can only be called from the outside.
      * Fund an issue, providing a token and value.
-     * Requires an allowance &gt; _value of the token.
+     * Requires an allowance > _value of the token.
      */
     function fund(bytes32 _platform, string _platformId, address _token, uint256 _value) external returns (bool success) {
-        require(doFunding(_platform, _platformId, _token, _value, msg.sender), &quot;funding with token failed&quot;);
+        require(doFunding(_platform, _platformId, _token, _value, msg.sender), "funding with token failed");
         return true;
     }
 
@@ -1224,7 +1224,7 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
      * Requires ether to be whitelisted in a precondition.
      */
     function etherFund(bytes32 _platform, string _platformId) payable external returns (bool success) {
-        require(doFunding(_platform, _platformId, ETHER_ADDRESS, msg.value, msg.sender), &quot;funding with ether failed&quot;);
+        require(doFunding(_platform, _platformId, ETHER_ADDRESS, msg.value, msg.sender), "funding with ether failed");
         return true;
     }
 
@@ -1235,8 +1235,8 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
      */
     function receiveApproval(address _from, uint _amount, address _token, bytes _data) public {
         var sliced = string(_data).toSlice();
-        var platform = sliced.split(&quot;|AAC|&quot;.toSlice());
-        var platformId = sliced.split(&quot;|AAC|&quot;.toSlice());
+        var platform = sliced.split("|AAC|".toSlice());
+        var platformId = sliced.split("|AAC|".toSlice());
         require(doFunding(platform.toBytes32(), platformId.toString(), _token, _amount, _from));
     }
 
@@ -1245,20 +1245,20 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
      * Anyone can call this function, but a valid signature from FundRequest is required
      */
     function claim(bytes32 platform, string platformId, string solver, address solverAddress, bytes32 r, bytes32 s, uint8 v) public returns (bool) {
-        require(validClaim(platform, platformId, solver, solverAddress, r, s, v), &quot;Claimsignature was not valid&quot;);
+        require(validClaim(platform, platformId, solver, solverAddress, r, s, v), "Claimsignature was not valid");
         uint256 tokenCount = fundRepository.getFundedTokenCount(platform, platformId);
-        for (uint i = 0; i &lt; tokenCount; i++) {
+        for (uint i = 0; i < tokenCount; i++) {
             address token = fundRepository.getFundedTokensByIndex(platform, platformId, i);
             uint256 tokenAmount = fundRepository.claimToken(platform, platformId, token);
             if (token == ETHER_ADDRESS) {
                 solverAddress.transfer(tokenAmount);
             } else {
-                require(ERC20(token).transfer(solverAddress, tokenAmount), &quot;transfer of tokens from contract failed&quot;);
+                require(ERC20(token).transfer(solverAddress, tokenAmount), "transfer of tokens from contract failed");
             }
-            require(claimRepository.addClaim(solverAddress, platform, platformId, solver, token, tokenAmount), &quot;adding claim to repository failed&quot;);
+            require(claimRepository.addClaim(solverAddress, platform, platformId, solver, token, tokenAmount), "adding claim to repository failed");
             emit Claimed(solverAddress, platform, platformId, solver, token, tokenAmount);
         }
-        require(fundRepository.finishResolveFund(platform, platformId), &quot;Resolving the fund failed&quot;);
+        require(fundRepository.finishResolveFund(platform, platformId), "Resolving the fund failed");
         return true;
     }
 
@@ -1268,14 +1268,14 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
      */
     function refund(bytes32 _platform, string _platformId, address _funder) external onlyCaller returns (bool) {
         uint256 tokenCount = fundRepository.getFundedTokenCount(_platform, _platformId);
-        for (uint i = 0; i &lt; tokenCount; i++) {
+        for (uint i = 0; i < tokenCount; i++) {
             address token = fundRepository.getFundedTokensByIndex(_platform, _platformId, i);
             uint256 tokenAmount = fundRepository.refundToken(_platform, _platformId, _funder, token);
-            if (tokenAmount &gt; 0) {
+            if (tokenAmount > 0) {
                 if (token == ETHER_ADDRESS) {
                     _funder.transfer(tokenAmount);
                 } else {
-                    require(ERC20(token).transfer(_funder, tokenAmount), &quot;transfer of tokens from contract failed&quot;);
+                    require(ERC20(token).transfer(_funder, tokenAmount), "transfer of tokens from contract failed");
                 }
             }
             emit Refund(_funder, _platform, _platformId, token, tokenAmount);
@@ -1287,19 +1287,19 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
      */
     function doFunding(bytes32 _platform, string _platformId, address _token, uint256 _value, address _funder) internal returns (bool success) {
         if (_token == ETHER_ADDRESS) {
-            //must check this, so we don&#39;t have people foefeling with the amounts
+            //must check this, so we don't have people foefeling with the amounts
             require(msg.value == _value);
         }
-        require(!fundRepository.issueResolved(_platform, _platformId), &quot;Can&#39;t fund tokens, platformId already claimed&quot;);
-        for (uint idx = 0; idx &lt; preconditions.length; idx++) {
+        require(!fundRepository.issueResolved(_platform, _platformId), "Can't fund tokens, platformId already claimed");
+        for (uint idx = 0; idx < preconditions.length; idx++) {
             if (address(preconditions[idx]) != address(0)) {
                 require(preconditions[idx].isValid(_platform, _platformId, _token, _value, _funder));
             }
         }
-        require(_value &gt; 0, &quot;amount of tokens needs to be more than 0&quot;);
+        require(_value > 0, "amount of tokens needs to be more than 0");
 
         if (_token != ETHER_ADDRESS) {
-            require(ERC20(_token).transferFrom(_funder, address(this), _value), &quot;Transfer of tokens to contract failed&quot;);
+            require(ERC20(_token).transferFrom(_funder, address(this), _value), "Transfer of tokens to contract failed");
         }
 
         fundRepository.updateFunders(_funder, _platform, _platformId);
@@ -1329,9 +1329,9 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
     }
 
     function removePrecondition(uint _index) external onlyOwner {
-        if (_index &gt;= preconditions.length) return;
+        if (_index >= preconditions.length) return;
 
-        for (uint i = _index; i &lt; preconditions.length - 1; i++) {
+        for (uint i = _index; i < preconditions.length - 1; i++) {
             preconditions[i] = preconditions[i + 1];
         }
 
@@ -1352,7 +1352,7 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
     }
 
     function prependUnderscore(string str) internal pure returns (string) {
-        return &quot;_&quot;.strConcat(str);
+        return "_".strConcat(str);
     }
 
     //required to be able to migrate to a new FundRequestContract
@@ -1367,12 +1367,12 @@ contract FundRequestContract is Callable, ApproveAndCallFallBack {
     }
 
     modifier addressNotNull(address target) {
-        require(target != address(0), &quot;target address can not be 0x0&quot;);
+        require(target != address(0), "target address can not be 0x0");
         _;
     }
 
     //required should there be an issue with available ether
     function deposit() external onlyOwner payable {
-        require(msg.value &gt; 0, &quot;Should at least be 1 wei deposited&quot;);
+        require(msg.value > 0, "Should at least be 1 wei deposited");
     }
 }

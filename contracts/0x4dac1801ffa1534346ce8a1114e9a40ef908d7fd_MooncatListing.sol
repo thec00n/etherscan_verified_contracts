@@ -62,9 +62,9 @@ contract MooncatListing is Ownable {
     }
     Mooncat public sourceContract;
     uint256 public ownerPercentage;
-    mapping (bytes5 =&gt; Listing) public tokenIdToListing;
+    mapping (bytes5 => Listing) public tokenIdToListing;
 
-    string constant public VERSION = &quot;1.0.0&quot;;
+    string constant public VERSION = "1.0.0";
     event ListingCreated(bytes5 indexed tokenId, uint256 price, uint256 dateStarts, uint256 dateEnds, address indexed seller);
     event ListingCancelled(bytes5 indexed tokenId, uint256 dateCancelled);
     event ListingBought(bytes5 indexed tokenId, uint256 price, uint256 dateBought, address buyer);
@@ -89,7 +89,7 @@ contract MooncatListing is Ownable {
     function() external payable { }
 
     function createListing(bytes5 tokenId, uint256 price, uint256 dateEnds) external {
-        require(price &gt; 0);
+        require(price > 0);
         tokenIdToListing[tokenId] = Listing(msg.sender, price, now, dateEnds);
         ListingCreated(tokenId, price, now, dateEnds, msg.sender);
     }
@@ -102,7 +102,7 @@ contract MooncatListing is Ownable {
     function buyListing(bytes5 tokenId) external payable {
         Listing storage listing = tokenIdToListing[tokenId];
         require(msg.value == listing.price);
-        require(now &lt;= listing.dateEnds);
+        require(now <= listing.dateEnds);
         address seller = listing.seller;
         uint256 currentPrice = listing.price;
         delete tokenIdToListing[tokenId];

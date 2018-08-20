@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 contract accessControlled {
     address public owner;
-    mapping (address =&gt; bool) public registrator;
+    mapping (address => bool) public registrator;
     
     function accessControlled() {
         registrator[msg.sender] = true;
@@ -32,7 +32,7 @@ contract accessControlled {
 
 contract OriginalMyDocAuthenticity is accessControlled {
     
-  mapping (string =&gt; uint) private authenticity;
+  mapping (string => uint) private authenticity;
 
   function storeAuthenticity(string sha256) onlyRegistrator {
     if (checkAuthenticity(sha256) == 0) {

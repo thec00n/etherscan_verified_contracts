@@ -8,8 +8,8 @@ contract WineMarket{
 
     uint256 public marketWine;
 
-    mapping (address =&gt; uint256) public totalWineTransferredFromVineyard;
-    mapping (address =&gt; uint256) public currentWineAmount;
+    mapping (address => uint256) public totalWineTransferredFromVineyard;
+    mapping (address => uint256) public currentWineAmount;
 
     address constant public VINEYARD_ADDRESS = 0x66593d57B26Ed56Fd7881a016fcd0AF66636A9F0;
     VineyardInterface vineyardContract;
@@ -33,7 +33,7 @@ contract WineMarket{
     }
 
     function transferWineFromVineyardCellar() initializedMarket public {
-        require(vineyardContract.wineInCellar(msg.sender) &gt; totalWineTransferredFromVineyard[msg.sender]);
+        require(vineyardContract.wineInCellar(msg.sender) > totalWineTransferredFromVineyard[msg.sender]);
         // More wine bottles have been produced from Vineyard. Transfer the difference here.
         uint256 wineToTransfer = SafeMath.sub(vineyardContract.wineInCellar(msg.sender),totalWineTransferredFromVineyard[msg.sender]);
         currentWineAmount[msg.sender] = SafeMath.add(currentWineAmount[msg.sender],wineToTransfer);
@@ -41,8 +41,8 @@ contract WineMarket{
     }
 
     function consumeWine(uint256 numBottlesToConsume) initializedMarket public returns(uint256) {
-        require(currentWineAmount[msg.sender] &gt; 0);
-        require(numBottlesToConsume &gt;= currentWineAmount[msg.sender]);
+        require(currentWineAmount[msg.sender] > 0);
+        require(numBottlesToConsume >= currentWineAmount[msg.sender]);
 
         // Once wine is consumed, it is gone forever
         currentWineAmount[msg.sender] = SafeMath.sub(currentWineAmount[msg.sender],numBottlesToConsume);
@@ -52,16 +52,16 @@ contract WineMarket{
     }
 
     function sellWine(uint256 numBottlesToSell) initializedMarket public {
-        require(numBottlesToSell &gt; 0);
+        require(numBottlesToSell > 0);
 
         uint256 myAvailableWine = currentWineAmount[msg.sender];
         uint256 adjustedNumBottlesToSell = numBottlesToSell;
-        if (numBottlesToSell &gt; myAvailableWine) {
-          // don&#39;t allow sell larger than the owner actually has
+        if (numBottlesToSell > myAvailableWine) {
+          // don't allow sell larger than the owner actually has
           adjustedNumBottlesToSell = myAvailableWine;
         }
-        if (adjustedNumBottlesToSell &gt; marketWine) {
-          // don&#39;t allow sell larger than the current market holdings
+        if (adjustedNumBottlesToSell > marketWine) {
+          // don't allow sell larger than the current market holdings
           adjustedNumBottlesToSell = marketWine;
         }
 
@@ -74,7 +74,7 @@ contract WineMarket{
     }
 
     function buyWine() initializedMarket public payable{
-        require(msg.value &lt;= SafeMath.sub(this.balance,msg.value));
+        require(msg.value <= SafeMath.sub(this.balance,msg.value));
 
         uint256 fee = devFee(msg.value);
         uint256 buyValue = SafeMath.sub(msg.value, fee);
@@ -154,9 +154,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -164,7 +164,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -173,7 +173,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

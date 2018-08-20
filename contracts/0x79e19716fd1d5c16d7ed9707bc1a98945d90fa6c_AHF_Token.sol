@@ -96,13 +96,13 @@ contract ApproveAndCallFallBack {
 // initial fixed supply
 // ----------------------------------------------------------------------------
 contract AHF_Token is ERC20Interface, Owned {
-    string public constant symbol = &quot;AHF&quot;;
-    string public constant name = &quot;Ahedgefund Sagl Token&quot;;
+    string public constant symbol = "AHF";
+    string public constant name = "Ahedgefund Sagl Token";
     uint8 public constant decimals = 18;
     uint private constant _totalSupply = 130000000 * 10**uint(decimals);
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     address public dividendsDistributor;
     address public controller;
@@ -147,7 +147,7 @@ contract AHF_Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -169,7 +169,7 @@ contract AHF_Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -177,8 +177,8 @@ contract AHF_Token is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address _to, uint _amount) public returns (bool success) {
@@ -201,7 +201,7 @@ contract AHF_Token is ERC20Interface, Owned {
         require(transfersEnabled);
 
         // The standard ERC 20 transferFrom functionality
-        require(allowed[_from][msg.sender] &gt;= _amount);
+        require(allowed[_from][msg.sender] >= _amount);
         allowed[_from][msg.sender] -= _amount;
         doTransfer(_from, _to, _amount);
         return true;
@@ -230,7 +230,7 @@ contract AHF_Token is ERC20Interface, Owned {
     }
 
     // ------------------------------------------------------------------------
-    // Don&#39;t accept ETH
+    // Don't accept ETH
     // ------------------------------------------------------------------------
     function () public payable {
         revert();
@@ -250,13 +250,13 @@ contract AHF_Token is ERC20Interface, Owned {
            }
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer throws
            uint previousBalanceFrom = balanceOf(_from);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            // Alerts the token controller of the transfer
            if (isContract(controller)) {
@@ -270,7 +270,7 @@ contract AHF_Token is ERC20Interface, Owned {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            uint previousBalanceTo = balanceOf(_to);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            balances[_to] = previousBalanceTo + _amount;
 
            // An event to make the transfer easy to find on the blockchain
@@ -296,7 +296,7 @@ contract AHF_Token is ERC20Interface, Owned {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @notice This method can be used by the owner to extract mistakenly

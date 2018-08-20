@@ -24,12 +24,12 @@ contract LuckyNumber {
        msg.sender.transfer(msg.value); 
     }
     
-    //explicit getter for &quot;owner&quot;
+    //explicit getter for "owner"
     function getOwner() view public returns (address)  {
         return owner;
     }
 
-    //explicit getter for &quot;balance&quot;
+    //explicit getter for "balance"
     function getBalance() view public returns (uint) {
         return this.balance;
     }

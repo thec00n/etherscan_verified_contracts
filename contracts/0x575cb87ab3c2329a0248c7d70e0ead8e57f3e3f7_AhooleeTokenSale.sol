@@ -11,37 +11,37 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -152,7 +152,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -186,7 +186,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -246,8 +246,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract AhooleeToken is StandardToken {
 
-  string public name = &quot;Ahoolee Token&quot;;
-  string public symbol = &quot;AHT&quot;;
+  string public name = "Ahoolee Token";
+  string public symbol = "AHT";
   uint256 public decimals = 18;
   uint256 public INITIAL_SUPPLY = 100000000 * 1 ether;
 
@@ -265,7 +265,7 @@ contract AhooleeToken is StandardToken {
 contract AhooleeTokenSale is Haltable {
     using SafeMath for uint;
 
-    string public name = &quot;Ahoolee Token Sale&quot;;
+    string public name = "Ahoolee Token Sale";
 
     AhooleeToken public token;
     address public beneficiary;
@@ -290,9 +290,9 @@ contract AhooleeTokenSale is Haltable {
     
     uint constant HARD_CAP_TOKENS = 25000000;
 
-    mapping (address =&gt; bool) refunded;
-    mapping (address =&gt; uint256) saleBalances ;  
-    mapping (address =&gt; bool) claimed;   
+    mapping (address => bool) refunded;
+    mapping (address => uint256) saleBalances ;  
+    mapping (address => bool) claimed;   
 
     event GoalReached(uint amountRaised);
     event SoftCapReached(uint softCap);
@@ -301,12 +301,12 @@ contract AhooleeTokenSale is Haltable {
     event LogClaim(address indexed holder, uint256 amount, uint price);
 
     modifier onlyAfter(uint time) {
-        require (now &gt; time);
+        require (now > time);
         _;
     }
 
     modifier onlyBefore(uint time) {
-        require (now &lt; time);
+        require (now < time);
         _;
     }
 
@@ -347,8 +347,8 @@ contract AhooleeTokenSale is Haltable {
     }
 
     function () payable stopInEmergency{
-        assert (msg.value &gt; 0.01 * 1 ether || msg.value == 0);
-        if(msg.value &gt; 0.01 * 1 ether) doPurchase(msg.sender);
+        assert (msg.value > 0.01 * 1 ether || msg.value == 0);
+        if(msg.value > 0.01 * 1 ether) doPurchase(msg.sender);
     }
 
     function saleBalanceOf(address _owner) constant returns (uint256) {
@@ -363,9 +363,9 @@ contract AhooleeTokenSale is Haltable {
         
         require(crowdsaleFinished == false);
 
-        require (collected.add(msg.value) &lt;= hardCapHigh);
+        require (collected.add(msg.value) <= hardCapHigh);
 
-        if (!softCapReached &amp;&amp; collected &lt; softCap &amp;&amp; collected.add(msg.value) &gt;= softCap) {
+        if (!softCapReached && collected < softCap && collected.add(msg.value) >= softCap) {
             softCapReached = true;
             SoftCapReached(softCap);
         }
@@ -388,7 +388,7 @@ contract AhooleeTokenSale is Haltable {
         require (!claimed[msg.sender]);
         
         uint price = HARD_CAP_TOKENS * 1 ether / hardCapLow;
-        if(collected &gt; hardCapLow){
+        if(collected > hardCapLow){
           price = HARD_CAP_TOKENS * 1 ether / collected; 
         } 
         uint tokens = saleBalances[msg.sender] * price;
@@ -402,7 +402,7 @@ contract AhooleeTokenSale is Haltable {
         require (crowdsaleFinished);
 
         uint tokenAmount = token.balanceOf(this);
-        if(collected &lt; hardCapLow){
+        if(collected < hardCapLow){
           tokenAmount = (hardCapLow - collected) * HARD_CAP_TOKENS * 1 ether / hardCapLow;
         } 
         require (token.transfer(beneficiary, tokenAmount));

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -65,7 +65,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -74,7 +74,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -103,7 +103,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -114,8 +114,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -129,7 +129,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -178,7 +178,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -192,7 +192,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -252,7 +252,7 @@ contract Object is StandardToken, Ownable {
     }
 
     function burn(uint _value) onlyOwner public {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -275,7 +275,7 @@ contract Object is StandardToken, Ownable {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(_value % (1 ether) == 0); // require whole token transfers
 
         // SafeMath.sub will throw if there is not enough balance.
@@ -304,17 +304,17 @@ contract Shop is Ownable {
 
     modifier onlyValidPurchase() {
         require(msg.value % shopSettings.price == 0); // whole numbers only
-        require((now &gt;= shopSettings.startTime &amp;&amp; now &lt;= shopSettings.endTime) &amp;&amp; msg.value != 0);
+        require((now >= shopSettings.startTime && now <= shopSettings.endTime) && msg.value != 0);
         _;
     }
 
     modifier whenClosed() { // not actually implemented?
-        require(now &gt; shopSettings.endTime);
+        require(now > shopSettings.endTime);
         _;
     }
 
     modifier whenOpen() {
-        require(now &lt; shopSettings.endTime);
+        require(now < shopSettings.endTime);
         _;
     }
 
@@ -342,8 +342,8 @@ contract Shop is Ownable {
 
     function Shop(address _bank, string _name, string _symbol, uint _rate, uint32 _endTime)
     onlyValidAddress(_bank) public {
-        require(_rate &gt;= 0);
-        require(_endTime &gt; now);
+        require(_rate >= 0);
+        require(_endTime > now);
         shopSettings = ShopSettings(_bank, uint32(now), _endTime, 0, _rate, 0);
         calculatePrice(); // set initial price based on initial rate
         object = new Object(_name, _symbol);
@@ -385,13 +385,13 @@ contract Shop is Ownable {
 contract EnchantedShop is Shop {
     using SafeMath for *;
 
-    mapping(address =&gt; uint) public balanceOwed; // balances owed to individual addresses
-    mapping(address =&gt; uint) public latestBalanceCheck; // latest balance check of individual addresses
-    mapping(address =&gt; uint) public itemsOwned;
-    //mapping(address =&gt; uint) public totalWithdrawn; // used in calculating total earnings
-    mapping(address =&gt; uint) public excessEth; // excess eth sent by individual addresses
+    mapping(address => uint) public balanceOwed; // balances owed to individual addresses
+    mapping(address => uint) public latestBalanceCheck; // latest balance check of individual addresses
+    mapping(address => uint) public itemsOwned;
+    //mapping(address => uint) public totalWithdrawn; // used in calculating total earnings
+    mapping(address => uint) public excessEth; // excess eth sent by individual addresses
     /*
-    Using itemsOwned in place of object.balanceOf(msg.sender) prevents users who did not purchase tokens from the contract but who were instead transferred tokens from receiving earnings on them (which would require extra contract and token functionality to account for when those items were acquired). Using itemsOwned also means that users can transfer their tokens out but will still earn returns on them if they were purchased from the shop. We can also perform a check against the user&#39;s balanceOf to prevent this if desired.
+    Using itemsOwned in place of object.balanceOf(msg.sender) prevents users who did not purchase tokens from the contract but who were instead transferred tokens from receiving earnings on them (which would require extra contract and token functionality to account for when those items were acquired). Using itemsOwned also means that users can transfer their tokens out but will still earn returns on them if they were purchased from the shop. We can also perform a check against the user's balanceOf to prevent this if desired.
     */
     uint public itemReturn;
     uint public maxDebt; // maximum possible debt owed by the shop if no funds were claimed
@@ -417,20 +417,20 @@ contract EnchantedShop is Shop {
     event WillWithdraw(uint amount);
 
     modifier onlyContributors {
-        require(itemsOwned[msg.sender] &gt; 0);
+        require(itemsOwned[msg.sender] > 0);
         _;
     }
 
-    modifier onlyValidPurchase() { // override onlyValidPurchase so that buyObject requires &gt;= enough for 1 token instead of whole numbers only
-        require(msg.value &gt;= shopSettings.price); // at least enough for 1
-        require((now &gt;= shopSettings.startTime &amp;&amp; now &lt;= shopSettings.endTime) &amp;&amp; msg.value != 0);
+    modifier onlyValidPurchase() { // override onlyValidPurchase so that buyObject requires >= enough for 1 token instead of whole numbers only
+        require(msg.value >= shopSettings.price); // at least enough for 1
+        require((now >= shopSettings.startTime && now <= shopSettings.endTime) && msg.value != 0);
         _;
     }
 
     function EnchantedShop(address _bank, string _name, string _symbol, uint _rate, uint32 _endTime, uint _itemReturn)
     Shop(_bank, _name, _symbol, _rate, _endTime) public
     {
-        require(_itemReturn == shopSettings.price.div(100)); // safety check; ensure we&#39;re using 1% returns and that we&#39;re using the correct price
+        require(_itemReturn == shopSettings.price.div(100)); // safety check; ensure we're using 1% returns and that we're using the correct price
         itemReturn = _itemReturn; // return should be in given wei
         originalPrice = shopSettings.price;
         ShopDeployed(_bank, _rate, _itemReturn, _endTime);
@@ -450,7 +450,7 @@ contract EnchantedShop is Shop {
         uint fee = shopSettings.price.mul(devFee).div(1000); // used to be msg.value.mul(devFee).div(1000); but we have refactored to only ever issue 1 token and the msg.value may exceed the price of one token
         uint supply = object.totalSupply();
 
-        if (msg.value &gt; shopSettings.price) { // if sender sent extra eth, account for it so we can send it back later
+        if (msg.value > shopSettings.price) { // if sender sent extra eth, account for it so we can send it back later
             excessEth[msg.sender] = excessEth[msg.sender].add(msg.value.sub(shopSettings.price));
             totalExcessEth = totalExcessEth.add(msg.value.sub(shopSettings.price));
         }
@@ -458,9 +458,9 @@ contract EnchantedShop is Shop {
         shopSettings.bank.transfer(fee);
         itemsOwned[msg.sender] = itemsOwned[msg.sender].add(1 ether);
                 
-        // update caller&#39;s balance and our debt
+        // update caller's balance and our debt
         uint earnings = (itemsOwned[msg.sender].div(1 ether).sub(1)).mul(supply.sub(latestBalanceCheck[msg.sender])).div(1 ether).mul(itemReturn);
-        if (latestBalanceCheck[msg.sender] != 0) { // if this isn&#39;t the first time we&#39;ve checked buyer&#39;s balance owed...
+        if (latestBalanceCheck[msg.sender] != 0) { // if this isn't the first time we've checked buyer's balance owed...
             balanceOwed[msg.sender] = balanceOwed[msg.sender].add(earnings);
             runningDebt = runningDebt.add(earnings);
         }
@@ -469,12 +469,12 @@ contract EnchantedShop is Shop {
 
         additionalDebt = maxDebt.sub(runningDebt).sub(debtPaid); // update total debt not yet accounted for due to amoritzation
         
-        if (additionalDebt &lt; 0) { // this check may be unnecessary but may have been needed for the prototype
+        if (additionalDebt < 0) { // this check may be unnecessary but may have been needed for the prototype
             additionalDebt = 0;
         }
         
         // update price of item (using rate for scalability) so that we can always cover fee + returns
-        if (supply.div(1 ether).mul(itemReturn).add(runningDebt).add(additionalDebt) &gt; (this.balance.sub(totalExcessEth))) {
+        if (supply.div(1 ether).mul(itemReturn).add(runningDebt).add(additionalDebt) > (this.balance.sub(totalExcessEth))) {
             shopSettings.rate = (1 ether).mul(1 ether).div(supply.div(1 ether).mul(itemReturn).mul(1000).div((uint(1000).sub(devFee))));
             calculatePrice(); // update price
             PriceUpdate(shopSettings.price);
@@ -486,18 +486,18 @@ contract EnchantedShop is Shop {
     /*
     changes needed for refactoring
 
-    // &quot;enchanted items have a recommended bid which increases your likelihood of obtaining the item. However, you will still pay the best possible price—any ETH sent in excess of the lowest available price of the item is automatically added to your account balance and can be withdrawn from the contract at any time.&quot;
+    // "enchanted items have a recommended bid which increases your likelihood of obtaining the item. However, you will still pay the best possible price—any ETH sent in excess of the lowest available price of the item is automatically added to your account balance and can be withdrawn from the contract at any time."
 
     // add recommendedBid which is real price rounded up to the next .01 - use round/truncate: https://ethereum.stackexchange.com/questions/5836/what-is-the-cheapest-way-to-roundup-or-ceil-to-multiple-of-1000
     // add price paid - real price to balance owed
     // mint exactly one token (calculateTokens)
 
-    // we don&#39;t seem to actually use whenClosed, whenOpen
+    // we don't seem to actually use whenClosed, whenOpen
 
     */
 
     function claimFunds() onlyContributors public {
-        // must use onlyContributors (itemsOwned &gt; 0) as a check here!
+        // must use onlyContributors (itemsOwned > 0) as a check here!
         uint latest = latestBalanceCheck[msg.sender];
         uint supply = object.totalSupply();
         uint balance = balanceOwed[msg.sender];
@@ -511,7 +511,7 @@ contract EnchantedShop is Shop {
         balanceOwed[msg.sender] = 0;
         excessEth[msg.sender] = 0;
 
-        balance = balance.add(earnings); // account for user&#39;s earnings since lastBalanceCheck, but don&#39;t add it to balanceOwed to prevent reentrancy attacks
+        balance = balance.add(earnings); // account for user's earnings since lastBalanceCheck, but don't add it to balanceOwed to prevent reentrancy attacks
         // next, update our debt:
         runningDebt = runningDebt.add(earnings);
         runningDebt = runningDebt.sub(balance); // might be going negative due to not adding the excess eth send to runningDebt
@@ -524,7 +524,7 @@ contract EnchantedShop is Shop {
         WillWithdraw(balance);
 
         // finally, send balance owed to msg.sender
-        require(balance &gt; 0);
+        require(balance > 0);
         msg.sender.transfer(balance);
         //totalWithdrawn[msg.sender] = totalWithdrawn[msg.sender].add(balance.sub(excess));
 
@@ -534,7 +534,7 @@ contract EnchantedShop is Shop {
     function startUnlock()
     onlyOwner public
     {
-        require(lock &amp;&amp; now.sub(unlockDate) &gt; 2 weeks);
+        require(lock && now.sub(unlockDate) > 2 weeks);
         unlockDate = now + 2 weeks;
         lock = false;
         StartedSafeUnlock(now);
@@ -543,7 +543,7 @@ contract EnchantedShop is Shop {
     function emergencyWithdraw(uint amount, bool relock)
     onlyOwner public
     {
-        require(!lock &amp;&amp; now &gt; unlockDate);
+        require(!lock && now > unlockDate);
         shopSettings.bank.transfer(amount);
         if (relock) {
             lock = relock;
@@ -557,12 +557,12 @@ contract EnchantedShop is Shop {
 to-do:
 - implement something so that calling claimFunds() if the balance var is 0 throws an exception?
 
-- implement a check if necessary for when balance to be sent to msg.sender &gt; address.balance
+- implement a check if necessary for when balance to be sent to msg.sender > address.balance
 
 - implement an emergency withdrawal function for owners?
     migrate this from ShopManager
 
-- &quot;forwardFunds() in EnchantedShop has to be executed sequentially with other purchases, we may want to implement the design you were talking about before which forces 1 tx per block or whatever it was&quot; -- will know more after testing
+- "forwardFunds() in EnchantedShop has to be executed sequentially with other purchases, we may want to implement the design you were talking about before which forces 1 tx per block or whatever it was" -- will know more after testing
 
 
 
@@ -590,7 +590,7 @@ to-do:
     function startUnlock()
     onlyOwner public
     {
-        require(lock &amp;&amp; now - unlockDate &gt; 2 weeks);
+        require(lock && now - unlockDate > 2 weeks);
         unlockDate = now + 2 weeks;
         lock = false;
         StartedSafeUnlock(now);
@@ -599,7 +599,7 @@ to-do:
     function fundsToBank()
     onlyOwner public
     {
-        require(!lock &amp;&amp; now &gt; unlockDate);
+        require(!lock && now > unlockDate);
         bank.transfer(this.balance);
         lock = true;
         SafeLocked(now);

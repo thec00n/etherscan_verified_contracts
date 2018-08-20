@@ -24,13 +24,13 @@ contract ChiToken is ERC20 {
     /**
      * The currency is named Chi.
      * 
-     * The currency&#39;s symbol is &#39;CHI&#39;. The different uses for the two are as 
+     * The currency's symbol is 'CHI'. The different uses for the two are as 
      * follows:
-     *  - &quot;That Jelly Pill will cost you 5 CHI.&quot;
-     *  - &quot;Did you know Aethia uses Chi as currency?&quot;
+     *  - "That Jelly Pill will cost you 5 CHI."
+     *  - "Did you know Aethia uses Chi as currency?"
      */
-    string public name = &#39;Chi&#39;;
-    string public symbol = &#39;CHI&#39;;
+    string public name = 'Chi';
+    string public symbol = 'CHI';
     
     /**
      * There is ten-billion Chi in circulation.
@@ -48,12 +48,12 @@ contract ChiToken is ERC20 {
     /**
      * The amount of CHI owned per address.
      */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     
     /**
      * The amount of CHI an owner has allowed a certain spender.
      */
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => mapping (address => uint256)) allowances;
 
     /**
      * Chi token transfer event.
@@ -129,7 +129,7 @@ contract ChiToken is ERC20 {
      *     True if the transfer succeeds.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -159,8 +159,8 @@ contract ChiToken is ERC20 {
      *     True if the transfer succeeds.
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(balances[_from] &gt;= _value);
-        require(allowances[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value);
+        require(allowances[_from][msg.sender] >= _value);
 
         balances[_to] += _value;
         balances[_from] -= _value;

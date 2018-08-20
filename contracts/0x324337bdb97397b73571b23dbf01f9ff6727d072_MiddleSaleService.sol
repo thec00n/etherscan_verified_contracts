@@ -48,11 +48,11 @@ contract MiddleSaleService {
     uint256 tmpERCBalance = erc.balanceOf(address(this));
     uint256 tmpEthBalance = address(this).balance;
 
-    if (tmpERCBalance &gt; 0) {
+    if (tmpERCBalance > 0) {
       require(erc.transfer(receiver, tmpERCBalance));
     }
 
-    if (tmpEthBalance &gt; 0) {
+    if (tmpEthBalance > 0) {
       require(receiver.send(tmpEthBalance));
     }
   }

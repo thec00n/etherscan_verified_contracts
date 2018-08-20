@@ -1,6 +1,6 @@
 /**
  * The Xmas Token contract complies with the ERC20 standard (see https://github.com/ethereum/EIPs/issues/20).
- * Santa Claus doesn&#39;t kepp any shares and all tokens not being sold during the crowdsale (but the 
+ * Santa Claus doesn't kepp any shares and all tokens not being sold during the crowdsale (but the 
  * reserved gift shares) are burned by the elves.
  * 
  * Author: Christmas Elf
@@ -25,13 +25,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal returns(uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal returns(uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 }
@@ -44,9 +44,9 @@ contract XmasToken {
     using SafeMath for uint256; 
 	
 	// Xmas token basic data
-	string constant public standard = &quot;ERC20&quot;;
-	string constant public symbol = &quot;xmas&quot;;
-	string constant public name = &quot;XmasToken&quot;;
+	string constant public standard = "ERC20";
+	string constant public symbol = "xmas";
+	string constant public name = "XmasToken";
 	uint8 constant public decimals = 18;
 	
 	// Xmas token distribution
@@ -74,8 +74,8 @@ contract XmasToken {
 	 */
 	bool public burned;
 
-	mapping(address =&gt; uint256) public balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+	mapping(address => uint256) public balanceOf;
+	mapping(address => mapping(address => uint256)) public allowance;
 	
 	// -------------------- Crowdsale parameters --------------------
 	
@@ -134,7 +134,7 @@ contract XmasToken {
 		
 	/**
 	 * Default function called whenever anyone sends funds to this contract.
-	 * Only callable if the crowdsale started and hasn&#39;t been closed already and the tokens for icos haven&#39;t been sold yet.
+	 * Only callable if the crowdsale started and hasn't been closed already and the tokens for icos haven't been sold yet.
 	 * The current token exchange rate is looked up and the corresponding number of tokens is transfered to the receiver.
 	 * The sent value is directly forwarded to a safe wallet.
 	 * This method allows to purchase tokens in behalf of another address.
@@ -142,8 +142,8 @@ contract XmasToken {
 	function() payable {
 		uint256 amount = msg.value;
 		uint256 numTokens = amount.mul(tokenExchangeRate); 
-		require(numTokens &gt;= 100 * 1 ether);
-		require(!crowdsaleClosed &amp;&amp; now &gt;= start &amp;&amp; now &lt;= end &amp;&amp; tokensSold.add(numTokens) &lt;= tokensForIco);
+		require(numTokens >= 100 * 1 ether);
+		require(!crowdsaleClosed && now >= start && now <= end && tokensSold.add(numTokens) <= tokensForIco);
 
 		ethFundWallet.transfer(amount);
 		
@@ -166,7 +166,7 @@ contract XmasToken {
 	 * @return true if the trasnfer is successful, false otherwise.
 	 */
 	function transfer(address _to, uint256 _value) returns(bool success) {
-		require(now &gt;= startTransferTime); 
+		require(now >= startTransferTime); 
 
 		balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value); 
 		balanceOf[_to] = balanceOf[_to].add(_value); 
@@ -201,10 +201,10 @@ contract XmasToken {
 	 * @return true if the transfer was successful, false otherwise. 
 	 */
 	function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
-		if (now &lt; startTransferTime) 
+		if (now < startTransferTime) 
 			require(_from == xmasFundWallet);
 		var _allowance = allowance[_from][msg.sender];
-		require(_value &lt;= _allowance);
+		require(_value <= _allowance);
 		
 		balanceOf[_from] = balanceOf[_from].sub(_value); 
 		balanceOf[_to] = balanceOf[_to].add(_value); 
@@ -220,7 +220,7 @@ contract XmasToken {
 	 * To be called when ICO is closed. Anybody may burn the tokens after ICO ended, but only once.
 	 */
 	function burn() internal {
-		require(now &gt; startTransferTime);
+		require(now > startTransferTime);
 		require(burned == false);
 			
 		uint256 difference = balanceOf[xmasFundWallet].sub(tokensForBonus);
@@ -237,23 +237,23 @@ contract XmasToken {
 	 * Burns the unsold tokens, if any.
 	 */
 	function markCrowdsaleEnding() {
-		require(now &gt; end);
+		require(now > end);
 
 		burn(); 
 		crowdsaleClosed = true;
 	}
 	
 	/**
-	 * Sends the bonus tokens to addresses from Santa&#39;s list gift.
+	 * Sends the bonus tokens to addresses from Santa's list gift.
 	 * @return true if the airdrop is successful, false otherwise.
 	 */
 	function sendGifts(address[] santaGiftList) returns(bool success)  {
 		require(msg.sender == xmasFundWallet);
-		require(now &gt;= startAirdropTime);
+		require(now >= startAirdropTime);
 	
-		for(uint i = 0; i &lt; santaGiftList.length; i++) {
+		for(uint i = 0; i < santaGiftList.length; i++) {
 		    uint256 tokensHold = balanceOf[santaGiftList[i]];
-			if (tokensHold &gt;= 100 * 1 ether) { 
+			if (tokensHold >= 100 * 1 ether) { 
 				uint256 bonus = tokensForBonus.div(1 ether);
 				uint256 giftTokens = ((tokensHold.mul(bonus)).div(tokensSold)) * 1 ether;
 				transferFrom(xmasFundWallet, santaGiftList[i], giftTokens);

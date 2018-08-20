@@ -4,7 +4,7 @@ contract UportRegistry {
   uint public version;
   address public previousPublishedVersion;
 
-  mapping(address =&gt; bytes) public ipfsAttributeLookup;
+  mapping(address => bytes) public ipfsAttributeLookup;
 
   function UportRegistry(address _previousPublishedVersion) {
     version = 1;

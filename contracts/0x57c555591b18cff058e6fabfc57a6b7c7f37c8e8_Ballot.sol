@@ -7,14 +7,14 @@ contract Ballot {
     // It will represent a vote for one batch votes in blockchain.
     struct Voter {
         uint weight; // vote number of specified voter and voted proposal
-        bytes32 voterName; // voter&#39;s name
+        bytes32 voterName; // voter's name
         uint proposalId; // index of the voted proposal
     }
 
     // This is a type for a single proposal.
     struct Proposal {
-        uint proposalId;// proposal&#39;s id, equals to proposals&#39; index
-        bytes32 proposalName;   // proposal&#39;s description
+        uint proposalId;// proposal's id, equals to proposals' index
+        bytes32 proposalName;   // proposal's description
         uint voteCount; // number of accumulated votes
     }
 
@@ -41,7 +41,7 @@ contract Ballot {
         // For each of the provided proposal names,
         // create a new proposal object and add it
         // to the end of the array.
-        for (uint i = 0; i &lt; proposalNames.length; i++) {
+        for (uint i = 0; i < proposalNames.length; i++) {
             // `Proposal({...})` creates a temporary
             // Proposal object and `proposals.push(...)`
             // appends it to the end of `proposals`.
@@ -57,7 +57,7 @@ contract Ballot {
         // For each of the provided proposal names,
         // create a new proposal object and add it
         // to the end of the array.
-        for (uint i = 0; i &lt; proposalNames.length; i++) {
+        for (uint i = 0; i < proposalNames.length; i++) {
             // `Proposal({...})` creates a temporary
             // Proposal object and `proposals.push(...)`
             // appends it to the end of `proposals`.
@@ -77,7 +77,7 @@ contract Ballot {
         require(weights.length == proposalIds.length);
         require(voterNames.length == proposalIds.length);
 
-        for (uint i = 0; i &lt; weights.length; i++) {
+        for (uint i = 0; i < weights.length; i++) {
             Voter memory voter = Voter({
               weight: weights[i],
               voterName: voterNames[i],
@@ -95,8 +95,8 @@ contract Ballot {
             returns (uint winningProposal)
     {
         uint winningVoteCount = 0;
-        for (uint p = 0; p &lt; proposals.length; p++) {
-            if (proposals[p].voteCount &gt; winningVoteCount) {
+        for (uint p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[p].voteCount;
                 winningProposal = p;
             }
@@ -119,7 +119,7 @@ contract Ballot {
         // For each of the provided proposal names,
         // create a new proposal object and add it
         // to the end of the array.
-        for (uint i = 0; i &lt; proposalNames.length; i++) {
+        for (uint i = 0; i < proposalNames.length; i++) {
             // `Proposal({...})` creates a temporary
             // Proposal object and `proposals.push(...)`
             // appends it to the end of `proposals`.
@@ -134,7 +134,7 @@ contract Ballot {
     function batchSearchProposalsId(bytes32[] proposalsName) public view
           returns (uint[] proposalsId) {
       proposalsId = new uint[](proposalsName.length);
-      for (uint i = 0; i &lt; proposalsName.length; i++) {
+      for (uint i = 0; i < proposalsName.length; i++) {
         uint proposalId = searchProposalId(proposalsName[i]);
         proposalsId[i]=proposalId;
       }
@@ -142,7 +142,7 @@ contract Ballot {
 
     function searchProposalId(bytes32 proposalName) public view
           returns (uint proposalId) {
-      for (uint i = 0; i &lt; proposals.length; i++) {
+      for (uint i = 0; i < proposals.length; i++) {
           if(proposals[i].proposalName == proposalName){
             proposalId = proposals[i].proposalId;
           }
@@ -159,7 +159,7 @@ contract Ballot {
     Proposal[] memory arr = new Proposal[](n);
 
     uint i;
-    for(i=0; i&lt;n; i++) {
+    for(i=0; i<n; i++) {
       arr[i] = proposals[i];
     }
 
@@ -172,7 +172,7 @@ contract Ballot {
     stack[top] = n-1;
 
     //Keep popping from stack while is not empty
-    while (top &gt; 0) {
+    while (top > 0) {
 
       uint h = stack[top];
       top = top - 1;
@@ -182,8 +182,8 @@ contract Ballot {
       i = l;
       uint x = arr[h].voteCount;
 
-      for(uint j=l; j&lt;h; j++){
-        if  (arr[j].voteCount &lt;= x) {
+      for(uint j=l; j<h; j++){
+        if  (arr[j].voteCount <= x) {
           //Move smaller element
           (arr[i], arr[j]) = (arr[j],arr[i]);
           i = i + 1;
@@ -193,7 +193,7 @@ contract Ballot {
       uint p = i;
 
       //Push left side to stack
-      if (p &gt; l + 1) {
+      if (p > l + 1) {
         top = top + 1;
         stack[top] = l;
         top = top + 1;
@@ -201,7 +201,7 @@ contract Ballot {
       }
 
       //Push right side to stack
-      if (p+1 &lt; h) {
+      if (p+1 < h) {
         top = top + 1;
         stack[top] = p + 1;
         top = top + 1;
@@ -212,7 +212,7 @@ contract Ballot {
     rankByProposalId = new uint[](n);
     rankByName = new bytes32[](n);
     rankByvoteCount = new uint[](n);
-    for(i=0; i&lt;n; i++) {
+    for(i=0; i<n; i++) {
       rankByProposalId[i]= arr[n-1-i].proposalId;
       rankByName[i]=arr[n-1-i].proposalName;
       rankByvoteCount[i]=arr[n-1-i].voteCount;

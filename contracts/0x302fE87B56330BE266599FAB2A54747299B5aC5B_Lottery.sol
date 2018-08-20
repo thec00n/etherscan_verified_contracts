@@ -36,7 +36,7 @@ contract Lottery {
 
     uint public numTickets;
     uint public numBuckets;
-    mapping (uint =&gt; Bucket) buckets;
+    mapping (uint => Bucket) buckets;
     uint public lastSaleTimestamp;
 
     Payout[] public payouts;
@@ -62,7 +62,7 @@ contract Lottery {
         nearestKnownBlockHash = 0;
 
         numTickets = 0;
-        for (uint i = 0; i &lt; numBuckets; i++) {
+        for (uint i = 0; i < numBuckets; i++) {
             buckets[i].numHolders = 0;
         }
         numBuckets = 0;
@@ -70,7 +70,7 @@ contract Lottery {
     }
 
     function resetLottery() {
-        if (numTickets &gt; 0) throw;
+        if (numTickets > 0) throw;
         if (!payoutReady()) throw;
 
         prepareLottery();
@@ -82,7 +82,7 @@ contract Lottery {
     }
 
     function buyTickets(address ticketHolder) {
-        if (msg.value &lt; TICKET_PRICE) throw;
+        if (msg.value < TICKET_PRICE) throw;
         if (!ticketsAvailable()) throw;
 
         uint n = msg.value / TICKET_PRICE;
@@ -94,11 +94,11 @@ contract Lottery {
         // each and so on. This allows us to process the sale of n tickets
         // with a gas cost of O(log(n)).
         uint bucket = 0;
-        while (n &gt; 0) {
-            uint inThisBucket = n &amp; (2 ** bucket);
-            if (inThisBucket &gt; 0) {
+        while (n > 0) {
+            uint inThisBucket = n & (2 ** bucket);
+            if (inThisBucket > 0) {
                 uint pos = buckets[bucket].numHolders++;
-                if (buckets[bucket].ticketHolders.length &lt;
+                if (buckets[bucket].ticketHolders.length <
                     buckets[bucket].numHolders) {
                     buckets[bucket].ticketHolders.length =
                         buckets[bucket].numHolders;
@@ -109,12 +109,12 @@ contract Lottery {
             bucket += 1;
         }
 
-        if (bucket &gt; numBuckets) numBuckets = bucket;
+        if (bucket > numBuckets) numBuckets = bucket;
 
         int missingBlocks = decidingBlock - btcRelay.getLastBlockHeight();
         uint betterCutoffTimestamp =
             now + uint(missingBlocks) * 10 minutes - CUTOFF_INTERVAL;
-        if (betterCutoffTimestamp &lt; cutoffTimestamp) {
+        if (betterCutoffTimestamp < cutoffTimestamp) {
             cutoffTimestamp = betterCutoffTimestamp;
         }
 
@@ -123,13 +123,13 @@ contract Lottery {
     }
 
     function ticketsAvailable() constant returns (bool) {
-        return now &lt; cutoffTimestamp &amp;&amp;
-            btcRelay.getLastBlockHeight() &lt; cutoffBlock;
+        return now < cutoffTimestamp &&
+            btcRelay.getLastBlockHeight() < cutoffBlock;
     }
 
     function lookupTicketHolder(uint idx) constant returns (address) {
         uint bucket = 0;
-        while (idx &gt;= buckets[bucket].numHolders * (2 ** bucket)) {
+        while (idx >= buckets[bucket].numHolders * (2 ** bucket)) {
             idx -= buckets[bucket].numHolders * (2 ** bucket);
             bucket += 1;
         }
@@ -159,12 +159,12 @@ contract Lottery {
     }
 
     function payoutReady() constant returns (bool) {
-        return decidingBlock &lt;= btcRelay.getLastBlockHeight();
+        return decidingBlock <= btcRelay.getLastBlockHeight();
     }
 
     function processPayout() returns (bool done) {
         if (!payoutReady()) throw;
-        if (getOperatingBudget() &lt; 1 ether) throw;
+        if (getOperatingBudget() < 1 ether) throw;
         if (numTickets == 0) throw;
         if (!checkDepth(8)) throw;
 
@@ -203,7 +203,7 @@ contract Lottery {
         }
 
         // Walk at most 5 steps to keep an upper limit on gas costs.
-        for (uint steps = 0; steps &lt; 5; steps++) {
+        for (uint steps = 0; steps < 5; steps++) {
             if (blockHeight == decidingBlock) {
                 return (true, blockHash);
             }
@@ -221,7 +221,7 @@ contract Lottery {
 
             blockHeight -= 1;
             blockHash = 0;
-            for (int i = 0; i &lt; 32; i++) {
+            for (int i = 0; i < 32; i++) {
                 blockHash = blockHash | int(temp[uint(i)]) * (256 ** i);
             }
         }
@@ -234,10 +234,10 @@ contract Lottery {
     }
 
     function accessOperatingBudget(uint amount) onlyOwner {
-        if (getOperatingBudget() &lt; 1 ether) throw;
+        if (getOperatingBudget() < 1 ether) throw;
 
         uint safeToAccess = getOperatingBudget() - 1 ether;
-        if (amount &gt; safeToAccess) throw;
+        if (amount > safeToAccess) throw;
 
         var _ = owner.send(amount);
     }

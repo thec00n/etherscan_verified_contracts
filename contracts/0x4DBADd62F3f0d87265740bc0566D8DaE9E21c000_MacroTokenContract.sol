@@ -36,13 +36,13 @@ contract MacroTokenContract{
     uint256 public totalSupply = 0;
     bool public lockdown = false;
 
-    string public standard = &#39;Macro token&#39;;
-    string public name = &#39;Macro&#39;;
-    string public symbol = &#39;MCR&#39;;
+    string public standard = 'Macro token';
+    string public name = 'Macro';
+    string public symbol = 'MCR';
     uint8 public decimals = 8;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     IProxyManagement proxyManagementContract;
     IFundManagement fundManagementContract;
 
@@ -64,8 +64,8 @@ contract MacroTokenContract{
     }
 
     function transfer(address _to, uint256 _value) returns (bool success){
-        if(balances[msg.sender] &lt; _value) throw;
-        if(balances[_to] + _value &lt;= balances[_to]) throw;
+        if(balances[msg.sender] < _value) throw;
+        if(balances[_to] + _value <= balances[_to]) throw;
         if(lockdown) throw;
 
         balances[msg.sender] -= _value;
@@ -75,9 +75,9 @@ contract MacroTokenContract{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if(balances[_from] &lt; _value) throw;
-        if(balances[_to] + _value &lt;= balances[_to]) throw;
-        if(_value &gt; allowed[_from][msg.sender]) throw;
+        if(balances[_from] < _value) throw;
+        if(balances[_to] + _value <= balances[_to]) throw;
+        if(_value > allowed[_from][msg.sender]) throw;
         if(lockdown) throw;
 
         balances[_from] -= _value;
@@ -101,8 +101,8 @@ contract MacroTokenContract{
 
     function transferViaProxy(address _source, address _to, uint256 _amount) returns (bool success){
         if (!proxyManagementContract.isProxyLegit(msg.sender)) throw;
-        if (balances[_source] &lt; _amount) throw;
-        if (balances[_to] + _amount &lt;= balances[_to]) throw;
+        if (balances[_source] < _amount) throw;
+        if (balances[_to] + _amount <= balances[_to]) throw;
         if (lockdown) throw;
 
         balances[_source] -= _amount;
@@ -118,10 +118,10 @@ contract MacroTokenContract{
     
     function transferFromViaProxy(address _source, address _from, address _to, uint256 _amount) returns (bool success) {
         if (!proxyManagementContract.isProxyLegit(msg.sender)) throw;
-        if (balances[_from] &lt; _amount) throw;
-        if (balances[_to] + _amount &lt;= balances[_to]) throw;
+        if (balances[_from] < _amount) throw;
+        if (balances[_to] + _amount <= balances[_to]) throw;
         if (lockdown) throw;
-        if (_amount &gt; allowed[_from][_source]) throw;
+        if (_amount > allowed[_from][_source]) throw;
 
         balances[_from] -= _amount;
         balances[_to] += _amount;
@@ -150,8 +150,8 @@ contract MacroTokenContract{
 
     function mint(address _destination, uint _amount) returns (bool success){
         if (msg.sender != mintingContractAddress) throw;
-        if(balances[_destination] + _amount &lt; balances[_destination]) throw;
-        if(totalSupply + _amount &lt; totalSupply) throw;
+        if(balances[_destination] + _amount < balances[_destination]) throw;
+        if(totalSupply + _amount < totalSupply) throw;
 
         totalSupply += _amount;
         balances[_destination] += _amount;
@@ -162,7 +162,7 @@ contract MacroTokenContract{
 
     function destroy(address _destination, uint _amount) returns (bool success) {
         if (msg.sender != destructionContractAddress) throw;
-        if (balances[_destination] &lt; _amount) throw;
+        if (balances[_destination] < _amount) throw;
 
         totalSupply -= _amount;
         balances[_destination] -= _amount;
@@ -197,7 +197,7 @@ contract MacroTokenContract{
     }
 
     function emergencyLock() {
-        if (msg.sender != curator &amp;&amp; msg.sender != dev) throw;
+        if (msg.sender != curator && msg.sender != dev) throw;
         
         lockdown = !lockdown;
     }
@@ -218,9 +218,9 @@ contract MacroTokenContract{
     }
 
     function getGasForMcr(){
-        if (balances[msg.sender] &lt; mcrAmmountForGas) throw;
-        if (balances[curator] &gt; balances[curator] + mcrAmmountForGas) throw;
-        if (this.balance &lt; weiForMcr * mcrAmmountForGas) throw;
+        if (balances[msg.sender] < mcrAmmountForGas) throw;
+        if (balances[curator] > balances[curator] + mcrAmmountForGas) throw;
+        if (this.balance < weiForMcr * mcrAmmountForGas) throw;
 
         balances[msg.sender] -= mcrAmmountForGas;
         balances[curator] += mcrAmmountForGas;

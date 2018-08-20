@@ -4,7 +4,7 @@ pragma solidity ^0.4.8;
   // Sample Erc20 supply token contract
   // Contract name:Erc20SupplyToken
   // Create params:uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol
-  //          e.g.:100000000,&quot;My company&#39;s Token&quot;,8,&quot;TOK&quot;
+  //          e.g.:100000000,"My company's Token",8,"TOK"
   // ----------------------------------------------------------------------------------------------
 
    // ERC Token Standard #20 Interface
@@ -41,16 +41,16 @@ pragma solidity ^0.4.8;
       string public name; //名称
       uint8 public decimals; //小数点后的位数
       uint256 public _totalSupply; //发行总量
-      string public constant version = &#39;1.0&#39;;    //版本
+      string public constant version = '1.0';    //版本
 
       // 智能合约的所有者
       address public owner;
 
       // 每个账户的余额
-      mapping(address =&gt; uint256) balances;
+      mapping(address => uint256) balances;
 
       // 帐户的所有者批准将金额转入另一个帐户。从上面的说明我们可以得知allowed[被转移的账户][转移钱的账户]
-      mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+      mapping(address => mapping (address => uint256)) allowed;
 
       // 只能通过智能合约的所有者才能调用的方法
       modifier onlyOwner() {
@@ -60,7 +60,7 @@ pragma solidity ^0.4.8;
           _;
       }
 
-      // 构造函数,发行一个币create时传入参数为:100000000,&quot;My company&#39;s Token&quot;,8,&quot;NOTRMB&quot;
+      // 构造函数,发行一个币create时传入参数为:100000000,"My company's Token",8,"NOTRMB"
       function Erc20SupplyToken(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) {
           owner 						= msg.sender;
           balances[owner] 	= _initialAmount;
@@ -83,9 +83,9 @@ pragma solidity ^0.4.8;
 
       // 转移余额到其他账户
       function transfer(address _to, uint256 _amount) returns (bool success) {
-          if (balances[msg.sender] &gt;= _amount 
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+          if (balances[msg.sender] >= _amount 
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
               balances[msg.sender] -= _amount;
               balances[_to] += _amount;
               Transfer(msg.sender, _to, _amount);
@@ -101,10 +101,10 @@ pragma solidity ^0.4.8;
           address _to,
           uint256 _amount
       ) returns (bool success) {
-          if (balances[_from] &gt;= _amount
-              &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-              &amp;&amp; _amount &gt; 0
-              &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+          if (balances[_from] >= _amount
+              && allowed[_from][msg.sender] >= _amount
+              && _amount > 0
+              && balances[_to] + _amount > balances[_to]) {
               balances[_from] -= _amount;
               allowed[_from][msg.sender] -= _amount;
               balances[_to] += _amount;

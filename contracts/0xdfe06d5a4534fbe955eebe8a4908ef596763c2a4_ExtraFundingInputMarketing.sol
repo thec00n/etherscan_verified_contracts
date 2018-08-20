@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
 
  * @name        Application Asset Contract ABI
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670a0e040c1e270908100b0e1102491508">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670a0e040c1e270908100b0e1102491508">[email protected]</a>>
 
  Any contract inheriting this will be usable as an Asset in the Application Entity
 
@@ -23,8 +23,8 @@ contract ABIApplicationAsset {
     bool public _settingsApplied;
     address public owner;
     address public deployerAddress;
-    mapping (bytes32 =&gt; uint8) public EntityStates;
-    mapping (bytes32 =&gt; uint8) public RecordStates;
+    mapping (bytes32 => uint8) public EntityStates;
+    mapping (bytes32 => uint8) public RecordStates;
 
     function setInitialApplicationAddress(address _ownerAddress) public;
     function setInitialOwnerAndName(bytes32 _name) external returns (bool);
@@ -48,7 +48,7 @@ contract ABIApplicationAsset {
 
  * @name        Token Manager Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="610c08020a18210f0e160d0817044f130e">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="610c08020a18210f0e160d0817044f130e">[email protected]</a>>
 
 */
 
@@ -78,14 +78,14 @@ contract ABITokenManager is ABIApplicationAsset {
 
  * @name        Marketing Funding Input Contract
  * @package     BlockBitsIO
- * @author      Micky Socaci &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91fcf8f2fae8d1fffee6fdf8e7f4bfe3fe">[email&#160;protected]</a>&gt;
+ * @author      Micky Socaci <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91fcf8f2fae8d1fffee6fdf8e7f4bfe3fe">[email protected]</a>>
 
 
  Classic funding method that receives ETH and mints tokens directly
     - has hard cap.
     - minted supply affects final token supply.
     - does not use vaults, mints directly to sender address.
-    - accepts over cap payment and returns what&#39;s left back to sender.
+    - accepts over cap payment and returns what's left back to sender.
   Funds used exclusively for Marketing
 
 */
@@ -141,12 +141,12 @@ contract ExtraFundingInputMarketing {
     }
 
     function buy() public payable returns(bool) {
-        if(msg.value &gt; 0) {
+        if(msg.value > 0) {
             if( canAcceptPayment() ) {
 
                 uint256 contributed_value = msg.value;
                 uint256 amountOverCap = getValueOverCurrentCap(contributed_value);
-                if ( amountOverCap &gt; 0 ) {
+                if ( amountOverCap > 0 ) {
                     // calculate how much we can accept
 
                     // update contributed value
@@ -165,7 +165,7 @@ contract ExtraFundingInputMarketing {
                     revert();
                 }
 
-                if(amountOverCap &gt; 0) {
+                if(amountOverCap > 0) {
                     // last step, if we received more than we can accept, send remaining back
                     // amountOverCap sent back
                     if( msg.sender.send(this.balance) ) {
@@ -186,7 +186,7 @@ contract ExtraFundingInputMarketing {
     }
 
     function canAcceptPayment() public view returns (bool) {
-        if( (getTimestamp() &gt;= start_time &amp;&amp; getTimestamp() &lt;= end_time) &amp;&amp; (AmountRaised &lt; hardCap) ) {
+        if( (getTimestamp() >= start_time && getTimestamp() <= end_time) && (AmountRaised < hardCap) ) {
             return true;
         }
         return false;
@@ -198,7 +198,7 @@ contract ExtraFundingInputMarketing {
 
     function getValueOverCurrentCap(uint256 _amount) public view returns (uint256) {
         uint256 remaining = hardCap - AmountRaised;
-        if( _amount &gt; remaining ) {
+        if( _amount > remaining ) {
             return _amount - remaining;
         }
         return 0;

@@ -11,9 +11,9 @@ pragma solidity ^0.4.21;
     you are trying to buy/sell.
     
     The contract provides to functions that can be used to query how much ETH
-    the contract is willing to pay for your CHI, or how much ETH you&#39;ll need to 
+    the contract is willing to pay for your CHI, or how much ETH you'll need to 
     buy CHI. You can call those functions without generating a transaction,
-    for example in the &quot;Read Smart Contract&quot; tab on Etherscan. This will give 
+    for example in the "Read Smart Contract" tab on Etherscan. This will give 
     you an estimate only, because the price might change by the time your TX confirms. 
     To avoid price surprises, this contract only supports limit buy and sells.
     
@@ -56,11 +56,11 @@ contract ChiMarket {
         uint256 eth_balance = address(this).balance;
         uint256 chi_balance = ChiToken.balanceOf(this);
         uint256 eth_amount;
-        require(eth_balance &gt; 0 &amp;&amp; chi_balance &gt; 0);
+        require(eth_balance > 0 && chi_balance > 0);
 
-        require(chi_balance + chi_amount &gt;= chi_balance); // don&#39;t allow overflow
+        require(chi_balance + chi_amount >= chi_balance); // don't allow overflow
         eth_amount = (chi_amount * eth_balance) / (chi_balance + chi_amount);
-        require(1000 * eth_amount &gt;= eth_amount); // don&#39;t allow overflow
+        require(1000 * eth_amount >= eth_amount); // don't allow overflow
         eth_amount = ((1000 - market_halfspread) * eth_amount) / 1000;
         return eth_amount;
     }
@@ -73,12 +73,12 @@ contract ChiMarket {
         uint256 eth_balance = address(this).balance - _offset_eth;
         uint256 chi_balance = ChiToken.balanceOf(this);
         uint256 eth_amount;
-        require(eth_balance &gt; 0 &amp;&amp; chi_balance &gt; 0);
-        require(chi_balance &gt; _chi_amount); // must have enough CHI
+        require(eth_balance > 0 && chi_balance > 0);
+        require(chi_balance > _chi_amount); // must have enough CHI
         
-        require(chi_balance - _chi_amount &lt;= chi_balance); // don&#39;t allow overflow
+        require(chi_balance - _chi_amount <= chi_balance); // don't allow overflow
         eth_amount = (_chi_amount * eth_balance) / (chi_balance - _chi_amount);
-        require(1000 * eth_amount &gt;= eth_amount); // don&#39;t allow overflow
+        require(1000 * eth_amount >= eth_amount); // don't allow overflow
         eth_amount = (1000 * eth_amount) / (1000 - market_halfspread);
         return eth_amount;
     }
@@ -87,13 +87,13 @@ contract ChiMarket {
     // All of the ETH included in the TX is converted to CHI
     // requires at least _min_chi_amount of CHI for that ETH, otherwise TX fails
     function limitBuy(uint256 _chi_amount) public payable{
-        require(_chi_amount &gt; 0);
+        require(_chi_amount > 0);
         uint256 eth_amount = calcBUYoffer(_chi_amount, msg.value);
-        require(eth_amount &lt;= msg.value);
+        require(eth_amount <= msg.value);
         uint256 return_ETH_amount = msg.value - eth_amount;
-        require(return_ETH_amount &lt; msg.value);
+        require(return_ETH_amount < msg.value);
 
-        if(return_ETH_amount &gt; 0){
+        if(return_ETH_amount > 0){
             msg.sender.transfer(return_ETH_amount); // return extra ETH
         }
         require(ChiToken.transfer(msg.sender, _chi_amount)); // send CHI tokens
@@ -104,10 +104,10 @@ contract ChiMarket {
     // require at least _min_eth_amount for that CHI, otherwise TX fails
     // Make sure to set CHI allowance before calling this function
     function limitSell(uint256 _chi_amount, uint256 _min_eth_amount) public {
-        require(ChiToken.allowance(msg.sender, this) &gt;= _chi_amount);
+        require(ChiToken.allowance(msg.sender, this) >= _chi_amount);
         uint256 eth_amount = calcSELLoffer(_chi_amount);
-        require(eth_amount &gt;= _min_eth_amount);
-        require(eth_amount &gt; 0);
+        require(eth_amount >= _min_eth_amount);
+        require(eth_amount > 0);
 
         require(ChiToken.transferFrom(msg.sender, this, _chi_amount));
         msg.sender.transfer(eth_amount);
@@ -120,7 +120,7 @@ contract ChiMarket {
         require(token.transfer(_to, _val));
     }
 
-    // Hopefully this doesn&#39;t get used, but it allows for gotchi rescue if someone sends
+    // Hopefully this doesn't get used, but it allows for gotchi rescue if someone sends
     // their gotchi (or a cat) to the contract by mistake.
     function moveERC721Tokens(address _tokenContract, address _to, uint256 _tid) public onlyOwner {
         ERC721Token token = ERC721Token(_tokenContract);
@@ -129,20 +129,20 @@ contract ChiMarket {
 
     // Allows the owner to move ether, for example to an updated contract  
     function moveEther(address _target, uint256 _amount) public onlyOwner {
-        require(_amount &lt;= address(this).balance);
+        require(_amount <= address(this).balance);
         _target.transfer(_amount);
     }
 
-    // Set the market spread (actually it&#39;s half of the spread).    
+    // Set the market spread (actually it's half of the spread).    
     function setSpread(uint256 _halfspread) public onlyOwner {
-        require(_halfspread &lt;= 50);
+        require(_halfspread <= 50);
         market_halfspread = _halfspread;        
     }
  
     // Allows for deposit of ETH and CHI at the same time (to avoid temporary imbalance
     // in the market)
     function depositBoth(uint256 _chi_amount) public payable onlyOwner {
-        require(ChiToken.allowance(msg.sender, this) &gt;= _chi_amount);
+        require(ChiToken.allowance(msg.sender, this) >= _chi_amount);
         require(ChiToken.transferFrom(msg.sender, this, _chi_amount));
     }
 
@@ -151,8 +151,8 @@ contract ChiMarket {
     function withdrawBoth(uint256 _chi_amount, uint256 _eth_amount) public onlyOwner {
         uint256 eth_balance = address(this).balance;
         uint256 chi_balance = ChiToken.balanceOf(this);
-        require(_chi_amount &lt;= chi_balance);
-        require(_eth_amount &lt;= eth_balance);
+        require(_chi_amount <= chi_balance);
+        require(_eth_amount <= eth_balance);
         
         msg.sender.transfer(_eth_amount);
         require(ChiToken.transfer(msg.sender, _chi_amount));

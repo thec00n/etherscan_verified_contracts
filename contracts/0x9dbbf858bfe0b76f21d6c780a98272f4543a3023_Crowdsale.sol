@@ -37,20 +37,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -64,7 +64,7 @@ contract BasicToken is ERC20Basic {
     
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -98,7 +98,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -110,7 +110,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -152,7 +152,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -232,9 +232,9 @@ contract MintableToken is StandardToken, Ownable {
 
 contract RomanovEmpireTokenCoin is MintableToken {
     
-    string public constant name = &quot; Romanov Empire Imperium Token&quot;;
+    string public constant name = " Romanov Empire Imperium Token";
     
-    string public constant symbol = &quot;REI&quot;;
+    string public constant symbol = "REI";
     
     uint32 public constant decimals = 0;
     
@@ -299,15 +299,15 @@ contract Crowdsale is Ownable {
     }
 
     modifier saleIsOn() {
-    	require(now &gt; start &amp;&amp; now &lt; preIcoEnd);
+    	require(now > start && now < preIcoEnd);
     	require(pause!=true);
     	_;
     }
 	
     modifier isUnderHardCap() {
-        require(token.totalSupply() &lt; preICOhardcap);
+        require(token.totalSupply() < preICOhardcap);
         //если набран hardcapUSD
-        require(collectedFunds &lt; hardcapUSD);
+        require(collectedFunds < hardcapUSD);
         _;
     }
 
@@ -322,7 +322,7 @@ contract Crowdsale is Ownable {
 
     function createTokens() isUnderHardCap saleIsOn payable {
 
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         uint256 totalSupply = token.totalSupply();
         
@@ -341,26 +341,26 @@ contract Crowdsale is Ownable {
         uint256 tokenRest = 0;
         uint256 rest = 0;
         
-          require(totalSupply &lt; preICOhardcap);
+          require(totalSupply < preICOhardcap);
           
           tokenRest = preICOhardcap.sub(totalSupply);
 
-          require(tokenRest &gt; 0);
+          require(tokenRest > 0);
             
           
-          if(usdValue&gt;summ2 &amp;&amp; tokenRest &gt; 200 ){
+          if(usdValue>summ2 && tokenRest > 200 ){
               numTokens = (usdValue.sub(summ2)).div(price3).add(200);
-              if(numTokens &gt; tokenRest)
+              if(numTokens > tokenRest)
                 numTokens = tokenRest;              
               spendMoney = summ2.add((numTokens.sub(200)).mul(price3));
-          }else if(usdValue&gt;summ1 &amp;&amp; tokenRest &gt; 100 ) {
+          }else if(usdValue>summ1 && tokenRest > 100 ) {
               numTokens = (usdValue.sub(summ1)).div(price2).add(100);
-              if(numTokens &gt; tokenRest)
+              if(numTokens > tokenRest)
                 numTokens = tokenRest;
               spendMoney = summ1.add((numTokens.sub(100)).mul(price2));
           }else {
               numTokens = usdValue.div(price1);
-              if(numTokens &gt; tokenRest)
+              if(numTokens > tokenRest)
                 numTokens = tokenRest;
               spendMoney = numTokens.mul(price1);
           }
@@ -368,7 +368,7 @@ contract Crowdsale is Ownable {
           rest = (usdValue.sub(spendMoney)).mul(1000000000000000000).div(ETHUSD);
     
          msg.sender.transfer(rest);
-         if(rest&lt;msg.value){
+         if(rest<msg.value){
             multisig.transfer(msg.value.sub(rest));
             collectedFunds = collectedFunds + msg.value.sub(rest).mul(ETHUSD).div(1000000000000000000); 
          }

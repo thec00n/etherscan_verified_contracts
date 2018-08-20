@@ -23,37 +23,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -64,10 +64,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -116,8 +116,8 @@ contract StandardToken is ERC20, SafeMath {
 
 contract QVT is StandardToken {
 
-    string public name = &quot;QVT&quot;;
-    string public symbol = &quot;QVT&quot;;
+    string public name = "QVT";
+    string public symbol = "QVT";
     uint public decimals = 18;
     uint public multiplier = 1000000000000000000; // two decimals to the left
 
@@ -207,13 +207,13 @@ contract QVT is StandardToken {
         // Buy allowed if contract is not on halt
         require(!halted);
         // Amount of wei should be more that 0
-        require(_value&gt;0);
+        require(_value>0);
 
         // Count expected tokens price
         uint tokens = _value / price();
 
-        // Total tokens should be more than user want&#39;s to buy
-        require(balances[owner]&gt;safeMul(tokens, multiplier));
+        // Total tokens should be more than user want's to buy
+        require(balances[owner]>safeMul(tokens, multiplier));
 
         // Gave pre-sale bonus
         if (isPreSale) {
@@ -236,7 +236,7 @@ contract QVT is StandardToken {
         }
 
         // Check that required tokens count are less than tokens already sold on ico sub pre-ico
-        require(safeAdd(presaleTokenSupply, tokens) &lt; icoCap);
+        require(safeAdd(presaleTokenSupply, tokens) < icoCap);
 
         // Send wei to founder address
         founder.transfer(_value);
@@ -277,7 +277,7 @@ contract QVT is StandardToken {
         address to = 0x0;
         uint value = 0;
 
-        for (uint i = 0; i &lt; toArray.length; i++) {
+        for (uint i = 0; i < toArray.length; i++) {
             to = toArray[i];
             value = valueArray[i];
             tokens = value / price();
@@ -304,7 +304,7 @@ contract QVT is StandardToken {
      * Transfer team tokens to target address
      */
     function sendBounty(address _to, uint256 _value) onlyOwner() {
-        require(bounty &gt; _value);
+        require(bounty > _value);
 
         bounty = safeSub(bounty, _value);
         balances[_to] = safeAdd(balances[_to], safeMul(_value, multiplier));
@@ -405,7 +405,7 @@ contract QVT is StandardToken {
      * Start new investment round
      */
     function startNewRound() onlyOwner() {
-        require(roundCount &lt; 5);
+        require(roundCount < 5);
         roundCount = roundCount + 1;
 
         balances[owner] = safeAdd(balances[owner], safeMul(icoCap, multiplier));
@@ -417,12 +417,12 @@ contract QVT is StandardToken {
     }
 
     modifier isAvailable() {
-        require(!halted &amp;&amp; !freeze);
+        require(!halted && !freeze);
         _;
     }
 
     /**
-     * Just being sent some cash? Let&#39;s buy tokens
+     * Just being sent some cash? Let's buy tokens
      */
     function() payable {
         buy();

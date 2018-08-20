@@ -22,20 +22,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -43,8 +43,8 @@ library SafeMath {
 contract BasicToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
   * @dev transfer token for a specified address
@@ -53,7 +53,7 @@ contract BasicToken is ERC20 {
   */
 
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -72,7 +72,7 @@ contract BasicToken is ERC20 {
    */
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         uint256 _allowance = allowed[_from][msg.sender];
         allowed[_from][msg.sender] = _allowance.sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -125,8 +125,8 @@ contract EPTToken is BasicToken {
 
     using SafeMath for uint256;
 
-    string public name = &quot;e-Pocket Token&quot;;                      //name of the token
-    string public symbol = &quot;EPT&quot;;                               //symbol of the token
+    string public name = "e-Pocket Token";                      //name of the token
+    string public symbol = "EPT";                               //symbol of the token
     uint8 public decimals = 18;                                 //decimals
     uint256 public initialSupply = 64000000 * 10**18;           //total supply of Tokens
 
@@ -257,7 +257,7 @@ contract EPTCrowdfund {
     }
 
     modifier isBetween() {
-        require(now &gt;= presaleStartTime &amp;&amp; now &lt;= crowdfundEndTime);
+        require(now >= presaleStartTime && now <= crowdfundEndTime);
         _;
     }
 
@@ -337,7 +337,7 @@ contract EPTCrowdfund {
      */
 
     function setEthRate(uint256 _newEthRate) onlyfounder returns (bool) {
-        require(_newEthRate &gt; 0);
+        require(_newEthRate > 0);
         ethRate = _newEthRate;
         return true;
     }
@@ -354,16 +354,16 @@ contract EPTCrowdfund {
             return 10;
         } 
         if(getState() == State.CrowdSale) {
-            if (now &gt;= crowdfundStartTime + 3 weeks &amp;&amp; now &lt;= crowdfundEndTime) {
+            if (now >= crowdfundStartTime + 3 weeks && now <= crowdfundEndTime) {
                 return 30;
              }
-            if (now &gt;= crowdfundStartTime + 2 weeks) {
+            if (now >= crowdfundStartTime + 2 weeks) {
                 return 25;
             }
-            if (now &gt;= crowdfundStartTime + 1 weeks) {
+            if (now >= crowdfundStartTime + 1 weeks) {
                 return 20;
             }
-            if (now &gt;= crowdfundStartTime) {
+            if (now >= crowdfundStartTime) {
                 return 15;
             }  
         } else {
@@ -378,10 +378,10 @@ contract EPTCrowdfund {
      */
 
     function getState() private returns(State) {
-        if (now &gt;= crowdfundStartTime &amp;&amp; now &lt;= crowdfundEndTime) {
+        if (now >= crowdfundStartTime && now <= crowdfundEndTime) {
             return State.CrowdSale;
         }
-        if (now &gt;= presaleStartTime &amp;&amp; now &lt;= presaleEndTime) {
+        if (now >= presaleStartTime && now <= presaleEndTime) {
             return State.PreSale;
         } else {
             return State.Finish;
@@ -395,7 +395,7 @@ contract EPTCrowdfund {
      */
 
     function endCrowdFund() onlyfounder returns(bool) {
-        require(now &gt; crowdfundEndTime);
+        require(now > crowdfundEndTime);
         uint256 remainingtoken = token.balanceOf(this);
 
         if (remainingtoken != 0) {

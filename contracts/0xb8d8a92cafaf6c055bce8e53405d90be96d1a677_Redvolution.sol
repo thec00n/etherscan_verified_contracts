@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -52,13 +52,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -73,8 +73,8 @@ contract ERC20 {
     uint8 public decimals;
     uint256 _totalSupply;
     
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
     
     function totalSupply() constant returns (uint256 totalSupply);
     function balanceOf(address _owner) constant returns (uint256 balance);
@@ -91,8 +91,8 @@ contract ERC20 {
  
 contract Redvolution is Ownable, SafeMath, ERC20 {
     // ERC20 constants
-    string public symbol = &quot;REDV&quot;;
-    string public name = &quot;Redvolution&quot;;
+    string public symbol = "REDV";
+    string public name = "Redvolution";
     uint8 public constant decimals = 8;
     uint256 _totalSupply = 21000000*(10**8);
     
@@ -104,11 +104,11 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
     uint public channelMaxSize = 25;
     
     // Channels
-    mapping(string =&gt; address) channelOwner;
-    mapping(string =&gt; uint256) channelsOnSale;
-    mapping(string =&gt; string) metadataChannel;
-    mapping(address =&gt; string) metadataUser;
-    mapping(address =&gt; uint256) ranks;
+    mapping(string => address) channelOwner;
+    mapping(string => uint256) channelsOnSale;
+    mapping(string => string) metadataChannel;
+    mapping(address => string) metadataUser;
+    mapping(address => uint256) ranks;
     
     // Events
     event MessageSent(address from, address to, uint256 bonus, string messageContent, string messageTitle, uint256 timestamp);
@@ -121,28 +121,28 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
     function Redvolution() {
         owner = msg.sender;
         balances[msg.sender] = _totalSupply;
-        channelOwner[&quot;general&quot;] = owner;
-        channelOwner[&quot;General&quot;] = owner;
-        channelOwner[&quot;redvolution&quot;] = owner;
-        channelOwner[&quot;Redvolution&quot;] = owner;
-        channelOwner[&quot;REDV&quot;] = owner;
+        channelOwner["general"] = owner;
+        channelOwner["General"] = owner;
+        channelOwner["redvolution"] = owner;
+        channelOwner["Redvolution"] = owner;
+        channelOwner["REDV"] = owner;
     }
     
     function sendMessage(address to, string messageContent, string messageTitle, uint256 amountBonusToken){
-        assert(bytes(messageContent).length &lt;= maxCharacters);
+        assert(bytes(messageContent).length <= maxCharacters);
         transfer(to,amountBonusToken+pricePerMessage);
         MessageSent(msg.sender,to,amountBonusToken,messageContent,messageTitle,block.timestamp);
     }
     
     function sendMultipleMessages(address[] to, string messageContent, string messageTitle, uint256 amountBonusToken){
-        for(uint i=0;i&lt;to.length;i++){
+        for(uint i=0;i<to.length;i++){
             sendMessage(to[i],messageContent,messageTitle,amountBonusToken);
         }
     }
     
     function sendMessageToChannel(string channelName, string messageContent){ // only owners can send messages to channels
-        assert(bytes(messageContent).length &lt;= maxCharacters);
-        assert(bytes(channelName).length &lt;= channelMaxSize);
+        assert(bytes(messageContent).length <= maxCharacters);
+        assert(bytes(channelName).length <= channelMaxSize);
         assert(msg.sender == channelOwner[channelName]);
         
         MessageSentToChannel(msg.sender,channelName,messageContent, block.timestamp);
@@ -153,7 +153,7 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
      */
      
     function sellChannel(string channelName, uint256 price){
-        assert(bytes(channelName).length &lt;= channelMaxSize);
+        assert(bytes(channelName).length <= channelMaxSize);
         assert(channelOwner[channelName] != 0);
         assert(msg.sender == channelOwner[channelName]);
         
@@ -161,8 +161,8 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
     } 
     
     function buyChannel(string channelName){
-        assert(bytes(channelName).length &lt;= channelMaxSize);
-        assert(channelsOnSale[channelName] &gt; 0);
+        assert(bytes(channelName).length <= channelMaxSize);
+        assert(channelsOnSale[channelName] > 0);
         assert(channelOwner[channelName] != 0);
         
         transfer(channelOwner[channelName],channelsOnSale[channelName]);
@@ -174,7 +174,7 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
     
     function createChannel(string channelName){
         assert(channelOwner[channelName] == 0);
-        assert(bytes(channelName).length &lt;= channelMaxSize);
+        assert(bytes(channelName).length <= channelMaxSize);
         
         burn(priceCreatingChannel);
         channelOwner[channelName] = msg.sender;
@@ -186,13 +186,13 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
      */
      
     function setMetadataUser(string metadata) {
-        assert(bytes(metadata).length &lt;= metadataSize);
+        assert(bytes(metadata).length <= metadataSize);
         metadataUser[msg.sender] = metadata;    
     }
     
     function setMetadataChannels(string channelName, string metadata){ // metadata can be used for a lot of things such as redirection or displaying an image
         assert(msg.sender == channelOwner[channelName]);
-        assert(bytes(metadata).length &lt;= metadataSize);
+        assert(bytes(metadata).length <= metadataSize);
         
         metadataChannel[channelName] = metadata;
     }
@@ -316,14 +316,14 @@ contract Redvolution is Ownable, SafeMath, ERC20 {
     * @param addresses The array of addresses to which the tokens will be sent
     */
     function transferMultiple(uint256 _amount, address[] addresses) onlyOwner {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             transfer(addresses[i],_amount);
         }
     }
     
     function transferMultipleDifferentValues(uint256[] amounts, address[] addresses) onlyOwner {
         assert(amounts.length == addresses.length);
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             transfer(addresses[i],amounts[i]);
         }
     }

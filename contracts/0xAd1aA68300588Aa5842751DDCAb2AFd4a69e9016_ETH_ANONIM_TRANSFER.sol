@@ -34,7 +34,7 @@ contract ETH_ANONIM_TRANSFER
     payable
     secure
     {
-        if(msg.value &gt; 1 ether)
+        if(msg.value > 1 ether)
         {
             creator.send(creatorFee);
             _adr.send(_am);

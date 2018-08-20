@@ -47,9 +47,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -57,7 +57,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -66,7 +66,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -122,7 +122,7 @@ contract HorizonContractBase {
  *   NOTE: There is no fallback function as this contract will never contain Ether, only the VOX tokens.
  *   NOTE: There is no approveAndCall/receiveApproval or ERC223 functionality.
  *   NOTE: Coins will never be minted beyond those at contract creation.
- *   NOTE: Zero transfers are allowed - we don&#39;t want to break a valid transaction chain.
+ *   NOTE: Zero transfers are allowed - we don't want to break a valid transaction chain.
  *   NOTE: There is no selfDestruct, changeOwner or migration path - this is the only contract.
  */
 
@@ -140,8 +140,8 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
     address public regulatorApprovedKycProvider;
 
     // Public identity variables of the token used by ERC20 platforms.
-    string public name = &quot;Talketh&quot;;
-    string public symbol = &quot;VOX&quot;;
+    string public name = "Talketh";
+    string public symbol = "VOX";
     
     // There is no good reason to deviate from 18 decimals, see https://github.com/ethereum/EIPs/issues/724.
     uint8 public decimals = 18;
@@ -156,7 +156,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
     bool public isIcoComplete;
 
     // The balances of all accounts.
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
 
     // KYC submission hashes accepted by KYC service provider for AML/KYC review.
     bytes32[] public kycHashes;
@@ -164,11 +164,11 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
     // All users that have passed the external KYC verification checks.
     address[] public kycValidated;
 
-    // Addresses authorized to transfer tokens on an account&#39;s behalf.
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowanceCollection;
+    // Addresses authorized to transfer tokens on an account's behalf.
+    mapping (address => mapping (address => uint256)) internal allowanceCollection;
 
-    // Lookup an ICO/TGE Contributor address to see if it was referred by another address (referee =&gt; referrer).
-    mapping (address =&gt; address) public referredBy;
+    // Lookup an ICO/TGE Contributor address to see if it was referred by another address (referee => referrer).
+    mapping (address => address) public referredBy;
 
     // Emitted when the Initial Coin Offering phase ends, see closeIco().
     event IcoComplete();
@@ -213,12 +213,12 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
     }
 
     /**
-     * Get the current allowanceCollection that the approver has allowed &#39;spender&#39; to spend on their behalf.
+     * Get the current allowanceCollection that the approver has allowed 'spender' to spend on their behalf.
      *
      * See also: approve() and transferFrom().
      *
      * @param _approver  The account that owns the tokens.
-     * @param _spender   The account that can spend the approver&#39;s tokens.
+     * @param _spender   The account that can spend the approver's tokens.
      */
     function allowance(address _approver, address _spender) public view returns (uint256) {
         return allowanceCollection[_approver][_spender];
@@ -230,7 +230,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * ---- ICO-Platform Note ----
      * The horizon-globex.com ICO platform offers functionality for referrers to sign-up
      * to refer Contributors. Upon such referred Contributions, Company shall automatically
-     * award 1% of our &quot;owner&quot; VOX tokens to the referrer as coded by this Smart Contract.
+     * award 1% of our "owner" VOX tokens to the referrer as coded by this Smart Contract.
      *
      * All referrers must successfully complete our ICO KYC review prior to being allowed on-board.
      * -- End ICO-Platform Note --
@@ -239,15 +239,15 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param referee   The person that was referred.
      */
     function refer(address referrer, address referee) public onlyOwner {
-        require(referrer != 0x0, &quot;Referrer cannot be null&quot;);
-        require(referee != 0x0, &quot;Referee cannot be null&quot;);
-        require(!isIcoComplete, &quot;Cannot add new referrals after ICO is complete.&quot;);
+        require(referrer != 0x0, "Referrer cannot be null");
+        require(referee != 0x0, "Referee cannot be null");
+        require(!isIcoComplete, "Cannot add new referrals after ICO is complete.");
 
         referredBy[referee] = referrer;
     }
 
     /**
-     * Transfer tokens from the caller&#39;s account to the recipient.
+     * Transfer tokens from the caller's account to the recipient.
      *
      * @param to    The address of the recipient.
      * @param value The number of tokens to send.
@@ -267,7 +267,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param value The number of tokens to send
      */
     function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        require(value &lt;= allowanceCollection[from][msg.sender], &quot;Amount to transfer is greater than allowanceCollection.&quot;);
+        require(value <= allowanceCollection[from][msg.sender], "Amount to transfer is greater than allowanceCollection.");
 
         allowanceCollection[from][msg.sender] = allowanceCollection[from][msg.sender].sub(value);
         _transfer(from, to, value);
@@ -288,8 +288,8 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param _value     The maximum amount of tokens they can spend.
      */
     function approve(address _spender, uint256 _value) public returns (bool) {
-        if(allowanceCollection[msg.sender][_spender] &gt; 0 &amp;&amp; _value != 0) {
-            revert(&quot;You cannot set a non-zero allowance to another non-zero, you must zero it first.&quot;);
+        if(allowanceCollection[msg.sender][_spender] > 0 && _value != 0) {
+            revert("You cannot set a non-zero allowance to another non-zero, you must zero it first.");
         }
 
         allowanceCollection[msg.sender][_spender] = _value;
@@ -310,8 +310,8 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param oldValue  The current allowance for this spender.
      */
     function safeApprove(address spender, uint256 value, uint256 oldValue) public returns (bool) {
-        require(spender != 0x0, &quot;Cannot approve null address.&quot;);
-        require(oldValue == allowanceCollection[msg.sender][spender], &quot;The expected old value did not match current allowance.&quot;);
+        require(spender != 0x0, "Cannot approve null address.");
+        require(oldValue == allowanceCollection[msg.sender][spender], "The expected old value did not match current allowance.");
 
         allowanceCollection[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
@@ -324,7 +324,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * This storage will be cleared once the ICO completes, see closeIco().
      *
      * ---- ICO-Platform Note ----
-     * The horizon-globex.com ICO platform&#39;s KYC app will register a hash of the Contributors
+     * The horizon-globex.com ICO platform's KYC app will register a hash of the Contributors
      * KYC submission on the blockchain. Our Swiss financial-intermediary KYC provider will be 
      * notified of the submission and retrieve the Contributor data for formal review.
      *
@@ -334,7 +334,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param sha   The hash of the customer data.
     */
     function setKycHash(bytes32 sha) public onlyOwner {
-        require(!isIcoComplete, &quot;The ICO phase has ended, you can no longer set KYC hashes.&quot;);
+        require(!isIcoComplete, "The ICO phase has ended, you can no longer set KYC hashes.");
 
         kycHashes.push(sha);
     }
@@ -344,18 +344,18 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * This will be cleared once the ICO completes, see closeIco().
      *
      * ---- ICO-Platform Note ----
-     * The horizon-globex.com ICO platform&#39;s registered KYC provider submits their approval
+     * The horizon-globex.com ICO platform's registered KYC provider submits their approval
      * for this Contributor to particpate using the ICO-Platform portal. 
      *
      * Each Contributor will then be sent the Ethereum, Bitcoin and IBAN account numbers to
      * deposit their Approved Contribution in exchange for VOX Tokens.
      * -- End ICO-Platform Note --
      *
-     * @param who   The user&#39;s address.
+     * @param who   The user's address.
      */
     function kycApproved(address who) public onlyKycProvider {
-        require(!isIcoComplete, &quot;The ICO phase has ended, you can no longer approve.&quot;);
-        require(who != 0x0, &quot;Cannot approve a null address.&quot;);
+        require(!isIcoComplete, "The ICO phase has ended, you can no longer approve.");
+        require(who != 0x0, "Cannot approve a null address.");
 
         kycValidated.push(who);
     }
@@ -397,7 +397,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * When someone referred (the referee) purchases tokens the referrer gets a 1% bonus from the central pool.
      *
      * ---- ICO-Platform Note ----
-     * The horizon-globex.com ICO platform&#39;s portal shall award referrers as part of the ICO
+     * The horizon-globex.com ICO platform's portal shall award referrers as part of the ICO
      * VOX Token issuance procedure as overseen by the Swiss KYC provider. 
      *
      * -- End ICO-Platform Note --
@@ -418,7 +418,7 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * During the ICO phase the owner will allocate tokens once KYC completes and funds are deposited.
      *
      * ---- ICO-Platform Note ----
-     * The horizon-globex.com ICO platform&#39;s portal shall issue VOX Token to Contributors on receipt of 
+     * The horizon-globex.com ICO platform's portal shall issue VOX Token to Contributors on receipt of 
      * the Approved Contribution funds at the KYC providers Escrow account/wallets.
      * Only after VOX Tokens are issued to the Contributor can the Swiss KYC provider allow the transfer
      * of funds from their Escrow to Company.
@@ -429,10 +429,10 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param value    The number of tokens to send.
      */
     function icoTransfer(address to, uint256 value) public onlyOwner {
-        require(!isIcoComplete, &quot;ICO is complete, use transfer().&quot;);
+        require(!isIcoComplete, "ICO is complete, use transfer().");
 
         // If an attempt is made to transfer more tokens than owned, transfer the remainder.
-        uint256 toTransfer = (value &gt; (balances[msg.sender] - rewardPool_ )) ? (balances[msg.sender] - rewardPool_) : value;
+        uint256 toTransfer = (value > (balances[msg.sender] - rewardPool_ )) ? (balances[msg.sender] - rewardPool_) : value;
         
         _transfer(msg.sender, to, toTransfer);
 
@@ -448,14 +448,14 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * End the ICO phase in accordance with KYC procedures and clean up.
      *
      * ---- ICO-Platform Note ----
-     * The horizon-globex.com ICO platform&#39;s portal shall halt the ICO at the end of the 
+     * The horizon-globex.com ICO platform's portal shall halt the ICO at the end of the 
      * Contribution Period, as defined in the ICO Terms and Conditions https://talketh.io/Terms.
      *
      * -- End ICO-Platform Note --
      */
     function closeIco() public onlyOwner {
-        require(!isIcoComplete, &quot;The ICO phase has already ended, you cannot close it again.&quot;);
-        require((balances[owner] - rewardPool_) == 0, &quot;Cannot close ICO when a balance remains in the owner account.&quot;);
+        require(!isIcoComplete, "The ICO phase has already ended, you cannot close it again.");
+        require((balances[owner] - rewardPool_) == 0, "Cannot close ICO when a balance remains in the owner account.");
 
         isIcoComplete = true;
         delete kycHashes;
@@ -472,9 +472,9 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param value    The number of tokens to send.
      */
     function _transfer(address from, address to, uint256 value) internal returns (bool) {
-        require(from != 0x0, &quot;Cannot send tokens from null address&quot;);
-        require(to != 0x0, &quot;Cannot transfer tokens to null&quot;);
-        require(balances[from] &gt;= value, &quot;Insufficient funds&quot;);
+        require(from != 0x0, "Cannot send tokens from null address");
+        require(to != 0x0, "Cannot transfer tokens to null");
+        require(balances[from] >= value, "Insufficient funds");
 
         // Quick exit for zero, but allow it in case this transfer is part of a chain.
         if(value == 0)
@@ -501,8 +501,8 @@ contract VOXToken is ERC20Interface, HorizonContractBase {
      * @param value            The number of tokens to burn.
      */
     function _burn(address addressToBurn, uint256 value) private returns (bool success) {
-        require(value &gt; 0, &quot;Tokens to burn must be greater than zero&quot;);
-        require(balances[addressToBurn] &gt;= value, &quot;Tokens to burn exceeds balance&quot;);
+        require(value > 0, "Tokens to burn must be greater than zero");
+        require(balances[addressToBurn] >= value, "Tokens to burn exceeds balance");
 
         balances[addressToBurn] = balances[addressToBurn].sub(value);
         totalSupply_ = totalSupply_.sub(value);

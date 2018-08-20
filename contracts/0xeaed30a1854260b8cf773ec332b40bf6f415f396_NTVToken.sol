@@ -33,7 +33,7 @@ library Base {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,7 +66,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -75,7 +75,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -103,7 +103,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -121,7 +121,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ library StringUtils {
         }
 
         bytes memory s = new bytes(i);
-        for (uint j = 0; j &lt; i; j++) {
+        for (uint j = 0; j < i; j++) {
             s[j] = reversed[i - 1 - j];
         }
 
@@ -172,11 +172,11 @@ library StringUtils {
         uint i;
         uint j;
 
-        for(i=0; i&lt;_baseBytes.length; i++) {
+        for(i=0; i<_baseBytes.length; i++) {
             _newValue[j++] = _baseBytes[i];
         }
 
-        for(i=0; i&lt;_valueBytes.length; i++) {
+        for(i=0; i<_valueBytes.length; i++) {
             _newValue[j++] = _valueBytes[i];
         }
 
@@ -184,7 +184,7 @@ library StringUtils {
     }
 
     function bytesToBytes32(bytes memory source) internal pure returns (bytes32 result) {
-        require(source.length &lt;= 32);
+        require(source.length <= 32);
 
         if (source.length == 0) {
             return 0x0;
@@ -198,7 +198,7 @@ library StringUtils {
     function toBytes96(string memory text) internal pure returns (bytes32, bytes32, bytes32, uint8) {
         bytes memory temp = bytes(text);
         len = uint8(temp.length);
-        require(len &lt;= 96);
+        require(len <= 96);
 
         uint8 i=0;
         uint8 j=0;
@@ -215,7 +215,7 @@ library StringUtils {
 
         uint8 len;
 
-        for(i=0; i&lt;len; i++) {
+        for(i=0; i<len; i++) {
             k = i / 32;
             j = i % 32;
 
@@ -232,25 +232,25 @@ library StringUtils {
     }
 
     function fromBytes96(bytes32 b1, bytes32 b2, bytes32 b3, uint8 len) internal pure returns (string) {
-        require(len &lt;= 96);
+        require(len <= 96);
         string memory _tmpValue = new string(len);
         bytes memory temp = bytes(_tmpValue);
 
         uint8 i;
         uint8 j = 0;
 
-        for(i=0; i&lt;32; i++) {
-            if (j &gt;= len) break;
+        for(i=0; i<32; i++) {
+            if (j >= len) break;
             temp[j++] = b1[i];
         }
 
-        for(i=0; i&lt;32; i++) {
-            if (j &gt;= len) break;
+        for(i=0; i<32; i++) {
+            if (j >= len) break;
             temp[j++] = b2[i];
         }
 
-        for(i=0; i&lt;32; i++) {
-            if (j &gt;= len) break;
+        for(i=0; i<32; i++) {
+            if (j >= len) break;
             temp[j++] = b3[i];
         }
 
@@ -265,7 +265,7 @@ library StringUtils {
  */
 contract NTVUToken is BasicToken, Ownable, Auction {
     string public name;
-    string public symbol = &quot;FOT&quot;;
+    string public symbol = "FOT";
 
     uint8 public number = 0;
     uint8 public decimals = 0;
@@ -293,7 +293,7 @@ contract NTVUToken is BasicToken, Ownable, Auction {
     uint32 public bidCount;
     uint32 public auctorCount;
 
-    mapping(address =&gt; bool) acutors;
+    mapping(address => bool) acutors;
 
     address public ethSaver; // 竞拍所得ETH保管者
 
@@ -315,8 +315,8 @@ contract NTVUToken is BasicToken, Ownable, Auction {
     function NTVUToken(uint8 _number, uint _bidStartValue, uint _bidStartTime, uint _bidEndTime, uint _tvUseStartTime, uint _tvUseEndTime, bool _isPrivate, string _defaultText, address _ethSaver) public {
         number = _number;
 
-        if (_number + 1 &lt; 10) {
-            symbol = StringUtils.concat(symbol, StringUtils.concat(&quot;0&quot;, StringUtils.uintToString(_number + 1)));
+        if (_number + 1 < 10) {
+            symbol = StringUtils.concat(symbol, StringUtils.concat("0", StringUtils.uintToString(_number + 1)));
         } else {
             symbol = StringUtils.concat(symbol, StringUtils.uintToString(_number + 1));
         }
@@ -345,11 +345,11 @@ contract NTVUToken is BasicToken, Ownable, Auction {
      * 拍卖期间如有更高出价，前一手出价者的以太坊自动退回其钱包
      */
     function bid() public payable returns (bool) {
-        require(now &gt;= bidStartTime); // 竞拍开始时间到后才能竞拍
-        require(now &lt; bidEndTime); // 竞拍截止时间到后不能再竞拍
-        require(msg.value &gt;= bidStartValue); // 拍卖金额需要大于起拍价
-        require(msg.value &gt;= maxBidValue + 0.05 ether); // 最低0.05ETH加价
-        require(!isPrivate || (isPrivate &amp;&amp; maxBidAccount == address(0))); // 竞拍或者私募第一次出价
+        require(now >= bidStartTime); // 竞拍开始时间到后才能竞拍
+        require(now < bidEndTime); // 竞拍截止时间到后不能再竞拍
+        require(msg.value >= bidStartValue); // 拍卖金额需要大于起拍价
+        require(msg.value >= maxBidValue + 0.05 ether); // 最低0.05ETH加价
+        require(!isPrivate || (isPrivate && maxBidAccount == address(0))); // 竞拍或者私募第一次出价
 
         // 如果上次有人出价，将上次出价的ETH退还给他
         if (maxBidAccount != address(0)) {
@@ -378,7 +378,7 @@ contract NTVUToken is BasicToken, Ownable, Auction {
      */
     function end() public returns (bool) {
         require(!auctionEnded); // 已经结束竞拍了不能再结束
-        require((now &gt;= bidEndTime) || (isPrivate &amp;&amp; maxBidAccount != address(0))); // 普通竞拍拍卖结束后才可以结束竞拍，私募只要出过价就可以结束竞拍
+        require((now >= bidEndTime) || (isPrivate && maxBidAccount != address(0))); // 普通竞拍拍卖结束后才可以结束竞拍，私募只要出过价就可以结束竞拍
    
         // 如果有人出价，将时段代币转给出价最高的人
         if (maxBidAccount != address(0)) {
@@ -407,8 +407,8 @@ contract NTVUToken is BasicToken, Ownable, Auction {
      */
     function setText(string _text) public {
         require(INITIAL_SUPPLY == balances[msg.sender]); // 拥有时段币的人可以设置文本
-        require(bytes(_text).length &gt; 0 &amp;&amp; bytes(_text).length &lt;= 90); // 汉字使用UTF8编码，1个汉字最多占用3个字节，所以最多写90个字节的字
-        require(now &lt; tvUseStartTime - 30 minutes); // 开播前30分钟不能再设置文本
+        require(bytes(_text).length > 0 && bytes(_text).length <= 90); // 汉字使用UTF8编码，1个汉字最多占用3个字节，所以最多写90个字节的字
+        require(now < tvUseStartTime - 30 minutes); // 开播前30分钟不能再设置文本
 
         text = _text;
     }
@@ -421,7 +421,7 @@ contract NTVUToken is BasicToken, Ownable, Auction {
      * 审核文本
      */
     function auditText(uint8 _status, string _text) external onlyOwner {
-        require((now &gt;= tvUseStartTime - 30 minutes) &amp;&amp; (now &lt; tvUseEndTime)); // 时段播出前30分钟为审核时间，截止到时段播出结束时间
+        require((now >= tvUseStartTime - 30 minutes) && (now < tvUseEndTime)); // 时段播出前30分钟为审核时间，截止到时段播出结束时间
         auditStatus = _status;
 
         if (_status == 2) { // 审核失败，更新审核文本
@@ -452,7 +452,7 @@ contract NTVUToken is BasicToken, Ownable, Auction {
      * 获得时段后，时段播出前，不可以转卖。时段播出后，可以作为纪念币转卖
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(now &gt;= tvUseEndTime); // 时段播出后，可以转卖。
+        require(now >= tvUseEndTime); // 时段播出后，可以转卖。
 
         super.transfer(_to, _value);
     }
@@ -518,7 +518,7 @@ contract NTVUToken is BasicToken, Ownable, Auction {
      * 提取以太坊到ethSaver
      */
     function reclaimEther() external onlyOwner {
-        require((now &gt; bidEndTime) || (isPrivate &amp;&amp; maxBidAccount != address(0))); // 普通竞拍拍卖结束后或者私募完成后，可以提币到ethSaver。
+        require((now > bidEndTime) || (isPrivate && maxBidAccount != address(0))); // 普通竞拍拍卖结束后或者私募完成后，可以提币到ethSaver。
         ethSaver.transfer(this.balance);
     }
 
@@ -542,12 +542,12 @@ contract NTVToken is Ownable {
 
     uint public onlineTime; // 上线时间，第一时段上电视的时间
     uint8 public totalTimeRange; // 当前已经释放的总的时段数
-    mapping(uint =&gt; address) internal timeRanges; // 每个时段的合约地址，编号从0开始
+    mapping(uint => address) internal timeRanges; // 每个时段的合约地址，编号从0开始
 
-    string public defaultText = &quot;浪花有意千里雪，桃花无言一队春。&quot;; // 忘记审核使用的默认文本
+    string public defaultText = "浪花有意千里雪，桃花无言一队春。"; // 忘记审核使用的默认文本
 
-    mapping(uint8 =&gt; Base.NTVUConfig) internal dayConfigs; // 每天时段配置
-    mapping(uint8 =&gt; Base.NTVUConfig) internal specialConfigs; // 特殊时段配置
+    mapping(uint8 => Base.NTVUConfig) internal dayConfigs; // 每天时段配置
+    mapping(uint8 => Base.NTVUConfig) internal specialConfigs; // 特殊时段配置
 
     address public ethSaver; // 竞拍所得ETH保管者
 
@@ -566,8 +566,8 @@ contract NTVToken is Ownable {
      */
     function startup(uint256 _onlineTime, address _ethSaver) public onlyOwner {
         require(!isRunning); // 只能上线一次，上线后不能停止
-        require((_onlineTime - 57600) % 1 days == 0); // 上线时间只能是整天时间，57600为北京时间的&#39;1970/1/2 0:0:0&#39;
-        require(_onlineTime &gt;= now); // 上线时间需要大于当前时间
+        require((_onlineTime - 57600) % 1 days == 0); // 上线时间只能是整天时间，57600为北京时间的'1970/1/2 0:0:0'
+        require(_onlineTime >= now); // 上线时间需要大于当前时间
         require(_ethSaver != address(0));
 
         onlineTime = _onlineTime;
@@ -584,7 +584,7 @@ contract NTVToken is Ownable {
         uint8[6] memory tvUseStartTimes = [0, 10, 12, 18, 20, 22]; // 电视使用开始时段
         uint8[6] memory tvUseEndTimes = [2, 12, 14, 20, 22, 24]; // 电视使用结束时段
 
-        for (uint8 i=0; i&lt;6; i++) {
+        for (uint8 i=0; i<6; i++) {
             dayConfigs[i].bidStartValue = 0.1 ether; // 正常起拍价0.1ETH
             dayConfigs[i].bidStartTime = 18 hours + 30 minutes - 1 days; // 一天前晚上 18:30起拍
             dayConfigs[i].bidEndTime = 22 hours - 1 days; // 一天前晚上 22:00 结束拍卖
@@ -600,7 +600,7 @@ contract NTVToken is Ownable {
         // ---------------------------
 
         // 首拍，第1天的6个时段都是首拍，拍卖时间从两天前的18:30到一天前的22:00
-        for(uint8 p=0; p&lt;6; p++) {
+        for(uint8 p=0; p<6; p++) {
             specialConfigs[p].special = true;
             
             specialConfigs[p].bidStartValue = 0.1 ether; // 起拍价0.1ETH
@@ -623,7 +623,7 @@ contract NTVToken is Ownable {
      * @param timestamp 时间戳
      */
     function dayFor(uint timestamp) constant public returns (uint) {
-        return timestamp &lt; onlineTime
+        return timestamp < onlineTime
             ? 0
             : (timestamp.sub(onlineTime) / 1 days) + 1;
     }
@@ -634,11 +634,11 @@ contract NTVToken is Ownable {
      * @param timestamp 时间戳
      */
     function numberFor(uint timestamp) constant public returns (uint8) {
-        if (timestamp &gt;= onlineTime) {
+        if (timestamp >= onlineTime) {
             uint current = timestamp.sub(onlineTime) % 1 days;
 
-            for(uint8 i=0; i&lt;6; i++) {
-                if (dayConfigs[i].tvUseStartTime&lt;=current &amp;&amp; current&lt;dayConfigs[i].tvUseEndTime) {
+            for(uint8 i=0; i<6; i++) {
+                if (dayConfigs[i].tvUseStartTime<=current && current<dayConfigs[i].tvUseEndTime) {
                     return (i + 1);
                 }
             }
@@ -681,11 +681,11 @@ contract NTVToken is Ownable {
      * 查询所有时段
      */
     function queryNTVUs(uint startIndex, uint count) public view returns(address[]){
-        startIndex = (startIndex &lt; totalTimeRange)? startIndex : totalTimeRange;
-        count = (startIndex + count &lt; totalTimeRange) ? count : (totalTimeRange - startIndex);
+        startIndex = (startIndex < totalTimeRange)? startIndex : totalTimeRange;
+        count = (startIndex + count < totalTimeRange) ? count : (totalTimeRange - startIndex);
 
         address[] memory result = new address[](count);
-        for(uint i=0; i&lt;count; i++) {
+        for(uint i=0; i<count; i++) {
             result[i] = timeRanges[startIndex + i];
         }
 
@@ -699,7 +699,7 @@ contract NTVToken is Ownable {
         uint day = dayFor(time());
         uint8 num = numberFor(time());
 
-        if (day&gt;0 &amp;&amp; (num&gt;0 &amp;&amp; num&lt;=6)) {
+        if (day>0 && (num>0 && num<=6)) {
             day = day - 1;
             num = num - 1;
 
@@ -714,8 +714,8 @@ contract NTVToken is Ownable {
      */
     function auditNTVUText(uint8 index, uint8 status, string _text) public onlyOwner {
         require(isRunning); // 合约启动后才能审核
-        require(index &gt;= 0 &amp;&amp; index &lt; totalTimeRange); //只能审核已经上线的时段
-        require(status==1 || (status==2 &amp;&amp; bytes(_text).length&gt;0 &amp;&amp; bytes(_text).length &lt;= 90)); // 审核不通，需要配置文本
+        require(index >= 0 && index < totalTimeRange); //只能审核已经上线的时段
+        require(status==1 || (status==2 && bytes(_text).length>0 && bytes(_text).length <= 90)); // 审核不通，需要配置文本
 
         address ntvu = timeRanges[index];
         assert(ntvu != address(0));
@@ -740,7 +740,7 @@ contract NTVToken is Ownable {
             var (b1, b2, b3, len) = ntvuToken.getShowTextBytes96();
             return StringUtils.fromBytes96(b1, b2, b3, len);
         } else {
-            return &quot;&quot;; // 当前不是播放时段，返回空文本
+            return ""; // 当前不是播放时段，返回空文本
         }
     }
 
@@ -750,13 +750,13 @@ contract NTVToken is Ownable {
     function status() public view returns(uint8) {
         if (!isRunning) {
             return 0; // 未启动拍卖
-        } else if (time() &lt; onlineTime) {
+        } else if (time() < onlineTime) {
             return 1; // 未到首播时间
         } else {
             if (totalTimeRange == 0) {
                 return 2; // 没有创建播放时段
             } else {
-                if (time() &lt; NTVUToken(timeRanges[totalTimeRange - 1]).tvUseEndTime()) {
+                if (time() < NTVUToken(timeRanges[totalTimeRange - 1]).tvUseEndTime()) {
                     return 3; // 整个竞拍活动进行中
                 } else {
                     return 4; // 整个竞拍活动已结束
@@ -771,7 +771,7 @@ contract NTVToken is Ownable {
     function totalAuctorCount() public view returns(uint32) {
         uint32 total = 0;
 
-        for(uint8 i=0; i&lt;totalTimeRange; i++) {
+        for(uint8 i=0; i<totalTimeRange; i++) {
             total += NTVUToken(timeRanges[i]).auctorCount();
         }
 
@@ -784,7 +784,7 @@ contract NTVToken is Ownable {
     function totalBidCount() public view returns(uint32) {
         uint32 total = 0;
 
-        for(uint8 i=0; i&lt;totalTimeRange; i++) {
+        for(uint8 i=0; i<totalTimeRange; i++) {
             total += NTVUToken(timeRanges[i]).bidCount();
         }
 
@@ -797,7 +797,7 @@ contract NTVToken is Ownable {
     function totalBidEth() public view returns(uint) {
         uint total = 0;
 
-        for(uint8 i=0; i&lt;totalTimeRange; i++) {
+        for(uint8 i=0; i<totalTimeRange; i++) {
             total += NTVUToken(timeRanges[i]).balance;
         }
 
@@ -813,9 +813,9 @@ contract NTVToken is Ownable {
     function maxBidEth() public view returns(uint) {
         uint maxETH = 0;
 
-        for(uint8 i=0; i&lt;totalTimeRange; i++) {
+        for(uint8 i=0; i<totalTimeRange; i++) {
             uint val = NTVUToken(timeRanges[i]).maxBidValue();
-            maxETH =  (val &gt; maxETH) ? val : maxETH;
+            maxETH =  (val > maxETH) ? val : maxETH;
         }
 
         return maxETH;
@@ -835,7 +835,7 @@ contract NTVToken is Ownable {
      */
     function reclaimNtvuEther(uint8 index) public onlyOwner {
         require(isRunning);
-        require(index &gt;= 0 &amp;&amp; index &lt; totalTimeRange); //只能审核已经上线的时段
+        require(index >= 0 && index < totalTimeRange); //只能审核已经上线的时段
 
         NTVUToken(timeRanges[index]).reclaimEther();
     }

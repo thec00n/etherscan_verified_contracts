@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-// By contributing you agree to our terms &amp; conditions.
+// By contributing you agree to our terms & conditions.
 // https://harbour.tokenate.io/HarbourTermsOfSale.pdf
 
 library SafeMath {
@@ -11,37 +11,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function assert(bool assertion) internal {
@@ -111,16 +111,16 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     uint public totalSupply;
     uint public freezeMintUntil;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
-    mapping (address =&gt; uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
+    mapping (address => uint) balances;
 
     modifier canMint {
-        require(totalSupply &lt; maxSupply);
+        require(totalSupply < maxSupply);
         _;
     }
 
     modifier mintIsNotFrozen {
-        require(freezeMintUntil &lt; now);
+        require(freezeMintUntil < now);
         _;
     }
 
@@ -145,7 +145,7 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     }
 
     function transfer(address _to, uint _value) returns (bool) {
-        if (_value &lt;= 0) {
+        if (_value <= 0) {
             return false;
         }
 
@@ -157,7 +157,7 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (_value &lt;= 0) {
+        if (_value <= 0) {
             return false;
         }
 
@@ -176,7 +176,7 @@ contract Token is ERC20, Mintable, Burnable, ownable {
     }
 
     function mint(address _to, uint _amount) public canMint mintIsNotFrozen onlyOwner {
-        if (maxSupply &lt; totalSupply.add(_amount)) throw;
+        if (maxSupply < totalSupply.add(_amount)) throw;
 
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -217,25 +217,25 @@ contract TokenSale is ownable {
     bool public capReached = false;
     bool public isFinalized = false;
 
-    mapping (address =&gt; uint) contributed;
-    mapping (address =&gt; bool) whitelisted;
+    mapping (address => uint) contributed;
+    mapping (address => bool) whitelisted;
 
     event GoalReached(uint amountRaised);
     event NewContribution(address indexed holder, uint256 tokens, uint256 contributed);
     event Refunded(address indexed beneficiary, uint amount);
 
-    modifier onlyAfterSale { require(block.number &gt; endBlock); _; }
+    modifier onlyAfterSale { require(block.number > endBlock); _; }
 
     modifier onlyWhenFinalized { require(isFinalized); _; }
 
     modifier onlyDuringSale {
-        require(block.number &gt;= startBlock(msg.sender));
-        require(block.number &lt;= endBlock);
+        require(block.number >= startBlock(msg.sender));
+        require(block.number <= endBlock);
         _;
     }
 
     modifier onlyWhenEnded {
-        if (block.number &lt; endBlock &amp;&amp; !capReached) throw;
+        if (block.number < endBlock && !capReached) throw;
         _;
     }
 
@@ -272,7 +272,7 @@ contract TokenSale is ownable {
         if (balance == 0) throw;
 
         uint refund = balance.div(price);
-        if (refund &gt; this.balance) {
+        if (refund > this.balance) {
             refund = this.balance;
         }
 
@@ -296,18 +296,18 @@ contract TokenSale is ownable {
     }
 
     function doPurchase(address _owner) internal onlyDuringSale {
-        if (msg.value &lt;= 0) throw;
-        if (collected &gt;= cap) throw;
+        if (msg.value <= 0) throw;
+        if (collected >= cap) throw;
 
         uint value = msg.value;
-        if (collected.add(value) &gt; cap) {
+        if (collected.add(value) > cap) {
             uint difference = cap.sub(collected);
             msg.sender.transfer(value.sub(difference));
             value = difference;
         }
 
         uint tokens = value.mul(price);
-        if (token.balanceOf(msg.sender) + tokens &gt; purchaseLimit) throw;
+        if (token.balanceOf(msg.sender) + tokens > purchaseLimit) throw;
 
         collected = collected.add(value);
         token.mint(msg.sender, tokens);

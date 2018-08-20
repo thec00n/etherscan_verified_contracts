@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,11 +68,11 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -101,14 +101,14 @@ contract ERC20 is ERC20Basic {
 contract StandardToken is ERC20, BasicToken {
   event ChangeBalance (address from, uint256 fromBalance, address to, uint256 toBalance, uint256 seq);
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   uint256 internal seq = 0;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -196,11 +196,11 @@ contract Crowdsale {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount, uint256 seq);
   
   function Crowdsale(uint256[] _startTime, uint256[] _endTime, uint256[] _rates, address _wallet, uint256 _cap) public {
-    // require(_startTime &gt;= now);
+    // require(_startTime >= now);
 
-    for (uint8 i = 0; i &lt; starts.length; i ++) {
-      require(_endTime[i] &gt;= _startTime[i]);
-      require(_rates[i] &gt; 0);
+    for (uint8 i = 0; i < starts.length; i ++) {
+      require(_endTime[i] >= _startTime[i]);
+      require(_rates[i] > 0);
       require(_wallet != address(0));
     }
 
@@ -225,7 +225,7 @@ contract Crowdsale {
 
   function () external payable {
     //minimum is 1 Ether
-    require (msg.value &gt;= 1000000000000000000);
+    require (msg.value >= 1000000000000000000);
     buyTokens(msg.sender);
   }
 
@@ -238,8 +238,8 @@ contract Crowdsale {
 
 
     // calculate token amount to be created
-    for (uint8 i = 0; i &lt; arrayLength; i ++) {
-      if (now &gt;= starts[i] &amp;&amp; now &lt;= ends[i]) {
+    for (uint8 i = 0; i < arrayLength; i ++) {
+      if (now >= starts[i] && now <= ends[i]) {
         rate = rates[i];
         break;
       }
@@ -261,22 +261,22 @@ contract Crowdsale {
   }
 
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
     
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function hasEnded() public view returns (bool) {
     uint256 tokenSupply = token.totalSupply();
-    bool capReached = tokenSupply &gt;= cap;
-    bool overTime = now &gt; endTime;
-    return capReached &amp;&amp; overTime; //now &gt; endTime;
+    bool capReached = tokenSupply >= cap;
+    bool overTime = now > endTime;
+    return capReached && overTime; //now > endTime;
   }
 
   function checkCap(uint256 tokens) internal view returns (bool) {
     uint256 issuedTokens = token.totalSupply();
-    return (issuedTokens.add(tokens) &lt;= cap);
+    return (issuedTokens.add(tokens) <= cap);
   }
 }
 
@@ -302,8 +302,8 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 // File: contracts/OMXToken.sol
 
 contract OMXToken is MintableToken {
-    string public constant name = &quot;OMEX&quot;;
-    string public constant symbol = &quot;OMX&quot;;
+    string public constant name = "OMEX";
+    string public constant symbol = "OMX";
     uint8 public constant decimals = 18;
 
     function OMXToken () public MintableToken () {

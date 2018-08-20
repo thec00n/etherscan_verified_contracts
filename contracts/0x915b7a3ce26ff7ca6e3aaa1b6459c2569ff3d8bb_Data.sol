@@ -28,20 +28,20 @@ contract Ownable {
 
 contract Data is Ownable {
 
-    // node =&gt; its parent
-    mapping (address =&gt; address) private parent;
+    // node => its parent
+    mapping (address => address) private parent;
 
-    // node =&gt; its status
-    mapping (address =&gt; uint8) public statuses;
+    // node => its status
+    mapping (address => uint8) public statuses;
 
-    // node =&gt; sum of all his child deposits in USD cents
-    mapping (address =&gt; uint) public referralDeposits;
+    // node => sum of all his child deposits in USD cents
+    mapping (address => uint) public referralDeposits;
 
-    // client =&gt; balance in wei*10^(-6) available for withdrawal
-    mapping(address =&gt; uint256) private balances;
+    // client => balance in wei*10^(-6) available for withdrawal
+    mapping(address => uint256) private balances;
 
-    // investor =&gt; balance in wei*10^(-6) available for withdrawal
-    mapping(address =&gt; uint256) private investorBalances;
+    // investor => balance in wei*10^(-6) available for withdrawal
+    mapping(address => uint256) private investorBalances;
 
     function parentOf(address _addr) public constant returns (address) {
         return parent[_addr];
@@ -68,7 +68,7 @@ contract Data is Ownable {
     }
 
     function subtrBalance(address _addr, uint256 amount) onlyOwner public {
-        require(balances[_addr] &gt;= amount);
+        require(balances[_addr] >= amount);
         balances[_addr] -= amount;
     }
 
@@ -77,7 +77,7 @@ contract Data is Ownable {
     }
 
     function subtrInvestorBalance(address _addr, uint256 amount) onlyOwner public {
-        require(investorBalances[_addr] &gt;= amount);
+        require(investorBalances[_addr] >= amount);
         investorBalances[_addr] -= amount;
     }
 

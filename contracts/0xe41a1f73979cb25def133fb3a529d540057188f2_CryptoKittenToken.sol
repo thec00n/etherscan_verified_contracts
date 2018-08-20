@@ -160,19 +160,19 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
 
     /// @dev A mapping from tokenIds to the address that owns them. All tokens have
     ///  some valid owner address.
-    mapping (uint256 =&gt; address) private tokenIdToOwner;
+    mapping (uint256 => address) private tokenIdToOwner;
 
     /// @dev A mapping from TokenIds to the price of the token.
-    mapping (uint256 =&gt; uint256) private tokenIdToPrice;
+    mapping (uint256 => uint256) private tokenIdToPrice;
 
     /// @dev A mapping from owner address to count of tokens that address owns.
     ///  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
 
     /// @dev A mapping from TokenIds to an address that has been approved to call
     ///  transferFrom(). Each Token can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding
-    mapping (uint256 =&gt; address) public tokenIdToApproved;
+    mapping (uint256 => address) public tokenIdToApproved;
 
     struct Kittens {
         string name;
@@ -191,7 +191,7 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
     /// @dev Creates a new token with the given name and _price and assignes it to an _owner.
     function createToken(string _name, address _owner, uint256 _price) public onlyCLevel {
         require(_owner != address(0));
-        require(_price &gt;= startingPrice);
+        require(_price >= startingPrice);
 
         _createToken(_name, _owner, _price);
     }
@@ -236,7 +236,7 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
         uint256[] memory nextPrices = new uint256[](total);
         address[] memory owners = new address[](total);
 
-        for (uint256 i = 0; i &lt; total; i++) {
+        for (uint256 i = 0; i < total; i++) {
             prices[i] = tokenIdToPrice[i];
             nextPrices[i] = nextPriceOf(i);
             owners[i] = tokenIdToOwner[i];
@@ -255,7 +255,7 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
             uint256 total = totalSupply();
             uint256 resultIndex = 0;
 
-            for (uint256 i = 0; i &lt; total; i++) {
+            for (uint256 i = 0; i < total; i++) {
                 if (tokenIdToOwner[i] == _owner) {
                     result[resultIndex] = i;
                     resultIndex++;
@@ -265,11 +265,11 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
         }
     }
 
-    /// @dev This function withdraws the contract owner&#39;s cut.
+    /// @dev This function withdraws the contract owner's cut.
     /// Any amount may be withdrawn as there is no user funds.
     /// User funds are immediately sent to the old owner in `purchase`
     function withdrawBalance(address _to, uint256 _amount) public onlyCEO {
-        require(_amount &lt;= this.balance);
+        require(_amount <= this.balance);
 
         if (_amount == 0) {
             _amount = this.balance;
@@ -290,17 +290,17 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
 
         // active tokens
         require(oldOwner != address(0));
-        // maybe one day newOwner&#39;s logic allows this to happen
+        // maybe one day newOwner's logic allows this to happen
         require(newOwner != address(0));
-        // don&#39;t buy from yourself
+        // don't buy from yourself
         require(oldOwner != newOwner);
-        // don&#39;t sell to contracts
-        // but even this doesn&#39;t prevent bad contracts to become an owner of a token
+        // don't sell to contracts
+        // but even this doesn't prevent bad contracts to become an owner of a token
         require(!_isContract(newOwner));
         // another check to be sure that token is active
-        require(sellingPrice &gt; 0);
+        require(sellingPrice > 0);
         // min required amount check
-        require(msg.value &gt;= sellingPrice);
+        require(msg.value >= sellingPrice);
 
         // transfer to the new owner
         _transfer(oldOwner, newOwner, _tokenId);
@@ -311,17 +311,17 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
 
         // extra ether which should be returned back to buyer
         uint256 excess = msg.value.sub(sellingPrice);
-        // contract owner&#39;s cut which is left in contract and accesed by withdrawBalance
+        // contract owner's cut which is left in contract and accesed by withdrawBalance
         uint256 contractCut = sellingPrice.mul(6).div(100); // 6%
 
-        // no need to transfer if it&#39;s initial sell
+        // no need to transfer if it's initial sell
         if (oldOwner != address(this)) {
-            // transfer payment to seller minus the contract&#39;s cut
+            // transfer payment to seller minus the contract's cut
             oldOwner.transfer(sellingPrice.sub(contractCut));
         }
 
         // return extra ether
-        if (excess &gt; 0) {
+        if (excess > 0) {
             newOwner.transfer(excess);
         }
     }
@@ -337,13 +337,13 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
 
     function nextPriceOf(uint256 _tokenId) public view returns (uint256 _nextPrice) {
         uint256 _price = priceOf(_tokenId);
-        if (_price &lt; increaseLimit1) {
+        if (_price < increaseLimit1) {
             return _price.mul(200).div(95);
-        } else if (_price &lt; increaseLimit2) {
+        } else if (_price < increaseLimit2) {
             return _price.mul(135).div(96);
-        } else if (_price &lt; increaseLimit3) {
+        } else if (_price < increaseLimit3) {
             return _price.mul(125).div(97);
-        } else if (_price &lt; increaseLimit4) {
+        } else if (_price < increaseLimit4) {
             return _price.mul(117).div(97);
         } else {
             return _price.mul(115).div(98);
@@ -405,11 +405,11 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
     }
 
     function name() public view returns (string _name) {
-        _name = &quot;CryptoKittens&quot;;
+        _name = "CryptoKittens";
     }
 
     function symbol() public view returns (string _symbol) {
-        _symbol = &quot;CKTN&quot;;
+        _symbol = "CKTN";
     }
 
     /*** PRIVATES ***/
@@ -425,12 +425,12 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
 
     /// @dev Assigns ownership of a specific token to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) private {
-        // Since the number of tokens is capped to 2^32 we can&#39;t overflow this
+        // Since the number of tokens is capped to 2^32 we can't overflow this
         ownershipTokenCount[_to]++;
         // Transfer ownership
         tokenIdToOwner[_tokenId] = _to;
 
-        // When creating new token _from is 0x0, but we can&#39;t account that address.
+        // When creating new token _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // clear any previously approved ownership exchange
@@ -445,7 +445,7 @@ contract CryptoKittenToken is AccessControl, DetailedERC721 {
     function _isContract(address addr) private view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -475,9 +475,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -485,7 +485,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -494,7 +494,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

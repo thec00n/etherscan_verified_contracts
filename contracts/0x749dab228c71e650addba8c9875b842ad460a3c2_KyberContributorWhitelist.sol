@@ -4,7 +4,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -43,7 +43,7 @@ contract Ownable {
 contract KyberContributorWhitelist is Ownable {
     // 7 wei is a dummy cap. Will be set by owner to a real cap after registration ends.
     uint public slackUsersCap = 7;
-    mapping(address=&gt;uint) public addressCap;
+    mapping(address=>uint) public addressCap;
 
     function KyberContributorWhitelist() {}
 
@@ -59,7 +59,7 @@ contract KyberContributorWhitelist is Ownable {
     // an optimasition in case of network congestion
     function listAddresses( address[] _users, uint[] _cap ) onlyOwner {
         require(_users.length == _cap.length );
-        for( uint i = 0 ; i &lt; _users.length ; i++ ) {
+        for( uint i = 0 ; i < _users.length ; i++ ) {
             listAddress( _users[i], _cap[i] );
         }
     }

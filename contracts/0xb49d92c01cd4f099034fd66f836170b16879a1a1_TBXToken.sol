@@ -16,13 +16,13 @@ contract SafeMath {
   }
 
   function subSafe(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
      return a - b;
    }
 
   function addSafe(uint256 a, uint256 b) internal pure returns (uint256) {
      uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
      return c;
    }
 }
@@ -70,12 +70,12 @@ contract ERC223ReceivingContract {
 
 contract StandardToken is ERC20, ERC223, SafeMath, Owned {
   event ReleaseSupply(address indexed receiver, uint256 value, uint256 releaseTime);
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = subSafe(balances[msg.sender], _value);
     balances[_to] = addSafe(balances[_to], _value);
     Transfer(msg.sender, _to, _value);
@@ -88,8 +88,8 @@ contract StandardToken is ERC20, ERC223, SafeMath, Owned {
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = subSafe(balances[_from], _value);
      balances[_to] = addSafe(balances[_to], _value);
@@ -116,7 +116,7 @@ contract StandardToken is ERC20, ERC223, SafeMath, Owned {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
      uint oldValue = allowed[msg.sender][_spender];
-     if (_subtractedValue &gt; oldValue) {
+     if (_subtractedValue > oldValue) {
        allowed[msg.sender][_spender] = 0;
      } else {
        allowed[msg.sender][_spender] = subSafe(oldValue, _subtractedValue);
@@ -126,7 +126,7 @@ contract StandardToken is ERC20, ERC223, SafeMath, Owned {
    }
 
     function transfer(address _to, uint _value, bytes _data) public {
-        require(_value &gt; 0 );
+        require(_value > 0 );
         if(isContract(_to)) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
@@ -142,14 +142,14 @@ contract StandardToken is ERC20, ERC223, SafeMath, Owned {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
 }
 
 contract TBXToken is StandardToken {
-  string public name = &#39;TBXToken&#39;;
-  string public symbol = &#39;TBX&#39;;
+  string public name = 'TBXToken';
+  string public symbol = 'TBX';
   uint public decimals = 8;
 
   uint256 public createTime         = 1527782400;
@@ -171,7 +171,7 @@ contract TBXToken is StandardToken {
 
   function releaseSupply() public onlyOwner returns(uint256 _actualRelease) {
     uint256 releaseAmount = getReleaseAmount();
-    require(releaseAmount &gt; 0);
+    require(releaseAmount > 0);
     balances[owner] = addSafe(balances[owner], releaseAmount);
     transfer(owner,releaseAmount);
     totalSupply = addSafe(totalSupply, releaseAmount);
@@ -181,18 +181,18 @@ contract TBXToken is StandardToken {
 
   function getReleaseAmount() internal returns(uint256 _actualRelease) {
         uint256 _amountToRelease;
-        if (    now &gt;= firstAnnual
-             &amp;&amp; now &lt; secondAnnual
-             &amp;&amp; firstAnnualReleasedAmount &gt; 0) {
+        if (    now >= firstAnnual
+             && now < secondAnnual
+             && firstAnnualReleasedAmount > 0) {
             _amountToRelease = firstAnnualReleasedAmount * 10 ** uint256(decimals);
             firstAnnualReleasedAmount = 0;
-        } else if (    now &gt;= secondAnnual 
-                    &amp;&amp; now &lt; thirdAnnual
-                    &amp;&amp; secondAnnualReleasedAmount &gt; 0) {
+        } else if (    now >= secondAnnual 
+                    && now < thirdAnnual
+                    && secondAnnualReleasedAmount > 0) {
             _amountToRelease = secondAnnualReleasedAmount * 10 ** uint256(decimals);
             secondAnnualReleasedAmount = 0;
-        } else if (    now &gt;= thirdAnnual 
-                    &amp;&amp; thirdAnnualReleasedAmount &gt; 0) {
+        } else if (    now >= thirdAnnual 
+                    && thirdAnnualReleasedAmount > 0) {
             _amountToRelease = thirdAnnualReleasedAmount * 10 ** uint256(decimals);
             thirdAnnualReleasedAmount = 0;
         } else {

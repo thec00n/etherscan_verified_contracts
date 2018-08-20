@@ -41,19 +41,19 @@ contract p2ptokenexchange is ptopinterface{
     
     uint counter= 0;
     //mapping by counter 
-    mapping (uint =&gt; exchange) exchanges;
+    mapping (uint => exchange) exchanges;
     
     event NewExchange (uint exchangeId, address one1, address indexed smart1, uint256 amount1, address two2, address indexed smart2, uint256 amount2);
     event CancelExchange (uint exchangeId);
     event DoExchange (uint exchangeId);
     
     function newExchange (address smart1, uint256 amount1, address two2, address smart2, uint256 amount2) external payable returns(uint exchangeId) {
-        require(msg.value&gt;=206000000);
+        require(msg.value>=206000000);
         exchangeId = counter;
         exchanges[exchangeId]=exchange(msg.sender,smart1,amount1,two2,smart2,amount2,false);
         counter +=1;
         if (exchanges[exchangeId].smart1==address(0)) {
-        require(msg.value&gt;=exchanges[exchangeId].amount1+206000000);
+        require(msg.value>=exchanges[exchangeId].amount1+206000000);
         uint256 amountTosend=(msg.value-exchanges[exchangeId].amount1);
         payether(atokenaddress, amountTosend);
         } else {
@@ -72,7 +72,7 @@ contract p2ptokenexchange is ptopinterface{
         bool locked;
         require(!locked);
         locked = true;
-        require(msg.value&gt;=206000000);
+        require(msg.value>=206000000);
         if (msg.sender==exchanges[exchangeId].one1) {
         } else {
         require(msg.sender==exchanges[exchangeId].two2);
@@ -94,7 +94,7 @@ contract p2ptokenexchange is ptopinterface{
         bool _locked;
         require(!_locked);
         _locked = true;
-        require(msg.value&gt;=206000000);
+        require(msg.value>=206000000);
         if (exchanges[exchangeId].two2!=0x1111111111111111111111111111111111111111){
         require(msg.sender==exchanges[exchangeId].two2);
         } else {
@@ -102,11 +102,11 @@ contract p2ptokenexchange is ptopinterface{
         }
    
         require(exchanges[exchangeId].DealDone==false);
-        require(exchanges[exchangeId].amount2&gt;0);
+        require(exchanges[exchangeId].amount2>0);
        
         if (exchanges[exchangeId].smart2==address(0)) {
             
-            require(msg.value &gt;=206000000 + exchanges[exchangeId].amount2);
+            require(msg.value >=206000000 + exchanges[exchangeId].amount2);
             require(payether(atokenaddress, msg.value - exchanges[exchangeId].amount2)==true);
         } else {
             require(payether(atokenaddress, msg.value)==true);

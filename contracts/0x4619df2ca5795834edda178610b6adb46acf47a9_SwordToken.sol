@@ -28,18 +28,18 @@ library SafeMath {
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract ERC20 is ERC20Basic {
 
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -101,7 +101,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -124,7 +124,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -227,8 +227,8 @@ contract MintableToken is StandardToken, Ownable {
  */
 contract SwordToken is MintableToken {
 
-    string public constant name = &quot;Sword Coin&quot;; 
-    string public constant symbol = &quot;SWDC&quot;;
+    string public constant name = "Sword Coin"; 
+    string public constant symbol = "SWDC";
     uint8 public constant decimals = 18;
 
     function getTotalSupply() view public returns (uint256) {
@@ -247,7 +247,7 @@ contract KycContractInterface {
 
 contract KycContract is Ownable {
     
-    mapping (address =&gt; bool) verifiedAddresses;
+    mapping (address => bool) verifiedAddresses;
     
     function isAddressVerified(address _address) public view returns (bool) {
         return verifiedAddresses[_address];
@@ -266,7 +266,7 @@ contract KycContract is Ownable {
     }
     
     function batchAddAddresses(address[] _addresses) public onlyOwner {
-        for (uint cnt = 0; cnt &lt; _addresses.length; cnt++) {
+        for (uint cnt = 0; cnt < _addresses.length; cnt++) {
             assert(!verifiedAddresses[_addresses[cnt]]);
             verifiedAddresses[_addresses[cnt]] = true;
         }
@@ -276,7 +276,7 @@ contract KycContract is Ownable {
 
 /**
  * @title SwordCrowdsale
- * @dev This is Sword&#39;s crowdsale contract.
+ * @dev This is Sword's crowdsale contract.
  */
 contract SwordCrowdsale is Ownable {
     using SafeMath for uint256;
@@ -299,8 +299,8 @@ contract SwordCrowdsale is Ownable {
    
    address[] public tokenSendFailures;
    
-    mapping(address =&gt; ContributorData) public contributorList;
-    mapping(uint =&gt; address) contributorIndexes;
+    mapping(address => ContributorData) public contributorList;
+    mapping(uint => address) contributorIndexes;
     uint nextContributorIndex;
 
     constructor() public {}
@@ -432,7 +432,7 @@ contract SwordCrowdsale is Ownable {
      * release Tokens
      */
     function releaseAllTokens() onlyOwner public {
-        for(uint i=0; i &lt; nextContributorIndex; i++) {
+        for(uint i=0; i < nextContributorIndex; i++) {
             address addressToSendTo = contributorIndexes[i]; // address of user
             releaseTokens(addressToSendTo);
         }
@@ -452,7 +452,7 @@ contract SwordCrowdsale is Ownable {
     }
     
     function release(address _contributerAddress) internal {
-        if(contributorList[_contributerAddress].tokensIssued &gt; 0) { 
+        if(contributorList[_contributerAddress].tokensIssued > 0) { 
             if(token.mint(_contributerAddress, contributorList[_contributerAddress].tokensIssued)) { // tokens sent successfully
                 contributorList[_contributerAddress].tokensIssued = 0;
                 contributorList[_contributerAddress].contributionAmount = 0;
@@ -509,7 +509,7 @@ contract SwordCrowdsale is Ownable {
     
     // @return true if crowdsale event has started
     function hasStarted() public constant returns (bool) {
-        return (startTime != 0 &amp;&amp; now &gt; startTime);
+        return (startTime != 0 && now > startTime);
     }
 
     // send ether to the fund collection wallet
@@ -523,11 +523,11 @@ contract SwordCrowdsale is Ownable {
     }
 
     function isWithinSaleTimeLimit() internal view returns (bool) {
-        return now &lt;= limitDateSale;
+        return now <= limitDateSale;
     }
 
     function isWithinSaleLimit(uint256 _tokens) internal view returns (bool) {
-        return token.getTotalSupply().add(_tokens) &lt;= tokensForCrowdSale;
+        return token.getTotalSupply().add(_tokens) <= tokensForCrowdSale;
     }
 
     function computeTokens(uint256 weiAmount) view internal returns (uint256) {
@@ -539,11 +539,11 @@ contract SwordCrowdsale is Ownable {
     }
     
     function isWithinTokenAllocLimit(uint256 _tokens) view internal returns (bool) {
-        return (isWithinSaleTimeLimit() &amp;&amp; isWithinSaleLimit(_tokens));
+        return (isWithinSaleTimeLimit() && isWithinSaleLimit(_tokens));
     }
 
     function didSoftCapReached() internal returns (bool) {
-        if(weiRaised &gt;= softCap){
+        if(weiRaised >= softCap){
             isSoftCapHit = true; // setting the flag that soft cap is hit and all funds should be sent directly to wallet from now on.
         } else {
             isSoftCapHit = false;
@@ -554,17 +554,17 @@ contract SwordCrowdsale is Ownable {
     // overriding SwordBaseCrowdsale#validPurchase to add extra cap logic
     // @return true if investors can buy at the moment
     function validPurchase() internal constant returns (bool) {
-        bool withinCap = weiRaised.add(msg.value) &lt;= hardCap;
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime; 
+        bool withinCap = weiRaised.add(msg.value) <= hardCap;
+        bool withinPeriod = now >= startTime && now <= endTime; 
         bool nonZeroPurchase = msg.value != 0; 
-        return (withinPeriod &amp;&amp; nonZeroPurchase) &amp;&amp; withinCap &amp;&amp; isWithinSaleTimeLimit();
+        return (withinPeriod && nonZeroPurchase) && withinCap && isWithinSaleTimeLimit();
     }
 
     // overriding Crowdsale#hasEnded to add cap logic
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        bool capReached = weiRaised &gt;= hardCap;
-        return (endTime != 0 &amp;&amp; now &gt; endTime) || capReached;
+        bool capReached = weiRaised >= hardCap;
+        return (endTime != 0 && now > endTime) || capReached;
     }
 
   
@@ -574,7 +574,7 @@ contract SwordCrowdsale is Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -615,7 +615,7 @@ contract SwordCrowdsale is Ownable {
      * auto refund Tokens
      */
     function refundAllMoney() onlyOwner public {
-        for(uint i=0; i &lt; nextContributorIndex; i++) {
+        for(uint i=0; i < nextContributorIndex; i++) {
             address addressToSendTo = contributorIndexes[i];
             refundMoney(addressToSendTo); 
         }
@@ -626,7 +626,7 @@ contract SwordCrowdsale is Ownable {
      */
     function refundMoney(address _address) onlyOwner public {
         uint amount = contributorList[_address].contributionAmount;
-        if (amount &gt; 0 &amp;&amp; _address.send(amount)) { // user got money back
+        if (amount > 0 && _address.send(amount)) { // user got money back
             contributorList[_address].contributionAmount =  0;
             contributorList[_address].tokensIssued =  0;
         } 

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
 // @authors:
-// Davy Van Roy &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670306111e491106094915081e27000a060e0b4904080a">[email&#160;protected]</a>&gt;
-// Quinten De Swaef &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95e4e0fcfbe1f0fbbbf1f0bbe6e2f4f0f3d5f2f8f4fcf9bbf6faf8">[email&#160;protected]</a>&gt;
+// Davy Van Roy <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670306111e491106094915081e27000a060e0b4904080a">[email protected]</a>>
+// Quinten De Swaef <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95e4e0fcfbe1f0fbbbf1f0bbe6e2f4f0f3d5f2f8f4fcf9bbf6faf8">[email protected]</a>>
 
 contract ApproveAndCallFallBack {
   function receiveApproval(address from, uint256 _amount, address _token, bytes _data) public;
@@ -40,20 +40,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -144,20 +144,20 @@ contract MiniMeTokenFactory {
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &quot;1.0.0&quot;;
+    string public version = "1.0.0";
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
     ///  given value, the block number attached is the one that last changed the
@@ -185,10 +185,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -267,7 +267,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) {
+            if (allowed[_from][msg.sender] < _amount) {
                 return false;
             }
             allowed[_from][msg.sender] -= _amount;
@@ -289,15 +289,15 @@ contract MiniMeToken is Controlled {
             return true;
         }
 
-        require(parentSnapShotBlock &lt; block.number);
+        require(parentSnapShotBlock < block.number);
 
         // Do not allow transfer to 0x0 or the token contract itself
-        require((_to != 0) &amp;&amp; (_to != address(this)));
+        require((_to != 0) && (_to != address(this)));
 
         // If the amount being transfered is more than the balance of the
         //  account the transfer returns false
         var previousBalanceFrom = balanceOfAt(_from, block.number);
-        if (previousBalanceFrom &lt; _amount) {
+        if (previousBalanceFrom < _amount) {
             return false;
         }
 
@@ -313,7 +313,7 @@ contract MiniMeToken is Controlled {
         // Then update the balance array with the new value for the address
         //  receiving the tokens
         var previousBalanceTo = balanceOfAt(_to, block.number);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
         // An event to make the transfer easy to find on the blockchain
@@ -322,7 +322,7 @@ contract MiniMeToken is Controlled {
         return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -411,7 +411,7 @@ contract MiniMeToken is Controlled {
         //  requires that the `parentToken.balanceOfAt` be queried at the
         //  genesis block for that token as this contains initial balance of
         //  this token
-        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -435,7 +435,7 @@ contract MiniMeToken is Controlled {
         //  requires that the `parentToken.totalSupplyAt` be queried at the
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
-        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -502,9 +502,9 @@ contract MiniMeToken is Controlled {
     public onlyController returns (bool)
     {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -520,9 +520,9 @@ contract MiniMeToken is Controlled {
     ) onlyController public returns (bool)
     {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -556,20 +556,20 @@ contract MiniMeToken is Controlled {
         }
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock) {
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock) {
             return checkpoints[checkpoints.length-1].value;
         }
 
-        if (_block &lt; checkpoints[0].fromBlock) {
+        if (_block < checkpoints[0].fromBlock) {
             return 0;
         }
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length - 1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1) / 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -585,7 +585,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal
     {
-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length-1].fromBlock &lt; block.number)) {
+        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length-1].fromBlock < block.number)) {
             Checkpoint storage newCheckPoint = checkpoints[checkpoints.length++];
             newCheckPoint.fromBlock = uint128(block.number);
             newCheckPoint.value = uint128(_value);
@@ -606,15 +606,15 @@ contract MiniMeToken is Controlled {
         assembly {
         size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -662,8 +662,8 @@ contract MiniMeToken is Controlled {
 // FundRequest Token
 //
 // @authors:
-// Davy Van Roy &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="01656077782f77606f2f736e7841666c60686d2f626e6c">[email&#160;protected]</a>&gt;
-// Quinten De Swaef &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6514100c0b11000b4b01004b1612040003250208040c094b060a08">[email&#160;protected]</a>&gt;
+// Davy Van Roy <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="01656077782f77606f2f736e7841666c60686d2f626e6c">[email protected]</a>>
+// Quinten De Swaef <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6514100c0b11000b4b01004b1612040003250208040c094b060a08">[email protected]</a>>
 //
 // Security audit performed by LeastAuthority:
 // https://github.com/FundRequest/audit-reports/raw/master/2018-02-06 - Least Authority - ICO Contracts Audit Report.pdf
@@ -718,7 +718,7 @@ contract FundRepository is Owned {
 
     uint256 public totalNumberOfFunders;
 
-    mapping (address =&gt; uint256) funders;
+    mapping (address => uint256) funders;
 
     uint256 public totalFunded;
 
@@ -726,13 +726,13 @@ contract FundRepository is Owned {
 
     uint256 public totalBalance;
 
-    mapping (bytes32 =&gt; mapping (string =&gt; Funding)) funds;
+    mapping (bytes32 => mapping (string => Funding)) funds;
 
-    mapping(address =&gt; bool) public callers;
+    mapping(address => bool) public callers;
 
     struct Funding {
         address[] funders;
-        mapping (address =&gt; uint256) balances;
+        mapping (address => uint256) balances;
         uint256 totalBalance;
     }
 
@@ -747,18 +747,18 @@ contract FundRepository is Owned {
     }
 
     function updateFunders(address _from, bytes32 _platform, string _platformId, uint256 _value) public onlyCaller {
-        bool existing = funds[_platform][_platformId].balances[_from] &gt; 0;
+        bool existing = funds[_platform][_platformId].balances[_from] > 0;
         if (!existing) {
             funds[_platform][_platformId].funders.push(_from);
         }
-        if (funders[_from] &lt;= 0) {
+        if (funders[_from] <= 0) {
             totalNumberOfFunders = totalNumberOfFunders.add(1);
             funders[_from].add(_value);
         }
     }
 
     function updateBalances(address _from, bytes32 _platform, string _platformId, uint256 _value) public onlyCaller {
-        if (funds[_platform][_platformId].totalBalance &lt;= 0) {
+        if (funds[_platform][_platformId].totalBalance <= 0) {
             requestsFunded = requestsFunded.add(1);
         }
         funds[_platform][_platformId].balances[_from] = funds[_platform][_platformId].balances[_from].add(_value);
@@ -771,7 +771,7 @@ contract FundRepository is Owned {
         var funding = funds[platform][platformId];
         var requestBalance = funding.totalBalance;
         totalBalance = totalBalance.sub(requestBalance);
-        for (uint i = 0; i &lt; funding.funders.length; i++) {
+        for (uint i = 0; i < funding.funders.length; i++) {
             var funder = funding.funders[i];
             delete (funding.balances[funder]);
         }
@@ -814,9 +814,9 @@ contract FundRepository is Owned {
 contract ClaimRepository is Owned {
     using SafeMath for uint256;
 
-    mapping (bytes32 =&gt; mapping (string =&gt; Claim)) claims;
+    mapping (bytes32 => mapping (string => Claim)) claims;
 
-    mapping(address =&gt; bool) public callers;
+    mapping(address => bool) public callers;
 
     uint256 public totalBalanceClaimed;
     uint256 public totalClaims;
@@ -854,11 +854,11 @@ contract ClaimRepository is Owned {
 }
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e5849784868d8b8c81a58b8a91818a91cb8b8091">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e5849784868d8b8c81a58b8a91818a91cb8b8091">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -866,11 +866,11 @@ contract ClaimRepository is Owned {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -885,7 +885,7 @@ contract ClaimRepository is Owned {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 
@@ -900,7 +900,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for (; len &gt;= 32; len -= 32) {
+        for (; len >= 32; len -= 32) {
             assembly {
             mstore(dest, mload(src))
             }
@@ -939,23 +939,23 @@ library strings {
         uint ret;
         if (self == 0)
         return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -991,7 +991,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -1014,22 +1014,22 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly {b := and(mload(ptr), 0xFF)}
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
             }
-            else if (b &lt; 0xE0) {
+            else if (b < 0xE0) {
                 ptr += 2;
             }
-            else if (b &lt; 0xF0) {
+            else if (b < 0xF0) {
                 ptr += 3;
             }
-            else if (b &lt; 0xF8) {
+            else if (b < 0xF8) {
                 ptr += 4;
             }
-            else if (b &lt; 0xFC) {
+            else if (b < 0xFC) {
                 ptr += 5;
             }
             else {
@@ -1058,12 +1058,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
         shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -1073,7 +1073,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                 return int(diff);
             }
@@ -1112,13 +1112,13 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly {b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF)}
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
         }
-        else if (b &lt; 0xE0) {
+        else if (b < 0xE0) {
             len = 2;
         }
-        else if (b &lt; 0xF0) {
+        else if (b < 0xF0) {
             len = 3;
         }
         else {
@@ -1126,7 +1126,7 @@ library strings {
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -1166,36 +1166,36 @@ library strings {
         // Load the rune into the MSBs of b
         assembly {word := mload(mload(add(self, 32)))}
         var b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
         }
-        else if (b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        else if (b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
         }
-        else if (b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        else if (b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         }
         else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -1219,7 +1219,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -1245,7 +1245,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -1274,7 +1274,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -1302,7 +1302,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -1329,8 +1329,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                 let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -1351,7 +1351,7 @@ library strings {
                 bytes32 hash;
                 assembly {hash := sha3(needleptr, needlelen)}
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly {testHash := sha3(ptr, needlelen)}
                     if (hash == testHash)
@@ -1368,8 +1368,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                 let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -1392,7 +1392,7 @@ library strings {
                 bytes32 hash;
                 assembly {hash := sha3(needleptr, needlelen)}
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly {testHash := sha3(ptr, needlelen)}
                     if (hash == testHash)
@@ -1516,7 +1516,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -1557,24 +1557,24 @@ library strings {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
     function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
-        return strConcat(_a, _b, _c, _d, &quot;&quot;);
+        return strConcat(_a, _b, _c, _d, "");
     }
 
     function strConcat(string _a, string _b, string _c) internal pure returns (string) {
-        return strConcat(_a, _b, _c, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, _c, "", "");
     }
 
     function strConcat(string _a, string _b) internal pure returns (string) {
-        return strConcat(_a, _b, &quot;&quot;, &quot;&quot;, &quot;&quot;);
+        return strConcat(_a, _b, "", "", "");
     }
 
     /*
@@ -1587,20 +1587,20 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-        return &quot;&quot;;
+        return "";
 
         uint length = self._len * (parts.length - 1);
-        for (uint i = 0; i &lt; parts.length; i++)
+        for (uint i = 0; i < parts.length; i++)
         length += parts[i]._len;
 
         var ret = new string(length);
         uint retptr;
         assembly {retptr := add(ret, 32)}
 
-        for (i = 0; i &lt; parts.length; i++) {
+        for (i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -1627,25 +1627,25 @@ library strings {
 
     function addressToString(address x) internal pure returns (string) {
         bytes memory s = new bytes(40);
-        for (uint i = 0; i &lt; 20; i++) {
+        for (uint i = 0; i < 20; i++) {
             byte b = byte(uint8(uint(x) / (2 ** (8 * (19 - i)))));
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
             s[2 * i] = charToByte(hi);
             s[2 * i + 1] = charToByte(lo);
         }
-      return strConcat(&quot;0x&quot;, string(s));
+      return strConcat("0x", string(s));
     }
 
     function charToByte(byte b) internal pure returns (byte c) {
-        if (b &lt; 10) return byte(uint8(b) + 0x30);
+        if (b < 10) return byte(uint8(b) + 0x30);
         else return byte(uint8(b) + 0x57);
     }
 
     function bytes32ToString(bytes32 x) internal pure returns (string) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
-        for (uint j = 0; j &lt; 32; j++) {
+        for (uint j = 0; j < 32; j++) {
             byte ch = byte(bytes32(uint(x) * 2 ** (8 * j)));
             if (ch != 0) {
                 bytesString[charCount] = ch;
@@ -1653,7 +1653,7 @@ library strings {
             }
         }
         bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j &lt; charCount; j++) {
+        for (j = 0; j < charCount; j++) {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
@@ -1708,13 +1708,13 @@ contract FundRequestContract is Owned, ApproveAndCallFallBack {
     function receiveApproval(address _from, uint _amount, address _token, bytes _data) public {
         require(_token == address(token));
         var sliced = string(_data).toSlice();
-        var platform = sliced.split(&quot;|AAC|&quot;.toSlice());
-        var platformId = sliced.split(&quot;|AAC|&quot;.toSlice());
+        var platform = sliced.split("|AAC|".toSlice());
+        var platformId = sliced.split("|AAC|".toSlice());
         require(doFunding(platform.toBytes32(), platformId.toString(), _amount, _from));
     }
 
     function doFunding(bytes32 _platform, string _platformId, uint256 _value, address _funder) internal returns (bool success){
-        require(_value &gt; 0);
+        require(_value > 0);
         require(token.transferFrom(_funder, address(this), _value));
         fundRepository.updateFunders(_funder, _platform, _platformId, _value);
         fundRepository.updateBalances(_funder, _platform, _platformId, _value);
@@ -1746,7 +1746,7 @@ contract FundRequestContract is Owned, ApproveAndCallFallBack {
 
 
     function prependUnderscore(string str) internal pure returns (string) {
-        return &quot;_&quot;.strConcat(str);
+        return "_".strConcat(str);
     }
 
     function setFundRepository(address _repositoryAddress) public onlyOwner {

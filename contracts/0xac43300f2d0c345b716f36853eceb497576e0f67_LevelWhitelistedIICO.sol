@@ -1,5 +1,5 @@
 /** @title Interactive Coin Offering
- *  @author Cl&#233;ment Lesaege - &lt;<span class="__cf_email__" data-cfemail="42212e272f272c36022e2731232725276c212d2f">[email&#160;protected]</span>&gt;
+ *  @author Clément Lesaege - <<span class="__cf_email__" data-cfemail="42212e272f272c36022e2731232725276c212d2f">[email protected]</span>>
  */
 
 pragma solidity ^0.4.23;
@@ -65,14 +65,14 @@ contract IICO {
         bool withdrawn;       // True if the bid has been withdrawn.
         bool redeemed;        // True if the ETH or tokens have been redeemed.
     }
-    mapping (uint =&gt; Bid) public bids; // Map bidID to bid.
-    mapping (address =&gt; uint[]) public contributorBidIDs; // Map contributor to a list of its bid ID.
+    mapping (uint => Bid) public bids; // Map bidID to bid.
+    mapping (address => uint[]) public contributorBidIDs; // Map contributor to a list of its bid ID.
     uint public lastBidID = 0; // The last bidID not accounting TAIL.
 
     /* *** Sale parameters *** */
     uint public startTime;                      // When the sale starts.
     uint public endFullBonusTime;               // When the full bonus period ends.
-    uint public withdrawalLockTime;             // When the contributors can&#39;t withdraw their bids manually anymore.
+    uint public withdrawalLockTime;             // When the contributors can't withdraw their bids manually anymore.
     uint public endTime;                        // When the sale ends.
     ERC20 public token;                         // The token which is sold.
     uint public tokensForSale;                  // The amount of tokens which will be sold.
@@ -152,10 +152,10 @@ contract IICO {
         Bid storage nextBid = bids[_next];
         uint prev = nextBid.prev;
         Bid storage prevBid = bids[prev];
-        require(_maxValuation &gt;= prevBid.maxValuation &amp;&amp; _maxValuation &lt; nextBid.maxValuation); // The new bid maxValuation is higher than the previous one and strictly lower than the next one.
-        require(now &gt;= startTime &amp;&amp; now &lt; endTime); // Check that the bids are still open.
+        require(_maxValuation >= prevBid.maxValuation && _maxValuation < nextBid.maxValuation); // The new bid maxValuation is higher than the previous one and strictly lower than the next one.
+        require(now >= startTime && now < endTime); // Check that the bids are still open.
 
-        ++lastBidID; // Increment the lastBidID. It will be the new bid&#39;s ID.
+        ++lastBidID; // Increment the lastBidID. It will be the new bid's ID.
         // Update the pointers of neighboring bids.
         prevBid.next = lastBidID;
         nextBid.prev = lastBidID;
@@ -199,14 +199,14 @@ contract IICO {
     function withdraw(uint _bidID) public {
         Bid storage bid = bids[_bidID];
         require(msg.sender == bid.contributor);
-        require(now &lt; withdrawalLockTime);
+        require(now < withdrawalLockTime);
         require(!bid.withdrawn);
 
         bid.withdrawn = true;
 
         // Before endFullBonusTime, everything is refunded. Otherwise, an amount decreasing linearly from endFullBonusTime to withdrawalLockTime is refunded.
-        uint refund = (now &lt; endFullBonusTime) ? bid.contrib : (bid.contrib * (withdrawalLockTime - now)) / (withdrawalLockTime - endFullBonusTime);
-        assert(refund &lt;= bid.contrib); // Make sure that we don&#39;t refund more than the contribution. Would a bug arise, we prefer blocking withdrawal than letting someone steal money.
+        uint refund = (now < endFullBonusTime) ? bid.contrib : (bid.contrib * (withdrawalLockTime - now)) / (withdrawalLockTime - endFullBonusTime);
+        assert(refund <= bid.contrib); // Make sure that we don't refund more than the contribution. Would a bug arise, we prefer blocking withdrawal than letting someone steal money.
         bid.contrib -= refund;
         bid.bonus = (bid.bonus * 2) / 3; // Reduce the bonus by 1/3.
 
@@ -220,7 +220,7 @@ contract IICO {
      *  @param _maxIt The maximum amount of bids to go through. This value must be set in order to not exceed the gas limit.
      */
     function finalize(uint _maxIt) public {
-        require(now &gt;= endTime);
+        require(now >= endTime);
         require(!finalized);
 
         // Make local copies of the finalization variables in order to avoid modifying storage in order to save gas.
@@ -229,21 +229,21 @@ contract IICO {
         uint localSumAcceptedVirtualContrib = sumAcceptedVirtualContrib;
 
         // Search for the cut-off bid while adding the contributions.
-        for (uint it = 0; it &lt; _maxIt &amp;&amp; !finalized; ++it) {
+        for (uint it = 0; it < _maxIt && !finalized; ++it) {
             Bid storage bid = bids[localCutOffBidID];
-            if (bid.contrib+localSumAcceptedContrib &lt; bid.maxValuation) { // We haven&#39;t found the cut-off yet.
+            if (bid.contrib+localSumAcceptedContrib < bid.maxValuation) { // We haven't found the cut-off yet.
                 localSumAcceptedContrib        += bid.contrib;
                 localSumAcceptedVirtualContrib += bid.contrib + (bid.contrib * bid.bonus) / BONUS_DIVISOR;
                 localCutOffBidID = bid.prev; // Go to the previous bid.
             } else { // We found the cut-off. This bid will be taken partially.
                 finalized = true;
-                uint contribCutOff = bid.maxValuation &gt;= localSumAcceptedContrib ? bid.maxValuation - localSumAcceptedContrib : 0; // The amount of the contribution of the cut-off bid that can stay in the sale without spilling over the maxValuation.
-                contribCutOff = contribCutOff &lt; bid.contrib ? contribCutOff : bid.contrib; // The amount that stays in the sale should not be more than the original contribution. This line is not required but it is added as an extra security measure.
-                bid.contributor.send(bid.contrib-contribCutOff); // Send the non-accepted part. Use send in order to not block if the contributor&#39;s fallback reverts.
+                uint contribCutOff = bid.maxValuation >= localSumAcceptedContrib ? bid.maxValuation - localSumAcceptedContrib : 0; // The amount of the contribution of the cut-off bid that can stay in the sale without spilling over the maxValuation.
+                contribCutOff = contribCutOff < bid.contrib ? contribCutOff : bid.contrib; // The amount that stays in the sale should not be more than the original contribution. This line is not required but it is added as an extra security measure.
+                bid.contributor.send(bid.contrib-contribCutOff); // Send the non-accepted part. Use send in order to not block if the contributor's fallback reverts.
                 bid.contrib = contribCutOff; // Update the contribution value.
                 localSumAcceptedContrib += bid.contrib;
                 localSumAcceptedVirtualContrib += bid.contrib + (bid.contrib * bid.bonus) / BONUS_DIVISOR;
-                beneficiary.send(localSumAcceptedContrib); // Use send in order to not block if the beneficiary&#39;s fallback reverts.
+                beneficiary.send(localSumAcceptedContrib); // Use send in order to not block if the beneficiary's fallback reverts.
             }
         }
 
@@ -264,7 +264,7 @@ contract IICO {
         require(!bid.redeemed);
 
         bid.redeemed=true;
-        if (bid.maxValuation &gt; cutOffBid.maxValuation || (bid.maxValuation == cutOffBid.maxValuation &amp;&amp; _bidID &gt;= cutOffBidID)) // Give tokens if the bid is accepted.
+        if (bid.maxValuation > cutOffBid.maxValuation || (bid.maxValuation == cutOffBid.maxValuation && _bidID >= cutOffBidID)) // Give tokens if the bid is accepted.
             require(token.transfer(bid.contributor, (tokensForSale * (bid.contrib + (bid.contrib * bid.bonus) / BONUS_DIVISOR)) / sumAcceptedVirtualContrib));
         else                                                                                            // Reimburse ETH otherwise.
             bid.contributor.transfer(bid.contrib);
@@ -275,10 +275,10 @@ contract IICO {
      *  This allows users to bid and get their tokens back using only send operations.
      */
     function () public payable {
-        if (msg.value != 0 &amp;&amp; now &gt;= startTime &amp;&amp; now &lt; endTime) // Make a bid with an infinite maxValuation if some ETH was sent.
+        if (msg.value != 0 && now >= startTime && now < endTime) // Make a bid with an infinite maxValuation if some ETH was sent.
             submitBid(INFINITY, TAIL);
-        else if (msg.value == 0 &amp;&amp; finalized)                    // Else, redeem all the non redeemed bids if no ETH was sent.
-            for (uint i = 0; i &lt; contributorBidIDs[msg.sender].length; ++i)
+        else if (msg.value == 0 && finalized)                    // Else, redeem all the non redeemed bids if no ETH was sent.
+            for (uint i = 0; i < contributorBidIDs[msg.sender].length; ++i)
             {
                 if (!bids[contributorBidIDs[msg.sender][i]].redeemed)
                     redeem(contributorBidIDs[msg.sender][i]);
@@ -299,14 +299,14 @@ contract IICO {
         uint next = _nextStart;
         bool found;
 
-        while(!found) { // While we aren&#39;t at the insertion point.
+        while(!found) { // While we aren't at the insertion point.
             Bid storage nextBid = bids[next];
             uint prev = nextBid.prev;
             Bid storage prevBid = bids[prev];
 
-            if (_maxValuation &lt; prevBid.maxValuation)       // It should be inserted before.
+            if (_maxValuation < prevBid.maxValuation)       // It should be inserted before.
                 next = prev;
-            else if (_maxValuation &gt;= nextBid.maxValuation) // It should be inserted after. The second value we sort by is bidID. Those are increasing, thus if the next bid is of the same maxValuation, we should insert after it.
+            else if (_maxValuation >= nextBid.maxValuation) // It should be inserted after. The second value we sort by is bidID. Those are increasing, thus if the next bid is of the same maxValuation, we should insert after it.
                 next = nextBid.next;
             else                                // We found the insertion point.
                 found = true;
@@ -319,9 +319,9 @@ contract IICO {
      *  @return b The bonus expressed in 1/BONUS_DIVISOR. Will be normalized by BONUS_DIVISOR. For example for a 20% bonus, _maxBonus must be 0.2 * BONUS_DIVISOR.
      */
     function bonus() public view returns(uint b) {
-        if (now &lt; endFullBonusTime) // Full bonus.
+        if (now < endFullBonusTime) // Full bonus.
             return maxBonus;
-        else if (now &gt; endTime)     // Assume no bonus after end.
+        else if (now > endTime)     // Assume no bonus after end.
             return 0;
         else                        // Compute the bonus decreasing linearly from endFullBonusTime to endTime.
             return (maxBonus * (endTime - now)) / (endTime - endFullBonusTime);
@@ -335,15 +335,15 @@ contract IICO {
      *  @return contribution The total contribution of the contributor.
      */
     function totalContrib(address _contributor) public view returns (uint contribution) {
-        for (uint i = 0; i &lt; contributorBidIDs[_contributor].length; ++i)
+        for (uint i = 0; i < contributorBidIDs[_contributor].length; ++i)
             contribution += bids[contributorBidIDs[_contributor][i]].contrib;
     }
 
     /* *** Interface Views *** */
 
-    /** @dev Get the current valuation and cut off bid&#39;s details.
+    /** @dev Get the current valuation and cut off bid's details.
      *  This function is O(n), where n is the amount of bids. This could exceed the gas limit, therefore this function should only be used for interface display and not by other contracts.
-     *  @return The current valuation and cut off bid&#39;s details.
+     *  @return The current valuation and cut off bid's details.
      */
     function valuationAndCutOff() public view returns (uint valuation, uint virtualValuation, uint currentCutOffBidID, uint currentCutOffBidmaxValuation, uint currentCutOffBidContrib) {
         currentCutOffBidID = bids[TAIL].prev;
@@ -351,12 +351,12 @@ contract IICO {
         // Loop over all bids or until cut off bid is found
         while (currentCutOffBidID != HEAD) {
             Bid storage bid = bids[currentCutOffBidID];
-            if (bid.contrib + valuation &lt; bid.maxValuation) { // We haven&#39;t found the cut-off yet.
+            if (bid.contrib + valuation < bid.maxValuation) { // We haven't found the cut-off yet.
                 valuation += bid.contrib;
                 virtualValuation += bid.contrib + (bid.contrib * bid.bonus) / BONUS_DIVISOR;
                 currentCutOffBidID = bid.prev; // Go to the previous bid.
             } else { // We found the cut-off bid. This bid will be taken partially.
-                currentCutOffBidContrib = bid.maxValuation &gt;= valuation ? bid.maxValuation - valuation : 0; // The amount of the contribution of the cut-off bid that can stay in the sale without spilling over the maxValuation.
+                currentCutOffBidContrib = bid.maxValuation >= valuation ? bid.maxValuation - valuation : 0; // The amount of the contribution of the cut-off bid that can stay in the sale without spilling over the maxValuation.
                 valuation += currentCutOffBidContrib;
                 virtualValuation += currentCutOffBidContrib + (currentCutOffBidContrib * bid.bonus) / BONUS_DIVISOR;
                 break;
@@ -375,8 +375,8 @@ contract IICO {
 contract LevelWhitelistedIICO is IICO {
     
     uint public maximumBaseContribution;
-    mapping (address =&gt; bool) public baseWhitelist; // True if in the base whitelist (has a contribution limit).
-    mapping (address =&gt; bool) public reinforcedWhitelist; // True if in the reinforced whitelist (does not have a contribution limit).
+    mapping (address => bool) public baseWhitelist; // True if in the base whitelist (has a contribution limit).
+    mapping (address => bool) public reinforcedWhitelist; // True if in the reinforced whitelist (does not have a contribution limit).
     address public whitelister; // The party which can add or remove people from the whitelist.
     
     modifier onlyWhitelister{ require(whitelister == msg.sender); _; }
@@ -400,7 +400,7 @@ contract LevelWhitelistedIICO is IICO {
      *  @param _next The bidID of the next bid in the list.
      */
     function submitBid(uint _maxValuation, uint _next) public payable {
-        require(reinforcedWhitelist[msg.sender] || (baseWhitelist[msg.sender] &amp;&amp; (msg.value + totalContrib(msg.sender) &lt;= maximumBaseContribution))); // Check if the buyer is in the reinforced whitelist or if it is on the base one and this would not make its total contribution exceed the limit.
+        require(reinforcedWhitelist[msg.sender] || (baseWhitelist[msg.sender] && (msg.value + totalContrib(msg.sender) <= maximumBaseContribution))); // Check if the buyer is in the reinforced whitelist or if it is on the base one and this would not make its total contribution exceed the limit.
         super.submitBid(_maxValuation,_next);
     }
     
@@ -415,7 +415,7 @@ contract LevelWhitelistedIICO is IICO {
      *  @param _buyersToWhitelist Buyers to add to the whitelist.
      */
     function addBaseWhitelist(address[] _buyersToWhitelist) public onlyWhitelister {
-        for(uint i=0;i&lt;_buyersToWhitelist.length;++i)
+        for(uint i=0;i<_buyersToWhitelist.length;++i)
             baseWhitelist[_buyersToWhitelist[i]]=true;
     }
     
@@ -423,7 +423,7 @@ contract LevelWhitelistedIICO is IICO {
      *  @param _buyersToWhitelist Buyers to add to the whitelist.
      */
     function addReinforcedWhitelist(address[] _buyersToWhitelist) public onlyWhitelister {
-        for(uint i=0;i&lt;_buyersToWhitelist.length;++i)
+        for(uint i=0;i<_buyersToWhitelist.length;++i)
             reinforcedWhitelist[_buyersToWhitelist[i]]=true;
     }
     
@@ -431,7 +431,7 @@ contract LevelWhitelistedIICO is IICO {
      *  @param _buyersToRemove Buyers to remove from the whitelist.
      */
     function removeBaseWhitelist(address[] _buyersToRemove) public onlyWhitelister {
-        for(uint i=0;i&lt;_buyersToRemove.length;++i)
+        for(uint i=0;i<_buyersToRemove.length;++i)
             baseWhitelist[_buyersToRemove[i]]=false;
     }
     
@@ -439,7 +439,7 @@ contract LevelWhitelistedIICO is IICO {
      *  @param _buyersToRemove Buyers to remove from the whitelist.
      */
     function removeReinforcedWhitelist(address[] _buyersToRemove) public onlyWhitelister {
-        for(uint i=0;i&lt;_buyersToRemove.length;++i)
+        for(uint i=0;i<_buyersToRemove.length;++i)
             reinforcedWhitelist[_buyersToRemove[i]]=false;
     }
 

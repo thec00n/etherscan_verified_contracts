@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,11 +94,11 @@ contract DevCoin is ERC20 {
   using SafeMath for uint256;
 
   // meta data
-  string public constant symbol = &quot;DEV&quot;;
+  string public constant symbol = "DEV";
 
-  string public constant version = &#39;1.0&#39;;
+  string public constant version = '1.0';
 
-  string public constant name = &quot;DevCoin&quot;;
+  string public constant name = "DevCoin";
 
   uint256 public constant decimals = 18;
 
@@ -108,12 +108,12 @@ contract DevCoin is ERC20 {
   address public owner;
 
   // Balances for each account
-  mapping(address =&gt; uint256) internal balances;
+  mapping(address => uint256) internal balances;
 
-  // Owner of account approves the transfer of an amount to another account owner -&gt; (recipient -&gt; amount)
+  // Owner of account approves the transfer of an amount to another account owner -> (recipient -> amount)
   // This is used by exchanges. The owner effectively gives an exchange POA to transfer coins using
   // the function transferFrom()
-  mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+  mapping(address => mapping(address => uint256)) internal allowed;
 
   /**
   * Constructor
@@ -145,7 +145,7 @@ contract DevCoin is ERC20 {
     */
   function transfer(address _to, uint256 _amount) public returns (bool success) {
     require(_to != address(0));
-    require(_amount &lt;= balances[msg.sender]);
+    require(_amount <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance of if there is an overflow
     balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -162,8 +162,8 @@ contract DevCoin is ERC20 {
   function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
     // protection against integer overflow
     require(_to != address(0));
-    require(_amount &lt;= balances[_from]);
-    require(_amount &lt;= allowed[_from][msg.sender]);
+    require(_amount <= balances[_from]);
+    require(_amount <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_amount);
     balances[_to] = balances[_to].add(_amount);

@@ -3,8 +3,8 @@ pragma solidity ^0.4.1;
 contract FipsNotary {
 
     address admin;
-    mapping(bytes20 =&gt; address) ledger;
-    mapping(address =&gt; bool) registrants;
+    mapping(bytes20 => address) ledger;
+    mapping(address => bool) registrants;
 
     event FipsData(bytes20 indexed fips, address indexed publisher, bytes data);
     event FipsRegistration(bytes20 indexed fips, address indexed owner);
@@ -58,7 +58,7 @@ contract FipsNotary {
     }
 
     function fipsPublishData(bytes20 fips, bytes data) constant {
-        if ((msg.sender != admin) &amp;&amp; (msg.sender != ledger[fips])) {
+        if ((msg.sender != admin) && (msg.sender != ledger[fips])) {
             throw;
         }
         FipsData(fips, msg.sender, data);
@@ -86,23 +86,23 @@ contract FipsNotary {
         if (registrants[msg.sender] != true) {
             throw;
         }
-        if ((count &lt; 1) || (count &gt; 1000)) {
+        if ((count < 1) || (count > 1000)) {
             throw;
         }
         bytes20 fips;
-        for (uint i = 1; i &lt;= count; i++) {
+        for (uint i = 1; i <= count; i++) {
             fips = fipsGenerate();
             fipsAddToLedger(fips, owner);
-            if (data.length &gt; 0) {
+            if (data.length > 0) {
                 FipsData(fips, owner, data);
             }
         }
     }
 
-    function fipsRegister() { fipsRegister(1, msg.sender, &quot;&quot;); }
-    function fipsRegister(uint count) { fipsRegister(count, msg.sender, &quot;&quot;); }
+    function fipsRegister() { fipsRegister(1, msg.sender, ""); }
+    function fipsRegister(uint count) { fipsRegister(count, msg.sender, ""); }
     function fipsRegister(uint count, bytes data) { fipsRegister(count, msg.sender, data); }
-    function fipsRegister(address owner) { fipsRegister(1, owner, &quot;&quot;); }
+    function fipsRegister(address owner) { fipsRegister(1, owner, ""); }
     function fipsRegister(address owner, bytes data) { fipsRegister(1, owner, data); }
 
     function fipsTransfer(bytes20 fips, address new_owner) {

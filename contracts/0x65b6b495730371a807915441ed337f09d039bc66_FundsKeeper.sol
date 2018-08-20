@@ -27,7 +27,7 @@ contract FundsKeeper {
 
     uint256 public totalPayments = 0;
 
-    mapping(uint256 =&gt; bool) public payments;
+    mapping(uint256 => bool) public payments;
 
     event Bank(uint256 indexed _sum, uint256 indexed _add);
 
@@ -46,7 +46,7 @@ contract FundsKeeper {
     }
 
     function getGain(uint256 _id) public {
-        require((lottery.gameOver() &amp;&amp; salarySent) || lottery.gameOverByUser());
+        require((lottery.gameOver() && salarySent) || lottery.gameOverByUser());
         require(lottery.getHolder(_id) == msg.sender);
         require(lottery.getState(_id) == 1); //living token only
         require(payments[_id] == false);
@@ -56,7 +56,7 @@ contract FundsKeeper {
         uint256 gain = calcGain();
 
         require(gain != 0);
-        require(this.balance &gt;= gain);
+        require(this.balance >= gain);
 
         totalPayments = totalPayments.add(gain);
         payments[_id] = true;
@@ -87,7 +87,7 @@ contract FundsKeeper {
     }
 
     function calcGain() internal returns (uint256) {
-        if (lottery.gameOverByUser() &amp;&amp; (weiReceived == 0)) {
+        if (lottery.gameOverByUser() && (weiReceived == 0)) {
             weiReceived = this.balance;
         }
         return weiReceived/lottery.livingSupply();
@@ -108,13 +108,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

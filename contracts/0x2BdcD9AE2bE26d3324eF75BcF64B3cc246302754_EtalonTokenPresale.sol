@@ -21,7 +21,7 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    if (b &lt;= a) {
+    if (b <= a) {
       return a - b;
     }
     revert();
@@ -29,18 +29,18 @@ library SafeMath {
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    if (c &gt;= a) {
+    if (c >= a) {
       return c;
     }
     revert();
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -144,13 +144,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint256 size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -188,7 +188,7 @@ contract BasicToken is ERC20Basic {
 contract StandardToken is BasicToken, ERC20 {
   using SafeMath for uint256;
   
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -216,7 +216,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -243,8 +243,8 @@ contract StandardToken is BasicToken, ERC20 {
 contract EtalonToken is StandardToken, Haltable {
   using SafeMath for uint256;
   
-  string  public name        = &quot;Etalon Token&quot;;
-  string  public symbol      = &quot;ETL&quot;;
+  string  public name        = "Etalon Token";
+  string  public symbol      = "ETL";
   uint256 public decimals    = 0;
   uint256 public INITIAL     = 4000000;
   
@@ -277,7 +277,7 @@ contract EtalonToken is StandardToken, Haltable {
 contract EtalonTokenPresale is Haltable {
   using SafeMath for uint256;
 
-  string public name = &quot;Etalon Token Presale&quot;;
+  string public name = "Etalon Token Presale";
 
   EtalonToken public token;
   address public beneficiary;
@@ -299,7 +299,7 @@ contract EtalonTokenPresale is Haltable {
   bool public softCapReached = false;
   bool public crowdsaleFinished = false;
 
-  mapping (address =&gt; bool) refunded;
+  mapping (address => bool) refunded;
 
   event CrowdsaleStarted(uint256 _time, uint256 _softCap, uint256 _hardCap, uint256 _price );
   event CrowdsaleFinished(uint256 _time);
@@ -310,12 +310,12 @@ contract EtalonTokenPresale is Haltable {
   event Refunded(address indexed _holder, uint256 _amount);
 
   modifier onlyAfter(uint256 time) {
-    if (now &lt; time) revert();
+    if (now < time) revert();
     _;
   }
 
   modifier onlyBefore(uint256 time) {
-    if (now &gt; time) revert();
+    if (now > time) revert();
     _;
   }
   
@@ -353,7 +353,7 @@ contract EtalonTokenPresale is Haltable {
     uint256 _duration,
     uint256 _price ) onlyOwner
   {
-    if (startTime &gt; 0) revert();
+    if (startTime > 0) revert();
     hardCap = _hardCap * 1 ether;
     softCap = _softCap * 1 ether;
     price   = _price;
@@ -380,7 +380,7 @@ contract EtalonTokenPresale is Haltable {
   function extend( uint256 _duration ) onlyOwner {
     endTime  = endTime + _duration * 1 hours;
     duration = duration + _duration;
-    if ((startTime + 4500 hours) &lt; endTime) revert();
+    if ((startTime + 4500 hours) < endTime) revert();
     CrowdsaleExtended( endTime );
   }
 
@@ -388,7 +388,7 @@ contract EtalonTokenPresale is Haltable {
    * fallback function - to recieve ethers and send tokens
    */
   function () payable stopInEmergency {
-    if ( msg.value &lt; uint256( 1 ether ).div( price ) ) revert();
+    if ( msg.value < uint256( 1 ether ).div( price ) ) revert();
     doPurchase(msg.sender, msg.value);
   }
 
@@ -404,7 +404,7 @@ contract EtalonTokenPresale is Haltable {
     if (balance == 0) revert();
 
     uint256 to_refund = balance.mul(1 ether).div(price);
-    if (to_refund &gt; this.balance) {
+    if (to_refund > this.balance) {
       to_refund = this.balance;  // if refunding is more than all, that contract hold - return all holded ether
     }
 
@@ -433,9 +433,9 @@ contract EtalonTokenPresale is Haltable {
     
     if (crowdsaleFinished) revert();
 
-    if (collected.add(_amount) &gt; hardCap) revert();
+    if (collected.add(_amount) > hardCap) revert();
 
-    if ((!softCapReached) &amp;&amp; (collected &lt; softCap) &amp;&amp; (collected.add(_amount) &gt;= softCap)) {
+    if ((!softCapReached) && (collected < softCap) && (collected.add(_amount) >= softCap)) {
       softCapReached = true;
       SoftCapReached(softCap);
     }

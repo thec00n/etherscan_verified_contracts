@@ -36,7 +36,7 @@ contract Ownable {
 
 contract VAtomOwner is Ownable {
 
-    mapping (string =&gt; string) vatoms;
+    mapping (string => string) vatoms;
 
     function setVAtomOwner(string vatomID, string ownerID) public onlyOwner {
         vatoms[vatomID] = ownerID;

@@ -50,9 +50,9 @@ contract VOCTOP25 is Owned {
     uint256 internal _totalSupply;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256)  internal _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal _allowance;
-    mapping (address =&gt; bool) internal _frozenAccount;
+    mapping (address => uint256)  internal _balanceOf;
+    mapping (address => mapping (address => uint256)) internal _allowance;
+    mapping (address => bool) internal _frozenAccount;
     
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -82,15 +82,15 @@ contract VOCTOP25 is Owned {
         _balanceOf[msg.sender] = _totalSupply;
         
         // Set the name for display purposes
-        _name = &quot;Voice Of Coins TOP 25 Index Fund&quot;;   
+        _name = "Voice Of Coins TOP 25 Index Fund";   
         
         // Set the symbol for display purposes
-        _symbol = &quot;VOC25&quot;;   
+        _symbol = "VOC25";   
         
     }
       
     /**
-     * Returns token&#39;s name
+     * Returns token's name
      *
      */
     function name() public view returns (string) {
@@ -100,7 +100,7 @@ contract VOCTOP25 is Owned {
     }
     
     /**
-     * Returns token&#39;s symbol
+     * Returns token's symbol
      *
      */
     function symbol() public view returns (string) {
@@ -110,7 +110,7 @@ contract VOCTOP25 is Owned {
     }
     
     /**
-     * Returns token&#39;s decimals
+     * Returns token's decimals
      *
      */
     function decimals() public view returns (uint8) {
@@ -120,7 +120,7 @@ contract VOCTOP25 is Owned {
     }
     
     /**
-     * Returns token&#39;s total supply
+     * Returns token's total supply
      *
      */
     function totalSupply() public view returns (uint256) {
@@ -169,7 +169,7 @@ contract VOCTOP25 is Owned {
         
         // Check allowance if transfer not from own
         if (msg.sender != _from) {
-            require(_allowance[_from][msg.sender] &gt;= _value);     
+            require(_allowance[_from][msg.sender] >= _value);     
             _allowance[_from][msg.sender] -= _value;
         }
         
@@ -186,7 +186,7 @@ contract VOCTOP25 is Owned {
      *  
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
      * @param _spender The address authorized to spend
@@ -224,7 +224,7 @@ contract VOCTOP25 is Owned {
     function increaseApproval(address _spender, uint256 _addedValue) public returns (bool) {
       
         //check overflow
-        require(_allowance[msg.sender][_spender] + _addedValue &gt;= _allowance[msg.sender][_spender]);
+        require(_allowance[msg.sender][_spender] + _addedValue >= _allowance[msg.sender][_spender]);
 
         //upate value
         _allowance[msg.sender][_spender] += _addedValue;
@@ -239,7 +239,7 @@ contract VOCTOP25 is Owned {
     
         //check if subtractedValue greater than available, if so set to zero
         //otherwise decrease by subtractedValue
-        if (_subtractedValue &gt; _allowance[msg.sender][_spender]) {
+        if (_subtractedValue > _allowance[msg.sender][_spender]) {
 
             _allowance[msg.sender][_spender] = 0;
 
@@ -268,7 +268,7 @@ contract VOCTOP25 is Owned {
         require(!_frozenAccount[_owner]);
         
         // Check if the targeted balance is enough
-        require(_balanceOf[_owner] &gt;= _value);
+        require(_balanceOf[_owner] >= _value);
         
         // Subtract from the targeted balance and total supply
         _balanceOf[_owner] -= _value;
@@ -325,10 +325,10 @@ contract VOCTOP25 is Owned {
         require(!_frozenAccount[_owner]);
         
         // Check for overflows
-        require(_balanceOf[_owner] + _mintedAmount &gt;= _balanceOf[_owner]);
+        require(_balanceOf[_owner] + _mintedAmount >= _balanceOf[_owner]);
         
         // Check for overflows
-        require(_totalSupply + _mintedAmount &gt;= _totalSupply);
+        require(_totalSupply + _mintedAmount >= _totalSupply);
         
         _balanceOf[_owner] += _mintedAmount;
         _totalSupply += _mintedAmount;
@@ -380,10 +380,10 @@ contract VOCTOP25 is Owned {
         require(!_frozenAccount[_to]);
         
         // Check if the sender has enough
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         
         // Check for overflows
-        require(_balanceOf[_to] + _value &gt;= _balanceOf[_to]);
+        require(_balanceOf[_to] + _value >= _balanceOf[_to]);
         
         // Subtract from the sender
         _balanceOf[_from] -= _value;

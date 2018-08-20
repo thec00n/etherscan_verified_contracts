@@ -4,7 +4,7 @@ contract JingzhiContract{
 
     address public jingZhiManager;
 
-    mapping(uint=&gt;mapping(bytes1=&gt;uint)) jingZhiMap;
+    mapping(uint=>mapping(bytes1=>uint)) jingZhiMap;
     
     
     modifier onlyBy(address _account){

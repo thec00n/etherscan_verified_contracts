@@ -42,9 +42,9 @@ contract StandardToken is Token {
         //По умолчанию предполагается, что totalSupply не может быть больше (2^256 - 1).
         //Если токен не содержит totalSupply и можно неограниченно выпускать токены, необходимо следить за переконвертацией токена.
         //Замените оператор if на this one.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         
-                if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+                if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -54,8 +54,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //Как и указано свыше, замените эту строку ниженаписанной, если желаете защитить контракт от переконвертированных токенов.  
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -78,8 +78,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -97,7 +97,7 @@ contract RussianCash is StandardToken { // ПОДЛЕЖИТ ИЗМЕНЕНИЮ. 
     string public name;                   // Название токена
     uint8 public decimals;                // Как много показывать десятичных. По умолчание устанавливает значение, равное 18
     string public symbol;                 // Идентификатор: например SBX, XPR и т.д...
-    string public version = &#39;H1.0&#39;; 
+    string public version = 'H1.0'; 
     uint256 public unitsOneEthCanBuy;     // Как много единиц вашего токена можно купить за 1 ETH?
     uint256 public totalEthInWei;         // WEI равняется минимальному значению ETH (эквивалентно центу в USD или сатоши в BTC). Здесь мы будем хранить все привлеченные ETH через ICO
     address public fundsWallet;           // Куда должны перенаправляться привлеченные ETH?
@@ -106,9 +106,9 @@ contract RussianCash is StandardToken { // ПОДЛЕЖИТ ИЗМЕНЕНИЮ. 
     function RussianCash() {
         balances[msg.sender] = 1000000000000000000000000000;               // Предоставить создателю контракта все начальные токены. В нашем случае количество равно 1000000000. Если вы хотите, чтобы количество равнялось число X, а десятичные равнялись 5, установите следующее значение X * 100000. (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
         totalSupply = 1000000000000000000000000000;                        // Обновить общий выпуск (1000000000 для примера) (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
-        name = &quot;Russian Cash&quot;;                                   // Установить название токена для отображения на дисплее (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
+        name = "Russian Cash";                                   // Установить название токена для отображения на дисплее (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
         decimals = 18;                                               // Количество десятичных знаков после запятой для отображения на дисплее (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
-        symbol = &quot;RUS&quot;;                                             // Идентификатор токена для отображения на дисплее (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
+        symbol = "RUS";                                             // Идентификатор токена для отображения на дисплее (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
         unitsOneEthCanBuy = 2500;                                      // Установить цену за единицу вашего токена для ICO (ПОДЛЕЖИТ ИЗМЕНЕНИЮ)
         fundsWallet = msg.sender;                                    // Владелец контракта получает ETH
     }
@@ -116,7 +116,7 @@ contract RussianCash is StandardToken { // ПОДЛЕЖИТ ИЗМЕНЕНИЮ. 
     function() payable{
         totalEthInWei = totalEthInWei + msg.value;
         uint256 amount = msg.value * unitsOneEthCanBuy;
-        require(balances[fundsWallet] &gt;= amount);
+        require(balances[fundsWallet] >= amount);
 
         balances[fundsWallet] = balances[fundsWallet] - amount;
         balances[msg.sender] = balances[msg.sender] + amount;
@@ -135,7 +135,7 @@ contract RussianCash is StandardToken { // ПОДЛЕЖИТ ИЗМЕНЕНИЮ. 
         //вызов функции receiveApproval в контракте, который вы хотите уведомить. Этот процесс по умолчанию создает подпись функции, но в нашем случае это не нужно включать в контракт.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //к этому моменту, вызов к функции должен пройти успешно. 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

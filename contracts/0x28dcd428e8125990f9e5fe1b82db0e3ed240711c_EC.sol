@@ -76,15 +76,15 @@ contract EC {
         uint256 da;
         uint256 db;
 
-        if ((x1==0)&amp;&amp;(y1==0)) {
+        if ((x1==0)&&(y1==0)) {
             return (x2,y2,z2);
         }
 
-        if ((x2==0)&amp;&amp;(y2==0)) {
+        if ((x2==0)&&(y2==0)) {
             return (x1,y1,z1);
         }
 
-        if ((x1==x2)&amp;&amp;(y1==y2)) {
+        if ((x1==x2)&&(y1==y2)) {
             (l,lz) = _jMul(x1, z1, x1, z1);
             (l,lz) = _jMul(l, lz, 3, 1);
             (l,lz) = _jAdd(l, lz, a, 1);
@@ -141,7 +141,7 @@ contract EC {
         }
 
         while (remaining != 0) {
-            if ((remaining &amp; 1) != 0) {
+            if ((remaining & 1) != 0) {
                 (acx,acy,acz) = _ecAdd(acx,acy,acz, px,py,pz);
             }
             remaining = remaining / 2;

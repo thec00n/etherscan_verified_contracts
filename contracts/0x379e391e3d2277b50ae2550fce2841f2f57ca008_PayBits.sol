@@ -13,17 +13,17 @@ pragma solidity ^0.4.16;
  
   // PayBits is ERC20 Token
   contract PayBits is ERC20 {
-     string public constant symbol = &quot;PYB&quot;;
-     string public constant name = &quot;PayBits&quot;;
+     string public constant symbol = "PYB";
+     string public constant name = "PayBits";
      uint8 public constant decimals = 18;
      uint256 _totalSupply = 21000000 * 10**18;
      
 
      address public owner;
   
-     mapping(address =&gt; uint256) balances;
+     mapping(address => uint256) balances;
   
-     mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+     mapping(address => mapping (address => uint256)) allowed;
      
         // Total Supply of Token will be 21 Million only
      function PayBits() {
@@ -38,7 +38,7 @@ pragma solidity ^0.4.16;
      
      // To Distribute AirDrops for Applicants of Round 1
      function AirDropPayBitsR1(address[] addresses) onlyOwner {
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         for (uint i = 0; i < addresses.length; i++) {
              balances[owner] -= 400000000000000000000;
              balances[addresses[i]] += 400000000000000000000;
              Transfer(owner, addresses[i], 400000000000000000000);
@@ -46,7 +46,7 @@ pragma solidity ^0.4.16;
      }
       // To Distribute AirDrops for Applicants of Round 2
       function AirDropPayBitsR2(address[] addresses) onlyOwner {
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         for (uint i = 0; i < addresses.length; i++) {
              balances[owner] -= 300000000000000000000;
              balances[addresses[i]] += 300000000000000000000;
              Transfer(owner, addresses[i], 300000000000000000000);
@@ -54,7 +54,7 @@ pragma solidity ^0.4.16;
      }
       // To Distribute AirDrops for Applicants of Round 3
      function AirDropPayBitsR3(address[] addresses) onlyOwner {
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         for (uint i = 0; i < addresses.length; i++) {
              balances[owner] -= 200000000000000000000;
              balances[addresses[i]] += 200000000000000000000;
              Transfer(owner, addresses[i], 200000000000000000000);
@@ -63,7 +63,7 @@ pragma solidity ^0.4.16;
      
      // To Distribute AirDrops of Remaining Token To Bounty (Press Release Post, Article submission, Blog submission, Social Sharing Etc)
      function AirDropPayBitsBounty(address[] addresses) onlyOwner {
-         for (uint i = 0; i &lt; addresses.length; i++) {
+         for (uint i = 0; i < addresses.length; i++) {
              balances[owner] -= 100000000000000000000;
              balances[addresses[i]] += 100000000000000000000;
              Transfer(owner, addresses[i], 100000000000000000000);
@@ -80,9 +80,9 @@ pragma solidity ^0.4.16;
      }
  
      function transfer(address _to, uint256 _amount) returns (bool success) {
-         if (balances[msg.sender] &gt;= _amount 
-            &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[msg.sender] >= _amount 
+            && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[msg.sender] -= _amount;
              balances[_to] += _amount;
              Transfer(msg.sender, _to, _amount);
@@ -98,10 +98,10 @@ pragma solidity ^0.4.16;
          address _to,
          uint256 _amount
      ) returns (bool success) {
-         if (balances[_from] &gt;= _amount
-             &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-             &amp;&amp; _amount &gt; 0
-             &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+         if (balances[_from] >= _amount
+             && allowed[_from][msg.sender] >= _amount
+             && _amount > 0
+             && balances[_to] + _amount > balances[_to]) {
              balances[_from] -= _amount;
              allowed[_from][msg.sender] -= _amount;
              balances[_to] += _amount;

@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,7 +87,7 @@ contract DetailedERC20 is ERC20 {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
   
@@ -97,7 +97,7 @@ contract BasicToken is ERC20Basic {
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     emit Transfer(msg.sender, _to, _value);
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev 从一个地址向另外一个地址转token
@@ -129,8 +129,8 @@ contract StandardToken is ERC20, BasicToken {
   {
     // 做合法性检查
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -174,7 +174,7 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
     emit Burn(_who, _value);
@@ -238,7 +238,7 @@ contract StandardBurnableToken is BurnableToken, StandardToken,MintableToken {
    * @param _value uint256 被销毁的token数量
    */
   function burnFrom(address _from, uint256 _value) public {
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= allowed[_from][msg.sender]);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     _burn(_from, _value);
   }
@@ -246,8 +246,8 @@ contract StandardBurnableToken is BurnableToken, StandardToken,MintableToken {
 }
 
 contract ZebraGoldToken is StandardBurnableToken {
-    string public name = &#39;ZebraGold&#39;;
-    string public symbol = &#39;ZBG&#39;;
+    string public name = 'ZebraGold';
+    string public symbol = 'ZBG';
     uint8 public decimals = 8;
     uint256 public INITIAL_SUPPLY = 2300000000000000000000000000; 
     

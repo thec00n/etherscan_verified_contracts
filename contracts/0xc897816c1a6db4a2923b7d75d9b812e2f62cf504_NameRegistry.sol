@@ -1,11 +1,11 @@
 /*
   Copyright 2017 Loopring Project Ltd (Loopring Foundation).
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
   http://www.apache.org/licenses/LICENSE-2.0
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -13,14 +13,14 @@
 pragma solidity 0.4.21;
 /// @title Ethereum Address Register Contract
 /// @dev This contract maintains a name service for addresses and miner.
-/// @author Kongliang Zhong - &lt;<span class="__cf_email__" data-cfemail="f2999d9c959e9b939c95b29e9d9d82809b9c95dc9d8095">[email&#160;protected]</span>&gt;,
-/// @author Daniel Wang - &lt;<span class="__cf_email__" data-cfemail="4420252a2d212804282b2b34362d2a236a2b3623">[email&#160;protected]</span>&gt;,
+/// @author Kongliang Zhong - <<span class="__cf_email__" data-cfemail="f2999d9c959e9b939c95b29e9d9d82809b9c95dc9d8095">[email protected]</span>>,
+/// @author Daniel Wang - <<span class="__cf_email__" data-cfemail="4420252a2d212804282b2b34362d2a236a2b3623">[email protected]</span>>,
 contract NameRegistry {
     uint public nextId = 0;
-    mapping (uint    =&gt; Participant) public participantMap;
-    mapping (address =&gt; NameInfo)    public nameInfoMap;
-    mapping (bytes12 =&gt; address)     public ownerMap;
-    mapping (address =&gt; string)      public nameMap;
+    mapping (uint    => Participant) public participantMap;
+    mapping (address => NameInfo)    public nameInfoMap;
+    mapping (bytes12 => address)     public ownerMap;
+    mapping (address => string)      public nameMap;
     struct NameInfo {
         bytes12  name;
         uint[]   participantIds;
@@ -74,7 +74,7 @@ contract NameRegistry {
         uint[] storage participantIds = nameInfo.participantIds;
         bytes12 nameBytes = stringToBytes12(name);
         require(nameInfo.name == nameBytes);
-        for (uint i = 0; i &lt; participantIds.length; i++) {
+        for (uint i = 0; i < participantIds.length; i++) {
             delete participantMap[participantIds[i]];
         }
         delete nameInfoMap[msg.sender];
@@ -90,7 +90,7 @@ contract NameRegistry {
         NameInfo storage nameInfo = nameInfoMap[msg.sender];
         string storage name = nameMap[msg.sender];
         uint[] memory participantIds = nameInfo.participantIds;
-        for (uint i = 0; i &lt; participantIds.length; i ++) {
+        for (uint i = 0; i < participantIds.length; i ++) {
             Participant storage p = participantMap[participantIds[i]];
             p.owner = newOwner;
         }
@@ -113,10 +113,10 @@ contract NameRegistry {
         external
         returns (uint)
     {
-        require(feeRecipient != 0x0 &amp;&amp; singer != 0x0);
+        require(feeRecipient != 0x0 && singer != 0x0);
         NameInfo storage nameInfo = nameInfoMap[msg.sender];
         bytes12 name = nameInfo.name;
-        require(name.length &gt; 0);
+        require(name.length > 0);
         Participant memory participant = Participant(
             feeRecipient,
             singer,
@@ -143,7 +143,7 @@ contract NameRegistry {
         uint[] storage participantIds = nameInfo.participantIds;
         delete participantMap[participantId];
         uint len = participantIds.length;
-        for (uint i = 0; i &lt; len; i ++) {
+        for (uint i = 0; i < len; i ++) {
             if (participantId == participantIds[i]) {
                 participantIds[i] = participantIds[len - 1];
                 participantIds.length -= 1;
@@ -179,18 +179,18 @@ contract NameRegistry {
         NameInfo storage nameInfo = nameInfoMap[owner];
         uint[] storage pIds = nameInfo.participantIds;
         uint len = pIds.length;
-        if (start &gt;= len) {
+        if (start >= len) {
             return;
         }
         uint end = start + count;
-        if (end &gt; len) {
+        if (end > len) {
             end = len;
         }
         if (start == end) {
             return;
         }
         idList = new uint[](end - start);
-        for (uint i = start; i &lt; end; i ++) {
+        for (uint i = start; i < end; i ++) {
             idList[i - start] = pIds[i];
         }
     }
@@ -208,7 +208,7 @@ contract NameRegistry {
         returns (bool)
     {
         bytes memory temp = bytes(name);
-        return temp.length &gt;= 6 &amp;&amp; temp.length &lt;= 12;
+        return temp.length >= 6 && temp.length <= 12;
     }
     function stringToBytes12(string str)
         internal

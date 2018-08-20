@@ -7,7 +7,7 @@ contract IAccessPolicy {
     // Public functions
     ////////////////////////
 
-    /// @notice We don&#39;t make this function constant to allow for state-updating access controls such as rate limiting.
+    /// @notice We don't make this function constant to allow for state-updating access controls such as rate limiting.
     /// @dev checks if subject belongs to requested role for particular object
     /// @param subject address to be checked against role, typically msg.sender
     /// @param role identifier of required role
@@ -65,14 +65,14 @@ contract StandardRoles {
     // Constants
     ////////////////////////
 
-    // @notice Soldity somehow doesn&#39;t evaluate this compile time
-    // @dev role which has rights to change permissions and set new policy in contract, keccak256(&quot;AccessController&quot;)
+    // @notice Soldity somehow doesn't evaluate this compile time
+    // @dev role which has rights to change permissions and set new policy in contract, keccak256("AccessController")
     bytes32 internal constant ROLE_ACCESS_CONTROLLER = 0xac42f8beb17975ed062dcb80c63e6d203ef1c2c335ced149dc5664cc671cb7da;
 }
 
 /// @title Granular code execution permissions
 /// @notice Intended to replace existing Ownable pattern with more granular permissions set to execute smart contract functions
-///     for each function where &#39;only&#39; modifier is applied, IAccessPolicy implementation is called to evaluate if msg.sender belongs to required role for contract being called.
+///     for each function where 'only' modifier is applied, IAccessPolicy implementation is called to evaluate if msg.sender belongs to required role for contract being called.
 ///     Access evaluation specific belong to IAccessPolicy implementation, see RoleBasedAccessPolicy for details.
 /// @dev Should be inherited by a contract requiring such permissions controll. IAccessPolicy must be provided in constructor. Access policy may be replaced to a different one
 ///     by msg.sender with ROLE_ACCESS_CONTROLLER role
@@ -88,7 +88,7 @@ contract AccessControlled is IAccessControlled, StandardRoles {
     // Modifiers
     ////////////////////////
 
-    /// @dev limits function execution only to senders assigned to required &#39;role&#39;
+    /// @dev limits function execution only to senders assigned to required 'role'
     modifier only(bytes32 role) {
         require(_accessPolicy.allowed(msg.sender, role, this, msg.sig));
         _;
@@ -145,7 +145,7 @@ contract AccessRoles {
 
     // NOTE: All roles are set to the keccak256 hash of the
     // CamelCased role name, i.e.
-    // ROLE_LOCKED_ACCOUNT_ADMIN = keccak256(&quot;LockedAccountAdmin&quot;)
+    // ROLE_LOCKED_ACCOUNT_ADMIN = keccak256("LockedAccountAdmin")
 
     // may setup LockedAccount, change disbursal mechanism and set migration
     bytes32 internal constant ROLE_LOCKED_ACCOUNT_ADMIN = 0x4675da546d2d92c5b86c4f726a9e61010dce91cccc2491ce6019e78b09d2572e;
@@ -168,10 +168,10 @@ contract AccessRoles {
     // may reclaim tokens/ether from contracts supporting IReclaimable interface
     bytes32 internal constant ROLE_RECLAIMER = 0x0542bbd0c672578966dcc525b30aa16723bb042675554ac5b0362f86b6e97dc5;
 
-    // represents legally platform operator in case of forks and contracts with legal agreement attached. keccak256(&quot;PlatformOperatorRepresentative&quot;)
+    // represents legally platform operator in case of forks and contracts with legal agreement attached. keccak256("PlatformOperatorRepresentative")
     bytes32 internal constant ROLE_PLATFORM_OPERATOR_REPRESENTATIVE = 0xb2b321377653f655206f71514ff9f150d0822d062a5abcf220d549e1da7999f0;
 
-    // allows to deposit EUR-T and allow addresses to send and receive EUR-T. keccak256(&quot;EurtDepositManager&quot;)
+    // allows to deposit EUR-T and allow addresses to send and receive EUR-T. keccak256("EurtDepositManager")
     bytes32 internal constant ROLE_EURT_DEPOSIT_MANAGER = 0x7c8ecdcba80ce87848d16ad77ef57cc196c208fc95c5638e4a48c681a34d4fe7;
 }
 
@@ -197,7 +197,7 @@ contract IBasicToken {
         constant
         returns (uint256);
 
-    /// @param owner The address that&#39;s balance is being requested
+    /// @param owner The address that's balance is being requested
     /// @return The balance of `owner` at the current block
     function balanceOf(address owner)
         public
@@ -218,7 +218,7 @@ contract IBasicToken {
 /// @notice note that this opens your contracts to claims from various people saying they lost tokens and they want them back
 ///     be ready to handle such claims
 /// @dev use with care!
-///     1. ROLE_RECLAIMER is allowed to claim tokens, it&#39;s not returning tokens to original owner
+///     1. ROLE_RECLAIMER is allowed to claim tokens, it's not returning tokens to original owner
 ///     2. in derived contract that holds any token by design you must override `reclaim` and block such possibility.
 ///         see LockedAccount as an example
 contract Reclaimable is AccessControlled, AccessRoles {
@@ -346,7 +346,7 @@ contract EthereumForkArbiter is
         public
         only(ROLE_PLATFORM_OPERATOR_REPRESENTATIVE)
     {
-        require(blockNumber == 0 || blockNumber &gt; block.number);
+        require(blockNumber == 0 || blockNumber > block.number);
 
         // Store announcement
         _nextForkName = name;

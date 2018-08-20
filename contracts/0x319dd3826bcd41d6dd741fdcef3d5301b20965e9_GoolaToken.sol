@@ -20,13 +20,13 @@ contract Utils {
 
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
 
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -55,12 +55,12 @@ contract IERC20Token {
 
 
 contract StandardERC20Token is IERC20Token, Utils {
-    string public name = &quot;&quot;;
-    string public symbol = &quot;&quot;;
+    string public name = "";
+    string public symbol = "";
     uint8 public decimals = 0;
     uint256 public totalSupply = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -68,7 +68,7 @@ contract StandardERC20Token is IERC20Token, Utils {
 
 
     function StandardERC20Token(string _name, string _symbol, uint8 _decimals) public{
-        require(bytes(_name).length &gt; 0 &amp;&amp; bytes(_symbol).length &gt; 0); // validate input
+        require(bytes(_name).length > 0 && bytes(_symbol).length > 0); // validate input
 
         name = _name;
         symbol = _symbol;
@@ -87,7 +87,7 @@ contract StandardERC20Token is IERC20Token, Utils {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0);
+        require(balanceOf[msg.sender] >= _value && _value > 0);
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
         Transfer(msg.sender, _to, _value);
@@ -101,8 +101,8 @@ contract StandardERC20Token is IERC20Token, Utils {
         validAddress(_to)
         returns (bool success)
     {
-        require(balanceOf[_from] &gt;= _value &amp;&amp; _value &gt; 0);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value && _value > 0);
+        require(allowance[_from][msg.sender] >= _value);
         allowance[_from][msg.sender] = safeSub(allowance[_from][msg.sender], _value);
         balanceOf[_from] = safeSub(balanceOf[_from], _value);
         balanceOf[_to] = safeAdd(balanceOf[_to], _value);
@@ -116,7 +116,7 @@ contract StandardERC20Token is IERC20Token, Utils {
         validAddress(_spender)
         returns (bool success)
     {
-        // if the allowance isn&#39;t 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
+        // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
         require(_value == 0 || allowance[msg.sender][_spender] == 0);
 
         allowance[msg.sender][_spender] = _value;
@@ -127,7 +127,7 @@ contract StandardERC20Token is IERC20Token, Utils {
 
 
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public constant returns (address) { owner; }
 
     function transferOwnership(address _newOwner) public;
@@ -212,7 +212,7 @@ contract GoolaToken is StandardERC20Token, Owned,GoolaStop {
     uint256 internal maxTranches = 16;       
 
     function GoolaToken( address _ecosystemAddress, address _backupAddress, address _goolaTeamAddress)
-    StandardERC20Token(&quot;Goola token&quot;, &quot;GOOLA&quot;, 18) public
+    StandardERC20Token("Goola token", "GOOLA", 18) public
      {
         goolaTeamAddress = _goolaTeamAddress;
         ecosystemAddress = _ecosystemAddress;
@@ -242,8 +242,8 @@ contract GoolaToken is StandardERC20Token, Owned,GoolaStop {
     
         
     function airdropBatchTransfer(address[] _to,uint256 _amountOfEach) public ownerOnly {
-        require(_to.length &gt; 0 &amp;&amp; _amountOfEach &gt; 0 &amp;&amp; _to.length * _amountOfEach &lt;=  (airdropSupply - hasAirdrop) &amp;&amp; (currentSupply + (_to.length * _amountOfEach)) &lt;= totalSupply &amp;&amp; _to.length &lt; 100000);
-        for(uint16 i = 0; i &lt; _to.length ;i++){
+        require(_to.length > 0 && _amountOfEach > 0 && _to.length * _amountOfEach <=  (airdropSupply - hasAirdrop) && (currentSupply + (_to.length * _amountOfEach)) <= totalSupply && _to.length < 100000);
+        for(uint16 i = 0; i < _to.length ;i++){
          balanceOf[_to[i]] = safeAdd(balanceOf[_to[i]], _amountOfEach);
           Transfer(0x0, _to[i], _amountOfEach);
         }
@@ -252,8 +252,8 @@ contract GoolaToken is StandardERC20Token, Owned,GoolaStop {
     }
     
   function releaseForEarlyInit(address[] _to,uint256 _amountOfEach) public ownerOnly {
-        require(_to.length &gt; 0 &amp;&amp; _amountOfEach &gt; 0 &amp;&amp; _to.length * _amountOfEach &lt;=  (earlyInitProjectSupply - hasReleaseForEarlyInit) &amp;&amp; (currentSupply + (_to.length * _amountOfEach)) &lt;= totalSupply &amp;&amp; _to.length &lt; 100000);
-        for(uint16 i = 0; i &lt; _to.length ;i++){
+        require(_to.length > 0 && _amountOfEach > 0 && _to.length * _amountOfEach <=  (earlyInitProjectSupply - hasReleaseForEarlyInit) && (currentSupply + (_to.length * _amountOfEach)) <= totalSupply && _to.length < 100000);
+        for(uint16 i = 0; i < _to.length ;i++){
           balanceOf[_to[i]] = safeAdd(balanceOf[_to[i]], _amountOfEach);
           Transfer(0x0, _to[i], _amountOfEach);
         }
@@ -268,14 +268,14 @@ contract GoolaToken is StandardERC20Token, Owned,GoolaStop {
         @return true if successful, throws if not
     */
     function releaseForEcosystem()   public ownerOnly  returns(bool success) {
-        require(now &gt;= createTime + 12 weeks);
-        require(tokensReleasedToEcosystem &lt; ecosystemSupply);
+        require(now >= createTime + 12 weeks);
+        require(tokensReleasedToEcosystem < ecosystemSupply);
 
         uint256 temp = ecosystemSupply / 10000;
         uint256 allocAmount = safeMul(temp, 625);
         uint256 currentTranche = uint256(now - createTime) /  12 weeks;
 
-        if(ecosystemTranchesReleased &lt; maxTranches &amp;&amp; currentTranche &gt; ecosystemTranchesReleased &amp;&amp; (currentSupply + allocAmount) &lt;= totalSupply) {
+        if(ecosystemTranchesReleased < maxTranches && currentTranche > ecosystemTranchesReleased && (currentSupply + allocAmount) <= totalSupply) {
             ecosystemTranchesReleased++;
             balanceOf[ecosystemAddress] = safeAdd(balanceOf[ecosystemAddress], allocAmount);
             currentSupply += allocAmount;
@@ -292,14 +292,14 @@ contract GoolaToken is StandardERC20Token, Owned,GoolaStop {
         @return true if successful, throws if not
     */
     function releaseForGoolaTeam()   public ownerOnly  returns(bool success) {
-        require(now &gt;= createTime + 12 weeks);
-        require(tokensReleasedToTeam &lt; teamSupply);
+        require(now >= createTime + 12 weeks);
+        require(tokensReleasedToTeam < teamSupply);
 
         uint256 temp = teamSupply / 10000;
         uint256 allocAmount = safeMul(temp, 625);
         uint256 currentTranche = uint256(now - createTime) / 12 weeks;
 
-        if(teamTranchesReleased &lt; maxTranches &amp;&amp; currentTranche &gt; teamTranchesReleased &amp;&amp; (currentSupply + allocAmount) &lt;= totalSupply) {
+        if(teamTranchesReleased < maxTranches && currentTranche > teamTranchesReleased && (currentSupply + allocAmount) <= totalSupply) {
             teamTranchesReleased++;
             balanceOf[goolaTeamAddress] = safeAdd(balanceOf[goolaTeamAddress], allocAmount);
             currentSupply += allocAmount;
@@ -311,7 +311,7 @@ contract GoolaToken is StandardERC20Token, Owned,GoolaStop {
     }
     
     function processWhenStop() public  ownerOnly   returns(bool success) {
-        require(currentSupply &lt;=  totalSupply &amp;&amp; stopped);
+        require(currentSupply <=  totalSupply && stopped);
         balanceOf[backupAddress] += (totalSupply - currentSupply);
         currentSupply = totalSupply;
        Transfer(0x0, backupAddress, (totalSupply - currentSupply));

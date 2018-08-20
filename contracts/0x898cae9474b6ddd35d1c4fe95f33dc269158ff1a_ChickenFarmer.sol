@@ -11,22 +11,22 @@ contract ChickenFarmer{
     bool public initialized=false;
     address private ceoAddress1=0x48baB4A535d4CF9aEd72c5Db74fB392ee38ea3e1;
     address private ceoAddress2=0x00d9391e4E09066C3D42D672AB453Fe70c203976;
-    mapping (address =&gt; uint256) public hatcheryChicken;
-    mapping (address =&gt; uint256) public claimedEggs;
-    mapping (address =&gt; uint256) public lastHatch;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public hatcheryChicken;
+    mapping (address => uint256) public claimedEggs;
+    mapping (address => uint256) public lastHatch;
+    mapping (address => address) public referrals;
     uint256 public marketEggs;
 
    
     function hatchEggs(address ref) public{
         require(initialized);
-        if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+        if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
             referrals[msg.sender]=ref;
         }
         uint256 eggsUsed=getMyEggs();
 
         //20% early hatch bonus
-        if (SafeMath.sub(now,lastHatch[msg.sender]) &lt; SafeMath.div(EGGS_TO_HATCH_1CHICKEN,2))
+        if (SafeMath.sub(now,lastHatch[msg.sender]) < SafeMath.div(EGGS_TO_HATCH_1CHICKEN,2))
 {    
         eggsUsed =  SafeMath.div(SafeMath.mul(eggsUsed,120),100); }
 
@@ -115,7 +115,7 @@ contract ChickenFarmer{
         return SafeMath.mul(secondsPassed,hatcheryChicken[adr]);
     }
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -137,9 +137,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -147,7 +147,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -156,7 +156,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

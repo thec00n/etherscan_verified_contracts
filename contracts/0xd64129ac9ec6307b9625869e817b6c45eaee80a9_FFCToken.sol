@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -63,7 +63,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -91,7 +91,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -183,7 +183,7 @@ contract Pausable is Ownable {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -196,7 +196,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -241,8 +241,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract FFCToken is StandardToken, Pausable {
 
-  string public constant name = &quot;FFC&quot;;
-  string public constant symbol = &quot;FFC&quot;;
+  string public constant name = "FFC";
+  string public constant symbol = "FFC";
   uint256 public constant decimals = 18;
   
   // lock
@@ -253,8 +253,8 @@ contract FFCToken is StandardToken, Pausable {
   struct LockTokenSet{
       LockToken[] lockList;
   }
-  mapping ( address =&gt; LockTokenSet ) addressTimeLock;
-  mapping ( address =&gt; bool ) lockAdminList;
+  mapping ( address => LockTokenSet ) addressTimeLock;
+  mapping ( address => bool ) lockAdminList;
   event TransferWithLockEvt(address indexed from, address indexed to, uint256 value,uint32 lockTime );
   /**
     * @dev Creates a new MPKToken instance
@@ -265,18 +265,18 @@ contract FFCToken is StandardToken, Pausable {
   }
   
   function transfer(address _to, uint256 _value)public whenNotPaused returns (bool) {
-    assert ( balances[msg.sender].sub( getLockAmount( msg.sender ) ) &gt;= _value );
+    assert ( balances[msg.sender].sub( getLockAmount( msg.sender ) ) >= _value );
     return super.transfer(_to, _value);
   }
 
   function transferFrom(address _from, address _to, uint256 _value)public whenNotPaused returns (bool) {
-    assert ( balances[_from].sub( getLockAmount( msg.sender ) ) &gt;= _value );
+    assert ( balances[_from].sub( getLockAmount( msg.sender ) ) >= _value );
     return super.transferFrom(_from, _to, _value);
   }
   function getLockAmount( address myaddress ) public view returns ( uint256 lockSum ) {
         uint256 lockAmount = 0;
-        for( uint32 i = 0; i &lt; addressTimeLock[myaddress].lockList.length; i ++ ){
-            if( addressTimeLock[myaddress].lockList[i].time &gt; now ){
+        for( uint32 i = 0; i < addressTimeLock[myaddress].lockList.length; i ++ ){
+            if( addressTimeLock[myaddress].lockList[i].time > now ){
                 lockAmount += addressTimeLock[myaddress].lockList[i].amount;
             }
         }
@@ -288,7 +288,7 @@ contract FFCToken is StandardToken, Pausable {
   }
   
   function getLockByIdx( address myaddress,uint32 idx ) public view returns ( uint256 lockAmount, uint32 lockTime ){
-      if( idx &gt;= addressTimeLock[myaddress].lockList.length ){
+      if( idx >= addressTimeLock[myaddress].lockList.length ){
         return (0,0);          
       }
       lockAmount = addressTimeLock[myaddress].lockList[idx].amount;
@@ -298,11 +298,11 @@ contract FFCToken is StandardToken, Pausable {
   
   function transferWithLock( address _to, uint256 _value,uint32 _lockTime )public whenNotPaused {
       assert( lockAdminList[msg.sender] == true  );
-      assert( _lockTime &gt; now  );
+      assert( _lockTime > now  );
       transfer( _to, _value );
       bool needNewLock = true;
-      for( uint32 i = 0 ; i&lt; addressTimeLock[_to].lockList.length; i ++ ){
-          if( addressTimeLock[_to].lockList[i].time &lt; now ){
+      for( uint32 i = 0 ; i< addressTimeLock[_to].lockList.length; i ++ ){
+          if( addressTimeLock[_to].lockList[i].time < now ){
               addressTimeLock[_to].lockList[i].time = _lockTime;
               addressTimeLock[_to].lockList[i].amount = _value;
               emit TransferWithLockEvt( msg.sender,_to,_value,_lockTime );

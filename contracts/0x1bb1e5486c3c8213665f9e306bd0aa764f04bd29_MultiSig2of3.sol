@@ -25,7 +25,7 @@ pragma solidity ^0.4.24;
 //
 // 1: Invalid Owner Address. You must provide three distinct addresses.
 //    None of the provided addresses may be 0x00.
-// 2: Invalid Destination. You may not send ETH to this contract&#39;s address.
+// 2: Invalid Destination. You may not send ETH to this contract's address.
 // 3: Insufficient Balance. You have tried to send more ETH that this
 //    contract currently owns.
 // 4: Invalid Signature. The provided signature does not correspond to
@@ -44,7 +44,7 @@ contract MultiSig2of3 {
     // The 3 addresses which control the funds in this contract.  The
     // owners of 2 of these addresses will need to both sign a message
     // allowing the funds in this contract to be spent.
-    mapping(address =&gt; bool) private owners;
+    mapping(address => bool) private owners;
 
     // The contract nonce is not accessible to the contract so we
     // implement a nonce-like variable for replay protection.
@@ -65,13 +65,13 @@ contract MultiSig2of3 {
     constructor(address owner1, address owner2, address owner3) public {
         address zeroAddress = 0x0;
 
-        require(owner1 != zeroAddress, &quot;1&quot;);
-        require(owner2 != zeroAddress, &quot;1&quot;);
-        require(owner3 != zeroAddress, &quot;1&quot;);
+        require(owner1 != zeroAddress, "1");
+        require(owner2 != zeroAddress, "1");
+        require(owner3 != zeroAddress, "1");
 
-        require(owner1 != owner2, &quot;1&quot;);
-        require(owner2 != owner3, &quot;1&quot;);
-        require(owner1 != owner3, &quot;1&quot;);
+        require(owner1 != owner2, "1");
+        require(owner2 != owner3, "1");
+        require(owner1 != owner3, "1");
 
         owners[owner1] = true;
         owners[owner2] = true;
@@ -84,7 +84,7 @@ contract MultiSig2of3 {
     }
 
     // Generates the message to sign given the output destination address and amount.
-    // includes this contract&#39;s address and a nonce for replay protection.
+    // includes this contract's address and a nonce for replay protection.
     // One option to independently verify:
     //     https://leventozturk.com/engineering/sha3/ and select keccak
     function generateMessageToSign(
@@ -93,7 +93,7 @@ contract MultiSig2of3 {
     )
         public view returns (bytes32)
     {
-        require(destination != address(this), &quot;2&quot;);
+        require(destination != address(this), "2");
         bytes32 message = keccak256(
             abi.encodePacked(
                 spendNonce,
@@ -122,7 +122,7 @@ contract MultiSig2of3 {
     {
         // This require is handled by generateMessageToSign()
         // require(destination != address(this));
-        require(address(this).balance &gt;= value, &quot;3&quot;);
+        require(address(this).balance >= value, "3");
         require(
             _validSignature(
                 destination,
@@ -130,14 +130,14 @@ contract MultiSig2of3 {
                 v1, r1, s1,
                 v2, r2, s2
             ),
-            &quot;4&quot;);
+            "4");
         spendNonce = spendNonce + 1;
         destination.transfer(value);
         emit Spent(destination, value);
     }
 
     // Confirm that the two signature triplets (v1, r1, s1) and (v2, r2, s2)
-    // both authorize a spend of this contract&#39;s funds to the given
+    // both authorize a spend of this contract's funds to the given
     // destination address.
     function _validSignature(
         address destination,
@@ -156,12 +156,12 @@ contract MultiSig2of3 {
             message,
             v2+27, r2, s2
         );
-        require(_distinctOwners(addr1, addr2), &quot;5&quot;);
+        require(_distinctOwners(addr1, addr2), "5");
 
         return true;
     }
 
-    // Generate the the unsigned message (in bytes32) that each owner&#39;s
+    // Generate the the unsigned message (in bytes32) that each owner's
     // wallet would have signed for the given destination and amount.
     //
     // The generated message from generateMessageToSign is converted to
@@ -183,7 +183,7 @@ contract MultiSig2of3 {
         bytes memory unsignedMessageBytes = _hashToAscii(
             hashedUnsignedMessage
         );
-        bytes memory prefix = &quot;\x19Ethereum Signed Message:\n64&quot;;
+        bytes memory prefix = "\x19Ethereum Signed Message:\n64";
         return keccak256(abi.encodePacked(prefix,unsignedMessageBytes));
     }
 
@@ -195,10 +195,10 @@ contract MultiSig2of3 {
         private view returns (bool)
     {
         // Check that both addresses are different
-        require(addr1 != addr2, &quot;5&quot;);
+        require(addr1 != addr2, "5");
         // Check that both addresses are owners
-        require(owners[addr1], &quot;5&quot;);
-        require(owners[addr2], &quot;5&quot;);
+        require(owners[addr1], "5");
+        require(owners[addr2], "5");
         return true;
     }
 
@@ -206,7 +206,7 @@ contract MultiSig2of3 {
     // hashed message written in hex.
     function _hashToAscii(bytes32 hash) private pure returns (bytes) {
         bytes memory s = new bytes(64);
-        for (uint i = 0; i &lt; 32; i++) {
+        for (uint i = 0; i < 32; i++) {
             byte  b = hash[i];
             byte hi = byte(uint8(b) / 16);
             byte lo = byte(uint8(b) - 16 * uint8(hi));
@@ -219,7 +219,7 @@ contract MultiSig2of3 {
     // Convert from byte to ASCII of 0-f
     // http://www.unicode.org/charts/PDF/U0000.pdf
     function _char(byte b) private pure returns (byte c) {
-        if (b &lt; 10) {
+        if (b < 10) {
             return byte(uint8(b) + 0x30);
         } else {
             return byte(uint8(b) + 0x57);

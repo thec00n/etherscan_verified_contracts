@@ -22,8 +22,8 @@ contract BlockchainPi {
     }
     
     function checkDie (uint _a) internal returns (bool) {
-        if (_a &gt; 0) {
-            if (_a &lt; 7) {
+        if (_a > 0) {
+            if (_a < 7) {
                 return true;
             } else {
                 return false;

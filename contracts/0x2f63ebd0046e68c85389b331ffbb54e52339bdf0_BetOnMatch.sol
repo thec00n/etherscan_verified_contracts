@@ -75,7 +75,7 @@ contract OwnerBase {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCOO whenNotPaused {
         paused = true;
@@ -87,7 +87,7 @@ contract OwnerBase {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCOO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
     
@@ -122,16 +122,16 @@ contract BaseFight is OwnerBase {
     }
     
     
-    mapping (uint =&gt; Fighter) public soldiers; // key is (season * 1000 + index)
+    mapping (uint => Fighter) public soldiers; // key is (season * 1000 + index)
     
     // time for matches
-    mapping (uint32 =&gt; uint64 ) public matchTime;// key is season
+    mapping (uint32 => uint64 ) public matchTime;// key is season
     
     
-    mapping (uint32 =&gt; uint64 ) public seedFromCOO; // key is season
+    mapping (uint32 => uint64 ) public seedFromCOO; // key is season
     
     
-    mapping (uint32 =&gt; uint8 ) public finished; // key is season
+    mapping (uint32 => uint8 ) public finished; // key is season
     
     //
     uint32[] seasonIDs;
@@ -140,9 +140,9 @@ contract BaseFight is OwnerBase {
     
     /// @dev get base infomation of the seasons
     function getSeasonInfo(uint32[99] _seasons) view public returns (uint length,uint[99] matchTimes, uint[99] results) {
-        for (uint i = 0; i &lt; _seasons.length; i++) {    
+        for (uint i = 0; i < _seasons.length; i++) {    
             uint32 _season = _seasons[i];
-            if(_season &gt;0){
+            if(_season >0){
                 matchTimes[i] = matchTime[_season];
                 results[i] = finished[_season];
             }else{
@@ -157,21 +157,21 @@ contract BaseFight is OwnerBase {
     
     /// @dev check seed form coo
     function checkCooSeed(uint32 _season) public view returns (uint64) {
-        require(finished[_season] &gt; 0);
+        require(finished[_season] > 0);
         return seedFromCOO[_season];
     }
 
     
     /// @dev set a fighter for a season, prepare for combat.
     function createSeason(uint32 _season, uint64 fightTime, uint64 _seedFromCOO, address[8] _home, uint[8] _tokenID, uint16[8] _power, address[8] _owner) external onlyCOO {
-        require(matchTime[_season] &lt;= 0);
-        require(fightTime &gt; 0);
-        require(_seedFromCOO &gt; 0);
+        require(matchTime[_season] <= 0);
+        require(fightTime > 0);
+        require(_seedFromCOO > 0);
         seasonIDs.push(_season);// a new season
         matchTime[_season] = fightTime;
         seedFromCOO[_season] = _seedFromCOO;
         
-        for (uint i = 0; i &lt; 8; i++) {        
+        for (uint i = 0; i < 8; i++) {        
             Fighter memory soldier = Fighter({
                 hometown:_home[i],
                 owner:_owner[i],
@@ -201,7 +201,7 @@ contract BaseFight is OwnerBase {
         uint8 i = 0;
         uint key = 0;
         Fighter storage soldier = soldiers[0];
-        for (i = 0; i &lt; 8; i++) {
+        for (i = 0; i < 8; i++) {
             key = _season * 1000 + i;
             soldier = soldiers[key];
             powers[i] = soldier.power;
@@ -210,7 +210,7 @@ contract BaseFight is OwnerBase {
         
         uint sumValue = 0;
         uint tmpPower = 0;
-        for (i = 0; i &lt; 8; i++) {
+        for (i = 0; i < 8; i++) {
             tmpPower = powers[i] ** 5;//
             sumValue += tmpPower;
             powers[i] = sumValue;
@@ -220,9 +220,9 @@ contract BaseFight is OwnerBase {
         
         winner = 0;
         uint shoot = sumValue * randomVal * 10000000000 / singleDeno / 0xffffffff;
-        for (i = 0; i &lt; 8; i++) {
+        for (i = 0; i < 8; i++) {
             tmpPower = powers[i];
-            if (shoot &lt;= tmpPower * 10000000000 / singleDeno) {
+            if (shoot <= tmpPower * 10000000000 / singleDeno) {
                 winner = i;
                 break;
             }
@@ -253,37 +253,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
  
 }
@@ -338,13 +338,13 @@ contract BetOnMatch is BaseFight, SafeMath {
     PartnerHolder public partners;
     
     // all betting data
-    mapping (uint =&gt; Betting[]) public allBittings; // key is season * 1000 + index
+    mapping (uint => Betting[]) public allBittings; // key is season * 1000 + index
     
     // bet on the fighter,
-    mapping (uint =&gt; uint) public betOnFighter; // key is season * 1000 + index
+    mapping (uint => uint) public betOnFighter; // key is season * 1000 + index
     
     // address to balance.
-    mapping( address =&gt; uint) public balances;
+    mapping( address => uint) public balances;
     
     
     /// @dev constructor of contract, set partners
@@ -366,9 +366,9 @@ contract BetOnMatch is BaseFight, SafeMath {
         address _invitor) 
     payable external returns (bool){
         require(isNormalUser(msg.sender));
-        require(matchTime[_season] &gt; 0);
-        require(now &lt; matchTime[_season] - 300); // 5 minites before match.
-        require(msg.value &gt;= 1 finney &amp;&amp; msg.value &lt; 99999 ether );
+        require(matchTime[_season] > 0);
+        require(now < matchTime[_season] - 300); // 5 minites before match.
+        require(msg.value >= 1 finney && msg.value < 99999 ether );
         
         
         Betting memory tmp = Betting({
@@ -395,7 +395,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     
     /// @dev set a fighter for a season, prepare for combat.
     function getFighters( uint32 _season) public view returns (address[8] outHome, uint[8] outTokenID, uint[8] power,  address[8] owner, uint[8] funds) {
-        for (uint i = 0; i &lt; 8; i++) {  
+        for (uint i = 0; i < 8; i++) {  
             uint key = _season * 1000 + i;
             funds[i] = betOnFighter[key];
             
@@ -413,7 +413,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     function processSeason(uint32 _season) public onlyCOO
     {
         uint64 fightTime = matchTime[_season];
-        require(now &gt;= fightTime &amp;&amp; fightTime &gt; 0);
+        require(now >= fightTime && fightTime > 0);
         
         uint sumFund = 0;
         uint sumSeed = 0;
@@ -450,7 +450,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     
     
     function clearTheSeason( uint32 _season) internal {
-        for (uint i = 0; i &lt; 8; i++){
+        for (uint i = 0; i < 8; i++){
             uint key = _season * 1000 + i;
             delete soldiers[key];
             delete allBittings[key];
@@ -461,7 +461,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     
     /// @dev write log about 8 fighters
     function doLogFighter( uint32 _season, uint _winnerKey, uint fighterReward) internal {
-        for (uint i = 0; i &lt; 8; i++){
+        for (uint i = 0; i < 8; i++){
             uint key = _season * 1000 + i;
             uint8 isWin = 0;
             uint64 fightTime = matchTime[_season];
@@ -480,11 +480,11 @@ contract BetOnMatch is BaseFight, SafeMath {
     /// @dev caculate fund and seed value
     function _getFightData(uint32 _season) internal returns (uint outFund, uint outSeed){
         outSeed = seedFromCOO[_season];
-        for (uint i = 0; i &lt; 8; i++){
+        for (uint i = 0; i < 8; i++){
             uint key = _season * 1000 + i;
             uint fund = 0;
             Betting[] storage items = allBittings[key]; 
-            for (uint j = 0; j &lt; items.length; j++) {
+            for (uint j = 0; j < items.length; j++) {
                 Betting storage item = items[j];
                 outSeed += item.seed;
                 fund += item.amount;
@@ -521,7 +521,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     
     /// @dev bonus to the fighters in the season.
     function _bonusToFighters(uint32 _season, uint8 _winner, uint _reward) internal {
-        for (uint i = 0; i &lt; 8; i++) {
+        for (uint i = 0; i < 8; i++) {
             uint key = _season * 1000 + i;
             Fighter storage item = soldiers[key];
             address owner = item.owner;
@@ -547,7 +547,7 @@ contract BetOnMatch is BaseFight, SafeMath {
             backToAll(_season);
             return true;
         } else {
-            for (uint j = 0; j &lt; items.length; j++) {
+            for (uint j = 0; j < items.length; j++) {
                 Betting storage item = items[j];
                 address account = item.account;
                 uint newFund = safeDiv(safeMul(bonusWinner, item.amount), winnerBet); 
@@ -559,10 +559,10 @@ contract BetOnMatch is BaseFight, SafeMath {
     
     /// @dev nobody win, return fund back to all bettors.
     function backToAll(uint32 _season) internal {
-        for (uint i = 0; i &lt; 8; i++) {
+        for (uint i = 0; i < 8; i++) {
             uint key = _season * 1000 + i;
             Betting[] storage items = allBittings[key];
-            for (uint j = 0; j &lt; items.length; j++) {
+            for (uint j = 0; j < items.length; j++) {
                 Betting storage item = items[j];
                 address account = item.account;
                 uint backVal = safeDiv(safeMul(item.amount, 8), 10); // amount * 0.8
@@ -578,7 +578,7 @@ contract BetOnMatch is BaseFight, SafeMath {
         uint sum = 0;
         uint key = _season * 1000 + _winner;
         Betting[] storage items = allBittings[key];
-        for (uint j = 0; j &lt; items.length; j++) {
+        for (uint j = 0; j < items.length; j++) {
             Betting storage item = items[j];
             sum += item.amount;
         }
@@ -590,7 +590,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     /// @dev partner withdraw, 
     function userWithdraw() public {
         uint fund = balances[msg.sender];
-        require (fund &gt; 0);
+        require (fund > 0);
         delete balances[msg.sender];
         msg.sender.transfer(fund);
     }
@@ -599,7 +599,7 @@ contract BetOnMatch is BaseFight, SafeMath {
     /// @dev cfo withdraw dead ether. 
     function withdrawDeadFund( address addr) external onlyCFO {
         uint fund = balances[addr];
-        require (fund &gt; 0);
+        require (fund > 0);
         delete balances[addr];
         cfoAddress.transfer(fund);
     }

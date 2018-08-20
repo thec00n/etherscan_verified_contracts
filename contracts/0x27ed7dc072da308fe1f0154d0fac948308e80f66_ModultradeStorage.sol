@@ -48,9 +48,9 @@ contract ModultradeStorage is Ownable, Deployer {
 
   bool private _doMigrate = true;
 
-  mapping (address =&gt; address[]) public sellerProposals;
+  mapping (address => address[]) public sellerProposals;
 
-  mapping (uint =&gt; address) public proposalListAddress;
+  mapping (uint => address) public proposalListAddress;
 
   address[] public proposals;
 

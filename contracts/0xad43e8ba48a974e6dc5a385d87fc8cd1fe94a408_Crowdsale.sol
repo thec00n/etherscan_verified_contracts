@@ -12,7 +12,7 @@ contract Crowdsale {
     uint public price = 0.000142857 ether;
     bool public crowdsaleClosed = false;
     bool public adminVer = false;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
 
     event GoalReached(address recipient, uint totalAmountRaised);
@@ -68,11 +68,11 @@ contract Crowdsale {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () payable {
-        require(!crowdsaleClosed &amp;&amp; msg.value &lt;= 2 ether);                                  //1 ether is minimum to contribute                                                                
+        require(!crowdsaleClosed && msg.value <= 2 ether);                                  //1 ether is minimum to contribute                                                                
         uint amount = msg.value;                                                           //save users eth value
         balanceOf[msg.sender] += amount;                                                   //save users eth value in balance list 
         amountRaised += amount;                                                            //update total amount of crowdsale
-        uint sendTokens = (amount / price) * 10 ** uint256(18);                            //calculate user&#39;s tokens
+        uint sendTokens = (amount / price) * 10 ** uint256(18);                            //calculate user's tokens
         tokenReward.transfer(msg.sender, sendTokens);                                      //send tokens to user
         soldTokensCounter += sendTokens;                                                   //update total sold tokens counter
         FundTransfer(msg.sender, amount, price, true);                                     //pin transaction data in blockchain

@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -30,8 +30,8 @@ contract OwOWorldToken {
 
     using SafeMath for uint256;
 
-    string public constant symbol = &quot;OWO&quot;;
-    string public constant name = &quot;OwO.World Token&quot;;
+    string public constant symbol = "OWO";
+    string public constant name = "OwO.World Token";
     uint public constant decimals = 18;
 
     uint public _owoAmount;
@@ -62,10 +62,10 @@ contract OwOWorldToken {
     // Crowdsale end time has been changed
     event EndsAtChanged(uint endsAt);
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) public investedAmountOf;
-    mapping (address =&gt; uint256) public tokenAmountOf;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping (address => uint256) public investedAmountOf;
+    mapping (address => uint256) public tokenAmountOf;
 
 
     function () payable{
@@ -97,7 +97,7 @@ contract OwOWorldToken {
 
     function setMultiSigWallet(address w) onlyOwner {
         require(w != 0
-          &amp;&amp; _investorCount &lt; MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE
+          && _investorCount < MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE
           );
 
           _multiSigWallet = w;
@@ -107,7 +107,7 @@ contract OwOWorldToken {
 
     function setEndsAt(uint time) onlyOwner {
 
-      require(now &lt; time);
+      require(now < time);
 
       _endsAt = time;
       EndsAtChanged(_endsAt);
@@ -157,35 +157,35 @@ contract OwOWorldToken {
     function createTokens() payable{
 
         require(
-            msg.value &gt; 0
-            &amp;&amp; _totalSupply &lt; _capOwO
-            &amp;&amp; _CROWDSALE_PAUSED ==false
-            &amp;&amp; _saleFinalized == false
-            &amp;&amp; now &lt; _endsAt
+            msg.value > 0
+            && _totalSupply < _capOwO
+            && _CROWDSALE_PAUSED ==false
+            && _saleFinalized == false
+            && now < _endsAt
             );
 
                //priced at $0.03
-            if(_totalSupply &gt;500001 &amp;&amp; _totalSupply&lt;1000000 &amp;&amp; _oneTokenInWei&lt;135714800000000){
+            if(_totalSupply >500001 && _totalSupply<1000000 && _oneTokenInWei<135714800000000){
                 _oneTokenInWei = 135714800000000;
             }
             //priced at $0.04
-            if(_totalSupply &gt;1000001 &amp;&amp; _totalSupply&lt;2000000 &amp;&amp; _oneTokenInWei&lt;180953100000000){
+            if(_totalSupply >1000001 && _totalSupply<2000000 && _oneTokenInWei<180953100000000){
                 _oneTokenInWei = 180953100000000;
             }
             //priced at $0.05
-            if(_totalSupply&gt;2000001 &amp;&amp; _totalSupply&lt;4000000 &amp;&amp; _oneTokenInWei&lt;226191400000000){
+            if(_totalSupply>2000001 && _totalSupply<4000000 && _oneTokenInWei<226191400000000){
                 _oneTokenInWei = 226191400000000;
             }
             //priced at $0.06
-            if(_totalSupply&gt;4000001 &amp;&amp; _totalSupply&lt;6000000 &amp;&amp; _oneTokenInWei&lt;271429700000000){
+            if(_totalSupply>4000001 && _totalSupply<6000000 && _oneTokenInWei<271429700000000){
               _oneTokenInWei = 271429700000000;
             }
             //priced at $0.07
-            if(_totalSupply&gt;6000001 &amp;&amp; _totalSupply&lt;8000000 &amp;&amp; _oneTokenInWei&lt;316667900000000){
+            if(_totalSupply>6000001 && _totalSupply<8000000 && _oneTokenInWei<316667900000000){
               _oneTokenInWei = 316667900000000;
             }
             //priced at $0.08
-            if(_totalSupply&gt;8000001 &amp;&amp; _totalSupply&lt;10000001 &amp;&amp; _oneTokenInWei&lt;361906200000000){
+            if(_totalSupply>8000001 && _totalSupply<10000001 && _oneTokenInWei<361906200000000){
               _oneTokenInWei = 361906200000000;
             }
 
@@ -218,8 +218,8 @@ contract OwOWorldToken {
 
     function transfer(address _to, uint256 _value) returns(bool success){
         require(
-            balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
+            balances[msg.sender] >= _value
+            && _value > 0
             );
             balances[msg.sender].sub(_value);
             balances[_to].add(_value);
@@ -229,9 +229,9 @@ contract OwOWorldToken {
 
     function transferFrom(address _from, address _to, uint256 _value) onlyOwner returns (bool success){
         require(
-            allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; _value &gt;0
+            allowed[_from][msg.sender] >= _value
+            && balances[_from] >= _value
+            && _value >0
 
             );
 

@@ -13,11 +13,11 @@ library TreeLib {
 
   struct Tree {
     // global table of intervals
-    mapping (uint =&gt; IntervalLib.Interval) intervals;
+    mapping (uint => IntervalLib.Interval) intervals;
     uint numIntervals;
 
     // tree nodes
-    mapping (uint =&gt; Node) nodes;
+    mapping (uint => Node) nodes;
     uint numNodes;
 
     // pointer to root of tree
@@ -55,14 +55,14 @@ library TreeLib {
     /*
      * depth-first search tree for place to add interval.
      * for each step of the search:
-     *   if the new interval contains the current node&#39;s center:
+     *   if the new interval contains the current node's center:
      *     add interval to current node
      *     stop search
      *
-     *   if the new interval &lt; center:
-     *     recurse &quot;before&quot;
-     *   if the new interval &gt; center:
-     *     recurse &quot;after&quot;
+     *   if the new interval < center:
+     *     recurse "before"
+     *   if the new interval > center:
+     *     recurse "after"
      */
     uint curID = tree.rootNode;
 
@@ -75,11 +75,11 @@ library TreeLib {
       // upon needing to add a new node
       bool recurseDirection;
 
-      if (end &lt;= curNode.intervals.center) {
+      if (end <= curNode.intervals.center) {
 	// traverse before
 	curID = curNode.earlier;
 	recurseDirection = TRAVERSED_EARLIER;
-      } else if (begin &gt; curNode.intervals.center) {
+      } else if (begin > curNode.intervals.center) {
 	// traverse after
 	curID = curNode.later;
 	recurseDirection = TRAVERSED_LATER;
@@ -100,7 +100,7 @@ library TreeLib {
 	  curNode.later = curID;
 	}
 
-	// creating a new node means we&#39;ve found the place to put the interval
+	// creating a new node means we've found the place to put the interval
 	found = true;
       }
     } while (!found);
@@ -116,7 +116,7 @@ library TreeLib {
     internal
     returns (uint begin, uint end, bytes32 data)
   {
-    require(intervalID &gt; 0 &amp;&amp; intervalID &lt;= tree.numIntervals);
+    require(intervalID > 0 && intervalID <= tree.numIntervals);
 
     var interval = tree.intervals[intervalID];
     return (interval.begin, interval.end, interval.data);
@@ -130,7 +130,7 @@ library TreeLib {
     internal
     returns (uint[] memory intervalIDs)
   {
-    // can&#39;t search empty trees
+    // can't search empty trees
     require(tree.rootNode != 0x0);
 
     // HACK repeatedly mallocs new arrays of matching interval IDs
@@ -159,12 +159,12 @@ library TreeLib {
        *
        * allocate temp array and copy in both prior and new matches
        */
-      if (matchingIDs.length &gt; 0) {
+      if (matchingIDs.length > 0) {
 	tempIDs = new uint[](intervalIDs.length + matchingIDs.length);
-	for (i = 0; i &lt; intervalIDs.length; i++) {
+	for (i = 0; i < intervalIDs.length; i++) {
 	  tempIDs[i] = intervalIDs[i];
 	}
-	for (i = 0; i &lt; matchingIDs.length; i++) {
+	for (i = 0; i < matchingIDs.length; i++) {
 	  tempIDs[i + intervalIDs.length] = matchingIDs[i];
 	}
 	intervalIDs = tempIDs;
@@ -178,7 +178,7 @@ library TreeLib {
       } else if (searchNext == SEARCH_LATER) { // SEARCH_LATER
 	curID = curNode.later;
       }
-    } while (searchNext != SEARCH_DONE &amp;&amp; curID != 0x0);
+    } while (searchNext != SEARCH_DONE && curID != 0x0);
   }
 
 
@@ -224,7 +224,7 @@ library GroveLib {
          */
         struct Index {
                 bytes32 root;
-                mapping (bytes32 =&gt; Node) nodes;
+                mapping (bytes32 => Node) nodes;
         }
 
         struct Node {
@@ -237,7 +237,7 @@ library GroveLib {
         }
 
         function max(uint a, uint b) internal returns (uint) {
-            if (a &gt;= b) {
+            if (a >= b) {
                 return a;
             }
             return b;
@@ -313,7 +313,7 @@ library GroveLib {
 
             if (currentNode.parent != 0x0) {
                 // Now we trace back up through parent relationships, looking
-                // for a link where the child is the right child of it&#39;s
+                // for a link where the child is the right child of it's
                 // parent.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -359,7 +359,7 @@ library GroveLib {
             }
 
             if (currentNode.parent != 0x0) {
-                // if the node is the left child of it&#39;s parent, then the
+                // if the node is the left child of it's parent, then the
                 // parent is the next one.
                 Node storage parent = index.nodes[currentNode.parent];
                 child = currentNode;
@@ -387,7 +387,7 @@ library GroveLib {
         /// @dev Updates or Inserts the id into the index at its appropriate location based on the value provided.
         /// @param index The index that the node is part of.
         /// @param id The unique identifier of the data element the index node will represent.
-        /// @param value The value of the data element that represents it&#39;s total ordering with respect to other elementes.
+        /// @param value The value of the data element that represents it's total ordering with respect to other elementes.
         function insert(Index storage index, bytes32 id, int value) public {
                 if (index.nodes[id].id == id) {
                     // A node with this id already exists.  If the value is
@@ -420,7 +420,7 @@ library GroveLib {
                     previousNodeId = currentNode.id;
 
                     // The new node belongs in the right subtree
-                    if (value &gt;= currentNode.value) {
+                    if (value >= currentNode.value) {
                         if (currentNode.right == 0x0) {
                             currentNode.right = id;
                         }
@@ -443,7 +443,7 @@ library GroveLib {
         /// @param index The index that should be searched
         /// @param id The unique identifier of the data element to check for.
         function exists(Index storage index, bytes32 id) constant returns (bool) {
-            return (index.nodes[id].height &gt; 0);
+            return (index.nodes[id].height > 0);
         }
 
         /// @dev Remove the node for the given unique identifier from the index.
@@ -461,7 +461,7 @@ library GroveLib {
 
             if (nodeToDelete.left != 0x0 || nodeToDelete.right != 0x0) {
                 // This node is not a leaf node and thus must replace itself in
-                // it&#39;s tree by either the previous or next node.
+                // it's tree by either the previous or next node.
                 if (nodeToDelete.left != 0x0) {
                     // This node is guaranteed to not have a right child.
                     Node storage replacementNode = index.nodes[getPreviousNode(index, nodeToDelete.id)];
@@ -528,7 +528,7 @@ library GroveLib {
                 }
             }
             else if (nodeToDelete.parent != 0x0) {
-                // The node being deleted is a leaf node so we only erase it&#39;s
+                // The node being deleted is a leaf node so we only erase it's
                 // parent linkage.
                 parent = index.nodes[nodeToDelete.parent];
 
@@ -562,11 +562,11 @@ library GroveLib {
             }
         }
 
-        bytes2 constant GT = &quot;&gt;&quot;;
-        bytes2 constant LT = &quot;&lt;&quot;;
-        bytes2 constant GTE = &quot;&gt;=&quot;;
-        bytes2 constant LTE = &quot;&lt;=&quot;;
-        bytes2 constant EQ = &quot;==&quot;;
+        bytes2 constant GT = ">";
+        bytes2 constant LT = "<";
+        bytes2 constant GTE = ">=";
+        bytes2 constant LTE = "<=";
+        bytes2 constant EQ = "==";
 
         function _compare(int left, bytes2 operator, int right) internal returns (bool) {
             require(
@@ -575,16 +575,16 @@ library GroveLib {
             );
 
             if (operator == GT) {
-                return (left &gt; right);
+                return (left > right);
             }
             if (operator == LT) {
-                return (left &lt; right);
+                return (left < right);
             }
             if (operator == GTE) {
-                return (left &gt;= right);
+                return (left >= right);
             }
             if (operator == LTE) {
-                return (left &lt;= right);
+                return (left <= right);
             }
             if (operator == EQ) {
                 return (left == right);
@@ -615,12 +615,12 @@ library GroveLib {
 
 
         /** @dev Query the index for the edge-most node that satisfies the
-         *  given query.  For &gt;, &gt;=, and ==, this will be the left-most node
-         *  that satisfies the comparison.  For &lt; and &lt;= this will be the
+         *  given query.  For >, >=, and ==, this will be the left-most node
+         *  that satisfies the comparison.  For < and <= this will be the
          *  right-most node that satisfies the comparison.
          */
         /// @param index The index that should be queried
-        /** @param operator One of &#39;&gt;&#39;, &#39;&gt;=&#39;, &#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;==&#39; to specify what
+        /** @param operator One of '>', '>=', '<', '<=', '==' to specify what
          *  type of comparison operator should be used.
          */
         function query(Index storage index, bytes2 operator, int value) public returns (bytes32) {
@@ -687,7 +687,7 @@ library GroveLib {
                     }
 
                     if (operator == EQ) {
-                        if (currentNode.value &lt; value) {
+                        if (currentNode.value < value) {
                             if (currentNode.right == 0x0) {
                                 return 0x0;
                             }
@@ -695,7 +695,7 @@ library GroveLib {
                             continue;
                         }
 
-                        if (currentNode.value &gt; value) {
+                        if (currentNode.value > value) {
                             if (currentNode.left == 0x0) {
                                 return 0x0;
                             }
@@ -736,7 +736,7 @@ library GroveLib {
                     _rotateLeft(index, currentNode.id);
                 }
 
-                if ((-1 &lt;= balanceFactor) &amp;&amp; (balanceFactor &lt;= 1)) {
+                if ((-1 <= balanceFactor) && (balanceFactor <= 1)) {
                     _updateNodeHeight(index, currentNode.id);
                 }
 
@@ -770,11 +770,11 @@ library GroveLib {
             assert(originalRoot.right != 0x0);
 
             // The right child is the new root, so it gets the original
-            // `originalRoot.parent` as it&#39;s parent.
+            // `originalRoot.parent` as it's parent.
             Node storage newRoot = index.nodes[originalRoot.right];
             newRoot.parent = originalRoot.parent;
 
-            // The original root needs to have it&#39;s right child nulled out.
+            // The original root needs to have it's right child nulled out.
             originalRoot.right = 0x0;
 
             if (originalRoot.parent != 0x0) {
@@ -782,7 +782,7 @@ library GroveLib {
                 // the newRoot which is rotating into the place where `node` was.
                 Node storage parent = index.nodes[originalRoot.parent];
 
-                // figure out if we&#39;re a left or right child and have the
+                // figure out if we're a left or right child and have the
                 // parent point to the new node.
                 if (parent.left == originalRoot.id) {
                     parent.left = newRoot.id;
@@ -801,7 +801,7 @@ library GroveLib {
                 leftChild.parent = originalRoot.id;
             }
 
-            // Update the newRoot&#39;s left node to point at the original node.
+            // Update the newRoot's left node to point at the original node.
             originalRoot.parent = newRoot.id;
             newRoot.left = originalRoot.id;
 
@@ -821,7 +821,7 @@ library GroveLib {
             // place.
             assert(originalRoot.left != 0x0);
 
-            // The left child is taking the place of node, so we update it&#39;s
+            // The left child is taking the place of node, so we update it's
             // parent to be the original parent of the node.
             Node storage newRoot = index.nodes[originalRoot.left];
             newRoot.parent = originalRoot.parent;
@@ -848,7 +848,7 @@ library GroveLib {
                 rightChild.parent = originalRoot.id;
             }
 
-            // Update the new root&#39;s right node to point to the original node.
+            // Update the new root's right node to point to the original node.
             originalRoot.parent = newRoot.id;
             newRoot.right = originalRoot.id;
 
@@ -875,7 +875,7 @@ library ListLib {
     uint center;
 
     // maps item ID to items
-    mapping (uint =&gt; IntervalLib.Interval) items;
+    mapping (uint => IntervalLib.Interval) items;
 
     GroveLib.Index beginIndex;
     GroveLib.Index endIndex;
@@ -951,7 +951,7 @@ library ListLib {
 
     if (point == list.center) {
       /*
-       * case: point exactly matches the list&#39;s center
+       * case: point exactly matches the list's center
        *
        * collect (all) matching intervals (every interval in list, by def)
        */
@@ -967,7 +967,7 @@ library ListLib {
        * no other nodes in tree have intervals containing point
        */
       searchNext = SEARCH_DONE;
-    } else if (point &lt; list.center) {
+    } else if (point < list.center) {
       /*
        * case: point is earlier than center.
        *
@@ -996,7 +996,7 @@ library ListLib {
       cur = list.lowestBegin;
       while (cur != 0x0) {
 	uint begin = _begin(list, cur);
-	if (begin &gt; point) {
+	if (begin > point) {
 	  break;
 	}
 
@@ -1010,7 +1010,7 @@ library ListLib {
        * search should proceed to earlier
        */
       searchNext = SEARCH_EARLIER;
-    } else if (point &gt; list.center) {
+    } else if (point > list.center) {
       /*
        * case: point is later than center.
        *
@@ -1039,7 +1039,7 @@ library ListLib {
       cur = list.highestEnd;
       while (cur != 0x0) {
 	uint end = _end(list, cur);
-	if (end &lt;= point) {
+	if (end <= point) {
 	  break;
 	}
 
@@ -1062,7 +1062,7 @@ library ListLib {
       intervalIDs = _intervalIDs;
     } else {
       intervalIDs = new uint[](num);
-      for (uint i = 0; i &lt; num; i++) {
+      for (uint i = 0; i < num; i++) {
 	intervalIDs[i] = _intervalIDs[i];
       }
     }

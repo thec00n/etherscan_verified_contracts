@@ -43,34 +43,34 @@ contract IungoPresale is Owned {
     ///         preallocation and public phases
     /// @dev Name complies with ERC20 token standard, etherscan for example will recognize
     ///      this and show the balances of the address
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /// @notice Log an event for each funding contributed during the public phase
     /// @notice Events are not logged when the constructor is being executed during
     ///         deployment, so the preallocations will not be logged
     event LogParticipation(address indexed sender, uint256 value, uint256 timestamp);
 
-    /// @notice A participant sends a contribution to the contract&#39;s address
+    /// @notice A participant sends a contribution to the contract's address
     ///         between the PRESALE_STATE_DATE and the PRESALE_END_DATE
     /// @notice Only contributions between the MIN_AMOUNT and
     ///         MAX_AMOUNT are accepted. Otherwise the transaction
-    ///         is rejected and contributed amount is returned to the participant&#39;s
+    ///         is rejected and contributed amount is returned to the participant's
     ///         account
-    /// @notice A participant&#39;s contribution will be rejected if the presale
+    /// @notice A participant's contribution will be rejected if the presale
     ///         has been funded to the maximum amount
     function () payable {
         // A participant cannot send funds before the presale start date
-        if (now &lt; PRESALE_START_DATE) throw;
+        if (now < PRESALE_START_DATE) throw;
         // A participant cannot send funds after the presale end date
-        if (now &gt; PRESALE_END_DATE) throw;
+        if (now > PRESALE_END_DATE) throw;
         // A participant cannot send less than the minimum amount
-        if (msg.value &lt; MIN_AMOUNT) throw;
+        if (msg.value < MIN_AMOUNT) throw;
         // A participant cannot send more than the maximum amount
-        if (msg.value &gt; MAX_AMOUNT) throw;
+        if (msg.value > MAX_AMOUNT) throw;
         // A participant cannot send funds if the presale has been reached the maximum
         // funding amount
-        if (safeIncrement(totalFunding, msg.value) &gt; PRESALE_MAXIMUM_FUNDING) throw;
-        // Register the participant&#39;s contribution
+        if (safeIncrement(totalFunding, msg.value) > PRESALE_MAXIMUM_FUNDING) throw;
+        // Register the participant's contribution
         addBalance(msg.sender, msg.value);
     }
 
@@ -78,7 +78,7 @@ contract IungoPresale is Owned {
     ///         only if the minimum funding level has been reached
     function ownerWithdraw(uint256 value) external onlyOwner {
         // The owner cannot withdraw if the presale did not reach the minimum funding amount
-        if (totalFunding &lt; PRESALE_MINIMUM_FUNDING) throw;
+        if (totalFunding < PRESALE_MINIMUM_FUNDING) throw;
         // Withdraw the amount requested
         if (!owner.send(value)) throw;
     }
@@ -87,14 +87,14 @@ contract IungoPresale is Owned {
     ///         the presale has not achieved the minimum funding level
     function participantWithdrawIfMinimumFundingNotReached(uint256 value) external {
         // Participant cannot withdraw before the presale ends
-        if (now &lt;= PRESALE_END_DATE) throw;
+        if (now <= PRESALE_END_DATE) throw;
         // Participant cannot withdraw if the minimum funding amount has been reached
-        if (totalFunding &gt;= PRESALE_MINIMUM_FUNDING) throw;
+        if (totalFunding >= PRESALE_MINIMUM_FUNDING) throw;
         // Participant can only withdraw an amount up to their contributed balance
-        if (balanceOf[msg.sender] &lt; value) throw;
-        // Participant&#39;s balance is reduced by the claimed amount.
+        if (balanceOf[msg.sender] < value) throw;
+        // Participant's balance is reduced by the claimed amount.
         balanceOf[msg.sender] = safeDecrement(balanceOf[msg.sender], value);
-        // Send ethers back to the participant&#39;s account
+        // Send ethers back to the participant's account
         if (!msg.sender.send(value)) throw;
     }
 
@@ -103,18 +103,18 @@ contract IungoPresale is Owned {
     ///         if the minimum funding level is not reached
     function ownerClawback() external onlyOwner {
         // The owner cannot withdraw before the clawback date
-        if (now &lt; OWNER_CLAWBACK_DATE) throw;
+        if (now < OWNER_CLAWBACK_DATE) throw;
         // Send remaining funds back to the owner
         if (!owner.send(this.balance)) throw;
     }
 
     /// @dev Keep track of participants contributions and the total funding amount
     function addBalance(address participant, uint256 value) private {
-        // Participant&#39;s balance is increased by the sent amount
+        // Participant's balance is increased by the sent amount
         balanceOf[participant] = safeIncrement(balanceOf[participant], value);
         // Keep track of the total funding amount
         totalFunding = safeIncrement(totalFunding, value);
-        // Log an event of the participant&#39;s contribution
+        // Log an event of the participant's contribution
         LogParticipation(participant, value, now);
     }
 
@@ -122,7 +122,7 @@ contract IungoPresale is Owned {
     ///      than the original base value.
     function safeIncrement(uint256 base, uint256 increment) private constant returns (uint256) {
         uint256 result = base + increment;
-        if (result &lt; base) throw;
+        if (result < base) throw;
         return result;
     }
 
@@ -130,7 +130,7 @@ contract IungoPresale is Owned {
     ///      is smaller than the original base value
     function safeDecrement(uint256 base, uint256 increment) private constant returns (uint256) {
         uint256 result = base - increment;
-        if (result &gt; base) throw;
+        if (result > base) throw;
         return result;
     }
 }

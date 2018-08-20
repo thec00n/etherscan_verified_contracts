@@ -6,7 +6,7 @@ contract IGold {
      function burnTokens(address _who, uint _tokens);
 }
 
-// StdToken inheritance is commented, because no &#39;totalSupply&#39; needed
+// StdToken inheritance is commented, because no 'totalSupply' needed
 contract IMNTP { /*is StdToken */
      function balanceOf(address _owner) constant returns (uint256);
 // Additional methods that MNTP contract provides
@@ -18,12 +18,12 @@ contract IMNTP { /*is StdToken */
 contract SafeMath {
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
      }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -61,7 +61,7 @@ contract StringMover {
      function bytes32ToString(bytes32 x) constant returns (string) {
           bytes memory bytesString = new bytes(32);
           uint charCount = 0;
-          for (uint j = 0; j &lt; 32; j++) {
+          for (uint j = 0; j < 32; j++) {
                byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
                if (char != 0) {
                     bytesString[charCount] = char;
@@ -69,7 +69,7 @@ contract StringMover {
                }
           }
           bytes memory bytesStringTrimmed = new bytes(charCount);
-          for (j = 0; j &lt; charCount; j++) {
+          for (j = 0; j < charCount; j++) {
                bytesStringTrimmed[j] = bytesString[j];
           }
           return string(bytesStringTrimmed);
@@ -79,14 +79,14 @@ contract StringMover {
           bytes memory bytesString = new bytes(64);
           uint charCount = 0;
 
-          for (uint j = 0; j &lt; 32; j++) {
+          for (uint j = 0; j < 32; j++) {
                byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
                if (char != 0) {
                     bytesString[charCount] = char;
                     charCount++;
                }
           }
-          for (j = 0; j &lt; 32; j++) {
+          for (j = 0; j < 32; j++) {
                char = byte(bytes32(uint(y) * 2 ** (8 * j)));
                if (char != 0) {
                     bytesString[charCount] = char;
@@ -95,7 +95,7 @@ contract StringMover {
           }
 
           bytes memory bytesStringTrimmed = new bytes(charCount);
-          for (j = 0; j &lt; charCount; j++) {
+          for (j = 0; j < charCount; j++) {
                bytesStringTrimmed[j] = bytesString[j];
           }
           return string(bytesStringTrimmed);
@@ -122,19 +122,19 @@ contract Storage is SafeMath, StringMover {
      }
 
 // Fields - 1
-     mapping(uint =&gt; string) docs;
+     mapping(uint => string) docs;
      uint public docCount = 0;
 
 // Fields - 2 
-     mapping(string =&gt; mapping(uint =&gt; int)) fiatTxs;
-     mapping(string =&gt; uint) fiatBalancesCents;
-     mapping(string =&gt; uint) fiatTxCounts;
+     mapping(string => mapping(uint => int)) fiatTxs;
+     mapping(string => uint) fiatBalancesCents;
+     mapping(string => uint) fiatTxCounts;
      uint fiatTxTotal = 0;
 
 // Fields - 3 
-     mapping(string =&gt; mapping(uint =&gt; int)) goldTxs;
-     mapping(string =&gt; uint) goldHotBalances;
-     mapping(string =&gt; uint) goldTxCounts;
+     mapping(string => mapping(uint => int)) goldTxs;
+     mapping(string => uint) goldHotBalances;
+     mapping(string => uint) goldTxCounts;
      uint goldTxTotal = 0;
 
 // Fields - 4 
@@ -150,7 +150,7 @@ contract Storage is SafeMath, StringMover {
           uint8 state;
      }
      
-     mapping (uint=&gt;Request) requests;
+     mapping (uint=>Request) requests;
      uint public requestsCount = 0;
 
 ///////
@@ -167,7 +167,7 @@ contract Storage is SafeMath, StringMover {
      }
 
      function getDocAsBytes64(uint _index) public constant returns (bytes32,bytes32) {
-          require(_index &lt; docCount);
+          require(_index < docCount);
           return stringToBytes64(docs[_index]);
      }
 
@@ -178,7 +178,7 @@ contract Storage is SafeMath, StringMover {
 
           fiatTxs[_userId][c] = _amountCents;
         
-          if (_amountCents &gt; 0) {
+          if (_amountCents > 0) {
               fiatBalancesCents[_userId] = safeAdd(fiatBalancesCents[_userId], uint(_amountCents));
           } else {
               fiatBalancesCents[_userId] = safeSub(fiatBalancesCents[_userId], uint(-_amountCents));
@@ -199,7 +199,7 @@ contract Storage is SafeMath, StringMover {
      }
 
      function getFiatTransaction(string _userId, uint _index) public constant returns(int) {
-          require(_index &lt; fiatTxCounts[_userId]);
+          require(_index < fiatTxCounts[_userId]);
           return fiatTxs[_userId][_index];
      }
 
@@ -214,7 +214,7 @@ contract Storage is SafeMath, StringMover {
 
           goldTxs[_userId][c] = _amount;
 
-          if (_amount &gt; 0) {
+          if (_amount > 0) {
               goldHotBalances[_userId] = safeAdd(goldHotBalances[_userId], uint(_amount));
           } else {
               goldHotBalances[_userId] = safeSub(goldHotBalances[_userId], uint(-_amount));
@@ -235,7 +235,7 @@ contract Storage is SafeMath, StringMover {
      }
 
      function getGoldTransaction(string _userId, uint _index) public constant returns(int) {
-          require(_index &lt; goldTxCounts[_userId]);
+          require(_index < goldTxCounts[_userId]);
           return goldTxs[_userId][_index];
      }
 
@@ -281,7 +281,7 @@ contract Storage is SafeMath, StringMover {
           bytes32 hashA, bytes32 hashB, 
           bool buy, uint8 state)
      {
-          require(_index &lt; requestsCount);
+          require(_index < requestsCount);
 
           Request memory r = requests[_index];
 
@@ -292,7 +292,7 @@ contract Storage is SafeMath, StringMover {
      }
 
      function cancelRequest(uint _index) onlyController public {
-          require(_index &lt; requestsCount);
+          require(_index < requestsCount);
           require(0==requests[_index].state);
 
           requests[_index].state = 2;
@@ -304,7 +304,7 @@ contract Storage is SafeMath, StringMover {
 }
 
 contract GoldFiatFee is CreatorEnabled, StringMover {
-     string gmUserId = &quot;&quot;;
+     string gmUserId = "";
 
 // Functions: 
      function GoldFiatFee(string _gmUserId) {
@@ -330,15 +330,15 @@ contract GoldFiatFee is CreatorEnabled, StringMover {
           // If the sender holds at least 10 MNTP, then the transaction fee is 2% fiat,
           // If the sender holds at least 1000 MNTP, then the transaction fee is 1.5% fiat,
           // If the sender holds at least 10000 MNTP, then the transaction fee is 1% fiat,
-          if (_mntpBalance &gt;= (10000 * 1 ether)) {
+          if (_mntpBalance >= (10000 * 1 ether)) {
                return (75 * _goldValue / 10000);
           }
 
-          if (_mntpBalance &gt;= (1000 * 1 ether)) {
+          if (_mntpBalance >= (1000 * 1 ether)) {
                return (15 * _goldValue / 1000);
           }
 
-          if (_mntpBalance &gt;= (10 * 1 ether)) {
+          if (_mntpBalance >= (10 * 1 ether)) {
                return (25 * _goldValue / 1000);
           }
           
@@ -490,7 +490,7 @@ contract StorageController is SafeMath, CreatorEnabled, StringMover {
      }
      
      function processRequest(uint _index, uint _amountCents, uint _centsPerGold) onlyCreator public {
-          require(_index &lt; getRequestsCount());
+          require(_index < getRequestsCount());
 
           var (sender, userId, hash, isBuy, state) = getRequest(_index);
           require(0 == state);
@@ -510,23 +510,23 @@ contract StorageController is SafeMath, CreatorEnabled, StringMover {
 
      function processBuyRequest(string _userId, address _userAddress, uint _amountCents, uint _centsPerGold) internal {
           uint userFiatBalance = getUserFiatBalance(_userId);
-          require(userFiatBalance &gt; 0);
+          require(userFiatBalance > 0);
 
-          if (_amountCents &gt; userFiatBalance) {
+          if (_amountCents > userFiatBalance) {
                _amountCents = userFiatBalance;
           }
 
           uint userMntpBalance = mntpToken.balanceOf(_userAddress);
           uint fee = fiatFee.calculateBuyGoldFee(userMntpBalance, _amountCents);
-          require(_amountCents &gt; fee);  
+          require(_amountCents > fee);  
 
           // 1 - issue tokens minus fee
           uint amountMinusFee = _amountCents;
-          if (fee &gt; 0) { 
+          if (fee > 0) { 
                amountMinusFee = safeSub(_amountCents, fee);
           }
 
-          require(amountMinusFee &gt; 0);
+          require(amountMinusFee > 0);
 
           uint tokens = (uint(amountMinusFee) * 1 ether) / _centsPerGold;
           issueGoldTokens(_userAddress, tokens);
@@ -542,7 +542,7 @@ contract StorageController is SafeMath, CreatorEnabled, StringMover {
 
           // 3 - send fee to Goldmint
           // positive for sell 
-          if (fee &gt; 0) {
+          if (fee > 0) {
                string memory gmAccount = bytes32ToString(fiatFee.getGoldmintFeeAccount());
                addFiatTransaction(gmAccount, int(fee));
           }
@@ -556,7 +556,7 @@ contract StorageController is SafeMath, CreatorEnabled, StringMover {
               tokenBalance = getUserHotGoldBalance(_userId);
           }
 
-          if (tokenBalance &lt; tokens) {
+          if (tokenBalance < tokens) {
                tokens = tokenBalance;
                _amountCents = uint((tokens * _centsPerGold) / 1 ether);
           }
@@ -571,20 +571,20 @@ contract StorageController is SafeMath, CreatorEnabled, StringMover {
           // 2 - add fiat tx
           uint userMntpBalance = mntpToken.balanceOf(_userAddress);
           uint fee = fiatFee.calculateSellGoldFee(userMntpBalance, _amountCents);
-          require(_amountCents &gt; fee);  
+          require(_amountCents > fee);  
 
           uint amountMinusFee = _amountCents;
 
-          if (fee &gt; 0) { 
+          if (fee > 0) { 
                amountMinusFee = safeSub(_amountCents, fee);
           }
 
-          require(amountMinusFee &gt; 0);
+          require(amountMinusFee > 0);
           // positive for sell 
           addFiatTransaction(_userId, int(amountMinusFee));
 
           // 3 - send fee to Goldmint
-          if (fee &gt; 0) {
+          if (fee > 0) {
                string memory gmAccount = bytes32ToString(fiatFee.getGoldmintFeeAccount());
                addFiatTransaction(gmAccount, int(fee));
           }
@@ -603,7 +603,7 @@ contract StorageController is SafeMath, CreatorEnabled, StringMover {
     function transferGoldFromHotWallet(address _to, uint _value, string _userId) onlyCreator public {
         
         uint balance = getUserHotGoldBalance(_userId);
-        require(balance &gt;= _value);
+        require(balance >= _value);
 
         goldToken.burnTokens(getHotWalletAddress(), _value);
         goldToken.issueTokens(_to, _value);

@@ -1,8 +1,8 @@
 pragma solidity 0.4.18;
 //signature - 9927A75EF7C89D3C028C8BA7A1B48CDD515ACED7A2BC564A099D452D3B3FFE89
 contract NewYearToken{
-	string public symbol = &quot;NYT&quot;;
-	string public name = &quot;New Year Token&quot;;
+	string public symbol = "NYT";
+	string public name = "New Year Token";
 	uint8 public constant decimals = 8;
 	uint256 _totalSupply = 0;
 	address contract_owner;
@@ -18,8 +18,8 @@ contract NewYearToken{
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping (address => uint256)) allowed;
 
     //initialize contract - set owner and give owner 20,000 tokens
     function NewYearToken(){	
@@ -37,9 +37,9 @@ contract NewYearToken{
 
 
 	function transfer(address _to, uint256 _amount) returns (bool success) {
-		if (balances[msg.sender] &gt;= _amount 
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+		if (balances[msg.sender] >= _amount 
+			&& _amount > 0
+			&& balances[_to] + _amount > balances[_to]) {
 			balances[msg.sender] -= _amount;
 			balances[_to] += _amount;
 			Transfer(msg.sender, _to, _amount);
@@ -54,10 +54,10 @@ contract NewYearToken{
 		address _to,
 		uint256 _amount
 	) returns (bool success) {
-		if (balances[_from] &gt;= _amount
-			&amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+		if (balances[_from] >= _amount
+			&& allowed[_from][msg.sender] >= _amount
+			&& _amount > 0
+			&& balances[_to] + _amount > balances[_to]) {
 			balances[_from] -= _amount;
 			allowed[_from][msg.sender] -= _amount;
 			balances[_to] += _amount;
@@ -79,17 +79,17 @@ contract NewYearToken{
 	}
 	//is_leap_year sets year to 12AM on new years day of the current year and sets the mining rewards
 	function is_leap_year() private{
-		if(now &gt;= _year + 31557600){	
+		if(now >= _year + 31557600){	
 			_year = _year + 31557600;	//changes to new year, 1 day early on leap year, in seconds
 			_year_count = _year_count + 1; //changes to new year in years
 			_currentMined = 0;	//rests for current years supply
 			_miningReward = _miningReward/2; //halved yearly starting at 100
-			if(((_year_count-2018)%5 == 0) &amp;&amp; (_year_count != 2018)){
+			if(((_year_count-2018)%5 == 0) && (_year_count != 2018)){
 				_maxMiningReward = _maxMiningReward/2; //halved every 5th year
 				
 
 			}
-			if((_year_count%4 == 1) &amp;&amp; ((_year_count-1)%100 != 0)){
+			if((_year_count%4 == 1) && ((_year_count-1)%100 != 0)){
 				_year = _year + 86400;	//adds a day following a leap year
 				
 
@@ -108,7 +108,7 @@ contract NewYearToken{
 
 		is_leap_year(); //set the year variables and rewards
 		//check if date is new years day
-	    if((_year &lt;= now) &amp;&amp; (now &lt;= (_year + 604800))){
+	    if((_year <= now) && (now <= (_year + 604800))){
 			return true;	//it is the first week of the new year
 		}
 		else{
@@ -119,8 +119,8 @@ contract NewYearToken{
 	function mine() returns(bool success){
 		if(date_check() != true)
 			revert();
-		else if((_currentMined &lt; _maxMiningReward) &amp;&amp; (_maxMiningReward - _currentMined &gt;= _miningReward)){
-			if((_totalSupply+_miningReward) &lt;= _maxTotalSupply){
+		else if((_currentMined < _maxMiningReward) && (_maxMiningReward - _currentMined >= _miningReward)){
+			if((_totalSupply+_miningReward) <= _maxTotalSupply){
 				//send reward if there are tokens available and it is new years day
 				balances[msg.sender] += _miningReward;	
 				_currentMined += _miningReward;
@@ -128,9 +128,9 @@ contract NewYearToken{
 				Transfer(this, msg.sender, _miningReward); 
 				return true;
 			}
-		else if(now &gt; (_year + 604800)){
+		else if(now > (_year + 604800)){
 			current_remaining = _maxMiningReward - _currentMined; 
-			if((current_remaining &gt;= 0) &amp;&amp; (_currentMined != 0)){
+			if((current_remaining >= 0) && (_currentMined != 0)){
 				_currentMined += current_remaining;
 				Transfer(this, contract_owner, current_remaining);	//sends unmined coins for the year to _owner
 			}

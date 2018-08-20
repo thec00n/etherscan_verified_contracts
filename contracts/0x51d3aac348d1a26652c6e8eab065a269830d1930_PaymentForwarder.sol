@@ -18,7 +18,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,7 +72,7 @@ contract Haltable is Ownable {
   }
 
   modifier stopNonOwnersInEmergency {
-    if (halted &amp;&amp; msg.sender != owner) throw;
+    if (halted && msg.sender != owner) throw;
     _;
   }
 
@@ -114,10 +114,10 @@ contract PaymentForwarder is Haltable {
   uint public customerCount;
 
   /** Total incoming money per centrally tracked customer id */
-  mapping(uint128 =&gt; uint) public paymentsByCustomer;
+  mapping(uint128 => uint) public paymentsByCustomer;
 
   /** Total incoming money per benefactor address */
-  mapping(address =&gt; uint) public paymentsByBenefactor;
+  mapping(address => uint) public paymentsByBenefactor;
 
   /** A customer has made a payment. Benefactor is the address where the tokens will be ultimately issued.*/
   event PaymentForwarded(address source, uint amount, uint128 customerId, address benefactor);

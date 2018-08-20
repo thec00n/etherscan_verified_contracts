@@ -12,7 +12,7 @@ contract Vault {
     uint256 constant public unlockedAt = 1515600000;
     
     function unlock() public {
-        if (now &lt; unlockedAt) throw;
+        if (now < unlockedAt) throw;
         uint vaultBalance = token.balanceOf(address(this));
         if (!token.transfer(recipient, vaultBalance)) throw;
     }

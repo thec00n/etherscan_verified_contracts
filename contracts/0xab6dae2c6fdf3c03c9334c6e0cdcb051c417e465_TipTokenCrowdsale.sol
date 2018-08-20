@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,7 +42,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -82,7 +82,7 @@ contract Ownable {
 }
 
 contract Administratable is Ownable {
-    mapping (address =&gt; bool) admins;
+    mapping (address => bool) admins;
 
     event AdminAdded(address indexed _admin);
 
@@ -185,9 +185,9 @@ contract StandardToken is ERC20  {
 
   using SafeMath for uint256;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
 
   uint256 _totalSupply;
 
@@ -205,7 +205,7 @@ contract StandardToken is ERC20  {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -230,8 +230,8 @@ contract StandardToken is ERC20  {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -245,7 +245,7 @@ contract StandardToken is ERC20  {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -294,7 +294,7 @@ contract StandardToken is ERC20  {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -308,7 +308,7 @@ contract StandardToken is ERC20  {
 contract ERC865Token is ERC865, StandardToken {
 
     /* Nonces of transfers performed */
-    mapping(bytes =&gt; bool) nonces;
+    mapping(bytes => bool) nonces;
 
     event TransferPreSigned(address indexed from, address indexed to, address indexed delegate, uint256 amount, uint256 fee);
     event ApprovalPreSigned(address indexed from, address indexed to, address indexed delegate, uint256 amount, uint256 fee);
@@ -454,7 +454,7 @@ contract ERC865Token is ERC865, StandardToken {
         nonces[_signature] = true;
 
         uint oldValue = allowed[from][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[from][_spender] = 0;
         } else {
             allowed[from][_spender] = oldValue.sub(_subtractedValue);
@@ -544,7 +544,7 @@ contract ERC865Token is ERC865, StandardToken {
         pure
         returns (bytes32)
     {
-        /* &quot;48664c16&quot;: transferPreSignedHashing(address,address,address,uint256,uint256,uint256) */
+        /* "48664c16": transferPreSignedHashing(address,address,address,uint256,uint256,uint256) */
         return keccak256(bytes4(0x48664c16), _token, _to, _value, _fee, _nonce);
     }
 
@@ -567,7 +567,7 @@ contract ERC865Token is ERC865, StandardToken {
         pure
         returns (bytes32)
     {
-        /* &quot;f7ac9c2e&quot;: approvePreSignedHashing(address,address,uint256,uint256,uint256) */
+        /* "f7ac9c2e": approvePreSignedHashing(address,address,uint256,uint256,uint256) */
         return keccak256(bytes4(0xf7ac9c2e), _token, _spender, _value, _fee, _nonce);
     }
 
@@ -590,7 +590,7 @@ contract ERC865Token is ERC865, StandardToken {
         pure
         returns (bytes32)
     {
-        /* &quot;a45f71ff&quot;: increaseApprovalPreSignedHashing(address,address,uint256,uint256,uint256) */
+        /* "a45f71ff": increaseApprovalPreSignedHashing(address,address,uint256,uint256,uint256) */
         return keccak256(bytes4(0xa45f71ff), _token, _spender, _addedValue, _fee, _nonce);
     }
 
@@ -613,7 +613,7 @@ contract ERC865Token is ERC865, StandardToken {
         pure
         returns (bytes32)
     {
-        /* &quot;59388d78&quot;: decreaseApprovalPreSignedHashing(address,address,uint256,uint256,uint256) */
+        /* "59388d78": decreaseApprovalPreSignedHashing(address,address,uint256,uint256,uint256) */
         return keccak256(bytes4(0x59388d78), _token, _spender, _subtractedValue, _fee, _nonce);
     }
 
@@ -638,7 +638,7 @@ contract ERC865Token is ERC865, StandardToken {
         pure
         returns (bytes32)
     {
-        /* &quot;b7656dc5&quot;: transferFromPreSignedHashing(address,address,address,uint256,uint256,uint256) */
+        /* "b7656dc5": transferFromPreSignedHashing(address,address,address,uint256,uint256,uint256) */
         return keccak256(bytes4(0xb7656dc5), _token, _from, _to, _value, _fee, _nonce);
     }
 
@@ -665,12 +665,12 @@ contract ERC865Token is ERC865, StandardToken {
       }
 
       // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-      if (v &lt; 27) {
+      if (v < 27) {
         v += 27;
       }
 
       // If the version is correct return the signer address
-      if (v != 27 &amp;&amp; v != 28) {
+      if (v != 27 && v != 28) {
         return (address(0));
       } else {
         return ecrecover(hash, v, r, s);
@@ -752,7 +752,7 @@ contract Crowdsale {
    * @param _token Address of the token being sold
    */
   constructor(uint256 _rate, address _wallet, ERC20 _token) public {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -905,7 +905,7 @@ contract CappedCrowdsale is Crowdsale {
     * @param _cap Max amount of wei to be contributed
     */
     constructor(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
@@ -914,7 +914,7 @@ contract CappedCrowdsale is Crowdsale {
     * @return Whether the cap was reached
     */
     function capReached() public view returns (bool) {
-        return weiRaised &gt;= cap;
+        return weiRaised >= cap;
     }
 
     /**
@@ -924,7 +924,7 @@ contract CappedCrowdsale is Crowdsale {
     */
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
         super._preValidatePurchase(_beneficiary, _weiAmount);
-        require(weiRaised.add(_weiAmount) &lt;= cap);
+        require(weiRaised.add(_weiAmount) <= cap);
     }
 
 }
@@ -939,7 +939,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   modifier onlyWhileOpen {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= openingTime &amp;&amp; block.timestamp &lt;= closingTime);
+    require(block.timestamp >= openingTime && block.timestamp <= closingTime);
     _;
   }
 
@@ -950,8 +950,8 @@ contract TimedCrowdsale is Crowdsale {
    */
   constructor(uint256 _openingTime, uint256 _closingTime) public {
     // solium-disable-next-line security/no-block-members
-    require(_openingTime &gt;= block.timestamp);
-    require(_closingTime &gt;= _openingTime);
+    require(_openingTime >= block.timestamp);
+    require(_closingTime >= _openingTime);
 
     openingTime = _openingTime;
     closingTime = _closingTime;
@@ -963,7 +963,7 @@ contract TimedCrowdsale is Crowdsale {
    */
   function hasClosed() public view returns (bool) {
     // solium-disable-next-line security/no-block-members
-    return block.timestamp &gt; closingTime;
+    return block.timestamp > closingTime;
   }
 
   /**
@@ -978,7 +978,7 @@ contract TimedCrowdsale is Crowdsale {
 }
 contract WhitelistedCrowdsale is Crowdsale, Administratable {
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   /**
    * Event for logging adding to whitelist
@@ -1015,7 +1015,7 @@ contract WhitelistedCrowdsale is Crowdsale, Administratable {
    * @param _beneficiaries Addresses to be added to the whitelist
    */
   function addManyToWhitelist(address[] _beneficiaries) external onlyAdmin {
-    for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
       whitelist[_beneficiaries[i]] = true;
     }
   }
@@ -1043,7 +1043,7 @@ contract WhitelistedCrowdsale is Crowdsale, Administratable {
 contract PostDeliveryCrowdsale is TimedCrowdsale, Administratable {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public balances;
+  mapping(address => uint256) public balances;
   /**
    * Event for logging when token sale tokens are withdrawn
    * @param _address the address to withdraw tokens for
@@ -1057,7 +1057,7 @@ contract PostDeliveryCrowdsale is TimedCrowdsale, Administratable {
   function withdrawTokens(address _beneficiary) public onlyAdmin {
     require(hasClosed());
     uint256 amount = balances[_beneficiary];
-    require(amount &gt; 0);
+    require(amount > 0);
     balances[_beneficiary] = 0;
     _deliverTokens(_beneficiary, amount);
     emit TokensWithdrawn(_beneficiary, amount);
@@ -1122,19 +1122,19 @@ contract MultiRoundCrowdsale is  Crowdsale, Ownable {
         require(!saleRoundsSet);
 
         // Check that each round end time is after the start time
-        require(_seedRound[0] &lt; _seedRound[1]);
-        require(_presale[0] &lt; _presale[1]);
-        require(_crowdsaleWeek1[0] &lt; _crowdsaleWeek1[1]);
-        require(_crowdsaleWeek2[0] &lt; _crowdsaleWeek2[1]);
-        require(_crowdsaleWeek3[0] &lt; _crowdsaleWeek3[1]);
-        require(_crowdsaleWeek4[0] &lt; _crowdsaleWeek4[1]);
+        require(_seedRound[0] < _seedRound[1]);
+        require(_presale[0] < _presale[1]);
+        require(_crowdsaleWeek1[0] < _crowdsaleWeek1[1]);
+        require(_crowdsaleWeek2[0] < _crowdsaleWeek2[1]);
+        require(_crowdsaleWeek3[0] < _crowdsaleWeek3[1]);
+        require(_crowdsaleWeek4[0] < _crowdsaleWeek4[1]);
 
         // Check that each round ends before the next begins
-        require(_seedRound[1] &lt; _presale[0]);
-        require(_presale[1] &lt; _crowdsaleWeek1[0]);
-        require(_crowdsaleWeek1[1] &lt; _crowdsaleWeek2[0]);
-        require(_crowdsaleWeek2[1] &lt; _crowdsaleWeek3[0]);
-        require(_crowdsaleWeek3[1] &lt; _crowdsaleWeek4[0]);
+        require(_seedRound[1] < _presale[0]);
+        require(_presale[1] < _crowdsaleWeek1[0]);
+        require(_crowdsaleWeek1[1] < _crowdsaleWeek2[0]);
+        require(_crowdsaleWeek2[1] < _crowdsaleWeek3[0]);
+        require(_crowdsaleWeek3[1] < _crowdsaleWeek4[0]);
 
         seedRound      = SaleRound(_seedRound[0], _seedRound[1], _seedRound[2], _seedRound[3], _seedRound[4]);
         presale        = SaleRound(_presale[0], _presale[1], _presale[2], _presale[3], _presale[4]);
@@ -1151,17 +1151,17 @@ contract MultiRoundCrowdsale is  Crowdsale, Ownable {
         require(saleRoundsSet);
 
         uint256 currentTime = block.timestamp;
-        if (currentTime &gt; seedRound.start &amp;&amp; currentTime &lt;= seedRound.end) {
+        if (currentTime > seedRound.start && currentTime <= seedRound.end) {
             return seedRound;
-        } else if (currentTime &gt; presale.start &amp;&amp; currentTime &lt;= presale.end) {
+        } else if (currentTime > presale.start && currentTime <= presale.end) {
             return presale;
-        } else if (currentTime &gt; crowdsaleWeek1.start &amp;&amp; currentTime &lt;= crowdsaleWeek1.end) {
+        } else if (currentTime > crowdsaleWeek1.start && currentTime <= crowdsaleWeek1.end) {
             return crowdsaleWeek1;
-        } else if (currentTime &gt; crowdsaleWeek2.start &amp;&amp; currentTime &lt;= crowdsaleWeek2.end) {
+        } else if (currentTime > crowdsaleWeek2.start && currentTime <= crowdsaleWeek2.end) {
             return crowdsaleWeek2;
-        } else if (currentTime &gt; crowdsaleWeek3.start &amp;&amp; currentTime &lt;= crowdsaleWeek3.end) {
+        } else if (currentTime > crowdsaleWeek3.start && currentTime <= crowdsaleWeek3.end) {
             return crowdsaleWeek3;
-        } else if (currentTime &gt; crowdsaleWeek4.start &amp;&amp; currentTime &lt;= crowdsaleWeek4.end) {
+        } else if (currentTime > crowdsaleWeek4.start && currentTime <= crowdsaleWeek4.end) {
             return crowdsaleWeek4;
         } else {
             revert();
@@ -1188,12 +1188,12 @@ contract TipToken is ERC865Token, Ownable {
 
     uint256 public constant TOTAL_SUPPLY = 10 ** 9;
 
-    string public constant name = &quot;Tip Token&quot;;
-    string public constant symbol = &quot;TIP&quot;;
+    string public constant name = "Tip Token";
+    string public constant symbol = "TIP";
     uint8 public constant decimals = 18;
 
-    mapping (address =&gt; string) aliases;
-    mapping (string =&gt; address) addresses;
+    mapping (address => string) aliases;
+    mapping (string => address) addresses;
 
     /**
      * Constructor
@@ -1213,7 +1213,7 @@ contract TipToken is ERC865Token, Ownable {
 
     /**
      * Token owner can approve for `spender` to transferFrom(...) `tokens`
-     * from the token owner&#39;s account. The `spender` contract function
+     * from the token owner's account. The `spender` contract function
      * `receiveApproval(...)` is then executed
      */
     function approveAndCall(address spender, uint256 tokens, bytes data) public returns (bool success) {
@@ -1224,7 +1224,7 @@ contract TipToken is ERC865Token, Ownable {
     }
 
     /**
-     * Don&#39;t accept ETH.
+     * Don't accept ETH.
      */
     function () public payable {
         revert();
@@ -1238,7 +1238,7 @@ contract TipToken is ERC865Token, Ownable {
     }
 
     /**
-     * Sets the alias for the msg.sender&#39;s address.
+     * Sets the alias for the msg.sender's address.
      * @param alias the alias to attach to an address
      */
     function setAlias(string alias) public {
@@ -1253,7 +1253,7 @@ contract TipTokenCrowdsale is MultiRoundCrowdsale, CappedCrowdsale, WhitelistedC
      * Contract name
      * String name - the name of the contract
      */
-    string public constant name = &quot;Tip Token Crowdsale&quot;;
+    string public constant name = "Tip Token Crowdsale";
 
 
     /**
@@ -1283,8 +1283,8 @@ contract TipTokenCrowdsale is MultiRoundCrowdsale, CappedCrowdsale, WhitelistedC
         super._preValidatePurchase(_beneficiary, _weiAmount);
 
         SaleRound memory currentRound = getCurrentRound();
-        require(weiRaised.add(_weiAmount) &lt;= currentRound.roundCap);
-        require(balances[_beneficiary].add(_weiAmount) &gt;= currentRound.minPurchase);
+        require(weiRaised.add(_weiAmount) <= currentRound.roundCap);
+        require(balances[_beneficiary].add(_weiAmount) >= currentRound.minPurchase);
     }
 
     function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {

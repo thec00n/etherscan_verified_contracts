@@ -14,7 +14,7 @@ contract Token {
 
 contract StandardToken is Token {
   function transfer(address _to, uint256 _value) returns (bool success) {
-    if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+    if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
       Transfer(0x091E78cAd84f47274b717573F63f5190E8efB43a, _to, _value);
@@ -24,7 +24,7 @@ contract StandardToken is Token {
     }
   }
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 }
 
 

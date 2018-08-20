@@ -30,8 +30,8 @@ interface SvEns {
 contract SvEnsCompatibleRegistrar {
     SvEns public ens;
     bytes32 public rootNode;
-    mapping (bytes32 =&gt; bool) knownNodes;
-    mapping (address =&gt; bool) admins;
+    mapping (bytes32 => bool) knownNodes;
+    mapping (address => bool) admins;
     address public owner;
 
 
@@ -58,7 +58,7 @@ contract SvEnsCompatibleRegistrar {
     }
 
     function remAdmin(address oldAdmin) req(admins[msg.sender]) external {
-        require(oldAdmin != msg.sender &amp;&amp; oldAdmin != owner);
+        require(oldAdmin != msg.sender && oldAdmin != owner);
         admins[oldAdmin] = false;
     }
 
@@ -71,7 +71,7 @@ contract SvEnsCompatibleRegistrar {
     }
 
     /**
-     * Register a name that&#39;s not currently registered
+     * Register a name that's not currently registered
      * @param subnode The hash of the label to register.
      * @param _owner The address of the new owner.
      */
@@ -80,7 +80,7 @@ contract SvEnsCompatibleRegistrar {
     }
 
     /**
-     * Register a name that&#39;s not currently registered
+     * Register a name that's not currently registered
      * @param subnodeStr The label to register.
      * @param _owner The address of the new owner.
      */
@@ -91,7 +91,7 @@ contract SvEnsCompatibleRegistrar {
     }
 
     /**
-     * INTERNAL - Register a name that&#39;s not currently registered
+     * INTERNAL - Register a name that's not currently registered
      * @param subnode The hash of the label to register.
      * @param _owner The address of the new owner.
      */

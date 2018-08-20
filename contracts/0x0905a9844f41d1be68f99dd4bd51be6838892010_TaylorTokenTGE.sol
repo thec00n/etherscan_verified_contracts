@@ -2,7 +2,7 @@
     Copyright (c) 2018 SmartTaylor
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the &quot;Software&quot;), to deal
+    of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
@@ -11,7 +11,7 @@
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -30,7 +30,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,20 +85,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -107,7 +107,7 @@ library SafeMath {
     Copyright (c) 2018 SmartTaylor
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the &quot;Software&quot;), to deal
+    of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
@@ -116,7 +116,7 @@ library SafeMath {
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -150,15 +150,15 @@ contract TaylorToken is Ownable{
     /**
         CONTRACT VARIABLES
     **/
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     //this address can transfer even when transfer is disabled.
-    mapping (address =&gt; bool) public whitelistedTransfer;
-    mapping (address =&gt; bool) public whitelistedBurn;
+    mapping (address => bool) public whitelistedTransfer;
+    mapping (address => bool) public whitelistedBurn;
 
-    string public name = &quot;Taylor&quot;;
-    string public symbol = &quot;TAY&quot;;
+    string public name = "Taylor";
+    string public symbol = "TAY";
     uint8 public decimals = 18;
     uint256 constant internal DECIMAL_CASES = 10**18;
     uint256 public totalSupply = 10**7 * DECIMAL_CASES;
@@ -259,7 +259,7 @@ contract TaylorToken is Ownable{
       returns (bool success)
     {
       require(_to != address(0));
-      require(_value &lt;= balances[msg.sender]);
+      require(_value <= balances[msg.sender]);
 
       balances[msg.sender] = balances[msg.sender].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -281,8 +281,8 @@ contract TaylorToken is Ownable{
         onlyWhenTransferable
         returns (bool success) {
       require(_to != address(0));
-      require(_value &lt;= balances[_from]);
-      require(_value &lt;= allowed[_from][msg.sender]);
+      require(_value <= balances[_from]);
+      require(_value <= allowed[_from][msg.sender]);
 
       balances[_from] = balances[_from].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -343,7 +343,7 @@ contract TaylorToken is Ownable{
       returns (bool)
     {
       uint oldValue = allowed[msg.sender][_spender];
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -361,7 +361,7 @@ contract TaylorToken is Ownable{
       returns (bool success)
     {
       require(whitelistedBurn[msg.sender]);
-      require(_amount &lt;= balances[msg.sender]);
+      require(_amount <= balances[msg.sender]);
       balances[msg.sender] = balances[msg.sender].sub(_amount);
       totalSupply =  totalSupply.sub(_amount);
       Burn(msg.sender, _amount);
@@ -402,7 +402,7 @@ contract TaylorToken is Ownable{
     Copyright (c) 2018 SmartTaylor
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the &quot;Software&quot;), to deal
+    of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
@@ -411,7 +411,7 @@ contract TaylorToken is Ownable{
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -468,11 +468,11 @@ contract TaylorTokenTGE is Ownable {
   }
 
   /**
-    @dev Distributes all the tokens belonging to this contract to it&#39;s defined destinationss
+    @dev Distributes all the tokens belonging to this contract to it's defined destinationss
   **/
   function distribute() public onlyOwner {
     uint256 total = FOUNDERS.add(ADVISORS).add(TEAM).add(REFERRAL_PROGRAMS).add(PRESALE).add(PUBLICSALE);
-    require(total &gt;= token.balanceOf(this));
+    require(total >= token.balanceOf(this));
     token.transfer(founders_address, FOUNDERS);
     token.transfer(advisors_address, ADVISORS);
     token.transfer(team_address, TEAM);

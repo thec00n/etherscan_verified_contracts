@@ -22,7 +22,7 @@ contract PepFarmer {
     }
 
     function pepFarm() external {
-        for (uint8 i = 0; i &lt; 100; i++) {
+        for (uint8 i = 0; i < 100; i++) {
             CornFarm(shop).buyObject(this);
         }
     }

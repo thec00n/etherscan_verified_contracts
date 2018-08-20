@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_y &lt;= _x);
+        assert(_y <= _x);
         return _x - _y;
     }
 
     function add(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
         z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 }
@@ -93,18 +93,18 @@ contract LemurTokenSale is Ownable {
     }
 
     function setRate(uint256 _rate) onlyOwner public {
-        require(_rate &gt; 0);
+        require(_rate > 0);
         rate = _rate;
     }
 
     function setClosingTime(uint256 _days) onlyOwner public {
-        require(_days &gt;= 1);
+        require(_days >= 1);
         closingTime = openingTime.add(_days.mul(1 days));
     }
 
     function hasClosed() public view returns (bool) {
         // solium-disable-next-line security/no-block-members
-        return block.timestamp &gt; closingTime;
+        return block.timestamp > closingTime;
     }
 
     function () external payable {
@@ -113,11 +113,11 @@ contract LemurTokenSale is Ownable {
 
     function buyTokens(address _beneficiary) public payable {
         require(!hasClosed());
-        require(token != address(0) &amp;&amp; wallet != address(0) &amp;&amp; rate &gt; 0);
+        require(token != address(0) && wallet != address(0) && rate > 0);
         require(_beneficiary != address(0));
 
         uint256 amount = msg.value;
-        require(amount &gt;= 0.01 ether);
+        require(amount >= 0.01 ether);
 
         uint256 tokenAmount = amount.mul(rate);
         amountRaised = amountRaised.add(amount);

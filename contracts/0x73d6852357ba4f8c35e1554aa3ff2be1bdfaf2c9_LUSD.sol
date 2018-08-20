@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 // sol to LUSD token
 // 
 // Senior Development Engineer  CHIEH-HSUAN WANG of Lucas. 
-// Jason Wang  &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5ccddcdddd5cbd6e5c2c8c4ccc98bc6cac8">[email&#160;protected]</a>&gt;
+// Jason Wang  <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5ccddcdddd5cbd6e5c2c8c4ccc98bc6cac8">[email protected]</a>>
 // reference https://ethereum.org/token
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
 
@@ -27,14 +27,14 @@ contract owned {
 contract LUSD is owned {
     address public deployer;
     // Public variables of the token
-    string public name =&quot;Lucas Credit Cooperative&quot;;
-    string public symbol = &quot;LUSD&quot;;
+    string public name ="Lucas Credit Cooperative";
+    string public symbol = "LUSD";
     uint8 public decimals = 4;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply = 1000000000000;
 
-    mapping (address =&gt; uint256) public balanceOf;  // 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;  // 
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -82,9 +82,9 @@ contract LUSD is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -97,19 +97,19 @@ contract LUSD is owned {
     }
 
     function transfer(address _to, uint256 _value) public {
-        /*if(msg.sender.balance &lt; minBalanceForAccounts)
+        /*if(msg.sender.balance < minBalanceForAccounts)
             sell((minBalanceForAccounts - msg.sender.balance) / sellPrice);
-        if(_to.balance&lt;minBalanceForAccounts)   // 可选，让接受者也补充余额，以便接受者使用代币。
+        if(_to.balance<minBalanceForAccounts)   // 可选，让接受者也补充余额，以便接受者使用代币。
             _to.send(sell((minBalanceForAccounts - _to.balance) / sellPrice));*/
         if (_to == 0x0) revert();//throw;                               // Prevent transfer to 0x0 address. Use burn() instead
-		if (_value &lt;= 0) revert();//throw; 
-        if (balanceOf[msg.sender] &lt; _value) revert();//throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();//throw; // Check for overflows
+		if (_value <= 0) revert();//throw; 
+        if (balanceOf[msg.sender] < _value) revert();//throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();//throw; // Check for overflows
         emit Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -130,7 +130,7 @@ contract LUSD is owned {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         emit Burn(msg.sender, _value);
@@ -138,8 +138,8 @@ contract LUSD is owned {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

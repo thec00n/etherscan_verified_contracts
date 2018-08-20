@@ -13,7 +13,7 @@ pragma solidity ^0.4.13;
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -28,20 +28,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,7 +66,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -176,7 +176,7 @@ contract Escapable {
 // Receive Ether
 //////
 
-    /// @notice Called anytime ether is sent to the contract &amp;&amp; creates an event
+    /// @notice Called anytime ether is sent to the contract && creates an event
     /// to more easily track the incoming transactions
     function receiveEther() payable {
         // Do not accept ether if baseToken is not ETH
@@ -260,7 +260,7 @@ contract MexicoMatcher is Escapable {
         uint256 amount;
         
         // If there is enough ETH in the contract to double it, DOUBLE IT!
-        if (this.balance &gt;= msg.value*2){
+        if (this.balance >= msg.value*2){
             amount = msg.value*2; // do it two it!
         
             // Send ETH to the beneficiary; must be an account, not a contract

@@ -10,8 +10,8 @@ pragma solidity ^0.4.11;
 
 contract MPY {
 
-    string public constant name = &quot;MatchPay Token&quot;;
-    string public constant symbol = &quot;MPY&quot;;
+    string public constant name = "MatchPay Token";
+    string public constant symbol = "MPY";
     uint256 public constant decimals = 18;
 
     address owner;
@@ -19,8 +19,8 @@ contract MPY {
     uint256 public fundingStartBlock;
     uint256 public fundingEndBlock;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint256 public constant tokenExchangeRate = 10; // 1 MPY per 0.1 ETH
     uint256 public maxCap = 30 * (10**3) * (10**decimals); // Maximum part for offering
@@ -51,7 +51,7 @@ contract MPY {
 
 
     // Check if ICO is open
-    modifier is_live() { require(block.number &gt;= fundingStartBlock &amp;&amp; block.number &lt;= fundingEndBlock); _; }
+    modifier is_live() { require(block.number >= fundingStartBlock && block.number <= fundingEndBlock); _; }
 
 
     // Only owmer
@@ -64,13 +64,13 @@ contract MPY {
     // safely add
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
     // safely subtract
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -111,9 +111,9 @@ contract MPY {
     /// @param _to Beneficiary
     /// @param _amount Number of tokens
     function transfer(address _to, uint256 _amount) returns (bool success) {
-      if (balances[msg.sender] &gt;= _amount
-          &amp;&amp; _amount &gt; 0
-          &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+      if (balances[msg.sender] >= _amount
+          && _amount > 0
+          && balances[_to] + _amount > balances[_to]) {
 
               balances[msg.sender] -= _amount;
               balances[_to] += _amount;
@@ -132,10 +132,10 @@ contract MPY {
     /// @param _to To address
     /// @param _amount Amount of tokens
     function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) {
-      if (balances[_from] &gt;= _amount
-          &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-          &amp;&amp; _amount &gt; 0
-          &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+      if (balances[_from] >= _amount
+          && allowed[_from][msg.sender] >= _amount
+          && _amount > 0
+          && balances[_to] + _amount > balances[_to]) {
 
               balances[_from] -= _amount;
               allowed[_from][msg.sender] -= _amount;
@@ -191,7 +191,7 @@ contract MPY {
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);   // calculate num of tokens purchased
         uint256 checkedSupply = safeAdd(totalSupply, tokens);      // calculate total supply if purchased
 
-        if (maxCap &lt; checkedSupply) revert();                         // if exceeding token max, cancel order
+        if (maxCap < checkedSupply) revert();                         // if exceeding token max, cancel order
 
         totalSupply = checkedSupply;                               // update totalSupply
         balances[msg.sender] += tokens;                            // update token balance for payer
@@ -206,8 +206,8 @@ contract MPY {
     // wrap up crowdsale after end block
     function finalize() external {
         if (msg.sender != owner) revert();                                         // check caller is ETH deposit address
-        if (totalSupply &lt; minCap) revert();                                        // check minimum is met
-        if (block.number &lt;= fundingEndBlock &amp;&amp; totalSupply &lt; maxCap) revert();     // check past end block unless at creation cap
+        if (totalSupply < minCap) revert();                                        // check minimum is met
+        if (block.number <= fundingEndBlock && totalSupply < maxCap) revert();     // check past end block unless at creation cap
 
         if (!owner.send(this.balance)) revert();                                   // send account balance to ETH deposit address
 
@@ -221,8 +221,8 @@ contract MPY {
     // legacy code to enable refunds if min token supply not met (not possible with fixed supply)
     function refund() external {
         if (isFinalized) revert();                               // check crowdsale state is false
-        if (block.number &lt;= fundingEndBlock) revert();           // check crowdsale still running
-        if (totalSupply &gt;= minCap) revert();                     // check creation min was not met
+        if (block.number <= fundingEndBlock) revert();           // check crowdsale still running
+        if (totalSupply >= minCap) revert();                     // check creation min was not met
         if (msg.sender == owner) revert();                       // do not allow dev refund
 
         uint256 mpyVal = balances[msg.sender];                // get callers token balance

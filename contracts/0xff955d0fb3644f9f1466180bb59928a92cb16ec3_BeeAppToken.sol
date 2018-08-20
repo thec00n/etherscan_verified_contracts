@@ -8,8 +8,8 @@ contract BeeAppToken {
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply = 1500000000000000000000000000;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    //mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    //mapping (address => mapping (address => uint256)) public allowance;
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
     
@@ -29,8 +29,8 @@ contract BeeAppToken {
     ) public {
         //totalSupply = initialSupply * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;Bee App Token&quot;;                                   // Set the name for display purposes
-        symbol = &quot;BTO&quot;;                               // Set the symbol for display purposes
+        name = "Bee App Token";                                   // Set the name for display purposes
+        symbol = "BTO";                               // Set the symbol for display purposes
     }
     /**
      * Internal transfer, only can be called by this contract
@@ -39,9 +39,9 @@ contract BeeAppToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -74,8 +74,8 @@ contract BeeAppToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-     //   require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
-        require(_value &lt;= balanceOf[_from]);
+     //   require(_value <= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= balanceOf[_from]);
        // balanceOf[_from] -= _value;
         //allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);

@@ -39,13 +39,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,8 +54,8 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; bool   ) isInvestor;
+  mapping(address => uint256) balances;
+  mapping(address => bool   ) isInvestor;
   address[] public arrInvestors;
   
   uint256 totalSupply_;
@@ -81,14 +81,14 @@ minimun one token to transfer
 or only all rest
 */
   function transfer(address _to, uint256 _value) public returns (bool) {
-    if (balances[msg.sender] &gt;= 1 ether){
-        require(_value &gt;= 1 ether);     // minimun one token to transfer
+    if (balances[msg.sender] >= 1 ether){
+        require(_value >= 1 ether);     // minimun one token to transfer
     } else {
         require(_value == balances[msg.sender]); //only all rest
     }
     
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -120,7 +120,7 @@ contract BurnableToken is BasicToken {
   }
 
   function _burn(address _who, uint256 _value) internal {
-    require(_value &lt;= balances[_who]);
+    require(_value <= balances[_who]);
     balances[_who] = balances[_who].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
     emit Burn(_who, _value);
@@ -130,8 +130,8 @@ contract BurnableToken is BasicToken {
 
 
 contract GoldenCurrencyToken is BurnableToken {
-  string public constant name = &quot;Pre-ICO Golden Currency Token&quot;;
-  string public constant symbol = &quot;PGCT&quot;;
+  string public constant name = "Pre-ICO Golden Currency Token";
+  string public constant symbol = "PGCT";
   uint32 public constant decimals = 18;
   uint256 public INITIAL_SUPPLY = 7600000 * 1 ether;
 
@@ -200,7 +200,7 @@ contract Crowdsale is Ownable {
   GoldenCurrencyToken public token = new GoldenCurrencyToken();
   
     modifier saleIsOn() {
-        require(now &gt; start &amp;&amp; now &lt; finish);
+        require(now > start && now < finish);
         _;
     }
 
@@ -213,7 +213,7 @@ contract Crowdsale is Ownable {
         // the function of selling tokens to new investors
         // the sum is entered in whole tokens (1 = 1 token)
         require (_newInvestor!= address(0));
-        require (_value &gt;= 1);
+        require (_value >= 1);
         _value = _value.mul(1 ether);
         token.transfer(_newInvestor, _value);
     }  
@@ -223,7 +223,7 @@ contract Crowdsale is Ownable {
 
     require(profitOwner != address(0));
     uint tokens = tokenRate.mul(msg.value);
-    require (tokens.div(1 ether) &gt;= 100);  //minimum 100 tokens purchase
+    require (tokens.div(1 ether) >= 100);  //minimum 100 tokens purchase
 
     profitOwner.transfer(msg.value);
     
@@ -236,11 +236,11 @@ contract Crowdsale is Ownable {
 
 
 
-    if(now &lt; period2) {
+    if(now < period2) {
       bonusTokens = tokens.div(4);
-    } else if(now &gt;= period2 &amp;&amp; now &lt; period3) {
+    } else if(now >= period2 && now < period3) {
       bonusTokens = tokens.div(5);
-    } else if(now &gt;= period3 &amp;&amp; now &lt; finish) {
+    } else if(now >= period3 && now < finish) {
       bonusTokens = tokens.div(100).mul(15);
     }
 

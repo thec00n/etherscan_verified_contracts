@@ -42,7 +42,7 @@ contract IcoMultiWallet is Ownable
 		uint nDailyPrice;
 	}
 	
-	mapping (address =&gt; Account) m_mapAccounts;
+	mapping (address => Account) m_mapAccounts;
 	uint m_nDailyPrice = 1 finney;  // Campaign has to pay it daily. Price can increase only for new campaigns.
 
 	uint m_nTotalDeposited = 0;
@@ -61,7 +61,7 @@ contract IcoMultiWallet is Ownable
 	
 	function depositFunds() public payable
 	{
-		if(msg.value &lt; m_nDailyPrice)
+		if(msg.value < m_nDailyPrice)
 			revert();
 
 		m_nTotalDeposited += msg.value;

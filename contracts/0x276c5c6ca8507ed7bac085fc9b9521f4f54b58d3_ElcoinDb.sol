@@ -6,7 +6,7 @@ contract ElcoinDb {
 
     modifier checkOwner() { if(msg.sender == owner) { _ } else { return; } }
     modifier checkCaller() { if(msg.sender == caller) { _ } else { return; } }
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     function ElcoinDb(address pCaller) {
         owner = msg.sender;
@@ -46,7 +46,7 @@ contract ElcoinDb {
 
     function withdraw(address addr, uint amount, bytes32 hash, uint time) checkCaller() returns (bool res) {
         uint oldBalance = balances[addr];
-        if(oldBalance &gt;= amount) {
+        if(oldBalance >= amount) {
             msg.sender.send(amount);
             balances[addr] = oldBalance - amount;
             Transaction(hash, addr, 0, time, amount);

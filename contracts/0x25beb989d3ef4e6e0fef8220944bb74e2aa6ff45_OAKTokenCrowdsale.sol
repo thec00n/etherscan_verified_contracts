@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -61,20 +61,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
     /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
      *
      * Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-     * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+     * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
@@ -216,7 +216,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -276,11 +276,11 @@ contract MintableToken is StandardToken, Ownable {
 // File: contracts/OAKToken.sol
 
 contract OAKToken is MintableToken {
-    string public name = &quot;Acorn Collective Token&quot;;
-    string public symbol = &quot;OAK&quot;;
+    string public name = "Acorn Collective Token";
+    string public symbol = "OAK";
     uint256 public decimals = 18;
 
-    mapping(address =&gt; bool) public kycRequired;
+    mapping(address => bool) public kycRequired;
 
     // overriding MintableToken#mint to add kyc logic
     function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
@@ -349,9 +349,9 @@ contract Crowdsale {
 
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-        require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         token = createTokenContract();
@@ -404,14 +404,14 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
 
@@ -433,7 +433,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner public {
         require(!isFinalized);
@@ -512,7 +512,7 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
 
     uint256 public totalTokenSupply;
 
-    mapping(address =&gt; bool) public vip;
+    mapping(address => bool) public vip;
 
     //TokenTimelock logic
     uint256 public Y1_lockedTokenReleaseTime;
@@ -542,7 +542,7 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
     // update hardCap for sale
     function setHardCap(uint256 _hardCap) public onlyOwner {
         require(!isFinalized);
-        require(_hardCap &gt;= 0 &amp;&amp; _hardCap &lt;= totalTokenSupply);
+        require(_hardCap >= 0 && _hardCap <= totalTokenSupply);
 
         hardCap = _hardCap;
     }
@@ -557,7 +557,7 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
     // update token units a buyer gets per wei
     function setRate(uint256 _rate) public onlyOwner {
         require(!isFinalized);
-        require(_rate &gt; 0);
+        require(_rate > 0);
 
         rate = _rate;
     }
@@ -565,7 +565,7 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
     // update token units a vip buyer gets per wei
     function setVipRate(uint256 _vipRate) public onlyOwner {
         require(!isFinalized);
-        require(_vipRate &gt; 0);
+        require(_vipRate > 0);
 
         vipRate = _vipRate;
     }
@@ -583,8 +583,8 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
     // update startTime, endTime for post-sales
     function setSalePeriod(uint256 _startTime, uint256 _endTime) public onlyOwner {
         require(!isFinalized);
-        require(_startTime &gt; 0);
-        require(_endTime &gt; _startTime);
+        require(_startTime > 0);
+        require(_endTime > _startTime);
 
         startTime = _startTime;
         endTime = _endTime;
@@ -623,11 +623,11 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
     // overriding Crowdsale#validPurchase to add capped sale logic
     // @return true if the transaction can buy tokens
     function validPurchase(uint256 tokens) internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool withinCap = soldTokens.add(tokens) &lt;= hardCap;
-        bool withinTotalSupply = soldTokens.add(tokens) &lt;= totalTokenSupply;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool withinCap = soldTokens.add(tokens) <= hardCap;
+        bool withinTotalSupply = soldTokens.add(tokens) <= totalTokenSupply;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap &amp;&amp; withinTotalSupply;
+        return withinPeriod && nonZeroPurchase && withinCap && withinTotalSupply;
     }
 
     // overriding FinalizableCrowdsale#finalization to add 20% of sold token for owner
@@ -653,8 +653,8 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
 
     // release the 1st year locked token
     function Y1_release() onlyOwner public {
-        require(Y1_lockedTokenAmount &gt; 0);
-        require(now &gt; Y1_lockedTokenReleaseTime);
+        require(Y1_lockedTokenAmount > 0);
+        require(now > Y1_lockedTokenReleaseTime);
 
         // transfer the locked token to restricted
         token.transfer(restricted, Y1_lockedTokenAmount);
@@ -665,11 +665,11 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
     // release the 2nd year locked token
     function Y2_release() onlyOwner public {
         require(Y1_lockedTokenAmount == 0);
-        require(Y2_lockedTokenAmount &gt; 0);
-        require(now &gt; Y2_lockedTokenReleaseTime);
+        require(Y2_lockedTokenAmount > 0);
+        require(now > Y2_lockedTokenReleaseTime);
 
         uint256 amount = token.balanceOf(this);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         // transfer the locked token to restricted
         token.transfer(restricted, amount);
@@ -683,9 +683,9 @@ contract OAKTokenCrowdsale is FinalizableCrowdsale, Pausable {
 
     function addPrecommitment(address participant, uint balance) onlyOwner public {
         require(!isFinalized);
-        require(balance &gt; 0);
+        require(balance > 0);
         // Check if the total token supply will be exceeded
-        require(soldTokens.add(balance) &lt;= totalTokenSupply);
+        require(soldTokens.add(balance) <= totalTokenSupply);
 
         soldTokens = soldTokens.add(balance);
         token.mint(participant, balance);

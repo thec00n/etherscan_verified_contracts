@@ -8,7 +8,7 @@ contract EtherealTarot {
         uint8 card_count;
     }
 
-  mapping(address =&gt; reading) readings;
+  mapping(address => reading) readings;
 
   uint8[78] cards;
   uint8 deckSize = 78;
@@ -16,7 +16,7 @@ contract EtherealTarot {
 
   constructor() public {
     creator = msg.sender;
-    for (uint8 card = 0; card &lt; deckSize; card++) {
+    for (uint8 card = 0; card < deckSize; card++) {
       cards[card] = card;
     }
   }
@@ -57,11 +57,11 @@ contract EtherealTarot {
   function spread(uint8 requested) private {
     // cards in the current spread
     uint8[] memory table = new uint8[](requested);
-    // reversed cards aren&#39;t all bad! understand the shadow...
+    // reversed cards aren't all bad! understand the shadow...
     bool[] memory upright = new bool[](requested);
 
     //Draw the whole spread
-    for (uint8 position = 0; position &lt; requested; position++) {
+    for (uint8 position = 0; position < requested; position++) {
       table[position] = draw_random_card(position);
       upright[position] = random_bool(position);
     }

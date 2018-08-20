@@ -37,20 +37,20 @@ contract safeMath {
   }
 
   function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &gt; 0);
+    safeAssert(b > 0);
     uint256 c = a / b;
     safeAssert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-    safeAssert(b &lt;= a);
+    safeAssert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    safeAssert(c&gt;=a &amp;&amp; c&gt;=b);
+    safeAssert(c>=a && c>=b);
     return c;
   }
 
@@ -66,13 +66,13 @@ contract StandardToken is owned, safeMath {
 }
 
 contract MoyTokenStorage is owned, safeMath {
-  // owner/admin &amp; token reward
+  // owner/admin & token reward
   address        public admin = owner;   //admin address
   StandardToken  public tokenContract;     // address of MoibeTV MOY ERC20 Standard Token.
 
   // loop control and limiters for funding proyect and mineable tokens through presale.
 
-  string  public CurrentStatus = &quot;&quot;;                          // current preSale status
+  string  public CurrentStatus = "";                          // current preSale status
   uint256 public fundingStartBlock;                           // preSale start block#
   uint256 public fundingEndBlock;                             // preSale end block#
   uint256 public successAtBlock;                              // the private funding succeed at this block. All in-platform tokens backed.
@@ -85,13 +85,13 @@ contract MoyTokenStorage is owned, safeMath {
   event Transfer(address indexed from, address indexed to, uint256 value); 
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Buy(address indexed _sender, uint256 _eth, uint256 _MOY);
-  mapping(address =&gt; uint256) balancesArray;
-  mapping(address =&gt; uint256) fundValue;
+  mapping(address => uint256) balancesArray;
+  mapping(address => uint256) fundValue;
 
   // default function, map admin
   function MoyTokenStorage() public onlyOwner {
     admin = msg.sender;
-    CurrentStatus = &quot;In-Platform POW Tokens Storage Released&quot;;
+    CurrentStatus = "In-Platform POW Tokens Storage Released";
   }
 
   
@@ -107,15 +107,15 @@ contract MoyTokenStorage is owned, safeMath {
           fundingStartBlock = _fundingStartBlock;
           fundingEndBlock = _fundingEndBlock;
                 
-          CurrentStatus = &quot;Fundind of Proyect in Process&quot;;
+          CurrentStatus = "Fundind of Proyect in Process";
           //PowerLineUp is funding the proyect to be able to launch the tokens. 
           
-          return &quot;Storage is setup.&quot;;
+          return "Storage is setup.";
 
       } else if (msg.sender != admin) {
-          return &quot;Not Authorized&quot;;
+          return "Not Authorized";
       } else  {
-          return &quot;Setup cannot be changed.&quot;;
+          return "Setup cannot be changed.";
       }
     }
 
@@ -127,14 +127,14 @@ contract MoyTokenStorage is owned, safeMath {
           amountRaisedInUsd = _amountRaisedInUsd; //amount raised includes development, human resources, infraestructure, design and marketing achieved by the proyect founders and partners.
           successAtBlock = _successAtBlock;       //Block when goal reached.
           successfulPreSale = true;       
-          CurrentStatus = &quot;Funding Successful, in-platform tokens ready to use.&quot;;
+          CurrentStatus = "Funding Successful, in-platform tokens ready to use.";
 
           
-          return &quot;All in-platform tokens backed.&quot;;
+          return "All in-platform tokens backed.";
       } else if (msg.sender != admin) {
-          return &quot;Not Authorized&quot;;
+          return "Not Authorized";
       } else {
-          return &quot;Setup cannot be changed.&quot;;
+          return "Setup cannot be changed.";
       }
     }
 

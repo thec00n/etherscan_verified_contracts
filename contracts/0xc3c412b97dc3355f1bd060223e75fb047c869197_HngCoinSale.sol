@@ -30,7 +30,7 @@ contract HngCoin {
     uint8 public decimals = 18;                 // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
     uint256 public coinunits;                 // How many units of your coin can be bought by 1 ETH?
-    uint256 public ethereumWei;            // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.
+    uint256 public ethereumWei;            // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.
     address public tokensWallet;             // Safe Address could be changed so owner isnt same address
     address public owner;             // Safe Address could be changed so owner isnt same address
     address public salesaccount;           // Where should the raised ETH be sent to?
@@ -40,8 +40,8 @@ contract HngCoin {
     bool public isActive; //check if we are seling or not
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -63,8 +63,8 @@ contract HngCoin {
         //initialSupply = 900000000000000000000000000;
         totalSupply = initialSupply * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;HNGCOIN&quot;;                                   // Set the name for display purposes
-        symbol = &quot;HNGC&quot;;                               // Set the symbol for display purposes
+        name = "HNGCOIN";                                   // Set the name for display purposes
+        symbol = "HNGC";                               // Set the symbol for display purposes
         coinunits = 100;                                      // Set the price of your token for the ICO (CHANGE THIS)
         tokensWallet = msg.sender;
         salesaccount = msg.sender;
@@ -82,9 +82,9 @@ contract HngCoin {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -120,7 +120,7 @@ contract HngCoin {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -168,7 +168,7 @@ contract HngCoin {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -184,10 +184,10 @@ contract HngCoin {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         emit Burn(_from, _value);
         return true;
@@ -236,7 +236,7 @@ contract HngCoin {
       require(isActive);
       uint256 amount = msg.value * coinunits;
       //uint256 amount = 100000000000000000;
-      require(balanceOf[tokensWallet] &gt;= amount);
+      require(balanceOf[tokensWallet] >= amount);
 
       balanceOf[tokensWallet] -= amount;
       balanceOf[msg.sender] += amount;
@@ -258,7 +258,7 @@ contract HngCoinSale is owned, HngCoin {
 
 
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -273,8 +273,8 @@ contract HngCoinSale is owned, HngCoin {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -292,7 +292,7 @@ contract HngCoinSale is owned, HngCoin {
         emit Transfer(this, target, mintedAmount);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
@@ -318,7 +318,7 @@ contract HngCoinSale is owned, HngCoin {
     } */
     /* function buyTokens(uint256 _numberOfTokens) public payable {
         require(msg.value == multiply(_numberOfTokens, tokenPrice));
-        require(tokenContract.balanceOf(this) &gt;= _numberOfTokens);
+        require(tokenContract.balanceOf(this) >= _numberOfTokens);
         require(tokenContract.transfer(msg.sender, _numberOfTokens));
 
         tokensSold += _numberOfTokens;
@@ -330,9 +330,9 @@ contract HngCoinSale is owned, HngCoin {
     /// @param amount amount of tokens to be sold
     /* function sell(uint256 amount) public {
         address myAddress = this;
-        require(myAddress.balance &gt;= amount * sellPrice);      // checks if the contract has enough ether to buy
+        require(myAddress.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
         _transfer(msg.sender, owner, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
     } */
 
 }

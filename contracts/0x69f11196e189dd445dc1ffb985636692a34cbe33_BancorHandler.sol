@@ -25,7 +25,7 @@ contract BancorHandler {
         bytes32 r, // ignore
         bytes32 s // ignore
     ) external returns (uint256) {
-        // Just return a massive number, as there&#39;s nothing else we can do here
+        // Just return a massive number, as there's nothing else we can do here
         return MAX_UINT;
     }
 
@@ -59,7 +59,7 @@ contract BancorHandler {
     ) internal returns (uint256) {
         // Find the length of the conversion path
         uint256 len = 0;
-        for(; len &lt; orderAddresses.length; len++) {
+        for(; len < orderAddresses.length; len++) {
             if(orderAddresses[len] == 0) {
                 break;
             }
@@ -68,7 +68,7 @@ contract BancorHandler {
         address[] memory conversionPath = new address[](len);
 
         // Move the contents from orderAddresses to conversionPath
-        for(uint256 i = 0; i &lt; len; i++) {
+        for(uint256 i = 0; i < len; i++) {
             conversionPath[i] = orderAddresses[i];
         }
 

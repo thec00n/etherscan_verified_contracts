@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,8 +91,8 @@ contract VGCToken is Ownable {
   // Triggered whenever approve(address _spender, uint256 _value) is called.
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-  string public constant symbol = &quot;VGC&quot;;
-  string public constant name = &quot;VooGlueC&quot;;
+  string public constant symbol = "VGC";
+  string public constant name = "VooGlueC";
   uint8 public constant decimals = 2;
   uint256 _totalSupply = 55000000*pow(10,decimals);
 
@@ -100,10 +100,10 @@ contract VGCToken is Ownable {
   address public owner;
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   // power function
   function pow(uint256 a, uint256 b) internal pure returns (uint256){ //power function
@@ -132,7 +132,7 @@ contract VGCToken is Ownable {
   transfer token from message sender to _to
   */
   function transfer(address _to, uint256 _amount) public returns (bool success) {
-    //you can&#39;t transfer token back to token contract
+    //you can't transfer token back to token contract
     require(this != _to);
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -160,10 +160,10 @@ contract VGCToken is Ownable {
     )public returns (bool success) {
       require(this != _to);
 
-      if (balances[_from] &gt;= _amount
-       &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-       &amp;&amp; _amount &gt; 0
-       &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+      if (balances[_from] >= _amount
+       && allowed[_from][msg.sender] >= _amount
+       && _amount > 0
+       && balances[_to] + _amount > balances[_to]) {
        balances[_from] -= _amount;
        allowed[_from][msg.sender] -= _amount;
        balances[_to] += _amount;
@@ -206,11 +206,11 @@ contract VGCToken is Ownable {
     balances[_address] = 0;
   }
   // Tokens reserve (last screen in documentation)
-  mapping (address =&gt; bool) public teamBalanceMap;
-  mapping (address =&gt; bool) public bountyBalanceMap;
-  mapping (address =&gt; bool) public advisorsBalanceMap;
-  mapping (address =&gt; bool) public referalFundBalanceMap;
-  mapping (address =&gt; bool) public reserveBalanceMap;
+  mapping (address => bool) public teamBalanceMap;
+  mapping (address => bool) public bountyBalanceMap;
+  mapping (address => bool) public advisorsBalanceMap;
+  mapping (address => bool) public referalFundBalanceMap;
+  mapping (address => bool) public reserveBalanceMap;
 
 
   uint private crowdsaleBalance = 36000000*pow(10,decimals);
@@ -331,10 +331,10 @@ contract VGCToken is Ownable {
 
   // Dashboard function
   function referralProgram (address[] _addresses, uint[] _values, uint _summary) public onlyTechSupport {
-    require (_summary &lt;= getCrowdsaleBalance());
+    require (_summary <= getCrowdsaleBalance());
     require(_addresses.length == _values.length);
     balances[this] = balances[this].sub(_summary);
-    for (uint i = 0; i &lt; _addresses.length; i++){
+    for (uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       Transfer(this,_addresses[i],_values[i]);
     }

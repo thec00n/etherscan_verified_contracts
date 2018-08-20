@@ -19,12 +19,12 @@ contract ERC20Interface {
 }
 
 contract StcToken is ERC20Interface {
-	string public constant symbol = &quot;STC&quot;;
-	string public constant name = &quot;StarChainToken&quot;;
+	string public constant symbol = "STC";
+	string public constant name = "StarChainToken";
 	uint8 public constant decimals = 8;
 	uint256 _totalSupply = 1000000000*100000000;
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping (address => uint256)) allowed;
 
 	function StcToken(){
 		balances[msg.sender] = _totalSupply;
@@ -39,9 +39,9 @@ contract StcToken is ERC20Interface {
 	}
 
 	function transfer(address _to,uint256 _amount) public returns (bool success){
-		if(balances[msg.sender] &gt;= _amount
-			&amp;&amp; _amount &gt;0
-			&amp;&amp; (balances[_to]+_amount) &gt; balances[_to]){
+		if(balances[msg.sender] >= _amount
+			&& _amount >0
+			&& (balances[_to]+_amount) > balances[_to]){
 			balances[msg.sender] -= _amount;
 			balances[_to] += _amount;
 			Transfer(msg.sender,_to,_amount);
@@ -52,10 +52,10 @@ contract StcToken is ERC20Interface {
 	}
 
 	function transferFrom(address _from,address _to,uint256 _amount) public returns(bool success){
-		if(balances[_from] &gt;= _amount
-			&amp;&amp; _amount &gt; 0
-			&amp;&amp; (balances[_to]+_amount) &gt; balances[_to]
-			&amp;&amp; allowed[_from][msg.sender] &gt;= _amount){
+		if(balances[_from] >= _amount
+			&& _amount > 0
+			&& (balances[_to]+_amount) > balances[_to]
+			&& allowed[_from][msg.sender] >= _amount){
 			balances[_from] -= _amount;
 			balances[_to] += _amount;
 			allowed[_from][msg.sender] -= _amount;

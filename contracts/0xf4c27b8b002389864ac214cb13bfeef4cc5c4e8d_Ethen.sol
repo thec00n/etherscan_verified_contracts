@@ -84,9 +84,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -94,7 +94,7 @@ library SafeMath {
     * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -103,7 +103,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -118,19 +118,19 @@ contract ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
-    string public constant name = &quot;&quot;;
-    string public constant symbol = &quot;&quot;;
+    string public constant name = "";
+    string public constant symbol = "";
     uint8 public constant decimals = 0;
 }
 
 // Ethen Decentralized Exchange Contract
 // https://ethen.io/
 contract Ethen is Pausable {
-    // Trade &amp; order types
+    // Trade & order types
     uint public constant BUY = 1; // order type BID
     uint public constant SELL = 0; // order type ASK
 
-    // Percent multiplier in makeFee &amp; takeFee
+    // Percent multiplier in makeFee & takeFee
     uint public FEE_MUL = 1000000;
 
     // x1000000, 0.5%
@@ -139,7 +139,7 @@ contract Ethen is Pausable {
     // Time after expiration, until order will still be valid to trade.
     //
     // All trades are signed by server so it should not be possible to trade
-    // expired orders. Let&#39;s say, signing happens at the last second.
+    // expired orders. Let's say, signing happens at the last second.
     // Some time needed for transaction to be mined. If we going to require
     // here in contract that expiration time should always be less than
     // a block.timestamp than such trades will not be successful.
@@ -150,8 +150,8 @@ contract Ethen is Pausable {
     uint public constant MAX_EXPIRE_DELAY = 600;
 
     // Value of keccak256(
-    //     &quot;address Contract&quot;, &quot;string Order&quot;, &quot;address Token&quot;, &quot;uint Nonce&quot;,
-    //     &quot;uint Price&quot;, &quot;uint Amount&quot;, &quot;uint Expire&quot;
+    //     "address Contract", "string Order", "address Token", "uint Nonce",
+    //     "uint Price", "uint Amount", "uint Expire"
     // )
     // See https://github.com/ethereum/EIPs/pull/712
     bytes32 public constant ETH_SIGN_TYPED_DATA_ARGHASH =
@@ -174,16 +174,16 @@ contract Ethen is Pausable {
     uint public takeFee = 2500;
 
     // user address to ether balances
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     // user address to token address to token balance
-    mapping (address =&gt; mapping (address =&gt; uint)) public tokens;
+    mapping (address => mapping (address => uint)) public tokens;
 
-    // user =&gt; order nonce =&gt; amount filled
-    mapping (address =&gt; mapping (uint =&gt; uint)) public filled;
+    // user => order nonce => amount filled
+    mapping (address => mapping (uint => uint)) public filled;
 
-    // user =&gt; nonce =&gt; true
-    mapping (address =&gt; mapping (uint =&gt; bool)) public trades;
+    // user => nonce => true
+    mapping (address => mapping (uint => bool)) public trades;
 
     // Every trade should be signed by that address
     address public signer;
@@ -194,11 +194,11 @@ contract Ethen is Pausable {
         uint8   coeff; // 0-99
         uint128 expire;
     }
-    mapping (address =&gt; Coeff) public coeffs;
+    mapping (address => Coeff) public coeffs;
 
     // Users can pay to reduce fees
-    // (duration &lt;&lt; 8) + coeff =&gt; price
-    mapping(uint =&gt; uint) public packs;
+    // (duration << 8) + coeff => price
+    mapping(uint => uint) public packs;
 
     //
     // Events
@@ -272,13 +272,13 @@ contract Ethen is Pausable {
     }
 
     function setMakeFee(uint _makeFee) external onlyOwner {
-        require(_makeFee &lt;= MAX_FEE);
+        require(_makeFee <= MAX_FEE);
         makeFee = _makeFee;
         NewMakeFee(makeFee);
     }
 
     function setTakeFee(uint _takeFee) external onlyOwner {
-        require(_takeFee &lt;= MAX_FEE);
+        require(_takeFee <= MAX_FEE);
         takeFee = _takeFee;
         NewTakeFee(takeFee);
     }
@@ -286,9 +286,9 @@ contract Ethen is Pausable {
     function addPack(
         uint8 _coeff, uint128 _duration, uint _price
     ) external onlyOwner {
-        require(_coeff &lt; 100);
-        require(_duration &gt; 0);
-        require(_price &gt; 0);
+        require(_coeff < 100);
+        require(_duration > 0);
+        require(_price > 0);
 
         uint key = packKey(_coeff, _duration);
         packs[key] = _price;
@@ -300,7 +300,7 @@ contract Ethen is Pausable {
     }
 
     function setExpireDelay(uint _expireDelay) external onlyOwner {
-        require(_expireDelay &lt;= MAX_EXPIRE_DELAY);
+        require(_expireDelay <= MAX_EXPIRE_DELAY);
         expireDelay = _expireDelay;
     }
 
@@ -319,12 +319,12 @@ contract Ethen is Pausable {
     function buyPack(
         uint8 _coeff, uint128 _duration
     ) external payable {
-        require(now &gt;= coeffs[msg.sender].expire);
+        require(now >= coeffs[msg.sender].expire);
 
         uint key = packKey(_coeff, _duration);
         uint price = packs[key];
 
-        require(price &gt; 0);
+        require(price > 0);
         require(msg.value == price);
 
         updateCoeff(msg.sender, _coeff, uint128(now) + _duration, price);
@@ -341,9 +341,9 @@ contract Ethen is Pausable {
         bytes32 hash = keccak256(this, msg.sender, _coeff, _expire);
         require(ecrecover(hash, _v, _r, _s) == signer);
 
-        require(_coeff &lt; 100);
-        require(uint(_expire) &gt; now);
-        require(uint(_expire) &lt;= now + 35 days);
+        require(_coeff < 100);
+        require(uint(_expire) > now);
+        require(uint(_expire) <= now + 35 days);
 
         updateCoeff(msg.sender, _coeff, _expire, 0);
     }
@@ -402,7 +402,7 @@ contract Ethen is Pausable {
     ) external {
         require(_order == BUY || _order == SELL);
 
-        if (now &gt; _expire + expireDelay) {
+        if (now > _expire + expireDelay) {
             // already expired
             return;
         }
@@ -419,7 +419,7 @@ contract Ethen is Pausable {
     }
 
     // Does trade, places order
-    // Argument hell because of &quot;Stack to deep&quot; errors.
+    // Argument hell because of "Stack to deep" errors.
     function trade(
         // _nums[0] 1=BUY, 0=SELL
         // _nums[1] trade.nonce
@@ -432,25 +432,25 @@ contract Ethen is Pausable {
         // _nums[8] order[0].v
         // _nums[9] order[0].tradeAmount
         // ...
-        // _nums[6N-2] order[N-1].nonce         N -&gt; 6N+4
-        // _nums[6N-1] order[N-1].price         N -&gt; 6N+5
-        // _nums[6N]   order[N-1].amount        N -&gt; 6N+6
-        // _nums[6N+1] order[N-1].expire        N -&gt; 6N+7
-        // _nums[6N+2] order[N-1].v             N -&gt; 6N+8
-        // _nums[6N+3] order[N-1].tradeAmount   N -&gt; 6N+9
+        // _nums[6N-2] order[N-1].nonce         N -> 6N+4
+        // _nums[6N-1] order[N-1].price         N -> 6N+5
+        // _nums[6N]   order[N-1].amount        N -> 6N+6
+        // _nums[6N+1] order[N-1].expire        N -> 6N+7
+        // _nums[6N+2] order[N-1].v             N -> 6N+8
+        // _nums[6N+3] order[N-1].tradeAmount   N -> 6N+9
         uint[] _nums,
         // _addrs[0] token
         // _addrs[1] order[0].owner
         // ...
-        // _addrs[N] order[N-1].owner           N -&gt; N+1
+        // _addrs[N] order[N-1].owner           N -> N+1
         address[] _addrs,
         // _rss[0] trade.r
         // _rss[1] trade.s
         // _rss[2] order[0].r
         // _rss[3] order[0].s
         // ...
-        // _rss[2N]   order[N-1].r              N -&gt; 2N+2
-        // _rss[2N+1] order[N-1].s              N -&gt; 2N+3
+        // _rss[2N]   order[N-1].r              N -> 2N+2
+        // _rss[2N+1] order[N-1].s              N -> 2N+3
         bytes32[] _rss
     ) public whenNotPaused {
         // number of orders
@@ -467,7 +467,7 @@ contract Ethen is Pausable {
         saveNonce(_nums[1]);
 
         // _nums[3] trade.expire
-        require(now &lt;= _nums[3]);
+        require(now <= _nums[3]);
 
         // Start building hash signed by server
         // _nums[0] BUY or SELL
@@ -481,12 +481,12 @@ contract Ethen is Pausable {
         // Hash of an order signed by its owner
         bytes32 orderHash;
 
-        for (uint i = 0; i &lt; N; i++) {
+        for (uint i = 0; i < N; i++) {
             checkExpiration(i, _nums);
 
             orderHash = verifyOrder(i, _nums, _addrs, _rss);
 
-            // _nums[6N+3] order[N-1].tradeAmount   N -&gt; 6N+9
+            // _nums[6N+3] order[N-1].tradeAmount   N -> 6N+9
             tradeHash = keccak256(tradeHash, orderHash, _nums[6*i+9]);
 
             tradeOrder(i, _nums, _addrs);
@@ -511,8 +511,8 @@ contract Ethen is Pausable {
         uint _i, // order number
         uint[] _nums
     ) private view {
-        // _nums[6N+1] order[N-1].expire        N -&gt; 6N+7
-        require(now &lt;= _nums[6*_i+7] + expireDelay);
+        // _nums[6N+1] order[N-1].expire        N -> 6N+7
+        require(now <= _nums[6*_i+7] + expireDelay);
     }
 
     // Returns hash of order `_i`, signed by its owner
@@ -526,23 +526,23 @@ contract Ethen is Pausable {
         // User is buying orders, that are selling, and vice versa
         uint8 order = _nums[0] == BUY ? uint8(SELL) : uint8(BUY);
 
-        // _addrs[N] order[N-1].owner       N -&gt; N+1
+        // _addrs[N] order[N-1].owner       N -> N+1
         // _addrs[0] token
         address owner = _addrs[_i+1];
         address token = _addrs[0];
 
-        // _nums[6N-2] order[N-1].nonce         N -&gt; 6N+4
-        // _nums[6N-1] order[N-1].price         N -&gt; 6N+5
-        // _nums[6N]   order[N-1].amount        N -&gt; 6N+6
-        // _nums[6N+1] order[N-1].expire        N -&gt; 6N+7
+        // _nums[6N-2] order[N-1].nonce         N -> 6N+4
+        // _nums[6N-1] order[N-1].price         N -> 6N+5
+        // _nums[6N]   order[N-1].amount        N -> 6N+6
+        // _nums[6N+1] order[N-1].expire        N -> 6N+7
         uint nonce = _nums[6*_i+4];
         uint price = _nums[6*_i+5];
         uint amount = _nums[6*_i+6];
         uint expire = _nums[6*_i+7];
 
-        // _nums[6N+2] order[N-1].v             N -&gt; 6N+8
-        // _rss[2N]   order[N-1].r              N -&gt; 2N+2
-        // _rss[2N+1] order[N-1].s              N -&gt; 2N+3
+        // _nums[6N+2] order[N-1].v             N -> 6N+8
+        // _rss[2N]   order[N-1].r              N -> 2N+2
+        // _rss[2N+1] order[N-1].s              N -> 2N+3
         uint v = _nums[6*_i+8];
         bytes32 r = _rss[2*_i+2];
         bytes32 s = _rss[2*_i+3];
@@ -562,11 +562,11 @@ contract Ethen is Pausable {
     ) private {
         // _nums[0] BUY or SELL
         // _addrs[0] token
-        // _addrs[N] order[N-1].owner           N -&gt; N+1
-        // _nums[6N-2] order[N-1].nonce         N -&gt; 6N+4
-        // _nums[6N-1] order[N-1].price         N -&gt; 6N+5
-        // _nums[6N]   order[N-1].amount        N -&gt; 6N+6
-        // _nums[6N+3] order[N-1].tradeAmount   N -&gt; 6N+9
+        // _addrs[N] order[N-1].owner           N -> N+1
+        // _nums[6N-2] order[N-1].nonce         N -> 6N+4
+        // _nums[6N-1] order[N-1].price         N -> 6N+5
+        // _nums[6N]   order[N-1].amount        N -> 6N+6
+        // _nums[6N+3] order[N-1].tradeAmount   N -> 6N+9
         executeOrder(
             _nums[0],
             _addrs[0],
@@ -624,7 +624,7 @@ contract Ethen is Pausable {
         );
 
         // Sanity check: orders should never overfill
-        require(filled[_orderOwner][_orderNonce] &lt;= _orderAmount);
+        require(filled[_orderOwner][_orderNonce] <= _orderAmount);
 
         uint makeFees = getFees(tradeEther, makeFee, _orderOwner);
         uint takeFees = getFees(tradeEther, takeFee, msg.sender);
@@ -714,13 +714,13 @@ contract Ethen is Pausable {
         );
 
         // trade no more than needed
-        if (_tokens &gt; _tradeAmount) {
+        if (_tokens > _tradeAmount) {
             _tokens = _tradeAmount;
         }
 
         if (_trade == BUY) {
             // ask owner has less tokens than it is on ask
-            if (_tokens &gt; tokens[_orderOwner][_token]) {
+            if (_tokens > tokens[_orderOwner][_token]) {
                 NotEnoughTokens(
                     _orderOwner, _token, _tokens, tokens[_orderOwner][_token]
                 );
@@ -728,7 +728,7 @@ contract Ethen is Pausable {
             }
         } else {
             // not possible to sell more tokens than sender has
-            if (_tokens &gt; tokens[msg.sender][_token]) {
+            if (_tokens > tokens[msg.sender][_token]) {
                 NotEnoughTokens(
                     msg.sender, _token, _tokens, tokens[msg.sender][_token]
                 );
@@ -753,13 +753,13 @@ contract Ethen is Pausable {
             );
         }
 
-        if (shouldHave &lt;= spendable) {
-            // everyone have needed amount of tokens &amp; ether
+        if (shouldHave <= spendable) {
+            // everyone have needed amount of tokens & ether
             _totalPrice = shouldHave;
             return;
         }
 
-        // less price -&gt; less tokens
+        // less price -> less tokens
         _tokens = SafeMath.div(
             SafeMath.mul(spendable, PRICE_MUL), _orderPrice
         );
@@ -801,7 +801,7 @@ contract Ethen is Pausable {
     }
 
     function applyCoeff(uint _fees, address _user) private view returns (uint) {
-        if (now &gt;= coeffs[_user].expire) {
+        if (now >= coeffs[_user].expire) {
             return _fees;
         }
         return SafeMath.div(
@@ -849,7 +849,7 @@ contract Ethen is Pausable {
             ETH_SIGN_TYPED_DATA_ARGHASH,
             keccak256(
                 this,
-                _order == BUY ? &quot;BUY&quot; : &quot;SELL&quot;,
+                _order == BUY ? "BUY" : "SELL",
                 _token,
                 _nonce,
                 _price,
@@ -865,7 +865,7 @@ contract Ethen is Pausable {
         uint _expire
     ) private view returns (bytes32) {
         return keccak256(
-            &quot;\x19Ethereum Signed Message:\n32&quot;,
+            "\x19Ethereum Signed Message:\n32",
             keccak256(this, _order, _token, _nonce, _price, _amount, _expire)
         );
     }
@@ -878,7 +878,7 @@ contract Ethen is Pausable {
         uint _nonce, uint _price, uint _amount, uint _expire,
         uint _v, bytes32 _r, bytes32 _s
     ) private view returns (bytes32 _hash) {
-        if (_v &lt; 1000) {
+        if (_v < 1000) {
             _hash = hashOrderTyped(
                 _order, _token, _nonce, _price, _amount, _expire
             );
@@ -894,7 +894,7 @@ contract Ethen is Pausable {
     function packKey(
         uint8 _coeff, uint128 _duration
     ) private pure returns (uint) {
-        return (uint(_duration) &lt;&lt; 8) + uint(_coeff);
+        return (uint(_duration) << 8) + uint(_coeff);
     }
 
     function updateCoeff(

@@ -48,7 +48,7 @@ contract BaseSafeMath {
 
 
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
 
 
@@ -70,7 +70,7 @@ contract BaseSafeMath {
 
 
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
 
 
@@ -140,7 +140,7 @@ contract BaseSafeMath {
 
 
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
 
 
@@ -158,7 +158,7 @@ contract BaseSafeMath {
 
 
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
 
 
@@ -198,7 +198,7 @@ contract BaseSafeMath {
 
 
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
 
 
@@ -220,7 +220,7 @@ contract BaseSafeMath {
 
 
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
 
 
@@ -290,7 +290,7 @@ contract BaseSafeMath {
 
 
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
 
 
@@ -308,7 +308,7 @@ contract BaseSafeMath {
 
 
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
 
 
@@ -348,7 +348,7 @@ contract BaseSafeMath {
 
 
 
-        assert(c &gt;= a);
+        assert(c >= a);
 
 
 
@@ -370,7 +370,7 @@ contract BaseSafeMath {
 
 
 
-        assert(b &lt;= a);
+        assert(b <= a);
 
 
 
@@ -440,7 +440,7 @@ contract BaseSafeMath {
 
 
 
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
 
 
 
@@ -458,7 +458,7 @@ contract BaseSafeMath {
 
 
 
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
 
 
 
@@ -506,9 +506,9 @@ contract BaseERC20 {
 
     // This creates an array with all balances
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
 
 
@@ -698,17 +698,17 @@ interface tokenRecipient {function receiveApproval(address _from, uint256 _value
 
 contract WFee is BaseERC20, BaseSafeMath {
 
-    string public name = &quot;WFee&quot;;
+    string public name = "WFee";
 
-    string public symbol = &quot;WFEE&quot;;
+    string public symbol = "WFEE";
 
     uint8 public decimals = 18;
 
     uint256 public totalSupply = 10000000000;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
 
 
@@ -736,11 +736,11 @@ contract WFee is BaseERC20, BaseSafeMath {
 
         // Check if the sender has enough
 
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check for overflows
 
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
 
         // Save this for an assertion in the future
 
@@ -774,7 +774,7 @@ contract WFee is BaseERC20, BaseSafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
 
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         // Check allowance
 
@@ -822,7 +822,7 @@ contract WFee is BaseERC20, BaseSafeMath {
 
     function burn(uint256 _value) public returns (bool success) {
 
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
 
         // Check if the sender has enough
 
@@ -844,11 +844,11 @@ contract WFee is BaseERC20, BaseSafeMath {
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
 
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
 
         // Check if the targeted balance is enough
 
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
 
         // Check allowance
 
@@ -858,7 +858,7 @@ contract WFee is BaseERC20, BaseSafeMath {
 
         allowance[_from][msg.sender] -= _value;
 
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
 
         totalSupply -= _value;
 

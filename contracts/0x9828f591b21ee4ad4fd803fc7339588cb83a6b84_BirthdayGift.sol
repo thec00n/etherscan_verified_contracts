@@ -27,11 +27,11 @@ contract BirthdayGift {
         birthday = _birthday;
     }
 
-    /// Collect money if birthday time didn&#39;t come yet.
+    /// Collect money if birthday time didn't come yet.
     function ()
     {
         // Do not collect after birthday time
-        if (block.timestamp &gt;= birthday) throw;
+        if (block.timestamp >= birthday) throw;
     }
 
     /// Take a gift.
@@ -40,10 +40,10 @@ contract BirthdayGift {
         // Only proper recipient is allowed to take the gift
         if (msg.sender != recipient) throw;
 
-        // Gift couldn&#39;t be taken before birthday time
-        if (block.timestamp &lt; birthday) throw;
+        // Gift couldn't be taken before birthday time
+        if (block.timestamp < birthday) throw;
 
-        // Let&#39;s congratulate our recipient
+        // Let's congratulate our recipient
         HappyBirthday (recipient, this.balance);
 
         // And finally give the gift!

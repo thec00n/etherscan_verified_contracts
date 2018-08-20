@@ -20,15 +20,15 @@ contract owned {
 contract DSMath {
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -36,11 +36,11 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
 
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 }
 
@@ -90,9 +90,9 @@ contract queue {
 }
 
 contract DeCenterToken is owned, queue, DSMath {
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;DeCenter&#39;;
-    string public symbol = &#39;DC&#39;;
+    string public standard = 'Token 0.1';
+    string public name = 'DeCenter';
+    string public symbol = 'DC';
     uint8 public decimals = 8;
 
     uint256 public totalSupply = 10000000000000000; // 100 million
@@ -108,7 +108,7 @@ contract DeCenterToken is owned, queue, DSMath {
     uint public lastProcessedDay = 3;
 
     uint public maxDailyCap = 3333300000000; // 33 333 DC
-    mapping (uint =&gt; uint) public dailyTotals;
+    mapping (uint => uint) public dailyTotals;
 
     uint public queuedAmount;
 
@@ -116,9 +116,9 @@ contract DeCenterToken is owned, queue, DSMath {
     address public expertsAccount;
     address public teamAccount;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -149,7 +149,7 @@ contract DeCenterToken is owned, queue, DSMath {
 
     function time() constant returns (uint) {
         // for testing
-        if(cTime &gt; 0) {
+        if(cTime > 0) {
             return cTime;
         }
 
@@ -171,8 +171,8 @@ contract DeCenterToken is owned, queue, DSMath {
     function scheduledTopUp() onlyOwner {
         uint payment = 400000000000000; // 4 million tokens
 
-        require(sub(time(), lastScheduledTopUp) &gt;= 1 years);
-        require(teamAndExpertsTokens &gt;= payment * 2);
+        require(sub(time(), lastScheduledTopUp) >= 1 years);
+        require(teamAndExpertsTokens >= payment * 2);
 
         lastScheduledTopUp = time();
 
@@ -196,8 +196,8 @@ contract DeCenterToken is owned, queue, DSMath {
     }
 
     function refund(uint256 _value) internal {
-        require(time() &gt; refundStartTime);
-        require(this.balance &gt;= _value * price);
+        require(time() > refundStartTime);
+        require(this.balance >= _value * price);
 
         balanceOf[msg.sender] = sub(balanceOf[msg.sender], _value);
         balanceOf[this] = add(balanceOf[this], _value);
@@ -210,7 +210,7 @@ contract DeCenterToken is owned, queue, DSMath {
 
     /* Send tokens */
     function transfer(address _to, uint256 _value) {
-        require(balanceOf[msg.sender] &gt;= _value); // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
 
         if (_to == address(this)) {
             refund(_value);
@@ -225,8 +225,8 @@ contract DeCenterToken is owned, queue, DSMath {
 
     /* A contract attempts to get the tokens */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value); // Check if the sender has enough
-        require(_value &lt;= allowance[_from][msg.sender]); // Check allowance
+        require(balanceOf[_from] >= _value); // Check if the sender has enough
+        require(_value <= allowance[_from][msg.sender]); // Check allowance
 
         allowance[_from][msg.sender] = sub(allowance[_from][msg.sender], _value); //  Subtract from the allowance
         balanceOf[_from] = sub(balanceOf[_from], _value); // Subtract from the sender
@@ -238,7 +238,7 @@ contract DeCenterToken is owned, queue, DSMath {
     }
 
     function closeRefund() onlyOwner {
-        require(time() - refundStartTime &gt; refundDuration);
+        require(time() - refundStartTime > refundDuration);
 
         beneficiary.transfer(this.balance);
     }
@@ -249,13 +249,13 @@ contract DeCenterToken is owned, queue, DSMath {
      *       - Second stage holds ~5 years after. There will be limit of 333.33 ether per day.
      */
     function buy() payable {
-        require(startTime &lt;= time()); // check if ICO is going
+        require(startTime <= time()); // check if ICO is going
 
         uint amount = div(msg.value, price);
 
-        if (time() - startTime &gt; firstStageDuration) { // second stage
-            require(1 ether &lt;= msg.value); // check min. limit
-            require(msg.value &lt;= 300 ether); // check max. limit
+        if (time() - startTime > firstStageDuration) { // second stage
+            require(1 ether <= msg.value); // check min. limit
+            require(msg.value <= 300 ether); // check max. limit
 
             // send 80% to beneficiary account, another 20% stays for refunding
             beneficiary.transfer(mul(div(msg.value, 5), 4));
@@ -263,30 +263,30 @@ contract DeCenterToken is owned, queue, DSMath {
             uint currentDay = lastProcessedDay + 1;
             uint limit = maxDailyCap - dailyTotals[currentDay];
 
-            if (limit &gt;= amount) {
+            if (limit >= amount) {
                 availableTokens = sub(availableTokens, amount);
-                balanceOf[this] = sub(balanceOf[this], amount); // subtracts amount from seller&#39;s balance
+                balanceOf[this] = sub(balanceOf[this], amount); // subtracts amount from seller's balance
                 dailyTotals[currentDay] = add(dailyTotals[currentDay], amount);
-                balanceOf[msg.sender] = add(balanceOf[msg.sender], amount); // adds the amount to buyer&#39;s balance
+                balanceOf[msg.sender] = add(balanceOf[msg.sender], amount); // adds the amount to buyer's balance
 
                 Transfer(this, msg.sender, amount); // execute an event reflecting the change
             } else {
                 queuedAmount = add(queuedAmount, amount);
-                require(queuedAmount &lt;= availableTokens);
+                require(queuedAmount <= availableTokens);
                 BuyTicket memory ticket = BuyTicket({account: msg.sender, amount: amount, time: time()});
                 pushQueue(ticket);
             }
 
         } else { // first stage
-            require(lowerLimitForToday() &lt;= msg.value); // check min. limit
-            require(amount &lt;= availableTokens);
+            require(lowerLimitForToday() <= msg.value); // check min. limit
+            require(amount <= availableTokens);
 
             // send 80% to beneficiary account, another 20% stays for refunding
             beneficiary.transfer(mul(div(msg.value, 5), 4));
 
             availableTokens = sub(availableTokens, amount);
-            balanceOf[this] = sub(balanceOf[this], amount); // subtracts amount from seller&#39;s balance
-            balanceOf[msg.sender] = add(balanceOf[msg.sender], amount); // adds the amount to buyer&#39;s balance
+            balanceOf[this] = sub(balanceOf[this], amount); // subtracts amount from seller's balance
+            balanceOf[msg.sender] = add(balanceOf[msg.sender], amount); // adds the amount to buyer's balance
 
             Transfer(this, msg.sender, amount); // execute an event reflecting the change
         }
@@ -300,23 +300,23 @@ contract DeCenterToken is owned, queue, DSMath {
         uint limit;
         BuyTicket memory ticket;
 
-        while (ptr &lt; size) {
+        while (ptr < size) {
             currentDay = lastProcessedDay + 1;
             limit = maxDailyCap - dailyTotals[currentDay];
 
             // stop then trying to process future
-            if (startTime + (currentDay - 1) * 1 days &gt; time()) {
+            if (startTime + (currentDay - 1) * 1 days > time()) {
                 return;
             }
 
             // limit to prevent out of gas error
-            if (ptr &gt; 50) {
+            if (ptr > 50) {
                 return;
             }
 
             ticket = peekQueue();
 
-            if (limit &lt; ticket.amount || ticket.time - 1000 seconds &gt; startTime + (currentDay - 1) * 1 days) {
+            if (limit < ticket.amount || ticket.time - 1000 seconds > startTime + (currentDay - 1) * 1 days) {
                 lastProcessedDay += 1;
                 continue;
             }
@@ -328,7 +328,7 @@ contract DeCenterToken is owned, queue, DSMath {
             queuedAmount = sub(queuedAmount, ticket.amount);
             dailyTotals[currentDay] = add(dailyTotals[currentDay], ticket.amount);
             balanceOf[this] = sub(balanceOf[this], ticket.amount);
-            balanceOf[ticket.account] = add(balanceOf[ticket.account], ticket.amount); // adds the amount to buyer&#39;s balance
+            balanceOf[ticket.account] = add(balanceOf[ticket.account], ticket.amount); // adds the amount to buyer's balance
 
             Transfer(this, ticket.account, ticket.amount); // execute an event reflecting the change
         }

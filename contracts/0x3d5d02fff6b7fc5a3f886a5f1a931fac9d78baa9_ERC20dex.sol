@@ -52,13 +52,13 @@ contract ERC20dex {
     uint256 minimum_trade;
     
     // Indexing for shitcoins array
-    mapping(string =&gt; uint16) shitcoin_index;
+    mapping(string => uint16) shitcoin_index;
 
     // Order book
-    mapping(string =&gt; order_t[]) order_book;
+    mapping(string => order_t[]) order_book;
     
     // Balances
-    mapping(address =&gt; uint256) etx_balances;
+    mapping(address => uint256) etx_balances;
 
     function ERC20dex() {
         owner = msg.sender;
@@ -94,12 +94,12 @@ contract ERC20dex {
     }
     
     function safe_add(uint256 a, uint256 b) constant returns (uint256 c) {
-        require(a + b &gt;= a);
+        require(a + b >= a);
         return a + b;
     }
     
     function safe_sub(uint256 a, uint256 b) constant returns (uint256 c) {
-        require(a &gt;= b);
+        require(a >= b);
         return a - b;
     }
     
@@ -141,7 +141,7 @@ contract ERC20dex {
     
     function remove_coin(uint index) public {
         require(msg.sender == owner);
-        require(index &lt; shitcoins.length);
+        require(index < shitcoins.length);
         
         shitcoin_index[shitcoins[index].ticker] = 0;
         shitcoins[index].state = COIN_DEAD;
@@ -224,18 +224,18 @@ contract ERC20dex {
     function sell(string token, uint256 amount, uint256 price) public {
         // Basic checks
         require(stopped == 0);
-        require(total_amount(token, amount, price) &gt;= minimum_trade);
+        require(total_amount(token, amount, price) >= minimum_trade);
         
         // Get coin
         coin_t coin = shitcoins[shitcoin_index[token] - 1];
         
         // Validate coin
         require(coin.state == COIN_APPROVED);
-        require(amount &gt;= coin.minimum_trade);
+        require(amount >= coin.minimum_trade);
         
         // Check if we are allowed to secure coins for a deal
         ERC20 shitcoin = ERC20(coin.base);
-        require(shitcoin.allowance(msg.sender, this) &gt;= amount);
+        require(shitcoin.allowance(msg.sender, this) >= amount);
         
         // Secure tokens for a deal
         require(shitcoin.transferFrom(msg.sender, this, amount));
@@ -248,14 +248,14 @@ contract ERC20dex {
         // Basic checks
         require(stopped == 0);
         require(total_amount(token, amount, price) == msg.value);
-        require(msg.value &gt;= minimum_trade);
+        require(msg.value >= minimum_trade);
         
         // Get coin
         coin_t coin = shitcoins[shitcoin_index[token] - 1];
         
         // Validate coin
         require(coin.state == COIN_APPROVED);
-        require(amount &gt;= coin.minimum_trade);
+        require(amount >= coin.minimum_trade);
 
         // Credit ETX to the holder account
         etx_balances[msg.sender] += msg.value;
@@ -267,8 +267,8 @@ contract ERC20dex {
     function trade(string token, uint maker, uint taker) public {
         // Basic checks
         require(msg.sender == trader);
-        require(maker &lt; order_book[token].length);
-        require(taker &lt; order_book[token].length);
+        require(maker < order_book[token].length);
+        require(taker < order_book[token].length);
         
         // Get coin
         coin_t coin = shitcoins[shitcoin_index[token] - 1];
@@ -286,7 +286,7 @@ contract ERC20dex {
         
         // Check how many coins go into the deal
         uint256 deal_amount = 0;
-        if (take.amount &lt; make.amount) {
+        if (take.amount < make.amount) {
             deal_amount = take.amount;
         } else {
             deal_amount = make.amount;
@@ -296,7 +296,7 @@ contract ERC20dex {
         // If maker buys something
         if (make.buy_sell == BUY) {
             // Sanity check
-            require(take.price &lt;= make.price);
+            require(take.price <= make.price);
             
             // Calculate fees
             makerFee = safe_mul(deal_amount, maker_fee) / 10000;
@@ -320,7 +320,7 @@ contract ERC20dex {
                 
         } else {
             // Sanity check
-            require(take.price &gt;= make.price);
+            require(take.price >= make.price);
             
             // Calculate fees
             makerFee = safe_mul(total_deal, maker_fee) / 10000;
@@ -358,7 +358,7 @@ contract ERC20dex {
 
         require(coin.state == COIN_APPROVED);
         require((msg.sender == order.owner) || (msg.sender == owner));
-        require(order.amount &gt; 0);
+        require(order.amount > 0);
         
         // Null the order
         uint256 old_amount = order.amount;
@@ -382,7 +382,7 @@ contract ERC20dex {
 
         // Send shitcoins
         coin_t coin = shitcoins[shitcoin_index[token] - 1];
-        if (coin.fee &gt; 0) {
+        if (coin.fee > 0) {
             ERC20 shitcoin = ERC20(coin.base);
             shitcoin.transfer(owner, coin.fee);
             coin.fee = 0;

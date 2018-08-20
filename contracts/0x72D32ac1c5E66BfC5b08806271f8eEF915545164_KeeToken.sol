@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -77,10 +77,10 @@ contract Dec {
 
 contract KeeToken is ERC20, Ownable {
     // ERC20 standards
-    string public symbol = &quot;KEE&quot;;
+    string public symbol = "KEE";
     uint8 public decimals = 0;
     uint public totalSupply = 1000; // inestimable
-    string public name = &quot;CryptoKEE&quot;;
+    string public name = "CryptoKEE";
 
     struct AddRec {
         address add;
@@ -99,9 +99,9 @@ contract KeeToken is ERC20, Ownable {
         // 0x81154d24f4de069d1f0c16E3a52e1Ef68714daD9
         
 
-    mapping (address =&gt; bool) public tokenIncluded;
-    mapping (address =&gt; uint256) public bitRegisters;
-    mapping (address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping (address => bool) public tokenIncluded;
+    mapping (address => uint256) public bitRegisters;
+    mapping (address => mapping(address => uint256)) public allowed;
 
     uint256[] public icoArray;
 
@@ -125,24 +125,24 @@ contract KeeToken is ERC20, Ownable {
         addToken(0x22F0AF8D78851b72EE799e05F54A77001586B18A, 0);
 
         uint mask = 0;
-        for (uint i = 0; i &lt; eligible.length; i++) {
+        for (uint i = 0; i < eligible.length; i++) {
             tokenIncluded[eligible[i].add] = true;
         }
         icoArray.push(0);       // 0 - empty to ensure default ico score = 0
-        icoArray.push(~mask &gt;&gt; 256 - eligible.length);
+        icoArray.push(~mask >> 256 - eligible.length);
     }
 
     // external
 
     function updateICOmask(uint256 maskPos, uint256 newMask) external onlyOwner {
         require(maskPos != 0); // can update loc 0
-        require(maskPos &lt; icoArray.length);
+        require(maskPos < icoArray.length);
         icoArray[maskPos] = newMask;
     }
 
     function setICObyAddress(address ico, uint256 maskPos) external onlyOwner {
         require(maskPos != 0);
-        require(maskPos &lt; icoArray.length);
+        require(maskPos < icoArray.length);
         bitRegisters[ico] = maskPos;
     }
 
@@ -174,7 +174,7 @@ contract KeeToken is ERC20, Ownable {
     }
     
     function updateToken(uint tokenPos, address newToken, uint8 decimalPlaces)  public onlyOwner {
-        require(tokenPos &lt; eligible.length);
+        require(tokenPos < eligible.length);
         eligible[tokenPos].decimals = decimalPlaces;
         eligible[tokenPos].add = newToken;
     }
@@ -207,7 +207,7 @@ contract KeeToken is ERC20, Ownable {
     function icoNumberBalanceOf(address from, uint icoMaskPtr) public view returns (uint) {
         if (icoMaskPtr == 0) 
             return 0;
-        if (icoMaskPtr &gt;= icoArray.length) 
+        if (icoMaskPtr >= icoArray.length) 
             return 0;
         uint icoRegister = icoArray[icoMaskPtr];
         return internalBalanceOf(from,icoRegister);
@@ -220,16 +220,16 @@ contract KeeToken is ERC20, Ownable {
         uint yourRegister = bitRegisters[to];
         uint sent = 0;
         uint added = 0;
-        for (uint i = 0; i &lt; eligible.length; i++) {
-            if (coinBal(eligible[i],from) &gt; 100) {
-                myRegister |= (uint(1) &lt;&lt; i);
+        for (uint i = 0; i < eligible.length; i++) {
+            if (coinBal(eligible[i],from) > 100) {
+                myRegister |= (uint(1) << i);
                 added++;
             }
         }
-        if (added &gt; 0) {
+        if (added > 0) {
             bitRegisters[from] = myRegister;
         }      
-        if ((myRegister &amp; ~yourRegister) &gt; 0) {
+        if ((myRegister & ~yourRegister) > 0) {
             sent = 1;
             bitRegisters[to] = yourRegister | myRegister;
         }
@@ -238,18 +238,18 @@ contract KeeToken is ERC20, Ownable {
     }
 
     function internalBalanceOf(address from, uint icoRegister) internal view returns (uint) {
-        uint myRegister = bitRegisters[from] &amp; icoRegister;
+        uint myRegister = bitRegisters[from] & icoRegister;
         uint bal = 0;
-        for (uint i = 0; i &lt; eligible.length; i++) {
-            uint bit = (uint(1) &lt;&lt; i);
-            if ( bit &amp; icoRegister == 0 )
+        for (uint i = 0; i < eligible.length; i++) {
+            uint bit = (uint(1) << i);
+            if ( bit & icoRegister == 0 )
                 continue;
-            if ( myRegister &amp; bit &gt; 0 ) {
+            if ( myRegister & bit > 0 ) {
                 bal++;
                 continue;
             }
             uint coins = coinBal(eligible[i], from);
-            if (coins &gt; 100) 
+            if (coins > 100) 
                 bal++;
         }
         return bal;

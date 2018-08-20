@@ -30,20 +30,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,10 +53,10 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
-    mapping(address =&gt; bool)  internal owners;
+    mapping(address => bool)  internal owners;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -131,9 +131,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, ElementhToken _token) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
     require(_token != address(0));
 
@@ -147,14 +147,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase(bool isBtc) internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0 || isBtc;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -172,21 +172,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) public {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap * 1 ether;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase(bool isBtc) internal view returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase(isBtc) &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase(isBtc) && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -208,7 +208,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -237,7 +237,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -245,9 +245,9 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   // minimum amount of funds to be raised in weis
   uint256 public goal;
 
-  mapping (address =&gt; bool) refunded;
-  mapping (address =&gt; uint256) saleBalances;  
-  mapping (address =&gt; bool) claimed;
+  mapping (address => bool) refunded;
+  mapping (address => uint256) saleBalances;  
+  mapping (address => bool) claimed;
 
   event Refunded(address indexed holder, uint256 amount);
 
@@ -270,7 +270,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
@@ -283,9 +283,9 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
  * The way to add new features to a base crowdsale is by multiple inheritance.
  * In this example we are providing following extensions:
  * CappedCrowdsale - sets a max boundary for raised funds
- * RefundableCrowdsale - set a min goal to be reached and returns funds if it&#39;s not met
+ * RefundableCrowdsale - set a min goal to be reached and returns funds if it's not met
  *
- * After adding multiple features it&#39;s good practice to run integration tests
+ * After adding multiple features it's good practice to run integration tests
  * to ensure that subcontracts works together as intended.
  */
 contract ElementhCrowdsale is CappedCrowdsale, RefundableCrowdsale {
@@ -304,7 +304,7 @@ contract ElementhCrowdsale is CappedCrowdsale, RefundableCrowdsale {
   uint256 public bonusStage2FirstDay;
   uint256 public bonusStage2SecondDay;
 
-  mapping (bytes16 =&gt; BTCTransaction) public BTCTransactions;
+  mapping (bytes16 => BTCTransaction) public BTCTransactions;
 
   // amount of raised money in satoshi
   uint256 public satoshiRaised;
@@ -373,11 +373,11 @@ contract ElementhCrowdsale is CappedCrowdsale, RefundableCrowdsale {
     require(stage !=0);
     require(validPurchase(false));
     if(stage == 1) {
-      require(msg.value &gt;= 10 ether);
+      require(msg.value >= 10 ether);
     }
 
     if(stage == 2) {
-      require(msg.value &gt;= 1 ether);
+      require(msg.value >= 1 ether);
     }
     
     uint256 weiAmount = msg.value;
@@ -430,10 +430,10 @@ contract ElementhCrowdsale is CappedCrowdsale, RefundableCrowdsale {
     }
 
     if(stage == 2){
-      if(now - startTime &lt; 1 days){
+      if(now - startTime < 1 days){
         tokens = tokens.mul(100 + bonusStage2FirstDay).div(100);
       }
-      if(now - startTime &lt; 2 days &amp;&amp; now - startTime &gt; 1 days){
+      if(now - startTime < 2 days && now - startTime > 1 days){
         tokens = tokens.mul(100 + bonusStage2SecondDay).div(100);
       }
     }

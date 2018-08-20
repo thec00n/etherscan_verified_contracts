@@ -1,9 +1,9 @@
 pragma solidity ^0.4.18;
 
 contract Profile {
-  mapping (address =&gt; string) private usernameOfOwner;
-  mapping (address =&gt; string) private agendaOfOwner;
-  mapping (string =&gt; address) private ownerOfUsername;
+  mapping (address => string) private usernameOfOwner;
+  mapping (address => string) private agendaOfOwner;
+  mapping (string => address) private ownerOfUsername;
 
   event Set (string indexed _username, string indexed _agenda, address indexed _owner);
   event SetUsername (string indexed _username, address indexed _owner);
@@ -33,13 +33,13 @@ contract Profile {
   }
 
   function set (string _username, string _agenda) public {
-    require(bytes(_username).length &gt; 2);
-    require(bytes(_agenda).length &gt; 2);
+    require(bytes(_username).length > 2);
+    require(bytes(_agenda).length > 2);
     require(ownerOf(_username) == address(0) || ownerOf(_username) == msg.sender);
     address owner = msg.sender;
     string storage oldUsername = usernameOfOwner[owner];
     string storage oldAgenda = agendaOfOwner[owner];
-    if (bytes(oldUsername).length &gt; 0 &amp;&amp; bytes(oldAgenda).length &gt; 0) {
+    if (bytes(oldUsername).length > 0 && bytes(oldAgenda).length > 0) {
       Unset(oldUsername, oldAgenda, owner);
       delete ownerOfUsername[oldUsername];
     }
@@ -50,11 +50,11 @@ contract Profile {
   }
 
   function setUsername (string _username) public {
-    require(bytes(_username).length &gt; 2);
+    require(bytes(_username).length > 2);
     require(ownerOf(_username) == address(0) || ownerOf(_username) == msg.sender);
     address owner = msg.sender;
     string storage oldUsername = usernameOfOwner[owner];
-    if(bytes(oldUsername).length &gt; 0) {
+    if(bytes(oldUsername).length > 0) {
       UnsetUsername(oldUsername, owner);
       delete ownerOfUsername[oldUsername];
     }
@@ -64,10 +64,10 @@ contract Profile {
   }
 
   function setAgenda (string _agenda) public {
-    require(bytes(_agenda).length &gt; 2);
+    require(bytes(_agenda).length > 2);
     address owner = msg.sender;
     string storage oldAgenda = agendaOfOwner[owner];
-    if(bytes(oldAgenda).length &gt; 0) {
+    if(bytes(oldAgenda).length > 0) {
       UnsetAgenda(oldAgenda, owner);
     }
     agendaOfOwner[owner] = _agenda;
@@ -75,7 +75,7 @@ contract Profile {
   }
 
   function unset () public {
-    require(bytes(usernameOfOwner[msg.sender]).length &gt; 0 &amp;&amp; bytes(agendaOfOwner[msg.sender]).length &gt; 0);
+    require(bytes(usernameOfOwner[msg.sender]).length > 0 && bytes(agendaOfOwner[msg.sender]).length > 0);
     address owner = msg.sender;
     string storage oldUsername = usernameOfOwner[owner];
     string storage oldAgenda = agendaOfOwner[owner];

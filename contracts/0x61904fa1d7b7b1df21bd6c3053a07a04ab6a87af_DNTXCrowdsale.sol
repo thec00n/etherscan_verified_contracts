@@ -46,20 +46,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -87,7 +87,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -128,7 +128,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="e694838b8589a6d4">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="e694838b8589a6d4">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -166,7 +166,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="2a584f4749456a18">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="2a584f4749456a18">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -215,7 +215,7 @@ contract Destructible is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -224,7 +224,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -253,7 +253,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -264,8 +264,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -279,7 +279,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -314,7 +314,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -391,8 +391,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -405,7 +405,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -421,7 +421,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -452,7 +452,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -467,9 +467,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -490,7 +490,7 @@ contract BurnableToken is StandardToken {
     * @dev Sending ether to contract increases burning reward 
     */
     function() public payable {
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             BurnRewardIncreased(msg.sender, msg.value);    
         }
     }
@@ -512,14 +512,14 @@ contract BurnableToken is StandardToken {
     * @param _amount of tokens to be burned
     */
     function burn(address _from, uint256 _amount) internal returns(bool){
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
         
         uint256 reward = burnReward(_amount);
-        assert(this.balance - reward &gt; 0);
+        assert(this.balance - reward > 0);
 
         balances[_from] = balances[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
-        //assert(totalSupply &gt;= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
+        //assert(totalSupply >= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
         
         _from.transfer(reward);
         Burn(_from, _amount);
@@ -551,7 +551,7 @@ contract BurnableToken is StandardToken {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         if( (_to == address(this)) || (_to == 0) ){
             var _allowance = allowed[_from][msg.sender];
-            //require (_value &lt;= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
+            //require (_value <= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
             allowed[_from][msg.sender] = _allowance.sub(_value);
             return burn(_from, _value);
         }else{
@@ -561,8 +561,8 @@ contract BurnableToken is StandardToken {
 
 }
 contract DNTXToken is BurnableToken, MintableToken, HasNoContracts, HasNoTokens {
-    string public symbol = &#39;DNTX&#39;;
-    string public name = &#39;Dentix&#39;;
+    string public symbol = 'DNTX';
+    string public name = 'Dentix';
     uint8 public constant decimals = 18;
 
     address founder;    //founder address to allow him transfer tokens while minting
@@ -614,7 +614,7 @@ contract DNTXCrowdsale is Ownable, Destructible {
 
     uint256 public icoCollected;
     uint256 public totalCollected;
-    mapping(address =&gt; uint256) public icoContributions; //amount of ether received from an investor during ICO
+    mapping(address => uint256) public icoContributions; //amount of ether received from an investor during ICO
 
     function DNTXCrowdsale() public{
         state = State.NotStarted;
@@ -623,18 +623,18 @@ contract DNTXCrowdsale is Ownable, Destructible {
     }   
 
     function() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(isOpen());
 
         totalCollected = totalCollected.add(msg.value);
         if(state == State.ICO){
-            require(totalCollected &lt;= hardCap);
+            require(totalCollected <= hardCap);
             icoCollected = icoCollected.add(msg.value);
             icoContributions[msg.sender] = icoContributions[msg.sender].add(msg.value);
         }
 
         uint256 rate = currentRate();
-        assert(rate &gt; 0);
+        assert(rate > 0);
 
         uint256 amount = rate.mul(msg.value);
         assert(token.mint(msg.sender, amount));
@@ -651,17 +651,17 @@ contract DNTXCrowdsale is Ownable, Destructible {
         if(state == State.NotStarted || state == State.Finished) return false;
         if(state == State.PreICO) return true;
         if(state == State.ICO){
-            if(totalCollected &gt;= hardCap) return false;
-            return (icoStartTimestamp &lt;= now) &amp;&amp; (now &lt;= icoEndTimestamp);
+            if(totalCollected >= hardCap) return false;
+            return (icoStartTimestamp <= now) && (now <= icoEndTimestamp);
         }
     }
     function currentRate() view public returns(uint256){
         if(state == State.PreICO) {
             return baseRate.add( baseRate.mul(preICOBonusPercent).div(PERCENT_DIVIDER) );
         }else if(state == State.ICO){
-            for(uint8 i=0; i &lt; icoBonuses.length; i++){
+            for(uint8 i=0; i < icoBonuses.length; i++){
                 ICOBonus storage b = icoBonuses[i];
-                if(now &lt;= b.expire){
+                if(now <= b.expire){
                     return baseRate.add( baseRate.mul(b.percent).div(PERCENT_DIVIDER) );
                 }
             }
@@ -672,7 +672,7 @@ contract DNTXCrowdsale is Ownable, Destructible {
     }
 
     function setBaseRate(uint256 rate) onlyOwner public {
-        require(state != State.ICO &amp;&amp; state != State.Finished);
+        require(state != State.ICO && state != State.Finished);
         baseRate = rate;
     }
     function setPreICOBonus(uint8 percent) onlyOwner public {
@@ -685,7 +685,7 @@ contract DNTXCrowdsale is Ownable, Destructible {
     }
 
     function setupICO(uint32 startTimestamp, uint32 endTimestamp, uint256 goal, uint256 cap, uint32[] expires, uint8[] percents) onlyOwner external {
-        require(state != State.ICO &amp;&amp; state != State.Finished);
+        require(state != State.ICO && state != State.Finished);
         icoStartTimestamp = startTimestamp;
         icoEndTimestamp = endTimestamp;
         icoGoal = goal;
@@ -693,8 +693,8 @@ contract DNTXCrowdsale is Ownable, Destructible {
 
         require(expires.length == percents.length);
         uint32 prevExpire;
-        for(uint8 i=0;  i &lt; expires.length; i++){
-            require(prevExpire &lt; expires[i]);
+        for(uint8 i=0;  i < expires.length; i++){
+            require(prevExpire < expires[i]);
             icoBonuses.push(ICOBonus({expire:expires[i], percent:percents[i]}));
             prevExpire = expires[i];
         }
@@ -713,7 +713,7 @@ contract DNTXCrowdsale is Ownable, Destructible {
     */
     function finishPreICO() onlyOwner external {
         require(state == State.PreICO);
-        require(icoStartTimestamp != 0 &amp;&amp; icoEndTimestamp != 0);
+        require(icoStartTimestamp != 0 && icoEndTimestamp != 0);
         state = State.ICO;
     }
     /**
@@ -723,7 +723,7 @@ contract DNTXCrowdsale is Ownable, Destructible {
         state = State.Finished;
         token.finishMinting();
         token.transferOwnership(owner);
-        if(icoCollected &gt;= icoGoal &amp;&amp; this.balance &gt; 0) {
+        if(icoCollected >= icoGoal && this.balance > 0) {
             claimEther();
         }
     }
@@ -731,8 +731,8 @@ contract DNTXCrowdsale is Ownable, Destructible {
     * @notice Claim collected ether without closing crowdsale
     */
     function claimEther() onlyOwner public {
-        require(state == State.PreICO || icoCollected &gt;= icoGoal);
-        require(this.balance &gt; 0);
+        require(state == State.PreICO || icoCollected >= icoGoal);
+        require(this.balance > 0);
         owner.transfer(this.balance);
     }
 
@@ -743,9 +743,9 @@ contract DNTXCrowdsale is Ownable, Destructible {
         return refundTo(msg.sender);
     }
     function refundTo(address beneficiary) public returns(bool) {
-        require(icoCollected &lt; icoGoal);
-        require(icoContributions[beneficiary] &gt; 0);
-        require( (state == State.Finished) || (state == State.ICO &amp;&amp; (now &gt; icoEndTimestamp)) );
+        require(icoCollected < icoGoal);
+        require(icoContributions[beneficiary] > 0);
+        require( (state == State.Finished) || (state == State.ICO && (now > icoEndTimestamp)) );
 
         uint256 _refund = icoContributions[beneficiary];
         icoContributions[beneficiary] = 0;

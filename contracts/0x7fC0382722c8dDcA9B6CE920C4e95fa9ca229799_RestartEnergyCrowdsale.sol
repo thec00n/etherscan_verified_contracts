@@ -6,7 +6,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -64,20 +64,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -161,7 +161,7 @@ contract Pausable is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -170,7 +170,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -222,7 +222,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -233,8 +233,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -248,7 +248,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -297,7 +297,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -397,8 +397,8 @@ contract PausableToken is StandardToken, Pausable {
 //begin RestartEnergyToken.sol
 
 contract RestartEnergyToken is MintableToken, PausableToken {
-    string public name = &quot;RED MegaWatt Token&quot;;
-    string public symbol = &quot;MWAT&quot;;
+    string public name = "RED MegaWatt Token";
+    string public symbol = "MWAT";
     uint256 public decimals = 18;
 }
 
@@ -444,9 +444,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -495,14 +495,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -529,32 +529,32 @@ contract TimedCrowdsale is Crowdsale, Ownable {
     event PresaleEndTimeChanged(uint newPresaleEndTime);
 
     function setEndTime(uint time) public onlyOwner {
-        require(now &lt; time);
-        require(time &gt; startTime);
+        require(now < time);
+        require(time > startTime);
 
         endTime = time;
         EndTimeChanged(endTime);
     }
 
     function setStartTime(uint time) public onlyOwner {
-        require(now &lt; time);
-        require(time &gt; presaleEndTime);
+        require(now < time);
+        require(time > presaleEndTime);
 
         startTime = time;
         StartTimeChanged(startTime);
     }
 
     function setPresaleStartTime(uint time) public onlyOwner {
-        require(now &lt; time);
-        require(time &lt; presaleEndTime);
+        require(now < time);
+        require(time < presaleEndTime);
 
         presaleStartTime = time;
         PresaleStartTimeChanged(presaleEndTime);
     }
 
     function setPresaleEndTime(uint time) public onlyOwner {
-        require(now &lt; time);
-        require(time &gt; presaleStartTime);
+        require(now < time);
+        require(time > presaleStartTime);
 
         presaleEndTime = time;
         PresaleEndTimeChanged(presaleEndTime);
@@ -581,7 +581,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -621,7 +621,7 @@ contract TokenCappedCrowdsale is FinalizableCrowdsale {
     }
 
     function notExceedingSaleLimit(uint256 amount) internal constant returns (bool) {
-        return hardCap &gt;= amount.add(token.totalSupply());
+        return hardCap >= amount.add(token.totalSupply());
     }
 
     /**
@@ -657,10 +657,10 @@ contract RestartEnergyCrowdsale is TimedCrowdsale, TokenCappedCrowdsale, Pausabl
     address public tokensWallet;
 
     // How much ETH each address has invested to this crowdsale
-    mapping(address =&gt; uint256) public purchasedAmountOf;
+    mapping(address => uint256) public purchasedAmountOf;
 
     // How many tokens this crowdsale has credited for each investor address
-    mapping(address =&gt; uint256) public tokenAmountOf;
+    mapping(address => uint256) public tokenAmountOf;
 
 
     function RestartEnergyCrowdsale(uint256 _presaleStartTime, uint256 _presaleEndTime,
@@ -735,12 +735,12 @@ contract RestartEnergyCrowdsale is TimedCrowdsale, TokenCappedCrowdsale, Pausabl
 
     function enableTokenTransfers() public onlyOwner {
         require(isFinalized);
-        require(now &gt; endTime + 15 days);
+        require(now > endTime + 15 days);
         require(RestartEnergyToken(token).paused());
         RestartEnergyToken(token).unpause();
     }
 
-    // the team wallet is the &#39;wallet&#39; field
+    // the team wallet is the 'wallet' field
     bool public firstPartOfTeamTokensClaimed = false;
     bool public secondPartOfTeamTokensClaimed = false;
 
@@ -748,7 +748,7 @@ contract RestartEnergyCrowdsale is TimedCrowdsale, TokenCappedCrowdsale, Pausabl
     function claimTeamTokens() public onlyOwner {
         require(isFinalized);
         require(!secondPartOfTeamTokensClaimed);
-        require(now &gt; endTime + 182 days);
+        require(now > endTime + 182 days);
 
         uint256 tokensToMint = totalTokens.mul(3).div(100);
         if (!firstPartOfTeamTokensClaimed) {
@@ -756,7 +756,7 @@ contract RestartEnergyCrowdsale is TimedCrowdsale, TokenCappedCrowdsale, Pausabl
             firstPartOfTeamTokensClaimed = true;
         }
         else {
-            require(now &gt; endTime + 365 days);
+            require(now > endTime + 365 days);
             token.mint(wallet, tokensToMint);
             secondPartOfTeamTokensClaimed = true;
             token.finishMinting();
@@ -777,7 +777,7 @@ contract RestartEnergyCrowdsale is TimedCrowdsale, TokenCappedCrowdsale, Pausabl
             //if not validPresalePurchase() and not validPurchase() this function is not called
             // so no need to check validPurchase() again here
             uint256 daysPassed = (now - startTime) / 1 days;
-            if (daysPassed &lt; 15) {
+            if (daysPassed < 15) {
                 calcRate = 100 + (15 - daysPassed);
             }
         }
@@ -792,10 +792,10 @@ contract RestartEnergyCrowdsale is TimedCrowdsale, TokenCappedCrowdsale, Pausabl
 
     // @return true if the transaction can buy tokens in presale
     function validPresalePurchase() internal constant returns (bool) {
-        bool withinPeriod = now &gt;= presaleStartTime &amp;&amp; now &lt;= presaleEndTime;
+        bool withinPeriod = now >= presaleStartTime && now <= presaleEndTime;
         bool nonZeroPurchase = msg.value != 0;
-        bool validPresaleLimit = msg.value &gt;= presaleLimit;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; validPresaleLimit;
+        bool validPresaleLimit = msg.value >= presaleLimit;
+        return withinPeriod && nonZeroPurchase && validPresaleLimit;
     }
 
     function finalization() internal {

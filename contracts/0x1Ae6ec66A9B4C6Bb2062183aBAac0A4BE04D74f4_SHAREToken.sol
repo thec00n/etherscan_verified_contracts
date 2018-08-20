@@ -12,13 +12,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -27,7 +27,7 @@ library SafeMath {
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -63,16 +63,16 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
   // Triggered whenever approve(address _spender, uint256 _value) is called.
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-  string public constant symbol = &quot;SVX&quot;;
-  string public constant name = &quot;SHARE&quot;;
+  string public constant symbol = "SVX";
+  string public constant name = "SHARE";
   uint8 public constant decimals = 6;
   uint256 _totalSupply = 200000000 * ((uint)(10) ** (uint)(decimals)); //include decimals;
 
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
 
   function totalSupply() public view returns (uint256) { //standard ERC-20 function
     return _totalSupply;
@@ -89,7 +89,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
   
   //standard ERC-20 function
   function transfer(address _to, uint256 _amount) public returns (bool success) {
-    require(this != _to &amp;&amp; _to != address(0));
+    require(this != _to && _to != address(0));
     require(!locked);
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -99,7 +99,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
 
   //standard ERC-20 function
   function transferFrom(address _from, address _to, uint256 _amount) public returns(bool success){
-    require(this != _to &amp;&amp; _to != address(0));
+    require(this != _to && _to != address(0));
     require(!locked);
     balances[_from] = balances[_from].sub(_amount);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -158,7 +158,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
 
   function sendTeamBalance (address[] _addresses, uint[] _values) external onlyOwner {
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(tokenHolder,_addresses[i],_values[i]);
@@ -169,7 +169,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
 
   function sendFoundersBalance (address[] _addresses, uint[] _values) external onlyOwner {
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(tokenHolder,_addresses[i],_values[i]);
@@ -180,7 +180,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
 
   function platformReferralBalance (address[] _addresses, uint[] _values) external onlyOwner {
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(tokenHolder,_addresses[i],_values[i]);
@@ -191,7 +191,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
 
   function sendBountyBalance (address[] _addresses, uint[] _values) external onlyOwner {
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(tokenHolder,_addresses[i],_values[i]);
@@ -202,7 +202,7 @@ contract SHAREToken is Ownable { //ERC - 20 token contract
 
   function sendAdvisorsBalance (address[] _addresses, uint[] _values) external onlyOwner {
     uint buffer = 0;
-    for(uint i = 0; i &lt; _addresses.length; i++){
+    for(uint i = 0; i < _addresses.length; i++){
       balances[_addresses[i]] = balances[_addresses[i]].add(_values[i]);
       buffer = buffer.add(_values[i]);
       emit Transfer(tokenHolder,_addresses[i],_values[i]);

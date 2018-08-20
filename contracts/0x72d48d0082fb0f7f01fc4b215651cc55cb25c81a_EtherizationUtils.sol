@@ -51,8 +51,8 @@ contract Etherization {
     Player[] public players;
     uint public numPlayers = 0;
     
-    mapping(address =&gt; uint) playerIDs;
-    mapping(uint =&gt; uint) public playerMsgs;
+    mapping(address => uint) playerIDs;
+    mapping(uint => uint) public playerMsgs;
     
     City city;
     City[] public cities;
@@ -71,7 +71,7 @@ contract Etherization {
     address utilsAddress;
     address utilsAddress2;
     
-    // Sum of all players&#39; balances
+    // Sum of all players' balances
     uint public totalBalances = 0;
 
     // Used to ensure only the owner can do some things.
@@ -91,15 +91,15 @@ contract Etherization {
         
         
         // If they paid too little, reject and refund their money.
-        if (msg.value &lt; START_PRICE) {
+        if (msg.value < START_PRICE) {
             //msg.sender.send(msg.value);
-            //playerMsgs[msg.sender] = &quot;Not enough ether sent to found a city and start playing. Sending back any eth sent...&quot;;
+            //playerMsgs[msg.sender] = "Not enough ether sent to found a city and start playing. Sending back any eth sent...";
             return;
         }
         // If the player already exists
-        if (playerIDs[msg.sender] &gt; 0) {
+        if (playerIDs[msg.sender] > 0) {
             //msg.sender.send(msg.value);
-            //playerMsgs[msg.sender] =  &quot;You already founded an etherization. Lookup your player ID by calling getMyPlayerID(). Sending back any eth sent...&quot;;
+            //playerMsgs[msg.sender] =  "You already founded an etherization. Lookup your player ID by calling getMyPlayerID(). Sending back any eth sent...";
             return;
         }
         
@@ -116,7 +116,7 @@ contract Etherization {
         city.owner = numPlayers;
         city.name = cityName;
         // the first city in the game has a quarry and a farm by default
-        if(numCities &lt;= 0) {
+        if(numCities <= 0) {
             city.buildings[0] = true;
             quarryCities.push(0);
             city.buildings[1] = true;
@@ -127,7 +127,7 @@ contract Etherization {
         } else {
             city.buildings[0] = false;
             city.buildings[1] = false;
-            if(row&gt;33 || col&gt;33 || rowref&gt;33 || colref&gt;33 || int(row)-int(rowref) &gt; int(1) || int(row)-int(rowref) &lt; int(-1) || int(col)-int(colref) &gt; int(1) || int(col)-int(colref) &lt; int(-1) || map[row][col]&gt;0 || map[rowref][colref]&lt;=0) {
+            if(row>33 || col>33 || rowref>33 || colref>33 || int(row)-int(rowref) > int(1) || int(row)-int(rowref) < int(-1) || int(col)-int(colref) > int(1) || int(col)-int(colref) < int(-1) || map[row][col]>0 || map[rowref][colref]<=0) {
                 throw;
             }
             city.rowcol[0] = row;
@@ -139,7 +139,7 @@ contract Etherization {
             uint productionCut;
             uint i;
             productionCut = START_PRICE / quarryCities.length;
-            for(i=0; i &lt; quarryCities.length; i++) {
+            for(i=0; i < quarryCities.length; i++) {
                 players[cities[quarryCities[i]].owner].treasury += productionCut;
             }
         }
@@ -163,15 +163,15 @@ contract Etherization {
     }
     
     function withdraw(uint amount) {
-        if(int(playerIDs[msg.sender])-1 &lt; 0) {
+        if(int(playerIDs[msg.sender])-1 < 0) {
             throw;
         }
         uint playerID = playerIDs[msg.sender]-1;
-        if(timePassed(playerID) &lt; WAIT_TIME) {
+        if(timePassed(playerID) < WAIT_TIME) {
             playerMsgs[playerIDs[msg.sender]-1] = 2;
             return;        
         }
-        if(amount &lt; players[playerID].treasury &amp;&amp; amount &gt; MIN_WTH) {
+        if(amount < players[playerID].treasury && amount > MIN_WTH) {
             players[playerID].treasury -= amount;
             totalBalances -= amount;
             players[playerID].etherAddress.send((amount*99)/100); //keep 1% as commission
@@ -205,7 +205,7 @@ contract Etherization {
 
     // Used only by the wizard to collect his commission.
     function sweepCommission(uint amount) onlywizard {
-        if(amount &lt; this.balance-totalBalances) {
+        if(amount < this.balance-totalBalances) {
             wizardAddress.send(amount);
         }
     }
@@ -221,7 +221,7 @@ contract Etherization {
     }
     
     function getPlayerID(address sender) onlyutils constant returns (uint playerID) {
-        if(int(playerIDs[sender])-1 &lt; 0) {
+        if(int(playerIDs[sender])-1 < 0) {
             throw;
         }
         return playerIDs[sender]-1;
@@ -356,18 +356,18 @@ contract EtherizationUtils {
     function buyBuilding(uint cityID, uint buildingType) {
         uint playerID = e.getPlayerID(msg.sender);
         
-        if(e.timePassed(playerID) &lt; e.WAIT_TIME()) {
+        if(e.timePassed(playerID) < e.WAIT_TIME()) {
             e.setMsg(msg.sender, 2);
             return;        
         }
         
         uint owner;
         (owner,) = e.cities(cityID);
-        if(playerID != owner || cityID &gt; e.numCities()-1) {
+        if(playerID != owner || cityID > e.numCities()-1) {
             e.setMsg(msg.sender, 3);
             return;
         }
-        if(buildingType&lt;0 || buildingType&gt;4) {
+        if(buildingType<0 || buildingType>4) {
             e.setMsg(msg.sender, 4);
             return;            
         }
@@ -380,7 +380,7 @@ contract EtherizationUtils {
         }
         uint treasury;
         (,,treasury,,,,) = e.players(owner);
-        if(treasury &lt; e.BUILDING_PRICE()) {
+        if(treasury < e.BUILDING_PRICE()) {
             e.setMsg(msg.sender, 6);
             return;
         }
@@ -391,7 +391,7 @@ contract EtherizationUtils {
         uint productionCut;
         uint i;
         productionCut = e.BUILDING_PRICE() / e.getQrLength();
-        for(i=0; i &lt; e.getQrLength(); i++) {
+        for(i=0; i < e.getQrLength(); i++) {
            (owner,) = e.cities(e.quarryCities(i));
            (,,treasury,,,,) = e.players(owner);
            e.setTreasury(owner, treasury+productionCut);
@@ -406,18 +406,18 @@ contract EtherizationUtils {
     function buyUnit(uint cityID, uint unitType) {
         uint playerID = e.getPlayerID(msg.sender);
         
-        if(e.timePassed(playerID) &lt; e.WAIT_TIME()) {
+        if(e.timePassed(playerID) < e.WAIT_TIME()) {
             e.setMsg(msg.sender, 2);
             return;        
         }
         
         uint owner;
         (owner,) = e.cities(cityID);
-        if(playerID != owner || cityID &gt; e.numCities()-1) {
+        if(playerID != owner || cityID > e.numCities()-1) {
             e.setMsg(msg.sender, 8);
             return;
         }
-        if(unitType&lt;1 || unitType&gt;3) {
+        if(unitType<1 || unitType>3) {
             e.setMsg(msg.sender, 9);
             return;            
         }
@@ -425,11 +425,11 @@ contract EtherizationUtils {
         uint treasury;
         (,,treasury,,,numUnits,) = e.players(owner);
         uint maint = numUnits*e.MAINT_PRICE();
-        if(treasury &lt; e.UNIT_PRICE() + maint) {
+        if(treasury < e.UNIT_PRICE() + maint) {
             e.setMsg(msg.sender, 10);
             return;
         }
-        if(unitType==1&amp;&amp;e.getWwLength()==0 || unitType==2&amp;&amp;e.getMwLength()==0 || unitType==3&amp;&amp;e.getStLength()==0) {
+        if(unitType==1&&e.getWwLength()==0 || unitType==2&&e.getMwLength()==0 || unitType==3&&e.getStLength()==0) {
             e.setMsg(msg.sender, 11);
             return;
         }
@@ -437,8 +437,8 @@ contract EtherizationUtils {
         uint[10] memory units;
         uint[2] memory rowcol;
         (,,,units,rowcol,,) = e.getCity(cityID);
-        for(uint i=0; i &lt; units.length; i++) {
-            if(units[i] &lt; 1) {
+        for(uint i=0; i < units.length; i++) {
+            if(units[i] < 1) {
                e.setUnit(cityID, i, unitType);
                e.setNumUnits(playerID, numUnits+1);
                e.setTreasury(playerID, treasury-e.UNIT_PRICE()-maint);
@@ -448,7 +448,7 @@ contract EtherizationUtils {
                // pikemen
                if(unitType == 1) {
                    productionCut = e.UNIT_PRICE() / e.getWwLength();
-                   for(j=0; j &lt; e.getWwLength(); j++) {
+                   for(j=0; j < e.getWwLength(); j++) {
                        (owner,) = e.cities(e.woodworksCities(j));
                        (,,treasury,,,,) = e.players(owner);
                        e.setTreasury(owner, treasury+productionCut);
@@ -456,7 +456,7 @@ contract EtherizationUtils {
                }
                else if(unitType == 2) {
                    productionCut = e.UNIT_PRICE() / e.getMwLength();
-                   for(j=0; j &lt; e.getMwLength(); j++) {
+                   for(j=0; j < e.getMwLength(); j++) {
                        (owner,) = e.cities(e.metalworksCities(j));
                        (,,treasury,,,,) = e.players(owner);
                        e.setTreasury(owner, treasury+productionCut);
@@ -464,7 +464,7 @@ contract EtherizationUtils {
                }
                else if(unitType == 3) {
                    productionCut = e.UNIT_PRICE() / e.getStLength();
-                   for(j=0; j &lt; e.getStLength(); j++) {
+                   for(j=0; j < e.getStLength(); j++) {
                        (owner,) = e.cities(e.stablesCities(j));
                        (,,treasury,,,,) = e.players(owner);
                        e.setTreasury(owner, treasury+productionCut);
@@ -472,7 +472,7 @@ contract EtherizationUtils {
                }
                // pay maintenance for all other units to farm owners
                uint maintCut = maint / e.getFmLength();
-               for(j=0; j &lt; e.getFmLength(); j++) {
+               for(j=0; j < e.getFmLength(); j++) {
                    (owner,) = e.cities(e.farmCities(j));
                    (,,treasury,,,,) = e.players(owner);
                    e.setTreasury(owner, treasury+maintCut);
@@ -493,7 +493,7 @@ contract EtherizationUtils {
         
         uint playerID = e.getPlayerID(msg.sender);
         
-        if(e.timePassed(playerID) &lt; e.WAIT_TIME()) {
+        if(e.timePassed(playerID) < e.WAIT_TIME()) {
             e.setMsg(msg.sender, 2);
             return;        
         }
@@ -502,19 +502,19 @@ contract EtherizationUtils {
         uint ownerT;
         (ownerS,,,unitsS,sRowcol,,) = e.getCity(source);
         (ownerT,,,unitsT,tRowcol,,) = e.getCity(target);
-        if(playerID != ownerS || playerID != ownerT || int(sRowcol[0])-int(tRowcol[0]) &gt; int(1) || int(sRowcol[0])-int(tRowcol[0]) &lt; int(-1) || int(sRowcol[1])-int(tRowcol[1]) &gt; int(1) || int(sRowcol[1])-int(tRowcol[1]) &lt; int(-1)) {
-        //if(playerID != ownerS || playerID != ownerT || source &gt; e.numCities()-1 || target &gt; e.numCities()-1) {
+        if(playerID != ownerS || playerID != ownerT || int(sRowcol[0])-int(tRowcol[0]) > int(1) || int(sRowcol[0])-int(tRowcol[0]) < int(-1) || int(sRowcol[1])-int(tRowcol[1]) > int(1) || int(sRowcol[1])-int(tRowcol[1]) < int(-1)) {
+        //if(playerID != ownerS || playerID != ownerT || source > e.numCities()-1 || target > e.numCities()-1) {
         //if(playerID != ownerS || playerID != ownerT) {    
             e.setMsg(msg.sender, 14);
             return;
         }
         
         uint j = 0;
-        for(uint i=0; i&lt;unitIndxs.length; i++) {
-            if(unitsS[unitIndxs[i]] &lt; 1) {
+        for(uint i=0; i<unitIndxs.length; i++) {
+            if(unitsS[unitIndxs[i]] < 1) {
                 continue;   //skip for non-unit
             }
-            for(; j&lt;unitsT.length; j++) {
+            for(; j<unitsT.length; j++) {
                 if(unitsT[j] == 0) {
                     e.setUnit(target, j, unitsS[unitIndxs[i]]);
                     unitsS[unitIndxs[i]] = 0;

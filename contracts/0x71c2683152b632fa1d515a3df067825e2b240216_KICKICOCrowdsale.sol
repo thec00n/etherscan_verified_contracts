@@ -59,7 +59,7 @@ contract KICKICOCrowdsale is owned {
 
 	CSToken public tokenReward;
 
-	mapping (address =&gt; uint256) public balanceOf;
+	mapping (address => uint256) public balanceOf;
 
 	event FundTransfer(address backer, uint amount, bool isContribution);
 
@@ -164,26 +164,26 @@ contract KICKICOCrowdsale is owned {
 		uint originalAmount = amount;
 		FundTransfer(from, amount, true);
 		uint currentStage = 0;
-		if (now &gt;= preIcoStagePeriod[0] &amp;&amp; now &lt; preIcoStagePeriod[1]) {
+		if (now >= preIcoStagePeriod[0] && now < preIcoStagePeriod[1]) {
 			currentStage = 0;
 		}
-		if (now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1]) {
+		if (now >= IcoStagePeriod[0] && now < IcoStagePeriod[1]) {
 			currentStage = 1;
 		}
 
 		uint price = prices[currentStage];
 		uint coefficient = 1000;
 
-		for (uint i = 0; i &lt; 15; i++) {
-			if (amount &gt;= bonuses[i])
-				coefficient = 1000 + ((i + 1 + (i &gt; 11 ? 1 : 0)) * 5);
-			if (amount &lt; bonuses[i]) break;
+		for (uint i = 0; i < 15; i++) {
+			if (amount >= bonuses[i])
+				coefficient = 1000 + ((i + 1 + (i > 11 ? 1 : 0)) * 5);
+			if (amount < bonuses[i]) break;
 		}
 		if (coefficient == 1000) {
-			for (uint z = 0; z &lt; 12; z++) {
-				if (amount &gt;= bonuses[z + 15])
+			for (uint z = 0; z < 12; z++) {
+				if (amount >= bonuses[z + 15])
 					coefficient = 1000 + ((8 + z) * 10);
-				if (amount &lt; bonuses[z]) break;
+				if (amount < bonuses[z]) break;
 			}
 		}
 
@@ -191,7 +191,7 @@ contract KICKICOCrowdsale is owned {
 
 		uint remain = thresholdsByState[currentStage] - etherRaisedByState[currentStage];
 
-		if (remain &lt;= amount) {
+		if (remain <= amount) {
 			amount = remain;
 		}
 
@@ -200,7 +200,7 @@ contract KICKICOCrowdsale is owned {
 		uint currentAmount = tokenAmount * price;
 		mint(currentAmount, tokenAmount, from, currentStage);
 		uint change = originalAmount - currentAmount;
-		if (change &gt; 0) {
+		if (change > 0) {
 			if (from.send(change)) {
 				FundTransfer(from, change, false);
 			}
@@ -210,24 +210,24 @@ contract KICKICOCrowdsale is owned {
 
 	function() payable {
 		require(parametersHaveBeenSet);
-		require(msg.value &gt;= 50 finney);
+		require(msg.value >= 50 finney);
 
 		// validate by stage periods
-		require((now &gt;= preIcoStagePeriod[0] &amp;&amp; now &lt; preIcoStagePeriod[1]) || (now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1]));
+		require((now >= preIcoStagePeriod[0] && now < preIcoStagePeriod[1]) || (now >= IcoStagePeriod[0] && now < IcoStagePeriod[1]));
 		// validate if closed manually or reached the threshold
-		if(now &gt;= preIcoStagePeriod[0] &amp;&amp; now &lt; preIcoStagePeriod[1]) {
-			require(!PreIcoClosedManually &amp;&amp; etherRaisedByState[0] &lt; thresholdsByState[0]);
+		if(now >= preIcoStagePeriod[0] && now < preIcoStagePeriod[1]) {
+			require(!PreIcoClosedManually && etherRaisedByState[0] < thresholdsByState[0]);
 		} else {
-			require(!IcoClosedManually &amp;&amp; etherRaisedByState[1] &lt; thresholdsByState[1]);
+			require(!IcoClosedManually && etherRaisedByState[1] < thresholdsByState[1]);
 		}
 		processPayment(msg.sender, msg.value);
 	}
 
 	function closeCurrentStage() onlyOwner {
-		if (now &gt;= preIcoStagePeriod[0] &amp;&amp; now &lt; preIcoStagePeriod[1] &amp;&amp; !PreIcoClosedManually) {
+		if (now >= preIcoStagePeriod[0] && now < preIcoStagePeriod[1] && !PreIcoClosedManually) {
 			PreIcoClosedManually = true;
 		} else {
-			if (now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1] &amp;&amp; !IcoClosedManually) {
+			if (now >= IcoStagePeriod[0] && now < IcoStagePeriod[1] && !IcoClosedManually) {
 				IcoClosedManually = true;
 			} else {
 				revert();
@@ -236,14 +236,14 @@ contract KICKICOCrowdsale is owned {
 	}
 
 	function safeWithdrawal(uint amount) onlyOwner {
-		require(allowedForWithdrawn &gt;= amount);
+		require(allowedForWithdrawn >= amount);
 
 		// lock withdraw if stage not closed
-//		require((now &gt;= preIcoStagePeriod[1] &amp;&amp; now &lt; IcoStagePeriod[0]) || (now &gt;= IcoStagePeriod[1]));
-		if(now &gt;= preIcoStagePeriod[0] &amp;&amp; now &lt; preIcoStagePeriod[1])
-			require(PreIcoClosedManually || etherRaisedByState[0] &gt;= thresholdsByState[0]);
-		if(now &gt;= IcoStagePeriod[0] &amp;&amp; now &lt; IcoStagePeriod[1])
-			require(IcoClosedManually || etherRaisedByState[1] &gt;= thresholdsByState[1]);
+//		require((now >= preIcoStagePeriod[1] && now < IcoStagePeriod[0]) || (now >= IcoStagePeriod[1]));
+		if(now >= preIcoStagePeriod[0] && now < preIcoStagePeriod[1])
+			require(PreIcoClosedManually || etherRaisedByState[0] >= thresholdsByState[0]);
+		if(now >= IcoStagePeriod[0] && now < IcoStagePeriod[1])
+			require(IcoClosedManually || etherRaisedByState[1] >= thresholdsByState[1]);
 
 		allowedForWithdrawn -= amount;
 		if(owner.send(amount)) {
@@ -254,7 +254,7 @@ contract KICKICOCrowdsale is owned {
 	}
 
 	function kill() onlyOwner {
-		require(now &gt; IcoStagePeriod[1]);
+		require(now > IcoStagePeriod[1]);
 
 		tokenReward.changeOwner(owner);
 		selfdestruct(owner);

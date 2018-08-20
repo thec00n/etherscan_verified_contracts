@@ -9,20 +9,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal constant returns (uint256 ) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal constant returns (uint256 ) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal constant returns (uint256 ) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,8 +75,8 @@ contract ERC20 {
 
 contract StandardToken is ERC20, SafeMath {
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     /// @dev Returns number of tokens owned by given address.
     /// @param _owner Address of token owner.
@@ -84,11 +84,11 @@ contract StandardToken is ERC20, SafeMath {
         return balances[_owner];
     }
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -101,7 +101,7 @@ contract StandardToken is ERC20, SafeMath {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = safeAdd(balances[_to], _value);
             balances[_from] = safeSub(balances[_from], _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);
@@ -156,7 +156,7 @@ contract Ownable {
 
 contract MultiOwnable {
 
-    mapping (address =&gt; bool) ownerMap;
+    mapping (address => bool) ownerMap;
     address[] public owners;
 
     event OwnerAdded(address indexed _newOwner);
@@ -183,7 +183,7 @@ contract MultiOwnable {
     }
 
     function addOwner(address owner) onlyOwner returns (bool) {
-        if (!isOwner(owner) &amp;&amp; owner != 0) {
+        if (!isOwner(owner) && owner != 0) {
             ownerMap[owner] = true;
             owners.push(owner);
 
@@ -195,7 +195,7 @@ contract MultiOwnable {
     function removeOwner(address owner) onlyOwner returns (bool) {
         if (isOwner(owner)) {
             ownerMap[owner] = false;
-            for (uint i = 0; i &lt; owners.length - 1; i++) {
+            for (uint i = 0; i < owners.length - 1; i++) {
                 if (owners[i] == owner) {
                     owners[i] = owners[owners.length - 1];
                     break;
@@ -246,7 +246,7 @@ contract BsToken is StandardToken, MultiOwnable {
     string public symbol;
     uint256 public totalSupply;
     uint8 public decimals = 18;
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
 
     address public creator;
     address public seller;
@@ -257,7 +257,7 @@ contract BsToken is StandardToken, MultiOwnable {
     event SellerChanged(address indexed _oldSeller, address indexed _newSeller);
 
     modifier onlyUnlocked() {
-        if (!isOwner(msg.sender) &amp;&amp; locked) throw;
+        if (!isOwner(msg.sender) && locked) throw;
         _;
     }
 
@@ -278,7 +278,7 @@ contract BsToken is StandardToken, MultiOwnable {
     }
 
     function changeSeller(address newSeller) onlyOwner returns (bool) {
-        require(newSeller != 0x0 &amp;&amp; seller != newSeller);
+        require(newSeller != 0x0 && seller != newSeller);
 
         address oldSeller = seller;
 
@@ -297,7 +297,7 @@ contract BsToken is StandardToken, MultiOwnable {
     }
 
     function sell(address _to, uint256 _value) onlyOwner returns (bool) {
-        if (balances[seller] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[seller] >= _value && _value > 0) {
             balances[seller] = safeSub(balances[seller], _value);
             balances[_to] = safeAdd(balances[_to], _value);
             Transfer(seller, _to, _value);
@@ -326,7 +326,7 @@ contract BsToken is StandardToken, MultiOwnable {
     }
 
     function burn(uint256 _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = safeSub(balances[msg.sender], _value) ;
             totalSupply = safeSub(totalSupply, _value);
             Transfer(msg.sender, 0x0, _value);
@@ -356,11 +356,11 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
     }
 
     // TODO rename to buyers?
-    // (buyer_eth_address -&gt; struct)
-    mapping(address =&gt; Backer) public backers;
+    // (buyer_eth_address -> struct)
+    mapping(address => Backer) public backers;
 
-    // currency_code =&gt; (tx_hash =&gt; tokens)
-    mapping(uint =&gt; mapping(bytes32 =&gt; uint256)) public externalTxs;
+    // currency_code => (tx_hash => tokens)
+    mapping(uint => mapping(bytes32 => uint256)) public externalTxs;
 
     BsToken public token;           // Token contract reference.
     address public beneficiary;     // Address that will receive ETH raised during this crowdsale.
@@ -386,7 +386,7 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
     uint256 public tokensPerCentsWeekOne = 1.05 * 1e18;
 
     // TODO set to last value from SnovWhitelist contract.
-    uint256 public totalInCents = 71481400; // Total amount of USD raised during this crowdsale including (wei -&gt; USD) + (external txs in USD).
+    uint256 public totalInCents = 71481400; // Total amount of USD raised during this crowdsale including (wei -> USD) + (external txs in USD).
 
     // Stats for current crowdsale
     uint256 public totalWeiReceived = 0;   // Total amount of wei received during this crowdsale smart contract.
@@ -452,7 +452,7 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
     }
 
     function setUsdPerEth(uint256 _usdPerEth) public canNotify {
-        if (_usdPerEth &lt; usdPerEthMin || _usdPerEth &gt; usdPerEthMax) throw;
+        if (_usdPerEth < usdPerEthMin || _usdPerEth > usdPerEthMax) throw;
 
         UsdPerEthChanged(usdPerEth, _usdPerEth);
         usdPerEth = _usdPerEth;
@@ -473,10 +473,10 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
     function sellTokensForEth(address _buyer, uint256 _amountInWei) internal ifNotPaused respectTimeFrame {
 
         uint256 amountInCents = weiToCents(_amountInWei);
-        require(amountInCents &gt;= minInvestCents);
+        require(amountInCents >= minInvestCents);
 
         totalInCents = safeAdd(totalInCents, amountInCents);
-        require(totalInCents &lt;= maxCapInCents); // If max cap reached.
+        require(totalInCents <= maxCapInCents); // If max cap reached.
 
         uint256 tokensSold = centsToTokens(amountInCents);
         require(token.sell(_buyer, tokensSold)); // Transfer tokens to buyer.
@@ -500,8 +500,8 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
         uint256 rate = tokensPerCents;
         uint _now = getNow();
 
-        if (startTime &lt;= _now &amp;&amp; _now &lt; oneDayTime) rate = tokensPerCentsDayOne;
-        else if (oneDayTime &lt;= _now &amp;&amp; _now &lt; oneWeekTime) rate = tokensPerCentsWeekOne;
+        if (startTime <= _now && _now < oneDayTime) rate = tokensPerCentsDayOne;
+        else if (oneDayTime <= _now && _now < oneWeekTime) rate = tokensPerCentsWeekOne;
 
         return safeMul(_amountInCents, rate);
     }
@@ -514,7 +514,7 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
         uint256 _tokensE18
     ) internal ifNotPaused canNotify {
 
-        require(_buyer &gt; 0 &amp;&amp; _amountInCents &gt; 0 &amp;&amp; _tokensE18 &gt; 0);
+        require(_buyer > 0 && _amountInCents > 0 && _tokensE18 > 0);
 
         var txsByCur = externalTxs[uint(_currency)];
         bytes32 txKey = keccak256(_txHash);
@@ -523,7 +523,7 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
         require(txsByCur[txKey] == 0);
 
         totalInCents = safeAdd(totalInCents, _amountInCents);
-        require(totalInCents &lt; maxCapInCents); // Max cap should not be reached yet.
+        require(totalInCents < maxCapInCents); // Max cap should not be reached yet.
 
         require(token.sell(_buyer, _tokensE18)); // Transfer tokens to buyer.
 
@@ -599,20 +599,20 @@ contract BsCrowdsale is SafeMath, Ownable, Pausable {
     }
 
     function isMaxCapReached() public constant returns (bool) {
-        return totalInCents &gt;= maxCapInCents;
+        return totalInCents >= maxCapInCents;
     }
 
     function isSaleOn() public constant returns (bool) {
         uint256 _now = getNow();
-        return startTime &lt;= _now &amp;&amp; _now &lt;= endTime;
+        return startTime <= _now && _now <= endTime;
     }
 
     function isSaleOver() public constant returns (bool) {
-        return getNow() &gt; endTime;
+        return getNow() > endTime;
     }
 
     function isFinalized() public constant returns (bool) {
-        return finalizedTime &gt; 0;
+        return finalizedTime > 0;
     }
 
     /*

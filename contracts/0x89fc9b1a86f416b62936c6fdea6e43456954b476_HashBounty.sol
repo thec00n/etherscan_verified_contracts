@@ -18,7 +18,7 @@ contract HashBounty {
         bool isClaimed;
     }
     
-    mapping (uint =&gt; Bounty) bounties;
+    mapping (uint => Bounty) bounties;
     uint bountyIndex = 0;
     
     address owner;
@@ -30,7 +30,7 @@ contract HashBounty {
     
     function setBounty(bytes32 hash) payable returns (uint) {
         uint reward;
-        if (msg.value &lt; 0.001 ether)
+        if (msg.value < 0.001 ether)
             throw;
         
         reward = msg.value - 0.001 ether;
@@ -54,7 +54,7 @@ contract HashBounty {
     }
     
     function addBountyReward(uint index) payable {
-        if (!bounties[index].isClaimed &amp;&amp; bounties[index].hash != 0x0) {
+        if (!bounties[index].isClaimed && bounties[index].hash != 0x0) {
             bounties[index].reward += msg.value;
         } else {
             throw;

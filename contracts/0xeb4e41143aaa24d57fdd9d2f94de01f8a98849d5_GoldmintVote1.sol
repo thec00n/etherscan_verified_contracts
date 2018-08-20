@@ -8,13 +8,13 @@ contract SafeMath {
      }
 
      function safeSub(uint a, uint b) internal returns (uint) {
-          assert(b &lt;= a);
+          assert(b <= a);
           return a - b;
      }
 
      function safeAdd(uint a, uint b) internal returns (uint) {
           uint c = a + b;
-          assert(c&gt;=a &amp;&amp; c&gt;=b);
+          assert(c>=a && c>=b);
           return c;
      }
 }
@@ -34,8 +34,8 @@ contract GoldmintVote1 {
      bool public stopped = false;
      StdToken mntpToken; 
 
-     mapping(address =&gt; bool) isVoted;
-     mapping(address =&gt; bool) votes;
+     mapping(address => bool) isVoted;
+     mapping(address => bool) votes;
      uint public totalVotes = 0;
      uint public votedYes = 0;
 
@@ -51,9 +51,9 @@ contract GoldmintVote1 {
           require(!stopped);
 
           // 1 - should be Goldmint MNTP token holder 
-          // with &gt;1 MNTP token balance
+          // with >1 MNTP token balance
           uint256 balance = mntpToken.balanceOf(msg.sender);
-          require(balance&gt;=1 ether);
+          require(balance>=1 ether);
 
           // 2 - can vote only once 
           require(isVoted[msg.sender]==false);

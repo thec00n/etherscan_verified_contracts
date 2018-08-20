@@ -17,7 +17,7 @@ pragma solidity ^0.4.13;
  * community members about the application of blockchain technology.
  * For further information: majoolr.io
  *
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -155,20 +155,20 @@ library Array64Lib {
         uint256 high = self.length - 1;
         uint256 mid = 0;
         uint256 low = 0;
-        while (low &lt;= high) {
+        while (low <= high) {
           mid = (low+high)/2;
           if (self[mid] == value) {
             found = true;
             index = mid;
             low = high + 1;
-          } else if (self[mid] &lt; value) {
+          } else if (self[mid] < value) {
             low = mid + 1;
           } else {
             high = mid - 1;
           }
         }
     } else {
-      for (uint256 i = 0; i&lt;self.length; i++) {
+      for (uint256 i = 0; i<self.length; i++) {
         if (self[i] == value) {
           found = true;
           index = i;
@@ -204,15 +204,15 @@ library Array64Lib {
     uint256 rChild;
     uint256 swap;
     uint64 temp;
-    while(start &gt;= 0){
+    while(start >= 0){
       root = start;
       lChild = getLeftChildI(start);
-      while(lChild &lt;= end){
+      while(lChild <= end){
         rChild = lChild + 1;
         swap = root;
-        if(self[swap] &lt; self[lChild])
+        if(self[swap] < self[lChild])
           swap = lChild;
-        if((rChild &lt;= end) &amp;&amp; (self[swap]&lt;self[rChild]))
+        if((rChild <= end) && (self[swap]<self[rChild]))
           swap = rChild;
         if(swap == root)
           lChild = end+1;
@@ -229,19 +229,19 @@ library Array64Lib {
       else
         start = start - 1;
     }
-    while(end &gt; 0){
+    while(end > 0){
       temp = self[end];
       self[end] = self[0];
       self[0] = temp;
       end = end - 1;
       root = 0;
       lChild = getLeftChildI(0);
-      while(lChild &lt;= end){
+      while(lChild <= end){
         rChild = lChild + 1;
         swap = root;
-        if(self[swap] &lt; self[lChild])
+        if(self[swap] < self[lChild])
           swap = lChild;
-        if((rChild &lt;= end) &amp;&amp; (self[swap]&lt;self[rChild]))
+        if((rChild <= end) && (self[swap]<self[rChild]))
           swap = rChild;
         if(swap == root)
           lChild = end + 1;

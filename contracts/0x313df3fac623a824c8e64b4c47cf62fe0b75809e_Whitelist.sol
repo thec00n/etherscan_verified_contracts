@@ -24,9 +24,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -43,7 +43,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -71,7 +71,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -89,7 +89,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -133,7 +133,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -144,8 +144,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -159,7 +159,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -208,7 +208,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -229,8 +229,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract SimpleToken is StandardToken {
 
-  string public constant name = &quot;SimpleToken&quot;; // solium-disable-line uppercase
-  string public constant symbol = &quot;SIM&quot;; // solium-disable-line uppercase
+  string public constant name = "SimpleToken"; // solium-disable-line uppercase
+  string public constant symbol = "SIM"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
 
   uint256 public constant INITIAL_SUPPLY = 10000 * (10 ** uint256(decimals));
@@ -251,7 +251,7 @@ contract SimpleToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -316,10 +316,10 @@ contract LockedOutTokens is Ownable {
     ) {
         require(_wallet != address(0));
         require(_tokenAddress != address(0));
-        require(_startTimestamp &gt; 0);
-        require(_tranchesCount &gt; 0);
-        require(_trancheSize &gt; 0);
-        require(_periodSeconds &gt; 0);
+        require(_startTimestamp > 0);
+        require(_tranchesCount > 0);
+        require(_trancheSize > 0);
+        require(_periodSeconds > 0);
 
         wallet = _wallet;
         tranchesCount = _tranchesCount;
@@ -334,9 +334,9 @@ contract LockedOutTokens is Ownable {
         public
     {
         require(wallet == msg.sender);
-        require(tranchesPayedOut &lt; tranchesCount);
-        require(startTimestamp &gt; 0);
-        require(now &gt;= startTimestamp + (period * (tranchesPayedOut + 1)));
+        require(tranchesPayedOut < tranchesCount);
+        require(startTimestamp > 0);
+        require(now >= startTimestamp + (period * (tranchesPayedOut + 1)));
 
         tranchesPayedOut = tranchesPayedOut + 1;
         token.transfer(wallet, trancheSize);
@@ -394,11 +394,11 @@ contract Pausable is Ownable {
 contract TiqpitToken is StandardToken, Pausable {
     using SafeMath for uint256;
 
-    string constant public name = &quot;Tiqpit Token&quot;;
-    string constant public symbol = &quot;PIT&quot;;
+    string constant public name = "Tiqpit Token";
+    string constant public symbol = "PIT";
     uint8 constant public decimals = 18;
 
-    string constant public smallestUnitName = &quot;TIQ&quot;;
+    string constant public smallestUnitName = "TIQ";
 
     uint256 constant public INITIAL_TOTAL_SUPPLY = 500e6 * (uint256(10) ** decimals);
 
@@ -463,8 +463,8 @@ contract TiqpitToken is StandardToken, Pausable {
         uint256 amount = balances[_from];
 
         require(_from != address(0));
-        require(amount &gt; 0);
-        require(amount &lt;= balances[_from]);
+        require(amount > 0);
+        require(amount <= balances[_from]);
 
         balances[_from] = balances[_from].sub(amount);
         totalSupply_ = totalSupply_.sub(amount);
@@ -479,7 +479,7 @@ contract TiqpitToken is StandardToken, Pausable {
  * @dev Whitelist for wallets.
 */
 contract Whitelist is Ownable {
-    mapping(address =&gt; bool) whitelist;
+    mapping(address => bool) whitelist;
 
     uint256 public whitelistLength = 0;
 
@@ -600,7 +600,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     TiqpitToken public token = new TiqpitToken(this);
 
     // Key - address of wallet, Value - address of  contract.
-    mapping (address =&gt; address) private lockedList;
+    mapping (address => address) private lockedList;
 
     address private tiqpitSolutionsWallet;
     address private foundersWallet;
@@ -619,8 +619,8 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
         uint256 burnableTiqs;
     }
 
-    mapping(address =&gt; Purchase) private preIcoPurchases;
-    mapping(address =&gt; Purchase) private icoPurchases;
+    mapping(address => Purchase) private preIcoPurchases;
+    mapping(address => Purchase) private icoPurchases;
 
     /**
     * @dev Constructor for TiqpitCrowdsale contract.
@@ -642,10 +642,10 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
         address _bountyWallet
     ) Whitelistable() public
     {
-        require(_bountyWallet != address(0) &amp;&amp; _foundersWallet != address(0) &amp;&amp; _tiqpitSolutionsWallet != address(0) &amp;&amp; _advisorsWallet != address(0));
+        require(_bountyWallet != address(0) && _foundersWallet != address(0) && _tiqpitSolutionsWallet != address(0) && _advisorsWallet != address(0));
         
-        require(_startTimePreIco &gt;= now &amp;&amp; _endTimePreIco &gt; _startTimePreIco);
-        require(_startTimeIco &gt;= _endTimePreIco &amp;&amp; _endTimeIco &gt; _startTimeIco);
+        require(_startTimePreIco >= now && _endTimePreIco > _startTimePreIco);
+        require(_startTimeIco >= _endTimePreIco && _endTimeIco > _startTimeIco);
 
         startTimePreIco = _startTimePreIco;
         endTimePreIco = _endTimePreIco;
@@ -673,22 +673,22 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     * @dev Check whether the pre-ICO is active at the moment.
     */
     function isPreIco() public view returns (bool) {
-        return now &gt;= startTimePreIco &amp;&amp; now &lt;= endTimePreIco;
+        return now >= startTimePreIco && now <= endTimePreIco;
     }
 
     /**
     * @dev Check whether the ICO is active at the moment.
     */
     function isIco() public view returns (bool) {
-        return now &gt;= startTimeIco &amp;&amp; now &lt;= endTimeIco;
+        return now >= startTimeIco && now <= endTimeIco;
     }
 
     /**
     * @dev Burn Remaining Tokens.
     */
     function burnRemainingTokens() onlyOwner public {
-        require(tokensRemainingIco &gt; 0);
-        require(now &gt; endTimeIco);
+        require(tokensRemainingIco > 0);
+        require(now > endTimeIco);
 
         token.burnFromAddress(this);
 
@@ -696,7 +696,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     }
 
     /**
-    * @dev Send tokens to Advisors &amp; Tiqpit Solutions Wallets.
+    * @dev Send tokens to Advisors & Tiqpit Solutions Wallets.
     * @dev Locked  tokens for Founders wallet.
     */
     function initialDistribution() onlyOwner public {
@@ -713,7 +713,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     }
 
     /**
-    * @dev Get Purchase by investor&#39;s address.
+    * @dev Get Purchase by investor's address.
     * @param _address The address of a ICO investor.
     */
     function getIcoPurchase(address _address) view public returns(uint256 weis, uint256 tokens) {
@@ -721,7 +721,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     }
 
     /**
-    * @dev Get Purchase by investor&#39;s address.
+    * @dev Get Purchase by investor's address.
     * @param _address The address of a Pre-ICO investor.
     */
     function getPreIcoPurchase(address _address) view public returns(uint256 weis, uint256 tokens) {
@@ -734,7 +734,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     function refundPreIco() public {
         require(hasPreIcoFailed);
 
-        require(preIcoPurchases[msg.sender].burnableTiqs &gt; 0 &amp;&amp; preIcoPurchases[msg.sender].refundableWei &gt; 0);
+        require(preIcoPurchases[msg.sender].burnableTiqs > 0 && preIcoPurchases[msg.sender].refundableWei > 0);
         
         uint256 amountWei = preIcoPurchases[msg.sender].refundableWei;
         msg.sender.transfer(amountWei);
@@ -751,7 +751,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     function refundIco() public {
         require(hasIcoFailed);
 
-        require(icoPurchases[msg.sender].burnableTiqs &gt; 0 &amp;&amp; icoPurchases[msg.sender].refundableWei &gt; 0);
+        require(icoPurchases[msg.sender].burnableTiqs > 0 && icoPurchases[msg.sender].refundableWei > 0);
         
         uint256 amountWei = icoPurchases[msg.sender].refundableWei;
         msg.sender.transfer(amountWei);
@@ -769,7 +769,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     function burnTokens(address _address) onlyOwner public {
         require(hasIcoFailed);
 
-        require(icoPurchases[_address].burnableTiqs &gt; 0 || preIcoPurchases[_address].burnableTiqs &gt; 0);
+        require(icoPurchases[_address].burnableTiqs > 0 || preIcoPurchases[_address].burnableTiqs > 0);
 
         icoPurchases[_address].burnableTiqs = 0;
         preIcoPurchases[_address].burnableTiqs = 0;
@@ -783,13 +783,13 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     * @param _tokensAmount Amount of tokens.
     */
     function manualSendTokens(address _address, uint256 _tokensAmount) whenWhitelisted(_address) public onlyPrivilegedAddresses {
-        require(_tokensAmount &gt; 0);
+        require(_tokensAmount > 0);
         
-        if (isPreIco() &amp;&amp; _tokensAmount &lt;= tokensRemainingPreIco) {
+        if (isPreIco() && _tokensAmount <= tokensRemainingPreIco) {
             token.transferFromIco(_address, _tokensAmount);
 
             addPreIcoPurchaseInfo(_address, 0, _tokensAmount);
-        } else if (isIco() &amp;&amp; _tokensAmount &lt;= tokensRemainingIco &amp;&amp; soldTokensPreIco &gt;= MINCAP_TOKENS_PRE_ICO) {
+        } else if (isIco() && _tokensAmount <= tokensRemainingIco && soldTokensPreIco >= MINCAP_TOKENS_PRE_ICO) {
             token.transferFromIco(_address, _tokensAmount);
 
             addIcoPurchaseInfo(_address, 0, _tokensAmount);
@@ -809,11 +809,11 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     * @dev Enable refund process.
     */
     function triggerFailFlags() onlyOwner public {
-        if (!hasPreIcoFailed &amp;&amp; now &gt; endTimePreIco &amp;&amp; soldTokensPreIco &lt; MINCAP_TOKENS_PRE_ICO) {
+        if (!hasPreIcoFailed && now > endTimePreIco && soldTokensPreIco < MINCAP_TOKENS_PRE_ICO) {
             hasPreIcoFailed = true;
         }
 
-        if (!hasIcoFailed &amp;&amp; now &gt; endTimeIco &amp;&amp; soldTokensIco &lt; MINCAP_TOKENS_ICO) {
+        if (!hasIcoFailed && now > endTimeIco && soldTokensIco < MINCAP_TOKENS_ICO) {
             hasIcoFailed = true;
         }
     }
@@ -822,50 +822,50 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
     * @dev Calculate rate for ICO phase.
     */
     function currentIcoRate() public view returns(uint256) {     
-        if (now &gt; startTimeIco &amp;&amp; now &lt;= startTimeIco + 5 days) {
+        if (now > startTimeIco && now <= startTimeIco + 5 days) {
             return firstRate;
         }
 
-        if (now &gt; startTimeIco + 5 days &amp;&amp; now &lt;= startTimeIco + 10 days) {
+        if (now > startTimeIco + 5 days && now <= startTimeIco + 10 days) {
             return secondRate;
         }
 
-        if (now &gt; startTimeIco + 10 days) {
+        if (now > startTimeIco + 10 days) {
             return thirdRate;
         }
     }
 
     /**
-    * @dev Sell tokens during Pre-ICO &amp;&amp; ICO stages.
+    * @dev Sell tokens during Pre-ICO && ICO stages.
     * @dev Sell tokens only for whitelisted wallets.
     */
     function sellTokens() whenWhitelisted(msg.sender) whenNotPaused public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         bool preIco = isPreIco();
         bool ico = isIco();
 
-        if (ico) {require(soldTokensPreIco &gt;= MINCAP_TOKENS_PRE_ICO);}
+        if (ico) {require(soldTokensPreIco >= MINCAP_TOKENS_PRE_ICO);}
         
-        require((preIco &amp;&amp; tokensRemainingPreIco &gt; 0) || (ico &amp;&amp; tokensRemainingIco &gt; 0));
+        require((preIco && tokensRemainingPreIco > 0) || (ico && tokensRemainingIco > 0));
         
         uint256 currentRate = preIco ? preIcoRate : currentIcoRate();
         
         uint256 weiAmount = msg.value;
         uint256 tokensAmount = weiAmount.mul(currentRate);
 
-        require(tokensAmount &gt;= MIN_INVESTMENT);
+        require(tokensAmount >= MIN_INVESTMENT);
 
         if (ico) {
             // Move unsold Pre-Ico tokens for current phase.
-            if (tokensRemainingPreIco &gt; 0) {
+            if (tokensRemainingPreIco > 0) {
                 tokensRemainingIco = tokensRemainingIco.add(tokensRemainingPreIco);
                 tokensRemainingPreIco = 0;
             }
         }
        
         uint256 tokensRemaining = preIco ? tokensRemainingPreIco : tokensRemainingIco;
-        if (tokensAmount &gt; tokensRemaining) {
+        if (tokensAmount > tokensRemaining) {
             uint256 tokensRemainder = tokensAmount.sub(tokensRemaining);
             tokensAmount = tokensAmount.sub(tokensRemainder);
             
@@ -880,7 +880,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
         if (preIco) {
             addPreIcoPurchaseInfo(msg.sender, weiAmount, tokensAmount);
 
-            if (soldTokensPreIco &gt;= MINCAP_TOKENS_PRE_ICO) {
+            if (soldTokensPreIco >= MINCAP_TOKENS_PRE_ICO) {
                 owner.transfer(this.balance);
             }
         }
@@ -888,7 +888,7 @@ contract TiqpitCrowdsale is Pausable, Whitelistable {
         if (ico) {
             addIcoPurchaseInfo(msg.sender, weiAmount, tokensAmount);
 
-            if (soldTokensIco &gt;= MINCAP_TOKENS_ICO) {
+            if (soldTokensIco >= MINCAP_TOKENS_ICO) {
                 owner.transfer(this.balance);
             }
         }

@@ -22,13 +22,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -38,11 +38,11 @@ library SafeMath {
 interface BaseExchangeableTokenInterface {
 
     // Sender interface must have:
-    // mapping(address =&gt; uint) private exchangedWith;
-    // mapping(address =&gt; uint) private exchangedBy;
+    // mapping(address => uint) private exchangedWith;
+    // mapping(address => uint) private exchangedBy;
 
     // Receiver interface must have:
-    // mapping(address =&gt; uint) private exchangesReceived;
+    // mapping(address => uint) private exchangesReceived;
 
     /// @dev Fired if token exchange complete
     event Exchange(address _from, address _targetContract, uint _amount);
@@ -68,7 +68,7 @@ interface BaseExchangeableTokenInterface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -160,9 +160,9 @@ contract BaseFixedERC20Token is Lockable {
     /// @dev ERC20 Total supply
     uint public totalSupply;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) private allowed;
+    mapping(address => mapping(address => uint)) private allowed;
 
     /// @dev Fired if token is transferred according to ERC20 spec
     event Transfer(address indexed from, address indexed to, uint value);
@@ -185,7 +185,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ The amount to be transferred.
      */
     function transfer(address to_, uint value_) public whenNotLocked returns (bool) {
-        require(to_ != address(0) &amp;&amp; value_ &lt;= balances[msg.sender]);
+        require(to_ != address(0) && value_ <= balances[msg.sender]);
         // SafeMath.sub will throw an exception if there is not enough balance
         balances[msg.sender] = balances[msg.sender].sub(value_);
         balances[to_] = balances[to_].add(value_);
@@ -200,7 +200,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ uint the amount of tokens to be transferred
      */
     function transferFrom(address from_, address to_, uint value_) public whenNotLocked returns (bool) {
-        require(to_ != address(0) &amp;&amp; value_ &lt;= balances[from_] &amp;&amp; value_ &lt;= allowed[from_][msg.sender]);
+        require(to_ != address(0) && value_ <= balances[from_] && value_ <= allowed[from_][msg.sender]);
         balances[from_] = balances[from_].sub(value_);
         balances[to_] = balances[to_].add(value_);
         allowed[from_][msg.sender] = allowed[from_][msg.sender].sub(value_);
@@ -223,7 +223,7 @@ contract BaseFixedERC20Token is Lockable {
      * @param value_ The amount of tokens to be spent.
      */
     function approve(address spender_, uint value_) public whenNotLocked returns (bool) {
-        if (value_ != 0 &amp;&amp; allowed[msg.sender][spender_] != 0) {
+        if (value_ != 0 && allowed[msg.sender][spender_] != 0) {
             revert();
         }
         allowed[msg.sender][spender_] = value_;
@@ -294,14 +294,14 @@ contract BaseExchangeableToken is BaseExchangeableTokenInterface, BaseFixedERC20
 
     // Sender interface
     /// @dev number of tokens exchanged to another tokens for each token address
-    mapping(address =&gt; uint) private exchangedWith;
+    mapping(address => uint) private exchangedWith;
 
     /// @dev number of tokens exchanged to another tokens for each user address
-    mapping(address =&gt; uint) private exchangedBy;
+    mapping(address => uint) private exchangedBy;
 
     // Receiver interface
     /// @dev number of tokens exchanged from another tokens for each token address
-    mapping(address =&gt; uint) private exchangesReceived;
+    mapping(address => uint) private exchangesReceived;
 
     /// @dev change exchange for this token. (extends EIP-823)
     function changeExchange(address _exchange) public onlyOwner {
@@ -324,7 +324,7 @@ contract BaseExchangeableToken is BaseExchangeableTokenInterface, BaseFixedERC20
      *              balance of tokens less then amount to exchange
      */
     function exchangeToken(address _targetContract, uint _amount) public whenConfigured returns (bool success, uint creditedAmount) {
-        require(_targetContract != address(0) &amp;&amp; _amount &lt;= balances[msg.sender]);
+        require(_targetContract != address(0) && _amount <= balances[msg.sender]);
         (success, creditedAmount) = exchange.exchangeToken(_targetContract, _amount);
         if (!success) {
             revert();
@@ -347,7 +347,7 @@ contract BaseExchangeableToken is BaseExchangeableTokenInterface, BaseFixedERC20
      *              balance of tokens less then amount to exchange
      */
     function exchangeAndSpend(address _targetContract, uint _amount, address _to) public whenConfigured returns (bool success) {
-        require(_targetContract != address(0) &amp;&amp; _to != address(0) &amp;&amp; _amount &lt;= balances[msg.sender]);
+        require(_targetContract != address(0) && _to != address(0) && _amount <= balances[msg.sender]);
         success = exchange.exchangeAndSpend(_targetContract, _amount, _to);
         if (!success) {
             revert();
@@ -370,7 +370,7 @@ contract BaseExchangeableToken is BaseExchangeableTokenInterface, BaseFixedERC20
      */
     function __exchangerCallback(address _targetContract, address _exchanger, uint _amount) public whenConfigured onlyExchange returns (bool success) {
         require(_targetContract != address(0));
-        if (_amount &gt; balances[_exchanger]) {
+        if (_amount > balances[_exchanger]) {
             return false;
         }
         balances[_exchanger] = balances[_exchanger].sub(_amount);
@@ -424,9 +424,9 @@ contract BaseExchangeableToken is BaseExchangeableTokenInterface, BaseFixedERC20
 contract BitoxToken is BaseExchangeableToken {
     using SafeMath for uint;
 
-    string public constant name = &quot;BitoxTokens&quot;;
+    string public constant name = "BitoxTokens";
 
-    string public constant symbol = &quot;BITOX&quot;;
+    string public constant symbol = "BITOX";
 
     uint8 public constant decimals = 18;
 

@@ -34,10 +34,10 @@ contract SunContractIco is owned{
 
 
   ISncToken sncTokenContract; 
-  mapping (address =&gt; bool) presaleContributorAllowance;
+  mapping (address => bool) presaleContributorAllowance;
   uint256 nextFreeParticipantIndex;
-  mapping (uint =&gt; address) participantIndex;
-  mapping (address =&gt; uint256) participantContribution;
+  mapping (uint => address) participantIndex;
+  mapping (address => uint256) participantContribution;
 
   bool icoHasStarted;
   bool minTresholdReached;
@@ -46,7 +46,7 @@ contract SunContractIco is owned{
     bool ownerHasClaimedTokens;
 
   uint256 lastEthReturnIndex;
-  mapping (address =&gt; bool) hasClaimedEthWhenFail;
+  mapping (address => bool) hasClaimedEthWhenFail;
 
   event ICOStarted(uint256 _blockNumber);
   event ICOMinTresholdReached(uint256 _blockNumber);
@@ -70,9 +70,9 @@ contract SunContractIco is owned{
   /* Users send ETH and enter the token sale*/  
   function () payable {
     if (msg.value == 0) throw;                                          // Throw if the value is 0  
-    if (icoHasSucessfulyEnded || block.number &gt; endBlock) throw;        // Throw if the ICO has ended     
+    if (icoHasSucessfulyEnded || block.number > endBlock) throw;        // Throw if the ICO has ended     
     if (!icoHasStarted){                                                // Check if this is the first ICO transaction       
-      if (block.number &gt;= startBlock){                                  // Check if the ICO should start        
+      if (block.number >= startBlock){                                  // Check if the ICO should start        
         icoHasStarted = true;                                           // Set that the ICO has started         
         ICOStarted(block.number);                                       // Raise ICOStarted event     
       } else{
@@ -83,11 +83,11 @@ contract SunContractIco is owned{
       participantIndex[nextFreeParticipantIndex] = msg.sender;         // Add a new user to the participant index       
       nextFreeParticipantIndex += 1;
     }     
-    if (maxEthToRaise &gt; (totalEthRaised + msg.value)){                 // Check if the user sent too much ETH       
+    if (maxEthToRaise > (totalEthRaised + msg.value)){                 // Check if the user sent too much ETH       
       participantContribution[msg.sender] += msg.value;                // Add contribution      
       totalEthRaised += msg.value;// Add to total eth Raised
       sncTokenContract.mintTokens(msg.sender, getSncTokenIssuance(block.number, msg.value));
-      if (!minTresholdReached &amp;&amp; totalEthRaised &gt;= minEthToRaise){      // Check if the min treshold has been reached one time        
+      if (!minTresholdReached && totalEthRaised >= minEthToRaise){      // Check if the min treshold has been reached one time        
         ICOMinTresholdReached(block.number);                            // Raise ICOMinTresholdReached event        
         minTresholdReached = true;                                      // Set that the min treshold has been reached       
       }     
@@ -107,7 +107,7 @@ contract SunContractIco is owned{
 
   /* Users can claim ETH by themselves if they want to in case of ETH failure*/   
   function claimEthIfFailed(){    
-    if (block.number &lt;= endBlock || totalEthRaised &gt;= minEthToRaise) throw; // Check if ICO has failed    
+    if (block.number <= endBlock || totalEthRaised >= minEthToRaise) throw; // Check if ICO has failed    
     if (participantContribution[msg.sender] == 0) throw;                    // Check if user has participated     
     if (hasClaimedEthWhenFail[msg.sender]) throw;                           // Check if this account has already claimed ETH    
     uint256 ethContributed = participantContribution[msg.sender];           // Get participant ETH Contribution     
@@ -123,17 +123,17 @@ contract SunContractIco is owned{
 
   /* Adds addresses that are allowed to take part in presale */   
   function addPresaleContributors(address[] _presaleContributors) onlyOwner {     
-    for (uint cnt = 0; cnt &lt; _presaleContributors.length; cnt++){       
+    for (uint cnt = 0; cnt < _presaleContributors.length; cnt++){       
       presaleContributorAllowance[_presaleContributors[cnt]] = true;    
     }   
   }   
 
   /* Owner can return eth for multiple users in one call*/  
   function batchReturnEthIfFailed(uint256 _numberOfReturns) onlyOwner{    
-    if (block.number &lt; endBlock || totalEthRaised &gt;= minEthToRaise) throw;    // Check if ICO failed  
+    if (block.number < endBlock || totalEthRaised >= minEthToRaise) throw;    // Check if ICO failed  
     address currentParticipantAddress;    
     uint256 contribution;
-    for (uint cnt = 0; cnt &lt; _numberOfReturns; cnt++){      
+    for (uint cnt = 0; cnt < _numberOfReturns; cnt++){      
       currentParticipantAddress = participantIndex[lastEthReturnIndex];       // Get next account       
       if (currentParticipantAddress == 0x0) return;                           // Check if participants were reimbursed      
       if (!hasClaimedEthWhenFail[currentParticipantAddress]) {                // Check if user has manually recovered ETH         
@@ -174,14 +174,14 @@ contract SunContractIco is owned{
   /* Withdraw funds from contract */  
   function withdrawEth() onlyOwner{     
     if (this.balance == 0) throw;                                            // Check if there is balance on the contract     
-    if (totalEthRaised &lt; minEthToRaise) throw;                               // Check if minEthToRaise treshold is exceeded     
+    if (totalEthRaised < minEthToRaise) throw;                               // Check if minEthToRaise treshold is exceeded     
       
-    if(multisigAddress.send(this.balance)){}                                 // Send the contract&#39;s balance to multisig address   
+    if(multisigAddress.send(this.balance)){}                                 // Send the contract's balance to multisig address   
   }
   
   function endIco() onlyOwner {
-      if (totalEthRaised &lt; minEthToRaise) throw;
-      if (block.number &lt; endBlock) throw;
+      if (totalEthRaised < minEthToRaise) throw;
+      if (block.number < endBlock) throw;
   
     icoHasSucessfulyEnded = true;
     ICOEndedSuccessfuly(block.number, totalEthRaised);
@@ -190,7 +190,7 @@ contract SunContractIco is owned{
   /* Withdraw remaining balance to manually return where contract send has failed */  
   function withdrawRemainingBalanceForManualRecovery() onlyOwner{     
     if (this.balance == 0) throw;                                         // Check if there is balance on the contract    
-    if (block.number &lt; endBlock) throw;                                   // Check if ICO failed    
+    if (block.number < endBlock) throw;                                   // Check if ICO failed    
     if (participantIndex[lastEthReturnIndex] != 0x0) throw;               // Check if all the participants have been reimbursed     
     if (multisigAddress.send(this.balance)){}                             // Send remainder so it can be manually processed   
   }
@@ -204,7 +204,7 @@ contract SunContractIco is owned{
   }   
 
   function icoInProgress() constant returns (bool answer){    
-    return icoHasStarted &amp;&amp; !icoHasSucessfulyEnded;   
+    return icoHasStarted && !icoHasSucessfulyEnded;   
   }   
 
   function isAddressAllowedInPresale(address _querryAddress) constant returns (bool answer){    
@@ -216,13 +216,13 @@ contract SunContractIco is owned{
   }
   
   function getSncTokenIssuance(uint256 _blockNumber, uint256 _ethSent) constant returns(uint){
-        if (_blockNumber &gt;= startBlock &amp;&amp; _blockNumber &lt; blocksInWeek + startBlock) {
+        if (_blockNumber >= startBlock && _blockNumber < blocksInWeek + startBlock) {
           if (presaleContributorAllowance[msg.sender]) return _ethSent * 11600;
           else return _ethSent * 11500;
         }
-        if (_blockNumber &gt;= blocksInWeek + startBlock &amp;&amp; _blockNumber &lt; blocksInWeek * 2 + startBlock) return _ethSent * 11000;
-        if (_blockNumber &gt;= blocksInWeek * 2 + startBlock &amp;&amp; _blockNumber &lt; blocksInWeek * 3 + startBlock) return _ethSent * 10500;
-        if (_blockNumber &gt;= blocksInWeek * 3 + startBlock &amp;&amp; _blockNumber &lt;= blocksInWeek * 4 + startBlock) return _ethSent * 10000;
+        if (_blockNumber >= blocksInWeek + startBlock && _blockNumber < blocksInWeek * 2 + startBlock) return _ethSent * 11000;
+        if (_blockNumber >= blocksInWeek * 2 + startBlock && _blockNumber < blocksInWeek * 3 + startBlock) return _ethSent * 10500;
+        if (_blockNumber >= blocksInWeek * 3 + startBlock && _blockNumber <= blocksInWeek * 4 + startBlock) return _ethSent * 10000;
     }
 
   //

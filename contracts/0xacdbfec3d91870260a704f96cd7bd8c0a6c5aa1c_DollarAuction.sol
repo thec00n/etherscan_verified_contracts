@@ -32,8 +32,8 @@ contract DollarAuction {
       uint lastBidAmount = getLastBidAmount();
       address sender = msg.sender;
       uint time = now;
-      require(amount &gt; minBid);
-      require(amount &gt; (lastBidAmount + step));
+      require(amount > minBid);
+      require(amount > (lastBidAmount + step));
       bids[bidsPtr] = Bid({time: now, sender: sender, amount: amount});
       bidsPtr = bidsPtr + 1;
       total = total + amount;
@@ -62,8 +62,8 @@ contract DollarAuction {
   }
 
   function isBidFinal() constant public returns (bool isFinal) {
-    if (bidsPtr &lt;= 1) return false;
-    return ((bids[bidsPtr-1].time - bids[bidsPtr-2].time) &gt; interval);
+    if (bidsPtr <= 1) return false;
+    return ((bids[bidsPtr-1].time - bids[bidsPtr-2].time) > interval);
   }
 
   function getTimeOfLastBid() constant public returns (uint time) {

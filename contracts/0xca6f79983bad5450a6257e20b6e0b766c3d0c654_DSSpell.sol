@@ -2,7 +2,7 @@
 pragma solidity ^0.4.18;
 
 ////// lib/ds-exec/src/exec.sol
-// exec.sol - base contract used by anything that wants to do &quot;untyped&quot; calls
+// exec.sol - base contract used by anything that wants to do "untyped" calls
 
 // Copyright (C) 2017  DappHub, LLC
 
@@ -17,7 +17,7 @@ pragma solidity ^0.4.18;
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -62,7 +62,7 @@ contract DSExec {
 }
 
 ////// lib/ds-note/src/note.sol
-/// note.sol -- the `note&#39; modifier, for logging calls as events
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ contract DSExec {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.13; */
 
@@ -120,12 +120,12 @@ contract DSNote {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 /* pragma solidity ^0.4.18; */
 
-/* import &#39;ds-exec/exec.sol&#39;; */
-/* import &#39;ds-note/note.sol&#39;; */
+/* import 'ds-exec/exec.sol'; */
+/* import 'ds-note/note.sol'; */
 
 contract DSSpell is DSExec, DSNote {
     address public whom;
@@ -138,7 +138,7 @@ contract DSSpell is DSExec, DSNote {
         mana = mana_;
         data = data_;
     }
-    // Only marked &#39;done&#39; if CALL succeeds (not exceptional condition).
+    // Only marked 'done' if CALL succeeds (not exceptional condition).
     function cast() public note {
         require( !done );
         exec(whom, data, mana);

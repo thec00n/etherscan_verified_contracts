@@ -12,21 +12,21 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract Fun_Day_Gifts {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;
     uint256 public decimals;
     address public owner;
@@ -36,7 +36,7 @@ contract Fun_Day_Gifts {
 
     function Fun_Day_Gifts() {
         totalSupply = 100000000;
-        symbol = &#39;FDG&#39;;
+        symbol = 'FDG';
         owner = 0xaf1ff400f078ed195ca813baf34fc934f4cbeff6;
         balances[owner] = totalSupply;
         decimals = 0;

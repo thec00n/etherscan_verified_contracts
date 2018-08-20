@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -109,9 +109,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -119,7 +119,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -128,7 +128,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -137,16 +137,16 @@ library SafeMath {
 /**
  * @title Whitelist
  * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * @dev This simplifies the implementation of &quot;user permissions&quot;.
+ * @dev This simplifies the implementation of "user permissions".
  */
 contract Whitelist is Ownable {
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     require(whitelist[msg.sender]);
@@ -173,7 +173,7 @@ contract Whitelist is Ownable {
    * false if all addresses were already in the whitelist
    */
   function addAddressesToWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (addAddressToWhitelist(addrs[i])) {
         success = true;
       }
@@ -184,7 +184,7 @@ contract Whitelist is Ownable {
    * @dev remove an address from the whitelist
    * @param addr address
    * @return true if the address was removed from the whitelist,
-   * false if the address wasn&#39;t in the whitelist in the first place
+   * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address addr) onlyOwner public returns(bool success) {
     if (whitelist[addr]) {
@@ -198,10 +198,10 @@ contract Whitelist is Ownable {
    * @dev remove addresses from the whitelist
    * @param addrs addresses
    * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren&#39;t in the whitelist in the first place
+   * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] addrs) onlyOwner public returns(bool success) {
-    for (uint256 i = 0; i &lt; addrs.length; i++) {
+    for (uint256 i = 0; i < addrs.length; i++) {
       if (removeAddressFromWhitelist(addrs[i])) {
         success = true;
       }
@@ -294,7 +294,7 @@ contract PresaleFirst is Whitelist, Pausable {
 //  collect eth
 //////////////////
 
-    mapping (address =&gt; uint256) public buyers;
+    mapping (address => uint256) public buyers;
     address[] private keys;
 
     function getKeyLength() external constant returns (uint256) {
@@ -307,9 +307,9 @@ contract PresaleFirst is Whitelist, Pausable {
 
     function collect(address _buyer) public payable onlyWhitelisted whenNotPaused {
         require(_buyer != address(0));
-        require(weiRaised &lt;= maxcap);
+        require(weiRaised <= maxcap);
         require(preValidation());
-        require(buyers[_buyer] &lt; exceed);
+        require(buyers[_buyer] < exceed);
 
         // get exist amount
         if(buyers[_buyer] == 0) {
@@ -337,12 +337,12 @@ contract PresaleFirst is Whitelist, Pausable {
 
     function preValidation() private constant returns (bool) {
         // check minimum
-        bool a = msg.value &gt;= minimum;
+        bool a = msg.value >= minimum;
 
         // sale duration
-        bool b = block.number &gt;= startNumber &amp;&amp; block.number &lt;= endNumber;
+        bool b = block.number >= startNumber && block.number <= endNumber;
 
-        return a &amp;&amp; b;
+        return a && b;
     }
 
     function getPurchaseAmount(address _buyer) private constant returns (uint256) {
@@ -351,9 +351,9 @@ contract PresaleFirst is Whitelist, Pausable {
 
     // 1. check over exceed
     function checkOverExceed(address _buyer) private constant returns (uint256) {
-        if(msg.value &gt;= exceed) {
+        if(msg.value >= exceed) {
             return exceed;
-        } else if(msg.value.add(buyers[_buyer]) &gt;= exceed) {
+        } else if(msg.value.add(buyers[_buyer]) >= exceed) {
             return exceed.sub(buyers[_buyer]);
         } else {
             return msg.value;
@@ -362,7 +362,7 @@ contract PresaleFirst is Whitelist, Pausable {
 
     // 2. check sale hardcap
     function checkOverMaxcap(uint256 amount) private constant returns (uint256) {
-        if((amount + weiRaised) &gt;= maxcap) {
+        if((amount + weiRaised) >= maxcap) {
             return (maxcap.sub(weiRaised));
         } else {
             return amount;
@@ -377,7 +377,7 @@ contract PresaleFirst is Whitelist, Pausable {
 
     function finalize() public onlyOwner {
         require(!finalized);
-        require(weiRaised &gt;= maxcap || block.number &gt;= endNumber);
+        require(weiRaised >= maxcap || block.number >= endNumber);
 
         // dev team
         withdrawEther();
@@ -400,7 +400,7 @@ contract PresaleFirst is Whitelist, Pausable {
     }
 
     function releaseMany(uint256 start, uint256 end) external onlyOwner {
-        for(uint256 i = start; i &lt; end; i++) {
+        for(uint256 i = start; i < end; i++) {
             release(keys[i]);
         }
     }
@@ -419,7 +419,7 @@ contract PresaleFirst is Whitelist, Pausable {
     }
 
     function refundMany(uint256 start, uint256 end) external onlyOwner {
-        for(uint256 i = start; i &lt; end; i++) {
+        for(uint256 i = start; i < end; i++) {
             refund(keys[i]);
         }
     }

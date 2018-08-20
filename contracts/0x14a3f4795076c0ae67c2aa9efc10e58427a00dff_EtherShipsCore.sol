@@ -7,7 +7,7 @@ pragma solidity ^0.4.0;
                               _  |____________|  _
                        _=====| | |            | | |==== _
                  =====| |.---------------------------. | |====
-   &lt;--------------------&#39;   .  .  .  .  .  .  .  .   &#39;--------------/
+   <--------------------'   .  .  .  .  .  .  .  .   '--------------/
      \                                                             /
       \___________________________________________________________/
   wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
@@ -19,14 +19,14 @@ wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 contract EtherShipsCore {
 
     struct ShipProduct {
-        string name; // Ship&#39;s name
+        string name; // Ship's name
         uint32 armor; // Armor value
         uint32 speed; // Speed value
-        uint32 minDamage; // Ship&#39;s minimal damage value
-        uint32 maxDamage; // Ship&#39;s maximum damage value
-        uint32 attackSpeed; // Ship&#39;s attack speed value
+        uint32 minDamage; // Ship's minimal damage value
+        uint32 maxDamage; // Ship's maximum damage value
+        uint32 attackSpeed; // Ship's attack speed value
         uint8 league; // The battle league which allows to play with this ship type
-        // Unfortunately, it&#39;s impossible to define the variable inside the struct as constant.
+        // Unfortunately, it's impossible to define the variable inside the struct as constant.
         // However, you can read this smart-contract and see that there are no changes at all related to the start prices.
         uint256 startPrice;
         uint256 currentPrice; // The current price. Changes every time someone buys this kind of ship
@@ -42,9 +42,9 @@ contract EtherShipsCore {
         address owner; // The address of the owner of this ship
         address earner; // The address of the earner of this ship who get paid
         bool selling; // Is this ship on the auction now?
-        uint256 auctionEntity; // If it&#39;s on the auction,
+        uint256 auctionEntity; // If it's on the auction,
         uint256 earned; // Total funds earned with this ship
-        uint32 exp; // ship&#39;s experience
+        uint32 exp; // ship's experience
         uint32 lastCashoutIndex; // Last amount of ships existing in the game with the same ProductID
     }
 
@@ -136,48 +136,48 @@ contract EtherShipsCore {
         // Creating ship types
         //name, armor, speed, minDamage, maxDamage, attackSpeed, league, start price, earning, release time
         
-        newShipProduct(&quot;L-Raz&quot;, 50, 5, 5, 40, 5, 1, 50000000000000000, 500000000000000, now);
-        newShipProduct(&quot;L-Vip&quot;, 50, 4, 6, 35, 6, 1, 50000000000000000, 500000000000000, now+(60*60*3));
-        newShipProduct(&quot;L-Rapt&quot;, 50, 5, 5, 35, 5, 1, 50000000000000000, 500000000000000, now+(60*60*6));
-        newShipProduct(&quot;L-Slash&quot;, 50, 5, 5, 30, 6, 1, 50000000000000000, 500000000000000, now+(60*60*12));
-        newShipProduct(&quot;L-Stin&quot;, 50, 5, 5, 40, 5, 1, 50000000000000000, 500000000000000, now+(60*60*24));
-        newShipProduct(&quot;L-Scor&quot;, 50, 4, 5, 35, 5, 1, 50000000000000000, 500000000000000, now+(60*60*48));
+        newShipProduct("L-Raz", 50, 5, 5, 40, 5, 1, 50000000000000000, 500000000000000, now);
+        newShipProduct("L-Vip", 50, 4, 6, 35, 6, 1, 50000000000000000, 500000000000000, now+(60*60*3));
+        newShipProduct("L-Rapt", 50, 5, 5, 35, 5, 1, 50000000000000000, 500000000000000, now+(60*60*6));
+        newShipProduct("L-Slash", 50, 5, 5, 30, 6, 1, 50000000000000000, 500000000000000, now+(60*60*12));
+        newShipProduct("L-Stin", 50, 5, 5, 40, 5, 1, 50000000000000000, 500000000000000, now+(60*60*24));
+        newShipProduct("L-Scor", 50, 4, 5, 35, 5, 1, 50000000000000000, 500000000000000, now+(60*60*48));
         
-        newShipProduct(&quot;Sub-Sc&quot;, 60, 5, 45, 115, 4, 2, 100000000000000000, 1000000000000000, now);
-        newShipProduct(&quot;Sub-Cycl&quot;, 70, 4, 40, 115, 4, 2, 100000000000000000, 1000000000000000, now+(60*60*6));
-        newShipProduct(&quot;Sub-Deep&quot;, 80, 5, 45, 120, 4, 2, 100000000000000000, 1000000000000000, now+(60*60*12));
-        newShipProduct(&quot;Sub-Sp&quot;, 90, 4, 50, 120, 3, 2, 100000000000000000, 1000000000000000, now+(60*60*24));
-        newShipProduct(&quot;Sub-Ab&quot;, 100, 5, 55, 130, 3, 2, 100000000000000000, 1000000000000000, now+(60*60*48));
+        newShipProduct("Sub-Sc", 60, 5, 45, 115, 4, 2, 100000000000000000, 1000000000000000, now);
+        newShipProduct("Sub-Cycl", 70, 4, 40, 115, 4, 2, 100000000000000000, 1000000000000000, now+(60*60*6));
+        newShipProduct("Sub-Deep", 80, 5, 45, 120, 4, 2, 100000000000000000, 1000000000000000, now+(60*60*12));
+        newShipProduct("Sub-Sp", 90, 4, 50, 120, 3, 2, 100000000000000000, 1000000000000000, now+(60*60*24));
+        newShipProduct("Sub-Ab", 100, 5, 55, 130, 3, 2, 100000000000000000, 1000000000000000, now+(60*60*48));
 
-        newShipProduct(&quot;M-Sp&quot;, 140, 4, 40, 120, 4, 3, 200000000000000000, 2000000000000000, now);
-        newShipProduct(&quot;M-Arma&quot;, 150, 4, 40, 115, 5, 3, 200000000000000000, 2000000000000000, now+(60*60*12));
-        newShipProduct(&quot;M-Penetr&quot;, 160, 4, 35, 120, 6, 3, 200000000000000000, 2000000000000000, now+(60*60*24));
-        newShipProduct(&quot;M-Slice&quot;, 170, 4, 45, 120, 3, 3, 200000000000000000, 2000000000000000, now+(60*60*36));
-        newShipProduct(&quot;M-Hell&quot;, 180, 3, 35, 120, 2, 3, 200000000000000000, 2000000000000000, now+(60*60*48));
+        newShipProduct("M-Sp", 140, 4, 40, 120, 4, 3, 200000000000000000, 2000000000000000, now);
+        newShipProduct("M-Arma", 150, 4, 40, 115, 5, 3, 200000000000000000, 2000000000000000, now+(60*60*12));
+        newShipProduct("M-Penetr", 160, 4, 35, 120, 6, 3, 200000000000000000, 2000000000000000, now+(60*60*24));
+        newShipProduct("M-Slice", 170, 4, 45, 120, 3, 3, 200000000000000000, 2000000000000000, now+(60*60*36));
+        newShipProduct("M-Hell", 180, 3, 35, 120, 2, 3, 200000000000000000, 2000000000000000, now+(60*60*48));
 
-        newShipProduct(&quot;H-Haw&quot;, 210, 3, 65, 140, 3, 4, 400000000000000000, 4000000000000000, now);
-        newShipProduct(&quot;H-Fat&quot;, 220, 3, 75, 150, 2, 4, 400000000000000000, 4000000000000000, now+(60*60*24));
-        newShipProduct(&quot;H-Beh&quot;, 230, 2, 85, 160, 2, 4, 400000000000000000, 4000000000000000, now+(60*60*48));
-        newShipProduct(&quot;H-Mamm&quot;, 240, 2, 100, 170, 2, 4, 400000000000000000, 4000000000000000, now+(60*60*72));
-        newShipProduct(&quot;H-BigM&quot;, 250, 2, 120, 180, 3, 4, 400000000000000000, 4000000000000000, now+(60*60*96));
+        newShipProduct("H-Haw", 210, 3, 65, 140, 3, 4, 400000000000000000, 4000000000000000, now);
+        newShipProduct("H-Fat", 220, 3, 75, 150, 2, 4, 400000000000000000, 4000000000000000, now+(60*60*24));
+        newShipProduct("H-Beh", 230, 2, 85, 160, 2, 4, 400000000000000000, 4000000000000000, now+(60*60*48));
+        newShipProduct("H-Mamm", 240, 2, 100, 170, 2, 4, 400000000000000000, 4000000000000000, now+(60*60*72));
+        newShipProduct("H-BigM", 250, 2, 120, 180, 3, 4, 400000000000000000, 4000000000000000, now+(60*60*96));
 
     }
 
     function cashOut (uint256 _amount) public payable {
 
-        require (_amount &gt;= 0); //just in case
+        require (_amount >= 0); //just in case
         require (_amount == uint256(uint128(_amount))); // Just some magic stuff
-        require (this.balance &gt;= _amount); // Checking if this contract has enought money to pay
-        require (balances[msg.sender] &gt;= _amount); // Checking if player has enough funds on his balance
+        require (this.balance >= _amount); // Checking if this contract has enought money to pay
+        require (balances[msg.sender] >= _amount); // Checking if player has enough funds on his balance
         if (_amount == 0){
             _amount = balances[msg.sender];
             // If the requested amount is 0, it means that player wants to cashout the whole amount of balance
         }
 
-        balances[msg.sender] -= _amount; // Changing the amount of funds on the player&#39;s in-game balance
+        balances[msg.sender] -= _amount; // Changing the amount of funds on the player's in-game balance
 
         if (!msg.sender.send(_amount)){ // Sending funds and if the transaction is failed
-            balances[msg.sender] += _amount; // Returning the amount of funds on the player&#39;s in-game balance
+            balances[msg.sender] += _amount; // Returning the amount of funds on the player's in-game balance
         }
 
         EventCashOut (msg.sender, _amount);
@@ -186,18 +186,18 @@ contract EtherShipsCore {
 
     function cashOutShip (uint32 _shipID) public payable {
 
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip); // Checking if the ship exists
+        require (_shipID > 0 && _shipID < newIdShip); // Checking if the ship exists
         require (ships[_shipID].owner == msg.sender); // Checking if sender owns this ship
         uint256 _amount = shipProducts[ships[_shipID].productID].earning*(shipProducts[ships[_shipID].productID].amountOfShips-ships[_shipID].lastCashoutIndex);
-        require (this.balance &gt;= _amount); // Checking if this contract has enought money to pay
-        require (_amount &gt; 0);
+        require (this.balance >= _amount); // Checking if this contract has enought money to pay
+        require (_amount > 0);
 
         uint32 lastIndex = ships[_shipID].lastCashoutIndex;
 
-        ships[_shipID].lastCashoutIndex = shipProducts[ships[_shipID].productID].amountOfShips; // Changing the amount of funds on the ships&#39;s in-game balance
+        ships[_shipID].lastCashoutIndex = shipProducts[ships[_shipID].productID].amountOfShips; // Changing the amount of funds on the ships's in-game balance
 
         if (!ships[_shipID].owner.send(_amount)){ // Sending funds and if the transaction is failed
-            ships[_shipID].lastCashoutIndex = lastIndex; // Changing the amount of funds on the ships&#39;s in-game balance
+            ships[_shipID].lastCashoutIndex = lastIndex; // Changing the amount of funds on the ships's in-game balance
         }
 
         EventCashOut (msg.sender, _amount);
@@ -212,11 +212,11 @@ contract EtherShipsCore {
     //upgrade ship
     // @_upgradeChoice: 0 is for armor, 1 is for damage, 2 is for speed, 3 is for attack speed
     function upgradeShip (uint32 _shipID, uint8 _upgradeChoice) public payable {
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip); // Checking if the ship exists
+        require (_shipID > 0 && _shipID < newIdShip); // Checking if the ship exists
         require (ships[_shipID].owner == msg.sender); // Checking if sender owns this ship
-        require (_upgradeChoice &gt;= 0 &amp;&amp; _upgradeChoice &lt; 4); // Has to be between 0 and 3
-        require (ships[_shipID].upgrades[_upgradeChoice] &lt; 5); // Only 5 upgrades are allowed for each type of ship&#39;s parametres
-        require (msg.value &gt;= upgradePrice); // Checking if there is enough amount of money for the upgrade
+        require (_upgradeChoice >= 0 && _upgradeChoice < 4); // Has to be between 0 and 3
+        require (ships[_shipID].upgrades[_upgradeChoice] < 5); // Only 5 upgrades are allowed for each type of ship's parametres
+        require (msg.value >= upgradePrice); // Checking if there is enough amount of money for the upgrade
         ships[_shipID].upgrades[_upgradeChoice]++; // Upgrading
         balances[msg.sender] += msg.value-upgradePrice; // Returning the rest amount of money back to the ship owner
         balances[UpgradeMaster] += upgradePrice; // Sending the amount of money spent on the upgrade to the contract creator
@@ -228,32 +228,32 @@ contract EtherShipsCore {
 
     // Transfer. Using for sending ships to another players
     function _transfer (uint32 _shipID, address _receiver) public {
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip); // Checking if the ship exists
+        require (_shipID > 0 && _shipID < newIdShip); // Checking if the ship exists
         require (ships[_shipID].owner == msg.sender); //Checking if sender owns this ship
         require (msg.sender != _receiver); // Checking that the owner is not sending the ship to himself
         require (ships[_shipID].selling == false); //Making sure that the ship is not on the auction now
-        ships[_shipID].owner = _receiver; // Changing the ship&#39;s owner
-        ships[_shipID].earner = _receiver; // Changing the ship&#39;s earner address
+        ships[_shipID].owner = _receiver; // Changing the ship's owner
+        ships[_shipID].earner = _receiver; // Changing the ship's earner address
 
         EventTransfer (msg.sender, _receiver, _shipID);
         return;
     }
 
-    // Transfer Action. Using for sending ships to EtherArmy&#39;s contracts. For example, the battle-area contract.
+    // Transfer Action. Using for sending ships to EtherArmy's contracts. For example, the battle-area contract.
     function _transferAction (uint32 _shipID, address _receiver, uint8 _ActionType) public {
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip); // Checking if the ship exists
+        require (_shipID > 0 && _shipID < newIdShip); // Checking if the ship exists
         require (ships[_shipID].owner == msg.sender); // Checking if sender owns this ship
         require (msg.sender != _receiver); // Checking that the owner is not sending the ship to himself
         require (ships[_shipID].selling == false); // Making sure that the ship is not on the auction now
-        ships[_shipID].owner = _receiver; // Changing the ship&#39;s owner
+        ships[_shipID].owner = _receiver; // Changing the ship's owner
 
         // As you can see, we do not change the earner here.
-        // It means that technically speaking, the ship&#39;s owner is still getting his earnings.
-        // It&#39;s logically that this method (transferAction) will be used for sending ships to the battle area contract or some other contracts which will be interacting with ships
+        // It means that technically speaking, the ship's owner is still getting his earnings.
+        // It's logically that this method (transferAction) will be used for sending ships to the battle area contract or some other contracts which will be interacting with ships
         // Be careful with this method! Do not call it to transfer ships to another player!
-        // The reason you should not do this is that the method called &quot;transfer&quot; changes the owner and earner, so it is possible to change the earner address to the current owner address any time.
+        // The reason you should not do this is that the method called "transfer" changes the owner and earner, so it is possible to change the earner address to the current owner address any time.
         // However, for our special contracts like battle area, you are able to read this contract and make sure that your ship will not be sent to anyone else, only back to you.
-        // So, please, do not use this method to send your ships to other players. Use it just for interacting with Etherships&#39; contracts, which will be listed on Etherships.com
+        // So, please, do not use this method to send your ships to other players. Use it just for interacting with Etherships' contracts, which will be listed on Etherships.com
 
         EventTransferAction (msg.sender, _receiver, _shipID, _ActionType);
         return;
@@ -261,12 +261,12 @@ contract EtherShipsCore {
 
     //selling
     function sellShip (uint32 _shipID, uint256 _startPrice, uint256 _finishPrice, uint256 _duration) public {
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip);
+        require (_shipID > 0 && _shipID < newIdShip);
         require (ships[_shipID].owner == msg.sender);
         require (ships[_shipID].selling == false); // Making sure that the ship is not on the auction already
-        require (_startPrice &gt;= _finishPrice);
-        require (_startPrice &gt; 0 &amp;&amp; _finishPrice &gt;= 0);
-        require (_duration &gt; 0);
+        require (_startPrice >= _finishPrice);
+        require (_startPrice > 0 && _finishPrice >= 0);
+        require (_duration > 0);
         require (_startPrice == uint256(uint128(_startPrice))); // Just some magic stuff
         require (_finishPrice == uint256(uint128(_finishPrice))); // Just some magic stuff
 
@@ -279,25 +279,25 @@ contract EtherShipsCore {
 
     //bidding function, people use this to buy ships
     function bid (uint32 _shipID) public payable {
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip); // Checking if the ship exists
+        require (_shipID > 0 && _shipID < newIdShip); // Checking if the ship exists
         require (ships[_shipID].selling == true); // Checking if this ships is on the auction now
         AuctionEntity memory currentAuction = auctions[ships[_shipID].auctionEntity]; // The auction entity for this ship. Just to make the line below easier to read
         uint256 currentPrice = currentAuction.startPrice-(((currentAuction.startPrice-currentAuction.finishPrice)/(currentAuction.duration))*(now-currentAuction.startTime));
         // The line above calculates the current price using the formula StartPrice-(((StartPrice-FinishPrice)/Duration)*(CurrentTime-StartTime)
-        if (currentPrice &lt; currentAuction.finishPrice){ // If the auction duration time has been expired
+        if (currentPrice < currentAuction.finishPrice){ // If the auction duration time has been expired
             currentPrice = currentAuction.finishPrice;  // Setting the current price as finishPrice
         }
-        require (currentPrice &gt;= 0); // Who knows :)
-        require (msg.value &gt;= currentPrice); // Checking if the buyer sent the amount of money which is more or equal the current price
+        require (currentPrice >= 0); // Who knows :)
+        require (msg.value >= currentPrice); // Checking if the buyer sent the amount of money which is more or equal the current price
 
-        // All is fine, changing balances and changing ship&#39;s owner
+        // All is fine, changing balances and changing ship's owner
         uint256 marketFee = (currentPrice/100)*3; // Calculating 3% of the current price as a fee
         balances[ships[_shipID].owner] += currentPrice-marketFee; // Giving [current price]-[fee] amount to seller
-        balances[AuctionMaster] += marketFee; // Sending the fee amount to the contract creator&#39;s balance
+        balances[AuctionMaster] += marketFee; // Sending the fee amount to the contract creator's balance
         balances[msg.sender] += msg.value-currentPrice; //Return the rest amount to buyer
         ships[_shipID].owner = msg.sender; // Changing the owner of the ship
-        ships[_shipID].selling = false; // Change the ship status to &quot;not selling now&quot;
-        delete auctions[ships[_shipID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don&#39;t need it anymore
+        ships[_shipID].selling = false; // Change the ship status to "not selling now"
+        delete auctions[ships[_shipID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don't need it anymore
         ships[_shipID].auctionEntity = 0; // Not necessary, but deleting the ID of auction entity which was deleted in the operation above
 
         EventBid (_shipID);
@@ -305,11 +305,11 @@ contract EtherShipsCore {
 
     //cancel auction
     function cancelAuction (uint32 _shipID) public {
-        require (_shipID &gt; 0 &amp;&amp; _shipID &lt; newIdShip); // Checking if the ship exists
+        require (_shipID > 0 && _shipID < newIdShip); // Checking if the ship exists
         require (ships[_shipID].selling == true); // Checking if this ships is on the auction now
         require (ships[_shipID].owner == msg.sender); // Checking if sender owns this ship
-        ships[_shipID].selling = false; // Change the ship status to &quot;not selling now&quot;
-        delete auctions[ships[_shipID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don&#39;t need it anymore
+        ships[_shipID].selling = false; // Change the ship status to "not selling now"
+        delete auctions[ships[_shipID].auctionEntity]; // Deleting the auction entity from the storage for auctions -- we don't need it anymore
         ships[_shipID].auctionEntity = 0; // Not necessary, but deleting the ID of auction entity which was deleted in the operation above
 
         EventCancelAuction (_shipID);
@@ -321,13 +321,13 @@ contract EtherShipsCore {
     }
 
     function buyShip (uint32 _shipproductID) public payable {
-        require (shipProducts[_shipproductID].currentPrice &gt; 0 &amp;&amp; msg.value &gt; 0); //value is more than 0, price is more than 0
-        require (msg.value &gt;= shipProducts[_shipproductID].currentPrice); //value is higher than price
-        require (shipProducts[_shipproductID].releaseTime &lt;= now); //checking if this ship was released.
+        require (shipProducts[_shipproductID].currentPrice > 0 && msg.value > 0); //value is more than 0, price is more than 0
+        require (msg.value >= shipProducts[_shipproductID].currentPrice); //value is higher than price
+        require (shipProducts[_shipproductID].releaseTime <= now); //checking if this ship was released.
         // Basically, the releaseTime was implemented just to give a chance to get the new ship for as many players as possible.
         // It prevents the using of bots.
 
-        if (msg.value &gt; shipProducts[_shipproductID].currentPrice){
+        if (msg.value > shipProducts[_shipproductID].currentPrice){
             // If player payed more, put the rest amount of money on his balance
             balances[msg.sender] += msg.value-shipProducts[_shipproductID].currentPrice;
         }
@@ -351,10 +351,10 @@ contract EtherShipsCore {
     uint32 public newIdShipProduct = 1; // The next ID for the new ship type
     uint256 public newIdAuctionEntity = 1; // The next ID for the new auction entity
 
-    mapping (uint32 =&gt; ShipEntity) ships; // The storage
-    mapping (uint32 =&gt; ShipProduct) shipProducts;
-    mapping (uint256 =&gt; AuctionEntity) auctions;
-    mapping (address =&gt; uint) balances;
+    mapping (uint32 => ShipEntity) ships; // The storage
+    mapping (uint32 => ShipProduct) shipProducts;
+    mapping (uint256 => AuctionEntity) auctions;
+    mapping (address => uint) balances;
 
     uint256 public constant upgradePrice = 5000000000000000; // The fee which the UgradeMaster earns for upgrading ships. Fee: 0.005 Eth
 
@@ -402,7 +402,7 @@ contract EtherShipsCore {
         require (getShipSell(_ID));
         AuctionEntity memory currentAuction = auctions[ships[_ID].auctionEntity]; // The auction entity for this ship. Just to make the line below easier to read
         uint256 currentPrice = currentAuction.startPrice-(((currentAuction.startPrice-currentAuction.finishPrice)/(currentAuction.duration))*(now-currentAuction.startTime));
-        if (currentPrice &lt; currentAuction.finishPrice){ // If the auction duration time has been expired
+        if (currentPrice < currentAuction.finishPrice){ // If the auction duration time has been expired
             currentPrice = currentAuction.finishPrice;  // Setting the current price as finishPrice
         }
         return currentPrice;

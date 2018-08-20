@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -134,7 +134,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -179,7 +179,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -192,7 +192,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -237,15 +237,15 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract HoQuToken is StandardToken, Pausable {
 
-    string public constant name = &quot;HOQU Token&quot;;
-    string public constant symbol = &quot;HQX&quot;;
+    string public constant name = "HOQU Token";
+    string public constant symbol = "HQX";
     uint32 public constant decimals = 18;
 
     /**
      * @dev Give all tokens to msg.sender.
      */
     function HoQuToken(uint _totalSupply) {
-        require (_totalSupply &gt; 0);
+        require (_totalSupply > 0);
         totalSupply = balances[msg.sender] = _totalSupply;
     }
 
@@ -284,9 +284,9 @@ contract ClaimableCrowdsale is Pausable {
     bool public isFinished = false;
 
     // buffer for claimable tokens
-    mapping(address =&gt; uint256) public tokens;
-    mapping(address =&gt; bool) public approved;
-    mapping(uint32 =&gt; address) internal tokenReceivers;
+    mapping(address => uint256) public tokens;
+    mapping(address => bool) public approved;
+    mapping(uint32 => address) internal tokenReceivers;
     uint32 internal receiversCount;
 
     /**
@@ -300,8 +300,8 @@ contract ClaimableCrowdsale is Pausable {
 
     modifier inProgress() {
         require (!isFinished);
-        require (issuedTokensAmount &lt; maxTokensAmount);
-        require (now &lt;= endDate);
+        require (issuedTokensAmount < maxTokensAmount);
+        require (now <= endDate);
         _;
     }
     
@@ -339,7 +339,7 @@ contract ClaimableCrowdsale is Pausable {
      * @dev Set new HoQu token exchange rate.
      */
     function setTokenRate(uint256 _tokenRate) onlyOwner {
-        require (_tokenRate &gt; 0);
+        require (_tokenRate > 0);
         tokenRate = _tokenRate;
     }
 
@@ -353,21 +353,21 @@ contract ClaimableCrowdsale is Pausable {
         // calculate token amount to be transfered to investor
         uint256 tokensAmount = tokenRate.mul(payAmount);
     
-        if (issuedTokensAmount + tokensAmount &gt; maxTokensAmount) {
+        if (issuedTokensAmount + tokensAmount > maxTokensAmount) {
             tokensAmount = maxTokensAmount.sub(issuedTokensAmount);
             payAmount = tokensAmount.div(tokenRate);
             returnAmount = msg.value.sub(payAmount);
         }
     
         issuedTokensAmount = issuedTokensAmount.add(tokensAmount);
-        require (issuedTokensAmount &lt;= maxTokensAmount);
+        require (issuedTokensAmount <= maxTokensAmount);
 
         storeTokens(msg.sender, tokensAmount);
         TokenBought(msg.sender, tokensAmount, payAmount);
 
         beneficiaryAddress.transfer(payAmount);
     
-        if (returnAmount &gt; 0) {
+        if (returnAmount > 0) {
             msg.sender.transfer(returnAmount);
         }
     }
@@ -400,7 +400,7 @@ contract ClaimableCrowdsale is Pausable {
     function sub(address _receiver, uint256 _equivalentEthAmount) onlyOwner whenNotPaused {
         uint256 tokensAmount = tokenRate.mul(_equivalentEthAmount);
 
-        require (tokens[_receiver] &gt;= tokensAmount);
+        require (tokens[_receiver] >= tokensAmount);
 
         tokens[_receiver] = tokens[_receiver].sub(tokensAmount);
         issuedTokensAmount = issuedTokensAmount.sub(tokensAmount);
@@ -438,9 +438,9 @@ contract ClaimableCrowdsale is Pausable {
      * Claim all bought HQX for all approved addresses
      */
     function claimAll() onlyOwner whenNotPaused {
-        for (uint32 i = 0; i &lt; receiversCount; i++) {
+        for (uint32 i = 0; i < receiversCount; i++) {
             address receiver = tokenReceivers[i];
-            if (approved[receiver] &amp;&amp; tokens[receiver] &gt; 0) {
+            if (approved[receiver] && tokens[receiver] > 0) {
                 claimFor(receiver);
             }
         }
@@ -451,7 +451,7 @@ contract ClaimableCrowdsale is Pausable {
      */
     function claimFor(address _receiver) internal whenNotPaused {
         require(approved[_receiver]);
-        require(tokens[_receiver] &gt; 0);
+        require(tokens[_receiver] > 0);
 
         uint256 tokensToSend = tokens[_receiver];
         tokens[_receiver] = 0;
@@ -468,7 +468,7 @@ contract ClaimableCrowdsale is Pausable {
      * Finish Sale.
      */
     function finish() onlyOwner {
-        require (issuedTokensAmount &gt;= maxTokensAmount || now &gt; endDate);
+        require (issuedTokensAmount >= maxTokensAmount || now > endDate);
         require (!isFinished);
         isFinished = true;
         token.transfer(bankAddress, token.balanceOf(this));

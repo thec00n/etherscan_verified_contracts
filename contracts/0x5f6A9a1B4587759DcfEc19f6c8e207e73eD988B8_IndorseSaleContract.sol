@@ -34,12 +34,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -77,12 +77,12 @@ contract StandardToken is ERC20, SafeMath {
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4) ;
+     require(msg.data.length >= size + 4) ;
      _;
   }
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32)  returns (bool success){
     balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
@@ -95,7 +95,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSubtract(balances[_from], _value);
@@ -171,10 +171,10 @@ contract Pausable is Ownable {
 // ================= Indorse Token Contract start =======================
 contract IndorseToken is SafeMath, StandardToken, Pausable {
     // metadata
-    string public constant name = &quot;Indorse Token&quot;;
-    string public constant symbol = &quot;IND&quot;;
+    string public constant name = "Indorse Token";
+    string public constant symbol = "IND";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public indSaleDeposit        = 0x0053B91E38B207C97CBff06f48a0f7Ab2Dd81449;      // deposit address for Indorse Sale contract
@@ -265,20 +265,20 @@ contract IndorseSaleContract is  Ownable,SafeMath,Pausable {
 
     /// @dev Accepts ether and creates new IND tokens.
     function createTokens(address _beneficiary, uint256 _value) internal whenNotPaused {
-      require (tokenCreationCap &gt; totalSupply);                                         // CAP reached no more please
-      require (now &gt;= fundingStartTime);
-      require (now &lt;= fundingEndTime);
-      require (_value &gt;= minContribution);                                              // To avoid spam transactions on the network    
+      require (tokenCreationCap > totalSupply);                                         // CAP reached no more please
+      require (now >= fundingStartTime);
+      require (now <= fundingEndTime);
+      require (_value >= minContribution);                                              // To avoid spam transactions on the network    
       require (!isFinalized);
-      require (tx.gasprice &lt;= MAX_GAS_PRICE);
+      require (tx.gasprice <= MAX_GAS_PRICE);
 
-      uint256 tokens = safeMult(_value, tokenExchangeRate);                             // check that we&#39;re not over totals
+      uint256 tokens = safeMult(_value, tokenExchangeRate);                             // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-      require (ind.balanceOf(msg.sender) + tokens &lt;= maxTokens);
+      require (ind.balanceOf(msg.sender) + tokens <= maxTokens);
       
       // DA 8/6/2017 to fairly allocate the last few tokens
-      if (tokenCreationCap &lt; checkedSupply) {        
+      if (tokenCreationCap < checkedSupply) {        
         uint256 tokensToAllocate = safeSubtract(tokenCreationCap,totalSupply);
         uint256 tokensToRefund   = safeSubtract(tokens,tokensToAllocate);
         totalSupply = tokenCreationCap;

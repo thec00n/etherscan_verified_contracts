@@ -23,7 +23,7 @@ contract Certifier {
 }
 
 contract ProofOfEmail is Owned, Certifier {
-	modifier when_fee_paid { if (msg.value &lt; fee) return; _; }
+	modifier when_fee_paid { if (msg.value < fee) return; _; }
 
 	event Requested(address indexed who, bytes32 indexed emailHash);
 	event Puzzled(address indexed who, bytes32 indexed emailHash, bytes32 puzzle);
@@ -67,9 +67,9 @@ contract ProofOfEmail is Owned, Certifier {
 		entries[_who];
 	}
 
-	mapping (address =&gt; bytes32) entries;
-	mapping (bytes32 =&gt; address) public reverse;
-	mapping (bytes32 =&gt; bytes32) puzzles;
+	mapping (address => bytes32) entries;
+	mapping (bytes32 => address) public reverse;
+	mapping (bytes32 => bytes32) puzzles;
 
 	uint public fee = 0 finney;
 }

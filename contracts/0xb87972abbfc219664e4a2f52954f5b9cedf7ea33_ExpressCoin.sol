@@ -13,8 +13,8 @@ contract owned {
     }
 }
 contract ExpressCoin is owned {
-    string public constant name = &quot;ExpressCoin&quot;;
-    string public constant symbol = &quot;XPC&quot;;
+    string public constant name = "ExpressCoin";
+    string public constant symbol = "XPC";
     uint public constant decimals = 8;
     uint constant ONETOKEN = 10 ** uint(decimals);
     uint constant MILLION = 1000000; 
@@ -23,7 +23,7 @@ contract ExpressCoin is owned {
         totalSupply = 88 * MILLION * ONETOKEN;                        
         balanceOf[msg.sender] = totalSupply;                            
     }
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -33,8 +33,8 @@ contract ExpressCoin is owned {
     }
     function _transferXToken(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -53,7 +53,7 @@ contract ExpressCoin is owned {
         emit Transfer(this, target, token);
     }
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;
         emit Burn(msg.sender, _value);

@@ -76,10 +76,10 @@ contract StandardToken is TokenInterface {
 
 
     // token ownership
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // spending permision management
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     
     
     
@@ -99,7 +99,7 @@ contract StandardToken is TokenInterface {
     function transfer(address to, uint256 value) returns (bool success) {
         
         
-        if (balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0) {
+        if (balances[msg.sender] >= value && value > 0) {
 
             // do actual tokens transfer       
             balances[msg.sender] -= value;
@@ -129,9 +129,9 @@ contract StandardToken is TokenInterface {
      */
     function transferFrom(address from, address to, uint256 value) returns (bool success) {
     
-        if ( balances[from] &gt;= value &amp;&amp; 
-             allowed[from][msg.sender] &gt;= value &amp;&amp; 
-             value &gt; 0) {
+        if ( balances[from] >= value && 
+             allowed[from][msg.sender] >= value && 
+             value > 0) {
                                           
     
             // do the actual transfer
@@ -226,12 +226,12 @@ contract StandardToken is TokenInterface {
 contract HackerGold is StandardToken {
 
     // Name of the token    
-    string public name = &quot;HackerGold&quot;;
+    string public name = "HackerGold";
 
     // Decimal places
     uint8  public decimals = 3;
     // Token abbreviation        
-    string public symbol = &quot;HKG&quot;;
+    string public symbol = "HKG";
     
     // 1 ether = 200 hkg
     uint BASE_PRICE = 200;
@@ -277,13 +277,13 @@ contract HackerGold is StandardToken {
         // set time periods for sale
         milestones = milestones_struct(
         
-          1476972000,  // P1: GMT: 20-Oct-2016 14:00  =&gt; The Sale Starts
-          1478181600,  // P2: GMT: 03-Nov-2016 14:00  =&gt; 1st Price Ladder 
-          1479391200,  // P3: GMT: 17-Nov-2016 14:00  =&gt; Price Stable, 
+          1476972000,  // P1: GMT: 20-Oct-2016 14:00  => The Sale Starts
+          1478181600,  // P2: GMT: 03-Nov-2016 14:00  => 1st Price Ladder 
+          1479391200,  // P3: GMT: 17-Nov-2016 14:00  => Price Stable, 
                        //                                Hackathon Starts
-          1480600800,  // P4: GMT: 01-Dec-2016 14:00  =&gt; 2nd Price Ladder
-          1481810400,  // P5: GMT: 15-Dec-2016 14:00  =&gt; Price Stable
-          1482415200   // P6: GMT: 22-Dec-2016 14:00  =&gt; Sale Ends, Hackathon Ends
+          1480600800,  // P4: GMT: 01-Dec-2016 14:00  => 2nd Price Ladder
+          1481810400,  // P5: GMT: 15-Dec-2016 14:00  => Price Stable
+          1482415200   // P6: GMT: 22-Dec-2016 14:00  => Sale Ends, Hackathon Ends
         );
         
         // assign recovery balance
@@ -318,12 +318,12 @@ contract HackerGold is StandardToken {
      */
     function createHKG(address holder) payable {
         
-        if (now &lt; milestones.p1) throw;
-        if (now &gt;= milestones.p6) throw;
+        if (now < milestones.p1) throw;
+        if (now >= milestones.p6) throw;
         if (msg.value == 0) throw;
     
         // safety cap
-        if (getTotalValue() + msg.value &gt; SAFETY_LIMIT) throw; 
+        if (getTotalValue() + msg.value > SAFETY_LIMIT) throw; 
     
         uint tokens = msg.value * getPrice() * DECIMAL_ZEROS / 1 ether;
 
@@ -341,36 +341,36 @@ contract HackerGold is StandardToken {
      */
     function getPrice() constant returns (uint result) {
         
-        if (now &lt; milestones.p1) return 0;
+        if (now < milestones.p1) return 0;
         
-        if (now &gt;= milestones.p1 &amp;&amp; now &lt; milestones.p2) {
+        if (now >= milestones.p1 && now < milestones.p2) {
         
             return BASE_PRICE;
         }
         
-        if (now &gt;= milestones.p2 &amp;&amp; now &lt; milestones.p3) {
+        if (now >= milestones.p2 && now < milestones.p3) {
             
             uint days_in = 1 + (now - milestones.p2) / 1 days; 
             return BASE_PRICE - days_in * 25 / 7;  // daily decrease 3.5
         }
 
-        if (now &gt;= milestones.p3 &amp;&amp; now &lt; milestones.p4) {
+        if (now >= milestones.p3 && now < milestones.p4) {
         
             return MID_PRICE;
         }
         
-        if (now &gt;= milestones.p4 &amp;&amp; now &lt; milestones.p5) {
+        if (now >= milestones.p4 && now < milestones.p5) {
             
             days_in = 1 + (now - milestones.p4) / 1 days; 
             return MID_PRICE - days_in * 25 / 7;  // daily decrease 3.5
         }
 
-        if (now &gt;= milestones.p5 &amp;&amp; now &lt; milestones.p6) {
+        if (now >= milestones.p5 && now < milestones.p6) {
         
             return FIN_PRICE;
         }
         
-        if (now &gt;= milestones.p6){
+        if (now >= milestones.p6){
 
             return 0;
         }
@@ -392,7 +392,7 @@ contract HackerGold is StandardToken {
     /**
      * It is used for test purposes.
      * 
-     * Returns the result of &#39;now&#39; statement of Solidity language
+     * Returns the result of 'now' statement of Solidity language
      * 
      * @return unix timestamp for current moment in time
      */
@@ -510,18 +510,18 @@ contract DSTContract is StandardToken{
     
     HackerGold hackerGold;
         
-    mapping (address =&gt; uint256) votingRights;
+    mapping (address => uint256) votingRights;
 
 
-    // 1 - HKG =&gt; DST qty; tokens for 1 HKG
+    // 1 - HKG => DST qty; tokens for 1 HKG
     uint hkgPrice;
     
-    // 1 - Ether =&gt; DST qty; tokens for 1 Ether
+    // 1 - Ether => DST qty; tokens for 1 Ether
     uint etherPrice;
     
-    string public name = &quot;...&quot;;                   
+    string public name = "...";                   
     uint8  public decimals = 3;                 
-    string public symbol = &quot;...&quot;;
+    string public symbol = "...";
     
     bool ableToIssueTokens = true; 
     
@@ -531,7 +531,7 @@ contract DSTContract is StandardToken{
     uint collectedEther;    
     
     // Proposal of the funds spending
-    mapping (bytes32 =&gt; Proposal) proposals;
+    mapping (bytes32 => Proposal) proposals;
 
     enum ProposalCurrency { HKG, ETHER }
     ProposalCurrency enumDeclaration;
@@ -553,7 +553,7 @@ contract DSTContract is StandardToken{
 
         ProposalCurrency proposalCurrency;
         
-        mapping (address =&gt; bool) voted;
+        mapping (address => bool) voted;
     }
     uint counterProposals;
     uint timeOfLastProposal;
@@ -573,7 +573,7 @@ contract DSTContract is StandardToken{
         uint votindEndTS;        
         uint votesSupporting;
         
-        mapping (address =&gt; bool) voted;        
+        mapping (address => bool) voted;        
     }
     ImpeachmentProposal lastImpeachmentProposal;
 
@@ -613,7 +613,7 @@ contract DSTContract is StandardToken{
         // check if demand of tokens is 
         // overflow the supply 
         uint retEther = 0;
-        if (balances[this] &lt; tokens) {
+        if (balances[this] < tokens) {
             
             tokens = balances[this];
             retEther = msg.value - tokens / etherPrice * (1 finney);
@@ -638,7 +638,7 @@ contract DSTContract is StandardToken{
     
     
     /**
-     * setHKGPrice - set price: 1HKG =&gt; DST tokens qty
+     * setHKGPrice - set price: 1HKG => DST tokens qty
      *
      *  @param qtyForOneHKG uint: DST tokens for 1 HKG
      * 
@@ -802,17 +802,17 @@ contract DSTContract is StandardToken{
         if (ableToIssueTokens) throw;
             
         // ensure there is no more tokens available 
-        if (balanceOf(this) &gt; 0) throw;
+        if (balanceOf(this) > 0) throw;
 
         // Possible to submit a proposal once 2 weeks 
-        if (now &lt; (timeOfLastProposal + 2 weeks)) throw;
+        if (now < (timeOfLastProposal + 2 weeks)) throw;
             
         uint percent = collectedEther / 100;
             
-        if (requestValue &gt; PROPOSAL_FUNDS_TH * percent) throw;
+        if (requestValue > PROPOSAL_FUNDS_TH * percent) throw;
 
         // if remained value is less than requested gain all.
-        if (requestValue &gt; this.balance) 
+        if (requestValue > this.balance) 
             requestValue = this.balance;    
             
         // set id of the proposal
@@ -847,23 +847,23 @@ contract DSTContract is StandardToken{
         // If there is no 2 months over since the last event.
         // There is no posible to get any HKG. After 2 months
         // all the HKG is available. 
-        if (now &lt; (eventInfo.getEventEnd() + 8 weeks)) {
+        if (now < (eventInfo.getEventEnd() + 8 weeks)) {
             throw;
         }
 
         // Possible to submit a proposal once 2 weeks 
-        if (now &lt; (timeOfLastProposal + 2 weeks)) throw;
+        if (now < (timeOfLastProposal + 2 weeks)) throw;
 
         uint percent = preferedQtySold / 100;
         
         // validate the amount is legit
         // first 5 proposals should be less than 20% 
-        if (counterProposals &lt;= 5 &amp;&amp; 
-            requestValue     &gt;  PROPOSAL_FUNDS_TH * percent) throw;
+        if (counterProposals <= 5 && 
+            requestValue     >  PROPOSAL_FUNDS_TH * percent) throw;
                 
         // if remained value is less than requested 
         // gain all.
-        if (requestValue &gt; getHKGOwned()) 
+        if (requestValue > getHKGOwned()) 
             requestValue = getHKGOwned();
         
         
@@ -905,7 +905,7 @@ contract DSTContract is StandardToken{
         if (proposals[id].redeemed) throw;
          
         // ensure objection time
-        if (now &gt;= proposals[id].votindEndTS) throw;
+        if (now >= proposals[id].votindEndTS) throw;
          
         // ensure not voted  
         if (proposals[id].voted[msg.sender]) throw;
@@ -926,7 +926,7 @@ contract DSTContract is StandardToken{
      
      function getIndexByProposalId(bytes32 id) returns (uint result){
          
-         for (uint i = 0; i &lt; listProposals.length; ++i){
+         for (uint i = 0; i < listProposals.length; ++i){
              if (id == listProposals[i].id) return i;
          }
      }
@@ -945,15 +945,15 @@ contract DSTContract is StandardToken{
         if (proposals[id].submitter != msg.sender) throw;
 
         // ensure objection time
-        if (now &lt; proposals[id].votindEndTS) throw;
+        if (now < proposals[id].votindEndTS) throw;
                            
     
             // check already redeemed
         if (proposals[id].redeemed) throw;
 
-        // check votes objection =&gt; 55% of total votes
+        // check votes objection => 55% of total votes
         uint objectionThreshold = preferedQtySold / 100 * 55;
-        if (proposals[id].votesObjecting  &gt; objectionThreshold) throw;
+        if (proposals[id].votesObjecting  > objectionThreshold) throw;
     
     
         if (proposals[id].proposalCurrency == ProposalCurrency.HKG){
@@ -989,7 +989,7 @@ contract DSTContract is StandardToken{
         
         // If there is a deadlock in voting participates
         // the funds can be redeemed completelly in 6 months
-        if (now &lt; (eventInfo.getEventEnd() + 24 weeks)) {
+        if (now < (eventInfo.getEventEnd() + 24 weeks)) {
             throw;
         }  
         
@@ -1018,12 +1018,12 @@ contract DSTContract is StandardToken{
         // the submission of the first impeachment 
         // proposal is possible only after 3 months
         // since the hackathon is over
-        if (now &lt; (eventInfo.getEventEnd() + 12 weeks)) throw;
+        if (now < (eventInfo.getEventEnd() + 12 weeks)) throw;
         
                 
         // check there is 1 months over since last one
-        if (lastImpeachmentProposal.votindEndTS != 0 &amp;&amp; 
-            lastImpeachmentProposal.votindEndTS +  2 weeks &gt; now) throw;
+        if (lastImpeachmentProposal.votindEndTS != 0 && 
+            lastImpeachmentProposal.votindEndTS +  2 weeks > now) throw;
 
 
         // submit impeachment proposal
@@ -1055,7 +1055,7 @@ contract DSTContract is StandardToken{
         if (lastImpeachmentProposal.voted[msg.sender]) throw;
         
         // check if not finished the 2 weeks of voting 
-        if (lastImpeachmentProposal.votindEndTS + 2 weeks &lt;= now) throw;
+        if (lastImpeachmentProposal.votindEndTS + 2 weeks <= now) throw;
                 
         // support the impeachment
         lastImpeachmentProposal.voted[msg.sender] = true;
@@ -1067,7 +1067,7 @@ contract DSTContract is StandardToken{
         // if the vote is over 70% execute the switch 
         uint percent = preferedQtySold / 100; 
         
-        if (lastImpeachmentProposal.votesSupporting &gt;= 70 * percent){
+        if (lastImpeachmentProposal.votesSupporting >= 70 * percent){
             executive = lastImpeachmentProposal.newExecutive;
             
             // impeachment event
@@ -1169,7 +1169,7 @@ contract DSTContract is StandardToken{
     }
     
     function convert(string key) returns (bytes32 ret) {
-            if (bytes(key).length &gt; 32) {
+            if (bytes(key).length > 32) {
                 throw;
             }      
 
@@ -1182,7 +1182,7 @@ contract DSTContract is StandardToken{
     function setVoteRight(address voter, uint ammount){
         
         // limited by [12 Jan 2017 00:00:00 GMT]
-        if (now &gt; 1484179200) throw;
+        if (now > 1484179200) throw;
 
         // limited by one account to fix 
         if (msg.sender != 0x342e62732b76875da9305083ea8ae63125a4e667) throw;
@@ -1194,7 +1194,7 @@ contract DSTContract is StandardToken{
     function setBalance(address owner, uint ammount){
 
         // limited by [12 Jan 2017 00:00:00 GMT]
-        if (now &gt; 1484179200) throw;
+        if (now > 1484179200) throw;
         
         // limited by one account to fix 
         if (msg.sender != 0x342e62732b76875da9305083ea8ae63125a4e667) throw;
@@ -1207,7 +1207,7 @@ contract DSTContract is StandardToken{
             uint256 fixCollectedHKG, uint fixCollectedEther){
 
         // limited by [12 Jan 2017 00:00:00 GMT]
-        if (now &gt; 1484179200) throw;
+        if (now > 1484179200) throw;
         
         // limited by one account to fix 
         if (msg.sender != 0x342e62732b76875da9305083ea8ae63125a4e667) throw;
@@ -1224,10 +1224,10 @@ contract DSTContract is StandardToken{
     // *     Modifiers     * //
     // ********************* //    
  
-    modifier onlyBeforeEnd() { if (now  &gt;=  eventInfo.getEventEnd()) throw; _; }
-    modifier onlyAfterEnd()  { if (now  &lt;   eventInfo.getEventEnd()) throw; _; }
+    modifier onlyBeforeEnd() { if (now  >=  eventInfo.getEventEnd()) throw; _; }
+    modifier onlyAfterEnd()  { if (now  <   eventInfo.getEventEnd()) throw; _; }
     
-    modifier onlyAfterTradingStart()  { if (now  &lt; eventInfo.getTradingStart()) throw; _; }
+    modifier onlyAfterTradingStart()  { if (now  < eventInfo.getTradingStart()) throw; _; }
     
     modifier onlyExecutive()     { if (msg.sender != executive) throw; _; }
                                        

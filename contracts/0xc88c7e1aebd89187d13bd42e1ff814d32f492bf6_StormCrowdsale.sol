@@ -55,18 +55,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -79,7 +79,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
     uint256 contributionAmount;
     uint256 tokensIssued;
   }
-  mapping(address =&gt; ContributorData) public contributorList;
+  mapping(address => ContributorData) public contributorList;
   enum state { pendingStart, communityRound, crowdsaleStarted, crowdsaleEnded }
   state crowdsaleState;
   uint public communityRoundStartDate;
@@ -112,7 +112,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
   }
   // limit gas price to 50 Gwei (about 5-10x the normal amount)
   modifier onlyLowGasPrice {
-	  require(tx.gasprice &lt;= 50*10**9 wei);
+	  require(tx.gasprice <= 50*10**9 wei);
 	  _;
   }
   //
@@ -123,7 +123,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
     require(companyAddress != 0x0);
     require(token != IToken(0x0));
     checkCrowdsaleState();                                           // Calibrate crowdsale state
-    assert((crowdsaleState == state.communityRound &amp;&amp; contributorList[msg.sender].isCommunityRoundApproved) ||
+    assert((crowdsaleState == state.communityRound && contributorList[msg.sender].isCommunityRoundApproved) ||
             crowdsaleState == state.crowdsaleStarted);
     
     processTransaction(msg.sender, msg.value);                       // Process transaction and issue tokens
@@ -152,13 +152,13 @@ contract Crowdsale is ReentrancyHandling, Owned {
   // Check crowdsale state and calibrate it
   //
   function checkCrowdsaleState() internal {
-    if (now &gt; crowdsaleEndDate || tokenSold &gt;= maxTokenSupply) {  // end crowdsale once all tokens are sold or run out of time
+    if (now > crowdsaleEndDate || tokenSold >= maxTokenSupply) {  // end crowdsale once all tokens are sold or run out of time
       if (crowdsaleState != state.crowdsaleEnded) {
         crowdsaleState = state.crowdsaleEnded;
         CrowdsaleEnded(now);
       }
     }
-    else if (now &gt; crowdsaleStartDate) { // move into crowdsale round
+    else if (now > crowdsaleStartDate) { // move into crowdsale round
       if (crowdsaleState != state.crowdsaleStarted) {
         uint256 communityTokenRemaining = maxCommunityCap.sub(communityTokenSold);  // apply any remaining tokens from community round to crowdsale round
         maxCrowdsaleCap = maxCrowdsaleCap.add(communityTokenRemaining);
@@ -166,8 +166,8 @@ contract Crowdsale is ReentrancyHandling, Owned {
         CrowdsaleStarted(now);
       }
     }
-    else if (now &gt; communityRoundStartDate) {
-      if (communityTokenSold &lt; maxCommunityCap) {
+    else if (now > communityRoundStartDate) {
+      if (communityTokenSold < maxCommunityCap) {
         if (crowdsaleState != state.communityRound) {
           crowdsaleState = state.communityRound;
           CommunityRoundStarted(now);
@@ -189,20 +189,20 @@ contract Crowdsale is ReentrancyHandling, Owned {
     uint256 communityTokenAmount = 0;
     uint previousContribution = contributorList[_contributor].contributionAmount;  // retrieve previous contributions
     // community round ONLY
-    if (crowdsaleState == state.communityRound &amp;&amp; 
-        contributorList[_contributor].isCommunityRoundApproved &amp;&amp; 
-        previousContribution &lt; maxContribution) {
+    if (crowdsaleState == state.communityRound && 
+        contributorList[_contributor].isCommunityRoundApproved && 
+        previousContribution < maxContribution) {
         communityEthAmount = _newContribution;
         uint256 availableEthAmount = maxContribution.sub(previousContribution);                 
         // limit the contribution ETH amount to the maximum allowed for the community round
-        if (communityEthAmount &gt; availableEthAmount) {
+        if (communityEthAmount > availableEthAmount) {
           communityEthAmount = availableEthAmount;
         }
         // compute community tokens without bonus
         communityTokenAmount = communityEthAmount.mul(ethToTokenConversion);
         uint256 availableTokenAmount = maxCommunityWithoutBonusCap.sub(communityTokenWithoutBonusSold);
         // verify community tokens do not go over the max cap for community round
-        if (communityTokenAmount &gt; availableTokenAmount) {
+        if (communityTokenAmount > availableTokenAmount) {
           // cap the tokens to the max allowed for the community round
           communityTokenAmount = availableTokenAmount;
           // recalculate the corresponding ETH amount
@@ -230,7 +230,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
     // determine crowdsale tokens remaining
     uint256 availableTokenAmount = maxCrowdsaleCap.sub(crowdsaleTokenSold);
     // verify crowdsale tokens do not go over the max cap for crowdsale round
-    if (crowdsaleTokenAmount &gt; availableTokenAmount) {
+    if (crowdsaleTokenAmount > availableTokenAmount) {
       // cap the tokens to the max allowed for the crowdsale round
       crowdsaleTokenAmount = availableTokenAmount;
       // recalculate the corresponding ETH amount
@@ -250,7 +250,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
     var (crowdsaleTokenAmount, crowdsaleEthAmount) = calculateCrowdsale(newContribution.sub(communityEthAmount));
     // add up crowdsale + community tokens
     uint256 tokenAmount = crowdsaleTokenAmount.add(communityTokenAmount);
-    assert(tokenAmount &gt; 0);
+    assert(tokenAmount > 0);
     // Issue new tokens
     token.mintTokens(_contributor, tokenAmount);                              
     // log token issuance
@@ -262,7 +262,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
     tokenSold = tokenSold.add(tokenAmount);                                  // track how many tokens are sold
     // compute any refund if applicable
     uint256 refundAmount = _amount.sub(newContribution);
-    if (refundAmount &gt; 0) {
+    if (refundAmount > 0) {
       _contributor.transfer(refundAmount);                                   // refund contributor amount behind the maximum ETH cap
     }
     companyAddress.transfer(newContribution);                                // send ETH to company
@@ -272,7 +272,7 @@ contract Crowdsale is ReentrancyHandling, Owned {
   //
   function WhiteListContributors(address[] _contributorAddresses, bool[] _contributorCommunityRoundApproved) public onlyOwner {
     require(_contributorAddresses.length == _contributorCommunityRoundApproved.length); // Check if input data is correct
-    for (uint cnt = 0; cnt &lt; _contributorAddresses.length; cnt++) {
+    for (uint cnt = 0; cnt < _contributorAddresses.length; cnt++) {
       contributorList[_contributorAddresses[cnt]].isWhiteListed = true;
       contributorList[_contributorAddresses[cnt]].isCommunityRoundApproved = _contributorCommunityRoundApproved[cnt];
     }
@@ -330,10 +330,10 @@ contract StormCrowdsale is Crowdsale {
     string public officialTelegram;
     string public officialEmail;
   function StormCrowdsale() public {
-    officialWebsite = &quot;https://www.stormtoken.com&quot;;
-    officialFacebook = &quot;https://www.facebook.com/stormtoken/&quot;;
-    officialTelegram = &quot;https://t.me/joinchat/GHTZGQwsy9mZk0KFEEjGtg&quot;;
-    officialEmail = &quot;<span class="__cf_email__" data-cfemail="472e29212807343328352a33282c22296924282a">[email&#160;protected]</span>&quot;;
+    officialWebsite = "https://www.stormtoken.com";
+    officialFacebook = "https://www.facebook.com/stormtoken/";
+    officialTelegram = "https://t.me/joinchat/GHTZGQwsy9mZk0KFEEjGtg";
+    officialEmail = "<span class="__cf_email__" data-cfemail="472e29212807343328352a33282c22296924282a">[email protected]</span>";
     communityRoundStartDate = 1510063200;                       // Nov 7, 2017 @ 6am PST
     crowdsaleStartDate = communityRoundStartDate + 24 hours;    // 24 hours later
     crowdsaleEndDate = communityRoundStartDate + 30 days + 12 hours; // 30 days + 12 hours later: Dec 7th, 2017 @ 6pm PST [1512698400]

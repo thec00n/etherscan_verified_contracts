@@ -12,7 +12,7 @@ contract Presale {
     uint public deadline; 
     uint public rate;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     event GoalReached(address beneficiary, uint amountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -34,8 +34,8 @@ contract Presale {
     function () payable {
         uint amount = msg.value;
         require (!crowdsaleClosed);
-        require (amountRaised + amount &lt;= max_fundingGoal);
-        require (amount &gt;= 10 * 1 ether);
+        require (amountRaised + amount <= max_fundingGoal);
+        require (amount >= 10 * 1 ether);
         
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
@@ -43,11 +43,11 @@ contract Presale {
         FundTransfer(msg.sender, amount, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /* checks if the goal or time limit has been reached and ends the campaign */
     function checkGoalReached() afterDeadline {
-        if (amountRaised &gt;= min_fundingGoal){
+        if (amountRaised >= min_fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
@@ -59,7 +59,7 @@ contract Presale {
         if (!fundingGoalReached) {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount, false);
                 } else {
@@ -68,7 +68,7 @@ contract Presale {
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {

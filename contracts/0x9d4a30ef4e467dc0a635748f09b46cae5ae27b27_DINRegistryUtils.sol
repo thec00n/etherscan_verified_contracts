@@ -9,8 +9,8 @@ contract DINRegistry {
         uint256 updated;   // Last updated time (Unix timestamp).
     }
 
-    // DIN =&gt; Record
-    mapping (uint256 =&gt; Record) records;
+    // DIN => Record
+    mapping (uint256 => Record) records;
 
     // The first DIN registered.
     uint256 public genesis;
@@ -171,7 +171,7 @@ contract DINRegistryUtils {
      * @param amount The amount of DINs to register.
      */
     function registerDINs(address owner, uint256 amount) public {
-        for (uint i = 0; i &lt; amount; i++) {
+        for (uint i = 0; i < amount; i++) {
             registry.registerDIN(owner);
         }
     }
@@ -183,7 +183,7 @@ contract DINRegistryUtils {
      * @param amount The amount of DINs to register.
      */
     function registerDINsWithResolver(address owner, address resolver, uint256 amount) public {
-        for (uint i = 0; i &lt; amount; i++) {
+        for (uint i = 0; i < amount; i++) {
             registry.registerDINWithResolver(owner, resolver);
         }
     }

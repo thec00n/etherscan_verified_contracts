@@ -3,12 +3,12 @@ pragma solidity ^0.4.23;
 // File: contracts/ParsecReferralTracking.sol
 
 contract ParsecReferralTracking {
-  mapping (address =&gt; address) public referrer;
+  mapping (address => address) public referrer;
 
   event ReferrerUpdated(address indexed _referee, address indexed _referrer);
 
   function _updateReferrerFor(address _referee, address _referrer) internal {
-    if (_referrer != address(0) &amp;&amp; _referrer != _referee) {
+    if (_referrer != address(0) && _referrer != _referee) {
       referrer[_referee] = _referrer;
       emit ReferrerUpdated(_referee, _referrer);
     }
@@ -64,13 +64,13 @@ contract ParsecShipInfo {
   }
 
   function _getShipName(uint256 _shipId) internal pure returns (uint256 /* _name */) {
-    if (_shipId &lt; 1) {
+    if (_shipId < 1) {
       return NAME_NOT_AVAILABLE;
-    } else if (_shipId &lt;= TOTAL_ARK) {
+    } else if (_shipId <= TOTAL_ARK) {
       return NAME_ARK;
-    } else if (_shipId &lt;= TOTAL_ARK + TOTAL_HAWKING) {
+    } else if (_shipId <= TOTAL_ARK + TOTAL_HAWKING) {
       return NAME_HAWKING;
-    } else if (_shipId &lt;= TOTAL_SHIP) {
+    } else if (_shipId <= TOTAL_SHIP) {
       return NAME_SATOSHI;
     } else {
       return NAME_NOT_AVAILABLE;
@@ -78,13 +78,13 @@ contract ParsecShipInfo {
   }
 
   function _getShipType(uint256 _shipId) internal pure returns (uint256 /* _type */) {
-    if (_shipId &lt; 1) {
+    if (_shipId < 1) {
       return TYPE_NOT_AVAILABLE;
-    } else if (_shipId &lt;= TOTAL_ARK) {
+    } else if (_shipId <= TOTAL_ARK) {
       return TYPE_EXPLORER_FREIGHTER;
-    } else if (_shipId &lt;= TOTAL_ARK + TOTAL_HAWKING) {
+    } else if (_shipId <= TOTAL_ARK + TOTAL_HAWKING) {
       return TYPE_EXPLORER;
-    } else if (_shipId &lt;= TOTAL_SHIP) {
+    } else if (_shipId <= TOTAL_SHIP) {
       return TYPE_FREIGHTER;
     } else {
       return TYPE_NOT_AVAILABLE;
@@ -92,71 +92,71 @@ contract ParsecShipInfo {
   }
 
   function _getShipColor(uint256 _shipId) internal pure returns (uint256 /* _color */) {
-    if (_shipId &lt; 1) {
+    if (_shipId < 1) {
       return COLOR_NOT_AVAILABLE;
     } else if (_shipId == 1) {
       return COLOR_CUSTOM;
-    } else if (_shipId &lt;= 23) {
+    } else if (_shipId <= 23) {
       return COLOR_BLACK;
-    } else if (_shipId &lt;= 37) {
+    } else if (_shipId <= 37) {
       return COLOR_BLUE;
-    } else if (_shipId &lt;= 42) {
+    } else if (_shipId <= 42) {
       return COLOR_BROWN;
-    } else if (_shipId &lt;= 45) {
+    } else if (_shipId <= 45) {
       return COLOR_GOLD;
-    } else if (_shipId &lt;= 49) {
+    } else if (_shipId <= 49) {
       return COLOR_GREEN;
-    } else if (_shipId &lt;= 64) {
+    } else if (_shipId <= 64) {
       return COLOR_GREY;
-    } else if (_shipId &lt;= 67) {
+    } else if (_shipId <= 67) {
       return COLOR_PINK;
-    } else if (_shipId &lt;= 77) {
+    } else if (_shipId <= 77) {
       return COLOR_RED;
-    } else if (_shipId &lt;= 83) {
+    } else if (_shipId <= 83) {
       return COLOR_SILVER;
-    } else if (_shipId &lt;= 93) {
+    } else if (_shipId <= 93) {
       return COLOR_WHITE;
-    } else if (_shipId &lt;= 100) {
+    } else if (_shipId <= 100) {
       return COLOR_YELLOW;
-    } else if (_shipId &lt;= 140) {
+    } else if (_shipId <= 140) {
       return COLOR_BLACK;
-    } else if (_shipId &lt;= 200) {
+    } else if (_shipId <= 200) {
       return COLOR_BLUE;
-    } else if (_shipId &lt;= 237) {
+    } else if (_shipId <= 237) {
       return COLOR_BROWN;
-    } else if (_shipId &lt;= 247) {
+    } else if (_shipId <= 247) {
       return COLOR_GOLD;
-    } else if (_shipId &lt;= 330) {
+    } else if (_shipId <= 330) {
       return COLOR_GREEN;
-    } else if (_shipId &lt;= 370) {
+    } else if (_shipId <= 370) {
       return COLOR_GREY;
-    } else if (_shipId &lt;= 380) {
+    } else if (_shipId <= 380) {
       return COLOR_PINK;
-    } else if (_shipId &lt;= 440) {
+    } else if (_shipId <= 440) {
       return COLOR_RED;
-    } else if (_shipId &lt;= 460) {
+    } else if (_shipId <= 460) {
       return COLOR_SILVER;
-    } else if (_shipId &lt;= 500) {
+    } else if (_shipId <= 500) {
       return COLOR_WHITE;
-    } else if (_shipId &lt;= 540) {
+    } else if (_shipId <= 540) {
       return COLOR_BLACK;
-    } else if (_shipId &lt;= 600) {
+    } else if (_shipId <= 600) {
       return COLOR_BLUE;
-    } else if (_shipId &lt;= 637) {
+    } else if (_shipId <= 637) {
       return COLOR_BROWN;
-    } else if (_shipId &lt;= 647) {
+    } else if (_shipId <= 647) {
       return COLOR_GOLD;
-    } else if (_shipId &lt;= 730) {
+    } else if (_shipId <= 730) {
       return COLOR_GREEN;
-    } else if (_shipId &lt;= 770) {
+    } else if (_shipId <= 770) {
       return COLOR_GREY;
-    } else if (_shipId &lt;= 780) {
+    } else if (_shipId <= 780) {
       return COLOR_PINK;
-    } else if (_shipId &lt;= 840) {
+    } else if (_shipId <= 840) {
       return COLOR_RED;
-    } else if (_shipId &lt;= 860) {
+    } else if (_shipId <= 860) {
       return COLOR_SILVER;
-    } else if (_shipId &lt;= TOTAL_SHIP) {
+    } else if (_shipId <= TOTAL_SHIP) {
       return COLOR_WHITE;
     } else {
       return COLOR_NOT_AVAILABLE;
@@ -188,9 +188,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -198,7 +198,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -207,7 +207,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -276,18 +276,18 @@ contract ParsecShipPricing {
     returns (uint256 /* _price */)
   {
     require(
-      _initialPrice &lt;= TOTAL_PARSEC_CREDIT_SUPPLY,
-      &quot;Initial ship price must not be greater than total Parsec Credit.&quot;
+      _initialPrice <= TOTAL_PARSEC_CREDIT_SUPPLY,
+      "Initial ship price must not be greater than total Parsec Credit."
     );
 
-    if (_minutesPassed &gt;&gt; _multipliers.length &gt; 0) {
+    if (_minutesPassed >> _multipliers.length > 0) {
       return 0;
     }
 
     uint256 _price = _initialPrice;
 
-    for (uint256 _powerOfTwo = 0; _powerOfTwo &lt; _multipliers.length; _powerOfTwo++) {
-      if (_minutesPassed &gt;&gt; _powerOfTwo &amp; 1 &gt; 0) {
+    for (uint256 _powerOfTwo = 0; _powerOfTwo < _multipliers.length; _powerOfTwo++) {
+      if (_minutesPassed >> _powerOfTwo & 1 > 0) {
         _price = _price
           .mul(_multipliers[_powerOfTwo])
           .div(TOTAL_PARSEC_CREDIT_SUPPLY)
@@ -316,7 +316,7 @@ interface TokenRecipient {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -512,7 +512,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -527,7 +527,7 @@ library AddressUtils {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -542,7 +542,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -557,21 +557,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -695,7 +695,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -711,14 +711,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -853,19 +853,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -908,7 +908,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list owned by the requested address
    */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -927,7 +927,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -1023,7 +1023,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
 // solium-disable-next-line lbrace
 contract ParsecShipAuction is
-  ERC721Token(&quot;Parsec Initial Ship&quot;, &quot;PIS&quot;),
+  ERC721Token("Parsec Initial Ship", "PIS"),
   ParsecShipInfo,
   ParsecShipPricing,
   ParsecReferralTracking,
@@ -1104,7 +1104,7 @@ contract ParsecShipAuction is
     uint256 _currentDate = now;
     uint256 _endDate = getFirstAuctionsEndDate();
 
-    if (_endDate &gt;= _currentDate) {
+    if (_endDate >= _currentDate) {
       return _endDate - _currentDate;
     } else {
       return 0;
@@ -1112,8 +1112,8 @@ contract ParsecShipAuction is
   }
 
   function concludeFirstAuction() external {
-    require(getLastAuctionedShipId() &gt;= 1, &quot;The first auction must have ended.&quot;);
-    require(!firstAuctionConcluded, &quot;The first auction must not have been concluded.&quot;);
+    require(getLastAuctionedShipId() >= 1, "The first auction must have ended.");
+    require(!firstAuctionConcluded, "The first auction must not have been concluded.");
 
     firstAuctionConcluded = true;
 
@@ -1146,7 +1146,7 @@ contract ParsecShipAuction is
   }
 
   function getLastAuctionedShipId() public view returns (uint256 /* _shipId */) {
-    if (_lastAuctionedShipId == 0 &amp;&amp; now &gt;= getFirstAuctionsEndDate()) {
+    if (_lastAuctionedShipId == 0 && now >= getFirstAuctionsEndDate()) {
       return 1;
     } else {
       return _lastAuctionedShipId;
@@ -1154,7 +1154,7 @@ contract ParsecShipAuction is
   }
 
   function getLastAuctionsWinningBid() public view returns (uint256 /* _value */) {
-    if (_lastAuctionedShipId == 0 &amp;&amp; now &gt;= getFirstAuctionsEndDate()) {
+    if (_lastAuctionedShipId == 0 && now >= getFirstAuctionsEndDate()) {
       return firstAuctionsHighestBid;
     } else {
       return _lastAuctionsWinningBid;
@@ -1165,7 +1165,7 @@ contract ParsecShipAuction is
     if (_lastAuctionedShipId == 0) {
       uint256 _firstAuctionsEndDate = getFirstAuctionsEndDate();
 
-      if (now &gt;= _firstAuctionsEndDate) {
+      if (now >= _firstAuctionsEndDate) {
         return _firstAuctionsEndDate;
       }
     }
@@ -1182,9 +1182,9 @@ contract ParsecShipAuction is
   }
 
   function getShipPrice(uint256 _shipId, uint256 _minutesPassed) public view returns (uint256 /* _price */) {
-    require(_shipId &gt;= 2, &quot;Ship ID must be greater than or equal to 2.&quot;);
-    require(_shipId &lt;= TOTAL_SHIP, &quot;Ship ID must be smaller than or equal to total number of ship.&quot;);
-    require(_shipId == getLastAuctionedShipId().add(1), &quot;Can only get price of the ship which is being auctioned.&quot;);
+    require(_shipId >= 2, "Ship ID must be greater than or equal to 2.");
+    require(_shipId <= TOTAL_SHIP, "Ship ID must be smaller than or equal to total number of ship.");
+    require(_shipId == getLastAuctionedShipId().add(1), "Can only get price of the ship which is being auctioned.");
 
     uint256 _initialPrice = getLastAuctionsWinningBid();
 
@@ -1202,10 +1202,10 @@ contract ParsecShipAuction is
   }
 
   function _bidFirstShip(uint256 _value, address _bidder, address _referrer) internal {
-    require(now &gt;= firstAuctionsStartDate, &quot;Auction of the first ship is not started yet.&quot;);
-    require(now &lt; getFirstAuctionsEndDate(), &quot;Auction of the first ship has ended.&quot;);
+    require(now >= firstAuctionsStartDate, "Auction of the first ship is not started yet.");
+    require(now < getFirstAuctionsEndDate(), "Auction of the first ship has ended.");
 
-    require(_value &gt;= firstAuctionsHighestBid.add(FIRST_AUCTIONS_MINIMUM_RAISE), &quot;Not enough Parsec Credit.&quot;);
+    require(_value >= firstAuctionsHighestBid.add(FIRST_AUCTIONS_MINIMUM_RAISE), "Not enough Parsec Credit.");
 
     _updateReferrerFor(_bidder, _referrer);
     _receiveFrom(_bidder, _value);
@@ -1217,12 +1217,12 @@ contract ParsecShipAuction is
     firstAuctionsHighestBid = _value;
     firstAuctionsHighestBidder = _bidder;
 
-    // To prevent the first auction&#39;s referrer being overriden,
-    // since later auction&#39;s bidders could be the same as the first auction&#39;s bidder
+    // To prevent the first auction's referrer being overriden,
+    // since later auction's bidders could be the same as the first auction's bidder
     // but their referrers could be different.
     firstAuctionsReferrer = referrer[_bidder];
 
-    if (now &gt;= getFirstAuctionsExtendableStartDate()) {
+    if (now >= getFirstAuctionsExtendableStartDate()) {
       firstAuctionsExtendedDuration = firstAuctionsExtendedDuration
         .add(firstAuctionsExtendedChunkDuration);
     }
@@ -1239,11 +1239,11 @@ contract ParsecShipAuction is
     internal
   {
     uint256 _price = getShipPrice(_shipId);
-    require(_value &gt;= _price, &quot;Not enough Parsec Credit.&quot;);
+    require(_value >= _price, "Not enough Parsec Credit.");
 
     _updateReferrerFor(_bidder, _referrer);
 
-    if (_price &gt; 0) {
+    if (_price > 0) {
       _receiveFrom(_bidder, _price);
     }
 
@@ -1253,7 +1253,7 @@ contract ParsecShipAuction is
     _lastAuctionsWinningBid = _price;
     _lastAuctionWinsDate = now;
 
-    if (referrer[_bidder] != address(0) &amp;&amp; _price &gt; 0) {
+    if (referrer[_bidder] != address(0) && _price > 0) {
       _sendTo(referrer[_bidder], _price.mul(REFERRAL_REWARD_PERCENTAGE).div(100));
     }
 
@@ -1274,10 +1274,10 @@ contract ParsecShipAuction is
     // because Parsec Credit contract is trustable and there are no callbacks involved.
     // solium-disable-next-line security/no-low-level-calls
     require(address(parsecCreditContract).call(
-      bytes4(keccak256(&quot;transfer(address,uint256)&quot;)),
+      bytes4(keccak256("transfer(address,uint256)")),
       _to,
       _value
-    ), &quot;Parsec Credit transfer failed.&quot;);
+    ), "Parsec Credit transfer failed.");
   }
 }
 
@@ -1285,7 +1285,7 @@ contract ParsecShipAuction is
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="3a485f5759557a08">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="3a485f5759557a08">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -1305,7 +1305,7 @@ contract HasNoContracts is Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="8ffdeae2ece0cfbd">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="8ffdeae2ece0cfbd">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be sent to this contract by:
@@ -1396,7 +1396,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="96e4f3fbf5f9d6a4">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="96e4f3fbf5f9d6a4">[email protected]</span>π.com>
  * @dev This blocks incoming ERC223 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -1422,7 +1422,7 @@ contract HasNoTokens is CanReclaimToken {
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="d2a0b7bfb1bd92e0">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="d2a0b7bfb1bd92e0">[email protected]</span>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -1443,7 +1443,7 @@ contract ParsecInitialShip is
   }
 
   function reclaimParsecCredit() external onlyOwner {
-    require(firstAuctionConcluded, &quot;The first auction must have been concluded.&quot;);
+    require(firstAuctionConcluded, "The first auction must have been concluded.");
     _sendTo(owner, parsecCreditContract.balanceOf(this));
   }
 }

@@ -6,7 +6,7 @@ pragma solidity ^0.4.18;
 // 3. send 150000+ gas
 // That calls the getMeOutOfHere() method
 
-// Wacky version, 0-1 tokens takes 10eth (should be avg 200% gains), 1-2 takes another 30eth (avg 100% gains), and beyond that who the fuck knows but it&#39;s 50% gains
+// Wacky version, 0-1 tokens takes 10eth (should be avg 200% gains), 1-2 takes another 30eth (avg 100% gains), and beyond that who the fuck knows but it's 50% gains
 // 10% fees, price goes up crazy fast
 contract EthPyramid {
 	uint256 constant PRECISION = 0x10000000000000000;  // 2^64
@@ -17,16 +17,16 @@ contract EthPyramid {
 	// the reserve is 0.5 ether and price 1 ether/token.
 	int constant LOGC = -0x296ABF784A358468C;
 	
-	string constant public name = &quot;EthPyramid&quot;;
-	string constant public symbol = &quot;ETP&quot;;
+	string constant public name = "EthPyramid";
+	string constant public symbol = "ETP";
 	uint8 constant public decimals = 18;
 	uint256 public totalSupply;
 	// amount of shares for each address (scaled number)
-	mapping(address =&gt; uint256) public balanceOfOld;
+	mapping(address => uint256) public balanceOfOld;
 	// allowance map, see erc20
-	mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+	mapping(address => mapping(address => uint256)) public allowance;
 	// amount payed out for each address (scaled number)
-	mapping(address =&gt; int256) public payouts;
+	mapping(address => int256) public payouts;
 	// sum of all payouts (scaled number)
 	int256 public totalPayouts;
 	// amount earned for each share (scaled number)
@@ -65,7 +65,7 @@ contract EthPyramid {
 		
 		uint value_ = (uint) (balance);
 		
-		 if (value_ &lt; 0.000001 ether || value_ &gt; 1000000 ether)
+		 if (value_ < 0.000001 ether || value_ > 1000000 ether)
 			revert();
 		var sender = msg.sender;
 		var res = reserve() - balance;
@@ -77,7 +77,7 @@ contract EthPyramid {
 		var numTokens = getTokensForEther2(numEther, balance);
 
 		var buyerfee = fee * PRECISION;
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// compute how the fee distributed to previous holders and buyer.
 			// The buyer already gets a part of the fee as if he would buy each token separately.
 			var holderreward =
@@ -94,7 +94,7 @@ contract EthPyramid {
 		totalSupply += numTokens;
 		// add numTokens to balance
 		balanceOfOld[sender] += numTokens;
-		// fix payouts so that sender doesn&#39;t get old earnings for the new tokens.
+		// fix payouts so that sender doesn't get old earnings for the new tokens.
 		// also add its buyerfee
 		var payoutDiff = (int256) ((earningsPerShare * numTokens) - buyerfee);
 		payouts[sender] += payoutDiff;
@@ -118,7 +118,7 @@ contract EthPyramid {
       payable 
       returns (bool)
     {
-      if (msg.value &gt; 0.000001 ether)
+      if (msg.value > 0.000001 ether)
 			buy();
 		else
 			return false;
@@ -143,7 +143,7 @@ contract EthPyramid {
 	//   totalPayouts = \sum_{addr:address} payouts(addr)
 	//   totalSupply  = \sum_{addr:address} balanceOfOld(addr)
 	// dividends not negative:
-	//   \forall addr:address. payouts[addr] &lt;= earningsPerShare * balanceOfOld[addr]
+	//   \forall addr:address. payouts[addr] <= earningsPerShare * balanceOfOld[addr]
 	// supply/reserve correlation:
 	//   totalSupply ~= exp(LOGC + CRRN/CRRD*log(reserve())
 	//   i.e. totalSupply = C * reserve()**CRR
@@ -151,7 +151,7 @@ contract EthPyramid {
 	//   reserve() = this.balance - \sum_{addr:address} dividends(addr)
 
 	function transferTokens(address _from, address _to, uint256 _value) internal {
-		if (balanceOfOld[_from] &lt; _value)
+		if (balanceOfOld[_from] < _value)
 			revert();
 		if (_to == address(this)) {
 			sell(_value);
@@ -171,7 +171,7 @@ contract EthPyramid {
 	
     function transferFrom(address _from, address _to, uint256 _value) public {
         var _allowance = allowance[_from][msg.sender];
-        if (_allowance &lt; _value)
+        if (_allowance < _value)
             revert();
         allowance[_from][msg.sender] = _allowance - _value;
         transferTokens(_from, _to, _value);
@@ -182,7 +182,7 @@ contract EthPyramid {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) revert();
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) revert();
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
     }
@@ -207,7 +207,7 @@ contract EthPyramid {
 	}
 
 	function buy() internal {
-		if (msg.value &lt; 0.000001 ether || msg.value &gt; 1000000 ether)
+		if (msg.value < 0.000001 ether || msg.value > 1000000 ether)
 			revert();
 		var sender = msg.sender;
 		// 10 % of the amount is used to pay holders.
@@ -218,7 +218,7 @@ contract EthPyramid {
 		var numTokens = getTokensForEther(numEther);
 
 		var buyerfee = fee * PRECISION;
-		if (totalSupply &gt; 0) {
+		if (totalSupply > 0) {
 			// compute how the fee distributed to previous holders and buyer.
 			// The buyer already gets a part of the fee as if he would buy each token separately.
 			var holderreward =
@@ -235,7 +235,7 @@ contract EthPyramid {
 		totalSupply += numTokens;
 		// add numTokens to balance
 		balanceOfOld[sender] += numTokens;
-		// fix payouts so that sender doesn&#39;t get old earnings for the new tokens.
+		// fix payouts so that sender doesn't get old earnings for the new tokens.
 		// also add its buyerfee
 		var payoutDiff = (int256) ((earningsPerShare * numTokens) - buyerfee);
 		payouts[sender] += payoutDiff;
@@ -249,7 +249,7 @@ contract EthPyramid {
         var numEthers = numEthersBeforeFee - fee; // Net ether for seller, after fee
             totalSupply -= amount;
         balanceOfOld[msg.sender] -= amount;
-         if(totalSupply &gt; 0 ) {
+         if(totalSupply > 0 ) {
             // fix payouts and put the ethers in payout
             var payoutDiff = (int256) (earningsPerShare * amount + (numEthers * PRECISION));
             payouts[msg.sender] -= payoutDiff;
@@ -294,11 +294,11 @@ contract EthPyramid {
 
 	function fixedLog(uint256 a) internal pure returns (int256 log) {
 		int32 scale = 0;
-		while (a &gt; sqrt2) {
+		while (a > sqrt2) {
 			a /= 2;
 			scale++;
 		}
-		while (a &lt;= sqrtdot5) {
+		while (a <= sqrtdot5) {
 			a *= 2;
 			scale--;
 		}
@@ -326,10 +326,10 @@ contract EthPyramid {
 		int256 R = ((int256)(2) * one) +
 			(z*(c2 + (z*(c4 + (z*(c6 + (z*c8/one))/one))/one))/one);
 		exp = (uint256) (((R + a) * one) / (R - a));
-		if (scale &gt;= 0)
-			exp &lt;&lt;= scale;
+		if (scale >= 0)
+			exp <<= scale;
 		else
-			exp &gt;&gt;= -scale;
+			exp >>= -scale;
 		return exp;
 	}
 
@@ -343,28 +343,28 @@ contract EthPyramid {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 	
 
 	function () payable public {
-		if (msg.value &gt; 0)
+		if (msg.value > 0)
 			buy();
 		else
 			withdrawOld(msg.sender);

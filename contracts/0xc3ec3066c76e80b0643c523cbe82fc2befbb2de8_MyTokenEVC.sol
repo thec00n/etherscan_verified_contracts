@@ -31,9 +31,9 @@ contract MyTokenEVC is owned {
     uint256 _totalSupply;
     
     // This creates an array with all balances
-    mapping (address =&gt; uint256)  _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) _allowance;
-    mapping (address =&gt; bool) _frozenAccount;
+    mapping (address => uint256)  _balanceOf;
+    mapping (address => mapping (address => uint256)) _allowance;
+    mapping (address => bool) _frozenAccount;
     
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -56,15 +56,15 @@ contract MyTokenEVC is owned {
         _balanceOf[msg.sender] = _totalSupply;
         
         // Set the name for display purposes
-        _name = &quot;MyTokenEVC 3&quot;;   
+        _name = "MyTokenEVC 3";   
         
         // Set the symbol for display purposes
-        _symbol = &quot;MEVC3&quot;;                    
+        _symbol = "MEVC3";                    
         
     }
     
     /**
-     * Returns token&#39;s name
+     * Returns token's name
      *
      */
     
@@ -73,7 +73,7 @@ contract MyTokenEVC is owned {
     }
     
     /**
-     * Returns token&#39;s symbol
+     * Returns token's symbol
      *
      */
     function symbol() public constant returns (string) {
@@ -81,7 +81,7 @@ contract MyTokenEVC is owned {
     }
     
     /**
-     * Returns token&#39;s total supply
+     * Returns token's total supply
      *
      */
     function decimals() public constant returns (uint8) {
@@ -124,11 +124,11 @@ contract MyTokenEVC is owned {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         //Check for negative amount
-        require(_value &gt;= 0);
+        require(_value >= 0);
         // Check if the sender has enough
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         // Check for overflows
-        require(_balanceOf[_to] + _value &gt; _balanceOf[_to]);
+        require(_balanceOf[_to] + _value > _balanceOf[_to]);
         //Check if FrozenFunds
         require(!_frozenAccount[msg.sender]);
         // Save this for an assertion in the future
@@ -167,7 +167,7 @@ contract MyTokenEVC is owned {
         
         // Check allowance if transfer not from own
         if (msg.sender != _from) {
-            require(_allowance[_from][msg.sender] &gt;= _value);     
+            require(_allowance[_from][msg.sender] >= _value);     
             _allowance[_from][msg.sender] -= _value;
         }
         
@@ -186,9 +186,9 @@ contract MyTokenEVC is owned {
     function approve(address _spender, uint256 _value) public returns (bool success) {
         
         //Check for negative amount
-        require(_value &gt;= 0);  
+        require(_value >= 0);  
         //Check the balance
-        require(_balanceOf[msg.sender] &gt;= _value);
+        require(_balanceOf[msg.sender] >= _value);
         
         _allowance[msg.sender][_spender] = _value;
         return true;
@@ -239,11 +239,11 @@ contract MyTokenEVC is owned {
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
         
         //Check for negative amount
-        require(_value &gt;= 0);
+        require(_value >= 0);
         // Check if the targeted balance is enough
-        require(_balanceOf[_from] &gt;= _value);
+        require(_balanceOf[_from] >= _value);
         // Check total Supply
-        require(_totalSupply &gt;= _value);
+        require(_totalSupply >= _value);
         
         // Subtract from the targeted balance
         _balanceOf[_from] -= _value;
@@ -263,7 +263,7 @@ contract MyTokenEVC is owned {
     function mintToken(uint256 mintedAmount) onlyOwner public {
         
         //Check for positive amount
-        require(mintedAmount &gt;= 0);
+        require(mintedAmount >= 0);
         
         _balanceOf[_owner] += mintedAmount;
         _totalSupply += mintedAmount;

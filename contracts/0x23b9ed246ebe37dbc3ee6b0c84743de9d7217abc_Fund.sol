@@ -15,26 +15,26 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract Restriction {
-    mapping (address =&gt; bool) internal accesses;
+    mapping (address => bool) internal accesses;
 
     function Restriction() public {
         accesses[msg.sender] = true;
@@ -78,7 +78,7 @@ contract TicketHolder is Restriction, DreamConstants {
     uint64 public totalTickets;
     uint64 public maxTickets;
 
-    mapping (address =&gt; Ticket) internal tickets;
+    mapping (address => Ticket) internal tickets;
 
     address[] internal players;
 
@@ -93,13 +93,13 @@ contract TicketHolder is Restriction, DreamConstants {
      * @param _dreamAmount Amount of dream or zero, if use previous.
      */
     function issueTickets(address _addr, uint _ticketAmount, uint _dreamAmount) public restricted {
-        require(_ticketAmount &lt;= MAX_TICKETS);
-        require(totalTickets &lt;= maxTickets);
+        require(_ticketAmount <= MAX_TICKETS);
+        require(totalTickets <= maxTickets);
         Ticket storage ticket = tickets[_addr];
 
         // if fist issue for this user
         if (ticket.ticketAmount == 0) {
-            require(_dreamAmount &gt;= MINIMAL_DREAM);
+            require(_dreamAmount >= MINIMAL_DREAM);
             ticket.dreamAmount = _dreamAmount;
             ticket.playerIndex = uint32(players.length);
             players.push(_addr);
@@ -109,12 +109,12 @@ contract TicketHolder is Restriction, DreamConstants {
         // add new ticket amount
         ticket.ticketAmount += uint32(_ticketAmount);
         // check to overflow
-        require(ticket.ticketAmount &gt;= _ticketAmount);
+        require(ticket.ticketAmount >= _ticketAmount);
 
         // cal total
         totalTickets += uint64(_ticketAmount);
         // check to overflow
-        require(totalTickets &gt;= _ticketAmount);
+        require(totalTickets >= _ticketAmount);
     }
 
     function setWinner(address _addr) public restricted {
@@ -127,7 +127,7 @@ contract TicketHolder is Restriction, DreamConstants {
         if (players.length == 0) {
             return;
         }
-        if (index &gt; players.length - 1) {
+        if (index > players.length - 1) {
             return;
         }
 
@@ -152,7 +152,7 @@ contract TicketHolder is Restriction, DreamConstants {
 contract Fund is Restriction, DreamConstants {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     event Pay(address receiver, uint amount);
     event Refund(address receiver, uint amount);
@@ -189,7 +189,7 @@ contract Fund is Restriction, DreamConstants {
      */
     function pay(address _addr, uint _amountWei) public restricted {
         // we have enough funds
-        require(this.balance &gt;= _amountWei);
+        require(this.balance >= _amountWei);
         require(balances[_addr] != 0);
         delete balances[_addr];
         totalPrizeAmount = totalPrizeAmount.add(_amountWei);
@@ -207,12 +207,12 @@ contract Fund is Restriction, DreamConstants {
     }
 
     function enableRefund() public restricted {
-        require(refundDate &gt; uint32(block.timestamp));
+        require(refundDate > uint32(block.timestamp));
         refundDate = uint32(block.timestamp);
     }
 
     function refund(address _addr) public restricted {
-        require(refundDate &gt;= uint32(block.timestamp));
+        require(refundDate >= uint32(block.timestamp));
         require(balances[_addr] != 0);
         uint amount = refundAmount(_addr);
         delete balances[_addr];
@@ -251,11 +251,11 @@ contract TicketSale is Restriction, DreamConstants {
     uint32 public endDate;
 
     function TicketSale(uint _endDate, address _proxy, address _beneficiary, uint _maxTickets) public {
-        require(_endDate &gt; block.timestamp);
+        require(_endDate > block.timestamp);
         require(_beneficiary != 0);
         uint refundDate = block.timestamp + REFUND_AFTER;
         // end date mist be less then refund
-        require(_endDate &lt; refundDate);
+        require(_endDate < refundDate);
 
         ticketHolder = new TicketHolder(_maxTickets);
         ticketHolder.giveAccess(msg.sender);
@@ -276,7 +276,7 @@ contract TicketSale is Restriction, DreamConstants {
     }
 
     function buyTicketsInternal(address _addr, uint _valueWei, uint _dreamAmount) internal notEnded {
-        require(_valueWei &gt;= TICKET_PRICE);
+        require(_valueWei >= TICKET_PRICE);
         require(checkDream(_dreamAmount));
 
         uint change = _valueWei % TICKET_PRICE;
@@ -318,7 +318,7 @@ contract TicketSale is Restriction, DreamConstants {
         (playerAddress, ticketAmount, dreamAmount) = ticketHolder.getTickets(_playerIndex);
         require(playerAddress != 0);
 
-        // pay the player&#39;s dream
+        // pay the player's dream
         fund.pay(playerAddress, _amountWei);
     }
 
@@ -340,7 +340,7 @@ contract TicketSale is Restriction, DreamConstants {
      */
     function finish() public restricted {
         // force end
-        if (endDate &gt; uint32(block.timestamp)) {
+        if (endDate > uint32(block.timestamp)) {
             endDate = uint32(block.timestamp);
         }
     }
@@ -348,10 +348,10 @@ contract TicketSale is Restriction, DreamConstants {
     // random integration
     function requestRandom() public payable restricted {
         uint price = proxy.getRandomPrice(RANDOM_GAS);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         uint change = msg.value - price;
         proxy.requestRandom.value(price)(this.random_callback, RANDOM_GAS);
-        if (change &gt; 0) {
+        if (change > 0) {
             msg.sender.transfer(change);
         }
     }
@@ -368,7 +368,7 @@ contract TicketSale is Restriction, DreamConstants {
 
     // constant methods
     function isEnded() public constant returns (bool) {
-        return block.timestamp &gt; endDate;
+        return block.timestamp > endDate;
     }
 
     function checkDream(uint _dreamAmount) internal constant returns (bool) {

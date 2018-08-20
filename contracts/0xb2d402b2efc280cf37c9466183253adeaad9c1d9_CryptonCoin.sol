@@ -3,10 +3,10 @@ pragma solidity ^0.4.4;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -14,7 +14,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -59,8 +59,8 @@ contract Token {
 
 
 contract StandardToken is Token, SafeMath {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -100,7 +100,7 @@ contract StandardToken is Token, SafeMath {
 
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);                         // Check if the sender has enough
+        require(balances[msg.sender] >= _value);                         // Check if the sender has enough
         balances[msg.sender] = safeSub(balances[msg.sender], _value);    // Subtract from the sender
         totalSupply = safeSub(totalSupply,_value);                       // Updates totalSupply
 
@@ -118,10 +118,10 @@ contract StandardToken is Token, SafeMath {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value);                                        // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);                             // Check allowance
+        require(balances[_from] >= _value);                                        // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);                             // Check allowance
         balances[_from] = safeSub(balances[_from],_value);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_value);   // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_value);   // Subtract from the sender's allowance
         totalSupply = safeSub(totalSupply,_value);                                 // Update totalSupply
         emit    Burn(_from, _value);
         return true;
@@ -132,7 +132,7 @@ contract CryptonCoin is StandardToken {
     string public name;
     uint8 public decimals;
     string public symbol;
-    string public version = &#39;H1.0&#39;;
+    string public version = 'H1.0';
     address public fundsWallet;
     address public contractAddress;
 
@@ -158,8 +158,8 @@ contract CryptonCoin is StandardToken {
     function CryptonCoin() public {
         fundsWallet = msg.sender;
 
-        name = &quot;CRYPTON&quot;;
-        symbol = &quot;CRN&quot;;
+        name = "CRYPTON";
+        symbol = "CRN";
         decimals = 18;
 
         balances[fundsWallet] = 0;
@@ -178,15 +178,15 @@ contract CryptonCoin is StandardToken {
 
     function() public payable {
         require(!ico_finish);
-        require(block.timestamp &lt; fundingEndTime);
+        require(block.timestamp < fundingEndTime);
         require(msg.value != 0);
 
         totalEthInWei = totalEthInWei + msg.value;
         uint256  amount = 0;
         uint256 tokenPrice = unitsOneEthCanBuy;
 
-        if (block.timestamp &lt; preIcoFinishTimestamp) {
-            require(msg.value * tokenPrice * 7 / 10 &lt;= (preIcoTotalSupply - preIcoSupply));
+        if (block.timestamp < preIcoFinishTimestamp) {
+            require(msg.value * tokenPrice * 7 / 10 <= (preIcoTotalSupply - preIcoSupply));
 
             tokenPrice = safeMul(tokenPrice,7);
             tokenPrice = safeDiv(tokenPrice,10);
@@ -199,7 +199,7 @@ contract CryptonCoin is StandardToken {
 
             emit Transfer(contractAddress, msg.sender, amount);
         } else {
-            require(msg.value * tokenPrice &lt;= (IcoTotalSupply - IcoSupply));
+            require(msg.value * tokenPrice <= (IcoTotalSupply - IcoSupply));
 
             amount = safeMul(msg.value,tokenPrice);
             IcoSupply = safeAdd(IcoSupply,amount);
@@ -211,7 +211,7 @@ contract CryptonCoin is StandardToken {
     }
 
     function withdraw() public {
-        if (block.timestamp &gt; fundingEndTime) {
+        if (block.timestamp > fundingEndTime) {
             fundsWallet.transfer(contractAddress.balance);
         }
     }
@@ -220,7 +220,7 @@ contract CryptonCoin is StandardToken {
         require(ico_finish);
         require(!token_was_created);
 
-        if (block.timestamp &gt; finalTokensIssueTime) {
+        if (block.timestamp > finalTokensIssueTime) {
             uint256 amount = safeAdd(preIcoSupply, IcoSupply);
             amount = safeMul(amount,3);
             amount = safeDiv(amount,10);
@@ -234,7 +234,7 @@ contract CryptonCoin is StandardToken {
     }
 
     function stopIco() public returns (bool success) {
-        if (block.timestamp &gt; fundingEndTime) {
+        if (block.timestamp > fundingEndTime) {
             ico_finish = true;
             return true;
         }
@@ -242,7 +242,7 @@ contract CryptonCoin is StandardToken {
 
     function setTokenPrice(uint256 _value) public returns (bool success) {
         require(msg.sender == fundsWallet);
-        require(_value &lt; 1500);
+        require(_value < 1500);
         unitsOneEthCanBuy = _value;
         return true;
     }

@@ -3,7 +3,7 @@ pragma solidity 0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -54,38 +54,38 @@ library SafeMath {
   }
 
   function div256(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &gt; 0); // Solidity automatically revert()s when dividing by 0
+    require(b > 0); // Solidity automatically revert()s when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub256(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add256(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }  
   
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -125,13 +125,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
@@ -166,7 +166,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -179,7 +179,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already revert() if this condition is not met
-    // if (_value &gt; _allowance) revert();
+    // if (_value > _allowance) revert();
 
     balances[_to] = balances[_to].add256(_value);
     balances[_from] = balances[_from].sub256(_value);
@@ -198,7 +198,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -226,8 +226,8 @@ contract StandardToken is BasicToken, ERC20 {
  */
  
 contract TeuToken is StandardToken, Ownable{
-  string public name = &quot;20-footEqvUnit&quot;;
-  string public symbol = &quot;TEU&quot;;
+  string public name = "20-footEqvUnit";
+  string public symbol = "TEU";
   uint public decimals = 18;
 
   event TokenBurned(uint256 value);
@@ -242,7 +242,7 @@ contract TeuToken is StandardToken, Ownable{
    * @param _value number of tokens to be burned.
    */
   function burn(uint _value) onlyOwner public {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub256(_value);
     totalSupply = totalSupply.sub256(_value);
     TokenBurned(_value);
@@ -275,11 +275,11 @@ contract teuInitialTokenSale is Ownable {
     uint                                constant private        referralAwardPercent = 20;
     uint256                             constant private        maxCollectableToken = 20 * 10 ** 6 * 10 ** 18;
 
-    mapping (address =&gt; uint256)                private     referralContribution;  // record the referral contribution amount in ether for claiming of referral bonus
-    mapping (address =&gt; uint)                   private     lastContribitionDate;  // record the last contribution date/time for valid the referral bonus claiming period
+    mapping (address => uint256)                private     referralContribution;  // record the referral contribution amount in ether for claiming of referral bonus
+    mapping (address => uint)                   private     lastContribitionDate;  // record the last contribution date/time for valid the referral bonus claiming period
 
-    mapping (address =&gt; uint256)                private     collectableToken;  // record the token amount to be collected of each contributor
-    mapping (address =&gt; uint8)                  private     clientIdentRejectList;  // record a list of contributors who do not pass the client identification process
+    mapping (address => uint256)                private     collectableToken;  // record the token amount to be collected of each contributor
+    mapping (address => uint8)                  private     clientIdentRejectList;  // record a list of contributors who do not pass the client identification process
     bool                                        public      isCollectTokenStart = false;  // flag to indicate if token collection is started
     bool                                        public      isAllowContribution = true; // flag to enable/disable contribution.
     uint256                                     public      totalCollectableToken;  // the total amount of token will be colleceted after considering all the contribution and bonus
@@ -307,7 +307,7 @@ contract teuInitialTokenSale is Ownable {
     * @param _days no of sale day to calculate the time bonus
     */      
     function getTimeBonusPercent(uint _days) private pure returns (uint) {
-        if (_days &lt;= 10)
+        if (_days <= 10)
             return 50;
         return 0;
     }
@@ -318,31 +318,31 @@ contract teuInitialTokenSale is Ownable {
     */          
     function getVolumeBonusPercent(uint256 _etherAmount) private pure returns (uint) {
 
-        if (_etherAmount &lt; 1 ether)
+        if (_etherAmount < 1 ether)
             return 0;
-        if (_etherAmount &lt; 2 ether)
+        if (_etherAmount < 2 ether)
             return 35;
-        if (_etherAmount &lt; 3 ether)
+        if (_etherAmount < 3 ether)
             return 40;
-        if (_etherAmount &lt; 4 ether)
+        if (_etherAmount < 4 ether)
             return 45;
-        if (_etherAmount &lt; 5 ether)
+        if (_etherAmount < 5 ether)
             return 50;
-        if (_etherAmount &lt; 10 ether)
+        if (_etherAmount < 10 ether)
             return 55;
-        if (_etherAmount &lt; 20 ether)
+        if (_etherAmount < 20 ether)
             return 60;
-        if (_etherAmount &lt; 30 ether)
+        if (_etherAmount < 30 ether)
             return 65;
-        if (_etherAmount &lt; 40 ether)
+        if (_etherAmount < 40 ether)
             return 70;
-        if (_etherAmount &lt; 50 ether)
+        if (_etherAmount < 50 ether)
             return 75;
-        if (_etherAmount &lt; 100 ether)
+        if (_etherAmount < 100 ether)
             return 80;
-        if (_etherAmount &lt; 200 ether)
+        if (_etherAmount < 200 ether)
             return 90;
-        if (_etherAmount &gt;= 200 ether)
+        if (_etherAmount >= 200 ether)
             return 100;
         return 0;
     }
@@ -387,7 +387,7 @@ contract teuInitialTokenSale is Ownable {
     * @dev modifier to allow contribution only when the sale is ON
     */
     modifier saleIsOn() {
-        require(getCurrentDatetime() &gt;= saleStart &amp;&amp; getCurrentDatetime() &lt; saleEnd);
+        require(getCurrentDatetime() >= saleStart && getCurrentDatetime() < saleEnd);
         _;
     }
 
@@ -395,7 +395,7 @@ contract teuInitialTokenSale is Ownable {
     * @dev modifier to check if the sale is ended
     */    
     modifier saleIsEnd() {
-        require(getCurrentDatetime() &gt;= saleEnd);
+        require(getCurrentDatetime() >= saleEnd);
         _;
     }
 
@@ -411,7 +411,7 @@ contract teuInitialTokenSale is Ownable {
     * @dev modifier to check if contribution is over the min. contribution amount
     */    
     modifier overMinContribution(uint256 _etherAmount) {
-        require(_etherAmount &gt;= minContribution);
+        require(_etherAmount >= minContribution);
         _;
     }
     
@@ -419,7 +419,7 @@ contract teuInitialTokenSale is Ownable {
     * @dev modifier to check if max. token pool is not reached
     */
     modifier underMaxTokenPool() {
-        require(maxCollectableToken &gt; totalCollectableToken);
+        require(maxCollectableToken > totalCollectableToken);
         _;
     }
 
@@ -438,9 +438,9 @@ contract teuInitialTokenSale is Ownable {
     * @param _newStart new start date/time
     */
     function setNewStart(uint _newStart) public onlyOwner {
-	require(saleStart &gt; getCurrentDatetime());
-        require(_newStart &gt; getCurrentDatetime());
-	require(saleEnd &gt; _newStart);
+	require(saleStart > getCurrentDatetime());
+        require(_newStart > getCurrentDatetime());
+	require(saleEnd > _newStart);
         saleStart = _newStart;
     }
 
@@ -449,9 +449,9 @@ contract teuInitialTokenSale is Ownable {
     * @param _newEnd new end date/time
     */
     function setNewEnd(uint _newEnd) public onlyOwner {
-	require(saleEnd &lt; getCurrentDatetime());
-        require(_newEnd &lt; getCurrentDatetime());
-	require(_newEnd &gt; saleStart);
+	require(saleEnd < getCurrentDatetime());
+        require(_newEnd < getCurrentDatetime());
+	require(_newEnd > saleStart);
         saleEnd = _newEnd;
     }
 
@@ -491,14 +491,14 @@ contract teuInitialTokenSale is Ownable {
     * @param _contributionDatetime date/time of contribution. For calculating time bonus and claiming referral bonus.
     */
     function contributeByBitcoin(uint256 _bitcoinAmount, uint256 _etherAmount, address _contributorWallet, uint _contributionDatetime) public overMinContribution(_etherAmount) onlyOwner contributionAllowed {
-        require(_contributionDatetime &lt;= getCurrentDatetime());
+        require(_contributionDatetime <= getCurrentDatetime());
 
         uint256 _basicToken = getBasicTokenAmount(_etherAmount);
         uint256 _timeBonus = getTimeBonusAmount(_basicToken);
         uint256 _volumeBonus = getVolumeBonusAmount(_basicToken, _etherAmount);
         uint256 _totalToken = _basicToken.add256(_timeBonus).add256(_volumeBonus);
         
-	    if (_contributionDatetime &gt; lastContribitionDate[_contributorWallet])
+	    if (_contributionDatetime > lastContribitionDate[_contributorWallet])
             lastContribitionDate[_contributorWallet] = _contributionDatetime;
         referralContribution[_contributorWallet] = referralContribution[_contributorWallet].add256(_etherAmount);
     
@@ -525,9 +525,9 @@ contract teuInitialTokenSale is Ownable {
     */
     function referral(address _referrerWallet) public {
 	require (msg.sender != _referrerWallet);
-        require (referralContribution[msg.sender] &gt; 0);
-        require (lastContribitionDate[_referrerWallet] &gt; 0);
-        require (getCurrentDatetime() - lastContribitionDate[msg.sender] &lt;= (4 * 24 * 60 * 60));
+        require (referralContribution[msg.sender] > 0);
+        require (lastContribitionDate[_referrerWallet] > 0);
+        require (getCurrentDatetime() - lastContribitionDate[msg.sender] <= (4 * 24 * 60 * 60));
         
         uint256 _referralBonus = getReferralBonusAmount(referralContribution[msg.sender]);
         referralContribution[msg.sender] = 0;
@@ -544,8 +544,8 @@ contract teuInitialTokenSale is Ownable {
     * @param _valueToSet  1 - add to reject list, 0 - remove from reject list
     */
     function setClientIdentRejectList(address[] _clients, uint8 _valueToSet) public onlyOwner {
-        for (uint i = 0; i &lt; _clients.length; i++) {
-            if (_clients[i] != address(0) &amp;&amp; clientIdentRejectList[_clients[i]] != _valueToSet) {
+        for (uint i = 0; i < _clients.length; i++) {
+            if (_clients[i] != address(0) && clientIdentRejectList[_clients[i]] != _valueToSet) {
                 clientIdentRejectList[_clients[i]] = _valueToSet;
                 LogClientIdentRejectListChange(_clients[i], _valueToSet);
             }
@@ -566,8 +566,8 @@ contract teuInitialTokenSale is Ownable {
     function collectToken() public tokenIsCollectable {
 	uint256 _collToken = collectableToken[msg.sender];
 
-	require(clientIdentRejectList[msg.sender] &lt;= 0);
-        require(_collToken &gt; 0);
+	require(clientIdentRejectList[msg.sender] <= 0);
+        require(_collToken > 0);
 
         collectableToken[msg.sender] = 0;
 

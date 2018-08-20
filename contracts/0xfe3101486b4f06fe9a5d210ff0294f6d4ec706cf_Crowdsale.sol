@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -101,13 +101,13 @@ contract Crowdsale {
     // calculate token amount to be sent
     uint256 tokens = (weiAmount) * 300;
 
-    if(now &lt; startTime + 1*7*24*60* 1 minutes){
+    if(now < startTime + 1*7*24*60* 1 minutes){
       tokens += (tokens * 20) / 100;
-    }else if(now &lt; startTime + 2*7*24*60* 1 minutes){
+    }else if(now < startTime + 2*7*24*60* 1 minutes){
       tokens += (tokens * 15) / 100;
-    }else if(now &lt; startTime + 3*7*24*60* 1 minutes){
+    }else if(now < startTime + 3*7*24*60* 1 minutes){
       tokens += (tokens * 10) / 100;
-    }else if(now &lt; startTime + 4*7*24*60* 1 minutes){
+    }else if(now < startTime + 4*7*24*60* 1 minutes){
       tokens += (tokens * 5) / 100;
     }
 
@@ -130,14 +130,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   function withdrawTokens(uint256 _amount) {

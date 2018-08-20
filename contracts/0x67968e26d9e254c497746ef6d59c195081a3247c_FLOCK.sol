@@ -21,9 +21,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
@@ -31,7 +31,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
@@ -40,7 +40,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -66,7 +66,7 @@ contract StandardToken is Token {
     using SafeMath for uint;
 
     function processTransfer(address _from, address _to, uint256 _value, bytes _data) internal returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && _value > 0) {
             balances[_from] = balances[_from].sub(_value);
             balances[_to] = balances[_to].add(_value);
 
@@ -107,7 +107,7 @@ contract StandardToken is Token {
     /// @param _value The amount of token to be transferred
     /// @return Whether the transfer was successful or not
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
-        if (allowed[_from][msg.sender] &gt;= _value) {
+        if (allowed[_from][msg.sender] >= _value) {
             bytes memory empty;
             return processTransfer(_from, _to, _value, empty);
         }
@@ -140,8 +140,8 @@ contract StandardToken is Token {
     string public name;                   
     uint8 public decimals;                 
     string public symbol;                  
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
     
     function totalSupply() external view returns (uint _supply) {
@@ -165,7 +165,7 @@ contract StandardToken is Token {
         assembly {
             length := extcodesize(_addr)
         }
-        return (length&gt;0);
+        return (length>0);
     }
 }
 
@@ -177,11 +177,11 @@ contract FLOCK is StandardToken { // CHANGE THIS. Update the contract name.
     /*
         NOTE:
         The following variables are OPTIONAL vanities. One does not have to include them.
-        They allow one to customise the token contract &amp; in no way influences the core functionality.
+        They allow one to customise the token contract & in no way influences the core functionality.
         Some wallets/interfaces might not even bother to look at this information.
     */
-    string public version = &quot;H1.0&quot;; 
-    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We&#39;ll store the total ETH raised via our ICO here.  
+    string public version = "H1.0"; 
+    uint256 public totalEthInWei;         // WEI is the smallest unit of ETH (the equivalent of cent in USD or satoshi in BTC). We'll store the total ETH raised via our ICO here.  
     address public fundsWallet;           // Where should the raised ETH go?
 
     Round[] rounds;
@@ -196,9 +196,9 @@ contract FLOCK is StandardToken { // CHANGE THIS. Update the contract name.
     function FLOCK() public {
         totalSupply = 10000000000;          // Update total supply
         balances[msg.sender] = totalSupply; // Give the creator all initial tokens.
-        name = &quot;FLOCK&quot;;                     // Set the name for display purposes
+        name = "FLOCK";                     // Set the name for display purposes
         decimals = 0;                       // Amount of decimals for display purposes
-        symbol = &quot;FLK&quot;;                     // Set the symbol for display purposes
+        symbol = "FLK";                     // Set the symbol for display purposes
         fundsWallet = msg.sender;           // The owner of the contract gets ETH
 
         uint ts = 1523764800;
@@ -218,9 +218,9 @@ contract FLOCK is StandardToken { // CHANGE THIS. Update the contract name.
     /// @notice Gets the conversion rate for ETH purchases.
     /// @return Amount of tokens per ETH paid.
     function unitsOneEthCanBuy() public view returns (uint _units) {
-        for (uint i = 0; i &lt; rounds.length; i++) {
+        for (uint i = 0; i < rounds.length; i++) {
             Round memory round = rounds[i];
-            if (block.timestamp &gt;= round.start &amp;&amp; block.timestamp &lt; round.end) {
+            if (block.timestamp >= round.start && block.timestamp < round.end) {
                 return round.price;
             }
         }
@@ -238,8 +238,8 @@ contract FLOCK is StandardToken { // CHANGE THIS. Update the contract name.
         // eth(wei=`18`) and our number of `decimal` places, since we have `unitsPerEth`:
         uint256 amount = ethInWei.mul(perEth).div(10**uint(18 - decimals));
 
-        require(amount &gt; 0);
-        require(balances[fundsWallet] &gt;= amount);
+        require(amount > 0);
+        require(balances[fundsWallet] >= amount);
 
         //Transfer ether to fundsWallet
         fundsWallet.transfer(msg.value);                               

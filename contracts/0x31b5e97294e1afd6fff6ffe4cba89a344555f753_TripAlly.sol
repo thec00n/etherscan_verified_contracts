@@ -4,12 +4,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -21,7 +21,7 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal returns (uint256) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
@@ -43,7 +43,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -54,7 +54,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -79,14 +79,14 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
     /**
      * @title Ownable
      * @dev The Ownable contract has an owner address, and provides basic authorization control
-     * functions, this simplifies the implementation of &quot;user permissions&quot;.
+     * functions, this simplifies the implementation of "user permissions".
      */
 contract Ownable {
   address public owner;
@@ -167,8 +167,8 @@ contract Pausable is Ownable {
 
 contract TripAlly is SafeMath, StandardToken, Pausable {
 
-    string public constant name = &quot;TripAlly Token&quot;;
-    string public constant symbol = &quot;ALLY&quot;;
+    string public constant name = "TripAlly Token";
+    string public constant symbol = "ALLY";
     uint256 public constant decimals = 18;
     uint256 public constant tokenCreationCap = 100000000*10**decimals;
     uint256 constant tokenCreationCapPreICO = 750000*10**decimals;
@@ -202,9 +202,9 @@ contract TripAlly is SafeMath, StandardToken, Pausable {
         uint256 tokens = safeDiv(msg.value*100000000, oneTokenInWei) * multiplier;
         uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-        if (currentPhase == Phase.PreICO &amp;&amp;  checkedSupply &lt;= tokenCreationCapPreICO) {
+        if (currentPhase == Phase.PreICO &&  checkedSupply <= tokenCreationCapPreICO) {
             addTokens(tokens);
-        } else if (currentPhase == Phase.ICO &amp;&amp; checkedSupply &lt;= tokenCreationCap) {
+        } else if (currentPhase == Phase.ICO && checkedSupply <= tokenCreationCap) {
             addTokens(tokens);
         } else {
             revert();
@@ -212,7 +212,7 @@ contract TripAlly is SafeMath, StandardToken, Pausable {
     }
 
     function addTokens(uint256 tokens) internal {
-        if (msg.value &lt;= 0) revert();
+        if (msg.value <= 0) revert();
         balances[msg.sender] += tokens;
         totalSupply = safeAdd(totalSupply, tokens);
         totalEthRecieved += msg.value;
@@ -227,17 +227,17 @@ contract TripAlly is SafeMath, StandardToken, Pausable {
 
     function setEthPrice(uint256 _tokenPrice) external onlyOwner {
         oneTokenInWei = _tokenPrice;
-        PriceChanged(&quot;New price is&quot;, _tokenPrice);
+        PriceChanged("New price is", _tokenPrice);
     }
 
     function setICOPhase() external onlyOwner {
         currentPhase = Phase.ICO;
-        StageChanged(&quot;Current stage is ICO&quot;);
+        StageChanged("Current stage is ICO");
     }
 
     function setPreICOPhase() external onlyOwner {
         currentPhase = Phase.PreICO;
-        StageChanged(&quot;Current stage is PreICO&quot;);
+        StageChanged("Current stage is PreICO");
     }
 
     function generateTokens(address _reciever, uint256 _amount) external onlyOwner {

@@ -18,7 +18,7 @@ contract ERC20Interface {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -54,13 +54,13 @@ contract Ownable {
  * @dev Implemantation of the DataTrading token
  */
 contract DataTradingToken is Ownable, ERC20Interface {
-    string public constant symbol = &quot;DTT&quot;;
-    string public constant name = &quot;DataTrading Token&quot;;
+    string public constant symbol = "DTT";
+    string public constant name = "DataTrading Token";
     uint8 public constant decimals = 18;
     uint256 private _unmintedTokens = 360000000*uint(10)**decimals;
     
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
     
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -81,8 +81,8 @@ contract DataTradingToken is Ownable, ERC20Interface {
      */  
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
-        assert(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        assert(balances[_to] + _value >= balances[_to]);
         
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -98,9 +98,9 @@ contract DataTradingToken is Ownable, ERC20Interface {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
-        assert(balances[_to] + _value &gt;= balances[_to]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
+        assert(balances[_to] + _value >= balances[_to]);
         
         balances[_from] = balances[_from] - _value;
         balances[_to] = balances[_to] + _value;
@@ -136,7 +136,7 @@ contract DataTradingToken is Ownable, ERC20Interface {
      * @param _mintedAmount The amout of tokens to be minted
      */    
     function mintTokens(address _target, uint256 _mintedAmount) public onlyOwner returns (bool success){
-        require(_mintedAmount &lt;= _unmintedTokens);
+        require(_mintedAmount <= _unmintedTokens);
         balances[_target] += _mintedAmount;
         _unmintedTokens -= _mintedAmount;
         totalSupply += _mintedAmount;
@@ -151,7 +151,7 @@ contract DataTradingToken is Ownable, ERC20Interface {
      * @param _spender The address which will spend minted funds
      */ 
     function mintTokensWithApproval(address _target, uint256 _mintedAmount, address _spender) public onlyOwner returns (bool success){
-        require(_mintedAmount &lt;= _unmintedTokens);
+        require(_mintedAmount <= _unmintedTokens);
         balances[_target] += _mintedAmount;
         _unmintedTokens -= _mintedAmount;
         totalSupply += _mintedAmount;
@@ -164,7 +164,7 @@ contract DataTradingToken is Ownable, ERC20Interface {
      * @param _burnedAmount The amout of unminted tokens to be burned
      */ 
     function burnUnmintedTokens(uint256 _burnedAmount) public onlyOwner returns (bool success){
-        require(_burnedAmount &lt;= _unmintedTokens);
+        require(_burnedAmount <= _unmintedTokens);
         _unmintedTokens -= _burnedAmount;
         return true;
     }

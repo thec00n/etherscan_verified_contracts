@@ -42,20 +42,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,7 +83,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,7 +124,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac8dfd7d9d5fa88">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac8dfd7d9d5fa88">[email protected]</a>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -161,7 +161,7 @@ contract HasNoEther is Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfbdaaa2aca08ffd">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfbdaaa2aca08ffd">[email protected]</a>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -199,7 +199,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b0c2d5ddd3dff082">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b0c2d5ddd3dff082">[email protected]</a>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -228,7 +228,7 @@ contract HasNoTokens is CanReclaimToken {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -237,7 +237,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -265,7 +265,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -276,8 +276,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -291,7 +291,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -326,7 +326,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -394,7 +394,7 @@ contract BurnableToken is StandardToken {
     * @dev Sending ether to contract increases burning reward 
     */
     function() payable public {
-        if(msg.value &gt; 0){
+        if(msg.value > 0){
             BurnRewardIncreased(msg.sender, msg.value);    
         }
     }
@@ -416,14 +416,14 @@ contract BurnableToken is StandardToken {
     * @param _amount of tokens to be burned
     */
     function burn(address _from, uint256 _amount) internal returns(bool){
-        require(balances[_from] &gt;= _amount);
+        require(balances[_from] >= _amount);
         
         uint256 reward = burnReward(_amount);
-        assert(this.balance - reward &gt; 0);
+        assert(this.balance - reward > 0);
 
         balances[_from] = balances[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
-        //assert(totalSupply &gt;= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
+        //assert(totalSupply >= 0); //Check is not needed because totalSupply.sub(value) will already throw if this condition is not met
         
         _from.transfer(reward);
         Burn(_from, _amount);
@@ -455,7 +455,7 @@ contract BurnableToken is StandardToken {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         if( (_to == address(this)) || (_to == 0) ){
             var _allowance = allowed[_from][msg.sender];
-            //require (_value &lt;= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
+            //require (_value <= _allowance); //Check is not needed because _allowance.sub(_value) will already throw if this condition is not met
             allowed[_from][msg.sender] = _allowance.sub(_value);
             return burn(_from, _value);
         }else{
@@ -475,8 +475,8 @@ contract BurnableToken is StandardToken {
 contract WorldCoin is BurnableToken, MintableToken, HasNoContracts, HasNoTokens { //MintableToken is StandardToken, Ownable
     using SafeMath for uint256;
 
-    string public name = &quot;World Coin Network&quot;;
-    string public symbol = &quot;WCN&quot;;
+    string public name = "World Coin Network";
+    string public symbol = "WCN";
     uint256 public decimals = 18;
 
 
@@ -545,20 +545,20 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     ) public {
 
         //Check all paramaters are correct and create rounds
-        require(_hardCap &gt; 0);                    //Need something to sell
+        require(_hardCap > 0);                    //Need something to sell
         require(
-            (roundStarts.length &gt; 0)  &amp;&amp;                //There should be at least one round
-            (roundStarts.length == roundEnds.length) &amp;&amp;
+            (roundStarts.length > 0)  &&                //There should be at least one round
+            (roundStarts.length == roundEnds.length) &&
             (roundStarts.length == roundRates.length)
         );                   
         uint256 prevRoundEnd = now;
         rounds.length = roundStarts.length;             //initialize rounds array
-        for(uint8 i=0; i &lt; roundStarts.length; i++){
+        for(uint8 i=0; i < roundStarts.length; i++){
             rounds[i] = Round(roundStarts[i], roundEnds[i], roundRates[i]);
             Round storage r = rounds[i];
-            require(prevRoundEnd &lt;= r.start);
-            require(r.start &lt; r.end);
-            require(r.rate &gt; 0);
+            require(prevRoundEnd <= r.start);
+            require(r.start < r.end);
+            require(r.rate > 0);
             prevRoundEnd = rounds[i].end;
         }
 
@@ -567,7 +567,7 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
         referralBonusPercent = _referralBonusPercent;
         founderPercent = _founderPercent;
         //founderPercentWithReferral = founderPercent * (rate + partnerBonusPercent + referralBonusPercent) / rate;  //Did not use SafeMath here, because this parameters defined by contract creator should not be malicious. Also have checked result on the next line.
-        //assert(founderPercentWithReferral &gt;= founderPercent);
+        //assert(founderPercentWithReferral >= founderPercent);
 
         token = new WorldCoin();
     }
@@ -577,8 +577,8 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * @return round number (index in rounds array + 1) or 0 if none
     */
     function currentRoundNum() constant public returns(uint8) {
-        for(uint8 i=0; i &lt; rounds.length; i++){
-            if( (now &gt; rounds[i].start) &amp;&amp; (now &lt;= rounds[i].end) ) return i+1;
+        for(uint8 i=0; i < rounds.length; i++){
+            if( (now > rounds[i].start) && (now <= rounds[i].end) ) return i+1;
         }
         return 0;
     }
@@ -606,7 +606,7 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * @dev Shows if crowdsale is running
     */ 
     function crowdsaleRunning() constant public returns(bool){
-        return !finalized &amp;&amp; (tokensMinted &lt; hardCap) &amp;&amp; (currentRoundNum() &gt; 0);
+        return !finalized && (tokensMinted < hardCap) && (currentRoundNum() > 0);
     }
 
     /**
@@ -621,13 +621,13 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     */
     function sale(address buyer, address partner) public payable {
         if(!crowdsaleRunning()) revert();
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         uint256 rate = currentRate();
-        assert(rate &gt; 0);
+        assert(rate > 0);
 
         uint256 referralTokens; uint256 partnerTokens; uint256 ownerTokens;
         uint256 tokens = rate.mul(msg.value);
-        assert(tokens &gt; 0);
+        assert(tokens > 0);
         totalCollected = totalCollected.add(msg.value);
         if(partner == 0x0){
             ownerTokens     = tokens.mul(founderPercent).div(PERCENT_DIVIDER);
@@ -659,7 +659,7 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * @notice Updates rate for the round
     */
     function setRoundRate(uint32 roundNum, uint256 rate) public onlyOwner {
-        require(roundNum &lt; rounds.length);
+        require(roundNum < rounds.length);
         rounds[roundNum].rate = rate;
     }
 
@@ -669,7 +669,7 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * May be executed only if goal reached and no refunds are possible
     */
     function claimEther() public onlyOwner {
-        if(this.balance &gt; 0){
+        if(this.balance > 0){
             owner.transfer(this.balance);
         }
     }
@@ -681,10 +681,10 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     * - message sent by owner
     */
     function finalizeCrowdsale() public {
-        require ( (now &gt; lastRoundEndTimestamp()) || (totalCollected == hardCap) || (msg.sender == owner) );
+        require ( (now > lastRoundEndTimestamp()) || (totalCollected == hardCap) || (msg.sender == owner) );
         finalized = token.finishMinting();
         token.transferOwnership(owner);
-        if(this.balance &gt; 0){
+        if(this.balance > 0){
             owner.transfer(this.balance);
         }
     }
@@ -694,7 +694,7 @@ contract WorldCoinCrowdsale is Ownable, HasNoContracts, HasNoTokens {
     */
     function mintTokens(address beneficiary, uint256 amount) internal {
         tokensMinted = tokensMinted.add(amount);
-        require(tokensMinted &lt;= hardCap);
+        require(tokensMinted <= hardCap);
         assert(token.mint(beneficiary, amount));
     }
 }

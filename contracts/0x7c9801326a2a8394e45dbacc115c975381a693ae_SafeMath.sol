@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// &#39;LEIA&#39; &#39;Save Princess Leia Peach Rainbow Vomit Cat ICO Token&#39; token contract
+// 'LEIA' 'Save Princess Leia Peach Rainbow Vomit Cat ICO Token' token contract
 //
 // Princess Leia Peach Rainbow Vomit Cat #52
 //   http://cryptocats.thetwentysix.io/#cbp=cats/52.html
@@ -20,7 +20,7 @@ pragma solidity ^0.4.18;
 //     https://github.com/tetherto/omnicore/blob/0e43bc4734cae29fa99d287c51619ffc9ae0019a/src/omnicore/omnicore.cpp#L831-L834
 //   * Add 0x4532874375f2417abadbde9003a7a468d4b926bd to https://etherscamdb.info/
 //     for feline extortion
-// * 25% of raised ETH to fund the founder&#39;s lifestyle
+// * 25% of raised ETH to fund the founder's lifestyle
 // * Crowdsale period 4 weeks
 // * 20% bonus in the first week
 // * 1,000 tokens per 1 ETH.
@@ -29,7 +29,7 @@ pragma solidity ^0.4.18;
 //   https://twitter.com/bitfwdxyz/status/933105474228011008
 // * Best of luck for the hackathon teams!!!
 //
-// ICO &amp; token  : 0x96E2fFDdd5aaB73dEf197df5fDC4653a72976837
+// ICO & token  : 0x96E2fFDdd5aaB73dEf197df5fDC4653a72976837
 // SafeMath lib : 0x7c9801326a2A8394e45dBAcC115c975381A693aE
 // Symbol       : LEIA
 // Name         : Save Princess Leia Peach Rainbow Vomit Cat ICO Token
@@ -50,10 +50,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) public pure returns (uint c) {
@@ -61,7 +61,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -139,16 +139,16 @@ contract SavePrincessLeiaPeachRainbowVomitCatICOToken is ERC20Interface, Owned {
     uint public bonusEnds;
     uint public endDate;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     function SavePrincessLeiaPeachRainbowVomitCatICOToken() public {
-        symbol = &quot;LEIA&quot;;
-        name = &quot;Save Princess Leia Peach Rainbow Vomit Cat ICO Token&quot;;
+        symbol = "LEIA";
+        name = "Save Princess Leia Peach Rainbow Vomit Cat ICO Token";
         decimals = 18;
         startDate = now;
         bonusEnds = now + 1 weeks;
@@ -173,8 +173,8 @@ contract SavePrincessLeiaPeachRainbowVomitCatICOToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -187,7 +187,7 @@ contract SavePrincessLeiaPeachRainbowVomitCatICOToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -220,7 +220,7 @@ contract SavePrincessLeiaPeachRainbowVomitCatICOToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -229,7 +229,7 @@ contract SavePrincessLeiaPeachRainbowVomitCatICOToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -244,9 +244,9 @@ contract SavePrincessLeiaPeachRainbowVomitCatICOToken is ERC20Interface, Owned {
     // 1,000 LEIA per 1 ETH
     // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds) {
+        if (now <= bonusEnds) {
             tokens = msg.value * 1200;
         } else {
             tokens = msg.value * 1000;

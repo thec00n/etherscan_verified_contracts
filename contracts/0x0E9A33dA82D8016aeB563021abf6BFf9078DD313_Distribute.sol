@@ -6,7 +6,7 @@ pragma solidity ^0.4.0;
 
  * @dev The Ownable contract has an owner address, and provides basic authorization control
 
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
 
  */
 
@@ -94,7 +94,7 @@ contract Distribute is Ownable{
 
   function register(address[] _addrs) public onlyOwner{
 
-    for(uint i = 0; i &lt; _addrs.length; ++i){
+    for(uint i = 0; i < _addrs.length; ++i){
 
       tokenReward.transfer(_addrs[i],20*10**8);
 

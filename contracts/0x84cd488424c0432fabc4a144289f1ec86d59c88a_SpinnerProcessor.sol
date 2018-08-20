@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -88,15 +88,15 @@ contract SpinnerDatabase is Ownable {
         marketAddress = market;
     }
 
-    mapping (uint =&gt; uint) public spinnerCounts;
-    mapping (address =&gt; uint) public balances;
-    mapping (address =&gt; uint) public earn;
-    mapping (uint =&gt; Shared.SpinnerMint) public themedSpinners;
-    mapping (address =&gt; Shared.Spinner[]) public SpinnersByAddress;
-    mapping (uint =&gt; address[]) public OwnersBySpinner;
-    mapping (address =&gt; uint) public SpinnerCountsByAddress;
-    mapping (uint =&gt; uint) public originalPricesBySpinner;
-    mapping (uint =&gt; uint) public spinnerCountsByType;
+    mapping (uint => uint) public spinnerCounts;
+    mapping (address => uint) public balances;
+    mapping (address => uint) public earn;
+    mapping (uint => Shared.SpinnerMint) public themedSpinners;
+    mapping (address => Shared.Spinner[]) public SpinnersByAddress;
+    mapping (uint => address[]) public OwnersBySpinner;
+    mapping (address => uint) public SpinnerCountsByAddress;
+    mapping (uint => uint) public originalPricesBySpinner;
+    mapping (uint => uint) public spinnerCountsByType;
 
     function SpinnerDatabase() public {
         totalSpinners = 0;
@@ -136,7 +136,7 @@ contract SpinnerDatabase is Ownable {
     function changeOwnership(string _name, uint _id, uint _type, address originalOwner, address newOwner) external {
         require(msg.sender == marketAddress);
         uint256 totalSpinnersOwned = SpinnerCountsByAddress[originalOwner];
-        for (uint256 i = 0; i &lt; totalSpinnersOwned; i++) {
+        for (uint256 i = 0; i < totalSpinnersOwned; i++) {
             uint mySpinnerId = getSpinnerData(originalOwner, i)._id;
             if (mySpinnerId == _id) {
                 executeOwnershipChange(i, _id, _type, originalOwner, newOwner, _name);
@@ -149,7 +149,7 @@ contract SpinnerDatabase is Ownable {
     function changeOwnershipStepTwo(uint _type, address originalOwner, address newOwner) private {
         uint totalSpinnersOfType = spinnerCountsByType[_type];
         address[] storage owners = OwnersBySpinner[_type];
-        for (uint j = 0; j &lt; totalSpinnersOfType; j++) {
+        for (uint j = 0; j < totalSpinnersOfType; j++) {
             if (owners[j] == originalOwner) {
                 owners[j] = newOwner;
                 break;
@@ -161,7 +161,7 @@ contract SpinnerDatabase is Ownable {
     function changeUniqueOwnership(string _name, uint _id, address originalOwner, address newOwner) external {
         require(msg.sender == marketAddress);
         uint256 totalSpinnersOwned = SpinnerCountsByAddress[originalOwner];
-        for (uint256 i = 0; i &lt; totalSpinnersOwned; i++) {
+        for (uint256 i = 0; i < totalSpinnersOwned; i++) {
             uint mySpinnerId = getSpinnerData(originalOwner, i)._id;
             if (mySpinnerId == _id) {
                 uint spinnerType = getSpinnerData(originalOwner, i).class;
@@ -174,7 +174,7 @@ contract SpinnerDatabase is Ownable {
     
     function changeUniqueOwnershipStepTwo(address originalOwner, address newOwner) private {
         uint totalUniqueSpinners = uniqueSpinners;
-        for (uint j = 0; j &lt; totalUniqueSpinners; j++) {
+        for (uint j = 0; j < totalUniqueSpinners; j++) {
             if (uniqueSpinnerOwners[j] == originalOwner) {
                 uniqueSpinnerOwners[j] = newOwner;
                 break;
@@ -233,7 +233,7 @@ contract SpinnerDatabase is Ownable {
 
     function doesAddressOwnSpinner(address walletAddress, uint _id) public view returns (bool) {
         uint count = spinnerCountsByType[_id + spinnerModulus];
-        for (uint i=0; i&lt;count; i++) {
+        for (uint i=0; i<count; i++) {
             if (keccak256(SpinnersByAddress[walletAddress][i].spinnerOwner) == keccak256(walletAddress)) {
                 return true;
             }
@@ -245,7 +245,7 @@ contract SpinnerDatabase is Ownable {
         uint totalPurchased = spinnerCounts[_type];
         address[] storage owners = OwnersBySpinner[_type];
         uint payout = themedSpinners[_type].returnPrice;
-        for (uint i = 0; i &lt; totalPurchased; i++) {
+        for (uint i = 0; i < totalPurchased; i++) {
             balances[owners[i]] = balances[owners[i]] + payout;
             earn[owners[i]] = earn[owners[i]] + payout;
         }
@@ -253,7 +253,7 @@ contract SpinnerDatabase is Ownable {
 
     function decrementBalance(address walletAddress, uint amount) external {
         require(msg.sender == processorAddress);
-        require(amount &lt;= balances[walletAddress]);
+        require(amount <= balances[walletAddress]);
         balances[walletAddress] = balances[walletAddress] - amount;
     }
 }
@@ -270,7 +270,7 @@ contract SpinnerFactory is Ownable {
 
     address public owner;
 
-    mapping (uint =&gt; bool) public initialSpinners; //mapping of initial spinners
+    mapping (uint => bool) public initialSpinners; //mapping of initial spinners
 
     function setProcessorAddress(address processAddress) public onlyOwner {
         processorAddress = processAddress;
@@ -428,13 +428,13 @@ contract SpinnerProcessor is Ownable {
         SpinnerDatabase database = SpinnerDatabase(databaseAddress);
         uint balance = database.getBalance(msg.sender);
         uint contractBalance = this.balance;
-        require(balance &lt;= contractBalance);
+        require(balance <= contractBalance);
         database.decrementBalance(msg.sender, balance);
         msg.sender.transfer(balance);
     }
 
     function OwnerCashout() public onlyOwner {
-        require(ownerBalance &lt;= this.balance);
+        require(ownerBalance <= this.balance);
         msg.sender.transfer(ownerBalance);
         ownerBalance = 0;
     }

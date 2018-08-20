@@ -6,8 +6,8 @@ contract SplitPayment {
   uint256 public totalShares = 0;
   uint256 public totalReleased = 0;
 
-  mapping(address =&gt; uint256) public shares;
-  mapping(address =&gt; uint256) public released;
+  mapping(address => uint256) public shares;
+  mapping(address => uint256) public released;
   address[] public payees;
 
   /**
@@ -16,7 +16,7 @@ contract SplitPayment {
   function SplitPayment(address[] _payees, uint256[] _shares) public payable {
     require(_payees.length == _shares.length);
 
-    for (uint256 i = 0; i &lt; _payees.length; i++) {
+    for (uint256 i = 0; i < _payees.length; i++) {
       addPayee(_payees[i], _shares[i]);
     }
   }
@@ -32,13 +32,13 @@ contract SplitPayment {
   function claim() public {
     address payee = msg.sender;
 
-    require(shares[payee] &gt; 0);
+    require(shares[payee] > 0);
 
     uint256 totalReceived = this.balance.add(totalReleased);
     uint256 payment = totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     released[payee] = released[payee].add(payment);
     totalReleased = totalReleased.add(payment);
@@ -53,7 +53,7 @@ contract SplitPayment {
    */
   function addPayee(address _payee, uint256 _shares) internal {
     require(_payee != address(0));
-    require(_shares &gt; 0);
+    require(_shares > 0);
     require(shares[_payee] == 0);
 
     payees.push(_payee);
@@ -71,8 +71,8 @@ interface ERC721Metadata /* is ERC721 */ {
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string);
 }
 
@@ -94,9 +94,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -104,7 +104,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -113,7 +113,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -155,9 +155,9 @@ interface ERC721 /* is ERC165 */ {
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -166,7 +166,7 @@ interface ERC721 /* is ERC165 */ {
 	
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;
+    ///  except this function just sets data to ""
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -192,7 +192,7 @@ interface ERC721 /* is ERC165 */ {
     /// @param _tokenId The NFT to approve
     function approve(address _approved, uint256 _tokenId) external payable;
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+    /// @notice Enable or disable approval for a third party ("operator") to manage
     ///  all your assets.
     /// @dev Throws unless `msg.sender` is the current NFT owner.
     /// @dev Emits the ApprovalForAll event
@@ -273,7 +273,7 @@ contract CorsariumAccessControl is SplitPayment {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyMEGO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -288,13 +288,13 @@ contract CardBase is CorsariumAccessControl, ERC721, ERC721Metadata {
     
     uint256 lastPrintedCard = 0;
      
-    mapping (uint256 =&gt; address) public tokenIdToOwner;  // 721 tokenIdToOwner
-    mapping (address =&gt; uint256) public ownerTokenCount; // 721 ownerTokenCount
-    mapping (uint256 =&gt; address) public tokenIdToApproved; // 721 tokenIdToApprovedAddress
-    mapping (uint256 =&gt; uint256) public tokenToCardIndex; // 721 tokenIdToMetadata
-    //mapping (uint256 =&gt; uint256) public tokenCountIndex;
-    //mapping (address =&gt; uint256[]) internal ownerToTokensOwned;
-    //mapping (uint256 =&gt; uint256) internal tokenIdToOwnerArrayIndex;
+    mapping (uint256 => address) public tokenIdToOwner;  // 721 tokenIdToOwner
+    mapping (address => uint256) public ownerTokenCount; // 721 ownerTokenCount
+    mapping (uint256 => address) public tokenIdToApproved; // 721 tokenIdToApprovedAddress
+    mapping (uint256 => uint256) public tokenToCardIndex; // 721 tokenIdToMetadata
+    //mapping (uint256 => uint256) public tokenCountIndex;
+    //mapping (address => uint256[]) internal ownerToTokensOwned;
+    //mapping (uint256 => uint256) internal tokenIdToOwnerArrayIndex;
 
     /// @dev Assigns ownership of a specific card to an address.
     /*function _transfer(address _from, address _to, uint256 _tokenId) internal {
@@ -312,7 +312,7 @@ contract CardBase is CorsariumAccessControl, ERC721, ERC721Metadata {
 
         // This will assign ownership, and also emit the Transfer event as
         // per ERC721 draft
-        require(uint256(1000000) &gt; lastPrintedCard);
+        require(uint256(1000000) > lastPrintedCard);
         lastPrintedCard++;
         tokenToCardIndex[lastPrintedCard] = _prototypeId;
         _setTokenOwner(lastPrintedCard, _owner);
@@ -320,7 +320,7 @@ contract CardBase is CorsariumAccessControl, ERC721, ERC721Metadata {
         Transfer(0, _owner, lastPrintedCard);
         //tokenCountIndex[_prototypeId]++;
         
-        //_transfer(0, _owner, lastPrintedCard); //&lt;-- asd
+        //_transfer(0, _owner, lastPrintedCard); //<-- asd
         
 
         return lastPrintedCard;
@@ -383,9 +383,9 @@ contract CardOwnership is CardBase {
     ///  operator, or the approved address for this NFT. Throws if `_from` is
     ///  not the current owner. Throws if `_to` is the zero address. Throws if
     ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
-    ///  checks if `_to` is a smart contract (code size &gt; 0). If so, it calls
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
     ///  `onERC721Received` on `_to` and throws if the return value is not
-    ///  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`.
+    ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -403,7 +403,7 @@ contract CardOwnership is CardBase {
         if (isContract(_to)) {
             bytes4 value = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, data);
 
-            if (value != bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))) {
+            if (value != bytes4(keccak256("onERC721Received(address,uint256,bytes)"))) {
                 revert();
             }
         }
@@ -411,7 +411,7 @@ contract CardOwnership is CardBase {
 	
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev This works identically to the other function with an extra data parameter,
-    ///  except this function just sets data to &quot;&quot;
+    ///  except this function just sets data to ""
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -426,9 +426,9 @@ contract CardOwnership is CardBase {
         Transfer(_from, _to, _tokenId);
 
         if (isContract(_to)) {
-            bytes4 value = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, &quot;&quot;);
+            bytes4 value = ERC721TokenReceiver(_to).onERC721Received(_from, _tokenId, "");
 
-            if (value != bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))) {
+            if (value != bytes4(keccak256("onERC721Received(address,uint256,bytes)"))) {
                 revert();
             }
         }
@@ -471,7 +471,7 @@ contract CardOwnership is CardBase {
         }
     }
 
-    /// @notice Enable or disable approval for a third party (&quot;operator&quot;) to manage
+    /// @notice Enable or disable approval for a third party ("operator") to manage
     ///  all your assets.
     /// @dev Throws unless `msg.sender` is the current NFT owner.
     /// @dev Emits the ApprovalForAll event
@@ -499,20 +499,20 @@ contract CardOwnership is CardBase {
 
     /// @notice A descriptive name for a collection of NFTs in this contract
     function name() external pure returns (string _name) {
-        return &quot;Dark Winds First Edition Cards&quot;;
+        return "Dark Winds First Edition Cards";
     }
 
     /// @notice An abbreviated name for NFTs in this contract
     function symbol() external pure returns (string _symbol) {
-        return &quot;DW1ST&quot;;
+        return "DW1ST";
     }
 
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-    ///  3986. The URI may point to a JSON file that conforms to the &quot;ERC721
-    ///  Metadata JSON Schema&quot;.
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string _tokenURI) {
-        _tokenURI = &quot;https://corsarium.playdarkwinds.com/cards/00000.json&quot;; //37 36 35 34 33
+        _tokenURI = "https://corsarium.playdarkwinds.com/cards/00000.json"; //37 36 35 34 33
         bytes memory tokenUriBytes = bytes(_tokenURI);
         tokenUriBytes[33] = byte(48 + (tokenToCardIndex[_tokenId] / 10000) % 10);
         tokenUriBytes[34] = byte(48 + (tokenToCardIndex[_tokenId] / 1000) % 10);
@@ -530,7 +530,7 @@ contract CardOwnership is CardBase {
         assembly { 
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
@@ -551,14 +551,14 @@ contract CorsariumCore is CardOwnership {
     }
 
     function getCard(uint _token_id) public view returns (uint256) {
-        assert(_token_id &lt;= lastPrintedCard);
+        assert(_token_id <= lastPrintedCard);
         return tokenToCardIndex[_token_id];
     }
 
     function buyBoosterPack() public payable {
         uint amount = msg.value/cardCost;
         uint blockNumber = block.timestamp;
-        for (uint i = 0; i &lt; amount; i++) {
+        for (uint i = 0; i < amount; i++) {
             _createCard(i%5 == 1 ? (uint256(keccak256(i+nonce+blockNumber)) % 50) : (uint256(keccak256(i+nonce+blockNumber)) % 50) + (nonce%50), msg.sender);
         }
         nonce += amount;
@@ -579,7 +579,7 @@ contract CorsariumCore is CardOwnership {
             // sequentially up to the totalCards count.
             uint256 cardId;
 
-            for (cardId = 1; cardId &lt;= lastPrintedCard; cardId++) {
+            for (cardId = 1; cardId <= lastPrintedCard; cardId++) {
                 if (tokenIdToOwner[cardId] == _owner) {
                     result[resultIndex] = cardId;
                     resultIndex++;
@@ -604,7 +604,7 @@ contract CorsariumCore is CardOwnership {
             // sequentially up to the totalCards count.
             uint256 cardId;
 
-            for (cardId = 1; cardId &lt;= lastPrintedCard; cardId++) {
+            for (cardId = 1; cardId <= lastPrintedCard; cardId++) {
                 if (tokenIdToOwner[cardId] == _owner) {
                     result[resultIndex] = cardId;
                     resultIndex++;
@@ -629,7 +629,7 @@ contract CorsariumCore is CardOwnership {
             // sequentially up to 1000000
             uint256 cardId;
 
-            for (cardId = 1; cardId &lt; 1000000; cardId++) {
+            for (cardId = 1; cardId < 1000000; cardId++) {
                 result[tokenToCardIndex[cardId]]++;
                 //resultIndex++;
             }
@@ -650,7 +650,7 @@ interface ERC721TokenReceiver {
     /// @param _from The sending address 
     /// @param _tokenId The NFT identifier which is being transfered
     /// @param data Additional data with no specified format
-    /// @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    /// @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     ///  unless throwing
 	function onERC721Received(address _from, uint256 _tokenId, bytes data) external returns(bytes4);
 }

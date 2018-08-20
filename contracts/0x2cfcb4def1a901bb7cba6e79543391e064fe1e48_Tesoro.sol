@@ -4,8 +4,8 @@ pragma solidity ^0.4.21;
 // ----------------------------------------------------------------------------
 // Se sei un abile crypto-pirata, potrai scovare e portare a casa un tesoro da
 // 1 milione di ORS tokens (equivalente a € 50.000).
-// Come? Partecipa al Reservation Contract (RC) di ORS Italia &amp; International
-// versando un qualunque ammontare di ETH, preferibilmente a pi&#249; cifre
+// Come? Partecipa al Reservation Contract (RC) di ORS Italia & International
+// versando un qualunque ammontare di ETH, preferibilmente a più cifre
 // (ad es. 1, 031158860 ETH).
 //
 // ORS trasferisce un importo in ETH su un suo wallet pubblico, che tutti
@@ -26,14 +26,14 @@ pragma solidity ^0.4.21;
 // Se hai versato nel RC un importo che contiene il codice segreto in sequenza,
 // come in questo caso 1,031158860 ETH, allora Bingo!!!
 // Avrai vinto il crypto tesoro e potrai portartelo a casa!
-// In caso di pi&#249; abili pirati nel trovare il codice segreto, vincer&#225; chi avr&#224;
+// In caso di più abili pirati nel trovare il codice segreto, vincerá chi avrà
 // la sequenza giusta nel versamento in ETH fatto in ordine di registrazione
 // nel RC precedente a quella degli altri.
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // If you are a skilled crypto-pirate, you can find and bring home a treasure
 // of 1 million ORS tokens (equivalent to €50,000).
-// How? Participate in the Reservation Contract (RC) of ORS Italia &amp;
+// How? Participate in the Reservation Contract (RC) of ORS Italia &
 // International by paying any amount of ETH, preferably with several digits
 // (eg 1.031158860 ETH).
 //
@@ -84,7 +84,7 @@ contract owned {
 
 contract Tesoro is owned {
 
-  // The Result event is emitted when this contest is &#39;over&#39; meaning someone
+  // The Result event is emitted when this contest is 'over' meaning someone
   // has won the prize
   //
   // Anyone can then confirm that the private key generates the public address
@@ -94,7 +94,7 @@ contract Tesoro is owned {
   // Then anyone can verify that the signature of the magic number matches the
   // same that is hard-coded below. Note we used geth 1.8.2-stable to generate.
   //
-  // &gt; web3.eth.sign( &quot;&lt;public address&gt;&quot;, web3.sha3(&quot;&lt;magic number&gt;&quot;) )
+  // > web3.eth.sign( "<public address>", web3.sha3("<magic number>") )
   //
   // Then scan the smart contracts for all incoming transactions and find the
   // first one whose value satisfies the equation stated above.
@@ -104,9 +104,9 @@ contract Tesoro is owned {
 
   event Result( string hexprivkey, string magicnumber );
 
-  string public pubaddr = &quot;0xff982b2a62eb872d01eb98761f1ff66f6055a8e6&quot;;
+  string public pubaddr = "0xff982b2a62eb872d01eb98761f1ff66f6055a8e6";
 
-  string public magicnumsig = &quot;0x28c599e8564c4e477fe69c712df9a6ad232b2dbadf77ffd9e406f1d5fa32ef7509ec26fa7fd559217ecd0d47ca04bb2d40613d0ad0b8aec2ea545baae9f763571b&quot;;
+  string public magicnumsig = "0x28c599e8564c4e477fe69c712df9a6ad232b2dbadf77ffd9e406f1d5fa32ef7509ec26fa7fd559217ecd0d47ca04bb2d40613d0ad0b8aec2ea545baae9f763571b";
 
   function Tesoro() public {}
 

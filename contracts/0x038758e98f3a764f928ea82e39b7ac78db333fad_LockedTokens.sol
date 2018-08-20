@@ -25,13 +25,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,7 +75,7 @@ contract LockedTokens is SafeMath {
 
     IERC20Token public token;
     address public crowdsaleAddress;
-    mapping(address =&gt; Tokens[]) public walletTokens;
+    mapping(address => Tokens[]) public walletTokens;
 
     /**
      * @dev LockedTokens constructor
@@ -102,10 +102,10 @@ contract LockedTokens is SafeMath {
      * @dev Called by owner of locked tokens to release them
      */
     function releaseTokens() public {
-        require(walletTokens[msg.sender].length &gt; 0);
+        require(walletTokens[msg.sender].length > 0);
 
-        for(uint256 i = 0; i &lt; walletTokens[msg.sender].length; i++) {
-            if(!walletTokens[msg.sender][i].released &amp;&amp; now &gt;= walletTokens[msg.sender][i].lockEndTime) {
+        for(uint256 i = 0; i < walletTokens[msg.sender].length; i++) {
+            if(!walletTokens[msg.sender][i].released && now >= walletTokens[msg.sender][i].lockEndTime) {
                 walletTokens[msg.sender][i].released = true;
                 token.transfer(msg.sender, walletTokens[msg.sender][i].amount);
                 TokensUnlocked(msg.sender, walletTokens[msg.sender][i].amount);

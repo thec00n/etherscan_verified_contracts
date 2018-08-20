@@ -40,7 +40,7 @@ contract KittenSelfDrop is Ownable {
     uint256 public donatorReward;
     uint256 public holderReward;
     uint8 public totalDropTransactions;
-    mapping (address =&gt; uint8) participants;
+    mapping (address => uint8) participants;
     
     
     // Initialize the cutest contract in the world
@@ -60,16 +60,16 @@ contract KittenSelfDrop is Ownable {
     
     // Drop some wonderful cutest Kitten Coins to sender every time contract is called without function
     function() payable {
-        require (participants[msg.sender] &lt; dropNumber &amp;&amp; kittensRemainingToDrop &gt; basicReward);
+        require (participants[msg.sender] < dropNumber && kittensRemainingToDrop > basicReward);
         uint256 tokensIssued = basicReward;
         // Send extra Kitten Coins bonus if participant is donating Ether
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
             tokensIssued += donatorReward;
         // Send extra Kitten Coins bonus if participant holds at least holderAmount
-        if (kittenContract.balanceOf(msg.sender) &gt;= holderAmount)
+        if (kittenContract.balanceOf(msg.sender) >= holderAmount)
             tokensIssued += holderReward;
         // Check if number of Kitten Coins to issue is higher than coins remaining for airdrop (last transaction of airdrop)
-        if (tokensIssued &gt; kittensRemainingToDrop)
+        if (tokensIssued > kittensRemainingToDrop)
             tokensIssued = kittensRemainingToDrop;
         
         // Give away these so cute Kitten Coins to contributor

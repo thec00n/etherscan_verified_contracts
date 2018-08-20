@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -52,12 +52,12 @@ contract TFFC is ERC20Basic {
 	using SafeMath for uint256;
 	address owner = msg.sender;
 
-	mapping (address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-	mapping (address =&gt; bool) public blacklist;
+	mapping (address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
+	mapping (address => bool) public blacklist;
 
-	string public constant name = &quot;TFFC&quot;;
-	string public constant symbol = &quot;TF&quot;;
+	string public constant name = "TFFC";
+	string public constant symbol = "TF";
 	uint public constant decimals = 8;
 
 	uint256 public totalSupply = 50000000e8;//50000000e8;//总量5000万个
@@ -101,7 +101,7 @@ contract TFFC is ERC20Basic {
     }
 
     modifier onlyPayloadSize(uint size) {
-        assert(msg.data.length &gt;= size + 4);
+        assert(msg.data.length >= size + 4);
         _;
     }
 
@@ -120,21 +120,21 @@ contract TFFC is ERC20Basic {
     	
     	return true;
 
-    	if (TeamReleaseCount &gt;= totaTeamRemainingBak) {
+    	if (TeamReleaseCount >= totaTeamRemainingBak) {
         	distributionteamFinished = true;
         }
     }
 
     function teamRelease(address _to) payable canTeamDistr onlyOwner public {
-    	if (teamvalue &gt; totaTeamRemaining) {
+    	if (teamvalue > totaTeamRemaining) {
 			teamvalue = totaTeamRemaining;
 		}
 
-		require(teamvalue &lt;= totaTeamRemaining);
+		require(teamvalue <= totaTeamRemaining);
 
         teamdistr(_to, teamvalue);
 
-        if (TeamReleaseCount &gt;= totaTeamRemainingBak) {
+        if (TeamReleaseCount >= totaTeamRemainingBak) {
         	distributionteamFinished = true;
         }
     }
@@ -148,8 +148,8 @@ contract TFFC is ERC20Basic {
 		UserSendCount = UserSendCount.add(_amount);
 		totalRemaining = totalRemaining.sub(_amount);
 		balances[_to] = balances[_to].add(_amount);
-		if (UserSendCount &lt; totalRemainingBak) {
-			if (UserSendCount.sub(UserSendCountBak) &gt;= totalPhaseValue) {
+		if (UserSendCount < totalRemainingBak) {
+			if (UserSendCount.sub(UserSendCountBak) >= totalPhaseValue) {
         		uservalue = uservalue.div(2);
         		UserSendCountBak = UserSendCount;
         	}
@@ -160,7 +160,7 @@ contract TFFC is ERC20Basic {
         
         return true;
         
-        if (UserSendCount &gt;= totalRemainingBak) {
+        if (UserSendCount >= totalRemainingBak) {
         	distributionuserFinished = true;
         }
         
@@ -169,22 +169,22 @@ contract TFFC is ERC20Basic {
 
 	function getTokens() payable canUserDistr onlyWhitelist public {
 		
-		if (uservalue &gt; totalRemaining) {
+		if (uservalue > totalRemaining) {
 			uservalue = totalRemaining;
 		}
 
-		require(uservalue &lt;= totalRemaining);
+		require(uservalue <= totalRemaining);
 
 		address investor = msg.sender;
         uint256 toGive = uservalue;
 
         distr(investor, toGive);
 
-        if (toGive &gt; 0) {
+        if (toGive > 0) {
         	blacklist[investor] = true;
         }
 
-        if (UserSendCount &gt;= totalRemainingBak) {
+        if (UserSendCount >= totalRemainingBak) {
         	distributionuserFinished = true;
         }
 	}
@@ -196,13 +196,13 @@ contract TFFC is ERC20Basic {
     }
 
     function enableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = false;
         }
     }
 
     function disableWhitelist(address[] addresses) onlyOwner public {
-        for (uint i = 0; i &lt; addresses.length; i++) {
+        for (uint i = 0; i < addresses.length; i++) {
             blacklist[addresses[i]] = true;
         }
     }
@@ -220,7 +220,7 @@ contract TFFC is ERC20Basic {
     function transfer(address _to, uint256 _amount) onlyPayloadSize(2 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -231,8 +231,8 @@ contract TFFC is ERC20Basic {
     function transferFrom(address _from, address _to, uint256 _amount) onlyPayloadSize(3 * 32) public returns (bool success) {
 
         require(_to != address(0));
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -243,7 +243,7 @@ contract TFFC is ERC20Basic {
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // mitigates the ERC20 spend/approval race condition
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;

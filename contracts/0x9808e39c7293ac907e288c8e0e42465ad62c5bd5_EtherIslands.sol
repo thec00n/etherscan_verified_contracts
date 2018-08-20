@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -141,8 +141,8 @@ contract EtherIslands is Ownable, ERC721 {
     }
 
     /*** CONSTANTS ***/
-    string public constant NAME = &quot;EtherIslands&quot;;
-    string public constant SYMBOL = &quot;EIS&quot;;
+    string public constant NAME = "EtherIslands";
+    string public constant SYMBOL = "EIS";
 
     bool public maintenance = true;
     uint256 islands_count;
@@ -151,9 +151,9 @@ contract EtherIslands is Ownable, ERC721 {
     uint256 withdrawalBlocksCooldown = 100;
     address m_address = 0xd17e2bFE196470A9fefb567e8f5992214EB42F24;
 
-    mapping(address =&gt; uint256) private ownerCount;
-    mapping(uint256 =&gt; Island) private islands;
-    mapping(uint256 =&gt; IslandBattleStats) private islandBattleStats;
+    mapping(address => uint256) private ownerCount;
+    mapping(uint256 => Island) private islands;
+    mapping(uint256 => IslandBattleStats) private islandBattleStats;
 
     /*** DEFAULT METHODS ***/
     function symbol() public pure returns (string) {return SYMBOL;}
@@ -163,12 +163,12 @@ contract EtherIslands is Ownable, ERC721 {
     function implementsERC721() public pure returns (bool) {return true;}
 
     function EtherIslands() public {
-        _create_island(&quot;Santorini&quot;, msg.sender, 0.001 ether, 0, 0, 0);
-        _create_island(&quot;Seychelles&quot;, msg.sender, 0.001 ether, 0, 0, 0);
-        _create_island(&quot;Palawan&quot;, msg.sender, 0.001 ether, 0, 0, 0);
-        _create_island(&quot;The Cook Islands&quot;, msg.sender, 0.001 ether, 0, 0, 0);
-        _create_island(&quot;Bora Bora&quot;, msg.sender, 0.001 ether, 0, 0, 0);
-        _create_island(&quot;Maldives&quot;, msg.sender, 0.001 ether, 0, 0, 0);
+        _create_island("Santorini", msg.sender, 0.001 ether, 0, 0, 0);
+        _create_island("Seychelles", msg.sender, 0.001 ether, 0, 0, 0);
+        _create_island("Palawan", msg.sender, 0.001 ether, 0, 0, 0);
+        _create_island("The Cook Islands", msg.sender, 0.001 ether, 0, 0, 0);
+        _create_island("Bora Bora", msg.sender, 0.001 ether, 0, 0, 0);
+        _create_island("Maldives", msg.sender, 0.001 ether, 0, 0, 0);
     }
 
     /** PUBLIC METHODS **/
@@ -189,10 +189,10 @@ contract EtherIslands is Ownable, ERC721 {
         require(attackerIsland.owner != defenderIsland.owner);
         require(msg.sender != address(0));
         require(msg.value == 0);
-        require(block.number &gt;= attackerIslandBattleStats.attack_cooldown);
-        require(block.number &gt;= defenderIslandBattleStats.defense_cooldown);
-        require(attackerIsland.attack_ships_count &gt; 0); // attacker must have at least 1 attack ship
-        require(attackerIsland.attack_ships_count &gt; defenderIsland.defense_ships_count);
+        require(block.number >= attackerIslandBattleStats.attack_cooldown);
+        require(block.number >= defenderIslandBattleStats.defense_cooldown);
+        require(attackerIsland.attack_ships_count > 0); // attacker must have at least 1 attack ship
+        require(attackerIsland.attack_ships_count > defenderIsland.defense_ships_count);
 
         uint256 goods_stolen = SafeMath.mul(SafeMath.div(defenderIsland.treasury, 100), 75);
 
@@ -240,7 +240,7 @@ contract EtherIslands is Ownable, ERC721 {
         uint256 totalPrice = SafeMath.mul(_ships_to_buy, shipPrice);
         require(island.owner == msg.sender);
         require(msg.sender != address(0));
-        require(msg.value &gt;= totalPrice);
+        require(msg.value >= totalPrice);
 
         if (_is_attack_ships) {
             island.attack_ships_count = SafeMath.add(island.attack_ships_count, _ships_to_buy);
@@ -267,8 +267,8 @@ contract EtherIslands is Ownable, ERC721 {
         m_address.transfer(m_fee);
         owner.transfer(d_fee);
 
-        DividendsPaid(island.previous_owners[0], previous_owner_div, &quot;buyShipPreviousOwner&quot;);
-        DividendsPaid(island.previous_owners[1], previous_owner2_div, &quot;buyShipPreviousOwner2&quot;);
+        DividendsPaid(island.previous_owners[0], previous_owner_div, "buyShipPreviousOwner");
+        DividendsPaid(island.previous_owners[1], previous_owner2_div, "buyShipPreviousOwner2");
 
         ShipsBought(_island_id, island.owner);
     }
@@ -279,8 +279,8 @@ contract EtherIslands is Ownable, ERC721 {
 
         require(island.owner == msg.sender);
         require(msg.sender != address(0));
-        require(island.treasury &gt; 0);
-        require(block.number &gt;= island.treasury_next_withdrawal_block);
+        require(island.treasury > 0);
+        require(block.number >= island.treasury_next_withdrawal_block);
 
         uint256 treasury_to_withdraw = SafeMath.mul(SafeMath.div(island.treasury, 100), 10);
         uint256 treasury_for_previous_owner_1 = SafeMath.mul(SafeMath.div(treasury_to_withdraw, 100), 2);
@@ -296,9 +296,9 @@ contract EtherIslands is Ownable, ERC721 {
         island.treasury_next_withdrawal_block = block.number + withdrawalBlocksCooldown;
         //setting cooldown for next withdrawal
 
-        DividendsPaid(island.previous_owners[0], treasury_for_previous_owner_1, &quot;withdrawalPreviousOwner&quot;);
-        DividendsPaid(island.previous_owners[1], treasury_for_previous_owner_2, &quot;withdrawalPreviousOwner2&quot;);
-        DividendsPaid(island.owner, treasury_for_current_owner, &quot;withdrawalOwner&quot;);
+        DividendsPaid(island.previous_owners[0], treasury_for_previous_owner_1, "withdrawalPreviousOwner");
+        DividendsPaid(island.previous_owners[1], treasury_for_previous_owner_2, "withdrawalPreviousOwner2");
+        DividendsPaid(island.owner, treasury_for_current_owner, "withdrawalOwner");
 
         TreasuryWithdrawn(_island_id);
     }
@@ -309,10 +309,10 @@ contract EtherIslands is Ownable, ERC721 {
 
         require(island.owner != msg.sender);
         require(msg.sender != address(0));
-        require(msg.value &gt;= island.price);
+        require(msg.value >= island.price);
 
         uint256 excess = SafeMath.sub(msg.value, island.price);
-        if (island.previous_price &gt; 0) {
+        if (island.previous_price > 0) {
             uint256 owners_cut = SafeMath.mul(SafeMath.div(island.price, 160), 130);
             uint256 treasury_cut = SafeMath.mul(SafeMath.div(island.price, 160), 18);
             uint256 dev_fee = SafeMath.mul(SafeMath.div(island.price, 160), 7);
@@ -337,10 +337,10 @@ contract EtherIslands is Ownable, ERC721 {
             m_address.transfer(m_fee);
             owner.transfer(d_fee);
 
-            DividendsPaid(island.previous_owners[0], previous_owner_fee, &quot;previousOwner&quot;);
-            DividendsPaid(island.previous_owners[1], previous_owner_fee2, &quot;previousOwner2&quot;);
-            DividendsPaid(island.owner, owners_cut, &quot;owner&quot;);
-            DividendsPaid(owner, dev_fee, &quot;dev&quot;);
+            DividendsPaid(island.previous_owners[0], previous_owner_fee, "previousOwner");
+            DividendsPaid(island.previous_owners[1], previous_owner_fee2, "previousOwner2");
+            DividendsPaid(island.owner, owners_cut, "owner");
+            DividendsPaid(owner, dev_fee, "dev");
         } else {
             island.owner.transfer(msg.value);
         }
@@ -443,7 +443,7 @@ contract EtherIslands is Ownable, ERC721 {
         uint256[] memory attack_ships_counts = new uint256[](islands_count);
         uint256[] memory defense_ships_counts = new uint256[](islands_count);
         uint256[] memory transactions_count = new uint256[](islands_count);
-        for (uint256 _id = 0; _id &lt; islands_count; _id++) {
+        for (uint256 _id = 0; _id < islands_count; _id++) {
             ids[_id] = _id;
             owners[_id] = islands[_id].owner;
             prices[_id] = islands[_id].price;

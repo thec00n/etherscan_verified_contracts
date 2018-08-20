@@ -10,13 +10,13 @@ contract NumberCarbonVoting {
         bytes32 title;
         uint256 minValue;
         uint256 maxValue;
-        mapping (address =&gt; uint256) votes;
+        mapping (address => uint256) votes;
     }
 
-    mapping(uint256 =&gt; VoteItem) public voteItems;
+    mapping(uint256 => VoteItem) public voteItems;
     uint256 public itemCount;
 
-    mapping(address =&gt; bool) public voted;
+    mapping(address => bool) public voted;
     address[] public voters;
 
     /// @notice Constructor, accept the number of voting items, and their infos
@@ -37,7 +37,7 @@ contract NumberCarbonVoting {
         public
     {
         itemCount = _itemCount;
-        for (uint256 i=0;i&lt;itemCount;i++) {
+        for (uint256 i=0;i<itemCount;i++) {
             voteItems[i].title = _titles[i];
             voteItems[i].minValue = _minValues[i];
             voteItems[i].maxValue = _maxValues[i];
@@ -52,7 +52,7 @@ contract NumberCarbonVoting {
     /// @param _votes List of votes on the voting items
     function vote(uint256[] _votes) public {
         require(_votes.length == itemCount);
-        require(now &gt;= start &amp;&amp; now &lt; end);
+        require(now >= start && now < end);
 
         address voter = msg.sender;
         if (!voted[voter]) {
@@ -60,8 +60,8 @@ contract NumberCarbonVoting {
             voters.push(voter);
         }
 
-        for (uint256 i=0;i&lt;itemCount;i++) {
-            require(_votes[i] &gt;= voteItems[i].minValue &amp;&amp; _votes[i] &lt;= voteItems[i].maxValue);
+        for (uint256 i=0;i<itemCount;i++) {
+            require(_votes[i] >= voteItems[i].minValue && _votes[i] <= voteItems[i].maxValue);
             voteItems[i].votes[voter] = _votes[i];
         }
     }
@@ -76,10 +76,10 @@ contract NumberCarbonVoting {
         returns (address[] _voters, uint256[] _votes)
     {
         uint256 _voterCount = voters.length;
-        require(_itemIndex &lt; itemCount);
+        require(_itemIndex < itemCount);
         _voters = voters;
         _votes = new uint256[](_voterCount);
-        for (uint256 i=0;i&lt;_voterCount;i++) {
+        for (uint256 i=0;i<_voterCount;i++) {
             _votes[i] = voteItems[_itemIndex].votes[_voters[i]];
         }
     }
@@ -97,7 +97,7 @@ contract NumberCarbonVoting {
     {
         _voted = voted[_voter];
         _votes = new uint256[](itemCount);
-        for (uint256 i=0;i&lt;itemCount;i++) {
+        for (uint256 i=0;i<itemCount;i++) {
             _votes[i] = voteItems[i].votes[_voter];
         }
     }

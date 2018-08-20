@@ -35,20 +35,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -66,7 +66,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -98,7 +98,7 @@ contract WrapperLock is BasicToken {
   uint public decimals;
   address public originalToken;
 
-  mapping (address =&gt; uint) public depositLock;
+  mapping (address => uint) public depositLock;
 
   function WrapperLock(address _originalToken, string _name, string _symbol, uint _decimals) {
     originalToken = _originalToken;
@@ -109,8 +109,8 @@ contract WrapperLock is BasicToken {
   }
 
   function deposit(uint _value, uint _forTime) returns (bool success) {
-    require (_forTime &gt;= 1);
-    require (now + _forTime * 1 hours &gt;= depositLock[msg.sender]);
+    require (_forTime >= 1);
+    require (now + _forTime * 1 hours >= depositLock[msg.sender]);
     success = ERC20Interface(originalToken).transferFrom(msg.sender, this, _value);
     if(success) {
       balances[msg.sender] = balances[msg.sender].add(_value);
@@ -119,13 +119,13 @@ contract WrapperLock is BasicToken {
   }
 
   function withdraw(uint8 v, bytes32 r, bytes32 s, uint _value, uint signatureValidUntilBlock) returns (bool success) {
-    require(balanceOf(msg.sender) &gt;= _value);
-    if (now &gt; depositLock[msg.sender]){
+    require(balanceOf(msg.sender) >= _value);
+    if (now > depositLock[msg.sender]){
       balances[msg.sender] = balances[msg.sender].sub(_value);
       success = ERC20Interface(originalToken).transfer(msg.sender, _value);
     }
     else {
-      require(block.number &lt; signatureValidUntilBlock);
+      require(block.number < signatureValidUntilBlock);
       require(isValidSignature(ETHFINEX, keccak256(msg.sender, _value, signatureValidUntilBlock), v, r, s));
       balances[msg.sender] = balances[msg.sender].sub(_value);
       success = ERC20Interface(originalToken).transfer(msg.sender, _value);
@@ -156,7 +156,7 @@ contract WrapperLock is BasicToken {
         returns (bool)
     {
         return signer == ecrecover(
-            keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash),
+            keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s

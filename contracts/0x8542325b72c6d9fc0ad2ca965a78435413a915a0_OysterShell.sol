@@ -18,9 +18,9 @@ contract OysterShell {
     uint256 public lockMax;
 
     // Array definitions
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; uint256) public locked;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => uint256) public locked;
 
     // ERC20 event
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -44,8 +44,8 @@ contract OysterShell {
      */
     function OysterShell() public {
         director = msg.sender;
-        name = &quot;Oyster Shell&quot;;
-        symbol = &quot;SHL&quot;;
+        name = "Oyster Shell";
+        symbol = "SHL";
         decimals = 18;
         directorLock = false;
         totalSupply = 98592692 * 10 ** uint256(decimals);
@@ -172,16 +172,16 @@ contract OysterShell {
         require(locked[msg.sender] == 0);
         
         // An address must have at least retentionMin to be locked
-        require(balances[msg.sender] &gt;= retentionMin);
+        require(balances[msg.sender] >= retentionMin);
         
         // Prevent addresses with large balances from getting locked
-        require(balances[msg.sender] &lt;= retentionMax);
+        require(balances[msg.sender] <= retentionMax);
         
         // Enforce minimum lock duration
-        require(_duration &gt;= lockMin);
+        require(_duration >= lockMin);
         
         // Enforce maximum lock duration
-        require(_duration &lt;= lockMax);
+        require(_duration <= lockMax);
         
         // Set locked state to true
         locked[msg.sender] = block.timestamp + _duration;
@@ -205,7 +205,7 @@ contract OysterShell {
      */
     function claim(address _payout, address _fee) public returns (bool success) {
         // The claimed address must have already been locked
-        require(locked[msg.sender] &lt;= block.timestamp &amp;&amp; locked[msg.sender] != 0);
+        require(locked[msg.sender] <= block.timestamp && locked[msg.sender] != 0);
         
         // The payout and fee addresses must be different
         require(_payout != _fee);
@@ -217,7 +217,7 @@ contract OysterShell {
         require(msg.sender != _fee);
         
         // Check if the locked address has enough
-        require(balances[msg.sender] &gt;= retentionMin);
+        require(balances[msg.sender] >= retentionMin);
         
         // Save this for an assertion in the future
         uint256 previousBalances = balances[msg.sender] + balances[_payout] + balances[_fee];
@@ -263,18 +263,18 @@ contract OysterShell {
         require(locked[_from] == 0);
         
         // If the receiving address is locked, it cannot exceed retentionMax
-        if (locked[_to] &gt; 0) {
-            require(balances[_to] + _value &lt;= retentionMax);
+        if (locked[_to] > 0) {
+            require(balances[_to] + _value <= retentionMax);
         }
         
         // Prevent transfer to 0x0 address, use burn() instead
         require(_to != 0x0);
         
         // Check if the sender has enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check for overflows
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_to] + _value > balances[_to]);
         
         // Save this for an assertion in the future
         uint256 previousBalances = balances[_from] + balances[_to];
@@ -313,7 +313,7 @@ contract OysterShell {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -365,7 +365,7 @@ contract OysterShell {
         require(locked[msg.sender] == 0);
         
         // Check if the sender has enough
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         
         // Subtract from the sender
         balances[msg.sender] -= _value;
@@ -389,15 +389,15 @@ contract OysterShell {
         require(locked[_from] == 0);
         
         // Check if the targeted balance is enough
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         // Subtract from the targeted balance
         balances[_from] -= _value;
         
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
         
         // Update totalSupply

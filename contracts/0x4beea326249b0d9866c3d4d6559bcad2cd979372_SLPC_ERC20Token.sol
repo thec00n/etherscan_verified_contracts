@@ -5,8 +5,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 contract SLPC_ERC20Token {
 
     address public owner;
-    string public name = &quot;SLPC&quot;;
-    string public symbol = &quot;SLPC&quot;;
+    string public name = "SLPC";
+    string public symbol = "SLPC";
     uint8 public decimals = 8;
 
     uint256 public totalSupply = 1000000000 * (10**8);
@@ -26,8 +26,8 @@ contract SLPC_ERC20Token {
     uint256 public constant CROWD_SUPPLY = 300000000 * (10**8);
     uint256 public constant DEVELOPER_RESERVED = 700000000 * (10**8);
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     //event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -55,9 +55,9 @@ contract SLPC_ERC20Token {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -74,7 +74,7 @@ contract SLPC_ERC20Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -95,7 +95,7 @@ contract SLPC_ERC20Token {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);
@@ -103,8 +103,8 @@ contract SLPC_ERC20Token {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;
@@ -131,13 +131,13 @@ contract SLPC_ERC20Token {
     function rewardRate() internal constant returns (uint256) {
             require(validPurchase());
             uint256 rate;
-            if (now &gt;= angelTime &amp;&amp; now &lt; firstTime){
+            if (now >= angelTime && now < firstTime){
               rate = angelExchangeRate;
-            }else if(now &gt;= firstTime &amp;&amp; now &lt; secondTime){
+            }else if(now >= firstTime && now < secondTime){
               rate = firstExchangeRate;
-            }else if(now &gt;= secondTime &amp;&amp; now &lt; thirdTime){
+            }else if(now >= secondTime && now < thirdTime){
               rate = secondExchangeRate;
-            }else if(now &gt;= thirdTime &amp;&amp; now &lt; endTime){
+            }else if(now >= thirdTime && now < endTime){
               rate = thirdExchangeRate;
             }
 			
@@ -152,21 +152,21 @@ contract SLPC_ERC20Token {
             bool nonZeroPurchase = msg.value != 0;
             bool noEnd = !hasEnded();
             bool noSoleout = !isSoleout();
-            return  nonZeroPurchase &amp;&amp; noEnd &amp;&amp; noSoleout;
+            return  nonZeroPurchase && noEnd && noSoleout;
       }
 
       function afterCrowdSale() public onlyOwner {
-        require( hasEnded() &amp;&amp; !isSoleout());
+        require( hasEnded() && !isSoleout());
         balanceOf[owner] = balanceOf[owner] + CROWD_SUPPLY - currentSupply;
         currentSupply = CROWD_SUPPLY;
       }
 
 
       function hasEnded() public constant returns (bool) {
-            return (now &gt; endTime); 
+            return (now > endTime); 
       }
 
       function isSoleout() public constant returns (bool) {
-        return (currentSupply &gt;= CROWD_SUPPLY);
+        return (currentSupply >= CROWD_SUPPLY);
       }
 }

@@ -4,7 +4,7 @@ contract SmartpoolVersion {
     address    public poolContract;
     bytes32    public clientVersion;
     
-    mapping (address=&gt;bool) owners;
+    mapping (address=>bool) owners;
     
     function SmartpoolVersion( address[3] _owners ) {
         owners[_owners[0]] = true;

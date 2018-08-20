@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 // King of the Crypto Hill contract by Spielley
 // P3D contract designed by TEAM JUST and here integrated for dividend payout purpose, not active in testnet version.
 // See P3D proof of concept at : https://divgarden.dvx.me/
-// Or look at it&#39;s code at: https://etherscan.io/address/0xdaa282aba7f4aa757fac94024dfb89f8654582d3#code
+// Or look at it's code at: https://etherscan.io/address/0xdaa282aba7f4aa757fac94024dfb89f8654582d3#code
 // any derivative of KOTCH is allowed if:
-// - 1% additional on payouts happen to original KOTCH contract creator&#39;s eth account: 0x0B0eFad4aE088a88fFDC50BCe5Fb63c6936b9220
+// - 1% additional on payouts happen to original KOTCH contract creator's eth account: 0x0B0eFad4aE088a88fFDC50BCe5Fb63c6936b9220
 // - contracts are not designed or used to scam people or mallpractices
 // This game is intended for fun, Spielley is not liable for any bugs the contract may contain. 
-// Don&#39;t play with crypto you can&#39;t afford to lose
+// Don't play with crypto you can't afford to lose
 
 
 
@@ -17,10 +17,10 @@ pragma solidity ^0.4.24;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -28,7 +28,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -103,16 +103,16 @@ contract FixedSupplyToken is ERC20Interface, Owned {
     uint8 public decimals;
     uint _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = &quot;DOTCH&quot;;
-        name = &quot;Diamond Of The Crypto Hill&quot;;
+        symbol = "DOTCH";
+        name = "Diamond Of The Crypto Hill";
         decimals = 0;
         _totalSupply = 10000000000;
         balances[this] = _totalSupply;
@@ -137,8 +137,8 @@ contract FixedSupplyToken is ERC20Interface, Owned {
 
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from token owner&#39;s account to `to` account
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -151,7 +151,7 @@ contract FixedSupplyToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account
+    // from the token owner's account
     //
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
     // recommends that there are no checks for the approval double-spend attack
@@ -184,7 +184,7 @@ contract FixedSupplyToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
@@ -193,7 +193,7 @@ contract FixedSupplyToken is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
     // `receiveApproval(...)` is then executed
     // ------------------------------------------------------------------------
     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
@@ -257,10 +257,10 @@ struct Variables {
 struct Ownables {
     address hillowner;
     uint soldiersdefendinghill; 
-    mapping(address =&gt; uint256) soldiers;
-    mapping(uint256 =&gt; Village) villages;
-    mapping(address =&gt; uint256)  GOTCH;
-    mapping(address =&gt; uint256)  redeemedvils;
+    mapping(address => uint256) soldiers;
+    mapping(uint256 => Village) villages;
+    mapping(address => uint256)  GOTCH;
+    mapping(address => uint256)  redeemedvils;
     bool ERCtradeactive;
     uint roundlength;
     
@@ -286,10 +286,10 @@ uint256 public nextroundsoldierreplenishrate = 50;
 uint256 public nextroundblocksbeforenewpay = 250;
 bool public divsforall;
 bool public nextroundERCtradeactive = true;
-mapping(uint256 =&gt; Variables) public roundvars;
-mapping(uint256 =&gt; Ownables) public roundownables; 
- mapping(address =&gt; uint256) public Redeemable;
- mapping(uint256 =&gt; Marketoffer) public marketplace;
+mapping(uint256 => Variables) public roundvars;
+mapping(uint256 => Ownables) public roundownables; 
+ mapping(address => uint256) public Redeemable;
+ mapping(uint256 => Marketoffer) public marketplace;
 
 function harvestabledivs()
         view
@@ -364,7 +364,7 @@ constructor () public {
        divsforall = false;
     }
 function hillpayout() internal  {
-    require(block.number &gt; roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay));
+    require(block.number > roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay));
     // new payout method
     roundvars[round].lastblockpayout = roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay);
     ethforp3dbuy = ethforp3dbuy.add((address(this).balance.sub(ethforp3dbuy)).div(100));
@@ -374,14 +374,14 @@ function hillpayout() internal  {
 
 }
 function attackhill(uint256 amtsoldiers) public payable returns(bool, uint){
-    require(msg.value &gt;= 1 finney);
-    if(block.number &gt; roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
+    require(msg.value >= 1 finney);
+    if(block.number > roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
     {
     hillpayout();
     }
     
-    require(amtsoldiers &lt;= roundownables[round].soldiers[msg.sender]);
-    require(amtsoldiers &gt;= 1);
+    require(amtsoldiers <= roundownables[round].soldiers[msg.sender]);
+    require(amtsoldiers >= 1);
     if(msg.sender == roundownables[round].hillowner)
 {
    roundownables[round].soldiersdefendinghill = roundownables[round].soldiersdefendinghill.add(amtsoldiers);
@@ -390,7 +390,7 @@ function attackhill(uint256 amtsoldiers) public payable returns(bool, uint){
 }
 if(msg.sender != roundownables[round].hillowner)
 {
-   if(roundownables[round].soldiersdefendinghill &lt; amtsoldiers)
+   if(roundownables[round].soldiersdefendinghill < amtsoldiers)
     {
         emit hilltakeover(roundownables[round].hillowner,msg.sender);
         emit battle(msg.sender,roundownables[round].soldiersdefendinghill,roundownables[round].hillowner,roundownables[round].soldiersdefendinghill);
@@ -399,7 +399,7 @@ if(msg.sender != roundownables[round].hillowner)
         roundownables[round].soldiers[msg.sender] = roundownables[round].soldiers[msg.sender].sub(amtsoldiers);
         return (true, roundownables[round].soldiersdefendinghill);
     }
-    if(roundownables[round].soldiersdefendinghill &gt;= amtsoldiers)
+    if(roundownables[round].soldiersdefendinghill >= amtsoldiers)
     {
         roundownables[round].soldiersdefendinghill = roundownables[round].soldiersdefendinghill.sub(amtsoldiers);
         roundownables[round].soldiers[msg.sender] = roundownables[round].soldiers[msg.sender].sub(amtsoldiers);
@@ -410,10 +410,10 @@ if(msg.sender != roundownables[round].hillowner)
 
 }
 function supporthill(uint256 amtsoldiers) public payable {
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
     require(roundownables[round].hillowner == msg.sender);
-    require(amtsoldiers &lt;= roundownables[round].soldiers[msg.sender]);
-    require(amtsoldiers &gt;= 1);
+    require(amtsoldiers <= roundownables[round].soldiers[msg.sender]);
+    require(amtsoldiers >= 1);
    roundownables[round].soldiersdefendinghill = roundownables[round].soldiersdefendinghill.add(amtsoldiers);
    roundownables[round].soldiers[msg.sender] = roundownables[round].soldiers[msg.sender].sub(amtsoldiers);  
 }
@@ -439,21 +439,21 @@ function updatesolsforhire() internal  {
    roundvars[round].solslastupdate = block.number;
 }
 function updatesolbuyrate() internal  {
-if(roundvars[round].solsforhire &gt; roundvars[round].totalsupplyGOTCH)
+if(roundvars[round].solsforhire > roundvars[round].totalsupplyGOTCH)
    {
         roundvars[round].solsforhire = roundvars[round].totalsupplyGOTCH;
    }
    roundvars[round].soldierprice = roundvars[round].totalsupplyGOTCH.div(roundvars[round].solsforhire);
-   if(roundvars[round].soldierprice &lt; 1)
+   if(roundvars[round].soldierprice < 1)
    {
        roundvars[round].soldierprice = 1;
    }
 }
 function buysoldiers(uint256 amount) public payable {
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
    updatesolsforhire();
    updatesolbuyrate() ;
-   require(amount &lt;= roundvars[round].solsforhire);
+   require(amount <= roundvars[round].solsforhire);
    
    roundownables[round].soldiers[msg.sender] = roundownables[round].soldiers[msg.sender].add(amount);
    roundvars[round].solsforhire = roundvars[round].solsforhire.sub(amount);
@@ -463,8 +463,8 @@ function buysoldiers(uint256 amount) public payable {
 }
 // found new villgage 
 function createvillage() public  payable  {
-    require(msg.value &gt;= 10 finney);
-    if(block.number &gt; roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
+    require(msg.value >= 10 finney);
+    if(block.number > roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
     {
     hillpayout();
     }
@@ -480,14 +480,14 @@ function createvillage() public  payable  {
     roundownables[round].redeemedvils[msg.sender]++;
 }
 function batchcreatevillage(uint256 amt) public  payable  {
-    require(msg.value &gt;= 10 finney * amt);
-    require(amt &gt;= 1);
-    require(amt &lt;= 40);
-    if(block.number &gt; roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
+    require(msg.value >= 10 finney * amt);
+    require(amt >= 1);
+    require(amt <= 40);
+    if(block.number > roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
     {
     hillpayout();
     }
-    for(uint i=0; i&lt; amt; i++)
+    for(uint i=0; i< amt; i++)
         {
     roundownables[round].villages[roundvars[round].nextVillageId].owner = msg.sender;
    roundownables[round].villages[roundvars[round].nextVillageId].lastcollect = block.number;
@@ -500,8 +500,8 @@ function batchcreatevillage(uint256 amt) public  payable  {
         roundownables[round].redeemedvils[msg.sender] = roundownables[round].redeemedvils[msg.sender].add(amt);
 }
 function cheapredeemvillage() public  payable  {
-    require(msg.value &gt;= 1 finney);
-    require(roundownables[round].redeemedvils[msg.sender] &lt; Redeemable[msg.sender]);
+    require(msg.value >= 1 finney);
+    require(roundownables[round].redeemedvils[msg.sender] < Redeemable[msg.sender]);
     roundownables[round].villages[roundvars[round].nextVillageId].owner = msg.sender;
     roundownables[round].villages[roundvars[round].nextVillageId].lastcollect = block.number;
     roundownables[round].villages[roundvars[round].nextVillageId].beginnerprotection = block.number;
@@ -518,17 +518,17 @@ function preregvills(address reg) public onlyOwner  {
     roundownables[round].villages[roundvars[round].nextVillageId].defending = roundvars[round].nextVillageId;
 }
 function attack(uint256 village, uint256 amtsoldiers) public payable returns(bool, uint){
-    require(msg.value &gt;= 1 finney);
-    if(block.number &gt; roundvars[round].lastblockpayout + roundvars[round].blocksbeforenewpay)
+    require(msg.value >= 1 finney);
+    if(block.number > roundvars[round].lastblockpayout + roundvars[round].blocksbeforenewpay)
     {
     hillpayout();
     }
    
     uint bpcheck = roundownables[round].villages[village].beginnerprotection.add(roundvars[round].bpamount);
-    require(block.number &gt; bpcheck);
+    require(block.number > bpcheck);
     require(roundownables[round].villages[village].owner != 0);// prevent from attacking a non-created village to create a village
-    require(amtsoldiers &lt;= roundownables[round].soldiers[msg.sender]);
-    require(amtsoldiers &gt;= 1);
+    require(amtsoldiers <= roundownables[round].soldiers[msg.sender]);
+    require(amtsoldiers >= 1);
     
 if(msg.sender == roundownables[round].villages[village].owner)
 {
@@ -538,7 +538,7 @@ if(msg.sender == roundownables[round].villages[village].owner)
 }
 if(msg.sender != roundownables[round].villages[village].owner)
 {
-   if(roundownables[round].villages[village].defending &lt; amtsoldiers)
+   if(roundownables[round].villages[village].defending < amtsoldiers)
     {
         emit battle(msg.sender,roundownables[round].villages[village].defending,roundownables[round].villages[village].owner,roundownables[round].villages[village].defending);
         emit villtakeover(roundownables[round].villages[village].owner,msg.sender,village);
@@ -549,7 +549,7 @@ if(msg.sender != roundownables[round].villages[village].owner)
         return (true, roundownables[round].villages[village].defending);
         
     }
-    if(roundownables[round].villages[village].defending &gt;= amtsoldiers)
+    if(roundownables[round].villages[village].defending >= amtsoldiers)
     {
         emit battle(msg.sender,amtsoldiers,roundownables[round].villages[village].owner,amtsoldiers);
         roundownables[round].villages[village].defending = roundownables[round].villages[village].defending.sub(amtsoldiers);
@@ -560,22 +560,22 @@ if(msg.sender != roundownables[round].villages[village].owner)
 
 }
 function support(uint256 village, uint256 amtsoldiers) public payable {
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
     require(roundownables[round].villages[village].owner == msg.sender);
     require(roundownables[round].villages[village].owner != 0);// prevent from supporting a non-created village to create a village
-    require(amtsoldiers &lt;= roundownables[round].soldiers[msg.sender]);
-    require(amtsoldiers &gt;= 1);
+    require(amtsoldiers <= roundownables[round].soldiers[msg.sender]);
+    require(amtsoldiers >= 1);
     roundownables[round].villages[village].defending = roundownables[round].villages[village].defending.add(amtsoldiers);
     roundownables[round].soldiers[msg.sender] = roundownables[round].soldiers[msg.sender].sub(amtsoldiers);  
 }
 function renewbeginnerprotection(uint256 village) public payable {
-    require(msg.value &gt;= (roundvars[round].nextVillageId.sub(village)).mul(1 finney) );//
+    require(msg.value >= (roundvars[round].nextVillageId.sub(village)).mul(1 finney) );//
     roundownables[round].villages[village].beginnerprotection = block.number;
    
 }
 function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint256 e , uint256 f , uint256 g, uint256 h, uint256 i, uint256 j) public payable {// payed transaction
     // a
-   require(msg.value &gt;= 10 finney);
+   require(msg.value >= 10 finney);
    require(roundownables[round].villages[a].owner == msg.sender);
    require(roundownables[round].villages[b].owner == msg.sender);
    require(roundownables[round].villages[c].owner == msg.sender);
@@ -586,19 +586,19 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
    require(roundownables[round].villages[h].owner == msg.sender);
    require(roundownables[round].villages[i].owner == msg.sender);
    require(roundownables[round].villages[j].owner == msg.sender);
-    require(block.number &gt;  roundownables[round].villages[a].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[b].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[c].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[d].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[e].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[f].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[g].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[h].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[i].lastcollect);
-    require(block.number &gt;  roundownables[round].villages[j].lastcollect);
+    require(block.number >  roundownables[round].villages[a].lastcollect);
+    require(block.number >  roundownables[round].villages[b].lastcollect);
+    require(block.number >  roundownables[round].villages[c].lastcollect);
+    require(block.number >  roundownables[round].villages[d].lastcollect);
+    require(block.number >  roundownables[round].villages[e].lastcollect);
+    require(block.number >  roundownables[round].villages[f].lastcollect);
+    require(block.number >  roundownables[round].villages[g].lastcollect);
+    require(block.number >  roundownables[round].villages[h].lastcollect);
+    require(block.number >  roundownables[round].villages[i].lastcollect);
+    require(block.number >  roundownables[round].villages[j].lastcollect);
     
     uint256 test = (block.number.sub(roundownables[round].villages[a].lastcollect)).mul((roundvars[round].nextVillageId.sub(a)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -610,7 +610,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //b
    
     test = (block.number.sub(roundownables[round].villages[b].lastcollect)).mul((roundvars[round].nextVillageId.sub(b)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -622,7 +622,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //c
    
     test = (block.number.sub(roundownables[round].villages[c].lastcollect)).mul((roundvars[round].nextVillageId.sub(c)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -634,7 +634,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //j
     
     test = (block.number.sub(roundownables[round].villages[j].lastcollect)).mul((roundvars[round].nextVillageId.sub(j)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -646,7 +646,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //d
     
     test = (block.number.sub(roundownables[round].villages[d].lastcollect)).mul((roundvars[round].nextVillageId.sub(d)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -658,7 +658,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //e
    
     test = (block.number.sub(roundownables[round].villages[e].lastcollect)).mul((roundvars[round].nextVillageId.sub(e)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -670,7 +670,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //f
     
     test = (block.number.sub(roundownables[round].villages[f].lastcollect)).mul((roundvars[round].nextVillageId.sub(f)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -682,7 +682,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //g
    
     test = (block.number.sub(roundownables[round].villages[g].lastcollect)).mul((roundvars[round].nextVillageId.sub(g)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -694,7 +694,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //h
     
     test = (block.number.sub(roundownables[round].villages[h].lastcollect)).mul((roundvars[round].nextVillageId.sub(h)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -706,7 +706,7 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
     //i
     
     test = (block.number.sub(roundownables[round].villages[i].lastcollect)).mul((roundvars[round].nextVillageId.sub(i)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -720,16 +720,16 @@ function batchcollecttaxes(uint256 a, uint256 b , uint256 c , uint256 d , uint25
 }
 function collecttaxes(uint256 village) public payable returns (uint){// payed transaction
     // 
-   require(msg.value &gt;= 1 finney);
-    if(block.number &gt; roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
+   require(msg.value >= 1 finney);
+    if(block.number > roundvars[round].lastblockpayout.add(roundvars[round].blocksbeforenewpay))
     {
     hillpayout();
     }
     
     require(roundownables[round].villages[village].owner == msg.sender);
-    require(block.number &gt;  roundownables[round].villages[village].lastcollect);
+    require(block.number >  roundownables[round].villages[village].lastcollect);
     uint256 test = (block.number.sub(roundownables[round].villages[village].lastcollect)).mul((roundvars[round].nextVillageId.sub(village)));
-    if(roundvars[round].GOTCHatcontract &lt; test ) 
+    if(roundvars[round].GOTCHatcontract < test ) 
     {
      roundvars[round].GOTCHatcontract =  roundvars[round].GOTCHatcontract.add(test);
      roundvars[round].totalsupplyGOTCH = roundvars[round].totalsupplyGOTCH.add(test);
@@ -742,11 +742,11 @@ function collecttaxes(uint256 village) public payable returns (uint){// payed tr
     return test;
 }
 function sellDOTCH(uint amt) payable public {
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
     require(roundownables[round].ERCtradeactive == true);
-    require(roundownables[round].GOTCH[this]&gt;= amt.mul(10000));
-    require(balances[msg.sender] &gt;=  amt);
-    require(amt &gt;= 1);
+    require(roundownables[round].GOTCH[this]>= amt.mul(10000));
+    require(balances[msg.sender] >=  amt);
+    require(amt >= 1);
     balances[this] = balances[this].add(amt);
     balances[msg.sender] = balances[msg.sender].sub(amt);
     emit Transfer(msg.sender,this, amt);
@@ -754,11 +754,11 @@ function sellDOTCH(uint amt) payable public {
     roundownables[round].GOTCH[msg.sender] =  roundownables[round].GOTCH[msg.sender].add(amt.mul(10000));
 }
 function buyDOTCH(uint amt) payable public {
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
     require(roundownables[round].ERCtradeactive == true);
-    require(balances[this]&gt;= amt);
-    require(roundownables[round].GOTCH[msg.sender] &gt;= amt.mul(10000));
-    require(amt &gt;= 1);
+    require(balances[this]>= amt);
+    require(roundownables[round].GOTCH[msg.sender] >= amt.mul(10000));
+    require(amt >= 1);
     balances[this] = balances[this].sub(amt);
     balances[msg.sender] = balances[msg.sender].add(amt);
     emit Transfer(this,msg.sender, amt);
@@ -788,9 +788,9 @@ function Divs() public payable{
 function Divsforall() public payable{
     
     require(divsforall = true);
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
     div = harvestabledivs();
-    require(div &gt; 0);
+    require(div > 0);
     claimdivs();
     msg.sender.transfer(div);
     emit onHarvest(msg.sender,div);
@@ -802,10 +802,10 @@ function Expand() public {
 
 //marketplace functions
 function placeoffer(uint256 dotchamount, uint256 askingpriceinwei) payable public{
-    require(dotchamount &gt; 0);
-    require(askingpriceinwei &gt; 0);
-    require(balances[msg.sender] &gt;=  dotchamount);
-    require(msg.value &gt;= 1 finney);
+    require(dotchamount > 0);
+    require(askingpriceinwei > 0);
+    require(balances[msg.sender] >=  dotchamount);
+    require(msg.value >= 1 finney);
     balances[msg.sender] = balances[msg.sender].sub(dotchamount);
     balances[this] = balances[this].add(dotchamount);
     emit Transfer(msg.sender,this, dotchamount);
@@ -816,9 +816,9 @@ function placeoffer(uint256 dotchamount, uint256 askingpriceinwei) payable publi
 }
 function adddotchtooffer(uint256 ordernumber , uint256 dotchamount) public
 {
-    require(dotchamount &gt; 0);
+    require(dotchamount > 0);
     require(msg.sender == marketplace[ordernumber].placedby);
-    require(balances[msg.sender] &gt;=  dotchamount);
+    require(balances[msg.sender] >=  dotchamount);
  
     balances[msg.sender] = balances[msg.sender].sub(dotchamount);
     balances[this] = balances[this].add(dotchamount);
@@ -827,9 +827,9 @@ function adddotchtooffer(uint256 ordernumber , uint256 dotchamount) public
 }
 function removedotchtooffer(uint256 ordernumber , uint256 dotchamount) public
 {
-    require(dotchamount &gt; 0);
+    require(dotchamount > 0);
     require(msg.sender == marketplace[ordernumber].placedby);
-    require(balances[this] &gt;=  dotchamount);
+    require(balances[this] >=  dotchamount);
  
     balances[msg.sender] = balances[msg.sender].add(dotchamount);
     balances[this] = balances[this].sub(dotchamount);
@@ -838,17 +838,17 @@ function removedotchtooffer(uint256 ordernumber , uint256 dotchamount) public
 }
 function offerchangeprice(uint256 ordernumber ,uint256 price ) public
 {
-    require(price &gt; 0);
+    require(price > 0);
     require(msg.sender == marketplace[ordernumber].placedby);
      marketplace[ordernumber].wantsthisamtweiperdotch = price;
 }
 function takeoffer(uint256 ordernumber ,uint256 amtdotch ) public payable
 {
-    require(msg.value &gt;= marketplace[ordernumber].wantsthisamtweiperdotch.mul(amtdotch));
-    require(amtdotch &gt; 0);
-    require(marketplace[ordernumber].amountdotch &gt;= amtdotch);
+    require(msg.value >= marketplace[ordernumber].wantsthisamtweiperdotch.mul(amtdotch));
+    require(amtdotch > 0);
+    require(marketplace[ordernumber].amountdotch >= amtdotch);
     require(msg.sender != marketplace[ordernumber].placedby);
-    require(balances[this] &gt;=  amtdotch);
+    require(balances[this] >=  amtdotch);
      marketplace[ordernumber].amountdotch = marketplace[ordernumber].amountdotch.sub(amtdotch);
      balances[msg.sender] = balances[msg.sender].add(amtdotch);
     balances[this] = balances[this].sub(amtdotch);
@@ -858,7 +858,7 @@ function takeoffer(uint256 ordernumber ,uint256 amtdotch ) public payable
 }
 // new round function
 function startnewround() public {
-    require(roundvars[round].ATPO &gt; roundownables[round].roundlength);
+    require(roundvars[round].ATPO > roundownables[round].roundlength);
     round++;
     roundvars[round].totalsupplyGOTCH = nextroundtotalsupplyGOTCH;
        roundvars[round].GOTCHatcontract = nextroundtotalsupplyGOTCH;

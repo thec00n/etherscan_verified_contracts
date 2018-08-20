@@ -40,7 +40,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -100,7 +100,7 @@ contract MultiTranser is Ownable {
     function transfer(address[] to, uint[] value) public onlyOwner {
         require(to.length == value.length);
 
-        for (uint i = 0; i &lt; to.length; i++) {
+        for (uint i = 0; i < to.length; i++) {
             tkcAddress.transferFrom(owner, to[i], value[i]);
         }
     }

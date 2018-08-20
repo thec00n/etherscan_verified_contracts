@@ -40,8 +40,8 @@ contract Protocol108 {
 	// executes the protocol
 	function execute() public payable {
 		// validate protocol state
-		assert(cycle &gt; 0);
-		assert(offset + length &gt; now);
+		assert(cycle > 0);
+		assert(offset + length > now);
 
 		// update the protocol
 		update();
@@ -50,8 +50,8 @@ contract Protocol108 {
 	// withdraws the reward to the last executor
 	function withdraw() public {
 		// validate protocol state
-		assert(cycle &gt; 0);
-		assert(offset + length &lt;= now);
+		assert(cycle > 0);
+		assert(offset + length <= now);
 
 		// validate input(s)
 		require(msg.sender == executor);
@@ -90,9 +90,9 @@ contract Protocol108 {
 	// calling this function as constant returns true or false
 	function validate(uint sequence) public constant returns (bool) {
 		// validate the sequence
-		require(sequence &gt; 0);
+		require(sequence > 0);
 
-		// we won&#39;t get here if validation fails
+		// we won't get here if validation fails
 		return true;
 	}
 
@@ -108,7 +108,7 @@ contract Protocol108 {
 		uint n = now;
 
 		// check for negative overflow
-		if(offset + length &gt; n) {
+		if(offset + length > n) {
 			// positive countdown
 			return offset + length - n;
 		}
@@ -124,11 +124,11 @@ contract Protocol108 {
 			// protocol not yet initialized, try to initialize
 			initialize();
 		}
-		else if(offset + length &gt; now) {
+		else if(offset + length > now) {
 			// protocol is eligible for execution, execute
 			execute();
 		}
-		else if(this.balance &gt; 0) {
+		else if(this.balance > 0) {
 			// protocol has terminated, withdraw the reward
 			withdraw();
 		}
@@ -164,12 +164,12 @@ contract Protocol108v2 is Protocol108 {
 		// require ~4.8 Gwei to execute the protocol if
 		// countdown is less then one minute
 		require(
-			c &lt; 60 &amp;&amp; ( // ~4.8+ Shannon
+			c < 60 && ( // ~4.8+ Shannon
 				sequence == 4815162342
 				|| sequence == 48151623420
 				|| sequence == 481516234200
 			) || //
-			c &lt; 240 &amp;&amp; ( // ~4.8 Szabo
+			c < 240 && ( // ~4.8 Szabo
 				sequence == 4815162342000
 				|| sequence == 48151623420000
 				|| sequence == 481516234200000
@@ -185,7 +185,7 @@ contract Protocol108v2 is Protocol108 {
 			)
 		);
 
-		// we won&#39;t get here if validation fails
+		// we won't get here if validation fails
 		return true;
 	}
 
@@ -195,7 +195,7 @@ contract Protocol108v2 is Protocol108 {
 	// returns number of trailing zeroes or -1
 	// if the sequence cannot be represented in this form
 	function seqSearch(uint sequence, uint offset, uint length) private constant returns (int) {
-		for(uint i = offset; i &lt; offset + length; i++) {
+		for(uint i = offset; i < offset + length; i++) {
 			if(sequence == 4815162342 * 10 ** i) {
 				// found at index i
 				return int(i);

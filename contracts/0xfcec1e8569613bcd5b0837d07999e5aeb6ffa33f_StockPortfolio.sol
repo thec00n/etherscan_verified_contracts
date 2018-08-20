@@ -4,7 +4,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -71,7 +71,7 @@ contract StockPortfolio is Ownable {
         uint32 avgPrice;
     }
 
-    mapping (bytes12 =&gt; Position) positions;
+    mapping (bytes12 => Position) positions;
     bytes12[] private holdings;
     bytes6[] private markets;
 
@@ -83,7 +83,7 @@ contract StockPortfolio is Ownable {
     // Profits have to be separated because of different curriences so
     // separate them by market. Market profit to currency can be worked
     // out by client
-    mapping (bytes6 =&gt; int) public profits;
+    mapping (bytes6 => int) public profits;
 
     constructor () public {
         markets.push(0x6e7973650000); //nyse 0
@@ -133,7 +133,7 @@ contract StockPortfolio is Ownable {
         external
         onlyOwner
     {
-        for (uint i = 0; i &lt; _symbols.length; i++) {
+        for (uint i = 0; i < _symbols.length; i++) {
             _buy(_marketIndexes[i], _symbols[i], _quantities[i], _prices[i]);
         }
     }
@@ -156,7 +156,7 @@ contract StockPortfolio is Ownable {
         bytes6 market = markets[_marketIndex];
         bytes12 stockKey = getStockKey(market, _symbol);
         Position storage position = positions[stockKey];
-        require(position.quantity &gt; 0);
+        require(position.quantity > 0);
         uint32 quantity = (_multiple * position.quantity) - position.quantity;
         position.avgPrice = (position.quantity * position.avgPrice) / (position.quantity + quantity);
         position.quantity += quantity;
@@ -184,10 +184,10 @@ contract StockPortfolio is Ownable {
         bytes6 market = markets[_marketIndex];
         bytes12 stockKey = getStockKey(market, _symbol);
         Position storage position = positions[stockKey];
-        require(position.quantity &gt; 0);
+        require(position.quantity > 0);
         uint32 quantity = position.quantity / _divisor;
         uint32 extraQuantity = position.quantity - (quantity * _divisor);
-        if (extraQuantity &gt; 0) {
+        if (extraQuantity > 0) {
             _sell(_marketIndex, _symbol, extraQuantity, _price);
         }
         position.avgPrice = position.avgPrice * _divisor;
@@ -231,7 +231,7 @@ contract StockPortfolio is Ownable {
         external
         onlyOwner
     {
-        for (uint i = 0; i &lt; _symbols.length; i++) {
+        for (uint i = 0; i < _symbols.length; i++) {
             _sell(_marketIndexes[i], _symbols[i], _quantities[i], _prices[i]);
         }
     }
@@ -338,10 +338,10 @@ contract StockPortfolio is Ownable {
      */
     function getStockKey(bytes6 _market, bytes6 _symbol) public pure returns(bytes12 key) {
         bytes memory combined = new bytes(12);
-        for (uint i = 0; i &lt; 6; i++) {
+        for (uint i = 0; i < 6; i++) {
             combined[i] = _market[i];
         }
-        for (uint j = 0; j &lt; 6; j++) {
+        for (uint j = 0; j < 6; j++) {
             combined[j + 6] = _symbol[j];
         }
         assembly {
@@ -358,10 +358,10 @@ contract StockPortfolio is Ownable {
     function recoverStockKey(bytes12 _key) public pure returns(bytes6 market, bytes6 symbol) {
         bytes memory _market = new bytes(6);
         bytes memory _symbol = new bytes(6);
-        for (uint i = 0; i &lt; 6; i++) {
+        for (uint i = 0; i < 6; i++) {
             _market[i] = _key[i];
         }
-        for (uint j = 0; j &lt; 6; j++) {
+        for (uint j = 0; j < 6; j++) {
             _symbol[j] = _key[j + 6];
         }
         assembly {
@@ -383,7 +383,7 @@ contract StockPortfolio is Ownable {
             return;
         }
         bool found = false;
-        for (uint i = 0; i &lt; holdings.length; i++) {
+        for (uint i = 0; i < holdings.length; i++) {
             if (found) {
                 holdings[i - 1] = holdings[i];
             }
@@ -410,10 +410,10 @@ contract StockPortfolio is Ownable {
         bytes6 market = markets[_marketIndex];
         bytes12 stockKey = getStockKey(market, _symbol);
         Position storage position = positions[stockKey];
-        require(position.quantity &gt;= _quantity);
+        require(position.quantity >= _quantity);
         int64 profit = int64(_quantity * _price) - int64(_quantity * position.avgPrice);
         position.quantity -= _quantity;
-        if (position.quantity &lt;= 0) {
+        if (position.quantity <= 0) {
             _removeHolding(stockKey);
             delete positions[stockKey];
         }

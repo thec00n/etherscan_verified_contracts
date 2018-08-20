@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,7 +50,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,8 +102,8 @@ contract Ethergarden is Ownable {
   event TreeUpdated(uint256 treeId, string name, string url);
 
   Tree[] public forest;
-  mapping (uint256 =&gt; address) public treeToOwner;
-  mapping (address =&gt; uint256) internal ownerTreeCount;
+  mapping (uint256 => address) public treeToOwner;
+  mapping (address => uint256) internal ownerTreeCount;
 
   function _createTree(string _name, string _url, uint256 _amount) private {
     uint256 id = forest.push(Tree(_amount, _name, _url)) - 1;
@@ -114,7 +114,7 @@ contract Ethergarden is Ownable {
   }
 
   function createTree(string _name, string _url) payable external {
-    require(msg.value &gt;= 0.001 ether);
+    require(msg.value >= 0.001 ether);
 
     _createTree(_name, _url, msg.value);
   }
@@ -134,7 +134,7 @@ contract Ethergarden is Ownable {
   }
 
   function dagheAcqua(uint256 _treeId) payable external {
-    require(msg.value &gt; 0.0001 ether);
+    require(msg.value > 0.0001 ether);
 
     Tree storage myTree = forest[_treeId];
     myTree.amount = myTree.amount.add(msg.value);
@@ -143,7 +143,7 @@ contract Ethergarden is Ownable {
   }
 
   function cut(uint256 _treeId) payable external {
-    require(msg.value &gt; 0.0001 ether);
+    require(msg.value > 0.0001 ether);
 
     Tree storage myTree = forest[_treeId];
     myTree.amount = myTree.amount.sub(msg.value);

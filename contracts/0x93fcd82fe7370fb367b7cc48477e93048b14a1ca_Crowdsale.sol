@@ -41,20 +41,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -103,7 +103,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -116,7 +116,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -159,7 +159,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
   
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
   event Mint(address indexed to, uint256 amount);
@@ -219,10 +219,10 @@ contract ReleasableToken is ERC20, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
   
   //dtco : time lock with specific address
-  mapping(address =&gt; uint) public lock_addresses;
+  mapping(address => uint) public lock_addresses;
   
   event AddLockAddress(address addr, uint lock_time);  
 
@@ -239,7 +239,7 @@ contract ReleasableToken is ERC20, Ownable {
     }
 	else {
 		//check time lock with team
-		if(now &lt; lock_addresses[_sender]) {
+		if(now < lock_addresses[_sender]) {
 			revert();
 		}
 	}
@@ -265,7 +265,7 @@ contract ReleasableToken is ERC20, Ownable {
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
 
-    // We don&#39;t do interface check here as we might want to a normal wallet address to act as a release agent
+    // We don't do interface check here as we might want to a normal wallet address to act as a release agent
     releaseAgent = addr;
   }
 
@@ -372,8 +372,8 @@ contract CrowdsaleLimit {
   uint public crowdsale_eth_refund = 0;
    
   // setting team list and set percentage of tokens
-  mapping(address =&gt; uint) public team_addresses_token_percentage;
-  mapping(uint =&gt; address) public team_addresses_idx;
+  mapping(address => uint) public team_addresses_token_percentage;
+  mapping(uint => address) public team_addresses_idx;
   uint public team_address_count= 0;
   uint public team_token_percentage_total= 0;
   uint public team_token_percentage_max= 0;
@@ -385,23 +385,23 @@ contract CrowdsaleLimit {
   // limitation of buying tokens
   modifier allowCrowdsaleAmountLimit(){	
 	if (msg.value == 0) revert();
-	if (msg.value &lt; CROWDSALE_ETH_IN_WEI_ACCEPTED_MIN) revert();
-	if((crowdsale_eth_fund.add(msg.value)) &gt; CROWDSALE_ETH_IN_WEI_FUND_MAX) revert();
-	if((CROWDSALE_GASPRICE_IN_WEI_MAX &gt; 0) &amp;&amp; (tx.gasprice &gt; CROWDSALE_GASPRICE_IN_WEI_MAX)) revert();
+	if (msg.value < CROWDSALE_ETH_IN_WEI_ACCEPTED_MIN) revert();
+	if((crowdsale_eth_fund.add(msg.value)) > CROWDSALE_ETH_IN_WEI_FUND_MAX) revert();
+	if((CROWDSALE_GASPRICE_IN_WEI_MAX > 0) && (tx.gasprice > CROWDSALE_GASPRICE_IN_WEI_MAX)) revert();
 	_;
   }  
    
   function CrowdsaleLimit(uint _start, uint _end, uint _token_max, uint _presale_token_in_wei, uint _crowdsale_token_in_wei, uint _presale_eth_inwei_fund_max, uint _crowdsale_eth_inwei_fund_min, uint _crowdsale_eth_inwei_fund_max, uint _crowdsale_eth_inwei_accepted_min, uint _crowdsale_gasprice_inwei_max, uint _team_token_percentage_max) {
 	require(_start != 0);
 	require(_end != 0);
-	require(_start &lt; _end);
+	require(_start < _end);
 	
 	if( (_presale_token_in_wei == 0) ||
 	    (_crowdsale_token_in_wei == 0) ||
 		(_crowdsale_eth_inwei_fund_min == 0) ||
 		(_crowdsale_eth_inwei_fund_max == 0) ||
 		(_crowdsale_eth_inwei_accepted_min == 0) ||
-		(_team_token_percentage_max &gt;= 100))  //example 20%=20
+		(_team_token_percentage_max >= 100))  //example 20%=20
 		revert();
 		
 	startsAt = _start;
@@ -435,13 +435,13 @@ contract CrowdsaleLimit {
   
   // check if the goal is reached
   function isMinimumGoalReached() public constant returns (bool) {
-    return crowdsale_eth_fund &gt;= CROWDSALE_ETH_IN_WEI_FUND_MIN;
+    return crowdsale_eth_fund >= CROWDSALE_ETH_IN_WEI_FUND_MIN;
   }
   
   // add new team percentage of tokens
   function addTeamAddressInternal(address addr, uint release_time, uint token_percentage) internal {
-	if((team_token_percentage_total.add(token_percentage)) &gt; team_token_percentage_max) revert();
-	if((team_token_percentage_total.add(token_percentage)) &gt; 100) revert();
+	if((team_token_percentage_total.add(token_percentage)) > team_token_percentage_max) revert();
+	if((team_token_percentage_total.add(token_percentage)) > 100) revert();
 	if(team_addresses_token_percentage[addr] != 0) revert();
 	
 	team_addresses_token_percentage[addr]= token_percentage;
@@ -455,7 +455,7 @@ contract CrowdsaleLimit {
    
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endsAt;
+    return now > endsAt;
   }
 }
 
@@ -468,13 +468,13 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
   address public multisigWallet;
     
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
   
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address =&gt; bool) public presaleWhitelist;
+  mapping (address => bool) public presaleWhitelist;
   
   bool public whitelist_enable= true;
   
@@ -523,10 +523,10 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
   /* Crowdfund state machine management. */
   function getState() public constant returns (State) {
     if(finalized) return State.Finalized;
-    else if (now &lt; startsAt) return State.PreFunding;
-    else if (now &lt;= endsAt &amp;&amp; !isMinimumGoalReached()) return State.Funding;
+    else if (now < startsAt) return State.PreFunding;
+    else if (now <= endsAt && !isMinimumGoalReached()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; crowdsale_eth_fund &gt; 0 &amp;&amp; loadedRefund &gt;= crowdsale_eth_fund) return State.Refunding;
+    else if (!isMinimumGoalReached() && crowdsale_eth_fund > 0 && loadedRefund >= crowdsale_eth_fund) return State.Refunding;
     else return State.Failure;
   }
    
@@ -554,7 +554,7 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
 	//uint tokens= total.mul(100).div(100-team_token_percentage_total).sub(total);
 	uint tokens= total.mul(team_token_percentage_total).div(100-team_token_percentage_total);
 	
-	for(uint i=0; i&lt;team_address_count; i++) {
+	for(uint i=0; i<team_address_count; i++) {
 		address addr= team_addresses_idx[i];
 		if(addr==0x0) continue;
 		
@@ -582,7 +582,7 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
 			}
 		}
 		
-		if((PRESALE_ETH_IN_WEI_FUND_MAX &gt; 0) &amp;&amp; ((presale_eth_fund.add(weiAmount)) &gt; PRESALE_ETH_IN_WEI_FUND_MAX)) revert();		
+		if((PRESALE_ETH_IN_WEI_FUND_MAX > 0) && ((presale_eth_fund.add(weiAmount)) > PRESALE_ETH_IN_WEI_FUND_MAX)) revert();		
 		
 		tokenAmount = calculateTokenPresale(weiAmount, token.decimals());
 		presale_eth_fund = presale_eth_fund.add(weiAmount);
@@ -611,7 +611,7 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
 	crowdsale_eth_fund = crowdsale_eth_fund.add(weiAmount);
 	tokensSold = tokensSold.add(tokenAmount);
 	
-	if((TOKEN_MAX &gt; 0) &amp;&amp; (tokensSold &gt; TOKEN_MAX)) revert();
+	if((TOKEN_MAX > 0) && (tokensSold > TOKEN_MAX)) revert();
 
     token.mint(receiver, tokenAmount);
 
@@ -647,7 +647,7 @@ contract Crowdsale is CrowdsaleLimit, Haltable {
   }
   
   function setEndsAt(uint time) onlyOwner {
-    if(now &gt; time) {
+    if(now > time) {
       revert();
     }
 
@@ -702,7 +702,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken {
 
     balances[owner] = totalSupply;
 
-    if(totalSupply &gt; 0) {
+    if(totalSupply > 0) {
       Mint(owner, totalSupply);
     }
 

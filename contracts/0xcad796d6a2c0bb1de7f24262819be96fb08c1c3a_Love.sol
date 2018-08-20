@@ -19,14 +19,14 @@ contract ERC20Interface {
 
 contract Love is ERC20Interface {
 	// ERC20 basic variables
-	string public constant symbol = &quot;LOVE&quot;;
-	string public constant name = &quot;LoveToken&quot;;
+	string public constant symbol = "LOVE";
+	string public constant name = "LoveToken";
 	uint8 public constant decimals = 0;
 	uint256 public constant _totalSupply = (10 ** 10);
-	mapping (address =&gt; uint) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+	mapping (address => uint) public balances;
+	mapping (address => mapping (address => uint256)) public allowed;
 
-	mapping (address =&gt; uint256) public tokenSaleAmount;
+	mapping (address => uint256) public tokenSaleAmount;
 	uint256 public saleStartEpoch;
 	uint256 public tokenSaleLeft = 7 * (10 ** 9);
 	uint256 public tokenAirdropLeft = 3 * (10 ** 9);
@@ -46,7 +46,7 @@ contract Love is ERC20Interface {
 	function Love(address _ownerAddress, address _devAddress, uint256 _saleStartEpoch) public {
 		require(_ownerAddress != 0);
 		require(_devAddress != 0);
-		require(_saleStartEpoch &gt; now);
+		require(_saleStartEpoch > now);
 
 		balances[saleDepositAddress] = tokenSaleLeft;
 		balances[airdropDepositAddress] = tokenAirdropLeft;
@@ -59,8 +59,8 @@ contract Love is ERC20Interface {
 	function sendAirdrop(address[] to, uint256[] value) public {
 		require(msg.sender == ownerAddress);
 		require(to.length == value.length);
-		for(uint256 i = 0; i &lt; to.length; i++){
-			if(tokenAirdropLeft &gt; value[i]){
+		for(uint256 i = 0; i < to.length; i++){
+			if(tokenAirdropLeft > value[i]){
 				Transfer(airdropDepositAddress, to[i], value[i]);
 
 				balances[to[i]] += value[i];
@@ -79,13 +79,13 @@ contract Love is ERC20Interface {
 	}
 
 	function buy() payable public {
-		require(tokenSaleLeft &gt; 0);
-		require(msg.value + tokenSaleAmount[msg.sender] &lt;= tokenSaleUpperLimit);
-		require(msg.value &gt;= tokenSaleLowerLimit);
-		require(now &gt;= saleStartEpoch);
-		require(msg.value &gt;= 1 ether / tokenExchangeRate);
+		require(tokenSaleLeft > 0);
+		require(msg.value + tokenSaleAmount[msg.sender] <= tokenSaleUpperLimit);
+		require(msg.value >= tokenSaleLowerLimit);
+		require(now >= saleStartEpoch);
+		require(msg.value >= 1 ether / tokenExchangeRate);
 
-		if(msg.value * tokenExchangeRate / 1 ether &gt; tokenSaleLeft){
+		if(msg.value * tokenExchangeRate / 1 ether > tokenSaleLeft){
 			Transfer(saleDepositAddress, msg.sender, tokenSaleLeft);
 
 			uint256 changeAmount = msg.value - tokenSaleLeft * 1 ether / tokenExchangeRate;
@@ -128,7 +128,7 @@ contract Love is ERC20Interface {
 	}
 	//transfer tokens
 	function transfer(address _to, uint _value) returns (bool success){
-		if(balances[msg.sender] &lt; _value)
+		if(balances[msg.sender] < _value)
 			return false;
 		balances[msg.sender] -= _value;
 		balances[_to] += _value;
@@ -137,10 +137,10 @@ contract Love is ERC20Interface {
 	}
 	//transfer tokens if you have been delegated a wallet
 	function transferFrom(address _from, address _to, uint _value) returns (bool success){
-		if(balances[_from] &gt;= _value
-			&amp;&amp; allowed[_from][msg.sender] &gt;= _value
-			&amp;&amp; _value &gt;= 0
-			&amp;&amp; balances[_to] + _value &gt; balances[_to]){
+		if(balances[_from] >= _value
+			&& allowed[_from][msg.sender] >= _value
+			&& _value >= 0
+			&& balances[_to] + _value > balances[_to]){
 			balances[_from] -= _value;
 			allowed[_from][msg.sender] -= _value;
 			balances[_to] += _value;

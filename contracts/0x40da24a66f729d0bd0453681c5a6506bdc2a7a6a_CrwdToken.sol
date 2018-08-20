@@ -10,70 +10,70 @@ library Bonus {
         //compare whole coins
 
         //yes, this is spaghetti code, to avoid complex formulas which would need 3 different sections anyways.
-        if (tokenSold &gt;= 100000) {
+        if (tokenSold >= 100000) {
             return 100;
         }
         //0.5% less per 10000 tokens
-        if (tokenSold &gt;= 90000) {
+        if (tokenSold >= 90000) {
             return 95;
         }
-        if (tokenSold &gt;= 80000) {
+        if (tokenSold >= 80000) {
             return 90;
         }
-        if (tokenSold &gt;= 70000) {
+        if (tokenSold >= 70000) {
             return 85;
         }
-        if (tokenSold &gt;= 60000) {
+        if (tokenSold >= 60000) {
             return 80;
         }
-        if (tokenSold &gt;= 50000) {
+        if (tokenSold >= 50000) {
             return 75;
         }
-        if (tokenSold &gt;= 40000) {
+        if (tokenSold >= 40000) {
             return 70;
         }
-        if (tokenSold &gt;= 30000) {
+        if (tokenSold >= 30000) {
             return 65;
         }
-        if (tokenSold &gt;= 20000) {
+        if (tokenSold >= 20000) {
             return 60;
         }
-        if (tokenSold &gt;= 10000) {
+        if (tokenSold >= 10000) {
             return 55;
         }
         //switch to 0.5% per 1000 tokens
-        if (tokenSold &gt;= 9000) {
+        if (tokenSold >= 9000) {
             return 50;
         }
-        if (tokenSold &gt;= 8000) {
+        if (tokenSold >= 8000) {
             return 45;
         }
-        if (tokenSold &gt;= 7000) {
+        if (tokenSold >= 7000) {
             return 40;
         }
-        if (tokenSold &gt;= 6000) {
+        if (tokenSold >= 6000) {
             return 35;
         }
-        if (tokenSold &gt;= 5000) {
+        if (tokenSold >= 5000) {
             return 30;
         }
-        if (tokenSold &gt;= 4000) {
+        if (tokenSold >= 4000) {
             return 25;
         }
         //switch to 0.5% per 500 tokens
-        if (tokenSold &gt;= 3000) {
+        if (tokenSold >= 3000) {
             return 20;
         }
-        if (tokenSold &gt;= 2500) {
+        if (tokenSold >= 2500) {
             return 15;
         }
-        if (tokenSold &gt;= 2000) {
+        if (tokenSold >= 2000) {
             return 10;
         }
-        if (tokenSold &gt;= 1500) {
+        if (tokenSold >= 1500) {
             return 5;
         }
-        //less than 1500 -&gt; 0 volume-dependant bonus
+        //less than 1500 -> 0 volume-dependant bonus
         return 0;
     }
 
@@ -86,20 +86,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -118,7 +118,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -144,7 +144,7 @@ contract BasicToken is ERC20Basic {
 }
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -157,7 +157,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -208,17 +208,17 @@ contract CrwdToken is StandardToken {
         Paused         // for contract upgrades
     }
 
-    mapping(address =&gt; uint256) public ethPossibleRefunds;
+    mapping(address => uint256) public ethPossibleRefunds;
 
     uint256 public soldTokens;
 
-    string public constant name = &quot;Crwdtoken&quot;;
+    string public constant name = "Crwdtoken";
 
-    string public constant symbol = &quot;CRWD&quot;;
+    string public constant symbol = "CRWD";
 
     uint8 public constant decimals = 18;
 
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     address public teamTimeLock;
     address public devTimeLock;
@@ -327,15 +327,15 @@ contract CrwdToken is StandardToken {
 
     //this is the main funding function, it updates the balances of tokens during the ICO.
     //no particular incentive schemes have been implemented here
-    //it is only accessible during the &quot;ICO&quot; phase.
+    //it is only accessible during the "ICO" phase.
     function() payable
     requireState(States.Ico)
     {
         require(whitelist[msg.sender] == true);
-        require(this.balance &lt;= weiICOMaximum);
+        require(this.balance <= weiICOMaximum);
         //note that msg.value is already included in this.balance
-        require(block.number &lt; endBlock);
-        require(block.number &gt;= startAcceptingFundsBlock);
+        require(block.number < endBlock);
+        require(block.number >= startAcceptingFundsBlock);
 
         uint256 basisTokens = msg.value.mul(ETH_CRWDTOKEN);
         uint256 soldToTuserWithBonus = addBonus(basisTokens);
@@ -371,8 +371,8 @@ contract CrwdToken is StandardToken {
         if (!bonusPhase) return basisTokens;
         //percentages are integer numbers as per mill (promille) so we can accurately calculate 0.5% = 5. 100% = 1000
         uint256 perMillBonus = getPhaseBonus();
-        //no bonus if investment amount &lt; 1000 tokens
-        if (basisTokens &gt;= pointMultiplier.mul(1000)) {
+        //no bonus if investment amount < 1000 tokens
+        if (basisTokens >= pointMultiplier.mul(1000)) {
             perMillBonus += Bonus.getBonusFactor(basisTokens);
         }
         //100% + bonus % times original amount divided by 100%.
@@ -415,9 +415,9 @@ contract CrwdToken is StandardToken {
     onlyStateControl
     {
         require(state == States.Initial || state == States.ValuationSet);
-        require(_newWeiICOMaximum &gt; _newWeiICOMinimum);
-        require(block.number + silencePeriod &lt; _newEndBlock);
-        require(block.number &lt; _newEndBlock);
+        require(_newWeiICOMaximum > _newWeiICOMinimum);
+        require(block.number + silencePeriod < _newEndBlock);
+        require(block.number < _newEndBlock);
         weiICOMinimum = _newWeiICOMinimum;
         weiICOMaximum = _newWeiICOMaximum;
         silencePeriod = _silencePeriod;
@@ -432,8 +432,8 @@ contract CrwdToken is StandardToken {
     onlyStateControl
     requireState(States.ValuationSet)
     {
-        require(block.number &lt; endBlock);
-        require(block.number + silencePeriod &lt; endBlock);
+        require(block.number < endBlock);
+        require(block.number + silencePeriod < endBlock);
         startAcceptingFundsBlock = block.number + silencePeriod;
         moveToState(States.Ico);
     }
@@ -450,7 +450,7 @@ contract CrwdToken is StandardToken {
     onlyStateControl
     requireState(States.Ico)
     {
-        if (this.balance &lt; weiICOMinimum) {
+        if (this.balance < weiICOMinimum) {
             moveToState(States.Underfunded);
         }
         else {
@@ -462,8 +462,8 @@ contract CrwdToken is StandardToken {
     function anyoneEndICO()
     requireState(States.Ico)
     {
-        require(block.number &gt; endBlock);
-        if (this.balance &lt; weiICOMinimum) {
+        require(block.number > endBlock);
+        if (this.balance < weiICOMinimum) {
             moveToState(States.Underfunded);
         }
         else {
@@ -527,7 +527,7 @@ contract CrwdToken is StandardToken {
     function requestRefund()
     requireState(States.Underfunded)
     {
-        require(ethPossibleRefunds[msg.sender] &gt; 0);
+        require(ethPossibleRefunds[msg.sender] > 0);
         //there is no need for updateAccount(msg.sender) since the token never became active.
         uint256 payout = ethPossibleRefunds[msg.sender];
         //reverse calculate the amount to pay out
@@ -582,7 +582,7 @@ contract CrwdToken is StandardToken {
 contract CrwdTimelock {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     uint256 public assignedBalance;
     // beneficiary of tokens after they are released
@@ -594,7 +594,7 @@ contract CrwdTimelock {
     CrwdToken token;
 
     function CrwdTimelock(CrwdToken _token, address _controller, uint _releaseTime) {
-        require(_releaseTime &gt; now);
+        require(_releaseTime > now);
         token = _token;
         controller = _controller;
         releaseTime = _releaseTime;
@@ -605,7 +605,7 @@ contract CrwdTimelock {
         assignedBalance = assignedBalance.sub(balances[_beneficiary]);
         //todo test that this rolls back correctly!
         //balanceOf(this) will be 0 until the Operational Phase has been reached, no need for explicit check
-        require(token.balanceOf(this) &gt;= assignedBalance.add(_amount));
+        require(token.balanceOf(this) >= assignedBalance.add(_amount));
         balances[_beneficiary] = _amount;
         //balance is set, not added, gives _controller the power to set any balance, even 0
         assignedBalance = assignedBalance.add(balances[_beneficiary]);
@@ -615,9 +615,9 @@ contract CrwdTimelock {
      * @notice Transfers tokens held by timelock to beneficiary.
      */
     function release(address _beneficiary) {
-        require(now &gt;= releaseTime);
+        require(now >= releaseTime);
         uint amount = balances[_beneficiary];
-        require(amount &gt; 0);
+        require(amount > 0);
         token.transfer(_beneficiary, amount);
         assignedBalance = assignedBalance.sub(amount);
         balances[_beneficiary] = 0;

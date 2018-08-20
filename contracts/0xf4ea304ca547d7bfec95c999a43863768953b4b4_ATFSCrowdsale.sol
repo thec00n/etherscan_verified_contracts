@@ -31,7 +31,7 @@ contract TokenTimeLock {
     function TokenTimeLock(IToken _token, address _beneficiary, uint _releaseTimeFirst, uint _amountFirst)
     public
     {
-        require(_releaseTimeFirst &gt; now);
+        require(_releaseTimeFirst > now);
         token = _token;
         beneficiary = _beneficiary;
         releaseTimeFirst = _releaseTimeFirst;
@@ -39,9 +39,9 @@ contract TokenTimeLock {
     }
 
     function releaseFirst() public {
-        require(now &gt;= releaseTimeFirst);
+        require(now >= releaseTimeFirst);
         uint amount = token.balanceOf(this);
-        require(amount &gt; 0 &amp;&amp; amount &gt;= amountFirst);
+        require(amount > 0 && amount >= amountFirst);
         token.transfer(beneficiary, amountFirst);
     }
 }
@@ -67,18 +67,18 @@ library SafeMath {
     return c;
   }
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -122,7 +122,7 @@ contract ATFSCrowdsale is Owned
     uint public totalSaleSupply 	= 0;
     uint public totalNonSaleSupply 	= 0;
 
-    mapping( address =&gt; TokenTimeLock ) lockBalances;
+    mapping( address => TokenTimeLock ) lockBalances;
 
     modifier inState( State _state ) {
         require(currentState == _state);
@@ -156,9 +156,9 @@ contract ATFSCrowdsale is Owned
     function setState( State _newState ) public only(owner)
     {
         require(
-           ( currentState == State.INIT &amp;&amp; _newState == State.ICO )
-        || ( currentState == State.ICO &amp;&amp; _newState == State.TOKEN_DIST )
-        || ( currentState == State.TOKEN_DIST &amp;&amp; _newState == State.CLOSED )
+           ( currentState == State.INIT && _newState == State.ICO )
+        || ( currentState == State.ICO && _newState == State.TOKEN_DIST )
+        || ( currentState == State.TOKEN_DIST && _newState == State.CLOSED )
         || _newState == State.EMERGENCY_STOP
         );
         currentState = _newState;
@@ -172,7 +172,7 @@ contract ATFSCrowdsale is Owned
     //
     function mintInvestor( address _to, uint _amount ) public only(owner) inState( State.TOKEN_DIST )
     {
-     	require( totalSaleSupply.add( _amount ) &lt;= MAX_SALE_SUPPLY );
+     	require( totalSaleSupply.add( _amount ) <= MAX_SALE_SUPPLY );
         totalSaleSupply = totalSaleSupply.add( _amount );
         _mint( _to, _amount );
     }
@@ -182,7 +182,7 @@ contract ATFSCrowdsale is Owned
     //
     function mintPartner( address _to, uint _amount ) public only( owner ) inState( State.TOKEN_DIST )
     {
-    	require( totalNonSaleSupply.add( _amount ) &lt;= MAX_NON_SALE_SUPPLY );
+    	require( totalNonSaleSupply.add( _amount ) <= MAX_NON_SALE_SUPPLY );
     	totalNonSaleSupply = totalNonSaleSupply.add( _amount );
     	_mint( _to, _amount );
     }
@@ -194,7 +194,7 @@ contract ATFSCrowdsale is Owned
     //
     function mintPartnerWithLock( address _to, uint _amount, uint _unlockDate ) public only( owner ) inICOExtended( )
     {
-    	require( totalNonSaleSupply.add( _amount ) &lt;= MAX_NON_SALE_SUPPLY );
+    	require( totalNonSaleSupply.add( _amount ) <= MAX_NON_SALE_SUPPLY );
         totalNonSaleSupply = totalNonSaleSupply.add( _amount );
 
         TokenTimeLock tokenTimeLock = new TokenTimeLock( token, _to, _unlockDate, _amount );
@@ -213,7 +213,7 @@ contract ATFSCrowdsale is Owned
     //
     function mintPrivate( address _to, uint _amount ) public only( owner ) inState( State.ICO )
     {
-    	require( totalSaleSupply.add( _amount ) &lt;= MAX_SALE_SUPPLY );
+    	require( totalSaleSupply.add( _amount ) <= MAX_SALE_SUPPLY );
     	totalSaleSupply = totalSaleSupply.add( _amount );
     	_mint( _to, _amount );
     }

@@ -3,7 +3,7 @@ pragma solidity ^0.4.13;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -88,7 +88,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -127,7 +127,7 @@ contract ERC20 is ERC20Basic {
 
  contract StandardToken is ERC20, BasicToken {
 
-   mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+   mapping (address => mapping (address => uint256)) allowed;
 
 
    /**
@@ -140,7 +140,7 @@ contract ERC20 is ERC20Basic {
      var _allowance = allowed[_from][msg.sender];
 
      // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-     // require (_value &lt;= _allowance);
+     // require (_value <= _allowance);
 
      balances[_to] = balances[_to].add(_value);
      balances[_from] = balances[_from].sub(_value);
@@ -216,8 +216,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract ChangeCoin is MintableToken {
-  string public name = &quot;Change COIN&quot;;
-  string public symbol = &quot;CAG&quot;;
+  string public name = "Change COIN";
+  string public symbol = "CAG";
   uint256 public decimals = 18;
 
   bool public tradingStarted = false;
@@ -298,8 +298,8 @@ contract ChangeCoinCrowdsale is Ownable {
       //minContribution = 0.5 ether;
       //hardcap = 250000 ether;
 
-      require(startBlock &gt;= block.number);
-      require(endBlock &gt;= startBlock);
+      require(startBlock >= block.number);
+      require(endBlock >= startBlock);
     }
 
     /**
@@ -310,11 +310,11 @@ contract ChangeCoinCrowdsale is Ownable {
     function bonusAmmount(uint256 tokens) internal returns(uint256) {
       uint256 bonus5 = tokens.div(20);
       // add bonus 20% in first 48hours, 15% in next 24h, 5% in next 24h
-      if (block.number &lt; startBlock.add(10160)) { // 5080 is aprox 24h
+      if (block.number < startBlock.add(10160)) { // 5080 is aprox 24h
         return tokens.add(bonus5.mul(4));
-      } else if (block.number &lt; startBlock.add(15240)) {
+      } else if (block.number < startBlock.add(15240)) {
         return tokens.add(bonus5.mul(3));
-      } else if (block.number &lt; startBlock.add(20320)) {
+      } else if (block.number < startBlock.add(20320)) {
         return tokens.add(bonus5);
       } else {
         return 0;
@@ -324,16 +324,16 @@ contract ChangeCoinCrowdsale is Ownable {
     // @return true if valid purchase
     function validPurchase() internal constant returns (bool) {
       uint256 current = block.number;
-      bool withinPeriod = current &gt;= startBlock &amp;&amp; current &lt;= endBlock;
-      bool nonZeroPurchase = msg.value &gt;= minContribution;
-      bool withinCap = weiRaised.add(msg.value).add(raisedInPresale) &lt;= hardcap;
-      return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap;
+      bool withinPeriod = current >= startBlock && current <= endBlock;
+      bool nonZeroPurchase = msg.value >= minContribution;
+      bool withinCap = weiRaised.add(msg.value).add(raisedInPresale) <= hardcap;
+      return withinPeriod && nonZeroPurchase && withinCap;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-      bool timeLimitReached = block.number &gt; endBlock;
-      bool capReached = weiRaised.add(raisedInPresale) &gt;= hardcap;
+      bool timeLimitReached = block.number > endBlock;
+      bool capReached = weiRaised.add(raisedInPresale) >= hardcap;
       return timeLimitReached || capReached;
     }
 

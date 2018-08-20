@@ -31,20 +31,20 @@ library SafeMath {
     }
     
     function div(uint a, uint b) internal pure returns (uint) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -114,18 +114,18 @@ contract AddressLimit {
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
 }
 
 // standard ERC20 Token
 // ----------------------------------------------------------------------------
 contract standardToken is ERC20Token, AddressLimit {
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowances;
     bool public tokenFrozen = true;
     
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(
         address _owner) 
@@ -148,8 +148,8 @@ contract standardToken is ERC20Token, AddressLimit {
         returns (bool success) 
     {
         require (!tokenFrozen);                             // Throw if token is frozen
-        require (balances[msg.sender] &gt;= _value);           // Throw if sender has insufficient balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if owerflow detected
+        require (balances[msg.sender] >= _value);           // Throw if sender has insufficient balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if owerflow detected
         balances[msg.sender] -= _value;                     // Deduct senders balance
         balances[_to] += _value;                            // Add recivers balance
         Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -210,9 +210,9 @@ contract standardToken is ERC20Token, AddressLimit {
         returns (bool success) 
     {
         require (!tokenFrozen);                             // Throw if token is frozen
-        require (balances[_from] &gt;= _value);                // Throw if sender does not have enough balance
-        require (balances[_to] + _value &gt;= balances[_to]);  // Throw if overflow detected
-        require (_value &lt;= allowances[_from][msg.sender]);  // Throw if you do not have allowance
+        require (balances[_from] >= _value);                // Throw if sender does not have enough balance
+        require (balances[_to] + _value >= balances[_to]);  // Throw if overflow detected
+        require (_value <= allowances[_from][msg.sender]);  // Throw if you do not have allowance
         balances[_from] -= _value;                          // Deduct senders balance
         balances[_to] += _value;                            // Add recipient balance
         allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address
@@ -239,15 +239,15 @@ contract standardToken is ERC20Token, AddressLimit {
 contract UseChainToken is standardToken, Controlled {
     
     ///          startCrowdsaleTime                                                          stopCrowdsaleTime          
-    ///                  |&lt;private placement&gt;|     |&lt;private presale&gt;|         |&lt;public sale&gt;|
+    ///                  |<private placement>|     |<private presale>|         |<public sale>|
     ///               o-----------------------o----------------------o------------------------------o
-    ///                      &lt;10% OFF&gt;                &lt;5%  OFF&gt;   
-    ///  payment accepted:   &lt;BTC/ETH&gt;                &lt;BTC/ETH&gt;                &lt;BTC/ETH&gt; 
+    ///                      <10% OFF>                <5%  OFF>   
+    ///  payment accepted:   <BTC/ETH>                <BTC/ETH>                <BTC/ETH> 
     
     using SafeMath for uint;
 
-    string constant public name   = &quot;UseChainToken&quot;;
-    string constant public symbol = &quot;UST&quot;;
+    string constant public name   = "UseChainToken";
+    string constant public symbol = "UST";
     uint constant public decimals = 18;
 
     uint256 public totalSupply = 0;
@@ -282,7 +282,7 @@ contract UseChainToken is standardToken, Controlled {
     function() public payable {
         require(!finalized);
         depositToken(msg.value);
-        if(this.balance &gt;= 10 ether) {
+        if(this.balance >= 10 ether) {
             walletAddress.transfer(this.balance);
         }
     }
@@ -297,7 +297,7 @@ contract UseChainToken is standardToken, Controlled {
     
     /// @dev Buys tokens with Ether.
     function depositToken(uint _value) internal {
-        require(_value &gt;= minimalRequire());
+        require(_value >= minimalRequire());
         uint tokenAlloc = buyPriceAt(exchangePrice * _value);
         require (tokenAlloc != 0);
         mintTokens(msg.sender, tokenAlloc);
@@ -305,9 +305,9 @@ contract UseChainToken is standardToken, Controlled {
 
     /// @dev Issue new tokens
     function mintTokens(address _to, uint _amount) internal {
-        require (balances[_to] + _amount &gt;= balances[_to]);      // Check for overflows
+        require (balances[_to] + _amount >= balances[_to]);      // Check for overflows
         totalSupply = totalSupply.add(_amount);
-        require(totalSupply &lt;= topTotalSupply);
+        require(totalSupply <= topTotalSupply);
         balances[_to] = balances[_to].add(_amount);             // Set minted coins to target
         Transfer(0x0, _to, _amount);                            // Create Transfer event from 0x0
     }
@@ -335,19 +335,19 @@ contract UseChainToken is standardToken, Controlled {
     function buyPriceAt(uint256 _tokenAllocWithoutDiscount) internal returns(uint) {
         if (stageNow() == stageAt.publicSale) {
             publicAllocatingToken = publicAllocatingToken.add(_tokenAllocWithoutDiscount);
-            require(publicAllocatingToken &lt;= publicSaleSupply);
+            require(publicAllocatingToken <= publicSaleSupply);
             return _tokenAllocWithoutDiscount;
         }
         if (stageNow() == stageAt.privatePresale) {
             uint _privatePresaleAlloc = _tokenAllocWithoutDiscount + percent(_tokenAllocWithoutDiscount, 5);
             privatePresaleAllocatingToken = privatePresaleAllocatingToken.add(_privatePresaleAlloc);
-            require(privatePresaleAllocatingToken &lt;= privatePresaleSupply);
+            require(privatePresaleAllocatingToken <= privatePresaleSupply);
             return _privatePresaleAlloc;
         }
         if (stageNow() == stageAt.privatePlacement) {
             uint _privatePlacementAlloc = _tokenAllocWithoutDiscount + percent(_tokenAllocWithoutDiscount, 10);
             privatePlacementAllocatingToken = privatePlacementAllocatingToken.add(_privatePlacementAlloc);
-            require(privatePlacementAllocatingToken &lt;= privatePlacementSupply);
+            require(privatePlacementAllocatingToken <= privatePlacementSupply);
             return _privatePlacementAlloc;
         }
         if (stageNow() == stageAt.notStart) {
@@ -360,16 +360,16 @@ contract UseChainToken is standardToken, Controlled {
     
     /// @dev Check the current stage
     function stageNow() constant internal returns (stageAt) {
-        if (getTimestamp() &lt; startCrowdsaleTime) {
+        if (getTimestamp() < startCrowdsaleTime) {
             return stageAt.notStart;
         }
-        else if(getTimestamp() &lt; startCrowdsaleTime + 27 days) {
+        else if(getTimestamp() < startCrowdsaleTime + 27 days) {
             return stageAt.privatePlacement;
         }
-        else if(getTimestamp() &lt; startCrowdsaleTime + 71 days) {
+        else if(getTimestamp() < startCrowdsaleTime + 71 days) {
             return stageAt.privatePresale;
         }
-        else if(getTimestamp() &lt; stopCrowdsaleTime) {
+        else if(getTimestamp() < stopCrowdsaleTime) {
             return stageAt.publicSale;
         }
         else {
@@ -412,7 +412,7 @@ contract UseChainToken is standardToken, Controlled {
     /// @dev allocate private stage tokens
     function allocateTokens(address[] _owners, uint256[] _values) public onlyController {
         require (_owners.length == _values.length);
-        for(uint i = 0; i &lt; _owners.length ; i++){
+        for(uint i = 0; i < _owners.length ; i++){
             address owner = _owners[i];
             uint value = _values[i];
             mintTokens(owner, value);
@@ -422,7 +422,7 @@ contract UseChainToken is standardToken, Controlled {
 
     function allocateCorporateToken(address _corAccount, uint256 _amount) public onlyController {
         require(_corAccount != address(0));
-        require(balances[_corAccount] + _amount &lt;= corporateSupply);
+        require(balances[_corAccount] + _amount <= corporateSupply);
         mintTokens(_corAccount, _amount);
     }
     
@@ -430,11 +430,11 @@ contract UseChainToken is standardToken, Controlled {
     
     function allocateEcoFundToken(address[] _owners, uint256[] _values) public onlyController {
         require (_owners.length == _values.length);
-        for(uint i = 0; i &lt; _owners.length ; i++){
+        for(uint i = 0; i < _owners.length ; i++){
             address owner = _owners[i];
             uint256 value = _values[i];
             ecoFundingSupply = ecoFundingSupply.add(value);
-            require(ecoFundingSupply &lt;= ecoFundSupply);
+            require(ecoFundingSupply <= ecoFundSupply);
             mintTokens(owner, value);
         }
     }
@@ -443,7 +443,7 @@ contract UseChainToken is standardToken, Controlled {
     function finalize() public onlyController {
         // only after closed stage
         require(stageNow() == stageAt.finalState);     
-        require(totalSupply + ecoFundSupply &gt;= softCap);
+        require(totalSupply + ecoFundSupply >= softCap);
         finalized = true;
     }
     

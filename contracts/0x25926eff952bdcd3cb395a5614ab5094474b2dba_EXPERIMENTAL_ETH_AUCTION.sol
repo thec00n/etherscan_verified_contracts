@@ -10,7 +10,7 @@ contract EXPERIMENTAL_ETH_AUCTION
     
     uint public SelfDestructTime = now + 16 days;
     
-    mapping(address=&gt;uint) public Bids;
+    mapping(address=>uint) public Bids;
     
     address creator = msg.sender;
     
@@ -25,7 +25,7 @@ contract EXPERIMENTAL_ETH_AUCTION
     public
     payable
     {
-        if(msg.value&gt;0)
+        if(msg.value>0)
         {
             ContributionToPrizeFund();
         }
@@ -35,11 +35,11 @@ contract EXPERIMENTAL_ETH_AUCTION
     public
     payable
     {
-        require(now&lt;EndTime);
+        require(now<EndTime);
         
         Bids[msg.sender]+=msg.value;
         
-        if(Bids[msg.sender]&gt;MaxOffer)
+        if(Bids[msg.sender]>MaxOffer)
         {
             MaxOffer=Bids[msg.sender];
         }
@@ -49,8 +49,8 @@ contract EXPERIMENTAL_ETH_AUCTION
     public
     payable
     {
-        require(now&gt;EndTime);
-        require(Bids[msg.sender]&gt;=MaxOffer);
+        require(now>EndTime);
+        require(Bids[msg.sender]>=MaxOffer);
         
         uint prizeAmount = Bids[msg.sender]+PrizeFund;
         PrizeFund = 0;
@@ -63,7 +63,7 @@ contract EXPERIMENTAL_ETH_AUCTION
     public
     payable
     {
-        require(now&gt;EndTime);
+        require(now>EndTime);
         
         uint toTransfer = Bids[msg.sender];
         Bids[msg.sender]=0;
@@ -74,7 +74,7 @@ contract EXPERIMENTAL_ETH_AUCTION
     public
     {
         require(msg.sender==creator);
-        require(now&gt;SelfDestructTime);
+        require(now>SelfDestructTime);
         
         selfdestruct(msg.sender);
     }

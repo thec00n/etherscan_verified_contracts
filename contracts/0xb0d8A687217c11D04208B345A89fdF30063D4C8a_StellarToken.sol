@@ -1,7 +1,7 @@
 pragma solidity ^0.4.9;
 
-// import &quot;./receiver_interface.sol&quot;;
-// import &quot;./erc223_interface.sol&quot;;
+// import "./receiver_interface.sol";
+// import "./erc223_interface.sol";
 
  contract ContractReceiver {
      
@@ -18,7 +18,7 @@ pragma solidity ^0.4.9;
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
       
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -52,25 +52,25 @@ contract SafeMath {
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) throw;
+        if (x > MAX_UINT256 - y) throw;
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        if (x &lt; y) throw;
+        if (x < y) throw;
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) constant internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) throw;
+        if (x > MAX_UINT256 / y) throw;
         return x * y;
     }
 }
  
 contract StellarToken is ERC223, SafeMath {
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
   
   string public name;
   string public symbol;
@@ -140,7 +140,7 @@ contract StellarToken is ERC223, SafeMath {
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -150,7 +150,7 @@ contract StellarToken is ERC223, SafeMath {
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) throw;
+    if (balanceOf(msg.sender) < _value) throw;
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -159,7 +159,7 @@ contract StellarToken is ERC223, SafeMath {
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) throw;
+    if (balanceOf(msg.sender) < _value) throw;
     balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
     balances[_to] = safeAdd(balanceOf(_to), _value);
     ContractReceiver reciever = ContractReceiver(_to);

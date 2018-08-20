@@ -48,7 +48,7 @@ contract allowMonthly is owned {
   }
 
   function isUnlocked() internal returns (bool) {
-    return now &gt;= unlockTime;
+    return now >= unlockTime;
   }
   
   modifier onlyWhenUnlocked() { require(isUnlocked()); _; }
@@ -66,27 +66,27 @@ library SaferMath {
   }
 
   function divX(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 contract BasicToken is ERC20Basic {
   using SaferMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -115,7 +115,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -130,7 +130,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -144,7 +144,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -179,7 +179,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -191,8 +191,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract Ether2x is StandardToken, owned, allowMonthly {
 
-  string public constant name = &quot;Ethereum 2x&quot;;
-  string public constant symbol = &quot;E2X&quot;;
+  string public constant name = "Ethereum 2x";
+  string public constant symbol = "E2X";
   uint8 public constant decimals = 8;
 
   bool public initialDrop;
@@ -207,7 +207,7 @@ contract Ether2x is StandardToken, owned, allowMonthly {
   
   function incNonce() public {
     nonce += 1;
-    if(nonce &gt; 100) {
+    if(nonce > 100) {
         nonce = 0;
     }
     NonceTick(nonce);
@@ -215,7 +215,7 @@ contract Ether2x is StandardToken, owned, allowMonthly {
 
   // Note intended to act as a source of authorized messaging from development team
   event NoteChanged(string newNote);
-  string public note = &quot;Earn from your Ether with Ease.&quot;;
+  string public note = "Earn from your Ether with Ease.";
   function setNote(string note_) public onlyOwner {
     note = note_;
     NoteChanged(note);
@@ -234,7 +234,7 @@ contract Ether2x is StandardToken, owned, allowMonthly {
         totalAmt = (totalSupply / 100) + (totalSupply / 500);
     }
     PerformingMonthlyMinting(totalAmt);
-    assert(totalAmt &gt; 0);
+    assert(totalAmt > 0);
 
     balances[owner] += totalAmt;
     totalSupply += totalAmt;
@@ -253,8 +253,8 @@ contract Ether2x is StandardToken, owned, allowMonthly {
     
     rewardSent(reward);
     
-    assert(reward &gt; 0);
-    assert(balances[owner] &gt;= reward);
+    assert(reward > 0);
+    assert(balances[owner] >= reward);
     
     require(recipient != NULL_ADDRESS);
 

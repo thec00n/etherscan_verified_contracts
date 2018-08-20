@@ -11,7 +11,7 @@ contract Jackpot {
     address public diceRollAddress;
     uint256 seed;
 
-    mapping (uint=&gt;address) public winnerHistory;
+    mapping (uint=>address) public winnerHistory;
     address[] public tempPlayer;
 
     event SendJackpotSuccesss(address indexed winner, uint amount, uint JackpotPeriods);
@@ -52,7 +52,7 @@ contract Jackpot {
     }
 
     function createWinner() public onlyOwner jackpotAreActive {
-        require(tempPlayer.length &gt; 0);
+        require(tempPlayer.length > 0);
         uint random = rand() % tempPlayer.length;
         address winner = tempPlayer[random];
         winnerHistory[JackpotPeriods] = winner;
@@ -65,14 +65,14 @@ contract Jackpot {
 
 
     function sendJackpot(address winner, uint256 amount) internal {
-        require(address(this).balance &gt; amount);
+        require(address(this).balance > amount);
         emit SendJackpotSuccesss(winner, amount,JackpotPeriods);
         winner.transfer(amount);
         
     }
 
     function seTJackpotPersent(uint newPersent) external onlyOwner{
-        require(newPersent &gt; 0 &amp;&amp; newPersent &lt; 1000);
+        require(newPersent > 0 && newPersent < 1000);
         jackpotPersent = newPersent;
     }
 

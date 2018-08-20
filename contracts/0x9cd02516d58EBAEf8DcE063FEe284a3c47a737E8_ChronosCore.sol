@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -331,8 +331,8 @@ contract ChronosBase is ChronosAccessControl {
             return true;
         }
         
-        for (uint256 i = 0; i &lt; windows; i++) {
-            if (timeOfWeek &gt;= activeTimesFrom[i] &amp;&amp; timeOfWeek &lt;= activeTimesTo[i]) {
+        for (uint256 i = 0; i < windows; i++) {
+            if (timeOfWeek >= activeTimesFrom[i] && timeOfWeek <= activeTimesTo[i]) {
                 return true;
             }
         }
@@ -340,12 +340,12 @@ contract ChronosBase is ChronosAccessControl {
         return false;
     }
     
-    /// @notice Calculate the current game&#39;s timeout.
+    /// @notice Calculate the current game's timeout.
     function calculateTimeout() public view returns(uint256) {
-        if (wagerIndex &gt;= numberOfWagersToFinalTimeout || numberOfWagersToFinalTimeout == 0) {
+        if (wagerIndex >= numberOfWagersToFinalTimeout || numberOfWagersToFinalTimeout == 0) {
             return finalTimeout;
         } else {
-            if (finalTimeout &lt;= timeout) {
+            if (finalTimeout <= timeout) {
                 // The timeout decreases over time.
             
                 // This cannot underflow, as timeout is guaranteed to be
@@ -383,7 +383,7 @@ contract ChronosBase is ChronosAccessControl {
 contract PullPayment {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) public payments;
+  mapping(address => uint256) public payments;
   uint256 public totalPayments;
 
   /**
@@ -394,7 +394,7 @@ contract PullPayment {
     uint256 payment = payments[payee];
 
     require(payment != 0);
-    require(this.balance &gt;= payment);
+    require(this.balance >= payment);
 
     totalPayments = totalPayments.sub(payment);
     payments[payee] = 0;
@@ -441,7 +441,7 @@ contract ChronosFinance is ChronosBase, PullPayment {
     /// @param _feePercentage The new fee percentage.
     function setFeePercentage(uint256 _feePercentage) external onlyCFO {
         // Fee percentage must be 4% at the most.
-        require(_feePercentage &lt;= 4000);
+        require(_feePercentage <= 4000);
         
         feePercentage = _feePercentage;
     }
@@ -453,8 +453,8 @@ contract ChronosFinance is ChronosBase, PullPayment {
     }
     
     /// @dev Send funds to a beneficiary. If sending fails, assign
-    /// funds to the beneficiary&#39;s balance for manual withdrawal.
-    /// @param beneficiary The beneficiary&#39;s address to send funds to
+    /// funds to the beneficiary's balance for manual withdrawal.
+    /// @param beneficiary The beneficiary's address to send funds to
     /// @param amount The amount to send.
     function _sendFunds(address beneficiary, uint256 amount) internal {
         if (!beneficiary.send(amount)) {
@@ -508,7 +508,7 @@ contract ChronosCore is ChronosFinance {
             require(!paused);
             
             if (allowStart) {
-                // We&#39;re allowed to start once outside of active times.
+                // We're allowed to start once outside of active times.
                 allowStart = false;
             } else {
                 // This must be an active time.
@@ -543,7 +543,7 @@ contract ChronosCore is ChronosFinance {
         }
         
         // Enough Ether must be supplied.
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         
         // Calculate the fees and next pool percentage.
         uint256 fee = price.mul(feePercentage).div(100000);
@@ -586,7 +586,7 @@ contract ChronosCore is ChronosFinance {
         // Emit event.
         Play(gameIndex, wagerIndex, msg.sender, block.timestamp, lastWagerTimeoutTimestamp, prizePool, nextPrizePool);
         
-        // Increment the wager index. This won&#39;t overflow before the heat death of the universe.
+        // Increment the wager index. This won't overflow before the heat death of the universe.
         wagerIndex++;
         
         // Refund any excess Ether sent.
@@ -594,7 +594,7 @@ contract ChronosCore is ChronosFinance {
         // to be greater than or equal to price.
         uint256 excess = msg.value - price;
         
-        if (excess &gt; 0) {
+        if (excess > 0) {
             msg.sender.transfer(excess);
         }
     }
@@ -613,7 +613,7 @@ contract ChronosCore is ChronosFinance {
         require(gameStarted || !paused);
         
         // Funds must be sent.
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         
         // Add funds to the prize pool.
         prizePool = prizePool.add(msg.value);
@@ -649,7 +649,7 @@ contract ChronosCore is ChronosFinance {
             return false;
         }
     
-        if (block.timestamp &lt;= lastWagerTimeoutTimestamp) {
+        if (block.timestamp <= lastWagerTimeoutTimestamp) {
             // The game has not yet finished.
             return false;
         }
@@ -675,7 +675,7 @@ contract ChronosCore is ChronosFinance {
         prizePool = nextPrizePool;
         nextPrizePool = 0;
         
-        // Increment the game index. This won&#39;t overflow before the heat death of the universe.
+        // Increment the game index. This won't overflow before the heat death of the universe.
         gameIndex++;
         
         // Indicate ending the game was successful.

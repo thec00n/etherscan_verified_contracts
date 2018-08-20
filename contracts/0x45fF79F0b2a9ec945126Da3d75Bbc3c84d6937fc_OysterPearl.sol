@@ -4,8 +4,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract OysterPearl {
     // Public variables of PRL
-    string public name = &quot;Oyster Pearl&quot;;
-    string public symbol = &quot;TPRL&quot;;
+    string public name = "Oyster Pearl";
+    string public symbol = "TPRL";
     uint8 public decimals = 18;
     uint256 public totalSupply;
     uint256 public funds = 0;
@@ -19,10 +19,10 @@ contract OysterPearl {
     uint256 public retentionMax;
 
     //this creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     //this generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -73,7 +73,7 @@ contract OysterPearl {
         require(!ownerLock);
         
         // Lockout will occur eventually, guaranteeing Oyster decentralization
-        require(block.number &lt; 8000000);
+        require(block.number < 8000000);
         
         // Only the contract owner is permitted
         require(msg.sender == owner);
@@ -171,10 +171,10 @@ contract OysterPearl {
         require(!buried[msg.sender]);
         
         // An address must have atleast claimAmount to be buried
-        require(balanceOf[msg.sender] &gt; claimAmount);
+        require(balanceOf[msg.sender] > claimAmount);
         
         // Prevent addresses with large balances from getting buried
-        require(balanceOf[msg.sender] &lt;= retentionMax);
+        require(balanceOf[msg.sender] <= retentionMax);
         
         // Set buried state to true
         buried[msg.sender] = true;
@@ -192,7 +192,7 @@ contract OysterPearl {
      * 
      * Claim PRL from a buried address
      *
-     * If a prior claim wasn&#39;t made during the current epoch
+     * If a prior claim wasn't made during the current epoch
      *
      * @param _payout The address of the recipient
      * @param _fee the amount to send
@@ -211,10 +211,10 @@ contract OysterPearl {
         require(msg.sender != _fee);
         
         // It must be either the first time this address is being claimed or atleast epoch in time has passed
-        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) &gt;= epoch);
+        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) >= epoch);
         
         // Check if the buried address has enough
-        require(balanceOf[msg.sender] &gt;= claimAmount);
+        require(balanceOf[msg.sender] >= claimAmount);
         
         // Reset the claim clock to the current time
         claimed[msg.sender] = block.timestamp;
@@ -248,18 +248,18 @@ contract OysterPearl {
         require(!saleClosed);
         
         // Minimum amount is 1 finney
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         
         // Price is 1 ETH = 5000 PRL
         uint256 amount = msg.value * 5000;
         
         // totalSupply limit is 500 million PRL
-        require(totalSupply + amount &lt;= (500000000 * 10 ** uint256(decimals)));
+        require(totalSupply + amount <= (500000000 * 10 ** uint256(decimals)));
         
         // Increases the total supply
         totalSupply += amount;
         
-        // Adds the amount to buyer&#39;s balance
+        // Adds the amount to buyer's balance
         balanceOf[msg.sender] += amount;
         
         // Track ETH amount raised
@@ -278,17 +278,17 @@ contract OysterPearl {
         
         // If the receiving addresse is buried, it cannot exceed retentionMax
         if (buried[_to]) {
-            require(balanceOf[_to] + _value &lt;= retentionMax);
+            require(balanceOf[_to] + _value <= retentionMax);
         }
         
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         
         // Save this for an assertion in the future
         uint256 previousBalances = balanceOf[_from] + balanceOf[_to];
@@ -327,7 +327,7 @@ contract OysterPearl {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -381,7 +381,7 @@ contract OysterPearl {
         require(!buried[msg.sender]);
         
         // Check if the sender has enough
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         
         // Subtract from the sender
         balanceOf[msg.sender] -= _value;
@@ -405,15 +405,15 @@ contract OysterPearl {
         require(!buried[_from]);
         
         // Check if the targeted balance is enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         
         // Check allowance
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         
         // Subtract from the targeted balance
         balanceOf[_from] -= _value;
         
-        // Subtract from the sender&#39;s allowance
+        // Subtract from the sender's allowance
         allowance[_from][msg.sender] -= _value;
         
         // Update totalSupply

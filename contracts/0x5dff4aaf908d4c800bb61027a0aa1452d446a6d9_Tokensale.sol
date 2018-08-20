@@ -13,20 +13,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -95,7 +95,7 @@ contract SuperOwners {
 
 contract MultiOwnable is SuperOwners {
 
-    mapping (address =&gt; bool) public ownerMap;
+    mapping (address => bool) public ownerMap;
     address[] public ownerHistory;
 
     event OwnerAddedEvent(address indexed _newOwner);
@@ -182,9 +182,9 @@ contract StandardToken is ERC20 {
     
     using SafeMath for uint;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => mapping(address => uint256)) allowed;
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
@@ -192,8 +192,8 @@ contract StandardToken is ERC20 {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -207,9 +207,9 @@ contract StandardToken is ERC20 {
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -241,7 +241,7 @@ contract CommonToken is StandardToken, MultiOwnable {
     string public symbol;
     uint256 public totalSupply;
     uint8 public decimals = 18;
-    string public version = &#39;v0.1&#39;;
+    string public version = 'v0.1';
 
     address public seller;     // The main account that holds all tokens at the beginning and during tokensale.
 
@@ -268,8 +268,8 @@ contract CommonToken is StandardToken, MultiOwnable {
     ) MultiOwnable(_owner1, _owner2) public {
 
         require(_seller != address(0));
-        require(_totalSupplyNoDecimals &gt; 0);
-        require(_saleLimitNoDecimals &gt; 0);
+        require(_totalSupplyNoDecimals > 0);
+        require(_saleLimitNoDecimals > 0);
 
         seller = _seller;
         name = _name;
@@ -316,11 +316,11 @@ contract CommonToken is StandardToken, MultiOwnable {
     function sell(address _to, uint256 _value) onlyOwner public returns (bool) {
 
         // Check that we are not out of limit and still can sell tokens:
-        require(tokensSold.add(_value) &lt;= saleLimit);
+        require(tokensSold.add(_value) <= saleLimit);
 
         require(_to != address(0));
-        require(_value &gt; 0);
-        require(_value &lt;= balances[seller]);
+        require(_value > 0);
+        require(_value <= balances[seller]);
 
         balances[seller] = balances[seller].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -334,22 +334,22 @@ contract CommonToken is StandardToken, MultiOwnable {
     }
     
     /**
-     * Until all tokens are sold, tokens can be transfered to/from owner&#39;s accounts.
+     * Until all tokens are sold, tokens can be transfered to/from owner's accounts.
      */
     function transfer(address _to, uint256 _value) ifUnlocked(msg.sender, _to) public returns (bool) {
         return super.transfer(_to, _value);
     }
 
     /**
-     * Until all tokens are sold, tokens can be transfered to/from owner&#39;s accounts.
+     * Until all tokens are sold, tokens can be transfered to/from owner's accounts.
      */
     function transferFrom(address _from, address _to, uint256 _value) ifUnlocked(_from, _to) public returns (bool) {
         return super.transferFrom(_from, _to, _value);
     }
 
     function burn(uint256 _value) public returns (bool) {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value) ;
         totalSupply = totalSupply.sub(_value);
@@ -366,8 +366,8 @@ contract RaceToken is CommonToken {
         0x229B9Ef80D25A7e7648b17e2c598805d042f9e56, // __OWNER1__
         0xcd7cF1D613D5974876AfBfd612ED6AFd94093ce7, // __OWNER2__
         0x2821e1486D604566842FF27F626aF133FddD5f89, // __SELLER__
-        &#39;Coin Race&#39;,
-        &#39;RACE&#39;,
+        'Coin Race',
+        'RACE',
         100 * 1e6, // 100m tokens in total.
         70 * 1e6   // 70m tokens for sale.
     ) public {}
@@ -393,7 +393,7 @@ contract CommonTokensale is MultiOwnable, Pausable {
     uint public totalWeiReceived; // Total amount of wei received during this tokensale.
     
     // This will allow another contract to check whether ETH address is a buyer in this sale.
-    mapping (address =&gt; bool) public isBuyer;
+    mapping (address => bool) public isBuyer;
     
     event ChangeTokenEvent(address indexed _oldAddress, address indexed _newAddress);
     event ChangeMaxCapTokensEvent(uint _oldMaxCap, uint _newMaxCap);
@@ -414,13 +414,13 @@ contract CommonTokensale is MultiOwnable, Pausable {
     }
     
     function setMaxCapTokens(uint _maxCap) onlySuperOwner public {
-        require(_maxCap &gt; 0);
+        require(_maxCap > 0);
         ChangeMaxCapTokensEvent(maxCapTokens, _maxCap);
         maxCapTokens = _maxCap;
     }
     
     function setTokenPrice(uint _tokenPrice) onlySuperOwner public {
-        require(_tokenPrice &gt; 0);
+        require(_tokenPrice > 0);
         ChangeTokenPriceEvent(tokensPerWei, _tokenPrice);
         tokensPerWei = _tokenPrice;
     }
@@ -435,10 +435,10 @@ contract CommonTokensale is MultiOwnable, Pausable {
         uint256 _amountWei
     ) ifNotPaused public payable {
         
-        require(_amountWei &gt;= minPaymentWei);
+        require(_amountWei >= minPaymentWei);
 
         uint tokensE18 = weiToTokens(_amountWei);
-        require(totalTokensSold.add(tokensE18) &lt;= maxCapTokens);
+        require(totalTokensSold.add(tokensE18) <= maxCapTokens);
         
         // Transfer tokens to buyer.
         require(token.sell(_buyer, tokensE18));
@@ -460,11 +460,11 @@ contract CommonTokensale is MultiOwnable, Pausable {
     }
 
     function withdraw1(address _to) onlySuperOwner1 public {
-        if (balance1 &gt; 0) _to.transfer(balance1);
+        if (balance1 > 0) _to.transfer(balance1);
     }
     
     function withdraw2(address _to) onlySuperOwner2 public {
-        if (balance2 &gt; 0) _to.transfer(balance2);
+        if (balance2 > 0) _to.transfer(balance2);
     }
 }
 

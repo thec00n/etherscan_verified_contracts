@@ -5,7 +5,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -48,7 +48,7 @@ contract Ownable {
  Copyright (c) 2016 Smart Contract Solutions, Inc.
  Permission is hereby granted, free of charge, to any person obtaining
  a copy of this software and associated documentation files (the
- &quot;Software&quot;), to deal in the Software without restriction, including
+ "Software"), to deal in the Software without restriction, including
  without limitation the rights to use, copy, modify, merge, publish,
  distribute, sublicense, and/or sell copies of the Software, and to
  permit persons to whom the Software is furnished to do so, subject to
@@ -95,7 +95,7 @@ contract EtherbotsPrivileges is Pausable {
 
 }
 
-// import &quot;./contracts/CratePreSale.sol&quot;;
+// import "./contracts/CratePreSale.sol";
 // Central collection of storage on which all other contracts depend.
 // Contains structs for parts, users and functions which control their
 // transferrence.
@@ -181,22 +181,22 @@ contract EtherbotsBase is EtherbotsPrivileges {
     // Store a map of the address to a uint representing index of User within users
     // we check if a user exists at multiple points, every time they acquire
     // via a crate or the market. Users can also manually register their address.
-    mapping ( address =&gt; User ) public addressToUser;
+    mapping ( address => User ) public addressToUser;
 
     // Array containing the structs of all parts in existence. The ID
     // of each part is an index into this array.
     Part[] parts;
 
     // Mapping from part IDs to to owning address. Should always exist.
-    mapping (uint256 =&gt; address) public partIndexToOwner;
+    mapping (uint256 => address) public partIndexToOwner;
 
     //  A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count. REMOVE?
-    mapping (address =&gt; uint256) addressToTokensOwned;
+    mapping (address => uint256) addressToTokensOwned;
 
     // Mapping from Part ID to an address approved to call transferFrom().
     // maximum of one approved address for transfer at any time.
-    mapping (uint256 =&gt; address) public partIndexToApproved;
+    mapping (uint256 => address) public partIndexToApproved;
 
     address auction;
     // address scrapyard;
@@ -215,12 +215,12 @@ contract EtherbotsBase is EtherbotsPrivileges {
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         // No cap on number of parts
         // Very unlikely to ever be 2^256 parts owned by one account
-        // Shouldn&#39;t waste gas checking for overflow
-        // no point making it less than a uint --&gt; mappings don&#39;t pack
+        // Shouldn't waste gas checking for overflow
+        // no point making it less than a uint --> mappings don't pack
         addressToTokensOwned[_to]++;
         // transfer ownership
         partIndexToOwner[_tokenId] = _to;
-        // New parts are transferred _from 0x0, but we can&#39;t account that address.
+        // New parts are transferred _from 0x0, but we can't account that address.
         if (_from != address(0)) {
             addressToTokensOwned[_from]--;
             // clear any previously approved ownership exchange
@@ -249,7 +249,7 @@ contract EtherbotsBase is EtherbotsPrivileges {
     function substring(string str, uint startIndex, uint endIndex) internal pure returns (string) {
         bytes memory strBytes = bytes(str);
         bytes memory result = new bytes(endIndex-startIndex);
-        for (uint i = startIndex; i &lt; endIndex; i++) {
+        for (uint i = startIndex; i < endIndex; i++) {
             result[i-startIndex] = strBytes[i];
         }
         return string(result);
@@ -259,8 +259,8 @@ contract EtherbotsBase is EtherbotsPrivileges {
     function stringToUint32(string s) internal pure returns (uint32) {
         bytes memory b = bytes(s);
         uint result = 0;
-        for (uint i = 0; i &lt; b.length; i++) { // c = b[i] was not needed
-            if (b[i] &gt;= 48 &amp;&amp; b[i] &lt;= 57) {
+        for (uint i = 0; i < b.length; i++) { // c = b[i] was not needed
+            if (b[i] >= 48 && b[i] <= 57) {
                 result = result * 10 + (uint(b[i]) - 48); // bytes and int are not compatible with the operator -.
             }
         }
@@ -281,7 +281,7 @@ contract EtherbotsBase is EtherbotsPrivileges {
             reversed[i++] = byte(48 + remainder);
         }
         bytes memory s = new bytes(i); // i + 1 is inefficient
-        for (uint j = 0; j &lt; i; j++) {
+        for (uint j = 0; j < i; j++) {
             s[j] = reversed[i - j - 1]; // to avoid the off-by-one error
         }
         string memory str = string(s);
@@ -291,8 +291,8 @@ contract EtherbotsBase is EtherbotsPrivileges {
 
 
 // This contract implements both the original ERC-721 standard and
-// the proposed &#39;deed&#39; standard of 841
-// I don&#39;t know which standard will eventually be adopted - support both for now
+// the proposed 'deed' standard of 841
+// I don't know which standard will eventually be adopted - support both for now
 
 
 /// @title Interface for contracts conforming to ERC-721: Deed Standard
@@ -305,16 +305,16 @@ contract ERC721 {
 
     /// @dev ERC-165 (draft) interface signature for itself
     bytes4 internal constant INTERFACE_SIGNATURE_ERC165 =
-        bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+        bytes4(keccak256("supportsInterface(bytes4)"));
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721 =
-         bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-         bytes4(keccak256(&quot;countOfDeeds()&quot;)) ^
-         bytes4(keccak256(&quot;countOfDeedsByOwner(address)&quot;)) ^
-         bytes4(keccak256(&quot;deedOfOwnerByIndex(address,uint256)&quot;)) ^
-         bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-         bytes4(keccak256(&quot;takeOwnership(uint256)&quot;));
+         bytes4(keccak256("ownerOf(uint256)")) ^
+         bytes4(keccak256("countOfDeeds()")) ^
+         bytes4(keccak256("countOfDeedsByOwner(address)")) ^
+         bytes4(keccak256("deedOfOwnerByIndex(address,uint256)")) ^
+         bytes4(keccak256("approve(address,uint256)")) ^
+         bytes4(keccak256("takeOwnership(uint256)"));
 
     function supportsInterface(bytes4 _interfaceID) external pure returns (bool);
 
@@ -340,9 +340,9 @@ contract ERC721 {
 contract ERC721Metadata is ERC721 {
 
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata =
-        bytes4(keccak256(&quot;name()&quot;)) ^
-        bytes4(keccak256(&quot;symbol()&quot;)) ^
-        bytes4(keccak256(&quot;deedUri(uint256)&quot;));
+        bytes4(keccak256("name()")) ^
+        bytes4(keccak256("symbol()")) ^
+        bytes4(keccak256("deedUri(uint256)"));
 
     function name() public pure returns (string n);
     function symbol() public pure returns (string s);
@@ -354,11 +354,11 @@ contract ERC721Metadata is ERC721 {
     ///  * The URL points to a valid JSON file format (ECMA-404 2nd ed.)
     ///  * The JSON base element is an object
     ///  then these names of the base element SHALL have special meaning:
-    ///  * &quot;name&quot;: A string identifying the item to which `_deedId` grants
+    ///  * "name": A string identifying the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;description&quot;: A string detailing the item to which `_deedId` grants
+    ///  * "description": A string detailing the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;image&quot;: A URI pointing to a file of image/* mime type representing
+    ///  * "image": A URI pointing to a file of image/* mime type representing
     ///    the item to which `_deedId` grants ownership
     ///  Wallets and exchanges MAY display this to the end user.
     ///  Consider making any images at a width between 320 and 1080 pixels and
@@ -373,9 +373,9 @@ contract ERC721Enumerable is ERC721Metadata {
 
     /// @dev ERC-165 (draft) interface signature for ERC721
     bytes4 internal constant INTERFACE_SIGNATURE_ERC721Enumerable =
-        bytes4(keccak256(&quot;deedByIndex()&quot;)) ^
-        bytes4(keccak256(&quot;countOfOwners()&quot;)) ^
-        bytes4(keccak256(&quot;ownerByIndex(uint256)&quot;));
+        bytes4(keccak256("deedByIndex()")) ^
+        bytes4(keccak256("countOfOwners()")) ^
+        bytes4(keccak256("ownerByIndex(uint256)"));
 
     function deedByIndex(uint256 _index) external view returns (uint256 _deedId);
     function countOfOwners() external view returns (uint256 _count);
@@ -385,12 +385,12 @@ contract ERC721Enumerable is ERC721Metadata {
 contract ERC721Original {
 
     bytes4 constant INTERFACE_SIGNATURE_ERC721Original =
-        bytes4(keccak256(&quot;totalSupply()&quot;)) ^
-        bytes4(keccak256(&quot;balanceOf(address)&quot;)) ^
-        bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-        bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-        bytes4(keccak256(&quot;takeOwnership(uint256)&quot;)) ^
-        bytes4(keccak256(&quot;transfer(address,uint256)&quot;));
+        bytes4(keccak256("totalSupply()")) ^
+        bytes4(keccak256("balanceOf(address)")) ^
+        bytes4(keccak256("ownerOf(uint256)")) ^
+        bytes4(keccak256("approve(address,uint256)")) ^
+        bytes4(keccak256("takeOwnership(uint256)")) ^
+        bytes4(keccak256("transfer(address,uint256)"));
 
     // Core functions
     function implementsERC721() public pure returns (bool);
@@ -429,14 +429,14 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     }
 
     function name() public pure returns (string _name) {
-      return &quot;Etherbots&quot;;
+      return "Etherbots";
     }
 
     function symbol() public pure returns (string _smbol) {
-      return &quot;ETHBOT&quot;;
+      return "ETHBOT";
     }
 
-    // total supply of parts --&gt; as no parts are ever deleted, this is simply
+    // total supply of parts --> as no parts are ever deleted, this is simply
     // the total supply of parts ever created
     function totalSupply() public view returns (uint) {
         return parts.length;
@@ -457,8 +457,8 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     /// internal function    which checks whether the token with id (_tokenId)
     /// is owned by the (_claimant) address
     function ownsAll(address _owner, uint256[] _tokenIds) public view returns (bool) {
-        require(_tokenIds.length &gt; 0);
-        for (uint i = 0; i &lt; _tokenIds.length; i++) {
+        require(_tokenIds.length > 0);
+        for (uint i = 0; i < _tokenIds.length; i++) {
             if (partIndexToOwner[_tokenIds[i]] != _owner) {
                 return false;
             }
@@ -489,20 +489,20 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
 
     // transfers a part to another account
     function transfer(address _to, uint256 _tokenId) public whenNotPaused payable {
-        // payable for ERC721 --&gt; don&#39;t actually send eth @<span class="__cf_email__" data-cfemail="366976">[email&#160;protected]</span>
+        // payable for ERC721 --> don't actually send eth @<span class="__cf_email__" data-cfemail="366976">[email protected]</span>
         require(msg.value == 0);
 
         // Safety checks to prevent accidental transfers to common accounts
         require(_to != address(0));
         require(_to != address(this));
-        // can&#39;t transfer parts to the auction contract directly
+        // can't transfer parts to the auction contract directly
         require(_to != address(auction));
-        // can&#39;t transfer parts to any of the battle contracts directly
-        for (uint j = 0; j &lt; approvedBattles.length; j++) {
+        // can't transfer parts to any of the battle contracts directly
+        for (uint j = 0; j < approvedBattles.length; j++) {
             require(_to != approvedBattles[j]);
         }
 
-        // Cannot send tokens you don&#39;t own
+        // Cannot send tokens you don't own
         require(owns(msg.sender, _tokenId));
 
         // perform state changes necessary for transfer
@@ -516,17 +516,17 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
         // Safety checks to prevent accidental transfers to common accounts
         require(_to != address(0));
         require(_to != address(this));
-        // can&#39;t transfer parts to the auction contract directly
+        // can't transfer parts to the auction contract directly
         require(_to != address(auction));
-        // can&#39;t transfer parts to any of the battle contracts directly
-        for (uint j = 0; j &lt; approvedBattles.length; j++) {
+        // can't transfer parts to any of the battle contracts directly
+        for (uint j = 0; j < approvedBattles.length; j++) {
             require(_to != approvedBattles[j]);
         }
 
-        // Cannot send tokens you don&#39;t own
+        // Cannot send tokens you don't own
         require(ownsAll(msg.sender, _tokenIds));
 
-        for (uint k = 0; k &lt; _tokenIds.length; k++) {
+        for (uint k = 0; k < _tokenIds.length; k++) {
             // perform state changes necessary for transfer
             _transfer(msg.sender, _to, _tokenIds[k]);
         }
@@ -538,10 +538,10 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     // approves the (_to) address to use the transferFrom function on the token with id (_tokenId)
     // if you want to clear all approvals, simply pass the zero address
     function approve(address _to, uint256 _deedId) external whenNotPaused payable {
-        // payable for ERC721 --&gt; don&#39;t actually send eth @<span class="__cf_email__" data-cfemail="e8b7a8">[email&#160;protected]</span>
+        // payable for ERC721 --> don't actually send eth @<span class="__cf_email__" data-cfemail="e8b7a8">[email protected]</span>
         require(msg.value == 0);
 // use internal function?
-        // Cannot approve the transfer of tokens you don&#39;t own
+        // Cannot approve the transfer of tokens you don't own
         require(owns(msg.sender, _deedId));
 
         // Store the approval (can only approve one at a time)
@@ -553,10 +553,10 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     // approves many token ids
     function approveMany(address _to, uint256[] _tokenIds) external whenNotPaused payable {
 
-        for (uint i = 0; i &lt; _tokenIds.length; i++) {
+        for (uint i = 0; i < _tokenIds.length; i++) {
             uint _tokenId = _tokenIds[i];
 
-            // Cannot approve the transfer of tokens you don&#39;t own
+            // Cannot approve the transfer of tokens you don't own
             require(owns(msg.sender, _tokenId));
 
             // Store the approval (can only approve one at a time)
@@ -593,7 +593,7 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     // returns a dynamic array of the ids of all tokens which are owned by (_owner)
     // Looping through every possible part and checking it against the owner is
     // actually much more efficient than storing a mapping or something, because
-    // it won&#39;t be executed as a transaction
+    // it won't be executed as a transaction
     function tokensOfOwner(address _owner) external view returns(uint256[] ownerTokens) {
         uint256 totalParts = totalSupply();
 
@@ -610,7 +610,7 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
         }
 
         uint256 resultIndex = 0;
-        for (uint partId = _start; partId &lt; _start + _numToSearch; partId++) {
+        for (uint partId = _start; partId < _start + _numToSearch; partId++) {
             if (partIndexToOwner[partId] == _owner) {
                 tmpResult[resultIndex] = partId;
                 resultIndex++;
@@ -623,7 +623,7 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
         // copy number of tokens found in given range
         uint resultLength = resultIndex;
         uint256[] memory result = new uint256[](resultLength);
-        for (uint i=0; i&lt;resultLength; i++) {
+        for (uint i=0; i<resultLength; i++) {
             result[i] = tmpResult[i];
         }
         return result;
@@ -646,7 +646,7 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
 
         uint resultIndex = 0;
         bytes24[] memory result = new bytes24[](tokenCount);
-        for (uint partId = _start; partId &lt; _start + _numToSearch; partId++) {
+        for (uint partId = _start; partId < _start + _numToSearch; partId++) {
             if (partIndexToOwner[partId] == _owner) {
                 result[resultIndex] = _partToBytes(parts[partId]);
                 resultIndex++;
@@ -659,28 +659,28 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     function _partToBytes(Part p) internal pure returns (bytes24 b) {
         b = bytes24(p.tokenId);
 
-        b = b &lt;&lt; 8;
+        b = b << 8;
         b = b | bytes24(p.partType);
 
-        b = b &lt;&lt; 8;
+        b = b << 8;
         b = b | bytes24(p.partSubType);
 
-        b = b &lt;&lt; 8;
+        b = b << 8;
         b = b | bytes24(p.rarity);
 
-        b = b &lt;&lt; 8;
+        b = b << 8;
         b = b | bytes24(p.element);
 
-        b = b &lt;&lt; 32;
+        b = b << 32;
         b = b | bytes24(p.battlesLastDay);
 
-        b = b &lt;&lt; 32;
+        b = b << 32;
         b = b | bytes24(p.experience);
 
-        b = b &lt;&lt; 32;
+        b = b << 32;
         b = b | bytes24(p.forgeTime);
 
-        b = b &lt;&lt; 32;
+        b = b << 32;
         b = b | bytes24(p.battlesLastReset);
     }
 
@@ -690,13 +690,13 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     // every level, you need 1000 more exp to go up a level
     function getLevel(uint32 _exp) public pure returns(uint32) {
         uint32 c = 0;
-        for (uint32 i = FIRST_LEVEL; i &lt;= FIRST_LEVEL + _exp; i += c * INCREMENT) {
+        for (uint32 i = FIRST_LEVEL; i <= FIRST_LEVEL + _exp; i += c * INCREMENT) {
             c++;
         }
         return c;
     }
 
-    string metadataBase = &quot;https://api.etherbots.io/api/&quot;;
+    string metadataBase = "https://api.etherbots.io/api/";
 
 
     function setMetadataBase(string _base) external onlyOwner {
@@ -710,10 +710,10 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
         return strConcat(strConcat(
             metadataBase,
             uintToString(uint(p.partType)),
-            &quot;/&quot;,
+            "/",
             uintToString(uint(p.partSubType)),
-            &quot;/&quot;
-        ), uintToString(uint(p.rarity)), &quot;&quot;, &quot;&quot;, &quot;&quot;);
+            "/"
+        ), uintToString(uint(p.rarity)), "", "", "");
     }
 
     function strConcat(string _a, string _b, string _c, string _d, string _e) internal pure returns (string){
@@ -725,11 +725,11 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
         string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
-        for (i = 0; i &lt; _bc.length; i++) babcde[k++] = _bc[i];
-        for (i = 0; i &lt; _bd.length; i++) babcde[k++] = _bd[i];
-        for (i = 0; i &lt; _be.length; i++) babcde[k++] = _be[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
         return string(babcde);
     }
 
@@ -740,11 +740,11 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     ///  * The URL points to a valid JSON file format (ECMA-404 2nd ed.)
     ///  * The JSON base element is an object
     ///  then these names of the base element SHALL have special meaning:
-    ///  * &quot;name&quot;: A string identifying the item to which `_deedId` grants
+    ///  * "name": A string identifying the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;description&quot;: A string detailing the item to which `_deedId` grants
+    ///  * "description": A string detailing the item to which `_deedId` grants
     ///    ownership
-    ///  * &quot;image&quot;: A URI pointing to a file of image/* mime type representing
+    ///  * "image": A URI pointing to a file of image/* mime type representing
     ///    the item to which `_deedId` grants ownership
     ///  Wallets and exchanges MAY display this to the end user.
     ///  Consider making any images at a width between 320 and 1080 pixels and
@@ -759,7 +759,7 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
     }
 
     function takeOwnership(uint256 _deedId) external payable {
-        // payable for ERC721 --&gt; don&#39;t actually send eth @<span class="__cf_email__" data-cfemail="b2edf2">[email&#160;protected]</span>
+        // payable for ERC721 --> don't actually send eth @<span class="__cf_email__" data-cfemail="b2edf2">[email protected]</span>
         require(msg.value == 0);
 
         address _from = partIndexToOwner[_deedId];
@@ -787,13 +787,13 @@ contract EtherbotsNFT is EtherbotsBase, ERC721Enumerable, ERC721Original {
 // code duplicated
     function _tokenOfOwnerByIndex(address _owner, uint _index) private view returns (uint _tokenId){
         // The index should be valid.
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
 
         // can loop through all without
         uint256 seen = 0;
         uint256 totalTokens = totalSupply();
 
-        for (uint i = 0; i &lt; totalTokens; i++) {
+        for (uint i = 0; i < totalTokens; i++) {
             if (partIndexToOwner[i] == _owner) {
                 if (seen == _index) {
                     return i;
@@ -844,7 +844,7 @@ contract NFTAuctionBase is Pausable {
     }
 
     // map of all tokens and their auctions
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     event AuctionCreated(uint256 tokenId, uint256 startPrice, uint256 endPrice, uint64 duration, uint64 start);
     event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
@@ -857,7 +857,7 @@ contract NFTAuctionBase is Pausable {
 
    // returns false if auction start time is 0, likely from uninitialised struct
     function _isActiveAuction(Auction _auction) internal pure returns (bool) {
-        return _auction.start &gt; 0;
+        return _auction.start > 0;
     }
     
     // assigns ownership of the token with id = _partId to this contract
@@ -879,8 +879,8 @@ contract NFTAuctionBase is Pausable {
     // creates
     function _newAuction(uint256 _partId, Auction _auction) internal {
 
-        require(_auction.duration &gt;= minDuration);
-        require(_auction.duration &lt;= maxDuration);
+        require(_auction.duration >= minDuration);
+        require(_auction.duration <= maxDuration);
 
         tokenIdToAuction[_partId] = _auction;
 
@@ -917,9 +917,9 @@ contract NFTAuctionBase is Pausable {
         // check that this token is being auctioned
         require(_isActiveAuction(auction));
 
-        // enforce purchase &gt;= the current price
+        // enforce purchase >= the current price
         uint256 price = _currentPrice(auction);
-        require(_purchaseAmount &gt;= price);
+        require(_purchaseAmount >= price);
 
         // Store seller before we delete auction.
         address seller = auction.seller;
@@ -928,14 +928,14 @@ contract NFTAuctionBase is Pausable {
         _removeAuction(_partId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
+        if (price > 0) {
             
             // Calculate and take fee from purchase
 
             uint256 auctioneerCut = _computeFee(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
-            PrintEvent(&quot;Seller, proceeds&quot;, seller, sellerProceeds);
+            PrintEvent("Seller, proceeds", seller, sellerProceeds);
 
             // Pay the seller
             seller.transfer(sellerProceeds);
@@ -944,7 +944,7 @@ contract NFTAuctionBase is Pausable {
         // Calculate excess funds and return to buyer.
         uint256 purchaseExcess = _purchaseAmount - price;
 
-        PrintEvent(&quot;Sender, excess&quot;, msg.sender, purchaseExcess);
+        PrintEvent("Sender, excess", msg.sender, purchaseExcess);
         // Return any excess funds. Reentrancy again prevented by deleting auction.
         msg.sender.transfer(purchaseExcess);
 
@@ -966,7 +966,7 @@ contract NFTAuctionBase is Pausable {
 
     // Checks if NFTPart is currently being auctioned.
     // function _isBeingAuctioned(Auction storage _auction) internal view returns (bool) {
-    //     return (_auction.start &gt; 0);
+    //     return (_auction.start > 0);
     // }
 
     // removes the auction of the part with id _partId
@@ -977,13 +977,13 @@ contract NFTAuctionBase is Pausable {
     // computes the current price of an deflating-price auction 
     function _computeCurrentPrice( uint256 _startPrice, uint256 _endPrice, uint256 _duration, uint256 _secondsPassed ) internal pure returns (uint256 _price) {
         _price = _startPrice;
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             // Has been up long enough to hit endPrice.
             // Return this price floor.
             _price = _endPrice;
             // this is a statically price sale. Just return the price.
         }
-        else if (_duration &gt; 0) {
+        else if (_duration > 0) {
             // This auction contract supports auctioning from any valid price to any other valid price.
             // This means the price can dynamically increase upward, or downard.
             int256 priceDifference = int256(_endPrice) - int256(_startPrice);
@@ -1014,7 +1014,7 @@ contract DutchAuction is NFTAuctionBase, EtherbotsPrivileges {
     bytes4 constant InterfaceSignature_ERC721 = bytes4(0xda671b9b);
  
     function DutchAuction(address _nftAddress, uint256 _fee) public {
-        require(_fee &lt;= 10000);
+        require(_fee <= 10000);
         ownerCut = _fee;
 
         ERC721AllImplementations candidateContract = ERC721AllImplementations(_nftAddress);
@@ -1038,12 +1038,12 @@ contract DutchAuction is NFTAuctionBase, EtherbotsPrivileges {
 
     // Creates an auction and lists it.
     function createAuction( uint256 _partId, uint256 _startPrice, uint256 _endPrice, uint256 _duration, address _seller ) external whenNotPaused {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startPrice == uint256(uint128(_startPrice)));
         require(_endPrice == uint256(uint128(_endPrice)));
         require(_duration == uint256(uint64(_duration)));
-        require(_startPrice &gt;= _endPrice);
+        require(_startPrice >= _endPrice);
 
         require(msg.sender == address(nftContract));
         _escrow(_seller, _partId);
@@ -1054,7 +1054,7 @@ contract DutchAuction is NFTAuctionBase, EtherbotsPrivileges {
             uint64(_duration),
             uint64(now) //seconds uint 
         );
-        PrintEvent(&quot;Auction Start&quot;, 0x0, auction.start);
+        PrintEvent("Auction Start", 0x0, auction.start);
         _newAuction(_partId, auction);
     }
 
@@ -1089,13 +1089,13 @@ contract DutchAuction is NFTAuctionBase, EtherbotsPrivileges {
 
     function averageScrapPrice() public view returns (uint) {
         uint sum = 0;
-        for (uint8 i = 0; i &lt; LAST_CONSIDERED; i++) {
+        for (uint8 i = 0; i < LAST_CONSIDERED; i++) {
             sum += lastScrapPrices[i];
         }
         return sum / LAST_CONSIDERED;
     }
 
-    // Allows a user to cancel an auction before it&#39;s resolved.
+    // Allows a user to cancel an auction before it's resolved.
     // Returns the part to the seller.
 
     function cancelAuction(uint256 _partId) external {
@@ -1123,7 +1123,7 @@ contract DutchAuction is NFTAuctionBase, EtherbotsPrivileges {
     // Allows owner to cancel an auction.
     // ONLY able to be used when contract is paused,
     // in the case of emergencies.
-    // Parts returned to seller as it&#39;s equivalent to them 
+    // Parts returned to seller as it's equivalent to them 
     // calling cancel.
     function cancelAuctionWhenPaused(uint256 _partId) whenPaused onlyOwner external {
         Auction storage auction = tokenIdToAuction[_partId];

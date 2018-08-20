@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,8 +39,8 @@ library SafeMath {
 
 /**
  * @title Moderated
- * @dev restricts execution of &#39;onlyModerator&#39; modified functions to the contract moderator
- * @dev restricts execution of &#39;ifUnrestricted&#39; modified functions to when unrestricted 
+ * @dev restricts execution of 'onlyModerator' modified functions to the contract moderator
+ * @dev restricts execution of 'ifUnrestricted' modified functions to when unrestricted 
  *      boolean state is true
  * @dev allows for the extraction of ether or other ERC20 tokens mistakenly sent to this address
  */
@@ -61,7 +61,7 @@ contract Moderated {
     }
     
     modifier onlyPayloadSize(uint256 numWords) {
-        assert(msg.data.length &gt;= numWords * 32 + 4);
+        assert(msg.data.length >= numWords * 32 + 4);
         _;
     }    
     
@@ -94,7 +94,7 @@ contract Moderated {
     function isContract(address _addr) internal view returns (bool) {
         uint256 size;
         assembly { size := extcodesize(_addr) }
-        return (size &gt; 0);
+        return (size > 0);
     }    
 } 
 
@@ -152,7 +152,7 @@ contract RefundVault is Controlled {
     
     enum State { Active, Refunding, Closed }
     
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
     State public state;
     
@@ -238,7 +238,7 @@ contract CrowdSale is Moderated {
     
     // checks that crowd sale is live	
     modifier onlyWhileActive {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate &amp;&amp; active);
+        require(now >= startDate && now <= endDate && active);
         _;
     }	
 	
@@ -261,7 +261,7 @@ contract CrowdSale is Moderated {
 	// forwards ether received to refund vault and generates tokens for purchaser
 	function buyTokens(address _purchaser) public payable ifUnrestricted onlyWhileActive returns (bool) {
 	    require(!targetReached());
-	    require(msg.value &gt; purchaseThreshold);
+	    require(msg.value > purchaseThreshold);
 	    refundVault.deposit.value(msg.value)(_purchaser);
 	    // 1 LEON is priced at 1 USD
 	    // etherToUSDRate is stored in cents, /100 to get USD quantity
@@ -275,7 +275,7 @@ contract CrowdSale is Moderated {
 	}	
 	
 	function initialize() public onlyModerator returns (bool) {
-	    require(!active &amp;&amp; !isFinalized);
+	    require(!active && !isFinalized);
 	    require(tokenContract.allowance(moderator,address(this)) == crowdsaleTarget + margin);
 	    active = true;
 	}
@@ -308,12 +308,12 @@ contract CrowdSale is Moderated {
     
 	// checks if end date of crowdsale is passed    
     function hasEnded() internal view returns (bool) {
-        return (now &gt; endDate);
+        return (now > endDate);
     }
     
     // checks if crowdsale target is reached
     function targetReached() internal view returns (bool) {
-        return (tokensSold &gt;= crowdsaleTarget);
+        return (tokensSold >= crowdsaleTarget);
     }
     
     // refunds ether to investors if crowdsale is unsuccessful 

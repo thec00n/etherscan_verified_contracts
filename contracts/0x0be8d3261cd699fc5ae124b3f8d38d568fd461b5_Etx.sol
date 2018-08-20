@@ -22,9 +22,9 @@ contract ERC20Interface {
 }
 
 contract Etx is ERC20Interface {
-    string public constant symbol = &quot;ETX&quot;;
+    string public constant symbol = "ETX";
 
-    string public constant name = &quot;Ethex supporter token.&quot;;
+    string public constant name = "Ethex supporter token.";
 
     uint8 public constant decimals = 18;
 
@@ -36,16 +36,16 @@ contract Etx is ERC20Interface {
     address public owner;
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // activate start for each account.
-    mapping (address =&gt; uint256) activateStartBlock;
+    mapping (address => uint256) activateStartBlock;
 
     //block at which this Etx token expires
     uint256 public expirationBlock;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Functions with this modifier can only be executed by the owner
     modifier onlyOwner() {
@@ -73,28 +73,28 @@ contract Etx is ERC20Interface {
 
     //in case the client wants to display how long until they are vested.
     function activateStartBlockOf(address _owner) public constant returns (uint256 blockNumber) {
-        if (balances[_owner] &gt;= (1 ether)) {
+        if (balances[_owner] >= (1 ether)) {
           return activateStartBlock[_owner];
         }
         return block.number;
     }
 
     function isActive(address _owner) public constant returns (bool vested) {
-        if (block.number &gt; expirationBlock) {
+        if (block.number > expirationBlock) {
             return false;
         }
-        if (balances[_owner] &gt;= (1 ether) &amp;&amp;
-        activateStartBlock[_owner] + blocksToVest &lt;= block.number) {
+        if (balances[_owner] >= (1 ether) &&
+        activateStartBlock[_owner] + blocksToVest <= block.number) {
             return true;
         }
         return false;
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount &amp;&amp;
-        _amount &gt; 0 &amp;&amp;
-        balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount &&
+        _amount > 0 &&
+        balances[_to] + _amount > balances[_to]) {
 
             // Record current _to balance.
             uint256 previousBalance = balances[_to];
@@ -103,8 +103,8 @@ contract Etx is ERC20Interface {
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
 
-            // If &quot;_to&quot; crossed the 1 ETX level in this transaction, this is the activate start block.
-            if (previousBalance &lt; (1 ether) &amp;&amp; balances[_to] &gt;= (1 ether)) {
+            // If "_to" crossed the 1 ETX level in this transaction, this is the activate start block.
+            if (previousBalance < (1 ether) && balances[_to] >= (1 ether)) {
                 activateStartBlock[_to] = block.number;
             }
 
@@ -118,15 +118,15 @@ contract Etx is ERC20Interface {
 
     // Send _value amount of tokens from address _from to address _to
     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
     // fees in sub-currencies; the command should fail unless the _from account has
     // deliberately authorized the sender of the message via some mechanism; we propose
     // these standardized APIs for approval:
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-        if (balances[_from] &gt;= _amount &amp;&amp;
-        allowed[_from][msg.sender] &gt;= _amount &amp;&amp;
-        _amount &gt; 0 &amp;&amp;
-        balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount &&
+        allowed[_from][msg.sender] >= _amount &&
+        _amount > 0 &&
+        balances[_to] + _amount > balances[_to]) {
 
             // Record current _to balance.
             uint256 previousBalance = balances[_to];
@@ -136,8 +136,8 @@ contract Etx is ERC20Interface {
             allowed[_from][msg.sender] -= _amount;
             balances[_to] += _amount;
 
-            // If &quot;_to&quot; crossed the 1 ETX level in this transaction, this is the activate start block.
-            if (previousBalance &lt; (1 ether) &amp;&amp; balances[_to] &gt;= (1 ether)) {
+            // If "_to" crossed the 1 ETX level in this transaction, this is the activate start block.
+            if (previousBalance < (1 ether) && balances[_to] >= (1 ether)) {
                 activateStartBlock[_to] = block.number;
             }
 

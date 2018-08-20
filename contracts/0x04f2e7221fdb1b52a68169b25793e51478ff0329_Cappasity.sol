@@ -29,20 +29,20 @@ library SafeMath {
    }
 
    function sub(uint a, uint b) internal pure returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
    }
 
    function add(uint a, uint b) internal pure returns (uint) {
       uint c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
    }
 
   function div(uint a, uint b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 }
@@ -50,14 +50,14 @@ library SafeMath {
 contract StandardToken is ERC20 {
     using SafeMath for uint;
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public returns (bool) {
-        if (balances[msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; _to != msg.sender
-            &amp;&amp; _to != address(0)
+        if (balances[msg.sender] >= _value
+            && _value > 0
+            && _to != msg.sender
+            && _to != address(0)
           ) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
@@ -70,10 +70,10 @@ contract StandardToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        if (balances[_from] &gt;= _value
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _value
-            &amp;&amp; _value &gt; 0
-            &amp;&amp; _from != _to
+        if (balances[_from] >= _value
+            && allowed[_from][msg.sender] >= _value
+            && _value > 0
+            && _from != _to
           ) {
             balances[_to]   = balances[_to].add(_value);
             balances[_from] = balances[_from].sub(_value);
@@ -95,7 +95,7 @@ contract StandardToken is ERC20 {
 
     function approve(address _spender, uint _value) public returns (bool) {
         require(_spender != address(0));
-        // needs to be called twice -&gt; first set to 0, then increase to another amount
+        // needs to be called twice -> first set to 0, then increase to another amount
         // this is to avoid race conditions
         require((_value == 0) || (allowed[msg.sender][_spender] == 0));
 
@@ -119,7 +119,7 @@ contract StandardToken is ERC20 {
         require(_spender != address(0));
 
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -130,7 +130,7 @@ contract StandardToken is ERC20 {
     }
 
     modifier onlyPayloadSize(uint _size) {
-        require(msg.data.length &gt;= _size + 4);
+        require(msg.data.length >= _size + 4);
         _;
     }
 }
@@ -139,8 +139,8 @@ contract Cappasity is StandardToken {
 
     // Constants
     // =========
-    string public constant name = &quot;Cappasity&quot;;
-    string public constant symbol = &quot;CAPP&quot;;
+    string public constant name = "Cappasity";
+    string public constant symbol = "CAPP";
     uint8 public constant decimals = 2;
     uint public constant TOKEN_LIMIT = 10 * 1e9 * 1e2; // 10 billion tokens, 2 decimals
 
@@ -211,7 +211,7 @@ contract Cappasity is StandardToken {
     // Mint some tokens and assign them to an address
     function mint(address _beneficiary, uint _value) external onlyByManager {
         require(_value != 0);
-        require(totalSupply.add(_value) &lt;= TOKEN_LIMIT);
+        require(totalSupply.add(_value) <= TOKEN_LIMIT);
         require(mintingIsAllowed == true);
 
         balances[_beneficiary] = balances[_beneficiary].add(_value);

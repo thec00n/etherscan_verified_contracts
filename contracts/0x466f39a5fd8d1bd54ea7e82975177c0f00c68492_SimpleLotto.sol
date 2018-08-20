@@ -1,7 +1,7 @@
 contract SimpleLotto {
     int public playCount = 0;
     address public owner = msg.sender;
-    mapping (address =&gt; uint) public players;
+    mapping (address => uint) public players;
     Aggregate public aggregate;
 
   struct Aggregate {

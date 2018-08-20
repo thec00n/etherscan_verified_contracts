@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -152,8 +152,8 @@ contract TokenSale is Pausable {
     uint256 _startTime,
     uint256 _endTime) public {
     require(_tokenAddress != 0x0);
-    require(_startTime &gt; 0);
-    require(_endTime &gt; _startTime);
+    require(_startTime > 0);
+    require(_endTime > _startTime);
 
     startTime = _startTime;
     endTime = _endTime;
@@ -184,7 +184,7 @@ contract TokenSale is Pausable {
 
     uint256 tokens = weiAmount.mul(decimalsMultiplier).div(priceInWei);
     tokensMinted = tokensMinted.add(tokens);
-    require(tokensMinted &lt; tokenCap);
+    require(tokensMinted < tokenCap);
 
     contributors = contributors.add(1);
 
@@ -202,11 +202,11 @@ contract TokenSale is Pausable {
 
     uint256 price;
 
-    if (totalWeiRaised &lt; firstCheckpoint) {
+    if (totalWeiRaised < firstCheckpoint) {
       price = firstCheckpointPrice;
-    } else if (totalWeiRaised &lt; secondCheckpoint) {
+    } else if (totalWeiRaised < secondCheckpoint) {
       price = secondCheckpointPrice;
-    } else if (totalWeiRaised &lt; thirdCheckpoint) {
+    } else if (totalWeiRaised < thirdCheckpoint) {
       price = thirdCheckpointPrice;
     } else {
       price = BASE_PRICE_IN_WEI;
@@ -229,10 +229,10 @@ contract TokenSale is Pausable {
   */
   function validPurchase() internal constant returns (bool) {
     uint256 current = now;
-    bool presaleStarted = (current &gt;= startTime || started);
-    bool presaleNotEnded = current &lt;= endTime;
+    bool presaleStarted = (current >= startTime || started);
+    bool presaleNotEnded = current <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return nonZeroPurchase &amp;&amp; presaleStarted &amp;&amp; presaleNotEnded;
+    return nonZeroPurchase && presaleStarted && presaleNotEnded;
   }
 
   /**
@@ -263,7 +263,7 @@ contract TokenSale is Pausable {
 
 
   function enableTransfers() public {
-    if (now &lt; endTime) {
+    if (now < endTime) {
       require(msg.sender == owner);
     }
 
@@ -271,7 +271,7 @@ contract TokenSale is Pausable {
   }
 
   function lockTransfers() public onlyOwner {
-    require(now &lt; endTime);
+    require(now < endTime);
     proofToken.enableTransfers(false);
   }
 
@@ -290,7 +290,7 @@ contract TokenSale is Pausable {
       assembly {
           size := extcodesize(_addr)
       }
-      return size&gt;0;
+      return size>0;
   }
 
   /**

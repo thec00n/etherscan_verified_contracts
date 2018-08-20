@@ -61,7 +61,7 @@ contract TimeLockedWallet is Ownable {
 		view
 		returns (bool)
 	{
-		return now &lt;= unlockTime;
+		return now <= unlockTime;
 	}
 
 	function claim()

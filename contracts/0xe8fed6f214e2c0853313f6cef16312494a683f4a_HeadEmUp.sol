@@ -14,9 +14,9 @@ contract HeadEmUp {
     }
     
     function () payable {
-        if (msg.sender == owner &amp;&amp; msg.value &gt; 0)
+        if (msg.sender == owner && msg.value > 0)
             return;
-        if (msg.sender == owner &amp;&amp; msg.value == 0)
+        if (msg.sender == owner && msg.value == 0)
             owner.transfer(this.balance);
         else {
             uint256 house_cut = msg.value / 100;
@@ -25,8 +25,8 @@ contract HeadEmUp {
             bytes2 house = rand(owner);
             Player(bytes32(player));
             House(bytes32(house));
-            if (player &lt;= house){
-                if (((msg.value) * 2 - house_cut) &gt; this.balance)
+            if (player <= house){
+                if (((msg.value) * 2 - house_cut) > this.balance)
                     msg.sender.transfer(this.balance);
                 else
                     msg.sender.transfer(((msg.value) * 2 - house_cut));

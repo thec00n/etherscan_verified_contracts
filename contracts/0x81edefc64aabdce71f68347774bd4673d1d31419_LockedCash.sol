@@ -11,7 +11,7 @@ contract LockedCash is Owned {
     address public owner = msg.sender;
 
     function init() payable {
-        require(msg.value &gt; 0.5 ether);
+        require(msg.value > 0.5 ether);
         owner = msg.sender;
     }
 
@@ -20,12 +20,12 @@ contract LockedCash is Owned {
     }
 
     function deposit() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         CashDeposit(msg.sender, msg.value);
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require(amount &lt;= this.balance);
+        require(amount <= this.balance);
         msg.sender.transfer(amount);
     }
 }

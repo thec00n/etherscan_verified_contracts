@@ -20,13 +20,13 @@ library SafeMath {
     }
     
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -34,7 +34,7 @@ contract Ownable {
      /*
       @title Ownable
       @dev The Ownable contract has an owner address, and provides basic authorization control
-      functions, this simplifies the implementation of &quot;user permissions&quot;.
+      functions, this simplifies the implementation of "user permissions".
     */
 
   address public owner;
@@ -133,7 +133,7 @@ contract Allocations{
 	// timestamp when token release is enabled
   	uint256 private releaseTime;
 
-	mapping (address =&gt; uint256) private allocations;
+	mapping (address => uint256) private allocations;
 
 	function Allocations(){
 		releaseTime = now + 200 days;
@@ -170,12 +170,12 @@ contract Allocations{
 	function RealeaseTime() external constant returns(uint256){ return releaseTime; }
 
     modifier timeLock() { 
-		require(now &gt;= releaseTime);
+		require(now >= releaseTime);
 		_; 
 	}
 
 	modifier isTeamMember() { 
-		require(allocations[msg.sender] &gt;= 10000 * 1 ether); 
+		require(allocations[msg.sender] >= 10000 * 1 ether); 
 		_; 
 	}
 
@@ -186,13 +186,13 @@ contract NotaryPlatformToken is Pausable, Allocations, ReentrancyGuard{
 
   using SafeMath for uint256;
 
-  string constant name = &quot;Notary Platform Token&quot;;
-  string constant symbol = &quot;NTRY&quot;;
+  string constant name = "Notary Platform Token";
+  string constant symbol = "NTRY";
   uint8 constant decimals = 18;
   uint256 totalSupply = 150000000 * 1 ether;
 
-  mapping(address =&gt; uint256) private balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) private allowed;
+  mapping(address => uint256) private balances;
+  mapping (address => mapping (address => uint256)) private allowed;
 
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -250,7 +250,7 @@ contract NotaryPlatformToken is Pausable, Allocations, ReentrancyGuard{
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -285,7 +285,7 @@ contract NotaryPlatformToken is Pausable, Allocations, ReentrancyGuard{
 
   function decreaseApproval (address _spender, uint _subtractedValue) external whenNotPaused returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -319,8 +319,8 @@ contract NotaryPlatformToken is Pausable, Allocations, ReentrancyGuard{
    * @param _value The amount of token to be migrated
    */
   function migrate(uint256 _value) external nonReentrant isUpgrading {
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
     require(agent.isMigrationAgent());
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -377,7 +377,7 @@ contract NotaryPlatformToken is Pausable, Allocations, ReentrancyGuard{
    * http://vessenes.com/the-erc20-short-address-attack-explained/
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt; size + 4);
+     require(msg.data.length > size + 4);
      _;
   }
 

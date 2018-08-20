@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns(uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns(uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -33,7 +33,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -127,13 +127,13 @@ contract BasicToken is ERC20, Pausable {
 
   event Frozen(address indexed _address, bool _value);
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; bool) public frozens;
-  mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping(address => bool) public frozens;
+  mapping(address => mapping(address => uint256)) allowed;
 
   function _transfer(address _from, address _to, uint256 _value) internal returns(bool success) {
     require(_to != 0x0);
-    require(_value &gt; 0);
+    require(_value > 0);
     require(frozens[_from] == false);
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -142,13 +142,13 @@ contract BasicToken is ERC20, Pausable {
   }
 
   function transfer(address _to, uint256 _value) public whenNotPaused returns(bool success) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     return _transfer(msg.sender, _to, _value);
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns(bool success) {
-    require(balances[_from] &gt;= _value);
-    require(allowed[_from][msg.sender] &gt;= _value);
+    require(balances[_from] >= _value);
+    require(allowed[_from][msg.sender] >= _value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     return _transfer(_from, _to, _value);
   }
@@ -168,9 +168,9 @@ contract BasicToken is ERC20, Pausable {
   }
 
   function freeze(address[] _targets, bool _value) public onlyOwner returns(bool success) {
-    require(_targets.length &gt; 0);
-    require(_targets.length &lt;= 255);
-    for (uint8 i = 0; i &lt; _targets.length; i++) {
+    require(_targets.length > 0);
+    require(_targets.length <= 255);
+    for (uint8 i = 0; i < _targets.length; i++) {
       assert(_targets[i] != 0x0);
       frozens[_targets[i]] = _value;
       emit Frozen(_targets[i], _value);
@@ -179,20 +179,20 @@ contract BasicToken is ERC20, Pausable {
   }
 
   function transferMulti(address[] _to, uint256[] _value) public whenNotPaused returns(bool success) {
-    require(_to.length &gt; 0);
-    require(_to.length &lt;= 255);
+    require(_to.length > 0);
+    require(_to.length <= 255);
     require(_to.length == _value.length);
     require(frozens[msg.sender] == false);
     uint8 i;
     uint256 amount;
-    for (i = 0; i &lt; _to.length; i++) {
+    for (i = 0; i < _to.length; i++) {
       assert(_to[i] != 0x0);
-      assert(_value[i] &gt; 0);
+      assert(_value[i] > 0);
       amount = amount.add(_value[i]);
     }
-    require(balances[msg.sender] &gt;= amount);
+    require(balances[msg.sender] >= amount);
     balances[msg.sender] = balances[msg.sender].sub(amount);
-    for (i = 0; i &lt; _to.length; i++) {
+    for (i = 0; i < _to.length; i++) {
       balances[_to[i]] = balances[_to[i]].add(_value[i]);
       emit Transfer(msg.sender, _to[i], _value[i]);
     }
@@ -202,8 +202,8 @@ contract BasicToken is ERC20, Pausable {
 
 contract CTCK is BasicToken {
 
-  string public constant name = &quot;CTCK&quot;;
-  string public constant symbol = &quot;CTCK&quot;;
+  string public constant name = "CTCK";
+  string public constant symbol = "CTCK";
   uint256 public constant decimals = 18;
 
   constructor() public {

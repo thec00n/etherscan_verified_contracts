@@ -17,8 +17,8 @@ library SafeMath {
     * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
             return 0;
@@ -34,9 +34,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -45,7 +45,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -55,7 +55,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -79,7 +79,7 @@ contract Ownable {
     /**
      * Any function with this modifier in its method signature can only be executed by
      * the owner of the contract. Any attempt made by any other account to invoke the 
-     * functions with this modifier will result in a loss of gas and the contract&#39;s state
+     * functions with this modifier will result in a loss of gas and the contract's state
      * will remain untampered.
      * */
     modifier onlyOwner {
@@ -95,7 +95,7 @@ contract Ownable {
     function transferOwnership(address _newOwner) public onlyOwner {
         require(
             _newOwner != address(0)
-            &amp;&amp; _newOwner != owner 
+            && _newOwner != owner 
         );
         OwnershipTransferred(owner, _newOwner);
         owner = _newOwner;
@@ -108,17 +108,17 @@ contract DappleAirdrops is Ownable {
     
     using SafeMath for uint256;
     
-    mapping (address =&gt; uint256) public bonusDropsOf;
-    mapping (address =&gt; uint256) public ethBalanceOf;
-    mapping (address =&gt; bool) public tokenIsBanned;
-    mapping (address =&gt; uint256) public trialDrops;
+    mapping (address => uint256) public bonusDropsOf;
+    mapping (address => uint256) public ethBalanceOf;
+    mapping (address => bool) public tokenIsBanned;
+    mapping (address => uint256) public trialDrops;
         
     uint256 public rate;
     uint256 public dropUnitPrice;
     uint256 public bonus;
     uint256 public maxDropsPerTx;
     uint256 public maxTrialDrops;
-    string public constant website = &quot;www.dappleairdrops.com&quot;;
+    string public constant website = "www.dappleairdrops.com";
     
     event BonusCreditGranted(address indexed to, uint256 credit);
     event BonusCreditRevoked(address indexed from, uint256 credit);
@@ -161,7 +161,7 @@ contract DappleAirdrops is Ownable {
      * otherwise.
      * */
     function tokenHasFreeTrial(address _addressOfToken) public view returns(bool) {
-        return trialDrops[_addressOfToken] &lt; maxTrialDrops;
+        return trialDrops[_addressOfToken] < maxTrialDrops;
     }
     
     
@@ -190,7 +190,7 @@ contract DappleAirdrops is Ownable {
     function setRate(uint256 _newRate) public onlyOwner returns(bool) {
         require(
             _newRate != rate 
-            &amp;&amp; _newRate &gt; 0
+            && _newRate > 0
         );
         RateChanged(rate, _newRate);
         rate = _newRate;
@@ -225,7 +225,7 @@ contract DappleAirdrops is Ownable {
      * @return true if function executes successfully, false otherwise.
      * */
     function setMaxDrops(uint256 _maxDrops) public onlyOwner returns(bool) {
-        require(_maxDrops &gt;= 100);
+        require(_maxDrops >= 100);
         MaxDropsChanged(maxDropsPerTx, _maxDrops);
         maxDropsPerTx = _maxDrops;
         return true;
@@ -258,7 +258,7 @@ contract DappleAirdrops is Ownable {
     function grantBonusDrops(address _addr, uint256 _bonusDrops) public onlyOwner returns(bool) {
         require(
             _addr != address(0) 
-            &amp;&amp; _bonusDrops &gt; 0
+            && _bonusDrops > 0
         );
         bonusDropsOf[_addr] = bonusDropsOf[_addr].add(_bonusDrops);
         BonusCreditGranted(_addr, _bonusDrops);
@@ -279,7 +279,7 @@ contract DappleAirdrops is Ownable {
     function revokeBonusCreditOf(address _addr, uint256 _bonusDrops) public onlyOwner returns(bool) {
         require(
             _addr != address(0) 
-            &amp;&amp; bonusDropsOf[_addr] &gt;= _bonusDrops
+            && bonusDropsOf[_addr] >= _bonusDrops
         );
         bonusDropsOf[_addr] = bonusDropsOf[_addr].sub(_bonusDrops);
         BonusCreditRevoked(_addr, _bonusDrops);
@@ -388,7 +388,7 @@ contract DappleAirdrops is Ownable {
      * owner. This is a security feature which was implemented on this contract. It is not possible
      * for the owner of this contract or anyone else to transfer the tokens which belong to others. 
      * 
-     * @param _addr The address of the token&#39;s owner.
+     * @param _addr The address of the token's owner.
      * @param _addressOfToken The contract address of the ERC20 token.
      * 
      * @return The ERC20 token allowance from token owner to this contract. 
@@ -419,8 +419,8 @@ contract DappleAirdrops is Ownable {
      * */
     function withdrawEth(uint256 _eth) public returns(bool) {
         require(
-            ethBalanceOf[msg.sender] &gt;= _eth
-            &amp;&amp; _eth &gt; 0 
+            ethBalanceOf[msg.sender] >= _eth
+            && _eth > 0 
         );
         uint256 toTransfer = _eth;
         ethBalanceOf[msg.sender] = ethBalanceOf[msg.sender].sub(_eth);
@@ -434,9 +434,9 @@ contract DappleAirdrops is Ownable {
      * to invoke the function will result in a loss of gas and no refunds will be made.
      * */
     function issueRefunds(address[] _addrs) public onlyOwner returns(bool) {
-        require(_addrs.length &lt;= maxDropsPerTx);
-        for(uint i = 0; i &lt; _addrs.length; i++) {
-            if(_addrs[i] != address(0) &amp;&amp; ethBalanceOf[_addrs[i]] &gt; 0) {
+        require(_addrs.length <= maxDropsPerTx);
+        for(uint i = 0; i < _addrs.length; i++) {
+            if(_addrs[i] != address(0) && ethBalanceOf[_addrs[i]] > 0) {
                 uint256 toRefund = ethBalanceOf[_addrs[i]];
                 ethBalanceOf[_addrs[i]] = 0;
                 _addrs[i].transfer(toRefund);
@@ -460,14 +460,14 @@ contract DappleAirdrops is Ownable {
     function singleValueAirdrop(address _addressOfToken,  address[] _recipients, uint256 _value) public returns(bool) {
         ERCInterface token = ERCInterface(_addressOfToken);
         require(
-            _recipients.length &lt;= maxDropsPerTx 
-            &amp;&amp; (
-                getTotalDropsOf(msg.sender)&gt;= _recipients.length 
+            _recipients.length <= maxDropsPerTx 
+            && (
+                getTotalDropsOf(msg.sender)>= _recipients.length 
                 || tokenHasFreeTrial(_addressOfToken) 
             )
-            &amp;&amp; !tokenIsBanned[_addressOfToken]
+            && !tokenIsBanned[_addressOfToken]
         );
-        for(uint i = 0; i &lt; _recipients.length; i++) {
+        for(uint i = 0; i < _recipients.length; i++) {
             if(_recipients[i] != address(0)) {
                 token.transferFrom(msg.sender, _recipients[i], _value);
             }
@@ -496,16 +496,16 @@ contract DappleAirdrops is Ownable {
     function multiValueAirdrop(address _addressOfToken,  address[] _recipients, uint256[] _values) public returns(bool) {
         ERCInterface token = ERCInterface(_addressOfToken);
         require(
-            _recipients.length &lt;= maxDropsPerTx 
-            &amp;&amp; _recipients.length == _values.length 
-            &amp;&amp; (
-                getTotalDropsOf(msg.sender) &gt;= _recipients.length
+            _recipients.length <= maxDropsPerTx 
+            && _recipients.length == _values.length 
+            && (
+                getTotalDropsOf(msg.sender) >= _recipients.length
                 || tokenHasFreeTrial(_addressOfToken)
             )
-            &amp;&amp; !tokenIsBanned[_addressOfToken]
+            && !tokenIsBanned[_addressOfToken]
         );
-        for(uint i = 0; i &lt; _recipients.length; i++) {
-            if(_recipients[i] != address(0) &amp;&amp; _values[i] &gt; 0) {
+        for(uint i = 0; i < _recipients.length; i++) {
+            if(_recipients[i] != address(0) && _values[i] > 0) {
                 token.transferFrom(msg.sender, _recipients[i], _values[i]);
             }
         }
@@ -527,13 +527,13 @@ contract DappleAirdrops is Ownable {
      * @param _drops The amount of recipients which received tokens from the airdrop.
      * */
     function updateMsgSenderBonusDrops(uint256 _drops) internal {
-        if(_drops &lt;= getDropsOf(msg.sender)) {
+        if(_drops <= getDropsOf(msg.sender)) {
             bonusDropsOf[msg.sender] = bonusDropsOf[msg.sender].add(_drops.mul(bonus).div(100));
             ethBalanceOf[msg.sender] = ethBalanceOf[msg.sender].sub(_drops.mul(dropUnitPrice));
             owner.transfer(_drops.mul(dropUnitPrice));
         } else {
             uint256 remainder = _drops.sub(getDropsOf(msg.sender));
-            if(ethBalanceOf[msg.sender] &gt; 0) {
+            if(ethBalanceOf[msg.sender] > 0) {
                 bonusDropsOf[msg.sender] = bonusDropsOf[msg.sender].add(getDropsOf(msg.sender).mul(bonus).div(100));
                 owner.transfer(ethBalanceOf[msg.sender]);
                 ethBalanceOf[msg.sender] = 0;
@@ -557,8 +557,8 @@ contract DappleAirdrops is Ownable {
     function withdrawERC20Tokens(address _addressOfToken,  address _recipient, uint256 _value) public onlyOwner returns(bool){
         require(
             _addressOfToken != address(0)
-            &amp;&amp; _recipient != address(0)
-            &amp;&amp; _value &gt; 0
+            && _recipient != address(0)
+            && _value > 0
         );
         ERCInterface token = ERCInterface(_addressOfToken);
         token.transfer(_recipient, _value);

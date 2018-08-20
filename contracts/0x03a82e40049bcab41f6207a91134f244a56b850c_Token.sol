@@ -2,9 +2,9 @@
 //Generally speaking, the difference between plain ERC20 token is in way of generating token via prescribed TGR (Token Generation Rounds)
 //and possibility to burn token to receive contributed Ether back
 
-// Authors: Alexander Shevtsov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcaebdb2b8b3b1b0b3bbb5b2ebea9cbbb1bdb5b0f2bfb3b1">[email&#160;protected]</a>&gt;
-//          Vladimir Bobrov &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ff9cfebeaeceae1fbfafdf6e8fde0faffa1ece0e2">[email&#160;protected]</a>&gt;
-//          vladiuz1 &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9dfdae9c8dbdbc8d087c0c6">[email&#160;protected]</a>&gt;
+// Authors: Alexander Shevtsov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcaebdb2b8b3b1b0b3bbb5b2ebea9cbbb1bdb5b0f2bfb3b1">[email protected]</a>>
+//          Vladimir Bobrov <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ff9cfebeaeceae1fbfafdf6e8fde0faffa1ece0e2">[email protected]</a>>
+//          vladiuz1 <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9dfdae9c8dbdbc8d087c0c6">[email protected]</a>>
 // License: see the repository file
 // Last updated: 16 August 2018
 pragma solidity ^0.4.22;
@@ -23,13 +23,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -42,7 +42,7 @@ contract Base {
 
     modifier noAnyReentrancy {
         uint _locks = bitlocks;
-        require(_locks &lt;= 0);
+        require(_locks <= 0);
         bitlocks = uint(-1);
         _;
         bitlocks = _locks;
@@ -63,11 +63,11 @@ contract Base {
 
 contract ERC20 is Base {
     
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     using SafeMath for uint;
     uint public totalSupply;
-    bool public isFrozen = false; //it&#39;s not part of ERC20 specification, however it has to be here to place modifiers on usual ERC20 functions
+    bool public isFrozen = false; //it's not part of ERC20 specification, however it has to be here to place modifiers on usual ERC20 functions
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 
@@ -119,8 +119,8 @@ contract ERC20 is Base {
 
 contract Whitelist {
 
-    mapping(address =&gt; bool) public whitelist;
-    mapping(address =&gt; bool) operators;
+    mapping(address => bool) public whitelist;
+    mapping(address => bool) operators;
     address authority;
 
     constructor(address _authority) {
@@ -153,12 +153,12 @@ contract Whitelist {
 contract Token is ERC20 {
 
     //some ERC20 definitions
-    string public constant name = &quot;Array.io Token&quot;;
-    string public constant symbol = &quot;eRAY&quot;;
+    string public constant name = "Array.io Token";
+    string public constant symbol = "eRAY";
     uint8 public constant decimals = 18;
 
     //these are settings, i.e. the values set by the initiator at the beginning of each token generation round
-    uint public tgrSettingsAmount; //how much is needed for current round goals. It doesn&#39;t depend on how much total funds is contributed, rather than on how much has the project received.
+    uint public tgrSettingsAmount; //how much is needed for current round goals. It doesn't depend on how much total funds is contributed, rather than on how much has the project received.
     uint public tgrSettingsMinimalContribution; 
     uint public tgrSettingsPartContributor;
     uint public tgrSettingsPartProject;
@@ -176,7 +176,7 @@ contract Token is ERC20 {
     address public projectWallet;
     address public foundersWallet;
     address constant public burnAddress = address(0);
-    mapping (address =&gt; uint) public invBalances;
+    mapping (address => uint) public invBalances;
     uint public totalInvSupply;
     Whitelist public whitelist;
 
@@ -217,11 +217,11 @@ contract Token is ERC20 {
     /// @dev Fallback function allows to buy tokens
     function () public payable isTgrLive isNotFrozenOnly noAnyReentrancy {
         require(whitelist.whitelist(msg.sender)); //checking if sender is allowed to send Ether
-        require(tgrAmountCollected &lt; tgrSettingsAmount); //checking if target amount is not achieved
-        require(msg.value &gt;= tgrSettingsMinimalContribution); 
+        require(tgrAmountCollected < tgrSettingsAmount); //checking if target amount is not achieved
+        require(msg.value >= tgrSettingsMinimalContribution); 
 
         uint stage = block.number.sub(tgrStartBlock).div(tgrSettingsBlocksPerStage);
-        require(stage &lt; tgrSettingsMaxStages); //checking if max stage is not reached
+        require(stage < tgrSettingsMaxStages); //checking if max stage is not reached
 
         //if the value sent is bigger than remaining amount to achieve the target, the difference is refunded
         uint etherToRefund = 0;
@@ -236,7 +236,7 @@ contract Token is ERC20 {
             remainsToContribute = remainsToContribute + allStakes;
         }
 
-        if (remainsToContribute &lt; msg.value) {
+        if (remainsToContribute < msg.value) {
             etherToRefund = msg.value.sub(remainsToContribute);
             etherContributed = remainsToContribute;
         }
@@ -300,7 +300,7 @@ contract Token is ERC20 {
     /// @param values array amount of tokens to transfer    
     function multiTransfer(address[] dests, uint[] values) public isNotFrozenOnly returns(uint) {
         uint i = 0;
-        while (i &lt; dests.length) {
+        while (i < dests.length) {
            transfer(dests[i], values[i]);
            i += 1;
         }
@@ -311,7 +311,7 @@ contract Token is ERC20 {
     function withdrawFrozen() public isFrozenOnly noAnyReentrancy {
         uint amountWithdraw = totalSupply.mul(invBalances[msg.sender]).div(totalInvSupply);
         // fix possible rounding errors for last withdrawal:
-        if (amountWithdraw &gt; address(this).balance) {
+        if (amountWithdraw > address(this).balance) {
             amountWithdraw = address(this).balance;
         }
         invBalances[msg.sender] = 0;
@@ -371,14 +371,14 @@ contract Token is ERC20 {
     }
 
 
-    //Status of tgr is initially defined by the start block of the tgr, if it&#39;s zero then tgr is not live
+    //Status of tgr is initially defined by the start block of the tgr, if it's zero then tgr is not live
     function tgrLive() view public returns(bool) {
         if (tgrStartBlock == 0) {
             return false;
         }
         uint stage = block.number.sub(tgrStartBlock).div(tgrSettingsBlocksPerStage);
-        if (stage &lt; tgrSettingsMaxStages) {
-            if (tgrAmountCollected &gt;= tgrSettingsAmount){
+        if (stage < tgrSettingsMaxStages) {
+            if (tgrAmountCollected >= tgrSettingsAmount){
                 return false;
             } else { 
                 return true;

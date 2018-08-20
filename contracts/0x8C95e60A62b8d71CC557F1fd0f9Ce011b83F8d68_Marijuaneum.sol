@@ -13,8 +13,8 @@ contract Marijuaneum {
 	address public burnAddress;
 
 	/* This creates an array with all balances */
-	mapping (address =&gt; uint) public balanceOf;
-	mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+	mapping (address => uint) public balanceOf;
+	mapping (address => mapping (address => uint)) public allowance;
 
 	/* This generates a public event on the blockchain that will notify clients */
 	event Transfer(address indexed from, address indexed to, uint value);
@@ -26,8 +26,8 @@ contract Marijuaneum {
 	function Marijuaneum() {
 		initialSupply = 420000000000000;
 		balanceOf[msg.sender] = initialSupply;             // Give the creator all initial tokens                    
-		name = &#39;Marijuaneum&#39;;                                 // Set the name for display purposes     
-		symbol = &#39;XMJ&#39;;                               	 // Set the symbol for display purposes    
+		name = 'Marijuaneum';                                 // Set the name for display purposes     
+		symbol = 'XMJ';                               	 // Set the symbol for display purposes    
 		decimals = 8;                           		 // Amount of decimals for display purposes
                 burnAddress = 0x1b32000000000000000000000000000000000000;
 		
@@ -40,7 +40,7 @@ contract Marijuaneum {
 	/* Send coins */
 	function transfer(address _to, uint256 _value) 
 	returns (bool success) {
-		if (balanceOf[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		if (balanceOf[msg.sender] >= _value && _value > 0) {
 			balanceOf[msg.sender] -= _value;
 			balanceOf[_to] += _value;
 			Transfer(msg.sender, _to, _value);
@@ -64,7 +64,7 @@ contract Marijuaneum {
 	}
 	
 	
-	/*Allow another adress to use your money but doesn&#39;t notify it*/
+	/*Allow another adress to use your money but doesn't notify it*/
 	function approve(address _spender, uint256 _value) returns (bool success) {
         allowance[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -78,7 +78,7 @@ contract Marijuaneum {
 						  address _to,
 						  uint256 _value)
 	returns (bool success) {
-		if (balanceOf[_from] &gt;= _value &amp;&amp; allowance[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+		if (balanceOf[_from] >= _value && allowance[_from][msg.sender] >= _value && _value > 0) {
 			balanceOf[_to] += _value;
 			Transfer(_from, _to, _value);
 			balanceOf[_from] -= _value;

@@ -2,8 +2,8 @@ pragma solidity ^0.4.13;
 
 contract Commons {
 
-    int256 constant INT256_MIN = int256((uint256(1) &lt;&lt; 255));
-    int256 constant INT256_MAX = int256(~((uint256(1) &lt;&lt; 255)));
+    int256 constant INT256_MIN = int256((uint256(1) << 255));
+    int256 constant INT256_MAX = int256(~((uint256(1) << 255)));
     uint256 constant UINT256_MIN = 0;
     uint256 constant UINT256_MAX = ~uint256(0);
 
@@ -69,8 +69,8 @@ contract Authorized is Ownable {
         bool isWinery;
     }
 
-    mapping (address =&gt; User) public onChainIdentities;    
-    mapping (bytes32 =&gt; address) public onChainAddresses;
+    mapping (address => User) public onChainIdentities;    
+    mapping (bytes32 => address) public onChainAddresses;
 
     event LogSetUser
     (
@@ -221,7 +221,7 @@ contract WineryOperations is Commons, Authorized {
         string attributes;      // dsda; dasd;; sadas;
     }
 
-    mapping(bytes32 =&gt; WineryOperation[]) public wineries;
+    mapping(bytes32 => WineryOperation[]) public wineries;
 
     event LogAddWineryOperation(
         string _trackID,
@@ -479,7 +479,7 @@ contract WineryOperations is Commons, Authorized {
     }
 
     // ============================================================================================
-    // Helpers for &#208;Apps
+    // Helpers for ÐApps
     // ============================================================================================
     
     /// @notice ****
@@ -526,7 +526,7 @@ contract WineryOperations is Commons, Authorized {
         returns (int position)
     {
         bytes32 _mappingID = keccak256(_trackID, _winery);
-        for (uint i = 0; i &lt; wineries[_mappingID].length &amp;&amp; i &lt; OPERATION_SEARCH_MAX; i++) {
+        for (uint i = 0; i < wineries[_mappingID].length && i < OPERATION_SEARCH_MAX; i++) {
             if (keccak256(wineries[_mappingID][i].operationID) == keccak256(_operationID)) {
                 return int(i);
             }
@@ -589,8 +589,8 @@ contract WineryOperations is Commons, Authorized {
     )
         private
     {
-        require(_numCurOperation &lt; OPERATION_SEARCH_MAX);
-        require(_numParent &gt;= 0);
+        require(_numCurOperation < OPERATION_SEARCH_MAX);
+        require(_numParent >= 0);
         uint _parentIndex = uint(_numParent);
         int _numCurOperationINT = int(_numCurOperation);
         wineries[_mappingID][_numCurOperation].parentList.push(IndexElem(_parentMappingID, _numParent));
@@ -600,7 +600,7 @@ contract WineryOperations is Commons, Authorized {
   /*
     
     // ======================================================================================
-    // &#208;Apps helpers
+    // ÐApps helpers
     // ======================================================================================
 
 
@@ -626,7 +626,7 @@ contract WineryOperations is Commons, Authorized {
     
     function getNumPositionProduct(bytes32 _mappingID, uint8 _nPosOp, string _productId) external view returns (int position) {
         position = -1;
-        for (uint8 i = 0; i &lt; wineries[_mappingID][_nPosOp].prods.length; i++) {
+        for (uint8 i = 0; i < wineries[_mappingID][_nPosOp].prods.length; i++) {
             if (keccak256(wineries[_mappingID][_nPosOp].prods[i].productID) == keccak256(_productId))
                 position = i;
         }
@@ -659,13 +659,13 @@ contract ProducerOperations is Commons, Authorized {
     }
 
     struct Vineyard {
-        uint16 variety;        // variet&#224; mapping descrizione_varieta
-        uint24 areaCode;       // codice_istat_comune, mapping dal quale si ricaver&#224; anche prov. e descrizione
+        uint16 variety;        // varietà mapping descrizione_varieta
+        uint24 areaCode;       // codice_istat_comune, mapping dal quale si ricaverà anche prov. e descrizione
         uint32 usedSurface;    // vigneto utilizzato (superficie_utilizzata) mq2
         uint16 plantingYear;
     }
 
-    mapping(bytes32 =&gt; HarvestOperation) public harvests;
+    mapping(bytes32 => HarvestOperation) public harvests;
     
     event LogStoreHarvestOperation(
         string trackIDs,
@@ -811,7 +811,7 @@ contract ProducerOperations is Commons, Authorized {
     }
 
     // ============================================================================================
-    // Helpers for &#208;Apps
+    // Helpers for ÐApps
     // ============================================================================================
 
     function getHarvestOperation(string _trackID, address _producer)
@@ -948,7 +948,7 @@ contract Upgradable is Ownable {
 
 contract SmartBinding is Authorized {
 
-    mapping (bytes32 =&gt; bytes32) public bindingSmartIdentity;
+    mapping (bytes32 => bytes32) public bindingSmartIdentity;
  
     event LogBindSmartIdentity (
         string _trackIDs,
@@ -997,7 +997,7 @@ contract SmartBinding is Authorized {
     }
 
     // ======================================================================================
-    // &#208;Apps helpers
+    // ÐApps helpers
     // ======================================================================================
 
     function getWineryMappingID(string _smartIdentity, string _offChainIdentity)
@@ -1021,7 +1021,7 @@ contract WineSupplyChain is
 
     address public endorsements;
 
-    function WineSupplyChain(address _endorsements) Upgradable(&quot;1.0.0&quot;) public {
+    function WineSupplyChain(address _endorsements) Upgradable("1.0.0") public {
         endorsements = _endorsements;
     }
 
@@ -1041,7 +1041,7 @@ contract WineSupplyChain is
         regulatorsOnly
         returns (bool success)
     {
-        require(_productIndex &gt;= 0);
+        require(_productIndex >= 0);
         address producer = getAddress(_producerOffChainIdentity);
         bytes32 harvestMappingID = keccak256(_harvestTrackID, producer);
         address winery = getAddress(_wineryOffChainIdentity);
@@ -1053,7 +1053,7 @@ contract WineSupplyChain is
     }
 
     /// @notice TODO Commenti
-    // TOCHECK AGGIUNGERE REQUIRE SU TIPO_OPERAZIONE = &#39;CASD&#39; ???
+    // TOCHECK AGGIUNGERE REQUIRE SU TIPO_OPERAZIONE = 'CASD' ???
     function startWinery(
         string _harvestTrackID,
         string _offChainProducerIdentity,
@@ -1063,7 +1063,7 @@ contract WineSupplyChain is
         external
         wineriesOnly
     {
-        require(_productIndex &gt;= 0);
+        require(_productIndex >= 0);
         address producer = getAddress(_offChainProducerIdentity);
         bytes32 harvestMappingID = keccak256(_harvestTrackID, producer);
         bytes32 wineryOperationMappingID = keccak256(_wineryTrackID, msg.sender);
@@ -1072,7 +1072,7 @@ contract WineSupplyChain is
     }
 
     /// @notice TODO Commenti
-    // TOCHECK AGGIUNGERE REQUIRE SU TIPO_OPERAZIONE = &#39;CASD&#39; ???
+    // TOCHECK AGGIUNGERE REQUIRE SU TIPO_OPERAZIONE = 'CASD' ???
     function startProduct(
         string _harvestTrackID,
         string _wineryTrackID,
@@ -1082,7 +1082,7 @@ contract WineSupplyChain is
         external
         producersOnly
     {
-        require(_productIndex &gt; 0);
+        require(_productIndex > 0);
         bytes32 harvestMappingID = keccak256(_harvestTrackID, msg.sender);
         address winery = getAddress(_offChainWineryIdentity);
         bytes32 wineryOperationMappingID = keccak256(_wineryTrackID, winery);

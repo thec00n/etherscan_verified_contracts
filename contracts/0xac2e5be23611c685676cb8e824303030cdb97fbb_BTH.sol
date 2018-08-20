@@ -12,37 +12,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -55,7 +55,7 @@ library SafeMath {
 
 /**
  * @title Shareable
- * @dev inheritable &quot;property&quot; contract that enables methods to be protected by requiring the
+ * @dev inheritable "property" contract that enables methods to be protected by requiring the
  * acquiescence of either a single, or, crucially, each of a number of, designated owners.
  * @dev Usage: use modifiers onlyowner (just own owned) or onlymanyowners(hash), whereby the same hash must be provided by some number (specified in constructor) of the set of owners (specified in the constructor) before the interior is executed.
  */
@@ -74,9 +74,9 @@ contract Shareable {
   // list of owners
   address[256] owners;
   // index on the list of owners to allow reverse lookup
-  mapping(address =&gt; uint) ownerIndex;
+  mapping(address => uint) ownerIndex;
   // the ongoing operations.
-  mapping(bytes32 =&gt; PendingState) pendings;
+  mapping(bytes32 => PendingState) pendings;
   bytes32[] pendingsIndex;
 
 
@@ -106,7 +106,7 @@ contract Shareable {
   }
 
   /**
-   * @dev Constructor is given the number of sigs required to do protected &quot;onlymanyowners&quot;
+   * @dev Constructor is given the number of sigs required to do protected "onlymanyowners"
    * transactions as well as the selection of addresses capable of confirming them.
    * @param _owners A list of owners.
    * @param _required The amount required for a transaction to be approved.
@@ -114,12 +114,12 @@ contract Shareable {
   function Shareable(address[] _owners, uint _required) {
     owners[1] = msg.sender;
     ownerIndex[msg.sender] = 1;
-    for (uint i = 0; i &lt; _owners.length; ++i) {
+    for (uint i = 0; i < _owners.length; ++i) {
       owners[2 + i] = _owners[i];
       ownerIndex[_owners[i]] = 2 + i;
     }
     required = _required;
-    if (required &gt; owners.length) {
+    if (required > owners.length) {
       throw;
     }
   }
@@ -130,13 +130,13 @@ contract Shareable {
    */
   function revoke(bytes32 _operation) external {
     uint index = ownerIndex[msg.sender];
-    // make sure they&#39;re an owner
+    // make sure they're an owner
     if (index == 0) {
       return;
     }
     uint ownerIndexBit = 2**index;
     var pending = pendings[_operation];
-    if (pending.ownersDone &amp; ownerIndexBit &gt; 0) {
+    if (pending.ownersDone & ownerIndexBit > 0) {
       pending.yetNeeded++;
       pending.ownersDone -= ownerIndexBit;
       Revoke(msg.sender, _operation);
@@ -158,7 +158,7 @@ contract Shareable {
    * @return True if the address is an owner and fase otherwise.
    */
   function isOwner(address _addr) constant returns (bool) {
-    return ownerIndex[_addr] &gt; 0;
+    return ownerIndex[_addr] > 0;
   }
 
   /**
@@ -171,31 +171,31 @@ contract Shareable {
     var pending = pendings[_operation];
     uint index = ownerIndex[_owner];
 
-    // make sure they&#39;re an owner
+    // make sure they're an owner
     if (index == 0) {
       return false;
     }
 
     // determine the bit to set for this owner.
     uint ownerIndexBit = 2**index;
-    return !(pending.ownersDone &amp; ownerIndexBit == 0);
+    return !(pending.ownersDone & ownerIndexBit == 0);
   }
 
   /**
-   * @dev Confirm and operation and checks if it&#39;s already executable.
+   * @dev Confirm and operation and checks if it's already executable.
    * @param _operation The operation identifier.
    * @return Returns true when operation can be executed.
    */
   function confirmAndCheck(bytes32 _operation) internal returns (bool) {
     // determine what index the present sender is:
     uint index = ownerIndex[msg.sender];
-    // make sure they&#39;re an owner
+    // make sure they're an owner
     if (index == 0) {
       throw;
     }
 
     var pending = pendings[_operation];
-    // if we&#39;re not yet working on this operation, switch over and reset the confirmation status.
+    // if we're not yet working on this operation, switch over and reset the confirmation status.
     if (pending.yetNeeded == 0) {
       // reset count of confirmations needed.
       pending.yetNeeded = required;
@@ -206,11 +206,11 @@ contract Shareable {
     }
     // determine the bit to set for this owner.
     uint ownerIndexBit = 2**index;
-    // make sure we (the message sender) haven&#39;t confirmed this operation previously.
-    if (pending.ownersDone &amp; ownerIndexBit == 0) {
+    // make sure we (the message sender) haven't confirmed this operation previously.
+    if (pending.ownersDone & ownerIndexBit == 0) {
       Confirmation(msg.sender, _operation);
       // ok - check if count is enough to go ahead.
-      if (pending.yetNeeded &lt;= 1) {
+      if (pending.yetNeeded <= 1) {
         // enough confirmations: reset and run interior.
         delete pendingsIndex[pendings[_operation].index];
         delete pendings[_operation];
@@ -230,7 +230,7 @@ contract Shareable {
    */
   function clearPending() internal {
     uint length = pendingsIndex.length;
-    for (uint i = 0; i &lt; length; ++i) {
+    for (uint i = 0; i < length; ++i) {
       if (pendingsIndex[i] != 0) {
         delete pendings[pendingsIndex[i]];
       }
@@ -271,13 +271,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -314,7 +314,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
 
   /**
@@ -327,7 +327,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -346,7 +346,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -375,10 +375,10 @@ contract BTH is StandardToken, Shareable {
   /*
    * Constants
    */
-  string public constant name = &quot;Bether&quot;;
-  string public constant symbol = &quot;BTH&quot;;
+  string public constant name = "Bether";
+  string public constant symbol = "BTH";
   uint256 public constant decimals = 18;
-  string public version = &quot;1.0&quot;;
+  string public version = "1.0";
 
   uint256 public constant INITIAL_SUBSIDY = 50 * 10**decimals;
   uint256 public constant HASH_RATE_MULTIPLIER = 1;
@@ -400,10 +400,10 @@ contract BTH is StandardToken, Shareable {
   /*
    * Storage vars
    */
-  mapping (uint256 =&gt; HalvingHashRate) halvingsHashRate; // Holds the accumulated hash rate per halving
-  mapping (uint256 =&gt; Subsidy) halvingsSubsidies; // Stores the remaining subsidy per halving
-  mapping (address =&gt; Miner) miners; // Miners data
-  mapping (bytes32 =&gt; Poll) polls; // Contract polls
+  mapping (uint256 => HalvingHashRate) halvingsHashRate; // Holds the accumulated hash rate per halving
+  mapping (uint256 => Subsidy) halvingsSubsidies; // Stores the remaining subsidy per halving
+  mapping (address => Miner) miners; // Miners data
+  mapping (bytes32 => Poll) polls; // Contract polls
 
   address public bthFoundationWallet;
   uint256 public subsidyHalvingInterval;
@@ -420,7 +420,7 @@ contract BTH is StandardToken, Shareable {
   struct Miner {
     uint256 block; // Miner block, used to calculate in which halving is the miner
     uint256 totalHashRate; // Accumulated miner hash rate
-    mapping (uint256 =&gt; MinerHashRate) hashRate;
+    mapping (uint256 => MinerHashRate) hashRate;
   }
 
   struct MinerHashRate {
@@ -436,8 +436,8 @@ contract BTH is StandardToken, Shareable {
 
   struct Poll {
     bool exists;  // Indicates that the poll is created
-    string title; // Title of the poll, it&#39;s the poll indentifier so it must be unique
-    mapping (address =&gt; bool) votes; // Control who have voted
+    string title; // Title of the poll, it's the poll indentifier so it must be unique
+    mapping (address => bool) votes; // Control who have voted
     uint8 percentage; // Percentage which determines if the poll has been approved
     uint256 hashRate; // Summed hash rate of all the voters
     bool approved; // True if the poll has been approved
@@ -450,12 +450,12 @@ contract BTH is StandardToken, Shareable {
    * Modifiers
    */
   modifier notBeforeGenesis() {
-    require(block.number &gt;= genesis);
+    require(block.number >= genesis);
     _;
   }
 
   modifier nonZero(uint256 _value) {
-    require(_value &gt; 0);
+    require(_value > 0);
     _;
   }
 
@@ -480,7 +480,7 @@ contract BTH is StandardToken, Shareable {
   }
 
   modifier notGreaterThanCurrentBlock(uint256 _block) {
-    require(_block &lt;= currentBlock());
+    require(_block <= currentBlock());
     _;
   }
 
@@ -523,7 +523,7 @@ contract BTH is StandardToken, Shareable {
     nonZero(_maxHalvings)
   {
     // Genesis block must be greater or equal than the current block
-    if (_genesis &lt; block.number) throw;
+    if (_genesis < block.number) throw;
 
     bthFoundationWallet = _bthFoundationWallet;
     subsidyHalvingInterval = _subsidyHalvingInterval;
@@ -684,9 +684,9 @@ contract BTH is StandardToken, Shareable {
   {
     uint256 halvings = _block.div(subsidyHalvingInterval);
 
-    if (halvings &gt;= maxHalvings) return 0;
+    if (halvings >= maxHalvings) return 0;
 
-    uint256 subsidy = INITIAL_SUBSIDY &gt;&gt; halvings;
+    uint256 subsidy = INITIAL_SUBSIDY >> halvings;
 
     return subsidy;
   }
@@ -751,10 +751,10 @@ contract BTH is StandardToken, Shareable {
     Miner miner = miners[_miner];
 
     // First of all use the contribute to synchronize the hash rate of the previous halvings
-    if (halving != 0 &amp;&amp; halving &lt; maxHalvings) {
+    if (halving != 0 && halving < maxHalvings) {
       uint256 I;
       uint256 n = 0;
-      for (I = halving - 1; I &gt; 0; I--) {
+      for (I = halving - 1; I > 0; I--) {
         if (!halvingsHashRate[I].carried) {
           n = n.add(1);
         } else {
@@ -762,7 +762,7 @@ contract BTH is StandardToken, Shareable {
         }
       }
 
-      for (I = halving - n; I &lt; halving; I++) {
+      for (I = halving - n; I < halving; I++) {
         if (!halvingsHashRate[I].carried) {
           halvingsHashRate[I].carried = true;
           halvingsHashRate[I].rate = halvingsHashRate[I].rate.add(halvingsHashRate[I - 1].rate);
@@ -771,13 +771,13 @@ contract BTH is StandardToken, Shareable {
     }
 
     // Increase the halving hash rate accordingly, after maxHalvings the halvings hash rate are not needed and therefore not updated
-    if (halving &lt; maxHalvings) {
+    if (halving < maxHalvings) {
       halvingsHashRate[halving].rate = halvingsHashRate[halving].rate.add(hashRate);
     }
 
     // After updating the halving hash rate, do the miner contribution
 
-    // If it&#39;s the very first time the miner participates in the BTH token, assign an initial block
+    // If it's the very first time the miner participates in the BTH token, assign an initial block
     // This block is used with two porpouses:
     //    - To account in which halving the miner is
     //    - To know the offset inside the halving and allow only claimings after the miner offset
@@ -819,7 +819,7 @@ contract BTH is StandardToken, Shareable {
     uint256 start = blockHalving(miner.block);
     uint256 end = start.add(_n);
 
-    if (end &gt; currentHalving()) {
+    if (end > currentHalving()) {
       return 0;
     }
 
@@ -830,7 +830,7 @@ contract BTH is StandardToken, Shareable {
     uint256 K;
 
     // Claim each unclaimed halving subsidy
-    for(K = start; K &lt; end &amp;&amp; K &lt; maxHalvings; K++) {
+    for(K = start; K < end && K < maxHalvings; K++) {
       // Check if the total hash rate has been carried, otherwise the current halving
       // hash rate needs to be updated carrying the total from the last carried
       HalvingHashRate halvingHashRate = halvingsHashRate[K];
@@ -853,7 +853,7 @@ contract BTH is StandardToken, Shareable {
       if (hashRate != 0){
         // If the halving to claim is the last claimable, check the offsets
         if (K == currentHalving().sub(1)) {
-          if (currentBlock() % subsidyHalvingInterval &lt; miner.block % subsidyHalvingInterval) {
+          if (currentBlock() % subsidyHalvingInterval < miner.block % subsidyHalvingInterval) {
             // Finish the loop
             continue;
           }
@@ -869,7 +869,7 @@ contract BTH is StandardToken, Shareable {
         unclaimed = sub.value;
         subsidy = halvingSubsidy(K).mul(hashRate).div(halvingHashRate.rate);
 
-        if (subsidy &gt; unclaimed) {
+        if (subsidy > unclaimed) {
           subsidy = unclaimed;
         }
 
@@ -884,9 +884,9 @@ contract BTH is StandardToken, Shareable {
       miner.block = miner.block.add(subsidyHalvingInterval);
     }
 
-    // If K is less than end, the loop exited because K &lt; maxHalvings, so
+    // If K is less than end, the loop exited because K < maxHalvings, so
     // move the miner end - K halvings
-    if (K &lt; end) {
+    if (K < end) {
       miner.block = miner.block.add(subsidyHalvingInterval.mul(end.sub(K)));
     }
 
@@ -931,7 +931,7 @@ contract BTH is StandardToken, Shareable {
       return 0;
     } else {
       // Check the miner offset
-      if (currentBlock() % subsidyHalvingInterval &lt; miner.block % subsidyHalvingInterval) {
+      if (currentBlock() % subsidyHalvingInterval < miner.block % subsidyHalvingInterval) {
         // In this case the miner offset is behind the current block offset, so it must wait
         // till the block offset is greater or equal than his offset
         return halving.sub(minerHalving).sub(1);
@@ -993,7 +993,7 @@ contract BTH is StandardToken, Shareable {
       throw;
     }
 
-    if (_percentage &lt; 1 || _percentage &gt; 100) {
+    if (_percentage < 1 || _percentage > 100) {
       throw;
     }
 
@@ -1061,7 +1061,7 @@ contract BTH is StandardToken, Shareable {
 
         // Check if the poll has succeeded
         if (!poll.approved) {
-          if (poll.hashRate.mul(100).div(totalHashRate) &gt;= poll.percentage) {
+          if (poll.hashRate.mul(100).div(totalHashRate) >= poll.percentage) {
             poll.approved = true;
 
             poll.approvalBlock = block.number;
@@ -1228,7 +1228,7 @@ contract BTH is StandardToken, Shareable {
     isMiner(_miner)
     returns(bool, uint256)
   {
-    require(_halving &lt;= currentHalving());
+    require(_halving <= currentHalving());
 
     Miner miner = miners[_miner];
     MinerHashRate hashRate = miner.hashRate[_halving];
@@ -1314,10 +1314,10 @@ contract BTH is StandardToken, Shareable {
     notBeforeGenesis
     returns(uint256)
   {
-    require(_halving &lt; currentHalving());
+    require(_halving < currentHalving());
 
     if (!halvingsSubsidies[_halving].claimed) {
-      // In the case that the halving subsidy hasn&#39;t been instantiated
+      // In the case that the halving subsidy hasn't been instantiated
       // (.claimed is false) return the full halving subsidy
       return halvingSubsidy(_halving);
     } else {

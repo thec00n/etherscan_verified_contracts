@@ -54,18 +54,18 @@ contract IERC20Token {
 contract ValusToken is IERC20Token, owned{
 
   /* Public variables of the token */
-  string public standard = &quot;VALUS token v1.0&quot;;
-  string public name = &quot;VALUS&quot;;
-  string public symbol = &quot;VLS&quot;;
+  string public standard = "VALUS token v1.0";
+  string public name = "VALUS";
+  string public symbol = "VLS";
   uint8 public decimals = 18;
   address public crowdsaleContractAddress;
   uint256 public tokenFrozenUntilBlock;
 
   /* Private variables of the token */
   uint256 supply = 0;
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
-  mapping (address =&gt; bool) restrictedAddresses;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowances;
+  mapping (address => bool) restrictedAddresses;
 
   /* Events */
   event Mint(address indexed _to, uint256 _value);
@@ -92,10 +92,10 @@ contract ValusToken is IERC20Token, owned{
 
   /* Transfers tokens from your address to other */
   function transfer(address _to, uint256 _value) returns (bool success) {
-    if (block.number &lt; tokenFrozenUntilBlock) throw;    // Throw if token is frozen
+    if (block.number < tokenFrozenUntilBlock) throw;    // Throw if token is frozen
     if (restrictedAddresses[_to]) throw;                // Throw if recipient is restricted address
-    if (balances[msg.sender] &lt; _value) throw;           // Throw if sender has insufficient balance
-    if (balances[_to] + _value &lt; balances[_to]) throw;  // Throw if owerflow detected
+    if (balances[msg.sender] < _value) throw;           // Throw if sender has insufficient balance
+    if (balances[_to] + _value < balances[_to]) throw;  // Throw if owerflow detected
     balances[msg.sender] -= _value;                     // Deduct senders balance
     balances[_to] += _value;                            // Add recivers blaance 
     Transfer(msg.sender, _to, _value);                  // Raise Transfer event
@@ -104,7 +104,7 @@ contract ValusToken is IERC20Token, owned{
 
   /* Approve other address to spend tokens on your account */
   function approve(address _spender, uint256 _value) returns (bool success) {
-    if (block.number &lt; tokenFrozenUntilBlock) throw;    // Throw if token is frozen        
+    if (block.number < tokenFrozenUntilBlock) throw;    // Throw if token is frozen        
     allowances[msg.sender][_spender] = _value;          // Set allowance         
     Approval(msg.sender, _spender, _value);             // Raise Approval event         
     return true;
@@ -120,11 +120,11 @@ contract ValusToken is IERC20Token, owned{
 
   /* A contract attempts to get the coins */
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {      
-    if (block.number &lt; tokenFrozenUntilBlock) throw;    // Throw if token is frozen
+    if (block.number < tokenFrozenUntilBlock) throw;    // Throw if token is frozen
     if (restrictedAddresses[_to]) throw;                // Throw if recipient is restricted address  
-    if (balances[_from] &lt; _value) throw;                // Throw if sender does not have enough balance     
-    if (balances[_to] + _value &lt; balances[_to]) throw;  // Throw if overflow detected    
-    if (_value &gt; allowances[_from][msg.sender]) throw;  // Throw if you do not have allowance       
+    if (balances[_from] < _value) throw;                // Throw if sender does not have enough balance     
+    if (balances[_to] + _value < balances[_to]) throw;  // Throw if overflow detected    
+    if (_value > allowances[_from][msg.sender]) throw;  // Throw if you do not have allowance       
     balances[_from] -= _value;                          // Deduct senders balance    
     balances[_to] += _value;                            // Add recipient blaance         
     allowances[_from][msg.sender] -= _value;            // Deduct allowance for this address         
@@ -141,7 +141,7 @@ contract ValusToken is IERC20Token, owned{
   function mintTokens(address _to, uint256 _amount) {         
     if (msg.sender != crowdsaleContractAddress) throw;            // Only Crowdsale address can mint tokens        
     if (restrictedAddresses[_to]) throw;                    // Throw if user wants to send to restricted address       
-    if (balances[_to] + _amount &lt; balances[_to]) throw;     // Check for overflows
+    if (balances[_to] + _amount < balances[_to]) throw;     // Check for overflows
     supply += _amount;                                      // Update total supply
     balances[_to] += _amount;                               // Set minted coins to target
     Mint(_to, _amount);                                     // Create Mint event       

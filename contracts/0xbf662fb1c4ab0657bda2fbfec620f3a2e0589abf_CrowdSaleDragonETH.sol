@@ -36,7 +36,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -59,9 +59,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -69,7 +69,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -78,14 +78,14 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 library Roles {
   struct Role {
-    mapping (address =&gt; bool) bearer;
+    mapping (address => bool) bearer;
   }
 
   /**
@@ -98,7 +98,7 @@ library Roles {
   }
 
   /**
-   * @dev remove an address&#39; access to this role
+   * @dev remove an address' access to this role
    */
   function remove(Role storage role, address addr)
     internal
@@ -133,7 +133,7 @@ library Roles {
 contract RBAC {
   using Roles for Roles.Role;
 
-  mapping (string =&gt; Roles.Role) private roles;
+  mapping (string => Roles.Role) private roles;
 
   event RoleAdded(address addr, string roleName);
   event RoleRemoved(address addr, string roleName);
@@ -210,7 +210,7 @@ contract RBAC {
    */
   // modifier onlyRoles(string[] roleNames) {
   //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i &lt; roleNames.length; i++) {
+  //     for (uint8 i = 0; i < roleNames.length; i++) {
   //         if (hasRole(msg.sender, roleNames[i])) {
   //             hasAnyRole = true;
   //             break;
@@ -227,8 +227,8 @@ contract RBACWithAdmin is RBAC {
   /**
    * A constant role name for indicating admins.
    */
-  string public constant ROLE_ADMIN = &quot;admin&quot;;
-  string public constant ROLE_PAUSE_ADMIN = &quot;pauseAdmin&quot;;
+  string public constant ROLE_ADMIN = "admin";
+  string public constant ROLE_PAUSE_ADMIN = "pauseAdmin";
 
   /**
    * @dev modifier to scope access to admins
@@ -353,7 +353,7 @@ contract CrowdSaleDragonETH is Pausable, ReentrancyGuard {
     uint256 public priceChanger = 0.00002 ether;
     uint256 public timeToBorn = 5760; // ~ 24h
     uint256 public contRefer50x50;
-    mapping(address =&gt; bool) public refer50x50;
+    mapping(address => bool) public refer50x50;
     
     constructor(address _wallet, address _mainContract) public {
         wallet = _wallet;
@@ -362,18 +362,18 @@ contract CrowdSaleDragonETH is Pausable, ReentrancyGuard {
 
 
     function() external payable whenNotPaused nonReentrant {
-        require(soldDragons &lt;= 100000);
-        require(msg.value &gt;= crowdSaleDragonPrice);
+        require(soldDragons <= 100000);
+        require(msg.value >= crowdSaleDragonPrice);
         require(!msg.sender.isContract());
         uint256 count_to_buy;
         uint256 return_value;
   
         count_to_buy = msg.value.div(crowdSaleDragonPrice);
-        if (count_to_buy &gt; 15) 
+        if (count_to_buy > 15) 
             count_to_buy = 15;
         // operation safety check with functions div() and require() above
         return_value = msg.value - count_to_buy * crowdSaleDragonPrice;
-        if (return_value &gt; 0) 
+        if (return_value > 0) 
             msg.sender.transfer(return_value);
             
         uint256 mainValue = msg.value - return_value;
@@ -395,7 +395,7 @@ contract CrowdSaleDragonETH is Pausable, ReentrancyGuard {
         } else 
             wallet.transfer(mainValue);
 
-        for(uint256 i = 1; i &lt;= count_to_buy; i += 1) {
+        for(uint256 i = 1; i <= count_to_buy; i += 1) {
             DragonsETH(mainContract).createDragon(msg.sender, block.number + timeToBorn, 0, 0, 0, 0);
             soldDragons++;
             crowdSaleDragonPrice = crowdSaleDragonPrice + priceChanger;
@@ -403,8 +403,8 @@ contract CrowdSaleDragonETH is Pausable, ReentrancyGuard {
         
     }
 
-    function sendBonusEgg(address _to, uint256 _count) external onlyRole(&quot;BountyAgent&quot;) {
-        for(uint256 i = 1; i &lt;= _count; i += 1) {
+    function sendBonusEgg(address _to, uint256 _count) external onlyRole("BountyAgent") {
+        for(uint256 i = 1; i <= _count; i += 1) {
             DragonsETH(mainContract).createDragon(_to, block.number + timeToBorn, 0, 0, 0, 0);
             soldDragons++;
             crowdSaleDragonPrice = crowdSaleDragonPrice + priceChanger;
@@ -428,7 +428,7 @@ contract CrowdSaleDragonETH is Pausable, ReentrancyGuard {
     
 
     function setRefer50x50(address _refer) external onlyAdmin {
-        require(contRefer50x50 &lt; 50);
+        require(contRefer50x50 < 50);
         require(refer50x50[_refer] == false);
         refer50x50[_refer] = true;
         contRefer50x50 += 1;

@@ -18,12 +18,12 @@ contract PortCoin is ERC20 {
 
   address mayor;
 
-  string public name = &quot;Portland Maine Token&quot;;
-  string public symbol = &quot;PORT&quot;;
+  string public name = "Portland Maine Token";
+  string public symbol = "PORT";
   uint public decimals = 0;
 
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; mapping(address =&gt; uint256)) approvals;
+  mapping(address => uint256) balances;
+  mapping(address => mapping(address => uint256)) approvals;
 
   event NewMayor(address indexed oldMayor, address indexed newMayor);
 
@@ -54,7 +54,7 @@ contract PortCoin is ERC20 {
   }
 
   function transfer(address to, uint256 value) public returns (bool) {
-    require(balances[msg.sender] &gt;= value);
+    require(balances[msg.sender] >= value);
     balances[to] += value;
     balances[msg.sender] -= value;
     Transfer(msg.sender, to, value);
@@ -72,8 +72,8 @@ contract PortCoin is ERC20 {
   }
 
   function transferFrom(address from, address to, uint256 value) public returns (bool) {
-    require(approvals[from][msg.sender] &gt;= value);
-    require(balances[from] &gt;= value);
+    require(approvals[from][msg.sender] >= value);
+    require(balances[from] >= value);
 
     balances[to] += value;
     balances[from] -= value;

@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365253425376574e5f595b4c5358185559">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365253425376574e5f595b4c5358185559">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -45,8 +45,8 @@ contract GameItemNew is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;CryptoKotakuGameItemNew&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;GameItemNew&quot;; // solhint-disable-line
+  string public constant NAME = "CryptoKotakuGameItemNew"; // solhint-disable-line
+  string public constant SYMBOL = "GameItemNew"; // solhint-disable-line
 
   uint256 private startingPrice = 0.005 ether;
 
@@ -54,19 +54,19 @@ contract GameItemNew is ERC721 {
 
   /// @dev A mapping from Game Item IDs to the address that owns them. All Game Items have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public gameItemIndexToOwner;
+  mapping (uint256 => address) public gameItemIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from gameItemIDs to an address that has been approved to call
   ///  transferFrom(). Each game Item can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public gameItemIndexToApproved;
+  mapping (uint256 => address) public gameItemIndexToApproved;
 
   // @dev A mapping from game Item IDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private gameItemIndexToPrice;
+  mapping (uint256 => uint256) private gameItemIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -143,7 +143,7 @@ contract GameItemNew is ERC721 {
       gameItemOwner = cooAddress;
     }
 
-    if (_price &lt;= 0) {
+    if (_price <= 0) {
       _price = startingPrice;
     }
 
@@ -212,7 +212,7 @@ contract GameItemNew is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 gameOwnerPayment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 10), 100));
     uint256 devFees = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 6), 100));
@@ -285,7 +285,7 @@ contract GameItemNew is ERC721 {
   }
 
   /// @param _owner The owner whose gameItem tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire gameItems array looking for gameItems belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -300,7 +300,7 @@ contract GameItemNew is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 gameItemId;
-      for (gameItemId = 0; gameItemId &lt;= totalGameItems; gameItemId++) {
+      for (gameItemId = 0; gameItemId <= totalGameItems; gameItemId++) {
         if (gameItemIndexToOwner[gameItemId] == _owner) {
           result[resultIndex] = gameItemId;
           resultIndex++;
@@ -366,8 +366,8 @@ contract GameItemNew is ERC721 {
     });
     uint256 newGameItemId = gameItems.push(_gameItem) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newGameItemId == uint256(uint32(newGameItemId)));
 
     Birth(newGameItemId, _name, _owner);
@@ -397,19 +397,19 @@ contract GameItemNew is ERC721 {
   This function can be used by the owner of a GameItem item to modify the price of its GameItem item.
   */
   function modifyGameItemPrice(uint _gameItemId, uint256 _newPrice) public {
-      require(_newPrice &gt; 0);
+      require(_newPrice > 0);
       require(gameItemIndexToOwner[_gameItemId] == msg.sender);
       gameItemIndexToPrice[_gameItemId] = _newPrice;
   }
 
   /// @dev Assigns ownership of a specific gameItem to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of gameItem is capped to 2^32 we can&#39;t overflow this
+    // Since the number of gameItem is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     gameItemIndexToOwner[_tokenId] = _to;
 
-    // When creating new gameItems _from is 0x0, but we can&#39;t account that address.
+    // When creating new gameItems _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -439,9 +439,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -449,7 +449,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -458,7 +458,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

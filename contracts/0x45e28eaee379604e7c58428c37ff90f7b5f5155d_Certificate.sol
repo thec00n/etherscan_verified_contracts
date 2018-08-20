@@ -9,7 +9,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,7 +98,7 @@ library CertificateLibrary {
         bytes storage ipfsHash = self.ipfsHash;
         bytes32 contentHash = self.contentHash;
         bytes32 transcriptHash = self.transcriptHash;
-        return contentHash == _contentHash &amp;&amp; keccak256(ipfsHash) == keccak256(_ipfsHash) &amp;&amp; transcriptHash == _transcriptHash;
+        return contentHash == _contentHash && keccak256(ipfsHash) == keccak256(_ipfsHash) && transcriptHash == _transcriptHash;
     }
     
     /**
@@ -137,11 +137,11 @@ contract Certificate is Ownable {
     using CertificateLibrary for CertificateLibrary.Document;
     
     struct Certification {
-        mapping (uint =&gt; CertificateLibrary.Document) documents;
+        mapping (uint => CertificateLibrary.Document) documents;
         uint16 indx;
     }
     
-    mapping (address =&gt; Certification) studentCertifications;
+    mapping (address => Certification) studentCertifications;
     
     event CertificationAdded(address userAddress, uint docIndx);
     

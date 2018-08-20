@@ -100,20 +100,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -123,7 +123,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -182,7 +182,7 @@ contract Escrow is IEscrow, Ownable {
     bool paid;
   }
 
-  mapping(address =&gt; mapping(uint256 =&gt; Lock)) internal escrows;
+  mapping(address => mapping(uint256 => Lock)) internal escrows;
 
   function Escrow(address _token) public {
     token = ISendToken(_token);
@@ -211,8 +211,8 @@ contract Escrow is IEscrow, Ownable {
       uint256 _expiration
   ) public tokenRestricted {
 
-    require(_tokens &gt; 0);
-    require(_fee &gt;= 0);
+    require(_tokens > 0);
+    require(_fee >= 0);
     require(escrows[_arbitrator][_transactionId].value == 0);
 
     escrows[_arbitrator][_transactionId].sender = _sender;
@@ -273,7 +273,7 @@ contract Escrow is IEscrow, Ownable {
 
     token.transfer(_recipient, lock.value);
 
-    if (lock.fee &gt; 0) {
+    if (lock.fee > 0) {
       token.transfer(msg.sender, lock.fee);
     }
 
@@ -305,7 +305,7 @@ contract Escrow is IEscrow, Ownable {
 
     require(lock.sender == msg.sender);
     require(lock.paid);
-    require(lock.expiration &lt; block.timestamp);
+    require(lock.expiration < block.timestamp);
     require(lock.expiration != 0);
 
     delete escrows[_arbitrator][_transactionId];

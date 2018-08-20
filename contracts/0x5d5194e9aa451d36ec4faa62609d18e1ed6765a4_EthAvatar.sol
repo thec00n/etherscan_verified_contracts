@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 contract EthAvatar {
-    mapping (address =&gt; string) private ipfsHashes;
+    mapping (address => string) private ipfsHashes;
 
     event DidSetIPFSHash(address indexed hashAddress, string hash);
 

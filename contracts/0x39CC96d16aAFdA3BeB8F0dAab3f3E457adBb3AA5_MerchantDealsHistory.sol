@@ -5,7 +5,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -57,7 +57,7 @@ contract Restricted is Ownable {
         bool _isMonethaAddress
     );
 
-    mapping (address =&gt; bool) public isMonethaAddress;
+    mapping (address => bool) public isMonethaAddress;
 
     /**
      *  Restrict methods in such way, that they can be invoked only by monethaAddress account.
@@ -106,7 +106,7 @@ contract Contactable is Ownable{
  */
 contract MerchantDealsHistory is Contactable, Restricted {
 
-    string constant VERSION = &quot;0.3&quot;;
+    string constant VERSION = "0.3";
 
     ///  Merchant identifier hash
     bytes32 public merchantIdHash;
@@ -145,14 +145,14 @@ contract MerchantDealsHistory is Contactable, Restricted {
      *  @param _merchantId Merchant of the acceptor
      */
     function MerchantDealsHistory(string _merchantId) public {
-        require(bytes(_merchantId).length &gt; 0);
+        require(bytes(_merchantId).length > 0);
         merchantIdHash = keccak256(_merchantId);
     }
 
     /**
      *  recordDeal creates an event of completed deal
-     *  @param _orderId Identifier of deal&#39;s order
-     *  @param _clientAddress Address of client&#39;s account
+     *  @param _orderId Identifier of deal's order
+     *  @param _clientAddress Address of client's account
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
      *  @param _isSuccess Identifies whether deal was successful or not
@@ -179,8 +179,8 @@ contract MerchantDealsHistory is Contactable, Restricted {
 
     /**
      *  recordDealCancelReason creates an event of not paid deal that was cancelled 
-     *  @param _orderId Identifier of deal&#39;s order
-     *  @param _clientAddress Address of client&#39;s account
+     *  @param _orderId Identifier of deal's order
+     *  @param _clientAddress Address of client's account
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
      *  @param _dealHash Hashcode of the deal, describing the order (used for deal verification)
@@ -207,8 +207,8 @@ contract MerchantDealsHistory is Contactable, Restricted {
 
 /**
      *  recordDealRefundReason creates an event of not paid deal that was cancelled 
-     *  @param _orderId Identifier of deal&#39;s order
-     *  @param _clientAddress Address of client&#39;s account
+     *  @param _orderId Identifier of deal's order
+     *  @param _clientAddress Address of client's account
      *  @param _clientReputation Updated reputation of the client
      *  @param _merchantReputation Updated reputation of the merchant
      *  @param _dealHash Hashcode of the deal, describing the order (used for deal verification)

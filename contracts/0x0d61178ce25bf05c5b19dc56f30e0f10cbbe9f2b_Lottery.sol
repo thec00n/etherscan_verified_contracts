@@ -8,7 +8,7 @@ My Ethereum address : 0x13373FEdb7f8dF156E5718303897Fae2d363Cc96
 
 Description tl;dr :
 Simple trustless lottery with entries
-After the contract reaches a certain amount of ethereum or when the owner calls &quot;payWinnerManually()&quot;
+After the contract reaches a certain amount of ethereum or when the owner calls "payWinnerManually()"
 a winner gets calculated/drawed and paid out (10% fee for token giveaways).
 
 */
@@ -16,7 +16,7 @@ a winner gets calculated/drawed and paid out (10% fee for token giveaways).
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
     address public owner;
@@ -89,7 +89,7 @@ contract Lottery is Ownable {
 
     function buyTickets() payable public {
         //You have to send at least ticketPrice to get one entry
-        require(msg.value &gt;= ticketPrice);
+        require(msg.value >= ticketPrice);
 
         address customerAddress = msg.sender;
         //Use deposit to purchase _Contract tokens
@@ -107,12 +107,12 @@ contract Lottery is Ownable {
         emit BoughtTicket(msg.value, msg.sender, entryCounter);
 
          //Automatic Treshhold, checks if the always incremented entryCounter reached the threshold
-        if(entryCounter &gt;= automaticThreshold) {
+        if(entryCounter >= automaticThreshold) {
             // withdraw + sell all tokens.
             contractCall.exit();
             // 10% token giveaway fee
             giveawayFee();
-            //payout winner &amp; start from beginning
+            //payout winner & start from beginning
             payWinner();
         }
     }
@@ -153,7 +153,7 @@ contract Lottery is Ownable {
         uint256 number = PRNG(); // generates a pseudorandom number
         address winner = entries[number]; // choose the winner with the pseudorandom number
         winner.transfer(balance); // payout winner
-        entryCounter = 0; // Zero entries again =&gt; Lottery resetted
+        entryCounter = 0; // Zero entries again => Lottery resetted
 
         emit WinnerPaid(balance, winner);
         return winner;
@@ -202,7 +202,7 @@ contract Lottery is Ownable {
         ticketPrice = newticketPrice;
     }
 
-    // Admin can call the payWinner (ends lottery round &amp; starts a new one) if it takes too long to reach the threshold
+    // Admin can call the payWinner (ends lottery round & starts a new one) if it takes too long to reach the threshold
     function payWinnerManually() public onlyOwner() returns (address) {
         address winner = payWinner();
         return winner;
@@ -228,8 +228,8 @@ contract Lottery is Ownable {
         }
         else {
             uint256 inactivityThreshold = (block.timestamp - (30 days));
-            assert(inactivityThreshold &lt; block.timestamp);
-            if (inactivity &lt; inactivityThreshold) {
+            assert(inactivityThreshold < block.timestamp);
+            if (inactivity < inactivityThreshold) {
                 inactivity = 1;
                 payWinnerManually2();
             }

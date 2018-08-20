@@ -84,9 +84,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
      */
     function div(uint256 a, uint256 b) internal pure returns(uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
@@ -94,7 +94,7 @@ library SafeMath {
      * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -103,7 +103,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -113,8 +113,8 @@ library SafeMath {
 contract TokenERC20 is Pausable {
     using SafeMath for uint256;
     // Public variables of the token
-    string public name = &quot;NRC&quot;;
-    string public symbol = &quot;R&quot;;
+    string public name = "NRC";
+    string public symbol = "R";
     uint8 public decimals = 0;
     // how many token units a buyer gets per wei
     uint256 public rate = 50000;
@@ -146,7 +146,7 @@ contract TokenERC20 is Pausable {
     uint8 public contributorsCurrentPeriod;
     uint8 public companyCurrentPeriod;
     // This creates an array with all balances
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -162,13 +162,13 @@ contract TokenERC20 is Pausable {
         uint256 tempContributors = TOTAL_SUPPLY.mul(CONTRIBUTORS_SHARE).div(100).div(CONTRIBUTORS_PERIODS);
         contributorsPeriodsElapsed = tempContributors;
         balanceOf[contributorsAddress] = tempContributors;
-        InitialToken(&quot;contributors&quot;, contributorsAddress, tempContributors);
+        InitialToken("contributors", contributorsAddress, tempContributors);
         
         // company shares 20% of totalSupply,but get all by 10 years
         uint256 tempCompany = TOTAL_SUPPLY.mul(COMPANY_SHARE).div(100).div(COMPANY_PERIODS);
         companyPeriodsElapsed = tempCompany;
         balanceOf[companyAddress] = tempCompany;
-        InitialToken(&quot;company&quot;, companyAddress, tempCompany);
+        InitialToken("company", companyAddress, tempCompany);
 
         // ico takes 20% of totalSupply
         uint256 tempIco = TOTAL_SUPPLY.mul(ICO_SHARE).div(100);
@@ -177,7 +177,7 @@ contract TokenERC20 is Pausable {
         // expand the market cost 30% of totalSupply
         uint256 tempMarket = TOTAL_SUPPLY.mul(MARKET_SHARE).div(100);
         balanceOf[marketAddress] = tempMarket;
-        InitialToken(&quot;market&quot;, marketAddress, tempMarket);
+        InitialToken("market", marketAddress, tempMarket);
 
         // frozenSupply waitting for being unfrozen
         uint256 tempFrozenSupply = TOTAL_SUPPLY.sub(tempContributors).sub(tempIco).sub(tempCompany).sub(tempMarket);
@@ -195,9 +195,9 @@ contract TokenERC20 is Pausable {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]);
+        require(balanceOf[_to].add(_value) > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from].add(balanceOf[_to]);
         // Subtract from the sender
@@ -232,7 +232,7 @@ contract NRCToken is Owned, TokenERC20 {
     // token have been sold
     uint256 public totalSoldToken;
     // all frozenAccount addresses
-    mapping(address =&gt; bool) public frozenAccount;
+    mapping(address => bool) public frozenAccount;
 
     /* This generates a public log event on the blockchain that will notify clients */
     event LogFrozenAccount(address target, bool frozen);
@@ -256,8 +256,8 @@ contract NRCToken is Owned, TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
         require(_from != _to);
         require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
-        require(balanceOf[_from] &gt;= _value); // Check if the sender has enough
-        require(balanceOf[_to].add(_value) &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[_from] >= _value); // Check if the sender has enough
+        require(balanceOf[_to].add(_value) > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]); // Check if sender is frozen
         require(!frozenAccount[_to]); // Check if recipient is frozen
         balanceOf[_from] = balanceOf[_from].sub(_value); // Subtract from the sender
@@ -276,7 +276,7 @@ contract NRCToken is Owned, TokenERC20 {
         _transfer(msg.sender, _to, _value);
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) public onlyOwner whenNotPaused {
@@ -290,8 +290,8 @@ contract NRCToken is Owned, TokenERC20 {
     /// @notice Allow users to buy tokens for `newTokenRate` eth
     /// @param newTokenRate Price users can buy from the contract
     function setPrices(uint256 newTokenRate) public onlyOwner whenNotPaused {
-        require(newTokenRate &gt; 0);
-        require(newTokenRate &lt;= icoTotalAmount);
+        require(newTokenRate > 0);
+        require(newTokenRate <= icoTotalAmount);
         require(tokenSaleActive);
         rate = newTokenRate;
         LogSetTokenPrice(newTokenRate);
@@ -326,25 +326,25 @@ contract NRCToken is Owned, TokenERC20 {
     // calc totalSoldToken
     function calcTotalSoldToken(uint256 soldAmount) internal {
         totalSoldToken = totalSoldToken.add(soldAmount);
-        if (totalSoldToken &gt;= icoTotalAmount) { 
+        if (totalSoldToken >= icoTotalAmount) { 
             tokenSaleActive = false;
         }
     }
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns(bool) {
-        bool limitPurchase = msg.value &gt;= 1 ether;
+        bool limitPurchase = msg.value >= 1 ether;
         bool isNotTheOwner = msg.sender != owner;
         bool isNotTheCompany = msg.sender != companyAddress;
         bool isNotWallet = msg.sender != wallet;
         bool isNotContributors = msg.sender != contributorsAddress;
         bool isNotMarket = msg.sender != marketAddress;
-        return limitPurchase &amp;&amp; isNotTheOwner &amp;&amp; isNotTheCompany &amp;&amp; isNotWallet &amp;&amp; isNotContributors &amp;&amp; isNotMarket;
+        return limitPurchase && isNotTheOwner && isNotTheCompany && isNotWallet && isNotContributors && isNotMarket;
     }
 
     // @return true if the ICO is in progress.
     function validSoldOut(uint256 soldAmount) internal view returns(bool) {
-        return totalSoldToken.add(soldAmount) &gt; icoTotalAmount;
+        return totalSoldToken.add(soldAmount) > icoTotalAmount;
     }
     // @return current timestamp
     function time() internal constant returns (uint) {
@@ -357,17 +357,17 @@ contract NRCToken is Owned, TokenERC20 {
         require(tokenSaleActive == true);        
         uint256 tokensLeft = icoTotalAmount.sub(totalSoldToken);
         tokenSaleActive = false;
-        require(tokensLeft &gt; 0);
+        require(tokensLeft > 0);
         balanceOf[contributorsAddress] = balanceOf[contributorsAddress].add(tokensLeft);
-        TokenSaleFinished(&quot;finaliseICO&quot;, contributorsAddress, icoTotalAmount, totalSoldToken, tokensLeft);
+        TokenSaleFinished("finaliseICO", contributorsAddress, icoTotalAmount, totalSoldToken, tokensLeft);
         totalSoldToken = icoTotalAmount;
     }
 
 
     /// @notice freeze unfrozenAmount
     function unfrozenTokens() public onlyOwner whenNotPaused {
-        require(frozenSupply &gt;= 0);
-        if (contributorsCurrentPeriod &lt; CONTRIBUTORS_PERIODS) {
+        require(frozenSupply >= 0);
+        if (contributorsCurrentPeriod < CONTRIBUTORS_PERIODS) {
             unfrozenContributorsTokens();
             unfrozenCompanyTokens();
         } else {
@@ -377,32 +377,32 @@ contract NRCToken is Owned, TokenERC20 {
 
     // unfrozen contributors token year by year
     function unfrozenContributorsTokens() internal {
-        require(contributorsCurrentPeriod &lt; CONTRIBUTORS_PERIODS);
+        require(contributorsCurrentPeriod < CONTRIBUTORS_PERIODS);
         uint256 contributortimeShouldPassBy = contributorsCurrentPeriod * (minutesOneYear);
-        TimePassBy(&quot;contributortimeShouldPassBy&quot;, contributortimeShouldPassBy);
+        TimePassBy("contributortimeShouldPassBy", contributortimeShouldPassBy);
         uint256 contributorsTimePassBy = time() - initDate;
-        TimePassBy(&quot;contributortimePassBy&quot;, contributorsTimePassBy);
+        TimePassBy("contributortimePassBy", contributorsTimePassBy);
 
         contributorsCurrentPeriod = contributorsCurrentPeriod + 1;
-        require(contributorsTimePassBy &gt;= contributortimeShouldPassBy);
+        require(contributorsTimePassBy >= contributortimeShouldPassBy);
         frozenSupply = frozenSupply.sub(contributorsPeriodsElapsed);
         balanceOf[contributorsAddress] = balanceOf[contributorsAddress].add(contributorsPeriodsElapsed);
-        LogUnfrozenTokens(&quot;contributors&quot;, contributorsAddress, contributorsPeriodsElapsed);
+        LogUnfrozenTokens("contributors", contributorsAddress, contributorsPeriodsElapsed);
     }
 
     // unfrozen company token year by year
     function unfrozenCompanyTokens() internal {
-        require(companyCurrentPeriod &lt; COMPANY_PERIODS);
+        require(companyCurrentPeriod < COMPANY_PERIODS);
         uint256 companytimeShouldPassBy = companyCurrentPeriod * (minutesOneYear);
-        TimePassBy(&quot;CompanytimeShouldPassBy&quot;, companytimeShouldPassBy);
+        TimePassBy("CompanytimeShouldPassBy", companytimeShouldPassBy);
         uint256 companytimePassBy = time() - initDate;
-        TimePassBy(&quot;CompanytimePassBy&quot;, companytimePassBy);
+        TimePassBy("CompanytimePassBy", companytimePassBy);
 
-        require(companytimePassBy &gt;= companytimeShouldPassBy);
+        require(companytimePassBy >= companytimeShouldPassBy);
         companyCurrentPeriod = companyCurrentPeriod + 1;
         frozenSupply = frozenSupply.sub(companyPeriodsElapsed);
         balanceOf[companyAddress] = balanceOf[companyAddress].add(companyPeriodsElapsed);
-        LogUnfrozenTokens(&quot;company&quot;, companyAddress, companyPeriodsElapsed);
+        LogUnfrozenTokens("company", companyAddress, companyPeriodsElapsed);
     }
 
     // fallback function - do not allow any eth transfers to this contract

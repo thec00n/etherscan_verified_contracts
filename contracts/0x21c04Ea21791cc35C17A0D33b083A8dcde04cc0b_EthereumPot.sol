@@ -43,9 +43,9 @@ contract EthereumPot {
 	
 	function findWinner(uint random) constant returns (address winner) {
 	    
-	    for(uint i = 0; i &lt; slots.length; i++) {
+	    for(uint i = 0; i < slots.length; i++) {
 	        
-	       if(random &lt;= slots[i]) {
+	       if(random <= slots[i]) {
 	           return addresses[i];
 	       }
 	        
@@ -56,15 +56,15 @@ contract EthereumPot {
 	
 	function joinPot() public payable {
 	    
-	    assert(now &lt; endTime);
+	    assert(now < endTime);
 	    assert(!locked);
 	    
 	    uint tickets = 0;
 	    
-	    for(uint i = msg.value; i &gt;= minBetSize; i-= minBetSize) {
+	    for(uint i = msg.value; i >= minBetSize; i-= minBetSize) {
 	        tickets++;
 	    }
-	    if(tickets &gt; 0) {
+	    if(tickets > 0) {
 	        addresses.push(msg.sender);
 	        slots.push(potSize += tickets);
 	        totalBet+= potSize;
@@ -100,12 +100,12 @@ contract EthereumPot {
         
         //assert time
         
-        assert(now &gt; endTime);
+        assert(now > endTime);
         if(!locked) {
             locked = true;
             
-            if(potSize &gt; 0) {
-            	//if only 1 person bet, wait until they&#39;ve been challenged
+            if(potSize > 0) {
+            	//if only 1 person bet, wait until they've been challenged
             	if(addresses.length == 1) {
             	    random_number = 0;
             	    endTime = now + potTime;

@@ -42,7 +42,7 @@ contract ERC20Lookup {
             allowances = new uint[](addressesToCheck.length);
         }
         
-        for (uint i = 0; i &lt; addressesToCheck.length; i++) {
+        for (uint i = 0; i < addressesToCheck.length; i++) {
             ERC20Interface erc20 = ERC20Interface(addressesToCheck[i]);
 
             balances[i] = erc20.balanceOf(owner);

@@ -33,14 +33,14 @@ contract PublicResolver {
         bytes32 content;
         string name;
         PublicKey pubkey;
-        mapping(string=&gt;string) text;
-        mapping(uint256=&gt;bytes) abis;
+        mapping(string=>string) text;
+        mapping(uint256=>bytes) abis;
         bytes multihash;
     }
 
     ENS ens;
 
-    mapping (bytes32 =&gt; Record) records;
+    mapping (bytes32 => Record) records;
 
     modifier only_owner(bytes32 node) {
         require(ens.owner(node) == msg.sender);
@@ -111,7 +111,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes data) public only_owner(node) {
         // Content types must be powers of 2
-        require(((contentType - 1) &amp; contentType) == 0);
+        require(((contentType - 1) & contentType) == 0);
         
         records[node].abis[contentType] = data;
         ABIChanged(node, contentType);
@@ -170,8 +170,8 @@ contract PublicResolver {
      */
     function ABI(bytes32 node, uint256 contentTypes) public view returns (uint256 contentType, bytes data) {
         Record storage record = records[node];
-        for (contentType = 1; contentType &lt;= contentTypes; contentType &lt;&lt;= 1) {
-            if ((contentType &amp; contentTypes) != 0 &amp;&amp; record.abis[contentType].length &gt; 0) {
+        for (contentType = 1; contentType <= contentTypes; contentType <<= 1) {
+            if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
                 data = record.abis[contentType];
                 return;
             }

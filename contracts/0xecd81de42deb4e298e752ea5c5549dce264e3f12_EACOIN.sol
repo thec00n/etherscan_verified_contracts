@@ -5,7 +5,7 @@ pragma solidity ^0.4.16;
 contract ERC20 {
    // uint public total a getter function instead
    // NOTE from Jalmost every token contract uses public uint variable. Total supply of t I think. 
-    string public standard = &#39;ERC20&#39;;
+    string public standard = 'ERC20';
     function balanceOf(address who) constant returns (uint);
     function allowance(address owner, address spender) constant returns (uint);
     function transfer(address to, uint value) returns (bool ok);
@@ -42,36 +42,36 @@ library SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        // assert(b &gt; 0); // NOTE (ihen): solidity will automatically throw when divided by 0
+        // assert(b > 0); // NOTE (ihen): solidity will automatically throw when divided by 0
         uint c = a / b;
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a); // a + b can&#39;t be larger than or equal to a when overflowed
+        assert(c >= a); // a + b can't be larger than or equal to a when overflowed
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
                      
             
     }
@@ -87,17 +87,17 @@ contract EACOIN is ERC20, Ownable {
     string public name;
     string public symbol;
     uint8 public decimals;
-    string public version = &#39;v1.0&#39;;
+    string public version = 'v1.0';
   // uint public initialSupply;
     uint public totalSupply;
-    mapping (address =&gt; uint) public balances; // NOTE(hen): those should be public
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => uint) public balances; // NOTE(hen): those should be public
+    mapping (address => mapping (address => uint)) public allowed;
 
     function EACOIN() {
         totalSupply = 100000000000000000000000000;
         balances[msg.sender] = 100000000000000000000000000;
-        name = &#39;EACOIN&#39;;
-        symbol = &#39;EACO&#39;;
+        name = 'EACOIN';
+        symbol = 'EACO';
         decimals = 18;
     }
 
@@ -105,9 +105,9 @@ contract EACOIN is ERC20, Ownable {
         return balances[who];
     }
     function transfer(address _to, uint _value) returns (bool) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp;
-            _value &gt; 0 /* zero transfer is not allowed */ &amp;&amp;
-            balances[_to] + _value &gt; balances[_to] /* check overflow */) {
+        if (balances[msg.sender] >= _value &&
+            _value > 0 /* zero transfer is not allowed */ &&
+            balances[_to] + _value > balances[_to] /* check overflow */) {
                                       
                 
              balances[msg.sender] = balances[msg.sender] - _value;
@@ -120,16 +120,16 @@ contract EACOIN is ERC20, Ownable {
     }
 
     function approve(address spender, uint256 value) returns (bool) {
-        require(value &gt; 0 &amp;&amp; spender != 0x0);
+        require(value > 0 && spender != 0x0);
         allowed[msg.sender][spender] = value;
         return true;
     }
 
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        if (balances[_from] &gt;= _value &amp;&amp;
-            allowed[_from][msg.sender] &gt;= _value &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value &&
+            allowed[_from][msg.sender] >= _value &&
+            _value > 0 &&
+            balances[_to] + _value > balances[_to]) {
              balances[_from] -= _value;
              allowed[_from][msg.sender] -= _value;
              balances[_to] += _value;

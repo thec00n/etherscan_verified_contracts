@@ -39,7 +39,7 @@ contract ETHCOOLAdvertisements {
     }
 
     function userCreate(string text, string link) public payable {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             uint expiry = now.add(msg.value.div(display_rate));
             Advertisement memory ad = Advertisement(msg.sender, text, link, expiry);
             advertisements.push(ad);
@@ -47,7 +47,7 @@ contract ETHCOOLAdvertisements {
     }
 
     function userTransfer() public {
-        if (address(this).balance &gt; 0) {
+        if (address(this).balance > 0) {
             main_contract.contractBoost.value(address(this).balance)(owner_share);
         }
     }
@@ -73,13 +73,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

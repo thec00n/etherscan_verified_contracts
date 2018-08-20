@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -89,18 +89,18 @@ library SafeMath {
         return c;
     }
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -134,7 +134,7 @@ contract ERC20 is ERC20Basic {
  */
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     /**
      * @dev transfer token for a specified address
@@ -164,7 +164,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
     /**
      * @dev Transfer tokens from one address to another
      * @param _from address The address which you want to send tokens from
@@ -253,8 +253,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract StrikeCoin is MintableToken, Pausable{
-    string public name = &quot;StrikeCoin Token&quot;;
-    string public symbol = &quot;STC&quot;;
+    string public name = "StrikeCoin Token";
+    string public symbol = "STC";
     uint256 public decimals = 18;
 
     event Ev(string message, address whom, uint256 val);
@@ -274,7 +274,7 @@ contract StrikeCoin is MintableToken, Pausable{
     address first = 0x0;
     address last = 0x0;
 
-    mapping (address =&gt; XRec) public theList;
+    mapping (address => XRec) public theList;
 
     QueueRecord[]  theQueue;
 
@@ -287,7 +287,7 @@ contract StrikeCoin is MintableToken, Pausable{
             first = whom;
         }
         last = whom;
-        Ev(&quot;add&quot;,whom,value);
+        Ev("add",whom,value);
     }
 
     function remove(address whom) internal {
@@ -305,7 +305,7 @@ contract StrikeCoin is MintableToken, Pausable{
             theList[next].prev = prev;
         }
         theList[whom] =XRec(false,0x0,0x0,0);
-        Ev(&quot;remove&quot;,whom,0);
+        Ev("remove",whom,0);
     }
 
     function update(address whom, uint256 value) internal {
@@ -314,7 +314,7 @@ contract StrikeCoin is MintableToken, Pausable{
                 add(whom,value);
             } else {
                 theList[whom].val = value;
-                Ev(&quot;update&quot;,whom,value);
+                Ev("update",whom,value);
             }
             return;
         }
@@ -385,7 +385,7 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
     address public restrictedWallet = 0xD36AA5Eaf6B1D6eC896E4A110501a872773a0125;
     address public bonusWallet = 0xb9325bd27e91D793470F84e9B3550596d34Bbe26;
 
-    mapping (address =&gt; uint256) public deposits;
+    mapping (address => uint256) public deposits;
     uint256 public numberOfPurchasers;
 
     // how many bonus tokens given in ICO
@@ -420,7 +420,7 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
     }
 
     function setHardCapEther(uint256 newEtherAmt) public onlyOwner{
-        require(newEtherAmt &gt; 0);
+        require(newEtherAmt > 0);
         hardCapEther = newEtherAmt;
         hardcap = hardCapEther * etherToWei;
         grantedTokensHardCap = etherToWei * hardCapEther*rate*40/60*(maxBonusRate+100)/100;
@@ -429,21 +429,21 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
     function StrikeCoinCrowdsale() public  {
 
         grantedTokensHardCap = etherToWei * hardCapEther*rate*40/60*(maxBonusRate+100)/100;
-        require(startTimestamp &gt;= now);
-        require(endTimestamp &gt;= startTimestamp);
+        require(startTimestamp >= now);
+        require(endTimestamp >= startTimestamp);
     }
 
     // check if valid purchase
     modifier validPurchase {
-        require(now &gt;= startTimestamp);
-        require(now &lt; endTimestamp);
-        require(msg.value &gt;= minContribution);
+        require(now >= startTimestamp);
+        require(now < endTimestamp);
+        require(msg.value >= minContribution);
         _;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        if (now &gt; endTimestamp)
+        if (now > endTimestamp)
             return true;
         return false;
     }
@@ -461,7 +461,7 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
 
         uint256 daysInSale = (now - startTimestamp) / (1 days);
         uint256 thisBonus = 0;
-        if(daysInSale &lt; 7 ){
+        if(daysInSale < 7 ){
             thisBonus = bonus[daysInSale];
         }
 
@@ -473,7 +473,7 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
         tokens = tokens.add(extraBonus);
         finalTokenCount = tokens.add(tokensSold);
         uint256 weiRaisedSoFar = weiRaised.add(weiAmount);
-        require(weiRaisedSoFar + weiRaisedInPresale &lt;= hardcap);
+        require(weiRaisedSoFar + weiRaisedInPresale <= hardcap);
 
         weiRaised = weiRaisedSoFar;
         tokensSold = finalTokenCount;
@@ -486,7 +486,7 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
     function grantTokens(address beneficiary,uint256 stcTokenCount) public onlyOwner{
         stcTokenCount = stcTokenCount * etherToWei;
         uint256 finalGrantedTokenCount = tokensGranted.add(stcTokenCount);
-        require(finalGrantedTokenCount&lt;grantedTokensHardCap);
+        require(finalGrantedTokenCount<grantedTokensHardCap);
         tokensGranted = finalGrantedTokenCount;
         token.mint(beneficiary,stcTokenCount);
     }
@@ -509,7 +509,7 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
 
         uint restrictedTokens = (issuedTokenSupply-tokensGranted)*40/60-tokensGranted; // 40% are for advisors
 
-        if(restrictedTokens&gt;0){
+        if(restrictedTokens>0){
             token.mint(restrictedWallet, restrictedTokens);
             tokensGranted = tokensGranted + restrictedTokens;
         }
@@ -525,11 +525,11 @@ contract StrikeCoinCrowdsale is Ownable, Pausable {
     }
 
     function setWeiRaisedInPresale(uint256 amount) onlyOwner public {
-        require(amount&gt;=0);
+        require(amount>=0);
         weiRaisedInPresale = amount;
     }
     function setEndTimeStamp(uint256 end) onlyOwner public {
-        require(end&gt;now);
+        require(end>now);
         endTimestamp = end;
     }
     function setStartTimeStamp(uint256 start) onlyOwner public {

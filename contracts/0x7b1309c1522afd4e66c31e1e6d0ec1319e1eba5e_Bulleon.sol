@@ -1,5 +1,5 @@
 pragma solidity ^0.4.18;
-// &#169; Bulleon. All Rights Reserved
+// © Bulleon. All Rights Reserved
 library SafeMath {
   function mul(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a * b;
@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,8 +54,8 @@ contract owned {
 contract StandardToken {
     using SafeMath for uint256;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply;  
     
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -97,7 +97,7 @@ contract StandardToken {
       var _allowance = allowed[_from][msg.sender];
 
       // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-      // require (_value &lt;= _allowance);
+      // require (_value <= _allowance);
 
       balances[_from] = balances[_from].sub(_value);
       balances[_to] = balances[_to].add(_value);
@@ -150,7 +150,7 @@ contract StandardToken {
     function decreaseApproval (address _spender, uint _subtractedValue) public
       returns (bool success) {
       uint oldValue = allowed[msg.sender][_spender];
-      if (_subtractedValue &gt; oldValue) {
+      if (_subtractedValue > oldValue) {
         allowed[msg.sender][_spender] = 0;
       } else {
         allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -163,7 +163,7 @@ contract StandardToken {
 
 contract BulleonICO is owned {
     using SafeMath for uint256;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     address private WITHDRAW_WALLET;
     uint256 public totalSold = 0;
     uint256 public soldOnStage = 0;
@@ -173,7 +173,7 @@ contract BulleonICO is owned {
 
     uint256[] tokensRate = [1000,800,600,400,200,100,75,50,25,10,5,1];
     uint256[] tokensCap = [760000,760000,760000,760000,760000,760000,760000,760000,760000,760000,760000,760000];
-    mapping(address=&gt;uint256) investments;
+    mapping(address=>uint256) investments;
     uint256 LIMIT_ON_BENEFICIARY = 1000 * 1 ether;
 
     function investmentsOf(address beneficiary) public constant returns(uint256) {
@@ -206,10 +206,10 @@ contract BulleonICO is owned {
     }
 
     function buyTokens(address beneficiary) payable {
-      bool canBuy = investmentsOf(beneficiary) &lt; LIMIT_ON_BENEFICIARY;
-      bool validPurchase = beneficiary != 0x0 &amp;&amp; msg.value != 0;
+      bool canBuy = investmentsOf(beneficiary) < LIMIT_ON_BENEFICIARY;
+      bool validPurchase = beneficiary != 0x0 && msg.value != 0;
       uint256 currentTokensAmount = availableTokens();
-      require(canBuy &amp;&amp; validPurchase &amp;&amp; currentTokensAmount &gt; 0);
+      require(canBuy && validPurchase && currentTokensAmount > 0);
       uint256 boughtTokens;
       uint256 refundAmount = 0;
       
@@ -217,16 +217,16 @@ contract BulleonICO is owned {
       boughtTokens = tokensAndRefund[0];
       refundAmount = tokensAndRefund[1];
 
-      require(boughtTokens &lt; currentTokensAmount);
+      require(boughtTokens < currentTokensAmount);
 
       totalSold = totalSold.add(boughtTokens);
       investments[beneficiary] = investments[beneficiary].add(boughtTokens);
-      if( soldOnStage &gt;= tokensCap[currentStage].mul(1 ether)) {
+      if( soldOnStage >= tokensCap[currentStage].mul(1 ether)) {
         toNextStage();
       } 
       
       rewardToken.transfer(beneficiary,boughtTokens);
-      if (refundAmount &gt; 0) 
+      if (refundAmount > 0) 
           refundMoney(refundAmount);
 
       withdrawFunds(this.balance);
@@ -242,19 +242,19 @@ contract BulleonICO is owned {
       uint256 _boughtTokens = 0; 
       uint256 undistributedTokens = availableTokens(); 
 
-      while(undistributedAmount &gt; 0 &amp;&amp; undistributedTokens &gt; 0) {
+      while(undistributedAmount > 0 && undistributedTokens > 0) {
         bool needNextStage = false; 
         
         stageBoughtTokens = getTokensAmount(undistributedAmount);
         
 
-        if(totalInvestments(_boughtTokens.add(stageBoughtTokens)) &gt; LIMIT_ON_BENEFICIARY){
+        if(totalInvestments(_boughtTokens.add(stageBoughtTokens)) > LIMIT_ON_BENEFICIARY){
           stageBoughtTokens = LIMIT_ON_BENEFICIARY.sub(_boughtTokens);
           undistributedTokens = stageBoughtTokens; 
         }
 
         
-        if (stageBoughtTokens &gt; availableOnStage()) {
+        if (stageBoughtTokens > availableOnStage()) {
           stageBoughtTokens = availableOnStage();
           needNextStage = true; 
         }
@@ -296,7 +296,7 @@ contract BulleonICO is owned {
 
     function toNextStage() internal {
         
-        if(currentStage &lt; tokensRate.length &amp;&amp; currentStage &lt; tokensCap.length){
+        if(currentStage < tokensRate.length && currentStage < tokensCap.length){
           currentStage++;
           soldOnStage = 0;
         }
@@ -315,12 +315,12 @@ contract BulleonICO is owned {
 contract Bulleon is StandardToken {
       event Burn(address indexed burner, uint256 value);
 
-      string public constant name = &quot;Bulleon&quot;;
-      string public constant symbol = &quot;BLN&quot;;
+      string public constant name = "Bulleon";
+      string public constant symbol = "BLN";
       uint8 public constant decimals = 18;
-      string public version = &quot;1.0&quot;;
+      string public version = "1.0";
       uint256 public totalSupply  = 9500000 * 1 ether;
-      mapping(address=&gt;uint256) premineOf;
+      mapping(address=>uint256) premineOf;
       address[] private premineWallets = [
           0xdAB26a04594Ca4EDB276672BE0A0F697e5a24aFb, 
           0xA75E62874Cb25D53e563A269DF4b52d5A28e7A8e, 
@@ -333,7 +333,7 @@ contract Bulleon is StandardToken {
         premineOf[premineWallets[1]] = 95000 * 1 ether;
         premineOf[premineWallets[2]] = 190000 * 1 ether;
         
-        for(uint i = 0; i&lt;premineWallets.length;i++) {
+        for(uint i = 0; i<premineWallets.length;i++) {
           transfer(premineWallets[i],premineOf[premineWallets[i]]);
         }
       }
@@ -343,7 +343,7 @@ contract Bulleon is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);

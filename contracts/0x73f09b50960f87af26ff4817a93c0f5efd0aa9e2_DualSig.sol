@@ -56,7 +56,7 @@ contract DualSig {
 
     function reset() public onlyDirectors {
         proposalNonce++;
-        if (proposalNonce &gt; 1000000) {
+        if (proposalNonce > 1000000) {
             proposalNonce = 0;
         }
         proposalAuthor = 0x0;
@@ -68,9 +68,9 @@ contract DualSig {
 
     function accept(uint256 acceptNonce) public onlyDirectors {
         require(proposalNonce == acceptNonce);
-        require(proposalAmount &gt; 0);
+        require(proposalAmount > 0);
         require(proposalDestination != 0x0);
-        require(proposalAuthor != msg.sender || block.number &gt;= proposalBlock);
+        require(proposalAuthor != msg.sender || block.number >= proposalBlock);
 
         address localContract = proposalContract;
         address localDestination = proposalDestination;
@@ -78,7 +78,7 @@ contract DualSig {
         reset();
 
         if (localContract==0x0) {
-            require(localAmount &lt;= address(this).balance);
+            require(localAmount <= address(this).balance);
             localDestination.transfer(localAmount);
         }
         else {

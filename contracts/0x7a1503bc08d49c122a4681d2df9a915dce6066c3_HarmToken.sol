@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,16 +48,16 @@ contract ERC721Token is ERC721 {
   uint256 private totalTokens;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) private tokenOwner;
+  mapping (uint256 => address) private tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) private tokenApprovals;
+  mapping (uint256 => address) private tokenApprovals;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) private ownedTokens;
+  mapping (address => uint256[]) private ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) private ownedTokensIndex;
+  mapping(uint256 => uint256) private ownedTokensIndex;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token
@@ -267,24 +267,24 @@ contract Ownable {
 }
 
 contract HarmToken is ERC721Token, Ownable {
-  mapping(uint256 =&gt; string) metadataUri;
-  mapping(string =&gt; uint256) tokenByMetadataUri;
-  mapping(string =&gt; uint256) prices;
+  mapping(uint256 => string) metadataUri;
+  mapping(string => uint256) tokenByMetadataUri;
+  mapping(string => uint256) prices;
 
-  string public name = &quot;HARM COIN&quot;;
-  string public symbol = &quot;QQQ&quot;;
+  string public name = "HARM COIN";
+  string public symbol = "QQQ";
   uint256 public newTokenPrice = 8500;
   uint256 public priceMultiplier = 1000;
 
   modifier tokenExists(uint256 _tokenId) {
-    require(_tokenId &gt; 0);
-    require(_tokenId &lt; totalSupply() + 1);
+    require(_tokenId > 0);
+    require(_tokenId < totalSupply() + 1);
     _;
   }
 
   function createEmptyToken() private returns (uint256){
     uint256 tokenId = totalSupply() + 1;
-    require(tokenId &lt;= 64);
+    require(tokenId <= 64);
     _mint(owner, tokenId);
     return tokenId;
   }
@@ -318,12 +318,12 @@ contract HarmToken is ERC721Token, Ownable {
   }
 
   function getPriceByMetadataUri(string _metadataUri) view external returns (uint256) {
-    require(prices[_metadataUri] &gt; 0);
+    require(prices[_metadataUri] > 0);
     return prices[_metadataUri];
   }
 
   function getWeiPriceByMetadataUri(string _metadataUri) view external returns (uint256) {
-    require(prices[_metadataUri] &gt; 0);
+    require(prices[_metadataUri] > 0);
     return makeWeiPrice(prices[_metadataUri]);
   }
 
@@ -332,7 +332,7 @@ contract HarmToken is ERC721Token, Ownable {
   }
 
   function buyWildcardToken() payable external returns (uint256) {
-    require(msg.value &gt;= newTokenWeiPrice());
+    require(msg.value >= newTokenWeiPrice());
 
     uint256 tokenId = createEmptyToken();
     clearApprovalAndTransfer(owner, msg.sender, tokenId);
@@ -340,8 +340,8 @@ contract HarmToken is ERC721Token, Ownable {
   }
 
   function tokenizeAndBuyWork(string _metadataUri) payable external returns (uint256) {
-    require(prices[_metadataUri] &gt; 0);
-    require(msg.value &gt;= makeWeiPrice(prices[_metadataUri]));
+    require(prices[_metadataUri] > 0);
+    require(msg.value >= makeWeiPrice(prices[_metadataUri]));
     require(workAdopted(_metadataUri) == false);
 
     uint256 tokenId = createEmptyToken();
@@ -376,7 +376,7 @@ contract HarmToken is ERC721Token, Ownable {
   }
 
   function setPriceMultiplier(uint256 _priceMultiplier) external onlyOwner {
-    require(_priceMultiplier &gt; 0);
+    require(_priceMultiplier > 0);
     priceMultiplier = _priceMultiplier;
   }
 }

@@ -20,13 +20,13 @@ contract SafeMath {
   }
 
   function safeSubtract(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ contract SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -134,7 +134,7 @@ contract ethPausable is Ownable {
 /*  ERC 20 token */
 contract StandardToken is Token, Pausable{
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -144,7 +144,7 @@ contract StandardToken is Token, Pausable{
       }
     }
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -165,15 +165,15 @@ contract StandardToken is Token, Pausable{
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {
       return allowed[_owner][_spender];
     }
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract GraceCoin is StandardToken, SafeMath, ethPausable {
-    string public constant name = &quot;Grace Coin&quot;;
-    string public constant symbol = &quot;GRACE&quot;;
+    string public constant name = "Grace Coin";
+    string public constant symbol = "GRACE";
     uint256 public constant decimals = 8;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     address public G2UFundDeposit;
     address public ETHFundDeposit;
     address public GraceFund;
@@ -203,15 +203,15 @@ contract GraceCoin is StandardToken, SafeMath, ethPausable {
     }
     function buyCoins() ethwhenNotPaused payable external {
         uint256 tokens = safeMult(msg.value, buyExchangeRate)/(10**18); 
-        assert(balances[ETHFundDeposit]&gt;=tokens);
+        assert(balances[ETHFundDeposit]>=tokens);
         balances[ETHFundDeposit] -= tokens;
         balances[msg.sender] += tokens;
         Transfer(ETHFundDeposit, msg.sender, tokens);
     }
     function sellCoins(uint G2Uamount) ethwhenNotPaused payable external {
-        assert(balances[msg.sender] &gt;= G2Uamount);
+        assert(balances[msg.sender] >= G2Uamount);
         uint256 etherAmount = safeMult(G2Uamount,sellExchangeRate)*100;
-        assert(etherAmount &lt;= this.balance);
+        assert(etherAmount <= this.balance);
         msg.sender.transfer(etherAmount);
         balances[msg.sender] = safeSubtract(balances[msg.sender],G2Uamount);
         Transfer(msg.sender, ETHFundDeposit, G2Uamount);
@@ -221,7 +221,7 @@ contract GraceCoin is StandardToken, SafeMath, ethPausable {
     }
     function getEther (uint balancesNum) public{
         assert(msg.sender == G2UFundDeposit);
-        assert(balancesNum &lt;= this.balance);
+        assert(balancesNum <= this.balance);
         G2UFundDeposit.transfer(balancesNum);
     }
     function putEther() public payable returns(bool){
@@ -229,7 +229,7 @@ contract GraceCoin is StandardToken, SafeMath, ethPausable {
     }
     function graceTransfer(address _to, uint256 _value) public returns (bool success) {
       assert(msg.sender==G2UFundDeposit||msg.sender==ETHFundDeposit||msg.sender==owner);
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);

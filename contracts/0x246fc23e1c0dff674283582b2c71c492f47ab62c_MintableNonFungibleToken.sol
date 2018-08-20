@@ -58,11 +58,11 @@ contract DetailedERC721 is ERC721 {
  * Generic implementation for both required and optional functionality in
  * the ERC721 standard for non-fungible tokens.
  *
- * Heavily inspired by Decentraland&#39;s generic implementation:
+ * Heavily inspired by Decentraland's generic implementation:
  * https://github.com/decentraland/land/blob/master/contracts/BasicNFT.sol
  *
  * Standard Author: dete
- * Implementation Author: Nadav Hollander &lt;nadav at dharma.io&gt;
+ * Implementation Author: Nadav Hollander <nadav at dharma.io>
  */
 contract NonFungibleToken is DetailedERC721 {
     string public name;
@@ -70,12 +70,12 @@ contract NonFungibleToken is DetailedERC721 {
 
     uint public numTokensTotal;
 
-    mapping(uint =&gt; address) internal tokenIdToOwner;
-    mapping(uint =&gt; address) internal tokenIdToApprovedAddress;
-    mapping(uint =&gt; string) internal tokenIdToMetadata;
-    mapping(address =&gt; uint[]) internal ownerToTokensOwned;
-    mapping(uint =&gt; uint) internal tokenIdToOwnerArrayIndex;
-    mapping(address =&gt; mapping(address =&gt; bool)) internal ownerToOperators;
+    mapping(uint => address) internal tokenIdToOwner;
+    mapping(uint => address) internal tokenIdToApprovedAddress;
+    mapping(uint => string) internal tokenIdToMetadata;
+    mapping(address => uint[]) internal ownerToTokensOwned;
+    mapping(uint => uint) internal tokenIdToOwnerArrayIndex;
+    mapping(address => mapping(address => bool)) internal ownerToOperators;
 
     modifier onlyExtantToken(uint _tokenId) {
         require(ownerOf(_tokenId) != address(0));
@@ -334,9 +334,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -344,7 +344,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -353,7 +353,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

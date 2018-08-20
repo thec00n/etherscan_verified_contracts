@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 // ----------------------------------------------------------------------------
-// &#39;RIPT&#39; token crowdsale contract
+// 'RIPT' token crowdsale contract
 //
 // Deployed to : 0xef9EcD8a0A2E4b31d80B33E243761f4D93c990a8
 // Symbol      : RIPT
@@ -22,20 +22,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -103,9 +103,9 @@ contract Crowdsale {
     function startSale(uint256 Start,uint256 End,uint256 amount) public
     {
      if (msg.sender != wallet || started) throw;
-     require(Start &lt; End);
-  require(now &lt; Start);
-  //require(balanceOf[msg.sender] &gt; amount);
+     require(Start < End);
+  require(now < Start);
+  //require(balanceOf[msg.sender] > amount);
   startTime=Start;
   endTime=End;
   tokenReward.transfer(this,amount);
@@ -141,30 +141,30 @@ contract Crowdsale {
 10**10) * price;//weiamount * price 
 
     //bonus schedule
-    // if(now &lt; startTime + 1*7*24*60* 1 minutes){//First week
+    // if(now < startTime + 1*7*24*60* 1 minutes){//First week
     //   tokens += (tokens * 60) / 100;//60%
-    // }else if(now &lt; startTime + 2*7*24*60* 1 minutes){//Second week
+    // }else if(now < startTime + 2*7*24*60* 1 minutes){//Second week
     //   tokens += (tokens * 40) / 100;//40%
-    // }else if(now &lt; startTime + 3*7*24*60* 1 minutes){//3rd week
+    // }else if(now < startTime + 3*7*24*60* 1 minutes){//3rd week
     //   tokens += (tokens * 30) / 100;//30% and so on
-    // }else if(now &lt; startTime + 4*7*24*60* 1 minutes){
+    // }else if(now < startTime + 4*7*24*60* 1 minutes){
     //   tokens += (tokens * 20) / 100;
-    // }else if(now &lt; startTime + 5*7*24*60* 1 minutes){
+    // }else if(now < startTime + 5*7*24*60* 1 minutes){
     //   tokens += (tokens * 10) / 100;
     // }
     /*
-    if(now&lt;startTime+27*24*60* 1 minutes){
-      if(weiAmount&gt;=10**18)
+    if(now<startTime+27*24*60* 1 minutes){
+      if(weiAmount>=10**18)
         tokens+=(tokens*60)/100;
-      else if(weiAmount&gt;=5*10**17)
+      else if(weiAmount>=5*10**17)
         tokens+=(tokens*25)/100;
-      else if(weiAmount&gt;=4*10**17)
+      else if(weiAmount>=4*10**17)
         tokens+=(tokens*20)/100;
-      else if(weiAmount&gt;=3*10**17)
+      else if(weiAmount>=3*10**17)
         tokens+=(tokens*15)/100;
-      else if(weiAmount&gt;=2*10**17)
+      else if(weiAmount>=2*10**17)
         tokens+=(tokens*10)/100;
-      else if(weiAmount&gt;=10**17)
+      else if(weiAmount>=10**17)
         tokens+=(tokens*5)/100;
     }
     */
@@ -187,14 +187,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
   function withdrawTokens(uint256 _amount) {

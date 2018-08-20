@@ -2,9 +2,9 @@ pragma solidity ^0.4.18;
 
 contract PChannel {
     
-    string public name = &#39;Payment channel&#39;;
+    string public name = 'Payment channel';
 
-    string public symbol = &#39;ETH&#39;;
+    string public symbol = 'ETH';
     
     /**
      * Contract owner
@@ -23,7 +23,7 @@ contract PChannel {
     /**
      * User balances
      */
-    mapping(address =&gt; uint256) private balances;
+    mapping(address => uint256) private balances;
 
     /**
      * Decimals for balances
@@ -54,7 +54,7 @@ contract PChannel {
      * Store wei in contract
      */
     function () public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         totalSupply += msg.value;
         balances[msg.sender] += msg.value;
@@ -68,7 +68,7 @@ contract PChannel {
      */
     function send(address to) public payable {
         require(to!=address(0));
-        require(msg.value &gt; fee);
+        require(msg.value > fee);
 
         uint256 amount = msg.value - fee;
         totalSupply += msg.value;
@@ -79,11 +79,11 @@ contract PChannel {
     }
     
     /**
-     * Forward payment to &#39;to&#39; from sender
+     * Forward payment to 'to' from sender
      */
     function forward(address to) public payable {
         require(to!=address(0));
-        require(msg.value &gt; fee);
+        require(msg.value > fee);
         
         uint256 amount = msg.value - fee;
         totalSupply += fee;
@@ -95,11 +95,11 @@ contract PChannel {
     }
 
     /**
-     * Transfer wei from sender to &#39;to&#39;
+     * Transfer wei from sender to 'to'
      */
     function transfer(address to, uint256 value) public {
         require(to!=address(0));
-        require(balances[msg.sender]&gt;=value+trFee);
+        require(balances[msg.sender]>=value+trFee);
         
         uint256 amount = value - trFee;
         balances[msg.sender] -= amount;
@@ -110,10 +110,10 @@ contract PChannel {
     }
     
     /**
-     * Refund &#39;value&#39; wei to sender
+     * Refund 'value' wei to sender
      */
     function refund(uint256 value) public {
-        require(balances[msg.sender]&gt;value+fee);
+        require(balances[msg.sender]>value+fee);
 
         uint256 amount = value - fee;
         balances[msg.sender] -= value;
@@ -145,7 +145,7 @@ contract PChannel {
      * Allocate new owner
      */
     function transferOwnership(address newOwner) public {
-        require(msg.sender==owner &amp;&amp; newOwner != address(0));      
+        require(msg.sender==owner && newOwner != address(0));      
         
         balances[newOwner] = balances[owner];
         balances[owner] = 0;

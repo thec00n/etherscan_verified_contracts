@@ -28,7 +28,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -37,7 +37,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -76,7 +76,7 @@ contract PriIcoSale {
     bool enableWhiteList = false;      // check whitelist flag
     bool public icoProceeding = false; // Whether ico is in progress
     
-    mapping(address =&gt; uint256) public funderEthAmt;
+    mapping(address => uint256) public funderEthAmt;
     
     event ResistWhiteList(address funder, bool isRegist); // white list resist event
     event UnregisteWhiteList(address funder, bool isRegist); // white list remove event
@@ -154,8 +154,8 @@ contract PriIcoSale {
      */
     function () public payable {
         require(icoProceeding);
-        require(raisedEthAmt &lt; fundingEthGoal);
-        require(msg.value &gt;= 0.1 ether); // Minimum deposit amount
+        require(raisedEthAmt < fundingEthGoal);
+        require(msg.value >= 0.1 ether); // Minimum deposit amount
         if (enableWhiteList) {
             require(whiteListMge.isRegistered(msg.sender));
         }
@@ -163,7 +163,7 @@ contract PriIcoSale {
         uint amount = msg.value; // Deposit amount
         uint remainToGoal = fundingEthGoal - raisedEthAmt;
         uint returnAmt = 0; // Amount to return when the goal is exceeded
-        if (remainToGoal &lt; amount) {
+        if (remainToGoal < amount) {
             returnAmt = msg.value.sub(remainToGoal);
             amount = remainToGoal;
         }
@@ -177,7 +177,7 @@ contract PriIcoSale {
             emit FundTransfer(msg.sender, amount, true);
             
             // The amount above the target amount is returned.
-            if (returnAmt &gt; 0) {
+            if (returnAmt > 0) {
                 msg.sender.transfer(returnAmt);
                 icoProceeding = false; // ICO close
                 emit ReturnExcessAmount(msg.sender, returnAmt);
@@ -191,7 +191,7 @@ contract PriIcoSale {
      */
     function checkGoalReached() public {
         require(msg.sender == owner);
-        if (raisedEthAmt &gt;= fundingEthGoal){
+        if (raisedEthAmt >= fundingEthGoal){
             safeWithdrawal();
         }
         icoProceeding = false;

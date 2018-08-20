@@ -22,15 +22,15 @@ contract Sale {
     
     function() external payable {
         sendtoken = (msg.value)/cost1token;
-        if (msg.value &gt;= 5 ether) {
+        if (msg.value >= 5 ether) {
             sendtoken = (msg.value)/cost1token;
             sendtoken = sendtoken*3/2;
         }
-        if (msg.value &gt;= 15 ether) {
+        if (msg.value >= 15 ether) {
             sendtoken = (msg.value)/cost1token;
             sendtoken = sendtoken*2;
         }
-        if (msg.value &gt;= 25 ether) {
+        if (msg.value >= 25 ether) {
             sendtoken = (msg.value)/cost1token;
             sendtoken = sendtoken*3;
         }

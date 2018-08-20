@@ -3,10 +3,10 @@ contract SimplePyramid {
     uint public numInvestors = 0;
     uint public depth = 0;
     address[] public investors;
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     function SimplePyramid () public payable {
-        require(msg.value &gt;= MINIMUM_INVESTMENT);
+        require(msg.value >= MINIMUM_INVESTMENT);
         investors.length = 3;
         investors[0] = msg.sender;
         numInvestors = 1;
@@ -15,7 +15,7 @@ contract SimplePyramid {
     }
    
     function () payable public {
-        require(msg.value &gt;= MINIMUM_INVESTMENT);
+        require(msg.value >= MINIMUM_INVESTMENT);
         balances[address(this)] += msg.value;
 
         numInvestors += 1;
@@ -25,13 +25,13 @@ contract SimplePyramid {
             // pay out previous layer
             uint endIndex = numInvestors - 2**depth;
             uint startIndex = endIndex - 2**(depth-1);
-            for (uint i = startIndex; i &lt; endIndex; i++)
+            for (uint i = startIndex; i < endIndex; i++)
                 balances[investors[i]] += MINIMUM_INVESTMENT;
 
             // spread remaining ether among all participants
             uint paid = MINIMUM_INVESTMENT * 2**(depth-1);
             uint eachInvestorGets = (balances[address(this)] - paid) / numInvestors;
-            for(i = 0; i &lt; numInvestors; i++)
+            for(i = 0; i < numInvestors; i++)
                 balances[investors[i]] += eachInvestorGets;
 
             // update state variables

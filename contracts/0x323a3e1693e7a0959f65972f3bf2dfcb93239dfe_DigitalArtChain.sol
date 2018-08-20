@@ -3,7 +3,7 @@
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract Ownable {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -65,7 +65,7 @@ contract ERC721Receiver {
    * @param _from The sending address
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
    */
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
@@ -164,7 +164,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     assembly { size := extcodesize(addr) }  // solium-disable-line security/no-inline-assembly
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -193,9 +193,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -203,7 +203,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -212,7 +212,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -227,21 +227,21 @@ contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -365,7 +365,7 @@ contract ERC721BasicToken is ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -381,14 +381,14 @@ contract ERC721BasicToken is ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -523,19 +523,19 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping (address =&gt; uint256[]) internal ownedTokens;
+  mapping (address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -578,7 +578,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list owned by the requested address
    */
   function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -597,7 +597,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -697,7 +697,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
  * In summary this is a simple library of integer functions which allow a simple
  * conversion to and from strings
  *
- * @author James Lockhart &lt;<span class="__cf_email__" data-cfemail="117b707c7462517f22656621637a3f727e3f647a">[email&#160;protected]</span>&gt;
+ * @author James Lockhart <<span class="__cf_email__" data-cfemail="117b707c7462517f22656621637a3f727e3f647a">[email protected]</span>>
  */
 library Integers {
     /**
@@ -714,8 +714,8 @@ library Integers {
         returns (uint _ret) {
         bytes memory _bytesValue = bytes(_value);
         uint j = 1;
-        for(uint i = _bytesValue.length-1; i &gt;= 0 &amp;&amp; i &lt; _bytesValue.length; i--) {
-            assert(_bytesValue[i] &gt;= 48 &amp;&amp; _bytesValue[i] &lt;= 57);
+        for(uint i = _bytesValue.length-1; i >= 0 && i < _bytesValue.length; i--) {
+            assert(_bytesValue[i] >= 48 && _bytesValue[i] <= 57);
             _ret += (uint(_bytesValue[i]) - 48)*j;
             j*=10;
         }
@@ -734,17 +734,17 @@ library Integers {
         returns (string) {
 
         if  (_base==0){
-            return &quot;0&quot;;
+            return "0";
         }
 
         bytes memory _tmp = new bytes(32);
         uint i;
-        for(i = 0;_base &gt; 0;i++) {
+        for(i = 0;_base > 0;i++) {
             _tmp[i] = byte((_base % 10) + 48);
             _base /= 10;
         }
         bytes memory _real = new bytes(i--);
-        for(uint j = 0; j &lt; _real.length; j++) {
+        for(uint j = 0; j < _real.length; j++) {
             _real[j] = _tmp[i--];
         }
         return string(_real);
@@ -799,7 +799,7 @@ library Integers {
  * Please be aware these functions can be quite gas heavy so use them only when
  * necessary not to clog the blockchain with expensive transactions.
  *
- * @author James Lockhart &lt;<span class="__cf_email__" data-cfemail="d8b2b9b5bdab98b6ebacafe8aab3f6bbb7f6adb3">[email&#160;protected]</span>&gt;
+ * @author James Lockhart <<span class="__cf_email__" data-cfemail="d8b2b9b5bdab98b6ebacafe8aab3f6bbb7f6adb3">[email protected]</span>>
  */
 library Strings {
 
@@ -820,7 +820,7 @@ library Strings {
         bytes memory _baseBytes = bytes(_base);
         bytes memory _valueBytes = bytes(_value);
 
-        assert(_valueBytes.length &gt; 0);
+        assert(_valueBytes.length > 0);
 
         string memory _tmpValue = new string(_baseBytes.length +
             _valueBytes.length);
@@ -829,11 +829,11 @@ library Strings {
         uint i;
         uint j;
 
-        for(i = 0; i &lt; _baseBytes.length; i++) {
+        for(i = 0; i < _baseBytes.length; i++) {
             _newValue[j++] = _baseBytes[i];
         }
 
-        for(i = 0; i&lt;_valueBytes.length; i++) {
+        for(i = 0; i<_valueBytes.length; i++) {
             _newValue[j++] = _valueBytes[i];
         }
 
@@ -883,7 +883,7 @@ library Strings {
 
         assert(_valueBytes.length == 1);
 
-        for(uint i = _offset; i &lt; _baseBytes.length; i++) {
+        for(uint i = _offset; i < _baseBytes.length; i++) {
             if (_baseBytes[i] == _valueBytes[0]) {
                 return int(i);
             }
@@ -943,13 +943,13 @@ library Strings {
         returns (string) {
         bytes memory _baseBytes = bytes(_base);
 
-        assert(uint(_offset+_length) &lt;= _baseBytes.length);
+        assert(uint(_offset+_length) <= _baseBytes.length);
 
         string memory _tmp = new string(uint(_length));
         bytes memory _tmpBytes = bytes(_tmp);
 
         uint j = 0;
-        for(uint i = uint(_offset); i &lt; uint(_offset+_length); i++) {
+        for(uint i = uint(_offset); i < uint(_offset+_length); i++) {
           _tmpBytes[j++] = _baseBytes[i];
         }
 
@@ -976,7 +976,7 @@ library Strings {
         bytes memory _baseBytes = bytes(_base);
         uint _offset = 0;
 
-        while(_offset &lt; _baseBytes.length-1) {
+        while(_offset < _baseBytes.length-1) {
 
             int _limit = _indexOf(_base, _value, _offset);
             if (_limit == -1) {
@@ -987,7 +987,7 @@ library Strings {
             bytes memory _tmpBytes = bytes(_tmp);
 
             uint j = 0;
-            for(uint i = _offset; i &lt; uint(_limit); i++) {
+            for(uint i = _offset; i < uint(_limit); i++) {
                 _tmpBytes[j++] = _baseBytes[i];
             }
             _offset = uint(_limit) + 1;
@@ -1017,7 +1017,7 @@ library Strings {
             return false;
         }
 
-        for(uint i = 0; i &lt; _baseBytes.length; i++) {
+        for(uint i = 0; i < _baseBytes.length; i++) {
             if (_baseBytes[i] != _valueBytes[i]) {
                 return false;
             }
@@ -1049,8 +1049,8 @@ library Strings {
             return false;
         }
 
-        for(uint i = 0; i &lt; _baseBytes.length; i++) {
-            if (_baseBytes[i] != _valueBytes[i] &amp;&amp;
+        for(uint i = 0; i < _baseBytes.length; i++) {
+            if (_baseBytes[i] != _valueBytes[i] &&
                 _upper(_baseBytes[i]) != _upper(_valueBytes[i])) {
                 return false;
             }
@@ -1073,7 +1073,7 @@ library Strings {
         internal
         returns (string) {
         bytes memory _baseBytes = bytes(_base);
-        for (uint i = 0; i &lt; _baseBytes.length; i++) {
+        for (uint i = 0; i < _baseBytes.length; i++) {
             _baseBytes[i] = _upper(_baseBytes[i]);
         }
         return string(_baseBytes);
@@ -1093,7 +1093,7 @@ library Strings {
         internal
         returns (string) {
         bytes memory _baseBytes = bytes(_base);
-        for (uint i = 0; i &lt; _baseBytes.length; i++) {
+        for (uint i = 0; i < _baseBytes.length; i++) {
             _baseBytes[i] = _lower(_baseBytes[i]);
         }
         return string(_baseBytes);
@@ -1114,7 +1114,7 @@ library Strings {
         constant
         returns (bytes1) {
 
-        if (_b1 &gt;= 0x61 &amp;&amp; _b1 &lt;= 0x7A) {
+        if (_b1 >= 0x61 && _b1 <= 0x7A) {
             return bytes1(uint8(_b1)-32);
         }
 
@@ -1136,7 +1136,7 @@ library Strings {
         constant
         returns (bytes1) {
 
-        if (_b1 &gt;= 0x41 &amp;&amp; _b1 &lt;= 0x5A) {
+        if (_b1 >= 0x41 && _b1 <= 0x5A) {
             return bytes1(uint8(_b1)+32);
         }
 
@@ -1150,7 +1150,7 @@ contract DigitalArtChain is Ownable, ERC721Token, ERC721Holder {
     using Strings for string;
     using Integers for uint;
 
-    function DigitalArtChain () ERC721Token(&quot;DigitalArtChain&quot; ,&quot;DAC&quot;) public {
+    function DigitalArtChain () ERC721Token("DigitalArtChain" ,"DAC") public {
 
     }
 
@@ -1160,12 +1160,12 @@ contract DigitalArtChain is Ownable, ERC721Token, ERC721Holder {
     }
 
     DigitalArt[] public digitalArts;
-    mapping (string =&gt; uint256) ipfsHashToTokenId;
+    mapping (string => uint256) ipfsHashToTokenId;
 
-    mapping (address =&gt; uint256) internal publishedTokensCount;
-    mapping (address =&gt; uint256[]) internal publishedTokens;
+    mapping (address => uint256) internal publishedTokensCount;
+    mapping (address => uint256[]) internal publishedTokens;
 
-    mapping(address =&gt; mapping (uint256 =&gt; uint256)) internal publishedTokensIndex;
+    mapping(address => mapping (uint256 => uint256)) internal publishedTokensIndex;
 
 
     struct SellingItem {
@@ -1173,12 +1173,12 @@ contract DigitalArtChain is Ownable, ERC721Token, ERC721Holder {
         uint128 price;
     }
 
-    mapping (uint256 =&gt; SellingItem) public tokenIdToSellingItem;
+    mapping (uint256 => SellingItem) public tokenIdToSellingItem;
 
     uint128 public createDigitalArtFee = 0.00198 ether;
     uint128 public publisherCut = 500;
-    string preUri1 = &quot;http://api.digitalartchain.com/tokens?tokenId=&quot;;
-    string preUri2 = &quot;&amp;ipfsHash=&quot;;
+    string preUri1 = "http://api.digitalartchain.com/tokens?tokenId=";
+    string preUri2 = "&ipfsHash=";
 
     /*** Modifier ***/
     modifier onlyOwner() {
@@ -1196,7 +1196,7 @@ contract DigitalArtChain is Ownable, ERC721Token, ERC721Holder {
     }
 
     function setPublisherCut(uint128 _cut) public onlyOwner {
-        require(_cut &gt; 0 &amp;&amp; _cut &lt; 10000);
+        require(_cut > 0 && _cut < 10000);
         publisherCut = _cut;
     }
 
@@ -1225,7 +1225,7 @@ contract DigitalArtChain is Ownable, ERC721Token, ERC721Holder {
     }
 
     function publishedTokenOfOwnerByIndex(address _publisher, uint256 _index) public view returns (uint256) {
-        require(_index &lt; publishedCountOf(_publisher));
+        require(_index < publishedCountOf(_publisher));
         return publishedTokens[_publisher][_index];
     }
 
@@ -1274,7 +1274,7 @@ contract DigitalArtChain is Ownable, ERC721Token, ERC721Holder {
 
         SellingItem memory sellingItem = tokenIdToSellingItem[_tokenId];
 
-        if (sellingItem.price &gt; 0) {
+        if (sellingItem.price > 0) {
             uint128 actualPublisherCut = _computePublisherCut(sellingItem.price);
             uint128 proceeds = sellingItem.price - actualPublisherCut;
             sellingItem.seller.transfer(proceeds);

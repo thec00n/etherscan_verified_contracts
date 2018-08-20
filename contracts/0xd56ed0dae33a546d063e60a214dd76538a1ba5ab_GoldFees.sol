@@ -100,37 +100,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -143,12 +143,12 @@ contract StandardToken is ERC20, SafeMath {
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     require(msg.data.length &gt;= size + 4);
+     require(msg.data.length >= size + 4);
      _;
   }
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32)  returns (bool success){
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, SafeMath {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
-    // if (_value &gt; _allowance) throw;
+    // if (_value > _allowance) throw;
 
     balances[_to] = safeAdd(balances[_to], _value);
     balances[_from] = safeSub(balances[_from], _value);
@@ -213,8 +213,8 @@ contract HelloGoldToken is ERC20, SafeMath, Pausable, StandardToken {
   }
 
   function HelloGoldToken(address _reserve) {
-    name = &quot;HelloGold Token&quot;;
-    symbol = &quot;HGT&quot;;
+    name = "HelloGold Token";
+    symbol = "HGT";
     decimals = 8;
  
     totalSupply = 1 * 10 ** 9 * 10 ** uint256(decimals);
@@ -283,7 +283,7 @@ contract GoldFees is SafeMath,Ownable {
             }
             maxRate = newN;
             pow *= 2;
-        } while (pow &lt; 2000);
+        } while (pow < 2000);
         
     }
 
@@ -294,10 +294,10 @@ contract GoldFees is SafeMath,Ownable {
     }
     
     function rateForDays(uint256 numDays) constant returns (uint256 rate) {
-        if (numDays &lt;= maxDays) {
+        if (numDays <= maxDays) {
             uint r = rateN ** numDays;
             uint d = rateD * numDays;
-            if (d &gt; 18) {
+            if (d > 18) {
                 uint div =  10 ** (d-18);
                 rate = r / div;
             } else {
@@ -340,7 +340,7 @@ contract GoldFees is SafeMath,Ownable {
             return;
         }
         amount = (rateForDays(numberOfDays) * startAmount) / (1 ether);
-        if ((fee == 0) &amp;&amp; (amount !=  0)) amount--;
+        if ((fee == 0) && (amount !=  0)) amount--;
         fee = safeSub(startAmount,amount);
     }
 }
@@ -356,8 +356,8 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
   event TokenMinted(address destination, uint256 amount);
   event TokenBurned(address source, uint256 amount);
   
-	string public name = &quot;HelloGold Gold Backed Token&quot;;
-	string public symbol = &quot;GBT&quot;;
+	string public name = "HelloGold Gold Backed Token";
+	string public symbol = "GBT";
 	uint256 constant public  decimals = 18;  // same as ETH
 	uint256 constant public  hgtDecimals = 8;
 		
@@ -408,8 +408,8 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
     }
 
 	/*Creates an array with all balances*/
-	mapping (address =&gt; Balance) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	mapping (address => Balance) public balances;
+	mapping (address => mapping (address => uint)) allowed;
 	
 	function update(address where) internal {
         uint256 pos;
@@ -429,7 +429,7 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
 		(val, fees) = calcFees(balances[where].lastUpdated,now,balances[where].amount);
 
 	    pos = balances[where].nextAllocationIndex;
-		if ((pos &lt; currentAllocations.length) &amp;&amp;  (balances[where].allocationShare != 0)) {
+		if ((pos < currentAllocations.length) &&  (balances[where].allocationShare != 0)) {
 
 			c_amount = currentAllocations[balances[where].nextAllocationIndex].amount * balances[where].allocationShare / allocationPool;
 
@@ -466,15 +466,15 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
 	function addAllocationPartOne(uint newAllocation,uint numSteps) onlyOwner{
 		uint256 thisAllocation = newAllocation;
 
-		require(totAllocation &lt; maxAllocation);		// cannot allocate more than this;
+		require(totAllocation < maxAllocation);		// cannot allocate more than this;
 
-		if (currentAllocations.length &gt; partAllocations.length) {
+		if (currentAllocations.length > partAllocations.length) {
 			partAllocations = currentAllocations;
 		}
 
-		if (totAllocation + thisAllocation &gt; maxAllocation) {
+		if (totAllocation + thisAllocation > maxAllocation) {
 			thisAllocation = maxAllocation - totAllocation;
-			log0(&quot;max alloc reached&quot;);
+			log0("max alloc reached");
 		}
 		totAllocation += thisAllocation;
 
@@ -488,7 +488,7 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
 		// add this record to the end of currentAllocations
 		partL = partAllocations.push(newDiv);
 		// update all other records with calcs from last record
-		if (partAllocations.length &lt; 2) { // no fees to consider
+		if (partAllocations.length < 2) { // no fees to consider
 			PartComplete();
 			currentAllocations = partAllocations;
 			FeeOnAllocation(0,now);
@@ -498,7 +498,7 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
 		// The only fees that need to be collected are the fees on location zero.
 		// Since they are the last calculated = they come out with the break
 		//
-		for (partPos = partAllocations.length - 2; partPos &gt;= 0; partPos-- ){
+		for (partPos = partAllocations.length - 2; partPos >= 0; partPos-- ){
 			(partAllocations[partPos].amount,partFees) = calcFees(partAllocations[partPos].date,now,partAllocations[partPos].amount);
 
 			partAllocations[partPos].amount += partAllocations[partL - 1].amount;
@@ -517,9 +517,9 @@ contract GoldBackedToken is Ownable, SafeMath, ERC20, Pausable {
 	}
 
 	function addAllocationPartTwo(uint numSteps) onlyOwner {
-		require(numSteps &gt; 0);
-		require(partPos &gt; 0);
-		for (uint i = 0; i &lt; numSteps; i++ ){
+		require(numSteps > 0);
+		require(partPos > 0);
+		for (uint i = 0; i < numSteps; i++ ){
 			partPos--;
 			(partAllocations[partPos].amount,partFees) = calcFees(partAllocations[partPos].date,now,partAllocations[partPos].amount);
 
@@ -654,8 +654,8 @@ contract HelloGoldSale is Pausable, SafeMath {
   }
 
   /* This creates an array with all balances */
-  mapping (address =&gt; csAction) public permissions;
-  mapping (address =&gt; uint256)  public deposits;
+  mapping (address => csAction) public permissions;
+  mapping (address => uint256)  public deposits;
 
   modifier MustBeEnabled(address x) {
       require (!permissions[x].blocked) ;
@@ -709,7 +709,7 @@ contract HelloGoldSale is Pausable, SafeMath {
         require (!funding()) ;
         tranchePeriod = period_;
         endDate = startDate + tranchePeriod;
-        if (endDate &lt; now + tranchePeriod) {
+        if (endDate < now + tranchePeriod) {
             endDate = now + tranchePeriod;
         }
     }
@@ -720,25 +720,25 @@ contract HelloGoldSale is Pausable, SafeMath {
 
   function funding() constant returns (bool) {     
     if (paused) return false;               // frozen
-    if (now &lt; startDate) return false;      // too early
-    if (now &gt; endDate) return false;        // too late
+    if (now < startDate) return false;      // too early
+    if (now > endDate) return false;        // too late
     if (coinsRemaining == 0) return false;  // no more coins
-    if (tierNo &gt;= numTiers ) return false;  // passed end of top tier. Tiers start at zero
+    if (tierNo >= numTiers ) return false;  // passed end of top tier. Tiers start at zero
     return true;
   }
 
   function success() constant returns (bool succeeded) {
     if (coinsRemaining == 0) return true;
-    bool complete = (now &gt; endDate) ;
-    bool didOK = (coinsRemaining &lt;= (MaxCoinsR1 - minimumCap)); // not even 40M Gone?? Aargh.
-    succeeded = (complete &amp;&amp; didOK)  ;  // (out of steam but enough sold) 
+    bool complete = (now > endDate) ;
+    bool didOK = (coinsRemaining <= (MaxCoinsR1 - minimumCap)); // not even 40M Gone?? Aargh.
+    succeeded = (complete && didOK)  ;  // (out of steam but enough sold) 
     return ;
   }
 
   function failed() constant returns (bool didNotSucceed) {
-    bool complete = (now &gt; endDate  );
-    bool didBad = (coinsRemaining &gt; (MaxCoinsR1 - minimumCap));
-    didNotSucceed = (complete &amp;&amp; didBad);
+    bool complete = (now > endDate  );
+    bool didBad = (coinsRemaining > (MaxCoinsR1 - minimumCap));
+    didNotSucceed = (complete && didBad);
     return;
   }
 
@@ -758,7 +758,7 @@ contract HelloGoldSale is Pausable, SafeMath {
   // hgtRates in whole tokens per ETH
   // max individual contribution in whole ETH
   function setHgtRates(uint256 p0,uint256 p1,uint256 p2,uint256 p3,uint256 p4, uint256 _max ) onlyOwner {
-              require (now &lt; startDate) ;
+              require (now < startDate) ;
               hgtRates[0]   = p0 * 10**8;
               hgtRates[1]   = p1 * 10**8;
               hgtRates[2]   = p2 * 10**8;
@@ -775,14 +775,14 @@ contract HelloGoldSale is Pausable, SafeMath {
     uint256 totalTokens;
     uint256 hgtRate;
     require (funding()) ;
-    require (value &gt; 1 finney) ;
-    require (deposits[recipient] &lt; personalMax);
+    require (value > 1 finney) ;
+    require (deposits[recipient] < personalMax);
 
     uint256 maxRefund = 0;
-    if ((deposits[msg.sender] + value) &gt; personalMax) {
+    if ((deposits[msg.sender] + value) > personalMax) {
         maxRefund = deposits[msg.sender] + value - personalMax;
         value -= maxRefund;
-        log0(&quot;maximum funds exceeded&quot;);
+        log0("maximum funds exceeded");
     }  
 
     uint256 val = value;
@@ -796,11 +796,11 @@ contract HelloGoldSale is Pausable, SafeMath {
       uint tokens = safeMul(val, hgtRate);      // (val in eth * 10^18) * #tokens per eth
       tokens = safeDiv(tokens, 1 ether);      // val is in ether, msg.value is in wei
    
-      if (tokens &lt;= coinsLeftInTier) {
+      if (tokens <= coinsLeftInTier) {
         uint256 actualTokens = tokens;
         uint refund = 0;
-        if (tokens &gt; coinsRemaining) { //can&#39;t sell desired # tokens
-            Reduction(&quot;in tier&quot;,recipient,tokens,coinsRemaining);
+        if (tokens > coinsRemaining) { //can't sell desired # tokens
+            Reduction("in tier",recipient,tokens,coinsRemaining);
             actualTokens = coinsRemaining;
             refund = safeSub(tokens, coinsRemaining ); // refund amount in tokens
             refund = safeDiv(refund*1 ether,hgtRate );  // refund amount in ETH
@@ -820,24 +820,24 @@ contract HelloGoldSale is Pausable, SafeMath {
 
         deposits[recipient] = safeAdd(deposits[recipient],val); // in case of refund - could pull off etherscan
         refund += maxRefund;
-        if (refund &gt; 0) {
+        if (refund > 0) {
             ethRaised = safeSub(ethRaised,refund);
             recipient.transfer(refund);
         }
-        if (coinsRemaining &lt;= (MaxCoinsR1 - minimumCap)){ // has passed success criteria
+        if (coinsRemaining <= (MaxCoinsR1 - minimumCap)){ // has passed success criteria
             if (!multiSig.send(this.balance)) {                // send funds to HGF
-                log0(&quot;cannot forward funds to owner&quot;);
+                log0("cannot forward funds to owner");
             }
         }
         coinsLeftInTier = safeSub(coinsLeftInTier,actualTokens);
-        if ((coinsLeftInTier == 0) &amp;&amp; (coinsRemaining != 0)) { // exact sell out of non final tier
+        if ((coinsLeftInTier == 0) && (coinsRemaining != 0)) { // exact sell out of non final tier
             coinsLeftInTier = coinsPerTier;
             tierNo++;
             endDate = now + tranchePeriod;
         }
         return;
       }
-      // check that coinsLeftInTier &gt;= coinsRemaining
+      // check that coinsLeftInTier >= coinsRemaining
 
       uint256 coins2buy = min256(coinsLeftInTier , coinsRemaining); 
 
@@ -856,26 +856,26 @@ contract HelloGoldSale is Pausable, SafeMath {
       val    = safeSub(val,costOfTheseCoins);
       tierNo = tierNo + 1;
       coinsLeftInTier = coinsPerTier;
-    } while ((val &gt; 0) &amp;&amp; funding());
+    } while ((val > 0) && funding());
 
     // escaped because we passed the end of the universe.....
     // so give them their tokens
     require (token.transferFrom(HGT_Reserve, recipient,totalTokens)) ;
 
-    if ((val &gt; 0) || (maxRefund &gt; 0)){
-        Reduction(&quot;finished crowdsale, returning &quot;,recipient,value,totalTokens);
+    if ((val > 0) || (maxRefund > 0)){
+        Reduction("finished crowdsale, returning ",recipient,value,totalTokens);
         // return the remainder !
-        recipient.transfer(val+maxRefund); // if you can&#39;t return the balance, abort whole process
+        recipient.transfer(val+maxRefund); // if you can't return the balance, abort whole process
     }
     if (!multiSig.send(this.balance)) {
         ethRaised = safeSub(ethRaised,this.balance);
-        log0(&quot;cannot send at tier jump&quot;);
+        log0("cannot send at tier jump");
     }
   }
   
   function allocatedTokens(address grantee, uint256 numTokens) onlyOwner {
-    require (now &lt; startDate) ;
-    if (numTokens &lt; coinsRemaining) {
+    require (now < startDate) ;
+    if (numTokens < coinsRemaining) {
         coinsRemaining = safeSub(coinsRemaining, numTokens);
        
     } else {
@@ -888,7 +888,7 @@ contract HelloGoldSale is Pausable, SafeMath {
 
   function withdraw() { // it failed. Come and get your ether.
       if (failed()) {
-          if (deposits[msg.sender] &gt; 0) {
+          if (deposits[msg.sender] > 0) {
               uint256 val = deposits[msg.sender];
               deposits[msg.sender] = 0;
               msg.sender.transfer(val);
@@ -899,14 +899,14 @@ contract HelloGoldSale is Pausable, SafeMath {
   function complete() onlyOwner {  // this should not have to be called. Extreme measures.
       if (success()) {
           uint256 val = this.balance;
-          if (val &gt; 0) {
+          if (val > 0) {
             if (!multiSig.send(val)) {
-                log0(&quot;cannot withdraw&quot;);
+                log0("cannot withdraw");
             } else {
-                log0(&quot;funds withdrawn&quot;);
+                log0("funds withdrawn");
             }
           } else {
-              log0(&quot;nothing to withdraw&quot;);
+              log0("nothing to withdraw");
           }
       }
   }

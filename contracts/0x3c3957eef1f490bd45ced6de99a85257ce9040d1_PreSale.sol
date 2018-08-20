@@ -47,7 +47,7 @@ contract PreSale {
     
     function _random(uint _lower, uint _range, uint _jump) internal view returns (uint) {
         uint number = uint(block.blockhash(block.number - _jump)) % _range;
-        if (number &lt; _lower) {
+        if (number < _lower) {
             number = _lower;
         }
         return number;
@@ -80,10 +80,10 @@ contract PreSale {
     
     uint public oneEth = 1 ether;
     
-    mapping (uint =&gt; address) public heroIdToBuyer;
-    mapping (address =&gt; uint) public BuyerLotteryTimes;
-    mapping (address =&gt; uint) public playerWinItems;
-    mapping (address =&gt; uint) public playerWinHeroes;
+    mapping (uint => address) public heroIdToBuyer;
+    mapping (address => uint) public BuyerLotteryTimes;
+    mapping (address => uint) public playerWinItems;
+    mapping (address => uint) public playerWinHeroes;
     
     function createPreSale(
         uint _heroId,
@@ -107,7 +107,7 @@ contract PreSale {
     }
     
     function multiCreate(uint _startId, uint _amount, uint _price) public onlyAdmin {
-        for (uint i; i &lt; _amount; i++) {
+        for (uint i; i < _amount; i++) {
             createPreSale(_startId + i, _price);
         }
     }
@@ -133,7 +133,7 @@ contract PreSale {
         require(_sale.ifSold == false);
         uint _heroId = _sale.heroId;
         uint _price = _sale.price;
-        require(msg.value &gt;= _price);
+        require(msg.value >= _price);
         require(heroIdToBuyer[_heroId] == address(0));
         
         heroIdToBuyer[_heroId] = msg.sender;
@@ -160,15 +160,15 @@ contract PreSale {
     
     function autoBuy(uint _heroId) public payable whenNotPaused{
         require(heroIdToBuyer[_heroId] == address(0));
-        require(_heroId &gt;= 101 &amp;&amp; _heroId &lt;= 998);
-        require(_heroId != 200 &amp;&amp; _heroId != 300 &amp;&amp; _heroId != 400 &amp;&amp; _heroId != 500 &amp;&amp; _heroId != 600 &amp;&amp; _heroId != 700 &amp;&amp; _heroId != 800 &amp;&amp; _heroId != 900);
-        require(_heroId != 111 &amp;&amp; _heroId != 222 &amp;&amp; _heroId != 333 &amp;&amp; _heroId != 444 &amp;&amp; _heroId != 555 &amp;&amp; _heroId != 666 &amp;&amp; _heroId != 777 &amp;&amp; _heroId != 888 &amp;&amp; _heroId != 999);
+        require(_heroId >= 101 && _heroId <= 998);
+        require(_heroId != 200 && _heroId != 300 && _heroId != 400 && _heroId != 500 && _heroId != 600 && _heroId != 700 && _heroId != 800 && _heroId != 900);
+        require(_heroId != 111 && _heroId != 222 && _heroId != 333 && _heroId != 444 && _heroId != 555 && _heroId != 666 && _heroId != 777 && _heroId != 888 && _heroId != 999);
         
-        if (_heroId &lt; 500) {
-            require(msg.value &gt;= standFeeBefore500);
+        if (_heroId < 500) {
+            require(msg.value >= standFeeBefore500);
             heroIdToBuyer[_heroId] = msg.sender;
         } else {
-            require(msg.value &gt;= standFeeAfter500);
+            require(msg.value >= standFeeAfter500);
             heroIdToBuyer[_heroId] = msg.sender;
         }
         
@@ -210,7 +210,7 @@ contract PreSale {
     function bidAuction(uint _auctionId) public payable whenNotPaused{
         Auction storage auction = auctions[_auctionId];
         require(auction.bidder != msg.sender);
-        require(msg.value &gt; auction.currentPrice);
+        require(msg.value > auction.currentPrice);
         if (auction.bidder != address(0)) {
             address lastBidder = auction.bidder;
             lastBidder.transfer(auction.currentPrice - transferFee);
@@ -240,19 +240,19 @@ contract PreSale {
     
     function _ItemRandom(uint _jump) internal view returns (uint) {
         uint num = _random(0,1000,_jump);
-        if (num &gt;= 0 &amp;&amp; num &lt;= 199) {
+        if (num >= 0 && num <= 199) {
             return 2;
-        } else if (num &gt;= 200 &amp;&amp; num &lt;= 449) {
+        } else if (num >= 200 && num <= 449) {
             return 1;
-        } else if (num &gt;= 450 &amp;&amp; num &lt;= 649) {
+        } else if (num >= 450 && num <= 649) {
             return 0;
-        } else if (num &gt;= 650 &amp;&amp; num &lt;= 799) {
+        } else if (num >= 650 && num <= 799) {
             return 3;
-        } else if (num &gt;= 800 &amp;&amp; num &lt;= 899) {
+        } else if (num >= 800 && num <= 899) {
             return 4;
-        } else if (num &gt;= 900 &amp;&amp; num &lt;= 969) {
+        } else if (num >= 900 && num <= 969) {
             return 5;
-        } else if (num &gt;= 970 &amp;&amp; num &lt;= 999) {
+        } else if (num >= 970 && num <= 999) {
             return 6;
         }
     }
@@ -260,9 +260,9 @@ contract PreSale {
     uint rad = _random(1,13,1);
     
     function itemLottery() public whenNotPaused returns (uint) {
-        require(BuyerLotteryTimes[msg.sender] &gt;= 1);
+        require(BuyerLotteryTimes[msg.sender] >= 1);
         uint _jump = _random(1, 89, rad);
-        if (rad &lt; 13) {
+        if (rad < 13) {
             rad ++;
         } else {
             rad = 1;
@@ -275,9 +275,9 @@ contract PreSale {
     }
     
     function heroLottery() public whenNotPaused returns (bool) {
-        require(BuyerLotteryTimes[msg.sender] &gt;= 1);
+        require(BuyerLotteryTimes[msg.sender] >= 1);
         uint _jump = _random(1, 89, rad);
-        if (rad &lt; 13) {
+        if (rad < 13) {
             rad ++;
         } else {
             rad = 1;

@@ -9,19 +9,19 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256){
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256){
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256){
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -74,8 +74,8 @@ contract Ownable {
 
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping(address => uint256) balances;
 
     /**
      * @dev transfer token for a specified address
@@ -83,8 +83,8 @@ contract StandardToken is ERC20 {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public returns (bool){
-        assert(0 &lt; _value);
-        assert(balances[msg.sender] &gt;= _value);
+        assert(0 < _value);
+        assert(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -108,12 +108,12 @@ contract StandardToken is ERC20 {
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool){
         uint256 _allowance = allowed[_from][msg.sender];
-        assert (balances[_from] &gt;= _value);
-        assert (_allowance &gt;= _value);
-        assert (_value &gt; 0);
-        // assert ( balances[_to] + _value &gt; balances[_to]);
+        assert (balances[_from] >= _value);
+        assert (_allowance >= _value);
+        assert (_value > 0);
+        // assert ( balances[_to] + _value > balances[_to]);
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -150,8 +150,8 @@ contract StandardToken is ERC20 {
 
 
 contract  Ammbr is StandardToken, Ownable {
-    string public name = &#39;&#39;;
-    string public symbol = &#39;&#39;;
+    string public name = '';
+    string public symbol = '';
     uint8 public  decimals = 0;
     uint256 public maxMintBlock = 0;
 
@@ -185,26 +185,26 @@ contract  Ammbr is StandardToken, Ownable {
      * must be taken to prevent quality being affected.
      * 
      * @param destinations An array of destinations we would be sending tokens to
-     * @param tokens An array of tokens, sent to destinations (index is used for destination-&gt;token match)
+     * @param tokens An array of tokens, sent to destinations (index is used for destination->token match)
      */
     function multiTransfer(address[] destinations, uint[] tokens) public returns (bool success){
         // Two variables must match in length, and must contain elements
         // Plus, a maximum of 127 transfers are supported
-        assert(destinations.length &gt; 0);
-        assert(destinations.length &lt; 128);
+        assert(destinations.length > 0);
+        assert(destinations.length < 128);
         assert(destinations.length == tokens.length);
         // Check total requested balance
         uint8 i = 0;
         uint totalTokensToTransfer = 0;
-        for (i = 0; i &lt; destinations.length; i++){
-            assert(tokens[i] &gt; 0);
+        for (i = 0; i < destinations.length; i++){
+            assert(tokens[i] > 0);
             totalTokensToTransfer += tokens[i];
         }
         // Do we have enough tokens in hand?
-        assert (balances[msg.sender] &gt; totalTokensToTransfer);
+        assert (balances[msg.sender] > totalTokensToTransfer);
         // We have enough tokens, execute the transfer
         balances[msg.sender] = balances[msg.sender].sub(totalTokensToTransfer);
-        for (i = 0; i &lt; destinations.length; i++){
+        for (i = 0; i < destinations.length; i++){
             // Add the token to the intended destination
             balances[destinations[i]] = balances[destinations[i]].add(tokens[i]);
             // Call the event...

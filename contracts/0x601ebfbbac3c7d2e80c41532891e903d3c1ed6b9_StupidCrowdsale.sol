@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -96,7 +96,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -108,7 +108,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -272,7 +272,7 @@ contract MintableToken is StandardToken, Ownable {
 
 /** 
  * @title TokenDestructible:
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f785929a9498b7c5">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f785929a9498b7c5">[email protected]</a>π.com>
  * @dev Base contract that can be destroyed by owner. All funds in contract including
  * listed tokens will be sent to the owner.
  */
@@ -290,7 +290,7 @@ contract TokenDestructible is Ownable {
   function destroy(address[] tokens) onlyOwner {
 
     // Transfer tokens to owner
-    for (uint256 i = 0; i &lt; tokens.length; i++) {
+    for (uint256 i = 0; i < tokens.length; i++) {
       ERC20Basic token = ERC20Basic(tokens[i]);
       uint256 balance = token.balanceOf(this);
       token.transfer(owner, balance);
@@ -310,10 +310,10 @@ contract TokenDestructible is Ownable {
  
 contract StupidCoin is StandardToken, Ownable, TokenDestructible {
 
-  string public name = &quot;StupidCoin&quot;;
+  string public name = "StupidCoin";
   uint8 public decimals = 18;
-  string public symbol = &quot;STPD&quot;;
-  string public version = &quot;1.0&quot;;
+  string public symbol = "STPD";
+  string public version = "1.0";
 
   event Mint(address indexed to, uint256 amount);
   event MintFinished();
@@ -371,9 +371,9 @@ contract StupidCrowdsale is Ownable, Pausable, TokenDestructible {
   // function to get the price of the token
   // returns how many token units a buyer gets per wei, needs to be divided by 10
   function getRate() constant returns (uint16) {
-    if      (block.timestamp &lt; START)            return 1000; // presale, 100% bonus
-    else if (block.timestamp &lt;= START + 14 days) return 835; // day 1 to 14, 67% bonus
-    else if (block.timestamp &lt;= START + 28 days) return 665; // day 15 to 28, 33% bonus
+    if      (block.timestamp < START)            return 1000; // presale, 100% bonus
+    else if (block.timestamp <= START + 14 days) return 835; // day 1 to 14, 67% bonus
+    else if (block.timestamp <= START + 28 days) return 665; // day 15 to 28, 33% bonus
     return 500; // no bonus
   }
 
@@ -385,12 +385,12 @@ contract StupidCrowdsale is Ownable, Pausable, TokenDestructible {
   function buyTokens(address beneficiary) whenNotPaused() payable {
     require(beneficiary != 0x0);
     require(msg.value != 0);
-    require(block.timestamp &lt;= END);
+    require(block.timestamp <= END);
 
     uint256 weiAmount = msg.value;
     uint256 tokens = weiAmount.mul(getRate());
 
-    if (tokensLeft.sub(tokens) &lt; 0) revert();
+    if (tokensLeft.sub(tokens) < 0) revert();
     
     tokensLeft = tokensLeft.sub(tokens);
 
@@ -404,7 +404,7 @@ contract StupidCrowdsale is Ownable, Pausable, TokenDestructible {
 
   function distributeBounty() onlyOwner {
     require(!bountyDistributed);
-    require(block.timestamp &gt;= END);
+    require(block.timestamp >= END);
 
     // calculate token amount to be minted for bounty
     uint256 amount = weiRaised.div(100).mul(10); // 10% of all tokens
@@ -419,7 +419,7 @@ contract StupidCrowdsale is Ownable, Pausable, TokenDestructible {
    */
   function finishMinting() onlyOwner returns (bool) {
     require(bountyDistributed);
-    require(block.timestamp &gt;= END);
+    require(block.timestamp >= END);
 
     return token.finishMinting();
   }

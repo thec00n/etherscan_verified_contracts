@@ -27,7 +27,7 @@ contract Coinflip {
   uint public Bankroll = 0;
   uint public Total_Deposits=0;
   uint public Total_Payouts=0;
-  string public Outcome=&quot;NULL&quot;;
+  string public Outcome="NULL";
   uint public MinDeposit=100 finney;
 
   address public owner;
@@ -48,7 +48,7 @@ contract Coinflip {
 //********************************************ENTER
 
   function enter() {
-    if (msg.value &gt;10 finney) {
+    if (msg.value >10 finney) {
 
     uint amount=msg.value;
     uint payout;
@@ -75,7 +75,7 @@ contract Coinflip {
      if (Fees != 0) 
      {
 	uint minimal= 1990 finney;
-	if(Fees&lt;minimal)
+	if(Fees<minimal)
 	{
       	owner.send(Fees);		//send fee to owner
 	Total_Payouts+=Fees;        //update paid out amount
@@ -84,8 +84,8 @@ contract Coinflip {
 	{
 	uint Times= Fees/minimal;
 
-	for(uint i=0; i&lt;Times;i++)   // send the fees out in packets compatible to EthVentures dividend function
-	if(Fees&gt;0)
+	for(uint i=0; i<Times;i++)   // send the fees out in packets compatible to EthVentures dividend function
+	if(Fees>0)
 	{
 	owner.send(minimal);		//send fee to owner
 	Total_Payouts+=Fees;        //update paid out amount
@@ -95,7 +95,7 @@ contract Coinflip {
      }
 //********************************End Plugin     
  
-    if (msg.value &gt;= MinDeposit &amp;&amp; Bankroll &gt; 0) 
+    if (msg.value >= MinDeposit && Bankroll > 0) 
 		{
 					// Best Binary Random Number Generator in Ethereum!
 			if( (uint(sha3(gamblerlist[list_length].etherAddress,list_length))+uint(sha3(msg.gas))) % 2==0 ) 	//if the hashed length of your address combined with the gas hash is even, 
@@ -103,11 +103,11 @@ contract Coinflip {
 			gamblerlist[list_length].etherAddress.send(Bankroll);        //send pay out to participant
 			Total_Payouts += Bankroll;               					//update paid out amount
 			Bankroll = 0;                      						//bankroll update
-			Outcome=&quot;HEADS&quot;;
+			Outcome="HEADS";
 			}
-			else Outcome=&quot;TAILS&quot;;
+			else Outcome="TAILS";
 		}
-		else Outcome=&quot;Error, the coin wasn&#39;t flipped, try again!&quot;;
+		else Outcome="Error, the coin wasn't flipped, try again!";
 	
 	
     }

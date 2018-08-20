@@ -21,17 +21,17 @@ contract tokenRecipient {
 
 contract ERC20 is Ownable{
     /* Public variables of the token */
-    string public standard = &#39;CREDITS&#39;;
-    string public name = &#39;CREDITS&#39;;
-    string public symbol = &#39;CS&#39;;
+    string public standard = 'CREDITS';
+    string public name = 'CREDITS';
+    string public symbol = 'CS';
     uint8 public decimals = 6;
     uint256 public totalSupply = 1000000000000000;
     bool public IsFrozen=false;
     address public ICOAddress;
 
     /* This creates an array with all balances */
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -54,8 +54,8 @@ contract ERC20 is Ownable{
     }
     /* Send coins */
     function transfer(address _to, uint256 _value) public IsNotFrozen {
-        require(balanceOf[msg.sender] &gt;= _value); // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]); // Check for overflows
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
         Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
@@ -82,9 +82,9 @@ contract ERC20 is Ownable{
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value)public IsNotFrozen returns(bool success)  {
-        require (balanceOf[_from] &gt;= _value) ; // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt;= balanceOf[_to]) ; // Check for overflows
-        require (_value &lt;= allowance[_from][msg.sender]) ; // Check allowance
+        require (balanceOf[_from] >= _value) ; // Check if the sender has enough
+        require (balanceOf[_to] + _value >= balanceOf[_to]) ; // Check for overflows
+        require (_value <= allowance[_from][msg.sender]) ; // Check allowance
       
         balanceOf[_from] -= _value; // Subtract from the sender
         balanceOf[_to] += _value; // Add the same to the recipient
@@ -95,7 +95,7 @@ contract ERC20 is Ownable{
  /* @param _value the amount of money to burn*/
     event Burn(address indexed from, uint256 value);
     function burn(uint256 _value) public onlyOwner  returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);

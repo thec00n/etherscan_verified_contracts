@@ -7,9 +7,9 @@ contract VouchCoin  {
   uint public initialSupply;
   string public name;
   uint public decimals;
-  string public standard = &quot;VouchCoin&quot;;
+  string public standard = "VouchCoin";
 
-  mapping (address =&gt; uint) public balanceOf;
+  mapping (address => uint) public balanceOf;
 
   event Transfer(address indexed from, address indexed to, uint value);
 
@@ -17,7 +17,7 @@ contract VouchCoin  {
     owner = msg.sender;
     balanceOf[msg.sender] = 10000000000000000;
     totalSupply = 10000000000000000;
-    name = &quot;VouchCoin&quot;;
+    name = "VouchCoin";
     decimals = 8;
   }
 
@@ -27,8 +27,8 @@ contract VouchCoin  {
 
   function transfer(address _to, uint _value)  {
     if (_to == 0x0) throw;
-    if (balanceOf[owner] &lt; _value) throw;
-    if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+    if (balanceOf[owner] < _value) throw;
+    if (balanceOf[_to] + _value < balanceOf[_to]) throw;
 
     balanceOf[owner] -= _value;
     balanceOf[_to] += _value;

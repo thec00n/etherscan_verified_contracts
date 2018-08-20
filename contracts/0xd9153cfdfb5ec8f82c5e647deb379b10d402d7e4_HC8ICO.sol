@@ -7,7 +7,7 @@
 
 
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/math/SafeMath.sol&quot; : start
+ * import "zeppelin-solidity/contracts/math/SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -26,43 +26,43 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/math/SafeMath.sol&quot; : end
+ * import "zeppelin-solidity/contracts/math/SafeMath.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/MintableToken.sol&quot; : start
- *************************************************************************/
-
-
-/*************************************************************************
- * import &quot;./StandardToken.sol&quot; : start
+ * import "zeppelin-solidity/contracts/token/MintableToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : start
+ * import "./StandardToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : start
+ * import "./BasicToken.sol" : start
+ *************************************************************************/
+
+
+/*************************************************************************
+ * import "./ERC20Basic.sol" : start
  *************************************************************************/
 
 
@@ -78,7 +78,7 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : end
+ * import "./ERC20Basic.sol" : end
  *************************************************************************/
 
 
@@ -90,7 +90,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -99,7 +99,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -119,10 +119,10 @@ contract BasicToken is ERC20Basic {
 
 }
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : end
+ * import "./BasicToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : start
+ * import "./ERC20.sol" : start
  *************************************************************************/
 
 
@@ -140,7 +140,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : end
+ * import "./ERC20.sol" : end
  *************************************************************************/
 
 
@@ -153,7 +153,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -164,8 +164,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -179,7 +179,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -225,17 +225,17 @@ contract StandardToken is ERC20, BasicToken {
 
 }
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : end
+ * import "./StandardToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../ownership/Ownable.sol&quot; : start
+ * import "../ownership/Ownable.sol" : start
  *************************************************************************/
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -274,7 +274,7 @@ contract Ownable {
 
 }
 /*************************************************************************
- * import &quot;../ownership/Ownable.sol&quot; : end
+ * import "../ownership/Ownable.sol" : end
  *************************************************************************/
 
 
@@ -323,7 +323,7 @@ contract MintableToken is StandardToken, Ownable {
   }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/MintableToken.sol&quot; : end
+ * import "zeppelin-solidity/contracts/token/MintableToken.sol" : end
  *************************************************************************/
 
 
@@ -331,9 +331,9 @@ contract HC8 is MintableToken {
 
     /* Token constants */
 
-    string public name = &quot;Hydrocarbon8&quot;;
+    string public name = "Hydrocarbon8";
 
-    string public symbol = &quot;HC8&quot;;
+    string public symbol = "HC8";
 
     uint public decimals = 6;
 
@@ -341,7 +341,7 @@ contract HC8 is MintableToken {
     bool public tokensBlocked = true;
 
     // list of addresses with time-freezend tokens
-    mapping (address =&gt; uint) public teamTokensFreeze;
+    mapping (address => uint) public teamTokensFreeze;
 
     event debugLog(string key, uint value);
 
@@ -382,7 +382,7 @@ contract HC8 is MintableToken {
     }
 
     function allowTokenOperations(address _holder) public constant returns (bool) {
-        return teamTokensFreeze[_holder] == 0 || now &gt;= teamTokensFreeze[_holder];
+        return teamTokensFreeze[_holder] == 0 || now >= teamTokensFreeze[_holder];
     }
 
 }
@@ -409,7 +409,7 @@ contract HC8ICO {
     // End time
     uint public endTime = startTime + 60 days;
 
-    // decimals multiplier for calculation &amp; debug
+    // decimals multiplier for calculation & debug
     uint public constant multiplier = 1000000;
 
     // minimal amount of tokens for sale
@@ -451,7 +451,7 @@ contract HC8ICO {
     HC8 public token;
 
     // Structure for holding bonuses and tokens for btc investors
-    // We can now deprecate rate/bonus_tokens/value without bitcoin holding mechanism - we don&#39;t need it
+    // We can now deprecate rate/bonus_tokens/value without bitcoin holding mechanism - we don't need it
     struct TokensHolder {
     uint value; //amount of wei
     uint tokens; //amount of tokens
@@ -462,7 +462,7 @@ contract HC8ICO {
     }
 
     //wei amount
-    mapping (address =&gt; uint) public investors;
+    mapping (address => uint) public investors;
 
     struct teamTokens {
     address holder;
@@ -490,8 +490,8 @@ contract HC8ICO {
     // Active ICO
     modifier ICOActive {
         require(icoState == IcoState.Running);
-        require(now &gt;= (startTime));
-        require(now &lt;= (endTime));
+        require(now >= (startTime));
+        require(now <= (endTime));
         _;
     }
 
@@ -503,7 +503,7 @@ contract HC8ICO {
 
     // Failed ICO - time is over 
     modifier ICOFailed {
-        require(now &gt;= (endTime));
+        require(now >= (endTime));
         require(icoState == IcoState.Failed || !isSuccess);
         _;
     }
@@ -602,24 +602,24 @@ contract HC8ICO {
     function() public payable ICOActive {
         require(!isReachedLimit());
         TokensHolder memory tokens = calculateTokens(msg.value);
-        require(tokens.total &gt; 0);
+        require(tokens.total > 0);
         token.mint(msg.sender, tokens.total);
         TokenPurchase(msg.sender, msg.sender, tokens.value, tokens.total);
-        if (tokens.change &gt; 0 &amp;&amp; tokens.change &lt;= msg.value) {
+        if (tokens.change > 0 && tokens.change <= msg.value) {
             msg.sender.transfer(tokens.change);
         }
         investors[msg.sender] = investors[msg.sender].add(tokens.value);
         addToStat(tokens.tokens, tokens.bonus);
-		debugLog(&quot;rate &quot;, priceInWei);
+		debugLog("rate ", priceInWei);
         manageStatus();
     }
 
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 
     function hasFinished() public constant returns (bool) {
-        return now &gt;= endTime || isReachedLimit();
+        return now >= endTime || isReachedLimit();
     }
 
     // Calculates amount of bonus tokens
@@ -628,17 +628,17 @@ contract HC8ICO {
         uint _bonus = 0;
 
         result.tokens = _value;
-        for (uint8 i = 0; _value &gt; 0 &amp;&amp; i &lt; bonusLimit.length; ++i) {
+        for (uint8 i = 0; _value > 0 && i < bonusLimit.length; ++i) {
             uint current_bonus_part = 0;
 
-            if (_value &gt; 0 &amp;&amp; _sold &lt; bonusLimit[i]) {
+            if (_value > 0 && _sold < bonusLimit[i]) {
                 uint bonus_left = bonusLimit[i] - _sold;
                 uint _bonusedPart = min(_value, bonus_left);
                 current_bonus_part = current_bonus_part.add(percent(_bonusedPart, bonusPatterns[i]));
                 _value = _value.sub(_bonusedPart);
                 _sold = _sold.add(_bonusedPart);                
             }
-            if (current_bonus_part &gt; 0) {
+            if (current_bonus_part > 0) {
                 _bonus = _bonus.add(current_bonus_part);
             }
             
@@ -655,11 +655,11 @@ contract HC8ICO {
     }
 
     function manageStatus() internal {
-        if (totalSupply &gt;= minSuccess &amp;&amp; !isSuccess) {
+        if (totalSupply >= minSuccess && !isSuccess) {
             successICO();
         }
         bool capIsReached = (totalSupply == tokensCap);
-        if (capIsReached || (now &gt;= endTime)) {
+        if (capIsReached || (now >= endTime)) {
             if (!isSuccess) {
                 failICO();
             }
@@ -677,15 +677,15 @@ contract HC8ICO {
 
     function calculateTokens(uint value) internal constant returns (TokensHolder)
     {
-        require(value &gt; 0);
-        require(priceInWei * minTokens &lt;= value);
+        require(value > 0);
+        require(priceInWei * minTokens <= value);
 
         uint tokens = value.div(priceInWei);
-        require(tokens &gt; 0);
+        require(tokens > 0);
         uint remain = tokensCap.sub(totalSupply);
         uint change = 0;
         uint value_clear = 0;
-        if (remain &lt;= tokens) {
+        if (remain <= tokens) {
             tokens = remain;
             change = value.sub(tokens.mul(priceInWei));
             value_clear = value.sub(change);
@@ -706,7 +706,7 @@ contract HC8ICO {
 
     }
 
-    // Add tokens&amp;bonus amount to counters
+    // Add tokens&bonus amount to counters
     function addToStat(uint tokens, uint bonus) internal {
         uint total = tokens + bonus;
         totalSupply = totalSupply.add(total);
@@ -741,7 +741,7 @@ contract HC8ICO {
     {
         if(!manualFinish) {
             bool capIsReached = (totalSupply == tokensCap);
-            if (capIsReached &amp;&amp; now &lt; endTime) {
+            if (capIsReached && now < endTime) {
                 endTime = now;
             }
         } else {
@@ -763,7 +763,7 @@ contract HC8ICO {
     function refund() public ICOFailed
     {
         require(msg.sender != 0x0);
-        require(investors[msg.sender] &gt; 0);
+        require(investors[msg.sender] > 0);
         uint refundVal = investors[msg.sender];
         investors[msg.sender] = 0;
 
@@ -782,10 +782,10 @@ contract HC8ICO {
     function generateTeamTokens() internal ICOFinished {
         require(!teamTokensGenerated);
         teamTokensGenerated = true;
-        if(tokensCap &gt; totalSupply) {
+        if(tokensCap > totalSupply) {
             uint unsoldAmount = tokensCap.sub(totalSupply);
             token.mint(unsold, unsoldAmount);
-            //debugLog(&#39;unsold &#39;, unsoldAmount);
+            //debugLog('unsold ', unsoldAmount);
             totalSupply = totalSupply.add(unsoldAmount);
             
         }
@@ -793,14 +793,14 @@ contract HC8ICO {
         totalSupplyTokens = totalSupplyTokens.mul(100);
         totalSupplyTokens = totalSupplyTokens.div(60);
         
-        for (uint8 i = 0; i &lt; listTeamTokens.length; ++i) {
+        for (uint8 i = 0; i < listTeamTokens.length; ++i) {
             uint teamTokensPart = percent(totalSupplyTokens, listTeamTokens[i].percent);
 
             if (listTeamTokens[i].divider != 0) {
                 teamTokensPart = teamTokensPart.div(listTeamTokens[i].divider);
             }
 
-            if (listTeamTokens[i].maxTokens != 0 &amp;&amp; listTeamTokens[i].maxTokens &lt; teamTokensPart) {
+            if (listTeamTokens[i].maxTokens != 0 && listTeamTokens[i].maxTokens < teamTokensPart) {
                 teamTokensPart = listTeamTokens[i].maxTokens;
             }
 
@@ -835,7 +835,7 @@ contract HC8ICO {
 
     // update token price in wei
     function setRate(uint newRate) public onlyTeam {
-        require(newRate &gt; 0);
+        require(newRate > 0);
         //todo min rate check! 0 - for debug
         priceInWei = newRate;
         updateRate(now, newRate);
@@ -845,7 +845,7 @@ contract HC8ICO {
     function robotRefund(address investor) public onlyTeam ICOFailed
     {
         require(investor != 0x0);
-        require(investors[investor] &gt; 0);
+        require(investors[investor] > 0);
         uint refundVal = investors[investor];
         investors[investor] = 0;
 
@@ -875,7 +875,7 @@ contract HC8ICO {
 
     // calculation of min value
     function min(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 

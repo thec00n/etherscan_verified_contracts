@@ -16,7 +16,7 @@ contract SafeMath {
    */
   function safeAdd (uint256 x, uint256 y) 
  internal pure returns (uint256 z) {
-    require (x &lt;= MAX_UINT256 - y);
+    require (x <= MAX_UINT256 - y);
     return x + y;
   }
 
@@ -30,7 +30,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
    internal pure
   returns (uint256 z) {
-    require(x &gt;= y);
+    require(x >= y);
     return x - y;
   }
 
@@ -44,14 +44,14 @@ contract SafeMath {
   function safeMul (uint256 x, uint256 y)
 internal pure returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    require (x &lt;= MAX_UINT256 / y);
+    require (x <= MAX_UINT256 / y);
     return x * y;
   }
 }
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract Token {
   /**
@@ -177,8 +177,8 @@ contract AbstractToken is Token, SafeMath {
   function transfer (address _to, uint256 _value) public returns (bool success) {
     uint256 feeTotal = fee();
 
-    if (accounts [msg.sender] &lt; _value) return false;
-    if (_value &gt; feeTotal &amp;&amp; msg.sender != _to) {
+    if (accounts [msg.sender] < _value) return false;
+    if (_value > feeTotal && msg.sender != _to) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       
       accounts [_to] = safeAdd (accounts [_to], safeSub(_value, feeTotal));
@@ -204,13 +204,13 @@ contract AbstractToken is Token, SafeMath {
   returns (bool success) {
     uint256 feeTotal = fee();
 
-    if (allowances [_from][msg.sender] &lt; _value) return false;
-    if (accounts [_from] &lt; _value) return false;
+    if (allowances [_from][msg.sender] < _value) return false;
+    if (accounts [_from] < _value) return false;
 
     allowances [_from][msg.sender] =
       safeSub (allowances [_from][msg.sender], _value);
 
-    if (_value &gt; feeTotal &amp;&amp; _from != _to) {
+    if (_value > feeTotal && _from != _to) {
       accounts [_from] = safeSub (accounts [_from], _value);
 
       
@@ -263,13 +263,13 @@ contract AbstractToken is Token, SafeMath {
    * Mapping from addresses of token holders to the numbers of tokens belonging
    * to these token holders.
    */
-  mapping (address =&gt; uint256) accounts;
+  mapping (address => uint256) accounts;
 
   /**
    * Mapping from addresses of token holders to the mapping of addresses of
    * spenders to the allowances set by these token holders to these spenders.
    */
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowances;
+  mapping (address => mapping (address => uint256)) allowances;
 }
 
 contract TradeBTC is AbstractToken {
@@ -308,7 +308,7 @@ contract TradeBTC is AbstractToken {
    * @return name of this token
    */
   function name () public pure returns (string) {
-    return &quot;TradeBTC&quot;;
+    return "TradeBTC";
   }
 
   /**
@@ -317,7 +317,7 @@ contract TradeBTC is AbstractToken {
    * @return symbol of this token
    */
   function symbol ()  public pure returns (string) {
-    return &quot;tBTC&quot;;
+    return "tBTC";
   }
 
 
@@ -409,8 +409,8 @@ contract TradeBTC is AbstractToken {
    * @return true on success, false on error
    */
   function burnTokens (uint256 _value) public returns (bool success) {
-    if (_value &gt; accounts [msg.sender]) return false;
-    else if (_value &gt; 0) {
+    if (_value > accounts [msg.sender]) return false;
+    else if (_value > 0) {
       accounts [msg.sender] = safeSub (accounts [msg.sender], _value);
       tokensCount = safeSub (tokensCount, _value);
       return true;

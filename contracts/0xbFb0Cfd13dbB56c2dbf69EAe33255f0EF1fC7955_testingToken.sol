@@ -2,17 +2,17 @@ pragma solidity ^0.4.8;
 
 contract testingToken {
     /* Public variables of the token */
-    string public standard = &quot;Token 0.1&quot;;
-    string public name = &quot;Testing Token&quot;;
-    string public symbol = &quot;TT&quot;;
+    string public standard = "Token 0.1";
+    string public name = "Testing Token";
+    string public symbol = "TT";
     uint8 public decimals = 2;
     uint256 public totalSupply = 10000;
     
     /*other vars*/
-	mapping (address =&gt; uint256) public balanceOf;
-	mapping (address =&gt; uint256) public weiWantedOf;
-	mapping (address =&gt; uint256) public tokensOfferedOf;
-	mapping (address =&gt; bool) public tradeActive;
+	mapping (address => uint256) public balanceOf;
+	mapping (address => uint256) public weiWantedOf;
+	mapping (address => uint256) public tokensOfferedOf;
+	mapping (address => bool) public tradeActive;
 	address public bank;
 	uint256 public ethTaxRate = 10;
 	uint256 public tokenTaxRate = 5;
@@ -28,9 +28,9 @@ contract testingToken {
 	}
 	
 	function transfer(address _to, uint256 _value) returns (bool success) { //give tokens to someone
-		if (balanceOf[msg.sender]&lt;_value) return false;
-		if (balanceOf[_to]+_value&lt;balanceOf[_to]) return false;
-		if (_value&lt;0) return false;
+		if (balanceOf[msg.sender]<_value) return false;
+		if (balanceOf[_to]+_value<balanceOf[_to]) return false;
+		if (_value<0) return false;
 		balanceOf[msg.sender] -= _value;
 		balanceOf[_to] += (_value*(100-tokenTaxRate))/100;
 		balanceOf[bank] += (_value*tokenTaxRate)/100;
@@ -40,12 +40,12 @@ contract testingToken {
 		return true;
 	}
 	
-	mapping (address =&gt; mapping (address=&gt;uint256)) approvalList;
+	mapping (address => mapping (address=>uint256)) approvalList;
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-		if (balanceOf[_from]&lt;_value) return false;
-		if (balanceOf[_to]+_value&lt;balanceOf[_to]) return false;
-		if (_value&lt;0) return false;
-		if (approvalList[_from][msg.sender]&lt;_value) return false;
+		if (balanceOf[_from]<_value) return false;
+		if (balanceOf[_to]+_value<balanceOf[_to]) return false;
+		if (_value<0) return false;
+		if (approvalList[_from][msg.sender]<_value) return false;
 		approvalList[_from][msg.sender]-=_value;
 		balanceOf[_from] -= _value;
 		balanceOf[_to] += (_value*(100-tokenTaxRate))/100;
@@ -73,7 +73,7 @@ contract testingToken {
 	function agreeToTrade(address _from) payable { //choose a trade to agree to and execute it
 	    if (!tradeActive[_from]) throw;
 	    if (weiWantedOf[_from]!=msg.value) throw;
-	    if (balanceOf[_from]&lt;tokensOfferedOf[_from]) throw;
+	    if (balanceOf[_from]<tokensOfferedOf[_from]) throw;
 	    if (!_from.send((msg.value*(100-ethTaxRate))/100)) throw;
 	    balanceOf[_from] -= tokensOfferedOf[_from];
 	    balanceOf[msg.sender] += (tokensOfferedOf[_from]*(100-tokenTaxRate))/100;

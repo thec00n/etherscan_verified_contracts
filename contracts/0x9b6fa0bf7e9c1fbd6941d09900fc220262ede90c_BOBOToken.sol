@@ -5,12 +5,12 @@ contract BOBOToken {
   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
 
-  mapping( address =&gt; uint ) _balances;
-  mapping( address =&gt; mapping( address =&gt; uint ) ) _approvals;
+  mapping( address => uint ) _balances;
+  mapping( address => mapping( address => uint ) ) _approvals;
   uint256 public totalSupply=21000000;
-  string public name=&quot;BOBOToken&quot;;
+  string public name="BOBOToken";
   uint8 public decimals=8;                
-  string public symbol=&quot;BOBO&quot;;   
+  string public symbol="BOBO";   
 
   function BOBOToken() {
         _balances[msg.sender] = totalSupply;               // Give the creator all initial tokens
@@ -21,7 +21,7 @@ contract BOBOToken {
   }
 
   function transfer( address _to, uint _value) returns (bool success) {
-    if ( _balances[msg.sender] &lt; _value ) {
+    if ( _balances[msg.sender] < _value ) {
       revert();
     }
     if ( !safeToAdd(_balances[_to], _value) ) {
@@ -33,12 +33,12 @@ contract BOBOToken {
     return true;
   }
   function transferFrom( address _from, address _to, uint _value) returns (bool success) {
-    // if you don&#39;t have enough balance, throw
-    if ( _balances[_from] &lt; _value ) {
+    // if you don't have enough balance, throw
+    if ( _balances[_from] < _value ) {
       revert();
     }
-    // if you don&#39;t have approval, throw
-    if ( _approvals[_from][msg.sender] &lt; _value ) {
+    // if you don't have approval, throw
+    if ( _approvals[_from][msg.sender] < _value ) {
       revert();
     }
     if ( !safeToAdd(_balances[_to], _value) ) {
@@ -61,6 +61,6 @@ contract BOBOToken {
     return _approvals[_owner][_spender];
   }
   function safeToAdd(uint a, uint b) internal returns (bool) {
-    return (a + b &gt;= a);
+    return (a + b >= a);
   }
 }

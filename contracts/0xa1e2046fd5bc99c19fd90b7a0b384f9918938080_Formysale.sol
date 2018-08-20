@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;       
     }       
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -96,10 +96,10 @@ contract Whitelist is Ownable {
     uint256 public count;
     using SafeMath for uint256;
 
-    //mapping (uint256 =&gt; address) public whitelist;
-    mapping (address =&gt; bool) public whitelist;
-    mapping (uint256 =&gt; address) public indexlist;
-    mapping (address =&gt; uint256) public reverseWhitelist;
+    //mapping (uint256 => address) public whitelist;
+    mapping (address => bool) public whitelist;
+    mapping (uint256 => address) public indexlist;
+    mapping (address => uint256) public reverseWhitelist;
 
 
     constructor() public {
@@ -150,8 +150,8 @@ contract Formysale is Ownable, Pausable, Whitelist {
     uint256 public mtEndTime;         // 교환비율 조정 종료 시간
 
 
-    mapping (address =&gt; uint256) public beneficiaryFunded; //구매자 : 지불한 이더
-    mapping (address =&gt; uint256) public beneficiaryBought; //구매자 : 구매한 토큰
+    mapping (address => uint256) public beneficiaryFunded; //구매자 : 지불한 이더
+    mapping (address => uint256) public beneficiaryBought; //구매자 : 구매한 토큰
 
     event Buy(address indexed beneficiary, uint256 payedEther, uint256 tokenAmount);
 
@@ -177,9 +177,9 @@ contract Formysale is Ownable, Pausable, Whitelist {
         uint256 tokenAmount = SafeMath.mul(toFund,exchangeRate);
         // check validity
         require(!isFinalized);
-        require(validPurchase());       // 판매조건 검증(최소 이더량 &amp;&amp; 판매시간 준수 &amp;&amp; gas량 &amp;&amp; 개인하드캡 초과)
+        require(validPurchase());       // 판매조건 검증(최소 이더량 && 판매시간 준수 && gas량 && 개인하드캡 초과)
         require(whitelist[beneficiary]);// WhitList 등록되어야만 세일에 참여 가능
-        require(remainToken &gt;= tokenAmount);// 남은 토큰이 교환해 줄 토큰의 양보다 많아야 한다.
+        require(remainToken >= tokenAmount);// 남은 토큰이 교환해 줄 토큰의 양보다 많아야 한다.
                 
 
         weiRaised = SafeMath.add(weiRaised, toFund);            //현재까지지 모금액에 펀딩금액 합산
@@ -193,17 +193,17 @@ contract Formysale is Ownable, Pausable, Whitelist {
 
     function validPurchase() internal view returns (bool) {
         //보내준 이더양이 0.1 이상인지 그리고 전체 지불한 Ethere가 1,000을 넘어가는지 체크 
-        bool validValue = msg.value &gt;= personalMincap &amp;&amp; beneficiaryFunded[msg.sender].add(msg.value) &lt;= personalMaxcap;
+        bool validValue = msg.value >= personalMincap && beneficiaryFunded[msg.sender].add(msg.value) <= personalMaxcap;
 
-        //현재 판매기간인지 체크 &amp;&amp; 정비시간이 아닌지 체크 
-        bool validTime = now &gt;= startTime &amp;&amp; now &lt;= endTime &amp;&amp; !checkMaintenanceTime();
+        //현재 판매기간인지 체크 && 정비시간이 아닌지 체크 
+        bool validTime = now >= startTime && now <= endTime && !checkMaintenanceTime();
 
-        return validValue &amp;&amp; validTime;
+        return validValue && validTime;
     }
 
     function checkMaintenanceTime() public view returns (bool){
         uint256 datetime = now % (60 * 60 * 24);
-        return (datetime &gt;= mtStartTime &amp;&amp; datetime &lt; mtEndTime);
+        return (datetime >= mtStartTime && datetime < mtEndTime);
     }
 
     function getNowTime() public view returns(uint256) {
@@ -228,7 +228,7 @@ contract Formysale is Ownable, Pausable, Whitelist {
     }
 
     function FinishTokenSale() public onlyOwner {
-        require(now &gt; endTime || remainToken == 0);
+        require(now > endTime || remainToken == 0);
         isFinalized = true;        
         owner.transfer(weiRaised); //현재까지의 모금액을 Owner지갑으로 전송.
     }

@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,7 +106,7 @@ contract TokenVesting is Ownable {
   bool public initialized;
   bool public active;
   ERC20Basic public token;
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   uint256 public circulatingSupply = 0;
 
@@ -174,9 +174,9 @@ contract TokenVesting is Ownable {
       uint256 _start,
       uint256 _vesting
   ) public icoResticted isActive {
-    require(_value &gt; 0);
-    require(_vesting &gt; _start);
-    require(grants[_to].length &lt; 10);
+    require(_value > 0);
+    require(_vesting > _start);
+    require(grants[_to].length < 10);
 
     TokenGrant memory grant = TokenGrant(_value, 0, _vesting, _start);
     grants[_to].push(grant);
@@ -212,7 +212,7 @@ contract TokenVesting is Ownable {
 
     uint256 claimable = 0;
     uint256 claimableFor = 0;
-    for (uint256 i = 0; i &lt; numberOfGrants; i++) {
+    for (uint256 i = 0; i < numberOfGrants; i++) {
       claimableFor = calculateVestedTokens(
         grants[_to][i].value,
         grants[_to][i].vesting,
@@ -236,7 +236,7 @@ contract TokenVesting is Ownable {
     }
 
     uint256 claimable = 0;
-    for (uint256 i = 0; i &lt; numberOfGrants; i++) {
+    for (uint256 i = 0; i < numberOfGrants; i++) {
       claimable = claimable.add(
         grants[_to][i].value.sub(grants[_to][i].claimed)
       );
@@ -259,11 +259,11 @@ contract TokenVesting is Ownable {
   ) internal constant returns (uint256) {
     uint256 time = block.timestamp;
 
-    if (time &lt; _start) {
+    if (time < _start) {
       return 0;
     }
 
-    if (time &gt;= _vesting) {
+    if (time >= _vesting) {
       return _tokens.sub(_claimed);
     }
 
@@ -286,7 +286,7 @@ contract TokenVesting is Ownable {
 
     uint256 claimable = 0;
     uint256 claimableFor = 0;
-    for (uint256 i = 0; i &lt; numberOfGrants; i++) {
+    for (uint256 i = 0; i < numberOfGrants; i++) {
       claimableFor = calculateVestedTokens(
         grants[_to][i].value,
         grants[_to][i].vesting,
@@ -313,7 +313,7 @@ contract TokenVesting is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -322,7 +322,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -357,9 +357,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -424,8 +424,8 @@ contract TokenSale is Ownable {
     require(activated);
     require(!isStopped);
     require(!isFinalized);
-    require(block.timestamp &gt;= startTime);
-    require(block.timestamp &lt;= endTime);
+    require(block.timestamp >= startTime);
+    require(block.timestamp <= endTime);
     _;
   }
 
@@ -435,9 +435,9 @@ contract TokenSale is Ownable {
       address _wallet,
       uint256 _vestingStarts
   ) public validAddress(_wallet) {
-    require(_startTime &gt; block.timestamp - 60);
-    require(_endTime &gt; startTime);
-    require(_vestingStarts &gt; startTime);
+    require(_startTime > block.timestamp - 60);
+    require(_endTime > startTime);
+    require(_vestingStarts > startTime);
 
     vestingStarts = _vestingStarts;
     vestingEnds = vestingStarts.add(VESTING_TIME);
@@ -451,7 +451,7 @@ contract TokenSale is Ownable {
    * @param _rate uint256 The new exchange rate
    */
   function setWeiUsdRate(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     weiUsdRate = _rate;
   }
 
@@ -460,7 +460,7 @@ contract TokenSale is Ownable {
    * @param _rate uint256 The new exchange rate
    */
   function setBtcUsdRate(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     btcUsdRate = _rate;
   }
 
@@ -581,7 +581,7 @@ contract TokenSale is Ownable {
   }
 
   /**
-   * @notice The owner of this contract is the owner of token&#39;s contract
+   * @notice The owner of this contract is the owner of token's contract
    * @param _usd amount invested in USD
    * @param _eth amount invested in ETH y contribution was made in ETH, 0 otherwise
    * @param _btc amount invested in BTC y contribution was made in BTC, 0 otherwise
@@ -599,7 +599,7 @@ contract TokenSale is Ownable {
       isActive
       returns(uint256)
   {
-    require(_usd &gt;= 10);
+    require(_usd >= 10);
 
     uint256 soldAmount = computeTokens(_usd);
 
@@ -617,7 +617,7 @@ contract TokenSale is Ownable {
     raised = raised.add(usd);
     soldTokens = soldTokens.add(tokens);
 
-    require(soldTokens &lt;= HARD_CAP);
+    require(soldTokens <= HARD_CAP);
   }
 
   /**

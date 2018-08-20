@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -56,20 +56,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -77,7 +77,7 @@ library ContractHelpers {
   function isContract(address addr) internal view returns (bool) {
       uint size;
       assembly { size := extcodesize(addr) }
-      return size &gt; 0;
+      return size > 0;
     }
 }
 
@@ -89,14 +89,14 @@ contract BetWinner is Ownable {
     string name;
     uint256 bets;
     address[] bettors;
-    mapping(address =&gt; uint256) bettorAmount;
+    mapping(address => uint256) bettorAmount;
   }
 
   Team[] teams;
-  uint8 public winningTeamIndex = 255; // 255 =&gt; not set
+  uint8 public winningTeamIndex = 255; // 255 => not set
 
   // payout table for winners
-  mapping(address =&gt; uint256) public payOuts;
+  mapping(address => uint256) public payOuts;
 
   bool public inited;
 
@@ -126,10 +126,10 @@ contract BetWinner is Ownable {
     return (bettingStart, bettingEnd, winnerAnnounced, winningTeamIndex, teams.length);
   }
   function bettingStarted() private view returns (bool) {
-    return now &gt;= bettingStart;
+    return now >= bettingStart;
   }
   function bettingEnded() private view returns (bool) {
-    return now &gt;= bettingEnd;
+    return now >= bettingEnd;
   }
 
   // remember to add all teams before calling startBetting
@@ -169,7 +169,7 @@ contract BetWinner is Ownable {
   // get total bets for every team
   function totalBets() view public returns (uint) {
     uint total = 0;
-    for (uint i = 0; i &lt; teams.length; i++) {
+    for (uint i = 0; i < teams.length; i++) {
       total += teams[i].bets;
     }
     return total;
@@ -178,13 +178,13 @@ contract BetWinner is Ownable {
   // place bet to team
   function bet(uint8 teamIndex) payable public {
     // betting has to be started and not ended and winningTeamIndex must be 255 (not announced)
-    require(bettingStarted() &amp;&amp; !bettingEnded() &amp;&amp; winningTeamIndex == 255);
+    require(bettingStarted() && !bettingEnded() && winningTeamIndex == 255);
     // value must be at least minimum bet
-    require(msg.value &gt;= minimumBet);
+    require(msg.value >= minimumBet);
     // must not be smart contract address
     require(!ContractHelpers.isContract(msg.sender));
     // check that we have team in that index we are betting
-    require(teamIndex &lt; teams.length);
+    require(teamIndex < teams.length);
 
     // get storage ref
     Team storage team = teams[teamIndex];
@@ -222,9 +222,9 @@ contract BetWinner is Ownable {
   // announce winner
   function announceWinner(uint8 teamIndex) public onlyOwner {
     // ensure we have a team here
-    require(teamIndex &lt; teams.length);
+    require(teamIndex < teams.length);
     // ensure that betting is ended before announcing winner and winner has not been announced
-    require(bettingEnded() &amp;&amp; winningTeamIndex == 255);
+    require(bettingEnded() && winningTeamIndex == 255);
     winningTeamIndex = teamIndex;
     winnerAnnounced = uint32(now);
 
@@ -247,7 +247,7 @@ contract BetWinner is Ownable {
     uint winnings = removeFeeAmount(totalAmount, winTeamAmount);
 
     // calc percentage of total pot for every winner bettor
-    for (uint i = 0; i &lt; wt.bettors.length; i++) {
+    for (uint i = 0; i < wt.bettors.length; i++) {
       // get bet amount
       uint betSize = wt.bettorAmount[wt.bettors[i]];
       // get bettor percentage of pot
@@ -262,9 +262,9 @@ contract BetWinner is Ownable {
   // winner can withdraw payout after winner is announced
   function withdraw() public {
     // check that we have winner announced
-    require(winnerAnnounced &gt; 0 &amp;&amp; uint32(now) &gt; winnerAnnounced);
+    require(winnerAnnounced > 0 && uint32(now) > winnerAnnounced);
     // check that we have payout calculated for address.
-    require(payOuts[msg.sender] &gt; 0);
+    require(payOuts[msg.sender] > 0);
 
     // no double withdrawals
     uint po = payOuts[msg.sender];
@@ -277,9 +277,9 @@ contract BetWinner is Ownable {
 
   // withdraw owner fee when winner is announced
   function withdrawFee() public onlyOwner {
-    require(totalFee &gt; 0);
+    require(totalFee > 0);
     // owner cannot withdraw fee before winner is announced. This is incentive for contract owner to announce winner
-    require(winnerAnnounced &gt; 0 &amp;&amp; now &gt; winnerAnnounced);
+    require(winnerAnnounced > 0 && now > winnerAnnounced);
     // make sure owner cannot withdraw more than fee amount
     msg.sender.transfer(totalFee);
     // set total fee to zero, so owner cannot empty whole contract
@@ -293,19 +293,19 @@ contract BetWinner is Ownable {
     winnerAnnounced = uint32(now);
 
     Team storage t = teams[0];
-    for (uint i = 0; i &lt; t.bettors.length; i++) {
+    for (uint i = 0; i < t.bettors.length; i++) {
       payOuts[t.bettors[i]] += t.bettorAmount[t.bettors[i]];
     }
     Team storage t2 = teams[1];
-    for (i = 0; i &lt; t2.bettors.length; i++) {
+    for (i = 0; i < t2.bettors.length; i++) {
       payOuts[t2.bettors[i]] += t2.bettorAmount[t2.bettors[i]];
     }
   }
 
   // can kill contract after winnerAnnounced + 8 weeks
   function kill() public onlyOwner {
-    // cannot kill contract before winner is announced and it&#39;s been announced at least for 8 weeks
-    require(winnerAnnounced &gt; 0 &amp;&amp; uint32(now) &gt; (winnerAnnounced + 8 weeks));
+    // cannot kill contract before winner is announced and it's been announced at least for 8 weeks
+    require(winnerAnnounced > 0 && uint32(now) > (winnerAnnounced + 8 weeks));
     selfdestruct(msg.sender);
   }
 

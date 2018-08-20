@@ -53,20 +53,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -88,13 +88,13 @@ contract StandardToken is Token {
     event Mint(address indexed to, uint256 amount);
     event MintFinished();
     using SafeMath for uint256;
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     uint256 endMintDate;
     
     address owner;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) minter;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) minter;
     
     uint256 public _totalSupply;
     
@@ -104,17 +104,17 @@ contract StandardToken is Token {
     }
   
     modifier canMint() {
-        require(endMintDate&gt;now &amp;&amp; minter[msg.sender]);
+        require(endMintDate>now && minter[msg.sender]);
         _;
     }
     
     modifier canTransfer() {
-        require(endMintDate&lt;now);
+        require(endMintDate<now);
         _;
     }
     
     function transfer(address _to, uint256 _value) canTransfer returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; _to!=0x0) {
+        if (balances[msg.sender] >= _value && _value > 0 && _to!=0x0) {
             //Do Transfer
             return doTransfer(msg.sender,_to,_value);
         }  else { return false; }
@@ -129,7 +129,7 @@ contract StandardToken is Token {
     
     function transferFrom(address _from, address _to, uint256 _value) canTransfer returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; _to!=0x0 ) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && _to!=0x0 ) {
             doTransfer(_from,_to,_value);
             allowed[_from][msg.sender] =allowed[_from][msg.sender].sub(_value);
             Transfer(_from, _to, _value);
@@ -178,7 +178,7 @@ contract StandardToken is Token {
         endMintDate=endDate;
     }
 }
-//name this contract whatever you&#39;d like
+//name this contract whatever you'd like
 contract GMCToken is StandardToken {
 
     struct GiftData {
@@ -197,14 +197,14 @@ contract GMCToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H1.0&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
-    mapping (address =&gt; mapping (uint256 =&gt; GiftData)) private gifts;
-    mapping (address =&gt; uint256 ) private giftsCounter;
+    string public version = 'H1.0';       //human 0.1 standard. Just an arbitrary versioning scheme.
+    mapping (address => mapping (uint256 => GiftData)) private gifts;
+    mapping (address => uint256 ) private giftsCounter;
     
     function GMCToken(address _wallet) {
         uint256 initialSupply = 2000000;
@@ -215,9 +215,9 @@ contract GMCToken is StandardToken {
         mint(_wallet,initialSupply.div(2));
         mint(msg.sender,initialSupply.div(2));
         
-        name = &quot;Good Mood Coin&quot;;                                   // Set the name for display purposes
+        name = "Good Mood Coin";                                   // Set the name for display purposes
         decimals = 4;                            // Amount of decimals for display purposes
-        symbol = &quot;GMC&quot;;                               // Set the symbol for display purposes
+        symbol = "GMC";                               // Set the symbol for display purposes
     }
 
     function sendGift(address _to,uint256 _value,string _msg) payable public returns  (bool success){
@@ -245,10 +245,10 @@ contract GMCToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 }

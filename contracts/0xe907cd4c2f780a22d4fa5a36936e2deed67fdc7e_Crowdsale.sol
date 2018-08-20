@@ -4,16 +4,16 @@ pragma solidity ^0.4.15;
 
 // Bitcoin transaction parsing library
 
-// Copyright 2016 rain &lt;https://keybase.io/rain&gt;
+// Copyright 2016 rain <https://keybase.io/rain>
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -58,23 +58,23 @@ pragma solidity ^0.4.15;
 // Variable integer encodings as a function of represented value:
 //
 // value           | bytes  | format
-// &lt;0xFD (253)     | 1      | uint8
-// &lt;=0xFFFF (65535)| 3      | 0xFD followed by length as uint16
-// &lt;=0xFFFF FFFF   | 5      | 0xFE followed by length as uint32
+// <0xFD (253)     | 1      | uint8
+// <=0xFFFF (65535)| 3      | 0xFD followed by length as uint16
+// <=0xFFFF FFFF   | 5      | 0xFE followed by length as uint32
 // -               | 9      | 0xFF followed by length as uint64
 //
 // Public key scripts `pk_script` are set on the output and can
 // take a number of forms. The regular transaction script is
-// called &#39;pay-to-pubkey-hash&#39; (P2PKH):
+// called 'pay-to-pubkey-hash' (P2PKH):
 //
-// OP_DUP OP_HASH160 &lt;pubKeyHash&gt; OP_EQUALVERIFY OP_CHECKSIG
+// OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
 //
 // OP_x are Bitcoin script opcodes. The bytes representation (including
 // the 0x14 20-byte stack push) is:
 //
-// 0x76 0xA9 0x14 &lt;pubKeyHash&gt; 0x88 0xAC
+// 0x76 0xA9 0x14 <pubKeyHash> 0x88 0xAC
 //
-// The &lt;pubKeyHash&gt; is the ripemd160 hash of the sha256 hash of
+// The <pubKeyHash> is the ripemd160 hash of the sha256 hash of
 // the public key, preceded by a network version byte. (21 bytes total)
 //
 // Network version bytes: 0x00 (mainnet); 0x6f (testnet); 0x34 (namecoin)
@@ -83,9 +83,9 @@ pragma solidity ^0.4.15;
 // pubKeyHash, plus a checksum at the end.  The checksum is the first 4 bytes
 // of the (32 byte) double sha256 of the pubKeyHash. (25 bytes total)
 // This is converted to base58 to form the publicly used Bitcoin address.
-// Mainnet P2PKH transaction scripts are to addresses beginning with &#39;1&#39;.
+// Mainnet P2PKH transaction scripts are to addresses beginning with '1'.
 //
-// P2SH (&#39;pay to script hash&#39;) scripts only supply a script hash. The spender
+// P2SH ('pay to script hash') scripts only supply a script hash. The spender
 // must then provide the script that would allow them to redeem this output.
 // This allows for arbitrarily complex scripts to be funded using only a
 // hash of the script, and moves the onus on providing the script from
@@ -93,14 +93,14 @@ pragma solidity ^0.4.15;
 //
 // The P2SH script format is simple:
 //
-// OP_HASH160 &lt;scriptHash&gt; OP_EQUAL
+// OP_HASH160 <scriptHash> OP_EQUAL
 //
-// 0xA9 0x14 &lt;scriptHash&gt; 0x87
+// 0xA9 0x14 <scriptHash> 0x87
 //
-// The &lt;scriptHash&gt; is the ripemd160 hash of the sha256 hash of the
+// The <scriptHash> is the ripemd160 hash of the sha256 hash of the
 // redeem script. The P2SH address is derived from the scriptHash.
 // Addresses are the scriptHash with a version prefix of 5, encoded as
-// Base58check. These addresses begin with a &#39;3&#39;.
+// Base58check. These addresses begin with a '3'.
 
 pragma solidity ^0.4.11;
 
@@ -113,7 +113,7 @@ library BTC {
         var ibit = uint8(txBytes[pos]);
         pos += 1;  // skip ibit
 
-        if (ibit &lt; 0xfd) {
+        if (ibit < 0xfd) {
             return (ibit, pos);
         } else if (ibit == 0xfd) {
             return (getBytesLE(txBytes, pos, 16), pos + 2);
@@ -164,7 +164,7 @@ library BTC {
 
         (output_values, script_starts, output_script_lens, pos) = scanOutputs(txBytes, pos, 2);
 
-        for (uint i = 0; i &lt; 2; i++) {
+        for (uint i = 0; i < 2; i++) {
             var pkhash = parseOutputScript(txBytes, script_starts[i], output_script_lens[i]);
             output_addresses[i] = pkhash;
         }
@@ -186,9 +186,9 @@ library BTC {
         var (output_values, script_starts, output_script_lens,) = scanOutputs(txBytes, pos, 0);
 
         // look at each output and check whether it at least value to btcAddress
-        for (uint i = 0; i &lt; output_values.length; i++) {
+        for (uint i = 0; i < output_values.length; i++) {
             var pkhash = parseOutputScript(txBytes, script_starts[i], output_script_lens[i]);
-            if (pkhash == btcAddress &amp;&amp; output_values[i] &gt;= value) {
+            if (pkhash == btcAddress && output_values[i] >= value) {
                 return (true,output_values[i]);
             }
         }
@@ -196,8 +196,8 @@ library BTC {
     // scan the inputs and find the script lengths.
     // return an array of script lengths and the end position
     // of the inputs.
-    // takes a &#39;stop&#39; argument which sets the maximum number of
-    // outputs to scan through. stop=0 =&gt; scan all.
+    // takes a 'stop' argument which sets the maximum number of
+    // outputs to scan through. stop=0 => scan all.
     function scanInputs(bytes txBytes, uint pos, uint stop)
              returns (uint[], uint)
     {
@@ -207,7 +207,7 @@ library BTC {
 
         (n_inputs, pos) = parseVarInt(txBytes, pos);
 
-        if (stop == 0 || stop &gt; n_inputs) {
+        if (stop == 0 || stop > n_inputs) {
             halt = n_inputs;
         } else {
             halt = stop;
@@ -215,7 +215,7 @@ library BTC {
 
         uint[] memory script_lens = new uint[](halt);
 
-        for (var i = 0; i &lt; halt; i++) {
+        for (var i = 0; i < halt; i++) {
             pos += 36;  // skip outpoint
             (script_len, pos) = parseVarInt(txBytes, pos);
             script_lens[i] = script_len;
@@ -227,8 +227,8 @@ library BTC {
     // scan the outputs and find the values and script lengths.
     // return array of values, array of script lengths and the
     // end position of the outputs.
-    // takes a &#39;stop&#39; argument which sets the maximum number of
-    // outputs to scan through. stop=0 =&gt; scan all.
+    // takes a 'stop' argument which sets the maximum number of
+    // outputs to scan through. stop=0 => scan all.
     function scanOutputs(bytes txBytes, uint pos, uint stop)
              returns (uint[], uint[], uint[], uint)
     {
@@ -238,7 +238,7 @@ library BTC {
 
         (n_outputs, pos) = parseVarInt(txBytes, pos);
 
-        if (stop == 0 || stop &gt; n_outputs) {
+        if (stop == 0 || stop > n_outputs) {
             halt = n_outputs;
         } else {
             halt = stop;
@@ -248,7 +248,7 @@ library BTC {
         uint[] memory script_lens = new uint[](halt);
         uint[] memory output_values = new uint[](halt);
 
-        for (var i = 0; i &lt; halt; i++) {
+        for (var i = 0; i < halt; i++) {
             output_values[i] = getBytesLE(txBytes, pos, 64);
             pos += 8;
 
@@ -263,8 +263,8 @@ library BTC {
     // Slice 20 contiguous bytes from bytes `data`, starting at `start`
     function sliceBytes20(bytes data, uint start) returns (bytes20) {
         uint160 slice = 0;
-        for (uint160 i = 0; i &lt; 20; i++) {
-            slice += uint160(data[i + start]) &lt;&lt; (8 * (19 - i));
+        for (uint160 i = 0; i < 20; i++) {
+            slice += uint160(data[i + start]) << (8 * (19 - i));
         }
         return bytes20(slice);
     }
@@ -272,19 +272,19 @@ library BTC {
     // script_len represent a P2PKH script
     function isP2PKH(bytes txBytes, uint pos, uint script_len) returns (bool) {
         return (script_len == 25)           // 20 byte pubkeyhash + 5 bytes of script
-            &amp;&amp; (txBytes[pos] == 0x76)       // OP_DUP
-            &amp;&amp; (txBytes[pos + 1] == 0xa9)   // OP_HASH160
-            &amp;&amp; (txBytes[pos + 2] == 0x14)   // bytes to push
-            &amp;&amp; (txBytes[pos + 23] == 0x88)  // OP_EQUALVERIFY
-            &amp;&amp; (txBytes[pos + 24] == 0xac); // OP_CHECKSIG
+            && (txBytes[pos] == 0x76)       // OP_DUP
+            && (txBytes[pos + 1] == 0xa9)   // OP_HASH160
+            && (txBytes[pos + 2] == 0x14)   // bytes to push
+            && (txBytes[pos + 23] == 0x88)  // OP_EQUALVERIFY
+            && (txBytes[pos + 24] == 0xac); // OP_CHECKSIG
     }
     // returns true if the bytes located in txBytes by pos and
     // script_len represent a P2SH script
     function isP2SH(bytes txBytes, uint pos, uint script_len) returns (bool) {
         return (script_len == 23)           // 20 byte scripthash + 3 bytes of script
-            &amp;&amp; (txBytes[pos + 0] == 0xa9)   // OP_HASH160
-            &amp;&amp; (txBytes[pos + 1] == 0x14)   // bytes to push
-            &amp;&amp; (txBytes[pos + 22] == 0x87); // OP_EQUAL
+            && (txBytes[pos + 0] == 0xa9)   // OP_HASH160
+            && (txBytes[pos + 1] == 0x14)   // bytes to push
+            && (txBytes[pos + 22] == 0x87); // OP_EQUAL
     }
     // Get the pubkeyhash / scripthash from an output script. Assumes
     // pay-to-pubkey-hash (P2PKH) or pay-to-script-hash (P2SH) outputs.
@@ -372,37 +372,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
 }
@@ -425,11 +425,11 @@ contract Token {
 /*  ERC 20 token */
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -440,7 +440,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -475,7 +475,7 @@ contract Utils{
 	//verifies the amount greater than zero
 
 	modifier greaterThanZero(uint256 _value){
-		require(_value&gt;0);
+		require(_value>0);
 		_;
 	}
 
@@ -490,10 +490,10 @@ contract Utils{
 // File: contracts/Crowdsale.sol
 
 contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
-	string public constant name = &quot;Mudra&quot;;
-	string public constant symbol = &quot;MUDRA&quot;;
+	string public constant name = "Mudra";
+	string public constant symbol = "MUDRA";
 	uint256 public constant decimals = 18;
-	string public version = &quot;1.0&quot;;
+	string public version = "1.0";
 	bool public tradingStarted = false;
 
     /**
@@ -523,7 +523,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
 
    uint256 public investmentETH;
    uint256 public investmentBTC;
-   mapping(uint256 =&gt; bool) transactionsClaimed;
+   mapping(uint256 => bool) transactionsClaimed;
    uint256 public initialSupply;
    address wallet;
    uint256 public constant _totalSupply = 100 * (10**6) * 10 ** decimals; // 100M ~ 10 Crores
@@ -553,21 +553,21 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
         || fundingStartBlock == 0
         || totalSupply == 0
         || tokenCreationMax == 0
-        || fundingStartBlock &lt;= block.number)
+        || fundingStartBlock <= block.number)
       throw;
 
    }
 
-   // don&#39;t just send ether to the contract expecting to get tokens
+   // don't just send ether to the contract expecting to get tokens
    //function() { throw; }
    ////@dev This function manages the Crowdsale State machine
    ///We make it a function and do not assign to a variable//
    ///so that no chance of stale variable
    function getState() constant public returns(State){
    	///once we reach success lock the State
-   	if(block.number&lt;fundingStartBlock) return State.Inactive;
-   	else if(block.number&gt;fundingStartBlock &amp;&amp; initialSupply&lt;tokenCreationMax) return State.Funding;
-   	else if (initialSupply &gt;= tokenCreationMax) return State.Success;
+   	if(block.number<fundingStartBlock) return State.Inactive;
+   	else if(block.number>fundingStartBlock && initialSupply<tokenCreationMax) return State.Funding;
+   	else if (initialSupply >= tokenCreationMax) return State.Success;
    	else return State.Failure;
    }
 
@@ -579,9 +579,9 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
    ///get the block number state
    function getStateFunding() public returns (uint256){
    	// average 6000 blocks mined in 24 hrs
-   	if(block.number&lt;fundingStartBlock + 180000) return 20; // 1 month 20%
-   	else if(block.number&gt;=fundingStartBlock+ 180001 &amp;&amp; block.number&lt;fundingStartBlock + 270000) return 10; // next 15 days
-   	else if(block.number&gt;=fundingStartBlock + 270001 &amp;&amp; block.number&lt;fundingStartBlock + 36000) return 5; // next 15 days
+   	if(block.number<fundingStartBlock + 180000) return 20; // 1 month 20%
+   	else if(block.number>=fundingStartBlock+ 180001 && block.number<fundingStartBlock + 270000) return 10; // next 15 days
+   	else if(block.number>=fundingStartBlock + 270001 && block.number<fundingStartBlock + 36000) return 5; // next 15 days
    	else return 0;
    }
    ///a function using safemath to work with
@@ -600,7 +600,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
    	newCreatedTokens = calNewTokens(newCreatedTokens);
    	///since we are creating tokens we need to increase the total supply
    	initialSupply = safeAdd(initialSupply,newCreatedTokens);
-   	if(initialSupply&gt;tokenCreationMax) throw;
+   	if(initialSupply>tokenCreationMax) throw;
       if (balances[msg.sender] == 0) investors.push(msg.sender);
       investmentETH += msg.value;
       balances[msg.sender] = safeAdd(balances[msg.sender],newCreatedTokens);
@@ -622,7 +622,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
    	uint256 newCreatedTokens = safeMul(val,tokensPerEther);
    	newCreatedTokens = calNewTokens(newCreatedTokens);
    	initialSupply = safeAdd(initialSupply,newCreatedTokens);
-   	if(initialSupply&gt;tokenCreationMax) throw;
+   	if(initialSupply>tokenCreationMax) throw;
       if (balances[addr] == 0) investors.push(addr);
       investmentETH += val;
       balances[addr] = safeAdd(balances[addr],newCreatedTokens);
@@ -647,7 +647,7 @@ contract Crowdsale is StandardToken, Pausable, SafeMath, Utils{
          newCreatedTokens = calNewTokens(newCreatedTokens);
          initialSupply = safeAdd(initialSupply,newCreatedTokens);
          ///remember not to go off the LIMITS!!
-         if(initialSupply&gt;tokenCreationMax) throw;
+         if(initialSupply>tokenCreationMax) throw;
          if (balances[addr] == 0) investors.push(addr);
          investmentBTC += b;
          balances[addr] = safeAdd(balances[addr],newCreatedTokens);

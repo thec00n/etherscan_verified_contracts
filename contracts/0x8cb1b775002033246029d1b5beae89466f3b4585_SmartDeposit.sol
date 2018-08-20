@@ -8,7 +8,7 @@ contract SmartDeposit {
     event Received(address from, bytes user_id, uint value);
 
     function() payable {
-        if (msg.value &gt; 0 &amp;&amp; msg.data.length == 4) {
+        if (msg.value > 0 && msg.data.length == 4) {
             Received(msg.sender, msg.data, msg.value);
             m_account.transfer(msg.value);
         } else throw;

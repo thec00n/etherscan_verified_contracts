@@ -8,13 +8,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -30,7 +30,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -155,7 +155,7 @@ contract MintHelper is Ownable {
     public onlyOwner
     returns (bool)
     {
-      require(fee &gt;= 0 &amp;&amp; fee &lt;= 100);
+      require(fee >= 0 && fee <= 100);
       minterFeePercent = fee;
       return true;
     }

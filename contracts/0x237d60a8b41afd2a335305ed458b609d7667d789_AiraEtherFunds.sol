@@ -91,8 +91,8 @@ contract TokenHash is Mortal, ERC20 {
     uint8 public decimals;
 
     /* Token approvement system */
-    mapping(bytes32 =&gt; uint256) balances;
-    mapping(bytes32 =&gt; mapping(bytes32 =&gt; uint256)) allowances;
+    mapping(bytes32 => uint256) balances;
+    mapping(bytes32 => mapping(bytes32 => uint256)) allowances;
  
     /**
      * @dev Get balance of plain address
@@ -147,7 +147,7 @@ contract TokenHash is Mortal, ERC20 {
     function transfer(address _to, uint256 _value) returns (bool) {
         var sender = sha3(msg.sender);
 
-        if (balances[sender] &gt;= _value) {
+        if (balances[sender] >= _value) {
             balances[sender]    -= _value;
             balances[sha3(_to)] += _value;
             Transfer(msg.sender, _to, _value);
@@ -166,7 +166,7 @@ contract TokenHash is Mortal, ERC20 {
     function transfer(bytes32 _to, uint256 _value) returns (bool) {
         var sender = sha3(msg.sender);
 
-        if (balances[sender] &gt;= _value) {
+        if (balances[sender] >= _value) {
             balances[sender] -= _value;
             balances[_to]    += _value;
             TransferHash(sender, _to, _value);
@@ -189,9 +189,9 @@ contract TokenHash is Mortal, ERC20 {
         var from  = sha3(_from);
         var sender= sha3(msg.sender);
         var avail = allowances[from][sender]
-                  &gt; balances[from] ? balances[from]
+                  > balances[from] ? balances[from]
                                    : allowances[from][sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowances[from][sender] -= _value;
             balances[from] -= _value;
             balances[to]   += _value;
@@ -212,9 +212,9 @@ contract TokenHash is Mortal, ERC20 {
     function transferFrom(bytes32 _from, bytes32 _to, uint256 _value) returns (bool) {
         var sender= sha3(msg.sender);
         var avail = allowances[_from][sender]
-                  &gt; balances[_from] ? balances[_from]
+                  > balances[_from] ? balances[_from]
                                     : allowances[_from][sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowances[_from][sender] -= _value;
             balances[_from] -= _value;
             balances[_to]   += _value;
@@ -269,7 +269,7 @@ contract TokenHash is Mortal, ERC20 {
 //sol Registrar
 // Simple global registrar.
 // @authors:
-//   Gav Wood &lt;<span class="__cf_email__" data-cfemail="c4a384a1b0aca0a1b2eaa7aba9">[email&#160;protected]</span>&gt;
+//   Gav Wood <<span class="__cf_email__" data-cfemail="c4a384a1b0aca0a1b2eaa7aba9">[email protected]</span>>
 
 contract Registrar {
 	event Changed(string indexed name);
@@ -283,7 +283,7 @@ contract Registrar {
 //sol OwnedRegistrar
 // Global registrar with single authoritative owner.
 // @authors:
-//   Gav Wood &lt;<span class="__cf_email__" data-cfemail="8aedcaeffee2eeeffca4e9e5e7">[email&#160;protected]</span>&gt;
+//   Gav Wood <<span class="__cf_email__" data-cfemail="8aedcaeffee2eeeffca4e9e5e7">[email protected]</span>>
 
 contract AiraRegistrarService is Registrar, Mortal {
 	struct Record {
@@ -321,7 +321,7 @@ contract AiraRegistrarService is Registrar, Mortal {
 	function subRegistrar(string _name) constant returns (address) { return m_toRecord[_name].subRegistrar; }
 	function content(string _name) constant returns (bytes32) { return m_toRecord[_name].content; }
 
-	mapping (string =&gt; Record) m_toRecord;
+	mapping (string => Record) m_toRecord;
 }
 
 contract AiraEtherFunds is TokenHash {
@@ -355,14 +355,14 @@ contract AiraEtherFunds is TokenHash {
         var value = msg.value;
  
         // Get a fee
-        if (fee &gt; 0) {
-            if (value &lt; fee) throw;
+        if (fee > 0) {
+            if (value < fee) throw;
             balances[sha3(owner)] += fee;
             value                 -= fee;
         }
 
         // Refund over limit
-        if (limit &gt; 0 &amp;&amp; value &gt; limit) {
+        if (limit > 0 && value > limit) {
             var refund = value - limit;
             if (!msg.sender.send(refund)) throw;
             value = limit;
@@ -402,7 +402,7 @@ contract AiraEtherFunds is TokenHash {
      */
     function refill(bytes32 _dest) payable returns (bool) {
         // Throw when over limit
-        if (balances[_dest] + msg.value &gt; limit) throw;
+        if (balances[_dest] + msg.value > limit) throw;
 
         // Refill
         balances[_dest] += msg.value;
@@ -419,9 +419,9 @@ contract AiraEtherFunds is TokenHash {
     function sendFrom(bytes32 _from, address _to, uint256 _value) {
         var sender = sha3(msg.sender);
         var avail = allowances[_from][sender]
-                  &gt; balances[_from] ? balances[_from]
+                  > balances[_from] ? balances[_from]
                                     : allowances[_from][sender];
-        if (avail &gt;= _value) {
+        if (avail >= _value) {
             allowances[_from][sender] -= _value;
             balances[_from]           -= _value;
             totalSupply               -= _value;
@@ -430,7 +430,7 @@ contract AiraEtherFunds is TokenHash {
     }
 
     AiraRegistrarService public reg;
-    modifier onlySecure { if (msg.sender != reg.addr(&quot;AiraSecure&quot;)) throw; _; }
+    modifier onlySecure { if (msg.sender != reg.addr("AiraSecure")) throw; _; }
 
     /**
      * @dev Increase approved token values for AiraEthBot
@@ -438,7 +438,7 @@ contract AiraEtherFunds is TokenHash {
      * @param _value is amount of tokens
      */
     function secureApprove(bytes32 _client, uint256 _value) onlySecure {
-        var ethBot = reg.addr(&quot;AiraEth&quot;);
+        var ethBot = reg.addr("AiraEth");
         if (ethBot != 0) {
             allowances[_client][sha3(ethBot)] += _value;
             ApprovalHash(_client, sha3(ethBot), _value);
@@ -450,7 +450,7 @@ contract AiraEtherFunds is TokenHash {
      * @param _client is a client ident
      */
     function secureUnapprove(bytes32 _client) onlySecure {
-        var ethBot = reg.addr(&quot;AiraEth&quot;);
+        var ethBot = reg.addr("AiraEth");
         if (ethBot != 0)
             allowances[_client][sha3(ethBot)] = 0;
     }

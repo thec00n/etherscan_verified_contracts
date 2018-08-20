@@ -15,8 +15,8 @@ contract ERC20Basic {
 
 contract BitronCoin is ERC20Basic {
 
-	string	public name			= &quot;Bitron Coin&quot;;
-	string	public symbol		= &quot;BTO&quot;;
+	string	public name			= "Bitron Coin";
+	string	public symbol		= "BTO";
 	uint 	public decimals		= 9;
 	uint 	public _totalSupply = 50000000 * 10 ** decimals;
 	uint 	public tokens		= 0;
@@ -26,8 +26,8 @@ contract BitronCoin is ERC20Basic {
 	bool	public stopped		= false;
 	address public ethFundMain  = 0x1e6d1Fc2d934D2E4e2aE5e4882409C3fECD769dF;
 
-	mapping (address =&gt; uint) balance;
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+	mapping (address => uint) balance;
+	mapping(address => mapping(address => uint)) allowed;
 
 	modifier onlyOwner() {
 		if(msg.sender != owner){
@@ -45,7 +45,7 @@ contract BitronCoin is ERC20Basic {
 
 	function() payable public {
 
-		if( msg.sender != owner &amp;&amp; msg.value &gt;= 0.02 ether &amp;&amp; now &lt;= icoEndDate &amp;&amp; stopped == false ){
+		if( msg.sender != owner && msg.value >= 0.02 ether && now <= icoEndDate && stopped == false ){
 
 			tokens				 = ( msg.value / 10 ** decimals ) * oneEth;
 			balance[msg.sender] += tokens;
@@ -70,7 +70,7 @@ contract BitronCoin is ERC20Basic {
 	function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
 		require( _to != 0x0);
 		tokens = _amount * 10 ** decimals;
-		require(balance[_from] &gt;= tokens &amp;&amp; allowed[_from][msg.sender] &gt;= tokens &amp;&amp; tokens &gt;= 0);
+		require(balance[_from] >= tokens && allowed[_from][msg.sender] >= tokens && tokens >= 0);
 		balance[_from] -= tokens;
 		allowed[_from][msg.sender] -= tokens;
 		balance[_to] += tokens;
@@ -97,7 +97,7 @@ contract BitronCoin is ERC20Basic {
 	}
 
 	function allowance(address _owner, address _spender)public view returns (uint256) {
-		require( _owner != 0x0 &amp;&amp; _spender !=0x0);
+		require( _owner != 0x0 && _spender !=0x0);
 		return allowed[_owner][_spender];
 	}
 
@@ -118,7 +118,7 @@ contract BitronCoin is ERC20Basic {
 	function sendTokens(address[] a, uint[] v) public 
 	{
 	    uint i = 0;
-	    while( i &lt; a.length ){
+	    while( i < a.length ){
 	        transfer(a[i], v[i]);
 	        i++;
 	    }

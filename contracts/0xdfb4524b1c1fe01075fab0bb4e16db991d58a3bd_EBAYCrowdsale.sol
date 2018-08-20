@@ -62,24 +62,24 @@ contract EBAYCrowdsale {
     }
 
     function () payable public {
-        require(msg.value &gt; 0);
-        require(now &gt; startDate);
-        require(now &lt; endDate);
+        require(msg.value > 0);
+        require(now > startDate);
+        require(now < endDate);
 	    uint amount = msg.value * price;
 
         // period 1 : 25%
-        if (now &gt; startDate &amp;&amp; now &lt; startDate + 2 days) {
+        if (now > startDate && now < startDate + 2 days) {
             amount += amount / 4;
         }
         
         // period 2 : 15%
-        if (now &gt; startDate + 2 days &amp;&amp; now &lt; startDate + 9 days) {
+        if (now > startDate + 2 days && now < startDate + 9 days) {
             uint _amount = amount / 20;
             amount += _amount * 3;
         }
 
         // period 3 : 10%
-        if (now &gt; startDate + 9 days &amp;&amp; now &lt; startDate + 23 days) {
+        if (now > startDate + 9 days && now < startDate + 23 days) {
             amount += amount / 10;
         }
 

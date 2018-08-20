@@ -5,7 +5,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -79,9 +79,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -89,7 +89,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -98,7 +98,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,7 +112,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     uint256 totalSupply_;
 
@@ -130,7 +130,7 @@ contract BasicToken is ERC20Basic {
   */
     function transferInternal(address _to, uint256 _value) internal returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -174,7 +174,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -185,8 +185,8 @@ contract StandardToken is ERC20, BasicToken {
    */
     function transferFromInternal(address _from, address _to, uint256 _value) internal returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -249,7 +249,7 @@ contract StandardToken is ERC20, BasicToken {
    */
     function decreaseApprovalInternal(address _spender, uint _subtractedValue) internal returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -262,8 +262,8 @@ contract StandardToken is ERC20, BasicToken {
 
 // File: contracts/MintableToken.sol
 
-//import &quot;./StandardToken.sol&quot;;
-//import &quot;../../ownership/Ownable.sol&quot;;
+//import "./StandardToken.sol";
+//import "../../ownership/Ownable.sol";
 
 
 
@@ -400,7 +400,7 @@ contract PausableToken is StandardToken, Pausable {
 
 /**
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7002151d131f3042">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7002151d131f3042">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -449,7 +449,7 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
     using SafeMath for uint256;
     
     // Mapping of rewards to beneficiaries of the reward
-    mapping(address =&gt; uint256) public reward;
+    mapping(address => uint256) public reward;
   
     string public name;
     string public symbol;
@@ -505,17 +505,17 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
         uint256[] _amountOfReward, 
         uint256 _timestampOfDistribution
     ) external nonReentrant onlyOwner whenNotPaused {
-        require(_timestampOfDistribution &gt; previousDistribution.add(durationBetweenRewardMints)); //To only allow a distribution to happen 30 days (2592000 seconds) after the previous distribution
-        require(_timestampOfDistribution &lt; now); // To only allow a distribution time in the past
+        require(_timestampOfDistribution > previousDistribution.add(durationBetweenRewardMints)); //To only allow a distribution to happen 30 days (2592000 seconds) after the previous distribution
+        require(_timestampOfDistribution < now); // To only allow a distribution time in the past
         require(_rewardAdresses.length == _amountOfReward.length); // To verify the length of the arrays are the same.
         
         uint256 rewardDistributed = 0;
 
-        for (uint j = 0; j &lt; _rewardAdresses.length; j++) {
+        for (uint j = 0; j < _rewardAdresses.length; j++) {
             rewardMint(_rewardAdresses[j], _amountOfReward[j]);
             rewardDistributed = rewardDistributed.add(_amountOfReward[j]);
         }
-        require(rewardAvailableCurrentDistribution &gt;= rewardDistributed);
+        require(rewardAvailableCurrentDistribution >= rewardDistributed);
         totalRewardsDistributed = totalRewardsDistributed.add(rewardDistributed);
         rewardAvailableCurrentDistribution = rewardAvailableCurrentDistribution.sub(rewardDistributed);
     }
@@ -530,9 +530,9 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
         uint256 _timestampOfDistribution
     ) external nonReentrant onlyOwner whenNotPaused {
         
-        require(_timestampOfDistribution &gt; previousDistribution);
-        require(_timestampOfDistribution &lt; previousDistribution.add(durationBetweenRewardMints)); //To only allow a distribution to happen 30 days (2592000 seconds) after the previous distribution
-        require(_timestampOfDistribution &lt; now); // To only allow a distribution time in the past
+        require(_timestampOfDistribution > previousDistribution);
+        require(_timestampOfDistribution < previousDistribution.add(durationBetweenRewardMints)); //To only allow a distribution to happen 30 days (2592000 seconds) after the previous distribution
+        require(_timestampOfDistribution < now); // To only allow a distribution time in the past
         //reward[_rewardAddress] = reward[_rewardAddress].add(_amountOfReward);
         rewardMint(_rewardAddress, _amountOfReward);
         
@@ -542,7 +542,7 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
     * @dev reset reward tokensfor the new duration
     */
     function resetReward() external nonReentrant onlyOwner whenNotPaused {
-        require(now &gt; previousDistribution.add(durationBetweenRewardMints)); //To only allow a distribution to happen 30 days (2592000 seconds) after the previous distribution
+        require(now > previousDistribution.add(durationBetweenRewardMints)); //To only allow a distribution to happen 30 days (2592000 seconds) after the previous distribution
         previousDistribution = previousDistribution.add(durationBetweenRewardMints); // To set the new distribution period as the previous distribution timestamp
         rewardAvailableCurrentDistribution = amountMintPerDuration;
         emit ResetReward();
@@ -559,8 +559,8 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
     ) external nonReentrant whenNotPaused{
         //Need to consider what happens to rewards after the stopping of minting process
         require(msg.sender == _beneficiary);
-        require(_value &gt;= minimumRewardWithdrawalLimit);
-        require(reward[_beneficiary] &gt;= _value);
+        require(_value >= minimumRewardWithdrawalLimit);
+        require(reward[_beneficiary] >= _value);
         reward[_beneficiary] = reward[_beneficiary].sub(_value);
         balances[_beneficiary] = balances[_beneficiary].add(_value);
         totalRewardsRedeemed = totalRewardsRedeemed.add(_value);
@@ -571,9 +571,9 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
         address _to, 
         uint256 _amount
     ) onlyOwner canMint whenNotPaused internal returns (bool) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         require(_to != address(0));
-        require(rewardAvailableCurrentDistribution &gt;= _amount);
+        require(rewardAvailableCurrentDistribution >= _amount);
         totalSupply_ = totalSupply_.add(_amount);
         reward[_to] = reward[_to].add(_amount);
         totalRewardsDistributed = totalRewardsDistributed.add(_amount);
@@ -591,7 +591,7 @@ contract IiinoCoin is MintableToken, PausableToken, ReentrancyGuard {
     function changeRewardMintingAmount(
         uint256 _newRewardMintAmt
     ) whenNotPaused nonReentrant onlyOwner external {
-        require(_newRewardMintAmt &lt; amountMintPerDuration);
+        require(_newRewardMintAmt < amountMintPerDuration);
         amountMintPerDuration = _newRewardMintAmt;
         emit RewardMintingAmt(_newRewardMintAmt);
     }
@@ -653,9 +653,9 @@ contract Crowdsale {
 
 
     function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-        //require(_startTime &gt;= now);
-        require(_endTime &gt;= _startTime);
-        require(_rate &gt; 0);
+        //require(_startTime >= now);
+        require(_endTime >= _startTime);
+        require(_rate > 0);
         require(_wallet != address(0));
 
         startTime = _startTime;
@@ -672,7 +672,7 @@ contract Crowdsale {
     function buyTokensInternal(address beneficiary) internal {
         require(beneficiary != address(0));
         require(validPurchase());
-        require(msg.value &gt;= (0.01 ether));
+        require(msg.value >= (0.01 ether));
 
         uint256 weiAmount = msg.value;
         uint256 tokens = getTokenAmount(weiAmount);
@@ -684,7 +684,7 @@ contract Crowdsale {
 
     // @return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
@@ -698,9 +698,9 @@ contract Crowdsale {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
 }
@@ -779,7 +779,7 @@ contract IiinoCoinCrowdsale is Crowdsale, Pausable, ReentrancyGuard {
     /*
     //Temp Function to retreive values
     function tempGetDataToCheck (uint indx, uint256 weiAmt) public view returns (uint256) {
-      //string temp = &quot;thresholdEtherLimitForSeedRound =&gt;&quot; + thresholdEtherLimitForSeedRound + &quot;Total Supply =&gt; &quot; + token.totalSupply() + &quot;noOfTokenAlocatedForSeedRound =&gt; &quot; + noOfTokenAlocatedForSeedRound + &quot;noOfTokenAlocatedForDev =&gt; &quot; + noOfTokenAlocatedForDev + &quot;rate =&gt; &quot; + rate;
+      //string temp = "thresholdEtherLimitForSeedRound =>" + thresholdEtherLimitForSeedRound + "Total Supply => " + token.totalSupply() + "noOfTokenAlocatedForSeedRound => " + noOfTokenAlocatedForSeedRound + "noOfTokenAlocatedForDev => " + noOfTokenAlocatedForDev + "rate => " + rate;
         if (indx == 0)
           return issueRateDecDuringICO;
         else if (indx == 1)
@@ -832,31 +832,31 @@ contract IiinoCoinCrowdsale is Crowdsale, Pausable, ReentrancyGuard {
         uint256 amountOfIiino = 0;
         uint256 referralsDistributed = referralTokensAllocated.sub(referralTokensAvailable);
         uint256 _totalSupply = (token.totalSupply()).sub(referralsDistributed);
-        if (now &lt;= seedRoundEndTime) {
+        if (now <= seedRoundEndTime) {
           
-            require(weiAmount &gt;= thresholdEtherLimitForSeedRound);
-            require(_totalSupply &lt; noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForDev));
+            require(weiAmount >= thresholdEtherLimitForSeedRound);
+            require(_totalSupply < noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForDev));
             (currRate, multiplierForICO) = getCurrentRateInternal();
             
             amountOfIiino = weiAmount.mul(currRate);
             
             //Only if there is enough available amount of iiino in the phase will it allocate it, else it will just revert the transaction and return the ether 
-            require (_totalSupply.add(amountOfIiino) &lt;= noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForDev));
+            require (_totalSupply.add(amountOfIiino) <= noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForDev));
             return amountOfIiino;
 
-        } else if (now &lt;= presaleEndTime) {
-            require(_totalSupply &lt; noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev));
+        } else if (now <= presaleEndTime) {
+            require(_totalSupply < noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev));
             (currRate, multiplierForICO) = getCurrentRateInternal();
             
             amountOfIiino = weiAmount.mul(currRate);
             //Only if there is enough available amount of iiino in the phase will it allocate it, else it will just revert the transaction and return the ether 
-            require (_totalSupply.add(amountOfIiino) &lt;= noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev));
+            require (_totalSupply.add(amountOfIiino) <= noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev));
             return amountOfIiino;
         } else {
             
            
-            require(_totalSupply &lt; noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev));
-            require(now &lt; endTime);
+            require(_totalSupply < noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev));
+            require(now < endTime);
             
             (currRate,multiplierForICO) = getCurrentRateInternal();
             //To check if the amount of tokens for the current ICO phase is exhausted
@@ -865,7 +865,7 @@ contract IiinoCoinCrowdsale is Crowdsale, Pausable, ReentrancyGuard {
             
             amountOfIiino = weiAmount * currRate;
             
-            require(_totalSupply.add(amountOfIiino) &lt;= noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev).add(noOfTokenAlocatedPerICOPhase.mul(multiplierForICO.add(1))));
+            require(_totalSupply.add(amountOfIiino) <= noOfTokenAlocatedForSeedRound.add(noOfTokenAlocatedForPresaleRound).add(noOfTokenAlocatedForDev).add(noOfTokenAlocatedPerICOPhase.mul(multiplierForICO.add(1))));
             return amountOfIiino;
           
         }
@@ -877,14 +877,14 @@ contract IiinoCoinCrowdsale is Crowdsale, Pausable, ReentrancyGuard {
         uint currRate;
         uint256 multiplierForICO = 0; 
 
-        if (now &lt;= seedRoundEndTime) {
+        if (now <= seedRoundEndTime) {
             currRate = rate.add(moreTokenPerEtherForSeedRound);
-        } else if (now &lt;= presaleEndTime) {
+        } else if (now <= presaleEndTime) {
             currRate = rate.add(moreTokenPerEtherForPresaleRound);
         } else {
             multiplierForICO = (now.sub(presaleEndTime)).div(30 days); //86400 seconds in a day
             currRate = rate.sub((issueRateDecDuringICO.mul(multiplierForICO)));
-            require(multiplierForICO &lt; noOfICOPhases);
+            require(multiplierForICO < noOfICOPhases);
         }
         return (currRate,multiplierForICO);
     }
@@ -894,7 +894,7 @@ contract IiinoCoinCrowdsale is Crowdsale, Pausable, ReentrancyGuard {
         require(referrer != address(0));
         require(beneficiary != address(0));
         require(validPurchase());
-        require(msg.value &gt;= (0.01 ether));
+        require(msg.value >= (0.01 ether));
 
         uint256 weiAmount = msg.value;
 
@@ -909,8 +909,8 @@ contract IiinoCoinCrowdsale is Crowdsale, Pausable, ReentrancyGuard {
 
         //To send the referrer his percentage of tokens.
         uint256 referrerTokens = tokens.mul(referralPercent).div(100);
-        if (referralTokensAvailable &gt; 0) {
-            if (referrerTokens &gt; referralTokensAvailable) {
+        if (referralTokensAvailable > 0) {
+            if (referrerTokens > referralTokensAvailable) {
                 referrerTokens = referralTokensAvailable;
             }
             

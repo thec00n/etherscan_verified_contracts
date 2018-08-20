@@ -1,6 +1,6 @@
 /*******************************/
 /* Solidity Contract By Younes */
-/**** <span class="__cf_email__" data-cfemail="4a066433253f242f390a7b2c2b24293364292527">[email&#160;protected]</span> ******/
+/**** <span class="__cf_email__" data-cfemail="4a066433253f242f390a7b2c2b24293364292527">[email protected]</span> ******/
 /****** www.1fancy.com *********/
 /*******************************/
 
@@ -16,15 +16,15 @@ contract MiCarsICO {
     address public beneficiary = 0x8f42914C201AcDd8a2769211C862222Ec56eea40;
     address public owner = beneficiary;
 	
-	// Start date vendredi 29 d&#233;cembre 2017 00:00:00
+	// Start date vendredi 29 décembre 2017 00:00:00
 	uint public startdate = now;
-	// Pr&#233; ico round 1 fin: vendredi 5 janvier 2018 23:59:3
+	// Pré ico round 1 fin: vendredi 5 janvier 2018 23:59:3
 	uint public deadlinePreIcoOne = 1515196740;
 	
-	// Pr&#233; ico round 2 fin: vendredi 12 janvier 2018 23:59:3
+	// Pré ico round 2 fin: vendredi 12 janvier 2018 23:59:3
     uint public deadlinePreIcoTwo = 1515801540;	
 	
-	// Fianl Tuesday fin: mardi 13 f&#233;vrier 2018 23:59:3
+	// Fianl Tuesday fin: mardi 13 février 2018 23:59:3
     uint public deadline = 1518566340;
 
 	
@@ -48,7 +48,7 @@ contract MiCarsICO {
 	
 	// Token Address
     token public tokenReward = token(0xdd5a3aeef473401c23f24c4c6b9cd1b0808fbb36);
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 	
     bool crowdsaleClosed = false;
     bool price_rate_changed = false;
@@ -64,9 +64,9 @@ contract MiCarsICO {
     function MiCarsICO() {}
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	  }
 	function mul(uint256 a, uint256 b) internal constant returns (uint256) {
@@ -118,17 +118,17 @@ contract MiCarsICO {
 		if (price_rate_changed == false) {
 					
 			// Token price in 1st week Pre Ico
-			if (now &lt;= deadlinePreIcoOne) {
+			if (now <= deadlinePreIcoOne) {
 				price = 0.000385901 * 1 ether;
 			}
 			
 			// Token price in 2nd week Pre Ico
-			else if (now &gt; deadlinePreIcoOne &amp;&amp; now &lt;= deadlinePreIcoTwo) {
+			else if (now > deadlinePreIcoOne && now <= deadlinePreIcoTwo) {
 				price = 0.000411628 * 1 ether;
 			}
 			
 			// Token price in 3th week Pre Ico
-			else if (now &gt; deadlinePreIcoTwo &amp;&amp; now &lt;= deadline) {
+			else if (now > deadlinePreIcoTwo && now <= deadline) {
 				price = 0.000515185 * 1 ether;
 			}
 			// Token fixed price in any issue happend
@@ -148,7 +148,7 @@ contract MiCarsICO {
 		uint tokentosend = div(calculedamount, price);
 
 
-        if (msg.value &gt;= vminEtherPerPurchase &amp;&amp; msg.value &lt;= vmaxEtherPerPurchase) {
+        if (msg.value >= vminEtherPerPurchase && msg.value <= vmaxEtherPerPurchase) {
 				
 				balanceOf[msg.sender] += amount;
 				FundTransfer(msg.sender, amount, true);

@@ -15,13 +15,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -75,8 +75,8 @@ contract StandardToken is ERC20, Ownable {
     string public symbol;
     uint8 public decimals;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     constructor(string _name, string _symbol, uint8 _decimals) public {
         name = _name;
@@ -117,7 +117,7 @@ contract StandardToken is ERC20, Ownable {
 
     function transfer(address _to, uint256 _value) whenNotPaused public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -129,8 +129,8 @@ contract StandardToken is ERC20, Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= allowed[_from][msg.sender]); // Check allowance
-        require(_value &gt; 0);
+        require(_value <= allowed[_from][msg.sender]); // Check allowance
+        require(_value > 0);
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -161,7 +161,7 @@ contract StandardToken is ERC20, Ownable {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -203,12 +203,12 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     constructor(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
     function mint(address _to, uint256 _amount) public returns(bool) {
-        require(totalSupply_.add(_amount) &lt;= cap);
+        require(totalSupply_.add(_amount) <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -218,7 +218,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
+        require(_value <= balances[_who]);
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -233,7 +233,7 @@ contract BurnableToken is StandardToken {
 }
 
 contract SafeCrypt is CappedToken, BurnableToken {
-    constructor() CappedToken(1535714285000000000000000000) StandardToken(&quot;SafeCrypt&quot;, &quot;SFC&quot;, 18) public {
+    constructor() CappedToken(1535714285000000000000000000) StandardToken("SafeCrypt", "SFC", 18) public {
         
     }
 }

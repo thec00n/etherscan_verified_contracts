@@ -42,7 +42,7 @@ contract Token {
 This implements ONLY the standard functions and NOTHING else.
 For a token like you would want to deploy in something like Mist, see HumanStandardToken.sol.
 
-If you deploy this, you won&#39;t have anything useful.
+If you deploy this, you won't have anything useful.
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -50,8 +50,8 @@ Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 contract StandardToken is Token {
 
     address tokenOwner;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     uint256 public totalSupply;
 
     modifier onlyowner {
@@ -64,8 +64,8 @@ contract StandardToken is Token {
     }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -74,7 +74,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -109,7 +109,7 @@ Imagine coins, currencies, shares, voting weight, etc.
 Machine-based, rapid creation of many tokens would not necessarily need these extra features or will be minted in other manners.
 
 1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol &amp; Name.
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
 3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
 
 .*/
@@ -123,9 +123,9 @@ contract ISINToken is StandardToken {
 
     /* Public variables of the token */
     string public name;
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;
-    string public version = &#39;H0.1&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
     function ISINToken(
         uint256 _initialAmount,

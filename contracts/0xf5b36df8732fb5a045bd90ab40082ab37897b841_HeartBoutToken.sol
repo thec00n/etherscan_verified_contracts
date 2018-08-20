@@ -21,19 +21,19 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -68,7 +68,7 @@ contract Ownable {
  */
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.
@@ -109,7 +109,7 @@ contract ERC20 is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from
@@ -120,7 +120,7 @@ contract StandardToken is ERC20, BasicToken {
     require(_to != address(0));
     uint256 _allowance = allowed[_from][msg.sender];
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = _allowance.sub(_value);
@@ -132,7 +132,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -166,7 +166,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -185,7 +185,7 @@ contract BurnableToken is StandardToken, Ownable {
      * @param _value The amount of token to be burned.
      */
     function burnValue(address _burner, uint256 _value) onlyOwner public {
-        require(_value &gt; 0);
+        require(_value > 0);
         burn(_burner, _value);
     }
     function burnAll(address _burner) onlyOwner public {
@@ -207,8 +207,8 @@ contract BurnableToken is StandardToken, Ownable {
 contract MintableToken is BurnableToken {
   bool public mintingFinished = false;
   // Bind User Account and Address Wallet
-  mapping(string =&gt; address) bindAccountsAddress;
-  mapping(address =&gt; string) bindAddressAccounts;
+  mapping(string => address) bindAccountsAddress;
+  mapping(address => string) bindAddressAccounts;
   modifier canMint() {
     require(!mintingFinished);
     _;
@@ -221,7 +221,7 @@ contract MintableToken is BurnableToken {
    */
   function mint(address _to, uint256 _amount, string _account) onlyOwner canMint public returns (bool) {
     // throw if address was bind with another account
-    if(!stringEqual(bindAddressAccounts[_to], &quot;&quot;)) {
+    if(!stringEqual(bindAddressAccounts[_to], "")) {
       require(stringEqual(bindAddressAccounts[_to], _account));
     }
     // only one bind address account
@@ -264,9 +264,9 @@ contract HeartBoutToken is MintableToken {
 	string public symbol;
 	uint8 public decimals;
 	function HeartBoutToken(string _name, string _symbol, uint8 _decimals) public {
-		require(!stringEqual(_name, &quot;&quot;));
-		require(!stringEqual(_symbol, &quot;&quot;));
-		require(_decimals &gt; 0);
+		require(!stringEqual(_name, ""));
+		require(!stringEqual(_symbol, ""));
+		require(_decimals > 0);
 		name = _name;
 		symbol = _symbol;
 		decimals = _decimals;

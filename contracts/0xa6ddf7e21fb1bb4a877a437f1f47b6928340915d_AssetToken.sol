@@ -41,8 +41,8 @@ contract ERC223ReceivingContract {
 
 contract AssetToken is admined,ERC223Interface{
 
- mapping (address =&gt; uint256) public balanceOf;
-     mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+ mapping (address => uint256) public balanceOf;
+     mapping(address => mapping(address => uint256)) allowed;
 
  uint256 public totalSupply;
  string public name;
@@ -90,7 +90,7 @@ contract AssetToken is admined,ERC223Interface{
 
         balanceOf[msg.sender] -= _value;
     balanceOf[_to] += _value;
-        if(codeLength&gt;0) {
+        if(codeLength>0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
 	
             receiver.tokenFallback(msg.sender, _value, empty);
@@ -109,7 +109,7 @@ contract AssetToken is admined,ERC223Interface{
     
     //Allow the owner to burn the token from their accounts
 function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);

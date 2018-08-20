@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -128,11 +128,11 @@ contract StandardToken is ERC20Token, Pausable {
    } 
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) whenNotPaused external returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             emit Transfer(msg.sender, _to, _value);
@@ -142,8 +142,8 @@ contract StandardToken is ERC20Token, Pausable {
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(2 * 32) whenNotPaused external returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = balances[_to].add(_value);
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -177,8 +177,8 @@ contract StandardToken is ERC20Token, Pausable {
     }
 
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public _totalSupply;
 }
 
@@ -193,13 +193,13 @@ contract Solarex is StandardToken{
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;V1.0&#39;;       //Version 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'V1.0';       //Version 0.1 standard. Just an arbitrary versioning scheme.
     uint256 private fulltoken;
     // This notifies clients about the amount burnt
     event Burn(address indexed from, uint256 value);
@@ -216,8 +216,8 @@ contract Solarex is StandardToken{
         decimals = 6;                            // Amount of decimals for display purposes
         _totalSupply = fulltoken.mul(10 ** uint256(decimals)); // Update total supply (100000 for example)
         balances[msg.sender] = _totalSupply;               // Give the creator all initial tokens (100000 for example)
-        name = &quot;Solarex&quot;;                                   // Set the name for display purposes
-        symbol = &quot;SRX&quot;;                               // Set the symbol for display purposes
+        name = "Solarex";                                   // Set the name for display purposes
+        symbol = "SRX";                               // Set the symbol for display purposes
     }
      function() public {
          //not payable fallback function
@@ -254,7 +254,7 @@ contract Solarex is StandardToken{
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] = balances[msg.sender].sub(_value);            // Subtract from the sender
         _totalSupply = _totalSupply.sub(_value);                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -271,10 +271,10 @@ contract Solarex is StandardToken{
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) onlyOwner public returns (bool success) {
-        require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+        require(balances[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowed[_from][msg.sender]);    // Check allowance
         balances[_from] = balances[_from].sub(_value);                         // Subtract from the targeted balance
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender&#39;s allowance
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);             // Subtract from the sender's allowance
         _totalSupply = _totalSupply.sub(_value);                              // Update totalSupply
         emit Burn(_from, _value);
         emit Transfer(_from, address(0), _value);
@@ -285,15 +285,15 @@ contract Solarex is StandardToken{
         
     }
     function withdrawEtherFromcontract(uint _amountInwei) public onlyOwner{
-        require(address(this).balance &gt; _amountInwei);
+        require(address(this).balance > _amountInwei);
       require(msg.sender == owner);
       owner.transfer(_amountInwei);
      
     }
 	 function withdrawTokensFromContract(uint _amountOfTokens) public onlyOwner{
-        require(balances[this] &gt;= _amountOfTokens);
+        require(balances[this] >= _amountOfTokens);
         require(msg.sender == owner);
-	    balances[msg.sender] = balances[msg.sender].add(_amountOfTokens);                        // adds the amount to owner&#39;s balance
+	    balances[msg.sender] = balances[msg.sender].add(_amountOfTokens);                        // adds the amount to owner's balance
         balances[this] = balances[this].sub(_amountOfTokens);                  // subtracts the amount from contract balance
 		emit Transfer(this, msg.sender, _amountOfTokens);               // execute an event reflecting the change
      

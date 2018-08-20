@@ -15,15 +15,15 @@ contract Token {
 
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     function transfer(address _to, uint256 _value)
         public
         returns (bool)
     {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -34,7 +34,7 @@ contract StandardToken is Token {
         public
         returns (bool)
     {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -70,8 +70,8 @@ contract StandardToken is Token {
 
 contract XiaoshiToken is StandardToken {
 
-    string constant public name = &quot;Xiaoshi Token&quot;;
-    string constant public symbol = &quot;XSH&quot;;
+    string constant public name = "Xiaoshi Token";
+    string constant public symbol = "XSH";
     uint8 constant public decimals = 18;
 
     function XiaoshiToken()

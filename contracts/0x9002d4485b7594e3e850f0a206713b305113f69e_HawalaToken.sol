@@ -8,37 +8,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -80,7 +80,7 @@ contract StandardToken is Token {
     
     
     function transfer(address _to, uint256 _value) public  returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0)
+        if (balances[msg.sender] >= _value && _value > 0)
         {
             if(inflation_complete)
             {
@@ -110,7 +110,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] =safeAdd(balances[_to],_value);
             balances[_from] =safeSub(balances[_from],_value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender],_value); 
@@ -135,8 +135,8 @@ contract StandardToken is Token {
     }
 
    
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply=   0;
     uint256 public initialSupply= 2500000*10**12;
     uint256 public rewardsupply= 4500000*10**12;
@@ -158,9 +158,9 @@ contract HawalaToken is StandardToken {
     string public name;                  
     uint8 public decimals;               
     string public symbol;
-    string public version = &#39;HAT&#39;;       
+    string public version = 'HAT';       
 
-  mapping (address =&gt; IFSBalance) public IFSBalances;
+  mapping (address => IFSBalance) public IFSBalances;
    struct IFSBalance
     {
         
@@ -192,7 +192,7 @@ contract HawalaToken is StandardToken {
         
       
         
-         if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 1 years)
+         if(safeSub(_currenttime,HawalaKickoffTime) <= 1 years)
          {
              //_amount = 1;//safeMul(safeDiv(stakingamount,100),15));
               
@@ -200,61 +200,61 @@ contract HawalaToken is StandardToken {
              _amount = safeMul(_timesinceStaking,_amount);
           
          }
-        else if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 2 years)
+        else if(safeSub(_currenttime,HawalaKickoffTime) <= 2 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),410958904) ;//15% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-        else  if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 3 years)
+        else  if(safeSub(_currenttime,HawalaKickoffTime) <= 3 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),328767123) ;//12% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-        else  if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 4 years)
+        else  if(safeSub(_currenttime,HawalaKickoffTime) <= 4 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),328767123) ;//12% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-       else   if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 5 years)
+       else   if(safeSub(_currenttime,HawalaKickoffTime) <= 5 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),328767123) ;//12% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-       else   if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 6 years)
+       else   if(safeSub(_currenttime,HawalaKickoffTime) <= 6 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),273972602) ;//10% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-      else    if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 7 years)
+      else    if(safeSub(_currenttime,HawalaKickoffTime) <= 7 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),273972602) ;//10%  safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-       else   if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 8 years)
+       else   if(safeSub(_currenttime,HawalaKickoffTime) <= 8 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),219178082) ;//8% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-      else    if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 9 years)
+      else    if(safeSub(_currenttime,HawalaKickoffTime) <= 9 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),205479452) ;//7.50% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-       else   if(safeSub(_currenttime,HawalaKickoffTime) &lt;= 10 years)
+       else   if(safeSub(_currenttime,HawalaKickoffTime) <= 10 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),198630136) ;//7.25% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
              
          }
-        else   if(safeSub(_currenttime,HawalaKickoffTime) &gt; 10 years)
+        else   if(safeSub(_currenttime,HawalaKickoffTime) > 10 years)
          {
              _amount = safeMul(safeDiv(stakingamount,1000000000000),198630136) ;//7.25% safeDiv(4,100);//safeMul(stakingamount,safeDiv(4,100));
              _amount = safeMul(_timesinceStaking,_amount);
@@ -279,7 +279,7 @@ contract HawalaToken is StandardToken {
      
      function canExecute(uint initialLockTime,uint256 _currenttime) public returns (bool success)
      {
-          if (_currenttime &gt;= initialLockTime + 3 days) {
+          if (_currenttime >= initialLockTime + 3 days) {
               
             return true;
           }
@@ -295,7 +295,7 @@ contract HawalaToken is StandardToken {
           {
              if(inflation_complete)
               {
-                  if(totalFeeCollected&gt;0 &amp;&amp; totalFeeCollected&gt;amount)
+                  if(totalFeeCollected>0 && totalFeeCollected>amount)
                   {
                     totalFeeCollected = safeSub(totalFeeCollected,amount);
                      balances[toaddress] = safeAdd(balances[toaddress],amount);
@@ -322,7 +322,7 @@ contract HawalaToken is StandardToken {
         }
         else
         {
-            if(IFSBalances[_sender].Amount&lt;=0)
+            if(IFSBalances[_sender].Amount<=0)
             {
                 return false;
                 
@@ -332,13 +332,13 @@ contract HawalaToken is StandardToken {
                 uint256 _currenttime = now;
                 if(canExecute(IFSBalances[_sender].IFSLockTime,_currenttime))
                 {
-                    //Get Total number of days in multiple of 3&#39;s.. Suppose if the staking lock was done 10 days ago
+                    //Get Total number of days in multiple of 3's.. Suppose if the staking lock was done 10 days ago
                     //but the reward shall be allocated and calculated for 9 Days.
                     uint256 calculatedreward = CalculateReward(IFSBalances[_sender].Amount,IFSBalances[_sender].IFSLockTime,_currenttime);
                     
                    if(!inflation_complete)
                    {
-                    if(rewardsupply&gt;=calculatedreward)
+                    if(rewardsupply>=calculatedreward)
                     {
                    
                    
@@ -350,7 +350,7 @@ contract HawalaToken is StandardToken {
                     }
                     else{
                         
-                        if(rewardsupply&gt;0)//whatever remaining in the supply hand it out to last staking account
+                        if(rewardsupply>0)//whatever remaining in the supply hand it out to last staking account
                         {
                               
                            balances[_sender] =safeAdd(balances[_sender], rewardsupply);
@@ -379,7 +379,7 @@ contract HawalaToken is StandardToken {
     }
    
     function setIFS(address _sender,uint256 _amount) public returns (bool success){
-        if(msg.sender!=_sender || balances[_sender]&lt;_amount || rewardsupply==0)//Make sure only authorize owner of account could trigger IFS and he/she must have enough balance to trigger IFS
+        if(msg.sender!=_sender || balances[_sender]<_amount || rewardsupply==0)//Make sure only authorize owner of account could trigger IFS and he/she must have enough balance to trigger IFS
         {
             return false;
         }
@@ -392,7 +392,7 @@ contract HawalaToken is StandardToken {
         
     }
     function reClaimIFS(address _sender)public returns (bool success){
-        if(msg.sender!=_sender || IFSBalances[_sender].Amount&lt;=0 )//Make sure only authorize owner of account and &gt; 0 staking could trigger reClaimIFS  
+        if(msg.sender!=_sender || IFSBalances[_sender].Amount<=0 )//Make sure only authorize owner of account and > 0 staking could trigger reClaimIFS  
         {
             return false;
         }
@@ -414,9 +414,9 @@ contract HawalaToken is StandardToken {
         //Add initial supply to total supply to make  7M. remaining 4.5M locked in for reward distribution        
         totalSupply=safeAdd(initialSupply,rewardsupply);
         balances[msg.sender] = initialSupply;               
-        name = &quot;HawalaToken&quot;;                              
+        name = "HawalaToken";                              
         decimals = 12;                            
-        symbol = &quot;HAT&quot;;  
+        symbol = "HAT";  
         inflation_complete = false;
         HawalaKickoffTime=now;
         totalstakeamount=0;
@@ -430,7 +430,7 @@ contract HawalaToken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 }

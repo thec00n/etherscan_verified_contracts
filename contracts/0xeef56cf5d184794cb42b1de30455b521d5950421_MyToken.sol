@@ -2,7 +2,7 @@ pragma solidity ^0.4.16;
 
 contract MyToken {
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     
     string public name;
     string public symbol;
@@ -21,7 +21,7 @@ contract MyToken {
     /* Send coins */
     function transfer(address _to, uint256 _value) public {
         /* Check if sender has balance and for overflows */
-        require(balanceOf[msg.sender] &gt;= _value &amp;&amp; balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value && balanceOf[_to] + _value >= balanceOf[_to]);
 
         /* Add and subtract new balances */
         balanceOf[msg.sender] -= _value;

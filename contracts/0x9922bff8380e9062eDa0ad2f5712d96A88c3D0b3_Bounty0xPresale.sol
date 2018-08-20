@@ -65,10 +65,10 @@ contract Bounty0xPresale is Owned {
     ///         preallocation and public phases
     /// @dev Name complies with ERC20 token standard, etherscan for example will recognize
     ///      this and show the balances of the address
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /// List of whitelisted participants
-    mapping (address =&gt; bool) public earlyParticipantWhitelist;
+    mapping (address => bool) public earlyParticipantWhitelist;
 
     /// @notice Log an event for each funding contributed during the public phase
     /// @notice Events are not logged when the constructor is being executed during
@@ -83,45 +83,45 @@ contract Bounty0xPresale is Owned {
         //assertEquals(TOTAL_PREALLOCATION, totalFunding);
     }
 
-    /// @notice A participant sends a contribution to the contract&#39;s address
+    /// @notice A participant sends a contribution to the contract's address
     ///         between the PRESALE_STATE_DATE and the PRESALE_END_DATE
     /// @notice Only contributions between the MINIMUM_PARTICIPATION_AMOUNT and
     ///         MAXIMUM_PARTICIPATION_AMOUNT are accepted. Otherwise the transaction
-    ///         is rejected and contributed amount is returned to the participant&#39;s
+    ///         is rejected and contributed amount is returned to the participant's
     ///         account
-    /// @notice A participant&#39;s contribution will be rejected if the presale
+    /// @notice A participant's contribution will be rejected if the presale
     ///         has been funded to the maximum amount
     function () payable {
         require(!saleHasEnded);
         // A participant cannot send funds before the presale start date
-        require(now &gt; PRESALE_START_DATE);
+        require(now > PRESALE_START_DATE);
         // A participant cannot send funds after the presale end date
-        require(now &lt; PRESALE_END_DATE);
+        require(now < PRESALE_END_DATE);
         // A participant cannot send less than the minimum amount
-        require(msg.value &gt;= MINIMUM_PARTICIPATION_AMOUNT);
+        require(msg.value >= MINIMUM_PARTICIPATION_AMOUNT);
         // A participant cannot send more than the maximum amount
-        require(msg.value &lt;= MAXIMUM_PARTICIPATION_AMOUNT);
+        require(msg.value <= MAXIMUM_PARTICIPATION_AMOUNT);
         // If whitelist filtering is active, if so then check the contributor is in list of addresses
         if (isWhitelistingActive) {
             require(earlyParticipantWhitelist[msg.sender]);
         }
         // A participant cannot send funds if the presale has been reached the maximum funding amount
-        require(safeIncrement(totalFunding, msg.value) &lt;= PRESALE_MAXIMUM_FUNDING);
-        // Register the participant&#39;s contribution
+        require(safeIncrement(totalFunding, msg.value) <= PRESALE_MAXIMUM_FUNDING);
+        // Register the participant's contribution
         addBalance(msg.sender, msg.value);    
     }
     
     /// @notice The owner can withdraw ethers after the presale has completed,
     ///         only if the minimum funding level has been reached
     function ownerWithdraw(uint256 value) external onlyOwner {
-        if (totalFunding &gt;= PRESALE_MAXIMUM_FUNDING) {
+        if (totalFunding >= PRESALE_MAXIMUM_FUNDING) {
             owner.transfer(value);
             saleHasEnded = true;
         } else {
         // The owner cannot withdraw before the presale ends
-        require(now &gt;= PRESALE_END_DATE);
+        require(now >= PRESALE_END_DATE);
         // The owner cannot withdraw if the presale did not reach the minimum funding amount
-        require(totalFunding &gt;= PRESALE_MINIMUM_FUNDING);
+        require(totalFunding >= PRESALE_MINIMUM_FUNDING);
         // Withdraw the amount requested
         owner.transfer(value);
     }
@@ -131,14 +131,14 @@ contract Bounty0xPresale is Owned {
     ///         the presale has not achieved the minimum funding level
     function participantWithdrawIfMinimumFundingNotReached(uint256 value) external {
         // Participant cannot withdraw before the presale ends
-        require(now &gt;= PRESALE_END_DATE);
+        require(now >= PRESALE_END_DATE);
         // Participant cannot withdraw if the minimum funding amount has been reached
-        require(totalFunding &lt;= PRESALE_MINIMUM_FUNDING);
+        require(totalFunding <= PRESALE_MINIMUM_FUNDING);
         // Participant can only withdraw an amount up to their contributed balance
-        assert(balanceOf[msg.sender] &lt; value);
-        // Participant&#39;s balance is reduced by the claimed amount.
+        assert(balanceOf[msg.sender] < value);
+        // Participant's balance is reduced by the claimed amount.
         balanceOf[msg.sender] = safeDecrement(balanceOf[msg.sender], value);
-        // Send ethers back to the participant&#39;s account
+        // Send ethers back to the participant's account
         msg.sender.transfer(value);
     }
 
@@ -147,7 +147,7 @@ contract Bounty0xPresale is Owned {
     ///         if the minimum funding level is not reached
     function ownerClawback() external onlyOwner {
         // The owner cannot withdraw before the clawback date
-        require(now &gt;= OWNER_CLAWBACK_DATE);
+        require(now >= OWNER_CLAWBACK_DATE);
         // Send remaining funds back to the owner
         owner.transfer(this.balance);
     }
@@ -169,11 +169,11 @@ contract Bounty0xPresale is Owned {
 
     /// @dev Keep track of participants contributions and the total funding amount
     function addBalance(address participant, uint256 value) private {
-        // Participant&#39;s balance is increased by the sent amount
+        // Participant's balance is increased by the sent amount
         balanceOf[participant] = safeIncrement(balanceOf[participant], value);
         // Keep track of the total funding amount
         totalFunding = safeIncrement(totalFunding, value);
-        // Log an event of the participant&#39;s contribution
+        // Log an event of the participant's contribution
         LogParticipation(participant, value, now);
     }
 
@@ -185,14 +185,14 @@ contract Bounty0xPresale is Owned {
     /// @dev Add a number to a base value. Detect overflows by checking the result is larger
     ///      than the original base value.
     function safeIncrement(uint256 base, uint256 increment) private constant returns (uint256) {
-        assert(increment &gt;= base);
+        assert(increment >= base);
         return base + increment;
     }
 
     /// @dev Subtract a number from a base value. Detect underflows by checking that the result
     ///      is smaller than the original base value
     function safeDecrement(uint256 base, uint256 decrement) private constant returns (uint256) {
-        assert(decrement &lt;= base);
+        assert(decrement <= base);
         return base - decrement;
     }
 }

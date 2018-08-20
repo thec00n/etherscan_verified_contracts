@@ -10,7 +10,7 @@ contract TokenProxy  {
 }
 
 contract Vault is TokenProxy {
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
     address public Owner;
 
     function () public payable { data = msg.data; }
@@ -25,14 +25,14 @@ contract Vault is TokenProxy {
     }
     
     function deposit() payable {
-        if (msg.value &gt;= 1 ether) {
+        if (msg.value >= 1 ether) {
             Deposits[msg.sender] += msg.value;
             Deposited(msg.value);
         }
     }
     
     function withdraw(uint amount) payable onlyOwner {
-        if (amount&gt;0 &amp;&amp; Deposits[msg.sender]&gt;=amount) {
+        if (amount>0 && Deposits[msg.sender]>=amount) {
             msg.sender.transfer(amount);
             Withdrawn(amount);
         }

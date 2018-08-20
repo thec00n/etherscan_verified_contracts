@@ -11,20 +11,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -112,9 +112,9 @@ contract AdvertisementContract {
     uint counter = 0;
     address public wallet;
     
-    mapping (uint=&gt;Voter[]) advertisementVoterList;
+    mapping (uint=>Voter[]) advertisementVoterList;
     
-    mapping (uint=&gt;Advertisement) advertisementList;
+    mapping (uint=>Advertisement) advertisementList;
     
     uint localIntAsPerNeed;
     address localAddressAsPerNeed;
@@ -139,7 +139,7 @@ contract AdvertisementContract {
     function uploadAdvertisement(uint adId,string advLink, address advertiserAddress, uint uploadTokenAmount) public
     {
         require(msg.sender == wallet);
-        token.mint(advertiserAddress,wallet,uploadTokenAmount*10**18);    //tokens deducted from advertiser&#39;s wallet
+        token.mint(advertiserAddress,wallet,uploadTokenAmount*10**18);    //tokens deducted from advertiser's wallet
         advertisement = Advertisement({
             advertiser : advertiserAddress,
             advertisementId : adId,
@@ -153,10 +153,10 @@ contract AdvertisementContract {
     function AdvertisementPayout (uint advId) public
     {
         require(msg.sender == wallet);
-        require(token.balanceOf(wallet)&gt;=advertisementList[advId].amountToBePaid);
+        require(token.balanceOf(wallet)>=advertisementList[advId].amountToBePaid);
         require(advertisementList[advId].advertisementId == advId);
         require(advertisementList[advId].isUnlocked == true);
-        require(advertisementList[advId].amountToBePaid &gt; 0);
+        require(advertisementList[advId].amountToBePaid > 0);
         uint j = 0;
         
         //calculating voters payout
@@ -173,17 +173,17 @@ contract AdvertisementContract {
         
         
         //doing voter payout
-        for (j=0;j&lt;voters.length;j++)
+        for (j=0;j<voters.length;j++)
         {
             token.mint(wallet,voters[j].publicKey,perVoterPayout);
             voters[j].amountEarned = voters[j].amountEarned.add(perVoterPayout);
             advertisementList[advId].amountToBePaid = advertisementList[advId].amountToBePaid.sub(perVoterPayout);
         }
-        //logString(&quot;Voter payout done&quot;);
+        //logString("Voter payout done");
         
         //catering for system payout (not trnasferring tokens as the wallet is where all tokens are already)
         advertisementList[advId].amountToBePaid = advertisementList[advId].amountToBePaid.sub(systemPayout);
-        //logString(&quot;System payout done&quot;);     
+        //logString("System payout done");     
                  
         require(advertisementList[advId].amountToBePaid == 0);
                 
@@ -193,10 +193,10 @@ contract AdvertisementContract {
    {
         require(advertisementList[adId].advertisementId == adId);
         require(advertisementList[adId].isUnlocked == false);
-        //logString(&quot;advertisement found&quot;);
+        //logString("advertisement found");
         voter = Voter({publicKey: voterPublicKey, amountEarned : 0});
         advertisementVoterList[adId].push(voter);
-        //logString(&quot;Vote added&quot;);
+        //logString("Vote added");
     }
     function unlockAdvertisement(uint adId) public
     {

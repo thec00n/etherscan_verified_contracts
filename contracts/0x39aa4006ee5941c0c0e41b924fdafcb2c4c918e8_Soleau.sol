@@ -7,12 +7,12 @@ contract Soleau {
     uint createdAt; /* Time */ 
     uint createdIn; /* Block number */
   }
-  mapping (string =&gt; Record) _records;
+  mapping (string => Record) _records;
 
   function record(string hash) returns (bool success, bool already, uint theBlock) {
-    if (msg.value &lt; price) {
+    if (msg.value < price) {
       success = false;
-      msg.sender.send(msg.value); /* We&#39;re nice, we refund */
+      msg.sender.send(msg.value); /* We're nice, we refund */
       return;
     } /* Else we keep the money but there is currently no way to use
 	 it: it is locked in the contract for ever */

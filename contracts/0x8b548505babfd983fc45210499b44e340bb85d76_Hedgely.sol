@@ -1,13 +1,13 @@
 pragma solidity ^0.4.19;
 
 // Hedgely - The Ethereum Inverted Market
-// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7d5c6c3c6cac8d4c4cfe7c0cac6cecb89c4c8ca">[email&#160;protected]</a>
+// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7d5c6c3c6cac8d4c4cfe7c0cac6cecb89c4c8ca">[email protected]</a>
 // Contract based investment game
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -70,7 +70,7 @@ contract Syndicate is Ownable{
      }
 
     address[] private syndicateMembers;
-    mapping(address =&gt; member ) private members;
+    mapping(address => member ) private members;
 
     event ProfitShare(
           uint256 _currentSyndicateValue,
@@ -90,7 +90,7 @@ contract Syndicate is Ownable{
     function claimProfit() public {
       if (members[msg.sender].numShares==0) revert(); // only syndicate members.
       uint256 profitShare = members[msg.sender].profitShare;
-      if (profitShare&gt;0){
+      if (profitShare>0){
         members[msg.sender].profitShare = 0;
         msg.sender.transfer(profitShare);
       }
@@ -103,7 +103,7 @@ contract Syndicate is Ownable{
       uint256 profitPerShare = SafeMath.div(currentSyndicateValue,totalOwnedShares);
 
       // foreach member , calculate their profitshare
-      for(uint i = 0; i&lt; numberSyndicateMembers; i++)
+      for(uint i = 0; i< numberSyndicateMembers; i++)
       {
         // do += so that acrues across share cycles.
         members[syndicateMembers[i]].profitShare+=SafeMath.mul(members[syndicateMembers[i]].numShares,profitPerShare);
@@ -136,12 +136,12 @@ contract Syndicate is Ownable{
     // buy into syndicate
     function buyIntoSyndicate() public payable  {
     		if(msg.value==0 || availableBuyInShares==0) revert();
-      		if(msg.value &lt; minimumBuyIn*buyInSharePrice) revert();
+      		if(msg.value < minimumBuyIn*buyInSharePrice) revert();
 
      		uint256 value = (msg.value/syndicatePrecision)*syndicatePrecision; // ensure precision
 		    uint256 allocation = value/buyInSharePrice;
 
-		    if (allocation &gt;= availableBuyInShares){
+		    if (allocation >= availableBuyInShares){
 		        allocation = availableBuyInShares; // limit hit
 		    }
 		    availableBuyInShares-=allocation;
@@ -170,11 +170,11 @@ contract Hedgely is Ownable, Syndicate {
 
    // Array of players
    address[] private players;
-   mapping(address =&gt; bool) private activePlayers;
+   mapping(address => bool) private activePlayers;
    uint256 numPlayers = 0;
 
    // map each player address to their portfolio of investments
-   mapping(address =&gt; uint256 [10] ) private playerPortfolio;
+   mapping(address => uint256 [10] ) private playerPortfolio;
 
    uint256 public totalHedgelyWinnings;
    uint256 public totalHedgelyInvested;
@@ -282,7 +282,7 @@ contract Hedgely is Ownable, Syndicate {
 
     // randomize the initial market values
     uint256 sumInvested = 0;
-    for(uint i=0;i&lt;10;i++)
+    for(uint i=0;i<10;i++)
     {
         uint256 num =  rand();
         marketOptions[i] =num * precision; // wei
@@ -313,10 +313,10 @@ contract Hedgely is Ownable, Syndicate {
     // main entry point for investors/players
     function invest(uint256 optionNumber) public payable noReentrancy {
 
-      // Check that the number is within the range (uints are always&gt;=0 anyway)
-      assert(optionNumber &lt;= 9);
+      // Check that the number is within the range (uints are always>=0 anyway)
+      assert(optionNumber <= 9);
       uint256 amount = roundIt(msg.value); // round to precision
-      assert(amount &gt;= minimumStake);
+      assert(amount >= minimumStake);
 
       uint256 holding = playerPortfolio[msg.sender][optionNumber];
       holding = SafeMath.add(holding, amount);
@@ -338,20 +338,20 @@ contract Hedgely is Ownable, Syndicate {
       allocateEarlyPlayerShare(); // allocate a single share per investment for early adopters
 
       currentLowest = findCurrentLowest();
-      if (block.number &gt;= endingBlock &amp;&amp; currentLowestCount==1) distributeWinnings();
+      if (block.number >= endingBlock && currentLowestCount==1) distributeWinnings();
 
     } // end invest
 
 
-    // find lowest option sets currentLowestCount&gt;1 if there are more than 1 lowest
+    // find lowest option sets currentLowestCount>1 if there are more than 1 lowest
     function findCurrentLowest() internal returns (uint lowestOption) {
 
       uint winner = 0;
       uint lowestTotal = marketOptions[0];
       currentLowestCount = 0;
-      for(uint i=0;i&lt;10;i++)
+      for(uint i=0;i<10;i++)
       {
-          if (marketOptions [i]&lt;lowestTotal){
+          if (marketOptions [i]<lowestTotal){
               winner = i;
               lowestTotal = marketOptions [i];
               currentLowestCount = 0;
@@ -364,7 +364,7 @@ contract Hedgely is Ownable, Syndicate {
     // distribute winnings at the end of a session
     function distributeWinnings() internal {
 
-      if (currentLowestCount&gt;1){
+      if (currentLowestCount>1){
       return; // cannot end session because there is no lowest.
       }
 
@@ -374,14 +374,14 @@ contract Hedgely is Ownable, Syndicate {
       EndSession(sessionNumber, numberWinner, marketOptions , block.number);
 
       uint256 sessionWinnings = 0;
-      for(uint j=1;j&lt;numPlayers;j++)
+      for(uint j=1;j<numPlayers;j++)
       {
-      if (playerPortfolio[players[j]][numberWinner]&gt;0){
+      if (playerPortfolio[players[j]][numberWinner]>0){
         uint256 winningAmount =  playerPortfolio[players[j]][numberWinner];
         uint256 winnings = SafeMath.mul(8,winningAmount); // eight times the invested amount.
         totalHedgelyWinnings+=winnings;
         sessionWinnings+=winnings;
-        players[j].transfer(winnings); // don&#39;t throw here
+        players[j].transfer(winnings); // don't throw here
       }
 
       playerPortfolio[players[j]] = [0,0,0,0,0,0,0,0,0,0];
@@ -391,22 +391,22 @@ contract Hedgely is Ownable, Syndicate {
 
       uint256 playerInvestments = totalInvested-seedInvestment;
 
-      if (sessionWinnings&gt;playerInvestments){
+      if (sessionWinnings>playerInvestments){
         uint256 loss = sessionWinnings-playerInvestments; // this is a loss
-        if (currentSyndicateValue&gt;=loss){
+        if (currentSyndicateValue>=loss){
           currentSyndicateValue-=loss;
         }else{
           currentSyndicateValue = 0;
         }
       }
 
-      if (playerInvestments&gt;sessionWinnings){
+      if (playerInvestments>sessionWinnings){
         currentSyndicateValue+=playerInvestments-sessionWinnings; // this is a gain
       }
 
       // check if share cycle is complete and if required distribute profits
       shareCycleIndex+=1;
-      if (shareCycleIndex &gt;= shareCycleSessionSize){
+      if (shareCycleIndex >= shareCycleSessionSize){
         distributeProfit();
       }
 
@@ -430,7 +430,7 @@ contract Hedgely is Ownable, Syndicate {
     // ----- admin functions in event of an issue --
 
     function withdraw(uint256 amount) public onlyOwner {
-        require(amount&lt;=this.balance);
+        require(amount<=this.balance);
         if (amount==0){
             amount=this.balance;
         }
@@ -472,9 +472,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -482,7 +482,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -491,7 +491,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

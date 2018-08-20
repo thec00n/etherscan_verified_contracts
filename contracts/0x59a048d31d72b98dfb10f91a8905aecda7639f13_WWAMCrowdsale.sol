@@ -11,37 +11,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -161,7 +161,7 @@ contract FinalizeAgent {
 
   /** Return true if we can run finalizeCrowdsale() properly.
    *
-   * This is a safety check function that doesn&#39;t allow crowdsale to begin
+   * This is a safety check function that doesn't allow crowdsale to begin
    * unless the finalizer has been set up properly.
    */
   function isSane() public constant returns (bool);
@@ -253,13 +253,13 @@ contract Crowdsale is Haltable, SafeMath {
   bool public finalized;
 
   /** How much ETH each address has invested to this crowdsale */
-  mapping (address =&gt; uint256) public investedAmountOf;
+  mapping (address => uint256) public investedAmountOf;
 
   /** How much tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint256) public tokenAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
 
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => bool) public earlyParticipantWhitelist;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -313,8 +313,8 @@ contract Crowdsale is Haltable, SafeMath {
 
     endsAt = _end;
 
-    // Don&#39;t mess the dates
-    if(startsAt &gt;= endsAt) {
+    // Don't mess the dates
+    if(startsAt >= endsAt) {
         throw;
     }
 
@@ -340,7 +340,7 @@ contract Crowdsale is Haltable, SafeMath {
    */
   function investInternal(address receiver) stopInEmergency private {
 
-    // Determine if it&#39;s a good time to accept investment from this participant
+    // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
       if(!earlyParticipantWhitelist[receiver]) {
@@ -417,7 +417,7 @@ contract Crowdsale is Haltable, SafeMath {
   function setFinalizeAgent(FinalizeAgent addr) onlyOwner {
     finalizeAgent = addr;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!finalizeAgent.isFinalizeAgent()) {
       throw;
     }
@@ -445,8 +445,8 @@ contract Crowdsale is Haltable, SafeMath {
    */
   function setEndsAt(uint time) onlyOwner {
 
-    if(now &gt; time) {
-      throw; // Don&#39;t change past
+    if(now > time) {
+      throw; // Don't change past
     }
 
     endsAt = time;
@@ -461,7 +461,7 @@ contract Crowdsale is Haltable, SafeMath {
   function setPricingStrategy(PricingStrategy _pricingStrategy) onlyOwner {
     pricingStrategy = _pricingStrategy;
 
-    // Don&#39;t allow setting bad agent
+    // Don't allow setting bad agent
     if(!pricingStrategy.isPricingStrategy()) {
       throw;
     }
@@ -477,7 +477,7 @@ contract Crowdsale is Haltable, SafeMath {
   function setMultisig(address addr) public onlyOwner {
 
     // Change
-    if(investorCount &gt; MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
+    if(investorCount > MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE) {
       throw;
     }
 
@@ -513,7 +513,7 @@ contract Crowdsale is Haltable, SafeMath {
    * @return true if the crowdsale has raised enough money to be a successful.
    */
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
 
   /**
@@ -540,10 +540,10 @@ contract Crowdsale is Haltable, SafeMath {
     else if (address(finalizeAgent) == 0) return State.Preparing;
     else if (!finalizeAgent.isSane()) return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) return State.Preparing;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
 
@@ -619,9 +619,9 @@ contract WWAMPricingStrategy is PricingStrategy, Ownable, SafeMath {
   }
   
   function getCurrentRound() public returns (CurrentRound){
-	  if (now &lt; round2BeginsAt)
+	  if (now < round2BeginsAt)
 		  return CurrentRound.Round1;
-	  else if (now &lt; finalRoundBeginsAt)
+	  else if (now < finalRoundBeginsAt)
 		  return CurrentRound.Round2;
 	  return CurrentRound.Final;
   }
@@ -636,7 +636,7 @@ contract WWAMPricingStrategy is PricingStrategy, Ownable, SafeMath {
    */
   function calculatePrice(uint value, uint weiRaised, uint tokensSold, address msgSender, uint decimals) public constant returns (uint) {
 	//Minimum investment is 10 finney
-	if (value &lt; 10 finney) 
+	if (value < 10 finney) 
 		return 0;
 	//15% Bonus for Round1 investors
 	if (getCurrentRound() == CurrentRound.Round1)
@@ -663,10 +663,10 @@ contract StandardToken is ERC20, SafeMath {
   event Minted(address receiver, uint amount);
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -700,7 +700,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) throw;
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) throw;
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -719,7 +719,7 @@ contract StandardToken is ERC20, SafeMath {
 contract WWAMBountyToken is StandardToken, Ownable {
 
   /** List of agents that are allowed to revoke tokens */
-  mapping (address =&gt; bool) public bountyAgents;
+  mapping (address => bool) public bountyAgents;
   
   event BountyAgentChanged(address addr, bool state  );
   
@@ -727,7 +727,7 @@ contract WWAMBountyToken is StandardToken, Ownable {
   * Function to revoke tokens in case the terms and conditions of the bounty campaign are violated by an user after tokens were assigned
   */
   function revokeTokens(address receiver, uint tokenAmount) onlyBountyAgent {
-      if (balances[receiver] &gt;= tokenAmount) {
+      if (balances[receiver] >= tokenAmount) {
 	    totalSupply = safeSub(totalSupply, tokenAmount);
 	    balances[receiver] = safeSub(balances[receiver], tokenAmount);
       }
@@ -764,7 +764,7 @@ contract MintableToken is StandardToken, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
 
@@ -815,7 +815,7 @@ contract WWAMCrowdsale is Crowdsale {
   uint public bountyTokens = 0;
   
   /* Public list of bounty rewards */
-  mapping (address =&gt; uint256) public bountyRewards;
+  mapping (address => uint256) public bountyRewards;
 	
   function WWAMCrowdsale(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end)
     Crowdsale(_token, _pricingStrategy, _multisigWallet, _start, _end, 500000000000000000000) { //Minimum funding goal of 500 ETH
@@ -829,7 +829,7 @@ contract WWAMCrowdsale is Crowdsale {
 	  uint totalBountyWeiAmount = WWAMPricingStrategy(pricingStrategy).tokensToWei(bountyTokens);
 	  
 	  //Making sure we do not exceed the 1% of maximum investment allocated for the bounty campaign
-	  if (safeAdd(bountyWeiAmount, totalBountyWeiAmount) &gt;= (investmentCapInWei / 100))
+	  if (safeAdd(bountyWeiAmount, totalBountyWeiAmount) >= (investmentCapInWei / 100))
 		  throw;
 	  
 	  bountyRewards[receiver] = safeAdd(bountyRewards[receiver], tokenAmount);
@@ -843,7 +843,7 @@ contract WWAMCrowdsale is Crowdsale {
   */
   function revokeBountyTokens(address receiver, uint tokenAmount) onlyOwner {
 	  //Checking that we can only revoke tokens of a bounty campaign participant. Also making sure that we do not end up with a negative blaance
-	  if (bountyRewards[receiver] &lt; tokenAmount)
+	  if (bountyRewards[receiver] < tokenAmount)
 		  throw;
 	  bountyTokens = safeSub(bountyTokens, tokenAmount);
 	  bountyRewards[receiver] = safeSub(bountyRewards[receiver], tokenAmount);
@@ -856,14 +856,14 @@ contract WWAMCrowdsale is Crowdsale {
    * Checking that we do not exceed the investment cap.
    */
   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool) {
-    return weiRaisedTotal &gt; investmentCapInWei;
+    return weiRaisedTotal > investmentCapInWei;
   }
 
   /**
    * Condition is the same as above
    */
   function isCrowdsaleFull() public constant returns (bool) {
-    return weiRaised &gt;= investmentCapInWei;
+    return weiRaised >= investmentCapInWei;
   }
 
   /**

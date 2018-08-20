@@ -1,46 +1,46 @@
 pragma solidity ^0.4.2;
-/*&#39;pragma&#39; indique au compileur dans quelle version de Solidity ce code est &#233;crit */
+/*'pragma' indique au compileur dans quelle version de Solidity ce code est écrit */
 contract storer {
-/*&#39;contract&#39; indique le d&#233;but du contrat a proprement parler &#39;contract&#39; est similaire
-&#224; &#39;class&#39; dans d&#39;autres langages (class variables, inheritance, etc.)*/
+/*'contract' indique le début du contrat a proprement parler 'contract' est similaire
+à 'class' dans d'autres langages (class variables, inheritance, etc.)*/
 address public owner;
 string public log;
 /* 29979245621189875516790
 function storer() {
     owner = msg.sender ;
 }
-/* &#39;storer&#39; est une fonction un peu particuli&#232;re, il s&#39;agit du constructeur du contrat.
-Cette fonction s&#39;ex&#233;cute une seule fois au moment de la cr&#233;ation du contrat.
-La cr&#233;ation du contrat est une transaction et comme toute transaction elle est
-repr&#233;sent&#233;e en Solidity par &quot;msg&quot;, &quot;msg.sender&quot; correspond  &#224; l&#39;adresse qui
-&#233;met cette transaction.  
-A la cr&#233;ation du contrat la variable owner re&#231;oit l&#39;adresse qui a d&#233;ploy&#233; le
+/* 'storer' est une fonction un peu particulière, il s'agit du constructeur du contrat.
+Cette fonction s'exécute une seule fois au moment de la création du contrat.
+La création du contrat est une transaction et comme toute transaction elle est
+représentée en Solidity par "msg", "msg.sender" correspond  à l'adresse qui
+émet cette transaction.  
+A la création du contrat la variable owner reçoit l'adresse qui a déployé le
 contrat */
 modifier onlyOwner {
         if (msg.sender != owner)
             throw;
         _;
     }
-/* le &#39;modifier&#39; permet de poser des conditions &#224; l&#39;ex&#233;cution des fonctions.
-Ici, &#39;onlyOwner&#39; sera ajout&#233; &#224; la syntaxe des fonctions que l&#39;on
-veut r&#233;server au &#39;owner&#39;. Le modifier teste la condion msg.sender != owner
-si le requ&#234;teur de la fonction n&#39;est pas le owner alors l&#39;ex&#233;cution
-s&#39;interrompt, c&#39;est le sens du &#39;throw&#39;; s&#39;il s&#39;agit bien du owner alors
-la fonction s&#39;ex&#233;cute. Notez le &#39;_&#39; underscore apr&#232;s le test, il signifie
-&#224; la fonction de continuer son ex&#233;cution.*/    
+/* le 'modifier' permet de poser des conditions à l'exécution des fonctions.
+Ici, 'onlyOwner' sera ajouté à la syntaxe des fonctions que l'on
+veut réserver au 'owner'. Le modifier teste la condion msg.sender != owner
+si le requêteur de la fonction n'est pas le owner alors l'exécution
+s'interrompt, c'est le sens du 'throw'; s'il s'agit bien du owner alors
+la fonction s'exécute. Notez le '_' underscore après le test, il signifie
+à la fonction de continuer son exécution.*/    
 function store(string _log) onlyOwner() {
     log = _log;
 }
-/*La fonction &#39;store&#39; re&#231;oit une cha&#238;ne de caract&#232;res qu&#39;elle associe &#224; une
-variable d&#39;&#233;tat &#39;_log&#39;. Cette fonction n&#39;est utilisable que par l&#39;adresse qui
-est &#39;owner&#39;, si c&#39;est bien cette adresse qui fait la requ&#234;te alors la variable
-&#39;log&#39; devient &#39;_log&#39;.*/
+/*La fonction 'store' reçoit une chaîne de caractères qu'elle associe à une
+variable d'état '_log'. Cette fonction n'est utilisable que par l'adresse qui
+est 'owner', si c'est bien cette adresse qui fait la requête alors la variable
+'log' devient '_log'.*/
 function kill() onlyOwner() {
   selfdestruct(owner); }
-/* Cette derni&#232;re fonction permet de &quot;nettoyer&quot; la blockchain en supprimant le
-contrat. Il est important de la faire figurer pour lib&#233;rer de l&#39;espace sur
-la blockchain mais aussi pour supprimer un contrat bugg&#233;. En pr&#233;cisant une
-adresse selfdestruct(address), tous les ethers stock&#233;s par le contrat y sont
-envoy&#233;s. Attention si une transaction envoie des ethers &#224; un contrat qui s&#39;est
-&quot;selfdestruct&quot; ces ethers seront perdus*/
+/* Cette dernière fonction permet de "nettoyer" la blockchain en supprimant le
+contrat. Il est important de la faire figurer pour libérer de l'espace sur
+la blockchain mais aussi pour supprimer un contrat buggé. En précisant une
+adresse selfdestruct(address), tous les ethers stockés par le contrat y sont
+envoyés. Attention si une transaction envoie des ethers à un contrat qui s'est
+"selfdestruct" ces ethers seront perdus*/
 }

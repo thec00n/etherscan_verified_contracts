@@ -37,18 +37,18 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract StandardMintableToken is owned{ 
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;                     // the token name 
     string public symbol;                   // the ticker symbol
     uint8 public decimals;                  // amount of decimal places in the token
     uint256 public totalSupply;             // total tokens
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
     /* This creates an array with all frozen accounts */
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -76,9 +76,9 @@ contract StandardMintableToken is owned{
 
     /* Send tokens */
     function transfer(address _to, uint256 _value) returns (bool success){
-        if (_value == 0) return false; 				             // Don&#39;t waste gas on zero-value transaction
-        if (balanceOf[msg.sender] &lt; _value) return false;    // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (_value == 0) return false; 				             // Don't waste gas on zero-value transaction
+        if (balanceOf[msg.sender] < _value) return false;    // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         if (frozenAccount[msg.sender]) throw;                // Check if sender frozen
         if (frozenAccount[_to]) throw;                       // Check if recipient frozen                 
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
@@ -109,12 +109,12 @@ contract StandardMintableToken is owned{
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[_from]) throw;                        // Check if sender frozen       
         if (frozenAccount[_to]) throw;                          // Check if recipient frozen                 
-        if (balanceOf[_from] &lt; _value) return false;          	// Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;    // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;       // Check allowance
+        if (balanceOf[_from] < _value) return false;          	// Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;    // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;       // Check allowance
         balanceOf[_from] -= _value;                             // Subtract from the sender
         balanceOf[_to] += _value;                               // Add the same to the recipient
-        allowance[_from][msg.sender] -= _value;                 // Update sender&#39;s allowance 
+        allowance[_from][msg.sender] -= _value;                 // Update sender's allowance 
         Transfer(_from, _to, _value);                           // Perform the transfer
         return true;
     }
@@ -131,8 +131,8 @@ contract StandardMintableToken is owned{
     
     function burn(uint256 _value) returns (bool success) {
         if (frozenAccount[msg.sender]) throw;                 // Check if sender frozen       
-        if (_value == 0) return false; 				          // Don&#39;t waste gas on zero-value transaction
-        if (balanceOf[msg.sender] &lt; _value) return false;     // Check if the sender has enough
+        if (_value == 0) return false; 				          // Don't waste gas on zero-value transaction
+        if (balanceOf[msg.sender] < _value) return false;     // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
         totalSupply -= _value;                                // Updates totalSupply
         Transfer(msg.sender,0, _value);	                      // Burn _value tokens
@@ -142,9 +142,9 @@ contract StandardMintableToken is owned{
     function burnFrom(address _from, uint256 _value) onlyOwner returns (bool success) {
         if (frozenAccount[msg.sender]) throw;                // Check if sender frozen       
         if (frozenAccount[_from]) throw;                     // Check if recipient frozen 
-        if (_value == 0) return false; 			             // Don&#39;t waste gas on zero-value transaction
-        if (balanceOf[_from] &lt; _value) return false;         // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) throw;    // Check allowance
+        if (_value == 0) return false; 			             // Don't waste gas on zero-value transaction
+        if (balanceOf[_from] < _value) return false;         // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) throw;    // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         totalSupply -= _value;                               // Updates totalSupply
         allowance[_from][msg.sender] -= _value;				 // Updates allowance
@@ -155,7 +155,7 @@ contract StandardMintableToken is owned{
     /* A function to add more tokens to the total supply, accessible only to owner*/
     
     function mintToken(address target, uint256 mintedAmount) onlyOwner {
-        if (balanceOf[target] + mintedAmount &lt; balanceOf[target]) throw; // Check for overflows
+        if (balanceOf[target] + mintedAmount < balanceOf[target]) throw; // Check for overflows
         balanceOf[target] += mintedAmount;
         totalSupply += mintedAmount;
         Transfer(0, target, mintedAmount);

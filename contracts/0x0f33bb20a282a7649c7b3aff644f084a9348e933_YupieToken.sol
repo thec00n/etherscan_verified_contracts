@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -91,7 +91,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -104,7 +104,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -151,10 +151,10 @@ contract YupieToken is StandardToken {
 
 	
 	// TOKEN DATA
-	string public constant name = &quot;YUPIE&quot;;
-	string public constant symbol = &quot;YUP&quot;;
+	string public constant name = "YUPIE";
+	string public constant symbol = "YUP";
 	uint256 public constant decimals = 18;
-	string public version = &quot;1.0&quot;;
+	string public version = "1.0";
 
 	// YUPIE TOKEN PURCHASE LIMITS
 	uint256 public maxPresaleSupply; 														// MAX TOTAL DURING PRESALE (0.8% of MAXTOTALSUPPLY)
@@ -190,7 +190,7 @@ contract YupieToken is StandardToken {
 	bool public allowInvestment = true;														// Flag to change if transfering is allowed
 	uint256 public totalWEIInvested = 0; 													// Total WEI invested
 	uint256 public totalYUPIESAllocated = 0;												// Total YUPIES allocated
-	mapping (address =&gt; uint256) public WEIContributed; 									// Total WEI Per Account
+	mapping (address => uint256) public WEIContributed; 									// Total WEI Per Account
 
 
 	// INITIALIZATIONS FUNCTION
@@ -213,7 +213,7 @@ contract YupieToken is StandardToken {
 
 		// Smallest investment is 0.00001 ether
 		uint256 amountOfWei = msg.value;
-		require(amountOfWei &gt;= 10000000000000);
+		require(amountOfWei >= 10000000000000);
 
 		uint256 amountOfYUPIE = 0;
 		uint256 absLowTimeBonusLimit = 0;
@@ -222,14 +222,14 @@ contract YupieToken is StandardToken {
 		uint256 totalYUPIEAvailable = 0;
 
 		// Investment periods
-		if (block.timestamp &gt; preSaleStartTime &amp;&amp; block.timestamp &lt; preSaleEndTime) {
+		if (block.timestamp > preSaleStartTime && block.timestamp < preSaleEndTime) {
 			// Pre-sale ICO
 			amountOfYUPIE = amountOfWei.mul(YUPIE_PER_ETH_PRE_SALE);
 			absLowTimeBonusLimit = preSaleStartTime + lowTimeBonusLimit;
 			absMidTimeBonusLimit = preSaleStartTime + midTimeBonusLimit;
 			absHighTimeBonusLimit = preSaleStartTime + highTimeBonusLimit;
 			totalYUPIEAvailable = maxPresaleSupply - totalYUPIESAllocated;
-		} else if (block.timestamp &gt; saleStartTime &amp;&amp; block.timestamp &lt; saleEndTime) {
+		} else if (block.timestamp > saleStartTime && block.timestamp < saleEndTime) {
 			// ICO
 			amountOfYUPIE = amountOfWei.mul(YUPIE_PER_ETH_SALE);
 			absLowTimeBonusLimit = saleStartTime + lowTimeBonusLimit;
@@ -242,26 +242,26 @@ contract YupieToken is StandardToken {
 		}
 
 		// Check that YUPIES calculated greater than zero
-		assert(amountOfYUPIE &gt; 0);
+		assert(amountOfYUPIE > 0);
 
 		// Apply Bonuses
-		if (amountOfWei &gt;= highEtherBonusLimit) {
+		if (amountOfWei >= highEtherBonusLimit) {
 			amountOfYUPIE = amountOfYUPIE.mul(highEtherBonusValue).div(100);
-		} else if (amountOfWei &gt;= midEtherBonusLimit) {
+		} else if (amountOfWei >= midEtherBonusLimit) {
 			amountOfYUPIE = amountOfYUPIE.mul(midEtherBonusValue).div(100);
-		} else if (amountOfWei &gt;= lowEtherBonusLimit) {
+		} else if (amountOfWei >= lowEtherBonusLimit) {
 			amountOfYUPIE = amountOfYUPIE.mul(lowEtherBonusValue).div(100);
 		}
-		if (block.timestamp &gt;= absLowTimeBonusLimit) {
+		if (block.timestamp >= absLowTimeBonusLimit) {
 			amountOfYUPIE = amountOfYUPIE.mul(lowTimeBonusValue).div(100);
-		} else if (block.timestamp &gt;= absMidTimeBonusLimit) {
+		} else if (block.timestamp >= absMidTimeBonusLimit) {
 			amountOfYUPIE = amountOfYUPIE.mul(midTimeBonusValue).div(100);
-		} else if (block.timestamp &gt;= absHighTimeBonusLimit) {
+		} else if (block.timestamp >= absHighTimeBonusLimit) {
 			amountOfYUPIE = amountOfYUPIE.mul(highTimeBonusValue).div(100);
 		}
 
-		// Max sure it doesn&#39;t exceed remaining supply
-		assert(amountOfYUPIE &lt;= totalYUPIEAvailable);
+		// Max sure it doesn't exceed remaining supply
+		assert(amountOfYUPIE <= totalYUPIEAvailable);
 
 		// Update total YUPIE balance
 		totalYUPIESAllocated = totalYUPIESAllocated + amountOfYUPIE;
@@ -278,11 +278,11 @@ contract YupieToken is StandardToken {
 		WEIContributed[msg.sender] = contributedSafe;
 
 		// CHECK VALUES
-		assert(totalYUPIESAllocated &lt;= totalSupply);
-		assert(totalYUPIESAllocated &gt; 0);
-		assert(balanceSafe &gt; 0);
-		assert(totalWEIInvested &gt; 0);
-		assert(contributedSafe &gt; 0);
+		assert(totalYUPIESAllocated <= totalSupply);
+		assert(totalYUPIESAllocated > 0);
+		assert(balanceSafe > 0);
+		assert(totalWEIInvested > 0);
+		assert(contributedSafe > 0);
 
 		// CREATE EVENT FOR SENDER
 		CreatedYUPIE(msg.sender, amountOfYUPIE);

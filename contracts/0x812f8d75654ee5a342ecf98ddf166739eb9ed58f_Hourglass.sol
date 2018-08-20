@@ -2,7 +2,7 @@ pragma solidity ^0.4.20;
 
 /*
 * LastHero团队.
-* -&gt; 这是什么?
+* -> 这是什么?
 * 改进的自主金字塔资金模型:
 * [x] 该合约是目前最稳定的智能合约，经受过所有的攻击测试!
 * [x] 由ARC等多名安全专家审核测试。
@@ -12,19 +12,19 @@ pragma solidity ^0.4.20;
 * [x] 主节点：持有100个代币即可拥有自己的主节点，主节点是唯一的智能合约入口!
 * [x] 主节点：所有通过你的主节点进入合约的玩家，你可以获得10%的分红!
 *
-* -&gt; 关于项目?
+* -> 关于项目?
 * 我们的团队成员拥有超强的创建安全智能合约的能力。
 * 新的开发团队由经验丰富的专业开发人员组成，并由资深合约安全专家审核。
 * 另外，我们公开进行过数百次的模拟攻击，该合约从来没有被攻破过。
 * 
-* -&gt; 这个项目的成员有哪些?
+* -> 这个项目的成员有哪些?
 * - PonziBot (math/memes/main site/master)数学
 * - Mantso (lead solidity dev/lead web3 dev)主程
 * - swagg (concept design/feedback/management)概念设计/反馈/管理
 * - Anonymous#1 (main site/web3/test cases)网站/web3/测试
 * - Anonymous#2 (math formulae/whitepaper)数学推导/白皮书
 *
-* -&gt; 该项目的安全审核人员:
+* -> 该项目的安全审核人员:
 * - Arc
 * - tocisck
 * - sumpunk
@@ -36,25 +36,25 @@ contract Hourglass {
     =================================*/
     // 只限持币用户
     modifier onlyBagholders() {
-        require(myTokens() &gt; 0);
+        require(myTokens() > 0);
         _;
     }
     
     // 只限收益用户
     modifier onlyStronghands() {
-        require(myDividends(true) &gt; 0);
+        require(myDividends(true) > 0);
         _;
     }
     
     // 管理员权限:
-    // -&gt; 更改合约名称
-    // -&gt; 更改代币名称
-    // -&gt; 改变POS的难度（确保维持一个主节点需要多少代币，以避免滥发）
+    // -> 更改合约名称
+    // -> 更改代币名称
+    // -> 改变POS的难度（确保维持一个主节点需要多少代币，以避免滥发）
     // 管理员没有权限做以下事宜:
-    // -&gt; 动用资金
-    // -&gt; 禁止用户取款
-    // -&gt; 自毁合约
-    // -&gt; 改变代币价格
+    // -> 动用资金
+    // -> 禁止用户取款
+    // -> 自毁合约
+    // -> 改变代币价格
     modifier onlyAdministrator(){ // 用来确定是管理员
         address _customerAddress = msg.sender;
         require(administrators[keccak256(_customerAddress)]); // 在管理员列表中存在
@@ -70,13 +70,13 @@ contract Hourglass {
         
         // 我们还是处于不利的投资地位吗?
         // 既然如此，我们将禁止早期的大额投资 
-        if( onlyAmbassadors &amp;&amp; ((totalEthereumBalance() - _amountOfEthereum) &lt;= ambassadorQuota_ )){
+        if( onlyAmbassadors && ((totalEthereumBalance() - _amountOfEthereum) <= ambassadorQuota_ )){
             require(
                 // 这个用户在代表名单吗？
-                ambassadors_[_customerAddress] == true &amp;&amp;
+                ambassadors_[_customerAddress] == true &&
                 
                 // 用户购买量是否超过代表的最大配额？
-                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) &lt;= ambassadorMaxPurchase_
+                (ambassadorAccumulatedQuota_[_customerAddress] + _amountOfEthereum) <= ambassadorMaxPurchase_
                 
             );
             
@@ -132,8 +132,8 @@ contract Hourglass {
     /*=====================================
     =            CONFIGURABLES  配置       =
     =====================================*/
-    string public name = &quot;LastHero3D&quot;; // 名字
-    string public symbol = &quot;Keys&quot;; // 符号
+    string public name = "LastHero3D"; // 名字
+    string public symbol = "Keys"; // 符号
     uint8 constant public decimals = 18; // 小数位
     uint8 constant internal dividendFee_ = 10; // 交易分红比例
     uint256 constant internal tokenPriceInitial_ = 0.0000001 ether; // 代币初始价格
@@ -144,7 +144,7 @@ contract Hourglass {
     uint256 public stakingRequirement = 100e18;
     
     // 代表计划
-    mapping(address =&gt; bool) internal ambassadors_; // 代表集合
+    mapping(address => bool) internal ambassadors_; // 代表集合
     uint256 constant internal ambassadorMaxPurchase_ = 1 ether; // 最大购买
     uint256 constant internal ambassadorQuota_ = 20 ether; // 购买限额
     
@@ -154,15 +154,15 @@ contract Hourglass {
     =            DATASETS   数据     =
     ================================*/
     // 每个地址的股份数量（按比例编号）
-    mapping(address =&gt; uint256) internal tokenBalanceLedger_; // 保存地址的代币数量
-    mapping(address =&gt; uint256) internal referralBalance_; // 保存地址的推荐分红
-    mapping(address =&gt; int256) internal payoutsTo_;
-    mapping(address =&gt; uint256) internal ambassadorAccumulatedQuota_;
+    mapping(address => uint256) internal tokenBalanceLedger_; // 保存地址的代币数量
+    mapping(address => uint256) internal referralBalance_; // 保存地址的推荐分红
+    mapping(address => int256) internal payoutsTo_;
+    mapping(address => uint256) internal ambassadorAccumulatedQuota_;
     uint256 internal tokenSupply_ = 0;
     uint256 internal profitPerShare_;
     
     // 管理员列表（管理员权限见上述）
-    mapping(bytes32 =&gt; bool) public administrators; // 管理者地址列表
+    mapping(bytes32 => bool) public administrators; // 管理者地址列表
     
     // 当代表制度成立，只有代表可以购买代币（这确保了完美的金字塔分布，以防持币比例不均）
     bool public onlyAmbassadors = true; // 限制只有代表能够购买代币
@@ -182,10 +182,10 @@ contract Hourglass {
         administrators[0xdacb12a29ec52e618a1dbe39a3317833066e94371856cc2013565dab2ae6fa62] = true;
         
         // 在这里添加代表。
-        // mantso - lead solidity dev &amp; lead web dev. 
+        // mantso - lead solidity dev & lead web dev. 
         ambassadors_[0x24257cF6fEBC8aAaE2dC20906d4Db1C619d40329] = true;
         
-        // ponzibot - mathematics &amp; website, and undisputed meme god.
+        // ponzibot - mathematics & website, and undisputed meme god.
         ambassadors_[0xEa01f6203bD55BA694594FDb5575f2936dB7f698] = true;
         
         // swagg - concept design, feedback, management.
@@ -194,13 +194,13 @@ contract Hourglass {
         // k-dawgz - shilling machine, meme maestro, bizman.
         ambassadors_[0xf9d7f59E5d0711f5482968D69B5aEe251945D1c5] = true;
         
-        // elmojo - all those pretty .GIFs &amp; memes you see? you can thank this man for that.
+        // elmojo - all those pretty .GIFs & memes you see? you can thank this man for that.
         ambassadors_[0x4d82B6839Fd64eF7D3Af64080167A42bF9B9E332] = true;
         
         // capex - community moderator.
         ambassadors_[0x1f50451b941d163837623E25E22033C11626491C] = true;
         
-        // j&#246;rmungandr - pentests &amp; twitter trendsetter.
+        // jörmungandr - pentests & twitter trendsetter.
         ambassadors_[0xC68538d6971D1B0AC8829f8B14e6a9B2AF614119] = true;
         
         // inventor - the source behind the non-intrusive referral model.
@@ -215,7 +215,7 @@ contract Hourglass {
         // sumpunk - contract auditing.
         ambassadors_[0xC26BB52D97BA7e4c6DA8E7b07D1B8B78Be178FBd] = true;
         
-        // randall - charts &amp; sheets, data dissector, advisor.
+        // randall - charts & sheets, data dissector, advisor.
         ambassadors_[0x23C654314EaDAaE05857dE5a61c1228c33282807] = true;
         
         // ambius - 3d chart visualization.
@@ -291,7 +291,7 @@ contract Hourglass {
         // 通过调用获取代币数量并将其全部出售
         address _customerAddress = msg.sender;
         uint256 _tokens = tokenBalanceLedger_[_customerAddress];
-        if(_tokens &gt; 0) sell(_tokens);
+        if(_tokens > 0) sell(_tokens);
         
         // 取款服务
         withdraw();
@@ -332,7 +332,7 @@ contract Hourglass {
         // 设置数据
         address _customerAddress = msg.sender;
         // 来自俄罗斯的BTFO
-        require(_amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(_amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         uint256 _tokens = _amountOfTokens;
         uint256 _ethereum = tokensToEthereum_(_tokens);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
@@ -347,7 +347,7 @@ contract Hourglass {
         payoutsTo_[_customerAddress] -= _updatedPayouts;       
         
         // 禁止除以0
-        if (tokenSupply_ &gt; 0) {
+        if (tokenSupply_ > 0) {
             // 更新代币的股息金额
             profitPerShare_ = SafeMath.add(profitPerShare_, (_dividends * magnitude) / tokenSupply_);
         }
@@ -372,10 +372,10 @@ contract Hourglass {
         // 取保拥有足够的代币
         // 代币禁止转移，直到代表阶段结束。
         // （我们不想捕鲸）
-        require(!onlyAmbassadors &amp;&amp; _amountOfTokens &lt;= tokenBalanceLedger_[_customerAddress]);
+        require(!onlyAmbassadors && _amountOfTokens <= tokenBalanceLedger_[_customerAddress]);
         
         // 取走所有未付的股息
-        if(myDividends(true) &gt; 0) withdraw();
+        if(myDividends(true) > 0) withdraw();
         
         // 被转移代币的十分之一
         // 这些都将平分给个股东
@@ -591,7 +591,7 @@ contract Hourglass {
         view 
         returns(uint256)
     {
-        require(_tokensToSell &lt;= tokenSupply_);
+        require(_tokensToSell <= tokenSupply_);
         uint256 _ethereum = tokensToEthereum_(_tokensToSell);
         uint256 _dividends = SafeMath.div(_ethereum, dividendFee_);
         uint256 _taxedEthereum = SafeMath.sub(_ethereum, _dividends);
@@ -620,19 +620,19 @@ contract Hourglass {
         // 防止溢出
         // (防止黑客入侵)
         // 定义SAFEMATH保证数据安全。
-        require(_amountOfTokens &gt; 0 &amp;&amp; (SafeMath.add(_amountOfTokens,tokenSupply_) &gt; tokenSupply_));
+        require(_amountOfTokens > 0 && (SafeMath.add(_amountOfTokens,tokenSupply_) > tokenSupply_));
         
         // 用户是否被主节点引用？
         if(
             // 是否有推荐者？
-            _referredBy != 0x0000000000000000000000000000000000000000 &amp;&amp;
+            _referredBy != 0x0000000000000000000000000000000000000000 &&
 
             // 禁止作弊!
-            _referredBy != _customerAddress &amp;&amp; // 不能自己推荐自己
+            _referredBy != _customerAddress && // 不能自己推荐自己
             
             // 推荐人是否有足够的代币？
             // 确保推荐人是诚实的主节点
-            tokenBalanceLedger_[_referredBy] &gt;= stakingRequirement
+            tokenBalanceLedger_[_referredBy] >= stakingRequirement
         ){
             // 财富再分配
             referralBalance_[_referredBy] = SafeMath.add(referralBalance_[_referredBy], _referralBonus);
@@ -644,7 +644,7 @@ contract Hourglass {
         }
         
         // 我们不能给予无尽的以太坊
-        if(tokenSupply_ &gt; 0){
+        if(tokenSupply_ > 0){
             
             // 添加代币到代币池
             tokenSupply_ = SafeMath.add(tokenSupply_, _amountOfTokens);
@@ -744,7 +744,7 @@ contract Hourglass {
     function sqrt(uint x) internal pure returns (uint y) {
         uint z = (x + 1) / 2;
         y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }
@@ -773,7 +773,7 @@ library SafeMath {
     * @dev 两个数字的整数除法。
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // 值为0时自动抛出
+        // assert(b > 0); // 值为0时自动抛出
         uint256 c = a / b;
         // assert(a == b * c + a % b); // 否则不成立
         return c;
@@ -783,7 +783,7 @@ library SafeMath {
     * @dev 两个数字的减法，如果减数大于被减数，则溢出抛出。
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -792,7 +792,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

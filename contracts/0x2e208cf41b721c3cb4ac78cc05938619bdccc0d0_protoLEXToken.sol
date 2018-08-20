@@ -25,12 +25,12 @@ contract SafeMath
 {
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
       }
     
 	function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
@@ -50,11 +50,11 @@ contract SafeMath
 }
 
 contract protoLEXToken is ERC223, SafeMath{
-	mapping(address =&gt; uint) balances;
-	string public name = &quot;proto-Limited Exchange Token&quot;;
-	string public symbol = &quot;pLEX&quot;;
+	mapping(address => uint) balances;
+	string public name = "proto-Limited Exchange Token";
+	string public symbol = "pLEX";
 	uint8 public decimals = 0; // Using a Satoshi as base for our decimals: 0.00000001;
-	uint256 public totalSupply = 2000000000; // 2,000,000,000 LEX&#39;s, not mineable, not mintable;
+	uint256 public totalSupply = 2000000000; // 2,000,000,000 LEX's, not mineable, not mintable;
 	
 	address admin;
 	
@@ -89,7 +89,7 @@ contract protoLEXToken is ERC223, SafeMath{
 	// Function that is called when a user or another contract wants to transfer funds .
 	function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
 		if(isContract(_to)) {
-			if (balanceOf(msg.sender) &lt; _value) revert();
+			if (balanceOf(msg.sender) < _value) revert();
 			balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
 			balances[_to] = safeAdd(balanceOf(_to), _value);
 			assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -133,12 +133,12 @@ contract protoLEXToken is ERC223, SafeMath{
 			//retrieve the size of the code on target address, this needs assembly
 			length := extcodesize(_addr)
 		}
-		return (length&gt;0);
+		return (length>0);
 	}
 
 	//function that is called when transaction target is an address
 	function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
 		balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
 		balances[_to] = safeAdd(balanceOf(_to), _value);
 		Transfer(msg.sender, _to, _value, _data);
@@ -147,7 +147,7 @@ contract protoLEXToken is ERC223, SafeMath{
 	  
 	  //function that is called when transaction target is a contract
 	function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-		if (balanceOf(msg.sender) &lt; _value) revert();
+		if (balanceOf(msg.sender) < _value) revert();
 		balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
 		balances[_to] = safeAdd(balanceOf(_to), _value);
 		ContractReceiver receiver = ContractReceiver(_to);

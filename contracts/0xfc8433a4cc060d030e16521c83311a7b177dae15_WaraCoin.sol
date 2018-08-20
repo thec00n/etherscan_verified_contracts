@@ -24,8 +24,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -38,8 +38,8 @@ contract TokenERC20 {
     function TokenERC20() public {
         totalSupply = 100000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
-        name = &quot;WaraCoin&quot;;                                   // Set the name for display purposes
-        symbol = &quot;WAC&quot;;                               // Set the symbol for display purposes
+        name = "WaraCoin";                                   // Set the name for display purposes
+        symbol = "WAC";                               // Set the symbol for display purposes
     }
 
     /**
@@ -49,9 +49,9 @@ contract TokenERC20 {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -85,7 +85,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -134,13 +134,13 @@ contract  WaraCoin is owned, TokenERC20 {
     uint256 presale_deadline_count;
     uint256 crowdsale_deadline_count;
     
-    /* Save product&#39;s genuine information */
+    /* Save product's genuine information */
     struct Product_genuine
     {
         address m_made_from_who;  // who made this product 
         
-        string m_Product_GUID;    // product&#39;s unique code
-        string m_Product_Description; // product&#39;s description
+        string m_Product_GUID;    // product's unique code
+        string m_Product_Description; // product's description
         address m_who_have;       // who have this product now
         address m_send_to_who;    // when product move to agency - if it is different with seller, it means that seller have no genuine  
         string m_hash;  // need to check hash of description
@@ -148,7 +148,7 @@ contract  WaraCoin is owned, TokenERC20 {
         uint256 m_moved_count;  // how many times moved this product
     }
     
-    mapping (address =&gt; mapping (uint256 =&gt; Product_genuine)) public MyProducts;
+    mapping (address => mapping (uint256 => Product_genuine)) public MyProducts;
     
     
     /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -178,10 +178,10 @@ contract  WaraCoin is owned, TokenERC20 {
             uint amount = 0;
             uint nowprice = 0;
             
-            if ( presale_deadline_count &gt; 0  )
+            if ( presale_deadline_count > 0  )
                 nowprice = 10000;   // presale price
             else
-                if ( crowdsale_deadline_count &gt; 0)
+                if ( crowdsale_deadline_count > 0)
                     nowprice = 5000;    // crowdsale price
                 else
                     nowprice = 1000;    // normalsale price
@@ -190,7 +190,7 @@ contract  WaraCoin is owned, TokenERC20 {
             
             if ( presale_deadline_count != 0 )
             {
-                if ( presale_deadline_count &gt; amount )
+                if ( presale_deadline_count > amount )
                     presale_deadline_count -= amount;
                 else
                     presale_deadline_count = 0;
@@ -198,7 +198,7 @@ contract  WaraCoin is owned, TokenERC20 {
             else
                 if ( crowdsale_deadline_count != 0 )
                 {
-                    if ( crowdsale_deadline_count &gt; amount )
+                    if ( crowdsale_deadline_count > amount )
                         crowdsale_deadline_count -= amount;
                     else
                         crowdsale_deadline_count = 0;
@@ -206,7 +206,7 @@ contract  WaraCoin is owned, TokenERC20 {
                 else
                     totalSupply += amount;
     
-            balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
+            balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
             require(waracoin_corp.send(msg.value));
             Transfer(this, msg.sender, amount);               // execute an event reflecting the change
         }
@@ -222,9 +222,9 @@ contract  WaraCoin is owned, TokenERC20 {
     {
         uint256 amount = coin_amount * 10 ** uint256(decimals);
 
-        require(balanceOf[msg.sender] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller&#39;s balance
-        balanceOf[_to] += amount;                  // subtracts the amount from seller&#39;s balance
+        require(balanceOf[msg.sender] >= amount);         // checks if the sender has enough to sell
+        balanceOf[msg.sender] -= amount;                  // subtracts the amount from seller's balance
+        balanceOf[_to] += amount;                  // subtracts the amount from seller's balance
         Transfer(msg.sender, _to, amount);               // executes an event reflecting on the change
     }
 
@@ -239,15 +239,15 @@ contract  WaraCoin is owned, TokenERC20 {
         uint256 amount = coin_amount * 10 ** uint256(decimals);
         uint need_to_pay = amount / waracoin_per_ether;
         
-        require(this.balance &gt;= need_to_pay);
-        require(balanceOf[_from] &gt;= amount);         // checks if the sender has enough to sell
-        balanceOf[_from] -= amount;                  // subtracts the amount from seller&#39;s balance
-        _from.transfer(need_to_pay);                // sends ether to the seller: it&#39;s important to do this last to prevent recursion attacks
+        require(this.balance >= need_to_pay);
+        require(balanceOf[_from] >= amount);         // checks if the sender has enough to sell
+        balanceOf[_from] -= amount;                  // subtracts the amount from seller's balance
+        _from.transfer(need_to_pay);                // sends ether to the seller: it's important to do this last to prevent recursion attacks
         Transfer(_from, this, amount);               // executes an event reflecting on the change
     }    
     
     /**
-     * Here is WaraCoin&#39;s Genuine dApp functions
+     * Here is WaraCoin's Genuine dApp functions
     */
     
     /* When creator made product, must need to use this fuction for register his product first */
@@ -255,7 +255,7 @@ contract  WaraCoin is owned, TokenERC20 {
     {
         uint256 amount = 1 * 10 ** uint256(decimals);        
         
-        require(balanceOf[msg.sender]&gt;=amount);   // Need to use one WaraCoin for make product code
+        require(balanceOf[msg.sender]>=amount);   // Need to use one WaraCoin for make product code
         
         Product_genuine storage mine = MyProducts[msg.sender][product_idx];
         
@@ -271,7 +271,7 @@ contract  WaraCoin is owned, TokenERC20 {
         return true;        
     }
     
-    /* If product&#39;s owner want to move, he need to use this fuction for setting receiver : must use by sender */  
+    /* If product's owner want to move, he need to use this fuction for setting receiver : must use by sender */  
     function setMoveProductToWhom(address who_made_this,uint256 product_idx,address moveto) public returns (bool success)
     {
         Product_genuine storage mine = MyProducts[who_made_this][product_idx];
@@ -283,12 +283,12 @@ contract  WaraCoin is owned, TokenERC20 {
         return true;
     }
     
-    /* Product&#39;s buyer need to use this function for save his genuine */
+    /* Product's buyer need to use this function for save his genuine */
     function moveProduct(address who_made_this,address who_have_this,uint256 product_idx) public returns (bool success)
     {
         uint256 amount = 1 * 10 ** uint256(decimals);        
 
-        require(balanceOf[msg.sender]&gt;=amount);   // Need to use one WaraCoin for move product
+        require(balanceOf[msg.sender]>=amount);   // Need to use one WaraCoin for move product
         
         Product_genuine storage mine = MyProducts[who_made_this][product_idx];
         

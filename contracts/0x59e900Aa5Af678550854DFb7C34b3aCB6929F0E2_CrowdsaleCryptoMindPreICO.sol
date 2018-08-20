@@ -12,7 +12,7 @@ contract CrowdsaleCryptoMindPreICO {
     uint public StartCrowdsale;
     uint public price;
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
     
@@ -41,9 +41,9 @@ contract CrowdsaleCryptoMindPreICO {
      */
     function () payable {
         require(!crowdsaleClosed);
-        require(now &gt; StartCrowdsale);
-        require(amountRaised + msg.value &gt; amountRaised);
-        require(amountRaised + msg.value &lt; MaxToken);
+        require(now > StartCrowdsale);
+        require(amountRaised + msg.value > amountRaised);
+        require(amountRaised + msg.value < MaxToken);
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
@@ -51,7 +51,7 @@ contract CrowdsaleCryptoMindPreICO {
         FundTransfer(msg.sender, amount, true);
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -73,7 +73,7 @@ contract CrowdsaleCryptoMindPreICO {
      */
     function safeWithdrawal() afterDeadline {
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+        if (fundingGoalReached && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {

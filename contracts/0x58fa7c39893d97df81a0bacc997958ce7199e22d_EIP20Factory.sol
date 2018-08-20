@@ -50,12 +50,12 @@ contract EIP20Interface {
 contract EIP20 is EIP20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -76,7 +76,7 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -85,10 +85,10 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value);
@@ -112,13 +112,13 @@ contract EIP20 is EIP20Interface {
 
 contract EIP20Factory {
 
-    mapping(address =&gt; address[]) public created;
-    mapping(address =&gt; bool) public isEIP20; //verify without having to do a bytecode check.
+    mapping(address => address[]) public created;
+    mapping(address => bool) public isEIP20; //verify without having to do a bytecode check.
     bytes public EIP20ByteCode; // solhint-disable-line var-name-mixedcase  
 
     function EIP20Factory() public {
         //upon creation of the factory, deploy a EIP20 (parameters are meaningless) and store the bytecode provably.
-        address verifiedToken = createEIP20(10000, &quot;Verify Token&quot;, 3, &quot;VTX&quot;);
+        address verifiedToken = createEIP20(10000, "Verify Token", 3, "VTX");
         EIP20ByteCode = codeAt(verifiedToken);
     }
 
@@ -132,7 +132,7 @@ contract EIP20Factory {
         }
 
       //starting iterating through it if lengths match
-        for (uint i = 0; i &lt; fetchedTokenByteCode.length; i++) {
+        for (uint i = 0; i < fetchedTokenByteCode.length; i++) {
             if (fetchedTokenByteCode[i] != EIP20ByteCode[i]) {
                 return false;
             }
@@ -162,7 +162,7 @@ contract EIP20Factory {
             // allocate output byte array - this could also be done without assembly
             // by using outputCode = new bytes(size)
             outputCode := mload(0x40)
-            // new &quot;memory end&quot; including padding
+            // new "memory end" including padding
             mstore(0x40, add(outputCode, and(add(add(size, 0x20), 0x1f), not(0x1f))))
             // store length in memory
             mstore(outputCode, size)

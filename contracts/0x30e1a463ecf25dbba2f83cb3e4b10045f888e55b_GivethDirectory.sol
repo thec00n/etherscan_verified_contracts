@@ -69,7 +69,7 @@ contract GivethDirectory is Owned {
         address milestoneTracker,
         string extra
     ) onlyOwner {
-        if (idCampaign &gt;= campaigns.length) throw;
+        if (idCampaign >= campaigns.length) throw;
         Campaign c = campaigns[idCampaign];
         c.name = name;
         c.description = description;
@@ -81,7 +81,7 @@ contract GivethDirectory is Owned {
     }
 
     function changeStatus(uint idCampaign, CampaignStatus newStatus) onlyOwner {
-        if (idCampaign &gt;= campaigns.length) throw;
+        if (idCampaign >= campaigns.length) throw;
         Campaign c = campaigns[idCampaign];
         c.status = newStatus;
     }
@@ -96,7 +96,7 @@ contract GivethDirectory is Owned {
         string extra,
         CampaignStatus status
     ) {
-        if (idCampaign &gt;= campaigns.length) throw;
+        if (idCampaign >= campaigns.length) throw;
         Campaign c = campaigns[idCampaign];
         name = c.name;
         description = c.description;

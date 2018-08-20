@@ -241,34 +241,34 @@ contract	DTCC_ILOW_6		{
 										
 										
 // Descriptif					0					
-// Forme juridique					&#171;&#160;Organisation autonome et d&#233;centralis&#233;e&#160;&#187;					
-// D&#233;nomination					&#171;&#160;LAKHTA-ZUG CONNECT&#160;&#187;					
-// Statut					&#171;&#160;D.A.O.&#160;&#187;					
-// Propri&#233;taires &amp; responsables implicites					Le pool d’utilisateurs					
-// Juridiction (i)					Ville de Saint-Petersbourg,  F&#233;d&#233;ration de Russie					
-// Juridiction (ii)					Ville et canton de Zoug / Zug, Conf&#233;d&#233;ration H&#233;lv&#233;tique					
-// instrument mon&#233;taire de r&#233;f&#233;rence (i)					&#171;&#160;ethrub&#160;&#187;					
-// instrument mon&#233;taire de r&#233;f&#233;rence (ii)					&#171;&#160;chfeth&#160;&#187;					
-// instrument mon&#233;taire de r&#233;f&#233;rence (iii)					&#171;&#160;ethbyn&#160;&#187;					
-// devise de r&#233;f&#233;rence (i)					&#171;&#160;RUB&#160;&#187;					
-// devise de r&#233;f&#233;rence (ii)					&#171;&#160;CHF&#160;&#187;					
-// devise de r&#233;f&#233;rence (iii)					&#171;&#160;BYN&#160;&#187;					
-// Date de d&#233;ployement initiale					09/03/2017					
-// Environnement de d&#233;ployement initial					suite protocolaire sur-couche &#171;&#160;88.2&#160;&#187; blockchain BITCOIN					
-// Objet principal (i)					Gestion des activit&#233;s post-march&#233;					
+// Forme juridique					« Organisation autonome et décentralisée »					
+// Dénomination					« LAKHTA-ZUG CONNECT »					
+// Statut					« D.A.O. »					
+// Propriétaires & responsables implicites					Le pool d’utilisateurs					
+// Juridiction (i)					Ville de Saint-Petersbourg,  Fédération de Russie					
+// Juridiction (ii)					Ville et canton de Zoug / Zug, Confédération Hélvétique					
+// instrument monétaire de référence (i)					« ethrub »					
+// instrument monétaire de référence (ii)					« chfeth »					
+// instrument monétaire de référence (iii)					« ethbyn »					
+// devise de référence (i)					« RUB »					
+// devise de référence (ii)					« CHF »					
+// devise de référence (iii)					« BYN »					
+// Date de déployement initiale					09/03/2017					
+// Environnement de déployement initial					suite protocolaire sur-couche « 88.2 » blockchain BITCOIN					
+// Objet principal (i)					Gestion des activités post-marché					
 // Objet principal (ii)					Contrepartie centrale					
 // Objet principal (iii)					Garant					
-// Objet principal (iv)					D&#233;positaire					
+// Objet principal (iv)					Dépositaire					
 // Objet principal (v)					Teneur de compte					
-// Objet principal (vi)					&#171;&#160;Chambre de compensation&#160;&#187;					
-// Objet principal (vii)					Op&#233;rateur &#171;&#160;r&#232;glement-livraison&#160;&#187;					
+// Objet principal (vi)					« Chambre de compensation »					
+// Objet principal (vii)					Opérateur « règlement-livraison »					
 // @ de communication additionnelle (i)					0xa24794106a6be5d644dd9ace9cbb98478ac289f5					
 // @ de communication additionnelle (ii)					0x8580dF106C8fF87911d4c2a9c815fa73CAD1cA38					
 // @ de publication additionnelle (protocole PP, i)					0xf7Aa11C7d092d956FC7Ca08c108a1b2DaEaf3171					
 // @ de publication additionnelle (protocole PP, ii)					0x2Eab17625B3040E02c97cE84bEBEEc8eFA703ce4					
-// Entit&#233; responsable du d&#233;veloppement					Programme d’apprentissage autonome &#171;&#160;KYOKO&#160;&#187; / MS (sign)					
-// Entit&#233; responsable de l’&#233;dition					Programme d’apprentissage autonome &#171;&#160;KYOKO&#160;&#187; / MS (sign)					
-// Entit&#233; responsable deu d&#233;ployement initial					Programme d’apprentissage autonome &#171;&#160;KYOKO&#160;&#187; / MS (sign)					
+// Entité responsable du développement					Programme d’apprentissage autonome « KYOKO » / MS (sign)					
+// Entité responsable de l’édition					Programme d’apprentissage autonome « KYOKO » / MS (sign)					
+// Entité responsable deu déployement initial					Programme d’apprentissage autonome « KYOKO » / MS (sign)					
 										
 										
 }

@@ -31,10 +31,10 @@ contract game is owned{
 //初始設定
     address public tokenAddress = 0x340e85491c5F581360811d0cE5CC7476c72900Ba;
     
-    mapping (address =&gt; uint) readyTime;
+    mapping (address => uint) readyTime;
     uint public amount = 1000*10**18 ;  //*100為10^2，幣為兩位小數
     uint public cooldown = 300;  //冷卻時間(秒)
-    mapping (address =&gt; uint8) record;
+    mapping (address => uint8) record;
 
 //管理權限
     function set_amount(uint new_amount)onlyOwner{
@@ -71,8 +71,8 @@ contract game is owned{
     }
     
     function play_game(uint8 play) internal{
-        require(readyTime[msg.sender] &lt; block.timestamp);
-        require(play &lt;= 2);
+        require(readyTime[msg.sender] < block.timestamp);
+        require(play <= 2);
         
         uint8 comp=uint8(uint(keccak256(block.difficulty, block.timestamp))%3);
         uint8 result = compare(play, comp);
@@ -91,15 +91,15 @@ contract game is owned{
     }
     
     function compare(uint8 player,uint computer) internal returns(uint8 result){
-        // input     0 =&gt; 布   1 =&gt; 剪刀   2 =&gt; 石頭
-        // output    0 =&gt; 輸   1 =&gt; 平手   2 =&gt; 贏
+        // input     0 => 布   1 => 剪刀   2 => 石頭
+        // output    0 => 輸   1 => 平手   2 => 贏
         uint8 _result;
         
-        if (player==0 &amp;&amp; computer==2){  //布贏石頭 (玩家贏)
+        if (player==0 && computer==2){  //布贏石頭 (玩家贏)
             _result = 2;
         }
         
-        else if(player==2 &amp;&amp; computer==0){ //石頭輸布(玩家輸)
+        else if(player==2 && computer==0){ //石頭輸布(玩家輸)
             _result = 0;
         }
         
@@ -108,7 +108,7 @@ contract game is owned{
         }
         
         else{
-            if (player &gt; computer){ //玩家贏 (玩家贏)
+            if (player > computer){ //玩家贏 (玩家贏)
                 _result = 2;
             }
             else{ //玩家輸
@@ -128,34 +128,34 @@ contract game is owned{
     }
     
     function mora(uint8 orig) internal returns(string _mora){
-        // 0 =&gt; 布   1 =&gt; 剪刀   2 =&gt; 石頭
+        // 0 => 布   1 => 剪刀   2 => 石頭
             if (orig == 0){
-                return &quot;paper&quot;;
+                return "paper";
             }
             else if (orig == 1){
-                return &quot;scissors&quot;;
+                return "scissors";
             }
             else if (orig == 2){
-                return &quot;stone&quot;;
+                return "stone";
             }
             else {
-                return &quot;error&quot;;
+                return "error";
             }
         }
         
     function win(uint8 _result) internal returns(string result){
-        // 0 =&gt; 輸   1 =&gt; 平手   2 =&gt; 贏
+        // 0 => 輸   1 => 平手   2 => 贏
         if (_result == 0){
-                return &quot;lose!!&quot;;
+                return "lose!!";
             }
             else if (_result == 1){
-                return &quot;draw~~&quot;;
+                return "draw~~";
             }
             else if (_result == 2){
-                return &quot;win!!!&quot;;
+                return "win!!!";
             }
             else {
-                return &quot;error&quot;;
+                return "error";
             }
     }
     
@@ -175,7 +175,7 @@ contract game is owned{
     }
     
     function view_readyTime(address _address) view public returns(uint _readyTime){
-        if (block.timestamp &gt;= readyTime[_address]){
+        if (block.timestamp >= readyTime[_address]){
         return 0 ;
         }
         else{

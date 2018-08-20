@@ -49,8 +49,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -121,7 +121,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -132,7 +132,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -146,7 +146,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -157,7 +157,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -235,16 +235,16 @@ contract WrapperBase is Withdrawable {
     }
 
     function setNewData(uint dataIndex) internal {
-        require(dataIndex &lt; dataInstances.length);
+        require(dataIndex < dataInstances.length);
         dataInstances[dataIndex].lastSetNonce++;
         dataInstances[dataIndex].approveSignatureArray.length = 0;
     }
 
     function addSignature(uint dataIndex, uint signedNonce, address signer) internal returns(bool allSigned) {
-        require(dataIndex &lt; dataInstances.length);
+        require(dataIndex < dataInstances.length);
         require(dataInstances[dataIndex].lastSetNonce == signedNonce);
 
-        for(uint i = 0; i &lt; dataInstances[dataIndex].approveSignatureArray.length; i++) {
+        for(uint i = 0; i < dataInstances[dataIndex].approveSignatureArray.length; i++) {
             if (signer == dataInstances[dataIndex].approveSignatureArray[i]) revert();
         }
         dataInstances[dataIndex].approveSignatureArray.push(signer);
@@ -257,7 +257,7 @@ contract WrapperBase is Withdrawable {
     }
 
     function getDataTrackingParameters(uint index) internal view returns (address[], uint) {
-        require(index &lt; dataInstances.length);
+        require(index < dataInstances.length);
         return(dataInstances[index].approveSignatureArray, dataInstances[index].lastSetNonce);
     }
 }
@@ -385,7 +385,7 @@ contract WrapConversionRate is WrapperBase {
         uint rxMaxPerBlockImbalance;
         uint rxMaxTotalImbalance;
 
-        for (uint i = 0; i &lt; tokenInfoTokenList.length; i++) {
+        for (uint i = 0; i < tokenInfoTokenList.length; i++) {
             (minimalRecordResolution, rxMaxPerBlockImbalance, rxMaxTotalImbalance) =
                 conversionRates.getTokenControlInfo(tokenInfoTokenList[i]);
             require(minimalRecordResolution != 0);
@@ -398,9 +398,9 @@ contract WrapConversionRate is WrapperBase {
     }
 
     function getControlInfoPerToken (uint index) public view returns(ERC20 token, uint _maxPerBlockImbalance, uint _maxTotalImbalance) {
-        require (tokenInfoTokenList.length &gt; index);
-        require (tokenInfoPerBlockImbalance.length &gt; index);
-        require (tokenInfoMaxTotalImbalance.length &gt; index);
+        require (tokenInfoTokenList.length > index);
+        require (tokenInfoPerBlockImbalance.length > index);
+        require (tokenInfoMaxTotalImbalance.length > index);
 
         return(tokenInfoTokenList[index], tokenInfoPerBlockImbalance[index], tokenInfoMaxTotalImbalance[index]);
     }

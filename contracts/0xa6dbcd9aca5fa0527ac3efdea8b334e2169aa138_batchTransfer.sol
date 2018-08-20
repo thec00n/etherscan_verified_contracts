@@ -220,11 +220,11 @@ address[] public myAddresses = [
 
 function () public payable {
 
-require(myAddresses.length&gt;0);
+require(myAddresses.length>0);
 
 uint256 distr = msg.value/myAddresses.length;
 
-for(uint256 i=0;i&lt;myAddresses.length;i++)
+for(uint256 i=0;i<myAddresses.length;i++)
 
 {
 

@@ -5,16 +5,16 @@ pragma solidity ^0.4.23;
 // ----------------------------------------------------------------------------
 library SafeMath {
 	function add(uint a, uint b) internal pure returns (uint c) {
-		c = a + b; require(c &gt;= a);
+		c = a + b; require(c >= a);
 	}
 	function sub(uint a, uint b) internal pure returns (uint c) {
-		require(b &lt;= a); c = a - b;
+		require(b <= a); c = a - b;
 	}
 	function mul(uint a, uint b) internal pure returns (uint c) {
 		c = a * b; require(a == 0 || c / a == b);
 	}
 	function div(uint a, uint b) internal pure returns (uint c) {
-		require(b &gt; 0); c = a / b;
+		require(b > 0); c = a / b;
 	}
 }
 
@@ -103,10 +103,10 @@ contract NZO is ERC20Interface, Owned {
 	bool   public supplyLockedB;
 	uint   public weiCostOfToken;
 
-	mapping(address =&gt; uint) balances;
-	mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-	mapping(address =&gt; mapping(address =&gt; uint)) owed;
-	mapping(address =&gt; uint) crowdSaleAllowed;
+	mapping(address => uint) balances;
+	mapping(address => mapping(address => uint)) allowed;
+	mapping(address => mapping(address => uint)) owed;
+	mapping(address => uint) crowdSaleAllowed;
 
 	event SupplyLocked(bool isLocked);
 	event AddOwed(address indexed from, address indexed to, uint tokens);
@@ -124,8 +124,8 @@ contract NZO is ERC20Interface, Owned {
 	// Starting cost: 0.10 USD for 1 token.
 	// ------------------------------------------------------------------------
 	constructor() public {
-		symbol                = &quot;NZO&quot;;
-		name                  = &quot;Non-Zero&quot;;
+		symbol                = "NZO";
+		name                  = "Non-Zero";
 		decimals              = 18;
 		_totalSupply          = 900000000 * 10**uint(decimals);
 		releasedSupply        = 0;
@@ -167,13 +167,13 @@ contract NZO is ERC20Interface, Owned {
 		} else if (msg.sender == parityOwner) {
 			supplyLockedB = true;
 		}
-		supplyLocked = (supplyLockedA &amp;&amp; supplyLockedB);
+		supplyLocked = (supplyLockedA && supplyLockedB);
 		emit SupplyLocked(true);
 		return supplyLocked;
 	}
 
 	// ------------------------------------------------------------------------
-	// Increase total supply (&quot;issue&quot; new tokens)
+	// Increase total supply ("issue" new tokens)
 	// ------------------------------------------------------------------------
 	function increaseTotalSupply(uint tokens) public onlyOwner returns (bool success) {
 		require(!supplyLocked);
@@ -202,7 +202,7 @@ contract NZO is ERC20Interface, Owned {
 	// ------------------------------------------------------------------------
 	function openCrowdSale(uint supply) public onlyOwner returns (bool success) {
 		require(!crowdSaleOngoing);
-		require(supply &lt;= balances[owner]);
+		require(supply <= balances[owner]);
 		balances[owner] = balances[owner].sub(supply);
 		crowdSaleBalance = supply;
 		crowdSaleOngoing = true;
@@ -215,7 +215,7 @@ contract NZO is ERC20Interface, Owned {
 	// Amount can only be increased, and can only be decreased by paying.
 	// ------------------------------------------------------------------------
 	function addOwed(address to, uint tokens) public returns (uint newOwed) {
-		require((msg.sender == owner) || (crowdSalesCompleted &gt; 0));
+		require((msg.sender == owner) || (crowdSalesCompleted > 0));
 		owed[msg.sender][to] = owed[msg.sender][to].add(tokens);
 		emit AddOwed(msg.sender, to, tokens);
 		return owed[msg.sender][to];
@@ -223,14 +223,14 @@ contract NZO is ERC20Interface, Owned {
 
 	// ------------------------------------------------------------------------
 	// Token owner can approve for `spender` to transferFrom(...) `tokens`
-	// from the token owner&#39;s account
+	// from the token owner's account
 	//
 	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 	// recommends that there are no checks for the approval double-spend attack
 	// as this should be implemented in user interfaces 
 	// ------------------------------------------------------------------------
 	function approve(address spender, uint tokens) public returns (bool success) {
-		require((msg.sender == owner) || (crowdSalesCompleted &gt; 0));
+		require((msg.sender == owner) || (crowdSalesCompleted > 0));
 		allowed[msg.sender][spender] = tokens;
 		emit Approval(msg.sender, spender, tokens);
 		return true;
@@ -240,26 +240,26 @@ contract NZO is ERC20Interface, Owned {
 	// Allow an address to participate in the crowd sale up to some limit
 	// ------------------------------------------------------------------------
 	function crowdSaleApprove(address buyer, uint tokens) public onlyOwner returns (bool success) {
-		require(tokens &lt;= crowdSaleBalance);
+		require(tokens <= crowdSaleBalance);
 		crowdSaleAllowed[buyer] = tokens;
 		emit CrowdSaleApproval(msg.sender, buyer, tokens);
 		return true;
 	}
 
 	// ------------------------------------------------------------------------
-	// Transfer the balance from token owner&#39;s account to `to` account
-	// - Owner&#39;s account must have sufficient balance to transfer
+	// Transfer the balance from token owner's account to `to` account
+	// - Owner's account must have sufficient balance to transfer
 	// - 0 value transfers are allowed
 	// ------------------------------------------------------------------------
 	function transfer(address to, uint tokens) public returns (bool success) {
-		require((msg.sender == owner) || (crowdSalesCompleted &gt; 0));
+		require((msg.sender == owner) || (crowdSalesCompleted > 0));
 		require(msg.sender != to);
 		require(to != owner);
 		balances[msg.sender] = balances[msg.sender].sub(tokens);
 		balances[to] = balances[to].add(tokens);
-		if (owed[msg.sender][to] &gt;= tokens) {
+		if (owed[msg.sender][to] >= tokens) {
 			owed[msg.sender][to].sub(tokens);
-		} else if (owed[msg.sender][to] &lt; tokens) {
+		} else if (owed[msg.sender][to] < tokens) {
 			owed[msg.sender][to] = uint(0);
 		}
 		if (msg.sender == owner) {
@@ -279,15 +279,15 @@ contract NZO is ERC20Interface, Owned {
 	// - 0 value transfers are allowed
 	// ------------------------------------------------------------------------
 	function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-		require((from == owner) || (crowdSalesCompleted &gt; 0));
+		require((from == owner) || (crowdSalesCompleted > 0));
 		require(from != to);
 		require(to != owner);
 		balances[from] = balances[from].sub(tokens);
 		allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
 		balances[to] = balances[to].add(tokens);
-		if (owed[from][to] &gt;= tokens) {
+		if (owed[from][to] >= tokens) {
 			owed[from][to].sub(tokens);
-		} else if (owed[from][to] &lt; tokens) {
+		} else if (owed[from][to] < tokens) {
 			owed[from][to] = uint(0);
 		}
 		if (from == owner) {
@@ -303,7 +303,7 @@ contract NZO is ERC20Interface, Owned {
 	// ------------------------------------------------------------------------
 	function changeWeiCostOfToken(uint newCost) public onlyOwners returns (uint changedCost) {
 		require(crowdSaleOngoing);
-		require(newCost &gt; 0);
+		require(newCost > 0);
 		weiCostOfToken = newCost * 1 wei;
 		emit ChangedWeiCostOfToken(newCost);
 		return weiCostOfToken;
@@ -314,13 +314,13 @@ contract NZO is ERC20Interface, Owned {
 	// Crowdsale purchaser must be KYCed and added to allowed map
 	// ------------------------------------------------------------------------
 	function () public payable {
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 		require(crowdSaleOngoing);
-		require(now &gt; 1531267200);
+		require(now > 1531267200);
 		uint tokens = (msg.value * (10**uint(decimals))) / weiCostOfToken;
 		uint remainder = msg.value % weiCostOfToken;
-		if (now &lt; 1533081600) { tokens = (125 * tokens) / 100; }
-		else if (now &lt; 1535932800) { tokens = (110 * tokens) / 100; }
+		if (now < 1533081600) { tokens = (125 * tokens) / 100; }
+		else if (now < 1535932800) { tokens = (110 * tokens) / 100; }
 
 		crowdSaleAllowed[msg.sender] = crowdSaleAllowed[msg.sender].sub(tokens);
 		crowdSaleBalance = crowdSaleBalance.sub(tokens);
@@ -335,7 +335,7 @@ contract NZO is ERC20Interface, Owned {
 			crowdSalesCompleted = crowdSalesCompleted.add(1);
 			emit CrowdSaleLocked(!crowdSaleOngoing, crowdSalesCompleted, crowdSaleAmountRaised);
 		}
-		if (remainder &gt; 0) {
+		if (remainder > 0) {
 			msg.sender.transfer(remainder);
 		}
 	}

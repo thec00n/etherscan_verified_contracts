@@ -12,31 +12,31 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns(uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract EtherByte {
     using SafeMath
     for uint256;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => uint256) balances;
     uint256 public totalSupply = 500000000;
     uint256 public decimals = 2;
     address public owner = 0x4e2E901D7Be5C2a3F86a475Ff9681E9229421E58;
-    bytes32 public symbol = &#39;EBX&#39;;
+    bytes32 public symbol = 'EBX';
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed _owner, address indexed spender, uint256 value);
 
     function EtherByte() {
         totalSupply = 500000000;
-        symbol = &#39;EBX&#39;;
+        symbol = 'EBX';
         owner = 0x4e2E901D7Be5C2a3F86a475Ff9681E9229421E58;
         balances[owner] = totalSupply;
         decimals = 2;

@@ -7,15 +7,15 @@ contract Math
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -23,10 +23,10 @@ contract Math
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 }
 
@@ -45,7 +45,7 @@ contract Grass is Math
       return (tokenPriceHistory[today] == 0)?currentTokenPriceInDollar:tokenPriceHistory[today];
   }
 
-  mapping(uint256 =&gt; uint256) public tokenPriceHistory;
+  mapping(uint256 => uint256) public tokenPriceHistory;
   struct ExtraTokensInfo
   {
     uint256 timestamp;
@@ -64,10 +64,10 @@ contract Grass is Math
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
-  // address =&gt; day =&gt; amount
-  mapping(address =&gt; mapping(uint256 =&gt; TokenInfo)) timeTable;
-  mapping(address =&gt; mapping(uint256 =&gt; uint256)) bonuses;
-  mapping (address =&gt; uint256) public balances;
+  // address => day => amount
+  mapping(address => mapping(uint256 => TokenInfo)) timeTable;
+  mapping(address => mapping(uint256 => uint256)) bonuses;
+  mapping (address => uint256) public balances;
   uint256 public totalSupply;
 
   string public name;
@@ -88,7 +88,7 @@ contract Grass is Math
   }
 
   address owner;
-  mapping(address =&gt; bool) admins;
+  mapping(address => bool) admins;
   modifier onlyAdmin()
   {
       assert(admins[msg.sender] == true || msg.sender == owner);
@@ -115,9 +115,9 @@ contract Grass is Math
     owner = msg.sender;
     admins[msg.sender] = true;
     totalSupply = 0;
-    name = &#39;GRASS Token&#39;;
+    name = 'GRASS Token';
     decimals = 18;
-    symbol = &#39;GRASS&#39;;
+    symbol = 'GRASS';
     availableTokens = 800 * 10**18;
     currentTokenPriceInDollar = 35 * 100; // 35.00$ (price may change)
 
@@ -145,7 +145,7 @@ contract Grass is Math
 
   modifier isEtherPriceUpdated()
   {
-      require(now - lastUpdateEtherPrice &lt; 24 hours);
+      require(now - lastUpdateEtherPrice < 24 hours);
       _;
   }
 
@@ -181,15 +181,15 @@ contract Grass is Math
 
   function partnerWithdraw () isInitialized public
   {
-    assert (partners[msg.sender] &gt; 0);
+    assert (partners[msg.sender] > 0);
     uint256 ethToWidthdraw = partners[msg.sender];
     partners[msg.sender] = 0;
     msg.sender.transfer(ethToWidthdraw);
   }
 
-  mapping(address =&gt; uint256) partners;
-  // refferal =&gt; partner
-  mapping(address =&gt; address) referrals;
+  mapping(address => uint256) partners;
+  // refferal => partner
+  mapping(address => address) referrals;
 
   function takeEther(address dest, uint256 amount) onlyAdmin public
   {
@@ -202,7 +202,7 @@ contract Grass is Math
 
   function buyWithPromo(address partner) isEtherPriceUpdated canBuy isInitialized payable public
   {
-      if (referrals[msg.sender] == 0 &amp;&amp; partner != msg.sender)
+      if (referrals[msg.sender] == 0 && partner != msg.sender)
       {
         referrals[msg.sender] = partner;
       }
@@ -225,13 +225,13 @@ contract Grass is Math
 
     // timeTable
     uint256 amount = msg.value * etherPriceInDollarIn / tokenPriceHistory[today] ;
-    if (amount &gt; availableTokens)
+    if (amount > availableTokens)
     {
        addr.transfer((amount - availableTokens) * tokenPriceHistory[today] / etherPriceInDollarIn);
        amount = availableTokens;
     }
 
-    assert(amount &gt; 0);
+    assert(amount > 0);
 
     availableTokens = sub(availableTokens, amount);
 
@@ -245,8 +245,8 @@ contract Grass is Math
       timeTable[addr][today].amount += amount;
     }
 
-    //                  &lt; 30.03.2018
-    if (block.timestamp &lt; 1522357200 &amp;&amp; bonuses[addr][today] == 0)
+    //                  < 30.03.2018
+    if (block.timestamp < 1522357200 && bonuses[addr][today] == 0)
     {
       bonuses[addr][today] = 1;
     }
@@ -259,21 +259,21 @@ contract Grass is Math
   function calculateProfit (uint256 day) public constant returns(int256)
   {
     uint256 today = getToday();
-    assert(today &gt;= day);
+    assert(today >= day);
     uint256 daysLeft = today - day;
     int256 extraProfit = 0;
 
     // is referral ?
     if (referrals[msg.sender] != 0) extraProfit++;
     // participant until March 30
-    if (bonuses[msg.sender][day] &gt; 0) extraProfit++;
+    if (bonuses[msg.sender][day] > 0) extraProfit++;
 
-    if (daysLeft &lt;= 7) return -10;
-    if (daysLeft &lt;= 14) return -5;
-    if (daysLeft &lt;= 21) return 1 + extraProfit;
-    if (daysLeft &lt;= 28) return 3 + extraProfit;
-    if (daysLeft &lt;= 60) return 5 + extraProfit;
-    if (daysLeft &lt;= 90) return 12 + extraProfit;
+    if (daysLeft <= 7) return -10;
+    if (daysLeft <= 14) return -5;
+    if (daysLeft <= 21) return 1 + extraProfit;
+    if (daysLeft <= 28) return 3 + extraProfit;
+    if (daysLeft <= 60) return 5 + extraProfit;
+    if (daysLeft <= 90) return 12 + extraProfit;
     return 18 + extraProfit;
   }
 
@@ -285,12 +285,12 @@ contract Grass is Math
   // returns amount, ether
   function getProfitForDay(uint256 day, uint256 amount) isEtherPriceUpdated public constant returns(uint256, uint256)
   {
-    assert (day &lt;= getToday());
+    assert (day <= getToday());
 
     uint256 tokenPrice = tokenPriceHistory[day];
-    if (timeTable[msg.sender][day].amount &lt; amount) amount = timeTable[msg.sender][day].amount;
+    if (timeTable[msg.sender][day].amount < amount) amount = timeTable[msg.sender][day].amount;
 
-    assert (amount &gt; 0);
+    assert (amount > 0);
 
     return (amount, amount * tokenPrice * uint256(100 + calculateProfit(day)) / 100 / etherPriceInDollarOut);
   }
@@ -300,9 +300,9 @@ contract Grass is Math
     assert (addr.length == _days.length);
 
     TokenInfo storage info;
-    for(uint256 i = 0; i &lt; addr.length;i++)
+    for(uint256 i = 0; i < addr.length;i++)
     {
-      assert(_days[i] + 92 &lt; getToday() &amp;&amp; info.amount &gt; 0);
+      assert(_days[i] + 92 < getToday() && info.amount > 0);
       info = timeTable[addr[i]][_days[i]];
       info.isReturnedInPool = true;
       availableTokens = add(availableTokens, info.amount);
@@ -314,9 +314,9 @@ contract Grass is Math
       if (addr == 0) addr = msg.sender;
 
       uint256 j = 0;
-      for(uint256 iDay = start; iDay &lt; end; iDay++)
+      for(uint256 iDay = start; iDay < end; iDay++)
       {
-        if (timeTable[addr][iDay].amount &gt; 0)
+        if (timeTable[addr][iDay].amount > 0)
         {
           _days[j] = iDay;
           _profits[j] = calculateProfit(iDay);
@@ -334,8 +334,8 @@ contract Grass is Math
     uint256 etherAmount;
     (tokensAmount, etherAmount) = getProfitForDay(day, userTokensAmount);
 
-    require(day &gt; 0);
-    require(balances[msg.sender] &gt;= tokensAmount);
+    require(day > 0);
+    require(balances[msg.sender] >= tokensAmount);
 
     balances[msg.sender] = sub(balances[msg.sender], tokensAmount);
     totalSupply = sub(totalSupply, tokensAmount);
@@ -354,7 +354,7 @@ contract Grass is Math
   {
     uint256 size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
   bool public initialized = false;
@@ -435,7 +435,7 @@ contract Grass is Math
         availableTokens = availableTokens - totalSupply;
         
         uint256 today = getToday();
-        for(uint256 j=17614;j &lt;= today;j++)
+        for(uint256 j=17614;j <= today;j++)
         {
             tokenPriceHistory[j] = currentTokenPriceInDollar;
         }
@@ -443,12 +443,12 @@ contract Grass is Math
     else
     {
         uint8 start = balancesTransferred;
-        for(uint8 i=start; i &lt; start+30; i++)
+        for(uint8 i=start; i < start+30; i++)
         {
-            assert(addr[i] != 0 &amp;&amp; _days[i] !=0 &amp;&amp; _amounts[i] !=0);
+            assert(addr[i] != 0 && _days[i] !=0 && _amounts[i] !=0);
             timeTable[addr[i]][_days[i]] = TokenInfo(_amounts[i], false);
             emit Transfer(0, addr[i], _amounts[i]);
-            if (_days[i] &lt; 17620 &amp;&amp; bonuses[addr[i]][_days[i]] == 0)
+            if (_days[i] < 17620 && bonuses[addr[i]][_days[i]] == 0)
             {
                 bonuses[addr[i]][_days[i]] = 1;
             }

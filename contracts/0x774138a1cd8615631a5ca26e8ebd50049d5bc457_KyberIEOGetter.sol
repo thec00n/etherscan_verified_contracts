@@ -20,8 +20,8 @@ contract PermissionGroups {
 
     address public admin;
     address public pendingAdmin;
-    mapping(address=&gt;bool) internal operators;
-    mapping(address=&gt;bool) internal alerters;
+    mapping(address=>bool) internal operators;
+    mapping(address=>bool) internal alerters;
     address[] internal operatorsGroup;
     address[] internal alertersGroup;
     uint constant internal MAX_GROUP_SIZE = 50;
@@ -92,7 +92,7 @@ contract PermissionGroups {
 
     function addAlerter(address newAlerter) public onlyAdmin {
         require(!alerters[newAlerter]); // prevent duplicates.
-        require(alertersGroup.length &lt; MAX_GROUP_SIZE);
+        require(alertersGroup.length < MAX_GROUP_SIZE);
 
         emit AlerterAdded(newAlerter, true);
         alerters[newAlerter] = true;
@@ -103,7 +103,7 @@ contract PermissionGroups {
         require(alerters[alerter]);
         alerters[alerter] = false;
 
-        for (uint i = 0; i &lt; alertersGroup.length; ++i) {
+        for (uint i = 0; i < alertersGroup.length; ++i) {
             if (alertersGroup[i] == alerter) {
                 alertersGroup[i] = alertersGroup[alertersGroup.length - 1];
                 alertersGroup.length--;
@@ -117,7 +117,7 @@ contract PermissionGroups {
 
     function addOperator(address newOperator) public onlyAdmin {
         require(!operators[newOperator]); // prevent duplicates.
-        require(operatorsGroup.length &lt; MAX_GROUP_SIZE);
+        require(operatorsGroup.length < MAX_GROUP_SIZE);
 
         emit OperatorAdded(newOperator, true);
         operators[newOperator] = true;
@@ -128,7 +128,7 @@ contract PermissionGroups {
         require(operators[operator]);
         operators[operator] = false;
 
-        for (uint i = 0; i &lt; operatorsGroup.length; ++i) {
+        for (uint i = 0; i < operatorsGroup.length; ++i) {
             if (operatorsGroup[i] == operator) {
                 operatorsGroup[i] = operatorsGroup[operatorsGroup.length - 1];
                 operatorsGroup.length -= 1;
@@ -197,9 +197,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -207,7 +207,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -216,7 +216,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -234,8 +234,8 @@ contract IEORate is Withdrawable {
     event RateSet (uint rateNumerator, uint rateDenominator, address sender);
 
     function setRateEthToToken(uint rateNumerator, uint rateDenominator) public onlyOperator {
-        require(rateNumerator &gt; 0);
-        require(rateDenominator &gt; 0);
+        require(rateNumerator > 0);
+        require(rateDenominator > 0);
 
         ethToTokenNumerator = rateNumerator;
         ethToTokenDenominator = rateDenominator;
@@ -255,7 +255,7 @@ contract IEORate is Withdrawable {
 //          First phase is capped IEO where each contributor can contribute up to capped amount.
 //          Second phase will be open for unlimited contributions that are blocked only by amount of tokens.
 contract CapManager is Withdrawable {
-    mapping(uint=&gt;uint) public participatedWei;
+    mapping(uint=>uint) public participatedWei;
     uint public contributorCapWei;
     uint internal IEOId; //uinque ID will be part of hash
     uint constant public MAX_PURCHASE_WEI = uint(-1);
@@ -274,9 +274,9 @@ contract CapManager is Withdrawable {
         Withdrawable(_admin)
         public
     {
-        require(_cappedIEOTime &gt;= now); // solium-disable-line security/no-block-members
-        require(_cappedIEOTime &lt;= _openIEOTime);
-        require(_openIEOTime &lt;= _endIEOTime);
+        require(_cappedIEOTime >= now); // solium-disable-line security/no-block-members
+        require(_cappedIEOTime <= _openIEOTime);
+        require(_openIEOTime <= _endIEOTime);
         require(_IEOId != 0);
 
         contributorCapWei = _contributorCapWei;
@@ -288,7 +288,7 @@ contract CapManager is Withdrawable {
 
     //@dev  getContributorRemainingCap returns remaining cap for a contributor
     //      Assuming that contributor has passed KYC process = is allowed to participate.
-    //      If contributor hasn&quot;t participated - it will return full cap according to IEO stage (capped / open / close).
+    //      If contributor hasn"t participated - it will return full cap according to IEO stage (capped / open / close).
     //      If contributor already participated. when IEO in capped stage, will return contributor cap less previous
     //        participation. if open contribute stage will return max cap.
     //        notice the participation amount will still be blocked by token balance of this contract.
@@ -299,14 +299,14 @@ contract CapManager is Withdrawable {
         if (openIEOStarted()) {
             capWei = MAX_PURCHASE_WEI;
         } else {
-            if (participatedWei[userId] &gt;= contributorCapWei) capWei = 0;
+            if (participatedWei[userId] >= contributorCapWei) capWei = 0;
             else capWei = contributorCapWei.sub(participatedWei[userId]);
         }
     }
 
     function eligible(uint userID, uint amountWei) public view returns(uint) {
         uint remainingCap = getContributorRemainingCap(userID);
-        if (amountWei &gt; remainingCap) return remainingCap;
+        if (amountWei > remainingCap) return remainingCap;
         return amountWei;
     }
 
@@ -317,15 +317,15 @@ contract CapManager is Withdrawable {
     }
 
     function IEOStarted() public view returns(bool) {
-        return (now &gt;= cappedIEOStartTime); // solium-disable-line security/no-block-members
+        return (now >= cappedIEOStartTime); // solium-disable-line security/no-block-members
     }
 
     function openIEOStarted() public view returns(bool) {
-        return (now &gt;= openIEOStartTime); // solium-disable-line security/no-block-members
+        return (now >= openIEOStartTime); // solium-disable-line security/no-block-members
     }
 
     function IEOEnded() public view returns(bool) {
-        return (now &gt;= endIEOTime); // solium-disable-line security/no-block-members
+        return (now >= endIEOTime); // solium-disable-line security/no-block-members
     }
 
     function validateContributor(address contributor, uint userId, uint8 v, bytes32 r, bytes32 s) public view returns(bool) {
@@ -362,7 +362,7 @@ interface KyberIEOInterface {
 // File: contracts/KyberIEO.sol
 
 contract KyberIEO is KyberIEOInterface, CapManager {
-    mapping(address=&gt;bool) public whiteListedAddresses;
+    mapping(address=>bool) public whiteListedAddresses;
     ERC20 public token;
     uint  public raisedWei;
     uint  public distributedTokensTwei;
@@ -412,18 +412,18 @@ contract KyberIEO is KyberIEOInterface, CapManager {
         uint rateNumerator;
         uint rateDenominator;
         (rateNumerator, rateDenominator) = IEORateContract.getRate();
-        require(rateNumerator &gt; 0);
-        require(rateDenominator &gt; 0);
+        require(rateNumerator > 0);
+        require(rateDenominator > 0);
         require(validateContributor(contributor, userId, v, r, s));
 
         uint weiPayment = eligibleCheckAndIncrement(userId, msg.value);
-        require(weiPayment &gt; 0);
+        require(weiPayment > 0);
 
         uint tokenQty = weiPayment.mul(rateNumerator).div(rateDenominator);
-        require(tokenQty &gt; 0);
+        require(tokenQty > 0);
 
         // send remaining wei to msg.sender, not to contributor
-        if(msg.value &gt; weiPayment) {
+        if(msg.value > weiPayment) {
             msg.sender.transfer(msg.value.sub(weiPayment));
         }
 
@@ -508,7 +508,7 @@ contract KyberIEOGetter {
         tokenDecimalsPerIEO = new uint[](IEOs.length);
         totalSupplyPerIEO = new uint[](IEOs.length);
 
-        for(uint i = 0; i &lt; IEOs.length; i++) {
+        for(uint i = 0; i < IEOs.length; i++) {
             distributedTweiPerIEO[i] = IEOs[i].distributedTokensTwei();
             tokenBalancePerIEO[i] = IEOs[i].token().balanceOf(address(IEOs[i]));
             tokenAddressPerIEO[i] = IEOs[i].token();

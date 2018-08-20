@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -30,16 +30,16 @@ contract ERC20 {
 	using SafeMath for uint256;
 	uint256 public totalSupply;
 	address public contractHolder;
-	string public constant name = &quot;LITMUS&quot;;
-	string public constant symbol = &quot;LIT&quot;;
+	string public constant name = "LITMUS";
+	string public constant symbol = "LIT";
 	uint8 public constant decimals = 0;
 	
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 	event Approval(address indexed owner, address indexed spender, uint256 value);
 	
-	mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) internal allowed;
 	
 
 	function ERC20 (){
@@ -105,7 +105,7 @@ contract ERC20 {
 
 	function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -133,7 +133,7 @@ contract LitmusCrowdsale {
 	address public issuer;
 	
     ERC20 public token;
-	mapping (address =&gt; uint256) contributions;
+	mapping (address => uint256) contributions;
 	event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 	
 	function LitmusCrowdsale (){	
@@ -151,37 +151,37 @@ contract LitmusCrowdsale {
 	}
     
 	function timeElapsed() internal constant returns (bool) {
-	bool assertTime = now &gt; endTime;
+	bool assertTime = now > endTime;
 	return assertTime;
 	}
 	
 	
     function goalReached() internal constant returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
 	}
 	
 	function icoFunded() internal constant returns (bool) {
-    bool softCap = goalReached() &amp;&amp; timeElapsed();
-	bool hardCap = weiRaised &gt;= cap;
+    bool softCap = goalReached() && timeElapsed();
+	bool hardCap = weiRaised >= cap;
 	return softCap || hardCap;
 	}
 	
 	function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-	bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return withinPeriod &amp;&amp; withinCap;
+    bool withinPeriod = now >= startTime && now <= endTime;
+	bool withinCap = weiRaised.add(msg.value) <= cap;
+    return withinPeriod && withinCap;
 	}
 	
 	function accruedBonus(uint256 senderWei, uint256 _tokens) internal constant returns (uint256 bonus) {
     require(_tokens != 0);
-	if (now &lt;= bonusTime || senderWei &gt;= 1 ether) {
+	if (now <= bonusTime || senderWei >= 1 ether) {
 		return _tokens.div(20);
 		}
 		return 0;
 	}
 	
 	function buyTokens() public payable {
-    require(msg.value &gt;= 50 finney);
+    require(msg.value >= 50 finney);
 	require(validPurchase());
 	address backer =  msg.sender;
     uint256 weiAmount = msg.value;
@@ -194,10 +194,10 @@ contract LitmusCrowdsale {
     }
 	
 	function claimRefund() public {
-	require(!goalReached() &amp;&amp; timeElapsed());		
+	require(!goalReached() && timeElapsed());		
 	address investor = msg.sender;
 	uint256 invested = contributions[investor];
-	require(invested &gt; 0);
+	require(invested > 0);
 	contributions[investor] = 0;
 	investor.transfer(invested);
 	}
@@ -214,7 +214,7 @@ contract LitmusCrowdsale {
 	}
 	
 	function mop() ifIssuer public {
-	require(now &gt; endTime + 31 days);
+	require(now > endTime + 31 days);
 	issuer.transfer(this.balance);
 	} 
     

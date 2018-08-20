@@ -1,11 +1,11 @@
-/* Copyright (C) Etherplay &lt;<span class="__cf_email__" data-cfemail="87e4e8e9f3e6e4f3c7e2f3efe2f5f7ebe6fea9eee8">[email&#160;protected]</span>&gt; - All Rights Reserved */
+/* Copyright (C) Etherplay <<span class="__cf_email__" data-cfemail="87e4e8e9f3e6e4f3c7e2f3efe2f5f7ebe6fea9eee8">[email protected]</span>> - All Rights Reserved */
 pragma solidity 0.4.4;
 
 contract CompetitionStore {
 	
 /////////////////////////////////////////////////////////////////// DATA /////////////////////////////////////////////////////////////
 	
-	//player&#39;s submission store the info required to verify its accuracy
+	//player's submission store the info required to verify its accuracy
 	struct Submission{
 		uint32 score; 
 		uint32 durationRoundedDown; // duration in second of the game session
@@ -28,7 +28,7 @@ contract CompetitionStore {
 		uint8 numPastBlocks;// number of past block allowed, 1 is the minimum since you can only get the hash of a past block. Allow player to start play instantunously
 		uint8 houseDivider; // how much the house takes : 4 means house take 1/4 (25%)
 		uint16 lag; // define how much extra time is allowed to submit a score (to accomodate block time and delays)
-		uint32 verificationWaitTime;// wait time allowed for submission past competition&#39;s end time 
+		uint32 verificationWaitTime;// wait time allowed for submission past competition's end time 
 		uint32 numPlayers;//current number of player that submited a score
 		uint32 version; //the version of the game used for that competition, a hash of the code is published in the log upon changing
 		uint32 previousVersion; // previousVersion to allow smooth update upon version change
@@ -38,17 +38,17 @@ contract CompetitionStore {
 		uint88 price;  // the price for that competition, do not change 
 		uint128 jackpot; // the current jackpot for that competition, this jackpot is then shared among the developer (in the deposit account for  funding development) and the winners (see houseDivider))
 		uint32[] rewardsDistribution; // the length of it define how many winners there is and the distribution of the reward is the value for each index divided by the total
-		mapping (address =&gt; Submission) submissions;  //only one submission per player per competition
+		mapping (address => Submission) submissions;  //only one submission per player per competition
 		address[] players; // contain the list of players that submited a score for that competition
 	}
 		
 	struct Game{
-		mapping (address =&gt; Start) starts; // only 1 start per player, further override the current
+		mapping (address => Start) starts; // only 1 start per player, further override the current
 		Competition[2] competitions; // 2 competitions only to save gas, overrite each other upon going to next competition
 		uint8 currentCompetitionIndex; //can only be 1 or 0 (switch operation : 1 - currentCompetitionIndex)
 	}
 
-	mapping (string =&gt; Game) games;
+	mapping (string => Game) games;
 	
 	address organiser; // admin having control of the reward 
 	address depositAccount;	 // is the receiver of the house part of the jackpot (see houseDivider) Can only be changed by the depositAccount.
@@ -98,7 +98,7 @@ contract CompetitionStore {
 		price = competition.price;
 		competitionBlockNumber = competition.switchBlockNumber;
 		
-		if (competition.submissions[player].submitBlockNumber &gt;= competition.switchBlockNumber){
+		if (competition.submissions[player].submitBlockNumber >= competition.switchBlockNumber){
 			myBestScore = competition.submissions[player].score;
 		}else{
 			myBestScore = 0;
@@ -118,13 +118,13 @@ contract CompetitionStore {
 		}
 
 		if(
-			competition.endTime &lt;= now || //block play when time is up 
+			competition.endTime <= now || //block play when time is up 
 			competitionIndex != game.currentCompetitionIndex || //start happen just after a switch // should not be possible since endTime already ensure that a new competition cannot start before the end of the first
-			version != competition.version &amp;&amp; (version != competition.previousVersion || block.number &gt; competition.versionChangeBlockNumber) || //ensure version is same as current (or previous if versionChangeBlockNumber is recent)
-			block.number &gt;= competition.numPastBlocks &amp;&amp; block.number - competition.numPastBlocks &gt; blockNumber //ensure start is not too old   
+			version != competition.version && (version != competition.previousVersion || block.number > competition.versionChangeBlockNumber) || //ensure version is same as current (or previous if versionChangeBlockNumber is recent)
+			block.number >= competition.numPastBlocks && block.number - competition.numPastBlocks > blockNumber //ensure start is not too old   
 			){
 				//if ether was sent, send it back if possible, else throw
-				if(msg.value != 0 &amp;&amp; !msg.sender.send(msg.value)){
+				if(msg.value != 0 && !msg.sender.send(msg.value)){
 					throw;
 				}
 				return;
@@ -154,28 +154,28 @@ contract CompetitionStore {
 		var competition = game.competitions[gameStart.competitionIndex];
 		
 		// game should not take too long to be submited
-		if(now - gameStart.time &gt; durationRoundedDown + competition.lag){ 
+		if(now - gameStart.time > durationRoundedDown + competition.lag){ 
 			return;
 		}
 
-		if(now &gt;= competition.endTime + competition.verificationWaitTime){
-			return; //this ensure verifier to get all the score at that time (should never be there though as game should ensure a maximumTime &lt; verificationWaitTime)
+		if(now >= competition.endTime + competition.verificationWaitTime){
+			return; //this ensure verifier to get all the score at that time (should never be there though as game should ensure a maximumTime < verificationWaitTime)
 		}
 		
 		var submission = competition.submissions[msg.sender];
-		if(submission.submitBlockNumber &lt; competition.switchBlockNumber){
-			if(competition.numPlayers &gt;= 4294967295){ //unlikely but if that happen this is for now the best place to stop
+		if(submission.submitBlockNumber < competition.switchBlockNumber){
+			if(competition.numPlayers >= 4294967295){ //unlikely but if that happen this is for now the best place to stop
 				return;
 			}
-		}else if (score &lt;= submission.score){
+		}else if (score <= submission.score){
 			return;
 		}
 		
 		var players = competition.players;
-		//if player did not submit score yet =&gt; add player to list
-		if(submission.submitBlockNumber &lt; competition.switchBlockNumber){
+		//if player did not submit score yet => add player to list
+		if(submission.submitBlockNumber < competition.switchBlockNumber){
 			var currentNumPlayer = competition.numPlayers;
-			if(currentNumPlayer &gt;= players.length){
+			if(currentNumPlayer >= players.length){
 				players.push(msg.sender);
 			}else{
 				players[currentNumPlayer] = msg.sender;
@@ -222,12 +222,12 @@ contract CompetitionStore {
 		var newCompetition = game.competitions[1 - game.currentCompetitionIndex]; 
 		var currentCompetition = game.competitions[game.currentCompetitionIndex];
 		//do not allow to switch if endTime is not over
-		if(currentCompetition.endTime &gt;= now){
+		if(currentCompetition.endTime >= now){
 			throw;
 		}
 
-		//block switch if reward was not called (numPlayers &gt; 0)
-		if(newCompetition.numPlayers &gt; 0){
+		//block switch if reward was not called (numPlayers > 0)
+		if(newCompetition.numPlayers > 0){
 			throw;
 		}
 		
@@ -235,17 +235,17 @@ contract CompetitionStore {
 			throw;
 		}
 		
-		if(numPastBlocks &lt; 1){
+		if(numPastBlocks < 1){
 			throw;
 		}
 		
-		if(rewardsDistribution.length == 0 || rewardsDistribution.length &gt; 64){ // do not risk gas shortage on reward
+		if(rewardsDistribution.length == 0 || rewardsDistribution.length > 64){ // do not risk gas shortage on reward
 			throw;
 		}
 		//ensure rewardsDistribution give always something and do not give more to a lower scoring player
 		uint32 prev = 0;
-		for(uint8 i = 0; i &lt; rewardsDistribution.length; i++){
-			if(rewardsDistribution[i] == 0 ||  (prev != 0 &amp;&amp; rewardsDistribution[i] &gt; prev)){
+		for(uint8 i = 0; i < rewardsDistribution.length; i++){
+			if(rewardsDistribution[i] == 0 ||  (prev != 0 && rewardsDistribution[i] > prev)){
 				throw;
 			}
 			prev = rewardsDistribution[i];
@@ -281,11 +281,11 @@ contract CompetitionStore {
 		var game = games[gameID];
 		var competition = game.competitions[game.currentCompetitionIndex];
 		
-		if(version &lt;= competition.version){ // a bug fix should be a new version (greater than previous version)
+		if(version <= competition.version){ // a bug fix should be a new version (greater than previous version)
 			throw;
 		}
 		
-		if(competition.endTime &lt;= now){ // cannot bugFix a competition that already ended
+		if(competition.endTime <= now){ // cannot bugFix a competition that already ended
 			return;
 		}
 		
@@ -300,7 +300,7 @@ contract CompetitionStore {
 			throw;
 		}
 		
-		if(numPastBlocks &lt; 1){
+		if(numPastBlocks < 1){
 			throw;
 		}
 
@@ -319,32 +319,32 @@ contract CompetitionStore {
 
 		//ensure time has passed so that players who started near the end can finish their session 
 		//game should be made to ensure termination before verificationWaitTime, it is the game responsability
-		if(int(now) - competition.endTime &lt; competition.verificationWaitTime){
+		if(int(now) - competition.endTime < competition.verificationWaitTime){
 			throw;
 		}
 
 		
-		if( competition.jackpot &gt; 0){ // if there is no jackpot skip
+		if( competition.jackpot > 0){ // if there is no jackpot skip
 
 			
 			var rewardsDistribution = competition.rewardsDistribution;
 
 			uint8 numWinners = uint8(rewardsDistribution.length);
 
-			if(numWinners &gt; uint8(winners.length)){
+			if(numWinners > uint8(winners.length)){
 				numWinners = uint8(winners.length);
 			}
 
 			uint128 forHouse = competition.jackpot;
-			if(numWinners &gt; 0 &amp;&amp; competition.houseDivider &gt; 1){ //in case there is no winners (no players or only cheaters), the house takes all
+			if(numWinners > 0 && competition.houseDivider > 1){ //in case there is no winners (no players or only cheaters), the house takes all
 				forHouse = forHouse / competition.houseDivider;
 				uint128 forWinners = competition.jackpot - forHouse;
 
 				uint64 total = 0;
-				for(uint8 i=0; i&lt;numWinners; i++){ // distribute all the winning even if there is not all the winners
+				for(uint8 i=0; i<numWinners; i++){ // distribute all the winning even if there is not all the winners
 					total += rewardsDistribution[i];
 				}
-				for(uint8 j=0; j&lt;numWinners; j++){
+				for(uint8 j=0; j<numWinners; j++){
 					uint128 value = (forWinners * rewardsDistribution[j]) / total;
 					if(!winners[j].send(value)){ // if fail give to house
 						forHouse = forHouse + value;

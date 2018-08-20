@@ -8,20 +8,20 @@ pragma solidity 0.4.11;
       return c;
     }
     function safeSub(uint a, uint b) internal returns (uint) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
     }
     function safeAdd(uint a, uint b) internal returns (uint) {
       uint c = a + b;
-      assert(c&gt;=a &amp;&amp; c&gt;=b);
+      assert(c>=a && c>=b);
       return c;
     }
 
     // mitigate short address attack
     // thanks to https://github.com/numerai/contract/blob/c182465f82e50ced8dacb3977ec374a892f5fa8c/contracts/Safe.sol#L30-L34.
-    // TODO: doublecheck implication of &gt;= compared to ==
+    // TODO: doublecheck implication of >= compared to ==
     modifier onlyPayloadSize(uint numWords) {
-       assert(msg.data.length &gt;= numWords * 32 + 4);
+       assert(msg.data.length >= numWords * 32 + 4);
        _;
     }
 
@@ -85,8 +85,8 @@ pragma solidity 0.4.11;
 
       function updateFundingEndBlock(uint256 newFundingEndBlock) {
           require(msg.sender == beneficiary);
-          require(block.number &lt; fundingEndBlock);
-          require(block.number &lt; newFundingEndBlock);
+          require(block.number < fundingEndBlock);
+          require(block.number < newFundingEndBlock);
           fundingEndBlock = newFundingEndBlock;
       }
 
@@ -107,9 +107,9 @@ pragma solidity 0.4.11;
 
       function claim() external {
           require(msg.sender == beneficiary);
-          require(block.number &gt; fundingEndBlock);
+          require(block.number > fundingEndBlock);
           uint256 balance = ERC20Token.balanceOf(this);
-          // in reverse order so stages changes don&#39;t carry within one claim
+          // in reverse order so stages changes don't carry within one claim
           fourth_release(balance);
           third_release(balance);
           second_release(balance);
@@ -131,25 +131,25 @@ pragma solidity 0.4.11;
           nextStage();
       }
       function first_release(uint256 balance) private atStage(Stages.firstRelease) {
-          require(now &gt; firstRelease);
+          require(now > firstRelease);
           uint256 amountToTransfer = balance / 4;
           ERC20Token.transfer(beneficiary, amountToTransfer); // send 25 % of team releases
           nextStage();
       }
       function second_release(uint256 balance) private atStage(Stages.secondRelease) {
-          require(now &gt; secondRelease);
+          require(now > secondRelease);
           uint256 amountToTransfer = balance / 3;
           ERC20Token.transfer(beneficiary, amountToTransfer); // send 25 % of team releases
           nextStage();
       }
       function third_release(uint256 balance) private atStage(Stages.thirdRelease) {
-          require(now &gt; thirdRelease);
+          require(now > thirdRelease);
           uint256 amountToTransfer = balance / 2;
           ERC20Token.transfer(beneficiary, amountToTransfer); // send 25 % of team releases
           nextStage();
       }
       function fourth_release(uint256 balance) private atStage(Stages.fourthRelease) {
-          require(now &gt; fourthRelease);
+          require(now > fourthRelease);
           ERC20Token.transfer(beneficiary, balance); // send remaining 25 % of team releases
       }
 

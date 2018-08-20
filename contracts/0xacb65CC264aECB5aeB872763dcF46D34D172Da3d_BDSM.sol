@@ -2,15 +2,15 @@ pragma solidity ^0.4.13;
 
 contract BDSM {
 
-	string public symbol = &quot;BDSM&quot;;
-	string public name = &quot;BlockchainDecentralizingSpinnerMachine&quot;;
+	string public symbol = "BDSM";
+	string public name = "BlockchainDecentralizingSpinnerMachine";
 	uint8 public constant decimals = 12;
 	uint256 public totalSupply = 1000000000000;
 
 	address public owner;
 
-	mapping (address =&gt; uint256) public balances;
-	mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+	mapping (address => uint256) public balances;
+	mapping (address => mapping (address => uint)) public allowed;
 
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	event Approval(address indexed _owner, address indexed _spender, uint _value);
@@ -21,13 +21,13 @@ contract BDSM {
 	}
     
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 
@@ -45,7 +45,7 @@ contract BDSM {
 
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 		require (_to != 0x0);
-		require (_value &lt;= allowed[_from][msg.sender]);  
+		require (_value <= allowed[_from][msg.sender]);  
 		balances[_to] = add(balances[_to], _value);
 		balances[_from] = sub(balances[_from], _value);
 		sub(allowed[_from][msg.sender], _value);

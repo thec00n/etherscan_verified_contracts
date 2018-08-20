@@ -3,7 +3,7 @@ pragma solidity ^0.4.12;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -72,20 +72,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -97,7 +97,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
   * @dev Transfer tokens from one address to another
@@ -219,8 +219,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract ReporterToken is MintableToken {
-  string public name = &quot;Reporter Token&quot;;
-  string public symbol = &quot;NEWS&quot;;
+  string public name = "Reporter Token";
+  string public symbol = "NEWS";
   uint256 public decimals = 18;
 
   bool public tradingStarted = false;
@@ -313,7 +313,7 @@ contract ReporterTokenSale is Ownable {
   // switch on/off the authorisation , default: false
   bool    public freeForAll = false;
 
-  mapping (address =&gt; bool) public authorised; // just to annoy the heck out of americans
+  mapping (address => bool) public authorised; // just to annoy the heck out of americans
 
   event TokenPurchase(address indexed beneficiary, uint256 value, uint256 amount);
   event SaleClosed();
@@ -335,11 +335,11 @@ contract ReporterTokenSale is Ownable {
   */
   function setTier() internal {
     // first 25% tokens get extra 30% of tokens, next half get 15%
-    if (tokenRaised &lt;= 9000000 * oneCoin) {
+    if (tokenRaised <= 9000000 * oneCoin) {
       rate = 1420;
       //minContribution = 100 ether;
       //maxContribution = 1000000 ether;
-    } else if (tokenRaised &lt;= 18000000 * oneCoin) {
+    } else if (tokenRaised <= 18000000 * oneCoin) {
       rate = 1170;
       //minContribution = 5 ether;
       //maxContribution = 1000000 ether;
@@ -352,9 +352,9 @@ contract ReporterTokenSale is Ownable {
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    if (now &gt; endTimestamp)
+    if (now > endTimestamp)
       return true;
-    if (tokenRaised &gt;= tokensForSale)
+    if (tokenRaised >= tokensForSale)
       return true; // if we reach the tokensForSale
     return false;
   }
@@ -376,10 +376,10 @@ contract ReporterTokenSale is Ownable {
   */
   modifier onlyAuthorised() {
     require (authorised[msg.sender] || freeForAll);
-    require (now &gt;= startTimestamp);
+    require (now >= startTimestamp);
     require (!(hasEnded()));
     require (multiSig != 0x0);
-    require(tokensForSale &gt; tokenRaised); // check we are not over the number of tokensForSale
+    require(tokensForSale > tokenRaised); // check we are not over the number of tokensForSale
     _;
   }
 
@@ -394,7 +394,7 @@ contract ReporterTokenSale is Ownable {
   * @dev authorise a lot of accounts in one go
   */
   function authoriseManyAccounts(address[] many) onlyCSorOwner public {
-    for (uint256 i = 0; i &lt; many.length; i++) {
+    for (uint256 i = 0; i < many.length; i++) {
       authorised[many[i]] = true;
     }
   }
@@ -432,8 +432,8 @@ contract ReporterTokenSale is Ownable {
     setTier();
 
     //check minimum and maximum amount
-    require(amount &gt;= minContribution);
-    require(amount &lt;= maxContribution);
+    require(amount >= minContribution);
+    require(amount <= maxContribution);
 
     // calculate token amount to be created
     uint256 tokens = amount.mul(rate);
@@ -455,7 +455,7 @@ contract ReporterTokenSale is Ownable {
 
     // assign the rest of the 60M tokens to the reserve
     uint unassigned;
-    if(maxTokens &gt; tokenRaised) {
+    if(maxTokens > tokenRaised) {
       unassigned  = maxTokens.sub(tokenRaised);
       token.mint(multiSig,unassigned);
     }

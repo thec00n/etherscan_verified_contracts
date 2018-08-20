@@ -36,7 +36,7 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal constant returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
 
     return a - b;
   }
@@ -44,7 +44,7 @@ contract SafeMath {
   function safeAdd(uint a, uint b) internal constant returns (uint) {
     uint c = a + b;
 
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
 
     return c;
   }
@@ -58,8 +58,8 @@ contract SafeMath {
  */
 contract Token is ERC20, SafeMath {
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) returns (bool success) {
 
@@ -124,9 +124,9 @@ contract Owned {
         owner = msg.sender;
     }
 
-    // Changes the owner of the contract to &quot;newOwner&quot;
-    // Only executed by &quot;owner&quot;
-    // If you want to completely remove the ownership of a contract, just change it to &quot;0x0&quot;
+    // Changes the owner of the contract to "newOwner"
+    // Only executed by "owner"
+    // If you want to completely remove the ownership of a contract, just change it to "0x0"
     function changeOwner(address newOwner) public onlyOwner {
       owner = newOwner;
     }
@@ -138,7 +138,7 @@ contract Owned {
 contract Minted is MintInterface, Owned {
   uint public numMinters; // Number of minters of the token.
   bool public open; // If is possible to add new minters or not. True by default.
-  mapping (address =&gt; bool) public minters; // if an address is a minter of the token or not
+  mapping (address => bool) public minters; // if an address is a minter of the token or not
 
   // Log of the minters added
   event NewMinter(address who);
@@ -161,8 +161,8 @@ contract Minted is MintInterface, Owned {
 
   // Adds a new minter to the token
   // _minter: address of the new minter
-  // Only executed by &quot;Owner&quot; (see &quot;Owned&quot; contract)
-  // Only executed if the function &quot;endMinting&quot; has not been executed
+  // Only executed by "Owner" (see "Owned" contract)
+  // Only executed if the function "endMinting" has not been executed
   function addMinter(address _minter) public onlyOwner onlyIfOpen {
     if(!minters[_minter]) {
       minters[_minter] = true;
@@ -174,7 +174,7 @@ contract Minted is MintInterface, Owned {
 
   // Removes a minter of the token
   // _minter: address of the minter to be removed
-  // Only executed by &quot;Owner&quot; (see &quot;Owned&quot; contract)
+  // Only executed by "Owner" (see "Owned" contract)
   function removeMinter(address _minter) public onlyOwner {
     if(minters[_minter]) {
       minters[_minter] = false;
@@ -184,29 +184,29 @@ contract Minted is MintInterface, Owned {
 
   // Blocks the possibility to add new minters
   // This function is irreversible
-  // Only executed by &quot;Owner&quot; (see &quot;Owned&quot; contract)
+  // Only executed by "Owner" (see "Owned" contract)
   function endMinting() public onlyOwner {
     open = false;
   }
 }
 
 /*
- * Allows an address to set a block from when a token won&#39;t be tradeable
+ * Allows an address to set a block from when a token won't be tradeable
  */
 contract Pausable is Owned {
-  // block from when the token won&#39;t be tradeable
+  // block from when the token won't be tradeable
   // Default to 0 = no restriction
   uint public endBlock;
 
   modifier validUntil() {
-    require(block.number &lt;= endBlock || endBlock == 0);
+    require(block.number <= endBlock || endBlock == 0);
 
     _;
   }
 
-  // Set a block from when a token won&#39;t be tradeable
+  // Set a block from when a token won't be tradeable
   // There is no limit in the number of executions to avoid irreversible mistakes.
-  // Only executed by &quot;Owner&quot; (see &quot;Owned&quot; contract)
+  // Only executed by "Owner" (see "Owned" contract)
   function setEndBlock(uint block) public onlyOwner {
     endBlock = block;
   }
@@ -224,7 +224,7 @@ contract ProjectToken is Token, Minted, Pausable {
   uint public transferableBlock; // block from which the token can de transfered
 
   modifier lockUpPeriod() {
-    require(block.number &gt;= transferableBlock);
+    require(block.number >= transferableBlock);
 
     _;
   }
@@ -241,8 +241,8 @@ contract ProjectToken is Token, Minted, Pausable {
     transferableBlock = _transferableBlock;
   }
 
-  // Creates &quot;amount&quot; tokens and send them to &quot;recipient&quot; address
-  // Only executed by authorized minters (see &quot;Minted&quot; contract)
+  // Creates "amount" tokens and send them to "recipient" address
+  // Only executed by authorized minters (see "Minted" contract)
   function mint(address recipient, uint amount)
     public
     onlyMinters
@@ -256,23 +256,23 @@ contract ProjectToken is Token, Minted, Pausable {
     return true;
   }
 
-  // Aproves &quot;_spender&quot; to spend &quot;_value&quot; tokens and executes its &quot;receiveApproval&quot; function
+  // Aproves "_spender" to spend "_value" tokens and executes its "receiveApproval" function
   function approveAndCall(address _spender, uint256 _value)
     public
     returns (bool success)
   {
     if(super.approve(_spender, _value)){
-      if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address)&quot;))), msg.sender, _value, this))
+      if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address)"))), msg.sender, _value, this))
         revert();
 
       return true;
     }
   }
 
-  // Transfers &quot;value&quot; tokens to &quot;to&quot; address
-  // Only executed adter &quot;transferableBlock&quot;
-  // Only executed before &quot;endBlock&quot; (see &quot;Expiration&quot; contract)
-  // Only executed if there are enough funds and don&#39;t overflow
+  // Transfers "value" tokens to "to" address
+  // Only executed adter "transferableBlock"
+  // Only executed before "endBlock" (see "Expiration" contract)
+  // Only executed if there are enough funds and don't overflow
   function transfer(address to, uint value)
     public
     lockUpPeriod
@@ -285,10 +285,10 @@ contract ProjectToken is Token, Minted, Pausable {
     return false;
   }
 
-  // Transfers &quot;value&quot; tokens to &quot;to&quot; address from &quot;from&quot;
-  // Only executed adter &quot;transferableBlock&quot;
-  // Only executed before &quot;endBlock&quot; (see &quot;Expiration&quot; contract)
-  // Only executed if there are enough funds available and approved, and don&#39;t overflow
+  // Transfers "value" tokens to "to" address from "from"
+  // Only executed adter "transferableBlock"
+  // Only executed before "endBlock" (see "Expiration" contract)
+  // Only executed if there are enough funds available and approved, and don't overflow
   function transferFrom(address from, address to, uint value)
     public
     lockUpPeriod

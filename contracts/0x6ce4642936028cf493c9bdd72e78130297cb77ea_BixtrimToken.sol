@@ -13,22 +13,22 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
         return a / b;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
 
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
 
         return c;
     }
@@ -50,7 +50,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     uint256 totalSupply_;
 
     function totalSupply() public view returns (uint256) {
@@ -59,7 +59,7 @@ contract BasicToken is ERC20Basic {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -74,12 +74,12 @@ contract BasicToken is ERC20Basic {
     }
 }
 contract StandardToken is ERC20, BasicToken {
-    mapping(address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => mapping (address => uint256)) internal allowed;
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -112,7 +112,7 @@ contract StandardToken is ERC20, BasicToken {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -144,7 +144,7 @@ contract Ownable {
         bytes32 prefixedMessage = prefixedHash(transferAdminMessage(_oldAdmin, _newAdmin));
         address[3] memory signers;
 
-        for (uint8 i = 0; i &lt; 3; i++) {
+        for (uint8 i = 0; i < 3; i++) {
             signers[i] = ecrecover(prefixedMessage, _vs[i], _rs[i], _ss[i]);
         }
 
@@ -157,7 +157,7 @@ contract Ownable {
         bytes32 prefixedMessage = prefixedHash(transferOwnershipMessage(_newOwner));
         address[3] memory signers;
 
-        for (uint8 i = 0; i &lt; 3; i++) {
+        for (uint8 i = 0; i < 3; i++) {
             signers[i] = ecrecover(prefixedMessage, _vs[i], _rs[i], _ss[i]);
         }
 
@@ -191,14 +191,14 @@ contract Ownable {
     }
 
     function prefixedHash(bytes32 hash) pure public returns (bytes32) {
-        return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+        return keccak256("\x19Ethereum Signed Message:\n32", hash);
     }
 
     function replaceAdmin (address _old, address _new) internal returns (bool) {
         require (_new != address(0));
         require (!isAdmin(_new));
 
-        for (uint8 i = 0; i &lt; admins.length; i++) {
+        for (uint8 i = 0; i < admins.length; i++) {
             if (admins[i] == _old) {
                 admins[i] = _new;
 
@@ -210,7 +210,7 @@ contract Ownable {
     }
 
     function isAdmin (address _a) public view returns (bool) {
-        for (uint8 i = 0; i &lt; admins.length; i++) {
+        for (uint8 i = 0; i < admins.length; i++) {
             if (admins[i] == _a) {
                 return true;
             }
@@ -225,7 +225,7 @@ contract Ownable {
             return false;
         }
 
-        for (uint8 i = 0; i &lt; signers.length; i++) {
+        for (uint8 i = 0; i < signers.length; i++) {
             if (signers[i] == address(0)) {
                 return false;
             }
@@ -305,7 +305,7 @@ contract PausableToken is StandardToken, Pausable {
 }
 
 contract CollectableToken is PausableToken {
-    mapping(address =&gt; uint256) nextNonce;
+    mapping(address => uint256) nextNonce;
 
     event Collected(address indexed from, address indexed to, address indexed collector, uint256 value);
 
@@ -321,7 +321,7 @@ contract CollectableToken is PausableToken {
     }
 
     function collect(address _from, address _to, uint256 _value, bytes32 _r, bytes32 _s, uint8 _v) public whenNotPaused returns (bool success) {
-        require (_value &gt; 0);
+        require (_value > 0);
         require (_from != _to);
         require (_to != address(0));
         require (isCollectSignatureCorrect(_from, _to, _value, _r, _s, _v));
@@ -337,8 +337,8 @@ contract CollectableToken is PausableToken {
     }
 }
 contract BixtrimToken is CollectableToken, OwnedToken {
-    string public constant name = &quot;BixtrimToken&quot;;
-    string public constant symbol = &quot;BXM&quot;;
+    string public constant name = "BixtrimToken";
+    string public constant symbol = "BXM";
     uint256 public constant decimals = 0;
 
     constructor (uint256 _total, address _owner, address[4] _admins) public OwnedToken(_owner, _admins) {

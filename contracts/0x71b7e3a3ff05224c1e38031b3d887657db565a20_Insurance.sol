@@ -4,7 +4,7 @@ pragma solidity ^0.4.0;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -36,37 +36,37 @@ contract SafeMath {
     }
 
     function safeDiv(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a &amp;&amp; c&gt;=b);
+        assert(c>=a && c>=b);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -91,20 +91,20 @@ library SafeMathLibExt {
     }
 
     function divides(uint a, uint b) returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function minus(uint a, uint b) returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function plus(uint a, uint b) returns (uint) {
         uint c = a + b;
-        assert(c&gt;=a);
+        assert(c>=a);
         return c;
     }
 
@@ -135,7 +135,7 @@ contract Insurance is Destructable, SafeMath  {
     address tokensContractAddress;
     uint256 ichnDecimals;
 
-    mapping (address =&gt; uint256) buyersBalances;
+    mapping (address => uint256) buyersBalances;
 
     struct ClientInsurance {
         uint256 tokensCount;
@@ -145,7 +145,7 @@ contract Insurance is Destructable, SafeMath  {
     }
 
 
-    mapping(address =&gt; ClientInsurance) insurancesMap;
+    mapping(address => ClientInsurance) insurancesMap;
 
 
     function Insurance() public {
@@ -168,7 +168,7 @@ contract Insurance is Destructable, SafeMath  {
     }
 
     /**
-     * Don&#39;t expect to just send money by anyone except the owner
+     * Don't expect to just send money by anyone except the owner
      */
     function () public payable {
         throw;
@@ -185,7 +185,7 @@ contract Insurance is Destructable, SafeMath  {
      * Amount - 18 decimals
      */
     function transferEthTo(address to, uint256 amount) public payable onlyOwner {
-        require(address(this).balance &gt; amount);
+        require(address(this).balance > amount);
         to.transfer(amount);
     }
 
@@ -211,7 +211,7 @@ contract Insurance is Destructable, SafeMath  {
     }
 
     function addBuyer(address clientAddress, uint256 tokensCount) public onlyOwner {
-        require( (clientAddress != address(0)) &amp;&amp; (tokensCount &gt; 0) );
+        require( (clientAddress != address(0)) && (tokensCount > 0) );
 
         /* Checking payment */
         require(buyersBalances[clientAddress] == buyPrice);
@@ -220,25 +220,25 @@ contract Insurance is Destructable, SafeMath  {
         require(!insurancesMap[clientAddress].exists);
 
         /* Checking the current number of tokens */
-        require(getTokensCount(clientAddress) &gt;= tokensCount);
+        require(getTokensCount(clientAddress) >= tokensCount);
 
         insurancesMap[clientAddress] = ClientInsurance(tokensCount, false, true, false);
     }
 
     function claim(address to, uint256 returnedTokensCount) public onlyOwner {
         /* Can be called only on time range */
-        require(now &gt; startClaimDate &amp;&amp; now &lt; endClaimDate);
+        require(now > startClaimDate && now < endClaimDate);
 
         /* Can be called once for address */
-        require( (to != address(0)) &amp;&amp; (insurancesMap[to].exists) &amp;&amp; (!insurancesMap[to].isApplied) &amp;&amp; (!insurancesMap[to].isBlocked) );
+        require( (to != address(0)) && (insurancesMap[to].exists) && (!insurancesMap[to].isApplied) && (!insurancesMap[to].isBlocked) );
 
         /* Tokens returned */
-        require(returnedTokensCount &gt;= insurancesMap[to].tokensCount);
+        require(returnedTokensCount >= insurancesMap[to].tokensCount);
 
         /* Start transfer */
         uint amount = getRewardWei(to);
 
-        require(address(this).balance &gt; amount);
+        require(address(this).balance > amount);
         insurancesMap[to].isApplied = true;
 
         to.transfer(amount);
@@ -283,7 +283,7 @@ contract Insurance is Destructable, SafeMath  {
     }
 
     function hasTokens(address clientAddress) private constant returns (bool) {
-        return getTokensCount(clientAddress) &gt; 0;
+        return getTokensCount(clientAddress) > 0;
     }
 
     function getTokensCount(address clientAddress) private constant returns (uint256) {

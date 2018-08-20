@@ -7,7 +7,7 @@ contract StandardToken {
     event Issuance(address indexed to, uint256 value);
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -15,7 +15,7 @@ contract StandardToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -37,8 +37,8 @@ contract StandardToken {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     uint public totalSupply;
 }
@@ -49,7 +49,7 @@ contract MintableToken is StandardToken {
     bool public isMinted = false;
 
     function mint(address _to) public {
-        assert(msg.sender == owner &amp;&amp; !isMinted);
+        assert(msg.sender == owner && !isMinted);
 
         balances[_to] = totalSupply;
         isMinted = true;
@@ -57,8 +57,8 @@ contract MintableToken is StandardToken {
 }
 
 contract SafeNetToken is MintableToken {
-    string public name = &#39;SafeNet Token&#39;;
-    string public symbol = &#39;SNT&#39;;
+    string public name = 'SafeNet Token';
+    string public symbol = 'SNT';
     uint8 public decimals = 18;
 
     function SafeNetToken(uint _totalSupply) public {

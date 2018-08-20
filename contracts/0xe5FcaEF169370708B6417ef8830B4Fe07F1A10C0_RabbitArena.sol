@@ -77,7 +77,7 @@ contract OwnerBase {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCOO whenNotPaused {
         paused = true;
@@ -89,7 +89,7 @@ contract OwnerBase {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCOO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 }
@@ -129,7 +129,7 @@ contract RabbitArena is OwnerBase {
     FighterCamp public theCamp; 
 	
 	
-	mapping (uint =&gt; Fighter) soldiers;
+	mapping (uint => Fighter) soldiers;
 	
 	
 	uint32[] public seasons;
@@ -157,14 +157,14 @@ contract RabbitArena is OwnerBase {
 	
 	/// @dev release storaged data, to save gas fee.
 	function releaseOldData() internal {
-		for (uint i = 0; i &lt; seasons.length; i++) {
+		for (uint i = 0; i < seasons.length; i++) {
             uint _season = seasons[i];
-			for (uint j = 0; j &lt; 8; j++) {
+			for (uint j = 0; j < 8; j++) {
 				uint key = _season * 1000 + j;
 				delete soldiers[key];
 			}
         }
-		delete seasons;// seasons.length --&gt; 0
+		delete seasons;// seasons.length --> 0
 	}
 
     
@@ -179,7 +179,7 @@ contract RabbitArena is OwnerBase {
 		seasons.push(_season);// a new season
 		
         //record fighter datas
-        for(uint i = 0; i &lt; 8; i++) {
+        for(uint i = 0; i < 8; i++) {
             uint tmpID = _tokenIDs[i];
             
             Fighter memory soldier = Fighter({
@@ -201,11 +201,11 @@ contract RabbitArena is OwnerBase {
         uint outTokenID,
         uint32 outStrength
     ) {
-		require(_index &lt; 8);
+		require(_index < 8);
 		uint key = _season * 1000 + _index;
         
         Fighter storage soldier = soldiers[key];
-		require(soldier.strength &gt; 0);
+		require(soldier.strength > 0);
         
         outTokenID = soldier.tokenID;
         outStrength = soldier.strength;
@@ -222,7 +222,7 @@ contract RabbitArena is OwnerBase {
 		uint sumPower = 0;
         uint i = 0;
 		uint key = 0;
-        for (i = 0; i &lt; 8; i++) {
+        for (i = 0; i < 8; i++) {
 			key = _season * 1000 + i;
             Fighter storage soldier = soldiers[key];
             powers[i] = soldier.strength;
@@ -231,7 +231,7 @@ contract RabbitArena is OwnerBase {
         
         uint sumValue = 0;
 		uint tmpPower = 0;
-        for (i = 0; i &lt; 8; i++) {
+        for (i = 0; i < 8; i++) {
             tmpPower = powers[i] ** 5;//
             sumValue += tmpPower;
             powers[i] = sumValue;
@@ -241,9 +241,9 @@ contract RabbitArena is OwnerBase {
         
         uint winner = 0;
         uint shoot = sumValue * randomVal * 10000000000 / singleDeno / 0xffffffff;
-        for (i = 0; i &lt; 8; i++) {
+        for (i = 0; i < 8; i++) {
             tmpPower = powers[i];
-            if (shoot &lt;= tmpPower * 10000000000 / singleDeno) {
+            if (shoot <= tmpPower * 10000000000 / singleDeno) {
                 winner = i;
                 break;
             }

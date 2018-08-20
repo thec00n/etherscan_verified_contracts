@@ -67,7 +67,7 @@ contract Mojito
     
     function UpdatePay() _onlyowner                                             //check for updating queue
     {
-        if (meg.balance&gt;((1 ether)/40)) {  
+        if (meg.balance>((1 ether)/40)) {  
             msg.sender.send(((1 ether)/40));
         } else {
             msg.sender.send(meg.balance);
@@ -76,7 +76,7 @@ contract Mojito
     
     function canPay() internal                                                  //create queue async
     {
-        while (meg.balance&gt;persons[paymentqueue].ETHamount/100*115)             //see for balance
+        while (meg.balance>persons[paymentqueue].ETHamount/100*115)             //see for balance
         {
             uint transactionAmount=persons[paymentqueue].ETHamount/100*115;     //create payment summ
             persons[paymentqueue].ETHaddress.send(transactionAmount);           //send payment to this person

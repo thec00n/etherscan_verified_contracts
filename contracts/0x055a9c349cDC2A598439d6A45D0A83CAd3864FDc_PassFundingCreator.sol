@@ -53,17 +53,17 @@ contract PassTokenManagerInterface {
     uint256 totalSupply;
 
     // Array with all balances
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     // Array with all allowances
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Map of the result (in wei) of fundings
-    mapping (uint =&gt; uint) fundedAmount;
+    mapping (uint => uint) fundedAmount;
     
     // If true, the shares or tokens can be transfered
     bool public transferable;
     // Map of blocked Dao share accounts. Points to the date when the share holder can transfer shares
-    mapping (address =&gt; uint) public blockedDeadLine; 
+    mapping (address => uint) public blockedDeadLine; 
 
     // Rules for the actual funding and the contractor token price
     fundingData[2] public FundingRules;
@@ -102,7 +102,7 @@ contract PassTokenManagerInterface {
     modifier onlyMainPartner {if (msg.sender !=  FundingRules[0].mainPartner) throw; _;}
     
     // Modifier that allows only the contractor propose set the token price or withdraw
-    modifier onlyContractor {if (recipient == 0 || (msg.sender != recipient &amp;&amp; msg.sender != creator)) throw; _;}
+    modifier onlyContractor {if (recipient == 0 || (msg.sender != recipient && msg.sender != creator)) throw; _;}
     
     // Modifier for Dao functions
     modifier onlyDao {if (recipient != 0) throw; _;}
@@ -133,7 +133,7 @@ contract PassTokenManagerInterface {
        );
 
     /// @param _initialPriceMultiplier The initial price multiplier of contractor tokens
-    /// @param _inflationRate If 0, the contractor token price doesn&#39;t change during the funding
+    /// @param _inflationRate If 0, the contractor token price doesn't change during the funding
     /// @param _closingTime The initial price and inflation rate can be changed after this date
     function setTokenPriceProposal(        
         uint _initialPriceMultiplier, 
@@ -147,7 +147,7 @@ contract PassTokenManagerInterface {
     /// @param _initialPriceMultiplier Price multiplier without considering any inflation rate
     /// @param _maxAmountToFund The maximum amount (in wei) of the funding
     /// @param _minutesFundingPeriod Period in minutes of the funding
-    /// @param _inflationRate If 0, the token price doesn&#39;t change during the funding
+    /// @param _inflationRate If 0, the token price doesn't change during the funding
     /// @param _proposalID Index of the client proposal (not mandatory)
     function setFundingRules(
         address _mainPartner,
@@ -263,8 +263,8 @@ contract PassTokenManager is PassTokenManagerInterface {
     function priceDivisor(uint _saleDate) constant internal returns (uint) {
         uint _date = _saleDate;
         
-        if (_saleDate &gt; FundingRules[0].closingTime) _date = FundingRules[0].closingTime;
-        if (_saleDate &lt; FundingRules[0].startTime) _date = FundingRules[0].startTime;
+        if (_saleDate > FundingRules[0].closingTime) _date = FundingRules[0].closingTime;
+        if (_saleDate < FundingRules[0].startTime) _date = FundingRules[0].startTime;
 
         return 100 + 100*FundingRules[0].inflationRate*(_date - FundingRules[0].startTime)/(100*365 days);
     }
@@ -275,8 +275,8 @@ contract PassTokenManager is PassTokenManagerInterface {
 
     function fundingMaxAmount(address _mainPartner) constant external returns (uint) {
         
-        if (now &gt; FundingRules[0].closingTime
-            || now &lt; FundingRules[0].startTime
+        if (now > FundingRules[0].closingTime
+            || now < FundingRules[0].startTime
             || _mainPartner != FundingRules[0].mainPartner) {
             return 0;   
         } else {
@@ -340,8 +340,8 @@ contract PassTokenManager is PassTokenManagerInterface {
         uint _closingTime
     ) onlyContractor {
         
-        if (_closingTime &lt; now 
-            || now &lt; FundingRules[1].closingTime) throw;
+        if (_closingTime < now 
+            || now < FundingRules[1].closingTime) throw;
         
         FundingRules[1].initialPriceMultiplier = _initialPriceMultiplier;
         FundingRules[1].inflationRate = _inflationRate;
@@ -360,17 +360,17 @@ contract PassTokenManager is PassTokenManagerInterface {
         uint _proposalID
     ) external onlyClient {
 
-        if (now &lt; FundingRules[0].closingTime
+        if (now < FundingRules[0].closingTime
             || _mainPartner == address(this)
             || _mainPartner == client
-            || (!_publicCreation &amp;&amp; _mainPartner == 0)
-            || (_publicCreation &amp;&amp; _mainPartner != 0)
-            || (recipient == 0 &amp;&amp; _initialPriceMultiplier == 0)
+            || (!_publicCreation && _mainPartner == 0)
+            || (_publicCreation && _mainPartner != 0)
+            || (recipient == 0 && _initialPriceMultiplier == 0)
             || (recipient != 0 
-                &amp;&amp; (FundingRules[1].initialPriceMultiplier == 0
-                    || _inflationRate &lt; FundingRules[1].inflationRate
-                    || now &lt; FundingRules[1].startTime
-                    || FundingRules[1].closingTime &lt; now + (_minutesFundingPeriod * 1 minutes)))
+                && (FundingRules[1].initialPriceMultiplier == 0
+                    || _inflationRate < FundingRules[1].inflationRate
+                    || now < FundingRules[1].startTime
+                    || FundingRules[1].closingTime < now + (_minutesFundingPeriod * 1 minutes)))
             || _maxAmountToFund == 0
             || _minutesFundingPeriod == 0
             ) throw;
@@ -402,19 +402,19 @@ contract PassTokenManager is PassTokenManagerInterface {
         uint _saleDate
     ) internal returns (bool success) {
 
-        if (now &gt; FundingRules[0].closingTime
-            || now &lt; FundingRules[0].startTime
-            ||_saleDate &gt; FundingRules[0].closingTime
-            || _saleDate &lt; FundingRules[0].startTime
-            || FundingRules[0].fundedAmount + _amount &gt; FundingRules[0].maxAmountToFund) return;
+        if (now > FundingRules[0].closingTime
+            || now < FundingRules[0].startTime
+            ||_saleDate > FundingRules[0].closingTime
+            || _saleDate < FundingRules[0].startTime
+            || FundingRules[0].fundedAmount + _amount > FundingRules[0].maxAmountToFund) return;
 
         uint _a = _amount*FundingRules[0].initialPriceMultiplier;
         uint _multiplier = 100*_a;
         uint _quantity = _multiplier/priceDivisor(_saleDate);
         if (_a/_amount != FundingRules[0].initialPriceMultiplier
             || _multiplier/100 != _a
-            || totalSupply + _quantity &lt;= totalSupply 
-            || totalSupply + _quantity &lt;= _quantity) return;
+            || totalSupply + _quantity <= totalSupply 
+            || totalSupply + _quantity <= _quantity) return;
 
         balances[_recipient] += _quantity;
         totalSupply += _quantity;
@@ -429,7 +429,7 @@ contract PassTokenManager is PassTokenManagerInterface {
     }
 
     function setFundingStartTime(uint _startTime) external onlyMainPartner {
-        if (now &gt; FundingRules[0].closingTime) throw;
+        if (now > FundingRules[0].closingTime) throw;
         FundingRules[0].startTime = _startTime;
     }
     
@@ -452,7 +452,7 @@ contract PassTokenManager is PassTokenManagerInterface {
     }
     
     function setFundingFueled() external onlyMainPartner {
-        if (now &gt; FundingRules[0].closingTime) throw;
+        if (now > FundingRules[0].closingTime) throw;
         closeFunding();
         if (recipient == 0) FundingFueled(FundingRules[0].proposalID, FundingRules[0].fundedAmount);
     }
@@ -472,7 +472,7 @@ contract PassTokenManager is PassTokenManagerInterface {
     }
     
     function blockTransfer(address _shareHolder, uint _deadLine) external onlyClient onlyDao {
-        if (_deadLine &gt; blockedDeadLine[_shareHolder]) {
+        if (_deadLine > blockedDeadLine[_shareHolder]) {
             blockedDeadLine[_shareHolder] = _deadLine;
         }
     }
@@ -484,12 +484,12 @@ contract PassTokenManager is PassTokenManagerInterface {
         ) internal returns (bool) {  
 
         if (transferable
-            &amp;&amp; now &gt; blockedDeadLine[_from]
-            &amp;&amp; now &gt; blockedDeadLine[_to]
-            &amp;&amp; _to != address(this)
-            &amp;&amp; balances[_from] &gt;= _value
-            &amp;&amp; balances[_to] + _value &gt; balances[_to]
-            &amp;&amp; balances[_to] + _value &gt;= _value
+            && now > blockedDeadLine[_from]
+            && now > blockedDeadLine[_to]
+            && _to != address(this)
+            && balances[_from] >= _value
+            && balances[_to] + _value > balances[_to]
+            && balances[_to] + _value >= _value
         ) {
             balances[_from] -= _value;
             balances[_to] += _value;
@@ -510,7 +510,7 @@ contract PassTokenManager is PassTokenManagerInterface {
         uint256 _value
         ) returns (bool success) { 
         
-        if (allowed[_from][msg.sender] &lt; _value
+        if (allowed[_from][msg.sender] < _value
             || !transferFromTo(_from, _to, _value)) throw;
             
         allowed[_from][msg.sender] -= _value;
@@ -536,7 +536,7 @@ pragma solidity ^0.4.2;
  * The contract derives to the Token Manager smart contract for the management of tokens.
  *
  * Recipient is 0 for the Dao account manager and the address of
- * contractor&#39;s recipient for the contractors&#39;s mahagers.
+ * contractor's recipient for the contractors's mahagers.
  *
 */
 
@@ -548,7 +548,7 @@ contract PassManagerInterface is PassTokenManagerInterface {
         uint amount;
         // A description of the proposal
         string description;
-        // The hash of the proposal&#39;s document
+        // The hash of the proposal's document
         bytes32 hashOfTheDocument;
         // A unix timestamp, denoting the date when the proposal was created
         uint dateOfProposal;
@@ -691,9 +691,9 @@ contract PassManager is PassManagerInterface, PassTokenManager {
         proposal c = proposals[_proposalID];
         
         uint _sum = c.orderAmount + _orderAmount;
-        if (_sum &gt; c.amount
-            || _sum &lt; c.orderAmount
-            || _sum &lt; _orderAmount) return; 
+        if (_sum > c.amount
+            || _sum < c.orderAmount
+            || _sum < _orderAmount) return; 
 
         c.orderAmount = _sum;
         c.dateOfOrder = now;
@@ -800,7 +800,7 @@ contract PassFundingInterface {
     // Array of partners who wish to fund the dao
     Partner[] public partners;
     // Map with the indexes of the partners
-    mapping (address =&gt; uint) public partnerID; 
+    mapping (address => uint) public partnerID; 
     // The total funded amount (in wei)
     uint public totalFunded; 
     // The calculated sum of funding amout limits (in wei) according to the set limits
@@ -909,7 +909,7 @@ contract PassFundingInterface {
             uint _to
         ) returns (bool);
     
-    /// @notice Function to fund the Dao with &#39;msg.sender&#39; as &#39;beneficiary&#39;
+    /// @notice Function to fund the Dao with 'msg.sender' as 'beneficiary'
     /// @return Whether the Dao was funded or not 
     function fundDao() returns (bool);
     
@@ -929,7 +929,7 @@ contract PassFundingInterface {
         uint _from,
         uint _to);
 
-    /// @notice Function to refund after the closing time with &#39;msg.sender&#39; as &#39;beneficiary&#39;
+    /// @notice Function to refund after the closing time with 'msg.sender' as 'beneficiary'
     function refund();
 
     /// @param _minAmountLimit The amount (in wei) below this limit can fund the dao
@@ -1009,7 +1009,7 @@ contract PassFunding is PassFundingInterface {
         if (_creator == _DaoManager
             || _creator == 0
             || _DaoManager == 0
-            || (_startTime &lt; now &amp;&amp; _startTime != 0)) throw;
+            || (_startTime < now && _startTime != 0)) throw;
             
         creator = _creator;
         DaoManager = PassManager(_DaoManager);
@@ -1018,7 +1018,7 @@ contract PassFunding is PassFundingInterface {
 
         if (_startTime == 0) {startTime = now;} else {startTime = _startTime;}
 
-        if (_closingTime &lt;= startTime) throw;
+        if (_closingTime <= startTime) throw;
         closingTime = _closingTime;
         
         setFromPartner = 1;
@@ -1060,13 +1060,13 @@ contract PassFunding is PassFundingInterface {
 
     function presale() payable returns (bool) {
 
-        if (msg.value &lt;= 0
-            || now &lt; startTime
-            || now &gt; closingTime
-            || now &lt; pauseClosingTime
+        if (msg.value <= 0
+            || now < startTime
+            || now > closingTime
+            || now < pauseClosingTime
             || limitSet
-            || msg.value &lt; minPresaleAmount
-            || msg.value &gt; maxPresaleAmount
+            || msg.value < minPresaleAmount
+            || msg.value > maxPresaleAmount
             || msg.sender == creator
         ) throw;
         
@@ -1084,7 +1084,7 @@ contract PassFunding is PassFundingInterface {
         } else {
 
             Partner p = partners[partnerID[msg.sender]];
-            if (p.presaleAmount + msg.value &gt; maxPresaleAmount) throw;
+            if (p.presaleAmount + msg.value > maxPresaleAmount) throw;
 
             p.presaleDate = (p.presaleDate*p.presaleAmount + now*msg.value)/(p.presaleAmount + msg.value);
             p.presaleAmount += msg.value;
@@ -1104,10 +1104,10 @@ contract PassFunding is PassFundingInterface {
         ) onlyCreator {
 
         if (limitSet
-            ||_from &lt; 1 
-            || _to &gt; partners.length - 1) throw;
+            ||_from < 1 
+            || _to > partners.length - 1) throw;
         
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             Partner t = partners[i];
             t.valid = _valid;
         }
@@ -1121,10 +1121,10 @@ contract PassFunding is PassFundingInterface {
         ) onlyCreator {
 
         if (limitSet
-            ||_from &lt; 1 
-            || _to &gt; partners.length - 1) throw;
+            ||_from < 1 
+            || _to > partners.length - 1) throw;
         
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             Partner t = partners[i];
             if (DaoManager.balanceOf(t.partnerAddress) != 0) t.valid = _valid;
         }
@@ -1168,16 +1168,16 @@ contract PassFunding is PassFundingInterface {
         uint _fundingMaxAmount = DaoManager.fundingMaxAmount(address(this));
 
         if (!limitSet 
-            || _fundingMaxAmount &lt; minFundingAmount
-            || setFromPartner &gt; _to 
-            || _to &gt; partners.length - 1) throw;
+            || _fundingMaxAmount < minFundingAmount
+            || setFromPartner > _to 
+            || _to > partners.length - 1) throw;
 
         DaoManager.setFundingStartTime(startTime);
         if (tokenCreation) contractorManager.setFundingStartTime(startTime);
 
         if (setFromPartner == 1) sumOfFundingAmountLimits = 0;
         
-        for (uint i = setFromPartner; i &lt;= _to; i++) {
+        for (uint i = setFromPartner; i <= _to; i++) {
 
             partners[i].fundingAmountLimit = partnerFundingLimit(i, minAmountLimit, maxAmountLimit, 
                 divisorBalanceLimit, multiplierSharesLimit, divisorSharesLimit);
@@ -1188,12 +1188,12 @@ contract PassFunding is PassFundingInterface {
         
         setFromPartner = _to + 1;
         
-        if (setFromPartner &gt;= partners.length) {
+        if (setFromPartner >= partners.length) {
 
             setFromPartner = 1;
 
-            if (sumOfFundingAmountLimits &lt; minFundingAmount 
-                || sumOfFundingAmountLimits &gt; _fundingMaxAmount) {
+            if (sumOfFundingAmountLimits < minFundingAmount 
+                || sumOfFundingAmountLimits > _fundingMaxAmount) {
 
                 maxPresaleAmount = 0;
                 IsfundingAborted = true; 
@@ -1218,18 +1218,18 @@ contract PassFunding is PassFundingInterface {
 
         if (!allSet) throw;
         
-        if (_from &lt; 1 || _to &gt; partners.length - 1) throw;
+        if (_from < 1 || _to > partners.length - 1) throw;
         
         address _partner;
         uint _amountToFund;
         uint _sumAmountToFund = 0;
 
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             
             _partner = partners[i].partnerAddress;
             _amountToFund = partners[i].fundingAmountLimit - partners[i].fundedAmount;
         
-            if (_amountToFund &gt; 0) {
+            if (_amountToFund > 0) {
 
                 partners[i].fundedAmount += _amountToFund;
                 _sumAmountToFund += _amountToFund;
@@ -1270,16 +1270,16 @@ contract PassFunding is PassFundingInterface {
         uint _amountnotToRefund = t.presaleAmount;
         uint _amountToRefund;
         
-        if (t.presaleAmount &gt; maxPresaleAmount &amp;&amp; t.valid) {
+        if (t.presaleAmount > maxPresaleAmount && t.valid) {
             _amountnotToRefund = maxPresaleAmount;
         }
         
-        if (t.fundedAmount &gt; 0 || now &gt; closingTime) {
+        if (t.fundedAmount > 0 || now > closingTime) {
             _amountnotToRefund = t.fundedAmount;
         }
 
         _amountToRefund = t.presaleAmount - _amountnotToRefund;
-        if (_amountToRefund &lt;= 0) return true;
+        if (_amountToRefund <= 0) return true;
 
         t.presaleAmount = _amountnotToRefund;
         if (t.partnerAddress.send(_amountToRefund)) {
@@ -1294,9 +1294,9 @@ contract PassFunding is PassFundingInterface {
 
     function refundForValidPartners(uint _to) {
 
-        if (refundFromPartner &gt; _to || _to &gt; partners.length - 1) throw;
+        if (refundFromPartner > _to || _to > partners.length - 1) throw;
         
-        for (uint i = refundFromPartner; i &lt;= _to; i++) {
+        for (uint i = refundFromPartner; i <= _to; i++) {
             if (partners[i].valid) {
                 if (!refundFor(i)) throw;
             }
@@ -1304,10 +1304,10 @@ contract PassFunding is PassFundingInterface {
 
         refundFromPartner = _to + 1;
         
-        if (refundFromPartner &gt;= partners.length) {
+        if (refundFromPartner >= partners.length) {
             refundFromPartner = 1;
 
-            if ((totalFunded &gt;= sumOfFundingAmountLimits &amp;&amp; allSet &amp;&amp; closingTime &gt; now)
+            if ((totalFunded >= sumOfFundingAmountLimits && allSet && closingTime > now)
                 || IsfundingAborted) {
 
                 closingTime = now; 
@@ -1322,9 +1322,9 @@ contract PassFunding is PassFundingInterface {
         uint _from,
         uint _to) {
 
-        if (_from &lt; 1 || _to &gt; partners.length - 1) throw;
+        if (_from < 1 || _to > partners.length - 1) throw;
         
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             if (!refundFor(i)) throw;
         }
 
@@ -1344,11 +1344,11 @@ contract PassFunding is PassFundingInterface {
         uint _to
         ) constant external returns (uint) {
 
-        if (_from &lt; 1 || _to &gt; partners.length - 1) throw;
+        if (_from < 1 || _to > partners.length - 1) throw;
 
         uint _total = 0;
         
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             _total += partnerFundingLimit(i, _minAmountLimit, _maxAmountLimit, 
                 _divisorBalanceLimit, _multiplierSharesLimit, _divisorSharesLimit);
         }
@@ -1375,12 +1375,12 @@ contract PassFunding is PassFundingInterface {
 
             _amount = t.presaleAmount;
             
-            if (_divisorBalanceLimit &gt; 0) {
+            if (_divisorBalanceLimit > 0) {
                 _amount1 = uint(t.partnerAddress.balance)/uint(_divisorBalanceLimit);
-                if (_amount &gt; _amount1) _amount = _amount1; 
+                if (_amount > _amount1) _amount = _amount1; 
                 }
 
-            if (_multiplierSharesLimit &gt; 0 &amp;&amp; _divisorSharesLimit &gt; 0) {
+            if (_multiplierSharesLimit > 0 && _divisorSharesLimit > 0) {
 
                 uint _balance = uint(DaoManager.balanceOf(t.partnerAddress));
 
@@ -1388,15 +1388,15 @@ contract PassFunding is PassFundingInterface {
                 if (_multiplier/_balance != _multiplierSharesLimit) throw;
 
                 _amount1 = _multiplier/_divisorSharesLimit;
-                if (_amount &gt; _amount1) _amount = _amount1; 
+                if (_amount > _amount1) _amount = _amount1; 
 
                 }
 
-            if (_amount &gt; _maxAmountLimit) _amount = _maxAmountLimit;
+            if (_amount > _maxAmountLimit) _amount = _maxAmountLimit;
             
-            if (_amount &lt; _minAmountLimit) _amount = _minAmountLimit;
+            if (_amount < _minAmountLimit) _amount = _minAmountLimit;
 
-            if (_amount &gt; t.presaleAmount) _amount = t.presaleAmount;
+            if (_amount > t.presaleAmount) _amount = t.presaleAmount;
             
         }
         
@@ -1413,11 +1413,11 @@ contract PassFunding is PassFundingInterface {
         uint _to
         ) constant external returns (uint) {
         
-        if (_from &lt; 1 || _to &gt; partners.length-1) throw;
+        if (_from < 1 || _to > partners.length-1) throw;
 
         uint _total = 0;
         
-        for (uint i = _from; i &lt;= _to; i++) {
+        for (uint i = _from; i <= _to; i++) {
             if (partners[i].valid) _total += 1;
         }
 

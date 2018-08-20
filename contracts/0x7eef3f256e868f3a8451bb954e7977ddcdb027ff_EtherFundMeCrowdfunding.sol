@@ -41,7 +41,7 @@ contract EtherFundMeCrowdfunding {
 	bool public halted;
 
     ///  How much ETH each address has invested to this crowdfunding
-    mapping (address =&gt; uint256) public investedAmountOf;
+    mapping (address => uint256) public investedAmountOf;
 
 	/// etherfund.me final fee in %
     uint public constant ETHERFUNDME_FEE = 2;
@@ -126,13 +126,13 @@ contract EtherFundMeCrowdfunding {
 	function getState() public constant returns (State) {
 		if (finalized)
 			return State.Finalized;
-		if (startsAt &gt; now)
+		if (startsAt > now)
 			return State.Preparing;
-		if (now &gt;= startsAt &amp;&amp; now &lt; endsAt)
+		if (now >= startsAt && now < endsAt)
 			return State.Funding;
 		if (isGoalReached())
 			return State.Success;
-		if (!isGoalReached() &amp;&amp; this.balance &gt; 0)
+		if (!isGoalReached() && this.balance > 0)
 			return State.Refunding;
 		return State.Failure;
 	}
@@ -140,7 +140,7 @@ contract EtherFundMeCrowdfunding {
 	/// @dev Goal was reached
 	/// @return true if the crowdsale has raised enough money to be a succes
 	function isGoalReached() public constant returns (bool reached) {
-		return this.balance &gt;= (fundingGoal * GOAL_REACHED_CRITERION) / 100;
+		return this.balance >= (fundingGoal * GOAL_REACHED_CRITERION) / 100;
 	}
 
 	 /// @dev Fallback method
@@ -151,7 +151,7 @@ contract EtherFundMeCrowdfunding {
 	 /// @dev Allow contributions to this crowdfunding.
 	 function invest() public payable stopInEmergency  {
 		require(getState() == State.Funding);
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
 		uint weiAmount = msg.value;
 		address investor = msg.sender;

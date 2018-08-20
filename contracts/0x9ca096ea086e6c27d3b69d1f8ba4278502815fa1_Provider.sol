@@ -10,7 +10,7 @@ library SafeMath {
       return 0;
     }
     c = a * b;
-    require(c / a == b, &quot;Overflow - Multiplication&quot;);
+    require(c / a == b, "Overflow - Multiplication");
     return c;
   }
 
@@ -25,7 +25,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a, &quot;Underflow - Subtraction&quot;);
+    require(b <= a, "Underflow - Subtraction");
     return a - b;
   }
 
@@ -34,7 +34,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    require(c &gt;= a, &quot;Overflow - Addition&quot;);
+    require(c >= a, "Overflow - Addition");
     return c;
   }
 }
@@ -52,7 +52,7 @@ library Contract {
     last();
   }
 
-  bytes32 internal constant EXEC_PERMISSIONS = keccak256(&#39;script_exec_permissions&#39;);
+  bytes32 internal constant EXEC_PERMISSIONS = keccak256('script_exec_permissions');
 
   // Sets up contract execution - reads execution id and sender from storage and
   // places in memory, creating getters. Calling this function should be the first
@@ -81,7 +81,7 @@ library Contract {
       authorized := sload(keccak256(0, 0x40))
     }
     if (!authorized)
-      revert(&quot;Sender is not authorized as a script exec address&quot;);
+      revert("Sender is not authorized as a script exec address");
   }
 
   // Sets up contract execution when initializing an instance of the application
@@ -96,7 +96,7 @@ library Contract {
   function initialize() internal view {
     // No memory should have been allocated yet - expect the free memory pointer
     // to point to 0x80 - and throw if it does not
-    require(freeMem() == 0x80, &quot;Memory allocated prior to execution&quot;);
+    require(freeMem() == 0x80, "Memory allocated prior to execution");
     // Next, set up memory for execution
     assembly {
       mstore(0x80, sload(0))     // Execution id, read from storage
@@ -112,7 +112,7 @@ library Contract {
       mstore(0x40, 0x180)
     }
     // Ensure that the sender and execution id returned from storage are expected values -
-    assert(execID() != bytes32(0) &amp;&amp; sender() != address(0));
+    assert(execID() != bytes32(0) && sender() != address(0));
   }
 
   // Calls the passed-in function, performing a memory state check before and after the check
@@ -132,7 +132,7 @@ library Contract {
   function commit() conditions(validState, none) internal pure {
     // Check value of storage buffer pointer - should be at least 0x180
     bytes32 ptr = buffPtr();
-    require(ptr &gt;= 0x180, &quot;Invalid buffer pointer&quot;);
+    require(ptr >= 0x180, "Invalid buffer pointer");
 
     assembly {
       // Get the size of the buffer
@@ -147,13 +147,13 @@ library Contract {
 
   // Checks to ensure the application was correctly executed -
   function validState() private pure {
-    if (freeMem() &lt; 0x180)
-      revert(&#39;Expected Contract.execute()&#39;);
+    if (freeMem() < 0x180)
+      revert('Expected Contract.execute()');
 
-    if (buffPtr() != 0 &amp;&amp; buffPtr() &lt; 0x180)
-      revert(&#39;Invalid buffer pointer&#39;);
+    if (buffPtr() != 0 && buffPtr() < 0x180)
+      revert('Invalid buffer pointer');
 
-    assert(execID() != bytes32(0) &amp;&amp; sender() != address(0));
+    assert(execID() != bytes32(0) && sender() != address(0));
   }
 
   // Returns a pointer to the execution storage buffer -
@@ -177,19 +177,19 @@ library Contract {
   // If the current action is not storing, reverts
   function isStoring() private pure {
     if (currentAction() != STORES)
-      revert(&#39;Invalid current action - expected STORES&#39;);
+      revert('Invalid current action - expected STORES');
   }
 
   // If the current action is not emitting, reverts
   function isEmitting() private pure {
     if (currentAction() != EMITS)
-      revert(&#39;Invalid current action - expected EMITS&#39;);
+      revert('Invalid current action - expected EMITS');
   }
 
   // If the current action is not paying, reverts
   function isPaying() private pure {
     if (currentAction() != PAYS)
-      revert(&#39;Invalid current action - expected PAYS&#39;);
+      revert('Invalid current action - expected PAYS');
   }
 
   // Initializes a storage buffer in memory -
@@ -203,7 +203,7 @@ library Contract {
       mstore(add(0x20, ptr), 0) // buffer length
       // Update free memory pointer -
       mstore(0x40, add(0x40, ptr))
-      // Set expected next function to &#39;NONE&#39; -
+      // Set expected next function to 'NONE' -
       mstore(0x100, 1)
     }
   }
@@ -214,10 +214,10 @@ library Contract {
     if (buffPtr() == bytes32(0))
       startBuffer();
 
-    // Ensure that the current action is not &#39;storing&#39;, and that the buffer has not already
+    // Ensure that the current action is not 'storing', and that the buffer has not already
     // completed a STORES action -
     if (stored() != 0 || currentAction() == STORES)
-      revert(&#39;Duplicate request - stores&#39;);
+      revert('Duplicate request - stores');
   }
 
   // Checks whether or not it is valid to create an EMITS action request -
@@ -226,10 +226,10 @@ library Contract {
     if (buffPtr() == bytes32(0))
       startBuffer();
 
-    // Ensure that the current action is not &#39;emitting&#39;, and that the buffer has not already
+    // Ensure that the current action is not 'emitting', and that the buffer has not already
     // completed an EMITS action -
     if (emitted() != 0 || currentAction() == EMITS)
-      revert(&#39;Duplicate request - emits&#39;);
+      revert('Duplicate request - emits');
   }
 
   // Checks whether or not it is valid to create a PAYS action request -
@@ -238,10 +238,10 @@ library Contract {
     if (buffPtr() == bytes32(0))
       startBuffer();
 
-    // Ensure that the current action is not &#39;paying&#39;, and that the buffer has not already
+    // Ensure that the current action is not 'paying', and that the buffer has not already
     // completed an PAYS action -
     if (paid() != 0 || currentAction() == PAYS)
-      revert(&#39;Duplicate request - pays&#39;);
+      revert('Duplicate request - pays');
   }
 
   // Placeholder function when no pre or post condition for a function is needed
@@ -252,13 +252,13 @@ library Contract {
   // Returns the execution id from memory -
   function execID() internal pure returns (bytes32 exec_id) {
     assembly { exec_id := mload(0x80) }
-    require(exec_id != bytes32(0), &quot;Execution id overwritten, or not read&quot;);
+    require(exec_id != bytes32(0), "Execution id overwritten, or not read");
   }
 
   // Returns the original sender from memory -
   function sender() internal pure returns (address addr) {
     assembly { addr := mload(0xa0) }
-    require(addr != address(0), &quot;Sender address overwritten, or not read&quot;);
+    require(addr != address(0), "Sender address overwritten, or not read");
   }
 
   // Reading from storage: //
@@ -272,10 +272,10 @@ library Contract {
 
   // Storing data, emitting events, and forwarding payments: //
 
-  bytes4 internal constant EMITS = bytes4(keccak256(&#39;Emit((bytes32[],bytes)[])&#39;));
-  bytes4 internal constant STORES = bytes4(keccak256(&#39;Store(bytes32[])&#39;));
-  bytes4 internal constant PAYS = bytes4(keccak256(&#39;Pay(bytes32[])&#39;));
-  bytes4 internal constant THROWS = bytes4(keccak256(&#39;Error(string)&#39;));
+  bytes4 internal constant EMITS = bytes4(keccak256('Emit((bytes32[],bytes)[])'));
+  bytes4 internal constant STORES = bytes4(keccak256('Store(bytes32[])'));
+  bytes4 internal constant PAYS = bytes4(keccak256('Pay(bytes32[])'));
+  bytes4 internal constant THROWS = bytes4(keccak256('Error(string)'));
 
   // Function enums -
   enum NextFunction {
@@ -286,7 +286,7 @@ library Contract {
   function validStoreDest() private pure {
     // Ensure that the next function expected pushes a storage destination -
     if (expected() != NextFunction.STORE_DEST)
-      revert(&#39;Unexpected function order - expected storage destination to be pushed&#39;);
+      revert('Unexpected function order - expected storage destination to be pushed');
 
     // Ensure that the current buffer is pushing STORES actions -
     isStoring();
@@ -296,10 +296,10 @@ library Contract {
   function validStoreVal() private pure {
     // Ensure that the next function expected pushes a storage value -
     if (
-      expected() != NextFunction.VAL_SET &amp;&amp;
-      expected() != NextFunction.VAL_INC &amp;&amp;
+      expected() != NextFunction.VAL_SET &&
+      expected() != NextFunction.VAL_INC &&
       expected() != NextFunction.VAL_DEC
-    ) revert(&#39;Unexpected function order - expected storage value to be pushed&#39;);
+    ) revert('Unexpected function order - expected storage value to be pushed');
 
     // Ensure that the current buffer is pushing STORES actions -
     isStoring();
@@ -309,7 +309,7 @@ library Contract {
   function validPayDest() private pure {
     // Ensure that the next function expected pushes a payment destination -
     if (expected() != NextFunction.PAY_DEST)
-      revert(&#39;Unexpected function order - expected payment destination to be pushed&#39;);
+      revert('Unexpected function order - expected payment destination to be pushed');
 
     // Ensure that the current buffer is pushing PAYS actions -
     isPaying();
@@ -319,7 +319,7 @@ library Contract {
   function validPayAmt() private pure {
     // Ensure that the next function expected pushes a payment amount -
     if (expected() != NextFunction.PAY_AMT)
-      revert(&#39;Unexpected function order - expected payment amount to be pushed&#39;);
+      revert('Unexpected function order - expected payment amount to be pushed');
 
     // Ensure that the current buffer is pushing PAYS actions -
     isPaying();
@@ -329,7 +329,7 @@ library Contract {
   function validEvent() private pure {
     // Ensure that the next function expected pushes an event -
     if (expected() != NextFunction.EMIT_LOG)
-      revert(&#39;Unexpected function order - expected event to be pushed&#39;);
+      revert('Unexpected function order - expected event to be pushed');
 
     // Ensure that the current buffer is pushing EMITS actions -
     isEmitting();
@@ -342,9 +342,9 @@ library Contract {
     assembly {
       // Get pointer to buffer length -
       let ptr := add(0x20, mload(0xc0))
-      // Push requestor to the end of buffer, as well as to the &#39;current action&#39; slot -
+      // Push requestor to the end of buffer, as well as to the 'current action' slot -
       mstore(add(0x20, add(ptr, mload(ptr))), action_req)
-      // Push &#39;0&#39; to the end of the 4 bytes just pushed - this will be the length of the STORES action
+      // Push '0' to the end of the 4 bytes just pushed - this will be the length of the STORES action
       mstore(add(0x24, add(ptr, mload(ptr))), 0)
       // Increment buffer length - 0x24 plus the previous length
       mstore(ptr, add(0x24, mload(ptr)))
@@ -359,7 +359,7 @@ library Contract {
     setFreeMem();
   }
 
-  // Sets a passed in location to a value passed in via &#39;to&#39;
+  // Sets a passed in location to a value passed in via 'to'
   function set(bytes32 _field) conditions(validStoreDest, validStoreVal) internal pure returns (bytes32) {
     assembly {
       // Get pointer to buffer length -
@@ -477,7 +477,7 @@ library Contract {
     else if (expected() == NextFunction.VAL_DEC)
       _amt = uint(_val).sub(_amt);
     else
-      revert(&#39;Expected VAL_INC or VAL_DEC&#39;);
+      revert('Expected VAL_INC or VAL_DEC');
 
     assembly {
       // Get pointer to buffer length -
@@ -498,12 +498,12 @@ library Contract {
     // Check the expected function type - if it is VAL_DEC, set the new amount to the difference of
     // _val and _amt, to a minimum of 0
     if (expected() == NextFunction.VAL_DEC) {
-      if (_amt &gt;= uint(_val))
+      if (_amt >= uint(_val))
         _amt = 0;
       else
         _amt = uint(_val).sub(_amt);
     } else {
-      revert(&#39;Expected VAL_DEC&#39;);
+      revert('Expected VAL_DEC');
     }
 
     assembly {
@@ -527,9 +527,9 @@ library Contract {
     assembly {
       // Get pointer to buffer length -
       let ptr := add(0x20, mload(0xc0))
-      // Push requestor to the end of buffer, as well as to the &#39;current action&#39; slot -
+      // Push requestor to the end of buffer, as well as to the 'current action' slot -
       mstore(add(0x20, add(ptr, mload(ptr))), action_req)
-      // Push &#39;0&#39; to the end of the 4 bytes just pushed - this will be the length of the EMITS action
+      // Push '0' to the end of the 4 bytes just pushed - this will be the length of the EMITS action
       mstore(add(0x24, add(ptr, mload(ptr))), 0)
       // Increment buffer length - 0x24 plus the previous length
       mstore(ptr, add(0x24, mload(ptr)))
@@ -730,9 +730,9 @@ library Contract {
     assembly {
       // Get pointer to buffer length -
       let ptr := add(0x20, mload(0xc0))
-      // Push requestor to the end of buffer, as well as to the &#39;current action&#39; slot -
+      // Push requestor to the end of buffer, as well as to the 'current action' slot -
       mstore(add(0x20, add(ptr, mload(ptr))), action_req)
-      // Push &#39;0&#39; to the end of the 4 bytes just pushed - this will be the length of the PAYS action
+      // Push '0' to the end of the 4 bytes just pushed - this will be the length of the PAYS action
       mstore(add(0x24, add(ptr, mload(ptr))), 0)
       // Increment buffer length - 0x24 plus the previous length
       mstore(ptr, add(0x24, mload(ptr)))
@@ -831,47 +831,47 @@ library Provider {
 
   // Returns the index address for this exec id
   function appIndex() internal pure returns (bytes32)
-    { return keccak256(&#39;index&#39;); }
+    { return keccak256('index'); }
 
-  // Storage seed for a script executor&#39;s execution permission mapping
+  // Storage seed for a script executor's execution permission mapping
   function execPermissions(address _exec) internal pure returns (bytes32)
-    { return keccak256(_exec, keccak256(&#39;script_exec_permissions&#39;)); }
+    { return keccak256(_exec, keccak256('script_exec_permissions')); }
 
-  // Storage seed for a function selector&#39;s implementation address
+  // Storage seed for a function selector's implementation address
   function appSelectors(bytes4 _selector) internal pure returns (bytes32)
-    { return keccak256(_selector, &#39;implementation&#39;); }
+    { return keccak256(_selector, 'implementation'); }
 
-  // Returns the location of a provider&#39;s list of registered applications in storage
+  // Returns the location of a provider's list of registered applications in storage
   function registeredApps() internal pure returns (bytes32)
-    { return keccak256(bytes32(Contract.sender()), &#39;app_list&#39;); }
+    { return keccak256(bytes32(Contract.sender()), 'app_list'); }
 
-  // Returns the location of a registered app&#39;s name under a provider
+  // Returns the location of a registered app's name under a provider
   function appBase(bytes32 _app) internal pure returns (bytes32)
-    { return keccak256(_app, keccak256(bytes32(Contract.sender()), &#39;app_base&#39;)); }
+    { return keccak256(_app, keccak256(bytes32(Contract.sender()), 'app_base')); }
 
-  // Returns the location of an app&#39;s list of versions
+  // Returns the location of an app's list of versions
   function appVersionList(bytes32 _app) internal pure returns (bytes32)
-    { return keccak256(&#39;versions&#39;, appBase(_app)); }
+    { return keccak256('versions', appBase(_app)); }
 
-  // Returns the location of a version&#39;s name
+  // Returns the location of a version's name
   function versionBase(bytes32 _app, bytes32 _version) internal pure returns (bytes32)
-    { return keccak256(_version, &#39;version&#39;, appBase(_app)); }
+    { return keccak256(_version, 'version', appBase(_app)); }
 
-  // Returns the location of a registered app&#39;s index address under a provider
+  // Returns the location of a registered app's index address under a provider
   function versionIndex(bytes32 _app, bytes32 _version) internal pure returns (bytes32)
-    { return keccak256(&#39;index&#39;, versionBase(_app, _version)); }
+    { return keccak256('index', versionBase(_app, _version)); }
 
-  // Returns the location of an app&#39;s function selectors, registered under a provider
+  // Returns the location of an app's function selectors, registered under a provider
   function versionSelectors(bytes32 _app, bytes32 _version) internal pure returns (bytes32)
-    { return keccak256(&#39;selectors&#39;, versionBase(_app, _version)); }
+    { return keccak256('selectors', versionBase(_app, _version)); }
 
-  // Returns the location of an app&#39;s implementing addresses, registered under a provider
+  // Returns the location of an app's implementing addresses, registered under a provider
   function versionAddresses(bytes32 _app, bytes32 _version) internal pure returns (bytes32)
-    { return keccak256(&#39;addresses&#39;, versionBase(_app, _version)); }
+    { return keccak256('addresses', versionBase(_app, _version)); }
 
   // Returns the location of the version before the current version
   function previousVersion(bytes32 _app, bytes32 _version) internal pure returns (bytes32)
-    { return keccak256(&quot;previous version&quot;, versionBase(_app, _version)); }
+    { return keccak256("previous version", versionBase(_app, _version)); }
 
   // Returns storage location of appversion list at a specific index
   function appVersionListAt(bytes32 _app, uint _index) internal pure returns (bytes32)
@@ -884,10 +884,10 @@ library Provider {
 
     // Throw if the name has already been registered
     if (Contract.read(appBase(_app)) != bytes32(0))
-      revert(&quot;app is already registered&quot;);
+      revert("app is already registered");
 
     if (_selectors.length != _implementations.length || _selectors.length == 0)
-      revert(&quot;invalid input arrays&quot;);
+      revert("invalid input arrays");
 
     // Start storing values
     Contract.storing();
@@ -921,7 +921,7 @@ library Provider {
     // version_selectors/version_addresses, respectively
     Contract.set(versionSelectors(_app, _app)).to(_selectors.length);
     Contract.set(versionAddresses(_app, _app)).to(_implementations.length);
-    for (uint i = 0; i &lt; _selectors.length; i++) {
+    for (uint i = 0; i < _selectors.length; i++) {
       Contract.set(bytes32(32 * (i + 1) + uint(versionSelectors(_app, _app)))).to(_selectors[i]);
       Contract.set(bytes32(32 * (i + 1) + uint(versionAddresses(_app, _app)))).to(_implementations[i]);
     }
@@ -940,15 +940,15 @@ library Provider {
     // Throw if the app has not been registered
     // Throw if the version has already been registered (check app_base)
     if (Contract.read(appBase(_app)) == bytes32(0))
-      revert(&quot;App has not been registered&quot;);
+      revert("App has not been registered");
 
     if (Contract.read(versionBase(_app, _version)) != bytes32(0))
-      revert(&quot;Version already exists&quot;);
+      revert("Version already exists");
 
     if (
       _selectors.length != _implementations.length ||
       _selectors.length == 0
-    ) revert(&quot;Invalid input array lengths&quot;);
+    ) revert("Invalid input array lengths");
 
     // Begin storing values
     Contract.storing();
@@ -956,7 +956,7 @@ library Provider {
     // Store the version name at version_base
     Contract.set(versionBase(_app, _version)).to(_version);
 
-    // Push the version to the app&#39;s version list
+    // Push the version to the app's version list
     uint num_versions = uint(Contract.read(appVersionList(_app)));
     Contract.set(appVersionListAt(_app, (num_versions + 1))).to(_version);
     Contract.set(appVersionList(_app)).to(num_versions + 1);
@@ -968,12 +968,12 @@ library Provider {
     // version_selectors/version_addresses, respectively
     Contract.set(versionSelectors(_app, _version)).to(_selectors.length);
     Contract.set(versionAddresses(_app, _version)).to(_implementations.length);
-    for (uint i = 0; i &lt; _selectors.length; i++) {
+    for (uint i = 0; i < _selectors.length; i++) {
       Contract.set(bytes32(32 * (i + 1) + uint(versionSelectors(_app, _version)))).to(_selectors[i]);
       Contract.set(bytes32(32 * (i + 1) + uint(versionAddresses(_app, _version)))).to(_implementations[i]);
     }
 
-    // Set the version&#39;s previous version
+    // Set the version's previous version
     bytes32 prev_version = Contract.read(bytes32(32 * num_versions + uint(appVersionList(_app))));
     Contract.set(previousVersion(_app, _version)).to(prev_version);
 
@@ -994,38 +994,38 @@ library Provider {
     Contract.authorize(msg.sender);
 
     // Validate input -
-    require(_app_name != 0 &amp;&amp; _current_version != 0 &amp;&amp; _registry_id != 0, &#39;invalid input&#39;);
+    require(_app_name != 0 && _current_version != 0 && _registry_id != 0, 'invalid input');
 
     // Get current version selectors and ensure nonzero length -
     bytes4[] memory current_selectors = getVersionSelectors(_app_name, _current_version, _registry_id);
-    require(current_selectors.length != 0, &#39;invalid current version&#39;);
+    require(current_selectors.length != 0, 'invalid current version');
 
     // Get latest version name and ensure it is not the current version, or zero -
     bytes32 latest_version = getLatestVersion(_app_name, _registry_id);
-    require(latest_version != _current_version, &#39;current version is already latest&#39;);
-    require(latest_version != 0, &#39;invalid latest version&#39;);
+    require(latest_version != _current_version, 'current version is already latest');
+    require(latest_version != 0, 'invalid latest version');
 
     // Get latest version index, selectors, and implementing addresses.
     // Ensure all returned values are valid -
     address latest_idx = getVersionIndex(_app_name, latest_version, _registry_id);
     bytes4[] memory latest_selectors = getVersionSelectors(_app_name, latest_version, _registry_id);
     address[] memory latest_impl = getVersionImplementations(_app_name, latest_version, _registry_id);
-    require(latest_idx != 0, &#39;invalid version idx address&#39;);
-    require(latest_selectors.length != 0 &amp;&amp; latest_selectors.length == latest_impl.length, &#39;invalid implementation specification&#39;);
+    require(latest_idx != 0, 'invalid version idx address');
+    require(latest_selectors.length != 0 && latest_selectors.length == latest_impl.length, 'invalid implementation specification');
 
     // Set up a storage buffer to clear current version implementation -
     Contract.storing();
 
     // For each selector, set its implementation to 0
-    for (uint i = 0; i &lt; current_selectors.length; i++)
+    for (uint i = 0; i < current_selectors.length; i++)
       Contract.set(appSelectors(current_selectors[i])).to(address(0));
 
-    // Set this application&#39;s index address to equal the latest version&#39;s index -
+    // Set this application's index address to equal the latest version's index -
     Contract.set(appIndex()).to(latest_idx);
 
     // Loop over implementing addresses, and map each function selector to its corresponding address for the new instance
-    for (i = 0; i &lt; latest_selectors.length; i++) {
-      require(latest_selectors[i] != 0 &amp;&amp; latest_impl[i] != 0, &#39;invalid input - expected nonzero implementation&#39;);
+    for (i = 0; i < latest_selectors.length; i++) {
+      require(latest_selectors[i] != 0 && latest_impl[i] != 0, 'invalid input - expected nonzero implementation');
       Contract.set(appSelectors(latest_selectors[i])).to(latest_impl[i]);
     }
 
@@ -1043,7 +1043,7 @@ library Provider {
     Contract.authorize(msg.sender);
 
     // Validate input -
-    require(_new_exec_addr != 0, &#39;invalid replacement&#39;);
+    require(_new_exec_addr != 0, 'invalid replacement');
 
     // Set up a storage buffer -
     Contract.storing();
@@ -1093,12 +1093,12 @@ library Provider {
   }
 
   /*
-  Returns the addresses associated with this version&#39;s implementation
+  Returns the addresses associated with this version's implementation
 
   @param _app: The name of the application
   @param _version: The name of the version
   @param _registry_id: The exec id of the registry application
-  @return impl: An address array containing all of this version&#39;s implementing addresses
+  @return impl: An address array containing all of this version's implementing addresses
   */
   function getVersionImplementations(bytes32 _app, bytes32 _version, bytes32 _registry_id) internal view returns (address[] memory impl) {
     // Get number of addresses
@@ -1106,19 +1106,19 @@ library Provider {
     // Allocate space for return
     impl = new address[](length);
     // For each address, read it from storage and add it to the array
-    for (uint i = 0; i &lt; length; i++) {
+    for (uint i = 0; i < length; i++) {
       bytes32 location = bytes32(32 * (i + 1) + uint(versionAddresses(_app, _version)));
       impl[i] = address(registryRead(location, _registry_id));
     }
   }
 
   /*
-  Returns the function selectors associated with this version&#39;s implementation
+  Returns the function selectors associated with this version's implementation
 
   @param _app: The name of the application
   @param _version: The name of the version
   @param _registry_id: The exec id of the registry application
-  @return sels: A bytes4 array containing all of this version&#39;s function selectors
+  @return sels: A bytes4 array containing all of this version's function selectors
   */
   function getVersionSelectors(bytes32 _app, bytes32 _version, bytes32 _registry_id) internal view returns (bytes4[] memory sels) {
     // Get number of addresses
@@ -1126,7 +1126,7 @@ library Provider {
     // Allocate space for return
     sels = new bytes4[](length);
     // For each address, read it from storage and add it to the array
-    for (uint i = 0; i &lt; length; i++) {
+    for (uint i = 0; i < length; i++) {
       bytes32 location = bytes32(32 * (i + 1) + uint(versionSelectors(_app, _version)));
       sels[i] = bytes4(registryRead(location, _registry_id));
     }

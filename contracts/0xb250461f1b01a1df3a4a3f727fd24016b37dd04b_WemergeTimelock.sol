@@ -84,7 +84,7 @@ contract TokenTimelock {
     public
   {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime &gt; block.timestamp);
+    require(_releaseTime > block.timestamp);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -95,10 +95,10 @@ contract TokenTimelock {
    */
   function release() public {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp &gt;= releaseTime);
+    require(block.timestamp >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
@@ -106,7 +106,7 @@ contract TokenTimelock {
 
 contract WemergeTimelock is TokenTimelock {
     
-    string public name = &quot;&quot;;
+    string public name = "";
     
     constructor(
         string _name,

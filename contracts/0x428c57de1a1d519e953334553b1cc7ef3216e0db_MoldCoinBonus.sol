@@ -10,18 +10,18 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-      assert(b &gt; 0);
+      assert(b > 0);
       uint c = a / b;
       assert(a == b * c + a % b);
       return c;
@@ -79,11 +79,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -93,8 +93,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -117,8 +117,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 
@@ -128,8 +128,8 @@ contract StandardToken is Token {
  */
 contract MoldCoin is StandardToken, SafeMath {
 
-    string public name = &quot;MOLD&quot;;
-    string public symbol = &quot;MLD&quot;;
+    string public name = "MOLD";
+    string public symbol = "MLD";
     uint public decimals = 18;
 
     uint public startDatetime; //pre-sell start datetime seconds
@@ -168,7 +168,7 @@ contract MoldCoin is StandardToken, SafeMath {
     }
 
     modifier duringCrowdSale {
-        require(block.timestamp &gt;= startDatetime &amp;&amp; block.timestamp &lt;= endDatetime);
+        require(block.timestamp >= startDatetime && block.timestamp <= endDatetime);
         _;
     }
 
@@ -191,10 +191,10 @@ contract MoldCoin is StandardToken, SafeMath {
      * Price for crowdsale by time
      */
     function price(uint timeInSeconds) constant returns(uint) {
-        if (timeInSeconds &lt; startDatetime) return 0;
-        if (timeInSeconds &lt;= firstStageDatetime) return 15000; //120 hours
-        if (timeInSeconds &lt;= secondStageDatetime) return 12000; //240 hours
-        if (timeInSeconds &lt;= endDatetime) return 10000; //2040 hours
+        if (timeInSeconds < startDatetime) return 0;
+        if (timeInSeconds <= firstStageDatetime) return 15000; //120 hours
+        if (timeInSeconds <= secondStageDatetime) return 12000; //240 hours
+        if (timeInSeconds <= endDatetime) return 10000; //2040 hours
         return 0;
     }
 
@@ -217,7 +217,7 @@ contract MoldCoin is StandardToken, SafeMath {
         require(!halted);
 
         uint tokens = safeMul(msg.value, price(block.timestamp));
-        require(safeAdd(saleTokenSupply,tokens)&lt;=coinAllocation );
+        require(safeAdd(saleTokenSupply,tokens)<=coinAllocation );
 
         balances[recipient] = safeAdd(balances[recipient], tokens);
 
@@ -234,7 +234,7 @@ contract MoldCoin is StandardToken, SafeMath {
      * Set up founder address token balance.
      */
     function allocateFounderTokens() onlyAdmin {
-        require( block.timestamp &gt; endDatetime );
+        require( block.timestamp > endDatetime );
         require(!founderAllocated);
 
         balances[founder] = safeAdd(balances[founder], founderAllocation);
@@ -249,7 +249,7 @@ contract MoldCoin is StandardToken, SafeMath {
      */
     function allocateAngelTokens(address angel, uint tokens) onlyAdmin {
 
-        require(safeAdd(angelTokenSupply,tokens) &lt;= angelAllocation );
+        require(safeAdd(angelTokenSupply,tokens) <= angelAllocation );
 
         balances[angel] = safeAdd(balances[angel], tokens);
         angelTokenSupply = safeAdd(angelTokenSupply, tokens);
@@ -280,9 +280,9 @@ contract MoldCoin is StandardToken, SafeMath {
      * arrange unsold coins
      */
     function arrangeUnsoldTokens(address holder, uint256 tokens) onlyAdmin {
-        require( block.timestamp &gt; endDatetime );
-        require( safeAdd(saleTokenSupply,tokens) &lt;= coinAllocation );
-        require( balances[holder] &gt;0 );
+        require( block.timestamp > endDatetime );
+        require( safeAdd(saleTokenSupply,tokens) <= coinAllocation );
+        require( balances[holder] >0 );
 
         balances[holder] = safeAdd(balances[holder], tokens);
         saleTokenSupply = safeAdd(saleTokenSupply, tokens);
@@ -301,7 +301,7 @@ contract MoldCoinBonus is SafeMath {
         return bonusBalances[_owner];
     }
 
-    mapping (address =&gt; uint256) bonusBalances;
+    mapping (address => uint256) bonusBalances;
 
     // administrator address
     address public admin;

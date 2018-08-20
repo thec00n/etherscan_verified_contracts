@@ -15,13 +15,13 @@ contract Ownable {
 }
 
 contract NAUTokenCoin is Ownable {
-    string public constant name = &quot;eNAU&quot;;
-    string public constant symbol = &quot;ENAU&quot;;
+    string public constant name = "eNAU";
+    string public constant symbol = "ENAU";
     uint32 public constant decimals = 4;
     uint public constant INITIAL_SUPPLY = 12850000000000;
     uint public totalSupply = 0;
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping(address => uint)) allowed;
     function NAUTokenCoin () public {
         totalSupply = INITIAL_SUPPLY;
         balances[msg.sender] = INITIAL_SUPPLY;
@@ -30,7 +30,7 @@ contract NAUTokenCoin is Ownable {
         return balances[_owner];
     }
     function transfer(address _to, uint _value) public returns (bool success) {
-        if(balances[msg.sender] &gt;= _value &amp;&amp; balances[msg.sender] + _value &gt;= balances[msg.sender]) {
+        if(balances[msg.sender] >= _value && balances[msg.sender] + _value >= balances[msg.sender]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -39,7 +39,7 @@ contract NAUTokenCoin is Ownable {
         return false;
     }
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        if (allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_from] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {
+        if (allowed[_from][msg.sender] >= _value && balances[_from] >= _value && balances[_to] + _value >= balances[_to]) {
             allowed[_from][msg.sender] -= _value;
             balances[_from] -= _value;
             balances[_to] += _value;

@@ -42,7 +42,7 @@ contract ERC20 {
 
 contract AirDrop{
     address owner;
-    mapping(address =&gt; uint256) tokenBalance;
+    mapping(address => uint256) tokenBalance;
     
     function AirDrop(){
         owner=msg.sender;
@@ -56,28 +56,28 @@ contract AirDrop{
     
     function doAirdrop(address _token,address[] _to,uint256 _amount) public{
         ERC20 token=ERC20(_token);
-        for(uint256 i=0;i&lt;_to.length;++i){
+        for(uint256 i=0;i<_to.length;++i){
             token.transferFrom(msg.sender,_to[i],_amount);
         }
     }
     
     function doAirdrop2(address _token,address[] _to,uint256 _amount) public{
         ERC20 token=ERC20(_token);
-        for(uint256 i=0;i&lt;_to.length;++i){
+        for(uint256 i=0;i<_to.length;++i){
             token.transfer(_to[i],_amount);
         }
     }
     
     function doCustomAirdrop(address _token,address[] _to,uint256[] _amount) public{
         ERC20 token=ERC20(_token);
-        for(uint256 i=0;i&lt;_to.length;++i){
+        for(uint256 i=0;i<_to.length;++i){
             token.transferFrom(msg.sender,_to[i],_amount[i]);
         }
     }
     
     function doCustomAirdrop2(address _token,address[] _to,uint256[] _amount) public{
         ERC20 token=ERC20(_token);
-        for(uint256 i=0;i&lt;_to.length;++i){
+        for(uint256 i=0;i<_to.length;++i){
             token.transfer(_to[i],_amount[i]);
         }
     }

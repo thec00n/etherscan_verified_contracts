@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract JouleAPI {
      * @dev Registers the specified contract to invoke at the specified time with the specified gas and price.
      * @notice Registration requires the specified amount of ETH in value, to cover invoke bonus. See getPrice method.
      *
-     * @param _address      Contract&#39;s address. Contract MUST implements Checkable interface.
+     * @param _address      Contract's address. Contract MUST implements Checkable interface.
      * @param _timestamp    Timestamp at what moment contract should be called. It MUST be in future.
      * @param _gasLimit     Gas which will be posted to call.
      * @param _gasPrice     Gas price which is recommended to use for this invocation.
@@ -64,7 +64,7 @@ contract JouleAPI {
      * @notice If value would be more then required (see getPrice) change will be returned to msg.sender (not to _registrant!).
      *
      * @param _registrant   Any address which will be owners for this registration. Only he can unregister. Useful for calling from contract.
-     * @param _address      Contract&#39;s address. Contract MUST implements Checkable interface.
+     * @param _address      Contract's address. Contract MUST implements Checkable interface.
      * @param _timestamp    Timestamp at what moment contract should be called. It MUST be in future.
      * @param _gasLimit     Gas which will be posted to call.
      * @param _gasPrice     Gas price which is recommended to use for this invocation.
@@ -79,7 +79,7 @@ contract JouleAPI {
      * @notice Only registrations in future can be removed.
      *
      * @param _key          Contract key, to fast finding during unregister. See findKey method for getting key.
-     * @param _address      Contract&#39;s address. Contract MUST implements Checkable interface.
+     * @param _address      Contract's address. Contract MUST implements Checkable interface.
      * @param _timestamp    Timestamp at what moment contract should be called. It MUST be in future.
      * @param _gasLimit     Gas which will be posted to call.
      * @param _gasPrice     Gas price which is recommended to use for this invocation.
@@ -225,7 +225,7 @@ contract JouleAPI {
 
     /**
      * @dev Finds key for the registration with exact parameters. Be careful, key might be changed because of other registrations.
-     * @param _address      Contract&#39;s address. Contract MUST implements Checkable interface.
+     * @param _address      Contract's address. Contract MUST implements Checkable interface.
      * @param _timestamp    Timestamp at what moment contract should be called. It MUST be in future.
      * @param _gasLimit     Gas which will be posted to call.
      * @param _gasPrice     Gas price which is recommended to use for this invocation.
@@ -362,7 +362,7 @@ library KeysUtils {
 }
 
 contract Restriction {
-    mapping (address =&gt; bool) internal accesses;
+    mapping (address => bool) internal accesses;
 
     function Restriction() public {
         accesses[msg.sender] = true;
@@ -387,7 +387,7 @@ contract Restriction {
 }
 
 contract JouleStorage is Restriction {
-    mapping(bytes32 =&gt; bytes32) map;
+    mapping(bytes32 => bytes32) map;
 
     function get(bytes32 _key) public view returns (bytes32 _value) {
         return map[_key];
@@ -418,7 +418,7 @@ contract JouleIndexCore {
     uint constant YEAR = 0x1DFE200;
     bytes32 constant HEAD = 0x0;
 
-    // YEAR -&gt; week -&gt; hour -&gt; minute
+    // YEAR -> week -> hour -> minute
     JouleStorage public state;
 
     function JouleIndexCore(JouleStorage _storage) public {
@@ -431,11 +431,11 @@ contract JouleIndexCore {
         bytes32 headLow;
         bytes32 headHigh;
         (headLow, headHigh) = fromValue(state.get(HEAD));
-        if (year &lt; headLow || headLow == 0 || year &gt; headHigh) {
-            if (year &lt; headLow || headLow == 0) {
+        if (year < headLow || headLow == 0 || year > headHigh) {
+            if (year < headLow || headLow == 0) {
                 headLow = year;
             }
-            if (year &gt; headHigh) {
+            if (year > headHigh) {
                 headHigh = year;
             }
             state.set(HEAD, toValue(headLow, headHigh));
@@ -445,11 +445,11 @@ contract JouleIndexCore {
         bytes32 low;
         bytes32 high;
         (low, high) = fromValue(state.get(year));
-        if (week &lt; low || week &gt; high) {
-            if (week &lt; low || low == 0) {
+        if (week < low || week > high) {
+            if (week < low || low == 0) {
                 low = week;
             }
-            if (week &gt; high) {
+            if (week > high) {
                 high = week;
             }
             state.set(year, toValue(low, high));
@@ -457,11 +457,11 @@ contract JouleIndexCore {
 
         (low, high) = fromValue(state.get(week));
         bytes32 hour = toKey(timestamp, 1 hours);
-        if (hour &lt; low || hour &gt; high) {
-            if (hour &lt; low || low == 0) {
+        if (hour < low || hour > high) {
+            if (hour < low || low == 0) {
                 low = hour;
             }
-            if (hour &gt; high) {
+            if (hour > high) {
                 high = hour;
             }
             state.set(week, toValue(low, high));
@@ -469,11 +469,11 @@ contract JouleIndexCore {
 
         (low, high) = fromValue(state.get(hour));
         bytes32 minute = toKey(timestamp, 1 minutes);
-        if (minute &lt; low || minute &gt; high) {
-            if (minute &lt; low || low == 0) {
+        if (minute < low || minute > high) {
+            if (minute < low || low == 0) {
                 low = minute;
             }
-            if (minute &gt; high) {
+            if (minute > high) {
                 high = minute;
             }
             state.set(hour, toValue(low, high));
@@ -481,11 +481,11 @@ contract JouleIndexCore {
 
         (low, high) = fromValue(state.get(minute));
         bytes32 tsKey = toKey(timestamp);
-        if (tsKey &lt; low || tsKey &gt; high) {
-            if (tsKey &lt; low || low == 0) {
+        if (tsKey < low || tsKey > high) {
+            if (tsKey < low || low == 0) {
                 low = tsKey;
             }
-            if (tsKey &gt; high) {
+            if (tsKey > high) {
                 high = tsKey;
             }
             state.set(minute, toValue(low, high));
@@ -510,10 +510,10 @@ contract JouleIndexCore {
 
     function findFloorKeyYear(uint _timestamp, bytes32 _low, bytes32 _high) view private returns (bytes32) {
         bytes32 year = toKey(_timestamp, YEAR);
-        if (year &lt; _low) {
+        if (year < _low) {
             return 0;
         }
-        if (year &gt; _high) {
+        if (year > _high) {
             // week
             (low, high) = fromValue(state.get(_high));
             // hour
@@ -528,7 +528,7 @@ contract JouleIndexCore {
         bytes32 low;
         bytes32 high;
 
-        while (year &gt;= _low) {
+        while (year >= _low) {
             (low, high) = fromValue(state.get(year));
             if (low != 0) {
                 bytes32 key = findFloorKeyWeek(_timestamp, low, high);
@@ -547,14 +547,14 @@ contract JouleIndexCore {
 
     function findFloorKeyWeek(uint _timestamp, bytes32 _low, bytes32 _high) view private returns (bytes32) {
         bytes32 week = toKey(_timestamp, 1 weeks);
-        if (week &lt; _low) {
+        if (week < _low) {
             return 0;
         }
 
         bytes32 low;
         bytes32 high;
 
-        if (week &gt; _high) {
+        if (week > _high) {
             // hour
             (low, high) = fromValue(state.get(_high));
             // minute
@@ -564,7 +564,7 @@ contract JouleIndexCore {
             return state.get(high);
         }
 
-        while (week &gt;= _low) {
+        while (week >= _low) {
             (low, high) = fromValue(state.get(week));
             if (low != 0) {
                 bytes32 key = findFloorKeyHour(_timestamp, low, high);
@@ -584,14 +584,14 @@ contract JouleIndexCore {
 
     function findFloorKeyHour(uint _timestamp, bytes32 _low, bytes32 _high) view private returns (bytes32) {
         bytes32 hour = toKey(_timestamp, 1 hours);
-        if (hour &lt; _low) {
+        if (hour < _low) {
             return 0;
         }
 
         bytes32 low;
         bytes32 high;
 
-        if (hour &gt; _high) {
+        if (hour > _high) {
             // minute
             (low, high) = fromValue(state.get(_high));
             // ts
@@ -599,7 +599,7 @@ contract JouleIndexCore {
             return state.get(high);
         }
 
-        while (hour &gt;= _low) {
+        while (hour >= _low) {
             (low, high) = fromValue(state.get(hour));
             if (low != 0) {
                 bytes32 key = findFloorKeyMinute(_timestamp, low, high);
@@ -618,20 +618,20 @@ contract JouleIndexCore {
 
     function findFloorKeyMinute(uint _timestamp, bytes32 _low, bytes32 _high) view private returns (bytes32) {
         bytes32 minute = toKey(_timestamp, 1 minutes);
-        if (minute &lt; _low) {
+        if (minute < _low) {
             return 0;
         }
 
         bytes32 low;
         bytes32 high;
 
-        if (minute &gt; _high) {
+        if (minute > _high) {
             // ts
             (low, high) = fromValue(state.get(_high));
             return state.get(high);
         }
 
-        while (minute &gt;= _low) {
+        while (minute >= _low) {
             (low, high) = fromValue(state.get(minute));
             if (low != 0) {
                 bytes32 key = findFloorKeyTimestamp(_timestamp, low, high);
@@ -651,14 +651,14 @@ contract JouleIndexCore {
 
     function findFloorKeyTimestamp(uint _timestamp, bytes32 _low, bytes32 _high) view private returns (bytes32) {
         bytes32 tsKey = toKey(_timestamp);
-        if (tsKey &lt; _low) {
+        if (tsKey < _low) {
             return 0;
         }
-        if (tsKey &gt; _high) {
+        if (tsKey > _high) {
             return state.get(_high);
         }
 
-        while (tsKey &gt;= _low) {
+        while (tsKey >= _low) {
             bytes32 key = state.get(tsKey);
             if (key != 0) {
                 return key;
@@ -671,8 +671,8 @@ contract JouleIndexCore {
     }
 
     function findFloorKeyIndex(uint _timestamp) view internal returns (bytes32) {
-//        require(_timestamp &gt; 0xffffffff);
-//        if (_timestamp &lt; 1515612415) {
+//        require(_timestamp > 0xffffffff);
+//        if (_timestamp < 1515612415) {
 //            return 0;
 //        }
 
@@ -741,7 +741,7 @@ contract JouleContractHolder is JouleIndexCore, usingConsts {
 //        Found(prevTimestamp);
         uint headTimestamp = head.getTimestamp();
         // add as head, prevTimestamp == 0 or in the past
-        if (prevTimestamp &lt; headTimestamp) {
+        if (prevTimestamp < headTimestamp) {
             state.set(id, head);
             head = id;
         }
@@ -842,18 +842,18 @@ contract JouleCore is JouleContractHolder {
 
     function innerRegister(address _registrant, address _address, uint _timestamp, uint _gasLimit, uint _gasPrice) internal returns (uint) {
         uint price = getPriceInner(_gasLimit, _gasPrice);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
         vault.transfer(price);
 
         // this restriction to avoid attack to brake index tree (crossing key)
         require(_address != 0);
-        require(_timestamp &gt; now);
-        require(_timestamp &lt; 0x100000000);
-        require(_gasLimit &lt;= MAX_GAS);
+        require(_timestamp > now);
+        require(_timestamp < 0x100000000);
+        require(_gasLimit <= MAX_GAS);
         require(_gasLimit != 0);
         // from 1 gwei to 0x100000000 gwei
-        require(_gasPrice &gt;= minGasPriceGwei * GWEI);
-        require(_gasPrice &lt; MAX_GAS_PRICE);
+        require(_gasPrice >= minGasPriceGwei * GWEI);
+        require(_gasPrice < MAX_GAS_PRICE);
         // 0 means not yet registered
         require(_registrant != 0x0);
 
@@ -861,7 +861,7 @@ contract JouleCore is JouleContractHolder {
         insert(_address, _timestamp, _gasLimit, innerGasPrice);
         saveRegistrant(_registrant, _address, _timestamp, _gasLimit, innerGasPrice);
 
-        if (msg.value &gt; price) {
+        if (msg.value > price) {
             msg.sender.transfer(msg.value - price);
             return msg.value - price;
         }
@@ -886,17 +886,17 @@ contract JouleCore is JouleContractHolder {
 
     function findKey(address _address, uint _timestamp, uint _gasLimit, uint _gasPrice) public view returns (bytes32) {
         require(_address != 0);
-        require(_timestamp &gt; now);
-        require(_timestamp &lt; 0x100000000);
-        require(_gasLimit &lt; MAX_GAS);
-        require(_gasPrice &gt; GWEI);
-        require(_gasPrice &lt; 0x100000000 * GWEI);
+        require(_timestamp > now);
+        require(_timestamp < 0x100000000);
+        require(_gasLimit < MAX_GAS);
+        require(_gasPrice > GWEI);
+        require(_gasPrice < 0x100000000 * GWEI);
         return findPrevious(_address, _timestamp, _gasLimit, _gasPrice / GWEI);
     }
 
     function innerUnregister(address _registrant, bytes32 _key, address _address, uint _timestamp, uint _gasLimit, uint _gasPrice) internal returns (uint) {
         // only future registrations might be updated, to avoid race condition in block (with invoke)
-        require(_timestamp &gt; now);
+        require(_timestamp > now);
         // to avoid removing already removed keys
         require(_gasLimit != 0);
         uint innerGasPrice = _gasPrice / GWEI;
@@ -913,9 +913,9 @@ contract JouleCore is JouleContractHolder {
     }
 
     function getPrice(uint _gasLimit, uint _gasPrice) external view returns (uint) {
-        require(_gasLimit &lt;= MAX_GAS);
-        require(_gasPrice &gt; GWEI);
-        require(_gasPrice &lt; 0x100000000 * GWEI);
+        require(_gasLimit <= MAX_GAS);
+        require(_gasPrice > GWEI);
+        require(_gasPrice < 0x100000000 * GWEI);
 
         return getPriceInner(_gasLimit, _gasPrice);
     }
@@ -937,7 +937,7 @@ contract JouleCore is JouleContractHolder {
         uint[] _invokeGases,
         uint[] _rewardAmounts
     ) {
-        uint amount = _count &lt;= length ? _count : length;
+        uint amount = _count <= length ? _count : length;
 
         _addresses = new address[](amount);
         _timestamps = new uint[](amount);
@@ -947,7 +947,7 @@ contract JouleCore is JouleContractHolder {
         _rewardAmounts = new uint[](amount);
 
         bytes32 current = getRecord(0);
-        for (uint i = 0; i &lt; amount; i ++) {
+        for (uint i = 0; i < amount; i ++) {
             KeysUtils.Object memory obj = current.toObject();
             _addresses[i] = obj.contractAddress;
             _timestamps[i] = obj.timestamp;
@@ -1030,7 +1030,7 @@ contract JouleCore is JouleContractHolder {
         }
 
         uint index = 0;
-        while (index &lt; _count) {
+        while (index < _count) {
             bytes32 current = getRecord(prev);
             if (current == 0) {
                 break;
@@ -1059,7 +1059,7 @@ contract JouleCore is JouleContractHolder {
         KeysUtils.Object memory current = KeysUtils.toObject(head);
 
         uint amount;
-        while (current.timestamp != 0 &amp;&amp; current.timestamp &lt; now &amp;&amp; msg.gas &gt; (current.gasLimit + REMAINING_GAS)) {
+        while (current.timestamp != 0 && current.timestamp < now && msg.gas > (current.gasLimit + REMAINING_GAS)) {
             if (current.gasLimit != 0) {
                 invokeCallback(_invoker, current);
             }
@@ -1068,7 +1068,7 @@ contract JouleCore is JouleContractHolder {
             next(current);
             current = head.toObject();
         }
-        if (amount &gt; 0) {
+        if (amount > 0) {
             vault.withdraw(msg.sender, amount);
         }
         return amount;
@@ -1083,7 +1083,7 @@ contract JouleCore is JouleContractHolder {
 
         uint amount = getPriceInner(current.gasLimit, current.gasPriceGwei * GWEI);
 
-        if (amount &gt; 0) {
+        if (amount > 0) {
             vault.withdraw(msg.sender, amount);
         }
         return amount;
@@ -1091,7 +1091,7 @@ contract JouleCore is JouleContractHolder {
 
 
     function invokeCallback(address, KeysUtils.Object memory _record) internal returns (bool) {
-        require(msg.gas &gt;= _record.gasLimit);
+        require(msg.gas >= _record.gasLimit);
         return _record.contractAddress.call.gas(_record.gasLimit)(0x919840ad);
     }
 
@@ -1115,8 +1115,8 @@ contract JouleBehindProxy is JouleCore, Ownable, TransferToken {
     }
 
     function setMinGasPrice(uint _minGasPrice) public onlyOwner {
-        require(_minGasPrice &gt;= MIN_GAS_PRICE);
-        require(_minGasPrice &lt;= MAX_GAS_PRICE);
+        require(_minGasPrice >= MIN_GAS_PRICE);
+        require(_minGasPrice <= MAX_GAS_PRICE);
         minGasPriceGwei = uint32(_minGasPrice / GWEI);
     }
 
@@ -1167,7 +1167,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
     function registerFor(address _registrant, address _address, uint _timestamp, uint _gasLimit, uint _gasPrice) public payable returns (uint) {
         Registered(_registrant, _address, _timestamp, _gasLimit, _gasPrice);
         uint change = joule.registerFor.value(msg.value)(_registrant, _address, _timestamp, _gasLimit, _gasPrice);
-        if (change &gt; 0) {
+        if (change > 0) {
             msg.sender.transfer(change);
         }
         return change;
@@ -1190,7 +1190,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
 
     function invokeFor(address _invoker) public returns (uint) {
         uint amount = joule.invokeFor(_invoker);
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
         }
         return amount;
@@ -1202,7 +1202,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
 
     function invokeOnceFor(address _invoker) public returns (uint) {
         uint amount = joule.invokeOnceFor(_invoker);
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.transfer(amount);
         }
         return amount;
@@ -1262,7 +1262,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
 
         (_addresses[i], _timestamps[i], _gasLimits[i], _gasPrices[i], _invokeGases[i], _rewardAmounts[i]) = joule.getNextOnce(_contractAddress, _timestamp, _gasLimit, _gasPrice);
 
-        for (i += 1; i &lt; _count; i ++) {
+        for (i += 1; i < _count; i ++) {
             if (_timestamps[i - 1] == 0) {
                 break;
             }
@@ -1280,7 +1280,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
         uint[] _rewardAmounts
     ) {
         uint length = joule.getCount();
-        uint amount = _count &lt;= length ? _count : length;
+        uint amount = _count <= length ? _count : length;
 
         _addresses = new address[](amount);
         _timestamps = new uint[](amount);
@@ -1293,7 +1293,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
 
         (_addresses[i], _timestamps[i], _gasLimits[i], _gasPrices[i], _invokeGases[i], _rewardAmounts[i]) = joule.getTopOnce();
 
-        for (i += 1; i &lt; amount; i ++) {
+        for (i += 1; i < amount; i ++) {
             (_addresses[i], _timestamps[i], _gasLimits[i], _gasPrices[i], _invokeGases[i], _rewardAmounts[i]) = joule.getNextOnce(_addresses[i - 1], _timestamps[i - 1], _gasLimits[i - 1], _gasPrices[i - 1]);
         }
     }
@@ -1307,7 +1307,7 @@ contract JouleProxy is JouleProxyAPI, JouleAPI, Ownable, TransferToken, usingCon
     }
 
     function callback(address _invoker, address _address, uint, uint _gasLimit, uint) public onlyJoule returns (bool) {
-        require(msg.gas &gt;= _gasLimit);
+        require(msg.gas >= _gasLimit);
         uint gas = msg.gas;
         bool status = _address.call.gas(_gasLimit)(0x919840ad);
         Invoked(_invoker, _address, status, gas - msg.gas);

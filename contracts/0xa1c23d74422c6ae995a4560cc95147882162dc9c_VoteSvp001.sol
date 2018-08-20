@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -31,10 +31,10 @@ library SafeMath {
 /* The authentication manager details user accounts that have access to certain priviledges and keeps a permanent ledger of who has and has had these rights. */
 contract AuthenticationManager {
     /* Map addresses to admins */
-    mapping (address =&gt; bool) adminAddresses;
+    mapping (address => bool) adminAddresses;
 
     /* Map addresses to account readers */
-    mapping (address =&gt; bool) accountReaderAddresses;
+    mapping (address => bool) accountReaderAddresses;
 
     /* Details of all admins that have ever existed */
     address[] adminAudit;
@@ -76,7 +76,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAdmin(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; adminAudit.length; i++)
+        for (uint256 i = 0; i < adminAudit.length; i++)
             if (adminAudit[i] == _address)
                 return true;
         return false;
@@ -89,7 +89,7 @@ contract AuthenticationManager {
 
     /* Gets whether or not the specified address has ever been an admin */
     function isCurrentOrPastAccountReader(address _address) constant returns (bool) {
-        for (uint256 i = 0; i &lt; accountReaderAudit.length; i++)
+        for (uint256 i = 0; i < accountReaderAudit.length; i++)
             if (accountReaderAudit[i] == _address)
                 return true;
         return false;
@@ -97,7 +97,7 @@ contract AuthenticationManager {
 
     /* Adds a user to our list of admins */
     function addAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -114,11 +114,11 @@ contract AuthenticationManager {
 
     /* Removes a user from our list of admins but keeps them in the history audit */
     function removeAdmin(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
-        /* Don&#39;t allow removal of self */
+        /* Don't allow removal of self */
         if (_address == msg.sender)
             throw;
 
@@ -133,7 +133,7 @@ contract AuthenticationManager {
 
     /* Adds a user/contract to our list of account readers */
     function addAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -150,7 +150,7 @@ contract AuthenticationManager {
 
     /* Removes a user/contracts from our list of account readers but keeps them in the history audit */
     function removeAccountReader(address _address) {
-        /* Ensure we&#39;re an admin */
+        /* Ensure we're an admin */
         if (!isCurrentAdmin(msg.sender))
             throw;
 
@@ -167,7 +167,7 @@ contract VotingBase {
     using SafeMath for uint256;
 
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) public voteCount;
+    mapping (address => uint256) public voteCount;
 
     /* List of all token holders */
     address[] public voterAddresses;
@@ -189,11 +189,11 @@ contract VotingBase {
 
     function setVoterCount(uint256 _count) adminOnly {
         // Forbid after voting has started
-        if (now &gt;= voteStartTime)
+        if (now >= voteStartTime)
             throw;
 
         /* Clear existing voter count */
-        for (uint256 i = 0; i &lt; voterAddresses.length; i++) {
+        for (uint256 i = 0; i < voterAddresses.length; i++) {
             address voter = voterAddresses[i];
             voteCount[voter] = 0;
         }
@@ -204,10 +204,10 @@ contract VotingBase {
 
     function setVoter(uint256 _position, address _voter, uint256 _voteCount) adminOnly {
         // Forbid after voting has started
-        if (now &gt;= voteStartTime)
+        if (now >= voteStartTime)
             throw;
 
-        if (_position &gt;= voterAddresses.length)
+        if (_position >= voterAddresses.length)
             throw;
             
         voterAddresses[_position] = _voter;
@@ -219,12 +219,12 @@ contract VoteSvp001 is VotingBase {
     using SafeMath for uint256;
 
     /* Votes for SVP001-01.  0 = not votes, 1 = Yes, 2 = No */
-     mapping (address =&gt; uint256) vote01;
+     mapping (address => uint256) vote01;
      uint256 public vote01YesCount;
      uint256 public vote01NoCount;
 
     /* Votes for SVP001-02.  0 = not votes, 1 = Yes, 2 = No */
-     mapping (address =&gt; uint256) vote02;
+     mapping (address => uint256) vote02;
      uint256 public vote02YesCount;
      uint256 public vote02NoCount;
 
@@ -236,7 +236,7 @@ contract VoteSvp001 is VotingBase {
             throw;
 
         /* Store start/end times */
-        if (_voteStartTime &gt;= _voteEndTime)
+        if (_voteStartTime >= _voteEndTime)
             throw;
         voteStartTime = _voteStartTime;
         voteEndTime = _voteEndTime;
@@ -244,7 +244,7 @@ contract VoteSvp001 is VotingBase {
 
      function voteSvp01(bool vote) {
         // Forbid outside of voting period
-        if (now &lt; voteStartTime || now &gt; voteEndTime)
+        if (now < voteStartTime || now > voteEndTime)
             throw;
 
          /* Ensure they have voting rights first */
@@ -273,7 +273,7 @@ contract VoteSvp001 is VotingBase {
 
      function voteSvp02(bool vote) {
         // Forbid outside of voting period
-        if (now &lt; voteStartTime || now &gt; voteEndTime)
+        if (now < voteStartTime || now > voteEndTime)
             throw;
 
          /* Ensure they have voting rights first */

@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -46,8 +46,8 @@ contract AudigentAudience is Ownable {
         address[] signatures;
     }
 
-    mapping (uint256 =&gt; Signature) private _hashToSignature;
-    mapping (address =&gt; address) private _signerToPartner;
+    mapping (uint256 => Signature) private _hashToSignature;
+    mapping (address => address) private _signerToPartner;
 
     modifier onlyPartnerSigner(uint256 _hash) {
         require(_signerToPartner[msg.sender] == _hashToSignature[_hash].partner);
@@ -61,7 +61,7 @@ contract AudigentAudience is Ownable {
 
     modifier onlyNewSigner(address _signer) {
         if (_signerToPartner[_signer] == msg.sender) {
-            revert(&#39;Signer already assigned to this partner&#39;);
+            revert('Signer already assigned to this partner');
         }
         require(_signer != owner);
         require(_signerToPartner[_signer] != _signer);
@@ -76,7 +76,7 @@ contract AudigentAudience is Ownable {
 
     function createHash(uint256 _hash, address _partner) public onlyOwner {
         if (_hashToSignature[_hash].partner != address(0)) {
-            revert(&#39;Hash already exists&#39;);
+            revert('Hash already exists');
         }
         _hashToSignature[_hash] = Signature(_partner, new address[](0));
     }
@@ -98,21 +98,21 @@ contract AudigentAudience is Ownable {
         address[] memory signatures = _hashToSignature[_hash].signatures;
 
         bool alreadySigned = false;
-        for (uint i = 0; i &lt; signatures.length; i++) {
+        for (uint i = 0; i < signatures.length; i++) {
             if (signatures[i] == msg.sender) {
                 alreadySigned = true;
                 break;
             }
         }
         if (alreadySigned == true) {
-            revert(&#39;Hash already signed&#39;);
+            revert('Hash already signed');
         }
 
         _hashToSignature[_hash].signatures.push(msg.sender);
     }
 
     function isHashSigned(uint256 _hash) public view returns (bool isSigned) {
-        return _hashToSignature[_hash].signatures.length &gt; 0;
+        return _hashToSignature[_hash].signatures.length > 0;
     }
 
     function getHashSignatures(uint256 _hash) public view returns (address[] signatures) {

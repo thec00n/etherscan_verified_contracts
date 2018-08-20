@@ -19,12 +19,12 @@ contract owned {
 
 contract MyToken is owned {
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
-    string public name = &#39;TrekMiles&#39;;
-    string public symbol = &#39;TMC&#39;;
+    string public standard = 'Token 0.1';
+    string public name = 'TrekMiles';
+    string public symbol = 'TMC';
     uint8 public decimals = 0;
     uint256 public totalSupply;
 
@@ -39,8 +39,8 @@ contract MyToken is owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);        // Notify anyone listening that this transfer took place

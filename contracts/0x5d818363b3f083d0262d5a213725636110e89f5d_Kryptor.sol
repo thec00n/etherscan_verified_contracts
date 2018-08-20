@@ -5,7 +5,7 @@ pragma solidity ^0.4.17;
 // An ERC20 standard
 //
 // author: EdooPAD Inc.
-// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="97e0fefbfbfef6fad7f2f3f8f8e7f6f3b9f4f8fa">[email&#160;protected]</a> 
+// Contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="97e0fefbfbfef6fad7f2f3f8f8e7f6f3b9f4f8fa">[email protected]</a> 
 
 contract ERC20Interface {
     // Get the total token supply
@@ -27,8 +27,8 @@ contract ERC20Interface {
 contract Kryptor is ERC20Interface {
     uint public constant decimals = 10;
 
-    string public constant symbol = &quot;Kryptor&quot;;
-    string public constant name = &quot;Kryptor&quot;;
+    string public constant symbol = "Kryptor";
+    string public constant name = "Kryptor";
 
     uint private constant icoSupplyRatio = 30;  // percentage of _icoSupply in _totalSupply. Preset: 30%
     uint private constant bonusRatio = 20;   // sale bonus percentage
@@ -43,7 +43,7 @@ contract Kryptor is ERC20Interface {
     address public owner;
  
     // Balances Kryptor for each account
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     
     // _icoSupply is the avalable unit. Initially, it is _totalSupply
     // uint public _icoSupply = _totalSupply - (_totalSupply * bonusBound)/100 * bonusRatio;
@@ -74,7 +74,7 @@ contract Kryptor is ERC20Interface {
      * Only allow sale if _selling is on
      */
     modifier onSale() {
-        if (!_selling || (_icoSupply &lt;= 0) ) { 
+        if (!_selling || (_icoSupply <= 0) ) { 
             revert();
         }
         _;
@@ -83,7 +83,7 @@ contract Kryptor is ERC20Interface {
     /* Functions with this modifier check the validity of original buy price
      */
     modifier validOriginalBuyPrice() {
-        if(_originalBuyPrice &lt;= 0) {
+        if(_originalBuyPrice <= 0) {
             revert();
         }
         _;
@@ -113,7 +113,7 @@ contract Kryptor is ERC20Interface {
         return _totalSupply;
     }
  
-    /// @dev Gets account&#39;s balance
+    /// @dev Gets account's balance
     /// @param _addr Address of the account
     /// @return Account balance
     function balanceOf(address _addr) 
@@ -130,12 +130,12 @@ contract Kryptor is ERC20Interface {
     function transfer(address _to, uint256 _amount)
         public 
         returns (bool) {
-        // if sender&#39;s balance has enough unit and amount &gt; 0, 
+        // if sender's balance has enough unit and amount > 0, 
         //      and the sum is not overflow,
         // then do transfer 
-        if ( (balances[msg.sender] &gt;= _amount) &amp;&amp;
-             (_amount &gt; 0) &amp;&amp; 
-             (balances[_to] + _amount &gt; balances[_to]) ) {  
+        if ( (balances[msg.sender] >= _amount) &&
+             (_amount > 0) && 
+             (balances[_to] + _amount > balances[_to]) ) {  
 
             balances[msg.sender] -= _amount;
             balances[_to] += _amount;
@@ -177,12 +177,12 @@ contract Kryptor is ERC20Interface {
     
     /*
      *  Exchange wei for Kryptor.
-     *  modifier _icoSupply &gt; 0
-     *  if requestedCoin &gt; _icoSupply 
+     *  modifier _icoSupply > 0
+     *  if requestedCoin > _icoSupply 
      *      revert
      *  
      *  Buy transaction must follow this policy:
-     *      if requestedCoin &lt; bonusRemain
+     *      if requestedCoin < bonusRemain
      *          actualCoin = requestedCoin + 20%requestedCoin
      *          bonusRemain -= requestedCoin
      *          _icoSupply -= requestedCoin
@@ -204,8 +204,8 @@ contract Kryptor is ERC20Interface {
         // convert buy amount in wei to number of unit want to buy
         uint requestedUnits = msg.value / _originalBuyPrice ;
         
-        //check requestedUnits &gt; _icoSupply
-        if(requestedUnits &gt; _icoSupply){
+        //check requestedUnits > _icoSupply
+        if(requestedUnits > _icoSupply){
             revert();
         }
         
@@ -213,7 +213,7 @@ contract Kryptor is ERC20Interface {
         uint actualSoldUnits = 0;
 
         // If bonus is available and requested amount of units is less than bonus amount
-        if (requestedUnits &lt; bonusRemain) {
+        if (requestedUnits < bonusRemain) {
             // calculate actual sold units with bonus to the requested amount of units
             actualSoldUnits = requestedUnits + ((requestedUnits*bonusRatio) / 100); 
             // decrease _icoSupply

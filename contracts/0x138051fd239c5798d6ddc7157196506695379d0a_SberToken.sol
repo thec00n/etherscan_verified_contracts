@@ -56,18 +56,18 @@ contract StandardToken is AbstractToken, Owned {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -84,7 +84,7 @@ contract StandardToken is AbstractToken, Owned {
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
       //
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -135,26 +135,26 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal pure returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -194,9 +194,9 @@ contract SberToken is Token {
     /*
      * Token meta data
      */
-    string constant public name = &quot;SberToken&quot;;
+    string constant public name = "SberToken";
 
-    string constant public symbol = &quot;SRUB&quot;;
+    string constant public symbol = "SRUB";
     uint8 constant public decimals = 8;
 
     // Address where Foundation tokens are allocated
@@ -253,7 +253,7 @@ contract SberToken is Token {
       uint256 burnedSupply = withDecimals(amount, decimals);
 
       // Check if foundationReserve has enough tokens
-      require(burnedSupply &lt;= balanceOf(foundationReserve));
+      require(burnedSupply <= balanceOf(foundationReserve));
 
       //Calculate new total supply
       totalSupply = sub(totalSupply, burnedSupply);

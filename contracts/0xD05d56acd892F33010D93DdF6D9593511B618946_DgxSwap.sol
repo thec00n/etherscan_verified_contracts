@@ -29,7 +29,7 @@ contract SwapContract {
 
   function () {
     if (dgxBalance() == 0) throw;
-    if (msg.value &lt; totalWeiPrice()) throw;
+    if (msg.value < totalWeiPrice()) throw;
     if (DgxToken(dgxContract).transfer(address(this), dgxBalance())) {
       seller.send(msg.value);       
     }
@@ -60,8 +60,8 @@ contract SwapContract {
 contract DgxSwap {
 
   uint256 public totalCount;
-  mapping (address =&gt; address) public swapContracts;
-  mapping (uint256 =&gt; address) public sellers;
+  mapping (address => address) public swapContracts;
+  mapping (uint256 => address) public sellers;
 
   function DgxSwap() {
     totalCount = 0;

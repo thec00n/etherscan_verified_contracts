@@ -19,13 +19,13 @@ pragma solidity ^0.4.23;
 // 2. the ownership of the devfee can transfer through sacrificing ShitClones
 //  a. the new requirement will be how many remaining ShitClones you have after the sacrifice
 //  b. you cannot sacrifice ShitClones if you are the ShitClonesLord
-// 3. the &quot;free&quot; 500 ShitClones cost 0.001 eth (in line with the mining fee)
+// 3. the "free" 500 ShitClones cost 0.001 eth (in line with the mining fee)
 // bots should have a harder time, and whales can compete for the devfee
 // 4. UI is for peasants, this is mew sniper territory. Step away to a safe distance.
 // 5. I made some changes to the contract that might have fucked it, or not.
 // https://bit.ly/2xc8v53
 // 6. Join our discord @ https://discord.gg/RbgqjPd
-// 7. Let&#39;s stop creating these and move on. M&#39;kay?
+// 7. Let's stop creating these and move on. M'kay?
 // 8. Drops the mic.
 
 contract ShitCloneFarmer {
@@ -37,10 +37,10 @@ contract ShitCloneFarmer {
     bool public initialized = true;
     address public ShitCloneslordAddress;
     uint256 public ShitCloneslordReq = 500000; // starts at 500k ShitClones
-    mapping (address =&gt; uint256) public ballShitClone;
-    mapping (address =&gt; uint256) public claimedTime;
-    mapping (address =&gt; uint256) public lastEvent;
-    mapping (address =&gt; address) public referrals;
+    mapping (address => uint256) public ballShitClone;
+    mapping (address => uint256) public claimedTime;
+    mapping (address => uint256) public lastEvent;
+    mapping (address => address) public referrals;
     uint256 public marketTime;
 
     function ShitCloneFarmer() public {
@@ -50,7 +50,7 @@ contract ShitCloneFarmer {
     function makeShitClone(address ref) public {
         require(initialized);
 
-        if (referrals[msg.sender] == 0 &amp;&amp; referrals[msg.sender] != msg.sender) {
+        if (referrals[msg.sender] == 0 && referrals[msg.sender] != msg.sender) {
             referrals[msg.sender] = ref;
         }
 
@@ -74,7 +74,7 @@ contract ShitCloneFarmer {
         uint256 cellValue = calculateCellSell(cellCount);
         uint256 fee = devFee(cellValue);
         
-        // one third of your ShitClones die :&#39;(
+        // one third of your ShitClones die :'(
         ballShitClone[msg.sender] = SafeMath.mul(SafeMath.div(ballShitClone[msg.sender], 3), 2); // =66%
         claimedTime[msg.sender] = 0;
         lastEvent[msg.sender] = now;
@@ -147,7 +147,7 @@ contract ShitCloneFarmer {
     function becomeShitClonelord() public {
         require(initialized);
         require(msg.sender != ShitCloneslordAddress);
-        require(ballShitClone[msg.sender] &gt;= ShitCloneslordReq);
+        require(ballShitClone[msg.sender] >= ShitCloneslordReq);
 
         ballShitClone[msg.sender] = SafeMath.sub(ballShitClone[msg.sender], ShitCloneslordReq);
         ShitCloneslordReq = ballShitClone[msg.sender]; // the requirement now becomes the balance at that time
@@ -168,7 +168,7 @@ contract ShitCloneFarmer {
     }
 
     function min(uint256 a, uint256 b) private pure returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -190,9 +190,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -200,7 +200,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -209,7 +209,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

@@ -2,7 +2,7 @@ pragma solidity ^0.4.16;
 /**
 * @title UNR ERC20 TOKEN CONTRACT
 * @dev ERC-20 Token Standar Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec880cfc0dac1c0c7c180cfc5cbc2eec9c3cfc7c280cdc1c3">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec880cfc0dac1c0c7c180cfc5cbc2eec9c3cfc7c280cdc1c3">[email protected]</a>
 */
 
 /**
@@ -12,13 +12,13 @@ pragma solidity ^0.4.16;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -83,8 +83,8 @@ contract admined {
 */
 contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a ERC20Token
     using SafeMath for uint256; //SafeMath is used for uint256 operations
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
     uint256 public totalSupply;
 
     /**
@@ -103,7 +103,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
     */
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //Dont want that any body destroy token
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
@@ -119,7 +119,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
     */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         require(_to != address(0)); //If you dont want that people destroy token
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -186,10 +186,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standar definition of a 
 * @notice ERC20 token creation.
 */
 contract AssetUNR is ERC20Token {
-    string public constant name = &#39;UnitedARCoin&#39;;
+    string public constant name = 'UnitedARCoin';
     uint256 public constant decimals = 8;
-    string public constant symbol = &#39;UNR&#39;;
-    string public constant version = &#39;1&#39;;
+    string public constant symbol = 'UNR';
+    string public constant version = '1';
     
     /**
     * @notice token contructor.

@@ -13,7 +13,7 @@ library SafeMath {
     function sub(uint256 _subtrahend, uint256 _subtractor) internal returns (uint256) {
 
         // overflow check
-        if (_subtractor &gt; _subtrahend)
+        if (_subtractor > _subtrahend)
             return 0;
 
         return _subtrahend - _subtractor;
@@ -25,7 +25,7 @@ library SafeMath {
  */
 contract Owned {
 
-    /* Owner&#39;s address */
+    /* Owner's address */
     address owner;
 
     /**
@@ -124,13 +124,13 @@ contract Token is ERC20 {
 
     /// Token holders list
     address[] public holders;
-    /* address =&gt; index in array of hodlers, index starts from 1 */
-    mapping(address =&gt; uint256) index;
+    /* address => index in array of hodlers, index starts from 1 */
+    mapping(address => uint256) index;
 
     /* Token holders map */
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
     /* Token transfer approvals */
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowances;
+    mapping(address => mapping(address => uint256)) allowances;
 
     /**
      * @dev Constructs Token with given `_name`, `_symbol` and `_decimals`
@@ -162,14 +162,14 @@ contract Token is ERC20 {
     function transfer(address _to, uint256 _value) returns (bool) {
 
         // balance check
-        if (balances[msg.sender] &gt;= _value) {
+        if (balances[msg.sender] >= _value) {
 
             // transfer
             balances[msg.sender] -= _value;
             balances[_to] += _value;
 
-            // push new holder if _value &gt; 0
-            if (_value &gt; 0 &amp;&amp; index[_to] == 0) {
+            // push new holder if _value > 0
+            if (_value > 0 && index[_to] == 0) {
                 index[_to] = holders.push(_to);
             }
 
@@ -193,8 +193,8 @@ contract Token is ERC20 {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
 
         // approved balance check
-        if (allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            balances[_from] &gt;= _value ) {
+        if (allowances[_from][msg.sender] >= _value &&
+            balances[_from] >= _value ) {
 
             // hit approved amount
             allowances[_from][msg.sender] -= _value;
@@ -203,8 +203,8 @@ contract Token is ERC20 {
             balances[_from] -= _value;
             balances[_to] += _value;
 
-            // push new holder if _value &gt; 0
-            if (_value &gt; 0 &amp;&amp; index[_to] == 0) {
+            // push new holder if _value > 0
+            if (_value > 0 && index[_to] == 0) {
                 index[_to] = holders.push(_to);
             }
 
@@ -266,16 +266,16 @@ contract Token is ERC20 {
 }
 
 /**
- * @title Cat&#39;s Token, miaow!!!
+ * @title Cat's Token, miaow!!!
  *
- * @dev Defines token with name &quot;Cat&#39;s Token&quot;, symbol &quot;CTS&quot;
+ * @dev Defines token with name "Cat's Token", symbol "CTS"
  * and 3 digits after the point
  */
-contract Cat is Token(&quot;Test&#39;s Token&quot;, &quot;TTS&quot;, 3), Owned {
+contract Cat is Token("Test's Token", "TTS", 3), Owned {
 
     /**
      * @dev Emits specified number of tokens. Only owner can emit.
-     * Emitted tokens are credited to owner&#39;s account
+     * Emitted tokens are credited to owner's account
      *
      * @param _value number of emitting tokens
      * @return true if emission succeeded, false otherwise
@@ -283,7 +283,7 @@ contract Cat is Token(&quot;Test&#39;s Token&quot;, &quot;TTS&quot;, 3), Owned {
     function emit(uint256 _value) onlyOwner returns (bool) {
 
         // overflow check
-        assert(totalSupply + _value &gt;= totalSupply);
+        assert(totalSupply + _value >= totalSupply);
 
         // emission
         totalSupply += _value;
@@ -295,7 +295,7 @@ contract Cat is Token(&quot;Test&#39;s Token&quot;, &quot;TTS&quot;, 3), Owned {
 
 
 /**
- * @title Drives Cat&#39;s Token ICO
+ * @title Drives Cat's Token ICO
  */
 contract CatICO {
 
@@ -310,7 +310,7 @@ contract CatICO {
     /// Keeps supplied ether
     address public wallet;
 
-    /// Cat&#39;s Token
+    /// Cat's Token
     Cat public cat;
 
     struct Stage {
@@ -328,7 +328,7 @@ contract CatICO {
     Stage sequels = Stage(0.016 ether / 1000, 3750000000);
 
     /**
-     * @dev Cat&#39;s ICO constructor. It spawns a Cat contract.
+     * @dev Cat's ICO constructor. It spawns a Cat contract.
      *
      * @param _wallet the address of the ICO wallet
      */
@@ -346,7 +346,7 @@ contract CatICO {
         var tokens = tokenEmission(msg.value, supplied);
 
         // revert if nothing to emit
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         // emit tokens
         bool success = cat.emit(tokens);
@@ -375,7 +375,7 @@ contract CatICO {
         Stage[3] memory stages = [simulator, online, sequels];
 
         /* Stage 1 and 2 */
-        for (uint8 i = 0; i &lt; 2; i++) {
+        for (uint8 i = 0; i < 2; i++) {
             (stageTokens, _value, _supplied) = stageEmission(_value, _supplied, stages[i]);
             emission += stageTokens;
         }
@@ -403,12 +403,12 @@ contract CatICO {
     {
 
         /* Check if there is space left in the stage */
-        if (_supplied &gt;= _stage.cap) {
+        if (_supplied >= _stage.cap) {
             return (0, _value, _supplied);
         }
 
         /* Check if there is enough value for at least one milliCTS */
-        if (_value &lt; _stage.price) {
+        if (_value < _stage.price) {
             return (0, _value, _supplied);
         }
 
@@ -417,7 +417,7 @@ contract CatICO {
 
         /* Adjust to the space left in the stage */
         var remainder = _stage.cap.sub(_supplied);
-        _tokens = _tokens &gt; remainder ? remainder : _tokens;
+        _tokens = _tokens > remainder ? remainder : _tokens;
 
         /* Update value and supply */
         var _valueRemainder = _value.sub(_tokens * _stage.price);
@@ -434,11 +434,11 @@ contract CatICO {
     function isRunning() constant returns (bool) {
 
         /* Timeframes */
-        if (now &lt; start) return false;
-        if (now &gt;= end) return false;
+        if (now < start) return false;
+        if (now >= end) return false;
 
         /* Total cap, held by Stage 3 */
-        if (cat.totalSupply() &gt;= sequels.cap) return false;
+        if (cat.totalSupply() >= sequels.cap) return false;
 
         return true;
     }
@@ -449,11 +449,11 @@ contract CatICO {
     modifier onlyRunning() {
 
         /* Check timeframes */
-        require(now &gt;= start);
-        require(now &lt; end);
+        require(now >= start);
+        require(now < end);
 
         /* Check Stage 3 cap */
-        require(cat.totalSupply() &lt; sequels.cap);
+        require(cat.totalSupply() < sequels.cap);
 
         _;
     }

@@ -7,7 +7,7 @@ contract Base {
     assembly {
         size := extcodesize(_addr)
     }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -38,20 +38,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -59,7 +59,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -100,9 +100,9 @@ contract Ownable {
 
 contract StateQuickEth is Ownable {
   //Certain parameters of the game can only be changed if the game is stopped.
-  //Rules shouldn&#39;t be changed while the game is going on :)
+  //Rules shouldn't be changed while the game is going on :)
   //
-  //This way, the owner can&#39;t e.g. lock up contributed funds or such, 
+  //This way, the owner can't e.g. lock up contributed funds or such, 
   //by updating the game params to bad values, like minimum 1 million participants, etc.
   modifier gameStopped {
     require(!gameRunning);
@@ -114,12 +114,12 @@ contract StateQuickEth is Ownable {
   
   bool public gameRunning;
   
-  //Instead of being able to stop the game outright, the owner can only &quot;schedule&quot;
+  //Instead of being able to stop the game outright, the owner can only "schedule"
   //for the game to stop at the end of the current round.
   //Game stays locked until explicitly restarted.
   bool public stopGameOnNextRound;
 
-  //When someone sends ETH to the contract, what&#39;s the minimum gas the tx should have,
+  //When someone sends ETH to the contract, what's the minimum gas the tx should have,
   //so that it can execute the draw. 
   uint32 public minGasForDrawing = 350000;
   
@@ -210,7 +210,7 @@ contract StateQuickEth is Ownable {
   }
 
   function updateRewardForDrawing(uint256 newRewardForDrawing) public onlyOwner {
-    require(newRewardForDrawing &gt; 0);
+    require(newRewardForDrawing > 0);
 
     rewardForDrawing = newRewardForDrawing;
   }
@@ -221,7 +221,7 @@ contract StateQuickEth is Ownable {
 
 //
 //-----------------------------
-// &lt;&lt;&lt;&lt;Contract begins here&gt;&gt;&gt;&gt;
+// <<<<Contract begins here>>>>
 //-----------------------------
 //
 //* CryptoLuck Lottery Game 
@@ -252,7 +252,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     
     uint256 drawerBonusTickets;
     
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
     address[] participants;
       
     address winner;
@@ -263,9 +263,9 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
 
     uint256 winningNumber;
 
-    //0 =&gt; initial state, open
-    //1 =&gt; finalized with success
-    //2 =&gt; finalized with error (e.g. due to Oraclize not returning proper results etc)
+    //0 => initial state, open
+    //1 => finalized with success
+    //2 => finalized with error (e.g. due to Oraclize not returning proper results etc)
     uint8 status;
 
     bool awaitingOraclizeCallback;
@@ -274,9 +274,9 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
   bool public useOraclize;
   //Keep track of all lotteries. Stats ftw
   uint32 public currentLotteryId = 0;
-  mapping (uint32 =&gt; Lottery) public lotteries;
+  mapping (uint32 => Lottery) public lotteries;
   
-  //1 finney == 0.001 ETH. Estimating for a run of ETH to 1000 USD, that&#39;s $1 per ticket.
+  //1 finney == 0.001 ETH. Estimating for a run of ETH to 1000 USD, that's $1 per ticket.
   uint256 public ticketPrice = 1 finney;
   
   //Timestamp to keep track of when the last draw happened
@@ -294,7 +294,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     useOraclize = _useOraclize;
     
     //Initialize lottery draw to contract deploy time - 
-    //that&#39;s when we &quot;start&quot; the lottery.
+    //that's when we "start" the lottery.
     lastDrawTs = block.timestamp;
   }
 
@@ -314,28 +314,28 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     require(gameRunning);
     
     // Require the sender to be able to purchase at least 1 ticket
-    require(msg.value &gt;= ticketPrice);
+    require(msg.value >= ticketPrice);
     
     uint256 existingBalance = currentLottery().balances[msg.sender];
     
     //Total contribution should be at least the minimum contribution (0.05 ETH to start with)
-    require(msg.value + existingBalance &gt;= minContribution);
+    require(msg.value + existingBalance >= minContribution);
     //But their total contribution must not exceed max contribution
-    require(msg.value + existingBalance &lt;= maxContribution);
+    require(msg.value + existingBalance <= maxContribution);
     
     updatePlayerBalance(currentLotteryId);
     
     //If the requirements for a draw are met, and the gas price and gas limit are OK as well,
     //execute the draw.
-    if (mustDraw() &amp;&amp; gasRequirementsOk()) {
+    if (mustDraw() && gasRequirementsOk()) {
       draw();
     }
   }
 
-  //Ensure there&#39;s enough gas left (minGasForDrawing is an estimate)
+  //Ensure there's enough gas left (minGasForDrawing is an estimate)
   //and that the gas price is enough to ensure it doesnt take an eternity to process the draw tx.
   function gasRequirementsOk() view private returns(bool) {
-    return (msg.gas &gt;= minGasForDrawing) &amp;&amp; (tx.gasprice &gt;= minGasPriceForDrawing);
+    return (msg.gas >= minGasForDrawing) && (tx.gasprice >= minGasPriceForDrawing);
   }
 
   /////////////////
@@ -346,7 +346,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     Lottery storage lot = lotteries[lotteryId];
     
     //if current lottery is locked, since we made the call to Oraclize for the random number,
-    //but we haven&#39;t received the response yet, put the player&#39;s ether into the next lottery instead.
+    //but we haven't received the response yet, put the player's ether into the next lottery instead.
     if (lot.awaitingOraclizeCallback) {
       updatePlayerBalance(lotteryId + 1);
       return;
@@ -355,7 +355,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     address participant = msg.sender;
     
     //If we dont have this participant in the balances mapping, 
-    //then it&#39;s a new address, so add it to the participants list, to keep track of the address.
+    //then it's a new address, so add it to the participants list, to keep track of the address.
     if (lot.balances[participant] == 0) {
       lot.participants.push(participant);
     }
@@ -369,17 +369,17 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
   }
   
   /////////////////
-  //STEP 3: when someone contributes to the lottery, check to see if we&#39;ve met the requirements for a draw yet.
+  //STEP 3: when someone contributes to the lottery, check to see if we've met the requirements for a draw yet.
   function mustDraw() view private returns (bool) {
     Lottery memory lot = currentLottery();
     
     //At least 60 mins have elapsed since the last draw
-    bool timeDiffOk = now - lastDrawTs &gt;= requiredTimeBetweenDraws;
+    bool timeDiffOk = now - lastDrawTs >= requiredTimeBetweenDraws;
     
     //We have at least 5 participants
-    bool minParticipantsOk = lot.participants.length &gt;= requiredEntries;
+    bool minParticipantsOk = lot.participants.length >= requiredEntries;
 
-    return minParticipantsOk &amp;&amp; timeDiffOk;
+    return minParticipantsOk && timeDiffOk;
   }
 
   /////////////////
@@ -420,7 +420,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     lot.oraclizeFees = lot.oraclizeFees.add(fee);
     
     //Store the query ID so we can match it on callback, to ensure we are receiving a legit callback.
-    //Ask for a 7 bytes number. max is 72&#39;057&#39;594&#39;037&#39;927&#39;936, should be ok :)
+    //Ask for a 7 bytes number. max is 72'057'594'037'927'936, should be ok :)
     bytes32 oraclizeId = rngContract.requestRandom.value(fee)(7);
     
     lot.oraclizeIds.push(oraclizeId);
@@ -457,7 +457,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     LogLotteryResult(currentLotteryId, 1, reqId, result);
   }
   
-  //STEP 6&#39;: Drawer receives bonus tickets, to cover the higher gas consumption and incentivize people to do so.
+  //STEP 6': Drawer receives bonus tickets, to cover the higher gas consumption and incentivize people to do so.
   function calculateBonusTickets(uint256 totalContributions) view internal returns(uint256) {
     
     //1% of all contributions
@@ -468,7 +468,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
        bonusTickets = 1;
     }
 
-    if (bonusTickets &gt; maxBonusTickets) {
+    if (bonusTickets > maxBonusTickets) {
       bonusTickets = maxBonusTickets;
     }
     
@@ -483,11 +483,11 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     
     uint256 currentLocation = 1;
 
-    for (uint16 i = 0; i &lt; lot.participants.length; i++) {
+    for (uint16 i = 0; i < lot.participants.length; i++) {
       address participant = lot.participants[i];
       
-      //A1 bought 70 tickets =&gt; head = 1 + 70 - 1 =&gt; owns [1, 70]; at the end of the loop, location ++
-      //A2 bought 90 tickets =&gt; head = 71 + 90 - 1 =&gt; owns [71, 160]; increment, etc
+      //A1 bought 70 tickets => head = 1 + 70 - 1 => owns [1, 70]; at the end of the loop, location ++
+      //A2 bought 90 tickets => head = 71 + 90 - 1 => owns [71, 160]; increment, etc
       uint256 finalTickets = lot.balances[participant] / ticketPrice;
       
       //The drawer receives some bonus tickets, for the effort of having executed the lottery draw.
@@ -497,11 +497,11 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
 
       currentLocation += finalTickets - 1; 
       
-      if (currentLocation &gt;= lot.winningNumber) {
+      if (currentLocation >= lot.winningNumber) {
           lot.winner = participant;
           break;
       }
-      //move to the &quot;start&quot; of the next interval, for the next participant.
+      //move to the "start" of the next interval, for the next participant.
       currentLocation += 1; 
     }
     
@@ -565,7 +565,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     //can withdraw contributed balance, minus the fees that have been paid to Oraclize, divided/supported among all participants
     uint256 playerBalance = lot.balances[player].sub(lot.oraclizeFees / lot.participants.length);
     //require to have something to send back
-    require(playerBalance &gt; 0);
+    require(playerBalance > 0);
 
     //update the local balances
     lot.balances[player] = 0;
@@ -599,9 +599,9 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
     //Allow the owner to draw only when it would normally be allowed
     require(mustDraw());
     
-    //Also, ensure there&#39;s at least 1 hr since the call to oraclize has been made.
-    //If the result didnt come in 1 hour, then something is wrong with oraclize, so it&#39;s ok to try again.
-    require(now - lastDrawTs &gt; MANUAL_WITHDRAW_INTERVAL);
+    //Also, ensure there's at least 1 hr since the call to oraclize has been made.
+    //If the result didnt come in 1 hour, then something is wrong with oraclize, so it's ok to try again.
+    require(now - lastDrawTs > MANUAL_WITHDRAW_INTERVAL);
 
     //If we try to draw manually but we already have 2 Oraclize requests logged, then we need to fail the lottery.
     //then something is wrong with Oraclize - maybe down or someone at Oraclize trying to meddle with the results.
@@ -610,7 +610,7 @@ contract CryptoLuckQuickEthV1 is RngRequester, StateQuickEth, Base {
       lot.status = 2;
       lot.awaitingOraclizeCallback = false;
       
-      LogLotteryResult(currentLotteryId, 2, lot.oraclizeIds[lot.oraclizeIds.length - 1], &quot;&quot;);
+      LogLotteryResult(currentLotteryId, 2, lot.oraclizeIds[lot.oraclizeIds.length - 1], "");
 
       finalizeLottery();
     } else {

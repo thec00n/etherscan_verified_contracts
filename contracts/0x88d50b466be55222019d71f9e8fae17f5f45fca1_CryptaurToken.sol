@@ -8,9 +8,9 @@ by the Free Software Foundation, either version 3 of the License, or
 for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the CryptaurToken Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the CryptaurToken Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<span class="__cf_email__" data-cfemail="adc483dedbc4dfc4c3edc3c2dfc9ccdbc4c3c983dfd8">[email&#160;protected]</span>&gt;
+@author Ilya Svirin <<span class="__cf_email__" data-cfemail="adc483dedbc4dfc4c3edc3c2dfc9ccdbc4c3c983dfd8">[email protected]</span>>
 Donation address 0x3Ad38D1060d1c350aF29685B2b8Ec3eDE527452B
 */
 
@@ -47,21 +47,21 @@ contract CryptaurToken is owned {
     address                      public cryptaurBackend;
     bool                         public crowdsaleFinished;
     uint                         public totalSupply;
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;Cryptaur&#39;;
-    string  public symbol      = &quot;CPT&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'Cryptaur';
+    string  public symbol      = "CPT";
     uint8   public decimals    = 8;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => mapping (address => uint)) public allowed;
     event Approval(address indexed owner, address indexed spender, uint value);
     event Transfer(address indexed from, address indexed to, uint value);
     event Mint(address indexed minter, uint tokens, uint8 originalCoinType, bytes32 originalTxHash);
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -88,8 +88,8 @@ contract CryptaurToken is owned {
 
     function transfer(address _to, uint256 _value)
         public onlyPayloadSize(2 * 32) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -97,9 +97,9 @@ contract CryptaurToken is owned {
     
     function transferFrom(address _from, address _to, uint _value)
         public onlyPayloadSize(3 * 32) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         allowed[_from][msg.sender] -= _value;

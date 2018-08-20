@@ -10,7 +10,7 @@ contract SMEBankingPlatformToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,9 +50,9 @@ contract Airdrop is Ownable {
 
   SMEBankingPlatformToken public token;
 
-  mapping(address=&gt;bool) public participated;
+  mapping(address=>bool) public participated;
 
-  mapping(address=&gt;bool) public whitelisted;
+  mapping(address=>bool) public whitelisted;
 
   event TokenAirdrop(address indexed beneficiary, uint256 amount);
 
@@ -67,7 +67,7 @@ contract Airdrop is Ownable {
   }
 
   function setAirdropAmount(uint256 _airdropAmount) public onlyOwner {
-    require(_airdropAmount &gt; 0);
+    require(_airdropAmount > 0);
 
     airdropAmount = _airdropAmount;
   }
@@ -84,7 +84,7 @@ contract Airdrop is Ownable {
   }
 
   function whitelistAddresses(address[] beneficiaries) public onlyOwner {
-    for (uint i = 0 ; i &lt; beneficiaries.length ; i++) {
+    for (uint i = 0 ; i < beneficiaries.length ; i++) {
       address beneficiary = beneficiaries[i];
       require(beneficiary != 0x0);
       whitelisted[beneficiary] = true;
@@ -96,7 +96,7 @@ contract Airdrop is Ownable {
     bool isWhitelisted = whitelisted[beneficiary];
     bool hasParticipated = participated[beneficiary];
 
-    return isWhitelisted &amp;&amp; !hasParticipated;
+    return isWhitelisted && !hasParticipated;
   }
 }
 

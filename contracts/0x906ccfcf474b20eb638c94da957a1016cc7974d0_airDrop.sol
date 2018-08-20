@@ -16,9 +16,9 @@ contract airDrop{
     function airDrop_(address contractaddress,address[] dsts,uint256 value) public {
 
         uint count= dsts.length;
-        require(value&gt;0);
+        require(value>0);
         BitSTDView View= BitSTDView(contractaddress);
-        for(uint i = 0; i &lt; count; i++){
+        for(uint i = 0; i < count; i++){
            View.transfer(dsts[i],value);
         }
     }
@@ -34,7 +34,7 @@ contract airDrop{
 
         uint count= dsts.length;
         BitSTDView View= BitSTDView(contractaddress);
-        for(uint i = 0; i &lt; count; i++){
+        for(uint i = 0; i < count; i++){
            View.transfer(dsts[i],values[i]);
         }
     }
@@ -48,7 +48,7 @@ contract airDrop{
     function dataMigration(address contractaddress,address[] dsts)public{
         uint count= dsts.length;
         BitSTDView View= BitSTDView(contractaddress);
-        for(uint i = 0; i &lt; count; i++){
+        for(uint i = 0; i < count; i++){
            View.migration(dsts[i]);
         }
     }
@@ -63,7 +63,7 @@ contract airDrop{
     function transferFrom(address contractaddress,address _from, address[] dsts, uint256 value) public returns (bool success) {
         uint count= dsts.length;
         BitSTDView View= BitSTDView(contractaddress);
-        for(uint i = 0; i &lt; count; i++){
+        for(uint i = 0; i < count; i++){
            View.transferFrom(_from,dsts[i],value);
         }
     }

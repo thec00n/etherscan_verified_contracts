@@ -9,9 +9,9 @@ contract Token {
 
 
 contract ABC {
-    string public constant symbol = &quot;ABC&quot;;
+    string public constant symbol = "ABC";
 
-    string public constant name = &quot;Airdrop Beggars Community&quot;;
+    string public constant name = "Airdrop Beggars Community";
 
     uint public constant decimals = 18;
 
@@ -19,11 +19,11 @@ contract ABC {
 
     address public owner;
 
-    mapping (address =&gt; bool) beggars;
+    mapping (address => bool) beggars;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
@@ -36,7 +36,7 @@ contract ABC {
 
     function() public payable {
         uint reward = totalSupply / 10000;
-        require(balances[owner] &gt;= reward &amp;&amp; !beggars[msg.sender]);
+        require(balances[owner] >= reward && !beggars[msg.sender]);
         balances[owner] -= reward;
         balances[msg.sender] += reward;
         beggars[msg.sender] = true;
@@ -51,7 +51,7 @@ contract ABC {
     }
 
     function transfer(address _to, uint256 _amount) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[msg.sender] >= _amount && _amount > 0);
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
         Transfer(msg.sender, _to, _amount);
@@ -59,7 +59,7 @@ contract ABC {
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool success) {
-        require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0);
         balances[_from] -= _amount;
         allowed[_from][msg.sender] -= _amount;
         balances[_to] += _amount;

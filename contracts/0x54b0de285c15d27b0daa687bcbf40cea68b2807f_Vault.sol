@@ -41,37 +41,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint a, uint b) internal pure returns (uint) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -132,13 +132,13 @@ contract Vault is Ownable, VaultInterface {
 
     address constant public ETH = 0x0;
 
-    mapping (address =&gt; bool) public isERC777;
+    mapping (address => bool) public isERC777;
 
-    // user =&gt; spender =&gt; approved
-    mapping (address =&gt; mapping (address =&gt; bool)) private approved;
-    mapping (address =&gt; mapping (address =&gt; uint)) private balances;
-    mapping (address =&gt; uint) private accounted;
-    mapping (address =&gt; bool) private spenders;
+    // user => spender => approved
+    mapping (address => mapping (address => bool)) private approved;
+    mapping (address => mapping (address => uint)) private balances;
+    mapping (address => uint) private accounted;
+    mapping (address => bool) private spenders;
 
     address private latest;
 
@@ -154,7 +154,7 @@ contract Vault is Ownable, VaultInterface {
 
     function Vault(ERC820 registry) public {
         // required by ERC777 standard.
-        registry.setInterfaceImplementer(address(this), keccak256(&quot;ERC777TokensRecipient&quot;), address(this));
+        registry.setInterfaceImplementer(address(this), keccak256("ERC777TokensRecipient"), address(this));
     }
 
     /// @dev Deposits a specific token.
@@ -177,7 +177,7 @@ contract Vault is Ownable, VaultInterface {
     /// @param token Address of the token to withdraw.
     /// @param amount Amount of tokens to withdraw.
     function withdraw(address token, uint amount) external {
-        require(balanceOf(token, msg.sender) &gt;= amount);
+        require(balanceOf(token, msg.sender) >= amount);
 
         balances[token][msg.sender] = balances[token][msg.sender].sub(amount);
         accounted[token] = accounted[token].sub(amount);
@@ -225,7 +225,7 @@ contract Vault is Ownable, VaultInterface {
     /// @param amount Amount of tokens to transfer.
     function transfer(address token, address from, address to, uint amount) external onlySpender onlyApproved(from) {
         // We do not check the balance here, as SafeMath will revert if sub / add fail. Due to over/underflows.
-        require(amount &gt; 0);
+        require(amount > 0);
         balances[token][from] = balances[token][from].sub(amount);
         balances[token][to] = balances[token][to].add(amount);
     }

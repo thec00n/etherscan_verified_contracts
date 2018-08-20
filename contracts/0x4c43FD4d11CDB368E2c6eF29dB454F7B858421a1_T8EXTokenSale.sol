@@ -33,13 +33,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -59,8 +59,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
 	using SafeMath for uint256;
 
-	mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+	mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
@@ -99,21 +99,21 @@ contract StandardToken is ERC20 {
 }
 
 contract T8EXToken is StandardToken {
-	string public constant name = &quot;T8EX Token&quot;;
-    string public constant symbol = &quot;T8EX&quot;;
+	string public constant name = "T8EX Token";
+    string public constant symbol = "T8EX";
     uint8  public constant decimals = 18;
 
 	address public minter; 
 	uint    public tokenSaleEndTime; 
 
 	// token lockup for cornerstone investors
-	mapping(address=&gt;uint) public lockedBalanceCor; 
-	mapping(uint=&gt;address) lockedBalanceCor_index;
+	mapping(address=>uint) public lockedBalanceCor; 
+	mapping(uint=>address) lockedBalanceCor_index;
 	uint lockedBalanceCor_count;
 
 	// token lockup for private investors
-	mapping(address=&gt;uint) public lockedBalancePri; 
-	mapping(uint=&gt;address) lockedBalancePri_index;
+	mapping(address=>uint) public lockedBalancePri; 
+	mapping(uint=>address) lockedBalancePri_index;
 	uint lockedBalancePri_count;
 
 	modifier onlyMinter {
@@ -122,7 +122,7 @@ contract T8EXToken is StandardToken {
 	}
 
 	modifier whenMintable {
-		require (now &lt;= tokenSaleEndTime);
+		require (now <= tokenSaleEndTime);
 		_;
 	}
 
@@ -177,11 +177,11 @@ contract T8EXToken is StandardToken {
 		return true;
 	}
 
-	// Make sender&#39;s locked balance liquid when called after lockout period.
+	// Make sender's locked balance liquid when called after lockout period.
 	function makeLiquidCor()
 		onlyMinter
 	{
-		for (uint i=0; i&lt;lockedBalanceCor_count; i++) {
+		for (uint i=0; i<lockedBalanceCor_count; i++) {
 			address investor = lockedBalanceCor_index[i];
 			balances[investor] += lockedBalanceCor[investor];
 			lockedBalanceCor[investor] = 0;
@@ -203,11 +203,11 @@ contract T8EXToken is StandardToken {
 		return true;
 	}
 
-	// Make sender&#39;s locked balance liquid when called after lockout period.
+	// Make sender's locked balance liquid when called after lockout period.
 	function makeLiquidPri()
 		onlyMinter
 	{
-		for (uint i=0; i&lt;lockedBalancePri_count; i++) {
+		for (uint i=0; i<lockedBalancePri_count; i++) {
 			address investor = lockedBalancePri_index[i];
 			balances[investor] += lockedBalancePri[investor];
 			lockedBalancePri[investor] = 0;
@@ -262,11 +262,11 @@ contract T8EXTokenSale is Ownable {
 	uint256 public totalT8EXSold_PRIVATE;
 	uint256 public totalT8EXSold_GENERAL;
     uint256 public weiRaised;
-	mapping(address=&gt;uint256) public weiContributions;
+	mapping(address=>uint256) public weiContributions;
 
 	// whitelisting
-	mapping(address=&gt;bool) public whitelisted_Private;
-	mapping(address=&gt;bool) public whitelisted_Cornerstone;
+	mapping(address=>bool) public whitelisted_Private;
+	mapping(address=>bool) public whitelisted_Cornerstone;
 	event WhitelistedPrivateStatusChanged(address target, bool isWhitelisted);
 	event WhitelistedCornerstoneStatusChanged(address target, bool isWhitelisted);
 
@@ -297,7 +297,7 @@ contract T8EXTokenSale is Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             changeWhitelistPrivateStatus(_targets[i], _isWhitelisted);
         }
     }
@@ -314,7 +314,7 @@ contract T8EXTokenSale is Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             changeWhitelistCornerstoneStatus(_targets[i], _isWhitelisted);
         }
     }
@@ -324,22 +324,22 @@ contract T8EXTokenSale is Ownable {
         returns(bool) 
     {
 		bool nonZeroPurchase = msg.value != 0;
-		bool withinSalePeriod = now &gt;= presaleStartTime &amp;&amp; now &lt;= publicEndTime;
-        bool withinPublicPeriod = now &gt;= publicStartTime &amp;&amp; now &lt;= publicEndTime;
+		bool withinSalePeriod = now >= presaleStartTime && now <= publicEndTime;
+        bool withinPublicPeriod = now >= publicStartTime && now <= publicEndTime;
 
 		bool whitelisted = whitelisted_Cornerstone[msg.sender] || whitelisted_Private[msg.sender];
-		bool whitelistedCanBuy = whitelisted &amp;&amp; withinSalePeriod;
+		bool whitelistedCanBuy = whitelisted && withinSalePeriod;
         
-        return nonZeroPurchase &amp;&amp; (whitelistedCanBuy || withinPublicPeriod);
+        return nonZeroPurchase && (whitelistedCanBuy || withinPublicPeriod);
     }
 
 	function getPriceRate()
 		constant
 		returns (uint)
 	{
-		if (now &lt;= publicStartTime + STAGE1_TIME_END) {return RATE_CROWDSALE_S1;}
-		if (now &lt;= publicStartTime + STAGE2_TIME_END) {return RATE_CROWDSALE_S2;}
-		if (now &lt;= publicStartTime + STAGE3_TIME_END) {return RATE_CROWDSALE_S3;}
+		if (now <= publicStartTime + STAGE1_TIME_END) {return RATE_CROWDSALE_S1;}
+		if (now <= publicStartTime + STAGE2_TIME_END) {return RATE_CROWDSALE_S2;}
+		if (now <= publicStartTime + STAGE3_TIME_END) {return RATE_CROWDSALE_S3;}
 		return 0;
 	}
 
@@ -360,17 +360,17 @@ contract T8EXTokenSale is Ownable {
 		
 		if (whitelisted_Cornerstone[msg.sender]) {
 			purchaseTokens = weiAmount.mul(RATE_CORNERSTONE); 
-			require(ALLOC_SALE_CORNERSTONE - totalT8EXSold_CORNERSTONE &gt;= purchaseTokens); // buy only if enough supply
+			require(ALLOC_SALE_CORNERSTONE - totalT8EXSold_CORNERSTONE >= purchaseTokens); // buy only if enough supply
 			require(t8exToken.createLockedTokenCor(msg.sender, purchaseTokens));
 			totalT8EXSold_CORNERSTONE = totalT8EXSold_CORNERSTONE.add(purchaseTokens); 
 		} else if (whitelisted_Private[msg.sender]) {
 			purchaseTokens = weiAmount.mul(RATE_PRIVATE); 
-			require(ALLOC_SALE_PRIVATE - totalT8EXSold_PRIVATE &gt;= purchaseTokens); // buy only if enough supply
+			require(ALLOC_SALE_PRIVATE - totalT8EXSold_PRIVATE >= purchaseTokens); // buy only if enough supply
 			require(t8exToken.createLockedTokenPri(msg.sender, purchaseTokens));
 			totalT8EXSold_PRIVATE = totalT8EXSold_PRIVATE.add(purchaseTokens); 
 		} else {
         	purchaseTokens = weiAmount.mul(getPriceRate()); 
-			require(ALLOC_SALE_GENERAL - totalT8EXSold_GENERAL &gt;= purchaseTokens); // buy only if enough supply
+			require(ALLOC_SALE_GENERAL - totalT8EXSold_GENERAL >= purchaseTokens); // buy only if enough supply
 			require(t8exToken.createToken(msg.sender, purchaseTokens));
 			totalT8EXSold_GENERAL = totalT8EXSold_GENERAL.add(purchaseTokens); 
 		}
@@ -394,7 +394,7 @@ contract T8EXTokenSale is Ownable {
         constant 
         returns(bool) 
     {
-        return now &gt; publicEndTime;
+        return now > publicEndTime;
     }
 
 	function releaseTokenCornerstone()

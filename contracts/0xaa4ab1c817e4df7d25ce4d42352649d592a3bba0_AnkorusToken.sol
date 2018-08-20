@@ -9,22 +9,22 @@ library SafeMath
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) 
   {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -66,12 +66,12 @@ contract BasicToken
     uint totalCoinSupply;
     
     //  allowance map
-    //  ( owner =&gt; (spender =&gt; amount ) ) 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public AllowanceLedger;
+    //  ( owner => (spender => amount ) ) 
+    mapping (address => mapping (address => uint256)) public AllowanceLedger;
     
     //  ownership map
-    //  ( owner =&gt; value )
-    mapping (address =&gt; uint256) public balanceOf;
+    //  ( owner => value )
+    mapping (address => uint256) public balanceOf;
 
     //  @dev transfer token for a specified address
     //  @param _to The address to transfer to.
@@ -91,7 +91,7 @@ contract BasicToken
         var _allowance = AllowanceLedger[_owner][msg.sender];
         // Check is not needed because sub(_allowance, _value) will already 
         //  throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balanceOf[_recipient] = balanceOf[_recipient].add(_value);
         balanceOf[_owner] = balanceOf[_owner].sub(_value);
@@ -160,12 +160,12 @@ contract AnkorusToken is BasicToken, Ownable
     uint256 public tokensPerTrunche = 2000000;
     
     //  Whitelist approval mapping
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
     bool public finalized = false;
     
-   //  This is the &#39;Ticker&#39; symbol and name for our Token.
-    string public constant symbol = &quot;ANK&quot;;
-    string public constant name = &quot;AnkorusToken&quot;;
+   //  This is the 'Ticker' symbol and name for our Token.
+    string public constant symbol = "ANK";
+    string public constant name = "AnkorusToken";
     
     //  This is for how your token can be fracionalized. 
     uint8 public decimals = 18; 
@@ -246,10 +246,10 @@ contract AnkorusToken is BasicToken, Ownable
                         uint256 _saleCap, uint256 _totalSupply)
                         public onlyOwner uninitialized
     {
-        require(_start &gt;= getCurrentTimestamp());
-        require(_start &lt; _end);
+        require(_start >= getCurrentTimestamp());
+        require(_start < _end);
         require(_wallet != 0x0);
-        require(_totalSupply &gt; _saleCap);
+        require(_totalSupply > _saleCap);
 
         finalized = false;
         startDate = _start;
@@ -283,7 +283,7 @@ contract AnkorusToken is BasicToken, Ownable
     function buyTokens(address beneficiary, uint256 value) internal
     {
         require(beneficiary != 0x0);
-        require(value &gt;= 0.1 ether);
+        require(value >= 0.1 ether);
         
         // Calculate token amount to be purchased
         uint256 weiAmount = value;
@@ -293,7 +293,7 @@ contract AnkorusToken is BasicToken, Ownable
         //  Check our supply
         //  Potentially redundant as balanceOf[0xb1].sub(tokenAmount) will
         //  throw with insufficient supply
-        require(supply() &gt;= tokenAmount);
+        require(supply() >= tokenAmount);
 
         //  Check conditions for sale
         require(saleActive());
@@ -324,7 +324,7 @@ contract AnkorusToken is BasicToken, Ownable
     function batchApproveWhitelist(address[] beneficiarys) 
         public onlyOwner
     {
-        for (uint i=0; i&lt;beneficiarys.length; i++) 
+        for (uint i=0; i<beneficiarys.length; i++) 
         {
             whitelist[beneficiarys[i]] = true;
         }
@@ -342,7 +342,7 @@ contract AnkorusToken is BasicToken, Ownable
     //  @returns time remaining, in seconds
     function getTimeUntilStart() public constant returns (uint256)
     {
-        if(getCurrentTimestamp() &gt;= startDate)
+        if(getCurrentTimestamp() >= startDate)
             return 0;
             
         return startDate.sub(getCurrentTimestamp());
@@ -371,7 +371,7 @@ contract AnkorusToken is BasicToken, Ownable
     function push(address beneficiary, uint256 amount) public 
         onlyOwner 
     {
-        require(balanceOf[wallet] &gt;= amount);
+        require(balanceOf[wallet] >= amount);
 
         // Transfer
         balanceOf[wallet] = balanceOf[wallet].sub(amount);
@@ -386,7 +386,7 @@ contract AnkorusToken is BasicToken, Ownable
     function finalize() public onlyOwner 
     {
         //  Can only finalize after after sale is completed
-        require(getCurrentTimestamp() &gt; endDate);
+        require(getCurrentTimestamp() > endDate);
 
         //  Set finalized
         finalized = true;
@@ -409,15 +409,15 @@ contract AnkorusToken is BasicToken, Ownable
         //  conditions: Sale has started 
         //  Or purchaser has been whitelisted to purchase tokens before The start date
         //  and the whitelistDate is active
-        bool checkSaleBegun = (whitelist[msg.sender] &amp;&amp; 
-            getCurrentTimestamp() &gt;= (startDate.sub(2 days))) || 
-                getCurrentTimestamp() &gt;= startDate;
+        bool checkSaleBegun = (whitelist[msg.sender] && 
+            getCurrentTimestamp() >= (startDate.sub(2 days))) || 
+                getCurrentTimestamp() >= startDate;
         
         //  Sale of tokens can not happen after the ico date or with no
         //  supply in any case
-        bool canPurchase = checkSaleBegun &amp;&amp; 
-            getCurrentTimestamp() &lt; endDate &amp;&amp;
-            supply() &gt; 0;
+        bool canPurchase = checkSaleBegun && 
+            getCurrentTimestamp() < endDate &&
+            supply() > 0;
             
         return(canPurchase);
     }

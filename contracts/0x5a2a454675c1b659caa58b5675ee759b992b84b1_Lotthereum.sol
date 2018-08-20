@@ -4,11 +4,11 @@ pragma solidity ^0.4.11;
 contract SafeMath {
 
     function add(uint x, uint y) internal constant returns (uint z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
  
     function subtract(uint x, uint y) internal constant returns (uint z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function multiply(uint x, uint y) internal constant returns (uint z) {
@@ -24,19 +24,19 @@ contract SafeMath {
     }
     
     function min64(uint64 x, uint64 y) internal constant returns (uint64) {
-        return x &lt; y ? x: y;
+        return x < y ? x: y;
     }
     
     function max64(uint64 x, uint64 y) internal constant returns (uint64) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     function min(uint x, uint y) internal constant returns (uint) {
-        return (x &lt;= y) ? x : y;
+        return (x <= y) ? x : y;
     }
 
     function max(uint x, uint y) internal constant returns (uint) {
-        return (x &gt;= y) ? x : y;
+        return (x >= y) ? x : y;
     }
 
     function assert(bool assertion) internal {
@@ -74,7 +74,7 @@ contract Mortal is Owned {
 contract Lotthereum is Mortal, SafeMath {
 
     Game[] private games;
-    mapping (address =&gt; uint) private balances;  // balances per address
+    mapping (address => uint) private balances;  // balances per address
 
     struct Game {
         uint id;
@@ -178,7 +178,7 @@ contract Lotthereum is Mortal, SafeMath {
 
     function payout(uint gameId) internal {
         address[] winners = games[gameId].rounds[games[gameId].currentRound].winners;
-        for (uint i = 0; i &lt; games[gameId].maxNumberOfBets -1; i++) {
+        for (uint i = 0; i < games[gameId].maxNumberOfBets -1; i++) {
             if (games[gameId].rounds[games[gameId].currentRound].bets[i].bet == games[gameId].rounds[games[gameId].currentRound].number) {
                 uint id = winners.length;
                 winners.length += 1;
@@ -186,9 +186,9 @@ contract Lotthereum is Mortal, SafeMath {
             }
         }
 
-        if (winners.length &gt; 0) {
+        if (winners.length > 0) {
             uint prize = divide(games[gameId].prize, winners.length);
-            for (i = 0; i &lt; winners.length; i++) {
+            for (i = 0; i < winners.length; i++) {
                 balances[winners[i]] = add(balances[winners[i]], prize);
                 RoundWinner(gameId, games[gameId].currentRound, winners[i], prize);
             }
@@ -210,7 +210,7 @@ contract Lotthereum is Mortal, SafeMath {
     }
 
     function getBlockHash(uint i) constant returns (bytes32 blockHash) {
-        if (i &gt; 255) {
+        if (i > 255) {
             i = 255;
         }
         blockHash = block.blockhash(block.number - i);
@@ -220,8 +220,8 @@ contract Lotthereum is Mortal, SafeMath {
         uint8 _b = 1;
         uint8 mint = 0;
         bool decimals = false;
-        for (uint i = _a.length - 1; i &gt;= 0; i--) {
-            if ((_a[i] &gt;= 48) &amp;&amp; (_a[i] &lt;= 57)) {
+        for (uint i = _a.length - 1; i >= 0; i--) {
+            if ((_a[i] >= 48) && (_a[i] <= 57)) {
                 if (decimals) {
                     if (_b == 0) {
                         break;
@@ -244,11 +244,11 @@ contract Lotthereum is Mortal, SafeMath {
             return false;
         }
 
-        if (msg.value &lt; games[gameId].minAmountByBet) {
+        if (msg.value < games[gameId].minAmountByBet) {
             return false;
         }
 
-        if (games[gameId].rounds[games[gameId].currentRound].bets.length &lt; games[gameId].maxNumberOfBets) {
+        if (games[gameId].rounds[games[gameId].currentRound].bets.length < games[gameId].maxNumberOfBets) {
             uint id = games[gameId].rounds[games[gameId].currentRound].bets.length;
             games[gameId].rounds[games[gameId].currentRound].bets.length += 1;
             games[gameId].rounds[games[gameId].currentRound].bets[id].id = id;
@@ -259,7 +259,7 @@ contract Lotthereum is Mortal, SafeMath {
             BetPlaced(gameId, games[gameId].rounds[games[gameId].currentRound].id, msg.sender, id);
         }
 
-        if (games[gameId].rounds[games[gameId].currentRound].bets.length &gt;= games[gameId].maxNumberOfBets) {
+        if (games[gameId].rounds[games[gameId].currentRound].bets.length >= games[gameId].maxNumberOfBets) {
             closeRound(gameId);
         }
 
@@ -268,7 +268,7 @@ contract Lotthereum is Mortal, SafeMath {
 
     function withdraw() public returns (uint) {
         uint amount = getBalance();
-        if (amount &gt; 0) {
+        if (amount > 0) {
             balances[msg.sender] = 0;
             msg.sender.transfer(amount);
             return amount;
@@ -277,7 +277,7 @@ contract Lotthereum is Mortal, SafeMath {
     }
 
     function getBalance() constant returns (uint) {
-        if ((balances[msg.sender] &gt; 0) &amp;&amp; (balances[msg.sender] &lt; this.balance)) {
+        if ((balances[msg.sender] > 0) && (balances[msg.sender] < this.balance)) {
             return balances[msg.sender];
         }
         return 0;
@@ -285,7 +285,7 @@ contract Lotthereum is Mortal, SafeMath {
 
     function numberOfClosedGames() constant returns(uint numberOfClosedGames) {
         numberOfClosedGames = 0;
-        for (uint i = 0; i &lt; games.length; i++) {
+        for (uint i = 0; i < games.length; i++) {
             if (games[i].open != true) {
                 numberOfClosedGames++;
             }
@@ -295,7 +295,7 @@ contract Lotthereum is Mortal, SafeMath {
 
     function getGames() constant returns(uint[] memory ids) {
         ids = new uint[](games.length - numberOfClosedGames());
-        for (uint i = 0; i &lt; games.length; i++) {
+        for (uint i = 0; i < games.length; i++) {
             if (games[i].open == true) {
                 ids[i] = games[i].id;
             }

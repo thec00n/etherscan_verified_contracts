@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -114,14 +114,14 @@ contract Discountable is Ownable {
 
     function getDiscountByAmount(uint256 amount) internal view returns(uint256 disc_){
         uint256 arrayLength = discounts.length;
-        if (amount &lt; discounts[0].amount){
+        if (amount < discounts[0].amount){
             return defaultCoef;
         }
-        for (uint8 i=0; i&lt;arrayLength; i++) {
+        for (uint8 i=0; i<arrayLength; i++) {
             if(i == arrayLength - 1){
                 return discounts[arrayLength - 1].disc;
             }
-            if (amount &lt; discounts[i+1].amount){
+            if (amount < discounts[i+1].amount){
                 return discounts[i].disc;
             }
         }
@@ -224,7 +224,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -242,7 +242,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -271,9 +271,9 @@ contract BurnableToken is BasicToken, Ownable {
    * @param _value The amount of token to be burned.
    */
   function burn(uint256 _value) public onlyOwner{
-    require(_value &lt;= balances[msg.sender]);
-    // no need to require value &lt;= totalSupply, since that would imply the
-    // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+    require(_value <= balances[msg.sender]);
+    // no need to require value <= totalSupply, since that would imply the
+    // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
@@ -328,7 +328,7 @@ contract OMPxContract is BasicToken, Haltable, Discountable, TransferStatistics 
     }
 
     function getFee() public {
-        if(feeBalance &gt; 1e15){
+        if(feeBalance > 1e15){
             feeReceiverContract.receiveFunds.value(feeBalance).gas(150000)();
             trackFee(feeBalance);
             feeBalance = 0;
@@ -350,7 +350,7 @@ contract OMPxContract is BasicToken, Haltable, Discountable, TransferStatistics 
         }
         uint256 eth;
         uint256 tokens = token.totalSupply();
-        if (buyBackValue &gt; 0) {
+        if (buyBackValue > 0) {
             eth = address(this).balance.sub(buyBackValue);
         } else {
             eth = address(this).balance;
@@ -360,11 +360,11 @@ contract OMPxContract is BasicToken, Haltable, Discountable, TransferStatistics 
 
 
     function getPurchasePrice(uint256 purchaseValue, uint256 amount) public view returns(uint256 price_) {
-        require(purchaseValue &gt;= 0);
-        require(amount &gt;= 0);
+        require(purchaseValue >= 0);
+        require(amount >= 0);
         uint256 buyerContributionCoefficient = getDiscountByAmount(amount);
         uint256 price = getBuyBackPrice(purchaseValue).mul(buyerContributionCoefficient).div(descPrecision);
-        if (price &lt;= 0) {price = 1e11;}
+        if (price <= 0) {price = 1e11;}
         return price;
     }
 
@@ -372,42 +372,42 @@ contract OMPxContract is BasicToken, Haltable, Discountable, TransferStatistics 
     // Purchase tokens to user.
     // Money back should happens if current price is lower, then expected
     function purchase(uint256 tokensToPurchase, uint256 maxPrice) public payable returns(uint256 tokensBought_) {
-        require(tokensToPurchase &gt; 0);
-        require(msg.value &gt; 0);
+        require(tokensToPurchase > 0);
+        require(msg.value > 0);
         return purchaseSafe(tokensToPurchase, maxPrice);
     }
 
     function purchaseSafe(uint256 tokensToPurchase, uint256 maxPrice) internal returns(uint256 tokensBought_){
-        require(maxPrice &gt;= 0);
+        require(maxPrice >= 0);
 
         uint256 currentPrice = getPurchasePrice(msg.value, tokensToPurchase);
-        require(currentPrice &lt;= maxPrice);
+        require(currentPrice <= maxPrice);
 
         uint256 tokensWuiAvailableByCurrentPrice = msg.value.mul(1e18).div(currentPrice);
-        if(tokensWuiAvailableByCurrentPrice &gt; tokensToPurchase) {
+        if(tokensWuiAvailableByCurrentPrice > tokensToPurchase) {
             tokensWuiAvailableByCurrentPrice = tokensToPurchase;
         }
         uint256 totalDealPrice = currentPrice.mul(tokensWuiAvailableByCurrentPrice).div(1e18);
-        require(msg.value &gt;= tokensToPurchase.mul(maxPrice).div(1e18));
-        require(msg.value &gt;= totalDealPrice);
+        require(msg.value >= tokensToPurchase.mul(maxPrice).div(1e18));
+        require(msg.value >= totalDealPrice);
 
         // 9% system support fee
         feeBalance = feeBalance + totalDealPrice.div(9);
 
         //mint tokens to sender
         uint256 availableTokens = token.balanceOf(this);
-        if (availableTokens &lt; tokensWuiAvailableByCurrentPrice) {
+        if (availableTokens < tokensWuiAvailableByCurrentPrice) {
             uint256 tokensToMint = tokensWuiAvailableByCurrentPrice.sub(availableTokens);
             token.mint(this, tokensToMint);
         }
         token.safeTransfer(msg.sender, tokensWuiAvailableByCurrentPrice);
 
         // money back
-        if (totalDealPrice &lt; msg.value) {
+        if (totalDealPrice < msg.value) {
             //            uint256 tokensToRefund = tokensToPurchase.sub(tokensWuiAvailableByCurrentPrice);
             uint256 oddEthers = msg.value.sub(totalDealPrice);
-            if (oddEthers &gt; 0) {
-                require(oddEthers &lt; msg.value);
+            if (oddEthers > 0) {
+                require(oddEthers < msg.value);
                 emit TransferMoneyBack(msg.sender, oddEthers);
                 msg.sender.transfer(oddEthers);
                 trackOdd(oddEthers);
@@ -421,10 +421,10 @@ contract OMPxContract is BasicToken, Haltable, Discountable, TransferStatistics 
     // buyback tokens from user
     function buyBack(uint256 tokensToBuyBack, uint256 minPrice) public {
         uint currentPrice = getBuyBackPrice(0);
-        require(currentPrice &gt;= minPrice);
+        require(currentPrice >= minPrice);
         uint256 totalPrice = tokensToBuyBack.mul(currentPrice).div(1e18);
-        require(tokensToBuyBack &gt; 0);
-        require(tokensToBuyBack &lt;= token.balanceOf(msg.sender));
+        require(tokensToBuyBack > 0);
+        require(tokensToBuyBack <= token.balanceOf(msg.sender));
 
         token.safeTransferFrom(msg.sender, this, tokensToBuyBack);
 
@@ -447,9 +447,9 @@ contract OMPxContract is BasicToken, Haltable, Discountable, TransferStatistics 
         uint256 tokensToPurchaseUp = tokensToSpend.sub(token.balanceOf(msg.sender));
         uint256 currentPrice = getPurchasePrice(msg.value, tokensToPurchaseUp);
         uint256 tokensAvailableByCurrentPrice = msg.value.mul(1e18).div(currentPrice);
-        require(tokensToPurchaseUp &lt;= tokensAvailableByCurrentPrice);
+        require(tokensToPurchaseUp <= tokensAvailableByCurrentPrice);
 
-        if (tokensToPurchaseUp&gt;0) {
+        if (tokensToPurchaseUp>0) {
             purchase(tokensToPurchaseUp, maxPrice);
         }
         spend(tokensToSpend, orderId);
@@ -478,7 +478,7 @@ contract Distribution is Ownable {
 
     uint256 sharesSum;
     uint8 constant maxRecsAmount = 12;
-    mapping(address =&gt; Recipient) public recs;
+    mapping(address => Recipient) public recs;
     address[maxRecsAmount] public recsLookUpTable; //to iterate
 
     event Payment(address indexed to, uint256 value);
@@ -494,7 +494,7 @@ contract Distribution is Ownable {
 
     function receiveFunds() public payable {
         emit FoundsReceived(msg.value);
-        for (uint8 i = 0; i &lt; maxRecsAmount; i++) {
+        for (uint8 i = 0; i < maxRecsAmount; i++) {
             Recipient storage rec = recs[recsLookUpTable[i]];
             uint ethAmount = (rec.share.mul(msg.value)).div(sharesSum);
             rec.balance = rec.balance + ethAmount;
@@ -508,7 +508,7 @@ contract Distribution is Ownable {
 
     function doPayments() public {
         Recipient storage rec = recs[msg.sender];
-        require(rec.balance &gt;= 1e12);
+        require(rec.balance >= 1e12);
         rec.addr.transfer(rec.balance);
         emit Payment(rec.addr, rec.balance);
         rec.received = (rec.received).add(rec.balance);
@@ -517,12 +517,12 @@ contract Distribution is Ownable {
 
     function addShare(address _rec, uint256 share) public onlyOwner {
         require(_rec != address(0));
-        require(share &gt; 0);
+        require(share > 0);
         require(recs[_rec].addr == address(0));
         recs[_rec].addr = _rec;
         recs[_rec].share = share;
         recs[_rec].received = 0;
-        for(uint8 i = 0; i &lt; maxRecsAmount; i++ ) {
+        for(uint8 i = 0; i < maxRecsAmount; i++ ) {
             if (recsLookUpTable[i] == address(0)) {
                 recsLookUpTable[i] = _rec;
                 break;
@@ -534,7 +534,7 @@ contract Distribution is Ownable {
 
     function changeShare(address _rec, uint share) public onlyOwner {
         require(_rec != address(0));
-        require(share &gt; 0);
+        require(share > 0);
         require(recs[_rec].addr != address(0));
         Recipient storage rec = recs[_rec];
         sharesSum = sharesSum.sub(rec.share).add(share);
@@ -546,7 +546,7 @@ contract Distribution is Ownable {
         require(_rec != address(0));
         require(recs[_rec].addr != address(0));
         sharesSum = sharesSum.sub(recs[_rec].share);
-        for(uint8 i = 0; i &lt; maxRecsAmount; i++ ) {
+        for(uint8 i = 0; i < maxRecsAmount; i++ ) {
             if (recsLookUpTable[i] == recs[_rec].addr) {
                 recsLookUpTable[i] = address(0);
                 break;
@@ -580,7 +580,7 @@ contract Distribution is Ownable {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   address internal owner;
 
   function StandardToken() public {
@@ -595,8 +595,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender] || msg.sender == owner);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender] || msg.sender == owner);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -612,7 +612,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -661,7 +661,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -714,6 +714,6 @@ contract OMPxToken is BurnableToken, MintableToken{
     uint32 public constant decimals = 18;
     uint256 public constant initialSupply = 1e24;
 
-    string public constant name = &quot;OMPx Token&quot;;
-    string public constant symbol = &quot;OMPX&quot;;
+    string public constant name = "OMPx Token";
+    string public constant symbol = "OMPX";
 }

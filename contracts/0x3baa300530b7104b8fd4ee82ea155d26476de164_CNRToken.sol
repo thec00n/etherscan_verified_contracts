@@ -46,20 +46,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -94,14 +94,14 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
 
 
     //Токен  ERC20
-    string public constant name = &quot;ICO Constructor token&quot;;
-    string public constant symbol = &quot;CNR&quot;;
+    string public constant name = "ICO Constructor token";
+    string public constant symbol = "CNR";
     uint256 public constant decimals = 18;
 
 
     //-------------------------ERC20 interface----------------------------------
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
-    mapping(address =&gt; uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
+    mapping(address => uint256) balances;
     ////////////////////////////ERC20 interface/////////////////////////////////
 
     //Адрес гранд фабрики
@@ -109,12 +109,12 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
 
     //Мапа и массив добавленнх токенов. Нулевой элемент  зарезервирован для
     //эфира. Остальные для токенов
-    mapping(address =&gt; uint256) public  tokens_map;
+    mapping(address => uint256) public  tokens_map;
     TokenInfo[] public                  tokens_arr;
 
-    //Мапа с забранными сущностями (эфиром, токенами). (адрес кошелька клиента =&gt; (индекс токена =&gt; сколько уже забрал))
+    //Мапа с забранными сущностями (эфиром, токенами). (адрес кошелька клиента => (индекс токена => сколько уже забрал))
     //По индексу 0 - всегда эфир.
-    mapping(address =&gt; mapping(uint =&gt; uint)) withdrawns;
+    mapping(address => mapping(uint => uint)) withdrawns;
 
     function CNRToken() public
     {
@@ -134,13 +134,13 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
     public view
     returns (address[])
     {
-        // ситуация, когда не добавлены токены. &lt;= чтобы убрать пред mythril,
+        // ситуация, когда не добавлены токены. <= чтобы убрать пред mythril,
         // который не понимает что в конструкторе забит первый элемент
-        if (tokens_arr.length &lt;= 1)
+        if (tokens_arr.length <= 1)
             return;
 
         address[] memory token_addresses = new address[](tokens_arr.length-1);
-        for (uint i = 1; i &lt; tokens_arr.length; i++)
+        for (uint i = 1; i < tokens_arr.length; i++)
         {
             token_addresses[i-1] = tokens_arr[i].contract_address;
         }
@@ -158,15 +158,15 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
         uint[]
     )
     {
-        // ситуация, когда не добавлены токены. &lt;= чтобы убрать пред mythril,
+        // ситуация, когда не добавлены токены. <= чтобы убрать пред mythril,
         // который не понимает что в конструкторе забит первый элемент
-        if (tokens_arr.length &lt;= 1)
+        if (tokens_arr.length <= 1)
             return;
 
         address[] memory token_addresses = new address[](tokens_arr.length-1);
         uint[] memory available_withdraws = new uint[](tokens_arr.length-1);
         //Здесь должно быть от 1-го, потому что на 0-ом - эфир
-        for (uint i = 1; i &lt; tokens_arr.length; i++)
+        for (uint i = 1; i < tokens_arr.length; i++)
         {
             token_addresses[i-1] = tokens_arr[i].contract_address;
             available_withdraws[i-1] =
@@ -221,7 +221,7 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
     // баланс рассчитывается по формуле:
     // общее количество токенов контракта _token_address, которым владеет контракт CNR
     // умножаем на количество токенов CNR у _owner, делим на totalSupply (получаем долю)
-    // и отнимаем уже выведенную _owner&#39;ом сумму токенов
+    // и отнимаем уже выведенную _owner'ом сумму токенов
     //Доступный к выводу баланс в токенах некоторого ICO
     function balanceOfToken(address _owner, address _token_address)
     public view
@@ -319,11 +319,11 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         //        uint withdraw_to_transfer = withdrawn[msg.sender] *  _value / balances[msg.sender];
 
-        for (uint i = 0; i &lt; tokens_arr.length; i++)
+        for (uint i = 0; i < tokens_arr.length; i++)
         {
             //Сколько забранных сущностей переместить на другой аккаунт
             uint withdraw_to_transfer = withdrawns[msg.sender][i].mul(_value).div(balances[msg.sender]);
@@ -347,10 +347,10 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
-        for (uint i = 0; i &lt; tokens_arr.length; i++)
+        for (uint i = 0; i < tokens_arr.length; i++)
         {
             //Сколько забранных сущностей переместить на другой аккаунт
             uint withdraw_to_transfer = withdrawns[_from][i].mul(_value).div(balances[_from]);
@@ -391,7 +391,7 @@ contract CNRToken is ERC20, CNRAddBalanceInterface, CNRAddTokenInterface, Platfo
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

@@ -21,7 +21,7 @@ contract Ownable {
 }
 
 contract Manageable is Ownable {
-    mapping(address =&gt; bool) public managers;
+    mapping(address => bool) public managers;
 
     event ManagerAdded(address indexed manager);
     event ManagerRemoved(address indexed manager);
@@ -66,8 +66,8 @@ contract MytilcoinStorage is Manageable {
         string login;
     }
     
-    mapping(bytes32 =&gt; Picture) public pictures;
-    mapping(bytes32 =&gt; mapping(uint32 =&gt; mapping(uint32 =&gt; Segment))) public segments;
+    mapping(bytes32 => Picture) public pictures;
+    mapping(bytes32 => mapping(uint32 => mapping(uint32 => Segment))) public segments;
 
     event AddPicture(bytes32 indexed hash, uint32 rows, uint32 cols, uint32 width, uint32 height, string image, string name, string author);
     event SetSegment(bytes32 indexed picture, uint32 indexed row, uint32 indexed col, bytes32 hash, string image);
@@ -81,8 +81,8 @@ contract MytilcoinStorage is Manageable {
     function addPicture(string _hash, uint32 _rows, uint32 _cols, uint32 _width, uint32 _height, string _image, string _name, string _author) onlyManager public returns(bool success) {
         bytes32 key = str_to_bytes32(_hash);
 
-        require(!(pictures[key].rows &gt; 0));
-        require(_rows &gt; 0 &amp;&amp; _cols &gt; 0 &amp;&amp; _width &gt; 0 &amp;&amp; _height &gt; 0);
+        require(!(pictures[key].rows > 0));
+        require(_rows > 0 && _cols > 0 && _width > 0 && _height > 0);
         
         pictures[key] = Picture({
             hash: _hash,
@@ -103,9 +103,9 @@ contract MytilcoinStorage is Manageable {
     function setSegment(string _picture, uint32 _row, uint32 _col, string _hash, string _image, string _email, string _login) onlyManager public returns(bool success) {
         bytes32 key = str_to_bytes32(_picture);
 
-        require(pictures[key].rows &gt; 0);
-        require(_row &gt; 0 &amp;&amp; _col &gt; 0 &amp;&amp; _row &lt;= pictures[key].rows &amp;&amp; _col &lt;= pictures[key].cols);
-        require(!(segments[key][_row][_col].row &gt; 0));
+        require(pictures[key].rows > 0);
+        require(_row > 0 && _col > 0 && _row <= pictures[key].rows && _col <= pictures[key].cols);
+        require(!(segments[key][_row][_col].row > 0));
         
         segments[key][_row][_col] = Segment({
             row: _row,
@@ -125,9 +125,9 @@ contract MytilcoinStorage is Manageable {
     function setSegmentOwner(string _picture, uint32 _row, uint32 _col, string _email, string _login) onlyManager public returns(bool success) {
         bytes32 key = str_to_bytes32(_picture);
 
-        require(pictures[key].rows &gt; 0);
-        require(_row &gt; 0 &amp;&amp; _col &gt; 0 &amp;&amp; _row &lt;= pictures[key].rows &amp;&amp; _col &lt;= pictures[key].cols);
-        require(segments[key][_row][_col].row &gt; 0);
+        require(pictures[key].rows > 0);
+        require(_row > 0 && _col > 0 && _row <= pictures[key].rows && _col <= pictures[key].cols);
+        require(segments[key][_row][_col].row > 0);
         
         segments[key][_row][_col].email = _email;
         segments[key][_row][_col].login = _login;

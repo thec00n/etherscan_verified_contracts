@@ -11,20 +11,20 @@ library SafeMath {
   }
  
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
  
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
  
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function percent(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -61,9 +61,9 @@ contract ERC20Basic {
 }
 contract BasicToken is ERC20Basic, Ownable {
     using SafeMath for uint256;
-    mapping (address =&gt; uint) public Account_balances;
-    mapping (address =&gt; uint) public Account_frozen;
-    mapping (address =&gt; uint) public Account_timePayout; 
+    mapping (address => uint) public Account_balances;
+    mapping (address => uint) public Account_frozen;
+    mapping (address => uint) public Account_timePayout; 
     
     event FrozenAccount_event(address target, uint frozen);
 
@@ -87,9 +87,9 @@ contract BasicToken is ERC20Basic, Ownable {
           }
  }
 contract AESconstants is BasicToken {
-    string public constant name = &quot;Adept Ethereum Stocks&quot;;
-    string public constant symbol = &quot;AES&quot;;
-    string public constant tagline = &quot;AES - when resoluteness is rewarded!&quot;;
+    string public constant name = "Adept Ethereum Stocks";
+    string public constant symbol = "AES";
+    string public constant tagline = "AES - when resoluteness is rewarded!";
     uint32 public constant decimals = 0;
 }
 contract Freeze_contract is AESconstants {
@@ -99,7 +99,7 @@ Account_frozen[_address] = _uint;
 FrozenAccount_event(_address, _uint);
 }    
     
-// mapping (address =&gt; uint) public frozenAccount;
+// mapping (address => uint) public frozenAccount;
 // 0 NO FREEZE
 // 1 Freeze onlyOwner
 // 2 Freeze user    
@@ -129,9 +129,9 @@ uint public payout = 0; // Бюджет дивидентов
 //--------Выплата доли  
 function Take_payout() public {
 //Проверка можно ли пользователю запрашивать
-require(Account_timePayout[msg.sender] &lt; now);
+require(Account_timePayout[msg.sender] < now);
 //Проверка периода, если период прошел начисляем  бюджет выплат
-if(next_payout&lt;now){
+if(next_payout<now){
 payout=this.balance; 
 next_payout=now + 90 days;
 }   
@@ -147,7 +147,7 @@ contract Hype is Ownable {
 using SafeMath for uint;  
 address public investors;
 function Hype(address _addres)  onlyOwner public {investors=_addres;    }
-    mapping (uint =&gt; address) public level;    
+    mapping (uint => address) public level;    
     uint private price=5000000000000000;      // in wei    1000 finney in 1 ether
     uint public step_level=0;
     uint public step_pay=0;
@@ -156,11 +156,11 @@ function Hype(address _addres)  onlyOwner public {investors=_addres;    }
     uint private bonus=price.percent(100+percent_hype);
     
 function() external payable {
-require(msg.value &gt; 4999999999999999);
+require(msg.value > 4999999999999999);
 uint amt_deposit=msg.value.div(price); // Количество шагов // обязательно перед выплатой инвесторам
 investors.transfer(msg.value.percent(percent_investors));       //Переводим процент инвесторам
 
- for (  uint i= 0; i &lt; amt_deposit; i++) { 
+ for (  uint i= 0; i < amt_deposit; i++) { 
         if (level[step_pay].send(bonus)==true){
           step_pay++;
                                               }
@@ -181,17 +181,17 @@ struct info {
         uint i_balance;
             }
 
-    mapping (uint =&gt; info) public level;    
+    mapping (uint => info) public level;    
     uint public step_level=0;
     uint public step_pay=0;
     uint private constant percent_hype=10;
     uint private constant percent_investors=3;
  
 function() external payable {
-require(msg.value &gt; 4999999999999999); 
+require(msg.value > 4999999999999999); 
 investors.transfer(msg.value.percent(percent_investors));       
 uint bonus=(level[step_pay].i_balance).percent(100+percent_hype);  
- if (step_level&gt;0 &amp;&amp; level[step_pay].i_address.send(bonus)==true){
+ if (step_level>0 && level[step_pay].i_address.send(bonus)==true){
           step_pay++;
                                                                  }
      level[step_level].i_address=msg.sender;
@@ -234,7 +234,7 @@ bighype.transferOwnership(multisig);
 function getTokensSale() public  view returns(uint){  return AEStoken.balanceOf(this);  }
 function getBalance_in_token() public view returns(uint){  return AEStoken.balanceOf(msg.sender); }
  
-modifier isSaleTime() {  require(Time_Start_Crowdsale&lt;now);  _;  } 
+modifier isSaleTime() {  require(Time_Start_Crowdsale<now);  _;  } 
  
  // Всего 1 000 000 токенов AES
  // 400 000 баунти          40%
@@ -250,28 +250,28 @@ modifier isSaleTime() {  require(Time_Start_Crowdsale&lt;now);  _;  }
         uint Discount=0;
         
       // Скидка от остатка для распродажи
-            if(Tokens_on_Sale&gt;400000)   {Discount+=20;}   //Szabo
-       else if(Tokens_on_Sale&gt;300000)   {Discount+=15; }   //Szabo
-       else if(Tokens_on_Sale&gt;200000)   {Discount+=10; }   //2000 Szabo   1000 Szabo= 1 finney
-       else if(Tokens_on_Sale&gt;100000)   {Discount+=5; } 
+            if(Tokens_on_Sale>400000)   {Discount+=20;}   //Szabo
+       else if(Tokens_on_Sale>300000)   {Discount+=15; }   //Szabo
+       else if(Tokens_on_Sale>200000)   {Discount+=10; }   //2000 Szabo   1000 Szabo= 1 finney
+       else if(Tokens_on_Sale>100000)   {Discount+=5; } 
        
        // Скидка от объема
-            if(msg.value&gt; 1000000000000000000 &amp;&amp; Tokens_on_Sale&gt;2500 )  {Discount+=20; }   // Если покупка больше чем на 1 эфиров 
-       else if(msg.value&gt;  900000000000000000 &amp;&amp; Tokens_on_Sale&gt;1500 )  {Discount+=15;  }   // Если покупка больше чем на 0.9 эфиров 
-       else if(msg.value&gt;  600000000000000000 &amp;&amp; Tokens_on_Sale&gt;500  )  {Discount+=10;  }   // Если покупка больше чем на 0.6 эфира 
-       else if(msg.value&gt;  300000000000000000 &amp;&amp; Tokens_on_Sale&gt;250  )  {Discount+=5;  }   // Если покупка больше чем на 0.3 эфир 
+            if(msg.value> 1000000000000000000 && Tokens_on_Sale>2500 )  {Discount+=20; }   // Если покупка больше чем на 1 эфиров 
+       else if(msg.value>  900000000000000000 && Tokens_on_Sale>1500 )  {Discount+=15;  }   // Если покупка больше чем на 0.9 эфиров 
+       else if(msg.value>  600000000000000000 && Tokens_on_Sale>500  )  {Discount+=10;  }   // Если покупка больше чем на 0.6 эфира 
+       else if(msg.value>  300000000000000000 && Tokens_on_Sale>250  )  {Discount+=5;  }   // Если покупка больше чем на 0.3 эфир 
        
        //Скидка от времени
      uint256   Time_Discount=now-Time_Start_Crowdsale;
-             if(Time_Discount &lt; 3 days)   {Discount+=20; }
-        else if(Time_Discount &lt; 5 days)   {Discount+=15; }       
-        else if(Time_Discount &lt; 10 days)  {Discount+=10; }
-        else if(Time_Discount &lt; 20 days)  {Discount+=5;  } 
+             if(Time_Discount < 3 days)   {Discount+=20; }
+        else if(Time_Discount < 5 days)   {Discount+=15; }       
+        else if(Time_Discount < 10 days)  {Discount+=10; }
+        else if(Time_Discount < 20 days)  {Discount+=5;  } 
          
      CenaTokena=CenaTokena.percent(100-Discount); // Делаем скидку
      uint256 Tokens=msg.value.div(CenaTokena); // Узнаем сколько токенов купили
        
-        if (Tokens_on_Sale&gt;=Tokens)   {         
+        if (Tokens_on_Sale>=Tokens)   {         
             multisig.transfer(msg.value);
           }
      else {
@@ -287,7 +287,7 @@ modifier isSaleTime() {  require(Time_Start_Crowdsale&lt;now);  _;  }
  
     function() external payable {
      
-      if (AEStoken.balanceOf(this)&gt;0)  { createTokens(); }
+      if (AEStoken.balanceOf(this)>0)  { createTokens(); }
       else { AEStoken.transfer(msg.value); }// После окончания ICO принимаем пожертвования
         
     }

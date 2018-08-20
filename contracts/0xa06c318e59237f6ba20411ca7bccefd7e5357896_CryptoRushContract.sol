@@ -16,7 +16,7 @@ contract CryptoRushContract
       uint lockedBalance; // how much funds are currently in the whole ecosystem
       uint currBalance; // how much funds are currently available (to e.g. withdraw)
       bool isInvestor; // special status in case user is investor
-      int investorCredit; // if this is &gt; 0 then fees get deducted from this virtual balance
+      int investorCredit; // if this is > 0 then fees get deducted from this virtual balance
       // This will be extended in the near future to allow for more diversity in calculations
       
   }
@@ -25,7 +25,7 @@ contract CryptoRushContract
   
 
   
-  mapping (address =&gt; Balance) balances;
+  mapping (address => Balance) balances;
   
  
   
@@ -96,7 +96,7 @@ contract CryptoRushContract
       
   }
   
-  // only owner can approve new User and currently owner can&#39;t remove user once registered.
+  // only owner can approve new User and currently owner can't remove user once registered.
   // Transparency and Trust yaaay!
   function approveUser(address _user) ifOwner
   {
@@ -168,16 +168,16 @@ contract CryptoRushContract
      // if user is not approved then do not add it to the balances in order to stop overbloating the array thus sabotaging the platform
      if (!(msg.sender == balances[msg.sender].user))
      {
-        // user is not approved so add it to the owner&#39;s account balance
+        // user is not approved so add it to the owner's account balance
         
         balances[owner].currBalance += msg.value;
-        UserStatus(&#39;User is not approved thus donating ether to the contract&#39;, msg.sender, msg.value);
+        UserStatus('User is not approved thus donating ether to the contract', msg.sender, msg.value);
      }
      else
      {  // user is approved so add it to their balance
          
         balances[msg.sender].currBalance += msg.value; // and current balance
-        UserStatus(&#39;User has deposited some funds&#39;, msg.sender, msg.value);
+        UserStatus('User has deposited some funds', msg.sender, msg.value);
      }
       
       
@@ -188,7 +188,7 @@ contract CryptoRushContract
 
   function withdrawFunds (uint amount) ifApproved
   {
-      if (balances[msg.sender].currBalance &gt;= amount)
+      if (balances[msg.sender].currBalance >= amount)
       {
           // user has enough funds, so pay him out!
           
@@ -201,7 +201,7 @@ contract CryptoRushContract
           if (msg.sender.send(amount)) 
           {
               // all okay!
-               UserStatus(&quot;User has withdrawn funds&quot;, msg.sender, amount);
+               UserStatus("User has withdrawn funds", msg.sender, amount);
           }
           else
           {
@@ -219,17 +219,17 @@ contract CryptoRushContract
   
   
   
-  // Bot grabs balance from user&#39;s account
+  // Bot grabs balance from user's account
   function allocateBalance(uint amount, address user) ifBot
   {
       // has user enough funds? remember this is being called by Backend!
-      if (balances[user].currBalance &gt;= amount)
+      if (balances[user].currBalance >= amount)
       {
           balances[user].currBalance -= amount;
           balances[user].lockedBalance += amount; 
           if (bot.send(amount))
           {
-            UserStatus(&#39;Bot has allocated balances&#39;, user, msg.value);
+            UserStatus('Bot has allocated balances', user, msg.value);
           }
           else
           {
@@ -255,7 +255,7 @@ contract CryptoRushContract
       // check if everything fine with bot value
       
       
-      if (msg.value &gt; balances[target].lockedBalance)
+      if (msg.value > balances[target].lockedBalance)
       {
           // profit has been made! Time to pay some fees!!11
           uint profit = msg.value - balances[target].lockedBalance;
@@ -270,13 +270,13 @@ contract CryptoRushContract
               
               
               // if user is investor and has credits left 
-              if (balances[target].investorCredit &gt; 0 )
+              if (balances[target].investorCredit > 0 )
               {
                   // deduct virtual balance
                   
                   balances[target].investorCredit -= vFee;
                   
-                  if (balances[target].investorCredit &lt; 0)
+                  if (balances[target].investorCredit < 0)
                   {
                       // credit is gone, recalculate profit
                       int toCalc = balances[target].investorCredit * -1;
@@ -289,7 +289,7 @@ contract CryptoRushContract
                   }
                   else
                   {
-                    //UserStatus(&quot;investor credit deducted&quot;, target, vFee);
+                    //UserStatus("investor credit deducted", target, vFee);
                      // add full profit 
                      balances[target].currBalance += balances[target].lockedBalance + profit; // full profit gets added
                      balances[target].lockedBalance = 0;    

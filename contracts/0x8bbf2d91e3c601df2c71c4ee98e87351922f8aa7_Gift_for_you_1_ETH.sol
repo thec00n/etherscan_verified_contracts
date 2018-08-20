@@ -14,7 +14,7 @@ contract Gift_for_you_1_ETH
     public
     payable
     {
-        if(!passHasBeenSet&amp;&amp;(msg.value &gt;= 1 ether))
+        if(!passHasBeenSet&&(msg.value >= 1 ether))
         {
             hashPass = hash;
         }

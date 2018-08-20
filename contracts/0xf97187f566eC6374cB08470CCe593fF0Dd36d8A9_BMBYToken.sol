@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -95,13 +95,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
-   *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+   *   bytes4(keccak256('supportsInterface(bytes4)'))
    */
 
   /**
-   * @dev a mapping of interface id to whether or not it&#39;s supported
+   * @dev a mapping of interface id to whether or not it's supported
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev A contract implementing SupportsInterfaceWithLookup
@@ -245,7 +245,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -262,8 +262,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -278,9 +278,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -288,7 +288,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -297,7 +297,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -312,7 +312,7 @@ library SafeMath {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
@@ -328,7 +328,7 @@ contract ERC721Receiver {
    * @param _from The address which previously owned the token
    * @param _tokenId The NFT identifier which is being transfered
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _operator,
@@ -351,41 +351,41 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
   bytes4 private constant InterfaceId_ERC721 = 0x80ac58cd;
   /*
    * 0x80ac58cd ===
-   *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-   *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-   *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-   *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+   *   bytes4(keccak256('balanceOf(address)')) ^
+   *   bytes4(keccak256('ownerOf(uint256)')) ^
+   *   bytes4(keccak256('approve(address,uint256)')) ^
+   *   bytes4(keccak256('getApproved(uint256)')) ^
+   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
    */
 
   bytes4 private constant InterfaceId_ERC721Exists = 0x4f558e79;
   /*
    * 0x4f558e79 ===
-   *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+   *   bytes4(keccak256('exists(uint256)'))
    */
 
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
    * @dev Guarantees msg.sender is owner of the given token
@@ -529,7 +529,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    *
    * Requires the msg sender to be the owner, approved, or operator
@@ -546,14 +546,14 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    * Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -699,17 +699,17 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   bytes4 private constant InterfaceId_ERC721Enumerable = 0x780e9d63;
   /**
    * 0x780e9d63 ===
-   *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+   *   bytes4(keccak256('totalSupply()')) ^
+   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+   *   bytes4(keccak256('tokenByIndex(uint256)'))
    */
 
   bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
   /**
    * 0x5b5e139f ===
-   *   bytes4(keccak256(&#39;name()&#39;)) ^
-   *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+   *   bytes4(keccak256('name()')) ^
+   *   bytes4(keccak256('symbol()')) ^
+   *   bytes4(keccak256('tokenURI(uint256)'))
    */
 
   // Token name
@@ -719,19 +719,19 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -785,7 +785,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -804,7 +804,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -898,7 +898,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 
 // File: contracts\BMBYToken.sol
 
-contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
+contract BMBYToken is ERC721Token("BMBY", "BMBY"), Ownable {
 
     struct BMBYTokenInfo {
         uint64 timestamp;
@@ -907,8 +907,8 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
 
     BMBYTokenInfo[] public tokens;
 
-    mapping(uint256 =&gt; address) private creators;
-    mapping(uint256 =&gt; uint256) private prices;
+    mapping(uint256 => address) private creators;
+    mapping(uint256 => uint256) private prices;
 
     address public ceoAddress;
     uint64 public creationFee;
@@ -940,7 +940,7 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
 
     constructor() public {
         ceoAddress = msg.sender;
-        baseURI = &quot;https://bmby.co/api/tokens/&quot;;
+        baseURI = "https://bmby.co/api/tokens/";
 
         creationFee = 0.03 ether;
         initialTokenValue = 0.06 ether;
@@ -963,21 +963,21 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
 
         uint newPriceValuePercent;
 
-        if (currentTokenPrice &lt;= priceStep1) {
+        if (currentTokenPrice <= priceStep1) {
             newPriceValuePercent = 200;
-        } else if (currentTokenPrice &lt;= priceStep2) {
+        } else if (currentTokenPrice <= priceStep2) {
             newPriceValuePercent = 150;
-        } else if (currentTokenPrice &lt;= priceStep3) {
+        } else if (currentTokenPrice <= priceStep3) {
             newPriceValuePercent = 135;
-        } else if (currentTokenPrice &lt;= priceStep4) {
+        } else if (currentTokenPrice <= priceStep4) {
             newPriceValuePercent = 125;
-        } else if (currentTokenPrice &lt;= priceStep5) {
+        } else if (currentTokenPrice <= priceStep5) {
             newPriceValuePercent = 120;
-        } else if (currentTokenPrice &lt;= priceStep6) {
+        } else if (currentTokenPrice <= priceStep6) {
             newPriceValuePercent = 117;
-        } else if (currentTokenPrice &lt;= priceStep7) {
+        } else if (currentTokenPrice <= priceStep7) {
             newPriceValuePercent = 115;
-        } else if (currentTokenPrice &lt;= priceStep8) {
+        } else if (currentTokenPrice <= priceStep8) {
             newPriceValuePercent = 113;
         } else {
             newPriceValuePercent = 110;
@@ -991,7 +991,7 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
 
     function mint(string userId) public payable {
 
-        require(msg.value &gt;= creationFee);
+        require(msg.value >= creationFee);
         address tokenCreator = msg.sender;
 
         require(isValidAddress(tokenCreator));
@@ -1025,39 +1025,39 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
 
         uint256 contractPayment = msg.value;
 
-        require(contractPayment &gt; 0);
+        require(contractPayment > 0);
         require(isValidAddress(newHolder));
 
         uint256 currentTokenPrice = prices[tokenId];
 
-        require(currentTokenPrice &gt; 0);
+        require(currentTokenPrice > 0);
 
-        require(contractPayment &gt;= currentTokenPrice);
+        require(contractPayment >= currentTokenPrice);
 
         // -------------------
         // New Price
 
         uint256 newTokenPrice = getNewTokenPrice(currentTokenPrice);
-        require(newTokenPrice &gt; currentTokenPrice);
+        require(newTokenPrice > currentTokenPrice);
 
         // ------------------------------
 
         uint256 currentOwnerFee = uint256(currentTokenPrice.mul(currentOwnerFeePercent).div(100));
         uint256 creatorFee = uint256(currentTokenPrice.mul(creatorFeePercent).div(100));
 
-        require(contractPayment &gt; currentOwnerFee + creatorFee);
+        require(contractPayment > currentOwnerFee + creatorFee);
 
         // ------------------------------
 
         address creator = creators[tokenId];
 
-        // If the current owner is the contract, the money is already in the balance so there&#39;s no need to transfer
+        // If the current owner is the contract, the money is already in the balance so there's no need to transfer
         if (holder != address(this)) {
             // send money to the seller
             holder.transfer(currentOwnerFee);
         }
 
-        // if the current owner is the creator, we don&#39;t give fee at this stage. only if other people purchase you
+        // if the current owner is the creator, we don't give fee at this stage. only if other people purchase you
         if (holder != creator) {
             // send money to the creator
             creator.transfer(creatorFee);
@@ -1075,7 +1075,7 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
     function payout(uint256 amount, address destination) public onlyCEO {
         require(isValidAddress(destination));
         uint balance = address(this).balance;
-        require(balance &gt;= amount);
+        require(balance >= amount);
         destination.transfer(amount);
     }
 
@@ -1166,7 +1166,7 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
 
     function toString(uint256 v) private pure returns (string) {
         if (v == 0) {
-            return &quot;0&quot;;
+            return "0";
         }
         else {
             uint maxlength = 100;
@@ -1183,7 +1183,7 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
             }
 
             bytes memory s = new bytes(i + 1);
-            for (uint j = 0; j &lt;= i; j++) {
+            for (uint j = 0; j <= i; j++) {
                 s[j] = reversed[i - j];
             }
             return string(s);
@@ -1197,8 +1197,8 @@ contract BMBYToken is ERC721Token(&quot;BMBY&quot;, &quot;BMBY&quot;), Ownable {
         string memory abcde = new string(_ba.length + _bb.length);
         bytes memory babcde = bytes(abcde);
         uint k = 0;
-        for (uint i = 0; i &lt; _ba.length; i++) babcde[k++] = _ba[i];
-        for (i = 0; i &lt; _bb.length; i++) babcde[k++] = _bb[i];
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
         return string(babcde);
     }
 

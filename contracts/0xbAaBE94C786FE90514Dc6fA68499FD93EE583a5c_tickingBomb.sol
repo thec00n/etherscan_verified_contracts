@@ -14,7 +14,7 @@ contract tickingBomb {
     team public red;
     team public blue;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
     address creator;
 
     string[] public historyWinner;
@@ -40,14 +40,14 @@ contract tickingBomb {
         red.lastUpdate = block.timestamp;
 
         // Split the incoming money every INVEST_AMOUNT
-        while (amount &gt;= INVEST_AMOUNT) {
+        while (amount >= INVEST_AMOUNT) {
             red.members.push(msg.sender);
             red.nbrMembers++;
             amount -= INVEST_AMOUNT;
         }
 
         // If there is still some money in the balance, sent it back
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.send(amount);
         }
     }
@@ -64,14 +64,14 @@ contract tickingBomb {
         blue.lastUpdate = block.timestamp;
 
         // Split the incoming money every 100 finneys
-        while (amount &gt;= INVEST_AMOUNT) {
+        while (amount >= INVEST_AMOUNT) {
             blue.members.push(msg.sender);
             blue.nbrMembers++;
             amount -= INVEST_AMOUNT;
         }
 
         // If there is still some money in the balance, sent it back
-        if (amount &gt; 0) {
+        if (amount > 0) {
             msg.sender.send(amount);
         }
     }
@@ -89,15 +89,15 @@ contract tickingBomb {
         uint feeCollected = 0;
 
         // If Red and Blue have exploded at the same time, return the amounted invested
-        if (red.lastUpdate == blue.lastUpdate &amp;&amp; red.lastUpdate + DELAY &lt; block.timestamp) {
-            for (i = 0; i &lt; red.members.length; i++) {
+        if (red.lastUpdate == blue.lastUpdate && red.lastUpdate + DELAY < block.timestamp) {
+            for (i = 0; i < red.members.length; i++) {
                 balances[red.members[i]] += INVEST_AMOUNT;
             }
-            for (i = 0; i &lt; blue.members.length; i++) {
+            for (i = 0; i < blue.members.length; i++) {
                 balances[blue.members[i]] += INVEST_AMOUNT;
             }
 
-            historyWinner.push(&#39;Tie between Red and Blue&#39;);
+            historyWinner.push('Tie between Red and Blue');
             historyRed.push(red.nbrMembers);
             historyBlue.push(blue.nbrMembers);
             gameNbr++;
@@ -105,9 +105,9 @@ contract tickingBomb {
         }
 
         // Take the older timestamp
-        if (red.lastUpdate &lt; blue.lastUpdate) {
+        if (red.lastUpdate < blue.lastUpdate) {
             // Check if the Red bomb exploded
-            if (red.lastUpdate + DELAY &lt; block.timestamp) {
+            if (red.lastUpdate + DELAY < block.timestamp) {
                 // Calculate the lost amount by the red team
                 // Number of Red member * Invested amount per user  *
                 feeCollected += (red.nbrMembers * INVEST_AMOUNT * FEE / 100);
@@ -115,11 +115,11 @@ contract tickingBomb {
                 lostAmount = (red.nbrMembers * INVEST_AMOUNT) - feeCollected;
 
                 gainPerMember = lostAmount / blue.nbrMembers;
-                for (i = 0; i &lt; blue.members.length; i++) {
+                for (i = 0; i < blue.members.length; i++) {
                     balances[blue.members[i]] += (INVEST_AMOUNT + gainPerMember);
                 }
 
-                historyWinner.push(&#39;Red&#39;);
+                historyWinner.push('Red');
                 historyRed.push(red.nbrMembers);
                 historyBlue.push(blue.nbrMembers);
                 gameNbr++;
@@ -128,18 +128,18 @@ contract tickingBomb {
             return false;
         } else {
             // Check if the Blue bomb exploded
-            if (blue.lastUpdate + DELAY &lt; block.timestamp) {
+            if (blue.lastUpdate + DELAY < block.timestamp) {
                 // Calculate the lost amount by the red team
                 // Number of Red member * Invested amount per user  *
                 feeCollected += (blue.nbrMembers * INVEST_AMOUNT * FEE / 100);
                 balances[creator] += feeCollected;
                 lostAmount = (blue.nbrMembers * INVEST_AMOUNT) - feeCollected;
                 gainPerMember = lostAmount / red.nbrMembers;
-                for (i = 0; i &lt; red.members.length; i++) {
+                for (i = 0; i < red.members.length; i++) {
                     balances[red.members[i]] += (INVEST_AMOUNT + gainPerMember);
                 }
 
-                historyWinner.push(&#39;Blue&#39;);
+                historyWinner.push('Blue');
                 historyRed.push(red.nbrMembers);
                 historyBlue.push(blue.nbrMembers);
                 gameNbr++;
@@ -150,8 +150,8 @@ contract tickingBomb {
     }
 
     function newRound() private {
-        red.name = &quot;Red team&quot;;
-        blue.name = &quot;Blue team&quot;;
+        red.name = "Red team";
+        blue.name = "Blue team";
         red.lastUpdate = block.timestamp;
         blue.lastUpdate = block.timestamp;
         red.nbrMembers = 0;
@@ -162,7 +162,7 @@ contract tickingBomb {
 
     function() {
         // Help the oldest timestamp (going to explode first)
-        if (red.lastUpdate &lt; blue.lastUpdate) {
+        if (red.lastUpdate < blue.lastUpdate) {
             helpRed();
         } else {
             helpBlue();

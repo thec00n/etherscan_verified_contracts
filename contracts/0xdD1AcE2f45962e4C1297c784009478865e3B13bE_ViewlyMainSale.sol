@@ -11,32 +11,32 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.13;
 
 contract DSMath {
     function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
 
     function min(uint x, uint y) internal pure returns (uint z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint x, uint y) internal pure returns (uint z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
     function imin(int x, int y) internal pure returns (int z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int x, int y) internal pure returns (int z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     uint constant WAD = 10 ** 18;
@@ -55,10 +55,10 @@ contract DSMath {
         z = add(mul(x, RAY), y / 2) / y;
     }
 
-    // This famous algorithm is called &quot;exponentiation by squaring&quot;
+    // This famous algorithm is called "exponentiation by squaring"
     // and calculates x^n with x as fixed-point and n as regular unsigned.
     //
-    // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+    // It's O(log n), instead of O(n) for naive repeated multiplication.
     //
     // These facts are why it works:
     //
@@ -94,7 +94,7 @@ contract DSMath {
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.4.13;
 
@@ -154,7 +154,7 @@ contract DSAuth is DSAuthEvents {
 
 /// erc20.sol -- API for the ERC20 token standard
 
-// See &lt;https://github.com/ethereum/EIPs/issues/20&gt;.
+// See <https://github.com/ethereum/EIPs/issues/20>.
 
 // This file likely does not meet the threshold of originality
 // required for copyright to apply.  As a result, this is free and
@@ -195,11 +195,11 @@ contract ViewlyMainSale is DSAuth, DSMath {
     uint public totalContributedAmount;          // stores all contributions
     uint public totalRefundedAmount;             // stores all refunds
 
-    mapping(address =&gt; uint256) public contributions;
-    mapping(address =&gt; uint256) public refunds;
+    mapping(address => uint256) public contributions;
+    mapping(address => uint256) public refunds;
 
     bool public whitelistRequired;
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
 
     // EVENTS
@@ -212,8 +212,8 @@ contract ViewlyMainSale is DSAuth, DSMath {
     // MODIFIERS
 
     modifier saleOpen() {
-        require(block.number &gt;= startBlock);
-        require(block.number &lt;= endBlock);
+        require(block.number >= startBlock);
+        require(block.number <= endBlock);
         _;
     }
 
@@ -238,8 +238,8 @@ contract ViewlyMainSale is DSAuth, DSMath {
 
     function refund(address contributor) public auth {
         uint amount = contributions[contributor];
-        require(amount &gt; 0);
-        require(amount &lt;= this.balance);
+        require(amount > 0);
+        require(amount <= this.balance);
 
         contributions[contributor] = 0;
         refunds[contributor] += amount;
@@ -250,27 +250,27 @@ contract ViewlyMainSale is DSAuth, DSMath {
     }
 
     function setMinContributionAmount(uint minAmount) public auth {
-        require(minAmount &gt; 0);
+        require(minAmount > 0);
 
         minContributionAmount = minAmount;
     }
 
     function setMaxTotalAmount(uint maxAmount) public auth {
-        require(maxAmount &gt; 0);
+        require(maxAmount > 0);
 
         maxTotalAmount = maxAmount;
     }
 
     function initSale(uint startBlock_, uint endBlock_) public auth {
-        require(startBlock_ &gt; 0);
-        require(endBlock_ &gt; startBlock_);
+        require(startBlock_ > 0);
+        require(endBlock_ > startBlock_);
 
         startBlock = startBlock_;
         endBlock   = endBlock_;
     }
 
     function collectAmount(uint amount) public auth {
-        require(this.balance &gt;= amount);
+        require(this.balance >= amount);
 
         beneficiary.transfer(amount);
         LogCollectAmount(amount);
@@ -279,7 +279,7 @@ contract ViewlyMainSale is DSAuth, DSMath {
     function addToWhitelist(address[] contributors) public auth {
         require(contributors.length != 0);
 
-        for (uint i = 0; i &lt; contributors.length; i++) {
+        for (uint i = 0; i < contributors.length; i++) {
           whitelist[contributors[i]] = true;
         }
     }
@@ -287,7 +287,7 @@ contract ViewlyMainSale is DSAuth, DSMath {
     function removeFromWhitelist(address[] contributors) public auth {
         require(contributors.length != 0);
 
-        for (uint i = 0; i &lt; contributors.length; i++) {
+        for (uint i = 0; i < contributors.length; i++) {
           whitelist[contributors[i]] = false;
         }
     }
@@ -313,8 +313,8 @@ contract ViewlyMainSale is DSAuth, DSMath {
     // PRIVATE
 
     function contribute() private saleOpen requireWhitelist {
-        require(msg.value &gt;= minContributionAmount);
-        require(maxTotalAmount &gt;= add(totalContributedAmount, msg.value));
+        require(msg.value >= minContributionAmount);
+        require(maxTotalAmount >= add(totalContributedAmount, msg.value));
 
         contributions[msg.sender] += msg.value;
         totalContributedAmount += msg.value;

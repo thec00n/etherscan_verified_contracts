@@ -2,7 +2,7 @@ contract Whitelist {
     address public owner;
     address public sale;
 
-    mapping (address =&gt; uint) public accepted;
+    mapping (address => uint) public accepted;
 
     function Whitelist() {
         owner = msg.sender;

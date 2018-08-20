@@ -16,12 +16,12 @@ contract Ownable {
 
 contract SafeMath {
     function safeSub(uint a, uint b) internal returns (uint) {
-        sAssert(b &lt;= a);
+        sAssert(b <= a);
         return a - b;
     }
     function safeAdd(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        sAssert(c&gt;=a &amp;&amp; c&gt;=b);
+        sAssert(c>=a && c>=b);
         return c;
     }
     function sAssert(bool assertion) internal {
@@ -43,8 +43,8 @@ contract ERC20 {
 }
 
 contract StandardToken is ERC20, SafeMath {
-    mapping(address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
     function balanceOf(address _owner) constant returns (uint balance) {
         return balances[_owner];
     }
@@ -75,14 +75,14 @@ contract StandardToken is ERC20, SafeMath {
 }
 
 contract TonCoin is Ownable, StandardToken {
-    string public name = &quot;TON Coin&quot;;
-    string public symbol = &quot;TON&quot;;
+    string public name = "TON Coin";
+    string public symbol = "TON";
     uint public decimals = 18;
     uint public totalSupply = 3 * (10**9) * (10**18);
     function TonCoin() {
         balances[msg.sender] = totalSupply;
     }
-    function () {// Don&#39;t accept ethers - no payable modifier
+    function () {// Don't accept ethers - no payable modifier
     }
     function transferOwnership(address _newOwner) onlyOwner {
         balances[_newOwner] = safeAdd(balances[owner], balances[_newOwner]);

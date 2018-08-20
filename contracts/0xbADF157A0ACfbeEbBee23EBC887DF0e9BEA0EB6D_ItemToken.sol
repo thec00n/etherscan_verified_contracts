@@ -18,9 +18,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -28,7 +28,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -49,7 +49,7 @@ contract ItemToken {
   event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
   address private owner;
-  mapping (address =&gt; bool) private admins;
+  mapping (address => bool) private admins;
   bool private erc721Enabled = false;
 
   uint256 private L = 500;
@@ -57,16 +57,16 @@ contract ItemToken {
   uint256 private pointsDecayFactor = 1209600000; // half-time: week
 
   uint256[] private listedItems;
-  mapping (uint256 =&gt; address) private ownerOfItem;
-  mapping (uint256 =&gt; string) private nameOfItem;
-  mapping (uint256 =&gt; string) private descOfItem;
-  mapping (uint256 =&gt; string) private URLOfItem;
-  mapping (uint256 =&gt; uint256) private pointOfItem;
-  mapping (uint256 =&gt; uint256) private timeOfItem;
-  mapping (uint256 =&gt; address) private approvedOfItem;
+  mapping (uint256 => address) private ownerOfItem;
+  mapping (uint256 => string) private nameOfItem;
+  mapping (uint256 => string) private descOfItem;
+  mapping (uint256 => string) private URLOfItem;
+  mapping (uint256 => uint256) private pointOfItem;
+  mapping (uint256 => uint256) private timeOfItem;
+  mapping (uint256 => address) private approvedOfItem;
 
-  mapping (uint256 =&gt; uint256[]) private pointArrayOfArray;
-  mapping (uint256 =&gt; uint256[]) private timeArrayOfArray;
+  mapping (uint256 => uint256[]) private pointArrayOfArray;
+  mapping (uint256 => uint256[]) private timeArrayOfArray;
 
   function ItemToken () public {
     owner = msg.sender;
@@ -130,9 +130,9 @@ contract ItemToken {
   }
 
   function listDapp (string _itemName, string _itemDesc, string _itemURL) public {
-    require(bytes(_itemName).length &gt; 2);
-    require(bytes(_itemDesc).length &gt; 2);
-    require(bytes(_itemURL).length &gt; 2);
+    require(bytes(_itemName).length > 2);
+    require(bytes(_itemDesc).length > 2);
+    require(bytes(_itemURL).length > 2);
     
     uint256 _itemId = itemIdCounter;
     itemIdCounter = itemIdCounter + 1;
@@ -151,7 +151,7 @@ contract ItemToken {
 
   /* Buying */
   function buyPoints (uint256 _itemId) payable public {
-    require(msg.value &gt; 0);
+    require(msg.value > 0);
     require(ownerOf(_itemId) == msg.sender);
     require(!isContract(msg.sender));
     
@@ -172,11 +172,11 @@ contract ItemToken {
   }
 
   function name() public pure returns (string _name) {
-    return &quot;DappTalk.org&quot;;
+    return "DappTalk.org";
   }
 
   function symbol() public pure returns (string _symbol) {
-    return &quot;DTC&quot;;
+    return "DTC";
   }
 
   function totalSupply() public view returns (uint256 _totalSupply) {
@@ -186,7 +186,7 @@ contract ItemToken {
   function balanceOf (address _owner) public view returns (uint256 _balance) {
     uint256 counter = 0;
 
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         counter++;
       }
@@ -203,7 +203,7 @@ contract ItemToken {
     uint256[] memory items = new uint256[](balanceOf(_owner));
 
     uint256 itemCounter = 0;
-    for (uint256 i = 0; i &lt; listedItems.length; i++) {
+    for (uint256 i = 0; i < listedItems.length; i++) {
       if (ownerOf(listedItems[i]) == _owner) {
         items[itemCounter] = listedItems[i];
         itemCounter += 1;
@@ -214,7 +214,7 @@ contract ItemToken {
   }
 
   function tokenExists (uint256 _itemId) public view returns (bool _exists) {
-    return bytes(nameOf(_itemId)).length &gt; 2;
+    return bytes(nameOf(_itemId)).length > 2;
   }
 
   function approvedFor(uint256 _itemId) public view returns (address _approved) {
@@ -301,8 +301,8 @@ contract ItemToken {
     _getPoint = 0;
     uint256 temp = 0;
 
-    for (uint256 i = 0; i &lt; pointArrayOfArray[_itemId].length; i++) {
-        if (timeArrayOfArray[_itemId][i] + pointsDecayFactor &gt; t) {
+    for (uint256 i = 0; i < pointArrayOfArray[_itemId].length; i++) {
+        if (timeArrayOfArray[_itemId][i] + pointsDecayFactor > t) {
             temp = timeArrayOfArray[_itemId][i];
             temp = temp - t;
             temp = temp + pointsDecayFactor;
@@ -327,7 +327,7 @@ contract ItemToken {
       _points = new uint256[](itemIdCounter);
       _initTime = new uint256[](itemIdCounter);
       _lastTime = new uint256[](itemIdCounter);
-      for (uint256 i = 0; i &lt; itemIdCounter; i++) {
+      for (uint256 i = 0; i < itemIdCounter; i++) {
           _owners[i] = ownerOf(i);
           _itemNames[i] = stringToBytes32(nameOf(i));
           _itemDescs[i] = stringToBytes32(descOf(i));
@@ -343,7 +343,7 @@ contract ItemToken {
   function isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) } // solium-disable-line
-    return size &gt; 0;
+    return size > 0;
   }
   
   function stringToBytes32(string memory source) returns (bytes32 result) {

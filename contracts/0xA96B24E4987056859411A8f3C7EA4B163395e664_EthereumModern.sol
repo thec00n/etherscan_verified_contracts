@@ -38,7 +38,7 @@ pragma solidity ^0.4.18;
         Bonus transaction = 0.001 ETHMD
 
        -Stage 3 Special Sale
-        Price: 10,000 ETHMD/X = 1 ETH (X++ ~ payable() &gt; 0.1 ETH)
+        Price: 10,000 ETHMD/X = 1 ETH (X++ ~ payable() > 0.1 ETH)
         Bonus transaction = 0.001 ETHMD
 
        -Stage 4 Done
@@ -53,8 +53,8 @@ pragma solidity ^0.4.18;
         1. Start the Ethereum Modern project
         2. Change the Ethereum Modern Stage
 
-        &quot;immutable unstoppable&quot;
-        (The Admin cannot modify coin limit, users&#39; balances, lock accounts, etc.)
+        "immutable unstoppable"
+        (The Admin cannot modify coin limit, users' balances, lock accounts, etc.)
 
         ******************************************************
 
@@ -69,10 +69,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -80,7 +80,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -116,7 +116,7 @@ contract EthereumModern is ERC20Interface {
     // 2M Reserved for community
     uint256 private amountPreDonateETHMD = 4000000 * 1000000000000000000;
 
-    // &gt;1M Manual Sale Promotional
+    // >1M Manual Sale Promotional
     uint256 private amountManualSaleETHMD = 1125800 * 1000000000000000000;
     
     uint256 private amountPreSaleETHMD = 0;
@@ -136,17 +136,17 @@ contract EthereumModern is ERC20Interface {
     uint8 public decimals;
     uint private _totalSupply;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; uint) rewards;
+    mapping(address => uint) balances;
+    mapping(address => uint) rewards;
 
     function EthereumModern() public {
         
-        symbol = &quot;ETHMD&quot;;
-        name = &quot;Ethereum Modern&quot;;
-        webSite = &quot;www.ethereummodern.com&quot;;
+        symbol = "ETHMD";
+        name = "Ethereum Modern";
+        webSite = "www.ethereummodern.com";
         decimals = 18;
 
-        // Max Coins 15M (2M Staff / 2M Community / 1M Promotional / 10M Distribution / 1M &lt; RewardTransactionSystem)
+        // Max Coins 15M (2M Staff / 2M Community / 1M Promotional / 10M Distribution / 1M < RewardTransactionSystem)
         _totalSupply = MaxCoinsLimit15M;
         
         admin = msg.sender;
@@ -170,13 +170,13 @@ contract EthereumModern is ERC20Interface {
     function currentStatus() public constant returns (string)
     {
         if(CurrentStage==1) { 
-            return &quot;Stage 1/4. Pre Sale.&quot;;
+            return "Stage 1/4. Pre Sale.";
         }else if (CurrentStage == 2){
-            return &quot;Stage 2/4. ICO Sale.&quot;;
+            return "Stage 2/4. ICO Sale.";
         }else if (CurrentStage == 3){
-            return &quot;Stage 3/4. Special Sale.&quot;;
+            return "Stage 3/4. Special Sale.";
         }else{
-            return &quot;All working correctly.&quot;;
+            return "All working correctly.";
         }
     }
 
@@ -245,9 +245,9 @@ contract EthereumModern is ERC20Interface {
         /*********************/
 
         require(to != 0x0);
-        require(tokens &gt; 0);
-        require(balances[msg.sender] &gt;= tokens);
-        require(balances[to] + tokens &gt; balances[to]);
+        require(tokens > 0);
+        require(balances[msg.sender] >= tokens);
+        require(balances[to] + tokens > balances[to]);
 
         /***************/
         /* Transaction */
@@ -271,11 +271,11 @@ contract EthereumModern is ERC20Interface {
                  amountManualSaleETHMD + 
                  rewardvalue + 
                  amountTransETHMD + 1000000000000000000
-                 &lt;= MaxCoinsLimit15M ) {
-                if (tokens &gt; 100 * 1000000000000000000) {
+                 <= MaxCoinsLimit15M ) {
+                if (tokens > 100 * 1000000000000000000) {
                     // 1M Reward Max
-                    if (amountTransETHMD &lt; 1000000 * 1000000000000000000 ) {
-                        if (rewards[msg.sender] &lt; 10 ) { 
+                    if (amountTransETHMD < 1000000 * 1000000000000000000 ) {
+                        if (rewards[msg.sender] < 10 ) { 
                         rewards[msg.sender]++;
                         amountTransETHMD += rewardvalue;
                         balances[msg.sender] += rewardvalue;
@@ -315,8 +315,8 @@ contract EthereumModern is ERC20Interface {
 
     function stage4() private {
 
-        // if &gt; 1M = exced for community
-        // if &lt; 1M = reward for transactions
+        // if > 1M = exced for community
+        // if < 1M = reward for transactions
 
         if ( amountPreSaleETHMD + 
             amountICOETHMD + 
@@ -325,7 +325,7 @@ contract EthereumModern is ERC20Interface {
             amountManualSaleETHMD + 
             1000000 * 1000000000000000000 + 
             amountTransETHMD 
-            &lt;= MaxCoinsLimit15M ) {
+            <= MaxCoinsLimit15M ) {
 
             balances[vault_community] += 1000000 * 1000000000000000000;
             Transfer(address(0), vault_community, 1000000 * 1000000000000000000);
@@ -346,8 +346,8 @@ contract EthereumModern is ERC20Interface {
 
     function () public payable {
 
-      require(CurrentStage &lt; 4);
-      require( msg.value &gt;= 1* (1 ether) / 100 ); // 0.01 ether min
+      require(CurrentStage < 4);
+      require( msg.value >= 1* (1 ether) / 100 ); // 0.01 ether min
           
           uint256 amountETHMD = 0;
           uint256 amountETH = msg.value;
@@ -367,7 +367,7 @@ contract EthereumModern is ERC20Interface {
                 amountManualSaleETHMD + 
                 amountETHMD + 
                 amountTransETHMD 
-                &lt;= MaxCoinsLimit15M );
+                <= MaxCoinsLimit15M );
 
           if(CurrentStage==1) { 
               amountPreSaleETHMD += amountETHMD;
@@ -378,7 +378,7 @@ contract EthereumModern is ERC20Interface {
           }else if (CurrentStage == 3){
               amountSpecialETHMD += amountETHMD;
               amountSpecialETH += amountETH;
-              if (amountETH &gt;= 100000000000000000) { // 0.1 eth
+              if (amountETH >= 100000000000000000) { // 0.1 eth
               stage3divisor += 1;
               }
           }

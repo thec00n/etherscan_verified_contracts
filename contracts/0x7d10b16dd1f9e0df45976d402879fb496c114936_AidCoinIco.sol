@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,9 +56,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -107,14 +107,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -167,7 +167,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -204,7 +204,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -219,7 +219,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -270,7 +270,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -290,7 +290,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -337,8 +337,8 @@ contract MintableToken is StandardToken, Ownable {
 }
 
 contract AidCoin is MintableToken, BurnableToken {
-    string public name = &quot;AidCoin&quot;;
-    string public symbol = &quot;AID&quot;;
+    string public name = "AidCoin";
+    string public symbol = "AID";
     uint256 public decimals = 18;
     uint256 public maxSupply = 100000000 * (10 ** decimals);
 
@@ -363,10 +363,10 @@ contract AidCoin is MintableToken, BurnableToken {
 contract AidCoinIco is Ownable, Crowdsale {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public whitelist;
-    mapping (address =&gt; uint256) public boughtTokens;
+    mapping (address => uint256) public whitelist;
+    mapping (address => uint256) public boughtTokens;
 
-    mapping (address =&gt; uint256) public claimedAirdropTokens;
+    mapping (address => uint256) public claimedAirdropTokens;
 
     // max tokens cap
     uint256 public tokenCap = 12000000 * (10 ** 18);
@@ -421,7 +421,7 @@ contract AidCoinIco is Ownable, Crowdsale {
         uint256 newTotalSold = soldTokens.add(tokens);
 
         // check if we are over the max token cap
-        require(newTotalSold &lt;= tokenCap);
+        require(newTotalSold <= tokenCap);
 
         // update states
         weiRaised = weiRaised.add(weiAmount);
@@ -440,8 +440,8 @@ contract AidCoinIco is Ownable, Crowdsale {
     }
 
     function updateEndDate(uint256 _endTime) public onlyOwner {
-        require(_endTime &gt; now);
-        require(_endTime &gt; startTime);
+        require(_endTime > now);
+        require(_endTime > startTime);
 
         endTime = _endTime;
     }
@@ -459,18 +459,18 @@ contract AidCoinIco is Ownable, Crowdsale {
         uint256 totalCap = newMaxWithWhitelist.add(newMaxWithoutWhitelist);
 
         require(totalCap == tokenCap);
-        require(newMaxWithWhitelist &gt;= boughtWithWhitelist);
-        require(newMaxWithoutWhitelist &gt;= boughtWithoutWhitelist);
+        require(newMaxWithWhitelist >= boughtWithWhitelist);
+        require(newMaxWithoutWhitelist >= boughtWithoutWhitelist);
 
         maxWithWhitelist = newMaxWithWhitelist;
         maxWithoutWhitelist = newMaxWithoutWhitelist;
     }
 
     function changeWhitelistStatus(address[] users, uint256[] amount) public onlyOwner {
-        require(users.length &gt; 0);
+        require(users.length > 0);
 
         uint len = users.length;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             address user = users[i];
             uint256 newAmount = amount[i] * (10 ** 18);
             whitelist[user] = newAmount;
@@ -482,7 +482,7 @@ contract AidCoinIco is Ownable, Crowdsale {
         uint256 limit = maxWithoutWhitelistPerUser;
 
         // check if user is whitelisted
-        if (whitelist[beneficiary] &gt; 0) {
+        if (whitelist[beneficiary] > 0) {
             isWhitelist = true;
             limit = whitelist[beneficiary];
         }
@@ -494,14 +494,14 @@ contract AidCoinIco is Ownable, Crowdsale {
         uint256 newOwnedTokens = ownedTokens.add(tokens);
 
         // check if we are over the max per user
-        require(newOwnedTokens &lt;= limit);
+        require(newOwnedTokens <= limit);
 
         if (!isWhitelist) {
             // calculate new total sold
             uint256 newBoughtWithoutWhitelist = boughtWithoutWhitelist.add(tokens);
 
             // check if we are over the max token cap
-            require(newBoughtWithoutWhitelist &lt;= maxWithoutWhitelist);
+            require(newBoughtWithoutWhitelist <= maxWithoutWhitelist);
 
             // update states
             boughtWithoutWhitelist = newBoughtWithoutWhitelist;
@@ -510,7 +510,7 @@ contract AidCoinIco is Ownable, Crowdsale {
             uint256 newBoughtWithWhitelist = boughtWithWhitelist.add(tokens);
 
             // check if we are over the max token cap
-            require(newBoughtWithWhitelist &lt;= maxWithWhitelist);
+            require(newBoughtWithWhitelist <= maxWithWhitelist);
 
             // update states
             boughtWithWhitelist = newBoughtWithWhitelist;
@@ -520,15 +520,15 @@ contract AidCoinIco is Ownable, Crowdsale {
     }
 
     function airdrop(address[] users, uint256[] amounts) public onlyOwner {
-        require(users.length &gt; 0);
-        require(amounts.length &gt; 0);
+        require(users.length > 0);
+        require(amounts.length > 0);
         require(users.length == amounts.length);
 
         uint256 oldRate = 1200;
         uint256 newRate = 2400;
 
         uint len = users.length;
-        for (uint i = 0; i &lt; len; i++) {
+        for (uint i = 0; i < len; i++) {
             address to = users[i];
             uint256 value = amounts[i];
 
@@ -547,12 +547,12 @@ contract AidCoinIco is Ownable, Crowdsale {
     // overriding Crowdsale#hasEnded to add tokenCap logic
     // @return true if crowdsale event has ended or cap is reached
     function hasEnded() public constant returns (bool) {
-        bool capReached = soldTokens &gt;= tokenCap;
+        bool capReached = soldTokens >= tokenCap;
         return super.hasEnded() || capReached;
     }
 
     // @return true if crowdsale event has started
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime &amp;&amp; now &lt; endTime;
+        return now >= startTime && now < endTime;
     }
 }

@@ -11,8 +11,8 @@ contract FederatedOracleBytes8 {
     event VoteSubmitted(address account, bytes8 value);
     event ValueFinalized(bytes8 value);
 
-    mapping(address =&gt; Voter) public voters;
-    mapping(bytes8 =&gt; uint8) public votes;
+    mapping(address => Voter) public voters;
+    mapping(bytes8 => uint8) public votes;
 
     uint8 public m;
     uint8 public n;

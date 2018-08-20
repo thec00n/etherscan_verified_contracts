@@ -19,11 +19,11 @@ contract DragonDistributions {
     uint public filmamount;
     bool public filmpaid;
     
-    mapping ( address =&gt; uint256 ) public  balanceOf;
-    mapping ( address =&gt; bool ) public  distributionOne;
-    mapping ( address =&gt; bool ) public  distributionTwo;
-    mapping ( address =&gt; bool ) public  distributionThree;
-    mapping ( address =&gt; bool ) public  advisors;
+    mapping ( address => uint256 ) public  balanceOf;
+    mapping ( address => bool ) public  distributionOne;
+    mapping ( address => bool ) public  distributionTwo;
+    mapping ( address => bool ) public  distributionThree;
+    mapping ( address => bool ) public  advisors;
    
     uint256 public awardAmount       =  45000000000000;
     uint256 public awardAmountPrime  = 100000000000000;
@@ -92,7 +92,7 @@ contract DragonDistributions {
             
         }
         
-        if ( distributionTwo[ msg.sender ] == false &amp;&amp; now &gt; clock + 22 days  ){
+        if ( distributionTwo[ msg.sender ] == false && now > clock + 22 days  ){
             
             
             distributionTwo[ msg.sender ] = true;
@@ -101,7 +101,7 @@ contract DragonDistributions {
             
         }
         
-        if ( distributionThree[ msg.sender ] == false &amp;&amp; now &gt; clock + 387 days ){
+        if ( distributionThree[ msg.sender ] == false && now > clock + 387 days ){
             distributionThree[ msg.sender ] = true;
             total += 15000000000000;
             balanceOf[ msg.sender ] -= 15000000000000; 

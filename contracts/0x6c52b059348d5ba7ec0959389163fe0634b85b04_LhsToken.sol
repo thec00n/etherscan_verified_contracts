@@ -18,12 +18,12 @@ contract Token{
   
 contract LhsToken is Token {  
   
-    string public name;                   //名称，例如&quot;My test token&quot;  
+    string public name;                   //名称，例如"My test token"  
     uint8 public decimals;               //返回token使用的小数点后几位。比如如果设置为3，就是支持0.001表示.  
     string public symbol;               //token简称,like MTT  
     
-    mapping (address =&gt; uint256) balances;  
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;  
+    mapping (address => uint256) balances;  
+    mapping (address => mapping (address => uint256)) allowed;  
     
     function LhsToken(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) public {  
         totalSupply = _initialAmount * 10 ** uint256(_decimalUnits);         // 设置初始总量  
@@ -40,8 +40,8 @@ contract LhsToken is Token {
     function _transferFunc(address _from, address _to, uint _value) internal {
 
         require(_to != 0x0);    // 不是零地址
-        require(balances[_from] &gt;= _value);        // 有足够的余额来发送
-        require(balances[_to] + _value &gt; balances[_to]);  // 这里也有意思, 不能发送负数的值(hhhh)
+        require(balances[_from] >= _value);        // 有足够的余额来发送
+        require(balances[_to] + _value > balances[_to]);  // 这里也有意思, 不能发送负数的值(hhhh)
 
         uint previousBalances = balances[_from] + balances[_to];  // 这个是为了校验, 避免过程出错, 总量不变对吧?
         balances[_from] -= _value; //发钱 不多说
@@ -56,7 +56,7 @@ contract LhsToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowed[_from][msg.sender]);     // 这句很重要, 地址对应的合约地址(也就是token余额)
+        require(_value <= allowed[_from][msg.sender]);     // 这句很重要, 地址对应的合约地址(也就是token余额)
         allowed[_from][msg.sender] -= _value;
         _transferFunc(_from, _to, _value);
         return true;

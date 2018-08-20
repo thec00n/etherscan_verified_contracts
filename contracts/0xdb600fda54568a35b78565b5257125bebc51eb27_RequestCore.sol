@@ -3,7 +3,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,26 +102,26 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function toInt256Safe(uint256 a) internal pure returns (int256) {
     int256 b = int256(a);
-    assert(b &gt;= 0);
+    assert(b >= 0);
     return b;
   }
 }
@@ -136,7 +136,7 @@ library SafeMathInt {
   function mul(int256 a, int256 b) internal pure returns (int256) {
     // Prevent overflow when multiplying INT256_MIN with -1
     // https://github.com/RequestNetwork/requestNetwork/issues/43
-    assert(!(a == - 2**255 &amp;&amp; b == -1) &amp;&amp; !(b == - 2**255 &amp;&amp; a == -1));
+    assert(!(a == - 2**255 && b == -1) && !(b == - 2**255 && a == -1));
 
     int256 c = a * b;
     assert((b == 0) || (c / b == a));
@@ -146,28 +146,28 @@ library SafeMathInt {
   function div(int256 a, int256 b) internal pure returns (int256) {
     // Prevent overflow when dividing INT256_MIN by -1
     // https://github.com/RequestNetwork/requestNetwork/issues/43
-    assert(!(a == - 2**255 &amp;&amp; b == -1));
+    assert(!(a == - 2**255 && b == -1));
 
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     int256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(int256 a, int256 b) internal pure returns (int256) {
-    assert((b &gt;= 0 &amp;&amp; a - b &lt;= a) || (b &lt; 0 &amp;&amp; a - b &gt; a));
+    assert((b >= 0 && a - b <= a) || (b < 0 && a - b > a));
 
     return a - b;
   }
 
   function add(int256 a, int256 b) internal pure returns (int256) {
     int256 c = a + b;
-    assert((b &gt;= 0 &amp;&amp; c &gt;= a) || (b &lt; 0 &amp;&amp; c &lt; a));
+    assert((b >= 0 && c >= a) || (b < 0 && c < a));
     return c;
   }
 
   function toUint256Safe(int256 a) internal pure returns (uint256) {
-    assert(a&gt;=0);
+    assert(a>=0);
     return uint256(a);
   }
 }
@@ -185,20 +185,20 @@ library SafeMathUint8 {
   }
 
   function div(uint8 a, uint8 b) internal pure returns (uint8) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint8 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint8 a, uint8 b) internal pure returns (uint8) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint8 a, uint8 b) internal pure returns (uint8) {
     uint8 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -216,20 +216,20 @@ library SafeMathUint96 {
   }
 
   function div(uint96 a, uint96 b) internal pure returns (uint96) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint96 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint96 a, uint96 b) internal pure returns (uint96) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint96 a, uint96 b) internal pure returns (uint96) {
     uint96 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -266,7 +266,7 @@ contract ERC20 is ERC20Basic {
 contract Administrable is Pausable {
 
     // mapping of address of trusted contract
-    mapping(address =&gt; uint8) public trustedCurrencyContracts;
+    mapping(address => uint8) public trustedCurrencyContracts;
 
     // Events of the system
     event NewTrustedContract(address newContract);
@@ -382,13 +382,13 @@ contract RequestCore is Administrable {
     uint96 public numRequests; 
     
     // Mapping of all the Requests. The key is the request ID.
-    // not anymore public to avoid &quot;UnimplementedFeatureError: Only in-memory reference type can be stored.&quot;
+    // not anymore public to avoid "UnimplementedFeatureError: Only in-memory reference type can be stored."
     // https://github.com/ethereum/solidity/issues/3577
-    mapping(bytes32 =&gt; Request) requests;
+    mapping(bytes32 => Request) requests;
 
     // Mapping of subPayees of the requests. The key is the request ID.
     // This array is outside the Request structure to optimize the gas cost when there is only 1 payee.
-    mapping(bytes32 =&gt; Payee[256]) public subPayees;
+    mapping(bytes32 => Payee[256]) public subPayees;
 
     /*
      *  Events 
@@ -397,7 +397,7 @@ contract RequestCore is Administrable {
     event Accepted(bytes32 indexed requestId);
     event Canceled(bytes32 indexed requestId);
 
-    // Event for Payee &amp; subPayees
+    // Event for Payee & subPayees
     event NewSubPayee(bytes32 indexed requestId, address indexed payee); // Separated from the Created Event to allow a 4th indexed parameter (subpayees)
     event UpdateExpectedAmount(bytes32 indexed requestId, uint8 payeeIndex, int256 deltaAmount);
     event UpdateBalance(bytes32 indexed requestId, uint8 payeeIndex, int256 deltaAmount);
@@ -446,7 +446,7 @@ contract RequestCore is Administrable {
         // Declare the new request
         Created(requestId, mainPayee, _payer, _creator, _data);
         
-        // Store and declare the sub payees (needed in internal function to avoid &quot;stack too deep&quot;)
+        // Store and declare the sub payees (needed in internal function to avoid "stack too deep")
         initSubPayees(requestId, _payees, _expectedAmounts);
 
         return requestId;
@@ -479,7 +479,7 @@ contract RequestCore is Administrable {
         // call must come from a trusted contract
         require(isTrustedContract(msg.sender)); // not as modifier to lighten the stack
 
-        // extract address creator &amp; payer
+        // extract address creator & payer
         address creator = extractAddress(_data, 0);
 
         address payer = extractAddress(_data, 20);
@@ -516,7 +516,7 @@ contract RequestCore is Administrable {
         Created(requestId, mainPayee, payer, creator, dataStr);
 
         // Store and declare the sub payees
-        for(uint8 i = 1; i &lt; payeesCount; i = i.add(1)) {
+        for(uint8 i = 1; i < payeesCount; i = i.add(1)) {
             address subPayeeAddress = extractAddress(_data, uint256(i).mul(52).add(41));
 
             // payees address cannot be 0x0
@@ -606,7 +606,7 @@ contract RequestCore is Administrable {
     }
 
     /*
-     * @dev Internal: Init payees for a request (needed to avoid &#39;stack too deep&#39; in createRequest())
+     * @dev Internal: Init payees for a request (needed to avoid 'stack too deep' in createRequest())
      * @param _requestId Request id
      * @param _payees array of payees address
      * @param _expectedAmounts array of payees initial expected amounts
@@ -616,7 +616,7 @@ contract RequestCore is Administrable {
     {
         require(_payees.length == _expectedAmounts.length);
      
-        for (uint8 i = 1; i &lt; _payees.length; i = i.add(1))
+        for (uint8 i = 1; i < _payees.length; i = i.add(1))
         {
             // payees address cannot be 0x0
             require(_payees[i] != 0);
@@ -756,7 +756,7 @@ contract RequestCore is Administrable {
     {
         isNull = requests[_requestId].payee.balance == 0;
 
-        for (uint8 i = 0; isNull &amp;&amp; subPayees[_requestId][i].addr != address(0); i = i.add(1))
+        for (uint8 i = 0; isNull && subPayees[_requestId][i].addr != address(0); i = i.add(1))
         {
             isNull = subPayees[_requestId][i].balance == 0;
         }
@@ -852,7 +852,7 @@ contract RequestCore is Administrable {
         returns (string) 
     {
         bytes memory bytesString = new bytes(size);
-        for (uint j = 0; j &lt; size; j++) {
+        for (uint j = 0; j < size; j++) {
             bytesString[j] = data[_offset+j];
         }
         return string(bytesString);
@@ -869,7 +869,7 @@ contract RequestCore is Administrable {
         // Update numRequest
         numRequests = numRequests.add(1);
         // requestId = ADDRESS_CONTRACT_CORE + numRequests (0xADRRESSCONTRACT00000NUMREQUEST)
-        return bytes32((uint256(this) &lt;&lt; 96).add(numRequests));
+        return bytes32((uint256(this) << 96).add(numRequests));
     }
 
     /*
@@ -883,7 +883,7 @@ contract RequestCore is Administrable {
         pure
         returns (address m)
     {
-        require(offset &gt;=0 &amp;&amp; offset + 20 &lt;= _data.length);
+        require(offset >=0 && offset + 20 <= _data.length);
         assembly {
             m := and( mload(add(_data, add(20, offset))), 
                       0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
@@ -901,7 +901,7 @@ contract RequestCore is Administrable {
         pure
         returns (bytes32 bs)
     {
-        require(offset &gt;=0 &amp;&amp; offset + 32 &lt;= _data.length);
+        require(offset >=0 && offset + 32 <= _data.length);
         assembly {
             bs := mload(add(_data, add(32, offset)))
         }

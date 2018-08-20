@@ -8,37 +8,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    require(b &gt; 0);
+    require(b > 0);
     uint c = a / b;
     require(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    require(c&gt;=a &amp;&amp; c&gt;=b);
+    require(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -59,10 +59,10 @@ contract ERC20 {
 contract StandardToken is ERC20, SafeMath {
 
   /* Actual balances of token holders */
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   /* approve() allowances */
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping (address => mapping (address => uint)) allowed;
 
   /* Interface declaration */
   function isToken() public constant returns (bool weAre) {
@@ -71,7 +71,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transfer(address _to, uint _value) returns (bool success) {
 
-    if (_value &lt; 1) {
+    if (_value < 1) {
       revert();
     }
 
@@ -83,7 +83,7 @@ contract StandardToken is ERC20, SafeMath {
 
   function transferFrom(address _from, address _to, uint _value) returns (bool success) {
 
-    if (_value &lt; 1) {
+    if (_value < 1) {
       revert();
     }
 
@@ -106,7 +106,7 @@ contract StandardToken is ERC20, SafeMath {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -122,8 +122,8 @@ contract OneUpToken is StandardToken {
   address public creator;
   ERC20 public yoshicoin;
 
-  function name() constant returns (string) { return &quot;1UP&quot;; }
-  function symbol() constant returns (string) { return &quot;UP&quot;; }
+  function name() constant returns (string) { return "1UP"; }
+  function symbol() constant returns (string) { return "UP"; }
   function decimals() constant returns (uint8) { return 0; }
 
   function OneUpToken(
@@ -134,10 +134,10 @@ contract OneUpToken is StandardToken {
   }
 
   function() payable {
-    require(msg.value &gt;= 1 finney);
+    require(msg.value >= 1 finney);
 
-    // Try to move yoshicoins into this contract&#39;s address. They will no
-    // longer be usable since this contract can&#39;t spend them.
+    // Try to move yoshicoins into this contract's address. They will no
+    // longer be usable since this contract can't spend them.
     require(yoshicoin.transferFrom(msg.sender, this, 5));
 
     totalSupply = safeAdd(totalSupply, 1);

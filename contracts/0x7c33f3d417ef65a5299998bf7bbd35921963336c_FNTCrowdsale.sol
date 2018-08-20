@@ -7,12 +7,12 @@
 
 
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/TokenTimelock.sol&quot; : start
+ * import "zeppelin-solidity/contracts/token/TokenTimelock.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : start
+ * import "./ERC20Basic.sol" : start
  *************************************************************************/
 
 
@@ -28,15 +28,15 @@ contract ERC20Basic {
   event Transfer(address indexed from, address indexed to, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20Basic.sol&quot; : end
+ * import "./ERC20Basic.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;../token/SafeERC20.sol&quot; : start
+ * import "../token/SafeERC20.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : start
+ * import "./ERC20.sol" : start
  *************************************************************************/
 
 
@@ -54,7 +54,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 /*************************************************************************
- * import &quot;./ERC20.sol&quot; : end
+ * import "./ERC20.sol" : end
  *************************************************************************/
 
 /**
@@ -77,7 +77,7 @@ library SafeERC20 {
   }
 }
 /*************************************************************************
- * import &quot;../token/SafeERC20.sol&quot; : end
+ * import "../token/SafeERC20.sol" : end
  *************************************************************************/
 
 /**
@@ -98,7 +98,7 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   function TokenTimelock(ERC20Basic _token, address _beneficiary, uint256 _releaseTime) public {
-    require(_releaseTime &gt; now);
+    require(_releaseTime > now);
     token = _token;
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
@@ -108,28 +108,28 @@ contract TokenTimelock {
    * @notice Transfers tokens held by timelock to beneficiary.
    */
   function release() public {
-    require(now &gt;= releaseTime);
+    require(now >= releaseTime);
 
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     token.safeTransfer(beneficiary, amount);
   }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/TokenTimelock.sol&quot; : end
+ * import "zeppelin-solidity/contracts/token/TokenTimelock.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./FNTRefundableCrowdsale.sol&quot; : start
+ * import "./FNTRefundableCrowdsale.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/crowdsale/RefundableCrowdsale.sol&quot; : start
+ * import "zeppelin-solidity/contracts/crowdsale/RefundableCrowdsale.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;../math/SafeMath.sol&quot; : start
+ * import "../math/SafeMath.sol" : start
  *************************************************************************/
 
 
@@ -148,40 +148,40 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 /*************************************************************************
- * import &quot;../math/SafeMath.sol&quot; : end
+ * import "../math/SafeMath.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./FinalizableCrowdsale.sol&quot; : start
+ * import "./FinalizableCrowdsale.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;../ownership/Ownable.sol&quot; : start
+ * import "../ownership/Ownable.sol" : start
  *************************************************************************/
 
 
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -220,24 +220,24 @@ contract Ownable {
 
 }
 /*************************************************************************
- * import &quot;../ownership/Ownable.sol&quot; : end
+ * import "../ownership/Ownable.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./Crowdsale.sol&quot; : start
+ * import "./Crowdsale.sol" : start
  *************************************************************************/
 
 /*************************************************************************
- * import &quot;../token/MintableToken.sol&quot; : start
- *************************************************************************/
-
-
-/*************************************************************************
- * import &quot;./StandardToken.sol&quot; : start
+ * import "../token/MintableToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : start
+ * import "./StandardToken.sol" : start
+ *************************************************************************/
+
+
+/*************************************************************************
+ * import "./BasicToken.sol" : start
  *************************************************************************/
 
 
@@ -252,7 +252,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -261,7 +261,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -281,7 +281,7 @@ contract BasicToken is ERC20Basic {
 
 }
 /*************************************************************************
- * import &quot;./BasicToken.sol&quot; : end
+ * import "./BasicToken.sol" : end
  *************************************************************************/
 
 
@@ -295,7 +295,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -306,8 +306,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -321,7 +321,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -370,7 +370,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -381,7 +381,7 @@ contract StandardToken is ERC20, BasicToken {
 
 }
 /*************************************************************************
- * import &quot;./StandardToken.sol&quot; : end
+ * import "./StandardToken.sol" : end
  *************************************************************************/
 
 
@@ -431,7 +431,7 @@ contract MintableToken is StandardToken, Ownable {
   }
 }
 /*************************************************************************
- * import &quot;../token/MintableToken.sol&quot; : end
+ * import "../token/MintableToken.sol" : end
  *************************************************************************/
 
 
@@ -473,9 +473,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
@@ -524,20 +524,20 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
 }
 /*************************************************************************
- * import &quot;./Crowdsale.sol&quot; : end
+ * import "./Crowdsale.sol" : end
  *************************************************************************/
 
 /**
@@ -554,7 +554,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);
@@ -575,10 +575,10 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
   }
 }
 /*************************************************************************
- * import &quot;./FinalizableCrowdsale.sol&quot; : end
+ * import "./FinalizableCrowdsale.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./RefundVault.sol&quot; : start
+ * import "./RefundVault.sol" : start
  *************************************************************************/
 
 
@@ -595,7 +595,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -636,7 +636,7 @@ contract RefundVault is Ownable {
   }
 }
 /*************************************************************************
- * import &quot;./RefundVault.sol&quot; : end
+ * import "./RefundVault.sol" : end
  *************************************************************************/
 
 
@@ -644,7 +644,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -656,12 +656,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault public vault;
 
   function RefundableCrowdsale(uint256 _goal) public {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -688,12 +688,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public view returns (bool) {
-    return weiRaised &gt;= goal;
+    return weiRaised >= goal;
   }
 
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/crowdsale/RefundableCrowdsale.sol&quot; : end
+ * import "zeppelin-solidity/contracts/crowdsale/RefundableCrowdsale.sol" : end
  *************************************************************************/
 
 
@@ -715,7 +715,7 @@ contract FNTRefundableCrowdsale is RefundableCrowdsale {
     vaultClosed = true;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function if the vault is not closed,
   // if it is closed we forward teh funds to the wallet
@@ -729,7 +729,7 @@ contract FNTRefundableCrowdsale is RefundableCrowdsale {
 
   // vault finalization task, called when owner calls finalize()
   function finalization() internal {
-    if (!vaultClosed &amp;&amp; goalReached()) {
+    if (!vaultClosed && goalReached()) {
       vault.close();
       vaultClosed = true;
     } else if (!goalReached()) {
@@ -738,15 +738,15 @@ contract FNTRefundableCrowdsale is RefundableCrowdsale {
   }
 }
 /*************************************************************************
- * import &quot;./FNTRefundableCrowdsale.sol&quot; : end
+ * import "./FNTRefundableCrowdsale.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;./FNTToken.sol&quot; : start
+ * import "./FNTToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/BurnableToken.sol&quot; : start
+ * import "zeppelin-solidity/contracts/token/BurnableToken.sol" : start
  *************************************************************************/
 
 
@@ -764,9 +764,9 @@ contract BurnableToken is BasicToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -775,15 +775,15 @@ contract BurnableToken is BasicToken {
     }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/BurnableToken.sol&quot; : end
+ * import "zeppelin-solidity/contracts/token/BurnableToken.sol" : end
  *************************************************************************/
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/PausableToken.sol&quot; : start
+ * import "zeppelin-solidity/contracts/token/PausableToken.sol" : start
  *************************************************************************/
 
 
 /*************************************************************************
- * import &quot;../lifecycle/Pausable.sol&quot; : start
+ * import "../lifecycle/Pausable.sol" : start
  *************************************************************************/
 
 
@@ -834,7 +834,7 @@ contract Pausable is Ownable {
   }
 }
 /*************************************************************************
- * import &quot;../lifecycle/Pausable.sol&quot; : end
+ * import "../lifecycle/Pausable.sol" : end
  *************************************************************************/
 
 /**
@@ -866,7 +866,7 @@ contract PausableToken is StandardToken, Pausable {
   }
 }
 /*************************************************************************
- * import &quot;zeppelin-solidity/contracts/token/PausableToken.sol&quot; : end
+ * import "zeppelin-solidity/contracts/token/PausableToken.sol" : end
  *************************************************************************/
 
 /**
@@ -878,17 +878,17 @@ contract PausableToken is StandardToken, Pausable {
  */
 contract FNTToken is BurnableToken, MintableToken, PausableToken {
   // Token Name
-  string public constant NAME = &quot;Friend Network Token&quot;;
+  string public constant NAME = "Friend Network Token";
 
   // Token Symbol
-  string public constant SYMBOL = &quot;FRND&quot;;
+  string public constant SYMBOL = "FRND";
 
   // Token decimals
   uint8 public constant DECIMALS = 18;
 
 }
 /*************************************************************************
- * import &quot;./FNTToken.sol&quot; : end
+ * import "./FNTToken.sol" : end
  *************************************************************************/
 
 /**
@@ -917,14 +917,14 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
 
   address public FSNASAddress;
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   event WhitelistedAddressAdded(address addr);
   event WhitelistedAddressRemoved(address addr);
   event VestedTeamTokens(address first, address second, address thrid, address fourth);
 
   /**
-   * @dev Throws if called by any account that&#39;s not whitelisted.
+   * @dev Throws if called by any account that's not whitelisted.
    */
   modifier onlyWhitelisted() {
     require(whitelist[msg.sender]);
@@ -943,7 +943,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
    * @param _highFunding address, high funding stage
    * @param _wallet address, wallet to receive ETH raised
    * @param _maxTotalSupply address, maximun token supply
-   * @param _teamAddress address, team&#39;s address
+   * @param _teamAddress address, team's address
    * @param _FSNASAddress address, fsnas address
    */
   function FNTCrowdsale(
@@ -954,10 +954,10 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
     RefundableCrowdsale(_minFunding)
     Crowdsale(_startTime, _endTime, _rate, _wallet)
   {
-    require(_maxTotalSupply &gt; 0);
-    require(_minFunding &gt; 0);
-    require(_mediumFunding &gt; _minFunding);
-    require(_highFunding &gt; _mediumFunding);
+    require(_maxTotalSupply > 0);
+    require(_minFunding > 0);
+    require(_mediumFunding > _minFunding);
+    require(_highFunding > _mediumFunding);
     require(_teamAddress != address(0));
     require(_FSNASAddress != address(0));
     minFunding = _minFunding;
@@ -990,10 +990,10 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
 
     // calculate token amount to be created
     uint256 tokens = 0;
-    if (weiRaised &lt; minFunding) {
+    if (weiRaised < minFunding) {
 
       // If the weiRaised go from less than min funding to more than high funding
-      if (weiRaised.add(weiAmount) &gt; highFunding) {
+      if (weiRaised.add(weiAmount) > highFunding) {
         tokens = minFunding.sub(weiRaised)
           .mul(rate).mul(115).div(100);
         tokens = tokens.add(
@@ -1007,7 +1007,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
         );
 
       // If the weiRaised go from less than min funding to more than medium funding
-      } else if (weiRaised.add(weiAmount) &gt; mediumFunding) {
+      } else if (weiRaised.add(weiAmount) > mediumFunding) {
         tokens = minFunding.sub(weiRaised)
           .mul(rate).mul(115).div(100);
         tokens = tokens.add(
@@ -1019,7 +1019,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
 
       // If the weiRaised go from less than min funding to more than min funding
       // but less than medium
-      } else if (weiRaised.add(weiAmount) &gt; minFunding) {
+      } else if (weiRaised.add(weiAmount) > minFunding) {
         tokens = minFunding.sub(weiRaised)
           .mul(rate).mul(115).div(100);
         tokens = tokens.add(
@@ -1031,11 +1031,11 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
         tokens = weiAmount.mul(rate).mul(115).div(100);
       }
 
-    } else if ((weiRaised &gt;= minFunding) &amp;&amp; (weiRaised &lt; mediumFunding)) {
+    } else if ((weiRaised >= minFunding) && (weiRaised < mediumFunding)) {
 
       // If the weiRaised go from more than min funding and less than min funding
       // to more than high funding
-      if (weiRaised.add(weiAmount) &gt; highFunding) {
+      if (weiRaised.add(weiAmount) > highFunding) {
         tokens = mediumFunding.sub(weiRaised)
           .mul(rate).mul(110).div(100);
         tokens = tokens.add(
@@ -1047,7 +1047,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
 
       // If the weiRaised go from more than min funding and less than min funding
       // to more than medium funding
-      } else if (weiRaised.add(weiAmount) &gt; mediumFunding) {
+      } else if (weiRaised.add(weiAmount) > mediumFunding) {
         tokens = mediumFunding.sub(weiRaised)
           .mul(rate).mul(110).div(100);
         tokens = tokens.add(
@@ -1059,11 +1059,11 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
         tokens = weiAmount.mul(rate).mul(110).div(100);
       }
 
-    } else if ((weiRaised &gt;= mediumFunding) &amp;&amp; (weiRaised &lt; highFunding)) {
+    } else if ((weiRaised >= mediumFunding) && (weiRaised < highFunding)) {
 
       // If the weiRaised go from more than medium funding and less than high funding
       // to more than high funding
-      if (weiRaised.add(weiAmount) &gt; highFunding) {
+      if (weiRaised.add(weiAmount) > highFunding) {
         tokens = highFunding.sub(weiRaised)
           .mul(rate).mul(105).div(100);
         tokens = tokens.add(
@@ -1081,7 +1081,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
     }
 
     // Check not to sold more than maxICOSupply
-    require(token.totalSupply().add(tokens) &lt;= maxICOSupply);
+    require(token.totalSupply().add(tokens) <= maxICOSupply);
 
     // Take in count wei received
     weiRaised = weiRaised.add(weiAmount);
@@ -1103,13 +1103,13 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
   function addPresaleTokens(
     address[] addrs, uint256[] values, uint256 rate
   ) onlyOwner external {
-    require(now &lt; endTime);
+    require(now < endTime);
     require(addrs.length == values.length);
-    require(rate &gt; 0);
+    require(rate > 0);
 
     uint256 totalTokens = 0;
 
-    for(uint256 i = 0; i &lt; addrs.length; i ++) {
+    for(uint256 i = 0; i < addrs.length; i ++) {
       token.mint(addrs[i], values[i].mul(rate));
       totalTokens = totalTokens.add(values[i].mul(rate));
 
@@ -1119,7 +1119,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
     }
 
     // Check not to issue more than maxICOSupply
-    require(token.totalSupply() &lt;= maxICOSupply);
+    require(token.totalSupply() <= maxICOSupply);
   }
 
   /**
@@ -1127,7 +1127,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
    * @param addrs address[] addresses to be added in whitelist
    */
   function addToWhitelist(address[] addrs) onlyOwner external {
-    for(uint256 i = 0; i &lt; addrs.length; i ++) {
+    for(uint256 i = 0; i < addrs.length; i ++) {
       require(!whitelist[addrs[i]]);
       whitelist[addrs[i]] = true;
       WhitelistedAddressAdded(addrs[i]);
@@ -1139,7 +1139,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
    * @param addrs address[] addresses to be removed from whitelist
    */
   function removeFromWhitelist(address[] addrs) onlyOwner public {
-    for(uint256 i = 0; i &lt; addrs.length; i ++) {
+    for(uint256 i = 0; i < addrs.length; i ++) {
       require(whitelist[addrs[i]]);
       whitelist[addrs[i]] = false;
       WhitelistedAddressRemoved(addrs[i]);
@@ -1149,7 +1149,7 @@ contract FNTCrowdsale is FNTRefundableCrowdsale {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalize() onlyOwner public {
     require(!isFinalized);

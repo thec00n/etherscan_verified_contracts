@@ -16,19 +16,19 @@ contract Owned {
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -40,20 +40,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -151,9 +151,9 @@ contract LegalLazyScheduler is Ownable {
     modifier intervalTrigger() {
         uint64 currentTime = uint64(now);
         uint64 requiredIntervals = (currentTime - lastUpdate) / intervalDuration;
-        if( schedulerEnabled &amp;&amp; (requiredIntervals &gt; 0)) {
+        if( schedulerEnabled && (requiredIntervals > 0)) {
             LogProcessedInterval(lastUpdate, requiredIntervals);
-            while (requiredIntervals-- &gt; 0) {
+            while (requiredIntervals-- > 0) {
                 callback();
             }
             lastUpdate = currentTime;
@@ -182,7 +182,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -327,7 +327,7 @@ contract LegalTGE is Ownable, Pausable {
   * The amount of wei a contributor has contributed. 
   * Used to check whether the total of contributions per user exceeds the max limit (depending on his verification level)
   */
-  mapping (address =&gt; uint) public weiPerContributor;
+  mapping (address => uint) public weiPerContributor;
 
   /** 
   * Minimum amount of tokens a contributor is able to buy
@@ -386,7 +386,7 @@ contract LegalTGE is Ownable, Pausable {
 
   /**
   * Total percent of tokens minted to the team at the end of the sale as base points
-  * 1BP -&gt; 0.01%
+  * 1BP -> 0.01%
   */
   uint public maxTeamBonusBps;
 
@@ -460,7 +460,7 @@ contract LegalTGE is Ownable, Pausable {
   /**
   * dictionary that maps addresses to contributors which have sucessfully been verified by the external KYC process 
   */
-  mapping (address =&gt; bool) public kycRegisteredContributors;
+  mapping (address => bool) public kycRegisteredContributors;
 
   struct TeamBonus {
     address toAddress;
@@ -471,7 +471,7 @@ contract LegalTGE is Ownable, Pausable {
 
   /*
   * Defines the percentage (base points) distribution of the team-allocated bonus rewards among members which will be vested ..
-  * 1 Bp -&gt; 0.01%
+  * 1 Bp -> 0.01%
   */
   TeamBonus[] public teamBonuses;
 
@@ -486,20 +486,20 @@ contract LegalTGE is Ownable, Pausable {
     // the address of the account used for auditing
     require(_foundationBoard != 0x0);
     
-    // the address of the multisig must not be &#39;undefined&#39;
+    // the address of the multisig must not be 'undefined'
     require(_multisigWallet != 0x0);
 
-    // the address of the wallet for constitutional contributors must not be &#39;undefined&#39;
+    // the address of the wallet for constitutional contributors must not be 'undefined'
     require(_instContWallet != 0x0);
 
     // the address of the account used for auditing
     require(_auditor != 0x0);
     
-    // the address of the cap for this TGE must not be &#39;undefined&#39;
-    require(_tokenCap &gt; 0); 
+    // the address of the cap for this TGE must not be 'undefined'
+    require(_tokenCap > 0); 
 
     // pre-contribution and contribution phases must not overlap
-    // require(_preSaleStartDate &lt;= _preSaleEndDate);
+    // require(_preSaleStartDate <= _preSaleEndDate);
 
     multisigWallet = _multisigWallet;
     instContWallet = _instContWallet;
@@ -525,9 +525,9 @@ contract LegalTGE is Ownable, Pausable {
   * ============================================================================================================================= */
 
   function setMaxWeiForVerificationLevels(uint _minWeiPerContributor, uint _maxWeiUnverified, uint  _maxWeiSMSVerified) public onlyOwner inState(States.PreparePreContribution) {
-    require(_minWeiPerContributor &gt;= 0);
-    require(_maxWeiUnverified &gt; _minWeiPerContributor);
-    require(_maxWeiSMSVerified &gt; _minWeiPerContributor);
+    require(_minWeiPerContributor >= 0);
+    require(_maxWeiUnverified > _minWeiPerContributor);
+    require(_maxWeiSMSVerified > _minWeiPerContributor);
 
     // the minimum number of wei an unverified user can contribute
     minWeiPerContributor = _minWeiPerContributor;
@@ -541,7 +541,7 @@ contract LegalTGE is Ownable, Pausable {
 
   function setLegalToken(LegalToken _legalToken) public onlyOwner inState(States.PreparePreContribution) {
     token = _legalToken;
-    if ( instContAllocatedTokens &gt; 0 ) {
+    if ( instContAllocatedTokens > 0 ) {
       // mint the pre allocated tokens for the institutional investors
       token.mint(instContWallet, instContAllocatedTokens);
       tokensSold += instContAllocatedTokens;
@@ -550,29 +550,29 @@ contract LegalTGE is Ownable, Pausable {
   }
 
   function validatePreContribution(uint _preSaleConversionRate, uint _preSaleStartDate, uint _preSaleEndDate) constant internal {
-    // the pre-contribution conversion rate must not be &#39;undefined&#39;
-    require(_preSaleConversionRate &gt;= 0);
+    // the pre-contribution conversion rate must not be 'undefined'
+    require(_preSaleConversionRate >= 0);
 
     // the pre-contribution start date must not be in the past
-    require(_preSaleStartDate &gt;= now);
+    require(_preSaleStartDate >= now);
 
     // the pre-contribution start date must not be in the past
-    require(_preSaleEndDate &gt;= _preSaleStartDate);
+    require(_preSaleEndDate >= _preSaleStartDate);
   }
 
   function validateContribution(uint _saleConversionRate, uint _saleStartDate, uint _saleEndDate) constant internal {
-    // the contribution conversion rate must not be &#39;undefined&#39;
-    require(_saleConversionRate &gt;= 0);
+    // the contribution conversion rate must not be 'undefined'
+    require(_saleConversionRate >= 0);
 
     // the contribution start date must not be in the past
-    require(_saleStartDate &gt;= now);
+    require(_saleStartDate >= now);
 
     // the contribution end date must not be before start date 
-    require(_saleEndDate &gt;= _saleStartDate);
+    require(_saleEndDate >= _saleStartDate);
   }
 
   function isNowBefore(uint _date) constant internal returns (bool) {
-    return ( now &lt; _date );
+    return ( now < _date );
   }
 
   function evalTransitionState() public returns (States) {
@@ -641,10 +641,10 @@ contract LegalTGE is Ownable, Pausable {
   */
   modifier teamBonusLimit(uint64 _tokenBps) {
     uint teamBonusBps = 0; 
-    for ( uint i = 0; i &lt; teamBonuses.length; i++ ) {
+    for ( uint i = 0; i < teamBonuses.length; i++ ) {
       teamBonusBps = teamBonusBps.add(teamBonuses[i].tokenBps);
     }
-    require(maxTeamBonusBps &gt;= teamBonusBps);
+    require(maxTeamBonusBps >= teamBonusBps);
     _;
   }
 
@@ -696,12 +696,12 @@ contract LegalTGE is Ownable, Pausable {
 
   function contribute() whenNotPaused stateTransitions inPreOrContributionState public payable {
     require(msg.sender != 0x0);
-    require(msg.value &gt;= minWeiPerContributor);
+    require(msg.value >= minWeiPerContributor);
 
     VerificationLevel verificationLevel = getVerificationLevel();
     
     // we only allow verified users to participate during pre-contribution phase
-    require(hasState(States.Contribution) || verificationLevel &gt; VerificationLevel.None);
+    require(hasState(States.Contribution) || verificationLevel > VerificationLevel.None);
 
     // we need to keep track of all contributions per user to limit total contributions
     weiPerContributor[msg.sender] = weiPerContributor[msg.sender].add(msg.value);
@@ -710,12 +710,12 @@ contract LegalTGE is Ownable, Pausable {
 
     if ( verificationLevel == VerificationLevel.SMSVerified ) {
       // the total amount of ETH a non-KYC user can contribute is limited to maxWeiPerContributor
-      require(weiPerContributor[msg.sender] &lt;= maxWeiSMSVerified);
+      require(weiPerContributor[msg.sender] <= maxWeiSMSVerified);
     }
 
     if ( verificationLevel == VerificationLevel.None ) {
       // the total amount of ETH a non-verified user can contribute is limited to maxWeiUnverified
-      require(weiPerContributor[msg.sender] &lt;= maxWeiUnverified);
+      require(weiPerContributor[msg.sender] <= maxWeiUnverified);
     }
 
     if (hasState(States.PreContribution)) {
@@ -788,7 +788,7 @@ contract LegalTGE is Ownable, Pausable {
 // All functions related to the TGE cap come here
 // =============================================================================================================================
   function isCapReached() constant internal returns (bool) {
-    if (tokensSold &gt;= tokenCap) {
+    if (tokensSold >= tokenCap) {
       return true;
     }
     return false;
@@ -822,7 +822,7 @@ contract LegalTGE is Ownable, Pausable {
   }
 
  /*
- * After the TGE reaches state &#39;auditing&#39;, the auditor will verify the legal and regulatory obligations 
+ * After the TGE reaches state 'auditing', the auditor will verify the legal and regulatory obligations 
  */
  function confirmLawfulness(bool _regulationsFulfilled, bytes32 _auditorComment) public onlyAuditor stateTransitions inState ( States.Auditing ) {
     regulationsFulfilled = _regulationsFulfilled;
@@ -881,7 +881,7 @@ contract LegalTGE is Ownable, Pausable {
   */
   function allocateTeamBonusTokens() private {
 
-    for (uint i = 0; i &lt; teamBonuses.length; i++) {
+    for (uint i = 0; i < teamBonuses.length; i++) {
       // How many % of tokens the team member receive as rewards
       uint _teamBonusTokens = (tokensSold.mul(teamBonuses[i].tokenBps)).div(10000);
 
@@ -897,7 +897,7 @@ contract LegalTGE is Ownable, Pausable {
   // Uses some slightly modifed logic from https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/crowdsale/RefundableTGE.sol
   // =============================================================================================================================
 
-  /** We&#39;re overriding the fund forwarding from TGE.
+  /** We're overriding the fund forwarding from TGE.
   * In addition to sending the funds, we want to call
   * the RefundVault deposit function
   */
@@ -932,7 +932,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -962,7 +962,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -977,7 +977,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -991,7 +991,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -1028,7 +1028,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -1082,7 +1082,7 @@ contract LimitedTransferToken is ERC20 {
    * @dev Checks whether it can transfer or otherwise throws.
    */
   modifier canTransfer(address _sender, uint256 _value) {
-    require(_value &lt;= transferableTokens(_sender, uint64(now)));
+    require(_value <= transferableTokens(_sender, uint64(now)));
    _;
   }
 
@@ -1129,7 +1129,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
     bool burnsOnRevoke;  // 2 * 1 = 2 bits? or 2 bytes?
   } // total 78 bytes = 3 sstore per operation (32 per sstore)
 
-  mapping (address =&gt; TokenGrant[]) public grants;
+  mapping (address => TokenGrant[]) public grants;
 
   event NewTokenGrant(address indexed from, address indexed to, uint256 value, uint256 grantId);
 
@@ -1152,9 +1152,9 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
   ) onlyOwner public {
 
     // Check for date inconsistencies that may cause unexpected behavior
-    require(_cliff &gt;= _start &amp;&amp; _vesting &gt;= _cliff);
+    require(_cliff >= _start && _vesting >= _cliff);
 
-    require(tokenGrantsCount(_to) &lt; MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
+    require(tokenGrantsCount(_to) < MAX_GRANTS_PER_ADDRESS);   // To prevent a user being spammed and have his balance locked (out of gas attack when calculating vesting).
 
     uint256 count = grants[_to].push(
                 TokenGrant(
@@ -1204,7 +1204,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
    * @dev Calculate the total amount of transferable tokens of a holder at a given time
    * @param holder address The address of the holder
    * @param time uint64 The specific time.
-   * @return An uint256 representing a holder&#39;s total amount of transferable tokens.
+   * @return An uint256 representing a holder's total amount of transferable tokens.
    */
   function transferableTokens(address holder, uint64 time) public constant returns (uint256) {
     uint256 grantIndex = tokenGrantsCount(holder);
@@ -1214,7 +1214,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
 
     // Iterate through all the grants the holder has, and add all non-vested tokens
     uint256 nonVested = 0;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       nonVested = SafeMath.add(nonVested, nonVestedTokens(grants[holder][i], time));
     }
 
@@ -1256,7 +1256,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
    *   |        .      |
    *   |      .        |
    *   |    .          |
-   *   +===+===========+---------+----------&gt; time
+   *   +===+===========+---------+----------> time
    *      Start       Cliff    Vesting
    */
   function calculateVestedTokens(
@@ -1267,12 +1267,12 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
     uint256 vesting) public constant returns (uint256)
     {
       // Shortcuts for before cliff and after vesting cases.
-      if (time &lt; cliff) return 0;
-      if (time &gt;= vesting) return tokens;
+      if (time < cliff) return 0;
+      if (time >= vesting) return tokens;
 
       // Interpolate all vested tokens.
       // As before cliff the shortcut returns 0, we can use just calculate a value
-      // in the vesting rect (as shown in above&#39;s figure)
+      // in the vesting rect (as shown in above's figure)
 
       // vestedTokens = (tokens * (time - start)) / (vesting - start)
       uint256 vestedTokens = SafeMath.div(
@@ -1342,7 +1342,7 @@ contract VestedToken is StandardToken, LimitedTransferToken, Ownable {
   function lastTokenIsTransferableDate(address holder) public constant returns (uint64 date) {
     date = uint64(now);
     uint256 grantIndex = grants[holder].length;
-    for (uint256 i = 0; i &lt; grantIndex; i++) {
+    for (uint256 i = 0; i < grantIndex; i++) {
       date = Math.max64(grants[holder][i].vesting, date);
     }
   }
@@ -1371,7 +1371,7 @@ contract SimpleCertifier is Owned, Certifier {
 
 	struct Certification {
 		bool active;
-		mapping (string =&gt; bytes32) meta;
+		mapping (string => bytes32) meta;
 	}
 
 	function certify(address _who) only_delegate {
@@ -1388,15 +1388,15 @@ contract SimpleCertifier is Owned, Certifier {
 	// function getUint(address _who, string _field) constant returns (uint) { return uint(certs[_who].meta[_field]); }
 	function setDelegate(address _new) only_owner { delegate = _new; }
 
-	mapping (address =&gt; Certification) certs;
-	// So that the server posting puzzles doesn&#39;t have access to the ETH.
+	mapping (address => Certification) certs;
+	// So that the server posting puzzles doesn't have access to the ETH.
 	address public delegate = msg.sender;
 }
 
 contract ProofOfSMS is SimpleCertifier {
 
 	modifier when_fee_paid {
-		if (msg.value &lt; fee)  {
+		if (msg.value < fee)  {
 		RequiredFeeNotMet(fee, msg.value);
 			return;
 		}
@@ -1443,7 +1443,7 @@ contract ProofOfSMS is SimpleCertifier {
 		return certs[_who].active;
 	}
 
-	mapping (address =&gt; bytes32) puzzles;
+	mapping (address => bytes32) puzzles;
 
 	uint public fee = 30 finney;
 }
@@ -1490,7 +1490,7 @@ contract LegalToken is LegalLazyScheduler, MintableToken, VestedToken {
     * @dev Constructor that gives msg.sender all of existing tokens. 
     */
     function LegalToken(address _rewardWallet, uint32 _inflationCompBPS, uint32 _inflationCompInterval) onlyOwner public {
-        setTokenInformation(&quot;Legal Token&quot;, &quot;LGL&quot;);
+        setTokenInformation("Legal Token", "LGL");
         totalSupply = 0;        
         rewardWallet = _rewardWallet;
         inflationCompBPS = _inflationCompBPS;

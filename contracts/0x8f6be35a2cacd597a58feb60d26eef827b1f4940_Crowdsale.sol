@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 /**
 * @title ICO CONTRACT
 * @dev ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="ef89c18e819b80818680c18e848a83af88828e8683c18c8082">[email&#160;protected]</span>
+* @author Fares A. Akel C. <span class="__cf_email__" data-cfemail="ef89c18e819b80818680c18e848a83af88828e8683c18c8082">[email protected]</span>
 */
 
 /**
@@ -20,20 +20,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -141,13 +141,13 @@ contract Crowdsale is Ownable {
 
   // return specific rate
   function getRate() constant public returns (uint256){
-    if(phase_1_remaining_tokens &gt; 0){
+    if(phase_1_remaining_tokens > 0){
       return phase_1_rate();
-    }else if(phase_2_remaining_tokens &gt; 0){
+    }else if(phase_2_remaining_tokens > 0){
       return phase_2_rate();
-    }else if(phase_3_remaining_tokens &gt; 0){
+    }else if(phase_3_remaining_tokens > 0){
       return phase_3_rate();
-    }else if(phase_4_remaining_tokens &gt; 0){
+    }else if(phase_4_remaining_tokens > 0){
       return phase_4_rate();
     }else{
       return 0;
@@ -156,10 +156,10 @@ contract Crowdsale is Ownable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= start_time &amp;&amp; now &lt;= end_Time;
-    bool allPhaseFinished = phase_4_remaining_tokens &gt; 0;
+    bool withinPeriod = now >= start_time && now <= end_Time;
+    bool allPhaseFinished = phase_4_remaining_tokens > 0;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; allPhaseFinished;
+    return withinPeriod && nonZeroPurchase && allPhaseFinished;
   }
 
 
@@ -168,8 +168,8 @@ contract Crowdsale is Ownable {
 
     uint256 total_token_to_transfer = 0;
     uint256 wei_amount_remaining = 0;
-    if(phase_1_remaining_tokens &gt; 0){
-      if(_tokens &gt; phase_1_remaining_tokens){
+    if(phase_1_remaining_tokens > 0){
+      if(_tokens > phase_1_remaining_tokens){
         wei_amount_remaining = _weiAmount.sub(_weiAmount.div(phase_1_rate()));
         uint256 tokens_from_phase_2 = wei_amount_remaining.mul(phase_2_rate());
         total_token_to_transfer = phase_1_remaining_tokens.add(tokens_from_phase_2);
@@ -179,8 +179,8 @@ contract Crowdsale is Ownable {
         phase_1_remaining_tokens = phase_1_remaining_tokens.sub(_tokens);
         total_token_to_transfer = _tokens;
       }
-    }else if(phase_2_remaining_tokens &gt; 0){
-      if(_tokens &gt; phase_2_remaining_tokens){
+    }else if(phase_2_remaining_tokens > 0){
+      if(_tokens > phase_2_remaining_tokens){
         wei_amount_remaining = _weiAmount.sub(_weiAmount.div(phase_2_rate()));
         uint256 tokens_from_phase_3 = wei_amount_remaining.mul(phase_3_rate());
         total_token_to_transfer = phase_2_remaining_tokens.add(tokens_from_phase_3);
@@ -191,8 +191,8 @@ contract Crowdsale is Ownable {
         total_token_to_transfer = _tokens;
       }
       
-    }else if(phase_3_remaining_tokens &gt; 0){
-      if(_tokens &gt; phase_3_remaining_tokens){
+    }else if(phase_3_remaining_tokens > 0){
+      if(_tokens > phase_3_remaining_tokens){
         wei_amount_remaining = _weiAmount.sub(_weiAmount.div(phase_3_rate()));
         uint256 tokens_from_phase_4 = wei_amount_remaining.mul(phase_4_rate());
         total_token_to_transfer = phase_3_remaining_tokens.add(tokens_from_phase_4);
@@ -203,8 +203,8 @@ contract Crowdsale is Ownable {
         total_token_to_transfer = _tokens;
       }
       
-    }else if(phase_4_remaining_tokens &gt; 0){
-      if(_tokens &gt; phase_3_remaining_tokens){
+    }else if(phase_4_remaining_tokens > 0){
+      if(_tokens > phase_3_remaining_tokens){
         total_token_to_transfer = 0;
       }else{
         phase_4_remaining_tokens = phase_4_remaining_tokens.sub(_tokens);
@@ -213,7 +213,7 @@ contract Crowdsale is Ownable {
     }else{
       total_token_to_transfer = 0;
     }
-    if(total_token_to_transfer &gt; 0){
+    if(total_token_to_transfer > 0){
       token_reward.transfer(_beneficiary, total_token_to_transfer);
       TokenPurchase(msg.sender, _beneficiary, _weiAmount, total_token_to_transfer);
       return true;
@@ -251,7 +251,7 @@ contract Crowdsale is Ownable {
   
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; end_Time;
+    return now > end_Time;
   }
   // function to transfer token back to owner
   function transferBack(uint256 tokens) onlyOwner public returns (bool){

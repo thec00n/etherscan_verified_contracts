@@ -10,20 +10,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -58,7 +58,7 @@ contract RICHCrowdsale {
     // ICOs specification
     uint256 public maxTotalSupply = 1000000000 * 10**8; // 1 mlrd. tokens
 
-    mapping (uint256 =&gt; uint256) icoTokenIssued; // Issued in each ICO
+    mapping (uint256 => uint256) icoTokenIssued; // Issued in each ICO
     uint256 public totalTokenIssued; // Total of issued tokens
 
     uint256 public icoPeriod = 10 days;
@@ -71,12 +71,12 @@ contract RICHCrowdsale {
     uint256 public bonusSecondIco = 10;
 
     uint256 public bonusSubscription = 5;
-    mapping (address =&gt; uint256) subsriptionBonusTokensIssued;
+    mapping (address => uint256) subsriptionBonusTokensIssued;
 
     // Balances
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; uint256) tokenBalances;
-    mapping (address =&gt; mapping (uint256 =&gt; uint256)) tokenBalancesPerIco;
+    mapping (address => uint256) balances;
+    mapping (address => uint256) tokenBalances;
+    mapping (address => mapping (uint256 => uint256)) tokenBalancesPerIco;
 
     enum Stages {
         Countdown,
@@ -105,11 +105,11 @@ contract RICHCrowdsale {
     modifier atStage(Stages _stage) {
         updateState();
 
-        if (stage != _stage &amp;&amp; _stage != Stages.Ico) {
+        if (stage != _stage && _stage != Stages.Ico) {
             throw;
         }
 
-        if (stage != Stages.PriorityIco &amp;&amp; stage != Stages.OpenIco &amp;&amp; stage != Stages.PreIco) {
+        if (stage != Stages.PriorityIco && stage != Stages.OpenIco && stage != Stages.PreIco) {
             throw;
         }
         _;
@@ -218,7 +218,7 @@ contract RICHCrowdsale {
      * @return rate How many tokens will be issued for one ETH
      */
     function getRate() returns (uint256 rate) {
-        if (currentMarketRate * 12 / 10 &lt; minimumIcoRate) {
+        if (currentMarketRate * 12 / 10 < minimumIcoRate) {
             return minimumIcoRate;
         }
 
@@ -236,7 +236,7 @@ contract RICHCrowdsale {
         uint256 deductionInvestor = 0;
         uint256 deductionIco = 0;
 
-        if (exeptInIco &gt;= 0) {
+        if (exeptInIco >= 0) {
             deductionInvestor = tokenBalancesPerIco[_investor][exeptInIco];
             deductionIco = icoTokenIssued[exeptInIco];
         }
@@ -268,7 +268,7 @@ contract RICHCrowdsale {
      */
     function getCurrentIcoNumber() returns (uint256 amount) {
         uint256 timeBehind = now - start;
-        if (now &lt; start) {
+        if (now < start) {
             return 0;
         }
 
@@ -282,34 +282,34 @@ contract RICHCrowdsale {
         uint256 timeBehind = now - start;
         uint256 currentIcoNumber = getCurrentIcoNumber();
 
-        if (icoTokenIssued[currentIcoNumber] &gt;= maxIssuedTokensPerIco) {
+        if (icoTokenIssued[currentIcoNumber] >= maxIssuedTokensPerIco) {
             stage = Stages.NoIco;
             return;
         }
 
-        if (totalTokenIssued &gt;= maxTotalSupply) {
+        if (totalTokenIssued >= maxTotalSupply) {
             stage = Stages.Ended;
             return;
         }
 
-        if (now &gt;= preIcoStart &amp;&amp; now &lt;= preIcoStart + preIcoPeriod) {
+        if (now >= preIcoStart && now <= preIcoStart + preIcoPeriod) {
             stage = Stages.PreIco;
             return;
         }
 
-        if (now &lt; start) {
+        if (now < start) {
             stage = Stages.Countdown;
             return;
         }
 
         uint256 timeFromIcoStart = timeBehind - (currentIcoNumber - 1) * (icoPeriod + noIcoPeriod);
 
-        if (timeFromIcoStart &gt; icoPeriod) {
+        if (timeFromIcoStart > icoPeriod) {
             stage = Stages.NoIco;
             return;
         }
 
-        if (timeFromIcoStart &gt; icoPeriod / 2) {
+        if (timeFromIcoStart > icoPeriod / 2) {
             stage = Stages.OpenIco;
             return;
         }
@@ -325,8 +325,8 @@ contract RICHCrowdsale {
         uint256 ethBalance = this.balance;
         uint256 amountToSend = ethBalance - 100000000;
 
-        if (creatorWithdraw &lt; maxCreatorWithdraw) {
-            if (amountToSend &gt; maxCreatorWithdraw - creatorWithdraw) {
+        if (creatorWithdraw < maxCreatorWithdraw) {
+            if (amountToSend > maxCreatorWithdraw - creatorWithdraw) {
                 amountToSend = maxCreatorWithdraw - creatorWithdraw;
             }
 
@@ -358,7 +358,7 @@ contract RICHCrowdsale {
     function sendSubscriptionBonus(address investorAddress) onlyCreator {
         uint256 subscriptionBonus = tokenBalances[investorAddress] * bonusSubscription / 100;
 
-        if (subsriptionBonusTokensIssued[investorAddress] &lt; subscriptionBonus) {
+        if (subsriptionBonusTokensIssued[investorAddress] < subscriptionBonus) {
             uint256 toBeIssued = subscriptionBonus - subsriptionBonusTokensIssued[investorAddress];
             if (!richToken.issue(investorAddress, toBeIssued)) {
                 throw;
@@ -374,7 +374,7 @@ contract RICHCrowdsale {
     function () payable atStage(Stages.Ico) {
         uint256 receivedEth = msg.value;
 
-        if (receivedEth &lt; minAcceptedEthAmount) {
+        if (receivedEth < minAcceptedEthAmount) {
             throw;
         }
 
@@ -384,7 +384,7 @@ contract RICHCrowdsale {
         //add bonus
         tokensToBeIssued = tokensToBeIssued + (tokensToBeIssued * getPercentageBonusForIco(currentIco) / 100);
 
-        if (tokensToBeIssued == 0 || icoTokenIssued[currentIco] + tokensToBeIssued &gt; maxIssuedTokensPerIco) {
+        if (tokensToBeIssued == 0 || icoTokenIssued[currentIco] + tokensToBeIssued > maxIssuedTokensPerIco) {
             throw;
         }
 
@@ -392,7 +392,7 @@ contract RICHCrowdsale {
             uint256 alreadyBoughtInIco = tokenBalancesPerIco[msg.sender][currentIco];
             uint256 canBuyTokensInThisIco = maxIssuedTokensPerIco * getInvestorTokenPercentage(msg.sender, currentIco) / 1000000;
 
-            if (tokensToBeIssued &gt; canBuyTokensInThisIco - alreadyBoughtInIco) {
+            if (tokensToBeIssued > canBuyTokensInThisIco - alreadyBoughtInIco) {
                 throw;
             }
         }

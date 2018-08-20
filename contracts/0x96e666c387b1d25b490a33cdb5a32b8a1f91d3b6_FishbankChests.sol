@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -62,10 +62,10 @@ contract FishbankBoosters is Ownable {
 
     Booster[] public boosters;
     bool public implementsERC721 = true;
-    string public name = &quot;Fishbank Boosters&quot;;
-    string public symbol = &quot;FISHB&quot;;
-    mapping(uint256 =&gt; address) public approved;
-    mapping(address =&gt; uint256) public balances;
+    string public name = "Fishbank Boosters";
+    string public symbol = "FISHB";
+    mapping(uint256 => address) public approved;
+    mapping(address => uint256) public balances;
     address public fishbank;
     address public chests;
     address public auction;
@@ -139,7 +139,7 @@ contract FishbankBoosters is Ownable {
     }
 
     //ERC721 functionality
-    //could split this to a different contract but doesn&#39;t make it easier to read
+    //could split this to a different contract but doesn't make it easier to read
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
@@ -216,9 +216,9 @@ contract FishbankChests is Ownable {
 
     Chest[] public chests;
     FishbankBoosters public boosterContract;
-    mapping(uint256 =&gt; address) public approved;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; bool) public minters;
+    mapping(uint256 => address) public approved;
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public minters;
 
     modifier onlyChestOwner(uint256 _tokenId) {
         require(chests[_tokenId].owner == msg.sender);
@@ -286,34 +286,34 @@ contract FishbankChests is Ownable {
 
         } else {//Regular chest
 
-            for (uint8 i = 0; i &lt; numberOfBoosters; i ++) {
+            for (uint8 i = 0; i < numberOfBoosters; i ++) {
                 uint24 random = uint16(keccak256(block.coinbase, block.blockhash(block.number - 1), i, chests.length)) % 1000
                 - chest.raiseChance;
                 //get random 0 - 9999 minus raiseChance
 
-                if (random &gt; 850) {
+                if (random > 850) {
                     boosterContract.mintBooster(msg.sender, 2 days, 1, 1, 1, chest.raiseStrength); //Small Agility Booster
-                } else if (random &gt; 700) {
+                } else if (random > 700) {
                     boosterContract.mintBooster(msg.sender, 7 days, 2, 1, 1, chest.raiseStrength); //Small Freezer
-                } else if (random &gt; 550) {
+                } else if (random > 550) {
                     boosterContract.mintBooster(msg.sender, 2 days, 3, 1, 1, chest.raiseStrength); //Small Power Booster
-                } else if (random &gt; 400) {
+                } else if (random > 400) {
                     boosterContract.mintBooster(msg.sender, 12 hours, 4, 1, 1, chest.raiseStrength); //Tiny Watch
-                } else if (random &gt; 325) {
+                } else if (random > 325) {
                     boosterContract.mintBooster(msg.sender, 48 hours, 4, 2, 1, chest.raiseStrength); //Small Watch
-                } else if (random &gt; 250) {
+                } else if (random > 250) {
                     boosterContract.mintBooster(msg.sender, 2 days, 1, 2, 1, chest.raiseStrength); //Mid Agility Booster
-                } else if (random &gt; 175) {
+                } else if (random > 175) {
                     boosterContract.mintBooster(msg.sender, 14 days, 2, 2, 1, chest.raiseStrength); //Mid Freezer
-                } else if (random &gt; 100) {
+                } else if (random > 100) {
                     boosterContract.mintBooster(msg.sender, 2 days, 3, 2, 1, chest.raiseStrength); //Mid Power Booster
-                } else if (random &gt; 80) {
+                } else if (random > 80) {
                     boosterContract.mintBooster(msg.sender, 2 days, 1, 3, 1, chest.raiseStrength); //Big Agility Booster
-                } else if (random &gt; 60) {
+                } else if (random > 60) {
                     boosterContract.mintBooster(msg.sender, 30 days, 2, 3, 1, chest.raiseStrength); //Big Freezer
-                } else if (random &gt; 40) {
+                } else if (random > 40) {
                     boosterContract.mintBooster(msg.sender, 2 days, 3, 3, 1, chest.raiseStrength); //Big Power Booster
-                } else if (random &gt; 20) {
+                } else if (random > 20) {
                     boosterContract.mintBooster(msg.sender, 0, 5, 1, 1, 0); //Instant Attack
                 } else {
                     boosterContract.mintBooster(msg.sender, 3 days, 4, 3, 1, 0); //Gold Watch
@@ -325,7 +325,7 @@ contract FishbankChests is Ownable {
     }
 
     //ERC721 functionality
-    //could split this to a different contract but doesn&#39;t make it easier to read
+    //could split this to a different contract but doesn't make it easier to read
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 

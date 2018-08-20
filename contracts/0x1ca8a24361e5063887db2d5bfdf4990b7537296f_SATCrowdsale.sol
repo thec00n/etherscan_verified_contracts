@@ -17,20 +17,20 @@ library SafeMath
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -98,8 +98,8 @@ contract SATCrowdsale
     
     function () external payable atStage(Stages.ICO)
     {
-        require(msg.value &gt;= 1 finney); //for round up and security measures
-        require(!stopped &amp;&amp; msg.sender != owner);
+        require(msg.value >= 1 finney); //for round up and security measures
+        require(!stopped && msg.sender != owner);
         
         uint256 ethCent = price.USD(0); //one USD cent in wei
         uint256 tokPrice = ethCent.mul(9); // 1Sat = 9 USD cent
@@ -110,19 +110,19 @@ contract SATCrowdsale
         uint256 bonus_token = 0;
         
         // Determine the bonus based on the time and the purchased amount
-        if (now &lt; ico_first)
+        if (now < ico_first)
         {
-            if (no_of_tokens &gt;=  2000 * (uint256(10)**8) &amp;&amp;
-                no_of_tokens &lt;= 19999 * (uint256(10)**8))
+            if (no_of_tokens >=  2000 * (uint256(10)**8) &&
+                no_of_tokens <= 19999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(50).div(100); // 50% bonus
             }
-            else if (no_of_tokens &gt;   19999 * (uint256(10)**8) &amp;&amp;
-                     no_of_tokens &lt;= 149999 * (uint256(10)**8))
+            else if (no_of_tokens >   19999 * (uint256(10)**8) &&
+                     no_of_tokens <= 149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(55).div(100); // 55% bonus
             }
-            else if (no_of_tokens &gt; 149999 * (uint256(10)**8))
+            else if (no_of_tokens > 149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(60).div(100); // 60% bonus
             }
@@ -131,19 +131,19 @@ contract SATCrowdsale
                 bonus_token = no_of_tokens.mul(45).div(100); // 45% bonus
             }
         }
-        else if (now &gt;= ico_first &amp;&amp; now &lt; ico_second)
+        else if (now >= ico_first && now < ico_second)
         {
-            if (no_of_tokens &gt;=  2000 * (uint256(10)**8) &amp;&amp;
-                no_of_tokens &lt;= 19999 * (uint256(10)**8))
+            if (no_of_tokens >=  2000 * (uint256(10)**8) &&
+                no_of_tokens <= 19999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(40).div(100); // 40% bonus
             }
-            else if (no_of_tokens &gt;   19999 * (uint256(10)**8) &amp;&amp;
-                     no_of_tokens &lt;= 149999 * (uint256(10)**8))
+            else if (no_of_tokens >   19999 * (uint256(10)**8) &&
+                     no_of_tokens <= 149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(45).div(100); // 45% bonus
             }
-            else if (no_of_tokens &gt;  149999 * (uint256(10)**8))
+            else if (no_of_tokens >  149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(50).div(100); // 50% bonus
             }
@@ -152,19 +152,19 @@ contract SATCrowdsale
                 bonus_token = no_of_tokens.mul(35).div(100); // 35% bonus
             }
         }
-        else if (now &gt;= ico_second &amp;&amp; now &lt; ico_third)
+        else if (now >= ico_second && now < ico_third)
         {
-            if (no_of_tokens &gt;=  2000 * (uint256(10)**8) &amp;&amp;
-                no_of_tokens &lt;= 19999 * (uint256(10)**8))
+            if (no_of_tokens >=  2000 * (uint256(10)**8) &&
+                no_of_tokens <= 19999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(30).div(100); // 30% bonus
             }
-            else if (no_of_tokens &gt;   19999 * (uint256(10)**8) &amp;&amp;
-                     no_of_tokens &lt;= 149999 * (uint256(10)**8))
+            else if (no_of_tokens >   19999 * (uint256(10)**8) &&
+                     no_of_tokens <= 149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(35).div(100); // 35% bonus
             }
-            else if (no_of_tokens &gt;  149999 * (uint256(10)**8))
+            else if (no_of_tokens >  149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(40).div(100); // 40% bonus
             }
@@ -173,19 +173,19 @@ contract SATCrowdsale
                 bonus_token = no_of_tokens.mul(25).div(100); // 25% bonus
             }
         }
-        else if (now &gt;= ico_third &amp;&amp; now &lt; ico_fourth)
+        else if (now >= ico_third && now < ico_fourth)
         {
-            if (no_of_tokens &gt;=  2000 * (uint256(10)**8) &amp;&amp;
-                no_of_tokens &lt;= 19999 * (uint256(10)**8))
+            if (no_of_tokens >=  2000 * (uint256(10)**8) &&
+                no_of_tokens <= 19999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(20).div(100); // 20% bonus
             }
-            else if (no_of_tokens &gt;   19999 * (uint256(10)**8) &amp;&amp;
-                     no_of_tokens &lt;= 149999 * (uint256(10)**8))
+            else if (no_of_tokens >   19999 * (uint256(10)**8) &&
+                     no_of_tokens <= 149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(25).div(100); // 25% bonus
             }
-            else if (no_of_tokens &gt;  149999 * (uint256(10)**8))
+            else if (no_of_tokens >  149999 * (uint256(10)**8))
             {
                 bonus_token = no_of_tokens.mul(30).div(100); // 30% bonus
             }
@@ -224,7 +224,7 @@ contract SATCrowdsale
     
     function endICO() external onlyOwner atStage(Stages.ICO)
     {
-        require(now &gt; ico_fourth);
+        require(now > ico_fourth);
         stage = Stages.ENDED;
         tokenContract.transfer(0x1, tokenContract.balanceOf(address(this)));
     }

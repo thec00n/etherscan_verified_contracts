@@ -15,7 +15,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,9 +74,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -84,7 +84,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -93,7 +93,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -105,7 +105,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -123,7 +123,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -163,7 +163,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -174,8 +174,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -189,7 +189,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -238,7 +238,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -250,8 +250,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract QIUToken is StandardToken,Ownable {
-    string public name = &#39;QIUToken&#39;;
-    string public symbol = &#39;QIU&#39;;
+    string public name = 'QIUToken';
+    string public symbol = 'QIU';
     uint8 public decimals = 0;
     uint public INITIAL_SUPPLY = 5000000000;
     uint public eth2qiuRate = 10000;
@@ -277,7 +277,7 @@ contract QIUToken is StandardToken,Ownable {
     function ownerTransferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(tx.origin == owner); // only the owner can call the method.
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -292,7 +292,7 @@ contract QIUToken is StandardToken,Ownable {
     */
     function originTransfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[tx.origin]);
+        require(_value <= balances[tx.origin]);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[tx.origin] = balances[tx.origin].sub(_value);
@@ -304,7 +304,7 @@ contract QIUToken is StandardToken,Ownable {
     event ExchangeForETH(address fromAddr,address to,uint qiuAmount,uint ethAmount);
     function exchangeForETH(uint qiuAmount) public returns (bool){
         uint ethAmount = qiuAmount * 1000000000000000000 / eth2qiuRate; // only accept multiple of 100
-        require(this.balance &gt;= ethAmount);
+        require(this.balance >= ethAmount);
         balances[this] = balances[this].add(qiuAmount);
         balances[msg.sender] = balances[msg.sender].sub(qiuAmount);
         msg.sender.transfer(ethAmount);
@@ -315,7 +315,7 @@ contract QIUToken is StandardToken,Ownable {
     event ExchangeForQIU(address fromAddr,address to,uint qiuAmount,uint ethAmount);
     function exchangeForQIU() payable public returns (bool){
         uint qiuAmount = msg.value * eth2qiuRate / 1000000000000000000;
-        require(qiuAmount &lt;= balances[this]);
+        require(qiuAmount <= balances[this]);
         balances[this] = balances[this].sub(qiuAmount);
         balances[msg.sender] = balances[msg.sender].add(qiuAmount);
         ExchangeForQIU(this,msg.sender,qiuAmount,msg.value);
@@ -328,7 +328,7 @@ contract QIUToken is StandardToken,Ownable {
         account.transfer(this.balance);
     }*/
     function getETHBalance() public view returns (uint) {
-        return this.balance; // balance is &quot;inherited&quot; from the address type
+        return this.balance; // balance is "inherited" from the address type
     }
 }
 
@@ -357,7 +357,7 @@ contract SoccerChampion is Ownable {
     }
 
     //ufixed private serviceChargeRate = 1/100;
-    mapping (uint =&gt; Tournament) public tournaments;
+    mapping (uint => Tournament) public tournaments;
     uint private _nextTournamentId = 0;
     QIUToken public _internalToken;
     uint private _commissionNumber;
@@ -383,7 +383,7 @@ contract SoccerChampion is Ownable {
         tournaments[newTourId].isEnded = false;
         tournaments[newTourId].isLockedForSupport = false;
         tournaments[newTourId].initialized = true;
-        for(uint idx = 0; idx &lt; teamIds.length; idx ++){
+        for(uint idx = 0; idx < teamIds.length; idx ++){
             Team memory team;
             team.id = teamIds[idx];
             team.isChampion = false;
@@ -395,10 +395,10 @@ contract SoccerChampion is Ownable {
 
     function supportTeam(uint tournamentId, uint teamId, uint amount) public {
         require(tournaments[tournamentId].initialized);
-        require(_internalToken.balanceOf(msg.sender) &gt;= amount);
+        require(_internalToken.balanceOf(msg.sender) >= amount);
         require(!tournaments[tournamentId].isEnded);
         require(!tournaments[tournamentId].isLockedForSupport);
-        require(amount &gt; 0);
+        require(amount > 0);
         SupportTicket memory ticket;
         ticket.teamId = teamId;
         ticket.supportAddres = msg.sender;
@@ -409,7 +409,7 @@ contract SoccerChampion is Ownable {
 
     function _getTournamentSupportAmount(uint tournamentId) public view returns(uint){
         uint supportAmount = 0;
-        for(uint idx = 0; idx &lt; tournaments[tournamentId].tickets.length; idx++){
+        for(uint idx = 0; idx < tournaments[tournamentId].tickets.length; idx++){
             supportAmount = supportAmount.add(tournaments[tournamentId].tickets[idx].supportAmount);
         }
         return supportAmount;
@@ -417,7 +417,7 @@ contract SoccerChampion is Ownable {
 
     function _getTeamSupportAmount(uint tournamentId, uint teamId) public view returns(uint){
         uint supportAmount = 0;
-        for(uint idx = 0; idx &lt; tournaments[tournamentId].tickets.length; idx++){
+        for(uint idx = 0; idx < tournaments[tournamentId].tickets.length; idx++){
             if(tournaments[tournamentId].tickets[idx].teamId == teamId){
                 supportAmount = supportAmount.add(tournaments[tournamentId].tickets[idx].supportAmount);
             }
@@ -427,8 +427,8 @@ contract SoccerChampion is Ownable {
 
     function _getUserSupportForTeamInTournament(uint tournamentId, uint teamId) public view returns(uint){
         uint supportAmount = 0;
-        for(uint idx = 0; idx &lt; tournaments[tournamentId].tickets.length; idx++){
-            if(tournaments[tournamentId].tickets[idx].teamId == teamId &amp;&amp; tournaments[tournamentId].tickets[idx].supportAddres == msg.sender){
+        for(uint idx = 0; idx < tournaments[tournamentId].tickets.length; idx++){
+            if(tournaments[tournamentId].tickets[idx].teamId == teamId && tournaments[tournamentId].tickets[idx].supportAddres == msg.sender){
                 supportAmount = supportAmount.add(tournaments[tournamentId].tickets[idx].supportAmount);
             }
         }
@@ -442,7 +442,7 @@ contract SoccerChampion is Ownable {
             supportAmounts = new uint[](tournaments[tournamentId].teams.length);
             knockOuts = new bool[](tournaments[tournamentId].teams.length);
             championTeamId = 0;
-            for(uint tidx = 0; tidx &lt; tournaments[tournamentId].teams.length; tidx++){
+            for(uint tidx = 0; tidx < tournaments[tournamentId].teams.length; tidx++){
                 teamIds[tidx] = tournaments[tournamentId].teams[tidx].id;
                 if(tournaments[tournamentId].teams[tidx].isChampion){
                     championTeamId = teamIds[tidx];
@@ -459,7 +459,7 @@ contract SoccerChampion is Ownable {
         if(tournaments[tournamentId].initialized){
             teamIds = new uint[](tournaments[tournamentId].teams.length);
             supportAmounts = new uint[](tournaments[tournamentId].teams.length);
-            for(uint tidx = 0; tidx &lt; tournaments[tournamentId].teams.length; tidx++){
+            for(uint tidx = 0; tidx < tournaments[tournamentId].teams.length; tidx++){
                 teamIds[tidx] = tournaments[tournamentId].teams[tidx].id;
                 uint userSupportAmount = _getUserSupportForTeamInTournament(tournamentId, teamIds[tidx]);
                 supportAmounts[tidx] = userSupportAmount;
@@ -472,7 +472,7 @@ contract SoccerChampion is Ownable {
         if(tournaments[tournamentId].initialized){
             isEnded = tournaments[tournamentId].isEnded;
             if(isEnded){
-                for(uint tidx = 0; tidx &lt; tournaments[tournamentId].teams.length; tidx++){
+                for(uint tidx = 0; tidx < tournaments[tournamentId].teams.length; tidx++){
                     Team memory team = tournaments[tournamentId].teams[tidx];
                     if(team.isChampion){
                         uint tournamentSupportAmount = _getTournamentSupportAmount(tournamentId);
@@ -491,7 +491,7 @@ contract SoccerChampion is Ownable {
     function knockoutTeam(uint tournamentId, uint teamId) public onlyOwner{
         require(tournaments[tournamentId].initialized);
         require(!tournaments[tournamentId].isEnded);
-        for(uint tidx = 0; tidx &lt; tournaments[tournamentId].teams.length; tidx++){
+        for(uint tidx = 0; tidx < tournaments[tournamentId].teams.length; tidx++){
             Team storage team = tournaments[tournamentId].teams[tidx];
             if(team.id == teamId){
                 team.isKnockout = true;
@@ -507,7 +507,7 @@ contract SoccerChampion is Ownable {
         uint tournamentSupportAmount = _getTournamentSupportAmount(tournaments[tournamentId].id);
         uint teamSupportAmount = _getTeamSupportAmount(tournaments[tournamentId].id, championTeamId);
         uint totalClearAmount = 0;
-        for(uint tidx = 0; tidx &lt; tournaments[tournamentId].teams.length; tidx++){
+        for(uint tidx = 0; tidx < tournaments[tournamentId].teams.length; tidx++){
             Team storage team = tournaments[tournamentId].teams[tidx];
             if(team.id == championTeamId){
                 team.isChampion = true;
@@ -515,7 +515,7 @@ contract SoccerChampion is Ownable {
             }
         }
 
-        for(uint idx = 0 ; idx &lt; tournaments[tournamentId].tickets.length; idx++){
+        for(uint idx = 0 ; idx < tournaments[tournamentId].tickets.length; idx++){
             SupportTicket memory ticket = tournaments[tournamentId].tickets[idx];
             if(ticket.teamId == championTeamId){
                 if(teamSupportAmount != 0){

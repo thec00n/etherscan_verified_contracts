@@ -27,13 +27,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,14 +41,14 @@ library SafeMath {
 contract NebToken is ERC20 {
   using SafeMath for uint256;
 
-  string public name = &quot;Nebula Network Token&quot;;
-  string public symbol = &quot;NEB&quot;;
+  string public name = "Nebula Network Token";
+  string public symbol = "NEB";
   uint8 public decimals = 0;
   address public treasury;
   uint256 public totalSupply;
 
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   constructor(uint256 _totalSupply) public {
     treasury = msg.sender;
@@ -63,7 +63,7 @@ contract NebToken is ERC20 {
 
   function transfer(address _to, uint256 _amount) public returns (bool) {
     require(_to != address(0));
-    require(_amount &lt;= balances[msg.sender]);
+    require(_amount <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     balances[_to] = balances[_to].add(_amount);
@@ -77,8 +77,8 @@ contract NebToken is ERC20 {
 
   function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
     require(_to != address(0));
-    require(_amount &lt;= balances[_from]);
-    require(_amount &lt;= allowed[_from][msg.sender]);
+    require(_amount <= balances[_from]);
+    require(_amount <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_amount);
     balances[_to] = balances[_to].add(_amount);

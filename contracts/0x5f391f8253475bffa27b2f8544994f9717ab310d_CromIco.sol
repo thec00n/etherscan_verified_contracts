@@ -34,20 +34,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -55,7 +55,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -112,12 +112,12 @@ contract ClaimableTokens is Ownable {
 
 contract CromToken is Ownable, ERC20, ClaimableTokens {
     using SafeMath for uint256;
-    string public constant name = &quot;CROM Token&quot;;
-    string public constant symbol = &quot;CROM&quot;;
+    string public constant name = "CROM Token";
+    string public constant symbol = "CROM";
     uint8 public constant decimals = 0;
     uint256 public constant INITIAL_SUPPLY = 10 ** 7;
-    mapping (address =&gt; uint256) internal balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     function CromToken() Ownable() ClaimableTokens(msg.sender) {
         totalSupply = INITIAL_SUPPLY;
@@ -126,7 +126,7 @@ contract CromToken is Ownable, ERC20, ClaimableTokens {
 
     function transfer(address to, uint256 value) public returns (bool success) {
         require(to != 0x0);
-        require(balances[msg.sender] &gt;= value);
+        require(balances[msg.sender] >= value);
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
         Transfer(msg.sender, to, value);
@@ -149,8 +149,8 @@ contract CromToken is Ownable, ERC20, ClaimableTokens {
 
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
         require(to != 0x0);
-        require(balances[from] &gt;= value);
-        require(value &lt;= allowed[from][msg.sender]);
+        require(balances[from] >= value);
+        require(value <= allowed[from][msg.sender]);
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(value);
@@ -189,10 +189,10 @@ contract CromIco is Ownable, ClaimableTokens {
     uint public constant DURATION = 14 days;
 
     // contributions per individual
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     // wallets allowed to take part in the pre ico
-    mapping (address =&gt; bool) public preIcoMembers;
+    mapping (address => bool) public preIcoMembers;
 
     // total amount of funds raised
     uint256 public amountRaised;
@@ -239,20 +239,20 @@ contract CromIco is Ownable, ClaimableTokens {
   // low level token purchase function
     function buyTokens() internal {
         require(msg.sender != 0x0);
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         require(!paused);
 
         uint256 weiAmount = msg.value;
 
         // calculate token amount to be transferred
         uint256 tokens = calculateTokensAmount(weiAmount);
-        require(tokens &gt; 0);
-        require(token.balanceOf(this) &gt;= tokens);
+        require(tokens > 0);
+        require(token.balanceOf(this) >= tokens);
 
         if (PayableStages.PreIco == getPayableStage()) {
             require(preIcoMembers[msg.sender]);
-            require(weiAmount.add(balanceOf[msg.sender]) &gt;= MINIMAL_PRE_ICO_INVESTMENT);
-            require(tokensSold.add(tokens) &lt;= BONUS_BATCH);
+            require(weiAmount.add(balanceOf[msg.sender]) >= MINIMAL_PRE_ICO_INVESTMENT);
+            require(tokensSold.add(tokens) <= BONUS_BATCH);
         }
 
         amountRaised = amountRaised.add(weiAmount);
@@ -270,14 +270,14 @@ contract CromIco is Ownable, ClaimableTokens {
 
     // add a list of wallets to be allowed to take part in pre ico
     function addPreIcoMembers(address[] members) public onlyOwner {
-        for (uint i = 0; i &lt; members.length; i++) {
+        for (uint i = 0; i < members.length; i++) {
             preIcoMembers[members[i]] = true;
         }
     }
 
     // remove a list of wallets to be allowed to take part in pre ico
     function removePreIcoMembers(address[] members) public onlyOwner {
-        for (uint i = 0; i &lt; members.length; i++) {
+        for (uint i = 0; i < members.length; i++) {
             preIcoMembers[members[i]] = false;
         }
     }
@@ -286,14 +286,14 @@ contract CromIco is Ownable, ClaimableTokens {
     function isPreIcoActive() public constant returns (bool) {
         bool isPayable = Stages.Payable == getCurrentStage();
         bool isPreIco = PayableStages.PreIco == getPayableStage();
-        return isPayable &amp;&amp; isPreIco;
+        return isPayable && isPreIco;
     }
 
     // @return true if the public ICO is in progress
     function isPublicIcoActive() public constant returns (bool) {
         bool isPayable = Stages.Payable == getCurrentStage();
         bool isPublic = PayableStages.PublicIco == getPayableStage();
-        return isPayable &amp;&amp; isPublic;
+        return isPayable && isPublic;
     }
 
     // @return true if ICO has ended
@@ -303,14 +303,14 @@ contract CromIco is Ownable, ClaimableTokens {
 
     // @return true if the soft cap has been reached
     function softCapReached() public constant returns (bool) {
-        return amountRaised &gt;= SOFT_CAP;
+        return amountRaised >= SOFT_CAP;
     }
 
     // withdraw the contributed funds if the ICO has
     // ended and the goal has not been reached
     function withdrawFunds() public atStage(Stages.AfterIco) returns(bool) {
         require(!softCapReached());
-        require(balanceOf[msg.sender] &gt; 0);
+        require(balanceOf[msg.sender] > 0);
 
         uint256 balance = balanceOf[msg.sender];
 
@@ -347,8 +347,8 @@ contract CromIco is Ownable, ClaimableTokens {
 
     function calculateTokensAmount(uint256 funds) internal returns (uint256) {
         uint256 tokens = funds.div(TOKEN_PRICE);
-        if (tokensSold &lt; BONUS_BATCH) {
-            if (tokensSold.add(tokens) &gt; BONUS_BATCH) {
+        if (tokensSold < BONUS_BATCH) {
+            if (tokensSold.add(tokens) > BONUS_BATCH) {
                 uint256 bonusBaseTokens = BONUS_BATCH.mul(100).div(125).sub(tokensSold);
                 tokens = tokens.add(bonusBaseTokens.mul(BONUS_PERCENTAGE).div(100));
             } else {
@@ -361,9 +361,9 @@ contract CromIco is Ownable, ClaimableTokens {
     function getCurrentStage() internal constant returns (Stages) {
         if (!targetWalletVerified) {
             return Stages.WalletUnverified;
-        } else if (now &lt; preStartTime) {
+        } else if (now < preStartTime) {
             return Stages.BeforeIco;
-        } else if (now &lt; endTime &amp;&amp; amountRaised &lt; HARD_CAP) {
+        } else if (now < endTime && amountRaised < HARD_CAP) {
             return Stages.Payable;
         } else {
             return Stages.AfterIco;
@@ -371,7 +371,7 @@ contract CromIco is Ownable, ClaimableTokens {
     }
 
     function getPayableStage() internal constant returns (PayableStages) {
-        if (now &lt; startTime) {
+        if (now < startTime) {
             return PayableStages.PreIco;
         } else {
             return PayableStages.PublicIco;

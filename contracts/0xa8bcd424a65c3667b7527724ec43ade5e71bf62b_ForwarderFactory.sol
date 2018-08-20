@@ -19,7 +19,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 Release notes:
 * Framworking changing to Factory v0.3.3 usage
@@ -89,7 +89,7 @@ contract RegBase is RegBaseAbstract
 // Constants
 //
 
-    bytes32 constant public VERSION = &quot;RegBase v0.3.3&quot;;
+    bytes32 constant public VERSION = "RegBase v0.3.3";
 
 //
 // State Variables
@@ -184,7 +184,7 @@ email:  o0ragman0o AT gmail.com
 This file is part of the SandalStraps framework
 
 Factories are a core but independant concept of the SandalStraps framework and 
-can be used to create SandalStraps compliant &#39;product&#39; contracts from embed
+can be used to create SandalStraps compliant 'product' contracts from embed
 bytecode.
 
 The abstract Factory contract is to be used as a SandalStraps compliant base for
@@ -200,16 +200,16 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 Release Notes
 -------------
-* Changed from`withdaw(&lt;value&gt;)` to `withdrawAll()`
+* Changed from`withdaw(<value>)` to `withdrawAll()`
 \******************************************************************************/
 
 pragma solidity ^0.4.13;
 
-// import &quot;./RegBase.sol&quot;;
+// import "./RegBase.sol";
 
 contract Factory is RegBase
 {
@@ -218,13 +218,13 @@ contract Factory is RegBase
 //
 
     // Deriving factories should have `bytes32 constant public regName` being
-    // the product&#39;s contract name, e.g for products &quot;Foo&quot;:
-    // bytes32 constant public regName = &quot;Foo&quot;;
+    // the product's contract name, e.g for products "Foo":
+    // bytes32 constant public regName = "Foo";
 
     // Deriving factories should have `bytes32 constant public VERSION` being
-    // the product&#39;s contract name appended with &#39;Factory` and the version
-    // of the product, e.g for products &quot;Foo&quot;:
-    // bytes32 constant public VERSION &quot;FooFactory 0.0.1&quot;;
+    // the product's contract name appended with 'Factory` and the version
+    // of the product, e.g for products "Foo":
+    // bytes32 constant public VERSION "FooFactory 0.0.1";
 
 //
 // State Variables
@@ -312,25 +312,25 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 Release Notes
 -------------
-* Name change from &#39;Redirector&#39; to &#39;Forwarder&#39;
-* Changes state name from &#39;payTo&#39; to &#39;forwardTo&#39;
+* Name change from 'Redirector' to 'Forwarder'
+* Changes state name from 'payTo' to 'forwardTo'
 
 \******************************************************************************/
 
 pragma solidity ^0.4.13;
 
-// import &quot;https://github.com/o0ragman0o/SandalStraps/contracts/Factory.sol&quot;;
+// import "https://github.com/o0ragman0o/SandalStraps/contracts/Factory.sol";
 
 contract Forwarder is RegBase {
 //
 // Constants
 //
 
-    bytes32 constant public VERSION = &quot;Forwarder v0.3.0&quot;;
+    bytes32 constant public VERSION = "Forwarder v0.3.0";
 
 //
 // State
@@ -387,10 +387,10 @@ contract ForwarderFactory is Factory
 //
 
     /// @return registrar name
-    bytes32 constant public regName = &quot;forwarder&quot;;
+    bytes32 constant public regName = "forwarder";
     
     /// @return version string
-    bytes32 constant public VERSION = &quot;ForwarderFactory v0.3.0&quot;;
+    bytes32 constant public VERSION = "ForwarderFactory v0.3.0";
 
 //
 // Functions

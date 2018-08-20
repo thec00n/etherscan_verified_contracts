@@ -15,7 +15,7 @@ pragma solidity ^0.4.24;
 contract hodlEthereum {
     event Hodl(address indexed hodler, uint indexed amount);
     event Party(address indexed hodler, uint indexed amount);
-    mapping (address =&gt; uint) public hodlers;
+    mapping (address => uint) public hodlers;
 
     // Set party date -  1st Sept 2018
     uint constant partyTime = 1535760000;
@@ -28,7 +28,7 @@ contract hodlEthereum {
 
     // Withdrawl Funds
     function party() public {
-        require (block.timestamp &gt; partyTime &amp;&amp; hodlers[msg.sender] &gt; 0);
+        require (block.timestamp > partyTime && hodlers[msg.sender] > 0);
         uint value = hodlers[msg.sender];
         hodlers[msg.sender] = 0;
         msg.sender.transfer(value);

@@ -12,9 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU lesser General Public License for more details.
 
 You should have received a copy of the GNU lesser General Public License
-along with the Open Longevity Contract. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with the Open Longevity Contract. If not, see <http://www.gnu.org/licenses/>.
 
-@author Ilya Svirin &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cf5b2efeaf5eef5f2dcf2f3eef8fdeaf5f2f8b2eee9">[email&#160;protected]</a>&gt;
+@author Ilya Svirin <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cf5b2efeaf5eef5f2dcf2f3eef8fdeaf5f2f8b2eee9">[email protected]</a>>
 */
 
 
@@ -71,8 +71,8 @@ contract PresaleOriginal is owned, ERC20 {
         uint256 amountTokens;
         uint    amountWei;
     }
-    mapping (address =&gt; Investor) public investors;
-    mapping (uint =&gt; address)     public investorsIter;
+    mapping (address => Investor) public investors;
+    mapping (uint => address)     public investorsIter;
     uint                          public numberOfInvestors;
 }
 
@@ -94,10 +94,10 @@ contract Presale is PresaleOriginal {
         // migrate tokens with x2 bonus
         numberOfInvestors = PresaleOriginal(_originalContract).numberOfInvestors();
         uint limit = migrationCounter + n;
-        if(limit &gt; numberOfInvestors) {
+        if(limit > numberOfInvestors) {
             limit = numberOfInvestors;
         }
-        for(; migrationCounter &lt; limit; ++migrationCounter) {
+        for(; migrationCounter < limit; ++migrationCounter) {
             address a = PresaleOriginal(_originalContract).investorsIter(migrationCounter);
             investorsIter[migrationCounter] = a;
             uint256 amountTokens;
@@ -109,7 +109,7 @@ contract Presale is PresaleOriginal {
             totalSupply += amountTokens;
             Transfer(_originalContract, a, amountTokens);
         }
-        if(limit &lt; numberOfInvestors) {
+        if(limit < numberOfInvestors) {
             return;
         }
 
@@ -120,7 +120,7 @@ contract Presale is PresaleOriginal {
 
         // add extra tokens for bounty
         address bountyAddress = 0x59B95A5e0268Cc843e6308FEf723544BaA6676c6;
-        if(investors[bountyAddress].amountWei == 0 &amp;&amp; investors[bountyAddress].amountTokens == 0) {
+        if(investors[bountyAddress].amountWei == 0 && investors[bountyAddress].amountTokens == 0) {
             investorsIter[numberOfInvestors++] = bountyAddress;
         }
         uint bountyTokens = 5 * PresaleOriginal(_originalContract).totalSupply() / 100;
@@ -130,11 +130,11 @@ contract Presale is PresaleOriginal {
 
     function () payable public {
         require(state == State.Presale);
-        require(now &lt; presaleFinishTime);
+        require(now < presaleFinishTime);
 
         uint valueWei = msg.value;
         uint valueUSD = valueWei * etherPrice / 1000000000000000000;
-        if (collectedUSD + valueUSD &gt; totalLimitUSD) { // don&#39;t need so much ether
+        if (collectedUSD + valueUSD > totalLimitUSD) { // don't need so much ether
             valueUSD = totalLimitUSD - collectedUSD;
             valueWei = valueUSD * 1000000000000000000 / etherPrice;
             require(msg.sender.call.gas(3000000).value(msg.value - valueWei)());
@@ -144,18 +144,18 @@ contract Presale is PresaleOriginal {
         }
 
         uint256 tokensPer10USD = 130;
-        if (valueUSD &gt;= 100000) {
+        if (valueUSD >= 100000) {
             tokensPer10USD = 150;
         }
 
         uint256 tokens = tokensPer10USD * valueUSD / 10;
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         Investor storage inv = investors[msg.sender];
         if (inv.amountWei == 0) { // new investor
             investorsIter[numberOfInvestors++] = msg.sender;
         }
-        require(inv.amountTokens + tokens &gt; inv.amountTokens); // overflow
+        require(inv.amountTokens + tokens > inv.amountTokens); // overflow
         inv.amountTokens += tokens;
         inv.amountWei += valueWei;
         totalSupply += tokens;
@@ -179,7 +179,7 @@ contract Presale is PresaleOriginal {
     
     function timeToFinishPresale() public constant returns(uint t) {
         require(state == State.Presale);
-        if (now &gt; presaleFinishTime) {
+        if (now > presaleFinishTime) {
             t = 0;
         } else {
             t = presaleFinishTime - now;
@@ -188,7 +188,7 @@ contract Presale is PresaleOriginal {
     
     function finishPresale() public onlyOwner {
         require(state == State.Presale);
-        require(now &gt;= presaleFinishTime || collectedUSD == totalLimitUSD);
+        require(now >= presaleFinishTime || collectedUSD == totalLimitUSD);
         require(presaleOwner.call.gas(3000000).value(this.balance)());
         state = State.Finished;
         NewState(state);
@@ -201,16 +201,16 @@ contract Presale is PresaleOriginal {
 
 contract PresaleToken is Presale {
     
-    string  public standard    = &#39;Token 0.1&#39;;
-    string  public name        = &#39;OpenLongevity&#39;;
-    string  public symbol      = &quot;YEAR&quot;;
+    string  public standard    = 'Token 0.1';
+    string  public name        = 'OpenLongevity';
+    string  public symbol      = "YEAR";
     uint8   public decimals    = 0;
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => mapping (address => uint)) public allowed;
 
     // Fix for the ERC20 short address attack
     modifier onlyPayloadSize(uint size) {
-        require(msg.data.length &gt;= size + 4);
+        require(msg.data.length >= size + 4);
         _;
     }
 
@@ -221,10 +221,10 @@ contract PresaleToken is Presale {
     }
 
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) {
-        require(investors[msg.sender].amountTokens &gt;= _value);
-        require(investors[_to].amountTokens + _value &gt;= investors[_to].amountTokens);
+        require(investors[msg.sender].amountTokens >= _value);
+        require(investors[_to].amountTokens + _value >= investors[_to].amountTokens);
         investors[msg.sender].amountTokens -= _value;
-        if(investors[_to].amountTokens == 0 &amp;&amp; investors[_to].amountWei == 0) {
+        if(investors[_to].amountTokens == 0 && investors[_to].amountWei == 0) {
             investorsIter[numberOfInvestors++] = _to;
         }
         investors[_to].amountTokens += _value;
@@ -232,11 +232,11 @@ contract PresaleToken is Presale {
     }
     
     function transferFrom(address _from, address _to, uint _value) public onlyPayloadSize(3 * 32) {
-        require(investors[_from].amountTokens &gt;= _value);
-        require(investors[_to].amountTokens + _value &gt;= investors[_to].amountTokens); // overflow
-        require(allowed[_from][msg.sender] &gt;= _value);
+        require(investors[_from].amountTokens >= _value);
+        require(investors[_to].amountTokens + _value >= investors[_to].amountTokens); // overflow
+        require(allowed[_from][msg.sender] >= _value);
         investors[_from].amountTokens -= _value;
-        if(investors[_to].amountTokens == 0 &amp;&amp; investors[_to].amountWei == 0) {
+        if(investors[_to].amountTokens == 0 && investors[_to].amountWei == 0) {
             investorsIter[numberOfInvestors++] = _to;
         }
         investors[_to].amountTokens += _value;

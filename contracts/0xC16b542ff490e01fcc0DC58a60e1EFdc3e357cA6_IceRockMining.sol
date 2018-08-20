@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 library itMaps {
 
     /* itMapAddressUint
-         address =&gt;  Uint
+         address =>  Uint
     */
     struct entryAddressUint {
     // Equal to the index of the key of this item in keys, plus 1.
@@ -12,14 +12,14 @@ library itMaps {
     }
 
     struct itMapAddressUint {
-    mapping(address =&gt; entryAddressUint) data;
+    mapping(address => entryAddressUint) data;
     address[] keys;
     }
 
     function insert(itMapAddressUint storage self, address key, uint value) internal returns (bool replaced) {
         entryAddressUint storage e = self.data[key];
         e.value = value;
-        if (e.keyIndex &gt; 0) {
+        if (e.keyIndex > 0) {
             return true;
         } else {
             e.keyIndex = ++self.keys.length;
@@ -33,7 +33,7 @@ library itMaps {
         if (e.keyIndex == 0)
         return false;
 
-        if (e.keyIndex &lt;= self.keys.length) {
+        if (e.keyIndex <= self.keys.length) {
             // Move an existing element into the vacated key slot.
             self.data[self.keys[self.keys.length - 1]].keyIndex = e.keyIndex;
             self.keys[e.keyIndex - 1] = self.keys[self.keys.length - 1];
@@ -44,7 +44,7 @@ library itMaps {
     }
 
     function destroy(itMapAddressUint storage self) internal  {
-        for (uint i; i&lt;self.keys.length; i++) {
+        for (uint i; i<self.keys.length; i++) {
             delete self.data[ self.keys[i]];
         }
         delete self.keys;
@@ -52,7 +52,7 @@ library itMaps {
     }
 
     function contains(itMapAddressUint storage self, address key) internal constant returns (bool exists) {
-        return self.data[key].keyIndex &gt; 0;
+        return self.data[key].keyIndex > 0;
     }
 
     function size(itMapAddressUint storage self) internal constant returns (uint) {
@@ -90,8 +90,8 @@ contract IceRockMining is ERC20{
 
 
     uint256 initialSupply = 20000000;
-    string public constant name = &quot;ICE ROCK MINING&quot;;
-    string public constant symbol = &quot;ROCK2&quot;;
+    string public constant name = "ICE ROCK MINING";
+    string public constant symbol = "ROCK2";
     uint currentUSDExchangeRate = 1340;
     uint bonus = 0;
     uint priceUSD = 1;
@@ -100,8 +100,8 @@ contract IceRockMining is ERC20{
     itMaps.itMapAddressUint balances;
 
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; uint256) approvedDividends;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => uint256) approvedDividends;
 
     event Burned(address indexed from, uint amount);
     event DividendsTransfered(address to, uint amount);
@@ -127,7 +127,7 @@ contract IceRockMining is ERC20{
 
 
     function transfer(address to, uint value) public returns (bool success) {
-        if (balances.get(msg.sender) &gt;= value &amp;&amp; value &gt; 0) {
+        if (balances.get(msg.sender) >= value && value > 0) {
 
             balances.insert(msg.sender, balances.get(msg.sender)-value);
 
@@ -146,7 +146,7 @@ contract IceRockMining is ERC20{
     }
 
     function transferFrom(address from, address to, uint256 value) public returns (bool success) {
-        if (balances.get(from) &gt;= value &amp;&amp; allowed[from][msg.sender] &gt;= value &amp;&amp; value &gt; 0) {
+        if (balances.get(from) >= value && allowed[from][msg.sender] >= value && value > 0) {
 
             uint amountToInsert = value;
 
@@ -163,7 +163,7 @@ contract IceRockMining is ERC20{
     }
 
     function approve(address spender, uint value) public returns (bool success) {
-        if ((value != 0) &amp;&amp; (balances.get(msg.sender) &gt;= value)){
+        if ((value != 0) && (balances.get(msg.sender) >= value)){
             allowed[msg.sender][spender] = value;
             Approval(msg.sender, spender, value);
             return true;
@@ -191,8 +191,8 @@ contract IceRockMining is ERC20{
 
     function sendp(address addr, uint amount) internal {
         require(addr != IceRockMiningAddress);
-        require(amount &gt; 0);
-        require (balances.get(IceRockMiningAddress)&gt;=amount);
+        require(amount > 0);
+        require (balances.get(IceRockMiningAddress)>=amount);
 
 
         if (balances.contains(addr)) {
@@ -211,7 +211,7 @@ contract IceRockMining is ERC20{
         uint valueToPass = amountInUSDollars / priceUSD;
         valueToPass = (valueToPass * (100 + bonus))/100;
 
-        if (balances.get(IceRockMiningAddress) &gt;= valueToPass) {
+        if (balances.get(IceRockMiningAddress) >= valueToPass) {
             if (balances.contains(msg.sender)) {
                 balances.insert(msg.sender, balances.get(msg.sender)+valueToPass);
             }
@@ -225,9 +225,9 @@ contract IceRockMining is ERC20{
 
     function approveDividends (uint totalDividendsAmount) public onlyOwner {
         uint256 dividendsPerToken = totalDividendsAmount*10**18 / initialSupply;
-        for (uint256 i = 0; i&lt;balances.size(); i += 1) {
+        for (uint256 i = 0; i<balances.size(); i += 1) {
             address tokenHolder = balances.getKeyByIndex(i);
-            if (balances.get(tokenHolder)&gt;0)
+            if (balances.get(tokenHolder)>0)
             approvedDividends[tokenHolder] = balances.get(tokenHolder)*dividendsPerToken;
         }
     }
@@ -245,9 +245,9 @@ contract IceRockMining is ERC20{
     }
 
     function transferAllDividends() public onlyOwner{
-        for (uint256 i = 0; i&lt; balances.size(); i += 1) {
+        for (uint256 i = 0; i< balances.size(); i += 1) {
             address tokenHolder = balances.getKeyByIndex(i);
-            if (approvedDividends[tokenHolder] &gt; 0)
+            if (approvedDividends[tokenHolder] > 0)
             {
                 tokenHolder.transfer(approvedDividends[tokenHolder]);
                 DividendsTransfered (tokenHolder, approvedDividends[tokenHolder]);

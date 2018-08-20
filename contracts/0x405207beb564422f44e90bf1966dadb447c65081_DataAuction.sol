@@ -3,8 +3,8 @@
 /* 
 /* https://ether.online  The first RPG game of blockchain 
 /*  
-/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9deff4fef6f5e8f3e9f8efb3eef5f8f3ddfaf0fcf4f1b3fef2f0">[email&#160;protected]</a>   
-/*         <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e99a9a8c9a9c878d80878ea98e84888085c78a8684">[email&#160;protected]</a>            
+/* authors <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9deff4fef6f5e8f3e9f8efb3eef5f8f3ddfaf0fcf4f1b3fef2f0">[email protected]</a>   
+/*         <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e99a9a8c9a9c878d80878ea98e84888085c78a8684">[email protected]</a>            
 /* ==================================================================== */
 
 pragma solidity ^0.4.20;
@@ -80,10 +80,10 @@ contract AccessService is AccessAdmin {
         external 
     {
         require(msg.sender == addrFinance || msg.sender == addrAdmin);
-        require(_amount &gt; 0);
+        require(_amount > 0);
         address receiver = _target == address(0) ? addrFinance : _target;
         uint256 balance = this.balance;
-        if (_amount &lt; balance) {
+        if (_amount < balance) {
             receiver.transfer(_amount);
         } else {
             receiver.transfer(this.balance);
@@ -126,29 +126,29 @@ contract DataAuction is IDataAuction, AccessAdmin {
     }
 
     function isOnSale(uint256 _tokenId) external view returns(bool) {
-        if (address(ethAuction) != address(0) &amp;&amp; ethAuction.isOnSale(_tokenId)) {
+        if (address(ethAuction) != address(0) && ethAuction.isOnSale(_tokenId)) {
             return true;   
         }
-        if (address(platAuction) != address(0) &amp;&amp; platAuction.isOnSale(_tokenId)) {
+        if (address(platAuction) != address(0) && platAuction.isOnSale(_tokenId)) {
             return true;   
         }
     }
 
     function isOnSaleAny2(uint256 _tokenId1, uint256 _tokenId2) external view returns(bool) {
-        if (address(ethAuction) != address(0) &amp;&amp; ethAuction.isOnSaleAny2(_tokenId1, _tokenId2)) {
+        if (address(ethAuction) != address(0) && ethAuction.isOnSaleAny2(_tokenId1, _tokenId2)) {
             return true;   
         }
-        if (address(platAuction) != address(0) &amp;&amp; platAuction.isOnSaleAny2(_tokenId1, _tokenId2)) {
+        if (address(platAuction) != address(0) && platAuction.isOnSaleAny2(_tokenId1, _tokenId2)) {
             return true;   
         }
         return false;
     }
 
     function isOnSaleAny3(uint256 _tokenId1, uint256 _tokenId2, uint256 _tokenId3) external view returns(bool) {
-        if (address(ethAuction) != address(0) &amp;&amp; ethAuction.isOnSaleAny3(_tokenId1, _tokenId2, _tokenId3)) {
+        if (address(ethAuction) != address(0) && ethAuction.isOnSaleAny3(_tokenId1, _tokenId2, _tokenId3)) {
             return true;   
         }
-        if (address(platAuction) != address(0) &amp;&amp; platAuction.isOnSaleAny3(_tokenId1, _tokenId2, _tokenId3)) {
+        if (address(platAuction) != address(0) && platAuction.isOnSaleAny3(_tokenId1, _tokenId2, _tokenId3)) {
             return true;   
         }
         return false;

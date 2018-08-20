@@ -6,13 +6,13 @@ contract FrikandelToken {
     bool public ICOEnabled = true; //Enable selling new Frikandellen
     bool public Killable = true; //Enabled when the contract can commit suicide (In case of a problem with the contract in its early development, we will set this to false later on)
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    uint256 public totalSupply = 500000; //500k Frikandellen (y&#39;all ready for some airdrop??)
+    uint256 public totalSupply = 500000; //500k Frikandellen (y'all ready for some airdrop??)
     uint256 internal hardLimitICO = 750000; //Do not allow more then 750k frikandellen to exist, ever. (The ICO will not sell past this)
 
-    function name() public pure returns (string) { return &quot;Frikandel&quot;; } //Frikandellen zijn lekker
-    function symbol() public pure returns (string) { return &quot;FRKNDL&quot;; }
+    function name() public pure returns (string) { return "Frikandel"; } //Frikandellen zijn lekker
+    function symbol() public pure returns (string) { return "FRKNDL"; }
     function decimals() public pure returns (uint8) { return 0; } //Imagine getting half of a frikandel, that must be pretty shitty... Lets not do that
 
     function balanceOf(address _owner) public view returns (uint256) { return balances[_owner]; }
@@ -43,16 +43,16 @@ contract FrikandelToken {
 	}
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        if(msg.data.length &lt; (2 * 32) + 4) { revert(); } //Something wrong yo
+        if(msg.data.length < (2 * 32) + 4) { revert(); } //Something wrong yo
 
         if (_value == 0) { return false; } //y try to transfer without specifying any???
 
         uint256 fromBalance = balances[msg.sender];
 
-        bool sufficientFunds = fromBalance &gt;= _value;
-        bool overflowed = balances[_to] + _value &lt; balances[_to];
+        bool sufficientFunds = fromBalance >= _value;
+        bool overflowed = balances[_to] + _value < balances[_to];
 
-        if (sufficientFunds &amp;&amp; !overflowed) {
+        if (sufficientFunds && !overflowed) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             
@@ -75,8 +75,8 @@ contract FrikandelToken {
 
     function() payable public {
         if (!ICOEnabled) { revert(); }
-        if(balances[msg.sender]+(msg.value / 1e14) &gt; 30000) { revert(); } //This would give you more then 30000 frikandellen, you can&#39;t buy from this account anymore through the ICO
-        if(totalSupply+(msg.value / 1e14) &gt; hardLimitICO) { revert(); } //Hard limit on Frikandellen
+        if(balances[msg.sender]+(msg.value / 1e14) > 30000) { revert(); } //This would give you more then 30000 frikandellen, you can't buy from this account anymore through the ICO
+        if(totalSupply+(msg.value / 1e14) > hardLimitICO) { revert(); } //Hard limit on Frikandellen
         if (msg.value == 0) { return; }
 
         contractOwner.transfer(msg.value);

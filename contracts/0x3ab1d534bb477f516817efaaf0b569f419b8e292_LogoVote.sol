@@ -12,7 +12,7 @@ contract ERC20 {
   event Approval(address indexed owner, address indexed spender, uint value);
 }
 /*
- * Safe Math Smart Contract.  Copyright &#169; 2016 by ABDK Consulting.
+ * Safe Math Smart Contract.  Copyright © 2016 by ABDK Consulting.
  */
 
 /**
@@ -32,7 +32,7 @@ contract SafeMath {
   function safeAdd (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &gt; MAX_UINT256 - y) throw;
+    if (x > MAX_UINT256 - y) throw;
     return x + y;
   }
 
@@ -46,7 +46,7 @@ contract SafeMath {
   function safeSub (uint256 x, uint256 y)
   constant internal
   returns (uint256 z) {
-    if (x &lt; y) throw;
+    if (x < y) throw;
     return x - y;
   }
 
@@ -61,15 +61,15 @@ contract SafeMath {
   constant internal
   returns (uint256 z) {
     if (y == 0) return 0; // Prevent division by zero at the next line
-    if (x &gt; MAX_UINT256 / y) throw;
+    if (x > MAX_UINT256 / y) throw;
     return x * y;
   }
 }
 
 contract Vote is ERC20, SafeMath{
 
-	mapping (address =&gt; uint) balances;
-	mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+	mapping (address => uint) balances;
+	mapping (address => mapping (address => uint)) allowed;
 
 	uint public totalSupply;
 	uint public initialSupply;
@@ -81,8 +81,8 @@ contract Vote is ERC20, SafeMath{
 		initialSupply = 100000;
 		totalSupply = initialSupply;
 		balances[msg.sender] = initialSupply;
-		name = &quot;EthTaipei Logo Vote&quot;;
-		symbol = &quot;EthTaipei Logo&quot;;
+		name = "EthTaipei Logo Vote";
+		symbol = "EthTaipei Logo";
 		decimals = 0;
 	}
 
@@ -236,8 +236,8 @@ contract LogoVote is Pausable, SafeMath{
 	Faucet public faucet;
 	Logo[] public logos;
 
-	mapping (address =&gt; uint) backers;
-	mapping (address =&gt; bool) rewards;
+	mapping (address => uint) backers;
+	mapping (address => bool) rewards;
 	uint rewardClaimed;
 
 	uint public votePerETH;
@@ -283,14 +283,14 @@ contract LogoVote is Pausable, SafeMath{
 	function claimWinner () onlyOwner afterEnd {
 		if (isLogo(winner)) throw;
 		winner = logos[0];
-		for (uint8 i = 1; i &lt; logos.length; i++) {
-			if (vote.balanceOf(logos[i]) &gt; vote.balanceOf(winner))
+		for (uint8 i = 1; i < logos.length; i++) {
+			if (vote.balanceOf(logos[i]) > vote.balanceOf(winner))
 				winner = logos[i];
 		} 
 	}
 
 	function cleanBalance () onlyOwner afterEnd {
-		if (rewardClaimed &gt;= logos.length || getBlockNumber() &lt; endBlock + 43200) throw;
+		if (rewardClaimed >= logos.length || getBlockNumber() < endBlock + 43200) throw;
 		if(!vote.transfer(owner, vote.balanceOf(this))) throw;
 		if (!owner.send(this.balance)) throw;
 	}
@@ -314,7 +314,7 @@ contract LogoVote is Pausable, SafeMath{
 		if(!msg.sender.send(amount)) throw;
 	}
 
-	// logo&#39;s owner can claim their rewards after end 
+	// logo's owner can claim their rewards after end 
 	function claimReward (address _receiver) stopInEmergency afterEnd {
 		if (!isLogo(msg.sender)) throw;
 		if (rewards[msg.sender]) throw;
@@ -331,7 +331,7 @@ contract LogoVote is Pausable, SafeMath{
 
 	// helper functions 
 	function isLogo (address _logoAddress) constant returns (bool) {
-		for (uint8 i = 0; i &lt; logos.length; i++) {
+		for (uint8 i = 0; i < logos.length; i++) {
 			if (logos[i] == _logoAddress) return true;
 		}
 	}
@@ -345,11 +345,11 @@ contract LogoVote is Pausable, SafeMath{
     }
 
 	function isAfterEnd() constant returns (bool) {
-      return getBlockNumber() &gt; endBlock;
+      return getBlockNumber() > endBlock;
     }
 
 	function isRespectTimeFrame() constant returns (bool) {
-		return getBlockNumber() &lt; endBlock;
+		return getBlockNumber() < endBlock;
 	}
 
 	function () payable {

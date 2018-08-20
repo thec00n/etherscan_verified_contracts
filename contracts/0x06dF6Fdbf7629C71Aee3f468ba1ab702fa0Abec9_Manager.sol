@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -124,7 +124,7 @@ contract BBODServiceRegistry is Ownable {
 
   //1. Manager
   //2. CustodyStorage
-  mapping(uint =&gt; address) public registry;
+  mapping(uint => address) public registry;
 
     constructor(address _owner) {
         owner = _owner;
@@ -166,8 +166,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -182,9 +182,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -192,7 +192,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -201,7 +201,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -239,13 +239,13 @@ contract Custody {
       require(msg.sender == address(manager));
 
       if (manager.isDailySettlementOnGoing()) {
-        require(_recipient == address(manager), &quot;Only manager can do this when the settlement is ongoing&quot;);
+        require(_recipient == address(manager), "Only manager can do this when the settlement is ongoing");
       } else {
         require(_recipient == owner);
       }
 
     } else {
-      require(msg.sender == owner, &quot;Only owner can do this when exchange is dead&quot;);
+      require(msg.sender == owner, "Only owner can do this when exchange is dead");
     }
     _;
   }
@@ -263,7 +263,7 @@ contract Custody {
   }
 
   function transferOwnership(address newOwner) public {
-    require(msg.sender == owner, &quot;Only the owner can transfer ownership&quot;);
+    require(msg.sender == owner, "Only the owner can transfer ownership");
     require(newOwner != address(0));
 
     emit OwnershipTransferred(owner, newOwner);
@@ -276,7 +276,7 @@ contract CustodyStorage {
 
   BBODServiceRegistry public bbodServiceRegistry;
 
-  mapping(address =&gt; bool) public custodiesMap;
+  mapping(address => bool) public custodiesMap;
 
   //Number of all custodies in the contract
   uint public custodyCounter = 0;
@@ -327,7 +327,7 @@ contract Insurance is Custody {
   function useInsurance (uint _amount) external {
     var manager = ManagerInterface(bbodServiceRegistry.registry(1));
     //Only usable for manager during settlement
-    require(manager.isDailySettlementOnGoing() &amp;&amp; msg.sender == address(manager));
+    require(manager.isDailySettlementOnGoing() && msg.sender == address(manager));
 
     address(manager).transfer(_amount);
   }
@@ -336,8 +336,8 @@ contract Insurance is Custody {
 contract Manager is Pausable {
 using SafeMath for uint;
 
-mapping(address =&gt; bool) public ownerAccountsMap;
-mapping(address =&gt; bool) public exchangeAccountsMap;
+mapping(address => bool) public ownerAccountsMap;
+mapping(address => bool) public exchangeAccountsMap;
 
 //SETTLEMENT PREPARATION####
 
@@ -360,8 +360,8 @@ uint public totalInsuranceFlows = 0;
 uint public lastSettlementStartedTimestamp = 0;
 uint public earliestNextSettlementTimestamp = 0;
 
-mapping(uint =&gt; mapping(address =&gt; bool)) public custodiesServedETH;
-mapping(uint =&gt; mapping(address =&gt; bool)) public custodiesServedBBD;
+mapping(uint => mapping(address => bool)) public custodiesServedETH;
+mapping(uint => mapping(address => bool)) public custodiesServedBBD;
 
 address public feeAccount;
 address public insuranceAccount;
@@ -401,17 +401,17 @@ paused = false;
 }
 
 modifier onlyAllowedInPhase(SettlementPhase _phase) {
-require(currentSettlementPhase == _phase, &quot;Not allowed in this phase&quot;);
+require(currentSettlementPhase == _phase, "Not allowed in this phase");
 _;
 }
 
 modifier onlyOwner() {
-require(ownerAccountsMap[msg.sender] == true, &quot;Only an owner can perform this action&quot;);
+require(ownerAccountsMap[msg.sender] == true, "Only an owner can perform this action");
 _;
 }
 
 modifier onlyExchange() {
-require(exchangeAccountsMap[msg.sender] == true, &quot;Only an exchange can perform this action&quot;);
+require(exchangeAccountsMap[msg.sender] == true, "Only an exchange can perform this action");
 _;
 }
 
@@ -430,7 +430,7 @@ heartBeat = now;
 }
 
 function isExchangeAlive() external view returns (bool) {
-return now - heartBeat &lt; maxTimeIntervalHB;
+return now - heartBeat < maxTimeIntervalHB;
 }
 
 function addOwnerAccount(address _exchangeAccount) external onlyOwner {
@@ -451,16 +451,16 @@ if(gweiBBDPriceInWei == 0) {
 gweiBBDPriceInWei = _priceInWei;
 } else {
 //Max 100% daily increase in price
-if(_priceInWei &gt; gweiBBDPriceInWei) {
-require(_priceInWei - gweiBBDPriceInWei &lt;= (gweiBBDPriceInWei / 2));
+if(_priceInWei > gweiBBDPriceInWei) {
+require(_priceInWei - gweiBBDPriceInWei <= (gweiBBDPriceInWei / 2));
 //Max 50% daily decrease in price
-} else if(_priceInWei &lt; gweiBBDPriceInWei) {
-require(gweiBBDPriceInWei - _priceInWei &lt;= (gweiBBDPriceInWei / 2));
+} else if(_priceInWei < gweiBBDPriceInWei) {
+require(gweiBBDPriceInWei - _priceInWei <= (gweiBBDPriceInWei / 2));
 }
 gweiBBDPriceInWei = _priceInWei;
 }
 //Price can only be set once per day
-require(now - lastTimePriceSet &gt; 23 hours);
+require(now - lastTimePriceSet > 23 hours);
 
 lastTimePriceSet = now;
 }
@@ -508,8 +508,8 @@ custody.transferToken(_tokenAddress, _recipient,_amount);
 /// @dev scope storage variables to 0.
 function startSettlementPreparation() external whenNotPaused onlyExchangeOrOwner
 onlyAllowedInPhase(SettlementPhase.FINISHED) {
-require(now &gt; earliestNextSettlementTimestamp, &quot;A settlement can happen once per day&quot;);
-require(gweiBBDPriceInWei &gt; 0, &quot;BBD Price cannot be 0 during settlement&quot;);
+require(now > earliestNextSettlementTimestamp, "A settlement can happen once per day");
+require(gweiBBDPriceInWei > 0, "BBD Price cannot be 0 during settlement");
 
 lastSettlementStartedTimestamp = now;
 totalFeeFlows = 0;
@@ -538,11 +538,11 @@ require(_custodies.length == _flows.length);
 
 uint preBatchBalance = address(this).balance;
 
-if(_insurance &gt; 0) {
+if(_insurance > 0) {
 Insurance(insuranceAccount).useInsurance(_insurance);
 }
 
-for (uint flowIndex = 0; flowIndex &lt; _flows.length; flowIndex++) {
+for (uint flowIndex = 0; flowIndex < _flows.length; flowIndex++) {
 
 //Every custody can be served ETH once during settlement
 require(custodiesServedETH[lastSettlementStartedTimestamp][_custodies[flowIndex]] == false);
@@ -550,19 +550,19 @@ require(custodiesServedETH[lastSettlementStartedTimestamp][_custodies[flowIndex]
 //All addresses must be custodies
 require(custodyStorage.custodiesMap(_custodies[flowIndex]));
 
-if (_flows[flowIndex] &gt; 0) {
+if (_flows[flowIndex] > 0) {
 //10% rule
 var outboundFlow = uint(_flows[flowIndex]);
 
 //100% rule exception threshold
-if(outboundFlow &gt; 10 ether) {
+if(outboundFlow > 10 ether) {
 //100% rule
-require(getTotalBalanceFor(_custodies[flowIndex]) &gt;= outboundFlow);
+require(getTotalBalanceFor(_custodies[flowIndex]) >= outboundFlow);
 }
 
 _custodies[flowIndex].transfer(uint(_flows[flowIndex]));
 
-} else if (_flows[flowIndex] &lt; 0) {
+} else if (_flows[flowIndex] < 0) {
 Custody custody = Custody(_custodies[flowIndex]);
 
 custody.withdraw(uint(-_flows[flowIndex]), address(this));
@@ -571,22 +571,22 @@ custody.withdraw(uint(-_flows[flowIndex]), address(this));
 custodiesServedETH[lastSettlementStartedTimestamp][_custodies[flowIndex]] = true;
 }
 
-if(_fee &gt; 0) {
+if(_fee > 0) {
 feeAccount.transfer(_fee);
 totalFeeFlows = totalFeeFlows + _fee;
 //100% rule for fee account
-require(totalFeeFlows &lt;= startingFeeBalance);
+require(totalFeeFlows <= startingFeeBalance);
 }
 
 uint postBatchBalance = address(this).balance;
 
 //Zero-sum guaranteed for ever batch
-if(address(this).balance &gt; preBatchBalance) {
+if(address(this).balance > preBatchBalance) {
 uint leftovers = address(this).balance - preBatchBalance;
 insuranceAccount.transfer(leftovers);
 totalInsuranceFlows += leftovers;
 //100% rule for insurance account
-require(totalInsuranceFlows &lt;= startingInsuranceBalance);
+require(totalInsuranceFlows <= startingInsuranceBalance);
 }
 }
 
@@ -604,28 +604,28 @@ require(_custodies.length == _flows.length);
 
 uint preBatchBalance = bbdToken.balanceOf(address(this));
 
-for (uint flowIndex = 0; flowIndex &lt; _flows.length; flowIndex++) {
+for (uint flowIndex = 0; flowIndex < _flows.length; flowIndex++) {
 
 //Every custody can be served BBD once during settlement
 require(custodiesServedBBD[lastSettlementStartedTimestamp][_custodies[flowIndex]] == false);
 //All addresses must be custodies
 require(custodyStorage.custodiesMap(_custodies[flowIndex]));
 
-if (_flows[flowIndex] &gt; 0) {
+if (_flows[flowIndex] > 0) {
 var flowValue = ((uint(_flows[flowIndex]) * gweiBBDPriceInWei)/gwei);
 
 //Minimal BBD transfer is 1gWeiBBD
-require(flowValue &gt;= 1);
+require(flowValue >= 1);
 
 //50% rule threshold
-if(flowValue &gt; 10 ether) {
+if(flowValue > 10 ether) {
 //50% rule for bbd
-require((getTotalBalanceFor(_custodies[flowIndex]) / 2) &gt;= flowValue);
+require((getTotalBalanceFor(_custodies[flowIndex]) / 2) >= flowValue);
 }
 
 bbdToken.transfer(_custodies[flowIndex], uint(_flows[flowIndex]));
 
-} else if (_flows[flowIndex] &lt; 0) {
+} else if (_flows[flowIndex] < 0) {
 Custody custody = Custody(_custodies[flowIndex]);
 
 custody.transferToken(address(bbdToken),address(this), uint(-(_flows[flowIndex])));
@@ -634,17 +634,17 @@ custody.transferToken(address(bbdToken),address(this), uint(-(_flows[flowIndex])
 custodiesServedBBD[lastSettlementStartedTimestamp][_custodies[flowIndex]] = true;
 }
 
-if(_fee &gt; 0) {
+if(_fee > 0) {
 bbdToken.transfer(feeAccount, _fee);
 //No need for safe math, as transfer will trow if _fee could cause overflow
 totalFeeFlows += ((_fee * gweiBBDPriceInWei) / gwei);
-require (totalFeeFlows &lt;= startingFeeBalance);
+require (totalFeeFlows <= startingFeeBalance);
 }
 
 uint postBatchBalance = bbdToken.balanceOf(address(this));
 
 //Zero-or-less-sum guaranteed for every batch, no insurance for spots
-require(postBatchBalance &lt;= preBatchBalance);
+require(postBatchBalance <= preBatchBalance);
 }
 
 /// @dev This function is used to finish the settlement process
@@ -664,7 +664,7 @@ return _custody.balance + bbdHoldingsInWei;
 }
 
 function checkIfCustodiesServedETH(address[] _custodies) external view returns (bool) {
-for (uint custodyIndex = 0; custodyIndex &lt; _custodies.length; custodyIndex++) {
+for (uint custodyIndex = 0; custodyIndex < _custodies.length; custodyIndex++) {
 if(custodiesServedETH[lastSettlementStartedTimestamp][_custodies[custodyIndex]]) {
 return true;
 }
@@ -673,7 +673,7 @@ return false;
 }
 
 function checkIfCustodiesServedBBD(address[] _custodies) external view returns (bool) {
-for (uint custodyIndex = 0; custodyIndex &lt; _custodies.length; custodyIndex++) {
+for (uint custodyIndex = 0; custodyIndex < _custodies.length; custodyIndex++) {
 if(custodiesServedBBD[lastSettlementStartedTimestamp][_custodies[custodyIndex]]) {
 return true;
 }

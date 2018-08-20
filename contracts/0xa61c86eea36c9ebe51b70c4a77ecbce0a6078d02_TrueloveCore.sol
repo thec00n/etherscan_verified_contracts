@@ -120,11 +120,11 @@ contract TrueloveAccessControl {
 
 contract TrueloveBase is TrueloveAccessControl {
 	Diamond[] diamonds;
-	mapping (uint256 =&gt; address) public diamondIndexToOwner;
-	mapping (address =&gt; uint256) ownershipTokenCount;
-	mapping (uint256 =&gt; address) public diamondIndexToApproved;
+	mapping (uint256 => address) public diamondIndexToOwner;
+	mapping (address => uint256) ownershipTokenCount;
+	mapping (uint256 => address) public diamondIndexToApproved;
 
-	mapping (address =&gt; uint256) public flowerBalances;
+	mapping (address => uint256) public flowerBalances;
 
 	struct Diamond {
 		bytes24 model;
@@ -159,10 +159,10 @@ contract TrueloveBase is TrueloveAccessControl {
 		registerPrice = 0.01 ether; // MARK: Modify it
 		_setVars();
 
-		diamond1 = Model({model: &quot;OnlyOne&quot;, current: 0, total: 1, year: 2018, price: 1000 ether}); // MARK: Modify it
-		diamond2 = Model({model: &quot;Eternity2018&quot;, current: 0, total: 5, year: 2018, price: 50 ether}); // MARK: Modify it
-		diamond3 = Model({model: &quot;Memorial&quot;, current: 0, total: 1000, year: 2018, price: 1 ether}); // MARK: Modify it
-		flower = Model({model: &quot;MySassyGirl&quot;, current: 0, total: 10000000, year: 2018, price: 0.01 ether}); // MARK: Modify it
+		diamond1 = Model({model: "OnlyOne", current: 0, total: 1, year: 2018, price: 1000 ether}); // MARK: Modify it
+		diamond2 = Model({model: "Eternity2018", current: 0, total: 5, year: 2018, price: 50 ether}); // MARK: Modify it
+		diamond3 = Model({model: "Memorial", current: 0, total: 1000, year: 2018, price: 1 ether}); // MARK: Modify it
+		flower = Model({model: "MySassyGirl", current: 0, total: 10000000, year: 2018, price: 0.01 ether}); // MARK: Modify it
 	}
 
 	function _setVars() internal {
@@ -279,50 +279,50 @@ contract ERC721 {
 contract ERC721Metadata {
 	function getMetadata(uint256 _tokenId, string) public pure returns (bytes32[4] buffer, uint256 count) {
 		if (_tokenId == 1) {
-			buffer[0] = &quot;Hello World! :D&quot;;
+			buffer[0] = "Hello World! :D";
 			count = 15;
 		} else if (_tokenId == 2) {
-			buffer[0] = &quot;I would definitely choose a medi&quot;;
-			buffer[1] = &quot;um length string.&quot;;
+			buffer[0] = "I would definitely choose a medi";
+			buffer[1] = "um length string.";
 			count = 49;
 		} else if (_tokenId == 3) {
-			buffer[0] = &quot;Lorem ipsum dolor sit amet, mi e&quot;;
-			buffer[1] = &quot;st accumsan dapibus augue lorem,&quot;;
-			buffer[2] = &quot; tristique vestibulum id, libero&quot;;
-			buffer[3] = &quot; suscipit varius sapien aliquam.&quot;;
+			buffer[0] = "Lorem ipsum dolor sit amet, mi e";
+			buffer[1] = "st accumsan dapibus augue lorem,";
+			buffer[2] = " tristique vestibulum id, libero";
+			buffer[3] = " suscipit varius sapien aliquam.";
 			count = 128;
 		}
 	}
 }
 
 contract TrueloveOwnership is TrueloveBase, ERC721 {
-	string public constant name = &quot;CryptoTruelove&quot;;
-	string public constant symbol = &quot;CT&quot;;
+	string public constant name = "CryptoTruelove";
+	string public constant symbol = "CT";
 
 	// The contract that will return kitty metadata
 	ERC721Metadata public erc721Metadata;
 
 	bytes4 constant InterfaceSignature_ERC165 = bytes4(0x9a20483d);
-			// bytes4(keccak256(&quot;supportsInterface(bytes4)&quot;));
+			// bytes4(keccak256("supportsInterface(bytes4)"));
 
 	bytes4 constant InterfaceSignature_ERC721 = bytes4(0x9a20483d);
-			// bytes4(keccak256(&quot;name()&quot;)) ^
-			// bytes4(keccak256(&quot;symbol()&quot;)) ^
-			// bytes4(keccak256(&quot;totalSupply()&quot;)) ^
-			// bytes4(keccak256(&quot;balanceOf(address)&quot;)) ^
-			// bytes4(keccak256(&quot;ownerOf(uint256)&quot;)) ^
-			// bytes4(keccak256(&quot;approve(address,uint256)&quot;)) ^
-			// bytes4(keccak256(&quot;transfer(address,uint256)&quot;)) ^
-			// bytes4(keccak256(&quot;transferFrom(address,address,uint256)&quot;)) ^
-			// bytes4(keccak256(&quot;tokensOfOwner(address)&quot;)) ^
-			// bytes4(keccak256(&quot;tokenMetadata(uint256,string)&quot;));
+			// bytes4(keccak256("name()")) ^
+			// bytes4(keccak256("symbol()")) ^
+			// bytes4(keccak256("totalSupply()")) ^
+			// bytes4(keccak256("balanceOf(address)")) ^
+			// bytes4(keccak256("ownerOf(uint256)")) ^
+			// bytes4(keccak256("approve(address,uint256)")) ^
+			// bytes4(keccak256("transfer(address,uint256)")) ^
+			// bytes4(keccak256("transferFrom(address,address,uint256)")) ^
+			// bytes4(keccak256("tokensOfOwner(address)")) ^
+			// bytes4(keccak256("tokenMetadata(uint256,string)"));
 
 	/// @notice Introspection interface as per ERC-165 (https://github.com/ethereum/EIPs/issues/165).
 	///  Returns true for any standardized interfaces implemented by this contract. We implement
 	///  ERC-165 (obviously!) and ERC-721.
 	function supportsInterface(bytes4 _interfaceID) external view returns (bool) {
 		// DEBUG ONLY
-		//require((InterfaceSignature_ERC165 == 0x01ffc9a7) &amp;&amp; (InterfaceSignature_ERC721 == 0x9a20483d));
+		//require((InterfaceSignature_ERC165 == 0x01ffc9a7) && (InterfaceSignature_ERC721 == 0x9a20483d));
 
 		return ((_interfaceID == InterfaceSignature_ERC165) || (_interfaceID == InterfaceSignature_ERC721));
 	}
@@ -419,7 +419,7 @@ contract TrueloveOwnership is TrueloveBase, ERC721 {
 			require(owner != address(0));
 	}
 
-	/// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+	/// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
 	///  expensive (it walks the entire Kitty array looking for cats belonging to owner),
 	///  but it also returns a dynamic array, which is only supported for web3 calls, and
 	///  not contract-to-contract calls.
@@ -436,7 +436,7 @@ contract TrueloveOwnership is TrueloveBase, ERC721 {
 
 					uint256 diamondId;
 
-					for (diamondId = 1; diamondId &lt;= totalDiamonds; diamondId++) {
+					for (diamondId = 1; diamondId <= totalDiamonds; diamondId++) {
 							if (diamondIndexToOwner[diamondId] == _owner) {
 									result[resultIndex] = diamondId;
 									resultIndex++;
@@ -449,7 +449,7 @@ contract TrueloveOwnership is TrueloveBase, ERC721 {
 
 	function _memcpy(uint _dest, uint _src, uint _len) private pure {
 			// Copy word-length chunks while possible
-			for(; _len &gt;= 32; _len -= 32) {
+			for(; _len >= 32; _len -= 32) {
 					assembly {
 							mstore(_dest, mload(_src))
 					}
@@ -510,13 +510,13 @@ contract TrueloveOwnership is TrueloveBase, ERC721 {
 
 contract TrueloveFlowerOwnership is TrueloveBase, EIP20Interface {
 	uint256 constant private MAX_UINT256 = 2**256 - 1;
-	mapping (address =&gt; mapping (address =&gt; uint256)) public flowerAllowed;
+	mapping (address => mapping (address => uint256)) public flowerAllowed;
 
 	bytes4 constant EIP20InterfaceSignature = bytes4(0x98474109);
-		// bytes4(keccak256(&quot;balanceOfFlower(address)&quot;)) ^
-		// bytes4(keccak256(&quot;approveFlower(address,uint256)&quot;)) ^
-		// bytes4(keccak256(&quot;transferFlower(address,uint256)&quot;)) ^
-		// bytes4(keccak256(&quot;transferFromFlower(address,address,uint256)&quot;));
+		// bytes4(keccak256("balanceOfFlower(address)")) ^
+		// bytes4(keccak256("approveFlower(address,uint256)")) ^
+		// bytes4(keccak256("transferFlower(address,uint256)")) ^
+		// bytes4(keccak256("transferFromFlower(address,address,uint256)"));
 
 	function supportsEIP20Interface(bytes4 _interfaceID) external view returns (bool) {
 		return _interfaceID == EIP20InterfaceSignature;
@@ -524,7 +524,7 @@ contract TrueloveFlowerOwnership is TrueloveBase, EIP20Interface {
 
 	function _transferFlower(address _from, address _to, uint256 _value) internal returns (bool success) {
 		if (_from != address(0)) {
-			require(flowerBalances[_from] &gt;= _value);
+			require(flowerBalances[_from] >= _value);
 			flowerBalances[_from] -= _value;
 		}
 		flowerBalances[_to] += _value;
@@ -533,7 +533,7 @@ contract TrueloveFlowerOwnership is TrueloveBase, EIP20Interface {
 	}
 
 	function transferFlower(address _to, uint256 _value) public returns (bool success) {
-		require(flowerBalances[msg.sender] &gt;= _value);
+		require(flowerBalances[msg.sender] >= _value);
 		flowerBalances[msg.sender] -= _value;
 		flowerBalances[_to] += _value;
 		TransferFlower(msg.sender, _to, _value);
@@ -542,10 +542,10 @@ contract TrueloveFlowerOwnership is TrueloveBase, EIP20Interface {
 
 	function transferFromFlower(address _from, address _to, uint256 _value) public returns (bool success) {
 		uint256 allowance = flowerAllowed[_from][msg.sender];
-		require(flowerBalances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+		require(flowerBalances[_from] >= _value && allowance >= _value);
 		flowerBalances[_to] += _value;
 		flowerBalances[_from] -= _value;
-		if (allowance &lt; MAX_UINT256) {
+		if (allowance < MAX_UINT256) {
 			flowerAllowed[_from][msg.sender] -= _value;
 		}
 		TransferFlower(_from, _to, _value);
@@ -582,7 +582,7 @@ contract TrueloveNextSale is TrueloveOwnership, TrueloveFlowerOwnership {
 	function openNextSale(uint256 _diamond1Price, bytes24 _diamond2Model, uint256 _diamond2Price, bytes24 _flowerModel, uint256 _flowerPrice)
 		external onlyCOO
 		{
-		require(now &gt;= nextSaleTime);
+		require(now >= nextSaleTime);
 
 		_setVars();
 		diamond1.price = _diamond1Price;
@@ -613,8 +613,8 @@ contract TrueloveNextSale is TrueloveOwnership, TrueloveFlowerOwnership {
 }
 
 contract TrueloveRegistration is TrueloveNextSale {
-	mapping (address =&gt; RegistrationRight) public registrationRights;
-	mapping (bytes32 =&gt; Registration) public registrations;
+	mapping (address => RegistrationRight) public registrationRights;
+	mapping (bytes32 => Registration) public registrations;
 
 	struct RegistrationRight {
 		bool able;
@@ -636,7 +636,7 @@ contract TrueloveRegistration is TrueloveNextSale {
 	}
 
 	function buyRegistration() external payable whenNotPaused {
-		require(registerPrice &lt;= msg.value);
+		require(registerPrice <= msg.value);
 		if (registrationRights[msg.sender].able == false) {
 			registrationRights[msg.sender].able = true;
 		} else {
@@ -686,8 +686,8 @@ contract TrueloveShop is TrueloveRegistration {
 		require(_index == 1 || _index == 2 || _index == 3);
 		Model storage model = _getModel(_index);
 
-		require(model.current &lt; model.total);
-		require(model.price &lt;= msg.value);
+		require(model.current < model.total);
+		require(model.price <= msg.value);
 		_giveSenderRegistration();
 
 		uint256 newDiamondId = diamonds.push(Diamond({model: model.model, year: model.year, no: uint16(model.current + 1), activateAt: 0})) - 1;
@@ -698,9 +698,9 @@ contract TrueloveShop is TrueloveRegistration {
 	}
 
 	function buyFlower(uint _amount) external payable whenNotPaused {
-		require(flower.current + _amount &lt; flower.total);
+		require(flower.current + _amount < flower.total);
 		uint256 price = currentFlowerPrice();
-		require(price * _amount &lt;= msg.value);
+		require(price * _amount <= msg.value);
 		_giveSenderRegistration();
 
 		_transferFlower(0, msg.sender, _amount);
@@ -708,9 +708,9 @@ contract TrueloveShop is TrueloveRegistration {
 	}
 
 	function currentFlowerPrice() public view returns(uint256) {
-		if (flower.current &lt; 100000 + REMAINING_AMOUNT) { // MARK: Modify it
+		if (flower.current < 100000 + REMAINING_AMOUNT) { // MARK: Modify it
 			return flower.price;
-		} else if (flower.current &lt; 300000 + REMAINING_AMOUNT) { // MARK: Modify it
+		} else if (flower.current < 300000 + REMAINING_AMOUNT) { // MARK: Modify it
 			return flower.price * 4;
 		} else {
 			return flower.price * 10;
@@ -731,7 +731,7 @@ contract TrueloveDelivery is TrueloveShop {
 	uint public giftSendIndex = 1;
 	
 	modifier sendCheck(bytes32 _registerID) {
-    require(sendGiftPrice &lt;= msg.value);
+    require(sendGiftPrice <= msg.value);
 		require(registrations[_registerID].signed);
     _;
   }
@@ -743,7 +743,7 @@ contract TrueloveDelivery is TrueloveShop {
 
 	function sendDiamond(address _truelove, bytes32 _registerID, string _letter, bytes16 _date, uint _tokenId) public payable sendCheck(_registerID) {
 		require(_owns(msg.sender, _tokenId));
-		require(now &gt; diamonds[_tokenId].activateAt);
+		require(now > diamonds[_tokenId].activateAt);
 		
 		_transfer(msg.sender, _truelove, _tokenId);
 		
@@ -765,7 +765,7 @@ contract TrueloveDelivery is TrueloveShop {
 	}
 
 	function sendFlower(address _truelove, bytes32 _registerID, string _letter, bytes16 _date, uint _amount) public payable sendCheck(_registerID) {
-		require(flowerBalances[msg.sender] &gt;= _amount);
+		require(flowerBalances[msg.sender] >= _amount);
 
 		flowerBalances[msg.sender] -= _amount;
 		flowerBalances[_truelove] += (_amount * 9 / 10);
@@ -907,7 +907,7 @@ contract ClockAuctionBase {
     uint256 public ownerCut;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint256 =&gt; Auction) tokenIdToAuction;
+    mapping (uint256 => Auction) tokenIdToAuction;
 
     event AuctionCreated(uint256 indexed tokenId, address indexed seller, uint256 startingPrice, uint256 endingPrice, uint256 duration);
     event AuctionSuccessful(uint256 indexed tokenId, uint256 totalPrice, address winner);
@@ -945,7 +945,7 @@ contract ClockAuctionBase {
     function _addAuction(uint256 _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
 
@@ -975,28 +975,28 @@ contract ClockAuctionBase {
         Auction storage auction = tokenIdToAuction[_tokenId];
 
         // Explicitly check that this auction is currently live.
-        // (Because of how Ethereum mappings work, we can&#39;t just count
+        // (Because of how Ethereum mappings work, we can't just count
         // on the lookup above failing. An invalid _tokenId will just
         // return an auction object that is all zeros.)
         require(_isOnAuction(auction));
 
         // Check that the bid is greater than or equal to the current price
         uint256 price = _currentPrice(auction);
-        require(_bidAmount &gt;= price);
+        require(_bidAmount >= price);
 
         // Grab a reference to the seller before the auction struct
         // gets deleted.
         address seller = auction.seller;
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy attack.
+        // to the sender so we can't have a reentrancy attack.
         _removeAuction(_tokenId);
 
         // Transfer proceeds to seller (if there are any!)
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             // (NOTE: _computeCut() is guaranteed to return a
-            // value &lt;= price, so this subtraction can&#39;t go negative.)
+            // value <= price, so this subtraction can't go negative.)
             uint256 auctioneerCut = _computeCut(price);
             uint256 sellerProceeds = price - auctioneerCut;
 
@@ -1006,7 +1006,7 @@ contract ClockAuctionBase {
             // a contract with an invalid fallback function. We explicitly
             // guard against reentrancy attacks by removing the auction
             // before calling transfer(), and the only thing the seller
-            // can DoS is the sale of their own asset! (And if it&#39;s an
+            // can DoS is the sale of their own asset! (And if it's an
             // accident, they can call cancelAuction(). )
             seller.transfer(sellerProceeds);
         }
@@ -1037,7 +1037,7 @@ contract ClockAuctionBase {
     /// @dev Returns true if the NFT is on auction.
     /// @param _auction - Auction to check.
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     /// @dev Returns current price of an NFT on auction. Broken into two
@@ -1053,8 +1053,8 @@ contract ClockAuctionBase {
 
         // A bit of insurance against negative values (or wraparound).
         // Probably not necessary (since Ethereum guarnatees that the
-        // now variable doesn&#39;t ever go backwards).
-        if (now &gt; _auction.startedAt) {
+        // now variable doesn't ever go backwards).
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -1080,13 +1080,13 @@ contract ClockAuctionBase {
         pure
         returns (uint256)
     {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our public functions carefully cap the maximum values for
         //  time (at 64-bits) and currency (at 128-bits). _duration is
         //  also known to be non-zero (see the require() statement in
         //  _addAuction())
-        if (_secondsPassed &gt;= _duration) {
-            // We&#39;ve reached the end of the dynamic pricing portion
+        if (_secondsPassed >= _duration) {
+            // We've reached the end of the dynamic pricing portion
             // of the auction, just return the end price.
             return _endingPrice;
         } else {
@@ -1094,7 +1094,7 @@ contract ClockAuctionBase {
             // this delta can be negative.
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);
 
-            // This multiplication can&#39;t overflow, _secondsPassed will easily fit within
+            // This multiplication can't overflow, _secondsPassed will easily fit within
             // 64-bits, and totalPriceChange will easily fit within 128-bits, their product
             // will always fit within 256-bits.
             int256 currentPriceChange = totalPriceChange * int256(_secondsPassed) / int256(_duration);
@@ -1107,14 +1107,14 @@ contract ClockAuctionBase {
         }
     }
 
-    /// @dev Computes owner&#39;s cut of a sale.
+    /// @dev Computes owner's cut of a sale.
     /// @param _price - Sale price of NFT.
     function _computeCut(uint256 _price) internal view returns (uint256) {
-        // NOTE: We don&#39;t use SafeMath (or similar) in this function because
+        // NOTE: We don't use SafeMath (or similar) in this function because
         //  all of our entry functions carefully cap the maximum values for
-        //  currency (at 128-bits), and ownerCut &lt;= 10000 (see the require()
+        //  currency (at 128-bits), and ownerCut <= 10000 (see the require()
         //  statement in the ClockAuction constructor). The result of this
-        //  function is always guaranteed to be &lt;= _price.
+        //  function is always guaranteed to be <= _price.
         return _price * ownerCut / 10000;
     }
 
@@ -1136,7 +1136,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
     /// @param _cut - percent cut the owner takes on each auction, must be
     ///  between 0-10,000.
     function ClockAuction(address _nftAddress, uint256 _cut) public {
-        require(_cut &lt;= 10000);
+        require(_cut <= 10000);
         ownerCut = _cut;
 
         ERC721 candidateContract = ERC721(_nftAddress);
@@ -1144,7 +1144,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         nonFungibleContract = candidateContract;
     }
 
-    /// @dev Remove all Ether from the contract, which is the owner&#39;s cuts
+    /// @dev Remove all Ether from the contract, which is the owner's cuts
     ///  as well as any Ether sent directly to the contract address.
     ///  Always transfers to the NFT contract, but can be called either by
     ///  the owner or the NFT contract.
@@ -1177,7 +1177,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         external
         whenNotPaused
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -1208,7 +1208,7 @@ contract ClockAuction is Pausable, ClockAuctionBase {
         _transfer(msg.sender, _tokenId);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
@@ -1304,7 +1304,7 @@ contract DiamondAuction is ClockAuction {
     )
         external
     {
-        // Sanity check that no inputs overflow how many bits we&#39;ve allocated
+        // Sanity check that no inputs overflow how many bits we've allocated
         // to store them in the auction struct.
         require(_startingPrice == uint256(uint128(_startingPrice)));
         require(_endingPrice == uint256(uint128(_endingPrice)));
@@ -1350,8 +1350,8 @@ contract FlowerAuction is Pausable {
 
     uint256 public ownerCut;
 
-    mapping (uint256 =&gt; Auction) auctions;
-    mapping (address =&gt; uint256) sellerToAuction;
+    mapping (uint256 => Auction) auctions;
+    mapping (address => uint256) sellerToAuction;
     uint256 public currentAuctionId;
 
     event AuctionCreated(uint256 indexed auctionId, address indexed seller, uint256 amount, uint256 startingPrice, uint256 endingPrice, uint256 duration);
@@ -1486,7 +1486,7 @@ contract FlowerAuction is Pausable {
     }
 
     function _addAuction(Auction _auction) internal {
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         currentAuctionId++;
         auctions[currentAuctionId] = _auction;
@@ -1518,12 +1518,12 @@ contract FlowerAuction is Pausable {
         require(_isOnAuction(auction));
         uint256 price = _currentPrice(auction);
         uint256 totalPrice = price * _amount;
-        require(_bidAmount &gt;= totalPrice);
+        require(_bidAmount >= totalPrice);
         auction.amount -= _amount;
 
         address seller = auction.seller;
 
-        if (totalPrice &gt; 0) {
+        if (totalPrice > 0) {
             uint256 auctioneerCut = _computeCut(totalPrice);
             uint256 sellerProceeds = totalPrice - auctioneerCut;
             seller.transfer(sellerProceeds);
@@ -1542,7 +1542,7 @@ contract FlowerAuction is Pausable {
     }
 
     function _isOnAuction(Auction storage _auction) internal view returns (bool) {
-        return (_auction.startedAt &gt; 0);
+        return (_auction.startedAt > 0);
     }
 
     function _currentPrice(Auction storage _auction)
@@ -1552,7 +1552,7 @@ contract FlowerAuction is Pausable {
     {
         uint256 secondsPassed = 0;
 
-        if (now &gt; _auction.startedAt) {
+        if (now > _auction.startedAt) {
             secondsPassed = now - _auction.startedAt;
         }
 
@@ -1574,7 +1574,7 @@ contract FlowerAuction is Pausable {
         pure
         returns (uint256)
     {
-        if (_secondsPassed &gt;= _duration) {
+        if (_secondsPassed >= _duration) {
             return _endingPrice;
         } else {
             int256 totalPriceChange = int256(_endingPrice) - int256(_startingPrice);

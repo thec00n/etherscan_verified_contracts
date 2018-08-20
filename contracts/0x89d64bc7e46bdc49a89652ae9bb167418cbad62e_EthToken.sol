@@ -23,11 +23,11 @@ contract Token {
 
 contract SafeAddSub {
     function safeToAdd(uint a, uint b) internal returns (bool) {
-        return (a + b &gt; a);
+        return (a + b > a);
     }
 
     function safeToSubtract(uint a, uint b) internal returns (bool) {
-        return (a &gt;= b);
+        return (a >= b);
     }
 
     function safeAdd(uint a, uint b) internal returns (uint256) {
@@ -42,13 +42,13 @@ contract SafeAddSub {
 }
 
 contract EthToken is Token, SafeAddSub {
-    string public constant name = &quot;Ether Token Proxy&quot;;
-    string public constant symbol = &quot;ETH&quot;;
+    string public constant name = "Ether Token Proxy";
+    string public constant symbol = "ETH";
     uint8   public constant decimals = 18;
     uint256 public constant baseUnit = 10**18;
     
-    mapping (address =&gt; uint256) _balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) _allowance;
+    mapping (address => uint256) _balanceOf;
+    mapping (address => mapping (address => uint256)) _allowance;
 
     event Deposit(address indexed owner, uint256 amount);
     event Withdrawal(address indexed owner, uint256 amount);

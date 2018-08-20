@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -51,12 +51,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -158,9 +158,9 @@ contract AngelCardData is IAngelCardData, SafeMath {
 
     /*** STORAGE ***/
 
-    mapping(uint8 =&gt; AngelCardSeries) public angelCardSeriesCollection;
-    mapping(uint64 =&gt; Angel) public angelCollection;
-    mapping(address =&gt; uint64[]) public ownerAngelCollection;
+    mapping(uint8 => AngelCardSeries) public angelCardSeriesCollection;
+    mapping(uint64 => Angel) public angelCollection;
+    mapping(address => uint64[]) public ownerAngelCollection;
     uint256 public prevSeriesSelloutHours;
     
     /*** FUNCTIONS ***/
@@ -171,7 +171,7 @@ contract AngelCardData is IAngelCardData, SafeMath {
   
 
     function createAngelCardSeries(uint8 _angelCardSeriesId, uint _basePrice,  uint64 _maxTotal, uint8 _baseAura, uint16 _baseBattlePower, uint64 _liveTime) onlyCREATOR external returns(uint8) {
-         if ((now &gt; 1517189201) || (totalAngelCardSeries &gt;= 24)) {revert();}
+         if ((now > 1517189201) || (totalAngelCardSeries >= 24)) {revert();}
         //This confirms that no one, even the develoopers, can create any angel series after JAN/29/2018 @ 1:26 am (UTC) or more than the original 24 series.
 
         AngelCardSeries storage angelCardSeries = angelCardSeriesCollection[_angelCardSeriesId];
@@ -190,9 +190,9 @@ contract AngelCardData is IAngelCardData, SafeMath {
   // This is called every 5 days to set the basePrice and maxAngelTotal for the angel series based on buy pressure of the last card
     function updateAngelCardSeries(uint8 _angelCardSeriesId, uint64 _newPrice, uint64 _newMaxTotal) onlyCREATOR external {
         // Require that the series is above the Arel card
-        if (_angelCardSeriesId &lt; 4) {revert();}
-        //(The orginal, powerful series can&#39;t be altered. 
-        if ((_newMaxTotal &lt;45) || (_newMaxTotal &gt;450)) {revert();}
+        if (_angelCardSeriesId < 4) {revert();}
+        //(The orginal, powerful series can't be altered. 
+        if ((_newMaxTotal <45) || (_newMaxTotal >450)) {revert();}
        //series can only be adjusted within a certain narrow range. 
         AngelCardSeries storage seriesStorage = angelCardSeriesCollection[_angelCardSeriesId];
         seriesStorage.maxAngelTotal = _newMaxTotal;
@@ -205,7 +205,7 @@ contract AngelCardData is IAngelCardData, SafeMath {
     function setAngel(uint8 _angelCardSeriesId, address _owner, uint _price, uint16 _battlePower) onlySERAPHIM external returns(uint64) {
         AngelCardSeries storage series = angelCardSeriesCollection[_angelCardSeriesId];
     
-        if (series.currentAngelTotal &gt;= series.maxAngelTotal) {
+        if (series.currentAngelTotal >= series.maxAngelTotal) {
             revert();
         }
        else { 
@@ -267,7 +267,7 @@ contract AngelCardData is IAngelCardData, SafeMath {
 //Anyone can transfer their own angel by sending a transaction with the address to transfer to from the address that owns it. 
     function ownerAngelTransfer (address _to, uint64 _angelId)  public  {
         
-       if ((_angelId &gt; totalAngels) || (_angelId == 0)) {revert();}
+       if ((_angelId > totalAngels) || (_angelId == 0)) {revert();}
        Angel storage angel = angelCollection[_angelId];
         if (msg.sender == _to) {revert();}
         if (angel.owner != msg.sender) {
@@ -292,7 +292,7 @@ contract AngelCardData is IAngelCardData, SafeMath {
     }
 
       function updateAngelLock (uint64 _angelId, bool newValue) public {
-        if ((_angelId &gt; totalAngels) || (_angelId == 0)) {revert();}
+        if ((_angelId > totalAngels) || (_angelId == 0)) {revert();}
         Angel storage angel = angelCollection[_angelId];
         if (angel.owner != msg.sender) { revert();}
         angel.ownerLock = newValue;
@@ -337,14 +337,14 @@ contract AngelCardData is IAngelCardData, SafeMath {
     }
     
     function getAngelLockStatus(uint64 _angelId) constant public returns (bool) {
-        if ((_angelId &gt; totalAngels) || (_angelId == 0)) {revert();}
+        if ((_angelId > totalAngels) || (_angelId == 0)) {revert();}
        Angel storage angel = angelCollection[_angelId];
        return angel.ownerLock;
     }
     
 
     function getAngelByIndex(address _owner, uint _index) constant public returns(uint64) {
-        if (_index &gt;= ownerAngelCollection[_owner].length) {
+        if (_index >= ownerAngelCollection[_owner].length) {
             return 0; }
         return ownerAngelCollection[_owner][_index];
     }

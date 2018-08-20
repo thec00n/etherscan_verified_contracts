@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -117,9 +117,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -127,7 +127,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -136,7 +136,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -158,7 +158,7 @@ contract CopaMarket is Ownable, Pausable {
     bool open;
   }
 
-  mapping(address =&gt; Buy[]) private buyers;
+  mapping(address => Buy[]) private buyers;
 
   struct Sell {
     uint256 cardId;
@@ -167,7 +167,7 @@ contract CopaMarket is Ownable, Pausable {
     bool open;
   }
 
-  mapping(address =&gt; Sell[]) private sellers;
+  mapping(address => Sell[]) private sellers;
 
   struct Trade {
     uint256[] offeredCardIds;
@@ -177,7 +177,7 @@ contract CopaMarket is Ownable, Pausable {
     bool open;
   }
 
-  mapping(address =&gt; Trade[]) private traders;
+  mapping(address => Trade[]) private traders;
 
   event NewBuy(address indexed buyer, uint256 indexed id, uint256 cardId, uint256 count, uint256 ethAmount);
   event CardSold(address indexed buyer, uint256 indexed id, address indexed seller, uint256 cardId, uint256 count, uint256 ethAmount);
@@ -209,14 +209,14 @@ contract CopaMarket is Ownable, Pausable {
   }
 
   function setCut(uint256 _cut) external onlyOwner {
-    require(_cut &gt; 0);
-    require(_cut &lt; 10000);
+    require(_cut > 0);
+    require(_cut < 10000);
 
     cut = _cut;
   }
 
   function setTradingFee(uint256 _tradingFee) external onlyOwner {
-    require(_tradingFee &gt; 0);
+    require(_tradingFee > 0);
 
     tradingFee = _tradingFee;
   }
@@ -263,8 +263,8 @@ contract CopaMarket is Ownable, Pausable {
     address _buyer = msg.sender;
     uint256 _ethAmount = msg.value;
 
-    require(_ethAmount &gt; 0);
-    require(_count &gt; 0);
+    require(_ethAmount > 0);
+    require(_count > 0);
 
     uint256 _id = buyers[_buyer].length;
     buyers[_buyer].push(Buy(_cardId, _count, _ethAmount, true));
@@ -324,8 +324,8 @@ contract CopaMarket is Ownable, Pausable {
   function addToSellList(uint256 _cardId, uint256 _count, uint256 _ethAmount) external whenNotPaused returns (bool) {
     address _seller = msg.sender;
 
-    require(_ethAmount &gt; 0);
-    require(_count &gt; 0);
+    require(_ethAmount > 0);
+    require(_count > 0);
 
     uint256 _id = sellers[_seller].length;
     sellers[_seller].push(Sell(_cardId, _count, _ethAmount, true));
@@ -348,7 +348,7 @@ contract CopaMarket is Ownable, Pausable {
     require(sellers[_seller][_id].open == true);
     require(sellers[_seller][_id].cardId == _cardId);
     require(sellers[_seller][_id].count == _count);
-    require(sellers[_seller][_id].ethAmount &lt;= _ethAmount);
+    require(sellers[_seller][_id].ethAmount <= _ethAmount);
 
     sellers[_seller][_id].open = false;
 
@@ -384,15 +384,15 @@ contract CopaMarket is Ownable, Pausable {
   function addToTradeList(uint256[] _offeredCardIds, uint256[] _offeredCardCounts, uint256[] _requestedCardIds, uint256[] _requestedCardCounts) external whenNotPaused returns (bool) {
     address _seller = msg.sender;
 
-    require(_offeredCardIds.length &gt; 0);
-    require(_offeredCardCounts.length &gt; 0);
-    require(_requestedCardIds.length &gt; 0);
-    require(_requestedCardCounts.length &gt; 0);
+    require(_offeredCardIds.length > 0);
+    require(_offeredCardCounts.length > 0);
+    require(_requestedCardIds.length > 0);
+    require(_requestedCardCounts.length > 0);
 
     uint256 _id = traders[_seller].length;
     traders[_seller].push(Trade(_offeredCardIds, _offeredCardCounts, _requestedCardIds, _requestedCardCounts, true));
 
-    for (uint256 i = 0; i &lt; _offeredCardIds.length; i++) {
+    for (uint256 i = 0; i < _offeredCardIds.length; i++) {
       copaCore.transferFrom(_seller, address(this), _offeredCardIds[i], _offeredCardCounts[i]);
     }
 
@@ -410,14 +410,14 @@ contract CopaMarket is Ownable, Pausable {
     uint256[] memory _requestedCardCounts = traders[_seller][_id].requestedCardCounts;
 
     require(traders[_seller][_id].open == true);
-    require(_ethAmount &gt;= tradingFee);
+    require(_ethAmount >= tradingFee);
 
     traders[_seller][_id].open = false;
 
-    for (uint256 i = 0; i &lt; _offeredCardIds.length; i++) {
+    for (uint256 i = 0; i < _offeredCardIds.length; i++) {
       copaCore.transfer(_buyer, _offeredCardIds[i], _offeredCardCounts[i]);
     }
-    for (uint256 j = 0; j &lt; _requestedCardIds.length; j++) {
+    for (uint256 j = 0; j < _requestedCardIds.length; j++) {
       copaCore.transferFrom(_buyer, _seller, _requestedCardIds[j], _requestedCardCounts[j]);
     }
 
@@ -441,7 +441,7 @@ contract CopaMarket is Ownable, Pausable {
 
     traders[_seller][_id].open = false;
 
-    for (uint256 i = 0; i &lt; _offeredCardIds.length; i++) {
+    for (uint256 i = 0; i < _offeredCardIds.length; i++) {
       copaCore.transfer(_seller, _offeredCardIds[i], _offeredCardCounts[i]);
     }
 
@@ -460,7 +460,7 @@ contract CopaCore is Ownable, Pausable {
   uint256 public packPrice;
   uint256 public totalCardCount;
 
-  mapping(address =&gt; uint256[1200]) public balances;
+  mapping(address => uint256[1200]) public balances;
 
   struct PackBuy {
     uint256 packSize;
@@ -468,7 +468,7 @@ contract CopaCore is Ownable, Pausable {
     uint256[] cardIds;
   }
 
-  mapping(address =&gt; PackBuy[]) private packBuys;
+  mapping(address => PackBuy[]) private packBuys;
 
   event Transfer(address indexed from, address indexed to, uint256 indexed cardId, uint256 count);
   event TransferManual(address indexed from, address indexed to, uint256[] cardIds, uint256[] counts);
@@ -494,19 +494,19 @@ contract CopaCore is Ownable, Pausable {
   }
 
   function setPackSize(uint256 _packSize) external onlyOwner {
-    require(_packSize &gt; 0);
+    require(_packSize > 0);
 
     packSize = _packSize;
   }
 
   function setPrice(uint256 _packPrice) external onlyOwner {
-    require(_packPrice &gt; 0);
+    require(_packPrice > 0);
 
     packPrice = _packPrice;
   }
 
   function setTotalCardCount(uint256 _totalCardCount) external onlyOwner {
-    require(_totalCardCount &gt; 0);
+    require(_totalCardCount > 0);
 
     totalCardCount = _totalCardCount;
   }
@@ -536,8 +536,8 @@ contract CopaCore is Ownable, Pausable {
     address _from = msg.sender;
 
     require(_to != address(0));
-    require(_count &gt; 0);
-    require(_count &lt;= balances[_from][_cardId]);
+    require(_count > 0);
+    require(_count <= balances[_from][_cardId]);
 
     balances[_from][_cardId] = balances[_from][_cardId].sub(_count);
     balances[_to][_cardId] = balances[_to][_cardId].add(_count);
@@ -552,12 +552,12 @@ contract CopaCore is Ownable, Pausable {
 
     require(_to != address(0));
 
-    for (uint256 i = 0; i &lt; _cardIds.length; i++) {
+    for (uint256 i = 0; i < _cardIds.length; i++) {
       uint256 _cardId = _cardIds[i];
       uint256 _count = _counts[i];
 
-      require(_count &gt; 0);
-      require(_count &lt;= balances[_from][_cardId]);
+      require(_count > 0);
+      require(_count <= balances[_from][_cardId]);
 
       balances[_from][_cardId] = balances[_from][_cardId].sub(_count);
       balances[_to][_cardId] = balances[_to][_cardId].add(_count);
@@ -572,8 +572,8 @@ contract CopaCore is Ownable, Pausable {
 
   function transferFrom(address _from, address _to, uint256 _cardId, uint256 _count) external onlyCopaMarket returns (bool) {
     require(_to != address(0));
-    require(_count &gt; 0);
-    require(_count &lt;= balances[_from][_cardId]);
+    require(_count > 0);
+    require(_count <= balances[_from][_cardId]);
 
     balances[_from][_cardId] = balances[_from][_cardId].sub(_count);
     balances[_to][_cardId] = balances[_to][_cardId].add(_count);
@@ -588,14 +588,14 @@ contract CopaCore is Ownable, Pausable {
     uint256 _ethAmount = msg.value;
     uint256 _totalPrice = packPrice * _count;
 
-    require(_count &gt; 0);
-    require(_ethAmount &gt; 0);
-    require(_ethAmount &gt;= _totalPrice);
+    require(_count > 0);
+    require(_ethAmount > 0);
+    require(_ethAmount >= _totalPrice);
 
-    for (uint256 i = 0; i &lt; _count; i++) {
+    for (uint256 i = 0; i < _count; i++) {
       uint256[] memory _cardsList = new uint256[](packSize);
 
-      for (uint256 j = 0; j &lt; packSize; j++) {
+      for (uint256 j = 0; j < packSize; j++) {
         uint256 _cardId = dice(totalCardCount);
 
         balances[_buyer][_cardId] = balances[_buyer][_cardId].add(1);
@@ -617,12 +617,12 @@ contract CopaCore is Ownable, Pausable {
   }
 
   function getPack(uint256 _count) external onlyOwner whenNotPaused returns (bool) {
-    require(_count &gt; 0);
+    require(_count > 0);
 
-    for (uint256 i = 0; i &lt; _count; i++) {
+    for (uint256 i = 0; i < _count; i++) {
       uint256[] memory _cardsList = new uint256[](packSize);
 
-      for (uint256 j = 0; j &lt; packSize; j++) {
+      for (uint256 j = 0; j < packSize; j++) {
         uint256 _cardId = dice(totalCardCount);
 
         balances[owner][_cardId] = balances[owner][_cardId].add(1);

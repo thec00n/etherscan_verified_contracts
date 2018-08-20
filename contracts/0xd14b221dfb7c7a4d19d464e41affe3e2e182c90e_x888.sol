@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
@@ -61,7 +61,7 @@ contract ERC20 is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
@@ -96,7 +96,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -133,8 +133,8 @@ contract Owned
 contract x888 is StandardToken
 {
     using SafeMath for uint256;
-    string public name = &quot;Meta Exchange x888&quot;;
-    string public symbol = &quot;X888&quot;;
+    string public name = "Meta Exchange x888";
+    string public symbol = "X888";
     uint8 public constant decimals = 6;
     
     uint256 version = 10090099999;
@@ -151,9 +151,9 @@ contract x888 is StandardToken
     address public teama = 0x20f349917d2521c41f8ec9c0a1f7e0c36af0b46f;
     address public baseowner;
 
-    mapping(address =&gt; bool) public _verify;
-    mapping(address =&gt; bool) public _trader;
-    mapping(uint256 =&gt; address) public _mks;
+    mapping(address => bool) public _verify;
+    mapping(address => bool) public _trader;
+    mapping(uint256 => address) public _mks;
     uint256 public makersCount;
 
     event LogTransfer(address sender, address to, uint amount);
@@ -188,7 +188,7 @@ contract x888 is StandardToken
         stuff.transfer(msg.value.mul(40).div(100));
         Clearing(teama, msg.value.mul(40).div(100));
         teama.transfer(msg.value.mul(40).div(100));
-        if(partner != adviser &amp;&amp; balances[adviser]!=0)
+        if(partner != adviser && balances[adviser]!=0)
         {
           Clearing(adviser, msg.value.mul(20).div(100));
           adviser.transfer(msg.value.mul(20).div(100));
@@ -235,19 +235,19 @@ contract x888 is StandardToken
 
     function getDeflator() constant returns (uint256)
     {
-        if (now &lt;= startTimestamp + 28 days)//38% 
+        if (now <= startTimestamp + 28 days)//38% 
         {
             return 138;
-        }else if (now &lt;= startTimestamp + 56 days)//23% 
+        }else if (now <= startTimestamp + 56 days)//23% 
         {
             return 123;
-        }else if (now &lt;= startTimestamp + 84 days)//15% 
+        }else if (now <= startTimestamp + 84 days)//15% 
         {
             return 115;
-        }else if (now &lt;= startTimestamp + 112 days)//9%
+        }else if (now <= startTimestamp + 112 days)//9%
         {
             return 109;
-        }else if (now &lt;= startTimestamp + 140 days)//5%
+        }else if (now <= startTimestamp + 140 days)//5%
         {                                                    
             return 105;
         }else
@@ -293,7 +293,7 @@ contract x888 is StandardToken
         bool    sellsTokens
     ) 
     {
-      if(id &lt; makersCount)
+      if(id < makersCount)
       {
         trade = _mks[id];
         valid = _verify[trade];
@@ -321,10 +321,10 @@ contract x888 is StandardToken
         bool    sellsTokens
     ) public returns (address trader) 
     {
-        require (balances[msg.sender] &gt; 1000 * (uint256(10) ** decimals));
+        require (balances[msg.sender] > 1000 * (uint256(10) ** decimals));
         require (asset != 0x0);
-        require(buyPrice &gt; 0 &amp;&amp; sellPrice &gt; 0);
-        require(buyPrice &lt; sellPrice);
+        require(buyPrice > 0 && sellPrice > 0);
+        require(buyPrice < sellPrice);
         require (units != 0x0);
 
         trader = new TokenTrader(
@@ -479,7 +479,7 @@ contract TokenTrader is Owned
 
     function makerWithdrawEther(uint256 ethers) onlyOwner returns (bool ok) 
     {
-        if (this.balance &gt;= ethers) 
+        if (this.balance >= ethers) 
         {
             require(ERC20(exchange).approve(baseowner,exchFee));
             require(ERC20(exchange).transfer(baseowner,exchFee));
@@ -496,7 +496,7 @@ contract TokenTrader is Owned
         require (owner == toTokenTrader.owner() || asset == toTokenTrader.asset()); 
         require(ERC20(exchange).approve(baseowner,exchFee));
         require(ERC20(exchange).transfer(baseowner,exchFee));
-        if (this.balance &gt;= ethers) 
+        if (this.balance >= ethers) 
         {
             MakerTransferredEther(toTokenTrader, ethers);
             toTokenTrader.makerDepositEther.value(ethers)();
@@ -512,16 +512,16 @@ contract TokenTrader is Owned
             uint256 order    =  msg.value / sellPrice;                        ///max tokens in order
             uint256 can_sell =  ERC20(asset).balanceOf(address(this))/units;  ///current balance in token
             uint256 change = 0;
-            if (msg.value &gt; (can_sell * sellPrice))
+            if (msg.value > (can_sell * sellPrice))
             {
                 change  = msg.value - (can_sell * sellPrice);
                 order = can_sell;
             }
-            if (change &gt; 0) 
+            if (change > 0) 
             {
                 require(msg.sender.send(change));
             }
-            if (order &gt; 0) 
+            if (order > 0) 
             {
                 require (ERC20(asset).approve(msg.sender, order * units));
                 require (ERC20(asset).transfer(msg.sender, order * units));
@@ -539,8 +539,8 @@ contract TokenTrader is Owned
             require(ERC20(exchange).transfer(baseowner,exchFee));
             uint256 can_buy = this.balance / buyPrice;          //limit of ethers 
             uint256 order = amountOfTokensToSell / units;       //limit of tokens to sell
-            if (order &gt; can_buy) order = can_buy;
-            if (order &gt; 0) 
+            if (order > can_buy) order = can_buy;
+            if (order > 0) 
             {
                 require(ERC20(asset).transferFrom(msg.sender, address(this), order * units));
                 require(msg.sender.send(order * buyPrice));

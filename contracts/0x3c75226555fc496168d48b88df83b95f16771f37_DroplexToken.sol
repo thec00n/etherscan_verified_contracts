@@ -10,13 +10,13 @@ contract SafeMath {
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
@@ -27,17 +27,17 @@ contract SafeMath {
 
 contract DroplexToken is SafeMath {
     /* Public variables of the token */
-    string public standard = &#39;ERC20&#39;;
-    string public name = &#39;Droplex Token&#39;;
-    string public symbol = &#39;DROP&#39;;
+    string public standard = 'ERC20';
+    string public name = 'Droplex Token';
+    string public symbol = 'DROP';
     uint8 public decimals = 0;
     uint256 public totalSupply = 30000000;
     address public owner = 0xaBE3d12e5518BF8266bB91B56913962ce1F77CF4;
     /* from this time on tokens may be transfered (after ICO)*/
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* This generates a public event on the blockchain that will notify clients */

@@ -52,8 +52,8 @@ library SafeMath {
      * @dev Multiplies two numbers, throws on overflow.
     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-        // benefit is lost if &#39;b&#39; is also tested.
+        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
         if (a == 0) {
           return 0;
@@ -68,9 +68,9 @@ library SafeMath {
      * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -78,7 +78,7 @@ library SafeMath {
      * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -87,7 +87,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -138,17 +138,17 @@ contract MIBTokenSale is Ownable {
     
     uint8 k;
     
-    mapping(uint8 =&gt; uint) assignTokensperType ;
-    mapping(uint8 =&gt; uint) remainTokensperType ;
-    mapping(uint8 =&gt; uint) nowTokensperEth;
-    mapping(uint8 =&gt; uint) distributionTimes;
+    mapping(uint8 => uint) assignTokensperType ;
+    mapping(uint8 => uint) remainTokensperType ;
+    mapping(uint8 => uint) nowTokensperEth;
+    mapping(uint8 => uint) distributionTimes;
 
     uint8 public iDistribution;
     uint8 public iICO;
 
     modifier canDistribute() {
         require(iICO == 1);
-        require(iDistribution &gt; 1);
+        require(iDistribution > 1);
         _;
     }
     
@@ -172,7 +172,7 @@ contract MIBTokenSale is Ownable {
             //proceed only ico
             nowvestingType = uint8(InvestTypes.Ico);
     
-            for(k=0; k&lt;uint8(InvestTypes.MAX_InvestTypes); k++)
+            for(k=0; k<uint8(InvestTypes.MAX_InvestTypes); k++)
             {
                 remainTokensperType[k] = remainTokensperType[k].add(vesting[k] * 1e18);
                 assignTokensperType[k] = assignTokensperType[k].add(vesting[k] * 1e18);
@@ -192,7 +192,7 @@ contract MIBTokenSale is Ownable {
     }
 
     function setVestingType(uint8 _type) onlyOwner public {
-        require(_type &lt; uint8(InvestTypes.MAX_InvestTypes));
+        require(_type < uint8(InvestTypes.MAX_InvestTypes));
         nowvestingType = _type;
         //proceed only ico
         nowvestingType = uint8(InvestTypes.Ico);
@@ -202,13 +202,13 @@ contract MIBTokenSale is Ownable {
     }
     
     function startICO() onlyOwner public {
-        require(iDistribution &lt; 1);
-        require(iICO &lt; 1);
+        require(iDistribution < 1);
+        require(iICO < 1);
         iICO = 2;
     }
 
     function stopICO() onlyOwner public {
-        require(iDistribution &lt;= 1);
+        require(iDistribution <= 1);
         iICO = 1;
     }
     
@@ -245,9 +245,9 @@ contract MIBTokenSale is Ownable {
     function buyTokens(address _to, uint8 _type) public payable {
         uint256 tokens;
         
-        require(iICO &gt; 1);
+        require(iICO > 1);
 
-        require(_type &lt; uint8(InvestTypes.MAX_InvestTypes));
+        require(_type < uint8(InvestTypes.MAX_InvestTypes));
         
         tokens = _preValidatePurchase(_to, _type, msg.value);
 
@@ -271,16 +271,16 @@ contract MIBTokenSale is Ownable {
         uint256 tmpTokens;
         
         require(_to != address(0));
-        require(_weiAmount &gt;= minimum_wei);
+        require(_weiAmount >= minimum_wei);
 
         tokens = nowTokensperEth[nowvestingType].mul(msg.value);
         
         tmpTokens = tokens.mul(20).div(100);
         tokens = tokens.add(tmpTokens);
         
-        require(tokens &gt; 0);
+        require(tokens > 0);
         
-        require(tokens &lt;= remainTokensperType[_type]);
+        require(tokens <= remainTokensperType[_type]);
         
         return tokens;
     }
@@ -305,8 +305,8 @@ contract MIBTokenSale is Ownable {
         
         remaintokens = remainTokensperType[_type];
         
-        require(remaintokens &gt;= _weitokens);
-        require(_type &lt; uint8(InvestTypes.MAX_InvestTypes));
+        require(remaintokens >= _weitokens);
+        require(_type < uint8(InvestTypes.MAX_InvestTypes));
         
         mibtokenaddress.safeTransfer(_to, _weitokens);
         remainTokensperType[_type] = remainTokensperType[_type].sub(_weitokens);

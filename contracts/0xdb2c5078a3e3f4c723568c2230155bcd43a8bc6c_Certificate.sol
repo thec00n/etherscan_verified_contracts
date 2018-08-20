@@ -13,7 +13,7 @@ contract Certificate {
   uint8 type_id;   
   uint dt_create; 
   address[] subjects_addr; 
-  mapping (address =&gt; Subject) subjects;
+  mapping (address => Subject) subjects;
   address _owner;       
 
   function Certificate(uint8 _type_id, uint _dt_create, address[] _subjects_addr) public {
@@ -25,7 +25,7 @@ contract Certificate {
 
   modifier restricted_to_subject {
       bool allowed = false;
-      for(uint i = 0; i &lt; subjects_addr.length; i++) {
+      for(uint i = 0; i < subjects_addr.length; i++) {
         if (msg.sender == subjects_addr[i]) {
           allowed = true;
           break;

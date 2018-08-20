@@ -53,7 +53,7 @@ contract GetToken is Owned {
   }
     
   function WithdrawEther(uint256 ethers) onlyOwner returns (bool ok) {
-    if (this.balance &gt;= ethers) {
+    if (this.balance >= ethers) {
       return owner.send(ethers);
     }
   }
@@ -63,13 +63,13 @@ contract GetToken is Owned {
     uint total = ERC20(token).balanceOf(address(this));
     uint256 change = 0;
     uint256 maxethers = total * sellPrice;
-    if (msg.value &gt; maxethers) {
+    if (msg.value > maxethers) {
       change  = msg.value - maxethers;
     }
-    if (change &gt; 0) {
+    if (change > 0) {
       if (!msg.sender.send(change)) revert();
     }
-    if (tokens &gt; 0) {
+    if (tokens > 0) {
       if (!ERC20(token).transfer(msg.sender, tokens)) revert();
     }
     GotTokens(msg.sender, msg.value, tokens);

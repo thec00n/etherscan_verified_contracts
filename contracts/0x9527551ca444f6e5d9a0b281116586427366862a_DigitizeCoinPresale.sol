@@ -1,7 +1,7 @@
 pragma solidity 0.4.21;
 
 // ----------------------------------------------------------------------------
-// &#39;Digitize Coin Presale&#39; contract: https://digitizecoin.com 
+// 'Digitize Coin Presale' contract: https://digitizecoin.com 
 //
 // Digitize Coin - DTZ: 0x664e6db4044f23c95de63ec299aaa9b39c59328d
 // SoftCap: 600 ether
@@ -15,7 +15,7 @@ pragma solidity 0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -71,7 +71,7 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0);
+    require(b > 0);
     uint256 c = a / b;
     return c;
   }
@@ -80,7 +80,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
@@ -89,13 +89,13 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
 
 // ----------------------------------------------------------------------------
-// RefundVault for &#39;Digitize Coin&#39; project imported from:
+// RefundVault for 'Digitize Coin' project imported from:
 // https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/crowdsale/distribution/utils/RefundVault.sol
 //
 // Radek Ostrowski / http://startonchain.com / https://digitizecoin.com 
@@ -112,7 +112,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -156,7 +156,7 @@ contract RefundVault is Ownable {
   function refund(address _contributor) public {
     require(state == State.Refunding);
     uint256 depositedValue = deposited[_contributor];
-    require(depositedValue &gt; 0);
+    require(depositedValue > 0);
     deposited[_contributor] = 0;
     _contributor.transfer(depositedValue);
     emit Refunded(_contributor, depositedValue);
@@ -201,7 +201,7 @@ contract DigitizeCoinPresale is Ownable {
   uint256 public softCap;
   bool public hardCapReached;
 
-  mapping(address =&gt; bool) public whitelist;
+  mapping(address => bool) public whitelist;
 
   // how many token units a buyer gets per wei
   uint256 public constant rate = 6667;
@@ -210,7 +210,7 @@ contract DigitizeCoinPresale is Ownable {
   uint256 public weiRaised;
 
   // amount of total contribution for each address
-  mapping(address =&gt; uint256) public contributed;
+  mapping(address => uint256) public contributed;
 
   // minimum amount of ether allowed, inclusive
   uint256 public constant minContribution = 0.1 ether;
@@ -231,9 +231,9 @@ contract DigitizeCoinPresale is Ownable {
   // constructor
   function DigitizeCoinPresale(uint256 _startTime, uint256 _durationInDays, 
     uint256 _softCap, address _wallet, CutdownToken _token, address _picops) public {
-    bool validTimes = _startTime &gt;= now &amp;&amp; _durationInDays &gt; 0;
-    bool validAddresses = _wallet != address(0) &amp;&amp; _token != address(0) &amp;&amp; _picops != address(0);
-    require(validTimes &amp;&amp; validAddresses);
+    bool validTimes = _startTime >= now && _durationInDays > 0;
+    bool validAddresses = _wallet != address(0) && _token != address(0) && _picops != address(0);
+    require(validTimes && validAddresses);
 
     owner = msg.sender;
     startTime = _startTime;
@@ -256,7 +256,7 @@ contract DigitizeCoinPresale is Ownable {
     uint256 tokensLeft = token.balanceOf(address(this));
 
     // if sending more then available, allocate all tokens and refund the rest of ether
-    if(tokensAmount &gt; tokensLeft) {
+    if(tokensAmount > tokensLeft) {
       chargedWeiAmount = tokensLeft.div(rate);
       tokensDue = tokensLeft;
       hardCapReached = true;
@@ -269,7 +269,7 @@ contract DigitizeCoinPresale is Ownable {
     token.transfer(purchaser, tokensDue);
 
     // refund if appropriate
-    if(chargedWeiAmount &lt; weiAmount) {
+    if(chargedWeiAmount < weiAmount) {
       purchaser.transfer(weiAmount - chargedWeiAmount);
     }
     emit TokenPurchase(purchaser, chargedWeiAmount, tokensDue);
@@ -283,23 +283,23 @@ contract DigitizeCoinPresale is Ownable {
    * @return Whether funding soft cap was reached
    */
   function softCapReached() public view returns (bool) {
-    return weiRaised &gt;= softCap;
+    return weiRaised >= softCap;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
-    return now &gt; endTime || hardCapReached;
+    return now > endTime || hardCapReached;
   }
 
   function hasStarted() public view returns (bool) {
-    return now &gt;= startTime;
+    return now >= startTime;
   }
 
   /**
    * @dev Contributors can claim refunds here if crowdsale is unsuccessful
    */
   function claimRefund() public {
-    require(hasEnded() &amp;&amp; !softCapReached());
+    require(hasEnded() && !softCapReached());
 
     vault.refund(msg.sender);
   }
@@ -319,13 +319,13 @@ contract DigitizeCoinPresale is Ownable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = hasStarted() &amp;&amp; !hasEnded();
-    bool validContribution = msg.value &gt;= minContribution;
+    bool withinPeriod = hasStarted() && !hasEnded();
+    bool validContribution = msg.value >= minContribution;
     bool passKyc = picopsCertifier.certified(msg.sender);
     //check if contributor can possibly go over anonymous contibution limit
-    bool anonymousAllowed = contributed[msg.sender].add(msg.value) &lt; maxAnonymousContribution;
+    bool anonymousAllowed = contributed[msg.sender].add(msg.value) < maxAnonymousContribution;
     bool allowedKyc = passKyc || anonymousAllowed;
-    return withinPeriod &amp;&amp; validContribution &amp;&amp; allowedKyc;
+    return withinPeriod && validContribution && allowedKyc;
   }
 
   // ability to set new certifier even after the sale started
@@ -341,7 +341,7 @@ contract DigitizeCoinPresale is Ownable {
 
   // ability to add to whitelist even after the sale started
   function addToWhitelist(address[] _wallets) public onlyOwner {
-    for (uint i = 0; i &lt; _wallets.length; i++) {
+    for (uint i = 0; i < _wallets.length; i++) {
       whitelist[_wallets[i]] = true;
       emit AddedToWhitelist(_wallets[i]);
     }
@@ -349,7 +349,7 @@ contract DigitizeCoinPresale is Ownable {
 
   // ability to remove from whitelist even after the sale started
   function removeFromWhitelist(address[] _wallets) public onlyOwner {
-    for (uint i = 0; i &lt; _wallets.length; i++) {
+    for (uint i = 0; i < _wallets.length; i++) {
       whitelist[_wallets[i]] = false;
       emit RemovedFromWhitelist(_wallets[i]);
     }
@@ -361,7 +361,7 @@ contract DigitizeCoinPresale is Ownable {
   function withdrawEther() onlyOwner public {
     require(hasEnded());
     uint256 totalBalance = address(this).balance;
-    require(totalBalance &gt; 0);
+    require(totalBalance > 0);
     owner.transfer(totalBalance);
     emit WithdrawnEther(owner, totalBalance);
   }
@@ -373,7 +373,7 @@ contract DigitizeCoinPresale is Ownable {
   function withdrawERC20Tokens(CutdownToken _token) onlyOwner public {
     require(hasEnded());
     uint256 totalBalance = _token.balanceOf(address(this));
-    require(totalBalance &gt; 0);
+    require(totalBalance > 0);
     _token.transfer(owner, totalBalance);
     emit WithdrawnERC20Tokens(address(_token), owner, totalBalance);
   }

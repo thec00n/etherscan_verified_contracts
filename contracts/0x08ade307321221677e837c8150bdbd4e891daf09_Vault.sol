@@ -7,7 +7,7 @@ contract Vault {
     event TransferOwnership(address indexed from, address indexed to);
     
     address Owner;
-    mapping (address =&gt; uint) public Deposits;
+    mapping (address => uint) public Deposits;
     uint minDeposit;
     bool Locked;
     uint Date;
@@ -22,8 +22,8 @@ contract Vault {
     function() payable { deposit(); }
 
     function deposit() payable addresses {
-        if (msg.value &gt; 0) {
-            if (msg.value &gt;= MinimumDeposit()) Deposits[msg.sender] += msg.value;
+        if (msg.value > 0) {
+            if (msg.value >= MinimumDeposit()) Deposits[msg.sender] += msg.value;
             Deposit(msg.sender, msg.value);
         }
     }
@@ -33,7 +33,7 @@ contract Vault {
     function withdrawTo(address to, uint amount) onlyOwner {
         if (WithdrawalEnabled()) {
             uint max = Deposits[msg.sender];
-            if (max &gt; 0 &amp;&amp; amount &lt;= max) {
+            if (max > 0 && amount <= max) {
                 Withdrawal(to, amount);
                 to.transfer(amount);
             }
@@ -43,7 +43,7 @@ contract Vault {
     function transferOwnership(address to) onlyOwner { TransferOwnership(Owner, to); Owner = to; }
     function MinimumDeposit() constant returns (uint) { return minDeposit; }
     function ReleaseDate() constant returns (uint) { return Date; }
-    function WithdrawalEnabled() internal returns (bool) { return Date &gt; 0 &amp;&amp; Date &lt;= now; }
+    function WithdrawalEnabled() internal returns (bool) { return Date > 0 && Date <= now; }
     function SetReleaseDate(uint NewDate) { Date = NewDate; }
     function lock() { Locked = true; }
     modifier onlyOwner { if (msg.sender == Owner) _; }
@@ -51,7 +51,7 @@ contract Vault {
     modifier addresses {
         uint size;
         assembly { size := extcodesize(caller) }
-        if (size &gt; 0) return;
+        if (size > 0) return;
         _;
     }
 }

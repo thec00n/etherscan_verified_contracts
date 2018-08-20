@@ -7,7 +7,7 @@ interface token {
 contract IOXDistribution {
     
     address public owner;
-    mapping(uint256 =&gt; bool) public claimers;
+    mapping(uint256 => bool) public claimers;
     token public ioxToken;
     
     event Signer(address signer); 
@@ -34,7 +34,7 @@ contract IOXDistribution {
 
     // Builds a prefixed hash to mimic the behavior of eth_sign.
     function prefixed(bytes32 hash) internal pure returns (bytes32) {
-        return keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+        return keccak256("\x19Ethereum Signed Message:\n32", hash);
     }
     
     function ecrecovery(bytes32 hash, bytes sig) internal pure returns (address) {
@@ -50,11 +50,11 @@ contract IOXDistribution {
         v := and(mload(add(sig, 65)), 255)
       }
 
-      if (v &lt; 27) {
+      if (v < 27) {
         v += 27;
       }
 
-      if (v != 27 &amp;&amp; v != 28) {
+      if (v != 27 && v != 28) {
         return 0;
       }
 

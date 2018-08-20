@@ -11,29 +11,29 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
 /**
  * @title Owned
- * @author Adria Massanet &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="49282d3b2028092a262d2c2a26273d2c313d672026">[email&#160;protected]</a>&gt;
+ * @author Adria Massanet <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="49282d3b2028092a262d2c2a26273d2c313d672026">[email protected]</a>>
  * @notice The Owned contract has an owner address, and provides basic
- *  authorization control functions, this simplifies &amp; the implementation of
+ *  authorization control functions, this simplifies & the implementation of
  *  user permissions; this contract has three work flows for a change in
  *  ownership, the first requires the new owner to validate that they have the
  *  ability to accept ownership, the second allows the ownership to be
@@ -173,15 +173,15 @@ contract SafeGuard is Owned {
 
     /**
      * @dev call has been separated into its own function in order to take advantage
-     *  of the Solidity&#39;s code generator to produce a loop that copies tx.data into memory.
+     *  of the Solidity's code generator to produce a loop that copies tx.data into memory.
      */
     function externalCall(address destination, uint value, uint dataLength, bytes data)
     private
     returns (bool) {
         bool result;
         assembly { // solhint-disable-line no-inline-assembly
-        let x := mload(0x40)   // &quot;Allocate&quot; memory for output
-            // (0x40 is where &quot;free memory&quot; pointer is stored by convention)
+        let x := mload(0x40)   // "Allocate" memory for output
+            // (0x40 is where "free memory" pointer is stored by convention)
             let d := add(data, 32) // First 32 bytes are the padded length of data, so exclude that
             result := call(
             sub(gas, 34710), // 34710 is the value that solidity is currently emitting
@@ -211,9 +211,9 @@ contract ERC664Balances is SafeGuard {
     event BalanceAdj(address indexed module, address indexed account, uint amount, string polarity);
     event ModuleSet(address indexed module, bool indexed set);
 
-    mapping(address =&gt; bool) public modules;
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowed;
+    mapping(address => bool) public modules;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowed;
 
     modifier onlyModule() {
         require(modules[msg.sender]);
@@ -329,7 +329,7 @@ contract ERC664Balances is SafeGuard {
      */
     function incBalance(address _acct, uint _val) public onlyModule returns (bool) {
         balances[_acct] = balances[_acct].add(_val);
-        emit BalanceAdj(msg.sender, _acct, _val, &quot;+&quot;);
+        emit BalanceAdj(msg.sender, _acct, _val, "+");
         return true;
     }
 
@@ -341,7 +341,7 @@ contract ERC664Balances is SafeGuard {
      */
     function decBalance(address _acct, uint _val) public onlyModule returns (bool) {
         balances[_acct] = balances[_acct].sub(_val);
-        emit BalanceAdj(msg.sender, _acct, _val, &quot;-&quot;);
+        emit BalanceAdj(msg.sender, _acct, _val, "-");
         return true;
     }
 }
@@ -352,7 +352,7 @@ contract ERC664Balances is SafeGuard {
  */
 contract CStore is ERC664Balances, ERC820Implementer {
 
-    mapping(address =&gt; mapping(address =&gt; bool)) private mAuthorized;
+    mapping(address => mapping(address => bool)) private mAuthorized;
 
     /**
      * @notice Database construction
@@ -362,7 +362,7 @@ contract CStore is ERC664Balances, ERC820Implementer {
     constructor(uint256 _totalSupply, address _registry) public
     ERC664Balances(_totalSupply)
     ERC820Implementer(_registry) {
-        setInterfaceImplementation(&quot;ERC664Balances&quot;, this);
+        setInterfaceImplementation("ERC664Balances", this);
     }
 
     /**
@@ -396,9 +396,9 @@ contract CStore is ERC664Balances, ERC820Implementer {
     onlyModule
     returns (bool) {
         balances[_from] = balances[_from].sub(_amount);
-        emit BalanceAdj(msg.sender, _from, _amount, &quot;-&quot;);
+        emit BalanceAdj(msg.sender, _from, _amount, "-");
         balances[_to] = balances[_to].add(_amount);
-        emit BalanceAdj(msg.sender, _to, _amount, &quot;+&quot;);
+        emit BalanceAdj(msg.sender, _to, _amount, "+");
         return true;
     }
 

@@ -73,9 +73,9 @@ contract DateTime {
 
                 // Month
                 uint secondsInMonth;
-                for (i = 1; i &lt;= 12; i++) {
+                for (i = 1; i <= 12; i++) {
                         secondsInMonth = DAY_IN_SECONDS * getDaysInMonth(i, dt.year);
-                        if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+                        if (secondsInMonth + secondsAccountedFor > timestamp) {
                                 dt.month = i;
                                 break;
                         }
@@ -83,8 +83,8 @@ contract DateTime {
                 }
 
                 // Day
-                for (i = 1; i &lt;= getDaysInMonth(dt.month, dt.year); i++) {
-                        if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+                for (i = 1; i <= getDaysInMonth(dt.month, dt.year); i++) {
+                        if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                                 dt.day = i;
                                 break;
                         }
@@ -116,7 +116,7 @@ contract DateTime {
                 secondsAccountedFor += LEAP_YEAR_IN_SECONDS * numLeapYears;
                 secondsAccountedFor += YEAR_IN_SECONDS * (year - ORIGIN_YEAR - numLeapYears);
 
-                while (secondsAccountedFor &gt; timestamp) {
+                while (secondsAccountedFor > timestamp) {
                         if (isLeapYear(uint16(year - 1))) {
                                 secondsAccountedFor -= LEAP_YEAR_IN_SECONDS;
                         }
@@ -168,7 +168,7 @@ contract DateTime {
                 uint16 i;
 
                 // Year
-                for (i = ORIGIN_YEAR; i &lt; year; i++) {
+                for (i = ORIGIN_YEAR; i < year; i++) {
                         if (isLeapYear(i)) {
                                 timestamp += LEAP_YEAR_IN_SECONDS;
                         }
@@ -197,7 +197,7 @@ contract DateTime {
                 monthDayCounts[10] = 30;
                 monthDayCounts[11] = 31;
 
-                for (i = 1; i &lt; month; i++) {
+                for (i = 1; i < month; i++) {
                         timestamp += DAY_IN_SECONDS * monthDayCounts[i - 1];
                 }
 
@@ -276,13 +276,13 @@ contract SafeMath {
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(a &gt;= b);
+        assert(a >= b);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -292,12 +292,12 @@ contract SafeMath {
 /**
  * @title MultiOwnable
  * @dev The MultiOwnable contract has owners addresses and provides basic authorization control
- * functions, this simplifies the implementation of &quot;users permissions&quot;.
+ * functions, this simplifies the implementation of "users permissions".
  */
 contract MultiOwnable {
     address public manager; // address used to set owners
     address[] public owners;
-    mapping(address =&gt; bool) public ownerByAddress;
+    mapping(address => bool) public ownerByAddress;
 
     event SetOwners(address[] owners);
 
@@ -323,12 +323,12 @@ contract MultiOwnable {
     }
 
     function _setOwners(address[] _owners) internal {
-        for(uint256 i = 0; i &lt; owners.length; i++) {
+        for(uint256 i = 0; i < owners.length; i++) {
             ownerByAddress[owners[i]] = false;
         }
 
 
-        for(uint256 j = 0; j &lt; _owners.length; j++) {
+        for(uint256 j = 0; j < _owners.length; j++) {
             ownerByAddress[_owners[j]] = true;
         }
         owners = _owners;
@@ -369,12 +369,12 @@ contract IERC20Token {
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 contract ERC20Token is IERC20Token, SafeMath {
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
 
         balances[msg.sender] = safeSub(balances[msg.sender], _value);
         balances[_to] = safeAdd(balances[_to], _value);
@@ -384,7 +384,7 @@ contract ERC20Token is IERC20Token, SafeMath {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_to] = safeAdd(balances[_to], _value);
         balances[_from] = safeSub(balances[_from], _value);
@@ -487,7 +487,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool) {
         bool success = super.transfer(_to, _value);
-        if(hasListener() &amp;&amp; success) {
+        if(hasListener() && success) {
             eventListener.onTokenTransfer(msg.sender, _to, _value);
         }
         return success;
@@ -495,7 +495,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
 
     function transferFrom(address _from, address _to, uint256 _value) public transfersAllowed returns (bool) {
         bool success = super.transferFrom(_from, _to, _value);
-        if(hasListener() &amp;&amp; success) {
+        if(hasListener() && success) {
             eventListener.onTokenTransfer(_from, _to, _value);
         }
         return success;
@@ -528,7 +528,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
      */
     function destroy(address _from, uint256 _value) external {
         require(ownerByAddress[msg.sender] || msg.sender == _from);
-        require(balances[_from] &gt;= _value);
+        require(balances[_from] >= _value);
         totalSupply = safeSub(totalSupply, _value);
         balances[_from] = safeSub(balances[_from], _value);
         Transfer(_from, address(0), _value);
@@ -563,7 +563,7 @@ contract ManagedToken is ERC20Token, MultiOwnable {
      */
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = safeSub(oldValue, _subtractedValue);
@@ -613,7 +613,7 @@ contract Fund is ICrowdsaleFund, SafeMath, MultiOwnable {
     uint256 public firstWithdrawAmount = 0;
 
     address public crowdsaleAddress;
-    mapping(address =&gt; uint256) public contributions;
+    mapping(address => uint256) public contributions;
 
     event RefundContributor(address tokenHolder, uint256 amountWei, uint256 timestamp);
     event RefundHolder(address tokenHolder, uint256 amountWei, uint256 tokenAmount, uint256 timestamp);
@@ -707,7 +707,7 @@ contract Fund is ICrowdsaleFund, SafeMath, MultiOwnable {
     */
     function refundCrowdsaleContributor() external {
         require(state == FundState.CrowdsaleRefund);
-        require(contributions[msg.sender] &gt; 0);
+        require(contributions[msg.sender] > 0);
 
         uint256 refundAmount = contributions[msg.sender];
         contributions[msg.sender] = 0;
@@ -722,7 +722,7 @@ contract Fund is ICrowdsaleFund, SafeMath, MultiOwnable {
      */
     function decTap(uint256 _tap) external onlyOwner {
         require(state == FundState.TeamWithdraw);
-        require(_tap &lt; tap);
+        require(_tap < tap);
         tap = _tap;
     }
 
@@ -735,14 +735,14 @@ contract Fund is ICrowdsaleFund, SafeMath, MultiOwnable {
 
     function calcTapAmount() internal view returns(uint256) {
         uint256 amount = safeMul(safeSub(now, lastWithdrawTime), tap);
-        if(address(this).balance &lt; amount) {
+        if(address(this).balance < amount) {
             amount = address(this).balance;
         }
         return amount;
     }
 
     function firstWithdraw() public onlyOwner withdrawEnabled {
-        require(firstWithdrawAmount &gt; 0);
+        require(firstWithdrawAmount > 0);
         uint256 amount = firstWithdrawAmount;
         firstWithdrawAmount = 0;
         teamWallet.transfer(amount);
@@ -784,9 +784,9 @@ contract Fund is ICrowdsaleFund, SafeMath, MultiOwnable {
         require(state == FundState.Refund);
 
         uint256 tokenBalance = token.balanceOf(msg.sender);
-        require(tokenBalance &gt; 0);
+        require(tokenBalance > 0);
         uint256 refundAmount = safeDiv(safeMul(tokenBalance, address(this).balance), token.totalSupply());
-        require(refundAmount &gt; 0);
+        require(refundAmount > 0);
 
         token.destroy(msg.sender, tokenBalance);
         msg.sender.transfer(refundAmount);
@@ -843,10 +843,10 @@ contract BasePoll is SafeMath {
     uint256 public totalVoted = 0;
 
     bool public finalized;
-    mapping(address =&gt; Vote) public votesByAddress;
+    mapping(address => Vote) public votesByAddress;
 
     modifier checkTime() {
-        require(now &gt;= startTime &amp;&amp; now &lt;= endTime);
+        require(now >= startTime && now <= endTime);
         _;
     }
 
@@ -864,7 +864,7 @@ contract BasePoll is SafeMath {
      */
     function BasePoll(address _tokenAddress, address _fundAddress, uint256 _startTime, uint256 _endTime, bool _checkTransfersAfterEnd) public {
         require(_tokenAddress != address(0));
-        require(_startTime &gt;= now &amp;&amp; _endTime &gt; _startTime);
+        require(_startTime >= now && _endTime > _startTime);
 
         token = IERC20Token(_tokenAddress);
         fundAddress = _fundAddress;
@@ -883,7 +883,7 @@ contract BasePoll is SafeMath {
 
         uint256 voiceWeight = token.balanceOf(msg.sender);
         uint256 maxVoiceWeight = safeDiv(token.totalSupply(), MAX_TOKENS_WEIGHT_DENOM);
-        voiceWeight =  voiceWeight &lt;= maxVoiceWeight ? voiceWeight : maxVoiceWeight;
+        voiceWeight =  voiceWeight <= maxVoiceWeight ? voiceWeight : maxVoiceWeight;
 
         if(agree) {
             yesCounter = safeAdd(yesCounter, voiceWeight);
@@ -903,7 +903,7 @@ contract BasePoll is SafeMath {
      * @dev Revoke user`s vote
      */
     function revokeVote() public checkTime {
-        require(votesByAddress[msg.sender].time &gt; 0);
+        require(votesByAddress[msg.sender].time > 0);
 
         uint256 voiceWeight = votesByAddress[msg.sender].weight;
         bool agree = votesByAddress[msg.sender].agree;
@@ -930,16 +930,16 @@ contract BasePoll is SafeMath {
             return;
         }
         if(!checkTransfersAfterEnd) {
-             if(finalized || (now &lt; startTime || now &gt; endTime)) {
+             if(finalized || (now < startTime || now > endTime)) {
                  return;
              }
         }
 
-        if(token.balanceOf(tokenHolder) &gt;= votesByAddress[tokenHolder].weight) {
+        if(token.balanceOf(tokenHolder) >= votesByAddress[tokenHolder].weight) {
             return;
         }
         uint256 voiceWeight = amount;
-        if(amount &gt; votesByAddress[tokenHolder].weight) {
+        if(amount > votesByAddress[tokenHolder].weight) {
             voiceWeight = votesByAddress[tokenHolder].weight;
         }
 
@@ -955,7 +955,7 @@ contract BasePoll is SafeMath {
      * Finalize poll and call onPollFinish callback with result
      */
     function tryToFinalize() public notFinalized returns(bool) {
-        if(now &lt; endTime) {
+        if(now < endTime) {
             return false;
         }
         finalized = true;
@@ -968,7 +968,7 @@ contract BasePoll is SafeMath {
     }
 
     function isSubjectApproved() internal view returns(bool) {
-        return yesCounter &gt; noCounter;
+        return yesCounter > noCounter;
     }
 
     /**
@@ -1007,10 +1007,10 @@ contract RefundPoll is BasePoll {
     }
 
     function tryToFinalize() public returns(bool) {
-        if(holdEndTime &gt; 0 &amp;&amp; holdEndTime &gt; endTime) {
-            require(now &gt;= holdEndTime);
+        if(holdEndTime > 0 && holdEndTime > endTime) {
+            require(now >= holdEndTime);
         } else {
-            require(now &gt;= endTime);
+            require(now >= endTime);
         }
 
         finalized = true;
@@ -1019,7 +1019,7 @@ contract RefundPoll is BasePoll {
     }
 
     function isSubjectApproved() internal view returns(bool) {
-        return yesCounter &gt; noCounter &amp;&amp; yesCounter &gt;= safeDiv(token.totalSupply(), 3);
+        return yesCounter > noCounter && yesCounter >= safeDiv(token.totalSupply(), 3);
     }
 
     function onPollFinish(bool agree) internal {
@@ -1072,7 +1072,7 @@ contract TapPoll is BasePoll {
     }
 
     function isSubjectApproved() internal view returns(bool) {
-        return yesCounter &gt; noCounter &amp;&amp; getVotedTokensPerc() &gt;= minTokensPerc;
+        return yesCounter > noCounter && getVotedTokensPerc() >= minTokensPerc;
     }
 }
 
@@ -1106,7 +1106,7 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
     ];
 
     modifier onlyTokenHolder() {
-        require(token.balanceOf(msg.sender) &gt; 0);
+        require(token.balanceOf(msg.sender) > 0);
         _;
     }
 
@@ -1135,10 +1135,10 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
 
     function canWithdraw() public returns(bool) {
         if(
-            address(refundPoll) != address(0) &amp;&amp;
-            !refundPoll.finalized() &amp;&amp;
-            refundPoll.holdEndTime() &gt; 0 &amp;&amp;
-            now &gt;= refundPoll.holdEndTime() &amp;&amp;
+            address(refundPoll) != address(0) &&
+            !refundPoll.finalized() &&
+            refundPoll.holdEndTime() > 0 &&
+            now >= refundPoll.holdEndTime() &&
             refundPoll.isNowApproved()
         ) {
             return false;
@@ -1151,10 +1151,10 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
      */
     function onTokenTransfer(address _from, address /*_to*/, uint256 _value) public {
         require(msg.sender == address(token));
-        if(address(tapPoll) != address(0) &amp;&amp; !tapPoll.finalized()) {
+        if(address(tapPoll) != address(0) && !tapPoll.finalized()) {
             tapPoll.onTokenTransfer(_from, _value);
         }
-         if(address(refundPoll) != address(0) &amp;&amp; !refundPoll.finalized()) {
+         if(address(refundPoll) != address(0) && !refundPoll.finalized()) {
             refundPoll.onTokenTransfer(_from, _value);
         }
     }
@@ -1165,7 +1165,7 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
      */
     function updateMinVotedTokens(uint256 _minVotedTokensPerc) internal {
         uint256 newPerc = safeDiv(_minVotedTokensPerc, 2);
-        if(newPerc &gt; MAX_VOTED_TOKEN_PERC) {
+        if(newPerc > MAX_VOTED_TOKEN_PERC) {
             minVotedTokensPerc = MAX_VOTED_TOKEN_PERC;
             return;
         }
@@ -1177,7 +1177,7 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
         require(state == FundState.TeamWithdraw);
         require(tapPoll == address(0));
         require(getDay(now) == 1);
-        require(tapIncPerc &lt;= 100);
+        require(tapIncPerc <= 100);
         uint256 _tap = safeAdd(tap, safeDiv(safeMul(tap, tapIncPerc), 50));
         uint256 startTime = now;
         uint256 endTime = startTime + TAP_POLL_DURATION;
@@ -1186,7 +1186,7 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
     }
 
     function onTapPollFinish(bool agree, uint256 _tap) external {
-        require(msg.sender == address(tapPoll) &amp;&amp; tapPoll.finalized());
+        require(msg.sender == address(tapPoll) && tapPoll.finalized());
         if(agree) {
             tap = _tap;
         }
@@ -1197,12 +1197,12 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
 
     // Refund poll
     function checkRefundPollDate() internal view returns(bool) {
-        if(secondRefundPollDate &gt; 0 &amp;&amp; now &gt;= secondRefundPollDate &amp;&amp; now &lt;= safeAdd(secondRefundPollDate, 1 days)) {
+        if(secondRefundPollDate > 0 && now >= secondRefundPollDate && now <= safeAdd(secondRefundPollDate, 1 days)) {
             return true;
         }
 
-        for(uint i; i &lt; refundPollDates.length; i++) {
-            if(now &gt;= refundPollDates[i] &amp;&amp; now &lt;= safeAdd(refundPollDates[i], 12 days)) {
+        for(uint i; i < refundPollDates.length; i++) {
+            if(now >= refundPollDates[i] && now <= safeAdd(refundPollDates[i], 12 days)) {
                 return true;
             }
         }
@@ -1214,7 +1214,7 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
         require(address(refundPoll) == address(0));
         require(checkRefundPollDate());
 
-        if(secondRefundPollDate &gt; 0 &amp;&amp; now &gt; safeAdd(secondRefundPollDate, 12 days)) {
+        if(secondRefundPollDate > 0 && now > safeAdd(secondRefundPollDate, 12 days)) {
             secondRefundPollDate = 0;
         }
 
@@ -1235,9 +1235,9 @@ contract PollManagedFund is Fund, DateTime, ITokenEventListener {
     }
 
     function onRefundPollFinish(bool agree) external {
-        require(msg.sender == address(refundPoll) &amp;&amp; refundPoll.finalized());
+        require(msg.sender == address(refundPoll) && refundPoll.finalized());
         if(agree) {
-            if(secondRefundPollDate &gt; 0) {
+            if(secondRefundPollDate > 0) {
                 enableRefund();
             } else {
                 uint256 startTime = refundPoll.startTime();

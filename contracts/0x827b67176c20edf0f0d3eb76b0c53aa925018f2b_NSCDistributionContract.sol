@@ -2,10 +2,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -13,7 +13,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -68,12 +68,12 @@ contract NSCDistributionContract is ERC20Interface, Owned {
     uint256 public unitsOneEthCanBuy;
     uint256 private totalEthInWei;
     address private fundsWallet;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
     function NSCDistributionContract() public {
-        symbol = &#39;NSC&#39;;
-        name = &#39;NSC&#39;;
+        symbol = 'NSC';
+        name = 'NSC';
         decimals = 18;
         _totalSupply = 500000000 * 10**uint(decimals);
         _initialDistribution = 1000000 * 10**uint(decimals);
@@ -126,7 +126,7 @@ contract NSCDistributionContract is ERC20Interface, Owned {
     function () public payable {
         totalEthInWei = totalEthInWei + msg.value;
         uint256 amount = msg.value * unitsOneEthCanBuy;
-        if (balances[fundsWallet] &lt; amount) {
+        if (balances[fundsWallet] < amount) {
             return;
         }
         balances[fundsWallet] = balances[fundsWallet] - amount;
@@ -137,14 +137,14 @@ contract NSCDistributionContract is ERC20Interface, Owned {
     
     //Send tokens to users from the exel file
     function send(address[] receivers, uint[] values) public payable {
-      for (uint i = 0; receivers.length &gt; i; i++) {
+      for (uint i = 0; receivers.length > i; i++) {
            sendTokens(receivers[i], values[i]);
         }
     }
     
     //Send tokens to specific user
     function sendTokens (address receiver, uint token) public onlyOwner {
-        require(balances[msg.sender] &gt;= token);
+        require(balances[msg.sender] >= token);
         balances[msg.sender] -= token;
         balances[receiver] += token;
         Transfer(msg.sender, receiver, token);

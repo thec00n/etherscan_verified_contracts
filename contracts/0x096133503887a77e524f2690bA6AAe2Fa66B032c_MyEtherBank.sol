@@ -7,7 +7,7 @@ contract MyEtherBank
     Copyright (c) 2016 Consent Development
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the &quot;Software&quot;), to deal
+    of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
@@ -16,7 +16,7 @@ contract MyEtherBank
     The above copyright notice and this permission notice shall be included in all
     copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -27,7 +27,7 @@ contract MyEtherBank
     */
 	
     // Author : Alex Darby 
-    // Contact email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="22414d4c51474c5646475462454f434b4e0c414d4f">[email&#160;protected]</a> 
+    // Contact email : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="22414d4c51474c5646475462454f434b4e0c414d4f">[email protected]</a> 
     // Version : 1.0 - initial release
 	// GitHub : https://github.com/ConsentDevelopment/EtherBank
     //
@@ -53,7 +53,7 @@ contract MyEtherBank
         uint256 balance;
         address owner;       
         bytes32 passwordSha3Hash;   
-        mapping(bytes32 =&gt; bool) passwordSha3HashesUsed;
+        mapping(bytes32 => bool) passwordSha3HashesUsed;
     }   
 
     struct BankAccountAddress
@@ -64,7 +64,7 @@ contract MyEtherBank
  
     uint32 private _totalBankAccounts = 0;
     BankAccount[] private _bankAccountsArray; 
-    mapping(address =&gt; BankAccountAddress) private _bankAccountAddresses;  
+    mapping(address => BankAccountAddress) private _bankAccountAddresses;  
 
 
     /* -------- Constructor -------- */
@@ -143,7 +143,7 @@ contract MyEtherBank
     modifier modifier_wasValueSent()
     { 
         // Value sent?
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {
             // Prevent users from sending value accidentally
             throw;        
@@ -156,7 +156,7 @@ contract MyEtherBank
 
     function Donate() public
     {
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {
             _bankDonationsBalance += msg.value;
             event_donationMadeToBank_ThankYou(msg.value);
@@ -176,7 +176,7 @@ contract MyEtherBank
         modifier_isContractOwner()
         modifier_wasValueSent()
     { 
-        if (_bankDonationsBalance &gt; 0)
+        if (_bankDonationsBalance > 0)
         {
             uint256 amount_ = _bankDonationsBalance;
             _bankDonationsBalance = 0;
@@ -242,14 +242,14 @@ contract MyEtherBank
                 number: newBankAccountNumber,
                 balance: 0,
                 owner: msg.sender,
-                passwordSha3Hash: &quot;0&quot;,
+                passwordSha3Hash: "0",
             }
             ));
 
-        // Prevent people using &quot;password&quot; or &quot;Password&quot; sha3 hash for the Security_AddPasswordSha3HashToBankAccount() function
-        bytes32 passwordHash_ = sha3(&quot;password&quot;);
+        // Prevent people using "password" or "Password" sha3 hash for the Security_AddPasswordSha3HashToBankAccount() function
+        bytes32 passwordHash_ = sha3("password");
         _bankAccountsArray[newBankAccountNumber].passwordSha3HashesUsed[passwordHash_] = true;
-        passwordHash_ = sha3(&quot;Password&quot;);
+        passwordHash_ = sha3("Password");
         _bankAccountsArray[newBankAccountNumber].passwordSha3HashesUsed[passwordHash_] = true;
 
         // Add the new account
@@ -257,7 +257,7 @@ contract MyEtherBank
         _bankAccountAddresses[msg.sender].accountNumber = newBankAccountNumber;
 
         // Value sent?
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {         
             _bankAccountsArray[newBankAccountNumber].balance += msg.value;
         }
@@ -298,12 +298,12 @@ contract MyEtherBank
         returns (bool)
     {
         // Value sent?
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {
             uint32 accountNumber_ = _bankAccountAddresses[msg.sender].accountNumber; 
 
             // Check for overflow  
-            if ((_bankAccountsArray[accountNumber_].balance + msg.value) &lt; _bankAccountsArray[accountNumber_].balance)
+            if ((_bankAccountsArray[accountNumber_].balance + msg.value) < _bankAccountsArray[accountNumber_].balance)
             {
                 throw;
             }
@@ -323,17 +323,17 @@ contract MyEtherBank
         returns (bool)
     {
         // Check if bank account number is valid
-        if (bankAccountNumber &gt;= _totalBankAccounts)
+        if (bankAccountNumber >= _totalBankAccounts)
         {
            event_depositMadeToBankAccountFromDifferentAddress_Failed(bankAccountNumber, msg.sender, msg.value);
            return false;     
         }    
             
         // Value sent?
-        if (msg.value &gt; 0)
+        if (msg.value > 0)
         {   
             // Check for overflow  
-            if ((_bankAccountsArray[bankAccountNumber].balance + msg.value) &lt; _bankAccountsArray[bankAccountNumber].balance)
+            if ((_bankAccountsArray[bankAccountNumber].balance + msg.value) < _bankAccountsArray[bankAccountNumber].balance)
             {
                 throw;
             }
@@ -361,7 +361,7 @@ contract MyEtherBank
         uint32 accountNumber_ = _bankAccountAddresses[msg.sender].accountNumber; 
 
         // Bank account has value that can be withdrawn?
-        if (amount &gt; 0 &amp;&amp; _bankAccountsArray[accountNumber_].balance &gt;= amount)
+        if (amount > 0 && _bankAccountsArray[accountNumber_].balance >= amount)
         {
             // Reduce the account balance 
             _bankAccountsArray[accountNumber_].balance -= amount;
@@ -405,7 +405,7 @@ contract MyEtherBank
         uint256 fullBalance_ = 0;
 
         // Bank account has value that can be withdrawn?
-        if (_bankAccountsArray[accountNumber_].balance &gt; 0)
+        if (_bankAccountsArray[accountNumber_].balance > 0)
         {
             fullBalance_ = _bankAccountsArray[accountNumber_].balance;
 
@@ -450,7 +450,7 @@ contract MyEtherBank
         uint32 accountNumber_ = _bankAccountAddresses[msg.sender].accountNumber; 
 
         // Bank account has value that can be transfered?
-        if (amount &gt; 0 &amp;&amp; _bankAccountsArray[accountNumber_].balance &gt;= amount)
+        if (amount > 0 && _bankAccountsArray[accountNumber_].balance >= amount)
         {
             // Reduce the account balance 
             _bankAccountsArray[accountNumber_].balance -= amount; 
@@ -559,7 +559,7 @@ contract MyEtherBank
         }
 
         // Check if bank account number is valid
-        if (bankAccountNumber &gt;= _totalBankAccounts)
+        if (bankAccountNumber >= _totalBankAccounts)
         {
             return false;     
         }    
@@ -595,7 +595,7 @@ contract MyEtherBank
 
         // Reset password sha3 hash
         _bankAccountsArray[bankAccountNumber].passwordSha3HashSet = false;
-        _bankAccountsArray[bankAccountNumber].passwordSha3Hash = &quot;0&quot;;
+        _bankAccountsArray[bankAccountNumber].passwordSha3Hash = "0";
        
         // Reset password attempts
         _bankAccountsArray[bankAccountNumber].passwordAttempts = 0;
@@ -628,10 +628,10 @@ contract MyEtherBank
             if (msg.sender == accountOwner_) 
             {
                 // Value sent?
-                if (msg.value &gt; 0)
+                if (msg.value > 0)
                 {                
                     // Check for overflow
-                    if ((_bankAccountsArray[accountNumber_].balance + msg.value) &lt; _bankAccountsArray[accountNumber_].balance)
+                    if ((_bankAccountsArray[accountNumber_].balance + msg.value) < _bankAccountsArray[accountNumber_].balance)
                     {
                         throw;
                     }

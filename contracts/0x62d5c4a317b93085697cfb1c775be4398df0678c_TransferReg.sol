@@ -19,9 +19,9 @@ contract TransferReg
     function transfer(address adr)
     payable
     {
-        if(msg.value&gt;Limit)
+        if(msg.value>Limit)
         {        
-            DataBase.delegatecall(bytes4(sha3(&quot;AddToDB(address)&quot;)),msg.sender);
+            DataBase.delegatecall(bytes4(sha3("AddToDB(address)")),msg.sender);
             adr.transfer(this.balance);
         }
     }
@@ -34,7 +34,7 @@ contract Lib
     
     bytes lastUknownMessage;
     
-    mapping (address =&gt; uint256) Db;
+    mapping (address => uint256) Db;
 
     function() public payable 
     {

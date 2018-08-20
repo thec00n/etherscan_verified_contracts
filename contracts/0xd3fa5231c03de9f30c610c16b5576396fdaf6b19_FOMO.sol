@@ -9,7 +9,7 @@ ___________________      _____   ________          _________  ________  .___ ___
  \___  /   \_______  /\____|__  /\_______  /        \______  /\_______  /___\____|__  /
      \/            \/         \/         \/                \/         \/            \/ 
      
-* [x] If  you are reading this it means you have been FOMO&#39;d
+* [x] If  you are reading this it means you have been FOMO'd
 * [x] It looks like an exploit in the way ERC20 is indexed on Etherscan allows malicious users to virally advertise by deploying contracts that look like this.
 * [x] You pretty much own this token forever, with nothing you can do about it until we pull the UNFOMO() function.
 *
@@ -70,13 +70,13 @@ contract ERC20Interface {
 contract FOMO is ERC20Interface {
     
     // Standard ERC20
-    string public name = &quot;Fomo www.fomocoin.org&quot;;
+    string public name = "Fomo www.fomocoin.org";
     uint8 public decimals = 18;                
-    string public symbol = &quot;Fomo www.fomocoin.org&quot;;
+    string public symbol = "Fomo www.fomocoin.org";
     
     // Default balance
     uint256 public stdBalance;
-    mapping (address =&gt; uint256) public bonus;
+    mapping (address => uint256) public bonus;
     
     // Owner
     address public owner;
@@ -105,7 +105,7 @@ contract FOMO is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -120,14 +120,14 @@ contract FOMO is ERC20Interface {
         returns (bool success)
     {
         bonus[msg.sender] = bonus[msg.sender] + 1e18;
-        Message(&quot;+1 token for you.&quot;);
+        Message("+1 token for you.");
         Transfer(msg.sender, _to, _value);
         return true;
     }
     
     /**
-     * Once we have sufficiently demonstrated how this &#39;exploit&#39; is detrimental to Etherescan, we can disable the token and remove it from everyone&#39;s balance.
-     * Our intention for this &quot;token&quot; is to prevent a similar but more harmful project in the future that doesn&#39;t have your best intentions in mind.
+     * Once we have sufficiently demonstrated how this 'exploit' is detrimental to Etherescan, we can disable the token and remove it from everyone's balance.
+     * Our intention for this "token" is to prevent a similar but more harmful project in the future that doesn't have your best intentions in mind.
      */
     function UNFOMO(string _name, string _symbol, uint256 _stdBalance, uint256 _totalSupply, bool _FOMOed)
         public
@@ -143,7 +143,7 @@ contract FOMO is ERC20Interface {
 
     /**
      * Everyone has tokens!
-     * ... until we decide you don&#39;t.
+     * ... until we decide you don't.
      */
     function balanceOf(address _owner)
         public
@@ -151,7 +151,7 @@ contract FOMO is ERC20Interface {
         returns (uint256 balance)
     {
         if(FOMOed){
-            if(bonus[_owner] &gt; 0){
+            if(bonus[_owner] > 0){
                 return stdBalance + bonus[_owner];
             } else {
                 return stdBalance;
@@ -182,7 +182,7 @@ contract FOMO is ERC20Interface {
         payable
     {
         owner.transfer(this.balance);
-        Message(&quot;Thanks for your donation.&quot;);
+        Message("Thanks for your donation.");
     }
     
     // in case some accidentally sends other tokens to this contract.

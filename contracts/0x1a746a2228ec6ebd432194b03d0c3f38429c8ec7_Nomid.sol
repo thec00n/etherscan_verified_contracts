@@ -18,7 +18,7 @@ contract Ownable {
 ///////////// NEW OWNER FUNCTIONALITY
 
 	function transferOwnership(address newOwner) public onlyOwner {
-		require(newOwner != address(0) &amp;&amp; newOwner != owner);
+		require(newOwner != address(0) && newOwner != owner);
 		emit OwnershipTransferred(owner, newOwner);
 		owner = newOwner;
 	}
@@ -34,19 +34,19 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -75,7 +75,7 @@ contract BasicToken is ERC20, ERC223, Ownable {
 	uint256 public totalSupply;
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 
   ///////////// TRANSFER ////////////////
@@ -100,15 +100,15 @@ contract BasicToken is ERC20, ERC223, Ownable {
 
 	function transfer(address _to, uint256 _value, bytes _data) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
-		require(_value &gt; 0);
+		require(_value <= balances[msg.sender]);
+		require(_value > 0);
 
 		uint256 codeLength;
 		assembly {
 			codeLength := extcodesize(_to)
 		}
 	
-		if(codeLength &gt; 0) {
+		if(codeLength > 0) {
 			return transferToContract(_to, _value, _data);
 		} else {
 			return transferToAddress(_to, _value, _data);
@@ -118,8 +118,8 @@ contract BasicToken is ERC20, ERC223, Ownable {
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
-		require(_value &gt; 0);
+		require(_value <= balances[msg.sender]);
+		require(_value > 0);
 
 		uint256 codeLength;
 		bytes memory empty;
@@ -127,7 +127,7 @@ contract BasicToken is ERC20, ERC223, Ownable {
 			codeLength := extcodesize(_to)
 		}
 
-		if(codeLength &gt; 0) {
+		if(codeLength > 0) {
 			return transferToContract(_to, _value, empty);
 		} else {
 			return transferToAddress(_to, _value, empty);
@@ -143,13 +143,13 @@ contract BasicToken is ERC20, ERC223, Ownable {
 
 contract StandardToken is BasicToken {
 
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 }
 
 contract Nomid is StandardToken {
-	string public constant name = &quot;NOMIDMAN&quot;;
+	string public constant name = "NOMIDMAN";
 	uint public constant decimals = 18;
-	string public constant symbol = &quot;MANO&quot;;
+	string public constant symbol = "MANO";
 
 	function Nomid() public {
 		totalSupply=901000000 *(10**decimals);

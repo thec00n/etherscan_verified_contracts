@@ -75,12 +75,12 @@ function GetIsPauded() public view returns(bool) {
 }
 
 function purchaseAdv(uint256 _cardType, uint256 _cardId, string _text, string _link) public payable {
-  require(msg.value &gt;= advs[_advId].curPrice);
+  require(msg.value >= advs[_advId].curPrice);
   require(isPaused == false);
   uint256 _advId;
   bool is_adv = false;
-  for (uint i=0; i &lt; advs.length; i++) {
-    if (advs[i].card_type == _cardType &amp;&amp; advs[i].cardId == _cardId){
+  for (uint i=0; i < advs.length; i++) {
+    if (advs[i].card_type == _cardType && advs[i].cardId == _cardId){
         _advId = i;
         is_adv = true;
     }
@@ -112,7 +112,7 @@ function purchaseAdv(uint256 _cardType, uint256 _cardId, string _text, string _l
 }
 
 function purchaseWhaleCard() public payable {
-    require(msg.value &gt;= whalecard.curPrice);
+    require(msg.value >= whalecard.curPrice);
     require(isPaused == false);
     require(whalecardAreInitiated == true);
     uint256 totalpercent = 155;
@@ -130,18 +130,18 @@ function purchaseCard(uint256 _cardType, uint256 _cardId) public payable {
   uint256 ownercount = 0;
   if (_cardType == 0){
       require(companies[_cardId].is_released == true);
-      require(msg.value &gt;= companies[_cardId].curPrice);
+      require(msg.value >= companies[_cardId].curPrice);
       totalpercent = totalpercent + 5;
   } else if (_cardType == 1) {
       require(makes[_cardId].is_released == true);
-      require(msg.value &gt;= makes[_cardId].curPrice);      
+      require(msg.value >= makes[_cardId].curPrice);      
       totalpercent = totalpercent + 5 + 2;
   } else if (_cardType == 2) {
       require(cars[_cardId].is_released == true);
-      require(msg.value &gt;= cars[_cardId].curPrice);            
+      require(msg.value >= cars[_cardId].curPrice);            
       uint256 len = cars[_cardId].ownerAddresses.length;
       ownercount = 1;
-      if (cars[_cardId].ownerAddresses.length &gt; 4){
+      if (cars[_cardId].ownerAddresses.length > 4){
         ownercount = 3;
       } else {
         ownercount = len-1;
@@ -185,9 +185,9 @@ function purchaseCard(uint256 _cardType, uint256 _cardId) public payable {
     makes[makeId].ownerAddress.transfer(commission2percent);
     commissionOwner = commissionOwner - commission2percent;
 
-    if (len &gt; 1){
-        for (uint i=len-2; i&gt;=0; i--) {
-            if (i &gt; len-5){
+    if (len > 1){
+        for (uint i=len-2; i>=0; i--) {
+            if (i > len-5){
                 cars[_cardId].ownerAddresses[i].transfer(commission2percent);
                 commissionOwner = commissionOwner - commission2percent;
             }
@@ -196,7 +196,7 @@ function purchaseCard(uint256 _cardType, uint256 _cardId) public payable {
 
     cars[_cardId].ownerAddresses[len-1].transfer(commissionOwner);
     cars[_cardId].ownerAddresses.push(msg.sender);
-    if (ownercount &lt; 3) totalpercent = totalpercent + 2;
+    if (ownercount < 3) totalpercent = totalpercent + 2;
     cars[_cardId].curPrice = div(mul(cars[_cardId].curPrice, totalpercent), 100);
   }
 }
@@ -284,8 +284,8 @@ uint256 curPrice,
 uint256 cardId
 ) {
   Adv storage _adv = advs[0];
-  for (uint i=0; i &lt; advs.length; i++) {
-    if (advs[i].card_type == _cardType &amp;&amp; advs[i].cardId == _cardId){
+  for (uint i=0; i < advs.length; i++) {
+    if (advs[i].card_type == _cardType && advs[i].cardId == _cardId){
         _adv = advs[i];
     }
   }
@@ -298,7 +298,7 @@ uint256 cardId
 }
 
 /**
-@dev Multiplies two numbers, throws on overflow. =&gt; From the SafeMath library
+@dev Multiplies two numbers, throws on overflow. => From the SafeMath library
 */
 function mul(uint256 a, uint256 b) internal pure returns (uint256) {
 if (a == 0) {
@@ -309,12 +309,12 @@ return c;
 }
 
 /**
-@dev Integer division of two numbers, truncating the quotient. =&gt; From the SafeMath library
+@dev Integer division of two numbers, truncating the quotient. => From the SafeMath library
 */
 function div(uint256 a, uint256 b) internal pure returns (uint256) {
-// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+// assert(b > 0); // Solidity automatically throws when dividing by 0
 uint c = a / b;
-// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 return c;
 }
 
@@ -322,10 +322,10 @@ return c;
 
 function InitiateCompanies() public onlyOwner {
   require(companiesAreInitiated == false);
-  addCompany(&#39;Aston Martin&#39;,ownerAddress, 100000000000000000);
-  addCompany(&#39;BMW&#39;,ownerAddress, 100000000000000000);
-  addCompany(&#39;Ferrari&#39;,ownerAddress, 100000000000000000);
-  addCompany(&#39;Honda&#39;,ownerAddress, 100000000000000000);
+  addCompany('Aston Martin',ownerAddress, 100000000000000000);
+  addCompany('BMW',ownerAddress, 100000000000000000);
+  addCompany('Ferrari',ownerAddress, 100000000000000000);
+  addCompany('Honda',ownerAddress, 100000000000000000);
   companiesAreInitiated = true;
 }
 
@@ -337,8 +337,8 @@ function addCompany(string name, address address1, uint256 price) public onlyOwn
   companies[companyId].is_released   = true;
 
   uint advId = advs.length++;
-  advs[advId].text = &#39;Your Ad here&#39;;
-  advs[advId].link = &#39;http://cryptoflipcars.site/&#39;;
+  advs[advId].text = 'Your Ad here';
+  advs[advId].link = 'http://cryptoflipcars.site/';
   advs[advId].curPrice   = 5000000000000000;
   advs[advId].card_type   = 0;
   advs[advId].ownerAddress = address1;
@@ -351,10 +351,10 @@ function setReleaseCompany(uint256 _companyId, bool is_released) public onlyOwne
 
 function InitiateMakes() public onlyOwner {
   require(makesAreInitiated == false);
-  addMake(&#39;DB5&#39;,ownerAddress,0,10000000000000000);
-  addMake(&#39;DB6&#39;,ownerAddress,0,10000000000000000);
-  addMake(&#39;DB9&#39;,ownerAddress,0,10000000000000000);
-  addMake(&#39;One-77&#39;,ownerAddress,0,10000000000000000);
+  addMake('DB5',ownerAddress,0,10000000000000000);
+  addMake('DB6',ownerAddress,0,10000000000000000);
+  addMake('DB9',ownerAddress,0,10000000000000000);
+  addMake('One-77',ownerAddress,0,10000000000000000);
   makesAreInitiated = true;
 }
 
@@ -367,8 +367,8 @@ function addMake(string name, address address1, uint256 companyId, uint256 price
   makes[makeId].is_released   = true;
 
   uint advId = advs.length++;
-  advs[advId].text = &#39;Your Ad here&#39;;
-  advs[advId].link = &#39;http://cryptoflipcars.site/&#39;;
+  advs[advId].text = 'Your Ad here';
+  advs[advId].link = 'http://cryptoflipcars.site/';
   advs[advId].curPrice   = 5000000000000000;
   advs[advId].card_type   = 1;
   advs[advId].ownerAddress = address1;
@@ -379,10 +379,10 @@ function addMake(string name, address address1, uint256 companyId, uint256 price
 
 function InitiateCars() public onlyOwner {
   require(carsAreInitiated == false);
-  addCar(&#39;1964 DB5 James Bond Edition&#39;,ownerAddress, 0, 0, 5000000000000000);
-  addCar(&#39;Blue 1965 &#39;,ownerAddress, 0, 0, 5000000000000000);
-  addCar(&#39;1964 DB5 James Bond Edition&#39;,ownerAddress,0,0,5000000000000000);
-  addCar(&#39;Blue 1965 &#39;,ownerAddress,0,0,5000000000000000);
+  addCar('1964 DB5 James Bond Edition',ownerAddress, 0, 0, 5000000000000000);
+  addCar('Blue 1965 ',ownerAddress, 0, 0, 5000000000000000);
+  addCar('1964 DB5 James Bond Edition',ownerAddress,0,0,5000000000000000);
+  addCar('Blue 1965 ',ownerAddress,0,0,5000000000000000);
   carsAreInitiated = true;
 }
 
@@ -403,8 +403,8 @@ function addCar(string name, address address1, uint256 companyId, uint256 makeId
   cars[carId].is_released   = true;
 
   uint advId = advs.length++;
-  advs[advId].text = &#39;Your Ad here&#39;;
-  advs[advId].link = &#39;http://cryptoflipcars.site/&#39;;
+  advs[advId].text = 'Your Ad here';
+  advs[advId].link = 'http://cryptoflipcars.site/';
   advs[advId].curPrice   = 5000000000000000;
   advs[advId].card_type   = 2;
   advs[advId].ownerAddress = address1;

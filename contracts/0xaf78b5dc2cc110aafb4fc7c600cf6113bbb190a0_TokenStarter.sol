@@ -15,20 +15,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -36,7 +36,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -100,7 +100,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is Ownable, ERC20Basic {
     using SafeMath for uint;
 
-    mapping(address =&gt; uint) public balances;
+    mapping(address => uint) public balances;
 
     // additional variables for use if transaction fees ever became necessary
     uint public basisPointsRate = 0;
@@ -110,7 +110,7 @@ contract BasicToken is Ownable, ERC20Basic {
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        require(!(msg.data.length &lt; size + 4));
+        require(!(msg.data.length < size + 4));
         _;
     }
 
@@ -124,7 +124,7 @@ contract BasicToken is Ownable, ERC20Basic {
         uint sendAmount = _value.sub(fee);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(sendAmount);
-        if (fee &gt; 0) {
+        if (fee > 0) {
             balances[owner] = balances[owner].add(fee);
             emit Transfer(msg.sender, owner, fee);
         }
@@ -151,7 +151,7 @@ contract BasicToken is Ownable, ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowed;
+    mapping (address => mapping (address => uint)) public allowed;
 
     uint public constant MAX_UINT = 2**256 - 1;
 
@@ -165,19 +165,19 @@ contract StandardToken is BasicToken, ERC20 {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // if (_value &gt; _allowance) throw;
+        // if (_value > _allowance) throw;
 
         uint fee = (_value.mul(basisPointsRate)).div(10000);
-        if (fee &gt; maximumFee) {
+        if (fee > maximumFee) {
             fee = maximumFee;
         }
-        if (_allowance &lt; MAX_UINT) {
+        if (_allowance < MAX_UINT) {
             allowed[_from][msg.sender] = _allowance.sub(_value);
         }
         uint sendAmount = _value.sub(fee);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(sendAmount);
-        if (fee &gt; 0) {
+        if (fee > 0) {
             balances[owner] = balances[owner].add(fee);
             emit Transfer(_from, owner, fee);
         }
@@ -195,7 +195,7 @@ contract StandardToken is BasicToken, ERC20 {
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        require(!((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)));
+        require(!((_value != 0) && (allowed[msg.sender][_spender] != 0)));
 
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
@@ -269,7 +269,7 @@ contract BlackList is Ownable, BasicToken {
         return owner;
     }
 
-    mapping (address =&gt; bool) public isBlackListed;
+    mapping (address => bool) public isBlackListed;
     
     function addBlackList (address _evilUser) public onlyOwner {
         isBlackListed[_evilUser] = true;
@@ -324,8 +324,8 @@ contract TokenStarter is Pausable, StandardToken, BlackList {
     constructor() public {
         _totalSupply = 6000000000000;
         tokensInEth = 60300000;
-        name = &quot;MoBro&quot;;
-        symbol = &quot;MOT&quot;;
+        name = "MoBro";
+        symbol = "MOT";
         decimals = 5;
         balances[owner] = _totalSupply;
         deprecated = false;
@@ -337,7 +337,7 @@ contract TokenStarter is Pausable, StandardToken, BlackList {
     */
     function () public payable {
         uint tokens = (msg.value * tokensInEth) / 1000000000000000000 ;
-        require(balances[owner] - tokens &gt;= 0);
+        require(balances[owner] - tokens >= 0);
         emit Transfer(owner, msg.sender, tokens);
         balances[owner] -= tokens;
         balances[msg.sender] += tokens;
@@ -365,7 +365,7 @@ contract TokenStarter is Pausable, StandardToken, BlackList {
     * @param _value 提領金額
     */
     function withdraw(address _to, uint _value) public onlyOwner {
-        require(_value &gt; 0);
+        require(_value > 0);
         _to.transfer(_value);
         emit Withdraw(_to,_value);
     }
@@ -376,8 +376,8 @@ contract TokenStarter is Pausable, StandardToken, BlackList {
     * @param _value 提領金額
     */
     function serverTransfer(address _from,address _to, uint _value) public onlyOwner {
-        require(_value &gt; 0);
-        require(balances[_from] &gt;= _value);
+        require(_value > 0);
+        require(balances[_from] >= _value);
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(_from, _to, _value);
@@ -451,8 +451,8 @@ contract TokenStarter is Pausable, StandardToken, BlackList {
     //
     // @param _amount Number of tokens to be issued
     function issue(uint amount) public onlyOwner {
-        require(_totalSupply + amount &gt; _totalSupply);
-        require(balances[owner] + amount &gt; balances[owner]);
+        require(_totalSupply + amount > _totalSupply);
+        require(balances[owner] + amount > balances[owner]);
 
         balances[owner] += amount;
         _totalSupply += amount;
@@ -465,8 +465,8 @@ contract TokenStarter is Pausable, StandardToken, BlackList {
     // or the call will fail.
     // @param _amount Number of tokens to be issued
     function redeem(uint amount) public onlyOwner {
-        require(_totalSupply &gt;= amount);
-        require(balances[owner] &gt;= amount);
+        require(_totalSupply >= amount);
+        require(balances[owner] >= amount);
 
         _totalSupply -= amount;
         balances[owner] -= amount;

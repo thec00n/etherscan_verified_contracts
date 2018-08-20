@@ -2,7 +2,7 @@ contract Ownable {
 
   address public owner;
   
-  mapping(address =&gt; uint) public balances;
+  mapping(address => uint) public balances;
 
   function Ownable() public {
     owner = msg.sender;
@@ -26,7 +26,7 @@ contract ExchangeRate is Ownable {
 
   event RateUpdated(uint timestamp, bytes32 symbol, uint rate);
 
-  mapping(bytes32 =&gt; uint) public rates;
+  mapping(bytes32 => uint) public rates;
 
   function updateRate(string _symbol, uint _rate) public onlyOwner {
     rates[keccak256(_symbol)] = _rate;
@@ -35,10 +35,10 @@ contract ExchangeRate is Ownable {
 
   
   function updateRates(uint[] data) public onlyOwner {
-    if (data.length % 2 &gt; 0)
+    if (data.length % 2 > 0)
       revert();
     uint i = 0;
-    while (i &lt; data.length / 2) {
+    while (i < data.length / 2) {
       bytes32 symbol = bytes32(data[i * 2]);
       uint rate = data[i * 2 + 1];
       rates[symbol] = rate;

@@ -4,15 +4,15 @@ pragma solidity ^0.4.18;
 
 contract LANDStorage {
 
-  mapping (address =&gt; uint) public latestPing;
+  mapping (address => uint) public latestPing;
 
   uint256 constant clearLow = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000;
   uint256 constant clearHigh = 0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff;
   uint256 constant factor = 0x100000000000000000000000000000000;
 
-  mapping (address =&gt; bool) public authorizedDeploy;
+  mapping (address => bool) public authorizedDeploy;
 
-  mapping (uint256 =&gt; address) public updateOperator;
+  mapping (uint256 => address) public updateOperator;
 }
 
 // File: contracts/upgradable/OwnableStorage.sol
@@ -54,33 +54,33 @@ contract AssetRegistryStorage {
   /**
    * Stores an array of assets owned by a given account
    */
-  mapping(address =&gt; uint256[]) internal _assetsOf;
+  mapping(address => uint256[]) internal _assetsOf;
 
   /**
    * Stores the current holder of an asset
    */
-  mapping(uint256 =&gt; address) internal _holderOf;
+  mapping(uint256 => address) internal _holderOf;
 
   /**
    * Stores the index of an asset in the `_assetsOf` array of its holder
    */
-  mapping(uint256 =&gt; uint256) internal _indexOfAsset;
+  mapping(uint256 => uint256) internal _indexOfAsset;
 
   /**
    * Stores the data associated with an asset
    */
-  mapping(uint256 =&gt; string) internal _assetData;
+  mapping(uint256 => string) internal _assetData;
 
   /**
    * For a given account, for a given operator, store whether that operator is
    * allowed to transfer and modify assets on behalf of them.
    */
-  mapping(address =&gt; mapping(address =&gt; bool)) internal _operators;
+  mapping(address => mapping(address => bool)) internal _operators;
 
   /**
    * Approval array
    */
-  mapping(uint256 =&gt; address) internal _approval;
+  mapping(uint256 => address) internal _approval;
 }
 
 // File: contracts/Storage.sol
@@ -102,7 +102,7 @@ contract Ownable is Storage {
 
   function bytesToAddress (bytes b) pure public returns (address) {
     uint result = 0;
-    for (uint i = b.length-1; i+1 &gt; 0; i--) {
+    for (uint i = b.length-1; i+1 > 0; i--) {
       uint c = uint(b[i]);
       uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
       result += to_inc;
@@ -236,9 +236,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -246,7 +246,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -255,7 +255,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -354,7 +354,7 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
   //
 
   /**
-   * @dev Authorize a third party operator to manage (send) msg.sender&#39;s asset
+   * @dev Authorize a third party operator to manage (send) msg.sender's asset
    * @param operator address to be approved
    * @param authorized bool set to true to authorize, false to withdraw authorization
    */
@@ -434,7 +434,7 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
   }
 
   function _clearApproval(address holder, uint256 assetId) internal {
-    if (ownerOf(assetId) == holder &amp;&amp; _approval[assetId] != 0) {
+    if (ownerOf(assetId) == holder && _approval[assetId] != 0) {
       _approval[assetId] = 0;
       Approval(holder, 0, assetId);
     }
@@ -449,7 +449,7 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
 
     _addAssetTo(beneficiary, assetId);
 
-    Transfer(0, beneficiary, assetId, msg.sender, &#39;&#39;);
+    Transfer(0, beneficiary, assetId, msg.sender, '');
   }
 
   function _destroy(uint256 assetId) internal {
@@ -458,7 +458,7 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
 
     _removeAssetFrom(holder, assetId);
 
-    Transfer(holder, 0, assetId, msg.sender, &#39;&#39;);
+    Transfer(holder, 0, assetId, msg.sender, '');
   }
 
   //
@@ -491,20 +491,20 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
   }
 
   /**
-   * @dev Alias of `safeTransferFrom(from, to, assetId, &#39;&#39;)`
+   * @dev Alias of `safeTransferFrom(from, to, assetId, '')`
    *
    * @param from address that currently owns an asset
    * @param to address to receive the ownership of the asset
    * @param assetId uint256 ID of the asset to be transferred
    */
   function safeTransferFrom(address from, address to, uint256 assetId) public {
-    return _doTransferFrom(from, to, assetId, &#39;&#39;, msg.sender, true);
+    return _doTransferFrom(from, to, assetId, '', msg.sender, true);
   }
 
   /**
    * @dev Securely transfers the ownership of a given asset from one address to
    * another address, calling the method `onNFTReceived` on the target address if
-   * there&#39;s code associated with it
+   * there's code associated with it
    *
    * @param from address that currently owns an asset
    * @param to address to receive the ownership of the asset
@@ -525,7 +525,7 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
    * @param assetId uint256 ID of the asset to be transferred
    */
   function transferFrom(address from, address to, uint256 assetId) public {
-    return _doTransferFrom(from, to, assetId, &#39;&#39;, msg.sender, false);
+    return _doTransferFrom(from, to, assetId, '', msg.sender, false);
   }
 
   function _doTransferFrom(
@@ -547,8 +547,8 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
     _clearApproval(holder, assetId);
     _addAssetTo(to, assetId);
 
-    if (doCheck &amp;&amp; _isContract(to)) {
-      // Equals to bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))
+    if (doCheck && _isContract(to)) {
+      // Equals to bytes4(keccak256("onERC721Received(address,uint256,bytes)"))
       bytes4 ERC721_RECEIVED = bytes4(0xf0b9e5ba);
       require(
         IERC721Receiver(to).onERC721Received(
@@ -579,7 +579,7 @@ contract ERC721Base is AssetRegistryStorage, IERC721Base, ERC165 {
   function _isContract(address addr) internal view returns (bool) {
     uint size;
     assembly { size := extcodesize(addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 }
 
@@ -589,7 +589,7 @@ contract IERC721Enumerable {
 
   /**
    * @notice Enumerate active tokens
-   * @dev Throws if `index` &gt;= `totalSupply()`, otherwise SHALL NOT throw.
+   * @dev Throws if `index` >= `totalSupply()`, otherwise SHALL NOT throw.
    * @param index A counter less than `totalSupply()`
    * @return The identifier for the `index`th asset, (sort order not
    *  specified)
@@ -607,7 +607,7 @@ contract IERC721Enumerable {
 
   /**
    * @notice Enumerate owners
-   * @dev Throws if `index` &gt;= `countOfOwners()`, otherwise must not throw.
+   * @dev Throws if `index` >= `countOfOwners()`, otherwise must not throw.
    * @param index A counter less than `countOfOwners()`
    * @return The address of the `index`th owner (sort order not specified)
    */
@@ -624,7 +624,7 @@ contract IERC721Enumerable {
 
   /**
    * @notice Enumerate tokens assigned to an owner
-   * @dev Throws if `index` &gt;= `balanceOf(owner)` or if
+   * @dev Throws if `index` >= `balanceOf(owner)` or if
    *  `owner` is the zero address, representing invalid assets.
    *  Otherwise this must not throw.
    * @param owner An address where we are interested in assets owned by them
@@ -653,7 +653,7 @@ contract ERC721Enumerable is AssetRegistryStorage, IERC721Enumerable {
 
   /**
    * @notice Enumerate tokens assigned to an owner
-   * @dev Throws if `index` &gt;= `balanceOf(owner)` or if
+   * @dev Throws if `index` >= `balanceOf(owner)` or if
    *  `owner` is the zero address, representing invalid assets.
    *  Otherwise this must not throw.
    * @param owner An address where we are interested in assets owned by them
@@ -665,8 +665,8 @@ contract ERC721Enumerable is AssetRegistryStorage, IERC721Enumerable {
     address owner, uint256 index
     ) public view returns (uint256 assetId)
   {
-    require(index &lt; _assetsOf[owner].length);
-    require(index &lt; (1&lt;&lt;127));
+    require(index < _assetsOf[owner].length);
+    require(index < (1<<127));
     return _assetsOf[owner][index];
   }
 
@@ -744,9 +744,9 @@ contract LANDRegistry is Storage,
 {
 
   function initialize(bytes) public {
-    _name = &#39;Decentraland LAND&#39;;
-    _symbol = &#39;LAND&#39;;
-    _description = &#39;Contract that stores the Decentraland LAND registry&#39;;
+    _name = 'Decentraland LAND';
+    _symbol = 'LAND';
+    _description = 'Contract that stores the Decentraland LAND registry';
   }
 
   modifier onlyProxyOwner() {
@@ -784,7 +784,7 @@ contract LANDRegistry is Storage,
   }
 
   function assignMultipleParcels(int[] x, int[] y, address beneficiary) public onlyProxyOwner {
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       _generate(encodeTokenId(x[i], y[i]), beneficiary);
     }
   }
@@ -804,10 +804,10 @@ contract LANDRegistry is Storage,
 
   function clearLand(int[] x, int[] y) public {
     require(x.length == y.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       uint landId = encodeTokenId(x[i], y[i]);
       address holder = ownerOf(landId);
-      if (latestPing[holder] &lt; now - 1 years) {
+      if (latestPing[holder] < now - 1 years) {
         _destroy(landId);
       }
     }
@@ -818,17 +818,17 @@ contract LANDRegistry is Storage,
   //
 
   function encodeTokenId(int x, int y) view public returns (uint) {
-    return ((uint(x) * factor) &amp; clearLow) | (uint(y) &amp; clearHigh);
+    return ((uint(x) * factor) & clearLow) | (uint(y) & clearHigh);
   }
 
   function decodeTokenId(uint value) view public returns (int, int) {
-    uint x = (value &amp; clearLow) &gt;&gt; 128;
-    uint y = (value &amp; clearHigh);
+    uint x = (value & clearLow) >> 128;
+    uint y = (value & clearHigh);
     return (expandNegative128BitCast(x), expandNegative128BitCast(y));
   }
 
   function expandNegative128BitCast(uint value) pure internal returns (int) {
-    if (value &amp; (1&lt;&lt;127) != 0) {
+    if (value & (1<<127) != 0) {
       return int(value | clearLow);
     }
     return int(value);
@@ -843,11 +843,11 @@ contract LANDRegistry is Storage,
   }
 
   function ownerOfLandMany(int[] x, int[] y) view public returns (address[]) {
-    require(x.length &gt; 0);
+    require(x.length > 0);
     require(x.length == y.length);
 
     address[] memory addrs = new address[](x.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       addrs[i] = ownerOfLand(x[i], y[i]);
     }
 
@@ -861,7 +861,7 @@ contract LANDRegistry is Storage,
 
     int assetX;
     int assetY;
-    for (uint i = 0; i &lt; len; i++) {
+    for (uint i = 0; i < len; i++) {
       (assetX, assetY) = decodeTokenId(_assetsOf[owner][i]);
       x[i] = assetX;
       y[i] = assetY;
@@ -884,10 +884,10 @@ contract LANDRegistry is Storage,
   }
 
   function transferManyLand(int[] x, int[] y, address to) public {
-    require(x.length &gt; 0);
+    require(x.length > 0);
     require(x.length == y.length);
 
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       uint256 tokenId = encodeTokenId(x[i], y[i]);
       safeTransferFrom(ownerOf(tokenId), to, tokenId);
     }
@@ -909,9 +909,9 @@ contract LANDRegistry is Storage,
   }
 
   function updateManyLandData(int[] x, int[] y, string data) public {
-    require(x.length &gt; 0);
+    require(x.length > 0);
     require(x.length == y.length);
-    for (uint i = 0; i &lt; x.length; i++) {
+    for (uint i = 0; i < x.length; i++) {
       updateLandData(x[i], y[i], data);
     }
   }

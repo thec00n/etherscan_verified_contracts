@@ -26,7 +26,7 @@ contract ERC20 is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,9 +85,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -95,7 +95,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -104,7 +104,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,11 +113,11 @@ contract SelfllerySaleFoundation is Ownable {
     using SafeMath for uint;
 
     // Amount of Ether paid from each address
-    mapping (address =&gt; uint) public paidEther;
+    mapping (address => uint) public paidEther;
     // Pre-sale participant tokens for each address
-    mapping (address =&gt; uint) public preSaleParticipantTokens;
+    mapping (address => uint) public preSaleParticipantTokens;
     // Number of tokens was sent during the ICO for each address
-    mapping (address =&gt; uint) public sentTokens;
+    mapping (address => uint) public sentTokens;
 
     // SELFLLERY PTE LTD (manager wallet)
     address public selflleryManagerWallet;
@@ -152,10 +152,10 @@ contract SelfllerySaleFoundation is Ownable {
     event Purchase(address indexed purchasedBy, uint amountTokens, uint etherWei);
 
     /**
-    * @dev Throws if date isn&#39;t between ICO dates.
+    * @dev Throws if date isn't between ICO dates.
     */
     modifier onlyDuringICODates() {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         _;
     }
 
@@ -213,13 +213,13 @@ contract SelfllerySaleFoundation is Ownable {
      */
     function purchaseFor(address _participant) public payable onlyDuringICODates() returns(bool) {
         require(_participant != 0x0);
-        require(paidEther[_participant].add(msg.value) &gt;= minimumPurchaseAmount);
+        require(paidEther[_participant].add(msg.value) >= minimumPurchaseAmount);
 
         selflleryManagerWallet.transfer(msg.value);
 
         uint currentBonusPercent = getCurrentBonusPercent();
         uint totalTokens = calcTotalTokens(msg.value, currentBonusPercent);
-        require(currentCapTokens.add(totalTokens) &lt;= saleTokensCents);
+        require(currentCapTokens.add(totalTokens) <= saleTokensCents);
         require(token.transferFrom(owner, _participant, totalTokens));
         sentTokens[_participant] = sentTokens[_participant].add(totalTokens);
         currentCapTokens = currentCapTokens.add(totalTokens);
@@ -236,7 +236,7 @@ contract SelfllerySaleFoundation is Ownable {
      * @return A boolean that indicates if the operation was successful.
      */
     function changeMinimumPurchaseAmount(uint _newMinimumPurchaseAmount) public onlyOwner returns(bool) {
-        require(_newMinimumPurchaseAmount &gt;= 0);
+        require(_newMinimumPurchaseAmount >= 0);
         minimumPurchaseAmount = _newMinimumPurchaseAmount;
         return true;
     }
@@ -249,8 +249,8 @@ contract SelfllerySaleFoundation is Ownable {
      */
     function addPreSalePurchaseTokens(address _participant, uint _totalTokens) public onlyOwner returns(bool) {
         require(_participant != 0x0);
-        require(_totalTokens &gt; 0);
-        require(currentCapTokens.add(_totalTokens) &lt;= saleTokensCents);
+        require(_totalTokens > 0);
+        require(currentCapTokens.add(_totalTokens) <= saleTokensCents);
 
         require(token.transferFrom(owner, _participant, _totalTokens));
         sentTokens[_participant] = sentTokens[_participant].add(_totalTokens);
@@ -265,7 +265,7 @@ contract SelfllerySaleFoundation is Ownable {
      * @return A boolean that indicates if finish date ICO reached.
      */
     function isFinishDateReached() public constant returns(bool) {
-        return endDate &lt;= now;
+        return endDate <= now;
     }
 
     /**
@@ -273,7 +273,7 @@ contract SelfllerySaleFoundation is Ownable {
      * @return A boolean that indicates if hard cap tokens reached.
      */
     function isHardCapTokensReached() public constant returns(bool) {
-        return hardCapTokens &lt;= currentCapTokens;
+        return hardCapTokens <= currentCapTokens;
     }
 
     /**
@@ -292,7 +292,7 @@ contract SelfllerySaleFoundation is Ownable {
      */
     function calcTotalTokens(uint _value, uint _bonusPercent) internal view returns(uint) {
         uint tokensAmount = _value.mul(tokenCents).div(tokenPriceWei);
-        require(tokensAmount &gt; 0);
+        require(tokensAmount > 0);
         uint bonusTokens = tokensAmount.mul(_bonusPercent).div(100);
         uint totalTokens = tokensAmount.add(bonusTokens);
         return totalTokens;
@@ -304,7 +304,7 @@ contract SelfllerySaleFoundation is Ownable {
      */
     function getCurrentBonusPercent() internal constant returns (uint) {
         uint currentBonusPercent;
-        if (now &lt;= bonusEndDate) {
+        if (now <= bonusEndDate) {
             currentBonusPercent = bonusPercent;
         } else {
             currentBonusPercent = 0;

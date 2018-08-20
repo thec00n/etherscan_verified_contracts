@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
     Owned contract interface
 */
 contract IOwned {
-    // this function isn&#39;t abstract since the compiler emits automatically generated getter functions as external
+    // this function isn't abstract since the compiler emits automatically generated getter functions as external
     function owner() public view returns (address) {}
 
     function transferOwnership(address _newOwner) public;
@@ -19,7 +19,7 @@ contract IContractRegistry {
 }
 
 /*
-    Utilities &amp; Common Modifiers
+    Utilities & Common Modifiers
 */
 contract Utils {
     /**
@@ -30,11 +30,11 @@ contract Utils {
 
     // verifies that an amount is greater than zero
     modifier greaterThanZero(uint256 _amount) {
-        require(_amount &gt; 0);
+        require(_amount > 0);
         _;
     }
 
-    // validates an address - currently only checks that it isn&#39;t null
+    // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != address(0));
         _;
@@ -58,7 +58,7 @@ contract Utils {
     */
     function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) {
         uint256 z = _x + _y;
-        assert(z &gt;= _x);
+        assert(z >= _x);
         return z;
     }
 
@@ -71,7 +71,7 @@ contract Utils {
         @return difference
     */
     function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) {
-        assert(_x &gt;= _y);
+        assert(_x >= _y);
         return _x - _y;
     }
 
@@ -153,7 +153,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         bool isSet;
     }
 
-    mapping (bytes32 =&gt; RegistryItem) private items;    // name -&gt; address mapping
+    mapping (bytes32 => RegistryItem) private items;    // name -> address mapping
     bytes32[] public names;                             // list of all registered contract names
 
     event AddressUpdate(bytes32 indexed _contractName, address _contractAddress);
@@ -186,7 +186,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         ownerOnly
         validAddress(_contractAddress)
     {
-        require(_contractName.length &gt; 0); // validate input
+        require(_contractName.length > 0); // validate input
 
         // update the address in the registry
         items[_contractName].contractAddress = _contractAddress;
@@ -194,7 +194,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         if (!items[_contractName].isSet) {
             // mark the item as set
             items[_contractName].isSet = true;
-            // add the contract name to the name list and update the item&#39;s index in the list
+            // add the contract name to the name list and update the item's index in the list
             items[_contractName].nameIndex = names.push(_contractName) - 1;
         }
 
@@ -208,7 +208,7 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
        @param _contractName contract name
     */
     function unregisterAddress(bytes32 _contractName) public ownerOnly {
-        require(_contractName.length &gt; 0); // validate input
+        require(_contractName.length > 0); // validate input
 
         // remove the address from the registry
         items[_contractName].contractAddress = address(0);
@@ -216,11 +216,11 @@ contract ContractRegistry is IContractRegistry, Owned, Utils {
         if (items[_contractName].isSet) {
             // mark the item as empty
             items[_contractName].isSet = false;
-            // move the last element to the deleted element&#39;s position
+            // move the last element to the deleted element's position
             names[items[_contractName].nameIndex] = names[names.length - 1];
             // remove the last element from the name list
             names.length--;
-            // zero the deleted element&#39;s index
+            // zero the deleted element's index
             items[_contractName].nameIndex = 0;
         }
 

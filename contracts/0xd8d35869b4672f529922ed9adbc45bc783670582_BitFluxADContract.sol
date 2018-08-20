@@ -47,7 +47,7 @@ contract BitFluxADContract {
      **/ 
     function BulkTransfer(address[] tokenHolders, uint amount) public {
         require(msg.sender==wallet);
-        for(uint i = 0; i&lt;tokenHolders.length; i++)
+        for(uint i = 0; i<tokenHolders.length; i++)
         {
             token.transferFrom(wallet,tokenHolders[i],amount);
         }

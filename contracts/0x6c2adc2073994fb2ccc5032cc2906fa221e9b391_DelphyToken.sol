@@ -1,14 +1,14 @@
 /*
   Copyright 2017 Delphy Foundation.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -93,7 +93,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -105,7 +105,7 @@ library Math {
         constant
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -168,13 +168,13 @@ contract StandardToken is Token {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
 
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param to Address of token receiver
     /// @param value Number of tokens to transfer
     /// @return Was transfer successful?
@@ -251,14 +251,14 @@ contract StandardToken is Token {
 /// @title Delphy Token contract
 /// For Delphy ICO details: https://delphy.org/index.html#ICO
 /// For Delphy Project: https://delphy.org
-/// @author <span class="__cf_email__" data-cfemail="b7ddc4c0f7d3d2dbc7dfce99d8c5d0">[email&#160;protected]</span>
+/// @author <span class="__cf_email__" data-cfemail="b7ddc4c0f7d3d2dbc7dfce99d8c5d0">[email protected]</span>
 contract DelphyToken is StandardToken {
     /*
      *  Constants
      */
 
-    string constant public name = &quot;Delphy Token&quot;;
-    string constant public symbol = &quot;DPY&quot;;
+    string constant public name = "Delphy Token";
+    string constant public symbol = "DPY";
     uint8 constant public decimals = 18;
 
     /// Delphy token total supply
@@ -276,7 +276,7 @@ contract DelphyToken is StandardToken {
     {
         totalSupply = 0;
 
-        for (uint i=0; i&lt;owners.length; i++) {
+        for (uint i=0; i<owners.length; i++) {
             require (owners[i] != 0);
 
             balances[owners[i]] += tokens[i];

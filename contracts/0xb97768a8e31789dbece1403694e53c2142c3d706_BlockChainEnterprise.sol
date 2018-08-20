@@ -6,8 +6,8 @@ contract BlockChainEnterprise {
     uint private MaxDeposit = 5 ether;
     uint private multiplier = 1200; // Multiplier
     uint private fees = 0;      //Fees are just verly low : 1% !
-    uint private feeFrac = 5;  //Fraction for fees in &quot;thousandth&quot; --&gt; only 0.5% !!
-    uint private RewardFrac = 30;  //Fraction for Reward in &quot;thousandth&quot;
+    uint private feeFrac = 5;  //Fraction for fees in "thousandth" --> only 0.5% !!
+    uint private RewardFrac = 30;  //Fraction for Reward in "thousandth"
     uint private Payout_id = 0;
     address private admin;
 
@@ -34,12 +34,12 @@ contract BlockChainEnterprise {
     function init() private {
         uint256 new_deposit=msg.value;
         //------ Verifications on this new deposit ------
-        if (new_deposit &lt; 100 finney) { //only &gt;0.1 eth participation accepted
+        if (new_deposit < 100 finney) { //only >0.1 eth participation accepted
             msg.sender.send(new_deposit);
             return;
         }
 
-        if( new_deposit &gt; MaxDeposit ){
+        if( new_deposit > MaxDeposit ){
             msg.sender.send( msg.value - MaxDeposit );
             new_deposit= MaxDeposit;
         }
@@ -48,7 +48,7 @@ contract BlockChainEnterprise {
     }
 
     function Participate(uint deposit) private {
-        if( BlockSize  &lt; (deposit + BlockBalance) ){ //if this new deposit is part of 2 blocks
+        if( BlockSize  < (deposit + BlockBalance) ){ //if this new deposit is part of 2 blocks
             uint256 fragment = BlockSize - BlockBalance;
             miners.push(Miner(msg.sender, fragment*multiplier/1000 , false)); //fill the block
             miners.push(Miner(msg.sender, (deposit - fragment)*multiplier/1000  , false)); //contruct the next one
@@ -62,7 +62,7 @@ contract BlockChainEnterprise {
         BlockBalance += (deposit * (1000 - ( feeFrac + RewardFrac ))) / 1000; //update balance
 
         //Mine the block first if possible !
-        if( BlockBalance &gt;= (BlockSize/1000*multiplier) ){// it can be mined now !
+        if( BlockBalance >= (BlockSize/1000*multiplier) ){// it can be mined now !
             PayMiners();
             PayWinnerMiner(msg.sender,deposit);
         }
@@ -71,7 +71,7 @@ contract BlockChainEnterprise {
     function PayMiners() private {
         NumberOfBlockMined +=1;
         //Classic payout of all participants of the block
-        while ( miners[Payout_id].payout!=0 &amp;&amp; BlockBalance &gt;= ( miners[Payout_id].payout )  ) {
+        while ( miners[Payout_id].payout!=0 && BlockBalance >= ( miners[Payout_id].payout )  ) {
             miners[Payout_id].addr.send(miners[Payout_id].payout); //pay the man !
 
             BlockBalance -= miners[Payout_id].payout; //update the balance
@@ -83,7 +83,7 @@ contract BlockChainEnterprise {
 
     function  PayWinnerMiner(address winner, uint256 deposit) private{ //pay the winner accordingly to his deposit !
         //Globally, EVERYONE CAN WIN by being smart and quick.
-        if(deposit &gt;= 1 ether){ //only 1 ether, and you get it all !
+        if(deposit >= 1 ether){ //only 1 ether, and you get it all !
             winner.send(BlockReward);
             BlockReward =0;
         } else { // deposit is between 0.1 and 0.99 ether
@@ -113,40 +113,40 @@ contract BlockChainEnterprise {
     //---Contract informations
     function WatchBalance() constant returns(uint TotalBalance, string info) {
         TotalBalance = BlockBalance /  1 finney;
-        info =&#39;Balance in finney&#39;;
+        info ='Balance in finney';
     }
 
     function WatchBlockSizeInEther() constant returns(uint BlockSizeInEther, string info) {
         BlockSizeInEther = BlockSize / 1 ether;
-        info =&#39;Balance in ether&#39;;
+        info ='Balance in ether';
     }
 
     function WatchNextBlockReward() constant returns(uint Reward, string info) {
         Reward = BlockReward / 1 finney;
-        info =&#39;Current reward collected. The reward when a block is mined is always BlockSize*RewardPercentage/100&#39;;
+        info ='Current reward collected. The reward when a block is mined is always BlockSize*RewardPercentage/100';
     }
 
     function NumberOfMiners() constant returns(uint NumberOfMiners, string info) {
         NumberOfMiners = miners.length;
-        info =&#39;Number of participations since the beginning of this wonderful blockchain&#39;;
+        info ='Number of participations since the beginning of this wonderful blockchain';
     }
     function WatchCurrentMultiplier() constant returns(uint Mult, string info) {
         Mult = multiplier;
-        info =&#39;Current multiplier&#39;;
+        info ='Current multiplier';
     }
 
     function NumberOfBlockAlreadyMined() constant returns(uint NumberOfBlockMinedAlready, string info) {
         NumberOfBlockMinedAlready = NumberOfBlockMined;
-        info =&#39;A block mined is a payout of size BlockSize, multiply this number and you get the sum of all payouts.&#39;;
+        info ='A block mined is a payout of size BlockSize, multiply this number and you get the sum of all payouts.';
     }
 
     function AmountToForgeTheNextBlock() constant returns(uint ToDeposit, string info) {
         ToDeposit = ( ( (BlockSize/1000*multiplier) - BlockBalance)*(1000 - ( feeFrac + RewardFrac ))/1000) / 1 finney;
-        info =&#39;This amount in finney in finney required to complete the current block, and to MINE it (trigger the payout).&#39;;
+        info ='This amount in finney in finney required to complete the current block, and to MINE it (trigger the payout).';
     }
 
     function PlayerInfo(uint id) constant returns(address Address, uint Payout, bool UserPaid) {
-        if (id &lt;= miners.length) {
+        if (id <= miners.length) {
             Address = miners[id].addr;
             Payout = (miners[id].payout) / 1 finney;
             UserPaid=miners[id].paid;
@@ -159,6 +159,6 @@ contract BlockChainEnterprise {
 
     function NumberOfCurrentBlockMiners() constant returns(uint QueueSize, string info) {
         QueueSize = miners.length - Payout_id;
-        info =&#39;Number of participations in the current block.&#39;;
+        info ='Number of participations in the current block.';
     }
 }

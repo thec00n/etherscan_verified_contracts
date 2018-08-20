@@ -1,6 +1,6 @@
 contract Company { 
     /* Public variables of the token */
-    string public standart = &#39;Token 0.1&#39;;
+    string public standart = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -8,8 +8,8 @@ contract Company {
     uint256 public totalSupply;
     
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping(address => uint256)) public allowance;
     
    
     function Company() {
@@ -18,9 +18,9 @@ contract Company {
         
         /* Unless you add other functions these variables will never change */
         initilSupply = 10000000000000000;
-        name = &quot;Company&quot;;
+        name = "Company";
         decimals = 8;   
-        symbol = &quot;COMP&quot;;
+        symbol = "COMP";
         
        balanceOf[msg.sender] = initilSupply;
        totalSupply = initilSupply;
@@ -28,8 +28,8 @@ contract Company {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-      if (balanceOf[msg.sender] &lt; _value) revert();
-      if(balanceOf[_to] + _value &lt; balanceOf[_to]) revert();
+      if (balanceOf[msg.sender] < _value) revert();
+      if(balanceOf[_to] + _value < balanceOf[_to]) revert();
       balanceOf[msg.sender] -= _value;
       balanceOf[_to] += _value;
     }

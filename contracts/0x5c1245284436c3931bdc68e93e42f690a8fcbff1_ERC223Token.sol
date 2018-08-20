@@ -36,7 +36,7 @@ contract Ownable {
       tkn.sender = _from;
       tkn.value = _value;
       tkn.data = _data;
-      uint32 u = uint32(_data[3]) + (uint32(_data[2]) &lt;&lt; 8) + (uint32(_data[1]) &lt;&lt; 16) + (uint32(_data[0]) &lt;&lt; 24);
+      uint32 u = uint32(_data[3]) + (uint32(_data[2]) << 8) + (uint32(_data[1]) << 16) + (uint32(_data[0]) << 24);
       tkn.sig = bytes4(u);
 
       /* tkn variable is analogue of msg variable of Ether transaction
@@ -67,26 +67,26 @@ contract SafeMath {
 	 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 	 function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-			 if (x &gt; MAX_UINT256 - y) revert();
+			 if (x > MAX_UINT256 - y) revert();
 			 return x + y;
 	 }
 
 	 function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-			 if (x &lt; y) revert();
+			 if (x < y) revert();
 			 return x - y;
 	 }
 
 	 function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
 			 if (y == 0) return 0;
-			 if (x &gt; MAX_UINT256 / y) revert();
+			 if (x > MAX_UINT256 / y) revert();
 			 return x * y;
 	 }
 }
 
 contract ERC223Token is ERC223, SafeMath , Ownable{
 
- mapping(address =&gt; uint) balances;
- mapping(address =&gt; bool) whitelist;
+ mapping(address => uint) balances;
+ mapping(address => bool) whitelist;
 
  string public name;
  string public symbol;
@@ -96,8 +96,8 @@ contract ERC223Token is ERC223, SafeMath , Ownable{
  function ERC223Token() public {
         totalSupply = 1200000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balances[msg.sender] = 120000000000000000;                // Give the creator all initial tokens
-        name = &quot;Ethereum Lendo Token&quot;;                                   // Set the name for display purposes
-        symbol = &quot;ELT&quot;;                               // Set the symbol for display purposes
+        name = "Ethereum Lendo Token";                                   // Set the name for display purposes
+        symbol = "ELT";                               // Set the symbol for display purposes
         whitelist[owner] = true;
     }
 
@@ -123,7 +123,7 @@ contract ERC223Token is ERC223, SafeMath , Ownable{
  function transfer(address _to, uint _value, bytes _data, string _custom_fallback) public returns (bool success) {
 
 	 if(isContract(_to)) {
-			 if (getbalance(msg.sender) &lt; _value) revert();
+			 if (getbalance(msg.sender) < _value) revert();
 			 balances[msg.sender] = safeSub(getbalance(msg.sender), _value);
 			 balances[_to] = safeAdd(getbalance(_to), _value);
 			 assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
@@ -171,12 +171,12 @@ contract ERC223Token is ERC223, SafeMath , Ownable{
 					 //retrieve the size of the code on target address, this needs assembly
 					 length := extcodesize(_addr)
 		 }
-		 return (length&gt;0);
+		 return (length>0);
 	 }
 
  //function that is called when transaction target is an address
  function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-	 if (getbalance(msg.sender) &lt; _value) revert();
+	 if (getbalance(msg.sender) < _value) revert();
 	 balances[msg.sender] = safeSub(getbalance(msg.sender), _value);
 	 balances[_to] = safeAdd(getbalance(_to), _value);
 	 Transfer(msg.sender, _to, _value, _data);
@@ -185,7 +185,7 @@ contract ERC223Token is ERC223, SafeMath , Ownable{
 
  //function that is called when transaction target is a contract
  function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-	 if (getbalance(msg.sender) &lt; _value) revert();
+	 if (getbalance(msg.sender) < _value) revert();
 	 balances[msg.sender] = safeSub(getbalance(msg.sender), _value);
 	 balances[_to] = safeAdd(getbalance(_to), _value);
 	 ContractReceiver receiver = ContractReceiver(_to);

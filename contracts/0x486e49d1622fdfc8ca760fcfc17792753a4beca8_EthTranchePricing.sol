@@ -85,13 +85,13 @@ contract SafeMathLib {
   }
 
   function safeSub(uint a, uint b) returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a);
+    assert(c>=a);
     return c;
   }
 
@@ -151,9 +151,9 @@ contract Crowdsale is Haltable, SafeMathLib {
   bool public requireCustomerId;
   bool public requiredSignedAddress;
   address public signerAddress;
-  mapping (address =&gt; uint256) public investedAmountOf;
-  mapping (address =&gt; uint256) public tokenAmountOf;
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => uint256) public investedAmountOf;
+  mapping (address => uint256) public tokenAmountOf;
+  mapping (address => bool) public earlyParticipantWhitelist;
   uint public ownerTestValue;
   enum State{Unknown, Preparing, PreFunding, Funding, Success, Failure, Finalized, Refunding}
   event Invested(address investor, uint weiAmount, uint tokenAmount, uint128 customerId);
@@ -186,7 +186,7 @@ contract Crowdsale is Haltable, SafeMathLib {
     }
 
     endsAt = _end;
-    if(startsAt &gt;= endsAt) {
+    if(startsAt >= endsAt) {
         throw;
     }
     minimumFundingGoal = _minimumFundingGoal;
@@ -296,7 +296,7 @@ contract Crowdsale is Haltable, SafeMathLib {
   }
   function setEndsAt(uint time) onlyOwner {
 
-    if(now &gt; time) {
+    if(now > time) {
       throw;
     }
 
@@ -322,7 +322,7 @@ contract Crowdsale is Haltable, SafeMathLib {
     if (!msg.sender.send(weiValue)) throw;
   }
   function isMinimumGoalReached() public constant returns (bool reached) {
-    return weiRaised &gt;= minimumFundingGoal;
+    return weiRaised >= minimumFundingGoal;
   }
   function isFinalizerSane() public constant returns (bool sane) {
     return finalizeAgent.isSane();
@@ -335,10 +335,10 @@ contract Crowdsale is Haltable, SafeMathLib {
     else if (address(finalizeAgent) == 0) return State.Preparing;
     else if (!finalizeAgent.isSane()) return State.Preparing;
     else if (!pricingStrategy.isSane(address(this))) return State.Preparing;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else if (isMinimumGoalReached()) return State.Success;
-    else if (!isMinimumGoalReached() &amp;&amp; weiRaised &gt; 0 &amp;&amp; loadedRefund &gt;= weiRaised) return State.Refunding;
+    else if (!isMinimumGoalReached() && weiRaised > 0 && loadedRefund >= weiRaised) return State.Refunding;
     else return State.Failure;
   }
   function setOwnerTestValue(uint val) onlyOwner {
@@ -361,7 +361,7 @@ contract Crowdsale is Haltable, SafeMathLib {
 contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
 
   uint public constant MAX_TRANCHES = 10;
-  mapping (address =&gt; uint) public preicoAddresses;
+  mapping (address => uint) public preicoAddresses;
 
   struct Tranche {
       uint amount;
@@ -370,7 +370,7 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
   Tranche[10] public tranches;
   uint public trancheCount;
   function EthTranchePricing(uint[] _tranches) {
-    if(_tranches.length % 2 == 1 || _tranches.length &gt;= MAX_TRANCHES*2) {
+    if(_tranches.length % 2 == 1 || _tranches.length >= MAX_TRANCHES*2) {
       throw;
     }
 
@@ -378,10 +378,10 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
 
     uint highestAmount = 0;
 
-    for(uint i=0; i&lt;_tranches.length/2; i++) {
+    for(uint i=0; i<_tranches.length/2; i++) {
       tranches[i].amount = _tranches[i*2];
       tranches[i].price = _tranches[i*2+1];
-      if((highestAmount != 0) &amp;&amp; (tranches[i].amount &lt;= highestAmount)) {
+      if((highestAmount != 0) && (tranches[i].amount <= highestAmount)) {
         throw;
       }
 
@@ -426,8 +426,8 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
   function getCurrentTranche(uint weiRaised) private constant returns (Tranche) {
     uint i;
 
-    for(i=0; i &lt; tranches.length; i++) {
-      if(weiRaised &lt; tranches[i].amount) {
+    for(i=0; i < tranches.length; i++) {
+      if(weiRaised < tranches[i].amount) {
         return tranches[i-1];
       }
     }
@@ -438,7 +438,7 @@ contract EthTranchePricing is PricingStrategy, Ownable, SafeMathLib {
   function calculatePrice(uint value, uint weiRaised, uint tokensSold, address msgSender, uint decimals) public constant returns (uint) {
 
     uint multiplier = 10 ** decimals;
-    if(preicoAddresses[msgSender] &gt; 0) {
+    if(preicoAddresses[msgSender] > 0) {
       return safeMul(value,multiplier) / preicoAddresses[msgSender];
     }
 

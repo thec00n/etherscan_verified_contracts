@@ -21,8 +21,8 @@ contract PresaleToken {
      *  Constants
     /*/
 
-    string public constant name = &quot;SONM Presale Token&quot;;
-    string public constant symbol = &quot;SPT&quot;;
+    string public constant name = "SONM Presale Token";
+    string public constant symbol = "SPT";
     uint   public constant decimals = 18;
 
     uint public constant PRICE = 606; // 606 SPT per Ether
@@ -56,13 +56,13 @@ contract PresaleToken {
     // functions on this contract.
     address public tokenManager;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow;
 
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager;
 
-    mapping (address =&gt; uint256) private balance;
+    mapping (address => uint256) private balance;
 
 
     modifier onlyTokenManager()     { if(msg.sender != tokenManager) throw; _; }
@@ -93,7 +93,7 @@ contract PresaleToken {
 
         if(msg.value == 0) throw;
         uint newTokens = msg.value * PRICE;
-        if (totalSupply + newTokens &gt; TOKEN_SUPPLY_LIMIT) throw;
+        if (totalSupply + newTokens > TOKEN_SUPPLY_LIMIT) throw;
         balance[_buyer] += newTokens;
         totalSupply += newTokens;
         LogBuy(_buyer, newTokens);
@@ -137,16 +137,16 @@ contract PresaleToken {
         onlyTokenManager
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         if(!canSwitchPhase) throw;
         currentPhase = _nextPhase;
@@ -158,7 +158,7 @@ contract PresaleToken {
         onlyTokenManager
     {
         // Available at any phase.
-        if(this.balance &gt; 0) {
+        if(this.balance > 0) {
             if(!escrow.send(this.balance)) throw;
         }
     }
@@ -167,7 +167,7 @@ contract PresaleToken {
     function setCrowdsaleManager(address _mgr) public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         if(currentPhase == Phase.Migrating) throw;
         crowdsaleManager = _mgr;
     }

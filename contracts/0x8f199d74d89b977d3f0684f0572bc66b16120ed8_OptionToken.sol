@@ -3,7 +3,7 @@
  *  This contract implements american option.
  *  Holders of the Option tokens can make a purchase of the underlying asset
  *  at the price of Strike until the Expiration time.
- *  The Strike price and Expiration date are set once and can&#39;t be changed.
+ *  The Strike price and Expiration date are set once and can't be changed.
  *  Author: Alexey Bukhteyev
  **/
 
@@ -27,13 +27,13 @@ contract ERC20 {
 
 /*
     Allows to recreate OptionToken contract on the same address.
-    Just create new TokenHolders(OptionToken) and reinitiallize OptionToken using it&#39;s address
+    Just create new TokenHolders(OptionToken) and reinitiallize OptionToken using it's address
 */
 contract TokenHolders {
     address public owner;
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /*
         TokenHolders contract is being connected to OptionToken on creation.
@@ -61,7 +61,7 @@ contract TokenHolders {
     allows to token holder to buy some asset for the fixed strike price before expiration date.
 */
 contract OptionToken {
-    string public standard = &#39;ERC20&#39;;
+    string public standard = 'ERC20';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -104,7 +104,7 @@ contract OptionToken {
 
     /* Send some of your tokens to a given address */
     function transfer(address _to, uint256 _value) public returns(bool success) {
-        if(now &gt; expiration)
+        if(now > expiration)
             return false;
 
         if(!tokenHolders.transfer(msg.sender, _to, _value))
@@ -116,7 +116,7 @@ contract OptionToken {
 
     /* Allow another contract or person to spend some tokens in your behalf */
     function approve(address _spender, uint256 _value) public returns(bool success) {
-        if(now &gt; expiration)
+        if(now > expiration)
             return false;
 
         if(!tokenHolders.approve(msg.sender, _spender, _value))
@@ -130,7 +130,7 @@ contract OptionToken {
     /* A contract or  person attempts to get the tokens of somebody else.
      *  This is only allowed if the token holder approved. */
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
-        if(now &gt; expiration)
+        if(now > expiration)
             return false;
 
         if(!tokenHolders.transferWithAllowance(msg.sender, _from, _to, _value))
@@ -152,7 +152,7 @@ contract OptionToken {
     */
     function init(ERC20 _baseToken, TokenHolders _tokenHolders, string _name, string _symbol,
                 uint256 _exp, uint256 _strike) public returns(bool success) {
-        require(msg.sender == owner &amp;&amp; !_initialized);
+        require(msg.sender == owner && !_initialized);
 
         baseToken = _baseToken;
         tokenHolders = _tokenHolders;
@@ -180,10 +180,10 @@ contract OptionToken {
         Actually should be called by contract owner, because no ETH payout will be done for token transfer.
     */
     function issue(uint256 _value) public returns(bool success) {
-        require(now &lt;= expiration &amp;&amp; _initialized);
+        require(now <= expiration && _initialized);
 
         uint256 receiver_balance = balanceOf(msg.sender) + _value;
-        assert(receiver_balance &gt;= _value);
+        assert(receiver_balance >= _value);
 
         // check if transfer failed
         if(!baseToken.transferFrom(msg.sender, this, _value))
@@ -199,27 +199,27 @@ contract OptionToken {
         Buy base tokens for the strike price
     */
     function() public payable {
-        require(now &lt;= expiration &amp;&amp; _initialized); // the contract should be initialized!
+        require(now <= expiration && _initialized); // the contract should be initialized!
         uint256 available = balanceOf(msg.sender); // balance of option holder
 
         // check if there are tokens for sale
-        require(available &gt; 0);
+        require(available > 0);
 
         uint256 tokens = msg.value / (strike);
-        assert(tokens &gt; 0 &amp;&amp; tokens &lt;= msg.value);
+        assert(tokens > 0 && tokens <= msg.value);
 
         uint256 change = 0;
         uint256 eth_to_transfer = 0;
 
-        if(tokens &gt; available) {
+        if(tokens > available) {
             tokens = available; // send all available tokens
         }
 
         // calculate the change for the operation
         eth_to_transfer = tokens * strike;
-        assert(eth_to_transfer &gt;= tokens);
+        assert(eth_to_transfer >= tokens);
         change = msg.value - eth_to_transfer;
-        assert(change &lt; msg.value);
+        assert(change < msg.value);
 
         if(!baseToken.transfer(msg.sender, tokens)) {
             revert(); // error, revert transaction
@@ -229,13 +229,13 @@ contract OptionToken {
         tokenHolders.setBalance(msg.sender, new_balance);
 
         // new balance should be less then old balance
-        assert(balanceOf(msg.sender) &lt; available);
+        assert(balanceOf(msg.sender) < available);
 
-        if(change &gt; 0) {
+        if(change > 0) {
             msg.sender.transfer(change); // return the change
         }
 
-        if(eth_to_transfer &gt; 0) {
+        if(eth_to_transfer > 0) {
             owner.transfer(eth_to_transfer); // transfer eth for tokens to the contract owner
         }
 
@@ -248,7 +248,7 @@ contract OptionToken {
     */
     function withdraw() public returns(bool success) {
         require(msg.sender == owner);
-        if(now &lt;= expiration || !_initialized)
+        if(now <= expiration || !_initialized)
             return false;
 
         // transfer all tokens

@@ -21,9 +21,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -31,7 +31,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -40,7 +40,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -91,7 +91,7 @@ contract Offer {
         string conversion_id
     );
 
-    mapping (bytes32 =&gt; conversion) conversions;         // Conversions table
+    mapping (bytes32 => conversion) conversions;         // Conversions table
 
     function Offer(address tokenContractAddress, string _offer_id, address _cpaOwner) public {
         tokenContract = ERC20(tokenContractAddress);
@@ -115,10 +115,10 @@ contract Offer {
     function writeConversion(string _conversion_id, address _affiliate, uint256 _amount, uint256 _toAffiliate)
         public returns (bool success) {
         require(msg.sender == owner);
-        require(_toAffiliate &lt;= _amount);
-        require(_amount &gt; 0);
-        require(_toAffiliate &gt; 0);
-        if (getBalance(address(this)) &gt;= _amount) {
+        require(_toAffiliate <= _amount);
+        require(_amount > 0);
+        require(_toAffiliate > 0);
+        if (getBalance(address(this)) >= _amount) {
             conversionsCount++;
             totalAmount = totalAmount.add(_amount);
             conversions[keccak256(_conversion_id)] = conversion(_conversion_id, now, _affiliate, _amount, _toAffiliate);

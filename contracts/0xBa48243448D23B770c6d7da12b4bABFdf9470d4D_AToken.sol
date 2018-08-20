@@ -6,12 +6,12 @@ library SafeMath
     function add(uint256 a, uint256 b) internal pure returns (uint256)
     {
         uint256 c = a+b;
-        assert (c&gt;=a);
+        assert (c>=a);
         return c;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256)
     {
-        assert(a&gt;=b);
+        assert(a>=b);
         return (a-b);
     }
 
@@ -68,8 +68,8 @@ contract Owned
 contract TokenControl is ERC20
 {
     using SafeMath for uint256;
-    mapping (address =&gt;uint256) internal balances;
-    mapping (address =&gt; mapping(address =&gt;uint256)) internal allowed;
+    mapping (address =>uint256) internal balances;
+    mapping (address => mapping(address =>uint256)) internal allowed;
     uint256 totaltoken;
 
 
@@ -81,7 +81,7 @@ contract TokenControl is ERC20
     function transfer(address _to, uint256 _value) public returns (bool)
     {
         require(_to!=address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -95,8 +95,8 @@ contract TokenControl is ERC20
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool)
     {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -127,7 +127,7 @@ contract TokenControl is ERC20
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool)
     {
         uint256 oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue)
+        if (_subtractedValue > oldValue)
         {
             allowed[msg.sender][_spender] = 0;
         }
@@ -145,8 +145,8 @@ contract AToken is TokenControl,Owned
 {
     using SafeMath for uint256 ;
 
-    string public constant name    = &quot;Alvin&#39;s Token&quot;;
-    string public constant symbol  = &quot;Atoken&quot;;
+    string public constant name    = "Alvin's Token";
+    string public constant symbol  = "Atoken";
     uint8 public decimals = 9;
 
 
@@ -166,7 +166,7 @@ contract AToken is TokenControl,Owned
     bool public confirm2stage = false;
     function ownerconfirm() public onlyowner
     {
-        require (uint32(block.timestamp)&gt; endtime);
+        require (uint32(block.timestamp)> endtime);
         require (!confirm2stage);
         Remain = Remain.add(40000000*10**9);
         totaltoken = 90000000*10**9;
@@ -182,19 +182,19 @@ contract AToken is TokenControl,Owned
 
     function verifyStage()internal
     {
-        if (stage==Stage.second&amp;&amp;Remain==0)
+        if (stage==Stage.second&&Remain==0)
         {
             stage= Stage.secondreturn;
         }
-        if (stage==Stage.firstreturn&amp;&amp;confirm2stage)
+        if (stage==Stage.firstreturn&&confirm2stage)
         {
              stage=Stage.second;
         }
-        if (uint32(block.timestamp)&gt; endtime&amp;&amp;Remain&gt;10000000*10**9&amp;&amp;stage==Stage.first)
+        if (uint32(block.timestamp)> endtime&&Remain>10000000*10**9&&stage==Stage.first)
         {
             stage=Stage.fail;
         }
-        if (uint32(block.timestamp)&gt;= endtime&amp;&amp;stage==Stage.first)
+        if (uint32(block.timestamp)>= endtime&&stage==Stage.first)
         {
              stage=Stage.firstreturn;
         }
@@ -245,16 +245,16 @@ contract AToken is TokenControl,Owned
     {
       //reject the buyer from contract
         require(!isContract(msg.sender));
-        require(Remain&gt;0);
+        require(Remain>0);
 
       //check current changerate
         uint256 rate = price();
       //return if not in payable stage
-        require(rate &gt;0);
+        require(rate >0);
         uint256 requested;
         uint256 toreturn;
         requested = msg.value.mul(rate);
-        if (requested &gt;Remain)
+        if (requested >Remain)
         {
           requested = Remain;
           toreturn = msg.value.sub(Remain.div(rate));
@@ -262,7 +262,7 @@ contract AToken is TokenControl,Owned
         Remain = Remain.sub(requested);
         balances[msg.sender]=balances[msg.sender].add(requested);
 
-        if (toreturn&gt;0)
+        if (toreturn>0)
         {
             msg.sender.transfer(toreturn);
         }
@@ -279,7 +279,7 @@ contract AToken is TokenControl,Owned
     function withdraw() public
     {
       require(stage==Stage.fail);
-      require(balances[msg.sender]&gt;0);
+      require(balances[msg.sender]>0);
       uint256 ethreturn = balances[msg.sender].div(10);
       balances[msg.sender] = 0;
       msg.sender.transfer(ethreturn);      
@@ -293,15 +293,15 @@ contract AToken is TokenControl,Owned
         assembly {
             size := extcodesize(_addr)
         }
-        return size &gt; 0;
+        return size > 0;
     }
     
     function ownertransfer(address _target,uint256 _amount) public onlyowner
     {
         require(stage==Stage.firstreturn||stage==Stage.secondreturn);
         uint256 contractvalue = address(this).balance;
-        require(contractvalue&gt;0);
-        if (_amount&gt;contractvalue)
+        require(contractvalue>0);
+        if (_amount>contractvalue)
         {
             _target.transfer(contractvalue);
         }    

@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 /**
 * TOKEN Contract
 * ERC-20 Token Standard Compliant
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2b632c233922232422632c2628210d2a202c2421632e2220">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2b632c233922232422632c2628210d2a202c2421632e2220">[email protected]</a>
 */
 
 /**
@@ -12,13 +12,13 @@ pragma solidity 0.4.21;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -125,8 +125,8 @@ contract admined { //This token contract is administered
 contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a ERC20Token
     using SafeMath for uint256;
     uint256 public totalSupply;
-    mapping (address =&gt; uint256) balances; //A mapping of all balances per address
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed; //A mapping of all allowances
+    mapping (address => uint256) balances; //A mapping of all balances per address
+    mapping (address => mapping (address => uint256)) allowed; //A mapping of all allowances
 
     /**
     * @dev Get the balance of an specified address.
@@ -189,7 +189,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
     * @param _mintedAmount amount to mint.
     */
     function mintToken(uint256 _mintedAmount) onlyAdmin supplyLock public {
-        require(totalSupply.add(_mintedAmount) &lt; 250000000 * (10**18)); //Max supply ever
+        require(totalSupply.add(_mintedAmount) < 250000000 * (10**18)); //Max supply ever
         balances[msg.sender] = SafeMath.add(balances[msg.sender], _mintedAmount);
         totalSupply = SafeMath.add(totalSupply, _mintedAmount);
         emit Transfer(0, this, _mintedAmount);
@@ -213,7 +213,7 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
     */
     function batch(address[] data,uint256[] amount) public { //It takes an array of addresses and an amount
         require(data.length == amount.length);//same array sizes
-        for (uint i=0; i&lt;data.length; i++) { //It moves over the array
+        for (uint i=0; i<data.length; i++) { //It moves over the array
             transfer(data[i],amount[i]);
         }
     }
@@ -232,10 +232,10 @@ contract ERC20Token is ERC20TokenInterface, admined { //Standard definition of a
 * @notice Supply is initially unlocked for minting
 */
 contract Asset is ERC20Token {
-    string public name = &#39;Citereum&#39;;
+    string public name = 'Citereum';
     uint8 public decimals = 18;
-    string public symbol = &#39;CTR&#39;;
-    string public version = &#39;1&#39;;
+    string public symbol = 'CTR';
+    string public version = '1';
 
     function Asset() public {
         totalSupply = 12500000 * (10**uint256(decimals)); //initial token creation

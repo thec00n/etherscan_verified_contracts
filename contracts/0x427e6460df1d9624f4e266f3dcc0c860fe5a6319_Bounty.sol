@@ -10,11 +10,11 @@ contract Bounty {
     // Track the total number of donors.
     uint256 public count_donors = 0;
     // Stores the amount given by every donor.
-    mapping (address =&gt; uint256) public balances;
+    mapping (address => uint256) public balances;
     // Stores the donor status.
-    mapping (address =&gt; bool) public has_donated;
+    mapping (address => bool) public has_donated;
     // Stores the voting state.
-    mapping (address =&gt; bool) public has_voted;
+    mapping (address => bool) public has_voted;
 
     address public proposed_beneficiary = 0x0;
     uint256 public votes_for = 0;
@@ -36,9 +36,9 @@ contract Bounty {
         require(!bounty_paid);
         require(proposed_beneficiary != 0x0);
         // To change, maybe. Find a way to use a ratio.
-        require(votes_for &gt; votes_against);
+        require(votes_for > votes_against);
         // Minimum of 80% of the donors must have voted.
-        require(votes_for+votes_against &gt; count_donors*8/10);
+        require(votes_for+votes_against > count_donors*8/10);
         bounty_paid = true;
         proposed_beneficiary.transfer(this.balance);
 
@@ -53,16 +53,16 @@ contract Bounty {
 
     }
 
-    // Allow to vote for the proposed_beneficiary by passing &quot;yes&quot; or &quot;no&quot; in the function.
-    // Any other string won&#39;t be counted.
+    // Allow to vote for the proposed_beneficiary by passing "yes" or "no" in the function.
+    // Any other string won't be counted.
     function vote_beneficiary(string _vote) onlyDonor {
         require(!has_voted[msg.sender]);
         require(proposed_beneficiary != 0x0);
-        if (keccak256(_vote) == keccak256(&quot;yes&quot;)) {
+        if (keccak256(_vote) == keccak256("yes")) {
             votes_for += 1;
             has_voted[msg.sender] = true;
         }
-        if (keccak256(_vote) == keccak256(&quot;no&quot;)) {
+        if (keccak256(_vote) == keccak256("no")) {
             votes_against += 1;
             has_voted[msg.sender] = true;
         }
@@ -74,13 +74,13 @@ contract Bounty {
         has_donated[msg.sender] = false;
         count_donors -= 1;
 
-        // Store the user&#39;s balance prior to withdrawal in a temporary variable.
+        // Store the user's balance prior to withdrawal in a temporary variable.
         uint256 eth_to_withdraw = balances[msg.sender];
         
-        // Update the user&#39;s balance prior to sending ETH to prevent recursive call.
+        // Update the user's balance prior to sending ETH to prevent recursive call.
         balances[msg.sender] = 0;
         
-        // Return the user&#39;s funds.  Throws on failure to prevent loss of funds.
+        // Return the user's funds.  Throws on failure to prevent loss of funds.
         msg.sender.transfer(eth_to_withdraw);
     }
 
@@ -89,10 +89,10 @@ contract Bounty {
         // Disallow sending if the bounty is already paid.
         require(!bounty_paid);
         // Maximum 50 donors are allowed.
-        require(count_donors &lt; 51);
+        require(count_donors < 51);
         // Minimum donation to avoid trolls.
-        require(msg.value &gt;= 0.1 ether);
-        //If you haven&#39;t donated before, you are added and counted as a new donor.
+        require(msg.value >= 0.1 ether);
+        //If you haven't donated before, you are added and counted as a new donor.
         if (!has_donated[msg.sender]) {
             has_donated[msg.sender] = true;
             count_donors += 1;

@@ -7,7 +7,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -122,8 +122,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -138,9 +138,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -148,7 +148,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -157,7 +157,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -173,7 +173,7 @@ contract Upgradable is Ownable, Pausable {
 
     /// @dev Used to mark the smart contract as upgraded, in case there is a serious
     ///  breaking bug. This method does nothing but keep track of the new contract and
-    ///  emit a message indicating that the new address is set. It&#39;s up to clients of this
+    ///  emit a message indicating that the new address is set. It's up to clients of this
     ///  contract to update to the new contract address in that case. (This contract will
     ///  be paused indefinitely if such an upgrade takes place.)
     /// @param _v2Address new address
@@ -205,7 +205,7 @@ contract SolidStampRegister is Ownable
     /// the particular contract by the particular auditor.
     /// Map key is: keccack256(auditor address, contract codeHash)
     /// @dev codeHash is a sha3 from the contract byte code
-    mapping (bytes32 =&gt; uint8) public AuditOutcomes;
+    mapping (bytes32 => uint8) public AuditOutcomes;
 
     /// @dev event fired when a contract is sucessfully audited
     event AuditRegistered(address auditor, bytes32 codeHash, bool isApproved);
@@ -219,12 +219,12 @@ contract SolidStampRegister is Ownable
     /// on code hash _existingCodeHashes[n] with an outcome _outcomes[n]
     constructor(address[] _existingAuditors, bytes32[] _existingCodeHashes, bool[] _outcomes) public {
         uint noOfExistingAudits = _existingAuditors.length;
-        require(noOfExistingAudits == _existingCodeHashes.length, &quot;paramters mismatch&quot;);
-        require(noOfExistingAudits == _outcomes.length, &quot;paramters mismatch&quot;);
+        require(noOfExistingAudits == _existingCodeHashes.length, "paramters mismatch");
+        require(noOfExistingAudits == _outcomes.length, "paramters mismatch");
 
         // set contract address temporarily to owner so that registerAuditOutcome does not revert
         contractSolidStamp = msg.sender;
-        for (uint i=0; i&lt;noOfExistingAudits; i++){
+        for (uint i=0; i<noOfExistingAudits; i++){
             registerAuditOutcome(_existingAuditors[i], _existingCodeHashes[i], _outcomes[i]);
         }
         contractSolidStamp = 0x0;
@@ -238,7 +238,7 @@ contract SolidStampRegister is Ownable
 
     function registerAuditOutcome(address _auditor, bytes32 _codeHash, bool _isApproved) public onlySolidStampContract
     {
-        require(_auditor != 0x0, &quot;auditor cannot be 0x0&quot;);
+        require(_auditor != 0x0, "auditor cannot be 0x0");
         bytes32 hashAuditorCode = keccak256(abi.encodePacked(_auditor, _codeHash));
         if ( _isApproved )
             AuditOutcomes[hashAuditorCode] = AUDITED_AND_APPROVED;
@@ -253,7 +253,7 @@ contract SolidStampRegister is Ownable
      * @dev Throws if called by any account other than the contractSolidStamp
      */
     modifier onlySolidStampContract() {
-      require(msg.sender == contractSolidStamp, &quot;cannot be run by not SolidStamp contract&quot;);
+      require(msg.sender == contractSolidStamp, "cannot be run by not SolidStamp contract");
       _;
     }
 
@@ -262,7 +262,7 @@ contract SolidStampRegister is Ownable
      * @param _newSolidStamp The address to transfer control registry to.
      */
     function changeSolidStampContract(address _newSolidStamp) public onlyOwner {
-      require(_newSolidStamp != address(0), &quot;SolidStamp contract cannot be 0x0&quot;);
+      require(_newSolidStamp != address(0), "SolidStamp contract cannot be 0x0");
       emit SolidStampContractChanged(_newSolidStamp);
       contractSolidStamp = _newSolidStamp;
     }
@@ -315,11 +315,11 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     /// the particular contract by the particular auditor.
     /// Map key is: keccack256(auditor address, contract codeHash)
     /// @dev codeHash is a sha3 from the contract byte code
-    mapping (bytes32 =&gt; uint) public Rewards;
+    mapping (bytes32 => uint) public Rewards;
 
     /// @dev Maps requestor, auditor and codeHash to an AuditRequest
     /// Map key is: keccack256(auditor address, requestor address, contract codeHash)
-    mapping (bytes32 =&gt; AuditRequest) public AuditRequests;
+    mapping (bytes32 => AuditRequest) public AuditRequests;
 
     /// @dev event fired upon successul audit request
     event AuditRequested(address auditor, address bidder, bytes32 codeHash, uint amount, uint expireDate);
@@ -335,15 +335,15 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     function requestAudit(address _auditor, bytes32 _codeHash, uint _auditTime)
     public whenNotPaused payable
     {
-        require(_auditor != 0x0, &quot;_auditor cannot be 0x0&quot;);
+        require(_auditor != 0x0, "_auditor cannot be 0x0");
         // audit request cannot expire too quickly or last too long
-        require(_auditTime &gt;= MIN_AUDIT_TIME, &quot;_auditTime should be &gt;= MIN_AUDIT_TIME&quot;);
-        require(_auditTime &lt;= MAX_AUDIT_TIME, &quot;_auditTime should be &lt;= MIN_AUDIT_TIME&quot;);
-        require(msg.value &gt; 0, &quot;msg.value should be &gt;0&quot;);
+        require(_auditTime >= MIN_AUDIT_TIME, "_auditTime should be >= MIN_AUDIT_TIME");
+        require(_auditTime <= MAX_AUDIT_TIME, "_auditTime should be <= MIN_AUDIT_TIME");
+        require(msg.value > 0, "msg.value should be >0");
 
         // revert if the contract is already audited by the auditor
         uint8 outcome = SolidStampRegister(SolidStampRegisterAddress).getAuditOutcome(_auditor, _codeHash);
-        require(outcome == NOT_AUDITED, &quot;contract already audited&quot;);
+        require(outcome == NOT_AUDITED, "contract already audited");
 
         bytes32 hashAuditorCode = keccak256(abi.encodePacked(_auditor, _codeHash));
         uint currentReward = Rewards[hashAuditorCode];
@@ -364,7 +364,7 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
             // Request already exists. Increasing value
             request.amount = request.amount.add(msg.value);
             // if new expireDate is later than existing one - increase the existing one
-            if ( expireDate &gt; request.expireDate )
+            if ( expireDate > request.expireDate )
                 request.expireDate = expireDate;
             // event returns the total request value and its expireDate
             emit AuditRequested(_auditor, msg.sender, _codeHash, request.amount, request.expireDate);
@@ -381,12 +381,12 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
 
         // revert if the contract is already audited by the auditor
         uint8 outcome = SolidStampRegister(SolidStampRegisterAddress).getAuditOutcome(_auditor, _codeHash);
-        require(outcome == NOT_AUDITED, &quot;contract already audited&quot;);
+        require(outcome == NOT_AUDITED, "contract already audited");
 
         bytes32 hashAuditorRequestorCode = keccak256(abi.encodePacked(_auditor, msg.sender, _codeHash));
         AuditRequest storage request = AuditRequests[hashAuditorRequestorCode];
-        require(request.amount &gt; 0, &quot;nothing to withdraw&quot;);
-        require(now &gt; request.expireDate, &quot;cannot withdraw before request.expireDate&quot;);
+        require(request.amount > 0, "nothing to withdraw");
+        require(now > request.expireDate, "cannot withdraw before request.expireDate");
 
         uint amount = request.amount;
         delete request.amount;
@@ -407,7 +407,7 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
 
         // revert if the contract is already audited by the auditor
         uint8 outcome = SolidStampRegister(SolidStampRegisterAddress).getAuditOutcome(msg.sender, _codeHash);
-        require(outcome == NOT_AUDITED, &quot;contract already audited&quot;);
+        require(outcome == NOT_AUDITED, "contract already audited");
 
         SolidStampRegister(SolidStampRegisterAddress).registerAuditOutcome(msg.sender, _codeHash, _isApproved);
         uint reward = Rewards[hashAuditorCode];
@@ -424,8 +424,8 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     /// @notice ability for owner to change the service commmission
     /// @param _newCommission new commision percentage
     function changeCommission(uint _newCommission) public onlyOwner whenNotPaused {
-        require(_newCommission &lt;= MAX_COMMISSION, &quot;commission should be &lt;= MAX_COMMISSION&quot;);
-        require(_newCommission != Commission, &quot;_newCommission==Commmission&quot;);
+        require(_newCommission <= MAX_COMMISSION, "commission should be <= MAX_COMMISSION");
+        require(_newCommission != Commission, "_newCommission==Commmission");
         Commission = _newCommission;
         emit NewCommission(Commission);
     }
@@ -440,23 +440,23 @@ contract SolidStamp is Ownable, Pausable, Upgradable {
     /// @param _amount amount to withdraw
     function withdrawCommission(uint _amount) public onlyOwner {
         // cannot withdraw money reserved for requests
-        require(_amount &lt;= AvailableCommission, &quot;Cannot withdraw more than available&quot;);
+        require(_amount <= AvailableCommission, "Cannot withdraw more than available");
         AvailableCommission = AvailableCommission.sub(_amount);
         msg.sender.transfer(_amount);
     }
 
-    /// @dev Override unpause so we can&#39;t have newContractAddress set,
+    /// @dev Override unpause so we can't have newContractAddress set,
     ///  because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.
     function unpause() public onlyOwner whenPaused {
-        require(newContractAddress == address(0), &quot;new contract cannot be 0x0&quot;);
+        require(newContractAddress == address(0), "new contract cannot be 0x0");
 
         // Actually unpause the contract.
         super.unpause();
     }
 
-    /// @notice We don&#39;t welcome tips &amp; donations
+    /// @notice We don't welcome tips & donations
     function() payable public {
         revert();
     }

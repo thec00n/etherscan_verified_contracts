@@ -52,7 +52,7 @@ contract Token {
 You should inherit from StandardToken or, for a token like you would want to
 deploy in something like Mist, see HumanStandardToken.sol.
 (This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won&#39;t have anything useful.)
+If you deploy this, you won't have anything useful.)
 
 Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
@@ -62,11 +62,11 @@ contract StandardToken is Token {
     uint256 constant MAX_UINT256 = 2**256 - 1;
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -75,12 +75,12 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         Transfer(_from, _to, _value);
@@ -102,8 +102,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 /*
@@ -115,7 +115,7 @@ contract CharitySpaceToken is StandardToken {
 
   /* Public variables of the token */
   string public name;                   //fancy name: eg Simon Bucks
-  uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+  uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
   string public symbol;                 //An identifier: eg SBX
 
   address public owner;
@@ -128,9 +128,9 @@ contract CharitySpaceToken is StandardToken {
     uint256 advisorsSupply = 700000 * 10**18;            // Update projects advisors supply 700.000 CHT
     uint256 bountySupply = 800000 * 10**18;              // Update projects bounty program supply 800.000 CHT
     uint256 companySupply = 1000000 * 10**18;            // Update charitySPACE company supply 1.000.000 CHT
-    name = &quot;charityTOKEN&quot;;
+    name = "charityTOKEN";
     decimals = 18;
-    symbol = &quot;CHT&quot;;
+    symbol = "CHT";
 
     balances[_icoAddress] = publicSaleSupply;
     Transfer(0, _icoAddress, publicSaleSupply);
@@ -193,8 +193,8 @@ contract CharitySpace {
   Tier[] public tiers;
   
   // Alt currencies hash
-  bytes32 private btcHash = keccak256(&#39;BTC&#39;);
-  bytes32 private bchHash = keccak256(&#39;BCH&#39;);
+  bytes32 private btcHash = keccak256('BTC');
+  bytes32 private bchHash = keccak256('BCH');
   
   // Interceptors
   modifier onlyBy(address a) {
@@ -203,13 +203,13 @@ contract CharitySpace {
   }
   
   modifier respectTimeFrame() {
-    require((now &gt; startDate) &amp;&amp; (now &lt; endDate));
+    require((now > startDate) && (now < endDate));
     _;
   }
   
   function CharitySpace(address _donationsAddress) public {
     owner = msg.sender;
-    donationsAddress = _donationsAddress; //address where eth&#39;s are holded
+    donationsAddress = _donationsAddress; //address where eth's are holded
   }
   
   function setup(address _charitySpaceToken) public onlyBy(owner) {
@@ -240,7 +240,7 @@ contract CharitySpace {
   function end() public onlyBy(owner) {
     require(started == true);
     require(live == true);
-    require(now &gt; endDate);
+    require(now > endDate);
     charitySpaceToken.destroyUnsoldTokens();
     live = false;
     started = true;
@@ -249,12 +249,12 @@ contract CharitySpace {
   function receiveDonation() public payable respectTimeFrame {
     uint256 _value = msg.value;
     uint256 _tokensToTransfer = 0;
-    require(_value &gt; 0);
+    require(_value > 0);
     
     uint256 _tokens = 0;
-    if(preIcoEndDate &gt; now) {
+    if(preIcoEndDate > now) {
       _tokens = _value * 10**18 / tiers[0].price;
-      if((tiers[0].tokens - tiers[0].tokensSold) &lt; _tokens) {
+      if((tiers[0].tokens - tiers[0].tokensSold) < _tokens) {
         _tokens = (tiers[0].tokens - tiers[0].tokensSold);
         _value -= ((_tokens * tiers[0].price) / 10**18);
       } else {
@@ -263,11 +263,11 @@ contract CharitySpace {
       tiers[0].tokensSold += _tokens;
       _tokensToTransfer += _tokens;
     }
-    if(_value &gt; 0) {
-      for (uint i = 1; i &lt; tiers.length; ++i) {
-        if(_value &gt; 0 &amp;&amp; (tiers[i].tokens &gt; tiers[i].tokensSold)) {
+    if(_value > 0) {
+      for (uint i = 1; i < tiers.length; ++i) {
+        if(_value > 0 && (tiers[i].tokens > tiers[i].tokensSold)) {
           _tokens = _value * 10**18 / tiers[i].price;
-          if((tiers[i].tokens - tiers[i].tokensSold) &lt; _tokens) {
+          if((tiers[i].tokens - tiers[i].tokensSold) < _tokens) {
             _tokens = (tiers[i].tokens - tiers[i].tokensSold);
             _value -= ((_tokens * tiers[i].price) / 10**18);
           } else {
@@ -279,8 +279,8 @@ contract CharitySpace {
       }
     }
     
-    assert(_tokensToTransfer &gt; 0);
-    assert(_value == 0);  // Yes, you can&#39;t donate 100000 ETH and receive all tokens.
+    assert(_tokensToTransfer > 0);
+    assert(_value == 0);  // Yes, you can't donate 100000 ETH and receive all tokens.
     
     tokensSold += _tokensToTransfer;
     
@@ -296,8 +296,8 @@ contract CharitySpace {
     uint256 _remainingTokens = tokens;
     uint256 _tokens = 0;
     
-    if(preIcoEndDate &gt; now) {
-       if((tiers[0].tokens - tiers[0].tokensSold) &lt; _remainingTokens) {
+    if(preIcoEndDate > now) {
+       if((tiers[0].tokens - tiers[0].tokensSold) < _remainingTokens) {
         _tokens = (tiers[0].tokens - tiers[0].tokensSold);
       } else {
         _tokens = _remainingTokens;
@@ -305,10 +305,10 @@ contract CharitySpace {
       tiers[0].tokensSold += _tokens;
       _remainingTokens -= _tokens;
     }
-    if(_remainingTokens &gt; 0) {
-      for (uint i = 1; i &lt; tiers.length; ++i) {
-        if(_remainingTokens &gt; 0 &amp;&amp; (tiers[i].tokens &gt; tiers[i].tokensSold)) {
-          if ((tiers[i].tokens - tiers[i].tokensSold) &lt; _remainingTokens) {
+    if(_remainingTokens > 0) {
+      for (uint i = 1; i < tiers.length; ++i) {
+        if(_remainingTokens > 0 && (tiers[i].tokens > tiers[i].tokensSold)) {
+          if ((tiers[i].tokens - tiers[i].tokensSold) < _remainingTokens) {
             _tokens = (tiers[i].tokens - tiers[i].tokensSold);
           } else {
             _tokens = _remainingTokens;

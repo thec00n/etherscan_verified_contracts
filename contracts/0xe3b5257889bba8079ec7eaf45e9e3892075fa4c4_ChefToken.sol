@@ -1,10 +1,10 @@
 /*
 Besides the standard ERC20 token functions, ChefToken smart contract has the following functions implemented:
 - servicePaymentWithCharityPercentage:
-    After the client and service provider agree on a service and it&#39;s price, the agreed amount is transfered to the CookUp smart contract address
+    After the client and service provider agree on a service and it's price, the agreed amount is transfered to the CookUp smart contract address
     to ensure that the service provider will be paid. Once the service has been completed, the CookUp application calls this function, 
     which then calculates the appropriate percentages of the price for each involved party: the service provider, CookUp and the charity organization.
-    CookUp&#39;s percentage is determined by the variable cookUpFee, while the charity&#39;s percentage is determined by the variable charityDonation.
+    CookUp's percentage is determined by the variable cookUpFee, while the charity's percentage is determined by the variable charityDonation.
     These two fees are substracted from the total service price, and the remaining amount is sent to the service provider.
     The funds that will be sent to charity organization are first stored at a temporary address.
 - releaseAdvisorsTeamTokens:
@@ -34,9 +34,9 @@ pragma solidity 0.4.23;
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -44,7 +44,7 @@ pragma solidity 0.4.23;
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ pragma solidity 0.4.23;
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -123,15 +123,15 @@ contract ChefToken is Ownable, ChefTokenInterface {
     uint256 public tokensReleasedAdvisorsTeam;
     uint256 initialReleaseDate; 
     uint256 releaseSum; 
-    mapping (address =&gt; uint256) public balanceOf; 
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf; 
+    mapping (address => mapping (address => uint256)) public allowance;
     
     
     function ChefToken () public {
         totalSupply = 630*(10**6)*(10**18);   
         balanceOf[msg.sender] = totalSupply;  
-        name = &quot;CHEF&quot;;                  
-        symbol = &quot;CHEF&quot;;
+        name = "CHEF";                  
+        symbol = "CHEF";
     
         tempCharity = address(0);
         tempAdvisorsTeam = address(0);
@@ -155,7 +155,7 @@ contract ChefToken is Ownable, ChefTokenInterface {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != address(0));
-        require(balanceOf[_from] &gt;= _value); 
+        require(balanceOf[_from] >= _value); 
         uint256 previousBalances = balanceOf[_from].add(balanceOf[_to]); 
         balanceOf[_from] = balanceOf[_from].sub(_value); 
         balanceOf[_to] = balanceOf[_to].add(_value); 
@@ -192,7 +192,7 @@ contract ChefToken is Ownable, ChefTokenInterface {
 	
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);   
+        require(_value <= allowance[_from][msg.sender]);   
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -209,7 +209,7 @@ contract ChefToken is Ownable, ChefTokenInterface {
 
 
     function burn(uint256 _value) public onlyOwner returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);  
+        require(balanceOf[msg.sender] >= _value);  
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);  
         totalSupply = totalSupply.sub(_value);  
         emit Burn(msg.sender, _value);
@@ -241,7 +241,7 @@ contract ChefToken is Ownable, ChefTokenInterface {
 
     function releaseAdvisorsTeamTokens () public onlyOwner returns (bool success) {
         uint256 releaseAmount = releaseSum.div(12);
-        if((releaseSum &gt;= (tokensReleasedAdvisorsTeam.add(releaseAmount))) &amp;&amp; (initialReleaseDate+(tokensReleasedAdvisorsTeam.mul(30 days).mul(12).div(releaseSum)) &lt;= now)) {
+        if((releaseSum >= (tokensReleasedAdvisorsTeam.add(releaseAmount))) && (initialReleaseDate+(tokensReleasedAdvisorsTeam.mul(30 days).mul(12).div(releaseSum)) <= now)) {
             tokensReleasedAdvisorsTeam=tokensReleasedAdvisorsTeam.add(releaseAmount);
             _transfer(chefOwner,tempAdvisorsTeam,releaseAmount);
             return true;

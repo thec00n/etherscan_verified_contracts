@@ -9,19 +9,19 @@ pragma solidity ^0.4.11;
 
 library Math {
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -39,20 +39,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,24 +64,24 @@ library SafeMath {
  * @dev Lifecycle of a standing order:
  *  - the payment amount per interval is set at construction time and can not be changed afterwards
  *  - the payee is set by the owner and can not be changed after creation
- *  - at &lt;startTime&gt; (unix timestamp) the first payment is due
- *  - every &lt;intervall&gt; seconds the next payment is due
+ *  - at <startTime> (unix timestamp) the first payment is due
+ *  - every <intervall> seconds the next payment is due
  *  - the owner can add funds to the order contract at any time
  *  - the owner can withdraw only funds that do not (yet) belong to the payee
  *  - the owner can terminate a standingorder anytime. Termination results in:
  *    - No further funding being allowed
- *    - order marked as &quot;terminated&quot; and not being displayed anymore in owner UI
+ *    - order marked as "terminated" and not being displayed anymore in owner UI
  *    - as long as there are uncollected funds entitled to the payee, it is still displayed in payee UI
  *    - the payee can still collect funds owned to him
  *
  *   * Terminology *
- *   &quot;withdraw&quot; -&gt; performed by owner - transfer funds stored in contract back to owner
- *   &quot;collect&quot;  -&gt; performed by payee - transfer entitled funds from contract to payee
+ *   "withdraw" -> performed by owner - transfer funds stored in contract back to owner
+ *   "collect"  -> performed by payee - transfer entitled funds from contract to payee
  *
  *   * How does a payment work? *
- *   Since a contract can not trigger a payment by itself, it provides the method &quot;collectFunds&quot; for the payee.
+ *   Since a contract can not trigger a payment by itself, it provides the method "collectFunds" for the payee.
  *   The payee can always query the contract to determine how many funds he is entitled to collect.
- *   The payee can call &quot;collectFunds&quot; to initiate transfer of entitled funds to his address.
+ *   The payee can call "collectFunds" to initiate transfer of entitled funds to his address.
  */
 contract StandingOrder {
 
@@ -122,7 +122,7 @@ contract StandingOrder {
      * @param _paymentInterval Interval for payments, unit: seconds
      * @param _paymentAmount The amount payee can claim per period, unit: wei
      * @param _startTime Date and time (unix timestamp - seconds since 1970) when first payment can be claimed by payee
-     * @param _label Label for contract, e.g &quot;rent&quot; or &quot;weekly paycheck&quot;
+     * @param _label Label for contract, e.g "rent" or "weekly paycheck"
      */
     function StandingOrder(
         address _owner,
@@ -135,11 +135,11 @@ contract StandingOrder {
         payable
     {
         // Sanity check parameters
-        require(_paymentInterval &gt; 0);
-        require(_paymentAmount &gt; 0);
+        require(_paymentInterval > 0);
+        require(_paymentAmount > 0);
         // Following check is not exact for unicode strings, but here i just want to make sure that some label is provided
         // See https://ethereum.stackexchange.com/questions/13862/is-it-possible-to-check-string-variables-length-inside-the-contract/13886
-        require(bytes(_label).length &gt; 2);
+        require(bytes(_label).length > 2);
 
         // Set owner to _owner, as msg.sender is the StandingOrderFactory contract
         owner = _owner;
@@ -172,7 +172,7 @@ contract StandingOrder {
      */
     function getEntitledFunds() constant returns (uint) {
         // First check if the contract startTime has been reached at all
-        if (now &lt; startTime) {
+        if (now < startTime) {
             // startTime not yet reached
             return 0;
         }
@@ -180,7 +180,7 @@ contract StandingOrder {
         // startTime has been reached, so add first payment
         uint entitledAmount = paymentAmount;
 
-        // Determine endTime for calculation. If order has been terminated -&gt; terminationTime, otherwise current time
+        // Determine endTime for calculation. If order has been terminated -> terminationTime, otherwise current time
         uint endTime = isTerminated ? terminationTime : now;
 
         // calculate number of complete intervals since startTime
@@ -199,7 +199,7 @@ contract StandingOrder {
      * @return Number of wei that payee can collect
      */
     function getUnclaimedFunds() constant returns (uint) {
-        // don&#39;t return more than available balance
+        // don't return more than available balance
         return getEntitledFunds().min256(this.balance);
     }
 
@@ -211,8 +211,8 @@ contract StandingOrder {
     function getOwnerFunds() constant returns (int) {
         // Conversion from unsigned int to int will produce unexpected results only for very large
         // numbers (2^255 and greater). This is about 5.7e+58 ether.
-        // -&gt; There will be no situation when the contract balance (this.balance) will hit this limit
-        // -&gt; getEntitledFunds() might end up hitting this limit when the contract creator INTENTIONALLY sets
+        // -> There will be no situation when the contract balance (this.balance) will hit this limit
+        // -> getEntitledFunds() might end up hitting this limit when the contract creator INTENTIONALLY sets
         //    any combination of absurdly high payment rate, low interval or a startTime way in the past.
         //    Being entitled to more than 5.7e+58 ether obviously will never be an expected usecase
         // Therefor the conversion can be considered safe here.
@@ -226,7 +226,7 @@ contract StandingOrder {
      */
     function collectFunds() onlyPayee returns(uint) {
         uint amount = getUnclaimedFunds();
-        if (amount &lt;= 0) {
+        if (amount <= 0) {
             // nothing to collect :-(
             revert();
         }
@@ -252,14 +252,14 @@ contract StandingOrder {
      */
     function WithdrawOwnerFunds(uint amount) onlyOwner {
         int intOwnerFunds = getOwnerFunds(); // this might be negative in case of underfunded contract!
-        if (intOwnerFunds &lt;= 0) {
+        if (intOwnerFunds <= 0) {
             // nothing available to withdraw :-(
             revert();
         }
-        // conversion int -&gt; uint is safe here as I&#39;m checking &lt;= 0 above!
+        // conversion int -> uint is safe here as I'm checking <= 0 above!
         uint256 ownerFunds = uint256(intOwnerFunds);
 
-        if (amount &gt; ownerFunds) {
+        if (amount > ownerFunds) {
             // Trying to withdraw more than available!
             revert();
         }
@@ -276,7 +276,7 @@ contract StandingOrder {
      * Can only be executed if no ownerfunds are left
      */
     function Terminate() onlyOwner {
-        assert(getOwnerFunds() &lt;= 0);
+        assert(getOwnerFunds() <= 0);
         terminationTime = now;
         isTerminated = true;
     }
@@ -288,9 +288,9 @@ contract StandingOrder {
  */
 contract StandingOrderFactory {
     // keep track who issued standing orders
-    mapping (address =&gt; StandingOrder[]) public standingOrdersByOwner;
+    mapping (address => StandingOrder[]) public standingOrdersByOwner;
     // keep track of payees of standing orders
-    mapping (address =&gt; StandingOrder[]) public standingOrdersByPayee;
+    mapping (address => StandingOrder[]) public standingOrdersByPayee;
 
     // Events
     event LogOrderCreated(
@@ -306,7 +306,7 @@ contract StandingOrderFactory {
      * @param _paymentInterval Interval for payments, unit: seconds
      * @param _paymentAmount The amount payee can claim per period, unit: wei
      * @param _startTime Date and time (unix timestamp - seconds since 1970) when first payment can be claimed by payee
-     * @param _label Label for contract, e.g &quot;rent&quot; or &quot;weekly paycheck&quot;
+     * @param _label Label for contract, e.g "rent" or "weekly paycheck"
      * @return Address of new created standingOrder contract
      */
     function createStandingOrder(address _payee, uint _paymentAmount, uint _paymentInterval, uint _startTime, string _label) returns (StandingOrder) {

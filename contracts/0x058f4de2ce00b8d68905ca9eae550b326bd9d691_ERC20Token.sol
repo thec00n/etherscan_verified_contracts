@@ -12,13 +12,13 @@ library SafeMath {
 
         c = a + b;
 
-        require(c &gt;= a);
+        require(c >= a);
 
     }
 
     function sub(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &lt;= a);
+        require(b <= a);
 
         c = a - b;
 
@@ -34,7 +34,7 @@ library SafeMath {
 
     function div(uint a, uint b) internal pure returns (uint c) {
 
-        require(b &gt; 0);
+        require(b > 0);
 
         c = a / b;
 
@@ -169,9 +169,9 @@ contract ERC20Token is ERC20Interface, Owned {
     uint public _totalSupply;
 
 
-    mapping(address =&gt; uint) balances;
+    mapping(address => uint) balances;
 
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => mapping(address => uint)) allowed;
 
 
 
@@ -185,9 +185,9 @@ contract ERC20Token is ERC20Interface, Owned {
 
     function ERC20Token() public {
 
-        symbol = &quot;AIEC&quot;;
+        symbol = "AIEC";
 
-        name = &quot;Artificial Intelligence Ecological Chain&quot;;
+        name = "Artificial Intelligence Ecological Chain";
 
         decimals = 8;
 
@@ -231,9 +231,9 @@ contract ERC20Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
 
-    // Transfer the balance from token owner&#39;s account to `to` account
+    // Transfer the balance from token owner's account to `to` account
 
-    // - Owner&#39;s account must have sufficient balance to transfer
+    // - Owner's account must have sufficient balance to transfer
 
     // - 0 value transfers are allowed
 
@@ -257,7 +257,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account
+    // from the token owner's account
 
     //
 
@@ -319,7 +319,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
     // Returns the amount of tokens approved by the owner that can be
 
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
 
     // ------------------------------------------------------------------------
 
@@ -335,7 +335,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
     // Token owner can approve for `spender` to transferFrom(...) `tokens`
 
-    // from the token owner&#39;s account. The `spender` contract function
+    // from the token owner's account. The `spender` contract function
 
     // `receiveApproval(...)` is then executed
 
@@ -357,7 +357,7 @@ contract ERC20Token is ERC20Interface, Owned {
 
     // ------------------------------------------------------------------------
 
-    // Don&#39;t accept ETH
+    // Don't accept ETH
 
     // ------------------------------------------------------------------------
 

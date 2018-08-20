@@ -21,16 +21,16 @@ pragma solidity 		^0.4.8	;
 											
 		contract	BIPOOH_DAO_32_b				is	Ownable	{		
 											
-			string	public	constant	name =	&quot;	BIPOOH_DAO_32_b		&quot;	;
-			string	public	constant	symbol =	&quot;	BIPI		&quot;	;
+			string	public	constant	name =	"	BIPOOH_DAO_32_b		"	;
+			string	public	constant	symbol =	"	BIPI		"	;
 			uint32	public	constant	decimals =		18			;
 			uint	public		totalSupply =		0			;
 											
-			mapping (address =&gt; uint) balances;								
-			mapping (address =&gt; mapping(address =&gt; uint)) allowed;								
+			mapping (address => uint) balances;								
+			mapping (address => mapping(address => uint)) allowed;								
 											
 			function mint(address _to, uint _value) onlyOwner {								
-				assert(totalSupply + _value &gt;= totalSupply &amp;&amp; balances[_to] + _value &gt;= balances[_to]);							
+				assert(totalSupply + _value >= totalSupply && balances[_to] + _value >= balances[_to]);							
 				balances[_to] += _value;							
 				totalSupply += _value;							
 			}								
@@ -40,7 +40,7 @@ pragma solidity 		^0.4.8	;
 			}								
 											
 			function transfer(address _to, uint _value) returns (bool success) {								
-				if(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt;= balances[_to]) {							
+				if(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]) {							
 					balances[msg.sender] -= _value; 						
 					balances[_to] += _value;						
 					return true;						
@@ -49,9 +49,9 @@ pragma solidity 		^0.4.8	;
 			}								
 											
 			function transferFrom(address _from, address _to, uint _value) returns (bool success) {								
-				if( allowed[_from][msg.sender] &gt;= _value &amp;&amp;							
-					balances[_from] &gt;= _value 						
-					&amp;&amp; balances[_to] + _value &gt;= balances[_to]) {						
+				if( allowed[_from][msg.sender] >= _value &&							
+					balances[_from] >= _value 						
+					&& balances[_to] + _value >= balances[_to]) {						
 					allowed[_from][msg.sender] -= _value;						
 					balances[_from] -= _value;						
 					balances[_to] += _value;						
@@ -76,24 +76,24 @@ pragma solidity 		^0.4.8	;
 											
 											
 											
-//	1	Annexe -1 &#171;&#160;PI_2_1&#160;&#187; ex-post &#233;dition &#171;&#160;BIPOOH_DAO_32&#160;&#187; 									
+//	1	Annexe -1 « PI_2_1 » ex-post édition « BIPOOH_DAO_32 » 									
 //	2	-									
-//	3	Droits rattach&#233;s, non-publi&#233;s (Contrat&#160;; Nom&#160;; Symbole)									
-//	4	&#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPI&#160;&#187;									
+//	3	Droits rattachés, non-publiés (Contrat ; Nom ; Symbole)									
+//	4	« BIPOOH_DAO_32_b » ; « BIPOOH_DAO_32_b » ; « BIPI »									
 //	5	Meta-donnees, premier rang									
-//	6	&#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPI_i&#160;&#187;									
+//	6	« BIPOOH_DAO_32_b » ; « BIPOOH_DAO_32_b » ; « BIPI_i »									
 //	7	Meta-donnees, second rang									
-//	8	&#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPI_j&#160;&#187;									
-//	9	Meta-donnees, troisi&#232;me rang									
-//	10	&#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_b&#160;&#187; ; &#171;&#160;BIPI_k&#160;&#187;									
-//	11	Droits rattach&#233;s, non-publi&#233;s (Contrat&#160;; Nom&#160;; Symbole)									
-//	12	&#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPII&#160;&#187;									
+//	8	« BIPOOH_DAO_32_b » ; « BIPOOH_DAO_32_b » ; « BIPI_j »									
+//	9	Meta-donnees, troisième rang									
+//	10	« BIPOOH_DAO_32_b » ; « BIPOOH_DAO_32_b » ; « BIPI_k »									
+//	11	Droits rattachés, non-publiés (Contrat ; Nom ; Symbole)									
+//	12	« BIPOOH_DAO_32_c » ; « BIPOOH_DAO_32_c » ; « BIPII »									
 //	13	Meta-donnees, premier rang									
-//	14	&#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPII_i&#160;&#187;									
+//	14	« BIPOOH_DAO_32_c » ; « BIPOOH_DAO_32_c » ; « BIPII_i »									
 //	15	Meta-donnees, second rang									
-//	16	&#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPII_j&#160;&#187;									
-//	17	Meta-donnees, troisi&#232;me rang									
-//	18	&#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPOOH_DAO_32_c&#160;&#187; ; &#171;&#160;BIPII_k&#160;&#187;									
+//	16	« BIPOOH_DAO_32_c » ; « BIPOOH_DAO_32_c » ; « BIPII_j »									
+//	17	Meta-donnees, troisième rang									
+//	18	« BIPOOH_DAO_32_c » ; « BIPOOH_DAO_32_c » ; « BIPII_k »									
 //	19										
 //	20										
 //	21										

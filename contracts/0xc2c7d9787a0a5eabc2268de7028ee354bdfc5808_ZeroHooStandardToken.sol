@@ -5,18 +5,18 @@ contract SafeMath {
         0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     function safeAdd(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &gt; MAX_UINT256 - y) revert();
+        if (x > MAX_UINT256 - y) revert();
         return x + y;
     }
 
     function safeSub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        if (x &lt; y) revert();
+        if (x < y) revert();
         return x - y;
     }
 
     function safeMul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         if (y == 0) return 0;
-        if (x &gt; MAX_UINT256 / y) revert();
+        if (x > MAX_UINT256 / y) revert();
         return x * y;
     }
 }
@@ -52,7 +52,7 @@ contract Token{
 contract StandardToken is Token, SafeMath {
     function transfer(address _to, uint256 _value) public returns(bool success) {
         //默认totalSupply 不会超过最大值 (2^256 - 1).
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] = safeSub(balances[msg.sender], _value);//从消息发送者账户中减去token数量_value
         balances[_to] = safeAdd(balances[_to], _value);//往接收账户增加token数量_value
         emit Transfer(msg.sender, _to, _value);//触发转币交易事件
@@ -63,7 +63,7 @@ contract StandardToken is Token, SafeMath {
     function transferFrom(address _from, address _to, uint256 _value) public returns
         (bool success) {
        
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] = safeAdd(balances[_to], _value);//接收账户增加token数量_value
         balances[_from] = safeSub(balances[_from], _value); //支出账户_from减去token数量_value
         allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender], _value);//消息发送者可以从账户_from中转出的数量减少_value
@@ -86,8 +86,8 @@ contract StandardToken is Token, SafeMath {
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {
         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
     }
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 }
 
 contract ZeroHooStandardToken is StandardToken { 
@@ -96,7 +96,7 @@ contract ZeroHooStandardToken is StandardToken {
     string public name;                   //名称
     uint8 public decimals;               //最多的小数位数
     string public symbol;               //token简称:FAC
-    string public version = &#39;zero 1.0.0&#39;;    //版本
+    string public version = 'zero 1.0.0';    //版本
 
     function ZeroHooStandardToken(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) public {
         balances[msg.sender] = _initialAmount; // 初始token数量给予消息发送者
@@ -111,7 +111,7 @@ contract ZeroHooStandardToken is StandardToken {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns(bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
-        require(_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 

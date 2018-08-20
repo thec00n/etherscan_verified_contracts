@@ -2,23 +2,23 @@ pragma solidity ^0.4.24;
 
 // DO YOU LOVE 0xBTC?
 // LETS SUMMARIZE 0xBTC
-// &gt; PURE MINED CRYPTO
-// &gt; PoW CONSENSUS PROVIDED BY ETH
-// &gt; NO TEAM, NO ICO, JUST VOLUNTEERS 
-// &gt; TRUSTLESS ERC20 
+// > PURE MINED CRYPTO
+// > PoW CONSENSUS PROVIDED BY ETH
+// > NO TEAM, NO ICO, JUST VOLUNTEERS 
+// > TRUSTLESS ERC20 
 // UPLOAD YOUR REASON WHY YOU LOVE 0xBTC AND GET FREE 0xBTCLOVE TOKENS! 
 // (also check the Transfer address in the ILove0xBTC function)
 
 contract ZEROxBTCLove {
 
-    string public name = &quot;0xBTCLove&quot;;      //  token name
-    string public symbol = &quot;0xBTCLove&quot;;           //  token symbol
+    string public name = "0xBTCLove";      //  token name
+    string public symbol = "0xBTCLove";           //  token symbol
     uint256 public decimals = 18;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     
-    mapping (uint =&gt; bool) public ZEROxBTCLovers;
+    mapping (uint => bool) public ZEROxBTCLovers;
     
 
     uint256 public totalSupply = 0;
@@ -38,8 +38,8 @@ contract ZEROxBTCLove {
             // reward: an 0xBTC love token 
             ZEROxBTCLovers[hash] = true; 
             balanceOf[msg.sender] += (10 ** 18);
-            for (uint i = 0; i &lt; 100; i++) {
-                emit Transfer(0xB6eD7644C69416d67B522e20bC294A9a9B405B31, msg.sender, 10**18); // &lt;3 
+            for (uint i = 0; i < 100; i++) {
+                emit Transfer(0xB6eD7644C69416d67B522e20bC294A9a9B405B31, msg.sender, 10**18); // <3 
             }
             emit New0xBTCLove(msg.sender, reason);
                 
@@ -47,13 +47,13 @@ contract ZEROxBTCLove {
             
             totalSupply += (10 ** 18); // Can actually overflow this because im bad at solidity (lel hackers lel)
         
-            assert(totalSupply &gt; beforeSupply);
+            assert(totalSupply > beforeSupply);
         }
     }
 
     function transfer(address _to, uint256 _value) public validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -61,9 +61,9 @@ contract ZEROxBTCLove {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;

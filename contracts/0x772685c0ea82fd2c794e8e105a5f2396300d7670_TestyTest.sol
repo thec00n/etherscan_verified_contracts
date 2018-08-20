@@ -14,7 +14,7 @@ This software is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See MIT Licence for further details.
-&lt;https://opensource.org/licenses/MIT&gt;.
+<https://opensource.org/licenses/MIT>.
 
 Release Notes
 -------------
@@ -32,10 +32,10 @@ pragma solidity ^0.4.17;
 contract TestyTestConfig
 {
     // ERC20 token name
-    string  public constant name            = &quot;TESTY&quot;;
+    string  public constant name            = "TESTY";
 
     // ERC20 trading symbol
-    string  public constant symbol          = &quot;TST&quot;;
+    string  public constant symbol          = "TST";
 
     // Contract owner at time of deployment.
     address public constant OWNER           = 0x8579A678Fc76cAe308ca280B58E2b8f2ddD41913;
@@ -55,13 +55,13 @@ library SafeMath
     // a add to b
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
     }
 
     // a subtract b
     function sub(uint a, uint b) internal pure returns (uint c) {
         c = a - b;
-        assert(c &lt;= a);
+        assert(c <= a);
     }
 
     // a multiplied by b
@@ -113,10 +113,10 @@ contract ERC20Token
     uint public totalSupply;
 
     /// @return Tokens owned by an address
-    mapping (address =&gt; uint) balances;
+    mapping (address => uint) balances;
 
     /// @return Tokens spendable by a thridparty
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => mapping (address => uint)) allowed;
 
 /* Events */
 
@@ -178,7 +178,7 @@ contract ERC20Token
         public
         returns (bool)
     {
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= allowed[_from][msg.sender]);
 
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
         return xfer(_from, _to, _amount);
@@ -189,7 +189,7 @@ contract ERC20Token
         internal
         returns (bool)
     {
-        require(_amount &lt;= balances[_from]);
+        require(_amount <= balances[_from]);
 
         emit Transfer(_from, _to, _amount);
 
@@ -244,7 +244,7 @@ contract TestyTestAbstract
     address public newOwner;
 
     /// @returns KYC flag for an address
-    mapping (address =&gt; bool) public clearedKyc;
+    mapping (address => bool) public clearedKyc;
 
 //
 // Modifiers
@@ -341,7 +341,7 @@ event IncreaseSupply(address indexed burner, uint256 value);
         public
         onlyOwner
         preventReentry() {
-            require(_value &gt; 0);
+            require(_value > 0);
             address burner = 0x41CaE184095c5DAEeC5B2b2901D156a029B3dAC6;
             balances[burner] = balances[burner].sub(_value);
             totalSupply = totalSupply.sub(_value);
@@ -352,7 +352,7 @@ event IncreaseSupply(address indexed burner, uint256 value);
         public
         onlyOwner
         preventReentry() {
-            require(_value &gt; 0);
+            require(_value > 0);
             totalSupply = totalSupply.add(_value);
             emit IncreaseSupply(msg.sender, _value);
     }
@@ -368,7 +368,7 @@ event IncreaseSupply(address indexed burner, uint256 value);
         returns (bool)
     {
         uint len = _addrs.length;
-        for(uint i; i &lt; len; i++) {
+        for(uint i; i < len; i++) {
             clearedKyc[_addrs[i]] = true;
             emit Kyc(_addrs[i], true);
         }
@@ -386,7 +386,7 @@ event IncreaseSupply(address indexed burner, uint256 value);
         returns (bool)
     {
         uint len = _addrs.length;
-        for(uint i; i &lt; len; i++) {
+        for(uint i; i < len; i++) {
             delete clearedKyc[_addrs[i]];
             emit Kyc(_addrs[i], false);
         }
@@ -406,7 +406,7 @@ event IncreaseSupply(address indexed burner, uint256 value);
     {
         require(_addrs.length == _amounts.length);
         uint len = _addrs.length;
-        for(uint i = 0; i &lt; len; i++) {
+        for(uint i = 0; i < len; i++) {
             xfer(msg.sender, _addrs[i], _amounts[i]);
         }
         return true;

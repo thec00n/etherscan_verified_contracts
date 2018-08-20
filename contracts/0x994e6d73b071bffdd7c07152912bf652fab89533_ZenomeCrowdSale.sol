@@ -14,20 +14,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -54,7 +54,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -106,7 +106,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -121,7 +121,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -135,7 +135,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -187,7 +187,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -336,7 +336,7 @@ contract PreSaleZNA is StandardToken, Ownable, Pausable {
    * @dev Set the address of the minter
    * @param _minter address to be set as minter.
    *
-   * Note: We also need to implement &quot;mint&quot; method.
+   * Note: We also need to implement "mint" method.
    */
   function setMinter(address _minter) onlyOwner {
       minter = _minter;
@@ -375,13 +375,13 @@ contract PreSaleZNA is StandardToken, Ownable, Pausable {
 
   /**
    * @dev Token meta-information
-   * @param name of the token as it&#39;s shown to user
+   * @param name of the token as it's shown to user
    * @param symbol of the token
    * @param decimals number
    * Number of indivisible tokens that make up 1 ZNA = 10^{decimals}
    */
-  string public constant name = &quot;Presale ZNA Token&quot;;
-  string public constant symbol = &quot;pZNA&quot;;
+  string public constant name = "Presale ZNA Token";
+  string public constant symbol = "pZNA";
   uint8  public constant decimals = 18;
 }
 
@@ -410,7 +410,7 @@ contract ZenomeCrowdSale is Ownable {
 
     // The accounting mapping to store information on the amount of
     // bonus tokens that should be given in case of successful presale.
-    mapping(address =&gt; uint256) bonuses;
+    mapping(address => uint256) bonuses;
 
     /**
      * @dev Variables
@@ -488,7 +488,7 @@ contract ZenomeCrowdSale is Ownable {
      * @param _close uint256 end of the sale.
      */
     function setTime(uint _start, uint _close) public onlyOwner {
-      require( _start &lt; _close );
+      require( _start < _close );
       START_TIME = _start;
       CLOSE_TIME = _close;
     }
@@ -498,26 +498,26 @@ contract ZenomeCrowdSale is Ownable {
      * @param _exchangeRate uint256 new exhange rate.
      */
     function setExchangeRate(uint256 _exchangeRate) public onlyOwner  {
-      require(now &lt; START_TIME);
+      require(now < START_TIME);
       exchangeRate = _exchangeRate;
     }
 
 
     /**
      * @dev Buy tokens for all sent ether.
-     *      Tokens will be added to beneficiary&#39;s account
+     *      Tokens will be added to beneficiary's account
      * @param beneficiary address the owner of bought tokens.
      */
     function buyTokens(address beneficiary) payable {
 
       uint256 total = token.totalSupply();
       uint256 amount = msg.value;
-      require(amount &gt; 0);
+      require(amount > 0);
 
       // Check that hardcap not reached, and sale-time.
-      require(total &lt; HARDCAP);
-      require(now &gt;= START_TIME);
-      require(now &lt;  CLOSE_TIME);
+      require(total < HARDCAP);
+      require(now >= START_TIME);
+      require(now <  CLOSE_TIME);
 
       // Mint tokens bought for all sent ether to beneficiary
       uint256 tokens = amount.mul(exchangeRate);
@@ -536,23 +536,23 @@ contract ZenomeCrowdSale is Ownable {
 
     /**
      * @dev Process bonus tokens for beneficiary in case of all tokens sold.
-     * @param beneficiary address the user&#39;s address to process.
+     * @param beneficiary address the user's address to process.
      *
      * Everyone can call this method for any beneficiary:
-     *  1) Method (code) does not depend on msg.sender =&gt;
-     *         =&gt; side effects don&#39;t depend on the caller
+     *  1) Method (code) does not depend on msg.sender =>
+     *         => side effects don't depend on the caller
      *  2) Calling method for beneficiary is either positive or neutral.
      */
     function transferBonuses(address beneficiary) {
       // Checks that sale has successfully ended by having all tokens sold.
       uint256 total = token.totalSupply();
-      require( total &gt;= HARDCAP );
+      require( total >= HARDCAP );
 
       // Since the number of bonus tokens that are intended for beneficiary
-      //    was pre-calculated beforehand, set variable &quot;tokens&quot; to this value.
+      //    was pre-calculated beforehand, set variable "tokens" to this value.
       uint256 tokens = bonuses[beneficiary];
       // Chech if there are tokens to give as bonuses
-      require( tokens &gt; 0 );
+      require( tokens > 0 );
 
       // If so, make changes the accounting mapping. Then mint bonus tokens
       bonuses[beneficiary] = 0;

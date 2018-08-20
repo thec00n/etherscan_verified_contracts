@@ -62,20 +62,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -83,9 +83,9 @@ contract CGE is ERC20,Ownable{
 	using SafeMath for uint256;
 
 	//the base info of the token
-	string public constant name=&quot;CoinGold Exchange Of Taiwan&quot;;
-	string public constant symbol=&quot;CGE&quot;;
-	string public constant version = &quot;1.0&quot;;
+	string public constant name="CoinGold Exchange Of Taiwan";
+	string public constant symbol="CGE";
+	string public constant version = "1.0";
 	uint256 public constant decimals = 18;
 
 	uint256 public constant MAX_SUPPLY=1000000000*10**decimals;
@@ -95,12 +95,12 @@ contract CGE is ERC20,Ownable{
         uint256 amount;
     }
 
-	mapping(address=&gt;epoch[]) public lockEpochsMap;
+	mapping(address=>epoch[]) public lockEpochsMap;
 
 
 	 
-    mapping(address =&gt; uint256) balances;
-	mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+	mapping (address => mapping (address => uint256)) allowed;
 	
 
 	function CGE(){
@@ -137,15 +137,15 @@ contract CGE is ERC20,Ownable{
 		require(_to != address(0));
 		epoch[] epochs = lockEpochsMap[msg.sender];
 		uint256 needLockBalance = 0;
-		for(uint256 i=0;i&lt;epochs.length;i++)
+		for(uint256 i=0;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].endTime )
+			if( now < epochs[i].endTime )
 			{
 				needLockBalance=needLockBalance.add(epochs[i].amount);
 			}
 		}
 
-		require(balances[msg.sender].sub(_value)&gt;=needLockBalance);
+		require(balances[msg.sender].sub(_value)>=needLockBalance);
 		// SafeMath.sub will throw if there is not enough balance.
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -165,15 +165,15 @@ contract CGE is ERC20,Ownable{
 
 		epoch[] epochs = lockEpochsMap[_from];
 		uint256 needLockBalance = 0;
-		for(uint256 i=0;i&lt;epochs.length;i++)
+		for(uint256 i=0;i<epochs.length;i++)
 		{
-			if( now &lt; epochs[i].endTime )
+			if( now < epochs[i].endTime )
 			{
 				needLockBalance = needLockBalance.add(epochs[i].amount);
 			}
 		}
 
-		require(balances[_from].sub(_value)&gt;=needLockBalance);
+		require(balances[_from].sub(_value)>=needLockBalance);
 		uint256 _allowance = allowed[_from][msg.sender];
 
 		balances[_from] = balances[_from].sub(_value);

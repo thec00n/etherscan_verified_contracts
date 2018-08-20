@@ -36,7 +36,7 @@ contract EtherModifierMonstro
   
     function enter()
     {
-        if (msg.value &gt;= minimum &amp;&amp; msg.value &lt;= maximum) //if value is between 0.01 and 0.025
+        if (msg.value >= minimum && msg.value <= maximum) //if value is between 0.01 and 0.025
         {
 	        //if value is correct
             collectedFees += ((msg.value/100) * 3) ;
@@ -64,7 +64,7 @@ contract EtherModifierMonstro
         persons[idx].amount = amount;
         balance += amount - (amount/100)*3;
     
-        while (balance &gt; persons[payoutIdx].amount / 100 * exchangemod ) 
+        while (balance > persons[payoutIdx].amount / 100 * exchangemod ) 
         {
             uint transactionAmount = persons[payoutIdx].amount / 100 * exchangemod;
             persons[payoutIdx].etherAddress.send(transactionAmount);

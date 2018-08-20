@@ -5,17 +5,17 @@ contract CreditIDENTITY{
     address public creditDao;
     
     uint public nextFieldIndex;
-    mapping (uint =&gt; string) avaliableFields;
-    mapping (string =&gt; bool) fieldActivated;
-    mapping (string =&gt; uint) fieldTypes;
+    mapping (uint => string) avaliableFields;
+    mapping (string => bool) fieldActivated;
+    mapping (string => uint) fieldTypes;
     
-    mapping (address =&gt; string) addressDescriptions;
+    mapping (address => string) addressDescriptions;
     
     uint public nextIdentityAccount;
-    mapping (uint =&gt; mapping (bytes =&gt; bytes)) identityAccounts;
-    mapping (address =&gt; uint) public addressToAccountMap;
+    mapping (uint => mapping (bytes => bytes)) identityAccounts;
+    mapping (address => uint) public addressToAccountMap;
     
-    mapping (address =&gt; mapping(address =&gt; uint)) mappingProposal;
+    mapping (address => mapping(address => uint)) mappingProposal;
     
     event MappingProposalIssued(address _addressThatMapped, address _addressToMap, uint identityId);
     event MappingDone(address _addressToMap, uint identityId);

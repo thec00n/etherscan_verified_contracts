@@ -1,12 +1,12 @@
 pragma solidity ^0.4.17;
 
 /// @author developers //NB!
-/// @notice <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="23505653534c515763474655464f4c53465150">[email&#160;protected]</a> //NB!
+/// @notice <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="23505653534c515763474655464f4c53465150">[email protected]</a> //NB!
 /// @title  Contract presale //NB!
 
 contract AvPresale {
 
-    string public constant RELEASE = &quot;0.2.2_AviaTest&quot;;
+    string public constant RELEASE = "0.2.2_AviaTest";
 
     //config// 
     uint public constant PRESALE_START  = 5307500; /* 23.03.2018 16:49:00 +3GMT */ //NB!
@@ -20,12 +20,12 @@ contract AvPresale {
 	//min send value 0.001 ETH (1 finney)
     uint public constant MIN_GET_AMOUNT_FINNEY = 10; //NB!
 
-    string[5] private standingNames = [&quot;BEFORE_START&quot;,  &quot;PRESALE_RUNNING&quot;, &quot;WITHDRAWAL_RUNNING&quot;, &quot;MONEY_BACK_RUNNING&quot;, &quot;CLOSED&quot; ];
+    string[5] private standingNames = ["BEFORE_START",  "PRESALE_RUNNING", "WITHDRAWAL_RUNNING", "MONEY_BACK_RUNNING", "CLOSED" ];
     enum State { BEFORE_START,  PRESALE_RUNNING, WITHDRAWAL_RUNNING, MONEY_BACK_RUNNING, CLOSED }
 
     uint public total_amount = 0;
     uint public total_money_back = 0;
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
 
     uint private constant MIN_TOTAL_AMOUNT_GET = MIN_TOTAL_AMOUNT_GET_ETH * 1 ether;
     uint private constant MAX_TOTAL_AMOUNT_GET = MAX_TOTAL_AMOUNT_GET_ETH * 1 ether;
@@ -98,7 +98,7 @@ contract AvPresale {
 
     //Method adding money to the user
     function getMoney() private notTooSmallAmountOnly {
-      if (total_amount + msg.value &gt; MAX_TOTAL_AMOUNT_GET) {
+      if (total_amount + msg.value > MAX_TOTAL_AMOUNT_GET) {
           var change_to_return = total_amount + msg.value - MAX_TOTAL_AMOUNT_GET;
           var acceptable_remainder = MAX_TOTAL_AMOUNT_GET - total_amount;
           balances[msg.sender] += acceptable_remainder;
@@ -121,16 +121,16 @@ contract AvPresale {
     //Determining the current status of the contract
     function currentStanding() private constant returns (State) {
         if (isTerminated) {
-            return this.balance &gt; 0
+            return this.balance > 0
                    ? State.MONEY_BACK_RUNNING
                    : State.CLOSED;
-        } else if (block.number &lt; PRESALE_START) {
+        } else if (block.number < PRESALE_START) {
             return State.BEFORE_START;
-        } else if (block.number &lt;= PRESALE_END &amp;&amp; total_amount &lt; MAX_TOTAL_AMOUNT_GET &amp;&amp; !isStopped) {
+        } else if (block.number <= PRESALE_END && total_amount < MAX_TOTAL_AMOUNT_GET && !isStopped) {
             return State.PRESALE_RUNNING;
         } else if (this.balance == 0) {
             return State.CLOSED;
-        } else if (block.number &lt;= WITHDRAWAL_END &amp;&amp; total_amount &gt;= MIN_TOTAL_AMOUNT_GET) {
+        } else if (block.number <= WITHDRAWAL_END && total_amount >= MIN_TOTAL_AMOUNT_GET) {
             return State.WITHDRAWAL_RUNNING;
         } else {
             return State.MONEY_BACK_RUNNING;
@@ -138,7 +138,7 @@ contract AvPresale {
     }
 
     function min(uint a, uint b) pure private returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     //Prohibition if the condition does not match
@@ -149,19 +149,19 @@ contract AvPresale {
 
     //Prohibition if the current state was not before
     modifier inStandingBefore(State state) {
-        require(currentStanding() &lt; state);
+        require(currentStanding() < state);
         _;
     }
 
-    //Works on users&#39;s command
+    //Works on users's command
     modifier tokenHoldersOnly(){
-        require(balances[msg.sender] &gt; 0);
+        require(balances[msg.sender] > 0);
         _;
     }
 
     //Do not accept transactions with a sum less than the configuration limit
     modifier notTooSmallAmountOnly(){
-        require(msg.value &gt;= MIN_GET_AMOUNT);
+        require(msg.value >= MIN_GET_AMOUNT);
         _;
     }
 
@@ -180,15 +180,15 @@ contract AvPresale {
             || PRESALE_START == 0
             || PRESALE_END == 0
             || WITHDRAWAL_END ==0
-            || PRESALE_START &lt;= block.number
-            || PRESALE_START &gt;= PRESALE_END
-            || PRESALE_END   &gt;= WITHDRAWAL_END
-            || MIN_TOTAL_AMOUNT_GET &gt; MAX_TOTAL_AMOUNT_GET )
+            || PRESALE_START <= block.number
+            || PRESALE_START >= PRESALE_END
+            || PRESALE_END   >= WITHDRAWAL_END
+            || MIN_TOTAL_AMOUNT_GET > MAX_TOTAL_AMOUNT_GET )
                 revert();
         _;
     }
 	
-	//Works on owner&#39;s command
+	//Works on owner's command
     modifier onlyOwner(){
         require(msg.sender == OWNER);
         _;

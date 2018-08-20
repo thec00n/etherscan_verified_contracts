@@ -20,7 +20,7 @@ contract Fizzy {
   }
 
   event InsuranceCreation(    // event sent when a new insurance contract is added to this smart contract
-    bytes32 flightId,         // &lt;carrier_code&gt;&lt;flight_number&gt;.&lt;timestamp_in_sec_of_departure_date&gt;
+    bytes32 flightId,         // <carrier_code><flight_number>.<timestamp_in_sec_of_departure_date>
     uint32 premium,           // amount of the premium paid by the user
     uint32 indemnity,         // amount of the potential indemnity
     bytes32 productId            // ID string of the product linked to this insurance
@@ -37,7 +37,7 @@ contract Fizzy {
    */
   event InsuranceUpdate(      // event sent when the situation of a particular insurance contract is resolved
     bytes32 productId,           // id string of the user linked to this account
-    bytes32 flightId,         // &lt;carrier_code&gt;&lt;flight_number&gt;.&lt;timestamp_in_sec_of_departure_date&gt;
+    bytes32 flightId,         // <carrier_code><flight_number>.<timestamp_in_sec_of_departure_date>
     uint32 premium,           // amount of the premium paid by the user
     uint32 indemnity,         // amount of the potential indemnity
     uint8 status              // new status of the insurance contract. See above comment for potential values
@@ -48,7 +48,7 @@ contract Fizzy {
   // All the insurances handled by this smart contract are contained in this mapping
   // key: a string containing the flight number and the timestamp separated by a dot
   // value: an array of insurance contracts for this flight
-  mapping (bytes32 =&gt; Insurance[]) insuranceList;
+  mapping (bytes32 => Insurance[]) insuranceList;
 
 
   // ------------------------------------------------------------------------------------------ //
@@ -86,7 +86,7 @@ contract Fizzy {
 
   /**
    * @dev Add a new insurance for the given flight
-   * @param flightId &lt;carrier_code&gt;&lt;flight_number&gt;.&lt;timestamp_in_sec_of_departure_date&gt;
+   * @param flightId <carrier_code><flight_number>.<timestamp_in_sec_of_departure_date>
    * @param limitArrivalTime Maximum time after which we trigger the compensation (timestamp in sec)
    * @param premium Amount of premium paid by the client
    * @param indemnity Amount (potentialy) perceived by the client
@@ -116,7 +116,7 @@ contract Fizzy {
 
   /**
    * @dev Update the status of a flight
-   * @param flightId &lt;carrier_code&gt;&lt;flight_number&gt;.&lt;timestamp_in_sec_of_departure_date&gt;
+   * @param flightId <carrier_code><flight_number>.<timestamp_in_sec_of_departure_date>
    * @param actualArrivalTime The actual arrival time of the flight (timestamp in sec)
    */
   function updateFlightStatus(
@@ -128,7 +128,7 @@ contract Fizzy {
     uint8 newStatus = 1;
 
     // go through the list of all insurances related to the given flight
-    for (uint i = 0; i &lt; insuranceList[flightId].length; i++) {
+    for (uint i = 0; i < insuranceList[flightId].length; i++) {
 
       // we check this contract is still ongoing before updating it
       if (insuranceList[flightId][i].status == 0) {
@@ -137,7 +137,7 @@ contract Fizzy {
 
         // if the actual arrival time is over the limit the user wanted,
         // we trigger the indemnity, which means status = 2
-        if (actualArrivalTime &gt; insuranceList[flightId][i].limitArrivalTime) {
+        if (actualArrivalTime > insuranceList[flightId][i].limitArrivalTime) {
           newStatus = 2;
         }
 
@@ -158,7 +158,7 @@ contract Fizzy {
 
   /**
    * @dev Manually resolve an insurance contract
-   * @param flightId &lt;carrier_code&gt;&lt;flight_number&gt;.&lt;timestamp_in_sec_of_departure_date&gt;
+   * @param flightId <carrier_code><flight_number>.<timestamp_in_sec_of_departure_date>
    * @param newStatusId ID of the resolution status for this insurance contract
    * @param productId ID string of the product linked to the insurance
    */
@@ -170,7 +170,7 @@ contract Fizzy {
   onlyIfCreator {
 
     // go through the list of all insurances related to the given flight
-    for (uint i = 0; i &lt; insuranceList[flightId].length; i++) {
+    for (uint i = 0; i < insuranceList[flightId].length; i++) {
 
       // look for the insurance contract with the correct ID number
       if (areStringsEqual(insuranceList[flightId][i].productId, productId)) {

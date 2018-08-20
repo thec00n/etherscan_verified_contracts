@@ -17,13 +17,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns(uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns(uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -77,8 +77,8 @@ contract StandardToken is ERC20 {
     string public symbol;
     uint8 public decimals;
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) internal allowed;
 
     constructor(string _name, string _symbol, uint8 _decimals) public {
         name = _name;
@@ -96,7 +96,7 @@ contract StandardToken is ERC20 {
 
     function transfer(address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -108,7 +108,7 @@ contract StandardToken is ERC20 {
     function multiTransfer(address[] _to, uint256[] _value) public returns(bool) {
         require(_to.length == _value.length);
 
-        for(uint i = 0; i &lt; _to.length; i++) {
+        for(uint i = 0; i < _to.length; i++) {
             transfer(_to[i], _value[i]);
         }
 
@@ -117,8 +117,8 @@ contract StandardToken is ERC20 {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20 {
     function decreaseApproval(address _spender, uint _subtractedValue) public returns(bool) {
         uint oldValue = allowed[msg.sender][_spender];
 
-        if(_subtractedValue &gt; oldValue) {
+        if(_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -191,12 +191,12 @@ contract CappedToken is MintableToken {
     uint256 public cap;
 
     constructor(uint256 _cap) public {
-        require(_cap &gt; 0);
+        require(_cap > 0);
         cap = _cap;
     }
 
     function mint(address _to, uint256 _amount) public returns(bool) {
-        require(totalSupply_.add(_amount) &lt;= cap);
+        require(totalSupply_.add(_amount) <= cap);
 
         return super.mint(_to, _amount);
     }
@@ -206,7 +206,7 @@ contract BurnableToken is StandardToken {
     event Burn(address indexed burner, uint256 value);
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value &lt;= balances[_who]);
+        require(_value <= balances[_who]);
 
         balances[_who] = balances[_who].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
@@ -220,7 +220,7 @@ contract BurnableToken is StandardToken {
     }
 
     function burnFrom(address _from, uint256 _value) public {
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= allowed[_from][msg.sender]);
         
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _burn(_from, _value);
@@ -230,7 +230,7 @@ contract BurnableToken is StandardToken {
 contract Withdrawable is Ownable {
     function withdrawEther(address _to, uint _value) onlyOwner public {
         require(_to != address(0));
-        require(address(this).balance &gt;= _value);
+        require(address(this).balance >= _value);
 
         _to.transfer(_value);
     }
@@ -285,7 +285,7 @@ contract Manageable is Ownable {
     }
 
     function isManager(address _manager) view public returns(bool) {
-        for(uint i = 0; i &lt; managers.length; i++) {
+        for(uint i = 0; i < managers.length; i++) {
             if(managers[i] == _manager) {
                 return true;
             }
@@ -306,13 +306,13 @@ contract Manageable is Ownable {
         require(isManager(_manager));
 
         uint index = 0;
-        for(uint i = 0; i &lt; managers.length; i++) {
+        for(uint i = 0; i < managers.length; i++) {
             if(managers[i] == _manager) {
                 index = i;
             }
         }
 
-        for(; index &lt; managers.length - 1; index++) {
+        for(; index < managers.length - 1; index++) {
             managers[index] = managers[index + 1];
         }
         
@@ -323,7 +323,7 @@ contract Manageable is Ownable {
 
 
 contract Token is CappedToken, BurnableToken, Withdrawable {
-    constructor() CappedToken(1e16) StandardToken(&quot;MIX Token&quot;, &quot;MIX&quot;, 8) public {
+    constructor() CappedToken(1e16) StandardToken("MIX Token", "MIX", 8) public {
         mint(0x1041626522f383431708D82B1f6c0AbF4d9e00f7, 25000000 * 1e8);      // Reserve fund 25%
         mint(0x792841fd5598C8a1b5957E56e62F02958E6BD39f, 10000000 * 1e8);     // Team 10%
         mint(0xb17489c6800fEEaFd8a3a2Baa752b6523a5AE25f, 8000000 * 1e8);      // Partners and Advisors 8%

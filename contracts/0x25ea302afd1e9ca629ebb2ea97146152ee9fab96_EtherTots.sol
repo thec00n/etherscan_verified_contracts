@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18; // solhint-disable-line
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ee8a8b9a8bae8f96878183948b80c08d81">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ee8a8b9a8bae8f96878183948b80c08d81">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
   // Required methods
   function approve(address _to, uint256 _tokenId) public;
@@ -40,8 +40,8 @@ contract EtherTots is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;EtherTots&quot;; // solhint-disable-line
-  string public constant SYMBOL = &quot;TotToken&quot;; // solhint-disable-line
+  string public constant NAME = "EtherTots"; // solhint-disable-line
+  string public constant SYMBOL = "TotToken"; // solhint-disable-line
 
   uint256 private startingPrice = 0.001 ether;
   uint256 private firstStepLimit =  0.053613 ether;
@@ -51,19 +51,19 @@ contract EtherTots is ERC721 {
 
   /// @dev A mapping from tot IDs to the address that owns them. All tots have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public totIndexToOwner;
+  mapping (uint256 => address) public totIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from TotIDs to an address that has been approved to call
   ///  transferFrom(). Each Tot can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public totIndexToApproved;
+  mapping (uint256 => address) public totIndexToApproved;
 
   // @dev A mapping from TotIDs to the price of the token.
-  mapping (uint256 =&gt; uint256) private totIndexToPrice;
+  mapping (uint256 => uint256) private totIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -187,16 +187,16 @@ contract EtherTots is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = uint256(SafeMath.div(SafeMath.mul(sellingPrice, 92), 100));
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
     // Update prices
-    if (sellingPrice &lt; firstStepLimit) {
+    if (sellingPrice < firstStepLimit) {
       // first stage
       totIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 200), 92);
-    } else if (sellingPrice &lt; secondStepLimit) {
+    } else if (sellingPrice < secondStepLimit) {
       // second stage
       totIndexToPrice[_tokenId] = SafeMath.div(SafeMath.mul(sellingPrice, 120), 92);
     } else {
@@ -258,7 +258,7 @@ contract EtherTots is ERC721 {
   }
 
   /// @param _owner The owner whose celebrity tokens we are interested in.
-  /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+  /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
   ///  expensive (it walks the entire Tots array looking for tots belonging to owner),
   ///  but it also returns a dynamic array, which is only supported for web3 calls, and
   ///  not contract-to-contract calls.
@@ -273,7 +273,7 @@ contract EtherTots is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 totId;
-      for (totId = 0; totId &lt;= totalTots; totId++) {
+      for (totId = 0; totId <= totalTots; totId++) {
         if (totIndexToOwner[totId] == _owner) {
           result[resultIndex] = totId;
           resultIndex++;
@@ -338,8 +338,8 @@ contract EtherTots is ERC721 {
     });
     uint256 newTotId = tots.push(_tot) - 1;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newTotId == uint256(uint32(newTotId)));
 
     Birth(newTotId, _name, _owner);
@@ -367,12 +367,12 @@ contract EtherTots is ERC721 {
 
   /// @dev Assigns ownership of a specific Tot to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of tots is capped to 2^32 we can&#39;t overflow this
+    // Since the number of tots is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     totIndexToOwner[_tokenId] = _to;
 
-    // When creating new tots _from is 0x0, but we can&#39;t account that address.
+    // When creating new tots _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -401,9 +401,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -411,7 +411,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -420,7 +420,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

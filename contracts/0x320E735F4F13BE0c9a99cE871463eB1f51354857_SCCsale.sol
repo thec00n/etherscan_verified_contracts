@@ -15,12 +15,12 @@ contract SafeMath{
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,11 +38,11 @@ contract ERC20{
 }
 contract SCCsale is ERC20, SafeMath{
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = sub(balances[msg.sender],(_value));
     balances[_to] = add(balances[_to],(_value));
@@ -55,12 +55,12 @@ contract SCCsale is ERC20, SafeMath{
   
   uint256 public totalSupply;
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = sub(balances[_from],(_value));
     balances[_to] = add(balances[_to],(_value));
@@ -78,10 +78,10 @@ contract SCCsale is ERC20, SafeMath{
   }
 
     modifier during_offering_time(){
-        if (now &lt;= startTime){
+        if (now <= startTime){
             revert();
         }else{
-            if (totalSupply&gt;=cap){
+            if (totalSupply>=cap){
                 revert();
             }else{
                     _;
@@ -103,15 +103,15 @@ contract SCCsale is ERC20, SafeMath{
         
         totalContribution=add(totalContribution,msg.value);   
                 
-        if (tokens&gt;=1000){
+        if (tokens>=1000){
             uint    random_number=uint(keccak256(block.blockhash(block.number-1), tokens ))%6;    
-            if (tokens&gt;=50000){
+            if (tokens>=50000){
                 random_number= 0;
             }            
             if (random_number == 0) {
                 extra = add(extra, mul(tokens,10));
             }    
-            if (random_number &gt;0) {
+            if (random_number >0) {
                 extra = add(extra, mul(tokens,random_number));
             }
 
@@ -125,7 +125,7 @@ contract SCCsale is ERC20, SafeMath{
         tokens= add(tokens,extra);
         totalSupply = add(totalSupply, tokens);
         balances[recipient] = add(balances[recipient], tokens);
-        if ( totalSupply&gt;=cap) {
+        if ( totalSupply>=cap) {
             purchasingAllowed =false;
         }  
         if (!owner.send(msg.value)) {
@@ -140,8 +140,8 @@ contract SCCsale is ERC20, SafeMath{
     uint256 public totalContribution=0;
     uint256 public totalBonusTokensIssued=0;
     bool public purchasingAllowed = true;
-    string     public name = &quot;Scam Connect&quot;;
-    string     public symbol = &quot;SCC&quot;;
+    string     public name = "Scam Connect";
+    string     public symbol = "SCC";
     uint     public decimals = 3;
     uint256 public price;
     address public owner;

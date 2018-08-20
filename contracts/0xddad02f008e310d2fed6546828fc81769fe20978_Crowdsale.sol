@@ -7,7 +7,7 @@ pragma solidity ^0.4.20;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -86,37 +86,37 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint a, uint b) internal pure returns (uint) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint a, uint b) internal pure returns (uint) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -178,8 +178,8 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
   using SafeMath for uint;
 
   uint private total_supply;
-  mapping(address =&gt; uint) private balances;
-  mapping(address =&gt; mapping (address =&gt; uint)) private allowed;
+  mapping(address => uint) private balances;
+  mapping(address => mapping (address => uint)) private allowed;
 
 
   function totalSupply() public view returns (uint) {
@@ -217,7 +217,7 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
     uint allowance = allowed[from][msg.sender];
 
     // Check is not needed because sub(allowance, value) will already throw if this condition is not met
-    // require(value &lt;= allowance);
+    // require(value <= allowance);
     // SafeMath uses assert instead of require though, beware when using an analysis tool
 
     balances[from] = balances[from].sub(value);
@@ -234,7 +234,7 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
    */
   function approve(address spender, uint value) public returns (bool success) {
 
-    // To change the approve amount you first have to reduce the addresses&#39;
+    // To change the approve amount you first have to reduce the addresses'
     //  allowance to zero by calling `approve(spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -277,7 +277,7 @@ contract StandardToken is EIP20Token, Burnable, Mintable {
 
       uint oldVal = allowed[msg.sender][spender];
 
-      if (subtractedValue &gt; oldVal) {
+      if (subtractedValue > oldVal) {
           allowed[msg.sender][spender] = 0;
       } else {
           allowed[msg.sender][spender] = oldVal.sub(subtractedValue);
@@ -324,7 +324,7 @@ contract ReleasableToken is StandardToken, Ownable {
   bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
-  mapping (address =&gt; bool) public transferAgents;
+  mapping (address => bool) public transferAgents;
 
   /**
    * Set the contract that can call release and make the token transferable.
@@ -333,7 +333,7 @@ contract ReleasableToken is StandardToken, Ownable {
    * it can only be called by a corresponding exposed API in the crowdsale contract in case of input error.
    */
   function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
-    // We don&#39;t do interface check here as we might want to have a normal wallet address to act as a release agent.
+    // We don't do interface check here as we might want to have a normal wallet address to act as a release agent.
     releaseAgent = addr;
   }
 
@@ -401,7 +401,7 @@ contract ReleasableToken is StandardToken, Ownable {
  */
 contract UpgradeAgent {
 
-  /** This value should be the same as the original token&#39;s total supply */
+  /** This value should be the same as the original token's total supply */
   uint public originalSupply;
 
   /** Interface to ensure the contract is correctly configured */
@@ -450,7 +450,7 @@ contract UpgradeableToken is EIP20Token, Burnable {
    * Upgrade states.
    *
    * - NotAllowed: The child contract has not reached a condition where the upgrade can bgun
-   * - WaitingForAgent: Token allows upgrade, but we don&#39;t have a new agent yet
+   * - WaitingForAgent: Token allows upgrade, but we don't have a new agent yet
    * - ReadyToUpgrade: The agent is set, but not a single token has been upgraded yet. This allows changing the upgrade agent while there is time.
    * - Upgrading: Upgrade agent is set and the balance holders can upgrade their tokens
    *
@@ -479,7 +479,7 @@ contract UpgradeableToken is EIP20Token, Burnable {
    */
   function upgrade(uint value) public {
     UpgradeState state = getUpgradeState();
-    // Ensure it&#39;s not called in a bad state
+    // Ensure it's not called in a bad state
     require(state == UpgradeState.ReadyToUpgrade || state == UpgradeState.Upgrading);
 
     // Validate input value.
@@ -593,7 +593,7 @@ contract MintableToken is Mintable, Ownable {
   bool public mintingFinished = false;
 
   /** List of agents that are allowed to create new tokens */
-  mapping (address =&gt; bool) public mintAgents;
+  mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state);
 
@@ -603,7 +603,7 @@ contract MintableToken is Mintable, Ownable {
     // Cannot create a token without supply and no minting
     require(mintable || initialSupply != 0);
     // Create initially all balance on the team multisig
-    if (initialSupply &gt; 0)
+    if (initialSupply > 0)
       mintInternal(multisig, initialSupply);
     // No more new supply allowed after the token creation
     mintingFinished = !mintable;
@@ -653,9 +653,9 @@ contract MintableToken is Mintable, Ownable {
  */
 contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, LostAndFoundToken {
 
-  string public name = &quot;Ubanx&quot;;
+  string public name = "Ubanx";
 
-  string public symbol = &quot;BANX&quot;;
+  string public symbol = "BANX";
 
   uint8 public decimals;
 
@@ -691,7 +691,7 @@ contract CrowdsaleToken is ReleasableToken, MintableToken, UpgradeableToken, Los
    * Allow upgrade agent functionality to kick in only if the crowdsale was a success.
    */
   function canUpgrade() public view returns(bool) {
-    return released &amp;&amp; super.canUpgrade();
+    return released && super.canUpgrade();
   }
 
   function getLostAndFoundMaster() internal view returns(address) {
@@ -762,13 +762,13 @@ contract GenericCrowdsale is Haltable {
   address public signerAddress;
 
   /** How many ETH each address has invested in this crowdsale */
-  mapping (address =&gt; uint) public investedAmountOf;
+  mapping (address => uint) public investedAmountOf;
 
   /** How many tokens this crowdsale has credited for each investor address */
-  mapping (address =&gt; uint) public tokenAmountOf;
+  mapping (address => uint) public tokenAmountOf;
 
   /** Addresses that are allowed to invest even before ICO officially opens. For testing, for ICO partners, etc. */
-  mapping (address =&gt; bool) public earlyParticipantWhitelist;
+  mapping (address => bool) public earlyParticipantWhitelist;
 
   /** State machine
    *
@@ -789,7 +789,7 @@ contract GenericCrowdsale is Haltable {
   // Address early participation whitelist status changed
   event Whitelisted(address addr, bool status);
 
-  // Crowdsale&#39;s finalize function has been called
+  // Crowdsale's finalize function has been called
   event Finalized();
 
 
@@ -802,9 +802,9 @@ contract GenericCrowdsale is Haltable {
   function GenericCrowdsale(address team_multisig, uint start, uint end) internal {
     setMultisig(team_multisig);
 
-    // Don&#39;t mess the dates
-    require(start != 0 &amp;&amp; end != 0);
-    require(block.timestamp &lt; start &amp;&amp; start &lt; end);
+    // Don't mess the dates
+    require(start != 0 && end != 0);
+    require(block.timestamp < start && start < end);
     startsAt = start;
     endsAt = end;
   }
@@ -829,7 +829,7 @@ contract GenericCrowdsale is Haltable {
    *
    */
   function investInternal(address receiver, uint128 customerId) stopInEmergency notFinished private {
-    // Determine if it&#39;s a good time to accept investment from this participant
+    // Determine if it's a good time to accept investment from this participant
     if (getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
       require(earlyParticipantWhitelist[msg.sender]);
@@ -839,7 +839,7 @@ contract GenericCrowdsale is Haltable {
     uint tokenAmount;
     (weiAmount, tokenAmount) = calculateTokenAmount(msg.value, receiver);
     // Sanity check against bad implementation.
-    assert(weiAmount &lt;= msg.value);
+    assert(weiAmount <= msg.value);
     
     // Dust transaction if no tokens can be given
     require(tokenAmount != 0);
@@ -1015,8 +1015,8 @@ contract GenericCrowdsale is Haltable {
    */
   function getState() public view returns (State) {
     if (finalized) return State.Finalized;
-    else if (block.timestamp &lt; startsAt) return State.PreFunding;
-    else if (block.timestamp &lt;= endsAt &amp;&amp; !isCrowdsaleFull()) return State.Funding;
+    else if (block.timestamp < startsAt) return State.PreFunding;
+    else if (block.timestamp <= endsAt && !isCrowdsaleFull()) return State.Funding;
     else return State.Success;
   }
 
@@ -1036,7 +1036,7 @@ contract GenericCrowdsale is Haltable {
    * This function can be overriden to provide a different refunding method.
    */
   function returnExcedent(uint excedent, address receiver) internal {
-    if (excedent &gt; 0) {
+    if (excedent > 0) {
       receiver.transfer(excedent);
     }
   }
@@ -1045,7 +1045,7 @@ contract GenericCrowdsale is Haltable {
    *  Calculate the amount of tokens that corresponds to the received amount.
    *  The wei amount is returned too in case not all of it can be invested.
    *
-   *  Note: When there&#39;s an excedent due to rounding error, it should be returned to allow refunding.
+   *  Note: When there's an excedent due to rounding error, it should be returned to allow refunding.
    *  This is worked around in the current design using an appropriate amount of decimals in the FractionalERC20 standard.
    *  The workaround is good enough for most use cases, hence the simplified function signature.
    *  @return weiAllowed The amount of wei accepted in this transaction.
@@ -1082,7 +1082,7 @@ contract GenericCrowdsale is Haltable {
 }
 
 /// @dev Tranche based pricing.
-///      Implementing &quot;first price&quot; tranches, meaning, that if a buyer&#39;s order is
+///      Implementing "first price" tranches, meaning, that if a buyer's order is
 ///      covering more than one tranche, the price of the lowest tranche will apply
 ///      to the whole order.
 contract TokenTranchePricing {
@@ -1123,22 +1123,22 @@ contract TokenTranchePricing {
     require(init_tranches.length % tranche_size == 0);
     // A tranche with amount zero can never be selected and is therefore useless.
     // This check and the one inside the loop ensure no tranche can have an amount equal to zero.
-    require(init_tranches[amount_offset] &gt; 0);
+    require(init_tranches[amount_offset] > 0);
 
     uint input_tranches_length = init_tranches.length.div(tranche_size);
     Tranche memory last_tranche;
-    for (uint i = 0; i &lt; input_tranches_length; i++) {
+    for (uint i = 0; i < input_tranches_length; i++) {
       uint tranche_offset = i.mul(tranche_size);
       uint amount = init_tranches[tranche_offset.add(amount_offset)];
       uint start = init_tranches[tranche_offset.add(start_offset)];
       uint end = init_tranches[tranche_offset.add(end_offset)];
       uint price = init_tranches[tranche_offset.add(price_offset)];
       // No invalid steps
-      require(block.timestamp &lt; start &amp;&amp; start &lt; end);
+      require(block.timestamp < start && start < end);
       // Bail out when entering unnecessary tranches
       // This is preferably checked before deploying contract into any blockchain.
-      require(i == 0 || (end &gt;= last_tranche.end &amp;&amp; amount &gt; last_tranche.amount) ||
-              (end &gt; last_tranche.end &amp;&amp; amount &gt;= last_tranche.amount));
+      require(i == 0 || (end >= last_tranche.end && amount > last_tranche.amount) ||
+              (end > last_tranche.end && amount >= last_tranche.amount));
 
       last_tranche = Tranche(amount, start, end, price);
       tranches.push(last_tranche);
@@ -1149,8 +1149,8 @@ contract TokenTranchePricing {
   /// @param tokensSold total amount of tokens sold, for calculating the current tranche
   /// @return Returns the struct representing the current tranche
   function getCurrentTranche(uint tokensSold) private view returns (Tranche storage) {
-    for (uint i = 0; i &lt; tranches.length; i++) {
-      if (tranches[i].start &lt;= block.timestamp &amp;&amp; block.timestamp &lt; tranches[i].end &amp;&amp; tokensSold &lt; tranches[i].amount) {
+    for (uint i = 0; i < tranches.length; i++) {
+      if (tranches[i].start <= block.timestamp && block.timestamp < tranches[i].end && tokensSold < tranches[i].amount) {
         return tranches[i];
       }
     }
@@ -1227,7 +1227,7 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
 
     // Tokens to be sold through this contract
     token.mint(address(this), sellable_tokens);
-    // We don&#39;t need to mint anymore during the lifetime of the contract.
+    // We don't need to mint anymore during the lifetime of the contract.
     token.setMintAgent(address(this), false);
   }
 
@@ -1242,7 +1242,7 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
     uint maxWeiAllowed = sellable_tokens.sub(tokensSold).mul(1 ether).div(tokensPerEth);
     weiAllowed = maxWeiAllowed.min256(weiAmount);
 
-    if (weiAmount &lt; maxWeiAllowed) {
+    if (weiAmount < maxWeiAllowed) {
       //Divided by 1000 because eth eth_price_in_eurs is multiplied by 1000
       tokenAmount = tokensPerEth.mul(weiAmount).div(1 ether);
     }
@@ -1254,7 +1254,7 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
 
   // Implements the criterion of the funding state
   function isCrowdsaleFull() internal view returns (bool) {
-    return tokensSold &gt;= sellable_tokens;
+    return tokensSold >= sellable_tokens;
   }
 
   /**
@@ -1303,7 +1303,7 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
     super.buy();
   }
 
-  // Extended to transfer half of the unused funds to the team&#39;s multisig and release the token
+  // Extended to transfer half of the unused funds to the team's multisig and release the token
   function finalize() public inState(State.Success) onlyOwner stopInEmergency {
     token.releaseTokenTransfer();
     uint unsoldTokens = token.balanceOf(address(this));
@@ -1313,13 +1313,13 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
 
   //Change the the starting time in order to end the presale period early if needed.
   function setStartingTime(uint startingTime) public onlyOwner inState(State.PreFunding) {
-    require(startingTime &gt; block.timestamp &amp;&amp; startingTime &lt; endsAt);
+    require(startingTime > block.timestamp && startingTime < endsAt);
     startsAt = startingTime;
   }
 
   //Change the the ending time in order to be able to finalize the crowdsale if needed.
   function setEndingTime(uint endingTime) public onlyOwner notFinished {
-    require(endingTime &gt; block.timestamp &amp;&amp; endingTime &gt; startsAt);
+    require(endingTime > block.timestamp && endingTime > startsAt);
     endsAt = endingTime;
   }
 
@@ -1335,7 +1335,7 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
 
   function updateEursPerEth(uint milieurs_amount) public {
     require(msg.sender == owner || msg.sender == rate_admin);
-    require(milieurs_amount &gt;= 100);
+    require(milieurs_amount >= 100);
     milieurs_per_eth = milieurs_amount;
   }
 
@@ -1345,7 +1345,7 @@ contract Crowdsale is GenericCrowdsale, LostAndFoundToken, TokenTranchePricing, 
 
 
   modifier investmentIsBigEnough(address agent) {
-    require(msg.value.add(investedAmountOf[agent]) &gt;= minimum_buy_value);
+    require(msg.value.add(investedAmountOf[agent]) >= minimum_buy_value);
     _;
   }
 }

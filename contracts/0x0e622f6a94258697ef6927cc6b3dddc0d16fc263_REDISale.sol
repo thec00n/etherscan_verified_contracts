@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -100,15 +100,15 @@ contract REDISale {
 
         require( ! haltSale );
         uint weiPayment =  msg.value ;
-        require( weiPayment &gt; 0 );
+        require( weiPayment > 0 );
         raisedWei = raisedWei.add( weiPayment );
         
    
-        if ( raisedWei &gt; 185000 * 10 ** 18 ){
+        if ( raisedWei > 185000 * 10 ** 18 ){
             rate = 40000; 
-        }else if ( raisedWei &gt; 145000 * 10 ** 18){
+        }else if ( raisedWei > 145000 * 10 ** 18){
             rate = 50000; 
-        }else if ( raisedWei &gt;  75000 * 10 ** 18 ){
+        }else if ( raisedWei >  75000 * 10 ** 18 ){
             rate = 80000; 
         }
         

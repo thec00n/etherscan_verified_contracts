@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -57,7 +57,7 @@ contract RealEstateCryptoFund {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -98,7 +98,7 @@ contract RECFCO is Ownable {
 
   RealEstateCryptoFund public token;
 
-  mapping(address=&gt;bool) public participated;
+  mapping(address=>bool) public participated;
    
    
    // address where funds are collected
@@ -109,7 +109,7 @@ contract RECFCO is Ownable {
   //date stop crodwsale
   uint256 public  salesdeadline;
 
-  // how many token units a buyer gets per wei (for &lt; 1ETH purchases)
+  // how many token units a buyer gets per wei (for < 1ETH purchases)
   uint256 public rate;
 
   // amount of raised money in wei
@@ -143,7 +143,7 @@ contract RECFCO is Ownable {
   
 
   function buyTokens(address beneficiary) public payable {
-    require(now &lt; salesdeadline);
+    require(now < salesdeadline);
     require(beneficiary != address(0));
     require(msg.value != 0);
 
@@ -182,7 +182,7 @@ function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
   }
  
 function setRate(uint256 _rate) public onlyOwner {
-    require(_rate &gt; 0);
+    require(_rate > 0);
     rate = _rate;
     emit RateUpdate(rate);
 }
@@ -196,7 +196,7 @@ emit WalletUpdated(wallet);
 //SALES_DEADLINE update
 function setsalesdeadline (uint256 _salesdeadline) onlyOwner public {
 salesdeadline=_salesdeadline;
-require(now &lt; salesdeadline);
+require(now < salesdeadline);
 emit sales_deadlineUpdated(salesdeadline);
 }
     

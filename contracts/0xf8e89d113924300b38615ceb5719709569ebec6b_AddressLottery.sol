@@ -23,7 +23,7 @@ contract AddressLottery{
     
     uint winnerLuckyNumber = 7;
         
-    mapping (address =&gt; bool) participated;
+    mapping (address => bool) participated;
 
 
     function AddressLottery() {

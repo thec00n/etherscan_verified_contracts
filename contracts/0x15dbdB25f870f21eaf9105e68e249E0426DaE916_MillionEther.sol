@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 pragma solidity ^0.4.2;
@@ -33,8 +33,8 @@ contract MillionEther {
         bool refunded;
         uint investments;
     }
-    mapping(address =&gt; User) private users;
-    mapping(uint =&gt; address) private userAddrs;
+    mapping(address => User) private users;
+    mapping(uint => address) private userAddrs;
 
     // Blocks. Blocks are 10x10 pixel areas. There are 10 000 blocks.
     uint16 private blocksSold = 0;
@@ -57,7 +57,7 @@ contract MillionEther {
         string adUrl;
         string adText;
     }
-    mapping(uint =&gt; Image) private images;
+    mapping(uint => Image) private images;
 
     // Contract settings and security
     uint public charityBalance = 0;
@@ -98,7 +98,7 @@ contract MillionEther {
     modifier onlyWhenInvitedBy (address someUser) {
         if (users[msg.sender].referal != address(0x0)) throw;   //user already exists
         if (users[someUser].referal == address(0x0)) throw;     //referral does not exist
-        if (now &lt; users[someUser].activationTime) throw;        //referral is not active yet
+        if (now < users[someUser].activationTime) throw;        //referral is not active yet
         _;
     }
 
@@ -108,12 +108,12 @@ contract MillionEther {
     }
 
     modifier onlyForSale (uint8 _x, uint8 _y) {
-        if (blocks[_x][_y].landlord != address(0x0) &amp;&amp; blocks[_x][_y].sellPrice == 0) throw;
+        if (blocks[_x][_y].landlord != address(0x0) && blocks[_x][_y].sellPrice == 0) throw;
         _;
     }
 
     modifier onlyWithin100x100Area (uint8 _fromX, uint8 _fromY, uint8 _toX, uint8 _toY) {
-        if ((_fromX &lt; 1) || (_fromY &lt; 1)  || (_toX &gt; 100) || (_toY &gt; 100)) throw;
+        if ((_fromX < 1) || (_fromY < 1)  || (_toX > 100) || (_toY > 100)) throw;
         _;
     }    
 
@@ -155,7 +155,7 @@ contract MillionEther {
         returns (uint) 
     {
         numUsers++;
-        // get user&#39;s referral handshakes and increase by one
+        // get user's referral handshakes and increase by one
         uint8 currentLevel = users[referal].handshakes + 1;
         users[msg.sender].referal = referal;
         users[msg.sender].handshakes = currentLevel;
@@ -210,22 +210,22 @@ contract MillionEther {
         returns (uint) 
     {   
         // Put funds to buyerBalance
-        if (users[msg.sender].balance + msg.value &lt; users[msg.sender].balance) throw; //checking for overflow
+        if (users[msg.sender].balance + msg.value < users[msg.sender].balance) throw; //checking for overflow
         uint previousWeiInvested = totalWeiInvested;
         uint buyerBalance = users[msg.sender].balance + msg.value;
 
         // perform buyBlock for coordinates [fromX, fromY, toX, toY] and withdraw funds
         uint purchasePrice;
-        for (uint8 ix=fromX; ix&lt;=toX; ix++) {
-            for (uint8 iy=fromY; iy&lt;=toY; iy++) {
+        for (uint8 ix=fromX; ix<=toX; ix++) {
+            for (uint8 iy=fromY; iy<=toY; iy++) {
                 purchasePrice = buyBlock (ix,iy);
-                if (buyerBalance &lt; purchasePrice) throw;
+                if (buyerBalance < purchasePrice) throw;
                 buyerBalance -= purchasePrice;
             }
         }
         // update user balance
         users[msg.sender].balance = buyerBalance;
-        // user&#39;s total investments are used for refunds calculations in emergency
+        // user's total investments are used for refunds calculations in emergency
         users[msg.sender].investments += totalWeiInvested - previousWeiInvested;
         // pay rewards to the referral chain starting from the current user referral
         payOut (totalWeiInvested - previousWeiInvested, users[msg.sender].referal);
@@ -252,8 +252,8 @@ contract MillionEther {
         returns (bool) 
     {
         if (priceForEachBlockInWei == 0) throw;
-        for (uint8 ix=fromX; ix&lt;=toX; ix++) {
-            for (uint8 iy=fromY; iy&lt;=toY; iy++) {
+        for (uint8 ix=fromX; ix<=toX; ix++) {
+            for (uint8 iy=fromY; iy<=toY; iy++) {
                 sellBlock (ix, iy, priceForEachBlockInWei);
             }
         }
@@ -267,9 +267,9 @@ contract MillionEther {
 // ** ASSIGNING IMAGES ** //
     
     function chargeForImagePlacement () private {
-        if (users[msg.sender].balance + msg.value &lt; users[msg.sender].balance) throw; //check for overflow`
+        if (users[msg.sender].balance + msg.value < users[msg.sender].balance) throw; //check for overflow`
         uint buyerBalance = users[msg.sender].balance + msg.value;
-        if (buyerBalance &lt; setting_imagePlacementPriceInWei) throw;
+        if (buyerBalance < setting_imagePlacementPriceInWei) throw;
         buyerBalance -= setting_imagePlacementPriceInWei;
         users[admin].balance += setting_imagePlacementPriceInWei;
         users[msg.sender].balance = buyerBalance;
@@ -294,8 +294,8 @@ contract MillionEther {
     {
         chargeForImagePlacement();
         numImages++;
-        for (uint8 ix=fromX; ix&lt;=toX; ix++) {
-            for (uint8 iy=fromY; iy&lt;=toY; iy++) {
+        for (uint8 ix=fromX; ix<=toX; ix++) {
+            for (uint8 iy=fromY; iy<=toY; iy++) {
                 assignImageID (ix, iy, numImages);
             }
         }
@@ -321,7 +321,7 @@ contract MillionEther {
         address iUser = referal;
         address nextUser;
         uint totalPayed = 0;
-        for (uint8 i = 1; i &lt; 7; i++) {                 // maximum 6 handshakes from the buyer 
+        for (uint8 i = 1; i < 7; i++) {                 // maximum 6 handshakes from the buyer 
             users[iUser].balance += _amount / (2**i);   // with every handshake far from the buyer reward halves:
             totalPayed += _amount / (2**i);             // 50%, 25%, 12.5%, 6.25%, 3.125%, 1.5625%
             if (iUser == admin) { break; }              // breaks at admin
@@ -405,8 +405,8 @@ contract MillionEther {
         uint blockPrice;
         uint totalPrice = 0;
         uint16 iblocksSold = blocksSold;
-        for (uint8 ix=fromX; ix&lt;=toX; ix++) {
-            for (uint8 iy=fromY; iy&lt;=toY; iy++) {
+        for (uint8 ix=fromX; ix<=toX; ix++) {
+            for (uint8 iy=fromY; iy<=toY; iy++) {
                 blockPrice = getBlockPrice(ix,iy,iblocksSold);
                 if (blocks[ix][iy].landlord == address(0x0)) { 
                         iblocksSold += 1; 
@@ -467,8 +467,8 @@ contract MillionEther {
         onlyAdmin () 
     {   
         // setting_delay affects user activation time.
-        if (newDelayInSeconds &gt; 0) setting_delay = newDelayInSeconds;
-        // when the charityAddress is set charityBalance immediately transfered to it&#39;s balance 
+        if (newDelayInSeconds > 0) setting_delay = newDelayInSeconds;
+        // when the charityAddress is set charityBalance immediately transfered to it's balance 
         if (newCharityAddress != address(0x0)) {
             if (users[newCharityAddress].referal == address(0x0)) throw;
             charityAddress = newCharityAddress;

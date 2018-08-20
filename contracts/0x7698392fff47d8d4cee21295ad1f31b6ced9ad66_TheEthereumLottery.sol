@@ -13,9 +13,9 @@ contract TheEthereumLottery {
     The advantage of TheEthereumLottery is that it is not using any pseudo-random numbers.
     The winning numbers are known from the announcement of next draw - at this moment the values of GuessXOutOf4,
     and ticket price is publically available. 
-    To unable cheating of contract owner there a hash (called &quot;TheHash&quot; in contract ledger) 
+    To unable cheating of contract owner there a hash (called "TheHash" in contract ledger) 
     equal to sha3(WinningNums, TheRand) is provided.
-    While announcing WinningNums the owner has to provide also a valid &quot;TheRand&quot; value, which satisfy 
+    While announcing WinningNums the owner has to provide also a valid "TheRand" value, which satisfy 
     following expression: TheHash == sha3(WinningNums, TheRand). 
     If hashes do not match - the player can refund his Ether used for lottery ticket.
     As by default all non existing values equal to 0, from the perspective of blockchain 
@@ -32,7 +32,7 @@ contract TheEthereumLottery {
 
   JSON interface:
 
-[{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;MyNum1&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;MyNum2&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;MyNum3&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;MyNum4&quot;,&quot;type&quot;:&quot;uint8&quot;}],&quot;name&quot;:&quot;Play&quot;,&quot;outputs&quot;:[],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;DrawNumber&quot;,&quot;type&quot;:&quot;uint32&quot;}],&quot;name&quot;:&quot;Withdraw&quot;,&quot;outputs&quot;:[],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;Announcements&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;}],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;DrawNumber&quot;,&quot;type&quot;:&quot;uint32&quot;}],&quot;name&quot;:&quot;Refund&quot;,&quot;outputs&quot;:[],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;IndexOfCurrentDraw&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;ledger&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;WinningNum1&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;WinningNum2&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;WinningNum3&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;WinningNum4&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;TheRand&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;TheHash&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;Guess4OutOf4&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;Guess3OutOf4&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;Guess2OutOf4&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;Guess1OutOf4&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;PriceOfTicket&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;ExpirencyTime&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;DrawNumber&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;PlayerAddress&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;MyBet&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;Nums&quot;,&quot;type&quot;:&quot;uint8[4]&quot;}],&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[],&quot;type&quot;:&quot;constructor&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;IndexOfDraw&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;TheHash&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;PriceOfTicketInWei&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;WeiToWin&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;NewDrawReadyToPlay&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;IndexOfDraw&quot;,&quot;type&quot;:&quot;uint32&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;WinningNumber1&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;WinningNumber2&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;WinningNumber3&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;WinningNumber4&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;TheRand&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;DrawReadyToPayout&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;Wei&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;PlayerWon&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;Num1&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;Num2&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;Num3&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;Num4&quot;,&quot;type&quot;:&quot;uint8&quot;},{&quot;name&quot;:&quot;TheRandomValue&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;CheckHash&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;TheHash&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;type&quot;:&quot;function&quot;}]
+[{"constant":false,"inputs":[{"name":"MyNum1","type":"uint8"},{"name":"MyNum2","type":"uint8"},{"name":"MyNum3","type":"uint8"},{"name":"MyNum4","type":"uint8"}],"name":"Play","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"DrawNumber","type":"uint32"}],"name":"Withdraw","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"Announcements","outputs":[{"name":"","type":"string"}],"type":"function"},{"constant":false,"inputs":[{"name":"DrawNumber","type":"uint32"}],"name":"Refund","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"IndexOfCurrentDraw","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"ledger","outputs":[{"name":"WinningNum1","type":"uint8"},{"name":"WinningNum2","type":"uint8"},{"name":"WinningNum3","type":"uint8"},{"name":"WinningNum4","type":"uint8"},{"name":"TheRand","type":"bytes32"},{"name":"TheHash","type":"bytes32"},{"name":"Guess4OutOf4","type":"uint256"},{"name":"Guess3OutOf4","type":"uint256"},{"name":"Guess2OutOf4","type":"uint256"},{"name":"Guess1OutOf4","type":"uint256"},{"name":"PriceOfTicket","type":"uint256"},{"name":"ExpirencyTime","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"DrawNumber","type":"uint8"},{"name":"PlayerAddress","type":"address"}],"name":"MyBet","outputs":[{"name":"Nums","type":"uint8[4]"}],"type":"function"},{"inputs":[],"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"IndexOfDraw","type":"uint256"},{"indexed":false,"name":"TheHash","type":"bytes32"},{"indexed":false,"name":"PriceOfTicketInWei","type":"uint256"},{"indexed":false,"name":"WeiToWin","type":"uint256"}],"name":"NewDrawReadyToPlay","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"IndexOfDraw","type":"uint32"},{"indexed":false,"name":"WinningNumber1","type":"uint8"},{"indexed":false,"name":"WinningNumber2","type":"uint8"},{"indexed":false,"name":"WinningNumber3","type":"uint8"},{"indexed":false,"name":"WinningNumber4","type":"uint8"},{"indexed":false,"name":"TheRand","type":"bytes32"}],"name":"DrawReadyToPayout","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"Wei","type":"uint256"}],"name":"PlayerWon","type":"event"},{"constant":true,"inputs":[{"name":"Num1","type":"uint8"},{"name":"Num2","type":"uint8"},{"name":"Num3","type":"uint8"},{"name":"Num4","type":"uint8"},{"name":"TheRandomValue","type":"bytes32"}],"name":"CheckHash","outputs":[{"name":"TheHash","type":"bytes32"}],"type":"function"}]
 */
 
 
@@ -62,7 +62,7 @@ struct ledger_t {
   uint8 WinningNum4;
   bytes32 TheRand;
   bytes32 TheHash;
-  mapping(address=&gt;bet_t) bets;
+  mapping(address=>bet_t) bets;
   uint Guess4OutOf4;
   uint Guess3OutOf4;
   uint Guess2OutOf4;
@@ -126,9 +126,9 @@ function Play(uint8 MyNum1,
     throw;
 
   //if numbers are sorted
-  if(MyNum1 &gt;= MyNum2 ||
-     MyNum2 &gt;= MyNum3 ||
-     MyNum3 &gt;= MyNum4
+  if(MyNum1 >= MyNum2 ||
+     MyNum2 >= MyNum3 ||
+     MyNum3 >= MyNum4
      )
     throw;//because you should sort the values yourself
 
@@ -148,11 +148,11 @@ function Play(uint8 MyNum1,
   uint8[4] memory InputData;
   (InputData[0],InputData[1],InputData[2],InputData[3])
     =(MyNum1,MyNum2,MyNum3,MyNum4);
-  for(uint8 n=4;n&gt;1;n--)//check if input is sorted / bubble sort
+  for(uint8 n=4;n>1;n--)//check if input is sorted / bubble sort
     {
       bool sorted=true; 
-      for(uint8 i=0;i&lt;n-1;i++)
-	if(InputData[i] &gt; InputData[i+1])//then mark array as not sorted &amp; swap
+      for(uint8 i=0;i<n-1;i++)
+	if(InputData[i] > InputData[i+1])//then mark array as not sorted & swap
 	  {
 	    sorted=false;
 	    (InputData[i], InputData[i+1])=(InputData[i+1], InputData[i]);
@@ -179,7 +179,7 @@ function Withdraw(uint32 DrawNumber)
   //so if there was no announcement WinningNums are zeros
   if(ledger[DrawNumber].WinningNum4==0)//the least possible value == 3
     throw;//this condition checks if the numbers were announced
-  //it&#39;s more gas-efficient than checking sha3(No1,No2,No3,No4,TheRand)
+  //it's more gas-efficient than checking sha3(No1,No2,No3,No4,TheRand)
   //and even if the hashes does not match then player benefits because of chance of win AND beeing able to Refund
 
   
@@ -195,9 +195,9 @@ function Withdraw(uint32 DrawNumber)
      ledger[DrawNumber].WinningNum4);
   //data ready
   
-  while(i&lt;4)//count player hits
+  while(i<4)//count player hits
     {//both arrays are sorted
-      while(j&lt;4 &amp;&amp; playernum[j] &lt; nums[i]) ++j;
+      while(j<4 && playernum[j] < nums[i]) ++j;
       if(j==4) break;//nothing more to check - break loop here
       if(playernum[j] == nums[i]) ++hits;
       ++i;
@@ -231,8 +231,8 @@ function Refund(uint32 DrawNumber)
      ledger[DrawNumber].TheHash ) throw;
   //no refund if hashes match
 
-  if(now &lt; ledger[DrawNumber].ExpirencyTime)
-    throw;//no refund while there is still TIME to announce nums &amp; TheRand
+  if(now < ledger[DrawNumber].ExpirencyTime)
+    throw;//no refund while there is still TIME to announce nums & TheRand
   
  
   if(ledger[DrawNumber].bets[msg.sender].can_withdraw==false)

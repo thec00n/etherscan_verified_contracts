@@ -13,13 +13,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -44,12 +44,12 @@ contract MMOToken is ERC20 {
 
     address public owner;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
-    string public name = &quot;MMO&#39;s game art foundation&quot;;
-    string public constant symbol = &quot;MMO&quot;;
+    string public name = "MMO's game art foundation";
+    string public constant symbol = "MMO";
     uint public constant decimals = 18;
     bool public stopped;
     
@@ -64,13 +64,13 @@ contract MMOToken is ERC20 {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event LOCK(address indexed _owner, uint256 _value);
 
-    mapping (address =&gt; uint256) public lockAddress;
+    mapping (address => uint256) public lockAddress;
     
     modifier lock(address _add){
         require(_add != address(0));
         uint256 releaseTime = lockAddress[_add];
-        if(releaseTime &gt; 0){
-             require(block.timestamp &gt;= releaseTime);
+        if(releaseTime > 0){
+             require(block.timestamp >= releaseTime);
               _;
         }else{
              _;
@@ -95,7 +95,7 @@ contract MMOToken is ERC20 {
     }
     
     function lockTime(address _to,uint256 _value) onlyOwner public {
-       if(_value &gt; block.timestamp){
+       if(_value > block.timestamp){
          lockAddress[_to] = _value;
          emit LOCK(_to, _value);
        }
@@ -122,7 +122,7 @@ contract MMOToken is ERC20 {
     
     function transfer(address _to, uint256 _amount) stoppable lock(msg.sender) public returns (bool success) {
         require(_to != address(0));
-        require(_amount &lt;= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
         
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to] = balances[_to].add(_amount);
@@ -131,8 +131,8 @@ contract MMOToken is ERC20 {
     }
     
     function transferFrom(address _from, uint256 _amount) stoppable lock(_from) public returns (bool success) {
-        require(_amount &lt;= balances[_from]);
-        require(_amount &lt;= allowed[_from][msg.sender]);
+        require(_amount <= balances[_from]);
+        require(_amount <= allowed[_from][msg.sender]);
         
         balances[_from] = balances[_from].sub(_amount);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -142,7 +142,7 @@ contract MMOToken is ERC20 {
     }
     
     function approve(address _spender, uint256 _value) stoppable lock(_spender) public returns (bool success) {
-        if (_value != 0 &amp;&amp; allowed[msg.sender][_spender] != 0) { return false; }
+        if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;

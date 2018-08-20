@@ -3,7 +3,7 @@
 // Participate in the ICO by sending ETH to this contract. 1 ETH = 10 HOW
 //
 //
-// DON&#39;T MISS THIS EXCLUSIVE OPPORTUNITY TO PARTICIPATE IN 
+// DON'T MISS THIS EXCLUSIVE OPPORTUNITY TO PARTICIPATE IN 
 // HOWEYCOINS TRAVEL NETWORK NOW!
 //
 //
@@ -41,13 +41,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -75,8 +75,8 @@ contract ERC223Receiver {
 contract HoweyCoin is ERC20 {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
 
   address public owner;
   uint256 public tokensPerWei;
@@ -165,7 +165,7 @@ contract HoweyCoin is ERC20 {
   function decreaseApproval(address _spender, uint _subtractedValue) 
     external returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -176,7 +176,7 @@ contract HoweyCoin is ERC20 {
 
   function transferMany(address [] _dests, uint256 [] _amounts) public {
     require(_dests.length == _amounts.length);
-    for (uint i = 0; i &lt; _dests.length; ++i) {
+    for (uint i = 0; i < _dests.length; ++i) {
       require(_transfer(_dests[i], _amounts[i]));
     }
   }
@@ -201,7 +201,7 @@ contract HoweyCoin is ERC20 {
     assembly {
       length := extcodesize(_addr)
     }
-    return length &gt; 0;
+    return length > 0;
   }
 
   function _contractFallback(address _origin, address _to, uint _value, bytes _data)

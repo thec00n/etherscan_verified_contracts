@@ -22,7 +22,7 @@ library SafeMath {
     // ------------------------------------------------------------------------
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 
@@ -30,7 +30,7 @@ library SafeMath {
     // Subtract a number from another number, checking for underflows
     // ------------------------------------------------------------------------
     function sub(uint a, uint b) internal returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 }
@@ -81,12 +81,12 @@ contract ERC20Token {
     // ------------------------------------------------------------------------
     // Balances for each account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
     // ------------------------------------------------------------------------
     // Owner of account approves the transfer of an amount to another account
     // ------------------------------------------------------------------------
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // ------------------------------------------------------------------------
     // Get the total token supply
@@ -103,12 +103,12 @@ contract ERC20Token {
     }
 
     // ------------------------------------------------------------------------
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // ------------------------------------------------------------------------
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] &gt;= _amount                // User has balance
-            &amp;&amp; _amount &gt; 0                                 // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]     // Overflow check
+        if (balances[msg.sender] >= _amount                // User has balance
+            && _amount > 0                                 // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]     // Overflow check
         ) {
             balances[msg.sender] = balances[msg.sender].sub(_amount);
             balances[_to] = balances[_to].add(_amount);
@@ -141,8 +141,8 @@ contract ERC20Token {
     }
 
     // ------------------------------------------------------------------------
-    // Spender of tokens transfer an amount of tokens from the token owner&#39;s
-    // balance to the spender&#39;s account. The owner of the tokens must already
+    // Spender of tokens transfer an amount of tokens from the token owner's
+    // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     // ------------------------------------------------------------------------
     function transferFrom(
@@ -150,10 +150,10 @@ contract ERC20Token {
         address _to,
         uint256 _amount
     ) returns (bool success) {
-        if (balances[_from] &gt;= _amount                  // From a/c has balance
-            &amp;&amp; allowed[_from][msg.sender] &gt;= _amount    // Transfer approved
-            &amp;&amp; _amount &gt; 0                              // Non-zero transfer
-            &amp;&amp; balances[_to] + _amount &gt; balances[_to]  // Overflow check
+        if (balances[_from] >= _amount                  // From a/c has balance
+            && allowed[_from][msg.sender] >= _amount    // Transfer approved
+            && _amount > 0                              // Non-zero transfer
+            && balances[_to] + _amount > balances[_to]  // Overflow check
         ) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
@@ -167,7 +167,7 @@ contract ERC20Token {
 
     // ------------------------------------------------------------------------
     // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender&#39;s account
+    // transferred to the spender's account
     // ------------------------------------------------------------------------
     function allowance(
         address _owner, 
@@ -187,8 +187,8 @@ contract DaoCasinoToken is ERC20Token, Owned {
     // ------------------------------------------------------------------------
     // Token information
     // ------------------------------------------------------------------------
-    string public constant name = &quot;Dao.Casino&quot;;
-    string public constant symbol = &quot;BET&quot;;
+    string public constant name = "Dao.Casino";
+    string public constant symbol = "BET";
     uint8 public constant decimals = 18;
 
     function DaoCasinoToken() {
@@ -204,8 +204,8 @@ contract DaoCasinoToken is ERC20Token, Owned {
     // The 96 MSB is the balance of that address.
     function fill(uint256[] data) onlyOwner {
         require(!sealed);
-        for (uint256 i = 0; i &lt; data.length; i++) {
-            address account = address(data[i] &amp; (D160-1));
+        for (uint256 i = 0; i < data.length; i++) {
+            address account = address(data[i] & (D160-1));
             uint256 amount = data[i] / D160;
             // Prevent duplicates
             if (balances[account] == 0) {

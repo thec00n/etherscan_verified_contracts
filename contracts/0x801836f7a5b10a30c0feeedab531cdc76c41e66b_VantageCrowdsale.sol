@@ -18,7 +18,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address internal owner;
@@ -89,7 +89,7 @@ contract Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -145,7 +145,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
    /**
@@ -156,8 +156,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -209,7 +209,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -283,20 +283,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -418,9 +418,9 @@ contract Crowdsale is Ownable, Pausable {
 
   // Vantage Crowdsale constructor
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     // Vantage token creation 
@@ -474,21 +474,21 @@ contract Crowdsale is Ownable, Pausable {
 
     uint256 weiAmount = msg.value;
     // minimum investment should be 0.05 ETH
-    require(weiAmount &gt;= 50000000000000000); //50000000000000000
+    require(weiAmount >= 50000000000000000); //50000000000000000
     
     uint256 accessTime = now;
     uint256 tokens = 0;
 
   // calculating the crowdsale and Pre-crowdsale bonuses on the basis of timing
-   require(!((accessTime &gt; privateEndTime) &amp;&amp; (accessTime &lt; publicStartTime)));
+   require(!((accessTime > privateEndTime) && (accessTime < publicStartTime)));
 
-    if ((accessTime &gt;= privateStartTime) &amp;&amp; (accessTime &lt; privateEndTime)) {
-        require(privateSupply &gt; 0);
+    if ((accessTime >= privateStartTime) && (accessTime < privateEndTime)) {
+        require(privateSupply > 0);
 
         tokens = SafeMath.add(tokens, weiAmount.mul(privateICOBonus));
         tokens = SafeMath.add(tokens, weiAmount.mul(rate));
         
-    } else if ((accessTime &gt;= publicStartTime) &amp;&amp; (accessTime &lt;= publicEndTime)) {
+    } else if ((accessTime >= publicStartTime) && (accessTime <= publicEndTime)) {
         tokens = SafeMath.add(tokens, weiAmount.mul(rate));
       } 
     // update state
@@ -506,14 +506,14 @@ contract Crowdsale is Ownable, Pausable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= privateStartTime &amp;&amp; now &lt;= publicEndTime;
+    bool withinPeriod = now >= privateStartTime && now <= publicEndTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-      return now &gt; publicEndTime;
+      return now > publicEndTime;
   }
 
   function burnToken() onlyOwner  public returns (bool) {
@@ -528,14 +528,14 @@ contract Crowdsale is Ownable, Pausable {
   }
 
   function grantReserveToken(address beneficiary) onlyOwner  public {
-    require((!grantReserveSupply) &amp;&amp; (now &gt; reserveTimeLock));
+    require((!grantReserveSupply) && (now > reserveTimeLock));
     grantReserveSupply = true;
     token.mint(beneficiary,reserveSupply);
     reserveSupply = 0;  
   }
 
   function grantTeamAdvisorToken(address beneficiary) onlyOwner public {
-    require((!grantTeamAdvisorSupply) &amp;&amp; (now &gt; teamTimeLock));
+    require((!grantTeamAdvisorSupply) && (now > teamTimeLock));
     grantTeamAdvisorSupply = true;
     token.mint(beneficiary,teamAdvisorSupply);
     teamAdvisorSupply = 0;
@@ -544,9 +544,9 @@ contract Crowdsale is Ownable, Pausable {
 
  function privateSaleTransfer(address[] recipients, uint256[] values) onlyOwner  public {
      require(!checkBurnTokens);
-     for (uint256 i = 0; i &lt; recipients.length; i++) {
+     for (uint256 i = 0; i < recipients.length; i++) {
         values[i] = SafeMath.mul(values[i], 1 ether);
-        require(privateSupply &gt;= values[i]);
+        require(privateSupply >= values[i]);
         privateSupply = SafeMath.sub(privateSupply,values[i]);
         token.mint(recipients[i], values[i]); 
     }
@@ -555,9 +555,9 @@ contract Crowdsale is Ownable, Pausable {
 
  function publicSaleTransfer(address[] recipients, uint256[] values) onlyOwner  public {
      require(!checkBurnTokens);
-     for (uint256 i = 0; i &lt; recipients.length; i++) {
+     for (uint256 i = 0; i < recipients.length; i++) {
         values[i] = SafeMath.mul(values[i], 1 ether);
-        require(publicSupply &gt;= values[i]);
+        require(publicSupply >= values[i]);
         publicSupply = SafeMath.sub(publicSupply,values[i]);
         token.mint(recipients[i], values[i]);     
     }
@@ -591,21 +591,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 internal cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -620,8 +620,8 @@ contract CappedCrowdsale is Crowdsale {
 
 contract VantageToken is MintableToken {
 
-  string public constant name = &quot;Vantage Token&quot;;
-  string public constant symbol = &quot;XVT&quot;;
+  string public constant name = "Vantage Token";
+  string public constant symbol = "XVT";
   uint8 public constant decimals = 18;
   uint256 public constant _totalSupply = SafeMath.mul(200000000, 1 ether);
 
@@ -656,7 +656,7 @@ contract FinalizableCrowdsale is Crowdsale {
 
   /**
    * @dev Must be called after crowdsale ends, to do some extra finalization
-   * work. Calls the contract&#39;s finalization function.
+   * work. Calls the contract's finalization function.
    */
   function finalizeCrowdsale() onlyOwner public {
     require(!isFinalized);
@@ -694,7 +694,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -742,7 +742,7 @@ contract RefundVault is Ownable {
  * @title RefundableCrowdsale
  * @dev Extension of Crowdsale contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
- * Uses a RefundVault as the crowdsale&#39;s vault.
+ * Uses a RefundVault as the crowdsale's vault.
  */
 contract RefundableCrowdsale is FinalizableCrowdsale {
   using SafeMath for uint256;
@@ -755,12 +755,12 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   RefundVault private vault;
 
   function RefundableCrowdsale(uint256 _goal) {
-    require(_goal &gt; 0);
+    require(_goal > 0);
     vault = new RefundVault(wallet);
     goal = _goal;
   }
 
-  // We&#39;re overriding the fund forwarding from Crowdsale.
+  // We're overriding the fund forwarding from Crowdsale.
   // In addition to sending the funds, we want to call
   // the RefundVault deposit function
   function forwardFunds() internal {
@@ -787,7 +787,7 @@ contract RefundableCrowdsale is FinalizableCrowdsale {
   }
 
   function goalReached() public constant returns (bool) {
-    if (weiRaised &gt;= goal) {
+    if (weiRaised >= goal) {
       _goalReached = true;
       return true;
     } else if (_goalReached) {
@@ -815,7 +815,7 @@ contract VantageCrowdsale is Crowdsale, CappedCrowdsale, RefundableCrowdsale {
     RefundableCrowdsale(_goal)
     Crowdsale(_startTime, _endTime, _rate, _wallet)
     {
-        require(_goal &lt;= _cap);  
+        require(_goal <= _cap);  
     }
 
     /**VantageToken Contract is generating from here */

@@ -43,10 +43,10 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -56,7 +56,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -79,25 +79,25 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract GGoken is StandardToken {
 
     function () public payable {
-        require(msg.value &gt; 0 &amp;&amp; receivedWei &lt; targetWei);
-        require(now &gt; releaseTime);
+        require(msg.value > 0 && receivedWei < targetWei);
+        require(now > releaseTime);
         receivedWei += msg.value;
         walletAddress.transfer(msg.value);
         NewSale(msg.sender, msg.value);
-        assert(receivedWei &gt;= msg.value);
+        assert(receivedWei >= msg.value);
     }
 
-    string public name = &quot;GG Token&quot;;                   //fancy name
-    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
-    string public symbol = &quot;GG&quot;;                 //An identifier
-    string public version = &#39;v0.1&#39;;       //gg 0.1 standard. Just an arbitrary versioning scheme.
+    string public name = "GG Token";                   //fancy name
+    uint8 public decimals = 18;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
+    string public symbol = "GG";                 //An identifier
+    string public version = 'v0.1';       //gg 0.1 standard. Just an arbitrary versioning scheme.
 
     address public founder; // The address of the founder
     uint256 public targetWei;// The target eth of ico
@@ -110,7 +110,7 @@ contract GGoken is StandardToken {
     
     
     // The nonce for avoid transfer replay attacks
-    mapping(address =&gt; uint256) nonces;
+    mapping(address => uint256) nonces;
 
     function GGoken(address _walletAddress) public {
         founder = msg.sender;
@@ -134,14 +134,14 @@ contract GGoken is StandardToken {
     function transferProxy(address _from, address _to, uint256 _value, uint256 _feeGg,
         uint8 _v,bytes32 _r, bytes32 _s) public returns (bool){
 
-        if(balances[_from] &lt; _feeGg + _value) revert();
+        if(balances[_from] < _feeGg + _value) revert();
 
         uint256 nonce = nonces[_from];
         bytes32 h = keccak256(_from,_to,_value,_feeGg,nonce);
         if(_from != ecrecover(h,_v,_r,_s)) revert();
 
-        if(balances[_to] + _value &lt; balances[_to]
-            || balances[msg.sender] + _feeGg &lt; balances[msg.sender]) revert();
+        if(balances[_to] + _value < balances[_to]
+            || balances[msg.sender] + _feeGg < balances[msg.sender]) revert();
         balances[_to] += _value;
         Transfer(_from, _to, _value);
 
@@ -189,10 +189,10 @@ contract GGoken is StandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(keccak256(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 
@@ -212,13 +212,13 @@ contract GGoken is StandardToken {
     function allocateTokens(address[] _owners, uint256[] _values) public {
 
         if(msg.sender != founder) revert();
-        if(allocateEndTime &lt; now) revert();
+        if(allocateEndTime < now) revert();
         if(_owners.length != _values.length) revert();
 
-        for(uint256 i = 0; i &lt; _owners.length ; i++){
+        for(uint256 i = 0; i < _owners.length ; i++){
             address owner = _owners[i];
             uint256 value = _values[i];
-            if(totalSupply + value &lt;= totalSupply || balances[owner] + value &lt;= balances[owner]) revert();
+            if(totalSupply + value <= totalSupply || balances[owner] + value <= balances[owner]) revert();
             totalSupply += value;
             balances[owner] += value;
         }

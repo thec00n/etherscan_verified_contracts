@@ -38,7 +38,7 @@ contract EthereumButton {
     }   
 
     function pressButton() public onlyWhenStarted payable {
-        require(msg.value == 10000000000000000 &amp;&amp; block.number &lt;= targetBlock);
+        require(msg.value == 10000000000000000 && block.number <= targetBlock);
 
         lastPresser = msg.sender;
         targetBlock = targetBlock + 240;
@@ -60,7 +60,7 @@ contract EthereumButton {
     }
     
     function claimPrize() public onlyWhenStarted {
-        require(block.number &gt; targetBlock &amp;&amp; (msg.sender == lastPresser || msg.sender == owner));
+        require(block.number > targetBlock && (msg.sender == lastPresser || msg.sender == owner));
 
         // In case of nobody pressed it, the owner can call this to set started to false
         if (pressCount == 0) {

@@ -15,13 +15,13 @@ library SafeMath {
 	}
 
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -43,7 +43,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
 	using SafeMath for uint256;
 
-	mapping(address =&gt; uint256) balances;
+	mapping(address => uint256) balances;
 
 	uint256 totalSupply_;
 
@@ -53,7 +53,7 @@ contract BasicToken is ERC20Basic {
 
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[msg.sender]);
+		require(_value <= balances[msg.sender]);
 
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -68,12 +68,12 @@ contract BasicToken is ERC20Basic {
 }
 
 contract StandardToken is ERC20, BasicToken {
-	mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+	mapping (address => mapping (address => uint256)) internal allowed;
 
 	function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);
-		require(_value &lt;= allowed[_from][msg.sender]);
+		require(_value <= balances[_from]);
+		require(_value <= allowed[_from][msg.sender]);
 
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
@@ -100,7 +100,7 @@ contract StandardToken is ERC20, BasicToken {
 
 	function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
 		uint oldValue = allowed[msg.sender][_spender];
-		if (_subtractedValue &gt; oldValue) {
+		if (_subtractedValue > oldValue) {
 			allowed[msg.sender][_spender] = 0;
 		} else {
 			allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -145,13 +145,13 @@ contract A2AToken is Ownable, StandardToken {
 	// Max supply of A2A token is 600M
 	uint256 constant public maxSupply = 600*(10**6)*(10**8);
 	
-	mapping(address =&gt; uint256) public vestingAmount;
-	mapping(address =&gt; uint256) public vestingBeforeBlockNumber;
-	mapping(address =&gt; bool) public icoAddrs;
+	mapping(address => uint256) public vestingAmount;
+	mapping(address => uint256) public vestingBeforeBlockNumber;
+	mapping(address => bool) public icoAddrs;
 
 	function A2AToken() public {
-		name = &quot;A2A STeX Exchange Token&quot;;
-		symbol = &quot;A2A&quot;;
+		name = "A2A STeX Exchange Token";
+		symbol = "A2A";
 		decimals = 8;
 		releasedForTransfer = false;
 	}
@@ -159,10 +159,10 @@ contract A2AToken is Ownable, StandardToken {
 	function transfer(address _to, uint256 _value) public returns (bool) {
 		require(releasedForTransfer);
 		// Cancel transaction if transfer value more then available without vesting amount
-		if ( ( vestingAmount[msg.sender] &gt; 0 ) &amp;&amp; ( block.number &lt; vestingBeforeBlockNumber[msg.sender] ) ) {
-			if ( balances[msg.sender] &lt; _value ) revert();
-			if ( balances[msg.sender] &lt;= vestingAmount[msg.sender] ) revert();
-			if ( balances[msg.sender].sub(_value) &lt; vestingAmount[msg.sender] ) revert();
+		if ( ( vestingAmount[msg.sender] > 0 ) && ( block.number < vestingBeforeBlockNumber[msg.sender] ) ) {
+			if ( balances[msg.sender] < _value ) revert();
+			if ( balances[msg.sender] <= vestingAmount[msg.sender] ) revert();
+			if ( balances[msg.sender].sub(_value) < vestingAmount[msg.sender] ) revert();
 		}
 		// ---
 		return super.transfer(_to, _value);
@@ -176,10 +176,10 @@ contract A2AToken is Ownable, StandardToken {
 	
 	function _transfer(address _from, address _to, uint256 _value, uint256 _vestingBlockNumber) public onlyOwner() returns (bool) {
 		require(_to != address(0));
-		require(_value &lt;= balances[_from]);			
+		require(_value <= balances[_from]);			
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
-		if ( _vestingBlockNumber &gt; 0 ) {
+		if ( _vestingBlockNumber > 0 ) {
 			vestingAmount[_to] = _value;
 			vestingBeforeBlockNumber[_to] = _vestingBlockNumber;
 		}
@@ -190,7 +190,7 @@ contract A2AToken is Ownable, StandardToken {
 	
 	function issueDuringICO(address _to, uint256 _amount) public returns (bool) {
 		require( icoAddrs[msg.sender] );
-		require( totalSupply.add(_amount) &lt; maxSupply );
+		require( totalSupply.add(_amount) < maxSupply );
 		balances[_to] = balances[_to].add(_amount);
 		totalSupply = totalSupply.add(_amount);
 		
@@ -288,7 +288,7 @@ contract ICrowdsaleProcessor is HasManager {
 	// Total collected Ethereum: must be updated every time tokens has been sold
 	uint256 public totalCollected;
 
-	// Total amount of project&#39;s token sold: must be updated every time tokens has been sold
+	// Total amount of project's token sold: must be updated every time tokens has been sold
 	uint256 public totalSold;
 
 	// Crowdsale minimal goal, must be greater or equal to Forecasting min amount
@@ -329,7 +329,7 @@ contract ICrowdsaleProcessor is HasManager {
 	// Validates parameters and starts crowdsale
 	function start(uint256 _startTimestamp, uint256 _endTimestamp, address _fundingAddress) public onlyManager() hasntStarted() hasntStopped();
 
-	// Is crowdsale failed (completed, but minimal goal wasn&#39;t reached)
+	// Is crowdsale failed (completed, but minimal goal wasn't reached)
 	function isFailed() public constant returns (bool);
 
 	// Is crowdsale active (i.e. the token can be sold)
@@ -350,7 +350,7 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	
 	A2AToken public token;
 	
-	mapping(address =&gt; bool) public partnerContracts;
+	mapping(address => bool) public partnerContracts;
 	
 	uint256 public icoPrice; // A2A tokens per 1 ether
 	uint256 public icoBonus; // % * 10000
@@ -381,14 +381,14 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	}
 
 	function mintETHRewards( address _contract, uint256 _amount ) public onlyManager() {
-		require(_amount &lt;= wingsETHRewards);
+		require(_amount <= wingsETHRewards);
 		require(_contract.call.value(_amount)());
 		wingsETHRewards -= _amount;
 	}
 	
 	function mintTokenRewards(address _contract, uint256 _amount) public onlyManager() {
 		require( token != address(0) );
-		require(_amount &lt;= wingsTokenRewards);
+		require(_amount <= wingsTokenRewards);
 		require( token.issueDuringICO(_contract, _amount) );
 		wingsTokenRewards -= _amount;
 	}
@@ -399,10 +399,10 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 
 	function start( uint256 _startTimestamp, uint256 _endTimestamp, address _fundingAddress ) public onlyManager() hasntStarted() hasntStopped() {
 		require(_fundingAddress != address(0));
-		require(_startTimestamp &gt;= block.timestamp);
-		require(_endTimestamp &gt; _startTimestamp);
+		require(_startTimestamp >= block.timestamp);
+		require(_endTimestamp > _startTimestamp);
 		duration = _endTimestamp - _startTimestamp;
-		require(duration &gt;= MIN_CROWDSALE_TIME &amp;&amp; duration &lt;= MAX_CROWDSALE_TIME);
+		require(duration >= MIN_CROWDSALE_TIME && duration <= MAX_CROWDSALE_TIME);
 		startTimestamp = _startTimestamp;
 		endTimestamp = _endTimestamp;
 		started = true;
@@ -413,13 +413,13 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	function isFailed() public constant returns(bool) {
 		return (
 			// it was started
-			started &amp;&amp;
+			started &&
 
 			// crowdsale period has finished
-			block.timestamp &gt;= endTimestamp &amp;&amp;
+			block.timestamp >= endTimestamp &&
 
 			// but collected ETH is below the required minimum
-			totalCollected &lt; minimalGoal
+			totalCollected < minimalGoal
 		);
 	}
 
@@ -427,14 +427,14 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	function isActive() public constant returns(bool) {
 		return (
 			// it was started
-			started &amp;&amp;
+			started &&
 
-			// hard cap wasn&#39;t reached yet
-			totalCollected &lt; hardCap &amp;&amp;
+			// hard cap wasn't reached yet
+			totalCollected < hardCap &&
 
 			// and current time is within the crowdfunding period
-			block.timestamp &gt;= startTimestamp &amp;&amp;
-			block.timestamp &lt; endTimestamp
+			block.timestamp >= startTimestamp &&
+			block.timestamp < endTimestamp
 		);
 	}
 
@@ -442,10 +442,10 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	function isSuccessful() public constant returns(bool) {
 		return (
 			// either the hard cap is collected
-			totalCollected &gt;= hardCap ||
+			totalCollected >= hardCap ||
 
 			// ...or the crowdfunding period is over, but the minimum has been reached
-			(block.timestamp &gt;= endTimestamp &amp;&amp; totalCollected &gt;= minimalGoal)
+			(block.timestamp >= endTimestamp && totalCollected >= minimalGoal)
 		);
 	}
 	
@@ -491,22 +491,22 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	function ico( address _to, uint256 _val ) internal returns(bool) {
 		require( token != address(0) );
 		require( isActive() );
-		require( _val &gt;= ( 1 ether / 10 ) );
-		require( totalCollected &lt; hardCap );
+		require( _val >= ( 1 ether / 10 ) );
+		require( totalCollected < hardCap );
 		
 		uint256 tokensAmount = _val.mul( icoPrice ) / 10**10;
-		if ( ( icoBonus &gt; 0 ) &amp;&amp; ( totalSold.add(tokensAmount) &lt; maxTokensWithBonus ) ) {
+		if ( ( icoBonus > 0 ) && ( totalSold.add(tokensAmount) < maxTokensWithBonus ) ) {
 			tokensAmount = tokensAmount.add( tokensAmount.mul(icoBonus) / 1000000 );
 		} else {
 			icoBonus = 0;
 		}
-		require( totalSold.add(tokensAmount) &lt; token.maxSupply() );
+		require( totalSold.add(tokensAmount) < token.maxSupply() );
 		require( token.issueDuringICO(_to, tokensAmount) );
 		
 		wingsTokenRewards = wingsTokenRewards.add( tokensAmount.mul( wingsTokenRewardsPercent ) / 1000000 );
 		wingsETHRewards = wingsETHRewards.add( _val.mul( wingsETHRewardsPercent ) / 1000000 );
 		
-		if ( ( bountyAddress != address(0) ) &amp;&amp; ( totalSold.add(tokensAmount) &lt; maxTokensWithBonus ) ) {
+		if ( ( bountyAddress != address(0) ) && ( totalSold.add(tokensAmount) < maxTokensWithBonus ) ) {
 			require( token.issueDuringICO(bountyAddress, tokensAmount.mul(bountyPercent) / 1000000) );
 			tokensAmount = tokensAmount.add( tokensAmount.mul(bountyPercent) / 1000000 );
 		}
@@ -532,12 +532,12 @@ contract A2ACrowdsale is ICrowdsaleProcessor {
 	}
 	
 	function withdrawToFounders(uint256 _amount) public whenCrowdsaleSuccessful() onlyOwner() returns(bool) {
-		require( address(this).balance.sub( _amount ) &gt;= wingsETHRewards );
+		require( address(this).balance.sub( _amount ) >= wingsETHRewards );
         
 		uint256 amount_to_withdraw = _amount / foundersAddresses.length;
 		uint8 i = 0;
 		uint8 errors = 0;        
-		for (i = 0; i &lt; foundersAddresses.length; i++) {
+		for (i = 0; i < foundersAddresses.length; i++) {
 			if (!foundersAddresses[i].send(amount_to_withdraw)) {
 				errors++;
 			}

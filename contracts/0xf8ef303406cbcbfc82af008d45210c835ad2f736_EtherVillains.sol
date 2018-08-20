@@ -41,8 +41,8 @@ contract EtherVillains is ERC721 {
   /*** CONSTANTS ***/
 
   /// @notice Name and symbol of the non fungible token, as defined in ERC721.
-  string public constant NAME = &quot;EtherVillains&quot;; //
-  string public constant SYMBOL = &quot;EVIL&quot;; //
+  string public constant NAME = "EtherVillains"; //
+  string public constant SYMBOL = "EVIL"; //
 
   uint256 public precision = 1000000000000; //0.000001 Eth
 
@@ -60,19 +60,19 @@ contract EtherVillains is ERC721 {
 
   /// @dev A mapping from villain IDs to the address that owns them. All villians have
   ///  some valid owner address.
-  mapping (uint256 =&gt; address) public villainIndexToOwner;
+  mapping (uint256 => address) public villainIndexToOwner;
 
   // @dev A mapping from owner address to count of tokens that address owns.
   //  Used internally inside balanceOf() to resolve ownership count.
-  mapping (address =&gt; uint256) private ownershipTokenCount;
+  mapping (address => uint256) private ownershipTokenCount;
 
   /// @dev A mapping from Villains to an address that has been approved to call
   ///  transferFrom(). Each Villain can only have one approved address for transfer
   ///  at any time. A zero value means no approval is outstanding.
-  mapping (uint256 =&gt; address) public villainIndexToApproved;
+  mapping (uint256 => address) public villainIndexToApproved;
 
   // @dev A mapping from Villains to the price of the token.
-  mapping (uint256 =&gt; uint256) private villainIndexToPrice;
+  mapping (uint256 => uint256) private villainIndexToPrice;
 
   // The addresses of the accounts (or contracts) that can execute actions within each roles.
   address public ceoAddress;
@@ -177,7 +177,7 @@ contract EtherVillains is ERC721 {
     level = villain.level;
     numSkillActive = villain.numSkillActive;
     state = villain.state;
-    if (villain.state==1 &amp;&amp; now&gt;villain.zappedExipryTime){
+    if (villain.state==1 && now>villain.zappedExipryTime){
         state=0; // time expired so say they are armed
     }
     zappedExipryTime=villain.zappedExipryTime;
@@ -189,18 +189,18 @@ contract EtherVillains is ERC721 {
   /// zap a villain in preparation for a pinch
   function zapVillain(uint256 _victim  , uint256 _zapper) public payable returns (bool){
     address villanOwner = villainIndexToOwner[_victim];
-    require(msg.sender != villanOwner); // it doesn&#39;t make sense, but hey
+    require(msg.sender != villanOwner); // it doesn't make sense, but hey
     require(villains[_zapper].class==0); // they must be a zapper class
     require(msg.sender==villainIndexToOwner[_zapper]); // they must be a zapper owner
 
     uint256 operationPrice = zapPrice;
-    // if the target sale price &lt;0.01 then operation is free
-    if (villainIndexToPrice[_victim]&lt;0.01 ether){
+    // if the target sale price <0.01 then operation is free
+    if (villainIndexToPrice[_victim]<0.01 ether){
       operationPrice=0;
     }
 
     // can be used to extend a zapped period
-    if (msg.value&gt;=operationPrice &amp;&amp; villains[_victim].state&lt;2){
+    if (msg.value>=operationPrice && villains[_victim].state<2){
         // zap villain
         villains[_victim].state=1;
         villains[_victim].zappedExipryTime = now + (villains[_zapper].level * 1 minutes);
@@ -211,20 +211,20 @@ contract EtherVillains is ERC721 {
     /// pinch a villain
   function pinchVillain(uint256 _victim, uint256 _pincher) public payable returns (bool){
     address victimOwner = villainIndexToOwner[_victim];
-    require(msg.sender != victimOwner); // it doesn&#39;t make sense, but hey
+    require(msg.sender != victimOwner); // it doesn't make sense, but hey
     require(msg.sender==villainIndexToOwner[_pincher]);
     require(villains[_pincher].class==1); // they must be a pincher
-    require(villains[_pincher].numSkillActive&lt;villains[_pincher].level);
+    require(villains[_pincher].numSkillActive<villains[_pincher].level);
 
     uint256 operationPrice = pinchPrice;
-    // if the target sale price &lt;0.01 then operation is free
-    if (villainIndexToPrice[_victim]&lt;0.01 ether){
+    // if the target sale price <0.01 then operation is free
+    if (villainIndexToPrice[_victim]<0.01 ether){
       operationPrice=0;
     }
 
     // 0 = normal , 1 = zapped , 2 = pinched
     // must be inside the zapped window
-    if (msg.value&gt;=operationPrice &amp;&amp; villains[_victim].state==1 &amp;&amp; now&lt; villains[_victim].zappedExipryTime){
+    if (msg.value>=operationPrice && villains[_victim].state==1 && now< villains[_victim].zappedExipryTime){
         // squeeze
         villains[_victim].state=2; // squeezed
         villains[_victim].affectedByToken=_pincher;
@@ -235,16 +235,16 @@ contract EtherVillains is ERC721 {
   /// guard a villain
   function guardVillain(uint256 _target, uint256 _guard) public payable returns (bool){
     require(msg.sender==villainIndexToOwner[_guard]); // sender must own this token
-    require(villains[_guard].numSkillActive&lt;villains[_guard].level);
+    require(villains[_guard].numSkillActive<villains[_guard].level);
 
     uint256 operationPrice = guardPrice;
-    // if the target sale price &lt;0.01 then operation is free
-    if (villainIndexToPrice[_target]&lt;0.01 ether){
+    // if the target sale price <0.01 then operation is free
+    if (villainIndexToPrice[_target]<0.01 ether){
       operationPrice=0;
     }
 
     // 0 = normal , 1 = zapped , 2 = pinched, 3 = guarded
-    if (msg.value&gt;=operationPrice &amp;&amp; villains[_target].state&lt;2){
+    if (msg.value>=operationPrice && villains[_target].state<2){
         // guard this villain
         villains[_target].state=3;
         villains[_target].affectedByToken=_guard;
@@ -295,20 +295,20 @@ contract EtherVillains is ERC721 {
     require(_addressNotNull(newOwner));
 
     // Making sure sent amount is greater than or equal to the sellingPrice
-    require(msg.value &gt;= sellingPrice);
+    require(msg.value >= sellingPrice);
 
     uint256 payment = roundIt(uint256(SafeMath.div(SafeMath.mul(sellingPrice, 93), 100))); // taking 7% for the house before any pinches?
     uint256 purchaseExcess = SafeMath.sub(msg.value, sellingPrice);
 
 
-    // HERE&#39;S THE FLIPPING STRATEGY
+    // HERE'S THE FLIPPING STRATEGY
 
     villainIndexToPrice[_tokenId]  = calculateNewPrice(_tokenId);
 
 
      // we check to see if there is a pinch on this villain
      // if there is, then transfer the pinch percentage to the owner of the pinch token
-     if (villains[_tokenId].state==2 &amp;&amp; villains[_tokenId].affectedByToken!=0){
+     if (villains[_tokenId].state==2 && villains[_tokenId].affectedByToken!=0){
          uint256 profit = sellingPrice - villains[_tokenId].buyPrice;
          uint256 pinchPayment = roundIt(SafeMath.mul(SafeMath.div(profit,100),pinchPercentageReturn));
 
@@ -319,7 +319,7 @@ contract EtherVillains is ERC721 {
      }
 
      // free the villan of any pinches or guards as part of this purpose
-     if (villains[villains[_tokenId].affectedByToken].numSkillActive&gt;0){
+     if (villains[villains[_tokenId].affectedByToken].numSkillActive>0){
         villains[villains[_tokenId].affectedByToken].numSkillActive--; // reset the pincher or guard affected count
      }
 
@@ -355,10 +355,10 @@ contract EtherVillains is ERC721 {
    uint256 sellingPrice = villainIndexToPrice[_tokenId];
    uint256 newPrice;
    // Update prices
-   if (sellingPrice &lt; firstStepLimit) {
+   if (sellingPrice < firstStepLimit) {
      // first stage
     newPrice = roundIt(SafeMath.mul(sellingPrice, 2));
-   } else if (sellingPrice &lt; secondStepLimit) {
+   } else if (sellingPrice < secondStepLimit) {
      // second stage
      newPrice = roundIt(SafeMath.div(SafeMath.mul(sellingPrice, 120), 100));
    } else {
@@ -418,7 +418,7 @@ contract EtherVillains is ERC721 {
       uint256 resultIndex = 0;
 
       uint256 villainId;
-      for (villainId = 0; villainId &lt;= totalVillains; villainId++) {
+      for (villainId = 0; villainId <= totalVillains; villainId++) {
         if (villainIndexToOwner[villainId] == _owner) {
           result[resultIndex] = villainId;
           resultIndex++;
@@ -495,8 +495,8 @@ contract EtherVillains is ERC721 {
     uint256 newVillainId = villains.push(_villain) - 1;
     villains[newVillainId].id=newVillainId;
 
-    // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-    // let&#39;s just be 100% sure we never let this happen.
+    // It's probably never going to happen, 4 billion tokens are A LOT, but
+    // let's just be 100% sure we never let this happen.
     require(newVillainId == uint256(uint32(newVillainId)));
 
     Birth(newVillainId, _name, _owner);
@@ -524,12 +524,12 @@ contract EtherVillains is ERC721 {
 
   /// @dev Assigns ownership of a specific Villain to an address.
   function _transfer(address _from, address _to, uint256 _tokenId) private {
-    // Since the number of villains is capped to 2^32 we can&#39;t overflow this
+    // Since the number of villains is capped to 2^32 we can't overflow this
     ownershipTokenCount[_to]++;
     //transfer ownership
     villainIndexToOwner[_tokenId] = _to;
 
-    // When creating new villains _from is 0x0, but we can&#39;t account that address.
+    // When creating new villains _from is 0x0, but we can't account that address.
     if (_from != address(0)) {
       ownershipTokenCount[_from]--;
       // clear any previously approved ownership exchange
@@ -570,9 +570,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -580,7 +580,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -589,7 +589,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

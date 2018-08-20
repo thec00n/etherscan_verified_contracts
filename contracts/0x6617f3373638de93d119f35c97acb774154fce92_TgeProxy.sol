@@ -4,7 +4,7 @@ pragma solidity ^0.4.4;
 contract TgeProxy {
 
   address[] public managers;
-  mapping (address =&gt; address) votesAddr;
+  mapping (address => address) votesAddr;
 
   bool locked = false;
 
@@ -32,7 +32,7 @@ contract TgeProxy {
   function lockAttemp() private {
     address addr = votesAddr[managers[0]];
     bool lock = true;
-    for (uint8 i = 0; i &lt; managers.length; ++i) {
+    for (uint8 i = 0; i < managers.length; ++i) {
       if (votesAddr[managers[i]] == 0x0) {
         lock = false;
         break;
@@ -49,7 +49,7 @@ contract TgeProxy {
   
   // only for contract managers
   modifier isManager() {
-    for (uint8 i = 0; i &lt; managers.length; ++i) {
+    for (uint8 i = 0; i < managers.length; ++i) {
       if (managers[i] == msg.sender) {
         _;
       }

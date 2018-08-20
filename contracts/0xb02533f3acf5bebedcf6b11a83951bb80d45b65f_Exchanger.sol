@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -47,7 +47,7 @@ contract ERC20 {
   function transferFrom(address _from, address _to, uint256 _amount
   ) returns (bool success);
 
-  /// @param _owner The address that&#39;s balance is being requested
+  /// @param _owner The address that's balance is being requested
   /// @return The balance of `_owner` at the current block
   function balanceOf(address _owner) constant returns (uint256 balance);
 
@@ -97,13 +97,13 @@ contract ERC20 {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -156,13 +156,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.1&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.1'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -191,10 +191,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -272,7 +272,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            if (allowed[_from][msg.sender] &lt; _amount) return false;
+            if (allowed[_from][msg.sender] < _amount) return false;
             allowed[_from][msg.sender] -= _amount;
         }
         return doTransfer(_from, _to, _amount);
@@ -291,15 +291,15 @@ contract MiniMeToken is Controlled {
                return true;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer returns false
            var previousBalanceFrom = balanceOfAt(_from, block.number);
-           if (previousBalanceFrom &lt; _amount) {
+           if (previousBalanceFrom < _amount) {
                return false;
            }
 
@@ -315,7 +315,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            var previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -324,7 +324,7 @@ contract MiniMeToken is Controlled {
            return true;
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -411,7 +411,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -436,7 +436,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -498,9 +498,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         Transfer(0, _owner, _amount);
@@ -515,9 +515,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         Transfer(_owner, 0, _amount);
@@ -548,16 +548,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -573,7 +573,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -592,15 +592,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function ()  payable {
@@ -689,7 +689,7 @@ contract MiniMeTokenFactory {
  * @title Aigang Contribution contract
  *
  *  By contributing ETH to this smart contract you agree to the following terms and conditions:
- *  https://github.com/AigangNetwork/aigang-crowdsale-contracts/Aigang-T&amp;Cs(171020_clean).docx
+ *  https://github.com/AigangNetwork/aigang-crowdsale-contracts/Aigang-T&Cs(171020_clean).docx
  *
  */
 
@@ -718,8 +718,8 @@ contract Contribution is Controlled, TokenController {
   uint256 public minimumPerTransaction = 0.01 ether;
 
   uint256 public numWhitelistedInvestors;
-  mapping (address =&gt; bool) public canPurchase;
-  mapping (address =&gt; uint256) public individualWeiCollected;
+  mapping (address => bool) public canPurchase;
+  mapping (address => uint256) public individualWeiCollected;
 
   uint256 public startTime;
   uint256 public endTime;
@@ -740,11 +740,11 @@ contract Contribution is Controlled, TokenController {
   modifier contributionOpen() {
     // collector can start depositing 2 days prior
     if (msg.sender == collector) {
-      require(getBlockTimestamp().add(2 days) &gt;= startTime);
+      require(getBlockTimestamp().add(2 days) >= startTime);
     } else {
-      require(getBlockTimestamp() &gt;= startTime);
+      require(getBlockTimestamp() >= startTime);
     }
-    require(getBlockTimestamp() &lt;= endTime);
+    require(getBlockTimestamp() <= endTime);
     require(finalizedTime == 0);
     _;
   }
@@ -794,16 +794,16 @@ contract Contribution is Controlled, TokenController {
     require(_collector != 0x0);
     collector = _collector;
 
-    require(_collectorWeiCap &gt; 0);
-    require(_collectorWeiCap &lt;= _totalWeiCap);
+    require(_collectorWeiCap > 0);
+    require(_collectorWeiCap <= _totalWeiCap);
     collectorWeiCap = _collectorWeiCap;
 
-    assert(_startTime &gt;= getBlockTimestamp());
-    require(_startTime &lt; _endTime);
+    assert(_startTime >= getBlockTimestamp());
+    require(_startTime < _endTime);
     startTime = _startTime;
     endTime = _endTime;
 
-    require(_totalWeiCap &gt; 0);
+    require(_totalWeiCap > 0);
     totalWeiCap = _totalWeiCap;
 
     initializedBlock = getBlockNumber();
@@ -824,7 +824,7 @@ contract Contribution is Controlled, TokenController {
   /// @notice interface for founders to blacklist investors
   /// @param _investors array of investors
   function blacklistAddresses(address[] _investors) public onlyController {
-    for (uint256 i = 0; i &lt; _investors.length; i++) {
+    for (uint256 i = 0; i < _investors.length; i++) {
       blacklist(_investors[i]);
     }
   }
@@ -832,7 +832,7 @@ contract Contribution is Controlled, TokenController {
   /// @notice interface for founders to whitelist investors
   /// @param _investors array of investors
   function whitelistAddresses(address[] _investors) public onlyController {
-    for (uint256 i = 0; i &lt; _investors.length; i++) {
+    for (uint256 i = 0; i < _investors.length; i++) {
       whitelist(_investors[i]);
     }
   }
@@ -851,28 +851,28 @@ contract Contribution is Controlled, TokenController {
 
   // ETH-AIX exchange rate
   function exchangeRate() constant public initialized returns (uint256) {
-    if (getBlockTimestamp() &lt;= startTime + 1 hours) {
+    if (getBlockTimestamp() <= startTime + 1 hours) {
       // 15% Bonus
       return 2300;
     }
 
-    if (getBlockTimestamp() &lt;= startTime + 2 hours) {
+    if (getBlockTimestamp() <= startTime + 2 hours) {
       // 10% Bonus
       return 2200;
     }
 
-    if (getBlockTimestamp() &lt;= startTime + 1 days) {
+    if (getBlockTimestamp() <= startTime + 1 days) {
       return 2000;
     }
 
     uint256 collectedAfter24Hours = notCollectedAmountAfter24Hours.sub(weiToCollect());
 
-    if (collectedAfter24Hours &lt;= twentyPercentWithBonus) {
+    if (collectedAfter24Hours <= twentyPercentWithBonus) {
       // 15% Bonus
       return 2300;
     }
 
-    if (collectedAfter24Hours &lt;= twentyPercentWithBonus + thirtyPercentWithBonus) {
+    if (collectedAfter24Hours <= twentyPercentWithBonus + thirtyPercentWithBonus) {
       // 10% Bonus
       return 2200;
     }
@@ -929,7 +929,7 @@ contract Contribution is Controlled, TokenController {
 
   function doBuy(address _th) internal {
     // whitelisting only during the first day
-    if (getBlockTimestamp() &lt;= startTime + 1 days) {
+    if (getBlockTimestamp() <= startTime + 1 days) {
       require(canPurchase[_th] || msg.sender == collector);
     } else if (notCollectedAmountAfter24Hours == 0) {
       notCollectedAmountAfter24Hours = weiToCollect();
@@ -937,17 +937,17 @@ contract Contribution is Controlled, TokenController {
       thirtyPercentWithBonus = notCollectedAmountAfter24Hours.mul(30).div(100);
     }
 
-    require(msg.value &gt;= minimumPerTransaction);
+    require(msg.value >= minimumPerTransaction);
     uint256 toFund = msg.value;
     uint256 toCollect = weiToCollectByInvestor(_th);
 
-    if (toCollect &gt; 0) {
+    if (toCollect > 0) {
       // Check total supply cap reached, sell the all remaining tokens
-      if (toFund &gt; toCollect) {
+      if (toFund > toCollect) {
         toFund = toCollect;
       }
       uint256 tokensGenerated = tokensToGenerate(toFund);
-      require(tokensGenerated &gt; 0);
+      require(tokensGenerated > 0);
       require(aix.generateTokens(_th, tokensGenerated));
 
       contributionWallet.transfer(toFund);
@@ -959,7 +959,7 @@ contract Contribution is Controlled, TokenController {
     }
 
     uint256 toReturn = msg.value.sub(toFund);
-    if (toReturn &gt; 0) {
+    if (toReturn > 0) {
       _th.transfer(toReturn);
     }
   }
@@ -971,8 +971,8 @@ contract Contribution is Controlled, TokenController {
   function finalize() public initialized {
     require(finalizedBlock == 0);
     require(finalizedTime == 0);
-    require(getBlockTimestamp() &gt;= startTime);
-    require(msg.sender == controller || getBlockTimestamp() &gt; endTime || weiToCollect() == 0);
+    require(getBlockTimestamp() >= startTime);
+    require(msg.sender == controller || getBlockTimestamp() > endTime || weiToCollect() == 0);
 
     // remainder will be minted and locked for 1 year.
     // This was decided to be removed.
@@ -997,7 +997,7 @@ contract Contribution is Controlled, TokenController {
 
   /// @return Total eth that still available for collection in weis.
   function weiToCollect() public constant returns(uint256) {
-    return totalWeiCap &gt; totalWeiCollected ? totalWeiCap.sub(totalWeiCollected) : 0;
+    return totalWeiCap > totalWeiCollected ? totalWeiCap.sub(totalWeiCollected) : 0;
   }
 
   /// @return Total eth that still available for collection in weis.
@@ -1009,14 +1009,14 @@ contract Contribution is Controlled, TokenController {
     if (investor == collector) {
       cap = collectorWeiCap;
       collected = individualWeiCollected[investor];
-    } else if (getBlockTimestamp() &lt;= startTime + 1 days) {
+    } else if (getBlockTimestamp() <= startTime + 1 days) {
       cap = totalWeiCap.div(numWhitelistedInvestors);
       collected = individualWeiCollected[investor];
     } else {
       cap = totalWeiCap;
       collected = totalWeiCollected;
     }
-    return cap &gt; collected ? cap.sub(collected) : 0;
+    return cap > collected ? cap.sub(collected) : 0;
   }
 
   //////////
@@ -1082,7 +1082,7 @@ contract Contribution is Controlled, TokenController {
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @title Exchanger Contract
@@ -1094,7 +1094,7 @@ contract Contribution is Controlled, TokenController {
 contract Exchanger is Controlled {
   using SafeMath for uint256;
 
-  mapping (address =&gt; uint256) public collected;
+  mapping (address => uint256) public collected;
   uint256 public totalCollected;
   MiniMeToken public apt;
   MiniMeToken public aix;
@@ -1114,7 +1114,7 @@ contract Exchanger is Controlled {
   ///  corresponding AIXs
   function collect() public {
     // APT sholder could collect AIX right after contribution started
-    assert(getBlockTimestamp() &gt; contribution.startTime());
+    assert(getBlockTimestamp() > contribution.startTime());
 
     uint256 pre_sale_fixed_at = contribution.initializedBlock();
 
@@ -1131,7 +1131,7 @@ contract Exchanger is Controlled {
     amount = amount.sub(collected[msg.sender]);
 
     // Notify the user that there are no tokens to exchange
-    require(amount &gt; 0);
+    require(amount > 0);
 
     totalCollected = totalCollected.add(amount);
     collected[msg.sender] = collected[msg.sender].add(amount);

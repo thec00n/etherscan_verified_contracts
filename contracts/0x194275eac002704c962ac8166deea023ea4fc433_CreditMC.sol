@@ -54,8 +54,8 @@ contract CreditMC {
 	}
 
 	uint public migrationAccountCounter;
-	mapping (uint =&gt; MigrationAccount) MigrationAccounts;
-	mapping (address =&gt; uint) AccountLocation;
+	mapping (uint => MigrationAccount) MigrationAccounts;
+	mapping (address => uint) AccountLocation;
 
 	function CreditMC(){
 		dev = msg.sender;
@@ -76,7 +76,7 @@ contract CreditMC {
 		    location = migrationAccountCounter;
 		    
 		    message = creditbitContract.mintMigrationTokens(_etherAddress, _numberOfCoins);
-		    if (message == 0 &amp;&amp; address(creditbitContract) != 0x0){
+		    if (message == 0 && address(creditbitContract) != 0x0){
 		        MigrationAccounts[location].legacyCreditAddresses = _legacyCreditAddress;
 		        MigrationAccounts[location].newCreditAddress = _etherAddress;
                 MigrationAccounts[location].creditbitsDeposited = _numberOfCoins;
@@ -92,7 +92,7 @@ contract CreditMC {
 		}else{
 		    location = AccountLocation[_etherAddress];
 		    message = creditbitContract.mintMigrationTokens(_etherAddress, _numberOfCoins);
-		    if (message == 0 &amp;&amp; address(creditbitContract) != 0x0){
+		    if (message == 0 && address(creditbitContract) != 0x0){
 		        MigrationAccounts[location].creditbitsDeposited += _numberOfCoins;
 		        
 		        creditsExchanged += _numberOfCoins;

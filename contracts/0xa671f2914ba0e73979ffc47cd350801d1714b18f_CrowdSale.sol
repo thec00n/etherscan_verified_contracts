@@ -13,7 +13,7 @@ pragma solidity ^0.4.15;
 	  }
 
 	  function safeDiv(uint a, uint b) returns (uint) {
-		require(b &gt; 0);
+		require(b > 0);
 		uint c = a / b;
 		require(a == b * c + a % b);
 		return c;
@@ -32,7 +32,7 @@ pragma solidity ^0.4.15;
 		uint public amountRaised;
 		uint public priceInUsd;
 		token public tokenReward;
-		mapping(address =&gt; uint256) public balanceOf;
+		mapping(address => uint256) public balanceOf;
 		bool public fundingGoalReached = false;
 		address tokenHolder;
 		address public creator;
@@ -42,7 +42,7 @@ pragma solidity ^0.4.15;
 		uint public totalUsdRaised;
 		bool public icoState = false;
 		bool public userRefund = false;
-		mapping(address =&gt; bool) public syncList;
+		mapping(address => bool) public syncList;
 
 		event GoalMinimumReached(address _beneficiary, uint _amountRaised, uint _totalUsdRaised);
 		event GoalMaximumReached(address _beneficiary, uint _amountRaised, uint _totalUsdRaised);
@@ -76,7 +76,7 @@ pragma solidity ^0.4.15;
 		}
 
 		modifier isMaximum() {
-		  require(safeMul(msg.value, etherPriceInUsd) &lt;= 100000000000000000000000000);
+		  require(safeMul(msg.value, etherPriceInUsd) <= 100000000000000000000000000);
 		   _;
 		}
 
@@ -130,12 +130,12 @@ pragma solidity ^0.4.15;
 			uint etherAmountInWei = msg.value;
 			uint amount = safeMul(msg.value, etherPriceInUsd);
 			uint256 tokenAmount = safeDiv(safeDiv(amount, priceInUsd), 10000000000);
-			require(tokenRaised + tokenAmount &lt;= tokenAllocation);
+			require(tokenRaised + tokenAmount <= tokenAllocation);
 			tokenRaised += tokenAmount;
 
 
 			uint amountInUsd = safeDiv(amount, 1000000000000000000);
-			require(totalUsdRaised + amountInUsd &lt;= fundingMaximumTargetInUsd);
+			require(totalUsdRaised + amountInUsd <= fundingMaximumTargetInUsd);
 			totalUsdRaised += amountInUsd;
 
 			balanceOf[msg.sender] += etherAmountInWei;
@@ -150,10 +150,10 @@ pragma solidity ^0.4.15;
 		 * Checks if the goal or time limit has been reached and ends the campaign
 		 */
 		function checkGoalReached() isCreator() {
-			if (totalUsdRaised &gt;= fundingMaximumTargetInUsd){
+			if (totalUsdRaised >= fundingMaximumTargetInUsd){
 				fundingGoalReached = true;
 				GoalMaximumReached(beneficiary, amountRaised, totalUsdRaised);
-			} else if (totalUsdRaised &gt;= fundingMinimumTargetInUsd) {
+			} else if (totalUsdRaised >= fundingMinimumTargetInUsd) {
 				fundingGoalReached = true;
 				GoalMinimumReached(beneficiary, amountRaised, totalUsdRaised);
 			}
@@ -168,7 +168,7 @@ pragma solidity ^0.4.15;
 			if (userRefund) {
 				uint amount = balanceOf[msg.sender];
 				balanceOf[msg.sender] = 0;
-				if (amount &gt; 0) {
+				if (amount > 0) {
 					if (msg.sender.send(amount)) {
 						FundTransfer(msg.sender, amount, false);
 					} else {

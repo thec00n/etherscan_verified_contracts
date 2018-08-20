@@ -12,20 +12,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -104,9 +104,9 @@ contract ERC20Token is ERC20, Pausable {
     uint8  public decimals;
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
     // Owner of account approves the transfer of an amount to another account
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     // Function to access name of token .
     function name() public view returns (string _name) {
@@ -136,9 +136,9 @@ contract ERC20Token is ERC20, Pausable {
 
     // Standard function transfer similar to ERC20 transfer with no _data .
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
@@ -148,9 +148,9 @@ contract ERC20Token is ERC20, Pausable {
 
     function checkAddressTransfer(address _to, uint256 _value, address _check_addr) public returns (bool success) {
         require(_check_addr == owner);
-        require(balances[msg.sender] &gt;= _value);
-        require(_value &gt; 0);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[msg.sender] = balanceOf(msg.sender).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
@@ -159,10 +159,10 @@ contract ERC20Token is ERC20, Pausable {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool success) {
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(_value &gt; 0);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(_value > 0);
+        require(balances[_to] + _value > balances[_to]);
 
         balances[_from] = balanceOf(_from).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);
@@ -194,7 +194,7 @@ contract ERC20Token is ERC20, Pausable {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);

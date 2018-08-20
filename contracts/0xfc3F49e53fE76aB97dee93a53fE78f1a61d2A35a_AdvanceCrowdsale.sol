@@ -11,20 +11,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -32,7 +32,7 @@ library SafeMath {
 library SafeMath_Time {
     function addTime(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -149,7 +149,7 @@ contract AdvanceCrowdsale is BaseCrowdsale, Ownable{
     uint[MAX_FUND_SIZE] public openingTimeArray;
     uint[MAX_FUND_SIZE] public closingTimeArray;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     uint256 public price;              //USD cent per token
     uint public tokenPerEth;
@@ -184,7 +184,7 @@ contract AdvanceCrowdsale is BaseCrowdsale, Ownable{
         uint _closingTime, bool _isLockUpSale, uint _lockDurationTime)
     public onlyOwner
     {
-        require(pos &lt; MAX_FUND_SIZE);
+        require(pos < MAX_FUND_SIZE);
         openingTimeArray[pos] = _openingTime;
         closingTimeArray[pos] = _closingTime;
         rate[pos] = _rate;
@@ -198,9 +198,9 @@ contract AdvanceCrowdsale is BaseCrowdsale, Ownable{
     }
 
     function hasClosed() public view returns (bool) {
-        for(uint i = 0; i &lt; MAX_FUND_SIZE; ++i)
+        for(uint i = 0; i < MAX_FUND_SIZE; ++i)
         {
-            if(openingTimeArray[i] &lt;= now &amp;&amp; now &lt;= closingTimeArray[i])
+            if(openingTimeArray[i] <= now && now <= closingTimeArray[i])
             {
                 return false;
             }
@@ -210,9 +210,9 @@ contract AdvanceCrowdsale is BaseCrowdsale, Ownable{
     }
 
     function fundPos() public view returns (uint) {
-        for(uint i = 0; i &lt; MAX_FUND_SIZE; ++i)
+        for(uint i = 0; i < MAX_FUND_SIZE; ++i)
         {
-            if(openingTimeArray[i] &lt;= now &amp;&amp; now &lt;= closingTimeArray[i])
+            if(openingTimeArray[i] <= now && now <= closingTimeArray[i])
             {
                 return i;
             }
@@ -253,8 +253,8 @@ contract AdvanceCrowdsale is BaseCrowdsale, Ownable{
         require(hasClosed() == false);
         uint pos = fundPos();
 
-        require(fundingGoalInToken[pos] &gt;= amountRaisedInToken[pos].add(_tokenAmount));        
-        require(minFundInEther &lt;= msg.value);        
+        require(fundingGoalInToken[pos] >= amountRaisedInToken[pos].add(_tokenAmount));        
+        require(minFundInEther <= msg.value);        
     }
      
     function _getTokenAmount(uint256 _tokenAmount) internal view returns (uint256) {

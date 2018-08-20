@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
+    // assert(b > 0); // Solidity automatically throws when dividing by 0 uint256 c = a / b;
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,7 +53,7 @@ contract Crowdsale {
 
   token tokenReward;
 
-  // mapping (address =&gt; uint) public contributions;
+  // mapping (address => uint) public contributions;
   
 
 
@@ -123,18 +123,18 @@ contract Crowdsale {
 
     uint256 weiAmount = msg.value;
 
-    // if(weiAmount &lt; 10**16) throw;
-    // if(weiAmount &gt; 50*10**18) throw;
+    // if(weiAmount < 10**16) throw;
+    // if(weiAmount > 50*10**18) throw;
 
     // calculate token amount to be sent
     uint256 tokens = (weiAmount) * price;//weiamount * price 
     // uint256 tokens = (weiAmount/10**(18-decimals)) * price;//weiamount * price 
 
-    if (msg.value &lt;= 522 * 10**18) {
+    if (msg.value <= 522 * 10**18) {
 
-      }else if (msg.value &lt;= 1045 * 10**18) {
+      }else if (msg.value <= 1045 * 10**18) {
         tokens = tokens.add(tokens.mul(25)/100);
-      }else if (msg.value &lt;= 1566 * 10**18) {
+      }else if (msg.value <= 1566 * 10**18) {
         tokens = tokens.add(tokens.mul(50)/100);
       } else {
         tokens = tokens.add(tokens.mul(90)/100);
@@ -143,7 +143,7 @@ contract Crowdsale {
     // update state
     weiRaised = weiRaised.add(weiAmount);
     
-    // if(contributions[msg.sender].add(weiAmount)&gt;10*10**18) throw;
+    // if(contributions[msg.sender].add(weiAmount)>10*10**18) throw;
     // contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
 
     tokenReward.transfer(beneficiary, tokens);
@@ -164,7 +164,7 @@ contract Crowdsale {
   function validPurchase() internal constant returns (bool) {
     bool withinPeriod = started;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   function withdrawTokens(uint256 _amount) {

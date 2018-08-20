@@ -1,6 +1,6 @@
 pragma solidity ^ 0.4 .2;
 contract Token {
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -9,8 +9,8 @@ contract Token {
     address[] public users;
     bytes32 public filehash;
     
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     modifier onlyOwner() {
@@ -27,22 +27,22 @@ contract Token {
         address firstOwner = owner;
         balanceOf[firstOwner] = 100000000;
         totalSupply = 100000000;
-        name = &#39;Cryptonian&#39;;
-        symbol = &#39;crypt&#39;;
+        name = 'Cryptonian';
+        symbol = 'crypt';
         decimals = 8;
         msg.sender.send(msg.value);
         users.push(0x7F325a2d8365385e4B189b708274526899c17453);
     }
 
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
         bool userExists = false;
         uint memberCount = users.length;
-        for (uint i = 0; i &lt; memberCount; i++) {
+        for (uint i = 0; i < memberCount; i++) {
             if (users[i] == _to) {
                 userExists = true;
             }
@@ -65,7 +65,7 @@ contract Token {
         uint sellAmount = msg.value;
         uint memberCount = users.length;
         owner = newOwner;
-        for (uint i = 0; i &lt; memberCount; i++) {
+        for (uint i = 0; i < memberCount; i++) {
             liquidateUser(users[i], sellAmount);
         }
     }
@@ -82,7 +82,7 @@ contract Token {
     function issueDividend() onlyOwner {
         uint sellAmount = msg.value;
         uint memberCount = users.length;
-        for (uint i = 0; i &lt; memberCount; i++) {
+        for (uint i = 0; i < memberCount; i++) {
             sendDividend(users[i], sellAmount);
         }
     }

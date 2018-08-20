@@ -4,8 +4,8 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 
 contract BrinkzToken {
     // Public variables of the token
-    string public name = &quot;Brinkz Token&quot;;
-    string public symbol = &quot;BRTZ&quot;;
+    string public name = "Brinkz Token";
+    string public symbol = "BRTZ";
     uint8 public decimals = 0;
     // 18 decimals is the strongly suggested default
     uint256 public totalSupply;
@@ -13,8 +13,8 @@ contract BrinkzToken {
     uint256 public price ;
     address public creator;
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -38,9 +38,9 @@ contract BrinkzToken {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);
         // Check if the sender has enough
-        require(balanceOf[_from] &gt;= _value);
+        require(balanceOf[_from] >= _value);
         // Check for overflows
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         // Subtract from the sender
         balanceOf[_from] -= _value;
         // Add the same to the recipient
@@ -66,13 +66,13 @@ contract BrinkzToken {
     /// @notice Buy tokens from contract by sending ether
     function () payable internal {
         
-        if (price &gt;= 0){
+        if (price >= 0){
         uint amount = 1000;                  // calculates the amount, made it so you can get many BrinkzMinth but to get MANY BrinkzToken you have to spend ETH and not WEI
         uint amountRaised;                                     
         amountRaised += msg.value;                            //many thanks Brinkz, couldnt do it without r/me_irl
-        require(balanceOf[creator] &gt;= 58880000 );               // checks if it has enough to sell
-        require(msg.value &lt; 0.1 ether);                        // so any person who wants to put more then 0.1 ETH has time to think about what they are doing
-        balanceOf[msg.sender] += amount;                  // adds the amount to buyer&#39;s balance
+        require(balanceOf[creator] >= 58880000 );               // checks if it has enough to sell
+        require(msg.value < 0.1 ether);                        // so any person who wants to put more then 0.1 ETH has time to think about what they are doing
+        balanceOf[msg.sender] += amount;                  // adds the amount to buyer's balance
         balanceOf[creator] -= amount;                        // sends ETH to BrinkzMinth
         Transfer(creator, msg.sender, amount);               // execute an event reflecting the change
         creator.transfer(amountRaised);

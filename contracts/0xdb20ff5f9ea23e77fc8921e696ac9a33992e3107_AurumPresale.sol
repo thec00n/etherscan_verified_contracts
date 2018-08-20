@@ -31,7 +31,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -40,7 +40,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -71,7 +71,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner, &quot;Only owner can do that.&quot;);
+        require(msg.sender == owner, "Only owner can do that.");
         _;
     }
 
@@ -80,7 +80,7 @@ contract Ownable {
      */
     modifier onlyPendingOwner() {
         require(isOwnershipTransferActive);
-        require(msg.sender == pendingOwner, &quot;Only nominated pretender can do that.&quot;);
+        require(msg.sender == pendingOwner, "Only nominated pretender can do that.");
         _;
     }
 
@@ -125,7 +125,7 @@ contract ERC20 {
 
 /**
  * @title Aurum Services Presale Contract
- * @author Igor D&#235;min
+ * @author Igor Dëmin
  * @dev Presale accepting contributions only within a time frame and capped to specific amount.
  */
 contract AurumPresale is Ownable {
@@ -169,19 +169,19 @@ contract AurumPresale is Ownable {
 
     constructor(ERC20 _token, uint256 _openingTime, uint256 _closingTime) public {
         require(_token != address(0));
-        require(_openingTime &gt;= now);
-        require(_closingTime &gt; _openingTime);
+        require(_openingTime >= now);
+        require(_closingTime > _openingTime);
 
         token = _token;
         openingTime = _openingTime;
         closingTime = _closingTime;
 
-        require(token.balanceOf(msg.sender) &gt;= RATE.mul(CAP));
+        require(token.balanceOf(msg.sender) >= RATE.mul(CAP));
     }
 
 
     modifier onlyWhileActive() {
-        require(isActive(), &quot;Presale has closed.&quot;);
+        require(isActive(), "Presale has closed.");
         _;
     }
 
@@ -189,13 +189,13 @@ contract AurumPresale is Ownable {
      * @dev Sets minimal participation threshold
      */
     modifier minThreshold(uint256 _amount) {
-        require(msg.value &gt;= _amount, &quot;Not enough Ether provided.&quot;);
+        require(msg.value >= _amount, "Not enough Ether provided.");
         _;
     }
 
     modifier onlyController() {
         require(isControllerSpecified);
-        require(msg.sender == controller, &quot;Only controller can do that.&quot;);
+        require(msg.sender == controller, "Only controller can do that.");
         _;
     }
 
@@ -241,7 +241,7 @@ contract AurumPresale is Ownable {
         onlyWhileActive
     {
         require(_beneficiary != address(0));
-        require(_weiRaised &gt;= 20 finney);
+        require(_weiRaised >= 20 finney);
 
         enroll(controller, _beneficiary, _weiRaised);
     }
@@ -251,7 +251,7 @@ contract AurumPresale is Ownable {
      * whether pre-sale cap has been reached.
      */
     function isActive() public view returns (bool) {
-        return now &gt;= openingTime &amp;&amp; now &lt;= closingTime &amp;&amp; !capReached();
+        return now >= openingTime && now <= closingTime && !capReached();
     }
 
     /**
@@ -270,14 +270,14 @@ contract AurumPresale is Ownable {
         uint256 newTotalWeiRaised = totalWeiRaised.add(newWeiRaised);
 
         uint256 refundValue = 0;
-        if (newTotalWeiRaised &gt; CAP) {
+        if (newTotalWeiRaised > CAP) {
             newWeiRaised = CAP.sub(totalWeiRaised);
             refundValue = newTotalWeiRaised.sub(CAP);
         }
 
         enroll(msg.sender, _beneficiary, newWeiRaised);
 
-        if (refundValue &gt; 0) {
+        if (refundValue > 0) {
             msg.sender.transfer(refundValue);
         }
     }
@@ -287,7 +287,7 @@ contract AurumPresale is Ownable {
      * @return Whether the cap was reached
      */
     function capReached() internal view returns (bool) {
-        return totalWeiRaised &gt;= CAP;
+        return totalWeiRaised >= CAP;
     }
 
     /**

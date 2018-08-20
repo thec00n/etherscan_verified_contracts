@@ -34,9 +34,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -44,7 +44,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -53,7 +53,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,7 +76,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -123,7 +123,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -134,8 +134,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -149,7 +149,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -198,7 +198,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -217,8 +217,8 @@ contract StandardToken is ERC20, BasicToken {
  */
 contract LibraToken is StandardToken {
 
-    string public constant name = &quot;LibraToken&quot;; // solium-disable-line uppercase
-    string public constant symbol = &quot;LBA&quot;; // solium-disable-line uppercase
+    string public constant name = "LibraToken"; // solium-disable-line uppercase
+    string public constant symbol = "LBA"; // solium-disable-line uppercase
     uint8 public constant decimals = 18; // solium-disable-line uppercase
 
     uint256 public constant INITIAL_SUPPLY = (10 ** 9) * (10 ** uint256(decimals));
@@ -237,7 +237,7 @@ contract LibraToken is StandardToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -296,13 +296,13 @@ contract LibraTokenVault is Ownable {
     uint256 public secondReserveTimeLock = 3 * 365 days;
 
     /** Reserve allocations */
-    mapping(address =&gt; uint256) public allocations;
+    mapping(address => uint256) public allocations;
 
     /** When timeLocks are over (UNIX Timestamp)  */  
-    mapping(address =&gt; uint256) public timeLocks;
+    mapping(address => uint256) public timeLocks;
 
     /** How many tokens each reserve wallet has claimed */
-    mapping(address =&gt; uint256) public claimed;
+    mapping(address => uint256) public claimed;
 
     /** When this vault was locked (UNIX Timestamp)*/
     uint256 public lockedAt = 0;
@@ -320,21 +320,21 @@ contract LibraTokenVault is Ownable {
 
     //Any of the three reserve wallets
     modifier onlyReserveWallets {
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     //Only Libra team reserve wallet
     modifier onlyTeamReserve {
         require(msg.sender == teamReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
     //Only first and second token reserve wallets
     modifier onlyTokenReserve {
         require(msg.sender == firstReserveWallet || msg.sender == secondReserveWallet);
-        require(allocations[msg.sender] &gt; 0);
+        require(allocations[msg.sender] > 0);
         _;
     }
 
@@ -345,7 +345,7 @@ contract LibraTokenVault is Ownable {
     }
 
     modifier locked {
-        require(lockedAt &gt; 0);
+        require(lockedAt > 0);
         _;
     }
 
@@ -419,8 +419,8 @@ contract LibraTokenVault is Ownable {
 
         address reserveWallet = msg.sender;
 
-        // Can&#39;t claim before Lock ends
-        require(block.timestamp &gt; timeLocks[reserveWallet]);
+        // Can't claim before Lock ends
+        require(block.timestamp > timeLocks[reserveWallet]);
 
         // Must Only claim once
         require(claimed[reserveWallet] == 0);
@@ -442,10 +442,10 @@ contract LibraTokenVault is Ownable {
         //Amount of tokens the team should have at this vesting stage
         uint256 totalUnlocked = vestingStage.mul(allocations[teamReserveWallet]).div(teamVestingStages);
 
-        require(totalUnlocked &lt;= allocations[teamReserveWallet]);
+        require(totalUnlocked <= allocations[teamReserveWallet]);
 
         //Previously claimed tokens must be less than what is unlocked
-        require(claimed[teamReserveWallet] &lt; totalUnlocked);
+        require(claimed[teamReserveWallet] < totalUnlocked);
 
         uint256 payment = totalUnlocked.sub(claimed[teamReserveWallet]);
 
@@ -464,8 +464,8 @@ contract LibraTokenVault is Ownable {
 
         uint256 stage = (block.timestamp.sub(lockedAt)).div(vestingMonths);
 
-        //Ensures team vesting stage doesn&#39;t go past teamVestingStages
-        if(stage &gt; teamVestingStages){
+        //Ensures team vesting stage doesn't go past teamVestingStages
+        if(stage > teamVestingStages){
             stage = teamVestingStages;
         }
 
@@ -476,7 +476,7 @@ contract LibraTokenVault is Ownable {
     // Checks if msg.sender can collect tokens
     function canCollect() public view onlyReserveWallets returns(bool) {
 
-        return block.timestamp &gt; timeLocks[msg.sender] &amp;&amp; claimed[msg.sender] == 0;
+        return block.timestamp > timeLocks[msg.sender] && claimed[msg.sender] == 0;
 
     }
 

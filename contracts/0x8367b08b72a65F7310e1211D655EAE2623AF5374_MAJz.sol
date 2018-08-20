@@ -17,9 +17,9 @@ pragma solidity 0.4.24;
 ****************************************************************************/
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        c = a + b; assert(c &gt;= a); return c; }
+        c = a + b; assert(c >= a); return c; }
 
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) { assert(b &lt;= a); return a - b; }
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) { assert(b <= a); return a - b; }
 
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
         if (a == 0){return 0;} c = a * b; assert(c / a == b); return c; }
@@ -69,13 +69,13 @@ contract MAJz is ERC20Token, Ownership {
     uint256 public decimals;
     uint256 public totalSupply;
 
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
     //Constructor of the Token
     constructor() public{
-        symbol = &quot;MAZ&quot;;
-        name = &quot;MAJz&quot;;
+        symbol = "MAZ";
+        name = "MAJz";
         decimals = 18;
         totalSupply = 560000000000000000000000000;
         balances[msg.sender] = totalSupply;
@@ -98,7 +98,7 @@ contract MAJz is ERC20Token, Ownership {
     
     //Transfer function. Validates targetAdress not to be 0x0
     function transfer(address _targetAddress, uint256 _value) validDestination(_targetAddress) public returns (bool) {
-        balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value); //SafeMath will throw if value &gt; balance
+        balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value); //SafeMath will throw if value > balance
         balances[_targetAddress] = SafeMath.add(balances[_targetAddress], _value);
         emit Transfer(msg.sender, _targetAddress, _value); 
         return true; 
@@ -118,8 +118,8 @@ contract MAJz is ERC20Token, Ownership {
     }
 
     function transferFrom(address _originAddress, address _targetAddress, uint256 _value) public returns (bool) {
-        balances[_originAddress] = SafeMath.sub(balances[_originAddress], _value); //SafeMath will throw if _value&gt; balanceOf[_originAddress]
-        allowed[_originAddress][msg.sender] = SafeMath.sub(allowed[_originAddress][msg.sender], _value); //SafeMath will throw if _value &gt; allowance
+        balances[_originAddress] = SafeMath.sub(balances[_originAddress], _value); //SafeMath will throw if _value> balanceOf[_originAddress]
+        allowed[_originAddress][msg.sender] = SafeMath.sub(allowed[_originAddress][msg.sender], _value); //SafeMath will throw if _value > allowance
         balances[_targetAddress] = SafeMath.add(balances[_targetAddress], _value);
         emit Transfer(_originAddress, _targetAddress, _value);
         return true;
@@ -135,7 +135,7 @@ contract MAJz is ERC20Token, Ownership {
 
     //Burn the specified amount (_value) of tokens
     function burnTokens(uint256 _value) public onlyOwner returns (bool){
-        balances[owner] = SafeMath.sub(balances[owner], _value); //SafeMath will throw if value &gt; balance
+        balances[owner] = SafeMath.sub(balances[owner], _value); //SafeMath will throw if value > balance
         totalSupply = SafeMath.sub(totalSupply, _value);
         emit BurnTokens(_value);
         return true;

@@ -1,7 +1,7 @@
 /*
 *
 * Universal Mobile Token smart contract
-* Developed by Phenom.team &lt;<span class="__cf_email__" data-cfemail="3950575f567949515c575654174d5c5854">[email&#160;protected]</span>&gt;   
+* Developed by Phenom.team <<span class="__cf_email__" data-cfemail="3950575f567949515c575654174d5c5854">[email protected]</span>>   
 *
 */
 
@@ -11,7 +11,7 @@ pragma solidity ^0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -70,9 +70,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -80,7 +80,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -89,7 +89,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract UniversalMobileToken is Ownable {
     // Nubmer of decimal places
     uint public decimals;
 
-    // Token&#39;s total supply
+    // Token's total supply
     uint public totalSupply;
 
     // Is minting active
@@ -127,13 +127,13 @@ contract UniversalMobileToken is Ownable {
         _;
     }
     
-    mapping (address =&gt; uint) public balances;
-    mapping (address =&gt; bool) public emitters;
-    mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping (address => uint) public balances;
+    mapping (address => bool) public emitters;
+    mapping (address => mapping (address => uint)) internal allowed;
     
     constructor() Ownable() public {
-        name = &quot;Universal Mobile Token&quot;;
-        symbol = &quot;UMT&quot;;
+        name = "Universal Mobile Token";
+        symbol = "UMT";
         decimals = 18;   
         // Make the Owner also an emitter
         emitters[msg.sender] = true;
@@ -159,7 +159,7 @@ contract UniversalMobileToken is Ownable {
     function transfer(address _to, uint _value) public returns (bool success) {
         // Make transfer only if transfer is possible
         require(transferIsPossible);
-        require(_to != address(0) &amp;&amp; _to != address(this));
+        require(_to != address(0) && _to != address(this));
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -201,7 +201,7 @@ contract UniversalMobileToken is Ownable {
         // Make transfer only if transfer is possible
         require(transferIsPossible);
 
-        require(_to != address(0) &amp;&amp; _to != address(this));
+        require(_to != address(0) && _to != address(this));
 
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -213,7 +213,7 @@ contract UniversalMobileToken is Ownable {
     /**
     *   @dev Add an emitter account
     *   
-    *   @param _emitter     emitter&#39;s address
+    *   @param _emitter     emitter's address
     */
     function addEmitter(address _emitter) public onlyOwner {
         emitters[_emitter] = true;
@@ -222,7 +222,7 @@ contract UniversalMobileToken is Ownable {
     /**
     *   @dev Remove an emitter account
     *   
-    *   @param _emitter     emitter&#39;s address
+    *   @param _emitter     emitter's address
     */
     function removeEmitter(address _emitter) public onlyOwner {
         emitters[_emitter] = false;
@@ -231,12 +231,12 @@ contract UniversalMobileToken is Ownable {
     /**
     *   @dev Mint token in batches
     *   
-    *   @param _adresses     token holders&#39; adresses
-    *   @param _values       token holders&#39; values
+    *   @param _adresses     token holders' adresses
+    *   @param _values       token holders' values
     */
     function batchMint(address[] _adresses, uint[] _values) public onlyEmitter {
         require(_adresses.length == _values.length);
-        for (uint i = 0; i &lt; _adresses.length; i++) {
+        for (uint i = 0; i < _adresses.length; i++) {
             require(minted(_adresses[i], _values[i]));
         }
     }
@@ -244,12 +244,12 @@ contract UniversalMobileToken is Ownable {
     /**
     *   @dev Transfer token in batches
     *   
-    *   @param _adresses     token holders&#39; adresses
-    *   @param _values       token holders&#39; values
+    *   @param _adresses     token holders' adresses
+    *   @param _values       token holders' values
     */
     function batchTransfer(address[] _adresses, uint[] _values) public {
         require(_adresses.length == _values.length);
-        for (uint i = 0; i &lt; _adresses.length; i++) {
+        for (uint i = 0; i < _adresses.length; i++) {
             require(transfer(_adresses[i], _values[i]));
         }
     }
@@ -263,7 +263,7 @@ contract UniversalMobileToken is Ownable {
         // Burn tokens only if minting stage is not finished
         require(!mintingIsFinished);
 
-        require(_value &lt;= balances[_from]);
+        require(_value <= balances[_from]);
         balances[_from] = balances[_from].sub(_value);
         totalSupply = totalSupply.sub(_value);
     }

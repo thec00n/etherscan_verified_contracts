@@ -14,18 +14,18 @@ contract SafeMath {
   function div(uint256 a, uint256 b) constant internal returns (uint256) {
     assert(b != 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) constant internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) constant internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   
@@ -39,7 +39,7 @@ contract SafeMath {
 /// @title Abstract token contract - Functions to be implemented by token contracts.
 
 contract AbstractToken {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -56,18 +56,18 @@ contract StandardToken is AbstractToken {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -83,7 +83,7 @@ contract StandardToken is AbstractToken {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -127,8 +127,8 @@ contract ImmlaToken is StandardToken, SafeMath {
     /*
      * Token meta data
      */
-    string public constant name = &quot;IMMLA&quot;;
-    string public constant symbol = &quot;IML&quot;;
+    string public constant name = "IMMLA";
+    string public constant symbol = "IML";
     uint public constant decimals = 18;
     uint public constant supplyLimit = 550688955000000000000000000;
     
@@ -154,22 +154,22 @@ contract ImmlaToken is StandardToken, SafeMath {
         icoContract = _icoContract;
     }
     
-    /// @dev Burns tokens from address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Burns tokens from address. It's can be applied by account with address this.icoContract
     /// @param _from Address of account, from which will be burned tokens
     /// @param _value Amount of tokens, that will be burned
     function burnTokens(address _from, uint _value) onlyIcoContract {
         assert(_from != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
         
         balances[_from] = sub(balances[_from], _value);
     }
     
-    /// @dev Adds tokens to address. It&#39;s can be applied by account with address this.icoContract
+    /// @dev Adds tokens to address. It's can be applied by account with address this.icoContract
     /// @param _to Address of account to which the tokens will pass
     /// @param _value Amount of tokens
     function emitTokens(address _to, uint _value) onlyIcoContract {
         assert(_to != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
         
         balances[_to] = add(balances[_to], _value);
     }
@@ -216,7 +216,7 @@ contract ImmlaIco is SafeMath {
     
     // 2018.03.14 21:00 UTC or 2018.03.15 0:00 MSK
     uint public constant defaultFoundersRewardTime = 1521061200;
-    // founders&#39; reward time
+    // founders' reward time
     uint public foundersRewardTime = defaultFoundersRewardTime;
     
     // Min limit of tokens is 18 000 000 IML
@@ -251,22 +251,22 @@ contract ImmlaIco is SafeMath {
     uint tokenPrice4 = 3367;
     uint tokenSupply4 = 60378083 * BASE;
     
-    // Token&#39;s prices in stages in array
+    // Token's prices in stages in array
     uint[] public tokenPrices;
-    // Token&#39;s remaining amounts in stages in array
+    // Token's remaining amounts in stages in array
     uint[] public tokenSupplies;
     
     // Check if manager can be setted
     bool public initialized = false;
     // If flag migrated=false, token can be burned
     bool public migrated = false;
-    // Tokens to founders can be sent only if sentTokensToFounders == false and time &gt; foundersRewardTime
+    // Tokens to founders can be sent only if sentTokensToFounders == false and time > foundersRewardTime
     bool public sentTokensToFounders = false;
     // If stopICO is called, then ICO 
     bool public icoStoppedManually = false;
     
     // mapping of ether balances info
-    mapping (address =&gt; uint) public balances;
+    mapping (address => uint) public balances;
     
     /*
      * Events
@@ -296,19 +296,19 @@ contract ImmlaIco is SafeMath {
     
     modifier onIcoRunning() {
         // Checks, if ICO is running and has not been stopped
-        require(!icoStoppedManually &amp;&amp; now &gt;= icoStart &amp;&amp; now &lt;= icoDeadline);
+        require(!icoStoppedManually && now >= icoStart && now <= icoDeadline);
         _;
     }
     
     modifier onGoalAchievedOrDeadline() {
-        // Checks if amount of sold tokens &gt;= min limit or deadline is reached
-        require(soldTokensOnIco &gt;= minIcoTokenLimit || now &gt; icoDeadline || icoStoppedManually);
+        // Checks if amount of sold tokens >= min limit or deadline is reached
+        require(soldTokensOnIco >= minIcoTokenLimit || now > icoDeadline || icoStoppedManually);
         _;
     }
     
     modifier onIcoStopped() {
         // Checks if ICO was stopped or deadline is reached
-        require(icoStoppedManually || now &gt; icoDeadline);
+        require(icoStoppedManually || now > icoDeadline);
         _;
     }
     
@@ -320,7 +320,7 @@ contract ImmlaIco is SafeMath {
     
     /// @dev Constructor of ICO. Requires address of icoManager,
     /// address of preIcoToken, time of start ICO (or zero),
-    /// time of ICO deadline (or zero), founders&#39; reward time (or zero)
+    /// time of ICO deadline (or zero), founders' reward time (or zero)
     /// @param _icoManager Address of ICO manager
     /// @param _preIcoToken Address of pre-ICO contract
     /// @param _icoStart Timestamp of ICO start (if equals 0, sets defaultIcoStart)
@@ -404,9 +404,9 @@ contract ImmlaIco is SafeMath {
         tokenImporter = _newTokenImporter;
     } 
     
-    // saves info if account&#39;s tokens were imported from pre-ICO
-    mapping (address =&gt; bool) private importedFromPreIco;
-    /// @dev Imports account&#39;s tokens from pre-ICO. It can be done only by user, ICO manager or token importer
+    // saves info if account's tokens were imported from pre-ICO
+    mapping (address => bool) private importedFromPreIco;
+    /// @dev Imports account's tokens from pre-ICO. It can be done only by user, ICO manager or token importer
     /// @param _account Address of account which tokens will be imported
     function importTokens(address _account) {
         // only tokens holder or manager or tokenImporter can do migration
@@ -414,7 +414,7 @@ contract ImmlaIco is SafeMath {
         require(!importedFromPreIco[_account]);
         
         uint preIcoBalance = preIcoToken.balanceOf(_account);
-        if (preIcoBalance &gt; 0) {
+        if (preIcoBalance > 0) {
             immlaToken.emitTokens(_account, preIcoBalance);
             importedTokens = add(importedTokens, preIcoBalance);
         }
@@ -430,9 +430,9 @@ contract ImmlaIco is SafeMath {
     
     /// @dev If ICO is successful, sends funds to escrow (Only manager can do it). If ICO is failed, sends funds to caller (Anyone can do it)
     function withdrawEther() onGoalAchievedOrDeadline {
-        if (soldTokensOnIco &gt;= minIcoTokenLimit) {
+        if (soldTokensOnIco >= minIcoTokenLimit) {
             assert(initialized);
-            assert(this.balance &gt; 0);
+            assert(this.balance > 0);
             assert(msg.sender == icoManager);
             
             escrow.transfer(this.balance);
@@ -447,8 +447,8 @@ contract ImmlaIco is SafeMath {
     /// @param _account Address of funder
     function returnFundsFor(address _account) onGoalAchievedOrDeadline {
         assert(msg.sender == address(this) || msg.sender == icoManager || msg.sender == _account);
-        assert(soldTokensOnIco &lt; minIcoTokenLimit);
-        assert(balances[_account] &gt; 0);
+        assert(soldTokensOnIco < minIcoTokenLimit);
+        assert(balances[_account] > 0);
         
         _account.transfer(balances[_account]);
         balances[_account] = 0;
@@ -461,7 +461,7 @@ contract ImmlaIco is SafeMath {
     function countTokens(uint _weis) private returns(uint) { 
         uint result = 0;
         uint stage;
-        for (stage = 0; stage &lt; 4; stage++) {
+        for (stage = 0; stage < 4; stage++) {
             if (_weis == 0) {
                 break;
             }
@@ -469,7 +469,7 @@ contract ImmlaIco is SafeMath {
                 continue;
             }
             uint maxTokenAmount = tokenPrices[stage] * _weis;
-            if (maxTokenAmount &lt;= tokenSupplies[stage]) {
+            if (maxTokenAmount <= tokenSupplies[stage]) {
                 result = add(result, maxTokenAmount);
                 break;
             }
@@ -487,11 +487,11 @@ contract ImmlaIco is SafeMath {
     /// @dev Invalidates _amount tokens. Can be called only by contract
     /// @param _amount Amount of tokens
     function removeTokens(uint _amount) private {
-        for (uint i = 0; i &lt; 4; i++) {
+        for (uint i = 0; i < 4; i++) {
             if (_amount == 0) {
                 break;
             }
-            if (tokenSupplies[i] &gt; _amount) {
+            if (tokenSupplies[i] > _amount) {
                 tokenSupplies[i] = sub(tokenSupplies[i], _amount);
                 break;
             }
@@ -504,11 +504,11 @@ contract ImmlaIco is SafeMath {
     /// @param _buyer Address of account which will receive tokens
     function buyTokens(address _buyer) private {
         assert(_buyer != 0x0);
-        require(msg.value &gt; 0);
-        require(soldTokensOnIco &lt; maxIcoTokenLimit);
+        require(msg.value > 0);
+        require(soldTokensOnIco < maxIcoTokenLimit);
         
         uint boughtTokens = countTokens(msg.value);
-        assert(add(soldTokensOnIco, boughtTokens) &lt;= maxIcoTokenLimit);
+        assert(add(soldTokensOnIco, boughtTokens) <= maxIcoTokenLimit);
         
         removeTokens(boughtTokens);
         soldTokensOnIco = add(soldTokensOnIco, boughtTokens);
@@ -524,13 +524,13 @@ contract ImmlaIco is SafeMath {
         buyTokens(msg.sender);
     }
     
-    /// @dev Burn tokens from accounts only in state &quot;not migrated&quot;. Only manager can do it
+    /// @dev Burn tokens from accounts only in state "not migrated". Only manager can do it
     /// @param _from Address of account 
     function burnTokens(address _from, uint _value) onlyManager notMigrated {
         immlaToken.burnTokens(_from, _value);
     }
     
-    /// @dev Set state &quot;migrated&quot;. Only manager can do it 
+    /// @dev Set state "migrated". Only manager can do it 
     function setStateMigrated() onlyManager {
         migrated = true;
     }
@@ -540,7 +540,7 @@ contract ImmlaIco is SafeMath {
     /// Sends 43% * 10% of all tokens to founder 2
     /// Sends 14% * 10% of all tokens to founder 3
     function sendTokensToFounders() onlyManager whenInitialized {
-        require(!sentTokensToFounders &amp;&amp; now &gt;= foundersRewardTime);
+        require(!sentTokensToFounders && now >= foundersRewardTime);
         
         // soldTokensOnPreIco + soldTokensOnIco is ~81.3% of tokens 
         uint totalCountOfTokens = mulByFraction(add(soldTokensOnIco, soldTokensOnPreIco), 1000, 813);

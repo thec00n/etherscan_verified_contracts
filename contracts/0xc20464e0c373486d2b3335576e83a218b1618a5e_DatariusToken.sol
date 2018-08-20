@@ -1,5 +1,5 @@
 // Datarius tokensale smart contract.
-// Developed by Phenom.Team &lt;<span class="__cf_email__" data-cfemail="177e79717857677f7279787a396372767a">[email&#160;protected]</span>&gt;
+// Developed by Phenom.Team <<span class="__cf_email__" data-cfemail="177e79717857677f7279787a396372767a">[email protected]</span>>
 pragma solidity ^0.4.15;
 
 /**
@@ -19,20 +19,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal constant returns(uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function sub(uint a, uint b) internal constant returns(uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal constant returns(uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -45,8 +45,8 @@ library SafeMath {
 contract ERC20 {
     uint public totalSupply = 0;
 
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping (address => uint)) allowed;
 
     function balanceOf(address _owner) constant returns (uint);
     function transfer(address _to, uint _value) returns (bool);
@@ -66,8 +66,8 @@ contract ERC20 {
  */
 contract DatariusToken is ERC20 {
     using SafeMath for uint;
-    string public name = &quot;Datarius Credit&quot;;
-    string public symbol = &quot;DTRC&quot;;
+    string public name = "Datarius Credit";
+    string public symbol = "DTRC";
     uint public decimals = 18;
 
     // Ico contract address
@@ -97,7 +97,7 @@ contract DatariusToken is ERC20 {
     *   @param _value        number of tokens to issue
     */
     function mintTokens(address _holder, uint _value) external icoOnly {
-       require(_value &gt; 0);
+       require(_value > 0);
        balances[_holder] = balances[_holder].add(_value);
        totalSupply = totalSupply.add(_value);
        Transfer(0x0, _holder, _value);
@@ -118,7 +118,7 @@ contract DatariusToken is ERC20 {
     *   @param _value        number of tokens to burn
     */
     function burnTokens(address _holder, uint _value) external icoOnly {
-        require(balances[_holder] &gt; 0);
+        require(balances[_holder] > 0);
         totalSupply = totalSupply.sub(_value);
         balances[_holder] = balances[_holder].sub(_value);
         Burn(_holder, _value);
@@ -126,7 +126,7 @@ contract DatariusToken is ERC20 {
 
    /**
     *   @dev Get balance of tokens holder
-    *   @param _holder        holder&#39;s address
+    *   @param _holder        holder's address
     *   @return               balance of investor
     */
     function balanceOf(address _holder) constant returns (uint) {

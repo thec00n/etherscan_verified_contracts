@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -41,7 +41,7 @@ contract StakeTreeMVP {
     uint balance;
     uint withdrawalEntry;
   }
-  mapping(address =&gt; Funder) public funders;
+  mapping(address => Funder) public funders;
 
   bool public live = true; // For sunsetting contract
   uint public totalCurrentFunders = 0; // Keeps track of total funders
@@ -88,7 +88,7 @@ contract StakeTreeMVP {
   }
 
   modifier onlyAfterNextWithdrawalDate() {
-    require(now &gt;= nextWithdrawal);
+    require(now >= nextWithdrawal);
     _;
   }
 
@@ -115,7 +115,7 @@ contract StakeTreeMVP {
   */
 
   function fund() public payable onlyWhenLive {
-    require(msg.value &gt;= minimumFundingAmount);
+    require(msg.value >= minimumFundingAmount);
 
     // Only increase total funders when we have a new funder
     if(!isFunder(msg.sender)) {
@@ -124,11 +124,11 @@ contract StakeTreeMVP {
       funders[msg.sender] = Funder({
         exists: true,
         balance: msg.value,
-        withdrawalEntry: withdrawalCounter // Set the withdrawal counter. Ie at which withdrawal the funder &quot;entered&quot; the patronage contract
+        withdrawalEntry: withdrawalCounter // Set the withdrawal counter. Ie at which withdrawal the funder "entered" the patronage contract
       });
     }
     else {
-      // If the funder is already in the pool let&#39;s update things while we&#39;re at it
+      // If the funder is already in the pool let's update things while we're at it
       // This calculates their actual balance left and adds their top up amount
       funders[msg.sender].balance = getRefundAmountForFunder(msg.sender).add(msg.value);
       // Reset withdrawal counter
@@ -141,7 +141,7 @@ contract StakeTreeMVP {
   /*
   * This function calculates how much the beneficiary can withdraw.
   * Due to no floating points in Solidity, we will lose some fidelity
-  * if there&#39;s wei on the last digit. The beneficiary loses a neglibible amount
+  * if there's wei on the last digit. The beneficiary loses a neglibible amount
   * to withdraw but this benefits the beneficiary again on later withdrawals.
   * We multiply by 10 (which corresponds to the 10%) 
   * then divide by 100 to get the actual part.
@@ -157,7 +157,7 @@ contract StakeTreeMVP {
   * The left over wei gets pooled to the fund.
   */
   function calculateRefundAmount(uint amount, uint withdrawalTimes) public returns (uint) {    
-    for(uint i=0; i&lt;withdrawalTimes; i++){
+    for(uint i=0; i<withdrawalTimes; i++){
       amount = amount.mul(9).div(10);
     }
     return amount;
@@ -211,7 +211,7 @@ contract StakeTreeMVP {
 
   // State changing functions
   function setMinimumFundingAmount(uint amount) external onlyByBeneficiary {
-    require(amount &gt; 0);
+    require(amount > 0);
     minimumFundingAmount = amount;
   }
 
@@ -236,7 +236,7 @@ contract StakeTreeMVP {
     // Check
     uint walletBalance = this.balance;
     uint amount = getRefundAmountForFunder(msg.sender);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     // Effects
     removeFunder();
@@ -268,7 +268,7 @@ contract StakeTreeMVP {
   }
 
   function swipe(address recipient) external onlyWhenSunset onlyByBeneficiary {
-    require(now &gt;= sunsetWithdrawDate);
+    require(now >= sunsetWithdrawDate);
 
     recipient.transfer(this.balance);
   }

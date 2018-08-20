@@ -70,20 +70,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -100,13 +100,13 @@ contract StandardToken is Token {
     using SafeMath for uint256;
     address newToken=0x0;
     
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public _totalSupply=0;
-    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It&#39;s like comparing 1 wei to 1 ether.
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
     // there is 3 level. 1 - inbound tx, 2 - outbount tx, 3 - all tx;
-    mapping(uint8 =&gt;mapping(address=&gt;bool)) internal whitelist;
-    mapping(address=&gt;uint8) internal whitelistModerator;
+    mapping(uint8 =>mapping(address=>bool)) internal whitelist;
+    mapping(address=>uint8) internal whitelistModerator;
     
     uint256 public maxFee;
     uint256 public feePercantage;
@@ -146,7 +146,7 @@ contract StandardToken is Token {
          if(withFee(msg.sender,_to)){
             valueWithFee=valueWithFee.add(fee);
         }
-        if (balances[msg.sender] &gt;= valueWithFee &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= valueWithFee && _value > 0) {
             //Do Transfer
             doTransfer(msg.sender,_to,_value,fee);
             return true;
@@ -154,7 +154,7 @@ contract StandardToken is Token {
     }
     
     function withFee(address _from,address _to) private returns(bool){
-        return !whitelist[2][_from] &amp;&amp; !whitelist[1][_to] &amp;&amp; !whitelist[3][_to] &amp;&amp; !whitelist[3][_from];
+        return !whitelist[2][_from] && !whitelist[1][_to] && !whitelist[3][_to] && !whitelist[3][_from];
     }
     
     function getFee(uint256 _value) private returns (uint256){
@@ -162,12 +162,12 @@ contract StandardToken is Token {
         uint256 fee=uint256(maxFee).power(decimals);
          // Check if 1% burn fee exceeds maxfee
         // If so then hard cap for burn fee is maxfee
-        if (feeOfValue&gt;= fee) {
+        if (feeOfValue>= fee) {
             return fee;
         // If 1% burn fee is less than maxfee
         // then use 1% burn fee
         } 
-        if (feeOfValue &lt; fee) {
+        if (feeOfValue < fee) {
             return feeOfValue;
         }
     }
@@ -181,7 +181,7 @@ contract StandardToken is Token {
     }
     
     function doBurn(address _from,uint256 _value) private returns (bool success){
-        require(balanceOf(_from) &gt;= _value);   // Check if the sender has enough
+        require(balanceOf(_from) >= _value);   // Check if the sender has enough
         balances[_from] =balances[_from].sub(_value);            // Subtract from the sender
         _totalSupply =_totalSupply.sub(_value);                      // Updates totalSupply
         Burn(_from, _value);
@@ -194,7 +194,7 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
         if(newToken!=0x0){
             return NewToken(newToken).transferFrom(msg.sender,_from,_to,_value);
         }
@@ -203,9 +203,9 @@ contract StandardToken is Token {
         if(withFee(_from,_to)){
             valueWithFee=valueWithFee.add(fee);
         }
-        if (balances[_from] &gt;= valueWithFee &amp;&amp; 
-            (allowed[_from][msg.sender] &gt;= valueWithFee || allowed[_from][msg.sender] == _value) &amp;&amp;
-            _value &gt; 0 ) {
+        if (balances[_from] >= valueWithFee && 
+            (allowed[_from][msg.sender] >= valueWithFee || allowed[_from][msg.sender] == _value) &&
+            _value > 0 ) {
             doTransfer(_from,_to,_value,fee);
             if(allowed[_from][msg.sender] == _value){
                 allowed[_from][msg.sender] =allowed[_from][msg.sender].sub(_value);
@@ -283,15 +283,15 @@ contract EqualToken is StandardToken {
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
     string public symbol;                 //An identifier: eg SBX
-    string public version = &#39;H1.0&#39;;       //human 0.1 standard. Just an arbitrary versioning scheme.
+    string public version = 'H1.0';       //human 0.1 standard. Just an arbitrary versioning scheme.
     address public oldToken=0x0;    
     // Fee info
-    string public feeInfo = &quot;Each operation costs 1% of the transaction amount, but not more than 250 tokens.&quot;;
+    string public feeInfo = "Each operation costs 1% of the transaction amount, but not more than 250 tokens.";
 
     function EqualToken() {
         _owner=msg.sender;
@@ -302,9 +302,9 @@ contract EqualToken is StandardToken {
         maxFee=250; // max fee for transfer
         feePercantage=1; // fee in percents
         
-        name = &quot;EQUAL&quot;;                      // Set the name for display purposes
+        name = "EQUAL";                      // Set the name for display purposes
         decimals = 18;                            // Amount of decimals for display purposes
-        symbol = &quot;EQL&quot;;                          // Set the symbol for display purposes
+        symbol = "EQL";                          // Set the symbol for display purposes
     }
 
     function setOldToken(address _oldToken) onlyOwner public{
@@ -320,7 +320,7 @@ contract EqualToken is StandardToken {
     function redistribute(address[] holders) onlyOwner public{
         require(oldToken!=0x0);
         Token token=Token(oldToken);
-        for(uint256 i=0;i&lt;holders.length;++i){
+        for(uint256 i=0;i<holders.length;++i){
             address _to=holders[i];
             if(balances[_to]==0){
                 uint256 balance=token.balanceOf(_to);
@@ -388,10 +388,10 @@ contract EqualToken is StandardToken {
         if(!approve(_spender,_value)){
             return false;
         }
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { revert(); }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { revert(); }
         return true;
     }
 }

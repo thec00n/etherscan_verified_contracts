@@ -11,7 +11,7 @@ interface token
 
 contract DCY_preICO 
 {
-    string public name = &#39;CONTRACT DICEYBIT.COM preICO&#39;;
+    string public name = 'CONTRACT DICEYBIT.COM preICO';
     address public beneficiary;
 
     uint public fundingGoal;
@@ -22,7 +22,7 @@ contract DCY_preICO
     token public tokenReward;
     uint256 public tokensLeft;
 
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     bool public fundingGoalReached = false;
     bool public crowdsaleClosed = false;
@@ -50,7 +50,7 @@ contract DCY_preICO
     function () payable 
     {
         require(!crowdsaleClosed);
-        require(tokensLeft &gt;= amount / price);
+        require(tokensLeft >= amount / price);
 
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
@@ -73,13 +73,13 @@ contract DCY_preICO
 
     modifier afterDeadline() 
     {
-        if (now &gt;= deadline) _;
+        if (now >= deadline) _;
     }
 
     /* checks if the goal or time limit has been reached and ends the campaign */
     function checkGoalReached() afterDeadline 
     {        
-        if (amountRaised &gt;= fundingGoal) 
+        if (amountRaised >= fundingGoal) 
         {
             fundingGoalReached = true;
             crowdsaleClosed = true;
@@ -94,7 +94,7 @@ contract DCY_preICO
         {
             uint amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
-            if (amount &gt; 0) 
+            if (amount > 0) 
             {
                 if (msg.sender.send(amount)) 
                 {
@@ -107,7 +107,7 @@ contract DCY_preICO
             }
         }
 
-        if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) 
+        if (fundingGoalReached && beneficiary == msg.sender) 
         {
             if (beneficiary.send(amountRaised)) 
             {
@@ -122,7 +122,7 @@ contract DCY_preICO
 
     function bringBackTokens() afterDeadline 
     {
-        require(tokensLeft &gt; 0);
+        require(tokensLeft > 0);
 
         if (msg.sender == beneficiary) 
         {

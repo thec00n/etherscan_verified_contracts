@@ -30,8 +30,8 @@ contract TokenBase is Owned {
     uint public kUnit = 1000 * tokenUnit;
     uint public foundingTime;
 
-    mapping (address =&gt; uint) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint)) public allowance;
+    mapping (address => uint) public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
 
     event Transfer(address indexed _from, address indexed _to, uint _value);
 
@@ -41,8 +41,8 @@ contract TokenBase is Owned {
 
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -55,7 +55,7 @@ contract TokenBase is Owned {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -82,15 +82,15 @@ contract Token is TokenBase {
     uint public reserveSupply = 0;
 
     constructor() public {
-        name = &quot;EX&quot;;
-        symbol = &quot;EX&quot;;
+        name = "EX";
+        symbol = "EX";
         totalSupply = initialSupply;
         balanceOf[msg.sender] = initialSupply;
         emit Transfer(address(0), msg.sender, totalSupply);
     }
 
     function releaseReserve(uint value) onlyOwner public {
-        require(reserveSupply &gt;= value);
+        require(reserveSupply >= value);
         balanceOf[owner] += value;
         totalSupply += value;
         reserveSupply -= value;

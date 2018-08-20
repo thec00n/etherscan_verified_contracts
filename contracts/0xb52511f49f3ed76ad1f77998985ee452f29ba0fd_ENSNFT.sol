@@ -31,37 +31,37 @@ contract ERC721Basic is ERC165 {
   bytes4 internal constant InterfaceId_ERC721 = 0x80ac58cd;
   /*
    * 0x80ac58cd ===
-   *   bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-   *   bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-   *   bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-   *   bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;))
+   *   bytes4(keccak256('balanceOf(address)')) ^
+   *   bytes4(keccak256('ownerOf(uint256)')) ^
+   *   bytes4(keccak256('approve(address,uint256)')) ^
+   *   bytes4(keccak256('getApproved(uint256)')) ^
+   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
    */
 
   bytes4 internal constant InterfaceId_ERC721Exists = 0x4f558e79;
   /*
    * 0x4f558e79 ===
-   *   bytes4(keccak256(&#39;exists(uint256)&#39;))
+   *   bytes4(keccak256('exists(uint256)'))
    */
 
   bytes4 internal constant InterfaceId_ERC721Enumerable = 0x780e9d63;
   /**
    * 0x780e9d63 ===
-   *   bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;))
+   *   bytes4(keccak256('totalSupply()')) ^
+   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+   *   bytes4(keccak256('tokenByIndex(uint256)'))
    */
 
   bytes4 internal constant InterfaceId_ERC721Metadata = 0x5b5e139f;
   /**
    * 0x5b5e139f ===
-   *   bytes4(keccak256(&#39;name()&#39;)) ^
-   *   bytes4(keccak256(&#39;symbol()&#39;)) ^
-   *   bytes4(keccak256(&#39;tokenURI(uint256)&#39;))
+   *   bytes4(keccak256('name()')) ^
+   *   bytes4(keccak256('symbol()')) ^
+   *   bytes4(keccak256('tokenURI(uint256)'))
    */
 
   event Transfer(
@@ -153,7 +153,7 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 contract ERC721Receiver {
   /**
    * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`,
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
    */
   bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
@@ -169,7 +169,7 @@ contract ERC721Receiver {
    * @param _from The address which previously owned the token
    * @param _tokenId The NFT identifier which is being transferred
    * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
   function onERC721Received(
     address _operator,
@@ -193,8 +193,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -209,9 +209,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // assert(_b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
     return _a / _b;
   }
 
@@ -219,7 +219,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    assert(_b &lt;= _a);
+    assert(_b <= _a);
     return _a - _b;
   }
 
@@ -228,7 +228,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     c = _a + _b;
-    assert(c &gt;= _a);
+    assert(c >= _a);
     return c;
   }
 }
@@ -257,7 +257,7 @@ library AddressUtils {
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(_addr) }
-    return size &gt; 0;
+    return size > 0;
   }
 
 }
@@ -274,13 +274,13 @@ contract SupportsInterfaceWithLookup is ERC165 {
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
-   *   bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;))
+   *   bytes4(keccak256('supportsInterface(bytes4)'))
    */
 
   /**
-   * @dev a mapping of interface id to whether or not it&#39;s supported
+   * @dev a mapping of interface id to whether or not it's supported
    */
-  mapping(bytes4 =&gt; bool) internal supportedInterfaces;
+  mapping(bytes4 => bool) internal supportedInterfaces;
 
   /**
    * @dev A contract implementing SupportsInterfaceWithLookup
@@ -325,21 +325,21 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant ERC721_RECEIVED = 0x150b7a02;
 
   // Mapping from token ID to owner
-  mapping (uint256 =&gt; address) internal tokenOwner;
+  mapping (uint256 => address) internal tokenOwner;
 
   // Mapping from token ID to approved address
-  mapping (uint256 =&gt; address) internal tokenApprovals;
+  mapping (uint256 => address) internal tokenApprovals;
 
   // Mapping from owner to number of owned token
-  mapping (address =&gt; uint256) internal ownedTokensCount;
+  mapping (address => uint256) internal ownedTokensCount;
 
   // Mapping from owner to operator approvals
-  mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   constructor()
     public
@@ -465,7 +465,7 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    *
    * Requires the msg sender to be the owner, approved, or operator
@@ -481,14 +481,14 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     public
   {
     // solium-disable-next-line arg-overflow
-    safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+    safeTransferFrom(_from, _to, _tokenId, "");
   }
 
   /**
    * @dev Safely transfers the ownership of a given token ID to another address
    * If the target address is a contract, it must implement `onERC721Received`,
    * which is called upon a safe transfer, and return the magic value
-   * `bytes4(keccak256(&quot;onERC721Received(address,address,uint256,bytes)&quot;))`; otherwise,
+   * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    * the transfer is reverted.
    * Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -637,19 +637,19 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   string internal symbol_;
 
   // Mapping from owner to list of owned token IDs
-  mapping(address =&gt; uint256[]) internal ownedTokens;
+  mapping(address => uint256[]) internal ownedTokens;
 
   // Mapping from token ID to index of the owner tokens list
-  mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+  mapping(uint256 => uint256) internal ownedTokensIndex;
 
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
   // Mapping from token id to position in the allTokens array
-  mapping(uint256 =&gt; uint256) internal allTokensIndex;
+  mapping(uint256 => uint256) internal allTokensIndex;
 
   // Optional mapping for token URIs
-  mapping(uint256 =&gt; string) internal tokenURIs;
+  mapping(uint256 => string) internal tokenURIs;
 
   /**
    * @dev Constructor function
@@ -703,7 +703,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
     view
     returns (uint256)
   {
-    require(_index &lt; balanceOf(_owner));
+    require(_index < balanceOf(_owner));
     return ownedTokens[_owner][_index];
   }
 
@@ -722,7 +722,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
    * @return uint256 token ID at the given index of the tokens list
    */
   function tokenByIndex(uint256 _index) public view returns (uint256) {
-    require(_index &lt; totalSupply());
+    require(_index < totalSupply());
     return allTokens[_index];
   }
 
@@ -870,7 +870,7 @@ contract Deed {
 
     function setBalance(uint newValue, bool throwOnFailure) public onlyRegistrar onlyActive {
         // Check if it has enough balance to set the value
-        require(value &gt;= newValue);
+        require(value >= newValue);
         value = newValue;
         // Send the difference to the owner
         require(owner.send(this.balance - newValue) || !throwOnFailure);
@@ -954,8 +954,8 @@ contract Registrar {
     ENS public ens;
     bytes32 public rootNode;
 
-    mapping (bytes32 =&gt; Entry) _entries;
-    mapping (address =&gt; mapping (bytes32 =&gt; Deed)) public sealedBids;
+    mapping (bytes32 => Entry) _entries;
+    mapping (address => mapping (bytes32 => Deed)) public sealedBids;
     
     enum Mode { Open, Auction, Owned, Forbidden, Reveal, NotYetAvailable }
 
@@ -986,12 +986,12 @@ contract Registrar {
     }
 
     modifier onlyOwner(bytes32 _hash) {
-        require(state(_hash) == Mode.Owned &amp;&amp; msg.sender == _entries[_hash].deed.owner());
+        require(state(_hash) == Mode.Owned && msg.sender == _entries[_hash].deed.owner());
         _;
     }
 
     modifier registryOpen() {
-        require(now &gt;= registryStarted &amp;&amp; now &lt;= registryStarted + 4 years &amp;&amp; ens.owner(rootNode) == address(this));
+        require(now >= registryStarted && now <= registryStarted + 4 years && ens.owner(rootNode) == address(this));
         _;
     }
 
@@ -1004,7 +1004,7 @@ contract Registrar {
     function Registrar(ENS _ens, bytes32 _rootNode, uint _startDate) public {
         ens = _ens;
         rootNode = _rootNode;
-        registryStarted = _startDate &gt; 0 ? _startDate : now;
+        registryStarted = _startDate > 0 ? _startDate : now;
     }
 
     /**
@@ -1036,7 +1036,7 @@ contract Registrar {
      * @param _hashes An array of hashes, at least one of which you presumably want to bid on
      */
     function startAuctions(bytes32[] _hashes) public {
-        for (uint i = 0; i &lt; _hashes.length; i ++) {
+        for (uint i = 0; i < _hashes.length; i ++) {
             startAuction(_hashes[i]);
         }
     }
@@ -1056,7 +1056,7 @@ contract Registrar {
      */
     function newBid(bytes32 sealedBid) public payable {
         require(address(sealedBids[msg.sender][sealedBid]) == 0x0);
-        require(msg.value &gt;= minPrice);
+        require(msg.value >= minPrice);
 
         // Creates a new hash contract with the owner
         Deed newBid = (new Deed).value(msg.value)(msg.sender);
@@ -1103,11 +1103,11 @@ contract Registrar {
         } else if (auctionState != Mode.Reveal) {
             // Invalid phase
             revert();
-        } else if (value &lt; minPrice || bid.creationDate() &gt; h.registrationDate - revealPeriod) {
+        } else if (value < minPrice || bid.creationDate() > h.registrationDate - revealPeriod) {
             // Bid too low or too late, refund 99.5%
             bid.closeDeed(995);
             BidRevealed(_hash, msg.sender, value, 0);
-        } else if (value &gt; h.highestBid) {
+        } else if (value > h.highestBid) {
             // New winner
             // Cancel the other bid, refund 99.5%
             if (address(h.deed) != 0) {
@@ -1117,17 +1117,17 @@ contract Registrar {
 
             // Set new winner
             // Per the rules of a vickery auction, the value becomes the previous highestBid
-            h.value = h.highestBid;  // will be zero if there&#39;s only 1 bidder
+            h.value = h.highestBid;  // will be zero if there's only 1 bidder
             h.highestBid = value;
             h.deed = bid;
             BidRevealed(_hash, msg.sender, value, 2);
-        } else if (value &gt; h.value) {
+        } else if (value > h.value) {
             // Not winner, but affects second place
             h.value = value;
             bid.closeDeed(995);
             BidRevealed(_hash, msg.sender, value, 3);
         } else {
-            // Bid doesn&#39;t affect auction
+            // Bid doesn't affect auction
             bid.closeDeed(995);
             BidRevealed(_hash, msg.sender, value, 4);
         }
@@ -1147,7 +1147,7 @@ contract Registrar {
         // For simplicity, they should call `startAuction` within
         // 9 days (2 weeks - totalAuctionLength), otherwise their bid will be
         // cancellable by anyone.
-        require(address(bid) != 0 &amp;&amp; now &gt;= bid.creationDate() + totalAuctionLength + 2 weeks);
+        require(address(bid) != 0 && now >= bid.creationDate() + totalAuctionLength + 2 weeks);
 
         // Send the canceller 0.5% of the bid, and burn the rest.
         bid.setOwner(msg.sender);
@@ -1164,7 +1164,7 @@ contract Registrar {
     function finalizeAuction(bytes32 _hash) public onlyOwner(_hash) {
         Entry storage h = _entries[_hash];
         
-        // Handles the case when there&#39;s only a single bidder (h.value is zero)
+        // Handles the case when there's only a single bidder (h.value is zero)
         h.value =  max(h.value, minPrice);
         h.deed.setBalance(h.value, true);
 
@@ -1187,7 +1187,7 @@ contract Registrar {
     }
 
     /**
-     * @dev After some time, or if we&#39;re no longer the registrar, the owner can release
+     * @dev After some time, or if we're no longer the registrar, the owner can release
      *      the name and get their ether back.
      *
      * @param _hash The node to release
@@ -1196,7 +1196,7 @@ contract Registrar {
         Entry storage h = _entries[_hash];
         Deed deedContract = h.deed;
 
-        require(now &gt;= h.registrationDate + 1 years || ens.owner(rootNode) != address(this));
+        require(now >= h.registrationDate + 1 years || ens.owner(rootNode) != address(this));
 
         h.value = 0;
         h.highestBid = 0;
@@ -1217,7 +1217,7 @@ contract Registrar {
      * @param unhashedName An invalid name to search for in the registry.
      */
     function invalidateName(string unhashedName) public inState(keccak256(unhashedName), Mode.Owned) {
-        require(strlen(unhashedName) &lt;= 6);
+        require(strlen(unhashedName) <= 6);
         bytes32 hash = keccak256(unhashedName);
 
         Entry storage h = _entries[hash];
@@ -1242,13 +1242,13 @@ contract Registrar {
 
     /**
      * @dev Allows anyone to delete the owner and resolver records for a (subdomain of) a
-     *      name that is not currently owned in the registrar. If passing, eg, &#39;foo.bar.eth&#39;,
-     *      the owner and resolver fields on &#39;foo.bar.eth&#39; and &#39;bar.eth&#39; will all be cleared.
+     *      name that is not currently owned in the registrar. If passing, eg, 'foo.bar.eth',
+     *      the owner and resolver fields on 'foo.bar.eth' and 'bar.eth' will all be cleared.
      *
      * @param labels A series of label hashes identifying the name to zero out, rooted at the
-     *        registrar&#39;s root. Must contain at least one element. For instance, to zero 
-     *        &#39;foo.bar.eth&#39; on a registrar that owns &#39;.eth&#39;, pass an array containing
-     *        [keccak256(&#39;foo&#39;), keccak256(&#39;bar&#39;)].
+     *        registrar's root. Must contain at least one element. For instance, to zero 
+     *        'foo.bar.eth' on a registrar that owns '.eth', pass an array containing
+     *        [keccak256('foo'), keccak256('bar')].
      */
     function eraseNode(bytes32[] labels) public {
         require(labels.length != 0);
@@ -1291,22 +1291,22 @@ contract Registrar {
      * @param registrationDate The date at which the name was originally registered.
      */
     function acceptRegistrarTransfer(bytes32 hash, Deed deed, uint registrationDate) public {
-        hash; deed; registrationDate; // Don&#39;t warn about unused variables
+        hash; deed; registrationDate; // Don't warn about unused variables
     }
 
     // State transitions for names:
-    //   Open -&gt; Auction (startAuction)
-    //   Auction -&gt; Reveal
-    //   Reveal -&gt; Owned
-    //   Reveal -&gt; Open (if nobody bid)
-    //   Owned -&gt; Open (releaseDeed or invalidateName)
+    //   Open -> Auction (startAuction)
+    //   Auction -> Reveal
+    //   Reveal -> Owned
+    //   Reveal -> Open (if nobody bid)
+    //   Owned -> Open (releaseDeed or invalidateName)
     function state(bytes32 _hash) public view returns (Mode) {
         Entry storage entry = _entries[_hash];
 
         if (!isAllowed(_hash, now)) {
             return Mode.NotYetAvailable;
-        } else if (now &lt; entry.registrationDate) {
-            if (now &lt; entry.registrationDate - revealPeriod) {
+        } else if (now < entry.registrationDate) {
+            if (now < entry.registrationDate - revealPeriod) {
                 return Mode.Auction;
             } else {
                 return Mode.Reveal;
@@ -1335,7 +1335,7 @@ contract Registrar {
      * @param _timestamp The timestamp to query about
      */
     function isAllowed(bytes32 _hash, uint _timestamp) public view returns (bool allowed) {
-        return _timestamp &gt; getAllowedTime(_hash);
+        return _timestamp > getAllowedTime(_hash);
     }
 
     /**
@@ -1347,8 +1347,8 @@ contract Registrar {
      * @param _hash The hash to start an auction on
      */
     function getAllowedTime(bytes32 _hash) public view returns (uint) {
-        return registryStarted + ((launchLength * (uint(_hash) &gt;&gt; 128)) &gt;&gt; 128);
-        // Right shift operator: a &gt;&gt; b == a / 2**b
+        return registryStarted + ((launchLength * (uint(_hash) >> 128)) >> 128);
+        // Right shift operator: a >> b == a / 2**b
     }
 
     /**
@@ -1378,7 +1378,7 @@ contract Registrar {
         node = keccak256(node, labels[idx]);
 
         // Recurse if there are more labels
-        if (idx &gt; 0) {
+        if (idx > 0) {
             _eraseNodeHierarchy(idx - 1, labels, node);
         }
 
@@ -1388,7 +1388,7 @@ contract Registrar {
     }
 
     /**
-     * @dev Assign the owner in ENS, if we&#39;re still the registrar
+     * @dev Assign the owner in ENS, if we're still the registrar
      *
      * @param _hash hash to change owner
      * @param _newOwner new owner to transfer to
@@ -1406,7 +1406,7 @@ contract Registrar {
      * @return The maximum of two unsigned integers
      */
     function max(uint a, uint b) internal pure returns (uint) {
-        if (a &gt; b)
+        if (a > b)
             return a;
         else
             return b;
@@ -1420,7 +1420,7 @@ contract Registrar {
      * @return The minimum of two unsigned integers
      */
     function min(uint a, uint b) internal pure returns (uint) {
-        if (a &lt; b)
+        if (a < b)
             return a;
         else
             return b;
@@ -1433,7 +1433,7 @@ contract Registrar {
      * @return The length of the input string
      */
     function strlen(string s) internal pure returns (uint) {
-        s; // Don&#39;t warn about unused variables
+        s; // Don't warn about unused variables
         // Starting here means the LSB will be the byte we care about
         uint ptr;
         uint end;
@@ -1441,18 +1441,18 @@ contract Registrar {
             ptr := add(s, 1)
             end := add(mload(s), ptr)
         }
-        for (uint len = 0; ptr &lt; end; len++) {
+        for (uint len = 0; ptr < end; len++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if (b &lt; 0xE0) {
+            } else if (b < 0xE0) {
                 ptr += 2;
-            } else if (b &lt; 0xF0) {
+            } else if (b < 0xF0) {
                 ptr += 3;
-            } else if (b &lt; 0xF8) {
+            } else if (b < 0xF8) {
                 ptr += 4;
-            } else if (b &lt; 0xFC) {
+            } else if (b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;

@@ -29,7 +29,7 @@ contract BidAskX {
     event Paydata(address indexed payer, uint256 value, bytes data, uint256 balances);
         
     //--------------------------------------------------------------------------admin
-    mapping (address =&gt; AdminType) admins;  
+    mapping (address => AdminType) admins;  
     address[] adminArray;   
     enum AdminType { none, normal, agent, admin, widthdraw }
 
@@ -46,7 +46,7 @@ contract BidAskX {
         uint tx_qty;
         address agent;
     }
-    mapping (address =&gt; Member) public members;  
+    mapping (address => Member) public members;  
     address[] public memberArray;
 
     //--------------------------------------------------------------------------order
@@ -63,11 +63,11 @@ contract BidAskX {
         bool isClosed;
     }
     address[] public tokensArray; 
-    mapping (address =&gt; bool) tokens; 
-    mapping (address =&gt; uint32[]) public token_ask; 
-    mapping (address =&gt; uint32[]) public token_bid; 
-    mapping (address =&gt; mapping(address =&gt; uint32[])) public token_member_order;
-    mapping (address =&gt; mapping(uint32 =&gt; OrderSheet)) public token_orderSheet;  
+    mapping (address => bool) tokens; 
+    mapping (address => uint32[]) public token_ask; 
+    mapping (address => uint32[]) public token_bid; 
+    mapping (address => mapping(address => uint32[])) public token_member_order;
+    mapping (address => mapping(uint32 => OrderSheet)) public token_orderSheet;  
 
     //--------------------------------------------------------------------------public
     bool public isPayable = true;
@@ -88,7 +88,7 @@ contract BidAskX {
 
     function list_token_ask(address _token){
         uint32[] storage numbers = token_ask[_token];
-        for(uint i=0;i&lt;numbers.length;i++){
+        for(uint i=0;i<numbers.length;i++){
             uint32 n32 = numbers[i];
             OrderSheet storage oa = token_orderSheet[_token][n32];
             Println(oa.owner, oa.number, oa.price, oa.qty, oa.ex_qty, oa.isClosed,n32);
@@ -97,7 +97,7 @@ contract BidAskX {
     
     function list_token_bid(address _token){
         uint32[] storage numbers = token_bid[_token];
-        for(uint i=0;i&lt;numbers.length;i++){
+        for(uint i=0;i<numbers.length;i++){
             uint32 n32 = numbers[i];
             OrderSheet storage oa = token_orderSheet[_token][n32];
             Println(oa.owner, oa.number, oa.price, oa.qty, oa.ex_qty, oa.isClosed,n32);
@@ -112,9 +112,9 @@ contract BidAskX {
     }
     
     function token_member_order_pop(address _token, address _sender, uint32 _number) private {
-        for(uint i=0;k&lt;token_member_order[_token][_sender].length-1;i++){
+        for(uint i=0;k<token_member_order[_token][_sender].length-1;i++){
             if(token_member_order[_token][_sender][i]==_number){
-                for(uint k=i;k&lt;token_member_order[_token][_sender].length-2;k++){
+                for(uint k=i;k<token_member_order[_token][_sender].length-2;k++){
                     token_bid[_token][k]=token_bid[_token][k+1];
                 }
                 token_member_order[_token][_sender].length-=1;
@@ -146,11 +146,11 @@ contract BidAskX {
             uint k;
             if(od.isAsk){
                 
-                for(i=0; i&lt;token_ask[_token].length;i++){
+                for(i=0; i<token_ask[_token].length;i++){
                     if(token_ask[_token][i]==_number){
                         od.isClosed = true;
                         members[msg.sender].ask_qty - od.qty + od.ex_qty;
-                        for(k=i;k&lt;token_ask[_token].length-2;k++){
+                        for(k=i;k<token_ask[_token].length-2;k++){
                             token_ask[_token][k]=token_ask[_token][k+1];
                         }
                         token_ask[_token].length-=1;
@@ -160,11 +160,11 @@ contract BidAskX {
                 
             } else {
             
-                for(i=0; i&lt;token_bid[_token].length;i++){
+                for(i=0; i<token_bid[_token].length;i++){
                     if(token_bid[_token][i]==_number){
                         od.isClosed = true;
                         members[msg.sender].bid_amount - od.amount + od.price*od.ex_qty;
-                        for(k=i;k&lt;token_bid[_token].length-2;k++){
+                        for(k=i;k<token_bid[_token].length-2;k++){
                             token_bid[_token][k]=token_bid[_token][k+1];
                         }
                         token_bid[_token].length-=1;
@@ -175,7 +175,7 @@ contract BidAskX {
             }
             token_member_order_pop(_token, msg.sender, _number);
         } else {
-            Logs(&quot;The order owner not match&quot;);
+            Logs("The order owner not match");
         }
     }
     
@@ -187,7 +187,7 @@ contract BidAskX {
         
         uint unclose = members[msg.sender].bid_amount - members[msg.sender].tx_amount;
         uint remaining = members[msg.sender].balances - unclose;
-        if(remaining &gt;= amount){
+        if(remaining >= amount){
             OrderSheet memory od;
             od.isAsk = false;
             od.number = order_number;
@@ -208,7 +208,7 @@ contract BidAskX {
             }
             order_number++;
         } else {
-            Log(&quot;You need more money for bid&quot;, remaining, amount);
+            Log("You need more money for bid", remaining, amount);
         }
     }
     
@@ -218,9 +218,9 @@ contract BidAskX {
         uint unclose = members[msg.sender].ask_qty - members[msg.sender].tx_qty;
         uint remaining = allow_spend(_token) - unclose;
         uint exFee = (_price * _qty)/exFeeRate;
-        if(members[msg.sender].balances &lt; exFee){
-            Log(&quot;You need to deposit ether to acoount befor ask&quot;, exFee, members[msg.sender].balances);
-        } else if(remaining &gt;= _qty){
+        if(members[msg.sender].balances < exFee){
+            Log("You need to deposit ether to acoount befor ask", exFee, members[msg.sender].balances);
+        } else if(remaining >= _qty){
             members_push(msg.sender);
             OrderSheet memory od;
             od.isAsk = true;
@@ -238,31 +238,31 @@ contract BidAskX {
             ask_match(_token,token_orderSheet[_token][order_number],token_bid[_token]);
             if(od.isClosed==false){
                 token_ask[_token].push(order_number);  
-                Log(&quot;Push order number to token_ask&quot;,order_number,0);
+                Log("Push order number to token_ask",order_number,0);
             }
             order_number++;
         } else {
-            Log(&quot;You need approve your token for transfer&quot;,0,0);
+            Log("You need approve your token for transfer",0,0);
         }
     }
      
     function ask_match(address _token, OrderSheet storage od, uint32[] storage token_match) private { 
-        for(uint i=token_match.length;i&gt;0 &amp;&amp; od.qty&gt;od.ex_qty;i--){
+        for(uint i=token_match.length;i>0 && od.qty>od.ex_qty;i--){
             uint32 n32 = token_match[i-1];
             OrderSheet storage oa = token_orderSheet[_token][n32];
             uint qty = oa.qty-oa.ex_qty;
-            if(oa.isClosed==false &amp;&amp; qty&gt;0){
-                uint ex_qty = (qty&gt;od.qty?od.qty:qty);
+            if(oa.isClosed==false && qty>0){
+                uint ex_qty = (qty>od.qty?od.qty:qty);
                 uint ex_price = oa.price;
                 uint exFee = (ex_qty * ex_price) / exFeeRate;
                 uint amount = (ex_qty * ex_price);
                 Println(oa.owner, oa.number, oa.price, oa.qty, oa.ex_qty, oa.isClosed,n32);
                 
-                if(members[oa.owner].balances &gt;= amount &amp;&amp; od.price &lt;= oa.price){
+                if(members[oa.owner].balances >= amount && od.price <= oa.price){
                     od.ex_qty += ex_qty;
-                    if(oa.ex_qty+ex_qty&gt;=oa.qty){
+                    if(oa.ex_qty+ex_qty>=oa.qty){
                         token_orderSheet[_token][n32].isClosed = true; 
-                        for(uint k=i-1;k&lt;token_match.length-2;k++){
+                        for(uint k=i-1;k<token_match.length-2;k++){
                             token_match[k]=token_match[k+1];
                         }
                     }
@@ -277,7 +277,7 @@ contract BidAskX {
                     members[msg.sender].tx_amount += (amount-exFee);
                     members[msg.sender].tx_qty += ex_qty;
                     
-                    if(od.ex_qty+ex_qty&gt;=od.qty){
+                    if(od.ex_qty+ex_qty>=od.qty){
                         od.isClosed = true; 
                     } 
                     exFeeTotal += exFee;
@@ -287,21 +287,21 @@ contract BidAskX {
     }
     
     function bid_match(address _token, OrderSheet storage od, uint32[] storage token_match) private { 
-        for(uint i=token_match.length;i&gt;0 &amp;&amp; od.qty&gt;od.ex_qty;i--){
+        for(uint i=token_match.length;i>0 && od.qty>od.ex_qty;i--){
             uint32 n32 = token_match[i-1];
             OrderSheet storage oa = token_orderSheet[_token][n32];
             uint qty = oa.qty-oa.ex_qty;
-            if(oa.isClosed==false &amp;&amp; qty&gt;0){
-                uint ex_qty = (qty&gt;od.qty?od.qty:qty);
+            if(oa.isClosed==false && qty>0){
+                uint ex_qty = (qty>od.qty?od.qty:qty);
                 uint ex_price = oa.price;
                 uint exFee = (ex_qty * ex_price) / exFeeRate;
                 uint amount = (ex_qty * ex_price);
                 Println(oa.owner, oa.number, oa.price, oa.qty, oa.ex_qty, oa.isClosed,222); 
-                if(members[msg.sender].balances &gt;= amount &amp;&amp; oa.price &lt;= od.price){
+                if(members[msg.sender].balances >= amount && oa.price <= od.price){
                     od.ex_qty += ex_qty;
-                    if(oa.ex_qty+ex_qty&gt;=oa.qty){
+                    if(oa.ex_qty+ex_qty>=oa.qty){
                         token_orderSheet[_token][n32].isClosed = true; 
-                        for(uint k=i-1;k&lt;token_match.length-2;k++){
+                        for(uint k=i-1;k<token_match.length-2;k++){
                             token_match[k]=token_match[k+1];
                         }
                     }
@@ -315,7 +315,7 @@ contract BidAskX {
                     members[msg.sender].tx_amount += (amount+exFee);
                     members[msg.sender].tx_qty += ex_qty;
                     
-                    if(od.ex_qty+ex_qty&gt;=od.qty){
+                    if(od.ex_qty+ex_qty>=od.qty){
                         od.isClosed = true; 
                     }
                     exFeeTotal += exFee;
@@ -328,18 +328,18 @@ contract BidAskX {
     //--------------------------------------------------------------------------member function
     function withdraw(uint _eth, uint _wei) {
         
-        for(uint i=0;i&lt;tokensArray.length-1;i++){
+        for(uint i=0;i<tokensArray.length-1;i++){
             address token = tokensArray[i];
             uint32[] storage order = token_member_order[token][msg.sender];
-            for(uint j=0;j&lt;order.length-1;j++){
+            for(uint j=0;j<order.length-1;j++){
                 cancel( token,order[j]);
             }
         }
         
         uint balances = members[msg.sender].balances;
         uint withdraws = _eth*10**18 + _wei;
-        require( balances &gt;= withdraws);
-        require( this.balance &gt;= withdraws);
+        require( balances >= withdraws);
+        require( this.balance >= withdraws);
         require(isWithdrawable);
         require(members[msg.sender].isWithdraw);
         msg.sender.transfer(withdraws);
@@ -358,7 +358,7 @@ contract BidAskX {
     
     function pay() public payable returns (bool) {
         
-        require(msg.value &gt; MinimalPayValue);
+        require(msg.value > MinimalPayValue);
         require(isPayable);
         
         
@@ -367,13 +367,13 @@ contract BidAskX {
         }else{
             
             if(isRequireData){
-                require(admins[address(msg.data[0])] &gt; AdminType.none);   
+                require(admins[address(msg.data[0])] > AdminType.none);   
             }
         
             members_push(msg.sender);
             members[msg.sender].balances += msg.value;
             members[msg.sender].deposit += msg.value;
-            if(admins[address(msg.data[0])]&gt;AdminType.none){
+            if(admins[address(msg.data[0])]>AdminType.none){
                 members[msg.sender].agent = address(msg.data[0]);
             }
 
@@ -391,7 +391,7 @@ contract BidAskX {
     //--------------------------------------------------------------------------admin function
     
     modifier onlyAdmin() {
-        require(admins[msg.sender] &gt; AdminType.agent);
+        require(admins[msg.sender] > AdminType.agent);
         _;
     }
 
@@ -409,8 +409,8 @@ contract BidAskX {
     
     function admin_add_modify(address admin, AdminType adminType) onlyAdmin {
         
-        require(admins[admin] &gt; AdminType.agent);
-        if(admins[admin] &lt; AdminType.normal){
+        require(admins[admin] > AdminType.agent);
+        if(admins[admin] < AdminType.normal){
             adminArray.push(admin);
         }
         admins[admin]=AdminType(adminType);
@@ -420,10 +420,10 @@ contract BidAskX {
     function admin_del(address admin) onlyAdmin {
         
         require(admin!=msg.sender);
-        require(admins[admin] &gt; AdminType.agent);
-        if(admins[admin] &gt; AdminType.none){
+        require(admins[admin] > AdminType.agent);
+        if(admins[admin] > AdminType.none){
             admins[admin] = AdminType.none;
-            for (uint i = 0; i &lt; adminArray.length - 1; i++) {
+            for (uint i = 0; i < adminArray.length - 1; i++) {
                 if (adminArray[i] == admin) {
                     adminArray[i] = adminArray[adminArray.length - 1];
                     adminArray.length -= 1;
@@ -436,9 +436,9 @@ contract BidAskX {
 
     function admin_withdraw(uint _eth, uint _wei) onlyAdmin {
 
-        require(admins[msg.sender] &gt; AdminType.admin);
+        require(admins[msg.sender] > AdminType.admin);
         uint256 amount = _eth * 10**18 + _wei;
-		require(this.balance &gt;= amount);
+		require(this.balance >= amount);
 		msg.sender.transfer(amount); 
         
     }
@@ -478,7 +478,7 @@ contract BidAskX {
         if(members[_member].isExists == true) {
             members[_member].isWithdraw = _withdrawable;
         } else {
-            Logs(&quot;member not existes&quot;);
+            Logs("member not existes");
         }
     }
     

@@ -14,20 +14,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 	
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -55,10 +55,10 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-		require( msg.data.length &gt;= (2 * 32) + 4 );
-		require( _value &gt; 0 );
-		require( balances[msg.sender] &gt;= _value );
-		require( balances[_to] + _value &gt; balances[_to] );
+		require( msg.data.length >= (2 * 32) + 4 );
+		require( _value > 0 );
+		require( balances[msg.sender] >= _value );
+		require( balances[_to] + _value > balances[_to] );
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -67,11 +67,11 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-		require( msg.data.length &gt;= (3 * 32) + 4 );
-		require( _value &gt; 0 );
-		require( balances[_from] &gt;= _value );
-		require( allowed[_from][msg.sender] &gt;= _value );
-		require( balances[_to] + _value &gt; balances[_to] );
+		require( msg.data.length >= (3 * 32) + 4 );
+		require( _value > 0 );
+		require( balances[_from] >= _value );
+		require( allowed[_from][msg.sender] >= _value );
+		require( balances[_to] + _value > balances[_to] );
 
         balances[_from] -= _value;
 		allowed[_from][msg.sender] -= _value;
@@ -96,8 +96,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
 }
 
@@ -107,10 +107,10 @@ contract WhaleToken is StandardToken {
 
     using SafeMath for uint256;
 
-	string public constant name = &quot;WhaleFUND&quot;;								// WHALE tokens name
-    string public constant symbol = &quot;WHALE&quot;;								// WHALE tokens ticker
+	string public constant name = "WhaleFUND";								// WHALE tokens name
+    string public constant symbol = "WHALE";								// WHALE tokens ticker
     uint256 public constant decimals = 18;									// WHALE tokens decimals
-	string public version = &quot;1.0&quot;;											// WHALE version
+	string public version = "1.0";											// WHALE version
 
 	uint256 public constant maximumSupply =  800 * (10**3) * 10**decimals;	// Maximum 800k Whale tokens
 	uint256 public constant operatingFund = 152 * (10**3) * 10**decimals;	// 19% - 152k WHALE reserved for operating expenses
@@ -121,9 +121,9 @@ contract WhaleToken is StandardToken {
 	uint256 public constant whaleExchangeRate = 100;						// 100 WHALE tokens per 1 ETH
 	
 	uint256 public constant preIcoBonus = 15;								// PreICO bonus 15%
-	uint256 public constant icoThreshold1 = 420 * (10**3) * 10**decimals;	// &lt;100k sold WHALE tokens, without 152k+120k+24k+24k=320k reserved tokens
-	uint256 public constant icoThreshold2 = 520 * (10**3) * 10**decimals;	// &gt;100k &amp;&amp; &lt;200k sold WHALE tokens, without 152k+120k+24k+24k=320k reserved tokens
-	uint256 public constant icoThreshold3 = 620 * (10**3) * 10**decimals;	// &gt;200k &amp;&amp; &lt;300k sold WHALE tokens, without 152k+120k+24k+24k=320k reserved tokens
+	uint256 public constant icoThreshold1 = 420 * (10**3) * 10**decimals;	// <100k sold WHALE tokens, without 152k+120k+24k+24k=320k reserved tokens
+	uint256 public constant icoThreshold2 = 520 * (10**3) * 10**decimals;	// >100k && <200k sold WHALE tokens, without 152k+120k+24k+24k=320k reserved tokens
+	uint256 public constant icoThreshold3 = 620 * (10**3) * 10**decimals;	// >200k && <300k sold WHALE tokens, without 152k+120k+24k+24k=320k reserved tokens
 	uint256 public constant icoThresholdBonus1 = 10;						// ICO threshold bonus 10%
 	uint256 public constant icoThresholdBonus2 = 5;							// ICO threshold bonus 5%
 	uint256 public constant icoThresholdBonus3 = 3;							// ICO threshold bonus 3%
@@ -184,13 +184,13 @@ contract WhaleToken is StandardToken {
     function makeTokens() payable  {
 
 		require( !isFinalized );
-		require( now &gt;= crowdsaleStart );
-		require( now &lt; crowdsaleEnd );
+		require( now >= crowdsaleStart );
+		require( now < crowdsaleEnd );
 		
-		if (now &lt; crowdsaleStart + 7 days) {
-			require( msg.value &gt;= 3000 finney );
-		} else if (now &gt;= crowdsaleStart + 7 days) {
-			require( msg.value &gt;= 10 finney );
+		if (now < crowdsaleStart + 7 days) {
+			require( msg.value >= 3000 finney );
+		} else if (now >= crowdsaleStart + 7 days) {
+			require( msg.value >= 10 finney );
 		}
 
 
@@ -201,7 +201,7 @@ contract WhaleToken is StandardToken {
 		uint256 tokens = 0;
 
 
-		if (now &lt; crowdsaleStart + 7 days) {
+		if (now < crowdsaleStart + 7 days) {
 
 			buyedTokens = msg.value.mul(whaleExchangeRate);								// Buyed WHALE tokens without bonuses
 			bonusTokens = buyedTokens.mul(preIcoBonus).div(100);						// preICO bonus 15%
@@ -211,23 +211,23 @@ contract WhaleToken is StandardToken {
 		
 			buyedTokens = msg.value.mul(whaleExchangeRate);								// Buyed WHALE tokens without bonuses
 
-			if (totalSupply &lt;= icoThreshold1) {
+			if (totalSupply <= icoThreshold1) {
 				bonusThresholdTokens = buyedTokens.mul(icoThresholdBonus1).div(100);	// ICO threshold bonus 10%
-			} else if (totalSupply &gt; icoThreshold1 &amp;&amp; totalSupply &lt;= icoThreshold2) {
+			} else if (totalSupply > icoThreshold1 && totalSupply <= icoThreshold2) {
 				bonusThresholdTokens = buyedTokens.mul(icoThresholdBonus2).div(100);	// ICO threshold bonus 5%
-			} else if (totalSupply &gt; icoThreshold2 &amp;&amp; totalSupply &lt;= icoThreshold3) {
+			} else if (totalSupply > icoThreshold2 && totalSupply <= icoThreshold3) {
 				bonusThresholdTokens = buyedTokens.mul(icoThresholdBonus3).div(100);	// ICO threshold bonus 3%
-			} else if (totalSupply &gt; icoThreshold3) {
+			} else if (totalSupply > icoThreshold3) {
 				bonusThresholdTokens = 0;												// ICO threshold bonus 0%
 			}
 
-			if (msg.value &lt; 10000 finney) {
+			if (msg.value < 10000 finney) {
 				bonusAmountTokens = 0;													// ICO amount bonus 0%
-			} else if (msg.value &gt;= 10000 finney &amp;&amp; msg.value &lt; 100010 finney) {
+			} else if (msg.value >= 10000 finney && msg.value < 100010 finney) {
 				bonusAmountTokens = buyedTokens.mul(icoAmountBonus1).div(100);			// ICO amount bonus 2%
-			} else if (msg.value &gt;= 100010 finney &amp;&amp; msg.value &lt; 300010 finney) {
+			} else if (msg.value >= 100010 finney && msg.value < 300010 finney) {
 				bonusAmountTokens = buyedTokens.mul(icoAmountBonus2).div(100);			// ICO amount bonus 3%
-			} else if (msg.value &gt;= 300010 finney) {
+			} else if (msg.value >= 300010 finney) {
 				bonusAmountTokens = buyedTokens.mul(icoAmountBonus3).div(100);			// ICO amount bonus 5%
 			}
 
@@ -237,7 +237,7 @@ contract WhaleToken is StandardToken {
 
 	    uint256 currentSupply = totalSupply.add(tokens);
 
-		require( maximumSupply &gt;= currentSupply );
+		require( maximumSupply >= currentSupply );
 
         totalSupply = currentSupply;
 
@@ -260,10 +260,10 @@ contract WhaleToken is StandardToken {
 
 		require( !isFinalized );											// Required crowdsale state FALSE
 		require( msg.sender == teamFundAddress );							// Required call from team fund address
-		require( now &gt; crowdsaleEnd || totalSupply == maximumSupply );		// Required crowdsale ended or maximum supply reached
+		require( now > crowdsaleEnd || totalSupply == maximumSupply );		// Required crowdsale ended or maximum supply reached
 		
 		uint256 remainingSupply = maximumSupply.sub(totalSupply);			// Remaining tokens to reach maximum supply
-		if (remainingSupply &gt; 0) {
+		if (remainingSupply > 0) {
 			uint256 updatedSupply = totalSupply.add(remainingSupply);		// New total supply
 			totalSupply = updatedSupply;									// Update total supply
 			balances[dividendFundAddress] += remainingSupply;				// Update dividend funds balance

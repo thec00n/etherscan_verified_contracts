@@ -1,9 +1,9 @@
 /// Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 
 /// @title Abstract token contract - Functions to be implemented by token contracts.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="e6959283808788c8818389948183a6858988958388959f95c8888392">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="e6959283808788c8818389948183a6858988958388959f95c8888392">[email protected]</span>>
 contract Token {
-    // This is not an abstract function, because solc won&#39;t recognize generated getter functions for public variables as functions
+    // This is not an abstract function, because solc won't recognize generated getter functions for public variables as functions
     function totalSupply() constant returns (uint256 supply) {}
     function balanceOf(address owner) constant returns (uint256 balance);
     function transfer(address to, uint256 value) returns (bool success);
@@ -22,18 +22,18 @@ contract StandardToken is Token {
     /*
      *  Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 
     /*
      *  Read and write storage functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -49,7 +49,7 @@ contract StandardToken is Token {
     /// @param _to Address to where tokens are sent.
     /// @param _value Number of tokens to transfer.
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -104,7 +104,7 @@ contract SingularDTVCrowdfunding {
 
 
 /// @title Token contract - Implements token issuance.
-/// @author Stefan George - &lt;<span class="__cf_email__" data-cfemail="0e7d7a6b686f6020696b617c696b4e6d61607d6b607d777d20606b7a">[email&#160;protected]</span>&gt;
+/// @author Stefan George - <<span class="__cf_email__" data-cfemail="0e7d7a6b686f6020696b617c696b4e6d61607d6b607d777d20606b7a">[email protected]</span>>
 contract SingularDTVToken is StandardToken {
 
     /*
@@ -116,15 +116,15 @@ contract SingularDTVToken is StandardToken {
     /*
      *  Token meta data
      */
-    string constant public name = &quot;SingularDTV&quot;;
-    string constant public symbol = &quot;SNGLS&quot;;
+    string constant public name = "SingularDTV";
+    string constant public symbol = "SNGLS";
     uint8 constant public decimals = 0;
 
     /*
      *  Modifiers
      */
     modifier noEther() {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             throw;
         }
         _
@@ -132,7 +132,7 @@ contract SingularDTVToken is StandardToken {
 
     modifier workshopWaitedTwoYears() {
         // Workshop can only transfer tokens after a two years period.
-        if (msg.sender == singularDTVFund.workshop() &amp;&amp; !singularDTVCrowdfunding.twoYearsPassed()) {
+        if (msg.sender == singularDTVFund.workshop() && !singularDTVCrowdfunding.twoYearsPassed()) {
             throw;
         }
         _
@@ -165,7 +165,7 @@ contract SingularDTVToken is StandardToken {
         return true;
     }
 
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param to Address of token receiver.
     /// @param value Number of tokens to transfer.
     function transfer(address to, uint256 value)

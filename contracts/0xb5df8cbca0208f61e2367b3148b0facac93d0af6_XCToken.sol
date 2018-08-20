@@ -10,12 +10,12 @@ contract SafeMath {
 
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSub(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -53,7 +53,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -64,7 +64,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -89,17 +89,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract XCToken is StandardToken,SafeMath,Ownable {
 
     // metadata
-    string public constant name = &quot;XC.COM(XC Program)&quot;;
-    string public constant symbol = &quot;XC&quot;;
+    string public constant name = "XC.COM(XC Program)";
+    string public constant symbol = "XC";
     uint256 public constant decimals = 8;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
     
     // total cap
     uint256 public constant tokenCreationCap = 2000 * (10**6) * 10**decimals;
@@ -142,9 +142,9 @@ contract XCToken is StandardToken,SafeMath,Ownable {
 
 	// mint token
 	function mint(uint256 _tokenAmount) onlyOwner canMint returns (bool) {
-		if(_tokenAmount &lt;= 0) throw;
+		if(_tokenAmount <= 0) throw;
 		uint256 checkedSupply = safeAdd(tokenMintedSupply, _tokenAmount);
-		if(checkedSupply &gt; tokenMintCap) throw;
+		if(checkedSupply > tokenMintCap) throw;
 		if(checkedSupply == tokenMintCap){ // mint finish
 		    mintFinished = true;
 		    MintFinished();

@@ -54,9 +54,9 @@ contract SafeMath
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -65,7 +65,7 @@ contract SafeMath
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) 
   {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -75,7 +75,7 @@ contract SafeMath
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) 
   {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -93,13 +93,13 @@ contract sacToken is ERC20ext,SafeMath
   uint256 _supply;
 
   //帐户的余额列表
-  mapping (address =&gt; uint256) _balances;
+  mapping (address => uint256) _balances;
 
   //帐户的转账限额
-  mapping (address =&gt; mapping (address =&gt; uint256)) _allowance;
+  mapping (address => mapping (address => uint256)) _allowance;
 
   //帐户的资金冻结
-  mapping (address =&gt; bool) public _frozen;
+  mapping (address => bool) public _frozen;
 
   //-----------------------------------------------
   // 初始化合约，并把所有代币都给CFO
@@ -170,7 +170,7 @@ contract sacToken is ERC20ext,SafeMath
     require(!_frozen[dst]);
 
     //检查帐户余额
-    require(_balances[msg.sender] &gt;= wad);
+    require(_balances[msg.sender] >= wad);
 
     _balances[msg.sender] = sub(_balances[msg.sender],wad);
     _balances[dst]        = add(_balances[dst], wad);
@@ -194,10 +194,10 @@ contract sacToken is ERC20ext,SafeMath
     require(!_frozen[dst]);
 
     //检查帐户余额
-    require(_balances[src] &gt;= wad);
+    require(_balances[src] >= wad);
 
     //检查帐户限额
-    require(_allowance[src][msg.sender] &gt;= wad);
+    require(_allowance[src][msg.sender] >= wad);
 
     _allowance[src][msg.sender] = sub(_allowance[src][msg.sender],wad);
 
@@ -296,7 +296,7 @@ contract sacToken is ERC20ext,SafeMath
   function melt(address dst, uint256 wad) onlyCFO public returns (bool)
   {
     //检查帐户余额
-    require(_balances[dst] &gt;= wad);
+    require(_balances[dst] >= wad);
 
     //销毁目标帐户地址代币,同时更新总量
     _balances[dst] = sub(_balances[dst],wad);

@@ -23,9 +23,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -33,7 +33,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -42,17 +42,17 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 
-/* &quot;Interfaces&quot; */
+/* "Interfaces" */
 
 //  this is expected from another contracts
 //  if it wants to spend tokens of behalf of the token owner in our contract
 //  this can be used in many situations, for example to convert pre-ICO tokens to ICO tokens
-//  see &#39;approveAndCall&#39; function
+//  see 'approveAndCall' function
 contract allowanceRecipient {
     function receiveApproval(address _from, uint256 _value, address _inContract, bytes _extraData) public returns (bool);
 }
@@ -79,11 +79,11 @@ contract ACCP {
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#name
     // function name() constant returns (string name)
-    string public name = &quot;ACCP&quot;;
+    string public name = "ACCP";
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#symbol
     // function symbol() constant returns (string symbol)
-    string public symbol = &quot;ACCP&quot;;
+    string public symbol = "ACCP";
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#decimals
     // function decimals() constant returns (uint8 decimals)
@@ -96,11 +96,11 @@ contract ACCP {
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#balanceof
     // function balanceOf(address _owner) constant returns (uint256 balance)
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md#allowance
     // function allowance(address _owner, address _spender) constant returns (uint256 remaining)
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     /* --- ERC-20 events */
 
@@ -117,7 +117,7 @@ contract ACCP {
 
     /* --- Other variables */
     bool public transfersBlocked = false;
-    mapping(address =&gt; bool) public whiteListed;
+    mapping(address => bool) public whiteListed;
 
     /* ---------- Constructor */
     // do not forget about:
@@ -174,7 +174,7 @@ contract ACCP {
         //
         require(msg.sender == owner);
         //
-        require(balanceOf[this] &gt; 0);
+        require(balanceOf[this] > 0);
         emit tokensBurnt(msg.sender, balanceOf[this]);
         balanceOf[this] = 0;
     }
@@ -191,16 +191,16 @@ contract ACCP {
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool){
 
         // Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event (ERC-20)
-        require(_value &gt;= 0);
+        require(_value >= 0);
 
         // The function SHOULD throw unless the _from account has deliberately authorized the sender of the message via some mechanism
-        require(msg.sender == _from || _value &lt;= allowance[_from][msg.sender] || (_from == address(this) &amp;&amp; msg.sender == owner));
+        require(msg.sender == _from || _value <= allowance[_from][msg.sender] || (_from == address(this) && msg.sender == owner));
 
         // TODO:
-        require(!transfersBlocked || (whiteListed[_from] &amp;&amp; whiteListed[msg.sender]));
+        require(!transfersBlocked || (whiteListed[_from] && whiteListed[msg.sender]));
 
         // check if _from account have required amount
-        require(_value &lt;= balanceOf[_from]);
+        require(_value <= balanceOf[_from]);
 
         // Subtract from the sender
         // balanceOf[_from] = balanceOf[_from] - _value;
@@ -211,7 +211,7 @@ contract ACCP {
         balanceOf[_to] = balanceOf[_to].add(_value);
 
         // If allowance used, change allowances correspondingly
-        if (_from != msg.sender &amp;&amp; (!(_from == address(this) &amp;&amp; msg.sender == owner))) {
+        if (_from != msg.sender && (!(_from == address(this) && msg.sender == owner))) {
             // allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value;
             allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
         }
@@ -228,7 +228,7 @@ contract ACCP {
     // https://drive.google.com/file/d/0ByMtMw2hul0EN3NCaVFHSFdxRzA/view
     // but this function is required by ERC-20
     function approve(address _spender, uint256 _value) public returns (bool){
-        require(_value &gt;= 0);
+        require(_value >= 0);
         allowance[msg.sender][_spender] = _value;
         // event
         emit Approval(msg.sender, _spender, _value);
@@ -239,24 +239,24 @@ contract ACCP {
 
     /* User can allow another smart contract to spend some shares in his behalf
     *  (this function should be called by user itself)
-    *  @param _spender another contract&#39;s address
+    *  @param _spender another contract's address
     *  @param _value number of tokens
     *  @param _extraData Data that can be sent from user to another contract to be processed
     *  bytes - dynamically-sized byte array,
     *  see http://solidity.readthedocs.io/en/v0.4.15/types.html#dynamically-sized-byte-array
-    *  see possible attack information in comments to function &#39;approve&#39;
-    *  &gt; this may be used to convert pre-ICO tokens to ICO tokens
+    *  see possible attack information in comments to function 'approve'
+    *  > this may be used to convert pre-ICO tokens to ICO tokens
     */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool) {
 
         approve(_spender, _value);
 
-        // &#39;spender&#39; is another contract that implements code as prescribed in &#39;allowanceRecipient&#39; above
+        // 'spender' is another contract that implements code as prescribed in 'allowanceRecipient' above
         allowanceRecipient spender = allowanceRecipient(_spender);
 
-        // our contract calls &#39;receiveApproval&#39; function of another contract (&#39;allowanceRecipient&#39;) to send information about
+        // our contract calls 'receiveApproval' function of another contract ('allowanceRecipient') to send information about
         // allowance and data sent by user
-        // &#39;this&#39; is this (our) contract address
+        // 'this' is this (our) contract address
         if (spender.receiveApproval(msg.sender, _value, this, _extraData)) {
             emit DataSentToAnotherContract(msg.sender, _spender, _extraData);
             return true;
@@ -274,7 +274,7 @@ contract ACCP {
     * @param address _to - another smart contract address
     * @param uint256 _value - number of tokens
     * @param bytes _extraData - data to send to another contract
-    * &gt; this may be used to convert pre-ICO tokens to ICO tokens
+    * > this may be used to convert pre-ICO tokens to ICO tokens
     */
     function transferAndCall(address _to, uint256 _value, bytes _extraData) public returns (bool success){
 

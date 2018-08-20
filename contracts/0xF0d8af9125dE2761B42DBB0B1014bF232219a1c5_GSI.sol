@@ -22,13 +22,13 @@ contract GSIToken is owned  {
     uint256 public sellPrice;
     uint256 public buyPrice;
 		    /* Public variables of the token */
-    string public standard = &#39;Token 0.1&#39;;
+    string public standard = 'Token 0.1';
     string public name;
     string public symbol;
     uint8 public decimalUnits;
     uint256 public totalSupply;
 
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -51,8 +51,8 @@ contract GSIToken is owned  {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         if (frozenAccount[msg.sender]) throw;                // Check if frozen
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
@@ -63,9 +63,9 @@ contract GSIToken is owned  {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[_from]) throw;                        // Check if frozen            
-        if (balanceOf[_from] &lt; _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw;  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) throw;   // Check allowance
+        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
         balanceOf[_from] -= _value;                          // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -95,17 +95,17 @@ contract GSIToken is owned  {
 
     function buy() {
         uint amount = msg.value / buyPrice;                // calculates the amount
-        if (balanceOf[this] &lt; amount) throw;               // checks if it has enough to sell
-        balanceOf[msg.sender] += amount;                   // adds the amount to buyer&#39;s balance
-        balanceOf[this] -= amount;                         // subtracts amount from seller&#39;s balance
+        if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
+        balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+        balanceOf[this] -= amount;                         // subtracts amount from seller's balance
         Transfer(this, msg.sender, amount);                // execute an event reflecting the change
     }
 
     function sell(uint256 amount) {
-        if (balanceOf[msg.sender] &lt; amount ) throw;        // checks if the sender has enough to sell
-        balanceOf[this] += amount;                         // adds the amount to owner&#39;s balance
-        balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller&#39;s balance
-        if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It&#39;s important
+        if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+        balanceOf[this] += amount;                         // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance
+        if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It's important
             throw;                                         // to do this last to avoid recursion attacks
         } else {
             Transfer(msg.sender, this, amount);            // executes an event reflecting on the change
@@ -114,8 +114,8 @@ contract GSIToken is owned  {
 
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -147,11 +147,11 @@ contract GSI is owned {
 		uint256 public requiredGas;
 		uint256 public secondsBetweenReadings;
 		
-		mapping(address=&gt;Reading) public lastReading;
-		mapping(address=&gt;Reading) public requestReading;
-		mapping(address=&gt;uint8) public freeReadings;
-		mapping(address=&gt;string) public plz;
-		mapping(address=&gt;uint8) public oracles;
+		mapping(address=>Reading) public lastReading;
+		mapping(address=>Reading) public requestReading;
+		mapping(address=>uint8) public freeReadings;
+		mapping(address=>string) public plz;
+		mapping(address=>uint8) public oracles;
 		
 		struct Reading {
 			uint256 timestamp;
@@ -162,29 +162,29 @@ contract GSI is owned {
 		function GSI() {
 			greenToken = new GSIToken(
 							0,
-							&#39;GreenPower&#39;,
+							'GreenPower',
 							0,
-							&#39;P+&#39;,
+							'P+',
 							this
 			);			
 			greyToken = new GSIToken(
 							0,
-							&#39;GreyPower&#39;,
+							'GreyPower',
 							0,
-							&#39;P-&#39;,
+							'P-',
 							this
 			);		
 			oracles[msg.sender]=1;
 		}
 		
 		function oracalizeReading(uint256 _reading) {
-			if(msg.value&lt;requiredGas) {  
+			if(msg.value<requiredGas) {  
 				if(freeReadings[msg.sender]==0) throw;
 				freeReadings[msg.sender]--;
 			} 		
-			if(_reading&lt;lastReading[msg.sender].value) throw;
-			if(_reading&lt;requestReading[msg.sender].value) throw;
-			if(now&lt;lastReading[msg.sender].timestamp+secondsBetweenReadings) throw;			
+			if(_reading<lastReading[msg.sender].value) throw;
+			if(_reading<requestReading[msg.sender].value) throw;
+			if(now<lastReading[msg.sender].timestamp+secondsBetweenReadings) throw;			
 			//lastReading[msg.sender]=requestReading[msg.sender];
 			requestReading[msg.sender]=Reading(now,_reading,plz[msg.sender]);
 			OracleRequest(msg.sender);
@@ -244,7 +244,7 @@ contract GSI is owned {
 		}
 		
 		function() {
-			if(msg.value&gt;0) {
+			if(msg.value>0) {
 				owner.send(msg.value);
 			}
 		}

@@ -34,14 +34,14 @@ contract NiceGuyPonzi {
     }
 
 
-    if (investor &lt; 9) {
+    if (investor < 9) {
         uint idx = persons.length;
         persons.length += 1;
         persons[idx].addr = msg.sender;
         investor += 1;
     }
 
-    if (investor &gt;= 9) {
+    if (investor >= 9) {
         uint ngidx = niceGuys.length;
         niceGuys.length += 1;
         niceGuys[ngidx].addr = msg.sender;
@@ -59,7 +59,7 @@ contract NiceGuyPonzi {
     }
 
 
-    while (this.balance &gt; 10/100 ether) {
+    while (this.balance > 10/100 ether) {
       persons[payoutIdx].addr.send(10/100 ether);
       payoutIdx += 1;
     }

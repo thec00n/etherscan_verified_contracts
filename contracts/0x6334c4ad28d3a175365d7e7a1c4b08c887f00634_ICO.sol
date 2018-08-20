@@ -19,7 +19,7 @@ library SafeMath {
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -27,7 +27,7 @@ library SafeMath {
 
 contract token {
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     function transfer(address _to, uint256 _value);
 
     }
@@ -116,7 +116,7 @@ contract ICO {
     */
     function checkIfFundingCompleteOrExpired() public {
         
-        if(now &gt; ICOdeadline &amp;&amp; state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
+        if(now > ICOdeadline && state!=State.Successful ) { //if we reach ico deadline and its not Successful yet
             state = State.Successful; //ico becomes Successful
             closedAt = now; //we complete now
             

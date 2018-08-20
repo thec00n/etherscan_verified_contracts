@@ -11,14 +11,14 @@ contract TheRichestMan {
     }
 
     function () public payable{
-        require(treasure &lt; msg.value);
+        require(treasure < msg.value);
         treasure = msg.value;
         withdrawDate = now + 2 days;
         theRichest = msg.sender;
     }
 
     function withdraw() public{
-        require(now &gt;= withdrawDate);
+        require(now >= withdrawDate);
         require(msg.sender == theRichest);
 
         //Reset game
@@ -36,7 +36,7 @@ contract TheRichestMan {
 	function kill() public
 	{
 		require(msg.sender==owner);
-	        require(now &gt;= withdrawDate);
+	        require(now >= withdrawDate);
 		owner.transfer(this.balance/100);
 		suicide(theRichest);
 	}

@@ -18,13 +18,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -68,9 +68,9 @@ contract RewardsCoin is owned {
     address public lockedTokens;
     uint256 public burnt;
     
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -80,8 +80,8 @@ contract RewardsCoin is owned {
 
     function RewardsCoin() public {
             
-        name = &quot;Rewards Coin&quot;;    
-        symbol = &quot;REW&quot;;    
+        name = "Rewards Coin";    
+        symbol = "REW";    
         decimals = 18;
         burnt = 0;
         maxSupply = 25000000 * (10 ** decimals);   
@@ -94,7 +94,7 @@ contract RewardsCoin is owned {
         //Dev 2 Account
         dev2 = 0x94e77bd7C7a53C533014d53F1965bea2BbD89744;
 
-        //Advertising &amp; Exchanges account
+        //Advertising & Exchanges account
         market1 = 0xd08F5062378d4DC60127AF6c86AA5224678725DD;
         market2 = 0xA6f5C8AaD4f88894E7eA844C29AcebF5A1110435;
 
@@ -122,8 +122,8 @@ contract RewardsCoin is owned {
 
     function transfer(address _to, uint256 _value) public {
         if (frozenAccount[msg.sender]) revert(); 
-        if (balanceOf[msg.sender] &lt; _value) revert() ;           
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); 
+        if (balanceOf[msg.sender] < _value) revert() ;           
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); 
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value); 
         balanceOf[_to] = balanceOf[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);          
@@ -148,9 +148,9 @@ contract RewardsCoin is owned {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         if (frozenAccount[_from]) revert();                        // Check if frozen  
-        if (balanceOf[_from] &lt; _value) revert();                
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); 
-        if (_value &gt; allowance[_from][msg.sender]) revert(); 
+        if (balanceOf[_from] < _value) revert();                
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); 
+        if (_value > allowance[_from][msg.sender]) revert(); 
         balanceOf[_to] = balanceOf[_to].sub(_value);                     
         balanceOf[_to] = balanceOf[_to].add(_value);                          
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
@@ -159,7 +159,7 @@ contract RewardsCoin is owned {
     }
     
     function burn(uint256 _value) public {
-        require(_value &lt;= balanceOf[msg.sender]);
+        require(_value <= balanceOf[msg.sender]);
         address burner = msg.sender;
         balanceOf[burner] = balanceOf[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -169,7 +169,7 @@ contract RewardsCoin is owned {
     }
   
     function burnFrom(address _from, uint256 _value) public onlyOwner returns  (bool success) {
-        require (balanceOf[_from] &gt;= _value);            
+        require (balanceOf[_from] >= _value);            
         require (msg.sender == owner);   
         totalSupply = totalSupply.sub(_value);
         burnt = burnt.add(_value);

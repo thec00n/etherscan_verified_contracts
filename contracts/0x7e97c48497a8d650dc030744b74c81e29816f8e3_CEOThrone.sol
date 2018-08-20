@@ -18,7 +18,7 @@ contract CEOThrone is Ownable {
 // The sent ETH is checked against largestStake
     function Stake() public payable {
         // if you own the largest stake in a company, you own a company
-        if (msg.value &gt; largestStake) {
+        if (msg.value > largestStake) {
             owner = msg.sender;
             largestStake = msg.value;
         }

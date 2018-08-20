@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 /******************************************/
 /*       Netkiller Mini TOKEN             */
 /******************************************/
-/* Author netkiller &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1cfc4d5cac8cdcdc4d3e1ccd2cf8fc2cecc">[email&#160;protected]</a>&gt;   */
+/* Author netkiller <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1cfc4d5cac8cdcdc4d3e1ccd2cf8fc2cecc">[email protected]</a>>   */
 /* Home http://www.netkiller.cn           */
 /* Version 2018-05-31 Fixed transfer bool */
 /******************************************/
@@ -18,8 +18,8 @@ contract NetkillerMiniToken {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -58,8 +58,8 @@ contract NetkillerMiniToken {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);               // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);               // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         emit Transfer(_from, _to, _value);
@@ -88,7 +88,7 @@ contract NetkillerMiniToken {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;

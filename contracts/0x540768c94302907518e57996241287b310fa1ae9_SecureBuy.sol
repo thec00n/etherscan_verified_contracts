@@ -36,20 +36,20 @@ library ABCMaths {
   }
 // Saftey Checks for Divison Tasks
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint256 c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 // Saftey Checks for Subtraction Tasks
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 // Saftey Checks for Addition Tasks
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 }
@@ -71,7 +71,7 @@ contract Ownable {
     _;
   }
 
-   // validates an address - currently only checks that it isn&#39;t null
+   // validates an address - currently only checks that it isn't null
     modifier validAddress(address _address) {
         require(_address != 0x0);
         _;
@@ -95,9 +95,9 @@ contract Ownable {
 contract BUYStandardToken is SecureBuyToken, Ownable {
     
     using ABCMaths for uint256;
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    mapping (address => bool) public frozenAccount;
 
     event FrozenFunds(address target, bool frozen);
      
@@ -113,11 +113,11 @@ contract BUYStandardToken is SecureBuyToken, Ownable {
     function transfer(address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[msg.sender]) return false;
         require(
-            (balances[msg.sender] &gt;= _value) // Check if the sender has enough
-            &amp;&amp; (_value &gt; 0) // Don&#39;t allow 0value transfer
-            &amp;&amp; (_to != address(0)) // Prevent transfer to 0x0 address
-            &amp;&amp; (balances[_to].add(_value) &gt;= balances[_to]) // Check for overflows
-            &amp;&amp; (msg.data.length &gt;= (2 * 32) + 4)); //mitigates the ERC20 short address attack
+            (balances[msg.sender] >= _value) // Check if the sender has enough
+            && (_value > 0) // Don't allow 0value transfer
+            && (_to != address(0)) // Prevent transfer to 0x0 address
+            && (balances[_to].add(_value) >= balances[_to]) // Check for overflows
+            && (msg.data.length >= (2 * 32) + 4)); //mitigates the ERC20 short address attack
             //most of these things are not necesary
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -129,12 +129,12 @@ contract BUYStandardToken is SecureBuyToken, Ownable {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (frozenAccount[msg.sender]) return false;
         require(
-            (allowed[_from][msg.sender] &gt;= _value) // Check allowance
-            &amp;&amp; (balances[_from] &gt;= _value) // Check if the sender has enough
-            &amp;&amp; (_value &gt; 0) // Don&#39;t allow 0value transfer
-            &amp;&amp; (_to != address(0)) // Prevent transfer to 0x0 address
-            &amp;&amp; (balances[_to].add(_value) &gt;= balances[_to]) // Check for overflows
-            &amp;&amp; (msg.data.length &gt;= (2 * 32) + 4) //mitigates the ERC20 short address attack
+            (allowed[_from][msg.sender] >= _value) // Check allowance
+            && (balances[_from] >= _value) // Check if the sender has enough
+            && (_value > 0) // Don't allow 0value transfer
+            && (_to != address(0)) // Prevent transfer to 0x0 address
+            && (balances[_to].add(_value) >= balances[_to]) // Check for overflows
+            && (msg.data.length >= (2 * 32) + 4) //mitigates the ERC20 short address attack
             //most of these things are not necesary
         );
         balances[_from] = balances[_from].sub(_value);
@@ -168,8 +168,8 @@ contract SecureBuy is BUYStandardToken {
     
     uint256 constant public decimals = 8;
     uint256 public totalSupply = 20 * (10**7) * 10**8 ; // 200 million tokens, 8 decimal places
-    string constant public name = &quot;SecureBuy&quot;;
-    string constant public symbol = &quot;BUY&quot;;
+    string constant public name = "SecureBuy";
+    string constant public symbol = "BUY";
     
     function SecureBuy(){
         balances[msg.sender] = totalSupply;               // Give the creator all initial tokens
@@ -180,10 +180,10 @@ contract SecureBuy is BUYStandardToken {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn&#39;t have to include a contract in here just for this.
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        require(_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData));
+        require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
         return true;
     }
 }

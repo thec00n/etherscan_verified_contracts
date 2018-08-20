@@ -10,7 +10,7 @@ contract Westy_Coin {
     address public entrepreneur;
     uint public secondsBetweenMints;
 
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event TotalSupply(uint oldAmount, uint newAmount, address mintAddress);
@@ -24,9 +24,9 @@ contract Westy_Coin {
         uint256 treasurySupply = 30000000;
         uint256 venerationSupply = 3000000;
         
-        var tokenName = &quot;Sample28&quot;;
+        var tokenName = "Sample28";
         var decimalUnits = 18;
-        var tokenSymbol = &quot;SMP&quot;;
+        var tokenSymbol = "SMP";
         secondsBetweenMints = 1200;//63072000;
         
         name = tokenName;
@@ -59,11 +59,11 @@ contract Westy_Coin {
 
     function transfer(address _to, uint256 _value) {
         
-        if (balanceOf[msg.sender] &lt; _value){
+        if (balanceOf[msg.sender] < _value){
           revert();  
         } 
         
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]){
+        if (balanceOf[_to] + _value < balanceOf[_to]){
           revert();  
         } 
         
@@ -78,7 +78,7 @@ contract Westy_Coin {
             revert();            
         }
         
-        if(block.timestamp &lt; nextMint){
+        if(block.timestamp < nextMint){
             revert();
         }
         

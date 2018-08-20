@@ -4,8 +4,8 @@ pragma solidity ^0.4.4;
 contract TestNetworkToken {
 
     // Token metadata
-    string public constant name = &quot;Test Network Token&quot;;
-    string public constant symbol = &quot;TNT&quot;;
+    string public constant name = "Test Network Token";
+    string public constant symbol = "TNT";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     uint256 public constant tokenCreationRate = 1000;
@@ -13,7 +13,7 @@ contract TestNetworkToken {
     // The current total token supply
     uint256 totalTokens;
     
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Refund(address indexed _from, uint256 _value);
@@ -66,7 +66,7 @@ contract TestNetworkToken {
     // This is a test contract, so kill can be used once it is not needed
     
     function kill() {
-        if(totalTokens &gt; 0) throw;
+        if(totalTokens > 0) throw;
 
         selfdestruct(msg.sender);
     }

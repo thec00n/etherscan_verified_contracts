@@ -3,7 +3,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4a4b5a4b6e4f56474143544b40004d41">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4a4b5a4b6e4f56474143544b40004d41">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     // Required methods
     function approve(address _to, uint256 _tokenId) public;
@@ -40,19 +40,19 @@ contract SportStarToken is ERC721 {
 
     // @dev A mapping from token IDs to the address that owns them. All tokens have
     //  some valid owner address.
-    mapping (uint256 =&gt; address) public tokenIndexToOwner;
+    mapping (uint256 => address) public tokenIndexToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) private ownershipTokenCount;
+    mapping (address => uint256) private ownershipTokenCount;
 
     // @dev A mapping from TokenIDs to an address that has been approved to call
     //  transferFrom(). Each Token can only have one approved address for transfer
     //  at any time. A zero value means no approval is outstanding.
-    mapping (uint256 =&gt; address) public tokenIndexToApproved;
+    mapping (uint256 => address) public tokenIndexToApproved;
 
     // Additional token data
-    mapping (uint256 =&gt; bytes32) public tokenIndexToData;
+    mapping (uint256 => bytes32) public tokenIndexToData;
 
     address public ceoAddress;
     address public masterContractAddress;
@@ -123,7 +123,7 @@ contract SportStarToken is ERC721 {
     }
 
     // @param _owner The owner whose sport star tokens we are interested in.
-    // @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    // @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     //  expensive (it walks the entire Tokens array looking for tokens belonging to owner),
     //  but it also returns a dynamic array, which is only supported for web3 calls, and
     //  not contract-to-contract calls.
@@ -138,7 +138,7 @@ contract SportStarToken is ERC721 {
             uint256 resultIndex = 0;
 
             uint256 tokenId;
-            for (tokenId = 0; tokenId &lt;= totalTokens; tokenId++) {
+            for (tokenId = 0; tokenId <= totalTokens; tokenId++) {
                 if (tokenIndexToOwner[tokenId] == _owner) {
                     result[resultIndex] = tokenId;
                     resultIndex++;
@@ -176,11 +176,11 @@ contract SportStarToken is ERC721 {
     }
 
     function name() public pure returns (string) {
-        return &quot;CryptoSportStars&quot;;
+        return "CryptoSportStars";
     }
 
     function symbol() public pure returns (string) {
-        return &quot;SportStarToken&quot;;
+        return "SportStarToken";
     }
 
     function implementsERC721() public pure returns (bool) {
@@ -274,8 +274,8 @@ contract SportStarToken is ERC721 {
             });
         uint256 newTokenId = tokens.push(_token) - 1;
 
-        // It&#39;s probably never going to happen, 4 billion tokens are A LOT, but
-        // let&#39;s just be 100% sure we never let this happen.
+        // It's probably never going to happen, 4 billion tokens are A LOT, but
+        // let's just be 100% sure we never let this happen.
         require(newTokenId == uint256(uint32(newTokenId)));
 
         // This will assign ownership, and also emit the Transfer event as
@@ -292,12 +292,12 @@ contract SportStarToken is ERC721 {
 
     // @dev Assigns ownership of a specific Token to an address.
     function _transfer(address _from, address _to, uint256 _tokenId) private {
-        // Since the number of tokens is capped to 2^32 we can&#39;t overflow this
+        // Since the number of tokens is capped to 2^32 we can't overflow this
         ownershipTokenCount[_to]++;
         //transfer ownership
         tokenIndexToOwner[_tokenId] = _to;
 
-        // When creating new tokens _from is 0x0, but we can&#39;t account that address.
+        // When creating new tokens _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             ownershipTokenCount[_from]--;
             // clear any previously approved ownership exchange

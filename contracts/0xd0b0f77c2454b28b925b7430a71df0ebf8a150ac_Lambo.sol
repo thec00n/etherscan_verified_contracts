@@ -2,12 +2,12 @@ pragma solidity ^0.4.21;
 
 contract Lambo {
 
-    string public name = &quot;Lambo&quot;;      //  token name
-    string public symbol = &quot;LAMBO&quot;;           //  token symbol
+    string public name = "Lambo";      //  token name
+    string public symbol = "LAMBO";           //  token symbol
     uint256 public decimals = 18;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
 
@@ -31,8 +31,8 @@ contract Lambo {
     }
 
     function transfer(address _to, uint256 _value) public validAddress returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
@@ -40,9 +40,9 @@ contract Lambo {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public validAddress returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -59,7 +59,7 @@ contract Lambo {
 
     // WTF you want to burn LAMBO!?
     function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         emit Transfer(msg.sender, 0x0, _value);
@@ -77,7 +77,7 @@ contract Lambo {
         if (who == 0x0){
             who = msg.sender;
         }
-        require(msg.value &gt;= (1 finney));
+        require(msg.value >= (1 finney));
         _mint(who,3);
         owner.transfer(msg.value);
     }

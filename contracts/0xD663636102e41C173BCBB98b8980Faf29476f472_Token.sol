@@ -9,20 +9,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -77,7 +77,7 @@ contract ERC20Token {
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return The balance
-    mapping (address =&gt; uint256) public balanceOf;
+    mapping (address => uint256) public balanceOf;
     //function balanceOf(address _owner) public constant returns (uint256 balance);
 
     /// @notice send `_value` token to `_to` from `msg.sender`
@@ -102,7 +102,7 @@ contract ERC20Token {
     /// @param _owner The address of the account owning tokens
     /// @param _spender The address of the account able to transfer the tokens
     /// @return Amount of remaining tokens allowed to spent
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => mapping (address => uint256)) public allowance;
     //function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -136,7 +136,7 @@ contract TokenController {
 
 contract TokenI is ERC20Token, Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
 
@@ -211,9 +211,9 @@ contract Token is TokenI {
         uint256 amount;
     }
     //Key1: step(募资阶段); Key2: user sequence(用户序列)
-    mapping (uint8 =&gt; mapping (uint8 =&gt; FreezeInfo)) public freezeOf; //所有锁仓，key 使用序号向上增加，方便程序查询。
-    mapping (uint8 =&gt; uint8) public lastFreezeSeq; //最后的 freezeOf 键值。key: step; value: sequence
-    mapping (uint8 =&gt; uint8) internal unlockTime;
+    mapping (uint8 => mapping (uint8 => FreezeInfo)) public freezeOf; //所有锁仓，key 使用序号向上增加，方便程序查询。
+    mapping (uint8 => uint8) public lastFreezeSeq; //最后的 freezeOf 键值。key: step; value: sequence
+    mapping (uint8 => uint8) internal unlockTime;
 
     bool public transfersEnabled;
 
@@ -264,14 +264,14 @@ contract Token is TokenI {
     }
 
     modifier moreThanZero(uint256 _value){
-        if (_value &lt;= 0){
+        if (_value <= 0){
             revert();
         }
         _;
     }
 
     modifier moreOrEqualZero(uint256 _value){
-        if(_value &lt; 0){
+        if(_value < 0){
             revert();
         }
         _;
@@ -288,13 +288,13 @@ contract Token is TokenI {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /* Send coins */
     function transfer(address _to, uint256 _value) realUser(_to) moreThanZero(_value) public returns (bool) {
-        require(balanceOf[msg.sender] &gt; _value);           // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require(balanceOf[msg.sender] > _value);           // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         balanceOf[msg.sender] = balanceOf[msg.sender] - _value;                     // Subtract from the sender
         balanceOf[_to] = balanceOf[_to] + _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
@@ -332,9 +332,9 @@ contract Token is TokenI {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) realUser(_from) realUser(_to) moreThanZero(_value) public returns (bool success) {
-        require(balanceOf[_from] &gt; _value);                 // Check if the sender has enough
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);  // Check for overflows
-        require(_value &lt; allowance[_from][msg.sender]);     // Check allowance
+        require(balanceOf[_from] > _value);                 // Check if the sender has enough
+        require(balanceOf[_to] + _value > balanceOf[_to]);  // Check for overflows
+        require(_value < allowance[_from][msg.sender]);     // Check allowance
         balanceOf[_from] = balanceOf[_from] - _value;                           // Subtract from the sender
         balanceOf[_to] = balanceOf[_to] + _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] = allowance[_from][msg.sender] + _value;
@@ -344,8 +344,8 @@ contract Token is TokenI {
     
     //只能自己或者 owner 才能冻结账户
     function freeze(address _user, uint256 _value, uint8 _step) moreThanZero(_value) onlyController public returns (bool success) {
-        //info256(&quot;balanceOf[_user]&quot;, balanceOf[_user]);
-        require(balanceOf[_user] &gt;= _value);
+        //info256("balanceOf[_user]", balanceOf[_user]);
+        require(balanceOf[_user] >= _value);
         balanceOf[_user] = balanceOf[_user] - _value;
         freezeOf[_step][lastFreezeSeq[_step]] = FreezeInfo({user:_user, amount:_value});
         lastFreezeSeq[_step]++;
@@ -360,12 +360,12 @@ contract Token is TokenI {
     function unFreeze(uint8 _step) onlyController public returns (bool unlockOver) {
         //_end = length of freezeOf[_step]
         uint8 _end = lastFreezeSeq[_step];
-        require(_end &gt; 0);
-        //info(&quot;_end&quot;, _end);
-        unlockOver = (_end &lt;= 49);
-        uint8 _start = (_end &gt; 49) ? _end-50 : 0;
-        //info(&quot;_start&quot;, _start);
-        for(; _end&gt;_start; _end--){
+        require(_end > 0);
+        //info("_end", _end);
+        unlockOver = (_end <= 49);
+        uint8 _start = (_end > 49) ? _end-50 : 0;
+        //info("_start", _start);
+        for(; _end>_start; _end--){
             FreezeInfo storage fInfo = freezeOf[_step][_end-1];
             uint256 _amount = fInfo.amount;
             balanceOf[fInfo.user] += _amount;
@@ -392,7 +392,7 @@ contract Token is TokenI {
     /// @param _amount The quantity of tokens generated
     /// @return True if the tokens are generated correctly
     function generateTokens(address _user, uint _amount) onlyController public returns (bool) {
-        require(balanceOf[owner] &gt;= _amount);
+        require(balanceOf[owner] >= _amount);
         balanceOf[_user] += _amount;
         balanceOf[owner] -= _amount;
         Transfer(0, _user, _amount);

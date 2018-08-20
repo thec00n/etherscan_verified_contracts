@@ -8,12 +8,12 @@ contract SafeMath {
  
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
  
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -42,7 +42,7 @@ contract Token {
 contract StandardToken is Token {
  
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -53,7 +53,7 @@ contract StandardToken is Token {
     }
  
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -78,17 +78,17 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
  
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
  
 contract WMToken is StandardToken, SafeMath {
  
 
-    string  public constant name = &quot;WMCoin&quot;;
-    string  public constant symbol = &quot;WMC&quot;;
+    string  public constant name = "WMCoin";
+    string  public constant symbol = "WMC";
     uint256 public constant decimals = 18;
-    string  public version = &quot;1.0&quot;;
+    string  public version = "1.0";
 
     address public ethFundDeposit;          // ETH存放地址
     address public newContractAddr;         // token更新地址
@@ -129,7 +129,7 @@ contract WMToken is StandardToken, SafeMath {
         currentSupply = formatDecimals(_currentSupply);
         totalSupply = formatDecimals(500000000);
         balances[msg.sender] = totalSupply;
-        if(currentSupply &gt; totalSupply) throw;
+        if(currentSupply > totalSupply) throw;
     }
  
     modifier isOwner()  { require(msg.sender == ethFundDeposit); _; }
@@ -145,7 +145,7 @@ contract WMToken is StandardToken, SafeMath {
 
     function increaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        if (value + currentSupply &gt; totalSupply) throw;
+        if (value + currentSupply > totalSupply) throw;
         currentSupply = safeAdd(currentSupply, value);
         IncreaseSupply(value);
     }
@@ -153,7 +153,7 @@ contract WMToken is StandardToken, SafeMath {
    
     function decreaseSupply (uint256 _value) isOwner external {
         uint256 value = formatDecimals(_value);
-        if (value + tokenRaised &gt; currentSupply) throw;
+        if (value + tokenRaised > currentSupply) throw;
  
         currentSupply = safeSubtract(currentSupply, value);
         DecreaseSupply(value);
@@ -162,8 +162,8 @@ contract WMToken is StandardToken, SafeMath {
 
     function startFunding (uint256 _fundingStartBlock, uint256 _fundingStopBlock) isOwner external {
         if (isFunding) throw;
-        if (_fundingStartBlock &gt;= _fundingStopBlock) throw;
-        if (block.number &gt;= _fundingStartBlock) throw;
+        if (_fundingStartBlock >= _fundingStopBlock) throw;
+        if (block.number >= _fundingStartBlock) throw;
  
         fundingStartBlock = _fundingStartBlock;
         fundingStopBlock = _fundingStopBlock;
@@ -217,7 +217,7 @@ contract WMToken is StandardToken, SafeMath {
         if (_addr == address(0x0)) throw;
  
         uint256 tokens = safeMult(formatDecimals(_eth), tokenExchangeRate);
-        if (tokens + tokenRaised &gt; currentSupply) throw;
+        if (tokens + tokenRaised > currentSupply) throw;
  
         tokenRaised = safeAdd(tokenRaised, tokens);
         balances[_addr] += tokens;
@@ -230,11 +230,11 @@ contract WMToken is StandardToken, SafeMath {
         if (!isFunding) throw;
         if (msg.value == 0) throw;
  
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingStopBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingStopBlock) throw;
  
         uint256 tokens = safeMult(msg.value, tokenExchangeRate);
-        if (tokens + tokenRaised &gt; currentSupply) throw;
+        if (tokens + tokenRaised > currentSupply) throw;
  
         tokenRaised = safeAdd(tokenRaised, tokens);
         balances[msg.sender] += tokens;

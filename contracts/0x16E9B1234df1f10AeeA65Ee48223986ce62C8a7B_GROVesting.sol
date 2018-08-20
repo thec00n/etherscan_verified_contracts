@@ -25,12 +25,12 @@ contract SafeMath {
     return c;
   }
   function safeSub(uint a, uint b) pure internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function safeAdd(uint a, uint b) pure internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
   function safeNumDigits(uint number) pure internal returns (uint8) {
@@ -44,9 +44,9 @@ contract SafeMath {
 
   // mitigate short address attack
   // thanks to https://github.com/numerai/contract/blob/c182465f82e50ced8dacb3977ec374a892f5fa8c/contracts/Safe.sol#L30-L34.
-  // TODO: doublecheck implication of &gt;= compared to ==
+  // TODO: doublecheck implication of >= compared to ==
   modifier onlyPayloadSize(uint numWords) {
-     assert(msg.data.length &gt;= numWords * 32 + 4);
+     assert(msg.data.length >= numWords * 32 + 4);
      _;
   }
 
@@ -54,7 +54,7 @@ contract SafeMath {
 /**
  * @title GROVesting
  * @dev GROVesting is a token holder contract that allows the specified beneficiary
- * to claim stored tokens after 6 &amp; 12 month intervals
+ * to claim stored tokens after 6 & 12 month intervals
  */
 
 contract GROVesting is SafeMath {
@@ -110,8 +110,8 @@ contract GROVesting is SafeMath {
 
   function updateFundingEndBlock(uint256 newFundingEndBlock) public {
     require(msg.sender == beneficiary);
-    require(currentBlock() &lt; fundingEndBlock);
-    require(currentBlock() &lt; newFundingEndBlock);
+    require(currentBlock() < fundingEndBlock);
+    require(currentBlock() < newFundingEndBlock);
     fundingEndBlock = newFundingEndBlock;
   }
 
@@ -129,7 +129,7 @@ contract GROVesting is SafeMath {
   //   15% - Operations
   //   15% - Advisors
   //   10% - Marketing
-  //   5% - Legal Framework &amp; Finance
+  //   5% - Legal Framework & Finance
   //   5% - Contingencies
   //
   // initial claim is bankroll - 16% = 152000000
@@ -139,9 +139,9 @@ contract GROVesting is SafeMath {
 
   function claim() external {
     require(msg.sender == beneficiary);
-    require(currentBlock() &gt; fundingEndBlock);
+    require(currentBlock() > fundingEndBlock);
     uint256 balance = ERC20Token.balanceOf(this);
-    // in reverse order so stages changes don&#39;t carry within one claim
+    // in reverse order so stages changes don't carry within one claim
     third_release(balance);
     second_release(balance);
     first_release(balance);
@@ -161,19 +161,19 @@ contract GROVesting is SafeMath {
     nextStage();
   }
   function first_release(uint256 balance) private atStage(Stages.firstRelease) {
-    require(currentTime() &gt; firstRelease);
+    require(currentTime() > firstRelease);
     uint256 amountToTransfer = safeMul(balance, 30) / 100;  // send 100% of incentives and bonuses - 30% of Expense Allocation
     ERC20Token.transfer(beneficiary, amountToTransfer);     // now 30% tokens left
     nextStage();
   }
   function second_release(uint256 balance) private atStage(Stages.secondRelease) {
-    require(currentTime() &gt; secondRelease);
+    require(currentTime() > secondRelease);
     uint256 amountToTransfer = balance / 2;             // send 50% of founders release - 15% of Expense Allocation
     ERC20Token.transfer(beneficiary, amountToTransfer); // now 15% tokens left
     nextStage();
   }
   function third_release(uint256 balance) private atStage(Stages.thirdRelease) {
-    require(currentTime() &gt; thirdRelease);
+    require(currentTime() > thirdRelease);
     uint256 amountToTransfer = balance;                 // send 50% of founders release - 15% of Expense Allocation
     ERC20Token.transfer(beneficiary, amountToTransfer);
     nextStage();

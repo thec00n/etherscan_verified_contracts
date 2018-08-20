@@ -55,25 +55,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function minimum( uint a, uint b) internal returns ( uint result) {
-    if ( a &lt;= b ) {
+    if ( a <= b ) {
       result = a;
     }
     else {
@@ -86,7 +86,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -116,7 +116,7 @@ contract BasicToken is ERC20Basic {
 
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -131,7 +131,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -197,8 +197,8 @@ contract StandardToken is ERC20, BasicToken {
 
 contract DRTCoin is StandardToken, Ownable {
     /* Overriding some ERC20 variables */
-    string public constant name = &quot;DomRaiderToken&quot;;
-    string public constant symbol = &quot;DRT&quot;;
+    string public constant name = "DomRaiderToken";
+    string public constant symbol = "DRT";
     uint256 public constant decimals = 8;
 
     /* DRT specific variables */
@@ -215,8 +215,8 @@ contract DRTCoin is StandardToken, Ownable {
 
     // Fields that can be changed by functions
     address[] icedBalances;
-    mapping (address =&gt; uint256) icedBalances_frosted;
-    mapping (address =&gt; uint256) icedBalances_defrosted;
+    mapping (address => uint256) icedBalances_frosted;
+    mapping (address => uint256) icedBalances_defrosted;
 
     uint256 ownerFrosted;
     uint256 ownerDefrosted;
@@ -249,12 +249,12 @@ contract DRTCoin is StandardToken, Ownable {
         require(batchAssignStopped == false);
         require(_vaddr.length == _vamounts.length);
         //Looping into input arrays to assign target amount to each given address
-        for (uint index = 0; index &lt; _vaddr.length; index++) {
+        for (uint index = 0; index < _vaddr.length; index++) {
             address toAddress = _vaddr[index];
             uint amount = _vamounts[index] * 10 ** decimals;
             bool isIced = _vIcedBalance[index];
             if (balances[toAddress] == 0) {
-                // In case it&#39;s filled two times, it only increments once
+                // In case it's filled two times, it only increments once
                 // Assigns the balance
                 assignedSupply += amount;
                 if (isIced == false) {
@@ -274,7 +274,7 @@ contract DRTCoin is StandardToken, Ownable {
     }
 
     function canDefrost() onlyOwner constant returns (bool bCanDefrost){
-        bCanDefrost = now &gt; START_ICO_TIMESTAMP;
+        bCanDefrost = now > START_ICO_TIMESTAMP;
     }
 
     function getBlockTimestamp() constant returns (uint256){
@@ -287,14 +287,14 @@ contract DRTCoin is StandardToken, Ownable {
      * Method called by the owner once per defrost period (1 month)
      */
     function defrostToken() onlyOwner {
-        require(now &gt; START_ICO_TIMESTAMP);
+        require(now > START_ICO_TIMESTAMP);
         // Looping into the iced accounts
-        for (uint index = 0; index &lt; icedBalances.length; index++) {
+        for (uint index = 0; index < icedBalances.length; index++) {
             address currentAddress = icedBalances[index];
             uint256 amountTotal = icedBalances_frosted[currentAddress] + icedBalances_defrosted[currentAddress];
             uint256 targetDeFrosted = (SafeMath.minimum(100, DEFROST_INITIAL_PERCENT + elapsedMonthsFromICOStart() * DEFROST_MONTHLY_PERCENT)) * amountTotal / 100;
             uint256 amountToRelease = targetDeFrosted - icedBalances_defrosted[currentAddress];
-            if (amountToRelease &gt; 0) {
+            if (amountToRelease > 0) {
                 icedBalances_frosted[currentAddress] = icedBalances_frosted[currentAddress] - amountToRelease;
                 icedBalances_defrosted[currentAddress] = icedBalances_defrosted[currentAddress] + amountToRelease;
                 balances[currentAddress] = balances[currentAddress] + amountToRelease;
@@ -306,13 +306,13 @@ contract DRTCoin is StandardToken, Ownable {
      * Defrost for the owner of the contract
      */
     function defrostOwner() onlyOwner {
-        if (now &lt; START_ICO_TIMESTAMP) {
+        if (now < START_ICO_TIMESTAMP) {
             return;
         }
         uint256 amountTotal = ownerFrosted + ownerDefrosted;
         uint256 targetDeFrosted = (SafeMath.minimum(100, DEFROST_INITIAL_PERCENT_OWNER + elapsedMonthsFromICOStart() * DEFROST_MONTHLY_PERCENT_OWNER)) * amountTotal / 100;
         uint256 amountToRelease = targetDeFrosted - ownerDefrosted;
-        if (amountToRelease &gt; 0) {
+        if (amountToRelease > 0) {
             ownerFrosted = ownerFrosted - amountToRelease;
             ownerDefrosted = ownerDefrosted + amountToRelease;
             balances[owner] = balances[owner] + amountToRelease;

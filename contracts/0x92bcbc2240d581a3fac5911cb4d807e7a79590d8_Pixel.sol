@@ -14,12 +14,12 @@ contract Pixel {
         uint16 index;
         //bytes32[10] image_data;
     }
-    string public standard = &quot;IPO 0.9&quot;;
-    string public constant name = &quot;Initial Pixel Offering&quot;;
-    string public constant symbol = &quot;IPO&quot;;
+    string public standard = "IPO 0.9";
+    string public constant name = "Initial Pixel Offering";
+    string public constant symbol = "IPO";
     uint8 public constant decimals = 0;
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; uint256) public ethBalance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public ethBalance;
     address owner;
     uint256 public ipo_price;
     Section[10000] public sections;
@@ -50,15 +50,15 @@ contract Pixel {
         totalSupply = tokenTotalSupply;
     }
 
-    /// Updates a pixel section&#39;s index number
+    /// Updates a pixel section's index number
     /// Not to be called by anyone but the contract owner
     function updatePixelIndex(
         uint16 _start,
         uint16 _end
     ) {
         if(msg.sender != owner) throw; 
-        if(_end &lt; _start) throw;
-        while(_start &lt; _end)
+        if(_end < _start) throw;
+        while(_start < _end)
         {
             sections[_start].index = _start;
             _start++;
@@ -75,14 +75,14 @@ contract Pixel {
     }
 
     /* Get the index to access a section object from the provided raw x,y */
-    /// Convert from a pixel&#39;s x, y coordinates to its section index
+    /// Convert from a pixel's x, y coordinates to its section index
     /// This is a helper function
     function getSectionIndexFromRaw(
         uint _x,
         uint _y
     ) returns (uint) {
-        if (_x &gt;= mapWidth) throw;
-        if (_y &gt;= mapHeight) throw;
+        if (_x >= mapWidth) throw;
+        if (_y >= mapHeight) throw;
         // Convert raw x, y to section identifer x y
         _x = _x / 10;
         _y = _y / 10;
@@ -91,27 +91,27 @@ contract Pixel {
     }
 
     /* Get the index to access a section object from its section identifier */
-    /// Get Section index based on its upper left x,y coordinates or &quot;identifier&quot;
+    /// Get Section index based on its upper left x,y coordinates or "identifier"
     /// coordinates
     /// This is a helper function
     function getSectionIndexFromIdentifier (
         uint _x_section_identifier,
         uint _y_section_identifier
     ) returns (uint) {
-        if (_x_section_identifier &gt;= (mapWidth / 10)) throw;
-        if (_y_section_identifier &gt;= (mapHeight / 10)) throw;
+        if (_x_section_identifier >= (mapWidth / 10)) throw;
+        if (_y_section_identifier >= (mapHeight / 10)) throw;
         uint index = _x_section_identifier + (_y_section_identifier * 100);
         return index;
     }
 
     /* Get x,y section_identifier from a section index */
-    /// Get Section upper left x,y coordinates or &quot;identifier&quot; coordinates
+    /// Get Section upper left x,y coordinates or "identifier" coordinates
     /// based on its index number
     /// This is a helper function
     function getIdentifierFromSectionIndex(
         uint _index
     ) returns (uint x, uint y) {
-        if (_index &gt; (mapWidth * mapHeight)) throw;
+        if (_index > (mapWidth * mapHeight)) throw;
         x = _index % 100;
         y = (_index - (_index % 100)) / 100;
     }
@@ -121,7 +121,7 @@ contract Pixel {
     function sectionAvailable(
         uint _section_index
     ) returns (bool) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section s = sections[_section_index];
         // The section has not been puchased previously
         return !s.initial_purchase_done;
@@ -132,12 +132,12 @@ contract Pixel {
     function sectionForSale(
         uint _section_index
     ) returns (bool) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section s = sections[_section_index];
         // Has the user set the section as for_sale
         if(s.for_sale)
         {
-            // Has the owner set a &quot;sell only to&quot; address?
+            // Has the owner set a "sell only to" address?
             if(s.sell_only_to == 0x0) return true;
             if(s.sell_only_to == msg.sender) return true;
             return false;
@@ -152,11 +152,11 @@ contract Pixel {
     /* Get the price of the Section */
     /// Returns the price of a section at market price.
     /// This is a helper function, it is more efficient to just access the
-    /// contract&#39;s sections attribute directly
+    /// contract's sections attribute directly
     function sectionPrice(
         uint _section_index
     ) returns (uint) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section s = sections[_section_index];
         return s.price;
     }
@@ -175,21 +175,21 @@ contract Pixel {
         uint _start_section_index,
         uint _end_section_index
     ) returns (bool available, uint extended_price, uint ipo_count) {
-        if (_end_section_index &lt; _start_section_index) throw;
+        if (_end_section_index < _start_section_index) throw;
         var (start_x, start_y) = getIdentifierFromSectionIndex(_start_section_index);
         var (end_x, end_y) = getIdentifierFromSectionIndex(_end_section_index);
-        if (start_x &gt;= mapWidth) throw;
-        if (start_y &gt;= mapHeight) throw;
-        if (end_x &gt;= mapWidth) throw;
-        if (end_y &gt;= mapHeight) throw;
+        if (start_x >= mapWidth) throw;
+        if (start_y >= mapHeight) throw;
+        if (end_x >= mapWidth) throw;
+        if (end_y >= mapHeight) throw;
         uint y_pos = start_y;
         available = false;
         extended_price = 0;
         ipo_count = 0;
-        while (y_pos &lt;= end_y)
+        while (y_pos <= end_y)
         {
             uint x_pos = start_x;
-            while (x_pos &lt;= end_x)
+            while (x_pos <= end_x)
             {
                 uint identifier = (x_pos + (y_pos * 100));
                 // Is this section available for first (IPO) purchase?
@@ -207,7 +207,7 @@ contract Pixel {
                     } else
                     {
                         available = false;
-                        //Don&#39;t return a price if there is an unavailable section
+                        //Don't return a price if there is an unavailable section
                         //to reduce confusion
                         extended_price = 0;
                         ipo_count = 0;
@@ -229,9 +229,9 @@ contract Pixel {
         uint _image_id,
         string _md5
     ) payable {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section section = sections[_section_index];
-        if(!section.for_sale &amp;&amp; section.initial_purchase_done)
+        if(!section.for_sale && section.initial_purchase_done)
         {
             //Section not for sale
             throw;
@@ -241,7 +241,7 @@ contract Pixel {
         if(section.initial_purchase_done)
         {
             // Section sold, sell for market price
-            if(msg.value &lt; section.price)
+            if(msg.value < section.price)
             {
                 // Not enough funds were sent
                 throw;
@@ -258,7 +258,7 @@ contract Pixel {
                     ethBalance[section.owner] += (msg.value - fee);
                 }
                 // Refund any overpayment
-                //require(msg.value &gt; (msg.value - section.price));
+                //require(msg.value > (msg.value - section.price));
                 ethBalance[msg.sender] += (msg.value - section.price);
                 // Owner loses a token
                 balanceOf[section.owner]--;
@@ -268,7 +268,7 @@ contract Pixel {
         } else
         {
             // Initial sale, sell for IPO price
-            if(msg.value &lt; ipo_price)
+            if(msg.value < ipo_price)
             {
                 // Not enough funds were sent
                 throw;
@@ -277,7 +277,7 @@ contract Pixel {
                 // Pay the contract owner
                 ethBalance[owner] += msg.value;
                 // Refund any overpayment
-                //require(msg.value &gt; (msg.value - ipo_price));
+                //require(msg.value > (msg.value - ipo_price));
                 ethBalance[msg.sender] += (msg.value - ipo_price);
                 // Reduce token pool
                 pool--;
@@ -307,9 +307,9 @@ contract Pixel {
         string _md5
     ) payable returns (uint start_section_y, uint start_section_x,
     uint end_section_y, uint end_section_x){
-        if (_end_section_index &lt; _start_section_index) throw;
-        if (_start_section_index &gt;= sections.length) throw;
-        if (_end_section_index &gt;= sections.length) throw;
+        if (_end_section_index < _start_section_index) throw;
+        if (_start_section_index >= sections.length) throw;
+        if (_end_section_index >= sections.length) throw;
         // ico_ammount reffers to the number of sections that are available
         // at ICO price
         var (available, ext_price, ico_amount) = regionAvailable(_start_section_index, _end_section_index);
@@ -320,7 +320,7 @@ contract Pixel {
         area_price = area_price + ext_price;
         AreaPrice(_start_section_index, _end_section_index, area_price);
         SentValue(msg.value);
-        if (area_price &gt; msg.value) throw;
+        if (area_price > msg.value) throw;
 
         // ico_ammount reffers to the amount in wei that the contract owner
         // is owed
@@ -329,7 +329,7 @@ contract Pixel {
         // owed in fees from market sales
         ext_price = 0;
 
-        // User sent enough funds, let&#39;s go
+        // User sent enough funds, let's go
         start_section_x = _start_section_index % 100;
         end_section_x = _end_section_index % 100;
         start_section_y = _start_section_index - (_start_section_index % 100);
@@ -337,17 +337,17 @@ contract Pixel {
         end_section_y = _end_section_index - (_end_section_index % 100);
         end_section_y = end_section_y / 100;
         uint x_pos = start_section_x;
-        while (x_pos &lt;= end_section_x)
+        while (x_pos <= end_section_x)
         {
             uint y_pos = start_section_y;
-            while (y_pos &lt;= end_section_y)
+            while (y_pos <= end_section_y)
             {
                 // Is this an IPO section?
                 Section s = sections[x_pos + (y_pos * 100)];
                 if (s.initial_purchase_done)
                 {
                     // Sale, we need to transfer balance
-                    // We only need to modify balances if the section&#39;s price
+                    // We only need to modify balances if the section's price
                     // is non-zero
                     if(s.price != 0)
                     {
@@ -357,7 +357,7 @@ contract Pixel {
                         ethBalance[s.owner] += (s.price - (s.price / 100));
                     }
                     // Refund any overpayment
-                    //if(msg.value &gt; (msg.value - s.price)) throw;
+                    //if(msg.value > (msg.value - s.price)) throw;
                     ext_price += s.price;
                     // Owner loses a token
                     balanceOf[s.owner]--;
@@ -369,7 +369,7 @@ contract Pixel {
                     // Pay the contract owner
                     ethBalance[owner] += ipo_price;
                     // Refund any overpayment
-                    //if(msg.value &gt; (msg.value - ipo_price)) throw;
+                    //if(msg.value > (msg.value - ipo_price)) throw;
                     // TODO Decrease the value
                     ico_amount += ipo_price;
                     // Reduce token pool
@@ -404,7 +404,7 @@ contract Pixel {
         uint _section_index,
         uint256 _price
     ) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section section = sections[_section_index];
         if(section.owner != msg.sender) throw;
         section.price = _price;
@@ -421,16 +421,16 @@ contract Pixel {
         uint _end_section_index,
         uint _price
     ) {
-        if(_start_section_index &gt; _end_section_index) throw;
-        if(_end_section_index &gt; 9999) throw;
+        if(_start_section_index > _end_section_index) throw;
+        if(_end_section_index > 9999) throw;
         uint x_pos = _start_section_index % 100;
         uint base_y_pos = (_start_section_index - (_start_section_index % 100)) / 100;
         uint x_max = _end_section_index % 100;
         uint y_max = (_end_section_index - (_end_section_index % 100)) / 100;
-        while(x_pos &lt;= x_max)
+        while(x_pos <= x_max)
         {
             uint y_pos = base_y_pos;
-            while(y_pos &lt;= y_max)
+            while(y_pos <= y_max)
             {
                 Section section = sections[x_pos + (y_pos * 100)];
                 if(section.owner == msg.sender)
@@ -458,16 +458,16 @@ contract Pixel {
         uint _price,
         address _only_sell_to
     ) {
-        if(_start_section_index &gt; _end_section_index) throw;
-        if(_end_section_index &gt; 9999) throw;
+        if(_start_section_index > _end_section_index) throw;
+        if(_end_section_index > 9999) throw;
         uint x_pos = _start_section_index % 100;
         uint base_y_pos = (_start_section_index - (_start_section_index % 100)) / 100;
         uint x_max = _end_section_index % 100;
         uint y_max = (_end_section_index - (_end_section_index % 100)) / 100;
-        while(x_pos &lt;= x_max)
+        while(x_pos <= x_max)
         {
             uint y_pos = base_y_pos;
-            while(y_pos &lt;= y_max)
+            while(y_pos <= y_max)
             {
                 Section section = sections[x_pos + (y_pos * 100)];
                 if(section.owner == msg.sender)
@@ -484,9 +484,9 @@ contract Pixel {
     }
 
     /*
-    Set an entire region&#39;s cloud image data
+    Set an entire region's cloud image data
     */
-    /// Update a region of sections&#39; cloud image_id and md5 to be redrawn on the
+    /// Update a region of sections' cloud image_id and md5 to be redrawn on the
     /// map starting at the top left start section index to and including the
     /// bottom right section index. Fires a NewImage event with the top left
     /// section index. If any sections not owned by the sender are in the region
@@ -497,18 +497,18 @@ contract Pixel {
         uint _image_id,
         string _md5
     ) {
-        if (_end_section_index &lt; _start_section_index) throw;
+        if (_end_section_index < _start_section_index) throw;
         var (start_x, start_y) = getIdentifierFromSectionIndex(_start_section_index);
         var (end_x, end_y) = getIdentifierFromSectionIndex(_end_section_index);
-        if (start_x &gt;= mapWidth) throw;
-        if (start_y &gt;= mapHeight) throw;
-        if (end_x &gt;= mapWidth) throw;
-        if (end_y &gt;= mapHeight) throw;
+        if (start_x >= mapWidth) throw;
+        if (start_y >= mapHeight) throw;
+        if (end_x >= mapWidth) throw;
+        if (end_y >= mapHeight) throw;
         uint y_pos = start_y;
-        while (y_pos &lt;= end_y)
+        while (y_pos <= end_y)
         {
             uint x_pos = start_x;
-            while (x_pos &lt;= end_x)
+            while (x_pos <= end_x)
             {
                 uint identifier = (x_pos + (y_pos * 100));
                 Section s = sections[identifier];
@@ -533,7 +533,7 @@ contract Pixel {
         uint256 _price,
         address _to
     ) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section section = sections[_section_index];
         if(section.owner != msg.sender) throw;
         section.price = _price;
@@ -547,7 +547,7 @@ contract Pixel {
     function unsetSectionForSale(
         uint _section_index
     ) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section section = sections[_section_index];
         if(section.owner != msg.sender) throw;
         section.for_sale = false;
@@ -563,16 +563,16 @@ contract Pixel {
         uint _start_section_index,
         uint _end_section_index
     ) {
-        if(_start_section_index &gt; _end_section_index) throw;
-        if(_end_section_index &gt; 9999) throw;
+        if(_start_section_index > _end_section_index) throw;
+        if(_end_section_index > 9999) throw;
         uint x_pos = _start_section_index % 100;
         uint base_y_pos = (_start_section_index - (_start_section_index % 100)) / 100;
         uint x_max = _end_section_index % 100;
         uint y_max = (_end_section_index - (_end_section_index % 100)) / 100;
-        while(x_pos &lt;= x_max)
+        while(x_pos <= x_max)
         {
             uint y_pos = base_y_pos;
-            while(y_pos &lt;= y_max)
+            while(y_pos <= y_max)
             {
                 Section section = sections[x_pos + (y_pos * 100)];
                 if(section.owner == msg.sender)
@@ -601,7 +601,7 @@ contract Pixel {
         // bytes32 _row_eight,
         // bytes32 _row_nine
     ) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section section = sections[_section_index];
         if(section.owner != msg.sender) throw;
         // section.image_data[0] = _row_zero;
@@ -615,19 +615,19 @@ contract Pixel {
         // section.image_data[8] = _row_eight;
         // section.image_data[9] = _row_nine;
         section.image_id = 0;
-        section.md5 = &quot;&quot;;
+        section.md5 = "";
         section.last_update = block.timestamp;
         NewImage(_section_index);
     }
 
-    /// Set a section&#39;s image data to be redrawn on the map. Fires a NewImage
+    /// Set a section's image data to be redrawn on the map. Fires a NewImage
     /// event.
     function setImageDataCloud(
         uint _section_index,
         uint _image_id,
         string _md5
     ) {
-        if (_section_index &gt;= sections.length) throw;
+        if (_section_index >= sections.length) throw;
         Section section = sections[_section_index];
         if(section.owner != msg.sender) throw;
         section.image_id = _image_id;
@@ -636,21 +636,21 @@ contract Pixel {
         NewImage(_section_index);
     }
 
-    /// Withdraw ethereum from the sender&#39;s ethBalance.
+    /// Withdraw ethereum from the sender's ethBalance.
     function withdraw() returns (bool) {
         var amount = ethBalance[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `send` returns.
             ethBalance[msg.sender] = 0;
-            WithdrawEvent(&quot;Reset Sender&quot;);
+            WithdrawEvent("Reset Sender");
             msg.sender.transfer(amount);
         }
         return true;
     }
 
-    /// Deposit ethereum into the sender&#39;s ethBalance. Not recommended.
+    /// Deposit ethereum into the sender's ethBalance. Not recommended.
     function deposit() payable
     {
         ethBalance[msg.sender] += msg.value;
@@ -661,9 +661,9 @@ contract Pixel {
       address _to,
       uint _section_index
     ) {
-        if (_section_index &gt; 9999) throw;
+        if (_section_index > 9999) throw;
         if (sections[_section_index].owner != msg.sender) throw;
-        if (balanceOf[_to] + 1 &lt; balanceOf[_to]) throw;
+        if (balanceOf[_to] + 1 < balanceOf[_to]) throw;
         sections[_section_index].owner = _to;
         sections[_section_index].for_sale = false;
         balanceOf[msg.sender] -= 1;
@@ -678,21 +678,21 @@ contract Pixel {
         uint _end_section_index,
         address _to
     ) {
-        if(_start_section_index &gt; _end_section_index) throw;
-        if(_end_section_index &gt; 9999) throw;
+        if(_start_section_index > _end_section_index) throw;
+        if(_end_section_index > 9999) throw;
         uint x_pos = _start_section_index % 100;
         uint base_y_pos = (_start_section_index - (_start_section_index % 100)) / 100;
         uint x_max = _end_section_index % 100;
         uint y_max = (_end_section_index - (_end_section_index % 100)) / 100;
-        while(x_pos &lt;= x_max)
+        while(x_pos <= x_max)
         {
             uint y_pos = base_y_pos;
-            while(y_pos &lt;= y_max)
+            while(y_pos <= y_max)
             {
                 Section section = sections[x_pos + (y_pos * 100)];
                 if(section.owner == msg.sender)
                 {
-                  if (balanceOf[_to] + 1 &lt; balanceOf[_to]) throw;
+                  if (balanceOf[_to] + 1 < balanceOf[_to]) throw;
                   section.owner = _to;
                   section.for_sale = false;
                   balanceOf[msg.sender] -= 1;

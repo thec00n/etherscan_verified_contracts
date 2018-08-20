@@ -12,20 +12,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -36,7 +36,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -101,7 +101,7 @@ pragma solidity ^0.4.11;
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -155,7 +155,7 @@ pragma solidity ^0.4.11;
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -170,7 +170,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -221,7 +221,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -242,10 +242,10 @@ contract DadiToken is StandardToken, Ownable {
     using SafeMath for uint256;
 
     /* Public variables of the token */
-    string public name = &quot;DADI&quot;;
-    string public symbol = &quot;DADI&quot;;
+    string public name = "DADI";
+    string public symbol = "DADI";
     uint8 public decimals = 18;
-    string public version = &quot;H1.0&quot;;
+    string public version = "H1.0";
 
     address public owner;
 
@@ -263,8 +263,8 @@ contract DadiToken is StandardToken, Ownable {
     // PartnerSale variables
     uint256 public partnerSaleTokensAvailable;
     uint256 public partnerSaleTokensPurchased = 0;
-    mapping(address =&gt; uint256) public purchasedTokens;
-    mapping(address =&gt; uint256) public partnerSaleWei;
+    mapping(address => uint256) public purchasedTokens;
+    mapping(address => uint256) public partnerSaleWei;
 
     // PreSale variables
     uint256 public preSaleTokensAvailable;
@@ -396,7 +396,7 @@ contract DadiToken is StandardToken, Ownable {
     */
     function offlineTransaction (address _recipient, uint256 _tokens) public onlyOwner returns (bool) {
         require(state == SaleState.PartnerSale);
-        require(_tokens &gt; 0);
+        require(_tokens > 0);
 
         // Convert to a token with decimals 
         uint256 tokens = _tokens * (uint256(10) ** decimals);
@@ -407,7 +407,7 @@ contract DadiToken is StandardToken, Ownable {
         partnerSaleTokensPurchased = partnerSaleTokensPurchased.add(_tokens);
 
         // Finalize the PartnerSale if necessary
-        if (partnerSaleTokensPurchased &gt;= partnerSaleTokensAvailable) {
+        if (partnerSaleTokensPurchased >= partnerSaleTokensAvailable) {
             state = SaleState.PartnerSaleFinalized;
         }
 
@@ -422,7 +422,7 @@ contract DadiToken is StandardToken, Ownable {
     * @return bool  Return true if the contract is in PartnerSale Period
     */
     function updateEthRate (uint256 rate) public onlyOwner returns (bool) {
-        require(rate &gt;= 100000);
+        require(rate >= 100000);
         
         ethRate = rate;
         return true;
@@ -435,7 +435,7 @@ contract DadiToken is StandardToken, Ownable {
     * @return success       bool        Returns true if executed successfully
     */
     function addPartnerSaleWallet (address _wallet) public onlyOwner returns (bool) {
-        require(state &lt; SaleState.PartnerSaleFinalized);
+        require(state < SaleState.PartnerSaleFinalized);
         require(_wallet != address(0));
         partnerSaleWallets.push(_wallet);
         return true;
@@ -577,14 +577,14 @@ contract DadiToken is StandardToken, Ownable {
 
         // we need to represent the tokens with included decimals
         // `2640 ** (10 ^ 18)` not `2640`
-        if (remainingPreSaleTokens &gt; 0) {
+        if (remainingPreSaleTokens > 0) {
             remainingPreSaleTokens = remainingPreSaleTokens * (uint256(10) ** decimals);
             balances[owner] = balances[owner].sub(remainingPreSaleTokens);
             balances[ecosystemWallet] = balances[ecosystemWallet].add(remainingPreSaleTokens);
             Transfer(0, ecosystemWallet, remainingPreSaleTokens);
         }
 
-        if (remainingPublicSaleTokens &gt; 0) {
+        if (remainingPublicSaleTokens > 0) {
             remainingPublicSaleTokens = remainingPublicSaleTokens * (uint256(10) ** decimals);
             balances[owner] = balances[owner].sub(remainingPublicSaleTokens);
             balances[ecosystemWallet] = balances[ecosystemWallet].add(remainingPublicSaleTokens);
@@ -608,7 +608,7 @@ contract DadiToken is StandardToken, Ownable {
     
 
     /*****
-    * @dev Allow investors to claim their tokens after the ICO is finalized &amp; successful
+    * @dev Allow investors to claim their tokens after the ICO is finalized & successful
     * @return   bool  Return true, if executed successfully
     */
     function claimTokens () public returns (bool) {
@@ -616,7 +616,7 @@ contract DadiToken is StandardToken, Ownable {
         
         // get the tokens available for the sender
         uint256 tokens = purchasedTokens[msg.sender];
-        require(tokens &gt; 0);
+        require(tokens > 0);
 
         purchasedTokens[msg.sender] = 0;
 
@@ -638,7 +638,7 @@ contract DadiToken is StandardToken, Ownable {
 
         uint256 value = partnerSaleWei[_recipient];
         
-        require(value &gt; 0);
+        require(value > 0);
 
         partnerSaleWei[_recipient] = 0;
 
@@ -756,7 +756,7 @@ contract DadiToken is StandardToken, Ownable {
     function forwardFunds (uint256 _value) internal {
         // if (isStatePartnerSale()) {
         //     // move funds to a partnerSaleWallet
-        //     if (partnerSaleWallets.length &gt; 0) {
+        //     if (partnerSaleWallets.length > 0) {
         //         // Transfer ETH to a random wallet
         //         uint accountNumber = getRandom(partnerSaleWallets.length) - 1;
         //         address account = partnerSaleWallets[accountNumber];
@@ -770,7 +770,7 @@ contract DadiToken is StandardToken, Ownable {
 
         if (isStatePreSale()) {
             // move funds to a preSaleWallet
-            if (preSaleWallets.length &gt; 0) {
+            if (preSaleWallets.length > 0) {
                 // Transfer ETH to a random wallet
                 accountNumber = getRandom(preSaleWallets.length) - 1;
                 account = preSaleWallets[accountNumber];
@@ -779,7 +779,7 @@ contract DadiToken is StandardToken, Ownable {
             }
         } else if (isStatePublicSale()) {
             // move funds to a publicSaleWallet
-            if (publicSaleWallets.length &gt; 0) {
+            if (publicSaleWallets.length > 0) {
                 // Transfer ETH to a random wallet
                 accountNumber = getRandom(publicSaleWallets.length) - 1;
                 account = publicSaleWallets[accountNumber];
@@ -811,7 +811,7 @@ contract DadiToken is StandardToken, Ownable {
                 investorCount++;
             }
 
-            // assign tokens to separate mapping, that is not &quot;balances&quot;
+            // assign tokens to separate mapping, that is not "balances"
             purchasedTokens[_recipient] = purchasedTokens[_recipient].add(boughtTokens);
         }
 
@@ -840,7 +840,7 @@ contract DadiToken is StandardToken, Ownable {
             partnerSaleTokensPurchased = partnerSaleTokensPurchased.add(tokens);
 
             // No PartnerSale tokens remaining
-            if (partnerSaleTokensPurchased &gt;= partnerSaleTokensAvailable) {
+            if (partnerSaleTokensPurchased >= partnerSaleTokensAvailable) {
                 state = SaleState.PartnerSaleFinalized;
             }
         } else if (isStatePreSale()) {
@@ -849,7 +849,7 @@ contract DadiToken is StandardToken, Ownable {
             preSaleRaised = preSaleRaised.add(_value);
 
             // No PreSale tokens remaining
-            if (preSaleTokensPurchased &gt;= preSaleTokensAvailable) {
+            if (preSaleTokensPurchased >= preSaleTokensAvailable) {
                 state = SaleState.PreSaleFinalized;
             }
         } else if (isStatePublicSale()) {
@@ -858,7 +858,7 @@ contract DadiToken is StandardToken, Ownable {
             publicSaleRaised = publicSaleRaised.add(_value);
 
             // No PublicSale tokens remaining
-            if (publicSaleTokensPurchased &gt;= publicSaleTokensAvailable) {
+            if (publicSaleTokensPurchased >= publicSaleTokensAvailable) {
                 state = SaleState.PublicSaleFinalized;
             }
         }
@@ -886,7 +886,7 @@ contract DadiToken is StandardToken, Ownable {
         // total percentage divided by the number of founding team wallets (likely 4).
         uint percentage = foundersPercentOfTotal / _recipients.length;
 
-        for (uint i = 0; i &lt; _recipients.length; i++) {
+        for (uint i = 0; i < _recipients.length; i++) {
             distribute(_recipients[i], percentage);
         }
     }

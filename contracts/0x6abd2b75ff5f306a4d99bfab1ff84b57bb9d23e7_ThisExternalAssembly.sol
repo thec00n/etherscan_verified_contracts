@@ -32,14 +32,14 @@ contract ThisExternalAssembly {
         numcalls++;
 
         address addr = address(this);
-        bytes4 sig = bytes4(sha3(&quot;failSend()&quot;));
+        bytes4 sig = bytes4(sha3("failSend()"));
 
         bool ret;
 
         // work around `solc` safeguards for throws in external calls
         // https://ethereum.stackexchange.com/questions/6354/
         assembly {
-            let x := mload(0x40) // read &quot;empty memory&quot; pointer
+            let x := mload(0x40) // read "empty memory" pointer
             mstore(x,sig)
 
             ret := call(

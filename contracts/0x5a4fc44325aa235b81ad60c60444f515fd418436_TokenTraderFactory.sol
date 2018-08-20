@@ -10,7 +10,7 @@ pragma solidity ^0.4.4;
 // directly as the token does not implement the ERC20
 // transferFrom(...), approve(...) and allowance(...) methods
 //
-// Enjoy. (c) JonnyLatte &amp; BokkyPooBah 2016. The MIT licence.
+// Enjoy. (c) JonnyLatte & BokkyPooBah 2016. The MIT licence.
 // ------------------------------------------------------------------------
 
 // https://github.com/ethereum/EIPs/issues/20
@@ -85,7 +85,7 @@ contract TokenTrader is Owned {
         ActivatedEvent(buysTokens, sellsTokens);
     }
 
-    // Maker can activate or deactivate this contract&#39;s buying and
+    // Maker can activate or deactivate this contract's buying and
     // selling status
     //
     // The ActivatedEvent() event is logged with the following
@@ -106,7 +106,7 @@ contract TokenTrader is Owned {
     // can buy asset tokens.
     //
     // Maker deposits asset tokens to this contract by calling the
-    // asset&#39;s transfer() method with the following parameters
+    // asset's transfer() method with the following parameters
     //   _to     is the address of THIS contract
     //   _value  is the number of asset tokens to be transferred
     //
@@ -167,7 +167,7 @@ contract TokenTrader is Owned {
     // This method was called withdraw() in the old version
     //
     function makerWithdrawEther(uint256 ethers) onlyOwner returns (bool ok) {
-        if (this.balance &gt;= ethers) {
+        if (this.balance >= ethers) {
             MakerWithdrewEther(ethers);
             return owner.send(ethers);
         }
@@ -176,7 +176,7 @@ contract TokenTrader is Owned {
     // Taker buys asset tokens by sending ethers
     //
     // The TakerBoughtAsset() event is logged with the following parameters
-    //   buyer           is the buyer&#39;s address
+    //   buyer           is the buyer's address
     //   ethersSent      is the number of ethers sent by the buyer
     //   ethersReturned  is the number of ethers sent back to the buyer as
     //                   change
@@ -189,12 +189,12 @@ contract TokenTrader is Owned {
             uint order    = msg.value / sellPrice;
             uint can_sell = ERC20(asset).balanceOf(address(this)) / units;
             uint256 change = 0;
-            if (order &gt; can_sell) {
+            if (order > can_sell) {
                 change = msg.value - (can_sell * sellPrice);
                 order = can_sell;
                 if (!msg.sender.send(change)) throw;
             }
-            if (order &gt; 0) {
+            if (order > 0) {
                 if(!ERC20(asset).transfer(msg.sender, order * units)) throw;
             }
             TakerBoughtAsset(msg.sender, msg.value, change, order * units);
@@ -204,14 +204,14 @@ contract TokenTrader is Owned {
     }
 
     // Taker sells asset tokens for ethers by:
-    // 1. Calling the asset&#39;s approve() method with the following parameters
+    // 1. Calling the asset's approve() method with the following parameters
     //    _spender  is the address of this contract
     //    _value    is the number of tokens to be sold
     // 2. Calling this takerSellAsset() method with the following parameter
     //    tokens    is the number of asset tokens to be sold
     //
     // The TakerSoldAsset() event is logged with the following parameters
-    //   seller        is the seller&#39;s address
+    //   seller        is the seller's address
     //   tokensToSell  is the number of asset tokens offered by the seller
     //   tokensSold    is the number of asset tokens sold
     //   ethers        is the number of ethers sent to the seller
@@ -225,8 +225,8 @@ contract TokenTrader is Owned {
             // Token lots available
             uint256 order = tokens / units;
             // Adjust order for funds available
-            if (order &gt; can_buy) order = can_buy;
-            if (order &gt; 0) {
+            if (order > can_buy) order = can_buy;
+            if (order > 0) {
                 // Extract user tokens
                 if(!ERC20(asset).transferFrom(msg.sender, address(this), order * units)) throw;
                 // Pay user
@@ -250,7 +250,7 @@ contract TokenTraderFactory is Owned {
         bool buysTokens, bool sellsTokens);
     event OwnerWithdrewERC20Token(address tokenAddress, uint256 tokens);
 
-    mapping(address =&gt; bool) _verify;
+    mapping(address => bool) _verify;
 
     // Anyone can call this method to verify the settings of a
     // TokenTrader contract. The parameters are:
@@ -312,7 +312,7 @@ contract TokenTraderFactory is Owned {
     //   sellsTokens  true
     //
     // The TradeListing() event is logged with the following parameters
-    //   ownerAddress        is the Maker&#39;s address
+    //   ownerAddress        is the Maker's address
     //   tokenTraderAddress  is the address of the newly created TokenTrader contract
     //   asset               is the ERC20 asset address
     //   buyPrice            is the buy price in ethers per `units` of asset tokens
@@ -330,11 +330,11 @@ contract TokenTraderFactory is Owned {
         bool    sellsTokens
     ) returns (address trader) {
         // Cannot set negative price
-        if (buyPrice &lt; 0 || sellPrice &lt; 0) throw;
+        if (buyPrice < 0 || sellPrice < 0) throw;
         // Must make profit on spread
-        if (buyPrice &gt; sellPrice) throw;
+        if (buyPrice > sellPrice) throw;
         // Cannot buy or sell zero or negative units
-        if (units &lt;= 0) throw;
+        if (units <= 0) throw;
         trader = new TokenTrader(
             asset,
             buyPrice,

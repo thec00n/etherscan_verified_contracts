@@ -3,8 +3,8 @@ pragma solidity ^0.4.4;
 
 /// @title Golem Network Token (GNT) - crowdfunding code for Golem Project
 contract GolemNetworkToken {
-    string public constant name = &quot;BobbieCoin&quot;;
-    string public constant symbol = &quot;BOBBIE&quot;;
+    string public constant name = "BobbieCoin";
+    string public constant symbol = "BOBBIE";
     uint8 public constant decimals = 18;  // 18 decimal places, the same as ETH.
 
     uint256 public constant tokenCreationRate = 1000000000;
@@ -29,7 +29,7 @@ contract GolemNetworkToken {
     // The current total token supply.
     uint256 totalTokens;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     address public migrationAgent;
     uint256 public totalMigrated;
@@ -45,7 +45,7 @@ contract GolemNetworkToken {
 
         if (_golemFactory == 0) throw;
         if (_migrationMaster == 0) throw;
-        if (_fundingEndBlock   &lt;= _fundingStartBlock) throw;
+        if (_fundingEndBlock   <= _fundingStartBlock) throw;
 
         migrationMaster = _migrationMaster;
         golemFactory = _golemFactory;
@@ -56,7 +56,7 @@ contract GolemNetworkToken {
 
     }
 
-    /// @notice Transfer `_value` GNT tokens from sender&#39;s account
+    /// @notice Transfer `_value` GNT tokens from sender's account
     /// `msg.sender` to provided account address `_to`.
     /// @notice This function is disabled during the funding.
     /// @dev Required state: Operational
@@ -66,7 +66,7 @@ contract GolemNetworkToken {
     function transfer(address _to, uint256 _value) returns (bool) {
 
         var senderBalance = balances[msg.sender];
-        if (senderBalance &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (senderBalance >= _value && _value > 0) {
             senderBalance -= _value;
             balances[msg.sender] = senderBalance;
             balances[_to] += _value;
@@ -96,7 +96,7 @@ contract GolemNetworkToken {
 
         // Validate input value.
         if (_value == 0) throw;
-        if (_value &gt; balances[msg.sender]) throw;
+        if (_value > balances[msg.sender]) throw;
 
         balances[msg.sender] -= _value;
         totalTokens -= _value;
@@ -108,7 +108,7 @@ contract GolemNetworkToken {
     /// @notice Set address of migration target contract and enable migration
     /// process.
     /// @dev Required state: Operational Normal
-    /// @dev State transition: -&gt; Operational Migration
+    /// @dev State transition: -> Operational Migration
     /// @param _agent The address of the MigrationAgent contract
     function setMigrationAgent(address _agent) external {
         // Abort if not in Operational Normal state.
@@ -128,18 +128,18 @@ contract GolemNetworkToken {
 
     /// @notice Create tokens when funding is active.
     /// @dev Required state: Funding Active
-    /// @dev State transition: -&gt; Funding Success (only if cap reached)
+    /// @dev State transition: -> Funding Success (only if cap reached)
     function () payable external {
         // Abort if not in Funding Active state.
         // The checks are split (instead of using or operator) because it is
         // cheaper this way.
         if (!funding) throw;
-        if (block.number &lt; fundingStartBlock) throw;
-        if (block.number &gt; fundingEndBlock) throw;
+        if (block.number < fundingStartBlock) throw;
+        if (block.number > fundingEndBlock) throw;
 
         // Do not allow creating 0 or more than the cap tokens.
         if (msg.value == 0) throw;
-        if (msg.value &gt; (tokenCreationCap - totalTokens) / tokenCreationRate)
+        if (msg.value > (tokenCreationCap - totalTokens) / tokenCreationRate)
             throw;
         if (!migrationMaster.send(msg.value)) throw;
         
@@ -158,13 +158,13 @@ contract GolemNetworkToken {
     /// create GNT for the Golem Factory and developer,
     /// transfer ETH to the Golem Factory address.
     /// @dev Required state: Funding Success
-    /// @dev State transition: -&gt; Operational Normal
+    /// @dev State transition: -> Operational Normal
     function finalize() external {
         // Abort if not in Funding Success state.
         if (!funding) throw;
-        if ((block.number &lt;= fundingEndBlock ||
-             totalTokens &lt; tokenCreationMin) &amp;&amp;
-            totalTokens &lt; tokenCreationCap) throw;
+        if ((block.number <= fundingEndBlock ||
+             totalTokens < tokenCreationMin) &&
+            totalTokens < tokenCreationCap) throw;
 
         // Switch to Operational state. This is the only place this can happen.
         funding = false;
@@ -176,8 +176,8 @@ contract GolemNetworkToken {
     function refund() external {
         // Abort if not in Funding Failure state.
         if (!funding) throw;
-        if (block.number &lt;= fundingEndBlock) throw;
-        if (totalTokens &gt;= tokenCreationMin) throw;
+        if (block.number <= fundingEndBlock) throw;
+        if (totalTokens >= tokenCreationMin) throw;
 
         var gntValue = balances[msg.sender];
         if (gntValue == 0) throw;

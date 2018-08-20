@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 contract WhiteList {
     
-    mapping (address =&gt; bool)   public  whiteList;
+    mapping (address => bool)   public  whiteList;
     
     address  public  owner;
     
@@ -14,14 +14,14 @@ contract WhiteList {
     function addToWhiteList(address [] _addresses) public {
         require(msg.sender == owner);
         
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             whiteList[_addresses[i]] = true;
         }
     }
     
     function removeFromWhiteList(address [] _addresses) public {
         require (msg.sender == owner);
-        for (uint i = 0; i &lt; _addresses.length; i++) {
+        for (uint i = 0; i < _addresses.length; i++) {
             whiteList[_addresses[i]] = false;
         }
     }

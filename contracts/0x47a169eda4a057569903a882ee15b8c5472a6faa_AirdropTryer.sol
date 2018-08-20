@@ -23,7 +23,7 @@ contract giveAirdrop {
         
         // Check to see if we won an airdrop
         (,,,uint winnings,,,) = fomo.getPlayerInfoByAddress(address(this));
-        require(winnings &gt; 0.1 ether);
+        require(winnings > 0.1 ether);
         fomo.withdraw();
         
         selfdestruct(msg.sender);

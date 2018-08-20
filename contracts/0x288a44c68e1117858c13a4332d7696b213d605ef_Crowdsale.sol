@@ -99,14 +99,14 @@ contract Crowdsale{
         _allToken = _allToken;
         _TokenSale = _TokenSale;
         bonuses.length = 0;
-        for (uint8 i = 0; i &lt; _value.length; i++){
+        for (uint8 i = 0; i < _value.length; i++){
             bonuses.push(Bonus(_value[i],_procent[i],_freezeTime[i]));
         }
     }
     
     
     function changeExchange(uint256 _ETHUSD) public {
-		require(_ETHUSD &gt;= 1 ether); 
+		require(_ETHUSD >= 1 ether); 
 
 		softCap=softCap.mul(exchange).div(_ETHUSD);  			// QUINTILLIONS
 		hardCap=hardCap.mul(exchange).div(_ETHUSD);  			// QUINTILLIONS
@@ -118,7 +118,7 @@ contract Crowdsale{
 		
 		emit ExchangeChanged(_ETHUSD, exchange, rate, softCap, hardCap);
 
-	    for (uint16 i = 0; i &lt; bonuses.length; i++) {
+	    for (uint16 i = 0; i < bonuses.length; i++) {
 	        bonuses[i].value=bonuses[i].value.mul(exchange).div(_ETHUSD);   // QUINTILLIONS
 	    }
 	    
@@ -129,21 +129,21 @@ contract Crowdsale{
     }
     
     function getTokenSaleType()  external constant returns(string){
-        return (TokenSale == TokenSaleType.round1)?&#39;round1&#39;:&#39;round2&#39;;
+        return (TokenSale == TokenSaleType.round1)?'round1':'round2';
     }
     
     
     function hasEnded() public constant returns (bool) {
 
-        bool timeReached = now &gt; endTime;
+        bool timeReached = now > endTime;
 
-        bool capReached = weiRaised() &gt;= hardCap;
+        bool capReached = weiRaised() >= hardCap;
 
-        return (timeReached || capReached) &amp;&amp; isInitialized;
+        return (timeReached || capReached) && isInitialized;
     }
     
     function goalReached() public constant returns (bool) {
-        return weiRaised() &gt;= softCap;
+        return weiRaised() >= softCap;
     }
     
     // Collected funds for the current round. Constant.
@@ -165,12 +165,12 @@ contract Crowdsale{
     // Returns the percentage of the bonus on the given date. Constant.
     function getProfitPercentForData(uint256 timeNow) public constant returns (uint256){
         // if the discount is 0 or zero steps, or the round does not start, we return the minimum discount
-        if (profit.max == 0 || profit.step == 0 || timeNow &gt; endDiscountTime){
+        if (profit.max == 0 || profit.step == 0 || timeNow > endDiscountTime){
             return profit.min;
         }
 
         // if the round is over - the maximum
-        if (timeNow&lt;=startTime){
+        if (timeNow<=startTime){
             return profit.max;
         }
 
@@ -189,12 +189,12 @@ contract Crowdsale{
     }
 
     function getBonuses(uint256 _value) public constant returns(uint256 procent, uint256 _dateUnfreeze){
-        if(bonuses.length == 0 || bonuses[0].value &gt; _value){
+        if(bonuses.length == 0 || bonuses[0].value > _value){
             return (0,0);
         }
         uint16 i = 1;
-        for(i; i &lt; bonuses.length; i++){
-            if(bonuses[i].value &gt; _value){
+        for(i; i < bonuses.length; i++){
+            if(bonuses[i].value > _value){
                 break;
             }
         }
@@ -212,20 +212,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
         // assert(a == b * c + a % b); // There is no case in which this does not hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }

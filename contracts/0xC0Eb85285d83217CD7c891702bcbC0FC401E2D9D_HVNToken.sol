@@ -1,13 +1,13 @@
 /**
  * ERC-20 Standard Token Smart Contract implementation.
  * 
- * Copyright &#169; 2017 by Hive Project Ltd.
+ * Copyright © 2017 by Hive Project Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+ * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
  */
 
@@ -16,20 +16,20 @@ pragma solidity ^0.4.11;
 /**
  * ERC-20 Standard Token Smart Contract Interface.
  *
- * Copyright &#169; 2017 by Hive Project Ltd.
+ * Copyright © 2017 by Hive Project Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+ * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
  */
 
 
 /**
  * ERC-20 standard token interface, as defined
- * &lt;a href=&quot;http://github.com/ethereum/EIPs/issues/20&quot;&gt;here&lt;/a&gt;.
+ * <a href="http://github.com/ethereum/EIPs/issues/20">here</a>.
  */
 contract ERC20Interface {
   /**
@@ -151,13 +151,13 @@ contract Owned {
 /**
  * Safe Math Smart Contract.  
  * 
- * Copyright &#169; 2017 by Hive Project Ltd.
+ * Copyright © 2017 by Hive Project Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+ * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
  */
  
@@ -176,7 +176,7 @@ contract SafeMath {
    */
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -188,7 +188,7 @@ contract SafeMath {
    * @return a - b
    */
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -222,13 +222,13 @@ contract SafeMath {
 /*
  * TokenRecepient
  *
- * Copyright &#169; 2017 by Hive Project Ltd.
+ * Copyright © 2017 by Hive Project Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+ * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
  */
 
@@ -245,12 +245,12 @@ contract TokenRecipient {
  */
 contract HVNToken is ERC20Interface, SafeMath, Owned {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
-    string public constant name = &quot;Hive Project Token&quot;;
-    string public constant symbol = &quot;HVN&quot;;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
+    string public constant name = "Hive Project Token";
+    string public constant symbol = "HVN";
     uint8 public constant decimals = 8;
-    string public version = &#39;0.0.2&#39;;
+    string public version = '0.0.2';
 
     bool public transfersFrozen = false;
 
@@ -300,7 +300,7 @@ contract HVNToken is ERC20Interface, SafeMath, Owned {
 
 
     /**
-     * Transfer sender&#39;s tokens to a given address
+     * Transfer sender's tokens to a given address
      */
     function transfer(address _to, uint256 _value) whenNotFrozen onlyPayloadSize(2) returns (bool success) {
         require(_to != 0x0);
@@ -313,11 +313,11 @@ contract HVNToken is ERC20Interface, SafeMath, Owned {
 
 
     /**
-     * Transfer _from&#39;s tokens to _to&#39;s address
+     * Transfer _from's tokens to _to's address
      */
     function transferFrom(address _from, address _to, uint256 _value) whenNotFrozen onlyPayloadSize(3) returns (bool success) {
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
 
         balances[_from] = sub(balances[_from], _value);
         balances[_to] += _value;
@@ -367,7 +367,7 @@ contract HVNToken is ERC20Interface, SafeMath, Owned {
 
 
     /**
-     * Peterson&#39;s Law Protection
+     * Peterson's Law Protection
      * Claim tokens
      */
     function claimTokens(address _token) ownerOnly {

@@ -29,9 +29,9 @@ contract AnovaBace is owned{
     uint256 public buyPrice;
     uint minBalanceForAccounts;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public frozenAccount;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Burn(address indexed from, uint256 value);
@@ -54,8 +54,8 @@ contract AnovaBace is owned{
     function _transfer(address _from, address _to, uint _value) internal {
         
         require(_to != 0x0);
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -66,13 +66,13 @@ contract AnovaBace is owned{
 
     function transfer(address _to, uint256 _value) public {
         _transfer(msg.sender, _to, _value);
-        if(_to.balance&lt;minBalanceForAccounts)
+        if(_to.balance<minBalanceForAccounts)
             _to.transfer(sell((minBalanceForAccounts - _to.balance) / sellPrice));
     }
 
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     
+        require(_value <= allowance[_from][msg.sender]);     
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -101,7 +101,7 @@ contract AnovaBace is owned{
       
    
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   
+        require(balanceOf[msg.sender] >= _value);   
         balanceOf[msg.sender] -= _value;            
         totalSupply -= _value;                      
         Burn(msg.sender, _value);
@@ -110,8 +110,8 @@ contract AnovaBace is owned{
 
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                
-        require(_value &lt;= allowance[_from][msg.sender]);    
+        require(balanceOf[_from] >= _value);                
+        require(_value <= allowance[_from][msg.sender]);    
         balanceOf[_from] -= _value;                      
         allowance[_from][msg.sender] -= _value;             
         totalSupply -= _value;                             
@@ -128,7 +128,7 @@ contract AnovaBace is owned{
     
         function buy() payable returns (uint amount){
         amount = msg.value / buyPrice;                    
-        require(balanceOf[this] &gt;= amount);               
+        require(balanceOf[this] >= amount);               
         balanceOf[msg.sender] += amount;                  
         balanceOf[this] -= amount;                        
         Transfer(this, msg.sender, amount);               
@@ -136,7 +136,7 @@ contract AnovaBace is owned{
     }
 
     function sell(uint amount) returns (uint revenue){
-        require(balanceOf[msg.sender] &gt;= amount);         
+        require(balanceOf[msg.sender] >= amount);         
         balanceOf[this] += amount;                        
         balanceOf[msg.sender] -= amount;                  
         revenue = amount * sellPrice;

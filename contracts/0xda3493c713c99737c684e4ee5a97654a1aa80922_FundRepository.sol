@@ -37,20 +37,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,7 +67,7 @@ contract FundRepository is Owned {
 
     uint256 public totalNumberOfFunders;
 
-    mapping (address =&gt; uint256) funders;
+    mapping (address => uint256) funders;
 
     uint256 public totalFunded;
 
@@ -75,13 +75,13 @@ contract FundRepository is Owned {
 
     uint256 public totalBalance;
 
-    mapping (bytes32 =&gt; mapping (string =&gt; Funding)) funds;
+    mapping (bytes32 => mapping (string => Funding)) funds;
 
-    mapping(address =&gt; bool) public callers;
+    mapping(address => bool) public callers;
 
     struct Funding {
         address[] funders;
-        mapping (address =&gt; uint256) balances;
+        mapping (address => uint256) balances;
         uint256 totalBalance;
     }
 
@@ -96,18 +96,18 @@ contract FundRepository is Owned {
     }
 
     function updateFunders(address _from, bytes32 _platform, string _platformId, uint256 _value) public onlyCaller {
-        bool existing = funds[_platform][_platformId].balances[_from] &gt; 0;
+        bool existing = funds[_platform][_platformId].balances[_from] > 0;
         if (!existing) {
             funds[_platform][_platformId].funders.push(_from);
         }
-        if (funders[_from] &lt;= 0) {
+        if (funders[_from] <= 0) {
             totalNumberOfFunders = totalNumberOfFunders.add(1);
             funders[_from].add(_value);
         }
     }
 
     function updateBalances(address _from, bytes32 _platform, string _platformId, uint256 _value) public onlyCaller {
-        if (funds[_platform][_platformId].totalBalance &lt;= 0) {
+        if (funds[_platform][_platformId].totalBalance <= 0) {
             requestsFunded = requestsFunded.add(1);
         }
         funds[_platform][_platformId].balances[_from] = funds[_platform][_platformId].balances[_from].add(_value);
@@ -120,7 +120,7 @@ contract FundRepository is Owned {
         var funding = funds[platform][platformId];
         var requestBalance = funding.totalBalance;
         totalBalance = totalBalance.sub(requestBalance);
-        for (uint i = 0; i &lt; funding.funders.length; i++) {
+        for (uint i = 0; i < funding.funders.length; i++) {
             var funder = funding.funders[i];
             delete (funding.balances[funder]);
         }

@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,10 +48,10 @@ contract ERC20 {
 contract SPCoin is ERC20
 { using SafeMath for uint256;
     // Name of the token
-    string public constant name = &quot;SP Coin&quot;;
+    string public constant name = "SP Coin";
 
     // Symbol of token
-    string public constant symbol = &quot;SPS&quot;;
+    string public constant symbol = "SPS";
     uint8 public constant decimals = 18;
     uint public _totalsupply = 2500000000 *10 ** 18; // 2.5 Billion SPS Coins
     address public owner;
@@ -67,10 +67,10 @@ contract SPCoin is ERC20
     uint256 maxCap_PRE;
     uint256 maxCap_ICO;
     bool public icoRunningStatus = true;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
-    address ethFundMain = 0x649BbCF5625E78f8A1dE1AE07d9D5E3E0fDCa932; // Suchapp&#39;s cold wallet
-    mapping (address =&gt; bool) public whitelisted;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+    address ethFundMain = 0x649BbCF5625E78f8A1dE1AE07d9D5E3E0fDCa932; // Suchapp's cold wallet
+    mapping (address => bool) public whitelisted;
     uint256 public Numtokens;
     uint256 public bonustokn;
     uint256 public ethreceived;
@@ -111,10 +111,10 @@ contract SPCoin is ERC20
   
     function () public payable 
     {
-        require(stage != Stages.ENDED &amp;&amp; msg.value &gt;= minimumInvestment);
-        require(!stopped &amp;&amp; msg.sender != owner);
+        require(stage != Stages.ENDED && msg.value >= minimumInvestment);
+        require(!stopped && msg.sender != owner);
         require(whitelisted[msg.sender]);
-    if( stage == Stages.PREICO &amp;&amp; now &lt;= pre_enddate )
+    if( stage == Stages.PREICO && now <= pre_enddate )
         {  
             no_of_tokens =(msg.value).mul(_price_tokn);
             ethreceived = ethreceived.add(msg.value);
@@ -128,7 +128,7 @@ contract SPCoin is ERC20
          
          
     else
-    if(stage == Stages.ICO &amp;&amp; now &lt;= ico_enddate )
+    if(stage == Stages.ICO && now <= ico_enddate )
         {
              
             no_of_tokens =((msg.value).mul(_price_tokn));
@@ -157,7 +157,7 @@ contract SPCoin is ERC20
             {
                 bon = 30;
             }
-          else if(bonusCalculationFactor &gt;= 15)
+          else if(bonusCalculationFactor >= 15)
             {
               bon = 2;
             }
@@ -171,34 +171,34 @@ contract SPCoin is ERC20
   function bonuscalico(uint256 y) private returns (uint256 cp){
      x = y/(10**18);
      uint bon;
-      if (x&gt;=2 &amp;&amp; x &lt;5){
+      if (x>=2 && x <5){
           bon = 1;
       }
-      else  if (x&gt;=5 &amp;&amp; x &lt;15){
+      else  if (x>=5 && x <15){
           bon = 2;
       }
-      else  if (x&gt;=15 &amp;&amp; x &lt;25){
+      else  if (x>=15 && x <25){
           bon = 3;
       }
-      else  if (x&gt;=25 &amp;&amp; x &lt;40){
+      else  if (x>=25 && x <40){
           bon = 4;
       }
-      else  if (x&gt;=40 &amp;&amp; x &lt;60){
+      else  if (x>=40 && x <60){
           bon = 5;
       }
-      else  if (x&gt;=60 &amp;&amp; x &lt;70){
+      else  if (x>=60 && x <70){
           bon = 6;
       }
-      else  if (x&gt;=70 &amp;&amp; x &lt;80){
+      else  if (x>=70 && x <80){
           bon = 7;
       }
-      else  if (x&gt;=80 &amp;&amp; x &lt;90){
+      else  if (x>=80 && x <90){
           bon = 8;
       }
-     else  if (x&gt;=90 &amp;&amp; x &lt;100){
+     else  if (x>=90 && x <100){
           bon = 9;
       }
-      else  if (x&gt;=100){
+      else  if (x>=100){
           bon = 10;
       }
       else{
@@ -253,7 +253,7 @@ contract SPCoin is ERC20
       
      function end_ICO() external onlyOwner atStage(Stages.ICO)
      {
-         require(now &gt; ico_enddate);
+         require(now > ico_enddate);
          stage = Stages.ENDED;
          icoRunningStatus= false;
         _totalsupply = (_totalsupply).sub(balances[address(this)]);
@@ -279,13 +279,13 @@ contract SPCoin is ERC20
     
     // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
      require( _to != 0x0);
-     require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+     require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
      balances[_from] = (balances[_from]).sub(_amount);
      allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
      balances[_to] = (balances[_to]).add(_amount);
@@ -304,14 +304,14 @@ contract SPCoin is ERC20
      }
   
      function allowance(address _owner, address _spender)public view returns (uint256 remaining) {
-         require( _owner != 0x0 &amp;&amp; _spender !=0x0);
+         require( _owner != 0x0 && _spender !=0x0);
          return allowed[_owner][_spender];
    }
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount) public returns (bool success) {
-         if(icoRunningStatus &amp;&amp; msg.sender == owner)
+         if(icoRunningStatus && msg.sender == owner)
          {
-            require(balances[owner] &gt;= _amount &amp;&amp; _amount &gt;= 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]);
+            require(balances[owner] >= _amount && _amount >= 0 && balances[_to] + _amount > balances[_to]);
             balances[owner] = (balances[owner]).sub(_amount);
             balances[_to] = (balances[_to]).add(_amount);
             Transfer(owner, _to, _amount);
@@ -320,7 +320,7 @@ contract SPCoin is ERC20
        
          else if(!icoRunningStatus)
          {
-            require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0 &amp;&amp; balances[_to] + _amount &gt; balances[_to]);
+            require(balances[msg.sender] >= _amount && _amount >= 0 && balances[_to] + _amount > balances[_to]);
             balances[msg.sender] = (balances[msg.sender]).sub(_amount);
             balances[_to] = (balances[_to]).add(_amount);
             Transfer(msg.sender, _to, _amount);
@@ -332,10 +332,10 @@ contract SPCoin is ERC20
      }
   
 
-          // Transfer the balance from owner&#39;s account to another account
+          // Transfer the balance from owner's account to another account
     function transferTokens(address _to, uint256 _amount) private returns(bool success) {
         require( _to != 0x0);       
-        require(balances[address(this)] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[address(this)] >= _amount && _amount > 0);
         balances[address(this)] = (balances[address(this)]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
         Transfer(address(this), _to, _amount);

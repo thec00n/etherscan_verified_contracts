@@ -38,7 +38,7 @@ library SafeMath
 
   function sub(uint256 a, uint256 b) internal pure returns(uint256) 
   {
-     assert(b &lt;= a);
+     assert(b <= a);
      return a - b;
   }
 
@@ -49,7 +49,7 @@ library SafeMath
   function add(uint256 a, uint256 b) internal pure returns(uint256 c) 
   {
      c = a + b;
-     assert(c &gt;= a);
+     assert(c >= a);
      return c;
   }
 }
@@ -76,8 +76,8 @@ contract GSCP is ERC20
     using SafeMath for uint256;
    
     uint256 constant public TOKEN_DECIMALS = 10 ** 18;
-    string public constant name            = &quot;Genesis Supply Chain Platform&quot;;
-    string public constant symbol          = &quot;GSCP&quot;;
+    string public constant name            = "Genesis Supply Chain Platform";
+    string public constant symbol          = "GSCP";
     uint256 public totalTokenSupply        = 999999999 * TOKEN_DECIMALS;
     uint8 public constant decimals         = 18;
     address public owner;
@@ -85,8 +85,8 @@ contract GSCP is ERC20
     event Burn(address indexed _burner, uint256 _value);
 
     /** mappings **/ 
-    mapping(address =&gt; uint256) public  balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) internal  allowed;
+    mapping(address => uint256) public  balances;
+    mapping(address => mapping(address => uint256)) internal  allowed;
  
     /**
      * @dev Throws if called by any account other than the owner.
@@ -115,7 +115,7 @@ contract GSCP is ERC20
 
      function burn(uint256 _value) onlyOwner public returns (bool) 
      {
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
 
         address burner = msg.sender;
 
@@ -163,7 +163,7 @@ contract GSCP is ERC20
        }
 
        require(_to != address(0x0));
-       require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt;= 0);
+       require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value >= 0);
 
        balances[_from] = balances[_from].sub(_value);
        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -177,7 +177,7 @@ contract GSCP is ERC20
     *
     * Beware that changing an allowance with this method brings the risk that someone may use both the old
     * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-    * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     * @param _spender The address which will spend the funds.
     * @param _tokens The amount of tokens to be spent.
@@ -201,7 +201,7 @@ contract GSCP is ERC20
 
     function allowance(address _owner, address _spender) public view returns(uint256)
     {
-       require(_owner != address(0x0) &amp;&amp; _spender != address(0x0));
+       require(_owner != address(0x0) && _spender != address(0x0));
 
        return allowed[_owner][_spender];
     }
@@ -221,7 +221,7 @@ contract GSCP is ERC20
        }
 
        require(_address != address(0x0));
-       require(balances[msg.sender] &gt;= _tokens);
+       require(balances[msg.sender] >= _tokens);
 
        balances[msg.sender] = (balances[msg.sender]).sub(_tokens);
        balances[_address] = (balances[_address]).add(_tokens);
@@ -238,7 +238,7 @@ contract GSCP is ERC20
     function transferTo(address _address, uint256 _tokens) external onlyOwner returns(bool) 
     {
        require( _address != address(0x0)); 
-       require( balances[address(this)] &gt;= _tokens.mul(TOKEN_DECIMALS) &amp;&amp; _tokens.mul(TOKEN_DECIMALS) &gt; 0);
+       require( balances[address(this)] >= _tokens.mul(TOKEN_DECIMALS) && _tokens.mul(TOKEN_DECIMALS) > 0);
 
        balances[address(this)] = ( balances[address(this)]).sub(_tokens.mul(TOKEN_DECIMALS));
        balances[_address] = (balances[_address]).add(_tokens.mul(TOKEN_DECIMALS));
@@ -280,7 +280,7 @@ contract GSCP is ERC20
    {
       uint256 oldValue = allowed[msg.sender][_spender];
 
-      if (_subtractedValue &gt; oldValue) 
+      if (_subtractedValue > oldValue) 
       {
          allowed[msg.sender][_spender] = 0;
       }

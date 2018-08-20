@@ -4,7 +4,7 @@ pragma solidity ^0.4.15;
   Copyright 2017 Mothership Foundation https://mothership.cx
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the &quot;Software&quot;), to
+  of this software and associated documentation files (the "Software"), to
   deal in the Software without restriction, including without limitation the
   rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
   sell copies of the Software, and to permit persons to whom the Software is
@@ -13,7 +13,7 @@ pragma solidity ^0.4.15;
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -42,7 +42,7 @@ contract Token is ERC20Basic{
 
 /// @title Ownable
 /// @dev The Ownable contract has an owner address, and provides basic authorization control
-/// functions, this simplifies the implementation of &quot;user permissions&quot;.
+/// functions, this simplifies the implementation of "user permissions".
 ///
 /// https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/ownership/Ownable.sol
 contract Ownable {
@@ -77,7 +77,7 @@ contract Voting is Ownable {
   uint public endBlock;
 
   // A map to store voting candidate for each user address
-  mapping(address =&gt; uint8) public votes;
+  mapping(address => uint8) public votes;
   // A list of all voters
   address[] public voters;
 
@@ -94,8 +94,8 @@ contract Voting is Ownable {
   /// @dev A method to signal a vote for a given `_candidate`
   /// @param _candidate Voting candidate ID
   function vote(uint8 _candidate) {
-    require(_candidate &gt; 0 &amp;&amp; _candidate &lt;= candidates);
-    assert(endBlock == 0 || getBlockNumber() &lt;= endBlock);
+    require(_candidate > 0 && _candidate <= candidates);
+    assert(endBlock == 0 || getBlockNumber() <= endBlock);
     if (votes[msg.sender] == 0) {
       voters.push(msg.sender);
     }
@@ -125,20 +125,20 @@ contract Voting is Ownable {
   ///  choosen and MSP amount at a specific `_blockNumber`
   /// @param _offset The offset at the `voters` list
   /// @param _limit The number of voters to return
-  /// @param _blockNumber The block number when the voters&#39;s MSP balances is queried
+  /// @param _blockNumber The block number when the voters's MSP balances is queried
   /// @return The voters, candidates and MSP amount at `_blockNumber`
   function getVotersAt(uint _offset, uint _limit, uint _blockNumber)
     constant
     returns(address[] _voters, uint8[] _candidates, uint[] _amounts) {
 
-    if (_offset &lt; voters.length) {
+    if (_offset < voters.length) {
       uint count = 0;
-      uint resultLength = voters.length - _offset &gt; _limit ? _limit : voters.length - _offset;
-      uint _block = _blockNumber &gt; endBlock ? endBlock : _blockNumber;
+      uint resultLength = voters.length - _offset > _limit ? _limit : voters.length - _offset;
+      uint _block = _blockNumber > endBlock ? endBlock : _blockNumber;
       _voters = new address[](resultLength);
       _candidates = new uint8[](resultLength);
       _amounts = new uint[](resultLength);
-      for(uint i = _offset; (i &lt; voters.length) &amp;&amp; (count &lt; _limit); i++) {
+      for(uint i = _offset; (i < voters.length) && (count < _limit); i++) {
         _voters[count] = voters[i];
         _candidates[count] = votes[voters[i]];
         _amounts[count] = msp.balanceOfAt(voters[i], _block);
@@ -150,18 +150,18 @@ contract Voting is Ownable {
   }
 
   function getSummary() constant returns (uint8[] _candidates, uint[] _summary) {
-    uint _block = getBlockNumber() &gt; endBlock ? endBlock : getBlockNumber();
+    uint _block = getBlockNumber() > endBlock ? endBlock : getBlockNumber();
 
     // Fill the candidates IDs list
     _candidates = new uint8[](candidates);
-    for(uint8 c = 1; c &lt;= candidates; c++) {
+    for(uint8 c = 1; c <= candidates; c++) {
       _candidates[c - 1] = c;
     }
 
     // Get MSP impact map for each candidate
     _summary = new uint[](candidates);
     uint8 _candidateIndex;
-    for(uint i = 0; i &lt; voters.length; i++) {
+    for(uint i = 0; i < voters.length; i++) {
       _candidateIndex = votes[voters[i]] - 1;
       _summary[_candidateIndex] = _summary[_candidateIndex] + msp.balanceOfAt(voters[i], _block);
     }

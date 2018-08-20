@@ -12,8 +12,8 @@ library SafeMath {
   * @dev Multiplies two numbers, reverts on overflow.
   */
   function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    // Gas optimization: this is cheaper than requiring &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (_a == 0) {
       return 0;
@@ -29,9 +29,9 @@ library SafeMath {
   * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
   */
   function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    require(_b &gt; 0); // Solidity only automatically asserts when dividing by 0
+    require(_b > 0); // Solidity only automatically asserts when dividing by 0
     uint256 c = _a / _b;
-    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn&#39;t hold
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
 
     return c;
   }
@@ -40,7 +40,7 @@ library SafeMath {
   * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-    require(_b &lt;= _a);
+    require(_b <= _a);
     uint256 c = _a - _b;
 
     return c;
@@ -51,7 +51,7 @@ library SafeMath {
   */
   function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
     uint256 c = _a + _b;
-    require(c &gt;= _a);
+    require(c >= _a);
 
     return c;
   }
@@ -80,16 +80,16 @@ contract Base {
         uint256 Tokens;
         address Owner;
      
-        mapping (uint256=&gt;strCateg) Category;
+        mapping (uint256=>strCateg) Category;
         uint256[] LoansID;
         Loan[] LoanPending;
         Portfolio[] Portfolios;
     }
     struct strCateg{
-        mapping(uint256=&gt;strAmount) Amount;
+        mapping(uint256=>strAmount) Amount;
     }
     struct strAmount{
-        mapping(uint256=&gt;strInsta) Installment;
+        mapping(uint256=>strInsta) Installment;
     }
     struct strInsta{
         uint256 value;
@@ -114,12 +114,12 @@ contract Base {
         uint256 forSale;
     }
     
-    mapping(address =&gt; Client) clients;
-    mapping(address =&gt; Bank) banks;
+    mapping(address => Client) clients;
+    mapping(address => Bank) banks;
     Loan[] loans;
     
     function () public payable{
-        require(false, &quot;Should not go through this point&quot;);
+        require(false, "Should not go through this point");
     }
 
  
@@ -127,14 +127,14 @@ contract Base {
 contract ClientFunctions is Base{
     // funciones del usuario
     modifier isClient(){
-        require(clients[msg.sender].Owner == msg.sender, &quot;not a client&quot;);
+        require(clients[msg.sender].Owner == msg.sender, "not a client");
         _;
     }
     // esta funcion es llamada por el cliente para pedir un prestamo
     function askForALoan(address _bankAddress, uint256 _amount, uint256 _installment) isClient public  {
         
-        require(banks[_bankAddress].Owner==_bankAddress, &quot;not a valid bank&quot;);
-        require(banks[_bankAddress].Category[clients[msg.sender].Category].Amount[_amount].Installment[_installment].enable, &quot;you not apply for that loan&quot;);
+        require(banks[_bankAddress].Owner==_bankAddress, "not a valid bank");
+        require(banks[_bankAddress].Category[clients[msg.sender].Category].Amount[_amount].Installment[_installment].enable, "you not apply for that loan");
 
         Loan memory _loan;
         _loan.Debt = _amount;
@@ -158,7 +158,7 @@ contract ClientFunctions is Base{
     }
     // esta funcion es llamada por el cliente, cuando el banco central (estado) le otorga el dinero 
     function removeClientToken(uint256 _value) isClient public{
-        require(clients[msg.sender].Tokens &gt;= _value, &quot;You don&#39;t have that many tokens&quot;);
+        require(clients[msg.sender].Tokens >= _value, "You don't have that many tokens");
         clients[msg.sender].Tokens = clients[msg.sender].Tokens.sub(_value);
     }
     // esta funcion es llamada por cliente para saber cuantos Tokens le quedan disponibles
@@ -180,12 +180,12 @@ contract ClientFunctions is Base{
 }
 contract BankFunctions is ClientFunctions{
     modifier isBank(){
-        require(banks[msg.sender].Owner==msg.sender, &quot;you are not a bank&quot;);
+        require(banks[msg.sender].Owner==msg.sender, "you are not a bank");
         _;
     }
     modifier isLoanOwner(uint256 _id) {
-        require(banks[msg.sender].Owner==msg.sender, &quot;you are not a bank&quot;);
-        require(loans[_id].Owner == msg.sender, &quot;not owner of loan&quot;);
+        require(banks[msg.sender].Owner==msg.sender, "you are not a bank");
+        require(loans[_id].Owner == msg.sender, "not owner of loan");
         _;
     }
     
@@ -195,16 +195,16 @@ contract BankFunctions is ClientFunctions{
     } 
     
     function removeBankToken(uint256 _value) isBank public{
-        require(banks[msg.sender].Tokens &gt;= _value, &quot;You don&#39;t have that many tokens&quot;);
+        require(banks[msg.sender].Tokens >= _value, "You don't have that many tokens");
         banks[msg.sender].Tokens = banks[msg.sender].Tokens.sub(_value);
     }
     // funcion llamada por el banco owner del Loan, permite saldar la deuda
     function payOffClientDebt(uint256 _loanId, uint256 _value)  isLoanOwner(_loanId) public{
 
         // checkear datos
-        require(loans[_loanId].Debt &gt; 0);
-        require(_value &gt; 0);
-        require(loans[_loanId].Debt&gt;= _value);
+        require(loans[_loanId].Debt > 0);
+        require(_value > 0);
+        require(loans[_loanId].Debt>= _value);
         loans[loans.length-1].EndTime = now;
         loans[_loanId].Debt = loans[_loanId].Debt.sub(_value);
     
@@ -236,8 +236,8 @@ contract LoansFunctions is BankFunctions{
     
     // permite comprar con Tokens un Loan
     function BuyLoan(address _owner, uint256 _loanId, uint256 _value)  isBank public{
-        require(loans[_loanId].ForSale &gt; 0, &quot;not for sale&quot;);
-        require(banks[msg.sender].Tokens&gt;= _value, &quot;you dont have money&quot;);
+        require(loans[_loanId].ForSale > 0, "not for sale");
+        require(banks[msg.sender].Tokens>= _value, "you dont have money");
         // asignar Loan
         SwitchLoanOwner( _owner,  _loanId);        
         
@@ -245,14 +245,14 @@ contract LoansFunctions is BankFunctions{
         banks[msg.sender].Tokens = banks[msg.sender].Tokens.sub(_value);
         banks[_owner].Tokens = banks[_owner].Tokens.add(_value);
     }
-    //funcion interna para intercambiar el due&#241;o del Loan
+    //funcion interna para intercambiar el dueño del Loan
     
     function SwitchLoanOwner(address _owner, uint256 _loanId) internal{
         //requisitos
-        require(loans[_loanId].Debt&gt; 0, &quot;at least one of the loans is already paid&quot;);
+        require(loans[_loanId].Debt> 0, "at least one of the loans is already paid");
         require(loans[_loanId].Owner == _owner);
         uint256 _indexLoan;
-        for (uint256 i; i&lt;banks[_owner].LoansID.length; i++){
+        for (uint256 i; i<banks[_owner].LoansID.length; i++){
             if (banks[_owner].LoansID[i] == _loanId){
                 _indexLoan = i;
                 i =  banks[_owner].LoansID.length.add(1);
@@ -278,8 +278,8 @@ contract LoansFunctions is BankFunctions{
     }
     
     function aproveLoan(uint256 _loanIndex) public {
-        require(banks[msg.sender].LoanPending[_loanIndex].Owner == msg.sender, &quot;you are not the owner&quot;);
-        require(banks[msg.sender].Tokens&gt;=banks[msg.sender].LoanPending[_loanIndex].Amount, &quot;the bank does not have that amount of tokens&quot;);
+        require(banks[msg.sender].LoanPending[_loanIndex].Owner == msg.sender, "you are not the owner");
+        require(banks[msg.sender].Tokens>=banks[msg.sender].LoanPending[_loanIndex].Amount, "the bank does not have that amount of tokens");
 
         banks[msg.sender].LoanPending[_loanIndex].Id =loans.length;
         loans.push(banks[msg.sender].LoanPending[_loanIndex]);
@@ -315,7 +315,7 @@ contract LoansFunctions is BankFunctions{
         
         Loan memory _loan;
         if (_pending){
-            require (_indexLoan &lt; banks[msg.sender].LoanPending.length, &quot;null value&quot;);
+            require (_indexLoan < banks[msg.sender].LoanPending.length, "null value");
             _loan = banks[msg.sender].LoanPending[_indexLoan];
         }else{
             _loan = loans[_indexLoan];
@@ -337,7 +337,7 @@ contract LoansFunctions is BankFunctions{
 }
 contract PortfolioFunctions is LoansFunctions{
     modifier isOwnerPortfolio(uint256 _indexPortfolio)  {
-        require(banks[msg.sender].Portfolios[_indexPortfolio].Owner== msg.sender, &quot;not the owner of portfolio&quot;);
+        require(banks[msg.sender].Portfolios[_indexPortfolio].Owner== msg.sender, "not the owner of portfolio");
         _;
     }
     // crear Portolio
@@ -359,9 +359,9 @@ contract PortfolioFunctions is LoansFunctions{
     }
     // agregar Loan to Portfolio
     function addLoanToPortfolio(uint256 _indexPortfolio, uint256 _idLoan) isOwnerPortfolio (_indexPortfolio) public {
-        for(uint256 i; i&lt;banks[msg.sender].Portfolios[_indexPortfolio].idLoans.length;i++){
+        for(uint256 i; i<banks[msg.sender].Portfolios[_indexPortfolio].idLoans.length;i++){
             if (banks[msg.sender].Portfolios[_indexPortfolio].idLoans[i]==_idLoan){
-                require(false, &quot;that loan already exists on the portfolio&quot;);
+                require(false, "that loan already exists on the portfolio");
             }
         }
         banks[msg.sender].Portfolios[_indexPortfolio].idLoans.push(_idLoan);
@@ -371,13 +371,13 @@ contract PortfolioFunctions is LoansFunctions{
         
         uint256 Loanslength = banks[msg.sender].Portfolios[_indexPortfolio].idLoans.length;
         uint256 _loanIndex = Loanslength;
-        for(uint256 i; i&lt;Loanslength; i++){
+        for(uint256 i; i<Loanslength; i++){
             if(_idLoan ==banks[msg.sender].Portfolios[_indexPortfolio].idLoans[i]){
                 _loanIndex = i;
                 i= Loanslength;
             }
         }
-        require(_loanIndex&lt;Loanslength, &quot;el Loan no se encuentra en el Portfolio&quot;);
+        require(_loanIndex<Loanslength, "el Loan no se encuentra en el Portfolio");
         
         if (_loanIndex !=banks[msg.sender].Portfolios[_indexPortfolio].idLoans.length-1){
                banks[msg.sender].Portfolios[_indexPortfolio].idLoans[_loanIndex] = banks[msg.sender].Portfolios[_indexPortfolio].idLoans[Loanslength-1];
@@ -391,27 +391,27 @@ contract PortfolioFunctions is LoansFunctions{
         _result = true;
     }    
     function getPortfolioInfo (address _bankAddress, uint256 _indexPortfolio) isBank  public view returns (uint256 _LoansLength, uint256 _forSale, address _owner){
-        require(banks[_bankAddress].Portfolios[_indexPortfolio].Owner == _bankAddress, &quot;not the owner of that portfolio&quot;);
+        require(banks[_bankAddress].Portfolios[_indexPortfolio].Owner == _bankAddress, "not the owner of that portfolio");
         _LoansLength =    banks[_bankAddress].Portfolios[_indexPortfolio].idLoans.length;
         _forSale =    banks[_bankAddress].Portfolios[_indexPortfolio].forSale;
         _owner =    banks[_bankAddress].Portfolios[_indexPortfolio].Owner;
     }
     function sellPorftolio(uint256 _indexPortfolio, uint256 _value) isOwnerPortfolio (_indexPortfolio) public {
-          require(banks[msg.sender].Portfolios[_indexPortfolio].idLoans.length&gt;0);
+          require(banks[msg.sender].Portfolios[_indexPortfolio].idLoans.length>0);
           banks[msg.sender].Portfolios[_indexPortfolio].forSale = _value;
     }
     function buyPortfolio(address _owner, uint256 _indexPortfolio, uint256 _value) isBank public {
         
-        require(banks[msg.sender].Tokens&gt;=_value);
-        require(banks[_owner].Portfolios[_indexPortfolio].idLoans.length &gt; 0);
-        require(banks[_owner].Portfolios[_indexPortfolio].forSale &gt; 0);
+        require(banks[msg.sender].Tokens>=_value);
+        require(banks[_owner].Portfolios[_indexPortfolio].idLoans.length > 0);
+        require(banks[_owner].Portfolios[_indexPortfolio].forSale > 0);
         require(banks[_owner].Portfolios[_indexPortfolio].forSale == _value );
         
 
         banks[msg.sender].Tokens = banks[msg.sender].Tokens.sub(_value);
         banks[_owner].Tokens = banks[_owner].Tokens.add(_value);
         
-        for(uint256 a;a&lt; banks[_owner].Portfolios[_indexPortfolio].idLoans.length ;a++){
+        for(uint256 a;a< banks[_owner].Portfolios[_indexPortfolio].idLoans.length ;a++){
            SwitchLoanOwner(_owner,  banks[_owner].Portfolios[_indexPortfolio].idLoans[a]);
         }
         
@@ -434,7 +434,7 @@ contract PortfolioFunctions is LoansFunctions{
 contract GobernanceFunctions is PortfolioFunctions{
 
     modifier IsOwner{
-        require(owner == msg.sender, &quot;not the owner&quot;);
+        require(owner == msg.sender, "not the owner");
         _;
     }
 
@@ -446,25 +446,25 @@ contract GobernanceFunctions is PortfolioFunctions{
 
     }
     function addClient (address _addressClient, uint256 _category) IsOwner  public{
-        require(banks[_addressClient].Owner!=_addressClient, &quot;that addreess is a bank&quot;);
-        require(clients[_addressClient].Owner!=_addressClient, &quot;that client already exists&quot;);
-        require (_category &gt; 0);
+        require(banks[_addressClient].Owner!=_addressClient, "that addreess is a bank");
+        require(clients[_addressClient].Owner!=_addressClient, "that client already exists");
+        require (_category > 0);
         clients[_addressClient].Owner = _addressClient;
         clients[_addressClient].Category =  _category; 
         clients[_addressClient].Tokens =  0;
     }
     function addTokensToBank(address _bank, uint256 _tokens) IsOwner public{
-        require(banks[_bank].Owner==_bank, &quot;not a Bank&quot;);
+        require(banks[_bank].Owner==_bank, "not a Bank");
         banks[_bank].Tokens = banks[_bank].Tokens.add(_tokens);
     }
     function changeClientCategory (address _client, uint256 _category) IsOwner public{
-        require (clients[_client].Owner==_client, &quot;not a client&quot;);
+        require (clients[_client].Owner==_client, "not a client");
         //function
         clients[_client].Category = _category;
     
     }
 }
-// deployar el contrato &quot;Deploy&quot;  con el address del gobierno
+// deployar el contrato "Deploy"  con el address del gobierno
 contract Deploy is GobernanceFunctions{
 
     constructor() public {

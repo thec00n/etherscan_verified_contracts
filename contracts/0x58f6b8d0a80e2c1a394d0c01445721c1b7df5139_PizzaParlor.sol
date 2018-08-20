@@ -13,7 +13,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -73,26 +73,26 @@ contract PizzaParlor {
   // technically either player can generate the game with the reveal
   // (and either player can drain the stack with the secret)
 
-    //     commit      -&gt;      player  -&gt; stack hash
-  mapping (bytes32 =&gt; mapping (address =&gt; bytes32)) public commitReceipt;
+    //     commit      ->      player  -> stack hash
+  mapping (bytes32 => mapping (address => bytes32)) public commitReceipt;
 
-    //     commit      -&gt;      player  -&gt; block number
-  mapping (bytes32 =&gt; mapping (address =&gt; uint32)) public commitBlock;
+    //     commit      ->      player  -> block number
+  mapping (bytes32 => mapping (address => uint32)) public commitBlock;
 
-  mapping (bytes32 =&gt; uint8) public stacksTransferred;
+  mapping (bytes32 => uint8) public stacksTransferred;
 
-  //tx1&amp;2: players submit to a particular commit hash their stack of pogs (the two txs can happen on the same block, no one is waiting)
-  //these go to the Cryptogs contract and it is transferStackAndCall&#39;ed to here
+  //tx1&2: players submit to a particular commit hash their stack of pogs (the two txs can happen on the same block, no one is waiting)
+  //these go to the Cryptogs contract and it is transferStackAndCall'ed to here
   function onTransferStack(address _sender, uint _token1, uint _token2, uint _token3, uint _token4, uint _token5, bytes32 _commit){
 
     //make sure this came from the Cryptogs contract
     require(msg.sender == cryptogsAddress);
 
-    //make sure this commit is unique / doesn&#39;t already exist
+    //make sure this commit is unique / doesn't already exist
     require(commitReceipt[_commit][_sender] == 0);
 
-    //make sure there aren&#39;t already two stacks submitted
-    require(stacksTransferred[_commit]&lt;2);
+    //make sure there aren't already two stacks submitted
+    require(stacksTransferred[_commit]<2);
     stacksTransferred[_commit]++;
 
     //make sure this contract now owns these tokens
@@ -126,8 +126,8 @@ contract PizzaParlor {
     require( commitReceipt[_commit][_opponent] == keccak256(_commit,_opponent,_token6,_token7,_token8,_token9,_token10) );
 
     //verify we are on a later block so random will work
-    require( uint32(block.number) &gt; commitBlock[_commit][msg.sender]);
-    require( uint32(block.number) &gt; commitBlock[_commit][_opponent]);
+    require( uint32(block.number) > commitBlock[_commit][msg.sender]);
+    require( uint32(block.number) > commitBlock[_commit][_opponent]);
 
     //verify that the reveal is correct
     require(_commit == keccak256(_reveal));
@@ -147,16 +147,16 @@ contract PizzaParlor {
 
     bool whosTurn = uint8(pseudoRandoms[0][0])%2==0;
     CoinFlip(_commit,whosTurn,whosTurn ? msg.sender : _opponent);
-    for(uint8 round=1;round&lt;=MAXROUNDS;round++){
-      for(uint8 i=1;i&lt;=10;i++){
+    for(uint8 round=1;round<=MAXROUNDS;round++){
+      for(uint8 i=1;i<=10;i++){
         //first check and see if this token has flipped yet
-        if(_tokens[i-1]&gt;0){
+        if(_tokens[i-1]>0){
 
           //get the random byte between 0-255 from our pseudoRandoms array of bytes32
           uint8 rand = _getRandom(pseudoRandoms,(round-1)*10 + i);
 
           uint8 threshold = (FLIPPINESS+round*FLIPPINESSROUNDBONUS);
-          if( rand &lt; threshold || round==MAXROUNDS ){
+          if( rand < threshold || round==MAXROUNDS ){
             _flip(_commit,round,cryptogsContract,_tokens,i-1,_opponent,whosTurn);
           }
         }
@@ -174,11 +174,11 @@ contract PizzaParlor {
   event GenerateGame(bytes32 indexed _commit,address indexed _sender);
 
   function _getRandom(bytes32[4] pseudoRandoms,uint8 randIndex) internal returns (uint8 rand){
-    if(randIndex&lt;32){
+    if(randIndex<32){
       rand = uint8(pseudoRandoms[0][randIndex]);
-    }else if(randIndex&lt;64){
+    }else if(randIndex<64){
       rand = uint8(pseudoRandoms[1][randIndex-32]);
-    }else if(randIndex&lt;96){
+    }else if(randIndex<96){
       rand = uint8(pseudoRandoms[1][randIndex-64]);
     }else{
       rand = uint8(pseudoRandoms[1][randIndex-96]);
@@ -195,7 +195,7 @@ contract PizzaParlor {
   }
 
   function max(uint32 a, uint32 b) private pure returns (uint32) {
-      return a &gt; b ? a : b;
+      return a > b ? a : b;
   }
 
   function _flip(bytes32 _commit,uint8 round,NFT cryptogsContract,uint[10] _tokens,uint8 tokenIndex,address _opponent,bool whosTurn) internal {
@@ -214,15 +214,15 @@ contract PizzaParlor {
   //if the game times out without either player generating the game,
   // (the frontend should have selected one of the players randomly to generate the game)
   //the frontend should give the other player the secret to drain the game
-  // secret -&gt; reveal -&gt; commit
+  // secret -> reveal -> commit
   function drainGame(bytes32 _commit,bytes32 _secret,address _opponent,uint _token1, uint _token2, uint _token3, uint _token4, uint _token5,uint _token6, uint _token7, uint _token8, uint _token9, uint _token10){
     //verify that receipts are valid
     require( commitReceipt[_commit][msg.sender] == keccak256(_commit,msg.sender,_token1,_token2,_token3,_token4,_token5) );
     require( commitReceipt[_commit][_opponent] == keccak256(_commit,_opponent,_token6,_token7,_token8,_token9,_token10) );
 
     //verify we are on a later block so random will work
-    require( uint32(block.number) &gt; commitBlock[_commit][msg.sender]+BLOCKTIMEOUT);
-    require( uint32(block.number) &gt; commitBlock[_commit][_opponent]+BLOCKTIMEOUT);
+    require( uint32(block.number) > commitBlock[_commit][msg.sender]+BLOCKTIMEOUT);
+    require( uint32(block.number) > commitBlock[_commit][_opponent]+BLOCKTIMEOUT);
 
     //make sure the commit is the doublehash of the secret
     require(_commit == keccak256(keccak256(_secret)));
@@ -298,5 +298,5 @@ contract PizzaParlor {
 contract NFT {
   function approve(address _to,uint256 _tokenId) public returns (bool) { }
   function transfer(address _to,uint256 _tokenId) external { }
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
+  mapping (uint256 => address) public tokenIndexToOwner;
 }

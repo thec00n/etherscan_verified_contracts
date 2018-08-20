@@ -99,7 +99,7 @@ contract OwnerBase {
         _;
     }
 
-    /// @dev Called by any &quot;C-level&quot; role to pause the contract. Used only when
+    /// @dev Called by any "C-level" role to pause the contract. Used only when
     ///  a bug or exploit is detected and we need to limit damage.
     function pause() external onlyCOO whenNotPaused {
         paused = true;
@@ -111,7 +111,7 @@ contract OwnerBase {
     /// @notice This is public rather than external so it can be called by
     ///  derived contracts.
     function unpause() public onlyCOO whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 	
@@ -174,26 +174,26 @@ contract RabbitBase is ERC721, OwnerBase, FighterCamp {
     RabbitData[] rabbits;
 
     /// @dev A mapping from rabbit IDs to the address that owns them. 
-    mapping (uint =&gt; address) rabbitToOwner;
+    mapping (uint => address) rabbitToOwner;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     //  Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint) howManyDoYouHave;
+    mapping (address => uint) howManyDoYouHave;
 
     /// @dev A mapping from RabbitIDs to an address that has been approved to call
     ///  transfeFrom(). Each Rabbit can only have one approved address for transfer
     ///  at any time. A zero value means no approval is outstanding.
-    mapping (uint =&gt; address) public rabbitToApproved;
+    mapping (uint => address) public rabbitToApproved;
 
 	
 	
     /// @dev Assigns ownership of a specific Rabbit to an address.
     function _transItem(address _from, address _to, uint _tokenId) internal {
-        // Since the number of rabbits is capped to 2^32 we can&#39;t overflow this
+        // Since the number of rabbits is capped to 2^32 we can't overflow this
         howManyDoYouHave[_to]++;
         // transfer ownership
         rabbitToOwner[_tokenId] = _to;
-        // When creating new rabbits _from is 0x0, but we can&#39;t account that address.
+        // When creating new rabbits _from is 0x0, but we can't account that address.
         if (_from != address(0)) {
             howManyDoYouHave[_from]--;
         }
@@ -201,13 +201,13 @@ contract RabbitBase is ERC721, OwnerBase, FighterCamp {
         delete rabbitToApproved[_tokenId];
         
         // Emit the transfer event.
-		if (_tokenId &gt; 0) {
+		if (_tokenId > 0) {
 			emit Transfer(_from, _to, _tokenId);
 		}
     }
 
     /// @dev An internal method that creates a new rabbit and stores it. This
-    ///  method doesn&#39;t do any checking and should only be called when the
+    ///  method doesn't do any checking and should only be called when the
     ///  input data is known to be valid. Will generate both a Birth event
     ///  and a Transfer event.
     function _createRabbit(
@@ -222,7 +222,7 @@ contract RabbitBase is ERC721, OwnerBase, FighterCamp {
         internal
         returns (uint)
     {
-        require(_star &gt;= 1 &amp;&amp; _star &lt;= 5);
+        require(_star >= 1 && _star <= 5);
 		
 		RabbitData memory _tmpRbt = RabbitData({
             genes: uint64(_genes),
@@ -319,14 +319,14 @@ contract RabbitOwnership is RabbitBase {
 
     /// @dev Checks if a given address is the current owner of a particular Rabbit.
     /// @param _owner the address we are validating against.
-    /// @param _tokenId rabbit id, only valid when &gt; 0
+    /// @param _tokenId rabbit id, only valid when > 0
     function _owns(address _owner, uint _tokenId) internal view returns (bool) {
         return rabbitToOwner[_tokenId] == _owner;
     }
 
     /// @dev Checks if a given address currently has transferApproval for a particular Rabbit.
     /// @param _claimant the address we are confirming rabbit is approved for.
-    /// @param _tokenId rabbit id, only valid when &gt; 0
+    /// @param _tokenId rabbit id, only valid when > 0
     function _approvedFor(address _claimant, uint _tokenId) internal view returns (bool) {
         return rabbitToApproved[_tokenId] == _claimant;
     }
@@ -444,7 +444,7 @@ contract RabbitOwnership is RabbitBase {
 
     /// @notice Returns a list of all Rabbit IDs assigned to an address.
     /// @param _owner The owner whose rabbits we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire Rabbit array looking for rabbits belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -463,7 +463,7 @@ contract RabbitOwnership is RabbitBase {
             // sequentially up to the totalCat count.
             uint rabbitId;
 
-            for (rabbitId = 1; rabbitId &lt;= totalCats; rabbitId++) {
+            for (rabbitId = 1; rabbitId <= totalCats; rabbitId++) {
                 if (rabbitToOwner[rabbitId] == _owner) {
                     result[resultIndex] = rabbitId;
                     resultIndex++;
@@ -531,7 +531,7 @@ contract RabbitMinting is RabbitOwnership {
     bool private box2OnSale = true;
 	
 	//record any task id for updating datas;
-	mapping(uint =&gt; uint8) usedSignId;
+	mapping(uint => uint8) usedSignId;
    
     
     /// @dev set base infomation by coo
@@ -544,12 +544,12 @@ contract RabbitMinting is RabbitOwnership {
     /// @dev we can create promo rabbits, up to a limit. Only callable by COO
     function createPromoRabbit(uint _star, address _owner) whenNotPaused external onlyCOO {
         require (_owner != address(0));
-        require(CREATED_PROMO &lt; LIMIT_PROMO);
+        require(CREATED_PROMO < LIMIT_PROMO);
        
         if (_star == 5){
-            require(CREATED_STAR5 &lt; LIMIT_STAR5);
+            require(CREATED_STAR5 < LIMIT_STAR5);
         } else if (_star == 4){
-            require(CREATED_STAR4 &lt; LIMIT_STAR4);
+            require(CREATED_STAR4 < LIMIT_STAR4);
         }
         CREATED_PROMO++;
         
@@ -565,7 +565,7 @@ contract RabbitMinting is RabbitOwnership {
         uint _endurance = 50;
         uint _nimble = 50;
         
-        if (_star &lt; 5) {
+        if (_star < 5) {
             uint tmp = _genes; 
             tmp = uint(keccak256(tmp));
             _explosive =  1 + 10 * (_star - 1) + tmp % 10;
@@ -604,22 +604,22 @@ contract RabbitMinting is RabbitOwnership {
         uint tmpPrice = 0;
         if (_star == 5){
             tmpPrice = priceStar5Now;
-			require(CREATED_STAR5 &lt; LIMIT_STAR5);
+			require(CREATED_STAR5 < LIMIT_STAR5);
         } else if (_star == 4){
             tmpPrice = priceStar4;
-			require(CREATED_STAR4 &lt; LIMIT_STAR4);
+			require(CREATED_STAR4 < LIMIT_STAR4);
         } else if (_star == 3){
             tmpPrice = priceStar3;
         } else {
 			revert();
 		}
         
-        require(msg.value &gt;= tmpPrice);
+        require(msg.value >= tmpPrice);
         _createRabbitInGrade(_star, msg.sender, 0);
         
         // Return the funds. 
         uint fundsExcess = msg.value - tmpPrice;
-        if (fundsExcess &gt; 1 finney) {
+        if (fundsExcess > 1 finney) {
             msg.sender.transfer(fundsExcess);
         }
         return true;
@@ -631,24 +631,24 @@ contract RabbitMinting is RabbitOwnership {
     function buyBox1() external payable whenNotPaused returns (bool) {
 		require(isNotContract(msg.sender));
         require(box1OnSale);
-        require(msg.value &gt;= priceBox1);
+        require(msg.value >= priceBox1);
 		
         uint tempVal = uint(keccak256(uint(msg.sender) + secretKey + rabbits.length));
         tempVal = tempVal % 10000;
         uint _star = 3; //default
-        if (tempVal &lt;= box1Star5){
+        if (tempVal <= box1Star5){
             _star = 5;
-			require(CREATED_STAR5 &lt; LIMIT_STAR5);
-        } else if (tempVal &lt;= box1Star5 + box1Star4){
+			require(CREATED_STAR5 < LIMIT_STAR5);
+        } else if (tempVal <= box1Star5 + box1Star4){
             _star = 4;
-			require(CREATED_STAR4 &lt; LIMIT_STAR4);
+			require(CREATED_STAR4 < LIMIT_STAR4);
         } 
         
         _createRabbitInGrade(_star, msg.sender, 2);
         
         // Return the funds. 
         uint fundsExcess = msg.value - priceBox1;
-        if (fundsExcess &gt; 1 finney) {
+        if (fundsExcess > 1 finney) {
             msg.sender.transfer(fundsExcess);
         }
         return true;
@@ -659,23 +659,23 @@ contract RabbitMinting is RabbitOwnership {
     function buyBox2() external payable whenNotPaused returns (bool) {
 		require(isNotContract(msg.sender));
         require(box2OnSale);
-        require(msg.value &gt;= priceBox2);
+        require(msg.value >= priceBox2);
 		
         uint tempVal = uint(keccak256(uint(msg.sender) + secretKey + rabbits.length));
         tempVal = tempVal % 10000;
         uint _star = 4; //default
-        if (tempVal &lt;= box2Star5){
+        if (tempVal <= box2Star5){
             _star = 5;
-			require(CREATED_STAR5 &lt; LIMIT_STAR5);
+			require(CREATED_STAR5 < LIMIT_STAR5);
         } else {
-			require(CREATED_STAR4 &lt; LIMIT_STAR4);
+			require(CREATED_STAR4 < LIMIT_STAR4);
 		}
         
         _createRabbitInGrade(_star, msg.sender, 3);
         
         // Return the funds. 
         uint fundsExcess = msg.value - priceBox2;
-        if (fundsExcess &gt; 1 finney) {
+        if (fundsExcess > 1 finney) {
             msg.sender.transfer(fundsExcess);
         }
         return true;
@@ -715,7 +715,7 @@ contract RabbitAuction is RabbitMinting {
     uint public masterCut = 200;
 
     // Map from token ID to their corresponding auction.
-    mapping (uint =&gt; Auction) tokenIdToAuction;
+    mapping (uint => Auction) tokenIdToAuction;
     
     
     /// @dev Creates and begins a new auction.
@@ -733,9 +733,9 @@ contract RabbitAuction is RabbitMinting {
         external whenNotPaused
     {
 		require(isNotContract(msg.sender));
-        require(_endingPrice &gt;= 1 finney);
-        require(_startingPrice &gt;= _endingPrice);
-        require(_duration &lt;= 100 days); 
+        require(_endingPrice >= 1 finney);
+        require(_startingPrice >= _endingPrice);
+        require(_duration <= 100 days); 
         require(_owns(msg.sender, _tokenId));
         
 		//assigning the ownship to this contract,
@@ -763,7 +763,7 @@ contract RabbitAuction is RabbitMinting {
         uint currentPrice
     ) {
         Auction storage auction = tokenIdToAuction[_tokenId];
-        require(auction.startedAt &gt; 0);
+        require(auction.startedAt > 0);
         seller = auction.seller;
         startingPrice = auction.startingPrice;
         endingPrice = auction.endingPrice;
@@ -780,11 +780,11 @@ contract RabbitAuction is RabbitMinting {
 		
         // Get a reference to the auction struct
         Auction storage auction = tokenIdToAuction[_tokenId];
-        require(auction.startedAt &gt; 0);
+        require(auction.startedAt > 0);
 
         // Check that the bid is greater than or equal to the current price
         uint price = _calcCurrentPrice(auction);
-        require(msg.value &gt;= price);
+        require(msg.value >= price);
 
         // Grab a reference to the seller before the auction struct gets deleted.
         address seller = auction.seller;
@@ -793,14 +793,14 @@ contract RabbitAuction is RabbitMinting {
 		require(_owns(this, _tokenId));
 
         // The bid is good! Remove the auction before sending the fees
-        // to the sender so we can&#39;t have a reentrancy endurance.
+        // to the sender so we can't have a reentrancy endurance.
         delete tokenIdToAuction[_tokenId];
 
-        if (price &gt; 0) {
-            // Calculate the auctioneer&#39;s cut.
+        if (price > 0) {
+            // Calculate the auctioneer's cut.
             uint auctioneerCut = price * masterCut / 10000;
             uint sellerProceeds = price - auctioneerCut;
-			require(sellerProceeds &lt;= price);
+			require(sellerProceeds <= price);
 
             // Doing a transfer() after removing the auction
             seller.transfer(sellerProceeds);
@@ -810,7 +810,7 @@ contract RabbitAuction is RabbitMinting {
         uint bidExcess = msg.value - price;
 
         // Return the funds. 
-		if (bidExcess &gt;= 1 finney) {
+		if (bidExcess >= 1 finney) {
 			msg.sender.transfer(bidExcess);
 		}
 
@@ -821,14 +821,14 @@ contract RabbitAuction is RabbitMinting {
         _transItem(this, msg.sender, _tokenId);
     }
 
-    /// @dev Cancels an auction that hasn&#39;t been won yet.
+    /// @dev Cancels an auction that hasn't been won yet.
     ///  Returns the NFT to original owner.
     /// @notice This is a state-modifying function that can
     ///  be called while the contract is paused.
     /// @param _tokenId - ID of token on auction
     function cancelAuction(uint _tokenId) external whenNotPaused {
         Auction storage auction = tokenIdToAuction[_tokenId];
-        require(auction.startedAt &gt; 0);
+        require(auction.startedAt > 0);
         address seller = auction.seller;
         require(msg.sender == seller);
         _cancelAuction(_tokenId);
@@ -851,7 +851,7 @@ contract RabbitAuction is RabbitMinting {
     function _addAuction(uint _tokenId, Auction _auction) internal {
         // Require that all auctions have a duration of
         // at least one minute. (Keeps our math from getting hairy!)
-        require(_auction.duration &gt;= 1 minutes);
+        require(_auction.duration >= 1 minutes);
 
         tokenIdToAuction[_tokenId] = _auction;
         
@@ -887,11 +887,11 @@ contract RabbitAuction is RabbitMinting {
         int256 duration = _auction.duration;
         int256 price0 = _auction.startingPrice;
         int256 price2 = _auction.endingPrice;
-        require(duration &gt; 0);
+        require(duration > 0);
         
         int256 secondsPassed = int256(now) - int256(_auction.startedAt);
-        require(secondsPassed &gt;= 0);
-        if (secondsPassed &lt; _auction.duration) {
+        require(secondsPassed >= 0);
+        if (secondsPassed < _auction.duration) {
             int256 priceChanged = (price2 - price0) * secondsPassed / duration;
             int256 currentPrice = price0 + priceChanged;
             outPrice = uint(currentPrice);
@@ -963,7 +963,7 @@ contract RabbitAuction is RabbitMinting {
 	/// @dev werify wether the message is form coo or not.
 	function verify(string text, uint8 v, bytes32 r, bytes32 s) public pure returns (address) {		
 		bytes32 hash = keccak256(text);
-		bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;
+		bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 		bytes32 prefixedHash = keccak256(prefix, hash);
 		address tmp = ecrecover(prefixedHash, v, r, s);
 		return tmp;
@@ -974,9 +974,9 @@ contract RabbitAuction is RabbitMinting {
     	uint length = 0;
     	uint i = 0;
     	uint val = 0;
-    	for(; i &lt; arr.length; i++){
+    	for(; i < arr.length; i++){
     		val = arr[i];
-    		while(val &gt;= 10) {
+    		while(val >= 10) {
     			length += 1;
     			val = val / 10;
     		}
@@ -989,25 +989,25 @@ contract RabbitAuction is RabbitMinting {
     	bytes memory bstr = new bytes(length);
         uint k = length - 1;
         int j = int(arr.length - 1);
-    	while (j &gt;= 0) {
+    	while (j >= 0) {
     		val = arr[uint(j)];
     		if (val == 0) {
     			bstr[k] = byte(48);
-    			if (k &gt; 0) {
+    			if (k > 0) {
     			    k--;
     			}
     		} else {
     		    while (val != 0){
     				bstr[k] = byte(48 + val % 10);
     				val /= 10;
-    				if (k &gt; 0) {
+    				if (k > 0) {
         			    k--;
         			}
     			}
     		}
     		
-    		if (j &gt; 0) { //add comma
-				assert(k &gt; 0);
+    		if (j > 0) { //add comma
+				assert(k > 0);
     			bstr[k] = byte(44);
     			k--;
     		}
@@ -1023,9 +1023,9 @@ contract RabbitAuction is RabbitMinting {
     	uint length = 0;
     	uint i = 0;
     	uint val = 0;
-    	for(; i &lt; arr.length; i++){
+    	for(; i < arr.length; i++){
     		val = arr[i];
-    		while(val &gt;= 10) {
+    		while(val >= 10) {
     			length += 1;
     			val = val / 10;
     		}
@@ -1038,25 +1038,25 @@ contract RabbitAuction is RabbitMinting {
     	bytes memory bstr = new bytes(length);
         uint k = length - 1;
         int j = int(arr.length - 1);
-    	while (j &gt;= 0) {
+    	while (j >= 0) {
     		val = arr[uint(j)];
     		if (val == 0) {
     			bstr[k] = byte(48);
-    			if (k &gt; 0) {
+    			if (k > 0) {
     			    k--;
     			}
     		} else {
     		    while (val != 0){
     				bstr[k] = byte(48 + val % 10);
     				val /= 10;
-    				if (k &gt; 0) {
+    				if (k > 0) {
         			    k--;
         			}
     			}
     		}
     		
-    		if (j &gt; 0) { //add comma
-				assert(k &gt; 0);
+    		if (j > 0) { //add comma
+				assert(k > 0);
     			bstr[k] = byte(44);
     			k--;
     		}
@@ -1072,7 +1072,7 @@ contract RabbitAuction is RabbitMinting {
 
 /// @title CryptoRabbit: Collectible, oh-so-adorable rabbits on the Ethereum blockchain.
 /// @author cuilichen
-/// @dev The main CryptoRabbit contract, keeps track of rabbits so they don&#39;t wander around and get lost.
+/// @dev The main CryptoRabbit contract, keeps track of rabbits so they don't wander around and get lost.
 /// This is the main CryptoRabbit contract. In order to keep our code seperated into logical sections.
 contract RabbitCore is RabbitAuction {
     
@@ -1106,7 +1106,7 @@ contract RabbitCore is RabbitAuction {
 
 
     /// @dev Override unpause so it requires all external contract addresses
-    ///  to be set before contract can be unpaused. Also, we can&#39;t have
+    ///  to be set before contract can be unpaused. Also, we can't have
     ///  newContractAddress set either, because then the contract was upgraded.
     /// @notice This is public rather than external so we can call super.unpause
     ///  without using an expensive CALL.

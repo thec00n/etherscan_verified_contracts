@@ -17,7 +17,7 @@ contract AbstractSweeper {
     }
 
     modifier canSweep() {
-        if (msg.sender != controller.authorizedCaller() &amp;&amp; msg.sender != controller.owner()) throw;
+        if (msg.sender != controller.authorizedCaller() && msg.sender != controller.owner()) throw;
         if (controller.halted()) throw;
         _;
     }
@@ -37,7 +37,7 @@ contract DefaultSweeper is AbstractSweeper {
     returns (bool) {
         Token token = Token(_token);
         uint amount = _amount;
-        if (amount &gt; token.balanceOf(this)) amount = token.balanceOf(this);
+        if (amount > token.balanceOf(this)) amount = token.balanceOf(this);
 
         address destination = controller.destination();
 
@@ -94,7 +94,7 @@ contract Controller is AbstractSweeperList {
     }
 
     modifier onlyAdmins() {
-        if (msg.sender != authorizedCaller &amp;&amp; msg.sender != owner) throw; 
+        if (msg.sender != authorizedCaller && msg.sender != owner) throw; 
         _;
     }
 
@@ -137,7 +137,7 @@ contract Controller is AbstractSweeperList {
     //SweeperList
     //***********
     address public defaultSweeper = address(new DefaultSweeper(this));
-    mapping (address =&gt; address) sweepers;
+    mapping (address => address) sweepers;
 
     function addSweeper(address _token, address _sweeper) onlyOwner {
         sweepers[_token] = _sweeper;

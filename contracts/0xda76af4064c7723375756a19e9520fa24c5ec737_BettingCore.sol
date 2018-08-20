@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,17 +41,17 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
 
 /*
- * @title String &amp; slice utility library for Solidity contracts.
- * @author Nick Johnson &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6e7d6e6c6761666b4f61607b6b607b21616a7b">[email&#160;protected]</a>&gt;
+ * @title String & slice utility library for Solidity contracts.
+ * @author Nick Johnson <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6e7d6e6c6761666b4f61607b6b607b21616a7b">[email protected]</a>>
  *
  * @dev Functionality in this library is largely implemented using an
- *      abstraction called a &#39;slice&#39;. A slice represents a part of a string -
+ *      abstraction called a 'slice'. A slice represents a part of a string -
  *      anything from the entire string to a single character, or even no
  *      characters at all (a 0-length slice). Since a slice only has to specify
  *      an offset and a length, copying and manipulating slices is a lot less
@@ -59,11 +59,11 @@ library SafeMath {
  *
  *      To further reduce gas costs, most functions on slice that need to return
  *      a slice modify the original one instead of allocating a new one; for
- *      instance, `s.split(&quot;.&quot;)` will return the text up to the first &#39;.&#39;,
- *      modifying s to only contain the remainder of the string after the &#39;.&#39;.
+ *      instance, `s.split(".")` will return the text up to the first '.',
+ *      modifying s to only contain the remainder of the string after the '.'.
  *      In situations where you do not want to modify the original slice, you
  *      can make a copy first with `.copy()`, for example:
- *      `s.copy().split(&quot;.&quot;)`. Try and avoid using this idiom in loops; since
+ *      `s.copy().split(".")`. Try and avoid using this idiom in loops; since
  *      Solidity has no memory management, it will result in allocating many
  *      short-lived slices that are later discarded.
  *
@@ -78,7 +78,7 @@ library SafeMath {
  *
  *      For convenience, some functions are provided with non-modifying
  *      variants that create a new slice and return both; for instance,
- *      `s.splitNew(&#39;.&#39;)` leaves s unmodified, and returns two values
+ *      `s.splitNew('.')` leaves s unmodified, and returns two values
  *      corresponding to the left and right parts of the string.
  */
 library strings {
@@ -89,7 +89,7 @@ library strings {
 
     function memcpy(uint dest, uint src, uint len) private {
         // Copy word-length chunks while possible
-        for(; len &gt;= 32; len -= 32) {
+        for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
             }
@@ -128,23 +128,23 @@ library strings {
         uint ret;
         if (self == 0)
             return 0;
-        if (self &amp; 0xffffffffffffffffffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffffffffffffffffffff == 0) {
             ret += 16;
             self = bytes32(uint(self) / 0x100000000000000000000000000000000);
         }
-        if (self &amp; 0xffffffffffffffff == 0) {
+        if (self & 0xffffffffffffffff == 0) {
             ret += 8;
             self = bytes32(uint(self) / 0x10000000000000000);
         }
-        if (self &amp; 0xffffffff == 0) {
+        if (self & 0xffffffff == 0) {
             ret += 4;
             self = bytes32(uint(self) / 0x100000000);
         }
-        if (self &amp; 0xffff == 0) {
+        if (self & 0xffff == 0) {
             ret += 2;
             self = bytes32(uint(self) / 0x10000);
         }
-        if (self &amp; 0xff == 0) {
+        if (self & 0xff == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -180,7 +180,7 @@ library strings {
     /*
      * @dev Copies a slice to a new string.
      * @param self The slice to copy.
-     * @return A newly allocated string containing the slice&#39;s text.
+     * @return A newly allocated string containing the slice's text.
      */
     function toString(slice self) internal returns (string) {
         var ret = new string(self._len);
@@ -203,18 +203,18 @@ library strings {
         // Starting at ptr-31 means the LSB will be the byte we care about
         var ptr = self._ptr - 31;
         var end = ptr + self._len;
-        for (l = 0; ptr &lt; end; l++) {
+        for (l = 0; ptr < end; l++) {
             uint8 b;
             assembly { b := and(mload(ptr), 0xFF) }
-            if (b &lt; 0x80) {
+            if (b < 0x80) {
                 ptr += 1;
-            } else if(b &lt; 0xE0) {
+            } else if(b < 0xE0) {
                 ptr += 2;
-            } else if(b &lt; 0xF0) {
+            } else if(b < 0xF0) {
                 ptr += 3;
-            } else if(b &lt; 0xF8) {
+            } else if(b < 0xF8) {
                 ptr += 4;
-            } else if(b &lt; 0xFC) {
+            } else if(b < 0xFC) {
                 ptr += 5;
             } else {
                 ptr += 6;
@@ -242,12 +242,12 @@ library strings {
      */
     function compare(slice self, slice other) internal returns (int) {
         uint shortest = self._len;
-        if (other._len &lt; self._len)
+        if (other._len < self._len)
             shortest = other._len;
 
         var selfptr = self._ptr;
         var otherptr = other._ptr;
-        for (uint idx = 0; idx &lt; shortest; idx += 32) {
+        for (uint idx = 0; idx < shortest; idx += 32) {
             uint a;
             uint b;
             assembly {
@@ -257,7 +257,7 @@ library strings {
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
-                var diff = (a &amp; mask) - (b &amp; mask);
+                var diff = (a & mask) - (b & mask);
                 if (diff != 0)
                     return int(diff);
             }
@@ -296,18 +296,18 @@ library strings {
         uint b;
         // Load the first byte of the rune into the LSBs of b
         assembly { b := and(mload(sub(mload(add(self, 32)), 31)), 0xFF) }
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             len = 1;
-        } else if(b &lt; 0xE0) {
+        } else if(b < 0xE0) {
             len = 2;
-        } else if(b &lt; 0xF0) {
+        } else if(b < 0xF0) {
             len = 3;
         } else {
             len = 4;
         }
 
         // Check for truncated codepoints
-        if (len &gt; self._len) {
+        if (len > self._len) {
             rune._len = self._len;
             self._ptr += self._len;
             self._len = 0;
@@ -347,33 +347,33 @@ library strings {
         // Load the rune into the MSBs of b
         assembly { word:= mload(mload(add(self, 32))) }
         var b = word / divisor;
-        if (b &lt; 0x80) {
+        if (b < 0x80) {
             ret = b;
             length = 1;
-        } else if(b &lt; 0xE0) {
-            ret = b &amp; 0x1F;
+        } else if(b < 0xE0) {
+            ret = b & 0x1F;
             length = 2;
-        } else if(b &lt; 0xF0) {
-            ret = b &amp; 0x0F;
+        } else if(b < 0xF0) {
+            ret = b & 0x0F;
             length = 3;
         } else {
-            ret = b &amp; 0x07;
+            ret = b & 0x07;
             length = 4;
         }
 
         // Check for truncated codepoints
-        if (length &gt; self._len) {
+        if (length > self._len) {
             return 0;
         }
 
-        for (uint i = 1; i &lt; length; i++) {
+        for (uint i = 1; i < length; i++) {
             divisor = divisor / 256;
-            b = (word / divisor) &amp; 0xFF;
-            if (b &amp; 0xC0 != 0x80) {
+            b = (word / divisor) & 0xFF;
+            if (b & 0xC0 != 0x80) {
                 // Invalid UTF-8 sequence
                 return 0;
             }
-            ret = (ret * 64) | (b &amp; 0x3F);
+            ret = (ret * 64) | (b & 0x3F);
         }
 
         return ret;
@@ -397,7 +397,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function startsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -423,7 +423,7 @@ library strings {
      * @return `self`
      */
     function beyond(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -452,7 +452,7 @@ library strings {
      * @return True if the slice starts with the provided text, false otherwise.
      */
     function endsWith(slice self, slice needle) internal returns (bool) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return false;
         }
 
@@ -480,7 +480,7 @@ library strings {
      * @return `self`
      */
     function until(slice self, slice needle) internal returns (slice) {
-        if (self._len &lt; needle._len) {
+        if (self._len < needle._len) {
             return self;
         }
 
@@ -507,8 +507,8 @@ library strings {
         uint ptr;
         uint idx;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -528,7 +528,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr;
-                for (idx = 0; idx &lt;= selflen - needlelen; idx++) {
+                for (idx = 0; idx <= selflen - needlelen; idx++) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -545,8 +545,8 @@ library strings {
     function rfindPtr(uint selflen, uint selfptr, uint needlelen, uint needleptr) private returns (uint) {
         uint ptr;
 
-        if (needlelen &lt;= selflen) {
-            if (needlelen &lt;= 32) {
+        if (needlelen <= selflen) {
+            if (needlelen <= 32) {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
@@ -568,7 +568,7 @@ library strings {
                 bytes32 hash;
                 assembly { hash := sha3(needleptr, needlelen) }
                 ptr = selfptr + (selflen - needlelen);
-                while (ptr &gt;= selfptr) {
+                while (ptr >= selfptr) {
                     bytes32 testHash;
                     assembly { testHash := sha3(ptr, needlelen) }
                     if (hash == testHash)
@@ -690,7 +690,7 @@ library strings {
      */
     function count(slice self, slice needle) internal returns (uint cnt) {
         uint ptr = findPtr(self._len, self._ptr, needle._len, needle._ptr) + needle._len;
-        while (ptr &lt;= self._ptr + self._len) {
+        while (ptr <= self._ptr + self._len) {
             cnt++;
             ptr = findPtr(self._len - (ptr - self._ptr), ptr, needle._len, needle._ptr) + needle._len;
         }
@@ -732,10 +732,10 @@ library strings {
      */
     function join(slice self, slice[] parts) internal returns (string) {
         if (parts.length == 0)
-            return &quot;&quot;;
+            return "";
 
         uint length = self._len * (parts.length - 1);
-        for (uint i = 0; i &lt; parts.length; i++) {
+        for (uint i = 0; i < parts.length; i++) {
             length += parts[i]._len;
         }
 
@@ -743,10 +743,10 @@ library strings {
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i &lt; parts.length; i++) {
+        for(i = 0; i < parts.length; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i &lt; parts.length - 1) {
+            if (i < parts.length - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
@@ -759,7 +759,7 @@ library strings {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -804,7 +804,7 @@ contract Ownable {
  */
 library Roles {
     struct Role {
-        mapping (address =&gt; bool) bearer;
+        mapping (address => bool) bearer;
     }
 
     /**
@@ -815,7 +815,7 @@ library Roles {
     }
 
     /**
-    * @dev remove an address&#39; access to this role
+    * @dev remove an address' access to this role
     */
     function remove(Role storage role, address addr) internal {
         role.bearer[addr] = false;
@@ -846,13 +846,13 @@ library Roles {
  *      See //contracts/mocks/RBACMock.sol for an example of usage.
  * This RBAC method uses strings to key roles. It may be beneficial
  *  for you to write your own implementation of this interface using Enums or similar.
- * It&#39;s also recommended that you define constants in the contract, like ROLE_ADMIN below,
+ * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
  *  to avoid typos.
  */
 contract RBAC is Ownable {
     using Roles for Roles.Role;
 
-    mapping (string =&gt; Roles.Role) private roles;
+    mapping (string => Roles.Role) private roles;
 
     event RoleAdded(address addr, string roleName);
     event RoleRemoved(address addr, string roleName);
@@ -922,8 +922,8 @@ contract RBAC is Ownable {
 /**
  * @title Heritable
  * @dev The Heritable contract provides ownership transfer capabilities, in the
- * case that the current owner stops &quot;heartbeating&quot;. Only the heir can pronounce the
- * owner&#39;s death.
+ * case that the current owner stops "heartbeating". Only the heir can pronounce the
+ * owner's death.
  */
 contract Heritable is RBAC {
   address private heir_;
@@ -931,7 +931,7 @@ contract Heritable is RBAC {
   // Time window the owner has to notify they are alive.
   uint256 private heartbeatTimeout_;
 
-  // Timestamp of the owner&#39;s death, as pronounced by the heir.
+  // Timestamp of the owner's death, as pronounced by the heir.
   uint256 private timeOfDeath_;
 
   event HeirChanged(address indexed owner, address indexed newHeir);
@@ -941,7 +941,7 @@ contract Heritable is RBAC {
 
 
   /**
-   * @dev Throw an exception if called by any account other than the heir&#39;s.
+   * @dev Throw an exception if called by any account other than the heir's.
    */
   modifier onlyHeir() {
     require(msg.sender == heir_);
@@ -1012,7 +1012,7 @@ contract Heritable is RBAC {
    */
   function claimHeirOwnership() public onlyHeir {
     require(!ownerLives());
-    require(block.timestamp &gt;= timeOfDeath_ + heartbeatTimeout_);
+    require(block.timestamp >= timeOfDeath_ + heartbeatTimeout_);
     OwnershipTransferred(owner, heir_);
     HeirOwnershipClaimed(owner, heir_);
     owner = heir_;
@@ -1127,7 +1127,7 @@ contract BettingCore is BettingBase, Heritable {
         uint8 discount;
     }    
 
-    // it&#39;s not possible to take off players bets
+    // it's not possible to take off players bets
     bool public payoutToOwnerIsLimited;
     // total sum of bets
     uint public blockedSum; 
@@ -1139,7 +1139,7 @@ contract BettingCore is BettingBase, Heritable {
     Event[] public events;
     Line[] private lines;
 
-    mapping(address =&gt; FeeDiscount) private discounts;
+    mapping(address => FeeDiscount) private discounts;
 
     event NewActivity(uint indexed activityId, ActivityType activityType, string title);
     event NewEvent(uint indexed activityId, uint indexed eventId, string title);
@@ -1158,13 +1158,13 @@ contract BettingCore is BettingBase, Heritable {
         fee = 200; // 2 %
         payoutToOwnerIsLimited = true;
         blockedSum = 1 wei;
-        contractMessage = &quot;betdapp.co&quot;;
+        contractMessage = "betdapp.co";
     }
 
     function() external onlyOwner payable {
     }
 
-    function addActivity(ActivityType activityType, string title) external onlyOwnerOr(&quot;Edit&quot;) returns (uint activityId) {
+    function addActivity(ActivityType activityType, string title) external onlyOwnerOr("Edit") returns (uint activityId) {
         Activity memory _activity = Activity({
             title: title, 
             activityType: activityType
@@ -1174,11 +1174,11 @@ contract BettingCore is BettingBase, Heritable {
         NewActivity(activityId, activityType, title);
     }
 
-    function addDoubleChanceLine(uint eventId, string title, uint start) external onlyOwnerOr(&quot;Edit&quot;) {
-        addLine(eventId, title, LineType.DoubleChance, start, &quot;1X_12_X2&quot;);
+    function addDoubleChanceLine(uint eventId, string title, uint start) external onlyOwnerOr("Edit") {
+        addLine(eventId, title, LineType.DoubleChance, start, "1X_12_X2");
     }
 
-    function addEvent(uint activityId, string title) external onlyOwnerOr(&quot;Edit&quot;) returns (uint eventId) {
+    function addEvent(uint activityId, string title) external onlyOwnerOr("Edit") returns (uint eventId) {
         Event memory _event = Event({
             activityId: activityId, 
             title: title
@@ -1188,23 +1188,23 @@ contract BettingCore is BettingBase, Heritable {
         NewEvent(activityId, eventId, title);      
     }
 
-    function addThreeWayLine(uint eventId, string title, uint start) external onlyOwnerOr(&quot;Edit&quot;) {
-        addLine(eventId, title, LineType.ThreeWay, start,  &quot;1_X_2&quot;);
+    function addThreeWayLine(uint eventId, string title, uint start) external onlyOwnerOr("Edit") {
+        addLine(eventId, title, LineType.ThreeWay, start,  "1_X_2");
     }
 
-    function addSomeOfManyLine(uint eventId, string title, uint start, string outcomes) external onlyOwnerOr(&quot;Edit&quot;) {
+    function addSomeOfManyLine(uint eventId, string title, uint start, string outcomes) external onlyOwnerOr("Edit") {
         addLine(eventId, title, LineType.SomeOfMany, start, outcomes);
     }
 
-    function addTwoWayLine(uint eventId, string title, uint start, TwoWayLineType customType) external onlyOwnerOr(&quot;Edit&quot;) {
+    function addTwoWayLine(uint eventId, string title, uint start, TwoWayLineType customType) external onlyOwnerOr("Edit") {
         string memory outcomes;
 
         if (customType == TwoWayLineType.YesNo) {
-            outcomes = &quot;Yes_No&quot;;
+            outcomes = "Yes_No";
         } else if (customType == TwoWayLineType.OverUnder) {
-            outcomes = &quot;Over_Under&quot;;
+            outcomes = "Over_Under";
         } else {
-            outcomes = &quot;1_2&quot;;
+            outcomes = "1_2";
         }
         
         addLine(eventId, title, LineType.TwoWay, start, outcomes);
@@ -1212,14 +1212,14 @@ contract BettingCore is BettingBase, Heritable {
 
     function bet(uint lineId, uint betId) external payable {
         uint amount = msg.value;
-        require(amount &gt;= minBetAmount);
+        require(amount >= minBetAmount);
         address player = msg.sender;
         betStorage.addBet(lineId, betId, player, amount);
         blockedSum = blockedSum.add(amount);
         BetMade(lineId, betId, player, amount);
     }
 
-    function cancelLine(uint lineId, string comment) external onlyOwnerOr(&quot;Submit&quot;) {
+    function cancelLine(uint lineId, string comment) external onlyOwnerOr("Submit") {
         betStorage.cancelLine(lineId);
         LineCanceled(lineId, comment);
     }   
@@ -1242,7 +1242,7 @@ contract BettingCore is BettingBase, Heritable {
         status = new BetStatus[](resultCount);
         pool = new uint[](resultCount);
 
-        for (uint i = 0; i &lt; resultCount; i++) {
+        for (uint i = 0; i < resultCount; i++) {
             (status[i], pool[i]) = betStorage.getBetPool(lineId, i);
         }
     }
@@ -1253,7 +1253,7 @@ contract BettingCore is BettingBase, Heritable {
         status = new BetStatus[](resultCount);
         pool = new uint[](resultCount);
 
-        for (uint i = 0; i &lt; resultCount; i++) {
+        for (uint i = 0; i < resultCount; i++) {
             (status[i], pool[i]) = betStorage.getBetPool(lineId, i);
         }
     }
@@ -1264,12 +1264,12 @@ contract BettingCore is BettingBase, Heritable {
     }
 
     function payout(uint sum) external onlyOwner {
-        require(sum &gt; 0);
-        require(!payoutToOwnerIsLimited || (this.balance - blockedSum) &gt;= sum);
+        require(sum > 0);
+        require(!payoutToOwnerIsLimited || (this.balance - blockedSum) >= sum);
         msg.sender.transfer(sum);
     }    
 
-    function payPlayers(uint lineId, uint chunkSize) external onlyOwnerOr(&quot;Pay&quot;) {
+    function payPlayers(uint lineId, uint chunkSize) external onlyOwnerOr("Pay") {
         uint startId;
         uint endId;
         PaymentType paymentType;
@@ -1278,7 +1278,7 @@ contract BettingCore is BettingBase, Heritable {
 
         (paymentType, startId, endId, luckyPool, unluckyPool) = betStorage.startPayments(lineId, chunkSize);
 
-        for (uint i = startId; i &lt; endId; i++) {
+        for (uint i = startId; i < endId; i++) {
             address player;
             uint amount; 
             (player, amount) = betStorage.getSumOfPlayerBetsById(lineId, i, paymentType);
@@ -1292,14 +1292,14 @@ contract BettingCore is BettingBase, Heritable {
             if (paymentType == PaymentType.Gain) {
                 payment = amount.add(amount.mul(unluckyPool).div(luckyPool)).div(10000).mul(10000 - getFee(player));
 
-                if (payment &lt; amount) {
+                if (payment < amount) {
                     payment = amount;
                 }
             } else {
                 payment = amount;               
             }
 
-            if (payment &gt; 0) {
+            if (payment > 0) {
                 player.transfer(payment);
                 PlayerPaid(lineId, player, payment);
             }
@@ -1317,24 +1317,24 @@ contract BettingCore is BettingBase, Heritable {
     }    
 
     function setDiscountForPlayer(address player, uint discount, uint till) external onlyOwner {
-        require(till &gt; now &amp;&amp; discount &gt; 0 &amp;&amp; discount &lt;= 100);
+        require(till > now && discount > 0 && discount <= 100);
         discounts[player].till = uint64(till);
         discounts[player].discount = uint8(discount);
     }
 
     function setFee(uint value) external onlyOwner {
         // 100 = 1% fee;
-        require(value &gt;= 0 &amp;&amp; value &lt;= 500);
+        require(value >= 0 && value <= 500);
         fee = value;
     }
 
-    function setLineStartTime(uint lineId, uint time) external onlyOwnerOr(&quot;Edit&quot;) {
+    function setLineStartTime(uint lineId, uint time) external onlyOwnerOr("Edit") {
         betStorage.setLineStartTime(lineId, time);
         LineStartTimeChanged(lineId, time);
     }    
 
     function setMinBetAmount(uint value) external onlyOwner {
-        require(value &gt; 0);
+        require(value > 0);
         minBetAmount = value;
     }
 
@@ -1355,13 +1355,13 @@ contract BettingCore is BettingBase, Heritable {
         betStorage.transferOwnership(newOwner);
     }    
 
-    function submitResult(uint lineId, uint[] results) external onlyOwnerOr(&quot;Submit&quot;) {
+    function submitResult(uint lineId, uint[] results) external onlyOwnerOr("Submit") {
         betStorage.submitResult(lineId, results);
         ResultSubmitted(lineId, results);
     }    
 
     function addLine(uint eventId, string title, LineType lineType, uint start, string outcomes) private {
-        require(start &gt; now);
+        require(start > now);
 
         Line memory line = Line({
             eventId: eventId, 
@@ -1387,7 +1387,7 @@ contract BettingCore is BettingBase, Heritable {
     function getFee(address player) private view returns (uint newFee) {
         var data = discounts[player];
 
-        if (data.till &gt; now) {
+        if (data.till > now) {
             return fee * (100 - data.discount) / 100;
         }
 
@@ -1399,7 +1399,7 @@ contract BettingCore is BettingBase, Heritable {
         uint count = getSplitCount(line.outcomes);
         result = new uint[](count);
 
-        for (uint i = 0; i &lt; count; i++) {
+        for (uint i = 0; i < count; i++) {
             result[i] = betStorage.getPlayerBet(lineId, i, player);
         }
     }
@@ -1412,10 +1412,10 @@ contract BettingCore is BettingBase, Heritable {
 
     function getSplitCount(string input) private returns (uint) { 
         var s = input.toSlice();
-        var delim = &quot;_&quot;.toSlice();
+        var delim = "_".toSlice();
         var parts = new string[](s.count(delim) + 1);
 
-        for (uint i = 0; i &lt; parts.length; i++) {
+        for (uint i = 0; i < parts.length; i++) {
             parts[i] = s.split(delim).toString();
         }
 

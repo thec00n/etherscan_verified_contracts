@@ -68,7 +68,7 @@ contract Transfer {
         internal
         returns (bool)
     {
-        require(token == ETH &amp;&amp; msg.value == amount || msg.value == 0);
+        require(token == ETH && msg.value == amount || msg.value == 0);
 
         if (token != ETH) {
             // Remember to approve first
@@ -82,7 +82,7 @@ contract Transfer {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -166,11 +166,11 @@ pragma solidity 0.4.24;
 contract ExternalCall {
     // Source: https://github.com/gnosis/MultiSigWallet/blob/master/contracts/MultiSigWallet.sol
     // call has been separated into its own function in order to take advantage
-    // of the Solidity&#39;s code generator to produce a loop that copies tx.data into memory.
+    // of the Solidity's code generator to produce a loop that copies tx.data into memory.
     function external_call(address destination, uint value, uint dataLength, bytes data) internal returns (bool) {
         bool result;
         assembly {
-            let x := mload(0x40)   // &quot;Allocate&quot; memory for output (0x40 is where &quot;free memory&quot; pointer is stored by convention)
+            let x := mload(0x40)   // "Allocate" memory for output (0x40 is where "free memory" pointer is stored by convention)
             let d := add(data, 32) // First 32 bytes are the padded length of data, so exclude that
             result := call(
                 sub(gas, 34710),   // 34710 is the value that solidity is currently emitting
@@ -192,14 +192,14 @@ contract ExternalCall {
 
   Copyright 2018 Contra Labs Inc.
 
-  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+  distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
@@ -209,7 +209,7 @@ contract ExternalCall {
 pragma solidity 0.4.24;
 
 // @title TradeExecutor: Atomically execute two trades using decentralized exchange wrapper contracts.
-// @author Rich McAteer &lt;<span class="__cf_email__" data-cfemail="c6b4afa5ae86aba7b4a4aaa3e8a9b4a1">[email&#160;protected]</span>&gt;, Max Wolff &lt;<span class="__cf_email__" data-cfemail="3d505c457d505c4f5f515813524f5a">[email&#160;protected]</span>&gt;
+// @author Rich McAteer <<span class="__cf_email__" data-cfemail="c6b4afa5ae86aba7b4a4aaa3e8a9b4a1">[email protected]</span>>, Max Wolff <<span class="__cf_email__" data-cfemail="3d505c457d505c4f5f515813524f5a">[email protected]</span>>
 contract TradeExecutor is Transfer, Withdrawable, ExternalCall {
 
     // Allow exchange wrappers to send Ether
@@ -219,8 +219,8 @@ contract TradeExecutor is Transfer, Withdrawable, ExternalCall {
      * @dev Execute multiple trades in a single transaction.
      * @param wrappers Addresses of exchange wrappers.
      * @param token Address of ERC20 token to receive in first trade.
-     * @param trade1 Calldata of Ether =&gt; ERC20 trade.
-     * @param trade2 Calldata of ERC20 =&gt; Ether trade.
+     * @param trade1 Calldata of Ether => ERC20 trade.
+     * @param trade2 Calldata of ERC20 => Ether trade.
     */
     function trade(
         address[2] wrappers,

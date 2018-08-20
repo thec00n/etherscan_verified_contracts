@@ -4,10 +4,10 @@
 *
 *  Compiler version: 0.4.19+commit.c4cbbb05.Emscripten.clang
 *
-* The Burner is Billionaire Token&#39;s version of a &quot;Faucet&quot; - an evil, twisted Faucet. 
+* The Burner is Billionaire Token's version of a "Faucet" - an evil, twisted Faucet. 
 * Just like a Faucet, people can use it to get some extra coins. 
 * Unlike a Faucet, the Burner will also burn coins and reduce the maximum supply in the process of giving people extra coins.
-* The Burner is only usable by addresses who have also participated in the last week&#39;s Raffle round.
+* The Burner is only usable by addresses who have also participated in the last week's Raffle round.
 */
 
 pragma solidity ^0.4.8;
@@ -74,25 +74,25 @@ contract TheBurner
             and give them back to the user plus 5% - if he is elligible of course.
         */
         uint256 tokens_registered = user_input*DECIMALS; /* 18 Decimals */
-        require (ERC20_CALLS.allowance(msg.sender, burner_addr) &gt;= tokens_registered); /* Did the user pre-allow enough tokens ? */
-        require (tokens_registered &lt;= RAFFLE_CALLS.getLastWeekStake(msg.sender)); /* Did the user have enough tickets in last week&#39;s Raffle ? */
+        require (ERC20_CALLS.allowance(msg.sender, burner_addr) >= tokens_registered); /* Did the user pre-allow enough tokens ? */
+        require (tokens_registered <= RAFFLE_CALLS.getLastWeekStake(msg.sender)); /* Did the user have enough tickets in last week's Raffle ? */
         uint256 eligible_reward = tokens_registered + getPercent(extra_bonus, tokens_registered);
-        require (eligible_reward &lt;= ERC20_CALLS.balanceOf(burner_addr)); /* Do we have enough tokens to give out? */
+        require (eligible_reward <= ERC20_CALLS.balanceOf(burner_addr)); /* Do we have enough tokens to give out? */
 
         /* Burn their tokens and give them their reward */
         ERC20_CALLS.burnFrom(msg.sender, tokens_registered);
         ERC20_CALLS.transfer(msg.sender, eligible_reward);
 
-        /* We have to reduce the users last_week_stake so that they can&#39;t burn all of the tokens, just the ones they contributed to the Raffle. */
+        /* We have to reduce the users last_week_stake so that they can't burn all of the tokens, just the ones they contributed to the Raffle. */
         RAFFLE_CALLS.reduceLastWeekStake(msg.sender, tokens_registered);
 
         return 0;
     }
 
 
-    /* &lt;&lt;&lt;--- Debug ONLY functions. ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Debug ONLY functions. ---&gt;&gt;&gt; */
-    /* &lt;&lt;&lt;--- Debug ONLY functions. ---&gt;&gt;&gt; */
+    /* <<<--- Debug ONLY functions. --->>> */
+    /* <<<--- Debug ONLY functions. --->>> */
+    /* <<<--- Debug ONLY functions. --->>> */
 
     function dSET_XBL_ADDRESS(address _XBLContract_addr) public onlyOwner
     {/* Debugging purposes. This will be hardcoded in the deployable version. */

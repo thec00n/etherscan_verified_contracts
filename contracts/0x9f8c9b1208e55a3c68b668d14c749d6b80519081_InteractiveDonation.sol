@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 // Donate all your ethers to 0x7Ec 
-// Made by EtherGuy (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4227362a273025373b022f232b2e6c212d2f">[email&#160;protected]</a>)
+// Made by EtherGuy (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4227362a273025373b022f232b2e6c212d2f">[email protected]</a>)
 // CryptoGaming Discord https://discord.gg/gjrHXFr
 // UI @ htpts://0x7.surge.sh
 
@@ -10,7 +10,7 @@ contract InteractiveDonation{
     
     event Quote(address Sent, string Text, uint256 AmtDonate);
 
-    string public DonatedBanner = &quot;&quot;;
+    string public DonatedBanner = "";
     
 
     
@@ -22,7 +22,7 @@ contract InteractiveDonation{
     
     function Withdraw() public {
         if (msg.sender != Donated){
-            emit Quote(msg.sender, &quot;OMG CHEATER ATTEMPTING TO WITHDRAW&quot;, 0);
+            emit Quote(msg.sender, "OMG CHEATER ATTEMPTING TO WITHDRAW", 0);
             return;
         }
         address contr = this;

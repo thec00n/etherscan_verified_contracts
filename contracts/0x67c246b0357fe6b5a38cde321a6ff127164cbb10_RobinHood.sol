@@ -6,7 +6,7 @@ pragma solidity ^0.4.21;
 // NOTE: In part two of the contract, the DIVIDEND is explained. 
 // The dividend has a very easy implementation
 // the price of the token rise when bought.
-// when it&#39;s sold, price will decrease with 50% of rate of price bought
+// when it's sold, price will decrease with 50% of rate of price bought
 // if you sell, you will sell all tokens, and you have thus to buy in at higher price
 // make sure you hold dividend for a long time.
 
@@ -32,7 +32,7 @@ contract RobinHood{
         //Timer in seconds: Base time for how long the new owner of the Tower has to wait until he can pay the amount.
         uint32 timer; 
         // Timestamp: if this is 0, the contract does not run. If it runs it is set to the blockchain timestamp. 
-        // If Timestamp + GetTime() &gt; Blockchain timestamp the user will be paid out  by the person who tries to buy the tower OR the user can decide to buy himself.
+        // If Timestamp + GetTime() > Blockchain timestamp the user will be paid out  by the person who tries to buy the tower OR the user can decide to buy himself.
         uint256 timestamp;
         // Payout of the amount in percent. Ranges from 0 - 10000. Here 0 is 0 % and 10000 is 100%.
         // This percentage of amount is paid to owner of tower. 
@@ -47,11 +47,11 @@ contract RobinHood{
         uint256 price;
         // Amount which the Tower has to pay to the owner.
         uint256 amount; 
-        // Min Price: the minimum price in wei. Is also the setting to make the contract move on if someone has been paid (if amount &gt;= minPrice);
+        // Min Price: the minimum price in wei. Is also the setting to make the contract move on if someone has been paid (if amount >= minPrice);
         // The minimum price is 1 szabo, maximum price is 1 ether. Both are included in the range.
         uint256 minPrice; 
         // If you create a contract (not developer) then you are allowed to set a fee which you will get from people who buy your Tower.
-        // Ranged again from 0 -&gt; 10000,  but the maximum value is 2500 (25%) minimum is 0 (0%).
+        // Ranged again from 0 -> 10000,  but the maximum value is 2500 (25%) minimum is 0 (0%).
         // Developer is not allowed to set creatorFee.
         uint16 creatorFee; 
         // This is the amount, in wei, to set at which amount the time necessary to wait will reduce by half.
@@ -70,13 +70,13 @@ contract RobinHood{
         address creator;
         // The current owner of this Tower. If he owns it for longer than getTime() of this Tower, he will receive his portion of the amount in the Tower.
         address owner;
-        // You can add a quote to troll your fellow friends. Hopefully they won&#39;t buy your tower!
+        // You can add a quote to troll your fellow friends. Hopefully they won't buy your tower!
         string quote;
     }
     
    
     // Mapping of all towers, indexed by ID. Starting at 0. 
-    mapping(uint256 =&gt; Tower) public Towers;
+    mapping(uint256 => Tower) public Towers;
     
     // Take track of at what position we insert the Tower. 
     uint256 public next_tower_index=0;
@@ -198,7 +198,7 @@ contract RobinHood{
     // DevFee is only a simple int, so can  be 0,1,2,3,4,5 
     // Fee has to be less or equal to 5, otherwise it is reverted. 
     function ChangeFee(uint8 _fee) public onlyOwner{
-        require(_fee &lt;= 5);
+        require(_fee <= 5);
         devFee = _fee;
     }
     
@@ -220,7 +220,7 @@ contract RobinHood{
     // The rest of the amount of that tower which stays over will be kept inside the tower, up for a new round. 
     // If someone wins and amount is more than the minPrice, timestamp is set to the blockchain timer and new round is started without changing the owner of the Tower!
     
-    // _priceIncrease: number between 0-10000, is a pecent: 0% = 0, 100% = 10000. Sets how much percentage the price will increase. Note that &quot;100%&quot; is always added. 
+    // _priceIncrease: number between 0-10000, is a pecent: 0% = 0, 100% = 10000. Sets how much percentage the price will increase. Note that "100%" is always added. 
     // If you set it at 5000 (which is 50%) then the total increase of price is 150%. So if someone buys tower for price at 1 ETH, the new price is then 1.5 ETH. 
     
     // _amountToHalfTime: number of Wei which sets how much Wei you need in order to reduce the time necessary to hold tower to win for 50%.
@@ -230,7 +230,7 @@ contract RobinHood{
     // Do not make this number extremely high. 
     
     // _minPrice: amount of Wei which the starting price of the Tower is. Minimum is 1/1000 finney, max is 1 ETH. 
-    // This is also the check value to see if the round moves on after someone has won. If amount &gt;= minPrice then the timestamp will be upgraded and a new round will start
+    // This is also the check value to see if the round moves on after someone has won. If amount >= minPrice then the timestamp will be upgraded and a new round will start
     // Of course that is after paying the owner of this tower. The owner of the tower does not change. He can win multiple times, in theory. 
     
     // _minPriceAfterWin: number between 0-10000, is a pecent: 0% = 0, 100% = 10000. After someone wins, the new price of the game is calculated.
@@ -242,24 +242,24 @@ contract RobinHood{
     // The rest, after subtracting the dev fee, will be put into Tower.amount. 
     
     function AddTower(uint32 _timer, uint16 _payout, uint16 _priceIncrease, uint256 _amountToHalfTime, uint256 _minPrice, uint16 _minPriceAfterWin, uint16 _creatorFee) public payable onlyOpenOrOwner returns (uint256) {
-        require (_timer &gt;= 300); // Need at least 5 minutes
-        require (_timer &lt;= 31622400);
-        require (_payout &gt;= 0 &amp;&amp; _payout &lt;= 10000);
-        require (_priceIncrease &gt;= 0 &amp;&amp; _priceIncrease &lt;= 10000);
-        require (_minPriceAfterWin &gt;= 0 &amp;&amp; _minPriceAfterWin &lt;= 10000);
+        require (_timer >= 300); // Need at least 5 minutes
+        require (_timer <= 31622400);
+        require (_payout >= 0 && _payout <= 10000);
+        require (_priceIncrease >= 0 && _priceIncrease <= 10000);
+        require (_minPriceAfterWin >= 0 && _minPriceAfterWin <= 10000);
        //amount to half time can be everything, but has to be 0 OR 1000000000000 due to division rules
-        require(_amountToHalfTime == 0 || _amountToHalfTime &gt;= 1000000000000);
-        require(_creatorFee &gt;= 0 &amp;&amp; _creatorFee &lt;= 2500);
-        require(_minPrice &gt;= (1 szabo) &amp;&amp; _minPrice &lt;= (1 ether));
+        require(_amountToHalfTime == 0 || _amountToHalfTime >= 1000000000000);
+        require(_creatorFee >= 0 && _creatorFee <= 2500);
+        require(_minPrice >= (1 szabo) && _minPrice <= (1 ether));
         if (msg.sender == owner){
             // If owner make sure creator fee is 0.
             _creatorFee = 0;
-            if (msg.value &gt; 0){
+            if (msg.value > 0){
                 owner.transfer(msg.value);
             }
         }
         else{
-            if (msg.value &gt;= amountToCreate){
+            if (msg.value >= amountToCreate){
                 uint256 toDiv = (mul(amountToCreate, tokenDividend))/100;
                 uint256 left = sub(amountToCreate, toDiv);
                 owner.transfer(left);
@@ -272,7 +272,7 @@ contract RobinHood{
             uint256 diff = sub(msg.value, amountToCreate);
             // If you send to much, you will get rest back.
             // Might be case if amountToCreate is transferred and this is not seen. 
-            if (diff &gt;= 0){
+            if (diff >= 0){
                 msg.sender.transfer(diff);
             }
         }
@@ -281,7 +281,7 @@ contract RobinHood{
 
         
         // Create tower. 
-        var NewTower = Tower(_timer, 0, _payout, _priceIncrease, _minPrice, 0, _minPrice, _creatorFee, _amountToHalfTime, _minPriceAfterWin, msg.sender, msg.sender, &quot;&quot;);
+        var NewTower = Tower(_timer, 0, _payout, _priceIncrease, _minPrice, 0, _minPrice, _creatorFee, _amountToHalfTime, _minPriceAfterWin, msg.sender, msg.sender, "");
         
         // Insert this into array. 
         Towers[next_tower_index] = NewTower;
@@ -296,9 +296,9 @@ contract RobinHood{
     
     // getTimer of TowerID to see how much time (in seconds) you need to win that tower. 
     // only works if contract is open. 
-    // id = tower id (note that &quot;first tower&quot; has ID 0 into the mapping)
+    // id = tower id (note that "first tower" has ID 0 into the mapping)
     function getTimer(uint256 _id) public onlyOpen returns (uint256)  {
-        require(_id &lt; next_tower_index);
+        require(_id < next_tower_index);
         var UsedTower = Towers[_id];
         //unsigned long long int pr =  totalPriceHalf/((total)/1000000000000+ totalPriceHalf/1000000000000);    
         // No half time? Return tower.
@@ -310,7 +310,7 @@ contract RobinHood{
         uint256 var3 = add(UsedTower.amount / 1000000000000, UsedTower.amountToHalfTime / 1000000000000);
         
         
-       if (var2 == 0 &amp;&amp; var3 == 0){
+       if (var2 == 0 && var3 == 0){
            // exception, both are zero!? Weird, return timer.
            return UsedTower.timer;
        }
@@ -320,8 +320,8 @@ contract RobinHood{
        uint256 target = (mul(UsedTower.timer, var2/var3 )/1000000000000);
        
        // Warning, if for some reason the calculation get super low, it will return 300, which is the absolute minimum.
-       //This prevents users from winning because people don&#39;t have enough time to edit gas, which would be unfair.
-       if (target &lt; 300){
+       //This prevents users from winning because people don't have enough time to edit gas, which would be unfair.
+       if (target < 300){
            return 300;
        }
        
@@ -346,7 +346,7 @@ contract RobinHood{
         uint256 newPrice = (UsedTower.price * UsedTower.minPriceAfterWin)/10000;
         
         // Check if lower than minPrice; if yes, set it to minPrice. 
-        if (newPrice &lt; UsedTower.minPrice){
+        if (newPrice < UsedTower.minPrice){
             newPrice = UsedTower.minPrice;
         }
         
@@ -354,7 +354,7 @@ contract RobinHood{
         UsedTower.price = newPrice;
         
          // Will we move on with game?
-        if (UsedTower.amount &gt; UsedTower.minPrice){
+        if (UsedTower.amount > UsedTower.minPrice){
             // RESTART game. OWNER STAYS SAME 
             UsedTower.timestamp = block.timestamp;
         }
@@ -372,13 +372,13 @@ contract RobinHood{
     // Usually owner of tower can call this. 
     // Note that if you are too late because someone else paid it, then this person will pay you. 
     // There is no way to cheat that.
-    // id = tower id. (id&#39;s start with 0, not 1!)
+    // id = tower id. (id's start with 0, not 1!)
     function TakePrize(uint256 _id) public onlyOpen{
-        require(_id &lt; next_tower_index);
+        require(_id < next_tower_index);
         var UsedTower = Towers[_id];
-        require(UsedTower.timestamp &gt; 0); // otherwise game has not started.
+        require(UsedTower.timestamp > 0); // otherwise game has not started.
         var Timing = getTimer(_id);
-        if (block.timestamp &gt; (add(UsedTower.timestamp,  Timing))){
+        if (block.timestamp > (add(UsedTower.timestamp,  Timing))){
             Payout_intern(_id);
         }
         else{
@@ -392,22 +392,22 @@ contract RobinHood{
     // _id = tower id   (starts at 0 for first tower);
     // _quote is optional: you can upload a quote to troll your enemies.
     function ShootRobinHood(uint256 _id, string _quote) public payable onlyOpen{
-        require(_id &lt; next_tower_index);
+        require(_id < next_tower_index);
         var UsedTower = Towers[_id];
         var Timing = getTimer(_id);
     
         // Check if game has started and if we are too late. If yes, we pay out and return. 
-        if (UsedTower.timestamp != 0 &amp;&amp; block.timestamp &gt; (add(UsedTower.timestamp,  Timing))){
+        if (UsedTower.timestamp != 0 && block.timestamp > (add(UsedTower.timestamp,  Timing))){
             Payout_intern(_id);
             // We will not buy, give tokens back. 
-            if (msg.value &gt; 0){
+            if (msg.value > 0){
                 msg.sender.transfer(msg.value);
             }
             return;
         }
         
         // Check if enough price. 
-        require(msg.value &gt;= UsedTower.price);
+        require(msg.value >= UsedTower.price);
         // Tower can still be bought, great. 
         
         uint256 devFee_used = (mul( UsedTower.price, 5))/100;
@@ -429,7 +429,7 @@ contract RobinHood{
             UsedTower.creator.transfer(creatorFee);
         }
         // Did you send too much? Get back difference. 
-        if (diff &gt; 0){
+        if (diff > 0){
             msg.sender.transfer(diff); 
         }
         
@@ -469,20 +469,20 @@ contract RobinHood{
    }
 
    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-      // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+      // assert(b > 0); // Solidity automatically throws when dividing by 0
       uint256 c = a / b;
-      // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+      // assert(a == b * c + a % b); // There is no case in which this doesn't hold
       return c;
    }
 
    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b &lt;= a);
+      assert(b <= a);
       return a - b;
    }
 
    function add(uint256 a, uint256 b) internal pure returns (uint256) {
       uint256 c = a + b;
-      assert(c &gt;= a);
+      assert(c >= a);
       return c;
    }
     
@@ -509,8 +509,8 @@ contract RobinHood{
     uint256 constant public tokenScaleFactor = 1000;
     
     // address link to how much token that address has 
-    mapping(address =&gt; uint256) public tokensPerAddress;
-    //mapping(address =&gt; uint256) public payments;
+    mapping(address => uint256) public tokensPerAddress;
+    //mapping(address => uint256) public payments;
     
     
     // add dividend to pool
@@ -552,14 +552,14 @@ contract RobinHood{
     // sell ALL your tokens to claim your dividend 
     function sellTokens() public {
         uint256 tokens = tokensPerAddress[msg.sender];
-        if (tokens &gt; 0 &amp;&amp; numTokens &gt;= tokens){
+        if (tokens > 0 && numTokens >= tokens){
             // get amount of tokens: 
             uint256 usetk = numTokens;
             uint256 amt = 0;
-            if (numTokens &gt; 0){
+            if (numTokens > 0){
              amt = (mul(tokens, ethDividendAmount))/numTokens ;
             }
-            if (numTokens &lt; tokens){
+            if (numTokens < tokens){
                 usetk = tokens;
             }
             
@@ -567,7 +567,7 @@ contract RobinHood{
             
             uint256 nPrice = (sub(tokenPrice, ((mul(tokenIncrease, tokens))/ (2*tokenScaleFactor)))) ;
             
-            if (nPrice &lt; tokenStartPrice){
+            if (nPrice < tokenStartPrice){
                 nPrice = tokenStartPrice;
             }
             tokenPrice = nPrice; 
@@ -578,7 +578,7 @@ contract RobinHood{
             
             // update total tokens 
             
-            if (tokens &lt;= numTokens){
+            if (tokens <= numTokens){
                 numTokens = numTokens - tokens; 
             }
             else{
@@ -588,7 +588,7 @@ contract RobinHood{
             
             // update dividend 
             
-            if (amt &lt;= ethDividendAmount){
+            if (amt <= ethDividendAmount){
                 ethDividendAmount = ethDividendAmount - amt;
             }
             else{
@@ -597,7 +597,7 @@ contract RobinHood{
             
             // pay 
             
-            if (amt &gt; 0){
+            if (amt > 0){
                 msg.sender.transfer(amt);
             }
         }
@@ -607,7 +607,7 @@ contract RobinHood{
     function sqrt(uint x) internal returns (uint y) {
     uint z = (x + 1) / 2;
     y = x;
-        while (z &lt; y) {
+        while (z < y) {
             y = z;
             z = (x / z + z) / 2;
         }

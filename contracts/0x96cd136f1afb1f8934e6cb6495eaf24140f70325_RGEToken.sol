@@ -48,12 +48,12 @@ contract EIP20Interface {
 contract EIP20 is EIP20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
-    They allow one to customise the token contract &amp; in no way influences the core functionality.
+    They allow one to customise the token contract & in no way influences the core functionality.
     Some wallets/interfaces might not even bother to look at this information.
     */
     string public name;                   //fancy name: eg Simon Bucks
@@ -74,7 +74,7 @@ contract EIP20 is EIP20Interface {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -83,10 +83,10 @@ contract EIP20 is EIP20Interface {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
@@ -110,15 +110,15 @@ contract EIP20 is EIP20Interface {
 contract RGEToken is EIP20 {
     
     /* ERC20 */
-    string public name = &#39;Rouge&#39;;
-    string public symbol = &#39;RGE&#39;;
+    string public name = 'Rouge';
+    string public symbol = 'RGE';
     uint8 public decimals = 6;
     
     /* RGEToken */
     address owner; 
     address public crowdsale;
     uint public endTGE;
-    string public version = &#39;v1&#39;;
+    string public version = 'v1';
     uint256 public totalSupply = 1000000000 * 10**uint(decimals);
     uint256 public   reserveY1 =  300000000 * 10**uint(decimals);
     uint256 public   reserveY2 =  200000000 * 10**uint(decimals);
@@ -139,7 +139,7 @@ contract RGEToken is EIP20 {
     function startCrowdsaleY0(address _crowdsale) onlyBy(owner) public {
         require(_crowdsale != address(0));
         require(crowdsale == address(0));
-        require(now &lt; endTGE);
+        require(now < endTGE);
         crowdsale = _crowdsale;
         balances[crowdsale] = totalSupply - reserveY1 - reserveY2;
         balances[address(0)] -= balances[crowdsale];
@@ -149,8 +149,8 @@ contract RGEToken is EIP20 {
     function startCrowdsaleY1(address _crowdsale) onlyBy(owner) public {
         require(_crowdsale != address(0));
         require(crowdsale == address(0));
-        require(reserveY1 &gt; 0);
-        require(now &gt;= endTGE + 31536000); /* Y+1 crowdsale can only start after a year */
+        require(reserveY1 > 0);
+        require(now >= endTGE + 31536000); /* Y+1 crowdsale can only start after a year */
         crowdsale = _crowdsale;
         balances[crowdsale] = reserveY1;
         balances[address(0)] -= reserveY1;
@@ -161,8 +161,8 @@ contract RGEToken is EIP20 {
     function startCrowdsaleY2(address _crowdsale) onlyBy(owner) public {
         require(_crowdsale != address(0));
         require(crowdsale == address(0));
-        require(reserveY2 &gt; 0);
-        require(now &gt;= endTGE + 63072000); /* Y+2 crowdsale can only start after 2 years */
+        require(reserveY2 > 0);
+        require(now >= endTGE + 63072000); /* Y+2 crowdsale can only start after 2 years */
         crowdsale = _crowdsale;
         balances[crowdsale] = reserveY2;
         balances[address(0)] -= reserveY2;
@@ -173,7 +173,7 @@ contract RGEToken is EIP20 {
     // in practice later than end of TGE to let people withdraw
     function endCrowdsale() onlyBy(owner) public {
         require(crowdsale != address(0));
-        require(now &gt; endTGE);
+        require(now > endTGE);
         reserveY2 += balances[crowdsale];
         emit Transfer(crowdsale, address(0), balances[crowdsale]);
         balances[address(0)] += balances[crowdsale];
@@ -191,14 +191,14 @@ contract RGEToken is EIP20 {
 
     function newCampaign(uint32 _issuance, uint256 _value) public {
         transfer(factory,_value);
-        require(factory.call(bytes4(keccak256(&quot;createCampaign(address,uint32,uint256)&quot;)),msg.sender,_issuance,_value));
+        require(factory.call(bytes4(keccak256("createCampaign(address,uint32,uint256)")),msg.sender,_issuance,_value));
     }
 
     event Burn(address indexed burner, uint256 value);
 
     function burn(uint256 _value) public returns (bool success) {
-        require(_value &gt; 0);
-        require(balances[msg.sender] &gt;= _value);
+        require(_value > 0);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         emit Transfer(msg.sender, address(0), _value);

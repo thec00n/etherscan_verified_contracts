@@ -15,7 +15,7 @@ contract EtherImp {
     );
 
     function EtherImp() payable public {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
 
         creator = msg.sender;
         currentOwner = creator;
@@ -26,8 +26,8 @@ contract EtherImp {
     function buyBottle() payable public {
         // Conditions
         require(msg.sender != currentOwner);
-        require(msg.value &gt; 0);
-        require(msg.value &lt; lastPricePaid);
+        require(msg.value > 0);
+        require(msg.value < lastPricePaid);
         
         // Effects
         previousOwner = currentOwner;

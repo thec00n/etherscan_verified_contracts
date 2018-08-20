@@ -66,8 +66,8 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
     uint256 constant private rndFirStage_ = 12 hours;           // round timer at first stage
     uint256 constant private rndSecStage_ = 12 hours;           // round timer at second stage
 
-    mapping (uint256 =&gt; Round) public round_m;                  // (rndNo =&gt; Round)
-    mapping (uint256 =&gt; mapping (address =&gt; PlayerRound)) public playerRound_m;   // (rndNo =&gt; addr =&gt; PlayerRound)
+    mapping (uint256 => Round) public round_m;                  // (rndNo => Round)
+    mapping (uint256 => mapping (address => PlayerRound)) public playerRound_m;   // (rndNo => addr => PlayerRound)
 
     address public owner;               // owner address
     uint256 public ownerWithdraw = 0;   // how many eth has been withdraw by owner
@@ -90,7 +90,7 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         uint256 _codeLength;
         
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;sorry humans only&quot;);
+        require(_codeLength == 0, "sorry humans only");
         _;
     }
     
@@ -99,8 +99,8 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
      */
     modifier isWithinLimits(uint256 _eth) 
     {
-        require(_eth &gt;= 1000000000, &quot;pocket lint: not a valid currency&quot;);
-        require(_eth &lt;= 100000000000000000000000, &quot;no vitalik, no&quot;);
+        require(_eth >= 1000000000, "pocket lint: not a valid currency");
+        require(_eth <= 100000000000000000000000, "no vitalik, no");
         _;    
     }
 
@@ -109,7 +109,7 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
      */
     modifier onlyOwner() 
     {
-        require(owner == msg.sender, &quot;only owner can do it&quot;);
+        require(owner == msg.sender, "only owner can do it");
         _;    
     }
 
@@ -128,7 +128,7 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         uint256 _ethUse = msg.value;
 
         // start next round?
-        if (_now &gt; round_m[_rndNo].endTime)
+        if (_now > round_m[_rndNo].endTime)
         {
             _rndNo = _rndNo.add(1);
             rndNo = _rndNo;
@@ -137,23 +137,23 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         }
 
         // first or second stage
-        if (round_m[_rndNo].keys &lt; 10000000000000000000000000)
+        if (round_m[_rndNo].keys < 10000000000000000000000000)
         {
             // first stage
             uint256 _keys = (round_m[_rndNo].eth).keysRec(_eth);
             // keys number 10,000,000, enter the second stage
-            if (_keys.add(round_m[_rndNo].keys) &gt;= 10000000000000000000000000)
+            if (_keys.add(round_m[_rndNo].keys) >= 10000000000000000000000000)
             {
                 _keys = (10000000000000000000000000).sub(round_m[_rndNo].keys);
 
-                if (round_m[_rndNo].eth &gt;= 8562500000000000000000)
+                if (round_m[_rndNo].eth >= 8562500000000000000000)
                 {
                     _ethUse = 0;
                 } else {
                     _ethUse = (8562500000000000000000).sub(round_m[_rndNo].eth);
                 }
 
-                if (_eth &gt; _ethUse)
+                if (_eth > _ethUse)
                 {
                     // refund
                     msg.sender.transfer(_eth.sub(_ethUse));
@@ -164,7 +164,7 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
             }
 
             // if they bought at least 1 whole key
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
                 round_m[_rndNo].endTime = _now + rndFirStage_;
                 round_m[_rndNo].leader = msg.sender;
@@ -193,13 +193,13 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         } else {
             // second stage
             // no more keys
-            // lastPrice + 0.1Ether &lt;= newPrice &lt;= lastPrice + 10Ether
+            // lastPrice + 0.1Ether <= newPrice <= lastPrice + 10Ether
             uint256 _lastPrice = round_m[_rndNo].lastPrice;
             uint256 _maxPrice = (10000000000000000000).add(_lastPrice);
             // less than (lastPrice + 0.1Ether) ?
-            require(_eth &gt;= (100000000000000000).add(_lastPrice), &quot;Need more Ether&quot;);
+            require(_eth >= (100000000000000000).add(_lastPrice), "Need more Ether");
             // more than (lastPrice + 10Ether) ?
-            if (_eth &gt; _maxPrice)
+            if (_eth > _maxPrice)
             {
                 _ethUse = _maxPrice;
                 // refund
@@ -239,10 +239,10 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         onlyHuman()
         public
     {
-        require(_rndNo &lt;= rndNo, &quot;You&#39;re running too fast&quot;);
+        require(_rndNo <= rndNo, "You're running too fast");
         uint256 _total = (((round_m[_rndNo].eth).mul(playerRound_m[_rndNo][msg.sender].keys)).mul(60) / ((round_m[_rndNo].keys).mul(100)));
         uint256 _withdrawed = playerRound_m[_rndNo][msg.sender].withdraw;
-        require(_total &gt; _withdrawed, &quot;No need to withdraw&quot;);
+        require(_total > _withdrawed, "No need to withdraw");
         uint256 _ethOut = _total.sub(_withdrawed);
         playerRound_m[_rndNo][msg.sender].withdraw = _total;
         msg.sender.transfer(_ethOut);
@@ -266,10 +266,10 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         onlyHuman()
         public
     {
-        require(_rndNo &lt;= rndNo, &quot;You&#39;re running too fast&quot;);
-        require(now &gt; round_m[_rndNo].endTime, &quot;Wait patiently&quot;);
-        require(round_m[_rndNo].leader == msg.sender, &quot;The prize is not yours&quot;);
-        require(round_m[_rndNo].award == false, &quot;Can&#39;t get prizes repeatedly&quot;);
+        require(_rndNo <= rndNo, "You're running too fast");
+        require(now > round_m[_rndNo].endTime, "Wait patiently");
+        require(round_m[_rndNo].leader == msg.sender, "The prize is not yours");
+        require(round_m[_rndNo].award == false, "Can't get prizes repeatedly");
 
         uint256 _ethOut = ((round_m[_rndNo].eth).mul(35) / (100));
         round_m[_rndNo].award = true;
@@ -295,7 +295,7 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
     {
         uint256 _total = (totalEth.mul(5) / (100));
         uint256 _withdrawed = ownerWithdraw;
-        require(_total &gt; _withdrawed, &quot;No need to withdraw&quot;);
+        require(_total > _withdrawed, "No need to withdraw");
         ownerWithdraw = _total;
         owner.transfer(_total.sub(_withdrawed));
     }
@@ -356,11 +356,11 @@ contract FlyToTheMoon is FlyToTheMoonEvents {
         uint256 _now = now;
         
         // start next round?
-        if (_now &gt; round_m[_rndNo].endTime)
+        if (_now > round_m[_rndNo].endTime)
         {
             return (75000000000000);
         }
-        if (round_m[_rndNo].keys &lt; 10000000000000000000000000)
+        if (round_m[_rndNo].keys < 10000000000000000000000000)
         {
             return ((round_m[_rndNo].keys.add(1000000000000000000)).ethRec(1000000000000000000));
         }
@@ -401,7 +401,7 @@ library KeysCalc {
 
     /**
      * @dev calculates how many keys would exist with given an amount of eth
-     * @param _eth eth &quot;in contract&quot;
+     * @param _eth eth "in contract"
      * @return number of keys that would exist
      */
     function keys(uint256 _eth) 
@@ -414,7 +414,7 @@ library KeysCalc {
     
     /**
      * @dev calculates how much eth would be in contract given a number of keys
-     * @param _keys number of keys &quot;in contract&quot; 
+     * @param _keys number of keys "in contract" 
      * @return eth that would exists
      */
     function eth(uint256 _keys) 
@@ -449,7 +449,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -461,7 +461,7 @@ library SafeMath {
         pure
         returns (uint256) 
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -474,7 +474,7 @@ library SafeMath {
         returns (uint256 c) 
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
     
@@ -488,7 +488,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y) 
+        while (z < y) 
         {
             y = z;
             z = ((add((x / z),z)) / 2);
@@ -521,7 +521,7 @@ library SafeMath {
         else 
         {
             uint256 z = x;
-            for (uint256 i=1; i &lt; y; i++)
+            for (uint256 i=1; i < y; i++)
                 z = mul(z,x);
             return (z);
         }

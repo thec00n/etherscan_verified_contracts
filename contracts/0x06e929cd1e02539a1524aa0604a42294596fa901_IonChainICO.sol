@@ -5,7 +5,7 @@ pragma solidity 0.4.24;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -48,7 +48,7 @@ contract Whitelisted is Ownable {
     bool public whitelistEnabled = true;
 
     /// @dev ICO whitelist
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     event ICOWhitelisted(address indexed addr);
     event ICOBlacklisted(address indexed addr);
@@ -202,7 +202,7 @@ contract BaseICO is Ownable, Whitelisted {
      * @param endAt_ ICO end date, seconds since epoch.
      */
     function start(uint endAt_) public onlyOwner {
-        require(endAt_ &gt; block.timestamp &amp;&amp; state == State.Inactive);
+        require(endAt_ > block.timestamp && state == State.Inactive);
         endAt = endAt_;
         startAt = block.timestamp;
         state = State.Active;
@@ -225,8 +225,8 @@ contract BaseICO is Ownable, Whitelisted {
      * ICO goals are not reached, ICO terminated and cannot be resumed.
      */
     function terminate() public onlyOwner {
-        require(state != State.Terminated &amp;&amp;
-        state != State.NotCompleted &amp;&amp;
+        require(state != State.Terminated &&
+        state != State.NotCompleted &&
         state != State.Completed);
         state = State.Terminated;
         emit ICOTerminated();
@@ -246,22 +246,22 @@ contract BaseICO is Ownable, Whitelisted {
         uint hardCapWei_,
         uint lowCapTxWei_,
         uint hardCapTxWei_) public onlyOwner isSuspended {
-        if (endAt_ &gt; block.timestamp) {
+        if (endAt_ > block.timestamp) {
             endAt = endAt_;
         }
-        if (lowCapWei_ &gt; 0) {
+        if (lowCapWei_ > 0) {
             lowCapWei = lowCapWei_;
         }
-        if (hardCapWei_ &gt; 0) {
+        if (hardCapWei_ > 0) {
             hardCapWei = hardCapWei_;
         }
-        if (lowCapTxWei_ &gt; 0) {
+        if (lowCapTxWei_ > 0) {
             lowCapTxWei = lowCapTxWei_;
         }
-        if (hardCapTxWei_ &gt; 0) {
+        if (hardCapTxWei_ > 0) {
             hardCapTxWei = hardCapTxWei_;
         }
-        require(lowCapWei &lt;= hardCapWei &amp;&amp; lowCapTxWei &lt;= hardCapTxWei);
+        require(lowCapWei <= hardCapWei && lowCapTxWei <= hardCapTxWei);
         touch();
     }
 
@@ -315,13 +315,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -350,7 +350,7 @@ contract IonChainICO is BaseICO {
     uint public personalCapEndAt;
 
     // @dev purchases till personal cap limit end
-    mapping(address =&gt; uint) internal personalPurchases;
+    mapping(address => uint) internal personalPurchases;
 
     constructor(address icoToken_,
             address teamWallet_,
@@ -359,7 +359,7 @@ contract IonChainICO is BaseICO {
             uint hardCapWei_,
             uint lowCapTxWei_,
             uint hardCapTxWei_) public {
-        require(icoToken_ != address(0) &amp;&amp; teamWallet_ != address(0));
+        require(icoToken_ != address(0) && teamWallet_ != address(0));
         token = ERC20Token(icoToken_);
         teamWallet = teamWallet_;
         tokenHolder = tokenHolder_;
@@ -380,8 +380,8 @@ contract IonChainICO is BaseICO {
 
     function start(uint endAt_) onlyOwner public {
         uint requireTokens = hardCapWei.mul(ETH_TOKEN_EXCHANGE_RATIO).mul(ONE_TOKEN).div(1 ether);
-        require(token.balanceOf(tokenHolder) &gt;= requireTokens
-            &amp;&amp; token.allowance(tokenHolder, address(this)) &gt;= requireTokens);
+        require(token.balanceOf(tokenHolder) >= requireTokens
+            && token.allowance(tokenHolder, address(this)) >= requireTokens);
         personalCapEndAt = block.timestamp + 48 hours;
         super.start(endAt_);
     }
@@ -391,15 +391,15 @@ contract IonChainICO is BaseICO {
      * Should be called periodically by ICO owner.
      */
     function touch() public {
-        if (state != State.Active &amp;&amp; state != State.Suspended) {
+        if (state != State.Active && state != State.Suspended) {
             return;
         }
-        if (collectedWei &gt;= hardCapWei) {
+        if (collectedWei >= hardCapWei) {
             state = State.Completed;
             endAt = block.timestamp;
             emit ICOCompleted(collectedWei);
-        } else if (block.timestamp &gt;= endAt) {
-            if (collectedWei &lt; lowCapWei) {
+        } else if (block.timestamp >= endAt) {
+            if (collectedWei < lowCapWei) {
                 state = State.NotCompleted;
                 emit ICONotCompleted();
             } else {
@@ -410,17 +410,17 @@ contract IonChainICO is BaseICO {
     }
 
     function buyTokens() public onlyWhitelisted payable {
-        require(state == State.Active &amp;&amp;
-            block.timestamp &lt;= endAt &amp;&amp;
-            msg.value &gt;= lowCapTxWei &amp;&amp;
-            msg.value &lt;= hardCapTxWei &amp;&amp;
-            collectedWei + msg.value &lt;= hardCapWei);
+        require(state == State.Active &&
+            block.timestamp <= endAt &&
+            msg.value >= lowCapTxWei &&
+            msg.value <= hardCapTxWei &&
+            collectedWei + msg.value <= hardCapWei);
         uint amountWei = msg.value;
 
         // check personal cap
-        if (block.timestamp &lt;= personalCapEndAt) {
+        if (block.timestamp <= personalCapEndAt) {
             personalPurchases[msg.sender] = personalPurchases[msg.sender].add(amountWei);
-            require(personalPurchases[msg.sender] &lt;= PERSONAL_CAP);
+            require(personalPurchases[msg.sender] <= PERSONAL_CAP);
         }
 
         uint itokens = amountWei.mul(ETH_TOKEN_EXCHANGE_RATIO).mul(ONE_TOKEN).div(1 ether);

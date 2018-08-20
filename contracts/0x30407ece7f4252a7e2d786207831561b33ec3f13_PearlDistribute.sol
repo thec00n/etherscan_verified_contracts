@@ -28,7 +28,7 @@ contract PearlDistribute {
 
     function distribute() public onlyDirector {
         require(!complete);
-        require(pearl.balanceOf(this) &gt; 0);
+        require(pearl.balanceOf(this) > 0);
         stakes();
         complete = true;
     }

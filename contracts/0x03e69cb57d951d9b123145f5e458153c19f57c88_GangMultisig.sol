@@ -28,7 +28,7 @@ contract GangMultisig {
   
   //@dev constructor
   constructor (address _token, uint _needApprovesToConfirm, address[] _owners) public{
-    require (_needApprovesToConfirm &gt; 1 &amp;&amp; _needApprovesToConfirm &lt;= _owners.length);
+    require (_needApprovesToConfirm > 1 && _needApprovesToConfirm <= _owners.length);
     
     //@dev setup GangTokenContract by contract address
     token = TokenContract(_token);
@@ -48,10 +48,10 @@ contract GangMultisig {
 
   /**
    *@dev internal function, called in constructor
-   *Add initial owners in mapping &#39;owners&#39;
+   *Add initial owners in mapping 'owners'
   */
   function addInitialOwners (address[] _owners) internal {
-    for (uint i = 0; i &lt; _owners.length; i++){
+    for (uint i = 0; i < _owners.length; i++){
       //@dev check for duplicate owner addresses
       require(!owners[_owners[i]]);
       owners[_owners[i]] = true;
@@ -62,19 +62,19 @@ contract GangMultisig {
   bool public mintingFinished = false;
 
   //@dev Mapping which contains all active owners.
-  mapping (address =&gt; bool) public owners;
+  mapping (address => bool) public owners;
 
   //@dev Owner can add new proposal 1 time at each lifeTime cycle
-  mapping (address =&gt; uint32) public lastOwnersAction;
+  mapping (address => uint32) public lastOwnersAction;
   
   modifier canCreate() { 
-    require (lastOwnersAction[msg.sender] + lifeTime &lt; now);
+    require (lastOwnersAction[msg.sender] + lifeTime < now);
     lastOwnersAction[msg.sender] = uint32(now);
     _; 
   }
   
 
-  //@dev Modifier to check is message sender contains in mapping &#39;owners&#39;.
+  //@dev Modifier to check is message sender contains in mapping 'owners'.
   modifier onlyOwners() { 
     require (owners[msg.sender]); 
     _; 
@@ -83,7 +83,7 @@ contract GangMultisig {
   //@dev current owners count
   uint public ownersCount;
 
-  //@dev current approves need to confirm for any function. Can&#39;t be less than 2. 
+  //@dev current approves need to confirm for any function. Can't be less than 2. 
   uint public needApprovesToConfirm;
 
   //Start Minting Tokens
@@ -111,7 +111,7 @@ contract GangMultisig {
    * @param _value uint256 the amount of tokens to be minted
    */
   function setNewMintRequest (address _spender, uint _value) public onlyOwners canCreate {
-    require (setNewMint.creationTimestamp + lifeTime &lt; uint32(now) || setNewMint.isExecute || setNewMint.isCanceled);
+    require (setNewMint.creationTimestamp + lifeTime < uint32(now) || setNewMint.isExecute || setNewMint.isCanceled);
 
     require (!mintingFinished);
 
@@ -125,22 +125,22 @@ contract GangMultisig {
 
   /**
    * @dev Approve mint request, can be call only by owner
-   * which don&#39;t call this mint request before.
+   * which don't call this mint request before.
    */
   function approveNewMintRequest () public onlyOwners {
-    require (!setNewMint.isExecute &amp;&amp; !setNewMint.isCanceled);
-    require (setNewMint.creationTimestamp + lifeTime &gt;= uint32(now));
+    require (!setNewMint.isExecute && !setNewMint.isCanceled);
+    require (setNewMint.creationTimestamp + lifeTime >= uint32(now));
 
     require (!mintingFinished);
 
-    for (uint i = 0; i &lt; setNewMint.confirmators.length; i++){
+    for (uint i = 0; i < setNewMint.confirmators.length; i++){
       require(setNewMint.confirmators[i] != msg.sender);
     }
       
     setNewMint.confirms++;
     setNewMint.confirmators.push(msg.sender);
 
-    if(setNewMint.confirms &gt;= needApprovesToConfirm){
+    if(setNewMint.confirms >= needApprovesToConfirm){
       setNewMint.isExecute = true;
 
       token.mint(setNewMint.spender, setNewMint.value); 
@@ -154,7 +154,7 @@ contract GangMultisig {
    */
   function cancelMintRequest () public {
     require (msg.sender == setNewMint.initiator);    
-    require (!setNewMint.isCanceled &amp;&amp; !setNewMint.isExecute);
+    require (!setNewMint.isCanceled && !setNewMint.isExecute);
 
     setNewMint.isCanceled = true;
     emit NewMintRequestCanceled();
@@ -183,7 +183,7 @@ contract GangMultisig {
    * @dev New finish minting request, can be call only by owner
    */
   function finishMintingRequestSetup () public onlyOwners canCreate{
-    require ((finishMintingStruct.creationTimestamp + lifeTime &lt; uint32(now) || finishMintingStruct.isCanceled) &amp;&amp; !finishMintingStruct.isExecute);
+    require ((finishMintingStruct.creationTimestamp + lifeTime < uint32(now) || finishMintingStruct.isCanceled) && !finishMintingStruct.isExecute);
     
     require (!mintingFinished);
 
@@ -197,15 +197,15 @@ contract GangMultisig {
 
   /**
    * @dev Approve finish minting request, can be call only by owner
-   * which don&#39;t call this finish minting request before.
+   * which don't call this finish minting request before.
    */
   function ApproveFinishMintingRequest () public onlyOwners {
-    require (!finishMintingStruct.isCanceled &amp;&amp; !finishMintingStruct.isExecute);
-    require (finishMintingStruct.creationTimestamp + lifeTime &gt;= uint32(now));
+    require (!finishMintingStruct.isCanceled && !finishMintingStruct.isExecute);
+    require (finishMintingStruct.creationTimestamp + lifeTime >= uint32(now));
 
     require (!mintingFinished);
 
-    for (uint i = 0; i &lt; finishMintingStruct.confirmators.length; i++){
+    for (uint i = 0; i < finishMintingStruct.confirmators.length; i++){
       require(finishMintingStruct.confirmators[i] != msg.sender);
     }
 
@@ -213,7 +213,7 @@ contract GangMultisig {
 
     finishMintingStruct.confirms++;
 
-    if(finishMintingStruct.confirms &gt;= needApprovesToConfirm){
+    if(finishMintingStruct.confirms >= needApprovesToConfirm){
       token.finishMinting();
       finishMintingStruct.isExecute = true;
       mintingFinished = true;
@@ -254,13 +254,13 @@ contract GangMultisig {
   event NewNeedApprovesToConfirmRequestCanceled();
 
   /**
-   * @dev Function to change &#39;needApprovesToConfirm&#39; variable, can be call only by owner
+   * @dev Function to change 'needApprovesToConfirm' variable, can be call only by owner
    * @param _count uint256 New need approves to confirm will needed
    */
   function setNewOwnersCountToApprove (uint _count) public onlyOwners canCreate {
-    require (setNewApproves.creationTimestamp + lifeTime &lt; uint32(now) || setNewApproves.isExecute || setNewApproves.isCanceled);
+    require (setNewApproves.creationTimestamp + lifeTime < uint32(now) || setNewApproves.isExecute || setNewApproves.isCanceled);
 
-    require (_count &gt; 1);
+    require (_count > 1);
 
     address[] memory addr;
 
@@ -272,22 +272,22 @@ contract GangMultisig {
 
   /**
    * @dev Approve new owners count request, can be call only by owner
-   * which don&#39;t call this new owners count request before.
+   * which don't call this new owners count request before.
    */
   function approveNewOwnersCount () public onlyOwners {
-    require (setNewApproves.count &lt;= ownersCount);
-    require (setNewApproves.creationTimestamp + lifeTime &gt;= uint32(now));
+    require (setNewApproves.count <= ownersCount);
+    require (setNewApproves.creationTimestamp + lifeTime >= uint32(now));
     
-    for (uint i = 0; i &lt; setNewApproves.confirmators.length; i++){
+    for (uint i = 0; i < setNewApproves.confirmators.length; i++){
       require(setNewApproves.confirmators[i] != msg.sender);
     }
     
-    require (!setNewApproves.isExecute &amp;&amp; !setNewApproves.isCanceled);
+    require (!setNewApproves.isExecute && !setNewApproves.isCanceled);
     
     setNewApproves.confirms++;
     setNewApproves.confirmators.push(msg.sender);
 
-    if(setNewApproves.confirms &gt;= needApprovesToConfirm){
+    if(setNewApproves.confirms >= needApprovesToConfirm){
       setNewApproves.isExecute = true;
 
       needApprovesToConfirm = setNewApproves.count;   
@@ -301,7 +301,7 @@ contract GangMultisig {
    */
   function cancelNewOwnersCountRequest () public {
     require (msg.sender == setNewApproves.initiator);    
-    require (!setNewApproves.isCanceled &amp;&amp; !setNewApproves.isExecute);
+    require (!setNewApproves.isCanceled && !setNewApproves.isExecute);
 
     setNewApproves.isCanceled = true;
     emit NewNeedApprovesToConfirmRequestCanceled();
@@ -328,11 +328,11 @@ contract GangMultisig {
   event AddOwnerRequestCanceled();
 
   /**
-   * @dev Function to add new owner in mapping &#39;owners&#39;, can be call only by owner
+   * @dev Function to add new owner in mapping 'owners', can be call only by owner
    * @param _newOwner address new potentially owner
    */
   function setAddOwnerRequest (address _newOwner) public onlyOwners canCreate {
-    require (addOwner.creationTimestamp + lifeTime &lt; uint32(now) || addOwner.isExecute || addOwner.isCanceled);
+    require (addOwner.creationTimestamp + lifeTime < uint32(now) || addOwner.isExecute || addOwner.isCanceled);
     
     address[] memory addr;
 
@@ -344,25 +344,25 @@ contract GangMultisig {
 
   /**
    * @dev Approve new owner request, can be call only by owner
-   * which don&#39;t call this new owner request before.
+   * which don't call this new owner request before.
    */
   function approveAddOwnerRequest () public onlyOwners {
-    require (!addOwner.isExecute &amp;&amp; !addOwner.isCanceled);
-    require (addOwner.creationTimestamp + lifeTime &gt;= uint32(now));
+    require (!addOwner.isExecute && !addOwner.isCanceled);
+    require (addOwner.creationTimestamp + lifeTime >= uint32(now));
 
     /**
-     *@dev new owner shoudn&#39;t be in owners mapping
+     *@dev new owner shoudn't be in owners mapping
      */
     require (!owners[addOwner.newOwner]);
 
-    for (uint i = 0; i &lt; addOwner.confirmators.length; i++){
+    for (uint i = 0; i < addOwner.confirmators.length; i++){
       require(addOwner.confirmators[i] != msg.sender);
     }
     
     addOwner.confirms++;
     addOwner.confirmators.push(msg.sender);
 
-    if(addOwner.confirms &gt;= needApprovesToConfirm){
+    if(addOwner.confirms >= needApprovesToConfirm){
       addOwner.isExecute = true;
 
       owners[addOwner.newOwner] = true;
@@ -378,7 +378,7 @@ contract GangMultisig {
    */
   function cancelAddOwnerRequest() public {
     require (msg.sender == addOwner.initiator);
-    require (!addOwner.isCanceled &amp;&amp; !addOwner.isExecute);
+    require (!addOwner.isCanceled && !addOwner.isExecute);
 
     addOwner.isCanceled = true;
     emit AddOwnerRequestCanceled();
@@ -394,11 +394,11 @@ contract GangMultisig {
   event RemoveOwnerRequestCanceled();
 
   /**
-   * @dev Function to remove owner from mapping &#39;owners&#39;, can be call only by owner
+   * @dev Function to remove owner from mapping 'owners', can be call only by owner
    * @param _removeOwner address potentially owner to remove
    */
   function removeOwnerRequest (address _removeOwner) public onlyOwners canCreate {
-    require (removeOwners.creationTimestamp + lifeTime &lt; uint32(now) || removeOwners.isExecute || removeOwners.isCanceled);
+    require (removeOwners.creationTimestamp + lifeTime < uint32(now) || removeOwners.isExecute || removeOwners.isCanceled);
 
     address[] memory addr;
     
@@ -410,24 +410,24 @@ contract GangMultisig {
 
   /**
    * @dev Approve remove owner request, can be call only by owner
-   * which don&#39;t call this remove owner request before.
+   * which don't call this remove owner request before.
    */
   function approveRemoveOwnerRequest () public onlyOwners {
-    require (ownersCount - 1 &gt;= needApprovesToConfirm &amp;&amp; ownersCount &gt; 2);
+    require (ownersCount - 1 >= needApprovesToConfirm && ownersCount > 2);
 
     require (owners[removeOwners.newOwner]);
     
-    require (!removeOwners.isExecute &amp;&amp; !removeOwners.isCanceled);
-    require (removeOwners.creationTimestamp + lifeTime &gt;= uint32(now));
+    require (!removeOwners.isExecute && !removeOwners.isCanceled);
+    require (removeOwners.creationTimestamp + lifeTime >= uint32(now));
 
-    for (uint i = 0; i &lt; removeOwners.confirmators.length; i++){
+    for (uint i = 0; i < removeOwners.confirmators.length; i++){
       require(removeOwners.confirmators[i] != msg.sender);
     }
     
     removeOwners.confirms++;
     removeOwners.confirmators.push(msg.sender);
 
-    if(removeOwners.confirms &gt;= needApprovesToConfirm){
+    if(removeOwners.confirms >= needApprovesToConfirm){
       removeOwners.isExecute = true;
 
       owners[removeOwners.newOwner] = false;
@@ -446,7 +446,7 @@ contract GangMultisig {
    */
   function cancelRemoveOwnerRequest () public {
     require (msg.sender == removeOwners.initiator);    
-    require (!removeOwners.isCanceled &amp;&amp; !removeOwners.isExecute);
+    require (!removeOwners.isCanceled && !removeOwners.isExecute);
 
     removeOwners.isCanceled = true;
     emit RemoveOwnerRequestCanceled();
@@ -462,11 +462,11 @@ contract GangMultisig {
   event RemoveOwnerRequestCanceled2();
 
   /**
-   * @dev Function to remove owner from mapping &#39;owners&#39;, can be call only by owner
+   * @dev Function to remove owner from mapping 'owners', can be call only by owner
    * @param _removeOwner address potentially owner to remove
    */
   function removeOwnerRequest2 (address _removeOwner) public onlyOwners canCreate {
-    require (removeOwners2.creationTimestamp + lifeTime &lt; uint32(now) || removeOwners2.isExecute || removeOwners2.isCanceled);
+    require (removeOwners2.creationTimestamp + lifeTime < uint32(now) || removeOwners2.isExecute || removeOwners2.isCanceled);
 
     address[] memory addr;
     
@@ -478,24 +478,24 @@ contract GangMultisig {
 
   /**
    * @dev Approve remove owner request, can be call only by owner
-   * which don&#39;t call this remove owner request before.
+   * which don't call this remove owner request before.
    */
   function approveRemoveOwnerRequest2 () public onlyOwners {
-    require (ownersCount - 1 &gt;= needApprovesToConfirm &amp;&amp; ownersCount &gt; 2);
+    require (ownersCount - 1 >= needApprovesToConfirm && ownersCount > 2);
 
     require (owners[removeOwners2.newOwner]);
     
-    require (!removeOwners2.isExecute &amp;&amp; !removeOwners2.isCanceled);
-    require (removeOwners2.creationTimestamp + lifeTime &gt;= uint32(now));
+    require (!removeOwners2.isExecute && !removeOwners2.isCanceled);
+    require (removeOwners2.creationTimestamp + lifeTime >= uint32(now));
 
-    for (uint i = 0; i &lt; removeOwners2.confirmators.length; i++){
+    for (uint i = 0; i < removeOwners2.confirmators.length; i++){
       require(removeOwners2.confirmators[i] != msg.sender);
     }
     
     removeOwners2.confirms++;
     removeOwners2.confirmators.push(msg.sender);
 
-    if(removeOwners2.confirms &gt;= needApprovesToConfirm){
+    if(removeOwners2.confirms >= needApprovesToConfirm){
       removeOwners2.isExecute = true;
 
       owners[removeOwners2.newOwner] = false;
@@ -513,7 +513,7 @@ contract GangMultisig {
    */
   function cancelRemoveOwnerRequest2 () public {
     require (msg.sender == removeOwners2.initiator);    
-    require (!removeOwners2.isCanceled &amp;&amp; !removeOwners2.isExecute);
+    require (!removeOwners2.isCanceled && !removeOwners2.isExecute);
 
     removeOwners2.isCanceled = true;
     emit RemoveOwnerRequestCanceled2();
@@ -531,13 +531,13 @@ contract GangMultisig {
     //@dev check for empty struct
     if (setNewMint.initiator != address(0)){
       //@dev check, can this request be approved by someone, if no then no sense to change something
-      if (setNewMint.creationTimestamp + lifeTime &gt;= uint32(now) &amp;&amp; !setNewMint.isExecute &amp;&amp; !setNewMint.isCanceled){
+      if (setNewMint.creationTimestamp + lifeTime >= uint32(now) && !setNewMint.isExecute && !setNewMint.isCanceled){
         if(setNewMint.initiator == _oldOwner){
           setNewMint.isCanceled = true;
           emit NewMintRequestCanceled();
         }else{
           //@dev Trying to find _oldOwner in struct confirmators
-          for (uint i = 0; i &lt; setNewMint.confirmators.length; i++){
+          for (uint i = 0; i < setNewMint.confirmators.length; i++){
             if (setNewMint.confirmators[i] == _oldOwner){
               //@dev if _oldOwner confirmed this request he should be removed from confirmators
               setNewMint.confirmators[i] = address(0);
@@ -559,13 +559,13 @@ contract GangMultisig {
      */
     if (finishMintingStruct.initiator != address(0)){
       //@dev check, can this request be approved by someone, if no then no sense to change something
-      if (finishMintingStruct.creationTimestamp + lifeTime &gt;= uint32(now) &amp;&amp; !finishMintingStruct.isExecute &amp;&amp; !finishMintingStruct.isCanceled){
+      if (finishMintingStruct.creationTimestamp + lifeTime >= uint32(now) && !finishMintingStruct.isExecute && !finishMintingStruct.isCanceled){
         if(finishMintingStruct.initiator == _oldOwner){
           finishMintingStruct.isCanceled = true;
           emit NewMintRequestCanceled();
         }else{
           //@dev Trying to find _oldOwner in struct confirmators
-          for (i = 0; i &lt; finishMintingStruct.confirmators.length; i++){
+          for (i = 0; i < finishMintingStruct.confirmators.length; i++){
             if (finishMintingStruct.confirmators[i] == _oldOwner){
               //@dev if _oldOwner confirmed this request he should be removed from confirmators
               finishMintingStruct.confirmators[i] = address(0);
@@ -587,14 +587,14 @@ contract GangMultisig {
      */
     if (setNewApproves.initiator != address(0)){
       //@dev check, can this request be approved by someone, if no then no sense to change something
-      if (setNewApproves.creationTimestamp + lifeTime &gt;= uint32(now) &amp;&amp; !setNewApproves.isExecute &amp;&amp; !setNewApproves.isCanceled){
+      if (setNewApproves.creationTimestamp + lifeTime >= uint32(now) && !setNewApproves.isExecute && !setNewApproves.isCanceled){
         if(setNewApproves.initiator == _oldOwner){
           setNewApproves.isCanceled = true;
 
           emit NewNeedApprovesToConfirmRequestCanceled();
         }else{
           //@dev Trying to find _oldOwner in struct confirmators
-          for (i = 0; i &lt; setNewApproves.confirmators.length; i++){
+          for (i = 0; i < setNewApproves.confirmators.length; i++){
             if (setNewApproves.confirmators[i] == _oldOwner){
               //@dev if _oldOwner confirmed this request he should be removed from confirmators
               setNewApproves.confirmators[i] = address(0);
@@ -617,13 +617,13 @@ contract GangMultisig {
      */
     if (addOwner.initiator != address(0)){
       //@dev check, can this request be approved by someone, if no then no sense to change something
-      if (addOwner.creationTimestamp + lifeTime &gt;= uint32(now) &amp;&amp; !addOwner.isExecute &amp;&amp; !addOwner.isCanceled){
+      if (addOwner.creationTimestamp + lifeTime >= uint32(now) && !addOwner.isExecute && !addOwner.isCanceled){
         if(addOwner.initiator == _oldOwner){
           addOwner.isCanceled = true;
           emit AddOwnerRequestCanceled();
         }else{
           //@dev Trying to find _oldOwner in struct confirmators
-          for (i = 0; i &lt; addOwner.confirmators.length; i++){
+          for (i = 0; i < addOwner.confirmators.length; i++){
             if (addOwner.confirmators[i] == _oldOwner){
               //@dev if _oldOwner confirmed this request he should be removed from confirmators
               addOwner.confirmators[i] = address(0);
@@ -645,13 +645,13 @@ contract GangMultisig {
     */
     if (removeOwners.initiator != address(0)){
       //@dev check, can this request be approved by someone, if no then no sense to change something
-      if (removeOwners.creationTimestamp + lifeTime &gt;= uint32(now) &amp;&amp; !removeOwners.isExecute &amp;&amp; !removeOwners.isCanceled){
+      if (removeOwners.creationTimestamp + lifeTime >= uint32(now) && !removeOwners.isExecute && !removeOwners.isCanceled){
         if(removeOwners.initiator == _oldOwner){
           removeOwners.isCanceled = true;
           emit RemoveOwnerRequestCanceled();
         }else{
           //@dev Trying to find _oldOwner in struct confirmators
-          for (i = 0; i &lt; removeOwners.confirmators.length; i++){
+          for (i = 0; i < removeOwners.confirmators.length; i++){
             if (removeOwners.confirmators[i] == _oldOwner){
               //@dev if _oldOwner confirmed this request he should be removed from confirmators
               removeOwners.confirmators[i] = address(0);

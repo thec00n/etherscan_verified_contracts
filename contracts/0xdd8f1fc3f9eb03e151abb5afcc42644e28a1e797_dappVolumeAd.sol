@@ -22,9 +22,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		// uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return a / b;
 	}
 
@@ -32,7 +32,7 @@ library SafeMath {
 	* @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -41,7 +41,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
 		c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -105,16 +105,16 @@ using SafeMath for uint256;
 	// update and set ad
 	function updateAd(uint256 id) public payable {
 		// set minimum amount and make sure ad hasnt expired
-		require(msg.value &gt;= adPriceMultiple.mul(adPriceHour));
-		require(block.timestamp &gt; purchaseTimestamp + purchaseSeconds);
-		require(id &gt; 0);
+		require(msg.value >= adPriceMultiple.mul(adPriceHour));
+		require(block.timestamp > purchaseTimestamp + purchaseSeconds);
+		require(id > 0);
 
 		// set ad time limit in seconds
-		if (msg.value &gt;= adPriceMultiple.mul(adPriceWeek)) {
+		if (msg.value >= adPriceMultiple.mul(adPriceWeek)) {
 			purchaseSeconds = 604800; // 1 week
-		} else if (msg.value &gt;= adPriceMultiple.mul(adPriceDay)) {
+		} else if (msg.value >= adPriceMultiple.mul(adPriceDay)) {
 			purchaseSeconds = 86400; // 1 day
-		} else if (msg.value &gt;= adPriceMultiple.mul(adPriceHalfDay)) {
+		} else if (msg.value >= adPriceMultiple.mul(adPriceHalfDay)) {
 			purchaseSeconds = 43200; // 12 hours
 		} else {
 			purchaseSeconds = 3600; // 1 hour
@@ -134,7 +134,7 @@ using SafeMath for uint256;
 
 	// update the investor
 	function updateInvestor() public payable {
-		require(msg.value &gt;= investmentMin);
+		require(msg.value >= investmentMin);
 		theInvestor.transfer(msg.value.div(100).mul(60)); // send 60% to last investor (120% of original purchase)
 		theInvestor = msg.sender; // set new investor
 		investmentMin = investmentMin.mul(2); // double the price to become the investor

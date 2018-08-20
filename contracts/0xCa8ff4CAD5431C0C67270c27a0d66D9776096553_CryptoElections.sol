@@ -3,8 +3,8 @@ pragma solidity ^0.4.17;
 //**
 contract ERC721 {
    // ERC20 compatible functions
-  string public name = &quot;CryptoElections&quot;;
-  string public symbol = &quot;CE&quot;;
+  string public name = "CryptoElections";
+  string public symbol = "CE";
    function totalSupply()  public view returns (uint256);
    function balanceOf(address _owner) public constant returns (uint);
    // Functions that define ownership
@@ -67,17 +67,17 @@ contract CryptoElections is ERC721 {
    event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
    
    
-    mapping(uint =&gt; Country) public countries ;
-    mapping(uint =&gt;  uint[]) public countriesCities ;
-    mapping(uint =&gt;  uint) public citiesCountries ;
+    mapping(uint => Country) public countries ;
+    mapping(uint =>  uint[]) public countriesCities ;
+    mapping(uint =>  uint) public citiesCountries ;
 
-    mapping(uint =&gt;  uint) public cityPopulation ;
-    mapping(uint =&gt; City) public cities;
-    mapping(address =&gt; uint[]) public userCities;
-    mapping(address =&gt; uint) public userPendingWithdrawals;
-    mapping(address =&gt; string) public userNicknames;
-     mapping(bytes32 =&gt; bool) public takenNicknames;
-    mapping(address =&gt; mapping (address =&gt; uint256)) private allowed;
+    mapping(uint =>  uint) public cityPopulation ;
+    mapping(uint => City) public cities;
+    mapping(address => uint[]) public userCities;
+    mapping(address => uint) public userPendingWithdrawals;
+    mapping(address => string) public userNicknames;
+     mapping(bytes32 => bool) public takenNicknames;
+    mapping(address => mapping (address => uint256)) private allowed;
        
     uint totalCities=0;
 
@@ -211,7 +211,7 @@ contract CryptoElections is ERC721 {
     onlyCreator()
     {
         require(!inited);
-        for (uint i = 0;i&lt;citiesIds.length;i++) {
+        for (uint i = 0;i<citiesIds.length;i++) {
             cities[citiesIds[i]].mayor = mayors[i];
             cities[citiesIds[i]].purchases = purchases[i];
         }
@@ -228,7 +228,7 @@ contract CryptoElections is ERC721 {
     onlyCreator()
     {
         require(!inited);
-        for (uint i = 0;i&lt;countriesIds.length;i++) {
+        for (uint i = 0;i<countriesIds.length;i++) {
             countries[countriesIds[i]].president = presidents[i];
         }
     }
@@ -237,7 +237,7 @@ contract CryptoElections is ERC721 {
     onlyCreator()
     {
         require(!inited);
-        for (uint i = 0;i&lt;userIds.length;i++) {
+        for (uint i = 0;i<userIds.length;i++) {
             userPendingWithdrawals[userIds[i]] = withdrawals[i];
         }
     }
@@ -263,7 +263,7 @@ contract CryptoElections is ERC721 {
     onlyCreator()
     {
         countriesCities[countryId] = _cities;
-        for (uint i = 0;i&lt;_cities.length;i++) {
+        for (uint i = 0;i<_cities.length;i++) {
             Transfer(0x0,address(this),_cities[i]);
             cities[_cities[i]].multiplierStep=multiplierStep;
               cities[_cities[i]].startPrice=startPrice;
@@ -288,7 +288,7 @@ contract CryptoElections is ERC721 {
     onlyCreator()
     {
 
-        for (uint i = 0;i&lt;_cities.length;i++) {
+        for (uint i = 0;i<_cities.length;i++) {
 
             cityPopulation[_cities[i]] = _populations[i];
         }
@@ -335,7 +335,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
      
         City[] memory cityArray= new City[](citiesIds.length);
      
-        for (uint i=0;i&lt;citiesIds.length;i++) {
+        for (uint i=0;i<citiesIds.length;i++) {
           
             cityArray[i]=cities[citiesIds[i]];
           
@@ -351,7 +351,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
          bytes32 [] memory pictures=new bytes32[](citiesIds.length);
    
      
-        for (uint i=0;i&lt;citiesIds.length;i++) {
+        for (uint i=0;i<citiesIds.length;i++) {
           
             slogans[i]=stringToBytes32(cities[citiesIds[i]].slogan);
             pictures[i]=stringToBytes32(cities[citiesIds[i]].picture);
@@ -371,7 +371,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
         uint [] memory startPrices=new uint[](citiesIds.length);
         uint [] memory multiplierSteps=new uint[](citiesIds.length);
                                     
-        for (uint i=0;i&lt;citiesIds.length;i++) {
+        for (uint i=0;i<citiesIds.length;i++) {
             mayors[i]=(cities[citiesIds[i]].mayor);
       
             purchases[i]=(cities[citiesIds[i]].purchases);
@@ -388,7 +388,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
         bytes32 [] memory slogans=new bytes32[](countriesIds.length);
          bytes32 [] memory flagUrls=new bytes32[](countriesIds.length);
    
-        for (uint i=0;i&lt;countriesIds.length;i++) {
+        for (uint i=0;i<countriesIds.length;i++) {
             presidents[i]=(countries[countriesIds[i]].president);
             slogans[i]=stringToBytes32(countries[countriesIds[i]].slogan);
             flagUrls[i]=stringToBytes32(countries[countriesIds[i]].flagUrl);
@@ -417,8 +417,8 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
         uint presidentCommission = 0;
         uint ownerCommission;
 
-        for (uint i = 1;i&lt;=purchases;i++) {
-            if (i&lt;=multiplierStep)
+        for (uint i = 1;i<=purchases;i++) {
+            if (i<=multiplierStep)
                 price = price*2;
             else
                 price = (price*12)/10;
@@ -448,14 +448,14 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
         uint  controlledPopulation;
 
         uint  population;
-        for (uint i = 0;i&lt;countriesCities[countryId].length;i++) {
+        for (uint i = 0;i<countriesCities[countryId].length;i++) {
             population = cityPopulation[countriesCities[countryId][i]];
             if (cities[countriesCities[countryId][i]].mayor==msg.sender) {
                 controlledPopulation += population;
             }
             totalPopulation += population;
         }
-        if (controlledPopulation*2&gt;(totalPopulation)) {
+        if (controlledPopulation*2>(totalPopulation)) {
             countries[countryId].president = msg.sender;
             assignCountryEvent(msg.sender,countryId);
             return true;
@@ -476,7 +476,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
             revert();
         }
 
-        if ( msg.value+userPendingWithdrawals[msg.sender]&gt;=prices[0]) {
+        if ( msg.value+userPendingWithdrawals[msg.sender]>=prices[0]) {
             // use user limit
             userPendingWithdrawals[msg.sender] = userPendingWithdrawals[msg.sender]+msg.value-prices[0];
             pendingWithdrawalEvent(msg.sender,userPendingWithdrawals[msg.sender]+msg.value-prices[0]);
@@ -497,7 +497,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
             // change mayor
             address oldMayor;
             oldMayor=cities[cityId].mayor;
-            if (cities[cityId].mayor&gt;0) {
+            if (cities[cityId].mayor>0) {
                 _removeUserCity(cities[cityId].mayor,cityId);
             }
 
@@ -523,7 +523,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
 
     function _addUserCity(address user,uint cityId) private {
         bool added = false;
-        for (uint i = 0; i&lt;userCities[user].length; i++) {
+        for (uint i = 0; i<userCities[user].length; i++) {
             if (userCities[user][i]==0) {
                 userCities[user][i] = cityId;
                 added = true;
@@ -535,7 +535,7 @@ function stringToBytes32(string memory source) private pure returns (bytes32 res
     }
 
     function _removeUserCity(address user,uint cityId) private {
-        for (uint i = 0; i&lt;userCities[user].length; i++) {
+        for (uint i = 0; i<userCities[user].length; i++) {
             if (userCities[user][i]==cityId) {
                 delete userCities[user][i];
             }

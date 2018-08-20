@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 ///EtherDrugs
 
 /// @title Interface for contracts conforming to ERC-721: Non-Fungible Tokens
-/// @author Dieter Shirley &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7c3c2d3c2e7c6dfcec8caddc2c989c4c8">[email&#160;protected]</a>&gt; (https://github.com/dete)
+/// @author Dieter Shirley <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7c3c2d3c2e7c6dfcec8caddc2c989c4c8">[email protected]</a>> (https://github.com/dete)
 contract ERC721 {
     function approve(address _to, uint256 _tokenId) public;
     function balanceOf(address _owner) public view returns (uint256 balance);
@@ -35,21 +35,21 @@ contract EtherDrugs is ERC721 {
   }
 
   /*** CONSTANTS ***/
-  string public constant NAME = &quot;EtherDrugs&quot;;
-  string public constant SYMBOL = &quot;DRUG&quot;;
+  string public constant NAME = "EtherDrugs";
+  string public constant SYMBOL = "DRUG";
   
   bool public gameOpen = false;
 
   /*** STORAGE ***/
-  mapping (address =&gt; uint256) private ownerCount;
-  mapping (uint256 =&gt; address) public lastBuyer;
+  mapping (address => uint256) private ownerCount;
+  mapping (uint256 => address) public lastBuyer;
 
   address public ceoAddress;
-  mapping (uint256 =&gt; address) public extra;
+  mapping (uint256 => address) public extra;
   
   uint256 drug_count;
  
-  mapping (uint256 =&gt; Drug) private drugs;
+  mapping (uint256 => Drug) private drugs;
 
   /*** ACCESS MODIFIERS ***/
   modifier onlyCEO() { require(msg.sender == ceoAddress); _; }
@@ -132,7 +132,7 @@ contract EtherDrugs is ERC721 {
     bytes32[] memory names = new bytes32[](drug_count);
     address[] memory owners = new address[](drug_count);
     uint256[] memory prices = new uint256[](drug_count);
-    for(uint256 _id = 0; _id &lt; drug_count; _id++){
+    for(uint256 _id = 0; _id < drug_count; _id++){
       ids[_id] = _id;
       names[_id] = drugs[_id].name;
       owners[_id] = drugs[_id].owner;
@@ -147,7 +147,7 @@ contract EtherDrugs is ERC721 {
 
     require(drug.owner != msg.sender);
     require(msg.sender != address(0));  
-    require(msg.value &gt;= drug.price);
+    require(msg.value >= drug.price);
 
     uint256 excess = SafeMath.sub(msg.value, drug.price);
     uint256 half_diff = SafeMath.div(SafeMath.sub(drug.price, drug.last_price), 2);
@@ -167,7 +167,7 @@ contract EtherDrugs is ERC721 {
     drug.last_price = drug.price;
     address _old_owner = drug.owner;
     
-    if(drug.price &lt; 1690000000000000000){ // 1.69 eth
+    if(drug.price < 1690000000000000000){ // 1.69 eth
         drug.price = SafeMath.mul(SafeMath.div(drug.price, 100), 169); // 1.69x
     } else {
         drug.price = SafeMath.mul(SafeMath.div(drug.price, 100), 125); // 1.2x
@@ -201,7 +201,7 @@ contract EtherDrugs is ERC721 {
     } else {
       uint256[] memory result = new uint256[](tokenCount);
       uint256 resultIndex = 0;
-      for (uint256 drugId = 0; drugId &lt;= totalSupply(); drugId++) {
+      for (uint256 drugId = 0; drugId <= totalSupply(); drugId++) {
         if (drugs[drugId].owner == _owner) {
           result[resultIndex] = drugId;
           resultIndex++;
@@ -282,12 +282,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }

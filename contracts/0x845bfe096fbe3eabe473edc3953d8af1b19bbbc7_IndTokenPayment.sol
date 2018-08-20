@@ -7,7 +7,7 @@ pragma solidity ^0.4.23;
  * https://github.com/OpenZeppelin/openzeppelin-solidity/
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -73,7 +73,7 @@ contract Ownable {
  * https://github.com/OpenZeppelin/openzeppelin-solidity/
  *
  * @title Helps contracts guard agains reentrancy attacks.
- * @author Remco Bloemen &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed9f88808e82addf">[email&#160;protected]</a>π.com&gt;
+ * @author Remco Bloemen <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed9f88808e82addf">[email protected]</a>π.com>
  * @notice If you mark a function `nonReentrant`, you should also
  * mark it `external`.
  */
@@ -185,7 +185,7 @@ contract IndTokenPayment is Ownable, ReentrancyGuard {
     address public destinationWallet;       
     uint256 public minConversionRate;
     IContractRegistry public bancorRegistry;
-    bytes32 public constant BANCOR_NETWORK = &quot;BancorNetwork&quot;;
+    bytes32 public constant BANCOR_NETWORK = "BancorNetwork";
     
     event conversionSucceded(address from,uint256 fromTokenVal,address dest,uint256 destTokenVal);    
     
@@ -221,7 +221,7 @@ contract IndTokenPayment is Ownable, ReentrancyGuard {
         //TODO : Compute minReturn
         uint256 minReturn =0;
         uint256 convTokens =  bancorNetwork.convertFor.value(msg.value)(path,msg.value,minReturn,destinationWallet);        
-        //assert(convTokens &gt; 0);
+        //assert(convTokens > 0);
         emit conversionSucceded(msg.sender,msg.value,destinationWallet,convTokens);                                                                    
     }
 
@@ -237,7 +237,7 @@ contract IndTokenPayment is Ownable, ReentrancyGuard {
     //ETH cannot get locked in this contract. If it does, this can be used to withdraw
     //the locked ether.
     function withdrawEther() public onlyOwner nonReentrant returns(bool){
-        if(address(this).balance &gt; 0){
+        if(address(this).balance > 0){
             destinationWallet.transfer(address(this).balance);
         }        
         return true;

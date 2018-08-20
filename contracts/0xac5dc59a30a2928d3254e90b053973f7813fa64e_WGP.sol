@@ -15,20 +15,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -48,10 +48,10 @@ contract ERC20 {
 contract WGP is ERC20
 { using SafeMath for uint256;
     // Name of the token
-    string public constant name = &quot;W Green Pay&quot;;
+    string public constant name = "W Green Pay";
 
     // Symbol of token
-    string public constant symbol = &quot;WGP&quot;;
+    string public constant symbol = "WGP";
     uint8 public constant decimals = 18;
     uint public _totalsupply; 
     uint public maxCap_MInt = 60000000 * 10 ** 18; // 60 Million Coins
@@ -67,8 +67,8 @@ contract WGP is ERC20
     bool public lockstatus; 
     bool public mintingFinished = false;
     
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
     event Mint(address indexed from, address indexed to, uint256 amount);
 
     
@@ -103,7 +103,7 @@ contract WGP is ERC20
     function Manual_Mint(address receiver, uint256 tokenQuantity) external onlyOwner {
       
             require(!mintingFinished);
-             require(mintedtokens + tokenQuantity &lt;= maxCap_MInt &amp;&amp; tokenQuantity &gt; 0);
+             require(mintedtokens + tokenQuantity <= maxCap_MInt && tokenQuantity > 0);
               mintedtokens = mintedtokens.add(tokenQuantity);
              _totalsupply = _totalsupply.add(tokenQuantity);
              balances[receiver] = balances[receiver].add(tokenQuantity);
@@ -113,7 +113,7 @@ contract WGP is ERC20
 
     function mintContract(address receiver, uint256 tokenQuantity) private {
             
-             require(mintedtokens + tokenQuantity &lt;= maxCap_MInt &amp;&amp; tokenQuantity &gt; 0);
+             require(mintedtokens + tokenQuantity <= maxCap_MInt && tokenQuantity > 0);
               mintedtokens = mintedtokens.add(tokenQuantity);
              _totalsupply = _totalsupply.add(tokenQuantity);
              balances[receiver] = balances[receiver].add(tokenQuantity);
@@ -123,8 +123,8 @@ contract WGP is ERC20
     
     function () public payable atStage(Stages.ICO)
     {
-        require(!stopped &amp;&amp; msg.sender != owner);
-        require (now &lt;= ico_enddate);
+        require(!stopped && msg.sender != owner);
+        require (now <= ico_enddate);
         _price_tokn = calcprice();
         no_of_tokens =((msg.value).mul(_price_tokn)).div(1000);
         ETHcollected = ETHcollected.add(msg.value);
@@ -136,10 +136,10 @@ contract WGP is ERC20
     function calcprice() view private returns (uint){
          uint price_tokn;
          
-        if(ETHcollected &lt;= 246153 ether){
+        if(ETHcollected <= 246153 ether){
             price_tokn = 40625;   // 1 ETH = 40.625 tokens
         }
-        else  if(ETHcollected &gt; 246153 ether){
+        else  if(ETHcollected > 246153 ether){
             price_tokn = 30111;   // 1 ETH = 30.111 tokens
         }
       
@@ -182,7 +182,7 @@ contract WGP is ERC20
     
      function CrowdSale_Finalize() external onlyOwner atStage(Stages.ICO)
      {
-         require(now &gt; ico_enddate);
+         require(now > ico_enddate);
          stage = Stages.ENDED;
          lockstatus = false;
          mintingFinished = true;
@@ -206,13 +206,13 @@ contract WGP is ERC20
     
     // Send _value amount of tokens from address _from to address _to
      // The transferFrom method is used for a withdraw workflow, allowing contracts to send
-     // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
      // fees in sub-currencies; the command should fail unless the _from account has
      // deliberately authorized the sender of the message via some mechanism; we propose
      // these standardized APIs for approval:
      function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
      require( _to != 0x0);
-     require(balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+     require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
      balances[_from] = (balances[_from]).sub(_amount);
      allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
      balances[_to] = (balances[_to]).add(_amount);
@@ -231,15 +231,15 @@ contract WGP is ERC20
      }
   
      function allowance(address _owner, address _spender)public view returns (uint256 remaining) {
-         require( _owner != 0x0 &amp;&amp; _spender !=0x0);
+         require( _owner != 0x0 && _spender !=0x0);
          return allowed[_owner][_spender];
    }
 
-     // Transfer the balance from owner&#39;s account to another account
+     // Transfer the balance from owner's account to another account
      function transfer(address _to, uint256 _amount)public returns (bool success) {
          require(!lockstatus);
         require( _to != 0x0);
-        require(balances[msg.sender] &gt;= _amount &amp;&amp; _amount &gt;= 0);
+        require(balances[msg.sender] >= _amount && _amount >= 0);
         balances[msg.sender] = (balances[msg.sender]).sub(_amount);
         balances[_to] = (balances[_to]).add(_amount);
         emit Transfer(msg.sender, _to, _amount);

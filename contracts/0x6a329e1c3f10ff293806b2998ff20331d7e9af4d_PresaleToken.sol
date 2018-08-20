@@ -16,8 +16,8 @@ contract PresaleToken {
      *  Constants
     /*/
 
-    string public name = &quot;TEL Presales Token&quot;;
-    string public  symbol = &quot;TEL&quot;;
+    string public name = "TEL Presales Token";
+    string public  symbol = "TEL";
     uint   public decimals = 18;
 
     uint public constant PRICE = 3450; // 3450 TEL per Ether
@@ -47,15 +47,15 @@ contract PresaleToken {
     // functions on this contract.
     address public tokenManager;
 
-    // Gathered funds can be withdrawn only to escrow&#39;s address.
+    // Gathered funds can be withdrawn only to escrow's address.
     address public escrow;
 
     // Crowdsale manager has exclusive priveleges to burn presale tokens.
     address public crowdsaleManager;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public isSaler;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public isSaler;
 
     modifier onlyTokenManager() { 
         require(msg.sender == tokenManager); 
@@ -90,16 +90,16 @@ contract PresaleToken {
      */
     function _transfer(address _from, address _to, uint _value) internal {
         require(_to != 0x0);
-        require(_value &gt; 0);
-        require(balanceOf[_from] &gt; _value);
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);
-        require(balanceOf[msg.sender] - _value &lt; balanceOf[msg.sender]);
+        require(_value > 0);
+        require(balanceOf[_from] > _value);
+        require(balanceOf[_to] + _value > balanceOf[_to]);
+        require(balanceOf[msg.sender] - _value < balanceOf[msg.sender]);
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
         Transfer(_from, _to, _value);
     }
 
-    // Transfer the balance from owner&#39;s account to another account
+    // Transfer the balance from owner's account to another account
     // only escrow can send token (to send token private sale)
     function transfer(address _to, uint256 _value) public
         onlyEscrow
@@ -108,15 +108,15 @@ contract PresaleToken {
     }
 
     /*
-    *        &gt;=3000 ETH: 1ETH = 6000 TEL
-    *        &gt;=300 ETH: 1ETH = 4800 TEL
-    *        &lt;300 ETH: 1ETH = 3450 TEL
+    *        >=3000 ETH: 1ETH = 6000 TEL
+    *        >=300 ETH: 1ETH = 4800 TEL
+    *        <300 ETH: 1ETH = 3450 TEL
     */
     function getBonus(uint value) internal returns (uint bonus) {
         require(value != 0);
-        if (value &gt;= (3000 * 10**18)) {
+        if (value >= (3000 * 10**18)) {
             return value * 2550;
-        } else if (value &gt;= (300 * 10**18)) {
+        } else if (value >= (300 * 10**18)) {
             return value * 1350;
         }
         return 0;
@@ -132,7 +132,7 @@ contract PresaleToken {
         require(currentPhase == Phase.Running);
         require(msg.value != 0);
         uint newTokens = msg.value * PRICE + getBonus(msg.value);
-        require (totalSupply + newTokens &lt; TOKEN_SUPPLY_LIMIT);
+        require (totalSupply + newTokens < TOKEN_SUPPLY_LIMIT);
         balanceOf[_buyer] += newTokens;
         totalSupply += newTokens;
         LogBuy(_buyer, newTokens);
@@ -147,7 +147,7 @@ contract PresaleToken {
         uint newTokens = msg.value * PRICE + getBonus(msg.value);
         uint tokenForSaler = newTokens / 20;
         
-        require(totalSupply + newTokens + tokenForSaler &lt;= TOKEN_SUPPLY_LIMIT);
+        require(totalSupply + newTokens + tokenForSaler <= TOKEN_SUPPLY_LIMIT);
         
         balanceOf[_saler] += tokenForSaler;
         balanceOf[msg.sender] += newTokens;
@@ -188,16 +188,16 @@ contract PresaleToken {
         onlyTokenManager
     {
         bool canSwitchPhase
-            =  (currentPhase == Phase.Created &amp;&amp; _nextPhase == Phase.Running)
-            || (currentPhase == Phase.Running &amp;&amp; _nextPhase == Phase.Paused)
+            =  (currentPhase == Phase.Created && _nextPhase == Phase.Running)
+            || (currentPhase == Phase.Running && _nextPhase == Phase.Paused)
                 // switch to migration phase only if crowdsale manager is set
             || ((currentPhase == Phase.Running || currentPhase == Phase.Paused)
-                &amp;&amp; _nextPhase == Phase.Migrating
-                &amp;&amp; crowdsaleManager != 0x0)
-            || (currentPhase == Phase.Paused &amp;&amp; _nextPhase == Phase.Running)
+                && _nextPhase == Phase.Migrating
+                && crowdsaleManager != 0x0)
+            || (currentPhase == Phase.Paused && _nextPhase == Phase.Running)
                 // switch to migrated only if everyting is migrated
-            || (currentPhase == Phase.Migrating &amp;&amp; _nextPhase == Phase.Migrated
-                &amp;&amp; totalSupply == 0);
+            || (currentPhase == Phase.Migrating && _nextPhase == Phase.Migrated
+                && totalSupply == 0);
 
         require(canSwitchPhase);
         currentPhase = _nextPhase;
@@ -210,7 +210,7 @@ contract PresaleToken {
     {
         require(escrow != 0x0);
         // Available at any phase.
-        if (this.balance &gt; 0) {
+        if (this.balance > 0) {
             escrow.transfer(this.balance);
         }
     }
@@ -219,7 +219,7 @@ contract PresaleToken {
     function setCrowdsaleManager(address _mgr) public
         onlyTokenManager
     {
-        // You can&#39;t change crowdsale contract when migration is in progress.
+        // You can't change crowdsale contract when migration is in progress.
         require(currentPhase != Phase.Migrating);
         crowdsaleManager = _mgr;
     }

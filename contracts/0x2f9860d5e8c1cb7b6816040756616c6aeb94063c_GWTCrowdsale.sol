@@ -27,20 +27,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
   
@@ -54,7 +54,7 @@ contract BasicToken is ERC20Basic {
     
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) public balances;
+    mapping(address => uint256) public balances;
 
     /**
     * @dev transfer token for a specified address
@@ -86,7 +86,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
  
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
     * @dev Transfer tokens from one address to another
@@ -98,7 +98,7 @@ contract StandardToken is ERC20, BasicToken {
         uint256 _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
@@ -136,7 +136,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -217,9 +217,9 @@ contract MintableToken is StandardToken, Ownable {
 // Токен 
 contract GWTToken is MintableToken {
     
-    string public constant name = &quot;Global Wind Token&quot;;
+    string public constant name = "Global Wind Token";
     
-    string public constant symbol = &quot;GWT&quot;;
+    string public constant symbol = "GWT";
     
     uint32 public constant decimals = 18; 
 
@@ -266,11 +266,11 @@ contract GWTCrowdsale is Ownable {
 
     function isInActiveStage() private returns(bool) {
         if (currentStageNumber == 8) return true;
-        if (now &gt;= currentStageStartTimestamp &amp;&amp; now &lt;= currentStageEndTimestamp){
+        if (now >= currentStageStartTimestamp && now <= currentStageEndTimestamp){
             return true;
-        }else if (now &lt; currentStageStartTimestamp) {
+        }else if (now < currentStageStartTimestamp) {
             return false;
-        }else if (now &gt; currentStageEndTimestamp){
+        }else if (now > currentStageEndTimestamp){
             if (currentStageNumber == 0 || currentStageNumber == 2 || currentStageNumber == 7) return false;
             switchPeriod();
             // It is not possible for stage to be finished after straight the start
@@ -294,9 +294,9 @@ contract GWTCrowdsale is Ownable {
 
         if(currentStageNumber == 0 ){
             supplyLimit = PrivateSaleLimit;
-        } else if(currentStageNumber &lt; 3){
+        } else if(currentStageNumber < 3){
             supplyLimit = PreSaleLimit;
-        } else if(currentStageNumber &lt; 8){
+        } else if(currentStageNumber < 8){
             supplyLimit = TokenSaleLimit;
         } else {
             // Base rate for phase 8 should update exchange rate
@@ -306,7 +306,7 @@ contract GWTCrowdsale is Ownable {
     }
 
     function setStage(uint _index) public onlyOwner {
-        require(_index &gt;= 0 &amp;&amp; _index &lt; 9);
+        require(_index >= 0 && _index < 9);
         
         if (_index == 0) return startPrivateSale();
         currentStageNumber = _index - 1;
@@ -330,21 +330,21 @@ contract GWTCrowdsale is Ownable {
 
     // Установить продолжительность текущего периода в днях
     function setPeriodLength(uint _length) public onlyOwner {
-        // require(now &lt; currentStageStartTimestamp + _length * 1 days);
+        // require(now < currentStageStartTimestamp + _length * 1 days);
         currentStagePeriodDays = _length;
         currentStageEndTimestamp = currentStageStartTimestamp + currentStagePeriodDays * 1 days;
     }
 
     // Изменить лимит выпуска токенов
     function modifySupplyLimit(uint _new) public onlyOwner {
-        if (_new &gt;= token.totalSupply()){
+        if (_new >= token.totalSupply()){
             supplyLimit = _new;
         }
     }
 
     // Выпустить токены на кошелек
     function mintFor(address _to, uint _val) public onlyOwner isActive payable {
-        require(token.totalSupply() + _val &lt;= supplyLimit);
+        require(token.totalSupply() + _val <= supplyLimit);
         token.mint(_to, _val);
     }
 
@@ -401,11 +401,11 @@ contract GWTCrowdsale is Ownable {
     function createTokens() public isActive payable {
         uint tokens = baseExchangeRate.mul(msg.value).div(1 ether); // Переводим ETH в GWT
 
-        if (currentStageMultiplier &gt; 0 &amp;&amp; currentStageEndTimestamp &gt; now) {            // Начисляем бонус
+        if (currentStageMultiplier > 0 && currentStageEndTimestamp > now) {            // Начисляем бонус
             tokens = tokens + tokens.div(100).mul(currentStageMultiplier);
         }
-        // require(tokens &gt; minLimit &amp;&amp; tokens &lt; buyLimit);
-        require(token.totalSupply() + tokens &lt;= supplyLimit);
+        // require(tokens > minLimit && tokens < buyLimit);
+        require(token.totalSupply() + tokens <= supplyLimit);
         ethAddress.transfer(msg.value);   // переводим на основной кошелек
         token.mint(msg.sender, tokens); // Начисляем
     }

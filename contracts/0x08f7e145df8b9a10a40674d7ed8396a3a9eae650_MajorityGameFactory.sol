@@ -8,7 +8,7 @@ contract MajorityGameFactory {
 
     address public adminAddress;
 
-    mapping(address =&gt; uint) private gameAddressIdMap;
+    mapping(address => uint) private gameAddressIdMap;
 
     uint public gameCount = 0;
     uint public endedGameCount = 0;
@@ -52,7 +52,7 @@ contract MajorityGameFactory {
      * set bonus of the game
      **/
     function setJackpot(address targetAddress, uint val) adminOnly public {
-        if (val &gt; 0) {
+        if (val > 0) {
             MajorityGame mGame = MajorityGame(targetAddress);
             mGame.setJackpot.value(val)();
         }
@@ -119,12 +119,12 @@ contract MajorityGame {
     string private questionText;
 
     // store all player bet value
-    mapping(address =&gt; bool) private playerList;
+    mapping(address => bool) private playerList;
     uint public playersCount;
 
     // store all player option record
-    mapping(address =&gt; bool) private option1List;
-    mapping(address =&gt; bool) private option2List;
+    mapping(address => bool) private option1List;
+    mapping(address => bool) private option2List;
 
     // address list
     address[] private option1AddressList;
@@ -144,14 +144,14 @@ contract MajorityGame {
     }
 
     modifier withinGameTime() {
-        require(now &lt;= startTime);
-        //require(now &lt; startTime + AVAILABLE_GAME_TIME);
+        require(now <= startTime);
+        //require(now < startTime + AVAILABLE_GAME_TIME);
         _;
     }
 
     modifier afterGameTime() {
-        require(now &gt; startTime);
-        //require(now &gt; startTime + AVAILABLE_GAME_TIME);
+        require(now > startTime);
+        //require(now > startTime + AVAILABLE_GAME_TIME);
         _;
     }
 
@@ -161,7 +161,7 @@ contract MajorityGame {
     }
 
     modifier isEnded() {
-        require(winnerSide &gt; 0);
+        require(winnerSide > 0);
         _;
     }
 
@@ -187,7 +187,7 @@ contract MajorityGame {
      * set the bonus of the game
      **/
     function setJackpot() public payable adminOnly returns (bool) {
-        if (msg.value &gt; 0) {
+        if (msg.value > 0) {
             jackpot += msg.value;
             return true;
         }
@@ -278,11 +278,11 @@ contract MajorityGame {
         uint option1Count = option1AddressList.length;
         uint option2Count = option2AddressList.length;
 
-        if (option1Count &gt; option2Count || (option1Count == option2Count &amp;&amp; gameId % 2 == 1)) { // option1 win
+        if (option1Count > option2Count || (option1Count == option2Count && gameId % 2 == 1)) { // option1 win
             award = option1Count == 0 ? 0 : uint(totalAward / option1Count);
             winnerSide = 1;
             winnerList = option1AddressList;
-        } else if (option2Count &gt; option1Count || (option1Count == option2Count &amp;&amp; gameId % 2 == 0)) { // option2 win
+        } else if (option2Count > option1Count || (option1Count == option2Count && gameId % 2 == 0)) { // option2 win
             award = option2Count == 0 ? 0 : uint(totalAward / option2Count);
             winnerSide = 2;
             winnerList = option2AddressList;
@@ -303,11 +303,11 @@ contract MajorityGame {
         uint option1Count = option1AddressList.length;
         uint option2Count = option2AddressList.length;
 
-        if (option1Count &gt; option2Count || (option1Count == option2Count &amp;&amp; gameId % 2 == 1)) { // option1 win
+        if (option1Count > option2Count || (option1Count == option2Count && gameId % 2 == 1)) { // option1 win
             award = option1Count == 0 ? 0 : uint(totalAward / option1Count);
             winnerSide = 1;
             winnerList = option1AddressList;
-        } else if (option2Count &gt; option1Count || (option1Count == option2Count &amp;&amp; gameId % 2 == 0)) { // option2 win
+        } else if (option2Count > option1Count || (option1Count == option2Count && gameId % 2 == 0)) { // option2 win
             award = option2Count == 0 ? 0 : uint(totalAward / option2Count);
             winnerSide = 2;
             winnerList = option2AddressList;
@@ -318,16 +318,16 @@ contract MajorityGame {
      * send award to winner
      **/
     function sendAward() public isEnded {
-        require(winnerList.length &gt; 0);
+        require(winnerList.length > 0);
 
         uint count = winnerList.length;
 
-        if (count &gt; 250) {
-            for (uint i = 0; i &lt; 250; i++) {
+        if (count > 250) {
+            for (uint i = 0; i < 250; i++) {
                 this.sendAwardToLastWinner();
             }
         } else {
-            for (uint j = 0; j &lt; count; j++) {
+            for (uint j = 0; j < count; j++) {
                 this.sendAwardToLastWinner();
             }
         }

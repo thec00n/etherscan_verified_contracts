@@ -16,9 +16,9 @@ contract ERC20 {
 contract Token is ERC20 {
     // Balances for trading
     // Default balance - 0
-    mapping(address =&gt; uint256) public balances;
-    mapping(address =&gt; uint256) public FreezeBalances;
-    mapping(address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping(address => uint256) public balances;
+    mapping(address => uint256) public FreezeBalances;
+    mapping(address => mapping (address => uint)) allowed;
 
     // Total amount of supplied tokens
     uint256 public totalSupply;
@@ -32,8 +32,8 @@ contract Token is ERC20 {
     uint256 public totalTokensRemind;
 
     // Information about token
-    string public constant name = &quot;AdMine&quot;;
-    string public constant symbol = &quot;MCN&quot;;
+    string public constant name = "AdMine";
+    string public constant symbol = "MCN";
     address public owner;
     uint8 public decimals = 5;
 
@@ -84,7 +84,7 @@ contract Token is ERC20 {
 
     // Transfere tokens to audit partners (2%)
     function transferAuditTokens(address _to, uint256 _amount) public onlyOwner {
-        require(auditSupply&gt;=_amount);
+        require(auditSupply>=_amount);
         balances[owner] -= _amount;
         balances[_to] += _amount;
         auditSupply -= _amount;
@@ -93,7 +93,7 @@ contract Token is ERC20 {
 
     // Transfer tokens to bounty partners (2%)
     function transferBountyTokens(address _to, uint256 _amount) public onlyOwner {
-        require(bountySupply&gt;=_amount);
+        require(bountySupply>=_amount);
         balances[owner] -= _amount;
         balances[_to] += _amount;
         bountySupply -= _amount;
@@ -101,7 +101,7 @@ contract Token is ERC20 {
     }
 
     function returnBountyTokens(address _from, uint256 _amount) public onlyOwner {
-        require(balances[_from]&gt;=_amount);
+        require(balances[_from]>=_amount);
         balances[owner] += _amount;
         balances[_from] -= _amount;
         bountySupply += _amount;
@@ -110,7 +110,7 @@ contract Token is ERC20 {
 
     // Transfer tokens to AdMine users pool (10%)
     function transferUserGrowthPoolTokens(address _to, uint256 _amount) public onlyOwner {
-        require(userGrowsPoolSupply&gt;=_amount);
+        require(userGrowsPoolSupply>=_amount);
         balances[owner] -= _amount;
         balances[_to] += _amount;
         userGrowsPoolSupply -= _amount;
@@ -118,7 +118,7 @@ contract Token is ERC20 {
     }
 
     function returnUserGrowthPoolTokens(address _from, uint256 _amount) public onlyOwner {
-        require(balances[_from]&gt;=_amount);
+        require(balances[_from]>=_amount);
         balances[owner] += _amount;
         balances[_from] -= _amount;
         userGrowsPoolSupply += _amount;
@@ -127,7 +127,7 @@ contract Token is ERC20 {
 
     // Transfer tokens to advisors (6%)
     function transferAdvisorTokens(address _to, uint256 _amount) public onlyOwner {
-        require(AdmineAdvisorTokens&gt;=_amount);
+        require(AdmineAdvisorTokens>=_amount);
         balances[owner] -= _amount;
         balances[_to] += _amount;
         AdmineAdvisorTokens -= _amount;
@@ -135,7 +135,7 @@ contract Token is ERC20 {
     }
 
     function returnAdvisorTokens(address _from, uint256 _amount) public onlyOwner {
-        require(balances[_from]&gt;=_amount);
+        require(balances[_from]>=_amount);
         balances[owner] += _amount;
         balances[_from] -= _amount;
         AdmineAdvisorTokens += _amount;
@@ -144,7 +144,7 @@ contract Token is ERC20 {
 
     // Transfer tokens to ico partners (60%)
     function transferIcoTokens(address _to, uint256 _amount) public onlyOwner {
-        require(ICOSupply&gt;=_amount);
+        require(ICOSupply>=_amount);
         balances[owner] -= _amount;
         balances[_to] += _amount;
         ICOSupply -= _amount;
@@ -152,7 +152,7 @@ contract Token is ERC20 {
     }
 
     function returnIcoTokens(address _from, uint256 _amount) public onlyOwner {
-        require(balances[_from]&gt;=_amount);
+        require(balances[_from]>=_amount);
         balances[owner] += _amount;
         balances[_from] -= _amount;
         ICOSupply += _amount;
@@ -161,7 +161,7 @@ contract Token is ERC20 {
 
     // Transfer tokens to pre sale partners (5%)
     function transferPreSaleTokens(address _to, uint256 _amount) public onlyOwner {
-        require(preSaleSupply&gt;=_amount);
+        require(preSaleSupply>=_amount);
         balances[owner] -= _amount;
         balances[_to] += _amount;
         preSaleSupply -= _amount;
@@ -169,7 +169,7 @@ contract Token is ERC20 {
     }
 
     function returnPreSaleTokens(address _from, uint256 _amount) public onlyOwner {
-        require(balances[_from]&gt;=_amount);
+        require(balances[_from]>=_amount);
         balances[owner] += _amount;
         balances[_from] -= _amount;
         preSaleSupply += _amount;
@@ -184,7 +184,7 @@ contract Token is ERC20 {
     }
 
     function transferUserTokensTo(address _from, address _to, uint256 _amount) public onlyOwner {
-        require(balances[_from] &gt;= _amount &amp;&amp; _amount &gt; 0);
+        require(balances[_from] >= _amount && _amount > 0);
         balances[_from] -= _amount;
         balances[_to] += _amount;
         Transfer(_from, _to, _amount);
@@ -198,7 +198,7 @@ contract Token is ERC20 {
     // Transfer tokens from your account to other account
     function transfer(address _to, uint _value) public  returns (bool success) {
         require(_to != 0x0);                               // Prevent transfer to 0x0 address.
-        require(balances[msg.sender] &gt;= _value);           // Check if the sender has enough
+        require(balances[msg.sender] >= _value);           // Check if the sender has enough
         balances[msg.sender] -= _value;                    // Subtract from the sender
         balances[_to] += _value;                           // Add the same to the recipient
         Transfer(msg.sender, _to, _value);
@@ -207,8 +207,8 @@ contract Token is ERC20 {
 
     // Transfer tokens from account (_from) to another account (_to)
     function transferFrom(address _from, address _to, uint256 _amount) public  returns(bool) {
-        require(_amount &lt;= allowed[_from][msg.sender]);
-        if (balances[_from] &gt;= _amount &amp;&amp; _amount &gt; 0) {
+        require(_amount <= allowed[_from][msg.sender]);
+        if (balances[_from] >= _amount && _amount > 0) {
             balances[_from] -= _amount;
             balances[_to] += _amount;
             allowed[_from][msg.sender] -= _amount;
@@ -239,7 +239,7 @@ contract Token is ERC20 {
 
     // вызвать эту функцию через  год -когда нужно будет разморозить
     function all_unfreeze() public onlyOwner {
-        require(now &gt;= unfreezeTime);
+        require(now >= unfreezeTime);
         // сюда записать те адреса которые морозили в конструткоре
         unfreeze(0x01306bfbC0C20BEADeEc30000F634d08985D87de);
     }

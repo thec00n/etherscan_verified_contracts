@@ -27,19 +27,19 @@ library Math {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a - b) &lt;= a);
+    require((r = a - b) <= a);
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256 r) {
-    require((r = a + b) &gt;= a);
+    require((r = a + b) >= a);
   }
 
   function min(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &lt;= y ? x : y;
+    return x <= y ? x : y;
   }
 
   function max(uint256 x, uint256 y) internal pure returns (uint256 r) {
-    return x &gt;= y ? x : y;
+    return x >= y ? x : y;
   }
 
   function mulDiv(uint256 value, uint256 m, uint256 d) internal pure returns (uint256 r) {
@@ -110,7 +110,7 @@ contract PrivateSaleMacau {
   uint256 public weiLiquid   = 0;
   uint256 public weiRefund   = 0;
 
-  mapping (address =&gt; Info) public users;
+  mapping (address => Info) public users;
 
   // Funder Smart Token
   ERC20 public token;
@@ -125,17 +125,17 @@ contract PrivateSaleMacau {
 
   function buy () payable public returns (bool) {
     require(
-      minWeiValue     &lt;= msg.value &amp;&amp;
-      fstSold         &lt;  saleCap   &amp;&amp;
-      block.timestamp &gt;= startTime &amp;&amp;
-      block.timestamp &lt;  endTime
+      minWeiValue     <= msg.value &&
+      fstSold         <  saleCap   &&
+      block.timestamp >= startTime &&
+      block.timestamp <  endTime
     );
 
     uint256 eth = msg.value;
     uint256 fst = eth.mul(fstUnitPriceDenominator).div(fstUnitPriceNumerator);
 
     uint256 fstAvailable = saleCap - fstSold;
-    if (fst &gt; fstAvailable) {
+    if (fst > fstAvailable) {
       uint256 refund = (fst - fstAvailable).mul(fstUnitPriceNumerator).div(fstUnitPriceDenominator);
       msg.sender.transfer(refund); // 2300 gas only
       eth -= refund;
@@ -166,13 +166,13 @@ contract PrivateSaleMacau {
   function processPurchase(uint256[] results) public {
     require(msg.sender == manager);
 
-    for (uint256 i = 0; i &lt; results.length; i++) {
-      address userAddress = address(results[i] &gt;&gt; 96);
+    for (uint256 i = 0; i < results.length; i++) {
+      address userAddress = address(results[i] >> 96);
       Info storage user = users[userAddress];
-      require(user.weiPaid &gt; 0);
+      require(user.weiPaid > 0);
 
       // kyc success
-      if ((results[i] &amp; 0x1) == 1) {
+      if ((results[i] & 0x1) == 1) {
         weiLiquid += user.weiPaid;
         token.transfer(userAddress, user.fstVested);
         Release(msg.sender, user.fstVested);
@@ -188,16 +188,16 @@ contract PrivateSaleMacau {
   }
 
   function finalize() public {
-    require(msg.sender == manager &amp;&amp; block.timestamp &gt;= endTime);
+    require(msg.sender == manager && block.timestamp >= endTime);
 
     uint256 weiVested = weiReceived - weiLiquid - weiRefund;
     uint256 weiAvailable = this.balance - weiVested;
-    if (weiAvailable &gt; 0) {
+    if (weiAvailable > 0) {
       msg.sender.transfer(weiAvailable);
     }
 
     uint256 tokenAvailable = token.balanceOf(this);
-    if (tokenAvailable &gt; 0) {
+    if (tokenAvailable > 0) {
       token.transfer(msg.sender, tokenAvailable);      
     }
     

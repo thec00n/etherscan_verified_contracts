@@ -141,11 +141,11 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) pure internal returns (uint256 z) {
@@ -157,10 +157,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) pure internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -169,11 +169,11 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) pure internal returns (uint128 z) {
@@ -185,10 +185,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) pure internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -197,10 +197,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) pure internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) pure internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -255,10 +255,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) pure internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -313,8 +313,8 @@ contract DSStop is DSAuth, DSNote {
 
 contract DSTokenBase is ERC20, DSMath {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
-    mapping (address =&gt; mapping (address =&gt; uint256))  _approvals;
+    mapping (address => uint256)                       _balances;
+    mapping (address => mapping (address => uint256))  _approvals;
     
     constructor(uint256 supply) public {
         _balances[msg.sender] = supply;
@@ -332,7 +332,7 @@ contract DSTokenBase is ERC20, DSMath {
     }
     
     function transfer(address dst, uint wad) public returns (bool) {
-        assert(_balances[msg.sender] &gt;= wad);
+        assert(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -343,8 +343,8 @@ contract DSTokenBase is ERC20, DSMath {
     }
     
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        assert(_balances[src] &gt;= wad);
-        assert(_approvals[src][msg.sender] &gt;= wad);
+        assert(_balances[src] >= wad);
+        assert(_approvals[src][msg.sender] >= wad);
         
         _approvals[src][msg.sender] = sub(_approvals[src][msg.sender], wad);
         _balances[src] = sub(_balances[src], wad);
@@ -397,7 +397,7 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     function mint(uint128 wad) public auth stoppable note {
-        assert (add(_supply, wad) &lt;= MAX_MINT_NUMBER);
+        assert (add(_supply, wad) <= MAX_MINT_NUMBER);
         _balances[msg.sender] = add(_balances[msg.sender], wad);
         _supply = add(_supply, wad);
     }
@@ -408,8 +408,8 @@ contract DSToken is DSTokenBase(0), DSStop {
 }
 
 contract DSAuthList is DSAuth {
-    mapping(address =&gt; bool) public whitelist;
-    mapping(address =&gt; bool) public adminlist;
+    mapping(address => bool) public whitelist;
+    mapping(address => bool) public adminlist;
 
     modifier onlyIfWhitelisted
     {
@@ -425,7 +425,7 @@ contract DSAuthList is DSAuth {
 
     function addAdminList(address[] addresses) public auth
     {
-        for (uint256 i=0; i &lt; addresses.length; i++)
+        for (uint256 i=0; i < addresses.length; i++)
         {
             adminlist[addresses[i]] = true;
         }
@@ -433,7 +433,7 @@ contract DSAuthList is DSAuth {
 
     function removeAdminList(address[] addresses) public auth
     {
-        for (uint256 i=0; i &lt; addresses.length; i++)
+        for (uint256 i=0; i < addresses.length; i++)
         {
             adminlist[addresses[i]] = false;
         }
@@ -441,7 +441,7 @@ contract DSAuthList is DSAuth {
 
     function addWhiteList(address[] addresses) public onlyIfAdmin
     {
-        for (uint256 i=0; i &lt; addresses.length; i++)
+        for (uint256 i=0; i < addresses.length; i++)
         {
             whitelist[addresses[i]] = true;
         }
@@ -449,7 +449,7 @@ contract DSAuthList is DSAuth {
 
     function removeWhiteList(address[] addresses) public onlyIfAdmin
     {
-        for (uint256 i=0; i &lt; addresses.length; i++)
+        for (uint256 i=0; i < addresses.length; i++)
         {
             whitelist[addresses[i]] = false;
         }
@@ -472,13 +472,13 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
     address  public  founderAddr = 0xF9BaaA91e617dF1dE6c2386b789B401c422E9AB1;
     address  public  burnAddr    = 0xA3Ad4EFDd5719eAed1B0F2e12c0D7368a6D11037;
 
-    mapping (uint =&gt; uint)                       public  dailyTotals;
-    mapping (uint =&gt; mapping (address =&gt; uint))  public  userBuys;
-    mapping (uint =&gt; mapping (address =&gt; bool))  public  claimed;
-    mapping (address =&gt; string)                  public  keys;
+    mapping (uint => uint)                       public  dailyTotals;
+    mapping (uint => mapping (address => uint))  public  userBuys;
+    mapping (uint => mapping (address => bool))  public  claimed;
+    mapping (address => string)                  public  keys;
 
-    mapping (uint =&gt; address[]) public userBuysArray;
-    mapping (uint =&gt; bool) public burned; //In one round, If the getted eth insufficient, the remain token will be burned
+    mapping (uint => address[]) public userBuysArray;
+    mapping (uint => bool) public burned; //In one round, If the getted eth insufficient, the remain token will be burned
 
     event LogBuy      (uint window, address user, uint amount);
     event LogClaim    (uint window, address user, uint amount);
@@ -509,9 +509,9 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
             numberOfRounds
         );
 
-        assert(numberOfRounds &gt; 0);
-        assert(totalSupply &gt; foundersAllocation);
-        assert(openTime &lt; startTime);
+        assert(numberOfRounds > 0);
+        assert(totalSupply > foundersAllocation);
+        assert(openTime < startTime);
     }
 
     function initialize(DSToken ono) public auth {
@@ -538,7 +538,7 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
     }
 
     function roundFor(uint timestamp) public constant returns (uint) {
-        return timestamp &lt; startTime
+        return timestamp < startTime
             ? 0
             : sub(timestamp, startTime) / 71 hours + 1;
     }
@@ -556,7 +556,7 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
     }
 
     function claimAll() public {
-        for (uint i = 0; i &lt; currRound(); i++) {
+        for (uint i = 0; i < currRound(); i++) {
             claim(i);
         }
     }
@@ -565,8 +565,8 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
     // Manually registering requires a base58
     // encoded using the STEEM, BTS, or ONO public key format.
     function register(string key) public {
-        assert(currRound() &lt;=  numberOfRounds + 1);
-        assert(bytes(key).length &lt;= 64);
+        assert(currRound() <=  numberOfRounds + 1);
+        assert(bytes(key).length <= 64);
 
         keys[msg.sender] = key;
 
@@ -577,14 +577,14 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
         
         uint round = currRound();
         
-        assert(time() &gt;= openTime &amp;&amp; round &lt;= numberOfRounds);
-        assert(msg.value &gt;= 0.1 ether);
+        assert(time() >= openTime && round <= numberOfRounds);
+        assert(msg.value >= 0.1 ether);
 
         userBuys[round][msg.sender] = add(userBuys[round][msg.sender], msg.value);
         dailyTotals[round] = add(dailyTotals[round], msg.value);
         
         bool founded = false;
-        for (uint i = 0; i &lt; userBuysArray[round].length; i++) {
+        for (uint i = 0; i < userBuysArray[round].length; i++) {
             address target = userBuysArray[round][i];
             if (target == msg.sender) {
                 founded = true;
@@ -601,13 +601,13 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
 
     function claimAddresses(address[] addresses, uint round) public onlyIfAdmin {
         uint arrayLength = addresses.length;
-        for (uint i=0; i &lt; arrayLength; i++) {
+        for (uint i=0; i < arrayLength; i++) {
             claimAddress(addresses[i], round);
         }
     }
 
     function claimAddress(address addr, uint round) public {
-        assert(currRound() &gt; round);
+        assert(currRound() > round);
 
         if (claimed[round][addr] || dailyTotals[round] == 0) {
             return;
@@ -623,7 +623,7 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
         uint128 minPrice   = wdiv(600000, 1);//private sale price
 
         //cannot lower than private sale price
-        if (price &gt; minPrice) {
+        if (price > minPrice) {
             price = minPrice;
         }
         uint128 reward     = wmul(price, userTotal);
@@ -642,9 +642,9 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
     }
 
     function burn(uint round) public onlyIfAdmin {
-        assert(time() &gt;= openTime &amp;&amp; round &lt;= numberOfRounds);
+        assert(time() >= openTime && round <= numberOfRounds);
 
-        assert (currRound() &gt; round);
+        assert (currRound() > round);
         assert (burned[round] == false);
         
         uint128 dailyTotalEth = cast(dailyTotals[round]);
@@ -660,11 +660,11 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
             uint128 price      = wdiv(dailyTotalToken, dailyTotalEth);
             uint128 minPrice   = wdiv(600000, 1);//private sale price
 
-            if (price &gt; minPrice) {
+            if (price > minPrice) {
                 price = minPrice;
 
                 uint128 totalReward = wmul(price, dailyTotalEth);
-                assert(dailyTotalToken &gt; totalReward);
+                assert(dailyTotalToken > totalReward);
 
                 burned[round] = true;
                 ONO.push(burnAddr, wsub(dailyTotalToken, totalReward));
@@ -677,7 +677,7 @@ contract ONOSale is DSExec, DSMath, DSAuthList {
 
     // Crowdsale owners can collect ETH any number of times
     function collect() public auth {
-        assert(currRound() &gt; 0); // Prevent recycling during window 0
+        assert(currRound() > 0); // Prevent recycling during window 0
         exec(msg.sender, address(this).balance);
         emit LogCollect(address(this).balance);
     }

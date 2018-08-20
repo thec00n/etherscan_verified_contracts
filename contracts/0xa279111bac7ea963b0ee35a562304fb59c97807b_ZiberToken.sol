@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
  /// @title Ownable contract - base contract with an owner
- /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7d3d2c1f7c4dad6c5c3d4d8d9c3c5d6d4c3d2d6da99d4d8da">[email&#160;protected]</a>
+ /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7d3d2c1f7c4dad6c5c3d4d8d9c3c5d6d4c3d2d6da99d4d8da">[email protected]</a>
 contract Ownable {
   address public owner;
 
@@ -22,7 +22,7 @@ contract Ownable {
 }
 
  /// @title ERC20 interface see https://github.com/ethereum/EIPs/issues/20
- /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bfdbdac9ffccd2decdcbdcd0d1cbcddedccbdaded291dcd0d2">[email&#160;protected]</a>
+ /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bfdbdac9ffccd2decdcbdcd0d1cbcddedccbdaded291dcd0d2">[email protected]</a>
 contract ERC20 {
   uint public totalSupply;
   function balanceOf(address who) constant returns (uint);
@@ -36,7 +36,7 @@ contract ERC20 {
 }
 
  /// @title SafeMath contract - math operations with safety checks
- /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a5e5f4c7a49575b484e5955544e485b594e5f5b5714595557">[email&#160;protected]</a>
+ /// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a5e5f4c7a49575b484e5955544e485b594e5f5b5714595557">[email protected]</a>
 contract SafeMath {
   function safeMul(uint a, uint b) internal returns (uint) {
     uint c = a * b;
@@ -45,37 +45,37 @@ contract SafeMath {
   }
 
   function safeDiv(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
 
   function safeSub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function safeAdd(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c&gt;=a &amp;&amp; c&gt;=b);
+    assert(c>=a && c>=b);
     return c;
   }
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function assert(bool assertion) internal {
@@ -84,10 +84,10 @@ contract SafeMath {
 }
 
 /// @title ZiberToken contract - standard ERC20 token with Short Hand Attack and approve() race condition mitigation.
-/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6105041721120c001315020e0f151300021504000c4f020e0c">[email&#160;protected]</a>
+/// @author <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6105041721120c001315020e0f151300021504000c4f020e0c">[email protected]</a>
 contract ZiberToken is SafeMath, ERC20, Ownable {
- string public name = &quot;Ziber Token&quot;;
- string public symbol = &quot;ZBR&quot;;
+ string public name = "Ziber Token";
+ string public symbol = "ZBR";
  uint public decimals = 8;
  uint public constant FROZEN_TOKENS = 10000000;
  uint public constant FREEZE_PERIOD = 1 years;
@@ -98,9 +98,9 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
  /// A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.
  bool public released = false;
  /// approve() allowances
- mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+ mapping (address => mapping (address => uint)) allowed;
  /// holder balances
- mapping(address =&gt; uint) balances;
+ mapping(address => uint) balances;
 
  /// @dev Limit token transfer until the crowdsale is over.
  modifier canTransfer() {
@@ -111,9 +111,9 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
  }
 
  modifier checkFrozenAmount(address source, uint amount) {
-   if (source == owner &amp;&amp; now &lt; crowdSaleOverTimestamp + FREEZE_PERIOD) {
+   if (source == owner && now < crowdSaleOverTimestamp + FREEZE_PERIOD) {
      var frozenTokens = 10 ** decimals * FROZEN_TOKENS;
-     require(safeSub(balances[owner], amount) &gt; frozenTokens);
+     require(safeSub(balances[owner], amount) > frozenTokens);
    }
    _;
  }
@@ -134,7 +134,7 @@ contract ZiberToken is SafeMath, ERC20, Ownable {
  /// @dev Fix for the ERC20 short address attack http://vessenes.com/the-erc20-short-address-attack-explained/
  /// @param size payload size
  modifier onlyPayloadSize(uint size) {
-   require(msg.data.length &gt;= size + 4);
+   require(msg.data.length >= size + 4);
     _;
  }
 

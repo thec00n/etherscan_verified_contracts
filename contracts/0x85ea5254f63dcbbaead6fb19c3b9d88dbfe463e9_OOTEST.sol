@@ -20,13 +20,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,12 +67,12 @@ contract Owned {
 contract ERC20Token is ERC20 {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
   uint256 public totalToken;
 
   function transfer(address _to, uint256 _value) public returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -81,8 +81,8 @@ contract ERC20Token is ERC20 {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(balances[_from] &gt;= _value);
-    require(allowed[_from][msg.sender] &gt;= _value);
+    require(balances[_from] >= _value);
+    require(allowed[_from][msg.sender] >= _value);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -115,8 +115,8 @@ contract ERC20Token is ERC20 {
  */
 contract OOTEST is ERC20Token, Owned {
 
-  string  public constant name     = &quot;OO Token&quot;;
-  string  public constant symbol   = &quot;OO&quot;;
+  string  public constant name     = "OO Token";
+  string  public constant symbol   = "OO";
   uint256 public constant decimals = 18;
 
   uint256 public constant initialToken      = 500000000 * (10 ** decimals);
@@ -150,7 +150,7 @@ contract OOTEST is ERC20Token, Owned {
   uint256 public constant maxDestroyThreshold = initialToken / 2;
   uint256 public constant maxBurnThreshold    = maxDestroyThreshold / 8;
   
-  mapping(address =&gt; bool) lockAddresses;
+  mapping(address => bool) lockAddresses;
 
   uint256 public destroyedToken;
 
@@ -191,17 +191,17 @@ contract OOTEST is ERC20Token, Owned {
   }
 
   function unlock() public onlyOwner {
-    if (lockAddresses[privateSell1Address] &amp;&amp; now &gt;= privateSell1LockEndTime)
+    if (lockAddresses[privateSell1Address] && now >= privateSell1LockEndTime)
       lockAddresses[privateSell1Address] = false;
-    if (lockAddresses[privateSell2Address] &amp;&amp; now &gt;= privateSell2LockEndTime)
+    if (lockAddresses[privateSell2Address] && now >= privateSell2LockEndTime)
       lockAddresses[privateSell2Address] = false;
-    if (lockAddresses[team1Address] &amp;&amp; now &gt;= team1LockEndTime)
+    if (lockAddresses[team1Address] && now >= team1LockEndTime)
       lockAddresses[team1Address] = false;
-    if (lockAddresses[team2Address] &amp;&amp; now &gt;= team2LockEndTime)
+    if (lockAddresses[team2Address] && now >= team2LockEndTime)
       lockAddresses[team2Address] = false;
-    if (lockAddresses[team3Address] &amp;&amp; now &gt;= team3LockEndTime)
+    if (lockAddresses[team3Address] && now >= team3LockEndTime)
       lockAddresses[team3Address] = false;
-    if (lockAddresses[team4Address] &amp;&amp; now &gt;= team4LockEndTime)
+    if (lockAddresses[team4Address] && now >= team4LockEndTime)
       lockAddresses[team4Address] = false;
   }
 
@@ -218,9 +218,9 @@ contract OOTEST is ERC20Token, Owned {
   }
 
   function burn(uint256 _value) public onlyOwner returns (bool) {
-    require(balances[msg.sender] &gt;= _value);
-    require(maxBurnThreshold &gt;= _value);
-    require(maxDestroyThreshold &gt;= destroyedToken.add(_value));
+    require(balances[msg.sender] >= _value);
+    require(maxBurnThreshold >= _value);
+    require(maxDestroyThreshold >= destroyedToken.add(_value));
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     totalToken = totalToken.sub(_value);

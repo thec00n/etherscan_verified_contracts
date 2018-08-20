@@ -24,27 +24,27 @@ contract SafeMath {
 	}
 
 	function div(uint a, uint b) internal pure returns (uint) {
-		assert(b &gt; 0);
+		assert(b > 0);
 		return a / b;
 	}
 
 	function sub(uint a, uint b) internal pure returns (uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint a, uint b) internal pure returns (uint) {
 		uint c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 
 	function min(uint x, uint y) internal pure returns (uint) {
-		return x &lt;= y ? x : y;
+		return x <= y ? x : y;
 	}
 
 	function max(uint x, uint y) internal pure returns (uint) {
-		return x &gt;= y ? x : y;
+		return x >= y ? x : y;
 	}
 }
 
@@ -75,13 +75,13 @@ contract SOPToken is ERC20, SafeMath, Owned {
 	uint public totalSupply;
 
 	// This creates an array with all balances
-	mapping(address =&gt; uint) public balanceOf;
-	mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+	mapping(address => uint) public balanceOf;
+	mapping(address => mapping(address => uint)) public allowance;
 
 
-	mapping(address=&gt;uint) public lock; 
-	mapping(address=&gt;bool) public freezeIn;
-	mapping(address=&gt;bool) public freezeOut;
+	mapping(address=>uint) public lock; 
+	mapping(address=>bool) public freezeIn;
+	mapping(address=>bool) public freezeOut;
 	
 
 	//event definitions
@@ -107,9 +107,9 @@ contract SOPToken is ERC20, SafeMath, Owned {
 
 	function internalTransfer(address from, address toaddr, uint value) internal {
 		require(toaddr!=0);
-		require(balanceOf[from]&gt;=value);
+		require(balanceOf[from]>=value);
 
-		require(now&gt;=lock[from]);
+		require(now>=lock[from]);
 		require(!freezeIn[toaddr]);
 		require(!freezeOut[from]);
 
@@ -126,7 +126,7 @@ contract SOPToken is ERC20, SafeMath, Owned {
 	}
 	
 	function transferFrom(address from, address toaddr, uint value) public returns (bool) {
-		require(allowance[from][msg.sender]&gt;=value);
+		require(allowance[from][msg.sender]>=value);
 
 		allowance[from][msg.sender]=sub(allowance[from][msg.sender], value);
 
@@ -156,13 +156,13 @@ contract SOPToken is ERC20, SafeMath, Owned {
 	function setLock(address[] addrs, uint[] times) public onlyOwner {
 		require(addrs.length==times.length);
 
-		for (uint i=0; i&lt;addrs.length; i++) {
+		for (uint i=0; i<addrs.length; i++) {
 			lock[addrs[i]]=times[i];
 		}
 	}
 
 	function setFreezeIn(address[] addrs, bool value) public onlyOwner {
-		for (uint i=0; i&lt;addrs.length; i++) {
+		for (uint i=0; i<addrs.length; i++) {
 			freezeIn[addrs[i]]=value;
 		}
 
@@ -170,7 +170,7 @@ contract SOPToken is ERC20, SafeMath, Owned {
 	}
 
 	function setFreezeOut(address[] addrs, bool value) public onlyOwner {
-		for (uint i=0; i&lt;addrs.length; i++) {
+		for (uint i=0; i<addrs.length; i++) {
 			freezeOut[addrs[i]]=value;
 		}
 

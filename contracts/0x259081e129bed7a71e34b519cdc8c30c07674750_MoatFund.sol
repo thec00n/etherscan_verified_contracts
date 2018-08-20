@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -82,8 +82,8 @@ contract MoatFund is addressKeeper {
     uint256 public redeemRate;     // When redeeming, 1MTC=fixed ETH
     bool public redeemBool;
 
-    uint256 public ethRaised;       // ETH deposited in owner&#39;s address
-    uint256 public ethRedeemed;     // ETH transferred from owner&#39;s address
+    uint256 public ethRaised;       // ETH deposited in owner's address
+    uint256 public ethRedeemed;     // ETH transferred from owner's address
 
     // function to start minting MTC
     function startMint(uint256 _rate, bool canMint, uint256 _minWeiInvest) onlyOwner public {
@@ -104,11 +104,11 @@ contract MoatFund is addressKeeper {
 
     // function called from MoatFund.sol
     function transferToken() public payable {
-        if (msg.sender != owner &amp;&amp;
-            msg.sender != tokenAddress &amp;&amp;
+        if (msg.sender != owner &&
+            msg.sender != tokenAddress &&
             msg.sender != boardAddress) {
                 require(mintBool);
-                require(msg.value &gt;= minInvest);
+                require(msg.value >= minInvest);
 
                 uint256 MTCToken = (msg.value / mtcRate);
                 uint256 teamToken = (MTCToken / 20);

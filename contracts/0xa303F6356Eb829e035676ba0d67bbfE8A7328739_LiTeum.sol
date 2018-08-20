@@ -34,18 +34,18 @@ library SafeMath {
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
         assert(b != 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -57,7 +57,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping(address =&gt; uint256) balances;
+    mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -88,7 +88,7 @@ contract BasicToken is ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -166,7 +166,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -178,8 +178,8 @@ contract BurnableToken is StandardToken {
 contract LiTeum is StandardToken, BurnableToken, Ownable {
 
     // Constants
-    string  public constant name = &quot;LiTeum&quot;;
-    string  public constant symbol = &quot;LTMF&quot;;
+    string  public constant name = "LiTeum";
+    string  public constant symbol = "LTMF";
     uint8   public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 100000000000 * (10 ** uint256(decimals));
 

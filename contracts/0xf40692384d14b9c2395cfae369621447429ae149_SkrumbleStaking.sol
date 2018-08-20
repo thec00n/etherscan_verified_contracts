@@ -20,20 +20,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -64,7 +64,7 @@ contract SkrumbleStaking {
     uint[] rewardAmounts;
     uint[] rewardEpochStart;
   }
-  mapping (uint =&gt; Reward) public rewardLevels;
+  mapping (uint => Reward) public rewardLevels;
 
   struct Staker {
     uint balance;
@@ -72,7 +72,7 @@ contract SkrumbleStaking {
     uint stakingSince;
     uint lastClaim;
   }
-  mapping (address =&gt; Staker) stakerMap;
+  mapping (address => Staker) stakerMap;
 
   event RewardLevel (uint level, uint amount, uint lockupPeriod, uint[] rewardAmounts, uint[] rewardEpochStart);
   event NewStaker (address staker, uint rewardLevel, uint stakingSince);
@@ -96,12 +96,12 @@ contract SkrumbleStaking {
   }
   
   function min (uint a, uint b) pure internal returns (uint) {
-    if (a &lt;= b) return a;
+    if (a <= b) return a;
     return b;
   }
   
   function max (uint a, uint b) pure internal returns (uint) {
-    if (a &gt;= b) return a;
+    if (a >= b) return a;
     return b;
   }
   
@@ -119,35 +119,35 @@ contract SkrumbleStaking {
   
   function setRewardLevel (uint _level, uint _amount, uint _lockup, uint[] _reward, uint[] _period) public onlyOwner {
     require (_reward.length == _period.length);
-    require (_period[_period.length.sub(1)] &lt; 9999999999);
-    for (uint i = 1; i &lt; _period.length; i++) {
-      require (_period[i] &gt; _period[i.sub(1)]);
+    require (_period[_period.length.sub(1)] < 9999999999);
+    for (uint i = 1; i < _period.length; i++) {
+      require (_period[i] > _period[i.sub(1)]);
     }
     rewardLevels[_level] = Reward(_amount, _lockup, _reward, _period);
     emit RewardLevel (_level, _amount, _lockup, _reward, _period);
   }
   
   function modifyStakerLimit (uint _limit) public onlyOwner {
-    require (count &lt;= _limit);
+    require (count <= _limit);
     limit = _limit;
   }
   
   function getAvailableReward (address _staker) view public returns (uint) {
     Staker storage staker = stakerMap[_staker];
     Reward storage reward = rewardLevels[staker.rewardLevel];
-    if (staker.balance == 0 || staker.lastClaim.add(86400) &gt; now) {
+    if (staker.balance == 0 || staker.lastClaim.add(86400) > now) {
       return 0;
     }
     uint unclaimed = 0;
     uint periodEnd = 9999999999;
-    for (uint i = reward.rewardEpochStart.length; i &gt; 0; i--) {
+    for (uint i = reward.rewardEpochStart.length; i > 0; i--) {
       uint start = staker.stakingSince.add(reward.rewardEpochStart[i.sub(1)]);
-      if (start &gt;= now) {
+      if (start >= now) {
         continue;
       }
       uint length = min(now, periodEnd).sub(max(start, staker.lastClaim));
       unclaimed = unclaimed.add(reward.rewardAmounts[i.sub(1)].mul(length).div(31622400));
-      if (staker.lastClaim &gt;= start) {
+      if (staker.lastClaim >= start) {
         break;
       }
       periodEnd = start;
@@ -164,7 +164,7 @@ contract SkrumbleStaking {
   function stakeTokens (uint _level) public onlyUnlocked {
     Reward storage reward = rewardLevels[_level];
     require (stakerMap[msg.sender].balance == 0);
-    require (count &lt; limit);
+    require (count < limit);
     require (token.transferFrom(msg.sender, address(this), reward.stakedAmount));
     count = count.add(1);
     balance = balance.add(reward.stakedAmount);
@@ -176,9 +176,9 @@ contract SkrumbleStaking {
   function unstakeTokens () public onlyUnlocked {
     Staker storage staker = stakerMap[msg.sender];
     Reward storage reward = rewardLevels[staker.rewardLevel];
-    require (staker.balance &gt; 0);
-    require (staker.stakingSince.add(reward.lockupPeriod) &lt; now);
-    if (getAvailableReward(msg.sender) &gt; 0) {
+    require (staker.balance > 0);
+    require (staker.stakingSince.add(reward.lockupPeriod) < now);
+    if (getAvailableReward(msg.sender) > 0) {
       claimReward();
     }
     require (token.transfer(msg.sender, staker.balance));
@@ -190,7 +190,7 @@ contract SkrumbleStaking {
   
   function claimReward () public onlyUnlocked {
     uint amount = getAvailableReward(msg.sender);
-    require (amount &gt; 0);
+    require (amount > 0);
     stakerMap[msg.sender].lastClaim = now;
     require (token.transferFrom(rewardWallet, msg.sender, amount));
     emit RewardClaimed (msg.sender, amount);
@@ -198,7 +198,7 @@ contract SkrumbleStaking {
   
   function transferSKM () public onlyOwner {
     uint fullBalance = token.balanceOf(address(this));
-    require (fullBalance &gt; balance);
+    require (fullBalance > balance);
     require (token.transfer(owner, fullBalance.sub(balance)));
   }
   
@@ -210,7 +210,7 @@ contract SkrumbleStaking {
 
   function claimRewardManually (address _staker) public onlyOwner {
     uint amount = getAvailableReward(_staker);
-    require (amount &gt; 0);
+    require (amount > 0);
     stakerMap[_staker].lastClaim = now;
     require (token.transferFrom(rewardWallet, _staker, amount));
     emit RewardClaimed (_staker, amount);
@@ -219,9 +219,9 @@ contract SkrumbleStaking {
   function unstakeTokensManually (address _staker) public onlyOwner {
     Staker storage staker = stakerMap[_staker];
     Reward storage reward = rewardLevels[staker.rewardLevel];
-    require (staker.balance &gt; 0);
-    require (staker.stakingSince.add(reward.lockupPeriod) &lt; now);
-    if (getAvailableReward(_staker) &gt; 0) {
+    require (staker.balance > 0);
+    require (staker.stakingSince.add(reward.lockupPeriod) < now);
+    if (getAvailableReward(_staker) > 0) {
       claimRewardManually(_staker);
     }
     require (token.transfer(_staker, staker.balance));
@@ -234,7 +234,7 @@ contract SkrumbleStaking {
   function stakeTokensManually (address _staker, uint _level, uint time) public onlyUnlocked {
     Reward storage reward = rewardLevels[_level];
     require (stakerMap[_staker].balance == 0);
-    require (count &lt; limit);
+    require (count < limit);
     count = count.add(1);
     balance = balance.add(reward.stakedAmount);
     stakerMap[_staker] = Staker(reward.stakedAmount, _level, time, time);

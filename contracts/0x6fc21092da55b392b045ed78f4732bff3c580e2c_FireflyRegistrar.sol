@@ -33,7 +33,7 @@ contract ReverseRegistrar {
  *
  */
 contract FireflyRegistrar {
-     // namehash(&#39;addr.reverse&#39;)
+     // namehash('addr.reverse')
      bytes32 constant RR_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
     // Admin triggered events
@@ -59,7 +59,7 @@ contract FireflyRegistrar {
     uint256 _totalPaid = 0;
     uint256 _nameCount = 0;
 
-    mapping (bytes32 =&gt; uint256) _donations;
+    mapping (bytes32 => uint256) _donations;
 
     function FireflyRegistrar(address ens, bytes32 nodeHash, address defaultResolver) {
         _ens = AbstractENS(ens);
@@ -149,21 +149,21 @@ contract FireflyRegistrar {
         }
 
         // Labels must be at least 4 characters and at most 20 characters
-        if (length &lt; 4 || length &gt; 20) { throw; }
+        if (length < 4 || length > 20) { throw; }
 
         // Only allow /^[a-z0-9-]*$/
-        for (uint256 i = 0; i &lt; length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             uint8 c;
             assembly { c := and(mload(position), 0xFF) }
-            //       &#39;a&#39;         &#39;z&#39;           &#39;0&#39;         &#39;9&#39;           &#39;-&#39;
-            if ((c &lt; 0x61 || c &gt; 0x7a) &amp;&amp; (c &lt; 0x30 || c &gt; 0x39) &amp;&amp; c != 0x2d) {
+            //       'a'         'z'           '0'         '9'           '-'
+            if ((c < 0x61 || c > 0x7a) && (c < 0x30 || c > 0x39) && c != 0x2d) {
                 throw;
             }
             position++;
         }
 
         // Paid too little; participants may pay more (as a donation)
-        if (msg.value &lt; _fee) { throw; }
+        if (msg.value < _fee) { throw; }
 
         // Compute the label and node hash
         var labelHash = sha3(label);

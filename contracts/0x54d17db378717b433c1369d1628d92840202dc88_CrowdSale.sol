@@ -4,7 +4,7 @@ pragma solidity ^0.4.19;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,7 +74,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -92,7 +92,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -139,7 +139,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -150,8 +150,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -165,7 +165,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -214,7 +214,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -251,7 +251,7 @@ contract GigERC20 is StandardToken, Ownable {
         bool _transferAllSupplyToOwner,
         bool _locked
     ) public {
-        standard = &#39;ERC20 0.1&#39;;
+        standard = 'ERC20 0.1';
         locked = _locked;
         totalSupply_ = _totalSupply;
 
@@ -335,9 +335,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -345,7 +345,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -354,7 +354,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -370,7 +370,7 @@ contract MintingERC20 is GigERC20 {
     using SafeMath for uint256;
 
     //Variables
-    mapping (address =&gt; bool) public minters;
+    mapping (address => bool) public minters;
 
     uint256 public maxSupply;
 
@@ -391,7 +391,7 @@ contract MintingERC20 is GigERC20 {
     )
         public GigERC20(_initialSupply, _tokenName, _decimals, _symbol, _transferAllSupplyToOwner, _locked)
     {
-        standard = &#39;MintingERC20 0.1&#39;;
+        standard = 'MintingERC20 0.1';
         minters[msg.sender] = true;
         maxSupply = _maxSupply;
     }
@@ -413,7 +413,7 @@ contract MintingERC20 is GigERC20 {
             return uint256(0);
         }
 
-        if (totalSupply_.add(_amount) &gt; maxSupply) {
+        if (totalSupply_.add(_amount) > maxSupply) {
             return uint256(0);
         }
 
@@ -444,24 +444,24 @@ contract MintingERC20 is GigERC20 {
 */
 
 contract GigToken is MintingERC20 {
-    SellableToken public crowdSale; // Pre ICO &amp; ICO
+    SellableToken public crowdSale; // Pre ICO & ICO
     SellableToken public privateSale;
 
     bool public transferFrozen = false;
 
     uint256 public crowdSaleEndTime;
 
-    mapping(address =&gt; uint256) public lockedBalancesReleasedAfterOneYear;
+    mapping(address => uint256) public lockedBalancesReleasedAfterOneYear;
 
     modifier onlyCrowdSale() {
-        require(crowdSale != address(0) &amp;&amp; msg.sender == address(crowdSale));
+        require(crowdSale != address(0) && msg.sender == address(crowdSale));
 
         _;
     }
 
     modifier onlySales() {
-        require((privateSale != address(0) &amp;&amp; msg.sender == address(privateSale)) ||
-            (crowdSale != address(0) &amp;&amp; msg.sender == address(crowdSale)));
+        require((privateSale != address(0) && msg.sender == address(privateSale)) ||
+            (crowdSale != address(0) && msg.sender == address(crowdSale)));
 
         _;
     }
@@ -469,9 +469,9 @@ contract GigToken is MintingERC20 {
     event MaxSupplyBurned(uint256 burnedTokens);
 
     function GigToken(bool _locked) public
-        MintingERC20(0, maxSupply, &#39;GigBit&#39;, 18, &#39;GBTC&#39;, false, _locked)
+        MintingERC20(0, maxSupply, 'GigBit', 18, 'GBTC', false, _locked)
     {
-        standard = &#39;GBTC 0.1&#39;;
+        standard = 'GBTC 0.1';
 
         maxSupply = uint256(1000000000).mul(uint256(10) ** decimals);
     }
@@ -496,18 +496,18 @@ contract GigToken is MintingERC20 {
 
     function isTransferAllowed(address _from, uint256 _value) public view returns (bool status) {
         uint256 senderBalance = balanceOf(_from);
-        if (transferFrozen == true || senderBalance &lt; _value) {
+        if (transferFrozen == true || senderBalance < _value) {
             return false;
         }
 
         uint256 lockedBalance = lockedBalancesReleasedAfterOneYear[_from];
 
         // check if holder tries to transfer more than locked tokens
-    if (lockedBalance &gt; 0 &amp;&amp; senderBalance.sub(_value) &lt; lockedBalance) {
+    if (lockedBalance > 0 && senderBalance.sub(_value) < lockedBalance) {
             uint256 unlockTime = crowdSaleEndTime + 1 years;
 
             // fail if unlock time is not come
-            if (crowdSaleEndTime == 0 || block.timestamp &lt; unlockTime) {
+            if (crowdSaleEndTime == 0 || block.timestamp < unlockTime) {
                 return false;
             }
 
@@ -516,7 +516,7 @@ contract GigToken is MintingERC20 {
             // number of months over from unlock
             uint256 months = secsFromUnlock / 30 days;
 
-            if (months &gt; 12) {
+            if (months > 12) {
                 months = 12;
             }
 
@@ -526,13 +526,13 @@ contract GigToken is MintingERC20 {
 
             uint256 actualLockedBalance = lockedBalance.sub(unlockedBalance);
 
-            if (senderBalance.sub(_value) &lt; actualLockedBalance) {
+            if (senderBalance.sub(_value) < actualLockedBalance) {
                 return false;
             }
         }
 
-        if (block.timestamp &lt; crowdSaleEndTime &amp;&amp;
-            crowdSale != address(0) &amp;&amp;
+        if (block.timestamp < crowdSaleEndTime &&
+            crowdSale != address(0) &&
             crowdSale.isTransferAllowed(_from, _value) == false
         ) {
             return false;
@@ -549,32 +549,32 @@ contract GigToken is MintingERC20 {
     }
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
-        require((crowdSaleEndTime &lt;= block.timestamp) &amp;&amp; isTransferAllowed(_from, _value));
+        // transferFrom & approve are disabled before end of ICO
+        require((crowdSaleEndTime <= block.timestamp) && isTransferAllowed(_from, _value));
 
         return super.transferFrom(_from, _to, _value);
     }
 
     function approve(address _spender, uint256 _value) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
+        // transferFrom & approve are disabled before end of ICO
 
-        require(crowdSaleEndTime &lt;= block.timestamp);
+        require(crowdSaleEndTime <= block.timestamp);
 
         return super.approve(_spender, _value);
     }
 
     function increaseApproval(address _spender, uint _addedValue) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
+        // transferFrom & approve are disabled before end of ICO
 
-        require(crowdSaleEndTime &lt;= block.timestamp);
+        require(crowdSaleEndTime <= block.timestamp);
 
         return super.increaseApproval(_spender, _addedValue);
     }
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool success) {
-        // transferFrom &amp; approve are disabled before end of ICO
+        // transferFrom & approve are disabled before end of ICO
 
-        require(crowdSaleEndTime &lt;= block.timestamp);
+        require(crowdSaleEndTime <= block.timestamp);
 
         return super.decreaseApproval(_spender, _subtractedValue);
     }
@@ -589,9 +589,9 @@ contract GigToken is MintingERC20 {
         address _address,
         uint256 _amount
     ) public onlyCrowdSale returns (uint256) {
-        require(block.timestamp &gt; crowdSaleEndTime);
+        require(block.timestamp > crowdSaleEndTime);
 
-        require(_amount &lt;= balances[_address]);
+        require(_amount <= balances[_address]);
 
         balances[_address] = balances[_address].sub(_amount);
 
@@ -604,7 +604,7 @@ contract GigToken is MintingERC20 {
 
     // decrease max supply of tokens that are not sold
     function burnUnsoldTokens(uint256 _amount) public onlyCrowdSale {
-        require(block.timestamp &gt; crowdSaleEndTime);
+        require(block.timestamp > crowdSaleEndTime);
 
         maxSupply = maxSupply.sub(_amount);
 
@@ -624,7 +624,7 @@ contract Multivest is Ownable {
     using SafeMath for uint256;
 
     /* public variables */
-    mapping (address =&gt; bool) public allowedMultivests;
+    mapping (address => bool) public allowedMultivests;
 
     /* events */
     event MultivestSet(address multivest);
@@ -661,11 +661,11 @@ contract Multivest is Ownable {
         bytes32 _r,
         bytes32 _s
     ) public payable onlyAllowedMultivests(verify(keccak256(msg.sender), _v, _r, _s)) {
-        require(_address == msg.sender &amp;&amp; buy(msg.sender, msg.value) == true);
+        require(_address == msg.sender && buy(msg.sender, msg.value) == true);
     }
 
     function verify(bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s) internal pure returns (address) {
-        bytes memory prefix = &#39;\x19Ethereum Signed Message:\n32&#39;;
+        bytes memory prefix = '\x19Ethereum Signed Message:\n32';
 
         return ecrecover(keccak256(prefix, _hash), _v, _r, _s);
     }
@@ -702,7 +702,7 @@ contract SellableToken is Multivest {
     uint256 public etherPriceInUSD;
     uint256 public priceUpdateAt;
 
-    mapping(address =&gt; uint256) public etherBalances;
+    mapping(address => uint256) public etherBalances;
 
     Tier[] public tiers;
 
@@ -725,12 +725,12 @@ contract SellableToken is Multivest {
     )
     public Multivest()
     {
-        require(_token != address(0) &amp;&amp; _etherHolder != address(0));
+        require(_token != address(0) && _etherHolder != address(0));
         token = GigToken(_token);
 
-        require(_startTime &lt; _endTime);
+        require(_startTime < _endTime);
         etherHolder = _etherHolder;
-        require((_maxTokenSupply == uint256(0)) || (_maxTokenSupply &lt;= token.maxSupply()));
+        require((_maxTokenSupply == uint256(0)) || (_maxTokenSupply <= token.maxSupply()));
 
         startTime = _startTime;
         endTime = _endTime;
@@ -752,7 +752,7 @@ contract SellableToken is Multivest {
     }
 
     function setPurchaseLimits(uint256 _min, uint256 _max) public onlyOwner {
-        if (_min &lt; _max) {
+        if (_min < _max) {
             minPurchase = _min;
             maxPurchase = _max;
         }
@@ -790,7 +790,7 @@ contract SellableToken is Multivest {
 
         uint256 newPrice = uint256(10 ** 23).div(parseInt(_price, 5));
 
-        require(newPrice &gt; 0);
+        require(newPrice > 0);
 
         etherPriceInUSD = parseInt(_price, 5);
 
@@ -805,8 +805,8 @@ contract SellableToken is Multivest {
         require(mintedAmount == _tokenAmount);
 
         soldTokens = soldTokens.add(_tokenAmount);
-        if (maxTokenSupply &gt; 0) {
-            require(maxTokenSupply &gt;= soldTokens);
+        if (maxTokenSupply > 0) {
+            require(maxTokenSupply >= soldTokens);
         }
 
         return _tokenAmount;
@@ -818,8 +818,8 @@ contract SellableToken is Multivest {
         bytes memory bresult = bytes(_a);
         uint res = 0;
         bool decimals = false;
-        for (uint i = 0; i &lt; bresult.length; i++) {
-            if ((bresult[i] &gt;= 48) &amp;&amp; (bresult[i] &lt;= 57)) {
+        for (uint i = 0; i < bresult.length; i++) {
+            if ((bresult[i] >= 48) && (bresult[i] <= 57)) {
                 if (decimals) {
                     if (_b == 0) break;
                     else _b--;
@@ -828,7 +828,7 @@ contract SellableToken is Multivest {
                 res += uint(bresult[i]) - 48;
             } else if (bresult[i] == 46) decimals = true;
         }
-        if (_b &gt; 0) res *= 10 ** _b;
+        if (_b > 0) res *= 10 ** _b;
         return res;
     }
 }
@@ -845,7 +845,7 @@ contract CrowdSale is SellableToken {
     uint256 public price;
 
     Stats public preICOStats;
-    mapping(address =&gt; uint256) public icoBalances;
+    mapping(address => uint256) public icoBalances;
 
     struct Stats {
         uint256 soldTokens;
@@ -948,7 +948,7 @@ contract CrowdSale is SellableToken {
     }
 
     function changeICODates(uint256 _tierId, uint256 _start, uint256 _end) public onlyOwner {
-        require(_start != 0 &amp;&amp; _start &lt; _end &amp;&amp; _tierId &lt; tiers.length);
+        require(_start != 0 && _start < _end && _tierId < tiers.length);
         Tier storage icoTier = tiers[_tierId];
         icoTier.startTime = _start;
         icoTier.endTime = _end;
@@ -981,8 +981,8 @@ contract CrowdSale is SellableToken {
     }
 
     function getActiveTier() public view returns (uint256) {
-        for (uint256 i = 0; i &lt; tiers.length; i++) {
-            if (block.timestamp &gt;= tiers[i].startTime &amp;&amp; block.timestamp &lt;= tiers[i].endTime) {
+        for (uint256 i = 0; i < tiers.length; i++) {
+            if (block.timestamp >= tiers[i].startTime && block.timestamp <= tiers[i].endTime) {
                 return i;
             }
         }
@@ -997,10 +997,10 @@ contract CrowdSale is SellableToken {
         uint256 activeTier = getActiveTier();
 
         if (activeTier == tiers.length) {
-            if (endTime &lt; block.timestamp) {
+            if (endTime < block.timestamp) {
                 return (0, 0);
             }
-            if (startTime &gt; block.timestamp) {
+            if (startTime > block.timestamp) {
                 activeTier = PRE_ICO_TIER_FIRST;
             }
         }
@@ -1010,7 +1010,7 @@ contract CrowdSale is SellableToken {
 
         usdAmount = usdAmount.div(uint256(10) ** 18);
 
-        if (usdAmount &lt; minPurchase) {
+        if (usdAmount < minPurchase) {
             return (0, 0);
         }
     }
@@ -1023,10 +1023,10 @@ contract CrowdSale is SellableToken {
         uint256 activeTier = getActiveTier();
 
         if (activeTier == tiers.length) {
-            if (endTime &lt; block.timestamp) {
+            if (endTime < block.timestamp) {
                 return (0, 0);
             }
-            if (startTime &gt; block.timestamp) {
+            if (startTime > block.timestamp) {
                 activeTier = PRE_ICO_TIER_FIRST;
             }
         }
@@ -1034,7 +1034,7 @@ contract CrowdSale is SellableToken {
         usdAmount = _tokens.mul((price * (100 - tiers[activeTier].discount) / 100));
         ethers = usdAmount.div(etherPriceInUSD);
 
-        if (ethers &lt; getMinEthersInvestment()) {
+        if (ethers < getMinEthersInvestment()) {
             return (0, 0);
         }
 
@@ -1062,7 +1062,7 @@ contract CrowdSale is SellableToken {
         (tokensPerEth, usd) = calculateTokensAmount(1 ether);
         (tokensPerBtc, usd) = calculateTokensAmount(_ethPerBtc);
         uint256 j = 0;
-        for (uint256 i = 0; i &lt; tiers.length; i++) {
+        for (uint256 i = 0; i < tiers.length; i++) {
             tiersData[j++] = uint256(tiers[i].discount);
             tiersData[j++] = uint256(tiers[i].startTime);
             tiersData[j++] = uint256(tiers[i].endTime);
@@ -1070,15 +1070,15 @@ contract CrowdSale is SellableToken {
     }
 
     function burnUnsoldTokens() public onlyOwner {
-        if (block.timestamp &gt;= endTime &amp;&amp; maxTokenSupply &gt; soldTokens) {
+        if (block.timestamp >= endTime && maxTokenSupply > soldTokens) {
             token.burnUnsoldTokens(maxTokenSupply.sub(soldTokens));
             maxTokenSupply = soldTokens;
         }
     }
 
     function isTransferAllowed(address _from, uint256 _value) public view returns (bool status){
-        if (collectedUSD.add(preICOStats.collectedUSD) &lt; softCap) {
-            if (token.balanceOf(_from) &gt;= icoBalances[_from] &amp;&amp; token.balanceOf(_from).sub(icoBalances[_from])&gt; _value) {
+        if (collectedUSD.add(preICOStats.collectedUSD) < softCap) {
+            if (token.balanceOf(_from) >= icoBalances[_from] && token.balanceOf(_from).sub(icoBalances[_from])> _value) {
                 return true;
             }
             return false;
@@ -1087,7 +1087,7 @@ contract CrowdSale is SellableToken {
     }
 
     function isRefundPossible() public view returns (bool) {
-        if (isActive() || block.timestamp &lt; startTime || collectedUSD.add(preICOStats.collectedUSD) &gt;= softCap) {
+        if (isActive() || block.timestamp < startTime || collectedUSD.add(preICOStats.collectedUSD) >= softCap) {
             return false;
         }
         return true;
@@ -1121,13 +1121,13 @@ contract CrowdSale is SellableToken {
 
     function moveUnsoldTokensToICO() public onlyOwner {
         uint256 unsoldTokens = preICOStats.maxTokenSupply - preICOStats.soldTokens;
-        if (unsoldTokens &gt; 0) {
+        if (unsoldTokens > 0) {
             preICOStats.maxTokenSupply = preICOStats.soldTokens;
         }
     }
 
     function transferEthers() internal {
-        if (collectedUSD.add(preICOStats.collectedUSD) &gt;= softCap) {
+        if (collectedUSD.add(preICOStats.collectedUSD) >= softCap) {
             etherHolder.transfer(this.balance);
         }
     }
@@ -1146,8 +1146,8 @@ contract CrowdSale is SellableToken {
         preICOStats.collectedEthers = preICOStats.collectedEthers.add(_ethAmount);
         preICOStats.collectedUSD = preICOStats.collectedUSD.add(_usdAmount);
 
-        require(preICOStats.maxTokenSupply &gt;= preICOStats.soldTokens);
-        require(maxTokenSupply &gt;= preICOStats.soldTokens);
+        require(preICOStats.maxTokenSupply >= preICOStats.soldTokens);
+        require(maxTokenSupply >= preICOStats.soldTokens);
 
         return _tokenAmount;
     }
@@ -1167,16 +1167,16 @@ contract CrowdSale is SellableToken {
         uint256 mintedAmount;
 
         (tokenAmount, usdAmount) = calculateTokensAmount(_value);
-        require(usdAmount &gt; 0 &amp;&amp; tokenAmount &gt; 0);
+        require(usdAmount > 0 && tokenAmount > 0);
 
-        if (activeTier &gt;= PRE_ICO_TIER_FIRST &amp;&amp; activeTier &lt;= PRE_ICO_TIER_LAST) {
+        if (activeTier >= PRE_ICO_TIER_FIRST && activeTier <= PRE_ICO_TIER_LAST) {
             mintedAmount = mintPreICO(_address, tokenAmount, _value, usdAmount);
             etherHolder.transfer(this.balance);
         } else {
             mintedAmount = mintInternal(_address, tokenAmount);
-            require(soldTokens &lt;= maxTokenSupply.sub(preICOStats.maxTokenSupply));
+            require(soldTokens <= maxTokenSupply.sub(preICOStats.maxTokenSupply));
             collectedUSD = collectedUSD.add(usdAmount);
-            require(hardCap &gt;= collectedUSD.add(preICOStats.collectedUSD) &amp;&amp; usdAmount &gt; 0 &amp;&amp; mintedAmount &gt; 0);
+            require(hardCap >= collectedUSD.add(preICOStats.collectedUSD) && usdAmount > 0 && mintedAmount > 0);
 
             collectedEthers = collectedEthers.add(_value);
             etherBalances[_address] = etherBalances[_address].add(_value);

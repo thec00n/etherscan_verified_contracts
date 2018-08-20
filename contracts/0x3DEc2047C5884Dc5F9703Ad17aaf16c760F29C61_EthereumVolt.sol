@@ -1,6 +1,6 @@
 contract EthereumVolt {
     /* Public variables of the token */
-    string public standard = &#39;EthereumVolt 0.1&#39;;
+    string public standard = 'EthereumVolt 0.1';
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -8,17 +8,17 @@ contract EthereumVolt {
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
   
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function EthereumVolt() {
 
          initialSupply = 314159265;
-         name =&quot;EthereumVolt&quot;;
+         name ="EthereumVolt";
         decimals = 0;
-         symbol = &quot;ETV&quot;;
+         symbol = "ETV";
         
         balanceOf[msg.sender] = initialSupply;              // Give the creator all initial tokens
         totalSupply = initialSupply;                        // Update total supply
@@ -27,8 +27,8 @@ contract EthereumVolt {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (balanceOf[msg.sender] &lt; _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) throw; // Check for overflows
+        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
       

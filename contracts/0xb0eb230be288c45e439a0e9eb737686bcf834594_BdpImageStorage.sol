@@ -67,14 +67,14 @@ contract BdpBase is BdpBaseData {
 	}
 
 	modifier whileContractIsActive() {
-		require(!paused &amp;&amp; setupCompleted);
+		require(!paused && setupCompleted);
 		_;
 	}
 
 	modifier storageAccessControl() {
 		require(
-			(! setupCompleted &amp;&amp; (msg.sender == ownerAddress || msg.sender == managerAddress))
-			|| (setupCompleted &amp;&amp; !paused &amp;&amp; (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
+			(! setupCompleted && (msg.sender == ownerAddress || msg.sender == managerAddress))
+			|| (setupCompleted && !paused && (msg.sender == BdpContracts.getBdpEntryPoint(contracts)))
 		);
 		_;
 	}
@@ -135,9 +135,9 @@ library SafeMath {
 	* @dev Integer division of two numbers, truncating the quotient.
 	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
@@ -145,7 +145,7 @@ library SafeMath {
 	* @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
@@ -154,7 +154,7 @@ library SafeMath {
 	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -169,8 +169,8 @@ contract BdpImageStorage is BdpBase {
 		address owner;
 		uint256 regionId;
 		uint256 currentRegionId;
-		mapping(uint16 =&gt; uint256[1000]) data;
-		mapping(uint16 =&gt; uint16) dataLength;
+		mapping(uint16 => uint256[1000]) data;
+		mapping(uint16 => uint16) dataLength;
 		uint16 partsCount;
 		uint16 width;
 		uint16 height;
@@ -180,7 +180,7 @@ contract BdpImageStorage is BdpBase {
 
 	uint256 public lastImageId = 0;
 
-	mapping(uint256 =&gt; Image) public images;
+	mapping(uint256 => Image) public images;
 
 
 	function getLastImageId() view public returns (uint256) {
@@ -193,7 +193,7 @@ contract BdpImageStorage is BdpBase {
 	}
 
 	function createImage(address _owner, uint256 _regionId, uint16 _width, uint16 _height, uint16 _partsCount, uint16 _imageDescriptor) public storageAccessControl returns (uint256) {
-		require(_owner != address(0) &amp;&amp; _width &gt; 0 &amp;&amp; _height &gt; 0 &amp;&amp; _partsCount &gt; 0 &amp;&amp; _imageDescriptor &gt; 0);
+		require(_owner != address(0) && _width > 0 && _height > 0 && _partsCount > 0 && _imageDescriptor > 0);
 		uint256 id = getNextImageId();
 		images[id].owner = _owner;
 		images[id].regionId = _regionId;
@@ -205,7 +205,7 @@ contract BdpImageStorage is BdpBase {
 	}
 
 	function imageExists(uint256 _imageId) view public returns (bool) {
-		return _imageId &gt; 0 &amp;&amp; images[_imageId].owner != address(0);
+		return _imageId > 0 && images[_imageId].owner != address(0);
 	}
 
 	function deleteImage(uint256 _imageId) public storageAccessControl {
@@ -251,7 +251,7 @@ contract BdpImageStorage is BdpBase {
 	function setImageData(uint256 _imageId, uint16 _part, uint256[] _data) public storageAccessControl {
 		require(imageExists(_imageId));
 		images[_imageId].dataLength[_part] = uint16(_data.length);
-		for (uint256 i = 0; i &lt; _data.length; i++) {
+		for (uint256 i = 0; i < _data.length; i++) {
 			images[_imageId].data[_part][i] = _data[i];
 		}
 	}
@@ -316,7 +316,7 @@ contract BdpImageStorage is BdpBase {
 
 	function imageUploadComplete(uint256 _imageId) view public returns (bool) {
 		require(imageExists(_imageId));
-		for (uint16 i = 1; i &lt;= images[_imageId].partsCount; i++) {
+		for (uint16 i = 1; i <= images[_imageId].partsCount; i++) {
 			if(images[_imageId].data[i].length == 0) {
 				return false;
 			}

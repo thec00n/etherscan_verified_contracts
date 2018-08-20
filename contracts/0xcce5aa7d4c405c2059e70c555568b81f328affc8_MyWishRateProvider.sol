@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -58,8 +58,8 @@ contract usingMyWishConsts {
     address constant PREICO_ADDRESS = 0x195610851A43E9685643A8F3b49F0F8a019204f1;
     address constant COLD_WALLET = 0x80826b5b717aDd3E840343364EC9d971FBa3955C;
 
-    string constant TOKEN_NAME = &quot;MyWish Token&quot;;
-    bytes32 constant TOKEN_SYMBOL = &quot;WISH&quot;;
+    string constant TOKEN_NAME = "MyWish Token";
+    bytes32 constant TOKEN_SYMBOL = "WISH";
 }
 /**
  * @title SafeMath
@@ -73,20 +73,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -120,7 +120,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /**
     * @dev transfer token for a specified address
@@ -157,7 +157,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
 
     /**
@@ -172,7 +172,7 @@ contract StandardToken is ERC20, BasicToken {
         var _allowance = allowed[_from][msg.sender];
 
         // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-        // require (_value &lt;= _allowance);
+        // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -223,7 +223,7 @@ contract StandardToken is ERC20, BasicToken {
 
     function decreaseApproval(address _spender, uint _subtractedValue) returns (bool success) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         }
         else {
@@ -293,7 +293,7 @@ contract BurnableToken is StandardToken {
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(_value &gt; 0);
+        require(_value > 0);
 
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
@@ -310,7 +310,7 @@ contract MyWishToken is usingMyWishConsts, MintableToken, BurnableToken {
     /**
      * @dev Accounts who can transfer token even if paused. Works only during crowdsale.
      */
-    mapping(address =&gt; bool) excluded;
+    mapping(address => bool) excluded;
 
     function name() constant public returns (string _name) {
         return TOKEN_NAME;
@@ -349,7 +349,7 @@ contract MyWishToken is usingMyWishConsts, MintableToken, BurnableToken {
      * @param _value    uint    The amount of tokens to be burned.
      */
     function burnFrom(address _from, uint256 _value) returns (bool) {
-        require(_value &gt; 0);
+        require(_value > 0);
         var allowance = allowed[_from][msg.sender];
         balances[_from] = balances[_from].sub(_value);
         totalSupply = totalSupply.sub(_value);
@@ -402,7 +402,7 @@ contract MyWishRateProvider is usingMyWishConsts, MyWishRateProviderI, Ownable {
         bool exists;
     }
 
-    mapping(address =&gt; ExclusiveRate) exclusiveRate;
+    mapping(address => ExclusiveRate) exclusiveRate;
 
     function getRateScale() public constant returns (uint) {
         return RATE_SCALE;
@@ -415,13 +415,13 @@ contract MyWishRateProvider is usingMyWishConsts, MyWishRateProviderI, Ownable {
     function getRate(address buyer, uint totalSold, uint amountWei) public constant returns (uint) {
         uint rate;
         // apply sale
-        if (totalSold &lt; STEP_30) {
+        if (totalSold < STEP_30) {
             rate = RATE_30;
         }
-        else if (totalSold &lt; STEP_20) {
+        else if (totalSold < STEP_20) {
             rate = RATE_20;
         }
-        else if (totalSold &lt; STEP_10) {
+        else if (totalSold < STEP_10) {
             rate = RATE_10;
         }
         else {
@@ -429,27 +429,27 @@ contract MyWishRateProvider is usingMyWishConsts, MyWishRateProviderI, Ownable {
         }
 
         // apply bonus for amount
-        if (amountWei &gt;= 1000 ether) {
+        if (amountWei >= 1000 ether) {
             rate += rate * 13 / 100;
         }
-        else if (amountWei &gt;= 500 ether) {
+        else if (amountWei >= 500 ether) {
             rate += rate * 10 / 100;
         }
-        else if (amountWei &gt;= 100 ether) {
+        else if (amountWei >= 100 ether) {
             rate += rate * 7 / 100;
         }
-        else if (amountWei &gt;= 50 ether) {
+        else if (amountWei >= 50 ether) {
             rate += rate * 5 / 100;
         }
-        else if (amountWei &gt;= 30 ether) {
+        else if (amountWei >= 30 ether) {
             rate += rate * 4 / 100;
         }
-        else if (amountWei &gt;= 10 ether) {
+        else if (amountWei >= 10 ether) {
             rate += rate * 25 / 1000;
         }
 
         ExclusiveRate memory eRate = exclusiveRate[buyer];
-        if (eRate.exists &amp;&amp; eRate.workUntil &gt;= now) {
+        if (eRate.exists && eRate.workUntil >= now) {
             if (eRate.rate != 0) {
                 rate = eRate.rate;
             }
@@ -511,9 +511,9 @@ contract Crowdsale {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint value, uint amount);
 
     function Crowdsale(uint _startTime, uint _endTime, uint _hardCap, address _wallet) {
-        require(_endTime &gt;= _startTime);
+        require(_endTime >= _startTime);
         require(_wallet != 0x0);
-        require(_hardCap &gt; 0);
+        require(_hardCap > 0);
 
         token = createTokenContract();
         startTime = uint32(_startTime);
@@ -586,11 +586,11 @@ contract Crowdsale {
      * @return true if the transaction can buy tokens
      */
     function validPurchase(uint _amountWei, uint _actualRate, uint _totalSupply) internal constant returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= startTime && now <= endTime;
         bool nonZeroPurchase = _amountWei != 0;
-        bool hardCapNotReached = _totalSupply &lt;= hardCap;
+        bool hardCapNotReached = _totalSupply <= hardCap;
 
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; hardCapNotReached;
+        return withinPeriod && nonZeroPurchase && hardCapNotReached;
     }
 
     /**
@@ -598,14 +598,14 @@ contract Crowdsale {
      * @return true if crowdsale event has ended
      */
     function hasEnded() public constant returns (bool) {
-        return now &gt; endTime || token.totalSupply() &gt; hardCap;
+        return now > endTime || token.totalSupply() > hardCap;
     }
 
     /**
      * @return true if crowdsale event has started
      */
     function hasStarted() public constant returns (bool) {
-        return now &gt;= startTime;
+        return now >= startTime;
     }
 }
 
@@ -622,7 +622,7 @@ contract FinalizableCrowdsale is Crowdsale, Ownable {
 
     /**
      * @dev Must be called after crowdsale ends, to do some extra finalization
-     * work. Calls the contract&#39;s finalization function.
+     * work. Calls the contract's finalization function.
      */
     function finalize() onlyOwner notFinalized {
         require(hasEnded());
@@ -709,17 +709,17 @@ contract MyWishCrowdsale is usingMyWishConsts, FinalizableCrowdsale {
      * @param _endTime New end time.
      */
     function setEndTime(uint _endTime) onlyOwner notFinalized {
-        require(_endTime &gt; startTime);
+        require(_endTime > startTime);
         endTime = uint32(_endTime);
     }
 
     function setHardCap(uint _hardCapTokens) onlyOwner notFinalized {
-        require(_hardCapTokens * TOKEN_DECIMAL_MULTIPLIER &gt; hardCap);
+        require(_hardCapTokens * TOKEN_DECIMAL_MULTIPLIER > hardCap);
         hardCap = _hardCapTokens * TOKEN_DECIMAL_MULTIPLIER;
     }
 
     function setStartTime(uint _startTime) onlyOwner notFinalized {
-        require(_startTime &lt; endTime);
+        require(_startTime < endTime);
         startTime = uint32(_startTime);
     }
 
@@ -728,7 +728,7 @@ contract MyWishCrowdsale is usingMyWishConsts, FinalizableCrowdsale {
     }
 
     function validPurchase(uint _amountWei, uint _actualRate, uint _totalSupply) internal constant returns (bool) {
-        if (_amountWei &lt; MINIMAL_PURCHASE) {
+        if (_amountWei < MINIMAL_PURCHASE) {
             return false;
         }
         return super.validPurchase(_amountWei, _actualRate, _totalSupply);

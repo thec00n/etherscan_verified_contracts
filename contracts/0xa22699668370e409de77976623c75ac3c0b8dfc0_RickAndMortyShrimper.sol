@@ -25,8 +25,8 @@ pragma solidity ^0.4.18; // solhint-disable-line
 
 
 	contract RickAndMortyShrimper{
-		string public name = &quot;RickAndMortyShrimper&quot;;
-		string public symbol = &quot;RickAndMortyS&quot;;
+		string public name = "RickAndMortyShrimper";
+		string public symbol = "RickAndMortyS";
 		//uint256 morties_PER_RickAndMorty_PER_SECOND=1;
 		uint256 public morties_TO_HATCH_1RickAndMorty=86400;//for final version should be seconds in a day
 		uint256 public STARTING_RickAndMorty=314;
@@ -34,10 +34,10 @@ pragma solidity ^0.4.18; // solhint-disable-line
 		uint256 PSNH=5000;
 		bool public initialized=true;
 		address public ceoAddress;
-		mapping (address =&gt; uint256) public hatcheryRickAndMorty;
-		mapping (address =&gt; uint256) public claimedmorties;
-		mapping (address =&gt; uint256) public lastHatch;
-		mapping (address =&gt; address) public referrals;
+		mapping (address => uint256) public hatcheryRickAndMorty;
+		mapping (address => uint256) public claimedmorties;
+		mapping (address => uint256) public lastHatch;
+		mapping (address => address) public referrals;
 		uint256 public marketmorties = 1000000000;
 		uint256 public RnMmasterReq=100000;
 		
@@ -50,14 +50,14 @@ pragma solidity ^0.4.18; // solhint-disable-line
 		}
 		function becomePickleRick() public{
 			require(initialized);
-			require(hatcheryRickAndMorty[msg.sender]&gt;=RnMmasterReq);
+			require(hatcheryRickAndMorty[msg.sender]>=RnMmasterReq);
 			hatcheryRickAndMorty[msg.sender]=SafeMath.sub(hatcheryRickAndMorty[msg.sender],RnMmasterReq);
 			RnMmasterReq=SafeMath.add(RnMmasterReq,100000);//+100k RickAndMortys each time
 			ceoAddress=msg.sender;
 		}
 		function hatchMorties(address ref) public{
 			require(initialized);
-			if(referrals[msg.sender]==0 &amp;&amp; referrals[msg.sender]!=msg.sender){
+			if(referrals[msg.sender]==0 && referrals[msg.sender]!=msg.sender){
 				referrals[msg.sender]=ref;
 			}
 			uint256 mortiesUsed=getMymorties();
@@ -136,7 +136,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 			return SafeMath.mul(secondsPassed,hatcheryRickAndMorty[adr]);
 		}
 		function min(uint256 a, uint256 b) private pure returns (uint256) {
-			return a &lt; b ? a : b;
+			return a < b ? a : b;
 		}
 		function transferOwnership() onlyCEO public {
 			uint256 etherBalance = this.balance;
@@ -162,9 +162,9 @@ pragma solidity ^0.4.18; // solhint-disable-line
 	  * @dev Integer division of two numbers, truncating the quotient.
 	  */
 	  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	  }
 
@@ -172,7 +172,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 	  * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
 	  */
 	  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	  }
 
@@ -181,7 +181,7 @@ pragma solidity ^0.4.18; // solhint-disable-line
 	  */
 	  function add(uint256 a, uint256 b) internal pure returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	  }
 	}

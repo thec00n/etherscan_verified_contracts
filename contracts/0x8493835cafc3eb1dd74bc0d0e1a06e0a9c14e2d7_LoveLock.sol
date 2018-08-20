@@ -1,6 +1,6 @@
 /*
 
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -69,7 +69,7 @@ uint   locktype;
 uint   timestamp;
 } // struct DataRecord
 
-mapping(bytes32 =&gt; DataRecord) public DataRecordStructs;
+mapping(bytes32 => DataRecord) public DataRecordStructs;
 
 //
 // Dataset for indexes
@@ -79,7 +79,7 @@ struct DataRecordIndex
 bytes32 index_hash;
 } // DataRecordIndex
 
-mapping(uint256 =&gt; DataRecordIndex) public DataRecordIndexStructs;
+mapping(uint256 => DataRecordIndex) public DataRecordIndexStructs;
 
 
 
@@ -141,7 +141,7 @@ return(ret);
 
 
 // ---
-// Web3 event &#39;LovelockPayment&#39;
+// Web3 event 'LovelockPayment'
 //
 event LovelockPayment
 (
@@ -160,14 +160,14 @@ last_buyer = msg.sender;
 
 
 // Overwrite protection
-if (DataRecordStructs[index_hash].timestamp &gt; 1000)
+if (DataRecordStructs[index_hash].timestamp > 1000)
    {
    return 0;
    }
    
 
 // only if payed the full price.
-if ( msg.value &gt;= lovelock_price )
+if ( msg.value >= lovelock_price )
    {
    
    // ----- Create the lock ---------------------------------
@@ -212,7 +212,7 @@ uint256      amount_token = 0;
 
 
 // Overwrite protection
-if (DataRecordStructs[index_hash].timestamp &gt; 1000)
+if (DataRecordStructs[index_hash].timestamp > 1000)
    {
    return 0;
    }
@@ -223,7 +223,7 @@ amount_token = TokenContract.allowance( msg.sender, thisAddress );
 debug_last_approved = amount_token;
    
 
-if (amount_token &gt;= lovelock_price_LOV)
+if (amount_token >= lovelock_price_LOV)
    {
 
    // Transfer token to this contract
@@ -254,7 +254,7 @@ if (amount_token &gt;= lovelock_price_LOV)
       } // if (success == true)
       else 
          {
-         //debug = &quot;transferFrom returns FALSE&quot;;   
+         //debug = "transferFrom returns FALSE";   
          }
        
       

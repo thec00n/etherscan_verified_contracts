@@ -22,9 +22,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -32,7 +32,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -41,7 +41,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -56,8 +56,8 @@ contract BallotSB52 {
   uint public phiWon;
   uint public neWon;
   Superbowl52 bettingContract;
-  mapping (address =&gt; bool) voted;
-  mapping (address =&gt; uint) votes;
+  mapping (address => bool) voted;
+  mapping (address => uint) votes;
   uint public constant votingPeriod = 7 days;
   uint public votingStart;
   uint public votingEnd;
@@ -67,10 +67,10 @@ contract BallotSB52 {
   // XX.XXX%
   uint public threshold;
   uint public votingReward;
-  mapping (address =&gt; uint) stake;
+  mapping (address => uint) stake;
   uint public majorityReward;
   bool public tie;
-  mapping (address =&gt; bool) claimed;
+  mapping (address => bool) claimed;
 
   function BallotSB52(uint th) public payable {
     validResult = 0;
@@ -86,7 +86,7 @@ contract BallotSB52 {
 
   // you can only vote once
   function voteResult(uint team) public payable {
-    require(votingStart &lt;= now &amp;&amp; votingEnd &gt;= now);
+    require(votingStart <= now && votingEnd >= now);
     require(voted[msg.sender] == false);
     require(msg.value == 50 finney);
     require(!closed);
@@ -104,23 +104,23 @@ contract BallotSB52 {
 
   function closeBallot() public returns (uint) {
     require(!closed);
-    require(now &gt; votingEnd);
-    if((phiWon.mul(100000).div(totalVoters) == neWon.mul(100000).div(totalVoters)) &amp;&amp; (threshold == 50000)) {
+    require(now > votingEnd);
+    if((phiWon.mul(100000).div(totalVoters) == neWon.mul(100000).div(totalVoters)) && (threshold == 50000)) {
       validResult = 9;
       closed = true;
       tie = true;
       return validResult;
-    } else if(phiWon.mul(100000).div(totalVoters) &gt;= threshold) {
+    } else if(phiWon.mul(100000).div(totalVoters) >= threshold) {
       validResult = 1;
       votingReward = bettingContract.getLosersOnePercent(2);
       majorityReward = (neWon * 50 finney).add(votingReward).div(phiWon);
-    } else if (neWon.mul(100000).div(totalVoters) &gt;= threshold) {
+    } else if (neWon.mul(100000).div(totalVoters) >= threshold) {
       validResult = 2;
       votingReward = bettingContract.getLosersOnePercent(3);
       majorityReward = (phiWon * 50 finney).add(votingReward).div(neWon);
     } else {
-      if (neWon.mul(100000).div(totalVoters) &gt; 50000) majorityReward = (phiWon * 50 finney).div(neWon);
-      else if (phiWon.mul(100000).div(totalVoters) &gt; 50000) majorityReward = (neWon * 50 finney).div(phiWon);
+      if (neWon.mul(100000).div(totalVoters) > 50000) majorityReward = (phiWon * 50 finney).div(neWon);
+      else if (phiWon.mul(100000).div(totalVoters) > 50000) majorityReward = (neWon * 50 finney).div(phiWon);
       else {
         tie = true;
         majorityReward = 0;
@@ -164,7 +164,7 @@ contract Superbowl52 {
   bool public resultConfirmed = false;
   address public owner;
 
-  mapping(address =&gt; betting) public bets;
+  mapping(address => betting) public bets;
   uint public totalBets;
   uint public philadelphiaBets;
   uint public newEnglandBets;
@@ -174,7 +174,7 @@ contract Superbowl52 {
   bool public withdrawalOpen;
   uint public threshold;
   uint public winningPot;
-  mapping(address =&gt; uint) public wins;
+  mapping(address => uint) public wins;
 
   BallotSB52 public ballot;
 
@@ -185,7 +185,7 @@ contract Superbowl52 {
   }
 
   function Superbowl52() public {
-    require(now&lt;GAME_START_TIME);
+    require(now<GAME_START_TIME);
     owner = msg.sender;
     result = 0;
     votingOpen = false;
@@ -200,8 +200,8 @@ contract Superbowl52 {
   // a bet is final and you cannot change it
   function bet(uint team) public payable {
     require(team == 1 || team == 2);
-    require(now &lt;= GAME_START_TIME);
-    require(msg.value &gt; 0);
+    require(now <= GAME_START_TIME);
+    require(msg.value > 0);
     if(!hasBet(msg.sender)) betters += 1;
     if(team == 1) {
       bets[msg.sender].philadelphiaBets += msg.value;
@@ -232,13 +232,13 @@ contract Superbowl52 {
   function startVoting() public {
     require(votingOpen == false);
     require(withdrawalOpen == false);
-    require(now &gt;= GAME_START_TIME + 8 hours);
+    require(now >= GAME_START_TIME + 8 hours);
     votingOpen = true;
     ballot = new BallotSB52(threshold);
   }
 
   function hasBet(address better) public constant returns (bool) {
-    return (bets[better].philadelphiaBets + bets[better].newEnglandBets) &gt; 0;
+    return (bets[better].philadelphiaBets + bets[better].newEnglandBets) > 0;
   }
 
   function endVoting() public {
@@ -284,7 +284,7 @@ contract Superbowl52 {
   }
 
   function getWinnings(uint donation) public {
-    require(donation&lt;=100);
+    require(donation<=100);
     require(withdrawalOpen);
     require(bets[msg.sender].claimed == false);
     uint winnings = 0;

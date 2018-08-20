@@ -88,12 +88,12 @@ contract KirkeContract is Token, Mortal, Pausable {
 
     function transfer(address _to, uint256 _value) public returns(bool success) {
         require(_to != 0x0);
-        require(_value &gt; 0);
+        require(_value > 0);
         uint256 bonus = 0;
 
         uint256 totalTokensToTransfer = _value + bonus;
 
-        if (balances[msg.sender] &gt;= totalTokensToTransfer) {
+        if (balances[msg.sender] >= totalTokensToTransfer) {
             balances[msg.sender] -= totalTokensToTransfer;
             balances[_to] += totalTokensToTransfer;
             Transfer(msg.sender, _to, totalTokensToTransfer);
@@ -108,10 +108,10 @@ contract KirkeContract is Token, Mortal, Pausable {
     function transferFrom(address _from, address _to, uint256 totalTokensToTransfer, uint256 deadLine_Locked) public returns(bool success) {
         require(_from != 0x0);
         require(_to != 0x0);
-        require(totalTokensToTransfer &gt; 0);
-        require(now &gt; deadLine_Locked || _from == owner);
+        require(totalTokensToTransfer > 0);
+        require(now > deadLine_Locked || _from == owner);
 
-        if (balances[_from] &gt;= totalTokensToTransfer &amp;&amp; allowance(_from, _to) &gt;= totalTokensToTransfer) {
+        if (balances[_from] >= totalTokensToTransfer && allowance(_from, _to) >= totalTokensToTransfer) {
             balances[_to] += totalTokensToTransfer;
             balances[_from] -= totalTokensToTransfer;
             allowed[_from][msg.sender] -= totalTokensToTransfer;
@@ -138,13 +138,13 @@ contract KirkeContract is Token, Mortal, Pausable {
         return allowed[_owner][_spender];
     }
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 }
 contract Kirke is KirkeContract{
-    string public constant name = &quot;Kirke&quot;;
+    string public constant name = "Kirke";
     uint8 public constant decimals = 18;
-    string public constant symbol = &quot;KIK&quot;;
+    string public constant symbol = "KIK";
     uint256 rateForToken;
     bool public isPaused;
     uint256 firstBonusEstimate;
@@ -182,25 +182,25 @@ contract Kirke is KirkeContract{
      */
     function() payable public whenNotPaused{
         require(msg.sender != 0x0);
-        require(now &lt; deadLine);
+        require(now < deadLine);
         if(isBurned){
             revert();
         }
         uint tokensToTransfer = 0;
-        if(tokensDistributed &gt;= 0 &amp;&amp; tokensDistributed &lt; firstBonusEstimate){
+        if(tokensDistributed >= 0 && tokensDistributed < firstBonusEstimate){
             tokensToTransfer = (( msg.value * rateForToken ) / firstBonusPriceRate);
         }
-        if(tokensDistributed &gt;= firstBonusEstimate &amp;&amp; tokensDistributed &lt; secondBonusEstimate){
+        if(tokensDistributed >= firstBonusEstimate && tokensDistributed < secondBonusEstimate){
             tokensToTransfer = (( msg.value * rateForToken ) / secondBonusPriceRate);
         }
-        if(tokensDistributed &gt;= secondBonusEstimate &amp;&amp; tokensDistributed &lt; thirdBonusEstimate){
+        if(tokensDistributed >= secondBonusEstimate && tokensDistributed < thirdBonusEstimate){
             tokensToTransfer = (( msg.value * rateForToken ) / thirdBonusPriceRate);
         }
-        if(tokensDistributed &gt;= thirdBonusEstimate &amp;&amp; tokensDistributed &lt; fourthBonusEstimate){
+        if(tokensDistributed >= thirdBonusEstimate && tokensDistributed < fourthBonusEstimate){
             tokensToTransfer = (( msg.value * rateForToken ) / fourthBonusPriceRate);
         }
         
-        if(balances[owner] &lt; tokensToTransfer) 
+        if(balances[owner] < tokensToTransfer) 
         {
            revert();
         }
@@ -217,7 +217,7 @@ contract Kirke is KirkeContract{
     }
     //Transfer All Balance to Address
     function transferFundToAccount() public onlyOwner whenPaused returns(uint256 result){
-        require(etherRaised&gt;0);
+        require(etherRaised>0);
         owner.transfer(etherRaised);
         etherRaised=0;
         return etherRaised;
@@ -225,7 +225,7 @@ contract Kirke is KirkeContract{
     //Transfer Bounty Reserve Tokens
     function transferBountyReserveTokens(address _bountyAddress, uint256 tokensToTransfer) public onlyOwner {
         tokensToTransfer = tokensToTransfer * (10 ** uint256(decimals));
-        if(bountyReserveTokensDistributed + tokensToTransfer &gt; bountyReserveTokens){
+        if(bountyReserveTokensDistributed + tokensToTransfer > bountyReserveTokens){
             revert();
         }
         allowed[owner][_bountyAddress] += tokensToTransfer;
@@ -240,7 +240,7 @@ contract Kirke is KirkeContract{
     //Transfer Bounty Reserve Tokens
     function transferTeamReserveTokens(address _teamAddress, uint256 tokensToTransfer) public onlyOwner {
         tokensToTransfer = tokensToTransfer * (10 ** uint256(decimals));
-        if(teamReserveTokensDistributed + tokensToTransfer &gt; teamReserveTokens){
+        if(teamReserveTokensDistributed + tokensToTransfer > teamReserveTokens){
             revert();
         }
         allowed[owner][_teamAddress] += tokensToTransfer;
@@ -255,7 +255,7 @@ contract Kirke is KirkeContract{
     //Transfer Bounty Reserve Tokens
     function transferAdvisoryReserveTokens(address _advisoryAddress, uint256 tokensToTransfer) public onlyOwner {
         tokensToTransfer = tokensToTransfer * (10 ** uint256(decimals));
-        if(advisoryReserveTokensDistributed + tokensToTransfer &gt; advisoryReserveTokens){
+        if(advisoryReserveTokensDistributed + tokensToTransfer > advisoryReserveTokens){
             revert();
         }
         allowed[owner][_advisoryAddress] += tokensToTransfer;

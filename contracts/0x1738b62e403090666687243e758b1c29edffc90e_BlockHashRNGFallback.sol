@@ -40,8 +40,8 @@ contract RNG{
  */
 contract BlockHashRNG is RNG {
 
-    mapping (uint =&gt; uint) public randomNumber; // randomNumber[block] is the random number for this block, 0 otherwise.
-    mapping (uint =&gt; uint) public reward; // reward[block] is the amount to be paid to the party w.
+    mapping (uint => uint) public randomNumber; // randomNumber[block] is the random number for this block, 0 otherwise.
+    mapping (uint => uint) public reward; // reward[block] is the amount to be paid to the party w.
 
 
 
@@ -74,7 +74,7 @@ contract BlockHashRNG is RNG {
         if (randomNumber[_block] != 0) { // If the number is set.
             uint rewardToSend = reward[_block];
             reward[_block] = 0;
-            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don&#39;t want to block in case msg.sender has a fallback issue.
+            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don't want to block in case msg.sender has a fallback issue.
         }
     }
 
@@ -93,7 +93,7 @@ contract BlockHashRNGFallback is BlockHashRNG {
      *  @param _block Block the random number is linked to.
      */
     function saveRN(uint _block) public {
-        if (_block&lt;block.number &amp;&amp; randomNumber[_block]==0) {// If the random number is not already set and can be.
+        if (_block<block.number && randomNumber[_block]==0) {// If the random number is not already set and can be.
             if (blockhash(_block)!=0x0) // Normal case.
                 randomNumber[_block]=uint(blockhash(_block));
             else // The contract was not called in time. Fallback to returning previous blockhash.
@@ -102,7 +102,7 @@ contract BlockHashRNGFallback is BlockHashRNG {
         if (randomNumber[_block] != 0) { // If the random number is set.
             uint rewardToSend=reward[_block];
             reward[_block]=0;
-            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don&#39;t want to block in case the msg.sender has a fallback issue.
+            msg.sender.send(rewardToSend); // Note that the use of send is on purpose as we don't want to block in case the msg.sender has a fallback issue.
         }
     }
     

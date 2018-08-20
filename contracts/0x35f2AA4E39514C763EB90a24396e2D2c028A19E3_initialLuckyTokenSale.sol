@@ -3,7 +3,7 @@ pragma solidity 0.4.14;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -56,38 +56,38 @@ library SafeMath {
   }
 
   function div256(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &gt; 0); // Solidity automatically revert()s when dividing by 0
+    require(b > 0); // Solidity automatically revert()s when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub256(uint256 a, uint256 b) internal returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add256(uint256 a, uint256 b) internal returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }  
   
 
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -127,13 +127,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -170,7 +170,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -183,7 +183,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already revert() if this condition is not met
-    // if (_value &gt; _allowance) revert();
+    // if (_value > _allowance) revert();
 
     balances[_to] = balances[_to].add256(_value);
     balances[_from] = balances[_from].sub256(_value);
@@ -202,7 +202,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -230,8 +230,8 @@ contract StandardToken is BasicToken, ERC20 {
  */
  
 contract LuckyToken is StandardToken, Ownable{
-  string public name = &quot;Lucky888Coin&quot;;
-  string public symbol = &quot;LKY&quot;;
+  string public name = "Lucky888Coin";
+  string public symbol = "LKY";
   uint public decimals = 18;
 
   event TokenBurned(uint256 value);
@@ -246,7 +246,7 @@ contract LuckyToken is StandardToken, Ownable{
    * @param _value number of tokens to be burned.
    */
   function burn(uint _value) onlyOwner {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub256(_value);
     totalSupply = totalSupply.sub256(_value);
     TokenBurned(_value);
@@ -267,18 +267,18 @@ contract initialLuckyTokenSale is Ownable {
   event LogCollect(address indexed contributorAddress, uint256 tokenAmount, uint period); 
 
   LuckyToken                                       private  token; 
-  mapping(uint =&gt; address)                       private  walletOfPeriod;
+  mapping(uint => address)                       private  walletOfPeriod;
   uint256                                        private  minContribution = 0.1 ether;
   uint                                           private  saleStart;
   bool                                           private  isTokenCollectable = false;
-  mapping(uint =&gt; uint)                          private  periodStart;
-  mapping(uint =&gt; uint)                          private  periodDeadline;
-  mapping(uint =&gt; uint256)                       private  periodTokenPool;
+  mapping(uint => uint)                          private  periodStart;
+  mapping(uint => uint)                          private  periodDeadline;
+  mapping(uint => uint256)                       private  periodTokenPool;
 
-  mapping(uint =&gt; mapping (address =&gt; uint256))  private  contribution;  
-  mapping(uint =&gt; uint256)                       private  periodContribution;  
-  mapping(uint =&gt; mapping (address =&gt; bool))     private  collected;  
-  mapping(uint =&gt; mapping (address =&gt; uint256))  private  tokenCollected;  
+  mapping(uint => mapping (address => uint256))  private  contribution;  
+  mapping(uint => uint256)                       private  periodContribution;  
+  mapping(uint => mapping (address => bool))     private  collected;  
+  mapping(uint => mapping (address => uint256))  private  tokenCollected;  
   
   uint public totalPeriod = 0;
   uint public currentPeriod = 0;
@@ -331,7 +331,7 @@ contract initialLuckyTokenSale is Ownable {
   } 
   
   function addPeriod(uint _periodStart, uint _periodDeadline) onlyOwner beforeSaleEnd private {
-    require(_periodStart &gt;= now &amp;&amp; _periodDeadline &gt; _periodStart &amp;&amp; (totalPeriod == 0 || _periodStart &gt; periodDeadline[totalPeriod]));
+    require(_periodStart >= now && _periodDeadline > _periodStart && (totalPeriod == 0 || _periodStart > periodDeadline[totalPeriod]));
     totalPeriod = totalPeriod + 1;
     periodStart[totalPeriod] = _periodStart;
     periodDeadline[totalPeriod] = _periodDeadline;
@@ -343,8 +343,8 @@ contract initialLuckyTokenSale is Ownable {
    * @dev Call this method to let the contract to go into next period of sales
    */
   function goNextPeriod() onlyOwner public {
-    for (uint i = 1; i &lt;= totalPeriod; i++) {
-        if (currentPeriod &lt; totalPeriod &amp;&amp; now &gt;= periodStart[currentPeriod + 1]) {
+    for (uint i = 1; i <= totalPeriod; i++) {
+        if (currentPeriod < totalPeriod && now >= periodStart[currentPeriod + 1]) {
             currentPeriod = currentPeriod + 1;
             isTokenCollectable = false;
             LogPeriodStart(currentPeriod);
@@ -357,7 +357,7 @@ contract initialLuckyTokenSale is Ownable {
    * @dev Call this method to let the contract to allow token collection after the contribution period
    */  
   function goTokenCollection() onlyOwner public {
-    require(currentPeriod &gt; 0 &amp;&amp; now &gt; periodDeadline[currentPeriod] &amp;&amp; !isTokenCollectable);
+    require(currentPeriod > 0 && now > periodDeadline[currentPeriod] && !isTokenCollectable);
     isTokenCollectable = true;
     LogCollectionStart(currentPeriod);
   }
@@ -366,7 +366,7 @@ contract initialLuckyTokenSale is Ownable {
    * @dev modifier to allow contribution only when the sale is ON
    */
   modifier saleIsOn() {
-    require(currentPeriod &gt; 0 &amp;&amp; now &gt;= periodStart[currentPeriod] &amp;&amp; now &lt; periodDeadline[currentPeriod]);
+    require(currentPeriod > 0 && now >= periodStart[currentPeriod] && now < periodDeadline[currentPeriod]);
     _;
   }
   
@@ -374,7 +374,7 @@ contract initialLuckyTokenSale is Ownable {
    * @dev modifier to allow collection only when the collection is ON
    */
   modifier collectIsOn() {
-    require(isTokenCollectable &amp;&amp; currentPeriod &gt; 0 &amp;&amp; now &gt; periodDeadline[currentPeriod] &amp;&amp; (currentPeriod == totalPeriod || now &lt; periodStart[currentPeriod + 1]));
+    require(isTokenCollectable && currentPeriod > 0 && now > periodDeadline[currentPeriod] && (currentPeriod == totalPeriod || now < periodStart[currentPeriod + 1]));
     _;
   }
   
@@ -382,7 +382,7 @@ contract initialLuckyTokenSale is Ownable {
    * @dev modifier to ensure it is before start of first period of sale
    */  
   modifier beforeSaleStart() {
-    require(totalPeriod == 0 || now &lt; periodStart[1]);
+    require(totalPeriod == 0 || now < periodStart[1]);
     _;  
   }
   /**
@@ -390,19 +390,19 @@ contract initialLuckyTokenSale is Ownable {
    */  
    
   modifier beforeSaleEnd() {
-    require(currentPeriod == 0 || now &lt; periodDeadline[totalPeriod]);
+    require(currentPeriod == 0 || now < periodDeadline[totalPeriod]);
     _;
   }
   /**
    * @dev modifier to ensure it is after the deadline of last sale period
    */ 
   modifier afterSaleEnd() {
-    require(currentPeriod &gt; 0 &amp;&amp; now &gt; periodDeadline[totalPeriod]);
+    require(currentPeriod > 0 && now > periodDeadline[totalPeriod]);
     _;
   }
   
   modifier overMinContribution() {
-    require(msg.value &gt;= minContribution);
+    require(msg.value >= minContribution);
     _;
   }
   
@@ -422,8 +422,8 @@ contract initialLuckyTokenSale is Ownable {
    */
   function collectToken() public collectIsOn {
     uint256 _tokenCollected = 0;
-    for (uint i = 1; i &lt;= totalPeriod; i++) {
-        if (!collected[i][msg.sender] &amp;&amp; contribution[i][msg.sender] &gt; 0)
+    for (uint i = 1; i <= totalPeriod; i++) {
+        if (!collected[i][msg.sender] && contribution[i][msg.sender] > 0)
         {
             _tokenCollected = contribution[i][msg.sender].mul256(periodTokenPool[i]).div256(periodContribution[i]);
 

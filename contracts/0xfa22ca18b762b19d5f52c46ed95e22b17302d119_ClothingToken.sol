@@ -3,14 +3,14 @@ pragma solidity ^0.4.16;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 
 contract Ownable {
     
     address[] public owners;
     
-    mapping(address =&gt; bool) bOwner;
+    mapping(address => bool) bOwner;
     
     /**
     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
@@ -19,7 +19,7 @@ contract Ownable {
     function Ownable() public {
         owners = [ 0x315C082246FFF04c9E790620867E6e0AD32f2FE3 ];
                     
-        for (uint i=0; i&lt; owners.length; i++){
+        for (uint i=0; i< owners.length; i++){
             bOwner[owners[i]]=true;
         }
     }
@@ -47,11 +47,11 @@ contract ClothingToken is Ownable {
     uint256 public totalSupply;
     uint256 public totalSupplyMarket;
     uint256 public totalSupplyYear;
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
     
-    string public constant name = &quot;ClothingCoin&quot;;
-    string public constant symbol = &quot;CC&quot;;
+    string public constant name = "ClothingCoin";
+    string public constant symbol = "CC";
     uint32 public constant decimals = 0;
 
     uint256 public constant hardcap = 300000000;
@@ -60,7 +60,7 @@ contract ClothingToken is Ownable {
     
     uint currentyear=2018;
     
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => bool) public frozenAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -114,7 +114,7 @@ contract ClothingToken is Ownable {
                     buf = YEAR_IN_SECONDS;
             }
 
-            if (secondsAccountedFor + buf &gt; timestamp) {
+            if (secondsAccountedFor + buf > timestamp) {
                     break;
             }
             dt.year += 1;
@@ -142,9 +142,9 @@ contract ClothingToken is Ownable {
         monthDayCounts[11] = 31;
 
         uint secondsInMonth;
-        for (i = 0; i &lt; monthDayCounts.length; i++) {
+        for (i = 0; i < monthDayCounts.length; i++) {
             secondsInMonth = DAY_IN_SECONDS * monthDayCounts[i];
-            if (secondsInMonth + secondsAccountedFor &gt; timestamp) {
+            if (secondsInMonth + secondsAccountedFor > timestamp) {
                     dt.month = i + 1;
                     break;
             }
@@ -152,8 +152,8 @@ contract ClothingToken is Ownable {
         }
 
         // Day
-        for (i = 0; i &lt; monthDayCounts[dt.month - 1]; i++) {
-            if (DAY_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+        for (i = 0; i < monthDayCounts[dt.month - 1]; i++) {
+            if (DAY_IN_SECONDS + secondsAccountedFor > timestamp) {
                     dt.day = i + 1;
                     break;
             }
@@ -161,8 +161,8 @@ contract ClothingToken is Ownable {
         }
 
         // Hour
-        for (i = 0; i &lt; 24; i++) {
-            if (HOUR_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+        for (i = 0; i < 24; i++) {
+            if (HOUR_IN_SECONDS + secondsAccountedFor > timestamp) {
                     dt.hour = i;
                     break;
             }
@@ -170,15 +170,15 @@ contract ClothingToken is Ownable {
         }
 
         // Minute
-        for (i = 0; i &lt; 60; i++) {
-            if (MINUTE_IN_SECONDS + secondsAccountedFor &gt; timestamp) {
+        for (i = 0; i < 60; i++) {
+            if (MINUTE_IN_SECONDS + secondsAccountedFor > timestamp) {
                     dt.minute = i;
                     break;
             }
             secondsAccountedFor += MINUTE_IN_SECONDS;
         }
 
-        if (timestamp - secondsAccountedFor &gt; 60) {
+        if (timestamp - secondsAccountedFor > 60) {
             __throw();
         }
         
@@ -205,27 +205,27 @@ contract ClothingToken is Ownable {
             yearCap=yearCap/2;
             totalSupplyYear=0;
         }
-        require(totalSupply &lt;= marketCap);
-        require(totalSupplyYear &lt;= yearCap);
+        require(totalSupply <= marketCap);
+        require(totalSupplyYear <= yearCap);
         _;
         
     }
     
     modifier canMarketMint(){
-        require(totalSupplyMarket &lt;= marketCap);
+        require(totalSupplyMarket <= marketCap);
         _;
     }
 
     function mintForMarket (address _to, uint256 _value) public onlyOwner canMarketMint returns (bool){
         
-        if (_value + totalSupplyMarket &lt;= marketCap) {
+        if (_value + totalSupplyMarket <= marketCap) {
         
             totalSupplyMarket = totalSupplyMarket + _value;
             
-            assert(totalSupplyMarket &gt;= _value);
+            assert(totalSupplyMarket >= _value);
              
             balances[msg.sender] = balances[msg.sender] + _value;
-            assert(balances[msg.sender] &gt;= _value);
+            assert(balances[msg.sender] >= _value);
             Mint(msg.sender, _value);
         
             _transfer(_to, _value);
@@ -236,7 +236,7 @@ contract ClothingToken is Ownable {
 
     function _transfer( address _to, uint256 _value) internal {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(!frozenAccount[_to]);
 
         balances[msg.sender] = balances[msg.sender] - _value;
@@ -248,7 +248,7 @@ contract ClothingToken is Ownable {
     
     function transfer(address _to, uint256 _value) public  returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         require(!frozenAccount[msg.sender]);
         require(!frozenAccount[_to]);
 
@@ -265,13 +265,13 @@ contract ClothingToken is Ownable {
     
     function transferFrom(address _from, address _to, uint256 _value) public  returns (bool) {
         require(_to != address(0));
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
         require(!frozenAccount[_from]);
         require(!frozenAccount[_to]);
         balances[_from] = balances[_from] - _value;
         balances[_to] = balances[_to] + _value;
-        //assert(balances[_to] &gt;= _value); no need to check, since mint has limited hardcap
+        //assert(balances[_to] >= _value); no need to check, since mint has limited hardcap
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;
         Transfer(_from, _to, _value);
         return true;
@@ -292,16 +292,16 @@ contract ClothingToken is Ownable {
     function mintForYear(address _to, uint256 _value) public onlyOwner canYearMint returns (bool) {
         require(_to != address(0));
         
-        if (_value + totalSupplyYear &lt;= yearCap) {
+        if (_value + totalSupplyYear <= yearCap) {
             
             totalSupply = totalSupply + _value;
         
             totalSupplyYear = totalSupplyYear + _value;
             
-            assert(totalSupplyYear &gt;= _value);
+            assert(totalSupplyYear >= _value);
              
             balances[msg.sender] = balances[msg.sender] + _value;
-            assert(balances[msg.sender] &gt;= _value);
+            assert(balances[msg.sender] >= _value);
             Mint(msg.sender, _value);
         
             _transfer(_to, _value);
@@ -318,9 +318,9 @@ contract ClothingToken is Ownable {
      */
 
     function burn(uint256 _value) public returns (bool) {
-        require(_value &lt;= balances[msg.sender]);
-        // no need to require value &lt;= totalSupply, since that would imply the
-        // sender&#39;s balance is greater than the totalSupply, which *should* be an assertion failure
+        require(_value <= balances[msg.sender]);
+        // no need to require value <= totalSupply, since that would imply the
+        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
         balances[msg.sender] = balances[msg.sender] - _value;
         totalSupply = totalSupply - _value;
         Burn(msg.sender, _value);
@@ -328,8 +328,8 @@ contract ClothingToken is Ownable {
     }
     
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balances[_from]);
-        require(_value &lt;= allowed[_from][msg.sender]);   
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);   
         balances[_from] = balances[_from] - _value;
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;
         totalSupply = totalSupply - _value;
@@ -337,7 +337,7 @@ contract ClothingToken is Ownable {
         return true;
     }
     
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) public onlyOwner {

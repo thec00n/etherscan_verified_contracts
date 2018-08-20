@@ -5,12 +5,12 @@ contract SafeMath {
 
 function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
 uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -39,7 +39,7 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-      if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -50,7 +50,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -75,17 +75,17 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 }
 
 contract LockChain is StandardToken, SafeMath {
 
     // metadata
-    string public constant name = &quot;LockChain&quot;;
-    string public constant symbol = &quot;LOC&quot;;
+    string public constant name = "LockChain";
+    string public constant symbol = "LOC";
     uint256 public constant decimals = 18;
-    string public version = &quot;1.0&quot;;
+    string public version = "1.0";
 
     // contracts
     address public LockChainFundDeposit;      // deposit address for depositing tokens for owners
@@ -112,10 +112,10 @@ contract LockChain is StandardToken, SafeMath {
     function LockChain()
     {
       isFinalized = false;                   //controls pre through crowdsale state
-      LockChainFundDeposit = &#39;0x013aF31dc76255d3b33d2185A7148300882EbC7a&#39;;
-      account1Address = &#39;0xe0F2653e7928e6CB7c6D3206163b3E466a29c7C3&#39;;
-      account2Address = &#39;0x25BC70bFda877e1534151cB92D97AC5E69e1F53D&#39;;
-      creatorAddress = &#39;0x953ebf6C38C58C934D58b9b17d8f9D0F121218BB&#39;;
+      LockChainFundDeposit = '0x013aF31dc76255d3b33d2185A7148300882EbC7a';
+      account1Address = '0xe0F2653e7928e6CB7c6D3206163b3E466a29c7C3';
+      account2Address = '0x25BC70bFda877e1534151cB92D97AC5E69e1F53D';
+      creatorAddress = '0x953ebf6C38C58C934D58b9b17d8f9D0F121218BB';
       isPrePreSale = false;
       isPreSale = false;
       isMainSale = false;
@@ -125,19 +125,19 @@ contract LockChain is StandardToken, SafeMath {
     /// @dev Accepts ether and creates new LOK tokens.
     function () payable {
       if (isFinalized) throw;
-      if (!isPrePreSale &amp;&amp; !isPreSale &amp;&amp; !isMainSale) throw;
+      if (!isPrePreSale && !isPreSale && !isMainSale) throw;
       //if (!saleStarted) throw;
       if (msg.value == 0) throw;
       //create tokens
-      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we&#39;re not over totals
+      uint256 tokens = safeMult(msg.value, tokenExchangeRate); // check that we're not over totals
       uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
       if(!isMainSale){
-        if (tokenPreSaleCap &lt; checkedSupply) throw;
+        if (tokenPreSaleCap < checkedSupply) throw;
       }
 
       // return money if something goes wrong
-      if (tokenSaleCap &lt; checkedSupply) throw;  // odd fractions won&#39;t be found
+      if (tokenSaleCap < checkedSupply) throw;  // odd fractions won't be found
       totalSupply = checkedSupply;
       //All good. start the transfer
       balances[msg.sender] += tokens;  // safeAdd not needed
@@ -192,23 +192,23 @@ contract LockChain is StandardToken, SafeMath {
       }
       else if (!isMainSale){
         isMainSale = true;
-        if (totalSupply &lt; 10 * (10**6) * 10**decimals)
+        if (totalSupply < 10 * (10**6) * 10**decimals)
         {
           tokenExchangeRate = 750;
         }
-        else if (totalSupply &gt;= 10 * (10**6) * 10**decimals &amp;&amp; totalSupply &lt; 20 * (10**6) * 10**decimals)
+        else if (totalSupply >= 10 * (10**6) * 10**decimals && totalSupply < 20 * (10**6) * 10**decimals)
         {
           tokenExchangeRate = 700;
         }
-        else if (totalSupply &gt;= 20 * (10**6) * 10**decimals &amp;&amp; totalSupply &lt; 30 * (10**6) * 10**decimals)
+        else if (totalSupply >= 20 * (10**6) * 10**decimals && totalSupply < 30 * (10**6) * 10**decimals)
         {
           tokenExchangeRate = 650;
         }
-        else if (totalSupply &gt;= 30 * (10**6) * 10**decimals &amp;&amp; totalSupply &lt; 40 * (10**6) * 10**decimals)
+        else if (totalSupply >= 30 * (10**6) * 10**decimals && totalSupply < 40 * (10**6) * 10**decimals)
         {
           tokenExchangeRate = 620;
         }
-        else if (totalSupply &gt;= 40 * (10**6) * 10**decimals &amp;&amp; totalSupply &lt;= 50 * (10**6) * 10**decimals)
+        else if (totalSupply >= 40 * (10**6) * 10**decimals && totalSupply <= 50 * (10**6) * 10**decimals)
         {
           tokenExchangeRate = 600;
         }

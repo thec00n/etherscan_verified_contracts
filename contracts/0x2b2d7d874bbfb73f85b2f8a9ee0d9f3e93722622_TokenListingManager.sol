@@ -55,13 +55,13 @@ contract TokenController {
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /// @title MiniMeToken Contract
 /// @author Jordi Baylina
-/// @dev This token contract&#39;s goal is to make it easy for anyone to clone this
-///  token using the token distribution at a given block, this will allow DAO&#39;s
+/// @dev This token contract's goal is to make it easy for anyone to clone this
+///  token using the token distribution at a given block, this will allow DAO's
 ///  and DApps to upgrade their features in a decentralized manner without
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
@@ -73,13 +73,13 @@ contract ApproveAndCallFallBack {
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
-///  token controller contract, which Giveth will call a &quot;Campaign&quot;
+///  token controller contract, which Giveth will call a "Campaign"
 contract MiniMeToken is Controlled {
 
-    string public name;                //The Token&#39;s name: e.g. DigixDAO Tokens
+    string public name;                //The Token's name: e.g. DigixDAO Tokens
     uint8 public decimals;             //Number of decimals of the smallest unit
     string public symbol;              //An identifier: e.g. REP
-    string public version = &#39;MMT_0.2&#39;; //An arbitrary versioning scheme
+    string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -108,10 +108,10 @@ contract MiniMeToken is Controlled {
     // `balances` is the map that tracks the balance of each address, in this
     //  contract when the balance changes the block number that the change
     //  occurred is also included in the map
-    mapping (address =&gt; Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) balances;
 
     // `allowed` tracks any extra transfer rights as in all ERC20 tokens
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     // Tracks the history of the `totalSupply` of the token
     Checkpoint[] totalSupplyHistory;
@@ -190,7 +190,7 @@ contract MiniMeToken is Controlled {
             require(transfersEnabled);
 
             // The standard ERC 20 transferFrom functionality
-            require(allowed[_from][msg.sender] &gt;= _amount);
+            require(allowed[_from][msg.sender] >= _amount);
             allowed[_from][msg.sender] -= _amount;
         }
         doTransfer(_from, _to, _amount);
@@ -211,16 +211,16 @@ contract MiniMeToken is Controlled {
                return;
            }
 
-           require(parentSnapShotBlock &lt; block.number);
+           require(parentSnapShotBlock < block.number);
 
            // Do not allow transfer to 0x0 or the token contract itself
-           require((_to != 0) &amp;&amp; (_to != address(this)));
+           require((_to != 0) && (_to != address(this)));
 
            // If the amount being transfered is more than the balance of the
            //  account the transfer throws
            uint previousBalanceFrom = balanceOfAt(_from, block.number);
 
-           require(previousBalanceFrom &gt;= _amount);
+           require(previousBalanceFrom >= _amount);
 
            // Alerts the token controller of the transfer
            if (isContract(controller)) {
@@ -234,7 +234,7 @@ contract MiniMeToken is Controlled {
            // Then update the balance array with the new value for the address
            //  receiving the tokens
            uint previousBalanceTo = balanceOfAt(_to, block.number);
-           require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+           require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
            updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
            // An event to make the transfer easy to find on the blockchain
@@ -242,7 +242,7 @@ contract MiniMeToken is Controlled {
 
     }
 
-    /// @param _owner The address that&#39;s balance is being requested
+    /// @param _owner The address that's balance is being requested
     /// @return The balance of `_owner` at the current block
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balanceOfAt(_owner, block.number);
@@ -328,7 +328,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for that token as this contains initial balance of
         //  this token
         if ((balances[_owner].length == 0)
-            || (balances[_owner][0].fromBlock &gt; _blockNumber)) {
+            || (balances[_owner][0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -353,7 +353,7 @@ contract MiniMeToken is Controlled {
         //  genesis block for this token as that contains totalSupply of this
         //  token at this block number.
         if ((totalSupplyHistory.length == 0)
-            || (totalSupplyHistory[0].fromBlock &gt; _blockNumber)) {
+            || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             if (address(parentToken) != 0) {
                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));
             } else {
@@ -415,9 +415,9 @@ contract MiniMeToken is Controlled {
     function generateTokens(address _owner, uint _amount
     ) public onlyController returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
         uint previousBalanceTo = balanceOf(_owner);
-        require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         emit Transfer(0, _owner, _amount);
@@ -432,9 +432,9 @@ contract MiniMeToken is Controlled {
     function destroyTokens(address _owner, uint _amount
     ) onlyController public returns (bool) {
         uint curTotalSupply = totalSupply();
-        require(curTotalSupply &gt;= _amount);
+        require(curTotalSupply >= _amount);
         uint previousBalanceFrom = balanceOf(_owner);
-        require(previousBalanceFrom &gt;= _amount);
+        require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
         updateValueAtNow(balances[_owner], previousBalanceFrom - _amount);
         emit Transfer(_owner, 0, _amount);
@@ -465,16 +465,16 @@ contract MiniMeToken is Controlled {
         if (checkpoints.length == 0) return 0;
 
         // Shortcut for the actual value
-        if (_block &gt;= checkpoints[checkpoints.length-1].fromBlock)
+        if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
-        if (_block &lt; checkpoints[0].fromBlock) return 0;
+        if (_block < checkpoints[0].fromBlock) return 0;
 
         // Binary search of the value in the array
         uint min = 0;
         uint max = checkpoints.length-1;
-        while (max &gt; min) {
+        while (max > min) {
             uint mid = (max + min + 1)/ 2;
-            if (checkpoints[mid].fromBlock&lt;=_block) {
+            if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
                 max = mid-1;
@@ -490,7 +490,7 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value
     ) internal  {
         if ((checkpoints.length == 0)
-        || (checkpoints[checkpoints.length -1].fromBlock &lt; block.number)) {
+        || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
@@ -509,15 +509,15 @@ contract MiniMeToken is Controlled {
         assembly {
             size := extcodesize(_addr)
         }
-        return size&gt;0;
+        return size>0;
     }
 
     /// @dev Helper function to return a min betwen the two uints
     function min(uint a, uint b) pure internal returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
-    /// @notice The fallback function: If the contract&#39;s controller has not been
+    /// @notice The fallback function: If the contract's controller has not been
     ///  set to 0, then the `proxyPayment` method is called which relays the
     ///  ether and creates tokens as described in the token controller contract
     function () public payable {
@@ -722,7 +722,7 @@ contract TokenListingManager is Ownable {
 
     DestructibleMiniMeTokenFactory public tokenFactory;
     address nectarToken;
-    mapping(address =&gt; bool) admins;
+    mapping(address => bool) admins;
 
     modifier onlyAdmins() {
         require(isAdmin(msg.sender));
@@ -739,7 +739,7 @@ contract TokenListingManager is Ownable {
     /// @param tokens the list of tokens in consideration during this period
     function startTokenVotes(address[15] tokens) public onlyAdmins {
         uint _proposalId = tokenBatches.length;
-        if(_proposalId &gt; 0) {
+        if(_proposalId > 0) {
           TokenProposal memory op = tokenBatches[_proposalId - 1];
           DestructibleMiniMeToken(op.votingToken).recycle();
         }
@@ -752,9 +752,9 @@ contract TokenListingManager is Ownable {
         p.votingToken = tokenFactory.createDestructibleCloneToken(
                 nectarToken,
                 getBlockNumber(),
-                appendUintToString(&quot;EfxTokenVotes-&quot;, _proposalId),
+                appendUintToString("EfxTokenVotes-", _proposalId),
                 MiniMeToken(nectarToken).decimals(),
-                appendUintToString(&quot;EfxTokenVotes-&quot;, _proposalId),
+                appendUintToString("EfxTokenVotes-", _proposalId),
                 true);
 
         p.startTime = now;
@@ -767,16 +767,16 @@ contract TokenListingManager is Ownable {
     /// @param _tokenIndex is the position from 0-9 in the token array of the chosen token
     function vote(uint _tokenIndex) public {
         // voting only on the most recent set of proposed tokens
-        require(tokenBatches.length &gt; 0);
+        require(tokenBatches.length > 0);
         uint _proposalId = tokenBatches.length - 1;
-        require(_tokenIndex &lt; 15);
+        require(_tokenIndex < 15);
 
         TokenProposal memory p = tokenBatches[_proposalId];
 
-        require(now &lt; p.startTime + p.duration);
+        require(now < p.startTime + p.duration);
 
         uint amount = DestructibleMiniMeToken(p.votingToken).balanceOf(msg.sender);
-        require(amount &gt; 0);
+        require(amount > 0);
 
         require(DestructibleMiniMeToken(p.votingToken).transferFrom(msg.sender, address(this), amount));
 
@@ -810,18 +810,18 @@ contract TokenListingManager is Ownable {
         address _votingToken,
         bool _hasBalance
     ) {
-        require(_proposalId &lt; tokenBatches.length);
+        require(_proposalId < tokenBatches.length);
 
         TokenProposal memory p = tokenBatches[_proposalId];
         _startBlock = p.startBlock;
         _startTime = p.startTime;
         _duration = p.duration;
-        _finalized = (_startTime+_duration &lt; now);
-        _active = !_finalized &amp;&amp; (p.startBlock &lt; getBlockNumber());
+        _finalized = (_startTime+_duration < now);
+        _active = !_finalized && (p.startBlock < getBlockNumber());
         _votes = p.yesVotes;
         _tokens = p.consideredTokens;
         _votingToken = p.votingToken;
-        _hasBalance = (p.votingToken == 0x0) ? false : (DestructibleMiniMeToken(p.votingToken).balanceOf(msg.sender) &gt; 0);
+        _hasBalance = (p.votingToken == 0x0) ? false : (DestructibleMiniMeToken(p.votingToken).balanceOf(msg.sender) > 0);
     }
 
     function appendUintToString(string inStr, uint v) private pure returns (string str) {
@@ -840,10 +840,10 @@ contract TokenListingManager is Ownable {
         bytes memory inStrb = bytes(inStr);
         bytes memory s = new bytes(inStrb.length + i);
         uint j;
-        for (j = 0; j &lt; inStrb.length; j++) {
+        for (j = 0; j < inStrb.length; j++) {
             s[j] = inStrb[j];
         }
-        for (j = 0; j &lt; i; j++) {
+        for (j = 0; j < i; j++) {
             s[j + inStrb.length] = reversed[i - 1 - j];
         }
         str = string(s);

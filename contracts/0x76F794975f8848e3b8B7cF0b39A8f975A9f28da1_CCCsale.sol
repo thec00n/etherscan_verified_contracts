@@ -20,7 +20,7 @@ contract CCCsale is MyOwned {
     uint public amountRaised;
     token public tokenReward;
     address public beneficiary;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     event TakeBackToken(uint amount);
     event FundTransfer(address sender, uint amount, bool isSuccessful);
 
@@ -47,12 +47,12 @@ contract CCCsale is MyOwned {
     }
 
     function saleActive() public constant returns (bool) {
-        return (now &gt;= startDate &amp;&amp; now &lt;= stopDate);
+        return (now >= startDate && now <= stopDate);
     }
 
     function () payable public {
         require(saleActive());
-        require(msg.value &gt;= 0.1 ether);
+        require(msg.value >= 0.1 ether);
         uint amount = msg.value;
         amountRaised += amount/100000000000000000;
         uint amountSend = amount/10000000000*salePrice;
@@ -64,7 +64,7 @@ contract CCCsale is MyOwned {
 
     function saleEnd(uint restAmount) public onlyOwner {
         require(!saleActive());
-        require(now &gt; stopDate );
+        require(now > stopDate );
         uint weiRest = restAmount*10000000;
         tokenReward.transfer(beneficiary, weiRest);
         TakeBackToken(restAmount);

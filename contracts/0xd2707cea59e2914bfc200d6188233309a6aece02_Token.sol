@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
@@ -14,7 +14,7 @@ library SafeMath {
         require(a == 0 || c / a == b);
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -69,19 +69,19 @@ contract Owned {
 contract Token is ERC20Interface, Owned {
     using SafeMath for uint;
 
-    string public name = &quot;CARcoin&quot;;   
-    string public symbol = &quot;CAR&quot;;   
+    string public name = "CARcoin";   
+    string public symbol = "CAR";   
     uint8 public decimals = 18;    
     uint public _totalSupply;   
 
 
-    mapping(address =&gt; uint) balances;  
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;   
+    mapping(address => uint) balances;  
+    mapping(address => mapping(address => uint)) allowed;   
 
 
     constructor() public {   
-        name = &quot;CARcoin&quot;;
-        symbol = &quot;CAR&quot;;
+        name = "CARcoin";
+        symbol = "CAR";
         decimals = 18;
         _totalSupply = 15000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;

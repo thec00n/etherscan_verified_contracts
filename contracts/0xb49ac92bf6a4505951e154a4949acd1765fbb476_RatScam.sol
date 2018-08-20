@@ -111,8 +111,8 @@ contract RatScam is modularRatScam {
 
     RatBookInterface constant private RatBook = RatBookInterface(0x3257d637B8977781B4f8178365858A474b2A6195);
 
-    string constant public name = &quot;RatScam In One Hour&quot;;
-    string constant public symbol = &quot;RS&quot;;
+    string constant public name = "RatScam In One Hour";
+    string constant public symbol = "RS";
     uint256 private rndGap_ = 0;
 
     uint256 private rndInit_ = 1 hours;                // round timer starts at this
@@ -123,22 +123,22 @@ contract RatScam is modularRatScam {
     //    (_|(_| | (_|  _\(/_ | |_||_)  .  (data used to store game info that changes)
     //=============================|================================================
     uint256 public airDropPot_;             // person who gets the airdrop wins part of this pot
-    uint256 public airDropTracker_ = 0;     // incremented each time a &quot;qualified&quot; tx occurs.  used to determine winning air drop
+    uint256 public airDropTracker_ = 0;     // incremented each time a "qualified" tx occurs.  used to determine winning air drop
     uint256 public rID_;    // round id number / total rounds that have happened
     //****************
     // PLAYER DATA
     //****************
     address private adminAddress;
-    mapping (address =&gt; uint256) public pIDxAddr_;          // (addr =&gt; pID) returns player id by address
-    mapping (bytes32 =&gt; uint256) public pIDxName_;          // (name =&gt; pID) returns player id by name
-    mapping (uint256 =&gt; RSdatasets.Player) public plyr_;   // (pID =&gt; data) player data
-    mapping (uint256 =&gt; mapping (uint256 =&gt; RSdatasets.PlayerRounds)) public plyrRnds_;    // (pID =&gt; rID =&gt; data) player round data by player id &amp; round id
-    mapping (uint256 =&gt; mapping (bytes32 =&gt; bool)) public plyrNames_; // (pID =&gt; name =&gt; bool) list of names a player owns.  (used so you can change your display name amongst any name you own)
+    mapping (address => uint256) public pIDxAddr_;          // (addr => pID) returns player id by address
+    mapping (bytes32 => uint256) public pIDxName_;          // (name => pID) returns player id by name
+    mapping (uint256 => RSdatasets.Player) public plyr_;   // (pID => data) player data
+    mapping (uint256 => mapping (uint256 => RSdatasets.PlayerRounds)) public plyrRnds_;    // (pID => rID => data) player round data by player id & round id
+    mapping (uint256 => mapping (bytes32 => bool)) public plyrNames_; // (pID => name => bool) list of names a player owns.  (used so you can change your display name amongst any name you own)
     //****************
     // ROUND DATA
     //****************
     //RSdatasets.Round public round_;   // round data
-    mapping (uint256 =&gt; RSdatasets.Round) public round_;   // (rID =&gt; data) round data
+    mapping (uint256 => RSdatasets.Round) public round_;   // (rID => data) round data
     //****************
     // TEAM FEE DATA
     //****************
@@ -162,7 +162,7 @@ contract RatScam is modularRatScam {
      * been activated.
      */
     modifier isActivated() {
-        require(activated_ == true, &quot;its not ready yet&quot;);
+        require(activated_ == true, "its not ready yet");
         _;
     }
 
@@ -174,7 +174,7 @@ contract RatScam is modularRatScam {
         uint256 _codeLength;
 
         assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, &quot;non smart contract address only&quot;);
+        require(_codeLength == 0, "non smart contract address only");
         _;
     }
 
@@ -182,8 +182,8 @@ contract RatScam is modularRatScam {
      * @dev sets boundaries for incoming tx
      */
     modifier isWithinLimits(uint256 _eth) {
-        require(_eth &gt;= 1000000000, &quot;too little money&quot;);
-        require(_eth &lt;= 100000000000000000000000, &quot;too much money&quot;);
+        require(_eth >= 1000000000, "too little money");
+        require(_eth <= 100000000000000000000000, "too much money");
         _;
     }
 
@@ -238,7 +238,7 @@ contract RatScam is modularRatScam {
             // use last stored affiliate code
             _affCode = plyr_[_pID].laff;
 
-            // if affiliate code was given &amp; its not the same as previously stored
+            // if affiliate code was given & its not the same as previously stored
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate
             plyr_[_pID].laff = _affCode;
@@ -302,7 +302,7 @@ contract RatScam is modularRatScam {
         // manage affiliate residuals
         uint256 _affID;
         // if no affiliate code was given or player tried to use their own, lolz
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // use last stored affiliate code
             _affID = plyr_[_pID].laff;
@@ -352,7 +352,7 @@ contract RatScam is modularRatScam {
             // use last stored affiliate code
             _affCode = plyr_[_pID].laff;
 
-            // if affiliate code was given &amp; its not the same as previously stored
+            // if affiliate code was given & its not the same as previously stored
         } else if (_affCode != plyr_[_pID].laff) {
             // update last affiliate
             plyr_[_pID].laff = _affCode;
@@ -414,7 +414,7 @@ contract RatScam is modularRatScam {
         // manage affiliate residuals
         uint256 _affID;
         // if no affiliate code was given or player tried to use their own, lolz
-        if (_affCode == &#39;&#39; || _affCode == plyr_[_pID].name)
+        if (_affCode == '' || _affCode == plyr_[_pID].name)
         {
             // use last stored affiliate code
             _affID = plyr_[_pID].laff;
@@ -458,7 +458,7 @@ contract RatScam is modularRatScam {
         uint256 _eth;
 
         // check to see if round has ended and no one has run round end yet
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (_now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // set up our tx event data
             RSdatasets.EventReturns memory _eventData_;
@@ -471,7 +471,7 @@ contract RatScam is modularRatScam {
             _eth = withdrawEarnings(_pID);
 
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // build event data
@@ -499,7 +499,7 @@ contract RatScam is modularRatScam {
             _eth = withdrawEarnings(_pID);
 
             // gib moni
-            if (_eth &gt; 0)
+            if (_eth > 0)
                 plyr_[_pID].addr.transfer(_eth);
 
             // fire withdraw event
@@ -580,7 +580,7 @@ contract RatScam is modularRatScam {
     }
     //==============================================================================
     //     _  _ _|__|_ _  _ _  .
-    //    (_|(/_ |  | (/_| _\  . (for UI &amp; viewing things on etherscan)
+    //    (_|(/_ |  | (/_| _\  . (for UI & viewing things on etherscan)
     //=====_|=======================================================================
     /**
      * @dev return the price buyer will pay for next 1 individual key.
@@ -599,14 +599,14 @@ contract RatScam is modularRatScam {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else // rounds over.  need price for new round
             return ( 75000000000000 ); // init
     }
 
     /**
-     * @dev returns time left.  dont spam this, you&#39;ll ddos yourself from your node
+     * @dev returns time left.  dont spam this, you'll ddos yourself from your node
      * provider
      * -functionhash- 0xc7e284b8
      * @return time left in seconds
@@ -622,8 +622,8 @@ contract RatScam is modularRatScam {
         // grab time
         uint256 _now = now;
 
-        if (_now &lt; round_[_rID].end)
-            if (_now &gt; round_[_rID].strt + rndGap_)
+        if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt + rndGap_)
                 return( (round_[_rID].end).sub(_now) );
             else
                 return( (round_[_rID].strt + rndGap_).sub(_now));
@@ -647,7 +647,7 @@ contract RatScam is modularRatScam {
         uint256 _rID = rID_;
 
         // if round has ended.  but round end has not been run (so contract has not distributed winnings)
-        if (now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false &amp;&amp; round_[_rID].plyr != 0)
+        if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
         {
             // if player is winner
             if (round_[_rID].plyr == _pID)
@@ -700,7 +700,7 @@ contract RatScam is modularRatScam {
      * @return current player ID in lead
      * @return current player in leads address
      * @return current player in leads name
-     * @return airdrop tracker # &amp; airdrop pot
+     * @return airdrop tracker # & airdrop pot
      */
     function getCurrentRoundInfo()
     public
@@ -780,9 +780,9 @@ contract RatScam is modularRatScam {
         uint256 _now = now;
 
         // if round is end, fire endRound
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false)
+        if (_now > round_[_rID].end && round_[_rID].ended == false)
         {
-            // end the round (distributes pot) &amp; start new round
+            // end the round (distributes pot) & start new round
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
 
@@ -824,9 +824,9 @@ contract RatScam is modularRatScam {
         uint256 _now = now;
 
         // if round is end, fire endRound
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].ended == false)
+        if (_now > round_[_rID].end && round_[_rID].ended == false)
         {
-            // end the round (distributes pot) &amp; start new round
+            // end the round (distributes pot) & start new round
             round_[_rID].ended = true;
             _eventData_ = endRound(_eventData_);
 
@@ -871,7 +871,7 @@ contract RatScam is modularRatScam {
             _eventData_ = managePlayer(_pID, _eventData_);
 
         // early round eth limiter
-        if (round_[_rID].eth &lt; 100000000000000000000 &amp;&amp; plyrRnds_[_pID][_rID].eth.add(_eth) &gt; 10000000000000000000)
+        if (round_[_rID].eth < 100000000000000000000 && plyrRnds_[_pID][_rID].eth.add(_eth) > 10000000000000000000)
         {
             uint256 _availableLimit = (10000000000000000000).sub(plyrRnds_[_pID][_rID].eth);
             uint256 _refund = _eth.sub(_availableLimit);
@@ -880,14 +880,14 @@ contract RatScam is modularRatScam {
         }
 
         // if eth left is greater than min eth allowed (sorry no pocket lint)
-        if (_eth &gt; 1000000000)
+        if (_eth > 1000000000)
         {
 
             // mint the new keys
             uint256 _keys = (round_[_rID].eth).keysRec(_eth);
 
             // if they bought at least 1 whole key
-            if (_keys &gt;= 1000000000000000000)
+            if (_keys >= 1000000000000000000)
             {
                 updateTimer(_keys, _rID);
 
@@ -900,14 +900,14 @@ contract RatScam is modularRatScam {
             }
 
             // manage airdrops
-            if (_eth &gt;= 100000000000000000)
+            if (_eth >= 100000000000000000)
             {
                 airDropTracker_++;
                 if (airdrop() == true)
                 {
                     // gib muni
                     uint256 _prize;
-                    if (_eth &gt;= 10000000000000000000)
+                    if (_eth >= 10000000000000000000)
                     {
                         // calculate prize and give it to winner
                         _prize = ((airDropPot_).mul(75)) / 100;
@@ -918,7 +918,7 @@ contract RatScam is modularRatScam {
 
                         // let event know a tier 3 prize was won
                         _eventData_.compressedData += 300000000000000000000000000000000;
-                    } else if (_eth &gt;= 1000000000000000000 &amp;&amp; _eth &lt; 10000000000000000000) {
+                    } else if (_eth >= 1000000000000000000 && _eth < 10000000000000000000) {
                         // calculate prize and give it to winner
                         _prize = ((airDropPot_).mul(50)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
@@ -928,7 +928,7 @@ contract RatScam is modularRatScam {
 
                         // let event know a tier 2 prize was won
                         _eventData_.compressedData += 200000000000000000000000000000000;
-                    } else if (_eth &gt;= 100000000000000000 &amp;&amp; _eth &lt; 1000000000000000000) {
+                    } else if (_eth >= 100000000000000000 && _eth < 1000000000000000000) {
                         // calculate prize and give it to winner
                         _prize = ((airDropPot_).mul(25)) / 100;
                         plyr_[_pID].win = (plyr_[_pID].win).add(_prize);
@@ -1001,7 +1001,7 @@ contract RatScam is modularRatScam {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].eth).keysRec(_eth) );
         else // rounds over.  need keys for new round
             return ( (_eth).keys() );
@@ -1025,7 +1025,7 @@ contract RatScam is modularRatScam {
         uint256 _now = now;
 
         // are we in a round?
-        if (_now &gt; round_[_rID].strt + rndGap_ &amp;&amp; (_now &lt;= round_[_rID].end || (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)))
+        if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
             return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
         else // rounds over.  need price for new round
             return ( (_keys).eth() );
@@ -1040,7 +1040,7 @@ contract RatScam is modularRatScam {
     function receivePlayerInfo(uint256 _pID, address _addr, bytes32 _name, uint256 _laff)
     external
     {
-        require (msg.sender == address(RatBook), &quot;only RatBook can call this function&quot;);
+        require (msg.sender == address(RatBook), "only RatBook can call this function");
         if (pIDxAddr_[_addr] != _pID)
             pIDxAddr_[_addr] = _pID;
         if (pIDxName_[_name] != _pID)
@@ -1061,7 +1061,7 @@ contract RatScam is modularRatScam {
     function receivePlayerNameList(uint256 _pID, bytes32 _name)
     external
     {
-        require (msg.sender == address(RatBook), &quot;only RatBook can call this function&quot;);
+        require (msg.sender == address(RatBook), "only RatBook can call this function");
         if(plyrNames_[_pID][_name] == false)
             plyrNames_[_pID][_name] = true;
     }
@@ -1087,14 +1087,14 @@ contract RatScam is modularRatScam {
             pIDxAddr_[msg.sender] = _pID;
             plyr_[_pID].addr = msg.sender;
 
-            if (_name != &quot;&quot;)
+            if (_name != "")
             {
                 pIDxName_[_name] = _pID;
                 plyr_[_pID].name = _name;
                 plyrNames_[_pID][_name] = true;
             }
 
-            if (_laff != 0 &amp;&amp; _laff != _pID)
+            if (_laff != 0 && _laff != _pID)
                 plyr_[_pID].laff = _laff;
 
             // set the new player bool to true
@@ -1104,7 +1104,7 @@ contract RatScam is modularRatScam {
     }
 
     /**
-     * @dev decides if round end needs to be run &amp; new round started.  and if
+     * @dev decides if round end needs to be run & new round started.  and if
      * player unmasked earnings from previously played rounds need to be moved.
      */
     function managePlayer(uint256 _pID, RSdatasets.EventReturns memory _eventData_)
@@ -1116,7 +1116,7 @@ contract RatScam is modularRatScam {
         if (plyr_[_pID].lrnd != 0)
             updateGenVault(_pID, plyr_[_pID].lrnd);
 
-        // update player&#39;s last round played
+        // update player's last round played
         plyr_[_pID].lrnd = rID_;
 
         // set the joined round bool to true
@@ -1135,7 +1135,7 @@ contract RatScam is modularRatScam {
         // setup local rID
         uint256 _rID = rID_;
 
-        // grab our winning player and team id&#39;s
+        // grab our winning player and team id's
         uint256 _winPID = round_[_rID].plyr;
 
         // grab our pot amount
@@ -1150,13 +1150,13 @@ contract RatScam is modularRatScam {
 
         // calculate ppt for round mask
         uint256 _ppt = 0;
-        if(round_[_rID].keys &gt; 0)
+        if(round_[_rID].keys > 0)
         {
             _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         }
         uint256 _dust = _gen.sub((_ppt.mul(round_[_rID].keys)) / 1000000000000000000);
         
-        if (_dust &gt; 0)
+        if (_dust > 0)
         {
             _gen = _gen.sub(_dust);
             _com = _com.add(_dust);
@@ -1197,7 +1197,7 @@ contract RatScam is modularRatScam {
     private
     {
         uint256 _earnings = calcUnMaskedEarnings(_pID, _rID);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             // put in gen vault
             plyr_[_pID].gen = _earnings.add(plyr_[_pID].gen);
@@ -1217,13 +1217,13 @@ contract RatScam is modularRatScam {
 
         // calculate time based on number of keys bought
         uint256 _newTime;
-        if (_now &gt; round_[_rID].end &amp;&amp; round_[_rID].plyr == 0)
+        if (_now > round_[_rID].end && round_[_rID].plyr == 0)
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
         else
             _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(round_[_rID].end);
 
         // compare to max and set new end time
-        if (_newTime &lt; (rndMax_).add(_now))
+        if (_newTime < (rndMax_).add(_now))
             round_[_rID].end = _newTime;
         else
             round_[_rID].end = rndMax_.add(_now);
@@ -1249,7 +1249,7 @@ contract RatScam is modularRatScam {
                 (block.number)
 
             )));
-        if((seed - ((seed / 1000) * 1000)) &lt; airDropTracker_)
+        if((seed - ((seed / 1000) * 1000)) < airDropTracker_)
             return(true);
         else
             return(false);
@@ -1270,7 +1270,7 @@ contract RatScam is modularRatScam {
 
         // decide what to do with affiliate share of fees
         // affiliate must not be self, and must have a name registered
-        if (_affID != _pID &amp;&amp; plyr_[_affID].name != &#39;&#39;) {
+        if (_affID != _pID && plyr_[_affID].name != '') {
             plyr_[_affID].aff = _aff.add(plyr_[_affID].aff);
             emit RSEvents.onAffiliatePayout(_affID, plyr_[_affID].addr, plyr_[_affID].name, _pID, _aff, now);
         } else {
@@ -1304,7 +1304,7 @@ contract RatScam is modularRatScam {
         // distribute gen share (thats what updateMasks() does) and adjust
         // balances for dust.
         uint256 _dust = updateMasks(_rID, _pID, _gen, _keys);
-        if (_dust &gt; 0)
+        if (_dust > 0)
             _gen = _gen.sub(_dust);
 
         // add eth to pot
@@ -1331,26 +1331,26 @@ contract RatScam is modularRatScam {
             tracker based on profit per share for each round, that increases in
             relevant proportion to the increase in share supply.
 
-            the player will have an additional mask that basically says &quot;based
-            on the rounds mask, my shares, and how much i&#39;ve already withdrawn,
-            how much is still owed to me?&quot;
+            the player will have an additional mask that basically says "based
+            on the rounds mask, my shares, and how much i've already withdrawn,
+            how much is still owed to me?"
         */
 
-        // calc profit per key &amp; round mask based on this buy:  (dust goes to pot)
+        // calc profit per key & round mask based on this buy:  (dust goes to pot)
         uint256 _ppt = (_gen.mul(1000000000000000000)) / (round_[_rID].keys);
         round_[_rID].mask = _ppt.add(round_[_rID].mask);
 
         // calculate player earning from their own buy (only based on the keys
-        // they just bought).  &amp; update player earnings mask
+        // they just bought).  & update player earnings mask
         uint256 _pearn = (_ppt.mul(_keys)) / (1000000000000000000);
         plyrRnds_[_pID][_rID].mask = (((round_[_rID].mask.mul(_keys)) / (1000000000000000000)).sub(_pearn)).add(plyrRnds_[_pID][_rID].mask);
 
-        // calculate &amp; return dust
+        // calculate & return dust
         return(_gen.sub((_ppt.mul(round_[_rID].keys)) / (1000000000000000000)));
     }
 
     /**
-     * @dev adds up unmasked earnings, &amp; vault earnings, sets them all to 0
+     * @dev adds up unmasked earnings, & vault earnings, sets them all to 0
      * @return earnings in wei format
      */
     function withdrawEarnings(uint256 _pID)
@@ -1362,7 +1362,7 @@ contract RatScam is modularRatScam {
 
         // from vaults
         uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        if (_earnings &gt; 0)
+        if (_earnings > 0)
         {
             plyr_[_pID].win = 0;
             plyr_[_pID].gen = 0;
@@ -1373,7 +1373,7 @@ contract RatScam is modularRatScam {
     }
 
     /**
-     * @dev prepares compression data and fires event for buy or reload tx&#39;s
+     * @dev prepares compression data and fires event for buy or reload tx's
      */
     function endTx(uint256 _pID, uint256 _eth, uint256 _keys, RSdatasets.EventReturns memory _eventData_)
     private
@@ -1409,11 +1409,11 @@ contract RatScam is modularRatScam {
         // only owner can activate
         require(
             msg.sender == adminAddress,
-            &quot;only owner can activate&quot;
+            "only owner can activate"
         );
 
         // can only be ran once
-        require(activated_ == false, &quot;ratscam already activated&quot;);
+        require(activated_ == false, "ratscam already activated");
 
         // activate the contract
         activated_ = true;
@@ -1428,7 +1428,7 @@ contract RatScam is modularRatScam {
     public
     {
         // only owner
-        require(msg.sender == adminAddress, &quot;only owner can setNextRndTime&quot;);
+        require(msg.sender == adminAddress, "only owner can setNextRndTime");
 
         rndInit_ = rndInit * 1 hours;
         rndInc_ = rndInc * 1 seconds;
@@ -1498,7 +1498,7 @@ library RSdatasets {
 
 //==============================================================================
 //  |  _      _ _ | _  .
-//  |&lt;(/_\/  (_(_||(_  .
+//  |<(/_\/  (_(_||(_  .
 //=======/======================================================================
 library RSKeysCalc {
     using SafeMath for *;
@@ -1532,7 +1532,7 @@ library RSKeysCalc {
 
     /**
      * @dev calculates how many keys would exist with given an amount of eth
-     * @param _eth eth &quot;in contract&quot;
+     * @param _eth eth "in contract"
      * @return number of keys that would exist
      */
     function keys(uint256 _eth)
@@ -1545,7 +1545,7 @@ library RSKeysCalc {
 
     /**
      * @dev calculates how much eth would be in contract given a number of keys
-     * @param _keys number of keys &quot;in contract&quot;
+     * @param _keys number of keys "in contract"
      * @return eth that would exists
      */
     function eth(uint256 _keys)
@@ -1592,24 +1592,24 @@ library NameFilter {
         uint256 _length = _temp.length;
 
         //sorry limited to 32 characters
-        require (_length &lt;= 32 &amp;&amp; _length &gt; 0, &quot;string must be between 1 and 32 characters&quot;);
+        require (_length <= 32 && _length > 0, "string must be between 1 and 32 characters");
         // make sure it doesnt start with or end with space
-        require(_temp[0] != 0x20 &amp;&amp; _temp[_length-1] != 0x20, &quot;string cannot start or end with space&quot;);
+        require(_temp[0] != 0x20 && _temp[_length-1] != 0x20, "string cannot start or end with space");
         // make sure first two characters are not 0x
         if (_temp[0] == 0x30)
         {
-            require(_temp[1] != 0x78, &quot;string cannot start with 0x&quot;);
-            require(_temp[1] != 0x58, &quot;string cannot start with 0X&quot;);
+            require(_temp[1] != 0x78, "string cannot start with 0x");
+            require(_temp[1] != 0x58, "string cannot start with 0X");
         }
 
         // create a bool to track if we have a non number character
         bool _hasNonNumber;
 
-        // convert &amp; check
-        for (uint256 i = 0; i &lt; _length; i++)
+        // convert & check
+        for (uint256 i = 0; i < _length; i++)
         {
             // if its uppercase A-Z
-            if (_temp[i] &gt; 0x40 &amp;&amp; _temp[i] &lt; 0x5b)
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
             {
                 // convert to lower case a-z
                 _temp[i] = byte(uint(_temp[i]) + 32);
@@ -1623,22 +1623,22 @@ library NameFilter {
                 // require character is a space
                     _temp[i] == 0x20 ||
                 // OR lowercase a-z
-                (_temp[i] &gt; 0x60 &amp;&amp; _temp[i] &lt; 0x7b) ||
+                (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
                 // or 0-9
-                (_temp[i] &gt; 0x2f &amp;&amp; _temp[i] &lt; 0x3a),
-                    &quot;string contains invalid characters&quot;
+                (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
                 );
                 // make sure theres not 2x spaces in a row
                 if (_temp[i] == 0x20)
-                    require( _temp[i+1] != 0x20, &quot;string cannot contain consecutive spaces&quot;);
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
 
                 // see if we have a character other than a number
-                if (_hasNonNumber == false &amp;&amp; (_temp[i] &lt; 0x30 || _temp[i] &gt; 0x39))
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
                     _hasNonNumber = true;
             }
         }
 
-        require(_hasNonNumber == true, &quot;string cannot be only numbers&quot;);
+        require(_hasNonNumber == true, "string cannot be only numbers");
 
         bytes32 _ret;
         assembly {
@@ -1671,7 +1671,7 @@ library SafeMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, &quot;SafeMath mul failed&quot;);
+        require(c / a == b, "SafeMath mul failed");
         return c;
     }
 
@@ -1683,7 +1683,7 @@ library SafeMath {
     pure
     returns (uint256)
     {
-        require(b &lt;= a, &quot;SafeMath sub failed&quot;);
+        require(b <= a, "SafeMath sub failed");
         return a - b;
     }
 
@@ -1696,7 +1696,7 @@ library SafeMath {
     returns (uint256 c)
     {
         c = a + b;
-        require(c &gt;= a, &quot;SafeMath add failed&quot;);
+        require(c >= a, "SafeMath add failed");
         return c;
     }
 
@@ -1710,7 +1710,7 @@ library SafeMath {
     {
         uint256 z = ((add(x,1)) / 2);
         y = x;
-        while (z &lt; y)
+        while (z < y)
         {
             y = z;
             z = ((add((x / z),z)) / 2);

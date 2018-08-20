@@ -31,7 +31,7 @@ contract ERC20Basic {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -85,20 +85,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -110,7 +110,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -119,7 +119,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -159,7 +159,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   /**
    * @dev Transfer tokens from one address to another
@@ -169,8 +169,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -184,7 +184,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -233,7 +233,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -273,7 +273,7 @@ contract MintableToken is StandardToken, Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="8ffdeae2ece0cfbd">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="8ffdeae2ece0cfbd">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -320,8 +320,8 @@ contract Scale is MintableToken, HasNoEther {
     //////////////////////
     // Token Information
     //////////////////////
-    string public constant name = &quot;SCALE&quot;;
-    string public constant symbol = &quot;SCALE&quot;;
+    string public constant name = "SCALE";
+    string public constant symbol = "SCALE";
     uint8 public constant  decimals = 18;
 
     ///////////////////////////////////////////////////////////
@@ -358,8 +358,8 @@ contract Scale is MintableToken, HasNoEther {
     // Total Scale currently staked
     uint public totalScaleStaked;
 
-    // Mapping of the timestamp =&gt; totalStaking that is created each time an address stakes or unstakes
-    mapping (uint =&gt; uint) totalStakingHistory;
+    // Mapping of the timestamp => totalStaking that is created each time an address stakes or unstakes
+    mapping (uint => uint) totalStakingHistory;
 
     // Variable for staking accuracy. Set to 86400 for seconds in a day so that staking gains are based on the day an account begins staking.
     uint timingVariable = 86400;
@@ -371,7 +371,7 @@ contract Scale is MintableToken, HasNoEther {
     }
 
     // Track all tokens staked
-    mapping (address =&gt; AddressStakeData) public stakeBalances;
+    mapping (address => AddressStakeData) public stakeBalances;
 
     // -- Inflation -- //
     // Inflation rate begins at 100% per year and decreases by 30% per year until it 
@@ -437,12 +437,12 @@ contract Scale is MintableToken, HasNoEther {
       lastInflationUpdate = now;
 
       // Decrease inflation rate by 30% each year
-      if (inflationRate &gt; 100) {
+      if (inflationRate > 100) {
 
         inflationRate = inflationRate.sub(300);
       }
       // Inflation rate reaches 10%. Decrease inflation rate by 0.5% from here on out until it reaches 1%.
-      else if (inflationRate &gt; 10) {
+      else if (inflationRate > 10) {
 
         inflationRate = inflationRate.sub(5);
       }
@@ -462,7 +462,7 @@ contract Scale is MintableToken, HasNoEther {
     function updateInflationRate() public {
 
       // Require 1 year to have passed for every inflation adjustment
-      require(now.sub(lastInflationUpdate) &gt;= 31536000);
+      require(now.sub(lastInflationUpdate) >= 31536000);
 
       adjustInflationRate();
 
@@ -494,12 +494,12 @@ contract Scale is MintableToken, HasNoEther {
       stake(_user, _stakeAmount);
     }
 
-    /// @dev stake function reduces the user&#39;s total available balance and adds it to their staking balance
+    /// @dev stake function reduces the user's total available balance and adds it to their staking balance
     /// @param _value how many tokens a user wants to stake
     function stake(address _user, uint256 _value) private returns (bool success) {
 
         // You can only stake as many tokens as you have
-        require(_value &lt;= balances[_user]);
+        require(_value <= balances[_user]);
         // You can only stake tokens if you have not already staked tokens
         require(stakeBalances[_user].stakeBalance == 0);
 
@@ -542,10 +542,10 @@ contract Scale is MintableToken, HasNoEther {
     function unstake() external returns (bool) {
 
         // Require that there was some amount vested
-        require(stakeBalances[msg.sender].stakeBalance &gt; 0);
+        require(stakeBalances[msg.sender].stakeBalance > 0);
 
         // Require that at least 7 timing variables have passed (days)
-        require(now.div(timingVariable).sub(stakeBalances[msg.sender].initialStakeTime) &gt;= 7);
+        require(now.div(timingVariable).sub(stakeBalances[msg.sender].initialStakeTime) >= 7);
 
         // Calculate tokens to mint
         uint _tokensToMint = calculateStakeGains(now);
@@ -579,12 +579,12 @@ contract Scale is MintableToken, HasNoEther {
       uint _nowAsTimingVariable = _now.div(timingVariable);    // Today as a unique value in unix time
       uint _initialStakeTimeInVariable = stakeBalances[msg.sender].initialStakeTime; // When the user started staking as a unique day in unix time
       uint _timePassedSinceStakeInVariable = _nowAsTimingVariable.sub(_initialStakeTimeInVariable); // How much time has passed, in days, since the user started staking.
-      uint _stakePercentages = 0; // Keeps an additive track of the user&#39;s staking percentages over time
+      uint _stakePercentages = 0; // Keeps an additive track of the user's staking percentages over time
       uint _tokensToMint = 0; // How many new Scale tokens to create
       uint _lastUsedVariable;  // Last day the totalScaleStaked was updated
 
-      // Average this msg.sender&#39;s relative percentage ownership of totalScaleStaked throughout each day since they started staking
-      for (uint i = _initialStakeTimeInVariable; i &lt; _nowAsTimingVariable; i++) {
+      // Average this msg.sender's relative percentage ownership of totalScaleStaked throughout each day since they started staking
+      for (uint i = _initialStakeTimeInVariable; i < _nowAsTimingVariable; i++) {
 
         // If the day exists add it to the percentages
         if (totalStakingHistory[i] != 0) {
@@ -603,19 +603,19 @@ contract Scale is MintableToken, HasNoEther {
 
       }
 
-        // Get the account&#39;s average percentage staked of the total stake over the course of all days they have been staking
+        // Get the account's average percentage staked of the total stake over the course of all days they have been staking
         uint _stakePercentageAverage = calculateFraction(_stakePercentages, _timePassedSinceStakeInVariable, 0);
 
-        // Calculate this account&#39;s mint rate per second while staking
+        // Calculate this account's mint rate per second while staking
         uint _finalMintRate = stakingMintRate.mul(_stakePercentageAverage);
 
         // Account for 18 decimals when calculating the amount of tokens to mint
         _finalMintRate = _finalMintRate.div(1 ether);
 
         // Calculate total tokens to be minted. Multiply by timingVariable to convert back to seconds.
-        if (_timePassedSinceStakeInVariable &gt;= 365) {
+        if (_timePassedSinceStakeInVariable >= 365) {
 
-          // Tokens were staked for the maximum amount of time, one year. Give them one year&#39;s worth of tokens. ( this limit is placed to avoid gas limits)
+          // Tokens were staked for the maximum amount of time, one year. Give them one year's worth of tokens. ( this limit is placed to avoid gas limits)
           _tokensToMint = calculateMintTotal(timingVariable.mul(365), _finalMintRate);
         }
         else {
@@ -630,7 +630,7 @@ contract Scale is MintableToken, HasNoEther {
     /// @dev set the new totalStakingHistory mapping to the current timestamp and totalScaleStaked
     function setTotalStakingHistory() private {
 
-      // Get now in terms of the variable staking accuracy (days in Scale&#39;s case)
+      // Get now in terms of the variable staking accuracy (days in Scale's case)
       uint _nowAsTimingVariable = now.div(timingVariable);
 
       // Set the totalStakingHistory as a timestamp of the totalScaleStaked today
@@ -651,7 +651,7 @@ contract Scale is MintableToken, HasNoEther {
     /// @dev allows contract owner to claim their mint
     function ownerClaim() external onlyOwner {
 
-        require(now &gt; ownerTimeLastMinted);
+        require(now > ownerTimeLastMinted);
 
         uint _timePassedSinceLastMint; // The amount of time passed since the owner claimed in seconds
         uint _tokenMintCount; // The amount of new tokens to mint
@@ -660,12 +660,12 @@ contract Scale is MintableToken, HasNoEther {
         // Calculate the number of seconds that have passed since the owner last took a claim
         _timePassedSinceLastMint = now.sub(ownerTimeLastMinted);
 
-        assert(_timePassedSinceLastMint &gt; 0);
+        assert(_timePassedSinceLastMint > 0);
 
         // Determine the token mint amount, determined from the number of seconds passed and the ownerMintRate
         _tokenMintCount = calculateMintTotal(_timePassedSinceLastMint, ownerMintRate);
 
-        // Mint the owner&#39;s tokens; this also increases totalSupply
+        // Mint the owner's tokens; this also increases totalSupply
         _mintingSuccess = mint(msg.sender, _tokenMintCount);
 
         require(_mintingSuccess);
@@ -685,7 +685,7 @@ contract Scale is MintableToken, HasNoEther {
         require(pool != address(0));
 
         // Make sure time has passed since last minted to pool
-        require(now &gt; poolTimeLastMinted);
+        require(now > poolTimeLastMinted);
         require(pool != address(0));
 
         uint _timePassedSinceLastMint; // The amount of time passed since the pool claimed in seconds
@@ -695,12 +695,12 @@ contract Scale is MintableToken, HasNoEther {
         // Calculate the number of seconds that have passed since the pool last took a claim
         _timePassedSinceLastMint = now.sub(poolTimeLastMinted);
 
-        assert(_timePassedSinceLastMint &gt; 0);
+        assert(_timePassedSinceLastMint > 0);
 
         // Determine the token mint amount, determined from the number of seconds passed and the poolMintRate
         _tokenMintCount = calculateMintTotal(_timePassedSinceLastMint, poolMintRate);
 
-        // Mint the pool&#39;s tokens; this also increases totalSupply
+        // Mint the pool's tokens; this also increases totalSupply
         _mintingSuccess = mint(pool, _tokenMintCount);
 
         require(_mintingSuccess);

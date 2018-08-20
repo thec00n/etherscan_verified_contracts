@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
 * @title Ownable
 * @dev The Ownable contract has an owner address, and provides basic authorization control
-* functions, this simplifies the implementation of &quot;user permissions&quot;.
+* functions, this simplifies the implementation of "user permissions".
 */
 contract Ownable {
  address public owner;
@@ -70,7 +70,7 @@ contract ERC20 is ERC20Basic {
 contract TokenLoot is Ownable {
 
   // FIELDS
-  /* signer address, verified in &#39;receiveTokenLoot&#39; method, can be set by owner only */
+  /* signer address, verified in 'receiveTokenLoot' method, can be set by owner only */
   address neverdieSigner;
   /* SKL token */
   ERC20 sklToken;
@@ -83,7 +83,7 @@ contract TokenLoot is Ownable {
   /* Scale token */
   ERC20 scaleToken;
   /* Nonces */
-  mapping (address =&gt; uint) public nonces;
+  mapping (address => uint) public nonces;
 
 
   // EVENTS
@@ -163,7 +163,7 @@ contract TokenLoot is Ownable {
                             bytes32 _s) {
 
     // reject if the new nonce is lower or equal to the current one
-    require(_nonce &gt; nonces[msg.sender]);
+    require(_nonce > nonces[msg.sender]);
     nonces[msg.sender] = _nonce;
 
     // verify signature
@@ -177,11 +177,11 @@ contract TokenLoot is Ownable {
     require(signer == neverdieSigner);
 
     // transer tokens
-    if (_amountSKL &gt; 0) assert(sklToken.transfer(msg.sender, _amountSKL));
-    if (_amountXP &gt; 0) assert(xpToken.transfer(msg.sender, _amountXP));
-    if (_amountGold &gt; 0) assert(goldToken.transfer(msg.sender, _amountGold));
-    if (_amountSilver &gt; 0) assert(silverToken.transfer(msg.sender, _amountSilver));
-    if (_amountScale &gt; 0) assert(scaleToken.transfer(msg.sender, _amountScale));
+    if (_amountSKL > 0) assert(sklToken.transfer(msg.sender, _amountSKL));
+    if (_amountXP > 0) assert(xpToken.transfer(msg.sender, _amountXP));
+    if (_amountGold > 0) assert(goldToken.transfer(msg.sender, _amountGold));
+    if (_amountSilver > 0) assert(silverToken.transfer(msg.sender, _amountSilver));
+    if (_amountScale > 0) assert(scaleToken.transfer(msg.sender, _amountScale));
 
     // emit event
     ReceiveLoot(msg.sender, _amountSKL, _amountXP, _amountGold, _amountSilver, _amountScale, _nonce);
@@ -199,11 +199,11 @@ contract TokenLoot is Ownable {
     uint256 allGold = goldToken.balanceOf(this);
     uint256 allSilver = silverToken.balanceOf(this);
     uint256 allScale = scaleToken.balanceOf(this);
-    if (allSKL &gt; 0) sklToken.transfer(msg.sender, allSKL);
-    if (allXP &gt; 0) xpToken.transfer(msg.sender, allXP);
-    if (allGold &gt; 0) goldToken.transfer(msg.sender, allGold);
-    if (allSilver &gt; 0) silverToken.transfer(msg.sender, allSilver);
-    if (allScale &gt; 0) scaleToken.transfer(msg.sender, allScale);
+    if (allSKL > 0) sklToken.transfer(msg.sender, allSKL);
+    if (allXP > 0) xpToken.transfer(msg.sender, allXP);
+    if (allGold > 0) goldToken.transfer(msg.sender, allGold);
+    if (allSilver > 0) silverToken.transfer(msg.sender, allSilver);
+    if (allScale > 0) scaleToken.transfer(msg.sender, allScale);
   }
 
   /// @dev kill contract, but before transfer all SKL and XP tokens 

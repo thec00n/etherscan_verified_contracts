@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 /**
 * @title Circa ICO Contract
 * @dev Circa is an ERC-20 Standar Compliant Token
-* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c6a226d627863626563226d6769604c6b616d6560226f6361">[email&#160;protected]</a>
+* @author Fares A. Akel C. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c6a226d627863626563226d6769604c6b616d6560226f6361">[email protected]</a>
 */
 
 /**
@@ -27,9 +27,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -37,7 +37,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -46,7 +46,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -70,7 +70,7 @@ contract ERC20Basic {
  * @notice This contract is administered
  */
 contract admined {
-    mapping(address =&gt; uint8) level;
+    mapping(address => uint8) level;
     //0 normal user
     //1 basic admin
     //2 master admin
@@ -87,7 +87,7 @@ contract admined {
     * @dev This modifier limits function execution to the admin by level
     */
     modifier onlyAdmin(uint8 _level) { //A modifier to define admin-only functions
-        require(level[msg.sender] &gt;= _level );
+        require(level[msg.sender] >= _level );
         _;
     }
 
@@ -139,7 +139,7 @@ contract CircaICO is admined {
     uint256 public hardCap = 640000000 * (10 ** 18); // 640M tokens (max tokens to be distributed by contract) [INFO]
     //Contract details
     address public creator;
-    string public version = &#39;1&#39;;
+    string public version = '1';
 
     bool ended = false;
 
@@ -175,7 +175,7 @@ contract CircaICO is admined {
     * @notice contribution handler
     */
     function contribute() public notFinished payable {
-        require(msg.value &lt;= 500 ether); //No whales
+        require(msg.value <= 500 ether); //No whales
 
         uint256 tokenBought = 0; //tokens bought variable
 
@@ -184,14 +184,14 @@ contract CircaICO is admined {
         //Rate of exchange depends on stage
         if (state == State.PreSale){
 
-            require(now &gt;= PreSaleStart);
+            require(now >= PreSaleStart);
 
             tokenBought = msg.value.mul(rates[0]);
 
-            if(PreSaleDistributed &lt;= 30000000 * (10**18)){
+            if(PreSaleDistributed <= 30000000 * (10**18)){
               tokenBought = tokenBought.mul(12);
               tokenBought = tokenBought.div(10); //+20%
-            } else if (PreSaleDistributed &lt;= 50000000 * (10**18)){
+            } else if (PreSaleDistributed <= 50000000 * (10**18)){
               tokenBought = tokenBought.mul(11);
               tokenBought = tokenBought.div(10); //+10%
             }
@@ -200,12 +200,12 @@ contract CircaICO is admined {
 
         } else if (state == State.MainSale){
 
-            require(now &gt;= MainSaleStart);
+            require(now >= MainSaleStart);
 
-            if(MainSaleDistributed &lt; mainSale1Limit){
+            if(MainSaleDistributed < mainSale1Limit){
               tokenBought = msg.value.mul(rates[1]);
 
-              if(MainSaleDistributed &lt;= 80000000 * (10**18)){
+              if(MainSaleDistributed <= 80000000 * (10**18)){
                 tokenBought = tokenBought.mul(12);
                 tokenBought = tokenBought.div(10); //+20%
               }
@@ -218,7 +218,7 @@ contract CircaICO is admined {
 
         totalDistributed = totalDistributed.add(tokenBought); //whole tokens sold updated
 
-        require(totalDistributed &lt;= hardCap);
+        require(totalDistributed <= hardCap);
         require(tokenReward.transfer(msg.sender, tokenBought));
 
         emit LogContributorsPayout(msg.sender, tokenBought);
@@ -233,7 +233,7 @@ contract CircaICO is admined {
     function checkIfFundingCompleteOrExpired() public {
 
         //If hardCap is reached ICO ends
-        if (totalDistributed == hardCap &amp;&amp; state != State.Successful){
+        if (totalDistributed == hardCap && state != State.Successful){
 
             state = State.Successful; //ICO becomes Successful
             completedAt = now; //ICO is complete
@@ -241,7 +241,7 @@ contract CircaICO is admined {
             emit LogFundingSuccessful(totalRaised); //we log the finish
             successful(); //and execute closure
 
-        } else if(state == State.PreSale &amp;&amp; PreSaleDistributed &gt;= PreSaleLimit){
+        } else if(state == State.PreSale && PreSaleDistributed >= PreSaleLimit){
 
             state = State.MainSale; //Once presale ends the ICO holds
 
@@ -250,9 +250,9 @@ contract CircaICO is admined {
 
     function forceNextStage() onlyAdmin(2) public {
 
-        if(state == State.PreSale &amp;&amp; now &gt; PreSaleDeadline){
+        if(state == State.PreSale && now > PreSaleDeadline){
           state = State.MainSale;
-        } else if (state == State.MainSale &amp;&amp; now &gt; MainSaleDeadline ){
+        } else if (state == State.MainSale && now > MainSaleDeadline ){
           state = State.Successful; //ICO becomes Successful
           completedAt = now; //ICO is complete
 
@@ -272,7 +272,7 @@ contract CircaICO is admined {
             ended = true;
             //If there is any token left after ico
             uint256 remanent = hardCap.sub(totalDistributed); //Total tokens to distribute - total distributed
-            //It&#39;s burned
+            //It's burned
             require(tokenReward.burnToken(remanent));
         }
         //After successful all remaining eth is send to creator

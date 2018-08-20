@@ -30,12 +30,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -53,10 +53,10 @@ contract ERC20 is ERC20Basic {
 }
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(msg.sender, _to, _value);
@@ -67,11 +67,11 @@ contract BasicToken is ERC20Basic {
   }
 }
 contract StandardToken is ERC20, BasicToken {
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -93,7 +93,7 @@ contract StandardToken is ERC20, BasicToken {
   }
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -106,8 +106,8 @@ contract StandardToken is ERC20, BasicToken {
 contract BurnableToken is StandardToken {
   event Burn(address indexed burner, uint256 value);
   function burn(uint256 _value) public {
-    require(_value &gt; 0);
-    require(_value &lt;= balances[msg.sender]);
+    require(_value > 0);
+    require(_value <= balances[msg.sender]);
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply = totalSupply.sub(_value);
@@ -115,8 +115,8 @@ contract BurnableToken is StandardToken {
   }
 }
 contract KimJCoin is BurnableToken {
-  string public constant name = &quot;KimJ Coin&quot;;
-  string public constant symbol = &quot;KJC&quot;;
+  string public constant name = "KimJ Coin";
+  string public constant symbol = "KJC";
   uint32 public constant decimals = 18;
   uint256 public constant INITIAL_SUPPLY = 20000000 *(10 ** 18);  
   address public giveAddress = 0xacc31A27A5Ce81cB7b6269003226024963016F37;
@@ -175,12 +175,12 @@ contract ICO is Ownable {
     uint256 _availableTokens = token.balanceOf(this);
     uint256 _tokens = calculateTokens(msg.value);
     uint256 _minTokens = holdTokensOnStage();
-    require(_availableTokens.sub(_tokens) &gt;= _minTokens);
+    require(_availableTokens.sub(_tokens) >= _minTokens);
     _;
   }
 
   modifier checkMinAmount() {
-    require(msg.value &gt;= minAmount);
+    require(msg.value >= minAmount);
     _;
   }
   function ICO() public {
@@ -253,13 +253,13 @@ contract ICO is Ownable {
   // 2 - sale 1
   // 3 - sale 2
   function getStatus() internal constant returns (uint256) {
-    if(now &gt; tier2EndDate) {
+    if(now > tier2EndDate) {
       return 0;
-    } else if(now &gt; tier2StartDate &amp;&amp; now &lt; tier2EndDate) {
+    } else if(now > tier2StartDate && now < tier2EndDate) {
       return 3;
-    } else if(now &gt; tier1StartDate &amp;&amp; now &lt; tier1EndDate) {
+    } else if(now > tier1StartDate && now < tier1EndDate) {
       return 2;
-    } else if(now &gt; preIcoStartDate &amp;&amp; now &lt; preIcoEndDate){
+    } else if(now > preIcoStartDate && now < preIcoEndDate){
       return 1;
     } else {
       return 0;
@@ -293,37 +293,37 @@ contract ICO is Ownable {
 
   function getStatusInfo() public view returns (string) {
     uint256 curState = getStatus();
-    if(now &gt; tier2EndDate) {
-      return &quot;ICO is over&quot;;
+    if(now > tier2EndDate) {
+      return "ICO is over";
     } else if(curState == 3) {
-      return &quot;Now ICO #2 is active&quot;;
+      return "Now ICO #2 is active";
     } else if(curState == 2) {
-      return &quot;Now ICO #1 is active&quot;;
+      return "Now ICO #1 is active";
     } else if(curState == 1) {
-      return &quot;Now Pre-ICO is active&quot;;
+      return "Now Pre-ICO is active";
     } else {
-      return &quot;The sale of tokens is stopped&quot;;
+      return "The sale of tokens is stopped";
     }
   }
 
   // burn the rest
   // keep nuc and team tokens
   function burnTokens() public onlyOwner {
-    require(now &gt; tier2EndDate);
+    require(now > tier2EndDate);
     uint256 circulating = token.totalSupply().sub(token.balanceOf(this));
 
     uint256 _teamTokens = circulating.mul(percentsTeamTokens).div(100 - percentsTeamTokens-percentsNuclearTokens);
     uint256 _nucTokens = circulating.mul(percentsNuclearTokens).div(100 - percentsTeamTokens-percentsNuclearTokens);
 
     // safety check. The math should work out, but this is here just in case
-    if (_teamTokens.add(_nucTokens)&gt;token.balanceOf(this)){
+    if (_teamTokens.add(_nucTokens)>token.balanceOf(this)){
       _nucTokens = token.balanceOf(this).sub(_teamTokens);
     }
 
     token.transfer(restricted, _teamTokens);
     token.transfer(token.AddressDefault(), _nucTokens);
     uint256 _burnTokens = token.balanceOf(this);
-    if (_burnTokens&gt;0){
+    if (_burnTokens>0){
       token.burn(_burnTokens);
     }
   }

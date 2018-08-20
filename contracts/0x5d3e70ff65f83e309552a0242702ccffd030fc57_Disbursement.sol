@@ -55,7 +55,7 @@ contract Disbursement {
             startDate = now;
     }
 
-    /// @dev Setup function sets external contracts&#39; addresses
+    /// @dev Setup function sets external contracts' addresses
     /// @param _token Token address
     function setup(Token _token)
         public
@@ -76,7 +76,7 @@ contract Disbursement {
         isSetUp
     {
         uint maxTokens = calcMaxWithdraw();
-        if (_value &gt; maxTokens)
+        if (_value > maxTokens)
             revert();
         withdrawnTokens += _value;
         token.transfer(_to, _value);
@@ -90,7 +90,7 @@ contract Disbursement {
         returns (uint)
     {
         uint maxTokens = (token.balanceOf(this) + withdrawnTokens) * (now - startDate) / disbursementPeriod;
-        if (withdrawnTokens &gt;= maxTokens || startDate &gt; now)
+        if (withdrawnTokens >= maxTokens || startDate > now)
             return 0;
         return maxTokens - withdrawnTokens;
     }

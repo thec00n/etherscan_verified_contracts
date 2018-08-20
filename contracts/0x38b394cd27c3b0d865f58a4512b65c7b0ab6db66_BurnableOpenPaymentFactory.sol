@@ -11,7 +11,7 @@
 //If the BOP is in the Open state,
 //anyone can become the worker by contributing the serviceDeposit with commit().
 //This changes the state from Open to Committed. The BOP will never return to the Open state.
-//The worker will never be changed once it&#39;s been set via commit().
+//The worker will never be changed once it's been set via commit().
 
 //In the committed state,
 //the payer can at any time choose to burn or release to the worker any amount of funds.
@@ -118,7 +118,7 @@ contract BurnableOpenPayment {
 	payable {
 		Created(this, _payer, _serviceDeposit, _autoreleaseInterval, _title);
 
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 		    //Here we use tx.origin instead of msg.sender (msg.sender is just the factory contract)
 			FundsAdded(tx.origin, msg.value);
 			amountDeposited += msg.value;
@@ -133,7 +133,7 @@ contract BurnableOpenPayment {
 
 		autoreleaseInterval = _autoreleaseInterval;
 
-		if (bytes(initialStatement).length &gt; 0)
+		if (bytes(initialStatement).length > 0)
 		    PayerStatement(initialStatement);
 	}
 
@@ -147,7 +147,7 @@ contract BurnableOpenPayment {
 	function addFunds()
 	public
 	payable {
-		require(msg.value &gt; 0);
+		require(msg.value > 0);
 
 		FundsAdded(msg.sender, msg.value);
 		amountDeposited += msg.value;
@@ -172,7 +172,7 @@ contract BurnableOpenPayment {
 	payable{
 		require(msg.value == serviceDeposit);
 
-		if (msg.value &gt; 0) {
+		if (msg.value > 0) {
 			FundsAdded(msg.sender, msg.value);
 			amountDeposited += msg.value;
 		}
@@ -250,7 +250,7 @@ contract BurnableOpenPayment {
 	public
 	onlyWorker()
 	inState(State.Committed) {
-		require(now &gt;= autoreleaseTime);
+		require(now >= autoreleaseTime);
 
         AutoreleaseTriggered();
 		internalRelease(this.balance);

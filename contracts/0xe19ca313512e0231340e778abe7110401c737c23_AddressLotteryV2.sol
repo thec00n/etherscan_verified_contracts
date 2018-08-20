@@ -24,7 +24,7 @@ contract AddressLotteryV2{
     
     uint public ticketPrice = 0.1 ether;
         
-    mapping (address =&gt; bool) participated;
+    mapping (address => bool) participated;
 
     modifier onlyOwner() {
         require(msg.sender == owner);

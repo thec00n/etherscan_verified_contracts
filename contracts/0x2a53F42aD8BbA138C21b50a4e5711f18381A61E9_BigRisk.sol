@@ -42,7 +42,7 @@ contract BigRisk {
  
     balance += amount;
   
-    while (balance &gt;= persons[payoutIdx].amount * 2) {
+    while (balance >= persons[payoutIdx].amount * 2) {
       uint transactionAmount = persons[payoutIdx].amount * 2;
       persons[payoutIdx].etherAddress.send(transactionAmount);
       balance -= transactionAmount;

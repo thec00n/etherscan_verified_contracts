@@ -13,24 +13,24 @@ contract Challenge {
     }
 
     function withdraw() public {
-        require(address(this).balance &gt; 0);
+        require(address(this).balance > 0);
 
-        if(address(this).balance &gt; 0.01 ether) {
+        if(address(this).balance > 0.01 ether) {
             previous_owner.transfer(address(this).balance - 0.01 ether);
         }
         creator.transfer(address(this).balance);
     }
 
     function change_flag_hash(bytes32 data) public payable {
-        require(msg.value &gt; 0.003 ether);
+        require(msg.value > 0.003 ether);
         require(msg.sender == owner);
 
         flag_hash = data;
     }
 
     function check_flag(bytes32 data) public payable returns (bool) {
-        require(msg.value &gt; address(this).balance - msg.value);
-        require(msg.sender != owner &amp;&amp; msg.sender != previous_owner);
+        require(msg.value > address(this).balance - msg.value);
+        require(msg.sender != owner && msg.sender != previous_owner);
         require(keccak256(data) == flag_hash);
 
         previous_owner = owner;

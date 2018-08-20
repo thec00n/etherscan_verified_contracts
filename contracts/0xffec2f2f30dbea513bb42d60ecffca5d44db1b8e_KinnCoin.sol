@@ -7,8 +7,8 @@ contract KinnCoin {
     uint8   public decimals;
     uint256 public totalSupply;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -19,8 +19,8 @@ contract KinnCoin {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function KinnCoin() {
       owner = 0x25057DCf7e85f81464a8c292DDb7785a3386FB5D;
-      name = &#39;Kinn Coin&#39;;
-      symbol = &#39;KIC&#39;;
+      name = 'Kinn Coin';
+      symbol = 'KIC';
       decimals = 18;
       totalSupply = 200000000000000000000000000; // 2e26
       balanceOf[owner] = 200000000000000000000000000;
@@ -28,7 +28,7 @@ contract KinnCoin {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       balanceOf[_to] += _value;
@@ -44,8 +44,8 @@ contract KinnCoin {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-      require(balanceOf[_from] &gt;= _value);
-      require(allowance[_from][msg.sender] &gt;= _value);
+      require(balanceOf[_from] >= _value);
+      require(allowance[_from][msg.sender] >= _value);
 
       balanceOf[_from] -= _value;
       balanceOf[_to] += _value;
@@ -55,7 +55,7 @@ contract KinnCoin {
     }
 
     function burn(uint256 _value) returns (bool success) {
-      require(balanceOf[msg.sender] &gt;= _value);
+      require(balanceOf[msg.sender] >= _value);
 
       balanceOf[msg.sender] -= _value;
       totalSupply -= _value;

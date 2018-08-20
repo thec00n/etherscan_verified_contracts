@@ -21,7 +21,7 @@ library SafeMath {
     internal constant
     returns(uint256) {
         uint256 z = x + y;
-        assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+        assert((z >= x) && (z >= y));
         return z;
     }
 
@@ -35,7 +35,7 @@ library SafeMath {
     function sub(uint256 x, uint256 y)
     internal constant
     returns(uint256) {
-        assert(x &gt;= y);
+        assert(x >= y);
         uint256 z = x - y;
         return z;
     }
@@ -56,7 +56,7 @@ library SafeMath {
     }
 
     /**
-    * @dev Parse a floating point number from String to uint, e.g. &quot;250.56&quot; to &quot;25056&quot;
+    * @dev Parse a floating point number from String to uint, e.g. "250.56" to "25056"
      */
     function parse(string s) 
     internal constant 
@@ -64,8 +64,8 @@ library SafeMath {
     {
     bytes memory b = bytes(s);
     uint result = 0;
-    for (uint i = 0; i &lt; b.length; i++) {
-        if (b[i] &gt;= 48 &amp;&amp; b[i] &lt;= 57) {
+    for (uint i = 0; i < b.length; i++) {
+        if (b[i] >= 48 && b[i] <= 57) {
             result = result * 10 + (uint(b[i]) - 48); 
         }
     }
@@ -101,8 +101,8 @@ contract Token {
  */
 contract StandardToken is Token {
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     modifier onlyPayloadSize(uint numwords) {
         assert(msg.data.length == numwords * 32 + 4);
@@ -124,7 +124,7 @@ contract StandardToken is Token {
     function transfer(address _to, uint256 _value)
     public
     returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
             balances[_to] = SafeMath.add(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
@@ -152,7 +152,7 @@ contract StandardToken is Token {
     function transferFrom(address _from, address _to, uint256 _value)
     public
     returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0 &amp;&amp; balances[_to] + _value &gt; balances[_to]) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = SafeMath.add(balances[_to], _value);
             balances[_from] = SafeMath.sub(balances[_from], _value);
             allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
@@ -182,7 +182,7 @@ contract StandardToken is Token {
      * @dev NOTE: To prevent attack vectors like the one described in [1] and discussed in [2], clients 
      * @dev SHOULD make sure to create user interfaces in such a way that they set the allowance first 
      * @dev to 0 before setting it to another value for the same spender. THOUGH The contract itself 
-     * @dev shouldn&#39;t enforce it, to allow backwards compatilibilty with contracts deployed before.
+     * @dev shouldn't enforce it, to allow backwards compatilibilty with contracts deployed before.
      * @dev [1] https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      * @dev [2] https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
      *
@@ -224,8 +224,8 @@ contract StandardToken is Token {
 contract LCDToken is StandardToken {
 
     // Token metadata
-    string public constant name = &quot;Lucyd&quot;;
-    string public constant symbol = &quot;LCD&quot;;
+    string public constant name = "Lucyd";
+    string public constant symbol = "LCD";
     uint256 public constant decimals = 18;
 
     uint256 public constant TOKEN_COMPANY_OWNED = 10 * (10**6) * 10**decimals; // 10 million LCDs
@@ -244,11 +244,11 @@ contract LCDToken is StandardToken {
     address public tokenVendor2;
 
     // Keep track of holders and icoBuyers
-    mapping (address =&gt; bool) public isHolder; // track if a user is a known token holder to the smart contract - important for payouts later
+    mapping (address => bool) public isHolder; // track if a user is a known token holder to the smart contract - important for payouts later
     address[] public holders;                  // array of all known holders - important for payouts later
 
-    // store the hashes of admins&#39; msg.data
-    mapping (address =&gt; bytes32) private multiSigHashes;
+    // store the hashes of admins' msg.data
+    mapping (address => bytes32) private multiSigHashes;
 
     // to track if management already got their tokens
     bool public managementTokensDelivered;
@@ -374,7 +374,7 @@ contract LCDToken is StandardToken {
     returns(bool success)
     {
         // check if the function is called before May 1, 2018
-        require(block.timestamp &lt;= 1525125600);
+        require(block.timestamp <= 1525125600);
 
         // Calculate the number of tokens from the given amount in cents
         uint256 tokens = SafeMath.mul(_amount, 10**decimals / 100);
@@ -399,7 +399,7 @@ contract LCDToken is StandardToken {
     returns (bool success)
     {
         // check if management tokens are already unlocked, if the function is called after March 31., 2019
-        require(block.timestamp &gt;= 1553990400);
+        require(block.timestamp >= 1553990400);
 
         // Deliver management tokens only once
         require(managementTokensDelivered == false);

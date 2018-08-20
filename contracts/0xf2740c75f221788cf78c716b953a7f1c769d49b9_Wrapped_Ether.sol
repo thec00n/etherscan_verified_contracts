@@ -9,25 +9,25 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
   function min(uint a, uint b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -44,10 +44,10 @@ contract Wrapped_Ether {
     /*Variables*/
 
     //ERC20 fields
-    string public name = &quot;Wrapped Ether&quot;;
+    string public name = "Wrapped Ether";
     uint public total_supply;
-    mapping(address =&gt; uint) internal balances;
-    mapping(address =&gt; mapping (address =&gt; uint)) internal allowed;
+    mapping(address => uint) internal balances;
+    mapping(address => mapping (address => uint)) internal allowed;
 
     /*Events*/
     event Transfer(address indexed _from, address indexed _to, uint _value);
@@ -59,13 +59,13 @@ contract Wrapped_Ether {
     *@dev This function creates tokens equal in value to the amount sent to the contract
     */
     function createToken() public payable {
-        require(msg.value &gt; 0);
+        require(msg.value > 0);
         balances[msg.sender] = balances[msg.sender].add(msg.value);
         total_supply = total_supply.add(msg.value);
     }
 
     /**
-    *@dev This function &#39;unwraps&#39; an _amount of Ether in the sender&#39;s balance by transferring 
+    *@dev This function 'unwraps' an _amount of Ether in the sender's balance by transferring 
     *Ether to them
     *@param _value The amount of the token to unwrap
     */
@@ -89,9 +89,9 @@ contract Wrapped_Ether {
     *@param _amount The amount of tokens to send
     */
     function transfer(address _to, uint _amount) public returns (bool) {
-        if (balances[msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] = balances[msg.sender] - _amount;
             balances[_to] = balances[_to] + _amount;
             emit Transfer(msg.sender, _to, _amount);
@@ -108,10 +108,10 @@ contract Wrapped_Ether {
     *@param _amount The amount of tokens to send
     */
     function transferFrom(address _from, address _to, uint _amount) public returns (bool) {
-        if (balances[_from] &gt;= _amount
-        &amp;&amp; allowed[_from][msg.sender] &gt;= _amount
-        &amp;&amp; _amount &gt; 0
-        &amp;&amp; balances[_to] + _amount &gt; balances[_to]) {
+        if (balances[_from] >= _amount
+        && allowed[_from][msg.sender] >= _amount
+        && _amount > 0
+        && balances[_to] + _amount > balances[_to]) {
             balances[_from] = balances[_from] - _amount;
             allowed[_from][msg.sender] = allowed[_from][msg.sender] - _amount;
             balances[_to] = balances[_to] + _amount;

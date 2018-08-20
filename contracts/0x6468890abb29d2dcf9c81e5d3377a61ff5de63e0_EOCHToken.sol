@@ -2,14 +2,14 @@ pragma solidity ^0.4.16;
 
 contract EOCHToken {
 
-    string public name = &quot;Everything On Chain for Health&quot;;      //  token name
-    string public symbol = &quot;EOCH&quot;;           //  token symbol
+    string public name = "Everything On Chain for Health";      //  token name
+    string public symbol = "EOCH";           //  token symbol
     uint256 public decimals = 6;            //  token digit
     uint256 constant valueFounder = 16000000000000000;
 
-    mapping (address =&gt; uint256) public balanceMap;
-    mapping (address =&gt; uint256) public frozenOf; // ##
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceMap;
+    mapping (address => uint256) public frozenOf; // ##
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool public stopped = false;
@@ -45,8 +45,8 @@ contract EOCHToken {
     }
 
     function transfer(address _to, uint256 _value) isRunning validAddress returns (bool success) {
-        require(balanceMap[msg.sender] &gt;= _value);
-        require(balanceMap[_to] + _value &gt;= balanceMap[_to]);
+        require(balanceMap[msg.sender] >= _value);
+        require(balanceMap[_to] + _value >= balanceMap[_to]);
         balanceMap[msg.sender] -= _value;
         balanceMap[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -66,17 +66,17 @@ contract EOCHToken {
         address _to_10,
         uint256 _value) isRunning validAddress isMulti returns (bool success) {
 
-        require(10 * _value &gt; 0 &amp;&amp; balanceMap[msg.sender] &gt;= 10 * _value);
-        require(balanceMap[_to_1] + _value &gt;= balanceMap[_to_1]) ;
-        require(balanceMap[_to_2] + _value &gt;= balanceMap[_to_2]) ;
-        require(balanceMap[_to_3] + _value &gt;= balanceMap[_to_3]) ;
-        require(balanceMap[_to_4] + _value &gt;= balanceMap[_to_4]) ;
-        require(balanceMap[_to_5] + _value &gt;= balanceMap[_to_5]) ;
-        require(balanceMap[_to_6] + _value &gt;= balanceMap[_to_6]) ;
-        require(balanceMap[_to_7] + _value &gt;= balanceMap[_to_7]) ;
-        require(balanceMap[_to_8] + _value &gt;= balanceMap[_to_8]) ;
-        require(balanceMap[_to_9] + _value &gt;= balanceMap[_to_9]) ;
-        require(balanceMap[_to_10] + _value &gt;= balanceMap[_to_10]) ;
+        require(10 * _value > 0 && balanceMap[msg.sender] >= 10 * _value);
+        require(balanceMap[_to_1] + _value >= balanceMap[_to_1]) ;
+        require(balanceMap[_to_2] + _value >= balanceMap[_to_2]) ;
+        require(balanceMap[_to_3] + _value >= balanceMap[_to_3]) ;
+        require(balanceMap[_to_4] + _value >= balanceMap[_to_4]) ;
+        require(balanceMap[_to_5] + _value >= balanceMap[_to_5]) ;
+        require(balanceMap[_to_6] + _value >= balanceMap[_to_6]) ;
+        require(balanceMap[_to_7] + _value >= balanceMap[_to_7]) ;
+        require(balanceMap[_to_8] + _value >= balanceMap[_to_8]) ;
+        require(balanceMap[_to_9] + _value >= balanceMap[_to_9]) ;
+        require(balanceMap[_to_10] + _value >= balanceMap[_to_10]) ;
 
         balanceMap[msg.sender] -= 10 * _value;
         balanceMap[_to_1] += _value;
@@ -94,9 +94,9 @@ contract EOCHToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress returns (bool success) {
-        require(balanceMap[_from] &gt;= _value);
-        require(balanceMap[_to] + _value &gt;= balanceMap[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceMap[_from] >= _value);
+        require(balanceMap[_to] + _value >= balanceMap[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceMap[_to] += _value;
         balanceMap[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -132,7 +132,7 @@ contract EOCHToken {
     }
 
     function burn(uint256 _value) {
-        require(balanceMap[msg.sender] &gt;= _value);
+        require(balanceMap[msg.sender] >= _value);
         balanceMap[msg.sender] -= _value;
         balanceMap[0x0] += _value;
         Transfer(msg.sender, 0x0, _value);
@@ -149,7 +149,7 @@ contract EOCHToken {
 
     function frozen(address targetAddress , uint256 value) public isOwner returns (bool success){
 
-        require(balanceMap[targetAddress] &gt;= value); // check has enough
+        require(balanceMap[targetAddress] >= value); // check has enough
 
         uint256 count = balanceMap[targetAddress] + frozenOf[targetAddress];
 
@@ -163,7 +163,7 @@ contract EOCHToken {
 
     function unfrozen(address targetAddress, uint256 value) public isOwner returns (bool success){
 
-        require(frozenOf[targetAddress] &gt;= value); // check has enough
+        require(frozenOf[targetAddress] >= value); // check has enough
 
         uint256 count = balanceMap[targetAddress] + frozenOf[targetAddress];
 

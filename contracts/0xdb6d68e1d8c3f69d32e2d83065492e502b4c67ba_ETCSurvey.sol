@@ -8,7 +8,7 @@ contract Survey {
     Devcon2Interface public devcon2Token;
 
     // Mapping from tokenId to boolean noting whether this token has responded.
-    mapping (bytes32 =&gt; bool) public hasResponded;
+    mapping (bytes32 => bool) public hasResponded;
     
     // The timestamp when this survey will end.
     uint public surveyEndAt;
@@ -24,7 +24,7 @@ contract Survey {
 
     // Histogram of the responses as a mapping from option index to number of
     // responses for that option.
-    mapping (uint =&gt; uint) public responseCounts;
+    mapping (uint => uint) public responseCounts;
 
     // Total number of responses.
     uint public numResponses;
@@ -41,7 +41,7 @@ contract Survey {
         devcon2Token = Devcon2Interface(tokenAddress);
         question = _question;
         numResponseOptions = _responseOptions.length;
-        for (uint i=0; i &lt; numResponseOptions; i++) {
+        for (uint i=0; i < numResponseOptions; i++) {
             responseOptions.push(_responseOptions[i]);
         }
         surveyEndAt = now + duration;
@@ -50,8 +50,8 @@ contract Survey {
     /// @dev Respond to the survey
     /// @param responseId Integer index of the response option being submitted.
     function respond(uint responseId) returns (bool) {
-        // Check our survey hasn&#39;t ended.
-        if (now &gt;= surveyEndAt) return false;
+        // Check our survey hasn't ended.
+        if (now >= surveyEndAt) return false;
 
         // Only allow token holders
         if (!devcon2Token.isTokenOwner(msg.sender)) return false;
@@ -69,7 +69,7 @@ contract Survey {
         if (hasResponded[tokenId]) return false;
 
         // verify the response is valid
-        if (responseId &gt;= responseOptions.length) return false;
+        if (responseId >= responseOptions.length) return false;
 
         responseCounts[responseId] += 1;
 
@@ -94,14 +94,14 @@ contract MainnetSurvey is Survey {
 contract ETCSurvey is MainnetSurvey {
     function ETCSurvey() MainnetSurvey(
             2 weeks,
-            &quot;Do plan to pursue any development or involvement on the Ethereum Classic blockchain&quot;,
+            "Do plan to pursue any development or involvement on the Ethereum Classic blockchain",
             _options
         )
     {
         bytes32[] memory _options = new bytes32[](4);
-        _options[0] = &quot;No Answer&quot;;
-        _options[1] = &quot;Yes&quot;;
-        _options[2] = &quot;No&quot;;
-        _options[3] = &quot;Undecided&quot;;
+        _options[0] = "No Answer";
+        _options[1] = "Yes";
+        _options[2] = "No";
+        _options[3] = "Undecided";
     }
 }

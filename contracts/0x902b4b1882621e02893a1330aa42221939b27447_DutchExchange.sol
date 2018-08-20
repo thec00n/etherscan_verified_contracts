@@ -65,15 +65,15 @@ contract DSMath {
      */
 
     function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
@@ -81,10 +81,10 @@ contract DSMath {
     }
 
     function min(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function max(uint256 x, uint256 y) constant internal returns (uint256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -93,15 +93,15 @@ contract DSMath {
 
 
     function hadd(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x + y) &gt;= x);
+        assert((z = x + y) >= x);
     }
 
     function hsub(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x - y) &lt;= x);
+        assert((z = x - y) <= x);
     }
 
     function hmul(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        assert((z = x * y) &gt;= x);
+        assert((z = x * y) >= x);
     }
 
     function hdiv(uint128 x, uint128 y) constant internal returns (uint128 z) {
@@ -109,10 +109,10 @@ contract DSMath {
     }
 
     function hmin(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function hmax(uint128 x, uint128 y) constant internal returns (uint128 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
 
@@ -121,10 +121,10 @@ contract DSMath {
      */
 
     function imin(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &lt;= y ? x : y;
+        return x <= y ? x : y;
     }
     function imax(int256 x, int256 y) constant internal returns (int256 z) {
-        return x &gt;= y ? x : y;
+        return x >= y ? x : y;
     }
 
     /*
@@ -179,10 +179,10 @@ contract DSMath {
     }
 
     function rpow(uint128 x, uint64 n) constant internal returns (uint128 z) {
-        // This famous algorithm is called &quot;exponentiation by squaring&quot;
+        // This famous algorithm is called "exponentiation by squaring"
         // and calculates x^n with x as fixed-point and n as regular unsigned.
         //
-        // It&#39;s O(log n), instead of O(n) for naive repeated multiplication.
+        // It's O(log n), instead of O(n) for naive repeated multiplication.
         //
         // These facts are why it works:
         //
@@ -275,8 +275,8 @@ contract DSValue is DSThing {
 // File: contracts/Oracle/Medianizer.sol
 
 contract Medianizer is DSValue {
-    mapping (bytes12 =&gt; address) public values;
-    mapping (address =&gt; bytes12) public indexes;
+    mapping (bytes12 => address) public values;
+    mapping (address => bytes12) public indexes;
     bytes12 public next = 0x1;
 
     uint96 public min = 0x1;
@@ -291,7 +291,7 @@ contract Medianizer is DSValue {
     function set(bytes12 pos, address wat) note auth {
         if (pos == 0x0) throw;
 
-        if (wat != 0 &amp;&amp; indexes[wat] != 0) throw;
+        if (wat != 0 && indexes[wat] != 0) throw;
 
         indexes[values[pos]] = 0; // Making sure to remove a possible existing address in that position
 
@@ -331,18 +331,18 @@ contract Medianizer is DSValue {
     function compute() constant returns (bytes32, bool) {
         bytes32[] memory wuts = new bytes32[](uint96(next) - 1);
         uint96 ctr = 0;
-        for (uint96 i = 1; i &lt; uint96(next); i++) {
+        for (uint96 i = 1; i < uint96(next); i++) {
             if (values[bytes12(i)] != 0) {
                 var (wut, wuz) = DSValue(values[bytes12(i)]).peek();
                 if (wuz) {
-                    if (ctr == 0 || wut &gt;= wuts[ctr - 1]) {
+                    if (ctr == 0 || wut >= wuts[ctr - 1]) {
                         wuts[ctr] = wut;
                     } else {
                         uint96 j = 0;
-                        while (wut &gt;= wuts[j]) {
+                        while (wut >= wuts[j]) {
                             j++;
                         }
-                        for (uint96 k = ctr; k &gt; j; k--) {
+                        for (uint96 k = ctr; k > j; k--) {
                             wuts[k] = wuts[k - 1];
                         }
                         wuts[j] = wut;
@@ -352,7 +352,7 @@ contract Medianizer is DSValue {
             }
         }
 
-        if (ctr &lt; min) return (val, false);
+        if (ctr < min) return (val, false);
 
         bytes32 value;
         if (ctr % 2 == 0) {
@@ -373,11 +373,11 @@ contract Medianizer is DSValue {
 
 // Copyright (C) 2017  DappHub, LLC
 
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;).
+// Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
 
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).
 
 
@@ -390,13 +390,13 @@ contract PriceFeed is DSThing {
     function peek() public view
         returns (bytes32, bool)
     {
-        return (bytes32(val), now &lt; zzz);
+        return (bytes32(val), now < zzz);
     }
 
     function read() public view
         returns (bytes32)
     {
-        assert(now &lt; zzz);
+        assert(now < zzz);
         return bytes32(val);
     }
 
@@ -404,7 +404,7 @@ contract PriceFeed is DSThing {
     {
         val = val_;
         zzz = zzz_;
-        bool ret = med_.call(bytes4(keccak256(&quot;poke()&quot;)));
+        bool ret = med_.call(bytes4(keccak256("poke()")));
         ret;
     }
 
@@ -438,7 +438,7 @@ contract PriceOracleInterface {
     }
 
     /// @dev constructor of the contract
-    /// @param _priceFeedSource address of price Feed Source -&gt; should be maker feeds Medianizer contract
+    /// @param _priceFeedSource address of price Feed Source -> should be maker feeds Medianizer contract
     function PriceOracleInterface(
         address _owner,
         address _priceFeedSource
@@ -488,7 +488,7 @@ contract PriceOracleInterface {
         // even if the price is compromised
         uint priceUint = uint256(price)/(1 ether);
         if (priceUint == 0) return 1;
-        if (priceUint &gt; 1000000) return 1000000; 
+        if (priceUint > 1000000) return 1000000; 
         return priceUint;
     }  
 }
@@ -496,8 +496,8 @@ contract PriceOracleInterface {
 // File: @gnosis.pm/util-contracts/contracts/Math.sol
 
 /// @title Math library - Allows calculation of logarithmic and exponential functions
-/// @author Alan Lu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcbdb0bdb2f2b0a99cbbb2b3afb5aff2acb1">[email&#160;protected]</a>&gt;
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a595e4f4c4b446a4d4445594359045a47">[email&#160;protected]</a>&gt;
+/// @author Alan Lu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcbdb0bdb2f2b0a99cbbb2b3afb5aff2acb1">[email protected]</a>>
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a595e4f4c4b446a4d4445594359045a47">[email protected]</a>>
 library Math {
 
     /*
@@ -519,21 +519,21 @@ library Math {
         pure
         returns (uint)
     {
-        // revert if x is &gt; MAX_POWER, where
+        // revert if x is > MAX_POWER, where
         // MAX_POWER = int(mp.floor(mp.log(mpf(2**256 - 1) / ONE) * ONE))
-        require(x &lt;= 2454971259878909886679);
+        require(x <= 2454971259878909886679);
         // return 0 if exp(x) is tiny, using
         // MIN_POWER = int(mp.floor(mp.log(mpf(1) / ONE) * ONE))
-        if (x &lt; -818323753292969962227)
+        if (x < -818323753292969962227)
             return 0;
-        // Transform so that e^x -&gt; 2^x
+        // Transform so that e^x -> 2^x
         x = x * int(ONE) / int(LN2);
         // 2^x = 2^whole(x) * 2^frac(x)
         //       ^^^^^^^^^^ is a bit shift
         // so Taylor expand on z = frac(x)
         int shift;
         uint z;
-        if (x &gt;= 0) {
+        if (x >= 0) {
             shift = x / int(ONE);
             z = uint(x % int(ONE));
         }
@@ -544,10 +544,10 @@ library Math {
         // 2^x = 1 + (ln 2) x + (ln 2)^2/2! x^2 + ...
         //
         // Can generate the z coefficients using mpmath and the following lines
-        // &gt;&gt;&gt; from mpmath import mp
-        // &gt;&gt;&gt; mp.dps = 100
-        // &gt;&gt;&gt; ONE =  0x10000000000000000
-        // &gt;&gt;&gt; print(&#39;\n&#39;.join(hex(int(mp.log(2)**i / mp.factorial(i) * ONE)) for i in range(1, 7)))
+        // >>> from mpmath import mp
+        // >>> mp.dps = 100
+        // >>> ONE =  0x10000000000000000
+        // >>> print('\n'.join(hex(int(mp.log(2)**i / mp.factorial(i) * ONE)) for i in range(1, 7)))
         // 0xb17217f7d1cf79ab
         // 0x3d7f7bff058b1d50
         // 0xe35846b82505fc5
@@ -587,13 +587,13 @@ library Math {
         result += 0xe1b7 * zpow / ONE;
         zpow = zpow * z / ONE;
         result += 0x9c7 * zpow / ONE;
-        if (shift &gt;= 0) {
-            if (result &gt;&gt; (256-shift) &gt; 0)
+        if (shift >= 0) {
+            if (result >> (256-shift) > 0)
                 return (2**256-1);
-            return result &lt;&lt; shift;
+            return result << shift;
         }
         else
-            return result &gt;&gt; (-shift);
+            return result >> (-shift);
     }
 
     /// @dev Returns natural logarithm value of given x
@@ -604,16 +604,16 @@ library Math {
         pure
         returns (int)
     {
-        require(x &gt; 0);
+        require(x > 0);
         // binary search for floor(log2(x))
         int ilog2 = floorLog2(x);
         int z;
-        if (ilog2 &lt; 0)
-            z = int(x &lt;&lt; uint(-ilog2));
+        if (ilog2 < 0)
+            z = int(x << uint(-ilog2));
         else
-            z = int(x &gt;&gt; uint(ilog2));
+            z = int(x >> uint(ilog2));
         // z = x * 2^-⌊log₂x⌋
-        // so 1 &lt;= z &lt; 2
+        // so 1 <= z < 2
         // and ln z = ln x - ⌊log₂x⌋/log₂e
         // so just compute ln z using artanh series
         // and calculate ln x from that
@@ -657,13 +657,13 @@ library Math {
         lo = -64;
         int hi = 193;
         // I use a shift here instead of / 2 because it floors instead of rounding towards 0
-        int mid = (hi + lo) &gt;&gt; 1;
-        while((lo + 1) &lt; hi) {
-            if (mid &lt; 0 &amp;&amp; x &lt;&lt; uint(-mid) &lt; ONE || mid &gt;= 0 &amp;&amp; x &gt;&gt; uint(mid) &lt; ONE)
+        int mid = (hi + lo) >> 1;
+        while((lo + 1) < hi) {
+            if (mid < 0 && x << uint(-mid) < ONE || mid >= 0 && x >> uint(mid) < ONE)
                 hi = mid;
             else
                 lo = mid;
-            mid = (hi + lo) &gt;&gt; 1;
+            mid = (hi + lo) >> 1;
         }
     }
 
@@ -675,10 +675,10 @@ library Math {
         pure
         returns (int maxNum)
     {
-        require(nums.length &gt; 0);
+        require(nums.length > 0);
         maxNum = -2**255;
-        for (uint i = 0; i &lt; nums.length; i++)
-            if (nums[i] &gt; maxNum)
+        for (uint i = 0; i < nums.length; i++)
+            if (nums[i] > maxNum)
                 maxNum = nums[i];
     }
 
@@ -691,7 +691,7 @@ library Math {
         pure
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -703,7 +703,7 @@ library Math {
         pure
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -766,7 +766,7 @@ library Math {
         pure
         returns (bool)
     {
-        return (b &gt;= 0 &amp;&amp; a + b &gt;= a) || (b &lt; 0 &amp;&amp; a + b &lt; a);
+        return (b >= 0 && a + b >= a) || (b < 0 && a + b < a);
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -778,7 +778,7 @@ library Math {
         pure
         returns (bool)
     {
-        return (b &gt;= 0 &amp;&amp; a - b &lt;= a) || (b &lt; 0 &amp;&amp; a - b &gt; a);
+        return (b >= 0 && a - b <= a) || (b < 0 && a - b > a);
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -836,13 +836,13 @@ library Math {
 // File: @gnosis.pm/util-contracts/contracts/Proxy.sol
 
 /// @title Proxied - indicates that a contract will be proxied. Also defines storage requirements for Proxy.
-/// @author Alan Lu - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91f0fdf0ffd1f6fffee2f8e2bfe1fc">[email&#160;protected]</a>&gt;
+/// @author Alan Lu - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91f0fdf0ffd1f6fffee2f8e2bfe1fc">[email protected]</a>>
 contract Proxied {
     address public masterCopy;
 }
 
 /// @title Proxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.
-/// @author Stefan George - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1063647576717e50777e7f6379633e607d">[email&#160;protected]</a>&gt;
+/// @author Stefan George - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1063647576717e50777e7f6379633e607d">[email protected]</a>>
 contract Proxy is Proxied {
     /// @dev Constructor function sets address of master copy contract.
     /// @param _masterCopy Master copy address.
@@ -903,8 +903,8 @@ contract StandardTokenData {
     /*
      *  Storage
      */
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowances;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowances;
     uint totalTokens;
 }
 
@@ -915,7 +915,7 @@ contract StandardToken is Token, StandardTokenData {
     /*
      *  Public functions
      */
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success
+    /// @dev Transfers sender's tokens to a given address. Returns success
     /// @param to Address of token receiver
     /// @param value Number of tokens to transfer
     /// @return Was transfer successful?
@@ -1003,8 +1003,8 @@ contract StandardToken is Token, StandardTokenData {
 
 /// @title Standard token contract with overflow protection
 contract TokenFRT is StandardToken {
-    string public constant symbol = &quot;MGN&quot;;
-    string public constant name = &quot;Magnolia Token&quot;;
+    string public constant symbol = "MGN";
+    string public constant name = "Magnolia Token";
     uint8 public constant decimals = 18;
 
     struct unlockedToken {
@@ -1019,11 +1019,11 @@ contract TokenFRT is StandardToken {
     address public owner;
     address public minter;
 
-    // user =&gt; unlockedToken
-    mapping (address =&gt; unlockedToken) public unlockedTokens;
+    // user => unlockedToken
+    mapping (address => unlockedToken) public unlockedTokens;
 
-    // user =&gt; amount
-    mapping (address =&gt; uint) public lockedTokenBalances;
+    // user => amount
+    mapping (address => uint) public lockedTokenBalances;
 
     /*
      *  Public functions
@@ -1102,7 +1102,7 @@ contract TokenFRT is StandardToken {
         // Adjust amount by locked balances
         amount = min(amount, lockedTokenBalances[msg.sender]);
 
-        if (amount &gt; 0) {
+        if (amount > 0) {
             // Update state variables
             lockedTokenBalances[msg.sender] = sub(lockedTokenBalances[msg.sender], amount);
             unlockedTokens[msg.sender].amountUnlocked =  add(unlockedTokens[msg.sender].amountUnlocked, amount);
@@ -1117,7 +1117,7 @@ contract TokenFRT is StandardToken {
     function withdrawUnlockedTokens()
         public
     {
-        require(unlockedTokens[msg.sender].withdrawalTime &lt; now);
+        require(unlockedTokens[msg.sender].withdrawalTime < now);
         balances[msg.sender] = add(balances[msg.sender], unlockedTokens[msg.sender].amountUnlocked);
         unlockedTokens[msg.sender].amountUnlocked = 0;
     }
@@ -1127,7 +1127,7 @@ contract TokenFRT is StandardToken {
         pure
         returns (uint)
     {
-        if (a &lt; b) {
+        if (a < b) {
             return a;
         } else {
             return b;
@@ -1142,7 +1142,7 @@ contract TokenFRT is StandardToken {
         constant
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -1154,7 +1154,7 @@ contract TokenFRT is StandardToken {
         constant
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
 
@@ -1190,8 +1190,8 @@ contract TokenFRT is StandardToken {
 contract TokenOWL is Proxied, StandardToken {
     using Math for *;
 
-    string public constant name = &quot;OWL Token&quot;;
-    string public constant symbol = &quot;OWL&quot;;
+    string public constant name = "OWL Token";
+    string public constant symbol = "OWL";
     uint8 public constant decimals = 18;
 
     struct masterCopyCountdownType {
@@ -1233,7 +1233,7 @@ contract TokenOWL is Proxied, StandardToken {
         onlyCreator()
     {   
         require(address(masterCopyCountdown.masterCopy) != 0);
-        require(now &gt;= masterCopyCountdown.timeWhenAvailable);
+        require(now >= masterCopyCountdown.timeWhenAvailable);
 
         // Update masterCopy
         masterCopy = masterCopyCountdown.masterCopy;
@@ -1272,7 +1272,7 @@ contract TokenOWL is Proxied, StandardToken {
     function mintOWL(address to, uint amount)
         public
     {
-        require(minter != 0 &amp;&amp; msg.sender == minter);
+        require(minter != 0 && msg.sender == minter);
         balances[to] = balances[to].add(amount);
         totalTokens = totalTokens.add(amount);
         emit Minted(to, amount);
@@ -1294,8 +1294,8 @@ contract TokenOWL is Proxied, StandardToken {
 // File: contracts/DutchExchange.sol
 
 /// @title Dutch Exchange - exchange token pairs with the clever mechanism of the dutch auction
-/// @author Alex Herrmann - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3d2dfd6cbf3d4dddcc0dac09dc3de">[email&#160;protected]</a>&gt;
-/// @author Dominik Teiml - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a0e0507030403012a0d0405190319441a07">[email&#160;protected]</a>&gt;
+/// @author Alex Herrmann - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3d2dfd6cbf3d4dddcc0dac09dc3de">[email protected]</a>>
+/// @author Dominik Teiml - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a0e0507030403012a0d0405190319441a07">[email protected]</a>>
 
 contract DutchExchange is Proxied {
     address masterCopy;
@@ -1314,7 +1314,7 @@ contract DutchExchange is Proxied {
     // Time when new masterCopy is updatabale
     uint public masterCopyCountdown;
 
-    // &gt; Storage
+    // > Storage
     // auctioneer has the power to manage some variables
     address public auctioneer;
     // Ether ERC-20 token
@@ -1334,41 +1334,41 @@ contract DutchExchange is Proxied {
     TokenOWL public owlToken;
 
     // mapping that stores the tokens, which are approved
-    // Token =&gt; approved
+    // Token => approved
     // Only tokens approved by auctioneer generate frtToken tokens
-    mapping (address =&gt; bool) public approvedTokens;
+    mapping (address => bool) public approvedTokens;
 
     // For the following two mappings, there is one mapping for each token pair
     // The order which the tokens should be called is smaller, larger
     // These variables should never be called directly! They have getters below
-    // Token =&gt; Token =&gt; index
-    mapping (address =&gt; mapping (address =&gt; uint)) public latestAuctionIndices;
-    // Token =&gt; Token =&gt; time
-    mapping (address =&gt; mapping (address =&gt; uint)) public auctionStarts;
+    // Token => Token => index
+    mapping (address => mapping (address => uint)) public latestAuctionIndices;
+    // Token => Token => time
+    mapping (address => mapping (address => uint)) public auctionStarts;
 
-    // Token =&gt; Token =&gt; auctionIndex =&gt; price
-    mapping (address =&gt; mapping (address =&gt; mapping (uint =&gt; fraction))) public closingPrices;
+    // Token => Token => auctionIndex => price
+    mapping (address => mapping (address => mapping (uint => fraction))) public closingPrices;
 
-    // Token =&gt; Token =&gt; amount
-    mapping (address =&gt; mapping (address =&gt; uint)) public sellVolumesCurrent;
-    // Token =&gt; Token =&gt; amount
-    mapping (address =&gt; mapping (address =&gt; uint)) public sellVolumesNext;
-    // Token =&gt; Token =&gt; amount
-    mapping (address =&gt; mapping (address =&gt; uint)) public buyVolumes;
+    // Token => Token => amount
+    mapping (address => mapping (address => uint)) public sellVolumesCurrent;
+    // Token => Token => amount
+    mapping (address => mapping (address => uint)) public sellVolumesNext;
+    // Token => Token => amount
+    mapping (address => mapping (address => uint)) public buyVolumes;
 
-    // Token =&gt; user =&gt; amount
-    // balances stores a user&#39;s balance in the DutchX
-    mapping (address =&gt; mapping (address =&gt; uint)) public balances;
+    // Token => user => amount
+    // balances stores a user's balance in the DutchX
+    mapping (address => mapping (address => uint)) public balances;
 
-    // Token =&gt; Token =&gt; auctionIndex =&gt; amount
-    mapping (address =&gt; mapping (address =&gt; mapping (uint =&gt; uint))) public extraTokens;
+    // Token => Token => auctionIndex => amount
+    mapping (address => mapping (address => mapping (uint => uint))) public extraTokens;
 
-    // Token =&gt; Token =&gt;  auctionIndex =&gt; user =&gt; amount
-    mapping (address =&gt; mapping (address =&gt; mapping (uint =&gt; mapping (address =&gt; uint)))) public sellerBalances;
-    mapping (address =&gt; mapping (address =&gt; mapping (uint =&gt; mapping (address =&gt; uint)))) public buyerBalances;
-    mapping (address =&gt; mapping (address =&gt; mapping (uint =&gt; mapping (address =&gt; uint)))) public claimedAmounts;
+    // Token => Token =>  auctionIndex => user => amount
+    mapping (address => mapping (address => mapping (uint => mapping (address => uint)))) public sellerBalances;
+    mapping (address => mapping (address => mapping (uint => mapping (address => uint)))) public buyerBalances;
+    mapping (address => mapping (address => mapping (uint => mapping (address => uint)))) public claimedAmounts;
 
-    // &gt; Modifiers
+    // > Modifiers
     modifier onlyAuctioneer() {
         // Only allows auctioneer to proceed
         // R1
@@ -1394,7 +1394,7 @@ contract DutchExchange is Proxied {
     )
         public
     {
-        // Make sure contract hasn&#39;t been initialised
+        // Make sure contract hasn't been initialised
         require(ethToken == 0);
 
         // Validates inputs
@@ -1440,7 +1440,7 @@ contract DutchExchange is Proxied {
         onlyAuctioneer
     {
         require(address(newProposalEthUSDOracle) != address(0));
-        require(oracleInterfaceCountdown &lt; now);
+        require(oracleInterfaceCountdown < now);
         ethUSDOracle = newProposalEthUSDOracle;
         newProposalEthUSDOracle = PriceOracleInterface(0);
     }
@@ -1470,7 +1470,7 @@ contract DutchExchange is Proxied {
         public
         onlyAuctioneer
      {  
-        for(uint i = 0; i &lt; token.length; i++) {
+        for(uint i = 0; i < token.length; i++) {
             approvedTokens[token[i]] = approved;
             Approval(token[i], approved);
         }
@@ -1495,7 +1495,7 @@ contract DutchExchange is Proxied {
         onlyAuctioneer
     {
         require(newMasterCopy != address(0));
-        require(now &gt;= masterCopyCountdown);
+        require(now >= masterCopyCountdown);
 
         // Update masterCopy
         masterCopy = newMasterCopy;
@@ -1527,10 +1527,10 @@ contract DutchExchange is Proxied {
         require(getAuctionIndex(token1, token2) == 0);
 
         // R5: to prevent overflow
-        require(initialClosingPriceNum &lt; 10 ** 18);
+        require(initialClosingPriceNum < 10 ** 18);
 
         // R6
-        require(initialClosingPriceDen &lt; 10 ** 18);
+        require(initialClosingPriceDen < 10 ** 18);
 
         setAuctionIndex(token1, token2);
 
@@ -1538,10 +1538,10 @@ contract DutchExchange is Proxied {
         token2Funding = min(token2Funding, balances[token2][msg.sender]);
 
         // R7
-        require(token1Funding &lt; 10 ** 30);
+        require(token1Funding < 10 ** 30);
 
         // R8
-        require(token2Funding &lt; 10 ** 30);
+        require(token2Funding < 10 ** 30);
 
         uint fundedValueUSD;
         uint ethUSDPrice = ethUSDOracle.getUSDETHPrice();
@@ -1563,7 +1563,7 @@ contract DutchExchange is Proxied {
         }
 
         // R5
-        require(fundedValueUSD &gt;= thresholdNewTokenPair);
+        require(fundedValueUSD >= thresholdNewTokenPair);
 
         // Save prices of opposite auctions
         closingPrices[token1][token2][0] = fraction(initialClosingPriceNum, initialClosingPriceDen);
@@ -1587,10 +1587,10 @@ contract DutchExchange is Proxied {
     {
         // We require there to exist ethToken-Token auctions
         // R3.1
-        require(getAuctionIndex(token1, ethTokenMem) &gt; 0);
+        require(getAuctionIndex(token1, ethTokenMem) > 0);
 
         // R3.2
-        require(getAuctionIndex(token2, ethTokenMem) &gt; 0);
+        require(getAuctionIndex(token2, ethTokenMem) > 0);
 
         // Price of Token 1
         uint priceToken1Num;
@@ -1665,7 +1665,7 @@ contract DutchExchange is Proxied {
         amount = min(amount, usersBalance);
 
         // R1
-        require(amount &gt; 0);
+        require(amount > 0);
 
         // R2
         require(Token(tokenAddress).transfer(msg.sender, amount));
@@ -1693,15 +1693,15 @@ contract DutchExchange is Proxied {
         amount = min(amount, balances[sellToken][msg.sender]);
 
         // R1
-        require(amount &gt; 0);
+        require(amount > 0);
         
         // R2
         uint latestAuctionIndex = getAuctionIndex(sellToken, buyToken);
-        require(latestAuctionIndex &gt; 0);
+        require(latestAuctionIndex > 0);
       
         // R3
         uint auctionStart = getAuctionStart(sellToken, buyToken);
-        if (auctionStart == AUCTION_START_WAITING_FOR_FUNDING || auctionStart &gt; now) {
+        if (auctionStart == AUCTION_START_WAITING_FOR_FUNDING || auctionStart > now) {
             // C1: We are in the 10 minute buffer period
             // OR waiting for an auction to receive sufficient sellVolume
             // Auction has already cleared, and index has been incremented
@@ -1714,7 +1714,7 @@ contract DutchExchange is Proxied {
             }
 
             // R1.2
-            require(add(sellVolumesCurrent[sellToken][buyToken], amount) &lt; 10 ** 30);
+            require(add(sellVolumesCurrent[sellToken][buyToken], amount) < 10 ** 30);
         } else {
             // C2
             // R2.1: Sell orders must go to next auction
@@ -1725,7 +1725,7 @@ contract DutchExchange is Proxied {
             }
 
             // R2.2
-            require(add(sellVolumesNext[sellToken][buyToken], amount) &lt; 10 ** 30);
+            require(add(sellVolumesNext[sellToken][buyToken], amount) < 10 ** 30);
         }
 
         // Fee mechanism, fees are added to extraTokens
@@ -1736,7 +1736,7 @@ contract DutchExchange is Proxied {
         uint newSellerBal = add(sellerBalances[sellToken][buyToken][auctionIndex][msg.sender], amountAfterFee);
         sellerBalances[sellToken][buyToken][auctionIndex][msg.sender] = newSellerBal;
 
-        if (auctionStart == AUCTION_START_WAITING_FOR_FUNDING || auctionStart &gt; now) {
+        if (auctionStart == AUCTION_START_WAITING_FOR_FUNDING || auctionStart > now) {
             // C1
             uint sellVolumeCurrent = sellVolumesCurrent[sellToken][buyToken];
             sellVolumesCurrent[sellToken][buyToken] = add(sellVolumeCurrent, amountAfterFee);
@@ -1770,22 +1770,22 @@ contract DutchExchange is Proxied {
         uint auctionStart = getAuctionStart(sellToken, buyToken);
 
         // R2
-        require(auctionStart &lt;= now);
+        require(auctionStart <= now);
 
         // R4
         require(auctionIndex == getAuctionIndex(sellToken, buyToken));
         
         // R5: auction must not be in waiting period
-        require(auctionStart &gt; AUCTION_START_WAITING_FOR_FUNDING);
+        require(auctionStart > AUCTION_START_WAITING_FOR_FUNDING);
         
         // R6: auction must be funded
-        require(sellVolumesCurrent[sellToken][buyToken] &gt; 0);
+        require(sellVolumesCurrent[sellToken][buyToken] > 0);
         
         uint buyVolume = buyVolumes[sellToken][buyToken];
         amount = min(amount, balances[buyToken][msg.sender]);
 
         // R7
-        require(add(buyVolume, amount) &lt; 10 ** 30);
+        require(add(buyVolume, amount) < 10 ** 30);
         
         // Overbuy is when a part of a buy order clears an auction
         // In that case we only process the part before the overbuy
@@ -1799,8 +1799,8 @@ contract DutchExchange is Proxied {
         uint outstandingVolume = atleastZero(int(mul(sellVolume, num) / den - buyVolume));
 
         uint amountAfterFee;
-        if (amount &lt; outstandingVolume) {
-            if (amount &gt; 0) {
+        if (amount < outstandingVolume) {
+            if (amount > 0) {
                 amountAfterFee = settleFee(buyToken, sellToken, auctionIndex, amount);
             }
         } else {
@@ -1808,8 +1808,8 @@ contract DutchExchange is Proxied {
             amountAfterFee = outstandingVolume;
         }
 
-        // Here we could also use outstandingVolume or amountAfterFee, it doesn&#39;t matter
-        if (amount &gt; 0) {
+        // Here we could also use outstandingVolume or amountAfterFee, it doesn't matter
+        if (amount > 0) {
             // Update variables
             balances[buyToken][msg.sender] = sub(balances[buyToken][msg.sender], amount);
             uint newBuyerBal = add(buyerBalances[sellToken][buyToken][auctionIndex][msg.sender], amountAfterFee);
@@ -1819,7 +1819,7 @@ contract DutchExchange is Proxied {
         }
 
         // Checking for equality would suffice here. nevertheless:
-        if (amount &gt;= outstandingVolume) {
+        if (amount >= outstandingVolume) {
             // Clear auction
             clearAuction(sellToken, buyToken, auctionIndex, sellVolume);
         }
@@ -1834,14 +1834,14 @@ contract DutchExchange is Proxied {
         uint auctionIndex
     )
         public
-        // &lt; (10^60, 10^61)
+        // < (10^60, 10^61)
         returns (uint returned, uint frtsIssued)
     {
         closeTheoreticalClosedAuction(sellToken, buyToken, auctionIndex);
         uint sellerBalance = sellerBalances[sellToken][buyToken][auctionIndex][user];
 
         // R1
-        require(sellerBalance &gt; 0);
+        require(sellerBalance > 0);
 
         // Get closing price for said auction
         fraction memory closingPrice = closingPrices[sellToken][buyToken][auctionIndex];
@@ -1849,17 +1849,17 @@ contract DutchExchange is Proxied {
         uint den = closingPrice.den;
 
         // R2: require auction to have cleared
-        require(den &gt; 0);
+        require(den > 0);
 
         // Calculate return
-        // &lt; 10^30 * 10^30 = 10^60
+        // < 10^30 * 10^30 = 10^60
         returned = mul(sellerBalance, num) / den;
 
         frtsIssued = issueFrts(sellToken, buyToken, returned, auctionIndex, sellerBalance, user);
 
         // Claim tokens
         sellerBalances[sellToken][buyToken][auctionIndex][user] = 0;
-        if (returned &gt; 0) {
+        if (returned > 0) {
             balances[buyToken][user] = add(balances[buyToken][user], returned);
         }
         NewSellerFundsClaim(sellToken, buyToken, user, auctionIndex, returned, frtsIssued);
@@ -1885,8 +1885,8 @@ contract DutchExchange is Proxied {
             claimedAmounts[sellToken][buyToken][auctionIndex][user] = add(claimedAmounts[sellToken][buyToken][auctionIndex][user], returned);
         } else {
             // Auction has closed
-            // We DON&#39;T want to check for returned &gt; 0, because that would fail if a user claims
-            // intermediate funds &amp; auction clears in same block (he/she would not be able to claim extraTokens)
+            // We DON'T want to check for returned > 0, because that would fail if a user claims
+            // intermediate funds & auction clears in same block (he/she would not be able to claim extraTokens)
 
             // Assign extra sell tokens (this is possible only after auction has cleared,
             // because buyVolume could still increase before that)
@@ -1894,7 +1894,7 @@ contract DutchExchange is Proxied {
             uint buyerBalance = buyerBalances[sellToken][buyToken][auctionIndex][user];
 
             // closingPrices.num represents buyVolume
-            // &lt; 10^30 * 10^30 = 10^60
+            // < 10^30 * 10^30 = 10^60
             uint tokensExtra = mul(buyerBalance, extraTokensTotal) / closingPrices[sellToken][buyToken][auctionIndex].num;
             returned = add(returned, tokensExtra);
 
@@ -1907,7 +1907,7 @@ contract DutchExchange is Proxied {
         }
 
         // Claim tokens
-        if (returned &gt; 0) {
+        if (returned > 0) {
             balances[sellToken][user] = add(balances[sellToken][user], returned);
         }
         
@@ -1925,7 +1925,7 @@ contract DutchExchange is Proxied {
         internal
         returns (uint frtsIssued)
     {
-        if (approvedTokens[primaryToken] &amp;&amp; approvedTokens[secondaryToken]) {
+        if (approvedTokens[primaryToken] && approvedTokens[secondaryToken]) {
             address ethTokenMem = ethToken;
             // Get frts issued based on ETH price of returned tokens
             if (primaryToken == ethTokenMem) {
@@ -1942,7 +1942,7 @@ contract DutchExchange is Proxied {
                 frtsIssued = mul(bal, pastNum) / pastDen;
             }
 
-            if (frtsIssued &gt; 0) {
+            if (frtsIssued > 0) {
                 // Issue frtToken
                 frtToken.mintTokens(user, frtsIssued);
             }
@@ -1960,7 +1960,7 @@ contract DutchExchange is Proxied {
     )
         public
     {
-        if(auctionIndex == getAuctionIndex(buyToken, sellToken) &amp;&amp; closingPrices[sellToken][buyToken][auctionIndex].num == 0) {
+        if(auctionIndex == getAuctionIndex(buyToken, sellToken) && closingPrices[sellToken][buyToken][auctionIndex].num == 0) {
             uint buyVolume = buyVolumes[sellToken][buyToken];
             uint sellVolume = sellVolumesCurrent[sellToken][buyToken];
             uint num;
@@ -1984,21 +1984,21 @@ contract DutchExchange is Proxied {
     )
         public
         view
-        // &lt; (10^67, 10^37)
+        // < (10^67, 10^37)
         returns (uint unclaimedBuyerFunds, uint num, uint den)
     {
         // R1: checks if particular auction has ever run
-        require(auctionIndex &lt;= getAuctionIndex(sellToken, buyToken));
+        require(auctionIndex <= getAuctionIndex(sellToken, buyToken));
 
         (num, den) = getCurrentAuctionPrice(sellToken, buyToken, auctionIndex);
 
         if (num == 0) {
-            // This should rarely happen - as long as there is &gt;= 1 buy order,
+            // This should rarely happen - as long as there is >= 1 buy order,
             // auction will clear before price = 0. So this is just fail-safe
             unclaimedBuyerFunds = 0;
         } else {
             uint buyerBalance = buyerBalances[sellToken][buyToken][auctionIndex][user];
-            // &lt; 10^30 * 10^37 = 10^67
+            // < 10^30 * 10^37 = 10^67
             unclaimedBuyerFunds = atleastZero(int(
                 mul(buyerBalance, den) / num - 
                 claimedAmounts[sellToken][buyToken][auctionIndex][user]
@@ -2013,7 +2013,7 @@ contract DutchExchange is Proxied {
         uint amount
     )
         internal
-        // &lt; 10^30
+        // < 10^30
         returns (uint amountAfterFee)
     {
         uint feeNum;
@@ -2022,7 +2022,7 @@ contract DutchExchange is Proxied {
         // 10^30 * 10^3 / 10^4 = 10^29
         uint fee = mul(amount, feeNum) / feeDen;
 
-        if (fee &gt; 0) {
+        if (fee > 0) {
             fee = settleFeeSecondPart(primaryToken, fee);
             
             uint usersExtraTokens = extraTokens[primaryToken][secondaryToken][auctionIndex + 1];
@@ -2052,13 +2052,13 @@ contract DutchExchange is Proxied {
 
         uint ethUSDPrice = ethUSDOracle.getUSDETHPrice();
         // 10^29 * 10^6 = 10^35
-        // Uses 18 decimal places &lt;&gt; exactly as owlToken tokens: 10**18 owlToken == 1 USD 
+        // Uses 18 decimal places <> exactly as owlToken tokens: 10**18 owlToken == 1 USD 
         uint feeInUSD = mul(feeInETH, ethUSDPrice);
         uint amountOfowlTokenBurned = min(owlToken.allowance(msg.sender, this), feeInUSD / 2);
         amountOfowlTokenBurned = min(owlToken.balanceOf(msg.sender), amountOfowlTokenBurned);
 
 
-        if (amountOfowlTokenBurned &gt; 0) {
+        if (amountOfowlTokenBurned > 0) {
             owlToken.burnOWL(msg.sender, amountOfowlTokenBurned);
             // Adjust fee
             // 10^35 * 10^29 = 10^64
@@ -2074,29 +2074,29 @@ contract DutchExchange is Proxied {
     )
         public
         view
-        // feeRatio &lt; 10^4
+        // feeRatio < 10^4
         returns (uint num, uint den)
     {
         uint t = frtToken.totalSupply();
         uint b = frtToken.lockedTokenBalances(user);
 
-        if (b * 100000 &lt; t || t == 0) {
+        if (b * 100000 < t || t == 0) {
             // 0.5%
             num = 1;
             den = 200;
-        } else if (b * 10000 &lt; t) {
+        } else if (b * 10000 < t) {
             // 0.4%
             num = 1;
             den = 250;
-        } else if (b * 1000 &lt; t) {
+        } else if (b * 1000 < t) {
             // 0.3%
             num = 3;
             den = 1000;
-        } else if (b * 100 &lt; t) {
+        } else if (b * 100 < t) {
             // 0.2%
             num = 1;
             den = 500;
-        } else if (b * 10 &lt; t) {
+        } else if (b * 10 < t) {
             // 0.1%
             num = 1;
             den = 1000;
@@ -2126,16 +2126,16 @@ contract DutchExchange is Proxied {
         uint auctionStart = getAuctionStart(sellToken, buyToken);
 
         // Update closing price
-        if (sellVolume &gt; 0) {
+        if (sellVolume > 0) {
             closingPrices[sellToken][buyToken][auctionIndex] = fraction(buyVolume, sellVolume);
         }
 
         // if (opposite is 0 auction OR price = 0 OR opposite auction cleared)
-        // price = 0 happens if auction pair has been running for &gt;= 24 hrs = 86400
-        if (sellVolumeOpp == 0 || now &gt;= auctionStart + 86400 || closingPriceOppDen &gt; 0) {
+        // price = 0 happens if auction pair has been running for >= 24 hrs = 86400
+        if (sellVolumeOpp == 0 || now >= auctionStart + 86400 || closingPriceOppDen > 0) {
             // Close auction pair
             uint buyVolumeOpp = buyVolumes[buyToken][sellToken];
-            if (closingPriceOppDen == 0 &amp;&amp; sellVolumeOpp &gt; 0) {
+            if (closingPriceOppDen == 0 && sellVolumeOpp > 0) {
                 // Save opposite price
                 closingPrices[buyToken][sellToken][auctionIndex] = fraction(buyVolumeOpp, sellVolumeOpp);
             }
@@ -2145,18 +2145,18 @@ contract DutchExchange is Proxied {
 
             // Update state variables for both auctions
             sellVolumesCurrent[sellToken][buyToken] = sellVolumeNext;
-            if (sellVolumeNext &gt; 0) {
+            if (sellVolumeNext > 0) {
                 sellVolumesNext[sellToken][buyToken] = 0;
             }
-            if (buyVolume &gt; 0) {
+            if (buyVolume > 0) {
                 buyVolumes[sellToken][buyToken] = 0;
             }
 
             sellVolumesCurrent[buyToken][sellToken] = sellVolumeNextOpp;
-            if (sellVolumeNextOpp &gt; 0) {
+            if (sellVolumeNextOpp > 0) {
                 sellVolumesNext[buyToken][sellToken] = 0;
             }
-            if (buyVolumeOpp &gt; 0) {
+            if (buyVolumeOpp > 0) {
                 buyVolumes[buyToken][sellToken] = 0;
             }
 
@@ -2188,13 +2188,13 @@ contract DutchExchange is Proxied {
 
         // We use current sell volume, because in clearAuction() we set
         // sellVolumesCurrent = sellVolumesNext before calling this function
-        // (this is so that we don&#39;t need case work,
+        // (this is so that we don't need case work,
         // since it might also be called from postSellOrder())
 
-        // &lt; 10^30 * 10^31 * 10^6 = 10^67
+        // < 10^30 * 10^31 * 10^6 = 10^67
         uint sellVolume = mul(mul(sellVolumesCurrent[sellToken][buyToken], sellNum), ethUSDPrice) / sellDen;
         uint sellVolumeOpp = mul(mul(sellVolumesCurrent[buyToken][sellToken], buyNum), ethUSDPrice) / buyDen;
-        if (sellVolume &gt;= thresholdNewAuction || sellVolumeOpp &gt;= thresholdNewAuction) {
+        if (sellVolume >= thresholdNewAuction || sellVolumeOpp >= thresholdNewAuction) {
             // Schedule next auction
             setAuctionStart(sellToken, buyToken, WAITING_PERIOD_NEW_AUCTION);
         } else {
@@ -2213,7 +2213,7 @@ contract DutchExchange is Proxied {
     )
         public
         view
-        // price &lt; 10^31
+        // price < 10^31
         returns (uint num, uint den)
     {
         if (token1 == token2) {
@@ -2223,12 +2223,12 @@ contract DutchExchange is Proxied {
         } else {
             // C2
             // R2.1
-            require(auctionIndex &gt;= 0);
+            require(auctionIndex >= 0);
 
 
             // C3
             // R3.1
-            require(auctionIndex &lt;= getAuctionIndex(token1, token2));
+            require(auctionIndex <= getAuctionIndex(token1, token2));
             // auction still running
 
             uint i = 0;
@@ -2240,8 +2240,8 @@ contract DutchExchange is Proxied {
                 closingPriceToken2 = closingPrices[token2][token1][auctionIndex - i];
                 closingPriceToken1 = closingPrices[token1][token2][auctionIndex - i];
                 
-                if (closingPriceToken1.num &gt; 0 &amp;&amp; closingPriceToken1.den &gt; 0 || 
-                    closingPriceToken2.num &gt; 0 &amp;&amp; closingPriceToken2.den &gt; 0)
+                if (closingPriceToken1.num > 0 && closingPriceToken1.den > 0 || 
+                    closingPriceToken2.num > 0 && closingPriceToken2.den > 0)
                 {
                     correctPair = true;
                 }
@@ -2272,11 +2272,11 @@ contract DutchExchange is Proxied {
     )
         public
         view
-        // price &lt; 10^31
+        // price < 10^31
         returns (uint num, uint den)
     {
         uint latestAuctionIndex = getAuctionIndex(token, ethToken);
-        // getPriceInPastAuction &lt; 10^30
+        // getPriceInPastAuction < 10^30
         (num, den) = getPriceInPastAuction(token, ethToken, latestAuctionIndex - 1);
     }
 
@@ -2287,7 +2287,7 @@ contract DutchExchange is Proxied {
     )
         public
         view
-        // price &lt; 10^37
+        // price < 10^37
         returns (uint num, uint den)
     {
         fraction memory closingPrice = closingPrices[sellToken][buyToken][auctionIndex];
@@ -2295,7 +2295,7 @@ contract DutchExchange is Proxied {
         if (closingPrice.den != 0) {
             // Auction has closed
             (num, den) = (closingPrice.num, closingPrice.den);
-        } else if (auctionIndex &gt; getAuctionIndex(sellToken, buyToken)) {
+        } else if (auctionIndex > getAuctionIndex(sellToken, buyToken)) {
             (num, den) = (0, 0);
         } else {
             // Auction is running
@@ -2303,19 +2303,19 @@ contract DutchExchange is Proxied {
             uint pastDen;
             (pastNum, pastDen) = getPriceInPastAuction(sellToken, buyToken, auctionIndex - 1);
 
-            // If we&#39;re calling the function into an unstarted auction,
+            // If we're calling the function into an unstarted auction,
             // it will return the starting price of that auction
             uint timeElapsed = atleastZero(int(now - getAuctionStart(sellToken, buyToken)));
 
             // The numbers below are chosen such that
-            // P(0 hrs) = 2 * lastClosingPrice, P(6 hrs) = lastClosingPrice, P(&gt;=24 hrs) = 0
+            // P(0 hrs) = 2 * lastClosingPrice, P(6 hrs) = lastClosingPrice, P(>=24 hrs) = 0
 
             // 10^5 * 10^31 = 10^36
             num = atleastZero(int((86400 - timeElapsed) * pastNum));
             // 10^6 * 10^31 = 10^37
             den = mul((timeElapsed + 43200), pastDen);
 
-            if (mul(num, sellVolumesCurrent[sellToken][buyToken]) &lt;= mul(den, buyVolumes[sellToken][buyToken])) {
+            if (mul(num, sellVolumesCurrent[sellToken][buyToken]) <= mul(den, buyVolumes[sellToken][buyToken])) {
                 num = buyVolumes[sellToken][buyToken];
                 den = sellVolumesCurrent[sellToken][buyToken];
             }
@@ -2348,7 +2348,7 @@ contract DutchExchange is Proxied {
         newBal = withdraw(buyToken, amount);
     }
 
-    // &gt; Helper fns
+    // > Helper fns
     function getTokenOrder(
         address token1,
         address token2
@@ -2357,7 +2357,7 @@ contract DutchExchange is Proxied {
         pure
         returns (address, address)
     {
-        if (token2 &lt; token1) {
+        if (token2 < token1) {
             (token1, token2) = (token2, token1);
         }
 
@@ -2425,13 +2425,13 @@ contract DutchExchange is Proxied {
         auctionIndex = latestAuctionIndices[token1][token2];
     }
 
-    // &gt; Math fns
+    // > Math fns
     function min(uint a, uint b) 
         public
         pure
         returns (uint)
     {
-        if (a &lt; b) {
+        if (a < b) {
             return a;
         } else {
             return b;
@@ -2443,7 +2443,7 @@ contract DutchExchange is Proxied {
         pure
         returns (uint)
     {
-        if (a &lt; 0) {
+        if (a < 0) {
             return 0;
         } else {
             return uint(a);
@@ -2458,7 +2458,7 @@ contract DutchExchange is Proxied {
         pure
         returns (bool)
     {
-        return a + b &gt;= a;
+        return a + b >= a;
     }
 
     /// @dev Returns whether a subtraction operation causes an underflow
@@ -2470,7 +2470,7 @@ contract DutchExchange is Proxied {
         pure
         returns (bool)
     {
-        return a &gt;= b;
+        return a >= b;
     }
 
     /// @dev Returns whether a multiply operation causes an overflow
@@ -2533,9 +2533,9 @@ contract DutchExchange is Proxied {
     {
         uint arrayLength;
 
-        for (uint k = 0; k &lt; tokens.length - 1; k++) {
-            for (uint l = k + 1; l &lt; tokens.length; l++) {
-                if (getAuctionIndex(tokens[k], tokens[l]) &gt; 0) {
+        for (uint k = 0; k < tokens.length - 1; k++) {
+            for (uint l = k + 1; l < tokens.length; l++) {
+                if (getAuctionIndex(tokens[k], tokens[l]) > 0) {
                     arrayLength++;
                 }
             }
@@ -2546,9 +2546,9 @@ contract DutchExchange is Proxied {
 
         uint h;
 
-        for (uint i = 0; i &lt; tokens.length - 1; i++) {
-            for (uint j = i + 1; j &lt; tokens.length; j++) {
-                if (getAuctionIndex(tokens[i], tokens[j]) &gt; 0) {
+        for (uint i = 0; i < tokens.length - 1; i++) {
+            for (uint j = i + 1; j < tokens.length; j++) {
+                if (getAuctionIndex(tokens[i], tokens[j]) > 0) {
                     tokens1[h] = tokens[i];
                     tokens2[h] = tokens[j];
                     h++;
@@ -2579,8 +2579,8 @@ contract DutchExchange is Proxied {
         
         uint startingIndex = lastNAuctions == 0 ? 1 : runningAuctionIndex - lastNAuctions + 1;
 
-        for (uint j = startingIndex; j &lt;= runningAuctionIndex; j++) {
-            if (sellerBalances[auctionSellToken][auctionBuyToken][j][user] &gt; 0) {
+        for (uint j = startingIndex; j <= runningAuctionIndex; j++) {
+            if (sellerBalances[auctionSellToken][auctionBuyToken][j][user] > 0) {
                 arrayLength++;
             }
         }
@@ -2590,8 +2590,8 @@ contract DutchExchange is Proxied {
 
         uint k;
 
-        for (uint i = startingIndex; i &lt;= runningAuctionIndex; i++) {
-            if (sellerBalances[auctionSellToken][auctionBuyToken][i][user] &gt; 0) {
+        for (uint i = startingIndex; i <= runningAuctionIndex; i++) {
+            if (sellerBalances[auctionSellToken][auctionBuyToken][i][user] > 0) {
                 indices[k] = i;
                 usersBalances[k] = sellerBalances[auctionSellToken][auctionBuyToken][i][user];
                 k++;
@@ -2618,7 +2618,7 @@ contract DutchExchange is Proxied {
 
         uint[] memory sellersBalances = new uint[](length);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             uint runningAuctionIndex = getAuctionIndex(auctionSellTokens[i], auctionBuyTokens[i]);
             sellersBalances[i] = sellerBalances[auctionSellTokens[i]][auctionBuyTokens[i]][runningAuctionIndex][user];
         }
@@ -2648,8 +2648,8 @@ contract DutchExchange is Proxied {
         
         uint startingIndex = lastNAuctions == 0 ? 1 : runningAuctionIndex - lastNAuctions + 1;
 
-        for (uint j = startingIndex; j &lt;= runningAuctionIndex; j++) {
-            if (buyerBalances[auctionSellToken][auctionBuyToken][j][user] &gt; 0) {
+        for (uint j = startingIndex; j <= runningAuctionIndex; j++) {
+            if (buyerBalances[auctionSellToken][auctionBuyToken][j][user] > 0) {
                 arrayLength++;
             }
         }
@@ -2659,8 +2659,8 @@ contract DutchExchange is Proxied {
 
         uint k;
 
-        for (uint i = startingIndex; i &lt;= runningAuctionIndex; i++) {
-            if (buyerBalances[auctionSellToken][auctionBuyToken][i][user] &gt; 0) {
+        for (uint i = startingIndex; i <= runningAuctionIndex; i++) {
+            if (buyerBalances[auctionSellToken][auctionBuyToken][i][user] > 0) {
                 indices[k] = i;
                 usersBalances[k] = buyerBalances[auctionSellToken][auctionBuyToken][i][user];
                 k++;
@@ -2687,7 +2687,7 @@ contract DutchExchange is Proxied {
 
         uint[] memory buyersBalances = new uint[](length);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             uint runningAuctionIndex = getAuctionIndex(auctionSellTokens[i], auctionBuyTokens[i]);
             buyersBalances[i] = buyerBalances[auctionSellTokens[i]][auctionBuyTokens[i]][runningAuctionIndex][user];
         }
@@ -2708,7 +2708,7 @@ contract DutchExchange is Proxied {
 
         bool[] memory isApproved = new bool[](length);
 
-        for (uint i = 0; i &lt; length; i++) {
+        for (uint i = 0; i < length; i++) {
             isApproved[i] = approvedTokens[addressToCheck[i]];
         }
 
@@ -2735,7 +2735,7 @@ contract DutchExchange is Proxied {
         uint length3 = auctionIndices.length;
         require(length2 == length3);
 
-        for (uint i = 0; i &lt; length; i++)
+        for (uint i = 0; i < length; i++)
             claimSellerFunds(auctionSellTokens[i], auctionBuyTokens[i], user, auctionIndices[i]);
     }
     //@dev for multiple withdraws
@@ -2758,7 +2758,7 @@ contract DutchExchange is Proxied {
         uint length3 = auctionIndices.length;
         require(length2 == length3);
 
-        for (uint i = 0; i &lt; length; i++)
+        for (uint i = 0; i < length; i++)
             claimBuyerFunds(auctionSellTokens[i], auctionBuyTokens[i], user, auctionIndices[i]);
     }
 
@@ -2770,7 +2770,7 @@ contract DutchExchange is Proxied {
         return masterCopy;
     }
 
-    // &gt; Events
+    // > Events
     event NewDeposit(
          address indexed token,
          uint amount

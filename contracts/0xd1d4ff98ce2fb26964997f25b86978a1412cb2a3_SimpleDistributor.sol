@@ -19,7 +19,7 @@ contract SimpleDistributor {
    
   function addReceivers(address[] receivers, uint[] balances) public {
     require(msg.sender == owner);
-    for(uint i = 0; i &lt; receivers.length; i++) {
+    for(uint i = 0; i < receivers.length; i++) {
       token.mint(receivers[i], balances[i]);
     }
   } 

@@ -33,7 +33,7 @@ contract Presale {
     address public foundersFund = 0xaefe05643b613823dBAF6245AFb819Fd56fBdd22; 
 
     token public tokenReward;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool fundingGoalReached = false;
     bool presaleClosed = false;
 
@@ -72,7 +72,7 @@ contract Presale {
         requestedTokens = amount * pricePresale;
 
         // Check if enough supply left to fill order
-        if (requestedTokens &lt;= availableSupply) {
+        if (requestedTokens <= availableSupply) {
             balanceOf[msg.sender] += amount;
             amountRaised += amount;
 
@@ -112,7 +112,7 @@ contract Presale {
         }
     }
 
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
 
     /**
      * Check if goal was reached
@@ -120,13 +120,13 @@ contract Presale {
      * Checks if the goal or time limit has been reached and ends the campaign
      */
     function checkGoalReached() afterDeadline public {
-        if (amountRaised &gt;= fundingGoal){
+        if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
         presaleClosed = true;
 
-        if (availableSupply &gt; 0) {
+        if (availableSupply > 0) {
             tokenReward.transfer(burner, availableSupply);
             tokenReward.transfer(burner, availableSupply * erotixFundMultiplier / 100);
             tokenReward.transfer(burner, availableSupply * foundersFundMultiplier / 100);
@@ -142,11 +142,11 @@ contract Presale {
      * the amount they contributed.
      */
     function safeWithdrawal() public {
-        if (now &gt;= deadline) {
+        if (now >= deadline) {
             if (!fundingGoalReached) {
                 uint amount = balanceOf[msg.sender];
                 balanceOf[msg.sender] = 0;
-                if (amount &gt; 0) {
+                if (amount > 0) {
                     if (msg.sender.send(amount)) {
                         FundTransfer(msg.sender, amount, false);
                     } else {
@@ -157,7 +157,7 @@ contract Presale {
         }
         
         if (presaleClosed) {
-            if (fundingGoalReached &amp;&amp; beneficiary == msg.sender) {
+            if (fundingGoalReached && beneficiary == msg.sender) {
                 if (beneficiary.send(amountRaised)) {
                     FundTransfer(beneficiary, amountRaised, false);
                 } else {

@@ -10,7 +10,7 @@ pragma solidity ^0.4.15;
 Simple Agreement for Future Tokens
 This Simple Agreement for Future Tokens (this “Agreement”) is entered into on
 between WT Limited (the “Company”) and (the “Buyer”) in connection with
-Company’s creation and distribution of the L&#237;f blockchain token
+Company’s creation and distribution of the Líf blockchain token
 (“Project Token”) in furtherance of the establishment and operation of a B2B
 marketplace for travel inventory called Winding Tree, as described in the White
 Paper.
@@ -86,7 +86,7 @@ Project Founders: Maksim Izmaylov, Jakub Vysoky, Augusto Lemble, Pedro Anderson.
 Project Plan: the plan containing a detailed overview of major milestones to be
 achieved and approximate dates of execution and launch of the blockchain-enabled
 network of the Project.
-Project Token: L&#237;f blockchain token, i.e. an ERC20 blockchain token created in
+Project Token: Líf blockchain token, i.e. an ERC20 blockchain token created in
 connection with and native to the Project with the characteristics described in
 the Token Characteristics Document and distributed via (i) a Token Distribution
 Event and/or (ii) a methodology described in the Token Distribution Plan.
@@ -164,7 +164,7 @@ Ethereum Wallet with a combination of Buyer’s account information (address),
 private key and password. The private key is encrypted with a password. The
 Buyer understands and accepts that if his private key file or password
 respectively got lost or stolen, the obtained Project Tokens associated with the
-Buyer&#39;s account (address) or password will be unrecoverable and will be
+Buyer's account (address) or password will be unrecoverable and will be
 permanently lost.
 Risk of theft: The Buyer understands and accepts that the Smart Contract System
 concept, the underlying software application and software platform (i.e. the
@@ -376,7 +376,7 @@ hereof.
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -471,20 +471,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -521,7 +521,7 @@ contract LifPresale is Ownable, Pausable {
      @param _wallet see `wallet`
    */
   function LifPresale(uint256 _weiRaised, uint256 _maxCap, address _wallet) {
-    require(_weiRaised &lt; _maxCap);
+    require(_weiRaised < _maxCap);
 
     weiRaised = _weiRaised;
     maxCap = _maxCap;
@@ -537,7 +537,7 @@ contract LifPresale is Ownable, Pausable {
      ONLY send from a ERC20 compatible wallet like myetherwallet.com
    */
   function () whenNotPaused payable {
-    require(weiRaised.add(msg.value) &lt;= maxCap);
+    require(weiRaised.add(msg.value) <= maxCap);
 
     weiRaised = weiRaised.add(msg.value);
     wallet.transfer(msg.value);

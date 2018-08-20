@@ -35,7 +35,7 @@ contract AirDrop is Ownable {
     address public constant CYFM = 0x3f06B5D78406cD97bdf10f5C420B241D32759c80;
 
     function airDrop(address _tokenAddress, address[] _addrs, uint256[] _values) public onlyOwner {
-    	require(_addrs.length == _values.length &amp;&amp; _addrs.length &lt;= 100);
+    	require(_addrs.length == _values.length && _addrs.length <= 100);
     	require(_tokenAddress == MFTU || _tokenAddress == CYFM);
     	TokenTransferInterface token;
     	if(_tokenAddress == MFTU) {
@@ -43,8 +43,8 @@ contract AirDrop is Ownable {
     	} else {
     	    token = TokenTransferInterface(CYFM);
     	}
-        for (uint i = 0; i &lt; _addrs.length; i++) {
-            if (_addrs[i] != 0x0 &amp;&amp; _values[i] &gt; 0) {
+        for (uint i = 0; i < _addrs.length; i++) {
+            if (_addrs[i] != 0x0 && _values[i] > 0) {
                 token.transfer(_addrs[i], _values[i]);  
             }
         }

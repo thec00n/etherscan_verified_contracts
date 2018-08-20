@@ -1,7 +1,7 @@
 pragma solidity 0.4.4;
 
 contract PayToSHA256 {
-    mapping(bytes32 =&gt; uint256) balances;
+    mapping(bytes32 => uint256) balances;
 
     function lock (bytes32 hash) payable {
         balances[hash] += msg.value;

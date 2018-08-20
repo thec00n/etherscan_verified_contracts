@@ -8,25 +8,25 @@ pragma solidity ^0.4.15;
 library SafeMath {
     function mul(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a * b;
-        if (a != 0 &amp;&amp; c / a != b) revert();
+        if (a != 0 && c / a != b) revert();
         return c;
     }
 
     function div(uint256 a, uint256 b) internal constant returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        if (b &gt; a) revert();
+        if (b > a) revert();
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        if (c &lt; a) revert();
+        if (c < a) revert();
         return c;
     }
 }
@@ -67,7 +67,7 @@ contract VLBRefundVault is Ownable {
     enum State {Active, Refunding, Closed}
     State public state;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
 
     address public wallet;
 

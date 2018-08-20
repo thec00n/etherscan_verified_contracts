@@ -1,5 +1,5 @@
 pragma solidity ^0.4.21;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 
 /**
  * @title SafeMath
@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,16 +35,16 @@ contract SmartInvestmentFundToken {
     using SafeMath for uint256;
 
     /* Map all our our balances for issued tokens */
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     /* Map between users and their approval addresses and amounts */
-    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping(address => mapping (address => uint256)) allowed;
 
     /* The name of the contract */
-    string public name = &quot;Smart Investment Fund Token v2&quot;;
+    string public name = "Smart Investment Fund Token v2";
 
     /* The symbol for the contract */
-    string public symbol = &quot;XSFT&quot;;
+    string public symbol = "XSFT";
 
     /* How many DPs are in use in this contract */
     uint8 public decimals = 6;
@@ -73,7 +73,7 @@ contract SmartInvestmentFundToken {
     
     /* Transfer funds between two addresses that are not the current msg.sender - this requires approval to have been set separately and follows standard ERC20 guidelines */
     function transferFrom(address _from, address _to, uint256 _amount) public onlyPayloadSize(3) returns (bool) {
-        if (balances[_from] &gt;= _amount &amp;&amp; allowed[_from][msg.sender] &gt;= _amount &amp;&amp; _amount &gt; 0 &amp;&amp; balances[_to].add(_amount) &gt; balances[_to]) {
+        if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to].add(_amount) > balances[_to]) {
             balances[_from] = balances[_from].sub(_amount);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
             balances[_to] = balances[_to].add(_amount);
@@ -100,10 +100,10 @@ contract SmartInvestmentFundToken {
         return balances[_owner];
     }
 
-    /* Transfer the balance from owner&#39;s account to another account */
+    /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint256 _amount) public onlyPayloadSize(2) returns (bool) {
         /* Check if sender has balance and for overflows */
-        if (balances[msg.sender] &lt; _amount || balances[_to].add(_amount) &lt; balances[_to])
+        if (balances[msg.sender] < _amount || balances[_to].add(_amount) < balances[_to])
             return false;
 
         /* Add and subtract new balances */

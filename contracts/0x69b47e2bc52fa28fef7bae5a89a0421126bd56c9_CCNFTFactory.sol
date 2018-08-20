@@ -22,9 +22,9 @@ library SafeMath {
     * @dev Integer division of two numbers, truncating the quotient.
     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         // uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return a / b;
     }
 
@@ -32,7 +32,7 @@ library SafeMath {
     * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
@@ -41,7 +41,7 @@ library SafeMath {
     */
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -68,19 +68,19 @@ library AddressUtils {
         // contracts then.
         // solium-disable-next-line security/no-inline-assembly
         assembly { size := extcodesize(addr) }
-        return size &gt; 0;
+        return size > 0;
     }
 
 }
 
 /* Controls state and access rights for contract functions
  * @title Operational Control
- * @author Fazri Zubair &amp; Farhan Khwaja (Lucid Sight, Inc.)
+ * @author Fazri Zubair & Farhan Khwaja (Lucid Sight, Inc.)
  * Inspired and adapted from contract created by OpenZeppelin
  * Ref: https://github.com/OpenZeppelin/zeppelin-solidity/
  */
 contract OperationalControl {
-    // Facilitates access &amp; control for the game.
+    // Facilitates access & control for the game.
     // Roles:
     //  -The Managers (Primary/Secondary): Has universal control of all elements (No ability to withdraw)
     //  -The Banker: The Bank can withdraw funds and adjust fees / prices.
@@ -95,12 +95,12 @@ contract OperationalControl {
     address public bankManager;
 
     // Contracts that require access for gameplay
-    mapping(address =&gt; uint8) public otherManagers;
+    mapping(address => uint8) public otherManagers;
 
     // @dev Keeps track whether the contract is paused. When that is true, most actions are blocked
     bool public paused = false;
 
-    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked &amp; refund can be claimed
+    // @dev Keeps track whether the contract erroredOut. When that is true, most actions are blocked & refund can be claimed
     bool public error = false;
 
     /// @dev Operation modifiers for limiting access
@@ -187,7 +187,7 @@ contract OperationalControl {
     /// @dev Unpauses the smart contract. Can only be called by the Game Master
     /// @notice This is public rather than external so it can be called by derived contracts. 
     function unpause() public onlyManager whenPaused {
-        // can&#39;t unpause if contract was upgraded
+        // can't unpause if contract was upgraded
         paused = false;
     }
 
@@ -291,21 +291,21 @@ contract ERC721BasicToken is ERC721Basic {
     using SafeMath for uint256;
     using AddressUtils for address;
 
-    // Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
 
     // Mapping from token ID to owner
-    mapping (uint256 =&gt; address) internal tokenOwner;
+    mapping (uint256 => address) internal tokenOwner;
 
     // Mapping from token ID to approved address
-    mapping (uint256 =&gt; address) internal tokenApprovals;
+    mapping (uint256 => address) internal tokenApprovals;
 
     // Mapping from owner to number of owned token
-    mapping (address =&gt; uint256) internal ownedTokensCount;
+    mapping (address => uint256) internal ownedTokensCount;
 
     // Mapping from owner to operator approvals
-    mapping (address =&gt; mapping (address =&gt; bool)) internal operatorApprovals;
+    mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     /**
     * @dev Guarantees msg.sender is owner of the given token
@@ -443,7 +443,7 @@ contract ERC721BasicToken is ERC721Basic {
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -459,14 +459,14 @@ contract ERC721BasicToken is ERC721Basic {
         canTransfer(_tokenId)
     {
         // solium-disable-next-line arg-overflow
-        safeTransferFrom(_from, _to, _tokenId, &quot;&quot;);
+        safeTransferFrom(_from, _to, _tokenId, "");
     }
 
     /**
     * @dev Safely transfers the ownership of a given token ID to another address
     * @dev If the target address is a contract, it must implement `onERC721Received`,
     *  which is called upon a safe transfer, and return the magic value
-    *  `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`; otherwise,
+    *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
     *  the transfer is reverted.
     * @dev Requires the msg sender to be the owner, approved, or operator
     * @param _from current owner of the token
@@ -608,7 +608,7 @@ contract ERC721BasicToken is ERC721Basic {
 contract ERC721Receiver {
     /**
     * @dev Magic value to be returned upon successful reception of an NFT
-    *  Equals to `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`,
+    *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
     *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
     */
     bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
@@ -623,7 +623,7 @@ contract ERC721Receiver {
     * @param _from The sending address
     * @param _tokenId The NFT identifier which is being transfered
     * @param _data Additional data with no specified format
-    * @return `bytes4(keccak256(&quot;onERC721Received(address,uint256,bytes)&quot;))`
+    * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
     */
     function onERC721Received(
         address _from,
@@ -654,16 +654,16 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     string internal symbol_;
 
     // Mapping from owner to list of owned token IDs
-    mapping(address =&gt; uint256[]) internal ownedTokens;
+    mapping(address => uint256[]) internal ownedTokens;
 
     // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 =&gt; uint256) internal ownedTokensIndex;
+    mapping(uint256 => uint256) internal ownedTokensIndex;
 
     // Array with all token ids, used for enumeration
     uint256[] internal allTokens;
 
     // Mapping from token id to position in the allTokens array
-    mapping(uint256 =&gt; uint256) internal allTokensIndex;
+    mapping(uint256 => uint256) internal allTokensIndex;
 
     // Base Server Address for Token MetaData URI
     string internal tokenURIBase;
@@ -692,7 +692,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
         view
         returns (uint256)
     {
-        require(_index &lt; balanceOf(_owner));
+        require(_index < balanceOf(_owner));
         return ownedTokens[_owner][_index];
     }
 
@@ -711,7 +711,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     * @return uint256 token ID at the given index of the tokens list
     */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index &lt; totalSupply());
+        require(_index < totalSupply());
         return allTokens[_index];
     }
 
@@ -813,39 +813,39 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
     bytes4 constant InterfaceSignature_ERC165 = 0x01ffc9a7;
     /*
-    bytes4(keccak256(&#39;supportsInterface(bytes4)&#39;));
+    bytes4(keccak256('supportsInterface(bytes4)'));
     */
 
     bytes4 constant InterfaceSignature_ERC721Enumerable = 0x780e9d63;
     /*
-    bytes4(keccak256(&#39;totalSupply()&#39;)) ^
-    bytes4(keccak256(&#39;tokenOfOwnerByIndex(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;tokenByIndex(uint256)&#39;));
+    bytes4(keccak256('totalSupply()')) ^
+    bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+    bytes4(keccak256('tokenByIndex(uint256)'));
     */
 
     bytes4 constant InterfaceSignature_ERC721Metadata = 0x5b5e139f;
     /*
-    bytes4(keccak256(&#39;name()&#39;)) ^
-    bytes4(keccak256(&#39;symbol()&#39;)) ^
-    bytes4(keccak256(&#39;tokenURI(uint256)&#39;));
+    bytes4(keccak256('name()')) ^
+    bytes4(keccak256('symbol()')) ^
+    bytes4(keccak256('tokenURI(uint256)'));
     */
 
     bytes4 constant InterfaceSignature_ERC721 = 0x80ac58cd;
     /*
-    bytes4(keccak256(&#39;balanceOf(address)&#39;)) ^
-    bytes4(keccak256(&#39;ownerOf(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;approve(address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;getApproved(uint256)&#39;)) ^
-    bytes4(keccak256(&#39;setApprovalForAll(address,bool)&#39;)) ^
-    bytes4(keccak256(&#39;isApprovedForAll(address,address)&#39;)) ^
-    bytes4(keccak256(&#39;transferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256)&#39;)) ^
-    bytes4(keccak256(&#39;safeTransferFrom(address,address,uint256,bytes)&#39;));
+    bytes4(keccak256('balanceOf(address)')) ^
+    bytes4(keccak256('ownerOf(uint256)')) ^
+    bytes4(keccak256('approve(address,uint256)')) ^
+    bytes4(keccak256('getApproved(uint256)')) ^
+    bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+    bytes4(keccak256('isApprovedForAll(address,address)')) ^
+    bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+    bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
     */
 
     bytes4 public constant InterfaceSignature_ERC721Optional =- 0x4f558e79;
     /*
-    bytes4(keccak256(&#39;exists(uint256)&#39;));
+    bytes4(keccak256('exists(uint256)'));
     */
 
     /**
@@ -881,22 +881,22 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
     event NFTAttached(address requester, uint256 assetId);
 
     // Mapping from assetId to uint encoded data for NFT
-    mapping(uint256 =&gt; uint256) internal nftDataA;
-    mapping(uint256 =&gt; uint128) internal nftDataB;
+    mapping(uint256 => uint256) internal nftDataA;
+    mapping(uint256 => uint128) internal nftDataB;
 
     // Mapping from Asset Types to count of that type in exsistance
-    mapping(uint32 =&gt; uint64) internal assetTypeTotalCount;
+    mapping(uint32 => uint64) internal assetTypeTotalCount;
 
-    mapping(uint32 =&gt; uint64) internal assetTypeBurnedCount;
+    mapping(uint32 => uint64) internal assetTypeBurnedCount;
   
     // Mapping from index of a Asset Type to get AssetID
-    mapping(uint256 =&gt; mapping(uint32 =&gt; uint64) ) internal sequenceIDToTypeForID;
+    mapping(uint256 => mapping(uint32 => uint64) ) internal sequenceIDToTypeForID;
 
      // Mapping from Asset Type to string name of type
-    mapping(uint256 =&gt; string) internal assetTypeName;
+    mapping(uint256 => string) internal assetTypeName;
 
     // Mapping from assetType to creation limit
-    mapping(uint256 =&gt; uint32) internal assetTypeCreationLimit;
+    mapping(uint256 => uint32) internal assetTypeCreationLimit;
 
     // Indicates if attached system is Active (Transfers will be blocked if attached and active)
     bool public attachedSystemActive;
@@ -919,8 +919,8 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         managerSecondary = msg.sender;
         bankManager = msg.sender;
 
-        name_ = &quot;CCNFTFactory&quot;;
-        symbol_ = &quot;CCNFT&quot;;
+        name_ = "CCNFTFactory";
+        symbol_ = "CCNFT";
     }
 
     /**
@@ -937,7 +937,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
                 otherManagers[msg.sender] == 1
             );
             updateIsAttached(_tokenId, 1);
-        } else if(attachedSystemActive == true &amp;&amp; isAttached &gt;= 1) {
+        } else if(attachedSystemActive == true && isAttached >= 1) {
             require(msg.sender == managerPrimary ||
                 msg.sender == managerSecondary ||
                 msg.sender == bankManager ||
@@ -975,10 +975,10 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
 
         assetId = _assetId;
         ownersIndex = ownedTokensIndex[_assetId];
-        createdTimestamp = uint256(uint48(nftData&gt;&gt;160));
-        assetType = uint256(uint32(nftData&gt;&gt;208));
+        createdTimestamp = uint256(uint48(nftData>>160));
+        assetType = uint256(uint32(nftData>>208));
         assetTypeSeqId = uint256(uint64(nftDataBLocal));
-        isAttached = uint256(uint48(nftDataBLocal&gt;&gt;64));
+        isAttached = uint256(uint48(nftDataBLocal>>64));
         creator = address(nftData);
         owner = ownerOf(_assetId);
     }
@@ -1010,7 +1010,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
     ) {
         require(exists(_assetId));
         uint256 dataA = nftDataA[_assetId];
-        assetType = uint256(uint32(dataA&gt;&gt;208));
+        assetType = uint256(uint32(dataA>>208));
     }
 
     function getAssetIdTypeSequenceId(uint256 _assetId) public view returns(
@@ -1026,7 +1026,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         uint256 isAttached
     ) {
         uint256 nftData = nftDataB[_assetId];
-        isAttached = uint256(uint48(nftData&gt;&gt;64));
+        isAttached = uint256(uint48(nftData>>64));
     }
 
     function getAssetIdCreator(uint256 _assetId) public view returns(
@@ -1059,7 +1059,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
     }
 
     /// @param _owner The owner whose ships tokens we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it&#39;s fairly
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
     ///  expensive (it walks the entire NFT owners array looking for NFT belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
@@ -1077,7 +1077,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
             // sequentially up to the total count.
             uint256 _itemIndex;
 
-            for (_itemIndex = 0; _itemIndex &lt; tokenCount; _itemIndex++) {
+            for (_itemIndex = 0; _itemIndex < tokenCount; _itemIndex++) {
                 result[resultIndex] = tokenOfOwnerByIndex(_owner,_itemIndex);
                 resultIndex++;
             }
@@ -1125,7 +1125,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         address _to;
         address _from;
         
-        for (uint256 i = 0; i &lt; _assetIds.length; ++i) {
+        for (uint256 i = 0; i < _assetIds.length; ++i) {
             _id = _assetIds[i];
             _to = _toB[i];
             _from = _fromB[i];
@@ -1149,7 +1149,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
     {
         uint256 _id;
         
-        for (uint256 i = 0; i &lt; _assetIds.length; ++i) {
+        for (uint256 i = 0; i < _assetIds.length; ++i) {
             _id = _assetIds[i];
 
             require(isApprovedOrOwner(msg.sender, _id));
@@ -1176,7 +1176,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         address _to;
         address _from;
         
-        for (uint256 i = 0; i &lt; _assetIds.length; ++i) {
+        for (uint256 i = 0; i < _assetIds.length; ++i) {
             _id = _assetIds[i];
             _to  = _toB[i];
             _from  = _fromB[i];
@@ -1193,7 +1193,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         public
     {
         uint256 _id;
-        for (uint256 i = 0; i &lt; _assetIds.length; ++i) {
+        for (uint256 i = 0; i < _assetIds.length; ++i) {
             _id = _assetIds[i];
             safeTransferFrom(_from, _to, _id);
         }
@@ -1207,7 +1207,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         public
     {
         uint256 _id;
-        for (uint256 i = 0; i &lt; _assetIds.length; ++i) {
+        for (uint256 i = 0; i < _assetIds.length; ++i) {
             _id = _assetIds[i];
             approve(_spender, _id);
         }
@@ -1222,7 +1222,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         public
     {
         address _spender;
-        for (uint256 i = 0; i &lt; _spenders.length; ++i) {
+        for (uint256 i = 0; i < _spenders.length; ++i) {
             _spender = _spenders[i];
             setApprovalForAll(_spender, _approved);
         }
@@ -1238,13 +1238,13 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
 
         uint256 isAttached = getIsNFTAttached(_tokenId);
 
-        require(isAttached &gt;= 1);
+        require(isAttached >= 1);
 
         if(attachedSystemActive == true) {
             //Checks to see if request was made and if time elapsed
-            if(isAttached &gt; 1 &amp;&amp; block.timestamp - isAttached &gt; detachmentTime) {
+            if(isAttached > 1 && block.timestamp - isAttached > detachmentTime) {
                 isAttached = 0;
-            } else if(isAttached &gt; 1) {
+            } else if(isAttached > 1) {
                 //Fail if time is already set for attachment
                 require(isAttached == 1);
             } else {
@@ -1280,13 +1280,13 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
     }
 
     function batchAttachAssets(uint256[] _ids) public {
-        for(uint i = 0; i &lt; _ids.length; i++) {
+        for(uint i = 0; i < _ids.length; i++) {
             attachAsset(_ids[i]);
         }
     }
 
     function batchDetachAssets(uint256[] _ids) public {
-        for(uint i = 0; i &lt; _ids.length; i++) {
+        for(uint i = 0; i < _ids.length; i++) {
             requestDetachment(_ids[i]);
         }
     }
@@ -1301,7 +1301,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
 
     function batchBurnAssets(uint256[] _assetIDs) public {
         uint256 _id;
-        for(uint i = 0; i &lt; _assetIDs.length; i++) {
+        for(uint i = 0; i < _assetIDs.length; i++) {
             _id = _assetIDs[i];
             burnAsset(_id);
         }
@@ -1345,7 +1345,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
     function batchSpawnAsset(address _to, uint256[] _assetTypes, uint256[] _assetIds, uint256 _isAttached) public anyOperator {
         uint256 _id;
         uint256 _assetType;
-        for(uint i = 0; i &lt; _assetIds.length; i++) {
+        for(uint i = 0; i < _assetIds.length; i++) {
             _id = _assetIds[i];
             _assetType = _assetTypes[i];
             _createAsset(_to, _assetType, _id, _isAttached, address(0));
@@ -1356,7 +1356,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         address _to;
         uint256 _id;
         uint256 _assetType;
-        for(uint i = 0; i &lt; _assetIds.length; i++) {
+        for(uint i = 0; i < _assetIds.length; i++) {
             _to = _toB[i];
             _id = _assetIds[i];
             _assetType = _assetTypes[i];
@@ -1370,7 +1370,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         uint256 _id;
         uint256 _assetType;
         uint256 _isAttached;
-        for(uint i = 0; i &lt; _assetIds.length; i++) {
+        for(uint i = 0; i < _assetIds.length; i++) {
             _to = _toB[i];
             _id = _assetIds[i];
             _assetType = _assetTypes[i];
@@ -1388,7 +1388,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         _createAsset(_to, _assetType, _assetID, _isAttached, _creator);
     }
 
-    /// @dev Remove all Ether from the contract, shouldn&#39;t have any but just incase.
+    /// @dev Remove all Ether from the contract, shouldn't have any but just incase.
     function withdrawBalance() public onlyBanker {
         // We are using this boolean method to make sure that even if one fails it will still work
         bankManager.transfer(address(this).balance);
@@ -1402,7 +1402,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
 
     function burnAssetOperator(uint256 _assetID) public anyOperator {
         
-        require(getIsNFTAttached(_assetID) &gt; 0);
+        require(getIsNFTAttached(_assetID) > 0);
 
         //Updates Type Total Count
         uint256 _assetType = getAssetIdItemType(_assetID);
@@ -1417,12 +1417,12 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
 
     function setDetachmentTime (uint256 _time) public onlyManager {
         //Detactment Time can not be set greater than 2 weeks.
-        require(_time &lt;= 1209600);
+        require(_time <= 1209600);
         detachmentTime = uint32(_time);
     }
 
     function setNFTDetached(uint256 _assetID) public anyOperator {
-        require(getIsNFTAttached(_assetID) &gt; 0);
+        require(getIsNFTAttached(_assetID) > 0);
 
         updateIsAttached(_assetID, 0);
         emit NFTDetached(msg.sender, _assetID);
@@ -1430,7 +1430,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
 
     function setBatchDetachCollectibles(uint256[] _assetIds) public anyOperator {
         uint256 _id;
-        for(uint i = 0; i &lt; _assetIds.length; i++) {
+        for(uint i = 0; i < _assetIds.length; i++) {
             _id = _assetIds[i];
             setNFTDetached(_id);
         }
@@ -1446,7 +1446,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         uint256 _sequenceId = uint256(assetTypeTotalCount[uint32(_assetType)]) + 1;
 
         //Will not allow creation if over limit
-        require(assetTypeCreationLimit[uint32(_assetType)] == 0 || assetTypeCreationLimit[uint32(_assetType)] &gt; _sequenceId);
+        require(assetTypeCreationLimit[uint32(_assetType)] == 0 || assetTypeCreationLimit[uint32(_assetType)] > _sequenceId);
         
         // These requires are not strictly necessary, our calling code should make
         // sure that these conditions are never broken.
@@ -1456,11 +1456,11 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         _mint(_to, _assetID);
 
         uint256 nftData = uint256(_creator); // 160 bit address of creator
-        nftData |= now&lt;&lt;160; // 48 bit creation timestamp
-        nftData |= _assetType&lt;&lt;208; // 32 bit item type 
+        nftData |= now<<160; // 48 bit creation timestamp
+        nftData |= _assetType<<208; // 32 bit item type 
 
         uint256 nftDataContinued = uint256(_sequenceId); // 64 bit sequence id of item
-        nftDataContinued |= _attachState&lt;&lt;64; // 48 bit state and/or timestamp for detachment
+        nftDataContinued |= _attachState<<64; // 48 bit state and/or timestamp for detachment
 
         nftDataA[_assetID] = nftData;
         nftDataB[_assetID] = uint128(nftDataContinued);
@@ -1482,7 +1482,7 @@ contract CCNFTFactory is ERC721Token, OperationalControl {
         uint256 assetTypeSeqId = uint256(uint64(nftData));
 
         uint256 nftDataContinued = uint256(assetTypeSeqId); // 64 bit sequence id of item
-        nftDataContinued |= _isAttached&lt;&lt;64; // 48 bit state and/or timestamp for detachment
+        nftDataContinued |= _isAttached<<64; // 48 bit state and/or timestamp for detachment
 
         nftDataB[_assetID] = uint128(nftDataContinued);
     }

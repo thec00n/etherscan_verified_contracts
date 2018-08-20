@@ -3,7 +3,7 @@
 // Author: DEx.top Team
 
 pragma solidity 0.4.21;
-pragma experimental &quot;v0.5.0&quot;;
+pragma experimental "v0.5.0";
 
 interface Token {
   function transfer(address to, uint256 value) external returns (bool success);
@@ -14,9 +14,9 @@ contract Dex2 {
   //------------------------------ Struct Definitions: ---------------------------------------------
 
   struct TokenInfo {
-    string  symbol;       // e.g., &quot;ETH&quot;, &quot;ADX&quot;
+    string  symbol;       // e.g., "ETH", "ADX"
     address tokenAddr;    // ERC20 token address
-    uint64  scaleFactor;  // &lt;original token amount&gt; = &lt;scaleFactor&gt; x &lt;DEx amountE8&gt; / 1e8
+    uint64  scaleFactor;  // <original token amount> = <scaleFactor> x <DEx amountE8> / 1e8
     uint    minDeposit;   // mininum deposit (original token amount) allowed for this token
   }
 
@@ -31,7 +31,7 @@ contract Dex2 {
   }
 
   struct Order {
-    uint32 pairId;  // &lt;cashId&gt;(16) &lt;stockId&gt;(16)
+    uint32 pairId;  // <cashId>(16) <stockId>(16)
     uint8  action;  // 0 means BUY; 1 means SELL
     uint8  ioc;     // 0 means a regular order; 1 means an immediate-or-cancel (IOC) order
     uint64 priceE8;
@@ -62,21 +62,21 @@ contract Dex2 {
   uint constant MAX_UINT256 = 2**256 - 1;
   uint16 constant MAX_FEE_RATE_E4 = 60;  // upper limit of fee rate is 0.6% (60 / 1e4)
 
-  // &lt;original ETH amount in Wei&gt; = &lt;DEx amountE8&gt; * &lt;ETH_SCALE_FACTOR&gt; / 1e8
+  // <original ETH amount in Wei> = <DEx amountE8> * <ETH_SCALE_FACTOR> / 1e8
   uint64 constant ETH_SCALE_FACTOR = 10**18;
 
   uint8 constant ACTIVE = 0;
   uint8 constant CLOSED = 2;
 
   bytes32 constant HASHTYPES =
-      keccak256(&#39;string title&#39;, &#39;address market_address&#39;, &#39;uint64 nonce&#39;, &#39;uint64 expire_time_sec&#39;,
-                &#39;uint64 amount_e8&#39;, &#39;uint64 price_e8&#39;, &#39;uint8 immediate_or_cancel&#39;, &#39;uint8 action&#39;,
-                &#39;uint16 cash_token_code&#39;, &#39;uint16 stock_token_code&#39;);
+      keccak256('string title', 'address market_address', 'uint64 nonce', 'uint64 expire_time_sec',
+                'uint64 amount_e8', 'uint64 price_e8', 'uint8 immediate_or_cancel', 'uint8 action',
+                'uint16 cash_token_code', 'uint16 stock_token_code');
 
   //----------------- States that cannot be changed once set: --------------------------------------
 
   address public admin;                         // admin address, and it cannot be changed
-  mapping (uint16 =&gt; TokenInfo) public tokens;  // mapping of token code to token information
+  mapping (uint16 => TokenInfo) public tokens;  // mapping of token code to token information
 
   //----------------- Other states: ----------------------------------------------------------------
 
@@ -90,10 +90,10 @@ contract Dex2 {
 
   ExeStatus public exeStatus;       // status of operation execution
 
-  mapping (address =&gt; TraderInfo) public traders;     // mapping of trade address to trader information
-  mapping (uint176 =&gt; TokenAccount) public accounts;  // mapping of trader token key to its account information
-  mapping (uint224 =&gt; Order) public orders;           // mapping of order key to order information
-  mapping (uint64  =&gt; Deposit) public deposits;       // mapping of deposit index to deposit information
+  mapping (address => TraderInfo) public traders;     // mapping of trade address to trader information
+  mapping (uint176 => TokenAccount) public accounts;  // mapping of trader token key to its account information
+  mapping (uint224 => Order) public orders;           // mapping of order key to order information
+  mapping (uint64  => Deposit) public deposits;       // mapping of deposit index to deposit information
 
   //------------------------------ Dex2 Events: ----------------------------------------------------
 
@@ -120,7 +120,7 @@ contract Dex2 {
 
   function Dex2(address admin_) public {
     admin = admin_;
-    setTokenInfo(0 /*tokenCode*/, &quot;ETH&quot;, 0 /*tokenAddr*/, ETH_SCALE_FACTOR, 0 /*minDeposit*/);
+    setTokenInfo(0 /*tokenCode*/, "ETH", 0 /*tokenAddr*/, ETH_SCALE_FACTOR, 0 /*minDeposit*/);
     emit DeployMarketEvent();
   }
 
@@ -139,9 +139,9 @@ contract Dex2 {
     emit ChangeMarketStatusEvent(status_);
   }
 
-  // Each trader can specify a withdraw address (but cannot change it later). Once a trader&#39;s
+  // Each trader can specify a withdraw address (but cannot change it later). Once a trader's
   // withdraw address is set, following withdrawals of this trader will go to the withdraw address
-  // instead of the trader&#39;s address.
+  // instead of the trader's address.
   function setWithdrawAddr(address withdrawAddr) external {
     if (withdrawAddr == 0) revert();
     if (traders[msg.sender].withdrawAddr != 0) revert();  // cannot change withdrawAddr once set
@@ -153,7 +153,7 @@ contract Dex2 {
   function depositEth(address traderAddr) external payable {
     if (marketStatus != ACTIVE) revert();
     if (traderAddr == 0) revert();
-    if (msg.value &lt; tokens[0].minDeposit) revert();
+    if (msg.value < tokens[0].minDeposit) revert();
     if (msg.data.length != 4 + 32) revert();  // length condition of param count
 
     uint64 pendingAmountE8 = uint64(msg.value / (ETH_SCALE_FACTOR / 10**8));  // msg.value is in Wei
@@ -161,13 +161,13 @@ contract Dex2 {
 
     uint64 depositIndex = ++lastDepositIndex;
     setDeposits(depositIndex, traderAddr, 0, pendingAmountE8);
-    emit DepositEvent(traderAddr, 0, &quot;ETH&quot;, pendingAmountE8, depositIndex);
+    emit DepositEvent(traderAddr, 0, "ETH", pendingAmountE8, depositIndex);
   }
 
   // Deposit token (other than ETH) from msg.sender for a specified trader.
   //
   // After the deposit has been confirmed enough times on the blockchain, it will be added to the
-  // trader&#39;s token account for trading.
+  // trader's token account for trading.
   function depositToken(address traderAddr, uint16 tokenCode, uint originalAmount) external {
     if (marketStatus != ACTIVE) revert();
     if (traderAddr == 0) revert();
@@ -175,15 +175,15 @@ contract Dex2 {
     if (msg.data.length != 4 + 32 + 32 + 32) revert();  // length condition of param count
 
     TokenInfo memory tokenInfo = tokens[tokenCode];
-    if (originalAmount &lt; tokenInfo.minDeposit) revert();
+    if (originalAmount < tokenInfo.minDeposit) revert();
     if (tokenInfo.scaleFactor == 0) revert();  // unsupported token
 
     // Need to make approval by calling Token(address).approve() in advance for ERC-20 Tokens.
     if (!Token(tokenInfo.tokenAddr).transferFrom(msg.sender, this, originalAmount)) revert();
 
-    if (originalAmount &gt; MAX_UINT256 / 10**8) revert();  // avoid overflow
+    if (originalAmount > MAX_UINT256 / 10**8) revert();  // avoid overflow
     uint amountE8 = originalAmount * 10**8 / uint(tokenInfo.scaleFactor);
-    if (amountE8 &gt;= 2**64 || amountE8 == 0) revert();
+    if (amountE8 >= 2**64 || amountE8 == 0) revert();
 
     uint64 depositIndex = ++lastDepositIndex;
     setDeposits(depositIndex, traderAddr, tokenCode, uint64(amountE8));
@@ -206,7 +206,7 @@ contract Dex2 {
     address withdrawAddr = traders[traderAddr].withdrawAddr;
     if (withdrawAddr == 0) withdrawAddr = traderAddr;
     withdrawAddr.transfer(truncatedWei);
-    emit WithdrawEvent(traderAddr, 0, &quot;ETH&quot;, uint64(amountE8), exeStatus.lastOperationIndex);
+    emit WithdrawEvent(traderAddr, 0, "ETH", uint64(amountE8), exeStatus.lastOperationIndex);
   }
 
   // Withdraw token (other than ETH) from the contract.
@@ -218,7 +218,7 @@ contract Dex2 {
     TokenInfo memory tokenInfo = tokens[tokenCode];
     if (tokenInfo.scaleFactor == 0) revert();  // unsupported token
 
-    uint176 accountKey = uint176(tokenCode) &lt;&lt; 160 | uint176(traderAddr);
+    uint176 accountKey = uint176(tokenCode) << 160 | uint176(traderAddr);
     uint amountE8 = accounts[accountKey].pendingWithdrawE8;
     if (amountE8 == 0) return;
 
@@ -239,13 +239,13 @@ contract Dex2 {
     if (toAddr == 0) revert();
     if (msg.data.length != 4 + 32 + 32 + 32) revert();
 
-    TokenAccount memory feeAccount = accounts[uint176(tokenCode) &lt;&lt; 160];
+    TokenAccount memory feeAccount = accounts[uint176(tokenCode) << 160];
     uint64 withdrawE8 = feeAccount.pendingWithdrawE8;
-    if (amountE8 &lt; withdrawE8) {
+    if (amountE8 < withdrawE8) {
       withdrawE8 = amountE8;
     }
     feeAccount.pendingWithdrawE8 -= withdrawE8;
-    accounts[uint176(tokenCode) &lt;&lt; 160] = feeAccount;
+    accounts[uint176(tokenCode) << 160] = feeAccount;
 
     TokenInfo memory tokenInfo = tokens[tokenCode];
     uint originalAmount = uint(withdrawE8) * uint(tokenInfo.scaleFactor) / 10**8;
@@ -264,25 +264,25 @@ contract Dex2 {
     uint64 nextOperationIndex = uint64(header);
     if (nextOperationIndex != exeStatus.lastOperationIndex + 1) revert();  // check sequence index
 
-    uint64 newLogicTimeSec = uint64(header &gt;&gt; 64);
-    if (newLogicTimeSec &lt; exeStatus.logicTimeSec) revert();
+    uint64 newLogicTimeSec = uint64(header >> 64);
+    if (newLogicTimeSec < exeStatus.logicTimeSec) revert();
 
-    for (uint i = 0; i &lt; body.length; nextOperationIndex++) {
+    for (uint i = 0; i < body.length; nextOperationIndex++) {
       uint bits = body[i];
-      uint opcode = bits &amp; 0xFFFF;
-      bits &gt;&gt;= 16;
-      if ((opcode &gt;&gt; 8) != 0xDE) revert();  // check the magic number
+      uint opcode = bits & 0xFFFF;
+      bits >>= 16;
+      if ((opcode >> 8) != 0xDE) revert();  // check the magic number
 
-      // ConfirmDeposit: &lt;depositIndex&gt;(64)
+      // ConfirmDeposit: <depositIndex>(64)
       if (opcode == 0xDE01) {
         confirmDeposit(uint64(bits));
         i += 1;
         continue;
       }
 
-      // InitiateWithdraw: &lt;amountE8&gt;(64) &lt;tokenCode&gt;(16) &lt;traderAddr&gt;(160)
+      // InitiateWithdraw: <amountE8>(64) <tokenCode>(16) <traderAddr>(160)
       if (opcode == 0xDE02) {
-        initiateWithdraw(uint176(bits), uint64(bits &gt;&gt; 176));
+        initiateWithdraw(uint176(bits), uint64(bits >> 176));
         i += 1;
         continue;
       }
@@ -293,29 +293,29 @@ contract Dex2 {
       // MatchOrders
       if (opcode == 0xDE03) {
         uint8 v1 = uint8(bits);
-        bits &gt;&gt;= 8;            // bits is now the key of the maker order
+        bits >>= 8;            // bits is now the key of the maker order
 
         Order memory makerOrder;
         if (v1 == 0) {         // order already in storage
-          if (i + 1 &gt;= body.length) revert();  // at least 1 body element left
+          if (i + 1 >= body.length) revert();  // at least 1 body element left
           makerOrder = orders[uint224(bits)];
           i += 1;
         } else {
           if (orders[uint224(bits)].pairId != 0) revert();  // order must not be already in storage
-          if (i + 4 &gt;= body.length) revert();  // at least 4 body elements left
+          if (i + 4 >= body.length) revert();  // at least 4 body elements left
           makerOrder = parseNewOrder(uint224(bits) /*makerOrderKey*/, v1, body, i);
           i += 4;
         }
 
         uint8 v2 = uint8(body[i]);
-        uint224 takerOrderKey = uint224(body[i] &gt;&gt; 8);
+        uint224 takerOrderKey = uint224(body[i] >> 8);
         Order memory takerOrder;
         if (v2 == 0) {         // order already in storage
           takerOrder = orders[takerOrderKey];
           i += 1;
         } else {
           if (orders[takerOrderKey].pairId != 0) revert();  // order must not be already in storage
-          if (i + 3 &gt;= body.length) revert();  // at least 3 body elements left
+          if (i + 3 >= body.length) revert();  // at least 3 body elements left
           takerOrder = parseNewOrder(takerOrderKey, v2, body, i);
           i += 4;
         }
@@ -324,23 +324,23 @@ contract Dex2 {
         continue;
       }
 
-      // HardCancelOrder: &lt;nonce&gt;(64) &lt;traderAddr&gt;(160)
+      // HardCancelOrder: <nonce>(64) <traderAddr>(160)
       if (opcode == 0xDE04) {
         hardCancelOrder(uint224(bits) /*orderKey*/);
         i += 1;
         continue;
       }
 
-      // SetFeeRates: &lt;withdrawFeeRateE4&gt;(16) &lt;takerFeeRateE4&gt;(16) &lt;makerFeeRateE4&gt;(16)
+      // SetFeeRates: <withdrawFeeRateE4>(16) <takerFeeRateE4>(16) <makerFeeRateE4>(16)
       if (opcode == 0xDE05) {
-        setFeeRates(uint16(bits), uint16(bits &gt;&gt; 16), uint16(bits &gt;&gt; 32));
+        setFeeRates(uint16(bits), uint16(bits >> 16), uint16(bits >> 32));
         i += 1;
         continue;
       }
 
-      // SetFeeRebatePercent: &lt;rebatePercent&gt;(8) &lt;traderAddr&gt;(160)
+      // SetFeeRebatePercent: <rebatePercent>(8) <traderAddr>(160)
       if (opcode == 0xDE06) {
-        setFeeRebatePercent(address(bits) /*traderAddr*/, uint8(bits &gt;&gt; 160) /*rebatePercent*/);
+        setFeeRebatePercent(address(bits) /*traderAddr*/, uint8(bits >> 160) /*rebatePercent*/);
         i += 1;
         continue;
       }
@@ -388,11 +388,11 @@ contract Dex2 {
 
   function confirmDeposit(uint64 depositIndex) private {
     Deposit memory deposit = deposits[depositIndex];
-    uint176 accountKey = (uint176(deposit.tokenCode) &lt;&lt; 160) | uint176(deposit.traderAddr);
+    uint176 accountKey = (uint176(deposit.tokenCode) << 160) | uint176(deposit.traderAddr);
     TokenAccount memory account = accounts[accountKey];
 
     // Check that pending amount is non-zero and no overflow would happen.
-    if (account.balanceE8 + deposit.pendingAmountE8 &lt;= account.balanceE8) revert();
+    if (account.balanceE8 + deposit.pendingAmountE8 <= account.balanceE8) revert();
     account.balanceE8 += deposit.pendingAmountE8;
 
     deposits[depositIndex].pendingAmountE8 = 0;
@@ -404,37 +404,37 @@ contract Dex2 {
     uint64 balanceE8 = accounts[tokenAccountKey].balanceE8;
     uint64 pendingWithdrawE8 = accounts[tokenAccountKey].pendingWithdrawE8;
 
-    if (balanceE8 &lt; amountE8 || amountE8 == 0) revert();
+    if (balanceE8 < amountE8 || amountE8 == 0) revert();
     balanceE8 -= amountE8;
 
     uint64 feeE8 = calcFeeE8(amountE8, withdrawFeeRateE4, address(tokenAccountKey));
     amountE8 -= feeE8;
 
-    if (pendingWithdrawE8 + amountE8 &lt; amountE8) revert();  // check overflow
+    if (pendingWithdrawE8 + amountE8 < amountE8) revert();  // check overflow
     pendingWithdrawE8 += amountE8;
 
     accounts[tokenAccountKey].balanceE8 = balanceE8;
     accounts[tokenAccountKey].pendingWithdrawE8 = pendingWithdrawE8;
 
     // Note that the fee account has a dummy trader address of 0.
-    if (accounts[tokenAccountKey &amp; (0xffff &lt;&lt; 160)].pendingWithdrawE8 + feeE8 &gt;= feeE8) {  // no overflow
-      accounts[tokenAccountKey &amp; (0xffff &lt;&lt; 160)].pendingWithdrawE8 += feeE8;
+    if (accounts[tokenAccountKey & (0xffff << 160)].pendingWithdrawE8 + feeE8 >= feeE8) {  // no overflow
+      accounts[tokenAccountKey & (0xffff << 160)].pendingWithdrawE8 += feeE8;
     }
 
-    emit InitiateWithdrawEvent(address(tokenAccountKey), uint16(tokenAccountKey &gt;&gt; 160) /*tokenCode*/,
+    emit InitiateWithdrawEvent(address(tokenAccountKey), uint16(tokenAccountKey >> 160) /*tokenCode*/,
                                amountE8, pendingWithdrawE8);
   }
 
   function getDealInfo(uint32 pairId, uint64 priceE8, uint64 amount1E8, uint64 amount2E8)
       private pure returns (DealInfo deal) {
     deal.stockCode = uint16(pairId);
-    deal.cashCode = uint16(pairId &gt;&gt; 16);
+    deal.cashCode = uint16(pairId >> 16);
     if (deal.stockCode == deal.cashCode) revert();  // we disallow homogeneous trading
 
-    deal.stockDealAmountE8 = amount1E8 &lt; amount2E8 ? amount1E8 : amount2E8;
+    deal.stockDealAmountE8 = amount1E8 < amount2E8 ? amount1E8 : amount2E8;
 
     uint cashDealAmountE8 = uint(priceE8) * uint(deal.stockDealAmountE8) / 10**8;
-    if (cashDealAmountE8 &gt;= 2**64) revert();
+    if (cashDealAmountE8 >= 2**64) revert();
     deal.cashDealAmountE8 = uint64(cashDealAmountE8);
   }
 
@@ -452,22 +452,22 @@ contract Dex2 {
     uint64 giveAmountE8 = isBuyer ? deal.cashDealAmountE8 : deal.stockDealAmountE8;
     uint64 getAmountE8 = isBuyer ? deal.stockDealAmountE8 : deal.cashDealAmountE8;
 
-    uint176 giveAccountKey = uint176(giveTokenCode) &lt;&lt; 160 | uint176(traderAddr);
-    uint176 getAccountKey = uint176(getTokenCode) &lt;&lt; 160 | uint176(traderAddr);
+    uint176 giveAccountKey = uint176(giveTokenCode) << 160 | uint176(traderAddr);
+    uint176 getAccountKey = uint176(getTokenCode) << 160 | uint176(traderAddr);
 
     uint64 feeE8 = calcFeeE8(getAmountE8, feeRateE4, traderAddr);
     getAmountE8 -= feeE8;
 
     // Check overflow.
-    if (accounts[giveAccountKey].balanceE8 &lt; giveAmountE8) revert();
-    if (accounts[getAccountKey].balanceE8 + getAmountE8 &lt; getAmountE8) revert();
+    if (accounts[giveAccountKey].balanceE8 < giveAmountE8) revert();
+    if (accounts[getAccountKey].balanceE8 + getAmountE8 < getAmountE8) revert();
 
     // Write storage.
     accounts[giveAccountKey].balanceE8 -= giveAmountE8;
     accounts[getAccountKey].balanceE8 += getAmountE8;
 
-    if (accounts[uint176(getTokenCode) &lt;&lt; 160].pendingWithdrawE8 + feeE8 &gt;= feeE8) {  // no overflow
-      accounts[uint176(getTokenCode) &lt;&lt; 160].pendingWithdrawE8 += feeE8;
+    if (accounts[uint176(getTokenCode) << 160].pendingWithdrawE8 + feeE8 >= feeE8) {  // no overflow
+      accounts[uint176(getTokenCode) << 160].pendingWithdrawE8 += feeE8;
     }
   }
 
@@ -489,11 +489,11 @@ contract Dex2 {
     if (makerOrder.pairId != takerOrder.pairId) revert();
     if (makerOrder.action == takerOrder.action) revert();
     if (makerOrder.priceE8 == 0 || takerOrder.priceE8 == 0) revert();
-    if (makerOrder.action == 0 &amp;&amp; makerOrder.priceE8 &lt; takerOrder.priceE8) revert();
-    if (takerOrder.action == 0 &amp;&amp; takerOrder.priceE8 &lt; makerOrder.priceE8) revert();
+    if (makerOrder.action == 0 && makerOrder.priceE8 < takerOrder.priceE8) revert();
+    if (takerOrder.action == 0 && takerOrder.priceE8 < makerOrder.priceE8) revert();
     if (makerOrder.amountE8 == 0 || takerOrder.amountE8 == 0) revert();
-    if (makerOrder.expireTimeSec &lt;= exeStatus.logicTimeSec) revert();
-    if (takerOrder.expireTimeSec &lt;= exeStatus.logicTimeSec) revert();
+    if (makerOrder.expireTimeSec <= exeStatus.logicTimeSec) revert();
+    if (takerOrder.expireTimeSec <= exeStatus.logicTimeSec) revert();
 
     DealInfo memory deal = getDealInfo(
         makerOrder.pairId, makerOrder.priceE8, makerOrder.amountE8, takerOrder.amountE8);
@@ -520,20 +520,20 @@ contract Dex2 {
     setOrders(takerOrderKey, takerOrder.pairId, takerOrder.action, takerOrder.ioc,
               takerOrder.priceE8, takerOrder.amountE8, takerOrder.expireTimeSec);
 
-    emit MatchOrdersEvent(address(makerOrderKey), uint64(makerOrderKey &gt;&gt; 160) /*nonce*/,
-                          address(takerOrderKey), uint64(takerOrderKey &gt;&gt; 160) /*nonce*/);
+    emit MatchOrdersEvent(address(makerOrderKey), uint64(makerOrderKey >> 160) /*nonce*/,
+                          address(takerOrderKey), uint64(takerOrderKey >> 160) /*nonce*/);
   }
 
   function hardCancelOrder(uint224 orderKey) private {
     orders[orderKey].pairId = 0xFFFFFFFF;
     orders[orderKey].amountE8 = 0;
-    emit HardCancelOrderEvent(address(orderKey) /*traderAddr*/, uint64(orderKey &gt;&gt; 160) /*nonce*/);
+    emit HardCancelOrderEvent(address(orderKey) /*traderAddr*/, uint64(orderKey >> 160) /*nonce*/);
   }
 
   function setFeeRates(uint16 makerE4, uint16 takerE4, uint16 withdrawE4) private {
-    if (makerE4 &gt; MAX_FEE_RATE_E4) revert();
-    if (takerE4 &gt; MAX_FEE_RATE_E4) revert();
-    if (withdrawE4 &gt; MAX_FEE_RATE_E4) revert();
+    if (makerE4 > MAX_FEE_RATE_E4) revert();
+    if (takerE4 > MAX_FEE_RATE_E4) revert();
+    if (withdrawE4 > MAX_FEE_RATE_E4) revert();
 
     makerFeeRateE4 = makerE4;
     takerFeeRateE4 = takerE4;
@@ -542,33 +542,33 @@ contract Dex2 {
   }
 
   function setFeeRebatePercent(address traderAddr, uint8 feeRebatePercent) private {
-    if (feeRebatePercent &gt; 100) revert();
+    if (feeRebatePercent > 100) revert();
 
     traders[traderAddr].feeRebatePercent = feeRebatePercent;
     emit SetFeeRebatePercentEvent(traderAddr, feeRebatePercent);
   }
 
   function parseNewOrder(uint224 orderKey, uint8 v, uint[] body, uint i) private view returns (Order) {
-    // bits: &lt;expireTimeSec&gt;(64) &lt;amountE8&gt;(64) &lt;priceE8&gt;(64) &lt;ioc&gt;(8) &lt;action&gt;(8) &lt;pairId&gt;(32)
+    // bits: <expireTimeSec>(64) <amountE8>(64) <priceE8>(64) <ioc>(8) <action>(8) <pairId>(32)
     uint240 bits = uint240(body[i + 1]);
-    uint64 nonce = uint64(orderKey &gt;&gt; 160);
+    uint64 nonce = uint64(orderKey >> 160);
     address traderAddr = address(orderKey);
     if (traderAddr == 0) revert();  // check zero addr early since `ecrecover` returns 0 on error
 
     // verify the signature of the trader
-    bytes32 hash1 = keccak256(&quot;\x19Ethereum Signed Message:\n70DEx2 Order: &quot;, address(this), nonce, bits);
+    bytes32 hash1 = keccak256("\x19Ethereum Signed Message:\n70DEx2 Order: ", address(this), nonce, bits);
     if (traderAddr != ecrecover(hash1, v, bytes32(body[i + 2]), bytes32(body[i + 3]))) {
-      bytes32 hashValues = keccak256(&quot;DEx2 Order&quot;, address(this), nonce, bits);
+      bytes32 hashValues = keccak256("DEx2 Order", address(this), nonce, bits);
       bytes32 hash2 = keccak256(HASHTYPES, hashValues);
       if (traderAddr != ecrecover(hash2, v, bytes32(body[i + 2]), bytes32(body[i + 3]))) revert();
     }
 
     Order memory order;
-    order.pairId = uint32(bits); bits &gt;&gt;= 32;
-    order.action = uint8(bits); bits &gt;&gt;= 8;
-    order.ioc = uint8(bits); bits &gt;&gt;= 8;
-    order.priceE8 = uint64(bits); bits &gt;&gt;= 64;
-    order.amountE8 = uint64(bits); bits &gt;&gt;= 64;
+    order.pairId = uint32(bits); bits >>= 32;
+    order.action = uint8(bits); bits >>= 8;
+    order.ioc = uint8(bits); bits >>= 8;
+    order.priceE8 = uint64(bits); bits >>= 64;
+    order.amountE8 = uint64(bits); bits >>= 64;
     order.expireTimeSec = uint64(bits);
     return order;
   }

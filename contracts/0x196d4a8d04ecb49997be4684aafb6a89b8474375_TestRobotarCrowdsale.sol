@@ -45,9 +45,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -64,7 +64,7 @@ library SafeMath {
   */
   function add(uint a, uint b) internal pure returns (uint c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,7 +76,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
+  mapping(address => uint) balances;
 
   uint totalSupply_;
 
@@ -94,7 +94,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -129,7 +129,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint)) internal allowed;
+  mapping (address => mapping (address => uint)) internal allowed;
 
 
   /**
@@ -140,8 +140,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -155,7 +155,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -204,7 +204,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -217,7 +217,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     
@@ -298,9 +298,9 @@ contract RobotarTestToken is MintableToken {
   // Constants
   // =========
   
-    string public constant name = &quot;Robotar token&quot;;
+    string public constant name = "Robotar token";
     
-    string public constant symbol = &quot;TTAR&quot;;
+    string public constant symbol = "TTAR";
     
     uint32 public constant decimals = 18;
     
@@ -396,18 +396,18 @@ contract TestRobotarCrowdsale is Ownable {
 	      	      
 	      function setPresaleStart(uint _presaleStart) onlyOwner public returns (bool) {
 	      PresaleStart = _presaleStart;
-	 //     require(PresaleStart &gt; now) ;
+	 //     require(PresaleStart > now) ;
 	      return true;
 	      }
 	      
 	       function setCrowdsaleStart(uint _crowdsaleStart)  onlyOwner public returns (bool) {
 	       CrowdsaleStart = _crowdsaleStart;
-	 //      require(CrowdsaleStart &gt; now &amp;&amp; CrowdsaleStart &gt; PresaleStart + 7 days ) ;
+	 //      require(CrowdsaleStart > now && CrowdsaleStart > PresaleStart + 7 days ) ;
 	       return true;
 	       }
       
    /**    modifier saleIsOn() {
-require(now &gt; testStart &amp;&amp; now &lt; testEnd || now &gt; PresaleStart &amp;&amp; now &lt; PresaleStart + PresalePeriod || now &gt; CrowdsaleStart &amp;&amp; now &lt;  CrowdsaleStart + CrowdsalePeriod);
+require(now > testStart && now < testEnd || now > PresaleStart && now < PresaleStart + PresalePeriod || now > CrowdsaleStart && now <  CrowdsaleStart + CrowdsalePeriod);
     	_;
     } **/
     
@@ -416,26 +416,26 @@ require(now &gt; testStart &amp;&amp; now &lt; testEnd || now &gt; PresaleStart 
        uint tokens = 0;
        uint bonusTokens = 0;
        
-         if (now &gt; PresaleStart &amp;&amp; now &lt; PresaleStart + PresalePeriod) {
+         if (now > PresaleStart && now < PresaleStart + PresalePeriod) {
        tokens = rate.mul(msg.value);
         bonusTokens = tokens.div(4);
         } 
-        else if (now &gt; CrowdsaleStart &amp;&amp; now &lt;  CrowdsaleStart + CrowdsalePeriod){
+        else if (now > CrowdsaleStart && now <  CrowdsaleStart + CrowdsalePeriod){
         tokens = rate.mul(msg.value);
         
-        if(now &lt; CrowdsaleStart + CrowdsalePeriod/4) {bonusTokens = tokens.mul(15).div(100);}
-        else if(now &gt;= CrowdsaleStart + CrowdsalePeriod/4 &amp;&amp; now &lt; CrowdsaleStart + CrowdsalePeriod/2) {bonusTokens = tokens.div(10);} 
-        else if(now &gt;= CrowdsaleStart + CrowdsalePeriod/2 &amp;&amp; now &lt; CrowdsaleStart + CrowdsalePeriod*3/4) {bonusTokens = tokens.div(20);}
+        if(now < CrowdsaleStart + CrowdsalePeriod/4) {bonusTokens = tokens.mul(15).div(100);}
+        else if(now >= CrowdsaleStart + CrowdsalePeriod/4 && now < CrowdsaleStart + CrowdsalePeriod/2) {bonusTokens = tokens.div(10);} 
+        else if(now >= CrowdsaleStart + CrowdsalePeriod/2 && now < CrowdsaleStart + CrowdsalePeriod*3/4) {bonusTokens = tokens.div(20);}
         
         }      
                  
         tokens += bonusTokens;
-       if (tokens&gt;0) {token.mint(msg.sender, tokens);}
+       if (tokens>0) {token.mint(msg.sender, tokens);}
     }        
        
 
    function() external payable {
-   if (msg.value &gt;= threshold) createTokens();   
+   if (msg.value >= threshold) createTokens();   
    
         }
    

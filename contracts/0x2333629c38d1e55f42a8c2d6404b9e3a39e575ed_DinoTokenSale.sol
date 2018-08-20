@@ -33,13 +33,13 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal constant returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -59,8 +59,8 @@ contract ERC20 {
 contract StandardToken is ERC20 {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
@@ -126,8 +126,8 @@ contract Pausable is Ownable {
 }
 
 contract DinoToken is StandardToken, Pausable {
-    string public constant name = &quot;DINO Token&quot;;
-    string public constant symbol = &quot;DINO&quot;;
+    string public constant name = "DINO Token";
+    string public constant symbol = "DINO";
     uint8  public constant decimals = 18;
 
     address public  tokenSaleContract;
@@ -204,12 +204,12 @@ contract DinoTokenSale is Ownable {
     uint256 public endTime          = 1531872000; // 2018-7-18 8:00 (UTC+8) 1531872000
     bool public halted;
 
-    mapping(address=&gt;bool) public whitelisted_Presale;
+    mapping(address=>bool) public whitelisted_Presale;
 
     // stats
     uint256 public totalDinoSold;
     uint256 public weiRaised;
-    mapping(address =&gt; uint256) public weiContributions;
+    mapping(address => uint256) public weiContributions;
 
     // EVENTS
     event updatedPresaleWhitelist(address target, bool isWhitelisted);
@@ -229,7 +229,7 @@ contract DinoTokenSale is Ownable {
         public
         onlyOwner
     {
-        for (uint i = 0; i &lt; _targets.length; i++) {
+        for (uint i = 0; i < _targets.length; i++) {
             whitelisted_Presale[_targets[i]] = _isWhitelisted;
             emit updatedPresaleWhitelist(_targets[i], _isWhitelisted);
         }
@@ -239,9 +239,9 @@ contract DinoTokenSale is Ownable {
         internal 
         returns(bool) 
     {
-        bool withinPeriod = now &gt;= presaleStartTime &amp;&amp; now &lt;= endTime;
+        bool withinPeriod = now >= presaleStartTime && now <= endTime;
         bool nonZeroPurchase = msg.value != 0;
-        return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; !halted;
+        return withinPeriod && nonZeroPurchase && !halted;
     }
 
     function getPriceRate()
@@ -249,10 +249,10 @@ contract DinoTokenSale is Ownable {
         view
         returns (uint)
     {
-        if (now &lt;= startTime) return 0;
-        if (now &lt;= startTime + STAGE1_TIME_END) return RATE_CROWDSALE_S1;
-        if (now &lt;= startTime + STAGE2_TIME_END) return RATE_CROWDSALE_S2;
-        if (now &lt;= startTime + STAGE3_TIME_END) return RATE_CROWDSALE_S3;
+        if (now <= startTime) return 0;
+        if (now <= startTime + STAGE1_TIME_END) return RATE_CROWDSALE_S1;
+        if (now <= startTime + STAGE2_TIME_END) return RATE_CROWDSALE_S2;
+        if (now <= startTime + STAGE3_TIME_END) return RATE_CROWDSALE_S3;
         return 0;
     }
 
@@ -270,7 +270,7 @@ contract DinoTokenSale is Ownable {
         else
             purchaseTokens = weiAmount.mul(getPriceRate()); 
 
-        require(purchaseTokens &gt; 0 &amp;&amp; ALLOC_SALE - totalDinoSold &gt;= purchaseTokens); // supply check
+        require(purchaseTokens > 0 && ALLOC_SALE - totalDinoSold >= purchaseTokens); // supply check
         require(dinoToken.transfer(msg.sender, purchaseTokens));
         emit TokenPurchase(msg.sender, weiAmount, purchaseTokens);
 
@@ -293,7 +293,7 @@ contract DinoTokenSale is Ownable {
         view
         returns(bool) 
     {
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     function toggleHalt(bool _halted)
@@ -307,7 +307,7 @@ contract DinoTokenSale is Ownable {
         public
         onlyOwner
     {
-        require(dinoToken.balanceOf(this) &gt;= _amount);
+        require(dinoToken.balanceOf(this) >= _amount);
         dinoToken.transfer(_to, _amount);
     }
 

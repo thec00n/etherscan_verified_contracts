@@ -21,16 +21,16 @@ contract Owned {
 
 contract GFCB is Owned {
 
-    string public name=&quot;Golden Fortune Coin Blocked&quot;;
-    string public symbol=&quot;GFCB&quot;;
+    string public name="Golden Fortune Coin Blocked";
+    string public symbol="GFCB";
     uint8  public decimals=18;
     uint256 public totalSupply;
     uint256 public sellPrice;
     uint256 public buyPrice;
     uint minBalanceForAccounts;
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; bool) public frozenAccount;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => bool) public frozenAccount;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event FrozenFunds(address target, bool frozen);
@@ -47,8 +47,8 @@ contract GFCB is Owned {
     /* Internal transfer, can only be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         balanceOf[_from] -= _value;                         // Subtract from the sender
@@ -57,7 +57,7 @@ contract GFCB is Owned {
     }
     function transfer(address _to, uint256 _value) public {
         require(!frozenAccount[msg.sender]);
-        if (msg.sender.balance&lt;minBalanceForAccounts) {
+        if (msg.sender.balance<minBalanceForAccounts) {
             sell((minBalanceForAccounts-msg.sender.balance)/sellPrice);
         }
         _transfer(msg.sender, _to, _value);
@@ -84,7 +84,7 @@ contract GFCB is Owned {
 
     function buy() payable public returns (uint amount) {
         amount = msg.value / buyPrice;
-        require(balanceOf[this] &gt;= amount);
+        require(balanceOf[this] >= amount);
         balanceOf[msg.sender] += amount;
         balanceOf[this] -= amount;
         emit Transfer(this, msg.sender, amount);
@@ -92,7 +92,7 @@ contract GFCB is Owned {
     }
 
     function sell(uint amount) public returns (uint revenue) {
-        require(balanceOf[msg.sender] &gt;= amount);
+        require(balanceOf[msg.sender] >= amount);
         balanceOf[this] += amount;
         balanceOf[msg.sender] -= amount;
         revenue = amount * sellPrice;

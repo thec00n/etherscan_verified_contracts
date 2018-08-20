@@ -25,7 +25,7 @@ contract PPBC_API {
     address paddyAdmin;          // contract owner          
     uint256 public gamesPlayed;  // Game Counter
     
-    mapping ( address =&gt; bool ) alreadyPlayed; // Ensure every user can only play ONCE using the 3:5 odds
+    mapping ( address => bool ) alreadyPlayed; // Ensure every user can only play ONCE using the 3:5 odds
                                                // to prevent abuse of benef. odds.
                                                // Consecutive games from the same account only run at 2:5 odds.
 
@@ -54,16 +54,16 @@ contract PPBC_API {
         //
         // Note total transaction cost ~ 100-200K Gas    
         // START Initial checks
-        // use Sha3 for increased API security (cannot be &quot;converted back&quot; to original accessCode) - prevents direct access
+        // use Sha3 for increased API security (cannot be "converted back" to original accessCode) - prevents direct access
         // if ( sha3( accessCode ) != 19498834600303040700126754596537880312193431075463488515213744382615666721600) throw; 
         // @MC disabled access check for PoC, ToDo: enable for Prod release, and allow change of hash if compromised
         
         // Check if Bet amount is within limits 1-10% of winning pool (account) balance
-        if (msg.value &lt; GetMinimumBet() || msg.value &gt; GetMaximumBet() ) throw; 
+        if (msg.value < GetMinimumBet() || msg.value > GetMaximumBet() ) throw; 
         
         // Only allow x games per block - to ensure outcome is as random as possible
         uint256 cntBlockUsed = blockUsed[block.number];  
-        if (cntBlockUsed &gt; maxGamesPerBlock) throw; 
+        if (cntBlockUsed > maxGamesPerBlock) throw; 
         blockUsed[block.number] = cntBlockUsed + 1; 
           
         gamesPlayed++;            // game counter
@@ -91,10 +91,10 @@ contract PPBC_API {
         
         // Depending on mode, user wins if numbers are in the lower range or higher range.
         if (modeA){  // Mode A (default) is: lower numbers win,  0-60, or 0-40, depending on odds
-            if (random &gt; winnerOdds ) winner = false;
+            if (random > winnerOdds ) winner = false;
         }
         else {   // Mode B is: higer numbers win 40-100, or 60-100, depending on odds
-            if (random &lt; (100 - winnerOdds) ) winner = false;
+            if (random < (100 - winnerOdds) ) winner = false;
         }
 
         // Pay winner (2 * bet amount)
@@ -123,7 +123,7 @@ contract PPBC_API {
     
     function createRandomNumber(uint maxnum) returns (uint256) {
         uint cnt;
-        for (cnt = 0; cnt &lt; lastRandom % 5; cnt++){lastBlock = lastBlock - block.timestamp;} // randomize gas
+        for (cnt = 0; cnt < lastRandom % 5; cnt++){lastBlock = lastBlock - block.timestamp;} // randomize gas
         uint256 random = 
                   block.difficulty + block.gaslimit + 
                   block.timestamp + msg.gas + 
@@ -147,7 +147,7 @@ contract PPBC_API {
     // Maintenance    ToDo: doc @MC
     /////////////////////////////
     uint256 public maxGamesPerBlock;  // Block limit
-    mapping ( uint256 =&gt; uint256 ) blockUsed;  // prevent more than 2 games per block; 
+    mapping ( uint256 => uint256 ) blockUsed;  // prevent more than 2 games per block; 
                                                //
     
     function PPBC_API()  { // Constructor: ToDo: obfuscate

@@ -20,12 +20,12 @@ contract Token {
 contract RpSafeMath {
     function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
       uint256 z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint256 z = x - y;
       return z;
     }
@@ -37,7 +37,7 @@ contract RpSafeMath {
     }
 
     function min(uint256 a, uint256 b) internal returns(uint256) {
-        if (a &lt; b) { 
+        if (a < b) { 
           return a;
         } else { 
           return b; 
@@ -45,7 +45,7 @@ contract RpSafeMath {
     }
     
     function max(uint256 a, uint256 b) internal returns(uint256) {
-        if (a &gt; b) { 
+        if (a > b) { 
           return a;
         } else { 
           return b; 
@@ -107,7 +107,7 @@ contract NanoLoanEngine is RpSafeMath {
         address approvedTransfer;
         uint256 expirationRequest;
 
-        mapping(address =&gt; bool) approbations;
+        mapping(address => bool) approbations;
     }
 
     Loan[] private loans;
@@ -121,14 +121,14 @@ contract NanoLoanEngine is RpSafeMath {
         uint256 _interestRatePunitory, uint256 _duesIn, uint256 _cancelableAt, uint256 _expirationRequest) returns (uint256) {
 
         require(!deprecated);
-        require(_cancelableAt &lt;= _duesIn);
+        require(_cancelableAt <= _duesIn);
         require(_oracleContract != address(0) || bytes(_currency).length == 0);
         require(_cosigner != address(0) || _cosignerFee == 0);
         require(_borrower != address(0));
         require(_amount != 0);
         require(_interestRatePunitory != 0);
         require(_interestRate != 0);
-        require(_expirationRequest &gt; block.timestamp);
+        require(_expirationRequest > block.timestamp);
 
         var loan = Loan(_oracleContract, Status.initial, _borrower, _cosigner, 0x0, msg.sender, _amount,
             0, 0, 0, 0, _cosignerFee, _interestRate, _interestRatePunitory, 0, _duesIn, _currency, _cancelableAt, 0, 0x0, _expirationRequest);
@@ -199,7 +199,7 @@ contract NanoLoanEngine is RpSafeMath {
 
     function isApproved(uint index) constant returns (bool) {
         Loan storage loan = loans[index];
-        return loan.approbations[loan.borrower] &amp;&amp; (loan.approbations[loan.cosigner] || loan.cosigner == address(0));
+        return loan.approbations[loan.borrower] && (loan.approbations[loan.cosigner] || loan.cosigner == address(0));
     }
 
     function approve(uint index) public returns(bool) {
@@ -214,14 +214,14 @@ contract NanoLoanEngine is RpSafeMath {
         Loan storage loan = loans[index];
         require(loan.status == Status.initial);
         require(isApproved(index));
-        require(block.timestamp &lt;= loan.expirationRequest);
+        require(block.timestamp <= loan.expirationRequest);
 
         loan.lender = msg.sender;
         loan.dueTime = safeAdd(block.timestamp, loan.duesIn);
         loan.interestTimestamp = block.timestamp;
         loan.status = Status.lent;
 
-        if (loan.cancelableAt &gt; 0)
+        if (loan.cancelableAt > 0)
             internalAddInterest(index, safeAdd(block.timestamp, loan.cancelableAt));
 
         uint256 rate = getOracleRate(index);
@@ -237,7 +237,7 @@ contract NanoLoanEngine is RpSafeMath {
     function destroy(uint index) public returns (bool) {
         Loan storage loan = loans[index];
         require(loan.status != Status.destroyed);
-        require(msg.sender == loan.lender || ((msg.sender == loan.borrower || msg.sender == loan.cosigner) &amp;&amp; loan.status == Status.initial));
+        require(msg.sender == loan.lender || ((msg.sender == loan.borrower || msg.sender == loan.cosigner) && loan.status == Status.initial));
         DestroyedBy(index, msg.sender);
         loan.status = Status.destroyed;
         return true;
@@ -273,7 +273,7 @@ contract NanoLoanEngine is RpSafeMath {
 
     function internalAddInterest(uint index, uint256 timestamp) internal {
         Loan storage loan = loans[index];
-        if (timestamp &gt; loan.interestTimestamp) {
+        if (timestamp > loan.interestTimestamp) {
             uint256 newInterest = loan.interest;
             uint256 newPunitoryInterest = loan.punitoryInterest;
 
@@ -285,7 +285,7 @@ contract NanoLoanEngine is RpSafeMath {
             uint256 pending;
 
             uint256 endNonPunitory = min(timestamp, loan.dueTime);
-            if (endNonPunitory &gt; loan.interestTimestamp) {
+            if (endNonPunitory > loan.interestTimestamp) {
                 deltaTime = safeSubtract(endNonPunitory, loan.interestTimestamp);
                 pending = safeSubtract(loan.amount, loan.paid);
                 (realDelta, calculatedInterest) = calculateInterest(deltaTime, loan.interestRate, pending);
@@ -293,7 +293,7 @@ contract NanoLoanEngine is RpSafeMath {
                 newTimestamp = loan.interestTimestamp + realDelta;
             }
 
-            if (timestamp &gt; loan.dueTime) {
+            if (timestamp > loan.dueTime) {
                 uint256 startPunitory = max(loan.dueTime, loan.interestTimestamp);
                 deltaTime = safeSubtract(timestamp, startPunitory);
                 pending = safeSubtract(safeAdd(loan.amount, newInterest), loan.paid);
@@ -313,7 +313,7 @@ contract NanoLoanEngine is RpSafeMath {
     function addInterestUpTo(uint index, uint256 timestamp) internal {
         Loan storage loan = loans[index];
         require(loan.status == Status.lent);
-        if (timestamp &lt;= block.timestamp) {
+        if (timestamp <= block.timestamp) {
             internalAddInterest(index, timestamp);
         }
     }
@@ -346,7 +346,7 @@ contract NanoLoanEngine is RpSafeMath {
     function withdrawal(uint index, address to, uint256 amount) public returns (bool) {
         Loan storage loan = loans[index];
         require(to != address(0));
-        if (msg.sender == loan.lender &amp;&amp; loan.lenderBalance &gt;= amount) {
+        if (msg.sender == loan.lender && loan.lenderBalance >= amount) {
             loan.lenderBalance = safeSubtract(loan.lenderBalance, amount);
             totalLenderBalance = safeSubtract(totalLenderBalance, amount);
             require(token.transfer(to, amount));
@@ -380,7 +380,7 @@ contract NanoLoanEngine is RpSafeMath {
 
     function emergencyWithdrawal(Token _token, address to, uint256 amount) returns (bool) {
         require(msg.sender == owner);
-        require(_token != token || safeSubtract(token.balanceOf(this), totalLenderBalance) &gt;= amount);
+        require(_token != token || safeSubtract(token.balanceOf(this), totalLenderBalance) >= amount);
         require(to != address(0));
         return _token.transfer(to, amount);
     }

@@ -23,8 +23,8 @@ contract REMMEPreSale {
     // 1100 ETH
     uint public constant MAXIMAL_PARTICIPATION = 1100 ether;
     uint public preSaleContributions;
-    mapping(address =&gt; uint) public participantContribution;
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => uint) public participantContribution;
+    mapping(address => bool) public whitelist;
 
     event Contributed(address receiver, uint contribution, uint reward);
     event WhitelistUpdated(address participant, bool isWhitelisted);
@@ -34,17 +34,17 @@ contract REMMEPreSale {
     }
 
     function contributeFor(address _participant) payable returns(bool) {
-        require(now &gt;= SALES_START);
-        require(now &lt; SALES_DEADLINE);
-        require((participantContribution[_participant] + msg.value) &gt;= MINIMAL_PARTICIPATION);
-        require((participantContribution[_participant] + msg.value) &lt;= MAXIMAL_PARTICIPATION);
-        require((preSaleContributions + msg.value) &lt;= PRE_SALE_MAX_CAP);
+        require(now >= SALES_START);
+        require(now < SALES_DEADLINE);
+        require((participantContribution[_participant] + msg.value) >= MINIMAL_PARTICIPATION);
+        require((participantContribution[_participant] + msg.value) <= MAXIMAL_PARTICIPATION);
+        require((preSaleContributions + msg.value) <= PRE_SALE_MAX_CAP);
         // Only the whitelisted addresses can participate.
         require(whitelist[_participant]);
 
         // If there is some division reminder, we just collect it too.
         uint tokensAmount = (msg.value * TOKEN_CENTS) / TOKEN_PRICE_WEI;
-        require(tokensAmount &gt; 0);
+        require(tokensAmount > 0);
         uint bonusTokens = (tokensAmount * BONUS) / 100;
         uint totalTokens = tokensAmount + bonusTokens;
 
@@ -81,7 +81,7 @@ contract REMMEPreSale {
     }
 
     function isSoftCapReached() constant returns(bool) {
-        return preSaleContributions &gt;= PRE_SALE_SOFT_CAP;
+        return preSaleContributions >= PRE_SALE_SOFT_CAP;
     }
 
     function () payable {

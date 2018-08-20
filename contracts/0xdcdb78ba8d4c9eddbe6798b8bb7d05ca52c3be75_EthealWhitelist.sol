@@ -4,7 +4,7 @@ pragma solidity ^0.4.17;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -78,12 +78,12 @@ library ECRecovery {
     }
 
     // Version of signature should be 27 or 28, but 0 and 1 are also possible versions
-    if (v &lt; 27) {
+    if (v < 27) {
       v += 27;
     }
 
     // If the version is correct return the signer address
-    if (v != 27 &amp;&amp; v != 28) {
+    if (v != 27 && v != 28) {
       return (address(0));
     } else {
       return ecrecover(hash, v, r, s);
@@ -104,7 +104,7 @@ contract EthealWhitelist is Ownable {
     address public signer;
 
     // storing whitelisted addresses
-    mapping(address =&gt; bool) public isWhitelisted;
+    mapping(address => bool) public isWhitelisted;
 
     event WhitelistSet(address indexed _address, bool _state);
 
@@ -128,23 +128,23 @@ contract EthealWhitelist is Ownable {
     // Whitelisting: only owner
     ////////////////
 
-    ///&#160;@notice Set whitelist state for an address.
+    /// @notice Set whitelist state for an address.
     function setWhitelist(address _addr, bool _state) public onlyOwner {
         require(_addr != address(0));
         isWhitelisted[_addr] = _state;
         WhitelistSet(_addr, _state);
     }
 
-    ///&#160;@notice Set whitelist state for multiple addresses
+    /// @notice Set whitelist state for multiple addresses
     function setManyWhitelist(address[] _addr, bool _state) public onlyOwner {
-        for (uint256 i = 0; i &lt; _addr.length; i++) {
+        for (uint256 i = 0; i < _addr.length; i++) {
             setWhitelist(_addr[i], _state);
         }
     }
 
     /// @notice offchain whitelist check
     function isOffchainWhitelisted(address _addr, bytes _sig) public view returns (bool) {
-        bytes32 hash = keccak256(&quot;\x19Ethereum Signed Message:\n20&quot;,_addr);
+        bytes32 hash = keccak256("\x19Ethereum Signed Message:\n20",_addr);
         return hash.recover(_sig) == signer;
     }
 }

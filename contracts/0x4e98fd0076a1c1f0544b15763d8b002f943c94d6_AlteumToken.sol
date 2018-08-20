@@ -45,7 +45,7 @@ contract AlteumToken {
     string public name;
     string public symbol;
     uint8 public decimals; 
-    string public version = &#39;v0.2&#39;;
+    string public version = 'v0.2';
     uint256 public totalSupply;
     bool locked;
 
@@ -54,9 +54,9 @@ contract AlteumToken {
     uint multiplier = 100000000; // For 8 decimals
     address swapperAddress; // Can bypass a lock
 
-    mapping(address =&gt; uint256) balances;
-    mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
-    mapping(address =&gt; bool) freezed; 
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
+    mapping(address => bool) freezed; 
 
 
   	event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
@@ -65,7 +65,7 @@ contract AlteumToken {
     // Modifiers
 
     modifier onlyOwner() {
-        if ( msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+        if ( msg.sender != rootAddress && msg.sender != Owner ) revert();
         _;
     }
 
@@ -75,7 +75,7 @@ contract AlteumToken {
     }
 
     modifier isUnlocked() {
-    	if ( locked &amp;&amp; msg.sender != rootAddress &amp;&amp; msg.sender != Owner ) revert();
+    	if ( locked && msg.sender != rootAddress && msg.sender != Owner ) revert();
 		_;    	
     }
 
@@ -87,10 +87,10 @@ contract AlteumToken {
 
     // Safe math
     function safeAdd(uint x, uint y) internal returns (uint z) {
-        require((z = x + y) &gt;= x);
+        require((z = x + y) >= x);
     }
     function safeSub(uint x, uint y) internal returns (uint z) {
-        require((z = x - y) &lt;= x);
+        require((z = x - y) <= x);
     }
 
 
@@ -98,8 +98,8 @@ contract AlteumToken {
     function AlteumToken() {        
         locked = true;
         totalSupply = 50000000 * multiplier; // 50,000,000 tokens * 8 decimals
-        name = &#39;Alteum&#39;; 
-        symbol = &#39;AUM&#39;; 
+        name = 'Alteum'; 
+        symbol = 'AUM'; 
         decimals = 8; 
         rootAddress = 0x803622DE47eACE04e25541496e1ED9216C3c640F;      
         Owner = msg.sender;       
@@ -191,7 +191,7 @@ function sendToken(address _tokenAddress , address _addressTo , uint256 _amount)
   function transfer(address _to, uint _value, bytes _data, string _custom_fallback) isUnlocked isUnfreezed(_to) returns (bool success) {
       
     if(isContract(_to)) {
-        if (balances[msg.sender] &lt; _value) return false;
+        if (balances[msg.sender] < _value) return false;
         balances[msg.sender] = safeSub( balances[msg.sender] , _value );
         balances[_to] = safeAdd( balances[_to] , _value );
         ContractReceiver receiver = ContractReceiver(_to);
@@ -236,12 +236,12 @@ function sendToken(address _tokenAddress , address _addressTo , uint256 _amount)
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
       }
-      return (length&gt;0);
+      return (length>0);
     }
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balances[msg.sender] &lt; _value) return false;
+    if (balances[msg.sender] < _value) return false;
     balances[msg.sender] = safeSub(balances[msg.sender], _value);
     balances[_to] = safeAdd(balances[_to], _value);
     Transfer(msg.sender, _to, _value, _data);
@@ -250,7 +250,7 @@ function sendToken(address _tokenAddress , address _addressTo , uint256 _amount)
   
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balances[msg.sender] &lt; _value) return false;
+    if (balances[msg.sender] < _value) return false;
     balances[msg.sender] = safeSub(balances[msg.sender] , _value);
     balances[_to] = safeAdd(balances[_to] , _value);
     ContractReceiver receiver = ContractReceiver(_to);
@@ -262,10 +262,10 @@ function sendToken(address _tokenAddress , address _addressTo , uint256 _amount)
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
 
-        if ( locked &amp;&amp; msg.sender != swapperAddress ) return false; 
+        if ( locked && msg.sender != swapperAddress ) return false; 
         if ( freezed[_from] || freezed[_to] ) return false; // Check if destination address is freezed
-        if ( balances[_from] &lt; _value ) return false; // Check if the sender has enough
-		if ( _value &gt; allowed[_from][msg.sender] ) return false; // Check allowance
+        if ( balances[_from] < _value ) return false; // Check if the sender has enough
+		if ( _value > allowed[_from][msg.sender] ) return false; // Check allowance
 
         balances[_from] = safeSub(balances[_from] , _value); // Subtract from the sender
         balances[_to] = safeAdd(balances[_to] , _value); // Add the same to the recipient

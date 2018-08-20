@@ -62,7 +62,7 @@ contract KimContract is KimAccessControl{
   string public symbol;
   // total supply of kims ever to be in circulation
   uint256 public totalSupply;
-  // Total Kims &quot;released&quot; into the market
+  // Total Kims "released" into the market
   uint256 public kimsCreated;
   // Total Kims on sale at any given time
   uint256 public kimsOnAuction;
@@ -72,13 +72,13 @@ contract KimContract is KimAccessControl{
   uint constant feeDivisor = 100;
 
   // Map an owners address to the total amount of KIMS that they own
-  mapping (address =&gt; uint256) public balanceOf;
-  // Map the KIM to the owner, &quot;Who owns this Kim?&quot;
-  mapping (uint =&gt; address) public tokenToOwner;
+  mapping (address => uint256) public balanceOf;
+  // Map the KIM to the owner, "Who owns this Kim?"
+  mapping (uint => address) public tokenToOwner;
   // This creates a mapping of the tokenId to an Auction
-  mapping (uint256 =&gt; TokenAuction) public tokenAuction;
+  mapping (uint256 => TokenAuction) public tokenAuction;
   // How much ether does this wallet have to withdraw?
-  mapping (address =&gt; uint) public pendingWithdrawals;
+  mapping (address => uint) public pendingWithdrawals;
 
   // This generates a public event on the blockchain that will notify clients
   event Transfer(address indexed from, address indexed to, uint256 value);
@@ -97,8 +97,8 @@ contract KimContract is KimAccessControl{
     // Give all initial kims to the contract itself
     balanceOf[this] = totalSupply;              // Give the creator all initial tokens
     // This is what we will call KIMs
-    name = &quot;KimJongCrypto&quot;;
-    symbol = &quot;KJC&quot;;
+    name = "KimJongCrypto";
+    symbol = "KJC";
     // Declaring seller cut on initalization of the contract
     sellerCut = 95;
   }
@@ -121,7 +121,7 @@ contract KimContract is KimAccessControl{
     // We promise not to manipulate the markets, so we take an
     // average of all the KIMS on sale at any given time
     uint256 marketAverage = averageKimSalePrice();
-    for(uint256 counter = 0; counter &lt; howMany; counter++) {
+    for(uint256 counter = 0; counter < howMany; counter++) {
       // map the token to the tokenOwner
       tokenToOwner[counter] = this;
       // Put the KIM out on the market for sale
@@ -132,16 +132,16 @@ contract KimContract is KimAccessControl{
   }
 
 
-  // Don&#39;t want to keep this KIM?
+  // Don't want to keep this KIM?
   // Sell KIM then...
   function sellToken(uint256 tokenIndex, uint256 sellPrice) public {
     // Which KIM are you selling?
     TokenAuction storage tokenOnAuction = tokenAuction[tokenIndex];
-    // Who&#39;s selling the KIM, stored into seller variable
+    // Who's selling the KIM, stored into seller variable
     address seller = msg.sender;
     // Do you own this kim?
     require(_owns(seller, tokenIndex));
-    // Is the KIM already on sale? Can&#39;t sell twice!
+    // Is the KIM already on sale? Can't sell twice!
     require(tokenOnAuction.isForSale == false);
     // CLEAR! Send that KIM to Auction!
     _tokenAuction(tokenIndex, seller, sellPrice);
@@ -168,10 +168,10 @@ contract KimContract is KimAccessControl{
     // Is the KIM even on sale? No monkey business!
     require(tokenOnAuction.isForSale == true);
     // You are going to have to pay for this KIM! make sure you send enough ether!
-    require(msg.value &gt;= sellPrice);
-    // Who&#39;s selling their KIM?
+    require(msg.value >= sellPrice);
+    // Who's selling their KIM?
     address seller = tokenOnAuction.seller;
-    // Who&#39;s trying to buy this KIM?
+    // Who's trying to buy this KIM?
     address buyer = msg.sender;
     // CLEAR!
     // Complete the auction! And transfer the KIM!
@@ -211,7 +211,7 @@ contract KimContract is KimAccessControl{
   }
 
 
-  // Don&#39;t want to sell KIM anymore?
+  // Don't want to sell KIM anymore?
   // Cancel Auction
   function cancelKimAuction(uint kimIndex) public {
     require(_owns(msg.sender, kimIndex));
@@ -284,7 +284,7 @@ contract KimContract is KimAccessControl{
     if (kimsOnAuction == 0){
       return 0;
       } else {
-        for (uint256 i = 0; i &lt;= kimsOnAuction; i++) {
+        for (uint256 i = 0; i <= kimsOnAuction; i++) {
           sumOfAllKimAuctions += tokenAuction[i].sellPrice;
         }
         return sumOfAllKimAuctions / kimsOnAuction;
@@ -296,7 +296,7 @@ contract KimContract is KimAccessControl{
   // this function serves for users to withdraw their ethereum
   function withdraw() {
       uint amount = pendingWithdrawals[msg.sender];
-      require(amount &gt; 0);
+      require(amount > 0);
       // Remember to zero the pending refund before
       // sending to prevent re-entrancy attacks
       pendingWithdrawals[msg.sender] = 0;

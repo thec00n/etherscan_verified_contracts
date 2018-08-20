@@ -3,7 +3,7 @@ pragma solidity ^0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -101,17 +101,17 @@ contract usingInterCrypto is Ownable {
     }
     
     function setNetwork() internal returns(bool) {
-        if (getCodeSize(0x314159265dD8dbb310642f98f50C066173C1259b)&gt;0){ //mainnet
+        if (getCodeSize(0x314159265dD8dbb310642f98f50C066173C1259b)>0){ //mainnet
             abstractENS = AbstractENS(0x314159265dD8dbb310642f98f50C066173C1259b);
             ResolverNode = 0xfdd5d5de6dd63db72bbc2d487944ba13bf775b50a80805fe6fcaba9b0fba88f5; // resolver.eth
             InterCryptoNode = 0x921a56636fce44f7cbd33eed763c940f580add9ffb4da7007f8ff6e99804a7c8; // intercrypto.jacksplace.eth
         }
-        else if (getCodeSize(0xe7410170f87102df0055eb195163a03b7f2bff4a)&gt;0){ //rinkeby
+        else if (getCodeSize(0xe7410170f87102df0055eb195163a03b7f2bff4a)>0){ //rinkeby
             abstractENS = AbstractENS(0xe7410170f87102df0055eb195163a03b7f2bff4a);
             ResolverNode = 0xf2cf3eab504436e1b5a541dd9fbc5ac8547b773748bbf2bb81b350ee580702ca; // jackdomain.test
             InterCryptoNode = 0xbe93c9e419d658afd89a8650dd90e37e763e75da1e663b9d57494aedf27f3eaa; // intercrypto.jackdomain.test
         }
-        else if (getCodeSize(0x112234455c3a32fd11230c42e7bccd4a84e02010)&gt;0){ //ropsten
+        else if (getCodeSize(0x112234455c3a32fd11230c42e7bccd4a84e02010)>0){ //ropsten
             abstractENS = AbstractENS(0x112234455c3a32fd11230c42e7bccd4a84e02010);
             ResolverNode = 0xf2cf3eab504436e1b5a541dd9fbc5ac8547b773748bbf2bb81b350ee580702ca; // jackdomain.test
             InterCryptoNode = 0xbe93c9e419d658afd89a8650dd90e37e763e75da1e663b9d57494aedf27f3eaa; // intercrypto.jackdomain.test
@@ -171,14 +171,14 @@ contract InterCrypto_Wallet is usingInterCrypto {
     event WithdrawalNormal(address indexed withdrawal, uint amount);
     event WithdrawalInterCrypto(uint indexed conversionID);
 
-    mapping (address =&gt; uint) public funds;
+    mapping (address => uint) public funds;
     
     function InterCrypto_Wallet() {}
 
     function () payable {}
     
     function deposit() payable {
-      if (msg.value &gt; 0) {
+      if (msg.value > 0) {
           funds[msg.sender] += msg.value;
           Deposit(msg.sender, msg.value);
       }

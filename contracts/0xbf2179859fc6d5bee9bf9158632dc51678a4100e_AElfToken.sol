@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -38,7 +38,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -106,19 +106,19 @@ contract AElfToken is ERC20, Ownable {
     uint256 blockNumber;
   }
   // Balances for each account
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
   // Tokens with time lock
-  // Only when the tokens&#39; blockNumber is less than current block number,
+  // Only when the tokens' blockNumber is less than current block number,
   // can the tokens be minted to the owner
-  mapping(address =&gt; TokensWithLock) lockTokens;
+  mapping(address => TokensWithLock) lockTokens;
   
   // Owner of account approves the transfer of an amount to another account
-  mapping(address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping(address => mapping (address => uint256)) allowed;
   // Token Cap
   uint256 public totalSupplyCap = 1e27;
   // Token Info
-  string public name = &quot;ELF Token&quot;;
-  string public symbol = &quot;ELF&quot;;
+  string public name = "ELF Token";
+  string public symbol = "ELF";
   uint8 public decimals = 18;
 
   bool public mintingFinished = false;
@@ -174,7 +174,7 @@ contract AElfToken is ERC20, Ownable {
    */
   function transfer(address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -200,8 +200,8 @@ contract AElfToken is ERC20, Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value) canTransfer public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -215,7 +215,7 @@ contract AElfToken is ERC20, Ownable {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -250,7 +250,7 @@ contract AElfToken is ERC20, Ownable {
 
   function decreaseApproval(address _spender, uint256 _subtractedValue) canTransfer public returns (bool) {
     uint256 oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -298,7 +298,7 @@ contract AElfToken is ERC20, Ownable {
    * @param _durationOfLock the new duration of lock
    */
   function setDurationOfLock(uint256 _durationOfLock) canMint only(aelfCommunityMultisig) public {
-    require(_durationOfLock &gt;= TIMETHRESHOLD);
+    require(_durationOfLock >= TIMETHRESHOLD);
     durationOfLock = _durationOfLock;
     SetDurationOfLock(msg.sender);
   }
@@ -318,14 +318,14 @@ contract AElfToken is ERC20, Ownable {
    * @return True if the tokens are approved of mintting correctly
    */
   function approveMintTokens(address _owner, uint256 _amount) nonZeroAddress(_owner) canMint only(aelfCommunityMultisig) public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     uint256 previousLockTokens = lockTokens[_owner].value;
-    require(previousLockTokens + _amount &gt;= previousLockTokens);
+    require(previousLockTokens + _amount >= previousLockTokens);
     uint256 curTotalSupply = totalSupply;
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
-    require(curTotalSupply + _amount &lt;= totalSupplyCap);  // Check for overflow of total supply cap
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+    require(curTotalSupply + _amount <= totalSupplyCap);  // Check for overflow of total supply cap
     uint256 previousBalanceTo = balanceOf(_owner);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     lockTokens[_owner].value = previousLockTokens.add(_amount);
     uint256 curBlockNumber = getCurrentBlockNumber();
     lockTokens[_owner].blockNumber = curBlockNumber.add(durationOfLock);
@@ -339,9 +339,9 @@ contract AElfToken is ERC20, Ownable {
    * @return True if the tokens are withdrawn correctly
    */
   function withdrawMintTokens(address _owner, uint256 _amount) nonZeroAddress(_owner) canMint only(aelfCommunityMultisig) public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     uint256 previousLockTokens = lockTokens[_owner].value;
-    require(previousLockTokens - _amount &gt;= 0);
+    require(previousLockTokens - _amount >= 0);
     lockTokens[_owner].value = previousLockTokens.sub(_amount);
     if (previousLockTokens - _amount == 0) {
       lockTokens[_owner].blockNumber = 0;
@@ -355,13 +355,13 @@ contract AElfToken is ERC20, Ownable {
    * @return True if the tokens are minted correctly
    */
   function mintTokens(address _owner) canMint only(aelfDevMultisig) nonZeroAddress(_owner) public returns (bool) {
-    require(lockTokens[_owner].blockNumber &lt;= getCurrentBlockNumber());
+    require(lockTokens[_owner].blockNumber <= getCurrentBlockNumber());
     uint256 _amount = lockTokens[_owner].value;
     uint256 curTotalSupply = totalSupply;
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
-    require(curTotalSupply + _amount &lt;= totalSupplyCap);  // Check for overflow of total supply cap
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+    require(curTotalSupply + _amount <= totalSupplyCap);  // Check for overflow of total supply cap
     uint256 previousBalanceTo = balanceOf(_owner);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     
     totalSupply = curTotalSupply.add(_amount);
     balances[_owner] = previousBalanceTo.add(_amount);
@@ -379,13 +379,13 @@ contract AElfToken is ERC20, Ownable {
    * @return True if the tokens are minted correctly
    */
   function mintTokensWithinTime(address _owner, uint256 _amount) nonZeroAddress(_owner) canMint only(aelfDevMultisig) public returns (bool) {
-    require(_amount &gt; 0);
-    require(getCurrentBlockNumber() &lt; (deployBlockNumber + MINTTIME));
+    require(_amount > 0);
+    require(getCurrentBlockNumber() < (deployBlockNumber + MINTTIME));
     uint256 curTotalSupply = totalSupply;
-    require(curTotalSupply + _amount &gt;= curTotalSupply); // Check for overflow
-    require(curTotalSupply + _amount &lt;= totalSupplyCap);  // Check for overflow of total supply cap
+    require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+    require(curTotalSupply + _amount <= totalSupplyCap);  // Check for overflow of total supply cap
     uint256 previousBalanceTo = balanceOf(_owner);
-    require(previousBalanceTo + _amount &gt;= previousBalanceTo); // Check for overflow
+    require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
     
     totalSupply = curTotalSupply.add(_amount);
     balances[_owner] = previousBalanceTo.add(_amount);
@@ -400,10 +400,10 @@ contract AElfToken is ERC20, Ownable {
    * @return True if the tokens are transferred correctly
    */
   function transferForMultiAddresses(address[] _addresses, uint256[] _amounts) canTransfer public returns (bool) {
-    for (uint256 i = 0; i &lt; _addresses.length; i++) {
+    for (uint256 i = 0; i < _addresses.length; i++) {
       require(_addresses[i] != address(0));
-      require(_amounts[i] &lt;= balances[msg.sender]);
-      require(_amounts[i] &gt; 0);
+      require(_amounts[i] <= balances[msg.sender]);
+      require(_amounts[i] > 0);
 
       // SafeMath.sub will throw if there is not enough balance.
       balances[msg.sender] = balances[msg.sender].sub(_amounts[i]);
@@ -419,11 +419,11 @@ contract AElfToken is ERC20, Ownable {
    * @return True if the tokens are burned correctly
    */
   function burnTokens(uint256 _amount) public returns (bool) {
-    require(_amount &gt; 0);
+    require(_amount > 0);
     uint256 curTotalSupply = totalSupply;
-    require(curTotalSupply &gt;= _amount);
+    require(curTotalSupply >= _amount);
     uint256 previousBalanceTo = balanceOf(msg.sender);
-    require(previousBalanceTo &gt;= _amount);
+    require(previousBalanceTo >= _amount);
     totalSupply = curTotalSupply.sub(_amount);
     balances[msg.sender] = previousBalanceTo.sub(_amount);
     BurnTokens(msg.sender, _amount);

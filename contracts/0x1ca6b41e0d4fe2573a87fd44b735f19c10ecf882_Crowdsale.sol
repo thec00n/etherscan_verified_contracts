@@ -11,13 +11,13 @@ library SafeMath { //standart library for uint
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 
@@ -26,7 +26,7 @@ library SafeMath { //standart library for uint
       return 1;
     }
     uint256 c = a**b;
-    assert (c &gt;= a);
+    assert (c >= a);
     return c;
   }
 }
@@ -110,7 +110,7 @@ contract Crowdsale is Ownable{
   uint public tokensSold = 0;
   uint public ethCollected = 0;
 
-  mapping (address =&gt; uint) contributorBalances;
+  mapping (address => uint) contributorBalances;
 
   uint public tokenPrice = 0.001 ether;
 
@@ -128,14 +128,14 @@ contract Crowdsale is Ownable{
   uint public constant minCap = 1000000 * uint(10).pow(decimals);
 
   function isPreIco (uint _time) public pure returns(bool) {
-    if((preIcoStart &lt;= _time) &amp;&amp; (_time &lt; preIcoFinish)){
+    if((preIcoStart <= _time) && (_time < preIcoFinish)){
       return true;
     }
   }
   
   //check is now ICO
   function isIco(uint _time) public pure returns (bool){
-    if((icoStart &lt;= _time) &amp;&amp; (_time &lt; icoFinish)){
+    if((icoStart <= _time) && (_time < icoFinish)){
       return true;
     }
     return false;
@@ -143,24 +143,24 @@ contract Crowdsale is Ownable{
 
   function timeBasedBonus(uint _time) public pure returns(uint) {
     if(isPreIco(_time)){
-      if(preIcoStart + 1 weeks &gt; _time){
+      if(preIcoStart + 1 weeks > _time){
         return 20;
       }
-      if(preIcoStart + 2 weeks &gt; _time){
+      if(preIcoStart + 2 weeks > _time){
         return 15;
       }
-      if(preIcoStart + 3 weeks &gt; _time){
+      if(preIcoStart + 3 weeks > _time){
         return 10;
       }
     }
     if(isIco(_time)){
-      if(icoStart + 1 weeks &gt; _time){
+      if(icoStart + 1 weeks > _time){
         return 20;
       }
-      if(icoStart + 2 weeks &gt; _time){
+      if(icoStart + 2 weeks > _time){
         return 15;
       }
-      if(icoStart + 3 weeks &gt; _time){
+      if(icoStart + 3 weeks > _time){
         return 10;
       }
     }
@@ -181,8 +181,8 @@ contract Crowdsale is Ownable{
     uint tokensToSend = etherToTokens(_value,_time);
 
     if (isPreIco(_time)){
-      require (tokensToSend &gt;= preIcoMinInvest);
-      require (preIcoTokensSold.add(tokensToSend) &lt;= preIcoMaxCap);
+      require (tokensToSend >= preIcoMinInvest);
+      require (preIcoTokensSold.add(tokensToSend) <= preIcoMaxCap);
       
       token.sendCrowdsaleTokens(_address,tokensToSend);
       preIcoTokensSold = preIcoTokensSold.add(tokensToSend);
@@ -191,14 +191,14 @@ contract Crowdsale is Ownable{
       distributeEther();
 
     }else{
-      require (tokensToSend &gt;= icoMinInvest);
+      require (tokensToSend >= icoMinInvest);
       token.sendCrowdsaleTokens(_address,tokensToSend);
 
       contributorBalances[_address] = contributorBalances[_address].add(_value);
 
       tokensSold = tokensSold.add(tokensToSend);
 
-      if (tokensSold &gt;= minCap){
+      if (tokensSold >= minCap){
         distributeEther();
       }
     }
@@ -244,7 +244,7 @@ contract Crowdsale is Ownable{
   event Refund(address indexed contributor, uint ethValue);  
 
   function refund () public {
-    require (now &gt; icoFinish &amp;&amp; tokensSold &lt; minCap);
+    require (now > icoFinish && tokensSold < minCap);
     require (contributorBalances[msg.sender] != 0);
 
     msg.sender.transfer(contributorBalances[msg.sender]);
@@ -255,7 +255,7 @@ contract Crowdsale is Ownable{
   }
   
   function endIco () public onlyTechSupport {
-    require(now &gt; icoFinish + 5 days);
+    require(now > icoFinish + 5 days);
     token.endIco();
   }
   

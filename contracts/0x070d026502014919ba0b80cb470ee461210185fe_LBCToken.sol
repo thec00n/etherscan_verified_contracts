@@ -16,25 +16,25 @@ library LBCCoin {
     }
  
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
  
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
 contract LBCToken {
     using LBCCoin for uint;
 
-    string public name = &quot;LeiBaoCoin&quot;;      //  token name
-    string public symbol = &quot;LBC&quot;;           //  token symbol
+    string public name = "LeiBaoCoin";      //  token name
+    string public symbol = "LBC";           //  token symbol
     uint256 public decimals = 6;            //  token digit
 
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     uint256 public totalSupply = 0;
     bool public stopped = false;
@@ -43,7 +43,7 @@ contract LBCToken {
     address owner = 0x0;
 
     modifier onlyPayloadSize(uint size) {
-        require(!(msg.data.length &lt; size + 4));
+        require(!(msg.data.length < size + 4));
         _;
     }
 
@@ -70,8 +70,8 @@ contract LBCToken {
     }
 
     function transfer(address _to, uint256 _value) isRunning validAddress onlyPayloadSize(2 * 32) returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+        require(balanceOf[msg.sender] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -79,9 +79,9 @@ contract LBCToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) isRunning validAddress onlyPayloadSize(3 * 32) returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-        require(allowance[_from][msg.sender] &gt;= _value);
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(allowance[_from][msg.sender] >= _value);
         balanceOf[_to] += _value;
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
@@ -109,7 +109,7 @@ contract LBCToken {
     }
 
     function burn(uint256 _value) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[0x0] += _value;
         Transfer(msg.sender, 0x0, _value);

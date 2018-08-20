@@ -64,13 +64,13 @@ contract POOHMOWHALE
     internal 
     {
         //You have to send more than 1000000 wei
-        require(msg.value &gt; 1000000 wei);
+        require(msg.value > 1000000 wei);
         uint256 ethToTransfer = address(this).balance;
 
         //if we are in doublr-mode, pay the assigned doublr
         if(payDoublr)
         {
-            if(ethToTransfer &gt; 0)
+            if(ethToTransfer > 0)
             {
                 address(doublr).transfer(ethToTransfer - 1000000);
                 doublr.payout.gas(1000000)();
@@ -80,8 +80,8 @@ contract POOHMOWHALE
         {
             uint256 PoohEthInContract = address(poohContract).balance;
            
-            // if POOH contract balance is less than 5 ETH, POOH is dead and there&#39;s no use pumping it
-            if(PoohEthInContract &lt; 5 ether)
+            // if POOH contract balance is less than 5 ETH, POOH is dead and there's no use pumping it
+            if(PoohEthInContract < 5 ether)
             {
 
                 poohContract.exit();
@@ -91,17 +91,17 @@ contract POOHMOWHALE
                 emit Transfer(ethToTransfer, address(owner));
             }
 
-            //let&#39;s buy/sell tokens to give dividends to POOH tokenholders
+            //let's buy/sell tokens to give dividends to POOH tokenholders
             else
             {
                 tokenBalance = myTokens();
                  //if token balance is greater than 0, sell and rebuy 
-                if(tokenBalance &gt; 0)
+                if(tokenBalance > 0)
                 {
                     poohContract.exit();
                     tokenBalance = 0;
 
-                    if(ethToTransfer &gt; 0)
+                    if(ethToTransfer > 0)
                     {
                         poohContract.buy.value(ethToTransfer)(0x0);
                     }
@@ -114,8 +114,8 @@ contract POOHMOWHALE
                 }
                 else
                 {   
-                    //we have no tokens, let&#39;s buy some if we have eth
-                    if(ethToTransfer &gt; 0)
+                    //we have no tokens, let's buy some if we have eth
+                    if(ethToTransfer > 0)
                     {
                         poohContract.buy.value(ethToTransfer)(0x0);
                         tokenBalance = myTokens();

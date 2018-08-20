@@ -9,8 +9,8 @@ contract BlackjackTipJar {
     uint256 public overflow_upper = 0.25 ether;
     uint256 public overflow_lower = 0.15 ether;
 
-    mapping(address =&gt; uint256) public bankrolls;
-    mapping(address =&gt; address) public beneficiaries;
+    mapping(address => uint256) public bankrolls;
+    mapping(address => address) public beneficiaries;
     
     event Deposit(address indexed _dealer, address indexed _from, uint256 _value);
     event Cashout(address indexed _dealer, address indexed _to, uint256 _value);
@@ -45,7 +45,7 @@ contract BlackjackTipJar {
 
       uint256 dealerBankroll = bankrolls[msg.sender];
       uint256 value = amount;
-      if (value &gt; dealerBankroll) {
+      if (value > dealerBankroll) {
         value = dealerBankroll;
       }
 
@@ -55,7 +55,7 @@ contract BlackjackTipJar {
 
       // Has our cup runneth over? Let us collect our profits
       dealerBankroll = bankrolls[msg.sender];
-      if (dealerBankroll &gt; overflow_upper) {
+      if (dealerBankroll > overflow_upper) {
 
         uint256 overflow_amt = dealerBankroll - overflow_lower;
         bankrolls[msg.sender] -= overflow_amt;
@@ -68,7 +68,7 @@ contract BlackjackTipJar {
 
         address beneficiary = msg.sender;
         address sender_beneficiary = beneficiaries[msg.sender];
-        if (sender_beneficiary &gt; 0) { beneficiary = sender_beneficiary; }
+        if (sender_beneficiary > 0) { beneficiary = sender_beneficiary; }
 
         beneficiary.transfer(value);
         emit Overflow(msg.sender, value);
@@ -83,13 +83,13 @@ contract BlackjackTipJar {
 
     // To be called by the pitboss
     function setDealerCut(uint8 cut) public auth {
-      require(cut &lt;= 100 &amp;&amp; cut &gt;= 1);
+      require(cut <= 100 && cut >= 1);
       dealer_cut = cut;
     }
 
     // To be called by the pitboss
     function setOverflowBounds(uint256 upper, uint256 lower) public auth {
-      require(lower &gt; 0 &amp;&amp; upper &gt; lower);
+      require(lower > 0 && upper > lower);
       overflow_upper = upper;
       overflow_lower = lower;
     }

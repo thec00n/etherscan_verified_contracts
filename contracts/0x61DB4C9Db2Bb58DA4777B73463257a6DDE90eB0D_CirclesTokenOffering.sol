@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -51,20 +51,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -80,7 +80,7 @@ contract RefundVault is Ownable {
 
   enum State { Active, Refunding, Closed }
 
-  mapping (address =&gt; uint256) public deposited;
+  mapping (address => uint256) public deposited;
   address public wallet;
   State public state;
 
@@ -141,7 +141,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -186,7 +186,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -199,7 +199,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_to] = balances[_to].add(_value);
     balances[_from] = balances[_from].sub(_value);
@@ -240,17 +240,17 @@ contract StandardToken is ERC20, BasicToken {
 
 /**
  * @title CirclesTokenOffering
- * @dev Modified from OpenZeppelin&#39;s Crowdsale.sol, RefundableCrowdsale.sol,
+ * @dev Modified from OpenZeppelin's Crowdsale.sol, RefundableCrowdsale.sol,
  * CappedCrowdsale.sol, and FinalizableCrowdsale.sol
  * Uses PausableToken rather than MintableToken.
  *
- * Requires that 350m tokens (entire supply minus team&#39;s portion) be deposited.
+ * Requires that 350m tokens (entire supply minus team's portion) be deposited.
  */
 contract CirclesTokenOffering is Ownable {
   using SafeMath for uint256;
 
   // Token allocations
-  mapping (address =&gt; uint256) allocations;
+  mapping (address => uint256) allocations;
 
   // manual early close flag
   bool public isFinalized = false;
@@ -304,12 +304,12 @@ contract CirclesTokenOffering is Ownable {
 
   function CirclesTokenOffering(address _token, uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, uint256 _goal, address _wallet) {
 
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
-    require(_cap &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
+    require(_cap > 0);
     require(_wallet != 0x0);
-    require(_goal &gt; 0);
+    require(_goal > 0);
 
     vault = new RefundVault(_wallet);
     goal = _goal;
@@ -355,7 +355,7 @@ contract CirclesTokenOffering is Ownable {
 
     // confirm there are tokens remaining
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     // send tokens to purchaser
     uint256 tokens = allocations[msg.sender];
@@ -372,7 +372,7 @@ contract CirclesTokenOffering is Ownable {
 
     // confirm there are tokens remaining
     uint256 amount = token.balanceOf(this);
-    require(amount &gt; 0);
+    require(amount > 0);
 
     // send tokens to purchaser
     uint256 tokens = allocations[beneficiary];
@@ -390,16 +390,16 @@ contract CirclesTokenOffering is Ownable {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap;
+    return withinPeriod && nonZeroPurchase && withinCap;
   }
 
   // @return true if crowdsale event has ended or cap reached
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
-    bool passedEndTime = now &gt; endTime;
+    bool capReached = weiRaised >= cap;
+    bool passedEndTime = now > endTime;
     return passedEndTime || capReached;
   }
 
@@ -412,7 +412,7 @@ contract CirclesTokenOffering is Ownable {
   }
 
   function goalReached() public constant returns (bool) {
-   return weiRaised &gt;= goal;
+   return weiRaised >= goal;
   }
 
     // @dev does not require that crowdsale `hasEnded()` to leave safegaurd
@@ -433,7 +433,7 @@ contract CirclesTokenOffering is Ownable {
 
   function unsoldCleanUp() onlyOwner { 
     uint256 amount = token.balanceOf(this);
-    if(amount &gt; 0) {
+    if(amount > 0) {
       require(token.transfer(msg.sender, amount));
     } 
 

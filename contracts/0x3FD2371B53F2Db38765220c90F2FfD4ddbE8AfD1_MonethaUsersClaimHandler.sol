@@ -5,7 +5,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -74,18 +74,18 @@ contract Contactable is Ownable{
  */
 contract MonethaUsersClaimStorage is Contactable {
 
-    string constant VERSION = &quot;0.1&quot;;
+    string constant VERSION = "0.1";
     
     // claimedTokens stores tokens claimed by the user.
-    mapping (address =&gt; uint256) public claimedTokens;
+    mapping (address => uint256) public claimedTokens;
 
     event UpdatedClaim(address indexed _userAddress, uint256 _claimedTokens, bool _isDeleted);
     event DeletedClaim(address indexed _userAddress, uint256 _unclaimedTokens, bool _isDeleted);
 
     /**
      *  updateUserClaim updates user claim status and adds token to his wallet
-     *  @param _userAddress address of user&#39;s wallet
-     *  @param _tokens corresponds to user&#39;s token that is to be claimed.
+     *  @param _userAddress address of user's wallet
+     *  @param _tokens corresponds to user's token that is to be claimed.
      */
     function updateUserClaim(address _userAddress, uint256 _tokens)
         external onlyOwner returns (bool)
@@ -105,7 +105,7 @@ contract MonethaUsersClaimStorage is Contactable {
     {
         require(_userAddresses.length == _tokens.length);
 
-        for (uint16 i = 0; i &lt; _userAddresses.length; i++) {
+        for (uint16 i = 0; i < _userAddresses.length; i++) {
             claimedTokens[_userAddresses[i]] = claimedTokens[_userAddresses[i]] + _tokens[i];
 
             emit UpdatedClaim(_userAddresses[i], _tokens[i], false);
@@ -116,7 +116,7 @@ contract MonethaUsersClaimStorage is Contactable {
 
     /**
      *  deleteUserClaim deletes user account
-     *  @param _userAddress corresponds to address of user&#39;s wallet
+     *  @param _userAddress corresponds to address of user's wallet
      */
     function deleteUserClaim(address _userAddress)
         external onlyOwner returns (bool)
@@ -134,7 +134,7 @@ contract MonethaUsersClaimStorage is Contactable {
     function deleteUserClaimInBulk(address[] _userAddresses)
         external onlyOwner returns (bool)
     {
-        for (uint16 i = 0; i &lt; _userAddresses.length; i++) {
+        for (uint16 i = 0; i < _userAddresses.length; i++) {
             delete claimedTokens[_userAddresses[i]];
 
             emit DeletedClaim(_userAddresses[i], 0, true);
@@ -154,7 +154,7 @@ contract MonethaUsersClaimStorage is Contactable {
  */
 contract MonethaUsersClaimHandler is Contactable {
 
-    string constant VERSION = &quot;0.1&quot;;
+    string constant VERSION = "0.1";
     
     MonethaUsersClaimStorage public storageContract;
 
@@ -165,9 +165,9 @@ contract MonethaUsersClaimHandler is Contactable {
     }
 
     /**
-     *  claimTokens calls updateUserClaim function of MonethaUsersClaimStorage contract to update user&#39;s token claim status and assign tokens to user.
-     *  @param _monethaUser address of user&#39;s wallet
-     *  @param _tokens corresponds to user&#39;s token that is to be claimed.
+     *  claimTokens calls updateUserClaim function of MonethaUsersClaimStorage contract to update user's token claim status and assign tokens to user.
+     *  @param _monethaUser address of user's wallet
+     *  @param _tokens corresponds to user's token that is to be claimed.
      */
     function claimTokens(address _monethaUser, uint256 _tokens) external onlyOwner {
         require(storageContract.updateUserClaim(_monethaUser, _tokens));
@@ -181,7 +181,7 @@ contract MonethaUsersClaimHandler is Contactable {
     }
 
     /**
-     *  deleteAccount deletes user&#39;s claimed token
+     *  deleteAccount deletes user's claimed token
      *  @param _monethaUser address of users wallet
      */
     function deleteAccount(address _monethaUser) external onlyOwner {

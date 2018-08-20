@@ -17,10 +17,10 @@ contract EthereumPrivate {
     uint256 public epoch;
     uint256 public retentionMax;
 
-    mapping (address =&gt; uint256) public balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
-    mapping (address =&gt; bool) public buried;
-    mapping (address =&gt; uint256) public claimed;
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public buried;
+    mapping (address => uint256) public claimed;
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -29,8 +29,8 @@ contract EthereumPrivate {
     event Claim(address indexed _target, address indexed _payout, address indexed _fee);
     function EthereumPrivate () public {
         director = msg.sender;
-        name = &quot;Ethereum Private Token&quot;;
-        symbol = &quot;ETP&quot;;
+        name = "Ethereum Private Token";
+        symbol = "ETP";
         decimals = 18;
         saleClosed = false;
         directorLock = false;
@@ -115,8 +115,8 @@ contract EthereumPrivate {
 
     function bury() public returns (bool success) {
         require(!buried[msg.sender]);
-        require(balances[msg.sender] &gt;= claimAmount);
-        require(balances[msg.sender] &lt;= retentionMax);
+        require(balances[msg.sender] >= claimAmount);
+        require(balances[msg.sender] <= retentionMax);
         buried[msg.sender] = true;
         claimed[msg.sender] = 1;
         Bury(msg.sender, balances[msg.sender]);
@@ -129,8 +129,8 @@ contract EthereumPrivate {
         require(_payout != _fee);
         require(msg.sender != _payout);
         require(msg.sender != _fee);
-        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) &gt;= epoch);
-        require(balances[msg.sender] &gt;= claimAmount);
+        require(claimed[msg.sender] == 1 || (block.timestamp - claimed[msg.sender]) >= epoch);
+        require(balances[msg.sender] >= claimAmount);
         claimed[msg.sender] = block.timestamp;
         uint256 previousBalances = balances[msg.sender] + balances[_payout] + balances[_fee];
         balances[msg.sender] -= claimAmount;
@@ -146,9 +146,9 @@ contract EthereumPrivate {
     
     function () public payable {
         require(!saleClosed);
-        require(msg.value &gt;= 1 finney);
+        require(msg.value >= 1 finney);
         uint256 amount = msg.value * 5000;
-        require(totalSupply + amount &lt;= (5000000 * 10 ** uint256(decimals)));
+        require(totalSupply + amount <= (5000000 * 10 ** uint256(decimals)));
         totalSupply += amount;
         balances[msg.sender] += amount;
         funds += msg.value;
@@ -158,12 +158,12 @@ contract EthereumPrivate {
     function _transfer(address _from, address _to, uint _value) internal {
         require(!buried[_from]);
         if (buried[_to]) {
-            require(balances[_to] + _value &lt;= retentionMax);
+            require(balances[_to] + _value <= retentionMax);
         }
         
         require(_to != 0x0);
-        require(balances[_from] &gt;= _value);
-        require(balances[_to] + _value &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to] + _value > balances[_to]);
         uint256 previousBalances = balances[_from] + balances[_to];
         balances[_from] -= _value;
         balances[_to] += _value;
@@ -178,7 +178,7 @@ contract EthereumPrivate {
 
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender]);
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -204,7 +204,7 @@ contract EthereumPrivate {
 
     function burn(uint256 _value) public returns (bool success) {
         require(!buried[msg.sender]);
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -214,8 +214,8 @@ contract EthereumPrivate {
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
         require(!buried[_from]);
-        require(balances[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balances[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balances[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;

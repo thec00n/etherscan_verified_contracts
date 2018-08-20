@@ -16,9 +16,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -26,7 +26,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -35,7 +35,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -106,10 +106,10 @@ contract SKYFNetworkDevelopmentFund is Ownable{
             initialSupply = balance;
         }
         
-        if (now &lt; firstYearEnd) {
-            require(balance.sub(_value).mul(2) &gt;= initialSupply); //no less than 50%(1/2) should be left on account after first year
-        } else if (now &lt; secondYearEnd) {
-            require(balance.sub(_value).mul(20) &gt;= initialSupply.mul(3)); //no less than 15%(3/20) should be left on account after second year
+        if (now < firstYearEnd) {
+            require(balance.sub(_value).mul(2) >= initialSupply); //no less than 50%(1/2) should be left on account after first year
+        } else if (now < secondYearEnd) {
+            require(balance.sub(_value).mul(20) >= initialSupply.mul(3)); //no less than 15%(3/20) should be left on account after second year
         }
 
         token.transfer(_to, _value);

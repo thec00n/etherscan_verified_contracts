@@ -3,15 +3,15 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract MGTOWToken {
     /* Public variables of the token */
-    string public standard = &#39;MGTOW 1.0&#39;;
-    string public name = &#39;MGTOW&#39;;
-    string public symbol = &#39;MGTOW&#39;;
+    string public standard = 'MGTOW 1.0';
+    string public name = 'MGTOW';
+    string public symbol = 'MGTOW';
     uint8 public decimals = 4;
     uint256 public totalSupply = 500000000000;
 
     /* Creates an array with all balances */
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     /* Generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -27,8 +27,8 @@ contract MGTOWToken {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         if (_to == 0x0) revert();                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] &lt; _value) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert(); // Check for overflows
+        if (balanceOf[msg.sender] < _value) revert();           // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
         balanceOf[msg.sender] -= _value;                        // Subtract from the sender
         balanceOf[_to] += _value;                               // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                      // Notify anyone listening that this transfer took place
@@ -37,7 +37,7 @@ contract MGTOWToken {
     /* Allow another contract to spend some tokens on my behalf */
     function approve(address _spender, uint256 _value)
         returns (bool success) {
-        if ((_value != 0) &amp;&amp; (allowance[msg.sender][_spender] != 0)) revert();
+        if ((_value != 0) && (allowance[msg.sender][_spender] != 0)) revert();
         allowance[msg.sender][_spender] = _value;
         return true;
     }
@@ -55,9 +55,9 @@ contract MGTOWToken {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         if (_to == 0x0) revert();                                // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] &lt; _value) revert();                 // Check if the sender has enough
-        if (balanceOf[_to] + _value &lt; balanceOf[_to]) revert();  // Check for overflows
-        if (_value &gt; allowance[_from][msg.sender]) revert();     // Check allowance
+        if (balanceOf[_from] < _value) revert();                 // Check if the sender has enough
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert();  // Check for overflows
+        if (_value > allowance[_from][msg.sender]) revert();     // Check allowance
         balanceOf[_from] -= _value;                              // Subtract from the sender
         balanceOf[_to] += _value;                                // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
@@ -67,7 +67,7 @@ contract MGTOWToken {
 
 	/* Burn by User */
     function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] &lt; _value) revert();            // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) revert();            // Check if the sender has enough
         balanceOf[msg.sender] -= _value;                         // Subtract from the sender
         totalSupply -= _value;                                   // Updates totalSupply
         Burn(msg.sender, _value);
@@ -76,8 +76,8 @@ contract MGTOWToken {
 
 	/* Burn from Users */
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] &lt; _value) revert();                // Check if the sender has enough
-        if (_value &gt; allowance[_from][msg.sender]) revert();    // Check allowance
+        if (balanceOf[_from] < _value) revert();                // Check if the sender has enough
+        if (_value > allowance[_from][msg.sender]) revert();    // Check allowance
         balanceOf[_from] -= _value;                             // Subtract from the sender
         totalSupply -= _value;                                  // Updates totalSupply
         Burn(_from, _value);

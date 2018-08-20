@@ -8,20 +8,20 @@ library SafeMath {
     }
 
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
         uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
         return c;
     }
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -71,8 +71,8 @@ contract BetleyToken is Ownable, ERC20 {
     using SafeMath for uint256;
 
     // Token properties
-    string public name = &quot;BetleyToken&quot;;               //Token name
-    string public symbol = &quot;BETS&quot;;                     //Token symbol
+    string public name = "BetleyToken";               //Token name
+    string public symbol = "BETS";                     //Token symbol
     uint256 public decimals = 18;
 
     uint256 public _totalSupply = 1000000000e18;       //100% Total Supply
@@ -94,10 +94,10 @@ contract BetleyToken is Ownable, ERC20 {
     uint256 public isDistributionTransferred = 0;
 
     // Balances for each account
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
     // Owner of account approves the transfer of an amount to another account
-    mapping (address =&gt; mapping(address =&gt; uint256)) allowed;
+    mapping (address => mapping(address => uint256)) allowed;
     
     // start and end timestamps where investments are allowed (both inclusive)
     uint256 public preSaleStartTime; 
@@ -127,7 +127,7 @@ contract BetleyToken is Ownable, ERC20 {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
     modifier canTradable() {
-        require(tradable || ((now &lt; mainSaleStartTime + 30 days) &amp;&amp; (now &gt; preSaleStartTime)));
+        require(tradable || ((now < mainSaleStartTime + 30 days) && (now > preSaleStartTime)));
         _;
     }
 
@@ -163,31 +163,31 @@ contract BetleyToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function tokensale(address recipient) public payable {
         require(recipient != 0x0);
-        require(msg.value &gt;= minContribAmount &amp;&amp; msg.value &lt;= maxContribAmount);
+        require(msg.value >= minContribAmount && msg.value <= maxContribAmount);
         price = getPrice();
         uint256 weiAmount = msg.value;
         uint256 tokenToSend = weiAmount.mul(price);
         
-        require(tokenToSend &gt; 0);
-        if ((now &gt; preSaleStartTime) &amp;&amp; (now &lt; preSaleStartTime + 60 days)) {
+        require(tokenToSend > 0);
+        if ((now > preSaleStartTime) && (now < preSaleStartTime + 60 days)) {
 		
-			require(_presaleSupply &gt;= tokenToSend);
+			require(_presaleSupply >= tokenToSend);
 		
-        } else if ((now &gt; mainSaleStartTime) &amp;&amp; (now &lt; mainSaleStartTime + 30 days)) {
+        } else if ((now > mainSaleStartTime) && (now < mainSaleStartTime + 30 days)) {
             	
-            require(_mainsaleSupply &gt;= tokenToSend);
+            require(_mainsaleSupply >= tokenToSend);
         
 		}
         
         balances[multisig] = balances[multisig].sub(tokenToSend);
         balances[recipient] = balances[recipient].add(tokenToSend);
         
-        if ((now &gt; preSaleStartTime) &amp;&amp; (now &lt; preSaleStartTime + 60 days)) {
+        if ((now > preSaleStartTime) && (now < preSaleStartTime + 60 days)) {
             
 			presaleTotalNumberTokenSold = presaleTotalNumberTokenSold.add(tokenToSend);
             _presaleSupply = _presaleSupply.sub(tokenToSend);
         
-		} else if ((now &gt; mainSaleStartTime) &amp;&amp; (now &lt; mainSaleStartTime + 30 days)) {
+		} else if ((now > mainSaleStartTime) && (now < mainSaleStartTime + 30 days)) {
             
 			mainsaleTotalNumberTokenSold = mainsaleTotalNumberTokenSold.add(tokenToSend);
             _mainsaleSupply = _mainsaleSupply.sub(tokenToSend);
@@ -195,7 +195,7 @@ contract BetleyToken is Ownable, ERC20 {
 		}
 
         address tar_addr = multisig;
-        if (presaleTotalNumberTokenSold + mainsaleTotalNumberTokenSold &gt; 10000000) { // Transfers ETHER to wallet after softcap is hit
+        if (presaleTotalNumberTokenSold + mainsaleTotalNumberTokenSold > 10000000) { // Transfers ETHER to wallet after softcap is hit
             tar_addr = sec_addr;
         }
         tar_addr.transfer(msg.value);
@@ -209,7 +209,7 @@ contract BetleyToken is Ownable, ERC20 {
 
     // Token distribution to Team
     function sendTeamSupplyToken(address to) public onlyOwner {
-        require ((to != 0x0) &amp;&amp; (isDistributionTransferred == 0));
+        require ((to != 0x0) && (isDistributionTransferred == 0));
 
         balances[multisig] = balances[multisig].sub(_teamSupply);
         balances[to] = balances[to].add(_teamSupply);
@@ -218,7 +218,7 @@ contract BetleyToken is Ownable, ERC20 {
 
     // Token distribution to Advisors
     function sendAdvisorsSupplyToken(address to) public onlyOwner {
-        require ((to != 0x0) &amp;&amp; (isDistributionTransferred == 0));
+        require ((to != 0x0) && (isDistributionTransferred == 0));
 
         balances[multisig] = balances[multisig].sub(_advisorsSupply);
         balances[to] = balances[to].add(_advisorsSupply);
@@ -227,7 +227,7 @@ contract BetleyToken is Ownable, ERC20 {
     
     // Token distribution to Platform
     function sendPlatformSupplyToken(address to) public onlyOwner {
-        require ((to != 0x0) &amp;&amp; (isDistributionTransferred == 0));
+        require ((to != 0x0) && (isDistributionTransferred == 0));
 
         balances[multisig] = balances[multisig].sub(_platformSupply);
         balances[to] = balances[to].add(_platformSupply);
@@ -236,7 +236,7 @@ contract BetleyToken is Ownable, ERC20 {
     
     // Token distribution to Bounty
     function sendBountySupplyToken(address to) public onlyOwner {
-        require ((to != 0x0) &amp;&amp; (isDistributionTransferred == 0));
+        require ((to != 0x0) && (isDistributionTransferred == 0));
 
         balances[multisig] = balances[multisig].sub(_bountySupply);
         balances[to] = balances[to].add(_bountySupply);
@@ -271,7 +271,7 @@ contract BetleyToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function transfer(address to, uint256 value) public canTradable returns (bool success)  {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         balances[msg.sender] = balances[msg.sender].sub(value);
         balances[to] = balances[to].add(value);
@@ -286,7 +286,7 @@ contract BetleyToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Transfer
     function transferFrom(address from, address to, uint256 value) public canTradable returns (bool success)  {
         require (
-            allowed[from][msg.sender] &gt;= value &amp;&amp; balances[from] &gt;= value &amp;&amp; value &gt; 0
+            allowed[from][msg.sender] >= value && balances[from] >= value && value > 0
         );
         balances[from] = balances[from].sub(value);
         balances[to] = balances[to].add(value);
@@ -302,7 +302,7 @@ contract BetleyToken is Ownable, ERC20 {
     // @return the transaction address and send the event as Approval
     function approve(address spender, uint256 value) public returns (bool success)  {
         require (
-            balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0
+            balances[msg.sender] >= value && value > 0
         );
         allowed[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
@@ -320,20 +320,20 @@ contract BetleyToken is Ownable, ERC20 {
     // Get current price of a Token
     // @return the price or token value for a ether
     function getPrice() public view returns (uint256 result) {
-        if ((now &gt; preSaleStartTime) &amp;&amp; (now &lt; preSaleStartTime + 60 days) &amp;&amp; (presaleTotalNumberTokenSold &lt; _saleSupply)) {
+        if ((now > preSaleStartTime) && (now < preSaleStartTime + 60 days) && (presaleTotalNumberTokenSold < _saleSupply)) {
             
-			if ((now &gt; preSaleStartTime) &amp;&amp; (now &lt; preSaleStartTime + 14 days)) {
+			if ((now > preSaleStartTime) && (now < preSaleStartTime + 14 days)) {
                 return 15000;
-            } else if ((now &gt;= preSaleStartTime + 14 days) &amp;&amp; (now &lt; preSaleStartTime + 28 days)) {
+            } else if ((now >= preSaleStartTime + 14 days) && (now < preSaleStartTime + 28 days)) {
                 return 13000;
-            } else if ((now &gt;= preSaleStartTime + 28 days) &amp;&amp; (now &lt; preSaleStartTime + 42 days)) {
+            } else if ((now >= preSaleStartTime + 28 days) && (now < preSaleStartTime + 42 days)) {
                 return 11000;
-            } else if ((now &gt;= preSaleStartTime + 42 days)) {
+            } else if ((now >= preSaleStartTime + 42 days)) {
                 return 10500;
             }
 			
-        } else if ((now &gt; mainSaleStartTime) &amp;&amp; (now &lt; mainSaleStartTime + 30 days) &amp;&amp; (mainsaleTotalNumberTokenSold &lt; _mainsaleSupply)) {
-            if ((now &gt; mainSaleStartTime) &amp;&amp; (now &lt; mainSaleStartTime + 30 days)) {
+        } else if ((now > mainSaleStartTime) && (now < mainSaleStartTime + 30 days) && (mainsaleTotalNumberTokenSold < _mainsaleSupply)) {
+            if ((now > mainSaleStartTime) && (now < mainSaleStartTime + 30 days)) {
                 return 10000;
             }
         } else {

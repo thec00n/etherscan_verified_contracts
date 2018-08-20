@@ -11,7 +11,7 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
@@ -19,7 +19,7 @@ library SafeMath {
 
     function add(uint a, uint b) internal returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
@@ -64,14 +64,14 @@ contract Token {
 contract StandardToken is Token {
 
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) {
+        if(msg.data.length < size + 4) {
             throw;
         }
         _;
     }
 
     function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) returns (bool success) {
-	  if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+	  if (balances[msg.sender] >= _value && _value > 0) {
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -82,7 +82,7 @@ contract StandardToken is Token {
     }
 
     function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) returns (bool success) {
-      if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+      if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -107,8 +107,8 @@ contract StandardToken is Token {
         return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 
 }
 
@@ -118,8 +118,8 @@ contract LudumToken is StandardToken {
 
     using SafeMath for uint;
 
-	string public constant name = &quot;Ludum&quot;; // Ludum tokens name
-    string public constant symbol = &quot;LDM&quot;; // Ludum tokens ticker
+	string public constant name = "Ludum"; // Ludum tokens name
+    string public constant symbol = "LDM"; // Ludum tokens ticker
     uint public constant decimals = 18; // Ludum tokens decimals
 	uint public constant maximumSupply =  100000000000000000000000000; // Maximum 100M Ludum tokens can be created
 
@@ -139,12 +139,12 @@ contract LudumToken is StandardToken {
 
     function ludumTokensPerEther() constant returns(uint) {
 
-		if (now &lt; crowdsaleStart || now &gt; crowdsaleEnd) {
+		if (now < crowdsaleStart || now > crowdsaleEnd) {
 			return 0;
 		} else {
-			if (now &lt; crowdsaleStart + 1 days) return 15000; // Ludum token sale with 50% bonus
-			if (now &lt; crowdsaleStart + 7 days) return 13000; // Ludum token sale with 30% bonus
-			if (now &lt; crowdsaleStart + 14 days) return 11000; // Ludum token sale with 10% bonus
+			if (now < crowdsaleStart + 1 days) return 15000; // Ludum token sale with 50% bonus
+			if (now < crowdsaleStart + 7 days) return 13000; // Ludum token sale with 30% bonus
+			if (now < crowdsaleStart + 14 days) return 11000; // Ludum token sale with 10% bonus
 			return 10000; // Ludum token sale
 		}
 
@@ -158,18 +158,18 @@ contract LudumToken is StandardToken {
     function LudumToken()
     {
         isFinalized = false;
-	    ethDepositAddress = &quot;0xD8E4FB6cC1BD2a8eF6E086152877E7ba540B5d9b&quot;;
-	    teamFundAddress = &quot;0xB6FCB6EF9b46B4ea0AC403e74b53e3962f6fc41d&quot;;
-	    operationsFundAddress = &quot;0x81B9c43a410C86620fbd85509c29E8C93995A8A9&quot;;
-	    marketingFundAddress = &quot;0x057CCb6A9061Aa61aEAE047fdCddeCb6511A0865&quot;;
+	    ethDepositAddress = "0xD8E4FB6cC1BD2a8eF6E086152877E7ba540B5d9b";
+	    teamFundAddress = "0xB6FCB6EF9b46B4ea0AC403e74b53e3962f6fc41d";
+	    operationsFundAddress = "0x81B9c43a410C86620fbd85509c29E8C93995A8A9";
+	    marketingFundAddress = "0x057CCb6A9061Aa61aEAE047fdCddeCb6511A0865";
     }
 
 
     function makeTokens() payable  {
         if (isFinalized) throw;
-        if (now &lt; crowdsaleStart) throw;
-        if (now &gt; crowdsaleEnd) throw;
-        if (msg.value &lt; 10 finney) throw;
+        if (now < crowdsaleStart) throw;
+        if (now > crowdsaleEnd) throw;
+        if (msg.value < 10 finney) throw;
 
         uint tokens = msg.value.mul(ludumTokensPerEther());
 	    uint teamTokens = tokens.mul(teamPercent).div(100);
@@ -178,7 +178,7 @@ contract LudumToken is StandardToken {
 
 	    uint currentSupply = totalSupply.add(tokens).add(teamTokens).add(operationsTokens).add(marketingTokens);
 
-        if (maximumSupply &lt; currentSupply) throw;
+        if (maximumSupply < currentSupply) throw;
 
         totalSupply = currentSupply;
 
@@ -205,7 +205,7 @@ contract LudumToken is StandardToken {
         if (isFinalized) throw;
         if (msg.sender != ethDepositAddress) throw;
 
-	    if(now &lt;= crowdsaleEnd &amp;&amp; totalSupply != maximumSupply) throw;
+	    if(now <= crowdsaleEnd && totalSupply != maximumSupply) throw;
 
         isFinalized = true;
         if(!ethDepositAddress.send(this.balance)) throw;

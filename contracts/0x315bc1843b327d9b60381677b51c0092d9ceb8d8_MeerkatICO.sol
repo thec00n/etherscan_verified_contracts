@@ -47,7 +47,7 @@ contract MeerkatICO {
     }
 
     function () public payable {
-        require( (msg.value &gt;= 100000000000000000) &amp;&amp; (rateMe != 0) );
+        require( (msg.value >= 100000000000000000) && (rateMe != 0) );
         
         uint value = msg.value * rateMe;
 

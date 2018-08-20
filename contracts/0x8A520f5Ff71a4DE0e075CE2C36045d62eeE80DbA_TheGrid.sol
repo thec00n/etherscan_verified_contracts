@@ -37,10 +37,10 @@ contract TheGrid is owned {
     uint public win;
     
 	// A mapping of the pending payouts
-	mapping(address =&gt; uint) public pendingPayouts;
+	mapping(address => uint) public pendingPayouts;
 	uint public totalPayouts;
 	// A mapping of the points gained in this game
-    mapping(address =&gt; uint) public balanceOf;
+    mapping(address => uint) public balanceOf;
     uint public totalSupply;
     
 	// State of the grid. Positions are encoded as _x*size+_y.
@@ -85,7 +85,7 @@ contract TheGrid is owned {
 		_x += _dx;
 		_y += _dy;
 		// While still on the grid...
-		while (_x &lt; s &amp;&amp; _y &lt; s &amp;&amp; _x &gt;= 0 &amp;&amp; _y &gt;= 0) {
+		while (_x < s && _y < s && _x >= 0 && _y >= 0) {
 			// If it is the sender, gain point, else break
 			if (theGrid[getIndex(uint(_x), uint(_y))] == msg.sender) {
 				found ++;
@@ -108,30 +108,30 @@ contract TheGrid is owned {
 		if (msg.sender == lastPlayer) throw;
 		// If there is a timeout, divide the price by two and let the
 		// next game start at 3 again.
-		if (now &gt; timeoutAt) {
+		if (now > timeoutAt) {
 			price = price / 2;
 			// 1 finney is the lowest acceptable price. It makes sure the
 			// calculation of a players share never becomes 0.
-			if (price &lt; 1 finney) price = 1 finney;
+			if (price < 1 finney) price = 1 finney;
 			nextsize = 3;
 			Timeout(gameId, size*size - empty + 1);
 		}
 		// If more than the price per position is sended, add it to the
 		// payouts so it can be withdrawn later
-		if (msg.value &lt; price) {
+		if (msg.value < price) {
 			throw;
 		} else {
 			// The owner of the contract gets a little benefit
 			// The sender gets back the overhead
 			var benefit = price / 1000000 * benefitMicros;
-			if (pendingPayouts[owner] + benefit &lt; pendingPayouts[owner]) throw;
+			if (pendingPayouts[owner] + benefit < pendingPayouts[owner]) throw;
 			pendingPayouts[owner] += benefit;
-			if (pendingPayouts[msg.sender] + msg.value - price &lt; pendingPayouts[msg.sender]) throw;
+			if (pendingPayouts[msg.sender] + msg.value - price < pendingPayouts[msg.sender]) throw;
 			pendingPayouts[msg.sender] += msg.value - price;
-			if (totalPayouts + msg.value - price + benefit &lt; totalPayouts) throw;
+			if (totalPayouts + msg.value - price + benefit < totalPayouts) throw;
 			totalPayouts += msg.value - price + benefit;
 			// Add the price to the win
-			if (win + price - benefit &lt; win) throw;
+			if (win + price - benefit < win) throw;
 			win += price - benefit;
 		}
 
@@ -154,32 +154,32 @@ contract TheGrid is owned {
 		
 		// East to west
 		var a = 1 + directionCount(x, y, 1, 0) + directionCount(x, y, -1, 0);
-		if (a &gt;= 3) {
+		if (a >= 3) {
 			found += a * a;
 		}
 		
 		// North east to south west
 		a = 1 + directionCount(x, y, 1, 1) + directionCount(x, y, -1, -1);
-		if (a &gt;= 3) {
+		if (a >= 3) {
 			found += a * a;
 		}
 		
 		// North to south
 		a = 1 + directionCount(x, y, 0, 1) + directionCount(x, y, 0, -1);
-		if (a &gt;= 3) {
+		if (a >= 3) {
 			found += a * a;
 		}
 		
 		// North west to south east
 		a = 1 + directionCount(x, y, 1, -1) + directionCount(x, y, -1, 1);
-		if (a &gt;= 3) {
+		if (a >= 3) {
 			found += a * a;
 		}
         
         // Add points
-		if (balanceOf[msg.sender] + found &lt; balanceOf[msg.sender]) throw;
+		if (balanceOf[msg.sender] + found < balanceOf[msg.sender]) throw;
         balanceOf[msg.sender] += found;
-		if (totalSupply + found &lt; totalSupply) throw;
+		if (totalSupply + found < totalSupply) throw;
         totalSupply += found;
 		
 		// Trigger event before the price increases!
@@ -208,8 +208,8 @@ contract TheGrid is owned {
 	// Returns the in array index of one position and throws on
 	// off-grid position
     function getIndex(uint _x, uint _y) internal returns (uint) {
-        if (_x &gt;= size) throw;
-        if (_y &gt;= size) throw;
+        if (_x >= size) throw;
+        if (_y >= size) throw;
 		return _x * size + _y;
     }
     
@@ -218,21 +218,21 @@ contract TheGrid is owned {
     function nextRound() internal {
         GameEnded(gameId, win, totalSupply);
 		// Calculate share per point
-		if (totalPayouts + win &lt; totalPayouts) throw;
+		if (totalPayouts + win < totalPayouts) throw;
 		totalPayouts += win;
 		// If the totalSupply is 0, no one played, so no one can gain a share
-		// The maximum total Supply is lower than 1.1e9, so the share can&#39;t
+		// The maximum total Supply is lower than 1.1e9, so the share can't
 		// become 0 because of a too high totalSupply, as a finney is still
 		// bigger.
 		var share = totalSupply == 0 ? 0 : win / totalSupply;
         // Send balances to the payouts
 		// If the win was not dividable by the number of points, it is kept
 		// for the next game. Most properly only some wei.
-        for (var i = 0; i &lt; players.length; i++) {
+        for (var i = 0; i < players.length; i++) {
 			var amount = share * balanceOf[players[i]];
 			totalSupply -= balanceOf[players[i]];
 			balanceOf[players[i]] = 0;
-			if (pendingPayouts[players[i]] + amount &lt; pendingPayouts[players[i]]) throw;
+			if (pendingPayouts[players[i]] + amount < pendingPayouts[players[i]]) throw;
             pendingPayouts[players[i]] += amount;
 			win -= amount;
         }
@@ -244,7 +244,7 @@ contract TheGrid is owned {
 		lastPlayer = 0x0;
 		// The next game will be a bit bigger, but limit it to 64.
         size = nextsize;
-		if (nextsize &lt; 64) nextsize ++;
+		if (nextsize < 64) nextsize ++;
 		gameId ++;
 		// Calculate empty spots
         empty = size * size;

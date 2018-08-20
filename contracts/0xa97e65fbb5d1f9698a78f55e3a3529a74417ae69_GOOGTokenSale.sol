@@ -1,9 +1,9 @@
 pragma solidity ^0.4.19;
 
 contract GOOGToken {
-    string  public name = &quot;GOOGOL TOKEN&quot;;
-    string  public symbol = &quot;GOOG&quot;;
-    string  public standard = &quot;GOOG Token v1.0&quot;;
+    string  public name = "GOOGOL TOKEN";
+    string  public symbol = "GOOG";
+    string  public standard = "GOOG Token v1.0";
     uint8 public constant decimals = 18;
     uint256 public totalSupply;
 
@@ -21,8 +21,8 @@ contract GOOGToken {
 
     event Burn(address indexed from, uint256 value);
 
-    mapping(address =&gt; uint256) public balanceOf;
-    mapping(address =&gt; mapping(address =&gt; uint256)) public allowance;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
 
     function GOOGToken () public {
@@ -35,7 +35,7 @@ contract GOOGToken {
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         
 
         balanceOf[msg.sender] -= _value;
@@ -55,8 +55,8 @@ contract GOOGToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= balanceOf[_from]);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowance[_from][msg.sender]);
 
         balanceOf[_from] -= _value;
         balanceOf[_to] += _value;
@@ -69,7 +69,7 @@ contract GOOGToken {
     }
 
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);
+        require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -77,8 +77,8 @@ contract GOOGToken {
     }
 
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);
-        require(_value &lt;= allowance[_from][msg.sender]);
+        require(balanceOf[_from] >= _value);
+        require(_value <= allowance[_from][msg.sender]);
         balanceOf[_from] -= _value;
         allowance[_from][msg.sender] -= _value;
         totalSupply -= _value;
@@ -127,7 +127,7 @@ contract GOOGTokenSale {
 
 
         //require(msg.value == multiply(_numberOfTokens, tokenPrice));
-        require(tokenContract.balanceOf(this) &gt;= _numberOfTokens);
+        require(tokenContract.balanceOf(this) >= _numberOfTokens);
         require(tokenContract.transfer(msg.sender, _numberOfTokens));
 
 
@@ -151,7 +151,7 @@ contract GOOGTokenSale {
         _numberOfTokens = multiply(msg.value,tokenRate);
 
         //require(msg.value == multiply(_numberOfTokens, tokenPrice));
-        require(tokenContract.balanceOf(this) &gt;= _numberOfTokens);
+        require(tokenContract.balanceOf(this) >= _numberOfTokens);
         require(tokenContract.transfer(msg.sender, _numberOfTokens));
 
 
@@ -193,7 +193,7 @@ contract GOOGTokenSale {
 
     function withdrawPartial(uint256 _withdrawAmount) public {
         require(msg.sender == admin);
-        require(address(this).balance &gt;= _withdrawAmount);
+        require(address(this).balance >= _withdrawAmount);
         //require(tokenContract.transfer(admin, tokenContract.balanceOf(this)));
 
         admin.transfer(_withdrawAmount);

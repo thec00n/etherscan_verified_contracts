@@ -14,28 +14,28 @@ contract FaceterTeamTokensLock {
     function unlock() public returns(bool) {
         uint unlockAmount = 0;
         // Oct 1, 2018
-        if (unlockStep == 0 &amp;&amp; now &gt;= 1538352000) {
+        if (unlockStep == 0 && now >= 1538352000) {
             unlockAmount = AMOUNT;
         // Jan 1, 2018
-        } else if (unlockStep == 1 &amp;&amp; now &gt;= 1546300800) {
+        } else if (unlockStep == 1 && now >= 1546300800) {
             unlockAmount = AMOUNT;
         // Apr 1, 2019
-        } else if (unlockStep == 2 &amp;&amp; now &gt;= 1554076800) {
+        } else if (unlockStep == 2 && now >= 1554076800) {
             unlockAmount = AMOUNT;
         // Jul 1, 2019
-        } else if (unlockStep == 3 &amp;&amp; now &gt;= 1561939200) {
+        } else if (unlockStep == 3 && now >= 1561939200) {
             unlockAmount = AMOUNT;
         // Oct 1, 2019
-        } else if (unlockStep == 4 &amp;&amp; now &gt;= 1569888000) {
+        } else if (unlockStep == 4 && now >= 1569888000) {
             unlockAmount = AMOUNT;
         // Jan 1, 2019
-        } else if (unlockStep == 5 &amp;&amp; now &gt;= 1577836800) {
+        } else if (unlockStep == 5 && now >= 1577836800) {
             unlockAmount = AMOUNT;
         // Apr 1, 2020
-        } else if (unlockStep == 6 &amp;&amp; now &gt;= 1585699200) {
+        } else if (unlockStep == 6 && now >= 1585699200) {
             unlockAmount = AMOUNT;
         // Jul 1, 2020
-        } else if (unlockStep == 7 &amp;&amp; now &gt;= 1593561600) {
+        } else if (unlockStep == 7 && now >= 1593561600) {
             unlockAmount = FaceterToken.balanceOf(this);
         }
         if (unlockAmount == 0) {
@@ -51,8 +51,8 @@ contract FaceterTeamTokensLock {
     }
 
     function recoverTokens(ERC20Interface _token) public returns(bool) {
-        // Don&#39;t allow recovering Faceter Token till the end of lock.
-        if (_token == FaceterToken &amp;&amp; now &lt; 1593561600 &amp;&amp; unlockStep != 8) {
+        // Don't allow recovering Faceter Token till the end of lock.
+        if (_token == FaceterToken && now < 1593561600 && unlockStep != 8) {
             return false;
         }
         return _token.transfer(RECEIVER, _token.balanceOf(this));

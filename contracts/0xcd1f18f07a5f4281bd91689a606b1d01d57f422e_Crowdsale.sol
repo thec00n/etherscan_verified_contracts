@@ -24,12 +24,12 @@ contract Crowdsale {
         bool whitelisted;
         uint256 contributions;
     }
-    mapping(address =&gt; ContributorStruct) public whitelist;
+    mapping(address => ContributorStruct) public whitelist;
 
-    modifier isContributor() {require(whitelist[msg.sender].contributions &gt; 0x00); _;}
+    modifier isContributor() {require(whitelist[msg.sender].contributions > 0x00); _;}
     modifier isOwner() {require(msg.sender == owner); _;}
     modifier inState(State _state) {require(state == _state); _;}
-    modifier inPaymentLimits(uint256 _payment) {require(_payment &gt;= MINCONTRIBUTION); _;}
+    modifier inPaymentLimits(uint256 _payment) {require(_payment >= MINCONTRIBUTION); _;}
     modifier inWhitelist(address _contributor) {require(whitelist[_contributor].whitelisted == true); _;}
 
     event WhitelistingLog(address indexed _contributor);
@@ -58,7 +58,7 @@ contract Crowdsale {
     {
         require(_beneficiary != address(0x00));
 
-        assert(block.timestamp &gt;= STARTDATE); //check if sale has started
+        assert(block.timestamp >= STARTDATE); //check if sale has started
 
         uint256 tokenAmount = _calculateTokenAmount(msg.value);
         YOUToken token = YOUToken(TOKEN);
@@ -69,8 +69,8 @@ contract Crowdsale {
             return false;
         }
 
-        if (weiRaised &gt;= MAXSALESCAP
-            || weiRaised &gt;= MINSALESCAP &amp;&amp; block.timestamp &gt;= ENDDATE) {
+        if (weiRaised >= MAXSALESCAP
+            || weiRaised >= MINSALESCAP && block.timestamp >= ENDDATE) {
             state = State.Funded;
         } else {
             _updateStateIfExpired();
@@ -174,8 +174,8 @@ contract Crowdsale {
     }
 
     function _updateStateIfExpired() internal {
-        if ((block.timestamp &gt;= ENDDATE &amp;&amp; state == State.Running)
-            || (block.timestamp &gt;= ENDDATE &amp;&amp; weiRaised &lt; MINSALESCAP)) {
+        if ((block.timestamp >= ENDDATE && state == State.Running)
+            || (block.timestamp >= ENDDATE && weiRaised < MINSALESCAP)) {
             state = State.Expired;
         }
     }
@@ -186,17 +186,17 @@ contract Crowdsale {
         returns (uint256 tokenAmount)
     {
         uint256 discount;
-        if (block.timestamp &lt;= 1535241660) {
-            if (_weiAmount &gt;= 1700 ether) {
+        if (block.timestamp <= 1535241660) {
+            if (_weiAmount >= 1700 ether) {
                 discount = 30;
-            } else if (_weiAmount &gt; 0.2 ether) {
+            } else if (_weiAmount > 0.2 ether) {
                 discount = 25;
             }
-        } else if (block.timestamp &lt;= 1537747260) {
+        } else if (block.timestamp <= 1537747260) {
             discount = 15;
-        } else if (block.timestamp &lt;= 1540339260) {
+        } else if (block.timestamp <= 1540339260) {
             discount = 10;
-        } else if (block.timestamp &lt;= 1543536060) {
+        } else if (block.timestamp <= 1543536060) {
             discount = 5;
         }
 
@@ -214,20 +214,20 @@ library SafeMath {
   }
 
   function div(uint a, uint b) internal pure returns (uint) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint a, uint b) internal pure returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 

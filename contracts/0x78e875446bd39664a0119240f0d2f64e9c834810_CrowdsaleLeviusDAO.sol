@@ -7,31 +7,31 @@ library SafeMath {
     return c;
   }
   function div(uint a, uint b) internal returns (uint) {
-    assert(b &gt; 0);
+    assert(b > 0);
     uint c = a / b;
     assert(a == b * c + a % b);
     return c;
   }
   function sub(uint a, uint b) internal returns (uint) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint a, uint b) internal returns (uint) {
     uint c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
   function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
   function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
   function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
  
 }
@@ -101,10 +101,10 @@ contract TokenInterface {
  */
 contract StandardToken is TokenInterface {
         // token ownership
-        mapping(address =&gt; uint256) balances;
+        mapping(address => uint256) balances;
 
         // spending permision management
-        mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+        mapping(address => mapping(address => uint256)) allowed;
 
         address owner;
         //best 10 owners
@@ -112,7 +112,7 @@ contract StandardToken is TokenInterface {
         uint[] best_count;
 
         function StandardToken() {
-            for(uint8 i = 0; i &lt; 10; i++) {
+            for(uint8 i = 0; i < 10; i++) {
                 best_wals.push(address(0));
                 best_count.push(0);
             }
@@ -129,7 +129,7 @@ contract StandardToken is TokenInterface {
          */
         function transfer(address to, uint256 value) returns(bool success) {
 
-                if (balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0) {
+                if (balances[msg.sender] >= value && value > 0) {
                         // do actual tokens transfer       
                         balances[msg.sender] -= value;
                         balances[to] += value;
@@ -148,7 +148,7 @@ contract StandardToken is TokenInterface {
 
         function transferWithoutChangeBest(address to, uint256 value) returns(bool success) {
 
-                if (balances[msg.sender] &gt;= value &amp;&amp; value &gt; 0) {
+                if (balances[msg.sender] >= value && value > 0) {
                         // do actual tokens transfer       
                         balances[msg.sender] -= value;
                         balances[to] += value;
@@ -174,9 +174,9 @@ contract StandardToken is TokenInterface {
          */
         function transferFrom(address from, address to, uint256 value) returns(bool success) {
 
-                if (balances[from] &gt;= value &amp;&amp;
-                        allowed[from][msg.sender] &gt;= value &amp;&amp;
-                        value &gt; 0) {
+                if (balances[from] >= value &&
+                        allowed[from][msg.sender] >= value &&
+                        value > 0) {
 
 
                         // do the actual transfer
@@ -200,9 +200,9 @@ contract StandardToken is TokenInterface {
 
         function CheckBest(uint _tokens, address _address) {
             //дописать токен проверку лучших (перенести из краудсейла)
-            for(uint8 i = 0; i &lt; 10; i++) {
-                            if(best_count[i] &lt; _tokens) {
-                                for(uint8 j = 9; j &gt; i; j--) {
+            for(uint8 i = 0; i < 10; i++) {
+                            if(best_count[i] < _tokens) {
+                                for(uint8 j = 9; j > i; j--) {
                                     best_count[j] = best_count[j-1];
                                     best_wals[j] = best_wals[j-1];
                                 }
@@ -268,8 +268,8 @@ contract StandardToken is TokenInterface {
 
 contract LeviusDAO is StandardToken {
 
-    string public constant symbol = &quot;LeviusDAO&quot;;
-    string public constant name = &quot;LeviusDAO&quot;;
+    string public constant symbol = "LeviusDAO";
+    string public constant name = "LeviusDAO";
 
     uint8 public constant decimals = 8;
     uint DECIMAL_ZEROS = 10**8;
@@ -287,13 +287,13 @@ contract LeviusDAO is StandardToken {
     }
 
     function GetBestTokenCount(uint8 _num) returns (uint) {
-        assert(_num &lt; 10);
+        assert(_num < 10);
         BestCountTokens(best_count[_num]);
         return best_count[_num];
     }
 
     function GetBestWalletAddress(uint8 _num) onlyOwner returns (address) {
-        assert(_num &lt; 10);
+        assert(_num < 10);
         BestWallet(best_wals[_num]);
         return best_wals[_num];
     }
@@ -301,12 +301,12 @@ contract LeviusDAO is StandardToken {
 
 contract CrowdsaleLeviusDAO {
     using SafeMath for uint;
-    uint public start_ico = 1503964800;//P2: GMT: 29-Aug-2017 00:00  =&gt; Start ico
-    uint public round1 = 1504224000;//P3: GMT: 1-Sep-2017 00:00  =&gt; End round1
-    uint public deadline = 1509148800;// GMT: 28-Oct-2017 00:00 =&gt; End ico
+    uint public start_ico = 1503964800;//P2: GMT: 29-Aug-2017 00:00  => Start ico
+    uint public round1 = 1504224000;//P3: GMT: 1-Sep-2017 00:00  => End round1
+    uint public deadline = 1509148800;// GMT: 28-Oct-2017 00:00 => End ico
 
-    //uint public start_ico = now + 5 minutes;//P2: GMT: 18-Aug-2017 00:00  =&gt; Start ico
-    //uint public round1 = now + 10 minutes;//P3: GMT: 13-Aug-2017 00:00  =&gt; End round1
+    //uint public start_ico = now + 5 minutes;//P2: GMT: 18-Aug-2017 00:00  => Start ico
+    //uint public round1 = now + 10 minutes;//P3: GMT: 13-Aug-2017 00:00  => End round1
     //uint public deadline = now + 15 minutes;
 
     uint amountRaised;
@@ -331,14 +331,14 @@ contract CrowdsaleLeviusDAO {
     //500,000 / 300 = 1,700 ethers
     uint public constant MIN_CAP = 1700 ether;    
 
-    mapping(address =&gt; uint256) eth_balance;
+    mapping(address => uint256) eth_balance;
 
     //if (addr == address(0)) throw;
 
     event FundTransfer(address backer, uint amount);
     event SendTokens(uint amount);
     
-    modifier afterDeadline() { if (now &gt;= deadline) _; }
+    modifier afterDeadline() { if (now >= deadline) _; }
     modifier onlyOwner { assert(msg.sender == owner); _; }
 
     function CrowdsaleLeviusDAO(
@@ -350,18 +350,18 @@ contract CrowdsaleLeviusDAO {
     }
 
     function () payable {
-        assert(now &lt;= deadline);
+        assert(now <= deadline);
 
         uint tokens = msg.value * getPrice() * DECIMAL_ZEROS / 1 ether;
 
-        assert(tokenReward.balanceOf(address(this)) &gt;= tokens);
+        assert(tokenReward.balanceOf(address(this)) >= tokens);
 
         amountRaised += msg.value;
         eth_balance[msg.sender] += msg.value;
         tokenReward.transfer(msg.sender, tokens);        
 
         if(!fundingGoalReached) {
-            if(amountRaised &gt;= MIN_CAP) {
+            if(amountRaised >= MIN_CAP) {
                 fundingGoalReached = true;
             }
         }
@@ -371,11 +371,11 @@ contract CrowdsaleLeviusDAO {
     }
 
     function getPrice() constant returns(uint result) {
-        if (now &lt;= start_ico) {
+        if (now <= start_ico) {
             result = PRICE_01;
         }
         else {
-            if(now &lt;= round1) {
+            if(now <= round1) {
                 result = PRICE_02;
             }
             else {
@@ -389,7 +389,7 @@ contract CrowdsaleLeviusDAO {
             uint amount = eth_balance[msg.sender];
             eth_balance[msg.sender] = 0;
 
-            if (amount &gt; 0) {
+            if (amount > 0) {
                 if (msg.sender.send(amount)) {
                     FundTransfer(msg.sender, amount);
                 } else {
@@ -400,13 +400,13 @@ contract CrowdsaleLeviusDAO {
     }
 
     function WithdrawalTokensAfterDeadLine() onlyOwner {
-        assert(now &gt; deadline);
+        assert(now > deadline);
 
         tokenReward.transferWithoutChangeBest(msg.sender, tokenReward.balanceOf(address(this)));
     }
 
     function WithdrawalAfterGoalReached() {
-        assert(fundingGoalReached &amp;&amp; owner == msg.sender);
+        assert(fundingGoalReached && owner == msg.sender);
             
             if (owner.send(amountRaised)) {
                 FundTransfer(owner, amountRaised);

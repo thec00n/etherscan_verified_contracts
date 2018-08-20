@@ -51,7 +51,7 @@ contract TimeLockedWallet {
 
     // callable by owner only, after specified time
     function withdraw() onlyOwner public {
-       require(now &gt;= unlockDate);
+       require(now >= unlockDate);
        //now send all the balance
        uint256 balance = address(this).balance;
        msg.sender.transfer(balance);
@@ -60,7 +60,7 @@ contract TimeLockedWallet {
 
     // callable by owner only, after specified time, only for Tokens implementing ERC20
     function withdrawTokens(address _tokenContract) onlyOwner public {
-       require(now &gt;= unlockDate);
+       require(now >= unlockDate);
        ERC20 token = ERC20(_tokenContract);
        //now send all the token balance
        uint tokenBalance = token.balanceOf(this);
@@ -74,7 +74,7 @@ contract TimeLockedWallet {
     
     function isLocked() public view returns(bool _isLocked) {
         
-        return now &lt; unlockDate;
+        return now < unlockDate;
     }
     
     function tokenBalance(address _tokenContract) public view returns(uint _balance) {

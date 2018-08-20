@@ -8,7 +8,7 @@ contract Crowdsale {
     uint public createdTimestamp; uint public start; uint public deadline;
     address public beneficiary;
     uint public amountRaised;
-    mapping(address =&gt; uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
     event FundTransfer(address backer, uint amount, bool isContribution);
     /**
@@ -30,7 +30,7 @@ contract Crowdsale {
      * The function without name is the default function that is called whenever anyone sends funds to a contract
      */
     function () payable {
-        require(block.timestamp &gt;= start &amp;&amp; block.timestamp &lt;= deadline &amp;&amp; amountRaised&lt;(6000 ether) );
+        require(block.timestamp >= start && block.timestamp <= deadline && amountRaised<(6000 ether) );
 
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;

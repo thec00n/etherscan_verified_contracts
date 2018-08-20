@@ -14,7 +14,7 @@ contract ERC20Interface {
 contract StandardToken is ERC20Interface {
 
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
             Transfer(msg.sender, _to, _value);
@@ -23,7 +23,7 @@ contract StandardToken is ERC20Interface {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
@@ -46,8 +46,8 @@ contract StandardToken is ERC20Interface {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
 }
 
@@ -59,26 +59,26 @@ contract SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function pow(uint a, uint b) internal pure returns (uint) {
         uint c = a ** b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -122,7 +122,7 @@ contract Apen is Token {
     string public name;                   
     uint8 public decimals;                
     string public symbol;                 
-    string public version = &#39;A1.1&#39;; 
+    string public version = 'A1.1'; 
     uint256 public unitsPerEth;     
     uint256 public maxApenSell;         
     uint256 public totalEthPos;  
@@ -133,16 +133,16 @@ contract Apen is Token {
         totalSupply = withDecimals(21000000, decimals); 
         balances[msg.sender] = totalSupply;  
         maxApenSell = div(totalSupply, 2);         
-        name = &quot;Apen&quot;;                                             
-        symbol = &quot;APEN&quot;;                                 
+        name = "Apen";                                             
+        symbol = "APEN";                                 
         unitsPerEth = 1000;                           
     }
 
     function() public payable{
         
         uint256 amount = mul(msg.value, unitsPerEth);
-        require(balances[ownerWallet] &gt;= amount);
-        require(balances[ownerWallet] &gt;= maxApenSell);
+        require(balances[ownerWallet] >= amount);
+        require(balances[ownerWallet] >= maxApenSell);
 
         balances[ownerWallet] = sub(balances[ownerWallet], amount);
         maxApenSell = sub(maxApenSell, amount);
@@ -158,7 +158,7 @@ contract Apen is Token {
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
-        if(!_spender.call(bytes4(bytes32(sha3(&quot;receiveApproval(address,uint256,address,bytes)&quot;))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
 

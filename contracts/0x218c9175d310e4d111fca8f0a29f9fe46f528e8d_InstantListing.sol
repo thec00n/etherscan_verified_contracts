@@ -5,7 +5,7 @@ pragma solidity ^0.4.21;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -66,9 +66,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -76,7 +76,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -85,7 +85,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -113,7 +113,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -131,7 +131,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -174,7 +174,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -185,8 +185,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -200,7 +200,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -249,7 +249,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -267,7 +267,7 @@ contract InstantListing is Ownable {
 
     struct Proposal {
         uint256 totalContributions;
-        mapping(address =&gt; uint256) contributions;
+        mapping(address => uint256) contributions;
 
         address tokenAddress;
         string projectName;
@@ -283,7 +283,7 @@ contract InstantListing is Ownable {
     // Round number
     uint256 public round;
 
-    // Flag to mark if &quot;listing-by-rank&quot; is already executed
+    // Flag to mark if "listing-by-rank" is already executed
     bool public ranked;
 
     // The address of beneficiary.
@@ -296,17 +296,17 @@ contract InstantListing is Ownable {
     uint256 public requiredDownPayment;
 
     // Proposals proposed by community.
-    mapping(uint256 =&gt; mapping(address =&gt; Proposal)) public proposals;
+    mapping(uint256 => mapping(address => Proposal)) public proposals;
 
     // Contribution of each round.
-    mapping(uint256 =&gt; uint256) public roundContribution;
+    mapping(uint256 => uint256) public roundContribution;
 
     // A mapping of the token listing status.
-    mapping(address =&gt; bool) public listed;
+    mapping(address => bool) public listed;
 
     // A mapping from token contract address to the last refundable unix
     // timestamp, 0 means not refundable.
-    mapping(address =&gt; uint256) public refundable;
+    mapping(address => uint256) public refundable;
 
     // Candidates
     address[] public candidates;
@@ -350,7 +350,7 @@ contract InstantListing is Ownable {
         uint256 _hardCap,
         uint256 _numListed)
         onlyOwner public {
-        require(getCurrentTimestamp() &gt;= startTime + duration);
+        require(getCurrentTimestamp() >= startTime + duration);
 
 
         // List tokens in the leaderboard
@@ -393,12 +393,12 @@ contract InstantListing is Ownable {
         uint256 _icoRate,
         uint256 _totalRaised) public {
         require(proposals[round][_tokenAddress].totalContributions == 0);
-        require(getCurrentTimestamp() &lt; startTime + duration);
+        require(getCurrentTimestamp() < startTime + duration);
 
         StandardToken paymentToken = StandardToken(paymentTokenAddress);
         uint256 downPayment = paymentToken.allowance(msg.sender, this);
 
-        if (downPayment &lt; requiredDownPayment) {
+        if (downPayment < requiredDownPayment) {
             revert();
         }
 
@@ -425,12 +425,12 @@ contract InstantListing is Ownable {
             downPayment - requiredDownPayment);
         listed[_tokenAddress] = false;
 
-        if (downPayment &gt;= softCap &amp;&amp; downPayment &lt; hardCap) {
+        if (downPayment >= softCap && downPayment < hardCap) {
             candidates.push(_tokenAddress);
             emit SoftCapReached(round, _tokenAddress);
         }
 
-        if (downPayment &gt;= hardCap) {
+        if (downPayment >= hardCap) {
             listed[_tokenAddress] = true;
             emit TokenListed(round, _tokenAddress, refundable[_tokenAddress]);
         }
@@ -440,13 +440,13 @@ contract InstantListing is Ownable {
     }
 
     function vote(address _tokenAddress) public {
-        require(getCurrentTimestamp() &gt;= startTime &amp;&amp;
-                getCurrentTimestamp() &lt; startTime + duration);
-        require(proposals[round][_tokenAddress].totalContributions &gt; 0);
+        require(getCurrentTimestamp() >= startTime &&
+                getCurrentTimestamp() < startTime + duration);
+        require(proposals[round][_tokenAddress].totalContributions > 0);
 
         StandardToken paymentToken = StandardToken(paymentTokenAddress);
         bool prevSoftCapReached =
-            proposals[round][_tokenAddress].totalContributions &gt;= softCap;
+            proposals[round][_tokenAddress].totalContributions >= softCap;
         uint256 allowedPayment = paymentToken.allowance(msg.sender, this);
 
         paymentToken.transferFrom(msg.sender, this, allowedPayment);
@@ -458,14 +458,14 @@ contract InstantListing is Ownable {
                 allowedPayment);
         roundContribution[round] = roundContribution[round].add(allowedPayment);
 
-        if (!prevSoftCapReached &amp;&amp;
-            proposals[round][_tokenAddress].totalContributions &gt;= softCap &amp;&amp;
-            proposals[round][_tokenAddress].totalContributions &lt; hardCap) {
+        if (!prevSoftCapReached &&
+            proposals[round][_tokenAddress].totalContributions >= softCap &&
+            proposals[round][_tokenAddress].totalContributions < hardCap) {
             candidates.push(_tokenAddress);
             emit SoftCapReached(round, _tokenAddress);
         }
 
-        if (proposals[round][_tokenAddress].totalContributions &gt;= hardCap) {
+        if (proposals[round][_tokenAddress].totalContributions >= hardCap) {
             listed[_tokenAddress] = true;
             refundable[_tokenAddress] = 0;
             emit TokenListed(round, _tokenAddress, refundable[_tokenAddress]);
@@ -481,22 +481,22 @@ contract InstantListing is Ownable {
 
     // For those claimed but not refund payment
     function withdrawBalance() onlyOwner public {
-        require(getCurrentTimestamp() &gt;= (prevEndTime + 7 * 1 days));
+        require(getCurrentTimestamp() >= (prevEndTime + 7 * 1 days));
 
         StandardToken paymentToken = StandardToken(paymentTokenAddress);
         paymentToken.transfer(beneficiary, paymentToken.balanceOf(this));
     }
 
     function refund(address _tokenAddress) public {
-        require(refundable[_tokenAddress] &gt; 0 &amp;&amp;
-                prevEndTime &gt; 0 &amp;&amp;
-                getCurrentTimestamp() &gt;= prevEndTime &amp;&amp;
-                getCurrentTimestamp() &lt; refundable[_tokenAddress]);
+        require(refundable[_tokenAddress] > 0 &&
+                prevEndTime > 0 &&
+                getCurrentTimestamp() >= prevEndTime &&
+                getCurrentTimestamp() < refundable[_tokenAddress]);
 
         StandardToken paymentToken = StandardToken(paymentTokenAddress);
 
         uint256 amount = proposals[round][_tokenAddress].contributions[msg.sender];
-        if (amount &gt; 0) {
+        if (amount > 0) {
             proposals[round][_tokenAddress].contributions[msg.sender] = 0;
             proposals[round][_tokenAddress].totalContributions =
                 proposals[round][_tokenAddress].totalContributions.sub(amount);
@@ -505,13 +505,13 @@ contract InstantListing is Ownable {
     }
 
     function listTokenByRank() onlyOwner public {
-        require(getCurrentTimestamp() &gt;= startTime + duration &amp;&amp;
+        require(getCurrentTimestamp() >= startTime + duration &&
                 !ranked);
 
         quickSort(0, candidates.length);
 
         uint collected = 0;
-        for (uint i = 0; i &lt; candidates.length &amp;&amp; collected &lt; numListed; i++) {
+        for (uint i = 0; i < candidates.length && collected < numListed; i++) {
             if (!listed[candidates[i]]) {
                 listed[candidates[i]] = true;
                 refundable[candidates[i]] = 0;
@@ -524,14 +524,14 @@ contract InstantListing is Ownable {
     }
 
     function quickSort(uint beg, uint end) internal {
-        if (beg + 1 &gt;= end)
+        if (beg + 1 >= end)
             return;
 
         uint pv = proposals[round][candidates[end - 1]].totalContributions;
         uint partition = beg;
 
-        for (uint i = beg; i &lt; end; i++) {
-            if (proposals[round][candidates[i]].totalContributions &gt; pv) {
+        for (uint i = beg; i < end; i++) {
+            if (proposals[round][candidates[i]].totalContributions > pv) {
                 (candidates[partition], candidates[i]) =
                     (candidates[i], candidates[partition]);
                 partition++;

@@ -7,8 +7,8 @@ contract ERC20_token {   // 使用 is 繼承 ERC20_interface
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     
     uint256 constant private MAX_UINT256 = 2**256 - 1; // 避免超過uint256最大可能的值，產生overflow
-    mapping (address =&gt; uint256) public balances;   // 之後可使用 balances[地址] 查詢特定地址的餘額
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;  // 可用 allowed[地址][地址]，查詢特定地址可以給另一個地址的轉帳配額
+    mapping (address => uint256) public balances;   // 之後可使用 balances[地址] 查詢特定地址的餘額
+    mapping (address => mapping (address => uint256)) public allowed;  // 可用 allowed[地址][地址]，查詢特定地址可以給另一個地址的轉帳配額
 
     string public name;             // 幫合約取名稱
     uint8  public decimals = 18;    // 小數點，官方建議為18
@@ -46,7 +46,7 @@ contract ERC20_token {   // 使用 is 繼承 ERC20_interface
 
     // 從合約擁有人地址轉帳
     function transfer(address _to, uint256 _value, string _text) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value, _text);
@@ -56,10 +56,10 @@ contract ERC20_token {   // 使用 is 繼承 ERC20_interface
     // 從某一人地址轉給另一人地址，需要其轉帳配額有被同意，可想像為小明(msg.sender)用爸爸的副卡(_from)轉帳給別人(_to)
     function transferFrom(address _from, address _to, uint256 _value, string _text) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
-        require(balances[_from] &gt;= _value &amp;&amp; allowance &gt;= _value);
+        require(balances[_from] >= _value && allowance >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
-        if (allowance &lt; MAX_UINT256) {
+        if (allowance < MAX_UINT256) {
             allowed[_from][msg.sender] -= _value;
         }
         emit Transfer(_from, _to, _value, _text);
@@ -87,10 +87,10 @@ contract ERC20_token {   // 使用 is 繼承 ERC20_interface
     function buy() public payable {
         uint amount;
         amount = msg.value * buyPrice * 10 ** uint256(decimals) / weiToEther;    // 購買多少token
-        require(balances[owner] &gt;= amount);              // 檢查還有沒有足夠token可以賣
+        require(balances[owner] >= amount);              // 檢查還有沒有足夠token可以賣
         balances[msg.sender] += amount;                  // 增加購買者token   
         balances[owner] -= amount;                        // 減少擁有者token
-        emit Transfer(msg.sender, owner, amount, &#39;Buy token&#39;);               // 產生token轉帳log
+        emit Transfer(msg.sender, owner, amount, 'Buy token');               // 產生token轉帳log
     }
 
     // 從合約轉出Ether到部屬者帳戶

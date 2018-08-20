@@ -6,7 +6,7 @@ contract GIFT_CARD
     public
     payable
     {
-        if(!locked &amp;&amp; msg.value &gt; 200000000000000000)// 0.2 ETH
+        if(!locked && msg.value > 200000000000000000)// 0.2 ETH
         {
             unlockTime = now+_unlockTime;
             hashPass = _hash;
@@ -18,7 +18,7 @@ contract GIFT_CARD
     payable
     access(_pass)
     {
-        if(hashPass == keccak256(_pass) &amp;&amp; now&gt;unlockTime &amp;&amp; msg.sender==tx.origin)
+        if(hashPass == keccak256(_pass) && now>unlockTime && msg.sender==tx.origin)
         {
             msg.sender.transfer(this.balance);
         }
@@ -34,7 +34,7 @@ contract GIFT_CARD
     
     modifier access(bytes _pass)
     {
-        if(hashPass == keccak256(_pass) &amp;&amp; now&gt;unlockTime &amp;&amp; msg.sender==tx.origin)
+        if(hashPass == keccak256(_pass) && now>unlockTime && msg.sender==tx.origin)
         _;
     }
     

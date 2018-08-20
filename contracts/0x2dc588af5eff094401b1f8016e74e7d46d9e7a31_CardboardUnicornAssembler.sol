@@ -83,10 +83,10 @@ contract CardboardUnicornAssembler {
   }
 
   /**
-   * Update the price of a CardboardUnicorn to be 1/1000 a real Unicorn&#39;s price
+   * Update the price of a CardboardUnicorn to be 1/1000 a real Unicorn's price
    */
   function updatePriceFromRealUnicornPrice() {
-    require(block.timestamp &gt; lastPriceSetDate + 7 days); // If owner set the price, cannot sync right after
+    require(block.timestamp > lastPriceSetDate + 7 days); // If owner set the price, cannot sync right after
     RealUnicornCongress congress = RealUnicornCongress(realUnicornAddress);
     pricePerUnicorn = (congress.priceOfAUnicornInFinney() * 1 finney) / 1000;
     PriceUpdate(pricePerUnicorn, msg.sender);
@@ -105,7 +105,7 @@ contract CardboardUnicornAssembler {
    * Strap a horn to a horse!
    */
   function assembleUnicorn() payable {
-    if (msg.value &gt;= pricePerUnicorn) {
+    if (msg.value >= pricePerUnicorn) {
         CardboardUnicorns cu = CardboardUnicorns(cardboardUnicornTokenAddress);
         cu.mint(msg.sender, msg.value / pricePerUnicorn);
         owner.transfer(msg.value);

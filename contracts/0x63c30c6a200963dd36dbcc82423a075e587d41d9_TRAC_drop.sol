@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 //TRAC token selfdrop event for TESTNET 2018,
-//Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dd898f9c9eaea8adadb2afa99db2afb4bab4b3a9afbcb4b1f3beb2b0">[email&#160;protected]</a> for help.
+//Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dd898f9c9eaea8adadb2afa99db2afb4bab4b3a9afbcb4b1f3beb2b0">[email protected]</a> for help.
 //All rights reserved.
 
 contract  TRAC_drop {
@@ -29,11 +29,11 @@ contract  TRAC_drop {
     
     //Tracks refund allowance for user
     
-    mapping (address =&gt; uint) refund_balance;       
+    mapping (address => uint) refund_balance;       
     
     //Tracks user contribution
     
-    mapping (address =&gt; uint) airdrop_balance;      
+    mapping (address => uint) airdrop_balance;      
 
     constructor(TRAC_drop) {
         
@@ -152,7 +152,7 @@ contract  TRAC_drop {
     
     function CheckRefundIsFair() public {
         
-        //Function checks if the refund is fair and sets the user&#39;s fair value accordingly
+        //Function checks if the refund is fair and sets the user's fair value accordingly
         //Adjusts token flow details as required
         
         require(msg.sender == T_BN_K___a);

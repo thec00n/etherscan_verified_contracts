@@ -23,9 +23,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -33,7 +33,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -42,7 +42,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -89,8 +89,8 @@ contract Ownable {
 }
 
 /// @title Whitelist for TKO token sale.
-/// @author Takeoff Technology OU - &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="523b3c343d12263339373d34347c2521">[email&#160;protected]</a>&gt;
-/// @dev Based on code by OpenZeppelin&#39;s WhitelistedCrowdsale.sol
+/// @author Takeoff Technology OU - <<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="523b3c343d12263339373d34347c2521">[email protected]</a>>
+/// @dev Based on code by OpenZeppelin's WhitelistedCrowdsale.sol
 contract TkoWhitelist is Ownable{
 
     using SafeMath for uint256;
@@ -98,15 +98,15 @@ contract TkoWhitelist is Ownable{
     // Manage whitelist account address.
     address public admin;
 
-    mapping(address =&gt; uint256) internal totalIndividualWeiAmount;
-    mapping(address =&gt; bool) internal whitelist;
+    mapping(address => uint256) internal totalIndividualWeiAmount;
+    mapping(address => bool) internal whitelist;
 
     event AdminChanged(address indexed previousAdmin, address indexed newAdmin);
 
 
     /**
      * TkoWhitelist
-     * @dev TkoWhitelist is the storage for whitelist and total amount by contributor&#39;s address.
+     * @dev TkoWhitelist is the storage for whitelist and total amount by contributor's address.
      * @param _admin Address of managing whitelist.
      */
     function TkoWhitelist (address _admin) public {
@@ -153,7 +153,7 @@ contract TkoWhitelist is Ownable{
      * @param _beneficiaries Addresses to be added to the whitelist
      */
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwnerOrAdmin {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }

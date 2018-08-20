@@ -1,6 +1,6 @@
 /**
- * The edgeless casino contract holds the players&#39;s funds and provides state channel functionality.
- * The casino has at no time control over the players&#39;s funds.
+ * The edgeless casino contract holds the players's funds and provides state channel functionality.
+ * The casino has at no time control over the players's funds.
  * State channels can be updated and closed from both parties: the player and the casino.
  * author: Julia Altenried
  **/
@@ -10,19 +10,19 @@ pragma solidity ^0.4.17;
 contract SafeMath {
 
 	function safeSub(uint a, uint b) pure internal returns(uint) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 	
 	function safeSub(int a, int b) pure internal returns(int) {
-		if(b &lt; 0) assert(a - b &gt; a);
-		else assert(a - b &lt;= a);
+		if(b < 0) assert(a - b > a);
+		else assert(a - b <= a);
 		return a - b;
 	}
 
 	function safeAdd(uint a, uint b) pure internal returns(uint) {
 		uint c = a + b;
-		assert(c &gt;= a &amp;&amp; c &gt;= b);
+		assert(c >= a && c >= b);
 		return c;
 	}
 
@@ -59,7 +59,7 @@ contract mortal is owned {
   function closeContract(uint playerBalance) internal{
 		if(playerBalance == 0) selfdestruct(owner);
 		if(closeAt == 0) closeAt = now + 30 days;
-		else if(closeAt &lt; now) selfdestruct(owner);
+		else if(closeAt < now) selfdestruct(owner);
   }
 
 	/**
@@ -81,7 +81,7 @@ contract mortal is owned {
 	* delays the time of closing.
 	**/
 	modifier keepAlive {
-		if(closeAt &gt; 0) closeAt = now + 30 days;
+		if(closeAt > 0) closeAt = now + 30 days;
 		_;
 	}
 }
@@ -91,7 +91,7 @@ contract chargingGas is mortal, SafeMath{
   /** the price per kgas and GWei in tokens (5 decimals) */
 	uint public gasPrice;
 	/** the amount of gas used per transaction in kGas */
-	mapping(bytes4 =&gt; uint) public gasPerTx;
+	mapping(bytes4 => uint) public gasPerTx;
 	
 	/**
 	 * sets the amount of gas consumed by methods with the given sigantures.
@@ -101,7 +101,7 @@ contract chargingGas is mortal, SafeMath{
 	 * */
 	function setGasUsage(bytes4[3] signatures, uint[3] gasNeeded) internal{
 	  require(signatures.length == gasNeeded.length);
-	  for(uint8 i = 0; i &lt; signatures.length; i++)
+	  for(uint8 i = 0; i < signatures.length; i++)
 	    gasPerTx[signatures[i]] = gasNeeded[i];
 	}
 	
@@ -151,9 +151,9 @@ contract CasinoBank is chargingGas{
 	/** the total balance of all players with 5 virtual decimals **/
 	uint public playerBalance;
 	/** the balance per player in edgeless tokens with 5 virtual decimals */
-	mapping(address=&gt;uint) public balanceOf;
+	mapping(address=>uint) public balanceOf;
 	/** in case the user wants/needs to call the withdraw function from his own wallet, he first needs to request a withdrawal */
-	mapping(address=&gt;uint) public withdrawAfter;
+	mapping(address=>uint) public withdrawAfter;
 	/** the edgeless token contract */
 	Token edg;
 	/** the maximum amount of tokens the user is allowed to deposit (5 decimals) */
@@ -178,14 +178,14 @@ contract CasinoBank is chargingGas{
 	* edgeless tokens do not have any decimals, but are represented on this contract with 5 decimals.
 	* @param receiver  address of the receiver
 	*        numTokens number of tokens to deposit (0 decimals)
-	*				 chargeGas indicates if the gas cost is subtracted from the user&#39;s edgeless token balance
+	*				 chargeGas indicates if the gas cost is subtracted from the user's edgeless token balance
 	**/
 	function deposit(address receiver, uint numTokens, bool chargeGas) public isAlive{
-		require(numTokens &gt; 0);
+		require(numTokens > 0);
 		uint value = safeMul(numTokens,100000);
 		if(chargeGas) value = subtractGas(value);
 		uint newBalance = safeAdd(balanceOf[receiver], value);
-		require(newBalance &lt;= maxDeposit);
+		require(newBalance <= maxDeposit);
 		assert(edg.transferFrom(msg.sender, address(this), numTokens));
 		balanceOf[receiver] = newBalance;
 		playerBalance = safeAdd(playerBalance, value);
@@ -194,7 +194,7 @@ contract CasinoBank is chargingGas{
 
 	/**
 	* If the user wants/needs to withdraw his funds himself, he needs to request the withdrawal first.
-	* This method sets the earliest possible withdrawal date to &#39;waitingTime from now (default 90m, but up to 24h).
+	* This method sets the earliest possible withdrawal date to 'waitingTime from now (default 90m, but up to 24h).
 	* Reason: The user should not be able to withdraw his funds, while the the last game methods have not yet been mined.
 	**/
 	function requestWithdrawal() public{
@@ -214,7 +214,7 @@ contract CasinoBank is chargingGas{
 	* @param amount the amount of tokens to withdraw
 	**/
 	function withdraw(uint amount) public keepAlive{
-		require(withdrawAfter[msg.sender]&gt;0 &amp;&amp; now&gt;withdrawAfter[msg.sender]);
+		require(withdrawAfter[msg.sender]>0 && now>withdrawAfter[msg.sender]);
 		withdrawAfter[msg.sender] = 0;
 		uint value = safeMul(amount,100000);
 		balanceOf[msg.sender]=safeSub(balanceOf[msg.sender],value);
@@ -228,7 +228,7 @@ contract CasinoBank is chargingGas{
 	* @param numTokens the number of tokens to withdraw (0 decimals)
 	**/
 	function withdrawBankroll(uint numTokens) public onlyOwner {
-		require(numTokens &lt;= bankroll());
+		require(numTokens <= bankroll());
 		assert(edg.transfer(owner, numTokens));
 	}
 
@@ -254,7 +254,7 @@ contract CasinoBank is chargingGas{
 	 * @param newWaitingTime the new waiting time in seconds
 	 * */
 	function setWaitingTime(uint newWaitingTime) public onlyOwner{
-		require(newWaitingTime &lt;= 24 hours);
+		require(newWaitingTime <= 24 hours);
 		waitingTime = newWaitingTime;
 	}
 
@@ -267,12 +267,12 @@ contract CasinoBank is chargingGas{
 }
 
 contract EdgelessCasino is CasinoBank{
-	/** indicates if an address is authorized to act in the casino&#39;s name  */
-    mapping(address =&gt; bool) public authorized;
+	/** indicates if an address is authorized to act in the casino's name  */
+    mapping(address => bool) public authorized;
 	/** a number to count withdrawal signatures to ensure each signature is different even if withdrawing the same amount to the same address */
-	mapping(address =&gt; uint) public withdrawCount;
+	mapping(address => uint) public withdrawCount;
 	/** the most recent known state of a state channel */
-	mapping(address =&gt; State) public lastState;
+	mapping(address => State) public lastState;
     /** fired when the state is updated */
     event StateUpdate(uint128 count, int128 winBalance, int difference, uint gasCost, address player, uint128 lcount);
     /** fired if one of the parties chooses to log the seeds and results */
@@ -308,7 +308,7 @@ contract EdgelessCasino is CasinoBank{
 
 
   /**
-  * transfers an amount from the contract balance to the owner&#39;s wallet.
+  * transfers an amount from the contract balance to the owner's wallet.
   * @param receiver the receiver address
 	*				 amount   the amount of tokens to withdraw (0 decimals)
 	*				 v,r,s 		the signature of the player
@@ -357,28 +357,28 @@ contract EdgelessCasino is CasinoBank{
   	else//if the casino wallet is the sender, subtract the gas costs from the player balance
   		gasCost = getGasCost();
   	State storage last = lastState[player];
-  	require(gameCount &gt; last.count);
+  	require(gameCount > last.count);
   	int difference = updatePlayerBalance(player, winBalance, last.winBalance, gasCost);
   	lastState[player] = State(gameCount, winBalance);
   	StateUpdate(gameCount, winBalance, difference, gasCost, player, last.count);
   }
 
   /**
-   * determines if the msg.sender or the signer of the passed signature is the player. returns the player&#39;s address
+   * determines if the msg.sender or the signer of the passed signature is the player. returns the player's address
    * @param winBalance the current winBalance, used to calculate the msg hash
    *				gameCount  the current gameCount, used to calculate the msg.hash
    *				v, r, s    the signature of the non-sending party
    * */
   function determinePlayer(int128 winBalance, uint128 gameCount, uint8 v, bytes32 r, bytes32 s) constant internal returns(address){
-  	if (authorized[msg.sender])//casino is the sender -&gt; player is the signer
+  	if (authorized[msg.sender])//casino is the sender -> player is the signer
   		return ecrecover(keccak256(winBalance, gameCount), v, r, s);
   	else
   		return msg.sender;
   }
 
 	/**
-	 * computes the difference of the win balance relative to the last known state and adds it to the player&#39;s balance.
-	 * in case the casino is the sender, the gas cost in EDG gets subtracted from the player&#39;s balance.
+	 * computes the difference of the win balance relative to the last known state and adds it to the player's balance.
+	 * in case the casino is the sender, the gas cost in EDG gets subtracted from the player's balance.
 	 * @param player the address of the player
 	 *				winBalance the current win-balance
 	 *				lastWinBalance the win-balance of the last known state
@@ -388,7 +388,7 @@ contract EdgelessCasino is CasinoBank{
   	difference = safeSub(winBalance, lastWinBalance);
   	int outstanding = safeSub(difference, int(gasCost));
   	uint outs;
-  	if(outstanding &lt; 0){
+  	if(outstanding < 0){
   		outs = uint256(outstanding * (-1));
   		playerBalance = safeSub(playerBalance, outs);
   		balanceOf[player] = safeSub(balanceOf[player], outs);
@@ -419,14 +419,14 @@ contract EdgelessCasino is CasinoBank{
   }
   
   /**
-   * determines if the msg.sender or the signer of the passed signature is the player. returns the player&#39;s address
+   * determines if the msg.sender or the signer of the passed signature is the player. returns the player's address
    * @param serverSeeds array containing the server seeds
    *        clientSeeds array containing the client seeds
    *        results     array containing the results
    *				v, r, s    the signature of the non-sending party
    * */
   function determinePlayer(bytes32[] serverSeeds, bytes32[] clientSeeds, int[] results, uint8 v, bytes32 r, bytes32 s) constant internal returns(address){
-  	if (authorized[msg.sender])//casino is the sender -&gt; player is the signer
+  	if (authorized[msg.sender])//casino is the sender -> player is the signer
   		return ecrecover(keccak256(serverSeeds, clientSeeds, results), v, r, s);
   	else
   		return msg.sender;

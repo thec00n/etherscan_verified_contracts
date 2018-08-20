@@ -13,20 +13,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -35,7 +35,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -101,7 +101,7 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -135,7 +135,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -150,7 +150,7 @@ contract StandardToken is ERC20, BasicToken {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -203,7 +203,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue) 
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -214,8 +214,8 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract SmokeExchangeCoin is StandardToken {
-  string public name = &quot;Smoke Exchange Token&quot;;
-  string public symbol = &quot;SMX&quot;;
+  string public name = "Smoke Exchange Token";
+  string public symbol = "SMX";
   uint256 public decimals = 18;  
   address public ownerAddress;
     
@@ -230,7 +230,7 @@ contract SmokeExchangeCoin is StandardToken {
   }
   
   function distribute(address _to, uint256 _value) returns (bool) {
-    require(balances[ownerAddress] &gt;= _value);
+    require(balances[ownerAddress] >= _value);
     balances[ownerAddress] = balances[ownerAddress].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Distribute(_to, _value);
@@ -329,7 +329,7 @@ contract SmokeExchangeCoinCrowdsale is Ownable {
   * @param _smxTeamAddress team address 
   */
   function SmokeExchangeCoinCrowdsale(uint256 _privateStartTime, uint256 _startTime, address _ethWallet, uint256 _privateWeiCap, uint256 _weiCap, uint256 _bonusThresholdWei, address _smxTeamAddress) {
-    require(_privateStartTime &gt;= now);
+    require(_privateStartTime >= now);
     require(_ethWallet != 0x0);    
     require(_smxTeamAddress != 0x0);    
     
@@ -339,7 +339,7 @@ contract SmokeExchangeCoinCrowdsale is Ownable {
     startTime = _startTime;
     
     //ICO start time after presale end
-    require(_startTime &gt;= privateEndTime);
+    require(_startTime >= privateEndTime);
     
     endTime = _startTime + STAGE_FOUR_TIME_END;
     
@@ -361,22 +361,22 @@ contract SmokeExchangeCoinCrowdsale is Ownable {
   
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool privatePeriod = now &gt;= privateStartTime &amp;&amp; now &lt; privateEndTime;
-    bool withinPeriod = (now &gt;= startTime &amp;&amp; now &lt;= endTime) || (privatePeriod);
+    bool privatePeriod = now >= privateStartTime && now < privateEndTime;
+    bool withinPeriod = (now >= startTime && now <= endTime) || (privatePeriod);
     bool nonZeroPurchase = (msg.value != 0);
     //cap depends on stage.
-    bool withinCap = privatePeriod ? (weiRaised.add(msg.value) &lt;= privateCap) : (weiRaised.add(msg.value) &lt;= cap);
+    bool withinCap = privatePeriod ? (weiRaised.add(msg.value) <= privateCap) : (weiRaised.add(msg.value) <= cap);
     // check if there are smx token left
-    bool smxAvailable = (ALLOC_CROWDSALE - smxSold &gt; 0); 
-    return withinPeriod &amp;&amp; nonZeroPurchase &amp;&amp; withinCap &amp;&amp; smxAvailable;
+    bool smxAvailable = (ALLOC_CROWDSALE - smxSold > 0); 
+    return withinPeriod && nonZeroPurchase && withinCap && smxAvailable;
     //return true;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     bool tokenSold = ALLOC_CROWDSALE - smxSold == 0;
-    bool timeEnded = now &gt; endTime;
+    bool timeEnded = now > endTime;
     return timeEnded || capReached || tokenSold;
   }  
   
@@ -393,7 +393,7 @@ contract SmokeExchangeCoinCrowdsale is Ownable {
     // calculate token amount to be distributed
     uint256 tokens = SafeMath.div(SafeMath.mul(weiAmount, getCurrentRate(weiAmount)), 1 ether);
     //require that there are more or equal tokens available for sell
-    require(ALLOC_CROWDSALE - smxSold &gt;= tokens);
+    require(ALLOC_CROWDSALE - smxSold >= tokens);
 
     //update total weiRaised
     weiRaised = weiRaised.add(weiAmount);
@@ -419,23 +419,23 @@ contract SmokeExchangeCoinCrowdsale is Ownable {
   */
   function getCurrentRate(uint256 _weiAmount) constant returns (uint256) {  
       
-      bool hasBonus = _weiAmount &gt;= bonusThresholdWei;
+      bool hasBonus = _weiAmount >= bonusThresholdWei;
   
-      if (now &lt; startTime) {
+      if (now < startTime) {
         return hasBonus ? PRICE_PREBUY_BONUS : PRICE_PREBUY;
       }
       uint delta = SafeMath.sub(now, startTime);
 
       //3+weeks from start
-      if (delta &gt; STAGE_THREE_TIME_END) {
+      if (delta > STAGE_THREE_TIME_END) {
         return hasBonus ? PRICE_STAGE_FOUR_BONUS : PRICE_STAGE_FOUR;
       }
       //2+weeks from start
-      if (delta &gt; STAGE_TWO_TIME_END) {
+      if (delta > STAGE_TWO_TIME_END) {
         return hasBonus ? PRICE_STAGE_THREE_BONUS : PRICE_STAGE_THREE;
       }
       //1+week from start
-      if (delta &gt; STAGE_ONE_TIME_END) {
+      if (delta > STAGE_ONE_TIME_END) {
         return hasBonus ? PRICE_STAGE_TWO_BONUS : PRICE_STAGE_TWO;
       }
 

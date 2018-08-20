@@ -18,17 +18,17 @@ contract Win20ETH {
     uint jackpot;
 
     address owner;
-    mapping(address =&gt; uint) referalProfits;
+    mapping(address => uint) referalProfits;
     address[] referals;
 
-    mapping(uint =&gt; Game) games;
+    mapping(uint => Game) games;
 
 	event PurchaseError(address oldOwner, uint amount);
 
 	struct Game{
 	    uint blockId;
 	    address[] gamers;
-	    mapping(address=&gt;bool) pays;
+	    mapping(address=>bool) pays;
 	}
 
 	modifier onlyOwner() {
@@ -46,7 +46,7 @@ contract Win20ETH {
 
 	}
 	function withdrawAdmin() public onlyOwner{
-	    require(adminComission&gt;0);
+	    require(adminComission>0);
 	    uint t = adminComission;
 	    adminComission = 0;
 	    owner.transfer(t);
@@ -74,7 +74,7 @@ contract Win20ETH {
     function buyTicketWithRef(address _ref) public payable{
        require(msg.value == ticketPrice);
        bool found = false;
-       for(uint i=0; i&lt; games[block.number+blockOffset].gamers.length;i++){
+       for(uint i=0; i< games[block.number+blockOffset].gamers.length;i++){
         	      if( msg.sender == games[block.number+blockOffset].gamers[i]){
         	        found = true;
         	        break;
@@ -84,10 +84,10 @@ contract Win20ETH {
 	    jackpot+=msg.value;
 	    games[block.number+blockOffset].gamers.push(msg.sender);
 	    games[block.number+blockOffset].pays[msg.sender] = false;
-	    if( _ref != address(0) &amp;&amp; comission.referal&gt;0){
+	    if( _ref != address(0) && comission.referal>0){
 	        referalProfits[_ref]+= msg.value*comission.referal/100;
 	        bool _found = false;
-	        for(i = 0;i&lt;referals.length;i++){
+	        for(i = 0;i<referals.length;i++){
 	            if( referals[i] == _ref){
 	                _found=true;
 	                break;
@@ -102,7 +102,7 @@ contract Win20ETH {
 
 	    require(msg.value == ticketPrice);
 	    bool found = false;
-	    for(uint i=0; i&lt; games[block.number+blockOffset].gamers.length;i++){
+	    for(uint i=0; i< games[block.number+blockOffset].gamers.length;i++){
 	      if( msg.sender == games[block.number+blockOffset].gamers[i]){
 	        found = true;
 	        break;
@@ -127,12 +127,12 @@ contract Win20ETH {
     function _checkWin( uint _blockIndex, address candidate) internal view returns(uint) {
             uint32 blockHash = uint32(blockhash(_blockIndex));
             uint32 hit = blockHash ^ uint32(candidate);
-            bool hit1 = (hit &amp; 0xF == 0)?true:false;
-            bool hit2 = (hit1 &amp;&amp; ((hit &amp; 0xF0)==0))?true:false;
-            bool hit3 = (hit2 &amp;&amp; ((hit &amp; 0xF00)==0))?true:false;
+            bool hit1 = (hit & 0xF == 0)?true:false;
+            bool hit2 = (hit1 && ((hit & 0xF0)==0))?true:false;
+            bool hit3 = (hit2 && ((hit & 0xF00)==0))?true:false;
             bool _found  = false;
 
-            for(uint i=0;i&lt;games[_blockIndex].gamers.length;i++){
+            for(uint i=0;i<games[_blockIndex].gamers.length;i++){
                 if(games[_blockIndex].gamers[i] == candidate) {
                     _found = true;
                 }
@@ -156,15 +156,15 @@ contract Win20ETH {
 
 
 	function withdrawForWinner(uint _blockIndex) public {
-	    require((block.number - 100) &lt; _blockIndex );
-		require(games[_blockIndex].gamers.length &gt; 0);
+	    require((block.number - 100) < _blockIndex );
+		require(games[_blockIndex].gamers.length > 0);
 		require(games[_blockIndex].pays[msg.sender]==false);
 
 		uint amount =  _checkWin(_blockIndex, msg.sender) ;
-		require(amount&gt;0);
+		require(amount>0);
 
 		address winner = msg.sender;
-		if( amount &gt; jackpot) amount=jackpot;
+		if( amount > jackpot) amount=jackpot;
 		if( amount == jackpot) amount = amount*99/100;
 		
 		games[_blockIndex].pays[msg.sender] = true;
@@ -173,14 +173,14 @@ contract Win20ETH {
 		uint techSum = amount-winnerSum;
 
 		winner.transfer( winnerSum );
-		for(uint i=0;i&lt;referals.length;i++){
-		    if( referalProfits[referals[i]]&gt;0 &amp;&amp; referalProfits[referals[i]]&lt;techSum){
+		for(uint i=0;i<referals.length;i++){
+		    if( referalProfits[referals[i]]>0 && referalProfits[referals[i]]<techSum){
 		        referals[i].transfer( referalProfits[referals[i]]);
 		        techSum -= referalProfits[referals[i]];
 		        referalProfits[referals[i]] = 0;
 		 }
 		}
-		if( techSum &gt; 0){
+		if( techSum > 0){
 		  owner.transfer(techSum);
 		}
 		jackpot = jackpot-amount;

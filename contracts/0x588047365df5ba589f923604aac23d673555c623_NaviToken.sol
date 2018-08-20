@@ -17,20 +17,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -40,7 +40,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -102,7 +102,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -111,7 +111,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -155,7 +155,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -166,8 +166,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -230,7 +230,7 @@ contract StandardToken is ERC20, BasicToken {
    */
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -251,8 +251,8 @@ contract NaviToken is StandardToken, Ownable {
 	using SafeMath for uint256;
 
     /* Overriding some ERC20 variables */
-    string public constant name      = &quot;NaviToken&quot;;
-    string public constant symbol    = &quot;NAVI&quot;;
+    string public constant name      = "NaviToken";
+    string public constant symbol    = "NAVI";
     uint8 public constant decimals   = 18;
 
     uint256 public constant MAX_NUM_NAVITOKENS    = 1000000000 * 10 ** uint256(decimals);
@@ -268,18 +268,18 @@ contract NaviToken is StandardToken, Ownable {
 
     // Fields that can be changed by functions
     address[] icedBalancesReserveAndTeam;
-    mapping (address =&gt; uint256) mapIcedBalancesReserveAndTeamFrosted;
-    mapping (address =&gt; uint256) mapIcedBalancesReserveAndTeamDefrosted;
+    mapping (address => uint256) mapIcedBalancesReserveAndTeamFrosted;
+    mapping (address => uint256) mapIcedBalancesReserveAndTeamDefrosted;
 
     address[] icedBalancesAdvisors;
-    mapping (address =&gt; uint256) mapIcedBalancesAdvisors;
+    mapping (address => uint256) mapIcedBalancesAdvisors;
 
     //Boolean to allow or not the initial assignement of token (batch)
     bool public batchAssignStopped = false;
 
     modifier canAssign() {
         require(!batchAssignStopped);
-        require(elapsedMonthsFromICOStart() &lt; 2);
+        require(elapsedMonthsFromICOStart() < 2);
         _;
     }
 
@@ -294,15 +294,15 @@ contract NaviToken is StandardToken, Ownable {
     * @param _amounts address The address which you want to transfer to
     */
     function batchAssignTokens(address[] _addr, uint256[] _amounts, DefrostClass[] _defrostClass) public onlyOwner canAssign {
-        require(_addr.length == _amounts.length &amp;&amp; _addr.length == _defrostClass.length);
+        require(_addr.length == _amounts.length && _addr.length == _defrostClass.length);
         //Looping into input arrays to assign target amount to each given address
-        for (uint256 index = 0; index &lt; _addr.length; index++) {
+        for (uint256 index = 0; index < _addr.length; index++) {
             address toAddress = _addr[index];
             uint amount = _amounts[index];
             DefrostClass defrostClass = _defrostClass[index]; // 0 = ico contributor, 1 = reserve and team , 2 = advisor
 
             totalSupply = totalSupply.add(amount);
-            require(totalSupply &lt;= MAX_NUM_NAVITOKENS);
+            require(totalSupply <= MAX_NUM_NAVITOKENS);
 
             if (defrostClass == DefrostClass.Contributor) {
                 // contributor account
@@ -323,11 +323,11 @@ contract NaviToken is StandardToken, Ownable {
     }
 
     function elapsedMonthsFromICOStart() view public returns (uint256) {
-       return (now &lt;= START_ICO_TIMESTAMP) ? 0 : (now - START_ICO_TIMESTAMP) / 60 / MONTH_IN_MINUTES;
+       return (now <= START_ICO_TIMESTAMP) ? 0 : (now - START_ICO_TIMESTAMP) / 60 / MONTH_IN_MINUTES;
     }
 
     function canDefrostReserveAndTeam() view public returns (bool) {
-        return elapsedMonthsFromICOStart() &gt; DEFROST_AFTER_MONTHS;
+        return elapsedMonthsFromICOStart() > DEFROST_AFTER_MONTHS;
     }
 
     function defrostReserveAndTeamTokens() public {
@@ -335,19 +335,19 @@ contract NaviToken is StandardToken, Ownable {
 
         uint256 monthsIndex = elapsedMonthsFromICOStart() - DEFROST_AFTER_MONTHS;
 
-        if (monthsIndex &gt; DEFROST_FACTOR_TEAMANDADV){
+        if (monthsIndex > DEFROST_FACTOR_TEAMANDADV){
             monthsIndex = DEFROST_FACTOR_TEAMANDADV;
         }
 
         // Looping into the iced accounts
-        for (uint256 index = 0; index &lt; icedBalancesReserveAndTeam.length; index++) {
+        for (uint256 index = 0; index < icedBalancesReserveAndTeam.length; index++) {
 
             address currentAddress = icedBalancesReserveAndTeam[index];
             uint256 amountTotal = mapIcedBalancesReserveAndTeamFrosted[currentAddress].add(mapIcedBalancesReserveAndTeamDefrosted[currentAddress]);
             uint256 targetDefrosted = monthsIndex.mul(amountTotal).div(DEFROST_FACTOR_TEAMANDADV);
             uint256 amountToRelease = targetDefrosted.sub(mapIcedBalancesReserveAndTeamDefrosted[currentAddress]);
 
-            if (amountToRelease &gt; 0) {
+            if (amountToRelease > 0) {
                 mapIcedBalancesReserveAndTeamFrosted[currentAddress] = mapIcedBalancesReserveAndTeamFrosted[currentAddress].sub(amountToRelease);
                 mapIcedBalancesReserveAndTeamDefrosted[currentAddress] = mapIcedBalancesReserveAndTeamDefrosted[currentAddress].add(amountToRelease);
                 balances[currentAddress] = balances[currentAddress].add(amountToRelease);
@@ -359,15 +359,15 @@ contract NaviToken is StandardToken, Ownable {
     }
 
     function canDefrostAdvisors() view public returns (bool) {
-        return elapsedMonthsFromICOStart() &gt;= DEFROST_AFTER_MONTHS;
+        return elapsedMonthsFromICOStart() >= DEFROST_AFTER_MONTHS;
     }
 
     function defrostAdvisorsTokens() public {
         require(canDefrostAdvisors());
-        for (uint256 index = 0; index &lt; icedBalancesAdvisors.length; index++) {
+        for (uint256 index = 0; index < icedBalancesAdvisors.length; index++) {
             address currentAddress = icedBalancesAdvisors[index];
             uint256 amountToDefrost = mapIcedBalancesAdvisors[currentAddress];
-            if (amountToDefrost &gt; 0) {
+            if (amountToDefrost > 0) {
                 balances[currentAddress] = balances[currentAddress].add(amountToDefrost);
                 mapIcedBalancesAdvisors[currentAddress] = mapIcedBalancesAdvisors[currentAddress].sub(amountToDefrost);
 

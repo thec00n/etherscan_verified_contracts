@@ -12,20 +12,20 @@ contract SafeMath {
     }
 
     function safeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint256 c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -83,7 +83,7 @@ contract Crowdsale is SafeMath {
     uint public finalRate = 4400;
 
     // token distribution during Crowdsale
-    mapping(address =&gt; uint256) public distribution;
+    mapping(address => uint256) public distribution;
     
     /**
      * event for token purchase logging
@@ -123,7 +123,7 @@ contract Crowdsale is SafeMath {
 
     // return true if crowdsale event has ended
     function hasEnded() public view returns (bool) {
-        return now &gt; endTime;
+        return now > endTime;
     }
     
     // set crowdsale wallet where funds are collected
@@ -169,7 +169,7 @@ contract Crowdsale is SafeMath {
     // withdraw remaining IPC token amount after crowdsale has ended
     function withdrawRemainingIPCToken() onlyCrowdsaleAgent public returns (bool) {
         uint256 remainingToken = ipc.balanceOf(this);
-        require(hasEnded() &amp;&amp; remainingToken &gt; 0);
+        require(hasEnded() && remainingToken > 0);
         ipc.transfer(crowdsaleAgent, remainingToken);
         return true;
     }
@@ -178,11 +178,11 @@ contract Crowdsale is SafeMath {
     function withdrawERC20Token(address beneficiary, address _token) onlyCrowdsaleAgent public {
         ERC20Basic erc20Token = ERC20Basic(_token);
         uint256 amount = erc20Token.balanceOf(this);
-        require(amount&gt;0);
+        require(amount>0);
         erc20Token.transfer(beneficiary, amount);
     }
     
-    // transfer &#39;weiAmount&#39; wei to &#39;beneficiary&#39;
+    // transfer 'weiAmount' wei to 'beneficiary'
     function sendEther(address beneficiary, uint256 weiAmount) onlyCrowdsaleAgent public {
         beneficiary.transfer(weiAmount);
     }
@@ -190,17 +190,17 @@ contract Crowdsale is SafeMath {
     // Calculate the token amount from the donated ETH onsidering the bonus system.
     function calcTokenAmount(uint256 weiAmount) internal view returns (uint256) {
         uint256 price;
-        if (now &gt;= startTime &amp;&amp; now &lt; deadlineOne) {
+        if (now >= startTime && now < deadlineOne) {
             price = firstRate; 
-        } else if (now &gt;= deadlineOne &amp;&amp; now &lt; deadlineTwo) {
+        } else if (now >= deadlineOne && now < deadlineTwo) {
             price = secondRate;
-        } else if (now &gt;= deadlineTwo &amp;&amp; now &lt; deadlineThree) {
+        } else if (now >= deadlineTwo && now < deadlineThree) {
             price = thirdRate;
-        } else if (now &gt;= deadlineThree &amp;&amp; now &lt;= endTime) {
+        } else if (now >= deadlineThree && now <= endTime) {
         	price = finalRate;
         }
         uint256 tokens = safeMul(price, weiAmount);
-        uint8 decimalCut = 18 &gt; ipc.decimals() ? 18-ipc.decimals() : 0;
+        uint8 decimalCut = 18 > ipc.decimals() ? 18-ipc.decimals() : 0;
         return safeDiv(tokens, 10**uint256(decimalCut));
     }
 
@@ -211,15 +211,15 @@ contract Crowdsale is SafeMath {
 
     // return true if valid purchase
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
-        bool isMinimumAmount = msg.value &gt;= minimumEtherAmount;
-        bool hasTokenBalance = ipc.balanceOf(this) &gt; 0;
-        return withinPeriod &amp;&amp; isMinimumAmount &amp;&amp; hasTokenBalance;
+        bool withinPeriod = now >= startTime && now <= endTime;
+        bool isMinimumAmount = msg.value >= minimumEtherAmount;
+        bool hasTokenBalance = ipc.balanceOf(this) > 0;
+        return withinPeriod && isMinimumAmount && hasTokenBalance;
     }
      
     // selfdestruct crowdsale contract only after crowdsale has ended
     function killContract() onlyCrowdsaleAgent public {
-        require(hasEnded() &amp;&amp; ipc.balanceOf(this) == 0);
+        require(hasEnded() && ipc.balanceOf(this) == 0);
      selfdestruct(crowdsaleAgent);
     }
 }

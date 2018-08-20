@@ -11,7 +11,7 @@ contract R256Basic {
     }
 
     function addMultipleRecords(uint[] zz) public {
-        for (uint i; i &lt; zz.length; i++) {
+        for (uint i; i < zz.length; i++) {
             emit R(zz[i]);
         }
     }

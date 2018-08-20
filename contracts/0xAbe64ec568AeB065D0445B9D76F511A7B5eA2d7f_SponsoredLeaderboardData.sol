@@ -2,7 +2,7 @@ pragma solidity ^0.4.17;
 contract AccessControl {
     address public creatorAddress;
     uint16 public totalSeraphims = 0;
-    mapping (address =&gt; bool) public seraphims;
+    mapping (address => bool) public seraphims;
 
     bool public isMaintenanceMode = true;
  
@@ -50,12 +50,12 @@ contract AccessControl {
 contract SafeMath {
     function safeAdd(uint x, uint y) pure internal returns(uint) {
       uint z = x + y;
-      assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+      assert((z >= x) && (z >= y));
       return z;
     }
 
     function safeSubtract(uint x, uint y) pure internal returns(uint) {
-      assert(x &gt;= y);
+      assert(x >= y);
       uint z = x - y;
       return z;
     }
@@ -209,9 +209,9 @@ contract SponsoredLeaderboardData is ISponsoredLeaderboardData {
     uint public contractReservedBalance;
     
     
-    mapping (uint64 =&gt; bool) angelsOnLeaderboards;
-    mapping (uint64 =&gt; bool) petsOnLeaderboards;
-    mapping (uint64 =&gt; bool) accessoriesOnLeaderboards;
+    mapping (uint64 => bool) angelsOnLeaderboards;
+    mapping (uint64 => bool) petsOnLeaderboards;
+    mapping (uint64 => bool) accessoriesOnLeaderboards;
     
     
     
@@ -225,9 +225,9 @@ contract SponsoredLeaderboardData is ISponsoredLeaderboardData {
         function openLeaderboard(uint8 numDays, string message) external payable {
             // This function is called by the sponsor to create the Leaderboard by sending money. 
             
-           if (msg.value &lt; 10000000000000000) {revert();}
+           if (msg.value < 10000000000000000) {revert();}
          
-         if ((numDays &lt; minDays) || (numDays &gt; maxDays)) {revert();}
+         if ((numDays < minDays) || (numDays > maxDays)) {revert();}
             Leaderboard memory leaderboard;
             leaderboard.startTime = now;
             leaderboard.endTime = (now + (numDays * 86400));
@@ -261,7 +261,7 @@ contract SponsoredLeaderboardData is ISponsoredLeaderboardData {
            
             Leaderboard memory leaderboard;
             leaderboard = Leaderboards[leaderboardId];
-            if (now &lt; leaderboard.endTime) {revert();}
+            if (now < leaderboard.endTime) {revert();}
             if (leaderboard.isLive = false) {revert();}
             Leaderboards[leaderboardId].isLive = false;
              IAngelCardData angelCardData = IAngelCardData(angelCardDataContract);
@@ -314,14 +314,14 @@ contract SponsoredLeaderboardData is ISponsoredLeaderboardData {
         }
         
 function withdrawEther() external onlyCREATOR {
-    //make sure we can&#39;t transfer out balance for leaderboards that aren&#39;t open. 
+    //make sure we can't transfer out balance for leaderboards that aren't open. 
     creatorAddress.transfer(this.balance-contractReservedBalance);
 }
 
     // Call to get the specified team at a certain position of a certain board. 
    function getTeamFromLeaderboard(uint16 leaderboardId, uint8 rank) public constant returns (uint64 angelId, uint64 petId, uint64 accessoryId)   {
       
-        if ((leaderboardId &lt;0) || (rank &lt;0) || (rank &gt;3) || (leaderboardId &gt; totalLeaderboards)) {revert();}
+        if ((leaderboardId <0) || (rank <0) || (rank >3) || (leaderboardId > totalLeaderboards)) {revert();}
         if (rank == 0) {
        angelId = Leaderboards[leaderboardId].rank0.angelId;
        petId = Leaderboards[leaderboardId].rank0.petId;
@@ -456,9 +456,9 @@ function withdrawEther() external onlyCREATOR {
     }
     
      function SafeDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
     /// Read access
      }

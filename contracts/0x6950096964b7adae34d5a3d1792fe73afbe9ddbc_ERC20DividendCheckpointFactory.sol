@@ -22,8 +22,8 @@ library SafeMath {
   * @dev Multiplies two numbers, throws on overflow.
   */
   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    // Gas optimization: this is cheaper than asserting &#39;a&#39; not being zero, but the
-    // benefit is lost if &#39;b&#39; is also tested.
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
@@ -38,9 +38,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return a / b;
   }
 
@@ -48,7 +48,7 @@ library SafeMath {
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -57,7 +57,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
     c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -69,7 +69,7 @@ library SafeMath {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   uint256 totalSupply_;
 
@@ -87,7 +87,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -134,7 +134,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -152,8 +152,8 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -167,7 +167,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -236,7 +236,7 @@ contract StandardToken is ERC20, BasicToken {
     returns (bool)
   {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -278,7 +278,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 
     /**
      * @notice mints new tokens and assigns them to the target _investor.
-     * Can only be called by the STO attached to the token (Or by the ST owner if there&#39;s no STO attached yet)
+     * Can only be called by the STO attached to the token (Or by the ST owner if there's no STO attached yet)
      */
     function mint(address _investor, uint256 _amount) public returns (bool success);
 
@@ -296,7 +296,7 @@ contract IST20 is StandardToken, DetailedERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -479,8 +479,8 @@ contract IModuleFactory is Ownable {
 
     //Pull function sig from _data
     function getSig(bytes _data) internal pure returns (bytes4 sig) {
-        uint len = _data.length &lt; 4 ? _data.length : 4;
-        for (uint i = 0; i &lt; len; i++) {
+        uint len = _data.length < 4 ? _data.length : 4;
+        for (uint i = 0; i < len; i++) {
             sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (len - 1 - i))));
         }
     }
@@ -524,7 +524,7 @@ contract IModule {
 
     address public securityToken;
 
-    bytes32 public constant FEE_ADMIN = &quot;FEE_ADMIN&quot;;
+    bytes32 public constant FEE_ADMIN = "FEE_ADMIN";
 
     ERC20 public polyToken;
 
@@ -548,22 +548,22 @@ contract IModule {
     modifier withPerm(bytes32 _perm) {
         bool isOwner = msg.sender == ISecurityToken(securityToken).owner();
         bool isFactory = msg.sender == factory;
-        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), &quot;Permission check failed&quot;);
+        require(isOwner||isFactory||ISecurityToken(securityToken).checkPermission(msg.sender, address(this), _perm), "Permission check failed");
         _;
     }
 
     modifier onlyOwner {
-        require(msg.sender == ISecurityToken(securityToken).owner(), &quot;Sender is not owner&quot;);
+        require(msg.sender == ISecurityToken(securityToken).owner(), "Sender is not owner");
         _;
     }
 
     modifier onlyFactory {
-        require(msg.sender == factory, &quot;Sender is not factory&quot;);
+        require(msg.sender == factory, "Sender is not factory");
         _;
     }
 
     modifier onlyFactoryOwner {
-        require(msg.sender == IModuleFactory(factory).owner(), &quot;Sender is not factory owner&quot;);
+        require(msg.sender == IModuleFactory(factory).owner(), "Sender is not factory owner");
         _;
     }
 
@@ -576,7 +576,7 @@ contract IModule {
      * @notice used to withdraw the fee by the factory owner
      */
     function takeFee(uint256 _amount) public withPerm(FEE_ADMIN) returns(bool) {
-        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), &quot;Unable to take fee&quot;);
+        require(polyToken.transferFrom(address(this), IModuleFactory(factory).owner(), _amount), "Unable to take fee");
         return true;
     }
 }
@@ -594,19 +594,19 @@ contract ICheckpoint is IModule {
  */
 library Math {
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -626,7 +626,7 @@ library Math {
 contract ERC20DividendCheckpoint is ICheckpoint {
     using SafeMath for uint256;
 
-    bytes32 public constant DISTRIBUTE = &quot;DISTRIBUTE&quot;;
+    bytes32 public constant DISTRIBUTE = "DISTRIBUTE";
 
     struct Dividend {
       uint256 checkpointId;
@@ -638,7 +638,7 @@ contract ERC20DividendCheckpoint is ICheckpoint {
       uint256 claimedAmount; // Amount of dividend claimed so far
       uint256 totalSupply; // Total supply at the associated checkpoint (avoids recalculating this)
       bool reclaimed;
-      mapping (address =&gt; bool) claimed; // List of addresses which have claimed dividend
+      mapping (address => bool) claimed; // List of addresses which have claimed dividend
     }
 
     // List of all dividends
@@ -649,10 +649,10 @@ contract ERC20DividendCheckpoint is ICheckpoint {
     event ERC20DividendReclaimed(address indexed _claimer, uint256 _dividendIndex, address _token, uint256 _claimedAmount);
 
     modifier validDividendIndex(uint256 _dividendIndex) {
-        require(_dividendIndex &lt; dividends.length, &quot;Incorrect dividend index&quot;);
-        require(now &gt;= dividends[_dividendIndex].maturity, &quot;Dividend maturity is in the future&quot;);
-        require(now &lt; dividends[_dividendIndex].expiry, &quot;Dividend expiry is in the past&quot;);
-        require(!dividends[_dividendIndex].reclaimed, &quot;Dividend has been reclaimed by issuer&quot;);
+        require(_dividendIndex < dividends.length, "Incorrect dividend index");
+        require(now >= dividends[_dividendIndex].maturity, "Dividend maturity is in the future");
+        require(now < dividends[_dividendIndex].expiry, "Dividend expiry is in the past");
+        require(!dividends[_dividendIndex].reclaimed, "Dividend has been reclaimed by issuer");
         _;
     }
 
@@ -682,11 +682,11 @@ contract ERC20DividendCheckpoint is ICheckpoint {
      * @param _amount Amount of specified token for dividend
      */
     function createDividend(uint256 _maturity, uint256 _expiry, address _token, uint256 _amount) public onlyOwner {
-        require(_expiry &gt; _maturity);
-        require(_expiry &gt; now);
+        require(_expiry > _maturity);
+        require(_expiry > now);
         require(_token != address(0));
-        require(_amount &gt; 0);
-        require(ERC20(_token).transferFrom(msg.sender, address(this), _amount), &quot;Unable to transfer tokens for dividend&quot;);
+        require(_amount > 0);
+        require(ERC20(_token).transferFrom(msg.sender, address(this), _amount), "Unable to transfer tokens for dividend");
         uint256 dividendIndex = dividends.length;
         uint256 checkpointId = ISecurityToken(securityToken).createCheckpoint();
         uint256 currentSupply = ISecurityToken(securityToken).totalSupply();
@@ -715,12 +715,12 @@ contract ERC20DividendCheckpoint is ICheckpoint {
      * @param _checkpointId Checkpoint id from which to create dividends
      */
     function createDividendWithCheckpoint(uint256 _maturity, uint256 _expiry, address _token, uint256 _amount, uint256 _checkpointId) payable public onlyOwner {
-        require(_expiry &gt; _maturity);
-        require(_expiry &gt; now);
-        require(_checkpointId &lt;= ISecurityToken(securityToken).currentCheckpointId());
+        require(_expiry > _maturity);
+        require(_expiry > now);
+        require(_checkpointId <= ISecurityToken(securityToken).currentCheckpointId());
         uint256 dividendIndex = dividends.length;
         uint256 currentSupply = ISecurityToken(securityToken).totalSupplyAt(_checkpointId);
-        require(ERC20(_token).transferFrom(msg.sender, address(this), _amount), &quot;Unable to transfer tokens for dividend&quot;);
+        require(ERC20(_token).transferFrom(msg.sender, address(this), _amount), "Unable to transfer tokens for dividend");
         dividends.push(
           Dividend(
             _checkpointId,
@@ -744,7 +744,7 @@ contract ERC20DividendCheckpoint is ICheckpoint {
      */
     function pushDividendPaymentToAddresses(uint256 _dividendIndex, address[] _payees) public withPerm(DISTRIBUTE) validDividendIndex(_dividendIndex) {
         Dividend storage dividend = dividends[_dividendIndex];
-        for (uint256 i = 0; i &lt; _payees.length; i++) {
+        for (uint256 i = 0; i < _payees.length; i++) {
             if (!dividend.claimed[_payees[i]]) {
                 _payDividend(_payees[i], dividend, _dividendIndex);
             }
@@ -760,7 +760,7 @@ contract ERC20DividendCheckpoint is ICheckpoint {
     function pushDividendPayment(uint256 _dividendIndex, uint256 _start, uint256 _iterations) public withPerm(DISTRIBUTE) validDividendIndex(_dividendIndex) {
         Dividend storage dividend = dividends[_dividendIndex];
         uint256 numberInvestors = ISecurityToken(securityToken).getInvestorsLength();
-        for (uint256 i = _start; i &lt; Math.min256(numberInvestors, _start.add(_iterations)); i++) {
+        for (uint256 i = _start; i < Math.min256(numberInvestors, _start.add(_iterations)); i++) {
             address payee = ISecurityToken(securityToken).investors(i);
             if (!dividend.claimed[payee]) {
                 _payDividend(payee, dividend, _dividendIndex);
@@ -775,7 +775,7 @@ contract ERC20DividendCheckpoint is ICheckpoint {
     function pullDividendPayment(uint256 _dividendIndex) public validDividendIndex(_dividendIndex)
     {
         Dividend storage dividend = dividends[_dividendIndex];
-        require(!dividend.claimed[msg.sender], &quot;Dividend already reclaimed&quot;);
+        require(!dividend.claimed[msg.sender], "Dividend already reclaimed");
         _payDividend(msg.sender, dividend, _dividendIndex);
     }
 
@@ -789,8 +789,8 @@ contract ERC20DividendCheckpoint is ICheckpoint {
         uint256 claim = calculateDividend(_dividendIndex, _payee);
         _dividend.claimed[_payee] = true;
         _dividend.claimedAmount = claim.add(_dividend.claimedAmount);
-        if (claim &gt; 0) {
-            require(ERC20(_dividend.token).transfer(_payee, claim), &quot;Unable to transfer tokens&quot;);
+        if (claim > 0) {
+            require(ERC20(_dividend.token).transfer(_payee, claim), "Unable to transfer tokens");
             emit ERC20DividendClaimed(_payee, _dividendIndex, _dividend.token, claim);
         }
     }
@@ -800,13 +800,13 @@ contract ERC20DividendCheckpoint is ICheckpoint {
      * @param _dividendIndex Dividend to reclaim
      */
     function reclaimDividend(uint256 _dividendIndex) public onlyOwner {
-        require(_dividendIndex &lt; dividends.length, &quot;Incorrect dividend index&quot;);
-        require(now &gt;= dividends[_dividendIndex].expiry, &quot;Dividend expiry is in the future&quot;);
-        require(!dividends[_dividendIndex].reclaimed, &quot;Dividend already claimed&quot;);
+        require(_dividendIndex < dividends.length, "Incorrect dividend index");
+        require(now >= dividends[_dividendIndex].expiry, "Dividend expiry is in the future");
+        require(!dividends[_dividendIndex].reclaimed, "Dividend already claimed");
         dividends[_dividendIndex].reclaimed = true;
         Dividend storage dividend = dividends[_dividendIndex];
         uint256 remainingAmount = dividend.amount.sub(dividend.claimedAmount);
-        require(ERC20(dividend.token).transfer(msg.sender, remainingAmount), &quot;Unable to transfer tokens&quot;);
+        require(ERC20(dividend.token).transfer(msg.sender, remainingAmount), "Unable to transfer tokens");
         emit ERC20DividendReclaimed(msg.sender, _dividendIndex, dividend.token, remainingAmount);
     }
 
@@ -832,7 +832,7 @@ contract ERC20DividendCheckpoint is ICheckpoint {
      */
     function getDividendIndex(uint256 _checkpointId) public view returns(uint256[]) {
         uint256 counter = 0;
-        for(uint256 i = 0; i &lt; dividends.length; i++) {
+        for(uint256 i = 0; i < dividends.length; i++) {
             if (dividends[i].checkpointId == _checkpointId) {
                 counter++;
             }
@@ -840,7 +840,7 @@ contract ERC20DividendCheckpoint is ICheckpoint {
 
        uint256[] memory index = new uint256[](counter);
        counter = 0;
-       for(uint256 j = 0; j &lt; dividends.length; j++) {
+       for(uint256 j = 0; j < dividends.length; j++) {
            if (dividends[j].checkpointId == _checkpointId) {
                index[counter] = j;
                counter++;
@@ -884,8 +884,8 @@ contract ERC20DividendCheckpointFactory is IModuleFactory {
      * @return address Contract address of the Module
      */
     function deploy(bytes /* _data */) external returns(address) {
-        if (setupCost &gt; 0)
-            require(polyToken.transferFrom(msg.sender, owner, setupCost), &quot;Failed transferFrom because of sufficent Allowance is not provided&quot;);
+        if (setupCost > 0)
+            require(polyToken.transferFrom(msg.sender, owner, setupCost), "Failed transferFrom because of sufficent Allowance is not provided");
         return address(new ERC20DividendCheckpoint(msg.sender, address(polyToken)));
     }
 
@@ -900,28 +900,28 @@ contract ERC20DividendCheckpointFactory is IModuleFactory {
      * @notice Get the name of the Module
      */
     function getName() public view returns(bytes32) {
-        return &quot;ERC20DividendCheckpoint&quot;;
+        return "ERC20DividendCheckpoint";
     }
 
     /**
      * @notice Get the description of the Module
      */
     function getDescription() public view returns(string) {
-        return &quot;Create ERC20 dividends for token holders at a specific checkpoint&quot;;
+        return "Create ERC20 dividends for token holders at a specific checkpoint";
     }
 
     /**
      * @notice Get the title of the Module
      */
     function getTitle() public  view returns(string) {
-        return &quot;ERC20 Dividend Checkpoint&quot;;
+        return "ERC20 Dividend Checkpoint";
     }
 
     /**
      * @notice Get the Instructions that helped to used the module
      */
     function getInstructions() public view returns(string) {
-        return &quot;Create a ERC20 dividend which will be paid out to token holders proportional to their balances at the point the dividend is created&quot;;
+        return "Create a ERC20 dividend which will be paid out to token holders proportional to their balances at the point the dividend is created";
     }
 
     /**
@@ -929,9 +929,9 @@ contract ERC20DividendCheckpointFactory is IModuleFactory {
      */
     function getTags() public view returns(bytes32[]) {
         bytes32[] memory availableTags = new bytes32[](3);
-        availableTags[0] = &quot;ERC20&quot;;
-        availableTags[1] = &quot;Dividend&quot;;
-        availableTags[2] = &quot;Checkpoint&quot;;
+        availableTags[0] = "ERC20";
+        availableTags[1] = "Dividend";
+        availableTags[2] = "Checkpoint";
         return availableTags;
     }
 }

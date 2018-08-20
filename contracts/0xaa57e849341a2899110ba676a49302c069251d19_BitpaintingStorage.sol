@@ -82,7 +82,7 @@ contract BaseStorage is Pausable {
     event AccessAllowed(address _address);
     event AccessDenied(address _address);
 
-    mapping (address =&gt; bool) public allowed;
+    mapping (address => bool) public allowed;
     address public developer;
 
 
@@ -118,8 +118,8 @@ contract BaseStorage is Pausable {
 contract AccessControlStorage is BaseStorage {
 
 
-    mapping (address =&gt; bool) public admins;
-    mapping (uint =&gt; address) public contracts;
+    mapping (address => bool) public admins;
+    mapping (uint => address) public contracts;
 
     function addAdmin(address _address) public onlyOwner {
         require(_address != address(0));
@@ -162,7 +162,7 @@ contract AuctionStorage is BaseStorage {
     }
 
     // Map from token ID to their corresponding auction.
-    mapping (uint =&gt; Auction) public tokenIdToAuction;
+    mapping (uint => Auction) public tokenIdToAuction;
     uint auctionsCounter = 0;
     uint8 public secondarySaleCut = 4;
 
@@ -225,7 +225,7 @@ contract AuctionStorage is BaseStorage {
 
     function _isOnAuction(uint _tokenId)
         internal constant returns (bool) {
-        return (tokenIdToAuction[_tokenId].startedAt &gt; 0);
+        return (tokenIdToAuction[_tokenId].startedAt > 0);
     }
 
     function isOnAuction(uint _tokenId)
@@ -284,7 +284,7 @@ contract AuctionStorage is BaseStorage {
     }
 
     function canBeCanceled(uint _tokenId) external constant returns (bool) {
-        return getAuctionEnd(_tokenId) &lt;= now;
+        return getAuctionEnd(_tokenId) <= now;
     }
 
     function isSecondary(uint _tokenId) public constant returns (bool _is) {
@@ -300,9 +300,9 @@ contract EditionStorage is BaseStorage {
     uint public offset = 1000000;
     uint public offsetIndex = 1;
     uint8[3] public defaultEditionLimits = [10, 89, 200];
-    mapping (uint =&gt; mapping (uint8 =&gt; uint8)) public editionCounts;
-    mapping (uint =&gt; mapping (uint8 =&gt; uint8)) public editionLimits;
-    mapping (uint =&gt; uint) public lastEditionOf;
+    mapping (uint => mapping (uint8 => uint8)) public editionCounts;
+    mapping (uint => mapping (uint8 => uint8)) public editionLimits;
+    mapping (uint => uint) public lastEditionOf;
 
     function setOffset(uint _offset) external onlyOwner {
         offset = _offset;
@@ -320,12 +320,12 @@ contract EditionStorage is BaseStorage {
         public constant returns (bool) {
         uint8 actual = editionCounts[_tokenId][_generation - 1];
         uint limit = editionLimits[_tokenId][_generation - 1];
-        return (actual &lt; limit);
+        return (actual < limit);
     }
 
     function isValidGeneration(uint8 _generation)
         public constant returns (bool) {
-        return (_generation &gt;= 1 &amp;&amp; _generation &lt;= 3);
+        return (_generation >= 1 && _generation <= 3);
     }
 
     function increaseGenerationCount(uint _tokenId, uint8 _generation)
@@ -371,7 +371,7 @@ contract PaintingInformationStorage {
         string artist;
     }
 
-    mapping (uint =&gt; PaintingInformation) public information;
+    mapping (uint => PaintingInformation) public information;
 }
 
 // File: contracts/libs/PaintingStorage.sol
@@ -429,19 +429,19 @@ contract PaintingStorage is BaseStorage {
         uint32(0 seconds)
     ];
 
-    mapping (uint =&gt; address) public paintingIndexToOwner;
-    mapping (uint =&gt; Painting) public paintings;
-    mapping (uint =&gt; address) public paintingIndexToApproved;
+    mapping (uint => address) public paintingIndexToOwner;
+    mapping (uint => Painting) public paintings;
+    mapping (uint => address) public paintingIndexToApproved;
     uint[] public paintingIds;
-    mapping (uint =&gt; uint) public paintingIdToIndex;
+    mapping (uint => uint) public paintingIdToIndex;
     uint public paintingsCount;
     uint public totalPaintingsCount;
-    mapping (uint =&gt; bool) public isCanceled;
-    mapping (uint =&gt; bool) public isReleased;
+    mapping (uint => bool) public isCanceled;
+    mapping (uint => bool) public isReleased;
 
     // @dev A mapping from owner address to count of tokens that address owns.
     // Used internally inside balanceOf() to resolve ownership count.
-    mapping (address =&gt; uint256) public ownershipTokenCount;
+    mapping (address => uint256) public ownershipTokenCount;
 
     modifier isNew(uint _tokenId) {
         require(paintings[_tokenId].createdAt == 0);
@@ -492,7 +492,7 @@ contract PaintingStorage is BaseStorage {
     function decreaseSpeed(uint _tokenId) public canWrite() {
         uint8 _speed = paintings[_tokenId].speedIndex;
 
-        if (_speed &gt; 0) {
+        if (_speed > 0) {
             paintings[_tokenId].speedIndex--;
         }
     }
@@ -529,7 +529,7 @@ contract PaintingStorage is BaseStorage {
 
     function isReady(uint _tokenId)
         public constant returns (bool) {
-        return paintings[_tokenId].completedAt &lt;= now;
+        return paintings[_tokenId].completedAt <= now;
     }
 
     function getPaintingIdAtIndex(uint _index)
@@ -548,7 +548,7 @@ contract PaintingStorage is BaseStorage {
     }
 
     function canBeBidden(uint _tokenId) public constant returns (bool _can) {
-        return (paintings[_tokenId].releasedAt &lt;= now);
+        return (paintings[_tokenId].releasedAt <= now);
     }
 
 }
@@ -563,7 +563,7 @@ contract BitpaintingStorage is PaintingStorage, PaintingInformationStorage, Acce
     uint8 mode;
 
     function BitpaintingStorage(uint8 _mode) public {
-        require(_mode &gt;= 0 &amp;&amp; _mode &lt;=2);
+        require(_mode >= 0 && _mode <=2);
         mode = _mode;
     }
 
@@ -586,7 +586,7 @@ contract BitpaintingStorage is PaintingStorage, PaintingInformationStorage, Acce
         uint8 generation = paintings[_tokenId].generation;
         uint8 limit = editionLimits[originalId][generation];
         uint8 current = editionCounts[originalId][generation];
-        return (current &lt; limit);
+        return (current < limit);
     }
 
     function resetPainting(uint _tokenId) public canWrite {
@@ -606,8 +606,8 @@ contract BitpaintingStorage is PaintingStorage, PaintingInformationStorage, Acce
         uint _artistId,
         uint _releasedAt
     ) public isNew(_tokenId) canWrite {
-        require(now &lt;= _releasedAt);
-        require(_speed &gt;= 1 &amp;&amp; _speed &lt;= 10);
+        require(now <= _releasedAt);
+        require(_speed >= 1 && _speed <= 10);
         _speed--;
 
         uint _createdAt = now;
@@ -707,7 +707,7 @@ contract BitpaintingStorage is PaintingStorage, PaintingInformationStorage, Acce
         tokens = new uint[](auctionsCounter);
         uint pointer = 0;
 
-        for(uint index = 0; index &lt; totalPaintingsCount; index++) {
+        for(uint index = 0; index < totalPaintingsCount; index++) {
             uint tokenId = getPaintingIdAtIndex(index);
 
             if (isCanceled[tokenId]) {
@@ -735,7 +735,7 @@ contract BitpaintingStorage is PaintingStorage, PaintingInformationStorage, Acce
     }
 
     function signature() external constant returns (bytes4) {
-        return bytes4(keccak256(&quot;storage&quot;));
+        return bytes4(keccak256("storage"));
     }
 
 

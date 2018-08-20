@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0); // Solidity automatically throws when dividing by 0
+    require(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    require(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    require(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    require(c &gt;= a);
+    require(c >= a);
     return c;
   }
 }
@@ -53,11 +53,11 @@ contract ContractReceiver {
 contract Tacoin is ERC223 {
   using SafeMath for uint;
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) internal _allowances;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) internal _allowances;
 
-  string public name = &quot;Tacoin&quot;;
-  string public symbol = &quot;TACO&quot;;
+  string public name = "Tacoin";
+  string public symbol = "TACO";
   uint8 public decimals = 18;
   uint256 public totalSupply = 10000000000000000000000000;
 
@@ -68,8 +68,8 @@ function Tacoin (
     ) public {
         totalSupply = initialSupply * 10000000000000000000000000  ** uint256(18);  
         balances[msg.sender] = totalSupply = 10000000000000000000000000;                
-        name = tokenName = &quot;Tacoin&quot;;                                   
-        symbol = tokenSymbol = &quot;TACO&quot;;                               
+        name = tokenName = "Tacoin";                                   
+        symbol = tokenSymbol = "TACO";                               
     }
 
   // Function to access name of token .
@@ -128,7 +128,7 @@ function Tacoin (
             //retrieve the size of the code on target address, this needs assembly
             length := extcodesize(_addr)
         }
-        if(length&gt;0) {
+        if(length>0) {
             return true;
         }
         else {
@@ -138,7 +138,7 @@ function Tacoin (
 
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     Transfer(msg.sender, _to, _value);
@@ -148,7 +148,7 @@ function Tacoin (
 
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
-    if (balanceOf(msg.sender) &lt; _value) revert();
+    if (balanceOf(msg.sender) < _value) revert();
     balances[msg.sender] = balanceOf(msg.sender).sub(_value);
     balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver reciever = ContractReceiver(_to);
@@ -163,10 +163,10 @@ function Tacoin (
   }
   
   function transferFrom(address _from, address _to, uint _value) external returns (bool) {
-        if (_allowances[_from][msg.sender] &gt; 0 &amp;&amp;
-            _value &gt; 0 &amp;&amp;
-            _allowances[_from][msg.sender] &gt;= _value &amp;&amp;
-            balances[_from] &gt;= _value) {
+        if (_allowances[_from][msg.sender] > 0 &&
+            _value > 0 &&
+            _allowances[_from][msg.sender] >= _value &&
+            balances[_from] >= _value) {
             balances[_from] = balances[_from].sub(_value);
             _allowances[_from][msg.sender] = _allowances[_from][msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);

@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
     address public owner;
@@ -111,7 +111,7 @@ contract ERC721Auction is Beneficiary {
     ERC721 public ERC721Contract;
     uint256 public fee = 45000; //in 1 10000th of a percent so 4.5% at the start
     uint256 constant FEE_DIVIDER = 1000000;
-    mapping(uint256 =&gt; Auction) public auctions;
+    mapping(uint256 => Auction) public auctions;
 
     event AuctionWon(uint256 indexed tokenId, address indexed winner, address indexed seller, uint256 price);
 
@@ -123,8 +123,8 @@ contract ERC721Auction is Beneficiary {
     function startAuction(uint256 _tokenId, uint256 _startPrice, uint256 _endPrice) external {
         require(ERC721Contract.transferFrom(msg.sender, address(this), _tokenId));
         //Prices must be in range from 0.01 Eth and 10 000 Eth
-        require(_startPrice &lt;= 10000 ether &amp;&amp; _endPrice &lt;= 10000 ether);
-        require(_startPrice &gt;= (1 ether / 100) &amp;&amp; _endPrice &gt;= (1 ether / 100));
+        require(_startPrice <= 10000 ether && _endPrice <= 10000 ether);
+        require(_startPrice >= (1 ether / 100) && _endPrice >= (1 ether / 100));
 
         Auction memory auction;
 
@@ -132,7 +132,7 @@ contract ERC721Auction is Beneficiary {
         auction.tokenId = _tokenId;
         auction.auctionBegin = uint64(now);
         auction.auctionEnd = uint64(now + auctionDuration);
-        require(auction.auctionEnd &gt; auction.auctionBegin);
+        require(auction.auctionEnd > auction.auctionBegin);
         auction.startPrice = _startPrice;
         auction.endPrice = _endPrice;
 
@@ -148,7 +148,7 @@ contract ERC721Auction is Beneficiary {
         uint256 price = calculateBid(_tokenId);
         uint256 totalFee = price * fee / FEE_DIVIDER; //safe math needed?
 
-        require(price &lt;= msg.value); //revert if not enough ether send
+        require(price <= msg.value); //revert if not enough ether send
 
         if (price != msg.value) {//send back to much eth
             msg.sender.transfer(msg.value - price);
@@ -160,7 +160,7 @@ contract ERC721Auction is Beneficiary {
 
         if (!ERC721Contract.transfer(msg.sender, _tokenId)) {
             revert();
-            //can&#39;t complete transfer if this fails
+            //can't complete transfer if this fails
         }
 
         AuctionWon(_tokenId, msg.sender, auction.seller, price);
@@ -170,7 +170,7 @@ contract ERC721Auction is Beneficiary {
     }
 
     function saveToken(uint256 _tokenId) external {
-        require(auctions[_tokenId].auctionEnd &lt; now);
+        require(auctions[_tokenId].auctionEnd < now);
         //auction must have ended
         require(ERC721Contract.transfer(auctions[_tokenId].seller, _tokenId));
         //transfer fish back to seller
@@ -186,7 +186,7 @@ contract ERC721Auction is Beneficiary {
     }
 
     function setFee(uint256 _fee) onlyOwner public {
-        if (_fee &gt; fee) {
+        if (_fee > fee) {
             revert(); //fee can only be set to lower value to prevent attacks by owner
         }
         fee = _fee; // all is well set fee
@@ -195,7 +195,7 @@ contract ERC721Auction is Beneficiary {
     function calculateBid(uint256 _tokenId) public view returns (uint256) {
         Auction storage auction = auctions[_tokenId];
 
-        if (now &gt;= auction.auctionEnd) {//if auction ended return auction end price
+        if (now >= auction.auctionEnd) {//if auction ended return auction end price
             return auction.endPrice;
         }
         //get hours passed
@@ -204,9 +204,9 @@ contract ERC721Auction is Beneficiary {
         //get total hours
         uint16 totalHours = uint16(auctionDuration /1 hours) - 1;
 
-        if (auction.endPrice &gt; auction.startPrice) {
+        if (auction.endPrice > auction.startPrice) {
             currentPrice = auction.startPrice + (hoursPassed * (auction.endPrice - auction.startPrice))/ totalHours;
-        } else if(auction.endPrice &lt; auction.startPrice) {
+        } else if(auction.endPrice < auction.startPrice) {
             currentPrice = auction.startPrice - (hoursPassed * (auction.startPrice - auction.endPrice))/ totalHours;
         } else {//start and end are the same
             currentPrice = auction.endPrice;

@@ -3,7 +3,7 @@ pragma solidity 0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control 
- * functions, this simplifies the implementation of &quot;user permissions&quot;. 
+ * functions, this simplifies the implementation of "user permissions". 
  */
 contract Ownable {
   address public owner;
@@ -56,20 +56,20 @@ library SafeMath {
   }
 
   function div256(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &gt; 0); // Solidity automatically revert()s when dividing by 0
+    require(b > 0); // Solidity automatically revert()s when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub256(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b &lt;= a);
+    require(b <= a);
     return a - b;
   }
 
   function add256(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }  
   
@@ -79,19 +79,19 @@ library SafeMath {
   }
 
   function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 
   function max256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &gt;= b ? a : b;
+    return a >= b ? a : b;
   }
 
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a &lt; b ? a : b;
+    return a < b ? a : b;
   }
 }
 
@@ -130,13 +130,13 @@ contract ERC20 is ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
    * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-     if(msg.data.length &lt; size + 4) {
+     if(msg.data.length < size + 4) {
        revert();
      }
      _;
@@ -173,7 +173,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is BasicToken, ERC20 {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -186,7 +186,7 @@ contract StandardToken is BasicToken, ERC20 {
     var _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already revert() if this condition is not met
-    // if (_value &gt; _allowance) revert();
+    // if (_value > _allowance) revert();
 
     balances[_to] = balances[_to].add256(_value);
     balances[_from] = balances[_from].sub256(_value);
@@ -205,7 +205,7 @@ contract StandardToken is BasicToken, ERC20 {
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
     allowed[msg.sender][_spender] = _value;
     Approval(msg.sender, _spender, _value);
@@ -233,8 +233,8 @@ contract StandardToken is BasicToken, ERC20 {
  */
  
 contract TeuToken is StandardToken, Ownable{
-  string public name = &quot;20-footEqvUnit&quot;;
-  string public symbol = &quot;TEU&quot;;
+  string public name = "20-footEqvUnit";
+  string public symbol = "TEU";
   uint public decimals = 18;
 
   event TokenBurned(uint256 value);
@@ -249,7 +249,7 @@ contract TeuToken is StandardToken, Ownable{
    * @param _value number of tokens to be burned.
    */
   function burn(uint _value) onlyOwner public {
-    require(balances[msg.sender] &gt;= _value);
+    require(balances[msg.sender] >= _value);
     balances[msg.sender] = balances[msg.sender].sub256(_value);
     totalSupply = totalSupply.sub256(_value);
     TokenBurned(_value);
@@ -354,14 +354,14 @@ contract TeuBookingDeposit is Ownable, Pausable {
     }
 	
     function receiveTokenByClientAccount(string _clientId, uint256 _tokenAmount, address _transferFrom) stopInEmergency public {
-        require(_tokenAmount &gt; 0);
+        require(_tokenAmount > 0);
         bytes32 _clientId32 = stringToBytes32(_clientId);
 		token.transferFrom(_transferFrom, this, _tokenAmount);   
 		eReceiveTokenByClientAccount(_clientId32, _tokenAmount, _transferFrom);
     }
 	
 	function withdrawTokenToClientAccount(bytes32 _clientId, bytes32 _withdrawnBy, address _transferTo, uint256 _tokenAmount) onlyOwner stopInEmergency public {
-        require(_tokenAmount &gt; 0);
+        require(_tokenAmount > 0);
 
 		token.transfer(_transferTo, _tokenAmount);      
 
@@ -376,7 +376,7 @@ contract TeuBookingDeposit is Ownable, Pausable {
     }
     
     function withdrawUnallocatedRestrictedToken(uint256 _tokenAmount, bytes32 _withdrawnBy) onlyOwner stopInEmergency public {
-        //require(_tokenAmount &lt;= token.balanceOf(this).sub256(totalBookingClientToken).sub256(totalClientToken).sub256(totalRestrictedToken));
+        //require(_tokenAmount <= token.balanceOf(this).sub256(totalBookingClientToken).sub256(totalClientToken).sub256(totalRestrictedToken));
         token.transfer(msg.sender, _tokenAmount);
 		eWithdrawUnallocatedRestrictedToken(_tokenAmount, _withdrawnBy);
     } 

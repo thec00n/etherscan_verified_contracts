@@ -23,20 +23,20 @@ library SafeMath {
 	}
 
 	function div(uint256 a, uint256 b) internal constant returns (uint256) {
-		// assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+		// assert(b > 0); // Solidity automatically throws when dividing by 0
 		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
 
 	function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-		assert(b &lt;= a);
+		assert(b <= a);
 		return a - b;
 	}
 
 	function add(uint256 a, uint256 b) internal constant returns (uint256) {
 		uint256 c = a + b;
-		assert(c &gt;= a);
+		assert(c >= a);
 		return c;
 	}
 }
@@ -51,8 +51,8 @@ contract BetaToken is IERC20{
 	bool public purchasingAllowed = true;
 	bool private bonusAllowed = true;	
 
-	string public constant symbol = &quot;BKE&quot;;
-	string public constant name = &quot;BetaToken&quot;;
+	string public constant symbol = "BKE";
+	string public constant name = "BetaToken";
 	uint256 public constant decimals = 18;
 
 	uint256 private CREATOR_TOKEN = 3100000000 * 10**decimals;
@@ -82,8 +82,8 @@ contract BetaToken is IERC20{
 		
 	address private owner;
 
-	mapping(address =&gt; uint256) balances;
-	mapping(address =&gt; mapping(address =&gt; uint256)) allowed;
+	mapping(address => uint256) balances;
+	mapping(address => mapping(address => uint256)) allowed;
 
 	uint private start;
 	uint private end;
@@ -132,65 +132,65 @@ contract BetaToken is IERC20{
    
 	function createTokens() payable{
 	    bool bSend = true;
-		require(msg.value &gt;= 0);
+		require(msg.value >= 0);
 		uint256 tokens = msg.value.mul(10 ** decimals);
 		tokens = tokens.mul(RATE);
 		tokens = tokens.div(10 ** 18);
 		if (bonusAllowed)
 		{
-			if (now &gt;= start &amp;&amp; now &lt; end)
+			if (now >= start && now < end)
 			{
 			tokens += tokens.mul(PERC_BONUS).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end &amp;&amp; now &lt; end2)
+			if (now >= end && now < end2)
 			{
 			tokens += tokens.mul(PERC_BONUS2).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end2 &amp;&amp; now &lt; end3)
+			if (now >= end2 && now < end3)
 			{
 			tokens += tokens.mul(PERC_BONUS3).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end3 &amp;&amp; now &lt; end4)
+			if (now >= end3 && now < end4)
 			{
 			tokens += tokens.mul(PERC_BONUS4).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end4 &amp;&amp; now &lt; end5)
+			if (now >= end4 && now < end5)
 			{
 			tokens += tokens.mul(PERC_BONUS5).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end5 &amp;&amp; now &lt; end6)
+			if (now >= end5 && now < end6)
 			{
 			tokens += tokens.mul(PERC_BONUS6).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end6 &amp;&amp; now &lt; end7)
+			if (now >= end6 && now < end7)
 			{
 			tokens += tokens.mul(PERC_BONUS7).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end7 &amp;&amp; now &lt; end8)
+			if (now >= end7 && now < end8)
 			{
 			tokens += tokens.mul(PERC_BONUS8).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end8 &amp;&amp; now &lt; end9)
+			if (now >= end8 && now < end9)
 			{
 			tokens += tokens.mul(PERC_BONUS9).div(100);
 			bSend = false;
 			}
-			if (now &gt;= end9 &amp;&amp; now &lt; end10)
+			if (now >= end9 && now < end10)
 			{
 			tokens += tokens.mul(PERC_BONUS10).div(100);
 			bSend = false;
 			}
 		}
 		uint256 sum2 = balances[owner].sub(tokens);		
-		require(sum2 &gt;= CREATOR_TOKEN_END);
+		require(sum2 >= CREATOR_TOKEN_END);
 		uint256 sum = _totalSupply.add(tokens);		
 		_totalSupply = sum;
 		owner.transfer(msg.value);
@@ -229,7 +229,7 @@ contract BetaToken is IERC20{
 	}   
 
 	function transfer(address _to, uint256 _value) returns (bool success){
-		require(balances[msg.sender] &gt;= _value	&amp;&amp; _value &gt; 0);
+		require(balances[msg.sender] >= _value	&& _value > 0);
 		balances[msg.sender] = balances[msg.sender].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		Transfer(msg.sender, _to, _value);
@@ -237,7 +237,7 @@ contract BetaToken is IERC20{
 	}
    
 	function transferFrom(address _from, address _to, uint256 _value) returns (bool success){
-		require(allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[msg.sender] &gt;= _value	&amp;&amp; _value &gt; 0);
+		require(allowed[_from][msg.sender] >= _value && balances[msg.sender] >= _value	&& _value > 0);
 		balances[_from] = balances[_from].sub(_value);
 		balances[_to] = balances[_to].add(_value);
 		allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -258,10 +258,10 @@ contract BetaToken is IERC20{
 	function burnAll() onlyOwner public {		
 		address burner = msg.sender;
 		uint256 total = balances[burner];
-		if (total &gt; CREATOR_TOKEN_END) {
+		if (total > CREATOR_TOKEN_END) {
 			total = total.sub(CREATOR_TOKEN_END);
 			balances[burner] = balances[burner].sub(total);
-			if (_totalSupply &gt;= total){
+			if (_totalSupply >= total){
 				_totalSupply = _totalSupply.sub(total);
 			}
 			Burn(burner, total);
@@ -269,21 +269,21 @@ contract BetaToken is IERC20{
 	}
 	
 	function burn(uint256 _value) onlyOwner public {
-        require(_value &gt; 0);
-        require(_value &lt;= balances[msg.sender]);
+        require(_value > 0);
+        require(_value <= balances[msg.sender]);
 		_value = _value.mul(10 ** decimals);
         address burner = msg.sender;
 		uint t = balances[burner].sub(_value);
-		require(t &gt;= CREATOR_TOKEN_END);
+		require(t >= CREATOR_TOKEN_END);
         balances[burner] = balances[burner].sub(_value);
-        if (_totalSupply &gt;= _value){
+        if (_totalSupply >= _value){
 			_totalSupply = _totalSupply.sub(_value);
 		}
         Burn(burner, _value);
 	}
 		
     function mintToken(uint256 _value) onlyOwner public {
-        require(_value &gt; 0);
+        require(_value > 0);
 		_value = _value.mul(10 ** decimals);
         balances[owner] = balances[owner].add(_value);
         _totalSupply = _totalSupply.add(_value);
@@ -291,7 +291,7 @@ contract BetaToken is IERC20{
     }
 	
 	function TransferTokens() onlyOwner public {
-	    for (uint i = 0; i&lt;buyers.length; i++){
+	    for (uint i = 0; i<buyers.length; i++){
     		balances[buyers[i].to] = balances[buyers[i].to].add(buyers[i].value);
     		balances[owner] = balances[owner].sub(buyers[i].value);
 	        Transfer(owner, buyers[i].to, buyers[i].value);

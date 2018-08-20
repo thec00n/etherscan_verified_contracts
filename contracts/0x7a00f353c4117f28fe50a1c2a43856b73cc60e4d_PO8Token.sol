@@ -15,12 +15,12 @@ library SafeMath {
         return a / b;
     }
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
         c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 }
@@ -67,8 +67,8 @@ contract KTBaseToken is ERC20 {
     uint8 public decimals;
     uint256 totalSupply_;
 
-    mapping(address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+    mapping(address => uint256) balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
 
     constructor(string _name, string _symbol, uint8 _decimals, uint256 _totalSupply) public{
         name = _name;
@@ -87,8 +87,8 @@ contract KTBaseToken is ERC20 {
 
     function _transfer(address _from, address _to, uint256 _value) internal {
         require(_to != address(0));
-        require(balances[_from] &gt;= _value);
-        require(balances[_to].add(_value) &gt; balances[_to]);
+        require(balances[_from] >= _value);
+        require(balances[_to].add(_value) > balances[_to]);
 
 
         uint256 previousBalances = balances[_from].add(balances[_to]);
@@ -104,7 +104,7 @@ contract KTBaseToken is ERC20 {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+        require(_value <= allowed[_from][msg.sender]);     // Check allowance
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         _transfer(_from, _to, _value);
         return true;
@@ -136,7 +136,7 @@ contract KTBaseToken is ERC20 {
 
     function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
         uint oldValue = allowed[msg.sender][_spender];
-        if (_subtractedValue &gt; oldValue) {
+        if (_subtractedValue > oldValue) {
             allowed[msg.sender][_spender] = 0;
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -147,7 +147,7 @@ contract KTBaseToken is ERC20 {
 
 }
 
-contract PO8Token is KTBaseToken(&quot;PO8 Token&quot;, &quot;PO8&quot;, 18, 10000000000000000000000000000), Ownable {
+contract PO8Token is KTBaseToken("PO8 Token", "PO8", 18, 10000000000000000000000000000), Ownable {
 
     uint256 internal privateToken;
     uint256 internal preSaleToken;
@@ -156,7 +156,7 @@ contract PO8Token is KTBaseToken(&quot;PO8 Token&quot;, &quot;PO8&quot;, 18, 100
     uint256 internal foundationToken;
     address public founderAddress;
 
-    mapping (address =&gt; bool) public approvedAccount;
+    mapping (address => bool) public approvedAccount;
     event UnFrozenFunds(address target, bool unfrozen);
 
     constructor() public {
@@ -167,8 +167,8 @@ contract PO8Token is KTBaseToken(&quot;PO8 Token&quot;, &quot;PO8&quot;, 18, 100
 
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != address(0));                               
-        require (balances[_from] &gt;= _value);               
-        require (balances[_to].add(_value) &gt;= balances[_to]); 
+        require (balances[_from] >= _value);               
+        require (balances[_to].add(_value) >= balances[_to]); 
         require(approvedAccount[_from]);
 
         balances[_from] = balances[_from].sub(_value);                  

@@ -16,7 +16,7 @@ contract Token {
      * https://github.com/ethereum/EIPs/blob/f90864a3d2b2b45c4decf95efd26b3f0c276051a/EIPS/eip-20-token-standard.md
      * https://github.com/ethereum/EIPs/issues/20
      *
-     *  Added support for the ERC 223 &quot;tokenFallback&quot; method in a &quot;transfer&quot; function with a payload.
+     *  Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      *  https://github.com/ethereum/EIPs/issues/223
      */
 
@@ -62,22 +62,22 @@ contract StandardToken is Token {
     /*
      * Data structures
      */
-    mapping (address =&gt; uint256) balances;
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /*
      * Public functions
      */
     /// @notice Send `_value` tokens to `_to` from `msg.sender`.
-    /// @dev Transfers sender&#39;s tokens to a given address. Returns success.
+    /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _to Address of token receiver.
     /// @param _value Number of tokens to transfer.
     /// @return Returns success of function call.
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -110,7 +110,7 @@ contract StandardToken is Token {
             codeLength := extcodesize(_to)
         }
 
-        if (codeLength &gt; 0) {
+        if (codeLength > 0) {
             ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
             receiver.tokenFallback(msg.sender, _value, _data);
         }
@@ -132,9 +132,9 @@ contract StandardToken is Token {
         require(_from != 0x0);
         require(_to != 0x0);
         require(_to != address(this));
-        require(balances[_from] &gt;= _value);
-        require(allowed[_from][msg.sender] &gt;= _value);
-        require(balances[_to] + _value &gt;= balances[_to]);
+        require(balances[_from] >= _value);
+        require(allowed[_from][msg.sender] >= _value);
+        require(balances[_to] + _value >= balances[_to]);
 
         balances[_to] += _value;
         balances[_from] -= _value;
@@ -196,14 +196,14 @@ contract RaidenToken is StandardToken {
      *  Terminology:
      *  1 token unit = Rei
      *  1 token = RDN = Rei * multiplier
-     *  multiplier set from token&#39;s number of decimals (i.e. 10 ** decimals)
+     *  multiplier set from token's number of decimals (i.e. 10 ** decimals)
      */
 
     /*
      *  Token metadata
      */
-    string constant public name = &quot;Raiden Token&quot;;
-    string constant public symbol = &quot;RDN&quot;;
+    string constant public name = "Raiden Token";
+    string constant public symbol = "RDN";
     uint8 constant public decimals = 18;
     uint constant multiplier = 10 ** uint(decimals);
 
@@ -233,7 +233,7 @@ contract RaidenToken is StandardToken {
         require(wallet_address != 0x0);
 
         // Initial supply is in Rei
-        require(initial_supply &gt; multiplier);
+        require(initial_supply > multiplier);
 
         // Total supply of Rei at deployment
         totalSupply = initial_supply;
@@ -254,9 +254,9 @@ contract RaidenToken is StandardToken {
     /// @dev Allows to destroy token units (Rei).
     /// @param num Number of token units (Rei) to burn.
     function burn(uint num) public {
-        require(num &gt; 0);
-        require(balances[msg.sender] &gt;= num);
-        require(totalSupply &gt;= num);
+        require(num > 0);
+        require(balances[msg.sender] >= num);
+        require(totalSupply >= num);
 
         uint pre_balance = balances[msg.sender];
 
@@ -281,7 +281,7 @@ contract DutchAuction {
      * Terminology:
      * 1 token unit = Rei
      * 1 token = RDN = Rei * token_multiplier
-     * token_multiplier set from token&#39;s number of decimals (i.e. 10 ** decimals)
+     * token_multiplier set from token's number of decimals (i.e. 10 ** decimals)
      */
 
     // Wait 7 days after the end of the auction, before anyone can claim tokens
@@ -330,11 +330,11 @@ contract DutchAuction {
     // Wei per RDN (Rei * token_multiplier)
     uint public final_price;
 
-    // Bidder address =&gt; bid value
-    mapping (address =&gt; uint) public bids;
+    // Bidder address => bid value
+    mapping (address => uint) public bids;
 
     // Whitelist for addresses that want to bid more than bid_threshold
-    mapping (address =&gt; bool) public whitelist;
+    mapping (address => bool) public whitelist;
 
     Stages public stage;
 
@@ -451,8 +451,8 @@ contract DutchAuction {
         internal
     {
         require(stage == Stages.AuctionDeployed || stage == Stages.AuctionSetUp);
-        require(_price_start &gt; 0);
-        require(_price_constant &gt; 0);
+        require(_price_start > 0);
+        require(_price_constant > 0);
 
         price_start = _price_start;
         price_constant = _price_constant;
@@ -463,7 +463,7 @@ contract DutchAuction {
     /// @dev Adds account addresses to whitelist.
     /// @param _bidder_addresses Array of addresses.
     function addToWhitelist(address[] _bidder_addresses) public isWhitelister {
-        for (uint32 i = 0; i &lt; _bidder_addresses.length; i++) {
+        for (uint32 i = 0; i < _bidder_addresses.length; i++) {
             whitelist[_bidder_addresses[i]] = true;
         }
     }
@@ -472,7 +472,7 @@ contract DutchAuction {
     /// @dev Removes account addresses from whitelist.
     /// @param _bidder_addresses Array of addresses.
     function removeFromWhitelist(address[] _bidder_addresses) public isWhitelister {
-        for (uint32 i = 0; i &lt; _bidder_addresses.length; i++) {
+        for (uint32 i = 0; i < _bidder_addresses.length; i++) {
             whitelist[_bidder_addresses[i]] = false;
         }
     }
@@ -503,7 +503,7 @@ contract DutchAuction {
         stage = Stages.AuctionEnded;
         AuctionEnded(final_price);
 
-        assert(final_price &gt; 0);
+        assert(final_price > 0);
     }
 
     /// --------------------------------- Auction Functions ------------------
@@ -516,16 +516,16 @@ contract DutchAuction {
         payable
         atStage(Stages.AuctionStarted)
     {
-        require(msg.value &gt; 0);
-        require(bids[msg.sender] + msg.value &lt;= bid_threshold || whitelist[msg.sender]);
-        assert(bids[msg.sender] + msg.value &gt;= msg.value);
+        require(msg.value > 0);
+        require(bids[msg.sender] + msg.value <= bid_threshold || whitelist[msg.sender]);
+        assert(bids[msg.sender] + msg.value >= msg.value);
 
         // Missing funds without the current bid value
         uint missing_funds = missingFundsToEndAuction();
 
         // We require bid values to be less than the funds missing to end the auction
         // at the current price.
-        require(msg.value &lt;= missing_funds);
+        require(msg.value <= missing_funds);
 
         bids[msg.sender] += msg.value;
         received_wei += msg.value;
@@ -535,7 +535,7 @@ contract DutchAuction {
 
         BidSubmission(msg.sender, msg.value, missing_funds);
 
-        assert(received_wei &gt;= msg.value);
+        assert(received_wei >= msg.value);
     }
 
     /// @notice Claim auction tokens for `msg.sender` after the auction has ended.
@@ -556,7 +556,7 @@ contract DutchAuction {
         // Waiting period after the end of the auction, before anyone can claim tokens
         // Ensures enough time to check if auction was finalized correctly
         // before users start transacting tokens
-        require(now &gt; end_time + token_claim_waiting_period);
+        require(now > end_time + token_claim_waiting_period);
         require(receiver_address != 0x0);
 
         if (bids[receiver_address] == 0) {
@@ -570,7 +570,7 @@ contract DutchAuction {
         // than expected. Therefore, the number of remaining unassigned auction tokens
         // may be smaller than the number of tokens needed for the last claimTokens call
         uint auction_tokens_balance = token.balanceOf(address(this));
-        if (num &gt; auction_tokens_balance) {
+        if (num > auction_tokens_balance) {
             num = auction_tokens_balance;
         }
 
@@ -591,7 +591,7 @@ contract DutchAuction {
             TokensDistributed();
         }
 
-        assert(token.balanceOf(receiver_address) &gt;= num);
+        assert(token.balanceOf(receiver_address) >= num);
         assert(bids[receiver_address] == 0);
         return true;
     }
@@ -617,11 +617,11 @@ contract DutchAuction {
 
         // num_tokens_auctioned = total number of Rei (RDN * token_multiplier) that is auctioned
         uint required_wei_at_price = num_tokens_auctioned * price() / token_multiplier;
-        if (required_wei_at_price &lt;= received_wei) {
+        if (required_wei_at_price <= received_wei) {
             return 0;
         }
 
-        // assert(required_wei_at_price - received_wei &gt; 0);
+        // assert(required_wei_at_price - received_wei > 0);
         return required_wei_at_price - received_wei;
     }
 

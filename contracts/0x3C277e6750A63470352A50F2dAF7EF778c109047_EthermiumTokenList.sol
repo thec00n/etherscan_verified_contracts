@@ -8,13 +8,13 @@ contract EthermiumTokenList {
 	}
 
 	function safeSub(uint a, uint b) returns (uint) {
-	    assert(b &lt;= a);
+	    assert(b <= a);
 	    return a - b;
 	}
 
 	function safeAdd(uint a, uint b) returns (uint) {
 	    uint c = a + b;
-	    assert(c&gt;=a &amp;&amp; c&gt;=b);
+	    assert(c>=a && c>=b);
 	    return c;
 	}
 	
@@ -31,10 +31,10 @@ contract EthermiumTokenList {
 	}
 
 	address public owner;
-	mapping (address =&gt; bool) public admins;
+	mapping (address => bool) public admins;
 	address public feeAccount;
 	address[] public tokenList;
-	mapping(address =&gt; Token) public tokens; 
+	mapping(address => Token) public tokens; 
 	uint256 public listTokenFee; // in wei per block
 	uint256 public modifyTokenFee; // in wei
 
@@ -50,7 +50,7 @@ contract EthermiumTokenList {
 	}
 
 	modifier onlyAdmin {
-	    if (msg.sender != owner &amp;&amp; !admins[msg.sender]) throw;
+	    if (msg.sender != owner && !admins[msg.sender]) throw;
 	    _;
 	}
 
@@ -87,9 +87,9 @@ contract EthermiumTokenList {
 	function addToken(address tokenAddress, uint256 decimals, string url, string symbol, string name, string logoUrl) public payable
 	{
 		require(tokens[tokenAddress].tokenAddress == address(0x0));
-		if (msg.sender != owner &amp;&amp; !admins[msg.sender])
+		if (msg.sender != owner && !admins[msg.sender])
 		{
-			require(msg.value &gt;= listTokenFee);
+			require(msg.value >= listTokenFee);
 		}
 
 		tokens[tokenAddress] = Token({
@@ -179,7 +179,7 @@ contract EthermiumTokenList {
 
 	function isTokenVerified(address tokenAddress) public constant returns (bool)
 	{
-		if (tokens[tokenAddress].tokenAddress != address(0x0) &amp;&amp; tokens[tokenAddress].verified)
+		if (tokens[tokenAddress].tokenAddress != address(0x0) && tokens[tokenAddress].verified)
 		{
 			return true;
 		}

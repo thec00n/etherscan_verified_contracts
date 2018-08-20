@@ -41,20 +41,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -82,7 +82,7 @@ library SafeERC20 {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -123,7 +123,7 @@ contract Ownable {
 
 /**
  * @title Contracts that should not own Ether
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="493b2c242a26097b">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="493b2c242a26097b">[email protected]</span>π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this ether.
  * @notice Ether can still be send to this contract by:
@@ -160,7 +160,7 @@ contract HasNoEther is Ownable {
 
 /**
  * @title Contracts that should not own Contracts
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="c6b4a3aba5a986f4">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="c6b4a3aba5a986f4">[email protected]</span>π.com>
  * @dev Should contracts (anything Ownable) end up being owned by this contract, it allows the owner
  * of this contract to reclaim ownership of the contracts.
  */
@@ -198,7 +198,7 @@ contract CanReclaimToken is Ownable {
 
 /**
  * @title Contracts that should not own Tokens
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="384a5d555b57780a">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="384a5d555b57780a">[email protected]</span>π.com>
  * @dev This blocks incoming ERC23 tokens to prevent accidental loss of tokens.
  * Should tokens (any ERC20Basic compatible) end up in the contract, it allows the
  * owner to reclaim the tokens.
@@ -222,7 +222,7 @@ contract HasNoTokens is CanReclaimToken {
 
 /**
  * @title Base contract for contracts that should not own things.
- * @author Remco Bloemen &lt;<span class="__cf_email__" data-cfemail="2e5c4b434d416e1c">[email&#160;protected]</span>π.com&gt;
+ * @author Remco Bloemen <<span class="__cf_email__" data-cfemail="2e5c4b434d416e1c">[email protected]</span>π.com>
  * @dev Solves a class of errors where a contract accidentally becomes owner of Ether, Tokens or
  * Owned contracts. See respective base contracts for details.
  */
@@ -256,7 +256,7 @@ contract Destructible is Ownable {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -265,7 +265,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -294,7 +294,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
 
   /**
@@ -305,8 +305,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[_from]);
-    require(_value &lt;= allowed[_from][msg.sender]);
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -320,7 +320,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -355,7 +355,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -432,8 +432,8 @@ contract TokenVesting is Ownable {
 
   bool public revocable;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -446,7 +446,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -462,7 +462,7 @@ contract TokenVesting is Ownable {
   function release(ERC20Basic token) public {
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -493,7 +493,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public view returns (uint256) {
@@ -508,9 +508,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -522,8 +522,8 @@ contract TokenVesting is Ownable {
 // ==== AALM Contracts ===
 
 contract AALMToken is MintableToken, NoOwner { //MintableToken is StandardToken, Ownable
-    string public symbol = &#39;AALM&#39;;
-    string public name = &#39;Alm Token&#39;;
+    string public symbol = 'AALM';
+    string public name = 'Alm Token';
     uint8 public constant decimals = 18;
 
     address founder;    //founder address to allow him transfer tokens while minting
@@ -574,10 +574,10 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     uint256 public tokensSold;      //total amount of tokens sold(!) on ICO, including all bonuses
     uint256 public collectedEther;  //total amount of ether collected during ICO (without Pre-ICO)
 
-    mapping(address =&gt; uint256) contributions; //amount of ether (in wei)received from a buyer
+    mapping(address => uint256) contributions; //amount of ether (in wei)received from a buyer
 
     AALMToken public token;
-    TokenVesting public founderVestingContract; //Contract which holds Founder&#39;s tokens
+    TokenVesting public founderVestingContract; //Contract which holds Founder's tokens
 
     bool public finalized;
 
@@ -586,12 +586,12 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
         uint256 _baseRate, uint32 _maxTimeBonusPercent, uint32 _referrerBonusPercent, uint32 _referralBonusPercent, 
         uint256[] bulkBonusMinAmounts, uint32[] bulkBonusPercents 
         ) public {
-        require(_startTimestamp &gt; now);
-        require(_startTimestamp &lt; _endTimestamp);
+        require(_startTimestamp > now);
+        require(_startTimestamp < _endTimestamp);
         startTimestamp = _startTimestamp;
         endTimestamp = _endTimestamp;
 
-        require(_hardCap &gt; 0);
+        require(_hardCap > 0);
         hardCap = _hardCap;
 
         minCap = _minCap;
@@ -601,7 +601,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
         token = new AALMToken();
         token.init(owner);
 
-        require(_founderTokensImmediate.add(_founderTokensVested) &lt; _hardCap);
+        require(_founderTokensImmediate.add(_founderTokensVested) < _hardCap);
         mintTokens(owner, _founderTokensImmediate);
 
         founderVestingContract = new TokenVesting(owner, endTimestamp, 0, _vestingDuration, false);
@@ -613,7 +613,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
         uint256[] bulkBonusMinAmounts, uint32[] bulkBonusPercents 
         ) internal {
 
-        require(_baseRate &gt; 0);
+        require(_baseRate > 0);
         baseRate = _baseRate;
 
         maxTimeBonusPercent = _maxTimeBonusPercent;
@@ -623,10 +623,10 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
         uint256 prevBulkAmount = 0;
         require(bulkBonusMinAmounts.length == bulkBonusPercents.length);
         bulkBonuses.length = bulkBonusMinAmounts.length;
-        for(uint8 i=0; i &lt; bulkBonuses.length; i++){
+        for(uint8 i=0; i < bulkBonuses.length; i++){
             bulkBonuses[i] = BulkBonus({minAmount:bulkBonusMinAmounts[i], bonusPercent:bulkBonusPercents[i]});
             BulkBonus storage bb = bulkBonuses[i];
-            require(prevBulkAmount &lt; bb.minAmount);
+            require(prevBulkAmount < bb.minAmount);
             prevBulkAmount = bb.minAmount;
         }
     }
@@ -638,7 +638,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     */
     function distributePreICOTokens(address[] beneficiaries, uint256[] amounts) onlyOwner public {
         require(beneficiaries.length == amounts.length);
-        for(uint256 i=0; i&lt;beneficiaries.length; i++){
+        for(uint256 i=0; i<beneficiaries.length; i++){
             mintTokens(beneficiaries[i], amounts[i]);
         }
     }
@@ -666,7 +666,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     */
     function sale(address beneficiary, uint256 value, address referrer) internal {
         require(crowdsaleOpen());
-        require(value &gt; 0);
+        require(value > 0);
         collectedEther = collectedEther.add(value);
         contributions[beneficiary] = contributions[beneficiary].add(value);
         uint256 amount;
@@ -696,7 +696,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     * @notice If crowdsale is running
     */
     function crowdsaleOpen() view public returns(bool) {
-        return (!finalized) &amp;&amp; (tokensMinted &lt; hardCap) &amp;&amp; (startTimestamp &lt;= now) &amp;&amp; (now &lt;= endTimestamp);
+        return (!finalized) && (tokensMinted < hardCap) && (startTimestamp <= now) && (now <= endTimestamp);
     }
 
     /**
@@ -738,9 +738,9 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     * @return bonus tokens
     */
     function getBulkBonus(uint256 value) view public returns(uint256) {
-        for(uint8 i=uint8(bulkBonuses.length); i &gt; 0; i--){
+        for(uint8 i=uint8(bulkBonuses.length); i > 0; i--){
             uint8 idx = i - 1; //if i  = bulkBonuses.length-1 to 0, i-- fails on last iteration
-            if (value &gt;= bulkBonuses[idx].minAmount) {
+            if (value >= bulkBonuses[idx].minAmount) {
                 return value.mul(baseRate).mul(bulkBonuses[idx].bonusPercent).div(PERCENT_DIVIDER);
             }
         }
@@ -769,7 +769,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     */
     function mintTokens(address beneficiary, uint256 amount) internal {
         tokensMinted = tokensMinted.add(amount);
-        require(tokensMinted &lt;= hardCap);
+        require(tokensMinted <= hardCap);
         assert(token.mint(beneficiary, amount));
     }
 
@@ -780,9 +780,9 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
         return refundTo(msg.sender);
     }
     function refundTo(address beneficiary) public returns(bool) {
-        require(contributions[beneficiary] &gt; 0);
-        require(finalized || (now &gt; endTimestamp));
-        require(tokensSold &lt; minCap);
+        require(contributions[beneficiary] > 0);
+        require(finalized || (now > endTimestamp));
+        require(tokensSold < minCap);
 
         uint256 _refund = contributions[beneficiary];
         contributions[beneficiary] = 0;
@@ -797,7 +797,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
         finalized = true;
         token.finishMinting();
         token.transferOwnership(owner);
-        if(tokensSold &gt;= minCap &amp;&amp; this.balance &gt; 0){
+        if(tokensSold >= minCap && this.balance > 0){
             owner.transfer(this.balance);
         }
     }
@@ -805,7 +805,7 @@ contract AALMCrowdsale is Ownable, CanReclaimToken, Destructible {
     * @notice Claim collected ether without closing crowdsale
     */
     function claimEther() public onlyOwner {
-        require(tokensSold &gt;= minCap);
+        require(tokensSold >= minCap);
         owner.transfer(this.balance);
     }
 

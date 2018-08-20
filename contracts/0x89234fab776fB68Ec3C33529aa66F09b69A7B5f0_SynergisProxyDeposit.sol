@@ -8,20 +8,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -76,8 +76,8 @@ contract SynergisProxyDeposit is Ownable {
         uint256  amount;
     }
 
-    mapping (int16 =&gt; Partner)  public partners; //public for dubug only
-    mapping (address =&gt; uint8) public special_offer;// % of discount
+    mapping (int16 => Partner)  public partners; //public for dubug only
+    mapping (address => uint8) public special_offer;// % of discount
 
 
     /////////////////////////////////////////
@@ -86,7 +86,7 @@ contract SynergisProxyDeposit is Ownable {
     uint8 constant Stake_Team = 10;
     uint8 constant Stake_Adv = 5;
 
-    string public constant name = &quot;SYNERGIS_TOKEN_CHANGE&quot;;
+    string public constant name = "SYNERGIS_TOKEN_CHANGE";
 
 
     uint8 public numTeamDeposits = 0; //public for dubug only
@@ -130,8 +130,8 @@ contract SynergisProxyDeposit is Ownable {
         //calculate token amount for sell -!!!! must check on minimum_token_sell
         uint256 tokens = weiAmount.mul(ac.token_rate()*(100+uint256(special_offer[beneficiary])))/100;
         require(beneficiary != address(0));
-        require(ac.token_rate() &gt; 0);//implicit enabling/disabling sell
-        require(tokens &gt;= ac.minimum_token_sell()*(10 ** uint256(ac.decimals())));
+        require(ac.token_rate() > 0);//implicit enabling/disabling sell
+        require(tokens >= ac.minimum_token_sell()*(10 ** uint256(ac.decimals())));
         require(ac.transferFrom(ERC20address, beneficiary, tokens));//!!!token sell/change
         weiRaised = weiRaised.add(weiAmount);
         emit TokenPurchase(msg.sender, beneficiary, msg.value, tokens);
@@ -141,7 +141,7 @@ contract SynergisProxyDeposit is Ownable {
     function setERC20address(address currentERC20contract)  public onlyOwner {
         require(address(currentERC20contract) != 0);
         AbstractCon ac = AbstractCon(currentERC20contract);
-        require(ac.allowance(currentERC20contract, address(this))&gt;0);
+        require(ac.allowance(currentERC20contract, address(this))>0);
         ERC20address = currentERC20contract;
     }    
 
@@ -169,7 +169,7 @@ contract SynergisProxyDeposit is Ownable {
     //Delete Team or Adviser accounts
     function deleteDeposit(address dep) public onlyOwner {
         int16 depositId = getDepositID(dep);
-        require(depositId&gt;0);
+        require(depositId>0);
         //can`t delete Fund deposit account
         require(partners[depositId].roleInProject != Role.Fund);
         //Decrease deposits number befor deleting
@@ -188,7 +188,7 @@ contract SynergisProxyDeposit is Ownable {
 
     function getDepositID(address dep) internal constant returns (int16 id){
         //id = -1; //not found
-        for (int16 i=0; i&lt;=maxId; i++) {
+        for (int16 i=0; i<=maxId; i++) {
             if (dep==partners[i].account){
                 //id=i;
                 //return id;
@@ -201,7 +201,7 @@ contract SynergisProxyDeposit is Ownable {
     //withdraw with pull payee patern
     function withdraw() external {
         int16 id = getDepositID(msg.sender);
-        require(id &gt;=0);
+        require(id >=0);
         uint256 amount = partners[id].amount;
         // set to zero the pending refund before
         // sending to prevent re-entrancy attacks
@@ -216,7 +216,7 @@ contract SynergisProxyDeposit is Ownable {
         uint256 distributed;
         uint256 sum;
         uint256 _amount;
-        for (int16 i=0; i&lt;=maxId; i++) {
+        for (int16 i=0; i<=maxId; i++) {
             if  (partners[i].account != address(0) ){
                 sum = 0;
                 if  (partners[i].roleInProject==Role.Team) {
@@ -250,7 +250,7 @@ contract SynergisProxyDeposit is Ownable {
     function checkBalance() public constant returns (uint256 red_balance) {
         // this.balance = notDistributedAmount + Sum(all deposits)
         uint256 allDepositSum;
-        for (int16 i=0; i&lt;=maxId; i++) {
+        for (int16 i=0; i<=maxId; i++) {
             allDepositSum = allDepositSum.add(partners[i].amount);
         }
         red_balance = address(this).balance.sub(notDistributedAmount).sub(allDepositSum);
@@ -270,7 +270,7 @@ contract SynergisProxyDeposit is Ownable {
 
         //For add percent discount for some purchaser - see WhitePaper
     function addSpecialOffer (address vip, uint8 discount_percent) public onlyOwner {
-        require(discount_percent&gt;0 &amp;&amp; discount_percent&lt;100);
+        require(discount_percent>0 && discount_percent<100);
         special_offer[vip] = discount_percent;
         emit SpecialOfferAdd(vip, discount_percent);
     }
@@ -281,7 +281,7 @@ contract SynergisProxyDeposit is Ownable {
         emit SpecialOfferRemove(was_vip);
     }
   //***************************************************************
-  //Token Change Contract Design by IBERGroup, email:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="402d213833293a2d2f22292c2500292225326e27322f3530">[email&#160;protected]</a>; 
+  //Token Change Contract Design by IBERGroup, email:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="402d213833293a2d2f22292c2500292225326e27322f3530">[email protected]</a>; 
   //     Telegram: https://t.me/msmobile
   //
   ////**************************************************************

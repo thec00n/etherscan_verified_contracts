@@ -15,30 +15,30 @@ library SafeMath {
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
         uint256 c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal constant returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint256 a, uint256 b) internal constant returns (uint256) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
 }
@@ -64,20 +64,20 @@ contract ERC20 {
  */
 contract Token is ERC20 { using SafeMath for uint;
 
-    mapping (address =&gt; uint256) balances;
+    mapping (address => uint256) balances;
 
-    mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+    mapping (address => mapping (address => uint256)) allowed;
 
     /**
     * @dev Fix for the ERC20 short address attack.
     */
     modifier onlyPayloadSize(uint size) {
-        if(msg.data.length &lt; size + 4) revert();
+        if(msg.data.length < size + 4) revert();
         _;
     }
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
-        if (balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             balances[_to] = balances[_to].add(_value);
             Transfer(msg.sender, _to, _value);
@@ -86,7 +86,7 @@ contract Token is ERC20 { using SafeMath for uint;
     }
 
     function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {
-        if (balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] = balances[_to].add(_value);
             balances[_from] = balances[_from].sub(_value);
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -100,7 +100,7 @@ contract Token is ERC20 { using SafeMath for uint;
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
         //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-        if ((_value != 0) &amp;&amp; (allowed[msg.sender][_spender] != 0)) revert();
+        if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
 
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -110,11 +110,11 @@ contract Token is ERC20 { using SafeMath for uint;
     // A vulernability of the approve method in the ERC20 standard was identified by
     // Mikhail Vladimirov and Dmitry Khovratovich here:
     // https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM
-    // It&#39;s better to use this method which is not susceptible to over-withdrawing by the approvee.
+    // It's better to use this method which is not susceptible to over-withdrawing by the approvee.
     /// @param _spender The address to approve
     /// @param _currentValue The previous value approved, which can be retrieved with allowance(msg.sender, _spender)
     /// @param _newValue The new value to approve, this will replace the _currentValue
-    /// @return bool Whether the approval was a success (see ERC20&#39;s `approve`)
+    /// @return bool Whether the approval was a success (see ERC20's `approve`)
     function compareAndApprove(address _spender, uint256 _currentValue, uint256 _newValue) public returns(bool) {
         if (allowed[msg.sender][_spender] != _currentValue) {
             return false;
@@ -137,8 +137,8 @@ contract Token is ERC20 { using SafeMath for uint;
  */
 contract CHEXToken is Token { using SafeMath for uint;
 
-    string public constant name = &quot;CHEX Token&quot;;
-    string public constant symbol = &quot;CHX&quot;;
+    string public constant name = "CHEX Token";
+    string public constant symbol = "CHX";
     uint public constant decimals = 18;
     uint public startBlock; //crowdsale start block
     uint public endBlock; //crowdsale end block
@@ -167,8 +167,8 @@ contract CHEXToken is Token { using SafeMath for uint;
     }
 
     function price() constant returns(uint) {
-        if (block.number &lt; startBlock) return 42007;
-        if (block.number &gt;= startBlock &amp;&amp; block.number &lt;= endBlock) {
+        if (block.number < startBlock) return 42007;
+        if (block.number >= startBlock && block.number <= endBlock) {
             uint percentRemaining = pct((endBlock - block.number), (endBlock - startBlock), 3);
             return 21000 + 21 * percentRemaining;
         }
@@ -178,18 +178,18 @@ contract CHEXToken is Token { using SafeMath for uint;
     function buy(address recipient) payable {
         if (frozen) revert();
         if (recipient == 0x0) revert();
-        if (msg.value &lt; MIN_ETHER) revert();
+        if (msg.value < MIN_ETHER) revert();
 
         uint tokens = msg.value.mul(price());
         uint nextTotal = totalSupply.add(tokens);
 
-        if (nextTotal &gt; tokenCap) revert();
+        if (nextTotal > tokenCap) revert();
         
         balances[recipient] = balances[recipient].add(tokens);
 
         totalSupply = nextTotal;
 
-        if (block.number &lt;= endBlock) {
+        if (block.number <= endBlock) {
             crowdsaleSupply = nextTotal;
             etherRaised = etherRaised.add(msg.value);
         }
@@ -201,12 +201,12 @@ contract CHEXToken is Token { using SafeMath for uint;
     * TRANSFER LOCK
     */
     function transfer(address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= endBlock + transferLockup &amp;&amp; msg.sender != founder) return false;
+        if (block.number <= endBlock + transferLockup && msg.sender != founder) return false;
         return super.transfer(_to, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (block.number &lt;= endBlock + transferLockup &amp;&amp; msg.sender != founder) return false;
+        if (block.number <= endBlock + transferLockup && msg.sender != founder) return false;
         return super.transferFrom(_from, _to, _value);
     }
 

@@ -28,8 +28,8 @@ contract TokenERC20 {
     uint256 public totalSupply;
 
     // This creates an array with all balances
-    mapping (address =&gt; uint256) public balanceOf;
-    mapping (address =&gt; mapping (address =&gt; uint256)) public allowance;
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // This generates a public event on the blockchain that will notify clients
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -61,8 +61,8 @@ contract TokenERC20 {
     function _transfer(address _from, address _to, uint _value) internal {
         // Prevent transfer to 0x0 address. Use burn() instead
         require(_to != 0x0);        
-        require(balanceOf[_from] &gt;= _value);        
-        require(balanceOf[_to] + _value &gt; balanceOf[_to]);        
+        require(balanceOf[_from] >= _value);        
+        require(balanceOf[_to] + _value > balanceOf[_to]);        
         uint previousBalances = balanceOf[_from] + balanceOf[_to];        
         balanceOf[_from] -= _value;        
         balanceOf[_to] += _value;
@@ -89,7 +89,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value &lt;= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender]);     // Check allowance
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -129,7 +129,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -143,10 +143,10 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;
@@ -210,8 +210,8 @@ contract TokenNWTC is owned, TokenERC20, utility {
 
     bool emergencyFreeze;       // If this variable is true then all account will be frozen and can not transfer/recieve tokens.
 
-    mapping (address =&gt; bool) public frozenAccount;
-    mapping (uint =&gt; address) public tokenUsers;
+    mapping (address => bool) public frozenAccount;
+    mapping (uint => address) public tokenUsers;
 
     /* This generates a public event on the blockchain that will notify clients */
     event FrozenFunds(address target, bool frozen);
@@ -227,8 +227,8 @@ contract TokenNWTC is owned, TokenERC20, utility {
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] &gt;= _value);                // Check if the sender has enough
-        require (balanceOf[_to] + _value &gt; balanceOf[_to]); // Check for overflows
+        require (balanceOf[_from] >= _value);                // Check if the sender has enough
+        require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
         require(!frozenAccount[_from]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         require(!emergencyFreeze);                          // Check if emergencyFreeze enable  // by JD.
@@ -237,9 +237,9 @@ contract TokenNWTC is owned, TokenERC20, utility {
         Transfer(_from, _to, _value);
         sellTokenAmount += _value;
         
-        if (users.length&gt;0){
+        if (users.length>0){
                 uint count=0;
-            for (uint a=0;a&lt;users.length;a++)
+            for (uint a=0;a<users.length;a++)
             {
             if (users[a]==_to){
             count=count+1;
@@ -268,9 +268,9 @@ contract TokenNWTC is owned, TokenERC20, utility {
         Transfer(this, target, mintedAmount);
         sellTokenAmount += mintedAmount;
         
-         if (users.length&gt;0){
+         if (users.length>0){
                 uint count1=0;
-            for (uint a=0;a&lt;users.length;a++)
+            for (uint a=0;a<users.length;a++)
             {
             if (users[a]==target){
             count1=count1+1;
@@ -286,16 +286,16 @@ contract TokenNWTC is owned, TokenERC20, utility {
         }
     }
 
-    /// @notice `freeze? Prevent | Allow` `target` from sending &amp; receiving tokens
+    /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
     function freezeAccount(address target, bool freeze) onlyOwner public {
         //require(target!=0x0);
         frozenAccount[target] = freeze;
         FrozenFunds(target, freeze);
-        if (frzAcc.length&gt;0){
+        if (frzAcc.length>0){
                 uint count=0;
-            for (uint a=0;a&lt;frzAcc.length;a++)
+            for (uint a=0;a<frzAcc.length;a++)
             {
             if (frzAcc[a]==target){
             count=count+1;
@@ -344,9 +344,9 @@ contract TokenNWTC is owned, TokenERC20, utility {
         
        // addUsers(msg.sender);
         
-        if (users.length&gt;0){
+        if (users.length>0){
                 uint count=0;
-            for (uint a=0;a&lt;users.length;a++)
+            for (uint a=0;a<users.length;a++)
             {
             if (users[a]==msg.sender){
             count=count+1;
@@ -372,18 +372,18 @@ contract TokenNWTC is owned, TokenERC20, utility {
         require(sellPrice!=0);
         uint etherAmount;
         etherAmount = calculateEthers(amount, sellPrice, decimals);
-        require(this.balance &gt;= etherAmount);           // checks if the contract has enough ether to buy
+        require(this.balance >= etherAmount);           // checks if the contract has enough ether to buy
         _transfer(msg.sender, this, amount);     // makes the transfers
         check(etherAmount);
-        msg.sender.transfer(etherAmount);               // sends ether to the seller. It&#39;s important to do this last to avoid recursion attacks
+        msg.sender.transfer(etherAmount);               // sends ether to the seller. It's important to do this last to avoid recursion attacks
     }
 
 
     function readAllUsers()constant returns(address[]){
 	      
 	      
-	          for (uint k=0;k&lt;users.length;k++){
-	              if (balanceOf[users[k]]&gt;0){
+	          for (uint k=0;k<users.length;k++){
+	              if (balanceOf[users[k]]>0){
 	                  users1.push(users[k]);
 	              }
 	          }
@@ -392,7 +392,7 @@ contract TokenNWTC is owned, TokenERC20, utility {
    }
    
    function readAllFrzAcc()constant returns(address[]){
-       for (uint k=0;k&lt;frzAcc.length;k++){
+       for (uint k=0;k<frzAcc.length;k++){
 	              if (frozenAccount[frzAcc[k]] == true){
 	                  frzAcc1.push(frzAcc[k]);
 	              }
@@ -417,10 +417,10 @@ contract TokenNWTC is owned, TokenERC20, utility {
 //         require(!frozenAccount[_to]);                       // Check if recipient is frozen
 //         require(!emergencyFreeze); 
 // 		require(!frozenAccount[msg.sender]);
-// 		// if(balanceOf[msg.sender] &lt; _value) throw;
-// 		require(balanceOf[msg.sender] &gt;= _value);
-// 		// if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-// 		require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
+// 		// if(balanceOf[msg.sender] < _value) throw;
+// 		require(balanceOf[msg.sender] >= _value);
+// 		// if(balanceOf[_to] + _value < balanceOf[_to]) throw;
+// 		require(balanceOf[_to] + _value >= balanceOf[_to]);
 // 		//if(admin)
 
 // 		balanceOf[msg.sender] -= _value;
@@ -431,12 +431,12 @@ contract TokenNWTC is owned, TokenERC20, utility {
 // 	function transferFrom1(address _from, address _to, uint256 _value) returns (bool success){
 // 		// if(frozenAccount[_from]) throw;
 // 		require(!frozenAccount[_from]);
-// 		// if(balanceOf[_from] &lt; _value) throw;
-// 		require(balanceOf[_from] &gt;= _value);
-// 		// if(balanceOf[_to] + _value &lt; balanceOf[_to]) throw;
-// 		require(balanceOf[_to] + _value &gt;= balanceOf[_to]);
-// 		// if(_value &gt; allowance[_from][msg.sender]) throw;
-// 		require(_value &lt;= allowance[_from][msg.sender]);
+// 		// if(balanceOf[_from] < _value) throw;
+// 		require(balanceOf[_from] >= _value);
+// 		// if(balanceOf[_to] + _value < balanceOf[_to]) throw;
+// 		require(balanceOf[_to] + _value >= balanceOf[_to]);
+// 		// if(_value > allowance[_from][msg.sender]) throw;
+// 		require(_value <= allowance[_from][msg.sender]);
 // 		balanceOf[_from] -= _value;
 // 		balanceOf[_to] += _value;
 // 		allowance[_from][msg.sender] -= _value;
@@ -479,7 +479,7 @@ contract TokenNWTC is owned, TokenERC20, utility {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         Burn(msg.sender, _value);
@@ -493,10 +493,10 @@ contract TokenNWTC is owned, TokenERC20, utility {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] &gt;= _value);                // Check if the targeted balance is enough
-        require(_value &lt;= allowance[_from][msg.sender]);    // Check allowance
+        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+        require(_value <= allowance[_from][msg.sender]);    // Check allowance
         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
         totalSupply -= _value;                              // Update totalSupply
         Burn(_from, _value);
         return true;

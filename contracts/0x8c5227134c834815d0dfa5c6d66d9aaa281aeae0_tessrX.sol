@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 // ----------------------------------------------------------------------------
-// --- &#39;TSRX&#39; &#39;tessr.credit&#39; token contract
+// --- 'TSRX' 'tessr.credit' token contract
 // --- Symbol      : TSRX
 // --- Name        : tessr.credit
 // --- Total supply: Generated from contributions
@@ -18,10 +18,10 @@ pragma solidity ^0.4.18;
 contract SafeMath {
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -30,7 +30,7 @@ contract SafeMath {
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
         c = a / b;
-        require(b &gt; 0);
+        require(b > 0);
     }
 }
 
@@ -94,15 +94,15 @@ contract tessrX is ERC20Interface, Owned, SafeMath {
     uint public startDate;
     uint public bonusEnds;
     uint public endDate;
-    mapping(address =&gt; uint) balances;
-    mapping(address =&gt; mapping(address =&gt; uint)) allowed;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
 
 // ------------------------------------------------------------------------
 // --- Constructor
 // ------------------------------------------------------------------------
     function tessrX() public {
-        symbol = &quot;TSRX&quot;;
-        name = &quot;tessr.credit&quot;;
+        symbol = "TSRX";
+        name = "tessr.credit";
         decimals = 18;
         _totalSupply = 400000000000000000000000000;
         startDate = now;
@@ -127,8 +127,8 @@ contract tessrX is ERC20Interface, Owned, SafeMath {
     }
 
 // ------------------------------------------------------------------------
-// --- Transfer the balance from token owner&#39;s account to the `to` account
-// --- Owner&#39;s account must have sufficient balance to transfer
+// --- Transfer the balance from token owner's account to the `to` account
+// --- Owner's account must have sufficient balance to transfer
 // --- 0 value transfers are allowed
 // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
@@ -184,9 +184,9 @@ contract tessrX is ERC20Interface, Owned, SafeMath {
 // --- 5,000 tokens per 1 ETH, with 25% bonus
 // ------------------------------------------------------------------------
     function () public payable {
-        require(now &gt;= startDate &amp;&amp; now &lt;= endDate);
+        require(now >= startDate && now <= endDate);
         uint tokens;
-        if (now &lt;= bonusEnds) {
+        if (now <= bonusEnds) {
             tokens = msg.value * 6250;
         } else {
             tokens = msg.value * 5000;

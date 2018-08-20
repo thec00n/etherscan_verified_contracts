@@ -5,7 +5,7 @@ pragma solidity 0.4.15;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -50,7 +50,7 @@ contract Authorizable is Ownable {
     event LogAccess(address authAddress);
     event Grant(address authAddress, bool grant);
 
-    mapping(address =&gt; bool) public auth;
+    mapping(address => bool) public auth;
 
     modifier authorized() {
         LogAccess(msg.sender);
@@ -83,20 +83,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal constant returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -124,7 +124,7 @@ contract ERC20Basic {
 contract BasicToken is ERC20Basic {
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * @dev transfer token for a specified address
@@ -176,7 +176,7 @@ contract ERC20 is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -191,7 +191,7 @@ contract StandardToken is ERC20, BasicToken {
     uint256 _allowance = allowed[_from][msg.sender];
 
     // Check is not needed because sub(_allowance, _value) will already throw if this condition is not met
-    // require (_value &lt;= _allowance);
+    // require (_value <= _allowance);
 
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
@@ -205,7 +205,7 @@ contract StandardToken is ERC20, BasicToken {
    *
    * Beware that changing an allowance with this method brings the risk that someone may use both the old
    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-   * race condition is to first reduce the spender&#39;s allowance to 0 and set the desired value afterwards:
+   * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
    * @param _spender The address which will spend the funds.
    * @param _value The amount of tokens to be spent.
@@ -242,7 +242,7 @@ contract StandardToken is ERC20, BasicToken {
   function decreaseApproval (address _spender, uint _subtractedValue)
     returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -308,8 +308,8 @@ contract MintableToken is StandardToken, Ownable {
  * @dev ERC20 Tutellus Token (TUT)
  */
 contract TutellusToken is MintableToken {
-   string public name = &quot;Tutellus&quot;;
-   string public symbol = &quot;TUT&quot;;
+   string public name = "Tutellus";
+   string public symbol = "TUT";
    uint8 public decimals = 18;
 }
 
@@ -326,7 +326,7 @@ contract TutellusVault is Authorizable {
 
     function mint(address _to, uint256 _amount) authorized public returns (bool) {
         require(_to != address(0));
-        require(_amount &gt;= 0);
+        require(_amount >= 0);
 
         VaultMint(msg.sender);
         return token.mint(_to, _amount);
@@ -391,8 +391,8 @@ contract TokenVesting is Ownable {
   // KYC valid
   bool public kycValid = false;
 
-  mapping (address =&gt; uint256) public released;
-  mapping (address =&gt; bool) public revoked;
+  mapping (address => uint256) public released;
+  mapping (address => bool) public revoked;
 
   /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
@@ -405,7 +405,7 @@ contract TokenVesting is Ownable {
    */
   function TokenVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, bool _revocable) public {
     require(_beneficiary != address(0));
-    require(_cliff &lt;= _duration);
+    require(_cliff <= _duration);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
@@ -422,7 +422,7 @@ contract TokenVesting is Ownable {
     require(kycValid);
     uint256 unreleased = releasableAmount(token);
 
-    require(unreleased &gt; 0);
+    require(unreleased > 0);
 
     released[token] = released[token].add(unreleased);
 
@@ -453,7 +453,7 @@ contract TokenVesting is Ownable {
   }
 
   /**
-   * @dev Calculates the amount that has already vested but hasn&#39;t been released yet.
+   * @dev Calculates the amount that has already vested but hasn't been released yet.
    * @param token ERC20 token which is being vested
    */
   function releasableAmount(ERC20Basic token) public returns (uint256) {
@@ -468,9 +468,9 @@ contract TokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released[token]);
 
-    if (now &lt; cliff) {
+    if (now < cliff) {
       return 0;
-    } else if (now &gt;= start.add(duration) || revoked[token]) {
+    } else if (now >= start.add(duration) || revoked[token]) {
       return totalBalance;
     } else {
       return totalBalance.mul(now.sub(start)).div(duration);
@@ -491,7 +491,7 @@ contract TutellusVestingFactory is Authorizable {
     event VestingKYCSetted(address indexed wallet, uint256 count);
     event VestingReleased(address indexed wallet, uint256 count);
 
-    mapping(address =&gt; mapping(address =&gt; address)) vestingsContracts;
+    mapping(address => mapping(address => address)) vestingsContracts;
     address[] contracts;
 
     TutellusToken token;
@@ -535,7 +535,7 @@ contract TutellusVestingFactory is Authorizable {
 
     function setValidKYC(address _address) authorized public returns(uint256) {
         uint256 count = 0;
-        for (uint256 c = 0; c &lt; contracts.length; c ++) {
+        for (uint256 c = 0; c < contracts.length; c ++) {
             address contractAddress = contracts[c];
             address vestingAddress = vestingsContracts[contractAddress][_address];
             if (vestingAddress != address(0)) {
@@ -549,7 +549,7 @@ contract TutellusVestingFactory is Authorizable {
 
     function release(address _address) authorized public returns(uint256) {
         uint256 count = 0;
-        for (uint256 c = 0; c &lt; contracts.length; c ++) {
+        for (uint256 c = 0; c < contracts.length; c ++) {
             address contractAddress = contracts[c];
             address vestingAddress = vestingsContracts[contractAddress][_address];
             if (vestingAddress != address(0)) {
@@ -602,9 +602,9 @@ contract Crowdsale {
 
 
   function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) {
-    require(_startTime &gt;= now);
-    require(_endTime &gt;= _startTime);
-    require(_rate &gt; 0);
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
     require(_wallet != 0x0);
 
     token = createTokenContract();
@@ -653,14 +653,14 @@ contract Crowdsale {
 
   // @return true if the transaction can buy tokens
   function validPurchase() internal constant returns (bool) {
-    bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime;
+    bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod &amp;&amp; nonZeroPurchase;
+    return withinPeriod && nonZeroPurchase;
   }
 
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    return now &gt; endTime;
+    return now > endTime;
   }
 
 
@@ -678,21 +678,21 @@ contract CappedCrowdsale is Crowdsale {
   uint256 public cap;
 
   function CappedCrowdsale(uint256 _cap) {
-    require(_cap &gt; 0);
+    require(_cap > 0);
     cap = _cap;
   }
 
   // overriding Crowdsale#validPurchase to add extra cap logic
   // @return true if investors can buy at the moment
   function validPurchase() internal constant returns (bool) {
-    bool withinCap = weiRaised.add(msg.value) &lt;= cap;
-    return super.validPurchase() &amp;&amp; withinCap;
+    bool withinCap = weiRaised.add(msg.value) <= cap;
+    return super.validPurchase() && withinCap;
   }
 
   // overriding Crowdsale#hasEnded to add cap logic
   // @return true if crowdsale event has ended
   function hasEnded() public constant returns (bool) {
-    bool capReached = weiRaised &gt;= cap;
+    bool capReached = weiRaised >= cap;
     return super.hasEnded() || capReached;
   }
 
@@ -780,8 +780,8 @@ contract TutellusPartnerCrowdsale is CappedCrowdsale, Pausable {
         require(_partner != address(0));
         require(_tutellusVault != address(0));
         require(_tutellusVestingFactory != address(0));
-        require(_cliff &lt;= _duration);
-        require(_percent &gt;= 0 &amp;&amp; _percent &lt;= 100);
+        require(_cliff <= _duration);
+        require(_percent >= 0 && _percent <= 100);
 
         vault = TutellusVault(_tutellusVault);
         token = MintableToken(vault.token());
@@ -826,7 +826,7 @@ contract TutellusPartnerCrowdsale is CappedCrowdsale, Pausable {
     function withdraw() public {
         require(hasEnded());
         uint256 amount = this.balance;
-        if (amount &gt; 0) {
+        if (amount > 0) {
             partner.transfer(amount);
             Withdrawal(msg.sender, amount);
         }

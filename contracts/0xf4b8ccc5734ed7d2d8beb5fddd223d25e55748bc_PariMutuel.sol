@@ -8,13 +8,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -50,11 +50,11 @@ contract PariMutuel is Ownable {
   Outcome public winningOutcome;
   State public state;
 
-  mapping(uint8 =&gt; mapping(address =&gt; uint256)) balancesForOutcome;
-  mapping(uint8 =&gt; uint256) public totalForOutcome;
+  mapping(uint8 => mapping(address => uint256)) balancesForOutcome;
+  mapping(uint8 => uint256) public totalForOutcome;
 
   bool public hasWithdrawnRake;
-  mapping(address =&gt; bool) refunded;
+  mapping(address => bool) refunded;
 
   function PariMutuel() {
     state = State.PreEvent;
@@ -66,7 +66,7 @@ contract PariMutuel is Ownable {
   }
 
   function bet(Outcome outcome) external payable requireState(State.PreEvent) {
-    require(msg.value &gt;= minBetAmount);
+    require(msg.value >= minBetAmount);
     balancesForOutcome[uint8(outcome)][msg.sender] = balancesForOutcome[uint8(outcome)][msg.sender].add(msg.value);
     totalForOutcome[uint8(outcome)] = totalForOutcome[uint8(outcome)].add(msg.value);
     BetPlaced(msg.sender, msg.value, outcome);
@@ -74,7 +74,7 @@ contract PariMutuel is Ownable {
 
   function totalWagered() public constant returns (uint256) {
     uint256 total = 0;
-    for (uint8 i = 0; i &lt; numberOfOutcomes; i++) {
+    for (uint8 i = 0; i < numberOfOutcomes; i++) {
       total = total.add(totalForOutcome[i]);
     }
     return total;
@@ -90,7 +90,7 @@ contract PariMutuel is Ownable {
 
   function totalWageredForAddress(address _address) public constant returns (uint256) {
     uint256 total = 0;
-    for (uint8 i = 0; i &lt; numberOfOutcomes; i++) {
+    for (uint8 i = 0; i < numberOfOutcomes; i++) {
       total = total.add(balancesForOutcome[i][_address]);
     }
     return total;
@@ -123,7 +123,7 @@ contract PariMutuel is Ownable {
     WinningOutcomeDeclared(outcome);
   }
 
-  // if there&#39;s a draw or a bug in the contract
+  // if there's a draw or a bug in the contract
   function refundEverybody() external onlyOwner {
     state = State.Refunding;
     StateChanged(state);
@@ -143,7 +143,7 @@ contract PariMutuel is Ownable {
 
   function withdrawWinnings() external requireState(State.PostEvent) {
     uint256 wager = balancesForOutcome[uint8(winningOutcome)][msg.sender];
-    require(wager &gt; 0);
+    require(wager > 0);
     uint256 winnings = payoutForWagerAndOutcome(wager, winningOutcome);
     balancesForOutcome[uint8(winningOutcome)][msg.sender] = 0;
     msg.sender.transfer(winnings);

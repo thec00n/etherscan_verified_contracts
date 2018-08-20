@@ -18,10 +18,10 @@ contract Ownable {
 contract joojinta is Ownable {
     uint constant minContribution = 200000000000000000; // 0.2 ETH
     address public owner;
-    mapping (address =&gt; uint) public contributors;
+    mapping (address => uint) public contributors;
 
     modifier onlyContributor() {
-        require(contributors[msg.sender] &gt; 0);
+        require(contributors[msg.sender] > 0);
         _;
     }
     
@@ -35,7 +35,7 @@ contract joojinta is Ownable {
     }
 
     function () public payable {
-        if (msg.value &gt; minContribution) {
+        if (msg.value > minContribution) {
             // contribution must be greater than a minimum allowed
             contributors[msg.sender] += msg.value;
         }
@@ -44,7 +44,7 @@ contract joojinta is Ownable {
     function exit() public onlyContributor(){
         uint amount;
         amount = contributors[msg.sender] / 10; // charging 10% org fee if contributor exits
-        if (contributors[msg.sender] &gt;= amount){
+        if (contributors[msg.sender] >= amount){
             contributors[msg.sender] = 0;
             msg.sender.transfer(amount); // transfer must be last
         }

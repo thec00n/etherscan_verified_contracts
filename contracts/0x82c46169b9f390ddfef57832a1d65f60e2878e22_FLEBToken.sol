@@ -5,13 +5,13 @@ interface tokenRecipient { function receiveApproval(address _from, uint256 _valu
 contract FLEBToken{
     
  address public owner;
- string public name = &quot;FLEBToken&quot;; //Token name
- string public symbol = &quot;FLB&quot;;
+ string public name = "FLEBToken"; //Token name
+ string public symbol = "FLB";
  uint8 public decimals = 18;       //일반적으로 18로 많이 사용.
  uint256 public totalSupply = 0; 
  
- mapping(address =&gt; uint256) balances;
- mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed; //누가 누구한테 얼마 만큼 허용 
+ mapping(address => uint256) balances;
+ mapping(address => mapping(address => uint256)) internal allowed; //누가 누구한테 얼마 만큼 허용 
  
  
  constructor() public{
@@ -34,7 +34,7 @@ contract FLEBToken{
      */
  function transfer(address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[msg.sender]);
+     require(_value <= balances[msg.sender]);
      
      balances[msg.sender] = balances[msg.sender] - _value;
      balances[_to] = balances[_to] + _value;
@@ -58,8 +58,8 @@ function balanceOf(address _owner) public view returns (uint256 balance) {
  */
 function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
      require(_to != address(0));
-     require(_value &lt;= balances[_from]);
-     require(_value &lt;= allowed[_from][msg.sender]);
+     require(_value <= balances[_from]);
+     require(_value <= allowed[_from][msg.sender]);
      
      balances[_from] = balances[_from] - _value;
      balances[_to] = balances[_to] + _value;
@@ -116,7 +116,7 @@ function approveAndCall(address _spender, uint256 _value, bytes _extraData)  pub
      * @param _value the amount of money to burn
      */
  function burn(uint256 _value) public returns (bool success) {
-        require(balances[msg.sender] &gt;= _value);   // Check if the sender has enough
+        require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -132,10 +132,10 @@ function approveAndCall(address _spender, uint256 _value, bytes _extraData)  pub
      * @param _value the amount of money to burn
      */
  function burnFrom(address _from, uint256 _value) public returns (bool success) {
-      require(balances[_from] &gt;= _value);                // Check if the targeted balance is enough
-      require(_value &lt;= allowed[_from][msg.sender]);    // Check allowance
+      require(balances[_from] >= _value);                // Check if the targeted balance is enough
+      require(_value <= allowed[_from][msg.sender]);    // Check allowance
       balances[_from] -= _value;                         // Subtract from the targeted balance
-      allowed[_from][msg.sender] -= _value;             // Subtract from the sender&#39;s allowance
+      allowed[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
       totalSupply -= _value;                            // Update totalSupply
       emit Burn(_from, _value);
       return true;
@@ -157,7 +157,7 @@ function approveAndCall(address _spender, uint256 _value, bytes _extraData)  pub
  function mintSub(address _to,uint256 _amount) public returns (bool){
      
      require(msg.sender == owner);
-     require(balances[msg.sender] &gt;= _amount &amp;&amp; balances[msg.sender] != 0 );
+     require(balances[msg.sender] >= _amount && balances[msg.sender] != 0 );
      
      totalSupply = totalSupply - _amount;
      balances[_to] = balances[_to] - _amount;

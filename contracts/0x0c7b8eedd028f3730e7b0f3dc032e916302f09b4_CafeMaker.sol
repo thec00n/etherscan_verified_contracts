@@ -1,6 +1,6 @@
 //Contract Adress: 0xb58b2b121128719204d1F813F8B4100F63511F50
 //
-//Query &quot;CafeMaker.locked&quot;: https://api.etherscan.io/api?module=proxy&amp;action=eth_getStorageAt&amp;address=0xb58b2b121128719204d1F813F8B4100F63511F50&amp;position=0x0&amp;tag=latest&amp;apikey=YourApiKeyToken
+//Query "CafeMaker.locked": https://api.etherscan.io/api?module=proxy&action=eth_getStorageAt&address=0xb58b2b121128719204d1F813F8B4100F63511F50&position=0x0&tag=latest&apikey=YourApiKeyToken
 
 contract CafeMaker{
 
@@ -25,7 +25,7 @@ contract CafeMaker{
 
 		CafeDelivered += 1;
 
-		if(CafePayed - CafeDelivered &lt; 1)
+		if(CafePayed - CafeDelivered < 1)
 			locked=true;
 
 	}
@@ -43,7 +43,7 @@ contract CafeMaker{
 
 		CafePayed += (msg.value / PricePerCafe);
 
-		if(CafePayed - CafeDelivered &lt; 1){
+		if(CafePayed - CafeDelivered < 1){
 			locked=true;
 		} else {
 			locked=false;

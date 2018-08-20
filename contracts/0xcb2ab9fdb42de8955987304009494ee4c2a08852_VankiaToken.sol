@@ -49,11 +49,11 @@ contract Token {
 contract StandardToken is Token {
 
     function transfer(address _to, uint _value) public returns (bool success) {
-        //Default assumes totalSupply can&#39;t be over max (2^256 - 1).
-        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn&#39;t wrap.
+        //Default assumes totalSupply can't be over max (2^256 - 1).
+        //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
-        //require(balances[msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[msg.sender] &gt;= _value);
+        //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -62,8 +62,8 @@ contract StandardToken is Token {
 
     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
         //same as above. Replace this line with the following if you want to protect against wrapping uints.
-        //require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; balances[_to] + _value &gt; balances[_to]);
-        require(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value);
+        //require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -85,8 +85,8 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address =&gt; uint) balances;
-    mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+    mapping (address => uint) balances;
+    mapping (address => mapping (address => uint)) allowed;
 }
 
 contract Owned {
@@ -108,9 +108,9 @@ contract Owned {
 }
 
 contract VankiaToken is StandardToken, Owned {
-    string public constant name = &quot;Vankia Token&quot;;
+    string public constant name = "Vankia Token";
     uint8 public constant decimals = 18;
-    string public constant symbol = &quot;VNT&quot;;
+    string public constant symbol = "VNT";
 
     event Burnt(address indexed from, uint amount);
 
@@ -125,8 +125,8 @@ contract VankiaToken is StandardToken, Owned {
 
     // anyone can burn their VKN tokens
     function burn(uint _amount) public {
-        require(_amount &gt; 0);
-        require(balances[msg.sender] &gt;= _amount);
+        require(_amount > 0);
+        require(balances[msg.sender] >= _amount);
         balances[msg.sender] -= _amount;
         totalSupply -= _amount;
         

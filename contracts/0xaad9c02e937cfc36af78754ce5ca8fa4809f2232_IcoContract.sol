@@ -33,12 +33,12 @@ contract SafeMath {
 
   function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
     uint256 z = x + y;
-    assert((z &gt;= x) &amp;&amp; (z &gt;= y));
+    assert((z >= x) && (z >= y));
     return z;
   }
 
   function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
-    assert(x &gt;= y);
+    assert(x >= y);
     uint256 z = x - y;
     return z;
   }
@@ -76,12 +76,12 @@ contract StandardToken is ERC20, SafeMath {
   * @dev Fix for the ERC20 short address attack.
    */
   modifier onlyPayloadSize(uint size) {
-    require(msg.data.length &gt;= size + 4) ;
+    require(msg.data.length >= size + 4) ;
     _;
   }
 
-  mapping(address =&gt; uint) balances;
-  mapping (address =&gt; mapping (address =&gt; uint)) allowed;
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
   function transfer(address _to, uint _value) onlyPayloadSize(2 * 32)  returns (bool success){
     balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
@@ -205,7 +205,7 @@ contract IcoToken is SafeMath, StandardToken, Pausable {
   }
 
   function sell(address _recipient, uint256 _value) whenNotPaused returns (bool success) {
-      assert(_value &gt; 0);
+      assert(_value > 0);
       require(msg.sender == icoContract);
 
       balances[_recipient] += _value;
@@ -217,7 +217,7 @@ contract IcoToken is SafeMath, StandardToken, Pausable {
   }
 
   function issue(address _recipient, uint256 _value) whenNotPaused onlyOwner returns (bool success) {
-      assert(_value &gt; 0);
+      assert(_value > 0);
       _value = _value * 10**decimals;
 
       balances[_recipient] += _value;
@@ -279,15 +279,15 @@ contract IcoContract is SafeMath, Pausable {
 
   /// @dev Accepts ether and creates new ICO tokens.
   function createTokens(address _beneficiary, uint256 _value) internal whenNotPaused {
-    require (tokenCreationCap &gt; totalSupply);
-    require (now &gt;= fundingStartTime);
-    require (_value &gt;= minContribution);
+    require (tokenCreationCap > totalSupply);
+    require (now >= fundingStartTime);
+    require (_value >= minContribution);
     require (!isFinalized);
 
     uint256 tokens = safeMult(_value, tokenExchangeRate);
     uint256 checkedSupply = safeAdd(totalSupply, tokens);
 
-    if (tokenCreationCap &lt; checkedSupply) {        
+    if (tokenCreationCap < checkedSupply) {        
       uint256 tokensToAllocate = safeSubtract(tokenCreationCap, totalSupply);
       uint256 tokensToRefund   = safeSubtract(tokens, tokensToAllocate);
       totalSupply = tokenCreationCap;

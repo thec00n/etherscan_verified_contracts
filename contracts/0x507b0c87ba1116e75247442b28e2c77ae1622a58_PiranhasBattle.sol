@@ -16,13 +16,13 @@ library SafeMath {
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -51,7 +51,7 @@ contract Ownable {
 }
 
 contract Payments {
-  mapping(address =&gt; uint256) public payments; 
+  mapping(address => uint256) public payments; 
   
   function getBalance() public constant returns(uint256) {
 	 return payments[msg.sender];
@@ -62,7 +62,7 @@ contract Payments {
 	uint256 payment = payments[payee];
 
 	require(payment != 0);
-	require(this.balance &gt;= payment);
+	require(this.balance >= payment);
 
 	payments[payee] = 0;
 
@@ -82,13 +82,13 @@ contract PiranhasBattle is Ownable, Payments  {
   using SafeMath for uint256;
   
 
-  mapping(uint256 =&gt; mapping(uint256 =&gt; uint256)) public fightersToBattle; //unique pair of the fighters
-  mapping(uint256 =&gt; mapping(uint256 =&gt; uint256)) public battleToFighterToSize; //fighters sizes
-  mapping(uint256 =&gt; mapping(uint256 =&gt; uint256)) public battleToFighterToBet; // Bets summ in power points
+  mapping(uint256 => mapping(uint256 => uint256)) public fightersToBattle; //unique pair of the fighters
+  mapping(uint256 => mapping(uint256 => uint256)) public battleToFighterToSize; //fighters sizes
+  mapping(uint256 => mapping(uint256 => uint256)) public battleToFighterToBet; // Bets summ in power points
 
-  mapping(uint256 =&gt; uint256) public battleToWinner; 
+  mapping(uint256 => uint256) public battleToWinner; 
   
-  mapping(address =&gt; mapping(uint256 =&gt; mapping(uint256 =&gt; uint256))) public addressToBattleToFigterIdToBetPower;  
+  mapping(address => mapping(uint256 => mapping(uint256 => uint256))) public addressToBattleToFigterIdToBetPower;  
   
   uint256 public battleId;
 
@@ -109,12 +109,12 @@ contract PiranhasBattle is Ownable, Payments  {
   
   function theBet(uint256 _piranhaFighter1, uint256 _piranhaFighter2, uint256 _betOnFighterId) public payable {
      
-	  require (_piranhaFighter1 &gt; 0 &amp;&amp; _piranhaFighter2 &gt; 0 &amp;&amp; _piranhaFighter1 != _piranhaFighter2);
+	  require (_piranhaFighter1 > 0 && _piranhaFighter2 > 0 && _piranhaFighter1 != _piranhaFighter2);
 	  
 	  uint256 curBattleId=fightersToBattle[_piranhaFighter1][_piranhaFighter2];
       require (battleToWinner[curBattleId] == 0); //battle not finished	  
 	  
-	  require (msg.value &gt;= 0.001 ether &amp;&amp; msg.sender != address(0));
+	  require (msg.value >= 0.001 ether && msg.sender != address(0));
 	  
 	  if (curBattleId == 0) { //new battle
  	      battleId = betsOnFighter.push([msg.sender]); //add gamer to the battle
@@ -122,7 +122,7 @@ contract PiranhasBattle is Ownable, Payments  {
 		  battleToFighterToSize[battleId][_piranhaFighter1]=240; 
 		  battleToFighterToSize[battleId][_piranhaFighter2]=240; 
 	  } else {
-	        if (addressToBattleToFigterIdToBetPower[msg.sender][battleId][_piranhaFighter1]==0 &amp;&amp; addressToBattleToFigterIdToBetPower[msg.sender][battleId][_piranhaFighter2]==0)
+	        if (addressToBattleToFigterIdToBetPower[msg.sender][battleId][_piranhaFighter1]==0 && addressToBattleToFigterIdToBetPower[msg.sender][battleId][_piranhaFighter2]==0)
 				betsOnFighter[battleId-1].push(msg.sender); //add gamer to the battle
 	  }
 	  
@@ -138,12 +138,12 @@ contract PiranhasBattle is Ownable, Payments  {
 	  
 	  if (randNum==0) { //fighter1 the winner
 
-			if ( fighter1Size+theBetPower &gt;= 240) 
+			if ( fighter1Size+theBetPower >= 240) 
 				battleToFighterToSize[battleId][_piranhaFighter1] = 240;
 			else 
 				battleToFighterToSize[battleId][_piranhaFighter1] += theBetPower;
 				
-	        if ( fighter2Size &lt;= theBetPower) {
+	        if ( fighter2Size <= theBetPower) {
 				battleToFighterToSize[battleId][_piranhaFighter2] = 0;
 				_finishTheBattle(battleId, _piranhaFighter1, _piranhaFighter2, 1);
 				
@@ -152,12 +152,12 @@ contract PiranhasBattle is Ownable, Payments  {
 				battleToFighterToSize[battleId][_piranhaFighter2] -= theBetPower;	
 				
 	  } else { //fighter2 the winner
-			if ( fighter2Size+theBetPower &gt;= 240) 
+			if ( fighter2Size+theBetPower >= 240) 
 				battleToFighterToSize[battleId][_piranhaFighter2] = 240;
 			else 
 				battleToFighterToSize[battleId][_piranhaFighter2] += theBetPower;
 				
-	        if ( fighter1Size &lt;= theBetPower) {
+	        if ( fighter1Size <= theBetPower) {
 				battleToFighterToSize[battleId][_piranhaFighter1] = 0;
 				_finishTheBattle(battleId, _piranhaFighter1, _piranhaFighter2, 2);
 				
@@ -185,12 +185,12 @@ contract PiranhasBattle is Ownable, Payments  {
 		
 		uint256 prizeUnit = uint256((battleToFighterToBet[_battleId][winnerId] * 1000000000000000 + winPot)  / battleToFighterToBet[_battleId][winnerId]);
 		
-		for (uint256 i=0; i &lt; betsOnFighter[_battleId-1].length; i++) {
+		for (uint256 i=0; i < betsOnFighter[_battleId-1].length; i++) {
 			if (addressToBattleToFigterIdToBetPower[betsOnFighter[_battleId-1][i]][_battleId][winnerId] != 0)
 				payments[betsOnFighter[_battleId-1][i]] += prizeUnit * addressToBattleToFigterIdToBetPower[betsOnFighter[_battleId-1][i]][_battleId][winnerId];
 		}
 		
-		if (divsForPiranhaOwner&gt;0) {
+		if (divsForPiranhaOwner>0) {
 			address piranhaOwner=ownerOfPiranha(winnerId);
 			if (piranhaOwner!=address(0))
 				piranhaOwner.send(divsForPiranhaOwner);

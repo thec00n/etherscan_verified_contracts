@@ -9,13 +9,13 @@ library SafeMath {
     }
 
     function sub(uint a, uint b) pure internal returns(uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) pure internal returns(uint) {
         uint c = a + b;
-        assert(c &gt;= a &amp;&amp; c &gt;= b);
+        assert(c >= a && c >= b);
         return c;
     }
 }
@@ -115,15 +115,15 @@ contract Crowdsale is Pausable {
     uint public totalClaimed; // Total number of tokens claimed
     
 
-    mapping(address =&gt; Backer) public backers; //backer list
-    mapping(address =&gt; uint) public affiliates; // affiliates list
+    mapping(address => Backer) public backers; //backer list
+    mapping(address => uint) public affiliates; // affiliates list
     address[] public backersIndex; // to be able to itarate through backers for verification.  
-    mapping(address =&gt; uint) public claimed;  // Tokens claimed by contibutors
+    mapping(address => uint) public claimed;  // Tokens claimed by contibutors
 
     
     // @notice to verify if action is not performed out of the campaing range
     modifier respectTimeFrame() {
-        if ((block.number &lt; startBlock) || (block.number &gt; endBlock)) 
+        if ((block.number < startBlock) || (block.number > endBlock)) 
             revert();
         _;
     }
@@ -196,7 +196,7 @@ contract Crowdsale is Pausable {
     // @notice It will be called by owner to start the sale    
     function start(uint _block) external onlyOwner() {   
 
-        require(_block &lt; 335462);  // 4.16*60*24*56 days = 335462     
+        require(_block < 335462);  // 4.16*60*24*56 days = 335462     
         startBlock = block.number;
         endBlock = startBlock.add(_block); 
     }
@@ -205,8 +205,8 @@ contract Crowdsale is Pausable {
     // this function will allow on adjusting duration of campaign closer to the end 
     function adjustDuration(uint _block) external onlyOwner() {
 
-        require(_block &lt; 389376);  // 4.16*60*24*65 days = 389376     
-        require(_block &gt; block.number.sub(startBlock)); // ensure that endBlock is not set in the past
+        require(_block < 389376);  // 4.16*60*24*65 days = 389376     
+        require(_block > block.number.sub(startBlock)); // ensure that endBlock is not set in the past
         endBlock = startBlock.add(_block); 
     }
 
@@ -222,7 +222,7 @@ contract Crowdsale is Pausable {
         require(isWhiteListed);      // ensure that user is whitelisted
     
         require(currentStep == Step.FundingPreSale || currentStep == Step.FundingPublicSale); // ensure that this is correct step
-        require(msg.value &gt;= minInvestETH);   // ensure that min contributions amount is met
+        require(msg.value >= minInvestETH);   // ensure that min contributions amount is met
           
         uint tokensToSend = determinePurchase();
 
@@ -233,7 +233,7 @@ contract Crowdsale is Pausable {
             referrer.tokensToSend = referrer.tokensToSend.add(affiliateTokens);
         }
         
-        require(totalTokensSent.add(tokensToSend.add(affiliateTokens)) &lt; maxCap); // Ensure that max cap hasn&#39;t been reached  
+        require(totalTokensSent.add(tokensToSend.add(affiliateTokens)) < maxCap); // Ensure that max cap hasn't been reached  
             
         Backer storage backer = backers[_backer];
     
@@ -260,7 +260,7 @@ contract Crowdsale is Pausable {
     // @return tokensToSend {uint} proper number of tokens based on the timline     
     function determinePurchase() internal view  returns (uint) {
        
-        require(msg.value &gt;= minInvestETH);                        // ensure that min contributions amount is met  
+        require(msg.value >= minInvestETH);                        // ensure that min contributions amount is met  
         uint tokenAmount = msg.value.mul(1e18) / tokenPriceWei;    // calculate amount of tokens
 
         uint tokensToSend;  
@@ -277,9 +277,9 @@ contract Crowdsale is Pausable {
     // @param _tokenAmount {uint} amount of tokens to allocate for the contribution
     function calculateNoOfTokensToSend(uint _tokenAmount) internal view  returns (uint) {
               
-        if (block.number &lt;= startBlock + (numOfBlocksInMinute * 60 * 24 * 14) / 100)        // less equal then/equal 14 days
+        if (block.number <= startBlock + (numOfBlocksInMinute * 60 * 24 * 14) / 100)        // less equal then/equal 14 days
             return  _tokenAmount + (_tokenAmount * 40) / 100;  // 40% bonus
-        else if (block.number &lt;= startBlock + (numOfBlocksInMinute * 60 * 24 * 28) / 100)   // less equal  28 days
+        else if (block.number <= startBlock + (numOfBlocksInMinute * 60 * 24 * 28) / 100)   // less equal  28 days
             return  _tokenAmount + (_tokenAmount * 30) / 100; // 30% bonus
         else
             return  _tokenAmount + (_tokenAmount * 20) / 100;   // remainder of the campaign 20% bonus
@@ -314,7 +314,7 @@ contract Crowdsale is Pausable {
         claimTokensForUser(msg.sender);
     }
 
-    // @notice this function can be called by admin to claim user&#39;s token in case of difficulties
+    // @notice this function can be called by admin to claim user's token in case of difficulties
     // @param _backer {address} user address to claim tokens for
     function adminClaimTokenForUser(address _backer) external onlyOwner() {
         claimTokensForUser(_backer);
@@ -343,8 +343,8 @@ contract Crowdsale is Pausable {
                   
         Backer storage backer = backers[_backer];
 
-        require(!backer.refunded);      // if refunded, don&#39;t allow for another refund           
-        require(!backer.claimed);       // if tokens claimed, don&#39;t allow refunding            
+        require(!backer.refunded);      // if refunded, don't allow for another refund           
+        require(!backer.claimed);       // if tokens claimed, don't allow refunding            
         require(backer.tokensToSend != 0);   // only continue if there are any tokens to send           
 
         claimCount++;
@@ -367,8 +367,8 @@ contract Crowdsale is Pausable {
         require(!crowdsaleClosed);        
         // purchasing precise number of tokens might be impractical, thus subtract 1000 tokens so finalizition is possible
         // near the end 
-        require(block.number &gt;= endBlock || totalTokensSent &gt;= maxCap.sub(1000));                 
-        require(totalTokensSent &gt;= minCap);  // ensure that minimum was reached
+        require(block.number >= endBlock || totalTokensSent >= maxCap.sub(1000));                 
+        require(totalTokensSent >= minCap);  // ensure that minimum was reached
 
         crowdsaleClosed = true;  
         
@@ -387,7 +387,7 @@ contract Crowdsale is Pausable {
 
     // @notice Failsafe token transfer
     function tokenDrian() external onlyOwner() {
-        if (block.number &gt; endBlock) {
+        if (block.number > endBlock) {
             if (!token.transfer(team, token.balanceOf(this))) 
                 revert();
         }
@@ -398,14 +398,14 @@ contract Crowdsale is Pausable {
 
         require(currentStep == Step.Refunding);         
        
-        require(this.balance &gt; 0);  // contract will hold 0 ether at the end of campaign.                                  
+        require(this.balance > 0);  // contract will hold 0 ether at the end of campaign.                                  
                                     // contract needs to be funded through fundContract() 
 
         Backer storage backer = backers[msg.sender];
 
-        require(backer.weiReceived &gt; 0);  // esnure that user has sent contribution
-        require(!backer.refunded);         // ensure that user hasn&#39;t been refunded yet
-        require(!backer.claimed);       // if tokens claimed, don&#39;t allow refunding   
+        require(backer.weiReceived > 0);  // esnure that user has sent contribution
+        require(!backer.refunded);         // ensure that user hasn't been refunded yet
+        require(!backer.claimed);       // if tokens claimed, don't allow refunding   
        
         backer.refunded = true;  // save refund status to true
     

@@ -16,20 +16,20 @@ library SafeMath {
     }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -67,14 +67,14 @@ contract BasicToken is ERC20Basic {
 
   using SafeMath for uint256;
 
-  mapping(address =&gt; uint256) balances;
+  mapping(address => uint256) balances;
 
   /**
   * Modifier avoids short address attacks.
   * For more info check: https://ericrafaloff.com/analyzing-the-erc20-short-address-attack/
   */
   modifier onlyPayloadSize(uint size) {
-      if (msg.data.length &lt; size + 4) {
+      if (msg.data.length < size + 4) {
       revert();
       }
       _;
@@ -87,7 +87,7 @@ contract BasicToken is ERC20Basic {
   */
   function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) returns (bool) {
     require(_to != address(0));
-    require(_value &lt;= balances[msg.sender]);
+    require(_value <= balances[msg.sender]);
     
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -117,7 +117,7 @@ contract BasicToken is ERC20Basic {
  */
 contract StandardToken is ERC20, BasicToken {
 
-  mapping (address =&gt; mapping (address =&gt; uint256)) allowed;
+  mapping (address => mapping (address => uint256)) allowed;
 
 
   /**
@@ -128,8 +128,8 @@ contract StandardToken is ERC20, BasicToken {
    */
   function transferFrom(address _from, address _to, uint256 _value) public onlyPayloadSize(3 * 32) returns (bool) {
     require(_to != address(0));
-    require(allowed[_from][msg.sender] &gt;= _value);
-    require(balances[_from] &gt;= _value);
+    require(allowed[_from][msg.sender] >= _value);
+    require(balances[_from] >= _value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -177,7 +177,7 @@ contract StandardToken is ERC20, BasicToken {
 
   function decreaseApproval (address _spender, uint _subtractedValue) public returns (bool success) {
     uint oldValue = allowed[msg.sender][_spender];
-    if (_subtractedValue &gt; oldValue) {
+    if (_subtractedValue > oldValue) {
       allowed[msg.sender][_spender] = 0;
     } else {
       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
@@ -192,7 +192,7 @@ contract StandardToken is ERC20, BasicToken {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -346,8 +346,8 @@ contract FoxTradingToken is MintableToken {
    * @dev Constructor that gives the founder all of the existing tokens.
    */
     function FoxTradingToken() public {
-        name = &quot;Fox Trading&quot;;
-        symbol = &quot;FOXT&quot;;
+        name = "Fox Trading";
+        symbol = "FOXT";
         decimals = 18;
         totalSupply = 3000000e18;
         founder = 0x698825d0CfeeD6F65E981FFB543ef5196A5C2A5A;
@@ -375,7 +375,7 @@ contract FoxTradingToken is MintableToken {
     * @param _tokens uint256 amount of tokens to burn
     */
     function burnTokens(address _partner, uint256 _tokens) public onlyFounder {
-        require(balances[_partner] &gt;= _tokens);
+        require(balances[_partner] >= _tokens);
         balances[_partner] = balances[_partner].sub(_tokens);
         totalSupply = totalSupply.sub(_tokens);
         emit TokensBurned(msg.sender, _partner, _tokens);
@@ -429,7 +429,7 @@ contract Crowdsale is Ownable {
         tokenCapForFourthMainStage = 6200000e18; 
     
         ICObonusStages[0] = now.add(7 days);
-        for (uint y = 1; y &lt; ICObonusStages.length; y++) {
+        for (uint y = 1; y < ICObonusStages.length; y++) {
             ICObonusStages[y] = ICObonusStages[y - 1].add(7 days);
         }
         
@@ -448,8 +448,8 @@ contract Crowdsale is Ownable {
     }
 
     function buyTokens(address _addr) public payable whenNotPaused {
-        require(validPurchase() &amp;&amp; tokensSold &lt; totalTokensForSale);
-        require(_addr != 0x0 &amp;&amp; msg.value &gt;= 100 finney);  
+        require(validPurchase() && tokensSold < totalTokensForSale);
+        require(_addr != 0x0 && msg.value >= 100 finney);  
         uint256 toMint;
         toMint = msg.value.mul(getRateWithBonus());
         tokensSold = tokensSold.add(toMint);
@@ -462,8 +462,8 @@ contract Crowdsale is Ownable {
     }
 
     function processOfflinePurchase(address _to, uint256 _toMint) public onlyOwner {
-        require(tokensSold.add(_toMint) &lt;= totalTokensForSale);
-        require(_toMint &gt; 0 &amp;&amp; _to != 0x0);
+        require(tokensSold.add(_toMint) <= totalTokensForSale);
+        require(_toMint > 0 && _to != 0x0);
         tokensSold = tokensSold.add(_toMint);
         token.mint(_to, _toMint);
     }
@@ -474,9 +474,9 @@ contract Crowdsale is Ownable {
      * @param _values The amount of tokens to send to each address
      * */
     function airDrop(address[] _addrs, uint256[] _values) public onlyOwner {
-        //require(_addrs.length &gt; 0);
-        for (uint i = 0; i &lt; _addrs.length; i++) {
-            if (_addrs[i] != 0x0 &amp;&amp; _values[i] &gt; 0) {
+        //require(_addrs.length > 0);
+        for (uint i = 0; i < _addrs.length; i++) {
+            if (_addrs[i] != 0x0 && _values[i] > 0) {
                 token.mint(_addrs[i], _values[i]);
             }
         }
@@ -484,9 +484,9 @@ contract Crowdsale is Ownable {
 
 
     function validPurchase() internal view returns (bool) {
-        bool withinPeriod = now &gt;= startTime &amp;&amp; now &lt;= endTime; 
+        bool withinPeriod = now >= startTime && now <= endTime; 
         bool nonZeroPurchase = msg.value != 0; 
-        return withinPeriod &amp;&amp; nonZeroPurchase;
+        return withinPeriod && nonZeroPurchase;
     }
 
     
@@ -495,7 +495,7 @@ contract Crowdsale is Ownable {
     }
     
     function getRateWithBonus() internal view returns (uint256 rateWithDiscount) {
-        if (tokensSold &lt; totalTokensForSale) {
+        if (tokensSold < totalTokensForSale) {
             return rate.mul(getCurrentBonus()).div(100).add(rate);
             return rateWithDiscount;
         }
@@ -512,28 +512,28 @@ contract Crowdsale is Ownable {
     * day 52 - 58   / week 4:  0%
     */
     function getCurrentBonus() internal view returns (uint256 discount) {
-        require(tokensSold &lt; tokenCapForFourthMainStage);
+        require(tokensSold < tokenCapForFourthMainStage);
         uint256 timeStamp = now;
         uint256 stage;
 
-        for (uint i = 0; i &lt; ICObonusStages.length; i++) {
-            if (timeStamp &lt;= ICObonusStages[i]) {
+        for (uint i = 0; i < ICObonusStages.length; i++) {
+            if (timeStamp <= ICObonusStages[i]) {
                 stage = i + 1;
                 break;
             } 
         } 
 
-        if(stage == 1 &amp;&amp; tokensSold &lt; tokenCapForFirstMainStage) { discount = 20; }
-        if(stage == 1 &amp;&amp; tokensSold &gt;= tokenCapForFirstMainStage) { discount = 15; }
-        if(stage == 1 &amp;&amp; tokensSold &gt;= tokenCapForSecondMainStage) { discount = 10; }
-        if(stage == 1 &amp;&amp; tokensSold &gt;= tokenCapForThirdMainStage) { discount = 0; }
+        if(stage == 1 && tokensSold < tokenCapForFirstMainStage) { discount = 20; }
+        if(stage == 1 && tokensSold >= tokenCapForFirstMainStage) { discount = 15; }
+        if(stage == 1 && tokensSold >= tokenCapForSecondMainStage) { discount = 10; }
+        if(stage == 1 && tokensSold >= tokenCapForThirdMainStage) { discount = 0; }
 
-        if(stage == 2 &amp;&amp; tokensSold &lt; tokenCapForSecondMainStage) { discount = 15; }
-        if(stage == 2 &amp;&amp; tokensSold &gt;= tokenCapForSecondMainStage) { discount = 10; }
-        if(stage == 2 &amp;&amp; tokensSold &gt;= tokenCapForThirdMainStage) { discount = 0; }
+        if(stage == 2 && tokensSold < tokenCapForSecondMainStage) { discount = 15; }
+        if(stage == 2 && tokensSold >= tokenCapForSecondMainStage) { discount = 10; }
+        if(stage == 2 && tokensSold >= tokenCapForThirdMainStage) { discount = 0; }
 
-        if(stage == 3 &amp;&amp; tokensSold &lt; tokenCapForThirdMainStage) { discount = 10; }
-        if(stage == 3 &amp;&amp; tokensSold &gt;= tokenCapForThirdMainStage) { discount = 0; }
+        if(stage == 3 && tokensSold < tokenCapForThirdMainStage) { discount = 10; }
+        if(stage == 3 && tokensSold >= tokenCapForThirdMainStage) { discount = 0; }
 
         if(stage == 4) { discount = 0; }
 
@@ -543,14 +543,14 @@ contract Crowdsale is Ownable {
 
 
     function extendDuration(uint256 _newEndTime) public onlyOwner {
-        require(endTime &lt; _newEndTime);
+        require(endTime < _newEndTime);
         endTime = _newEndTime;
         emit ICOSaleExtended(_newEndTime);
     }
 
 
     function hasEnded() public view returns (bool) { 
-        return now &gt; endTime;
+        return now > endTime;
     }
 
     /**

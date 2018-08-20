@@ -16,20 +16,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -39,7 +39,7 @@ library SafeMath {
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -92,7 +92,7 @@ interface Token {
 contract Vault is Ownable {
     using SafeMath for uint256;
 
-    mapping (address =&gt; uint256) public deposited;
+    mapping (address => uint256) public deposited;
     address public wallet;
    
     event Withdrawn(address _wallet);
@@ -126,7 +126,7 @@ contract ESTTokenSale is Ownable{
       Vault public vault;
 
      // This mapping stores the addresses of whitelisted users
-      mapping(address =&gt; bool) public whitelisted;
+      mapping(address => bool) public whitelisted;
   
       //rate of token :  1 EST = 0.00005804 ETH
       uint256 public rate = 58040000000000;
@@ -217,7 +217,7 @@ contract ESTTokenSale is Ownable{
         require(!contractUp);
 
         // Contract should have enough EST credits
-        require(token.balanceOf(this) &gt;= tokensAvailableForSale);
+        require(token.balanceOf(this) >= tokensAvailableForSale);
         
         //activate the sale process
         contractUp = true;
@@ -247,7 +247,7 @@ contract ESTTokenSale is Ownable{
       // @return true if all the tiers has been ended
   function saleTimeOver() public view returns (bool) {
     
-    return now &gt; phases[noOfPhases-1].endTime;
+    return now > phases[noOfPhases-1].endTime;
   }
 
   
@@ -274,13 +274,13 @@ contract ESTTokenSale is Ownable{
     
     noOfPhases = _noOfPhases;
     
-    for(uint8 i = 0; i &lt; _noOfPhases; i++){
-        require(_cummulativeHardCaps[i] &gt; 0);
-        require(_endTimes[i] &gt; _startTimes[i]);
-        if(i &gt; 0){
+    for(uint8 i = 0; i < _noOfPhases; i++){
+        require(_cummulativeHardCaps[i] > 0);
+        require(_endTimes[i] > _startTimes[i]);
+        if(i > 0){
             
             //start time of this tier should be greater than previous tier
-            require(_startTimes[i] &gt; _endTimes[i-1]);
+            require(_startTimes[i] > _endTimes[i-1]);
             
             phases.push(PhaseInfo({
                 cummulativeHardCap:_cummulativeHardCaps[i],
@@ -292,7 +292,7 @@ contract ESTTokenSale is Ownable{
         }
         else{
             //start time of tier1 should be greater than current time
-            require(_startTimes[i] &gt; now);
+            require(_startTimes[i] > now);
           
             phases.push(PhaseInfo({
                 cummulativeHardCap:_cummulativeHardCaps[i],
@@ -373,7 +373,7 @@ contract ESTTokenSale is Ownable{
        require(whitelisted[beneficiary]);
 
        int8 currentPhaseIndex = getCurrentlyRunningPhase();
-       assert(currentPhaseIndex &gt;= 0);
+       assert(currentPhaseIndex >= 0);
        
         // recheck this for storage and memory
        PhaseInfo storage currentlyRunningPhase = phases[uint256(currentPhaseIndex)];
@@ -382,7 +382,7 @@ contract ESTTokenSale is Ownable{
        uint256 weiAmount = msg.value;
 
        //Check cummulative Hard Cap for this phase has not been reached
-       require(weiAmount.add(totalFunding) &lt;= currentlyRunningPhase.cummulativeHardCap);
+       require(weiAmount.add(totalFunding) <= currentlyRunningPhase.cummulativeHardCap);
        
        
        uint256 tokens = weiAmount.div(rate).mul(100000000);//considering decimal places to be 8 for token
@@ -420,8 +420,8 @@ contract ESTTokenSale is Ownable{
     * Return -1 if no tier is running currently
     * */
    function getCurrentlyRunningPhase()public view returns(int8){
-      for(uint8 i = 0; i &lt; noOfPhases; i++){
-          if(now &gt;= phases[i].startTime &amp;&amp; now &lt;= phases[i].endTime){
+      for(uint8 i = 0; i < noOfPhases; i++){
+          if(now >= phases[i].startTime && now <= phases[i].endTime){
               return int8(i);
           }
       }   
@@ -458,9 +458,9 @@ contract ESTTokenSale is Ownable{
     // Add many users in one go to the whitelist
     function addManyUsers(address[] users)public onlyOwner {
         
-        require(users.length &lt; 100);
+        require(users.length < 100);
 
-        for (uint8 index = 0; index &lt; users.length; index++) {
+        for (uint8 index = 0; index < users.length; index++) {
 
              whitelisted[users[index]] = true;
 

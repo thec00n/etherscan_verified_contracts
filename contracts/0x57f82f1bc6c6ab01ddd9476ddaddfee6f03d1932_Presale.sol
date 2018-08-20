@@ -3,10 +3,10 @@ pragma solidity ^0.4.18;
 library SafeMath {
 
     function sub(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a - b) &lt;= a);
+        require((c = a - b) <= a);
     }
     function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        require((c = a + b) &gt;= a);
+        require((c = a + b) >= a);
     }
     function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
         require((b == 0 || (c = a * b) / b == a));
@@ -36,7 +36,7 @@ contract Presale {
     uint256 public fundsRaised;
     
 
-    mapping (address =&gt; uint256) public contributionBy;
+    mapping (address => uint256) public contributionBy;
     
     event ContributionReceived(address contributer, uint256 amount, uint256 totalContributions,uint totalAmountRaised);
     event FundsWithdrawn(uint256 funds, address beneficiaryAddress);
@@ -60,10 +60,10 @@ contract Presale {
 
     function () public payable {
         require(presaleOpen());
-        require(msg.value &gt;= minimumContribution);
+        require(msg.value >= minimumContribution);
         uint256 contribution = msg.value;
         uint256 refund;
-        if(this.balance &gt; hardcapInEther){
+        if(this.balance > hardcapInEther){
             refund = this.balance.sub(hardcapInEther);
             contribution = msg.value.sub(refund);
             msg.sender.transfer(refund);
@@ -75,12 +75,12 @@ contract Presale {
     }
 
 
-    function presaleOpen() public view returns(bool) {return(now &gt;= startTime &amp;&amp;
-                                                            now &lt;= endTime &amp;&amp;
-                                                            fundsRaised &lt; hardcapInEther);} 
+    function presaleOpen() public view returns(bool) {return(now >= startTime &&
+                                                            now <= endTime &&
+                                                            fundsRaised < hardcapInEther);} 
 
     function withdrawFunds() public {
-        require(this.balance &gt; 0);
+        require(this.balance > 0);
         beneficiaryAddress.transfer(this.balance);
         FundsWithdrawn(this.balance, beneficiaryAddress);
     }

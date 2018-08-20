@@ -82,37 +82,37 @@ library SafeMath {
     }
 
     function div(uint a, uint b) internal pure returns (uint) {
-        assert(b &gt; 0);
+        assert(b > 0);
         uint c = a / b;
         assert(a == b * c + a % b);
         return c;
     }
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        assert(b &lt;= a);
+        assert(b <= a);
         return a - b;
     }
 
     function add(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        assert(c &gt;= a);
+        assert(c >= a);
         return c;
     }
 
     function max64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min64(uint64 a, uint64 b) internal pure returns (uint64) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 
     function max256(uint a, uint b) internal pure returns (uint) {
-        return a &gt;= b ? a : b;
+        return a >= b ? a : b;
     }
 
     function min256(uint a, uint b) internal pure returns (uint) {
-        return a &lt; b ? a : b;
+        return a < b ? a : b;
     }
 }
 
@@ -142,9 +142,9 @@ library SignatureValidator {
         }
 
         if (mode == SignatureMode.GETH) {
-            hash = keccak256(&quot;\x19Ethereum Signed Message:\n32&quot;, hash);
+            hash = keccak256("\x19Ethereum Signed Message:\n32", hash);
         } else if (mode == SignatureMode.TREZOR) {
-            hash = keccak256(&quot;\x19Ethereum Signed Message:\n\x20&quot;, hash);
+            hash = keccak256("\x19Ethereum Signed Message:\n\x20", hash);
         }
 
         return ecrecover(hash, v, r, s) == signer;
@@ -154,14 +154,14 @@ library SignatureValidator {
 library OrderLibrary {
 
     bytes32 constant public HASH_SCHEME = keccak256(
-        &quot;address Taker Token&quot;,
-        &quot;uint Taker Token Amount&quot;,
-        &quot;address Maker Token&quot;,
-        &quot;uint Maker Token Amount&quot;,
-        &quot;uint Expires&quot;,
-        &quot;uint Nonce&quot;,
-        &quot;address Maker&quot;,
-        &quot;address Exchange&quot;
+        "address Taker Token",
+        "uint Taker Token Amount",
+        "address Maker Token",
+        "uint Maker Token Amount",
+        "uint Expires",
+        "uint Nonce",
+        "address Maker",
+        "address Exchange"
     );
 
     struct Order {
@@ -194,8 +194,8 @@ library OrderLibrary {
     }
 
     /// @dev Creates order struct from value arrays.
-    /// @param addresses Array of trade&#39;s maker, makerToken and takerToken.
-    /// @param values Array of trade&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+    /// @param addresses Array of trade's maker, makerToken and takerToken.
+    /// @param values Array of trade's makerTokenAmount, takerTokenAmount, expires and nonce.
     /// @return Order struct
     function createOrder(address[3] addresses, uint[4] values) internal pure returns (Order memory) {
         return Order({
@@ -266,10 +266,10 @@ contract Exchange is Ownable, ExchangeInterface {
     uint public takerFee = 0;
     address public feeAccount;
 
-    mapping (address =&gt; mapping (bytes32 =&gt; bool)) private orders;
-    mapping (bytes32 =&gt; uint) private fills;
-    mapping (bytes32 =&gt; bool) private cancelled;
-    mapping (address =&gt; bool) private subscribed;
+    mapping (address => mapping (bytes32 => bool)) private orders;
+    mapping (bytes32 => uint) private fills;
+    mapping (bytes32 => bool) private cancelled;
+    mapping (address => bool) private subscribed;
 
     function Exchange(uint _takerFee, address _feeAccount, VaultInterface _vault) public {
         require(address(_vault) != 0x0);
@@ -305,8 +305,8 @@ contract Exchange is Ownable, ExchangeInterface {
     }
 
     /// @dev Takes an order.
-    /// @param addresses Array of trade&#39;s maker, makerToken and takerToken.
-    /// @param values Array of trade&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+    /// @param addresses Array of trade's maker, makerToken and takerToken.
+    /// @param values Array of trade's makerTokenAmount, takerTokenAmount, expires and nonce.
     /// @param signature Signed order along with signature mode.
     /// @param maxFillAmount Maximum amount of the order to be filled.
     function trade(address[3] addresses, uint[4] values, bytes signature, uint maxFillAmount) external {
@@ -314,16 +314,16 @@ contract Exchange is Ownable, ExchangeInterface {
     }
 
     /// @dev Cancels an order.
-    /// @param addresses Array of trade&#39;s maker, makerToken and takerToken.
-    /// @param values Array of trade&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+    /// @param addresses Array of trade's maker, makerToken and takerToken.
+    /// @param values Array of trade's makerTokenAmount, takerTokenAmount, expires and nonce.
     function cancel(address[3] addresses, uint[4] values) external {
         OrderLibrary.Order memory order = OrderLibrary.createOrder(addresses, values);
 
         require(msg.sender == order.maker);
-        require(order.makerTokenAmount &gt; 0 &amp;&amp; order.takerTokenAmount &gt; 0);
+        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0);
 
         bytes32 hash = order.hash();
-        require(fills[hash] &lt; order.takerTokenAmount);
+        require(fills[hash] < order.takerTokenAmount);
         require(!cancelled[hash]);
 
         cancelled[hash] = true;
@@ -331,8 +331,8 @@ contract Exchange is Ownable, ExchangeInterface {
     }
 
     /// @dev Creates an order which is then indexed in the orderbook.
-    /// @param addresses Array of trade&#39;s makerToken and takerToken.
-    /// @param values Array of trade&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+    /// @param addresses Array of trade's makerToken and takerToken.
+    /// @param values Array of trade's makerTokenAmount, takerTokenAmount, expires and nonce.
     function order(address[2] addresses, uint[4] values) external {
         OrderLibrary.Order memory order = OrderLibrary.createOrder(
             [msg.sender, addresses[0], addresses[1]],
@@ -340,10 +340,10 @@ contract Exchange is Ownable, ExchangeInterface {
         );
 
         require(vault.isApproved(order.maker, this));
-        require(vault.balanceOf(order.makerToken, order.maker) &gt;= order.makerTokenAmount);
+        require(vault.balanceOf(order.makerToken, order.maker) >= order.makerTokenAmount);
         require(order.makerToken != order.takerToken);
-        require(order.makerTokenAmount &gt; 0);
-        require(order.takerTokenAmount &gt; 0);
+        require(order.makerTokenAmount > 0);
+        require(order.takerTokenAmount > 0);
 
         bytes32 hash = order.hash();
 
@@ -362,8 +362,8 @@ contract Exchange is Ownable, ExchangeInterface {
     }
 
     /// @dev Checks if a order can be traded.
-    /// @param addresses Array of trade&#39;s maker, makerToken and takerToken.
-    /// @param values Array of trade&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+    /// @param addresses Array of trade's maker, makerToken and takerToken.
+    /// @param values Array of trade's makerTokenAmount, takerTokenAmount, expires and nonce.
     /// @param signature Signed order along with signature mode.
     /// @return Boolean if order can be traded
     function canTrade(address[3] addresses, uint[4] values, bytes signature)
@@ -386,8 +386,8 @@ contract Exchange is Ownable, ExchangeInterface {
     }
 
     /// @dev Checks how much of an order can be filled.
-    /// @param addresses Array of trade&#39;s maker, makerToken and takerToken.
-    /// @param values Array of trade&#39;s makerTokenAmount, takerTokenAmount, expires and nonce.
+    /// @param addresses Array of trade's maker, makerToken and takerToken.
+    /// @param values Array of trade's makerTokenAmount, takerTokenAmount, expires and nonce.
     /// @return Amount of the order which can be filled.
     function availableAmount(address[3] addresses, uint[4] values) external view returns (uint) {
         OrderLibrary.Order memory order = OrderLibrary.createOrder(addresses, values);
@@ -404,7 +404,7 @@ contract Exchange is Ownable, ExchangeInterface {
     /// @dev Sets the taker fee.
     /// @param _takerFee New taker fee.
     function setFees(uint _takerFee) public onlyOwner {
-        require(_takerFee &lt;= MAX_FEE);
+        require(_takerFee <= MAX_FEE);
         takerFee = _takerFee;
     }
 
@@ -441,13 +441,13 @@ contract Exchange is Ownable, ExchangeInterface {
 
         uint fillAmount = SafeMath.min256(maxFillAmount, availableAmount(order, hash));
 
-        require(roundingPercent(fillAmount, order.takerTokenAmount, order.makerTokenAmount) &lt;= MAX_ROUNDING_PERCENTAGE);
-        require(vault.balanceOf(order.takerToken, taker) &gt;= fillAmount);
+        require(roundingPercent(fillAmount, order.takerTokenAmount, order.makerTokenAmount) <= MAX_ROUNDING_PERCENTAGE);
+        require(vault.balanceOf(order.takerToken, taker) >= fillAmount);
 
         uint makeAmount = order.makerTokenAmount.mul(fillAmount).div(order.takerTokenAmount);
         uint tradeTakerFee = makeAmount.mul(takerFee).div(1 ether);
 
-        if (tradeTakerFee &gt; 0) {
+        if (tradeTakerFee > 0) {
             vault.transfer(order.makerToken, order.maker, feeAccount, tradeTakerFee);
         }
 
@@ -455,7 +455,7 @@ contract Exchange is Ownable, ExchangeInterface {
         vault.transfer(order.makerToken, order.maker, taker, makeAmount.sub(tradeTakerFee));
 
         fills[hash] = fills[hash].add(fillAmount);
-        assert(fills[hash] &lt;= order.takerTokenAmount);
+        assert(fills[hash] <= order.takerTokenAmount);
 
         if (subscribed[order.maker]) {
             order.maker.call.gas(MAX_HOOK_GAS)(HookSubscriber(order.maker).tradeExecuted.selector, order.takerToken, fillAmount);
@@ -485,7 +485,7 @@ contract Exchange is Ownable, ExchangeInterface {
         // if the order has never been traded against, we need to check the sig.
         if (fills[hash] == 0) {
             // ensures order was either created on chain, or signature is valid
-            if (!isOrdered(order.maker, hash) &amp;&amp; !SignatureValidator.isValidSignature(hash, order.maker, signature)) {
+            if (!isOrdered(order.maker, hash) && !SignatureValidator.isValidSignature(hash, order.maker, signature)) {
                 return false;
             }
         }
@@ -511,7 +511,7 @@ contract Exchange is Ownable, ExchangeInterface {
             return false;
         }
 
-        return order.expires &gt; now;
+        return order.expires > now;
     }
 
     /// @dev Returns the maximum available amount that can be taken of an order.

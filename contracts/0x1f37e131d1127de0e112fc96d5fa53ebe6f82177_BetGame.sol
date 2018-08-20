@@ -6,7 +6,7 @@ contract BetGame  {
     }
 
 	modifier onlyowner {
-		require(msg.sender == owner, &quot;Only owner is allowed&quot;);
+		require(msg.sender == owner, "Only owner is allowed");
 		_;
 	 }
 
@@ -53,15 +53,15 @@ contract BetGame  {
 	
 
 	function winnerIsA() public onlyowner {
-		if (totalA &gt; 0) {
+		if (totalA > 0) {
         	uint housefee = (totalB + totalD) /80;
 
 			uint award = (totalB + totalD) - housefee;
 
 			uint ratio = 1000000 * award/totalA;
 
-			for (uint p = 0; p &lt; A.length; p++) {
-				if (A[p].deposit &gt; 0 ) {
+			for (uint p = 0; p < A.length; p++) {
+				if (A[p].deposit > 0 ) {
 					if (A[p].player.send(A[p].deposit + A[p].deposit/1000000*ratio)) {
 						A[p].deposit = 0;
 					}
@@ -75,13 +75,13 @@ contract BetGame  {
     }
 
 	function winnerIsB() public onlyowner{
-		if (totalB &gt; 0) {
+		if (totalB > 0) {
 			uint housefee = (totalA + totalD) /80;
 			uint award = (totalA + totalD) - housefee;
 			uint ratio = 1000000 * award/totalB;
 
-			for (uint p = 0; p &lt; B.length; p++) {
-				if (B[p].deposit &gt; 0 ) {
+			for (uint p = 0; p < B.length; p++) {
+				if (B[p].deposit > 0 ) {
 					if (B[p].player.send(B[p].deposit + B[p].deposit/1000000*ratio)) {
 						B[p].deposit = 0;
 					}
@@ -95,13 +95,13 @@ contract BetGame  {
     }
 
 	function winnerIsDraw() public onlyowner{
-		if (totalD &gt; 0) {
+		if (totalD > 0) {
        		uint housefee = (totalB + totalA) /80;
 			uint award = (totalB + totalA) - housefee;
 			uint ratio = 1000000 * award/totalD;
 
-			for (uint p = 0; p &lt; D.length; p++) {
-				if (D[p].deposit &gt; 0 ) {
+			for (uint p = 0; p < D.length; p++) {
+				if (D[p].deposit > 0 ) {
 					if (D[p].player.send(D[p].deposit + D[p].deposit/1000000*ratio)) {
 						D[p].deposit = 0;
 					}
@@ -123,18 +123,18 @@ contract BetGame  {
 			return (0,0,0,0,0,0, false);
 		}
 		 
-		for (uint p = 0; p &lt; D.length; p++) {
+		for (uint p = 0; p < D.length; p++) {
 			if (D[p].player == addr) {
 				d+=D[p].deposit;
 			}
         }
 		
-		for (p = 0; p &lt; A.length; p++) {
+		for (p = 0; p < A.length; p++) {
 			if (A[p].player == addr) {
 				a+=A[p].deposit;
 			}
         }
-		for (p = 0; p &lt; B.length; p++) {
+		for (p = 0; p < B.length; p++) {
 			if (B[p].player == addr) {
 				b+=B[p].deposit;
 			}
@@ -146,15 +146,15 @@ contract BetGame  {
 
 	function betA() public payable {
 		require(
-            now &lt;= betEnd,
-            &quot;Betting already ended.&quot;
+            now <= betEnd,
+            "Betting already ended."
         );
 
-		require(open, &quot;Game closed&quot;);
+		require(open, "Game closed");
 
-		require(msg.value &gt;= 0.01 ether, &quot;Single bet must be at least 0.01 ether&quot;);
+		require(msg.value >= 0.01 ether, "Single bet must be at least 0.01 ether");
 		totalA+=msg.value;
-		for(uint p =0; p&lt;A.length; p++) {
+		for(uint p =0; p<A.length; p++) {
 			if (A[p].player == msg.sender)
 			{
 				A[p].deposit += msg.value;
@@ -166,14 +166,14 @@ contract BetGame  {
 
 	function betB() public payable {
 		require(
-            now &lt;= betEnd,
-            &quot;Betting already ended.&quot;
+            now <= betEnd,
+            "Betting already ended."
         );
 
-		require(open, &quot;Game closed&quot;);
-		require(msg.value &gt;= 0.01 ether, &quot;Single bet must be at least 0.01 ether&quot;);
+		require(open, "Game closed");
+		require(msg.value >= 0.01 ether, "Single bet must be at least 0.01 ether");
 		totalB+=msg.value;
-		for(uint p =0; p&lt;B.length; p++) {
+		for(uint p =0; p<B.length; p++) {
 			if (B[p].player == msg.sender)
 			{
 				B[p].deposit += msg.value;
@@ -186,13 +186,13 @@ contract BetGame  {
 	
 	function betD() public payable {
 		require(
-            now &lt;= betEnd,
-            &quot;Betting already ended.&quot;
+            now <= betEnd,
+            "Betting already ended."
         );
-		require(open, &quot;Game closed&quot;);
-		require(msg.value &gt;= 0.01 ether, &quot;Single bet must be at least 0.01 ether&quot;);
+		require(open, "Game closed");
+		require(msg.value >= 0.01 ether, "Single bet must be at least 0.01 ether");
 		totalD+=msg.value;
-		for(uint p =0; p&lt;D.length; p++) {
+		for(uint p =0; p<D.length; p++) {
 			if (D[p].player == msg.sender)
 			{
 				D[p].deposit += msg.value;

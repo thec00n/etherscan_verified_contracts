@@ -5,10 +5,10 @@ pragma solidity ^0.4.24;
 contract SafeMath {                 
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
-        require(c &gt;= a);
+        require(c >= a);
     }
     function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b &lt;= a);
+        require(b <= a);
         c = a - b;
     }
     function safeMul(uint a, uint b) public pure returns (uint c) {
@@ -16,7 +16,7 @@ contract SafeMath {
         require(a == 0 || c / a == b);
     }
     function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b &gt; 0);
+        require(b > 0);
         c = a / b;
     }
 }
@@ -45,15 +45,15 @@ contract CRYPTXFINANCIALToken is Interface, SafeMath {
     uint public totalSupply;
     address owner;
 
-    mapping(address =&gt; uint) public balanceOf; // this creates an array of all the balances
-    mapping (address =&gt; bool) public frozenAccount; // this creates an array of all frozen ethereum wallet address
+    mapping(address => uint) public balanceOf; // this creates an array of all the balances
+    mapping (address => bool) public frozenAccount; // this creates an array of all frozen ethereum wallet address
 
     event Burn(address indexed from, uint256 value); // This generates a public event on the ethereum blockchain for burn notification
     event FrozenFunds(address target, bool frozen);  // This generates a public event on the ethereum blockchain for freeze notification
 
     constructor() public {
-        symbol = &quot;CRYPTX&quot;;
-        name = &quot;CRYPTX FINANCIAL Token&quot;;
+        symbol = "CRYPTX";
+        name = "CRYPTX FINANCIAL Token";
         decimals = 18;
         owner = msg.sender; // Assigns the contract depoloyer as the contract owner
         totalSupply = 250000000000000000000000000; // Total number of tokens minted
@@ -76,11 +76,11 @@ contract CRYPTXFINANCIALToken is Interface, SafeMath {
     // Transfering the token to any ERC20 wallet address
     function transfer(address to, uint tokens) public returns (bool success) {
         require(to != 0x0); // Use burn function to do this 
-        require(tokens &gt; 0); // No 0 value transactions allowed
+        require(tokens > 0); // No 0 value transactions allowed
         require(!frozenAccount[msg.sender]); // Cannot send from a frozen wallet address
         require(!frozenAccount[to]); // Cannot send to a frozen wallet address
-        require(balanceOf[msg.sender] &gt;= tokens); // Check if enough balance is there from the sender
-        require(safeAdd(balanceOf[to], tokens) &gt; balanceOf[to]); // Cannot send 0 tokens
+        require(balanceOf[msg.sender] >= tokens); // Check if enough balance is there from the sender
+        require(safeAdd(balanceOf[to], tokens) > balanceOf[to]); // Cannot send 0 tokens
         uint256 previousBalances = safeAdd(balanceOf[msg.sender], balanceOf[to]); 
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], tokens); // Subract tokens from the sender wallet address
         balanceOf[to] = safeAdd(balanceOf[to], tokens); // Add the tokens to receiver wallet address
@@ -98,7 +98,7 @@ contract CRYPTXFINANCIALToken is Interface, SafeMath {
 
     // Makes the token unusable
      function burn(uint256 amount) public returns (bool success) {
-        require(balanceOf[msg.sender] &gt;= amount); // Checks if the particular ethereum wallet address has enough tokens to Burn
+        require(balanceOf[msg.sender] >= amount); // Checks if the particular ethereum wallet address has enough tokens to Burn
         balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], amount); // Subract the tokens to be burnt from the user ethereum wallet address
         totalSupply = safeSub(totalSupply, amount); // Subract the tokens burnt from the total Supply
         emit Burn(msg.sender, amount); 

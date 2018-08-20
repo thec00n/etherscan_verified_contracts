@@ -12,13 +12,13 @@ contract ExtendData {
         _;
     }
 
-    mapping(bytes32 =&gt; address) usernameToAddress;
-    mapping(bytes32 =&gt; address) queryToAddress;
-    mapping(address =&gt; mapping(bytes32 =&gt; uint)) tips;
-    mapping(address =&gt; mapping(bytes32 =&gt; uint)) lastTip;
-    mapping(bytes32 =&gt; uint) balances;
-    mapping(address =&gt; User) users;   
-    mapping(address =&gt; bool) owners;
+    mapping(bytes32 => address) usernameToAddress;
+    mapping(bytes32 => address) queryToAddress;
+    mapping(address => mapping(bytes32 => uint)) tips;
+    mapping(address => mapping(bytes32 => uint)) lastTip;
+    mapping(bytes32 => uint) balances;
+    mapping(address => User) users;   
+    mapping(address => bool) owners;
     
     function ExtendData() public {
         owners[msg.sender] = true;

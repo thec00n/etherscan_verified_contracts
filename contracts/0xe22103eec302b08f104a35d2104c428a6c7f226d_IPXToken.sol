@@ -2,7 +2,7 @@ pragma solidity 0.4.20;
 
 contract IPXTokenBase {
     uint256                                            _supply;
-    mapping (address =&gt; uint256)                       _balances;
+    mapping (address => uint256)                       _balances;
     
     event Transfer( address indexed from, address indexed to, uint256 value);
 
@@ -16,7 +16,7 @@ contract IPXTokenBase {
     }
     
     function transfer(address dst, uint256 wad) public returns (bool) {
-        require(_balances[msg.sender] &gt;= wad);
+        require(_balances[msg.sender] >= wad);
         
         _balances[msg.sender] = sub(_balances[msg.sender], wad);
         _balances[dst] = add(_balances[dst], wad);
@@ -28,20 +28,20 @@ contract IPXTokenBase {
     
     function add(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x + y;
-        require(z &gt;= x &amp;&amp; z&gt;=y);
+        require(z >= x && z>=y);
         return z;
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256) {
         uint256 z = x - y;
-        require(x &gt;= y &amp;&amp; z &lt;= x);
+        require(x >= y && z <= x);
         return z;
     }
 }
 
 contract IPXToken is IPXTokenBase {
-    string  public  symbol = &quot;IPX&quot;;
-    string  public name = &quot;InterPlanetary X&quot;;
+    string  public  symbol = "IPX";
+    string  public name = "InterPlanetary X";
     uint256  public  decimals = 18; 
     uint256 public freezedValue = 4*(10**8)*(10**18);
     uint256 public eachUnfreezeValue = 4*(10**7)*(10**18);
@@ -80,12 +80,12 @@ contract IPXToken is IPXTokenBase {
 
     function checkFreezeValue(uint256 wad) internal view returns(bool) {
         if ( msg.sender == freezeAddress ) {
-            for ( uint i = 0; i&lt;unfreezeTimeMap.length; i++ ) {
+            for ( uint i = 0; i<unfreezeTimeMap.length; i++ ) {
                 uint idx = unfreezeTimeMap[i].idx;
                 uint256 unfreezeTime = unfreezeTimeMap[i].unfreezeTime;
-                if ( now&lt;unfreezeTime ) {
+                if ( now<unfreezeTime ) {
                     uint256 shouldFreezedValue = freezedValue - (idx-1)*eachUnfreezeValue;
-                    if (sub(_balances[msg.sender], wad) &lt; shouldFreezedValue) {
+                    if (sub(_balances[msg.sender], wad) < shouldFreezedValue) {
                         return false;
                     }
                 }

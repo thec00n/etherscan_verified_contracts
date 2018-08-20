@@ -2,7 +2,7 @@ pragma solidity ^0.4.21;
 
 contract primoContratto {
     address private proprietario;
-    mapping (uint256 =&gt; string) private frasi;
+    mapping (uint256 => string) private frasi;
     uint256 private frasiTotali = 0;
     
     function primoContratto() public {

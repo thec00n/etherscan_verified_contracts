@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
 
@@ -114,14 +114,14 @@ contract BCFAuction is Pausable {
     ERC721 public dataStore;
     uint256 public auctioneerCut;
 
-    mapping (uint256 =&gt; CardAuction) playerCardIdToAuction;
+    mapping (uint256 => CardAuction) playerCardIdToAuction;
 
     event AuctionCreated(uint256 cardId, uint256 startPrice, uint256 endPrice, uint256 duration);
     event AuctionSuccessful(uint256 cardId, uint256 finalPrice, address winner);
     event AuctionCancelled(uint256 cardId);
 
     function BCFAuction(address dataStoreAddress, uint cutValue) public {
-        require(cutValue &lt;= 10000); // 100% == 10,000
+        require(cutValue <= 10000); // 100% == 10,000
         auctioneerCut = cutValue;
 
         ERC721 candidateDataStoreContract = ERC721(dataStoreAddress);
@@ -209,7 +209,7 @@ contract BCFAuction is Pausable {
     }
 
     function _addAuction(uint256 cardId, CardAuction auction) internal {
-        require(auction.duration &gt;= 1 minutes &amp;&amp; auction.duration &lt;= 14 days);
+        require(auction.duration >= 1 minutes && auction.duration <= 14 days);
         playerCardIdToAuction[cardId] = auction;
         AuctionCreated(cardId, auction.startPrice, auction.endPrice, auction.duration);
     }
@@ -225,7 +225,7 @@ contract BCFAuction is Pausable {
     }
 
     function isOnAuction(CardAuction storage auction) internal view returns (bool) {
-        return (auction.startedAt &gt; 0);
+        return (auction.startedAt > 0);
     }
 
     function _bid(uint256 cardId, uint256 bidAmount) internal returns (uint256) {
@@ -233,12 +233,12 @@ contract BCFAuction is Pausable {
         require(isOnAuction(auction));
 
         uint256 price = currentPrice(auction);
-        require(bidAmount &gt;= price);
+        require(bidAmount >= price);
 
         address seller = auction.seller;
         _removeAuction(cardId);
 
-        if (price &gt; 0) {
+        if (price > 0) {
             uint256 handlerCut = calculateAuctioneerCut(price);
             uint256 sellerProceeds = price - handlerCut;
             seller.transfer(sellerProceeds);
@@ -254,7 +254,7 @@ contract BCFAuction is Pausable {
 
     function currentPrice(CardAuction storage auction) internal view returns (uint256) {
         uint256 secondsPassed = 0;
-        if (now &gt; auction.startedAt) {
+        if (now > auction.startedAt) {
             secondsPassed = now - auction.startedAt;
         }
 
@@ -266,7 +266,7 @@ contract BCFAuction is Pausable {
         pure
         returns (uint256)
     {
-        if (secondsElapsed &gt;= duration) {
+        if (secondsElapsed >= duration) {
             return endPrice;
         } 
 
@@ -278,7 +278,7 @@ contract BCFAuction is Pausable {
     }
 
     function calculateAuctioneerCut(uint256 sellPrice) internal view returns (uint256) {
-        // 10,000 = 100%, ownerCut required&#39;d &lt;= 10,000 in the constructor so no requirement to validate here
+        // 10,000 = 100%, ownerCut required'd <= 10,000 in the constructor so no requirement to validate here
         uint finalCut = sellPrice * auctioneerCut / 10000;
         return finalCut;
     }    

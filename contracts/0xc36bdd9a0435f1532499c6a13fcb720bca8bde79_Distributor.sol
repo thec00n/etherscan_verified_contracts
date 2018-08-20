@@ -61,7 +61,7 @@ contract Distributor is Owned {
 	}
 	
 	function distribute(address[] addrs) onlyOwner {
-		for (uint256 i = 0; i &lt;  addrs.length; i++) {
+		for (uint256 i = 0; i <  addrs.length; i++) {
 			w.withdrawTo(addrs[i]);
 		}
 		BatchComplete(nonce);

@@ -45,9 +45,9 @@ library SafeMath {
   * @dev Integer division of two numbers, truncating the quotient.
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
@@ -55,7 +55,7 @@ library SafeMath {
   * @dev Substracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
@@ -64,7 +64,7 @@ library SafeMath {
   */
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -132,7 +132,7 @@ contract Owned {
       newCooAddress = address(0);
   }
 
-  mapping (address =&gt; bool) public youCollectContracts;
+  mapping (address => bool) public youCollectContracts;
   function addYouCollectContract(address contractAddress, bool active) public onlyCOO {
     youCollectContracts[contractAddress] = active;
   }
@@ -151,7 +151,7 @@ contract Owned {
     youCollectContracts[yccContract] = true;
     youCollectContracts[yctContract] = true;
     youCollectContracts[ycmContract] = true;
-    for (uint16 index = 0; index &lt; otherContracts.length; index++) {
+    for (uint16 index = 0; index < otherContracts.length; index++) {
       youCollectContracts[otherContracts[index]] = true;
     }
   }
@@ -191,7 +191,7 @@ contract YouCollectBase is Owned {
     _payout(_to, this.balance);
   }
   function payout(address _to, uint amount) public onlyCLevel {
-    if (amount&gt;this.balance)
+    if (amount>this.balance)
       amount = this.balance;
     _payout(_to, amount);
   }
@@ -213,10 +213,10 @@ contract YouCollectBase is Owned {
 
 
 contract Donate is YouCollectBase {
-  mapping (uint256 =&gt; address) public tokenIndexToOwner;
-  mapping (uint256 =&gt; uint256) public tokenIndexToPrice;
-  mapping (uint256 =&gt; address) public donateAddress;
-  mapping (uint256 =&gt; address) public tokenWinner;
+  mapping (uint256 => address) public tokenIndexToOwner;
+  mapping (uint256 => uint256) public tokenIndexToPrice;
+  mapping (uint256 => address) public donateAddress;
+  mapping (uint256 => address) public tokenWinner;
   uint256 donateTokenCount;
   uint256 highestPrice = 0.001 ether;
   address public nextRoundWinner;
@@ -244,7 +244,7 @@ contract Donate is YouCollectBase {
   }
 
   function getBlocksUntilNextRound() public view returns(uint) {
-    if (lastBuyBlock+roundDelay&lt;block.number)
+    if (lastBuyBlock+roundDelay<block.number)
       return 0;
     return lastBuyBlock + roundDelay - block.number + 1;
   }
@@ -255,12 +255,12 @@ contract Donate is YouCollectBase {
   
   function startNextRound() public {
     require(started);
-    require(lastBuyBlock+roundDelay&lt;block.number);
+    require(lastBuyBlock+roundDelay<block.number);
     tokenIndexToPrice[0] = highestPrice;
     tokenIndexToOwner[0] = nextRoundWinner;
     tokenWinner[0] = tokenIndexToOwner[0];
     
-    for (uint index = 1; index &lt;= donateTokenCount; index++) {
+    for (uint index = 1; index <= donateTokenCount; index++) {
       tokenIndexToPrice[index] = 0.001 ether;
       tokenWinner[index] = tokenIndexToOwner[index];
     }
@@ -269,7 +269,7 @@ contract Donate is YouCollectBase {
   }
 
   function getNextPrice(uint price) public pure returns (uint) {
-    if (price &lt; 1 ether)
+    if (price < 1 ether)
       return price.mul(200).div(87);
     return price.mul(120).div(87);
   }
@@ -278,8 +278,8 @@ contract Donate is YouCollectBase {
     address oldOwner = tokenIndexToOwner[_tokenId];
     uint256 sellingPrice = tokenIndexToPrice[_tokenId];
     require(oldOwner!=msg.sender);
-    require(msg.value &gt;= sellingPrice);
-    require(sellingPrice &gt; 0);
+    require(msg.value >= sellingPrice);
+    require(sellingPrice > 0);
 
     uint256 purchaseExcess = msg.value.sub(sellingPrice);
     uint256 payment = sellingPrice.mul(87).div(100);
@@ -291,12 +291,12 @@ contract Donate is YouCollectBase {
     // Transfers the Token
     tokenIndexToOwner[_tokenId] = msg.sender;
     lastBuyBlock = block.number;
-    if (_tokenId &gt; 0) {
+    if (_tokenId > 0) {
       // Taxes for last round winner or new owner of the All-Donate-Token
       if (tokenIndexToOwner[0]!=address(0))
         tokenIndexToOwner[0].transfer(feeThree);
       // Check for new winner of this round
-      if (nextPrice &gt; highestPrice) {
+      if (nextPrice > highestPrice) {
         highestPrice = nextPrice;
         nextRoundWinner = msg.sender;
       }
@@ -316,7 +316,7 @@ contract Donate is YouCollectBase {
     TokenSold(_tokenId, sellingPrice, oldOwner, msg.sender);
 
     // refund when paid too much
-    if (purchaseExcess&gt;0)
+    if (purchaseExcess>0)
       msg.sender.transfer(purchaseExcess);
   }
 

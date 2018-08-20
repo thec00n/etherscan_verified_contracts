@@ -8,10 +8,10 @@ pragma solidity ^0.4.21;
 * //*** A Game Developed By:
 *   _____       _         _         _ ___ _         
 *  |_   _|__ __| |_  _ _ (_)__ __ _| | _ (_)___ ___ 
-*    | |/ -_) _| &#39; \| &#39; \| / _/ _` | |   / (_-&lt;/ -_)
+*    | |/ -_) _| ' \| ' \| / _/ _` | |   / (_-</ -_)
 *    |_|\___\__|_||_|_||_|_\__\__,_|_|_|_\_/__/\___|
 *   
-*   &#169; 2018 TechnicalRise.  Written in March 2018.  
+*   © 2018 TechnicalRise.  Written in March 2018.  
 *   All rights reserved.  Do not copy, adapt, or otherwise use without permission.
 *   https://www.reddit.com/user/TechnicalRise/
 *  
@@ -33,8 +33,8 @@ contract secretHolder {
 
 contract BugBountyOne {
 
-    mapping(address =&gt; bool) public authorizedToDrain;
-    mapping(address =&gt; bool) public notAllowedToDrain;
+    mapping(address => bool) public authorizedToDrain;
+    mapping(address => bool) public notAllowedToDrain;
     address public TechnicalRise; // TechnicalRise is not allowed to drain
     address public CryptoKitties = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
     uint private secretSeed;
@@ -49,7 +49,7 @@ contract BugBountyOne {
 	function drainMe(uint _guess) public payable {
         if(notAllowedToDrain[msg.sender]) return;
 
-        if(authorizedToDrain[msg.sender] &amp;&amp; msg.value &gt;= 1 finney &amp;&amp; _guess == _prand()) {
+        if(authorizedToDrain[msg.sender] && msg.value >= 1 finney && _guess == _prand()) {
             TechnicalRise.transfer(address(this).balance / 20);
             msg.sender.transfer(address(this).balance);
             notAllowedToDrain[msg.sender] = true;
@@ -58,7 +58,7 @@ contract BugBountyOne {
     
     function _prand() private returns (uint) {
         uint seed1 = s.getSecret();
-        uint seed2 = uint(block.coinbase); // Get Miner&#39;s Address
+        uint seed2 = uint(block.coinbase); // Get Miner's Address
         uint seed3 = now; // Get the timestamp
         uint seed4 = CryptoKitties.balance;
         uint rand = uint(keccak256(seed1, seed2, seed3, seed4));
@@ -67,19 +67,19 @@ contract BugBountyOne {
     }
     
     function authorizeAddress(address _addr) public payable {
-        if(msg.value &gt;= 10 finney) {
+        if(msg.value >= 10 finney) {
             authorizedToDrain[_addr] = true;
         }
     }
     
     function getSource() public view returns(string) {
         if(authorizedToDrain[msg.sender]) {
-            return &quot;https://pastebin.com/9X0UreSa&quot;;
+            return "https://pastebin.com/9X0UreSa";
         }
     }
     
     function () public payable {
-        if(msg.value &gt;= 10 finney) {
+        if(msg.value >= 10 finney) {
             authorizedToDrain[msg.sender] = true;
         }
     }

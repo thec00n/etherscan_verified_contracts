@@ -26,8 +26,8 @@ contract UTEMIS is ERC20{
 
         uint public constant START_ICO          = 1518714000; // 15 Feb 2018 17:00:00 GMT | 15 Feb 2018 18:00:00 GMT+1
 
-        string public constant TOKEN_NAME       = &quot;UTEMIS&quot;;
-        string public constant TOKEN_SYMBOL     = &quot;UTS&quot;;
+        string public constant TOKEN_NAME       = "UTEMIS";
+        string public constant TOKEN_SYMBOL     = "UTS";
 
     /*------------------- Finish public constants -------------------*/
 
@@ -50,9 +50,9 @@ contract UTEMIS is ERC20{
         uint public tokensSold;
         uint256 public totalSupply = TOTAL_SUPPLY;
         bool public icoStarted;            
-        mapping(address =&gt; uint256) public balances;    
-        mapping(address =&gt; Investors) public investorsList;
-        mapping(address =&gt; mapping (address =&gt; uint256)) public allowed;
+        mapping(address => uint256) public balances;    
+        mapping(address => Investors) public investorsList;
+        mapping(address => mapping (address => uint256)) public allowed;
         address[] public investorsAddress;    
         string public name     = TOKEN_NAME;
         uint8 public decimals  = TOKEN_DECIMAL;
@@ -71,8 +71,8 @@ contract UTEMIS is ERC20{
     event FundTransfer(address backer , uint amount , address investor);
 
     //Safe math
-    function safeSub(uint a , uint b) internal pure returns (uint){assert(b &lt;= a);return a - b;}  
-    function safeAdd(uint a , uint b) internal pure returns (uint){uint c = a + b;assert(c&gt;=a &amp;&amp; c&gt;=b);return c;}
+    function safeSub(uint a , uint b) internal pure returns (uint){assert(b <= a);return a - b;}  
+    function safeAdd(uint a , uint b) internal pure returns (uint){uint c = a + b;assert(c>=a && c>=b);return c;}
     
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -81,7 +81,7 @@ contract UTEMIS is ERC20{
     
     modifier icoIsStarted(){
         require(icoStarted == true);        
-        require(now &gt;= START_ICO);      
+        require(now >= START_ICO);      
         _;
     }
 
@@ -91,7 +91,7 @@ contract UTEMIS is ERC20{
     }
 
     modifier minValue(){
-        require(msg.value &gt;= MIN_ACCEPTED_VALUE);
+        require(msg.value >= MIN_ACCEPTED_VALUE);
         _;
     }
 
@@ -126,8 +126,8 @@ contract UTEMIS is ERC20{
      */
     function _transfer(address _from , address _to , uint _value) internal{        
         require(_to != 0x0);                                                          //Prevent send tokens to 0x0 address        
-        require(balances[_from] &gt;= _value);                                           //Check if the sender have enough tokens        
-        require(balances[_to] + _value &gt; balances[_to]);                              //Check for overflows        
+        require(balances[_from] >= _value);                                           //Check if the sender have enough tokens        
+        require(balances[_to] + _value > balances[_to]);                              //Check for overflows        
         balances[_from]         = safeSub(balances[_from] , _value);                  //Subtract from the source ( sender )        
         balances[_to]           = safeAdd(balances[_to]   , _value);                  //Add tokens to destination        
         uint previousBalance    = balances[_from] + balances[_to];                    //To make assert        
@@ -149,14 +149,14 @@ contract UTEMIS is ERC20{
 
 
     /**
-     * Transfer token from address to another address that&#39;s allowed to. 
+     * Transfer token from address to another address that's allowed to. 
      * ERC20
      * @param _from          Source address
      * @param _to            Destination address
      * @param _value         Amount of tokens to send
      */   
     function transferFrom(address _from , address _to , uint256 _value) public returns (bool success){
-        if(balances[_from] &gt;= _value &amp;&amp; allowed[_from][msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) {
+        if(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             _transfer(_from , _to , _value);
             allowed[_from][msg.sender] = safeSub(allowed[_from][msg.sender] , _value);
             return true;
@@ -180,7 +180,7 @@ contract UTEMIS is ERC20{
     /**
      * Returns the amount of tokens allowed by owner to spender ERC20
      * ERC20
-     * @param _owner         Source address that allow&#39;s spend tokens
+     * @param _owner         Source address that allow's spend tokens
      * @param _spender       Address that can transfer tokens form allowed     
      */   
     function allowance(address _owner , address _spender) public view returns(uint256 allowance_){
@@ -198,7 +198,7 @@ contract UTEMIS is ERC20{
         address[] memory addr = new address[](length);
         uint[] memory amount  = new uint[](length);
         uint[] memory when    = new uint[](length);
-        for(uint i = 0; i &lt; length; i++){
+        for(uint i = 0; i < length; i++){
             address key = investorsAddress[i];
             addr[i]     = key;
             amount[i]   = investorsList[key].amount;
@@ -218,12 +218,12 @@ contract UTEMIS is ERC20{
         uint8 _bonus  = 0;                                                          //Assign bonus to 
         uint8 _bonusPerInvestion = 0;
         uint  starter = now - START_ICO;                                            //To control end time of bonus
-        for(uint i = 0; i &lt; bonusTime.length; i++){                                 //For loop
-            if(starter &lt;= bonusTime[i]){                                            //If the starter are greater than bonusTime, the bonus will be 0                
-                if(_ethers &gt; 10 ether &amp;&amp; _ethers &lt;= 50 ether){
+        for(uint i = 0; i < bonusTime.length; i++){                                 //For loop
+            if(starter <= bonusTime[i]){                                            //If the starter are greater than bonusTime, the bonus will be 0                
+                if(_ethers > 10 ether && _ethers <= 50 ether){
                     _bonusPerInvestion = bonusPerInvestion_10[i];
                 }
-                if(_ethers &gt; 50 ether){
+                if(_ethers > 50 ether){
                     _bonusPerInvestion = bonusPerInvestion_50[i];
                 }
                 _bonus = bonusBenefit[i];                                           //Asign amount of bonus to bonus_ variable                                
@@ -262,7 +262,7 @@ contract UTEMIS is ERC20{
             investorsList[msg.sender] = Investors(msg.value , now);                 //Store investors info        
         }
         
-        if(amount_actually_invested &gt; 0){                                           //If amount invested are greater than 0
+        if(amount_actually_invested > 0){                                           //If amount invested are greater than 0
             investorsList[msg.sender].amount += msg.value;                          //Increase the amount invested
             investorsList[msg.sender].when    = now;                                //Change the last time invested
         }
@@ -270,7 +270,7 @@ contract UTEMIS is ERC20{
         
         uint tokensToSend = getTokensToSend(msg.value);                             //Calc the tokens to send depending on ethers received
         tokensSold += tokensToSend;        
-        require(balances[owner] &gt;= tokensToSend);
+        require(balances[owner] >= tokensToSend);
         
         _transfer(owner , msg.sender , tokensToSend);                               //Transfer tokens to investor                                
         ethersCollecteds   += msg.value;

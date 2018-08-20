@@ -1,43 +1,43 @@
 pragma solidity ^0.4.20; // 23 Febr 2018
 
-/*    Copyright &#169; 2018  -  All Rights Reserved
+/*    Copyright © 2018  -  All Rights Reserved
  Use the first fully autonomous, profitable for depositors, based on smart contract, 
 totally transparent nonprofit Elections Market Savings Bank, feel the future!
  Elections Market Savings Bank offers open-source solution for avoiding regulated banking and banking collapses. 
 
  Elections Market Bank strictly does not accept any currencies produced with the legal sanction of states or governments and will  never do.
-Ⓐ Elections Market Savings Bank does not require  nor citizenship status nor customer&#39;s documents.
+Ⓐ Elections Market Savings Bank does not require  nor citizenship status nor customer's documents.
 
  Elections Market Savings Bank offers an interest rate up to 2% per day for deposits (basically 1% per day for deposits 1st year since opening, 
 0.25% daily since 2nd year and 0.08% daily since 3rd year  until the end of the world).
 
- Elections Market Savings Bank automatically generates returns for older and new users by increase Asset&#39;s total supply 
+ Elections Market Savings Bank automatically generates returns for older and new users by increase Asset's total supply 
 untill it reaches in circulating the max of supply level equal to 1 576 800 000. 
 Even after this will happen everybody can decrease total supply by burning his own balances or by spending in doubled deposits, 
-lose at a dice game or Binary Trading. And generation of bank&#39;s returns will continue.
+lose at a dice game or Binary Trading. And generation of bank's returns will continue.
 
- There is no way for developers or anybody else withdraw ETH from the bank&#39;s smartcontract (the bank&#39;s capital) in a different way, 
+ There is no way for developers or anybody else withdraw ETH from the bank's smartcontract (the bank's capital) in a different way, 
 except sell the assets back to the bank!  Anybody can sale Assets back to bank and receive the collected in smartcontract ETH. 
-Max to sell by 1 function&#39;s call is 100 000 assets (8 ETH).
+Max to sell by 1 function's call is 100 000 assets (8 ETH).
 
  Business activities, profit of financial trading and received by bank fees do not give any profit for investors and developers, 
 but decrease the total amount of assets in circulation.
 
  There is no law stronger then the code. No one government ever can regulate Elections Market Savings Bank. 
  Released Election Transparency. Crypto-anarchy. Digital money. 
-Elections Market Savings Bank offers transparent counting  depersonalized votes technology for  people&#39;s choice voting.
+Elections Market Savings Bank offers transparent counting  depersonalized votes technology for  people's choice voting.
 
  Your Vote can change everything! 
 
  Save your money in your account and it will the next 584 942 415 337 years generate returns for you with the predictable  high interest rate!
-Through the function &lt;&lt;Deposit_double_sum_paid_from_the_balance&gt;&gt; Elections Market Savings Bank offers an interest rate 2 % per day 
+Through the function <<Deposit_double_sum_paid_from_the_balance>> Elections Market Savings Bank offers an interest rate 2 % per day 
 (!) for deposits (1st year since opening), 0.5% daily since 2nd year and 0.16% daily since 3rd year  until the end of the world.
 
 */
 
 contract InCodeWeTrust {
   modifier onlyPayloadSize(uint256 size) {
-    if(msg.data.length &lt; size + 4) {
+    if(msg.data.length < size + 4) {
        throw;
      }
      _;
@@ -103,7 +103,7 @@ contract InCodeWeTrust {
  }
 /*
     For early investors!
-    If you send Ethereum directly to this smartcontract&#39;s address,
+    If you send Ethereum directly to this smartcontract's address,
  you will receive 350 Assets (Votes) per 1 ETH. And extra bonus if gas price ≥ 50 gwei
    
 */
@@ -113,8 +113,8 @@ contract investor is InCodeWeTrust {
     uint128 amount;
     uint64 time;
   } // https://ElectionsMarketSavingsBank.github.io/
-  mapping(address =&gt; uint256) balances;
-  mapping(address =&gt; making[]) deposit; // makingDeposit
+  mapping(address => uint256) balances;
+  mapping(address => making[]) deposit; // makingDeposit
   uint256 internal bank_opening = 1519805288; //Wednesday, 28-Feb-18 08:08:08 UTC = UNIX 1519805288
   uint256 internal stakeMinAge = 1 days;
   uint256 internal stakeMaxAge = 1 years;
@@ -136,12 +136,12 @@ library SafeMath {
     return c;
   }
   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
   function add(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -154,17 +154,17 @@ library SafeMath {
 
                                                            For the compounding calculations below 99 Aseets Fee was not counted:
      1% daily = 1.01 daily, 1.01^365 ≈  37.8, effective annual interest rate = 3680%. 
-     ⟬buyPrice/Buy_Wall_level_in_wei = 35,7125⟭ &lt; 37.8 =&gt; profit with effective annual interest rate ≈ 5,8% per 1st year
-     (or profit is 74,567 times if function &#39;Deposit_double_sum_paid_from_the_balance&#39; used =&gt; profit 208,8% per 1st year).
+     ⟬buyPrice/Buy_Wall_level_in_wei = 35,7125⟭ < 37.8 => profit with effective annual interest rate ≈ 5,8% per 1st year
+     (or profit is 74,567 times if function 'Deposit_double_sum_paid_from_the_balance' used => profit 208,8% per 1st year).
      
-     If function &#39;Deposit_double_sum_paid_from_the_balance&#39; is used =&gt;  2*1.01^365-1 ≈  74,567, effective annual interest rate = 7357%.
+     If function 'Deposit_double_sum_paid_from_the_balance' is used =>  2*1.01^365-1 ≈  74,567, effective annual interest rate = 7357%.
      
      1% daily = 1.01 daily, 1.01^365 ≈  37.8, effective annual interest rate = 3680%. 
      Since 2nd year 0.25% daily = 1.0025 daily, 1.0025^365 ≈  2,49, effective annual interest rate = 139%.
      Since 3rd year 0.08% daily = 1.0008 daily, 1.0008^365 ≈  1,3389, effective annual interest rate = 33.89%.
      
-  The maximum sum can be invested  by the function call &lt;&lt;Deposit_double_sum_paid_from_the_balance&gt;&gt; is all the available balance of the Assets after deduction 99 inviolable balance. 
-  You may also compound interest or withdraw the interest income at any time by calling the function &lt;&lt;Collect_accrued_interest_and_transfer&gt;&gt;. 
+  The maximum sum can be invested  by the function call <<Deposit_double_sum_paid_from_the_balance>> is all the available balance of the Assets after deduction 99 inviolable balance. 
+  You may also compound interest or withdraw the interest income at any time by calling the function <<Collect_accrued_interest_and_transfer>>. 
   */
 
 
@@ -177,38 +177,38 @@ contract Satoshi is investor {
  
     /* Batch assets transfer. Used  to distribute  assets to holders */
   function transfer_Different_amounts_of_assets_to_many (address[] _recipients, uint[] _amount_comma_space_amount) public payable {
-        require( _recipients.length &gt; 0 &amp;&amp; _recipients.length == _amount_comma_space_amount.length);
+        require( _recipients.length > 0 && _recipients.length == _amount_comma_space_amount.length);
 
         uint256 total = 0;
-        for(uint i = 0; i &lt; _amount_comma_space_amount.length; i++){
+        for(uint i = 0; i < _amount_comma_space_amount.length; i++){
             total = total.add(_amount_comma_space_amount[i]);
         }
-        require(total &lt;= balances[msg.sender]);
+        require(total <= balances[msg.sender]);
 
         uint64 _now = uint64(now);
-        for(uint j = 0; j &lt; _recipients.length; j++){
+        for(uint j = 0; j < _recipients.length; j++){
             balances[_recipients[j]] = balances[_recipients[j]].add(_amount_comma_space_amount[j]);
             deposit[_recipients[j]].push(making(uint128(_amount_comma_space_amount[j]),_now));
             Transfer(msg.sender, _recipients[j], _amount_comma_space_amount[j]);
         }
         balances[msg.sender] = balances[msg.sender].sub(total);
-        if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
-        if(balances[msg.sender] &gt; 0) deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
+        if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
+        if(balances[msg.sender] > 0) deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
   } // https://ElectionsMarketSavingsBank.github.io/
  
   function transfer_Same_Amounts_of_assets_to_many_addresses (address[] address_to_comma_space_address_to_, uint256 _value) public payable { 
-        require(_value &lt;= balances[msg.sender]);
+        require(_value <= balances[msg.sender]);
         uint64 _now = uint64(now);
-        for (uint i = 0; i &lt; address_to_comma_space_address_to_.length; i++){
-         if(balances[msg.sender] &gt;= _value)  { 
+        for (uint i = 0; i < address_to_comma_space_address_to_.length; i++){
+         if(balances[msg.sender] >= _value)  { 
          balances[msg.sender] = balances[msg.sender].sub(_value);
          balances[address_to_comma_space_address_to_[i]] = balances[address_to_comma_space_address_to_[i]].add(_value);
          deposit[address_to_comma_space_address_to_[i]].push(making(uint128(_value),_now));
          Transfer(msg.sender, address_to_comma_space_address_to_[i], _value);
          }
         }
-        if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
-        if(balances[msg.sender] &gt; 0) deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
+        if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
+        if(balances[msg.sender] > 0) deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
   }
 }
  
@@ -257,13 +257,13 @@ contract TheSmartAsset is Transparent {
   uint public constant max_TotalSupply_limit = 50 years; // 1 576 800 000
   address internal sponsor = 0x1522900B6daFac587d499a862861C0869Be6E428;
   modifier canMine() {
-        require(totalSupply &lt;= max_TotalSupply_limit);
+        require(totalSupply <= max_TotalSupply_limit);
         _;
     }
   function Compound_now_Accrued_interest() canMine public returns (bool);
   function Mine() canMine public returns (bool);
   function totally_decrease_the_supply(uint256 amount_to_burn_from_supply) public payable {
-        require(balances[msg.sender] &gt;= amount_to_burn_from_supply);
+        require(balances[msg.sender] >= amount_to_burn_from_supply);
         balances[msg.sender] = balances[msg.sender].sub(amount_to_burn_from_supply);
         totalSupply = totalSupply.sub(amount_to_burn_from_supply);
   }
@@ -296,7 +296,7 @@ contract Voter is TheSmartAsset {
  string public symbol;
   function Voter () {
       balances[this] = 112 ** 3;  // this is the total initial assets sale limit
-      balances[0x0] = 130 ** 3;  // this limit can be used only for 1 Vote&#39;s-per-call candidate&#39;s voting
+      balances[0x0] = 130 ** 3;  // this limit can be used only for 1 Vote's-per-call candidate's voting
       balances[owner] = 95037;  // total amount for all bounty programs
       // (initialSupply / totalSupply = 146.47%) http://gawker.com/5864945/putin-clings-to-victory-as-russias-voter-turnout-exceeds-146
       initialSupply = balances[this] + balances[0x0] + balances[owner];
@@ -320,10 +320,10 @@ contract Voter is TheSmartAsset {
 
 contract InvestAssets is  Voter {
  function show_Accrued_Interest (address _address) constant public returns (uint256 interest_earned_but_not_collected)  { // https://ElectionsMarketSavingsBank.github.io/
-        require((now &gt;= bank_opening) &amp;&amp; (bank_opening &gt; 0));
+        require((now >= bank_opening) && (bank_opening > 0));
         uint _now = now;
         uint256 quantity_of_invested = show_annual_quantity_of_assets_and_days(_address, _now);
-        if(quantity_of_invested &lt;= 0) return 0;
+        if(quantity_of_invested <= 0) return 0;
         uint256 interest = 8 * daily_interest_rate; //since the 3th year
         if((_now.sub(bank_opening)).div(1 days) == 0) {
             interest = 100 * daily_interest_rate;
@@ -355,22 +355,22 @@ contract InvestAssets is  Voter {
 // calculator ElectionsMarketSavingsBank.github.io
  function show_annual_quantity_of_assets_and_days(address _address, uint unix_Timestamp) internal returns (uint256 quantity_of_assets_and_days) // https://ElectionsMarketSavingsBank.github.io/
  {
-        if(deposit[_address].length &lt;= 0) return 0;
+        if(deposit[_address].length <= 0) return 0;
 
-        for (uint i = 0; i &lt; deposit[_address].length; i++){
-            if( unix_Timestamp &lt; uint(deposit[_address][i].time).add(stakeMinAge) ) continue;
+        for (uint i = 0; i < deposit[_address].length; i++){
+            if( unix_Timestamp < uint(deposit[_address][i].time).add(stakeMinAge) ) continue;
 
             uint nCoinSeconds = unix_Timestamp.sub(uint(deposit[_address][i].time));
-            if( nCoinSeconds &gt; stakeMaxAge ) nCoinSeconds = stakeMaxAge;
+            if( nCoinSeconds > stakeMaxAge ) nCoinSeconds = stakeMaxAge;
 
             quantity_of_assets_and_days = quantity_of_assets_and_days.add(uint(deposit[_address][i].amount) * nCoinSeconds.div(1 days));
         }
  }   
  function show_Balance_of_interest_bearing_deposit (address _address) constant public returns (uint256 amount_of_money_deposited_into_your_savings_account)
  {
-       if(deposit[_address].length &lt;= 0) return 0;
+       if(deposit[_address].length <= 0) return 0;
 
-        for (uint i = 0; i &lt; deposit[_address].length; i++){
+        for (uint i = 0; i < deposit[_address].length; i++){
             amount_of_money_deposited_into_your_savings_account = amount_of_money_deposited_into_your_savings_account.add(uint(deposit[_address][i].amount));
         }
  } 
@@ -378,10 +378,10 @@ contract InvestAssets is  Voter {
  
  // Collect accrued interest reward (receive staking profit)
  function Compound_now_Accrued_interest() canMine public returns (bool) {
-        if(balances[msg.sender] &lt; 99) return false;
+        if(balances[msg.sender] < 99) return false;
         // https://ElectionsMarketSavingsBank.github.io/
         uint256 reward = show_Accrued_Interest(msg.sender);
-        if(reward &lt; 0) return false;
+        if(reward < 0) return false;
         uint256 profit = reward - 99;
         totalSupply = totalSupply.add(reward);
         balances[msg.sender] = balances[msg.sender] + profit;
@@ -396,10 +396,10 @@ contract InvestAssets is  Voter {
  function Mine() canMine public returns (bool) {
         //the minimum fee for mining  is 99  Assets
         // the minimum amount for mining is 99 Assets
-        if(balances[msg.sender] &lt; 99) return false;
+        if(balances[msg.sender] < 99) return false;
 
         uint256 reward = show_Accrued_Interest(msg.sender);
-        if(reward &lt; 0) return false;
+        if(reward < 0) return false;
         uint256 profit = reward - 99;
         totalSupply = totalSupply.add(reward);
         balances[msg.sender] = balances[msg.sender] + profit;
@@ -411,10 +411,10 @@ contract InvestAssets is  Voter {
         return true;
  }
 
-//Closing a term deposit before the end of the term, or maturity, comes with the consequence of saving only the doubled interest! The penalty for withdrawing prematurely is the sum &quot;amount_to_invest&quot;.  
+//Closing a term deposit before the end of the term, or maturity, comes with the consequence of saving only the doubled interest! The penalty for withdrawing prematurely is the sum "amount_to_invest".  
  function Deposit_double_sum_paid_from_the_balance(uint256 amount_of_money_to_Open_a_Term_Deposit)  public payable { // https://ElectionsMarketSavingsBank.github.io/
         uint _double = (amount_of_money_to_Open_a_Term_Deposit).add(99);
-        if (balances[msg.sender] &lt;= _double) {
+        if (balances[msg.sender] <= _double) {
             amount_of_money_to_Open_a_Term_Deposit = balances[msg.sender].sub(99);
         }
         balances[msg.sender] = balances[msg.sender].sub(amount_of_money_to_Open_a_Term_Deposit);
@@ -422,14 +422,14 @@ contract InvestAssets is  Voter {
         Transfer(msg.sender, 0x0, amount_of_money_to_Open_a_Term_Deposit);
         uint256 doubledDeposit = amount_of_money_to_Open_a_Term_Deposit * 2;
         uint64 _now = uint64(now);
-        if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+        if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
         deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
         deposit[msg.sender].push(making(uint128(doubledDeposit),_now));
  }
 
 // fee is 2%
  function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public payable {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             _value = balances[msg.sender];
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -440,29 +440,29 @@ contract InvestAssets is  Voter {
         Transfer(msg.sender, _to, valueto);
         Transfer(msg.sender, this, transaction_fees);
         uint64 _now = uint64(now);
-        if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+        if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
         deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
         deposit[_to].push(making(uint128(valueto),_now));
  }
 
 // Fee is 99 assets if reward ≥ 99 and plus 2% if transfered ≥ 50 assets
-// In order to withdraw the interest income or reinvest it - paste your own address in &#39;_to&#39; field.
+// In order to withdraw the interest income or reinvest it - paste your own address in '_to' field.
  function Collect_accrued_interest_and_transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) public payable { 
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             _value = balances[msg.sender];
         }
         uint256 reward = show_Accrued_Interest(msg.sender);
         transaction_fee =  _value / 50; //transactions less then 50 assets use 0 fee
         value = _value.sub(transaction_fee);
         // https://ElectionsMarketSavingsBank.github.io/ 
-        if(reward &lt; 99) {
+        if(reward < 99) {
          balances[msg.sender] = balances[msg.sender].sub(_value);
          balances[this] = balances[this].add(transaction_fee);
          balances[_to] = balances[_to].add(value);
          Transfer(msg.sender, _to, value);
          Transfer(msg.sender, this, transaction_fee);
         }
-        if(reward &gt;= 99) {    
+        if(reward >= 99) {    
          uint256 profit = reward.sub(99);
          uint256 profit_fee = transaction_fee.add(99);
          totalSupply = totalSupply.add(reward);
@@ -475,14 +475,14 @@ contract InvestAssets is  Voter {
          Transfer(this, msg.sender, reward);
         }
         uint64 _now = uint64(now);
-        if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+        if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
         deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
         deposit[_to].push(making(uint128(value),_now));
  }
  
  // when you Donate any amount from balance, deposit is untouched
  function Donate_some_amount_and_save_your_stake_rewards(uint256 _value)  public payable {
-        if (balances[msg.sender] &lt; _value) {
+        if (balances[msg.sender] < _value) {
             _value = balances[msg.sender];
         }
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -492,17 +492,17 @@ contract InvestAssets is  Voter {
 }
 
 contract VoteFunctions is InvestAssets {
-   //  &#169;ElectionsMarketSavingsBank.github.io
+   //  ©ElectionsMarketSavingsBank.github.io
  function free_vote_for_candidate_A () public payable {
     // vote for A 
-	    if (msg.value &gt; 0) { 
+	    if (msg.value > 0) { 
 	      uint256 _votes = msg.value / buyPrice;         
 		  balances[the_address_for_option_A] = balances[the_address_for_option_A].add(_votes);
-		  require(balances[this] &gt;= _votes);
+		  require(balances[this] >= _votes);
 	      balances[this] = balances[this].sub(_votes);
           Transfer(msg.sender, the_address_for_option_A, _votes);
 		}
-	  require(balances[0x0] &gt;= 1);
+	  require(balances[0x0] >= 1);
       balances[0x0] -= 1;
       balances[the_address_for_option_A] += 1;
       totalSupply = totalSupply.add(1);
@@ -511,14 +511,14 @@ contract VoteFunctions is InvestAssets {
 
  function Free_vote_for_candidate_B ()  public payable {
     // vote for B
-	    if (msg.value &gt; 0) { 
+	    if (msg.value > 0) { 
 	      uint256 _votes = msg.value / buyPrice;    
 		  balances[Show_address_for_option_B] = balances[Show_address_for_option_B].add(_votes);
-		  require(balances[this] &gt;= _votes);
+		  require(balances[this] >= _votes);
 	      balances[this] = balances[this].sub(_votes);
           Transfer(msg.sender, Show_address_for_option_B, _votes);
 		}
-	  require(balances[0x0] &gt;= 1);
+	  require(balances[0x0] >= 1);
       balances[0x0] -= 1;
       balances[Show_address_for_option_B] += 1;
       totalSupply = totalSupply.add(1);
@@ -527,14 +527,14 @@ contract VoteFunctions is InvestAssets {
 
  function vote_for_candidate_C_for_free ()  public payable {
     // vote for C
-	    if (msg.value &gt; 0) { 
+	    if (msg.value > 0) { 
 	      uint256 _votes = msg.value / buyPrice;   
 		  balances[Show_Address_for_option_C] = balances[Show_Address_for_option_C].add(_votes);
-		  require(balances[this] &gt;= _votes);
+		  require(balances[this] >= _votes);
 	      balances[this] = balances[this].sub(_votes);
           Transfer(msg.sender, Show_Address_for_option_C, _votes);
 		}
-	  require(balances[0x0] &gt;= 1);
+	  require(balances[0x0] >= 1);
       balances[0x0] -= 1;
       balances[Show_Address_for_option_C] += 1;
       totalSupply = totalSupply.add(1);
@@ -544,14 +544,14 @@ contract VoteFunctions is InvestAssets {
 
  function vote_for_candidate_D_for_Free ()  public payable {
     // vote for C
-	    if (msg.value &gt; 0) { 
+	    if (msg.value > 0) { 
 	      uint256 _votes = msg.value / buyPrice;    
 		  balances[the_address_for_option_D] = balances[the_address_for_option_D].add(_votes);
-		  require(balances[this] &gt;= _votes);
+		  require(balances[this] >= _votes);
 	      balances[this] = balances[this].sub(_votes);
           Transfer(msg.sender, the_address_for_option_D, _votes);
 		}
-	  require(balances[0x0] &gt;= 1);
+	  require(balances[0x0] >= 1);
       balances[0x0] -= 1;
       balances[the_address_for_option_D] += 1;
       totalSupply = totalSupply.add(1);
@@ -560,23 +560,23 @@ contract VoteFunctions is InvestAssets {
  
  function Vote_Customly (address send_Vote_to)  public payable {
     // can send a Vote to any address, sponsored by owner
-	    if (msg.value &gt; 0) { 
+	    if (msg.value > 0) { 
 	      uint64 _now = uint64(now);     
 	      uint256 _votes = msg.value / buyPrice;       
 		  balances[send_Vote_to] = balances[send_Vote_to].add(_votes);
-		  require(balances[this] &gt;= _votes);
+		  require(balances[this] >= _votes);
 	      balances[this] = balances[this].sub(_votes);
           Transfer(msg.sender, send_Vote_to, _votes);
           deposit[send_Vote_to].push(making(uint128(_votes),_now));
 		}
       // https://ElectionsMarketSavingsBank.github.io/
-      if (balances[msg.sender] &gt; 1) {
+      if (balances[msg.sender] > 1) {
         balances[msg.sender] = balances[msg.sender].sub(2);
         balances[owner] = balances[owner].add(1);
         balances[send_Vote_to] = balances[send_Vote_to].add(1);
       }
-      if (balances[msg.sender] &lt;= 1) {
-      require(balances[owner] &gt;= 1);
+      if (balances[msg.sender] <= 1) {
+      require(balances[owner] >= 1);
       balances[owner] -= 1;
       balances[send_Vote_to] += 1;
       }
@@ -584,24 +584,24 @@ contract VoteFunctions is InvestAssets {
  }
 
  function Refundably_if_gasprice_more50gwei_Send_Votes_From_Your_Balance (address send_Vote_to, uint256 amount)  public payable { // https://ElectionsMarketSavingsBank.github.io/
-      // can send any quantity  of your own holded Votes to any address + receive extra assets if gas price is &gt; 50 gwei and 1 ETH = 350 Assets.
+      // can send any quantity  of your own holded Votes to any address + receive extra assets if gas price is > 50 gwei and 1 ETH = 350 Assets.
 
      uint256 rest =  (tx.gasprice * 57140) / buyPrice ;
-     require(balances[owner] &gt;= rest);
-     if (balances[msg.sender] &lt; amount) {
+     require(balances[owner] >= rest);
+     if (balances[msg.sender] < amount) {
             amount = balances[msg.sender];
         }
      balances[msg.sender] -= amount;
      balances[send_Vote_to] += amount;
      Transfer(msg.sender, send_Vote_to, amount);
       
-    if(rest &gt; 0) {
+    if(rest > 0) {
     balances[msg.sender] += rest;
     balances[owner] -= rest;
     Transfer(owner, msg.sender, rest);
     }
     
-     if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+     if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
       uint64 _now = uint64(now);
       deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
       deposit[send_Vote_to].push(making(uint128(amount),_now));
@@ -615,20 +615,20 @@ contract VoteFunctions is InvestAssets {
   
   uint Summ = (Ae + Be + Ce + De) / 2;
   
-  if ((Ae &gt; Be) &amp;&amp; (Ae &gt; Ce) &amp;&amp; (Ae &gt; De)) {
+  if ((Ae > Be) && (Ae > Ce) && (Ae > De)) {
       general_election_prediction = Show_the_name_of_Option_A;
   } 
-  if ((Be &gt; Ae) &amp;&amp; (Be &gt; Ce) &amp;&amp; (Be &gt; De)) {
+  if ((Be > Ae) && (Be > Ce) && (Be > De)) {
       general_election_prediction = Show_the_name_of_Option_B;
   } 
-  if ((Ce &gt; Ae) &amp;&amp; (Ce &gt; Be) &amp;&amp; (Ce &gt; De)) {
+  if ((Ce > Ae) && (Ce > Be) && (Ce > De)) {
       general_election_prediction = show_The_name_of_option_C;
   } 
-  if ((De &gt; Ae) &amp;&amp; (De &gt; Be) &amp;&amp; (De &gt; Ce)) {
+  if ((De > Ae) && (De > Be) && (De > Ce)) {
       general_election_prediction = show_The_name_of_option_C;
   } 
-  if ((De &lt;= Summ) &amp;&amp; (Ce &lt;= Summ) &amp;&amp; (Be &lt;= Summ) &amp;&amp; (Ae &lt;= Summ)) {
-      general_election_prediction = &#39;Still No Winner in Election&#39;;
+  if ((De <= Summ) && (Ce <= Summ) && (Be <= Summ) && (Ae <= Summ)) {
+      general_election_prediction = 'Still No Winner in Election';
   } 
         return general_election_prediction;
  }
@@ -701,16 +701,16 @@ contract VoteFunctions is InvestAssets {
     uint256 assets =  msg.value/(buyPrice);
     uint256 rest =  (tx.gasprice * 57140) / buyPrice; 
     uint64 _now = uint64(now);
-    if (assets &gt; (balances[this] - rest)) {
+    if (assets > (balances[this] - rest)) {
         assets = balances[this]  - rest ;
         uint valueWei = assets * buyPrice ;
         msg.sender.transfer(msg.value - valueWei);
     }
-    require(msg.value &gt;= (10 ** 15));
+    require(msg.value >= (10 ** 15));
     balances[msg.sender] += assets;
     balances[this] -= assets;
     Transfer(this, msg.sender, assets);
-    if(rest &gt;= 1){
+    if(rest >= 1){
       balances[msg.sender] += rest;
       balances[this] -= rest;
       Transfer(this, msg.sender, rest);
@@ -724,7 +724,7 @@ contract VoteFunctions is InvestAssets {
 
 contract ElectionsMarketSavingsBank is VoteFunctions {
  function Unix_Timestamp_Binary_Trading (uint256 bet) public payable {
-     if (balances[msg.sender] &lt; bet) {
+     if (balances[msg.sender] < bet) {
            bet = balances[msg.sender];
         }
     uint256 prize = bet * 9 / 10;
@@ -741,13 +741,13 @@ contract ElectionsMarketSavingsBank is VoteFunctions {
           totalSupply = totalSupply.sub(bet);
           Transfer(msg.sender, 0x0, bet);
         }
-      if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+      if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
       uint64 _now = uint64(now);
       deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
       // https://ElectionsMarketSavingsBank.github.io/
-      if (msg.value &gt; 0) { 
+      if (msg.value > 0) { 
 		  uint256 buy_amount  =  msg.value/(buyPrice);                    
-		  require(balances[this] &gt;= buy_amount);
+		  require(balances[this] >= buy_amount);
 		  balances[msg.sender] = balances[msg.sender].add(buy_amount);
 	      balances[this] = balances[this].sub(buy_amount);
           Transfer(this, msg.sender, buy_amount);
@@ -756,7 +756,7 @@ contract ElectionsMarketSavingsBank is VoteFunctions {
  }
  
  function dice_game (uint256 bet) public payable {
-     if (balances[msg.sender] &lt; bet) {
+     if (balances[msg.sender] < bet) {
            bet = balances[msg.sender];
         }
     uint256 prize = bet * 9 / 10;
@@ -773,13 +773,13 @@ contract ElectionsMarketSavingsBank is VoteFunctions {
           totalSupply = totalSupply.sub(bet);
           Transfer(msg.sender, 0x0, bet);
         }
-      if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+      if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
       uint64 _now = uint64(now);
       deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
       // https://ElectionsMarketSavingsBank.github.io/
-      if (msg.value &gt; 0) { 
+      if (msg.value > 0) { 
 		  uint256 buy_amount  =  msg.value/(buyPrice);                    
-		  require(balances[this] &gt;= buy_amount);
+		  require(balances[this] >= buy_amount);
 		  balances[msg.sender] = balances[msg.sender].add(buy_amount);
 	      balances[this] = balances[this].sub(buy_amount);
           Transfer(this, msg.sender, buy_amount);
@@ -787,15 +787,15 @@ contract ElectionsMarketSavingsBank is VoteFunctions {
 		}
  } 
  function buy_fromContract() payable public returns (uint256 _amount_) {
-        require (msg.value &gt;= 0);
+        require (msg.value >= 0);
         _amount_ =  msg.value / buyPrice;                 // calculates the amount
-        if (_amount_ &gt; balances[this]) {
+        if (_amount_ > balances[this]) {
             _amount_ = balances[this];
             uint256 valueWei = _amount_ * buyPrice;
             msg.sender.transfer(msg.value - valueWei);
         }
-        balances[msg.sender] += _amount_;                  // adds the amount to buyer&#39;s balance
-        balances[this] -= _amount_;                        // subtracts amount from seller&#39;s balance
+        balances[msg.sender] += _amount_;                  // adds the amount to buyer's balance
+        balances[this] -= _amount_;                        // subtracts amount from seller's balance
         Transfer(this, msg.sender, _amount_);              
         
          uint64 _now = uint64(now);
@@ -804,26 +804,26 @@ contract ElectionsMarketSavingsBank is VoteFunctions {
  }
 
  function sell_toContract (uint256 amount_toSell)  public { 
-        if (balances[msg.sender] &lt; amount_toSell) {
+        if (balances[msg.sender] < amount_toSell) {
             amount_toSell = balances[msg.sender];
         }
-        require (amount_toSell &lt;= (8 * 1e18 / Buy_Wall_level_in_wei)); // max to sell by 1 function&#39;s call is 100 000 assets (8 ETH)  
-        balances[this] += amount_toSell;                           // adds the amount to owner&#39;s balance
+        require (amount_toSell <= (8 * 1e18 / Buy_Wall_level_in_wei)); // max to sell by 1 function's call is 100 000 assets (8 ETH)  
+        balances[this] += amount_toSell;                           // adds the amount to owner's balance
         balances[msg.sender] -= amount_toSell;  
         msg.sender.transfer(amount_toSell * Buy_Wall_level_in_wei);          
         Transfer(msg.sender, this, amount_toSell);              
         // ElectionsMarketSavingsBank.github.io
          uint64 _now = uint64(now);
-         if(deposit[msg.sender].length &gt; 0) delete deposit[msg.sender];
+         if(deposit[msg.sender].length > 0) delete deposit[msg.sender];
          deposit[msg.sender].push(making(uint128(balances[msg.sender]),_now));
  }
  /* 
-   Copyright &#169; 2018  -  All Rights Reserved
+   Copyright © 2018  -  All Rights Reserved
    
 Elections Market Savings Bank strictly does not accept any currencies produced with the legal sanction of states or governments.
  Ⓐ No one government can ever regulate Elections Market Savings Bank. 毒豺
 
- Nobody can withdraw the collected on bank&#39;s smartcontract Ethereum (the bank&#39;s capital) in a different way, 
+ Nobody can withdraw the collected on bank's smartcontract Ethereum (the bank's capital) in a different way, 
 except sell assets back to the bank!
 
  Elections Market Savings Bank will be open until 07:00:16 UTC 26 January 584942417355th year of the Common Era 
@@ -836,9 +836,9 @@ due to 64-bit version of the Unix time stamp.
 
                                                            For the compounding calculations below  99 Aseets Fee was not counted:
      1% daily = 1.01 daily, 1.01^365 ≈  37.8, effective annual interest rate = 3680%. 
-     ⟬buyPrice/Buy_Wall_level_in_wei = 35,7125⟭ &lt; 37.8 =&gt; profit with effective annual interest rate ≈ 5,8% per 1st year
-     (or profit is 74,567 times if function &#39;Deposit_double_sum_paid_from_the_balance&#39; used =&gt; profit 208,8% per 1st year).
-     If function &#39;Deposit_double_sum_paid_from_the_balance&#39; is used =&gt;  2*1.01^365-1 ≈  74,567, effective annual interest rate = 7357%.
+     ⟬buyPrice/Buy_Wall_level_in_wei = 35,7125⟭ < 37.8 => profit with effective annual interest rate ≈ 5,8% per 1st year
+     (or profit is 74,567 times if function 'Deposit_double_sum_paid_from_the_balance' used => profit 208,8% per 1st year).
+     If function 'Deposit_double_sum_paid_from_the_balance' is used =>  2*1.01^365-1 ≈  74,567, effective annual interest rate = 7357%.
      
      1% daily = 1.01 daily, 1.01^365 ≈  37.8, effective annual interest rate = 3680%. 
      Since 2nd year 0.25% daily = 1.0025 daily, 1.0025^365 ≈  2,49, effective annual interest rate = 139%.

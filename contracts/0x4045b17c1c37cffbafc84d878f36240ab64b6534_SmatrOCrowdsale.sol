@@ -105,7 +105,7 @@ contract ICrowdsaleProcessor is Ownable, HasManager {
   // Total collected Ethereum: must be updated every time tokens has been sold
   uint256 public totalCollected;
 
-  // Total amount of project&#39;s token sold: must be updated every time tokens has been sold
+  // Total amount of project's token sold: must be updated every time tokens has been sold
   uint256 public totalSold;
 
   // Crowdsale minimal goal, must be greater or equal to Forecasting min amount
@@ -147,7 +147,7 @@ contract ICrowdsaleProcessor is Ownable, HasManager {
   function start(uint256 _startTimestamp, uint256 _endTimestamp, address _fundingAddress)
     public onlyManager() hasntStarted() hasntStopped();
 
-  // Is crowdsale failed (completed, but minimal goal wasn&#39;t reached)
+  // Is crowdsale failed (completed, but minimal goal wasn't reached)
   function isFailed() public constant returns (bool);
 
   // Is crowdsale active (i.e. the token can be sold)
@@ -209,19 +209,19 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
     public
     onlyManager()   // manager is CrowdsaleController instance
     hasntStarted()  // not yet started
-    hasntStopped()  // crowdsale wasn&#39;t cancelled
+    hasntStopped()  // crowdsale wasn't cancelled
   {
     require(_fundingAddress != address(0));
 
     // start time must not be earlier than current time
-    require(_startTimestamp &gt;= block.timestamp);
+    require(_startTimestamp >= block.timestamp);
 
     // range must be sane
-    require(_endTimestamp &gt; _startTimestamp);
+    require(_endTimestamp > _startTimestamp);
     duration = _endTimestamp - _startTimestamp;
 
     // duration must fit constraints
-    require(duration &gt;= MIN_CROWDSALE_TIME &amp;&amp; duration &lt;= MAX_CROWDSALE_TIME);
+    require(duration >= MIN_CROWDSALE_TIME && duration <= MAX_CROWDSALE_TIME);
 
     startTimestamp = _startTimestamp;
     endTimestamp = _endTimestamp;
@@ -241,13 +241,13 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
   {
     return (
       // it was started
-      started &amp;&amp;
+      started &&
 
       // crowdsale period has finished
-      block.timestamp &gt;= endTimestamp &amp;&amp;
+      block.timestamp >= endTimestamp &&
 
       // but collected ETH is below the required minimum
-      totalCollected &lt; minimalGoal
+      totalCollected < minimalGoal
     );
   }
 
@@ -259,14 +259,14 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
   {
     return (
       // it was started
-      started &amp;&amp;
+      started &&
 
-      // hard cap wasn&#39;t reached yet
-      totalCollected &lt; hardCap &amp;&amp;
+      // hard cap wasn't reached yet
+      totalCollected < hardCap &&
 
       // and current time is within the crowdfunding period
-      block.timestamp &gt;= startTimestamp &amp;&amp;
-      block.timestamp &lt; endTimestamp
+      block.timestamp >= startTimestamp &&
+      block.timestamp < endTimestamp
     );
   }
 
@@ -278,10 +278,10 @@ contract BasicCrowdsale is ICrowdsaleProcessor {
   {
     return (
       // either the hard cap is collected
-      totalCollected &gt;= hardCap ||
+      totalCollected >= hardCap ||
 
       // ...or the crowdfunding period is over, but the minimum has been reached
-      (block.timestamp &gt;= endTimestamp &amp;&amp; totalCollected &gt;= minimalGoal)
+      (block.timestamp >= endTimestamp && totalCollected >= minimalGoal)
     );
   }
 }
@@ -299,20 +299,20 @@ library SafeMath {
   }
 
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
     uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
     return c;
   }
 
   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b &lt;= a);
+    assert(b <= a);
     return a - b;
   }
 
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
     uint256 c = a + b;
-    assert(c &gt;= a);
+    assert(c >= a);
     return c;
   }
 }
@@ -322,15 +322,15 @@ contract SmartOToken is Ownable, IERC20 {
   using SafeMath for uint256;
 
   /* Public variables of the token */
-  string public constant name = &quot;STO&quot;;
-  string public constant symbol = &quot;STO&quot;;
+  string public constant name = "STO";
+  string public constant symbol = "STO";
   uint public constant decimals = 18;
   uint256 public constant initialSupply = 12000000000 * 1 ether;
   uint256 public totalSupply;
 
   /* This creates an array with all balances */
-  mapping (address =&gt; uint256) public balances;
-  mapping (address =&gt; mapping (address =&gt; uint256)) public allowed;
+  mapping (address => uint256) public balances;
+  mapping (address => mapping (address => uint256)) public allowed;
 
   /* Events */
   event Burn(address indexed burner, uint256 value);
@@ -352,7 +352,7 @@ contract SmartOToken is Ownable, IERC20 {
   /* Internal transfer, only can be called by this contract */
   function _transfer(address _from, address _to, uint _amount) internal {
       require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
-      require (balances[_from] &gt;= _amount);                // Check if the sender has enough
+      require (balances[_from] >= _amount);                // Check if the sender has enough
       balances[_from] = balances[_from].sub(_amount);
       balances[_to] = balances[_to].add(_amount);
       Transfer(_from, _to, _amount);
@@ -365,7 +365,7 @@ contract SmartOToken is Ownable, IERC20 {
   }
 
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require (_value &lt;= allowed[_from][msg.sender]);     // Check allowance
+    require (_value <= allowed[_from][msg.sender]);     // Check allowance
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     _transfer(_from, _to, _value);
     return true;
@@ -386,7 +386,7 @@ contract SmartOToken is Ownable, IERC20 {
 // Custom crowdsale example
 contract SmatrOCrowdsale is BasicCrowdsale {
   // Crowdsale participants
-  mapping(address =&gt; uint256) participants;
+  mapping(address => uint256) participants;
 
   // tokens per ETH fixed price
   uint256 tokensPerEthPrice;
@@ -442,7 +442,7 @@ contract SmatrOCrowdsale is BasicCrowdsale {
   function releaseTokens()
     public
     onlyManager()             // manager is CrowdsaleController instance
-    hasntStopped()            // crowdsale wasn&#39;t cancelled
+    hasntStopped()            // crowdsale wasn't cancelled
     whenCrowdsaleSuccessful() // crowdsale was successful
   {
     // do nothing
@@ -459,23 +459,23 @@ contract SmatrOCrowdsale is BasicCrowdsale {
 
   // default function allows for ETH transfers to the contract
   function () payable public {
-    require(msg.value &gt;= 0.1 * 1 ether);
+    require(msg.value >= 0.1 * 1 ether);
 
     // and it sells the token
     sellTokens(msg.sender, msg.value);
   }
 
-  // sels the project&#39;s token to buyers
+  // sels the project's token to buyers
   function sellTokens(address _recepient, uint256 _value)
     internal
     hasBeenStarted()     // crowdsale started
-    hasntStopped()       // wasn&#39;t cancelled by owner
+    hasntStopped()       // wasn't cancelled by owner
     whenCrowdsaleAlive() // in active state
   {
     uint256 newTotalCollected = totalCollected + _value;
 
-    if (hardCap &lt; newTotalCollected) {
-      // don&#39;t sell anything above the hard cap
+    if (hardCap < newTotalCollected) {
+      // don't sell anything above the hard cap
 
       uint256 refund = newTotalCollected - hardCap;
       uint256 diff = _value - refund;
@@ -501,16 +501,16 @@ contract SmatrOCrowdsale is BasicCrowdsale {
     totalSold += tokensSold;
   }
 
-  // project&#39;s owner withdraws ETH funds to the funding address upon successful crowdsale
+  // project's owner withdraws ETH funds to the funding address upon successful crowdsale
   function withdraw(
     uint256 _amount // can be done partially
   )
     public
-    onlyOwner() // project&#39;s owner
-    hasntStopped()  // crowdsale wasn&#39;t cancelled
+    onlyOwner() // project's owner
+    hasntStopped()  // crowdsale wasn't cancelled
     whenCrowdsaleSuccessful() // crowdsale completed successfully
   {
-    require(_amount &lt;= this.balance);
+    require(_amount <= this.balance);
     fundingAddress.transfer(_amount);
   }
 
@@ -524,7 +524,7 @@ contract SmatrOCrowdsale is BasicCrowdsale {
     uint256 amount = participants[msg.sender];
 
     // prevent from doing it twice
-    require(amount &gt; 0);
+    require(amount > 0);
     participants[msg.sender] = 0;
 
     msg.sender.transfer(amount);

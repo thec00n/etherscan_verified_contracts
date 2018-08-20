@@ -1,9 +1,9 @@
 // Welcome to the source code of the unofficial Etheremon Swap smart contract! This allows MonSeekers to trustlessly trade mons with each other.
 // You can offer up any specific Etheremon you own in exchange for any other specific mon or any mon of a specific class.
 // For example, you can offer up your Berrball in exchange for any Dracobra.
-// Or you can offer it in exchange for some specific mon specified by object ID, like that level 50 Pangrass named &quot;Donny&quot;.
+// Or you can offer it in exchange for some specific mon specified by object ID, like that level 50 Pangrass named "Donny".
 // You can even keep both offers up at once if you want.
-// If someone has an offer up that your mon qualifies for (for example if &quot;Donny&quot; belongs to you or you happen to own a Dracobra), you can match that offer to execute the trade, instantly transferring the mons to their new owners.
+// If someone has an offer up that your mon qualifies for (for example if "Donny" belongs to you or you happen to own a Dracobra), you can match that offer to execute the trade, instantly transferring the mons to their new owners.
 
 pragma solidity ^0.4.19;
 
@@ -36,24 +36,24 @@ contract EtheremonTrade
 }
 
 // Deposit contract. Each trader has a unique one which is generated ONCE and never changes.
-// To trade a mon, it must be deposited in your deposit address. You can&#39;t trade mons that aren&#39;t deposited!
+// To trade a mon, it must be deposited in your deposit address. You can't trade mons that aren't deposited!
 // Each trader has complete control over mons in their deposit address, so only send YOUR mons to YOUR unique deposit address!
-// Sending a mon to someone else&#39;s deposit address is the same as giving them the mon for free.
+// Sending a mon to someone else's deposit address is the same as giving them the mon for free.
 // Finally, make sure you actually GENERATE a deposit address before depositing mons.
-// If you haven&#39;t generated one before then your deposit address will appear to be 0x000... which is NOT A REAL DEPOSIT ADDRESS! Any mons sent to 0x000... will be lost forever!
+// If you haven't generated one before then your deposit address will appear to be 0x000... which is NOT A REAL DEPOSIT ADDRESS! Any mons sent to 0x000... will be lost forever!
 contract EtheremonDepositContract is Ownable
 {
-    function sendMon(address tradeAddress, address receiver, uint64 mon) external onlyOwner // The &quot;owner&quot; is always the EtheremonSwap contract itself because it created this deposit contract on your behalf.
+    function sendMon(address tradeAddress, address receiver, uint64 mon) external onlyOwner // The "owner" is always the EtheremonSwap contract itself because it created this deposit contract on your behalf.
     {
         EtheremonTrade(tradeAddress).freeTransferItem(mon, receiver);
     }
 }
 
-// This is the main contract. This needs an owner (it&#39;s me, hi!) because it is possible for Etheremon&#39;s Trade contract to be upgraded. The owner of this contract is responsible for updating the Trade address if/when that happens.
+// This is the main contract. This needs an owner (it's me, hi!) because it is possible for Etheremon's Trade contract to be upgraded. The owner of this contract is responsible for updating the Trade address if/when that happens.
 // Eventually Etheremon will be fully decentralized and we can be sure the Trade contract will never be changed. After that happens the owner of THIS contract will be set to 0x0, effectively revoking ownership.
 // The only power the contract owner has is changing the address pointing to the official Etheremon Trade contract.
 // If the contract owner is compromised, the worst that could happen is you will no longer be able to trade mons through this contract.
-// It is NOT possible for the contract owner to withdraw anyone else&#39;s mons.
+// It is NOT possible for the contract owner to withdraw anyone else's mons.
 // It is NOT possible for the contract owner to sever the link between a user and their deposit address.
 // It is NOT possible for the contract owner to prevent a user from withdrawing their deposited mons.
 // Even if the contract owner tried to set up his own malicious copy of the Trade contract, only the official Etheremon Trade contract has the authority to transfer mons, so nothing could be accomplished that way.
@@ -62,12 +62,12 @@ contract EtheremonSwap is Ownable
     address public dataAddress = 0xabc1c404424bdf24c19a5cc5ef8f47781d18eb3e;
     address public tradeAddress = 0x4ba72f0f8dad13709ee28a992869e79d0fe47030;
     
-    mapping(address =&gt; address) public depositAddress;
-    mapping(uint64 =&gt; address) public monToTrainer; // Only valid for POSTED mons.
-    mapping(uint64 =&gt; uint64) public listedMonForMon;
-    mapping(uint64 =&gt; uint32) public listedMonForClass;
+    mapping(address => address) public depositAddress;
+    mapping(uint64 => address) public monToTrainer; // Only valid for POSTED mons.
+    mapping(uint64 => uint64) public listedMonForMon;
+    mapping(uint64 => uint32) public listedMonForClass;
     
-    // Included here instead of Ownable because the Deposit contracts don&#39;t need it.
+    // Included here instead of Ownable because the Deposit contracts don't need it.
     function changeOwner(address newOwner) onlyOwner external
     {
         owner = newOwner;
@@ -92,7 +92,7 @@ contract EtheremonSwap is Ownable
         require(depositAddress[msg.sender] != 0);
         // Delist the mon from any posted trades.
         delist(mon);
-        // Execute the withdrawal. No need to check ownership or anything; Etheremon&#39;s official trade contract will revert this transaction for us if there&#39;s a problem.
+        // Execute the withdrawal. No need to check ownership or anything; Etheremon's official trade contract will revert this transaction for us if there's a problem.
         EtheremonDepositContract(depositAddress[msg.sender]).sendMon(tradeAddress, msg.sender, mon);
     }
     
@@ -107,13 +107,13 @@ contract EtheremonSwap is Ownable
     }
     
     // Posts a trade offering up your mon for ONLY the given mon.
-    // Will replace this mon&#39;s currently listed Mon-for-Mon trade if it exists.
-    // Will NOT replace this mon&#39;s currently listed Mon-for-Class trade if it exists!
+    // Will replace this mon's currently listed Mon-for-Mon trade if it exists.
+    // Will NOT replace this mon's currently listed Mon-for-Class trade if it exists!
     function postMonForMon(uint64 yourMon, uint64 desiredMon) external
     {
-        // Make sure you own and have deposited the mon you&#39;re posting.
+        // Make sure you own and have deposited the mon you're posting.
         checkOwnership(yourMon);
-        // Make sure you&#39;re requesting a valid mon.
+        // Make sure you're requesting a valid mon.
         require(desiredMon != 0);
         
         listedMonForMon[yourMon] = desiredMon;
@@ -122,15 +122,15 @@ contract EtheremonSwap is Ownable
     }
     
     // Posts a trade offering up your mon for ANY mon of the given class.
-    // To figure out the class ID, just look at the URL of that mon&#39;s page.
+    // To figure out the class ID, just look at the URL of that mon's page.
     // For example, Tygloo is class 33: https://www.etheremon.com/#/mons/33
-    // Will replace this mon&#39;s currently listed Mon-for-Class trade if it exists.
-    // Will NOT replace this mon&#39;s currently listed Mon-for-Mon trade if it exists!
+    // Will replace this mon's currently listed Mon-for-Class trade if it exists.
+    // Will NOT replace this mon's currently listed Mon-for-Mon trade if it exists!
     function postMonForClass(uint64 yourMon, uint32 desiredClass) external
     {
-        // Make sure you own and have deposited the mon you&#39;re posting.
+        // Make sure you own and have deposited the mon you're posting.
         checkOwnership(yourMon);
-        // Make sure you&#39;re requesting a valid class.
+        // Make sure you're requesting a valid class.
         require(desiredClass != 0);
         
         listedMonForClass[yourMon] = desiredClass;
@@ -154,10 +154,10 @@ contract EtheremonSwap is Ownable
         // No need to waste gas checking for weird uncommon situations (like yourMon and desiredMon being owned by
         // the same address or even being the same mon) because the trade will revert in those situations anyway.
         
-        // Make sure you own and have deposited the mon you&#39;re offering.
+        // Make sure you own and have deposited the mon you're offering.
         checkOwnership(yourMon);
         
-        // If there&#39;s no exact match...
+        // If there's no exact match...
         if(listedMonForMon[desiredMon] != yourMon)
         {
             // ...check for a class match.
@@ -185,7 +185,7 @@ contract EtheremonSwap is Ownable
     }
     
     // Executes a trade, swapping the mons between trainer A and trainer B.
-    // No withdrawal is necessary: the mons end up in the trainers&#39; actual addresses, NOT their deposit addresses!
+    // No withdrawal is necessary: the mons end up in the trainers' actual addresses, NOT their deposit addresses!
     function executeTrade(address trainerA, uint64 monA, address trainerB, uint64 monB) private
     {
         EtheremonDepositContract(depositAddress[trainerA]).sendMon(tradeAddress, trainerB, monA); // Mon A from trainer A to trainer B.

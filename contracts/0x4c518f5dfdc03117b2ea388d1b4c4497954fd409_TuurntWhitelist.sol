@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of &quot;user permissions&quot;.
+ * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
   address public owner;
@@ -61,7 +61,7 @@ contract Ownable {
 
 contract TuurntWhitelist is Ownable{
 
-    mapping(address =&gt; bool) public whitelist;
+    mapping(address => bool) public whitelist;
     address public airdrop;
     
     /**
@@ -84,7 +84,7 @@ contract TuurntWhitelist is Ownable{
    * @param _beneficiaries Addresses to be added to the whitelist
    */
     function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
-        for (uint256 i = 0; i &lt; _beneficiaries.length; i++) {
+        for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }

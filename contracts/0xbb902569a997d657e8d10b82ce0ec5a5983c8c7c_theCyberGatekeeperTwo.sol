@@ -37,20 +37,20 @@ contract theCyberGatekeeperTwo {
   uint8 private nextAssigneeIndex_;
 
   // Addresses / passcodes must be unique; passcodes must hash to a known value.
-  mapping (address =&gt; bool) private interactions_;
-  mapping (bytes32 =&gt; bool) private knownHashes_;
-  mapping (bytes32 =&gt; bool) public acceptedPasscodes_;
+  mapping (address => bool) private interactions_;
+  mapping (bytes32 => bool) private knownHashes_;
+  mapping (bytes32 => bool) public acceptedPasscodes_;
 
   modifier checkOne() {
     // The number of entrant submissions cannot exceed the maximum. Credit goes
     // to benjaminion for spotting the prior vulnerability in this method where
     // the number of entrants could be made to exceed MAXENTRANTS_ by 1.
-    require(entrants.length &lt; MAXENTRANTS_);
+    require(entrants.length < MAXENTRANTS_);
     _;
   }
 
   modifier checkTwo() {
-    // Each entrant&#39;s interaction with the gatekeeper must be unique.
+    // Each entrant's interaction with the gatekeeper must be unique.
     require(interactions_[msg.sender] == false);
     require(interactions_[tx.origin] == false);
     _;
@@ -413,10 +413,10 @@ contract theCyberGatekeeperTwo {
     require(active_);
 
     // Require a large transaction so that members are added in bulk.
-    require(msg.gas &gt; 7000000);
+    require(msg.gas > 7000000);
     
     // All entrants must be registered in order to assign new members.
-    require(entrants.length &gt;= MAXENTRANTS_);
+    require(entrants.length >= MAXENTRANTS_);
 
     // Initialize variables for checking membership statuses.
     bool member;
@@ -430,12 +430,12 @@ contract theCyberGatekeeperTwo {
     uint8 i = nextAssigneeIndex_;
 
     // Loop through entrants as long as sufficient gas remains.
-    while (i &lt; MAXENTRANTS_ &amp;&amp; msg.gas &gt; 175000) {
-      // Make sure that the target membership isn&#39;t already owned.
+    while (i < MAXENTRANTS_ && msg.gas > 175000) {
+      // Make sure that the target membership isn't already owned.
       (,,,,memberAddress) = theCyberInterface(THECYBERADDRESS_).getMemberInformation(i + 1);
       if (memberAddress == address(0)) {
         // If it is not owned, add the entrant as a new member of theCyber.
-        theCyberInterface(THECYBERADDRESS_).newMember(i + 1, bytes32(&quot;&quot;), entrants[i]);
+        theCyberInterface(THECYBERADDRESS_).newMember(i + 1, bytes32(""), entrants[i]);
       }
       // Move on to the next entrant / member id.
       i++;
@@ -443,7 +443,7 @@ contract theCyberGatekeeperTwo {
 
     // Set the index where the function left off; set as inactive if finished.
     nextAssigneeIndex_ = i;
-    if (nextAssigneeIndex_ &gt;= MAXENTRANTS_) {
+    if (nextAssigneeIndex_ >= MAXENTRANTS_) {
       active_ = false;
     }
 

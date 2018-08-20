@@ -78,18 +78,18 @@ contract UsingAdmin is
         constant
         returns (address _addr)
     {
-        return addressOf(&quot;ADMIN&quot;);
+        return addressOf("ADMIN");
     }
 }
 
 /**
     This is a simple class that maintains a doubly linked list of
-    address =&gt; uint amounts. Address balances can be added to 
+    address => uint amounts. Address balances can be added to 
     or removed from via add() and subtract(). All balances can
     be obtain by calling balances(). If an address has a 0 amount,
     it is removed from the Ledger.
 
-    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it&#39;s safe to
+    Note: THIS DOES NOT TEST FOR OVERFLOWS, but it's safe to
           use to track Ether balances.
 
     Public methods:
@@ -110,7 +110,7 @@ contract Ledger {
         address next;
         address prev;
     }
-    mapping (address =&gt; Entry) public entries;
+    mapping (address => Entry) public entries;
 
     address public owner;
     modifier fromOwner() { require(msg.sender==owner); _; }
@@ -156,7 +156,7 @@ contract Ledger {
         uint _maxAmt = entry.balance;
         if (_maxAmt == 0) return;
         
-        if (_amt &gt;= _maxAmt) {
+        if (_amt >= _maxAmt) {
             // Subtract the max amount, and delete entry.
             total -= _maxAmt;
             entries[entry.prev].next = entry.next;
@@ -183,7 +183,7 @@ contract Ledger {
     {
         // Loop once to get the total count.
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _curEntry = entries[_curEntry.next];
             _size++;
         }
@@ -209,7 +209,7 @@ contract Ledger {
         _balances = new uint[](_size);
         uint _i = 0;
         Entry memory _curEntry = entries[0x0];
-        while (_curEntry.next &gt; 0) {
+        while (_curEntry.next > 0) {
             _addresses[_i] = _curEntry.next;
             _balances[_i] = entries[_curEntry.next].balance;
             _curEntry = entries[_curEntry.next];
@@ -258,7 +258,7 @@ contract Requestable is
         address target;
         uint value;
     }
-    mapping (uint32 =&gt; Request) public requests;
+    mapping (uint32 => Request) public requests;
     uint32 public curRequestId;
     uint32[] public completedRequestIds;
     uint32[] public cancelledRequestIds;
@@ -299,7 +299,7 @@ contract Requestable is
     {
         // Require Request exists, is not cancelled, is not executed.
         Request storage r = requests[_id];
-        require(r.id != 0 &amp;&amp; r.dateCancelled == 0 &amp;&amp; r.dateExecuted == 0);
+        require(r.id != 0 && r.dateCancelled == 0 && r.dateExecuted == 0);
         r.dateCancelled = uint32(now);
         r.cancelledMsg = _msg;
         _removePendingRequestId(_id);
@@ -308,19 +308,19 @@ contract Requestable is
     }
 
     // Executes (or times out) a request if it is not already cancelled or executed.
-    // Note: This may revert if the executeFn() reverts. It&#39;ll time-out eventually.
+    // Note: This may revert if the executeFn() reverts. It'll time-out eventually.
     function executeRequest(uint32 _id)
         public
     {
         // Require Request exists, is not cancelled, is not executed.
         // Also require is past WAITING_TIME since creation.
         Request storage r = requests[_id];
-        require(r.id != 0 &amp;&amp; r.dateCancelled == 0 &amp;&amp; r.dateExecuted == 0);
-        require(uint32(now) &gt; r.dateCreated + WAITING_TIME);
+        require(r.id != 0 && r.dateCancelled == 0 && r.dateExecuted == 0);
+        require(uint32(now) > r.dateCreated + WAITING_TIME);
         
         // If request timed out, cancel it.
-        if (uint32(now) &gt; r.dateCreated + TIMEOUT_TIME) {
-            cancelRequest(_id, &quot;Request timed out.&quot;);
+        if (uint32(now) > r.dateCreated + TIMEOUT_TIME) {
+            cancelRequest(_id, "Request timed out.");
             return;
         }
                 
@@ -363,7 +363,7 @@ contract Requestable is
         // Find this id in the array, or throw.
         uint _len = pendingRequestIds.length;
         uint _foundIndex = MAX_PENDING_REQUESTS;
-        for (uint _i = 0; _i &lt; _len; _i++) {
+        for (uint _i = 0; _i < _len; _i++) {
             if (pendingRequestIds[_i] == _id) {
                 _foundIndex = _i;
                 break;
@@ -391,7 +391,7 @@ contract Requestable is
     //////////////////////////////////////////////////////////////////
 
     // View that returns a Request as a valid tuple.
-    // Sorry for the formatting, but it&#39;s a waste of lines otherwise.
+    // Sorry for the formatting, but it's a waste of lines otherwise.
     function getRequest(uint32 _requestId) public view returns (
         uint32 _id, uint8 _typeId, address _target, uint _value,
         bool _executedSuccessfully,
@@ -413,8 +413,8 @@ contract Requestable is
         returns (bool _isExecutable)
     {
         Request memory r = requests[_requestId];
-        _isExecutable = (r.id&gt;0 &amp;&amp; r.dateCancelled==0 &amp;&amp; r.dateExecuted==0);
-        _isExecutable = _isExecutable &amp;&amp; (uint32(now) &gt; r.dateCreated + WAITING_TIME);
+        _isExecutable = (r.id>0 && r.dateCancelled==0 && r.dateExecuted==0);
+        _isExecutable = _isExecutable && (uint32(now) > r.dateCreated + WAITING_TIME);
         return _isExecutable;
     }
 
@@ -438,8 +438,8 @@ The Treasury manages 2 balances:
 
     * capital: Ether that can be sent to bankrollable contracts.
         - Is controlled via `Requester` governance, by the Admin (which is mutable)
-            - Capital received by Comptroller is considered &quot;capitalRaised&quot;.
-            - A target amount can be set: &quot;capitalRaisedTarget&quot;.
+            - Capital received by Comptroller is considered "capitalRaised".
+            - A target amount can be set: "capitalRaisedTarget".
             - Comptroller will sell Tokens to reach capitalRaisedTarget.
         - Can be sent to Bankrollable contracts.
         - Can be recalled from Bankrollable contracts.
@@ -454,7 +454,7 @@ Thus, the balance of Treasury will always equal: capital + profits.
 
 Roles:
     Owner:       can set Comptroller and Token addresses, once.
-    Comptroller: can add and remove &quot;raised&quot; capital
+    Comptroller: can add and remove "raised" capital
     Admin:       can trigger requests.
     Token:       receives profits via .issueDividend().
     Anybody:     can call .issueDividend()
@@ -477,7 +477,7 @@ contract Treasury is
 {
     // Address that can initComptroller
     address public owner;
-    // Capital sent from this address is considered &quot;capitalRaised&quot;
+    // Capital sent from this address is considered "capitalRaised"
     // This also contains the token that dividends will be sent to.
     _ITrComptroller public comptroller;
 
@@ -539,7 +539,7 @@ contract Treasury is
         require(msg.sender == owner);
         // comptroller must not already be set.
         require(address(comptroller) == address(0));
-        // comptroller&#39;s treasury must point to this.
+        // comptroller's treasury must point to this.
         require(_comptroller.treasury() == address(this));
         comptroller = _comptroller;
         emit ComptrollerSet(now, _comptroller, comptroller.token());
@@ -550,7 +550,7 @@ contract Treasury is
     /******* PROFITS AND DIVIDENDS *******************************/
     /*************************************************************/
 
-    // Can receive Ether from anyone. Typically Bankrollable contracts&#39; profits.
+    // Can receive Ether from anyone. Typically Bankrollable contracts' profits.
     function () public payable {
         profits += msg.value;
         profitsTotal += msg.value;
@@ -564,18 +564,18 @@ contract Treasury is
     {
         // Ensure token is set.
         if (address(comptroller) == address(0)) {
-            emit DividendFailure(now, &quot;Comptroller not yet set.&quot;);
+            emit DividendFailure(now, "Comptroller not yet set.");
             return;
         }
         // Ensure the CrowdSale is completed
         if (comptroller.wasSaleEnded() == false) {
-            emit DividendFailure(now, &quot;CrowdSale not yet completed.&quot;);
+            emit DividendFailure(now, "CrowdSale not yet completed.");
             return;
         }
         // Load _profits to memory (saves gas), and ensure there are profits.
         _profits = profits;
-        if (_profits &lt;= 0) {
-            emit DividendFailure(now, &quot;No profits to send.&quot;);
+        if (_profits <= 0) {
+            emit DividendFailure(now, "No profits to send.");
             return;
         }
 
@@ -617,11 +617,11 @@ contract Treasury is
         returns (bool _success, string _result)
     {
         // Fail if we do not have the capital available.
-        if (_value &gt; capital)
-            return (false, &quot;Not enough capital.&quot;);
+        if (_value > capital)
+            return (false, "Not enough capital.");
         // Fail if target is not Bankrollable
         if (!_hasCorrectTreasury(_bankrollable))
-            return (false, &quot;Bankrollable does not have correct Treasury.&quot;);
+            return (false, "Bankrollable does not have correct Treasury.");
 
         // Decrease capital, increase bankrolled
         capital -= _value;
@@ -631,23 +631,23 @@ contract Treasury is
         _ITrBankrollable(_bankrollable).addBankroll.value(_value)();
         emit CapitalRemoved(now, _bankrollable, _value);
         emit ExecutedSendCapital(now, _bankrollable, _value);
-        return (true, &quot;Sent bankroll to target.&quot;);
+        return (true, "Sent bankroll to target.");
     }
 
-    // Calls &quot;.removeBankroll()&quot; on Bankrollable target.
+    // Calls ".removeBankroll()" on Bankrollable target.
     function executeRecallCapital(address _bankrollable, uint _value)
         internal
         returns (bool _success, string _result)
     {
         // This should call .addCapital(), incrementing capital.
         uint _prevCapital = capital;
-        _ITrBankrollable(_bankrollable).removeBankroll(_value, &quot;addCapital()&quot;);
+        _ITrBankrollable(_bankrollable).removeBankroll(_value, "addCapital()");
         uint _recalled = capital - _prevCapital;
         capitalLedger.subtract(_bankrollable, _recalled);
         
         // Emit and return
         emit ExecutedRecallCapital(now, _bankrollable, _recalled);
-        return (true, &quot;Received bankoll back from target.&quot;);
+        return (true, "Received bankoll back from target.");
     }
 
     // Increases capitalRaisedTarget
@@ -658,7 +658,7 @@ contract Treasury is
         // Increase target amount.
         capitalRaisedTarget += _value;
         emit ExecutedRaiseCapital(now, _value);
-        return (true, &quot;Capital target raised.&quot;);
+        return (true, "Capital target raised.");
     }
 
     // Moves capital to profits
@@ -666,15 +666,15 @@ contract Treasury is
         internal
         returns (bool _success, string _result)
     {
-        if (_value &gt; capital)
-            return (false, &quot;Not enough capital.&quot;);
+        if (_value > capital)
+            return (false, "Not enough capital.");
         capital -= _value;
         profits += _value;
         profitsTotal += _value;
         emit CapitalRemoved(now, this, _value);
         emit ProfitsReceived(now, this, _value);
         emit ExecutedDistributeCapital(now, _value);
-        return (true, &quot;Capital moved to profits.&quot;);
+        return (true, "Capital moved to profits.");
     }
 
 
@@ -706,7 +706,7 @@ contract Treasury is
         view
         returns (uint _amount)
     {
-        return capitalRaisedTarget &gt; capitalRaised
+        return capitalRaisedTarget > capitalRaised
             ? capitalRaisedTarget - capitalRaised
             : 0;
     }
@@ -745,7 +745,7 @@ contract Treasury is
         private
         returns (bool)
     {
-        bytes32 _sig = bytes4(keccak256(&quot;getTreasury()&quot;));
+        bytes32 _sig = bytes4(keccak256("getTreasury()"));
         bool _success;
         address _response;
         assembly {
